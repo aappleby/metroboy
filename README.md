@@ -30,15 +30,9 @@ In step mode, up/down changes step granularity (frame/line/cycle) and left/right
 
 **MetroBoy isn't an emulator in the traditional sense** - it's comparatively slow, though you can use it to play Game Boy games. It should run at full speed on most modern processors, with my current laptop running at about 2.5x realtime in fast mode.
 
-MetroBoy is more like a Verilog simulation of a Game Boy that's been translated into C++. You can also think of it as being written in a synthesizable subset of C++.
+MetroBoy is more like a Verilog simulation of a Game Boy that's been translated into C++. You can also think of it as being written in a subset of C++ that's designed to to be mechanically translated into synthesizable Verilog.
 
-MetroBoy is designed to be mechanically translated into Verilog.
-
-MetroBoy is part of a larger project named Metron, which is a C-to-Verilog translator based on LLVM that I'm still working on.
-
-Portions of MetroBoy have been validated by translating them from C to Verilog using Metron, translating that back to C using Verilator, then asserting that all the registers match up.
-
-MetroBoy usually runs between 3x-5x faster than the C->Verilog->Verilator->C version.
+MetroBoy is part of a larger project named Metron, which is a C-to-Verilog translator based on LLVM that I'm still working on. Portions of MetroBoy have been validated by translating them from C to Verilog using Metron, translating that back to C using Verilator, then asserting that all the registers match up. MetroBoy usually runs between 3x-5x faster than the C->Verilog->Verilator->C version.
 
 ----------
 

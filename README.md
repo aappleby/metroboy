@@ -44,7 +44,7 @@ MetroBoy usually runs between 3x-5x faster than the C->Verilog->Verilator->C ver
 
 MetroBoy screen contents 
 
-- Left columns
+Left columns
 - CPU registers
 - Memory bus
 - DMA state

@@ -4,31 +4,31 @@ MetroBoy is a playable, circuit-level simulation of an entire Game Boy.
 
 ----------
 
-TL;DR - Drag and drop rom files into the window to load them.
+**TL;DR - Drag and drop rom files into the window to load them.**
 
 Game controls:
 
-Dpad = arrow keys
-B = Z
-A = X
-Select = shift
-Start = enter
+- Dpad = arrow keys
+- B = Z
+- A = X
+- Select = shift
+- Start = enter
 
 Debug controls:
 
-R = Reset
-F = Fast mode
-V = Vsync mode (default)
-S = Step mode
-F1 = Load state
-F4 = Save state
-ESC = Quit
+- R = Reset
+- F = Fast mode
+- V = Vsync mode (default)
+- S = Step mode
+- F1 = Load state
+- F4 = Save state
+- ESC = Quit
 
 In step mode, up/down changes step granularity (frame/line/cycle) and left/right steps forward/back. Shift-right can be used to step over long instructions like loops and halts.
 
 ----------
 
-MetroBoy isn't an emulator in the traditional sense - it's comparatively slow, though you can use it to play Game Boy games. It should run at full speed on most modern processors, with my current laptop running at about 2.5x realtime in fast mode.
+**MetroBoy isn't an emulator in the traditional sense** - it's comparatively slow, though you can use it to play Game Boy games. It should run at full speed on most modern processors, with my current laptop running at about 2.5x realtime in fast mode.
 
 MetroBoy is more like a Verilog simulation of a Game Boy that's been translated into C++. You can also think of it as being written in a synthesizable subset of C++.
 

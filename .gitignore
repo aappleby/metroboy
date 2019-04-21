@@ -4,3 +4,4 @@ SDL2*
 *.vcxproj.user
 *.gb
 dump.MetroBoy
+release

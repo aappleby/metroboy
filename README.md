@@ -1,4 +1,4 @@
-MetroBoy is a playable, circuit-level simulation of an entire Game Boy.
+# MetroBoy is a playable, circuit-level simulation of an entire Game Boy.
 
 ![MetroBoy screenshot](MetroBoy.png "MetroBoy screenshot")
 

@@ -4,7 +4,7 @@
 
 ----------
 
-**TL;DR - Drag and drop rom files into the window to load them.**
+**TL;DR - Drag and drop rom files into the window to load them. Only first-gen Game Boy games that use the MBC1 controller are supported - Game Boy Color roms will not work.**
 
 Game controls:
 

@@ -6,7 +6,7 @@
 
 **TL;DR - Drag and drop rom files into the window to load them. Only first-gen Game Boy games that use the MBC1 controller are supported - Game Boy Color roms will not work.**
 
-Game controls:
+## Game controls:
 
 - Dpad = arrow keys
 - B = Z
@@ -14,7 +14,7 @@ Game controls:
 - Select = shift
 - Start = enter
 
-Debug controls:
+## Debug controls:
 
 - R = Reset
 - F = Fast mode
@@ -28,7 +28,9 @@ In step mode, up/down changes step granularity (frame/line/cycle) and left/right
 
 ----------
 
-**MetroBoy isn't an emulator in the traditional sense** - it's comparatively slow, though you can use it to play Game Boy games. It should run at full speed on most modern processors, with my current laptop running at about 2.5x realtime in fast mode.
+## MetroBoy isn't an emulator in the traditional sense
+
+It's comparatively slow, though you can use it to play Game Boy games. It should run at full speed on most modern processors, with my current laptop running at about 2.5x realtime in fast mode.
 
 MetroBoy is more like a Verilog simulation of a Game Boy that's been translated into C++. You can also think of it as being written in a subset of C++ that's designed to to be mechanically translated into synthesizable Verilog.
 
@@ -36,7 +38,7 @@ MetroBoy is part of a larger project named Metron, which is a C-to-Verilog trans
 
 ----------
 
-MetroBoy screen contents 
+## MetroBoy screen contents 
 
 Left columns
 - CPU registers
@@ -59,7 +61,7 @@ Right column
 
 ----------
 
-FAQ
+## FAQ
 
 - Why is MetroBoy so slow?
   - MetroBoy simulates a Game Boy the hard way - in vsync mode it's simulating 4213440 full clock ticks per second. In fast mode it runs at about 10M clock ticks per second, or around 300 cycles per tick - not bad considering that the simulation does terrible things to branch predictors.
@@ -70,7 +72,7 @@ FAQ
 
 ----------
 
-Known Issues
+## Known Issues
 
 - The code is a mix of DMG (original Game Boy) and AGS (Game Boy Advance SP) configurations and will fail a few compatibility tests due to the inconsistency.
 - The sound hardware implementation is buggy

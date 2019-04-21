@@ -35,8 +35,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   bool rom_loaded = false;
   const char* filename = nullptr;
 
-  filename = "LinksAwakening.gb";
-
   MetroBoy metroboy;
 
   if (filename) {
@@ -96,6 +94,13 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
       }
 
       if (event.type == SDL_QUIT) quit = true;
+
+      if (event.type == SDL_DROPFILE) {
+        metroboy.load_rom(event.drop.file);
+        rom_loaded = true;
+        mode = RUN_VSYNC;
+        SDL_free(event.drop.file);
+      }
     }
 
     //----------------------------------------

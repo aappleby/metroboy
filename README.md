@@ -65,6 +65,17 @@ Right column
 
 ----------
 
+FAQ
+
+- Why is MetroBoy so slow?
+  - MetroBoy simulates a Game Boy the hard way - in vsync mode it's simulating 4213440 full clock ticks per second. In fast mode it runs at about 10M clock ticks per second, or around 300 cycles per tick - not bad considering that the simulation does terrible things to branch predictors.
+- How accurate is MetroBoy's simulation?
+  - Very, very accurate. It should run any ROM you throw at it, though there are a few corner cases regarding sprite vs. scroll timing that fail in Wilbert Pol's test suite.
+- How are you drawing the UI?
+  - Raw pixel writes to a SDL surface.
+
+----------
+
 Known Issues
 
 - The code is a mix of DMG (original Game Boy) and AGS (Game Boy Advance SP) configurations and will fail a few compatibility tests due to the inconsistency.

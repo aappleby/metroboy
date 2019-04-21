@@ -11,6 +11,7 @@ const char* to_binary(uint8_t b);
 //-----------------------------------------------------------------------------
 
 Gameboy::Gameboy() {
+  reset(0, 0);
 }
 
 void Gameboy::reset(int new_rom_size, uint16_t new_pc) {

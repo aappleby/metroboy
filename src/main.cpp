@@ -58,7 +58,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   uint64_t freq = SDL_GetPerformanceFrequency();
 
-  char text_buf[16384];
+  char text_buf[65536];
   char* cursor = text_buf;
 
   printf_console("MetroBoy starting...\n");
@@ -131,6 +131,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
     if (load_dump) {
       metroboy.load_dump();
       load_dump = false;
+      rom_loaded = true;
     }
 
     if (save_dump) {

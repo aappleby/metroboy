@@ -3,3 +3,4 @@ x64
 SDL2*
 *.vcxproj.user
 *.gb
+dump.MetroBoy

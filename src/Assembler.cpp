@@ -3,10 +3,10 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <memory.h>
 #include <string.h>
 
-//#include <cstdlib>
 #include <vector>
 
 #pragma warning(disable : 4996)

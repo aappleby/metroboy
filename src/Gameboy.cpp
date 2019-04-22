@@ -303,7 +303,7 @@ char* Gameboy::dump(char* cursor) {
   cursor += sprintf(cursor, "intf  %s\n", to_binary(intf));
   cursor += sprintf(cursor, "\n");
 
-  cursor += sprintf(cursor, "tcycle %lld\n", tcycle);
+  cursor += sprintf(cursor, "tcycle %ld\n", tcycle);
 
   cursor += sprintf(cursor, "z80 mem addr 0x%04x\n", z80.mem_addr_);
   cursor += sprintf(cursor, "z80 mem data 0x%02x\n", z80.mem_out_);

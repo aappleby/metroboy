@@ -1,6 +1,6 @@
 #include "MMU.h"
 #include "constants.h"
-#include "utils.h"
+#include "Utils.h"
 
 #include <stdio.h>
 #include <memory.h>
@@ -69,9 +69,9 @@ void MMU::reset(uint16_t new_pc) {
   case 0x05: rom_bank_count = 64; break;
   case 0x06: rom_bank_count = 128; break;
 
-  case 0x52: __debugbreak(); rom_bank_count = 72; break;
-  case 0x53: __debugbreak(); rom_bank_count = 80; break;
-  case 0x54: __debugbreak(); rom_bank_count = 96; break;
+  case 0x52: assert(false); rom_bank_count = 72; break;
+  case 0x53: assert(false); rom_bank_count = 80; break;
+  case 0x54: assert(false); rom_bank_count = 96; break;
 
   default:   rom_bank_count = 0; break;
   }

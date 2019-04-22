@@ -1,6 +1,6 @@
 #include "Audio.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <stdint.h>
 #include <list>
 #include <thread>

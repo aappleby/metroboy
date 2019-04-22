@@ -46,9 +46,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //----------
 
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-  
+
   window = SDL_CreateWindow("MetroBoy Gameboy Simulator", 4, 34, fb_width, fb_height, SDL_WINDOW_SHOWN);
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC); 
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
   fb_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, fb_width, fb_height);
   terminus_surface = SDL_LoadBMP("terminus2.bmp");
   terminus_font = (uint8_t*)terminus_surface->pixels;
@@ -289,7 +289,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
     time *= 0.98;
     time += (1000.0 * double(frame_time) / double(freq)) * 0.02;
 
-    sprintf_s(text_buf, 256, "frame time %2.2f msec, %6d cyc/frame\n", (double)time, (int)(cycles_end - cycles_begin) / 4);
+    sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", (double)time, (int)(cycles_end - cycles_begin) / 4);
     //sprintf_s(text_buf, "%lld\n", (sim_end - sim_begin));
     render_text(framebuffer, 736, 1024 - 12 - 4, terminus_font, text_buf);
 

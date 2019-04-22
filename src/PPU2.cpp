@@ -4,7 +4,6 @@
 #include <memory.h>
 #include <math.h>
 #include <stdio.h>
-#include <io.h>
 
 //-----------------------------------------------------------------------------
 
@@ -162,7 +161,7 @@ void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, boo
   oam_addr = 0;
   oam_data = 0;
   oam_read = false;
-  
+
   stat = ubit8_t(0x80 | (stat & 0b11111000) | (lyc_match << 2));
 
   if (cpu_write) bus_write(cpu_addr, cpu_data);

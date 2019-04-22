@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "Utils.h"
 #include "Gameboy.h"
 
 #include <stdio.h>
@@ -10,14 +10,16 @@ void dprintf(const char* fmt, ...) {
   char buf[1024];
   va_list args;
   va_start(args, fmt);
-  vsprintf_s(buf, sizeof(buf), fmt, args);
-  printf(buf);
+  //vsprintf_s(buf, sizeof(buf), fmt, args);
+  vsnprintf(buf, sizeof(buf), fmt, args);
+  printf("%s", buf);
 }
 
 
 bool assert_fail(const char* expr, const char* file, int line) {
   dprintf("\nAssertion \"%s\" failed @ %s : %d\n", expr, file, line);
-  __debugbreak();
+  //__debugbreak();
+  assert(false);
   return false;
 }
 

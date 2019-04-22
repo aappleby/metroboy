@@ -6,6 +6,7 @@
 #include <memory.h>
 #include <string.h>
 
+//#include <cstdlib>
 #include <vector>
 
 #pragma warning(disable : 4996)
@@ -40,7 +41,7 @@ int disassemble(const uint8_t* code, uint16_t code_base, int code_cursor, int op
       const char* op_string = cb_strings[op1];
       int size = 2;
       cursor += sprintf(cursor, "%04x: %02x%02x   ", code_base + code_cursor, op0, op1);
-      cursor += sprintf(cursor, op_string);
+      cursor += sprintf(cursor, "%s", op_string);
       *cursor++ = '\n';
       code_cursor += size;
       continue;
@@ -51,7 +52,7 @@ int disassemble(const uint8_t* code, uint16_t code_base, int code_cursor, int op
 
     if (size == 1) {
       cursor += sprintf(cursor, "%04x: %02x     ", code_base + code_cursor, op0);
-      cursor += sprintf(cursor, op_string);
+      cursor += sprintf(cursor, "%s", op_string);
     }
     if (size == 2) {
       uint8_t op1 = code[code_cursor + 1];
@@ -93,7 +94,7 @@ int assemble(const char* source, uint8_t* code, int& out_size) {
     if (*line == 0) continue;
 
     int match = -1;
-    uint8_t op = 0;
+    int op = 0;
     int arg = 0;
     for (; op < 256; op++) {
       if (op_sizes[op] == 1) {
@@ -138,9 +139,9 @@ void fuzz_assembler() {
 
     if (cmp != 0) {
       printf("---- %d ------\n", rep);
-      printf(source1);
+      printf("%s", source1);
       printf("----------\n");
-      printf(source2);
+      printf("%s", source2);
     }
   }
 }

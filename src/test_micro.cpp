@@ -64,7 +64,7 @@ static const char* micro_tests[] = {
   //"microtests/build/lcdon_halt_to_vblank_int_b.gb",
   //"microtests/build/lcdon_nops_to_vblank_int_a.gb",
   //"microtests/build/lcdon_nops_to_vblank_int_b.gb",
-  
+
   "-----",
   "microtests/build/100_int_timing_1a.gb",
   "microtests/build/100_int_timing_1b.gb", // broken, timer update timing off?
@@ -139,7 +139,7 @@ void run_microtest(const char* filename) {
   printf("%-50s ", filename);
 
   FILE* rom_file = NULL;
-  fopen_s(&rom_file, filename, "rb");
+  rom_file = fopen(filename, "rb");
   fseek(rom_file, 0, SEEK_END);
   int rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);

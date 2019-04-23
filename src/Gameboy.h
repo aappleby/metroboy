@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils.h"
+#include "Utils.h"
 #include "Z80.h"
 #include "PPU.h"
 #include "MMU.h"

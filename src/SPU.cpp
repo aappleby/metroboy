@@ -99,7 +99,7 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
 
   ubit14_t spu_clock_ = (spu_clock + 1) & 0x3FFF;
   ubit14_t clock_flip = (~spu_clock) & spu_clock_;
-  spu_clock = spu_clock;
+  spu_clock = spu_clock_;
 
   ubit9_t _out_r = out_r;
   ubit9_t _out_l = out_l;

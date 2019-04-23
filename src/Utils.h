@@ -4,15 +4,15 @@
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
-#include <intrin.h>
+#include <x86intrin.h>
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
 
 #pragma warning(disable : 4996)
 
 struct Gameboy;
 
-__forceinline uint32_t xrand()
+/*__forceinline*/ inline uint32_t xrand()
 {
   static uint32_t x = 0;
 

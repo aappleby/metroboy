@@ -18,8 +18,7 @@ MetroBoy::MetroBoy() {
 //-----------------------------------------------------------------------------
 
 void MetroBoy::load_rom(const char* filename) {
-  FILE* rom_file = NULL;
-  fopen_s(&rom_file, filename, "rb");
+  FILE* rom_file = fopen(filename, "rb");
   fseek(rom_file, 0, SEEK_END);
   int rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
@@ -30,16 +29,14 @@ void MetroBoy::load_rom(const char* filename) {
 }
 
 void MetroBoy::load_dump() {
-  FILE* dump_file = NULL;
-  fopen_s(&dump_file, "dump.MetroBoy", "rb");
+  FILE* dump_file = fopen("dump.MetroBoy", "rb");
   fread(current_gameboy, 1, sizeof(Gameboy), dump_file);
   fread(rom_buf, 1, 1024 * 1024, dump_file);
   fclose(dump_file);
 }
 
 void MetroBoy::save_dump() {
-  FILE* dump_file = NULL;
-  fopen_s(&dump_file, "dump.MetroBoy", "wb");
+  FILE* dump_file = fopen("dump.MetroBoy", "wb");
   fwrite(current_gameboy, 1, sizeof(Gameboy), dump_file);
   fwrite(rom_buf, 1, 1024 * 1024, dump_file);
   fclose(dump_file);

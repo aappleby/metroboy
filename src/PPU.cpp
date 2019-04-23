@@ -5,7 +5,6 @@
 #include <memory.h>
 #include <math.h>
 #include <stdio.h>
-#include <io.h>
 
 //-----------------------------------------------------------------------------
 
@@ -186,7 +185,7 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
   stat_int_hblank = false;
   stat_int_hblank |= (counter2 > 80) && (hblank_delay < HBLANK_DELAY_INT);
- 
+
   if (counter2 >= 452) stat_int_hblank = false;
 
   stat_int_hblank &= (stat & EI_HBLANK) != 0;
@@ -311,7 +310,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
   //-----------------------------------
 
-  int                  state = PPU_STATE_HBLANK; 
+  int                  state = PPU_STATE_HBLANK;
   if (render_phase)    state = PPU_STATE_VRAM;
   if (hblank_delay < HBLANK_DELAY_STATE)   state = PPU_STATE_HBLANK;
   if (oam_phase)       state = PPU_STATE_OAM;

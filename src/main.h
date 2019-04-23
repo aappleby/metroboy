@@ -1,6 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <SDL2/SDL.h>
+#include "Platform.h"
 
 struct Gameboy;
 

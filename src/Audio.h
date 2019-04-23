@@ -1,4 +1,5 @@
 #pragma once
+#include "Platform.h"
 
 void audio_init();
 void audio_stop();

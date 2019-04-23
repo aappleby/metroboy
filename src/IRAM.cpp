@@ -1,7 +1,5 @@
 #include "IRAM.h"
-#include "constants.h"
-
-#include <memory.h>
+#include "Constants.h"
 
 void IRAM::reset() {
   bus_out = 0x00;

@@ -1,10 +1,6 @@
 #include "Gameboy.h"
+
 #include "Assembler.h"
-
-#include <stdio.h>
-#include <memory.h>
-
-#pragma warning(disable : 4996)
 
 const char* to_binary(uint8_t b);
 

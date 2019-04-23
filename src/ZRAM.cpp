@@ -1,7 +1,5 @@
 #include "ZRAM.h"
-#include "constants.h"
-
-#include <memory.h>
+#include "Constants.h"
 
 void ZRAM::reset() {
   bus_out = 0x00;

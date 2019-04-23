@@ -1,4 +1,5 @@
 #pragma once
+#include "Platform.h"
 
 #include "Utils.h"
 #include "Z80.h"

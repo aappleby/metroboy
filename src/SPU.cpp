@@ -1,10 +1,5 @@
 #include "SPU.h"
-#include "constants.h"
-
-#include <math.h>
-#include <stdarg.h>
-
-#pragma warning(disable : 4996)
+#include "Constants.h"
 
 const char* to_binary(uint8_t b);
 

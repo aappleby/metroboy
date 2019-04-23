@@ -1,9 +1,5 @@
 #include "Z80.h"
 
-#include <stdio.h>
-
-#pragma warning(disable : 4996)
-
 #define F_CARRY      0x10
 #define F_HALF_CARRY 0x20
 #define F_NEGATIVE   0x40

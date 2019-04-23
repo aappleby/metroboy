@@ -1,9 +1,6 @@
 #include "Timer.h"
-#include "constants.h"
-#include <assert.h>
-#include <stdio.h>
+#include "Constants.h"
 
-#pragma warning(disable : 4996)
 const char* to_binary(uint8_t b);
 
 #define TAC_RUN 0x04

@@ -2,9 +2,6 @@
 #include "MetroBoy.h"
 #include "Audio.h"
 
-#pragma warning(disable : 4996)
-#pragma warning(disable : 4702)
-
 void run_microtests();
 void run_mooneye_acceptance();
 void run_wpol_acceptance();

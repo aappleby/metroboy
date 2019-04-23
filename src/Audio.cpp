@@ -1,12 +1,5 @@
 #include "Audio.h"
 
-#include <SDL2/SDL.h>
-#include <stdint.h>
-#include <list>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-
 //-----------------------------------------------------------------------------
 
 typedef int16_t sample_t;

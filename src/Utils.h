@@ -1,14 +1,5 @@
 #pragma once
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <time.h>
-#include <assert.h>
-#include <x86intrin.h>
-
-#include <SDL2/SDL.h>
-
-#pragma warning(disable : 4996)
+#include "Platform.h"
 
 struct Gameboy;
 

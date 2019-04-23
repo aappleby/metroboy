@@ -1,6 +1,7 @@
 #include "MetroBoy.h"
-#include "Audio.h"
+
 #include "Assembler.h"
+#include "Audio.h"
 
 uint8_t rom_buf[1024 * 1024];
 
@@ -22,7 +23,7 @@ void MetroBoy::load_rom(const char* filename) {
   fseek(rom_file, 0, SEEK_END);
   int rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
-  fread(rom_buf, 1, rom_size, rom_file);
+  rom_size = fread(rom_buf, 1, rom_size, rom_file);
   fclose(rom_file);
 
   current_gameboy->reset(rom_size, 0x100);
@@ -30,8 +31,8 @@ void MetroBoy::load_rom(const char* filename) {
 
 void MetroBoy::load_dump() {
   FILE* dump_file = fopen("dump.MetroBoy", "rb");
-  fread(current_gameboy, 1, sizeof(Gameboy), dump_file);
-  fread(rom_buf, 1, 1024 * 1024, dump_file);
+  int size = fread(current_gameboy, 1, sizeof(Gameboy), dump_file);
+  size = fread(rom_buf, 1, 1024 * 1024, dump_file);
   fclose(dump_file);
 }
 

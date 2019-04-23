@@ -1,9 +1,6 @@
 #include "MMU.h"
-#include "constants.h"
+#include "Constants.h"
 #include "Utils.h"
-
-#include <stdio.h>
-#include <memory.h>
 
 extern uint8_t rom_buf[1024 * 1024];
 

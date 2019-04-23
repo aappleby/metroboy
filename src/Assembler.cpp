@@ -1,16 +1,5 @@
 #include "Assembler.h"
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <memory.h>
-#include <string.h>
-
-#include <vector>
-
-#pragma warning(disable : 4996)
-
 void copy_line(const char*& source, char* dest) {
   // skip leading whitespace
 

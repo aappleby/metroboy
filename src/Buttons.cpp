@@ -1,10 +1,5 @@
 #include "Buttons.h"
-#include "constants.h"
-#include <stdio.h>
-
-#include <memory.h>
-
-#pragma warning(disable:4996)
+#include "Constants.h"
 
 Buttons::Buttons() {
   reset();

@@ -1,7 +1,5 @@
 #pragma once
-#include <stdint.h>
-
-#pragma warning(disable : 4201)
+#include "Platform.h"
 
 struct Buttons {
   Buttons();

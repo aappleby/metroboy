@@ -1,7 +1,5 @@
 #include "OAM.h"
-#include "constants.h"
-#include <stdio.h>
-#include <memory.h>
+#include "Constants.h"
 
 void OAM::reset() {
   bus_out = 0x00;

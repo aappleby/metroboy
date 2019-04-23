@@ -1,7 +1,6 @@
+#pragma once
+#include "Platform.h"
 #include "Gameboy.h"
-
-#include <stdint.h>
-#include <vector>
 
 class MetroBoy {
 public:

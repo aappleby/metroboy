@@ -1,10 +1,8 @@
 #pragma once
+#include "Platform.h"
 
-#include <stdint.h>
 #include "OAM.h"
 #include "Utils.h"
-
-#pragma warning(disable : 4201)
 
 //-----------------------------------------------------------------------------
 

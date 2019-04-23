@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include "Platform.h"
 
 #define PHASE_CPU_TICK  0
 

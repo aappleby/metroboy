@@ -1,10 +1,7 @@
 #pragma once
-#include "constants.h"
+#include "Platform.h"
+#include "Constants.h"
 #include "Utils.h"
-
-#include <stdint.h>
-
-#pragma warning(disable:4201) // unnamed struct/union
 
 enum Z80State {
   Z80_STATE_DECODE = 0,

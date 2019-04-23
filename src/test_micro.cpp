@@ -1,9 +1,5 @@
+#include "Platform.h"
 #include "Gameboy.h"
-
-#include <stdio.h>
-#include <stdint.h>
-#include <memory.h>
-#include <string.h>
 
 static const char* micro_tests[] = {
   "-----",
@@ -143,7 +139,7 @@ void run_microtest(const char* filename) {
   fseek(rom_file, 0, SEEK_END);
   int rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
-  fread(rom_buf, 1, rom_size, rom_file);
+  rom_size = fread(rom_buf, 1, rom_size, rom_file);
   fclose(rom_file);
 
   Gameboy gameboy;

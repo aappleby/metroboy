@@ -1,10 +1,5 @@
-
 #include "PPU.h"
-#include "constants.h"
-
-#include <memory.h>
-#include <math.h>
-#include <stdio.h>
+#include "Constants.h"
 
 //-----------------------------------------------------------------------------
 

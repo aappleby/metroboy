@@ -1,6 +1,6 @@
 #pragma once
-#include <assert.h>
-#include <stdint.h>
+#include "Platform.h"
+
 #include "Utils.h"
 
 //-----------------------------------------------------------------------------

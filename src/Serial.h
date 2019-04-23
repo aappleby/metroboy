@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include "Platform.h"
 
 struct Serial {
   void reset();

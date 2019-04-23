@@ -1,5 +1,4 @@
 #pragma once
-#include "Platform.h"
 
 struct IRAM {
   void reset();

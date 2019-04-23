@@ -1,5 +1,9 @@
+#include "Platform.h"
 #include "OAM.h"
+
 #include "Constants.h"
+
+//-----------------------------------------------------------------------------
 
 void OAM::reset() {
   bus_out = 0x00;
@@ -37,3 +41,5 @@ char* OAM::dump(char* cursor) {
 
   return cursor;
 }
+
+//-----------------------------------------------------------------------------

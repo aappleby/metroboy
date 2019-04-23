@@ -1,4 +1,10 @@
+#include "Platform.h"
 #include "Z80.h"
+
+#include "Constants.h"
+#include "Common.h"
+
+//-----------------------------------------------------------------------------
 
 #define F_CARRY      0x10
 #define F_HALF_CARRY 0x20
@@ -294,7 +300,7 @@ void Z80::setup_decode() {
       pc_ = data16_;
     }
     else {
-      zassert(false);
+      assert(false);
     }
   }
   else if (fetch_d16_) {
@@ -446,7 +452,7 @@ void Z80::tock_decode() {
 // New opcode arrived, decode it and dispatch next state.
 
 void Z80::tick_decode() {
-  zassert(bus_tag == TAG_OPCODE);
+  assert(bus_tag == TAG_OPCODE);
 
   interrupt2 = (imask_ & intf_) && ime;
 
@@ -676,7 +682,7 @@ void Z80::tock_decode_cb() {
 }
 
 void Z80::tick_decode_cb() {
-  zassert(bus_tag == TAG_OPCODE_CB);
+  assert(bus_tag == TAG_OPCODE_CB);
 
   uint8_t cb_opcode_ = bus_data_;
 
@@ -706,7 +712,7 @@ void Z80::tock_mem_read_cb() {
 }
 
 void Z80::tick_mem_read_cb() {
-  zassert(bus_tag == TAG_ARG1);
+  assert(bus_tag == TAG_ARG1);
 
   tick_exec_cb();
   if (cb_col_ == 6 && cb_quad_ != 1) {
@@ -747,7 +753,7 @@ void Z80::setup_mem_read1() {
   else if (LD_A_AT_DE) { bus_tag_ = TAG_DATA0; mem_addr_ = de; }
   else if (get_hl_)    { bus_tag_ = TAG_DATA0; mem_addr_ = hl; }
   else if (pop_d16_)   { bus_tag_ = TAG_DATA0; mem_addr_ = sp; }
-  else                 { zassert(false); }
+  else                 { assert(false); }
 
   mem_read_ = true;
   mem_write_ = false;
@@ -791,7 +797,7 @@ void Z80::setup_mem_read2() {
   if      (fetch_d16_) { bus_tag_ = TAG_ARG1;  mem_addr_ = pc + 2; }
   else if (pop_d16_)   { bus_tag_ = TAG_DATA1; mem_addr_ = sp + 1; }
   else if (LD_A_AT_A8) { bus_tag_ = TAG_DATA0; mem_addr_ = 0xFF00 | bus_data_; }
-  else                 { zassert(false); }
+  else                 { assert(false); }
 
   mem_read_ = true;
   mem_write_ = false;

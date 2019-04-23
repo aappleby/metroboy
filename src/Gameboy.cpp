@@ -1,8 +1,9 @@
+#include "Platform.h"
 #include "Gameboy.h"
 
 #include "Assembler.h"
-
-const char* to_binary(uint8_t b);
+#include "Common.h"
+#include "Constants.h"
 
 //-----------------------------------------------------------------------------
 
@@ -109,7 +110,7 @@ void Gameboy::tick() {
   bus_oe_ += timer.bus_oe;
   bus_oe_ += zram.bus_oe;
 
-  zassert(bus_oe_ <= 1);
+  assert(bus_oe_ <= 1);
   if (!bus_oe_) bus_out_ = 0xFF;
 
   ppu.tick(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
@@ -363,6 +364,8 @@ char* Gameboy::dump(char* cursor) {
   return cursor;
 }
 
+//-----------------------------------------------------------------------------
+
 char* Gameboy::dump_disasm(char* cursor) {
   uint16_t pc = z80.get_pc();
 
@@ -387,3 +390,5 @@ char* Gameboy::dump_disasm(char* cursor) {
 
   return cursor;
 }
+
+//-----------------------------------------------------------------------------

@@ -1,4 +1,6 @@
+#include "Platform.h"
 #include "Buttons.h"
+
 #include "Constants.h"
 
 Buttons::Buttons() {

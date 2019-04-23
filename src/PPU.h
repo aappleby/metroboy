@@ -1,95 +1,7 @@
 #pragma once
-#include "Platform.h"
-
 #include "OAM.h"
-#include "Utils.h"
 
 //-----------------------------------------------------------------------------
-
-#define ADDR_TILE0        0x8000
-#define ADDR_TILE1        0x8800
-#define ADDR_MAP0         0x9800
-#define ADDR_MAP1         0x9C00
-
-#define ADDR_OAM_BEGIN    0xFE00
-#define ADDR_OAM_END      0xFE9F
-
-#define ADDR_GPU_BEGIN    0xFF40
-#define ADDR_LCDC         0xFF40
-#define ADDR_STAT         0xFF41
-#define ADDR_SCY          0xFF42
-#define ADDR_SCX          0xFF43
-#define ADDR_LY           0xFF44
-#define ADDR_LYC          0xFF45
-#define ADDR_DMA          0xFF46
-#define ADDR_BGP          0xFF47
-#define ADDR_OBP0         0xFF48
-#define ADDR_OBP1         0xFF49
-#define ADDR_WY           0xFF4A
-#define ADDR_WX           0xFF4B
-#define ADDR_GPU_END      0xFF4B
-
-#define FLAG_BG_ON        0x01
-#define FLAG_OBJ_ON       0x02
-#define FLAG_TALL_SPRITES 0x04
-#define FLAG_BG_MAP_1     0x08
-#define FLAG_TILE_0       0x10
-#define FLAG_WIN_ON       0x20
-#define FLAG_WIN_MAP_1    0x40
-#define FLAG_LCD_ON       0x80
-
-#define TCYCLES_LINE      456
-#define TCYCLES_OAM       80
-#define TCYCLES_VRAM      172
-#define TCYCLES_HBLANK    204
-
-#define HBLANK_DELAY_START  4
-
-#define HBLANK_DELAY_PHASE  3 // 3 = we pass sprite timings?
-#define HBLANK_DELAY_LOCK   1
-#define HBLANK_DELAY_STATE  1
-#define HBLANK_DELAY_INT    1
-
-#define SPRITE_PRI    0x80
-#define SPRITE_FLIP_Y 0x40
-#define SPRITE_FLIP_X 0x20
-#define SPRITE_PAL    0x10
-
-#define PPU_STATE_HBLANK 0
-#define PPU_STATE_VBLANK 1
-#define PPU_STATE_OAM    2
-#define PPU_STATE_VRAM   3
-
-//-----------------------------------------------------------------------------
-
-const static uint32_t gb_colors[8] = {
-  0xFF7F7F7F,
-  0xFF5F5F5F,
-  0xFF3F3F3F,
-  0xFF1F1F1F,
-  0xFF9F7F7F,
-  0xFF7F5F5F,
-  0xFF5F3F3F,
-  0xFF3F1F1F,
-};
-
-//-----------------------------------------------------------------------------
-
-enum FetchState {
-  FETCH_TILE_MAP,
-  FETCH_TILE_LO,
-  FETCH_TILE_HI,
-
-  FETCH_SPRITE_MAP,
-  FETCH_SPRITE_LO,
-  FETCH_SPRITE_HI,
-
-  FETCH_IDLE,
-  FETCH_DONE,
-};
-
-//-----------------------------------------------------------------------------
-// PPU ticks at 4 mhz
 
 struct PPU {
   void reset();
@@ -203,6 +115,19 @@ struct PPU {
   //----------
   // Vram Fetcher
 
+  enum FetchState {
+    FETCH_TILE_MAP,
+    FETCH_TILE_LO,
+    FETCH_TILE_HI,
+
+    FETCH_SPRITE_MAP,
+    FETCH_SPRITE_LO,
+    FETCH_SPRITE_HI,
+
+    FETCH_IDLE,
+    FETCH_DONE,
+  };
+
   FetchState fetch_state;
   bool    window_hit;
 
@@ -231,14 +156,5 @@ struct PPU {
   ubit8_t ob_pal_lo;
   ubit8_t ob_pal_hi;
 };
-
-uint16_t pack_map_addr(uint16_t base, uint8_t map_x, uint8_t map_y);
-uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty);
-uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y);
-uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y);
-uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map);
-uint16_t win_base_address(uint8_t lcdc, uint8_t wy, uint8_t line, uint8_t map);
-uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags);
-
 
 //-----------------------------------------------------------------------------

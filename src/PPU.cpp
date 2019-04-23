@@ -1,5 +1,16 @@
+#include "Platform.h"
 #include "PPU.h"
+
+#include "Common.h"
 #include "Constants.h"
+
+uint16_t pack_map_addr(uint16_t base, uint8_t map_x, uint8_t map_y);
+uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty);
+uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y);
+uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y);
+uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map);
+uint16_t win_base_address(uint8_t lcdc, uint8_t wy, uint8_t line, uint8_t map);
+uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags);
 
 //-----------------------------------------------------------------------------
 

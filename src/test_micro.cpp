@@ -1,4 +1,6 @@
 #include "Platform.h"
+
+#include "Common.h"
 #include "Gameboy.h"
 
 static const char* micro_tests[] = {
@@ -124,8 +126,6 @@ static const char* micro_tests[] = {
   "microtests/build/lcdon_to_vblank_int.gb",
   "microtests/build/lcdon_to_stat_int_vblank.gb",
 };
-
-extern uint8_t rom_buf[1024 * 1024];
 
 void run_microtest(const char* filename) {
   if (filename[0] == '-') {

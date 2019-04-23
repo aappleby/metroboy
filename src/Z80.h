@@ -1,30 +1,4 @@
 #pragma once
-#include "Platform.h"
-#include "Constants.h"
-#include "Utils.h"
-
-enum Z80State {
-  Z80_STATE_DECODE = 0,
-  Z80_STATE_HALT,
-
-  Z80_STATE_DELAY_A,
-
-  Z80_STATE_MEM_READ1,
-  Z80_STATE_MEM_READ2,
-  Z80_STATE_MEM_READ3,
-
-  Z80_STATE_DELAY_D,
-
-  Z80_STATE_MEM_WRITE1,
-  Z80_STATE_MEM_WRITE2,
-
-  Z80_STATE_DECODE_CB,
-  Z80_STATE_MEM_READ_CB,
-  Z80_STATE_MEM_WRITE_CB,
-
-  Z80_STATE_DELAY_B,
-  Z80_STATE_DELAY_C,
-};
 
 //-----------------------------------------------------------------------------
 
@@ -48,11 +22,46 @@ struct Z80 {
 
 //private:
 
+  // What's on the bus?
+  enum MemTag {
+    TAG_OPCODE,
+    TAG_OPCODE_CB,
+    TAG_ARG0,
+    TAG_ARG1,
+
+    TAG_DATA0,
+    TAG_DATA1,
+
+    TAG_NONE,
+  };
 
   MemTag bus_tag, bus_tag_;
   uint16_t mem_addr;
 
   //----------
+
+  enum Z80State {
+    Z80_STATE_DECODE = 0,
+    Z80_STATE_HALT,
+
+    Z80_STATE_DELAY_A,
+
+    Z80_STATE_MEM_READ1,
+    Z80_STATE_MEM_READ2,
+    Z80_STATE_MEM_READ3,
+
+    Z80_STATE_DELAY_D,
+
+    Z80_STATE_MEM_WRITE1,
+    Z80_STATE_MEM_WRITE2,
+
+    Z80_STATE_DECODE_CB,
+    Z80_STATE_MEM_READ_CB,
+    Z80_STATE_MEM_WRITE_CB,
+
+    Z80_STATE_DELAY_B,
+    Z80_STATE_DELAY_C,
+  };
 
   Z80State state, state_;
 

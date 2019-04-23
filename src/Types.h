@@ -1,34 +1,27 @@
 #pragma once
-#include "Platform.h"
 
-struct Gameboy;
+typedef int16_t sample_t;
 
-/*__forceinline*/ inline uint32_t xrand()
-{
-  static uint32_t x = 0;
+//-----------------------------------------------------------------------------
 
-  if (x == 0) {
-    srand((uint32_t)time(0));
-    x = rand();
-  }
-
-  x ^= x << 13;
-  x ^= x >> 17;
-  x ^= x << 5;
-  return x;
-}
-
-void dprintf(const char* fmt, ...);
-
-bool assert_fail(const char* expr, const char* file, int line);
-#define zassert(expression) (void)((!!(expression)) || assert_fail(#expression, __FILE__, __LINE__))
-
-
-const char* to_binary(uint8_t b);
-const char* to_binary(uint8_t lo, uint8_t hi);
-const char* to_binary(uint16_t lo, uint16_t hi);
-uint8_t flip(uint8_t x);
-uint8_t flip2(uint8_t b);
+struct Sprite {
+  uint8_t y;
+  uint8_t x;
+  uint8_t p;
+  union {
+    struct {
+      uint8_t pad0 : 1;
+      uint8_t pad1 : 1;
+      uint8_t pad2 : 1;
+      uint8_t pad3 : 1;
+      uint8_t pal : 1;
+      uint8_t flipX : 1;
+      uint8_t flipY : 1;
+      uint8_t pri : 1;
+    } bits;
+    uint8_t f;
+  } flags;
+};
 
 //-----------------------------------------------------------------------------
 // Bit-width-checking logic type, for sanity tests

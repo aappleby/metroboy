@@ -1,9 +1,8 @@
+#include "Platform.h"
 #include "Timer.h"
+
+#include "Common.h"
 #include "Constants.h"
-
-const char* to_binary(uint8_t b);
-
-#define TAC_RUN 0x04
 
 //-----------------------------------------------------------------------------
 
@@ -69,3 +68,5 @@ char* Timer::dump(char* cursor) {
   cursor += sprintf(cursor, "TAC  %s\n", to_binary(tac));
   return cursor;
 }
+
+//-----------------------------------------------------------------------------

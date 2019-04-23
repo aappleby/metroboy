@@ -1,7 +1,8 @@
+#include "Platform.h"
 #include "SPU.h"
-#include "Constants.h"
 
-const char* to_binary(uint8_t b);
+#include "Common.h"
+#include "Constants.h"
 
 uint32_t pext(uint32_t a, uint32_t b) {
   return _pext_u32(a, b);

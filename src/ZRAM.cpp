@@ -1,5 +1,9 @@
+#include "Platform.h"
 #include "ZRAM.h"
+
 #include "Constants.h"
+
+//-----------------------------------------------------------------------------
 
 void ZRAM::reset() {
   bus_out = 0x00;
@@ -7,6 +11,8 @@ void ZRAM::reset() {
 
   memset(ram, 0, sizeof(ram));
 }
+
+//-----------------------------------------------------------------------------
 
 void ZRAM::tock(uint16_t addr, uint8_t data, bool read, bool write) {
   bus_out = 0x00;
@@ -25,3 +31,5 @@ void ZRAM::tock(uint16_t addr, uint8_t data, bool read, bool write) {
     bus_oe = true;
   }
 }
+
+//-----------------------------------------------------------------------------

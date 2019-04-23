@@ -49,8 +49,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -64,8 +63,10 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <SDLCheck>
       </SDLCheck>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>
+      </MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile>Platform.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -77,8 +78,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -89,6 +89,7 @@
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile>Platform.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,6 +103,7 @@
     <ClInclude Include="src\Assembler.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\Buttons.h" />
+    <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Gameboy.h" />
     <ClInclude Include="src\IRAM.h" />
@@ -112,8 +114,9 @@
     <ClInclude Include="src\PPU.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\SPU.h" />
+    <ClInclude Include="src\test_micro.h" />
     <ClInclude Include="src\Timer.h" />
-    <ClInclude Include="src\Utils.h" />
+    <ClInclude Include="src\Types.h" />
     <ClInclude Include="src\VRAM.h" />
     <ClInclude Include="src\Z80.h" />
     <ClInclude Include="src\ZRAM.h" />
@@ -123,17 +126,21 @@
     <ClCompile Include="src\Assembler.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Buttons.cpp" />
+    <ClCompile Include="src\Common.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\MMU.cpp" />
     <ClCompile Include="src\OAM.cpp" />
+    <ClCompile Include="src\Platform.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\PPU.cpp" />
     <ClCompile Include="src\Serial.cpp" />
     <ClCompile Include="src\SPU.cpp" />
     <ClCompile Include="src\test_micro.cpp" />
     <ClCompile Include="src\Timer.cpp" />
-    <ClCompile Include="src\Utils.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />

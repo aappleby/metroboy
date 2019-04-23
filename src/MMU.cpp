@@ -1,8 +1,8 @@
+#include "Platform.h"
 #include "MMU.h"
-#include "Constants.h"
-#include "Utils.h"
 
-extern uint8_t rom_buf[1024 * 1024];
+#include "Common.h"
+#include "Constants.h"
 
 //-----------------------------------------------------------------------------
 

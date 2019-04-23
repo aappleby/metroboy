@@ -1,10 +1,9 @@
+#include "Platform.h"
 #include "main.h"
-#include "MetroBoy.h"
-#include "Audio.h"
 
-void run_microtests();
-void run_mooneye_acceptance();
-void run_wpol_acceptance();
+#include "Audio.h"
+#include "Common.h"
+#include "MetroBoy.h"
 
 //-----------------------------------------------------------------------------
 

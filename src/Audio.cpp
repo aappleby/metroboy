@@ -1,53 +1,17 @@
+#include "Platform.h"
 #include "Audio.h"
 
-//-----------------------------------------------------------------------------
+#include "Constants.h"
 
-typedef int16_t sample_t;
-
-struct AudioQueue {
-  AudioQueue() : queue(), mux(), cv(), closed(false) {
-  }
-
-  std::list<sample_t*> queue;
-  std::mutex mux;
-  std::condition_variable cv;
-  bool closed;
-
-  sample_t* get() {
-    std::unique_lock<std::mutex> lock(mux);
-    cv.wait(lock, [&] { return closed || !queue.empty(); });
-    if (queue.empty()) {
-      return nullptr;
-    }
-    else {
-      sample_t* buf = queue.front();
-      queue.pop_front();
-      return buf;
-    }
-  }
-
-  void put(sample_t* buf) {
-    std::unique_lock<std::mutex> lock(mux);
-    queue.push_back(buf);
-    cv.notify_one();
-  }
-
-  void close() {
-    closed = true;
-    cv.notify_all();
-  }
-};
+SDL_AudioDeviceID dev;
 
 AudioQueue audio_queue_out;
 AudioQueue audio_queue_in;
 
-//-------------------------------------
-
-const int64_t input_hz = 154 * 114 * 60;
-const int64_t output_hz = 48000;
-const int samples_per_frame = output_hz / 60;
-SDL_AudioDeviceID dev;
 uint16_t spu_write_cursor = 0;
+sample_t* spu_buffer = nullptr;
+
+//-----------------------------------------------------------------------------
 
 void audio_callback(void* /*userdata*/, Uint8* stream, int len) {
   sample_t* buf = audio_queue_out.get();
@@ -76,6 +40,8 @@ void audio_init() {
   audio_queue_in.put(new sample_t[samples_per_frame * 2]);
 }
 
+//-------------------------------------
+
 void audio_stop() {
   audio_queue_out.close();
   SDL_CloseAudioDevice(dev);
@@ -83,17 +49,15 @@ void audio_stop() {
 
 //-------------------------------------
 
-sample_t* spu_buffer = nullptr;
-
 void audio_begin() {
   spu_buffer = audio_queue_in.get();
-  memset(spu_buffer, 0, samples_per_frame * 2 * sizeof(sample_t));
   spu_write_cursor = 0;
+  memset(spu_buffer, 0, samples_per_frame * 2 * sizeof(sample_t));
 }
 
 //-------------------------------------
 
-void audio_post(int in_l_i, int in_r_i) {
+void audio_post(sample_t in_l_i, sample_t in_r_i) {
   static uint32_t in_l_accum = 0;
   static uint32_t in_r_accum = 0;
   static int sample_count = 0;
@@ -102,7 +66,7 @@ void audio_post(int in_l_i, int in_r_i) {
   in_r_accum += in_r_i;
   sample_count++;
 
-  static int64_t accum = 0;
+  static int32_t accum = 0;
   accum += output_hz;
 
   if (accum >= input_hz) {
@@ -145,9 +109,12 @@ void audio_post(int in_l_i, int in_r_i) {
   }
 }
 
+//-------------------------------------
+
 void audio_end() {
   audio_queue_out.put(spu_buffer);
   spu_buffer = nullptr;
+  spu_write_cursor = 0;
 }
 
 //-----------------------------------------------------------------------------

@@ -1,5 +1,9 @@
+#include "Platform.h"
 #include "Serial.h"
+
 #include "Constants.h"
+
+//-----------------------------------------------------------------------------
 
 void Serial::reset() {
   bus_out = 0x00;
@@ -8,6 +12,8 @@ void Serial::reset() {
   sb = 0x00;
   sc = 0x7E;
 }
+
+//-----------------------------------------------------------------------------
 
 void Serial::tock(uint16_t addr, uint8_t data, bool read, bool write) {
   bus_out = 0x00;
@@ -29,3 +35,5 @@ void Serial::tock(uint16_t addr, uint8_t data, bool read, bool write) {
     }
   }
 }
+
+//-----------------------------------------------------------------------------

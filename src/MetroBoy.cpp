@@ -1,9 +1,8 @@
+#include "Platform.h"
 #include "MetroBoy.h"
 
-#include "Assembler.h"
 #include "Audio.h"
-
-uint8_t rom_buf[1024 * 1024];
+#include "Common.h"
 
 //-----------------------------------------------------------------------------
 

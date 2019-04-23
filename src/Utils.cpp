@@ -43,7 +43,7 @@ const char* to_binary(uint8_t lo, uint8_t hi) {
     int a = (lo >> (7 - i)) & 1;
     int b = (hi >> (7 - i)) & 1;
     int c = b * 2 + a;
-    binarybuf[i] = '0' + c;
+    binarybuf[i] = char('0' + c);
   }
   binarybuf[8] = 0;
   return binarybuf;
@@ -54,7 +54,7 @@ const char* to_binary(uint16_t lo, uint16_t hi) {
     int a = (lo >> (15 - i)) & 1;
     int b = (hi >> (15 - i)) & 1;
     int c = b * 2 + a;
-    binarybuf[i] = '0' + c;
+    binarybuf[i] = char('0' + c);
   }
   binarybuf[16] = 0;
   return binarybuf;

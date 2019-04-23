@@ -4,7 +4,10 @@
 
 typedef int16_t sample_t;
 
-struct audio_queue {
+struct AudioQueue {
+  AudioQueue() : queue(), mux(), cv(), closed(false) {
+  }
+
   std::list<sample_t*> queue;
   std::mutex mux;
   std::condition_variable cv;
@@ -35,8 +38,8 @@ struct audio_queue {
   }
 };
 
-audio_queue audio_queue_out;
-audio_queue audio_queue_in;
+AudioQueue audio_queue_out;
+AudioQueue audio_queue_in;
 
 //-------------------------------------
 

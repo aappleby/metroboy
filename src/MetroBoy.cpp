@@ -7,12 +7,15 @@ uint8_t rom_buf[1024 * 1024];
 
 //-----------------------------------------------------------------------------
 
-MetroBoy::MetroBoy() {
-  current_gameboy = new Gameboy();
-  cycles = 0;
+MetroBoy::MetroBoy()
+: current_gameboy(new Gameboy()),
+  history_frame(),
+  history_line(),
+  history_cycle(),
+  cycles(0),
+  trace(true)
+{
   memset(current_gameboy->framebuffer, 0, sizeof(current_gameboy->framebuffer));
-
-  trace = true;
   memset(tracebuffer, 0, sizeof(tracebuffer));
 }
 
@@ -21,7 +24,7 @@ MetroBoy::MetroBoy() {
 void MetroBoy::load_rom(const char* filename) {
   FILE* rom_file = fopen(filename, "rb");
   fseek(rom_file, 0, SEEK_END);
-  int rom_size = ftell(rom_file);
+  size_t rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
   rom_size = fread(rom_buf, 1, rom_size, rom_file);
   fclose(rom_file);
@@ -31,8 +34,10 @@ void MetroBoy::load_rom(const char* filename) {
 
 void MetroBoy::load_dump() {
   FILE* dump_file = fopen("dump.MetroBoy", "rb");
-  int size = fread(current_gameboy, 1, sizeof(Gameboy), dump_file);
+  size_t size = fread(current_gameboy, 1, sizeof(Gameboy), dump_file);
+  assert(size == sizeof(Gameboy));
   size = fread(rom_buf, 1, 1024 * 1024, dump_file);
+  assert(size == 1024 * 1024);
   fclose(dump_file);
 }
 

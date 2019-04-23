@@ -18,7 +18,7 @@
 struct Gameboy {
   Gameboy();
 
-  void reset(int new_rom_size, uint16_t new_pc);
+  void reset(size_t new_rom_size, uint16_t new_pc);
   void reset(uint16_t new_pc);
 
   void tick();
@@ -89,38 +89,38 @@ struct Gameboy {
   Serial serial;
   ZRAM zram;
 
-  int64_t tcycle;
+  int64_t tcycle = -1;
 
-  bool cpu_read_oam;
-  bool cpu_read_vram;
-  bool cpu_read_iram;
-  bool cpu_read_cart;
+  bool cpu_read_oam = false;
+  bool cpu_read_vram = false;
+  bool cpu_read_iram = false;
+  bool cpu_read_cart = false;
 
-  DMAMode  dma_mode_x;
-  uint8_t  dma_count_x;
-  uint16_t dma_source_x;
+  DMAMode  dma_mode_x = DMA_NONE;
+  uint8_t  dma_count_x = 0;
+  uint16_t dma_source_x = 0;
 
-  DMAMode  dma_mode_a;
-  uint8_t  dma_count_a;
-  uint16_t dma_source_a;
+  DMAMode  dma_mode_a = DMA_NONE;
+  uint8_t  dma_count_a = 0;
+  uint16_t dma_source_a = 0;
 
-  DMAMode  dma_mode_b;
-  uint8_t  dma_count_b;
-  uint8_t  dma_data_b;
+  DMAMode  dma_mode_b = DMA_NONE;
+  uint8_t  dma_count_b = 0;
+  uint8_t  dma_data_b = 0;
 
-  uint8_t oam_bus_out;
-  bool oam_bus_oe;
+  uint8_t oam_bus_out = 0;
+  bool oam_bus_oe = false;
 
-  uint8_t bus_out;
-  bool bus_oe;
+  uint8_t bus_out = 0;
+  bool bus_oe = false;
 
-  uint8_t bus_out_latch;
-  bool bus_oe_latch;
+  uint8_t bus_out_latch = 0;
+  bool bus_oe_latch = false;
 
-  bool old_stat_int;
+  bool old_stat_int = false;
 
-  uint8_t intf;
-  uint8_t imask;
+  uint8_t intf = 0;
+  uint8_t imask = 0;
 
   uint32_t sentinel = 0xDEADBEEF;
 };

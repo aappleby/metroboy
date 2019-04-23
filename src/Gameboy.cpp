@@ -6,11 +6,23 @@ const char* to_binary(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
-Gameboy::Gameboy() {
+Gameboy::Gameboy()
+: z80(),
+  mmu(),
+  ppu(),
+  oam(),
+  spu(),
+  timer(),
+  vram(),
+  iram(),
+  buttons(),
+  serial(),
+  zram()
+{
   reset(0, 0);
 }
 
-void Gameboy::reset(int new_rom_size, uint16_t new_pc) {
+void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
   z80.reset(new_pc);
   ppu.reset();
   oam.reset();
@@ -252,7 +264,7 @@ void Gameboy::tock() {
 
   if (cpu_write_) {
     if (cpu_addr_ == ADDR_DMA) {
-      if (0x00 <= cpu_data_ && cpu_data_ <= 0x7F) dma_mode_x = DMA_CART;
+      if (cpu_data_ <= 0x7F) dma_mode_x = DMA_CART;
       if (0x80 <= cpu_data_ && cpu_data_ <= 0x9F) dma_mode_x = DMA_VRAM;
       if (0xA0 <= cpu_data_ && cpu_data_ <= 0xBF) dma_mode_x = DMA_CART;
       if (0xC0 <= cpu_data_ && cpu_data_ <= 0xFD) dma_mode_x = DMA_IRAM;
@@ -299,7 +311,7 @@ char* Gameboy::dump(char* cursor) {
   cursor += sprintf(cursor, "intf  %s\n", to_binary(intf));
   cursor += sprintf(cursor, "\n");
 
-  cursor += sprintf(cursor, "tcycle %ld\n", tcycle);
+  cursor += sprintf(cursor, "tcycle %zd\n", tcycle);
 
   cursor += sprintf(cursor, "z80 mem addr 0x%04x\n", z80.mem_addr_);
   cursor += sprintf(cursor, "z80 mem data 0x%02x\n", z80.mem_out_);

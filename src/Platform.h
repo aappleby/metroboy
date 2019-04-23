@@ -18,9 +18,11 @@
 #include <mutex>
 #include <condition_variable>
 
+#ifdef _MSC_VER
 #pragma warning(disable : 4702) // Unreachable code
 #pragma warning(disable : 4996) // Deprecated stuff
 #pragma warning(disable : 4201) // Unnamed struct/union
+#endif
 
 #ifdef _MSC_VER
 #include <intrin.h>

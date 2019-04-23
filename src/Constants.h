@@ -109,8 +109,6 @@ enum MemTag {
   TAG_NONE,
 };
 
-#pragma warning(disable : 4201)
-
 //-----------------------------------------------------------------------------
 // the boot rom that goes "baBING"
 

@@ -6,6 +6,8 @@ class MetroBoy {
 public:
 
   MetroBoy();
+  MetroBoy(const MetroBoy&) = delete;
+  MetroBoy& operator=(const MetroBoy&) = delete;
 
   Gameboy& gb() {
     return *current_gameboy;
@@ -47,7 +49,7 @@ public:
   std::vector<Gameboy*> history_cycle;
 
   int64_t cycles;
-
   bool trace;
+
   uint32_t tracebuffer[456 * 154];
 };

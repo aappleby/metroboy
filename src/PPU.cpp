@@ -129,8 +129,8 @@ void PPU::reset() {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-void PPU::tick(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
-               uint8_t vram_in, uint8_t oam_in) {
+void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool /*cpu_write*/,
+               uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
   //-----------------------------------
   // Update counter/line/frame
 
@@ -342,7 +342,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   oam_read = false;
 
   if (oam_phase) {
-    oam_addr = _pdep_u32(counter2, 0b11111101);
+    oam_addr = uint16_t(_pdep_u32(counter2, 0b11111101));
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
   }
@@ -516,7 +516,7 @@ uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y) {
 uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map) {
   ubit16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
   map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
-  int ty = (scy + line) & 7;
+  uint8_t ty = (scy + line) & 7;
 
   return pack_tile_addr(base, map, ty);
 }
@@ -714,13 +714,6 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "WX   %d\n", wx);
   cursor += sprintf(cursor, "\n");
 
-  const char* mode_names[4] = {
-  "HBK",
-  "VBK",
-  "OAM",
-  "VRM"
-  };
-
   const char* bus_names[] = {
     "FETCH_TILE_MAP",
     "FETCH_TILE_LO",
@@ -843,8 +836,8 @@ void PPU::dump_tiles(uint32_t* framebuffer, int stride, int x, int y, int /*scal
   const uint8_t* tiles) const {
 
   for (int sy = 0; sy < 192; sy++) {
-    uint32_t* line1 = &framebuffer[(y + sy * 2 + 0) * stride + x];
-    uint32_t* line2 = &framebuffer[(y + sy * 2 + 1) * stride + x];
+    uint32_t* lineA = &framebuffer[(y + sy * 2 + 0) * stride + x];
+    uint32_t* lineB = &framebuffer[(y + sy * 2 + 1) * stride + x];
     for (int sx = 0; sx < 128; sx++) {
       int tileX = sx >> 3;
       int tileY = sy >> 3;
@@ -859,8 +852,8 @@ void PPU::dump_tiles(uint32_t* framebuffer, int stride, int x, int y, int /*scal
 
       uint32_t color = gb_colors[c];
 
-      *line1++ = color; *line1++ = color;
-      *line2++ = color; *line2++ = color;
+      *lineA++ = color; *lineA++ = color;
+      *lineB++ = color; *lineB++ = color;
     }
   }
 }

@@ -61,7 +61,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   printf_console("MetroBoy starting...\n");
 
   uint64_t frame_begin, frame_end, frame_time = 0;
-  uint64_t sim_begin = 0, sim_end = 0;
   static double fast_cycles = 114 * 154;
 
   int frame_count = 0;
@@ -149,9 +148,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
     //----------------------------------------
     // Run simulation
 
-    sim_begin = SDL_GetPerformanceCounter();
-
-   int64_t cycles_begin = metroboy.total_tcycles();
+    int64_t cycles_begin = metroboy.total_tcycles();
 
     if (rom_loaded) {
       if (mode == RUN_FAST) {
@@ -190,7 +187,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
     step_down = false;
 
     int64_t cycles_end = metroboy.total_tcycles();
-    sim_end = SDL_GetPerformanceCounter();
 
     //----------------------------------------
     // Render stuff
@@ -287,7 +283,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
     time += (1000.0 * double(frame_time) / double(freq)) * 0.02;
 
     sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", (double)time, (int)(cycles_end - cycles_begin) / 4);
-    //sprintf_s(text_buf, "%lld\n", (sim_end - sim_begin));
     render_text(framebuffer, 736, 1024 - 12 - 4, terminus_font, text_buf);
 
     //----------

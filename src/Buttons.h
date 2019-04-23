@@ -11,11 +11,11 @@ struct Buttons {
   void set(uint8_t new_val) { val = new_val; }
   char* dump(char* text_buf);
 
-  uint8_t bus_out;
-  bool bus_oe;
-  uint8_t val;
+  uint8_t bus_out = 0;
+  bool bus_oe = false;
+  uint8_t val = 0;
 
 private:
 
-  uint8_t p1; // FF00
+  uint8_t p1 = 0; // FF00
 };

@@ -6,6 +6,8 @@ struct Gameboy;
 class MetroBoyApp {
 public:
 
+  MetroBoyApp() {}
+
   int main_(int argc, char** argv);
 
   void render_text(uint32_t* framebuffer, int dst_x, int dst_y, uint8_t* font, const char* text);
@@ -31,10 +33,10 @@ public:
   int cursor_x = 0;
   int cursor_y = 0;
 
-  SDL_Window* window;
-  SDL_Renderer* renderer;
-  SDL_Texture* fb_tex;
-  SDL_Surface* terminus_surface;
-  uint8_t* terminus_font;
-  const uint8_t* keyboard_state;
+  SDL_Window* window = nullptr;
+  SDL_Renderer* renderer = nullptr;
+  SDL_Texture* fb_tex = nullptr;
+  SDL_Surface* terminus_surface = nullptr;
+  uint8_t* terminus_font = nullptr;
+  const uint8_t* keyboard_state = nullptr;
 };

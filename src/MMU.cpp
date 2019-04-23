@@ -10,7 +10,7 @@ MMU::MMU() {
   rom_size = 0;
 }
 
-void MMU::reset(int new_rom_size, uint16_t new_pc) {
+void MMU::reset(size_t new_rom_size, uint16_t new_pc) {
   rom_size = new_rom_size;
   reset(new_pc);
 }
@@ -25,36 +25,6 @@ void MMU::reset(uint16_t new_pc) {
 
   bus_out = rom_buf[new_pc];
   bus_oe = true;
-
-  int cart_type = rom_buf[0x147];
-
-  const char* cart_strings[] = {
-    "ROM ONLY",
-    "MBC1",
-    "MBC1 + RAM",
-    "MBC1 + RAM + BATTERY",
-    "---",
-    "MBC2",
-    "MBC2 + BATTERY",
-    "---",
-    "ROM + RAM",
-    "ROM + RAM + BATTERY",
-    "---",
-    "MMM01",
-    "MMM01 + RAM",
-    "MMM01 + RAM + BATTERY",
-    "---",
-    "MBC3 + TIMER + BATTERY",
-    "MBC3 + TIMER + RAM + BATTERY",
-    "MBC3",
-    "MBC3 + RAM",
-    "---",
-  };
-
-  if (cart_type < 20) {
-    //printf_console("MMU: cart type %s\n", cart_strings[cart_type]);
-  }
-
 
   int rom_banks = rom_buf[0x0148];
   switch (rom_banks) {
@@ -87,9 +57,6 @@ void MMU::reset(uint16_t new_pc) {
 
   SDL_assert_always(ram_bank_count <= 1);
 
-  //printf_console("MMU: %d rom banks\n", rom_bank_count);
-  //printf_console("MMU: %d ram banks\n", ram_bank_count);
-
   disable_boot_rom = !(new_pc == 0x0000);
 }
 
@@ -97,7 +64,7 @@ void MMU::reset(uint16_t new_pc) {
 
 void MMU::tock_t3(uint16_t addr, uint8_t data, bool read, bool write) {
   if (write) {
-    if (addr >= 0x0000 && addr <= 0x1FFF) {
+    if (addr <= 0x1FFF) {
       ram_enable = (data & 0x0F) == 0x0A;
     }
     else if (addr >= 0x2000 && addr <= 0x3FFF) {

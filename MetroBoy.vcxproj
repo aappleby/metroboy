@@ -125,7 +125,6 @@
     <ClCompile Include="src\MMU.cpp" />
     <ClCompile Include="src\OAM.cpp" />
     <ClCompile Include="src\PPU.cpp" />
-    <ClCompile Include="src\PPU2.cpp" />
     <ClCompile Include="src\Serial.cpp" />
     <ClCompile Include="src\SPU.cpp" />
     <ClCompile Include="src\test_micro.cpp" />

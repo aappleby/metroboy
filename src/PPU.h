@@ -94,26 +94,17 @@ enum FetchState {
 // PPU ticks at 4 mhz
 
 struct PPU {
-  PPU() {}
-
-  void reset(uint16_t new_pc);
+  void reset();
 
   void tick(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write, uint8_t vram_in, uint8_t oam_in);
   void tock(ubit16_t cpu_addr_, ubit8_t cpu_data_, bool cpu_read_, bool cpu_write_, uint8_t vram_in, uint8_t oam_in);
+  char* dump(char* cursor);
 
   bool is_frame_start() { return frame_start; }
   bool is_frame_done()  { return frame_done; }
   uint8_t get_line()    { return line2; }
   uint8_t get_lcdc()    { return lcdc; }
   int get_pix_count()   { return pix_count; }
-
-  char* dump(char* cursor);
-
-  void dump_tiles (uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
-  void draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram, int sprite_index) const;
-  void draw_map   (uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* map, const uint8_t* tiles, uint8_t map_flip) const;
-  void draw_bg_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
-  void draw_wm_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
 
   bool vblank_int;
   bool stat_int;
@@ -140,19 +131,19 @@ struct PPU {
 //private:
 
   void handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write);
-  void handle_oam_read(uint8_t oam_data);
-  void handle_vram_read(uint8_t vram_data);
   void merge_sprite();
   void check_sprite_hit();
   void emit_pixel();
   void merge_tile();
-  void update_window();
-  void update_vram();
-  
+
   void bus_read(uint16_t cpu_addr);
   void bus_write(uint16_t cpu_addr, uint8_t cpu_data);
 
-  void update_oam_addr(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write);
+  void dump_tiles(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
+  void draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram, int sprite_index) const;
+  void draw_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* map, const uint8_t* tiles, uint8_t map_flip) const;
+  void draw_bg_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
+  void draw_wm_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
 
   //----------
   // Registers

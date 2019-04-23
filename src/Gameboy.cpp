@@ -16,7 +16,7 @@ Gameboy::Gameboy() {
 
 void Gameboy::reset(int new_rom_size, uint16_t new_pc) {
   z80.reset(new_pc);
-  ppu.reset(new_pc);
+  ppu.reset();
   oam.reset();
   mmu.reset(new_rom_size, new_pc);
   timer.reset();

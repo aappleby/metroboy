@@ -3,5 +3,7 @@ x64
 SDL2*
 *.vcxproj.user
 *.gb
+*.o
+MetroBoy
 dump.MetroBoy
 release

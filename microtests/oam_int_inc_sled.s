@@ -4,11 +4,10 @@
 
 main:
   di
+  clear_stat
   clear_if
-
   lcd_off_unsafe
   lcd_on
-
   nops 114
 
   set_stat_int_oam

@@ -13,7 +13,7 @@
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
   //run_mooneye_acceptance();
-  //return 0;
+  return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -41,7 +41,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   MetroBoy metroboy;
 
   if (filename) {
-    metroboy.load_rom(filename);
+    metroboy.load_rom(MODEL_DMG, filename);
     rom_loaded = true;
     mode = RUN_VSYNC;
   }
@@ -98,7 +98,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
       if (event.type == SDL_QUIT) quit = true;
 
       if (event.type == SDL_DROPFILE) {
-        metroboy.load_rom(event.drop.file);
+        metroboy.load_rom(MODEL_DMG, event.drop.file);
         rom_loaded = true;
         mode = RUN_VSYNC;
         SDL_free(event.drop.file);

@@ -1,10 +1,12 @@
 #pragma once
 #include "OAM.h"
+#include "Constants.h"
 
 //-----------------------------------------------------------------------------
 
 struct PPU {
-  void reset();
+  void reset(int new_model);
+  int model = MODEL_DMG;
 
   void tick(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write, uint8_t vram_in, uint8_t oam_in);
   void tock(ubit16_t cpu_addr_, ubit8_t cpu_data_, bool cpu_read_, bool cpu_write_, uint8_t vram_in, uint8_t oam_in);

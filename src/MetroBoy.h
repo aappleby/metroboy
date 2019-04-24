@@ -18,7 +18,7 @@ public:
     return cycles;
   }
 
-  void load_rom(const char* filename);
+  void load_rom(int model, const char* filename);
   void load_dump();
   void save_dump();
 

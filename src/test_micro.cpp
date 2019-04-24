@@ -15,9 +15,9 @@ static const char* micro_tests[] = {
   "microtests/build/oam_int_if_edge_c.gb",
   "microtests/build/oam_int_if_edge_d.gb",
   "microtests/build/oam_int_if_level_a.gb",
-  //"microtests/build/oam_int_if_level_b.gb",
-  //"microtests/build/oam_int_if_level_c.gb",
-  //"microtests/build/oam_int_if_level_d.gb",
+  "microtests/build/oam_int_if_level_b.gb",
+  "microtests/build/oam_int_if_level_c.gb",
+  "microtests/build/oam_int_if_level_d.gb",
 
   "-----",
   "microtests/build/hblank_int_inc_sled.gb",
@@ -129,7 +129,7 @@ void run_microtest(const char* filename) {
   fclose(rom_file);
 
   Gameboy gameboy;
-  gameboy.reset(rom_size, 0x100);
+  gameboy.reset(MODEL_DMG, rom_size, 0x100);
 
   uint8_t result = 0;
   int i = 0;

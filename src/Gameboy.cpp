@@ -20,12 +20,12 @@ Gameboy::Gameboy()
   serial(),
   zram()
 {
-  reset(0, 0);
+  reset(MODEL_DMG, 0, 0);
 }
 
-void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
-  z80.reset(new_pc);
-  ppu.reset();
+void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
+  z80.reset(new_model, new_pc);
+  ppu.reset(new_model);
   oam.reset();
   mmu.reset(new_rom_size, new_pc);
   timer.reset();
@@ -36,6 +36,7 @@ void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
   zram.reset();
   spu.reset();
 
+  model = new_model;
   tcycle = -1;
 
   cpu_read_oam = false;
@@ -65,7 +66,7 @@ void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
 }
 
 void Gameboy::reset(uint16_t new_pc) {
-  reset(mmu.rom_size, new_pc);
+  reset(model, mmu.rom_size, new_pc);
 }
 
 //-----------------------------------------------------------------------------

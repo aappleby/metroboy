@@ -28,5 +28,5 @@ main:
   test_fail
 
 .org STAT_INT_VECTOR
-  nops 7
+  nops DELAY
   test_finish_div 0

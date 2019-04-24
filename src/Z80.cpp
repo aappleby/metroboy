@@ -74,7 +74,8 @@
 
 //-----------------------------------------------------------------------------
 
-void Z80::reset(uint16_t new_pc) {
+void Z80::reset(int new_model, uint16_t new_pc) {
+  model = new_model;
   bus_tag = bus_tag_ = TAG_OPCODE;
   mem_addr = mem_addr_ = new_pc;
   mem_read_ = true;
@@ -141,11 +142,6 @@ void Z80::reset(uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-#ifdef CONFIG_DMG
-bool fasthalt = false;
-#else
-bool fasthalt = false;
-#endif
 
 void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   imask_ = imask;
@@ -164,6 +160,14 @@ void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   else if (bus_tag == TAG_DATA1) data_hi_ = bus_data;
   else if (bus_tag == TAG_ARG0)  data_lo_ = bus_data;
   else if (bus_tag == TAG_ARG1)  data_hi_ = bus_data;
+
+  bool fasthalt;
+  if (model == MODEL_DMG) {
+    fasthalt = false;
+  }
+  else {
+    fasthalt = false;
+  }
 
   if (state == Z80_STATE_HALT) {
     if (imask_ & intf_) {

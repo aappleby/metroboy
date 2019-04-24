@@ -23,7 +23,7 @@ main:
   lcd_on
   nops 114
 
-  nops 104
+  nops 109
 
   set_stat_int_oam
   ldh a, (IF)

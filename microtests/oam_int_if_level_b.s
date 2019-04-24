@@ -23,9 +23,9 @@ main:
   lcd_on
   nops 114
 
-  nops 104
+  nops 105
 
   set_stat_int_oam
   ldh a, (IF)
 
-  test_finish_a $E0
+  test_finish_a $E2

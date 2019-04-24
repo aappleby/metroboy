@@ -153,7 +153,7 @@ void run_mooneye(const char* filename) {
 
 
   Gameboy gameboy;
-  gameboy.reset(rom_size, 0x100);
+  gameboy.reset(MODEL_DMG, rom_size, 0x100);
 
   bool pass = false;
   int i = 0;

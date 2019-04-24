@@ -20,7 +20,7 @@ MetroBoy::MetroBoy()
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::load_rom(const char* filename) {
+void MetroBoy::load_rom(int model, const char* filename) {
   FILE* rom_file = fopen(filename, "rb");
   fseek(rom_file, 0, SEEK_END);
   size_t rom_size = ftell(rom_file);
@@ -28,7 +28,7 @@ void MetroBoy::load_rom(const char* filename) {
   rom_size = fread(rom_buf, 1, rom_size, rom_file);
   fclose(rom_file);
 
-  current_gameboy->reset(rom_size, 0x100);
+  current_gameboy->reset(model, rom_size, 0x100);
 }
 
 void MetroBoy::load_dump() {

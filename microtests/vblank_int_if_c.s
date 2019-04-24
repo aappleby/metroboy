@@ -1,4 +1,4 @@
-; pass - ags
+; pass - ags, dmg
 
 .include "header.inc"
 
@@ -14,11 +14,11 @@ main:
   cp b
   jr nz, -
 
+  set_stat_int_vblank
   nops 101
 
-  set_ie_stat
   clear_if
-  set_stat_int_vblank
-
   ldh a, (IF)
-  test_finish_a $E3
+
+  and $FE
+  test_finish_a $E2

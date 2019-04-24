@@ -55,6 +55,11 @@
   ldh (LCDC), a
 .endm
 
+.macro clear_stat
+  ld a, %00000000
+  ldh (STAT), a
+.endm
+
 .macro set_stat_int_lyc
   ld a, %01000000
   ldh (STAT), a

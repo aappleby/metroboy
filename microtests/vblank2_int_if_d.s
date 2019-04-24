@@ -1,12 +1,6 @@
-; pass - ags
+; pass - ags, dmg
 
 .include "header.inc"
-
-; 103 - 0
-; 104 - 1
-; 105 - 1
-; 106 - 1
-; 107 - 0
 
 main:
   di
@@ -20,8 +14,11 @@ main:
   cp b
   jr nz, -
 
-  nops 107
+  clear_stat
+  nops 102
 
   clear_if
   ldh a, (IF)
+
+  and $FD
   test_finish_a $E0

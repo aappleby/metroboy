@@ -1,4 +1,4 @@
-; pass - ags
+; pass - ags, dmg
 
 .include "header.inc"
 
@@ -8,6 +8,8 @@ main:
   lcd_off_unsafe
   lcd_on
 
+  nops 114
+
   nops 45
 
   set_ie_stat
@@ -15,4 +17,4 @@ main:
   set_stat_int_hblank
 
   ldh a, (IF)
-  test_finish_a $e0
+  test_finish_a $E0

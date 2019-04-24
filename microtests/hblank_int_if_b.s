@@ -1,4 +1,4 @@
-; pass - ags
+; pass - ags, dmg
 
 .include "header.inc"
 
@@ -7,6 +7,8 @@ main:
 
   lcd_off_unsafe
   lcd_on
+
+  nops 114
 
   nops 46
 

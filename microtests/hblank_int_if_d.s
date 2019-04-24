@@ -1,4 +1,10 @@
-; pass - ags
+; pass - ags, dmg
+
+.ifdef DMG
+.define DELAY 100
+.else
+.define DELAY 99
+.endif
 
 .include "header.inc"
 
@@ -8,7 +14,9 @@ main:
   lcd_off_unsafe
   lcd_on
 
-  nops 99
+  nops 114
+
+  nops DELAY
 
   set_ie_stat
   clear_if

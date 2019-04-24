@@ -141,7 +141,11 @@ void Z80::reset(uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
+#ifdef CONFIG_DMG
+bool fasthalt = true;
+#else
 bool fasthalt = false;
+#endif
 
 void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   imask_ = imask;
@@ -164,7 +168,6 @@ void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   if (state == Z80_STATE_HALT) {
     if (imask_ & intf_) {
       if (ime && fasthalt) {
-
         interrupt2 = true;
         ime_ = ime_delay = false;
 

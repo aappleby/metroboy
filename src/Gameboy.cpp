@@ -310,6 +310,7 @@ char* Gameboy::dump(char* cursor) {
   cursor = z80.dump(cursor);
   cursor += sprintf(cursor, "imask %s\n", to_binary(imask));
   cursor += sprintf(cursor, "intf  %s\n", to_binary(intf));
+  cursor += sprintf(cursor, "oldsstat int %d\n", old_stat_int);
   cursor += sprintf(cursor, "\n");
 
   cursor += sprintf(cursor, "tcycle %zd\n", tcycle);

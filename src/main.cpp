@@ -5,9 +5,16 @@
 #include "Common.h"
 #include "MetroBoy.h"
 
+#include "test_micro.h"
+#include "test_mooneye.h"
+
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
+  run_microtests();
+  //run_mooneye_acceptance();
+  return 0;
+
   enum RunMode {
     RUN_FAST,
     RUN_VSYNC,
@@ -29,7 +36,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //---------
 
   bool rom_loaded = false;
-  const char* filename = nullptr;
+  const char* filename = "mooneye-gb/tests/build/acceptance/ppu/stat_irq_blocking.gb";
 
   MetroBoy metroboy;
 

@@ -107,9 +107,6 @@ static const char* micro_tests[] = {
   "microtests/build/lcdon_to_stat3_b.gb",
   "microtests/build/lcdon_to_stat3_c.gb",
   "microtests/build/lcdon_to_stat3_d.gb",
-
-  "microtests/build/lcdon_to_vblank_int.gb",
-  "microtests/build/lcdon_to_stat_int_vblank.gb",
 };
 
 void run_microtest(const char* filename) {

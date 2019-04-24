@@ -157,8 +157,7 @@ void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, b
 
   //----------
 
-  vblank_int = false;
-  vblank_int |= (line2 == 144) && (counter2 == 1);
+  vblank_int = (line2 == 144) && (counter2 == 1);
 
   //----------
   // DO THE SAME INTERRUPT TESTS FOR LYC_MATCH
@@ -170,8 +169,14 @@ void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, b
   //----------
 
   stat_int_oam = false;
-  stat_int_oam |= (line2 == 153) && (counter2 == 455);
-  stat_int_oam |= (line2  < 143) && (counter2 == 455);
+  stat_int_oam |= (line2 == 153) && (counter2 >= 453);
+  stat_int_oam |= (line2  < 143) && (counter2 >= 453);
+
+  if (line2 < 144) {
+    // what's special about 23?
+    stat_int_oam |= (counter2 < 76);
+  }
+
   stat_int_oam |= vblank_int; // glitch
   stat_int_oam &= (stat & EI_OAM) != 0;
 
@@ -181,7 +186,7 @@ void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, b
   stat_int_vblank |= (line2 == 144) && (counter2 >= 1);
   stat_int_vblank |= (line2 > 144);
 
-  if ((line2 == 153) && (counter2 >= 452)) {
+  if ((line2 == 153) && (counter2 >= 454)) {
     stat_int_vblank = false;
   }
 
@@ -190,9 +195,13 @@ void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, b
   //----------
 
   stat_int_hblank = false;
-  stat_int_hblank |= (counter2 > 80) && (hblank_delay < HBLANK_DELAY_INT);
+  stat_int_hblank |= (counter2 > 80) && (hblank_delay < HBLANK_DELAY_INT) && line2 < 144;
 
-  if (counter2 >= 452) stat_int_hblank = false;
+#ifdef CONFIG_DMG
+  //if (counter2 >= 454) stat_int_hblank = false;
+#else
+  if (counter2 >= 454) stat_int_hblank = false;
+#endif
 
   stat_int_hblank &= (stat & EI_HBLANK) != 0;
 
@@ -243,6 +252,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     oam_phase = false;
     render_phase = false;
     hblank_phase = false;
+    hblank_delay = HBLANK_DELAY_START;
 
     oam_lock = false;
     vram_lock = false;

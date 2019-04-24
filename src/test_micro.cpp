@@ -36,8 +36,6 @@ static const char* micro_tests[] = {
   "microtests/build/vblank_int_if_b.gb",
   "microtests/build/vblank_int_if_c.gb",
   "microtests/build/vblank_int_if_d.gb",
-  "microtests/build/vblank_int_if_e.gb",
-  "microtests/build/vblank_int_if_f.gb",
 
   "-----",
   "microtests/build/vblank2_int_inc_sled.gb",
@@ -51,21 +49,8 @@ static const char* micro_tests[] = {
   "microtests/build/vblank2_int_if_d.gb",
 
   "-----",
-
-  //"microtests/build/is_if_set_during_ime0.gb",
-  "microtests/build/enable_oam_int_during_oam_a.gb",
-  "microtests/build/enable_oam_int_during_oam_b.gb",
-  "microtests/build/enable_oam_int_during_oam_c.gb",
-  "microtests/build/enable_oam_int_during_oam_d.gb",
-
-  //"microtests/build/lcdon_halt_to_vblank_int_a.gb",
-  //"microtests/build/lcdon_halt_to_vblank_int_b.gb",
-  //"microtests/build/lcdon_nops_to_vblank_int_a.gb",
-  //"microtests/build/lcdon_nops_to_vblank_int_b.gb",
-
-  "-----",
   "microtests/build/100_int_timing_1a.gb",
-  "microtests/build/100_int_timing_1b.gb", // broken, timer update timing off?
+  "microtests/build/100_int_timing_1b.gb",
   "-----",
   "microtests/build/100_int_timing_2a.gb",
   "microtests/build/100_int_timing_2b.gb",

@@ -1,4 +1,4 @@
-; pass - dmg
+; pass - dmg, ags
 
 .include "header.inc"
 

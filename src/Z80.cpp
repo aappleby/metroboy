@@ -142,7 +142,7 @@ void Z80::reset(uint16_t new_pc) {
 //-----------------------------------------------------------------------------
 
 #ifdef CONFIG_DMG
-bool fasthalt = true;
+bool fasthalt = false;
 #else
 bool fasthalt = false;
 #endif

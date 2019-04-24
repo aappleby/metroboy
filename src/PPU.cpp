@@ -233,12 +233,17 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
   // FIXME ly handling is still a bit weird, ly changes "early"
 
-  lyc_match = (line2 == lyc);
-
-  if (counter2 == (TCYCLES_LINE - 4)) {
+  if (counter2 >= (TCYCLES_LINE - 4)) {
     ly = (line2 == 153) ? 0 : line2 + 1;
+  }
+
+  lyc_match = (ly == lyc);
+
+#ifdef CONFIG_DMG
+  if (counter2 >= (TCYCLES_LINE - 4)) {
     lyc_match = 0;
   }
+#endif
 
   // FIXME why 1 here? something to do with video out
   frame_start = (counter2 < 4) && (line2 == 0);

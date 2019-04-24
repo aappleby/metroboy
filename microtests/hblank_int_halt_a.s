@@ -11,10 +11,9 @@
 main:
   di
   clear_if
-
+  clear_stat
   lcd_off_unsafe
   lcd_on
-
   nops 114
 
   set_stat_int_hblank

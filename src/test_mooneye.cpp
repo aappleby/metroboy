@@ -66,18 +66,18 @@ static const char* generic_tests[] = {
 // mooneye ppu
 
 static const char* ppu_tests[] = {
-  //"mooneye-gb/tests/build/acceptance/ppu/hblank_ly_scx_timing-GS.gb",
-  //"mooneye-gb/tests/build/acceptance/ppu/intr_1_2_timing-GS.gb",
+  "mooneye-gb/tests/build/acceptance/ppu/hblank_ly_scx_timing-GS.gb",
+  "mooneye-gb/tests/build/acceptance/ppu/intr_1_2_timing-GS.gb",
   "mooneye-gb/tests/build/acceptance/ppu/intr_2_0_timing.gb",
   "mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing.gb",
   "mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing_sprites.gb",
   "mooneye-gb/tests/build/acceptance/ppu/intr_2_mode3_timing.gb",
   "mooneye-gb/tests/build/acceptance/ppu/intr_2_oam_ok_timing.gb",
-  //"mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-dmgABCmgbS.gb",
-  //"mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb",
+  "mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-dmgABCmgbS.gb",
+  "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb",
   "mooneye-gb/tests/build/acceptance/ppu/stat_irq_blocking.gb",
   "mooneye-gb/tests/build/acceptance/ppu/stat_lyc_onoff.gb",
-  //"mooneye-gb/tests/build/acceptance/ppu/vblank_stat_intr-GS.gb",
+  "mooneye-gb/tests/build/acceptance/ppu/vblank_stat_intr-GS.gb",
 
   //"mooneye-gb/tests/build/misc/ppu/vblank_stat_intr-C.gb",  // ?
 };

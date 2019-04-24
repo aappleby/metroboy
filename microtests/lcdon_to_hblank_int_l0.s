@@ -1,3 +1,5 @@
+; pass - dmg (sort of)
+
 .include "header.inc"
 
 ; LCD on -> HBLANK int

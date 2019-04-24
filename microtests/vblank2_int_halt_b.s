@@ -1,4 +1,4 @@
-; pass - ags
+; pass - ags, dmg
 
 .ifdef DMG
 .define DELAY 23

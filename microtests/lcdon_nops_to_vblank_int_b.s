@@ -1,4 +1,4 @@
-; tested - dmg
+; pass - dmg
 
 .include "header.inc"
 

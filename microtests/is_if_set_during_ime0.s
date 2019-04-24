@@ -1,7 +1,8 @@
+; pass - dmg, ags
+
 .include "header.inc"
 
 ; IF bits _do_ get set if IME=0
-; tested - ags
 
 ;-------------------------------------------------------------------------------
 

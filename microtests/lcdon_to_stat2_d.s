@@ -1,3 +1,5 @@
+; pass - dmg
+
 .include "header.inc"
 
 ; LCD on -> STAT mode reads 2

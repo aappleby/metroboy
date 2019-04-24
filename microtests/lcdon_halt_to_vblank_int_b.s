@@ -1,5 +1,4 @@
-; pass on dmg
-; passes on metroboy if fasthalt = false
+; pass - dmg
 
 .include "header.inc"
 

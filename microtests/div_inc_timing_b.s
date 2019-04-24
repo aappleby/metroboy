@@ -1,6 +1,6 @@
-.include "header.inc"
+; pass - dmg
 
-; LCD on -> OAM int while halted
+.include "header.inc"
 
 ;-------------------------------------------------------------------------------
   

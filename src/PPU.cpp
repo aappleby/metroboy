@@ -261,7 +261,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   // FIXME why 1 here? something to do with video out
   frame_start = (counter2 < 4) && (line2 == 0);
   frame_done = (counter2 < 4) && (line2 == 144);
-  bool line0_weirdness = (frame_count == 0 && line2 == 0 && counter2 < 81);
+  bool line0_weirdness = (frame_count == 0 && line2 == 0 && counter2 < 80);
 
   //-----------------------------------
   // vblank early-out
@@ -338,6 +338,21 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     vram_lock = !(hblank_delay < HBLANK_DELAY_LOCK);
   }
   else {
+    oam_lock = false;
+    vram_lock = false;
+  }
+
+  if (counter2 == TCYCLES_LINE - 1) oam_lock = true;
+  if (counter2 == 79) vram_lock = true;
+
+  if (line2 > 0) {
+    // 1-tcycle hole between oam and vram
+    if (counter2 == 77) {
+      oam_lock = false;
+    }
+  }
+
+  if (line0_weirdness) {
     oam_lock = false;
     vram_lock = false;
   }

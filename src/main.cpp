@@ -36,13 +36,11 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //---------
 
   /*
+  // Failing mooneye tests -
   di_timing-GS.gb                X FAIL @ 1069164
   halt_ime1_timing2-GS.gb        X FAIL @ 1293220
-
   ppu/hblank_ly_scx_timing-GS.gb     X FAIL @ 864392
   ppu/intr_1_2_timing-GS.gb          X FAIL @ 941480
-  ppu/lcdon_timing-dmgABCmgbS.gb     X FAIL @ 1919228
-  ppu/lcdon_write_timing-GS.gb       X FAIL @ 2515368
   */
 
   bool rom_loaded = false;

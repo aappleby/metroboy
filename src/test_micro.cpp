@@ -108,9 +108,17 @@ static const std::string micro_tests[] = {
   "lcdon_to_stat3_b.gb",
   "lcdon_to_stat3_c.gb",
   "lcdon_to_stat3_d.gb",
+
+  "-----",
+  "line_153_ly_a.gb",
+  "line_153_ly_b.gb",
+  "line_153_ly_c.gb",
+  "line_153_ly_d.gb",
+  "line_153_ly_e.gb",
+  "line_153_ly_f.gb",
 };
 
-void run_microtest(const char* filename) {
+void run_microtest(int model, const char* filename) {
   FILE* rom_file = NULL;
   rom_file = fopen(filename, "rb");
   fseek(rom_file, 0, SEEK_END);
@@ -120,7 +128,7 @@ void run_microtest(const char* filename) {
   fclose(rom_file);
 
   Gameboy gameboy;
-  gameboy.reset(MODEL_DMG, rom_size, 0x100);
+  gameboy.reset(model, rom_size, 0x100);
 
   uint8_t result = 0;
   int i = 0;
@@ -145,7 +153,9 @@ void run_microtest(const char* filename) {
 }
 
 void run_microtests() {
-  std::string prefix = "microtests/build/dmg/";
+  int model = MODEL_DMG;
+  std::string model_string = (model == MODEL_DMG ? "dmg" : "ags");
+  std::string prefix = "microtests/build/" + model_string + "/";
 
   printf("Microtests in %s:\n", prefix.c_str());
 
@@ -155,6 +165,6 @@ void run_microtests() {
       continue;
     }
     printf("%-30s ", name.c_str());
-    run_microtest((prefix + name).c_str());
+    run_microtest(model, (prefix + name).c_str());
   }
 }

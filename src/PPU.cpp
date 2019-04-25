@@ -238,6 +238,17 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     ly = (line2 == 153) ? 0 : line2 + 1;
   }
 
+  if (line2 == 153) {
+    if (model == MODEL_DMG) {
+      ly = 0;
+    }
+    else {
+      if (counter2 >= 4) {
+        ly = 0;
+      }
+    }
+  }
+
   lyc_match = (ly == lyc);
 
   if (model == MODEL_DMG) {

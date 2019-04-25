@@ -11,9 +11,9 @@
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  //run_microtests();
+  run_microtests();
   //run_mooneye_acceptance();
-  //return 0;
+  return 0;
 
   enum RunMode {
     RUN_FAST,

@@ -1,19 +1,28 @@
-ALL_GB = $(patsubst %.s,build/%.gb, $(wildcard *.s))
+ALL_GB_SOURCE = $(wildcard *.s)
+ALL_GB_OBJ    = $(patsubst %.s,%.o, $(ALL_GB_SOURCE))
+ALL_GB_BINARY = $(patsubst %.s,%.gb, $(ALL_GB_SOURCE))
 
-help:
-	@echo "make (dmg|ags)"
+DMG_GB_BINARY = $(addprefix build/dmg/, $(ALL_GB_BINARY))
+AGS_GB_BINARY = $(addprefix build/ags/, $(ALL_GB_BINARY))
 
-ags: MODEL = AGS
-ags: $(ALL_GB)
+all: $(AGS_GB_BINARY) $(DMG_GB_BINARY)
 
-dmg: MODEL = DMG
-dmg: $(ALL_GB)
-
-build/%.o: %.s
+build/dmg/%.o : %.s
 	@echo compiling $<
-	@wla-gb -D$(MODEL) -o $@ $< 
+	@wla-gb -DDMG -o $@ $< 	
 
-build/%.gb: build/%.o
+build/dmg/%.gb: build/dmg/%.o
+	@echo linking $@
+	@printf "[objects]\n%s\n" $< > temp.link
+	@wlalink -S temp.link $@
+	@rm $<
+	@rm temp.link
+
+build/ags/%.o : %.s
+	@echo compiling $<
+	@wla-gb -DAGS -o $@ $< 	
+
+build/ags/%.gb: build/ags/%.o
 	@echo linking $@
 	@printf "[objects]\n%s\n" $< > temp.link
 	@wlalink -S temp.link $@
@@ -21,7 +30,7 @@ build/%.gb: build/%.o
 	@rm temp.link
 
 clean:
-	@rm build/*.gb
-	@rm build/*.sym
+	@rm build/ags/*
+	@rm build/dmg/*
 
 .PHONY: all clean

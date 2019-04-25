@@ -57,14 +57,9 @@ static const std::string micro_tests[] = {
   "-----",
   "100_int_timing_1a.gb",
   "100_int_timing_1b.gb",
-  "-----",
   "100_int_timing_2a.gb",
   "100_int_timing_2b.gb",
-  "-----",
-
   "100_int_timing_3a.gb",
-  "-----",
-
   "100_int_timing_4a.gb",
   "100_int_timing_4b.gb",
 

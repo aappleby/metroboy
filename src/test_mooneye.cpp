@@ -6,78 +6,78 @@
 //---------
 // mooneye generic
 
-static const char* generic_tests[] = {
-  "mooneye-gb/tests/build/acceptance/add_sp_e_timing.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_div-dmg0.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_div-dmgABCmgb.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_div-S.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_div2-S.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_hwio-dmg0.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_hwio-dmgABCmgb.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_hwio-S.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_regs-dmg0.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_regs-dmgABC.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_regs-mgb.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_regs-sgb.gb",
-  //"mooneye-gb/tests/build/acceptance/boot_regs-sgb2.gb",
-  "mooneye-gb/tests/build/acceptance/call_cc_timing.gb",
-  "mooneye-gb/tests/build/acceptance/call_cc_timing2.gb",
-  "mooneye-gb/tests/build/acceptance/call_timing.gb",
-  "mooneye-gb/tests/build/acceptance/call_timing2.gb",
-  //"mooneye-gb/tests/build/acceptance/di_timing-GS.gb",   // ?
-  "mooneye-gb/tests/build/acceptance/div_timing.gb",
-  "mooneye-gb/tests/build/acceptance/ei_sequence.gb",
-  "mooneye-gb/tests/build/acceptance/ei_timing.gb",
-  "mooneye-gb/tests/build/acceptance/halt_ime0_ei.gb",
-  "mooneye-gb/tests/build/acceptance/halt_ime0_nointr_timing.gb",
-  "mooneye-gb/tests/build/acceptance/halt_ime1_timing.gb",
-  //"mooneye-gb/tests/build/acceptance/halt_ime1_timing2-GS.gb",
-  "mooneye-gb/tests/build/acceptance/if_ie_registers.gb",
-  "mooneye-gb/tests/build/acceptance/intr_timing.gb",
-  "mooneye-gb/tests/build/acceptance/jp_cc_timing.gb",
-  "mooneye-gb/tests/build/acceptance/jp_timing.gb",
-  "mooneye-gb/tests/build/acceptance/ld_hl_sp_e_timing.gb",
-  "mooneye-gb/tests/build/acceptance/oam_dma_restart.gb",
-  "mooneye-gb/tests/build/acceptance/oam_dma_start.gb",
-  "mooneye-gb/tests/build/acceptance/oam_dma_timing.gb",
-  "mooneye-gb/tests/build/acceptance/pop_timing.gb",
-  "mooneye-gb/tests/build/acceptance/push_timing.gb",
-  "mooneye-gb/tests/build/acceptance/rapid_di_ei.gb",
-  "mooneye-gb/tests/build/acceptance/ret_cc_timing.gb",
-  "mooneye-gb/tests/build/acceptance/ret_timing.gb",
-  "mooneye-gb/tests/build/acceptance/reti_intr_timing.gb",
-  "mooneye-gb/tests/build/acceptance/reti_timing.gb",
-  "mooneye-gb/tests/build/acceptance/rst_timing.gb",
+static const std::string generic_tests[] = {
+  "add_sp_e_timing.gb",
+  //"boot_div-dmg0.gb",
+  //"boot_div-dmgABCmgb.gb",
+  //"boot_div-S.gb",
+  //"boot_div2-S.gb",
+  //"boot_hwio-dmg0.gb",
+  //"boot_hwio-dmgABCmgb.gb",
+  //"boot_hwio-S.gb",
+  //"boot_regs-dmg0.gb",
+  //"boot_regs-dmgABC.gb",
+  //"boot_regs-mgb.gb",
+  //"boot_regs-sgb.gb",
+  //"boot_regs-sgb2.gb",
+  "call_cc_timing.gb",
+  "call_cc_timing2.gb",
+  "call_timing.gb",
+  "call_timing2.gb",
+  //"di_timing-GS.gb",   // ?
+  "div_timing.gb",
+  "ei_sequence.gb",
+  "ei_timing.gb",
+  "halt_ime0_ei.gb",
+  "halt_ime0_nointr_timing.gb",
+  "halt_ime1_timing.gb",
+  //"halt_ime1_timing2-GS.gb",
+  "if_ie_registers.gb",
+  "intr_timing.gb",
+  "jp_cc_timing.gb",
+  "jp_timing.gb",
+  "ld_hl_sp_e_timing.gb",
+  "oam_dma_restart.gb",
+  "oam_dma_start.gb",
+  "oam_dma_timing.gb",
+  "pop_timing.gb",
+  "push_timing.gb",
+  "rapid_di_ei.gb",
+  "ret_cc_timing.gb",
+  "ret_timing.gb",
+  "reti_intr_timing.gb",
+  "reti_timing.gb",
+  "rst_timing.gb",
  
-  "mooneye-gb/tests/build/acceptance/bits/mem_oam.gb",
-  "mooneye-gb/tests/build/acceptance/bits/reg_f.gb",
-  //"mooneye-gb/tests/build/acceptance/bits/unused_hwio-GS.gb",
+  "bits/mem_oam.gb",
+  "bits/reg_f.gb",
+  //"bits/unused_hwio-GS.gb",
 
-  "mooneye-gb/tests/build/acceptance/instr/daa.gb",
+  "instr/daa.gb",
 
-  "mooneye-gb/tests/build/acceptance/interrupts/ie_push.gb",
+  "interrupts/ie_push.gb",
 
-  "mooneye-gb/tests/build/acceptance/oam_dma/basic.gb",
-  "mooneye-gb/tests/build/acceptance/oam_dma/reg_read.gb",
-  //"mooneye-gb/tests/build/acceptance/oam_dma/sources-dmgABCmgbS.gb",
+  "oam_dma/basic.gb",
+  "oam_dma/reg_read.gb",
+  //"oam_dma/sources-dmgABCmgbS.gb",
 };
 
 //---------
 // mooneye ppu
 
-static const char* ppu_tests[] = {
-  "mooneye-gb/tests/build/acceptance/ppu/hblank_ly_scx_timing-GS.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/intr_1_2_timing-GS.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/intr_2_0_timing.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing_sprites.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/intr_2_mode3_timing.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/intr_2_oam_ok_timing.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-dmgABCmgbS.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/stat_irq_blocking.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/stat_lyc_onoff.gb",
-  "mooneye-gb/tests/build/acceptance/ppu/vblank_stat_intr-GS.gb",
+static const std::string ppu_tests[] = {
+  "hblank_ly_scx_timing-GS.gb",
+  "intr_1_2_timing-GS.gb",
+  "intr_2_0_timing.gb",
+  "intr_2_mode0_timing.gb",
+  "intr_2_mode0_timing_sprites.gb",
+  "intr_2_mode3_timing.gb",
+  "intr_2_oam_ok_timing.gb",
+  "lcdon_timing-dmgABCmgbS.gb",
+  "lcdon_write_timing-GS.gb",
+  "stat_irq_blocking.gb",
+  "stat_lyc_onoff.gb",
+  "vblank_stat_intr-GS.gb",
 
   //"mooneye-gb/tests/build/misc/ppu/vblank_stat_intr-C.gb",  // ?
 };
@@ -85,39 +85,39 @@ static const char* ppu_tests[] = {
 //---------
 // mooneye timer
 
-static const char* timer_tests[] = {
+static const std::string timer_tests[] = {
   // this one is a tiny bit slow
-  "mooneye-gb/tests/build/acceptance/timer/div_write.gb",
-  "mooneye-gb/tests/build/acceptance/timer/rapid_toggle.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tim00.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tim00_div_trigger.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tim01.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tim01_div_trigger.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tim10.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tim10_div_trigger.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tim11.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tim11_div_trigger.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tima_reload.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tima_write_reloading.gb",
-  "mooneye-gb/tests/build/acceptance/timer/tma_write_reloading.gb",
+  "div_write.gb",
+  "rapid_toggle.gb",
+  "tim00.gb",
+  "tim00_div_trigger.gb",
+  "tim01.gb",
+  "tim01_div_trigger.gb",
+  "tim10.gb",
+  "tim10_div_trigger.gb",
+  "tim11.gb",
+  "tim11_div_trigger.gb",
+  "tima_reload.gb",
+  "tima_write_reloading.gb",
+  "tma_write_reloading.gb",
 };
 
 //---------
 // mooneye mbc
 
-static const char* mbc1_tests[] = {
-  "mooneye-gb_hwtests/emulator-only/mbc1/bits_ram_en.gb",
-  "mooneye-gb_hwtests/emulator-only/mbc1/ram_256Kb.gb",
-  "mooneye-gb_hwtests/emulator-only/mbc1/ram_64Kb.gb",
-  "mooneye-gb_hwtests/emulator-only/mbc1/rom_16Mb.gb",
-  "mooneye-gb_hwtests/emulator-only/mbc1/rom_1Mb.gb",
-  "mooneye-gb_hwtests/emulator-only/mbc1/rom_2Mb.gb",
-  "mooneye-gb_hwtests/emulator-only/mbc1/rom_4Mb.gb",
-  "mooneye-gb_hwtests/emulator-only/mbc1/rom_512Kb.gb",
-  "mooneye-gb_hwtests/emulator-only/mbc1/rom_8Mb.gb",
+static const std::string mbc1_tests[] = {
+  "bits_ram_en.gb",
+  "ram_256Kb.gb",
+  "ram_64Kb.gb",
+  "rom_16Mb.gb",
+  "rom_1Mb.gb",
+  "rom_2Mb.gb",
+  "rom_4Mb.gb",
+  "rom_512Kb.gb",
+  "rom_8Mb.gb",
 
   // not going to bother with multicart support for now
-  //"mooneye-gb_hwtests/emulator-only/mbc1/multicart_rom_8Mb.gb",
+  //"multicart_rom_8Mb.gb",
 };
 
 //---------
@@ -125,14 +125,14 @@ static const char* mbc1_tests[] = {
 
 /*
 static const char* misc_tests[] = {
-  //"mooneye-gb_hwtests/misc/bits/unused_hwio-C.gb", 
-  //"mooneye-gb_hwtests/misc/ppu/vblank_stat_intr-C.gb",
-  //"mooneye-gb_hwtests/misc/boot_div-A.gb",
-  //"mooneye-gb_hwtests/misc/boot_div-cgb0.gb",
-  //"mooneye-gb_hwtests/misc/boot_div-cgbABCDE.gb",
-  //"mooneye-gb_hwtests/misc/boot_hwio-C.gb",
-  //"mooneye-gb_hwtests/misc/boot_regs-A.gb",
-  //"mooneye-gb_hwtests/misc/boot_regs-cgb.gb",
+  //"bits/unused_hwio-C.gb", 
+  //"ppu/vblank_stat_intr-C.gb",
+  //"boot_div-A.gb",
+  //"boot_div-cgb0.gb",
+  //"boot_div-cgbABCDE.gb",
+  //"boot_hwio-C.gb",
+  //"boot_regs-A.gb",
+  //"boot_regs-cgb.gb",
 };
 */
 
@@ -141,8 +141,6 @@ static const char* misc_tests[] = {
 extern uint8_t rom_buf[1024 * 1024];
 
 void run_mooneye(const char* filename) {
-  printf("%-70s ", filename);
-
   FILE* rom_file = NULL;
   fopen_s(&rom_file, filename, "rb");
   fseek(rom_file, 0, SEEK_END);
@@ -180,25 +178,49 @@ void run_mooneye(const char* filename) {
 
 void run_mooneye_generic() {
   printf("-----Generic tests-----\n");
-  for (auto name : generic_tests) run_mooneye(name);
+
+  std::string prefix = "mooneye-gb/tests/build/acceptance/";
+
+  for (auto name : generic_tests) {
+    printf("%-30s ", name.c_str());
+    run_mooneye((prefix + name).c_str());
+  }
   printf("\n");
 }
 
 void run_mooneye_timer() {
   printf("-----Timer tests-----\n");
-  for (auto name : timer_tests) run_mooneye(name);
+
+  std::string prefix = "mooneye-gb/tests/build/acceptance/timer/";
+
+  for (auto name : timer_tests) {
+    printf("%-30s ", name.c_str());
+    run_mooneye((prefix + name).c_str());
+  }
   printf("\n");
 }
 
 void run_mooneye_mbc1() {
   printf("-----MBC1 tests-----\n");
-  for (auto name : mbc1_tests) run_mooneye(name);
+
+  std::string prefix = "mooneye-gb/tests/build/emulator-only/mbc1/";
+
+  for (auto name : mbc1_tests) {
+    printf("%-30s ", name.c_str());
+    run_mooneye((prefix + name).c_str());
+  }
   printf("\n");
 }
 
 void run_mooneye_ppu() {
   printf("-----PPU tests-----\n");
-  for (auto name : ppu_tests) run_mooneye(name);
+
+  std::string prefix = "mooneye-gb/tests/build/acceptance/ppu/";
+
+  for (auto name : ppu_tests) {
+    printf("%-30s ", name.c_str());
+    run_mooneye((prefix + name).c_str());
+  }
   printf("\n");
 }
 

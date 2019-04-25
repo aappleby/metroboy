@@ -153,9 +153,9 @@
 
 .macro reset_lcd_for_test
   di
+  clear_stat
   clear_ie
   clear_if
-  clear_stat
   lcd_off_unsafe
   lcd_on
 .endm

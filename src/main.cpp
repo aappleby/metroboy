@@ -46,8 +46,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   */
 
   bool rom_loaded = false;
-  const char* filename = "mooneye-gb/tests/build/acceptance/di_timing-GS.gb";
-  //const char* filename = "microtests/build/dmg/line_153_ly_a.gb";
+  const char* filename = nullptr;
 
   MetroBoy metroboy;
 

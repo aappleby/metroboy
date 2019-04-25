@@ -12,6 +12,6 @@ main:
 
   nops 104
 
-  ldh a, ($FE00)
+  ld a, ($FE00)
 
   test_finish_a $55

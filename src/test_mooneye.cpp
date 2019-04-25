@@ -9,14 +9,14 @@
 static const std::string generic_tests[] = {
   "add_sp_e_timing.gb",
   //"boot_div-dmg0.gb",
-  //"boot_div-dmgABCmgb.gb",
+  "boot_div-dmgABCmgb.gb",
   //"boot_div-S.gb",
   //"boot_div2-S.gb",
   //"boot_hwio-dmg0.gb",
-  //"boot_hwio-dmgABCmgb.gb",
+  "boot_hwio-dmgABCmgb.gb",
   //"boot_hwio-S.gb",
   //"boot_regs-dmg0.gb",
-  //"boot_regs-dmgABC.gb",
+  "boot_regs-dmgABC.gb",
   //"boot_regs-mgb.gb",
   //"boot_regs-sgb.gb",
   //"boot_regs-sgb2.gb",
@@ -24,14 +24,14 @@ static const std::string generic_tests[] = {
   "call_cc_timing2.gb",
   "call_timing.gb",
   "call_timing2.gb",
-  //"di_timing-GS.gb",   // ?
+  "di_timing-GS.gb",
   "div_timing.gb",
   "ei_sequence.gb",
   "ei_timing.gb",
   "halt_ime0_ei.gb",
   "halt_ime0_nointr_timing.gb",
   "halt_ime1_timing.gb",
-  //"halt_ime1_timing2-GS.gb",
+  "halt_ime1_timing2-GS.gb",
   "if_ie_registers.gb",
   "intr_timing.gb",
   "jp_cc_timing.gb",
@@ -51,7 +51,7 @@ static const std::string generic_tests[] = {
  
   "bits/mem_oam.gb",
   "bits/reg_f.gb",
-  //"bits/unused_hwio-GS.gb",
+  "bits/unused_hwio-GS.gb",
 
   "instr/daa.gb",
 
@@ -78,8 +78,6 @@ static const std::string ppu_tests[] = {
   "stat_irq_blocking.gb",
   "stat_lyc_onoff.gb",
   "vblank_stat_intr-GS.gb",
-
-  //"mooneye-gb/tests/build/misc/ppu/vblank_stat_intr-C.gb",  // ?
 };
 
 //---------
@@ -123,18 +121,16 @@ static const std::string mbc1_tests[] = {
 //---------
 // mooneye misc
 
-/*
 static const char* misc_tests[] = {
-  //"bits/unused_hwio-C.gb", 
-  //"ppu/vblank_stat_intr-C.gb",
-  //"boot_div-A.gb",
-  //"boot_div-cgb0.gb",
-  //"boot_div-cgbABCDE.gb",
-  //"boot_hwio-C.gb",
-  //"boot_regs-A.gb",
-  //"boot_regs-cgb.gb",
+  "bits/unused_hwio-C.gb", 
+  "ppu/vblank_stat_intr-C.gb",
+  "boot_div-A.gb",
+  "boot_div-cgb0.gb",
+  "boot_div-cgbABCDE.gb",
+  "boot_hwio-C.gb",
+  "boot_regs-A.gb",
+  "boot_regs-cgb.gb",
 };
-*/
 
 //-----------------------------------------------------------------------------
 

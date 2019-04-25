@@ -12,8 +12,8 @@
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_microtests();
-  run_mooneye_acceptance();
-  return 0;
+  //run_mooneye_acceptance();
+  //return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -36,7 +36,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //---------
 
   bool rom_loaded = false;
-  const char* filename = "mooneye-gb/tests/build/acceptance/halt_ime0_nointr_timing.gb";
+  //const char* filename = "mooneye-gb/tests/build/acceptance/halt_ime0_nointr_timing.gb";
+  const char* filename = "microtests/build/dmg/line_153_ly_a.gb";
 
   MetroBoy metroboy;
 

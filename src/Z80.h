@@ -3,7 +3,9 @@
 //-----------------------------------------------------------------------------
 
 struct Z80 {
-  void reset(uint16_t new_pc);
+  void reset(int new_model, uint16_t new_pc);
+  int model = 0;
+
   void tick_t0(uint8_t imask, uint8_t intf, uint8_t mem_out);
   void tock_t3();
   uint16_t get_pc() { return pc; }

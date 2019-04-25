@@ -20,7 +20,7 @@ main:
   cp b
   jr nz, -
 
-  set_vblank_int
+  set_ie_vblank
   clear_if
   ei
 

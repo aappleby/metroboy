@@ -16,7 +16,7 @@
 struct Gameboy {
   Gameboy();
 
-  void reset(size_t new_rom_size, uint16_t new_pc);
+  void reset(int new_model, size_t new_rom_size, uint16_t new_pc);
   void reset(uint16_t new_pc);
 
   void tick();
@@ -87,6 +87,7 @@ struct Gameboy {
   Serial serial;
   ZRAM zram;
 
+  int model = MODEL_DMG;
   int64_t tcycle = -1;
 
   bool cpu_read_oam = false;

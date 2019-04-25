@@ -6,7 +6,7 @@ main:
   lcd_off_unsafe
   lcd_on
 
-  set_vblank_int
+  set_ie_vblank
   clear_if
 
   ei

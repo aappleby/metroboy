@@ -14,7 +14,8 @@ uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8
 
 //-----------------------------------------------------------------------------
 
-void PPU::reset() {
+void PPU::reset(int new_model) {
+  model = new_model;
 
   vblank_int = 0;
   stat_int = 0;
@@ -140,7 +141,7 @@ void PPU::reset() {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool /*cpu_write*/,
+void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write,
                uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
   //-----------------------------------
   // Update counter/line/frame
@@ -167,18 +168,18 @@ void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, b
   stat_int_lyc &= (stat & EI_LYC) != 0;
 
   //----------
+  // max oam int range that doesn't break - [453,1]
 
   stat_int_oam = false;
   stat_int_oam |= (line2 == 153) && (counter2 >= 453);
   stat_int_oam |= (line2  < 143) && (counter2 >= 453);
 
   if (line2 < 144) {
-    // what's special about 23?
-    stat_int_oam |= (counter2 < 76);
+    if (counter2 <= 1) stat_int_oam = true;
   }
 
   stat_int_oam |= vblank_int; // glitch
-  stat_int_oam &= (stat & EI_OAM) != 0;
+  stat_int_oam &= ((stat & EI_OAM) != 0);
 
   //----------
 
@@ -197,17 +198,17 @@ void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, b
   stat_int_hblank = false;
   stat_int_hblank |= (counter2 > 80) && (hblank_delay < HBLANK_DELAY_INT) && line2 < 144;
 
-#ifdef CONFIG_DMG
-  //if (counter2 >= 454) stat_int_hblank = false;
-#else
-  if (counter2 >= 454) stat_int_hblank = false;
-#endif
+  if (model == MODEL_DMG) {
+  }
+  else {
+    if (counter2 >= 454) stat_int_hblank = false;
+  }
 
   stat_int_hblank &= (stat & EI_HBLANK) != 0;
 
   //----------
 
-  //stat_int_glitch = cpu_write && cpu_addr == ADDR_STAT && (hblank_phase || vblank);
+  stat_int_glitch = cpu_write && cpu_addr == ADDR_STAT && (hblank_phase || (line2 >= 144));
   stat_int_glitch = 0;
 
   //----------
@@ -233,11 +234,28 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
   // FIXME ly handling is still a bit weird, ly changes "early"
 
-  lyc_match = (line2 == lyc);
+  // this has to be _before_ ly update or prehistorik man breaks
+  lyc_match = (ly == lyc);
 
-  if (counter2 == (TCYCLES_LINE - 4)) {
+  if (counter2 >= (TCYCLES_LINE - 4)) {
     ly = (line2 == 153) ? 0 : line2 + 1;
-    lyc_match = 0;
+  }
+
+  if (line2 == 153) {
+    if (model == MODEL_DMG) {
+      ly = 0;
+    }
+    else {
+      if (counter2 >= 4) {
+        ly = 0;
+      }
+    }
+  }
+
+  if (model == MODEL_DMG) {
+    if (counter2 >= (TCYCLES_LINE - 4)) {
+      lyc_match = 0;
+    }
   }
 
   // FIXME why 1 here? something to do with video out

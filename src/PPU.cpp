@@ -141,7 +141,7 @@ void PPU::reset(int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool /*cpu_write*/,
+void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write,
                uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
   //-----------------------------------
   // Update counter/line/frame
@@ -208,7 +208,7 @@ void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, b
 
   //----------
 
-  //stat_int_glitch = cpu_write && cpu_addr == ADDR_STAT && (hblank_phase || vblank);
+  stat_int_glitch = cpu_write && cpu_addr == ADDR_STAT && (hblank_phase || (line2 >= 144));
   stat_int_glitch = 0;
 
   //----------

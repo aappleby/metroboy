@@ -45,18 +45,30 @@
 
 ;-------------------------------------------------------------------------------
 
-.macro lcd_off_unsafe
-  ld a, $0
-  ldh (LCDC), a
+.macro clear_if
+  xor a
+  ldh (IF), a
 .endm
 
-.macro lcd_on
-  ld a, $91
-  ldh (LCDC), a
+.macro clear_ie
+  xor a
+  ldh (IE), a
 .endm
+
+.macro set_ie_stat
+  ld a, %00000010
+  ldh (IE), a
+.endm
+
+.macro set_ie_vblank
+  ld a, %00000001
+  ldh (IE), a
+.endm
+
+;-------------------------------------------------------------------------------
 
 .macro clear_stat
-  ld a, %00000000
+  xor a
   ldh (STAT), a
 .endm
 
@@ -80,19 +92,16 @@
   ldh (STAT), a
 .endm
 
-.macro set_ie_stat
-  ld a, %00000010
-  ldh (IE), a
+;-------------------------------------------------------------------------------
+
+.macro lcd_off_unsafe
+  ld a, $0
+  ldh (LCDC), a
 .endm
 
-.macro set_vblank_int
-  ld a, %00000001
-  ldh (IE), a
-.endm
-
-.macro clear_if
-  xor a
-  ldh (IF), a
+.macro lcd_on
+  ld a, $91
+  ldh (LCDC), a
 .endm
 
 ;-------------------------------------------------------------------------------
@@ -141,6 +150,21 @@
 .endm
 
 ;-------------------------------------------------------------------------------
+
+.macro reset_lcd_for_test
+  di
+  clear_ie
+  clear_if
+  clear_stat
+  lcd_off_unsafe
+  lcd_on
+.endm
+
+.macro skip_line
+  nops 114
+.endm
+
+;-------------------------------------------------------------------------------
 ; Report test failure
 
 ; Report test pass if a == expected
@@ -185,6 +209,11 @@
 
 .macro test_finish_ly ARGS expected
   ldh a, (LY)
+  test_finish_a expected
+.endm
+
+.macro test_finish_if ARGS expected
+  ldh a, (IF)
   test_finish_a expected
 .endm
 

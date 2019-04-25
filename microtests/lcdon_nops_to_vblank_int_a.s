@@ -10,7 +10,7 @@ main:
   xor a
   ldh (DIV), a
 
-  set_vblank_int
+  set_ie_vblank
   clear_if
   ei
 

@@ -13,7 +13,7 @@
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
   //run_mooneye_acceptance();
-  return 0;
+  //return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -35,9 +35,19 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //---------
 
+  /*
+  di_timing-GS.gb                X FAIL @ 1069164
+  halt_ime1_timing2-GS.gb        X FAIL @ 1293220
+
+  ppu/hblank_ly_scx_timing-GS.gb     X FAIL @ 864392
+  ppu/intr_1_2_timing-GS.gb          X FAIL @ 941480
+  ppu/lcdon_timing-dmgABCmgbS.gb     X FAIL @ 1919228
+  ppu/lcdon_write_timing-GS.gb       X FAIL @ 2515368
+  */
+
   bool rom_loaded = false;
-  //const char* filename = "mooneye-gb/tests/build/acceptance/halt_ime0_nointr_timing.gb";
-  const char* filename = "microtests/build/dmg/line_153_ly_a.gb";
+  const char* filename = "mooneye-gb/tests/build/acceptance/di_timing-GS.gb";
+  //const char* filename = "microtests/build/dmg/line_153_ly_a.gb";
 
   MetroBoy metroboy;
 

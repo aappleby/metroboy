@@ -116,6 +116,14 @@ static const std::string micro_tests[] = {
   "line_153_ly_d.gb",
   "line_153_ly_e.gb",
   "line_153_ly_f.gb",
+
+  "-----",
+  "lyc1_int_halt_a.gb",
+  "lyc1_int_halt_b.gb",
+  "lyc1_int_if_edge_a.gb",
+  "lyc1_int_if_edge_b.gb",
+  "lyc1_int_if_edge_c.gb",
+  "lyc1_int_if_edge_d.gb",
 };
 
 void run_microtest(int model, const char* filename) {
@@ -132,7 +140,7 @@ void run_microtest(int model, const char* filename) {
 
   uint8_t result = 0;
   int i = 0;
-  const int ticks = 25000000;  // bits_ram_en needs lots of tcycles
+  const int ticks = 100000;  // bits_ram_en needs lots of tcycles
   for (; i < ticks; i++) {
     gameboy.tick();
     gameboy.tock();
@@ -153,11 +161,14 @@ void run_microtest(int model, const char* filename) {
 }
 
 void run_microtests() {
+  double freq = (double)SDL_GetPerformanceFrequency();
+  double begin = (double)SDL_GetPerformanceCounter();
+
   int model = MODEL_DMG;
   std::string model_string = (model == MODEL_DMG ? "dmg" : "ags");
   std::string prefix = "microtests/build/" + model_string + "/";
 
-  printf("Microtests in %s:\n", prefix.c_str());
+  printf("---------- Microtests in %s: ----------\n", prefix.c_str());
 
   for (auto name : micro_tests) {
     if (name[0] == '-') {
@@ -167,4 +178,7 @@ void run_microtests() {
     printf("%-30s ", name.c_str());
     run_microtest(model, (prefix + name).c_str());
   }
+
+  double end = (double)SDL_GetPerformanceCounter();
+  printf("---------- Microtests took %f seconds ----------\n", (end - begin) / freq);
 }

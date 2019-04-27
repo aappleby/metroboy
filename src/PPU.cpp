@@ -237,7 +237,11 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   // FIXME ly handling is still a bit weird, ly changes "early"
 
   // this has to be _before_ ly update or prehistorik man breaks
-  lyc_match = (ly == lyc);
+
+  // updating lyc_match only on tphase 0 fixes line_153_lyc_*
+  if ((counter2 & 3) == 0) {
+    lyc_match = (ly == lyc);
+  }
 
   if (counter2 >= (TCYCLES_LINE - 4)) {
     ly = (line2 == 153) ? 0 : line2 + 1;

@@ -128,6 +128,11 @@ static const std::string micro_tests[] = {
   "lyc1_int_if_edge_b.gb",
   "lyc1_int_if_edge_c.gb",
   "lyc1_int_if_edge_d.gb",
+
+  "lyc1_write_timing_a.gb",
+  "lyc1_write_timing_b.gb",
+  "lyc1_write_timing_c.gb",
+  "lyc1_write_timing_d.gb",
 };
 
 void run_microtest(int model, const char* filename) {

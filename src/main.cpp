@@ -7,12 +7,15 @@
 
 #include "test_micro.h"
 #include "test_mooneye.h"
+#include "test_wpol.h"
 
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
   //run_mooneye_acceptance();
+  run_wpol_acceptance();
+
   //return 0;
 
   enum RunMode {
@@ -44,14 +47,18 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   */
 
   bool rom_loaded = false;
-  const char* filename = nullptr;
+
+  //const char* filename = nullptr;
+  //const char* filename = "mooneye-gb/tests/build/acceptance/ppu/hblank_ly_scx_timing-GS.gb";
+  //const char* filename = "gejmboj.gb";
+  const char* filename = "wpol-gb/tests/build/acceptance/boot_hwio-G.gb";
 
   MetroBoy metroboy;
 
   if (filename) {
     metroboy.load_rom(MODEL_DMG, filename);
     rom_loaded = true;
-    mode = RUN_VSYNC;
+    mode = RUN_FAST;
   }
 
   //----------

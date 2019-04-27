@@ -46,7 +46,10 @@ void PPU::reset(int new_model) {
   scx = 0;
   ly = 0;
   lyc = 0;
-  dma = 0;
+  dma = 0xFF;
+  bgp = 0xFC;
+  obp0 = 0xFF;
+  obp1 = 0xFF;
   wy = 0;
   wx = 0;
 
@@ -719,9 +722,9 @@ void PPU::bus_read(uint16_t addr) {
     case ADDR_LY:   bus_out = ly; break;
     case ADDR_LYC:  bus_out = lyc; break;
     case ADDR_DMA:  bus_out = dma; break;
-    case ADDR_BGP:  bus_out = palettes[0]; break;
-    case ADDR_OBP0: bus_out = palettes[2]; break;
-    case ADDR_OBP1: bus_out = palettes[3]; break;
+    case ADDR_BGP:  bus_out = bgp; break;
+    case ADDR_OBP0: bus_out = obp0; break;
+    case ADDR_OBP1: bus_out = obp1; break;
     case ADDR_WY:   bus_out = wy; break;
     case ADDR_WX:   bus_out = wx; break;
     }
@@ -741,9 +744,9 @@ void PPU::bus_write(uint16_t addr, uint8_t data) {
     case ADDR_LY:   ly = data;   break;
     case ADDR_LYC:  lyc = data;  break;
     case ADDR_DMA:  dma = data;  break;
-    case ADDR_BGP:  palettes[0] = data; break;
-    case ADDR_OBP0: palettes[2] = data; break;
-    case ADDR_OBP1: palettes[3] = data; break;
+    case ADDR_BGP:  bgp = palettes[0] = data; break;
+    case ADDR_OBP0: obp0 = palettes[2] = data; break;
+    case ADDR_OBP1: obp1 = palettes[3] = data; break;
     case ADDR_WY:   wy = data;   break;
     case ADDR_WX:   wx = data;   break;
     };

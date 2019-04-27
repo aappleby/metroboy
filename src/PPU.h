@@ -67,6 +67,9 @@ struct PPU {
   ubit8_t ly;   // FF44
   ubit8_t lyc;  // FF45
   ubit8_t dma;  // FF46
+  ubit8_t bgp;  // FF47
+  ubit8_t obp0; // FF48
+  ubit8_t obp1; // FF49
   ubit8_t wy;   // FF4A
   ubit8_t wx;   // FF4B
 

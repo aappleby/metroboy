@@ -11,8 +11,8 @@ main:
   clear_if
   ei
 
-  nops 88 + 114
-  ld a, 2
+  nops 88
+  ld a, 1
   ldh (LYC), a
 
   di

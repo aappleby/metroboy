@@ -12,7 +12,7 @@
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  run_microtests();
+  //run_microtests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
 
@@ -52,8 +52,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //const char* filename = "mooneye-gb/tests/build/acceptance/ppu/hblank_ly_scx_timing-GS.gb";
   //const char* filename = "gejmboj.gb";
   //const char* filename = "Prehistorik Man (U).gb";
-  const char* filename = "wpol-gb/tests/build/acceptance/gpu/ly_lyc_write-GS.gb";
-  //const char* filename = "microtests/build/dmg/lyc1_write_timing_a.gb";
+  //const char* filename = "wpol-gb/tests/build/acceptance/gpu/ly_lyc_write-GS.gb";
+  const char* filename = "microtests/build/dmg/lyc1_write_timing_c.gb";
 
   MetroBoy metroboy;
 

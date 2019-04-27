@@ -117,6 +117,10 @@ static const std::string micro_tests[] = {
   "line_153_ly_e.gb",
   "line_153_ly_f.gb",
 
+  "line_153_lyc_a.gb",
+  "line_153_lyc_b.gb",
+  "line_153_lyc_c.gb",
+
   "-----",
   "lyc1_int_halt_a.gb",
   "lyc1_int_halt_b.gb",

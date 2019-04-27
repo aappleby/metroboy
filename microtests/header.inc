@@ -150,6 +150,18 @@
 .endm
 
 ;-------------------------------------------------------------------------------
+; Long delay w/ loop
+
+.macro long_delay ARGS cycles
+  xor a
+  ld bc, ((cycles - 9) / 6) + 256
+- dec bc
+  cp b
+  jr nz, -
+  nops ((cycles - 9) # 6)
+.endm
+
+;-------------------------------------------------------------------------------
 
 .macro reset_lcd_for_test
   di

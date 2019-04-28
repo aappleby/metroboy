@@ -4,9 +4,12 @@ SDL2*
 *.vcxproj.user
 *.gb
 *.o
+*.vcxproj.filters
 MetroBoy
 dump.MetroBoy
 release
 gb-live32.exe
 mooneye-gb_hwtests
 mooneye-gb
+wpol-gb
+microtests/build

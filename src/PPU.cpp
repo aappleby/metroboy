@@ -194,7 +194,7 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
 
   stat_int_lyc = false;
   stat_int_lyc |= lyc_match_for_int_b;
-  stat_int_lyc &= (stat & EI_LYC) != 0;
+  stat_int_lyc &= ((stat & EI_LYC) != 0);
 
   //----------
   // max oam int range that doesn't break - [453,1]
@@ -202,12 +202,13 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   stat_int_oam = false;
   stat_int_oam |= (line2 == 153) && (counter2 >= 453);
   stat_int_oam |= (line2  < 143) && (counter2 >= 453);
+  stat_int_oam |= (line2  < 144) && (counter2 <= 1);
+  
+  stat_int_oam |= (line2 == 144) && (counter2 == 1); // glitch
 
-  if (line2 < 144) {
-    if (counter2 <= 1) stat_int_oam = true;
-  }
+  // adding this fixes intr_2_timing but breaks vblank_stat_intr-GS.gb
+  //stat_int_oam |= (line2 == 143) && (counter2 == 455);
 
-  stat_int_oam |= vblank_int; // glitch
   stat_int_oam &= ((stat & EI_OAM) != 0);
 
   //----------

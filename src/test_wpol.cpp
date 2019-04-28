@@ -48,13 +48,16 @@ static const std::string generic_tests[] = {
 
 static const std::string ppu_tests[] = {
   // dmg pass
+  /*
   "hblank_ly_scx_timing-GS.gb",
   "hblank_ly_scx_timing_nops.gb",
   "hblank_ly_scx_timing_variant_nops.gb",
+  */
   "intr_0_timing.gb",
   "intr_1_2_timing-GS.gb",
   "intr_1_timing.gb",
   "intr_2_0_timing.gb",
+  /*
   "intr_2_mode0_scx1_timing_nops.gb",
   "intr_2_mode0_scx2_timing_nops.gb",
   "intr_2_mode0_scx3_timing_nops.gb",
@@ -70,6 +73,7 @@ static const std::string ppu_tests[] = {
   "intr_2_mode0_timing_sprites_scx2_nops.gb",
   "intr_2_mode0_timing_sprites_scx3_nops.gb",
   "intr_2_mode0_timing_sprites_scx4_nops.gb",
+  */
   "intr_2_mode3_timing.gb",
   "intr_2_oam_ok_timing.gb",
   "intr_2_timing.gb",
@@ -222,7 +226,7 @@ void run_wpol_ppu() {
 }
 
 void run_wpol_acceptance() {
-  run_wpol_generic();
+  //run_wpol_generic();
   //run_wpol_timer();
   //run_wpol_mbc1();
   run_wpol_ppu();

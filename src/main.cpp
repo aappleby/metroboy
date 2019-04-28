@@ -46,9 +46,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //const char* filename = "Prehistorik Man (U).gb";
   //const char* filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_timing.gb";
   //const char* filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
-  const char* filename = "wpol-gb/tests/build/acceptance/gpu/ly_lyc_153_write-GS.gb";
+  //const char* filename = "wpol-gb/tests/build/acceptance/gpu/ly_lyc_0-GS.gb";
   
-  //const char* filename = "microtests/build/dmg/line_153_lyc_stuff.gb";
+  const char* filename = "microtests/build/dmg/line_153_lyc0_stat_timing_a.gb";
 
   MetroBoy metroboy;
 

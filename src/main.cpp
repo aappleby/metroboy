@@ -12,7 +12,7 @@
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  //run_microtests();
+  run_microtests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
 
@@ -38,22 +38,14 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //---------
 
-  /*
-  // Failing mooneye tests -
-  di_timing-GS.gb                X FAIL @ 1069164
-  halt_ime1_timing2-GS.gb        X FAIL @ 1293220
-  ppu/hblank_ly_scx_timing-GS.gb     X FAIL @ 864392
-  ppu/intr_1_2_timing-GS.gb          X FAIL @ 941480
-  */
-
   bool rom_loaded = false;
 
   //const char* filename = nullptr;
   //const char* filename = "mooneye-gb/tests/build/acceptance/ppu/hblank_ly_scx_timing-GS.gb";
-  //const char* filename = "gejmboj.gb";
+  const char* filename = "gejmboj.gb";
   //const char* filename = "Prehistorik Man (U).gb";
   //const char* filename = "wpol-gb/tests/build/acceptance/gpu/ly_lyc_write-GS.gb";
-  const char* filename = "microtests/build/dmg/lyc1_write_timing_c.gb";
+  //const char* filename = "microtests/build/dmg/lyc1_write_timing_d.gb";
 
   MetroBoy metroboy;
 

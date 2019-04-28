@@ -61,6 +61,8 @@ void PPU::reset(int new_model) {
   scy_latch = 0;
 
   lyc_match = 0;
+  lyc_match_for_int_a = 0;
+  lyc_match_for_int_b = 0;
 
   //----------
   // Timers and states
@@ -159,6 +161,30 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
     frame_count++;
   }
 
+  // updating lyc_match only on tphase 0 fixes line_153_lyc_*
+  if ((counter2 & 3) == 1) {
+    int compare_line = (line2 == 153 && counter2 >= 4) ? 0 : line2;
+
+    lyc_match = (compare_line == lyc);
+
+    if (model == MODEL_DMG) {
+      if (counter2 >= (TCYCLES_LINE - 4)) {
+        lyc_match = 0;
+      }
+    }
+  }
+
+  {
+    lyc_match_for_int_b = lyc_match_for_int_a;
+    lyc_match_for_int_a = (lyc == line2);
+
+    // feels hacky, but passes lyc1_write_timing_*
+
+    if (counter2 >= TCYCLES_LINE - 2) {
+      lyc_match_for_int_a = false;
+    }
+  }
+
   //----------
 
   vblank_int = (line2 == 144) && (counter2 == 1);
@@ -167,7 +193,7 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   // DO THE SAME INTERRUPT TESTS FOR LYC_MATCH
 
   stat_int_lyc = false;
-  stat_int_lyc |= lyc_match;
+  stat_int_lyc |= lyc_match_for_int_b;
   stat_int_lyc &= (stat & EI_LYC) != 0;
 
   //----------
@@ -235,18 +261,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   }
 
   // FIXME ly handling is still a bit weird, ly changes "early"
-
-  // this has to be _before_ ly update or prehistorik man breaks
-
-  // updating lyc_match only on tphase 0 fixes line_153_lyc_*
-  if ((counter2 & 3) == 0) {
-    lyc_match = (ly == lyc);
-  }
-
-  if (counter2 >= (TCYCLES_LINE - 4)) {
-    ly = (line2 == 153) ? 0 : line2 + 1;
-  }
-
   if (line2 == 153) {
     if (model == MODEL_DMG) {
       ly = 0;
@@ -257,10 +271,9 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
       }
     }
   }
-
-  if (model == MODEL_DMG) {
+  else {
     if (counter2 >= (TCYCLES_LINE - 4)) {
-      lyc_match = 0;
+      ly = (line2 == 153) ? 0 : line2 + 1;
     }
   }
 

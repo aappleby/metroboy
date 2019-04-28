@@ -175,8 +175,10 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   }
 
   {
+    int compare_line = (line2 == 153 && counter2 >= 4) ? 0 : line2;
+
     lyc_match_for_int_b = lyc_match_for_int_a;
-    lyc_match_for_int_a = (lyc == line2);
+    lyc_match_for_int_a = (lyc == compare_line);
 
     // feels hacky, but passes lyc1_write_timing_*
 

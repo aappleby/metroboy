@@ -14,7 +14,7 @@
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
   //run_mooneye_acceptance();
-  run_wpol_acceptance();
+  //run_wpol_acceptance();
 
   //return 0;
 
@@ -46,8 +46,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //const char* filename = "Prehistorik Man (U).gb";
   //const char* filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_timing.gb";
   //const char* filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
+  const char* filename = "wpol-gb/tests/build/acceptance/gpu/ly_lyc_153_write-GS.gb";
   
-  const char* filename = "microtests/build/dmg/stat_write_glitch_a.gb";
+  //const char* filename = "microtests/build/dmg/line_153_lyc_stuff.gb";
 
   MetroBoy metroboy;
 

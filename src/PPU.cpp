@@ -162,14 +162,25 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   }
 
   // updating lyc_match only on tphase 0 fixes line_153_lyc_*
-  if ((counter2 & 3) == 1) {
-    int compare_line = (line2 == 153 && counter2 >= 4) ? 0 : line2;
+  {
+    if (line2 == 153) {
+      int compare_line = counter2 >= 4 ? 0 : line2;
 
-    lyc_match = (compare_line == lyc);
+      lyc_match = (compare_line == lyc);
 
-    if (model == MODEL_DMG) {
-      if (counter2 >= (TCYCLES_LINE - 4)) {
-        lyc_match = 0;
+      if (model == MODEL_DMG) {
+        if (counter2 >= (TCYCLES_LINE - 4)) {
+          lyc_match = 0;
+        }
+      }
+    }
+    else {
+      lyc_match = (line2 == lyc);
+
+      if (model == MODEL_DMG) {
+        if (counter2 >= (TCYCLES_LINE - 4)) {
+          lyc_match = 0;
+        }
       }
     }
   }

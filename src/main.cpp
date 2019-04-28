@@ -16,7 +16,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_mooneye_acceptance();
   run_wpol_acceptance();
 
-  return 0;
+  //return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -45,8 +45,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //const char* filename = "gejmboj.gb";
   //const char* filename = "Prehistorik Man (U).gb";
   //const char* filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_timing.gb";
-  const char* filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
-  //const char* filename = "microtests/build/dmg/lyc1_write_timing_d.gb";
+  //const char* filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
+  
+  const char* filename = "microtests/build/dmg/stat_write_glitch_a.gb";
 
   MetroBoy metroboy;
 

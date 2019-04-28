@@ -1,24 +1,13 @@
-; pass - ags, dmg
+; pass - dmg
 
 .include "header.inc"
 
 main:
-  di
-  lcd_off_unsafe
-  lcd_on
+  reset_lcd_for_test
 
-  ; This delay loop will run out at the beginning of line 143
-  xor a
-  ld bc, 2972
-- dec bc
-  cp b
-  jr nz, -
+  long_delay 114 * 143
 
-  clear_stat
-  nops 98
+  nops 106
 
   clear_if
-  ldh a, (IF)
-
-  and $FD
-  test_finish_a $E0
+  test_finish_if $E0

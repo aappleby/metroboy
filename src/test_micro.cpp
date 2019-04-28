@@ -55,15 +55,6 @@ static const std::string micro_tests[] = {
   "vblank2_int_if_d.gb",
 
   "-----",
-  "100_int_timing_1a.gb",
-  "100_int_timing_1b.gb",
-  "100_int_timing_2a.gb",
-  "100_int_timing_2b.gb",
-  "100_int_timing_3a.gb",
-  "100_int_timing_4a.gb",
-  "100_int_timing_4b.gb",
-
-  "-----",
   "lcdon_to_hblank_int_l0.gb",
   "lcdon_to_hblank_int_l1.gb",
   "lcdon_to_hblank_int_l2.gb",
@@ -133,6 +124,19 @@ static const std::string micro_tests[] = {
   "lyc1_write_timing_b.gb",
   "lyc1_write_timing_c.gb",
   "lyc1_write_timing_d.gb",
+
+  "-----",
+  "stat_write_glitch_l0_a.gb",
+  "stat_write_glitch_l0_b.gb",
+  "stat_write_glitch_l0_c.gb",
+  "stat_write_glitch_l143_a.gb",
+  "stat_write_glitch_l143_b.gb",
+  "stat_write_glitch_l143_c.gb",
+  "stat_write_glitch_l143_d.gb",
+  "stat_write_glitch_l1_a.gb",
+  "stat_write_glitch_l1_b.gb",
+  "stat_write_glitch_l1_c.gb",
+  "stat_write_glitch_l1_d.gb",
 };
 
 void run_microtest(int model, const char* filename) {

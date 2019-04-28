@@ -1,19 +1,15 @@
 ; pass - ags, dmg
 
+.include "header.inc"
+
 .ifdef DMG
 .define DELAY 20
 .else
 .define DELAY 20
 .endif
 
-.include "header.inc"
-
 main:
-  di
-  clear_if
-  clear_stat
-  lcd_off_unsafe
-  lcd_on
+  reset_lcd_for_test
   nops 114
 
   set_stat_int_oam

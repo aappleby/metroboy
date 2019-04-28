@@ -9,11 +9,7 @@
 .include "header.inc"
 
 main:
-  di
-  clear_if
-  clear_stat
-  lcd_off_unsafe
-  lcd_on
+  reset_lcd_for_test
   nops 114
 
   set_stat_int_hblank

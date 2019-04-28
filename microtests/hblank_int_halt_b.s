@@ -1,19 +1,15 @@
 ; pass - ags, dmg
 
 .ifdef DMG
-.define DELAY 72
+.define DELAY 8
 .else
-.define DELAY 71
+.define DELAY 7
 .endif
 
 .include "header.inc"
 
 main:
-  di
-  clear_if
-  clear_stat
-  lcd_off_unsafe
-  lcd_on
+  reset_lcd_for_test
   nops 114
 
   set_stat_int_hblank
@@ -29,4 +25,4 @@ main:
 
 .org STAT_INT_VECTOR
   nops DELAY
-  test_finish_div 2
+  test_finish_div 1

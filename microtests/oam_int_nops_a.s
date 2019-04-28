@@ -2,13 +2,14 @@
 
 .include "header.inc"
 
+.ifdef DMG
+.define DELAY 21
+.else
+.define DELAY 21
+.endif
+
 main:
-  di
-  clear_if
-
-  lcd_off_unsafe
-  lcd_on
-
+  reset_lcd_for_test
   nops 114
 
   set_stat_int_oam
@@ -23,5 +24,5 @@ main:
   test_fail
 
 .org STAT_INT_VECTOR
-  nops 21
+  nops DELAY
   test_finish_div 1

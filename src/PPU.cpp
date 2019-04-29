@@ -575,9 +575,6 @@ void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, boo
   frame_done = false;
   frame_start = false;
 
-  stat_int = false;
-  vblank_int = false;
-
   oam_phase = false;
   render_phase = false;
   hblank_phase = true;

@@ -114,19 +114,11 @@ void Gameboy::tick() {
   assert(bus_oe_ <= 1);
   if (!bus_oe_) bus_out_ = 0xFF;
 
-  ppu.tick(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
-
-  // this probably has to go _before_ intf update
   if (tphase == PHASE_CPU_TICK) {
     z80.tick_t0(imask, intf, bus_out_);
   }
 
-  bool stat_int = ppu.stat_int && !old_stat_int;
-  old_stat_int = ppu.stat_int;
-  if (ppu.vblank_int)      intf |= INT_VBLANK;
-  if (stat_int)            intf |= INT_STAT;
-  if (timer.overflow)      intf |= INT_TIMER;
-  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
+  ppu.tick(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
 }
 
 //-----------------------------------------------------------------------------
@@ -253,6 +245,16 @@ void Gameboy::tock() {
   timer.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   zram.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   spu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+
+  //-----------------------------------
+  // Interrupt update
+
+  bool stat_int = ppu.stat_int && !old_stat_int;
+  old_stat_int = ppu.stat_int;
+  if (ppu.vblank_int)      intf |= INT_VBLANK;
+  if (stat_int)            intf |= INT_STAT;
+  if (timer.overflow)      intf |= INT_TIMER;
+  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
 
   //-----------------------------------
   // Z80

@@ -37,6 +37,7 @@ static const std::string micro_tests[] = {
   "hblank_scx3_if_a.gb",
   "hblank_scx3_if_b.gb",
   "hblank_scx3_if_c.gb",
+  "hblank_scx3_if_d.gb",
 
   "-----",
   "vblank_int_inc_sled.gb",

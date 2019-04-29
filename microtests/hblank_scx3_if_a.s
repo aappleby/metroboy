@@ -1,5 +1,7 @@
 ; pass - dmg
 
+; di happens before interrupt
+
 .include "header.inc"
 
 main:

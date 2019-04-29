@@ -1,5 +1,7 @@
 ; pass - dmg
 
+; ld happens after interrupt
+
 .include "header.inc"
 
 main:

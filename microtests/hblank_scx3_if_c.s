@@ -1,5 +1,7 @@
 ; pass - dmg
 
+; ld happens before interrupt and after if change, di not hit
+
 .include "header.inc"
 
 main:

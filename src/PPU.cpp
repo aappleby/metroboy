@@ -164,7 +164,9 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   // updating lyc_match only on tphase 0 fixes line_153_lyc_*
   {
     if (line2 == 153) {
-      int compare_line = counter2 >= 4 ? 0 : line2;
+      int compare_line = -1;
+      if (counter2 < 4)  compare_line = 153;
+      if (counter2 >= 8) compare_line = 0;
 
       lyc_match = (compare_line == lyc);
 
@@ -186,8 +188,14 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   }
 
   {
-    int compare_line = (line2 == 153 && counter2 >= 4) ? 0 : line2;
-
+    int compare_line = -1;
+    if (line2 == 153) {
+      if (counter2 < 4)  compare_line = 153;
+      if (counter2 >= 8) compare_line = 0;
+    }
+    else {
+      compare_line = line2;
+    }
     lyc_match_for_int_b = lyc_match_for_int_a;
     lyc_match_for_int_a = (lyc == compare_line);
 
@@ -307,7 +315,18 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
     oam_lock = false;
     vram_lock = false;
-    stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match << 2) | PPU_STATE_VBLANK);
+
+    int state = PPU_STATE_VBLANK;
+    if (line2 == 153 && counter2 == 454) {
+      state = PPU_STATE_HBLANK;
+
+      bool lyc_match_2 = lyc == 0;
+      stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match_2 << 2) | state);
+    }
+    else {
+      stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match << 2) | state);
+    }
+
     oam_addr = 0;
     oam_read = false;
     vram_addr = 0;

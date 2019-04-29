@@ -14,6 +14,15 @@
 ; line 0
 ; 215 - C2
 
+
+
+
+
+
+
+
+
+
 main:
   reset_lcd_for_test
 

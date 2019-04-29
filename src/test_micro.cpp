@@ -112,6 +112,8 @@ static const std::string micro_tests[] = {
   "line_153_lyc_b.gb",
   "line_153_lyc_c.gb",
 
+  "line_153_lyc_int.gb",
+
   "line_153_lyc0_stat_timing_a.gb",
   "line_153_lyc0_stat_timing_b.gb",
   "line_153_lyc0_stat_timing_c.gb",
@@ -126,6 +128,13 @@ static const std::string micro_tests[] = {
   "line_153_lyc0_stat_timing_l.gb",
   "line_153_lyc0_stat_timing_m.gb",
   "line_153_lyc0_stat_timing_n.gb",
+
+  "line_153_lyc153_stat_timing_a.gb",
+  "line_153_lyc153_stat_timing_b.gb",
+  "line_153_lyc153_stat_timing_c.gb",
+  "line_153_lyc153_stat_timing_d.gb",
+  "line_153_lyc153_stat_timing_e.gb",
+  "line_153_lyc153_stat_timing_f.gb",
 
   "-----",
   "lyc1_int_halt_a.gb",
@@ -203,7 +212,7 @@ void run_microtests() {
       printf("%s\n", name.c_str());
       continue;
     }
-    printf("%-30s ", name.c_str());
+    printf("%-40s ", name.c_str());
     run_microtest(model, (prefix + name).c_str());
   }
 

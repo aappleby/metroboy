@@ -28,8 +28,11 @@ main:
 
   set_stat_int_lyc
 
+  ld a, 0
+  ldh (LYC), a
+
   long_delay 114 * 152
 
-  nops 220
+  nops 215
 
   test_finish_stat $C6

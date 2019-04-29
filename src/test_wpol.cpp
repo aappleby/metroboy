@@ -139,11 +139,11 @@ extern uint8_t rom_buf[1024 * 1024];
 
 void run_wpol(const char* filename) {
   FILE* rom_file = NULL;
-  fopen_s(&rom_file, filename, "rb");
+  rom_file = fopen(filename, "rb");
   fseek(rom_file, 0, SEEK_END);
-  int rom_size = ftell(rom_file);
+  size_t rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
-  fread(rom_buf, 1, rom_size, rom_file);
+  rom_size = fread(rom_buf, 1, rom_size, rom_file);
   fclose(rom_file);
 
 

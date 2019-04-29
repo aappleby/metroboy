@@ -40,7 +40,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   bool rom_loaded = false;
 
   const char* filename = nullptr;
-    
+
   MetroBoy metroboy;
 
   if (filename) {

@@ -19,9 +19,6 @@ main:
   ld hl, $FF0F
   nops 55
   ld a, (hl)
-  nop
-  nop
-  nop
   test_fail
 
 .org STAT_INT_VECTOR

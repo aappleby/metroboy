@@ -15,7 +15,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_microtests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
-
   //return 0;
 
   enum RunMode {
@@ -41,12 +40,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   bool rom_loaded = false;
 
   const char* filename = nullptr;
-  //filename = "mooneye-gb/tests/build/acceptance/ppu/stat_lyc_onoff.gb";
-  //filename = "gejmboj.gb";
-  //filename = "Prehistorik Man (U).gb";
-  //filename = "wpol-gb/tests/build/acceptance/gpu/ly_lyc_0_write-GS.gb";
- 
-  //filename = "microtests/build/dmg/line_153_lyc_int_b.gb";
     
   MetroBoy metroboy;
 
@@ -61,7 +54,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
   window = SDL_CreateWindow("MetroBoy Gameboy Simulator", 4, 34, fb_width, fb_height, SDL_WINDOW_SHOWN);
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   fb_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, fb_width, fb_height);
   terminus_surface = SDL_LoadBMP("terminus2.bmp");
   terminus_font = (uint8_t*)terminus_surface->pixels;

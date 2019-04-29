@@ -25,15 +25,7 @@
 #endif
 
 #ifdef _MSC_VER
-#include <intrin.h>
-#else
-#include <x86intrin.h>
-#endif
-
-#ifdef _MSC_VER
 #include <include/SDL.h>
 #else
 #include <SDL2/SDL.h>
 #endif
-
-

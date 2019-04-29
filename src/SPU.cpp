@@ -4,10 +4,6 @@
 #include "Common.h"
 #include "Constants.h"
 
-uint32_t pext(uint32_t a, uint32_t b) {
-  return _pext_u32(a, b);
-}
-
 //-----------------------------------------------------------------------------
 
 void SPU::reset() {
@@ -260,7 +256,8 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
 
   if (sound_on) {
     ubit4_t s3_sample_;
-    s3_sample_ = (ubit4_t)pext(s3_wave[s3_phase >> 1], (s3_phase & 1) ? 0b00001111 : 0b11110000);
+    s3_sample_ = s3_wave[s3_phase >> 1];
+    s3_sample_ = (s3_phase & 1) ? (s3_sample_ & 0xF) : (s3_sample_ >> 4);
     s3_sample_ >>= s3_volume_shift;
 
     s1_out_ = s1_enable ? (s1_phase < s1_duty ? s1_volume : 0) : 0;
@@ -391,14 +388,14 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   case 0xFF10: {
     nr10 = data | 0b10000000;
-    s1_sweep_period = (ubit3_t)pext(data, 0b01110000);
-    s1_sweep_dir    = (ubit1_t)pext(data, 0b00001000);
-    s1_sweep_shift  = (ubit3_t)pext(data, 0b00000111);
+    s1_sweep_period = (ubit3_t)((data >> 4) & 0b111);
+    s1_sweep_dir    = (ubit1_t)((data >> 3) & 0b001);
+    s1_sweep_shift  = (ubit3_t)((data >> 0) & 0b111);
     break;
   }
   case 0xFF1A: {
     nr30 = data;
-    s3_power = pext(data, 0b10000000);
+    s3_power = (data >> 7) & 1;
     break;
   }
 
@@ -406,14 +403,14 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   // nrx1 - duty and length
 
   case 0xFF11: {
-    switch (pext(data, 0b11000000)) {
+    switch ((data >> 6) & 3) {
     case 0: s1_duty = 1; break;
     case 1: s1_duty = 2; break;
     case 2: s1_duty = 4; break;
     case 3: s1_duty = 6; break;
     }
 
-    s1_length = 63 ^ (ubit7_t)pext(data, 0b00111111);
+    s1_length = 63 ^ (ubit7_t)(data & 0b00111111);
     if (s1_length == 0) s1_length = 64;
 
     nr11 = data;
@@ -456,9 +453,9 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   case 0xFF12: {
     if (data == 0) s1_enable = false;
-    s1_env_volume = (ubit4_t)pext(data, 0b11110000);
-    s1_env_dir    = (ubit1_t)pext(data, 0b00001000);
-    s1_env_period = (ubit3_t)pext(data, 0b00000111);
+    s1_env_volume = (ubit4_t)((data >> 4) & 0b1111);
+    s1_env_dir    = (ubit1_t)((data >> 3) & 0b0001);
+    s1_env_period = (ubit3_t)((data >> 0) & 0b0111);
 
     nr12 = data;
     break;
@@ -466,16 +463,16 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   case 0xFF17: {
     if (data == 0) s2_enable = false;
-    s2_env_volume = (ubit4_t)pext(data, 0b11110000);
-    s2_env_dir    = (ubit1_t)pext(data, 0b00001000);
-    s2_env_period = (ubit3_t)pext(data, 0b00000111);
+    s2_env_volume = (ubit4_t)((data >> 4) & 0b1111);
+    s2_env_dir    = (ubit1_t)((data >> 3) & 0b0001);
+    s2_env_period = (ubit3_t)((data >> 0) & 0b0111);
 
     nr22 = data;
     break;
   }
 
   case 0xFF1C: {
-    switch (pext(data, 0b01100000)) {
+    switch ((data >> 5) & 3) {
     case 0: s3_volume_shift = 4; s3_volume = 0;  break;
     case 1: s3_volume_shift = 0; s3_volume = 15; break;
     case 2: s3_volume_shift = 1; s3_volume = 7;  break;
@@ -488,9 +485,9 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   case 0xFF21: {
     s4_enable = (data != 0);
-    s4_env_volume = (ubit4_t)pext(data, 0b11110000);
-    s4_env_dir =    (ubit1_t)pext(data, 0b00001000);
-    s4_env_period = (ubit3_t)pext(data, 0b00000111);
+    s4_env_volume = (ubit4_t)((data >> 4) & 0b1111);
+    s4_env_dir    = (ubit1_t)((data >> 3) & 0b0001);
+    s4_env_period = (ubit3_t)((data >> 0) & 0b0111);
 
     nr42 = data;
     break;
@@ -519,11 +516,11 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   case 0xFF22: {
     // period is actually [1, 2, 4, 6, 8, 10, 12, 14]
-    s4_phase_period = (ubit4_t)pext(data, 0b00000111) * 2;
+    s4_phase_period = (ubit4_t)((data >> 0) & 0b0111) * 2;
     if (s4_phase_period == 0) s4_phase_period = 1;
 
-    s4_lfsr_mode = (ubit1_t)pext(data, 0b00001000);
-    s4_clock_shift = (ubit4_t)pext(data, 0b11110000);
+    s4_lfsr_mode = (ubit1_t)((data >> 3) & 0b0001);
+    s4_clock_shift = (ubit4_t)((data >> 4) & 0b1111);
 
     nr43 = data;
     break;
@@ -533,31 +530,31 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   // nrx4 - frequency msb, length_enable, trigger
 
   case 0xFF14: {
-    s1_freq = ubit11_t((s1_freq & 0x00FF) | (pext(data, 0b00000111) << 8));
-    s1_length_enable = (ubit1_t)pext(data, 0b01000000);
+    s1_freq = ubit11_t((s1_freq & 0x00FF) | ((data & 0b111) << 8));
+    s1_length_enable = (ubit1_t)((data >> 6) & 0b0001);
 
     nr14 = data;
     break;
   }
 
   case 0xFF19: {
-    s2_freq = ubit11_t((s2_freq & 0x00FF) | (pext(data, 0b00000111) << 8));
-    s2_length_enable = (ubit1_t)pext(data, 0b01000000);
+    s2_freq = ubit11_t((s2_freq & 0x00FF) | ((data & 0b111) << 8));
+    s2_length_enable = (ubit1_t)((data >> 6) & 0b0001);
 
     nr24 = data;
     break;
   }
 
   case 0xFF1E: {
-    s3_freq = ubit11_t((s3_freq & 0x00FF) | (pext(data, 0b00000111) << 8));
-    s3_length_enable = (ubit1_t)pext(data, 0b01000000);
+    s3_freq = ubit11_t((s3_freq & 0x00FF) | ((data & 0b111) << 8));
+    s3_length_enable = (ubit1_t)((data >> 6) & 0b0001);
 
     nr34 = data;
     break;
   }
 
   case 0xFF23: {
-    s4_length_enable = (ubit1_t)pext(data, 0b01000000);
+    s4_length_enable = (ubit1_t)((data >> 6) & 0b0001);
 
     nr44 = data;
     break;
@@ -569,26 +566,26 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   case 0xFF24: {
     nr50 = data;
 
-    volume_r = (ubit4_t)pext(data, 0b00000111) + 1;
-    volume_l = (ubit4_t)pext(data, 0b01110000) + 1;
+    volume_r = (ubit4_t)((data >> 0) & 0b0111) + 1;
+    volume_l = (ubit4_t)((data >> 4) & 0b0111) + 1;
 
     break;
   }
   case 0xFF25: {
     nr51 = data;
-    s1r = ubit4_t(pext(data, 0b00000001) * 0xF);
-    s2r = ubit4_t(pext(data, 0b00000010) * 0xF);
-    s3r = ubit4_t(pext(data, 0b00000100) * 0xF);
-    s4r = ubit4_t(pext(data, 0b00001000) * 0xF);
-    s1l = ubit4_t(pext(data, 0b00010000) * 0xF);
-    s2l = ubit4_t(pext(data, 0b00100000) * 0xF);
-    s3l = ubit4_t(pext(data, 0b01000000) * 0xF);
-    s4l = ubit4_t(pext(data, 0b10000000) * 0xF);
+    s1r = ubit4_t(((data >> 0) & 1) * 0xF);
+    s2r = ubit4_t(((data >> 1) & 1) * 0xF);
+    s3r = ubit4_t(((data >> 2) & 1) * 0xF);
+    s4r = ubit4_t(((data >> 3) & 1) * 0xF);
+    s1l = ubit4_t(((data >> 4) & 1) * 0xF);
+    s2l = ubit4_t(((data >> 5) & 1) * 0xF);
+    s3l = ubit4_t(((data >> 6) & 1) * 0xF);
+    s4l = ubit4_t(((data >> 7) & 1) * 0xF);
     break;
   }
   case 0xFF26: {
     nr52 = data;
-    sound_on = pext(data, 0b10000000);
+    sound_on = (data >> 7) & 1;
     break;
   }
   }

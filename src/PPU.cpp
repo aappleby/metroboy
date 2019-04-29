@@ -148,6 +148,8 @@ void PPU::reset(int new_model) {
 
 void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write,
                uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
+  bool lcd_on = (lcdc & FLAG_LCD_ON) != 0;
+
   //-----------------------------------
   // Update counter/line/frame
 
@@ -162,7 +164,7 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   }
 
   // updating lyc_match only on tphase 0 fixes line_153_lyc_*
-  {
+  if (lcd_on) {
     if (line2 == 153) {
       int compare_line = -1;
       if (counter2 < 4)  compare_line = 153;
@@ -187,7 +189,7 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
     }
   }
 
-  {
+  if (lcd_on) {
     int compare_line = -1;
     if (line2 == 153) {
       if (counter2 < 4)  compare_line = 153;
@@ -594,7 +596,8 @@ void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, boo
   oam_data = 0;
   oam_read = false;
 
-  stat = ubit8_t(0x80 | (stat & 0b11111000) | (lyc_match << 2));
+  //stat = ubit8_t(0x80 | (stat & 0b11111000) | (lyc_match << 2));
+  stat = ubit8_t(0x80 | (stat & 0b11111100));
 
   if (cpu_write) bus_write(cpu_addr, cpu_data);
 }

@@ -178,7 +178,7 @@ void run_mooneye_generic() {
   std::string prefix = "mooneye-gb/tests/build/acceptance/";
 
   for (auto name : generic_tests) {
-    printf("%-30s ", name.c_str());
+    printf("%-50s ", name.c_str());
     run_mooneye((prefix + name).c_str());
   }
   printf("\n");
@@ -190,7 +190,7 @@ void run_mooneye_timer() {
   std::string prefix = "mooneye-gb/tests/build/acceptance/timer/";
 
   for (auto name : timer_tests) {
-    printf("%-30s ", name.c_str());
+    printf("%-50s ", name.c_str());
     run_mooneye((prefix + name).c_str());
   }
   printf("\n");
@@ -202,7 +202,7 @@ void run_mooneye_mbc1() {
   std::string prefix = "mooneye-gb/tests/build/emulator-only/mbc1/";
 
   for (auto name : mbc1_tests) {
-    printf("%-30s ", name.c_str());
+    printf("%-50s ", name.c_str());
     run_mooneye((prefix + name).c_str());
   }
   printf("\n");
@@ -214,7 +214,7 @@ void run_mooneye_ppu() {
   std::string prefix = "mooneye-gb/tests/build/acceptance/ppu/";
 
   for (auto name : ppu_tests) {
-    printf("%-30s ", name.c_str());
+    printf("%-50s ", name.c_str());
     run_mooneye((prefix + name).c_str());
   }
   printf("\n");

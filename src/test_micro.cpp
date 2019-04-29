@@ -212,7 +212,7 @@ void run_microtests() {
       printf("%s\n", name.c_str());
       continue;
     }
-    printf("%-40s ", name.c_str());
+    printf("%-50s ", name.c_str());
     run_microtest(model, (prefix + name).c_str());
   }
 

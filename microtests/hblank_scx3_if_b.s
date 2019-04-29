@@ -17,9 +17,10 @@ main:
   ei
   xor a
   ld hl, $FF0F
-  nops 54
+  nops 53
   ld a, (hl)
+  di
   test_fail
 
 .org STAT_INT_VECTOR
-  test_finish_a $E2
+  test_finish_a $E0

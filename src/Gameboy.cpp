@@ -147,6 +147,16 @@ void Gameboy::tock() {
   bool ce_iram = page == 6;
   bool ce_echo = page == 7 && !ce_oam && !ce_zram;
 
+  //-----------------------------------
+  // Interrupt update - note that this currently has to happen before the read below
+
+  bool stat_int = ppu.stat_int && !old_stat_int;
+  old_stat_int = ppu.stat_int;
+  if (ppu.vblank_int)      intf |= INT_VBLANK;
+  if (stat_int)            intf |= INT_STAT;
+  if (timer.overflow)      intf |= INT_TIMER;
+  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
+
   if (cpu_read_) {
     bus_out = 0x00;
     bus_oe = false;
@@ -245,16 +255,6 @@ void Gameboy::tock() {
   timer.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   zram.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   spu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-
-  //-----------------------------------
-  // Interrupt update
-
-  bool stat_int = ppu.stat_int && !old_stat_int;
-  old_stat_int = ppu.stat_int;
-  if (ppu.vblank_int)      intf |= INT_VBLANK;
-  if (stat_int)            intf |= INT_STAT;
-  if (timer.overflow)      intf |= INT_TIMER;
-  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
 
   //-----------------------------------
   // Z80

@@ -32,6 +32,10 @@ static const std::string micro_tests[] = {
   "hblank_int_if_c.gb",
   "hblank_int_if_d.gb",
 
+  "hblank_scx2_if_a.gb",
+  "hblank_scx3_if_a.gb",
+  "hblank_scx3_if_b.gb",
+
   "-----",
   "vblank_int_inc_sled.gb",
   "vblank_int_halt_a.gb",
@@ -112,7 +116,8 @@ static const std::string micro_tests[] = {
   "line_153_lyc_b.gb",
   "line_153_lyc_c.gb",
 
-  "line_153_lyc_int.gb",
+  "line_153_lyc_int_a.gb",
+  "line_153_lyc_int_b.gb",
 
   "line_153_lyc0_stat_timing_a.gb",
   "line_153_lyc0_stat_timing_b.gb",

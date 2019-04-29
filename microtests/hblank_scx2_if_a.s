@@ -6,20 +6,19 @@ main:
   reset_lcd_for_test
 
   set_stat_int_hblank
-  ld a, 3
+  ld a, 2
   ldh (SCX), a
 
   nops 103
 
-  set_ie_stat
+
   clear_if
-  ei
 
 
 
-  nops 58
 
-  test_fail
+  nops 57
 
-.org STAT_INT_VECTOR
-  test_pass
+
+
+  test_finish_if $E2

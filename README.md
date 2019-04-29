@@ -1,6 +1,6 @@
 # MetroBoy is a Game Boy simulation designed to be mechanically translated into Verilog
 
-(Note - Interrupt timing is currently more broken than intended, I should have a build than can run Prehistorik Man and Pinball Fantasies up in another day or two)
+(Note - Interrupt timing is currently more broken than intended, but it should be able to run Prehistorik Man now)
 
 ![MetroBoy screenshot](MetroBoy.png "MetroBoy screenshot")
 

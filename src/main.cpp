@@ -12,7 +12,7 @@
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  run_microtests();
+  //run_microtests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
   //return 0;
@@ -41,12 +41,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   const char* filename = nullptr;
   
-  //filename = "wpol-gb/tests/build/acceptance/gpu/hblank_ly_scx_timing_variant_nops.gb";
-  filename = "microtests/build/dmg/hblank_scx_if_a.gb";
-
-  //filename = "microtests/build/dmg/lcdon_to_hblank_int_scx3.gb";
-  filename = "microtests/build/dmg/hblank_scx3_int_a.gb";
-
   MetroBoy metroboy;
 
   if (filename) {

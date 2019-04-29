@@ -14,10 +14,15 @@ main:
 
   ; line 1
   clear_if
+  ei
+  xor a
+  ld hl, $FF0F
+  nops 54
+  ld a, (hl)
   nop
-  nops 56
-  di
-  test_finish_if $E2
+  nop
+  nop
+  test_fail
 
 .org STAT_INT_VECTOR
-  test_pass
+  test_finish_a $E2

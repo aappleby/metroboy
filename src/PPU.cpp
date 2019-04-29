@@ -220,42 +220,24 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   stat_int_lyc &= ((stat & EI_LYC) != 0);
 
   //----------
-  // max oam int range that doesn't break - [453,1]
 
   stat_int_oam = false;
   stat_int_oam |= (line2 == 153) && (counter2 >= 453);
-  stat_int_oam |= (line2  < 143) && (counter2 >= 453);
   stat_int_oam |= (line2  < 144) && (counter2 <= 1);
-  
-  stat_int_oam |= (line2 == 144) && (counter2 == 1); // glitch
-
-  // adding this fixes intr_2_timing but breaks vblank_stat_intr-GS.gb
-  //stat_int_oam |= (line2 == 143) && (counter2 == 455);
+  stat_int_oam |= (line2  < 144) && (counter2 >= 453);
+  stat_int_oam |= (line2 == 144) && (counter2 <= 1); // glitch
 
   stat_int_oam &= ((stat & EI_OAM) != 0);
 
   //----------
 
-  stat_int_vblank = false;
-  stat_int_vblank |= (line2 == 144) && (counter2 >= 1);
-  stat_int_vblank |= (line2 > 144);
-
-  if ((line2 == 153) && (counter2 >= 454)) {
-    stat_int_vblank = false;
-  }
-
+  stat_int_vblank = (line2 >= 144);
   stat_int_vblank &= (stat & EI_VBLANK) != 0;
 
   //----------
 
   stat_int_hblank = false;
   stat_int_hblank |= (counter2 > 80) && (hblank_delay < HBLANK_DELAY_INT) && line2 < 144;
-
-  if (model == MODEL_DMG) {
-  }
-  else {
-    if (counter2 >= 454) stat_int_hblank = false;
-  }
 
   stat_int_hblank &= (stat & EI_HBLANK) != 0;
 

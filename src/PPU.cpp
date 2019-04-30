@@ -224,16 +224,22 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   //----------
 
   stat_int_oam = false;
+  /*
   stat_int_oam |= (line2 == 153) && (counter2 >= 453);
   stat_int_oam |= (line2  < 144) && (counter2 <= 1);
   stat_int_oam |= (line2  < 144) && (counter2 >= 453);
-  stat_int_oam |= (line2 == 144) && (counter2 <= 1); // glitch
+  */
+  stat_int_oam |= (line2 <= 143) && (counter2 >= 453); // 452. 453
+  stat_int_oam |= (line2 < 144) && (counter2 == 0);
+
+  //stat_int_oam |= (line2 == 144) && (counter2 <= 1); // glitch
 
   stat_int_oam &= ((stat & EI_OAM) != 0);
 
   //----------
 
-  stat_int_vblank = (line2 >= 144);
+  stat_int_vblank = false;
+  stat_int_vblank |= (line2 >= 144);
   stat_int_vblank &= (stat & EI_VBLANK) != 0;
 
   //----------

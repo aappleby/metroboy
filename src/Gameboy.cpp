@@ -114,58 +114,52 @@ void Gameboy::tick() {
   assert(bus_oe_ <= 1);
   if (!bus_oe_) bus_out_ = 0xFF;
 
-  if (tphase == PHASE_CPU_TICK) {
-    if (z80.state == Z80::Z80_STATE_HALT) {
-
-      /*
-      if (imask & intf) {
-        z80.unhalt = 1;
-      }
-      else*/
-      {
-
-        bool vblank_int = (ppu.line2 == 143) && (ppu.counter2 == 455);
-        if (vblank_int && (imask & 1)) {
-          z80.unhalt = 1;
-        }
-
-        bool stat_int_hblank = false;
-        stat_int_hblank |= (ppu.counter2 > 80) && (ppu.hblank_delay < 7) && ppu.line2 < 144;
-        stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
-        if (stat_int_hblank && (imask & 2)) {
-          z80.unhalt = 1;
-        }
-
-        bool stat_int_vblank = false;
-        stat_int_vblank |= (ppu.line2 == 143) && (ppu.counter2 == 455);
-        stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
-        if (stat_int_vblank && (imask & 2)) {
-          z80.unhalt = 1;
-        }
-
-        bool stat_int_oam = false;
-        stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 0);
-        stat_int_oam &= ((ppu.stat & EI_OAM) != 0);
-        if (stat_int_oam && (imask & 2)) {
-          z80.unhalt = 1;
-        }
-
-        bool stat_int_lyc = false;
-        stat_int_lyc |= ppu.lyc_match_for_int_b;
-        stat_int_lyc &= ((ppu.stat & EI_LYC) != 0);
-        if (stat_int_lyc && (imask & 2)) {
-          z80.unhalt = 1;
-        }
-
-        if (timer.overflow) {
-          z80.unhalt = 1;
-        }
-
-        if (buttons.val != 0xFF) {
-          z80.unhalt = 1;
-        }
-      }
+  if (z80.state == Z80::Z80_STATE_HALT) {
+    bool vblank_int = (ppu.line2 == 143) && (ppu.counter2 == 455);
+    if (vblank_int && (imask & 1)) {
+      z80.unhalt = 1;
     }
+
+    bool stat_int_hblank = false;
+    stat_int_hblank |= (ppu.counter2 > 80) && (ppu.hblank_delay < 7) && ppu.line2 < 144;
+    stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
+    if (stat_int_hblank && (imask & 2)) {
+      z80.unhalt = 1;
+    }
+
+    bool stat_int_vblank = false;
+    stat_int_vblank |= (ppu.line2 == 143) && (ppu.counter2 == 453);
+    stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
+    if (stat_int_vblank && (imask & 2)) {
+      z80.unhalt = 1;
+    }
+
+    bool stat_int_oam = false;
+    stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 455);
+    stat_int_oam |= (ppu.line2 == 153) && (ppu.counter2 == 455);
+    stat_int_oam &= ((ppu.stat & EI_OAM) != 0);
+
+    if (stat_int_oam && (imask & 2)) {
+      z80.unhalt = 1;
+    }
+
+    bool stat_int_lyc = false;
+    stat_int_lyc |= ppu.lyc_match_for_int_b;
+    stat_int_lyc &= ((ppu.stat & EI_LYC) != 0);
+    if (stat_int_lyc && (imask & 2)) {
+      z80.unhalt = 1;
+    }
+
+    if (timer.overflow) {
+      z80.unhalt = 1;
+    }
+
+    if (buttons.val != 0xFF) {
+      z80.unhalt = 1;
+    }
+  }
+
+  if (tphase == PHASE_CPU_TICK) {
     z80.tick_t0(imask, intf, bus_out_);
   }
 

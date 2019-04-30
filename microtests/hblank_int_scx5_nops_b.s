@@ -21,5 +21,5 @@ main:
   test_fail
 
 .org STAT_INT_VECTOR
-  nops 19
+  nops 18
   test_finish_div 1

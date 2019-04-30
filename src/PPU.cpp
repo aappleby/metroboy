@@ -130,8 +130,8 @@ void PPU::reset(int new_model) {
   //----------
   // Fixup if we're not running the bootrom
 
-  counter2 = 455;
   line2 = 153;
+  counter2 = 399;
 
   lcdc = 0x91;
   palettes[0] = 0xfc;

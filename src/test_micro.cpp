@@ -7,6 +7,10 @@
 
 static const std::string micro_tests[] = {
   "-----",
+  "poweron_ly_a.gb",
+  "poweron_ly_b.gb",
+
+  "-----",
   "oam_int_inc_sled.gb",
   "oam_int_halt_a.gb",
   "oam_int_halt_b.gb",

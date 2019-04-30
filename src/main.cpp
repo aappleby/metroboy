@@ -42,13 +42,14 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   const char* filename = nullptr;
   
   //filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_timing.gb";
+  filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
 
   //filename = "mooneye-gb/tests/build/acceptance/di_timing-GS.gb";
-  filename = "mooneye-gb/tests/build/acceptance/ppu/vblank_stat_intr-GS.gb";
+  //filename = "mooneye-gb/tests/build/acceptance/ppu/vblank_stat_intr-GS.gb";
 
   //filename = "microtests/build/dmg/hblank_scx_if_a.gb";
   //filename = "microtests/build/dmg/lcdon_to_hblank_int_scx3.gb";
-  //filename = "microtests/build/dmg/hblank_scx3_int_a.gb";
+  //filename = "microtests/build/dmg/line_144_oam_int_.gb";
 
   MetroBoy metroboy;
 

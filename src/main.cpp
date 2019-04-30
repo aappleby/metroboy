@@ -12,9 +12,9 @@
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  run_microtests();
+  //run_microtests();
   run_mooneye_acceptance();
-  run_wpol_acceptance();
+  //run_wpol_acceptance();
   return 0;
 
   enum RunMode {
@@ -48,11 +48,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //filename = "mooneye-gb/tests/build/acceptance/di_timing-GS.gb";
   //filename = "mooneye-gb/tests/build/acceptance/halt_ime1_timing2-GS.gb";
+  filename = "mooneye-gb/tests/build/acceptance/ppu/intr_1_2_timing-GS.gb";
 
   //filename = "microtests/build/dmg/hblank_scx_if_a.gb";
   //filename = "microtests/build/dmg/lcdon_to_hblank_int_scx3.gb";
   //filename = "microtests/build/dmg/line_144_oam_int_.gb";
-  filename = "microtests/build/dmg/hblank_int_scx0_halt_a.gb";
+  //filename = "microtests/build/dmg/hblank_int_scx0_halt_a.gb";
 
   MetroBoy metroboy;
 

@@ -116,6 +116,7 @@ static const std::string micro_tests[] = {
   "hblank_scx3_if_b.gb",
   "hblank_scx3_if_c.gb",
   "hblank_scx3_if_d.gb",
+  */
 
   "-----",
   "vblank_int_inc_sled.gb",
@@ -139,6 +140,7 @@ static const std::string micro_tests[] = {
   "vblank2_int_if_c.gb",
   "vblank2_int_if_d.gb",
 
+  /*
   "-----",
   "lcdon_to_hblank_int_l0.gb",
   "lcdon_to_hblank_int_l1.gb",

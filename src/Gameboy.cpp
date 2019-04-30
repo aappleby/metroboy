@@ -150,7 +150,12 @@ void Gameboy::tock() {
   //-----------------------------------
   // Interrupt update 
 
-  // putting the read before the update breaks hblank_ly_scx_timing_variant_nops.gb
+  bool stat_int = ppu.stat_int && !old_stat_int;
+  old_stat_int = ppu.stat_int;
+  if (ppu.vblank_int)      intf |= INT_VBLANK;
+  if (stat_int)            intf |= INT_STAT;
+  if (timer.overflow)      intf |= INT_TIMER;
+  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
 
   if (cpu_read_) {
     bus_out = 0x00;
@@ -158,13 +163,6 @@ void Gameboy::tock() {
     if (cpu_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
     if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }
-
-  bool stat_int = ppu.stat_int && !old_stat_int;
-  old_stat_int = ppu.stat_int;
-  if (ppu.vblank_int)      intf |= INT_VBLANK;
-  if (stat_int)            intf |= INT_STAT;
-  if (timer.overflow)      intf |= INT_TIMER;
-  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
 
   //-----------------------------------
   // DMA state machine - tock can't be on t3, can't be after cpu_write_

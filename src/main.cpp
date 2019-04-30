@@ -52,7 +52,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //filename = "microtests/build/dmg/hblank_scx_if_a.gb";
   //filename = "microtests/build/dmg/lcdon_to_hblank_int_scx3.gb";
   //filename = "microtests/build/dmg/line_144_oam_int_.gb";
-  filename = "microtests/build/dmg/hblank_int_scx0_halt_a.gb";
+  filename = "microtests/build/dmg/hblank_int_scx2_if_c.gb";
 
   MetroBoy metroboy;
 

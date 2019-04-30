@@ -210,7 +210,8 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
 
   //----------
 
-  vblank_int = (line2 == 144) && (counter2 == 1);
+  vblank_int = false;
+  vblank_int |= (line2 == 144) && (counter2 <= 1);
 
   //----------
   // DO THE SAME INTERRUPT TESTS FOR LYC_MATCH

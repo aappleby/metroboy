@@ -7,6 +7,16 @@
 
 static const std::string micro_tests[] = {
   "-----",
+  "hblank_int_scx0_halt_a.gb",
+  "hblank_int_scx0_halt_b.gb",
+  "hblank_int_scx0_nops_a.gb",
+  "hblank_int_scx0_nops_b.gb",
+  "hblank_int_scx0_if_a.gb",
+  "hblank_int_scx0_if_b.gb",
+  "hblank_int_scx0_if_c.gb",
+  "hblank_int_scx0_if_d.gb",
+
+  "-----",
   "poweron_ly_a.gb",
   "poweron_ly_b.gb",
 

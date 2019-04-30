@@ -115,6 +115,21 @@ void Gameboy::tick() {
   if (!bus_oe_) bus_out_ = 0xFF;
 
   if (tphase == PHASE_CPU_TICK) {
+    if (z80.state == Z80::Z80_STATE_HALT) {
+
+      if (imask & intf) {
+        z80.unhalt = 1;
+      }
+      else {
+        bool stat_int_hblank = false;
+        stat_int_hblank |= (ppu.counter2 > 80) && (ppu.hblank_delay < 7) && ppu.line2 < 144;
+        stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
+
+        if (stat_int_hblank) {
+          //z80.unhalt = 1;
+        }
+      }
+    }
     z80.tick_t0(imask, intf, bus_out_);
   }
 

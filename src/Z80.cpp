@@ -138,6 +138,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
   alu_out_ = 0;
   opcount = 0;
   cycle = 0;
+  unhalt = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -162,7 +163,7 @@ void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   else if (bus_tag == TAG_ARG1)  data_hi_ = bus_data;
 
   if (state == Z80_STATE_HALT) {
-    if (imask_ & intf_) {
+    if (unhalt) {
       pc_ = pc + 1;
       state_ = Z80_STATE_DECODE;
       bus_tag_ = TAG_OPCODE;
@@ -170,6 +171,7 @@ void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       mem_out_ = 0;
       mem_read_ = true;
       mem_write_ = false;
+      unhalt = 0;
     }
     return;
   }
@@ -608,6 +610,7 @@ void Z80::setup_halt() {
   mem_addr_ = pc;
   mem_read_ = true;
   mem_write_ = false;
+  unhalt = 0;
 }
 
 void Z80::tock_halt() {

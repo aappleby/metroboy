@@ -26,6 +26,7 @@ struct PPU {
   bool stat_int_hblank;
   bool stat_int_vblank;
   bool stat_int_glitch;
+  bool unhalt;
 
   ubit8_t bus_out;
   bool bus_oe;

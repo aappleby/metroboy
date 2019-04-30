@@ -13,9 +13,9 @@
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
-  //return 0;
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
+  return 0;
 
   enum RunMode {
     RUN_FAST,

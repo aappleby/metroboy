@@ -24,6 +24,7 @@ void PPU::reset(int new_model) {
   stat_int_hblank = 0;
   stat_int_vblank = 0;
   stat_int_glitch = 0;
+  unhalt = 0;
 
   bus_out = 0;
   bus_oe = 0;
@@ -249,6 +250,8 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   //----------
 
   stat_int = stat_int_lyc | stat_int_oam | stat_int_hblank | stat_int_vblank | stat_int_glitch;
+
+  unhalt = stat_int;
 }
 
 //-----------------------------------------------------------------------------

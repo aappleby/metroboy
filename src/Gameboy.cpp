@@ -125,6 +125,11 @@ void Gameboy::tick() {
     bool stat_int_hblank = false;
     stat_int_hblank |= (ppu.counter2 > 80) && (ppu.hblank_delay < 7) && ppu.line2 < 144;
     stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
+
+    if (ppu.frame_count == 0 && ppu.line2 == 0 && ppu.counter2 < 80) {
+      stat_int_hblank = false;
+    }
+
     if (stat_int_hblank && (imask & 2)) {
       z80.unhalt = 1;
     }

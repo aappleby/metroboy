@@ -241,11 +241,19 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   stat_int_hblank = false;
   stat_int_hblank |= (counter2 > 80) && (hblank_delay < HBLANK_DELAY_INT) && line2 < 144;
 
+  if (frame_count == 0 && line2 == 0 && counter2 < 80) {
+    stat_int_hblank = false;
+  }
+
   stat_int_hblank &= (stat & EI_HBLANK) != 0;
 
   //----------
 
   stat_int_glitch = cpu_write && cpu_addr == ADDR_STAT && (hblank_phase || (line2 >= 144));
+
+  if (frame_count == 0 && line2 == 0 && counter2 < 80) {
+    stat_int_glitch = false;
+  }
 
   //----------
 

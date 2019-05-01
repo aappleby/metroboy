@@ -98,7 +98,6 @@ static const std::string micro_tests[] = {
   "oam_int_if_level_c.gb",
   "oam_int_if_level_d.gb",
 
-  /*
   "-----",
   "hblank_int_inc_sled.gb",
   "hblank_int_halt_a.gb",
@@ -109,14 +108,11 @@ static const std::string micro_tests[] = {
   "hblank_int_if_b.gb",
   "hblank_int_if_c.gb",
   "hblank_int_if_d.gb",
-
-  //"hblank_scx2_if_a.gb",
-
+  "hblank_scx2_if_a.gb",
   "hblank_scx3_if_a.gb",
   "hblank_scx3_if_b.gb",
   "hblank_scx3_if_c.gb",
   "hblank_scx3_if_d.gb",
-  */
 
   "-----",
   "vblank_int_inc_sled.gb",
@@ -140,7 +136,6 @@ static const std::string micro_tests[] = {
   "vblank2_int_if_c.gb",
   "vblank2_int_if_d.gb",
 
-  /*
   "-----",
   "lcdon_to_hblank_int_l0.gb",
   "lcdon_to_hblank_int_l1.gb",
@@ -237,6 +232,9 @@ static const std::string micro_tests[] = {
   "lyc1_write_timing_c.gb",
   "lyc1_write_timing_d.gb",
 
+  "lyc2_int_halt_a.gb",
+  "lyc2_int_halt_b.gb",
+
   "-----",
   "stat_write_glitch_l0_a.gb",
   "stat_write_glitch_l0_b.gb",
@@ -249,7 +247,6 @@ static const std::string micro_tests[] = {
   "stat_write_glitch_l1_b.gb",
   "stat_write_glitch_l1_c.gb",
   "stat_write_glitch_l1_d.gb",
-  */
 };
 
 void run_microtest(int model, const char* filename) {

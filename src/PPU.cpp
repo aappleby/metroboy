@@ -63,7 +63,6 @@ void PPU::reset(int new_model) {
 
   lyc_match = 0;
   lyc_match_for_int_a = 0;
-  lyc_match_for_int_b = 0;
 
   //----------
   // Timers and states
@@ -199,8 +198,8 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
     else {
       compare_line = line2;
     }
-    lyc_match_for_int_b = lyc_match_for_int_a;
-    lyc_match_for_int_a = (lyc == compare_line);
+
+    lyc_match_for_int_a = lyc == compare_line;
 
     // feels hacky, but passes lyc1_write_timing_*
 
@@ -218,17 +217,12 @@ void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool 
   // DO THE SAME INTERRUPT TESTS FOR LYC_MATCH
 
   stat_int_lyc = false;
-  stat_int_lyc |= lyc_match_for_int_b;
+  stat_int_lyc |= lyc_match_for_int_a;
   stat_int_lyc &= ((stat & EI_LYC) != 0);
 
   //----------
 
   stat_int_oam = false;
-  /*
-  stat_int_oam |= (line2 == 153) && (counter2 >= 453);
-  stat_int_oam |= (line2  < 144) && (counter2 <= 1);
-  stat_int_oam |= (line2  < 144) && (counter2 >= 453);
-  */
   stat_int_oam |= (line2 <= 143) && (counter2 >= 453); // 452. 453
   stat_int_oam |= (line2 < 144) && (counter2 == 0);
 
@@ -355,9 +349,8 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
     window_hit = false;
     map_x = (scx >> 3) & 31;
-    map_y = ((scy + line2) >> 3) & 31;
     pix_discard = (scx & 7) + 8;
-    scy_latch = scy;
+    //scy_latch = scy;
     tile_latched = true; // we always start w/ a "garbage" tile
   }
   else if (pix_count < 160) {
@@ -438,6 +431,10 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
   // Render phase
 
+  // If we don't do this early, the right twirler in gejmboj is broken
+  // (but it could also be a timing issue with the lyc int?)
+  if (cpu_write) bus_write(cpu_addr, cpu_data);
+
   oam_addr = 0;
   oam_read = false;
 
@@ -501,9 +498,11 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
       if (fetch_state == FETCH_TILE_MAP) {
         if (window_hit) {
+          map_y = ((line2 - wy) >> 3) & 31;
           vram_addr = win_map_address(lcdc, map_x, map_y);
         }
         else {
+          map_y = ((scy + line2) >> 3) & 31;
           vram_addr = tile_map_address(lcdc, map_x, map_y);
         }
         map_x = (map_x + 1) & 31;
@@ -513,7 +512,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
           vram_addr = win_base_address(lcdc, wy, line2, tile_map) + 0;
         }
         else {
-          vram_addr = tile_base_address(lcdc, scy_latch, line2, tile_map) + 0;
+          vram_addr = tile_base_address(lcdc, scy, line2, tile_map) + 0;
         }
       }
       else if (fetch_state == FETCH_TILE_HI) {
@@ -521,7 +520,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
           vram_addr = win_base_address(lcdc, wy, line2, tile_map) + 1;
         }
         else {
-          vram_addr = tile_base_address(lcdc, scy_latch, line2, tile_map) + 1;
+          vram_addr = tile_base_address(lcdc, scy, line2, tile_map) + 1;
         }
       }
       else if (fetch_state == FETCH_SPRITE_MAP) {
@@ -552,7 +551,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
   //-----------------------------------
 
-  if (cpu_write) bus_write(cpu_addr, cpu_data);
 }
 
 //-----------------------------------------------------------------------------
@@ -800,6 +798,7 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "LCDC %s\n", to_binary(lcdc));
   cursor += sprintf(cursor, "STAT %s\n", to_binary(stat));
   cursor += sprintf(cursor, "SCY  %d\n", scy);
+  cursor += sprintf(cursor, "SCY+ %d\n", scy_latch);
   cursor += sprintf(cursor, "SCX  %d\n", scx);
   cursor += sprintf(cursor, "LY   %d\n", ly);
   cursor += sprintf(cursor, "LYC  %d\n", lyc);

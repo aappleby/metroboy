@@ -80,7 +80,6 @@ struct PPU {
 
   bool lyc_match;
   bool lyc_match_for_int_a;
-  bool lyc_match_for_int_b;
   
   //----------
   // Timers and states

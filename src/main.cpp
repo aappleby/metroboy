@@ -13,9 +13,9 @@
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
-  //return 0;
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
+  return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -55,6 +55,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //filename = "microtests/build/dmg/lcdon_to_hblank_int_scx3.gb";
   //filename = "microtests/build/dmg/line_144_oam_int_.gb";
   //filename = "microtests/build/dmg/hblank_int_scx0_halt_a.gb";
+
+  //filename = "microtests/build/dmg/lyc1_int_halt_a.gb";
+  //filename = "microtests/build/dmg/lyc1_int_halt_b.gb";
 
   filename = "gejmboj.gb";
 

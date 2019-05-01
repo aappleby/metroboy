@@ -114,6 +114,8 @@ void Gameboy::tick() {
   assert(bus_oe_ <= 1);
   if (!bus_oe_) bus_out_ = 0xFF;
 
+  ppu.tick(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
+
   if (z80.state == Z80::Z80_STATE_HALT) {
     bool vblank_int = (ppu.line2 == 143) && (ppu.counter2 == 455);
     if (vblank_int && (imask & 1)) {
@@ -144,7 +146,7 @@ void Gameboy::tick() {
     }
 
     bool stat_int_lyc = false;
-    stat_int_lyc |= ppu.lyc_match_for_int_b;
+    stat_int_lyc |= ppu.lyc_match_for_int_a;
     stat_int_lyc &= ((ppu.stat & EI_LYC) != 0);
     if (stat_int_lyc && (imask & 2)) {
       z80.unhalt = 1;
@@ -162,8 +164,6 @@ void Gameboy::tick() {
   if (tphase == PHASE_CPU_TICK) {
     z80.tick_t0(imask, intf, bus_out_);
   }
-
-  ppu.tick(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
 }
 
 //-----------------------------------------------------------------------------

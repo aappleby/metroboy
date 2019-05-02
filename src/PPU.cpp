@@ -202,7 +202,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
   // Update state machiney stuff
 
-  if (counter2 == 0) {
+  if (counter2 < 77) {
     oam_phase = true;
     render_phase = false;
     hblank_phase = false;
@@ -215,19 +215,34 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     oam_lock = !line0_weirdness;
     vram_lock = false;
   }
-  else if (counter2 < 81) {
-    oam_lock = counter2 != 78 && !line0_weirdness;
-    vram_lock = counter2 == 80 && !line0_weirdness;
+  else if (counter2 == 77) {
+    oam_lock = false;
+    vram_lock = false;
+  }
+  else if (counter2 == 78) {
+    oam_lock = true;
+    vram_lock = false;
+  }
+  else if (counter2 == 79) {
+    oam_lock = true;
+    vram_lock = false;
+  }
+  else if (counter2 == 80) {
+    oam_lock = true;
+    vram_lock = true;
   }
   else if (counter2 == 81) {
+    oam_lock = true;
+    vram_lock = true;
+
     oam_phase = false;
     render_phase = true;
     hblank_phase = false;
 
+    sprite_index = -1;
     window_hit = false;
     map_x = (scx >> 3) & 31;
     pix_discard = (scx & 7) + 8;
-    //scy_latch = scy;
     tile_latched = true; // we always start w/ a "garbage" tile
   }
   else if (pix_count < 160) {
@@ -250,25 +265,15 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
       hblank_phase = true;
     }
 
-    oam_lock = !(hblank_delay < HBLANK_DELAY_LOCK);
-    vram_lock = !(hblank_delay < HBLANK_DELAY_LOCK);
+    // 5 6 7 8
+    oam_lock = !(hblank_delay < 8);
+    vram_lock = !(hblank_delay < 8);
   }
-  else {
-    oam_lock = false;
+  else if (counter2 >= TCYCLES_LINE - 2) { // 0 1 2
+    oam_lock = true;
     vram_lock = false;
   }
-
-  if (counter2 == TCYCLES_LINE - 1) oam_lock = true;
-  if (counter2 == 79) vram_lock = true;
-
-  if (line2 > 0) {
-    // 1-tcycle hole between oam and vram
-    if (counter2 == 77) {
-      oam_lock = false;
-    }
-  }
-
-  if (line0_weirdness) {
+  else {
     oam_lock = false;
     vram_lock = false;
   }
@@ -291,7 +296,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   if (oam_read && (oam_addr & 3) == 2) spriteP = oam_in;
   if (oam_read && (oam_addr & 3) == 3) spriteF = oam_in;
 
-  if (oam_phase && (oam_addr & 3) == 1 && sprite_count < 10) {
+  if ((counter2 < 81) && (oam_addr & 3) == 1 && sprite_count < 10) {
     int si = (counter2 - 1) >> 1;
     int sy = spriteY - 16;
     int sx = spriteX;
@@ -315,8 +320,8 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   oam_addr = 0;
   oam_read = false;
 
-  if (oam_phase) {
-    oam_addr = uint16_t(_pdep_u32(counter2, 0b11111101));
+  if ((counter2 < 80)) {
+    oam_addr = ((counter2 << 1) & 0b11111100) | (counter2 & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
   }
@@ -526,9 +531,6 @@ void PPU::merge_sprite() {
   // sprites don't draw where we already drew sprites
   ubit8_t mask = ob_pix_lo | ob_pix_hi;
 
-  // if pri is set, sprites also don't draw where bg != 0
-  if (spriteF & SPRITE_PRI) mask |= bg_pix_lo | bg_pix_hi;
-
   ob_pix_lo |= (sprite_lo & ~mask);
   ob_pix_hi |= (sprite_hi & ~mask);
   ob_pal_lo |= (sprite_pal_lo & ~mask);
@@ -595,6 +597,13 @@ void PPU::emit_pixel() {
 
   int pal = ob_pix ? ob_pal : bg_pal;
   int pix = ob_pix ? ob_pix : bg_pix;
+
+  if (spriteF & SPRITE_PRI) {
+    if (bg_pix) {
+      pal = bg_pal;
+      pix = bg_pix;
+    }
+  }
 
   pipe_count--;
 
@@ -739,6 +748,9 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "latched %d\n", tile_latched);
   cursor += sprintf(cursor, "\n");
 
+  cursor += sprintf(cursor, "sprite idx %d\n", sprite_index);
+  cursor += sprintf(cursor, "oam addr  %04x\n", oam_addr);
+  cursor += sprintf(cursor, "oam read  %04x\n", oam_read);
   cursor += sprintf(cursor, "vram addr  %04x\n", vram_addr);
   cursor += sprintf(cursor, "vram delay %d\n", vram_delay);
   cursor += sprintf(cursor, "\n");

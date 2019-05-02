@@ -131,18 +131,16 @@ void Gameboy::tick() {
   // Update ly/lyc_match
 
   int compare_line = ppu.line2;
+
   if (ppu.line2 == 153) {
-    if (ppu.counter2 < 4)  compare_line = 153;
     if (ppu.counter2 >= 4 && ppu.counter2 < 8) compare_line = -1;
     if (ppu.counter2 >= 8) compare_line = 0;
   }
 
   if (ppu.lcdc & FLAG_LCD_ON) {
     ppu.lyc_match = (compare_line == ppu.lyc);
-    if (ppu.model == MODEL_DMG) {
-      if (ppu.counter2 >= (TCYCLES_LINE - 4)) {
-        ppu.lyc_match = 0;
-      }
+    if (ppu.line2 < 153 && ppu.counter2 >= (TCYCLES_LINE - 4)) {
+      ppu.lyc_match = 0;
     }
   }
 

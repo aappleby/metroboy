@@ -310,9 +310,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     }
   }
 
-  //-----------------------------------
-  // Render phase
-
   // If we don't do this early, the right twirler in gejmboj is broken
   // (but it could also be a timing issue with the lyc int?)
   if (cpu_write) bus_write(cpu_addr, cpu_data);
@@ -320,12 +317,15 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   oam_addr = 0;
   oam_read = false;
 
+  // FIXME
   if ((counter2 < 80)) {
     oam_addr = ((counter2 << 1) & 0b11111100) | (counter2 & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
   }
 
+  //-----------------------------------
+  // Render phase
 
   if (render_phase) {
     if (vram_delay) {

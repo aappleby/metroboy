@@ -9,12 +9,18 @@
 #include "test_mooneye.h"
 #include "test_wpol.h"
 
+void run_test(const std::string& prefix, const std::string& name);
+
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
+  //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS.gb");
+  //run_test("wpol-gb/tests/build/acceptance/gpu/",    "intr_2_timing.gb");
+  //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS.gb");
+
   run_microtests();
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
   return 0;
 
   enum RunMode {
@@ -39,29 +45,14 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   bool rom_loaded = false;
 
-  const char* filename = nullptr;
-  
-  //filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_timing.gb";
-  //filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
-
-  //filename = "wpol-gb/tests/build/acceptance/gpu/hblank_ly_scx_timing_variant_nops.gb";
-
-  //filename = "mooneye-gb/tests/build/acceptance/di_timing-GS.gb";
-  //filename = "mooneye-gb/tests/build/acceptance/halt_ime1_timing2-GS.gb";
-  //filename = "mooneye-gb/tests/build/acceptance/ppu/intr_1_2_timing-GS.gb";
-  //filename = "mooneye-gb/tests/build/acceptance/ppu/stat_irq_blocking.gb";
-
-  //filename = "microtests/build/dmg/hblank_scx_if_a.gb";
-  //filename = "microtests/build/dmg/lcdon_to_hblank_int_scx3.gb";
-  //filename = "microtests/build/dmg/line_144_oam_int_.gb";
-  //filename = "microtests/build/dmg/hblank_int_scx0_halt_a.gb";
-
-  //filename = "microtests/build/dmg/lyc1_int_halt_a.gb";
-  //filename = "microtests/build/dmg/lyc1_int_halt_b.gb";
-
-  filename = "microtests/build/dmg/temp.gb";
-
   MetroBoy metroboy;
+
+  const char* filename = nullptr;
+
+  //filename = "mooneye-gb/tests/build/acceptance/ppu/vblank_stat_intr-GS.gb";
+  //filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
+  //filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_timing.gb";
+  filename = "gejmboj.gb";
 
   if (filename) {
     metroboy.load_rom(MODEL_DMG, filename);

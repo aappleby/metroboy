@@ -112,34 +112,16 @@ static const std::string ppu_tests[] = {
   */
 };
 
-//---------
-// wpol timer
-
-static const std::string timer_tests[] = {
-  "",
-};
-
-//---------
-// wpol mbc
-
-static const std::string mbc1_tests[] = {
-  "",
-};
-
-//---------
-// wpol misc
-
-static const char* misc_tests[] = {
-  "",
-};
-
 //-----------------------------------------------------------------------------
 
 extern uint8_t rom_buf[1024 * 1024];
 
-void run_wpol(const char* filename) {
+void run_test(const std::string& prefix, const std::string& name) {
+  std::string filename = prefix + name;
+  printf("%-50s ", name.c_str());
+
   FILE* rom_file = NULL;
-  rom_file = fopen(filename, "rb");
+  rom_file = fopen(filename.c_str(), "rb");
   fseek(rom_file, 0, SEEK_END);
   size_t rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
@@ -173,57 +155,18 @@ void run_wpol(const char* filename) {
   }
 }
 
-void run_wpol_generic() {
-  printf("-----Generic tests-----\n");
-
-  std::string prefix = "wpol-gb/tests/build/acceptance/";
-
-  for (auto name : generic_tests) {
-    printf("%-50s ", name.c_str());
-    run_wpol((prefix + name).c_str());
-  }
-  printf("\n");
-}
-
-void run_wpol_timer() {
-  printf("-----Timer tests-----\n");
-
-  std::string prefix = "wpol-gb/tests/build/acceptance/timer/";
-
-  for (auto name : timer_tests) {
-    printf("%-50s ", name.c_str());
-    run_wpol((prefix + name).c_str());
-  }
-  printf("\n");
-}
-
-void run_wpol_mbc1() {
-  printf("-----MBC1 tests-----\n");
-
-  std::string prefix = "wpol-gb/tests/build/emulator-only/mbc1/";
-
-  for (auto name : mbc1_tests) {
-    printf("%-50s ", name.c_str());
-    run_wpol((prefix + name).c_str());
-  }
-  printf("\n");
-}
-
-void run_wpol_ppu() {
-  printf("-----PPU tests-----\n");
-
-  std::string prefix = "wpol-gb/tests/build/acceptance/gpu/";
-
-  for (auto name : ppu_tests) {
-    printf("%-50s ", name.c_str());
-    run_wpol((prefix + name).c_str());
-  }
-  printf("\n");
-}
-
 void run_wpol_acceptance() {
-  run_wpol_generic();
-  //run_wpol_timer();
-  //run_wpol_mbc1();
-  run_wpol_ppu();
+  printf("-----WPol Generic tests-----\n");
+  for (auto name : generic_tests) {
+    std::string prefix = "wpol-gb/tests/build/acceptance/";
+    run_test(prefix, name);
+  }
+  printf("\n");
+
+  printf("-----WPol PPU tests-----\n");
+  for (auto name : ppu_tests) {
+    std::string prefix = "wpol-gb/tests/build/acceptance/gpu/";
+    run_test(prefix, name);
+  }
+  printf("\n");
 }

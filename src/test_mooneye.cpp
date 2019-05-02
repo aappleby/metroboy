@@ -136,15 +136,17 @@ static const char* misc_tests[] = {
 
 extern uint8_t rom_buf[1024 * 1024];
 
-void run_mooneye(const char* filename) {
+void run_mooneye(const std::string& prefix, const std::string& name) {
+  std::string filename = prefix + name;
+  printf("%-50s ", name.c_str());
+
   FILE* rom_file = NULL;
-  rom_file = fopen(filename, "rb");
+  rom_file = fopen(filename.c_str(), "rb");
   fseek(rom_file, 0, SEEK_END);
   size_t rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
   rom_size = fread(rom_buf, 1, rom_size, rom_file);
   fclose(rom_file);
-
 
   Gameboy gameboy;
   gameboy.reset(MODEL_DMG, rom_size, 0x100);
@@ -172,57 +174,34 @@ void run_mooneye(const char* filename) {
   }
 }
 
-void run_mooneye_generic() {
-  printf("-----Generic tests-----\n");
-
-  std::string prefix = "mooneye-gb/tests/build/acceptance/";
-
-  for (auto name : generic_tests) {
-    printf("%-50s ", name.c_str());
-    run_mooneye((prefix + name).c_str());
-  }
-  printf("\n");
-}
-
-void run_mooneye_timer() {
-  printf("-----Timer tests-----\n");
-
-  std::string prefix = "mooneye-gb/tests/build/acceptance/timer/";
-
-  for (auto name : timer_tests) {
-    printf("%-50s ", name.c_str());
-    run_mooneye((prefix + name).c_str());
-  }
-  printf("\n");
-}
-
-void run_mooneye_mbc1() {
-  printf("-----MBC1 tests-----\n");
-
-  std::string prefix = "mooneye-gb/tests/build/emulator-only/mbc1/";
-
-  for (auto name : mbc1_tests) {
-    printf("%-50s ", name.c_str());
-    run_mooneye((prefix + name).c_str());
-  }
-  printf("\n");
-}
-
-void run_mooneye_ppu() {
-  printf("-----PPU tests-----\n");
-
-  std::string prefix = "mooneye-gb/tests/build/acceptance/ppu/";
-
-  for (auto name : ppu_tests) {
-    printf("%-50s ", name.c_str());
-    run_mooneye((prefix + name).c_str());
-  }
-  printf("\n");
-}
-
 void run_mooneye_acceptance() {
-  run_mooneye_generic();
-  run_mooneye_timer();
-  //run_mooneye_mbc1();
-  run_mooneye_ppu();
+  printf("-----Generic tests-----\n");
+  for (auto name : generic_tests) {
+    std::string prefix = "mooneye-gb/tests/build/acceptance/";
+    run_mooneye(prefix, name);
+  }
+  printf("\n");
+
+  printf("-----Timer tests-----\n");
+  for (auto name : timer_tests) {
+    std::string prefix = "mooneye-gb/tests/build/acceptance/timer/";
+    run_mooneye(prefix, name);
+  }
+  printf("\n");
+
+  /*
+  printf("-----MBC1 tests-----\n");
+  for (auto name : mbc1_tests) {
+    std::string prefix = "mooneye-gb/tests/build/emulator-only/mbc1/";
+    run_mooneye(prefix, name);
+  }
+  printf("\n");
+  */
+
+  printf("-----PPU tests-----\n");
+  for (auto name : ppu_tests) {
+    std::string prefix = "mooneye-gb/tests/build/acceptance/ppu/";
+    run_mooneye(prefix, name);
+  }
+  printf("\n");
 }

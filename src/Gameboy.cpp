@@ -127,6 +127,24 @@ void Gameboy::tick() {
     }
   }
 
+  ppu.counter1++;
+  if (ppu.counter1 == TCYCLES_LINE) {
+    ppu.counter1 = 0;
+    ppu.line1++;
+    if (ppu.line1 == 154) {
+      ppu.line1 = 0;
+    }
+  }
+
+  ppu.counter0++;
+  if (ppu.counter0 == TCYCLES_LINE) {
+    ppu.counter0 = 0;
+    ppu.line0++;
+    if (ppu.line0 == 154) {
+      ppu.line0 = 0;
+    }
+  }
+
   //-----------------------------------
   // Update ly/lyc_match
 

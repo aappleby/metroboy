@@ -82,6 +82,12 @@ struct PPU {
   //----------
   // Timers and states
 
+  uint16_t counter0;
+  uint8_t line0;
+
+  uint16_t counter1;
+  uint8_t line1;
+
   uint16_t counter2;
   uint8_t line2;
 

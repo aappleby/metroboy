@@ -55,7 +55,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
   //filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_timing.gb";
   filename = "oh.gb";
-  filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb";
+  //filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb";
 
   if (filename) {
     metroboy.load_rom(MODEL_DMG, filename);

@@ -131,6 +131,12 @@ void PPU::reset(int new_model) {
   line2 = 153;
   counter2 = 399;
 
+  line1 = 153;
+  counter1 = 400;
+
+  line0 = 153;
+  counter0 = 401;
+
   lcdc = 0x91;
   palettes[0] = 0xfc;
   oam_phase = false;
@@ -296,13 +302,13 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   if (oam_read && (oam_addr & 3) == 2) spriteP = oam_in;
   if (oam_read && (oam_addr & 3) == 3) spriteF = oam_in;
 
-  if ((counter2 < 81) && (oam_addr & 3) == 1 && sprite_count < 10) {
-    int si = (counter2 - 1) >> 1;
+  if (oam_read && (counter0 <= 80) && (oam_addr & 3) == 1 && sprite_count < 10) {
+    int si = (counter0 - 1) >> 1;
     int sy = spriteY - 16;
     int sx = spriteX;
 
     ubit4_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
-    if ((sx < 168) && (sy <= line2) && (line2 <= sy + sprite_height)) {
+    if ((sx < 168) && (sy <= line0) && (line0 <= sy + sprite_height)) {
       sprite_x[sprite_count] = spriteX;
       sprite_y[sprite_count] = spriteY;
       sprite_i[sprite_count] = (uint8_t)si;
@@ -318,8 +324,8 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   oam_read = false;
 
   // FIXME
-  if ((counter2 < 80)) {
-    oam_addr = ((counter2 << 1) & 0b11111100) | (counter2 & 1);
+  if ((counter0 < 80)) {
+    oam_addr = ((counter0 << 1) & 0b11111100) | (counter0 & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
   }
@@ -731,8 +737,10 @@ char* PPU::dump(char* cursor) {
       stat_int_glitch ? "-GLT" : "    ");
   }
 
-  cursor += sprintf(cursor, "cycle2  %d\n", counter2);
-  cursor += sprintf(cursor, "line2   %d\n", line2);
+  cursor += sprintf(cursor, "clock2  %3d:%3d\n", line2, counter2);
+  cursor += sprintf(cursor, "clock1  %3d:%3d\n", line1, counter1);
+  cursor += sprintf(cursor, "clock0  %3d:%3d\n", line0, counter0);
+
   cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay);
   cursor += sprintf(cursor, "vblank int %d\n", vblank_int);
   cursor += sprintf(cursor, "stat int %d\n", stat_int);

@@ -77,8 +77,8 @@ void Gameboy::tick() {
   int tphase = tcycle & 3;
 
   uint16_t cpu_addr_ = z80.mem_addr_;
-  uint8_t  cpu_data_ = z80.mem_out_;
-  bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
+  //uint8_t  cpu_data_ = z80.mem_out_;
+  //bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
   bool     cpu_write_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
 
   //-----------------------------------
@@ -114,17 +114,164 @@ void Gameboy::tick() {
   assert(bus_oe_ <= 1);
   if (!bus_oe_) bus_out_ = 0xFF;
 
-  ppu.tick(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
+  //-----------------------------------
+  // Update counter/line/frame
 
-  bool stat_int = ppu.stat_int && !old_stat_int;
-  old_stat_int = ppu.stat_int;
-  if (ppu.vblank_int)      intf |= INT_VBLANK;
-  if (stat_int)            intf |= INT_STAT;
-  if (timer.overflow)      intf |= INT_TIMER;
-  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
+  ppu.counter2++;
+  if (ppu.counter2 == TCYCLES_LINE) {
+    ppu.counter2 = 0;
+    ppu.line2++;
+    if (ppu.line2 == 154) {
+      ppu.line2 = 0;
+      ppu.frame_count++;
+    }
+  }
+
+  //-----------------------------------
+  // Update ly/lyc_match
+
+  int compare_line = ppu.line2;
+
+  if (ppu.line2 == 153) {
+    if (ppu.counter2 >= 4 && ppu.counter2 < 8) compare_line = -1;
+    if (ppu.counter2 >= 8) compare_line = 0;
+  }
+
+  if (ppu.lcdc & FLAG_LCD_ON) {
+    ppu.lyc_match = (compare_line == ppu.lyc);
+    if (ppu.line2 < 153 && ppu.counter2 >= (TCYCLES_LINE - 4)) {
+      ppu.lyc_match = 0;
+    }
+  }
+
+  if (ppu.counter2 >= (TCYCLES_LINE - 4)) {
+    ppu.ly = ppu.line2 + 1;
+  }
+
+  if (ppu.line2 == 153) ppu.ly = 0;
+
+  //----------------------------------------
+
+  ppu.vblank_int = false;
+  //ppu.vblank_int |= (ppu.line2 == 143) && (ppu.counter2 == 455);
+  ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 0);
+  ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 1);
+  //ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 2);
+
+  bool vblank_int = false;
+  //vblank_int |= (ppu.line2 == 143) && (ppu.counter2 == 453);
+  //vblank_int |= (ppu.line2 == 143) && (ppu.counter2 == 454);
+  //vblank_int |= (ppu.line2 == 143) && (ppu.counter2 == 455);
+  vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 0);
+
+  //----------
+
+  bool stat_int_lyc = ppu.lyc_match;
+  ppu.stat_int_lyc = ppu.lyc_match;
+
+  //----------
+
+  ppu.stat_int_oam = false;
+  bool stat_int_oam = false;
+
+  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 0);
+
+  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 452);
+  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 453);
+  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 454);
+  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 455);
+  
+  stat_int_oam |= (ppu.line2 <  143) && (ppu.counter2 == 455);
+  stat_int_oam |= (ppu.line2 == 153) && (ppu.counter2 == 455);
+
+  ppu.stat_int_oam |= (ppu.line2 == 144) && (ppu.counter2 == 0);
+  stat_int_oam     |= (ppu.line2 == 144) && (ppu.counter2 == 0);
+
+  //----------
+
+  ppu.stat_int_vblank  = false;
+  bool stat_int_vblank = false;
+
+  ppu.stat_int_vblank |= (ppu.line2 >= 144);
+
+  stat_int_vblank     |= (ppu.line2 == 143) && (ppu.counter2 == 453);
+
+
+  //----------
+
+  ppu.stat_int_hblank  = false;
+  bool stat_int_hblank = false;
+
+  ppu.stat_int_hblank |= (ppu.hblank_delay < HBLANK_DELAY_INT);
+  stat_int_hblank     |= (ppu.hblank_delay < 7);
+
+  //----------
+
+  bool stat_int_glitch = false;
+
+  if (cpu_write_ && cpu_addr_ == ADDR_STAT) {
+    stat_int_glitch |= ppu.stat_int_hblank;
+    stat_int_glitch |= ppu.line2 >= 144;
+    stat_int_glitch |= ppu.lyc_match;
+  }
+
+  ppu.stat_int_glitch = stat_int_glitch;
+
+  //----------
+  ppu.stat_int_lyc    &= (ppu.stat & EI_LYC) != 0;
+  ppu.stat_int_oam    &= (ppu.stat & EI_OAM) != 0;
+  ppu.stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
+  ppu.stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
+
+  stat_int_lyc    &= (ppu.stat & EI_LYC) != 0;
+  stat_int_oam    &= (ppu.stat & EI_OAM) != 0;
+  stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
+  stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
+
+  //----------------------------------------
+  // tick z80
+
+  if (imask & 0x01) {
+    z80.unhalt |= vblank_int;
+  }
+
+  if (imask & 0x02) {
+    z80.unhalt |= stat_int_lyc;
+    z80.unhalt |= stat_int_oam;
+    z80.unhalt |= stat_int_hblank;
+    z80.unhalt |= stat_int_vblank;
+    z80.unhalt |= stat_int_glitch;
+  }
+
+  if (imask & 0x04) {
+    z80.unhalt |= timer.overflow;
+  }
+
+  if (imask & 0x10) {
+    z80.unhalt |= buttons.val != 0xFF;
+  }
 
   if (tphase == PHASE_CPU_TICK) {
     z80.tick_t0(imask, intf, bus_out_);
+  }
+
+  //----------------------------------------
+
+  ppu.stat_int = ppu.stat_int_lyc | ppu.stat_int_oam | ppu.stat_int_hblank | ppu.stat_int_vblank | ppu.stat_int_glitch;
+
+  bool new_stat_int = ppu.stat_int && !old_stat_int;
+  old_stat_int = ppu.stat_int;
+
+  if (ppu.vblank_int)      intf |= INT_VBLANK;
+  if (new_stat_int)        intf |= INT_STAT;
+  if (timer.overflow)      intf |= INT_TIMER;
+  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
+
+  if (z80.mem_read_ && (tphase == PHASE_CPU_READ)) {
+    bus_out = 0x00;
+    bus_oe = false;
+    if (z80.mem_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
+    if (z80.mem_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }
 }
 
@@ -153,13 +300,6 @@ void Gameboy::tock() {
   bool ce_cram = page == 5;
   bool ce_iram = page == 6;
   bool ce_echo = page == 7 && !ce_oam && !ce_zram;
-
-  if (cpu_read_) {
-    bus_out = 0x00;
-    bus_oe = false;
-    if (cpu_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
-    if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
-  }
 
   //-----------------------------------
   // DMA state machine - tock can't be on t3, can't be after cpu_write_

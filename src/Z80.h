@@ -132,6 +132,8 @@ struct Z80 {
   uint32_t opcount;
   int cycle;
 
+  bool unhalt;
+
   //----------
 
 private:

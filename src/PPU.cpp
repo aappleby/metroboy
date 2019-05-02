@@ -61,8 +61,6 @@ void PPU::reset(int new_model) {
   scy_latch = 0;
 
   lyc_match = 0;
-  lyc_match_for_int_a = 0;
-  lyc_match_for_int_b = 0;
 
   //----------
   // Timers and states
@@ -130,8 +128,8 @@ void PPU::reset(int new_model) {
   //----------
   // Fixup if we're not running the bootrom
 
-  counter2 = 455;
   line2 = 153;
+  counter2 = 399;
 
   lcdc = 0x91;
   palettes[0] = 0xfc;
@@ -146,126 +144,8 @@ void PPU::reset(int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write,
+void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool /*cpu_write*/,
                uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
-  bool lcd_on = (lcdc & FLAG_LCD_ON) != 0;
-
-  //-----------------------------------
-  // Update counter/line/frame
-
-  counter2++;
-  if (counter2 == TCYCLES_LINE) {
-    counter2 = 0;
-    line2++;
-  }
-  if (line2 == 154) {
-    line2 = 0;
-    frame_count++;
-  }
-
-  // updating lyc_match only on tphase 0 fixes line_153_lyc_*
-  if (lcd_on) {
-    if (line2 == 153) {
-      int compare_line = -1;
-      if (counter2 < 4)  compare_line = 153;
-      if (counter2 >= 8) compare_line = 0;
-
-      lyc_match = (compare_line == lyc);
-
-      if (model == MODEL_DMG) {
-        if (counter2 >= (TCYCLES_LINE - 4)) {
-          lyc_match = 0;
-        }
-      }
-    }
-    else {
-      lyc_match = (line2 == lyc);
-
-      if (model == MODEL_DMG) {
-        if (counter2 >= (TCYCLES_LINE - 4)) {
-          lyc_match = 0;
-        }
-      }
-    }
-  }
-
-  if (lcd_on) {
-    int compare_line = -1;
-    if (line2 == 153) {
-      if (counter2 < 4)  compare_line = 153;
-      if (counter2 >= 8) compare_line = 0;
-    }
-    else {
-      compare_line = line2;
-    }
-    lyc_match_for_int_b = lyc_match_for_int_a;
-    lyc_match_for_int_a = (lyc == compare_line);
-
-    // feels hacky, but passes lyc1_write_timing_*
-
-    if (counter2 >= TCYCLES_LINE - 2) {
-      lyc_match_for_int_a = false;
-    }
-  }
-
-  //----------
-
-  vblank_int = (line2 == 144) && (counter2 == 1);
-
-  //----------
-  // DO THE SAME INTERRUPT TESTS FOR LYC_MATCH
-
-  stat_int_lyc = false;
-  stat_int_lyc |= lyc_match_for_int_b;
-  stat_int_lyc &= ((stat & EI_LYC) != 0);
-
-  //----------
-  // max oam int range that doesn't break - [453,1]
-
-  stat_int_oam = false;
-  stat_int_oam |= (line2 == 153) && (counter2 >= 453);
-  stat_int_oam |= (line2  < 143) && (counter2 >= 453);
-  stat_int_oam |= (line2  < 144) && (counter2 <= 1);
-  
-  stat_int_oam |= (line2 == 144) && (counter2 == 1); // glitch
-
-  // adding this fixes intr_2_timing but breaks vblank_stat_intr-GS.gb
-  //stat_int_oam |= (line2 == 143) && (counter2 == 455);
-
-  stat_int_oam &= ((stat & EI_OAM) != 0);
-
-  //----------
-
-  stat_int_vblank = false;
-  stat_int_vblank |= (line2 == 144) && (counter2 >= 1);
-  stat_int_vblank |= (line2 > 144);
-
-  if ((line2 == 153) && (counter2 >= 454)) {
-    stat_int_vblank = false;
-  }
-
-  stat_int_vblank &= (stat & EI_VBLANK) != 0;
-
-  //----------
-
-  stat_int_hblank = false;
-  stat_int_hblank |= (counter2 > 80) && (hblank_delay < HBLANK_DELAY_INT) && line2 < 144;
-
-  if (model == MODEL_DMG) {
-  }
-  else {
-    if (counter2 >= 454) stat_int_hblank = false;
-  }
-
-  stat_int_hblank &= (stat & EI_HBLANK) != 0;
-
-  //----------
-
-  stat_int_glitch = cpu_write && cpu_addr == ADDR_STAT && (hblank_phase || (line2 >= 144));
-
-  //----------
-
-  stat_int = stat_int_lyc | stat_int_oam | stat_int_hblank | stat_int_vblank | stat_int_glitch;
 }
 
 //-----------------------------------------------------------------------------
@@ -282,23 +162,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   if (!lcd_on) {
     handle_lcd_off(cpu_addr, cpu_data, cpu_read, cpu_write);
     return;
-  }
-
-  // FIXME ly handling is still a bit weird, ly changes "early"
-  if (line2 == 153) {
-    if (model == MODEL_DMG) {
-      ly = 0;
-    }
-    else {
-      if (counter2 >= 4) {
-        ly = 0;
-      }
-    }
-  }
-  else {
-    if (counter2 >= (TCYCLES_LINE - 4)) {
-      ly = (line2 == 153) ? 0 : line2 + 1;
-    }
   }
 
   // FIXME why 1 here? something to do with video out
@@ -339,7 +202,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
   // Update state machiney stuff
 
-  if (counter2 == 0) {
+  if (counter2 < 77) {
     oam_phase = true;
     render_phase = false;
     hblank_phase = false;
@@ -352,20 +215,34 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     oam_lock = !line0_weirdness;
     vram_lock = false;
   }
-  else if (counter2 < 81) {
-    oam_lock = counter2 != 78 && !line0_weirdness;
-    vram_lock = counter2 == 80 && !line0_weirdness;
+  else if (counter2 == 77) {
+    oam_lock = false;
+    vram_lock = false;
+  }
+  else if (counter2 == 78) {
+    oam_lock = true;
+    vram_lock = false;
+  }
+  else if (counter2 == 79) {
+    oam_lock = true;
+    vram_lock = false;
+  }
+  else if (counter2 == 80) {
+    oam_lock = true;
+    vram_lock = true;
   }
   else if (counter2 == 81) {
+    oam_lock = true;
+    vram_lock = true;
+
     oam_phase = false;
     render_phase = true;
     hblank_phase = false;
 
+    sprite_index = -1;
     window_hit = false;
     map_x = (scx >> 3) & 31;
-    map_y = ((scy + line2) >> 3) & 31;
     pix_discard = (scx & 7) + 8;
-    scy_latch = scy;
     tile_latched = true; // we always start w/ a "garbage" tile
   }
   else if (pix_count < 160) {
@@ -388,25 +265,15 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
       hblank_phase = true;
     }
 
-    oam_lock = !(hblank_delay < HBLANK_DELAY_LOCK);
-    vram_lock = !(hblank_delay < HBLANK_DELAY_LOCK);
+    // 5 6 7 8
+    oam_lock = !(hblank_delay < 8);
+    vram_lock = !(hblank_delay < 8);
   }
-  else {
-    oam_lock = false;
+  else if (counter2 >= TCYCLES_LINE - 2) { // 0 1 2
+    oam_lock = true;
     vram_lock = false;
   }
-
-  if (counter2 == TCYCLES_LINE - 1) oam_lock = true;
-  if (counter2 == 79) vram_lock = true;
-
-  if (line2 > 0) {
-    // 1-tcycle hole between oam and vram
-    if (counter2 == 77) {
-      oam_lock = false;
-    }
-  }
-
-  if (line0_weirdness) {
+  else {
     oam_lock = false;
     vram_lock = false;
   }
@@ -429,7 +296,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   if (oam_read && (oam_addr & 3) == 2) spriteP = oam_in;
   if (oam_read && (oam_addr & 3) == 3) spriteF = oam_in;
 
-  if (oam_phase && (oam_addr & 3) == 1 && sprite_count < 10) {
+  if ((counter2 < 81) && (oam_addr & 3) == 1 && sprite_count < 10) {
     int si = (counter2 - 1) >> 1;
     int sy = spriteY - 16;
     int sx = spriteX;
@@ -443,18 +310,22 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     }
   }
 
-  //-----------------------------------
-  // Render phase
+  // If we don't do this early, the right twirler in gejmboj is broken
+  // (but it could also be a timing issue with the lyc int?)
+  if (cpu_write) bus_write(cpu_addr, cpu_data);
 
   oam_addr = 0;
   oam_read = false;
 
-  if (oam_phase) {
-    oam_addr = uint16_t(_pdep_u32(counter2, 0b11111101));
+  // FIXME
+  if ((counter2 < 80)) {
+    oam_addr = ((counter2 << 1) & 0b11111100) | (counter2 & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
   }
 
+  //-----------------------------------
+  // Render phase
 
   if (render_phase) {
     if (vram_delay) {
@@ -509,9 +380,11 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
       if (fetch_state == FETCH_TILE_MAP) {
         if (window_hit) {
+          map_y = ((line2 - wy) >> 3) & 31;
           vram_addr = win_map_address(lcdc, map_x, map_y);
         }
         else {
+          map_y = ((scy + line2) >> 3) & 31;
           vram_addr = tile_map_address(lcdc, map_x, map_y);
         }
         map_x = (map_x + 1) & 31;
@@ -521,7 +394,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
           vram_addr = win_base_address(lcdc, wy, line2, tile_map) + 0;
         }
         else {
-          vram_addr = tile_base_address(lcdc, scy_latch, line2, tile_map) + 0;
+          vram_addr = tile_base_address(lcdc, scy, line2, tile_map) + 0;
         }
       }
       else if (fetch_state == FETCH_TILE_HI) {
@@ -529,7 +402,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
           vram_addr = win_base_address(lcdc, wy, line2, tile_map) + 1;
         }
         else {
-          vram_addr = tile_base_address(lcdc, scy_latch, line2, tile_map) + 1;
+          vram_addr = tile_base_address(lcdc, scy, line2, tile_map) + 1;
         }
       }
       else if (fetch_state == FETCH_SPRITE_MAP) {
@@ -560,7 +433,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
   //-----------------------------------
 
-  if (cpu_write) bus_write(cpu_addr, cpu_data);
 }
 
 //-----------------------------------------------------------------------------
@@ -568,15 +440,12 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write) {
   if (cpu_read) bus_read(cpu_addr);
 
-  counter2 = (counter2 + 1) & 3;
+  counter2 &= 3;
   line2 = 0;
   ly = 0;
   frame_count = 0;
   frame_done = false;
   frame_start = false;
-
-  stat_int = false;
-  vblank_int = false;
 
   oam_phase = false;
   render_phase = false;
@@ -662,9 +531,6 @@ void PPU::merge_sprite() {
   // sprites don't draw where we already drew sprites
   ubit8_t mask = ob_pix_lo | ob_pix_hi;
 
-  // if pri is set, sprites also don't draw where bg != 0
-  if (spriteF & SPRITE_PRI) mask |= bg_pix_lo | bg_pix_hi;
-
   ob_pix_lo |= (sprite_lo & ~mask);
   ob_pix_hi |= (sprite_hi & ~mask);
   ob_pal_lo |= (sprite_pal_lo & ~mask);
@@ -731,6 +597,13 @@ void PPU::emit_pixel() {
 
   int pal = ob_pix ? ob_pal : bg_pal;
   int pix = ob_pix ? ob_pix : bg_pix;
+
+  if (spriteF & SPRITE_PRI) {
+    if (bg_pix) {
+      pal = bg_pal;
+      pix = bg_pix;
+    }
+  }
 
   pipe_count--;
 
@@ -811,6 +684,7 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "LCDC %s\n", to_binary(lcdc));
   cursor += sprintf(cursor, "STAT %s\n", to_binary(stat));
   cursor += sprintf(cursor, "SCY  %d\n", scy);
+  cursor += sprintf(cursor, "SCY+ %d\n", scy_latch);
   cursor += sprintf(cursor, "SCX  %d\n", scx);
   cursor += sprintf(cursor, "LY   %d\n", ly);
   cursor += sprintf(cursor, "LYC  %d\n", lyc);
@@ -874,6 +748,9 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "latched %d\n", tile_latched);
   cursor += sprintf(cursor, "\n");
 
+  cursor += sprintf(cursor, "sprite idx %d\n", sprite_index);
+  cursor += sprintf(cursor, "oam addr  %04x\n", oam_addr);
+  cursor += sprintf(cursor, "oam read  %04x\n", oam_read);
   cursor += sprintf(cursor, "vram addr  %04x\n", vram_addr);
   cursor += sprintf(cursor, "vram delay %d\n", vram_delay);
   cursor += sprintf(cursor, "\n");

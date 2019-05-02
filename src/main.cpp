@@ -9,9 +9,17 @@
 #include "test_mooneye.h"
 #include "test_wpol.h"
 
+void run_test(const std::string& prefix, const std::string& name);
+
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
+  //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS.gb");
+
+  //run_test("mooneye-gb/tests/build/acceptance/ppu/", "lcdon_write_timing-GS.gb");
+  //run_test("wpol-gb/tests/build/acceptance/gpu/",    "intr_2_timing.gb");
+  //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS.gb");
+
   //run_microtests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
@@ -39,9 +47,15 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   bool rom_loaded = false;
 
-  const char* filename = nullptr;
-  
   MetroBoy metroboy;
+
+  const char* filename = nullptr;
+
+  //filename = "mooneye-gb/tests/build/acceptance/ppu/vblank_stat_intr-GS.gb";
+  //filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
+  //filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_timing.gb";
+  filename = "oh.gb";
+  filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb";
 
   if (filename) {
     metroboy.load_rom(MODEL_DMG, filename);

@@ -26,7 +26,6 @@ struct PPU {
   bool stat_int_hblank;
   bool stat_int_vblank;
   bool stat_int_glitch;
-  bool unhalt;
 
   ubit8_t bus_out;
   bool bus_oe;
@@ -79,7 +78,6 @@ struct PPU {
   ubit8_t scy_latch;
 
   bool lyc_match;
-  bool lyc_match_for_int_a;
   
   //----------
   // Timers and states

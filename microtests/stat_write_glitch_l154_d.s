@@ -31,7 +31,9 @@
 main:
   reset_lcd_for_test
 
-  nops 0
+  long_delay 114 * 154
+
+  nops 110
   
   clear_stat
-  test_finish_if $E2
+  test_finish_if $E0

@@ -31,6 +31,9 @@
 main:
   reset_lcd_for_test
 
+  long_delay 114 * 154 - 4
+  clear_if
+
   nops 0
   
   clear_stat

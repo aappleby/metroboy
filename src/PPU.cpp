@@ -24,7 +24,6 @@ void PPU::reset(int new_model) {
   stat_int_hblank = 0;
   stat_int_vblank = 0;
   stat_int_glitch = 0;
-  unhalt = 0;
 
   bus_out = 0;
   bus_oe = 0;
@@ -62,7 +61,6 @@ void PPU::reset(int new_model) {
   scy_latch = 0;
 
   lyc_match = 0;
-  lyc_match_for_int_a = 0;
 
   //----------
   // Timers and states
@@ -146,120 +144,8 @@ void PPU::reset(int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-void PPU::tick(ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write,
+void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool /*cpu_write*/,
                uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
-  bool lcd_on = (lcdc & FLAG_LCD_ON) != 0;
-
-  //-----------------------------------
-  // Update counter/line/frame
-
-  counter2++;
-  if (counter2 == TCYCLES_LINE) {
-    counter2 = 0;
-    line2++;
-  }
-  if (line2 == 154) {
-    line2 = 0;
-    frame_count++;
-  }
-
-  // updating lyc_match only on tphase 0 fixes line_153_lyc_*
-  if (lcd_on) {
-    if (line2 == 153) {
-      int compare_line = -1;
-      if (counter2 < 4)  compare_line = 153;
-      if (counter2 >= 8) compare_line = 0;
-
-      lyc_match = (compare_line == lyc);
-
-      if (model == MODEL_DMG) {
-        if (counter2 >= (TCYCLES_LINE - 4)) {
-          lyc_match = 0;
-        }
-      }
-    }
-    else {
-      lyc_match = (line2 == lyc);
-
-      if (model == MODEL_DMG) {
-        if (counter2 >= (TCYCLES_LINE - 4)) {
-          lyc_match = 0;
-        }
-      }
-    }
-  }
-
-  if (lcd_on) {
-    int compare_line = -1;
-    if (line2 == 153) {
-      if (counter2 < 4)  compare_line = 153;
-      if (counter2 >= 8) compare_line = 0;
-    }
-    else {
-      compare_line = line2;
-    }
-
-    lyc_match_for_int_a = lyc == compare_line;
-
-    // feels hacky, but passes lyc1_write_timing_*
-
-    if (counter2 >= TCYCLES_LINE - 2) {
-      lyc_match_for_int_a = false;
-    }
-  }
-
-  //----------
-
-  vblank_int = false;
-  vblank_int |= (line2 == 144) && (counter2 <= 1);
-
-  //----------
-  // DO THE SAME INTERRUPT TESTS FOR LYC_MATCH
-
-  stat_int_lyc = false;
-  stat_int_lyc |= lyc_match_for_int_a;
-  stat_int_lyc &= ((stat & EI_LYC) != 0);
-
-  //----------
-
-  stat_int_oam = false;
-  stat_int_oam |= (line2 <= 143) && (counter2 >= 453); // 452. 453
-  stat_int_oam |= (line2 < 144) && (counter2 == 0);
-
-  //stat_int_oam |= (line2 == 144) && (counter2 <= 1); // glitch
-
-  stat_int_oam &= ((stat & EI_OAM) != 0);
-
-  //----------
-
-  stat_int_vblank = false;
-  stat_int_vblank |= (line2 >= 144);
-  stat_int_vblank &= (stat & EI_VBLANK) != 0;
-
-  //----------
-
-  stat_int_hblank = false;
-  stat_int_hblank |= (counter2 > 80) && (hblank_delay < HBLANK_DELAY_INT) && line2 < 144;
-
-  if (frame_count == 0 && line2 == 0 && counter2 < 80) {
-    stat_int_hblank = false;
-  }
-
-  stat_int_hblank &= (stat & EI_HBLANK) != 0;
-
-  //----------
-
-  stat_int_glitch = cpu_write && cpu_addr == ADDR_STAT && (hblank_phase || (line2 >= 144));
-
-  if (frame_count == 0 && line2 == 0 && counter2 < 80) {
-    stat_int_glitch = false;
-  }
-
-  //----------
-
-  stat_int = stat_int_lyc | stat_int_oam | stat_int_hblank | stat_int_vblank | stat_int_glitch;
-
-  unhalt = stat_int;
 }
 
 //-----------------------------------------------------------------------------
@@ -276,23 +162,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   if (!lcd_on) {
     handle_lcd_off(cpu_addr, cpu_data, cpu_read, cpu_write);
     return;
-  }
-
-  // FIXME ly handling is still a bit weird, ly changes "early"
-  if (line2 == 153) {
-    if (model == MODEL_DMG) {
-      ly = 0;
-    }
-    else {
-      if (counter2 >= 4) {
-        ly = 0;
-      }
-    }
-  }
-  else {
-    if (counter2 >= (TCYCLES_LINE - 4)) {
-      ly = (line2 == 153) ? 0 : line2 + 1;
-    }
   }
 
   // FIXME why 1 here? something to do with video out
@@ -566,7 +435,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write) {
   if (cpu_read) bus_read(cpu_addr);
 
-  counter2 = (counter2 + 1) & 3;
+  counter2 &= 3;
   line2 = 0;
   ly = 0;
   frame_count = 0;

@@ -24,6 +24,8 @@ static const std::string micro_tests[] = {
   "hblank_int_scx5_halt_b.gb",
   "hblank_int_scx6_halt_b.gb",
   "hblank_int_scx7_halt_b.gb",
+
+  /*
   "-----",
   "hblank_int_scx0_nops_a.gb",
   "hblank_int_scx1_nops_a.gb",
@@ -82,6 +84,7 @@ static const std::string micro_tests[] = {
   "-----",
   "poweron_ly_a.gb",
   "poweron_ly_b.gb",
+  */
 
   "-----",
   "oam_int_inc_sled.gb",
@@ -114,6 +117,7 @@ static const std::string micro_tests[] = {
   "hblank_scx3_if_c.gb",
   "hblank_scx3_if_d.gb",
 
+  /*
   "-----",
   "vblank_int_inc_sled.gb",
   "vblank_int_halt_a.gb",
@@ -151,6 +155,7 @@ static const std::string micro_tests[] = {
 
   "lcdon_to_hblank_di_timing_a.gb",
   "lcdon_to_hblank_di_timing_b.gb",
+  */
 
   "-----",
   "lcdon_to_ly1_a.gb",
@@ -222,6 +227,8 @@ static const std::string micro_tests[] = {
   "-----",
   "lyc1_int_halt_a.gb",
   "lyc1_int_halt_b.gb",
+  "lyc1_int_nops_a.gb",
+  "lyc1_int_nops_b.gb",
   "lyc1_int_if_edge_a.gb",
   "lyc1_int_if_edge_b.gb",
   "lyc1_int_if_edge_c.gb",

@@ -30,7 +30,7 @@ const int samples_per_frame = output_hz / 60;
 
 #define PHASE_CPU_TICK  0
 #define PHASE_DMA_TOCK  0
-#define PHASE_CPU_WRITE 1
+#define PHASE_CPU_WRITE 0
 #define PHASE_SPU_TOCK  2
 #define PHASE_CPU_TOCK  3
 #define PHASE_CPU_READ  3

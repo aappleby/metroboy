@@ -2,7 +2,7 @@
 
 .include "header.inc"
 
-.define DELAY  131
+.define DELAY  225
 .define ADDR   $FE00
 .define RESULT $FF
 

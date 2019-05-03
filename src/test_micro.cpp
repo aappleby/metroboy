@@ -18,12 +18,14 @@ static const std::string micro_tests[] = {
   "oam_read_l1_c.gb",
   "oam_read_l1_d.gb",
   "oam_read_l1_e.gb",
+  "oam_read_l1_f.gb",
 
   "-----",
   "oam_write_l0_a.gb",
   "oam_write_l0_b.gb",
   "oam_write_l0_c.gb",
   "oam_write_l0_d.gb",
+  "oam_write_l0_e.gb",
 
   "-----",
   "oam_write_l1_a.gb",

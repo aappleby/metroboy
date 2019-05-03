@@ -2,9 +2,9 @@
 
 .include "header.inc"
 
-.define DELAY  131
+.define DELAY  111
 .define ADDR   $FE00
-.define RESULT $FF
+.define RESULT $91
 
 main:
   ld hl, ADDR
@@ -19,6 +19,11 @@ main:
   ldh (LCDC), a
 
   nops DELAY
-  ld a, (hl)
+  ld (hl), a
 
+- ldh a, (STAT)
+  and 3
+  jr nz, -
+
+  ld a, (hl)
   test_finish_a RESULT

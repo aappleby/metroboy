@@ -2,9 +2,9 @@
 
 .include "header.inc"
 
-.define DELAY  225
+.define DELAY  224
 .define ADDR   $FE00
-.define RESULT $FF
+.define RESULT $F0
 
 main:
   ld hl, ADDR

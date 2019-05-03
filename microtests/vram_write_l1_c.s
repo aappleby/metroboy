@@ -4,7 +4,7 @@
 
 .define DELAY  174
 .define ADDR   $9FFF
-.define RESULT $00
+.define RESULT $F0
 
 main:
   ld hl, ADDR

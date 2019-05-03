@@ -214,9 +214,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     hblank_phase = false;
 
     pix_count = 0;
-    sprite_index = -1;
     hblank_delay = HBLANK_DELAY_START;
-    sprite_count = 0;
 
     oam_lock = !line0_weirdness;
     vram_lock = false;
@@ -278,6 +276,8 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   else if (counter2 >= TCYCLES_LINE - 2) { // 0 1 2
     oam_lock = true;
     vram_lock = false;
+    sprite_index = -1;
+    sprite_count = 0;
   }
   else {
     oam_lock = false;
@@ -328,6 +328,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     oam_addr = ((counter0 << 1) & 0b11111100) | (counter0 & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
+    oam_lock = true;
   }
 
   //-----------------------------------
@@ -447,7 +448,13 @@ void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, boo
   if (cpu_read) bus_read(cpu_addr);
 
   counter2 &= 3;
+  counter1 &= 3;
+  counter0 &= 3;
+
   line2 = 0;
+  line1 = 0;
+  line0 = 0;
+
   ly = 0;
   frame_count = 0;
   frame_done = false;

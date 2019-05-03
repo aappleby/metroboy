@@ -216,27 +216,21 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     pix_count = 0;
     hblank_delay = HBLANK_DELAY_START;
 
-    oam_lock = !line0_weirdness;
     vram_lock = false;
   }
   else if (counter2 == 77) {
-    oam_lock = false;
     vram_lock = false;
   }
   else if (counter2 == 78) {
-    oam_lock = true;
     vram_lock = false;
   }
   else if (counter2 == 79) {
-    oam_lock = true;
     vram_lock = false;
   }
   else if (counter2 == 80) {
-    oam_lock = true;
     vram_lock = true;
   }
   else if (counter2 == 81) {
-    oam_lock = true;
     vram_lock = true;
 
     oam_phase = false;
@@ -250,7 +244,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     tile_latched = true; // we always start w/ a "garbage" tile
   }
   else if (pix_count < 160) {
-    oam_lock = true;
     vram_lock = true;
   }
   else if (hblank_delay) {
@@ -269,18 +262,14 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
       hblank_phase = true;
     }
 
-    // 5 6 7 8
-    oam_lock = !(hblank_delay < 8);
     vram_lock = !(hblank_delay < 8);
   }
   else if (counter2 >= TCYCLES_LINE - 2) { // 0 1 2
-    oam_lock = true;
     vram_lock = false;
     sprite_index = -1;
     sprite_count = 0;
   }
   else {
-    oam_lock = false;
     vram_lock = false;
   }
 
@@ -324,11 +313,20 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   oam_read = false;
 
   // FIXME
-  if ((counter0 < 80)) {
+  if (frame_count == 0 && line0 == 0 && counter0 < 82) {
+    oam_addr = 0;
+    oam_read = false;
+    oam_lock = false;
+  }
+  else if (line0 < 144 && counter0 < 82) {
     oam_addr = ((counter0 << 1) & 0b11111100) | (counter0 & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
     oam_lock = true;
+  }
+  else {
+    // 5 6 7 8
+    oam_lock = (line0 < 144) && (hblank_delay >= 3);
   }
 
   //-----------------------------------

@@ -7,6 +7,58 @@
 
 static const std::string micro_tests[] = {
   "-----",
+  "oam_read_l0_a.gb",
+  "oam_read_l0_b.gb",
+  "oam_read_l0_c.gb",
+  "oam_read_l0_d.gb",
+
+  "-----",
+  "oam_read_l1_a.gb",
+  "oam_read_l1_b.gb",
+  "oam_read_l1_c.gb",
+  "oam_read_l1_d.gb",
+  "oam_read_l1_e.gb",
+
+  "-----",
+  "oam_write_l0_a.gb",
+  "oam_write_l0_b.gb",
+  "oam_write_l0_c.gb",
+  "oam_write_l0_d.gb",
+
+  "-----",
+  "oam_write_l1_a.gb",
+  "oam_write_l1_b.gb",
+  "oam_write_l1_c.gb",
+  "oam_write_l1_d.gb",
+  "oam_write_l1_e.gb",
+  "oam_write_l1_f.gb",
+
+  "-----",
+  "vram_read_l0_a.gb",
+  "vram_read_l0_b.gb",
+  "vram_read_l0_c.gb",
+  "vram_read_l0_d.gb",
+
+  "-----",
+  "vram_read_l1_a.gb",
+  "vram_read_l1_b.gb",
+  "vram_read_l1_c.gb",
+  "vram_read_l1_d.gb",
+
+  "-----",
+  "vram_write_l0_a.gb",
+  "vram_write_l0_b.gb",
+  "vram_write_l0_c.gb",
+  "vram_write_l0_d.gb",
+
+  "-----",
+  "vram_write_l1_a.gb",
+  "vram_write_l1_b.gb",
+  "vram_write_l1_c.gb",
+  "vram_write_l1_d.gb",
+
+  /*
+  "-----",
   "hblank_int_scx0_halt_a.gb",
   "hblank_int_scx1_halt_a.gb",
   "hblank_int_scx2_halt_a.gb",
@@ -249,6 +301,7 @@ static const std::string micro_tests[] = {
   "stat_write_glitch_l1_b.gb",
   "stat_write_glitch_l1_c.gb",
   "stat_write_glitch_l1_d.gb",
+  */
 };
 
 void run_microtest(int model, const char* filename) {

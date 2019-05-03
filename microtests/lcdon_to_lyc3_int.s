@@ -27,6 +27,6 @@ main:
   test_fail
 
 .org STAT_INT_VECTOR
-  test_finish_a 340
+  test_finish_a 84
 
 ;-------------------------------------------------------------------------------

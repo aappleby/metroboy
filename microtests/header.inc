@@ -196,10 +196,21 @@
   test_end
 .endm
 
+.macro display_a
+- ld (VRAM), a
+  jr -
+.endm
+
 .macro test_finish_a ARGS expected
-  sub <expected
-  add $55
-  test_end
+  cp expected
+  jr z, +
+  ld a, $FF
+- ld (VRAM), a
+  jr -
+
++ ld a, $55
+- ld (VRAM), a
+  jr -
 .endm
 
 .macro test_finish_b ARGS expected

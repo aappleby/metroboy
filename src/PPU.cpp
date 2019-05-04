@@ -177,10 +177,8 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     return;
   }
 
-  // FIXME why 1 here? something to do with video out
   frame_start = (counter0 == 0) && (line0 == 0);
   frame_done = (counter0 == 0) && (line0 == 144);
-  bool line0_weirdness = (frame_count == 0 && line0 == 0 && counter0 < 82);
 
   //-----------------------------------
   // vblank early-out
@@ -228,6 +226,8 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
     pix_count = 0;
     hblank_delay = HBLANK_DELAY_START;
+    state = PPU_STATE_OAM;
+    if (frame_count == 0 && line0 == 0)  state = PPU_STATE_HBLANK;
   }
 
   if (counter0 == 82) {
@@ -244,6 +244,8 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     pipe_count = 0;
   }
 
+  if (render_phase) state = PPU_STATE_VRAM;
+
   if (counter0 == 83) {
     tile_latched = true; // we always start w/ a "garbage" tile
   }
@@ -252,21 +254,13 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     hblank_delay--;
   }
 
-  if (pix_count == 160) {
+  if (hblank_delay < 5) {
     vram_addr = 0;
     fetch_state = FETCH_IDLE;
-  }
-
-  if (render_phase)     state = PPU_STATE_VRAM;
-  
-  if (hblank_delay < 5) {
     render_phase = false;
     hblank_phase = true;
     state = PPU_STATE_HBLANK;
   }
-
-  if (oam_phase)        state = PPU_STATE_OAM;
-  if (line0_weirdness)  state = PPU_STATE_HBLANK;
 
   //-----------------------------------
 

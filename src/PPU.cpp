@@ -215,7 +215,11 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
   // Update state machiney stuff
 
-  if (counter0 >= 2 && counter0 < 79) {
+  if (counter0 == 0) {
+    sprite_index = -1;
+    sprite_count = 0;
+  }
+  else if (counter0 >= 2 && counter0 < 80) {
     oam_phase = true;
     render_phase = false;
     hblank_phase = false;
@@ -223,7 +227,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     pix_count = 0;
     hblank_delay = HBLANK_DELAY_START;
   }
-  else if (counterP2 == 85) {
+  else if (counter0 == 83) {
 
     oam_phase = false;
     render_phase = true;
@@ -252,10 +256,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
       render_phase = false;
       hblank_phase = true;
     }
-  }
-  else if (counterP2 == 2) {
-    sprite_index = -1;
-    sprite_count = 0;
   }
 
   // need scx test

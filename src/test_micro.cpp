@@ -59,7 +59,6 @@ static const std::string micro_tests[] = {
   "vram_write_l1_c.gb",
   "vram_write_l1_d.gb",
 
-  /*
   "-----",
   "hblank_int_scx0_halt_a.gb",
   "hblank_int_scx1_halt_a.gb",
@@ -303,12 +302,17 @@ static const std::string micro_tests[] = {
   "stat_write_glitch_l1_b.gb",
   "stat_write_glitch_l1_c.gb",
   "stat_write_glitch_l1_d.gb",
-  */
 };
 
-void run_microtest(int model, const char* filename) {
+void run_microtest(int model, const std::string& prefix, const std::string& name) {
+  if (name[0] == '-') {
+    return;
+  }
+
+  std::string filename = prefix + name;
+
   FILE* rom_file = NULL;
-  rom_file = fopen(filename, "rb");
+  rom_file = fopen(filename.c_str(), "rb");
   fseek(rom_file, 0, SEEK_END);
   size_t rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
@@ -330,12 +334,16 @@ void run_microtest(int model, const char* filename) {
   }
 
   if (i == ticks) {
+    printf("%-50s ", name.c_str());
     printf("? TIMEOUT @ %d\n", i);
   }
   else if (result == 0x55) {
-    printf("  0x%02x PASS @ %d\n", result, i);
+    printf(".");
+    //printf("  0x%02x PASS @ %d\n", result, i);
   }
   else {
+    printf("\n");
+    printf("%-50s ", name.c_str());
     printf("X 0x%02x FAIL @ %d\n", result, i);
   }
 }
@@ -351,12 +359,7 @@ void run_microtests() {
   printf("---------- Microtests in %s: ----------\n", prefix.c_str());
 
   for (auto name : micro_tests) {
-    if (name[0] == '-') {
-      printf("%s\n", name.c_str());
-      continue;
-    }
-    printf("%-50s ", name.c_str());
-    run_microtest(model, (prefix + name).c_str());
+    run_microtest(model, prefix, name);
   }
 
   double end = (double)SDL_GetPerformanceCounter();

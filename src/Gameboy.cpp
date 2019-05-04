@@ -202,7 +202,7 @@ void Gameboy::tick() {
   ppu.vblank_int = false;
   //ppu.vblank_int |= (ppu.line2 == 143) && (ppu.counter2 == 455);
   ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 0);
-  ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 1);
+  //ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 1);
   //ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 2);
 
   bool vblank_int = false;

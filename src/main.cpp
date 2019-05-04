@@ -44,7 +44,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "intr_2_timing.gb");
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS.gb");
 
-  //run_microtests();
+  run_microtests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
   //return 0;
@@ -82,8 +82,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //filename = "oh.gb";
   //filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb";
   //filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-dmgABCmgbS.gb";
-  //filename = "LinksAwakening.gb";
+  filename = "LinksAwakening.gb";
   //filename = "microtests/build/dmg/oam_sprite_trashing.gb";
+  filename = "microtests/build/dmg/vblank2_int_if_d.gb";
 
   //filename = "mealybug/m3_bgp_change_sprites.gb";
 

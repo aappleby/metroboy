@@ -192,15 +192,15 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     oam_lock = false;
     vram_lock = false;
 
-    int state = PPU_STATE_VBLANK;
+    int state2 = PPU_STATE_VBLANK;
     if (line0 == 0 && counter0 == 0) {
-      state = PPU_STATE_HBLANK;
+      state2 = PPU_STATE_HBLANK;
 
       bool lyc_match_2 = lyc == 0;
-      stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match_2 << 2) | state);
+      stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match_2 << 2) | state2);
     }
     else {
-      stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match << 2) | state);
+      stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match << 2) | state2);
     }
 
     oam_addr = 0;
@@ -213,11 +213,12 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
   // Update state machiney stuff
 
-  int state = PPU_STATE_HBLANK;
+  state = PPU_STATE_HBLANK;
 
   if (counter0 == 0) {
     sprite_index = -1;
     sprite_count = 0;
+    state = PPU_STATE_HBLANK;
   }
   
   if (counter0 >= 2 && counter0 < 82) {

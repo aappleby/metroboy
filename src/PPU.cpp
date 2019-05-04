@@ -219,6 +219,9 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     hblank_delay = HBLANK_DELAY_START;
   }
 
+  if (counterP2 == 80) {
+  }
+
   if (counterP2 == 82) {
   }
 
@@ -273,14 +276,14 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     vram_lock = false;
   }
 
+  oam_lock = (counter0 >= 80) && (hblank_delay >= 6);
+
   if (frame_count == 0 && line0 == 0 && counter0 < 82) {
     oam_lock = false;
   }
-  else if (counterP2 < 80) {
+
+  if (counterP2 < 80) {
     oam_lock = true;
-  }
-  else {
-    oam_lock = (counter0 >= 80) && (hblank_delay >= 6);
   }
 
   //-----------------------------------

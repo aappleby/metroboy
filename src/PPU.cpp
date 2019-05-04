@@ -219,44 +219,54 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     sprite_index = -1;
     sprite_count = 0;
   }
-  else if (counter0 >= 2 && counter0 < 80) {
-    oam_phase = true;
-    render_phase = false;
+  
+  if (counter0 >= 2 && counter0 < 82) {
     hblank_phase = false;
+    oam_phase = true;
 
     pix_count = 0;
     hblank_delay = HBLANK_DELAY_START;
   }
-  else if (counter0 == 83) {
 
+  if (counter0 == 82) {
     oam_phase = false;
     render_phase = true;
-    hblank_phase = false;
 
     sprite_index = -1;
     window_hit = false;
     map_x = (scx >> 3) & 31;
     pix_discard = (scx & 7) + 8;
-    tile_latched = true; // we always start w/ a "garbage" tile
-  }
-  else if (pix_count < 160) {
-  }
-  else if (hblank_delay) {
-    fetch_state = FETCH_IDLE;
     sprite_latched = false;
     tile_latched = false;
     window_hit = false;
     pipe_count = 0;
-    vram_addr = 0;
-
-    hblank_delay--;
-
-    if (hblank_delay < HBLANK_DELAY_PHASE) {
-      oam_phase = false;
-      render_phase = false;
-      hblank_phase = true;
-    }
   }
+
+  if (counter0 == 83) {
+    tile_latched = true; // we always start w/ a "garbage" tile
+  }
+
+  if (pix_count == 160 && hblank_delay) {
+    hblank_delay--;
+  }
+
+  if (pix_count == 160) {
+    vram_addr = 0;
+    fetch_state = FETCH_IDLE;
+  }
+
+  if (hblank_delay < HBLANK_DELAY_PHASE) {
+    render_phase = false;
+    hblank_phase = true;
+  }
+
+  int                  state = PPU_STATE_HBLANK;
+  if (render_phase)    state = PPU_STATE_VRAM;
+  if (hblank_delay < HBLANK_DELAY_STATE)   state = PPU_STATE_HBLANK;
+  if (oam_phase)       state = PPU_STATE_OAM;
+  if (line0_weirdness) state = PPU_STATE_HBLANK;
+
+  //-----------------------------------
 
   // need scx test
   if (frame_count == 0 && lineP2 == 0) {
@@ -267,12 +277,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   }
 
   //-----------------------------------
-
-  int                  state = PPU_STATE_HBLANK;
-  if (render_phase)    state = PPU_STATE_VRAM;
-  if (hblank_delay < HBLANK_DELAY_STATE)   state = PPU_STATE_HBLANK;
-  if (oam_phase)       state = PPU_STATE_OAM;
-  if (line0_weirdness) state = PPU_STATE_HBLANK;
 
   stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match << 2) | state);
 

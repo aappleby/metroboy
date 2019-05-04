@@ -220,7 +220,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     sprite_count = 0;
   }
   
-  if (counter0 >= 2 && counter0 < 82) {
+  if (counter0 == 2) {
     hblank_phase = false;
     oam_phase = true;
 
@@ -253,7 +253,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     hblank_delay--;
   }
 
-  if (hblank_delay < 5) {
+  if (hblank_delay == 4) {
     vram_addr = 0;
     fetch_state = FETCH_IDLE;
     render_phase = false;

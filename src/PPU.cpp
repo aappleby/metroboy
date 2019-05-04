@@ -65,6 +65,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
   //----------
   // Timers and states
 
+  state = PPU_STATE_HBLANK;
+
   counterM2 = 0;
   lineM2 = 0;
 
@@ -213,12 +215,9 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
   // Update state machiney stuff
 
-  state = PPU_STATE_HBLANK;
-
   if (counter0 == 0) {
     sprite_index = -1;
     sprite_count = 0;
-    state = PPU_STATE_HBLANK;
   }
   
   if (counter0 >= 2 && counter0 < 82) {
@@ -243,9 +242,8 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     tile_latched = false;
     window_hit = false;
     pipe_count = 0;
+    state = PPU_STATE_VRAM;
   }
-
-  if (render_phase) state = PPU_STATE_VRAM;
 
   if (counter0 == 83) {
     tile_latched = true; // we always start w/ a "garbage" tile

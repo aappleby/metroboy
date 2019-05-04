@@ -314,7 +314,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     oam_read = false;
     oam_lock = false;
   }
-  else if (lineN < 144 && counterN2 < 80) {
+  else if (lineN2 < 144 && counterN2 < 80) {
     // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
     oam_addr = ((counterN2 << 1) & 0b11111100) | (counterN2 & 1);
     oam_addr += ADDR_OAM_BEGIN;

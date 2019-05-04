@@ -166,32 +166,42 @@ void Gameboy::tick() {
   }
 
   //-----------------------------------
-  // Update ly/lyc_match
-
-  int compare_line = ppu.line2;
+  // lyc_match
 
   bool new_lyc_match = ppu.lyc_match;
+  int compare_line = ppu.line2;
 
-  if (ppu.line0 == 153 && ppu.counter0 >= 6 && ppu.counter0 < 10) compare_line = -1;
-  if (ppu.line2 == 153 && ppu.counter2 >= 8) compare_line = 0;
+  if (ppu.line2 == 153) {
+    if (ppu.counter2 < 4) {
+      compare_line = ppu.line2;
+    }
+    else if (ppu.counter2 >= 4 && ppu.counter2 < 8) {
+      compare_line = -1;
+    }
+    else if (ppu.counter2 >= 8) {
+      compare_line = 0;
+    }
 
-  new_lyc_match = (compare_line == ppu.lyc);
+    new_lyc_match = (compare_line == ppu.lyc);
+  }
+  else {
+    new_lyc_match = (ppu.line2 == ppu.lyc);
 
-  if (ppu.line2 < 153 && ppu.counter2 >= (TCYCLES_LINE - 4)) {
-    new_lyc_match = 0;
+    if (ppu.counter2 >= (TCYCLES_LINE - 4)) {
+      new_lyc_match = 0;
+    }
   }
 
-  if (ppu.counterN2 < 2) {
-    new_lyc_match = 0;
-  }
+  if (ppu.lcdc & FLAG_LCD_ON) ppu.lyc_match = new_lyc_match;
+
+  //----------------------------------------
+  // ly update
 
   if (ppu.counterN2 == 0) {
     ppu.ly = ppu.line2 + 1;
   }
 
   if (ppu.line0 == 153 && ppu.counter0 > 2) ppu.ly = 0;
-
-  if (ppu.lcdc & FLAG_LCD_ON) ppu.lyc_match = new_lyc_match;
 
   //----------------------------------------
 

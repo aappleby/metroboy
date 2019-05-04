@@ -14,7 +14,7 @@ struct PPU {
 
   bool is_frame_start() { return frame_start; }
   bool is_frame_done()  { return frame_done; }
-  uint8_t get_line()    { return line2; }
+  uint8_t get_line()    { return lineM2; }
   uint8_t get_lcdc()    { return lcdc; }
   int get_pix_count()   { return pix_count; }
 
@@ -82,14 +82,14 @@ struct PPU {
   //----------
   // Timers and states
 
-  uint16_t counterN2;
-  uint8_t lineN2;
+  uint16_t counterP2;
+  uint8_t lineP2;
 
   uint16_t counter0;
   uint8_t line0;
 
-  uint16_t counter2;
-  uint8_t line2;
+  uint16_t counterM2;
+  uint8_t lineM2;
 
   bool frame_start;
   bool frame_done;

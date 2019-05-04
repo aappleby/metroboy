@@ -273,11 +273,11 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
       for (int y = 0; y < 144; y++) {
         uint32_t* line1 = &framebuffer[(y * 2 + sy + 0) * fb_width + sx];
-        uint32_t* line2 = &framebuffer[(y * 2 + sy + 1) * fb_width + sx];
+        uint32_t* lineM2 = &framebuffer[(y * 2 + sy + 1) * fb_width + sx];
         for (int x = 0; x < 160; x++) {
           uint32_t c = gb_colors[gameboy.framebuffer[x + (y * 160)] & 7];
           *line1++ = c; *line1++ = c;
-          *line2++ = c; *line2++ = c;
+          *lineM2++ = c; *lineM2++ = c;
         }
       }
 

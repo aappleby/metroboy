@@ -219,6 +219,9 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     hblank_delay = HBLANK_DELAY_START;
   }
 
+  if (counter0 == 80) {
+  }
+
   if (counter0 == 82) {
     oam_phase = false;
     render_phase = true;
@@ -242,6 +245,10 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     hblank_delay--;
   }
 
+  if (hblank_delay == 6) {
+    vram_lock = false;
+  }
+
   if (hblank_delay == 4) {
     render_phase = false;
     hblank_phase = true;
@@ -253,12 +260,17 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
 
   //-----------------------------------
 
-  // need scx test
   if (frame_count == 0 && line0 == 0) {
-    vram_lock = (line0 < 144) && (counter0 >= 82) && (hblank_delay >= 6);
+    vram_lock = (counter0 >= 82);
   }
-  else {
-    vram_lock = (line0 < 144) && (counter0 >= 80) && (hblank_delay >= 6);
+
+
+  if (frame_count != 0 || line0 != 0) {
+    vram_lock = (counter0 >= 80);
+  }
+
+  if (hblank_delay < 6) {
+    vram_lock = false;
   }
 
   //-----------------------------------

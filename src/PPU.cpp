@@ -205,24 +205,24 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
   // Update state machiney stuff
   
-  if (counter0 == 0) {
+  if (counterP2 == 0) {
+    oam_phase = (frame_count != 0 || line0 != 0);
     hblank_phase = false;
-    oam_phase = true;
     sprite_index = -1;
     sprite_count = 0;
   }
 
-  if (counter0 == 2) {
+  if (counterP2 == 4) {
     if (frame_count != 0 || line0 != 0) state = PPU_STATE_OAM;
 
     pix_count = 0;
     hblank_delay = HBLANK_DELAY_START;
   }
 
-  if (counter0 == 80) {
+  if (counterP2 == 82) {
   }
 
-  if (counter0 == 82) {
+  if (counterP2 == 84) {
     oam_phase = false;
     render_phase = true;
     state = PPU_STATE_VRAM;
@@ -237,7 +237,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     pipe_count = 0;
   }
 
-  if (counter0 == 83) {
+  if (counterP2 == 85) {
     tile_latched = true; // we always start w/ a "garbage" tile
   }
 
@@ -273,6 +273,16 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     vram_lock = false;
   }
 
+  if (frame_count == 0 && line0 == 0 && counter0 < 82) {
+    oam_lock = false;
+  }
+  else if (counterP2 < 80) {
+    oam_lock = true;
+  }
+  else {
+    oam_lock = (counter0 >= 80) && (hblank_delay >= 6);
+  }
+
   //-----------------------------------
 
   stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match << 2) | state);
@@ -306,22 +316,18 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   oam_addr = 0;
   oam_read = false;
 
-  // FIXME
-  if (frame_count == 0 && line0 == 0 && counter0 <= 81) {
+  if (frame_count == 0 && line0 == 0 && counter0 < 82) {
     oam_addr = 0;
     oam_read = false;
-    oam_lock = false;
   }
-  else if (lineP2 < 144 && counterP2 < 80) {
+  else if (counterP2 < 80) {
     // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
     oam_addr = ((counterP2 << 1) & 0b11111100) | (counterP2 & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
-    oam_lock = true;
   }
   else {
     oam_read = false;
-    oam_lock = (lineP2 < 144) && (counterP2 >= 82) && (hblank_delay >= 6);
   }
 
   //-----------------------------------

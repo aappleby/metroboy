@@ -140,9 +140,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
     line0 = 153;
     counter0 = 401;
 
-    lineN = 153;
-    counterN = 402;
-
     lineN2 = 153;
     counterN2 = 403;
 

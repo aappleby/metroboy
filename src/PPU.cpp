@@ -215,6 +215,8 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
   // Update state machiney stuff
 
+  int state = PPU_STATE_HBLANK;
+
   if (counter0 == 0) {
     sprite_index = -1;
     sprite_count = 0;
@@ -255,16 +257,16 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     fetch_state = FETCH_IDLE;
   }
 
-  if (hblank_delay < HBLANK_DELAY_PHASE) {
+  if (render_phase)     state = PPU_STATE_VRAM;
+  
+  if (hblank_delay < 5) {
     render_phase = false;
     hblank_phase = true;
+    state = PPU_STATE_HBLANK;
   }
 
-  int                  state = PPU_STATE_HBLANK;
-  if (render_phase)    state = PPU_STATE_VRAM;
-  if (hblank_delay < HBLANK_DELAY_STATE)   state = PPU_STATE_HBLANK;
-  if (oam_phase)       state = PPU_STATE_OAM;
-  if (line0_weirdness) state = PPU_STATE_HBLANK;
+  if (oam_phase)        state = PPU_STATE_OAM;
+  if (line0_weirdness)  state = PPU_STATE_HBLANK;
 
   //-----------------------------------
 

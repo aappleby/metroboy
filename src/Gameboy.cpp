@@ -170,67 +170,55 @@ void Gameboy::tick() {
 
   int compare_line = ppu.line2;
 
+  bool new_lyc_match = ppu.lyc_match;
+
   if (ppu.line0 == 153 && ppu.counter0 >= 6 && ppu.counter0 < 10) compare_line = -1;
   if (ppu.line2 == 153 && ppu.counter2 >= 8) compare_line = 0;
 
-  if (ppu.lcdc & FLAG_LCD_ON) {
-    ppu.lyc_match = (compare_line == ppu.lyc);
+  new_lyc_match = (compare_line == ppu.lyc);
 
-    if (ppu.line2 < 153 && ppu.counter2 >= (TCYCLES_LINE - 4)) {
-      ppu.lyc_match = 0;
-    }
+  if (ppu.line2 < 153 && ppu.counter2 >= (TCYCLES_LINE - 4)) {
+    new_lyc_match = 0;
+  }
+
+  if (ppu.counterN2 < 2) {
+    new_lyc_match = 0;
   }
 
   if (ppu.counterN2 == 0) {
     ppu.ly = ppu.line2 + 1;
-    ppu.lyc_match = 0;
-  }
-
-  if (ppu.counterN2 < 2) {
-    ppu.lyc_match = 0;
   }
 
   if (ppu.line0 == 153 && ppu.counter0 > 2) ppu.ly = 0;
 
+  if (ppu.lcdc & FLAG_LCD_ON) ppu.lyc_match = new_lyc_match;
+
   //----------------------------------------
 
   bool vblank_int = false;
-  vblank_int |= (ppu.line0 == 144) && (ppu.counter0 == 0);
-
-  ppu.vblank_int = false;
-  ppu.vblank_int |= (ppu.line0 == 144) && (ppu.counter0 == 2);
-
-  //----------
-
-  bool stat_int_lyc = ppu.lyc_match;
-  ppu.stat_int_lyc = ppu.lyc_match;
-
-  //----------
-
-  ppu.stat_int_oam = false;
+  bool stat_int_lyc = false;
   bool stat_int_oam = false;
-
-  ppu.stat_int_oam |= (ppu.lineN2 <= 143) && (ppu.counterN2 == 0);
-  stat_int_oam     |= (ppu.lineN2 <= 143) && (ppu.counterN2 == 1); // [1,2,3,4]
-
-  ppu.stat_int_oam |= vblank_int;
-  stat_int_oam     |= vblank_int;
-
-  //----------
-
-  ppu.stat_int_vblank  = false;
   bool stat_int_vblank = false;
-
-  ppu.stat_int_vblank |= (ppu.line2 >= 144);
-  stat_int_vblank     |= (ppu.line0 == 144) && (ppu.counter0 == 0);
-
-
-  //----------
-
-  ppu.stat_int_hblank  = false;
   bool stat_int_hblank = false;
 
-  ppu.stat_int_hblank |= (ppu.hblank_delay < HBLANK_DELAY_INT);
+  ppu.vblank_int = false;
+  ppu.stat_int_lyc = false;
+  ppu.stat_int_oam = false;
+  ppu.stat_int_vblank = false;
+  ppu.stat_int_hblank = false;
+
+  //----------
+
+  ppu.vblank_int      |= (ppu.line2 == 144) && (ppu.counter2 == 0);
+  ppu.stat_int_lyc    |= ppu.lyc_match;
+  ppu.stat_int_oam    |= ((ppu.lineN2 <= 143) && (ppu.counterN2 == 0)) | vblank_int;
+  ppu.stat_int_vblank |= (ppu.line2 >= 144);
+  ppu.stat_int_hblank |= (ppu.hblank_delay < 6);
+
+  vblank_int          |= (ppu.line0 == 144) && (ppu.counter0 == 0);
+  stat_int_lyc        |= ppu.lyc_match;
+  stat_int_oam        |= ((ppu.line0 <= 143) && (ppu.counter0 == 0)) | vblank_int;
+  stat_int_vblank     |= (ppu.line0 >= 144);
   stat_int_hblank     |= (ppu.hblank_delay < 7);
 
   //----------

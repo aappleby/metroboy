@@ -170,20 +170,24 @@ void Gameboy::tick() {
 
   int compare_line = ppu.line2;
 
-  if (ppu.line2 == 153) {
-    if (ppu.counter2 >= 4 && ppu.counter2 < 8) compare_line = -1;
-    if (ppu.counter2 >= 8) compare_line = 0;
-  }
+  if (ppu.line0 == 153 && ppu.counter0 >= 6 && ppu.counter0 < 10) compare_line = -1;
+  if (ppu.line2 == 153 && ppu.counter2 >= 8) compare_line = 0;
 
   if (ppu.lcdc & FLAG_LCD_ON) {
     ppu.lyc_match = (compare_line == ppu.lyc);
+
     if (ppu.line2 < 153 && ppu.counter2 >= (TCYCLES_LINE - 4)) {
       ppu.lyc_match = 0;
     }
   }
 
-  if (ppu.counter2 >= (TCYCLES_LINE - 4)) {
+  if (ppu.counterN2 == 0) {
     ppu.ly = ppu.line2 + 1;
+    ppu.lyc_match = 0;
+  }
+
+  if (ppu.counterN2 < 2) {
+    ppu.lyc_match = 0;
   }
 
   if (ppu.line2 == 153) ppu.ly = 0;
@@ -194,7 +198,7 @@ void Gameboy::tick() {
   vblank_int |= (ppu.line0 == 144) && (ppu.counter0 == 0);
 
   ppu.vblank_int = false;
-  ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 0);
+  ppu.vblank_int |= (ppu.line0 == 144) && (ppu.counter0 == 2);
 
   //----------
 
@@ -207,7 +211,7 @@ void Gameboy::tick() {
   bool stat_int_oam = false;
 
   ppu.stat_int_oam |= (ppu.lineN2 <= 143) && (ppu.counterN2 == 0);
-  stat_int_oam     |= (ppu.lineN2 <= 143) && (ppu.counterN2 == 1);
+  stat_int_oam     |= (ppu.lineN2 <= 143) && (ppu.counterN2 == 1); // [1,2,3,4]
 
   ppu.stat_int_oam |= vblank_int;
   stat_int_oam     |= vblank_int;
@@ -218,8 +222,7 @@ void Gameboy::tick() {
   bool stat_int_vblank = false;
 
   ppu.stat_int_vblank |= (ppu.line2 >= 144);
-
-  stat_int_vblank     |= (ppu.line2 == 143) && (ppu.counter2 == 453);
+  stat_int_vblank     |= (ppu.line0 == 144) && (ppu.counter0 == 0);
 
 
   //----------

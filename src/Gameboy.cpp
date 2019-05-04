@@ -190,17 +190,11 @@ void Gameboy::tick() {
 
   //----------------------------------------
 
-  ppu.vblank_int = false;
-  //ppu.vblank_int |= (ppu.line2 == 143) && (ppu.counter2 == 455);
-  ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 0);
-  //ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 1);
-  //ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 2);
-
   bool vblank_int = false;
-  //vblank_int |= (ppu.line2 == 143) && (ppu.counter2 == 453);
-  //vblank_int |= (ppu.line2 == 143) && (ppu.counter2 == 454);
-  //vblank_int |= (ppu.line2 == 143) && (ppu.counter2 == 455);
-  vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 0);
+  vblank_int |= (ppu.line0 == 144) && (ppu.counter0 == 0);
+
+  ppu.vblank_int = false;
+  ppu.vblank_int |= (ppu.line2 == 144) && (ppu.counter2 == 0);
 
   //----------
 
@@ -212,18 +206,11 @@ void Gameboy::tick() {
   ppu.stat_int_oam = false;
   bool stat_int_oam = false;
 
-  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 0);
+  ppu.stat_int_oam |= (ppu.lineN2 <= 143) && (ppu.counterN2 == 0);
+  stat_int_oam     |= (ppu.lineN2 <= 143) && (ppu.counterN2 == 1);
 
-  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 452);
-  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 453);
-  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 454);
-  ppu.stat_int_oam |= (ppu.line2 <= 143) && (ppu.counter2 == 455);
-  
-  stat_int_oam |= (ppu.line2 <  143) && (ppu.counter2 == 455);
-  stat_int_oam |= (ppu.line2 == 153) && (ppu.counter2 == 455);
-
-  ppu.stat_int_oam |= (ppu.line2 == 144) && (ppu.counter2 == 0);
-  stat_int_oam     |= (ppu.line2 == 144) && (ppu.counter2 == 0);
+  ppu.stat_int_oam |= vblank_int;
+  stat_int_oam     |= vblank_int;
 
   //----------
 

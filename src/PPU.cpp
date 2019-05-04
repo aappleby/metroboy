@@ -178,9 +178,9 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   }
 
   // FIXME why 1 here? something to do with video out
-  frame_start = (counterP2 == 0) && (lineP2 == 0);
-  frame_done = (counterP2 == 0) && (lineP2 == 144);
-  bool line0_weirdness = (frame_count == 0 && lineP2 == 0 && counterP2 < 84);
+  frame_start = (counter0 == 0) && (line0 == 0);
+  frame_done = (counter0 == 0) && (line0 == 144);
+  bool line0_weirdness = (frame_count == 0 && line0 == 0 && counter0 < 82);
 
   //-----------------------------------
   // vblank early-out

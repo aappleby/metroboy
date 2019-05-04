@@ -14,7 +14,7 @@ uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8
 
 //-----------------------------------------------------------------------------
 
-void PPU::reset(int new_model) {
+void PPU::reset(bool run_bootrom, int new_model) {
   model = new_model;
 
   vblank_int = 0;
@@ -46,10 +46,10 @@ void PPU::reset(int new_model) {
   scx = 0;
   ly = 0;
   lyc = 0;
-  dma = 0xFF;
-  bgp = 0xFC;
-  obp0 = 0xFF;
-  obp1 = 0xFF;
+  dma = 0;
+  bgp = 0;
+  obp0 = 0;
+  obp1 = 0;
   wy = 0;
   wx = 0;
 
@@ -65,7 +65,7 @@ void PPU::reset(int new_model) {
   //----------
   // Timers and states
 
-  counter2 = 4;
+  counter2 = 0;
   line2 = 0;
 
   frame_start = 0;
@@ -128,24 +128,34 @@ void PPU::reset(int new_model) {
   //----------
   // Fixup if we're not running the bootrom
 
-  line2 = 153;
-  counter2 = 399;
+  if (!run_bootrom) {
+    dma = 0xFF;
+    bgp = 0xFC;
+    obp0 = 0xFF;
+    obp1 = 0xFF;
 
-  line1 = 153;
-  counter1 = 400;
+    line2 = 153;
+    counter2 = 399;
 
-  line0 = 153;
-  counter0 = 401;
+    line1 = 153;
+    counter1 = 400;
 
-  lineN = 153;
-  counterN = 402;
+    line0 = 153;
+    counter0 = 401;
 
-  lcdc = 0x91;
-  palettes[0] = 0xfc;
-  oam_phase = false;
-  render_phase = false;
-  hblank_phase = false;
-  pix_count = 160;
+    lineN = 153;
+    counterN = 402;
+
+    lineN2 = 153;
+    counterN2 = 403;
+
+    lcdc = 0x91;
+    palettes[0] = 0xfc;
+    oam_phase = false;
+    render_phase = false;
+    hblank_phase = false;
+    pix_count = 160;
+  }
 }
 
 
@@ -290,13 +300,13 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   if (oam_read && (oam_addr & 3) == 2) spriteP = oam_in;
   if (oam_read && (oam_addr & 3) == 3) spriteF = oam_in;
 
-  if (oam_read && (counterN <= 80) && (oam_addr & 3) == 1 && sprite_count < 10) {
-    int si = (counterN - 1) >> 1;
+  if (oam_read && (counterN2 <= 80) && (oam_addr & 3) == 1 && sprite_count < 10) {
+    int si = (counterN2 - 1) >> 1;
     int sy = spriteY - 16;
     int sx = spriteX;
 
     ubit4_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
-    if ((sx < 168) && (sy <= lineN) && (lineN <= sy + sprite_height)) {
+    if ((sx < 168) && (sy <= lineN2) && (lineN2 <= sy + sprite_height)) {
       sprite_x[sprite_count] = spriteX;
       sprite_y[sprite_count] = spriteY;
       sprite_i[sprite_count] = (uint8_t)si;
@@ -312,21 +322,21 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   oam_read = false;
 
   // FIXME
-  if (frame_count == 0 && lineN == 0 && counterN <= 82) {
+  if (frame_count == 0 && lineN2 == 0 && counterN2 <= 83) {
     oam_addr = 0;
     oam_read = false;
     oam_lock = false;
   }
-  else if (lineN < 144 && counterN < 80) {
+  else if (lineN < 144 && counterN2 < 80) {
     // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-    oam_addr = ((counterN << 1) & 0b11111100) | (counterN & 1);
+    oam_addr = ((counterN2 << 1) & 0b11111100) | (counterN2 & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
     oam_lock = true;
   }
   else {
     oam_read = false;
-    oam_lock = (lineN < 144) && (counterN >= 82) && (hblank_delay >= 5);
+    oam_lock = (lineN2 < 144) && (counterN2 >= 82) && (hblank_delay >= 6);
   }
 
   //-----------------------------------
@@ -449,11 +459,13 @@ void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, boo
   counter1 = counter2 + 1;
   counter0 = counter1 + 1;
   counterN = counter0 + 1;
+  counterN2 = counterN + 1;
 
   line2 = 0;
   line1 = 0;
   line0 = 0;
   lineN = 0;
+  lineN2 = 0;
 
   ly = 0;
   frame_count = 0;
@@ -598,6 +610,13 @@ void PPU::emit_pixel() {
   int bg_pal = ((bg_pal_hi >> 6) & 2) | ((bg_pal_lo >> 7) & 1);
   int ob_pix = ((ob_pix_hi >> 6) & 2) | ((ob_pix_lo >> 7) & 1);
   int ob_pal = ((ob_pal_hi >> 6) & 2) | ((ob_pal_lo >> 7) & 1);
+
+  if (lcdc & FLAG_BG_ON) {
+  }
+  else {
+    bg_pix = 0;
+    bg_pal = 0;
+  }
 
   bg_pix_lo <<= 1;
   bg_pix_hi <<= 1;
@@ -748,6 +767,7 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "clock1  %3d:%3d\n", line1, counter1);
   cursor += sprintf(cursor, "clock0  %3d:%3d\n", line0, counter0);
   cursor += sprintf(cursor, "clockN  %3d:%3d\n", lineN, counterN);
+  cursor += sprintf(cursor, "clockN2 %3d:%3d\n", lineN2, counterN2);
 
   cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay);
   cursor += sprintf(cursor, "vblank int %d\n", vblank_int);

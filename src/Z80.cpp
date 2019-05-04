@@ -113,7 +113,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
   pc = pc_ = new_pc;
   */
 
-  op_ = 0;
+  op_ = rom_buf[new_pc];
   quad_ = 0;
   row_ = 0;
   col_ = 0;
@@ -230,6 +230,9 @@ void Z80::tock_t3() {
 // If we're jumping to an interrupt vector, ack the interrupt that triggered it.
 
 void Z80::setup_decode() {
+  if (cycle == 0) {
+    pc_ = pc;
+  }
   if (interrupt2) {
     // Someone could've changed the interrupt mask or flags while we were
     // handling the interrupt, so we have to compute the new PC at the very
@@ -296,6 +299,11 @@ void Z80::setup_decode() {
 // Not idempotent yet
 
 void Z80::tock_decode() {
+  /*
+  if (cycle > 0) {
+    pc = pc_;
+  }
+  */
   pc = pc_;
 
   f = f_ & 0xF0;
@@ -1360,6 +1368,7 @@ char* Z80::dump(char* cursor) {
   cursor += sprintf(cursor, "CYC %d\n", cycle);
   int bgb = (cycle * 2) + 0x00B2D5E6;
   cursor += sprintf(cursor, "BGB 0x%08x\n", bgb);
+  cursor += sprintf(cursor, "op 0x%02x\n", op_);
   cursor += sprintf(cursor, "af 0x%04x\n", af);
   cursor += sprintf(cursor, "bc 0x%04x\n", bc);
   cursor += sprintf(cursor, "de 0x%04x\n", de);

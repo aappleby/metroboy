@@ -25,7 +25,7 @@ Gameboy::Gameboy()
 
 void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   z80.reset(new_model, new_pc);
-  ppu.reset(new_model);
+  ppu.reset(new_pc == 0, new_model);
   oam.reset();
   mmu.reset(new_rom_size, new_pc);
   timer.reset();
@@ -114,6 +114,17 @@ void Gameboy::tick() {
   assert(bus_oe_ <= 1);
   if (!bus_oe_) bus_out_ = 0xFF;
 
+  if (tcycle == 0) {
+    if (z80.pc == 0) {
+      bus_out_ = DMG_ROM_bin[0];
+      bus_oe_ = 1;
+    }
+    else {
+      bus_out_ = rom_buf[z80.pc];
+      bus_oe_ = 1;
+    }
+  }
+
   //-----------------------------------
   // Update counter/line/frame
 
@@ -151,6 +162,15 @@ void Gameboy::tick() {
     ppu.lineN++;
     if (ppu.lineN == 154) {
       ppu.lineN = 0;
+    }
+  }
+
+  ppu.counterN2++;
+  if (ppu.counterN2 == TCYCLES_LINE) {
+    ppu.counterN2 = 0;
+    ppu.lineN2++;
+    if (ppu.lineN2 == 154) {
+      ppu.lineN2 = 0;
     }
   }
 

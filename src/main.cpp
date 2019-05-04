@@ -11,6 +11,30 @@
 
 void run_test(const std::string& prefix, const std::string& name);
 
+const char* mealybug[] = {
+  "m3_bgp_change.gb",                     // ok
+  "m3_bgp_change_sprites.gb",             // no sprites
+  "m3_lcdc_bg_en_change.gb",              // solid grid of glyphs
+  "m3_lcdc_bg_map_change.gb",             // some black bars
+  "m3_lcdc_obj_en_change.gb",             // blank
+  "m3_lcdc_obj_en_change_variant.gb",     // 
+  "m3_lcdc_obj_size_change.gb",           // nope
+  "m3_lcdc_obj_size_change_scx.gb",
+  "m3_lcdc_tile_sel_change.gb",
+  "m3_lcdc_tile_sel_win_change.gb",
+  "m3_lcdc_win_en_change_multiple.gb",
+  "m3_lcdc_win_en_change_multiple_wx.gb",
+  "m3_lcdc_win_map_change.gb",
+  "m3_obp0_change.gb",
+  "m3_scx_low_3_bits.gb",
+  "m3_window_timing.gb",
+  "m3_window_timing_wx_0.gb",
+  "m3_wx_4_change.gb",
+  "m3_wx_4_change_sprites.gb",
+  "m3_wx_5_change.gb",
+  "m3_wx_6_change.gb", 
+};
+
 //-----------------------------------------------------------------------------
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
@@ -20,10 +44,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "intr_2_timing.gb");
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS.gb");
 
-  run_microtests();
-  run_mooneye_acceptance();
-  run_wpol_acceptance();
-  return 0;
+  //run_microtests();
+  //run_mooneye_acceptance();
+  //run_wpol_acceptance();
+  //return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -41,11 +65,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   bool load_dump = false;
   bool save_dump = false;
   bool reset = false;
-  RunMode mode = STEP_FRAME;
+  RunMode mode = STEP_CYCLE;
 
   //---------
 
   bool rom_loaded = false;
+  memset(rom_buf, 0, 1024 * 1024);
 
   MetroBoy metroboy;
 
@@ -54,14 +79,16 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //filename = "mooneye-gb/tests/build/acceptance/ppu/vblank_stat_intr-GS.gb";
   //filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
   //filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_timing.gb";
-  filename = "oh.gb";
+  //filename = "oh.gb";
   //filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb";
   //filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-dmgABCmgbS.gb";
   //filename = "LinksAwakening.gb";
-  //filename = "microtests/build/dmg/oam_write_l0_e.gb";
+  //filename = "microtests/build/dmg/oam_sprite_trashing.gb";
+
+  //filename = "mealybug/m3_bgp_change_sprites.gb";
 
   if (filename) {
-    metroboy.load_rom(MODEL_DMG, filename);
+    metroboy.load_rom(MODEL_DMG, filename, false);
     rom_loaded = true;
     mode = RUN_FAST;
   }
@@ -118,7 +145,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
       if (event.type == SDL_QUIT) quit = true;
 
       if (event.type == SDL_DROPFILE) {
-        metroboy.load_rom(MODEL_DMG, event.drop.file);
+        metroboy.load_rom(MODEL_DMG, event.drop.file, false);
         rom_loaded = true;
         mode = RUN_VSYNC;
         SDL_free(event.drop.file);
@@ -146,7 +173,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
     // Handle sim controls
 
     if (reset) {
-      metroboy.reset(0x100);
+      metroboy.reset(0x0100);
       reset = false;
     }
 
@@ -176,35 +203,33 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
     int64_t cycles_begin = metroboy.total_tcycles();
 
-    if (rom_loaded) {
-      if (mode == RUN_FAST) {
-        fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
-        metroboy.run_fast(buttons, (int)fast_cycles);
-      }
-      else if (mode == RUN_VSYNC) {
-        metroboy.run_vsync(buttons);
-      }
-      else if (mode == STEP_CYCLE) {
-        while (step_forward--) {
-          if (keyboard_state[SDL_SCANCODE_LSHIFT]) {
-            metroboy.step_over();
-          }
-          else {
-            metroboy.step_cycle();
-          }
+    if (mode == RUN_FAST) {
+      fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
+      metroboy.run_fast(buttons, (int)fast_cycles);
+    }
+    else if (mode == RUN_VSYNC) {
+      metroboy.run_vsync(buttons);
+    }
+    else if (mode == STEP_CYCLE) {
+      while (step_forward--) {
+        if (keyboard_state[SDL_SCANCODE_LSHIFT]) {
+          metroboy.step_over();
         }
-        while (step_backward--) {
-          metroboy.unstep_cycle();
+        else {
+          metroboy.step_cycle();
         }
       }
-      else if (mode == STEP_FRAME) {
-        while (step_forward--) metroboy.step_frame();
-        while (step_backward--) metroboy.unstep_frame();
+      while (step_backward--) {
+        metroboy.unstep_cycle();
       }
-      else if (mode == STEP_LINE) {
-        while (step_forward--) metroboy.step_line();
-        while (step_backward--) metroboy.unstep_line();
-      }
+    }
+    else if (mode == STEP_FRAME) {
+      while (step_forward--) metroboy.step_frame();
+      while (step_backward--) metroboy.unstep_frame();
+    }
+    else if (mode == STEP_LINE) {
+      while (step_forward--) metroboy.step_line();
+      while (step_backward--) metroboy.unstep_line();
     }
 
     step_forward = 0;

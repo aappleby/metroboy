@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 
 struct PPU {
-  void reset(int new_model);
+  void reset(bool run_bootrom, int new_model);
   int model = MODEL_DMG;
 
   void tick(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write, uint8_t vram_in, uint8_t oam_in);
@@ -81,6 +81,9 @@ struct PPU {
   
   //----------
   // Timers and states
+
+  uint16_t counterN2;
+  uint8_t lineN2;
 
   uint16_t counterN;
   uint8_t lineN;

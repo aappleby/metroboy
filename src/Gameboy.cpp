@@ -190,7 +190,7 @@ void Gameboy::tick() {
     ppu.lyc_match = 0;
   }
 
-  if (ppu.line2 == 153) ppu.ly = 0;
+  if (ppu.line0 == 153 && ppu.counter0 > 2) ppu.ly = 0;
 
   //----------------------------------------
 

@@ -216,14 +216,14 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   // Update state machiney stuff
 
   if (counter0 == 0) {
+    hblank_phase = false;
+    oam_phase = true;
+
     sprite_index = -1;
     sprite_count = 0;
   }
   
   if (counter0 == 2) {
-    hblank_phase = false;
-    oam_phase = true;
-
     pix_count = 0;
     hblank_delay = HBLANK_DELAY_START;
     state = PPU_STATE_OAM;
@@ -264,7 +264,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
 
   // need scx test
-  if (frame_count == 0 && lineP2 == 0) {
+  if (frame_count == 0 && line0 == 0) {
     vram_lock = (line0 < 144) && (counterP2 >= 84) && (hblank_delay >= 6);
   }
   else {

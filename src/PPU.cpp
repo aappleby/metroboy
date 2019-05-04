@@ -186,53 +186,43 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   // vblank early-out
 
   if (line0 >= 144) {
-    oam_phase = false;
-    render_phase = false;
     hblank_phase = false;
     hblank_delay = HBLANK_DELAY_START;
 
     oam_lock = false;
-    vram_lock = false;
-
-    int state2 = PPU_STATE_VBLANK;
-    if (line0 == 0 && counter0 == 0) {
-      state2 = PPU_STATE_HBLANK;
-
-      bool lyc_match_2 = lyc == 0;
-      stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match_2 << 2) | state2);
-    }
-    else {
-      stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match << 2) | state2);
-    }
-
     oam_addr = 0;
     oam_read = false;
+
+    vram_lock = false;
     vram_addr = 0;
+
+    stat = ubit8_t(0x80 | (stat & 0b01111000) | (lyc_match << 2) | PPU_STATE_VBLANK);
+
     if (cpu_write) bus_write(cpu_addr, cpu_data);
     return;
   }
 
   //-----------------------------------
   // Update state machiney stuff
-
+  
   if (counter0 == 0) {
     hblank_phase = false;
     oam_phase = true;
-
     sprite_index = -1;
     sprite_count = 0;
   }
-  
+
   if (counter0 == 2) {
+    if (frame_count != 0 || line0 != 0) state = PPU_STATE_OAM;
+
     pix_count = 0;
     hblank_delay = HBLANK_DELAY_START;
-    state = PPU_STATE_OAM;
-    if (frame_count == 0 && line0 == 0)  state = PPU_STATE_HBLANK;
   }
 
   if (counter0 == 82) {
     oam_phase = false;
     render_phase = true;
+    state = PPU_STATE_VRAM;
 
     sprite_index = -1;
     window_hit = false;
@@ -242,7 +232,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     tile_latched = false;
     window_hit = false;
     pipe_count = 0;
-    state = PPU_STATE_VRAM;
   }
 
   if (counter0 == 83) {
@@ -254,21 +243,22 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   }
 
   if (hblank_delay == 4) {
-    vram_addr = 0;
-    fetch_state = FETCH_IDLE;
     render_phase = false;
     hblank_phase = true;
     state = PPU_STATE_HBLANK;
+
+    vram_addr = 0;
+    fetch_state = FETCH_IDLE;
   }
 
   //-----------------------------------
 
   // need scx test
   if (frame_count == 0 && line0 == 0) {
-    vram_lock = (line0 < 144) && (counterP2 >= 84) && (hblank_delay >= 6);
+    vram_lock = (line0 < 144) && (counter0 >= 82) && (hblank_delay >= 6);
   }
   else {
-    vram_lock = (line0 < 144) && (counterP2 >= 82) && (hblank_delay >= 6);
+    vram_lock = (line0 < 144) && (counter0 >= 80) && (hblank_delay >= 6);
   }
 
   //-----------------------------------

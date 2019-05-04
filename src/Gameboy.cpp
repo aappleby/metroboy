@@ -234,19 +234,13 @@ void Gameboy::tick() {
 
   ppu.stat_int_glitch = stat_int_glitch;
 
-  //----------
-  ppu.stat_int_lyc    &= (ppu.stat & EI_LYC) != 0;
-  ppu.stat_int_oam    &= (ppu.stat & EI_OAM) != 0;
-  ppu.stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
-  ppu.stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
-
-  stat_int_lyc    &= (ppu.stat & EI_LYC) != 0;
-  stat_int_oam    &= (ppu.stat & EI_OAM) != 0;
-  stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
-  stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
-
   //----------------------------------------
   // tick z80
+
+  stat_int_lyc &= (ppu.stat & EI_LYC) != 0;
+  stat_int_oam &= (ppu.stat & EI_OAM) != 0;
+  stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
+  stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
 
   if (imask & 0x01) {
     z80.unhalt |= vblank_int;
@@ -273,6 +267,11 @@ void Gameboy::tick() {
   }
 
   //----------------------------------------
+
+  ppu.stat_int_lyc &= (ppu.stat & EI_LYC) != 0;
+  ppu.stat_int_oam &= (ppu.stat & EI_OAM) != 0;
+  ppu.stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
+  ppu.stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
 
   ppu.stat_int = ppu.stat_int_lyc | ppu.stat_int_oam | ppu.stat_int_hblank | ppu.stat_int_vblank | ppu.stat_int_glitch;
 

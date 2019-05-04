@@ -276,7 +276,9 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
     vram_lock = false;
   }
 
-  oam_lock = (counter0 >= 80) && (hblank_delay >= 6);
+  oam_lock = (counter0 >= 80);
+
+  if (hblank_delay < 6) oam_lock = false;
 
   if (frame_count == 0 && line0 == 0 && counter0 < 82) {
     oam_lock = false;

@@ -436,7 +436,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_writ
   //-----------------------------------
 
   assert(counter0  == (counter2 + 2) % 456);
-  assert(counterN  == (counter2 + 3) % 456);
   assert(counterN2 == (counter2 + 4) % 456);
 
 }
@@ -448,12 +447,10 @@ void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, boo
 
   counter2 &= 3;
   counter0  = counter2 + 2;
-  counterN  = counter2 + 3;
   counterN2 = counter2 + 4;
 
   line2 = 0;
   line0 = 0;
-  lineN = 0;
   lineN2 = 0;
 
   ly = 0;
@@ -754,7 +751,6 @@ char* PPU::dump(char* cursor) {
 
   cursor += sprintf(cursor, "clock2  %3d:%3d\n", line2, counter2);
   cursor += sprintf(cursor, "clock0  %3d:%3d\n", line0, counter0);
-  cursor += sprintf(cursor, "clockN  %3d:%3d\n", lineN, counterN);
   cursor += sprintf(cursor, "clockN2 %3d:%3d\n", lineN2, counterN2);
 
   cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay);

@@ -296,20 +296,15 @@ void Gameboy::tick() {
   //----------------------------------------
   // tick z80
 
-  stat_int_lyc &= (ppu.stat & EI_LYC) != 0;
-  stat_int_oam &= (ppu.stat & EI_OAM) != 0;
-  stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
-  stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
-
   if (imask & 0x01) {
     z80.unhalt |= vblank_int;
   }
 
   if (imask & 0x02) {
-    z80.unhalt |= stat_int_lyc;
-    z80.unhalt |= stat_int_oam;
-    z80.unhalt |= stat_int_hblank;
-    z80.unhalt |= stat_int_vblank;
+    if (ppu.stat & EI_LYC) z80.unhalt |= stat_int_lyc;
+    if (ppu.stat & EI_OAM) z80.unhalt |= stat_int_oam;
+    if (ppu.stat & EI_HBLANK) z80.unhalt |= stat_int_hblank;
+    if (ppu.stat & EI_VBLANK) z80.unhalt |= stat_int_vblank;
     z80.unhalt |= stat_int_glitch;
   }
 
@@ -370,7 +365,6 @@ void Gameboy::tock() {
   if (ppu.stat & EI_VBLANK) ppu.stat_int |= ppu.stat_int_vblank;
   if (ppu.stat & EI_HBLANK) ppu.stat_int |= ppu.stat_int_hblank;
   ppu.stat_int |= ppu.stat_int_glitch;
-
 
   if (!lcd_on || vblankP2) {
     ppu.vram_lock = false;

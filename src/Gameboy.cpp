@@ -151,7 +151,7 @@ void Gameboy::tick() {
   ppu.frame_start = (ppu.counterM2 == 0) && (ppu.lineM2 == 0);
   ppu.frame_done = (ppu.counterM2 == 0) && (ppu.lineM2 == 144);
 
-  bool vblank0 = ppu.lineP2 >= 144;
+  bool vblankP2 = ppu.lineP2 >= 144;
 
   bool vblank_int = false;
   bool stat_int_lyc = false;
@@ -191,25 +191,25 @@ void Gameboy::tick() {
   // Update state machiney stuff
 
   if (ppu.counterP2 == 0) {
-    ppu.oam_phase = (ppu.frame_count != 0 || ppu.lineP2 != 0) && !vblank0;
+    ppu.oam_phase = (ppu.frame_count != 0 || ppu.lineP2 != 0) && !vblankP2;
     ppu.hblank_phase = false;
     ppu.sprite_index = -1;
     ppu.sprite_count = 0;
   }
 
-  if (!vblank0 && ppu.counterP2 == 4) {
+  if (!vblankP2 && ppu.counterP2 == 4) {
     if (ppu.frame_count != 0 || ppu.lineP2 != 0) ppu.state = PPU_STATE_OAM;
     ppu.pix_count = 0;
     ppu.hblank_delay = HBLANK_DELAY_START;
   }
 
-  if (!vblank0 && ppu.counterP2 == 80) {
+  if (!vblankP2 && ppu.counterP2 == 80) {
   }
 
-  if (!vblank0 && ppu.counterP2 == 82) {
+  if (!vblankP2 && ppu.counterP2 == 82) {
   }
 
-  if (!vblank0 && ppu.counterP2 == 84) {
+  if (!vblankP2 && ppu.counterP2 == 84) {
     ppu.oam_phase = false;
     ppu.render_phase = true;
     ppu.state = PPU_STATE_VRAM;
@@ -224,19 +224,19 @@ void Gameboy::tick() {
     ppu.pipe_count = 0;
   }
 
-  if (!vblank0 && ppu.counterP2 == 85) {
+  if (!vblankP2 && ppu.counterP2 == 85) {
     ppu.tile_latched = true; // we always start w/ a "garbage" tile
   }
 
-  if (!vblank0 && ppu.pix_count == 160 && ppu.hblank_delay) {
+  if (!vblankP2 && ppu.pix_count == 160 && ppu.hblank_delay) {
     ppu.hblank_delay--;
   }
 
-  if (!vblank0 && ppu.hblank_delay == 6) {
+  if (!vblankP2 && ppu.hblank_delay == 6) {
     ppu.vram_lock = false;
   }
 
-  if (!vblank0 && ppu.hblank_delay == 4) {
+  if (!vblankP2 && ppu.hblank_delay == 4) {
     ppu.render_phase = false;
     ppu.hblank_phase = true;
     ppu.state = PPU_STATE_HBLANK;

@@ -78,8 +78,9 @@ void Gameboy::tick() {
 
   uint16_t cpu_addr_ = z80.mem_addr_;
   //uint8_t  cpu_data_ = z80.mem_out_;
-  //bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
+  bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
   bool     cpu_write_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
+
 
   //-----------------------------------
   // Tick the CPU using the updated interrupts and bus mux
@@ -127,6 +128,10 @@ void Gameboy::tick() {
 
   bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
 
+  ppu.bus_oe = 0;
+  ppu.bus_out = 0;
+  if (cpu_read_) ppu.bus_read(cpu_addr_);
+
   //-----------------------------------
   // Update counter/line/frame
 
@@ -161,6 +166,7 @@ void Gameboy::tick() {
   ppu.frame_start = (ppu.counter0 == 0) && (ppu.line0 == 0);
   ppu.frame_done = (ppu.counter0 == 0) && (ppu.line0 == 144);
 
+  bool vblank0 = ppu.line0 >= 144;
 
   //-----------------------------------
   // lyc_match
@@ -240,6 +246,111 @@ void Gameboy::tick() {
 
   ppu.stat_int_glitch = stat_int_glitch;
 
+  //-----------------------------------
+
+  if (!lcd_on) {
+    ppu.handle_lcd_off();
+  }
+
+  if (vblank0) {
+
+    ppu.hblank_phase = false;
+    ppu.hblank_delay = HBLANK_DELAY_START;
+
+    ppu.oam_lock = false;
+    ppu.oam_addr = 0;
+    ppu.oam_read = false;
+
+    ppu.vram_lock = false;
+    ppu.vram_addr = 0;
+
+    ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | PPU_STATE_VBLANK);
+  }
+
+  //-----------------------------------
+  // Update state machiney stuff
+
+  if (!vblank0 && ppu.counterP2 == 0) {
+    ppu.oam_phase = (ppu.frame_count != 0 || ppu.line0 != 0);
+    ppu.hblank_phase = false;
+    ppu.sprite_index = -1;
+    ppu.sprite_count = 0;
+  }
+
+  if (!vblank0 && ppu.counterP2 == 4) {
+    if (ppu.frame_count != 0 || ppu.line0 != 0) ppu.state = PPU_STATE_OAM;
+    ppu.pix_count = 0;
+    ppu.hblank_delay = HBLANK_DELAY_START;
+  }
+
+  if (ppu.counterP2 == 80) {
+  }
+
+  if (ppu.counterP2 == 82) {
+  }
+
+  if (!vblank0 && ppu.counterP2 == 84) {
+    ppu.oam_phase = false;
+    ppu.render_phase = true;
+    ppu.state = PPU_STATE_VRAM;
+
+    ppu.sprite_index = -1;
+    ppu.window_hit = false;
+    ppu.map_x = (ppu.scx >> 3) & 31;
+    ppu.pix_discard = (ppu.scx & 7) + 8;
+    ppu.sprite_latched = false;
+    ppu.tile_latched = false;
+    ppu.window_hit = false;
+    ppu.pipe_count = 0;
+  }
+
+  if (!vblank0 && ppu.counterP2 == 85) {
+    ppu.tile_latched = true; // we always start w/ a "garbage" tile
+  }
+
+  if (!vblank0 && ppu.pix_count == 160 && ppu.hblank_delay) {
+    ppu.hblank_delay--;
+  }
+
+  if (!vblank0 && ppu.hblank_delay == 6) {
+    ppu.vram_lock = false;
+  }
+
+  if (!vblank0 && ppu.hblank_delay == 4) {
+    ppu.render_phase = false;
+    ppu.hblank_phase = true;
+    ppu.state = PPU_STATE_HBLANK;
+
+    ppu.vram_addr = 0;
+    ppu.fetch_state = PPU::FETCH_IDLE;
+  }
+
+  if (ppu.frame_count == 0 && ppu.line0 == 0) {
+    ppu.vram_lock = (ppu.counter0 >= 82);
+  }
+
+  if (ppu.frame_count != 0 || ppu.line0 != 0) {
+    ppu.vram_lock = (ppu.counter0 >= 80);
+  }
+
+  if (ppu.hblank_delay < 6) {
+    ppu.vram_lock = false;
+  }
+
+  ppu.oam_lock = (ppu.counter0 >= 80);
+
+  if (ppu.hblank_delay < 6) ppu.oam_lock = false;
+
+  if (ppu.frame_count == 0 && ppu.line0 == 0 && ppu.counter0 < 82) {
+    ppu.oam_lock = false;
+  }
+
+  if (ppu.counterP2 < 80) {
+    ppu.oam_lock = true;
+  }
+
+  ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | ppu.state);
+
   //----------------------------------------
   // tick z80
 
@@ -268,166 +379,10 @@ void Gameboy::tick() {
     z80.unhalt |= buttons.val != 0xFF;
   }
 
+  // TICK IS HERE
   if (tphase == PHASE_CPU_TICK) {
     z80.tick_t0(imask, intf, bus_out_);
   }
-
-  //----------------------------------------
-
-  ppu.stat_int_lyc &= (ppu.stat & EI_LYC) != 0;
-  ppu.stat_int_oam &= (ppu.stat & EI_OAM) != 0;
-  ppu.stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
-  ppu.stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
-
-  ppu.stat_int = ppu.stat_int_lyc | ppu.stat_int_oam | ppu.stat_int_hblank | ppu.stat_int_vblank | ppu.stat_int_glitch;
-
-  bool new_stat_int = ppu.stat_int && !old_stat_int;
-  old_stat_int = ppu.stat_int;
-
-  if (ppu.vblank_int)      intf |= INT_VBLANK;
-  if (new_stat_int)        intf |= INT_STAT;
-  if (timer.overflow)      intf |= INT_TIMER;
-  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
-
-  if (z80.mem_read_ && (tphase == PHASE_CPU_READ)) {
-    bus_out = 0x00;
-    bus_oe = false;
-    if (z80.mem_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
-    if (z80.mem_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
-  }
-
-  uint16_t cpu_addr2_ = z80.mem_addr_;
-  uint8_t  cpu_data2_ = z80.mem_out_;
-  bool     cpu_read2_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
-  bool     cpu_write2_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
-
-  ppu.bus_oe = 0;
-  ppu.bus_out = 0;
-  if (cpu_read2_) ppu.bus_read(cpu_addr2_);
-
-  if (!lcd_on) {
-    ppu.handle_lcd_off();
-  }
-
-  if (!lcd_on) {
-    if (cpu_write2_) ppu.bus_write(cpu_addr2_, cpu_data2_);
-    return;
-  }
-  
-  if (ppu.line0 >= 144) {
-    //-----------------------------------
-    // vblank early-out
-
-    ppu.hblank_phase = false;
-    ppu.hblank_delay = HBLANK_DELAY_START;
-
-    ppu.oam_lock = false;
-    ppu.oam_addr = 0;
-    ppu.oam_read = false;
-
-    ppu.vram_lock = false;
-    ppu.vram_addr = 0;
-
-    ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | PPU_STATE_VBLANK);
-  }
-
-  if (ppu.line0 >= 144) {
-    if (cpu_write2_) ppu.bus_write(cpu_addr2_, cpu_data2_);
-    return;
-  }
-  
-  //-----------------------------------
-  // Update state machiney stuff
-
-  if (ppu.counterP2 == 0) {
-    ppu.oam_phase = (ppu.frame_count != 0 || ppu.line0 != 0);
-    ppu.hblank_phase = false;
-    ppu.sprite_index = -1;
-    ppu.sprite_count = 0;
-  }
-
-  if (ppu.counterP2 == 4) {
-    if (ppu.frame_count != 0 || ppu.line0 != 0) ppu.state = PPU_STATE_OAM;
-
-    ppu.pix_count = 0;
-    ppu.hblank_delay = HBLANK_DELAY_START;
-  }
-
-  if (ppu.counterP2 == 80) {
-  }
-
-  if (ppu.counterP2 == 82) {
-  }
-
-  if (ppu.counterP2 == 84) {
-    ppu.oam_phase = false;
-    ppu.render_phase = true;
-    ppu.state = PPU_STATE_VRAM;
-
-    ppu.sprite_index = -1;
-    ppu.window_hit = false;
-    ppu.map_x = (ppu.scx >> 3) & 31;
-    ppu.pix_discard = (ppu.scx & 7) + 8;
-    ppu.sprite_latched = false;
-    ppu.tile_latched = false;
-    ppu.window_hit = false;
-    ppu.pipe_count = 0;
-  }
-
-  if (ppu.counterP2 == 85) {
-    ppu.tile_latched = true; // we always start w/ a "garbage" tile
-  }
-
-  if (ppu.pix_count == 160 && ppu.hblank_delay) {
-    ppu.hblank_delay--;
-  }
-
-  if (ppu.hblank_delay == 6) {
-    ppu.vram_lock = false;
-  }
-
-  if (ppu.hblank_delay == 4) {
-    ppu.render_phase = false;
-    ppu.hblank_phase = true;
-    ppu.state = PPU_STATE_HBLANK;
-
-    ppu.vram_addr = 0;
-    ppu.fetch_state = PPU::FETCH_IDLE;
-  }
-
-  //-----------------------------------
-
-  if (ppu.frame_count == 0 && ppu.line0 == 0) {
-    ppu.vram_lock = (ppu.counter0 >= 82);
-  }
-
-
-  if (ppu.frame_count != 0 || ppu.line0 != 0) {
-    ppu.vram_lock = (ppu.counter0 >= 80);
-  }
-
-  if (ppu.hblank_delay < 6) {
-    ppu.vram_lock = false;
-  }
-
-  ppu.oam_lock = (ppu.counter0 >= 80);
-
-  if (ppu.hblank_delay < 6) ppu.oam_lock = false;
-
-  if (ppu.frame_count == 0 && ppu.line0 == 0 && ppu.counter0 < 82) {
-    ppu.oam_lock = false;
-  }
-
-  if (ppu.counterP2 < 80) {
-    ppu.oam_lock = true;
-  }
-
-  //-----------------------------------
-
-  ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | ppu.state);
-
-
-  ppu.tock(cpu_addr2_, cpu_data2_, cpu_read2_, cpu_write2_, vram.bus_out, oam.bus_out);
 }
 
 //-----------------------------------------------------------------------------
@@ -439,6 +394,43 @@ void Gameboy::tock() {
   uint8_t  cpu_data_ = z80.mem_out_;
   bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
   bool     cpu_write_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
+
+  bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
+  bool vblank0 = ppu.line0 >= 144;
+
+  //-----------------------------------
+
+  ppu.stat_int_lyc &= (ppu.stat & EI_LYC) != 0;
+  ppu.stat_int_oam &= (ppu.stat & EI_OAM) != 0;
+  ppu.stat_int_vblank &= (ppu.stat & EI_VBLANK) != 0;
+  ppu.stat_int_hblank &= (ppu.stat & EI_HBLANK) != 0;
+
+  ppu.stat_int = ppu.stat_int_lyc | ppu.stat_int_oam | ppu.stat_int_hblank | ppu.stat_int_vblank | ppu.stat_int_glitch;
+
+  if (!lcd_on || vblank0) {
+    ppu.vram_lock = false;
+    ppu.oam_lock = false;
+    if (cpu_write_) ppu.bus_write(cpu_addr_, cpu_data_);
+    ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | 1);
+  }
+  else {
+    ppu.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
+  }
+
+  bool new_stat_int = ppu.stat_int && !old_stat_int;
+  old_stat_int = ppu.stat_int;
+
+  if (ppu.vblank_int)      intf |= INT_VBLANK;
+  if (new_stat_int)        intf |= INT_STAT;
+  if (timer.overflow)      intf |= INT_TIMER;
+  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
+
+  if (cpu_read_) {
+    bus_out = 0x00;
+    bus_oe = false;
+    if (cpu_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
+    if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
+  }
 
   bool ce_oam = (cpu_addr_ & 0xFF00) == 0xFE00;
   bool ce_zram = (cpu_addr_ & 0xFF00) == 0xFF00;

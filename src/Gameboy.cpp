@@ -203,12 +203,6 @@ void Gameboy::tick() {
     ppu.hblank_delay = HBLANK_DELAY_START;
   }
 
-  if (!vblankP2 && ppu.counterP2 == 80) {
-  }
-
-  if (!vblankP2 && ppu.counterP2 == 82) {
-  }
-
   if (!vblankP2 && ppu.counterP2 == 84) {
     ppu.oam_phase = false;
     ppu.render_phase = true;
@@ -232,10 +226,6 @@ void Gameboy::tick() {
     ppu.hblank_delay--;
   }
 
-  if (!vblankP2 && ppu.hblank_delay == 6) {
-    ppu.vram_lock = false;
-  }
-
   if (!vblankP2 && ppu.hblank_delay == 4) {
     ppu.render_phase = false;
     ppu.hblank_phase = true;
@@ -245,33 +235,37 @@ void Gameboy::tick() {
     ppu.fetch_state = PPU::FETCH_IDLE;
   }
 
+  ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | ppu.state);
+
   //----------------------------------------
 
-  if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
-    ppu.vram_lock = (ppu.counterP2 >= 84);
+  bool weird_line = ppu.frame_count == 0 && ppu.lineP2 == 0;
+
+  const int oam_start = 0;
+  const int oam_end = 80;
+  const int render_start = 82;
+  const int render_start_l0 = 84;
+
+  if (weird_line) {
+    if (ppu.counterP2 == render_start_l0) {
+      ppu.oam_lock = true;
+      ppu.vram_lock = true;
+    }
+  }
+  else {
+    if (ppu.counterP2 == oam_start) ppu.oam_lock = true;
+    if (ppu.counterP2 == oam_end)   ppu.oam_lock = false;
+
+    if (ppu.counterP2 == render_start) {
+      ppu.oam_lock = true;
+      ppu.vram_lock = true;
+    }
   }
 
-  if (ppu.frame_count != 0 || ppu.lineP2 != 0) {
-    ppu.vram_lock = (ppu.counterP2 >= 82);
-  }
-
-  if (ppu.hblank_delay < 6) {
+  if (ppu.hblank_delay == 5 || vblankP2) {
+    ppu.oam_lock = false;
     ppu.vram_lock = false;
   }
-
-  ppu.oam_lock = (ppu.counterP2 >= 82);
-
-  if (ppu.hblank_delay < 6) ppu.oam_lock = false;
-
-  if (ppu.frame_count == 0 && ppu.lineP2 == 0 && ppu.counterP2 < 84) {
-    ppu.oam_lock = false;
-  }
-
-  if (ppu.counterP2 < 80) {
-    ppu.oam_lock = true;
-  }
-
-  ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | ppu.state);
 
   //----------------------------------------
 

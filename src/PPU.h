@@ -42,7 +42,7 @@ struct PPU {
 
 //private:
 
-  void handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write);
+  void handle_lcd_off();
   void merge_sprite();
   void check_sprite_hit();
   void emit_pixel();

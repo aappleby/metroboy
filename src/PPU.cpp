@@ -327,8 +327,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
 
 //-----------------------------------------------------------------------------
 
-void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write) {
-  if (cpu_read) bus_read(cpu_addr);
+void PPU::handle_lcd_off() {
 
   counterM2 &= 3;
   counter0  = counterM2 + 2;
@@ -349,7 +348,6 @@ void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, boo
   hblank_delay = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 
-
   pix_count = 0;
   pix_oe = false;
   sprite_count = 0;
@@ -361,10 +359,7 @@ void PPU::handle_lcd_off(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, boo
   oam_data = 0;
   oam_read = false;
 
-  //stat = ubit8_t(0x80 | (stat & 0b11111000) | (lyc_match << 2));
   stat = ubit8_t(0x80 | (stat & 0b11111100));
-
-  if (cpu_write) bus_write(cpu_addr, cpu_data);
 }
 
 //-----------------------------------------------------------------------------

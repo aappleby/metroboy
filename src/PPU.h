@@ -87,9 +87,6 @@ struct PPU {
   uint16_t counterP2;
   uint8_t lineP2;
 
-  uint16_t counter0;
-  uint8_t line0;
-
   uint16_t counterM2;
   uint8_t lineM2;
 

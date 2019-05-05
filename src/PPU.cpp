@@ -139,9 +139,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
     lineM2 = 153;
     counterM2 = 399;
 
-    line0 = 153;
-    counter0 = 401;
-
     lineP2 = 153;
     counterP2 = 403;
 
@@ -197,7 +194,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
   oam_addr = 0;
   oam_read = false;
 
-  if (frame_count == 0 && line0 == 0 && counter0 < 82) {
+  if (frame_count == 0 && lineP2 == 0 && counterP2 < 84) {
     oam_addr = 0;
     oam_read = false;
   }
@@ -312,7 +309,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
     }
 
     if (fetch_state == FETCH_SPRITE_MAP) {
-      oam_addr = (sprite_index << 2) + (counter0 & 1) + 2;
+      oam_addr = (sprite_index << 2) + (counterP2 & 1) + 2;
       oam_addr += ADDR_OAM_BEGIN;
       oam_read = true;
     }
@@ -320,7 +317,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
 
   //-----------------------------------
 
-  assert(counter0  == (counterM2 + 2) % 456);
   assert(counterP2 == (counterM2 + 4) % 456);
 
 }
@@ -330,11 +326,9 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
 void PPU::handle_lcd_off() {
 
   counterM2 &= 3;
-  counter0  = counterM2 + 2;
   counterP2 = counterM2 + 4;
 
   lineM2 = 0;
-  line0 = 0;
   lineP2 = 0;
 
   ly = 0;
@@ -630,7 +624,6 @@ char* PPU::dump(char* cursor) {
   }
 
   cursor += sprintf(cursor, "clockM2 %3d:%3d\n", lineM2, counterM2);
-  cursor += sprintf(cursor, "clock0  %3d:%3d\n", line0, counter0);
   cursor += sprintf(cursor, "clockP2 %3d:%3d\n", lineP2, counterP2);
 
   cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay);

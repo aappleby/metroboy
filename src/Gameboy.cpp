@@ -278,15 +278,12 @@ void Gameboy::tick() {
   ppu.stat_int_hblank |= (old_hblank_delay < 6);
 
   //----------
+  // this has to be set for exactly one tcycle
+  if (ppu.lineM2 == 144 && ppu.counterM2 == 0) ppu.vblank_int = true;
+  if (ppu.lineM2 == 144 && ppu.counterM2 == 1) ppu.vblank_int = false;
 
-  ppu.vblank_int = false;
-  ppu.vblank_int |= (ppu.lineP2 == 144) && ppu.counterP2 == 4;
-
-  if (ppu.lineP2 == 0 && ppu.counterP2 == 0) ppu.vblank_int = false;
-  if (ppu.lineP2 == 144 && ppu.counterP2 == 4) ppu.vblank_int = true;
-
-  if (ppu.lineM2 == 0 && ppu.counterM2 == 0)   ppu.stat_int_vblank = false;
   if (ppu.lineM2 == 144 && ppu.counterM2 == 0) ppu.stat_int_vblank = true;
+  if (ppu.lineM2 ==   0 && ppu.counterM2 == 0) ppu.stat_int_vblank = false;
 
   //----------
 

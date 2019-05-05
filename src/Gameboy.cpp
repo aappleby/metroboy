@@ -269,17 +269,24 @@ void Gameboy::tick() {
   stat_int_vblank |= vblankP2;
   stat_int_hblank |= (old_hblank_delay == 6);
 
-  ppu.vblank_int = false;
   ppu.stat_int_lyc = false;
   ppu.stat_int_oam = false;
-  ppu.stat_int_vblank = false;
   ppu.stat_int_hblank = false;
 
-  ppu.vblank_int      |= (ppu.lineP2 == 144) && ppu.counterP2 == 4;
   ppu.stat_int_lyc    |= ppu.lyc_match;
   ppu.stat_int_oam    |= ((ppu.lineP2 <= 143) && (ppu.counterP2 == 0)) | vblank_int;
-  ppu.stat_int_vblank |= (ppu.lineM2 >= 144);
   ppu.stat_int_hblank |= (old_hblank_delay < 6);
+
+  //----------
+
+  ppu.vblank_int = false;
+  ppu.vblank_int |= (ppu.lineP2 == 144) && ppu.counterP2 == 4;
+
+  if (ppu.lineP2 == 0 && ppu.counterP2 == 0) ppu.vblank_int = false;
+  if (ppu.lineP2 == 144 && ppu.counterP2 == 4) ppu.vblank_int = true;
+
+  if (ppu.lineM2 == 0 && ppu.counterM2 == 0)   ppu.stat_int_vblank = false;
+  if (ppu.lineM2 == 144 && ppu.counterM2 == 0) ppu.stat_int_vblank = true;
 
   //----------
 

@@ -156,6 +156,10 @@ void Gameboy::tick() {
     }
   }
 
+  ppu.frame_start = (ppu.counter0 == 0) && (ppu.line0 == 0);
+  ppu.frame_done = (ppu.counter0 == 0) && (ppu.line0 == 144);
+
+
   //-----------------------------------
   // lyc_match
 
@@ -289,6 +293,144 @@ void Gameboy::tick() {
     if (z80.mem_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
     if (z80.mem_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }
+
+  uint16_t cpu_addr2_ = z80.mem_addr_;
+  uint8_t  cpu_data2_ = z80.mem_out_;
+  bool     cpu_read2_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
+  bool     cpu_write2_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
+
+  bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
+
+  if (!lcd_on) {
+    ppu.bus_oe = 0;
+    ppu.bus_out = 0;
+    if (cpu_read2_) ppu.bus_read(cpu_addr2_);
+
+    ppu.handle_lcd_off(cpu_addr2_, cpu_data2_, cpu_read2_, cpu_write2_);
+  }
+  else {
+    //-----------------------------------
+    // vblank early-out
+
+    if (ppu.line0 >= 144) {
+      ppu.bus_oe = 0;
+      ppu.bus_out = 0;
+      if (cpu_read2_) ppu.bus_read(cpu_addr2_);
+
+      ppu.hblank_phase = false;
+      ppu.hblank_delay = HBLANK_DELAY_START;
+
+      ppu.oam_lock = false;
+      ppu.oam_addr = 0;
+      ppu.oam_read = false;
+
+      ppu.vram_lock = false;
+      ppu.vram_addr = 0;
+
+      ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | PPU_STATE_VBLANK);
+
+      if (cpu_write2_) ppu.bus_write(cpu_addr2_, cpu_data2_);
+      return;
+    }
+    else {
+      //-----------------------------------
+      // Update state machiney stuff
+
+      ppu.bus_oe = 0;
+      ppu.bus_out = 0;
+      if (cpu_read2_) ppu.bus_read(cpu_addr2_);
+
+      if (ppu.counterP2 == 0) {
+        ppu.oam_phase = (ppu.frame_count != 0 || ppu.line0 != 0);
+        ppu.hblank_phase = false;
+        ppu.sprite_index = -1;
+        ppu.sprite_count = 0;
+      }
+
+      if (ppu.counterP2 == 4) {
+        if (ppu.frame_count != 0 || ppu.line0 != 0) ppu.state = PPU_STATE_OAM;
+
+        ppu.pix_count = 0;
+        ppu.hblank_delay = HBLANK_DELAY_START;
+      }
+
+      if (ppu.counterP2 == 80) {
+      }
+
+      if (ppu.counterP2 == 82) {
+      }
+
+      if (ppu.counterP2 == 84) {
+        ppu.oam_phase = false;
+        ppu.render_phase = true;
+        ppu.state = PPU_STATE_VRAM;
+
+        ppu.sprite_index = -1;
+        ppu.window_hit = false;
+        ppu.map_x = (ppu.scx >> 3) & 31;
+        ppu.pix_discard = (ppu.scx & 7) + 8;
+        ppu.sprite_latched = false;
+        ppu.tile_latched = false;
+        ppu.window_hit = false;
+        ppu.pipe_count = 0;
+      }
+
+      if (ppu.counterP2 == 85) {
+        ppu.tile_latched = true; // we always start w/ a "garbage" tile
+      }
+
+      if (ppu.pix_count == 160 && ppu.hblank_delay) {
+        ppu.hblank_delay--;
+      }
+
+      if (ppu.hblank_delay == 6) {
+        ppu.vram_lock = false;
+      }
+
+      if (ppu.hblank_delay == 4) {
+        ppu.render_phase = false;
+        ppu.hblank_phase = true;
+        ppu.state = PPU_STATE_HBLANK;
+
+        ppu.vram_addr = 0;
+        ppu.fetch_state = PPU::FETCH_IDLE;
+      }
+
+      //-----------------------------------
+
+      if (ppu.frame_count == 0 && ppu.line0 == 0) {
+        ppu.vram_lock = (ppu.counter0 >= 82);
+      }
+
+
+      if (ppu.frame_count != 0 || ppu.line0 != 0) {
+        ppu.vram_lock = (ppu.counter0 >= 80);
+      }
+
+      if (ppu.hblank_delay < 6) {
+        ppu.vram_lock = false;
+      }
+
+      ppu.oam_lock = (ppu.counter0 >= 80);
+
+      if (ppu.hblank_delay < 6) ppu.oam_lock = false;
+
+      if (ppu.frame_count == 0 && ppu.line0 == 0 && ppu.counter0 < 82) {
+        ppu.oam_lock = false;
+      }
+
+      if (ppu.counterP2 < 80) {
+        ppu.oam_lock = true;
+      }
+
+      //-----------------------------------
+
+      ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | ppu.state);
+
+
+      ppu.tock(cpu_addr2_, cpu_data2_, cpu_read2_, cpu_write2_, vram.bus_out, oam.bus_out);
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -300,11 +442,6 @@ void Gameboy::tock() {
   uint8_t  cpu_data_ = z80.mem_out_;
   bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
   bool     cpu_write_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
-
-  //-----------------------------------
-  // PPU - FIXME should not be reading from PPU after tock
-
-  ppu.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
 
   bool ce_oam = (cpu_addr_ & 0xFF00) == 0xFE00;
   bool ce_zram = (cpu_addr_ & 0xFF00) == 0xFF00;

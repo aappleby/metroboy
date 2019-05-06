@@ -298,11 +298,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
       oam_read = true;
     }
   }
-
-  //-----------------------------------
-
-  assert(counterP2 == (counterM2 + 4) % 456);
-
 }
 
 //-----------------------------------------------------------------------------

@@ -233,7 +233,9 @@ void Gameboy::tick() {
     }
   }
 
-  ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | ppu.state);
+  if (tphase == 0 || tphase == 2) {
+    ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | ppu.state);
+  }
 
   //----------------------------------------
 

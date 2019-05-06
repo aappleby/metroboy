@@ -184,33 +184,39 @@ void Gameboy::tick() {
   //----------------------------------------
   // Update state machiney stuff
 
-  if (ppu.counterP2 == 0) {
-    ppu.oam_phase = !weird_line && !vblankP2;
-    ppu.hblank_phase = false;
-    ppu.sprite_index = -1;
-    ppu.sprite_count = 0;
+  if (tphase == 0) {
+    if (ppu.counterP2 == 0) {
+      ppu.oam_phase = !weird_line && !vblankP2;
+      ppu.hblank_phase = false;
+      ppu.sprite_index = -1;
+      ppu.sprite_count = 0;
+    }
   }
 
-  if (!vblankP2 && ppu.counterP2 == 4) {
-    if (!weird_line) ppu.state = PPU_STATE_OAM;
-    ppu.pix_count = 0;
-    ppu.hblank_delay = HBLANK_DELAY_START;
+  if (tphase == 0) {
+    if (!vblankP2 && ppu.counterP2 == 4) {
+      if (!weird_line) ppu.state = PPU_STATE_OAM;
+      ppu.pix_count = 0;
+      ppu.hblank_delay = HBLANK_DELAY_START;
+    }
   }
 
-  if (!vblankP2 && ppu.counterP2 == 84) {
-    ppu.hblank_phase = false;
-    ppu.oam_phase = false;
-    ppu.render_phase = true;
-    ppu.state = PPU_STATE_VRAM;
+  if (tphase == 0) {
+    if (!vblankP2 && ppu.counterP2 == 84) {
+      ppu.hblank_phase = false;
+      ppu.oam_phase = false;
+      ppu.render_phase = true;
+      ppu.state = PPU_STATE_VRAM;
 
-    ppu.sprite_index = -1;
-    ppu.window_hit = false;
-    ppu.map_x = (ppu.scx >> 3) & 31;
-    ppu.pix_discard = (ppu.scx & 7) + 8;
-    ppu.sprite_latched = false;
-    ppu.tile_latched = false;
-    ppu.window_hit = false;
-    ppu.pipe_count = 0;
+      ppu.sprite_index = -1;
+      ppu.window_hit = false;
+      ppu.map_x = (ppu.scx >> 3) & 31;
+      ppu.pix_discard = (ppu.scx & 7) + 8;
+      ppu.sprite_latched = false;
+      ppu.tile_latched = false;
+      ppu.window_hit = false;
+      ppu.pipe_count = 0;
+    }
   }
 
   if (!vblankP2 && ppu.counterP2 == 85) {

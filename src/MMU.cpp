@@ -62,7 +62,7 @@ void MMU::reset(uint16_t new_pc) {
 
 //-------------------------------------
 
-void MMU::tock_t3(uint16_t addr, uint8_t data, bool read, bool write) {
+void MMU::tock_t2(uint16_t addr, uint8_t data, bool read, bool write) {
   if (write) {
     if (addr <= 0x1FFF) {
       ram_enable = (data & 0x0F) == 0x0A;

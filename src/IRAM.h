@@ -2,7 +2,7 @@
 
 struct IRAM {
   void reset();
-  void tock_t3(uint16_t addr, uint8_t data, bool read, bool write);
+  void tock_t2(uint16_t addr, uint8_t data, bool read, bool write);
 
   const uint8_t* get() {
     return ram;

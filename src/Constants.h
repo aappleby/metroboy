@@ -23,17 +23,6 @@ const int samples_per_frame = output_hz / 60;
 
 #define HBLANK_DELAY_START  8
 
-#define PHASE_CPU_TICK  0
-#define PHASE_CPU_TOCK  2
-
-#define PHASE_CPU_WRITE 0
-#define PHASE_CPU_READ  2
-
-#define PHASE_DMA_WRITE 0
-#define PHASE_DMA_READ  2
-
-#define PHASE_SPU_TOCK  2
-
 //-----------------------------------------------------------------------------
 // Memory map
 

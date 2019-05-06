@@ -247,48 +247,46 @@ void Gameboy::tick() {
   //----------------------------------------
   // tick z80
 
-  if (tphase == PHASE_CPU_TICK) {
+  if (tphase == 0) {
 
     uint8_t bus_out_ = bus_out;
     uint8_t bus_oe_ = bus_oe;
 
-    if (tphase == PHASE_CPU_TICK) {
-      bus_out_ |= cpu_read_cart ? mmu.bus_out : 0x00;
-      bus_out_ |= cpu_read_vram ? vram.bus_out : 0x00;
-      bus_out_ |= cpu_read_iram ? iram.bus_out : 0x00;
-      bus_out_ |= cpu_read_oam ? oam.bus_out : 0x00;
+    bus_out_ |= cpu_read_cart ? mmu.bus_out : 0x00;
+    bus_out_ |= cpu_read_vram ? vram.bus_out : 0x00;
+    bus_out_ |= cpu_read_iram ? iram.bus_out : 0x00;
+    bus_out_ |= cpu_read_oam ? oam.bus_out : 0x00;
 
-      bus_out_ |= ppu.bus_out;
-      bus_out_ |= buttons.bus_out;
-      bus_out_ |= serial.bus_out;
-      bus_out_ |= spu.bus_out;
-      bus_out_ |= timer.bus_out;
-      bus_out_ |= zram.bus_out;
+    bus_out_ |= ppu.bus_out;
+    bus_out_ |= buttons.bus_out;
+    bus_out_ |= serial.bus_out;
+    bus_out_ |= spu.bus_out;
+    bus_out_ |= timer.bus_out;
+    bus_out_ |= zram.bus_out;
 
-      bus_oe_ += cpu_read_cart;
-      bus_oe_ += cpu_read_vram;
-      bus_oe_ += cpu_read_iram;
-      bus_oe_ += cpu_read_oam;
+    bus_oe_ += cpu_read_cart;
+    bus_oe_ += cpu_read_vram;
+    bus_oe_ += cpu_read_iram;
+    bus_oe_ += cpu_read_oam;
 
-      bus_oe_ += ppu.bus_oe;
-      bus_oe_ += buttons.bus_oe;
-      bus_oe_ += serial.bus_oe;
-      bus_oe_ += spu.bus_oe;
-      bus_oe_ += timer.bus_oe;
-      bus_oe_ += zram.bus_oe;
+    bus_oe_ += ppu.bus_oe;
+    bus_oe_ += buttons.bus_oe;
+    bus_oe_ += serial.bus_oe;
+    bus_oe_ += spu.bus_oe;
+    bus_oe_ += timer.bus_oe;
+    bus_oe_ += zram.bus_oe;
 
-      assert(bus_oe_ <= 1);
-      if (!bus_oe_) bus_out_ = 0xFF;
+    assert(bus_oe_ <= 1);
+    if (!bus_oe_) bus_out_ = 0xFF;
 
-      if (tcycle == 0) {
-        if (z80.pc == 0) {
-          bus_out_ = DMG_ROM_bin[0];
-          bus_oe_ = 1;
-        }
-        else {
-          bus_out_ = rom_buf[z80.pc];
-          bus_oe_ = 1;
-        }
+    if (tcycle == 0) {
+      if (z80.pc == 0) {
+        bus_out_ = DMG_ROM_bin[0];
+        bus_oe_ = 1;
+      }
+      else {
+        bus_out_ = rom_buf[z80.pc];
+        bus_oe_ = 1;
       }
     }
 
@@ -308,10 +306,10 @@ void Gameboy::tock() {
 
   uint16_t cpu_addr_ = z80.mem_addr_;
   uint8_t  cpu_data_ = z80.mem_out_;
-  bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
-  bool     cpu_write_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
+  bool     cpu_read_ = z80.mem_read_ && (tphase == 2);
+  bool     cpu_write_ = z80.mem_write_ && (tphase == 0);
 
-  if (tphase == PHASE_CPU_READ) {
+  if (tphase == 2) {
     if (cpu_read_) {
       bus_out = 0x00;
       bus_oe = false;
@@ -340,7 +338,7 @@ void Gameboy::tock() {
   //-----------------------------------
   // DMA state machine
 
-  if (tphase == PHASE_DMA_READ) {
+  if (tphase == 2) {
     dma_mode_b = dma_mode_a;
     dma_count_b = dma_count_a;
     if (dma_mode_a == DMA_CART) dma_data_b = mmu.bus_out;
@@ -414,11 +412,11 @@ void Gameboy::tock() {
 
   if (dma_mode_a == DMA_IRAM) {
     cpu_read_iram = false;
-    iram.tock_t3(dma_read_addr, 0, true, false);
+    iram.tock_t2(dma_read_addr, 0, true, false);
   }
   else {
     cpu_read_iram = cpu_read_ && (ce_iram || ce_echo);
-    iram.tock_t3(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+    iram.tock_t2(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   }
 
   //-----------------------------------
@@ -426,11 +424,11 @@ void Gameboy::tock() {
 
   if (dma_mode_a == DMA_CART) {
     cpu_read_cart = false;
-    mmu.tock_t3(dma_read_addr, 0, true, false);
+    mmu.tock_t2(dma_read_addr, 0, true, false);
   }
   else {
     cpu_read_cart = cpu_read_ && (ce_rom || ce_cram);
-    mmu.tock_t3(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+    mmu.tock_t2(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   }
 
   //-----------------------------------
@@ -445,8 +443,8 @@ void Gameboy::tock() {
   //-----------------------------------
   // Z80
 
-  if (tphase == PHASE_CPU_TOCK) {
-    z80.tock_t3();
+  if (tphase == 2) {
+    z80.tock_t2();
     intf &= ~z80.int_ack_;
   }
 

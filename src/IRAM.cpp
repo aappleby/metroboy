@@ -10,7 +10,7 @@ void IRAM::reset() {
   memset(ram, 0, sizeof(ram));
 }
 
-void IRAM::tock_t3(uint16_t addr, uint8_t data, bool read, bool write) {
+void IRAM::tock_t2(uint16_t addr, uint8_t data, bool read, bool write) {
   bus_out = 0x00;
   bus_oe = false;
 

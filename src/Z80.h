@@ -7,7 +7,7 @@ struct Z80 {
   int model = 0;
 
   void tick_t0(uint8_t imask, uint8_t intf, uint8_t mem_out);
-  void tock_t3();
+  void tock_t2();
   uint16_t get_pc() { return pc; }
   uint8_t get_a() { return a; }
   uint8_t get_op() { return op_; }

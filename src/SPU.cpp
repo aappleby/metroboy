@@ -83,7 +83,7 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
     bus_write(addr, data);
     return;
   }
-  else if (tphase != PHASE_SPU_TOCK) {
+  else if (tphase != 2) {
     return;
   }
 

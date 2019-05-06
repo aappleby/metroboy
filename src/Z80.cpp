@@ -194,7 +194,7 @@ void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 }
 
-void Z80::tock_t3() {
+void Z80::tock_t2() {
   ime = ime_delay;
 
   switch (state_) {

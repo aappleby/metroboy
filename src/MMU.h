@@ -8,7 +8,7 @@ struct MMU {
   void reset(size_t new_rom_size, uint16_t new_pc);
   void reset(uint16_t new_pc);
   
-  void tock_t3(uint16_t addr, uint8_t data, bool read, bool write);
+  void tock_t2(uint16_t addr, uint8_t data, bool read, bool write);
 
   uint8_t* get_flat_ptr(uint16_t addr);
 

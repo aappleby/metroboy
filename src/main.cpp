@@ -87,14 +87,15 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //filename = "LinksAwakening.gb";
 
   //filename = "microtests/build/dmg/oam_sprite_trashing.gb";
-  filename = "microtests/build/dmg/oam_int_halt_b.gb";
+  filename = "microtests/build/dmg/000-write_to_x8000.gb";
 
   //filename = "mealybug/m3_bgp_change_sprites.gb";
 
   if (filename) {
     metroboy.load_rom(MODEL_DMG, filename, false);
     rom_loaded = true;
-    mode = RUN_FAST;
+    //mode = RUN_FAST;
+    mode = STEP_CYCLE;
   }
 
   //----------

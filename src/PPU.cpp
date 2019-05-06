@@ -57,9 +57,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
   state = PPU_STATE_HBLANK;
 
-  counterM2 = 0;
-  lineM2 = 0;
-
   frame_start = 0;
   frame_done = 0;
   frame_count = 0;
@@ -125,9 +122,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
     bgp = 0xFC;
     obp0 = 0xFF;
     obp1 = 0xFF;
-
-    lineM2 = 153;
-    counterM2 = 399;
 
     lineP2 = 153;
     counterP2 = 403;
@@ -220,14 +214,14 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
     merge_tile();
 
     // Slightly broken
-    if ((lcdc & FLAG_WIN_ON) && !window_hit && (lineM2 >= wy)) {
+    if ((lcdc & FLAG_WIN_ON) && !window_hit && (lineP2 >= wy)) {
       if (pix_count + pix_discard == wx + 1) {
         window_hit = true;
         fetch_state = FETCH_IDLE;
         pipe_count = 0;
         tile_latched = false;
         map_x = 0;
-        map_y = (lineM2 - wy) >> 3;
+        map_y = (lineP2 - wy) >> 3;
         vram_addr = 0;
         vram_delay = 0;
 
@@ -254,29 +248,29 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
 
       if (fetch_state == FETCH_TILE_MAP) {
         if (window_hit) {
-          map_y = ((lineM2 - wy) >> 3) & 31;
+          map_y = ((lineP2 - wy) >> 3) & 31;
           vram_addr = win_map_address(lcdc, map_x, map_y);
         }
         else {
-          map_y = ((scy + lineM2) >> 3) & 31;
+          map_y = ((scy + lineP2) >> 3) & 31;
           vram_addr = tile_map_address(lcdc, map_x, map_y);
         }
         map_x = (map_x + 1) & 31;
       }
       else if (fetch_state == FETCH_TILE_LO) {
         if (window_hit) {
-          vram_addr = win_base_address(lcdc, wy, lineM2, tile_map) + 0;
+          vram_addr = win_base_address(lcdc, wy, lineP2, tile_map) + 0;
         }
         else {
-          vram_addr = tile_base_address(lcdc, scy, lineM2, tile_map) + 0;
+          vram_addr = tile_base_address(lcdc, scy, lineP2, tile_map) + 0;
         }
       }
       else if (fetch_state == FETCH_TILE_HI) {
         if (window_hit) {
-          vram_addr = win_base_address(lcdc, wy, lineM2, tile_map) + 1;
+          vram_addr = win_base_address(lcdc, wy, lineP2, tile_map) + 1;
         }
         else {
-          vram_addr = tile_base_address(lcdc, scy, lineM2, tile_map) + 1;
+          vram_addr = tile_base_address(lcdc, scy, lineP2, tile_map) + 1;
         }
       }
       else if (fetch_state == FETCH_SPRITE_MAP) {
@@ -284,10 +278,10 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
         vram_addr = ADDR_VRAM_BEGIN;
       }
       else if (fetch_state == FETCH_SPRITE_LO) {
-        vram_addr = sprite_base_address(lcdc, lineM2, spriteY, spriteP, spriteF) + 0;
+        vram_addr = sprite_base_address(lcdc, lineP2, spriteY, spriteP, spriteF) + 0;
       }
       else if (fetch_state == FETCH_SPRITE_HI) {
-        vram_addr = sprite_base_address(lcdc, lineM2, spriteY, spriteP, spriteF) + 1;
+        vram_addr = sprite_base_address(lcdc, lineP2, spriteY, spriteP, spriteF) + 1;
       }
       else {
         vram_addr = 0;
@@ -315,10 +309,7 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
 
 void PPU::handle_lcd_off() {
 
-  counterM2 &= 3;
-  counterP2 = counterM2 + 4;
-
-  lineM2 = 0;
+  counterP2 = (counterP2 & 3) + 4;
   lineP2 = 0;
 
   ly = 0;
@@ -595,7 +586,7 @@ char* PPU::dump(char* cursor) {
     oam_phase ? "OAM" : "   ",
     render_phase ? "VRM" : "   ",
     hblank_phase ? "HBK" : "   ",
-    lineM2 >= 144 ? "VBK" : "   ");
+    lineP2 >= 144 ? "VBK" : "   ");
 
   /*
   if (stat_int) {
@@ -616,7 +607,6 @@ char* PPU::dump(char* cursor) {
   }
   */
 
-  cursor += sprintf(cursor, "clockM2 %3d:%3d\n", lineM2, counterM2);
   cursor += sprintf(cursor, "clockP2 %3d:%3d\n", lineP2, counterP2);
 
   cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay);

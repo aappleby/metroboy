@@ -171,9 +171,19 @@ void Gameboy::tick() {
       ppu.fetch_state = PPU::FETCH_IDLE;
     }
 
-    ppu.stat &= 0b11111000;
-    ppu.stat |= ppu.state;
-    ppu.stat |= (compare_line == ppu.lyc) << 2;
+    if (vblank) {
+      ppu.hblank_phase = false;
+      ppu.hblank_delay = HBLANK_DELAY_START;
+
+      ppu.oam_lock = false;
+      ppu.oam_addr = 0;
+      ppu.oam_read = false;
+
+      ppu.vram_lock = false;
+      ppu.vram_addr = 0;
+
+      ppu.state = PPU_STATE_VRAM;
+    }
 
     //----------------------------------------
     // locking
@@ -240,7 +250,7 @@ void Gameboy::tick() {
   }
 
 
-  if (ppu.pix_count == 160 && ppu.hblank_delay) {
+  if (ppu.pix_count == 160 && ppu.hblank_delay && ppu.lineP2 < 144) {
     ppu.hblank_delay--;
   }
 
@@ -304,25 +314,23 @@ void Gameboy::tick() {
 void Gameboy::tock() {
   int tphase = tcycle & 3;
 
-  uint16_t cpu_addr_ = z80.mem_addr_;
-  uint8_t  cpu_data_ = z80.mem_out_;
-  bool     cpu_read_ = z80.mem_read_ && (tphase == 2);
-  bool     cpu_write_ = z80.mem_write_ && (tphase == 0);
-
-  if (tphase == 2) {
-    if (cpu_read_) {
-      bus_out = 0x00;
-      bus_oe = false;
-      if (cpu_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
-      if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
-    }
-  }
+  uint16_t cpu_addr_  = z80.mem_addr_;
+  uint8_t  cpu_data_  = z80.mem_out_;
+  bool     cpu_write_ = z80.mem_write_ && ~(tphase & 2);
+  bool     cpu_read_  = z80.mem_read_ && (tphase & 2);
 
   if (ppu.lineP2 == 144 && ppu.counterP2 == 4) intf |= INT_VBLANK;
   if (stat_int && !old_stat_int) intf |= INT_STAT;
   if (timer.overflow)      intf |= INT_TIMER;
   if (buttons.val != 0xFF) intf |= INT_JOYPAD;
   old_stat_int = stat_int;
+
+  if (cpu_read_) {
+    bus_out = 0x00;
+    bus_oe = false;
+    if (cpu_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
+    if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
+  }
 
   bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
 
@@ -335,10 +343,16 @@ void Gameboy::tock() {
     ppu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
   }
 
+  if (tphase == 2) {
+    ppu.stat &= 0b11111000;
+    ppu.stat |= ppu.state;
+    ppu.stat |= (compare_line == ppu.lyc) << 2;
+  }
+
   //-----------------------------------
   // DMA state machine
 
-  if (tphase == 2) {
+  if (tphase & 2) {
     dma_mode_b = dma_mode_a;
     dma_count_b = dma_count_a;
     if (dma_mode_a == DMA_CART) dma_data_b = mmu.bus_out;

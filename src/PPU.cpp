@@ -1,3 +1,4 @@
+
 #include "Platform.h"
 #include "PPU.h"
 
@@ -206,19 +207,6 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
 void PPU::tock(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                uint8_t vram_in, uint8_t oam_in) {
-  bool vblankP2 = lineP2 >= 144;
-  if (vblankP2) {
-    hblank_phase = false;
-    hblank_delay = HBLANK_DELAY_START;
-
-    oam_lock = false;
-    oam_addr = 0;
-    oam_read = false;
-
-    vram_lock = false;
-    vram_addr = 0;
-  }
-  
   //-----------------------------------
   // Bus write
 

@@ -227,10 +227,18 @@ static const std::string micro_tests[] = {
   "lcdon_to_stat0_b.gb",
   "lcdon_to_stat0_c.gb",
   "lcdon_to_stat0_d.gb",
+
+  "lcdon_to_stat1_a.gb",
+  "lcdon_to_stat1_b.gb",
+  "lcdon_to_stat1_c.gb",
+  "lcdon_to_stat1_d.gb",
+  "lcdon_to_stat1_e.gb",
+
   "lcdon_to_stat2_a.gb",
   "lcdon_to_stat2_b.gb",
   "lcdon_to_stat2_c.gb",
   "lcdon_to_stat2_d.gb",
+
   "lcdon_to_stat3_a.gb",
   "lcdon_to_stat3_b.gb",
   "lcdon_to_stat3_c.gb",

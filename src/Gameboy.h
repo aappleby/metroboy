@@ -94,6 +94,7 @@ struct Gameboy {
   bool vblank;
   bool vblank_edge;
   bool oam_edge;
+  bool lyc_match;
 
   bool cpu_read_oam = false;
   bool cpu_read_vram = false;

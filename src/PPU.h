@@ -72,8 +72,6 @@ struct PPU {
 
   ubit8_t scy_latch;
 
-  bool lyc_match;
-  
   //----------
   // Timers and states
 

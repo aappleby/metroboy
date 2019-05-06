@@ -52,8 +52,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
   scy_latch = 0;
 
-  lyc_match = 0;
-
   //----------
   // Timers and states
 
@@ -572,7 +570,7 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "SCX  %d\n", scx);
   cursor += sprintf(cursor, "LY   %d\n", ly);
   cursor += sprintf(cursor, "LYC  %d\n", lyc);
-  cursor += sprintf(cursor, "lyc match %d\n", lyc_match);
+  //cursor += sprintf(cursor, "lyc match %d\n", lyc_match);
   cursor += sprintf(cursor, "DMA  %d\n", dma);
   cursor += sprintf(cursor, "BGP  0x%02x\n", palettes[0]);
   cursor += sprintf(cursor, "OBP0 0x%02x\n", palettes[2]);

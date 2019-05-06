@@ -237,10 +237,10 @@ void Gameboy::tick() {
       ppu.vram_addr = 0;
       ppu.fetch_state = PPU::FETCH_IDLE;
     }
-  }
 
-  if (tphase == 2) {
-    ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | ppu.state);
+    ppu.stat &= 0b11111000;
+    ppu.stat |= ppu.state;
+    ppu.stat |= ppu.lyc_match << 2;
   }
 
   //----------------------------------------
@@ -334,14 +334,14 @@ void Gameboy::tick() {
   if (timer.overflow)      intf |= INT_TIMER;
   if (buttons.val != 0xFF) intf |= INT_JOYPAD;
 
-  old_stat_int = stat_int2;
-
   if (cpu_read_) {
     bus_out = 0x00;
     bus_oe = false;
     if (cpu_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
     if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }
+
+  old_stat_int = stat_int2;
 }
 
 //-----------------------------------------------------------------------------

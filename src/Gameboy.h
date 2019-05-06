@@ -91,6 +91,7 @@ struct Gameboy {
   int64_t tcycle = -1;
 
   int stat_int;
+  int stat_int2;
   int compare_line;
   bool vblank;
   bool vblank_edge;

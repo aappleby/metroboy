@@ -257,12 +257,6 @@ void Gameboy::tick() {
 
   //----------------------------------------
 
-  bool vblank_int = ppu.lineP2 == 144 && ppu.counterP2 == 2;
-
-  bool stat_int_oam = (ppu.lineM2 <= 143) && (ppu.counterM2 == 0);
-  bool stat_int_vblank = vblankP2;
-  bool stat_int_hblank = (old_hblank_delay == 6);
-
   //----------
 
   ppu.stat_int_lyc = ppu.lyc_match;
@@ -270,7 +264,7 @@ void Gameboy::tick() {
   //----------
 
   if (ppu.lineP2 <= 143 && ppu.counterP2 == 0) ppu.stat_int_oam = true;
-  if (ppu.counterP2 == 1) ppu.stat_int_oam = false;
+  if (ppu.counterP2 == 4) ppu.stat_int_oam = false;
 
   //----------
 
@@ -289,43 +283,46 @@ void Gameboy::tick() {
 
   //----------
 
-  bool stat_int_glitch = false;
+  ppu.stat_int_glitch = false;
 
   if (cpu_write_ && cpu_addr_ == ADDR_STAT) {
-    stat_int_glitch |= ppu.stat_int_hblank;
-    stat_int_glitch |= vblankP2;
-    stat_int_glitch |= ppu.lyc_match;
+    ppu.stat_int_glitch |= ppu.stat_int_hblank;
+    ppu.stat_int_glitch |= vblankP2;
+    ppu.stat_int_glitch |= ppu.lyc_match;
   }
-
-  ppu.stat_int_glitch = stat_int_glitch;
 
   //----------------------------------------
   // tick z80
 
-  if (imask & 0x01) {
-    z80.unhalt |= vblank_int;
-  }
 
-  if (imask & 0x02) {
-    if (ppu.stat & EI_LYC)    z80.unhalt |= ppu.lyc_match;
-    if (ppu.stat & EI_OAM)    z80.unhalt |= stat_int_oam;
-    if (ppu.stat & EI_OAM)    z80.unhalt |= vblank_int;
-    if (ppu.stat & EI_HBLANK) z80.unhalt |= stat_int_hblank;
-    if (ppu.stat & EI_VBLANK) z80.unhalt |= stat_int_vblank;
-
-    z80.unhalt |= stat_int_glitch;
-  }
-
-  if (imask & 0x04) {
-    z80.unhalt |= timer.overflow;
-  }
-
-  if (imask & 0x10) {
-    z80.unhalt |= buttons.val != 0xFF;
-  }
-
-  // TICK IS HERE
   if (tphase == PHASE_CPU_TICK) {
+    bool vblank_int = ppu.lineP2 == 144 && ppu.counterP2 == 4;
+    bool stat_int_oam = (ppu.lineM2 <= 143) && (ppu.counterM2 == 0);
+    bool stat_int_vblank = vblankP2;
+    bool stat_int_hblank = (old_hblank_delay < 7);
+
+    if (imask & 0x01) {
+      z80.unhalt |= vblank_int;
+    }
+
+    if (imask & 0x02) {
+      if (ppu.stat & EI_LYC)    z80.unhalt |= ppu.lyc_match;
+      if (ppu.stat & EI_OAM)    z80.unhalt |= stat_int_oam;
+      if (ppu.stat & EI_OAM)    z80.unhalt |= vblank_int;
+      if (ppu.stat & EI_VBLANK) z80.unhalt |= stat_int_vblank;
+      if (ppu.stat & EI_HBLANK) z80.unhalt |= stat_int_hblank;
+      z80.unhalt |= ppu.stat_int_glitch;
+    }
+
+    if (imask & 0x04) {
+      z80.unhalt |= timer.overflow;
+    }
+
+    if (imask & 0x10) {
+      z80.unhalt |= buttons.val != 0xFF;
+    }
+
+    // TICK IS HERE
     z80.tick_t0(imask, intf, bus_out_);
   }
 }

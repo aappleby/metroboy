@@ -198,6 +198,7 @@ void Gameboy::tick() {
   }
 
   if (!vblankP2 && ppu.counterP2 == 84) {
+    ppu.hblank_phase = false;
     ppu.oam_phase = false;
     ppu.render_phase = true;
     ppu.state = PPU_STATE_VRAM;
@@ -213,7 +214,7 @@ void Gameboy::tick() {
   }
 
   if (!vblankP2 && ppu.counterP2 == 85) {
-    ppu.tile_latched = true; // we always start w/ a "garbage" tile
+    ppu.tile_latched = true;
   }
 
   if (!vblankP2 && ppu.pix_count == 160 && ppu.hblank_delay) {
@@ -265,17 +266,12 @@ void Gameboy::tick() {
 
   if (tphase == 0 || tphase == 2) {
     ppu.stat_int_lyc = ppu.lyc_match;
-  }
-
-  //----------
-
-  if (tphase == 0) {
     ppu.stat_int_oam = oamP2;
   }
 
   //----------
 
-  if (old_hblank_delay == 5) ppu.stat_int_hblank = true;
+  if (old_hblank_delay < 6) ppu.stat_int_hblank = true;
   if (old_hblank_delay == HBLANK_DELAY_START) ppu.stat_int_hblank = false;
 
   //----------
@@ -286,26 +282,21 @@ void Gameboy::tick() {
 
   //----------
 
-  if (tphase == 0) {
+  if (tphase == PHASE_CPU_TICK) {
     if (ppu.lineM2 == 144 && ppu.counterM2 == 0) ppu.stat_int_vblank = true;
     if (ppu.lineM2 == 0 && ppu.counterM2 == 0) ppu.stat_int_vblank = false;
-  }
 
-  //----------
+    ppu.stat_int_glitch = false;
 
-  ppu.stat_int_glitch = false;
+    if (cpu_write_ && cpu_addr_ == ADDR_STAT) {
+      ppu.stat_int_glitch |= ppu.stat_int_hblank;
+      ppu.stat_int_glitch |= vblankP2;
+      ppu.stat_int_glitch |= ppu.lyc_match;
+    }
 
-  if (cpu_write_ && cpu_addr_ == ADDR_STAT) {
-    ppu.stat_int_glitch |= ppu.stat_int_hblank;
-    ppu.stat_int_glitch |= vblankP2;
-    ppu.stat_int_glitch |= ppu.lyc_match;
-  }
+    //----------------------------------------
+    // tick z80
 
-  //----------------------------------------
-  // tick z80
-
-
-  if (tphase == PHASE_CPU_TICK) {
     if (imask & 0x01) {
       z80.unhalt |= vblankM2;
     }

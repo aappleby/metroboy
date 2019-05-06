@@ -23,11 +23,6 @@ const int samples_per_frame = output_hz / 60;
 
 #define HBLANK_DELAY_START  8
 
-#define HBLANK_DELAY_PHASE  7
-#define HBLANK_DELAY_LOCK   5
-#define HBLANK_DELAY_STATE  5
-#define HBLANK_DELAY_INT    6
-
 #define PHASE_CPU_TICK  0
 #define PHASE_DMA_TOCK  0
 #define PHASE_CPU_WRITE 0

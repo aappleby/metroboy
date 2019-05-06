@@ -81,7 +81,6 @@ void Gameboy::tick() {
   uint16_t cpu_addr_ = z80.mem_addr_;
   bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
   bool     cpu_write_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
-  int old_hblank_delay = ppu.hblank_delay;
 
   //-----------------------------------
   // Tick the CPU using the updated interrupts and bus mux
@@ -89,41 +88,43 @@ void Gameboy::tick() {
   uint8_t bus_out_ = bus_out;
   uint8_t bus_oe_ = bus_oe;
 
-  bus_out_ |= cpu_read_cart ? mmu.bus_out : 0x00;
-  bus_out_ |= cpu_read_vram ? vram.bus_out : 0x00;
-  bus_out_ |= cpu_read_iram ? iram.bus_out : 0x00;
-  bus_out_ |= cpu_read_oam ? oam.bus_out : 0x00;
+  if (tphase == PHASE_CPU_TICK) {
+    bus_out_ |= cpu_read_cart ? mmu.bus_out : 0x00;
+    bus_out_ |= cpu_read_vram ? vram.bus_out : 0x00;
+    bus_out_ |= cpu_read_iram ? iram.bus_out : 0x00;
+    bus_out_ |= cpu_read_oam ? oam.bus_out : 0x00;
 
-  bus_out_ |= ppu.bus_out;
-  bus_out_ |= buttons.bus_out;
-  bus_out_ |= serial.bus_out;
-  bus_out_ |= spu.bus_out;
-  bus_out_ |= timer.bus_out;
-  bus_out_ |= zram.bus_out;
+    bus_out_ |= ppu.bus_out;
+    bus_out_ |= buttons.bus_out;
+    bus_out_ |= serial.bus_out;
+    bus_out_ |= spu.bus_out;
+    bus_out_ |= timer.bus_out;
+    bus_out_ |= zram.bus_out;
 
-  bus_oe_ += cpu_read_cart;
-  bus_oe_ += cpu_read_vram;
-  bus_oe_ += cpu_read_iram;
-  bus_oe_ += cpu_read_oam;
+    bus_oe_ += cpu_read_cart;
+    bus_oe_ += cpu_read_vram;
+    bus_oe_ += cpu_read_iram;
+    bus_oe_ += cpu_read_oam;
 
-  bus_oe_ += ppu.bus_oe;
-  bus_oe_ += buttons.bus_oe;
-  bus_oe_ += serial.bus_oe;
-  bus_oe_ += spu.bus_oe;
-  bus_oe_ += timer.bus_oe;
-  bus_oe_ += zram.bus_oe;
+    bus_oe_ += ppu.bus_oe;
+    bus_oe_ += buttons.bus_oe;
+    bus_oe_ += serial.bus_oe;
+    bus_oe_ += spu.bus_oe;
+    bus_oe_ += timer.bus_oe;
+    bus_oe_ += zram.bus_oe;
 
-  assert(bus_oe_ <= 1);
-  if (!bus_oe_) bus_out_ = 0xFF;
+    assert(bus_oe_ <= 1);
+    if (!bus_oe_) bus_out_ = 0xFF;
 
-  if (tcycle == 0) {
-    if (z80.pc == 0) {
-      bus_out_ = DMG_ROM_bin[0];
-      bus_oe_ = 1;
-    }
-    else {
-      bus_out_ = rom_buf[z80.pc];
-      bus_oe_ = 1;
+    if (tcycle == 0) {
+      if (z80.pc == 0) {
+        bus_out_ = DMG_ROM_bin[0];
+        bus_oe_ = 1;
+      }
+      else {
+        bus_out_ = rom_buf[z80.pc];
+        bus_oe_ = 1;
+      }
     }
   }
 
@@ -184,6 +185,8 @@ void Gameboy::tick() {
 
   //----------------------------------------
   // Update state machiney stuff
+
+  int old_hblank_delay = ppu.hblank_delay;
 
   if (tphase == 0) {
     if (ppu.counterP2 == 0) {
@@ -310,14 +313,14 @@ void Gameboy::tick() {
     z80.tick_t0(imask, intf, bus_out_);
   }
 
-  bool stat_int2 = false;
-  if (ppu.stat & EI_LYC) stat_int2 |= ppu.lyc_match;
-  if (ppu.stat & EI_OAM) stat_int2 |= ppu.lineP2 <= 143 && ppu.counterP2 == 0;
-  if (ppu.stat & EI_VBLANK) stat_int2 |= (ppu.lineM2 == 144 && ppu.counterM2 == 0);
-  if (ppu.stat & EI_HBLANK) stat_int2 |= old_hblank_delay < 6;
-  stat_int2 |= stat_int_glitch;
+  bool stat_int = false;
+  if (ppu.stat & EI_LYC) stat_int |= ppu.lyc_match;
+  if (ppu.stat & EI_OAM) stat_int |= ppu.lineP2 <= 143 && ppu.counterP2 == 0;
+  if (ppu.stat & EI_VBLANK) stat_int |= (ppu.lineM2 == 144 && ppu.counterM2 == 0);
+  if (ppu.stat & EI_HBLANK) stat_int |= old_hblank_delay < 6;
+  stat_int |= stat_int_glitch;
 
-  bool new_stat_int = stat_int2 && !old_stat_int;
+  bool new_stat_int = stat_int && !old_stat_int;
 
   if (vblankM2_edge)       intf |= INT_VBLANK;
   if (new_stat_int)        intf |= INT_STAT;
@@ -331,7 +334,7 @@ void Gameboy::tick() {
     if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }
 
-  old_stat_int = stat_int2;
+  old_stat_int = stat_int;
 }
 
 //-----------------------------------------------------------------------------

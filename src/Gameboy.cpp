@@ -108,6 +108,8 @@ void Gameboy::tick() {
     }
   }
 
+  //-----------------------------------
+
   const int oam_start = 0;
   const int oam_end = 80;
   const int render_start = 82;
@@ -115,21 +117,16 @@ void Gameboy::tick() {
 
   uint8_t old_intf = intf;
   uint8_t old_imask = imask;
-
-  int stat_int = 0;
-  bool old_vblank = vblank;
-  //bool old_vblank_edge = vblank_edge;
-  int old_hblank_delay = ppu.hblank_delay;
   bool old_oam_edge = oam_edge;
-
-  bool weird_line = ppu.frame_count == 0 && ppu.lineP2 == 0;
-
-  //-----------------------------------
-  // Tick the CPU using the updated interrupts and bus mux
+  bool old_vblank = vblank;
+  int old_hblank_delay = ppu.hblank_delay;
+  bool stat_int_unhalt = false;
+  uint8_t bus_out_ = bus_out;
+  uint8_t bus_oe_ = bus_oe;
+  int stat_int = 0;
 
   if (tphase == 0) {
-    uint8_t bus_out_ = bus_out;
-    uint8_t bus_oe_ = bus_oe;
+    bool weird_line = ppu.frame_count == 0 && ppu.lineP2 == 0;
 
     bus_out_ |= cpu_read_cart ? mmu.bus_out : 0x00;
     bus_out_ |= cpu_read_vram ? vram.bus_out : 0x00;
@@ -255,51 +252,36 @@ void Gameboy::tick() {
       ppu.vram_lock = false;
     }
 
-    if (ppu.pix_count == 160 && ppu.hblank_delay) {
-      ppu.hblank_delay--;
-    }
+    //----------------------------------------
 
     if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
 
-    bool stat_int_glitch = false;
     oam_edge = ppu.lineP2 <= 143 && ppu.counterP2 == 0;
 
     if (ppu.lineP2 <= 143 && ppu.counterP2 == 0) stat_int |= (ppu.stat & EI_OAM);
     if (ppu.lineM2 == 144 && ppu.counterM2 == 0) stat_int |= (ppu.stat & EI_VBLANK);
 
+    //----------------------------------------
+    // stat int glitch
+
+    bool stat_int_glitch = false;
     if (cpu_write_ && cpu_addr_ == ADDR_STAT) {
       stat_int_glitch |= old_hblank_delay < 6;
       stat_int_glitch |= vblank;
       stat_int_glitch |= lyc_match;
     }
-
     stat_int |= stat_int_glitch ? 0x80 : 0;
 
-    if (ppu.lineM2 == 144 && ppu.counterM2 < 4) intf |= INT_VBLANK;
-    if (timer.overflow)      intf |= INT_TIMER;
-    if (buttons.val != 0xFF) intf |= INT_JOYPAD;
-
     //----------------------------------------
-    // tick z80
 
-    if (old_imask & 0x02) {
-      if (ppu.stat & EI_LYC)    z80.unhalt |= lyc_match;
-      if (ppu.stat & EI_OAM)    z80.unhalt |= old_oam_edge;
-      if (ppu.stat & EI_OAM)    z80.unhalt |= old_vblank;
-      if (ppu.stat & EI_VBLANK) z80.unhalt |= vblank;
-      if (ppu.stat & EI_HBLANK) z80.unhalt |= (old_hblank_delay < 7); // [7]
-      z80.unhalt |= stat_int_glitch ? true : false;
-    }
+    if (ppu.lineM2 == 144 && ppu.counterM2 == 0) intf |= INT_VBLANK;
 
-    if (old_imask & 0x01) z80.unhalt |= old_vblank;
-    if (old_imask & 0x04) z80.unhalt |= timer.overflow;
-    if (old_imask & 0x10) z80.unhalt |= buttons.val != 0xFF;
-
-    // TICK IS HERE
-    z80.tick_t0(old_imask, old_intf, bus_out_);
-
-    if (stat_int && !old_stat_int) intf |= INT_STAT;
-    old_stat_int = stat_int;
+    if (ppu.stat & EI_LYC)    stat_int_unhalt |= lyc_match;
+    if (ppu.stat & EI_OAM)    stat_int_unhalt |= old_oam_edge;
+    if (ppu.stat & EI_OAM)    stat_int_unhalt |= old_vblank;
+    if (ppu.stat & EI_VBLANK) stat_int_unhalt |= vblank;
+    if (ppu.stat & EI_HBLANK) stat_int_unhalt |= (old_hblank_delay < 7); // [7]
+    stat_int_unhalt |= stat_int_glitch ? true : false;
   }
 
   else if (tphase == 1) {
@@ -308,22 +290,13 @@ void Gameboy::tick() {
       ppu.tile_latched = true;
     }
 
-    if (ppu.pix_count == 160 && ppu.hblank_delay) {
-      ppu.hblank_delay--;
-    }
-
     if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
-
-    if (stat_int && !old_stat_int) intf |= INT_STAT;
-    old_stat_int = stat_int;
   }
 
   else if (tphase == 2) {
+    bool weird_line = ppu.frame_count == 0 && ppu.lineP2 == 0;
+  
     if (ppu.lcdc & FLAG_LCD_ON) lyc_match = (compare_line == ppu.lyc);
-
-    if (ppu.pix_count == 160 && ppu.hblank_delay) {
-      ppu.hblank_delay--;
-    }
 
     if (!weird_line && ppu.counterP2 == render_start) {
       ppu.oam_lock = true;
@@ -331,24 +304,41 @@ void Gameboy::tick() {
     }
 
     if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
-
-    if (stat_int && !old_stat_int) intf |= INT_STAT;
-    old_stat_int = stat_int;
   }
 
   else if (tphase == 3) {
-    if (ppu.pix_count == 160 && ppu.hblank_delay) {
-      ppu.hblank_delay--;
-    }
-
     if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
 
     // odd
-    if (ppu.hblank_delay < 5) stat_int |= (ppu.stat & EI_HBLANK);
+    if (ppu.hblank_delay < 6) stat_int |= (ppu.stat & EI_HBLANK);
+  }
 
-    if (stat_int && !old_stat_int) intf |= INT_STAT;
-    old_stat_int = stat_int;
+  if (stat_int && !old_stat_int) intf |= INT_STAT;
+  old_stat_int = stat_int;
 
+  if (ppu.pix_count == 160 && ppu.hblank_delay) {
+    ppu.hblank_delay--;
+  }
+
+  //-----------------------------------
+
+  if (tphase == 0) {
+    if (timer.overflow)      intf |= INT_TIMER;
+    if (buttons.val != 0xFF) intf |= INT_JOYPAD;
+
+    //----------------------------------------
+    // tick z80
+
+    if (old_imask & 0x02) z80.unhalt |= stat_int_unhalt;
+    if (old_imask & 0x01) z80.unhalt |= old_vblank;
+    if (old_imask & 0x04) z80.unhalt |= timer.overflow;
+    if (old_imask & 0x10) z80.unhalt |= buttons.val != 0xFF;
+
+    // TICK IS HERE
+    z80.tick_t0(old_imask, old_intf, bus_out_);
+  }
+
+  if (tphase == 3) {
     if (cpu_read_) {
       bus_out = 0x00;
       bus_oe = false;

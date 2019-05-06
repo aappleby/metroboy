@@ -214,6 +214,7 @@ void Gameboy::tick() {
   }
 
   if (!vblankP2 && ppu.counterP2 == 85) {
+    // FIXME this is weird
     ppu.tile_latched = true;
   }
 
@@ -221,13 +222,15 @@ void Gameboy::tick() {
     ppu.hblank_delay--;
   }
 
-  if (!vblankP2 && ppu.hblank_delay == 4) {
-    ppu.render_phase = false;
-    ppu.hblank_phase = true;
-    ppu.state = PPU_STATE_HBLANK;
+  if (tphase == 0 || tphase == 2) {
+    if (!vblankP2 && ppu.hblank_delay < 5) {
+      ppu.render_phase = false;
+      ppu.hblank_phase = true;
+      ppu.state = PPU_STATE_HBLANK;
 
-    ppu.vram_addr = 0;
-    ppu.fetch_state = PPU::FETCH_IDLE;
+      ppu.vram_addr = 0;
+      ppu.fetch_state = PPU::FETCH_IDLE;
+    }
   }
 
   ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (ppu.lyc_match << 2) | ppu.state);

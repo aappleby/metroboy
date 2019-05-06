@@ -8,8 +8,9 @@ struct PPU {
   void reset(bool run_bootrom, int new_model);
   int model = MODEL_DMG;
 
-  void tick(ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write, uint8_t vram_in, uint8_t oam_in);
-  void tock(ubit16_t cpu_addr_, ubit8_t cpu_data_, bool cpu_read_, bool cpu_write_, uint8_t vram_in, uint8_t oam_in);
+  void tick(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write, uint8_t vram_in, uint8_t oam_in);
+  void tock_lcdoff(int tphase, ubit16_t cpu_addr_, ubit8_t cpu_data_, bool cpu_read_, bool cpu_write_, uint8_t vram_in, uint8_t oam_in);
+  void tock(int tphase, ubit16_t cpu_addr_, ubit8_t cpu_data_, bool cpu_read_, bool cpu_write_, uint8_t vram_in, uint8_t oam_in);
   char* dump(char* cursor);
 
   bool is_frame_start() { return frame_start; }

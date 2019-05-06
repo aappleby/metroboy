@@ -140,14 +140,91 @@ void PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-void PPU::tick(ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool /*cpu_write*/,
+void PPU::tick(int /*tphase*/, ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool /*cpu_write*/,
                uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
 }
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_write,
+void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
+                      uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
+  bool vblankP2 = lineP2 >= 144;
+  if (vblankP2) {
+    hblank_phase = false;
+    hblank_delay = HBLANK_DELAY_START;
+
+    oam_lock = false;
+    oam_addr = 0;
+    oam_read = false;
+
+    vram_lock = false;
+    vram_addr = 0;
+  }
+
+
+  counterP2 = (counterP2 & 3) + 4;
+  lineP2 = 0;
+
+  if (cpu_write) bus_write(cpu_addr, cpu_data);
+
+  ly = 0;
+  frame_count = 0;
+  frame_done = false;
+  frame_start = false;
+
+  oam_phase = false;
+  render_phase = false;
+  hblank_phase = true;
+  hblank_delay = HBLANK_DELAY_START;
+  fetch_state = FETCH_IDLE;
+
+  pix_count = 0;
+  pix_oe = false;
+  sprite_count = 0;
+  sprite_index = -1;
+  tile_latched = false;
+
+  vram_addr = 0;
+  oam_addr = 0;
+  oam_data = 0;
+  oam_read = false;
+
+  stat = ubit8_t(0x80 | (stat & 0b11111100));
+
+  vram_lock = false;
+  oam_lock = false;
+
+  // FIXME
+  //stat = ubit8_t(0x80 | (stat & 0b01111000) | ((compare_line == lyc) << 2) | 1);
+
+  bus_oe = 0;
+  bus_out = 0;
+  if (cpu_read) bus_read(cpu_addr);
+}
+
+//-----------------------------------------------------------------------------
+
+void PPU::tock(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                uint8_t vram_in, uint8_t oam_in) {
+  bool vblankP2 = lineP2 >= 144;
+  if (vblankP2) {
+    hblank_phase = false;
+    hblank_delay = HBLANK_DELAY_START;
+
+    oam_lock = false;
+    oam_addr = 0;
+    oam_read = false;
+
+    vram_lock = false;
+    vram_addr = 0;
+  }
+  
+  //-----------------------------------
+  // Bus write
+
+  // If we don't do this early, the right twirler in gejmboj is broken
+  // (but it could also be a timing issue with the lyc int?)
+  if (cpu_write) bus_write(cpu_addr, cpu_data);
 
   //-----------------------------------
   // Handle OAM reads from the previous cycle
@@ -170,10 +247,6 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
       sprite_count++;
     }
   }
-
-  // If we don't do this early, the right twirler in gejmboj is broken
-  // (but it could also be a timing issue with the lyc int?)
-  if (cpu_write) bus_write(cpu_addr, cpu_data);
 
   oam_addr = 0;
   oam_read = false;
@@ -298,38 +371,13 @@ void PPU::tock(ubit16_t cpu_addr, ubit8_t cpu_data, bool /*cpu_read*/, bool cpu_
       oam_read = true;
     }
   }
-}
 
-//-----------------------------------------------------------------------------
+  //-----------------------------------
+  // Bus read
 
-void PPU::handle_lcd_off() {
-
-  counterP2 = (counterP2 & 3) + 4;
-  lineP2 = 0;
-
-  ly = 0;
-  frame_count = 0;
-  frame_done = false;
-  frame_start = false;
-
-  oam_phase = false;
-  render_phase = false;
-  hblank_phase = true;
-  hblank_delay = HBLANK_DELAY_START;
-  fetch_state = FETCH_IDLE;
-
-  pix_count = 0;
-  pix_oe = false;
-  sprite_count = 0;
-  sprite_index = -1;
-  tile_latched = false;
-
-  vram_addr = 0;
-  oam_addr = 0;
-  oam_data = 0;
-  oam_read = false;
-
-  stat = ubit8_t(0x80 | (stat & 0b11111100));
+  bus_oe = 0;
+  bus_out = 0;
+  if (cpu_read) bus_read(cpu_addr);
 }
 
 //-----------------------------------------------------------------------------

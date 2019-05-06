@@ -91,6 +91,9 @@ struct Gameboy {
   int64_t tcycle = -1;
 
   int compare_line;
+  bool vblank;
+  bool vblank_edge;
+  bool oam_edge;
 
   bool cpu_read_oam = false;
   bool cpu_read_vram = false;
@@ -118,7 +121,7 @@ struct Gameboy {
   uint8_t bus_out_latch = 0;
   bool bus_oe_latch = false;
 
-  bool old_stat_int = false;
+  int old_stat_int = 0;
 
   uint8_t intf = 0;
   uint8_t imask = 0;

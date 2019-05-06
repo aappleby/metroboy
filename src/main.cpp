@@ -84,7 +84,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-dmgABCmgbS.gb";
   filename = "LinksAwakening.gb";
   //filename = "microtests/build/dmg/oam_sprite_trashing.gb";
-  filename = "microtests/build/dmg/oam_read_l0_d.gb";
+  //filename = "microtests/build/dmg/oam_read_l0_d.gb";
 
   //filename = "mealybug/m3_bgp_change_sprites.gb";
 

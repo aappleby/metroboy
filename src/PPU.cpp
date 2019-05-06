@@ -17,7 +17,6 @@ uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8
 void PPU::reset(bool run_bootrom, int new_model) {
   model = new_model;
 
-  stat_int = 0;
   stat_int_lyc = 0;
   stat_int_oam = 0;
   stat_int_vblank = 0;
@@ -604,11 +603,13 @@ char* PPU::dump(char* cursor) {
     render_phase ? "VRM" : "   ",
     hblank_phase ? "HBK" : "   ",
     lineM2 >= 144 ? "VBK" : "   ");
+
+  /*
   if (stat_int) {
     cursor += sprintf(cursor, "%s %s %s %s %s\n",
       stat_int_lyc ? "#LYC" : "    ",
       stat_int_oam ? "#OAM" : "    ",
-      /*stat_int_hblank ? "#HBK" :*/ "    ",
+      stat_int_hblank ? "#HBK" : "    ",
       stat_int_vblank ? "#VBK" : "    ",
       stat_int_glitch ? "#GLT" : "    ");
   }
@@ -616,17 +617,18 @@ char* PPU::dump(char* cursor) {
     cursor += sprintf(cursor, "%s %s %s %s %s\n",
       stat_int_lyc ? "-LYC" : "    ",
       stat_int_oam ? "-OAM" : "    ",
-      /*stat_int_hblank ? "-HBK" :*/ "    ",
+      stat_int_hblank ? "-HBK" : "    ",
       stat_int_vblank ? "-VBK" : "    ",
       stat_int_glitch ? "-GLT" : "    ");
   }
+  */
 
   cursor += sprintf(cursor, "clockM2 %3d:%3d\n", lineM2, counterM2);
   cursor += sprintf(cursor, "clockP2 %3d:%3d\n", lineP2, counterP2);
 
   cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay);
   //cursor += sprintf(cursor, "vblank int %d\n", vblank_int);
-  cursor += sprintf(cursor, "stat int %d\n", stat_int);
+  //cursor += sprintf(cursor, "stat int %d\n", stat_int);
   cursor += sprintf(cursor, "\n");
 
   cursor += sprintf(cursor, "map x   %d\n", map_x);

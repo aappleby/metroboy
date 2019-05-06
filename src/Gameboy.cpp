@@ -331,20 +331,21 @@ void Gameboy::tick() {
     z80.tick_t0(imask, intf, bus_out_);
   }
 
-  ppu.stat_int = false;
-  if (ppu.stat & EI_LYC) ppu.stat_int |= ppu.stat_int_lyc;
-  if (ppu.stat & EI_OAM) ppu.stat_int |= ppu.stat_int_oam;
-  if (ppu.stat & EI_VBLANK) ppu.stat_int |= ppu.stat_int_vblank;
-  if (ppu.stat & EI_HBLANK) ppu.stat_int |= stat_int_hblank2;
-  ppu.stat_int |= ppu.stat_int_glitch;
+  bool stat_int2 = false;
+  if (ppu.stat & EI_LYC) stat_int2 |= ppu.stat_int_lyc;
+  if (ppu.stat & EI_OAM) stat_int2 |= ppu.stat_int_oam;
+  if (ppu.stat & EI_VBLANK) stat_int2 |= ppu.stat_int_vblank;
+  if (ppu.stat & EI_HBLANK) stat_int2 |= stat_int_hblank2;
+  stat_int2 |= ppu.stat_int_glitch;
 
-  bool new_stat_int = ppu.stat_int && !old_stat_int;
-  old_stat_int = ppu.stat_int;
+  bool new_stat_int = stat_int2 && !old_stat_int;
 
   if (vblankM2_edge)      intf |= INT_VBLANK;
   if (new_stat_int)        intf |= INT_STAT;
   if (timer.overflow)      intf |= INT_TIMER;
   if (buttons.val != 0xFF) intf |= INT_JOYPAD;
+
+  old_stat_int = stat_int2;
 }
 
 //-----------------------------------------------------------------------------

@@ -18,8 +18,6 @@ struct PPU {
   uint8_t get_lcdc()    { return lcdc; }
   int get_pix_count()   { return pix_count; }
 
-  bool stat_int;
-
   bool stat_int_lyc;
   bool stat_int_oam;
   bool stat_int_vblank;

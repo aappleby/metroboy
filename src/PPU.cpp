@@ -17,7 +17,6 @@ uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8
 void PPU::reset(bool run_bootrom, int new_model) {
   model = new_model;
 
-  vblank_int = 0;
   stat_int = 0;
   stat_int_lyc = 0;
   stat_int_oam = 0;
@@ -626,7 +625,7 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "clockP2 %3d:%3d\n", lineP2, counterP2);
 
   cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay);
-  cursor += sprintf(cursor, "vblank int %d\n", vblank_int);
+  //cursor += sprintf(cursor, "vblank int %d\n", vblank_int);
   cursor += sprintf(cursor, "stat int %d\n", stat_int);
   cursor += sprintf(cursor, "\n");
 

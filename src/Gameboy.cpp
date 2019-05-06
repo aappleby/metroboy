@@ -158,6 +158,7 @@ void Gameboy::tick() {
 
   bool vblankM2 = ppu.lineM2 > 143;
   bool vblankP2 = ppu.lineP2 > 143;
+  bool vblankM2_edge = ppu.lineM2 == 144 && ppu.counterM2 == 0;
 
   //-----------------------------------
   // lyc_match
@@ -289,12 +290,6 @@ void Gameboy::tick() {
   bool stat_int_hblank2 = old_hblank_delay < 6;
 
   //----------
-  // this has to be set for exactly one tcycle
-
-  if (ppu.lineM2 == 144 && ppu.counterM2 == 0) ppu.vblank_int = true;
-  if (ppu.lineM2 == 144 && ppu.counterM2 == 1) ppu.vblank_int = false;
-
-  //----------
 
   if (tphase == PHASE_CPU_TICK) {
     if (ppu.lineM2 == 144 && ppu.counterM2 == 0) ppu.stat_int_vblank = true;
@@ -346,7 +341,7 @@ void Gameboy::tick() {
   bool new_stat_int = ppu.stat_int && !old_stat_int;
   old_stat_int = ppu.stat_int;
 
-  if (ppu.vblank_int)      intf |= INT_VBLANK;
+  if (vblankM2_edge)      intf |= INT_VBLANK;
   if (new_stat_int)        intf |= INT_STAT;
   if (timer.overflow)      intf |= INT_TIMER;
   if (buttons.val != 0xFF) intf |= INT_JOYPAD;

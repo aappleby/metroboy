@@ -257,30 +257,32 @@ void Gameboy::tick() {
 
   //----------------------------------------
 
-  bool vblank_int = false;
-  bool stat_int_lyc = false;
-  bool stat_int_oam = false;
-  bool stat_int_vblank = false;
-  bool stat_int_hblank = false;
+  bool vblank_int = ppu.lineP2 == 144 && ppu.counterP2 == 2;
 
-  vblank_int |= ppu.lineP2 == 144 && ppu.counterP2 == 2;
-  stat_int_lyc |= ppu.lyc_match;
-  stat_int_oam |= ((ppu.lineP2 <= 143) && (ppu.counterP2 == 2)) | vblank_int;
-  stat_int_vblank |= vblankP2;
-  stat_int_hblank |= (old_hblank_delay == 6);
+  bool stat_int_oam = (ppu.lineM2 <= 143) && (ppu.counterM2 == 0);
+  bool stat_int_vblank = vblankP2;
+  bool stat_int_hblank = (old_hblank_delay == 6);
 
-  ppu.stat_int_lyc = false;
-  ppu.stat_int_oam = false;
-  ppu.stat_int_hblank = false;
+  //----------
 
-  ppu.stat_int_lyc    |= ppu.lyc_match;
-  ppu.stat_int_oam    |= ((ppu.lineP2 <= 143) && (ppu.counterP2 == 0)) | vblank_int;
-  ppu.stat_int_hblank |= (old_hblank_delay < 6);
+  ppu.stat_int_lyc = ppu.lyc_match;
+
+  //----------
+
+  if (ppu.lineP2 <= 143 && ppu.counterP2 == 0) ppu.stat_int_oam = true;
+  if (ppu.counterP2 == 1) ppu.stat_int_oam = false;
+
+  //----------
+
+  if (old_hblank_delay == 5) ppu.stat_int_hblank = true;
+  if (old_hblank_delay == HBLANK_DELAY_START) ppu.stat_int_hblank = false;
 
   //----------
   // this has to be set for exactly one tcycle
   if (ppu.lineM2 == 144 && ppu.counterM2 == 0) ppu.vblank_int = true;
   if (ppu.lineM2 == 144 && ppu.counterM2 == 1) ppu.vblank_int = false;
+
+  //----------
 
   if (ppu.lineM2 == 144 && ppu.counterM2 == 0) ppu.stat_int_vblank = true;
   if (ppu.lineM2 ==   0 && ppu.counterM2 == 0) ppu.stat_int_vblank = false;
@@ -305,10 +307,12 @@ void Gameboy::tick() {
   }
 
   if (imask & 0x02) {
-    if (ppu.stat & EI_LYC) z80.unhalt |= stat_int_lyc;
-    if (ppu.stat & EI_OAM) z80.unhalt |= stat_int_oam;
+    if (ppu.stat & EI_LYC)    z80.unhalt |= ppu.lyc_match;
+    if (ppu.stat & EI_OAM)    z80.unhalt |= stat_int_oam;
+    if (ppu.stat & EI_OAM)    z80.unhalt |= vblank_int;
     if (ppu.stat & EI_HBLANK) z80.unhalt |= stat_int_hblank;
     if (ppu.stat & EI_VBLANK) z80.unhalt |= stat_int_vblank;
+
     z80.unhalt |= stat_int_glitch;
   }
 

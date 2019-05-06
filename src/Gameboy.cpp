@@ -154,7 +154,6 @@ void Gameboy::tick() {
   uint8_t old_intf = intf;
   uint8_t old_imask = imask;
   bool old_oam_edge = oam_edge;
-  bool old_vblank = vblank;
   int old_hblank_delay = ppu.hblank_delay;
   bool stat_int_unhalt = false;
   int stat_int = 0;
@@ -273,7 +272,7 @@ void Gameboy::tick() {
 
     if (ppu.stat & EI_LYC)    stat_int_unhalt |= lyc_match;
     if (ppu.stat & EI_OAM)    stat_int_unhalt |= old_oam_edge;
-    if (ppu.stat & EI_OAM)    stat_int_unhalt |= old_vblank;
+    if (ppu.stat & EI_OAM)    stat_int_unhalt |= vblank;
     if (ppu.stat & EI_VBLANK) stat_int_unhalt |= vblank;
     if (ppu.stat & EI_HBLANK) stat_int_unhalt |= (old_hblank_delay < 7); // [7]
     stat_int_unhalt |= stat_int_glitch ? true : false;
@@ -313,6 +312,12 @@ void Gameboy::tick() {
   old_stat_int = stat_int;
 
   if (tphase == 0) {
+
+    /*
+    if (!!stat_int != !!stat_int_unhalt) {
+      __debugbreak();
+    }
+    */
 
     //----------------------------------------
     // tick z80

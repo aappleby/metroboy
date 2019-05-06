@@ -342,6 +342,14 @@ void Gameboy::tick() {
   if (ppu.stat & EI_VBLANK) ppu.stat_int |= ppu.stat_int_vblank;
   if (ppu.stat & EI_HBLANK) ppu.stat_int |= stat_int_hblank2;
   ppu.stat_int |= ppu.stat_int_glitch;
+
+  bool new_stat_int = ppu.stat_int && !old_stat_int;
+  old_stat_int = ppu.stat_int;
+
+  if (ppu.vblank_int)      intf |= INT_VBLANK;
+  if (new_stat_int)        intf |= INT_STAT;
+  if (timer.overflow)      intf |= INT_TIMER;
+  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
 }
 
 //-----------------------------------------------------------------------------
@@ -389,14 +397,6 @@ void Gameboy::tock() {
   else {
     ppu.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
   }
-
-  bool new_stat_int = ppu.stat_int && !old_stat_int;
-  old_stat_int = ppu.stat_int;
-
-  if (ppu.vblank_int)      intf |= INT_VBLANK;
-  if (new_stat_int)        intf |= INT_STAT;
-  if (timer.overflow)      intf |= INT_TIMER;
-  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
 
   if (cpu_read_) {
     bus_out = 0x00;

@@ -93,10 +93,6 @@ struct Gameboy {
   int stat_int;
   int stat_int2;
   int compare_line;
-  bool vblank;
-  bool vblank_edge;
-  bool oam_edge;
-  bool lyc_match;
 
   bool cpu_read_oam = false;
   bool cpu_read_vram = false;

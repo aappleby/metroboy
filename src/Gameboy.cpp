@@ -42,10 +42,6 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   stat_int = 0;
   stat_int2 = 0;
   compare_line = 0;
-  vblank = false;
-  vblank_edge = false;
-  oam_edge = false;
-  lyc_match = false;
 
   cpu_read_oam = false;
   cpu_read_vram = false;
@@ -85,7 +81,7 @@ void Gameboy::tick() {
   int tphase = tcycle & 3;
 
   uint16_t cpu_addr_ = z80.mem_addr_;
-  bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
+  //bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
   bool     cpu_write_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
 
   //-----------------------------------
@@ -159,8 +155,7 @@ void Gameboy::tick() {
 
     //-----------------------------------
 
-    vblank = ppu.lineP2 > 143;
-    vblank_edge = ppu.lineP2 == 144 && ppu.counterP2 == 0;
+    bool vblank = ppu.lineP2 > 143;
     ppu.frame_start = (ppu.counterP2 == 0) && (ppu.lineP2 == 0);
     ppu.frame_done = (ppu.counterP2 == 0) && (ppu.lineP2 == 144);
 
@@ -182,8 +177,6 @@ void Gameboy::tick() {
       compare_line = -1;
     }
 
-    if (ppu.lcdc & FLAG_LCD_ON) lyc_match = (compare_line == ppu.lyc);
-  
     //----------------------------------------
     // Update state machiney stuff
 
@@ -229,7 +222,7 @@ void Gameboy::tick() {
 
     ppu.stat &= 0b11111000;
     ppu.stat |= ppu.state;
-    ppu.stat |= lyc_match << 2;
+    ppu.stat |= (compare_line == ppu.lyc) << 2;
 
     //----------------------------------------
     // locking
@@ -247,30 +240,29 @@ void Gameboy::tick() {
 
     //----------------------------------------
 
-    oam_edge = ppu.lineP2 <= 143 && ppu.counterP2 == 0;
-
     stat_int &= ~EI_VBLANK;
     if (ppu.lineP2 == 144 && ppu.counterP2 == 4) stat_int |= (ppu.stat & EI_VBLANK);
 
     stat_int &= ~EI_HBLANK;
     if (ppu.hblank_delay < 7) stat_int |= (ppu.stat & EI_HBLANK);
 
-    stat_int &= ~EI_LYC;
-    if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
+    if (ppu.lcdc & FLAG_LCD_ON) {
+      stat_int &= ~EI_LYC;
+      if (compare_line == ppu.lyc) stat_int |= (ppu.stat & EI_LYC);
+    }
 
     stat_int2 = stat_int;
 
     stat_int &= ~EI_OAM;
     if (!weird_line && ppu.lineP2 <= 143 && ppu.counterP2 == 0) stat_int |= (ppu.stat & EI_OAM);
 
-    //----------------------------------------
     // stat int glitch
 
     bool stat_int_glitch = false;
     if (cpu_write_ && cpu_addr_ == ADDR_STAT) {
       stat_int_glitch |= old_hblank_delay < 6;
       stat_int_glitch |= vblank;
-      stat_int_glitch |= lyc_match;
+      stat_int_glitch |= (compare_line == ppu.lyc);
     }
 
     stat_int &= ~0x80;
@@ -281,15 +273,15 @@ void Gameboy::tick() {
     if (ppu.counterP2 == 85) ppu.tile_latched = true;
   }
   else if (tphase == 2) {
-    if (ppu.lcdc & FLAG_LCD_ON) lyc_match = (compare_line == ppu.lyc);
-
     if (!weird_line && ppu.counterP2 == render_start) {
       ppu.oam_lock = true;
       ppu.vram_lock = true;
     }
 
-    stat_int &= ~EI_LYC;
-    if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
+    if (ppu.lcdc & FLAG_LCD_ON) {
+      stat_int &= ~EI_LYC;
+      if (compare_line == ppu.lyc) stat_int |= (ppu.stat & EI_LYC);
+    }
 
     stat_int &= ~EI_HBLANK;
     if (ppu.hblank_delay < 7) stat_int |= (ppu.stat & EI_HBLANK);
@@ -300,11 +292,10 @@ void Gameboy::tick() {
     ppu.hblank_delay--;
   }
 
-  //-----------------------------------
+  //----------------------------------------
+  // tick z80
 
   if (tphase == 0) {
-    //----------------------------------------
-    // tick z80
 
     if (imask & 0x01) z80.unhalt |= (ppu.lineP2 == 144 && ppu.counterP2 == 4) ? true : false;
     if (imask & 0x02) z80.unhalt |= stat_int2 != 0;
@@ -314,6 +305,17 @@ void Gameboy::tick() {
     // TICK IS HERE
     z80.tick_t0(imask, intf, bus_out_);
   }
+}
+
+//-----------------------------------------------------------------------------
+
+void Gameboy::tock() {
+  int tphase = tcycle & 3;
+
+  uint16_t cpu_addr_ = z80.mem_addr_;
+  uint8_t  cpu_data_ = z80.mem_out_;
+  bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
+  bool     cpu_write_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
 
   if (tphase == 3) {
     if (cpu_read_) {
@@ -323,23 +325,12 @@ void Gameboy::tick() {
       if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
     }
   }
-}
-
-//-----------------------------------------------------------------------------
-
-void Gameboy::tock() {
-  int tphase = tcycle & 3;
 
   if (ppu.lineP2 == 144 && ppu.counterP2 == 4) intf |= INT_VBLANK;
   if (stat_int && !old_stat_int) intf |= INT_STAT;
   if (timer.overflow)      intf |= INT_TIMER;
   if (buttons.val != 0xFF) intf |= INT_JOYPAD;
   old_stat_int = stat_int;
-
-  uint16_t cpu_addr_ = z80.mem_addr_;
-  uint8_t  cpu_data_ = z80.mem_out_;
-  bool     cpu_read_ = z80.mem_read_ && (tphase == PHASE_CPU_READ);
-  bool     cpu_write_ = z80.mem_write_ && (tphase == PHASE_CPU_WRITE);
 
   bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
   bool vblankP2 = ppu.lineP2 >= 144;
@@ -368,7 +359,7 @@ void Gameboy::tock() {
     ppu.vram_lock = false;
     ppu.oam_lock = false;
     if (cpu_write_) ppu.bus_write(cpu_addr_, cpu_data_);
-    ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | (lyc_match << 2) | 1);
+    ppu.stat = ubit8_t(0x80 | (ppu.stat & 0b01111000) | ((compare_line == ppu.lyc) << 2) | 1);
   }
   else {
     ppu.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);

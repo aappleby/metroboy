@@ -23,7 +23,6 @@ struct PPU {
 
   bool stat_int_lyc;
   bool stat_int_oam;
-  bool stat_int_hblank;
   bool stat_int_vblank;
   bool stat_int_glitch;
 

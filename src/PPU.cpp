@@ -21,7 +21,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   stat_int = 0;
   stat_int_lyc = 0;
   stat_int_oam = 0;
-  stat_int_hblank = 0;
   stat_int_vblank = 0;
   stat_int_glitch = 0;
 
@@ -610,7 +609,7 @@ char* PPU::dump(char* cursor) {
     cursor += sprintf(cursor, "%s %s %s %s %s\n",
       stat_int_lyc ? "#LYC" : "    ",
       stat_int_oam ? "#OAM" : "    ",
-      stat_int_hblank ? "#HBK" : "    ",
+      /*stat_int_hblank ? "#HBK" :*/ "    ",
       stat_int_vblank ? "#VBK" : "    ",
       stat_int_glitch ? "#GLT" : "    ");
   }
@@ -618,7 +617,7 @@ char* PPU::dump(char* cursor) {
     cursor += sprintf(cursor, "%s %s %s %s %s\n",
       stat_int_lyc ? "-LYC" : "    ",
       stat_int_oam ? "-OAM" : "    ",
-      stat_int_hblank ? "-HBK" : "    ",
+      /*stat_int_hblank ? "-HBK" :*/ "    ",
       stat_int_vblank ? "-VBK" : "    ",
       stat_int_glitch ? "-GLT" : "    ");
   }

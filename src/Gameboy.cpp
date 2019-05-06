@@ -286,8 +286,13 @@ void Gameboy::tick() {
 
   //----------
 
-  if (old_hblank_delay < 6) ppu.stat_int_hblank = true;
-  if (old_hblank_delay == HBLANK_DELAY_START) ppu.stat_int_hblank = false;
+  bool stat_int_hblank2 = old_hblank_delay < 6;
+
+  //----------
+  // this has to be set for exactly one tcycle
+
+  if (ppu.lineM2 == 144 && ppu.counterM2 == 0) ppu.vblank_int = true;
+  if (ppu.lineM2 == 144 && ppu.counterM2 == 1) ppu.vblank_int = false;
 
   //----------
 
@@ -298,7 +303,7 @@ void Gameboy::tick() {
     ppu.stat_int_glitch = false;
 
     if (cpu_write_ && cpu_addr_ == ADDR_STAT) {
-      ppu.stat_int_glitch |= ppu.stat_int_hblank;
+      ppu.stat_int_glitch |= stat_int_hblank2;
       ppu.stat_int_glitch |= vblankP2;
       ppu.stat_int_glitch |= ppu.lyc_match;
     }
@@ -330,6 +335,13 @@ void Gameboy::tick() {
     // TICK IS HERE
     z80.tick_t0(imask, intf, bus_out_);
   }
+
+  ppu.stat_int = false;
+  if (ppu.stat & EI_LYC) ppu.stat_int |= ppu.stat_int_lyc;
+  if (ppu.stat & EI_OAM) ppu.stat_int |= ppu.stat_int_oam;
+  if (ppu.stat & EI_VBLANK) ppu.stat_int |= ppu.stat_int_vblank;
+  if (ppu.stat & EI_HBLANK) ppu.stat_int |= stat_int_hblank2;
+  ppu.stat_int |= ppu.stat_int_glitch;
 }
 
 //-----------------------------------------------------------------------------
@@ -368,14 +380,6 @@ void Gameboy::tock() {
 
   //-----------------------------------
 
-  ppu.stat_int = false;
-
-  if (ppu.stat & EI_LYC) ppu.stat_int |= ppu.stat_int_lyc;
-  if (ppu.stat & EI_OAM) ppu.stat_int |= ppu.stat_int_oam;
-  if (ppu.stat & EI_VBLANK) ppu.stat_int |= ppu.stat_int_vblank;
-  if (ppu.stat & EI_HBLANK) ppu.stat_int |= ppu.stat_int_hblank;
-  ppu.stat_int |= ppu.stat_int_glitch;
-
   if (!lcd_on || vblankP2) {
     ppu.vram_lock = false;
     ppu.oam_lock = false;
@@ -389,10 +393,7 @@ void Gameboy::tock() {
   bool new_stat_int = ppu.stat_int && !old_stat_int;
   old_stat_int = ppu.stat_int;
 
-  //----------
-  // this has to be set for exactly one tcycle
-
-  if (ppu.lineM2 == 144 && ppu.counterM2 == 0)      intf |= INT_VBLANK;
+  if (ppu.vblank_int)      intf |= INT_VBLANK;
   if (new_stat_int)        intf |= INT_STAT;
   if (timer.overflow)      intf |= INT_TIMER;
   if (buttons.val != 0xFF) intf |= INT_JOYPAD;

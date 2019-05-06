@@ -323,7 +323,7 @@ void run_microtest(int model, const std::string& prefix, const std::string& name
   Gameboy gameboy;
   gameboy.reset(model, rom_size, 0x100);
 
-  uint8_t result = 0;
+  uint8_t result = 0xFF;
   int i = 0;
   const int ticks = 100000;  // bits_ram_en needs lots of tcycles
   for (; i < ticks; i++) {

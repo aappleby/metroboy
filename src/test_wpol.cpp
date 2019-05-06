@@ -118,7 +118,6 @@ extern uint8_t rom_buf[1024 * 1024];
 
 void run_test(const std::string& prefix, const std::string& name) {
   std::string filename = prefix + name;
-  printf("%-50s ", name.c_str());
 
   FILE* rom_file = NULL;
   rom_file = fopen(filename.c_str(), "rb");
@@ -132,26 +131,29 @@ void run_test(const std::string& prefix, const std::string& name) {
   Gameboy gameboy;
   gameboy.reset(MODEL_DMG, rom_size, 0x100);
 
-  bool pass = false;
+  uint8_t result = 0xFF;
   int i = 0;
   const int ticks = 25000000;  // bits_ram_en needs lots of tcycles
   for (; i < ticks; i++) {
     gameboy.tick();
     gameboy.tock();
     if (gameboy.get_op() == 0x40) {
-      pass = gameboy.get_reg_a() == 0x00;
+      result = gameboy.get_reg_a();
       break;
     }
   }
 
   if (i == ticks) {
+    printf("%-50s ", name.c_str());
     printf("? TIMEOUT @ %d\n", i);
   }
-  else if (pass) {
-    printf("  PASS @ %d\n", i);
+  else if (result == 0x00) {
+    printf(".");
   }
   else {
-    printf("X FAIL @ %d\n", i);
+    printf("\n");
+    printf("%-50s ", name.c_str());
+    printf("X 0x%02x FAIL @ %d\n", result, i);
   }
 }
 

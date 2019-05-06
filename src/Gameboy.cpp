@@ -228,8 +228,8 @@ void Gameboy::tick() {
     ppu.hblank_delay--;
   }
 
-  if (tphase == 0 || tphase == 2) {
-    if (!vblankP2 && ppu.hblank_delay < 5) {
+  if (tphase == 0) {
+    if (!vblankP2 && ppu.hblank_delay < 6) {
       ppu.render_phase = false;
       ppu.hblank_phase = true;
       ppu.state = PPU_STATE_HBLANK;

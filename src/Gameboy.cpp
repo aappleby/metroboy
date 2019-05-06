@@ -153,16 +153,17 @@ void Gameboy::tick() {
 
   uint8_t old_intf = intf;
   uint8_t old_imask = imask;
+  //bool old_vblank = vblank;
   bool old_oam_edge = oam_edge;
   int old_hblank_delay = ppu.hblank_delay;
   bool stat_int_unhalt = false;
   int stat_int = 0;
+  bool weird_line = ppu.frame_count == 0 && ppu.lineP2 == 0;
 
   if (tphase == 0) {
 
     //-----------------------------------
 
-    bool weird_line = ppu.frame_count == 0 && ppu.lineP2 == 0;
     vblank = ppu.lineP2 > 143;
     vblank_edge = ppu.lineP2 == 144 && ppu.counterP2 == 0;
     ppu.frame_start = (ppu.counterP2 == 0) && (ppu.lineP2 == 0);
@@ -220,7 +221,7 @@ void Gameboy::tick() {
       ppu.pipe_count = 0;
     }
 
-    if (ppu.hblank_delay < 7) {
+    if (!vblank && ppu.hblank_delay < 7) {
       ppu.render_phase = false;
       ppu.hblank_phase = true;
       ppu.state = PPU_STATE_HBLANK;
@@ -251,10 +252,13 @@ void Gameboy::tick() {
 
     oam_edge = ppu.lineP2 <= 143 && ppu.counterP2 == 0;
 
-    if (ppu.lineP2 <= 143 && ppu.counterP2 == 0) stat_int |= (ppu.stat & EI_OAM);
     if (ppu.lineP2 == 144 && ppu.counterP2 == 4) stat_int |= (ppu.stat & EI_VBLANK);
+    if (ppu.hblank_delay < 7) stat_int |= (ppu.stat & EI_HBLANK);
+    if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
 
-    if (old_hblank_delay < 7) stat_int |= (ppu.stat & EI_HBLANK);
+    int stat_int2 = stat_int;
+
+    if (!weird_line && ppu.lineP2 <= 143 && ppu.counterP2 == 0) stat_int |= (ppu.stat & EI_OAM);
 
     //----------------------------------------
     // stat int glitch
@@ -269,34 +273,33 @@ void Gameboy::tick() {
 
     //----------------------------------------
 
-
-    if (ppu.stat & EI_LYC)    stat_int_unhalt |= lyc_match;
+    if (ppu.stat & EI_LYC)    stat_int_unhalt |= (stat_int2 & EI_LYC) != 0;
     if (ppu.stat & EI_OAM)    stat_int_unhalt |= old_oam_edge;
-    if (ppu.stat & EI_OAM)    stat_int_unhalt |= vblank;
-    if (ppu.stat & EI_VBLANK) stat_int_unhalt |= vblank;
-    if (ppu.stat & EI_HBLANK) stat_int_unhalt |= (old_hblank_delay < 7); // [7]
-    stat_int_unhalt |= stat_int_glitch ? true : false;
+    if (ppu.stat & EI_OAM)    stat_int_unhalt |= (stat_int2 & EI_VBLANK) != 0;
+    if (ppu.stat & EI_VBLANK) stat_int_unhalt |= (stat_int2 & EI_VBLANK) != 0;
+    if (ppu.stat & EI_HBLANK) stat_int_unhalt |= (stat_int2 & EI_HBLANK) != 0;
+    stat_int_unhalt |= (stat_int & 0x80) != 0;
   }
   else if (tphase == 1) {
     // FIXME this is weird
     if (ppu.counterP2 == 85) ppu.tile_latched = true;
+    if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
   }
   else if (tphase == 2) {
-    bool weird_line = ppu.frame_count == 0 && ppu.lineP2 == 0;
-  
     if (ppu.lcdc & FLAG_LCD_ON) lyc_match = (compare_line == ppu.lyc);
 
     if (!weird_line && ppu.counterP2 == render_start) {
       ppu.oam_lock = true;
       ppu.vram_lock = true;
     }
+    if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
   }
   else if (tphase == 3) {
     // FIXME this is weird
     if (ppu.hblank_delay < 6) stat_int |= (ppu.stat & EI_HBLANK);
+    if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
   }
 
-  if (lyc_match) stat_int |= (ppu.stat & EI_LYC);
 
 
   if (ppu.pix_count == 160 && ppu.hblank_delay) {

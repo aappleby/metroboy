@@ -90,6 +90,7 @@ struct Gameboy {
   int model = MODEL_DMG;
   int64_t tcycle = -1;
 
+  int stat_int;
   int compare_line;
   bool vblank;
   bool vblank_edge;

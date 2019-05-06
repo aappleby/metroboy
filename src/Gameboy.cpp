@@ -83,6 +83,8 @@ void Gameboy::tick() {
   //-----------------------------------
   // Update counter/line/frame
 
+  //bool old_vblank = ppu.lineP2 > 143;
+
   ppu.counterP2++;
   if (ppu.counterP2 == TCYCLES_LINE) {
     ppu.counterP2 = 0;
@@ -171,18 +173,9 @@ void Gameboy::tick() {
       ppu.fetch_state = PPU::FETCH_IDLE;
     }
 
-    if (vblank) {
+    if (ppu.lineP2 == 144 && ppu.counterP2 == 4) {
       ppu.hblank_phase = false;
-      ppu.hblank_delay = HBLANK_DELAY_START;
-
-      ppu.oam_lock = false;
-      ppu.oam_addr = 0;
-      ppu.oam_read = false;
-
-      ppu.vram_lock = false;
-      ppu.vram_addr = 0;
-
-      ppu.state = PPU_STATE_VRAM;
+      ppu.state = PPU_STATE_VBLANK;
     }
 
     //----------------------------------------

@@ -44,12 +44,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "intr_2_timing.gb");
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS.gb");
 
-  //run_test("microtests/build/dmg/", "oam_int_inc_sled.gb");
+  //run_test("microtests/build/dmg/", "dma_timing_a.gb");
 
   run_microtests();
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
-  //return 0;
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
+  return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -78,14 +78,14 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   const char* filename = nullptr;
 
-  filename = "mooneye-gb/tests/build/acceptance/oam_dma_start.gb";
+  filename = "mooneye-gb/tests/build/acceptance/oam_dma/basic.gb";
   //filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
   //filename = "oh.gb";
   //filename = "LinksAwakening.gb";
 
   //filename = "microtests/build/dmg/oam_sprite_trashing.gb";
   //filename = "microtests/build/dmg/line_153_lyc_a.gb";
-  //filename = "microtests/build/dmg/lcdon_to_stat3_b.gb";
+  //filename = "microtests/build/dmg/dma_timing_a.gb";
 
   //filename = "mealybug/m3_bgp_change_sprites.gb";
 
@@ -260,7 +260,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
     // Left column text
 
     Gameboy& gameboy = metroboy.gb();
-    gameboy.dump(text_buf);
+    cursor = text_buf;
+    cursor = gameboy.dump(cursor);
+    cursor = gameboy.oam.dump(cursor);
     render_text(framebuffer, 4, 4, terminus_font, text_buf);
 
     gameboy.dump_disasm(text_buf);

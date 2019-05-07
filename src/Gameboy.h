@@ -116,9 +116,7 @@ struct Gameboy {
 
   uint8_t bus_out = 0;
   bool bus_oe = false;
-
-  uint8_t bus_out_latch = 0;
-  bool bus_oe_latch = false;
+  uint8_t bus_in = 0;
 
   int old_stat_int = 0;
 

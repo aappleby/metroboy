@@ -151,10 +151,13 @@ void MetroBoy::step_over() {
   current_gameboy = new Gameboy();
   memcpy(current_gameboy, history_cycle.back(), sizeof(Gameboy));
 
-  int op = current_gameboy->get_op();
+  //int op = current_gameboy->get_op();
+  int pc = current_gameboy->get_pc();
+  int op = rom_buf[pc];
   int op_size = op_sizes[op];
+  if (op == 0xcb) op_size = 2;
 
-  int next_pc = current_gameboy->get_pc() + op_size;
+  int next_pc = pc + op_size;
 
   int i = 0;
   for (; i < 1000000; i++) {

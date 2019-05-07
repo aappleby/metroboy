@@ -28,14 +28,7 @@ void OAM::tock(uint16_t addr, uint8_t data, bool read, bool write) {
 
 char* OAM::dump(char* cursor) {
   for (int i = 0; i < 10; i++) {
-    uint8_t y = ram[4 * i + 0];
-    cursor += sprintf(cursor, "%3d ", y);
-  }
-  cursor += sprintf(cursor, "\n");
-
-  for (int i = 0; i < 10; i++) {
-    uint8_t x = ram[4 * i + 1];
-    cursor += sprintf(cursor, "%3d ", x);
+    cursor += sprintf(cursor, "%2x ", ram[i]);
   }
   cursor += sprintf(cursor, "\n");
 

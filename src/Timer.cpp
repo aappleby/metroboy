@@ -45,7 +45,7 @@ void Timer::tock(int tphase, uint16_t addr, uint8_t data, bool read, bool write)
   }
   tick = new_tick;
 
-  if (tphase == 2) {
+  if (tphase == 1) {
     if (overflow) new_tima = tma;
     overflow = (old_tima == 0xFF) && (new_tima == 0x00);
   }

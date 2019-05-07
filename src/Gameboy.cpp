@@ -208,7 +208,12 @@ void Gameboy::tick() {
     stat_int2 = stat_int;
 
     stat_int &= ~EI_OAM;
-    if (!weird_line && ppu.lineP2 <= 143 && ppu.counterP2 == 0) stat_int |= (ppu.stat & EI_OAM);
+    if (ppu.lineP2 == 0) {
+      if (ppu.counterP2 == 4) stat_int |= (ppu.stat & EI_OAM);
+    }
+    else if (ppu.lineP2 <= 144) {
+      if (ppu.counterP2 == 0) stat_int |= (ppu.stat & EI_OAM);
+    }
 
     // stat int glitch
 
@@ -322,7 +327,7 @@ void Gameboy::tock() {
   if (cpu_read_) {
     bus_out = 0x00;
     bus_oe = false;
-    if (cpu_addr_ == ADDR_IF) { bus_out = intf; bus_oe = true; }
+    if (cpu_addr_ == ADDR_IF) { bus_out = 0b11100000 | intf; bus_oe = true; }
     if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }
 

@@ -46,10 +46,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //run_test("microtests/build/dmg/", "dma_timing_a.gb");
 
-  //run_microtests();
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
-  //return 0;
+  run_microtests();
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
+  return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -78,8 +78,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   const char* filename = nullptr;
 
-  filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb";
-  //filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
+  filename = "mooneye-gb/tests/build/acceptance/timer/tima_reload.gb";
+  //filename = "wpol-gb/tests/build/acceptance/gpu/intr_1_2_timing-GS.gb";
   //filename = "oh.gb";
   //filename = "LinksAwakening.gb";
 

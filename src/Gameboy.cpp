@@ -337,7 +337,7 @@ void Gameboy::tock() {
     ppu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
   }
 
-  if (tphase == 2) {
+  if (tphase == 0 || tphase == 2) {
     ppu.stat &= 0b11111000;
     ppu.stat |= ppu.state;
     ppu.stat |= (compare_line == ppu.lyc) << 2;

@@ -78,14 +78,14 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   const char* filename = nullptr;
 
-  filename = "mooneye-gb/tests/build/acceptance/oam_dma/basic.gb";
+  //filename = "mooneye-gb/tests/build/acceptance/oam_dma/basic.gb";
   //filename = "wpol-gb/tests/build/acceptance/gpu/vblank_stat_intr-GS.gb";
   //filename = "oh.gb";
   //filename = "LinksAwakening.gb";
 
   //filename = "microtests/build/dmg/oam_sprite_trashing.gb";
   //filename = "microtests/build/dmg/line_153_lyc_a.gb";
-  //filename = "microtests/build/dmg/dma_timing_a.gb";
+  filename = "microtests/build/dmg/lcdon_to_stat0_b.gb";
 
   //filename = "mealybug/m3_bgp_change_sprites.gb";
 

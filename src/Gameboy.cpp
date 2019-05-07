@@ -195,7 +195,8 @@ void Gameboy::tick() {
     //----------------------------------------
 
     stat_int &= ~EI_VBLANK;
-    if (ppu.lineP2 == 144 && ppu.counterP2 == 4) stat_int |= (ppu.stat & EI_VBLANK);
+    if (ppu.lineP2 == 144 && ppu.counterP2 >= 4) stat_int |= (ppu.stat & EI_VBLANK);
+    if (ppu.lineP2 > 144) stat_int |= (ppu.stat & EI_VBLANK);
 
     stat_int &= ~EI_HBLANK;
     if (ppu.hblank_delay < 7) stat_int |= (ppu.stat & EI_HBLANK);

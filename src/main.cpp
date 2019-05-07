@@ -78,8 +78,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   const char* filename = nullptr;
 
-  filename = "mooneye-gb/tests/build/acceptance/timer/tima_reload.gb";
-  //filename = "wpol-gb/tests/build/acceptance/gpu/intr_1_2_timing-GS.gb";
+  //filename = "mooneye-gb/tests/build/acceptance/ppu/stat_irq_blocking.gb";
+  filename = "wpol-gb/tests/build/acceptance/gpu/stat_write_if-GS.gb";
   //filename = "oh.gb";
   //filename = "LinksAwakening.gb";
 

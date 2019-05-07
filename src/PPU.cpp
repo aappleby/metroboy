@@ -545,7 +545,7 @@ void PPU::bus_read(uint16_t addr) {
     bus_oe = 1;
     switch (addr) {
     case ADDR_LCDC: bus_out = lcdc; break;
-    case ADDR_STAT: bus_out = stat; break;
+    case ADDR_STAT: bus_out = stat | 0x80; break;
     case ADDR_SCY:  bus_out = scy; break;
     case ADDR_SCX:  bus_out = scx; break;
     case ADDR_LY:   bus_out = ly; break;

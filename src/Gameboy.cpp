@@ -364,19 +364,7 @@ void Gameboy::tock() {
   //-----------------------------------
   // DMA state machine
 
-  bool dma_read = false;
-  uint16_t dma_read_addr = 0;
-
-  bool dma_write = false;
-  uint16_t dma_write_addr = 0;
-
-  uint8_t dma_data = 0;
-
-  // write
   if (tphase == 0) {
-    //----------
-    // update dma state
-
     dma_mode_b = dma_mode_a;
     dma_count_b = dma_count_a;
 
@@ -384,38 +372,17 @@ void Gameboy::tock() {
     dma_count_a = dma_count_x;
     dma_source_a = dma_source_x;
 
-    if (dma_count_x == 159) {
-      dma_mode_x = DMA_NONE;
-    }
-    else {
-      dma_count_x = dma_count_x + 1;
-    }
+    if (dma_mode_x != DMA_NONE) dma_count_x++;
+    if (dma_count_x == 160) dma_mode_x = DMA_NONE;
   }
 
-  //----------
-  // set up dma write addr/data
+  uint16_t dma_read_addr = (dma_source_a << 8) | dma_count_a;
+  uint16_t dma_write_addr = ADDR_OAM_BEGIN + dma_count_b;
 
-  if (dma_mode_b == DMA_CART) {
-    //printf("%8lld: Read cart byte 0x%02x\n", tcycle, mmu.bus_out);
-    dma_data = mmu.bus_out;
-    dma_write = true;
-  }
-  if (dma_mode_b == DMA_VRAM) {
-    //printf("%8lld: Read vram byte 0x%02x\n", tcycle, vram.bus_out);
-    dma_data = vram.bus_out;
-    dma_write = true;
-  }
-  if (dma_mode_b == DMA_IRAM) {
-    //printf("%8lld: Read iram byte 0x%02x\n", tcycle, iram.bus_out);
-    dma_data = iram.bus_out;
-    dma_write = true;
-  }
-
-  dma_write_addr = ADDR_OAM_BEGIN + dma_count_b;
-
-  // read
-  dma_read = (dma_mode_a != DMA_NONE);
-  dma_read_addr = (dma_source_a << 8) | dma_count_a;
+  uint8_t dma_data = 0;
+  if (dma_mode_b == DMA_CART) dma_data = mmu.bus_out;
+  if (dma_mode_b == DMA_VRAM) dma_data = vram.bus_out;
+  if (dma_mode_b == DMA_IRAM) dma_data = iram.bus_out;
 
   //-----------------------------------
 
@@ -433,8 +400,7 @@ void Gameboy::tock() {
   //-----------------------------------
   // oam bus mux
 
-  if (dma_write) {
-    //printf("%8lld: dma write to oam 0x%04x 0x%02x\n", tcycle, dma_write_addr, dma_data);
+  if (dma_mode_b != DMA_NONE) {
     cpu_read_oam = false;
     if (tphase == 0) {
       oam.tock(dma_write_addr, dma_data, false, true);
@@ -471,7 +437,6 @@ void Gameboy::tock() {
   // vram bus mux
 
   if (dma_mode_a == DMA_VRAM) {
-    //printf("%8lld: dma read from vram 0x%04x\n", tcycle, dma_read_addr);
     cpu_read_vram = false;
     vram.tock(dma_read_addr, 0, true, false);
   }
@@ -488,7 +453,6 @@ void Gameboy::tock() {
   // iram bus mux
 
   if (dma_mode_a == DMA_IRAM) {
-    //printf("%8lld: dma read from iram 0x%04x\n", tcycle, dma_read_addr);
     cpu_read_iram = false;
     iram.tock_t2(dma_read_addr, 0, true, false);
   }
@@ -501,7 +465,6 @@ void Gameboy::tock() {
   // cart bus mux
 
   if (dma_mode_a == DMA_CART) {
-    //printf("%8lld: dma read from cart 0x%04x\n", tcycle, dma_read_addr);
     cpu_read_cart = false;
     mmu.tock_t2(dma_read_addr, 0, true, false);
   }

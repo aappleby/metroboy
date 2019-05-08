@@ -48,8 +48,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   run_microtests();
   run_mooneye_acceptance();
-  //run_wpol_acceptance();
-  return 0;
+  run_wpol_acceptance();
+  //return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -82,12 +82,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //filename = "mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing_sprites.gb";
   //filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb";
 
-  filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_mode0_timing_sprites_nops.gb";
+  //filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_mode0_timing_sprites_nops.gb";
 
   //filename = "oh.gb";
   //filename = "pocket.gb";
   //filename = "gejmboj.gb";
-  //filename = "LinksAwakening.gb";
+  filename = "LinksAwakening.gb";
 
   //filename = "microtests/build/dmg/oam_sprite_trashing.gb";
   //filename = "microtests/build/dmg/oam_write_l0_e.gb";

@@ -129,6 +129,14 @@ struct PPU {
     FETCH_DONE,
   };
 
+  enum FetchType {
+    FETCH_BACKGROUND,
+    FETCH_WINDOW,
+    FETCH_SPRITE,
+    FETCH_NONE
+  };
+
+  FetchType fetch_type = FETCH_NONE;
   FetchState fetch_state;
   bool    window_hit;
 

@@ -88,6 +88,7 @@ struct PPU {
   bool oam_phase;
   bool render_phase;
   bool hblank_phase;
+  bool vblank_phase;
 
   uint8_t hblank_delay;
 

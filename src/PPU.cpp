@@ -62,9 +62,13 @@ void PPU::reset(bool run_bootrom, int new_model) {
   frame_done = 0;
   frame_count = 0;
 
+  lineP2 = 0;
+  counterP2 = 0;
+
   oam_phase = false;
   render_phase = false;
-  hblank_phase = false;
+  hblank_phase = true;
+  vblank_phase = false;
 
   hblank_delay = HBLANK_DELAY_START;
 
@@ -132,6 +136,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
     oam_phase = false;
     render_phase = false;
     hblank_phase = false;
+    vblank_phase = true;
     pix_count = 160;
   }
 }
@@ -176,6 +181,7 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   oam_phase = false;
   render_phase = false;
   hblank_phase = true;
+  vblank_phase = false;
   hblank_delay = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 
@@ -190,6 +196,7 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   oam_data = 0;
   oam_read = false;
 
+  state = PPU_STATE_HBLANK;
   stat = ubit8_t(0x80 | (stat & 0b11111100));
 
   vram_lock = false;
@@ -563,7 +570,13 @@ void PPU::bus_read(uint16_t addr) {
 void PPU::bus_write(uint16_t addr, uint8_t data) {
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
-    case ADDR_LCDC: lcdc = data; break;
+    case ADDR_LCDC: {
+      if ((lcdc & 0x80) && !(data & 0x80)) {
+        // lcd turning off
+        //state = PPU_STATE_HBLANK;
+      }
+      lcdc = data; break;
+    }
     case ADDR_STAT: {
       stat = (stat & 0b10000111) | (data & 0b01111000);
       break;
@@ -612,11 +625,12 @@ char* PPU::dump(char* cursor) {
   };
 
   cursor += sprintf(cursor, "frame   %d\n", frame_count);
+  cursor += sprintf(cursor, "state   %d\n", state);
   cursor += sprintf(cursor, "%s %s %s %s\n",
-    oam_phase ? "OAM" : "   ",
+    oam_phase    ? "OAM" : "   ",
     render_phase ? "VRM" : "   ",
     hblank_phase ? "HBK" : "   ",
-    lineP2 >= 144 ? "VBK" : "   ");
+    vblank_phase ? "VBK" : "   ");
 
   /*
   if (stat_int) {

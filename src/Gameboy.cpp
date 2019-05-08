@@ -497,7 +497,16 @@ void Gameboy::tock() {
     spu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   }
 
-  timer.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  if (tphase == 0) {
+    timer.tock(0, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+    timer.tock(1, 0, 0, false, false);
+  }
+
+  if (tphase == 2) {
+    timer.tock(2, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+    timer.tock(3, 0, 0, false, false);
+  }
+
 
   //-----------------------------------
   // Z80

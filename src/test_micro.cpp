@@ -6,6 +6,8 @@
 #include <string>
 
 static const std::string micro_tests[] = {
+  "hblank_int_scx0_halt_a.gb",
+
   "-----",
   "oam_read_l0_a.gb",
   "oam_read_l0_b.gb",

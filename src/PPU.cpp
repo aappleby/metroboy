@@ -34,7 +34,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   // Registers
 
   lcdc = 0;
-  stat = 0;
+  stat = 0x80;
   scy = 0;
   scx = 0;
   ly = 0;
@@ -154,20 +154,6 @@ void PPU::tick(int /*tphase*/, ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool
 
 void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                       uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
-  bool vblankP2 = lineP2 >= 144;
-  if (vblankP2) {
-    hblank_phase = false;
-    hblank_delay = HBLANK_DELAY_START;
-
-    oam_lock = false;
-    oam_addr = 0;
-    oam_read = false;
-
-    vram_lock = false;
-    vram_addr = 0;
-  }
-
-
   counterP2 = (counterP2 & 3) + 4;
   lineP2 = 0;
 
@@ -202,9 +188,6 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   vram_lock = false;
   oam_lock = false;
 
-  // FIXME
-  //stat = ubit8_t(0x80 | (stat & 0b01111000) | ((compare_line == lyc) << 2) | 1);
-
   bus_oe = 0;
   bus_out = 0;
   if (cpu_read) bus_read(cpu_addr);
@@ -212,7 +195,7 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
+void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                uint8_t vram_in, uint8_t oam_in) {
   //-----------------------------------
   // Bus write
@@ -276,10 +259,11 @@ void PPU::tock(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_rea
       vram_addr = 0;
     }
 
-    merge_sprite();
-    check_sprite_hit();
-    emit_pixel();
-    merge_tile();
+    merge_sprite(tphase);
+    check_sprite_hit(tphase);
+    emit_pixel(tphase);
+
+    merge_tile(tphase);
 
     // Slightly broken
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (lineP2 >= wy)) {
@@ -421,7 +405,7 @@ uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8
 
 //-----------------------------------------------------------------------------
 
-void PPU::merge_sprite() {
+void PPU::merge_sprite(int /*tphase*/) {
   if (!sprite_latched) return;
 
   if (spriteF & SPRITE_FLIP_X) {
@@ -446,7 +430,7 @@ void PPU::merge_sprite() {
 
 //-----------------------------------------------------------------------------
 
-void PPU::check_sprite_hit() {
+void PPU::check_sprite_hit(int /*tphase*/) {
   if (sprite_index != -1) return;
   if (!(lcdc & FLAG_OBJ_ON)) return;
 
@@ -478,7 +462,7 @@ void PPU::check_sprite_hit() {
 //-----------------------------------------------------------------------------
 // Emit pixel if we have some in the pipe and we're not stalled.
 
-void PPU::emit_pixel() {
+void PPU::emit_pixel(int /*tphase*/) {
   pix_oe = false;
   pix_out = 0;
 
@@ -532,7 +516,7 @@ void PPU::emit_pixel() {
 
 //-----------------------------------------------------------------------------
 
-void PPU::merge_tile() {
+void PPU::merge_tile(int /*tphase*/) {
   if (pipe_count) return;
   if (!tile_latched) return;
 
@@ -552,7 +536,7 @@ void PPU::bus_read(uint16_t addr) {
     bus_oe = 1;
     switch (addr) {
     case ADDR_LCDC: bus_out = lcdc; break;
-    case ADDR_STAT: bus_out = stat | 0x80; break;
+    case ADDR_STAT: bus_out = stat; break;
     case ADDR_SCY:  bus_out = scy; break;
     case ADDR_SCX:  bus_out = scx; break;
     case ADDR_LY:   bus_out = ly; break;
@@ -570,17 +554,8 @@ void PPU::bus_read(uint16_t addr) {
 void PPU::bus_write(uint16_t addr, uint8_t data) {
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
-    case ADDR_LCDC: {
-      if ((lcdc & 0x80) && !(data & 0x80)) {
-        // lcd turning off
-        //state = PPU_STATE_HBLANK;
-      }
-      lcdc = data; break;
-    }
-    case ADDR_STAT: {
-      stat = (stat & 0b10000111) | (data & 0b01111000);
-      break;
-    }
+    case ADDR_LCDC: lcdc = data; break;
+    case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000);
     case ADDR_SCY:  scy = data;  break;
     case ADDR_SCX:  scx = data;  break;
     case ADDR_LY:   ly = data;   break;

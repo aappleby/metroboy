@@ -48,7 +48,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   run_microtests();
   run_mooneye_acceptance();
-  run_wpol_acceptance();
+  //run_wpol_acceptance();
   return 0;
 
   enum RunMode {
@@ -78,9 +78,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   const char* filename = nullptr;
 
+  // vram read on tphase 1/3?
   //filename = "mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing_sprites.gb";
   //filename = "mooneye-gb/tests/build/acceptance/ppu/lcdon_write_timing-GS.gb";
-  //filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_mode0_timing_sprites_nops.gb";
+
+  filename = "wpol-gb/tests/build/acceptance/gpu/intr_2_mode0_timing_sprites_nops.gb";
+
   //filename = "oh.gb";
   //filename = "pocket.gb";
   //filename = "gejmboj.gb";

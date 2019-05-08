@@ -119,7 +119,7 @@ void Gameboy::tick() {
       if (!ppu.vblank_phase) {
         if (ppu.counterP2 == 0) {
           ppu.oam_phase = ppu.lineP2 != 0;
-          ppu.hblank_phase = false;
+          ppu.hblank_phase = ppu.lineP2 == 0;
           ppu.sprite_index = -1;
           ppu.sprite_count = 0;
           ppu.state = PPU_STATE_HBLANK;
@@ -448,65 +448,51 @@ void Gameboy::tock() {
     }
   }
 
+  //-----------------------------------
+  // vram bus mux
 
-  if (tphase == 0 || tphase == 2) {
-
-    //-----------------------------------
-    // vram bus mux
-
-    if (dma_mode_a == DMA_VRAM) {
-      cpu_read_vram = false;
-      vram.tock(dma_read_addr, 0, true, false);
-    }
-    else if (ppu.vram_lock) {
-      cpu_read_vram = false;
-      vram.tock(ppu.vram_addr, 0, ppu.vram_addr != 0, false);
-    }
-    else {
-      cpu_read_vram = cpu_read_ && ce_vram;
-      vram.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-    }
-
-    //-----------------------------------
-    // iram bus mux
-
-    if (dma_mode_a == DMA_IRAM) {
-      cpu_read_iram = false;
-      iram.tock_t2(dma_read_addr, 0, true, false);
-    }
-    else {
-      cpu_read_iram = cpu_read_ && (ce_iram || ce_echo);
-      iram.tock_t2(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-    }
-
-    //-----------------------------------
-    // cart bus mux
-
-    if (dma_mode_a == DMA_CART) {
-      cpu_read_cart = false;
-      mmu.tock_t2(dma_read_addr, 0, true, false);
-    }
-    else {
-      cpu_read_cart = cpu_read_ && (ce_rom || ce_cram);
-      mmu.tock_t2(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-    }
-
-    buttons.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-    serial.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-    zram.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-    spu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  if (dma_mode_a == DMA_VRAM) {
+    cpu_read_vram = false;
+    vram.tock(dma_read_addr, 0, true, false);
+  }
+  else if (ppu.vram_lock) {
+    cpu_read_vram = false;
+    vram.tock(ppu.vram_addr, 0, ppu.vram_addr != 0, false);
+  }
+  else {
+    cpu_read_vram = cpu_read_ && ce_vram;
+    vram.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   }
 
-  if (tphase == 0) {
-    timer.tock(0, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-    timer.tock(1, 0, 0, false, false);
+  //-----------------------------------
+  // iram bus mux
+
+  if (dma_mode_a == DMA_IRAM) {
+    cpu_read_iram = false;
+    iram.tock_t2(dma_read_addr, 0, true, false);
+  }
+  else {
+    cpu_read_iram = cpu_read_ && (ce_iram || ce_echo);
+    iram.tock_t2(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   }
 
-  if (tphase == 2) {
-    timer.tock(2, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-    timer.tock(3, 0, 0, false, false);
+  //-----------------------------------
+  // cart bus mux
+
+  if (dma_mode_a == DMA_CART) {
+    cpu_read_cart = false;
+    mmu.tock_t2(dma_read_addr, 0, true, false);
+  }
+  else {
+    cpu_read_cart = cpu_read_ && (ce_rom || ce_cram);
+    mmu.tock_t2(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
   }
 
+  buttons.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  serial.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  zram.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  spu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  timer.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
 
   //-----------------------------------
   // Z80

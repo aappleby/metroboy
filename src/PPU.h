@@ -38,11 +38,10 @@ struct PPU {
 
 //private:
 
-  void handle_lcd_off();
-  void merge_sprite();
-  void check_sprite_hit();
-  void emit_pixel();
-  void merge_tile();
+  void merge_sprite(int tphase);
+  void check_sprite_hit(int tphase);
+  void emit_pixel(int tphase);
+  void merge_tile(int tphase);
 
   void bus_read(uint16_t cpu_addr);
   void bus_write(uint16_t cpu_addr, uint8_t cpu_data);

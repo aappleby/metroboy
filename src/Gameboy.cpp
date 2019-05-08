@@ -188,7 +188,7 @@ void Gameboy::tick() {
     stat_int &= ~EI_VBLANK;
     stat_int &= ~0x80;
 
-    if (ppu.hblank_delay < 7 && !ppu.oam_phase && !ppu.vblank_phase) stat_int |= EI_HBLANK;
+    if (ppu.hblank_delay < 6 && !ppu.oam_phase && !ppu.vblank_phase) stat_int |= EI_HBLANK;
     if (ppu.lineP2 == 144 && ppu.counterP2 >= 4) stat_int |= EI_VBLANK;
     if (ppu.lineP2 > 144) stat_int |= EI_VBLANK;
 
@@ -199,7 +199,7 @@ void Gameboy::tick() {
 
     bool stat_int_glitch = false;
     if (z80.mem_write_ && z80.mem_addr_ == ADDR_STAT) {
-      stat_int_glitch |= old_hblank_delay < 6;
+      stat_int_glitch |= old_hblank_delay < 4;
       stat_int_glitch |= ppu.vblank_phase;
       stat_int_glitch |= (compare_line == ppu.lyc);
     }

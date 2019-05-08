@@ -88,7 +88,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //filename = "microtests/build/dmg/oam_sprite_trashing.gb";
   //filename = "microtests/build/dmg/oam_write_l0_e.gb";
-  filename = "microtests/build/dmg/lcdon_to_stat0_a.gb";
+  filename = "microtests/build/dmg/stat_write_glitch_l1_a.gb";
 
   //filename = "mealybug/m3_bgp_change_sprites.gb";
 

@@ -153,13 +153,15 @@ void Gameboy::tick() {
     //----------------------------------------
     // interrupts
 
-    if (ppu.hblank_delay < 7 && !ppu.oam_phase && !ppu.vblank_phase) {
-      ppu.render_phase = false;
-      ppu.hblank_phase = true;
-      ppu.state = PPU_STATE_HBLANK;
+    if (tphase == 2) {
+      if (ppu.hblank_delay < 7 && !ppu.oam_phase && !ppu.vblank_phase) {
+        ppu.render_phase = false;
+        ppu.hblank_phase = true;
+        ppu.state = PPU_STATE_HBLANK;
 
-      ppu.vram_addr = 0;
-      ppu.fetch_state = PPU::FETCH_IDLE;
+        ppu.vram_addr = 0;
+        ppu.fetch_state = PPU::FETCH_IDLE;
+      }
     }
 
     if (ppu.lineP2 == 144 && ppu.counterP2 == 4) {

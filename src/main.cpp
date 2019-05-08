@@ -49,7 +49,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
   run_mooneye_acceptance();
   run_wpol_acceptance();
-  return 0;
+  //return 0;
 
   enum RunMode {
     RUN_FAST,
@@ -84,11 +84,11 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //filename = "oh.gb";
   //filename = "pocket.gb";
   //filename = "gejmboj.gb";
-  //filename = "LinksAwakening.gb";
+  filename = "LinksAwakening.gb";
 
   //filename = "microtests/build/dmg/oam_sprite_trashing.gb";
   //filename = "microtests/build/dmg/oam_write_l0_e.gb";
-  filename = "microtests/build/dmg/stat_write_glitch_l1_a.gb";
+  //filename = "microtests/build/dmg/stat_write_glitch_l1_a.gb";
 
   //filename = "mealybug/m3_bgp_change_sprites.gb";
 

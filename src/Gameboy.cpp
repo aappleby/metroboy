@@ -217,18 +217,25 @@ void Gameboy::tick() {
     // locking
 
     if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
-      const int render_start_l0 = 84;
-      if (ppu.counterP2 == render_start_l0) ppu.oam_lock = true;
-      if (ppu.counterP2 == render_start_l0) ppu.vram_lock = true;
+      if (tphase == 0) {
+        const int render_start_l0 = 84;
+        if (ppu.counterP2 == render_start_l0) ppu.oam_lock = true;
+        if (ppu.counterP2 == render_start_l0) ppu.vram_lock = true;
+      }
     }
     else {
-      const int oam_start = 0;
-      const int oam_end = 80;
-      const int render_start = 82;
-      if (ppu.counterP2 == oam_start)    ppu.oam_lock = true;
-      if (ppu.counterP2 == oam_end)      ppu.oam_lock = false;
-      if (ppu.counterP2 == render_start) ppu.oam_lock = true;
-      if (ppu.counterP2 == render_start) ppu.vram_lock = true;
+      if (tphase == 0) {
+        const int oam_start = 0;
+        const int oam_end = 80;
+        if (ppu.counterP2 == oam_start)    ppu.oam_lock = true;
+        if (ppu.counterP2 == oam_end)      ppu.oam_lock = false;
+      }
+
+      if (tphase == 2) {
+        const int render_start = 82;
+        if (ppu.counterP2 == render_start) ppu.oam_lock = true;
+        if (ppu.counterP2 == render_start) ppu.vram_lock = true;
+      }
     }
 
     if (tphase == 0) {

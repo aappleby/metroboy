@@ -72,6 +72,11 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
   hblank_delay = HBLANK_DELAY_START;
 
+  old_stat_int = false;
+  stat_int = 0;
+  stat_int2 = 0;
+  compare_line = 0;
+
   //----------
   // Sprites
 

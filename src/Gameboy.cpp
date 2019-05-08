@@ -39,10 +39,6 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   model = new_model;
   tcycle = -1;
 
-  stat_int = 0;
-  stat_int2 = 0;
-  compare_line = 0;
-
   cpu_read_oam = false;
   cpu_read_vram = false;
   cpu_read_iram = false;
@@ -62,8 +58,6 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
 
   bus_out = 0;
   bus_oe = false;
-
-  old_stat_int = false;
 
   intf = 0xE1;
   imask = 0x00;
@@ -92,11 +86,11 @@ void Gameboy::tick() {
       //-----------------------------------
       // lyc_match
 
-      compare_line = ppu.ly;
+      ppu.compare_line = ppu.ly;
 
       if (ppu.lineP2 > 0 && ppu.counterP2 == 0) {
         ppu.ly = ppu.lineP2;
-        compare_line = -1;
+        ppu.compare_line = -1;
       }
 
       if (ppu.lineP2 == 153 && ppu.counterP2 == 4) {
@@ -104,7 +98,7 @@ void Gameboy::tick() {
       }
 
       if (ppu.lineP2 == 153 && ppu.counterP2 == 8) {
-        compare_line = -1;
+        ppu.compare_line = -1;
       }
 
       //----------------------------------------
@@ -174,23 +168,23 @@ void Gameboy::tick() {
     //----------------------------------------
     // interrupts
 
-    stat_int &= ~EI_HBLANK;
-    stat_int &= ~EI_VBLANK;
-    stat_int &= ~0x80;
-    if (ppu.lcdc & FLAG_LCD_ON) stat_int &= ~EI_LYC;
+    ppu.stat_int &= ~EI_HBLANK;
+    ppu.stat_int &= ~EI_VBLANK;
+    ppu.stat_int &= ~0x80;
+    if (ppu.lcdc & FLAG_LCD_ON) ppu.stat_int &= ~EI_LYC;
 
     if (tphase == 0 || tphase == 2) {
-      if (ppu.hblank_delay < 6 && !ppu.oam_phase && !ppu.vblank_phase) stat_int |= EI_HBLANK;
+      if (ppu.hblank_delay < 6 && !ppu.oam_phase && !ppu.vblank_phase) ppu.stat_int |= EI_HBLANK;
     }
 
     if (tphase == 0) {
-      if (ppu.lineP2 == 144 && ppu.counterP2 >= 4) stat_int |= EI_VBLANK;
-      if (ppu.lineP2 > 144) stat_int |= EI_VBLANK;
+      if (ppu.lineP2 == 144 && ppu.counterP2 >= 4) ppu.stat_int |= EI_VBLANK;
+      if (ppu.lineP2 > 144) ppu.stat_int |= EI_VBLANK;
     }
 
     if (tphase == 0 || tphase == 2) {
       if (ppu.lcdc & FLAG_LCD_ON) {
-        if (compare_line == ppu.lyc) stat_int |= EI_LYC;
+        if (ppu.compare_line == ppu.lyc) ppu.stat_int |= EI_LYC;
       }
     }
 
@@ -199,18 +193,18 @@ void Gameboy::tick() {
       if (z80.mem_write_ && z80.mem_addr_ == ADDR_STAT) {
         stat_int_glitch |= ppu.hblank_delay < 4;
         stat_int_glitch |= ppu.vblank_phase;
-        stat_int_glitch |= (compare_line == ppu.lyc);
+        stat_int_glitch |= (ppu.compare_line == ppu.lyc);
       }
-      stat_int |= stat_int_glitch ? 0x80 : 0;
+      ppu.stat_int |= stat_int_glitch ? 0x80 : 0;
     }
 
     if (tphase == 0) {
-      stat_int2 = stat_int;
+      ppu.stat_int2 = ppu.stat_int;
 
-      stat_int &= ~EI_OAM;
+      ppu.stat_int &= ~EI_OAM;
 
-      if (ppu.lineP2 == 0 && ppu.counterP2 == 4) stat_int |= EI_OAM;
-      if (ppu.lineP2 > 0 && ppu.lineP2 <= 144 && ppu.counterP2 == 0) stat_int |= EI_OAM;
+      if (ppu.lineP2 == 0 && ppu.counterP2 == 4) ppu.stat_int |= EI_OAM;
+      if (ppu.lineP2 > 0 && ppu.lineP2 <= 144 && ppu.counterP2 == 0) ppu.stat_int |= EI_OAM;
     }
 
     //----------------------------------------
@@ -295,11 +289,11 @@ void Gameboy::tick() {
 
     int new_stat_int = 0;
 
-    if ((stat_int2 & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int = 1;
-    if ((stat_int2 & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int = 1;
-    if ((stat_int2 & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
-    if ((stat_int2 & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
-    if (stat_int2 & 0x80) new_stat_int = 1;
+    if ((ppu.stat_int2 & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int = 1;
+    if ((ppu.stat_int2 & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int = 1;
+    if ((ppu.stat_int2 & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
+    if ((ppu.stat_int2 & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
+    if (ppu.stat_int2 & 0x80) new_stat_int = 1;
     if (imask & 0x02) z80.unhalt |= new_stat_int != 0;
 
     if (imask & 0x04) z80.unhalt |= (timer.overflow) ? true : false;
@@ -331,15 +325,15 @@ void Gameboy::tock() {
   bool     cpu_read_  = z80.mem_read_ && (tphase == 2);
 
   int new_stat_int = 0;
-  if ((stat_int & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int = 1;
-  if ((stat_int & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int = 1;
-  if ((stat_int & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
-  if ((stat_int & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
-  if (stat_int & 0x80) new_stat_int = 1;
-  if (new_stat_int && !old_stat_int) intf |= INT_STAT;
+  if ((ppu.stat_int & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int = 1;
+  if ((ppu.stat_int & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int = 1;
+  if ((ppu.stat_int & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
+  if ((ppu.stat_int & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
+  if (ppu.stat_int & 0x80) new_stat_int = 1;
+  if (new_stat_int && !ppu.old_stat_int) intf |= INT_STAT;
 
   if (tphase == 0) {
-    old_stat_int = new_stat_int;
+    ppu.old_stat_int = new_stat_int;
     if (ppu.lineP2 == 144 && ppu.counterP2 == 4) intf |= INT_VBLANK;
     if (timer.overflow)      intf |= INT_TIMER;
     if (buttons.val != 0xFF) intf |= INT_JOYPAD;
@@ -360,7 +354,7 @@ void Gameboy::tock() {
     ppu.stat &= 0b11111000;
     ppu.stat |= ppu.state;
 
-    if (stat_int & EI_LYC) {
+    if (ppu.stat_int & EI_LYC) {
       ppu.stat |= 0x04;
     }
   }
@@ -569,7 +563,7 @@ char* Gameboy::dump(char* cursor) {
   cursor = z80.dump(cursor);
   cursor += sprintf(cursor, "imask %s\n", to_binary(imask));
   cursor += sprintf(cursor, "intf  %s\n", to_binary(intf));
-  cursor += sprintf(cursor, "old stat int %d\n", old_stat_int);
+  cursor += sprintf(cursor, "old stat int %d\n", ppu.old_stat_int);
   cursor += sprintf(cursor, "\n");
 
   cursor += sprintf(cursor, "tcycle %zd\n", tcycle);

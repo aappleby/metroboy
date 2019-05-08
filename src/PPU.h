@@ -91,6 +91,11 @@ struct PPU {
 
   uint8_t hblank_delay;
 
+  int old_stat_int = 0;
+  int stat_int;
+  int stat_int2;
+  int compare_line;
+
   //----------
   // Sprites
 

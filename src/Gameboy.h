@@ -90,10 +90,6 @@ struct Gameboy {
   int model = MODEL_DMG;
   int64_t tcycle = -1;
 
-  int stat_int;
-  int stat_int2;
-  int compare_line;
-
   bool cpu_read_oam = false;
   bool cpu_read_vram = false;
   bool cpu_read_iram = false;
@@ -117,8 +113,6 @@ struct Gameboy {
   uint8_t bus_out = 0;
   bool bus_oe = false;
   uint8_t bus_in = 0;
-
-  int old_stat_int = 0;
 
   uint8_t intf = 0;
   uint8_t imask = 0;

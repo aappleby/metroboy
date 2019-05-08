@@ -370,6 +370,7 @@ void run_microtests() {
   for (auto name : micro_tests) {
     run_microtest(model, prefix, name);
   }
+  printf("\n");
 
   double end = (double)SDL_GetPerformanceCounter();
   printf("---------- Microtests took %f seconds ----------\n", (end - begin) / freq);

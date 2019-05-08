@@ -111,19 +111,21 @@ void Gameboy::tick() {
     //-----------------------------------
     // lyc_match
 
-    compare_line = ppu.ly;
+    if (ppu.lcdc & FLAG_LCD_ON) {
+      compare_line = ppu.ly;
 
-    if (ppu.lineP2 > 0 && ppu.counterP2 == 0) {
-      ppu.ly = ppu.lineP2;
-      compare_line = -1;
-    }
+      if (ppu.lineP2 > 0 && ppu.counterP2 == 0) {
+        ppu.ly = ppu.lineP2;
+        compare_line = -1;
+      }
 
-    if (ppu.lineP2 == 153 && ppu.counterP2 == 4) {
-      ppu.ly = 0;
-    }
+      if (ppu.lineP2 == 153 && ppu.counterP2 == 4) {
+        ppu.ly = 0;
+      }
 
-    if (ppu.lineP2 == 153 && ppu.counterP2 == 8) {
-      compare_line = -1;
+      if (ppu.lineP2 == 153 && ppu.counterP2 == 8) {
+        compare_line = -1;
+      }
     }
 
     //----------------------------------------
@@ -187,51 +189,38 @@ void Gameboy::tick() {
   //----------------------------------------
   // interrupts
 
-  if (tphase == 0) {
+  if (tphase == 0 || tphase == 2) {
+    stat_int &= ~EI_HBLANK;
     stat_int &= ~EI_VBLANK;
+    stat_int &= ~EI_LYC;
+    stat_int &= ~0x80;
+
+    if (ppu.hblank_delay < 7 && !ppu.oam_phase && !ppu.vblank_phase) stat_int |= EI_HBLANK;
     if (ppu.lineP2 == 144 && ppu.counterP2 >= 4) stat_int |= EI_VBLANK;
     if (ppu.lineP2 > 144) stat_int |= EI_VBLANK;
-
-    stat_int &= ~EI_HBLANK;
-    if (ppu.hblank_delay < 7 && !ppu.oam_phase && !ppu.vblank_phase) stat_int |= EI_HBLANK;
-
-    if (ppu.lcdc & FLAG_LCD_ON) {
-      stat_int &= ~EI_LYC;
-      if (compare_line == ppu.lyc) stat_int |= EI_LYC;
-    }
-
-    stat_int2 = stat_int;
-
-    stat_int &= ~EI_OAM;
-    if (ppu.lineP2 == 0) {
-      if (ppu.counterP2 == 4) stat_int |= EI_OAM;
-    }
-    else if (ppu.lineP2 <= 144) {
-      if (ppu.counterP2 == 0) stat_int |= EI_OAM;
-    }
-
-    // stat int glitch
+    if (compare_line == ppu.lyc) stat_int |= EI_LYC;
 
     bool stat_int_glitch = false;
-
     if (z80.mem_write_ && z80.mem_addr_ == ADDR_STAT) {
       stat_int_glitch |= old_hblank_delay < 6;
       stat_int_glitch |= ppu.vblank_phase;
       stat_int_glitch |= (compare_line == ppu.lyc);
     }
-
-    stat_int &= ~0x80;
     stat_int |= stat_int_glitch ? 0x80 : 0;
-  }
 
-  if (tphase == 2) {
-    if (ppu.lcdc & FLAG_LCD_ON) {
-      stat_int &= ~EI_LYC;
-      if (compare_line == ppu.lyc) stat_int |= EI_LYC;
+    stat_int2 = stat_int;
+
+    if (tphase == 0) {
+      stat_int &= ~EI_OAM;
+
+      if (ppu.lineP2 == 0) {
+        if (ppu.counterP2 == 4) stat_int |= EI_OAM;
+      }
+
+      if (ppu.lineP2 > 0 && ppu.lineP2 <= 144) {
+        if (ppu.counterP2 == 0) stat_int |= EI_OAM;
+     }
     }
-
-    stat_int &= ~EI_HBLANK;
-    if (ppu.hblank_delay < 7 && !ppu.oam_phase && !ppu.vblank_phase) stat_int |= EI_HBLANK;
   }
 
   //----------------------------------------

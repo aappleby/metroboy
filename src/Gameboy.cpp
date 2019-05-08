@@ -87,9 +87,11 @@ void Gameboy::tick() {
 
     //-----------------------------------
 
-    ppu.vblank_phase = ppu.lineP2 > 143;
-    ppu.frame_start = (ppu.counterP2 == 0) && (ppu.lineP2 == 0);
-    ppu.frame_done = (ppu.counterP2 == 0) && (ppu.lineP2 == 144);
+    if (tphase == 0) {
+      ppu.vblank_phase = ppu.lineP2 > 143;
+      ppu.frame_start = (ppu.counterP2 == 0) && (ppu.lineP2 == 0);
+      ppu.frame_done = (ppu.counterP2 == 0) && (ppu.lineP2 == 144);
+    }
 
     //-----------------------------------
     // lyc_match
@@ -114,40 +116,42 @@ void Gameboy::tick() {
     //----------------------------------------
     // Update state machiney stuff
 
-    if (ppu.counterP2 == 0) {
-      ppu.hblank_phase = false;
-    }
+    if (tphase == 0) {
+      if (ppu.counterP2 == 0) {
+        ppu.hblank_phase = false;
+      }
 
-    if (!ppu.vblank_phase && ppu.counterP2 == 0) {
-      ppu.oam_phase = !weird_line && !(ppu.lineP2 > 143);
-      ppu.hblank_phase = false;
-      ppu.sprite_index = -1;
-      ppu.sprite_count = 0;
+      if (!ppu.vblank_phase && ppu.counterP2 == 0) {
+        ppu.oam_phase = !weird_line && !(ppu.lineP2 > 143);
+        ppu.hblank_phase = false;
+        ppu.sprite_index = -1;
+        ppu.sprite_count = 0;
 
-      //ppu.state = (ppu.lineP2 == 0) ? PPU_STATE_HBLANK : PPU_STATE_OAM;
-      ppu.state = PPU_STATE_HBLANK;
-    }
+        //ppu.state = (ppu.lineP2 == 0) ? PPU_STATE_HBLANK : PPU_STATE_OAM;
+        ppu.state = PPU_STATE_HBLANK;
+      }
 
-    if (!ppu.vblank_phase && ppu.counterP2 == 4) {
-      if (!weird_line) ppu.state = PPU_STATE_OAM;
-      ppu.pix_count = 0;
-      ppu.hblank_delay = HBLANK_DELAY_START;
-    }
+      if (!ppu.vblank_phase && ppu.counterP2 == 4) {
+        if (!weird_line) ppu.state = PPU_STATE_OAM;
+        ppu.pix_count = 0;
+        ppu.hblank_delay = HBLANK_DELAY_START;
+      }
 
-    if (!ppu.vblank_phase && ppu.counterP2 == 84) {
-      ppu.hblank_phase = false;
-      ppu.oam_phase = false;
-      ppu.render_phase = true;
-      ppu.state = PPU_STATE_VRAM;
+      if (!ppu.vblank_phase && ppu.counterP2 == 84) {
+        ppu.hblank_phase = false;
+        ppu.oam_phase = false;
+        ppu.render_phase = true;
+        ppu.state = PPU_STATE_VRAM;
 
-      ppu.sprite_index = -1;
-      ppu.window_hit = false;
-      ppu.map_x = (ppu.scx >> 3) & 31;
-      ppu.pix_discard = (ppu.scx & 7) + 8;
-      ppu.sprite_latched = false;
-      ppu.tile_latched = true;
-      ppu.window_hit = false;
-      ppu.pipe_count = 0;
+        ppu.sprite_index = -1;
+        ppu.window_hit = false;
+        ppu.map_x = (ppu.scx >> 3) & 31;
+        ppu.pix_discard = (ppu.scx & 7) + 8;
+        ppu.sprite_latched = false;
+        ppu.tile_latched = true;
+        ppu.window_hit = false;
+        ppu.pipe_count = 0;
+      }
     }
 
     //----------------------------------------
@@ -164,9 +168,11 @@ void Gameboy::tick() {
       }
     }
 
-    if (ppu.lineP2 == 144 && ppu.counterP2 == 4) {
-      ppu.hblank_phase = false;
-      ppu.state = PPU_STATE_VBLANK;
+    if (tphase == 0) {
+      if (ppu.lineP2 == 144 && ppu.counterP2 == 4) {
+        ppu.hblank_phase = false;
+        ppu.state = PPU_STATE_VBLANK;
+      }
     }
 
     stat_int &= ~EI_HBLANK;
@@ -182,17 +188,19 @@ void Gameboy::tick() {
       if (compare_line == ppu.lyc) stat_int |= EI_LYC;
     }
 
-    bool stat_int_glitch = false;
-    if (z80.mem_write_ && z80.mem_addr_ == ADDR_STAT) {
-      stat_int_glitch |= ppu.hblank_delay < 4;
-      stat_int_glitch |= ppu.vblank_phase;
-      stat_int_glitch |= (compare_line == ppu.lyc);
+    if (tphase == 2) {
+      bool stat_int_glitch = false;
+      if (z80.mem_write_ && z80.mem_addr_ == ADDR_STAT) {
+        stat_int_glitch |= ppu.hblank_delay < 4;
+        stat_int_glitch |= ppu.vblank_phase;
+        stat_int_glitch |= (compare_line == ppu.lyc);
+      }
+      stat_int |= stat_int_glitch ? 0x80 : 0;
     }
-    stat_int |= stat_int_glitch ? 0x80 : 0;
-
-    stat_int2 = stat_int;
 
     if (tphase == 0) {
+      stat_int2 = stat_int;
+
       stat_int &= ~EI_OAM;
 
       if (ppu.lineP2 == 0) {
@@ -201,20 +209,22 @@ void Gameboy::tick() {
 
       if (ppu.lineP2 > 0 && ppu.lineP2 <= 144) {
         if (ppu.counterP2 == 0) stat_int |= EI_OAM;
-     }
+      }
     }
 
     //----------------------------------------
     // locking
+
+    const int oam_start = 0;
+    const int oam_end = 80;
+    const int render_start = 82;
+    const int render_start_l0 = 84;
+
     if (weird_line) {
-      const int render_start_l0 = 84;
       if (ppu.counterP2 == render_start_l0) ppu.oam_lock = true;
       if (ppu.counterP2 == render_start_l0) ppu.vram_lock = true;
     }
     else {
-      const int oam_start = 0;
-      const int oam_end = 80;
-      const int render_start = 82;
 
       if (ppu.counterP2 == oam_start)    ppu.oam_lock = true;
       if (ppu.counterP2 == oam_end)      ppu.oam_lock = false;

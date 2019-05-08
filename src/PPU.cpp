@@ -129,7 +129,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
     obp1 = 0xFF;
 
     lineP2 = 153;
-    counterP2 = 403;
+    counterP2 = 404;
 
     lcdc = 0x91;
     palettes[0] = 0xfc;

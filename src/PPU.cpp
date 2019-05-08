@@ -151,8 +151,50 @@ void PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-void PPU::tick(int /*tphase*/, ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool /*cpu_write*/,
-               uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
+void PPU::tick(int tphase, ubit16_t /*cpu_addr*/, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool /*cpu_write*/) {
+  PPU& ppu = *this;
+
+  if (tphase == 0 || tphase == 2) {
+
+    //----------------------------------------
+    // locking
+
+    if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
+      if (tphase == 0) {
+        const int render_start_l0 = 84;
+        if (ppu.counterP2 == render_start_l0) ppu.oam_lock = true;
+        if (ppu.counterP2 == render_start_l0) ppu.vram_lock = true;
+      }
+    }
+    else {
+      if (tphase == 0) {
+        const int oam_start = 0;
+        const int oam_end = 80;
+        if (ppu.counterP2 == oam_start)    ppu.oam_lock = true;
+        if (ppu.counterP2 == oam_end)      ppu.oam_lock = false;
+      }
+
+      if (tphase == 2) {
+        const int render_start = 82;
+        if (ppu.counterP2 == render_start) ppu.oam_lock = true;
+        if (ppu.counterP2 == render_start) ppu.vram_lock = true;
+      }
+    }
+
+    if (tphase == 0) {
+      if (ppu.hblank_delay == 5) {
+        ppu.oam_lock = false;
+        ppu.vram_lock = false;
+      }
+    }
+
+    if (tphase == 0) {
+      if (ppu.vblank_phase) {
+        ppu.oam_lock = false;
+        ppu.vram_lock = false;
+      }
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------

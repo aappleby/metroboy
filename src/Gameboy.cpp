@@ -206,46 +206,14 @@ void Gameboy::tick() {
       if (ppu.lineP2 == 0 && ppu.counterP2 == 4) ppu.stat_int |= EI_OAM;
       if (ppu.lineP2 > 0 && ppu.lineP2 <= 144 && ppu.counterP2 == 0) ppu.stat_int |= EI_OAM;
     }
-
-    //----------------------------------------
-    // locking
-
-    if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
-      if (tphase == 0) {
-        const int render_start_l0 = 84;
-        if (ppu.counterP2 == render_start_l0) ppu.oam_lock = true;
-        if (ppu.counterP2 == render_start_l0) ppu.vram_lock = true;
-      }
-    }
-    else {
-      if (tphase == 0) {
-        const int oam_start = 0;
-        const int oam_end = 80;
-        if (ppu.counterP2 == oam_start)    ppu.oam_lock = true;
-        if (ppu.counterP2 == oam_end)      ppu.oam_lock = false;
-      }
-
-      if (tphase == 2) {
-        const int render_start = 82;
-        if (ppu.counterP2 == render_start) ppu.oam_lock = true;
-        if (ppu.counterP2 == render_start) ppu.vram_lock = true;
-      }
-    }
-
-    if (tphase == 0) {
-      if (ppu.hblank_delay == 5) {
-        ppu.oam_lock = false;
-        ppu.vram_lock = false;
-      }
-    }
-
-    if (tphase == 0) {
-      if (ppu.vblank_phase) {
-        ppu.oam_lock = false;
-        ppu.vram_lock = false;
-      }
-    }
   }
+
+  uint16_t cpu_addr_ = z80.mem_addr_;
+  uint8_t  cpu_data_ = z80.mem_out_;
+  bool     cpu_write_ = z80.mem_write_ && (tphase == 0);
+  bool     cpu_read_ = z80.mem_read_ && (tphase == 2);
+
+  ppu.tick(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
 
   //----------------------------------------
   // tick z80

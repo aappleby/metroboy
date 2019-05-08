@@ -111,21 +111,19 @@ void Gameboy::tick() {
     //-----------------------------------
     // lyc_match
 
-    if (ppu.lcdc & FLAG_LCD_ON) {
-      compare_line = ppu.ly;
+    compare_line = ppu.ly;
 
-      if (ppu.lineP2 > 0 && ppu.counterP2 == 0) {
-        ppu.ly = ppu.lineP2;
-        compare_line = -1;
-      }
+    if (ppu.lineP2 > 0 && ppu.counterP2 == 0) {
+      ppu.ly = ppu.lineP2;
+      compare_line = -1;
+    }
 
-      if (ppu.lineP2 == 153 && ppu.counterP2 == 4) {
-        ppu.ly = 0;
-      }
+    if (ppu.lineP2 == 153 && ppu.counterP2 == 4) {
+      ppu.ly = 0;
+    }
 
-      if (ppu.lineP2 == 153 && ppu.counterP2 == 8) {
-        compare_line = -1;
-      }
+    if (ppu.lineP2 == 153 && ppu.counterP2 == 8) {
+      compare_line = -1;
     }
 
     //----------------------------------------
@@ -192,13 +190,16 @@ void Gameboy::tick() {
   if (tphase == 0 || tphase == 2) {
     stat_int &= ~EI_HBLANK;
     stat_int &= ~EI_VBLANK;
-    stat_int &= ~EI_LYC;
     stat_int &= ~0x80;
 
     if (ppu.hblank_delay < 7 && !ppu.oam_phase && !ppu.vblank_phase) stat_int |= EI_HBLANK;
     if (ppu.lineP2 == 144 && ppu.counterP2 >= 4) stat_int |= EI_VBLANK;
     if (ppu.lineP2 > 144) stat_int |= EI_VBLANK;
-    if (compare_line == ppu.lyc) stat_int |= EI_LYC;
+
+    if (ppu.lcdc & FLAG_LCD_ON) {
+      stat_int &= ~EI_LYC;
+      if (compare_line == ppu.lyc) stat_int |= EI_LYC;
+    }
 
     bool stat_int_glitch = false;
     if (z80.mem_write_ && z80.mem_addr_ == ADDR_STAT) {
@@ -369,7 +370,10 @@ void Gameboy::tock() {
   if (tphase == 0 || tphase == 2) {
     ppu.stat &= 0b11111000;
     ppu.stat |= ppu.state;
-    ppu.stat |= (compare_line == ppu.lyc) << 2;
+
+    if (stat_int & EI_LYC) {
+      ppu.stat |= 0x04;
+    }
   }
 
   //-----------------------------------

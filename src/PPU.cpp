@@ -337,8 +337,21 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
+void PPU::tock_lcdoff(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                       uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
+  if (tphase == 0 || tphase == 2) {
+    stat &= 0b11111000;
+    stat |= state;
+
+    if (stat_int & EI_LYC) {
+      stat |= 0x04;
+    }
+  }
+
+  if (pix_count == 160 && hblank_delay && lineP2 < 144) {
+    hblank_delay--;
+  }
+
   counterP2 = (counterP2 & 3) + 4;
   lineP2 = 0;
 
@@ -382,6 +395,19 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
 void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                uint8_t vram_in, uint8_t oam_in) {
+  if (tphase == 0 || tphase == 2) {
+    stat &= 0b11111000;
+    stat |= state;
+
+    if (stat_int & EI_LYC) {
+      stat |= 0x04;
+    }
+  }
+
+  if (pix_count == 160 && hblank_delay && lineP2 < 144) {
+    hblank_delay--;
+  }
+
   //-----------------------------------
   // Bus write
 

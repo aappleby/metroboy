@@ -180,22 +180,9 @@ void Gameboy::tock() {
     if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }
 
-  bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
-
   //-----------------------------------
 
-  if (tphase == 0 || tphase == 2) {
-    ppu.stat &= 0b11111000;
-    ppu.stat |= ppu.state;
-
-    if (ppu.stat_int & EI_LYC) {
-      ppu.stat |= 0x04;
-    }
-  }
-
-  if (ppu.pix_count == 160 && ppu.hblank_delay && ppu.lineP2 < 144) {
-    ppu.hblank_delay--;
-  }
+  bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
 
   if (!lcd_on) {
     ppu.tock_lcdoff(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);

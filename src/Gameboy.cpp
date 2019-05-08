@@ -98,6 +98,7 @@ void Gameboy::tick() {
   //-----------------------------------
 
   bool weird_line = ppu.frame_count == 0 && ppu.lineP2 == 0;
+  int old_hblank_delay = ppu.hblank_delay;
 
   if (tphase == 0) {
 
@@ -127,8 +128,6 @@ void Gameboy::tick() {
 
     //----------------------------------------
     // Update state machiney stuff
-
-    int old_hblank_delay = ppu.hblank_delay;
 
     if (ppu.counterP2 == 0) {
       ppu.hblank_phase = false;
@@ -179,9 +178,16 @@ void Gameboy::tick() {
       ppu.hblank_phase = false;
       ppu.state = PPU_STATE_VBLANK;
     }
+  }
+  else if (tphase == 1) {
+    // FIXME this is weird
+    if (ppu.counterP2 == 85) ppu.tile_latched = true;
+  }
 
-    //----------------------------------------
+  //----------------------------------------
+  // interrupts
 
+  if (tphase == 0) {
     stat_int &= ~EI_VBLANK;
     if (ppu.lineP2 == 144 && ppu.counterP2 >= 4) stat_int |= EI_VBLANK;
     if (ppu.lineP2 > 144) stat_int |= EI_VBLANK;
@@ -217,11 +223,8 @@ void Gameboy::tick() {
     stat_int &= ~0x80;
     stat_int |= stat_int_glitch ? 0x80 : 0;
   }
-  else if (tphase == 1) {
-    // FIXME this is weird
-    if (ppu.counterP2 == 85) ppu.tile_latched = true;
-  }
-  else if (tphase == 2) {
+
+  if (tphase == 2) {
     if (ppu.lcdc & FLAG_LCD_ON) {
       stat_int &= ~EI_LYC;
       if (compare_line == ppu.lyc) stat_int |= EI_LYC;

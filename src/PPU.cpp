@@ -342,6 +342,19 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     if ((ppu.stat_int2 & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
     if (ppu.stat_int2 & 0x80) new_stat_int = 1;
   }
+
+  new_stat_int2 = 0;
+  if ((ppu.stat_int & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int2 = 1;
+  if ((ppu.stat_int & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int2 = 1;
+  if ((ppu.stat_int & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int2 = 1;
+  if ((ppu.stat_int & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int2 = 1;
+  if (ppu.stat_int & 0x80) new_stat_int2 = 1;
+
+  stat_edge = new_stat_int2 && !ppu.old_stat_int;
+  if (tphase == 0) {
+    ppu.old_stat_int = new_stat_int2;
+  }
+
 }
 
 //-----------------------------------------------------------------------------

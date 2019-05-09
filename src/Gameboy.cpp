@@ -149,23 +149,10 @@ void Gameboy::tock() {
   bool     cpu_write_ = z80.mem_write_ && (tphase == 0);
   bool     cpu_read_  = z80.mem_read_ && (tphase == 2);
 
-  int new_stat_int = 0;
-  if ((ppu.stat_int & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int = 1;
-  if ((ppu.stat_int & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int = 1;
-  if ((ppu.stat_int & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
-  if ((ppu.stat_int & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
-  if (ppu.stat_int & 0x80) new_stat_int = 1;
-
-  if (tphase == 0 || tphase == 2) {
-    if (new_stat_int && !ppu.old_stat_int) intf |= INT_STAT;
-  }
-
-  if (tphase == 0) {
-    ppu.old_stat_int = new_stat_int;
-    if (ppu.lineP2 == 144 && ppu.counterP2 == 4) intf |= INT_VBLANK;
-    if (timer.overflow)      intf |= INT_TIMER;
-    if (buttons.val != 0xFF) intf |= INT_JOYPAD;
-  }
+  if (ppu.stat_edge) intf |= INT_STAT;
+  if (ppu.lineP2 == 144 && ppu.counterP2 == 4) intf |= INT_VBLANK;
+  if (timer.overflow)      intf |= INT_TIMER;
+  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
 
   if (cpu_read_) {
     bus_out = 0x00;

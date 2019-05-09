@@ -97,6 +97,8 @@ struct PPU {
   int compare_line;
 
   int new_stat_int = 0;
+  int new_stat_int2 = 0;
+  bool stat_edge = false;
 
   //----------
   // Sprites

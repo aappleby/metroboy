@@ -246,43 +246,36 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     vblank_delay = false;
     vblank_phase = false;
 
-    if (tphase == 0) {
-
-      if (counter == 0) {
-        if (frame_count == 0 && line == 0) {
-          hblank_phase = true;
-        }
-        else {
-          hblank_phase = false;
-          oam_phase = true;
-        }
-
-        sprite_index = -1;
-        sprite_count = 0;
-        state = PPU_STATE_HBLANK;
-        pix_count2 = 0;
+    if (counter == 0) {
+      if (frame_count == 0 && line == 0) {
+        hblank_phase = true;
       }
-
-      if (counter == 4) {
-        state = (frame_count == 0 && line == 0) ? PPU_STATE_HBLANK : PPU_STATE_OAM;
-      }
-
-      if (counter == 84) {
+      else {
         hblank_phase = false;
-        oam_phase = false;
-        render_phase = true;
-        state = PPU_STATE_VRAM;
+        oam_phase = true;
       }
 
+      sprite_index = -1;
+      sprite_count = 0;
+      state = PPU_STATE_HBLANK;
+      pix_count2 = 0;
+    }
+
+    if (counter == 4) {
+      state = (frame_count == 0 && line == 0) ? PPU_STATE_HBLANK : PPU_STATE_OAM;
+    }
+
+    if (counter == 84) {
+      hblank_phase = false;
+      oam_phase = false;
+      render_phase = true;
+      state = PPU_STATE_VRAM;
     }
 
     if (hblank_delay2 < 7 && render_phase) { // must be 7
       render_phase = false;
       hblank_phase = true;
       state = PPU_STATE_HBLANK;
-    }
-
-    if (hblank_phase) {
       vram_addr = 0;
       fetch_state = PPU::FETCH_IDLE;
     }
@@ -297,9 +290,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       if (line == 144 && counter == 4) {
         state = PPU_STATE_VBLANK;
       }
-
-      vram_addr = 0;
-      fetch_state = PPU::FETCH_IDLE;
     }
   }
 

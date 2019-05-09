@@ -91,13 +91,14 @@ struct PPU {
 
   uint8_t hblank_delay;
 
+  bool vblank = false;
+  bool vblank_delay = false;
+
   int old_stat_int = 0;
   int stat_int;
   int compare_line;
 
   int new_stat_int = 0;
-  int new_stat_int2 = 0;
-  bool stat_edge = false;
 
   //----------
   // Sprites

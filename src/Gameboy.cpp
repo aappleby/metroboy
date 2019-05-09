@@ -135,8 +135,6 @@ void Gameboy::tick() {
 
     z80.tick_t0(imask, intf, bus_in);
   }
-
-  assert((ppu.oam_phase + ppu.render_phase + ppu.hblank_phase + ppu.vblank_phase) == 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -149,7 +147,11 @@ void Gameboy::tock() {
   bool     cpu_write_ = z80.mem_write_ && (tphase == 0);
   bool     cpu_read_  = z80.mem_read_ && (tphase == 2);
 
-  if (ppu.stat_edge) intf |= INT_STAT;
+
+  if ((ppu.stat & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
+  if (tphase == 0) ppu.old_stat_int = (ppu.stat & ppu.stat_int);
+
+
   if (ppu.line == 144 && ppu.counter == 4) intf |= INT_VBLANK;
   if (timer.overflow)      intf |= INT_TIMER;
   if (buttons.val != 0xFF) intf |= INT_JOYPAD;

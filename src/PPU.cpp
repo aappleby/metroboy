@@ -110,7 +110,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   tile_hi = 0;
   tile_latched = 0;
 
-  pix_count = 0;
   pix_count2 = 0;
   pipe_count = 0;
   pix_discard = 0;
@@ -143,7 +142,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
     render_phase = false;
     hblank_phase = false;
     vblank_phase = true;
-    pix_count = 160;
     pix_count2 = 160;
   }
 }
@@ -263,8 +261,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
         else {
           state = PPU_STATE_OAM;
         }
-
-        pix_count = 0;
       }
 
       if (counter == 84) {
@@ -359,7 +355,6 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   hblank_delay2 = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 
-  pix_count = 0;
   pix_count2 = 0;
   pix_oe = false;
   sprite_count = 0;
@@ -638,7 +633,7 @@ void PPU::check_sprite_hit(int /*tphase*/) {
   if (!(lcdc & FLAG_OBJ_ON)) return;
 
   ubit4_t hit = 15;
-  int next_pix = pix_count + 8 - pix_discard;
+  int next_pix = pix_count2 + 8 - pix_discard;
 
   if (next_pix == sprite_x[9]) hit = 9;
   if (next_pix == sprite_x[8]) hit = 8;
@@ -705,7 +700,7 @@ void PPU::emit_pixel(int /*tphase*/) {
 
   pipe_count--;
 
-  if (pix_discard || pix_count == 160) {
+  if (pix_discard || pix_count2 == 160) {
     pix_oe = false;
     pix_out = 0;
     if (pix_discard) pix_discard--;
@@ -713,7 +708,6 @@ void PPU::emit_pixel(int /*tphase*/) {
   else {
     pix_oe = true;
     pix_out = (palettes[pal] >> (pix << 1)) & 3;
-    pix_count++;
     pix_count2++;
   }
 }
@@ -841,7 +835,7 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "map y   %d\n", map_y);
 
   cursor += sprintf(cursor, "discard %d\n", pix_discard);
-  cursor += sprintf(cursor, "pix     %d\n", pix_count);
+  cursor += sprintf(cursor, "pix     %d\n", pix_count2);
   cursor += sprintf(cursor, "pipe    %d\n", pipe_count);
   cursor += sprintf(cursor, "fetch   %s\n", bus_names[fetch_state]);
   cursor += sprintf(cursor, "latched %d\n", tile_latched);

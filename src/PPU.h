@@ -17,7 +17,7 @@ struct PPU {
   bool is_frame_done()  { return frame_done; }
   uint8_t get_line()    { return line; }
   uint8_t get_lcdc()    { return lcdc; }
-  int get_pix_count()   { return pix_count; }
+  int get_pix_count()   { return pix_count2; }
 
   //bool stat_int_oam;
   //bool stat_int_vblank;
@@ -159,7 +159,6 @@ struct PPU {
   ubit8_t tile_hi;
   bool    tile_latched;
 
-  int pix_count;
   int pix_count2;
   ubit4_t pipe_count;
   int pix_discard;

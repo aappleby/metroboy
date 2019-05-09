@@ -152,6 +152,10 @@ void PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
 void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write) {
+  if (!(lcdc & FLAG_LCD_ON)) {
+    return;
+  }
+
   frame_start = (counter == 0) && (line == 0);
   frame_done = (counter == 0) && (line == 144);
 
@@ -194,34 +198,32 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   //-----------------------------------
   // lyc_match
 
-  if (lcdc & FLAG_LCD_ON) {
-    if (line == 0) {
-      if (counter == 0) compare_line = 0;
-      if (counter == 0) ly = line;
+  if (line == 0) {
+    if (counter == 0) compare_line = 0;
+    if (counter == 0) ly = line;
 
-      if (counter == 4) compare_line = ly;
-      if (counter == 4) ly = line;
-    }
-    else if (line < 153) {
-      if (counter == 0) compare_line = -1;
-      if (counter == 0) ly = line;
+    if (counter == 4) compare_line = ly;
+    if (counter == 4) ly = line;
+  }
+  else if (line < 153) {
+    if (counter == 0) compare_line = -1;
+    if (counter == 0) ly = line;
 
-      if (counter == 4) compare_line = ly;
-      if (counter == 4) ly = line;
-    }
-    else if (line == 153) {
-      if (counter == 0) compare_line = -1;
-      if (counter == 0) ly = line;
+    if (counter == 4) compare_line = ly;
+    if (counter == 4) ly = line;
+  }
+  else if (line == 153) {
+    if (counter == 0) compare_line = -1;
+    if (counter == 0) ly = line;
 
-      if (counter == 4) compare_line = ly;
-      if (counter == 4) ly = 0;
+    if (counter == 4) compare_line = ly;
+    if (counter == 4) ly = 0;
 
-      if (counter == 8) compare_line = -1;
-      if (counter == 8) ly = 0;
+    if (counter == 8) compare_line = -1;
+    if (counter == 8) ly = 0;
 
-      if (counter == 12) compare_line = 0;
-      if (counter == 12) ly = 0;
-    }
+    if (counter == 12) compare_line = 0;
+    if (counter == 12) ly = 0;
   }
 
   //----------------------------------------
@@ -293,40 +295,37 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   //----------------------------------------
   // interrupts
 
-  if (lcdc & FLAG_LCD_ON) {
-    if (tphase == 0 || tphase == 2) {
+  if (tphase == 0 || tphase == 2) {
 
-      // must be 6, must be both tphases
-      stat_int &= ~EI_HBLANK;
-      if (hblank_delay < 6 && hblank_phase) stat_int |= EI_HBLANK;
+    // must be 6, must be both tphases
+    stat_int &= ~EI_HBLANK;
+    if (hblank_delay < 6 && hblank_phase) stat_int |= EI_HBLANK;
 
-      stat_int &= ~EI_VBLANK;
-      if (vblank_delay) stat_int |= EI_VBLANK;
+    stat_int &= ~EI_VBLANK;
+    if (vblank_delay) stat_int |= EI_VBLANK;
 
-      stat_int &= ~EI_LYC;
-      if (compare_line == lyc) stat_int |= EI_LYC;
+    stat_int &= ~EI_LYC;
+    if (compare_line == lyc) stat_int |= EI_LYC;
 
-      if (tphase == 2) {
-        stat_int &= ~0x80;
-        bool stat_int_glitch = false;
-        if (cpu_write && cpu_addr == ADDR_STAT) {
-          stat_int_glitch |= hblank_delay < 6;
-          stat_int_glitch |= (stat_int & EI_VBLANK) != 0;
-          stat_int_glitch |= (stat_int & EI_LYC) != 0;
-        }
-        stat_int |= stat_int_glitch ? 0x80 : 0;
+    if (tphase == 2) {
+      stat_int &= ~0x80;
+      bool stat_int_glitch = false;
+      if (cpu_write && cpu_addr == ADDR_STAT) {
+        stat_int_glitch |= hblank_delay < 6;
+        stat_int_glitch |= (stat_int & EI_VBLANK) != 0;
+        stat_int_glitch |= (stat_int & EI_LYC) != 0;
       }
+      stat_int |= stat_int_glitch ? 0x80 : 0;
+    }
 
-      if (tphase == 0) {
-        // note that this happens _before_ we update the EI_OAM bit
-        new_stat_int = (stat & stat_int) != 0;
+    if (tphase == 0) {
+      // note that this happens _before_ we update the EI_OAM bit
+      new_stat_int = (stat & stat_int) != 0;
 
-        stat_int &= ~EI_OAM;
-        if (oam_edge) stat_int |= EI_OAM;
-      }
+      stat_int &= ~EI_OAM;
+      if (oam_edge) stat_int |= EI_OAM;
     }
   }
-
 
   assert((oam_phase + render_phase + hblank_phase + vblank_phase) == 1);
 }

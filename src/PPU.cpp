@@ -71,7 +71,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   vblank_phase = false;
   vblank_delay = false;
 
-  hblank_delay = HBLANK_DELAY_START;
   hblank_delay2 = HBLANK_DELAY_START;
 
   old_stat_int = false;
@@ -263,7 +262,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
         }
 
         pix_count = 0;
-        hblank_delay = HBLANK_DELAY_START;
       }
 
       if (counter == 84) {
@@ -355,7 +353,6 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   hblank_phase = true;
   vblank_phase = false;
   vblank_delay = false;
-  hblank_delay = HBLANK_DELAY_START;
   hblank_delay2 = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 
@@ -397,7 +394,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   }
 
   if (pix_count == 160 && hblank_delay2 && line < 144 && counter > 4) {
-    hblank_delay--;
     hblank_delay2--;
   }
 
@@ -831,7 +827,7 @@ char* PPU::dump(char* cursor) {
 
   cursor += sprintf(cursor, "clockP2 %3d:%3d\n", line, counter);
 
-  cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay);
+  cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay2);
   //cursor += sprintf(cursor, "vblank int %d\n", vblank_int);
   //cursor += sprintf(cursor, "stat int %d\n", stat_int);
   cursor += sprintf(cursor, "\n");

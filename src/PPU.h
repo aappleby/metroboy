@@ -89,7 +89,6 @@ struct PPU {
   bool hblank_phase;
   bool vblank_phase;
 
-  uint8_t hblank_delay;
   uint8_t hblank_delay2;
 
   bool vblank_delay = false;

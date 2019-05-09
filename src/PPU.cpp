@@ -111,6 +111,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   tile_latched = 0;
 
   pix_count = 0;
+  pix_count2 = 0;
   pipe_count = 0;
   pix_discard = 0;
 
@@ -143,6 +144,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
     hblank_phase = false;
     vblank_phase = true;
     pix_count = 160;
+    pix_count2 = 160;
   }
 }
 
@@ -251,6 +253,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
         sprite_count = 0;
         state = PPU_STATE_HBLANK;
         hblank_delay2 = HBLANK_DELAY_START;
+        pix_count2 = 0;
       }
 
       if (counter == 4) {
@@ -357,6 +360,7 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   fetch_state = FETCH_IDLE;
 
   pix_count = 0;
+  pix_count2 = 0;
   pix_oe = false;
   sprite_count = 0;
   sprite_index = -1;
@@ -709,7 +713,8 @@ void PPU::emit_pixel(int /*tphase*/) {
   else {
     pix_oe = true;
     pix_out = (palettes[pal] >> (pix << 1)) & 3;
-    pix_count = pix_count + 1;
+    pix_count++;
+    pix_count2++;
   }
 }
 

@@ -160,6 +160,7 @@ struct PPU {
   bool    tile_latched;
 
   int pix_count;
+  int pix_count2;
   ubit4_t pipe_count;
   int pix_discard;
 

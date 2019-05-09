@@ -306,7 +306,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     bool stat_int_glitch = false;
     if (cpu_write && cpu_addr == ADDR_STAT) {
       stat_int_glitch |= hblank_delay2 < 6 || counter < 4;
-      stat_int_glitch |= (stat_int & EI_VBLANK) != 0;
+      stat_int_glitch |= state == PPU_STATE_VBLANK;
       stat_int_glitch |= (stat_int & EI_LYC) != 0;
     }
     stat_int |= stat_int_glitch ? 0x80 : 0;

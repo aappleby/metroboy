@@ -152,93 +152,90 @@ void PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
 void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write) {
-  PPU& ppu = *this;
-
-  //-----------------------------------
 
   if (tphase == 0) {
-    ppu.frame_start = (ppu.counterP2 == 0) && (ppu.lineP2 == 0);
-    ppu.frame_done = (ppu.counterP2 == 0) && (ppu.lineP2 == 144);
+    frame_start = (counterP2 == 0) && (lineP2 == 0);
+    frame_done = (counterP2 == 0) && (lineP2 == 144);
 
     //-----------------------------------
     // lyc_match
 
-    ppu.compare_line = ppu.ly;
+    compare_line = ly;
 
-    if (ppu.lineP2 > 0 && ppu.counterP2 == 0) {
-      ppu.ly = ppu.lineP2;
-      ppu.compare_line = -1;
+    if (lineP2 > 0 && counterP2 == 0) {
+      ly = lineP2;
+      compare_line = -1;
     }
 
-    if (ppu.lineP2 == 153 && ppu.counterP2 == 4) {
-      ppu.ly = 0;
+    if (lineP2 == 153 && counterP2 == 4) {
+      ly = 0;
     }
 
-    if (ppu.lineP2 == 153 && ppu.counterP2 == 8) {
-      ppu.compare_line = -1;
+    if (lineP2 == 153 && counterP2 == 8) {
+      compare_line = -1;
     }
 
     //----------------------------------------
     // Update state machiney stuff
 
-    ppu.vblank_phase = ppu.lineP2 > 143;
+    vblank_phase = lineP2 > 143;
 
-    if (ppu.counterP2 == 0) {
-      ppu.hblank_phase = false;
+    if (counterP2 == 0) {
+      hblank_phase = false;
     }
 
-    if (!ppu.vblank_phase) {
-      if (ppu.counterP2 == 0) {
-        ppu.oam_phase = ppu.lineP2 != 0;
-        ppu.hblank_phase = ppu.lineP2 == 0;
-        ppu.sprite_index = -1;
-        ppu.sprite_count = 0;
-        ppu.state = PPU_STATE_HBLANK;
+    if (!vblank_phase) {
+      if (counterP2 == 0) {
+        oam_phase = lineP2 != 0;
+        hblank_phase = lineP2 == 0;
+        sprite_index = -1;
+        sprite_count = 0;
+        state = PPU_STATE_HBLANK;
       }
 
-      if (ppu.counterP2 == 4) {
-        if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
-          ppu.state = PPU_STATE_HBLANK;
+      if (counterP2 == 4) {
+        if (frame_count == 0 && lineP2 == 0) {
+          state = PPU_STATE_HBLANK;
         }
         else {
-          ppu.state = PPU_STATE_OAM;
+          state = PPU_STATE_OAM;
         }
 
-        ppu.pix_count = 0;
-        ppu.hblank_delay = HBLANK_DELAY_START;
+        pix_count = 0;
+        hblank_delay = HBLANK_DELAY_START;
       }
 
-      if (ppu.counterP2 == 84) {
-        ppu.hblank_phase = false;
-        ppu.oam_phase = false;
-        ppu.render_phase = true;
-        ppu.state = PPU_STATE_VRAM;
+      if (counterP2 == 84) {
+        hblank_phase = false;
+        oam_phase = false;
+        render_phase = true;
+        state = PPU_STATE_VRAM;
 
-        ppu.sprite_index = -1;
-        ppu.window_hit = false;
-        ppu.map_x = (ppu.scx >> 3) & 31;
-        ppu.pix_discard = (ppu.scx & 7) + 8;
-        ppu.sprite_latched = false;
-        ppu.tile_latched = true;
-        ppu.window_hit = false;
-        ppu.pipe_count = 0;
+        sprite_index = -1;
+        window_hit = false;
+        map_x = (scx >> 3) & 31;
+        pix_discard = (scx & 7) + 8;
+        sprite_latched = false;
+        tile_latched = true;
+        window_hit = false;
+        pipe_count = 0;
       }
     }
 
-    if (ppu.lineP2 == 144 && ppu.counterP2 == 4) {
-      ppu.hblank_phase = false;
-      ppu.state = PPU_STATE_VBLANK;
+    if (lineP2 == 144 && counterP2 == 4) {
+      hblank_phase = false;
+      state = PPU_STATE_VBLANK;
     }
   }
 
   if (tphase == 2) {
-    if (ppu.hblank_delay < 7 && ppu.render_phase) {
-      ppu.render_phase = false;
-      ppu.hblank_phase = true;
-      ppu.state = PPU_STATE_HBLANK;
+    if (hblank_delay < 7 && render_phase) {
+      render_phase = false;
+      hblank_phase = true;
+      state = PPU_STATE_HBLANK;
 
-      ppu.vram_addr = 0;
-      ppu.fetch_state = PPU::FETCH_IDLE;
+      vram_addr = 0;
+      fetch_state = PPU::FETCH_IDLE;
     }
   }
 
@@ -250,28 +247,28 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   const int render_start = 82;
   const int render_start_l0 = 84;
 
-  if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
-    if (ppu.counterP2 == render_start_l0) {
-      ppu.oam_lock = true;
-      ppu.vram_lock = true;
+  if (frame_count == 0 && lineP2 == 0) {
+    if (counterP2 == render_start_l0) {
+      oam_lock = true;
+      vram_lock = true;
     }
   }
   else {
-    if (ppu.counterP2 == oam_start) {
-      ppu.oam_lock = true;
+    if (counterP2 == oam_start) {
+      oam_lock = true;
     }
-    else if (ppu.counterP2 == oam_end) {
-      ppu.oam_lock = false;
+    else if (counterP2 == oam_end) {
+      oam_lock = false;
     }
-    else if (ppu.counterP2 == render_start) {
-      ppu.oam_lock = true;
-      ppu.vram_lock = true;
+    else if (counterP2 == render_start) {
+      oam_lock = true;
+      vram_lock = true;
     }
   }
 
-  if (ppu.hblank_delay == 5 || ppu.vblank_phase) {
-    ppu.oam_lock = false;
-    ppu.vram_lock = false;
+  if (hblank_delay == 5 || vblank_phase) {
+    oam_lock = false;
+    vram_lock = false;
   }
 
   //----------------------------------------
@@ -279,65 +276,65 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   if (tphase == 0 || tphase == 2) {
 
-    ppu.stat_int &= ~EI_HBLANK;
-    ppu.stat_int &= ~EI_VBLANK;
-    ppu.stat_int &= ~0x80;
-    if (ppu.lcdc & FLAG_LCD_ON) ppu.stat_int &= ~EI_LYC;
+    stat_int &= ~EI_HBLANK;
+    stat_int &= ~EI_VBLANK;
+    stat_int &= ~0x80;
+    if (lcdc & FLAG_LCD_ON) stat_int &= ~EI_LYC;
 
     if (tphase == 0 || tphase == 2) {
-      if (ppu.hblank_delay < 6 && !ppu.oam_phase && !ppu.vblank_phase) ppu.stat_int |= EI_HBLANK;
+      if (hblank_delay < 6 && !oam_phase && !vblank_phase) stat_int |= EI_HBLANK;
     }
 
     if (tphase == 0) {
-      if (ppu.lineP2 == 144 && ppu.counterP2 >= 4) ppu.stat_int |= EI_VBLANK;
-      if (ppu.lineP2 > 144) ppu.stat_int |= EI_VBLANK;
+      if (lineP2 == 144 && counterP2 >= 4) stat_int |= EI_VBLANK;
+      if (lineP2 > 144) stat_int |= EI_VBLANK;
     }
 
     if (tphase == 0 || tphase == 2) {
-      if (ppu.lcdc & FLAG_LCD_ON) {
-        if (ppu.compare_line == ppu.lyc) ppu.stat_int |= EI_LYC;
+      if (lcdc & FLAG_LCD_ON) {
+        if (compare_line == lyc) stat_int |= EI_LYC;
       }
     }
 
     if (tphase == 2) {
       bool stat_int_glitch = false;
       if (cpu_write && cpu_addr == ADDR_STAT) {
-        stat_int_glitch |= ppu.hblank_delay < 4;
-        stat_int_glitch |= ppu.vblank_phase;
-        stat_int_glitch |= (ppu.compare_line == ppu.lyc);
+        stat_int_glitch |= hblank_delay < 4;
+        stat_int_glitch |= vblank_phase;
+        stat_int_glitch |= (compare_line == lyc);
       }
-      ppu.stat_int |= stat_int_glitch ? 0x80 : 0;
+      stat_int |= stat_int_glitch ? 0x80 : 0;
     }
 
     if (tphase == 0) {
-      ppu.stat_int2 = ppu.stat_int;
+      stat_int2 = stat_int;
 
       new_stat_int = 0;
-      if ((ppu.stat_int2 & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int = 1;
-      if ((ppu.stat_int2 & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int = 1;
-      if ((ppu.stat_int2 & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
-      if ((ppu.stat_int2 & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
-      if (ppu.stat_int2 & 0x80) new_stat_int = 1;
+      if ((stat_int2 & EI_HBLANK) && (stat & EI_HBLANK)) new_stat_int = 1;
+      if ((stat_int2 & EI_VBLANK) && (stat & EI_VBLANK)) new_stat_int = 1;
+      if ((stat_int2 & EI_LYC) && (stat & EI_LYC)) new_stat_int = 1;
+      if ((stat_int2 & EI_OAM) && (stat & EI_OAM)) new_stat_int = 1;
+      if (stat_int2 & 0x80) new_stat_int = 1;
 
-      ppu.stat_int &= ~EI_OAM;
+      stat_int &= ~EI_OAM;
 
-      if (ppu.lineP2 == 0 && ppu.counterP2 == 4) ppu.stat_int |= EI_OAM;
-      if (ppu.lineP2 > 0 && ppu.lineP2 <= 144 && ppu.counterP2 == 0) ppu.stat_int |= EI_OAM;
+      if (lineP2 == 0 && counterP2 == 4) stat_int |= EI_OAM;
+      if (lineP2 > 0 && lineP2 <= 144 && counterP2 == 0) stat_int |= EI_OAM;
     }
   }
 
   //----------------------------------------
 
   new_stat_int2 = 0;
-  if ((ppu.stat_int & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int2 = 1;
-  if ((ppu.stat_int & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int2 = 1;
-  if ((ppu.stat_int & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int2 = 1;
-  if ((ppu.stat_int & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int2 = 1;
-  if (ppu.stat_int & 0x80) new_stat_int2 = 1;
+  if ((stat_int & EI_HBLANK) && (stat & EI_HBLANK)) new_stat_int2 = 1;
+  if ((stat_int & EI_VBLANK) && (stat & EI_VBLANK)) new_stat_int2 = 1;
+  if ((stat_int & EI_LYC) && (stat & EI_LYC)) new_stat_int2 = 1;
+  if ((stat_int & EI_OAM) && (stat & EI_OAM)) new_stat_int2 = 1;
+  if (stat_int & 0x80) new_stat_int2 = 1;
 
-  stat_edge = new_stat_int2 && !ppu.old_stat_int;
+  stat_edge = new_stat_int2 && !old_stat_int;
   if (tphase == 0) {
-    ppu.old_stat_int = new_stat_int2;
+    old_stat_int = new_stat_int2;
   }
 }
 

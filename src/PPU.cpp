@@ -312,7 +312,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       bool stat_int_glitch = false;
       if (cpu_write && cpu_addr == ADDR_STAT) {
         stat_int_glitch |= hblank_delay < 6;
-        stat_int_glitch |= vblank_phase;
+        stat_int_glitch |= (stat_int & EI_VBLANK) != 0;
         stat_int_glitch |= (compare_line == lyc);
       }
       stat_int |= stat_int_glitch ? 0x80 : 0;

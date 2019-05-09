@@ -153,12 +153,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
 void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write) {
   frame_start = (counter == 0) && (line == 0);
   frame_done = (counter == 0) && (line == 144);
-  vblank_phase = line > 143;
-
-  if (tphase == 0) {
-    vblank_delay = vblank;
-    vblank = line >= 144;
-  }
 
   //----------------------------------------
   // locking
@@ -187,7 +181,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
-  if (hblank_delay == 5 || vblank_phase) {
+  if (hblank_delay == 5 || line > 143) {
     oam_lock = false;
     vram_lock = false;
   }
@@ -197,29 +191,42 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   if (lcdc & FLAG_LCD_ON) {
     if (line == 0) {
-      if (counter == 4) compare_line = ly;
-      if (counter == 8) compare_line = ly;
-    }
-
-    else if (line == 153) {
+      if (counter == 0) compare_line = 0;
       if (counter == 0) ly = line;
+
+      if (counter == 4) compare_line = ly;
+      if (counter == 4) ly = line;
+    }
+    else if (line < 153) {
+      if (counter == 0) compare_line = -1;
+      if (counter == 0) ly = line;
+
+      if (counter == 4) compare_line = ly;
+      if (counter == 4) ly = line;
+    }
+    else if (line == 153) {
+      if (counter == 0) compare_line = -1;
+      if (counter == 0) ly = line;
+
+      if (counter == 4) compare_line = ly;
       if (counter == 4) ly = 0;
 
-      if (counter == 0)  compare_line = -1;
-      if (counter == 4)  compare_line = line;
-      if (counter == 8)  compare_line = -1;
+      if (counter == 8) compare_line = -1;
+      if (counter == 8) ly = 0;
+
       if (counter == 12) compare_line = 0;
+      if (counter == 12) ly = 0;
     }
 
-    else {
-      if (counter == 0) ly = line;
-      if (counter == 0) compare_line = -1;
-      if (counter == 4) compare_line = ly;
-    }
   }
 
   //----------------------------------------
   // Update state machiney stuff
+
+  if (tphase == 0) {
+    vblank_delay = vblank_phase;
+    vblank_phase = line > 143;
+  }
 
   if (tphase == 0) {
 
@@ -357,6 +364,8 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   sprite_count = 0;
   sprite_index = -1;
   tile_latched = false;
+
+  compare_line = 0;
 
   vram_addr = 0;
   oam_addr = 0;

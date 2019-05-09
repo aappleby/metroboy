@@ -91,7 +91,6 @@ struct PPU {
 
   uint8_t hblank_delay;
 
-  bool vblank = false;
   bool vblank_delay = false;
 
   int old_stat_int = 0;

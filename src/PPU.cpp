@@ -246,11 +246,42 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
+  //----------------------------------------
+  // locking
+
+  const int oam_start = 0;
+  const int oam_end = 80;
+  const int render_start = 82;
+  const int render_start_l0 = 84;
+
+  if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
+    if (ppu.counterP2 == render_start_l0) {
+      ppu.oam_lock = true;
+      ppu.vram_lock = true;
+    }
+  }
+  else {
+    if (ppu.counterP2 == oam_start) {
+      ppu.oam_lock = true;
+    }
+    else if (ppu.counterP2 == oam_end) {
+      ppu.oam_lock = false;
+    }
+    else if (ppu.counterP2 == render_start) {
+      ppu.oam_lock = true;
+      ppu.vram_lock = true;
+    }
+  }
+
+  if (ppu.hblank_delay == 5 || ppu.vblank_phase) {
+    ppu.oam_lock = false;
+    ppu.vram_lock = false;
+  }
+
+  //----------------------------------------
+  // interrupts
 
   if (tphase == 0 || tphase == 2) {
-
-    //----------------------------------------
-    // interrupts
 
     ppu.stat_int &= ~EI_HBLANK;
     ppu.stat_int &= ~EI_VBLANK;
@@ -285,6 +316,13 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     if (tphase == 0) {
       ppu.stat_int2 = ppu.stat_int;
 
+      new_stat_int = 0;
+      if ((ppu.stat_int2 & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int = 1;
+      if ((ppu.stat_int2 & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int = 1;
+      if ((ppu.stat_int2 & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
+      if ((ppu.stat_int2 & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
+      if (ppu.stat_int2 & 0x80) new_stat_int = 1;
+
       ppu.stat_int &= ~EI_OAM;
 
       if (ppu.lineP2 == 0 && ppu.counterP2 == 4) ppu.stat_int |= EI_OAM;
@@ -293,45 +331,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   }
 
   //----------------------------------------
-  // locking
-
-  const int oam_start = 0;
-  const int oam_end = 80;
-  const int render_start = 82;
-  const int render_start_l0 = 84;
-
-  if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
-    if (ppu.counterP2 == render_start_l0) {
-      ppu.oam_lock = true;
-      ppu.vram_lock = true;
-    }
-  }
-  else {
-    if (ppu.counterP2 == oam_start) {
-      ppu.oam_lock = true;
-    }
-    else if (ppu.counterP2 == oam_end) {
-      ppu.oam_lock = false;
-    }
-    else if (ppu.counterP2 == render_start) {
-      ppu.oam_lock = true;
-      ppu.vram_lock = true;
-    }
-  }
-
-  if (ppu.hblank_delay == 5 || ppu.vblank_phase) {
-    ppu.oam_lock = false;
-    ppu.vram_lock = false;
-  }
-
-  //----------------------------------------
-
-  new_stat_int = 0;
-  if ((ppu.stat_int2 & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int = 1;
-  if ((ppu.stat_int2 & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int = 1;
-  if ((ppu.stat_int2 & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
-  if ((ppu.stat_int2 & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
-  if (ppu.stat_int2 & 0x80) new_stat_int = 1;
 
   new_stat_int2 = 0;
   if ((ppu.stat_int & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int2 = 1;

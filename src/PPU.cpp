@@ -235,55 +235,49 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (line < 144) {
     if (tphase == 0) {
       vblank_delay = vblank_phase && !frame_start;
-      vblank_phase = line > 143;
+      vblank_phase = false;
 
       if (counter == 0) {
         hblank_phase = false;
       }
 
-      if (!vblank_phase) {
-        if (counter == 0) {
+      if (counter == 0) {
 
-          if (frame_count == 0 && line == 0) {
-            hblank_phase = true;
-          }
-          else {
-            hblank_phase = false;
-            oam_phase = true;
-          }
-
-          sprite_index = -1;
-          sprite_count = 0;
-          state = PPU_STATE_HBLANK;
-          pix_count2 = 0;
+        if (frame_count == 0 && line == 0) {
+          hblank_phase = true;
         }
-
-        if (counter == 4) {
-          state = (frame_count == 0 && line == 0) ? PPU_STATE_HBLANK : PPU_STATE_OAM;
-        }
-
-        if (counter == 84) {
+        else {
           hblank_phase = false;
-          oam_phase = false;
-
-          render_phase = true;
-          state = PPU_STATE_VRAM;
-
-          sprite_index = -1;
-          window_hit = false;
-          map_x = (scx >> 3) & 31;
-          pix_discard = (scx & 7) + 8;
-          sprite_latched = false;
-          tile_latched = true;
-          window_hit = false;
-          pipe_count = 0;
+          oam_phase = true;
         }
+
+        sprite_index = -1;
+        sprite_count = 0;
+        state = PPU_STATE_HBLANK;
+        pix_count2 = 0;
       }
 
-      if (line == 144 && counter == 4) {
-        hblank_phase = false;
-        state = PPU_STATE_VBLANK;
+      if (counter == 4) {
+        state = (frame_count == 0 && line == 0) ? PPU_STATE_HBLANK : PPU_STATE_OAM;
       }
+
+      if (counter == 84) {
+        hblank_phase = false;
+        oam_phase = false;
+
+        render_phase = true;
+        state = PPU_STATE_VRAM;
+
+        sprite_index = -1;
+        window_hit = false;
+        map_x = (scx >> 3) & 31;
+        pix_discard = (scx & 7) + 8;
+        sprite_latched = false;
+        tile_latched = true;
+        window_hit = false;
+        pipe_count = 0;
+      }
+
     }
 
     if (hblank_delay2 < 7 && render_phase) { // must be 7
@@ -299,20 +293,18 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   }
   else {
     if (tphase == 0) {
-      vblank_delay = vblank_phase && !frame_start;
+      vblank_delay = vblank_phase;
+      oam_phase = false;
+      render_phase = false;
+      hblank_phase = false;
+      vblank_phase = true;
+      if (line == 144 && counter == 4) {
+        state = PPU_STATE_VBLANK;
+      }
+
+      vram_addr = 0;
+      fetch_state = PPU::FETCH_IDLE;
     }
-
-    if (line == 144 && counter == 4) {
-      state = PPU_STATE_VBLANK;
-    }
-
-    oam_phase = false;
-    render_phase = false;
-    hblank_phase = false;
-    vblank_phase = true;
-
-    vram_addr = 0;
-    fetch_state = PPU::FETCH_IDLE;
   }
 
   //----------------------------------------

@@ -62,8 +62,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
   frame_done = 0;
   frame_count = 0;
 
-  lineP2 = 0;
-  counterP2 = 0;
+  line = 0;
+  counter = 0;
 
   oam_phase = false;
   render_phase = false;
@@ -133,8 +133,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
     obp0 = 0xFF;
     obp1 = 0xFF;
 
-    lineP2 = 153;
-    counterP2 = 404;
+    line = 153;
+    counter = 404;
 
     lcdc = 0x91;
     palettes[0] = 0xfc;
@@ -152,9 +152,9 @@ void PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
 void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write) {
-  frame_start = (counterP2 == 0) && (lineP2 == 0);
-  frame_done = (counterP2 == 0) && (lineP2 == 144);
-  vblank_phase = lineP2 > 143;
+  frame_start = (counter == 0) && (line == 0);
+  frame_done = (counter == 0) && (line == 144);
+  vblank_phase = line > 143;
 
   //----------------------------------------
   // locking
@@ -164,20 +164,20 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   const int render_start = 82;
   const int render_start_l0 = 84;
 
-  if (frame_count == 0 && lineP2 == 0) {
-    if (counterP2 == render_start_l0) {
+  if (frame_count == 0 && line == 0) {
+    if (counter == render_start_l0) {
       oam_lock = true;
       vram_lock = true;
     }
   }
   else {
-    if (counterP2 == oam_start) {
+    if (counter == oam_start) {
       oam_lock = true;
     }
-    else if (counterP2 == oam_end) {
+    else if (counter == oam_end) {
       oam_lock = false;
     }
-    else if (counterP2 == render_start) {
+    else if (counter == render_start) {
       oam_lock = true;
       vram_lock = true;
     }
@@ -192,21 +192,23 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   // lyc_match
 
   if (tphase == 0) {
-
     compare_line = ly;
+  }
 
-    if (lineP2 > 0 && counterP2 == 0) {
-      ly = lineP2;
-      compare_line = -1;
-    }
+  if (line > 0 && counter == 0) {
+    ly = line;
+  }
 
-    if (lineP2 == 153 && counterP2 == 4) {
-      ly = 0;
-    }
+  if (line > 0 && counter == 0) {
+    compare_line = -1;
+  }
 
-    if (lineP2 == 153 && counterP2 == 8) {
-      compare_line = -1;
-    }
+  if (line == 153 && counter == 4) {
+    ly = 0;
+  }
+
+  if (line == 153 && counter == 8) {
+    compare_line = -1;
   }
 
   //----------------------------------------
@@ -214,21 +216,21 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   if (tphase == 0) {
 
-    if (counterP2 == 0) {
+    if (counter == 0) {
       hblank_phase = false;
     }
 
     if (!vblank_phase) {
-      if (counterP2 == 0) {
-        oam_phase = lineP2 != 0;
-        hblank_phase = lineP2 == 0;
+      if (counter == 0) {
+        oam_phase = line != 0;
+        hblank_phase = line == 0;
         sprite_index = -1;
         sprite_count = 0;
         state = PPU_STATE_HBLANK;
       }
 
-      if (counterP2 == 4) {
-        if (frame_count == 0 && lineP2 == 0) {
+      if (counter == 4) {
+        if (frame_count == 0 && line == 0) {
           state = PPU_STATE_HBLANK;
         }
         else {
@@ -239,7 +241,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
         hblank_delay = HBLANK_DELAY_START;
       }
 
-      if (counterP2 == 84) {
+      if (counter == 84) {
         hblank_phase = false;
         oam_phase = false;
         render_phase = true;
@@ -256,7 +258,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       }
     }
 
-    if (lineP2 == 144 && counterP2 == 4) {
+    if (line == 144 && counter == 4) {
       hblank_phase = false;
       state = PPU_STATE_VBLANK;
     }
@@ -288,8 +290,8 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
 
     if (tphase == 0) {
-      if (lineP2 == 144 && counterP2 >= 4) stat_int |= EI_VBLANK;
-      if (lineP2 > 144) stat_int |= EI_VBLANK;
+      if (line == 144 && counter >= 4) stat_int |= EI_VBLANK;
+      if (line > 144) stat_int |= EI_VBLANK;
     }
 
     if (tphase == 0 || tphase == 2) {
@@ -320,8 +322,8 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
       stat_int &= ~EI_OAM;
 
-      if (lineP2 == 0 && counterP2 == 4) stat_int |= EI_OAM;
-      if (lineP2 > 0 && lineP2 <= 144 && counterP2 == 0) stat_int |= EI_OAM;
+      if (line == 0 && counter == 4) stat_int |= EI_OAM;
+      if (line > 0 && line <= 144 && counter == 0) stat_int |= EI_OAM;
     }
   }
 
@@ -344,8 +346,8 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
 void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                       uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
-  counterP2 = 4;
-  lineP2 = 0;
+  counter = 4;
+  line = 0;
 
   if (cpu_write) bus_write(cpu_addr, cpu_data);
 
@@ -396,7 +398,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
   }
 
-  if (pix_count == 160 && hblank_delay && lineP2 < 144) {
+  if (pix_count == 160 && hblank_delay && line < 144) {
     hblank_delay--;
   }
 
@@ -415,13 +417,13 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   if (oam_read && (oam_addr & 3) == 2) spriteP = oam_in;
   if (oam_read && (oam_addr & 3) == 3) spriteF = oam_in;
 
-  if (oam_read && (counterP2 <= 80) && (oam_addr & 3) == 1 && sprite_count < 10) {
-    int si = (counterP2 - 1) >> 1;
+  if (oam_read && (counter <= 80) && (oam_addr & 3) == 1 && sprite_count < 10) {
+    int si = (counter - 1) >> 1;
     int sy = spriteY - 16;
     int sx = spriteX;
 
     ubit4_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
-    if ((sx < 168) && (sy <= lineP2) && (lineP2 <= sy + sprite_height)) {
+    if ((sx < 168) && (sy <= line) && (line <= sy + sprite_height)) {
       sprite_x[sprite_count] = spriteX;
       sprite_y[sprite_count] = spriteY;
       sprite_i[sprite_count] = (uint8_t)si;
@@ -432,13 +434,13 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   oam_addr = 0;
   oam_read = false;
 
-  if (frame_count == 0 && lineP2 == 0 && counterP2 < 84) {
+  if (frame_count == 0 && line == 0 && counter < 84) {
     oam_addr = 0;
     oam_read = false;
   }
-  else if (counterP2 < 80) {
+  else if (counter < 80) {
     // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-    oam_addr = ((counterP2 << 1) & 0b11111100) | (counterP2 & 1);
+    oam_addr = ((counter << 1) & 0b11111100) | (counter & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
   }
@@ -469,14 +471,14 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     merge_tile(tphase);
 
     // Slightly broken
-    if ((lcdc & FLAG_WIN_ON) && !window_hit && (lineP2 >= wy)) {
+    if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
       if (pix_count + pix_discard == wx + 1) {
         window_hit = true;
         fetch_state = FETCH_IDLE;
         pipe_count = 0;
         tile_latched = false;
         map_x = 0;
-        map_y = (lineP2 - wy) >> 3;
+        map_y = (line - wy) >> 3;
         vram_addr = 0;
         vram_delay = 0;
 
@@ -516,25 +518,25 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
       vram_addr = 0;
 
-      map_y = window_hit ? ((lineP2 - wy) >> 3) & 31 : ((scy + lineP2) >> 3) & 31;
+      map_y = window_hit ? ((line - wy) >> 3) & 31 : ((scy + line) >> 3) & 31;
 
       if (window_hit) {
         if      (fetch_state == FETCH_TILE_MAP) vram_addr = win_map_address(lcdc, map_x, map_y);
-        else if (fetch_state == FETCH_TILE_LO)  vram_addr = win_base_address(lcdc, wy, lineP2, tile_map) + 0;
-        else if (fetch_state == FETCH_TILE_HI)  vram_addr = win_base_address(lcdc, wy, lineP2, tile_map) + 1;
+        else if (fetch_state == FETCH_TILE_LO)  vram_addr = win_base_address(lcdc, wy, line, tile_map) + 0;
+        else if (fetch_state == FETCH_TILE_HI)  vram_addr = win_base_address(lcdc, wy, line, tile_map) + 1;
         else if (fetch_state == FETCH_IDLE)     vram_addr = 0;
       }
       else {
         if      (fetch_state == FETCH_TILE_MAP) vram_addr = tile_map_address(lcdc, map_x, map_y);
-        else if (fetch_state == FETCH_TILE_LO)  vram_addr = tile_base_address(lcdc, scy, lineP2, tile_map) + 0;
-        else if (fetch_state == FETCH_TILE_HI)  vram_addr = tile_base_address(lcdc, scy, lineP2, tile_map) + 1;
+        else if (fetch_state == FETCH_TILE_LO)  vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
+        else if (fetch_state == FETCH_TILE_HI)  vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
         else if (fetch_state == FETCH_IDLE)     vram_addr = 0;
       }
 
       // bogus address just to keep the state machine running
       if      (fetch_state == FETCH_SPRITE_MAP) vram_addr = ADDR_VRAM_BEGIN;
-      else if (fetch_state == FETCH_SPRITE_LO)  vram_addr = sprite_base_address(lcdc, lineP2, spriteY, spriteP, spriteF) + 0;
-      else if (fetch_state == FETCH_SPRITE_HI)  vram_addr = sprite_base_address(lcdc, lineP2, spriteY, spriteP, spriteF) + 1;
+      else if (fetch_state == FETCH_SPRITE_LO)  vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
+      else if (fetch_state == FETCH_SPRITE_HI)  vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
       else if (fetch_state == FETCH_IDLE)       vram_addr = 0;
 
       if (fetch_state == FETCH_TILE_MAP) {
@@ -547,7 +549,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
 
     if (fetch_state == FETCH_SPRITE_MAP) {
-      oam_addr = (sprite_index << 2) + (counterP2 & 1) + 2;
+      oam_addr = (sprite_index << 2) + (counter & 1) + 2;
       oam_addr += ADDR_OAM_BEGIN;
       oam_read = true;
     }
@@ -828,7 +830,7 @@ char* PPU::dump(char* cursor) {
   }
   */
 
-  cursor += sprintf(cursor, "clockP2 %3d:%3d\n", lineP2, counterP2);
+  cursor += sprintf(cursor, "clockP2 %3d:%3d\n", line, counter);
 
   cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay);
   //cursor += sprintf(cursor, "vblank int %d\n", vblank_int);

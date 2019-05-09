@@ -119,7 +119,7 @@ void Gameboy::tick() {
   }
 
   if (tphase == 0) {
-    if (imask & 0x01) z80.unhalt |= (ppu.lineP2 == 144 && ppu.counterP2 == 4);
+    if (imask & 0x01) z80.unhalt |= (ppu.line == 144 && ppu.counter == 4);
     if (imask & 0x02) z80.unhalt |= ppu.new_stat_int != 0;
     if (imask & 0x04) z80.unhalt |= (timer.overflow) ? true : false;
     if (imask & 0x10) z80.unhalt |= (buttons.val != 0xFF) ? true : false;
@@ -150,7 +150,7 @@ void Gameboy::tock() {
   bool     cpu_read_  = z80.mem_read_ && (tphase == 2);
 
   if (ppu.stat_edge) intf |= INT_STAT;
-  if (ppu.lineP2 == 144 && ppu.counterP2 == 4) intf |= INT_VBLANK;
+  if (ppu.line == 144 && ppu.counter == 4) intf |= INT_VBLANK;
   if (timer.overflow)      intf |= INT_TIMER;
   if (buttons.val != 0xFF) intf |= INT_JOYPAD;
 
@@ -222,7 +222,7 @@ void Gameboy::tock() {
   }
   else {
     // Dirty hack - on tcycle 0 of a line, cpu write takes precendence over ppu read.
-    if (ppu.counterP2 == 0) {
+    if (ppu.counter == 0) {
       if (cpu_write_ && (cpu_addr_ & 0xFF00) == 0xFE00) {
         cpu_read_oam = cpu_read_ && ce_oam;
         oam.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
@@ -247,12 +247,12 @@ void Gameboy::tock() {
   //-----------------------------------
   // Update counter/line/frame
 
-  ppu.counterP2++;
-  if (ppu.counterP2 == TCYCLES_LINE) {
-    ppu.counterP2 = 0;
-    ppu.lineP2++;
-    if (ppu.lineP2 == 154) {
-      ppu.lineP2 = 0;
+  ppu.counter++;
+  if (ppu.counter == TCYCLES_LINE) {
+    ppu.counter = 0;
+    ppu.line++;
+    if (ppu.line == 154) {
+      ppu.line = 0;
       ppu.frame_count++;
     }
   }

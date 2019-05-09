@@ -226,7 +226,7 @@ void MetroBoy::cycle() {
   current_gameboy->tock();
 
   if (trace) {
-    tracebuffer[current_gameboy->ppu.lineP2 * 456 + current_gameboy->ppu.counterP2] = current_gameboy->trace();
+    tracebuffer[current_gameboy->ppu.line * 456 + current_gameboy->ppu.counter] = current_gameboy->trace();
   }
 
   if (current_gameboy->is_frame_start()) {

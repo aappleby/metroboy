@@ -152,13 +152,14 @@ void PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
 void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write) {
+  frame_start = (counterP2 == 0) && (lineP2 == 0);
+  frame_done = (counterP2 == 0) && (lineP2 == 144);
+  vblank_phase = lineP2 > 143;
+
+  //-----------------------------------
+  // lyc_match
 
   if (tphase == 0) {
-    frame_start = (counterP2 == 0) && (lineP2 == 0);
-    frame_done = (counterP2 == 0) && (lineP2 == 144);
-
-    //-----------------------------------
-    // lyc_match
 
     compare_line = ly;
 
@@ -174,11 +175,12 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     if (lineP2 == 153 && counterP2 == 8) {
       compare_line = -1;
     }
+  }
 
-    //----------------------------------------
-    // Update state machiney stuff
+  //----------------------------------------
+  // Update state machiney stuff
 
-    vblank_phase = lineP2 > 143;
+  if (tphase == 0) {
 
     if (counterP2 == 0) {
       hblank_phase = false;

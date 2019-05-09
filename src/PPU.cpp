@@ -156,6 +156,38 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   frame_done = (counterP2 == 0) && (lineP2 == 144);
   vblank_phase = lineP2 > 143;
 
+  //----------------------------------------
+  // locking
+
+  const int oam_start = 0;
+  const int oam_end = 80;
+  const int render_start = 82;
+  const int render_start_l0 = 84;
+
+  if (frame_count == 0 && lineP2 == 0) {
+    if (counterP2 == render_start_l0) {
+      oam_lock = true;
+      vram_lock = true;
+    }
+  }
+  else {
+    if (counterP2 == oam_start) {
+      oam_lock = true;
+    }
+    else if (counterP2 == oam_end) {
+      oam_lock = false;
+    }
+    else if (counterP2 == render_start) {
+      oam_lock = true;
+      vram_lock = true;
+    }
+  }
+
+  if (hblank_delay == 5 || vblank_phase) {
+    oam_lock = false;
+    vram_lock = false;
+  }
+
   //-----------------------------------
   // lyc_match
 
@@ -239,38 +271,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       vram_addr = 0;
       fetch_state = PPU::FETCH_IDLE;
     }
-  }
-
-  //----------------------------------------
-  // locking
-
-  const int oam_start = 0;
-  const int oam_end = 80;
-  const int render_start = 82;
-  const int render_start_l0 = 84;
-
-  if (frame_count == 0 && lineP2 == 0) {
-    if (counterP2 == render_start_l0) {
-      oam_lock = true;
-      vram_lock = true;
-    }
-  }
-  else {
-    if (counterP2 == oam_start) {
-      oam_lock = true;
-    }
-    else if (counterP2 == oam_end) {
-      oam_lock = false;
-    }
-    else if (counterP2 == render_start) {
-      oam_lock = true;
-      vram_lock = true;
-    }
-  }
-
-  if (hblank_delay == 5 || vblank_phase) {
-    oam_lock = false;
-    vram_lock = false;
   }
 
   //----------------------------------------

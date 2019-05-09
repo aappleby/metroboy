@@ -207,7 +207,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   }
 
   else {
-    if (counter == 0) ly = line;
+    if (counter == 2) ly = line;
     if (counter == 0) compare_line = -1;
     if (counter == 4) compare_line = ly;
   }

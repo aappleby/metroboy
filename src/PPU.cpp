@@ -471,7 +471,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     // Slightly broken
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
-      if (pix_count + pix_discard == wx + 1) {
+      if (pix_count2 + pix_discard == wx + 1) {
         window_hit = true;
         fetch_state = FETCH_IDLE;
         pipe_count = 0;

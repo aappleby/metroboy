@@ -156,7 +156,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   frame_done = (counter == 0) && (line == 144);
 
   bool oam_edge = false;
-  if (line == 0 && counter == 4) oam_edge = true; 
+  if (line == 0 && counter == 4) oam_edge = true;
   if (line > 0 && line <= 144 && counter == 0) oam_edge = true;
 
   //----------------------------------------
@@ -293,37 +293,37 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   //----------------------------------------
   // interrupts
 
-  if (tphase == 0 || tphase == 2) {
+  if (lcdc & FLAG_LCD_ON) {
+    if (tphase == 0 || tphase == 2) {
 
-    stat_int &= ~EI_HBLANK;
-    // must be 6, must be both tphases
-    if (hblank_delay < 6 && hblank_phase) stat_int |= EI_HBLANK; 
+      // must be 6, must be both tphases
+      stat_int &= ~EI_HBLANK;
+      if (hblank_delay < 6 && hblank_phase) stat_int |= EI_HBLANK;
 
-    stat_int &= ~EI_VBLANK;
-    if (vblank_delay) stat_int |= EI_VBLANK;
+      stat_int &= ~EI_VBLANK;
+      if (vblank_delay) stat_int |= EI_VBLANK;
 
-    if (lcdc & FLAG_LCD_ON) {
       stat_int &= ~EI_LYC;
       if (compare_line == lyc) stat_int |= EI_LYC;
-    }
 
-    if (tphase == 2) {
-      stat_int &= ~0x80;
-      bool stat_int_glitch = false;
-      if (cpu_write && cpu_addr == ADDR_STAT) {
-        stat_int_glitch |= hblank_delay < 6;
-        stat_int_glitch |= (stat_int & EI_VBLANK) != 0;
-        stat_int_glitch |= (compare_line == lyc);
+      if (tphase == 2) {
+        stat_int &= ~0x80;
+        bool stat_int_glitch = false;
+        if (cpu_write && cpu_addr == ADDR_STAT) {
+          stat_int_glitch |= hblank_delay < 6;
+          stat_int_glitch |= (stat_int & EI_VBLANK) != 0;
+          stat_int_glitch |= (stat_int & EI_LYC) != 0;
+        }
+        stat_int |= stat_int_glitch ? 0x80 : 0;
       }
-      stat_int |= stat_int_glitch ? 0x80 : 0;
-    }
 
-    if (tphase == 0) {
-      // note that this happens _before_ we update the EI_OAM bit
-      new_stat_int = (stat & stat_int) != 0;
+      if (tphase == 0) {
+        // note that this happens _before_ we update the EI_OAM bit
+        new_stat_int = (stat & stat_int) != 0;
 
-      stat_int &= ~EI_OAM;
-      if (oam_edge) stat_int |= EI_OAM;
+        stat_int &= ~EI_OAM;
+        if (oam_edge) stat_int |= EI_OAM;
+      }
     }
   }
 

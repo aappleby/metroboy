@@ -152,6 +152,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
 void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write) {
+  if (tphase == 1 || tphase == 3) return;
+
   if (!(lcdc & FLAG_LCD_ON)) {
     return;
   }

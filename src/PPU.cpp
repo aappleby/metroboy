@@ -228,6 +228,10 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   //----------------------------------------
   // Update state machiney stuff
 
+  if (counter == 0) {
+    hblank_delay2 = HBLANK_DELAY_START;
+  }
+
   if (tphase == 0) {
     vblank_delay = vblank_phase && !frame_start;
     vblank_phase = line > 143;
@@ -250,17 +254,11 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
         sprite_index = -1;
         sprite_count = 0;
         state = PPU_STATE_HBLANK;
-        hblank_delay2 = HBLANK_DELAY_START;
         pix_count2 = 0;
       }
 
       if (counter == 4) {
-        if (frame_count == 0 && line == 0) {
-          state = PPU_STATE_HBLANK;
-        }
-        else {
-          state = PPU_STATE_OAM;
-        }
+        state = (frame_count == 0 && line == 0) ? PPU_STATE_HBLANK : PPU_STATE_OAM;
       }
 
       if (counter == 84) {

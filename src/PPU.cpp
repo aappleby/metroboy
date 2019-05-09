@@ -192,7 +192,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
-  if (hblank_delay2 < 6 || vblank_phase) {
+  if (hblank_delay2 < 6 || line >= 144) {
     oam_lock = false;
     vram_lock = false;
   }
@@ -253,7 +253,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
   else {
-    hblank_delay2 = HBLANK_DELAY_START;
     oam_phase = false;
     render_phase = false;
     hblank_phase = false;

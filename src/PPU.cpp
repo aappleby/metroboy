@@ -238,11 +238,15 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   }
 
   if (counter == 84) {
-    sprite_index = -1;
     map_x = (scx >> 3) & 31;
     pix_discard = (scx & 7) + 8;
     sprite_latched = false;
     tile_latched = true;
+  }
+
+  if (hblank_delay2 < 7) {
+    vram_addr = 0;
+    fetch_state = PPU::FETCH_IDLE;
   }
 
   if (line < 144) {
@@ -250,8 +254,9 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     vblank_phase = false;
 
     if (counter == 0) {
+      oam_phase = (frame_count == 0 && line == 0) ? false : true;
+      render_phase = false;
       hblank_phase = (frame_count == 0 && line == 0) ? true : false;
-      oam_phase = !hblank_phase;
       state = PPU_STATE_HBLANK;
     }
 
@@ -260,18 +265,17 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
 
     if (counter == 84) {
-      hblank_phase = false;
       oam_phase = false;
       render_phase = true;
+      hblank_phase = false;
       state = PPU_STATE_VRAM;
     }
 
     if (hblank_delay2 < 7) { // must be 7
+      oam_phase = false;
       render_phase = false;
       hblank_phase = true;
       state = PPU_STATE_HBLANK;
-      vram_addr = 0;
-      fetch_state = PPU::FETCH_IDLE;
     }
   }
   else {

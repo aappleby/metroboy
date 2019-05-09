@@ -271,7 +271,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
 
     if (counter == 4) {
-      if (oam_phase) state = PPU_STATE_OAM;
+      if (frame_count != 0 || line != 0) state = PPU_STATE_OAM;
     }
 
     if (counter == 84) {
@@ -296,7 +296,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (hblank_delay2 < 6 && hblank_phase) stat_int |= EI_HBLANK;
 
   stat_int &= ~EI_VBLANK;
-  if (vblank_delay) stat_int |= EI_VBLANK;
+  if (state == PPU_STATE_VBLANK) stat_int |= EI_VBLANK;
 
   stat_int &= ~EI_LYC;
   if (compare_line == lyc) stat_int |= EI_LYC;

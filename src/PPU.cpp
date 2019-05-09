@@ -65,9 +65,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   line = 0;
   counter = 0;
 
-  line_delay = 0;
-  counter_delay = 0;
-
   hblank_delay2 = HBLANK_DELAY_START;
 
   old_stat_int = false;
@@ -241,7 +238,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (hblank_delay2 < 6) stat_int |= EI_HBLANK;
 
   stat_int &= ~EI_VBLANK;
-  if ((line == 144 && counter >= 4) || (line >= 145)) stat_int |= EI_VBLANK;
+  if (line_delay4 > 143) stat_int |= EI_VBLANK;
 
   stat_int &= ~EI_LYC;
   if (compare_line == lyc) stat_int |= EI_LYC;

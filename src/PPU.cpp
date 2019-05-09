@@ -69,6 +69,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   render_phase = false;
   hblank_phase = true;
   vblank_phase = false;
+  vblank_delay = false;
 
   hblank_delay = HBLANK_DELAY_START;
 
@@ -230,7 +231,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   // Update state machiney stuff
 
   if (tphase == 0) {
-    vblank_delay = vblank_phase;
+    vblank_delay = vblank_phase && !frame_start;
     vblank_phase = line > 143;
 
     if (counter == 0) {
@@ -299,15 +300,10 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
     stat_int &= ~EI_HBLANK;
     // must be 6, must be both tphases
-    if (tphase == 0 || tphase == 2) {
-      if (hblank_delay < 6 && hblank_phase) stat_int |= EI_HBLANK; 
-    }
+    if (hblank_delay < 6 && hblank_phase) stat_int |= EI_HBLANK; 
 
     stat_int &= ~EI_VBLANK;
-    if (tphase == 0) {
-      if (line == 144 && counter >= 4) stat_int |= EI_VBLANK;
-      if (line > 144) stat_int |= EI_VBLANK;
-    }
+    if (vblank_delay) stat_int |= EI_VBLANK;
 
     if (lcdc & FLAG_LCD_ON) {
       stat_int &= ~EI_LYC;
@@ -357,6 +353,7 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   render_phase = false;
   hblank_phase = true;
   vblank_phase = false;
+  vblank_delay = false;
   hblank_delay = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 

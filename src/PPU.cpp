@@ -228,11 +228,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   //----------------------------------------
   // Update state machiney stuff
 
-  if (hblank_delay2 < 7) {
-    vram_addr = 0;
-    fetch_state = PPU::FETCH_IDLE;
-  }
-
   if (line < 144) {
     vblank_delay = false;
     vblank_phase = false;
@@ -360,6 +355,11 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
 void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                uint8_t vram_in, uint8_t oam_in) {
+  if (hblank_delay2 < 7) {
+    vram_addr = 0;
+    fetch_state = PPU::FETCH_IDLE;
+  }
+
   if (counter == 0) {
     window_hit = false;
     pipe_count = 0;

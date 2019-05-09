@@ -120,16 +120,7 @@ void Gameboy::tick() {
 
   if (tphase == 0) {
     if (imask & 0x01) z80.unhalt |= (ppu.lineP2 == 144 && ppu.counterP2 == 4);
-
-    int new_stat_int = 0;
-
-    if ((ppu.stat_int2 & EI_HBLANK) && (ppu.stat & EI_HBLANK)) new_stat_int = 1;
-    if ((ppu.stat_int2 & EI_VBLANK) && (ppu.stat & EI_VBLANK)) new_stat_int = 1;
-    if ((ppu.stat_int2 & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
-    if ((ppu.stat_int2 & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
-    if (ppu.stat_int2 & 0x80) new_stat_int = 1;
-    if (imask & 0x02) z80.unhalt |= new_stat_int != 0;
-
+    if (imask & 0x02) z80.unhalt |= ppu.new_stat_int != 0;
     if (imask & 0x04) z80.unhalt |= (timer.overflow) ? true : false;
     if (imask & 0x10) z80.unhalt |= (buttons.val != 0xFF) ? true : false;
 
@@ -164,7 +155,10 @@ void Gameboy::tock() {
   if ((ppu.stat_int & EI_LYC) && (ppu.stat & EI_LYC)) new_stat_int = 1;
   if ((ppu.stat_int & EI_OAM) && (ppu.stat & EI_OAM)) new_stat_int = 1;
   if (ppu.stat_int & 0x80) new_stat_int = 1;
-  if (new_stat_int && !ppu.old_stat_int) intf |= INT_STAT;
+
+  if (tphase == 0 || tphase == 2) {
+    if (new_stat_int && !ppu.old_stat_int) intf |= INT_STAT;
+  }
 
   if (tphase == 0) {
     ppu.old_stat_int = new_stat_int;

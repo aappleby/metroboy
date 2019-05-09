@@ -96,6 +96,8 @@ struct PPU {
   int stat_int2;
   int compare_line;
 
+  int new_stat_int = 0;
+
   //----------
   // Sprites
 

@@ -154,6 +154,13 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   frame_start = (counter == 0) && (line == 0);
   frame_done = (counter == 0) && (line == 144);
 
+  bool oam_edge = false;
+  if (line == 0 && counter == 4) oam_edge = true; 
+  if (line > 0 && line <= 144 && counter == 0) oam_edge = true;
+
+  //bool vblank_edge = line = 144 && counter == 0;
+  //bool vblank_edge_delay = line = 144 && counter == 4;
+
   //----------------------------------------
   // locking
 
@@ -217,7 +224,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       if (counter == 12) compare_line = 0;
       if (counter == 12) ly = 0;
     }
-
   }
 
   //----------------------------------------
@@ -226,9 +232,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (tphase == 0) {
     vblank_delay = vblank_phase;
     vblank_phase = line > 143;
-  }
-
-  if (tphase == 0) {
 
     if (counter == 0) {
       hblank_phase = false;
@@ -322,12 +325,10 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       stat_int |= stat_int_glitch ? 0x80 : 0;
     }
 
-    // note that this happens _before_ we update the EI_OAM bit
     if (tphase == 0) {
+      // note that this happens _before_ we update the EI_OAM bit
       new_stat_int = (stat & stat_int) != 0;
-    }
 
-    if (tphase == 0) {
       stat_int &= ~EI_OAM;
       if (line == 0 && counter == 4) stat_int |= EI_OAM;
       if (line > 0 && line <= 144 && counter == 0) stat_int |= EI_OAM;

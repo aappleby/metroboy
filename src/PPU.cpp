@@ -257,7 +257,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
 
     if (counter == 4) {
-      state = (frame_count == 0 && line == 0) ? PPU_STATE_HBLANK : PPU_STATE_OAM;
+      if (oam_phase) state = PPU_STATE_OAM;
     }
 
     if (counter == 84) {

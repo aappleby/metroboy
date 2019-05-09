@@ -237,25 +237,21 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       oam_phase = (frame_count == 0 && line == 0) ? false : true;
       render_phase = false;
       hblank_phase = (frame_count == 0 && line == 0) ? true : false;
-      state = PPU_STATE_HBLANK;
     }
 
     if (counter == 4) {
-      if (oam_phase) state = PPU_STATE_OAM;
     }
 
     if (counter == 84) {
       oam_phase = false;
       render_phase = true;
       hblank_phase = false;
-      state = PPU_STATE_VRAM;
     }
 
     if (hblank_delay2 == 5 || hblank_delay2 == 6) {
       oam_phase = false;
       render_phase = false;
       hblank_phase = true;
-      state = PPU_STATE_HBLANK;
     }
   }
   else {
@@ -266,6 +262,28 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     vblank_phase = true;
     if (counter == 4) {
       vblank_delay = true;
+    }
+  }
+
+  if (line < 144) {
+    if (counter == 0) {
+      state = PPU_STATE_HBLANK;
+    }
+
+    if (counter == 4) {
+      if (oam_phase) state = PPU_STATE_OAM;
+    }
+
+    if (counter == 84) {
+      state = PPU_STATE_VRAM;
+    }
+
+    if (hblank_delay2 == 5 || hblank_delay2 == 6) {
+      state = PPU_STATE_HBLANK;
+    }
+  }
+  else {
+    if (counter == 4) {
       state = PPU_STATE_VBLANK;
     }
   }

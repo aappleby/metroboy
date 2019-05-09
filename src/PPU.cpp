@@ -287,10 +287,9 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (tphase == 0 || tphase == 2) {
 
     stat_int &= ~EI_HBLANK;
-    stat_int &= ~EI_VBLANK;
-
     if (hblank_delay < 6 && !oam_phase && !vblank_phase) stat_int |= EI_HBLANK;
 
+    stat_int &= ~EI_VBLANK;
     if (line == 144 && counter >= 4) stat_int |= EI_VBLANK;
     if (line > 144) stat_int |= EI_VBLANK;
 

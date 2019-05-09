@@ -194,10 +194,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (lcdc & FLAG_LCD_ON) {
     if (line == 0) {
       if (counter == 2) compare_line = ly;
-      if (counter == 6) {
-        //if (compare_line != 0) printf("%d\n", compare_line);
-        compare_line = ly;
-      }
+      if (counter == 6) compare_line = ly;
     }
 
     else if (line == 153) {
@@ -270,8 +267,8 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
-  if (tphase == 2) {
-    if (hblank_delay < 7 && render_phase) {
+  if (tphase == 0 || tphase == 2) {
+    if (hblank_delay < 7 && render_phase) { // must be 7
       render_phase = false;
       hblank_phase = true;
       state = PPU_STATE_HBLANK;
@@ -287,7 +284,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (tphase == 0 || tphase == 2) {
 
     stat_int &= ~EI_HBLANK;
-    if (hblank_delay < 6 && !oam_phase && !vblank_phase) stat_int |= EI_HBLANK;
+    if (hblank_delay < 6 && hblank_phase) stat_int |= EI_HBLANK; // must be 6
 
     stat_int &= ~EI_VBLANK;
     if (line == 144 && counter >= 4) stat_int |= EI_VBLANK;

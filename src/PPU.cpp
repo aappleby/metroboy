@@ -156,93 +156,89 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   //-----------------------------------
 
-  if (tphase == 0 || tphase == 2) {
+  if (tphase == 0) {
+    ppu.frame_start = (ppu.counterP2 == 0) && (ppu.lineP2 == 0);
+    ppu.frame_done = (ppu.counterP2 == 0) && (ppu.lineP2 == 144);
+
     //-----------------------------------
+    // lyc_match
 
-    if (tphase == 0) {
-      ppu.frame_start = (ppu.counterP2 == 0) && (ppu.lineP2 == 0);
-      ppu.frame_done = (ppu.counterP2 == 0) && (ppu.lineP2 == 144);
+    ppu.compare_line = ppu.ly;
 
-      //-----------------------------------
-      // lyc_match
+    if (ppu.lineP2 > 0 && ppu.counterP2 == 0) {
+      ppu.ly = ppu.lineP2;
+      ppu.compare_line = -1;
+    }
 
-      ppu.compare_line = ppu.ly;
+    if (ppu.lineP2 == 153 && ppu.counterP2 == 4) {
+      ppu.ly = 0;
+    }
 
-      if (ppu.lineP2 > 0 && ppu.counterP2 == 0) {
-        ppu.ly = ppu.lineP2;
-        ppu.compare_line = -1;
-      }
+    if (ppu.lineP2 == 153 && ppu.counterP2 == 8) {
+      ppu.compare_line = -1;
+    }
 
-      if (ppu.lineP2 == 153 && ppu.counterP2 == 4) {
-        ppu.ly = 0;
-      }
+    //----------------------------------------
+    // Update state machiney stuff
 
-      if (ppu.lineP2 == 153 && ppu.counterP2 == 8) {
-        ppu.compare_line = -1;
-      }
+    ppu.vblank_phase = ppu.lineP2 > 143;
 
-      //----------------------------------------
-      // Update state machiney stuff
+    if (ppu.counterP2 == 0) {
+      ppu.hblank_phase = false;
+    }
 
-      ppu.vblank_phase = ppu.lineP2 > 143;
-
+    if (!ppu.vblank_phase) {
       if (ppu.counterP2 == 0) {
-        ppu.hblank_phase = false;
+        ppu.oam_phase = ppu.lineP2 != 0;
+        ppu.hblank_phase = ppu.lineP2 == 0;
+        ppu.sprite_index = -1;
+        ppu.sprite_count = 0;
+        ppu.state = PPU_STATE_HBLANK;
       }
 
-      if (!ppu.vblank_phase) {
-        if (ppu.counterP2 == 0) {
-          ppu.oam_phase = ppu.lineP2 != 0;
-          ppu.hblank_phase = ppu.lineP2 == 0;
-          ppu.sprite_index = -1;
-          ppu.sprite_count = 0;
+      if (ppu.counterP2 == 4) {
+        if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
           ppu.state = PPU_STATE_HBLANK;
         }
-
-        if (ppu.counterP2 == 4) {
-          if (ppu.frame_count == 0 && ppu.lineP2 == 0) {
-            ppu.state = PPU_STATE_HBLANK;
-          }
-          else {
-            ppu.state = PPU_STATE_OAM;
-          }
-
-          ppu.pix_count = 0;
-          ppu.hblank_delay = HBLANK_DELAY_START;
+        else {
+          ppu.state = PPU_STATE_OAM;
         }
 
-        if (ppu.counterP2 == 84) {
-          ppu.hblank_phase = false;
-          ppu.oam_phase = false;
-          ppu.render_phase = true;
-          ppu.state = PPU_STATE_VRAM;
-
-          ppu.sprite_index = -1;
-          ppu.window_hit = false;
-          ppu.map_x = (ppu.scx >> 3) & 31;
-          ppu.pix_discard = (ppu.scx & 7) + 8;
-          ppu.sprite_latched = false;
-          ppu.tile_latched = true;
-          ppu.window_hit = false;
-          ppu.pipe_count = 0;
-        }
+        ppu.pix_count = 0;
+        ppu.hblank_delay = HBLANK_DELAY_START;
       }
 
-      if (ppu.lineP2 == 144 && ppu.counterP2 == 4) {
+      if (ppu.counterP2 == 84) {
         ppu.hblank_phase = false;
-        ppu.state = PPU_STATE_VBLANK;
+        ppu.oam_phase = false;
+        ppu.render_phase = true;
+        ppu.state = PPU_STATE_VRAM;
+
+        ppu.sprite_index = -1;
+        ppu.window_hit = false;
+        ppu.map_x = (ppu.scx >> 3) & 31;
+        ppu.pix_discard = (ppu.scx & 7) + 8;
+        ppu.sprite_latched = false;
+        ppu.tile_latched = true;
+        ppu.window_hit = false;
+        ppu.pipe_count = 0;
       }
     }
 
-    if (tphase == 2) {
-      if (ppu.hblank_delay < 7 && !ppu.oam_phase && !ppu.vblank_phase) {
-        ppu.render_phase = false;
-        ppu.hblank_phase = true;
-        ppu.state = PPU_STATE_HBLANK;
+    if (ppu.lineP2 == 144 && ppu.counterP2 == 4) {
+      ppu.hblank_phase = false;
+      ppu.state = PPU_STATE_VBLANK;
+    }
+  }
 
-        ppu.vram_addr = 0;
-        ppu.fetch_state = PPU::FETCH_IDLE;
-      }
+  if (tphase == 2) {
+    if (ppu.hblank_delay < 7 && ppu.render_phase) {
+      ppu.render_phase = false;
+      ppu.hblank_phase = true;
+      ppu.state = PPU_STATE_HBLANK;
+
+      ppu.vram_addr = 0;
+      ppu.fetch_state = PPU::FETCH_IDLE;
     }
   }
 
@@ -343,7 +339,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (tphase == 0) {
     ppu.old_stat_int = new_stat_int2;
   }
-
 }
 
 //-----------------------------------------------------------------------------

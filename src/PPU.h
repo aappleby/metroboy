@@ -93,7 +93,6 @@ struct PPU {
 
   int old_stat_int = 0;
   int stat_int;
-  int stat_int2;
   int compare_line;
 
   int new_stat_int = 0;

@@ -74,7 +74,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
   old_stat_int = false;
   stat_int = 0;
-  stat_int2 = 0;
   compare_line = 0;
 
   //----------
@@ -306,14 +305,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       stat_int |= stat_int_glitch ? 0x80 : 0;
     }
 
-    stat_int2 = stat_int;
-
-    new_stat_int = 0;
-    if ((stat_int2 & EI_HBLANK) && (stat & EI_HBLANK)) new_stat_int = 1;
-    if ((stat_int2 & EI_VBLANK) && (stat & EI_VBLANK)) new_stat_int = 1;
-    if ((stat_int2 & EI_LYC) && (stat & EI_LYC)) new_stat_int = 1;
-    if ((stat_int2 & EI_OAM) && (stat & EI_OAM)) new_stat_int = 1;
-    if (stat_int2 & 0x80) new_stat_int = 1;
+    new_stat_int = (stat & stat_int) != 0;
 
     if (tphase == 0) {
       stat_int &= ~EI_OAM;
@@ -325,17 +317,8 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   //----------------------------------------
 
-  new_stat_int2 = 0;
-  if ((stat_int & EI_HBLANK) && (stat & EI_HBLANK)) new_stat_int2 = 1;
-  if ((stat_int & EI_VBLANK) && (stat & EI_VBLANK)) new_stat_int2 = 1;
-  if ((stat_int & EI_LYC) && (stat & EI_LYC)) new_stat_int2 = 1;
-  if ((stat_int & EI_OAM) && (stat & EI_OAM)) new_stat_int2 = 1;
-  if (stat_int & 0x80) new_stat_int2 = 1;
-
-  stat_edge = new_stat_int2 && !old_stat_int;
-  if (tphase == 0) {
-    old_stat_int = new_stat_int2;
-  }
+  stat_edge = (stat & stat_int) && !old_stat_int;
+  if (tphase == 0) old_stat_int = (stat & stat_int);
 }
 
 //-----------------------------------------------------------------------------

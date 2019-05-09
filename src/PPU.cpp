@@ -260,20 +260,9 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     vblank_phase = true;
   }
 
-  if (line < 144) {
-    if (counter == 0) {
-      state = PPU_STATE_HBLANK;
-    }
-
-    if (counter == 4) {
-      if (frame_count != 0 || line != 0) state = PPU_STATE_OAM;
-    }
-
-    if (counter == 84) {
-      state = PPU_STATE_VRAM;
-    }
-  }
-
+  if (counter == 0) state = PPU_STATE_HBLANK;
+  if (counter == 4 && (frame_count != 0 || line != 0)) state = PPU_STATE_OAM;
+  if (counter == 84) state = PPU_STATE_VRAM;
   if (hblank_delay2 < 7) state = PPU_STATE_HBLANK;
 
   if (line == 144 && counter >= 4) state = PPU_STATE_VBLANK;

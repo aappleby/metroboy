@@ -228,21 +228,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   //----------------------------------------
   // Update state machiney stuff
 
-  if (counter == 0) {
-    window_hit = false;
-    pipe_count = 0;
-    sprite_index = -1;
-    sprite_count = 0;
-    pix_count2 = 0;
-  }
-
-  if (counter == 84) {
-    map_x = (scx >> 3) & 31;
-    pix_discard = (scx & 7) + 8;
-    sprite_latched = false;
-    tile_latched = true;
-  }
-
   if (hblank_delay2 < 7) {
     vram_addr = 0;
     fetch_state = PPU::FETCH_IDLE;
@@ -375,6 +360,21 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
 void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                uint8_t vram_in, uint8_t oam_in) {
+  if (counter == 0) {
+    window_hit = false;
+    pipe_count = 0;
+    sprite_index = -1;
+    sprite_count = 0;
+    pix_count2 = 0;
+  }
+
+  if (counter == 84) {
+    map_x = (scx >> 3) & 31;
+    pix_discard = (scx & 7) + 8;
+    sprite_latched = false;
+    tile_latched = true;
+  }
+
   if (tphase == 0 || tphase == 2) {
     stat &= 0b11111000;
     stat |= state;

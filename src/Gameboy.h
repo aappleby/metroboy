@@ -62,8 +62,6 @@ struct Gameboy {
   char* dump(char* cursor);
   char* dump_disasm(char* cursor);
 
-  int fbX = 0;
-  int fbY = 0;
   uint8_t framebuffer[160 * 144];
 
 //private:

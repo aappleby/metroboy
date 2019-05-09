@@ -229,20 +229,12 @@ void MetroBoy::cycle() {
     tracebuffer[current_gameboy->ppu.line * 456 + current_gameboy->ppu.counter] = current_gameboy->trace();
   }
 
-  if (current_gameboy->is_frame_start()) {
-    current_gameboy->fbX = 0;
-    current_gameboy->fbY = 0;
-  }
-
   if (current_gameboy->get_pix_oe()) {
-    current_gameboy->framebuffer[current_gameboy->fbX + (current_gameboy->fbY * 160)] = current_gameboy->get_pix_out();
-    current_gameboy->fbX++;
-    if (current_gameboy->fbX == 160) {
-      current_gameboy->fbX = 0;
-      current_gameboy->fbY++;
-      if (current_gameboy->fbY == 144) {
-        current_gameboy->fbY = 0;
-      }
+    int x = current_gameboy->ppu.pix_count2 - 1;
+    int y = current_gameboy->ppu.line;
+
+    if (x >= 0 && x < 160 && y >= 0 && y < 144) {
+      current_gameboy->framebuffer[x + y * 160] = current_gameboy->get_pix_out();
     }
   }
 

@@ -161,6 +161,10 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (line == 0 && counter == 4) oam_edge = true;
   if (line > 0 && line <= 144 && counter == 0) oam_edge = true;
 
+  if (counter == 0) {
+    hblank_delay2 = HBLANK_DELAY_START;
+  }
+
   //----------------------------------------
   // locking
 
@@ -188,7 +192,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
-  if (hblank_delay2 == 5 || vblank_phase) {
+  if (hblank_delay2 < 6 || vblank_phase) {
     oam_lock = false;
     vram_lock = false;
   }
@@ -226,10 +230,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   //----------------------------------------
   // Update state machiney stuff
-
-  if (counter == 0) {
-    hblank_delay2 = HBLANK_DELAY_START;
-  }
 
   if (line < 144) {
     vblank_phase = false;

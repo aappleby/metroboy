@@ -290,14 +290,10 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     stat_int &= ~EI_VBLANK;
     stat_int &= ~0x80;
 
-    if (tphase == 0 || tphase == 2) {
-      if (hblank_delay < 6 && !oam_phase && !vblank_phase) stat_int |= EI_HBLANK;
-    }
+    if (hblank_delay < 6 && !oam_phase && !vblank_phase) stat_int |= EI_HBLANK;
 
-    if (tphase == 0) {
-      if (line == 144 && counter >= 4) stat_int |= EI_VBLANK;
-      if (line > 144) stat_int |= EI_VBLANK;
-    }
+    if (line == 144 && counter >= 4) stat_int |= EI_VBLANK;
+    if (line > 144) stat_int |= EI_VBLANK;
 
     if (lcdc & FLAG_LCD_ON) {
       stat_int &= ~EI_LYC;
@@ -314,16 +310,16 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       stat_int |= stat_int_glitch ? 0x80 : 0;
     }
 
+    stat_int2 = stat_int;
+
+    new_stat_int = 0;
+    if ((stat_int2 & EI_HBLANK) && (stat & EI_HBLANK)) new_stat_int = 1;
+    if ((stat_int2 & EI_VBLANK) && (stat & EI_VBLANK)) new_stat_int = 1;
+    if ((stat_int2 & EI_LYC) && (stat & EI_LYC)) new_stat_int = 1;
+    if ((stat_int2 & EI_OAM) && (stat & EI_OAM)) new_stat_int = 1;
+    if (stat_int2 & 0x80) new_stat_int = 1;
+
     if (tphase == 0) {
-      stat_int2 = stat_int;
-
-      new_stat_int = 0;
-      if ((stat_int2 & EI_HBLANK) && (stat & EI_HBLANK)) new_stat_int = 1;
-      if ((stat_int2 & EI_VBLANK) && (stat & EI_VBLANK)) new_stat_int = 1;
-      if ((stat_int2 & EI_LYC) && (stat & EI_LYC)) new_stat_int = 1;
-      if ((stat_int2 & EI_OAM) && (stat & EI_OAM)) new_stat_int = 1;
-      if (stat_int2 & 0x80) new_stat_int = 1;
-
       stat_int &= ~EI_OAM;
 
       if (line == 0 && counter == 4) stat_int |= EI_OAM;

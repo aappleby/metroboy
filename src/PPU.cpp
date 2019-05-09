@@ -194,7 +194,10 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (lcdc & FLAG_LCD_ON) {
     if (line == 0) {
       if (counter == 2) compare_line = ly;
-      if (counter == 6) compare_line = ly;
+      if (counter == 6) {
+        //if (compare_line != 0) printf("%d\n", compare_line);
+        compare_line = ly;
+      }
     }
 
     else if (line == 153) {

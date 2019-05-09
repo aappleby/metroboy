@@ -84,10 +84,12 @@ struct PPU {
   bool frame_done;
   int frame_count;
 
+  /*
   bool oam_phase;
   bool render_phase;
   bool hblank_phase;
   bool vblank_phase;
+  */
 
   uint8_t hblank_delay2;
 

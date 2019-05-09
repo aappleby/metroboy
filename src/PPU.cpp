@@ -65,10 +65,12 @@ void PPU::reset(bool run_bootrom, int new_model) {
   line = 0;
   counter = 0;
 
+  /*
   oam_phase = false;
   render_phase = false;
   hblank_phase = true;
   vblank_phase = false;
+  */
 
   hblank_delay2 = HBLANK_DELAY_START;
 
@@ -137,10 +139,12 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
     lcdc = 0x91;
     palettes[0] = 0xfc;
+    /*
     oam_phase = false;
     render_phase = false;
     hblank_phase = false;
     vblank_phase = true;
+    */
     pix_count2 = 160;
   }
 }
@@ -231,6 +235,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   //----------------------------------------
   // Update state machiney stuff
 
+  /*
   if (line < 144) {
     vblank_phase = false;
 
@@ -258,6 +263,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     hblank_phase = false;
     vblank_phase = true;
   }
+  */
 
   if (counter == 0) state = PPU_STATE_HBLANK;
   if (counter == 4 && (frame_count != 0 || line != 0)) state = PPU_STATE_OAM;
@@ -310,10 +316,12 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   frame_done = false;
   frame_start = false;
 
+  /*
   oam_phase = false;
   render_phase = false;
   hblank_phase = true;
   vblank_phase = false;
+  */
   hblank_delay2 = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 
@@ -427,7 +435,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   //-----------------------------------
   // Render phase
 
-  if (render_phase) {
+  if (counter >= 84 && hblank_delay2 > 7) {
     if (vram_delay) {
       vram_delay = 0;
     }
@@ -781,11 +789,13 @@ char* PPU::dump(char* cursor) {
 
   cursor += sprintf(cursor, "frame   %d\n", frame_count);
   cursor += sprintf(cursor, "state   %d\n", state);
+  /*
   cursor += sprintf(cursor, "%s %s %s %s\n",
     oam_phase    ? "OAM" : "   ",
     render_phase ? "VRM" : "   ",
     hblank_phase ? "HBK" : "   ",
     vblank_phase ? "VBK" : "   ");
+  */
 
   /*
   if (stat_int) {

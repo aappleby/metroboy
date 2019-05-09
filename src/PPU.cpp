@@ -290,7 +290,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
-  if (hblank_delay < 7 && render_phase) { // must be 7
+  if (hblank_delay2 < 7 && render_phase) { // must be 7
     render_phase = false;
     hblank_phase = true;
     state = PPU_STATE_HBLANK;

@@ -293,7 +293,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   // must be 6, must be both tphases
   stat_int &= ~EI_HBLANK;
-  if (hblank_delay2 < 6 && hblank_phase) stat_int |= EI_HBLANK;
+  if (hblank_delay2 < 6 || counter < 4) stat_int |= EI_HBLANK;
 
   stat_int &= ~EI_VBLANK;
   if (state == PPU_STATE_VBLANK) stat_int |= EI_VBLANK;
@@ -303,12 +303,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   if (tphase == 2) {
     stat_int &= ~0x80;
-    bool stat_int_glitch = false;
-    if (cpu_write && cpu_addr == ADDR_STAT) {
-      stat_int_glitch |= hblank_delay2 < 6 || counter < 4;
-      stat_int_glitch |= state == PPU_STATE_VBLANK;
-      stat_int_glitch |= (stat_int & EI_LYC) != 0;
-    }
+    bool stat_int_glitch = cpu_write && cpu_addr == ADDR_STAT && stat_int != 0;
     stat_int |= stat_int_glitch ? 0x80 : 0;
   }
 

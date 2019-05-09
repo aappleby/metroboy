@@ -72,6 +72,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   vblank_delay = false;
 
   hblank_delay = HBLANK_DELAY_START;
+  hblank_delay2 = HBLANK_DELAY_START;
 
   old_stat_int = false;
   stat_int = 0;
@@ -189,7 +190,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
-  if (hblank_delay == 5 || vblank_phase) {
+  if (hblank_delay2 == 5 || vblank_phase) {
     oam_lock = false;
     vram_lock = false;
   }
@@ -250,6 +251,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
         sprite_index = -1;
         sprite_count = 0;
         state = PPU_STATE_HBLANK;
+        hblank_delay2 = HBLANK_DELAY_START;
       }
 
       if (counter == 4) {
@@ -354,6 +356,7 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   vblank_phase = false;
   vblank_delay = false;
   hblank_delay = HBLANK_DELAY_START;
+  hblank_delay2 = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 
   pix_count = 0;
@@ -395,6 +398,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   if (pix_count == 160 && hblank_delay && line < 144) {
     hblank_delay--;
+    hblank_delay2--;
   }
 
   //-----------------------------------

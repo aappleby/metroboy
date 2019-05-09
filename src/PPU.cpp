@@ -246,7 +246,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       hblank_phase = false;
     }
 
-    if (hblank_delay2 == 5 || hblank_delay2 == 6) {
+    if (hblank_delay2 < 7) {
       oam_phase = false;
       render_phase = false;
       hblank_phase = true;

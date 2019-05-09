@@ -229,7 +229,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   // Update state machiney stuff
 
   if (counter == 0) {
-    hblank_delay2 = HBLANK_DELAY_START;
     window_hit = false;
     pipe_count = 0;
     sprite_index = -1;
@@ -254,6 +253,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     vblank_phase = false;
 
     if (counter == 0) {
+      hblank_delay2 = HBLANK_DELAY_START;
       oam_phase = (frame_count == 0 && line == 0) ? false : true;
       render_phase = false;
       hblank_phase = (frame_count == 0 && line == 0) ? true : false;
@@ -271,7 +271,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
       state = PPU_STATE_VRAM;
     }
 
-    if (hblank_delay2 < 7) { // must be 7
+    if (hblank_delay2 == 5 || hblank_delay2 == 6) {
       oam_phase = false;
       render_phase = false;
       hblank_phase = true;
@@ -279,6 +279,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
   else {
+    hblank_delay2 = HBLANK_DELAY_START;
     oam_phase = false;
     render_phase = false;
     hblank_phase = false;

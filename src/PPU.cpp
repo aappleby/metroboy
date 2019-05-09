@@ -69,7 +69,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   render_phase = false;
   hblank_phase = true;
   vblank_phase = false;
-  vblank_delay = false;
 
   hblank_delay2 = HBLANK_DELAY_START;
 
@@ -228,18 +227,17 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   //----------------------------------------
   // Update state machiney stuff
 
+  if (counter == 0) {
+    hblank_delay2 = HBLANK_DELAY_START;
+  }
+
   if (line < 144) {
-    vblank_delay = false;
     vblank_phase = false;
 
     if (counter == 0) {
-      hblank_delay2 = HBLANK_DELAY_START;
       oam_phase = (frame_count == 0 && line == 0) ? false : true;
       render_phase = false;
       hblank_phase = (frame_count == 0 && line == 0) ? true : false;
-    }
-
-    if (counter == 4) {
     }
 
     if (counter == 84) {
@@ -260,9 +258,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     render_phase = false;
     hblank_phase = false;
     vblank_phase = true;
-    if (counter == 4) {
-      vblank_delay = true;
-    }
   }
 
   if (line < 144) {
@@ -277,16 +272,12 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     if (counter == 84) {
       state = PPU_STATE_VRAM;
     }
+  }
 
-    if (hblank_delay2 == 5 || hblank_delay2 == 6) {
-      state = PPU_STATE_HBLANK;
-    }
-  }
-  else {
-    if (counter == 4) {
-      state = PPU_STATE_VBLANK;
-    }
-  }
+  if (hblank_delay2 < 7) state = PPU_STATE_HBLANK;
+
+  if (line == 144 && counter >= 4) state = PPU_STATE_VBLANK;
+  if (line >= 145) state = PPU_STATE_VBLANK;
 
   //----------------------------------------
   // interrupts
@@ -335,7 +326,6 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   render_phase = false;
   hblank_phase = true;
   vblank_phase = false;
-  vblank_delay = false;
   hblank_delay2 = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 

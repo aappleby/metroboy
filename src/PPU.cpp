@@ -344,7 +344,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
 void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                       uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
-  counterP2 = (counterP2 & 3) + 4;
+  counterP2 = 4;
   lineP2 = 0;
 
   if (cpu_write) bus_write(cpu_addr, cpu_data);

@@ -65,12 +65,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
   line = 0;
   counter = 0;
 
-  /*
-  oam_phase = false;
-  render_phase = false;
-  hblank_phase = true;
-  vblank_phase = false;
-  */
+  line_delay = 0;
+  counter_delay = 0;
 
   hblank_delay2 = HBLANK_DELAY_START;
 
@@ -139,12 +135,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
     lcdc = 0x91;
     palettes[0] = 0xfc;
-    /*
-    oam_phase = false;
-    render_phase = false;
-    hblank_phase = false;
-    vblank_phase = true;
-    */
     pix_count2 = 160;
   }
 }
@@ -235,36 +225,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   //----------------------------------------
   // Update state machiney stuff
 
-  /*
-  if (line < 144) {
-    vblank_phase = false;
-
-    if (counter == 0) {
-      oam_phase = (frame_count == 0 && line == 0) ? false : true;
-      render_phase = false;
-      hblank_phase = (frame_count == 0 && line == 0) ? true : false;
-    }
-
-    if (counter == 84) {
-      oam_phase = false;
-      render_phase = true;
-      hblank_phase = false;
-    }
-
-    if (hblank_delay2 < 7) {
-      oam_phase = false;
-      render_phase = false;
-      hblank_phase = true;
-    }
-  }
-  else {
-    oam_phase = false;
-    render_phase = false;
-    hblank_phase = false;
-    vblank_phase = true;
-  }
-  */
-
   if (counter == 0) state = PPU_STATE_HBLANK;
   if (counter == 4 && (frame_count != 0 || line != 0)) state = PPU_STATE_OAM;
   if (counter == 84) state = PPU_STATE_VRAM;
@@ -281,7 +241,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (hblank_delay2 < 6) stat_int |= EI_HBLANK;
 
   stat_int &= ~EI_VBLANK;
-  if (state == PPU_STATE_VBLANK) stat_int |= EI_VBLANK;
+  if ((line == 144 && counter >= 4) || (line >= 145)) stat_int |= EI_VBLANK;
 
   stat_int &= ~EI_LYC;
   if (compare_line == lyc) stat_int |= EI_LYC;
@@ -298,8 +258,6 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     stat_int &= ~EI_OAM;
     if (oam_edge) stat_int |= EI_OAM;
   }
-
-  assert((oam_phase + render_phase + hblank_phase + vblank_phase) == 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -316,12 +274,6 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   frame_done = false;
   frame_start = false;
 
-  /*
-  oam_phase = false;
-  render_phase = false;
-  hblank_phase = true;
-  vblank_phase = false;
-  */
   hblank_delay2 = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 

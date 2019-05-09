@@ -249,6 +249,11 @@ void Gameboy::tock() {
   //-----------------------------------
   // Update counter/line/frame
 
+  if (tphase == 0) {
+    ppu.counter_delay = ppu.counter;
+    ppu.line_delay = ppu.line;
+  }
+
   ppu.counter++;
   if (ppu.counter == TCYCLES_LINE) {
     ppu.counter = 0;

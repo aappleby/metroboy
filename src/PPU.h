@@ -80,6 +80,9 @@ struct PPU {
   uint16_t counter;
   uint8_t line;
 
+  uint16_t counter_delay;
+  uint8_t line_delay;
+
   bool frame_start;
   bool frame_done;
   int frame_count;

@@ -397,7 +397,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
   }
 
-  if (pix_count == 160 && hblank_delay2 && line < 144 && counter > 4) {
+  if (pix_count2 == 160 && hblank_delay2 && line < 144) {
     hblank_delay2--;
   }
 

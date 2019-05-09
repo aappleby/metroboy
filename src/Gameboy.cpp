@@ -245,6 +245,19 @@ void Gameboy::tock() {
   }
 
   //-----------------------------------
+  // Update counter/line/frame
+
+  ppu.counterP2++;
+  if (ppu.counterP2 == TCYCLES_LINE) {
+    ppu.counterP2 = 0;
+    ppu.lineP2++;
+    if (ppu.lineP2 == 154) {
+      ppu.lineP2 = 0;
+      ppu.frame_count++;
+    }
+  }
+
+  //-----------------------------------
   // vram bus mux
 
   if (dma_mode_a == DMA_VRAM) {
@@ -322,19 +335,6 @@ void Gameboy::tock() {
   }
 
   assert((ppu.oam_phase + ppu.render_phase + ppu.hblank_phase + ppu.vblank_phase) == 1);
-
-  //-----------------------------------
-  // Update counter/line/frame
-
-  ppu.counterP2++;
-  if (ppu.counterP2 == TCYCLES_LINE) {
-    ppu.counterP2 = 0;
-    ppu.lineP2++;
-    if (ppu.lineP2 == 154) {
-      ppu.lineP2 = 0;
-      ppu.frame_count++;
-    }
-  }
 }
 
 //-----------------------------------------------------------------------------

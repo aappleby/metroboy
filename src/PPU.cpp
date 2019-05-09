@@ -192,14 +192,14 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   // lyc_match
 
   if (line == 0) {
-    if (tphase == 0) compare_line = ly;
+    if (tphase == 2) compare_line = ly;
   }
 
   else if (line == 153) {
     if (counter == 0) compare_line = -1;
-    if (counter == 0) ly = line;
+    if (counter == 2) ly = line;
 
-    if (counter == 4) compare_line = 153;
+    if (counter == 4) compare_line = ly;
     if (counter == 4) ly = 0;
 
     if (counter == 8) compare_line = -1;
@@ -207,8 +207,8 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   }
 
   else {
-    if (counter == 2) ly = line;
     if (counter == 0) compare_line = -1;
+    if (counter == 2) ly = line;
     if (counter == 4) compare_line = ly;
   }
 

@@ -721,7 +721,7 @@ void PPU::bus_write(uint16_t addr, uint8_t data) {
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
     case ADDR_LCDC: lcdc = data; break;
-    case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000);
+    case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
     case ADDR_SCY:  scy = data;  break;
     case ADDR_SCX:  scx = data;  break;
     case ADDR_LY:   ly = data;   break;

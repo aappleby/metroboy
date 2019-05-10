@@ -345,8 +345,6 @@ void Gameboy::tock() {
       imask = cpu_data_;
     }
   }
-
-  //assert((ppu.oam_phase + ppu.render_phase + ppu.hblank_phase + ppu.vblank_phase) == 1);
 }
 
 //-----------------------------------------------------------------------------

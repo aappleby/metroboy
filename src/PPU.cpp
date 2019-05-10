@@ -162,6 +162,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (tphase == 1 || tphase == 3) return;
   if (!(lcdc & FLAG_LCD_ON)) return;
 
+  bool first_line = frame_count == 0 && line == 0;
   frame_start = (counter == 0) && (line == 0);
   frame_done = (counter == 0) && (line == 144);
 
@@ -173,6 +174,8 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     hblank_delay2 = HBLANK_DELAY_START;
   }
 
+  bool vblank = line >= 144;
+
   //----------------------------------------
   // locking
 
@@ -181,7 +184,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   const int render_start = 82;
   const int render_start_l0 = 84;
 
-  if (frame_count == 0 && line == 0) {
+  if (first_line) {
     if (counter == render_start_l0) {
       oam_lock = true;
       vram_lock = true;
@@ -200,7 +203,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
-  if (hblank_delay2 < 6 || line >= 144) {
+  if (hblank_delay2 < 6 || vblank) {
     oam_lock = false;
     vram_lock = false;
   }
@@ -326,6 +329,8 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
 void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                uint8_t vram_in, uint8_t oam_in) {
+  bool first_line = frame_count == 0 && line == 0;
+
   if (hblank_delay2 < 7) {
     vram_addr = 0;
     fetch_state = PPU::FETCH_IDLE;
@@ -391,7 +396,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   oam_addr = 0;
   oam_read = false;
 
-  if (frame_count == 0 && line == 0 && counter < 84) {
+  if (first_line && counter < 84) {
     oam_addr = 0;
     oam_read = false;
   }

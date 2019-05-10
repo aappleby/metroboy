@@ -63,7 +63,16 @@ void PPU::reset(bool run_bootrom, int new_model) {
   frame_count = 0;
 
   line = 0;
-  counter = 0;
+  line_delay1 = 0;
+  line_delay2 = 0;
+  line_delay3 = 0;
+  line_delay4 = 0;
+
+  counter = 4;
+  counter_delay1 = 3;
+  counter_delay2 = 2;
+  counter_delay3 = 1;
+  counter_delay4 = 0;
 
   hblank_delay2 = HBLANK_DELAY_START;
 
@@ -128,7 +137,15 @@ void PPU::reset(bool run_bootrom, int new_model) {
     obp1 = 0xFF;
 
     line = 153;
+    line_delay1 = 153;
+    line_delay2 = 153;
+    line_delay3 = 153;
+    line_delay4 = 153;
     counter = 404;
+    counter_delay1 = 403;
+    counter_delay2 = 402;
+    counter_delay3 = 401;
+    counter_delay4 = 400;
 
     lcdc = 0x91;
     palettes[0] = 0xfc;
@@ -226,9 +243,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (counter == 4 && (frame_count != 0 || line != 0)) state = PPU_STATE_OAM;
   if (counter == 84) state = PPU_STATE_VRAM;
   if (hblank_delay2 < 7) state = PPU_STATE_HBLANK;
-
-  if (line == 144 && counter >= 4) state = PPU_STATE_VBLANK;
-  if (line >= 145) state = PPU_STATE_VBLANK;
+  if ((line == 144 && counter >= 4) || (line >= 145)) state = PPU_STATE_VBLANK;
 
   //----------------------------------------
   // interrupts
@@ -238,7 +253,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (hblank_delay2 < 6) stat_int |= EI_HBLANK;
 
   stat_int &= ~EI_VBLANK;
-  if (line_delay4 > 143) stat_int |= EI_VBLANK;
+  if ((line == 144 && counter >= 4) || (line >= 145)) stat_int |= EI_VBLANK;
 
   stat_int &= ~EI_LYC;
   if (compare_line == lyc) stat_int |= EI_LYC;
@@ -262,7 +277,16 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                       uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
   counter = 4;
+  counter_delay1 = 3;
+  counter_delay2 = 2;
+  counter_delay3 = 1;
+  counter_delay4 = 0;
+
   line = 0;
+  line_delay1 = 0;
+  line_delay2 = 0;
+  line_delay3 = 0;
+  line_delay4 = 0;
 
   if (cpu_write) bus_write(cpu_addr, cpu_data);
 

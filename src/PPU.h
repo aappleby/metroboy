@@ -93,19 +93,9 @@ struct PPU {
   uint16_t counter_delay3;
   uint8_t line_delay3;
 
-  uint16_t counter_delay4;
-  uint8_t line_delay4;
-
   bool frame_start;
   bool frame_done;
   int frame_count;
-
-  /*
-  bool oam_phase;
-  bool render_phase;
-  bool hblank_phase;
-  bool vblank_phase;
-  */
 
   uint8_t hblank_delay2;
 

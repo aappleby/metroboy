@@ -52,6 +52,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   palettes[3] = 0;
 
   scy_latch = 0;
+  lcdc_latch = 0;
 
   //----------
   // Timers and states
@@ -203,7 +204,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
-  if (hblank_delay2 < 6 || vblank) {
+  if (hblank_delay2 < 7 || vblank) {
     oam_lock = false;
     vram_lock = false;
   }
@@ -245,7 +246,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (counter == 0) state = PPU_STATE_HBLANK;
   if (counter == 4 && (frame_count != 0 || line != 0)) state = PPU_STATE_OAM;
   if (counter == 84) state = PPU_STATE_VRAM;
-  if (hblank_delay2 < 7) state = PPU_STATE_HBLANK;
+  if (hblank_delay2 < 8) state = PPU_STATE_HBLANK;
   if ((line == 144 && counter >= 4) || (line >= 145)) state = PPU_STATE_VBLANK;
 
   //----------------------------------------
@@ -253,7 +254,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   // must be 6, must be both tphases
   stat_int &= ~EI_HBLANK;
-  if (hblank_delay2 < 6) stat_int |= EI_HBLANK;
+  if (hblank_delay2 < 7) stat_int |= EI_HBLANK;
 
   stat_int &= ~EI_VBLANK;
   if ((line == 144 && counter >= 4) || (line >= 145)) stat_int |= EI_VBLANK;
@@ -291,7 +292,8 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   line_delay3 = 0;
   line_delay4 = 0;
 
-  if (cpu_write) bus_write(cpu_addr, cpu_data);
+  if (cpu_read)  bus_read_early(cpu_addr);
+  if (cpu_write) bus_write_early(cpu_addr, cpu_data);
 
   ly = 0;
   frame_count = 0;
@@ -322,7 +324,9 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
   bus_oe = 0;
   bus_out = 0;
-  if (cpu_read) bus_read(cpu_addr);
+
+  if (cpu_read)  bus_read_late(cpu_addr);
+  if (cpu_write) bus_write_late(cpu_addr, cpu_data);
 }
 
 //-----------------------------------------------------------------------------
@@ -344,13 +348,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     pix_count2 = 0;
   }
 
-  if (counter == 84) {
-    map_x = (scx >> 3) & 31;
-    pix_discard = (scx & 7) + 8;
-    sprite_latched = false;
-    tile_latched = true;
-  }
-
   if (tphase == 0 || tphase == 2) {
     stat &= 0b11111000;
     stat |= state;
@@ -360,16 +357,11 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
   }
 
-  if (pix_count2 == 160 && hblank_delay2) {
-    hblank_delay2--;
-  }
-
   //-----------------------------------
   // Bus write
 
-  // If we don't do this early, the right twirler in gejmboj is broken
-  // (but it could also be a timing issue with the lyc int?)
-  if (cpu_write) bus_write(cpu_addr, cpu_data);
+  if (cpu_read)  bus_read_early(cpu_addr);
+  if (cpu_write) bus_write_early(cpu_addr, cpu_data);
 
   //-----------------------------------
   // Handle OAM reads from the previous cycle
@@ -413,8 +405,14 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   //-----------------------------------
   // Render phase
 
-  // 86 = better mealybug test
-  if (counter >= 84 && hblank_delay2 > 7) {
+  if (counter == 86) {
+    map_x = (scx >> 3) & 31;
+    pix_discard = (scx & 7) + 8;
+    sprite_latched = false;
+    tile_latched = true;
+  }
+
+  if (counter >= 86 && hblank_delay2 > 7) {
     if (vram_delay) {
       vram_delay = 0;
     }
@@ -518,12 +516,16 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
   }
 
-  //-----------------------------------
-  // Bus read
+  if (pix_count2 == 160 && hblank_delay2) {
+    hblank_delay2--;
+  }
 
-  bus_oe = 0;
-  bus_out = 0;
-  if (cpu_read) bus_read(cpu_addr);
+  //-----------------------------------
+
+  lcdc_latch = lcdc;
+
+  if (cpu_read)  bus_read_late(cpu_addr);
+  if (cpu_write) bus_write_late(cpu_addr, cpu_data);
 }
 
 //-----------------------------------------------------------------------------
@@ -691,50 +693,103 @@ void PPU::merge_tile(int /*tphase*/) {
 
   bg_pix_lo = tile_lo;
   bg_pix_hi = tile_hi;
+
   pipe_count = 8;
   tile_latched = 0;
 }
 
 //-----------------------------------------------------------------------------
 
-void PPU::bus_read(uint16_t addr) {
+void PPU::bus_read_early(uint16_t addr) {
   bus_oe = 0;
   bus_out = 0;
 
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
-    bus_oe = 1;
     switch (addr) {
-    case ADDR_LCDC: bus_out = lcdc; break;
-    case ADDR_STAT: bus_out = stat; break;
-    case ADDR_SCY:  bus_out = scy; break;
-    case ADDR_SCX:  bus_out = scx; break;
-    case ADDR_LY:   bus_out = ly; break;
-    case ADDR_LYC:  bus_out = lyc; break;
-    case ADDR_DMA:  bus_out = dma; break;
-    case ADDR_BGP:  bus_out = bgp; break;
-    case ADDR_OBP0: bus_out = obp0; break;
-    case ADDR_OBP1: bus_out = obp1; break;
-    case ADDR_WY:   bus_out = wy; break;
-    case ADDR_WX:   bus_out = wx; break;
+    case ADDR_LCDC: bus_oe = 1; bus_out = lcdc; break;
+    case ADDR_STAT: bus_oe = 1; bus_out = stat; break;
+    case ADDR_SCY:  bus_oe = 1; bus_out = scy; break;
+    case ADDR_SCX:  bus_oe = 1; bus_out = scx; break;
+    case ADDR_LY:   bus_oe = 1; bus_out = ly; break;
+    case ADDR_LYC:  bus_oe = 1; bus_out = lyc; break;
+    case ADDR_DMA:  bus_oe = 1; bus_out = dma; break;
+    case ADDR_BGP:  bus_oe = 1; bus_out = bgp; break;
+    case ADDR_OBP0: bus_oe = 1; bus_out = obp0; break;
+    case ADDR_OBP1: bus_oe = 1; bus_out = obp1; break;
+    case ADDR_WY:   bus_oe = 1; bus_out = wy; break;
+    case ADDR_WX:   bus_oe = 1; bus_out = wx; break;
     }
   }
 }
 
-void PPU::bus_write(uint16_t addr, uint8_t data) {
+void PPU::bus_read_late(uint16_t addr) {
+
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
-    case ADDR_LCDC: lcdc = data; break;
+    case ADDR_LCDC: bus_oe = 1; bus_out = lcdc; break;
+    case ADDR_STAT: bus_oe = 1; bus_out = stat; break;
+    case ADDR_SCY:  bus_oe = 1; bus_out = scy; break;
+    case ADDR_SCX:  bus_oe = 1; bus_out = scx; break;
+    case ADDR_LY:   bus_oe = 1; bus_out = ly; break;
+    case ADDR_LYC:  bus_oe = 1; bus_out = lyc; break;
+    case ADDR_DMA:  bus_oe = 1; bus_out = dma; break;
+    case ADDR_BGP:  bus_oe = 1; bus_out = bgp; break;
+    case ADDR_OBP0: bus_oe = 1; bus_out = obp0; break;
+    case ADDR_OBP1: bus_oe = 1; bus_out = obp1; break;
+    case ADDR_WY:   bus_oe = 1; bus_out = wy; break;
+    case ADDR_WX:   bus_oe = 1; bus_out = wx; break;
+    }
+  }
+}
+
+void PPU::bus_write_early(uint16_t addr, uint8_t data) {
+  if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
+    switch (addr) {
+    case ADDR_LCDC: {
+      lcdc  = lcdc & 0b11101111;
+      lcdc |= data & 0b00010000;
+      break;
+    }
     case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
     case ADDR_SCY:  scy = data;  break;
     case ADDR_SCX:  scx = data;  break;
     case ADDR_LY:   ly = data;   break;
     case ADDR_LYC:  lyc = data;  break;
     case ADDR_DMA:  dma = data;  break;
-    case ADDR_BGP:  bgp = palettes[0] = data; break;
+    case ADDR_BGP: {
+      bgp |= data;
+      palettes[0] |= data;
+      break;
+    }
     case ADDR_OBP0: obp0 = palettes[2] = data; break;
     case ADDR_OBP1: obp1 = palettes[3] = data; break;
     case ADDR_WY:   wy = data;   break;
     case ADDR_WX:   wx = data;   break;
+    };
+  }
+}
+
+void PPU::bus_write_late(uint16_t addr, uint8_t data) {
+  if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
+    switch (addr) {
+    case ADDR_LCDC: {
+      // obj_en _must_ be late
+      // tile_sel should probably be early?
+      lcdc  = lcdc & 0b00010000;
+      lcdc |= data & 0b11101111;
+      break;
+    };
+    //case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
+    //case ADDR_SCY:  scy = data;  break;
+    //case ADDR_SCX:  scx = data;  break;
+    //case ADDR_LY:   ly = data;   break;
+    //case ADDR_LYC:  lyc = data;  break;
+    //case ADDR_DMA:  dma = data;  break;
+    case ADDR_BGP:  bgp = palettes[0] = data; break;
+    //case ADDR_OBP0: obp0 = palettes[2] = data; break;
+    //case ADDR_OBP1: obp1 = palettes[3] = data; break;
+    //case ADDR_WY:   wy = data;   break;
+    //case ADDR_WX:   wx = data;   break;
     };
   }
 }

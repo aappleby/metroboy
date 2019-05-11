@@ -43,8 +43,10 @@ struct PPU {
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
 
-  void bus_read(uint16_t cpu_addr);
-  void bus_write(uint16_t cpu_addr, uint8_t cpu_data);
+  void bus_read_early(uint16_t cpu_addr);
+  void bus_read_late(uint16_t cpu_addr);
+  void bus_write_early(uint16_t cpu_addr, uint8_t cpu_data);
+  void bus_write_late (uint16_t cpu_addr, uint8_t cpu_data);
 
   void dump_tiles(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
   void draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram, int sprite_index) const;
@@ -71,6 +73,8 @@ struct PPU {
   uint8_t palettes[4];
 
   ubit8_t scy_latch;
+
+  uint8_t lcdc_latch;
 
   //----------
   // Timers and states

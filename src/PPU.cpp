@@ -280,11 +280,11 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
 void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                       uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
-  counter = 4;
-  counter_delay1 = 3;
-  counter_delay2 = 2;
-  counter_delay3 = 1;
-  counter_delay4 = 0;
+  counter = 5;
+  counter_delay1 = 4;
+  counter_delay2 = 3;
+  counter_delay3 = 2;
+  counter_delay4 = 1;
 
   line = 0;
   line_delay1 = 0;
@@ -327,34 +327,12 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
   if (cpu_read)  bus_read_late(cpu_addr);
   if (cpu_write) bus_write_late(cpu_addr, cpu_data);
-
-  counter_delay4 = counter_delay3;
-  counter_delay3 = counter_delay2;
-  counter_delay2 = counter_delay1;
-  counter_delay1 = counter;
-
-  line_delay4 = line_delay3;
-  line_delay3 = line_delay2;
-  line_delay2 = line_delay1;
-  line_delay1 = line;
-
-  counter++;
-  if (counter == TCYCLES_LINE) {
-    counter = 0;
-    line++;
-    if (line == 154) {
-      line = 0;
-      frame_count++;
-    }
-  }
 }
 
 //-----------------------------------------------------------------------------
 
 void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                uint8_t vram_in, uint8_t oam_in) {
-  bool first_line = frame_count == 0 && line == 0;
-
   if (hblank_delay2 < 7) {
     vram_addr = 0;
     fetch_state = PPU::FETCH_IDLE;
@@ -377,6 +355,26 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
   }
 
+  counter_delay4 = counter_delay3;
+  counter_delay3 = counter_delay2;
+  counter_delay2 = counter_delay1;
+  counter_delay1 = counter;
+
+  line_delay4 = line_delay3;
+  line_delay3 = line_delay2;
+  line_delay2 = line_delay1;
+  line_delay1 = line;
+
+  counter++;
+  if (counter == TCYCLES_LINE) {
+    counter = 0;
+    line++;
+    if (line == 154) {
+      line = 0;
+      frame_count++;
+    }
+  }
+
   //-----------------------------------
   // Bus write
 
@@ -391,13 +389,13 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   if (oam_read && (oam_addr & 3) == 2) spriteP = oam_in;
   if (oam_read && (oam_addr & 3) == 3) spriteF = oam_in;
 
-  if (oam_read && (counter <= 80) && (oam_addr & 3) == 1 && sprite_count < 10) {
-    int si = (counter - 1) >> 1;
+  if (oam_read && (counter_delay1 <= 80) && (oam_addr & 3) == 1 && sprite_count < 10) {
+    int si = (counter_delay1 - 1) >> 1;
     int sy = spriteY - 16;
     int sx = spriteX;
 
     ubit4_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
-    if ((sx < 168) && (sy <= line) && (line <= sy + sprite_height)) {
+    if ((sx < 168) && (sy <= line_delay1) && (line_delay1 <= sy + sprite_height)) {
       sprite_x[sprite_count] = spriteX;
       sprite_y[sprite_count] = spriteY;
       sprite_i[sprite_count] = (uint8_t)si;
@@ -408,13 +406,13 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   oam_addr = 0;
   oam_read = false;
 
-  if (first_line && counter < 84) {
+  if (frame_count == 0 && line_delay1 == 0 && counter_delay1 < 84) {
     oam_addr = 0;
     oam_read = false;
   }
-  else if (counter < 80) {
+  else if (counter_delay1 < 80) {
     // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-    oam_addr = ((counter << 1) & 0b11111100) | (counter & 1);
+    oam_addr = ((counter_delay1 << 1) & 0b11111100) | (counter_delay1 & 1);
     oam_addr += ADDR_OAM_BEGIN;
     oam_read = true;
   }
@@ -425,14 +423,14 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   //-----------------------------------
   // Render phase
 
-  if (counter == 86) {
+  if (counter_delay1 == 86) {
     map_x = (scx >> 3) & 31;
     pix_discard = (scx & 7) + 8;
     sprite_latched = false;
     tile_latched = true;
   }
 
-  if (counter >= 86 && hblank_delay2 > 7) {
+  if (counter_delay1 >= 86 && hblank_delay2 > 7) {
     if (vram_delay) {
       vram_delay = 0;
     }
@@ -546,26 +544,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   if (cpu_read)  bus_read_late(cpu_addr);
   if (cpu_write) bus_write_late(cpu_addr, cpu_data);
-
-  counter_delay4 = counter_delay3;
-  counter_delay3 = counter_delay2;
-  counter_delay2 = counter_delay1;
-  counter_delay1 = counter;
-
-  line_delay4 = line_delay3;
-  line_delay3 = line_delay2;
-  line_delay2 = line_delay1;
-  line_delay1 = line;
-
-  counter++;
-  if (counter == TCYCLES_LINE) {
-    counter = 0;
-    line++;
-    if (line == 154) {
-      line = 0;
-      frame_count++;
-    }
-  }
 }
 
 //-----------------------------------------------------------------------------

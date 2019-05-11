@@ -413,6 +413,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   //-----------------------------------
   // Render phase
 
+  // 86 = better mealybug test
   if (counter >= 84 && hblank_delay2 > 7) {
     if (vram_delay) {
       vram_delay = 0;
@@ -598,7 +599,6 @@ void PPU::merge_sprite(int /*tphase*/) {
 
 void PPU::check_sprite_hit(int /*tphase*/) {
   if (sprite_index != -1) return;
-  if (!(lcdc & FLAG_OBJ_ON)) return;
 
   ubit4_t hit = 15;
   int next_pix = pix_count2 + 8 - pix_discard;
@@ -640,9 +640,12 @@ void PPU::emit_pixel(int /*tphase*/) {
   int ob_pix = ((ob_pix_hi >> 6) & 2) | ((ob_pix_lo >> 7) & 1);
   int ob_pal = ((ob_pal_hi >> 6) & 2) | ((ob_pal_lo >> 7) & 1);
 
-  if (lcdc & FLAG_BG_ON) {
+  if (!(lcdc & FLAG_OBJ_ON)) {
+    ob_pix = 0;
+    ob_pal = 0;
   }
-  else {
+
+  if (!(lcdc & FLAG_BG_ON)) {
     bg_pix = 0;
     bg_pal = 0;
   }

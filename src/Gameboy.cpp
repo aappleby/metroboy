@@ -164,17 +164,6 @@ void Gameboy::tock() {
   }
 
   //-----------------------------------
-
-  bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
-
-  if (!lcd_on) {
-    ppu.tock_lcdoff(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
-  }
-  else {
-    ppu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
-  }
-
-  //-----------------------------------
   // DMA state machine
 
   if (tphase == 0) {
@@ -243,29 +232,6 @@ void Gameboy::tock() {
         cpu_read_oam = cpu_read_ && ce_oam;
         oam.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
       }
-    }
-  }
-
-  //-----------------------------------
-  // Update counter/line/frame
-
-  ppu.counter_delay4 = ppu.counter_delay3;
-  ppu.counter_delay3 = ppu.counter_delay2;
-  ppu.counter_delay2 = ppu.counter_delay1;
-  ppu.counter_delay1 = ppu.counter;
-
-  ppu.line_delay4 = ppu.line_delay3;
-  ppu.line_delay3 = ppu.line_delay2;
-  ppu.line_delay2 = ppu.line_delay1;
-  ppu.line_delay1 = ppu.line;
-
-  ppu.counter++;
-  if (ppu.counter == TCYCLES_LINE) {
-    ppu.counter = 0;
-    ppu.line++;
-    if (ppu.line == 154) {
-      ppu.line = 0;
-      ppu.frame_count++;
     }
   }
 
@@ -344,6 +310,17 @@ void Gameboy::tock() {
     if (cpu_addr_ == ADDR_IE) {
       imask = cpu_data_;
     }
+  }
+
+  //-----------------------------------
+
+  bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
+
+  if (!lcd_on) {
+    ppu.tock_lcdoff(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
+  }
+  else {
+    ppu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
   }
 }
 

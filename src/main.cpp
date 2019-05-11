@@ -25,9 +25,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
   run_microtests();
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
-  //return 0;
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
+  return 0;
 
   //---------
 
@@ -57,7 +57,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
   //load("mealybug", "m3_lcdc_tile_sel_change");           // vram address 1 tcycle off
 
-  load("mealybug", "m3_window_timing");                  // nope
+  //load("mealybug", "m3_window_timing");                  // nope
   //load("mealybug", "m3_window_timing_wx_0");             // almost?
   //load("mealybug", "m3_lcdc_tile_sel_win_change");       // nope
   //load("mealybug", "m3_lcdc_win_en_change_multiple");    // nope

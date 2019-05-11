@@ -327,6 +327,26 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
   if (cpu_read)  bus_read_late(cpu_addr);
   if (cpu_write) bus_write_late(cpu_addr, cpu_data);
+
+  counter_delay4 = counter_delay3;
+  counter_delay3 = counter_delay2;
+  counter_delay2 = counter_delay1;
+  counter_delay1 = counter;
+
+  line_delay4 = line_delay3;
+  line_delay3 = line_delay2;
+  line_delay2 = line_delay1;
+  line_delay1 = line;
+
+  counter++;
+  if (counter == TCYCLES_LINE) {
+    counter = 0;
+    line++;
+    if (line == 154) {
+      line = 0;
+      frame_count++;
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -526,6 +546,26 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   if (cpu_read)  bus_read_late(cpu_addr);
   if (cpu_write) bus_write_late(cpu_addr, cpu_data);
+
+  counter_delay4 = counter_delay3;
+  counter_delay3 = counter_delay2;
+  counter_delay2 = counter_delay1;
+  counter_delay1 = counter;
+
+  line_delay4 = line_delay3;
+  line_delay3 = line_delay2;
+  line_delay2 = line_delay1;
+  line_delay1 = line;
+
+  counter++;
+  if (counter == TCYCLES_LINE) {
+    counter = 0;
+    line++;
+    if (line == 154) {
+      line = 0;
+      frame_count++;
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------

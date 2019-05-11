@@ -38,7 +38,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("oh");
   //load("pocket");
   //load("gejmboj");
-  //load("LinksAwakening");
+  load("LinksAwakening");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
@@ -47,20 +47,22 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("mealybug", "m3_bgp_change");                     // pass!
   //load("mealybug", "m3_bgp_change_sprites");             // pass!
   //load("mealybug", "m3_lcdc_bg_en_change");              // tiny piece of error
-  //load("mealybug", "m3_lcdc_bg_map_change");             // bar not right
   //load("mealybug", "m3_lcdc_obj_en_change");             // pass!
+  //load("mealybug", "m3_obp0_change");                    // pass!
+  //load("mealybug", "m3_scx_low_3_bits");                 // pass!
+
+  //load("mealybug", "m3_lcdc_bg_map_change");             // bar not right
   //load("mealybug", "m3_lcdc_obj_en_change_variant");     // black bar bottom right, something about bgp
   //load("mealybug", "m3_lcdc_obj_size_change");           // related to cpu changing mem address during fetch?
   //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
-  //load("mealybug", "m3_lcdc_tile_sel_change");           // correct w/ render on 87
+  //load("mealybug", "m3_lcdc_tile_sel_change");           // vram address 1 tcycle off
+
+  load("mealybug", "m3_window_timing");                  // nope
+  //load("mealybug", "m3_window_timing_wx_0");             // almost?
   //load("mealybug", "m3_lcdc_tile_sel_win_change");       // nope
   //load("mealybug", "m3_lcdc_win_en_change_multiple");    // nope
   //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // nope
   //load("mealybug", "m3_lcdc_win_map_change");            // bars off
-  //load("mealybug", "m3_obp0_change");                    // pass!
-  //load("mealybug", "m3_scx_low_3_bits");                 // pass!
-  //load("mealybug", "m3_window_timing");                  // nope
-  //load("mealybug", "m3_window_timing_wx_0");             // almost?
   //load("mealybug", "m3_wx_4_change");                    // that looks almost correct
   //load("mealybug", "m3_wx_4_change_sprites");            // no dots
   //load("mealybug", "m3_wx_5_change");                    // almost?

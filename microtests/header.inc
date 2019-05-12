@@ -150,7 +150,7 @@
 .endm
 
 ;-------------------------------------------------------------------------------
-; Long delay w/ loop
+; Long delay w/ loop, clobbers ABC
 
 .macro long_delay ARGS cycles
   xor a

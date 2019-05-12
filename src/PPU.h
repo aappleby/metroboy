@@ -75,8 +75,6 @@ struct PPU {
 
   uint8_t lcdc_latch;
 
-  bool scx_delay;
-
   uint8_t win_x_latch = 0;
   uint8_t win_y_latch = 0;
   uint8_t win_y_counter = 0;

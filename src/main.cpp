@@ -45,7 +45,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
   //load("microtests/build/dmg", "stat_write_glitch_l1_a");
-  load("microtests/build/dmg", "ppu_scx_vs_bgp");
+  //load("microtests/build/dmg", "ppu_scx_vs_bgp");
 
   //load("mealybug", "m3_bgp_change");                     // pass
   //load("mealybug", "m3_bgp_change_sprites");             // broken

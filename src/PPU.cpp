@@ -422,12 +422,9 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   
   if (counter == 86) {
-    map_x = (scx >> 3) & 31;
     pix_discard = (scx & 7) + 8;
     sprite_latched = false;
     tile_latched = true;
-
-    scx_delay = (scx & 7) != 0;
 
     if (line == 0) {
       win_y_counter = 0;
@@ -436,17 +433,12 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
   }
 
-  win_x_latch = wx;
-
-  // this fixes m3_window_timing_wx_0 but breaks other stuff
-  //if (counter >= (scx_delay ? 87 : 86) && hblank_delay2 > 7) {
-
   if (counter >= 87 && hblank_delay2 > 7) {
     if (!fetch_delay) {
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
           tile_map = vram_in;
-          map_x = (map_x + 1) & 31;
+          map_x++;
         }
         if (fetch_state == FETCH_LO)   tile_lo = vram_in;
         if (fetch_state == FETCH_HI) { tile_hi = vram_in; tile_latched = 1; }
@@ -462,11 +454,13 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
 
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
-      if (pix_count2 + 7 == win_x_latch + pix_discard) {
+      if (pix_count2 + 7 == wx + pix_discard) {
         window_hit = true;
         fetch_restarted = false;
+        win_x_latch = wx;
         win_y_latch = win_y_counter;
         win_y_counter++;
+        map_x = ((pix_count2 - (wx - 7)) >> 3) & 31;
       }
     }
 
@@ -476,7 +470,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       fetch_delay = false;
       pipe_count = 0;
       tile_latched = false;
-      map_x = 0;
       vram_addr = 0;
 
       bg_pix_lo = 0;
@@ -530,6 +523,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     if (fetch_type == FETCH_BACKGROUND) {
       if (fetch_state == FETCH_MAP) {
+        map_x = ((scx + pix_count2 - pix_discard + 8) >> 3) & 31;
         map_y = ((scy + line) >> 3) & 31;
         vram_addr = tile_map_address(lcdc, map_x, map_y);
       }

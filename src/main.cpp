@@ -19,15 +19,17 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
+  run_microtests();
+
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS");
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "lcdon_write_timing-GS");
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "intr_2_timing");
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
-  run_microtests();
-  run_mooneye_acceptance();
-  run_wpol_acceptance();
-  return 0;
+
+  //run_mooneye_acceptance();
+  //run_wpol_acceptance();
+  //return 0;
 
   //---------
 
@@ -52,13 +54,13 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("mealybug", "m3_scx_low_3_bits");                 // pass
 
   //load("mealybug", "m3_lcdc_bg_map_change");             // blocks slightly wrong
-  //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail, black bar bottom right, something about bgp
+  //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail top left, black bar bottom right, something about bgp
   //load("mealybug", "m3_lcdc_obj_size_change");           // nope
   //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
   //load("mealybug", "m3_lcdc_tile_sel_change");           // pass
 
   //load("mealybug", "m3_window_timing");                  // top left edge ragged?
-  //load("mealybug", "m3_window_timing_wx_0");             // weird blocky
+  //load("mealybug", "m3_window_timing_wx_0");             // off by one tcycle somewhere
   //load("mealybug", "m3_lcdc_tile_sel_win_change");       // pass
   //load("mealybug", "m3_lcdc_win_en_change_multiple");    // pass
   //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // missing dots, golden doesn't load?
@@ -67,6 +69,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("mealybug", "m3_wx_4_change_sprites");            // no dots
   //load("mealybug", "m3_wx_5_change");                    // nope
   //load("mealybug", "m3_wx_6_change");                    // scooted diagonally a pixel
+
+  overlay_mode = 1;
 
   //----------
 

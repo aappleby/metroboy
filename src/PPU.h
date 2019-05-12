@@ -31,7 +31,6 @@ struct PPU {
 
   // HAAACK
   ubit16_t vram_addr;
-  int vram_delay;
 
   bool oam_lock;
   bool vram_lock;
@@ -136,19 +135,6 @@ struct PPU {
   //----------
   // Vram Fetcher
 
-  enum FetchState {
-    FETCH_TILE_MAP,
-    FETCH_TILE_LO,
-    FETCH_TILE_HI,
-
-    FETCH_SPRITE_MAP,
-    FETCH_SPRITE_LO,
-    FETCH_SPRITE_HI,
-
-    FETCH_IDLE,
-    FETCH_DONE,
-  };
-
   enum FetchType {
     FETCH_BACKGROUND,
     FETCH_WINDOW,
@@ -156,10 +142,18 @@ struct PPU {
     FETCH_NONE
   };
 
+  enum FetchState {
+    FETCH_MAP,
+    FETCH_LO,
+    FETCH_HI,
+    FETCH_IDLE,
+  };
+
   FetchType fetch_type = FETCH_NONE;
   bool fetch_delay = false;
   FetchState fetch_state;
   bool    window_hit;
+  bool    fetch_restarted;
 
   //----------
   // Pixel pipe

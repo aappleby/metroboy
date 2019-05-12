@@ -25,9 +25,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
   run_microtests();
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
-  //return 0;
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
+  return 0;
 
   //---------
 
@@ -44,29 +44,29 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "oam_write_l0_e");
   //load("microtests/build/dmg", "stat_write_glitch_l1_a");
 
-  //load("mealybug", "m3_bgp_change");                     // pass!
-  //load("mealybug", "m3_bgp_change_sprites");             // pass!
-  //load("mealybug", "m3_lcdc_bg_en_change");              // tiny piece of error
-  //load("mealybug", "m3_lcdc_obj_en_change");             // pass!
-  //load("mealybug", "m3_obp0_change");                    // pass!
-  //load("mealybug", "m3_scx_low_3_bits");                 // pass!
+  //load("mealybug", "m3_bgp_change");                     // pass
+  //load("mealybug", "m3_bgp_change_sprites");             // pass
+  //load("mealybug", "m3_lcdc_bg_en_change");              // tiny fail
+  //load("mealybug", "m3_lcdc_obj_en_change");             // pass
+  //load("mealybug", "m3_obp0_change");                    // pass
+  //load("mealybug", "m3_scx_low_3_bits");                 // pass
 
-  //load("mealybug", "m3_lcdc_bg_map_change");             // bar not right
-  //load("mealybug", "m3_lcdc_obj_en_change_variant");     // black bar bottom right, something about bgp
-  //load("mealybug", "m3_lcdc_obj_size_change");           // related to cpu changing mem address during fetch?
+  //load("mealybug", "m3_lcdc_bg_map_change");             // blocks slightly wrong
+  //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail, black bar bottom right, something about bgp
+  //load("mealybug", "m3_lcdc_obj_size_change");           // nope
   //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
-  //load("mealybug", "m3_lcdc_tile_sel_change");           // vram address 1 tcycle off
+  //load("mealybug", "m3_lcdc_tile_sel_change");           // pass
 
-  //load("mealybug", "m3_window_timing");                  // pass!
-  //load("mealybug", "m3_window_timing_wx_0");             // almost? looks like (scx % 8 != 0) adds one tcycle delay somewhere
-  //load("mealybug", "m3_lcdc_tile_sel_win_change");       // nope mem addr stuff
-  //load("mealybug", "m3_lcdc_win_en_change_multiple");    // pass!
-  //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // close
-  //load("mealybug", "m3_lcdc_win_map_change");            // bars off
+  //load("mealybug", "m3_window_timing");                  // top left edge ragged?
+  //load("mealybug", "m3_window_timing_wx_0");             // weird blocky
+  //load("mealybug", "m3_lcdc_tile_sel_win_change");       // pass
+  //load("mealybug", "m3_lcdc_win_en_change_multiple");    // pass
+  //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // missing dots, golden doesn't load?
+  //load("mealybug", "m3_lcdc_win_map_change");            // blocks slightly wrong
   //load("mealybug", "m3_wx_4_change");                    // tiny weird errors
   //load("mealybug", "m3_wx_4_change_sprites");            // no dots
-  //load("mealybug", "m3_wx_5_change");                    // almost?
-  //load("mealybug", "m3_wx_6_change");                    // nooooope
+  //load("mealybug", "m3_wx_5_change");                    // nope
+  //load("mealybug", "m3_wx_6_change");                    // scooted diagonally a pixel
 
   //----------
 

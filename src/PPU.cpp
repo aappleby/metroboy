@@ -108,6 +108,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   // Pixel pipe
 
   fetch_state = FETCH_IDLE;
+  fetch_delay = false;
   window_hit = 0;
 
   tile_map = 0;
@@ -351,6 +352,8 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
                uint8_t vram_in, uint8_t oam_in) {
   if (hblank_delay2 < 7) {
     vram_addr = 0;
+    vram_delay = false;
+    fetch_delay = false;
     fetch_state = PPU::FETCH_IDLE;
   }
 
@@ -441,11 +444,11 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   //if (counter >= (scx_delay ? 87 : 86) && hblank_delay2 > 7) {
 
   if (counter >= 86 && hblank_delay2 > 7) {
-    if (vram_delay) {
-      vram_delay = 0;
-    }
-    else if (vram_addr) {
-      if (fetch_state == FETCH_TILE_MAP)  tile_map = vram_in;
+    if (!fetch_delay) {
+      if (fetch_state == FETCH_TILE_MAP) {
+        tile_map = vram_in;
+        map_x = (map_x + 1) & 31;
+      }
       if (fetch_state == FETCH_TILE_LO)   tile_lo = vram_in;
       if (fetch_state == FETCH_TILE_HI) { tile_hi = vram_in; tile_latched = 1; }
       if (fetch_state == FETCH_SPRITE_LO) sprite_lo = vram_in;
@@ -479,64 +482,74 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       }
     }
 
-    // Still feels too complicated
-    if (vram_addr == 0) {
-      if      (fetch_state == FETCH_TILE_MAP)   fetch_state = FETCH_TILE_LO;
-      else if (fetch_state == FETCH_TILE_LO)    fetch_state = FETCH_TILE_HI;
-      else if (fetch_state == FETCH_TILE_HI)    fetch_state = FETCH_IDLE;
-      else if (fetch_state == FETCH_SPRITE_MAP) fetch_state = FETCH_SPRITE_LO;
-      else if (fetch_state == FETCH_SPRITE_LO)  fetch_state = FETCH_SPRITE_HI;
-      else if (fetch_state == FETCH_SPRITE_HI)  fetch_state = FETCH_IDLE;
+    if (!fetch_delay) {
+      if (fetch_state == FETCH_TILE_MAP) {
+        fetch_state = FETCH_TILE_LO;
+        fetch_delay = true;
+      }
+      else if (fetch_state == FETCH_TILE_LO) {
+        fetch_state = FETCH_TILE_HI;
+        fetch_delay = true;
+      }
+      else if (fetch_state == FETCH_TILE_HI) {
+        fetch_state = FETCH_IDLE;
+      }
+      else if (fetch_state == FETCH_SPRITE_MAP) {
+        fetch_state = FETCH_SPRITE_LO;
+        fetch_delay = true;
+      }
+      else if (fetch_state == FETCH_SPRITE_LO) {
+        fetch_state = FETCH_SPRITE_HI;
+        fetch_delay = true;
+      }
+      else if (fetch_state == FETCH_SPRITE_HI) {
+        fetch_state = FETCH_IDLE;
+      }
 
       if (fetch_state == FETCH_IDLE) {
         fetch_type = FETCH_NONE;
         if (sprite_index != -1) {
           fetch_type = FETCH_SPRITE;
           fetch_state = FETCH_SPRITE_MAP;
+          fetch_delay = true;
         }
         if (!tile_latched) {
           if (window_hit) {
             fetch_type = FETCH_WINDOW;
             fetch_state = FETCH_TILE_MAP;
+            fetch_delay = true;
           }
           else {
             fetch_type = FETCH_BACKGROUND;
             fetch_state = FETCH_TILE_MAP;
+            fetch_delay = true;
           }
         }
       }
-
-      vram_addr = 0;
-
-      map_y = window_hit ? ((line - wy) >> 3) & 31 : ((scy + line) >> 3) & 31;
-
-      if (window_hit) {
-        if      (fetch_state == FETCH_TILE_MAP) vram_addr = win_map_address(lcdc, map_x, win_y_latch);
-        else if (fetch_state == FETCH_TILE_LO)  vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
-        else if (fetch_state == FETCH_TILE_HI)  vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
-        else if (fetch_state == FETCH_IDLE)     vram_addr = 0;
-      }
-      else {
-        if      (fetch_state == FETCH_TILE_MAP) vram_addr = tile_map_address(lcdc, map_x, map_y);
-        else if (fetch_state == FETCH_TILE_LO)  vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
-        else if (fetch_state == FETCH_TILE_HI)  vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
-        else if (fetch_state == FETCH_IDLE)     vram_addr = 0;
-      }
-
-      // bogus address just to keep the state machine running
-      if      (fetch_state == FETCH_SPRITE_MAP) vram_addr = ADDR_VRAM_BEGIN;
-      else if (fetch_state == FETCH_SPRITE_LO)  vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
-      else if (fetch_state == FETCH_SPRITE_HI)  vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
-      else if (fetch_state == FETCH_IDLE)       vram_addr = 0;
-
-      if (fetch_state == FETCH_TILE_MAP) {
-        map_x = (map_x + 1) & 31;
-      }
-
-      if (vram_addr != 0) {
-        vram_delay = true;
-      }
     }
+    else {
+      fetch_delay = false;
+    }
+
+    vram_addr = 0;
+
+    map_y = window_hit ? ((line - wy) >> 3) & 31 : ((scy + line) >> 3) & 31;
+
+    if (window_hit) {
+      if      (fetch_state == FETCH_TILE_MAP) vram_addr = win_map_address(lcdc, map_x, win_y_latch);
+      else if (fetch_state == FETCH_TILE_LO)  vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
+      else if (fetch_state == FETCH_TILE_HI)  vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
+    }
+    else {
+      if      (fetch_state == FETCH_TILE_MAP) vram_addr = tile_map_address(lcdc, map_x, map_y);
+      else if (fetch_state == FETCH_TILE_LO)  vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
+      else if (fetch_state == FETCH_TILE_HI)  vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
+    }
+
+    // bogus address just to keep the state machine running
+    if      (fetch_state == FETCH_SPRITE_MAP) vram_addr = ADDR_VRAM_BEGIN;
+    else if (fetch_state == FETCH_SPRITE_LO)  vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
+    else if (fetch_state == FETCH_SPRITE_HI)  vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
 
     if (fetch_state == FETCH_SPRITE_MAP) {
       oam_addr = (sprite_index << 2) + (counter & 1) + 2;

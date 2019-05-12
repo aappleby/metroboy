@@ -31,7 +31,7 @@ struct PPU {
 
   // HAAACK
   ubit16_t vram_addr;
-  bool vram_delay;
+  int vram_delay;
 
   bool oam_lock;
   bool vram_lock;
@@ -157,6 +157,7 @@ struct PPU {
   };
 
   FetchType fetch_type = FETCH_NONE;
+  bool fetch_delay = false;
   FetchState fetch_state;
   bool    window_hit;
 

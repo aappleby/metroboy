@@ -441,7 +441,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   // this fixes m3_window_timing_wx_0 but breaks other stuff
   //if (counter >= (scx_delay ? 87 : 86) && hblank_delay2 > 7) {
 
-  if (counter >= 86 && hblank_delay2 > 7) {
+  if (counter >= 87 && hblank_delay2 > 7) {
     if (!fetch_delay) {
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
@@ -462,7 +462,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
 
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
-      if (pix_count2 + 6 == win_x_latch + pix_discard) {
+      if (pix_count2 + 7 == win_x_latch + pix_discard) {
         window_hit = true;
         fetch_restarted = false;
         win_y_latch = win_y_counter;
@@ -473,6 +473,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     if (window_hit && !fetch_restarted) {
       fetch_state = FETCH_IDLE;
       fetch_restarted = true;
+      fetch_delay = false;
       pipe_count = 0;
       tile_latched = false;
       map_x = 0;
@@ -486,8 +487,8 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     merge_sprite(tphase);
     check_sprite_hit(tphase);
-    emit_pixel(tphase);
     merge_tile(tphase);
+    emit_pixel(tphase);
 
     if (fetch_delay) {
       fetch_delay = false;

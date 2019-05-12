@@ -61,8 +61,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("mealybug", "m3_window_timing");                  // top left edge ragged?
   //load("mealybug", "m3_window_timing_wx_0");             // off by one tcycle somewhere
-  //load("mealybug", "m3_lcdc_tile_sel_win_change");       // pass
-  //load("mealybug", "m3_lcdc_win_en_change_multiple");    // pass
+  //load("mealybug", "m3_lcdc_tile_sel_win_change");       // super broken
+  load("mealybug", "m3_lcdc_win_en_change_multiple");    // pass
   //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // missing dots, golden doesn't load?
   //load("mealybug", "m3_lcdc_win_map_change");            // blocks slightly wrong
   //load("mealybug", "m3_wx_4_change");                    // tiny weird errors

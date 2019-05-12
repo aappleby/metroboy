@@ -54,7 +54,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   palettes[3] = 0;
 
   scy_latch = 0;
-  lcdc_latch = 0;
+  lcdc_delay = 0;
 
   //----------
   // Timers and states
@@ -454,13 +454,13 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
 
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
-      if (pix_count2 + 7 == wx + pix_discard) {
+      if (pix_count2 + 7 == wx_delay + pix_discard) {
         window_hit = true;
         fetch_restarted = false;
-        win_x_latch = wx;
+        win_x_latch = wx_delay;
         win_y_latch = win_y_counter;
         win_y_counter++;
-        map_x = ((pix_count2 - (wx - 7)) >> 3) & 31;
+        map_x = ((pix_count2 - (wx_delay - 7)) >> 3) & 31;
       }
     }
 
@@ -571,7 +571,11 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   //-----------------------------------
 
-  lcdc_latch = lcdc;
+  lcdc_delay = lcdc;
+  wx_delay = wx;
+
+  bgp = bgp_early;
+  palettes[0] = bgp_early;
 
   if (cpu_read)  bus_read_late(cpu_addr);
   if (cpu_write) bus_write_late(cpu_addr, cpu_data);
@@ -807,15 +811,17 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
     case ADDR_LY:   ly = data;   break;
     case ADDR_LYC:  lyc = data;  break;
     case ADDR_DMA:  dma = data;  break;
+    /*
     case ADDR_BGP: {
       bgp |= data;
       palettes[0] |= data;
       break;
     }
+    */
     case ADDR_OBP0: obp0 = palettes[2] = data; break;
     case ADDR_OBP1: obp1 = palettes[3] = data; break;
     case ADDR_WY:   wy = data;   break;
-    case ADDR_WX:   wx = data;   break;
+    //case ADDR_WX:   wx = data;   break;
     };
   }
 }
@@ -841,11 +847,15 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
     //case ADDR_LY:   ly = data;   break;
     //case ADDR_LYC:  lyc = data;  break;
     //case ADDR_DMA:  dma = data;  break;
-    case ADDR_BGP:  bgp = palettes[0] = data; break;
+    case ADDR_BGP: {
+      bgp_early = data;
+      bgp |= data;
+      palettes[0] |= data; break;
+    }
     //case ADDR_OBP0: obp0 = palettes[2] = data; break;
     //case ADDR_OBP1: obp1 = palettes[3] = data; break;
     //case ADDR_WY:   wy = data;   break;
-    //case ADDR_WX:   wx = data;   break;
+    case ADDR_WX:   wx = data;   break;
     };
   }
 }

@@ -45,13 +45,13 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
   //load("microtests/build/dmg", "stat_write_glitch_l1_a");
-  //load("microtests/build/dmg", "ppu_scx_vs_bgp");
+  load("microtests/build/dmg", "ppu_scx_vs_bgp");
 
   //load("mealybug", "m3_bgp_change");                     // pass
   //load("mealybug", "m3_bgp_change_sprites");             // broken
   //load("mealybug", "m3_lcdc_bg_en_change");              // fail
-  //load("mealybug", "m3_lcdc_obj_en_change");             // pass
-  //load("mealybug", "m3_obp0_change");                    // pass
+  //load("mealybug", "m3_lcdc_obj_en_change");             // tiny fail
+  //load("mealybug", "m3_obp0_change");                    // tiny fail
   //load("mealybug", "m3_scx_low_3_bits");                 // pass
 
   //load("mealybug", "m3_lcdc_bg_map_change");             // blocks slightly wrong
@@ -66,10 +66,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("mealybug", "m3_lcdc_win_en_change_multiple");    // pass
   //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // missing dots, golden doesn't load?
   //load("mealybug", "m3_lcdc_win_map_change");            // blocks slightly wrong
-  //load("mealybug", "m3_wx_4_change");                    // super broken
+  //load("mealybug", "m3_wx_4_change");                    // a few wrong pixels
   //load("mealybug", "m3_wx_4_change_sprites");            // no dots
-  //load("mealybug", "m3_wx_5_change");                    // nope
-  //load("mealybug", "m3_wx_6_change");                    // scooted diagonally a pixel
+  //load("mealybug", "m3_wx_5_change");                    // just a few wrong pixels now
+  //load("mealybug", "m3_wx_6_change");                    // pass
 
   overlay_mode = 1;
 

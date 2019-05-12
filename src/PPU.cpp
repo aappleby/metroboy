@@ -7,10 +7,13 @@
 
 uint16_t pack_map_addr(uint16_t base, uint8_t map_x, uint8_t map_y);
 uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty);
+
 uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y);
-uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y);
 uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map);
-uint16_t win_base_address(uint8_t lcdc, uint8_t wy, uint8_t line, uint8_t map);
+
+uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, int wy_counter);
+uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map);
+
 uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags);
 
 //-----------------------------------------------------------------------------
@@ -416,12 +419,26 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   //-----------------------------------
   // Render phase
 
+  
   if (counter == 86) {
     map_x = (scx >> 3) & 31;
     pix_discard = (scx & 7) + 8;
     sprite_latched = false;
     tile_latched = true;
+
+    scx_delay = (scx & 7) != 0;
+
+    if (line == 0) {
+      win_y_counter = 0;
+      win_y_latch = 0;
+      win_x_latch = 0;
+    }
   }
+
+  win_x_latch = wx;
+
+  // this fixes m3_window_timing_wx_0 but breaks other stuff
+  //if (counter >= (scx_delay ? 87 : 86) && hblank_delay2 > 7) {
 
   if (counter >= 86 && hblank_delay2 > 7) {
     if (vram_delay) {
@@ -442,15 +459,13 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     merge_tile(tphase);
 
-    // Slightly broken
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
-      if (pix_count2 + 6 == wx + pix_discard) {
+      if (pix_count2 + 7 == win_x_latch + pix_discard) {
         window_hit = true;
         fetch_state = FETCH_IDLE;
         pipe_count = 0;
         tile_latched = false;
         map_x = 0;
-        map_y = (line - wy) >> 3;
         vram_addr = 0;
         vram_delay = 0;
 
@@ -458,6 +473,9 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
         bg_pix_hi = 0;
         bg_pal_lo = 0;
         bg_pal_hi = 0;
+
+        win_y_latch = win_y_counter;
+        win_y_counter++;
       }
     }
 
@@ -493,9 +511,9 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       map_y = window_hit ? ((line - wy) >> 3) & 31 : ((scy + line) >> 3) & 31;
 
       if (window_hit) {
-        if      (fetch_state == FETCH_TILE_MAP) vram_addr = win_map_address(lcdc, map_x, map_y);
-        else if (fetch_state == FETCH_TILE_LO)  vram_addr = win_base_address(lcdc, wy, line, tile_map) + 0;
-        else if (fetch_state == FETCH_TILE_HI)  vram_addr = win_base_address(lcdc, wy, line, tile_map) + 1;
+        if      (fetch_state == FETCH_TILE_MAP) vram_addr = win_map_address(lcdc, map_x, win_y_latch);
+        else if (fetch_state == FETCH_TILE_LO)  vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
+        else if (fetch_state == FETCH_TILE_HI)  vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
         else if (fetch_state == FETCH_IDLE)     vram_addr = 0;
       }
       else {
@@ -554,11 +572,6 @@ uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y) {
   return pack_map_addr(base, map_x, map_y);
 }
 
-uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y) {
-  ubit16_t base = (lcdc & FLAG_WIN_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
-  return pack_map_addr(base, map_x, map_y);
-}
-
 uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map) {
   ubit16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
   map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
@@ -567,10 +580,15 @@ uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map)
   return pack_tile_addr(base, map, ty);
 }
 
-uint16_t win_base_address(uint8_t lcdc, uint8_t wy, uint8_t line, uint8_t map) {
+uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, int wy_counter) {
+  ubit16_t base = (lcdc & FLAG_WIN_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
+  return pack_map_addr(base, map_x, uint8_t(wy_counter >> 3));
+}
+
+uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map) {
   ubit16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
   map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
-  return pack_tile_addr(base, map, (line - wy) & 7);
+  return pack_tile_addr(base, map, wy_counter & 7);
 }
 
 uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags) {
@@ -687,7 +705,9 @@ void PPU::emit_pixel(int /*tphase*/) {
   if (pix_discard || pix_count2 == 160) {
     pix_oe = false;
     pix_out = 0;
-    if (pix_discard) pix_discard--;
+    if (pix_discard) {
+      pix_discard--;
+    }
   }
   else {
     pix_oe = true;
@@ -788,6 +808,11 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
       // tile_sel should probably be early?
       lcdc  = lcdc & 0b00010000;
       lcdc |= data & 0b11101111;
+
+
+      if (!(lcdc & FLAG_WIN_ON)) {
+        window_hit = false;
+      }
       break;
     };
     //case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
@@ -821,6 +846,7 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "OBP1 0x%02x\n", palettes[3]);
   cursor += sprintf(cursor, "WY   %d\n", wy);
   cursor += sprintf(cursor, "WX   %d\n", wx);
+  cursor += sprintf(cursor, "wyc   %d\n", win_y_counter);
   cursor += sprintf(cursor, "\n");
 
   const char* bus_names[] = {
@@ -870,6 +896,7 @@ char* PPU::dump(char* cursor) {
   //cursor += sprintf(cursor, "stat int %d\n", stat_int);
   cursor += sprintf(cursor, "\n");
 
+  cursor += sprintf(cursor, "%s\n", window_hit ? "window" : "");
   cursor += sprintf(cursor, "map x   %d\n", map_x);
   cursor += sprintf(cursor, "map y   %d\n", map_y);
 

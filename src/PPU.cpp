@@ -422,7 +422,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   
   if (counter == 86) {
-    pix_discard = (scx & 7) + 8;
+    pix_discard = 0;
     sprite_latched = false;
     tile_latched = true;
 
@@ -453,14 +453,21 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       vram_addr = 0;
     }
 
+    merge_sprite(tphase);
+    check_sprite_hit(tphase);
+    merge_tile(tphase);
+    emit_pixel(tphase);
+
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
-      if (pix_count2 + 7 == wx_delay + pix_discard) {
+      int total_discard = (scx & 7) + 8;
+
+      if (pix_count2 + pix_discard - total_discard == wx_delay - 7) {
         window_hit = true;
         fetch_restarted = false;
         win_x_latch = wx_delay;
         win_y_latch = win_y_counter;
         win_y_counter++;
-        map_x = ((pix_count2 - (wx_delay - 7)) >> 3) & 31;
+        map_x = 0;
       }
     }
 
@@ -477,11 +484,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       bg_pal_lo = 0;
       bg_pal_hi = 0;
     }
-
-    merge_sprite(tphase);
-    check_sprite_hit(tphase);
-    merge_tile(tphase);
-    emit_pixel(tphase);
 
     if (fetch_delay) {
       fetch_delay = false;
@@ -523,7 +525,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     if (fetch_type == FETCH_BACKGROUND) {
       if (fetch_state == FETCH_MAP) {
-        map_x = ((scx + pix_count2 - pix_discard + 8) >> 3) & 31;
+        map_x = ((scx + pix_count2) >> 3) & 31;
         map_y = ((scy + line) >> 3) & 31;
         vram_addr = tile_map_address(lcdc, map_x, map_y);
       }
@@ -656,7 +658,7 @@ void PPU::check_sprite_hit(int /*tphase*/) {
   if (sprite_index != -1) return;
 
   ubit4_t hit = 15;
-  int next_pix = pix_count2 + 8 - pix_discard;
+  int next_pix = pix_count2 + 7;
 
   if (next_pix == sprite_x[9]) hit = 9;
   if (next_pix == sprite_x[8]) hit = 8;
@@ -726,12 +728,12 @@ void PPU::emit_pixel(int /*tphase*/) {
 
   pipe_count--;
 
-  if (pix_discard || pix_count2 == 160) {
+  int total_discard = (scx & 7) + 8;
+
+  if ((pix_discard < total_discard) || pix_count2 == 160) {
     pix_oe = false;
     pix_out = 0;
-    if (pix_discard) {
-      pix_discard--;
-    }
+    pix_discard++;
   }
   else {
     pix_oe = true;
@@ -807,7 +809,6 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
     }
     case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
     case ADDR_SCY:  scy = data;  break;
-    case ADDR_SCX:  scx = data;  break;
     case ADDR_LY:   ly = data;   break;
     case ADDR_LYC:  lyc = data;  break;
     case ADDR_DMA:  dma = data;  break;
@@ -843,7 +844,21 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
     };
     //case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
     //case ADDR_SCY:  scy = data;  break;
-    //case ADDR_SCX:  scx = data;  break;
+
+    // scx write must be late
+    case ADDR_SCX: {
+      if (counter == 88) {
+        scx = data;
+      }
+      else if (counter == 92) {
+        scx = data;
+      }
+      else {
+        scx = data;
+      }
+      break;
+    }
+
     //case ADDR_LY:   ly = data;   break;
     //case ADDR_LYC:  lyc = data;  break;
     //case ADDR_DMA:  dma = data;  break;
@@ -933,12 +948,14 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "map x   %d\n", map_x);
   cursor += sprintf(cursor, "map y   %d\n", map_y);
 
-  cursor += sprintf(cursor, "discard %d\n", pix_discard);
-  cursor += sprintf(cursor, "pix     %d\n", pix_count2);
-  cursor += sprintf(cursor, "pipe    %d\n", pipe_count);
-  cursor += sprintf(cursor, "fetch   %s\n", fetch_names1[fetch_type]);
-  cursor += sprintf(cursor, "        %s\n", fetch_names2[fetch_state]);
-  cursor += sprintf(cursor, "latched %d\n", tile_latched);
+  int total_discard = (scx & 7) + 8;
+  cursor += sprintf(cursor, "discard1 %d\n", total_discard);
+  cursor += sprintf(cursor, "discard2 %d\n", pix_discard);
+  cursor += sprintf(cursor, "pix      %d\n", pix_count2);
+  cursor += sprintf(cursor, "pipe     %d\n", pipe_count);
+  cursor += sprintf(cursor, "fetch    %s\n", fetch_names1[fetch_type]);
+  cursor += sprintf(cursor, "         %s\n", fetch_names2[fetch_state]);
+  cursor += sprintf(cursor, "latched  %d\n", tile_latched);
   cursor += sprintf(cursor, "\n");
 
   cursor += sprintf(cursor, "sprite idx %d\n", sprite_index);

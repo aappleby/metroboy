@@ -33,7 +33,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //---------
 
-  load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites");
+  //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites");
   //load("wpol-gb/tests/build/acceptance/gpu", "lcdon_write_timing-GS");
   //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites_nops");
 
@@ -48,9 +48,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   
   //load("microtests/build/dmg", "ppu_scx_vs_bgp");
   //load("microtests/build/dmg", "ppu_win_vs_wx");
-  //load("microtests/build/dmg", "ppu_sprite_testbench");
+  load("microtests/build/dmg", "ppu_sprite_testbench");
 
-  load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
+  //load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
 
   //load("mealybug", "m3_bgp_change");                     // pass
   //load("mealybug", "m3_bgp_change_sprites");             // broken

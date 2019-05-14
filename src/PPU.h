@@ -169,6 +169,7 @@ struct PPU {
 
   int pix_count2;
   int pix_discard;
+  int next_pix;
   ubit4_t pipe_count;
 
   ubit8_t bg_pix_lo;

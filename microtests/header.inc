@@ -104,6 +104,11 @@
   ldh (LCDC), a
 .endm
 
+.macro lcd_on_sprites
+  ld a, $93
+  ldh (LCDC), a
+.endm
+
 ;-------------------------------------------------------------------------------
 ; Non-cycle-accurate wait for vblank
 
@@ -138,6 +143,20 @@
 .repeat 12
 	ld (hl+), a
 .endr
+.endm
+
+;-------------------------------------------------------------------------------
+
+.macro load_sprite ARGS i y x p f
+  ld hl, $FE00 + 4 * i
+  ld a, y
+  ld (hl+), a
+  ld a, x
+  ld (hl+), a
+  ld a, p
+  ld (hl+), a
+  ld a, f
+  ld (hl+), a
 .endm
 
 ;-------------------------------------------------------------------------------

@@ -152,6 +152,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
     lcdc = 0x91;
     palettes[0] = 0xfc;
     pix_count2 = 160;
+    next_pix = 0;
   }
 }
 
@@ -432,9 +433,12 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       win_y_latch = 0;
       win_x_latch = 0;
     }
+
+    int total_discard = (scx & 7) + 8;
+    next_pix = -total_discard + pix_discard + pix_count2;
   }
 
-  if (counter >= 87 && hblank_delay2 > 7) {
+  if (counter >= 86 && hblank_delay2 > 7) {
     if (!fetch_delay) {
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
@@ -454,25 +458,21 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       vram_addr = 0;
     }
 
+    check_sprite_hit(tphase);
     merge_sprite(tphase);
     merge_tile(tphase);
-
-    check_sprite_hit(tphase);
+    emit_pixel(tphase);
 
     // check window hit
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
-      int total_discard = (scx & 7) + 8;
-
-      int next_pix = -total_discard + pix_discard + pix_count2;
-
-        if (next_pix == wx_delay - 7) {
-          window_hit = true;
-          fetch_restarted = false;
-          win_x_latch = wx_delay;
-          win_y_latch = win_y_counter;
-          win_y_counter++;
-          map_x = 0;
-        }
+      if (next_pix == wx_delay - 7) {
+        window_hit = true;
+        fetch_restarted = false;
+        win_x_latch = wx_delay;
+        win_y_latch = win_y_counter;
+        win_y_counter++;
+        map_x = 0;
+      }
     }
 
     if (window_hit && !fetch_restarted) {
@@ -490,7 +490,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
 
 
-    emit_pixel(tphase);
 
     if (fetch_delay) {
       fetch_delay = false;
@@ -664,9 +663,6 @@ void PPU::merge_sprite(int /*tphase*/) {
 void PPU::check_sprite_hit(int /*tphase*/) {
   if (sprite_index != -1) return;
 
-  int total_discard = (scx & 7) + 8;
-  int next_pix = -total_discard + pix_discard + pix_count2;
-
   ubit4_t hit = 15;
   if (next_pix == sprite_x[9] - 8) hit = 9;
   if (next_pix == sprite_x[8] - 8) hit = 8;
@@ -748,6 +744,8 @@ void PPU::emit_pixel(int /*tphase*/) {
     pix_out = (palettes[pal] >> (pix << 1)) & 3;
     pix_count2++;
   }
+
+  next_pix = -total_discard + pix_discard + pix_count2;
 }
 
 //-----------------------------------------------------------------------------
@@ -960,6 +958,7 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "discard1 %d\n", total_discard);
   cursor += sprintf(cursor, "discard2 %d\n", pix_discard);
   cursor += sprintf(cursor, "pix      %d\n", pix_count2);
+  cursor += sprintf(cursor, "next pix %d\n", next_pix);
   cursor += sprintf(cursor, "pipe     %d\n", pipe_count);
   cursor += sprintf(cursor, "fetch    %s\n", fetch_names1[fetch_type]);
   cursor += sprintf(cursor, "         %s\n", fetch_names2[fetch_state]);

@@ -135,6 +135,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   if (!run_bootrom) {
     dma = 0xFF;
     bgp = 0xFC;
+    bgp_early = 0xFC;
     obp0 = 0xFF;
     obp1 = 0xFF;
 
@@ -454,21 +455,24 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
 
     merge_sprite(tphase);
-    check_sprite_hit(tphase);
     merge_tile(tphase);
-    emit_pixel(tphase);
 
+    check_sprite_hit(tphase);
+
+    // check window hit
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
       int total_discard = (scx & 7) + 8;
 
-      if (pix_count2 + pix_discard - total_discard == wx_delay - 7) {
-        window_hit = true;
-        fetch_restarted = false;
-        win_x_latch = wx_delay;
-        win_y_latch = win_y_counter;
-        win_y_counter++;
-        map_x = 0;
-      }
+      int next_pix = -total_discard + pix_discard + pix_count2;
+
+        if (next_pix == wx_delay - 7) {
+          window_hit = true;
+          fetch_restarted = false;
+          win_x_latch = wx_delay;
+          win_y_latch = win_y_counter;
+          win_y_counter++;
+          map_x = 0;
+        }
     }
 
     if (window_hit && !fetch_restarted) {
@@ -484,6 +488,9 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       bg_pal_lo = 0;
       bg_pal_hi = 0;
     }
+
+
+    emit_pixel(tphase);
 
     if (fetch_delay) {
       fetch_delay = false;
@@ -525,7 +532,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     if (fetch_type == FETCH_BACKGROUND) {
       if (fetch_state == FETCH_MAP) {
-        map_x = ((scx + pix_count2) >> 3) & 31;
+        map_x = ((scx + pix_count2 + pix_discard) >> 3) & 31;
         map_y = ((scy + line) >> 3) & 31;
         vram_addr = tile_map_address(lcdc, map_x, map_y);
       }
@@ -657,19 +664,20 @@ void PPU::merge_sprite(int /*tphase*/) {
 void PPU::check_sprite_hit(int /*tphase*/) {
   if (sprite_index != -1) return;
 
-  ubit4_t hit = 15;
-  int next_pix = pix_count2 + 7;
+  int total_discard = (scx & 7) + 8;
+  int next_pix = -total_discard + pix_discard + pix_count2;
 
-  if (next_pix == sprite_x[9]) hit = 9;
-  if (next_pix == sprite_x[8]) hit = 8;
-  if (next_pix == sprite_x[7]) hit = 7;
-  if (next_pix == sprite_x[6]) hit = 6;
-  if (next_pix == sprite_x[5]) hit = 5;
-  if (next_pix == sprite_x[4]) hit = 4;
-  if (next_pix == sprite_x[3]) hit = 3;
-  if (next_pix == sprite_x[2]) hit = 2;
-  if (next_pix == sprite_x[1]) hit = 1;
-  if (next_pix == sprite_x[0]) hit = 0;
+  ubit4_t hit = 15;
+  if (next_pix == sprite_x[9] - 8) hit = 9;
+  if (next_pix == sprite_x[8] - 8) hit = 8;
+  if (next_pix == sprite_x[7] - 8) hit = 7;
+  if (next_pix == sprite_x[6] - 8) hit = 6;
+  if (next_pix == sprite_x[5] - 8) hit = 5;
+  if (next_pix == sprite_x[4] - 8) hit = 4;
+  if (next_pix == sprite_x[3] - 8) hit = 3;
+  if (next_pix == sprite_x[2] - 8) hit = 2;
+  if (next_pix == sprite_x[1] - 8) hit = 1;
+  if (next_pix == sprite_x[0] - 8) hit = 0;
 
   if (hit != 15) {
     sprite_index = sprite_i[hit];

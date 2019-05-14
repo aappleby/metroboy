@@ -27,25 +27,30 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  run_mooneye_acceptance();
-  run_wpol_acceptance();
-  return 0;
+  //run_mooneye_acceptance();
+  //run_wpol_acceptance();
+  //return 0;
 
   //---------
 
-  //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites");
+  load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites");
   //load("wpol-gb/tests/build/acceptance/gpu", "lcdon_write_timing-GS");
   //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites_nops");
 
   //load("oh");
   //load("pocket");
   //load("gejmboj");
-  load("LinksAwakening");
+  //load("LinksAwakening");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
   //load("microtests/build/dmg", "stat_write_glitch_l1_a");
+  
   //load("microtests/build/dmg", "ppu_scx_vs_bgp");
+  //load("microtests/build/dmg", "ppu_win_vs_wx");
+  //load("microtests/build/dmg", "ppu_sprite_testbench");
+
+  load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
 
   //load("mealybug", "m3_bgp_change");                     // pass
   //load("mealybug", "m3_bgp_change_sprites");             // broken
@@ -70,8 +75,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("mealybug", "m3_wx_4_change_sprites");            // no dots
   //load("mealybug", "m3_wx_5_change");                    // just a few wrong pixels now
   //load("mealybug", "m3_wx_6_change");                    // pass
-
-  overlay_mode = 1;
 
   //----------
 
@@ -250,7 +253,7 @@ void MetroBoyApp::loop() {
   const int gb_screenx = (fb_width / 2) - 160;
   const int gb_screeny = (fb_height / 2) - 128;
 
-  if (!golden_surface || overlay_mode == 0 || overlay_mode == 1) {
+  if (overlay_mode == 0 || overlay_mode == 1) {
     for (int y = 0; y < 144; y++) {
       uint32_t* line1 = &framebuffer[(y * 2 + gb_screeny + 0) * fb_width + gb_screenx];
       uint32_t* lineM2 = &framebuffer[(y * 2 + gb_screeny + 1) * fb_width + gb_screenx];
@@ -262,16 +265,18 @@ void MetroBoyApp::loop() {
     }
   }
 
+  draw_bbox(gb_screenx - 2, gb_screeny - 2, 320 + 3, 288 + 3);
+  draw_bbox(gb_screenx - 1, gb_screeny - 1, 320+1, 288+1);
+
   //----------------------------------------
   // Reference image
 
-  if (golden_surface && (overlay_mode == 2)) {
-    uint8_t* src = (uint8_t*)golden_surface->pixels;
+  if (overlay_mode == 2) {
     for (int y = 0; y < 144; y++) {
       uint32_t* line1 = &framebuffer[(y * 2 + gb_screeny + 0) * fb_width + gb_screenx];
       uint32_t* lineM2 = &framebuffer[(y * 2 + gb_screeny + 1) * fb_width + gb_screenx];
       for (int x = 0; x < 160; x++) {
-        uint32_t c = gb_colors[src[x + y * 160]];
+        uint32_t c = gb_colors[golden[x + y * 160]];
         c += 0x100000;
         *line1++ = c; *line1++ = c;
         *lineM2++ = c; *lineM2++ = c;
@@ -282,15 +287,13 @@ void MetroBoyApp::loop() {
   //----------------------------------------
   // Diff overlay
 
-  if (golden_surface && (overlay_mode == 1)) {
-    uint8_t* src = (uint8_t*)golden_surface->pixels;
-
+  if (overlay_mode == 1) {
     for (int y = 0; y < 144; y++) {
       uint32_t* line1 = &framebuffer[(y * 2 + gb_screeny + 0) * fb_width + gb_screenx];
       uint32_t* lineM2 = &framebuffer[(y * 2 + gb_screeny + 1) * fb_width + gb_screenx];
       for (int x = 0; x < 160; x++) {
         int c = gameboy.framebuffer[x + (y * 160)];
-        if (c != src[x + y * 160]) {
+        if (c != golden[x + y * 160]) {
           *line1++ += 0x808000;
           *line1++ += 0x808000;
           *lineM2++ += 0x808000;
@@ -389,17 +392,46 @@ void MetroBoyApp::loop() {
 void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   std::string gb_filename = prefix + "/" + name + ".gb";
   std::string golden_filename = prefix + "/" + name + ".bmp";
-  golden_surface = SDL_LoadBMP(golden_filename.c_str());
+  SDL_Surface* golden_surface = SDL_LoadBMP(golden_filename.c_str());
+
+  if (!golden_surface) {
+    overlay_mode = 0;
+    memset(golden, 0, 160 * 144);
+  }
 
   if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_INDEX8) {
     uint8_t* src = (uint8_t*)golden_surface->pixels;
     uint32_t* pal = (uint32_t*)golden_surface->format->palette->colors;
     for (int y = 0; y < 144; y++) {
       for (int x = 0; x < 160; x++) {
-        uint32_t a = src[x + y * 160];
-        src[x + y * 160] = 3 - (pal[a] & 3);
+        uint8_t a = pal[src[x + y * 160]] & 0xFF;
+
+        if (a < 40) a = 3;
+        else if (a < 128) a = 2;
+        else if (a < 210) a = 1;
+        else a = 0;
+
+        golden[x + y * 160] = a;
       }
     }
+    overlay_mode = 1;
+  }
+
+  else if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_BGR24) {
+    uint8_t* src = (uint8_t*)golden_surface->pixels;
+    for (int y = 0; y < 144; y++) {
+      for (int x = 0; x < 160; x++) {
+        uint8_t a = src[x * 3 + y * golden_surface->pitch];
+
+        if (a < 40) a = 3;
+        else if (a < 128) a = 2;
+        else if (a < 210) a = 1;
+        else a = 0;
+
+        golden[x + y * 160] = a;
+      }
+    }
+    overlay_mode = 1;
   }
 
   memset(rom_buf, 0, 1024 * 1024);
@@ -449,7 +481,7 @@ void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::draw_bbox(int sx, int sy, int w, int h, uint32_t* buf) {
+void MetroBoyApp::draw_bbox(int sx, int sy, int w, int h) {
   int ax = sx;
   int bx = sx + w;
   int ay = sy;
@@ -457,19 +489,19 @@ void MetroBoyApp::draw_bbox(int sx, int sy, int w, int h, uint32_t* buf) {
   int x, y;
 
   for (x = ax, y = ay; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) buf[x + y * fb_width] |= 0x00008000;
+    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] |= 0x00008000;
   }
 
   for (x = ax, y = by; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) buf[x + y * fb_width] |= 0x00008000;
+    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] |= 0x00008000;
   }
 
   for (x = ax, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) buf[x + y * fb_width] |= 0x00008000;
+    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] |= 0x00008000;
   }
 
   for (x = bx, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) buf[x + y * fb_width] |= 0x00008000;
+    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] |= 0x00008000;
   }
 }
 
@@ -504,7 +536,7 @@ void MetroBoyApp::render_console(int sx, int sy, uint8_t* font) {
     }
   }
 
-  draw_bbox(sx - 2, sy - 2, console_width * glyph_width + 4, console_height * glyph_height + 4, framebuffer);
+  draw_bbox(sx - 2, sy - 2, console_width * glyph_width + 4, console_height * glyph_height + 4);
 }
 
 //-----------------------------------------------------------------------------

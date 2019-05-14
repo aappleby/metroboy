@@ -11,7 +11,7 @@ public:
   int main_(int argc, char** argv);
 
   void render_text(int dst_x, int dst_y, const char* text);
-  void draw_bbox(int sx, int sy, int w, int h, uint32_t* buf);
+  void draw_bbox(int sx, int sy, int w, int h);
   void render_console(int sx, int sy, uint8_t* font);
   void printf_console(const char* format, ...);
   
@@ -78,5 +78,5 @@ public:
   uint8_t* terminus_font = nullptr;
   const uint8_t* keyboard_state = nullptr;
 
-  SDL_Surface* golden_surface = nullptr;
+  uint8_t golden[160 * 144];
 };

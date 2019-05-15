@@ -11,7 +11,7 @@ public:
   int main_(int argc, char** argv);
 
   void render_text(int dst_x, int dst_y, const char* text);
-  void draw_bbox(int sx, int sy, int w, int h);
+  void draw_bbox(int sx, int sy, int w, int h, uint32_t color);
   void render_console(int sx, int sy, uint8_t* font);
   void printf_console(const char* format, ...);
   

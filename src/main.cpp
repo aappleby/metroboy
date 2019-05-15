@@ -65,7 +65,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("mealybug", "m3_lcdc_bg_map_change");             // blocks slightly wrong
   //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail top left, black bar bottom right, something about bgp
-  //load("mealybug", "m3_lcdc_obj_size_change");           // nope
+  load("mealybug", "m3_lcdc_obj_size_change");           // nope
   //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
   //load("mealybug", "m3_lcdc_tile_sel_change");           // pass
 
@@ -269,8 +269,8 @@ void MetroBoyApp::loop() {
     }
   }
 
-  draw_bbox(gb_screenx - 2, gb_screeny - 2, 320 + 3, 288 + 3);
-  draw_bbox(gb_screenx - 1, gb_screeny - 1, 320+1, 288+1);
+  draw_bbox(gb_screenx - 2, gb_screeny - 2, 320 + 3, 288 + 3, 0x303030);
+  draw_bbox(gb_screenx - 1, gb_screeny - 1, 320+1, 288+1, 0x101010);
 
   //----------------------------------------
   // Reference image
@@ -485,7 +485,7 @@ void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::draw_bbox(int sx, int sy, int w, int h) {
+void MetroBoyApp::draw_bbox(int sx, int sy, int w, int h, uint32_t color) {
   int ax = sx;
   int bx = sx + w;
   int ay = sy;
@@ -493,19 +493,19 @@ void MetroBoyApp::draw_bbox(int sx, int sy, int w, int h) {
   int x, y;
 
   for (x = ax, y = ay; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] |= 0x00008000;
+    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
   }
 
   for (x = ax, y = by; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] |= 0x00008000;
+    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
   }
 
   for (x = ax, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] |= 0x00008000;
+    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
   }
 
   for (x = bx, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] |= 0x00008000;
+    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
   }
 }
 
@@ -540,7 +540,7 @@ void MetroBoyApp::render_console(int sx, int sy, uint8_t* font) {
     }
   }
 
-  draw_bbox(sx - 2, sy - 2, console_width * glyph_width + 4, console_height * glyph_height + 4);
+  draw_bbox(sx - 2, sy - 2, console_width * glyph_width + 4, console_height * glyph_height + 4, 0xFF00FF00);
 }
 
 //-----------------------------------------------------------------------------

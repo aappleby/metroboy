@@ -54,6 +54,8 @@ void MetroBoy::reset(uint16_t new_pc) {
   clear_line_history();
   clear_cycle_history();
 
+  memset(tracebuffer, 0, sizeof(tracebuffer));
+
   current_gameboy->reset(new_pc);
 }
 

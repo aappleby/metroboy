@@ -100,12 +100,22 @@
 .endm
 
 .macro lcd_on
-  ld a, $91
+  ld a, %10010001
   ldh (LCDC), a
 .endm
 
 .macro lcd_on_sprites
-  ld a, $93
+  ld a, %10010011
+  ldh (LCDC), a
+.endm
+
+.macro lcd_on_win
+  ld a, %10110001
+  ldh (LCDC), a
+.endm
+
+.macro lcd_on_win_sprites
+  ld a, %10110011
   ldh (LCDC), a
 .endm
 

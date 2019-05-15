@@ -11,8 +11,8 @@
 ; 15 - 61/62
 
 .define SPRITEX 8
-.define DELAY 63
-.define RESULT $83
+.define DELAY 64
+.define RESULT $80
 
 main:
   lcd_off_unsafe

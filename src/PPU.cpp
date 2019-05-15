@@ -438,7 +438,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     next_pix = -total_discard + pix_discard + pix_count2;
   }
 
-  if (counter >= 86 && hblank_delay2 > 7) {
+  if (counter >= 87 && hblank_delay2 > 7) {
     if (!fetch_delay) {
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
@@ -460,8 +460,8 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     check_sprite_hit(tphase);
     merge_sprite(tphase);
-    merge_tile(tphase);
     emit_pixel(tphase);
+    merge_tile(tphase);
 
     // check window hit
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {

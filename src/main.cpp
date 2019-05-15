@@ -8,6 +8,7 @@
 #include "test_micro.h"
 #include "test_mooneye.h"
 #include "test_wpol.h"
+#include "test_screenshot.h"
 
 void run_test(const std::string& prefix, const std::string& name);
 
@@ -20,6 +21,7 @@ int main(int argc, char** argv) {
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
+  run_screenshot_tests();
 
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS");
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "lcdon_write_timing-GS");
@@ -46,9 +48,11 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "oam_write_l0_e");
   //load("microtests/build/dmg", "stat_write_glitch_l1_a");
   
+  load("microtests/build/dmg", "sprite4_0_a");
+
   //load("microtests/build/dmg", "ppu_scx_vs_bgp");
   //load("microtests/build/dmg", "ppu_win_vs_wx");
-  load("microtests/build/dmg", "ppu_sprite_testbench");
+  //load("microtests/build/dmg", "ppu_sprite_testbench");
 
   //load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
 

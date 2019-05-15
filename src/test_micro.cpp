@@ -6,7 +6,22 @@
 #include <string>
 
 static const std::string micro_tests[] = {
-  "hblank_int_scx0_halt_a.gb",
+  "sprite4_0_a.gb",
+  "sprite4_0_b.gb",
+  "sprite4_1_a.gb",
+  "sprite4_1_b.gb",
+  "sprite4_2_a.gb",
+  "sprite4_2_b.gb",
+  "sprite4_3_a.gb",
+  "sprite4_3_b.gb",
+  "sprite4_4_a.gb",
+  "sprite4_4_b.gb",
+  "sprite4_5_a.gb",
+  "sprite4_5_b.gb",
+  "sprite4_6_a.gb",
+  "sprite4_6_b.gb",
+  "sprite4_7_a.gb",
+  "sprite4_7_b.gb",
 
   "-----",
   "oam_read_l0_a.gb",

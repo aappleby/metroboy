@@ -116,6 +116,7 @@
     <ClInclude Include="src\SPU.h" />
     <ClInclude Include="src\test_micro.h" />
     <ClInclude Include="src\test_mooneye.h" />
+    <ClInclude Include="src\test_screenshot.h" />
     <ClInclude Include="src\test_wpol.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\Types.h" />
@@ -143,6 +144,7 @@
     <ClCompile Include="src\SPU.cpp" />
     <ClCompile Include="src\test_micro.cpp" />
     <ClCompile Include="src\test_mooneye.cpp" />
+    <ClCompile Include="src\test_screenshot.cpp" />
     <ClCompile Include="src\test_wpol.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\VRAM.cpp" />

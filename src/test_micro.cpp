@@ -6,6 +6,11 @@
 #include <string>
 
 static const std::string micro_tests[] = {
+  "sprite_0_a.gb",
+  "sprite_0_b.gb",
+  "sprite_1_a.gb",
+  "sprite_1_b.gb",
+
   "sprite4_0_a.gb",
   "sprite4_0_b.gb",
   "sprite4_1_a.gb",

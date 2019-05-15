@@ -13,10 +13,6 @@
 .rombanks 2
 
 .bank 0 slot 0
-.org $100
-	nop
-	jp $150
-.org $150
 
 ;-------------------------------------------------------------------------------
 
@@ -147,7 +143,7 @@
 ;-------------------------------------------------------------------------------
 ; Put a box pattern in tile 0
 
-.macro load_box
+.macro load_box 
 	ld a, %01111110
 	ld hl, $8002
 .repeat 12
@@ -167,6 +163,28 @@
   ld (hl+), a
   ld a, f
   ld (hl+), a
+.endm
+
+.macro load_tile ARGS index addr
+  ld bc, addr
+  ld hl, $8000 + (index * 16)
+.repeat 16
+  ld a, (bc)
+  ld (hl+), a
+  inc bc
+.endr
+.endm
+
+.macro memset_1024 ARGS base index
+  ld hl, base
+  ld a, 0
+  ld b, 0
+- ld (hl+), a
+  ld (hl+), a
+  ld (hl+), a
+  ld (hl+), a
+  dec b
+  jr nz, -
 .endm
 
 ;-------------------------------------------------------------------------------
@@ -275,3 +293,8 @@
 .define STAT_INT_VECTOR   $48
 
 ;-------------------------------------------------------------------------------
+
+.org $100
+  nop
+  jp $150
+.org $150

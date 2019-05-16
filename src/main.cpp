@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
-  run_screenshot_tests();
+  //run_screenshot_tests();
 
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS");
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "lcdon_write_timing-GS");
@@ -29,13 +29,14 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
-  //return 0;
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
+  run_mealybug_tests();
+  return 0;
 
   //---------
 
-  load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites");
+  //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites");
   //load("wpol-gb/tests/build/acceptance/gpu", "lcdon_write_timing-GS");
   //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites_nops");
 
@@ -48,7 +49,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "oam_write_l0_e");
   //load("microtests/build/dmg", "stat_write_glitch_l1_a");
   
-  //load("microtests/build/dmg", "sprite_0_b");
+  //load("microtests/build/dmg", "win13_a");
 
   //load("microtests/build/dmg", "ppu_scx_vs_bgp");
   //load("microtests/build/dmg", "ppu_win_vs_wx");
@@ -56,25 +57,14 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
 
-  //load("mealybug", "m3_bgp_change");                     // pass
-  //load("mealybug", "m3_bgp_change_sprites");             // pass
   //load("mealybug", "m3_lcdc_bg_en_change");              // tiny error top left
   //load("mealybug", "m3_lcdc_obj_en_change");             // tiny error top left
-  //load("mealybug", "m3_obp0_change");                    // pass
   //load("mealybug", "m3_scx_low_3_bits");                 // fail
-
-  //load("mealybug", "m3_lcdc_bg_map_change");             // blocks slightly wrong
   //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail top left, black bar bottom right, something about bgp
-  load("mealybug", "m3_lcdc_obj_size_change");           // nope
+  //load("mealybug", "m3_lcdc_obj_size_change");           // nope
   //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
-  //load("mealybug", "m3_lcdc_tile_sel_change");           // pass
-
-  //load("mealybug", "m3_window_timing");                  // pass
-  //load("mealybug", "m3_window_timing_wx_0");             // off by one
-  //load("mealybug", "m3_lcdc_tile_sel_win_change");       // pass
-  //load("mealybug", "m3_lcdc_win_en_change_multiple");    // pass
+  load("mealybug", "m3_window_timing_wx_0");             // off by one
   //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // off by two, missing dots
-  //load("mealybug", "m3_lcdc_win_map_change");            // blocks slightly wrong
   //load("mealybug", "m3_wx_4_change");                    // a few wrong pixels
   //load("mealybug", "m3_wx_4_change_sprites");            // no dots
   //load("mealybug", "m3_wx_5_change");                    // a few wrong pixels now

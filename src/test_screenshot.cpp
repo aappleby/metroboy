@@ -5,6 +5,31 @@
 
 #include <string>
 
+static const char* mealybug_tests[] = {
+  "m3_window_timing",
+  "m3_bgp_change",
+  "m3_bgp_change_sprites",
+  "m3_obp0_change",
+  "m3_lcdc_tile_sel_change",
+  "m3_lcdc_tile_sel_win_change",
+  "m3_lcdc_win_en_change_multiple",
+  "m3_lcdc_bg_map_change",
+  "m3_lcdc_win_map_change",
+  "m3_window_timing_wx_0",
+
+  "m3_lcdc_bg_en_change",
+  "m3_lcdc_obj_en_change",
+  "m3_scx_low_3_bits",
+  "m3_lcdc_obj_en_change_variant",
+  "m3_lcdc_obj_size_change",
+  "m3_lcdc_obj_size_change_scx",
+  "m3_lcdc_win_en_change_multiple_wx",
+  "m3_wx_4_change",
+  "m3_wx_4_change_sprites",
+  "m3_wx_5_change",
+  "m3_wx_6_change",
+};
+
 static const char* screenshot_tests[] = {
   "sprite_0_a"
 };
@@ -54,13 +79,13 @@ bool load_bmp(const std::string& prefix, const std::string& name, uint8_t* out_g
   return false;
 }
 
-void run_screenshot_test(int model, const std::string& prefix, const std::string& name) {
+int run_screenshot_test(int model, const std::string& prefix, const std::string& name) {
   std::string filename = prefix + name + ".gb";
 
   uint8_t golden[160 * 144];
   if (!load_bmp(prefix, name, golden)) {
     printf("Couldn't load golden image for %s\n", name.c_str());
-    return;
+    return -1;
   }
 
   FILE* rom_file = NULL;
@@ -75,35 +100,68 @@ void run_screenshot_test(int model, const std::string& prefix, const std::string
   gameboy.reset(model, rom_size, 0x100);
 
   int i = 0;
-  const int ticks = 100000;
+  const int ticks = 400000;
   for (; i < ticks; i++) {
     gameboy.tick();
     gameboy.tock();
-    if (gameboy.is_frame_done()) break;
+
+    if (gameboy.get_pix_oe()) {
+      int x = gameboy.ppu.pix_count2 - 1;
+      int y = gameboy.ppu.line;
+
+      if (x >= 0 && x < 160 && y >= 0 && y < 144) {
+        gameboy.framebuffer[x + y * 160] = gameboy.get_pix_out();
+      }
+    }
+
+    //if (gameboy.is_frame_done()) break;
   }
 
-  int result = 0;
+  int diff = 0;
 
-  // diff
+  for (int y = 0; y < 144; y++) {
+    for (int x = 0; x < 160; x++) {
+      if (gameboy.framebuffer[x + y * 160] != golden[x + y * 160]) {
+        diff++;
+      }
+    }
+  }
 
-  // print result
+  return diff;
+}
 
-  if (i == ticks) {
-    printf("%-50s ", name.c_str());
-    printf("? TIMEOUT @ %d\n", i);
+void run_mealybug_tests() {
+  double freq = (double)SDL_GetPerformanceFrequency();
+  double begin = (double)SDL_GetPerformanceCounter();
+
+  printf("---------- Mealybug tests ----------\n");
+
+  bool dots = true;
+  for (auto name : mealybug_tests) {
+    if (name[0] == '-') continue;
+    int diff = run_screenshot_test(MODEL_DMG, "mealybug/", name);
+    if (diff == 0) {
+      printf(".");
+      dots = true;
+    }
+    else {
+      if (dots) {
+        printf("\n");
+        dots = false;
+      }
+      printf("%-50s ", name);
+      printf("X FAIL diff %d\n", diff);
+    }
+
   }
-  else if (result == 0x55) {
-    printf(".");
-    //printf("  0x%02x PASS @ %d\n", result, i);
-  }
-  else {
-    printf("\n");
-    printf("%-50s ", name.c_str());
-    printf("X 0x%02x FAIL @ %d\n", result, i);
-  }
+  printf("\n");
+
+  double end = (double)SDL_GetPerformanceCounter();
+  printf("---------- Mealybug tests took %f seconds ----------\n", (end - begin) / freq);
 }
 
 void run_screenshot_tests() {
+  /*
   double freq = (double)SDL_GetPerformanceFrequency();
   double begin = (double)SDL_GetPerformanceCounter();
 
@@ -121,4 +179,5 @@ void run_screenshot_tests() {
 
   double end = (double)SDL_GetPerformanceCounter();
   printf("---------- Screenshot tests took %f seconds ----------\n", (end - begin) / freq);
+  */
 }

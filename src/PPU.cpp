@@ -223,7 +223,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
     }
   }
 
-  if (hblank_delay2 < 7 || vblank) {
+  if (hblank_delay2 < 8 || vblank) {
     oam_lock = false;
     vram_lock = false;
   }
@@ -265,7 +265,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (counter == 0) state = PPU_STATE_HBLANK;
   if (counter == 4 && (frame_count != 0 || line != 0)) state = PPU_STATE_OAM;
   if (counter == 84) state = PPU_STATE_VRAM;
-  if (hblank_delay2 < 8) state = PPU_STATE_HBLANK;
+  if (counter > 84 && pix_count2 == 160) state = PPU_STATE_HBLANK;
   if ((line == 144 && counter >= 4) || (line >= 145)) state = PPU_STATE_VBLANK;
 
   //----------------------------------------
@@ -351,7 +351,7 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
 void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
                uint8_t vram_in, uint8_t oam_in) {
-  if (hblank_delay2 < 7) {
+  if (counter > 84 && pix_count2 == 160) {
     vram_addr = 0;
     fetch_delay = false;
     fetch_state = PPU::FETCH_IDLE;
@@ -438,8 +438,14 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     next_pix = -total_discard + pix_discard + pix_count2;
   }
 
+  // this is a weird hack
+  int start_counter = 86;
+  if ((lcdc & FLAG_WIN_ON) && (scx & 7)) {
+    start_counter = 87;
+  }
+
   // if this isn't 86 stuff breaks :/
-  if (counter >= 86 && hblank_delay2 > 7) {
+  if (counter >= start_counter && pix_count2 != 160) {
     if (!fetch_delay) {
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
@@ -817,8 +823,8 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
     case ADDR_LCDC: {
-      lcdc  = lcdc & 0b11101111;
-      lcdc |= data & 0b00010000;
+      lcdc  = lcdc & 0b10100111;
+      lcdc |= data & 0b01011000;
       break;
     }
     case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
@@ -847,8 +853,8 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
     case ADDR_LCDC: {
       // obj_en _must_ be late
       // tile_sel should probably be early?
-      lcdc  = lcdc & 0b00010000;
-      lcdc |= data & 0b11101111;
+      lcdc  = lcdc & 0b01011000;
+      lcdc |= data & 0b10100111;
 
 
       if (!(lcdc & FLAG_WIN_ON)) {

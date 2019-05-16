@@ -16,6 +16,7 @@ static const char* mealybug_tests[] = {
   "m3_lcdc_bg_map_change",
   "m3_lcdc_win_map_change",
   "m3_window_timing_wx_0",
+  "m3_wx_6_change",
 
   "m3_lcdc_bg_en_change",
   "m3_lcdc_obj_en_change",
@@ -27,7 +28,6 @@ static const char* mealybug_tests[] = {
   "m3_wx_4_change",
   "m3_wx_4_change_sprites",
   "m3_wx_5_change",
-  "m3_wx_6_change",
 };
 
 static const char* screenshot_tests[] = {

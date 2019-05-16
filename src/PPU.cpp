@@ -470,12 +470,12 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     emit_pixel(tphase);
     merge_tile(tphase);
 
-    // check window hit
+    // check window hit - putting this before emit_pixel partially fixes m3_lcdc_win_en_change_multiple_wx, but breaks other stuff
     if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
-      if (next_pix == wx_delay - 7) {
+      if (next_pix == wx - 7) {
         window_hit = true;
         fetch_restarted = false;
-        win_x_latch = wx_delay;
+        win_x_latch = wx;
         win_y_latch = win_y_counter;
         win_y_counter++;
         map_x = 0;
@@ -593,7 +593,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   //-----------------------------------
 
   lcdc_delay = lcdc;
-  wx_delay = wx;
 
   if (cpu_read)  bus_read_late(cpu_addr);
   if (cpu_write) bus_write_late(cpu_addr, cpu_data);
@@ -823,8 +822,8 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
     case ADDR_LCDC: {
-      lcdc  = lcdc & 0b10100111;
-      lcdc |= data & 0b01011000;
+      lcdc  = lcdc & 0b10000111;
+      lcdc |= data & 0b01111000;
       break;
     }
     case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
@@ -853,8 +852,8 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
     case ADDR_LCDC: {
       // obj_en _must_ be late
       // tile_sel should probably be early?
-      lcdc  = lcdc & 0b01011000;
-      lcdc |= data & 0b10100111;
+      lcdc  = lcdc & 0b01111000;
+      lcdc |= data & 0b10000111;
 
 
       if (!(lcdc & FLAG_WIN_ON)) {

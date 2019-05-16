@@ -29,10 +29,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  run_mooneye_acceptance();
-  run_wpol_acceptance();
+  //run_mooneye_acceptance();
+  //run_wpol_acceptance();
   run_mealybug_tests();
-  return 0;
+  //return 0;
 
   //---------
 
@@ -63,12 +63,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail top left, black bar bottom right, something about bgp
   //load("mealybug", "m3_lcdc_obj_size_change");           // nope
   //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
-  load("mealybug", "m3_window_timing_wx_0");             // off by one
-  //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // off by two, missing dots
-  //load("mealybug", "m3_wx_4_change");                    // a few wrong pixels
+  load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // off by one-ish, missing dots
+  //load("mealybug", "m3_wx_4_change");                    // a few wrong pixels, window retriggering?
   //load("mealybug", "m3_wx_4_change_sprites");            // no dots
   //load("mealybug", "m3_wx_5_change");                    // a few wrong pixels now
-  //load("mealybug", "m3_wx_6_change");                    // totally broken
 
   //----------
 

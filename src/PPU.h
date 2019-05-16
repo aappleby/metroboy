@@ -69,7 +69,6 @@ struct PPU {
   ubit8_t wy;   // FF4A
   ubit8_t wx;   // FF4B
 
-  uint8_t wx_delay;
   uint8_t bgp_early;
 
   uint8_t palettes[4];

@@ -37,8 +37,6 @@ struct PPU {
 
 //private:
 
-  void merge_sprite(int tphase);
-  void check_sprite_hit(int tphase);
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
 
@@ -154,6 +152,7 @@ struct PPU {
   FetchState fetch_state;
   bool    in_window;
   bool    window_trigger;
+  int sprite_hit;
 
   //----------
   // Pixel pipe

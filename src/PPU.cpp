@@ -110,6 +110,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   fetch_delay = false;
   in_window = 0;
   window_trigger = false;
+  sprite_hit = 15;
 
   tile_map = 0;
   tile_lo = 0;
@@ -425,6 +426,18 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   // Render phase
 
   
+  sprite_hit = 15;
+  if (next_pix == sprite_x[9] - 8) sprite_hit = 9;
+  if (next_pix == sprite_x[8] - 8) sprite_hit = 8;
+  if (next_pix == sprite_x[7] - 8) sprite_hit = 7;
+  if (next_pix == sprite_x[6] - 8) sprite_hit = 6;
+  if (next_pix == sprite_x[5] - 8) sprite_hit = 5;
+  if (next_pix == sprite_x[4] - 8) sprite_hit = 4;
+  if (next_pix == sprite_x[3] - 8) sprite_hit = 3;
+  if (next_pix == sprite_x[2] - 8) sprite_hit = 2;
+  if (next_pix == sprite_x[1] - 8) sprite_hit = 1;
+  if (next_pix == sprite_x[0] - 8) sprite_hit = 0;
+
   if (counter == 86) {
     pix_discard = 0;
     sprite_latched = false;
@@ -467,14 +480,53 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       vram_addr = 0;
     }
 
-    merge_sprite(tphase);
-    check_sprite_hit(tphase);
+    if (sprite_latched) {
+      if (spriteF & SPRITE_FLIP_X) {
+        sprite_lo = flip2(sprite_lo);
+        sprite_hi = flip2(sprite_hi);
+      }
+
+      ubit8_t sprite_pal_lo = spriteF & SPRITE_PAL ? 0b11111111 : 0b00000000;
+      ubit8_t sprite_pal_hi = 0b11111111;
+
+      // sprites don't draw where we already drew sprites
+      ubit8_t mask = ob_pix_lo | ob_pix_hi;
+
+      ob_pix_lo |= (sprite_lo & ~mask);
+      ob_pix_hi |= (sprite_hi & ~mask);
+      ob_pal_lo |= (sprite_pal_lo & ~mask);
+      ob_pal_hi |= (sprite_pal_hi & ~mask);
+
+      sprite_latched = false;
+      sprite_index = -1;
+    }
+    
+    bool can_emit = pipe_count != 0 && sprite_index == -1 && sprite_hit == 15;
+
+    if (can_emit) {
+      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + 1 + pix_count2) == wx - 7);
+    }
+    else {
+      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + pix_count2) == wx - 7);
+    }
+
+    if (sprite_index == -1) {
+      if (sprite_hit != 15) {
+        sprite_index = sprite_i[sprite_hit];
+        spriteX = sprite_x[sprite_hit];
+        spriteY = sprite_y[sprite_hit];
+
+        sprite_i[sprite_hit] = 255;
+        sprite_x[sprite_hit] = 255;
+        sprite_y[sprite_hit] = 255;
+      }
+    }
+
     emit_pixel(tphase);
+
     merge_tile(tphase);
 
     // check window hit
-
-    window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && (next_pix == wx - 7);
 
     if (window_trigger) {
       if (!in_window) {
@@ -642,60 +694,6 @@ uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8
   return pack_tile_addr(ADDR_TILE0, map, sprite_dy);
 }
 
-
-//-----------------------------------------------------------------------------
-
-void PPU::merge_sprite(int /*tphase*/) {
-  if (!sprite_latched) return;
-
-  if (spriteF & SPRITE_FLIP_X) {
-    sprite_lo = flip2(sprite_lo);
-    sprite_hi = flip2(sprite_hi);
-  }
-
-  ubit8_t sprite_pal_lo = spriteF & SPRITE_PAL ? 0b11111111 : 0b00000000;
-  ubit8_t sprite_pal_hi = 0b11111111;
-
-  // sprites don't draw where we already drew sprites
-  ubit8_t mask = ob_pix_lo | ob_pix_hi;
-
-  ob_pix_lo |= (sprite_lo & ~mask);
-  ob_pix_hi |= (sprite_hi & ~mask);
-  ob_pal_lo |= (sprite_pal_lo & ~mask);
-  ob_pal_hi |= (sprite_pal_hi & ~mask);
-
-  sprite_latched = false;
-  sprite_index = -1;
-}
-
-//-----------------------------------------------------------------------------
-
-void PPU::check_sprite_hit(int /*tphase*/) {
-  if (sprite_index != -1) return;
-
-  ubit4_t hit = 15;
-  if (next_pix == sprite_x[9] - 8) hit = 9;
-  if (next_pix == sprite_x[8] - 8) hit = 8;
-  if (next_pix == sprite_x[7] - 8) hit = 7;
-  if (next_pix == sprite_x[6] - 8) hit = 6;
-  if (next_pix == sprite_x[5] - 8) hit = 5;
-  if (next_pix == sprite_x[4] - 8) hit = 4;
-  if (next_pix == sprite_x[3] - 8) hit = 3;
-  if (next_pix == sprite_x[2] - 8) hit = 2;
-  if (next_pix == sprite_x[1] - 8) hit = 1;
-  if (next_pix == sprite_x[0] - 8) hit = 0;
-
-  if (hit != 15) {
-    sprite_index = sprite_i[hit];
-    spriteX = sprite_x[hit];
-    spriteY = sprite_y[hit];
-
-    sprite_i[hit] = 255;
-    sprite_x[hit] = 255;
-    sprite_y[hit] = 255;
-  }
-}
-
 //-----------------------------------------------------------------------------
 // Emit pixel if we have some in the pipe and we're not stalled.
 
@@ -703,8 +701,12 @@ void PPU::emit_pixel(int /*tphase*/) {
   pix_oe = false;
   pix_out = 0;
 
-  if (pipe_count == 0) return;
-  if (sprite_index != -1) return;
+  if (pipe_count == 0) {
+    return;
+  }
+  if (sprite_index != -1) {
+    return;
+  }
 
   int bg_pix = ((bg_pix_hi >> 6) & 2) | ((bg_pix_lo >> 7) & 1);
   int bg_pal = ((bg_pal_hi >> 6) & 2) | ((bg_pal_lo >> 7) & 1);
@@ -755,7 +757,8 @@ void PPU::emit_pixel(int /*tphase*/) {
     pix_count2++;
   }
 
-  next_pix = -total_discard + pix_discard + pix_count2;
+
+  next_pix = (-total_discard + pix_discard + pix_count2);
 }
 
 //-----------------------------------------------------------------------------

@@ -366,6 +366,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     sprite_index = -1;
     sprite_count = 0;
     pix_count2 = 0;
+    pix_discard = 0;
   }
 
   if (tphase == 0 || tphase == 2) {
@@ -382,6 +383,27 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   if (cpu_read)  bus_read_early(cpu_addr);
   if (cpu_write) bus_write_early(cpu_addr, cpu_data);
+
+  sprite_hit = 15;
+  if (next_pix == sprite_x[9] - 8) sprite_hit = 9;
+  if (next_pix == sprite_x[8] - 8) sprite_hit = 8;
+  if (next_pix == sprite_x[7] - 8) sprite_hit = 7;
+  if (next_pix == sprite_x[6] - 8) sprite_hit = 6;
+  if (next_pix == sprite_x[5] - 8) sprite_hit = 5;
+  if (next_pix == sprite_x[4] - 8) sprite_hit = 4;
+  if (next_pix == sprite_x[3] - 8) sprite_hit = 3;
+  if (next_pix == sprite_x[2] - 8) sprite_hit = 2;
+  if (next_pix == sprite_x[1] - 8) sprite_hit = 1;
+  if (next_pix == sprite_x[0] - 8) sprite_hit = 0;
+
+  sprite_latched = !fetch_delay && fetch_type == FETCH_SPRITE && fetch_state == FETCH_HI;
+  bool can_emit = pipe_count != 0 && (sprite_index == -1 || sprite_latched) && sprite_hit == 15;
+  if (can_emit) {
+    window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + 1 + pix_count2) == wx - 7);
+  }
+  else {
+    window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + pix_count2) == wx - 7);
+  }
 
   //-----------------------------------
   // Handle OAM reads from the previous cycle
@@ -425,22 +447,8 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   //-----------------------------------
   // Render phase
 
-  
-  sprite_hit = 15;
-  if (next_pix == sprite_x[9] - 8) sprite_hit = 9;
-  if (next_pix == sprite_x[8] - 8) sprite_hit = 8;
-  if (next_pix == sprite_x[7] - 8) sprite_hit = 7;
-  if (next_pix == sprite_x[6] - 8) sprite_hit = 6;
-  if (next_pix == sprite_x[5] - 8) sprite_hit = 5;
-  if (next_pix == sprite_x[4] - 8) sprite_hit = 4;
-  if (next_pix == sprite_x[3] - 8) sprite_hit = 3;
-  if (next_pix == sprite_x[2] - 8) sprite_hit = 2;
-  if (next_pix == sprite_x[1] - 8) sprite_hit = 1;
-  if (next_pix == sprite_x[0] - 8) sprite_hit = 0;
-
   if (counter == 86) {
-    pix_discard = 0;
-    sprite_latched = false;
+
     tile_latched = true;
 
     if (line == 0) {
@@ -451,7 +459,9 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     int total_discard = (scx & 7) + 8;
     next_pix = -total_discard + pix_discard + pix_count2;
+
   }
+
 
   // this is a weird hack
   int start_counter = 86;
@@ -461,6 +471,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   // if this isn't 86 stuff breaks :/
   if (counter >= start_counter && pix_count2 != 160) {
+
     if (!fetch_delay) {
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
@@ -474,11 +485,11 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
         if (fetch_state == FETCH_LO) sprite_lo = vram_in;
         if (fetch_state == FETCH_HI) {
           sprite_hi = vram_in;
-          sprite_latched = 1;
         }
       }
       vram_addr = 0;
     }
+
 
     if (sprite_latched) {
       if (spriteF & SPRITE_FLIP_X) {
@@ -501,15 +512,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       sprite_index = -1;
     }
     
-    bool can_emit = pipe_count != 0 && sprite_index == -1 && sprite_hit == 15;
-
-    if (can_emit) {
-      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + 1 + pix_count2) == wx - 7);
-    }
-    else {
-      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + pix_count2) == wx - 7);
-    }
-
     if (sprite_index == -1) {
       if (sprite_hit != 15) {
         sprite_index = sprite_i[sprite_hit];

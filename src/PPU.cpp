@@ -110,7 +110,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   fetch_delay = false;
   in_window = 0;
   window_trigger = false;
-  window_trigger_delay = false;
   sprite_hit = 15;
 
   tile_map = 0;
@@ -353,7 +352,7 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 //-----------------------------------------------------------------------------
 
 void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
-               uint8_t vram_in, uint8_t oam_in) {
+  uint8_t vram_in, uint8_t oam_in) {
   if (counter > 84 && pix_count2 == 160) {
     vram_addr = 0;
     fetch_delay = false;
@@ -363,7 +362,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   if (counter == 0) {
     in_window = false;
     window_trigger = false;
-    window_trigger_delay = false;
     pipe_count = 0;
     sprite_index = -1;
     sprite_count = 0;
@@ -492,7 +490,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       sprite_latched = false;
       sprite_index = -1;
     }
-    
+
     if (sprite_index == -1) {
       if (sprite_hit != 15) {
         sprite_index = sprite_i[sprite_hit];
@@ -511,7 +509,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     // check window hit
 
-    if (window_trigger_delay) {
+    if (window_trigger) {
       if (!in_window) {
         in_window = true;
         win_x_latch = wx;
@@ -644,16 +642,27 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   sprite_latched = !fetch_delay && fetch_type == FETCH_SPRITE && fetch_state == FETCH_HI;
   bool can_emit = pipe_count != 0 && (sprite_index == -1 || sprite_latched) && sprite_hit == 15;
-  if (can_emit) {
-    window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + 1 + pix_count2) == wx - 7);
+
+  if (model == MODEL_AGS) {
+    if (can_emit) {
+      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + 1 + pix_count2) == wx - 7);
+    }
+    else {
+      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + pix_count2) == wx - 7);
+    }
   }
-  else {
-    window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + pix_count2) == wx - 7);
-  }
-  window_trigger_delay = window_trigger;
 
   if (cpu_read)  bus_read_late(cpu_addr);
   if (cpu_write) bus_write_late(cpu_addr, cpu_data);
+
+  if (model == MODEL_DMG) {
+    if (can_emit) {
+      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + 1 + pix_count2) == wx - 7);
+    }
+    else {
+      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + pix_count2) == wx - 7);
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -847,8 +856,6 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
     }
     case ADDR_OBP0: obp0 = palettes[2] = data; break;
     case ADDR_OBP1: obp1 = palettes[3] = data; break;
-    case ADDR_WY:   wy = data;   break;
-    case ADDR_WX:   wx = data;   break;
     };
   }
 }
@@ -868,7 +875,6 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
       if (!(lcdc & FLAG_WIN_ON)) {
         in_window = false;
         window_trigger = false;
-        window_trigger_delay = false;
       }
       break;
     };
@@ -899,8 +905,8 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
     }
     //case ADDR_OBP0: obp0 = palettes[2] = data; break;
     //case ADDR_OBP1: obp1 = palettes[3] = data; break;
-    //case ADDR_WY:   wy = data;   break;
-    //case ADDR_WX:   wx = data;   break;
+    case ADDR_WY:   wy = data;   break;
+    case ADDR_WX:   wx = data;   break;
     };
   }
 }
@@ -974,6 +980,7 @@ char* PPU::dump(char* cursor) {
   //cursor += sprintf(cursor, "stat int %d\n", stat_int);
   cursor += sprintf(cursor, "\n");
 
+  cursor += sprintf(cursor, "%s\n", window_trigger ? "window triggered" : "");
   cursor += sprintf(cursor, "%s\n", in_window ? "window" : "");
   cursor += sprintf(cursor, "map x   %d\n", map_x);
   cursor += sprintf(cursor, "map y   %d\n", map_y);

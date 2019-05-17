@@ -152,7 +152,6 @@ struct PPU {
   FetchState fetch_state;
   bool in_window;
   bool window_trigger;
-  bool window_trigger_delay;
   int sprite_hit;
 
   //----------

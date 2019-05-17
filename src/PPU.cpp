@@ -108,7 +108,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
   fetch_state = FETCH_IDLE;
   fetch_delay = false;
-  window_hit = 0;
+  in_window = 0;
+  window_trigger = false;
 
   tile_map = 0;
   tile_lo = 0;
@@ -358,7 +359,8 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   }
 
   if (counter == 0) {
-    window_hit = false;
+    in_window = false;
+    window_trigger = false;
     pipe_count = 0;
     sprite_index = -1;
     sprite_count = 0;
@@ -470,30 +472,29 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     emit_pixel(tphase);
     merge_tile(tphase);
 
-    // check window hit - putting this before emit_pixel partially fixes m3_lcdc_win_en_change_multiple_wx, but breaks other stuff
-    if ((lcdc & FLAG_WIN_ON) && !window_hit && (line >= wy)) {
-      if (next_pix == wx - 7) {
-        window_hit = true;
-        fetch_restarted = false;
+    // check window hit
+
+    window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && (next_pix == wx - 7);
+
+    if (window_trigger) {
+      if (!in_window) {
+        in_window = true;
         win_x_latch = wx;
         win_y_latch = win_y_counter;
         win_y_counter++;
         map_x = 0;
+
+        fetch_state = FETCH_IDLE;
+        fetch_delay = false;
+        pipe_count = 0;
+        tile_latched = false;
+        vram_addr = 0;
+
+        bg_pix_lo = 0;
+        bg_pix_hi = 0;
+        bg_pal_lo = 0;
+        bg_pal_hi = 0;
       }
-    }
-
-    if (window_hit && !fetch_restarted) {
-      fetch_state = FETCH_IDLE;
-      fetch_restarted = true;
-      fetch_delay = false;
-      pipe_count = 0;
-      tile_latched = false;
-      vram_addr = 0;
-
-      bg_pix_lo = 0;
-      bg_pix_hi = 0;
-      bg_pal_lo = 0;
-      bg_pal_hi = 0;
     }
 
     if (pix_count2 == 160) {
@@ -527,7 +528,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
             fetch_delay = true;
           }
           if (!tile_latched) {
-            if (window_hit) {
+            if (in_window) {
               fetch_type = FETCH_WINDOW;
               fetch_state = FETCH_MAP;
               fetch_delay = true;
@@ -839,7 +840,7 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
     case ADDR_OBP0: obp0 = palettes[2] = data; break;
     case ADDR_OBP1: obp1 = palettes[3] = data; break;
     case ADDR_WY:   wy = data;   break;
-    //case ADDR_WX:   wx = data;   break;
+    case ADDR_WX:   wx = data;   break;
     };
   }
 }
@@ -857,7 +858,8 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
 
 
       if (!(lcdc & FLAG_WIN_ON)) {
-        window_hit = false;
+        in_window = false;
+        window_trigger = false;
       }
       break;
     };
@@ -889,7 +891,7 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
     //case ADDR_OBP0: obp0 = palettes[2] = data; break;
     //case ADDR_OBP1: obp1 = palettes[3] = data; break;
     //case ADDR_WY:   wy = data;   break;
-    case ADDR_WX:   wx = data;   break;
+    //case ADDR_WX:   wx = data;   break;
     };
   }
 }
@@ -963,7 +965,7 @@ char* PPU::dump(char* cursor) {
   //cursor += sprintf(cursor, "stat int %d\n", stat_int);
   cursor += sprintf(cursor, "\n");
 
-  cursor += sprintf(cursor, "%s\n", window_hit ? "window" : "");
+  cursor += sprintf(cursor, "%s\n", in_window ? "window" : "");
   cursor += sprintf(cursor, "map x   %d\n", map_x);
   cursor += sprintf(cursor, "map y   %d\n", map_y);
 

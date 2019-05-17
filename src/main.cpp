@@ -54,6 +54,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "ppu_scx_vs_bgp");
   //load("microtests/build/dmg", "ppu_win_vs_wx");
   //load("microtests/build/dmg", "ppu_sprite_testbench");
+  load("microtests/build/dmg", "ppu_wx_early");
 
   //load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
 
@@ -63,7 +64,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail top left, black bar bottom right, something about bgp
   //load("mealybug", "m3_lcdc_obj_size_change");           // nope
   //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
-  load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // off by one-ish, missing dots
+  //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // off by one-ish, missing dots
   //load("mealybug", "m3_wx_4_change");                    // a few wrong pixels, window retriggering?
   //load("mealybug", "m3_wx_4_change_sprites");            // no dots
   //load("mealybug", "m3_wx_5_change");                    // a few wrong pixels now

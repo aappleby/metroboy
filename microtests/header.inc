@@ -115,6 +115,30 @@
   ldh (LCDC), a
 .endm
 
+.macro clear_map0 ARGS value
+  ld hl, $9800
+  ld a, value
+  ld b, 0
+- ld (hl+), a
+  ld (hl+), a
+  ld (hl+), a
+  ld (hl+), a
+  dec b
+  jr nz,-
+.endm
+
+.macro clear_map1 ARGS value
+  ld hl, $9C00
+  ld a, value
+  ld b, 0
+- ld (hl+), a
+  ld (hl+), a
+  ld (hl+), a
+  ld (hl+), a
+  dec b
+  jr nz,-
+.endm
+
 ;-------------------------------------------------------------------------------
 ; Non-cycle-accurate wait for vblank
 

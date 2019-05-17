@@ -152,8 +152,8 @@ struct PPU {
   FetchType fetch_type = FETCH_NONE;
   bool fetch_delay = false;
   FetchState fetch_state;
-  bool    window_hit;
-  bool    fetch_restarted;
+  bool    in_window;
+  bool    window_trigger;
 
   //----------
   // Pixel pipe

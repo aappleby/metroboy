@@ -150,8 +150,9 @@ struct PPU {
   FetchType fetch_type = FETCH_NONE;
   bool fetch_delay = false;
   FetchState fetch_state;
-  bool    in_window;
-  bool    window_trigger;
+  bool in_window;
+  bool window_trigger;
+  bool window_trigger_delay;
   int sprite_hit;
 
   //----------

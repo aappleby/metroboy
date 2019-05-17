@@ -110,6 +110,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
   fetch_delay = false;
   in_window = 0;
   window_trigger = false;
+  window_trigger_delay = false;
   sprite_hit = 15;
 
   tile_map = 0;
@@ -362,6 +363,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   if (counter == 0) {
     in_window = false;
     window_trigger = false;
+    window_trigger_delay = false;
     pipe_count = 0;
     sprite_index = -1;
     sprite_count = 0;
@@ -509,7 +511,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     // check window hit
 
-    if (window_trigger) {
+    if (window_trigger_delay) {
       if (!in_window) {
         in_window = true;
         win_x_latch = wx;
@@ -648,6 +650,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   else {
     window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + pix_count2) == wx - 7);
   }
+  window_trigger_delay = window_trigger;
 
   if (cpu_read)  bus_read_late(cpu_addr);
   if (cpu_write) bus_write_late(cpu_addr, cpu_data);
@@ -865,6 +868,7 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
       if (!(lcdc & FLAG_WIN_ON)) {
         in_window = false;
         window_trigger = false;
+        window_trigger_delay = false;
       }
       break;
     };

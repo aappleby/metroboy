@@ -455,9 +455,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
           tile_map = vram_in;
-          if (fetch_type == FETCH_WINDOW) {
-            map_x++;
-          }
         }
         if (fetch_state == FETCH_LO)   tile_lo = vram_in;
         if (fetch_state == FETCH_HI) { tile_hi = vram_in; tile_latched = 1; }
@@ -592,6 +589,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       }
       else if (fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
+          map_x = (((wx - 7) >> 3) + ((pix_count2 + pix_discard) >> 3)) & 31;
           vram_addr = win_map_address(lcdc, map_x, win_y_latch);
         }
         else if (fetch_state == FETCH_LO) {

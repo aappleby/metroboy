@@ -40,7 +40,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("wpol-gb/tests/build/acceptance/gpu", "lcdon_write_timing-GS");
   //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites_nops");
 
-  //load("oh"); // broken eyev
+  load("oh"); // broken eyev
   //load("pocket");
   //load("gejmboj");
   //load("LinksAwakening");

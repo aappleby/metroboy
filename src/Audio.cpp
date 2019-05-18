@@ -3,6 +3,10 @@
 
 #include "Constants.h"
 
+#define AVERAGE
+#define HIGHPASS
+#define LOWPASS
+
 SDL_AudioDeviceID dev;
 
 AudioQueue audio_queue_out;
@@ -15,10 +19,8 @@ sample_t* spu_buffer = nullptr;
 
 void audio_callback(void* /*userdata*/, Uint8* stream, int len) {
   sample_t* buf = audio_queue_out.get();
-  if (buf) {
-    memcpy(stream, buf, len);
-    audio_queue_in.put(buf);
-  }
+  memcpy(stream, buf, len);
+  audio_queue_in.put(buf);
 }
 
 //-------------------------------------
@@ -75,6 +77,7 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
     float out_l = 0;
     float out_r = 0;
 
+#ifdef AVERAGE
     if (sample_count) {
       // Input samples are in the range [0,480]
       // - 4 channels * 15 max intensity * 8 global volume.
@@ -84,7 +87,12 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
       in_r_accum = 0;
       sample_count = 0;
     }
+#else
+    out_l = float(in_l_i) / float(240);
+    out_r = float(in_r_i) / float(240);
+#endif
 
+#ifdef HIGHPASS
     // high pass to remove dc bias
     const float a = 0.99633663348f;
     static float highpass_l = 0;
@@ -93,16 +101,16 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
     highpass_r = highpass_r * a + out_r * (1 - a);
     out_l -= highpass_l;
     out_r -= highpass_r;
+#endif
 
-    /*
+#ifdef LOWPASS
     static float lowpass_l = 0;
     static float lowpass_r = 0;
-    lowpass_l = lowpass_l * 0.8 + out_l * 0.2;
-    lowpass_r = lowpass_r * 0.8 + out_r * 0.2;
-
+    lowpass_l = lowpass_l * 0.4f + out_l * 0.6f;
+    lowpass_r = lowpass_r * 0.4f + out_r * 0.6f;
     out_l = lowpass_l;
     out_r = lowpass_r;
-    */
+#endif
 
     spu_buffer[spu_write_cursor++] = int16_t(out_l * 16383);
     spu_buffer[spu_write_cursor++] = int16_t(out_r * 16383);

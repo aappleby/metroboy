@@ -53,9 +53,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   palettes[2] = 0;
   palettes[3] = 0;
 
-  scy_latch = 0;
-  lcdc_delay = 0;
-
   //----------
   // Timers and states
 
@@ -433,11 +430,11 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     if (line == 0) {
       win_y_counter = 0;
       win_y_latch = 0;
-      win_x_latch = 0;
     }
 
     int total_discard = (scx & 7) + 8;
     next_pix = -total_discard + pix_discard + pix_count2;
+    map_x = 0;
 
   }
 
@@ -455,6 +452,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
           tile_map = vram_in;
+          map_x++;
         }
         if (fetch_state == FETCH_LO)   tile_lo = vram_in;
         if (fetch_state == FETCH_HI) { tile_hi = vram_in; tile_latched = 1; }
@@ -511,7 +509,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     if (window_trigger) {
       if (!in_window) {
         in_window = true;
-        win_x_latch = wx;
         win_y_latch = win_y_counter;
         win_y_counter++;
         map_x = 0;
@@ -576,9 +573,9 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
       if (fetch_type == FETCH_BACKGROUND) {
         if (fetch_state == FETCH_MAP) {
-          map_x = ((scx >> 3) + ((pix_count2 + pix_discard) >> 3)) & 31;
+          uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
           map_y = ((scy + line) >> 3) & 31;
-          vram_addr = tile_map_address(lcdc, map_x, map_y);
+          vram_addr = tile_map_address(lcdc, new_map_x, map_y);
         }
         else if (fetch_state == FETCH_LO) {
           vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
@@ -589,7 +586,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       }
       else if (fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
-          map_x = (((wx - 7) >> 3) + ((pix_count2 + pix_discard) >> 3)) & 31;
           vram_addr = win_map_address(lcdc, map_x, win_y_latch);
         }
         else if (fetch_state == FETCH_LO) {
@@ -625,8 +621,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   }
 
   //-----------------------------------
-
-  lcdc_delay = lcdc;
 
   sprite_hit = 15;
   if (lcdc & FLAG_OBJ_ON) {
@@ -919,7 +913,6 @@ char* PPU::dump(char* cursor) {
   cursor += sprintf(cursor, "LCDC %s\n", to_binary(lcdc));
   cursor += sprintf(cursor, "STAT %s\n", to_binary(stat));
   cursor += sprintf(cursor, "SCY  %d\n", scy);
-  cursor += sprintf(cursor, "SCY+ %d\n", scy_latch);
   cursor += sprintf(cursor, "SCX  %d\n", scx);
   cursor += sprintf(cursor, "LY   %d\n", ly);
   cursor += sprintf(cursor, "LYC  %d\n", lyc);

@@ -31,7 +31,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
-  //run_mealybug_tests();
+  run_mealybug_tests();
   //return 0;
 
   //---------
@@ -57,6 +57,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "ppu_wx_early");
 
   //load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
+
+  //load("mealybug", "m3_lcdc_win_en_change_multiple");
 
   //load("mealybug", "m3_lcdc_bg_en_change");              // tiny error top left
   //load("mealybug", "m3_lcdc_obj_en_change");             // tiny error top left

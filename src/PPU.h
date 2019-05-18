@@ -71,11 +71,6 @@ struct PPU {
 
   uint8_t palettes[4];
 
-  ubit8_t scy_latch;
-
-  uint8_t lcdc_delay;
-
-  uint8_t win_x_latch = 0;
   uint8_t win_y_latch = 0;
   uint8_t win_y_counter = 0;
 

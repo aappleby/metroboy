@@ -449,13 +449,15 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   }
 
   // if this isn't 86 stuff breaks :/
-  if (counter >= start_counter && pix_count2 != 160) {
+  if (counter >= start_counter && pix_count2 != 160 && line < 144) {
 
     if (!fetch_delay) {
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
           tile_map = vram_in;
-          map_x++;
+          if (fetch_type == FETCH_WINDOW) {
+            map_x++;
+          }
         }
         if (fetch_state == FETCH_LO)   tile_lo = vram_in;
         if (fetch_state == FETCH_HI) { tile_hi = vram_in; tile_latched = 1; }
@@ -577,7 +579,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
       if (fetch_type == FETCH_BACKGROUND) {
         if (fetch_state == FETCH_MAP) {
-          map_x = ((scx + pix_count2 + pix_discard) >> 3) & 31;
+          map_x = ((scx >> 3) + ((pix_count2 + pix_discard) >> 3)) & 31;
           map_y = ((scy + line) >> 3) & 31;
           vram_addr = tile_map_address(lcdc, map_x, map_y);
         }
@@ -629,16 +631,18 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   lcdc_delay = lcdc;
 
   sprite_hit = 15;
-  if (next_pix == sprite_x[9] - 8) sprite_hit = 9;
-  if (next_pix == sprite_x[8] - 8) sprite_hit = 8;
-  if (next_pix == sprite_x[7] - 8) sprite_hit = 7;
-  if (next_pix == sprite_x[6] - 8) sprite_hit = 6;
-  if (next_pix == sprite_x[5] - 8) sprite_hit = 5;
-  if (next_pix == sprite_x[4] - 8) sprite_hit = 4;
-  if (next_pix == sprite_x[3] - 8) sprite_hit = 3;
-  if (next_pix == sprite_x[2] - 8) sprite_hit = 2;
-  if (next_pix == sprite_x[1] - 8) sprite_hit = 1;
-  if (next_pix == sprite_x[0] - 8) sprite_hit = 0;
+  if (lcdc & FLAG_OBJ_ON) {
+    if (next_pix == sprite_x[9] - 8) sprite_hit = 9;
+    if (next_pix == sprite_x[8] - 8) sprite_hit = 8;
+    if (next_pix == sprite_x[7] - 8) sprite_hit = 7;
+    if (next_pix == sprite_x[6] - 8) sprite_hit = 6;
+    if (next_pix == sprite_x[5] - 8) sprite_hit = 5;
+    if (next_pix == sprite_x[4] - 8) sprite_hit = 4;
+    if (next_pix == sprite_x[3] - 8) sprite_hit = 3;
+    if (next_pix == sprite_x[2] - 8) sprite_hit = 2;
+    if (next_pix == sprite_x[1] - 8) sprite_hit = 1;
+    if (next_pix == sprite_x[0] - 8) sprite_hit = 0;
+  }
 
   sprite_latched = !fetch_delay && fetch_type == FETCH_SPRITE && fetch_state == FETCH_HI;
   bool can_emit = pipe_count != 0 && (sprite_index == -1 || sprite_latched) && sprite_hit == 15;

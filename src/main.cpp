@@ -29,10 +29,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  run_mooneye_acceptance();
-  run_wpol_acceptance();
-  run_mealybug_tests();
-  return 0;
+  //run_mooneye_acceptance();
+  //run_wpol_acceptance();
+  //run_mealybug_tests();
+  //return 0;
 
   //---------
 
@@ -40,9 +40,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("wpol-gb/tests/build/acceptance/gpu", "lcdon_write_timing-GS");
   //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites_nops");
 
-  //load("oh"); // reboot loop
-  //load("pocket"); // checkerboard broken, some scrolling weird, eyes weird
-  //load("gejmboj"); // twirlers broken again
+  //load("oh"); // broken eyev
+  //load("pocket");
+  //load("gejmboj");
   //load("LinksAwakening");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");

@@ -6,6 +6,24 @@
 #include <string>
 
 static const std::string micro_tests[] = {
+  "ppu_sprite0_scx0_a",
+  "ppu_sprite0_scx0_b",
+  "ppu_sprite0_scx1_a",
+  "ppu_sprite0_scx1_b",
+  "ppu_sprite0_scx2_a",
+  "ppu_sprite0_scx2_b",
+  "ppu_sprite0_scx3_a",
+  "ppu_sprite0_scx3_b",
+  "ppu_sprite0_scx4_a",
+  "ppu_sprite0_scx4_b",
+  "ppu_sprite0_scx5_a",
+  "ppu_sprite0_scx5_b",
+  "ppu_sprite0_scx6_a",
+  "ppu_sprite0_scx6_b",
+  "ppu_sprite0_scx7_a",
+  "ppu_sprite0_scx7_b",
+
+
   "win0_a", "win0_b",
   "win1_a", "win1_b",
   "win2_a", "win2_b",

@@ -31,7 +31,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
-  run_mealybug_tests();
+  //run_mealybug_tests();
   //return 0;
 
   //---------
@@ -55,6 +55,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "ppu_win_vs_wx");
   //load("microtests/build/dmg", "ppu_sprite_testbench");
   //load("microtests/build/dmg", "ppu_wx_early");
+  load("microtests/build/dmg", "ppu_sprite0_scx7_a");
 
   //load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
 

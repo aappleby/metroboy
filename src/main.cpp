@@ -4,6 +4,8 @@
 #include "Audio.h"
 #include "Common.h"
 #include "MetroBoy.h"
+#include "Assembler.h"
+#include "Linker.h"
 
 #include "test_micro.h"
 #include "test_mooneye.h"
@@ -20,7 +22,42 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  run_microtests();
+  //link("alkdsjlakasd");
+
+  //FILE* gb_template = fopen("template.gbt", "rb");
+  //fread(rom_buf, 1, 32768, gb_template);
+
+  /*
+  Linker l(rom_buf);
+
+  const int sx = 0;
+  const int scroll = 0;
+  const int delay = 61;
+  const int result = 0x83;
+
+  l.loc(0x100);
+  l.assemble("nop");
+  l.assemble("jp $0150");
+
+  l.loc(0x150);
+  l.lcd_off_unsafe();
+  l.load_sprite(0, 0, sx, 0, 0);
+  l.scx(scroll);
+  l.lcd_on_sprites();
+  l.nops(114 - 2);
+  l.nops(delay);
+  l.test_finish_stat(result);
+
+  printf(source_header);
+  printf(l.a.generated_source.c_str());
+  */
+
+  //metroboy.reset(0x0100);
+  //runmode = RUN_FAST;
+
+  //return 0;
+  
+  //run_microtests();
   //run_screenshot_tests();
 
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS");
@@ -40,10 +77,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("wpol-gb/tests/build/acceptance/gpu", "lcdon_write_timing-GS");
   //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites_nops");
 
-  load("oh"); // broken eyev
+  //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
-  //load("LinksAwakening");
+  load("LinksAwakening");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
@@ -55,7 +92,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "ppu_win_vs_wx");
   //load("microtests/build/dmg", "ppu_sprite_testbench");
   //load("microtests/build/dmg", "ppu_wx_early");
-  load("microtests/build/dmg", "ppu_sprite0_scx7_a");
+  //load("microtests/build/dmg", "ppu_sprite0_scx7_a");
+
+  //load("microtests/build/dmg", "temp");
 
   //load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
 

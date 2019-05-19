@@ -414,19 +414,21 @@ char* Gameboy::dump(char* cursor) {
 char* Gameboy::dump_disasm(char* cursor) {
   uint16_t pc = z80.get_pc();
 
+  Assembler a;
+
   cursor += sprintf(cursor, "---disasm---\n");
   uint8_t* flat = mmu.get_flat_ptr(pc);
   if (flat != nullptr) {
-    cursor += disassemble(flat, pc, 0, 30, cursor);
+    cursor += a.disassemble(flat, pc, 0, 30, cursor);
   }
   else if (ADDR_IRAM_BEGIN <= pc && pc <= ADDR_IRAM_END) {
-    cursor += disassemble(iram.get(), ADDR_IRAM_BEGIN, pc - ADDR_IRAM_BEGIN, 30, cursor);
+    cursor += a.disassemble(iram.get(), ADDR_IRAM_BEGIN, pc - ADDR_IRAM_BEGIN, 30, cursor);
   }
   else if (ADDR_ZEROPAGE_BEGIN <= pc && pc <= ADDR_ZEROPAGE_END) {
-    cursor += disassemble(zram.get(), ADDR_ZEROPAGE_BEGIN, pc - ADDR_ZEROPAGE_BEGIN, 30, cursor);
+    cursor += a.disassemble(zram.get(), ADDR_ZEROPAGE_BEGIN, pc - ADDR_ZEROPAGE_BEGIN, 30, cursor);
   }
   else if (ADDR_OAM_BEGIN <= pc && pc <= ADDR_OAM_END) {
-    cursor += disassemble(oam.ram, ADDR_OAM_BEGIN, pc - ADDR_OAM_BEGIN, 30, cursor);
+    cursor += a.disassemble(oam.ram, ADDR_OAM_BEGIN, pc - ADDR_OAM_BEGIN, 30, cursor);
   }
   else {
     cursor += sprintf(cursor, "(bad pc)\n");

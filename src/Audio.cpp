@@ -19,8 +19,10 @@ sample_t* spu_buffer = nullptr;
 
 void audio_callback(void* /*userdata*/, Uint8* stream, int len) {
   sample_t* buf = audio_queue_out.get();
-  memcpy(stream, buf, len);
-  audio_queue_in.put(buf);
+  if (buf) {
+    memcpy(stream, buf, len);
+    audio_queue_in.put(buf);
+  }
 }
 
 //-------------------------------------

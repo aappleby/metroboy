@@ -107,6 +107,7 @@
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Gameboy.h" />
     <ClInclude Include="src\IRAM.h" />
+    <ClInclude Include="src\Linker.h" />
     <ClInclude Include="src\MetroBoy.h" />
     <ClInclude Include="src\MMU.h" />
     <ClInclude Include="src\OAM.h" />
@@ -132,6 +133,7 @@
     <ClCompile Include="src\Common.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
+    <ClCompile Include="src\Linker.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\MMU.cpp" />
     <ClCompile Include="src\OAM.cpp" />

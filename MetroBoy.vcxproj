@@ -107,14 +107,15 @@
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Gameboy.h" />
     <ClInclude Include="src\IRAM.h" />
-    <ClInclude Include="src\Linker.h" />
     <ClInclude Include="src\MetroBoy.h" />
     <ClInclude Include="src\MMU.h" />
     <ClInclude Include="src\OAM.h" />
+    <ClInclude Include="src\Opcodes.h" />
     <ClInclude Include="src\Platform.h" />
     <ClInclude Include="src\PPU.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\SPU.h" />
+    <ClInclude Include="src\test_codegen.h" />
     <ClInclude Include="src\test_micro.h" />
     <ClInclude Include="src\test_mooneye.h" />
     <ClInclude Include="src\test_screenshot.h" />
@@ -133,7 +134,6 @@
     <ClCompile Include="src\Common.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
-    <ClCompile Include="src\Linker.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\MMU.cpp" />
     <ClCompile Include="src\OAM.cpp" />
@@ -144,6 +144,7 @@
     <ClCompile Include="src\PPU.cpp" />
     <ClCompile Include="src\Serial.cpp" />
     <ClCompile Include="src\SPU.cpp" />
+    <ClCompile Include="src\test_codegen.cpp" />
     <ClCompile Include="src\test_micro.cpp" />
     <ClCompile Include="src\test_mooneye.cpp" />
     <ClCompile Include="src\test_screenshot.cpp" />

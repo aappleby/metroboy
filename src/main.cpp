@@ -5,8 +5,8 @@
 #include "Common.h"
 #include "MetroBoy.h"
 #include "Assembler.h"
-#include "Linker.h"
 
+#include "test_codegen.h"
 #include "test_micro.h"
 #include "test_mooneye.h"
 #include "test_wpol.h"
@@ -22,41 +22,11 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  //link("alkdsjlakasd");
+  test_codegen();
+  return 0;
 
-  //FILE* gb_template = fopen("template.gbt", "rb");
-  //fread(rom_buf, 1, 32768, gb_template);
+  metroboy.reset(0x100);
 
-  /*
-  Linker l(rom_buf);
-
-  const int sx = 0;
-  const int scroll = 0;
-  const int delay = 61;
-  const int result = 0x83;
-
-  l.loc(0x100);
-  l.assemble("nop");
-  l.assemble("jp $0150");
-
-  l.loc(0x150);
-  l.lcd_off_unsafe();
-  l.load_sprite(0, 0, sx, 0, 0);
-  l.scx(scroll);
-  l.lcd_on_sprites();
-  l.nops(114 - 2);
-  l.nops(delay);
-  l.test_finish_stat(result);
-
-  printf(source_header);
-  printf(l.a.generated_source.c_str());
-  */
-
-  //metroboy.reset(0x0100);
-  //runmode = RUN_FAST;
-
-  //return 0;
-  
   //run_microtests();
   //run_screenshot_tests();
 
@@ -80,7 +50,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
-  load("LinksAwakening");
+  //load("LinksAwakening");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
@@ -271,16 +241,16 @@ void MetroBoyApp::loop() {
   //----------------------------------------
   // Left column text
 
-  char* cursor = text_buf;
-
   Gameboy& gameboy = metroboy.gb();
-  cursor = text_buf;
-  cursor = gameboy.dump(cursor);
-  cursor = gameboy.oam.dump(cursor);
-  render_text(4, 4, text_buf);
+
+  gameboy.dump(text_buf);
+  gameboy.oam.dump(text_buf);
+  render_text(4, 4, text_buf.c_str());
+  text_buf.clear();
 
   gameboy.dump_disasm(text_buf);
-  render_text(140, 4, text_buf);
+  render_text(140, 4, text_buf.c_str());
+  text_buf.clear();
 
   //----------------------------------------
   // Gameboy screen
@@ -370,9 +340,9 @@ void MetroBoyApp::loop() {
     "STEP_CYCLE",
   };
 
-  cursor = text_buf;
-  cursor += sprintf(cursor, "%s %d", mode_names[runmode], (int)(metroboy.current_gameboy->get_tcycle() & 3));
-  render_text(32 * 11, 32 * 11 + 18, text_buf);
+  sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.current_gameboy->get_tcycle() & 3));
+  render_text(32 * 11, 32 * 11 + 18, text_buf.c_str());
+  text_buf.clear();
 
   //----------------------------------------
   // VRAM dump
@@ -401,7 +371,8 @@ void MetroBoyApp::loop() {
   smoothed_frame_time += (1000.0 * double(frame_time) / double(freq)) * 0.02;
 
   sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, (int)(cycles_end - cycles_begin) / 4);
-  render_text(736, 1024 - 12 - 4, text_buf);
+  render_text(736, 1024 - 12 - 4, text_buf.c_str());
+  text_buf.clear();
 
   //----------------------------------------
   // Console

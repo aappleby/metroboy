@@ -60,13 +60,12 @@ void Timer::tock(int tphase, uint16_t addr, uint8_t data, bool read, bool write)
 
 //-----------------------------------------------------------------------------
 
-char* Timer::dump(char* cursor) {
-  cursor += sprintf(cursor, "TICK 0x%08x\n", counter);
-  cursor += sprintf(cursor, "DIV  0x%02x\n", (counter >> 6) & 0xFF);
-  cursor += sprintf(cursor, "TIMA 0x%02x\n", new_tima);
-  cursor += sprintf(cursor, "TMA  0x%02x\n", tma);
-  cursor += sprintf(cursor, "TAC  %s\n", to_binary(tac));
-  return cursor;
+void Timer::dump(std::string& out) {
+  sprintf(out, "TICK 0x%08x\n", counter);
+  sprintf(out, "DIV  0x%02x\n", (counter >> 6) & 0xFF);
+  sprintf(out, "TIMA 0x%02x\n", new_tima);
+  sprintf(out, "TMA  0x%02x\n", tma);
+  sprintf(out, "TAC  %s\n", to_binary(tac));
 }
 
 //-----------------------------------------------------------------------------

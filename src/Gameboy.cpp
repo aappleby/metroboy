@@ -346,96 +346,96 @@ uint32_t Gameboy::trace() {
 
 //-----------------------------------------------------------------------------
 
-char* Gameboy::dump(char* cursor) {
+void Gameboy::dump(std::string& out) {
   //uint16_t pc = z80.get_pc();
 
-  cursor = buttons.dump(cursor);
+  buttons.dump(out);
 
-  cursor = z80.dump(cursor);
-  cursor += sprintf(cursor, "imask %s\n", to_binary(imask));
-  cursor += sprintf(cursor, "intf  %s\n", to_binary(intf));
-  cursor += sprintf(cursor, "old stat int %d\n", ppu.old_stat_int);
-  cursor += sprintf(cursor, "\n");
+  z80.dump(out);
+  sprintf(out, "imask %s\n", to_binary(imask));
+  sprintf(out, "intf  %s\n", to_binary(intf));
+  sprintf(out, "old stat int %d\n", ppu.old_stat_int);
+  sprintf(out, "\n");
 
-  cursor += sprintf(cursor, "tcycle %zd\n", tcycle);
+  sprintf(out, "tcycle %zd\n", tcycle);
 
-  cursor += sprintf(cursor, "z80 mem addr 0x%04x\n", z80.mem_addr_);
-  cursor += sprintf(cursor, "z80 mem data 0x%02x\n", z80.mem_out_);
-  cursor += sprintf(cursor, "z80 mem read %d\n", z80.mem_read_);
-  cursor += sprintf(cursor, "z80 mem write %d\n", z80.mem_write_);
+  sprintf(out, "z80 mem addr 0x%04x\n", z80.mem_addr_);
+  sprintf(out, "z80 mem data 0x%02x\n", z80.mem_out_);
+  sprintf(out, "z80 mem read %d\n", z80.mem_read_);
+  sprintf(out, "z80 mem write %d\n", z80.mem_write_);
 
-  //cursor += sprintf(cursor, "bus out2 %02x\n", bus_out2);
-  //cursor += sprintf(cursor, "bus oe2 %d\n", bus_oe2);
-  cursor += sprintf(cursor, "\n");
+  //sprintf(out, "bus out2 %02x\n", bus_out2);
+  //sprintf(out, "bus oe2 %d\n", bus_oe2);
+  sprintf(out, "\n");
 
-  cursor += sprintf(cursor, "dma mode a %d\n", dma_mode_a);
-  cursor += sprintf(cursor, "dma count a %d\n", dma_count_a);
-  cursor += sprintf(cursor, "dma source a 0x%04x\n", dma_source_a);
-  cursor += sprintf(cursor, "\n");
+  sprintf(out, "dma mode a %d\n", dma_mode_a);
+  sprintf(out, "dma count a %d\n", dma_count_a);
+  sprintf(out, "dma source a 0x%04x\n", dma_source_a);
+  sprintf(out, "\n");
 
-  cursor += sprintf(cursor, "dma mode b %d\n", dma_mode_b);
-  cursor += sprintf(cursor, "dma count b %d\n", dma_count_b);
-  cursor += sprintf(cursor, "dma data b %d\n", dma_data_b);
+  sprintf(out, "dma mode b %d\n", dma_mode_b);
+  sprintf(out, "dma count b %d\n", dma_count_b);
+  sprintf(out, "dma data b %d\n", dma_data_b);
 
-  cursor += sprintf(cursor, "\n");
+  sprintf(out, "\n");
 
-  cursor = timer.dump(cursor);
-  cursor += sprintf(cursor, "\n");
+  timer.dump(out);
+  sprintf(out, "\n");
 
-  cursor = ppu.dump(cursor);
-  cursor += sprintf(cursor, "\n");
+  ppu.dump(out);
+  sprintf(out, "\n");
 
   /*
-  cursor = spu.dump(cursor);
-  cursor += sprintf(cursor, "\n");
+  spu.dump(out);
+  sprintf(out, "\n");
 
   {
     uint8_t* ram = ppu.get_oam_ram();
     for (int i = 0; i < 16; i++) {
-      cursor += sprintf(cursor, "%02x ", ram[i]);
+      sprintf(out, "%02x ", ram[i]);
     }
-    cursor += sprintf(cursor, "\n");
+    sprintf(out, "\n");
   }
 
   {
     uint8_t* ram = vram.ram;
     for (int i = 0; i < 16; i++) {
-      cursor += sprintf(cursor, "%02x ", ram[i]);
+      sprintf(out, "%02x ", ram[i]);
     }
-    cursor += sprintf(cursor, "\n");
+    sprintf(out, "\n");
   }
   */
-
-  return cursor;
 }
 
 //-----------------------------------------------------------------------------
 
-char* Gameboy::dump_disasm(char* cursor) {
+void Gameboy::dump_disasm(std::string& out) {
+  sprintf(out, "---disasm---\n");
+
   uint16_t pc = z80.get_pc();
-
-  Assembler a;
-
-  cursor += sprintf(cursor, "---disasm---\n");
-  uint8_t* flat = mmu.get_flat_ptr(pc);
-  if (flat != nullptr) {
-    cursor += a.disassemble(flat, pc, 0, 30, cursor);
-  }
-  else if (ADDR_IRAM_BEGIN <= pc && pc <= ADDR_IRAM_END) {
-    cursor += a.disassemble(iram.get(), ADDR_IRAM_BEGIN, pc - ADDR_IRAM_BEGIN, 30, cursor);
+  const uint8_t* segment;
+  
+  if (ADDR_IRAM_BEGIN <= pc && pc <= ADDR_IRAM_END) {
+    segment = iram.get() + (pc - ADDR_IRAM_BEGIN);
   }
   else if (ADDR_ZEROPAGE_BEGIN <= pc && pc <= ADDR_ZEROPAGE_END) {
-    cursor += a.disassemble(zram.get(), ADDR_ZEROPAGE_BEGIN, pc - ADDR_ZEROPAGE_BEGIN, 30, cursor);
+    segment = zram.get() + (pc - ADDR_ZEROPAGE_BEGIN);
   }
   else if (ADDR_OAM_BEGIN <= pc && pc <= ADDR_OAM_END) {
-    cursor += a.disassemble(oam.ram, ADDR_OAM_BEGIN, pc - ADDR_OAM_BEGIN, 30, cursor);
+    segment = oam.ram + (pc - ADDR_OAM_BEGIN);
   }
   else {
-    cursor += sprintf(cursor, "(bad pc)\n");
+    segment = mmu.get_flat_ptr(pc);
   }
-  cursor += sprintf(cursor, "\n");
 
-  return cursor;
+  if (segment) {
+    Assembler a;
+    a.disassemble(segment, 65536, pc, 30, out, false);
+    sprintf(out, "\n");
+  }
+  else {
+    sprintf(out, "(bad pc)\n");
+  }
 }
 
 //-----------------------------------------------------------------------------

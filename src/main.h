@@ -23,7 +23,7 @@ public:
   MetroBoy metroboy;
   bool rom_loaded = false;
   const char* filename = nullptr;
-  char text_buf[65536];
+  std::string text_buf;
   uint64_t frame_begin, frame_end, frame_time = 0;
   double fast_cycles = 114 * 154;
   uint32_t* framebuffer = NULL;

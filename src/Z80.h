@@ -11,7 +11,7 @@ struct Z80 {
   uint16_t get_pc() { return pc; }
   uint8_t get_a() { return a; }
   uint8_t get_op() { return op_; }
-  char* dump(char* text_buf);
+  void dump(std::string& out);
 
   uint16_t mem_addr_;
   bool mem_read_;

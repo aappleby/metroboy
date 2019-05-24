@@ -1364,20 +1364,19 @@ uint8_t Z80::set(uint8_t x, uint8_t y) {
 
 //-----------------------------------------------------------------------------
 
-char* Z80::dump(char* cursor) {
-  cursor += sprintf(cursor, "CYC %d\n", cycle);
+void Z80::dump(std::string& out) {
+  sprintf(out, "CYC %d\n", cycle);
   int bgb = (cycle * 2) + 0x00B2D5E6;
-  cursor += sprintf(cursor, "BGB 0x%08x\n", bgb);
-  cursor += sprintf(cursor, "op 0x%02x\n", op_);
-  cursor += sprintf(cursor, "af 0x%04x\n", af);
-  cursor += sprintf(cursor, "bc 0x%04x\n", bc);
-  cursor += sprintf(cursor, "de 0x%04x\n", de);
-  cursor += sprintf(cursor, "hl 0x%04x\n", hl);
-  cursor += sprintf(cursor, "sp 0x%04x\n", sp);
-  cursor += sprintf(cursor, "pc 0x%04x\n", pc);
-  cursor += sprintf(cursor, "ime %d\n", ime);
-  cursor += sprintf(cursor, "ime_delay %d\n", ime_delay);
-  return cursor;
+  sprintf(out, "BGB 0x%08x\n", bgb);
+  sprintf(out, "op 0x%02x\n", op_);
+  sprintf(out, "af 0x%04x\n", af);
+  sprintf(out, "bc 0x%04x\n", bc);
+  sprintf(out, "de 0x%04x\n", de);
+  sprintf(out, "hl 0x%04x\n", hl);
+  sprintf(out, "sp 0x%04x\n", sp);
+  sprintf(out, "pc 0x%04x\n", pc);
+  sprintf(out, "ime %d\n", ime);
+  sprintf(out, "ime_delay %d\n", ime_delay);
 }
 
 //-----------------------------------------------------------------------------

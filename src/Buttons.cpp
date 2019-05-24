@@ -36,16 +36,14 @@ void Buttons::tock(uint16_t addr, uint8_t data, bool read, bool write) {
   }
 }
 
-char* Buttons::dump(char* text_buf) {
-  char* cursor = text_buf;
-  cursor += sprintf(cursor, "%c %c %c %c %c %c %c %c\n",
-                    val & 0x01 ? '-' : 'R',
-                    val & 0x02 ? '-' : 'L',
-                    val & 0x04 ? '-' : 'U',
-                    val & 0x08 ? '-' : 'D',
-                    val & 0x10 ? '-' : 'A',
-                    val & 0x20 ? '-' : 'B',
-                    val & 0x40 ? '-' : 'E',
-                    val & 0x80 ? '-' : 'S');
-  return cursor;
+void Buttons::dump(std::string& out) {
+  sprintf(out, "%c %c %c %c %c %c %c %c\n",
+          val & 0x01 ? '-' : 'R',
+          val & 0x02 ? '-' : 'L',
+          val & 0x04 ? '-' : 'U',
+          val & 0x08 ? '-' : 'D',
+          val & 0x10 ? '-' : 'A',
+          val & 0x20 ? '-' : 'B',
+          val & 0x40 ? '-' : 'E',
+          val & 0x80 ? '-' : 'S');
 }

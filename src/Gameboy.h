@@ -59,8 +59,8 @@ struct Gameboy {
   void check_sentinel() {
     SDL_assert_release(sentinel == 0xDEADBEEF);
   }
-  char* dump(char* cursor);
-  char* dump_disasm(char* cursor);
+  void dump(std::string& out);
+  void dump_disasm(std::string& out);
 
   uint8_t framebuffer[160 * 144];
 

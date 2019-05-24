@@ -909,21 +909,21 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
 
 //-----------------------------------------------------------------------------
 
-char* PPU::dump(char* cursor) {
-  cursor += sprintf(cursor, "LCDC %s\n", to_binary(lcdc));
-  cursor += sprintf(cursor, "STAT %s\n", to_binary(stat));
-  cursor += sprintf(cursor, "SCY  %d\n", scy);
-  cursor += sprintf(cursor, "SCX  %d\n", scx);
-  cursor += sprintf(cursor, "LY   %d\n", ly);
-  cursor += sprintf(cursor, "LYC  %d\n", lyc);
-  cursor += sprintf(cursor, "DMA  %d\n", dma);
-  cursor += sprintf(cursor, "BGP  0x%02x\n", palettes[0]);
-  cursor += sprintf(cursor, "OBP0 0x%02x\n", palettes[2]);
-  cursor += sprintf(cursor, "OBP1 0x%02x\n", palettes[3]);
-  cursor += sprintf(cursor, "WY   %d\n", wy);
-  cursor += sprintf(cursor, "WX   %d\n", wx);
-  cursor += sprintf(cursor, "wyc   %d\n", win_y_counter);
-  cursor += sprintf(cursor, "\n");
+void PPU::dump(std::string& out) {
+  sprintf(out, "LCDC %s\n", to_binary(lcdc));
+  sprintf(out, "STAT %s\n", to_binary(stat));
+  sprintf(out, "SCY  %d\n", scy);
+  sprintf(out, "SCX  %d\n", scx);
+  sprintf(out, "LY   %d\n", ly);
+  sprintf(out, "LYC  %d\n", lyc);
+  sprintf(out, "DMA  %d\n", dma);
+  sprintf(out, "BGP  0x%02x\n", palettes[0]);
+  sprintf(out, "OBP0 0x%02x\n", palettes[2]);
+  sprintf(out, "OBP1 0x%02x\n", palettes[3]);
+  sprintf(out, "WY   %d\n", wy);
+  sprintf(out, "WX   %d\n", wx);
+  sprintf(out, "wyc   %d\n", win_y_counter);
+  sprintf(out, "\n");
 
   const char* fetch_names1[] = {
     "FETCH_BACKGROUND",
@@ -939,10 +939,10 @@ char* PPU::dump(char* cursor) {
     "FETCH_IDLE",
   };
 
-  cursor += sprintf(cursor, "frame   %d\n", frame_count);
-  cursor += sprintf(cursor, "state   %d\n", state);
+  sprintf(out, "frame   %d\n", frame_count);
+  sprintf(out, "state   %d\n", state);
   /*
-  cursor += sprintf(cursor, "%s %s %s %s\n",
+  sprintf(out, "%s %s %s %s\n",
     oam_phase    ? "OAM" : "   ",
     render_phase ? "VRM" : "   ",
     hblank_phase ? "HBK" : "   ",
@@ -951,7 +951,7 @@ char* PPU::dump(char* cursor) {
 
   /*
   if (stat_int) {
-    cursor += sprintf(cursor, "%s %s %s %s %s\n",
+    sprintf(out, "%s %s %s %s %s\n",
       stat_int_lyc ? "#LYC" : "    ",
       stat_int_oam ? "#OAM" : "    ",
       stat_int_hblank ? "#HBK" : "    ",
@@ -959,7 +959,7 @@ char* PPU::dump(char* cursor) {
       stat_int_glitch ? "#GLT" : "    ");
   }
   else {
-    cursor += sprintf(cursor, "%s %s %s %s %s\n",
+    sprintf(out, "%s %s %s %s %s\n",
       stat_int_lyc ? "-LYC" : "    ",
       stat_int_oam ? "-OAM" : "    ",
       stat_int_hblank ? "-HBK" : "    ",
@@ -968,61 +968,59 @@ char* PPU::dump(char* cursor) {
   }
   */
 
-  cursor += sprintf(cursor, "clockP2 %3d:%3d\n", line, counter);
+  sprintf(out, "clockP2 %3d:%3d\n", line, counter);
 
-  cursor += sprintf(cursor, "hbdly   %d\n", hblank_delay2);
-  //cursor += sprintf(cursor, "vblank int %d\n", vblank_int);
-  //cursor += sprintf(cursor, "stat int %d\n", stat_int);
-  cursor += sprintf(cursor, "\n");
+  sprintf(out, "hbdly   %d\n", hblank_delay2);
+  //sprintf(out, "vblank int %d\n", vblank_int);
+  //sprintf(out, "stat int %d\n", stat_int);
+  sprintf(out, "\n");
 
-  cursor += sprintf(cursor, "%s\n", window_trigger ? "window triggered" : "");
-  cursor += sprintf(cursor, "%s\n", in_window ? "window" : "");
-  cursor += sprintf(cursor, "map x   %d\n", map_x);
-  cursor += sprintf(cursor, "map y   %d\n", map_y);
+  sprintf(out, "%s\n", window_trigger ? "window triggered" : "");
+  sprintf(out, "%s\n", in_window ? "window" : "");
+  sprintf(out, "map x   %d\n", map_x);
+  sprintf(out, "map y   %d\n", map_y);
 
   int total_discard = (scx & 7) + 8;
-  cursor += sprintf(cursor, "discard1 %d\n", total_discard);
-  cursor += sprintf(cursor, "discard2 %d\n", pix_discard);
-  cursor += sprintf(cursor, "pix      %d\n", pix_count2);
-  cursor += sprintf(cursor, "next pix %d\n", next_pix);
-  cursor += sprintf(cursor, "pipe     %d\n", pipe_count);
-  cursor += sprintf(cursor, "fetch    %s\n", fetch_names1[fetch_type]);
-  cursor += sprintf(cursor, "         %s\n", fetch_names2[fetch_state]);
-  cursor += sprintf(cursor, "latched  %d\n", tile_latched);
-  cursor += sprintf(cursor, "\n");
+  sprintf(out, "discard1 %d\n", total_discard);
+  sprintf(out, "discard2 %d\n", pix_discard);
+  sprintf(out, "pix      %d\n", pix_count2);
+  sprintf(out, "next pix %d\n", next_pix);
+  sprintf(out, "pipe     %d\n", pipe_count);
+  sprintf(out, "fetch    %s\n", fetch_names1[fetch_type]);
+  sprintf(out, "         %s\n", fetch_names2[fetch_state]);
+  sprintf(out, "latched  %d\n", tile_latched);
+  sprintf(out, "\n");
 
-  cursor += sprintf(cursor, "sprite idx %d\n", sprite_index);
-  cursor += sprintf(cursor, "oam addr  %04x\n", oam_addr);
-  cursor += sprintf(cursor, "oam read  %04x\n", oam_read);
-  cursor += sprintf(cursor, "vram addr  %04x\n", vram_addr);
-  cursor += sprintf(cursor, "\n");
+  sprintf(out, "sprite idx %d\n", sprite_index);
+  sprintf(out, "oam addr  %04x\n", oam_addr);
+  sprintf(out, "oam read  %04x\n", oam_read);
+  sprintf(out, "vram addr  %04x\n", vram_addr);
+  sprintf(out, "\n");
 
   /*
-  cursor += sprintf(cursor, "stat_int_lyc    %d %d\n", stat_int_lyc, bool(stat & EI_LYC));
-  cursor += sprintf(cursor, "stat_int_oam    %d %d\n", stat_int_oam, bool(stat & EI_OAM));
-  cursor += sprintf(cursor, "stat_int_vblank %d %d\n", stat_int_vblank, bool(stat & EI_VBLANK));
-  cursor += sprintf(cursor, "stat_int_hblank %d %d\n", stat_int_vblank, bool(stat & EI_HBLANK));
+  sprintf(out, "stat_int_lyc    %d %d\n", stat_int_lyc, bool(stat & EI_LYC));
+  sprintf(out, "stat_int_oam    %d %d\n", stat_int_oam, bool(stat & EI_OAM));
+  sprintf(out, "stat_int_vblank %d %d\n", stat_int_vblank, bool(stat & EI_VBLANK));
+  sprintf(out, "stat_int_hblank %d %d\n", stat_int_vblank, bool(stat & EI_HBLANK));
   */
 
   /*
-  cursor += sprintf(cursor, "spriteX %d\n", spriteX);
-  cursor += sprintf(cursor, "spriteY %d\n", spriteY);
-  cursor += sprintf(cursor, "spriteP %d\n", spriteP);
-  cursor += sprintf(cursor, "spriteF %d\n", spriteF);
-  cursor += sprintf(cursor, "\n");
+  sprintf(out, "spriteX %d\n", spriteX);
+  sprintf(out, "spriteY %d\n", spriteY);
+  sprintf(out, "spriteP %d\n", spriteP);
+  sprintf(out, "spriteF %d\n", spriteF);
+  sprintf(out, "\n");
   */
 
   uint8_t* si = sprite_i;
   uint8_t* sx = sprite_x;
   uint8_t* sy = sprite_y;
 
-  cursor += sprintf(cursor, "sprite_i [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", si[0], si[1], si[2], si[3], si[4], si[5], si[6], si[7], si[8], si[9]);
-  cursor += sprintf(cursor, "sprite_x [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sx[0], sx[1], sx[2], sx[3], sx[4], sx[5], sx[6], sx[7], sx[8], sx[9]);
-  cursor += sprintf(cursor, "sprite_y [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sy[0], sy[1], sy[2], sy[3], sy[4], sy[5], sy[6], sy[7], sy[8], sy[9]);
+  sprintf(out, "sprite_i [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", si[0], si[1], si[2], si[3], si[4], si[5], si[6], si[7], si[8], si[9]);
+  sprintf(out, "sprite_x [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sx[0], sx[1], sx[2], sx[3], sx[4], sx[5], sx[6], sx[7], sx[8], sx[9]);
+  sprintf(out, "sprite_y [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sy[0], sy[1], sy[2], sy[3], sy[4], sy[5], sy[6], sy[7], sy[8], sy[9]);
 
-  cursor += sprintf(cursor, "\n");
-
-  return cursor;
+  sprintf(out, "\n");
 }
 
 //-----------------------------------------------------------------------------

@@ -15,7 +15,7 @@ struct OAM {
     return ram;
   }
 
-  char* dump(char* cursor);
+  void dump(std::string& out);
 
   uint8_t bus_out;
   bool bus_oe;

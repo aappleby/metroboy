@@ -26,13 +26,11 @@ void OAM::tock(uint16_t addr, uint8_t data, bool read, bool write) {
   }
 }
 
-char* OAM::dump(char* cursor) {
+void OAM::dump(std::string& out) {
   for (int i = 0; i < 10; i++) {
-    cursor += sprintf(cursor, "%2x ", ram[i]);
+    sprintf(out, "%2x ", ram[i]);
   }
-  cursor += sprintf(cursor, "\n");
-
-  return cursor;
+  sprintf(out, "\n");
 }
 
 //-----------------------------------------------------------------------------

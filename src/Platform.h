@@ -11,9 +11,10 @@
 #include <string.h>
 #include <time.h>
 
+#include <string>
 #include <list>
 #include <vector>
-
+#include <map>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -29,3 +30,15 @@
 #else
 #include <SDL2/SDL.h>
 #endif
+
+template<typename ... Args>
+void sprintf(std::string& out, const char* format, Args ... args)
+{
+  char source_buf[1024];
+  snprintf(source_buf, 1024, format, args ...);
+  out.append(source_buf);
+}
+
+using std::string;
+using std::vector;
+using std::map;

@@ -8,7 +8,7 @@ struct Buttons {
 
   uint8_t get() { return val; }
   void set(uint8_t new_val) { val = new_val; }
-  char* dump(char* text_buf);
+  void dump(std::string& out);
 
   uint8_t bus_out = 0;
   bool bus_oe = false;

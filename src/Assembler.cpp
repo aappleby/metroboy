@@ -228,6 +228,13 @@ void Assembler::disassemble(std::string& out) {
 
 //-----------------------------------------------------------------------------
 
+bool match_op(const char* line, const char* op_string, int& arg) {
+  char buf[256];
+  sscanf(line, op_string, &arg);
+  sprintf(buf, op_string, arg);
+  return strcmp(line, buf) == 0;
+}
+
 void Assembler::assemble(const char* source) {
   while (*source) {
     char line_buf[256];
@@ -244,23 +251,33 @@ void Assembler::assemble(const char* source) {
     }
     if (*line == 0) continue;
 
-    int match = -1;
     int op = 0;
     int arg = 0;
     for (; op < 256; op++) {
+
+      bool found_match = match_op(line, op_strings[op], arg);
+      if (!found_match) {
+        continue;
+      }
+
+      /*
+      int match = -1;
       if (op_sizes[op] == 1) {
         match = strcmp(line, op_strings[op]);
       }
       else {
         match = sscanf(line, op_strings[op], &arg) - 1;
       }
-      if (match == 0) {
-        int op_size = op_sizes[op];
-        emit(uint8_t(op));
-        if (op_size > 1) emit(arg & 0xFF);
-        if (op_size > 2) emit((arg >> 8) & 0xFF);
-        break;
+      if (match != 0) {
+        continue;
       }
+      */
+
+      int op_size = op_sizes[op];
+      emit(uint8_t(op));
+      if (op_size > 1) emit(arg & 0xFF);
+      if (op_size > 2) emit((arg >> 8) & 0xFF);
+      break;
     }
     if (op == 256) {
       printf("BAD ASM\n");
@@ -343,6 +360,25 @@ void Assembler::patch_jr() {
 }
 
 //-----------------------------------------------------------------------------
+
+void Assembler::clear_oam() {
+	emit(LD_A_D8(0));
+  emit(LD_B_D8(0));
+  
+  //emit(LD_HL_D16(uint16_t(0xFE00)));
+  emit(0x21);
+  emit(0x00);
+  emit(0xFE);
+  
+  size_t dst = block_code->size();
+
+  emit(LD_HLP_A);
+  emit(DEC_B);
+
+  size_t src = block_code->size();
+
+  emit(JR_NZ_D8(dst - src - 2));
+}
 
 void Assembler::lcd_off_unsafe() {
   emit(LD_A_D8(0));

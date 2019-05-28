@@ -634,6 +634,24 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     if (next_pix == sprite_x[2] - 8) sprite_hit = 2;
     if (next_pix == sprite_x[1] - 8) sprite_hit = 1;
     if (next_pix == sprite_x[0] - 8) sprite_hit = 0;
+
+    if (sprite_hit == 15) {
+      if (sprite_x[9] == 0) sprite_hit = 9;
+      if (sprite_x[8] == 0) sprite_hit = 8;
+      if (sprite_x[7] == 0) sprite_hit = 7;
+      if (sprite_x[6] == 0) sprite_hit = 6;
+      if (sprite_x[5] == 0) sprite_hit = 5;
+      if (sprite_x[4] == 0) sprite_hit = 4;
+      if (sprite_x[3] == 0) sprite_hit = 3;
+      if (sprite_x[2] == 0) sprite_hit = 2;
+      if (sprite_x[1] == 0) sprite_hit = 1;
+      if (sprite_x[0] == 0) sprite_hit = 0;
+
+      if (sprite_hit != 15) {
+        int x = 1;
+        (void)x;
+      }
+    }
   }
 
   sprite_latched = !fetch_delay && fetch_type == FETCH_SPRITE && fetch_state == FETCH_HI;

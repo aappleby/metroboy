@@ -1,4 +1,3 @@
-
 .gbheader
 name "microtest"
 nintendologo

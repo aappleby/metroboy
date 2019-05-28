@@ -22,10 +22,10 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  test_codegen();
-  return 0;
+  //test_codegen();
+  //return 0;
 
-  metroboy.reset(0x100);
+  //metroboy.reset(0x100);
 
   //run_microtests();
   //run_screenshot_tests();
@@ -36,10 +36,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
-  //run_mealybug_tests();
-  //return 0;
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
+  run_mealybug_tests();
+  return 0;
 
   //---------
 
@@ -55,14 +55,17 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
   //load("microtests/build/dmg", "stat_write_glitch_l1_a");
-  
+
+  //load("microtests/build/dmg", "ppu_spritex_vs_scx");
+
   //load("microtests/build/dmg", "win13_a");
 
   //load("microtests/build/dmg", "ppu_scx_vs_bgp");
   //load("microtests/build/dmg", "ppu_win_vs_wx");
   //load("microtests/build/dmg", "ppu_sprite_testbench");
   //load("microtests/build/dmg", "ppu_wx_early");
-  //load("microtests/build/dmg", "ppu_sprite0_scx7_a");
+  
+  load("microtests/build/dmg", "ppu_sprite0_scx1_a");
 
   //load("microtests/build/dmg", "temp");
 

@@ -30,6 +30,7 @@ struct Assembler {
   void assemble_jr();
   void patch_jr();
 
+  void clear_oam();
   void lcd_off_unsafe();
   void lcd_on_sprites();
   void scx(int x);
@@ -41,9 +42,14 @@ struct Assembler {
 
   std::string name;
   std::vector<size_t> bookmarks;
+  std::map<string, uint16_t> label_map;
   std::map<uint16_t, blob> block_map;
   uint16_t block_addr;
   blob* block_code;
+
+  void begin_label(std::string label) {
+    label_map[label] = block_addr + (uint16_t)block_code->size();
+  }
 
   void begin_block(uint16_t addr) {
     blob& code = block_map[addr];

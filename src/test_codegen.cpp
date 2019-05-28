@@ -3,17 +3,33 @@
 #include "Assembler.h"
 #include "Gameboy.h"
 
-// x y scroll delay result delay result
-// 0 0   0       62   0x83    63   0x80
-// 0 0   1       64   0x83    65   0x80
-// 0 0   2       64   0x83    65   0x80
-// 0 0   3       64   0x83    65   0x80
-// 0 0   4       64   0x83    65   0x80
-// 0 0   5       64   0x83    65   0x80
-// 0 0   6       64   0x83    65   0x80
-// 0 0   7       64   0x83    65   0x80
+// no sprites, no scroll - last render is 61
+// sprite at 0, no scroll - last render is 63
 
-void test_preloaded(Gameboy& gameboy, const char* name) {
+// last cycle in render phase
+int spritex_vs_scx[17][9] = {
+  { 63, 64, 64, 64, 64, 65, 65, 65, 63 },
+  { 63, 63, 63, 63, 63, 63, 64, 65, 63 },
+  { 63, 63, 63, 63, 63, 63, 65, 65, 63 },
+  { 63, 63, 63, 63, 63, 65, 65, 65, 63 },
+  { 62, 62, 63, 63, 64, 64, 64, 64, 62 },
+  { 62, 62, 63, 64, 64, 64, 64, 64, 62 },
+  { 62, 62, 64, 64, 64, 64, 64, 64, 62 },
+  { 62, 64, 64, 64, 64, 64, 64, 64, 62 },
+  
+  { 63, 63, 63, 63, 63, 63, 64, 64, 63 },
+  { 63, 63, 63, 63, 63, 63, 64, 65, 63 },
+  { 63, 63, 63, 63, 63, 63, 65, 65, 63 },
+  { 63, 63, 63, 63, 63, 65, 65, 65, 63 },
+  { 62, 62, 63, 63, 64, 64, 64, 64, 62 },
+  { 62, 62, 63, 64, 64, 64, 64, 64, 62 },
+  { 62, 62, 64, 64, 64, 64, 64, 64, 62 },
+  { 62, 64, 64, 64, 64, 64, 64, 64, 62 },
+  
+  { 63, 63, 63, 63, 63, 63, 64, 64, 63 },
+};
+
+void test_preloaded(Gameboy& gameboy, const string& /*name*/) {
   uint8_t result = 0xFF;
   int i = 0;
   const int ticks = 100000;  // bits_ram_en needs lots of tcycles
@@ -25,56 +41,65 @@ void test_preloaded(Gameboy& gameboy, const char* name) {
   }
 
   if (i == ticks) {
-    printf("%-50s ", name);
-    printf("? TIMEOUT @ %d\n", i);
+    printf("?");
   }
   else if (result == 0x55) {
-    //printf(".");
-    printf("%-50s ", name);
-    printf("  0x%02x PASS @ %d\n", result, i);
+    printf(".");
   }
   else {
-    printf("%-50s ", name);
-    printf("X 0x%02x FAIL @ %d\n", result, i);
+    printf("X");
   }
 }
 
 void emit_test_scx_sprite(Assembler& l, int spriteX, int spriteY, int scroll, int delay, int result) {
   l.begin_block(0x150);
   l.lcd_off_unsafe();
+  l.clear_oam();
   l.load_sprite(0, spriteY, spriteX, 0, 0);
   l.scx(scroll);
-  
   l.lcd_on_sprites();
   l.nops(112);
-
   l.nops(delay);
   l.test_finish_stat(result);
 }
 
 void test_scx_sprite() {
-  Assembler l;
+  Assembler* l = new Assembler();
+  Gameboy* g = new Gameboy();
 
-  for (int scroll = 0; scroll < 8; scroll++) {
-    const int spriteX = 0;
-    const int spriteY = 32;
-    const int delay = scroll == 0 ? 62 : 64;
-    const int result = 0x83;
+  for (int spriteX = 0; spriteX < 17; spriteX++) {
+    const int spriteY = 16;
+    for (int scrollX = 0; scrollX < 9; scrollX++) {
+      const int delay = spritex_vs_scx[spriteX][scrollX];
+      const int result = 0x83;
 
-    l.begin(std::string("codegen/ppu_sprite0_scx") + std::to_string(scroll) + std::string("_a"));
-    emit_test_scx_sprite(l, spriteX, spriteY, scroll, delay, result);
-    l.write_source();
-  }
+      string name;
+      sprintf(name, "sprite_vs_scx_%02d_%02d_%02d_%02d", spriteX, scrollX, delay, result);
+      l->begin(name);
 
-  for (int scroll = 0; scroll < 8; scroll++) {
-    const int spriteX = 0;
-    const int spriteY = 32;
-    const int delay = scroll == 0 ? 64 : 65;
-    const int result = 0x80;
+      emit_test_scx_sprite(*l, spriteX, spriteY, scrollX, delay, result);
+      l->link();
 
-    l.begin(std::string("codegen/ppu_sprite0_scx") + std::to_string(scroll) + std::string("_b"));
-    emit_test_scx_sprite(l, spriteX, spriteY, scroll, delay, result);
-    l.write_source();
+      g->reset(0x100);
+      test_preloaded(*g, name);
+    }
+    printf("\n");
+
+    for (int scrollX = 0; scrollX < 9; scrollX++) {
+      const int delay = spritex_vs_scx[spriteX][scrollX] + 1;
+      const int result = 0x80;
+
+      string name;
+      sprintf(name, "sprite_vs_scx_%02d_%02d_%02d_%02d", spriteX, scrollX, delay, result);
+      l->begin(name);
+
+      emit_test_scx_sprite(*l, spriteX, spriteY, scrollX, delay, result);
+      l->link();
+
+      g->reset(0x100);
+      test_preloaded(*g, name);
+    }
+    printf("\n");
   }
 }
 

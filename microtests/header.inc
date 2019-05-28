@@ -276,12 +276,9 @@
   cp expected
   jr z, +
   ld a, $FF
-- ld (VRAM), a
-  jr -
-
+  test_end
 + ld a, $55
-- ld (VRAM), a
-  jr -
+  test_end
 .endm
 
 .macro test_finish_b ARGS expected
@@ -309,6 +306,16 @@
 .macro test_finish_if ARGS expected
   ldh a, (IF)
   test_finish_a expected
+.endm
+
+.macro assert_stat ARGS expected
+  ldh a, (STAT)
+  cp expected
+  jr z, +
+  ld a, $FF
+- ld (VRAM), a
+  jr -
++ nop
 .endm
 
 ;-------------------------------------------------------------------------------

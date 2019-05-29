@@ -76,8 +76,6 @@ Right column
 
 ## Known Issues
 
-- The code is a mix of DMG (original Game Boy) and AGS (Game Boy Advance SP) configurations and will fail a few compatibility tests due to the inconsistency.
 - The sound hardware implementation is buggy
 - Save game support isn't implemented yet
 - Cross-platform support via CMake is coming. Nothing in MetroBoy is OS-specific, I just haven't set it up yet.
-- The window overlay is off by 8 pixels. :/

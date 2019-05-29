@@ -1,6 +1,6 @@
 # MetroBoy is a Game Boy simulation designed to be mechanically translated into Verilog
 
-(Note - Interrupt timing is currently more broken than intended, but it should be able to run Prehistorik Man now)
+As of build 1.02 all Blargg, Mooneye, and Wpol test suites should be passing.
 
 ![MetroBoy screenshot](MetroBoy.png "MetroBoy screenshot")
 

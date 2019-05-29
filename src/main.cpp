@@ -36,10 +36,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  run_mooneye_acceptance();
-  run_wpol_acceptance();
-  run_mealybug_tests();
-  return 0;
+  //run_mooneye_acceptance();
+  //run_wpol_acceptance();
+  //run_mealybug_tests();
+  //return 0;
 
   //---------
 
@@ -50,7 +50,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
-  //load("LinksAwakening");
+  //load("LinksAwakening"); // rain sprites in opening that cross scroll boundary are glitched
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
@@ -65,7 +65,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "ppu_sprite_testbench");
   //load("microtests/build/dmg", "ppu_wx_early");
   
-  load("microtests/build/dmg", "ppu_sprite0_scx1_a");
+  //load("microtests/build/dmg", "ppu_sprite0_scx1_a");
 
   //load("microtests/build/dmg", "temp");
 

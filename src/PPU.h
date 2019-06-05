@@ -112,7 +112,6 @@ struct PPU {
 
   ubit4_t sprite_count;
   sbit8_t sprite_index;
-  bool    sprite_latched;
   uint8_t sprite_x[10]; // 80 bits
   uint8_t sprite_y[10]; // 80 bits
   uint8_t sprite_i[10]; // 60 bits?
@@ -145,9 +144,10 @@ struct PPU {
   FetchType fetch_type = FETCH_NONE;
   bool fetch_delay = false;
   FetchState fetch_state;
-  bool in_window;
-  bool window_trigger;
   int sprite_hit;
+
+  bool in_window_old;
+  bool in_window_new;
 
   //----------
   // Pixel pipe
@@ -161,8 +161,8 @@ struct PPU {
   bool    tile_latched;
 
   int pix_count2;
-  int pix_discard;
-  int next_pix;
+  int pix_discard_scx;
+  int pix_discard_pad;
   ubit4_t pipe_count;
 
   ubit8_t bg_pix_lo;

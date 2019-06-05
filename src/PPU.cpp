@@ -87,7 +87,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
   sprite_count = 0;
   sprite_index = -1;
-  sprite_latched = 0;
   for (int i = 0; i < 10; i++) sprite_x[i] = 0xFF;
   for (int i = 0; i < 10; i++) sprite_y[i] = 0xFF;
   for (int i = 0; i < 10; i++) sprite_i[i] = 0xFF;
@@ -105,9 +104,10 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
   fetch_state = FETCH_IDLE;
   fetch_delay = false;
-  in_window = 0;
-  window_trigger = false;
   sprite_hit = 15;
+
+  in_window_old = false;
+  in_window_new = false;
 
   tile_map = 0;
   tile_lo = 0;
@@ -116,7 +116,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
   pix_count2 = 0;
   pipe_count = 0;
-  pix_discard = 0;
+  pix_discard_scx = 0;
+  pix_discard_pad = 0;
 
   bg_pix_lo = 0;
   bg_pix_hi = 0;
@@ -151,7 +152,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
     lcdc = 0x91;
     palettes[0] = 0xfc;
     pix_count2 = 160;
-    next_pix = 0;
   }
 }
 
@@ -357,13 +357,14 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   }
 
   if (counter == 0) {
-    in_window = false;
-    window_trigger = false;
+    in_window_old = false;
+    in_window_new = false;
     pipe_count = 0;
     sprite_index = -1;
     sprite_count = 0;
     pix_count2 = 0;
-    pix_discard = 0;
+    pix_discard_scx = 0;
+    pix_discard_pad = 0;
   }
 
   if (tphase == 0 || tphase == 2) {
@@ -431,23 +432,47 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       win_y_counter = 0;
       win_y_latch = 0;
     }
-
-    int total_discard = (scx & 7) + 8;
-    next_pix = -total_discard + pix_discard + pix_count2;
     map_x = 0;
-
   }
 
 
   // this is a weird hack
   int start_counter = 86;
+  /*
   if ((lcdc & FLAG_WIN_ON) && (scx & 7)) {
     start_counter = 87;
   }
+  */
+
+  // check window hit
+  in_window_new =
+    (lcdc & FLAG_WIN_ON) &&
+    (line >= wy) &&
+    (pix_count2 + pix_discard_pad == wx + 1);
+
+  if (!in_window_old && in_window_new) {
+    win_y_latch = win_y_counter;
+    win_y_counter++;
+    map_x = 0;
+
+    fetch_state = FETCH_IDLE;
+    fetch_delay = false;
+    pipe_count = 0;
+    tile_latched = false;
+    vram_addr = 0;
+
+    bg_pix_lo = 0;
+    bg_pix_hi = 0;
+    bg_pal_lo = 0;
+    bg_pal_hi = 0;
+  }
+
+  in_window_old |= in_window_new;
 
   // if this isn't 86 stuff breaks :/
   if (counter >= start_counter && pix_count2 != 160 && line < 144) {
 
+    bool sprite_latched = false;
     if (!fetch_delay) {
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
@@ -461,11 +486,11 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
         if (fetch_state == FETCH_LO) sprite_lo = vram_in;
         if (fetch_state == FETCH_HI) {
           sprite_hi = vram_in;
+          sprite_latched = true;
         }
       }
       vram_addr = 0;
     }
-
 
     if (sprite_latched) {
       if (spriteF & SPRITE_FLIP_X) {
@@ -483,8 +508,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       ob_pix_hi |= (sprite_hi & ~mask);
       ob_pal_lo |= (sprite_pal_lo & ~mask);
       ob_pal_hi |= (sprite_pal_hi & ~mask);
-
-      sprite_latched = false;
       sprite_index = -1;
     }
 
@@ -503,28 +526,6 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     emit_pixel(tphase);
 
     merge_tile(tphase);
-
-    // check window hit
-
-    if (window_trigger) {
-      if (!in_window) {
-        in_window = true;
-        win_y_latch = win_y_counter;
-        win_y_counter++;
-        map_x = 0;
-
-        fetch_state = FETCH_IDLE;
-        fetch_delay = false;
-        pipe_count = 0;
-        tile_latched = false;
-        vram_addr = 0;
-
-        bg_pix_lo = 0;
-        bg_pix_hi = 0;
-        bg_pal_lo = 0;
-        bg_pal_hi = 0;
-      }
-    }
 
     if (pix_count2 == 160) {
       fetch_type = FETCH_NONE;
@@ -557,7 +558,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
             fetch_delay = true;
           }
           if (!tile_latched) {
-            if (in_window) {
+            if (in_window_old && (lcdc & FLAG_WIN_ON)) {
               fetch_type = FETCH_WINDOW;
               fetch_state = FETCH_MAP;
               fetch_delay = true;
@@ -622,18 +623,20 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   //-----------------------------------
 
+  int next_pix = pix_count2 + 8;
+
   sprite_hit = 15;
   if (lcdc & FLAG_OBJ_ON) {
-    if (next_pix == sprite_x[9] - 8) sprite_hit = 9;
-    if (next_pix == sprite_x[8] - 8) sprite_hit = 8;
-    if (next_pix == sprite_x[7] - 8) sprite_hit = 7;
-    if (next_pix == sprite_x[6] - 8) sprite_hit = 6;
-    if (next_pix == sprite_x[5] - 8) sprite_hit = 5;
-    if (next_pix == sprite_x[4] - 8) sprite_hit = 4;
-    if (next_pix == sprite_x[3] - 8) sprite_hit = 3;
-    if (next_pix == sprite_x[2] - 8) sprite_hit = 2;
-    if (next_pix == sprite_x[1] - 8) sprite_hit = 1;
-    if (next_pix == sprite_x[0] - 8) sprite_hit = 0;
+    if (next_pix == sprite_x[9]) sprite_hit = 9;
+    if (next_pix == sprite_x[8]) sprite_hit = 8;
+    if (next_pix == sprite_x[7]) sprite_hit = 7;
+    if (next_pix == sprite_x[6]) sprite_hit = 6;
+    if (next_pix == sprite_x[5]) sprite_hit = 5;
+    if (next_pix == sprite_x[4]) sprite_hit = 4;
+    if (next_pix == sprite_x[3]) sprite_hit = 3;
+    if (next_pix == sprite_x[2]) sprite_hit = 2;
+    if (next_pix == sprite_x[1]) sprite_hit = 1;
+    if (next_pix == sprite_x[0]) sprite_hit = 0;
 
     if (sprite_hit == 15) {
       if (sprite_x[9] == 0) sprite_hit = 9;
@@ -646,38 +649,14 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       if (sprite_x[2] == 0) sprite_hit = 2;
       if (sprite_x[1] == 0) sprite_hit = 1;
       if (sprite_x[0] == 0) sprite_hit = 0;
-
-      if (sprite_hit != 15) {
-        int x = 1;
-        (void)x;
-      }
     }
   }
 
-  sprite_latched = !fetch_delay && fetch_type == FETCH_SPRITE && fetch_state == FETCH_HI;
-  bool can_emit = pipe_count != 0 && (sprite_index == -1 || sprite_latched) && sprite_hit == 15;
-
-  if (model == MODEL_AGS) {
-    if (can_emit) {
-      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + 1 + pix_count2) == wx - 7);
-    }
-    else {
-      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + pix_count2) == wx - 7);
-    }
-  }
+  //-----------------------------------
 
   if (cpu_read)  bus_read_late(cpu_addr);
   if (cpu_write) bus_write_late(cpu_addr, cpu_data);
-
-  if (model == MODEL_DMG) {
-    if (can_emit) {
-      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + 1 + pix_count2) == wx - 7);
-    }
-    else {
-      window_trigger = (lcdc & FLAG_WIN_ON) && (line >= wy) && ((-((scx & 7) + 8) + pix_discard + pix_count2) == wx - 7);
-    }
-  }
-}
+} // PPU::tock
 
 //-----------------------------------------------------------------------------
 
@@ -772,21 +751,25 @@ void PPU::emit_pixel(int /*tphase*/) {
 
   pipe_count--;
 
-  int total_discard = (scx & 7) + 8;
-
-  if ((pix_discard < total_discard) || pix_count2 == 160) {
+  if (pix_discard_scx < (scx & 7)) {
     pix_oe = false;
     pix_out = 0;
-    pix_discard++;
+    pix_discard_scx++;
+  }
+  else if (pix_discard_pad < 8) {
+    pix_oe = false;
+    pix_out = 0;
+    pix_discard_pad++;
+  }
+  else if (pix_count2 == 160) {
+    pix_oe = false;
+    pix_out = 0;
   }
   else {
     pix_oe = true;
     pix_out = (palettes[pal] >> (pix << 1)) & 3;
     pix_count2++;
   }
-
-
-  next_pix = (-total_discard + pix_discard + pix_count2);
 }
 
 //-----------------------------------------------------------------------------
@@ -887,8 +870,8 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
 
 
       if (!(lcdc & FLAG_WIN_ON)) {
-        in_window = false;
-        window_trigger = false;
+        in_window_old = false;
+        in_window_new = false;
       }
       break;
     };
@@ -917,8 +900,6 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
       palettes[0] = data;
       break;
     }
-    //case ADDR_OBP0: obp0 = palettes[2] = data; break;
-    //case ADDR_OBP1: obp1 = palettes[3] = data; break;
     case ADDR_WY:   wy = data;   break;
     case ADDR_WX:   wx = data;   break;
     };
@@ -993,16 +974,14 @@ void PPU::dump(std::string& out) {
   //sprintf(out, "stat int %d\n", stat_int);
   sprintf(out, "\n");
 
-  sprintf(out, "%s\n", window_trigger ? "window triggered" : "");
-  sprintf(out, "%s\n", in_window ? "window" : "");
+  sprintf(out, "%s\n", in_window_old ? "in_window_old" : "");
+  sprintf(out, "%s\n", in_window_new ? "in_window_new" : "");
   sprintf(out, "map x   %d\n", map_x);
   sprintf(out, "map y   %d\n", map_y);
 
-  int total_discard = (scx & 7) + 8;
-  sprintf(out, "discard1 %d\n", total_discard);
-  sprintf(out, "discard2 %d\n", pix_discard);
+  sprintf(out, "scx disc %d\n", pix_discard_scx);
+  sprintf(out, "pad disc %d\n", pix_discard_pad);
   sprintf(out, "pix      %d\n", pix_count2);
-  sprintf(out, "next pix %d\n", next_pix);
   sprintf(out, "pipe     %d\n", pipe_count);
   sprintf(out, "fetch    %s\n", fetch_names1[fetch_type]);
   sprintf(out, "         %s\n", fetch_names2[fetch_state]);

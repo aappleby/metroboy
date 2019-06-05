@@ -842,6 +842,14 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
     case ADDR_LCDC: {
       lcdc  = lcdc & 0b10000111;
       lcdc |= data & 0b01111000;
+
+      // dmg glitch hack
+      if (pix_count2 == 0) {
+        if ((data & 2) == 0) {
+          lcdc &= ~2;
+        }
+      }
+
       break;
     }
     case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
@@ -870,7 +878,6 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
       // tile_sel should probably be early?
       lcdc  = lcdc & 0b01111000;
       lcdc |= data & 0b10000111;
-
 
       if (!(lcdc & FLAG_WIN_ON)) {
         in_window_old = false;
@@ -1080,6 +1087,8 @@ void PPU::dump_tiles(uint32_t* framebuffer, int stride, int x, int y, int /*scal
       uint8_t c = 2 * ((hi >> spriteX2) & 1) + ((lo >> spriteX2) & 1);
 
       uint32_t color = gb_colors[c];
+
+      if (spriteX2 == 0 && spriteY2 == 0) color = 0xFF00FF00;
 
       *lineA++ = color; *lineA++ = color;
       *lineB++ = color; *lineB++ = color;

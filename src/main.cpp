@@ -73,9 +73,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("mealybug", "m3_lcdc_bg_en_change");              // tiny error top left
   //load("mealybug", "m3_lcdc_obj_en_change");             // tiny error top left
-  load("mealybug", "m3_scx_low_3_bits");                 // fail
 
-  //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail top left, black bar bottom right, something about bgp
+  load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail top left, black bar bottom right, something about bgp
   //load("mealybug", "m3_lcdc_obj_size_change");           // nope
   //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
   

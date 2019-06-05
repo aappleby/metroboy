@@ -71,6 +71,8 @@ struct PPU {
 
   uint8_t palettes[4];
 
+
+  uint8_t scx_latch;
   uint8_t win_y_latch = 0;
   uint8_t win_y_counter = 0;
 
@@ -148,6 +150,7 @@ struct PPU {
 
   bool in_window_old;
   bool in_window_new;
+  bool in_window_new_early;
 
   //----------
   // Pixel pipe

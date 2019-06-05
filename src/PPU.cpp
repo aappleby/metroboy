@@ -53,6 +53,10 @@ void PPU::reset(bool run_bootrom, int new_model) {
   palettes[2] = 0;
   palettes[3] = 0;
 
+  scx_latch = 0;
+  win_y_latch = 0;
+  win_y_counter = 0;
+
   //----------
   // Timers and states
 
@@ -108,6 +112,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
   in_window_old = false;
   in_window_new = false;
+  in_window_new_early = false;
 
   tile_map = 0;
   tile_lo = 0;
@@ -152,6 +157,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
     lcdc = 0x91;
     palettes[0] = 0xfc;
     pix_count2 = 160;
+    pix_discard_scx = 0;
+    pix_discard_pad = 8;
   }
 }
 
@@ -264,7 +271,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
   if (counter == 0) state = PPU_STATE_HBLANK;
   if (counter == 4 && (frame_count != 0 || line != 0)) state = PPU_STATE_OAM;
   if (counter == 84) state = PPU_STATE_VRAM;
-  if (counter > 84 && pix_count2 == 160) state = PPU_STATE_HBLANK;
+  if (counter > 84 && (pix_count2 + pix_discard_pad == 160)) state = PPU_STATE_HBLANK;
   if ((line == 144 && counter >= 4) || (line >= 145)) state = PPU_STATE_VBLANK;
 
   //----------------------------------------
@@ -321,6 +328,8 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   fetch_state = FETCH_IDLE;
 
   pix_count2 = 0;
+  pix_discard_scx = 0;
+  pix_discard_pad = 0;
   pix_oe = false;
   sprite_count = 0;
   sprite_index = -1;
@@ -350,7 +359,7 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
 
 void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
   uint8_t vram_in, uint8_t oam_in) {
-  if (counter > 84 && pix_count2 == 160) {
+  if (counter > 84 && (pix_count2 + pix_discard_pad == 168)) {
     vram_addr = 0;
     fetch_delay = false;
     fetch_state = PPU::FETCH_IDLE;
@@ -359,6 +368,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   if (counter == 0) {
     in_window_old = false;
     in_window_new = false;
+    in_window_new_early = false;
     pipe_count = 0;
     sprite_index = -1;
     sprite_count = 0;
@@ -433,22 +443,15 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       win_y_latch = 0;
     }
     map_x = 0;
+    scx_latch = scx;
   }
-
-
-  // this is a weird hack
-  int start_counter = 86;
-  /*
-  if ((lcdc & FLAG_WIN_ON) && (scx & 7)) {
-    start_counter = 87;
-  }
-  */
 
   // check window hit
-  in_window_new =
+  in_window_new = in_window_new_early;
+  in_window_new_early =
     (lcdc & FLAG_WIN_ON) &&
     (line >= wy) &&
-    (pix_count2 + pix_discard_pad == wx + 1);
+    (pix_count2 + pix_discard_pad == wx);
 
   if (!in_window_old && in_window_new) {
     win_y_latch = win_y_counter;
@@ -470,7 +473,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   in_window_old |= in_window_new;
 
   // if this isn't 86 stuff breaks :/
-  if (counter >= start_counter && pix_count2 != 160 && line < 144) {
+  if (counter >= 86 && (pix_count2 + pix_discard_pad != 168) && line < 144) {
 
     bool sprite_latched = false;
     if (!fetch_delay) {
@@ -527,7 +530,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
     merge_tile(tphase);
 
-    if (pix_count2 == 160) {
+    if (pix_count2 + pix_discard_pad == 168) {
       fetch_type = FETCH_NONE;
       fetch_state = FETCH_IDLE;
       vram_addr = 0;
@@ -617,13 +620,13 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     }
   }
 
-  if (pix_count2 == 160 && hblank_delay2) {
+  if ((pix_count2 + pix_discard_pad == 168) && hblank_delay2) {
     hblank_delay2--;
   }
 
   //-----------------------------------
 
-  int next_pix = pix_count2 + 8;
+  int next_pix = pix_count2 + pix_discard_pad;
 
   sprite_hit = 15;
   if (lcdc & FLAG_OBJ_ON) {
@@ -751,7 +754,7 @@ void PPU::emit_pixel(int /*tphase*/) {
 
   pipe_count--;
 
-  if (pix_discard_scx < (scx & 7)) {
+  if (pix_discard_scx < (scx_latch & 7)) {
     pix_oe = false;
     pix_out = 0;
     pix_discard_scx++;
@@ -761,7 +764,7 @@ void PPU::emit_pixel(int /*tphase*/) {
     pix_out = 0;
     pix_discard_pad++;
   }
-  else if (pix_count2 == 160) {
+  else if (pix_count2 + pix_discard_pad == 168) {
     pix_oe = false;
     pix_out = 0;
   }
@@ -872,6 +875,7 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
       if (!(lcdc & FLAG_WIN_ON)) {
         in_window_old = false;
         in_window_new = false;
+        in_window_new_early = false;
       }
       break;
     };

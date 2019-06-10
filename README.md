@@ -1,6 +1,6 @@
 # MetroBoy is a Game Boy simulation designed to be mechanically translated into Verilog
 
-(Note - Interrupt timing is currently more broken than intended, but it should be able to run Prehistorik Man now)
+As of build 1.02 all Blargg, Mooneye, and Wpol test suites should be passing.
 
 ![MetroBoy screenshot](MetroBoy.png "MetroBoy screenshot")
 
@@ -68,7 +68,7 @@ Right column
 - Why is MetroBoy so slow?
   - MetroBoy simulates a Game Boy the hard way - in vsync mode it's simulating 4213440 full clock ticks per second. In fast mode it runs at about 10M clock ticks per second, or around 300 cycles per tick - not bad considering that the simulation does terrible things to branch predictors.
 - How accurate is MetroBoy's simulation?
-  - Very, very accurate. It should run any ROM you throw at it, though there are a few corner cases regarding sprite vs. scroll timing that fail in Wilbert Pol's test suite.
+  - Very, very accurate. It passes all the test suites I've thrown at it, with the exception of a few PPU rendering issues in the Mealybug test suite.
 - How are you drawing the UI?
   - Raw pixel writes to a SDL surface.
 
@@ -76,8 +76,6 @@ Right column
 
 ## Known Issues
 
-- The code is a mix of DMG (original Game Boy) and AGS (Game Boy Advance SP) configurations and will fail a few compatibility tests due to the inconsistency.
 - The sound hardware implementation is buggy
 - Save game support isn't implemented yet
 - Cross-platform support via CMake is coming. Nothing in MetroBoy is OS-specific, I just haven't set it up yet.
-- The window overlay is off by 8 pixels. :/

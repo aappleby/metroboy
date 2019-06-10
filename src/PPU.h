@@ -151,6 +151,7 @@ struct PPU {
   bool in_window_old;
   bool in_window_new;
   bool in_window_new_early;
+  bool in_window_late;
 
   //----------
   // Pixel pipe

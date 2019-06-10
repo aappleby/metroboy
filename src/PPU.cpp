@@ -447,11 +447,19 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   }
 
   // check window hit
-  in_window_new = in_window_new_early;
+  in_window_new = in_window_new_early | in_window_late;
   in_window_new_early =
     (lcdc & FLAG_WIN_ON) &&
     (line >= wy) &&
     (pix_count2 + pix_discard_pad == wx);
+
+  in_window_late = false;
+  if (cpu_write && cpu_addr == 0xFF40 && (cpu_data & FLAG_WIN_ON)) {
+    in_window_late =
+      (lcdc & FLAG_WIN_ON) &&
+      (line >= wy) &&
+      (pix_count2 + pix_discard_pad == wx + 1);
+  }
 
   if (!in_window_old && in_window_new) {
     win_y_latch = win_y_counter;
@@ -840,8 +848,8 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
     case ADDR_LCDC: {
-      lcdc  = lcdc & 0b10000111;
-      lcdc |= data & 0b01111000;
+      lcdc  = lcdc & 0b10000011;
+      lcdc |= data & 0b01111100;
 
       // dmg glitch hack
       if (pix_count2 == 0) {
@@ -876,8 +884,8 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
     case ADDR_LCDC: {
       // obj_en _must_ be late
       // tile_sel should probably be early?
-      lcdc  = lcdc & 0b01111000;
-      lcdc |= data & 0b10000111;
+      lcdc  = lcdc & 0b01111100;
+      lcdc |= data & 0b10000011;
 
       if (!(lcdc & FLAG_WIN_ON)) {
         in_window_old = false;

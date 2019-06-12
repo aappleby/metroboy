@@ -265,6 +265,15 @@
     <None Include="microtests\vblank_int_inc_sled.s" />
     <None Include="microtests\vblank_int_nops_a.s" />
     <None Include="microtests\vblank_int_nops_b.s" />
+    <None Include="verilog\CPU.v" />
+    <None Include="verilog\PPU.v" />
+    <CustomBuild Include="verilog\SPU.v">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"wsl" --exec /usr/local/bin/verilator</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj_dir/VSPU.cpp, obj_dir/VSPU.h</Outputs>
+    </CustomBuild>
+    <None Include="verilog\VRAM.v" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

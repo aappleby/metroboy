@@ -113,6 +113,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
   in_window_old = false;
   in_window_new = false;
   in_window_new_early = false;
+  window_retrigger_old = false;
+  window_retrigger_new = false;
 
   tile_map = 0;
   tile_lo = 0;
@@ -369,6 +371,8 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     in_window_old = false;
     in_window_new = false;
     in_window_new_early = false;
+    window_retrigger_old = false;
+    window_retrigger_new = false;
     pipe_count = 0;
     sprite_index = -1;
     sprite_count = 0;
@@ -405,12 +409,23 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     int sy = spriteY - 16;
     int sx = spriteX;
 
-    ubit4_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
-    if ((sx < 168) && (sy <= line) && (line <= sy + sprite_height)) {
-      sprite_x[sprite_count] = spriteX;
-      sprite_y[sprite_count] = spriteY;
-      sprite_i[sprite_count] = (uint8_t)si;
-      sprite_count++;
+    if (lcdc & FLAG_TALL_SPRITES) {
+      ubit4_t sprite_height = 15;
+      if ((sx < 168) && (sy <= line) && (line <= sy + sprite_height)) {
+        sprite_x[sprite_count] = spriteX;
+        sprite_y[sprite_count] = spriteY;
+        sprite_i[sprite_count] = (uint8_t)si;
+        sprite_count++;
+      }
+    }
+    else {
+      ubit4_t sprite_height = 7;
+      if ((sx < 168) && (sy <= line) && (line <= sy + sprite_height)) {
+        sprite_x[sprite_count] = spriteX;
+        sprite_y[sprite_count] = spriteY;
+        sprite_i[sprite_count] = (uint8_t)si;
+        sprite_count++;
+      }
     }
   }
 
@@ -446,6 +461,9 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     scx_latch = scx;
   }
 
+  window_retrigger_old = window_retrigger_new;
+  window_retrigger_new = in_window_old && in_window_new_early;
+
   // check window hit
   in_window_new = in_window_new_early | in_window_late;
   in_window_new_early =
@@ -476,6 +494,25 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     bg_pix_hi = 0;
     bg_pal_lo = 0;
     bg_pal_hi = 0;
+  }
+
+  if (!window_retrigger_old && window_retrigger_new) {
+    //win_y_latch = win_y_counter;
+    //win_y_counter++;
+    //map_x = 0;
+
+    //fetch_state = FETCH_IDLE;
+    //fetch_delay = false;
+    //if (in_window_new_early) {
+    //pipe_count++;
+    //}
+    //tile_latched = false;
+    //vram_addr = 0;
+
+    //bg_pix_lo = 0;
+    //bg_pix_hi = 0;
+    //bg_pal_lo = 0;
+    //bg_pal_hi = 0;
   }
 
   in_window_old |= in_window_new;
@@ -703,11 +740,14 @@ uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map) {
   return pack_tile_addr(base, map, wy_counter & 7);
 }
 
-uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags) {
-  if (lcdc & FLAG_TALL_SPRITES) map &= 0xFE;
-  ubit4_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
+uint16_t sprite_base_address(uint8_t /*lcdc*/, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags) {
   uint8_t sprite_dy = line + 16 - sprite_y;
-  if (flags & SPRITE_FLIP_Y) sprite_dy ^= sprite_height;
+  if (flags & SPRITE_FLIP_Y) {
+    //if (lcdc & FLAG_TALL_SPRITES) map &= 0xFE;
+    //ubit4_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
+    ubit4_t sprite_height = 7;
+    sprite_dy ^= sprite_height;
+  }
 
   return pack_tile_addr(ADDR_TILE0, map, sprite_dy);
 }
@@ -891,6 +931,8 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
         in_window_old = false;
         in_window_new = false;
         in_window_new_early = false;
+        window_retrigger_old = false;
+        window_retrigger_new = false;
       }
       break;
     };
@@ -995,6 +1037,10 @@ void PPU::dump(std::string& out) {
 
   sprintf(out, "%s\n", in_window_old ? "in_window_old" : "");
   sprintf(out, "%s\n", in_window_new ? "in_window_new" : "");
+  sprintf(out, "%s\n", in_window_new_early ? "in_window_new_early" : "");
+  sprintf(out, "%s\n", in_window_late ? "in_window_late" : "");
+  sprintf(out, "%s\n", window_retrigger_old ? "window_retrigger_old" : "");
+  sprintf(out, "%s\n", window_retrigger_new ? "window_retrigger_new" : "");
   sprintf(out, "map x   %d\n", map_x);
   sprintf(out, "map y   %d\n", map_y);
 

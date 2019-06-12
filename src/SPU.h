@@ -55,7 +55,6 @@ private:
   bool sound_on;
   ubit4_t volume_r;
   ubit4_t volume_l;
-  ubit4_t s1l, s1r, s2l, s2r, s3l, s3r, s4l, s4r;
 
   //----------
 
@@ -69,21 +68,13 @@ private:
   ubit4_t s3_volume;
   ubit4_t s4_volume;
 
-  ubit3_t s1_sweep_period;
-  bool    s1_sweep_dir;
-  ubit3_t s1_sweep_shift;
   ubit3_t s1_sweep_clock;
-  ubit11_t s1_freq;
+  ubit11_t s1_sweep_freq;
 
-  bool s1_length_enable;
-  bool s2_length_enable;
-  bool s3_length_enable;
-  bool s4_length_enable;
-
-  ubit7_t s1_length;
-  ubit7_t s2_length;
-  ubit9_t s3_length;
-  ubit7_t s4_length;
+  ubit7_t s1_duration;
+  ubit7_t s2_duration;
+  ubit9_t s3_duration;
+  ubit7_t s4_duration;
 
   ubit4_t s1_env_volume;
   ubit4_t s2_env_volume;
@@ -111,12 +102,7 @@ private:
   ubit5_t s3_phase;
   ubit15_t s4_lfsr;
 
-  ubit11_t s2_freq;
-  ubit11_t s3_freq;
-
-  ubit3_t s1_duty;
   ubit3_t s2_duty;
-  bool s3_power;
   ubit3_t s3_volume_shift;
   ubit4_t s4_phase_period;
   ubit4_t s4_clock_shift;

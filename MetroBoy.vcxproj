@@ -268,7 +268,7 @@
     <None Include="verilog\CPU.v" />
     <None Include="verilog\PPU.v" />
     <CustomBuild Include="verilog\SPU.v">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"wsl" --exec /usr/local/bin/verilator</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj_dir/VSPU.cpp, obj_dir/VSPU.h</Outputs>

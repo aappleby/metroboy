@@ -266,11 +266,6 @@ begin
   ubit9_t out_l_ = out_l;
   ubit4_t s1_out_, s2_out_, s3_out_, s4_out_;
 
-  bool s1_enable_ = s1_enable;
-  bool s2_enable_ = s2_enable;
-  bool s3_enable_ = s3_enable;
-  bool s4_enable_ = s4_enable;
-
   ubit4_t s1_volume_ = s1_volume;
   ubit4_t s2_volume_ = s2_volume;
   ubit4_t s4_volume_ = s4_volume;
@@ -324,7 +319,7 @@ begin
         ubit11_t new_freq = s1_freq_ + (s1_sweep_dir ? -delta : +delta);
         s1_sweep_clock_ = s1_sweep_period;
         if (new_freq > 2047) begin
-          s1_enable_ = false;
+          s1_enable <= false;
         end
         else begin
           s1_freq_ = new_freq;
@@ -336,10 +331,10 @@ begin
   //----------
   // length
 
-  if (s1_trigger_) s1_enable_ = true;
-  if (s2_trigger_) s2_enable_ = true;
-  if (s3_trigger_) s3_enable_ = true;
-  if (s4_trigger_) s4_enable_ = true;
+  if (s1_trigger_) s1_enable <= true;
+  if (s2_trigger_) s2_enable <= true;
+  if (s3_trigger_) s3_enable <= true;
+  if (s4_trigger_) s4_enable <= true;
 
   length_tick = (spu_clock & 14'b00111111111111) == 14'b00000000000000;
   if (length_tick) begin
@@ -348,10 +343,10 @@ begin
     if (s3_length_enable && s3_length_) s3_length_ = s3_length_ - 1;
     if (s4_length_enable && s4_length_) s4_length_ = s4_length_ - 1;
 
-    if (s1_length_ == 0) s1_enable_ = false;
-    if (s2_length_ == 0) s2_enable_ = false;
-    if (s3_length_ == 0) s3_enable_ = false;
-    if (s4_length_ == 0) s4_enable_ = false;
+    if (s1_length_ == 0) s1_enable <= false;
+    if (s2_length_ == 0) s2_enable <= false;
+    if (s3_length_ == 0) s3_enable <= false;
+    if (s4_length_ == 0) s4_enable <= false;
 
   end
 
@@ -508,11 +503,6 @@ begin
   if (read) bus_read(addr);
 
   spu_clock <= spu_clock_;
-
-  s1_enable <= s1_enable_;
-  s2_enable <= s2_enable_;
-  s3_enable <= s3_enable_;
-  s4_enable <= s4_enable_;
 
   s1_volume <= s1_volume_;
   s2_volume <= s2_volume_;
@@ -861,7 +851,7 @@ endtask
 
 //-----------------------------------------------------------------------------
 
-always @* tick();
+always_comb tick();
 always @(posedge clk) begin
   if (rst) reset();
   else tock();

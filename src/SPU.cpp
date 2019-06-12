@@ -14,7 +14,8 @@ void SPU::reset() {
   bus_out = 0;
   bus_oe = 0;
 
-  bus_write(0xFF10, 0x80); // nr10
+  nr10 = 0x80;
+
   bus_write(0xFF11, 0xBF); // nr11
   bus_write(0xFF12, 0xF3); // nr12
   bus_write(0xFF13, 0xFF); // nr13
@@ -74,9 +75,9 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
+void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) {
   if (read)  bus_read(addr);
-  if (write) bus_write(addr, data);
+  if (write) bus_write(addr, data2);
   if (tphase != 2) return;
 
   //----------
@@ -85,54 +86,30 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   ubit14_t clock_flip = (~spu_clock) & spu_clock_;
   spu_clock = spu_clock_;
 
-  ubit9_t _out_r = out_r;
-  ubit9_t _out_l = out_l;
-  ubit4_t s1_out_, s2_out_, s3_out_, s4_out_;
-
-  ubit4_t s1_volume_ = s1_volume;
-  ubit4_t s2_volume_ = s2_volume;
-  ubit4_t s4_volume_ = s4_volume;
-
-  ubit3_t s1_sweep_clock_ = s1_sweep_clock;
-  ubit11_t s1_freq_ = s1_freq;
-
-  ubit7_t s1_length_ = s1_length;
-  ubit7_t s2_length_ = s2_length;
-  ubit9_t s3_length_ = s3_length;
-  ubit7_t s4_length_ = s4_length;
-
-  ubit3_t s1_env_clock_ = s1_env_clock;
-  ubit3_t s2_env_clock_ = s2_env_clock;
-  ubit3_t s4_env_clock_ = s4_env_clock;
-
-  ubit11_t s1_phase_clock_ = s1_phase_clock;
-  ubit11_t s2_phase_clock_ = s2_phase_clock;
-  ubit11_t s3_phase_clock_ = s3_phase_clock;
-  ubit11_t s4_phase_clock_ = s4_phase_clock;
-
-  ubit3_t s1_phase_ = s1_phase;
-  ubit3_t s2_phase_ = s2_phase;
-  ubit5_t s3_phase_ = s3_phase;
-  ubit15_t s4_lfsr_ = s4_lfsr;
-
   //----------
   // sweep
 
-  bool sweep_tick = (spu_clock & 0b01111111111111) == 0b01000000000000;
+  {
+    bool sweep_tick = (spu_clock & 0b01111111111111) == 0b01000000000000;
+    const ubit3_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
+    const ubit3_t s1_sweep_shift = (nr10 & 0b00000111) >> 0;
+    const ubit11_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
 
-  if (sweep_tick && s1_sweep_period && s1_sweep_shift) {
-    if (s1_sweep_clock_) {
-      s1_sweep_clock_ = s1_sweep_clock_ - 1;
-    }
-    else {
-      ubit11_t delta = s1_freq_ >> s1_sweep_shift;
-      ubit11_t new_freq = s1_freq_ + (s1_sweep_dir ? -delta : +delta);
-      s1_sweep_clock_ = s1_sweep_period;
-      if (new_freq > 2047) {
-        s1_enable = false;
+    if (sweep_tick && s1_sweep_period && s1_sweep_shift) {
+      if (s1_sweep_clock) {
+        s1_sweep_clock = s1_sweep_clock - 1;
       }
       else {
-        s1_freq_ = new_freq;
+        const bool    s1_sweep_dir = (nr10 & 0b00001000) >> 3;
+        ubit11_t delta = s1_sweep_freq >> s1_sweep_shift;
+        ubit11_t new_freq = s1_sweep_freq + (s1_sweep_dir ? -delta : +delta);
+        s1_sweep_clock = s1_sweep_period;
+        if (new_freq > 2047) {
+          s1_enable = false;
+        }
+        else {
+          s1_sweep_freq = new_freq;
+        }
       }
     }
   }
@@ -140,175 +117,170 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   //----------
   // length
 
-  bool length_tick = (spu_clock & 0b00111111111111) == 0b00000000000000;
-  if (length_tick) {
-    if (s1_length_enable && s1_length_) s1_length_ = s1_length_ - 1;
-    if (s2_length_enable && s2_length_) s2_length_ = s2_length_ - 1;
-    if (s3_length_enable && s3_length_) s3_length_ = s3_length_ - 1;
-    if (s4_length_enable && s4_length_) s4_length_ = s4_length_ - 1;
+  {
+    bool length_tick = (spu_clock & 0b00111111111111) == 0b00000000000000;
+    if (length_tick) {
+      const bool s1_length_enable = (nr14 & 0b01000000) >> 6;
+      const bool s2_length_enable = (nr24 & 0b01000000) >> 6;
+      const bool s3_length_enable = (nr34 & 0b01000000) >> 6;
+      const bool s4_length_enable = (nr44 & 0b01000000) >> 6;
 
-    if (s1_length_enable && s1_length_ == 0) s1_enable = false;
-    if (s2_length_enable && s2_length_ == 0) s2_enable = false;
-    if (s3_length_enable && s3_length_ == 0) s3_enable = false;
-    if (s4_length_enable && s4_length_ == 0) s4_enable = false;
+      if (s1_length_enable && s1_duration) s1_duration = s1_duration - 1;
+      if (s2_length_enable && s2_duration) s2_duration = s2_duration - 1;
+      if (s3_length_enable && s3_duration) s3_duration = s3_duration - 1;
+      if (s4_length_enable && s4_duration) s4_duration = s4_duration - 1;
+
+      if (s1_length_enable && s1_duration == 0) s1_enable = false;
+      if (s2_length_enable && s2_duration == 0) s2_enable = false;
+      if (s3_length_enable && s3_duration == 0) s3_enable = false;
+      if (s4_length_enable && s4_duration == 0) s4_enable = false;
+    }
   }
 
   //----------
   // env
 
-  bool env_tick = (spu_clock & 0b11111111111111) == 0b11100000000000;
+  {
+    bool env_tick = (spu_clock & 0b11111111111111) == 0b11100000000000;
 
-  if (env_tick && s1_env_period) {
-    if (s1_env_clock_) {
-      s1_env_clock_--;
+    if (env_tick && s1_env_period) {
+      if (s1_env_clock) {
+        s1_env_clock--;
+      }
+      else {
+        s1_env_clock = s1_env_period;
+        if (s1_volume < 15 && s1_env_dir) s1_volume++;
+        if (s1_volume > 0 && !s1_env_dir) s1_volume--;
+      }
     }
-    else {
-      s1_env_clock_ = s1_env_period;
-      if (s1_volume_ < 15 && s1_env_dir) s1_volume_++;
-      if (s1_volume_ > 0 && !s1_env_dir) s1_volume_--;
-    }
-  }
 
-  if (env_tick && s2_env_period) {
-    if (s2_env_clock_) {
-      s2_env_clock_--;
+    if (env_tick && s2_env_period) {
+      if (s2_env_clock) {
+        s2_env_clock--;
+      }
+      else {
+        s2_env_clock = s2_env_period;
+        if (s2_volume < 15 && s2_env_dir) s2_volume++;
+        if (s2_volume > 0 && !s2_env_dir) s2_volume--;
+      }
     }
-    else {
-      s2_env_clock_ = s2_env_period;
-      if (s2_volume_ < 15 && s2_env_dir) s2_volume_++;
-      if (s2_volume_ > 0 && !s2_env_dir) s2_volume_--;
-    }
-  }
 
-  if (env_tick && s4_env_period) {
-    if (s4_env_clock_) {
-      s4_env_clock_--;
-    }
-    else {
-      s4_env_clock_ = s4_env_period;
-      if (s4_volume_ < 15 && s4_env_dir) s4_volume_++;
-      if (s4_volume_ > 0 && !s4_env_dir) s4_volume_--;
+    if (env_tick && s4_env_period) {
+      if (s4_env_clock) {
+        s4_env_clock--;
+      }
+      else {
+        s4_env_clock = s4_env_period;
+        if (s4_volume < 15 && s4_env_dir) s4_volume++;
+        if (s4_volume > 0 && !s4_env_dir) s4_volume--;
+      }
     }
   }
 
   //----------
   // phase
 
-  if (!s1_phase_clock_) {
-    s1_phase_clock_ = 2047 ^ s1_freq;
-    s1_phase_ = (s1_phase_ + 1) & 7;
-  }
-  else {
-    s1_phase_clock_--;
-  }
-
-  if (!s2_phase_clock_) {
-    s2_phase_clock_ = 2047 ^ s2_freq;
-    s2_phase_ = (s2_phase_ + 1) & 7;
-  }
-  else {
-    s2_phase_clock_--;
-  }
-
-
-  // we run this twice because this is ticking at 1 mhz
-  if (!s3_phase_clock_) {
-    s3_phase_clock_ = 2047 ^ s3_freq;
-    s3_phase_ = (s3_phase_ + 1) & 31;
-  }
-  else {
-    s3_phase_clock_--;
-  }
-
-  if (!s3_phase_clock_) {
-    s3_phase_clock_ = 2047 ^ s3_freq;
-    s3_phase_ = (s3_phase_ + 1) & 31;
-  }
-  else {
-    s3_phase_clock_--;
-  }
-
-  if (!s4_phase_clock_) {
-    bool lfsr_bit;
-    s4_phase_clock_ = s4_phase_period;
-    lfsr_bit = (s4_lfsr_ ^ (s4_lfsr_ >> 1)) & 1;
-    s4_lfsr_ >>= 1;
-    s4_lfsr_ |= (lfsr_bit << 14);
-    if (s4_lfsr_mode) {
-      s4_lfsr_ &= ~(1 << 5);
-      s4_lfsr_ |= (lfsr_bit << 5);
+  {
+    if (!s1_phase_clock) {
+      s1_phase_clock = 2047 ^ s1_sweep_freq;
+      s1_phase = (s1_phase + 1) & 7;
     }
-  }
-  else {
-    s4_phase_clock_ -= (clock_flip >> s4_clock_shift) & 1;
+    else {
+      s1_phase_clock--;
+    }
+
+    if (!s2_phase_clock) {
+      const ubit11_t s2_freq = ((nr24 << 8) | nr23) & 0x07FF;
+      s2_phase_clock = 2047 ^ s2_freq;
+      s2_phase = (s2_phase + 1) & 7;
+    }
+    else {
+      s2_phase_clock--;
+    }
+
+    // we run this twice because this is ticking at 1 mhz
+    if (!s3_phase_clock) {
+      const ubit11_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
+      s3_phase_clock = 2047 ^ s3_freq;
+      s3_phase = (s3_phase + 1) & 31;
+    }
+    else {
+      s3_phase_clock--;
+    }
+
+    if (!s3_phase_clock) {
+      const ubit11_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
+      s3_phase_clock = 2047 ^ s3_freq;
+      s3_phase = (s3_phase + 1) & 31;
+    }
+    else {
+      s3_phase_clock--;
+    }
+
+    if (!s4_phase_clock) {
+      bool lfsr_bit;
+      s4_phase_clock = s4_phase_period;
+      lfsr_bit = (s4_lfsr ^ (s4_lfsr >> 1)) & 1;
+      s4_lfsr >>= 1;
+      s4_lfsr |= (lfsr_bit << 14);
+      if (s4_lfsr_mode) {
+        s4_lfsr &= ~(1 << 5);
+        s4_lfsr |= (lfsr_bit << 5);
+      }
+    }
+    else {
+      s4_phase_clock -= (clock_flip >> s4_clock_shift) & 1;
+    }
   }
 
   //----------
   // output
 
   if (sound_on) {
-    ubit4_t s3_sample_;
-    s3_sample_ = s3_wave[s3_phase >> 1];
-    s3_sample_ = (s3_phase & 1) ? (s3_sample_ & 0xF) : (s3_sample_ >> 4);
-    s3_sample_ >>= s3_volume_shift;
+    ubit4_t s3_sample;
+    s3_sample = s3_wave[s3_phase >> 1];
+    s3_sample = (s3_phase & 1) ? (s3_sample & 0xF) : (s3_sample >> 4);
+    s3_sample >>= s3_volume_shift;
 
-    s1_out_ = s1_enable ? (s1_phase < s1_duty ? s1_volume : 0) : 0;
-    s2_out_ = s2_enable ? (s2_phase < s2_duty ? s2_volume : 0) : 0;
-    s3_out_ = s3_enable ? (s3_power ? s3_sample_ : 0) : 0;
-    s4_out_ = s4_enable ? (s4_lfsr & 1 ? s4_volume : 0) : 0;
+    ubit3_t s1_duty = 0;
+    switch ((nr11 & 0b11000000) >> 6) {
+    case 0: s1_duty = 1; break;
+    case 1: s1_duty = 2; break;
+    case 2: s1_duty = 4; break;
+    case 3: s1_duty = 6; break;
+    }
 
-    _out_r = (s1_out_ & s1r) + (s2_out_ & s2r) + (s3_out_ & s3r) + (s4_out_ & s4r);
-    _out_l = (s1_out_ & s1l) + (s2_out_ & s2l) + (s3_out_ & s3l) + (s4_out_ & s4l);
+    const bool s3_power = (nr30 & 0b10000000);
 
-    _out_r *= volume_r;
-    _out_l *= volume_l;
+    s1_out = s1_enable ? (s1_phase < s1_duty ? s1_volume : 0) : 0;
+    s2_out = s2_enable ? (s2_phase < s2_duty ? s2_volume : 0) : 0;
+    s3_out = s3_enable ? (s3_power ? s3_sample : 0) : 0;
+    s4_out = s4_enable ? (s4_lfsr & 1 ? s4_volume : 0) : 0;
+
+    const bool s1r = (nr51 & 0b00000001);
+    const bool s2r = (nr51 & 0b00000010);
+    const bool s3r = (nr51 & 0b00000100);
+    const bool s4r = (nr51 & 0b00001000);
+    const bool s1l = (nr51 & 0b00010000);
+    const bool s2l = (nr51 & 0b00100000);
+    const bool s3l = (nr51 & 0b01000000);
+    const bool s4l = (nr51 & 0b10000000);
+
+    out_r = (s1_out * s1r) + (s2_out * s2r) + (s3_out * s3r) + (s4_out * s4r);
+    out_l = (s1_out * s1l) + (s2_out * s2l) + (s3_out * s3l) + (s4_out * s4l);
+
+    out_r *= volume_r;
+    out_l *= volume_l;
   }
   else {
-    s1_out_ = 0;
-    s2_out_ = 0;
-    s3_out_ = 0;
-    s4_out_ = 0;
+    s1_out = 0;
+    s2_out = 0;
+    s3_out = 0;
+    s4_out = 0;
 
-    _out_r = 0;
-    _out_l = 0;
+    out_r = 0;
+    out_l = 0;
   }
-
-  //----------
-  // commit
-
-  s1_volume = s1_volume_;
-  s2_volume = s2_volume_;
-  s4_volume = s4_volume_;
-
-  s1_sweep_clock = s1_sweep_clock_;
-  s1_freq = s1_freq_;
-
-  s1_length = s1_length_;
-  s2_length = s2_length_;
-  s3_length = s3_length_;
-  s4_length = s4_length_;
-
-  s1_env_clock = s1_env_clock_;
-  s2_env_clock = s2_env_clock_;
-  s4_env_clock = s4_env_clock_;
-
-  s1_phase_clock = s1_phase_clock_;
-  s2_phase_clock = s2_phase_clock_;
-  s3_phase_clock = s3_phase_clock_;
-  s4_phase_clock = s4_phase_clock_;
-
-  s1_phase = s1_phase_;
-  s2_phase = s2_phase_;
-  s3_phase = s3_phase_;
-  s4_lfsr = s4_lfsr_;
-
-  s1_out = s1_out_;
-  s2_out = s2_out_;
-  s3_out = s3_out_;
-  s4_out = s4_out_;
-
-  out_r = _out_r;
-  out_l = _out_l;
 }
 
 //-----------------------------------------------------------------------------
@@ -369,75 +341,28 @@ void SPU::bus_read(ubit16_t addr) {
 void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   switch (addr) {
 
-  //----------
-  // nrx0 - sweep and wave power
-
-  case 0xFF10: {
-    nr10 = data | 0b10000000;
-    s1_sweep_period = (ubit3_t)((data >> 4) & 0b111);
-    s1_sweep_dir    = (ubit1_t)((data >> 3) & 0b001);
-    s1_sweep_shift  = (ubit3_t)((data >> 0) & 0b111);
-    break;
-  }
-  case 0xFF1A: {
-    nr30 = data;
-    s3_power = (data >> 7) & 1;
-    break;
-  }
-
-  //----------
-  // nrx1 - duty and length
-
-  case 0xFF11: {
-    switch((data & 0b11000000) >> 6) {
-    case 0: s1_duty = 1; break;
-    case 1: s1_duty = 2; break;
-    case 2: s1_duty = 4; break;
-    case 3: s1_duty = 6; break;
-    }
-
-    s1_length = 63 ^ (ubit7_t)(data & 0b00111111);
-    if (s1_length == 0) s1_length = 64;
-
-    nr11 = data;
-    break;
-  }
+  case 0xFF10: nr10 = data | 0b10000000; break;
+  case 0xFF11: nr11 = data; break;
+  case 0xFF1A: nr30 = data; break;
 
   case 0xFF16: {
-    switch ((data & 0b11000000) >> 6) {
+    nr21 = data;
+
+    switch ((nr21 & 0b11000000) >> 6) {
     case 0: s2_duty = 1; break;
     case 1: s2_duty = 2; break;
     case 2: s2_duty = 4; break;
     case 3: s2_duty = 6; break;
     }
 
-    s2_length = 63 ^ (data & 0b00111111);
-    if (s2_length == 0) s2_length = 64;
-
-    nr21 = data;
     break;
   }
 
-  case 0xFF1B: {
-    if (data == 0) {
-      s3_length = 256;
-    }
-    else {
-      s3_length = 255 ^ data;
-    }
-
-    nr31 = data;
-    break;
-  }
+  case 0xFF1B: nr31 = data;  break;
 
   case 0xFF20: {
-    if ((data & 0b00111111) == 0) {
-      s4_length = 64;
-    } else {
-      s4_length = 63 ^ (data & 0b00111111);
-    }
-        
     nr41 = data;
+
     break;
   }
 
@@ -490,71 +415,32 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   //----------
   // nrx3 - frequency lsb, lfsr clock/mode/shift
 
-  case 0xFF13: {
-    s1_freq = (s1_freq & 0xFF00) | data;
-    nr13 = data;
-    break;
-  }
-
-  case 0xFF18: {
-    s2_freq = (s2_freq & 0xFF00) | data;
-    nr23 = data;
-    break;
-  }
-
-  case 0xFF1D: {
-    s3_freq = (s2_freq & 0xFF00) | data;
-    nr33 = data;
-    break;
-  }
+  case 0xFF13: nr13 = data; break;
+  case 0xFF18: nr23 = data; break;
+  case 0xFF1D: nr33 = data; break;
 
   case 0xFF22: {
+    nr43 = data;
+
     // period is actually [1, 2, 4, 6, 8, 10, 12, 14]
-    if (data & 0b00000111) {
-      s4_phase_period = (data & 0b00000111) * 2;
+    if (nr43 & 0b00000111) {
+      s4_phase_period = (nr43 & 0b00000111) * 2;
     } else {
       s4_phase_period = 1;
     }
-    s4_lfsr_mode = (data & 0b00001000) >> 3;
-    s4_clock_shift = (data & 0b11110000) >> 4;
+    s4_lfsr_mode = (nr43 & 0b00001000) >> 3;
+    s4_clock_shift = (nr43 & 0b11110000) >> 4;
 
-    nr43 = data;
     break;
   }
 
   //----------
   // nrx4 - frequency msb, length_enable, trigger
 
-  case 0xFF14: {
-    s1_freq = (s1_freq & 0x00FF) | ((data & 0b00000111) << 8);
-    s1_length_enable = (data & 0b01000000) >> 6;
-
-    nr14 = data;
-    break;
-  }
-
-  case 0xFF19: {
-    s2_freq = (s2_freq & 0x00FF) | ((data & 0b00000111) << 8);
-    s2_length_enable = (data & 0b01000000) >> 6;
-
-    nr24 = data;
-    break;
-  }
-
-  case 0xFF1E: {
-    s3_freq = (s3_freq & 0x00FF) | ((data & 0b00000111) << 8);
-    s3_length_enable = (data & 0b01000000) >> 6;
-
-    nr34 = data;
-    break;
-  }
-
-  case 0xFF23: {
-    s4_length_enable = (data & 0b01000000) >> 6;
-
-    nr44 = data;
-    break;
-  }
+  case 0xFF14: nr14 = data; break;
+  case 0xFF19: nr24 = data; break;
+  case 0xFF1E: nr34 = data; break;
+  case 0xFF23: nr44 = data; break;
 
   //----------
   // global spu stuff
@@ -567,14 +453,6 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   }
   case 0xFF25: {
     nr51 = data;
-    s1r = (data & 0b00000001) ? 0xFF : 0x00;
-    s2r = (data & 0b00000010) ? 0xFF : 0x00;
-    s3r = (data & 0b00000100) ? 0xFF : 0x00;
-    s4r = (data & 0b00001000) ? 0xFF : 0x00;
-    s1l = (data & 0b00010000) ? 0xFF : 0x00;
-    s2l = (data & 0b00100000) ? 0xFF : 0x00;
-    s3l = (data & 0b01000000) ? 0xFF : 0x00;
-    s4l = (data & 0b10000000) ? 0xFF : 0x00;
     break;
   }
   case 0xFF26: {
@@ -599,9 +477,16 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   bool s3_trigger_ = addr == 0xFF1E && (data >> 7);
   bool s4_trigger_ = addr == 0xFF23 && (data >> 7);
 
+
   if (s1_trigger_) {
+    const ubit7_t s1_length = (nr11 & 0b00111111) ? 63 ^ (nr11 & 0b00111111) : 64;
+    const ubit3_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
+    const ubit11_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
+
     s1_enable = true;
+    s1_duration = s1_length;
     s1_sweep_clock = s1_sweep_period;
+    s1_sweep_freq = s1_freq;
     s1_volume = s1_env_volume;
     s1_env_clock = s1_env_period;
     s1_phase_clock = 2047 ^ s1_freq;
@@ -609,7 +494,11 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   }
 
   if (s2_trigger_) {
+    const ubit7_t s2_length = (nr21 & 0b00111111) ? 63 ^ (nr21 & 0b00111111) : 64;
+    const ubit11_t s2_freq = ((nr24 << 8) | nr23) & 0x07FF;
+
     s2_enable = true;
+    s2_duration = s2_length;
     s2_volume = s2_env_volume;
     s2_env_clock = s2_env_period;
     s2_phase_clock = 2047 ^ s2_freq;
@@ -617,13 +506,20 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   }
 
   if (s3_trigger_) {
+    const ubit9_t s3_length = (nr31 & 0b11111111) ? 255 ^ (nr31 & 0b11111111) : 256;
+    const ubit11_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
+
     s3_enable = true;
+    s3_duration = s3_length;
     s3_phase_clock = 2047 ^ s3_freq;
     s3_phase = 0;
   }
 
   if (s4_trigger_) {
+    const ubit7_t s4_length = (nr41 & 0b00111111) ? 63 ^ (nr41 & 0b00111111) : 64;
+
     s4_enable = true;
+    s4_duration = s4_length;
     s4_volume = s4_env_volume;
     s4_env_clock = s4_env_period;
     s4_phase_clock = s4_phase_period;

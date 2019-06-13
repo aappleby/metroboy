@@ -8,7 +8,7 @@ struct SPU {
 
   void tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write);
 
-  char* dump(char* buf);
+  void  dump(std::string& out);
 
   //----------
   // output registers

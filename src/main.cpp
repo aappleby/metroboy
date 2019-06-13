@@ -49,9 +49,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
+  //load("gejmboj");
   //load("LinksAwakening");
-  //load("Prehistorik Man (U)");
+  load("Prehistorik Man (U)");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
@@ -197,6 +197,7 @@ void MetroBoyApp::loop() {
     metroboy.run_fast(buttons, (int)fast_cycles);
   }
   else if (runmode == RUN_VSYNC) {
+    printf("--------\n");
     metroboy.run_vsync(buttons);
   }
   else if (runmode == STEP_CYCLE) {
@@ -252,6 +253,10 @@ void MetroBoyApp::loop() {
 
   gameboy.dump_disasm(text_buf);
   render_text(140, 4, text_buf.c_str());
+  text_buf.clear();
+
+  gameboy.spu.dump(text_buf);
+  render_text(280, 4, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------

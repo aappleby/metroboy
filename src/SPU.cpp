@@ -40,7 +40,7 @@ void SPU::reset() {
   nr51 = 0xF3;
   nr52 = 0xF1;
 
-  s1_enable = true;
+  s1_enable = false;
   s2_enable = false;
   s3_enable = false;
   s4_enable = false;
@@ -204,7 +204,16 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
     const ubit4_t s4_clock_shift = (nr43 & 0b11110000) >> 4;
 
     if (!s1_phase_clock) {
-      s1_phase_clock = 2047 ^ s1_sweep_freq;
+      const ubit3_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
+      const ubit11_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
+
+      if (s1_sweep_period) {
+        s1_phase_clock = 2047 ^ s1_sweep_freq;
+      }
+      else {
+        s1_phase_clock = 2047 ^ s1_freq;
+      }
+
       s1_phase = (s1_phase + 1) & 7;
     }
     else {
@@ -315,31 +324,29 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
 void SPU::bus_read(ubit16_t addr) {
   bus_oe = 1;
   switch (addr) {
-  case 0xFF10: bus_out = nr10 | 0x80; break;
-  case 0xFF11: bus_out = nr11 | 0x3F; break;
-  case 0xFF12: bus_out = nr12 | 0x00; break;
-  case 0xFF13: bus_out = nr13 | 0xFF; break;
-  case 0xFF14: bus_out = nr14 | 0xBF; break;
-  case 0xFF15: bus_out = nr20 | 0xFF; break;
-  case 0xFF16: bus_out = nr21 | 0x3F; break;
-  case 0xFF17: bus_out = nr22 | 0x00; break;
-  case 0xFF18: bus_out = nr23 | 0xFF; break;
-  case 0xFF19: bus_out = nr24 | 0xBF; break;
-  case 0xFF1A: bus_out = nr30 | 0x7F; break;
-  case 0xFF1B: bus_out = nr31 | 0xFF; break;
-  case 0xFF1C: bus_out = nr32 | 0x9F; break;
-  case 0xFF1D: bus_out = nr33 | 0xFF; break;
-  case 0xFF1E: bus_out = nr34 | 0xBF; break;
-  case 0xFF1F: bus_out = nr40 | 0xFF; break;
-  case 0xFF20: bus_out = nr41 | 0xFF; break;
-  case 0xFF21: bus_out = nr42 | 0x00; break;
-  case 0xFF22: bus_out = nr43 | 0x00; break;
-  case 0xFF23: bus_out = nr44 | 0xBF; break;
-  case 0xFF24: bus_out = nr50 | 0x00; break;
-  case 0xFF25: bus_out = nr51 | 0x00; break;
+  case 0xFF10: bus_out = nr10; break;
+  case 0xFF11: bus_out = nr11; break;
+  case 0xFF12: bus_out = nr12; break;
+  case 0xFF13: bus_out = nr13; break;
+  case 0xFF14: bus_out = nr14; break;
+  case 0xFF16: bus_out = nr21; break;
+  case 0xFF17: bus_out = nr22; break;
+  case 0xFF18: bus_out = nr23; break;
+  case 0xFF19: bus_out = nr24; break;
+  case 0xFF1A: bus_out = nr30; break;
+  case 0xFF1B: bus_out = nr31; break;
+  case 0xFF1C: bus_out = nr32; break;
+  case 0xFF1D: bus_out = nr33; break;
+  case 0xFF1E: bus_out = nr34; break;
+  case 0xFF20: bus_out = nr41; break;
+  case 0xFF21: bus_out = nr42; break;
+  case 0xFF22: bus_out = nr43; break;
+  case 0xFF23: bus_out = nr44; break;
+  case 0xFF24: bus_out = nr50; break;
+  case 0xFF25: bus_out = nr51; break;
 
   case 0xFF26: {
-    bus_out = (nr52 & 0x80) | 0x70;
+    bus_out = nr52;
     if (s1_enable) bus_out |= 0b00000001;
     if (s2_enable) bus_out |= 0b00000010;
     if (s3_enable) bus_out |= 0b00000100;
@@ -366,32 +373,53 @@ void SPU::bus_read(ubit16_t addr) {
 //-----------------------------------------------------------------------------
 
 void SPU::bus_write(ubit16_t addr, ubit8_t data) {
+  /*
+  if (addr >= 0xFF10 && addr <= 0xFF14) {
+    printf("0x%04x 0x%02x\n", addr, data);
+  }
+
+  if (addr >= 0xFF24 && addr <= 0xFF26) {
+    printf("* 0x%04x 0x%02x\n", addr, data);
+  }
+  */
+
   switch (addr) {
-  case 0xFF10: nr10 = data | 0b10000000; break;
-  case 0xFF11: nr11 = data; break;
-  case 0xFF12: nr12 = data; break;
-  case 0xFF13: nr13 = data; break;
-  case 0xFF14: nr14 = data; break;
+  case 0xFF10: nr10 = data | 0b10000000; printf("nr10 0x%02x\n", nr10); break;
+  case 0xFF11: nr11 = data | 0b00000000; printf("nr11 0x%02x\n", nr11); break;
+  case 0xFF12: nr12 = data | 0b00000000; printf("nr12 0x%02x\n", nr12); break;
+  case 0xFF13: nr13 = data | 0b00000000; printf("nr13 0x%02x\n", nr13); break;
+  case 0xFF14: nr14 = data | 0b00111000; printf("nr14 0x%02x\n", nr14); break;
 
-  case 0xFF16: nr21 = data; break;
-  case 0xFF17: nr22 = data; break;
-  case 0xFF18: nr23 = data; break;
-  case 0xFF19: nr24 = data; break;
+  case 0xFF16: nr21 = data | 0b00000000; printf("nr21 0x%02x\n", nr21); break;
+  case 0xFF17: nr22 = data | 0b00000000; printf("nr22 0x%02x\n", nr22); break;
+  case 0xFF18: nr23 = data | 0b00000000; printf("nr23 0x%02x\n", nr23); break;
+  case 0xFF19: nr24 = data | 0b00111000; printf("nr24 0x%02x\n", nr24); break;
 
-  case 0xFF1A: nr30 = data; break;
-  case 0xFF1B: nr31 = data; break;
-  case 0xFF1C: nr32 = data; break;
-  case 0xFF1D: nr33 = data; break;
-  case 0xFF1E: nr34 = data; break;
+  case 0xFF1A: nr30 = data | 0b01111111; printf("nr30 0x%02x\n", nr30); break;
+  case 0xFF1B: nr31 = data | 0b00000000; printf("nr31 0x%02x\n", nr31); break;
+  case 0xFF1C: nr32 = data | 0b10011111; printf("nr32 0x%02x\n", nr32); break;
+  case 0xFF1D: nr33 = data | 0b00000000; printf("nr33 0x%02x\n", nr33); break;
+  case 0xFF1E: nr34 = data | 0b00111000; printf("nr34 0x%02x\n", nr34); break;
 
-  case 0xFF20: nr41 = data; break;
-  case 0xFF21: nr42 = data; break;
-  case 0xFF22: nr43 = data; break;
-  case 0xFF23: nr44 = data; break;
+  case 0xFF20: nr41 = data | 0b11000000; printf("nr41 0x%02x\n", nr41); break;
+  case 0xFF21: nr42 = data | 0b00000000; printf("nr42 0x%02x\n", nr42); break;
+  case 0xFF22: nr43 = data | 0b00000000; printf("nr43 0x%02x\n", nr43); break;
+  case 0xFF23: nr44 = data | 0b00111111; printf("nr44 0x%02x\n", nr44); break;
 
-  case 0xFF24: nr50 = data; break;
-  case 0xFF25: nr51 = data; break;
-  case 0xFF26: nr52 = data; break;
+  case 0xFF24: nr50 = data | 0b00000000; printf("nr50 0x%02x\n", nr50); break;
+  case 0xFF25: nr51 = data | 0b00000000; printf("nr51 0x%02x\n", nr51); break;
+  case 0xFF26: {
+    nr52 = data | 0b01110000;
+
+    const bool sound_on = (nr52 & 0x80);
+    if (!sound_on) {
+      reset();
+    }
+
+    printf("nr52 0x%02x\n", nr52);
+
+    break;
+  }
   }
 
   //----------
@@ -408,7 +436,6 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   bool s2_trigger_ = addr == 0xFF19 && (data & 0x80);
   bool s3_trigger_ = addr == 0xFF1E && (data & 0x80);
   bool s4_trigger_ = addr == 0xFF23 && (data & 0x80);
-
 
   if (s1_trigger_) {
     const ubit3_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
@@ -445,10 +472,12 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
     const ubit9_t s3_length = (nr31 & 0b11111111) ? 255 ^ (nr31 & 0b11111111) : 256;
     const ubit11_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
 
-    s3_enable = (nr32 != 0);
-    s3_duration = s3_length;
-    s3_phase_clock = 2047 ^ s3_freq;
-    s3_phase = 0;
+    if (s3_freq) {
+      s3_enable = (nr32 != 0);
+      s3_duration = s3_length;
+      s3_phase_clock = 2047 ^ s3_freq;
+      s3_phase = 0;
+    }
   }
 
   if (s4_trigger_) {
@@ -464,21 +493,69 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
     s4_phase_clock = s4_phase_period;
     s4_lfsr = 0x7FFF;
   }
+
+  /*
+  bool s1_untrigger_ = addr == 0xFF14 && !(data & 0x80);
+  bool s2_untrigger_ = addr == 0xFF19 && !(data & 0x80);
+  bool s3_untrigger_ = addr == 0xFF1E && !(data & 0x80);
+  bool s4_untrigger_ = addr == 0xFF23 && !(data & 0x80);
+
+  if (s1_untrigger_) s1_enable = false;
+  if (s2_untrigger_) s2_enable = false;
+  if (s3_untrigger_) s3_enable = false;
+  if (s4_untrigger_) s4_enable = false;
+  */
 }
 
 //-----------------------------------------------------------------------------
 
-char* SPU::dump(char* cursor) {
-  cursor += sprintf(cursor, "nr10 %s\n", to_binary(nr10));
-  cursor += sprintf(cursor, "nr11 %s\n", to_binary(nr11));
-  cursor += sprintf(cursor, "nr12 %s\n", to_binary(nr12));
-  cursor += sprintf(cursor, "nr13 %s\n", to_binary(nr13));
-  cursor += sprintf(cursor, "nr14 %s\n", to_binary(nr14));
+void SPU::dump(std::string& out) {
+  sprintf(out, "nr10 %s\n", to_binary(nr10));
+  sprintf(out, "nr11 %s\n", to_binary(nr11));
+  sprintf(out, "nr12 %s\n", to_binary(nr12));
+  sprintf(out, "nr13 %s\n", to_binary(nr13));
+  sprintf(out, "nr14 %s\n", to_binary(nr14));
+  sprintf(out, "\n");
+
+  sprintf(out, "nr20 %s\n", to_binary(nr20));
+  sprintf(out, "nr21 %s\n", to_binary(nr21));
+  sprintf(out, "nr22 %s\n", to_binary(nr22));
+  sprintf(out, "nr23 %s\n", to_binary(nr23));
+  sprintf(out, "nr24 %s\n", to_binary(nr24));
+  sprintf(out, "\n");
+
+  sprintf(out, "nr30 %s\n", to_binary(nr30));
+  sprintf(out, "nr31 %s\n", to_binary(nr31));
+  sprintf(out, "nr32 %s\n", to_binary(nr32));
+  sprintf(out, "nr33 %s\n", to_binary(nr33));
+  sprintf(out, "nr34 %s\n", to_binary(nr34));
+  sprintf(out, "\n");
+
+  sprintf(out, "nr40 %s\n", to_binary(nr40));
+  sprintf(out, "nr41 %s\n", to_binary(nr41));
+  sprintf(out, "nr42 %s\n", to_binary(nr42));
+  sprintf(out, "nr43 %s\n", to_binary(nr43));
+  sprintf(out, "nr44 %s\n", to_binary(nr44));
+  sprintf(out, "\n");
+
+  sprintf(out, "nr50 %s\n", to_binary(nr50));
+  sprintf(out, "nr51 %s\n", to_binary(nr51));
+  sprintf(out, "nr52 %s\n", to_binary(nr52));
+  sprintf(out, "\n");
 
   const char* bar = "===============";
-  cursor += sprintf(cursor, "vol %s\n", bar + (15 - s1_env_volume));
+  sprintf(out, "s1 vol %s\n", bar + (15 - s1_env_volume));
+  sprintf(out, "s2 vol %s\n", bar + (15 - s2_env_volume));
 
-  return cursor;
+  ubit3_t s3_volume = 0;
+  switch ((nr32 & 0b01100000) >> 5) {
+  case 0: s3_volume = 0; break;
+  case 1: s3_volume = 15; break;
+  case 2: s3_volume = 7; break;
+  case 3: s3_volume = 3; break;
+  }
+  sprintf(out, "s3 vol %s\n", bar + (15 - s3_volume));
+  sprintf(out, "s4 vol %s\n", bar + (15 - s4_env_volume));
 }
 
 //-----------------------------------------------------------------------------

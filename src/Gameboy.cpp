@@ -386,9 +386,6 @@ void Gameboy::dump(std::string& out) {
   sprintf(out, "\n");
 
   /*
-  spu.dump(out);
-  sprintf(out, "\n");
-
   {
     uint8_t* ram = ppu.get_oam_ram();
     for (int i = 0; i < 16; i++) {

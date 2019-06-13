@@ -1034,7 +1034,8 @@ void PPU::dump(std::string& out) {
   //sprintf(out, "vblank int %d\n", vblank_int);
   //sprintf(out, "stat int %d\n", stat_int);
   sprintf(out, "\n");
-
+  
+  /*
   sprintf(out, "%s\n", in_window_old ? "in_window_old" : "");
   sprintf(out, "%s\n", in_window_new ? "in_window_new" : "");
   sprintf(out, "%s\n", in_window_new_early ? "in_window_new_early" : "");
@@ -1043,6 +1044,7 @@ void PPU::dump(std::string& out) {
   sprintf(out, "%s\n", window_retrigger_new ? "window_retrigger_new" : "");
   sprintf(out, "map x   %d\n", map_x);
   sprintf(out, "map y   %d\n", map_y);
+  */
 
   sprintf(out, "scx disc %d\n", pix_discard_scx);
   sprintf(out, "pad disc %d\n", pix_discard_pad);

@@ -50,8 +50,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
-  //load("LinksAwakening");
-  load("Prehistorik Man (U)");
+  load("LinksAwakening");
+  //load("Prehistorik Man (U)");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
@@ -197,7 +197,7 @@ void MetroBoyApp::loop() {
     metroboy.run_fast(buttons, (int)fast_cycles);
   }
   else if (runmode == RUN_VSYNC) {
-    printf("--------\n");
+    //printf("%d --------\n", frame_count);
     metroboy.run_vsync(buttons);
   }
   else if (runmode == STEP_CYCLE) {
@@ -450,7 +450,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   memset(rom_buf, 0, 1024 * 1024);
   metroboy.load_rom(MODEL_DMG, gb_filename.c_str(), false);
   rom_loaded = true;
-  runmode = RUN_FAST;
+  runmode = RUN_VSYNC;
 }
 
 //-----------------------------------------------------------------------------

@@ -74,11 +74,16 @@ void SPU::reset() {
 //-----------------------------------------------------------------------------
 
 void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) {
+  const bool sound_on = (nr52 & 0x80);
+
   if (read)  bus_read(addr);
-  if (write) bus_write(addr, data2);
+  if (write) {
+    if (sound_on || addr == 0xFF26) {
+      bus_write(addr, data2);
+    }
+  }
   if (tphase != 2) return;
 
-  const bool sound_on = (nr52 & 0x80);
   if (!sound_on) {
     s1_out = 0;
     s2_out = 0;
@@ -206,14 +211,7 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
     if (!s1_phase_clock) {
       const ubit3_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
       const ubit11_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
-
-      if (s1_sweep_period) {
-        s1_phase_clock = 2047 ^ s1_sweep_freq;
-      }
-      else {
-        s1_phase_clock = 2047 ^ s1_freq;
-      }
-
+      s1_phase_clock = 2047 ^ (s1_sweep_period ? s1_sweep_freq : s1_freq);
       s1_phase = (s1_phase + 1) & 7;
     }
     else {
@@ -245,7 +243,6 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
       s3_phase_clock--;
     }
 
-    // period is actually [1, 2, 4, 6, 8, 10, 12, 14]
     if (!s4_phase_clock) {
       s4_phase_clock = s4_phase_period;
       bool lfsr_bit = (s4_lfsr ^ (s4_lfsr >> 1)) & 1;
@@ -277,21 +274,11 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
   }
   s3_sample >>= s3_volume_shift;
 
-  ubit3_t s1_duty = 0;
-  switch ((nr11 & 0b11000000) >> 6) {
-  case 0: s1_duty = 1; break;
-  case 1: s1_duty = 2; break;
-  case 2: s1_duty = 4; break;
-  case 3: s1_duty = 6; break;
-  }
+  ubit3_t s1_duty = (nr11 & 0b11000000) >> 6;
+  s1_duty = s1_duty ? s1_duty * 2 : 1;
 
-  ubit3_t s2_duty = 0;
-  switch ((nr21 & 0b11000000) >> 6) {
-  case 0: s2_duty = 1; break;
-  case 1: s2_duty = 2; break;
-  case 2: s2_duty = 4; break;
-  case 3: s2_duty = 6; break;
-  }
+  ubit3_t s2_duty = (nr21 & 0b11000000) >> 6;
+  s2_duty = s2_duty ? s2_duty * 2 : 1;
 
   const bool s3_power = (nr30 & 0b10000000);
 
@@ -324,24 +311,30 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
 void SPU::bus_read(ubit16_t addr) {
   bus_oe = 1;
   switch (addr) {
-  case 0xFF10: bus_out = nr10; break;
-  case 0xFF11: bus_out = nr11; break;
-  case 0xFF12: bus_out = nr12; break;
-  case 0xFF13: bus_out = nr13; break;
-  case 0xFF14: bus_out = nr14; break;
-  case 0xFF16: bus_out = nr21; break;
-  case 0xFF17: bus_out = nr22; break;
-  case 0xFF18: bus_out = nr23; break;
-  case 0xFF19: bus_out = nr24; break;
-  case 0xFF1A: bus_out = nr30; break;
-  case 0xFF1B: bus_out = nr31; break;
-  case 0xFF1C: bus_out = nr32; break;
-  case 0xFF1D: bus_out = nr33; break;
-  case 0xFF1E: bus_out = nr34; break;
-  case 0xFF20: bus_out = nr41; break;
-  case 0xFF21: bus_out = nr42; break;
-  case 0xFF22: bus_out = nr43; break;
-  case 0xFF23: bus_out = nr44; break;
+  case 0xFF10: bus_out = nr10 | 0x80; break;
+  case 0xFF11: bus_out = nr11 | 0x3F; break;
+  case 0xFF12: bus_out = nr12 | 0x00; break;
+  case 0xFF13: bus_out = nr13 | 0xFF; break;
+  case 0xFF14: bus_out = nr14 | 0xBF; break;
+
+  case 0xFF15: bus_out = nr20 | 0xFF; break;
+  case 0xFF16: bus_out = nr21 | 0x3F; break;
+  case 0xFF17: bus_out = nr22 | 0x00; break;
+  case 0xFF18: bus_out = nr23 | 0xFF; break;
+  case 0xFF19: bus_out = nr24 | 0xBF; break;
+  
+  case 0xFF1A: bus_out = nr30 | 0x7F; break;
+  case 0xFF1B: bus_out = nr31 | 0xFF; break;
+  case 0xFF1C: bus_out = nr32 | 0x9F; break;
+  case 0xFF1D: bus_out = nr33 | 0xFF; break;
+  case 0xFF1E: bus_out = nr34 | 0xBF; break;
+  
+  case 0xFF1F: bus_out = nr40 | 0xFF; break;
+  case 0xFF20: bus_out = nr41 | 0xFF; break;
+  case 0xFF21: bus_out = nr42 | 0x00; break;
+  case 0xFF22: bus_out = nr43 | 0x00; break;
+  case 0xFF23: bus_out = nr44 | 0xBF; break;
+
   case 0xFF24: bus_out = nr50; break;
   case 0xFF25: bus_out = nr51; break;
 
@@ -373,51 +366,46 @@ void SPU::bus_read(ubit16_t addr) {
 //-----------------------------------------------------------------------------
 
 void SPU::bus_write(ubit16_t addr, ubit8_t data) {
-  /*
-  if (addr >= 0xFF10 && addr <= 0xFF14) {
-    printf("0x%04x 0x%02x\n", addr, data);
-  }
-
-  if (addr >= 0xFF24 && addr <= 0xFF26) {
-    printf("* 0x%04x 0x%02x\n", addr, data);
-  }
-  */
-
   switch (addr) {
-  case 0xFF10: nr10 = data | 0b10000000; printf("nr10 0x%02x\n", nr10); break;
-  case 0xFF11: nr11 = data | 0b00000000; printf("nr11 0x%02x\n", nr11); break;
-  case 0xFF12: nr12 = data | 0b00000000; printf("nr12 0x%02x\n", nr12); break;
-  case 0xFF13: nr13 = data | 0b00000000; printf("nr13 0x%02x\n", nr13); break;
-  case 0xFF14: nr14 = data | 0b00111000; printf("nr14 0x%02x\n", nr14); break;
+  case 0xFF10: nr10 = data | 0b10000000; break;
+  case 0xFF11: nr11 = data | 0b00000000; break;
+  case 0xFF12: {
+    if ((data ^ nr12) & 8) s1_env_volume ^= 15;
+    nr12 = data | 0b00000000;
+    break;
+  }
+  case 0xFF13: nr13 = data | 0b00000000; break;
+  case 0xFF14: nr14 = data | 0b00111000; break;
 
-  case 0xFF16: nr21 = data | 0b00000000; printf("nr21 0x%02x\n", nr21); break;
-  case 0xFF17: nr22 = data | 0b00000000; printf("nr22 0x%02x\n", nr22); break;
-  case 0xFF18: nr23 = data | 0b00000000; printf("nr23 0x%02x\n", nr23); break;
-  case 0xFF19: nr24 = data | 0b00111000; printf("nr24 0x%02x\n", nr24); break;
+  case 0xFF16: nr21 = data | 0b00000000; break;
+  case 0xFF17: {
+    if ((data ^ nr22) & 8) s2_env_volume ^= 15;
+    nr22 = data | 0b00000000;
+    break;
+  }
+  case 0xFF18: nr23 = data | 0b00000000; break;
+  case 0xFF19: nr24 = data | 0b00111000; break;
 
-  case 0xFF1A: nr30 = data | 0b01111111; printf("nr30 0x%02x\n", nr30); break;
-  case 0xFF1B: nr31 = data | 0b00000000; printf("nr31 0x%02x\n", nr31); break;
-  case 0xFF1C: nr32 = data | 0b10011111; printf("nr32 0x%02x\n", nr32); break;
-  case 0xFF1D: nr33 = data | 0b00000000; printf("nr33 0x%02x\n", nr33); break;
-  case 0xFF1E: nr34 = data | 0b00111000; printf("nr34 0x%02x\n", nr34); break;
+  case 0xFF1A: nr30 = data | 0b01111111; break;
+  case 0xFF1B: nr31 = data | 0b00000000; break;
+  case 0xFF1C: nr32 = data | 0b10011111; break;
+  case 0xFF1D: nr33 = data | 0b00000000; break;
+  case 0xFF1E: nr34 = data | 0b00111000; break;
 
-  case 0xFF20: nr41 = data | 0b11000000; printf("nr41 0x%02x\n", nr41); break;
-  case 0xFF21: nr42 = data | 0b00000000; printf("nr42 0x%02x\n", nr42); break;
-  case 0xFF22: nr43 = data | 0b00000000; printf("nr43 0x%02x\n", nr43); break;
-  case 0xFF23: nr44 = data | 0b00111111; printf("nr44 0x%02x\n", nr44); break;
+  case 0xFF20: nr41 = data | 0b11000000; break;
+  case 0xFF21: {
+    if ((data ^ nr42) & 8) s4_env_volume ^= 15;
+    nr42 = data | 0b00000000;
+    break;
+  }
+  case 0xFF22: nr43 = data | 0b00000000; break;
+  case 0xFF23: nr44 = data | 0b00111111; break;
 
-  case 0xFF24: nr50 = data | 0b00000000; printf("nr50 0x%02x\n", nr50); break;
-  case 0xFF25: nr51 = data | 0b00000000; printf("nr51 0x%02x\n", nr51); break;
+  case 0xFF24: nr50 = data | 0b00000000; break;
+  case 0xFF25: nr51 = data | 0b00000000; break;
   case 0xFF26: {
     nr52 = data | 0b01110000;
-
-    const bool sound_on = (nr52 & 0x80);
-    if (!sound_on) {
-      reset();
-    }
-
-    printf("nr52 0x%02x\n", nr52);
-
+    if (!(nr52 & 0x80)) reset();
     break;
   }
   }
@@ -439,12 +427,12 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   if (s1_trigger_) {
     const ubit3_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
-    const ubit7_t s1_length = (nr11 & 0b00111111) ? 63 ^ (nr11 & 0b00111111) : 64;
+    const ubit7_t s1_length = 64 - (nr11 & 0b00111111);
     const ubit4_t s1_start_volume = (nr12 & 0b11110000) >> 4;
     const ubit3_t s1_env_period = (nr12 & 0b00000111) >> 0;
     const ubit11_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
 
-    s1_enable = (nr12 != 0);
+    s1_enable = (nr12 & 0xF8) != 0;
     s1_duration = s1_length;
     s1_sweep_clock = s1_sweep_period;
     s1_sweep_freq = s1_freq;
@@ -455,12 +443,12 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   }
 
   if (s2_trigger_) {
-    const ubit7_t s2_length = (nr21 & 0b00111111) ? 63 ^ (nr21 & 0b00111111) : 64;
+    const ubit7_t s2_length = 64 - (nr21 & 0b00111111);
     const ubit4_t s2_start_volume = (nr22 & 0b11110000) >> 4;
     const ubit3_t s2_env_period = (nr22 & 0b00000111) >> 0;
     const ubit11_t s2_freq = ((nr24 << 8) | nr23) & 0x07FF;
 
-    s2_enable = (nr22 != 0);
+    s2_enable = (nr22 & 0xF8) != 0;
     s2_duration = s2_length;
     s2_env_volume = s2_start_volume;
     s2_env_clock = s2_env_period;
@@ -469,42 +457,28 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   }
 
   if (s3_trigger_) {
-    const ubit9_t s3_length = (nr31 & 0b11111111) ? 255 ^ (nr31 & 0b11111111) : 256;
+    const ubit9_t s3_length = 256 - nr31;
     const ubit11_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
 
-    if (s3_freq) {
-      s3_enable = (nr32 != 0);
-      s3_duration = s3_length;
-      s3_phase_clock = 2047 ^ s3_freq;
-      s3_phase = 0;
-    }
+    s3_enable = (nr32 != 0);
+    s3_duration = s3_length;
+    s3_phase_clock = 2047 ^ s3_freq;
+    s3_phase = 0;
   }
 
   if (s4_trigger_) {
-    const ubit7_t s4_length = (nr41 & 0b00111111) ? 63 ^ (nr41 & 0b00111111) : 64;
+    const ubit7_t s4_length = 64 - (nr41 & 0b00111111);
     const ubit4_t s4_start_volume = (nr42 & 0b11110000) >> 4;
     const ubit3_t s4_env_period = (nr42 & 0b00000111) >> 0;
     const ubit4_t s4_phase_period = (nr43 & 0b00000111) ? (nr43 & 0b00000111) * 2 : 1;
 
-    s4_enable = (nr42 != 0);
+    s4_enable = (nr42 & 0xF8) != 0;
     s4_duration = s4_length;
     s4_env_volume = s4_start_volume;
     s4_env_clock = s4_env_period;
     s4_phase_clock = s4_phase_period;
     s4_lfsr = 0x7FFF;
   }
-
-  /*
-  bool s1_untrigger_ = addr == 0xFF14 && !(data & 0x80);
-  bool s2_untrigger_ = addr == 0xFF19 && !(data & 0x80);
-  bool s3_untrigger_ = addr == 0xFF1E && !(data & 0x80);
-  bool s4_untrigger_ = addr == 0xFF23 && !(data & 0x80);
-
-  if (s1_untrigger_) s1_enable = false;
-  if (s2_untrigger_) s2_enable = false;
-  if (s3_untrigger_) s3_enable = false;
-  if (s4_untrigger_) s4_enable = false;
-  */
 }
 
 //-----------------------------------------------------------------------------

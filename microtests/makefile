@@ -7,30 +7,21 @@ AGS_GB_BINARY = $(addprefix build/ags/, $(ALL_GB_BINARY))
 
 all: $(AGS_GB_BINARY) $(DMG_GB_BINARY)
 
-build/dmg/%.o : %.s
-	@echo compiling $<
-	@wla-gb -DDMG -o $@ $< 	
+#all: $(AGS_GB_BINARY)
 
-build/dmg/%.gb: build/dmg/%.o
-	@echo linking $@
-	@printf "[objects]\n%s\n" $< > temp.link
+build/dmg/%.gb: %.s
+	@echo $@
+	@wla-gb -DDMG -o build/temp.o $<
 	@wlalink -S temp.link $@
-	@rm $<
-	@rm temp.link
 
-build/ags/%.o : %.s
-	@echo compiling $<
-	@wla-gb -DAGS -o $@ $< 	
-
-build/ags/%.gb: build/ags/%.o
-	@echo linking $@
-	@printf "[objects]\n%s\n" $< > temp.link
+build/ags/%.gb: %.s
+	@echo $@
+	@wla-gb -DAGS -o build/temp.o $<
 	@wlalink -S temp.link $@
-	@rm $<
-	@rm temp.link
 
 clean:
-	@rm build/ags/*
-	@rm build/dmg/*
+	@rm -f build/ags/*
+	@rm -f build/dmg/*
+	@rm -f build/temp.o
 
 .PHONY: all clean

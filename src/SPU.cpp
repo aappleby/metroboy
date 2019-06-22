@@ -170,8 +170,7 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
       }
       else {
         s1_env_clock = s1_env_period;
-        if (s1_env_volume < 15 && s1_env_dir) s1_env_volume++;
-        if (s1_env_volume > 0 && !s1_env_dir) s1_env_volume--;
+        if (s1_env_volume < 15) s1_env_volume++;
       }
     }
 
@@ -261,7 +260,7 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
   //----------
   // output
 
-  //int s1_volume = (nr12 & 0x04) ? s1_env_volume : 15 ^ s1_env_volume;
+  ubit4_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
 
   ubit4_t s3_sample;
   s3_sample = s3_wave[s3_phase >> 1];
@@ -284,7 +283,8 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
 
   const bool s3_power = (nr30 & 0b10000000);
 
-  s1_out = s1_enable ? (s1_phase < s1_duty ? s1_env_volume : 0) : 0;
+  //s1_out = s1_enable ? (s1_phase < s1_duty ? s1_env_volume : 0) : 0;
+  s1_out = s1_enable ? (s1_phase < s1_duty ? s1_volume : 0) : 0;
   s2_out = s2_enable ? (s2_phase < s2_duty ? s2_env_volume : 0) : 0;
   s3_out = s3_enable ? (s3_power ? s3_sample : 0) : 0;
   s4_out = s4_enable ? (s4_lfsr & 1 ? s4_env_volume : 0) : 0;
@@ -487,8 +487,10 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
     s1_duration = s1_length;
     s1_sweep_clock = s1_sweep_period;
     s1_sweep_freq = s1_freq;
-    s1_env_volume = s1_start_volume;
+
+    s1_env_volume = (nr12 & 0x08) ? s1_start_volume : 15 ^ s1_start_volume;
     s1_env_clock = s1_env_period;
+
     s1_phase_clock = 2047 ^ s1_freq;
     s1_phase = 0;
   }
@@ -569,7 +571,9 @@ void SPU::dump(std::string& out) {
   sprintf(out, "\n");
 
   const char* bar = "===============";
-  sprintf(out, "s1 vol %s\n", bar + (15 - s1_env_volume));
+
+  ubit4_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
+  sprintf(out, "s1 vol %s\n", bar + (15 - s1_volume));
   sprintf(out, "s2 vol %s\n", bar + (15 - s2_env_volume));
 
   ubit3_t s3_volume = 0;

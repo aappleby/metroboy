@@ -48,7 +48,7 @@ main:
 	ldh ($11), a
 
 	; NR12 VVVVAPPP Starting volume, Envelope add mode, period
-	ld a, %11110001
+	ld a, %00001111
 	ldh ($12), a
 
 	; NR13 FFFFFFFF Frequency LSB
@@ -56,7 +56,7 @@ main:
 	ldh ($13), a
 
 	; NR14 TL---FFF Trigger, Length enable, Frequency MSB
-	ld a, %10000111
+	ld a, %10000000
 	ldh ($14), a
 
 	/*

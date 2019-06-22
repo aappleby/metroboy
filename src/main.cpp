@@ -51,8 +51,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("pocket");
   //load("gejmboj");
   //load("LinksAwakening");
-  load("Prehistorik Man (U)");
+  //load("Prehistorik Man (U)");
   //load("SML");
+
+  load("microtests/build/dmg", "spu_env_change");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");

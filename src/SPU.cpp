@@ -261,6 +261,8 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
   //----------
   // output
 
+  //int s1_volume = (nr12 & 0x04) ? s1_env_volume : 15 ^ s1_env_volume;
+
   ubit4_t s3_sample;
   s3_sample = s3_wave[s3_phase >> 1];
   s3_sample = (s3_phase & 1) ? (s3_sample & 0xF) : (s3_sample >> 4);
@@ -295,6 +297,11 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
   const bool s2l = (nr51 & 0b00100000);
   const bool s3l = (nr51 & 0b01000000);
   const bool s4l = (nr51 & 0b10000000);
+
+  //s1_out = 0;
+  //s2_out = 0;
+  //s3_out = 0;
+  //s4_out = 0;
 
   out_r = (s1_out * s1r) + (s2_out * s2r) + (s3_out * s3r) + (s4_out * s4r);
   out_l = (s1_out * s1l) + (s2_out * s2l) + (s3_out * s3l) + (s4_out * s4l);
@@ -366,12 +373,46 @@ void SPU::bus_read(ubit16_t addr) {
 //-----------------------------------------------------------------------------
 
 void SPU::bus_write(ubit16_t addr, ubit8_t data) {
+  if (addr >= 0xFF10 && addr <= 0xFF14) {
+    //printf("0x%04x 0x%02x\n", addr, data);
+  }
+
   switch (addr) {
   case 0xFF10: nr10 = data | 0b10000000; break;
   case 0xFF11: nr11 = data | 0b00000000; break;
   case 0xFF12: {
-    if ((data ^ nr12) & 8) s1_env_volume ^= 15;
-    nr12 = data | 0b00000000;
+
+    /*
+    bool dir_flip = (data ^ nr12) & 8;
+
+    if (nr12 & 7) {
+      if (dir_flip) {
+        s1_env_volume ^= 15;
+        if (nr12 & 8) s1_env_volume++;
+        else          s1_env_volume--;
+      }
+    }
+    else {
+      if (dir_flip) {
+        s1_env_volume ^= 15;
+        if (nr12 & 8) s1_env_volume++;
+      }
+      else {
+        if (data & 8) {
+          s1_env_volume++;
+        }
+        else {
+          if (data & 7) if (s1_env_volume) s1_env_volume--;
+        }
+      }
+    }
+    
+    if ((nr12 & 0xF8) == 0) s1_enable = false;
+    
+    s1_env_volume &= 0xF;
+    */
+
+    nr12 = data;
     break;
   }
   case 0xFF13: nr13 = data | 0b00000000; break;
@@ -379,8 +420,13 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   case 0xFF16: nr21 = data | 0b00000000; break;
   case 0xFF17: {
-    if ((data ^ nr22) & 8) s2_env_volume ^= 15;
-    nr22 = data | 0b00000000;
+    if (data & 8) s2_env_volume++;
+    if (((data ^ nr22) & 8)) s2_env_volume = 0x10 - s2_env_volume;
+    if ((data & 7) && !(nr22 & 7) && s2_env_volume && !(data & 8)) s2_env_volume--;
+    if ((nr22 & 7) && (data & 8)) s2_env_volume--;
+    s2_env_volume &= 0xF;
+    nr22 = data;
+    if ((nr22 & 0xF8) == 0) s1_enable = false;
     break;
   }
   case 0xFF18: nr23 = data | 0b00000000; break;
@@ -394,8 +440,13 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   case 0xFF20: nr41 = data | 0b11000000; break;
   case 0xFF21: {
-    if ((data ^ nr42) & 8) s4_env_volume ^= 15;
-    nr42 = data | 0b00000000;
+    if (data & 8) s4_env_volume++;
+    if (((data ^ nr42) & 8)) s4_env_volume = 0x10 - s4_env_volume;
+    if ((data & 7) && !(nr42 & 7) && s4_env_volume && !(data & 8)) s4_env_volume--;
+    if ((nr42 & 7) && (data & 8)) s4_env_volume--;
+    s4_env_volume &= 0xF;
+    nr42 = data;
+    if ((nr42 & 0xF8) == 0) s1_enable = false;
     break;
   }
   case 0xFF22: nr43 = data | 0b00000000; break;

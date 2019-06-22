@@ -50,8 +50,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
-  load("LinksAwakening");
-  //load("Prehistorik Man (U)");
+  //load("LinksAwakening");
+  load("Prehistorik Man (U)");
+  //load("SML");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");

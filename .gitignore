@@ -3,6 +3,7 @@ x64
 SDL2*
 *.vcxproj.user
 *.gb
+*.sav
 *.o
 *.vcxproj.filters
 MetroBoy
@@ -17,3 +18,4 @@ mealybug-tearoom-tests
 microtests/build
 SameSuite
 GBVisualizer
+gb-test-roms

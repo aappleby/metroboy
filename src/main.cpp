@@ -51,7 +51,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("pocket");
   //load("gejmboj");
   //load("LinksAwakening");
-  load("Prehistorik Man (U)");
+  //load("Prehistorik Man (U)");
   //load("SML");
 
   //load("microtests/build/dmg", "spu_env_change");

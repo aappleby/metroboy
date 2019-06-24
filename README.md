@@ -76,6 +76,5 @@ Right column
 
 ## Known Issues
 
-- The sound hardware implementation is buggy
 - Save game support isn't implemented yet
 - Cross-platform support via CMake is coming. Nothing in MetroBoy is OS-specific, I just haven't set it up yet.

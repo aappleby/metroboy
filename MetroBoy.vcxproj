@@ -277,6 +277,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"wsl" --exec /usr/local/bin/verilator</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj_dir/VSPU.cpp, obj_dir/VSPU.h</Outputs>
     </CustomBuild>
+    <None Include="verilog\types.v" />
     <None Include="verilog\VRAM.v">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>

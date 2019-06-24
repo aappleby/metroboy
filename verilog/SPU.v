@@ -160,7 +160,7 @@ task tock;
   `define bit_set(a,b) a[b]
   
   logic sound_on = `bit_set(nr52, 7);
-  ubit14_t spu_clock_ = (spu_clock + 14'b1) & 14'h3FFF;
+  ubit14_t spu_clock_ = spu_clock + 14'b1;
   ubit14_t clock_flip = (~spu_clock) & spu_clock_;
   logic sweep_tick, length_tick, env_tick;
   ubit4_t s1_out_;

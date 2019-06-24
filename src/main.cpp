@@ -51,7 +51,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("pocket");
   //load("gejmboj");
   //load("LinksAwakening");
-  //load("Prehistorik Man (U)");
+  load("Prehistorik Man (U)");
   //load("SML");
 
   //load("microtests/build/dmg", "spu_env_change");
@@ -261,6 +261,18 @@ void MetroBoyApp::loop() {
   gameboy.spu.dump(text_buf);
   render_text(280, 4, text_buf.c_str());
   text_buf.clear();
+
+  //----------------------------------------
+  // Wave thingy
+
+  for (int i = 0; i < 16; i++) {
+    uint8_t a = (gameboy.spu.s3_wave[i] & 0x0F) >> 0;
+    uint8_t b = (gameboy.spu.s3_wave[i] & 0xF0) >> 4;
+    uint32_t color = 0xFFFFFFFF;
+  
+    framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;
+    framebuffer[(512 + 2 * i + 1) + (100 + a) * fb_width] = color;
+  }
 
   //----------------------------------------
   // Gameboy screen

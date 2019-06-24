@@ -265,15 +265,21 @@
     <None Include="microtests\vblank_int_inc_sled.s" />
     <None Include="microtests\vblank_int_nops_a.s" />
     <None Include="microtests\vblank_int_nops_b.s" />
-    <None Include="verilog\CPU.v" />
-    <None Include="verilog\PPU.v" />
+    <None Include="verilog\CPU.v">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="verilog\PPU.v">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
     <CustomBuild Include="verilog\SPU.v">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"wsl" --exec /usr/local/bin/verilator</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj_dir/VSPU.cpp, obj_dir/VSPU.h</Outputs>
     </CustomBuild>
-    <None Include="verilog\VRAM.v" />
+    <None Include="verilog\VRAM.v">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

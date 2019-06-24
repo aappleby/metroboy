@@ -180,8 +180,7 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
       }
       else {
         s2_env_clock = s2_env_period;
-        if (s2_env_volume < 15 && s2_env_dir) s2_env_volume++;
-        if (s2_env_volume > 0 && !s2_env_dir) s2_env_volume--;
+        if (s2_env_volume < 15) s2_env_volume++;
       }
     }
 
@@ -191,8 +190,7 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
       }
       else {
         s4_env_clock = s4_env_period;
-        if (s4_env_volume < 15 && s4_env_dir) s4_env_volume++;
-        if (s4_env_volume > 0 && !s4_env_dir) s4_env_volume--;
+        if (s4_env_volume < 15) s4_env_volume++;
       }
     }
   }
@@ -260,8 +258,6 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
   //----------
   // output
 
-  ubit4_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
-
   ubit4_t s3_sample;
   s3_sample = s3_wave[s3_phase >> 1];
   s3_sample = (s3_phase & 1) ? (s3_sample & 0xF) : (s3_sample >> 4);
@@ -273,7 +269,11 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
   case 2: s3_volume_shift = 1; break;
   case 3: s3_volume_shift = 2; break;
   }
-  s3_sample >>= s3_volume_shift;
+
+  ubit4_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
+  ubit4_t s2_volume = (nr22 & 0x08) ? s2_env_volume : 15 ^ s2_env_volume;
+  ubit4_t s3_volume = s3_sample >> s3_volume_shift;
+  ubit4_t s4_volume = (nr42 & 0x08) ? s4_env_volume : 15 ^ s4_env_volume;
 
   ubit3_t s1_duty = (nr11 & 0b11000000) >> 6;
   s1_duty = s1_duty ? s1_duty * 2 : 1;
@@ -283,11 +283,10 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
 
   const bool s3_power = (nr30 & 0b10000000);
 
-  //s1_out = s1_enable ? (s1_phase < s1_duty ? s1_env_volume : 0) : 0;
-  s1_out = s1_enable ? (s1_phase < s1_duty ? s1_volume : 0) : 0;
-  s2_out = s2_enable ? (s2_phase < s2_duty ? s2_env_volume : 0) : 0;
-  s3_out = s3_enable ? (s3_power ? s3_sample : 0) : 0;
-  s4_out = s4_enable ? (s4_lfsr & 1 ? s4_env_volume : 0) : 0;
+  s1_out = s1_enable && (s1_phase < s1_duty) ? s1_volume : 0;
+  s2_out = s2_enable && (s2_phase < s2_duty) ? s2_volume : 0;
+  s3_out = s3_enable && s3_power             ? s3_volume : 0;
+  s4_out = s4_enable && (s4_lfsr & 1)        ? s4_volume : 0;
 
   const bool s1r = (nr51 & 0b00000001);
   const bool s2r = (nr51 & 0b00000010);
@@ -297,11 +296,6 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data2, bool read, bool write) 
   const bool s2l = (nr51 & 0b00100000);
   const bool s3l = (nr51 & 0b01000000);
   const bool s4l = (nr51 & 0b10000000);
-
-  //s1_out = 0;
-  //s2_out = 0;
-  //s3_out = 0;
-  //s4_out = 0;
 
   out_r = (s1_out * s1r) + (s2_out * s2r) + (s3_out * s3r) + (s4_out * s4r);
   out_l = (s1_out * s1l) + (s2_out * s2l) + (s3_out * s3l) + (s4_out * s4l);
@@ -381,37 +375,8 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
   case 0xFF10: nr10 = data | 0b10000000; break;
   case 0xFF11: nr11 = data | 0b00000000; break;
   case 0xFF12: {
-
-    /*
-    bool dir_flip = (data ^ nr12) & 8;
-
-    if (nr12 & 7) {
-      if (dir_flip) {
-        s1_env_volume ^= 15;
-        if (nr12 & 8) s1_env_volume++;
-        else          s1_env_volume--;
-      }
-    }
-    else {
-      if (dir_flip) {
-        s1_env_volume ^= 15;
-        if (nr12 & 8) s1_env_volume++;
-      }
-      else {
-        if (data & 8) {
-          s1_env_volume++;
-        }
-        else {
-          if (data & 7) if (s1_env_volume) s1_env_volume--;
-        }
-      }
-    }
-    
-    if ((nr12 & 0xF8) == 0) s1_enable = false;
-    
-    s1_env_volume &= 0xF;
-    */
-
+    if ((data & 0xF8) == 0) s1_enable = false;
+    if ((nr12 & 0x08) && s1_enable) s1_env_volume = (s1_env_volume + 1) & 15;
     nr12 = data;
     break;
   }
@@ -420,13 +385,9 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   case 0xFF16: nr21 = data | 0b00000000; break;
   case 0xFF17: {
-    if (data & 8) s2_env_volume++;
-    if (((data ^ nr22) & 8)) s2_env_volume = 0x10 - s2_env_volume;
-    if ((data & 7) && !(nr22 & 7) && s2_env_volume && !(data & 8)) s2_env_volume--;
-    if ((nr22 & 7) && (data & 8)) s2_env_volume--;
-    s2_env_volume &= 0xF;
+    if ((data & 0xF8) == 0) s2_enable = false;
+    if ((nr22 & 0x08) && s2_enable) s2_env_volume = (s2_env_volume + 1) & 15;
     nr22 = data;
-    if ((nr22 & 0xF8) == 0) s1_enable = false;
     break;
   }
   case 0xFF18: nr23 = data | 0b00000000; break;
@@ -440,13 +401,9 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
   case 0xFF20: nr41 = data | 0b11000000; break;
   case 0xFF21: {
-    if (data & 8) s4_env_volume++;
-    if (((data ^ nr42) & 8)) s4_env_volume = 0x10 - s4_env_volume;
-    if ((data & 7) && !(nr42 & 7) && s4_env_volume && !(data & 8)) s4_env_volume--;
-    if ((nr42 & 7) && (data & 8)) s4_env_volume--;
-    s4_env_volume &= 0xF;
+    if ((data & 0xF8) == 0) s4_enable = false;
+    if ((nr42 & 0x08) && s4_enable) s4_env_volume = (s4_env_volume + 1) & 15;
     nr42 = data;
-    if ((nr42 & 0xF8) == 0) s1_enable = false;
     break;
   }
   case 0xFF22: nr43 = data | 0b00000000; break;
@@ -503,8 +460,10 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
     s2_enable = (nr22 & 0xF8) != 0;
     s2_duration = s2_length;
-    s2_env_volume = s2_start_volume;
+
+    s2_env_volume = (nr22 & 0x08) ? s2_start_volume : 15 ^ s2_start_volume;
     s2_env_clock = s2_env_period;
+
     s2_phase_clock = 2047 ^ s2_freq;
     s2_phase = 0;
   }
@@ -527,8 +486,10 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
 
     s4_enable = (nr42 & 0xF8) != 0;
     s4_duration = s4_length;
-    s4_env_volume = s4_start_volume;
+
+    s4_env_volume = (nr42 & 0x08) ? s4_start_volume : 15 ^ s4_start_volume;
     s4_env_clock = s4_env_period;
+
     s4_phase_clock = s4_phase_period;
     s4_lfsr = 0x7FFF;
   }

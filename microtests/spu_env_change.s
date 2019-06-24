@@ -8,62 +8,50 @@
 ; NR13 FF13 FFFFFFFF Frequency LSB
 ; NR14 FF14 TL---FFF Trigger, Length enable, Frequency MSB
 
-; starting with sweep off then turning it on after trigger does something weird
-
-; starting with %01110000 and changing to %01110111 after trigger is super weird
-; starting with %01111000 and changing to %01111111 after trigger also super weird, sounds like above
-
 ; FF76 - pcm12
 ; FF77 - pcm34
 
 ; envelope 
 
-/*
-nr10 000 0 000          sweep off
-nr11 10 001111          50% duty, sound length 15?
-nr12 1111 0 000         initial volume 15, envelope decrease, no? envelope
-nr14 10 xxx 00000000000 start sound, no length, high freq bit 0
-nr12 0001 1 000         initial volume 1, envelope increase, no? envelope
+.macro nr10 ARGS p n s
+	ld a, (p << 4) | (n << 3) | s
+	ldh ($10), a
+.endm
 
-nr14 00 xxx 00111110100
+.macro nr11 ARGS d l
+	ld a, (d << 6) | l
+	ldh ($11), a
+.endm
 
-nr14 00 xxx 00111110100
+.macro nr12 ARGS v a p
+	ld a, (v << 4) | (a << 3) | p
+	ldh ($12), a
+.endm
 
-nr14 00 xxx 00111110100
-*/
+.macro trigger ARGS freq l
+	ld a, freq & $FF
+	ldh ($13), a
+	ld a, $80 | (l << 6) | (freq >> 8)
+	ldh ($14), a
+.endm
+
+;-------------------------------------------------------------------------------
 
 main:
-
-	; turn audio on
-	ld a, %11111111
+	ld a, $FF
 	ldh ($25), a
 	ldh ($26), a
 
-	; NR10 -PPPNSSS Sweep period, negate, shift
-	ld a, %00000000
-	ldh ($10), a
+	nr10 0 0 0
+	nr11 2 0
 
-	; NR11 DDLLLLLL Duty, Length load (64-L)
-	ld a, %10000000
-	ldh ($11), a
+	nr12 15 0 0
 
-	; NR12 VVVVAPPP Starting volume, Envelope add mode, period
-	ld a, %00001111
-	ldh ($12), a
+	; 18
+	trigger (2047 - 47) 0
 
-	; NR13 FFFFFFFF Frequency LSB
-	ld a, %11111111
-	ldh ($13), a
-
-	; NR14 TL---FFF Trigger, Length enable, Frequency MSB
-	ld a, %10000000
-	ldh ($14), a
-
-	/*
-	; NR12 VVVVAPPP Starting volume, Envelope add mode, period
-	ld a, %11110111
-	ldh ($12), a
-	*/
+	;nr12 10 1 0
+	;nr12 10 0 0
 
 end:
 	ldh a, ($76)

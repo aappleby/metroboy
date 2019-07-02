@@ -36,10 +36,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
   //run_mealybug_tests();
-  //return 0;
+  return 0;
 
   //---------
 

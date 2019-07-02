@@ -71,12 +71,21 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
-  bool sound_on = (nr52 & 0x80);
-  ubit14_t spu_clock_ = (spu_clock + 1) & 0x3FFF;
-  ubit14_t clock_flip = (~spu_clock) & spu_clock_;
+void SPU::tock(int tphase, uint16_t addr, uint8_t data, bool read, bool write) {
+  bool sound_on = (nr52 & 0x80) != 0;
+  uint16_t spu_clock_ = (spu_clock + 1) & 0x3FFF;
+  uint16_t clock_flip = (~spu_clock) & spu_clock_;
+  bool sweep_tick, length_tick, env_tick;
+  uint8_t s1_out_;
+  uint8_t s2_out_;
+  uint8_t s3_out_;
+  uint8_t s4_out_;
+  uint16_t out_r_ = 0;
+  uint16_t out_l_ = 0;
 
-  if (read)  bus_read(addr);
+  //----------
+
+  if (read) bus_read(addr);
   if (write && (sound_on || addr == 0xFF26)) bus_write(addr, data);
   if (tphase != 2) return;
 
@@ -94,19 +103,24 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   //----------
   // sweep
 
-  bool sweep_tick = (spu_clock_ & 0b01111111111111) == 0b01000000000000;
+  bool sweep_tick =  (spu_clock_ & 0b01111111111111) == 0b01000000000000;
+  bool length_tick = (spu_clock_ & 0b00111111111111) == 0b00000000000000;
+  bool env_tick =    (spu_clock_ & 0b11111111111111) == 0b11100000000000;
+
   if (sweep_tick) {
-    ubit3_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
-    ubit3_t s1_sweep_shift = (nr10 & 0b00000111) >> 0;
+    uint8_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
+    uint8_t s1_sweep_shift = (nr10 & 0b00000111) >> 0;
+    /* verilator lint_off WIDTH */
     bool s1_sweep_dir = (nr10 & 0b00001000) >> 3;
+    /* verilator lint_on WIDTH */
 
     if (s1_sweep_period && s1_sweep_shift) {
       if (s1_sweep_clock) {
         s1_sweep_clock = s1_sweep_clock - 1;
       }
       else {
-        ubit11_t delta = s1_sweep_freq >> s1_sweep_shift;
-        ubit11_t new_freq = s1_sweep_freq + (s1_sweep_dir ? -delta : +delta);
+        uint16_t delta = s1_sweep_freq >> s1_sweep_shift;
+        uint16_t new_freq = s1_sweep_freq + (s1_sweep_dir ? -delta : +delta);
         s1_sweep_clock = s1_sweep_period;
         if (new_freq > 2047) {
           s1_enable = false;
@@ -121,16 +135,17 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   //----------
   // length
 
-  bool length_tick = (spu_clock_ & 0b00111111111111) == 0b00000000000000;
   if (length_tick) {
+    /* verilator lint_off WIDTH */
     bool s1_length_enable = (nr14 & 0b01000000) >> 6;
     bool s2_length_enable = (nr24 & 0b01000000) >> 6;
     bool s3_length_enable = (nr34 & 0b01000000) >> 6;
     bool s4_length_enable = (nr44 & 0b01000000) >> 6;
-    ubit7_t s1_duration_ = s1_duration;
-    ubit7_t s2_duration_ = s2_duration;
-    ubit9_t s3_duration_ = s3_duration;
-    ubit7_t s4_duration_ = s4_duration;
+    /* verilator lint_on WIDTH */
+    uint8_t s1_duration_ = s1_duration;
+    uint8_t s2_duration_ = s2_duration;
+    uint16_t s3_duration_ = s3_duration;
+    uint8_t s4_duration_ = s4_duration;
 
     if (s1_length_enable && s1_duration_) s1_duration_ = s1_duration_ - 1;
     if (s2_length_enable && s2_duration_) s2_duration_ = s2_duration_ - 1;
@@ -151,44 +166,44 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   //----------
   // env
 
-  bool env_tick = (spu_clock_ & 0b11111111111111) == 0b11100000000000;
   if (env_tick) {
-
+    /* verilator lint_off WIDTH */
     const bool s1_env_dir = (nr12 & 0b00001000) >> 3;
     const bool s2_env_dir = (nr22 & 0b00001000) >> 3;
     const bool s4_env_dir = (nr42 & 0b00001000) >> 3;
+    /* verilator lint_on WIDTH */
 
-    const ubit3_t s1_env_period = (nr12 & 0b00000111) >> 0;
-    const ubit3_t s2_env_period = (nr22 & 0b00000111) >> 0;
-    const ubit3_t s4_env_period = (nr42 & 0b00000111) >> 0;
+    const uint8_t s1_env_period = (nr12 & 0b00000111) >> 0;
+    const uint8_t s2_env_period = (nr22 & 0b00000111) >> 0;
+    const uint8_t s4_env_period = (nr42 & 0b00000111) >> 0;
 
     if (s1_env_period) {
       if (s1_env_clock) {
-        s1_env_clock--;
+        s1_env_clock = s1_env_clock - 1;
       }
       else {
         s1_env_clock = s1_env_period;
-        if (s1_env_volume < 15) s1_env_volume++;
+        if (s1_env_volume < 15) s1_env_volume = s1_env_volume + 1;
       }
     }
 
     if (s2_env_period) {
       if (s2_env_clock) {
-        s2_env_clock--;
+        s2_env_clock = s2_env_clock - 1;
       }
       else {
         s2_env_clock = s2_env_period;
-        if (s2_env_volume < 15) s2_env_volume++;
+        if (s2_env_volume < 15) s2_env_volume = s2_env_volume + 1;
       }
     }
 
     if (s4_env_period) {
       if (s4_env_clock) {
-        s4_env_clock--;
+        s4_env_clock = s4_env_clock - 1;
       }
       else {
         s4_env_clock = s4_env_period;
-        if (s4_env_volume < 15) s4_env_volume++;
+        if (s4_env_volume < 15) s4_env_volume = s4_env_volume + 1;
       }
     }
   }
@@ -197,62 +212,81 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   // phase
 
   if (!s1_phase_clock) {
-    const ubit3_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
-    const ubit11_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
+    uint8_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
+    /* verilator lint_off WIDTH */    
+    uint16_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
+    /* verilator lint_on WIDTH */
       
     s1_phase_clock = 2047 ^ (s1_sweep_period ? s1_sweep_freq : s1_freq);
     s1_phase = (s1_phase + 1) & 7;
   }
   else {
-    s1_phase_clock--;
+    s1_phase_clock = s1_phase_clock - 1;
   }
 
   if (!s2_phase_clock) {
-    const ubit11_t s2_freq = ((nr24 << 8) | nr23) & 0x07FF;
+    /* verilator lint_off WIDTH */    
+    uint16_t s2_freq = ((nr24 << 8) | nr23) & 0x07FF;
+    /* verilator lint_on WIDTH */
       
     s2_phase_clock = 2047 ^ s2_freq;
     s2_phase = (s2_phase + 1) & 7;
   }
   else {
-    s2_phase_clock--;
+    s2_phase_clock = s2_phase_clock - 1;
   }
 
   // we run this twice because this is ticking at 1 mhz
-  if (!s3_phase_clock) {
-    const ubit11_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
-      
-    s3_phase_clock = 2047 ^ s3_freq;
-    s3_phase = (s3_phase + 1) & 31;
-  }
-  else {
-    s3_phase_clock--;
-  }
+  begin
+    /* verilator lint_off WIDTH */    
+    uint16_t s3_freq = ((nr34 << 8) | nr33) & 16'h07FF;
+    /* verilator lint_on WIDTH */    
+    uint16_t s3_phase_clock_ = s3_phase_clock;
+    uint8_t s3_phase_ = s3_phase;
+    
+    if (s3_phase_clock_ == 0) begin
+      s3_phase_clock_ = 2047 ^ s3_freq;
+      s3_phase_ = (s3_phase + 1) & 31;
+    end
+    else begin
+      s3_phase_clock_ = s3_phase_clock_ - 1;
+    end
 
-  if (!s3_phase_clock) {
-    const ubit11_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
-      
-    s3_phase_clock = 2047 ^ s3_freq;
-    s3_phase = (s3_phase + 1) & 31;
-  }
-  else {
-    s3_phase_clock--;
-  }
+    if (s3_phase_clock_ == 0) begin
+      s3_phase_clock_ = 2047 ^ s3_freq;
+      s3_phase_ = (s3_phase + 1) & 31;
+    end
+    else begin
+      s3_phase_clock_ = s3_phase_clock_ - 1;
+    end
+
+    s3_phase_clock <= s3_phase_clock_;
+    s3_phase <= s3_phase_;
+  end
 
   if (!s4_phase_clock) {
-    const bool s4_lfsr_mode = (nr43 & 0b00001000) >> 3;
-    const ubit4_t s4_phase_period = (nr43 & 0b00000111) ? (nr43 & 0b00000111) * 2 : 1;
-
-    s4_phase_clock = s4_phase_period;
+    /* verilator lint_off WIDTH */    
+    bool s4_lfsr_mode = (nr43 & 0b00001000) >> 3;
+    uint8_t s4_phase_period = (nr43 & 0b00000111) ? (nr43 & 0b00000111) * 2 : 1;
     bool lfsr_bit = (s4_lfsr ^ (s4_lfsr >> 1)) & 1;
-    s4_lfsr = (s4_lfsr >> 1) | (lfsr_bit << 14);
+    /* verilator lint_on WIDTH */    
+    s4_phase_clock = s4_phase_period;
     if (s4_lfsr_mode) {
-      s4_lfsr &= ~(1 << 5);
-      s4_lfsr |= (lfsr_bit << 5);
+      /* verilator lint_off WIDTH */    
+      s4_lfsr = ((s4_lfsr >> 1) & 0b0111111111011111) | (lfsr_bit << 5);
+      /* verilator lint_on WIDTH */    
+    }
+    else {
+      /* verilator lint_off WIDTH */    
+      s4_lfsr = ((s4_lfsr >> 1) & 0b0011111111111111) | (lfsr_bit << 14);
+      /* verilator lint_on WIDTH */    
     }
   }
   else {
-    const ubit4_t s4_clock_shift = (nr43 & 0b11110000) >> 4;
-    s4_phase_clock -= (clock_flip >> s4_clock_shift) & 1;
+    uint8_t s4_clock_shift = (nr43 & 0b11110000) >> 4;
+    /* verilator lint_off WIDTH */    
+    s4_phase_clock = s4_phase_clock - ((clock_flip >> s4_clock_shift) & 1);
+    /* verilator lint_on WIDTH */    
   }
 
   //----------
@@ -264,39 +298,46 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   s4_out = 0;
 
   if (s1_enable) {
-    ubit4_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
-    ubit3_t s1_duty = (nr11 & 0b11000000) >> 6;
-    s1_duty = s1_duty ? s1_duty * 2 : 1;
-    ubit4_t s1_sample = (s1_phase < s1_duty) ? s1_volume : 0;
+    /* verilator lint_off WIDTH */    
+    uint8_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
+    uint8_t s1_duty = (nr11 & 0b11000000) ? ((nr11 & 0b11000000) >> 6) * 2 : 1;
+    /* verilator lint_on WIDTH */    
+    uint8_t s1_sample = (s1_phase < s1_duty) ? s1_volume : 0;
     s1_out = s1_sample;
   }
 
   if (s2_enable) {
-    ubit4_t s2_volume = (nr22 & 0x08) ? s2_env_volume : 15 ^ s2_env_volume;
-    ubit3_t s2_duty = (nr21 & 0b11000000) >> 6;
+    /* verilator lint_off WIDTH */    
+    uint8_t s2_volume = (nr22 & 0x08) ? s2_env_volume : 15 ^ s2_env_volume;
+    uint8_t s2_duty = (nr21 & 0b11000000) >> 6;
+    /* verilator lint_on WIDTH */    
     s2_duty = s2_duty ? s2_duty * 2 : 1;
-    ubit4_t s2_sample = (s2_phase < s2_duty) ? s2_volume : 0;
+    uint8_t s2_sample = (s2_phase < s2_duty) ? s2_volume : 0;
     s2_out = s2_sample;
   }
 
-  const bool s3_power = (nr30 & 0b10000000);
-  if (s3_enable && s3_power) {
-    ubit3_t s3_volume_shift = 0;
+  /* verilator lint_off WIDTH */    
+  if (s3_enable && (nr30 & 0b10000000)) {
+    uint8_t s3_byte = s3_wave[s3_phase >> 1];
+    uint8_t s3_sample = (s3_phase & 1) ? (s3_byte & 0x0F) : (s3_byte >> 4);
+    /* verilator lint_on WIDTH */    
+    uint8_t s3_volume_shift = 0;
+
     switch ((nr32 & 0b01100000) >> 5) {
     case 0: s3_volume_shift = 4; break;
     case 1: s3_volume_shift = 0; break;
     case 2: s3_volume_shift = 1; break;
     case 3: s3_volume_shift = 2; break;
     }
-    ubit4_t s3_sample = s3_wave[s3_phase >> 1];
-    s3_sample = (s3_phase & 1) ? (s3_sample & 0xF) : (s3_sample >> 4);
-    s3_sample >>= s3_volume_shift;
-    s3_out = s3_sample;
+
+    s3_out = s3_sample >> s3_volume_shift;
   }
 
   if (s4_enable) {
-    ubit4_t s4_volume = (nr42 & 0x08) ? s4_env_volume : 15 ^ s4_env_volume;
-    ubit4_t s4_sample = (s4_lfsr & 1) ? s4_volume : 0;
+    /* verilator lint_off WIDTH */    
+    uint8_t s4_volume = (nr42 & 0x08) ? s4_env_volume : 15 ^ s4_env_volume;
+    uint8_t s4_sample = (s4_lfsr & 1) ? s4_volume : 0;
+    /* verilator lint_on WIDTH */    
     s4_out = s4_sample;
   }
 
@@ -306,6 +347,7 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   out_r = 0;
   out_l = 0;
 
+  /* verilator lint_off WIDTH */    
   if (nr51 & 0b00000001) out_r += s1_out;
   if (nr51 & 0b00000010) out_r += s2_out;
   if (nr51 & 0b00000100) out_r += s3_out;
@@ -314,19 +356,32 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   if (nr51 & 0b00100000) out_l += s2_out;
   if (nr51 & 0b01000000) out_l += s3_out;
   if (nr51 & 0b10000000) out_l += s4_out;
+  /* verilator lint_on WIDTH */    
 
-  const ubit4_t volume_r = ((nr50 & 0b00000111) >> 0) + 1;
-  const ubit4_t volume_l = ((nr50 & 0b01110000) >> 4) + 1;
+  {
+    uint8_t volume_r = ((nr50 & 0b00000111) >> 0) + 1;
+    uint8_t volume_l = ((nr50 & 0b01110000) >> 4) + 1;
 
-  out_r *= volume_r;
-  out_l *= volume_l;
+    out_r *= volume_r;
+    out_l *= volume_l;
+  }
 
-  spu_clock = spu_clock_;
+  //----------
+  // commit
+
+  s1_out <= s1_out_;
+  s2_out <= s2_out_;
+  s3_out <= s3_out_;
+  s4_out <= s4_out_;
+
+  out_r <= out_r_;
+  out_l <= out_l_;
+  spu_clock <= spu_clock_;
 }
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_read(ubit16_t addr) {
+void SPU::bus_read(uint16_t addr) {
   bus_oe = 1;
   switch (addr) {
   case 0xFF10: bus_out = nr10 | 0x80; break;
@@ -384,23 +439,23 @@ void SPU::bus_read(ubit16_t addr) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_write(ubit16_t addr, ubit8_t data) {
+void SPU::bus_write(uint16_t addr, uint8_t data) {
   //----------
   // glitches n stuff
 
   if (addr == 0xFF12) {
     if ((nr12 & 0x08) && s1_enable) s1_env_volume = (s1_env_volume + 1) & 15;
-    if ((data & 0xF8) == 0) s1_enable = false;
+    if (!(data & 0xF8)) s1_enable = false;
   }
 
   if (addr == 0xFF17) {
     if ((nr22 & 0x08) && s2_enable) s2_env_volume = (s2_env_volume + 1) & 15;
-    if ((data & 0xF8) == 0) s2_enable = false;
+    if (!(data & 0xF8)) s2_enable = false;
   }
 
   if (addr == 0xFF21) {
     if ((nr42 & 0x08) && s4_enable) s4_env_volume = (s4_env_volume + 1) & 15;
-    if ((data & 0xF8) == 0) s4_enable = false;
+    if (!(data & 0xF8)) s4_enable = false;
   }
 
   if (addr == 0xFF26) {
@@ -451,11 +506,13 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
     bool s4_trigger_ = addr == 0xFF23 && (data & 0x80);
 
     if (s1_trigger_) {
-      ubit3_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
-      ubit7_t s1_length = 64 - (nr11 & 0b00111111);
-      ubit4_t s1_start_volume = (nr12 & 0b11110000) >> 4;
-      ubit3_t s1_env_period = (nr12 & 0b00000111) >> 0;
-      ubit11_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
+      uint8_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
+      uint8_t s1_length = 64 - (nr11 & 0b00111111);
+      uint8_t s1_start_volume = (nr12 & 0b11110000) >> 4;
+      uint8_t s1_env_period = (nr12 & 0b00000111) >> 0;
+      /* verilator lint_off WIDTH */
+      uint16_t s1_freq = ((nr14 << 8) | nr13) & 0x07FF;
+      /* verilator lint_on WIDTH */
 
       s1_enable = (nr12 & 0xF8) != 0;
       s1_duration = s1_length;
@@ -470,10 +527,12 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
     }
 
     if (s2_trigger_) {
-      ubit7_t s2_length = 64 - (nr21 & 0b00111111);
-      ubit4_t s2_start_volume = (nr22 & 0b11110000) >> 4;
-      ubit3_t s2_env_period = (nr22 & 0b00000111) >> 0;
-      ubit11_t s2_freq = ((nr24 << 8) | nr23) & 0x07FF;
+      uint8_t s2_length = 64 - (nr21 & 0b00111111);
+      uint8_t s2_start_volume = (nr22 & 0b11110000) >> 4;
+      uint8_t s2_env_period = (nr22 & 0b00000111) >> 0;
+      /* verilator lint_off WIDTH */
+      uint16_t s2_freq = ((nr24 << 8) | nr23) & 0x07FF;
+      /* verilator lint_on WIDTH */
 
       s2_enable = (nr22 & 0xF8) != 0;
       s2_duration = s2_length;
@@ -486,8 +545,10 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
     }
 
     if (s3_trigger_) {
-      ubit9_t s3_length = 256 - nr31;
-      ubit11_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
+      /* verilator lint_off WIDTH */
+      uint16_t s3_length = 256 - nr31;
+      uint16_t s3_freq = ((nr34 << 8) | nr33) & 0x07FF;
+      /* verilator lint_on WIDTH */
 
       s3_enable = (nr32 != 0);
       s3_duration = s3_length;
@@ -496,10 +557,12 @@ void SPU::bus_write(ubit16_t addr, ubit8_t data) {
     }
 
     if (s4_trigger_) {
-      ubit7_t s4_length = 64 - (nr41 & 0b00111111);
-      ubit4_t s4_start_volume = (nr42 & 0b11110000) >> 4;
-      ubit3_t s4_env_period = (nr42 & 0b00000111) >> 0;
-      ubit4_t s4_phase_period = (nr43 & 0b00000111) ? (nr43 & 0b00000111) * 2 : 1;
+      uint8_t s4_length = 64 - (nr41 & 0b00111111);
+      uint8_t s4_start_volume = (nr42 & 0b11110000) >> 4;
+      uint8_t s4_env_period = (nr42 & 0b00000111) >> 0;
+      /* verilator lint_off WIDTH */
+      uint8_t s4_phase_period = (nr43 & 0b00000111) ? (nr43 & 0b00000111) * 2 : 1;
+      /* verilator lint_on WIDTH */
 
       s4_enable = (nr42 & 0xF8) != 0;
       s4_duration = s4_length;
@@ -546,13 +609,13 @@ void SPU::dump(std::string& out) {
 
   const char* bar = "===============";
 
-  ubit4_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
+  uint8_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
   sprintf(out, "s1 vol %s\n", bar + (15 - s1_volume));
 
-  ubit4_t s2_volume = (nr22 & 0x08) ? s2_env_volume : 15 ^ s2_env_volume;
+  uint8_t s2_volume = (nr22 & 0x08) ? s2_env_volume : 15 ^ s2_env_volume;
   sprintf(out, "s2 vol %s\n", bar + (15 - s2_volume));
 
-  ubit3_t s3_volume = 0;
+  uint8_t s3_volume = 0;
   switch ((nr32 & 0b01100000) >> 5) {
   case 0: s3_volume = 0; break;
   case 1: s3_volume = 15; break;
@@ -561,7 +624,7 @@ void SPU::dump(std::string& out) {
   }
   sprintf(out, "s3 vol %s\n", bar + (15 - s3_volume));
 
-  ubit4_t s4_volume = (nr42 & 0x08) ? s4_env_volume : 15 ^ s4_env_volume;
+  uint8_t s4_volume = (nr42 & 0x08) ? s4_env_volume : 15 ^ s4_env_volume;
   sprintf(out, "s4 vol %s\n", bar + (15 - s4_volume));
 
   /*

@@ -1,13 +1,11 @@
 #pragma once
+#include "Types.h"
 
 //-----------------------------------------------------------------------------
 
 struct Serial {
   void reset();
-  void tock(uint16_t addr, uint8_t data, bool read, bool write);
-
-  uint8_t bus_out;
-  bool bus_oe;
+  BusOut tock(CpuBus bus);
 
 private:
   uint8_t sb; // FF01

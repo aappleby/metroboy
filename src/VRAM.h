@@ -1,13 +1,12 @@
 #pragma once
+#include "Types.h"
 
 //-----------------------------------------------------------------------------
 
 struct VRAM {
   void reset();
 
-  void tock(uint16_t addr, uint8_t data, bool read, bool write);
-
-  uint8_t bus_out;
+  BusOut tock(CpuBus bus);
 
   union {
     struct {

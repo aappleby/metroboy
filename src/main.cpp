@@ -266,8 +266,8 @@ void MetroBoyApp::loop() {
   // Wave thingy
 
   for (int i = 0; i < 16; i++) {
-    uint8_t a = (gameboy.spu.s3_wave[i] & 0x0F) >> 0;
-    uint8_t b = (gameboy.spu.s3_wave[i] & 0xF0) >> 4;
+    uint8_t a = (gameboy.spu.get_wave()[i] & 0x0F) >> 0;
+    uint8_t b = (gameboy.spu.get_wave()[i] & 0xF0) >> 4;
     uint32_t color = 0xFFFFFFFF;
   
     framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;

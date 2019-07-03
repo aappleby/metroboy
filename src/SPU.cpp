@@ -7,11 +7,6 @@
 //-----------------------------------------------------------------------------
 
 void SPU::reset() {
-  bus_out = 0;
-  bus_oe = 0;
-  out_r = 0;
-  out_l = 0;
-
   nr10 = 0x80;
   nr11 = 0xBF;
   nr12 = 0xF3;
@@ -71,14 +66,15 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
+SpuOut SPU::tock(int tphase, CpuBus bus) {
+  SpuOut ret = {};
   bool sound_on = (nr52 & 0x80);
   ubit14_t spu_clock_ = (spu_clock + 1) & 0x3FFF;
   ubit14_t clock_flip = (~spu_clock) & spu_clock_;
 
-  if (read)  bus_read(addr);
-  if (write && (sound_on || addr == 0xFF26)) bus_write(addr, data);
-  if (tphase != 2) return;
+  if (bus.read)  bus_read(bus.addr, ret);
+  if (bus.write && (sound_on || bus.addr == 0xFF26)) bus_write(bus.addr, bus.data);
+  if (tphase != 0) return ret;
 
   if (!sound_on) {
     s1_out = 0;
@@ -86,9 +82,9 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
     s3_out = 0;
     s4_out = 0;
 
-    out_r = 0;
-    out_l = 0;
-    return;
+    ret.out_r = 0;
+    ret.out_l = 0;
+    return ret;
   }
 
   //----------
@@ -303,58 +299,60 @@ void SPU::tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write) {
   //----------
   // mixer & master volume
 
-  out_r = 0;
-  out_l = 0;
+  ret.out_r = 0;
+  ret.out_l = 0;
 
-  if (nr51 & 0b00000001) out_r += s1_out;
-  if (nr51 & 0b00000010) out_r += s2_out;
-  if (nr51 & 0b00000100) out_r += s3_out;
-  if (nr51 & 0b00001000) out_r += s4_out;
-  if (nr51 & 0b00010000) out_l += s1_out;
-  if (nr51 & 0b00100000) out_l += s2_out;
-  if (nr51 & 0b01000000) out_l += s3_out;
-  if (nr51 & 0b10000000) out_l += s4_out;
+  if (nr51 & 0b00000001) ret.out_r += s1_out;
+  if (nr51 & 0b00000010) ret.out_r += s2_out;
+  if (nr51 & 0b00000100) ret.out_r += s3_out;
+  if (nr51 & 0b00001000) ret.out_r += s4_out;
+  if (nr51 & 0b00010000) ret.out_l += s1_out;
+  if (nr51 & 0b00100000) ret.out_l += s2_out;
+  if (nr51 & 0b01000000) ret.out_l += s3_out;
+  if (nr51 & 0b10000000) ret.out_l += s4_out;
 
   const ubit4_t volume_r = ((nr50 & 0b00000111) >> 0) + 1;
   const ubit4_t volume_l = ((nr50 & 0b01110000) >> 4) + 1;
 
-  out_r *= volume_r;
-  out_l *= volume_l;
+  ret.out_r *= volume_r;
+  ret.out_l *= volume_l;
 
   spu_clock = spu_clock_;
+
+  return ret;
 }
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_read(ubit16_t addr) {
-  bus_oe = 1;
+void SPU::bus_read(ubit16_t addr, SpuOut& ret) {
+  ret.bus_oe = 1;
   switch (addr) {
-  case 0xFF10: bus_out = nr10 | 0x80; break;
-  case 0xFF11: bus_out = nr11 | 0x3F; break;
-  case 0xFF12: bus_out = nr12 | 0x00; break;
-  case 0xFF13: bus_out = nr13 | 0xFF; break;
-  case 0xFF14: bus_out = nr14 | 0xBF; break;
+  case 0xFF10: ret.bus_out = nr10 | 0x80; break;
+  case 0xFF11: ret.bus_out = nr11 | 0x3F; break;
+  case 0xFF12: ret.bus_out = nr12 | 0x00; break;
+  case 0xFF13: ret.bus_out = nr13 | 0xFF; break;
+  case 0xFF14: ret.bus_out = nr14 | 0xBF; break;
 
-  case 0xFF15: bus_out = nr20 | 0xFF; break;
-  case 0xFF16: bus_out = nr21 | 0x3F; break;
-  case 0xFF17: bus_out = nr22 | 0x00; break;
-  case 0xFF18: bus_out = nr23 | 0xFF; break;
-  case 0xFF19: bus_out = nr24 | 0xBF; break;
+  case 0xFF15: ret.bus_out = nr20 | 0xFF; break;
+  case 0xFF16: ret.bus_out = nr21 | 0x3F; break;
+  case 0xFF17: ret.bus_out = nr22 | 0x00; break;
+  case 0xFF18: ret.bus_out = nr23 | 0xFF; break;
+  case 0xFF19: ret.bus_out = nr24 | 0xBF; break;
   
-  case 0xFF1A: bus_out = nr30 | 0x7F; break;
-  case 0xFF1B: bus_out = nr31 | 0xFF; break;
-  case 0xFF1C: bus_out = nr32 | 0x9F; break;
-  case 0xFF1D: bus_out = nr33 | 0xFF; break;
-  case 0xFF1E: bus_out = nr34 | 0xBF; break;
+  case 0xFF1A: ret.bus_out = nr30 | 0x7F; break;
+  case 0xFF1B: ret.bus_out = nr31 | 0xFF; break;
+  case 0xFF1C: ret.bus_out = nr32 | 0x9F; break;
+  case 0xFF1D: ret.bus_out = nr33 | 0xFF; break;
+  case 0xFF1E: ret.bus_out = nr34 | 0xBF; break;
   
-  case 0xFF1F: bus_out = nr40 | 0xFF; break;
-  case 0xFF20: bus_out = nr41 | 0xFF; break;
-  case 0xFF21: bus_out = nr42 | 0x00; break;
-  case 0xFF22: bus_out = nr43 | 0x00; break;
-  case 0xFF23: bus_out = nr44 | 0xBF; break;
+  case 0xFF1F: ret.bus_out = nr40 | 0xFF; break;
+  case 0xFF20: ret.bus_out = nr41 | 0xFF; break;
+  case 0xFF21: ret.bus_out = nr42 | 0x00; break;
+  case 0xFF22: ret.bus_out = nr43 | 0x00; break;
+  case 0xFF23: ret.bus_out = nr44 | 0xBF; break;
 
-  case 0xFF24: bus_out = nr50 | 0x00; break;
-  case 0xFF25: bus_out = nr51 | 0x00; break;
+  case 0xFF24: ret.bus_out = nr50 | 0x00; break;
+  case 0xFF25: ret.bus_out = nr51 | 0x00; break;
 
   case 0xFF26: {
     uint8_t bus_out_ = (nr52 & 0x80) | 0x70;
@@ -362,13 +360,13 @@ void SPU::bus_read(ubit16_t addr) {
     if (s2_enable) bus_out_ |= 0b00000010;
     if (s3_enable) bus_out_ |= 0b00000100;
     if (s4_enable) bus_out_ |= 0b00001000;
-    bus_out = bus_out_;
+    ret.bus_out = bus_out_;
     break;
   }
 
   default: {
-    bus_out = 0;
-    bus_oe = 0;
+    ret.bus_out = 0;
+    ret.bus_oe = 0;
     break;
   }
   }
@@ -377,8 +375,8 @@ void SPU::bus_read(ubit16_t addr) {
   // wavetable
 
   if (addr >= 0xFF30 && addr <= 0xFF3F) {
-    bus_oe = 1;
-    bus_out = s3_wave[addr & 0xF];
+    ret.bus_oe = 1;
+    ret.bus_out = s3_wave[addr & 0xF];
   }
 }
 

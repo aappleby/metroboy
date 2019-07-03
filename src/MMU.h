@@ -1,4 +1,5 @@
 #pragma once
+#include "Types.h"
 
 //-----------------------------------------------------------------------------
 
@@ -8,13 +9,11 @@ struct MMU {
   void reset(size_t new_rom_size, uint16_t new_pc);
   void reset(uint16_t new_pc);
   
-  void tock_t2(uint16_t addr, uint8_t data, bool read, bool write);
+  BusOut tock_t2(CpuBus bus);
 
   uint8_t* get_flat_ptr(uint16_t addr);
 
   size_t rom_size = 0;
-  uint8_t bus_out = 0;
-  bool bus_oe = false;
 
 private:
 

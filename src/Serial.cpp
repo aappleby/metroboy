@@ -6,34 +6,32 @@
 //-----------------------------------------------------------------------------
 
 void Serial::reset() {
-  bus_out = 0x00;
-  bus_oe = false;
-
   sb = 0x00;
   sc = 0x7E;
 }
 
 //-----------------------------------------------------------------------------
 
-void Serial::tock(uint16_t addr, uint8_t data, bool read, bool write) {
-  bus_out = 0x00;
-  bus_oe = false;
+BusOut Serial::tock(CpuBus bus) {
+  BusOut out = { 0,0 };
 
-  if (write) {
-    if (addr == ADDR_SB) sb = data;
-    if (addr == ADDR_SC) sc = data | 0b01111110;
+  if (bus.write) {
+    if (bus.addr == ADDR_SB) sb = bus.data;
+    if (bus.addr == ADDR_SC) sc = bus.data | 0b01111110;
   }
 
-  if (read) {
-    if (addr == ADDR_SB) {
-      bus_out = sb;
-      bus_oe = true;
+  if (bus.read) {
+    if (bus.addr == ADDR_SB) {
+      out.data = sb;
+      out.oe = true;
     }
-    if (addr == ADDR_SC) {
-      bus_out = sc;
-      bus_oe = true;
+    if (bus.addr == ADDR_SC) {
+      out.data = sc;
+      out.oe = true;
     }
   }
+
+  return out;
 }
 
 //-----------------------------------------------------------------------------

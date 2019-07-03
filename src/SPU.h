@@ -3,24 +3,29 @@
 
 //-----------------------------------------------------------------------------
 
-struct SPU {
-  void reset();
-
-  void tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write);
-
-  void  dump(std::string& out);
-
-  //----------
-  // output registers
-
+struct SpuOut {
   ubit8_t bus_out;
   bool    bus_oe;
   ubit9_t out_r;
   ubit9_t out_l;
+};
 
-//private:
+struct SPU {
+  void reset();
 
-  void bus_read(ubit16_t addr);
+  SpuOut tock(int tphase, CpuBus bus);
+
+  void  dump(std::string& out);
+
+  const uint8_t* get_wave() { return s3_wave; }
+
+  //----------
+  // output registers
+
+
+private:
+
+  void bus_read(ubit16_t addr, SpuOut& ret);
   void bus_write(ubit16_t addr, ubit8_t data);
 
   //----------

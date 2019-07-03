@@ -90,15 +90,15 @@ void Gameboy::tick() {
     uint8_t bus_out_ = bus_out;
     uint8_t bus_oe_ = bus_oe;
 
-    bus_out_ |= cpu_read_cart ? mmu.bus_out : 0x00;
-    bus_out_ |= cpu_read_vram ? vram.bus_out : 0x00;
-    bus_out_ |= cpu_read_iram ? iram.bus_out : 0x00;
+    bus_out_ |= cpu_read_cart ? mmu_out.data : 0x00;
+    bus_out_ |= cpu_read_vram ? vram_out.data : 0x00;
+    bus_out_ |= cpu_read_iram ? iram_out.data : 0x00;
     bus_out_ |= cpu_read_oam ? oam.bus_out : 0x00;
 
     bus_out_ |= ppu.bus_out;
-    bus_out_ |= buttons.bus_out;
-    bus_out_ |= serial.bus_out;
-    bus_out_ |= spu.bus_out;
+    bus_out_ |= buttons_out.data;
+    bus_out_ |= serial_out.data;
+    bus_out_ |= spu_out.bus_out;
     bus_out_ |= timer.bus_out;
     bus_out_ |= zram.bus_out;
 
@@ -108,9 +108,9 @@ void Gameboy::tick() {
     bus_oe_ += cpu_read_oam;
 
     bus_oe_ += ppu.bus_oe;
-    bus_oe_ += buttons.bus_oe;
-    bus_oe_ += serial.bus_oe;
-    bus_oe_ += spu.bus_oe;
+    bus_oe_ += buttons_out.oe;
+    bus_oe_ += serial_out.oe;
+    bus_oe_ += spu_out.bus_oe;
     bus_oe_ += timer.bus_oe;
     bus_oe_ += zram.bus_oe;
 
@@ -184,9 +184,9 @@ void Gameboy::tock() {
   uint16_t dma_write_addr = ADDR_OAM_BEGIN + dma_count_b;
 
   uint8_t dma_data = 0;
-  if (dma_mode_b == DMA_CART) dma_data = mmu.bus_out;
-  if (dma_mode_b == DMA_VRAM) dma_data = vram.bus_out;
-  if (dma_mode_b == DMA_IRAM) dma_data = iram.bus_out;
+  if (dma_mode_b == DMA_CART) dma_data = mmu_out.data;
+  if (dma_mode_b == DMA_VRAM) dma_data = vram_out.data;
+  if (dma_mode_b == DMA_IRAM) dma_data = iram_out.data;
 
   //-----------------------------------
 
@@ -240,47 +240,22 @@ void Gameboy::tock() {
   //-----------------------------------
   // vram bus mux
 
-  if (dma_mode_a == DMA_VRAM) {
-    cpu_read_vram = false;
-    vram.tock(dma_read_addr, 0, true, false);
-  }
-  else if (ppu.vram_lock) {
-    cpu_read_vram = false;
-    vram.tock(ppu.vram_addr, 0, ppu.vram_addr != 0, false);
-  }
-  else {
-    cpu_read_vram = cpu_read_ && ce_vram;
-    vram.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-  }
+  CpuBus cpu_bus = { cpu_addr_, cpu_data_, cpu_read_, cpu_write_ };
+  CpuBus dma_bus = { dma_read_addr, 0, true, false };
+  CpuBus ppu_bus = { ppu.vram_addr, 0, ppu.vram_addr != 0, false };
 
-  //-----------------------------------
-  // iram bus mux
+  cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu.vram_lock && cpu_read_ && ce_vram;
+  cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
+  cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_read_ && (ce_rom || ce_cram);
 
-  if (dma_mode_a == DMA_IRAM) {
-    cpu_read_iram = false;
-    iram.tock_t2(dma_read_addr, 0, true, false);
-  }
-  else {
-    cpu_read_iram = cpu_read_ && (ce_iram || ce_echo);
-    iram.tock_t2(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-  }
+  vram_out = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu.vram_lock ? ppu_bus : cpu_bus);
+  iram_out = iram.tock_t2(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
+  mmu_out = mmu.tock_t2(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
 
-  //-----------------------------------
-  // cart bus mux
-
-  if (dma_mode_a == DMA_CART) {
-    cpu_read_cart = false;
-    mmu.tock_t2(dma_read_addr, 0, true, false);
-  }
-  else {
-    cpu_read_cart = cpu_read_ && (ce_rom || ce_cram);
-    mmu.tock_t2(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-  }
-
-  buttons.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-  serial.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  buttons_out = buttons.tock(cpu_bus);
+  serial_out = serial.tock(cpu_bus);
   zram.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
-  spu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  spu_out = spu.tock(tphase, cpu_bus);
   timer.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
 
   //-----------------------------------
@@ -319,10 +294,10 @@ void Gameboy::tock() {
   bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
 
   if (!lcd_on) {
-    ppu.tock_lcdoff(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
+    ppu.tock_lcdoff(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram_out.data, oam.bus_out);
   }
   else {
-    ppu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram.bus_out, oam.bus_out);
+    ppu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram_out.data, oam.bus_out);
   }
 }
 

@@ -10,21 +10,18 @@ Buttons::Buttons() {
 void Buttons::reset() {
   val = 0xFF;
   p1 = 0xCF;
-  bus_out = 0;
-  bus_oe = false;
 }
 
-void Buttons::tock(uint16_t addr, uint8_t data, bool read, bool write) {
-  bus_out = 0x00;
-  bus_oe = false;
+BusOut Buttons::tock(CpuBus bus) {
+  BusOut ret = { 0,0 };
 
-  if (write && addr == ADDR_P1) {
-    p1 = (p1 & 0xCF) | (data & 0x30);
+  if (bus.write && bus.addr == ADDR_P1) {
+    p1 = (p1 & 0xCF) | (bus.data & 0x30);
   }
 
-  if (read && addr == ADDR_P1) {
-    bus_out = p1;
-    bus_oe = true;
+  if (bus.read && bus.addr == ADDR_P1) {
+    ret.data = p1;
+    ret.oe = true;
   }
 
   //-----------------------------------
@@ -34,6 +31,8 @@ void Buttons::tock(uint16_t addr, uint8_t data, bool read, bool write) {
   case 0x10: p1 = (p1 & 0xF0) | ((val >> 4) & 0xF); break;
   case 0x20: p1 = (p1 & 0xF0) | ((val >> 0) & 0xF); break;
   }
+
+  return ret;
 }
 
 void Buttons::dump(std::string& out) {

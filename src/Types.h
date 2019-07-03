@@ -2,6 +2,18 @@
 
 typedef int16_t sample_t;
 
+struct CpuBus {
+  uint16_t addr;
+  uint8_t data;
+  bool read;
+  bool write;
+};
+
+struct BusOut {
+  uint8_t data;
+  bool oe;
+};
+
 //-----------------------------------------------------------------------------
 
 struct Sprite {

@@ -40,8 +40,8 @@ struct Gameboy {
 
   bool    get_pix_oe()     { return ppu.pix_oe; }
   uint8_t get_pix_out()    { return ppu.pix_out; }
-  ubit9_t get_audio_r() { return spu.out_r; }
-  ubit9_t get_audio_l() { return spu.out_l; }
+  ubit9_t get_audio_r() { return spu_out.out_r; }
+  ubit9_t get_audio_l() { return spu_out.out_l; }
 
   uint16_t get_pc() {
     return z80.get_pc();
@@ -84,6 +84,13 @@ struct Gameboy {
   Buttons buttons;
   Serial serial;
   ZRAM zram;
+
+  SpuOut spu_out;
+  BusOut buttons_out;
+  BusOut iram_out;
+  BusOut serial_out;
+  BusOut vram_out;
+  BusOut mmu_out;
 
   int model = MODEL_DMG;
   int64_t tcycle = -1;

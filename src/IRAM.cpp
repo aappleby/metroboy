@@ -4,33 +4,31 @@
 #include "Constants.h"
 
 void IRAM::reset() {
-  bus_out = 0x00;
-  bus_oe = false;
-
   memset(ram, 0, sizeof(ram));
 }
 
-void IRAM::tock_t2(uint16_t addr, uint8_t data, bool read, bool write) {
-  bus_out = 0x00;
-  bus_oe = false;
+BusOut IRAM::tock_t2(CpuBus bus) {
+  BusOut out = { 0,0 };
 
-  if (read) {
-    if (ADDR_IRAM_BEGIN <= addr && addr <= ADDR_IRAM_END) {
-      bus_out = ram[addr - ADDR_IRAM_BEGIN];
-      bus_oe = true;
+  if (bus.read) {
+    if (ADDR_IRAM_BEGIN <= bus.addr && bus.addr <= ADDR_IRAM_END) {
+      out.data = ram[bus.addr - ADDR_IRAM_BEGIN];
+      out.oe = true;
     }
-    else if (ADDR_ECHO_BEGIN <= addr && addr <= ADDR_ECHO_END) {
-      bus_out = ram[addr - ADDR_ECHO_BEGIN];
-      bus_oe = true;
+    else if (ADDR_ECHO_BEGIN <= bus.addr && bus.addr <= ADDR_ECHO_END) {
+      out.data = ram[bus.addr - ADDR_ECHO_BEGIN];
+      out.oe = true;
     }   
   }
 
-  if (write) {
-    if (ADDR_IRAM_BEGIN <= addr && addr <= ADDR_IRAM_END) {
-      ram[addr - ADDR_IRAM_BEGIN] = data;
+  if (bus.write) {
+    if (ADDR_IRAM_BEGIN <= bus.addr && bus.addr <= ADDR_IRAM_END) {
+      ram[bus.addr - ADDR_IRAM_BEGIN] = bus.data;
     }
-    else if (ADDR_ECHO_BEGIN <= addr && addr <= ADDR_ECHO_END) {
-      ram[addr - ADDR_ECHO_BEGIN] = data;
+    else if (ADDR_ECHO_BEGIN <= bus.addr && bus.addr <= ADDR_ECHO_END) {
+      ram[bus.addr - ADDR_ECHO_BEGIN] = bus.data;
     }
   }
+
+  return out;
 }

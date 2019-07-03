@@ -23,9 +23,6 @@ void MMU::reset(uint16_t new_pc) {
   bank_latch1 = 0;
   bank_latch2 = 0;
 
-  bus_out = rom_buf[new_pc];
-  bus_oe = true;
-
   int rom_banks = rom_buf[0x0148];
   switch (rom_banks) {
   case 0x00: rom_bank_count = 0; break;
@@ -62,66 +59,66 @@ void MMU::reset(uint16_t new_pc) {
 
 //-------------------------------------
 
-void MMU::tock_t2(uint16_t addr, uint8_t data, bool read, bool write) {
-  if (write) {
-    if (addr <= 0x1FFF) {
-      ram_enable = (data & 0x0F) == 0x0A;
+BusOut MMU::tock_t2(CpuBus bus) {
+  if (bus.write) {
+    if (bus.addr <= 0x1FFF) {
+      ram_enable = (bus.data & 0x0F) == 0x0A;
     }
-    else if (addr >= 0x2000 && addr <= 0x3FFF) {
-      bank_latch1 = data & 0b00011111;
+    else if (bus.addr >= 0x2000 && bus.addr <= 0x3FFF) {
+      bank_latch1 = bus.data & 0b00011111;
 
       int bank = ((bank_latch2 << 5) | bank_latch1);
       if (bank_latch1 == 0) {
         bank |= 0b00000001;
       }
     }
-    else if (addr >= 0x4000 && addr <= 0x5FFF) {
-      bank_latch2 = data & 0b00000011;
+    else if (bus.addr >= 0x4000 && bus.addr <= 0x5FFF) {
+      bank_latch2 = bus.data & 0b00000011;
 
       int bank = ((bank_latch2 << 5) | bank_latch1);
       if (bank_latch1 == 0) {
         bank |= 0b00000001;
       }
     }
-    else if (addr >= 0x6000 && addr <= 0x7FFF) {
-      mode = data & 1;
+    else if (bus.addr >= 0x6000 && bus.addr <= 0x7FFF) {
+      mode = bus.data & 1;
     }
-    else if (addr >= 0xA000 && addr <= 0xBFFF) {
+    else if (bus.addr >= 0xA000 && bus.addr <= 0xBFFF) {
       if (ram_enable && ram_bank_count) {
         int bank = mode ? bank_latch2 : 0;
         bank &= (ram_bank_count - 1);
-        ram_buf[(addr - 0xA000) | (bank << 13)] = data;
+        ram_buf[(bus.addr - 0xA000) | (bank << 13)] = bus.data;
         ram_dirty = true;
         //printf("ram_dirty 0x%04x 0x%02x\n", addr, data);
       }
     }
-    else if (addr == ADDR_DISABLE_BOOTROM) {
-      disable_boot_rom |= (data != 0);
+    else if (bus.addr == ADDR_DISABLE_BOOTROM) {
+      disable_boot_rom |= (bus.data != 0);
     }
   }
 
   uint8_t _bus_out = 0x00;
   bool _bus_oe = false;
 
-  if (read) {
-    if (addr <= 0x00FF && !disable_boot_rom) {
-      _bus_out = DMG_ROM_bin[addr];
+  if (bus.read) {
+    if (bus.addr <= 0x00FF && !disable_boot_rom) {
+      _bus_out = DMG_ROM_bin[bus.addr];
       _bus_oe = true;
     }
-    else if (addr <= 0x3FFF) {
+    else if (bus.addr <= 0x3FFF) {
       if (mode == 0) {
-        _bus_out = rom_buf[addr];
+        _bus_out = rom_buf[bus.addr];
         _bus_oe = true;
       }
       else {
         int bank = (bank_latch2 << 5);
         bank &= (rom_bank_count - 1);
         if (rom_bank_count == 0) bank = 0;
-        _bus_out = rom_buf[(addr & 0x3FFF) | (bank << 14)];
+        _bus_out = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
         _bus_oe = true;
       }
     }
-    else if (addr >= 0x4000 && addr <= 0x7FFF) {
+    else if (bus.addr >= 0x4000 && bus.addr <= 0x7FFF) {
       // so one doc says this should ignore bank_latch2 if mode == 1, but that breaks the mooneye test...
       int bank = ((bank_latch2 << 5) | bank_latch1);
       if (bank_latch1 == 0) {
@@ -130,22 +127,21 @@ void MMU::tock_t2(uint16_t addr, uint8_t data, bool read, bool write) {
 
       bank &= (rom_bank_count - 1);
 
-      _bus_out = rom_buf[(addr & 0x3FFF) | (bank << 14)];
+      _bus_out = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
       _bus_oe = true;
     }
-    else if (addr >= 0xA000 && addr <= 0xBFFF) {
+    else if (bus.addr >= 0xA000 && bus.addr <= 0xBFFF) {
       if (ram_enable && ram_bank_count) {
         int bank = mode ? bank_latch2 : 0;
         bank &= (ram_bank_count - 1);
         if (rom_bank_count == 0) bank = 0;
-        _bus_out = ram_buf[(addr - 0xA000) | (bank << 13)];
+        _bus_out = ram_buf[(bus.addr - 0xA000) | (bank << 13)];
         _bus_oe = true;
       }
     }
   }
 
-  bus_out = _bus_out;
-  bus_oe = _bus_oe;
+  return { _bus_out, _bus_oe };
 }
 
 //-----------------------------------------------------------------------------

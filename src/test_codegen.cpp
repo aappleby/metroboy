@@ -1,7 +1,7 @@
-#include "Platform.h"
-
 #include "Assembler.h"
 #include "Gameboy.h"
+
+#include <string>
 
 // no sprites, no scroll - last render is 61
 // sprite at 0, no scroll - last render is 63
@@ -29,14 +29,14 @@ int spritex_vs_scx[17][9] = {
   { 63, 63, 63, 63, 63, 63, 64, 64, 63 },
 };
 
-void test_preloaded(Gameboy& gameboy, const string& /*name*/) {
+void test_preloaded(Gameboy& gameboy, const std::string& /*name*/) {
   uint8_t result = 0xFF;
   int i = 0;
   const int ticks = 100000;  // bits_ram_en needs lots of tcycles
   for (; i < ticks; i++) {
     gameboy.tick();
     gameboy.tock();
-    result = gameboy.vram.ram[0];
+    result = gameboy.get_vram()[0];
     if (result) break;
   }
 
@@ -73,7 +73,7 @@ void test_scx_sprite() {
       const int delay = spritex_vs_scx[spriteX][scrollX];
       const int result = 0x83;
 
-      string name;
+      std::string name;
       sprintf(name, "sprite_vs_scx_%02d_%02d_%02d_%02d", spriteX, scrollX, delay, result);
       l->begin(name);
 
@@ -89,7 +89,7 @@ void test_scx_sprite() {
       const int delay = spritex_vs_scx[spriteX][scrollX] + 1;
       const int result = 0x80;
 
-      string name;
+      std::string name;
       sprintf(name, "sprite_vs_scx_%02d_%02d_%02d_%02d", spriteX, scrollX, delay, result);
       l->begin(name);
 

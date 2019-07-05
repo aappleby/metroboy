@@ -1,9 +1,10 @@
-
-#include "Platform.h"
 #include "PPU.h"
 
-#include "Common.h"
 #include "Constants.h"
+
+extern const uint32_t gb_colors[];
+
+const char* to_binary(uint8_t b);
 
 uint16_t pack_map_addr(uint16_t base, uint8_t map_x, uint8_t map_y);
 uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty);
@@ -15,6 +16,10 @@ uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, int wy_counter);
 uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map);
 
 uint16_t sprite_base_address(uint8_t lcdc, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags);
+
+uint8_t flip2(uint8_t b) {
+  return uint8_t(((b * 0x80200802ULL) & 0x0884422110ULL) * 0x0101010101ULL >> 32);
+}
 
 //-----------------------------------------------------------------------------
 
@@ -169,7 +174,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_read*/, bool cpu_write) {
+void PPU::tick(int tphase, CpuBus bus) {
   counter_delay3 = counter_delay2;
   counter_delay2 = counter_delay1;
   counter_delay1 = counter;
@@ -291,7 +296,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
   if (tphase == 2) {
     stat_int &= ~0x80;
-    if (cpu_write && cpu_addr == ADDR_STAT && stat_int != 0) stat_int |= 0x80;
+    if (bus.write && bus.addr == ADDR_STAT && stat_int != 0) stat_int |= 0x80;
   }
 
   if (tphase == 0) {
@@ -306,8 +311,7 @@ void PPU::tick(int tphase, ubit16_t cpu_addr, ubit8_t /*cpu_data*/, bool /*cpu_r
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
-                      uint8_t /*vram_in*/, uint8_t /*oam_in*/) {
+void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
   counter = 4;
   counter_delay1 = 3;
   counter_delay2 = 2;
@@ -318,8 +322,8 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   line_delay2 = 0;
   line_delay3 = 0;
 
-  if (cpu_read)  bus_read_early(cpu_addr);
-  if (cpu_write) bus_write_early(cpu_addr, cpu_data);
+  if (bus.read)  bus_read_early(bus.addr);
+  if (bus.write) bus_write_early(bus.addr, bus.data);
 
   ly = 0;
   frame_count = 0;
@@ -353,14 +357,13 @@ void PPU::tock_lcdoff(int /*tphase*/, ubit16_t cpu_addr, ubit8_t cpu_data, bool 
   bus_oe = 0;
   bus_out = 0;
 
-  if (cpu_read)  bus_read_late(cpu_addr);
-  if (cpu_write) bus_write_late(cpu_addr, cpu_data);
+  if (bus.read)  bus_read_late(bus.addr);
+  if (bus.write) bus_write_late(bus.addr, bus.data);
 }
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write,
-  uint8_t vram_in, uint8_t oam_in) {
+void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
   if (counter > 84 && (pix_count2 + pix_discard_pad == 168)) {
     vram_addr = 0;
     fetch_delay = false;
@@ -393,16 +396,16 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
   //-----------------------------------
   // Bus write
 
-  if (cpu_read)  bus_read_early(cpu_addr);
-  if (cpu_write) bus_write_early(cpu_addr, cpu_data);
+  if (bus.read)  bus_read_early(bus.addr);
+  if (bus.write) bus_write_early(bus.addr, bus.data);
 
   //-----------------------------------
   // Handle OAM reads from the previous cycle
 
-  if (oam_read && (oam_addr & 3) == 0) spriteY = oam_in;
-  if (oam_read && (oam_addr & 3) == 1) spriteX = oam_in;
-  if (oam_read && (oam_addr & 3) == 2) spriteP = oam_in;
-  if (oam_read && (oam_addr & 3) == 3) spriteF = oam_in;
+  if (oam_read && (oam_addr & 3) == 0) spriteY = oam_in.data;
+  if (oam_read && (oam_addr & 3) == 1) spriteX = oam_in.data;
+  if (oam_read && (oam_addr & 3) == 2) spriteP = oam_in.data;
+  if (oam_read && (oam_addr & 3) == 3) spriteF = oam_in.data;
 
   if (oam_read && (counter <= 80) && (oam_addr & 3) == 1 && sprite_count < 10) {
     int si = (counter - 1) >> 1;
@@ -410,7 +413,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     int sx = spriteX;
 
     if (lcdc & FLAG_TALL_SPRITES) {
-      ubit4_t sprite_height = 15;
+      uint8_t sprite_height = 15;
       if ((sx < 168) && (sy <= line) && (line <= sy + sprite_height)) {
         sprite_x[sprite_count] = spriteX;
         sprite_y[sprite_count] = spriteY;
@@ -419,7 +422,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
       }
     }
     else {
-      ubit4_t sprite_height = 7;
+      uint8_t sprite_height = 7;
       if ((sx < 168) && (sy <= line) && (line <= sy + sprite_height)) {
         sprite_x[sprite_count] = spriteX;
         sprite_y[sprite_count] = spriteY;
@@ -472,7 +475,7 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     (pix_count2 + pix_discard_pad == wx);
 
   in_window_late = false;
-  if (cpu_write && cpu_addr == 0xFF40 && (cpu_data & FLAG_WIN_ON)) {
+  if (bus.write && bus.addr == 0xFF40 && (bus.data & FLAG_WIN_ON)) {
     in_window_late =
       (lcdc & FLAG_WIN_ON) &&
       (line >= wy) &&
@@ -524,16 +527,16 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
     if (!fetch_delay) {
       if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
         if (fetch_state == FETCH_MAP) {
-          tile_map = vram_in;
+          tile_map = vram_in.data;
           map_x++;
         }
-        if (fetch_state == FETCH_LO)   tile_lo = vram_in;
-        if (fetch_state == FETCH_HI) { tile_hi = vram_in; tile_latched = 1; }
+        if (fetch_state == FETCH_LO)   tile_lo = vram_in.data;
+        if (fetch_state == FETCH_HI) { tile_hi = vram_in.data; tile_latched = 1; }
       }
       else if (fetch_type == FETCH_SPRITE) {
-        if (fetch_state == FETCH_LO) sprite_lo = vram_in;
+        if (fetch_state == FETCH_LO) sprite_lo = vram_in.data;
         if (fetch_state == FETCH_HI) {
-          sprite_hi = vram_in;
+          sprite_hi = vram_in.data;
           sprite_latched = true;
         }
       }
@@ -546,11 +549,11 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
         sprite_hi = flip2(sprite_hi);
       }
 
-      ubit8_t sprite_pal_lo = spriteF & SPRITE_PAL ? 0b11111111 : 0b00000000;
-      ubit8_t sprite_pal_hi = 0b11111111;
+      uint8_t sprite_pal_lo = spriteF & SPRITE_PAL ? 0b11111111 : 0b00000000;
+      uint8_t sprite_pal_hi = 0b11111111;
 
       // sprites don't draw where we already drew sprites
-      ubit8_t mask = ob_pix_lo | ob_pix_hi;
+      uint8_t mask = ob_pix_lo | ob_pix_hi;
 
       ob_pix_lo |= (sprite_lo & ~mask);
       ob_pix_hi |= (sprite_hi & ~mask);
@@ -702,8 +705,8 @@ void PPU::tock(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, b
 
   //-----------------------------------
 
-  if (cpu_read)  bus_read_late(cpu_addr);
-  if (cpu_write) bus_write_late(cpu_addr, cpu_data);
+  if (bus.read)  bus_read_late(bus.addr);
+  if (bus.write) bus_write_late(bus.addr, bus.data);
 } // PPU::tock
 
 //-----------------------------------------------------------------------------
@@ -717,12 +720,12 @@ uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty) {
 }
 
 uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y) {
-  ubit16_t base = (lcdc & FLAG_BG_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
+  uint16_t base = (lcdc & FLAG_BG_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
   return pack_map_addr(base, map_x, map_y);
 }
 
 uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map) {
-  ubit16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
+  uint16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
   map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
   uint8_t ty = (scy + line) & 7;
 
@@ -730,12 +733,12 @@ uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map)
 }
 
 uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, int wy_counter) {
-  ubit16_t base = (lcdc & FLAG_WIN_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
+  uint16_t base = (lcdc & FLAG_WIN_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
   return pack_map_addr(base, map_x, uint8_t(wy_counter >> 3));
 }
 
 uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map) {
-  ubit16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
+  uint16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
   map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
   return pack_tile_addr(base, map, wy_counter & 7);
 }
@@ -744,8 +747,8 @@ uint16_t sprite_base_address(uint8_t /*lcdc*/, uint8_t line, uint8_t sprite_y, u
   uint8_t sprite_dy = line + 16 - sprite_y;
   if (flags & SPRITE_FLIP_Y) {
     //if (lcdc & FLAG_TALL_SPRITES) map &= 0xFE;
-    //ubit4_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
-    ubit4_t sprite_height = 7;
+    //uint8_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
+    uint8_t sprite_height = 7;
     sprite_dy ^= sprite_height;
   }
 
@@ -1097,8 +1100,8 @@ void draw_tile(uint32_t* framebuffer, int stride, int x, int y, int scale,
     uint8_t hi = tile[y2 * 2 + 1];
 
     if (flip_x) {
-      lo = flip(lo);
-      hi = flip(hi);
+      lo = flip2(lo);
+      hi = flip2(hi);
     }
 
     for (int tx = 0; tx < 8; tx++) {
@@ -1156,7 +1159,7 @@ void PPU::dump_tiles(uint32_t* framebuffer, int stride, int x, int y, int /*scal
 
 void PPU::draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale,
   const uint8_t* vram2, int sprite_index2) const {
-  const Sprite& s = oam.get_sprite(sprite_index2);
+  const Sprite& s = ((Sprite*)oam.ram)[sprite_index2];
   if (s.x == 0) return;
   const uint8_t* sprite_base = vram2 + (16 * s.p);
 

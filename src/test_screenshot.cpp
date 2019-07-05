@@ -1,9 +1,16 @@
-#include "Platform.h"
-
-#include "Common.h"
 #include "Gameboy.h"
 
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
+
 #include <string>
+
+#pragma warning(disable : 4996)
+
+extern uint8_t rom_buf[];
 
 static const char* mealybug_tests[] = {
   "m3_window_timing",
@@ -106,8 +113,8 @@ int run_screenshot_test(int model, const std::string& prefix, const std::string&
     gameboy.tock();
 
     if (gameboy.get_pix_oe()) {
-      int x = gameboy.ppu.pix_count2 - 1;
-      int y = gameboy.ppu.line;
+      int x = gameboy.get_ppu().get_pix_count() - 1;
+      int y = gameboy.get_ppu().get_line();
 
       if (x >= 0 && x < 160 && y >= 0 && y < 144) {
         gameboy.framebuffer[x + y * 160] = gameboy.get_pix_out();

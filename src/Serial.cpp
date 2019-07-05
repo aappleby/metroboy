@@ -1,4 +1,3 @@
-#include "Platform.h"
 #include "Serial.h"
 
 #include "Constants.h"

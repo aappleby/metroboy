@@ -1,4 +1,3 @@
-#include "Platform.h"
 #include "ZRAM.h"
 
 #include "Constants.h"
@@ -6,30 +5,28 @@
 //-----------------------------------------------------------------------------
 
 void ZRAM::reset() {
-  bus_out = 0x00;
-  bus_oe = false;
-
   memset(ram, 0, sizeof(ram));
 }
 
 //-----------------------------------------------------------------------------
 
-void ZRAM::tock(uint16_t addr, uint8_t data, bool read, bool write) {
-  bus_out = 0x00;
-  bus_oe = false;
+BusOut ZRAM::tock(CpuBus bus) {
+  BusOut out = { 0,0 };
 
-  if (addr < ADDR_ZEROPAGE_BEGIN || ADDR_ZEROPAGE_END < addr) {
-    return;
+  if (bus.addr < ADDR_ZEROPAGE_BEGIN || ADDR_ZEROPAGE_END < bus.addr) {
+    return out;
   }
 
-  if (write) {
-    ram[addr - ADDR_ZEROPAGE_BEGIN] = data;
+  if (bus.write) {
+    ram[bus.addr - ADDR_ZEROPAGE_BEGIN] = bus.data;
   }
 
-  if (read) {
-    bus_out = ram[addr - ADDR_ZEROPAGE_BEGIN];
-    bus_oe = true;
+  if (bus.read) {
+    out.data = ram[bus.addr - ADDR_ZEROPAGE_BEGIN];
+    out.oe = true;
   }
+
+  return out;
 }
 
 //-----------------------------------------------------------------------------

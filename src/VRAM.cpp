@@ -1,4 +1,3 @@
-#include "Platform.h"
 #include "VRAM.h"
 
 #include "Constants.h"

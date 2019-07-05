@@ -1,7 +1,12 @@
-#include "Platform.h"
 #include "Audio.h"
 
 #include "Constants.h"
+
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
 
 #define AVERAGE
 #define HIGHPASS

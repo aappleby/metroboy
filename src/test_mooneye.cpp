@@ -1,7 +1,8 @@
-#include "Platform.h"
 #include "test_mooneye.h"
 
 #include "Gameboy.h"
+
+#pragma warning(disable : 4996)
 
 //---------
 // mooneye generic

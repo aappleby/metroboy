@@ -1,15 +1,14 @@
 #pragma once
+#include "Types.h"
 
 //-----------------------------------------------------------------------------
 
 struct Timer {
   void reset();
-  void tock(int tphase, uint16_t addr, uint8_t data, bool read, bool write);
+  BusOut tock(int tphase, CpuBus bus);
   void dump(std::string& out);
 
   bool overflow;
-  uint8_t bus_out;
-  bool bus_oe;
 
 //private:
 

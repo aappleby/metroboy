@@ -1,4 +1,3 @@
-#include "Platform.h"
 #include "IRAM.h"
 
 #include "Constants.h"

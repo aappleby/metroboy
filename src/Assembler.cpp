@@ -1,9 +1,16 @@
-#include "Platform.h"
 #include "Assembler.h"
-
-#include "Common.h"
+#include "Types.h"
 #include "Constants.h"
 #include "Opcodes.h"
+
+#include <assert.h>
+
+#pragma warning(disable : 4996)
+
+extern uint8_t rom_buf[];
+extern const char* op_strings[];
+extern const char* cb_strings[];
+extern const int op_sizes[];
 
 const char* source_header = R"(
 .gbheader
@@ -83,6 +90,32 @@ void Assembler::write_source() {
   FILE* out = fopen((name + ".s").c_str(), "wb");
   fwrite(source.data(), 1, source.size(), out);
   fclose(out);
+}
+
+void Assembler::begin_label(std::string label) {
+  label_map[label] = block_addr + (uint16_t)block_code->size();
+}
+
+void Assembler::begin_block(uint16_t addr) {
+  blob& code = block_map[addr];
+  assert(code.empty());
+  block_addr = addr;
+  block_code = &code;
+}
+
+void Assembler::emit(uint8_t x) {
+  block_code->push_back(x);
+}
+
+void Assembler::emit(uint8_t a, uint8_t b) {
+  block_code->push_back(a);
+  block_code->push_back(b);
+}
+
+void Assembler::emit(uint8_t a, uint8_t b, uint8_t c) {
+  block_code->push_back(a);
+  block_code->push_back(b);
+  block_code->push_back(c);
 }
 
 //-----------------------------------------------------------------------------

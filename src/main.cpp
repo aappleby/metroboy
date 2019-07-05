@@ -1,8 +1,6 @@
-#include "Platform.h"
 #include "main.h"
 
 #include "Audio.h"
-#include "Common.h"
 #include "MetroBoy.h"
 #include "Assembler.h"
 
@@ -12,13 +10,27 @@
 #include "test_wpol.h"
 #include "test_screenshot.h"
 
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
+
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4702)
+
+extern const uint32_t gb_colors[];
+extern uint8_t rom_buf[];
+
 void run_test(const std::string& prefix, const std::string& name);
 
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-  MetroBoyApp app;
-  return app.main_(argc, argv);
+  MetroBoyApp* app = new MetroBoyApp();
+  int ret = app->main_(argc, argv);
+  delete app;
+  return ret;
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
@@ -49,9 +61,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  //load("gejmboj");
+  load("gejmboj");
   //load("LinksAwakening");
-  load("Prehistorik Man (U)");
+  //load("Prehistorik Man (U)");
   //load("SML");
 
   //load("microtests/build/dmg", "spu_env_change");
@@ -250,7 +262,7 @@ void MetroBoyApp::loop() {
   Gameboy& gameboy = metroboy.gb();
 
   gameboy.dump(text_buf);
-  gameboy.oam.dump(text_buf);
+  gameboy.get_oam().dump(text_buf);
   render_text(4, 4, text_buf.c_str());
   text_buf.clear();
 
@@ -258,7 +270,7 @@ void MetroBoyApp::loop() {
   render_text(140, 4, text_buf.c_str());
   text_buf.clear();
 
-  gameboy.spu.dump(text_buf);
+  gameboy.get_spu().dump(text_buf);
   render_text(280, 4, text_buf.c_str());
   text_buf.clear();
 
@@ -266,8 +278,8 @@ void MetroBoyApp::loop() {
   // Wave thingy
 
   for (int i = 0; i < 16; i++) {
-    uint8_t a = (gameboy.spu.get_wave()[i] & 0x0F) >> 0;
-    uint8_t b = (gameboy.spu.get_wave()[i] & 0xF0) >> 4;
+    uint8_t a = (gameboy.get_spu().get_wave()[i] & 0x0F) >> 0;
+    uint8_t b = (gameboy.get_spu().get_wave()[i] & 0xF0) >> 4;
     uint32_t color = 0xFFFFFFFF;
   
     framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;

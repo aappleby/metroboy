@@ -1,11 +1,6 @@
-#include "Platform.h"
 #include "Buttons.h"
 
 #include "Constants.h"
-
-Buttons::Buttons() {
-  reset();
-}
 
 void Buttons::reset() {
   val = 0xFF;
@@ -35,7 +30,7 @@ BusOut Buttons::tock(CpuBus bus) {
   return ret;
 }
 
-void Buttons::dump(std::string& out) {
+void Buttons::dump(std::string& out) const {
   sprintf(out, "%c %c %c %c %c %c %c %c\n",
           val & 0x01 ? '-' : 'R',
           val & 0x02 ? '-' : 'L',

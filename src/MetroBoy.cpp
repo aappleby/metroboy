@@ -1,8 +1,13 @@
-#include "Platform.h"
 #include "MetroBoy.h"
 
 #include "Audio.h"
-#include "Common.h"
+
+#include <assert.h>
+
+extern uint8_t rom_buf[];
+extern const int op_sizes[];
+
+#pragma warning(disable : 4996)
 
 //-----------------------------------------------------------------------------
 
@@ -228,12 +233,12 @@ void MetroBoy::cycle() {
   current_gameboy->tock();
 
   if (trace) {
-    tracebuffer[current_gameboy->ppu.line * 456 + current_gameboy->ppu.counter] = current_gameboy->trace();
+    tracebuffer[current_gameboy->get_ppu().get_line() * 456 + current_gameboy->get_ppu().get_counter()] = current_gameboy->trace();
   }
 
   if (current_gameboy->get_pix_oe()) {
-    int x = current_gameboy->ppu.pix_count2 - 1;
-    int y = current_gameboy->ppu.line;
+    int x = current_gameboy->get_ppu().get_pix_count() - 1;
+    int y = current_gameboy->get_ppu().get_line();
 
     if (x >= 0 && x < 160 && y >= 0 && y < 144) {
       current_gameboy->framebuffer[x + y * 160] = current_gameboy->get_pix_out();

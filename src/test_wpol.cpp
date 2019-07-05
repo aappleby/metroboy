@@ -1,7 +1,8 @@
-#include "Platform.h"
 #include "test_wpol.h"
 
 #include "Gameboy.h"
+
+#pragma warning(disable : 4996)
 
 //---------
 // wpol generic

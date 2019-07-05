@@ -1,9 +1,15 @@
-#include "Platform.h"
-
-#include "Common.h"
 #include "Gameboy.h"
 
 #include <string>
+
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
+
+#pragma warning(disable : 4996)
+extern uint8_t rom_buf[];
 
 static const std::string micro_tests[] = {
   "ppu_sprite0_scx0_a",
@@ -402,7 +408,7 @@ void run_microtest(int model, const std::string& prefix, const std::string& name
     //assert(!gameboy.ppu.vram_delay == !gameboy.ppu.fetch_delay);
 
 
-    result = gameboy.vram.ram[0];
+    result = gameboy.get_vram()[0];
     if (result) break;
   }
 

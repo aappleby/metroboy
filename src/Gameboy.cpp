@@ -1,9 +1,13 @@
-#include "Platform.h"
 #include "Gameboy.h"
 
 #include "Assembler.h"
-#include "Common.h"
 #include "Constants.h"
+
+#include <assert.h>
+
+extern uint8_t rom_buf[];
+extern const uint8_t DMG_ROM_bin[];
+const char* to_binary(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
@@ -76,12 +80,7 @@ void Gameboy::tick() {
   tcycle++;
   int tphase = tcycle & 3;
 
-  uint16_t cpu_addr_ = z80.mem_addr_;
-  uint8_t  cpu_data_ = z80.mem_out_;
-  bool     cpu_write_ = z80.mem_write_;
-  bool     cpu_read_ = z80.mem_read_;
-
-  ppu.tick(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  ppu.tick(tphase, cpu_bus2);
 
   //----------------------------------------
   // tick z80
@@ -93,14 +92,14 @@ void Gameboy::tick() {
     bus_out_ |= cpu_read_cart ? mmu_out.data : 0x00;
     bus_out_ |= cpu_read_vram ? vram_out.data : 0x00;
     bus_out_ |= cpu_read_iram ? iram_out.data : 0x00;
-    bus_out_ |= cpu_read_oam ? oam.bus_out : 0x00;
+    bus_out_ |= cpu_read_oam ? oam_out.data : 0x00;
 
     bus_out_ |= ppu.bus_out;
     bus_out_ |= buttons_out.data;
     bus_out_ |= serial_out.data;
-    bus_out_ |= spu_out.bus_out;
-    bus_out_ |= timer.bus_out;
-    bus_out_ |= zram.bus_out;
+    bus_out_ |= spu_out.data;
+    bus_out_ |= timer_out.data;
+    bus_out_ |= zram_out.data;
 
     bus_oe_ += cpu_read_cart;
     bus_oe_ += cpu_read_vram;
@@ -110,9 +109,9 @@ void Gameboy::tick() {
     bus_oe_ += ppu.bus_oe;
     bus_oe_ += buttons_out.oe;
     bus_oe_ += serial_out.oe;
-    bus_oe_ += spu_out.bus_oe;
-    bus_oe_ += timer.bus_oe;
-    bus_oe_ += zram.bus_oe;
+    bus_oe_ += spu_out.data;
+    bus_oe_ += timer_out.oe;
+    bus_oe_ += zram_out.oe;
 
     assert(bus_oe_ <= 1);
     if (!bus_oe_) bus_out_ = 0xFF;
@@ -121,21 +120,21 @@ void Gameboy::tick() {
   }
 
   if (tphase == 0) {
-    if (imask & 0x01) z80.unhalt |= (ppu.line == 144 && ppu.counter == 4);
+    if (imask & 0x01) z80.unhalt |= (ppu.get_line() == 144 && ppu.get_counter() == 4);
     if (imask & 0x02) z80.unhalt |= ppu.new_stat_int != 0;
     if (imask & 0x04) z80.unhalt |= (timer.overflow) ? true : false;
-    if (imask & 0x10) z80.unhalt |= (buttons.val != 0xFF) ? true : false;
+    if (imask & 0x10) z80.unhalt |= (buttons.get() != 0xFF) ? true : false;
 
     if (tcycle == 0) {
-      if (z80.pc == 0) {
+      if (z80.get_pc() == 0) {
         bus_in = DMG_ROM_bin[0];
       }
       else {
-        bus_in = rom_buf[z80.pc];
+        bus_in = rom_buf[z80.get_pc()];
       }
     }
 
-    z80.tick_t0(imask, intf, bus_in);
+    cpu_bus2 = z80.tick_t0(imask, intf, bus_in);
   }
 }
 
@@ -144,25 +143,26 @@ void Gameboy::tick() {
 void Gameboy::tock() {
   int tphase = tcycle & 3;
 
-  uint16_t cpu_addr_  = z80.mem_addr_;
-  uint8_t  cpu_data_  = z80.mem_out_;
-  bool     cpu_write_ = z80.mem_write_ && (tphase == 0);
-  bool     cpu_read_  = z80.mem_read_ && (tphase == 2);
-
+  CpuBus cpu_bus = {
+    cpu_bus2.addr,
+    cpu_bus2.data,
+    cpu_bus2.read && (tphase == 2),
+    cpu_bus2.write && (tphase == 0),
+  };
 
   if ((ppu.stat & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
   if (tphase == 0) ppu.old_stat_int = (ppu.stat & ppu.stat_int);
 
 
-  if (ppu.line == 144 && ppu.counter == 4) intf |= INT_VBLANK;
+  if (ppu.get_line() == 144 && ppu.get_counter() == 4) intf |= INT_VBLANK;
   if (timer.overflow)      intf |= INT_TIMER;
-  if (buttons.val != 0xFF) intf |= INT_JOYPAD;
+  if (buttons.get() != 0xFF) intf |= INT_JOYPAD;
 
-  if (cpu_read_) {
+  if (cpu_bus.read) {
     bus_out = 0x00;
     bus_oe = false;
-    if (cpu_addr_ == ADDR_IF) { bus_out = 0b11100000 | intf; bus_oe = true; }
-    if (cpu_addr_ == ADDR_IE) { bus_out = imask; bus_oe = true; }
+    if (cpu_bus.addr == ADDR_IF) { bus_out = 0b11100000 | intf; bus_oe = true; }
+    if (cpu_bus.addr == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }
 
   //-----------------------------------
@@ -190,10 +190,10 @@ void Gameboy::tock() {
 
   //-----------------------------------
 
-  bool ce_oam = (cpu_addr_ & 0xFF00) == 0xFE00;
-  bool ce_zram = (cpu_addr_ & 0xFF00) == 0xFF00;
+  bool ce_oam = (cpu_bus.addr & 0xFF00) == 0xFE00;
+  bool ce_zram = (cpu_bus.addr & 0xFF00) == 0xFF00;
 
-  int page = cpu_addr_ >> 13;
+  int page = cpu_bus.addr >> 13;
 
   bool ce_rom = page <= 3;
   bool ce_vram = page == 4;
@@ -201,38 +201,40 @@ void Gameboy::tock() {
   bool ce_iram = page == 6;
   bool ce_echo = page == 7 && !ce_oam && !ce_zram;
 
+  CpuBus dma_bus = { dma_read_addr, 0, true, false };
+
   //-----------------------------------
   // oam bus mux
 
   if (dma_mode_b != DMA_NONE) {
     cpu_read_oam = false;
     if (tphase == 0) {
-      oam.tock(dma_write_addr, dma_data, false, true);
+      oam_out = oam.tock({ dma_write_addr, dma_data, false, true });
     }
     else {
-      oam.tock(0, 0, false, false);
+      oam_out = oam.tock({ 0, 0, false, false });
     }
   }
   else {
     // Dirty hack - on tcycle 0 of a line, cpu write takes precendence over ppu read.
-    if (ppu.counter == 0) {
-      if (cpu_write_ && (cpu_addr_ & 0xFF00) == 0xFE00) {
-        cpu_read_oam = cpu_read_ && ce_oam;
-        oam.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+    if (ppu.get_counter() == 0) {
+      if (cpu_bus.write && (cpu_bus.addr & 0xFF00) == 0xFE00) {
+        cpu_read_oam = cpu_bus.read && ce_oam;
+        oam_out = oam.tock(cpu_bus);
       }
       else {
         cpu_read_oam = false;
-        oam.tock(ppu.oam_addr, ppu.oam_data, ppu.oam_read, false);
+        oam_out = oam.tock({ ppu.oam_addr, ppu.oam_data, ppu.oam_read, false });
       }
     }
     else {
       if (ppu.oam_lock) {
         cpu_read_oam = false;
-        oam.tock(ppu.oam_addr, ppu.oam_data, ppu.oam_read, false);
+        oam_out = oam.tock({ ppu.oam_addr, ppu.oam_data, ppu.oam_read, false });
       }
       else {
-        cpu_read_oam = cpu_read_ && ce_oam;
-        oam.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+        cpu_read_oam = cpu_bus.read && ce_oam;
+        oam_out = oam.tock(cpu_bus);
       }
     }
   }
@@ -240,23 +242,22 @@ void Gameboy::tock() {
   //-----------------------------------
   // vram bus mux
 
-  CpuBus cpu_bus = { cpu_addr_, cpu_data_, cpu_read_, cpu_write_ };
-  CpuBus dma_bus = { dma_read_addr, 0, true, false };
-  CpuBus ppu_bus = { ppu.vram_addr, 0, ppu.vram_addr != 0, false };
-
-  cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu.vram_lock && cpu_read_ && ce_vram;
+  cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu.vram_lock && cpu_bus.read && ce_vram;
   cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
-  cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_read_ && (ce_rom || ce_cram);
+  cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_bus.read && (ce_rom || ce_cram);
 
-  vram_out = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu.vram_lock ? ppu_bus : cpu_bus);
+  {
+    CpuBus ppu_bus = { ppu.vram_addr, 0, ppu.vram_addr != 0, false };
+    vram_out = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu.vram_lock ? ppu_bus : cpu_bus);
+  }
   iram_out = iram.tock_t2(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
   mmu_out = mmu.tock_t2(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
 
   buttons_out = buttons.tock(cpu_bus);
   serial_out = serial.tock(cpu_bus);
-  zram.tock(cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  zram_out = zram.tock(cpu_bus);
   spu_out = spu.tock(tphase, cpu_bus);
-  timer.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_);
+  timer_out = timer.tock(tphase, cpu_bus);
 
   //-----------------------------------
   // Z80
@@ -269,35 +270,37 @@ void Gameboy::tock() {
   //-----------------------------------
   // bus write
 
-  if (cpu_write_) {
-    if (cpu_addr_ == ADDR_DMA) {
-      //printf("%8lld: Starting dma from 0x%02x00\n", tcycle, cpu_data_);
+  if (cpu_bus.write) {
+    if (cpu_bus.addr == ADDR_DMA) {
+      //printf("%8lld: Starting dma from 0x%02x00\n", tcycle, cpu_bus.data);
 
-      if (cpu_data_ <= 0x7F) dma_mode_x = DMA_CART;
-      if (0x80 <= cpu_data_ && cpu_data_ <= 0x9F) dma_mode_x = DMA_VRAM;
-      if (0xA0 <= cpu_data_ && cpu_data_ <= 0xBF) dma_mode_x = DMA_CART;
-      if (0xC0 <= cpu_data_ && cpu_data_ <= 0xFD) dma_mode_x = DMA_IRAM;
+      if (cpu_bus.data <= 0x7F) dma_mode_x = DMA_CART;
+      if (0x80 <= cpu_bus.data && cpu_bus.data <= 0x9F) dma_mode_x = DMA_VRAM;
+      if (0xA0 <= cpu_bus.data && cpu_bus.data <= 0xBF) dma_mode_x = DMA_CART;
+      if (0xC0 <= cpu_bus.data && cpu_bus.data <= 0xFD) dma_mode_x = DMA_IRAM;
       dma_count_x = 0;
-      dma_source_x = cpu_data_;
+      dma_source_x = cpu_bus.data;
     }
 
-    if (cpu_addr_ == ADDR_IF) {
-      intf = cpu_data_ | 0b11100000;
+    if (cpu_bus.addr == ADDR_IF) {
+      intf = cpu_bus.data | 0b11100000;
     }
-    if (cpu_addr_ == ADDR_IE) {
-      imask = cpu_data_;
+    if (cpu_bus.addr == ADDR_IE) {
+      imask = cpu_bus.data;
     }
   }
 
   //-----------------------------------
 
-  bool lcd_on = (ppu.lcdc & FLAG_LCD_ON) != 0;
+  bool lcd_on = (ppu.get_lcdc() & FLAG_LCD_ON) != 0;
+
+  // FIXME should not be tocking w/ vram out here, it just got tocked
 
   if (!lcd_on) {
-    ppu.tock_lcdoff(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram_out.data, oam.bus_out);
+    ppu.tock_lcdoff(tphase, cpu_bus, vram_out, oam_out);
   }
   else {
-    ppu.tock(tphase, cpu_addr_, cpu_data_, cpu_read_, cpu_write_, vram_out.data, oam.bus_out);
+    ppu.tock(tphase, cpu_bus, vram_out, oam_out);
   }
 }
 
@@ -334,10 +337,10 @@ void Gameboy::dump(std::string& out) {
 
   sprintf(out, "tcycle %zd\n", tcycle);
 
-  sprintf(out, "z80 mem addr 0x%04x\n", z80.mem_addr_);
-  sprintf(out, "z80 mem data 0x%02x\n", z80.mem_out_);
-  sprintf(out, "z80 mem read %d\n", z80.mem_read_);
-  sprintf(out, "z80 mem write %d\n", z80.mem_write_);
+  sprintf(out, "z80 mem addr 0x%04x\n", cpu_bus2.addr);
+  sprintf(out, "z80 mem data 0x%02x\n", cpu_bus2.data);
+  sprintf(out, "z80 mem read %d\n", cpu_bus2.read);
+  sprintf(out, "z80 mem write %d\n", cpu_bus2.write);
 
   //sprintf(out, "bus out2 %02x\n", bus_out2);
   //sprintf(out, "bus oe2 %d\n", bus_oe2);
@@ -391,7 +394,7 @@ void Gameboy::dump_disasm(std::string& out) {
     segment = iram.get() + (pc - ADDR_IRAM_BEGIN);
   }
   else if (ADDR_ZEROPAGE_BEGIN <= pc && pc <= ADDR_ZEROPAGE_END) {
-    segment = zram.get() + (pc - ADDR_ZEROPAGE_BEGIN);
+    segment = zram.ram + (pc - ADDR_ZEROPAGE_BEGIN);
   }
   else if (ADDR_OAM_BEGIN <= pc && pc <= ADDR_OAM_END) {
     segment = oam.ram + (pc - ADDR_OAM_BEGIN);

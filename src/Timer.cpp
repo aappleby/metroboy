@@ -1,15 +1,12 @@
-#include "Platform.h"
 #include "Timer.h"
-
-#include "Common.h"
 #include "Constants.h"
+
+const char* to_binary(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
 void Timer::reset() {
   overflow = false;
-  bus_out = 0;
-  bus_oe = false;
 
   counter = 0x2AF3;
   old_tima = 0x00;
@@ -24,14 +21,14 @@ void Timer::reset() {
 
 static const int masks[] = { 0x80, 0x02, 0x08, 0x20 };
 
-void Timer::tock(int tphase, uint16_t addr, uint8_t data, bool read, bool write) {
-  if (read) {
-    bus_out = 0x00;
-    bus_oe = false;
-    if (addr == ADDR_TAC)  { bus_oe = true; bus_out = tac | 0b11111000; }
-    if (addr == ADDR_TMA)  { bus_oe = true; bus_out = tma; }
-    if (addr == ADDR_DIV)  { bus_oe = true; bus_out = uint8_t(counter >> 6); }
-    if (addr == ADDR_TIMA) { bus_oe = true; bus_out = new_tima; }
+BusOut Timer::tock(int tphase, CpuBus bus) {
+  BusOut out = { 0,0 };
+
+  if (bus.read) {
+    if (bus.addr == ADDR_TAC)  { out.oe = true; out.data = tac | 0b11111000; }
+    if (bus.addr == ADDR_TMA)  { out.oe = true; out.data = tma; }
+    if (bus.addr == ADDR_DIV)  { out.oe = true; out.data = uint8_t(counter >> 6); }
+    if (bus.addr == ADDR_TIMA) { out.oe = true; out.data = new_tima; }
   }
 
   if (tphase == 0) {
@@ -50,12 +47,14 @@ void Timer::tock(int tphase, uint16_t addr, uint8_t data, bool read, bool write)
     overflow = (old_tima == 0xFF) && (new_tima == 0x00);
   }
 
-  if (write) {
-    if (addr == ADDR_TIMA) new_tima = data;
-    if (addr == ADDR_DIV) counter = 0;
-    if (addr == ADDR_TAC) tac = data;
-    if (addr == ADDR_TMA) tma = data;
+  if (bus.write) {
+    if (bus.addr == ADDR_TIMA) new_tima = bus.data;
+    if (bus.addr == ADDR_DIV) counter = 0;
+    if (bus.addr == ADDR_TAC) tac = bus.data;
+    if (bus.addr == ADDR_TMA) tma = bus.data;
   }
+
+  return out;
 }
 
 //-----------------------------------------------------------------------------

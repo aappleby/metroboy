@@ -1,8 +1,11 @@
-#include "Platform.h"
 #include "MMU.h"
 
-#include "Common.h"
+#include <assert.h>
+
 #include "Constants.h"
+
+extern uint8_t rom_buf[];
+extern const uint8_t DMG_ROM_bin[];
 
 //-----------------------------------------------------------------------------
 
@@ -40,7 +43,7 @@ void MMU::reset(uint16_t new_pc) {
   default:   rom_bank_count = 0; break;
   }
 
-  SDL_assert_always(rom_bank_count <= 32);
+  assert(rom_bank_count <= 32);
 
   int ram_banks = rom_buf[0x0149];
   switch (ram_banks) {
@@ -52,7 +55,7 @@ void MMU::reset(uint16_t new_pc) {
   default:   ram_bank_count = 0; break;
   }
 
-  SDL_assert_always(ram_bank_count <= 1);
+  assert(ram_bank_count <= 1);
 
   disable_boot_rom = !(new_pc == 0x0000);
 }

@@ -1,9 +1,8 @@
-#include "Platform.h"
-#include "Common.h"
+#include "Constants.h"
 
 //-----------------------------------------------------------------------------
 
-const uint32_t gb_colors[8] = {
+extern const uint32_t gb_colors[8] = {
   0xFF7F7F7F,
   0xFF5F5F5F,
   0xFF3F3F3F,
@@ -22,7 +21,7 @@ uint8_t rom_buf[1024 * 1024];
 //-----------------------------------------------------------------------------
 // the boot rom that goes "baBING"
 
-const uint8_t DMG_ROM_bin[] = {
+extern const uint8_t DMG_ROM_bin[] = {
   0x31, 0xfe, 0xff, 0xaf, 0x21, 0xff, 0x9f, 0x32,
   0xcb, 0x7c, 0x20, 0xfb, 0x21, 0x26, 0xff, 0x0e,
   0x11, 0x3e, 0x80, 0x32, 0xe2, 0x0c, 0x3e, 0xf3,
@@ -60,7 +59,7 @@ const uint8_t DMG_ROM_bin[] = {
   0xfb, 0x86, 0x20, 0xfe, 0x3e, 0x01, 0xe0, 0x50
 };
 
-const char* op_strings[256] = {
+extern const char* op_strings[256] = {
   "nop",                "ld bc, $%04hx",  "ld (bc), a",     "inc bc",      "inc b",          "dec b",        "ld b, %hhu",      "rlca",
   "ld ($%04hx), sp",    "add hl, bc",     "ld a, (bc)",     "dec bc",      "inc c",          "dec c",        "ld c, %hhu",      "rrca",
   "stop",               "ld de, $%04hx",  "ld (de), a",     "inc de",      "inc d",          "dec d",        "ld d, %hhu",      "rla",
@@ -98,7 +97,7 @@ const char* op_strings[256] = {
   "ld hl, sp + %d",     "ld sp, hl",      "ld a, ($%04hx)",  "ei",          "undefined10",     "undefined11",  "cp %hhu",        "rst $38",
 };
 
-const char* cb_strings[256] = {
+extern const char* cb_strings[256] = {
   "rlc b",    "rlc c",    "rlc d",    "rlc e",    "rlc h",    "rlc l",    "rlc (hl)",    "rlc a",
   "rrc b",    "rrc c",    "rrc d",    "rrc e",    "rrc h",    "rrc l",    "rrc (hl)",    "rrc a",
   "rl b",     "rl c",     "rl d",     "rl e",     "rl h",     "rl l",     "rl (hl)",     "rl a",
@@ -136,7 +135,7 @@ const char* cb_strings[256] = {
   "set 7, b", "set 7, c", "set 7, d", "set 7, e", "set 7, h", "set 7, l", "set 7, (hl)", "set 7, a",
 };
 
-const int op_sizes[256] = {
+extern const int op_sizes[256] = {
   1, 3, 1, 1, 1, 1, 2, 1,
   3, 1, 1, 1, 1, 1, 2, 1,
   2, 3, 1, 1, 1, 1, 2, 1,
@@ -174,7 +173,7 @@ const int op_sizes[256] = {
   2, 1, 3, 1, 1, 1, 2, 1,
 };
 
-const int op_times_min[256] = {
+extern const int op_times_min[256] = {
   1, 3, 2, 2, 1, 1, 2, 1,
   5, 2, 2, 2, 1, 1, 2, 1,
   1, 3, 2, 2, 1, 1, 2, 1,
@@ -212,7 +211,7 @@ const int op_times_min[256] = {
   3, 2, 4, 1, 0, 0, 2, 4,
 };
 
-const int op_times_max[256] = {
+extern const int op_times_max[256] = {
   1, 3, 2, 2, 1, 1, 2, 1,
   5, 2, 2, 2, 1, 1, 2, 1,
   1, 3, 2, 2, 1, 1, 2, 1,
@@ -299,10 +298,6 @@ uint8_t flip(uint8_t x) {
   x = ((x & 0b11001100) >> 2) | ((x & 0b00110011) << 2);
   x = ((x & 0b11110000) >> 4) | ((x & 0b00001111) << 4);
   return x;
-}
-
-uint8_t flip2(uint8_t b) {
-  return uint8_t(((b * 0x80200802ULL) & 0x0884422110ULL) * 0x0101010101ULL >> 32);
 }
 
 //-----------------------------------------------------------------------------

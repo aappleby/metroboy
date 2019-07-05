@@ -1,6 +1,8 @@
 #pragma once
 #include "Gameboy.h"
 
+#include <vector>
+
 //-----------------------------------------------------------------------------
 
 class MetroBoy {

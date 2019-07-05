@@ -1,6 +1,10 @@
 #pragma once
 #include "Types.h"
 
+#include <list>
+#include <mutex>
+#include <condition_variable>
+
 struct AudioQueue {
   AudioQueue() : queue(), mux(), cv(), closed(false) {
   }

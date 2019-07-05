@@ -8,6 +8,7 @@ struct VRAM {
 
   BusOut tock(CpuBus bus);
 
+  /*
   union {
     struct {
       uint8_t tiles0[2048];  // 8000 - tile pattern 0
@@ -16,8 +17,9 @@ struct VRAM {
       uint8_t map0[1024];    // 9800
       uint8_t map1[1024];    // 9C00
     };
-    uint8_t ram[8192];
   };
+  */
+  uint8_t ram[8192];
 };
 
 //-----------------------------------------------------------------------------

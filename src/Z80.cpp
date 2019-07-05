@@ -1,8 +1,8 @@
-#include "Platform.h"
 #include "Z80.h"
 
 #include "Constants.h"
-#include "Common.h"
+
+#include <assert.h>
 
 //-----------------------------------------------------------------------------
 
@@ -103,17 +103,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
     pc = pc_ = new_pc;
   }
 
-  /*
-  // ags via gb-live32
-  af = 0x1100;
-  bc = 0x0100;
-  de = 0x0008;
-  hl = 0x007C;
-  sp = 0xFFFE;
-  pc = pc_ = new_pc;
-  */
-
-  op_ = rom_buf[new_pc];
+  op_ = 0;
   quad_ = 0;
   row_ = 0;
   col_ = 0;
@@ -144,7 +134,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 //-----------------------------------------------------------------------------
 
 
-void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   imask_ = imask;
   intf_ = intf;
   bus_data_ = bus_data;
@@ -173,7 +163,12 @@ void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       mem_write_ = false;
       unhalt = 0;
     }
-    return;
+    return {
+      mem_addr_,
+      mem_out_,
+      mem_read_,
+      mem_write_
+    };
   }
 
   switch (state) {
@@ -192,7 +187,16 @@ void Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DELAY_B:      tick_delayB();       break;
   case Z80_STATE_DELAY_C:      tick_delayC();       break;
   }
+
+  return {
+    mem_addr_,
+    mem_out_,
+    mem_read_,
+    mem_write_
+  };
 }
+
+//-----------------------------------------------------------------------------
 
 void Z80::tock_t2() {
   ime = ime_delay;

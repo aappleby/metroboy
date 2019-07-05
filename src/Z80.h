@@ -1,4 +1,5 @@
 #pragma once
+#include "Types.h"
 
 //-----------------------------------------------------------------------------
 
@@ -6,23 +7,27 @@ struct Z80 {
   void reset(int new_model, uint16_t new_pc);
   int model = 0;
 
-  void tick_t0(uint8_t imask, uint8_t intf, uint8_t mem_out);
+  CpuBus tick_t0(uint8_t imask, uint8_t intf, uint8_t mem_out);
   void tock_t2();
-  uint16_t get_pc() { return pc; }
-  uint8_t get_a() { return a; }
-  uint8_t get_op() { return op_; }
+
+  uint16_t get_pc() const { return pc; }
+  uint8_t  get_a()  const { return a; }
+  uint8_t  get_op() const { return op_; }
+
   void dump(std::string& out);
+
+  uint8_t int_ack_;
+  uint8_t bus_data_;
+  uint8_t imask_;
+  uint8_t intf_;
+  bool unhalt;
+
+private:
 
   uint16_t mem_addr_;
   bool mem_read_;
   bool mem_write_;
   uint8_t mem_out_;
-  uint8_t int_ack_;
-  uint8_t bus_data_;
-  uint8_t imask_;
-  uint8_t intf_;
-
-//private:
 
   // What's on the bus?
   enum MemTag {
@@ -67,6 +72,8 @@ struct Z80 {
 
   Z80State state, state_;
 
+#pragma warning(push)
+#pragma warning(disable : 4201)
   // Registers
   union { uint16_t bc; struct { uint8_t c; uint8_t b; }; };
   union { uint16_t de; struct { uint8_t e; uint8_t d; }; };
@@ -91,6 +98,7 @@ struct Z80 {
     };
     uint16_t data16_;
   };
+#pragma warning(pop)
 
   // Signals
 
@@ -131,8 +139,6 @@ struct Z80 {
 
   uint32_t opcount;
   int cycle;
-
-  bool unhalt;
 
   //----------
 

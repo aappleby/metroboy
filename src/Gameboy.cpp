@@ -70,7 +70,7 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
 }
 
 void Gameboy::reset(uint16_t new_pc) {
-  reset(model, mmu.rom_size, new_pc);
+  reset(model, mmu.get_rom_size(), new_pc);
 }
 
 //-----------------------------------------------------------------------------
@@ -122,7 +122,7 @@ void Gameboy::tick() {
   if (tphase == 0) {
     if (imask & 0x01) z80.unhalt |= (ppu.get_line() == 144 && ppu.get_counter() == 4);
     if (imask & 0x02) z80.unhalt |= ppu.new_stat_int != 0;
-    if (imask & 0x04) z80.unhalt |= (timer.overflow) ? true : false;
+    if (imask & 0x04) z80.unhalt |= (timer_out.overflow) ? true : false;
     if (imask & 0x10) z80.unhalt |= (buttons.get() != 0xFF) ? true : false;
 
     if (tcycle == 0) {
@@ -155,7 +155,7 @@ void Gameboy::tock() {
 
 
   if (ppu.get_line() == 144 && ppu.get_counter() == 4) intf |= INT_VBLANK;
-  if (timer.overflow)      intf |= INT_TIMER;
+  if (timer_out.overflow)      intf |= INT_TIMER;
   if (buttons.get() != 0xFF) intf |= INT_JOYPAD;
 
   if (cpu_bus.read) {
@@ -394,10 +394,10 @@ void Gameboy::dump_disasm(std::string& out) {
     segment = iram.get() + (pc - ADDR_IRAM_BEGIN);
   }
   else if (ADDR_ZEROPAGE_BEGIN <= pc && pc <= ADDR_ZEROPAGE_END) {
-    segment = zram.ram + (pc - ADDR_ZEROPAGE_BEGIN);
+    segment = zram.get() + (pc - ADDR_ZEROPAGE_BEGIN);
   }
   else if (ADDR_OAM_BEGIN <= pc && pc <= ADDR_OAM_END) {
-    segment = oam.ram + (pc - ADDR_OAM_BEGIN);
+    segment = oam.get() + (pc - ADDR_OAM_BEGIN);
   }
   else {
     segment = mmu.get_flat_ptr(pc);

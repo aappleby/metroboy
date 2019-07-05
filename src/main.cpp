@@ -374,7 +374,7 @@ void MetroBoyApp::loop() {
     "STEP_CYCLE",
   };
 
-  sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.current_gameboy->get_tcycle() & 3));
+  sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
   render_text(32 * 11, 32 * 11 + 18, text_buf.c_str());
   text_buf.clear();
 
@@ -393,7 +393,7 @@ void MetroBoyApp::loop() {
 
   for (int y = 0; y < 154; y++) {
     for (int x = 0; x < 456; x++) {
-      framebuffer[(trace_sx + x) + (trace_sy + y) * fb_width] = metroboy.tracebuffer[x + y * 456];
+      framebuffer[(trace_sx + x) + (trace_sy + y) * fb_width] = metroboy.get_trace()[x + y * 456];
     }
   }
 

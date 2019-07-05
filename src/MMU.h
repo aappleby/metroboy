@@ -4,18 +4,17 @@
 //-----------------------------------------------------------------------------
 
 struct MMU {
-  MMU();
-
   void reset(size_t new_rom_size, uint16_t new_pc);
   void reset(uint16_t new_pc);
   
   BusOut tock_t2(CpuBus bus);
 
   uint8_t* get_flat_ptr(uint16_t addr);
-
-  size_t rom_size = 0;
+  size_t get_rom_size() const { return rom_size; }
 
 private:
+
+  size_t rom_size = 0;
 
   bool disable_boot_rom = false;
 

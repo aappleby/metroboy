@@ -5,13 +5,12 @@
 
 struct Timer {
   void reset();
-  BusOut tock(int tphase, CpuBus bus);
+  TimerOut tock(int tphase, CpuBus bus);
   void dump(std::string& out);
 
+private:
+
   bool overflow;
-
-//private:
-
   void do_tima();
 
   uint16_t counter;  // FF04

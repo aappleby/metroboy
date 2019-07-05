@@ -27,28 +27,31 @@ struct Gameboy {
 
   uint32_t trace();
 
+  const SPU& get_spu() const { return spu; }
+  const PPU& get_ppu() const { return ppu; }
+  const OAM& get_oam() const { return oam; }
+
   int64_t        get_tcycle()     const { return tcycle; }
+
+  uint16_t       get_pc()         const { return z80.get_pc(); }
+  uint8_t        get_op()         const { return z80.get_op(); }
+  uint8_t        get_reg_a()      const { return z80.get_a(); }
+
   bool           is_frame_start() const { return ppu.is_frame_start(); }
   bool           is_frame_done()  const { return ppu.is_frame_done(); }
   int            get_line()       const { return ppu.get_line(); }
   int            get_pix_count()  const { return ppu.get_pix_count(); }
-  const SPU&     get_spu()        const { return spu; }
-  const PPU&     get_ppu()        const { return ppu; }
-  const uint8_t* get_vram()       const { return vram.ram; }
-  const OAM&     get_oam()        const { return oam; }
   bool           get_pix_oe()     const { return ppu.pix_oe; }
   uint8_t        get_pix_out()    const { return ppu.pix_out; }
+
+  const uint8_t* get_vram()       const { return vram.ram; }
+
   sample_t       get_audio_r()    const { return spu_out.out_r; }
   sample_t       get_audio_l()    const { return spu_out.out_l; }
-  uint16_t       get_pc()         const { return z80.get_pc(); }
-  uint8_t        get_op()         const { return z80.get_op(); }
-  uint8_t        get_reg_a()      const { return z80.get_a(); }
                  
   void set_buttons(uint8_t v) { buttons.set(v); }
 
-  // utils
   void check_sentinel() { assert(sentinel == 0xDEADBEEF); }
-
 
   void dump(std::string& out);
   void dump_disasm(std::string& out);
@@ -85,7 +88,7 @@ private:
   BusOut vram_out;
   BusOut mmu_out;
   BusOut zram_out;
-  BusOut timer_out;
+  TimerOut timer_out;
   BusOut oam_out;
 
   int model = MODEL_DMG;

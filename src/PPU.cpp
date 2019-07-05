@@ -284,7 +284,6 @@ void PPU::tick(int tphase, CpuBus bus) {
   //----------------------------------------
   // interrupts
 
-  // must be 6, must be both tphases
   stat_int &= ~EI_HBLANK;
   if (hblank_delay2 < 7) stat_int |= EI_HBLANK;
 
@@ -1159,7 +1158,7 @@ void PPU::dump_tiles(uint32_t* framebuffer, int stride, int x, int y, int /*scal
 
 void PPU::draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale,
   const uint8_t* vram2, int sprite_index2) const {
-  const Sprite& s = ((Sprite*)oam.ram)[sprite_index2];
+  const Sprite& s = ((Sprite*)oam.get())[sprite_index2];
   if (s.x == 0) return;
   const uint8_t* sprite_base = vram2 + (16 * s.p);
 

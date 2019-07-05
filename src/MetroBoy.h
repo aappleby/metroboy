@@ -20,6 +20,8 @@ public:
     return cycles;
   }
 
+  const uint32_t* get_trace() const { return tracebuffer; }
+
   void load_rom(int model, const char* filename, bool run_bootrom);
   void load_dump();
   void save_dump();
@@ -45,6 +47,8 @@ public:
   void clear_frame_history();
   void clear_line_history();
   void clear_cycle_history();
+
+private:
 
   Gameboy* current_gameboy;
   std::vector<Gameboy*> history_frame;

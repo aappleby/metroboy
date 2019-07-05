@@ -21,8 +21,8 @@ void Timer::reset() {
 
 static const int masks[] = { 0x80, 0x02, 0x08, 0x20 };
 
-BusOut Timer::tock(int tphase, CpuBus bus) {
-  BusOut out = { 0,0 };
+TimerOut Timer::tock(int tphase, CpuBus bus) {
+  TimerOut out = { 0, 0, 0 };
 
   if (bus.read) {
     if (bus.addr == ADDR_TAC)  { out.oe = true; out.data = tac | 0b11111000; }
@@ -46,6 +46,7 @@ BusOut Timer::tock(int tphase, CpuBus bus) {
     if (overflow) new_tima = tma;
     overflow = (old_tima == 0xFF) && (new_tima == 0x00);
   }
+  out.overflow = overflow;
 
   if (bus.write) {
     if (bus.addr == ADDR_TIMA) new_tima = bus.data;

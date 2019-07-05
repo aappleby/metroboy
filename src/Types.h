@@ -25,6 +25,30 @@ struct SpuOut {
   sample_t out_l;
 };
 
+struct PpuOut {
+  uint8_t data;
+  bool oe;
+  int x;
+  int y;
+  int counter;
+  uint8_t pix;
+};
+
+struct GameboyOut {
+  int x;
+  int y;
+  int counter;
+  uint8_t pix;
+  sample_t out_r;
+  sample_t out_l;
+};
+
+struct TimerOut {
+  uint8_t data;
+  bool oe;
+  bool overflow;
+};
+
 //-----------------------------------------------------------------------------
 
 struct Sprite {

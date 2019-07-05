@@ -9,10 +9,6 @@ extern const uint8_t DMG_ROM_bin[];
 
 //-----------------------------------------------------------------------------
 
-MMU::MMU() {
-  rom_size = 0;
-}
-
 void MMU::reset(size_t new_rom_size, uint16_t new_pc) {
   rom_size = new_rom_size;
   reset(new_pc);

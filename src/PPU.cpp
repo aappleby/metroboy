@@ -91,7 +91,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   // Sprites
 
   oam_addr = 0;
-  oam_data = 0;
   oam_read = false;
 
   sprite_count = 0;
@@ -344,7 +343,6 @@ void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*o
 
   vram_addr = 0;
   oam_addr = 0;
-  oam_data = 0;
   oam_read = false;
 
   state = PPU_STATE_HBLANK;
@@ -363,6 +361,10 @@ void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*o
 //-----------------------------------------------------------------------------
 
 void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
+  if ((lcdc & FLAG_LCD_ON) == 0) {
+    return tock_lcdoff(tphase, bus, vram_in, oam_in);
+  }
+
   if (counter > 84 && (pix_count2 + pix_discard_pad == 168)) {
     vram_addr = 0;
     fetch_delay = false;

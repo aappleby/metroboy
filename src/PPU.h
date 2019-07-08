@@ -10,7 +10,6 @@ struct PPU {
   int model = MODEL_DMG;
 
   void tick(int tphase, CpuBus cpu_bus);
-  void tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void dump(std::string& out);
 
@@ -20,6 +19,7 @@ struct PPU {
   uint8_t  get_line()       const { return line; }
   uint16_t get_counter()    const { return counter; }
   uint8_t  get_lcdc()       const { return lcdc; }
+  uint8_t  get_stat()       const { return stat; }
 
   uint8_t bus_out;
   bool bus_oe;
@@ -35,10 +35,8 @@ struct PPU {
   int new_stat_int = 0;
   int old_stat_int = 0;
   int stat_int;
-  uint8_t stat; // FF41
 
   uint16_t oam_addr;
-  uint8_t oam_data;
   bool oam_read;
 
   void dump_tiles(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
@@ -49,6 +47,7 @@ struct PPU {
 
 private:
 
+  void tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
 
@@ -61,6 +60,7 @@ private:
   // Registers
 
   uint8_t lcdc; // FF40
+  uint8_t stat; // FF41
   uint8_t scy;  // FF42
   uint8_t scx;  // FF43
   uint8_t ly;   // FF44

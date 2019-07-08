@@ -18,20 +18,24 @@ struct BusOut {
   bool oe;
 };
 
-struct SpuOut {
-  uint8_t data;
-  bool oe;
+struct SpuOut : public BusOut {
   sample_t out_r;
   sample_t out_l;
 };
 
-struct PpuOut {
-  uint8_t data;
-  bool oe;
+struct PpuOut : public BusOut {
   int x;
   int y;
   int counter;
   uint8_t pix;
+};
+
+struct ButtonsOut : public BusOut {
+  uint8_t val;
+};
+
+struct TimerOut : public BusOut {
+  bool overflow;
 };
 
 struct GameboyOut {
@@ -39,14 +43,9 @@ struct GameboyOut {
   int y;
   int counter;
   uint8_t pix;
+  bool pix_oe;
   sample_t out_r;
   sample_t out_l;
-};
-
-struct TimerOut {
-  uint8_t data;
-  bool oe;
-  bool overflow;
 };
 
 //-----------------------------------------------------------------------------

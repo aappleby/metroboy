@@ -48,10 +48,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  //run_mooneye_acceptance();
-  //run_wpol_acceptance();
+  run_mooneye_acceptance();
+  run_wpol_acceptance();
   //run_mealybug_tests();
-  //return 0;
+  return 0;
 
   //---------
 
@@ -353,8 +353,8 @@ void MetroBoyApp::loop() {
 
   if (runmode == STEP_LINE || runmode == STEP_CYCLE) {
 
-    int px = gameboy.get_pix_count();
-    int py = gameboy.get_line();
+    int px = metroboy.gb_out.x;
+    int py = metroboy.gb_out.y;
 
     for (int x = 0; x < 320; x++) {
       int color = (px == (x / 2)) ? 0x00606000 : 0x00600000;

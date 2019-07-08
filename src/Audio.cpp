@@ -2,6 +2,10 @@
 
 #include "Constants.h"
 
+#include <list>
+#include <mutex>
+#include <condition_variable>
+
 #ifdef _MSC_VER
 #include <include/SDL.h>
 #else
@@ -13,6 +17,41 @@
 #define LOWPASS
 
 SDL_AudioDeviceID dev;
+
+struct AudioQueue {
+  AudioQueue() : queue(), mux(), cv(), closed(false) {
+  }
+
+  std::list<sample_t*> queue;
+  std::mutex mux;
+  std::condition_variable cv;
+  bool closed;
+
+  sample_t* get() {
+    std::unique_lock<std::mutex> lock(mux);
+    cv.wait(lock, [&] { return closed || !queue.empty(); });
+    if (queue.empty()) {
+      return nullptr;
+    }
+    else {
+      sample_t* buf = queue.front();
+      queue.pop_front();
+      return buf;
+    }
+  }
+
+  void put(sample_t* buf) {
+    std::unique_lock<std::mutex> lock(mux);
+    queue.push_back(buf);
+    cv.notify_one();
+  }
+
+  void close() {
+    closed = true;
+    cv.notify_all();
+  }
+};
+
 
 AudioQueue audio_queue_out;
 AudioQueue audio_queue_in;

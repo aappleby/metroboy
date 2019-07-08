@@ -157,8 +157,8 @@ void run_mooneye(const std::string& prefix, const std::string& name) {
   for (; i < ticks; i++) {
     gameboy.tick();
     gameboy.tock();
-    if (gameboy.get_op() == 0x40) {
-      result = gameboy.get_reg_a();
+    if (gameboy.get_cpu().get_op() == 0x40) {
+      result = gameboy.get_cpu().get_a();
       break;
     }
   }

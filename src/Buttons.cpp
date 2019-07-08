@@ -7,8 +7,8 @@ void Buttons::reset() {
   p1 = 0xCF;
 }
 
-BusOut Buttons::tock(CpuBus bus) {
-  BusOut ret = { 0,0 };
+ButtonsOut Buttons::tock(CpuBus bus) {
+  ButtonsOut ret = { 0, 0, 0 };
 
   if (bus.write && bus.addr == ADDR_P1) {
     p1 = (p1 & 0xCF) | (bus.data & 0x30);
@@ -27,6 +27,7 @@ BusOut Buttons::tock(CpuBus bus) {
   case 0x20: p1 = (p1 & 0xF0) | ((val >> 0) & 0xF); break;
   }
 
+  ret.val = val;
   return ret;
 }
 

@@ -110,14 +110,14 @@ int run_screenshot_test(int model, const std::string& prefix, const std::string&
   const int ticks = 400000;
   for (; i < ticks; i++) {
     gameboy.tick();
-    gameboy.tock();
+    GameboyOut gb_out = gameboy.tock();
 
-    if (gameboy.get_pix_oe()) {
+    if (gb_out.pix_oe) {
       int x = gameboy.get_ppu().get_pix_count() - 1;
       int y = gameboy.get_ppu().get_line();
 
       if (x >= 0 && x < 160 && y >= 0 && y < 144) {
-        gameboy.framebuffer[x + y * 160] = gameboy.get_pix_out();
+        gameboy.framebuffer[x + y * 160] = gb_out.pix;
       }
     }
 

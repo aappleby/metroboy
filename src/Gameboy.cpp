@@ -123,24 +123,24 @@ void Gameboy::tick() {
     if (imask & 0x01) z80.unhalt |= (ppu.get_line() == 144 && ppu.get_counter() == 4);
     if (imask & 0x02) z80.unhalt |= ppu.new_stat_int != 0;
     if (imask & 0x04) z80.unhalt |= (timer_out.overflow) ? true : false;
-    if (imask & 0x10) z80.unhalt |= (buttons.get() != 0xFF) ? true : false;
-
-    if (tcycle == 0) {
-      if (z80.get_pc() == 0) {
-        bus_in = DMG_ROM_bin[0];
-      }
-      else {
-        bus_in = rom_buf[z80.get_pc()];
-      }
-    }
+    if (imask & 0x10) z80.unhalt |= (buttons_out.val != 0xFF) ? true : false;
 
     cpu_bus2 = z80.tick_t0(imask, intf, bus_in);
   }
+
+  // Moving these before z80.tick slightly breaks things
+
+  if ((ppu.get_stat() & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
+  if (tphase == 0) ppu.old_stat_int = (ppu.get_stat() & ppu.stat_int);
+  if (ppu.get_line() == 144 && ppu.get_counter() == 4) intf |= INT_VBLANK;
+  if (timer_out.overflow)      intf |= INT_TIMER;
+  if (buttons_out.val != 0xFF) intf |= INT_JOYPAD;
+
 }
 
 //-----------------------------------------------------------------------------
 
-void Gameboy::tock() {
+GameboyOut Gameboy::tock() {
   int tphase = tcycle & 3;
 
   CpuBus cpu_bus = {
@@ -150,20 +150,18 @@ void Gameboy::tock() {
     cpu_bus2.write && (tphase == 0),
   };
 
-  if ((ppu.stat & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
-  if (tphase == 0) ppu.old_stat_int = (ppu.stat & ppu.stat_int);
+  ppu.tock(tphase, cpu_bus, vram_out, oam_out);
 
+  // Moving these before ppu.tock slightly breaks things
+  bool ppu_vram_lock = ppu.vram_lock;
+  uint16_t ppu_vram_addr = ppu.vram_addr;
+  int ppu_counter = ppu.get_counter();
+  //int ppu_line = ppu.get_line();
+  bool ppu_oam_lock = ppu.oam_lock;
+  bool ppu_oam_read = ppu.oam_read;
+  uint16_t ppu_oam_addr = ppu.oam_addr;
 
-  if (ppu.get_line() == 144 && ppu.get_counter() == 4) intf |= INT_VBLANK;
-  if (timer_out.overflow)      intf |= INT_TIMER;
-  if (buttons.get() != 0xFF) intf |= INT_JOYPAD;
-
-  if (cpu_bus.read) {
-    bus_out = 0x00;
-    bus_oe = false;
-    if (cpu_bus.addr == ADDR_IF) { bus_out = 0b11100000 | intf; bus_oe = true; }
-    if (cpu_bus.addr == ADDR_IE) { bus_out = imask; bus_oe = true; }
-  }
+  CpuBus ppu_bus = { ppu_vram_addr, 0, ppu_vram_addr != 0, false };
 
   //-----------------------------------
   // DMA state machine
@@ -190,66 +188,64 @@ void Gameboy::tock() {
 
   //-----------------------------------
 
-  bool ce_oam = (cpu_bus.addr & 0xFF00) == 0xFE00;
-  bool ce_zram = (cpu_bus.addr & 0xFF00) == 0xFF00;
+  bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
 
   int page = cpu_bus.addr >> 13;
 
-  bool ce_rom = page <= 3;
+  bool ce_rom  = page <= 3;
   bool ce_vram = page == 4;
   bool ce_cram = page == 5;
   bool ce_iram = page == 6;
-  bool ce_echo = page == 7 && !ce_oam && !ce_zram;
+  bool ce_echo = page == 7 && (cpu_bus.addr < 0xFE00);
 
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
 
   //-----------------------------------
   // oam bus mux
 
+  CpuBus oam_bus;
+  cpu_read_oam = false;
+
   if (dma_mode_b != DMA_NONE) {
-    cpu_read_oam = false;
     if (tphase == 0) {
-      oam_out = oam.tock({ dma_write_addr, dma_data, false, true });
+      oam_bus = { dma_write_addr, dma_data, false, true };
     }
     else {
-      oam_out = oam.tock({ 0, 0, false, false });
+      oam_bus = { 0, 0, false, false };
     }
   }
   else {
     // Dirty hack - on tcycle 0 of a line, cpu write takes precendence over ppu read.
-    if (ppu.get_counter() == 0) {
+    if (ppu_counter == 0) {
       if (cpu_bus.write && (cpu_bus.addr & 0xFF00) == 0xFE00) {
         cpu_read_oam = cpu_bus.read && ce_oam;
-        oam_out = oam.tock(cpu_bus);
+        oam_bus = cpu_bus;
       }
       else {
-        cpu_read_oam = false;
-        oam_out = oam.tock({ ppu.oam_addr, ppu.oam_data, ppu.oam_read, false });
+        oam_bus = { ppu_oam_addr, 0, ppu_oam_read, false };
       }
     }
     else {
-      if (ppu.oam_lock) {
-        cpu_read_oam = false;
-        oam_out = oam.tock({ ppu.oam_addr, ppu.oam_data, ppu.oam_read, false });
+      if (ppu_oam_lock) {
+        oam_bus = { ppu_oam_addr, 0, ppu_oam_read, false };
       }
       else {
         cpu_read_oam = cpu_bus.read && ce_oam;
-        oam_out = oam.tock(cpu_bus);
+        oam_bus = cpu_bus;
       }
     }
   }
+
+  oam_out = oam.tock(oam_bus);
 
   //-----------------------------------
   // vram bus mux
 
-  cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu.vram_lock && cpu_bus.read && ce_vram;
+  cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu_vram_lock && cpu_bus.read && ce_vram;
   cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
   cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_bus.read && (ce_rom || ce_cram);
 
-  {
-    CpuBus ppu_bus = { ppu.vram_addr, 0, ppu.vram_addr != 0, false };
-    vram_out = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu.vram_lock ? ppu_bus : cpu_bus);
-  }
+  vram_out = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_vram_lock ? ppu_bus : cpu_bus);
   iram_out = iram.tock_t2(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
   mmu_out = mmu.tock_t2(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
 
@@ -270,10 +266,15 @@ void Gameboy::tock() {
   //-----------------------------------
   // bus write
 
+  if (cpu_bus.read) {
+    bus_out = 0x00;
+    bus_oe = false;
+    if (cpu_bus.addr == ADDR_IF) { bus_out = 0b11100000 | intf; bus_oe = true; }
+    if (cpu_bus.addr == ADDR_IE) { bus_out = imask; bus_oe = true; }
+  }
+
   if (cpu_bus.write) {
     if (cpu_bus.addr == ADDR_DMA) {
-      //printf("%8lld: Starting dma from 0x%02x00\n", tcycle, cpu_bus.data);
-
       if (cpu_bus.data <= 0x7F) dma_mode_x = DMA_CART;
       if (0x80 <= cpu_bus.data && cpu_bus.data <= 0x9F) dma_mode_x = DMA_VRAM;
       if (0xA0 <= cpu_bus.data && cpu_bus.data <= 0xBF) dma_mode_x = DMA_CART;
@@ -292,16 +293,15 @@ void Gameboy::tock() {
 
   //-----------------------------------
 
-  bool lcd_on = (ppu.get_lcdc() & FLAG_LCD_ON) != 0;
-
-  // FIXME should not be tocking w/ vram out here, it just got tocked
-
-  if (!lcd_on) {
-    ppu.tock_lcdoff(tphase, cpu_bus, vram_out, oam_out);
-  }
-  else {
-    ppu.tock(tphase, cpu_bus, vram_out, oam_out);
-  }
+  return {
+    ppu.get_pix_count(),
+    ppu.get_line(),
+    ppu.get_counter(),
+    ppu.pix_out,
+    ppu.pix_oe,
+    spu_out.out_r,
+    spu_out.out_l,
+  };
 }
 
 //-----------------------------------------------------------------------------

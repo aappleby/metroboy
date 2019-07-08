@@ -85,7 +85,8 @@ void MetroBoy::run_vsync(uint8_t buttons) {
 
   current_gameboy->set_buttons(~buttons);
 
-  while (!current_gameboy->is_frame_done()) {
+  //while (!current_gameboy->is_frame_done()) {
+  while(gb_out.y != 144) {
     cycle();
   }
 
@@ -93,8 +94,7 @@ void MetroBoy::run_vsync(uint8_t buttons) {
 
   for (int i = 0; i < 154 * 114; i++) {
     mcycle();
-    audio_post(current_gameboy->get_audio_l(),
-               current_gameboy->get_audio_r());
+    audio_post(gb_out.out_l, gb_out.out_r);
   }
 
   audio_end();
@@ -108,7 +108,7 @@ void MetroBoy::run_to(uint16_t breakpoint) {
   clear_cycle_history();
 
   while (1) {
-    uint16_t pc = current_gameboy->get_pc();
+    uint16_t pc = current_gameboy->get_cpu().get_pc();
     if (pc == breakpoint) break;
     cycle();
   }
@@ -127,7 +127,8 @@ void MetroBoy::step_frame() {
 
   do {
     mcycle();
-  } while (!current_gameboy->is_frame_done());
+    //} while (!current_gameboy->is_frame_done());
+  } while (gb_out.y != 144);
 }
 
 void MetroBoy::step_line() {
@@ -138,10 +139,10 @@ void MetroBoy::step_line() {
   current_gameboy = new Gameboy();
   memcpy(current_gameboy, history_line.back(), sizeof(Gameboy));
 
-  int line = current_gameboy->get_line();
+  int line = gb_out.y;
   do {
     mcycle();
-  } while (current_gameboy->get_line() == line);
+  } while (gb_out.y == line);
 }
 
 void MetroBoy::step_cycle() {
@@ -159,7 +160,7 @@ void MetroBoy::step_over() {
   memcpy(current_gameboy, history_cycle.back(), sizeof(Gameboy));
 
   //int op = current_gameboy->get_op();
-  int pc = current_gameboy->get_pc();
+  int pc = current_gameboy->get_cpu().get_pc();
   int op = rom_buf[pc];
   int op_size = op_sizes[op];
   if (op == 0xcb) op_size = 2;
@@ -168,7 +169,7 @@ void MetroBoy::step_over() {
 
   int i = 0;
   for (; i < 1000000; i++) {
-    if (current_gameboy->get_pc() == next_pc) {
+    if (current_gameboy->get_cpu().get_pc() == next_pc) {
       // step succeeded
       return;
     }
@@ -230,18 +231,18 @@ void MetroBoy::clear_cycle_history() {
 
 void MetroBoy::cycle() {
   current_gameboy->tick();
-  current_gameboy->tock();
+  gb_out = current_gameboy->tock();
 
   if (trace) {
-    tracebuffer[current_gameboy->get_ppu().get_line() * 456 + current_gameboy->get_ppu().get_counter()] = current_gameboy->trace();
+    tracebuffer[gb_out.y * 456 + gb_out.counter] = current_gameboy->trace();
   }
 
-  if (current_gameboy->get_pix_oe()) {
-    int x = current_gameboy->get_ppu().get_pix_count() - 1;
-    int y = current_gameboy->get_ppu().get_line();
+  if (gb_out.pix_oe) {
+    int x = gb_out.x - 1;
+    int y = gb_out.y;
 
     if (x >= 0 && x < 160 && y >= 0 && y < 144) {
-      current_gameboy->framebuffer[x + y * 160] = current_gameboy->get_pix_out();
+      current_gameboy->framebuffer[x + y * 160] = gb_out.pix;
     }
   }
 

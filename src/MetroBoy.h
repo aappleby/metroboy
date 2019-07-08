@@ -48,9 +48,12 @@ public:
   void clear_line_history();
   void clear_cycle_history();
 
+  GameboyOut gb_out;
+
 private:
 
   Gameboy* current_gameboy;
+
   std::vector<Gameboy*> history_frame;
   std::vector<Gameboy*> history_line;
   std::vector<Gameboy*> history_cycle;

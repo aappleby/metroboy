@@ -3,8 +3,8 @@
 
 struct Buttons {
   void reset();
-  BusOut tock(CpuBus bus);
-  uint8_t get() { return val; }
+  ButtonsOut tock(CpuBus bus);
+
   void set(uint8_t new_val) { val = new_val; }
   void dump(std::string& out) const;
 

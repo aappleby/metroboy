@@ -81,7 +81,8 @@ void Gameboy::tick() {
   tcycle++;
   int tphase = tcycle & 3;
 
-  ppu.tick(tphase, cpu_bus2);
+  // FIXME
+  PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus2);
 
   //----------------------------------------
   // tick z80
@@ -121,7 +122,7 @@ void Gameboy::tick() {
   }
 
   if (tphase == 0) {
-    if (imask & 0x01) z80.unhalt |= (ppu.get_line() == 144 && ppu.get_counter() == 4);
+    if (imask & 0x01) z80.unhalt |= (ppu_tick_out.y == 144 && ppu_tick_out.counter == 4);
     if (imask & 0x02) z80.unhalt |= ppu.new_stat_int != 0;
     if (imask & 0x04) z80.unhalt |= (timer_out.overflow) ? true : false;
     if (imask & 0x10) z80.unhalt |= (buttons_out.val != 0xFF) ? true : false;
@@ -131,24 +132,17 @@ void Gameboy::tick() {
 
   // Moving these before z80.tick slightly breaks things
 
-  assert(intf == 0xE1);
-
   if ((ppu.get_stat() & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
   if (tphase == 0) ppu.old_stat_int = (ppu.get_stat() & ppu.stat_int);
-  if (ppu.get_line() == 144 && ppu.get_counter() == 4) intf |= INT_VBLANK;
+  if (ppu_tick_out.y == 144 && ppu_tick_out.counter == 4) intf |= INT_VBLANK;
   if (timer_out.overflow)      intf |= INT_TIMER;
   if (buttons_out.val != 0xFF) intf |= INT_JOYPAD;
-
-  assert(intf == 0xE1);
-
 }
 
 //-----------------------------------------------------------------------------
 
 GameboyOut Gameboy::tock() {
   int tphase = tcycle & 3;
-
-  assert(intf != 0xF1);
 
   CpuBus cpu_bus = {
     cpu_bus2.addr,

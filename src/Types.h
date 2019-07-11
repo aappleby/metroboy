@@ -47,6 +47,9 @@ struct PpuOut {
   int counter;
   uint8_t pix_out;
   bool pix_oe;
+
+  bool vblank_int;
+  bool stat_int;
 };
 
 struct ButtonsOut {

@@ -8,15 +8,12 @@
 struct PPU {
   PpuOut reset(bool run_bootrom, int new_model);
 
-  void tick(int tphase, CpuBus cpu_bus);
+  PpuOut tick(int tphase, CpuBus cpu_bus);
   PpuOut tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void dump(std::string& out);
 
   bool     is_frame_start() const { return frame_start; }
   bool     is_frame_done()  const { return frame_done; }
-  int      get_pix_count()  const { return pix_count2; }
-  uint8_t  get_line()       const { return line; }
-  uint16_t get_counter()    const { return counter; }
   uint8_t  get_lcdc()       const { return lcdc; }
   uint8_t  get_stat()       const { return stat; }
 

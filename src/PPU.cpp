@@ -175,7 +175,7 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-void PPU::tick(int tphase, CpuBus bus) {
+PpuOut PPU::tick(int tphase, CpuBus bus) {
   counter_delay3 = counter_delay2;
   counter_delay2 = counter_delay1;
   counter_delay1 = counter;
@@ -183,6 +183,9 @@ void PPU::tick(int tphase, CpuBus bus) {
   line_delay3 = line_delay2;
   line_delay2 = line_delay1;
   line_delay1 = line;
+
+  bool tick_vblank_int = false;
+  bool tick_stat_int = false;
 
   counter++;
   if (counter == TCYCLES_LINE) {
@@ -194,8 +197,52 @@ void PPU::tick(int tphase, CpuBus bus) {
     }
   }
 
-  if (tphase == 1 || tphase == 3) return;
-  if (!(lcdc & FLAG_LCD_ON)) return;
+  if (tphase == 1 || tphase == 3) {
+    return {
+      bus_out,
+      bus_oe,
+
+      vram_lock,
+      vram_addr,
+      vram_addr != 0,
+
+      oam_lock,
+      oam_addr,
+      oam_read,
+
+      pix_count2,
+      line,
+      counter,
+      pix_out,
+      pix_oe,
+
+      tick_vblank_int,
+      tick_stat_int,
+    };
+  }
+  if (!(lcdc & FLAG_LCD_ON)) {
+    return {
+      bus_out,
+      bus_oe,
+
+      vram_lock,
+      vram_addr,
+      vram_addr != 0,
+
+      oam_lock,
+      oam_addr,
+      oam_read,
+
+      pix_count2,
+      line,
+      counter,
+      pix_out,
+      pix_oe,
+
+      tick_vblank_int,
+      tick_stat_int,
+    };
+  }
 
   frame_start = (counter == 0) && (line == 0);
   frame_done = (counter == 0) && (line == 144);
@@ -307,6 +354,27 @@ void PPU::tick(int tphase, CpuBus bus) {
     if (oam_edge) stat_int |= EI_OAM;
   }
 
+  return {
+    bus_out,
+    bus_oe,
+
+    vram_lock,
+    vram_addr,
+    vram_addr != 0,
+
+    oam_lock,
+    oam_addr,
+    oam_read,
+
+    pix_count2,
+    line,
+    counter,
+    pix_out,
+    pix_oe,
+
+    tick_vblank_int,
+    tick_stat_int,
+  };
 }
 
 //-----------------------------------------------------------------------------

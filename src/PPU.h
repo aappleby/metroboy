@@ -7,7 +7,6 @@
 
 struct PPU {
   PpuOut reset(bool run_bootrom, int new_model);
-  int model = MODEL_DMG;
 
   void tick(int tphase, CpuBus cpu_bus);
   PpuOut tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
@@ -32,6 +31,8 @@ struct PPU {
   void draw_wm_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
 
 private:
+
+  int model = MODEL_DMG;
 
   uint8_t bus_out;
   bool bus_oe;

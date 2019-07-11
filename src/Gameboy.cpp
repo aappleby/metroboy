@@ -298,9 +298,9 @@ GameboyOut Gameboy::tock() {
   //-----------------------------------
 
   return {
-    ppu.get_pix_count(),
-    ppu.get_line(),
-    ppu.get_counter(),
+    ppu_out.x,
+    ppu_out.y,
+    ppu_out.counter,
     ppu_out.pix_out,
     ppu_out.pix_oe,
     spu_out.out_r,

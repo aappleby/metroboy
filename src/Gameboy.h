@@ -44,6 +44,8 @@ struct Gameboy {
 
   uint8_t framebuffer[160 * 144];
 
+  PpuOut get_ppu_out() { return ppu_out; }
+
 private:
 
   enum DMAMode {

@@ -4,9 +4,8 @@
 //-----------------------------------------------------------------------------
 
 struct MMU {
-  void reset(size_t new_rom_size, uint16_t new_pc);
-  void reset(uint16_t new_pc);
-  
+  BusOut reset(size_t new_rom_size, uint16_t new_pc);
+  BusOut reset(uint16_t new_pc);
   BusOut tock_t2(CpuBus bus);
 
   uint8_t* get_flat_ptr(uint16_t addr);

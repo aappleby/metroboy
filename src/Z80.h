@@ -4,11 +4,9 @@
 //-----------------------------------------------------------------------------
 
 struct Z80 {
-  void reset(int new_model, uint16_t new_pc);
-  int model = 0;
-
+  CpuOut reset(int new_model, uint16_t new_pc);
   CpuBus tick_t0(uint8_t imask, uint8_t intf, uint8_t mem_out);
-  void tock_t2();
+  CpuOut tock_t2();
 
   uint16_t get_pc() const { return pc; }
   uint8_t  get_a()  const { return a; }
@@ -16,6 +14,7 @@ struct Z80 {
 
   void dump(std::string& out);
 
+  int model = 0;
   uint8_t int_ack_;
   uint8_t bus_data_;
   uint8_t imask_;

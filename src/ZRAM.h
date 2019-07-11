@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct ZRAM {
-  void reset();
+  BusOut reset();
   BusOut tock(CpuBus bus);
   const uint8_t* get() const { return ram; }
 

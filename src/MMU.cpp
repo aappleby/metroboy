@@ -9,12 +9,12 @@ extern const uint8_t DMG_ROM_bin[];
 
 //-----------------------------------------------------------------------------
 
-void MMU::reset(size_t new_rom_size, uint16_t new_pc) {
+BusOut MMU::reset(size_t new_rom_size, uint16_t new_pc) {
   rom_size = new_rom_size;
-  reset(new_pc);
+  return reset(new_pc);
 }
 
-void MMU::reset(uint16_t new_pc) {
+BusOut MMU::reset(uint16_t new_pc) {
   memset(ram_buf, 0, sizeof(ram_buf));
   ram_enable = false;
 
@@ -54,6 +54,8 @@ void MMU::reset(uint16_t new_pc) {
   assert(ram_bank_count <= 1);
 
   disable_boot_rom = !(new_pc == 0x0000);
+
+  return { 0 };
 }
 
 //-------------------------------------

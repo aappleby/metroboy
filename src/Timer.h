@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct Timer {
-  void reset();
+  TimerOut reset();
   TimerOut tock(int tphase, CpuBus bus);
   void dump(std::string& out);
 

@@ -74,7 +74,7 @@
 
 //-----------------------------------------------------------------------------
 
-void Z80::reset(int new_model, uint16_t new_pc) {
+CpuOut Z80::reset(int new_model, uint16_t new_pc) {
   model = new_model;
   bus_tag = bus_tag_ = TAG_OPCODE;
   mem_addr = mem_addr_ = new_pc;
@@ -129,6 +129,8 @@ void Z80::reset(int new_model, uint16_t new_pc) {
   opcount = 0;
   cycle = 0;
   unhalt = 0;
+
+  return { 0 };
 }
 
 //-----------------------------------------------------------------------------
@@ -198,7 +200,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tock_t2() {
+CpuOut Z80::tock_t2() {
   ime = ime_delay;
 
   switch (state_) {
@@ -226,6 +228,8 @@ void Z80::tock_t2() {
   mem_addr = mem_addr_;
 
   cycle++;
+
+  return { 0 };
 }
 
 //-----------------------------------------------------------------------------

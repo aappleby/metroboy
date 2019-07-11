@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct OAM {
-  void reset();
+  BusOut reset();
   BusOut tock(CpuBus bus);
   void dump(std::string& out) const;
   const uint8_t* get() const { return ram; }

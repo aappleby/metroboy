@@ -6,11 +6,11 @@
 //-----------------------------------------------------------------------------
 
 struct PPU {
-  void reset(bool run_bootrom, int new_model);
+  PpuOut reset(bool run_bootrom, int new_model);
   int model = MODEL_DMG;
 
   void tick(int tphase, CpuBus cpu_bus);
-  void tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
+  PpuOut tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void dump(std::string& out);
 
   bool     is_frame_start() const { return frame_start; }
@@ -21,23 +21,9 @@ struct PPU {
   uint8_t  get_lcdc()       const { return lcdc; }
   uint8_t  get_stat()       const { return stat; }
 
-  uint8_t bus_out;
-  bool bus_oe;
-
-  uint8_t pix_out;
-  bool pix_oe;
-
-  uint16_t vram_addr;
-
-  bool oam_lock;
-  bool vram_lock;
-
   int new_stat_int = 0;
   int old_stat_int = 0;
   int stat_int;
-
-  uint16_t oam_addr;
-  bool oam_read;
 
   void dump_tiles(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
   void draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram, int sprite_index) const;
@@ -47,7 +33,20 @@ struct PPU {
 
 private:
 
-  void tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
+  uint8_t bus_out;
+  bool bus_oe;
+
+  bool vram_lock;
+  uint16_t vram_addr;
+
+  bool oam_lock;
+  uint16_t oam_addr;
+  bool oam_read;
+
+  uint8_t pix_out;
+  bool pix_oe;
+
+  PpuOut tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
 

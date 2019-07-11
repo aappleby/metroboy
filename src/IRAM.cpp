@@ -2,8 +2,9 @@
 
 #include "Constants.h"
 
-void IRAM::reset() {
+BusOut IRAM::reset() {
   memset(ram, 0, sizeof(ram));
+  return { 0 };
 }
 
 BusOut IRAM::tock_t2(CpuBus bus) {

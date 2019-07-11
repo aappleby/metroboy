@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct SPU {
-  void reset();
+  SpuOut reset();
   SpuOut tock(int tphase, CpuBus bus);
   void  dump(std::string& out) const;
   const uint8_t* get_wave() const { return s3_wave; }

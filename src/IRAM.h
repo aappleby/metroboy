@@ -2,7 +2,7 @@
 #include "Types.h"
 
 struct IRAM {
-  void reset();
+  BusOut reset();
   BusOut tock_t2(CpuBus bus);
   const uint8_t* get() { return ram; }
 private:

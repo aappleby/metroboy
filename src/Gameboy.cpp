@@ -28,26 +28,18 @@ Gameboy::Gameboy()
 }
 
 void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
-  z80.reset(new_model, new_pc);
-  ppu.reset(new_pc == 0, new_model);
-  oam.reset();
-  mmu.reset(new_rom_size, new_pc);
-  timer.reset();
-  vram.reset();
-  iram.reset();
+  cpu_out = z80.reset(new_model, new_pc);
+  ppu_out = ppu.reset(new_pc == 0, new_model);
+  
+  oam_out = oam.reset();
+  mmu_out = mmu.reset(new_rom_size, new_pc);
+  timer_out = timer.reset();
+  vram_out = vram.reset();
+  iram_out = iram.reset();
   buttons_out = buttons.reset();
-  serial.reset();
-  zram.reset();
-  spu.reset();
-
-  memset(&spu_out, 0, sizeof(spu_out));
-  memset(&iram_out, 0, sizeof(iram_out));
-  memset(&serial_out, 0, sizeof(serial_out));
-  memset(&vram_out, 0, sizeof(vram_out));
-  memset(&mmu_out, 0, sizeof(mmu_out));
-  memset(&zram_out, 0, sizeof(zram_out));
-  memset(&timer_out, 0, sizeof(timer_out));
-  memset(&oam_out, 0, sizeof(oam_out));
+  serial_out = serial.reset();
+  zram_out = zram.reset();
+  spu_out = spu.reset();
 
   model = new_model;
   tcycle = -1;
@@ -103,7 +95,7 @@ void Gameboy::tick() {
     bus_out_ |= cpu_read_iram ? iram_out.data : 0x00;
     bus_out_ |= cpu_read_oam ? oam_out.data : 0x00;
 
-    bus_out_ |= ppu.bus_out;
+    bus_out_ |= ppu_out.data;
     bus_out_ |= buttons_out.data;
     bus_out_ |= serial_out.data;
     bus_out_ |= spu_out.data;
@@ -115,7 +107,7 @@ void Gameboy::tick() {
     bus_oe_ += cpu_read_iram;
     bus_oe_ += cpu_read_oam;
 
-    bus_oe_ += ppu.bus_oe;
+    bus_oe_ += ppu_out.oe;
     bus_oe_ += buttons_out.oe;
     bus_oe_ += serial_out.oe;
     bus_oe_ += spu_out.oe;
@@ -165,18 +157,11 @@ GameboyOut Gameboy::tock() {
     cpu_bus2.write && (tphase == 0),
   };
 
-  ppu.tock(tphase, cpu_bus, vram_out, oam_out);
+  ppu_out = ppu.tock(tphase, cpu_bus, vram_out, oam_out);
 
   // Moving these before ppu.tock slightly breaks things
-  bool ppu_vram_lock = ppu.vram_lock;
-  uint16_t ppu_vram_addr = ppu.vram_addr;
-  int ppu_counter = ppu.get_counter();
-  //int ppu_line = ppu.get_line();
-  bool ppu_oam_lock = ppu.oam_lock;
-  bool ppu_oam_read = ppu.oam_read;
-  uint16_t ppu_oam_addr = ppu.oam_addr;
 
-  CpuBus ppu_bus = { ppu_vram_addr, 0, ppu_vram_addr != 0, false };
+  CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_read, false };
 
   //-----------------------------------
   // DMA state machine
@@ -231,18 +216,18 @@ GameboyOut Gameboy::tock() {
   }
   else {
     // Dirty hack - on tcycle 0 of a line, cpu write takes precendence over ppu read.
-    if (ppu_counter == 0) {
+    if (ppu_out.counter == 0) {
       if (cpu_bus.write && (cpu_bus.addr & 0xFF00) == 0xFE00) {
         cpu_read_oam = cpu_bus.read && ce_oam;
         oam_bus = cpu_bus;
       }
       else {
-        oam_bus = { ppu_oam_addr, 0, ppu_oam_read, false };
+        oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_read, false };
       }
     }
     else {
-      if (ppu_oam_lock) {
-        oam_bus = { ppu_oam_addr, 0, ppu_oam_read, false };
+      if (ppu_out.oam_lock) {
+        oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_read, false };
       }
       else {
         cpu_read_oam = cpu_bus.read && ce_oam;
@@ -256,11 +241,11 @@ GameboyOut Gameboy::tock() {
   //-----------------------------------
   // vram bus mux
 
-  cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu_vram_lock && cpu_bus.read && ce_vram;
+  cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu_out.vram_lock && cpu_bus.read && ce_vram;
   cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
   cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_bus.read && (ce_rom || ce_cram);
 
-  vram_out = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_vram_lock ? ppu_bus : cpu_bus);
+  vram_out = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_lock ? ppu_bus : cpu_bus);
   iram_out = iram.tock_t2(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
   mmu_out = mmu.tock_t2(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
 
@@ -316,8 +301,8 @@ GameboyOut Gameboy::tock() {
     ppu.get_pix_count(),
     ppu.get_line(),
     ppu.get_counter(),
-    ppu.pix_out,
-    ppu.pix_oe,
+    ppu_out.pix_out,
+    ppu_out.pix_oe,
     spu_out.out_r,
     spu_out.out_l,
   };
@@ -338,7 +323,7 @@ uint32_t Gameboy::trace() {
 
   //return ppu.sprite_index << 4; // also pretty cool
 
-  return ppu.vram_addr; // this one's pretty cool
+  return ppu_out.vram_addr; // this one's pretty cool
 }
 
 //-----------------------------------------------------------------------------

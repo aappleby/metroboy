@@ -4,8 +4,9 @@
 
 //-----------------------------------------------------------------------------
 
-void OAM::reset() {
+BusOut OAM::reset() {
   for (int i = 0; i < 256; i++) ram[i] = 0;
+  return { 0 };
 }
 
 BusOut OAM::tock(CpuBus bus) {

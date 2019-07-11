@@ -13,21 +13,40 @@ struct CpuBus {
   bool write;
 };
 
+struct CpuOut {
+  uint8_t data;
+  bool oe;
+};
+
 struct BusOut {
   uint8_t data;
   bool oe;
 };
 
-struct SpuOut : public BusOut {
+struct SpuOut {
+  uint8_t data;
+  bool oe;
   sample_t out_r;
   sample_t out_l;
 };
 
-struct PpuOut : public BusOut {
+struct PpuOut {
+  uint8_t data;
+  bool oe;
+
+  bool vram_lock;
+  uint16_t vram_addr;
+  bool vram_read;
+
+  bool oam_lock;
+  uint16_t oam_addr;
+  bool oam_read;
+
   int x;
   int y;
   int counter;
-  uint8_t pix;
+  uint8_t pix_out;
+  bool pix_oe;
 };
 
 struct ButtonsOut {

@@ -5,7 +5,7 @@ const char* to_binary(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
-void Timer::reset() {
+TimerOut Timer::reset() {
   overflow = false;
   counter = 0x2AF3;
   old_tima = 0x00;
@@ -13,6 +13,8 @@ void Timer::reset() {
   tma = 0x00;
   tac = 0xF8;
   tick = false;
+
+  return { 0 };
 }
 
 //-----------------------------------------------------------------------------

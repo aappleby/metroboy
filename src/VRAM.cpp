@@ -33,9 +33,10 @@ uint8_t bootrom_logo[] = {
 
 //-----------------------------------------------------------------------------
 
-void VRAM::reset() {
+BusOut VRAM::reset() {
   memset(ram, 0, sizeof(ram));
   memcpy(ram, bootrom_logo, sizeof(bootrom_logo));
+  return { 0 };
 }
 
 //-----------------------------------------------------------------------------

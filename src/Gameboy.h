@@ -67,6 +67,9 @@ private:
 
   CpuBus cpu_bus2;
 
+  CpuOut cpu_out;
+  PpuOut ppu_out;
+
   SpuOut spu_out;
   ButtonsOut buttons_out;
   BusOut iram_out;

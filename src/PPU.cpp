@@ -23,7 +23,7 @@ uint8_t flip2(uint8_t b) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::reset(bool run_bootrom, int new_model) {
+PpuOut PPU::reset(bool run_bootrom, int new_model) {
   model = new_model;
 
   bus_out = 0;
@@ -166,6 +166,8 @@ void PPU::reset(bool run_bootrom, int new_model) {
     pix_discard_scx = 0;
     pix_discard_pad = 8;
   }
+
+  return { 0 };
 }
 
 
@@ -309,7 +311,7 @@ void PPU::tick(int tphase, CpuBus bus) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
+PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
   counter = 4;
   counter_delay1 = 3;
   counter_delay2 = 2;
@@ -334,6 +336,7 @@ void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*o
   pix_count2 = 0;
   pix_discard_scx = 0;
   pix_discard_pad = 0;
+  pix_out = 0;
   pix_oe = false;
   sprite_count = 0;
   sprite_index = -1;
@@ -356,11 +359,30 @@ void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*o
 
   if (bus.read)  bus_read_late(bus.addr);
   if (bus.write) bus_write_late(bus.addr, bus.data);
+
+  return {
+    bus_out,
+    bus_oe,
+
+    vram_lock,
+    vram_addr,
+    vram_addr != 0,
+
+    oam_lock,
+    oam_addr,
+    oam_read,
+
+    pix_count2,
+    line,
+    counter,
+    pix_out,
+    pix_oe
+  };
 }
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
+PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
   if ((lcdc & FLAG_LCD_ON) == 0) {
     return tock_lcdoff(tphase, bus, vram_in, oam_in);
   }
@@ -708,6 +730,25 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
 
   if (bus.read)  bus_read_late(bus.addr);
   if (bus.write) bus_write_late(bus.addr, bus.data);
+
+  return {
+    bus_out,
+    bus_oe,
+
+    vram_lock,
+    vram_addr,
+    vram_addr != 0,
+
+    oam_lock,
+    oam_addr,
+    oam_read,
+
+    pix_count2,
+    line,
+    counter,
+    pix_out,
+    pix_oe
+  };
 } // PPU::tock
 
 //-----------------------------------------------------------------------------

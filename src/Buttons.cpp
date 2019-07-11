@@ -2,13 +2,15 @@
 
 #include "Constants.h"
 
-void Buttons::reset() {
+ButtonsOut Buttons::reset() {
   val = 0xFF;
   p1 = 0xCF;
+
+  return { 0, false, val };
 }
 
 ButtonsOut Buttons::tock(CpuBus bus) {
-  ButtonsOut ret = { 0, 0, 0 };
+  ButtonsOut ret = { 0, false, 0 };
 
   if (bus.write && bus.addr == ADDR_P1) {
     p1 = (p1 & 0xCF) | (bus.data & 0x30);

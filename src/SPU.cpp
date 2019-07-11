@@ -35,7 +35,7 @@ void SPU::reset() {
 
   spu_clock = 0;
 
-  s1_enable = false;
+  s1_enable = true;
   s2_enable = false;
   s3_enable = false;
   s4_enable = false;

@@ -30,11 +30,15 @@ struct PpuOut : public BusOut {
   uint8_t pix;
 };
 
-struct ButtonsOut : public BusOut {
+struct ButtonsOut {
+  uint8_t data;
+  bool oe;
   uint8_t val;
 };
 
-struct TimerOut : public BusOut {
+struct TimerOut {
+  uint8_t data;
+  bool oe;
   bool overflow;
 };
 

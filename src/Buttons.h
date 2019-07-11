@@ -2,7 +2,7 @@
 #include "Types.h"
 
 struct Buttons {
-  void reset();
+  ButtonsOut reset();
   ButtonsOut tock(CpuBus bus);
 
   void set(uint8_t new_val) { val = new_val; }

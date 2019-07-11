@@ -7,13 +7,11 @@ const char* to_binary(uint8_t b);
 
 void Timer::reset() {
   overflow = false;
-
   counter = 0x2AF3;
   old_tima = 0x00;
   new_tima = 0x00;
   tma = 0x00;
   tac = 0xF8;
-
   tick = false;
 }
 

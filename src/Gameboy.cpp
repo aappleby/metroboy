@@ -35,10 +35,19 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   timer.reset();
   vram.reset();
   iram.reset();
-  buttons.reset();
+  buttons_out = buttons.reset();
   serial.reset();
   zram.reset();
   spu.reset();
+
+  memset(&spu_out, 0, sizeof(spu_out));
+  memset(&iram_out, 0, sizeof(iram_out));
+  memset(&serial_out, 0, sizeof(serial_out));
+  memset(&vram_out, 0, sizeof(vram_out));
+  memset(&mmu_out, 0, sizeof(mmu_out));
+  memset(&zram_out, 0, sizeof(zram_out));
+  memset(&timer_out, 0, sizeof(timer_out));
+  memset(&oam_out, 0, sizeof(oam_out));
 
   model = new_model;
   tcycle = -1;
@@ -109,7 +118,7 @@ void Gameboy::tick() {
     bus_oe_ += ppu.bus_oe;
     bus_oe_ += buttons_out.oe;
     bus_oe_ += serial_out.oe;
-    bus_oe_ += spu_out.data;
+    bus_oe_ += spu_out.oe;
     bus_oe_ += timer_out.oe;
     bus_oe_ += zram_out.oe;
 
@@ -130,11 +139,15 @@ void Gameboy::tick() {
 
   // Moving these before z80.tick slightly breaks things
 
+  assert(intf == 0xE1);
+
   if ((ppu.get_stat() & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
   if (tphase == 0) ppu.old_stat_int = (ppu.get_stat() & ppu.stat_int);
   if (ppu.get_line() == 144 && ppu.get_counter() == 4) intf |= INT_VBLANK;
   if (timer_out.overflow)      intf |= INT_TIMER;
   if (buttons_out.val != 0xFF) intf |= INT_JOYPAD;
+
+  assert(intf == 0xE1);
 
 }
 
@@ -142,6 +155,8 @@ void Gameboy::tick() {
 
 GameboyOut Gameboy::tock() {
   int tphase = tcycle & 3;
+
+  assert(intf != 0xF1);
 
   CpuBus cpu_bus = {
     cpu_bus2.addr,
@@ -269,7 +284,11 @@ GameboyOut Gameboy::tock() {
   if (cpu_bus.read) {
     bus_out = 0x00;
     bus_oe = false;
-    if (cpu_bus.addr == ADDR_IF) { bus_out = 0b11100000 | intf; bus_oe = true; }
+    if (cpu_bus.addr == ADDR_IF) { 
+      bus_out = 0b11100000 | intf; 
+      bus_oe = true;
+      assert(bus_out == 0xE1);
+    }
     if (cpu_bus.addr == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }
 

@@ -83,7 +83,6 @@ void Gameboy::tick() {
 
   // FIXME
   PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus2);
-  if (ppu_tick_out.y == 144 && ppu_tick_out.counter == 5) intf |= INT_VBLANK;
 
   //----------------------------------------
   // tick z80
@@ -131,12 +130,6 @@ void Gameboy::tick() {
     cpu_bus2 = z80.tick_t0(imask, intf, bus_in);
   }
 
-  // Moving these before z80.tick slightly breaks things
-
-  if ((ppu.get_stat() & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
-  if (tphase == 0) ppu.old_stat_int = (ppu.get_stat() & ppu.stat_int);
-  if (timer_out.overflow)      intf |= INT_TIMER;
-  if (buttons_out.val != 0xFF) intf |= INT_JOYPAD;
 }
 
 //-----------------------------------------------------------------------------
@@ -151,7 +144,9 @@ GameboyOut Gameboy::tock() {
     cpu_bus2.write && (tphase == 0),
   };
 
+  if ((ppu.get_stat() & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
   ppu_out = ppu.tock(tphase, cpu_bus, vram_out, oam_out);
+  if (ppu_out.y == 144 && ppu_out.counter == 4) intf |= INT_VBLANK;
 
   // Moving these before ppu.tock slightly breaks things
 
@@ -193,6 +188,9 @@ GameboyOut Gameboy::tock() {
   bool ce_echo = page == 7 && (cpu_bus.addr < 0xFE00);
 
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
+
+  if (timer_out.overflow)      intf |= INT_TIMER;
+  if (buttons_out.val != 0xFF) intf |= INT_JOYPAD;
 
   //-----------------------------------
   // oam bus mux
@@ -258,7 +256,7 @@ GameboyOut Gameboy::tock() {
   }
 
   //-----------------------------------
-  // bus write
+  // bus
 
   if (cpu_bus.read) {
     bus_out = 0x00;

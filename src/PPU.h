@@ -24,6 +24,10 @@ struct PPU {
   void draw_bg_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
   void draw_wm_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
 
+  bool stat_int_a;
+  bool stat_int_b;
+  bool stat_int_c;
+
 private:
 
   int model = MODEL_DMG;

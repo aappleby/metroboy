@@ -332,6 +332,8 @@ PpuOut PPU::tick(int tphase, CpuBus bus) {
   //----------------------------------------
   // interrupts
 
+  int last_stat_int = stat_int;
+
   stat_int &= ~EI_HBLANK;
   if (hblank_delay2 < 7) stat_int |= EI_HBLANK;
 
@@ -353,6 +355,11 @@ PpuOut PPU::tick(int tphase, CpuBus bus) {
     stat_int &= ~EI_OAM;
     if (oam_edge) stat_int |= EI_OAM;
   }
+
+  stat_int_c = stat_int_b;
+  stat_int_b = stat_int_a;
+  stat_int_a = (last_stat_int == 0) && (stat_int != 0);
+
 
   return {
     bus_out,
@@ -451,6 +458,12 @@ PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /
 //-----------------------------------------------------------------------------
 
 PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
+  if (tphase == 0) old_stat_int = (stat & stat_int);
+
+  //stat_int_b = 
+  //if ((ppu.get_stat() & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
+
+
   if ((lcdc & FLAG_LCD_ON) == 0) {
     return tock_lcdoff(tphase, bus, vram_in, oam_in);
   }

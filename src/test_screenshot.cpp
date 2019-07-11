@@ -120,8 +120,6 @@ int run_screenshot_test(int model, const std::string& prefix, const std::string&
         gameboy.framebuffer[x + y * 160] = gb_out.pix;
       }
     }
-
-    //if (gameboy.is_frame_done()) break;
   }
 
   int diff = 0;

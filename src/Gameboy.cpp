@@ -83,6 +83,7 @@ void Gameboy::tick() {
 
   // FIXME
   PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus2);
+  if (ppu_tick_out.y == 144 && ppu_tick_out.counter == 5) intf |= INT_VBLANK;
 
   //----------------------------------------
   // tick z80
@@ -134,7 +135,6 @@ void Gameboy::tick() {
 
   if ((ppu.get_stat() & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
   if (tphase == 0) ppu.old_stat_int = (ppu.get_stat() & ppu.stat_int);
-  if (ppu_tick_out.y == 144 && ppu_tick_out.counter == 4) intf |= INT_VBLANK;
   if (timer_out.overflow)      intf |= INT_TIMER;
   if (buttons_out.val != 0xFF) intf |= INT_JOYPAD;
 }

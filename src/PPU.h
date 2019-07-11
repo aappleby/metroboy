@@ -12,9 +12,6 @@ struct PPU {
   PpuOut tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void dump(std::string& out);
 
-  bool     is_frame_start() const { return frame_start; }
-  bool     is_frame_done()  const { return frame_done; }
-  uint8_t  get_lcdc()       const { return lcdc; }
   uint8_t  get_stat()       const { return stat; }
 
   int new_stat_int = 0;

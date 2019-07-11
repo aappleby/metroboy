@@ -85,7 +85,6 @@ void MetroBoy::run_vsync(uint8_t buttons) {
 
   current_gameboy->set_buttons(~buttons);
 
-  //while (!current_gameboy->is_frame_done()) {
   while(gb_out.y != 144) {
     cycle();
   }
@@ -127,7 +126,6 @@ void MetroBoy::step_frame() {
 
   do {
     mcycle();
-    //} while (!current_gameboy->is_frame_done());
   } while (gb_out.y != 144);
 }
 

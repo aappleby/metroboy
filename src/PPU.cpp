@@ -175,7 +175,7 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-PpuOut PPU::tick(int tphase, CpuBus bus) {
+PpuOut PPU::tick(int tphase, CpuBus /*bus*/) {
   counter_delay3 = counter_delay2;
   counter_delay2 = counter_delay1;
   counter_delay1 = counter;
@@ -328,39 +328,6 @@ PpuOut PPU::tick(int tphase, CpuBus bus) {
   //----------------------------------------
   // interrupts
 
-  int last_stat_int = stat_int;
-
-  stat_int &= ~EI_HBLANK;
-  if (hblank_delay2 < 7) stat_int |= EI_HBLANK;
-
-  stat_int &= ~EI_VBLANK;
-  if ((line == 144 && counter >= 4) || (line >= 145)) stat_int |= EI_VBLANK;
-
-  stat_int &= ~EI_LYC;
-  if (compare_line == lyc) stat_int |= EI_LYC;
-
-  if (tphase == 2) {
-    stat_int &= ~0x80;
-    if (bus.write && bus.addr == ADDR_STAT && stat_int != 0) stat_int |= 0x80;
-  }
-
-  bool oam_edge = false;
-  if (line == 0 && counter == 4) oam_edge = true;
-  if (line > 0 && line <= 144 && counter == 0) oam_edge = true;
-
-  if (tphase == 0) {
-    // note that this happens _before_ we update the EI_OAM bit
-    new_stat_int = (stat & stat_int) != 0;
-
-    stat_int &= ~EI_OAM;
-    if (oam_edge) stat_int |= EI_OAM;
-  }
-
-  stat_int_c = stat_int_b;
-  stat_int_b = stat_int_a;
-  stat_int_a = (last_stat_int == 0) && (stat_int != 0);
-
-
   return {
     bus_out,
     bus_oe,
@@ -458,7 +425,6 @@ PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /
 //-----------------------------------------------------------------------------
 
 PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
-
   if ((lcdc & FLAG_LCD_ON) == 0) {
     return tock_lcdoff(tphase, bus, vram_in, oam_in);
   }
@@ -484,12 +450,8 @@ PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
   }
 
   if (tphase == 0 || tphase == 2) {
-    stat &= 0b11111000;
+    stat &= 0b11111100;
     stat |= state;
-
-    if (stat_int & EI_LYC) {
-      stat |= 0x04;
-    }
   }
 
   //-----------------------------------

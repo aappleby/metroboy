@@ -84,6 +84,39 @@ void Gameboy::tick() {
   // FIXME
   PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus2);
 
+  if ((tphase == 0 || tphase == 2) && (ppu.lcdc & FLAG_LCD_ON)) {
+    ppu.stat_int &= ~EI_HBLANK;
+    if (ppu.hblank_delay2 < 7) ppu.stat_int |= EI_HBLANK;
+
+    ppu.stat_int &= ~EI_VBLANK;
+    if ((ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145)) ppu.stat_int |= EI_VBLANK;
+
+    ppu.stat_int &= ~EI_LYC;
+    if (ppu.compare_line == ppu.lyc) ppu.stat_int |= EI_LYC;
+
+    if (tphase == 2) {
+      ppu.stat_int &= ~0x80;
+      if (cpu_bus2.write && cpu_bus2.addr == ADDR_STAT && ppu.stat_int != 0) ppu.stat_int |= 0x80;
+    }
+
+    bool oam_edge = false;
+    if (ppu.line == 0 && ppu.counter == 4) oam_edge = true;
+    if (ppu.line > 0 && ppu.line <= 144 && ppu.counter == 0) oam_edge = true;
+
+    if (tphase == 0) {
+      // note that this happens _before_ we update the EI_OAM bit
+      ppu.new_stat_int = (ppu.stat & ppu.stat_int) != 0;
+
+      ppu.stat_int &= ~EI_OAM;
+      if (oam_edge) ppu.stat_int |= EI_OAM;
+    }
+
+    ppu.stat_int_c = ppu.stat_int_b;
+    ppu.stat_int_b = ppu.stat_int_a;
+    ppu.stat_int_a = (ppu.old_stat_int == 0) && (ppu.stat_int != 0);
+  }
+
+
   //----------------------------------------
   // tick z80
 
@@ -148,7 +181,15 @@ GameboyOut Gameboy::tock() {
 
   if (tphase == 0) ppu.old_stat_int = (ppu.stat & ppu.stat_int);
 
+  if ((tphase == 0 || tphase == 2) && (ppu.lcdc & FLAG_LCD_ON)) {
+    ppu.stat &= ~0x04;
+    if (ppu.stat_int & EI_LYC) {
+      ppu.stat |= 0x04;
+    }
+  }
+
   ppu_out = ppu.tock(tphase, cpu_bus, vram_out, oam_out);
+
   if (ppu_out.y == 144 && ppu_out.counter == 4) intf |= INT_VBLANK;
   if (timer_out.overflow)      intf |= INT_TIMER;
   if (buttons_out.val != 0xFF) intf |= INT_JOYPAD;

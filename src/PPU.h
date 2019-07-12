@@ -28,7 +28,7 @@ struct PPU {
   bool stat_int_b;
   bool stat_int_c;
 
-private:
+//private:
 
   int model = MODEL_DMG;
 

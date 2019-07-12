@@ -247,10 +247,6 @@ PpuOut PPU::tick(int tphase, CpuBus bus) {
   frame_start = (counter == 0) && (line == 0);
   frame_done = (counter == 0) && (line == 144);
 
-  bool oam_edge = false;
-  if (line == 0 && counter == 4) oam_edge = true;
-  if (line > 0 && line <= 144 && counter == 0) oam_edge = true;
-
   if (counter == 0) {
     hblank_delay2 = HBLANK_DELAY_START;
   }
@@ -347,6 +343,10 @@ PpuOut PPU::tick(int tphase, CpuBus bus) {
     stat_int &= ~0x80;
     if (bus.write && bus.addr == ADDR_STAT && stat_int != 0) stat_int |= 0x80;
   }
+
+  bool oam_edge = false;
+  if (line == 0 && counter == 4) oam_edge = true;
+  if (line > 0 && line <= 144 && counter == 0) oam_edge = true;
 
   if (tphase == 0) {
     // note that this happens _before_ we update the EI_OAM bit
@@ -458,11 +458,6 @@ PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /
 //-----------------------------------------------------------------------------
 
 PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
-  if (tphase == 0) old_stat_int = (stat & stat_int);
-
-  //stat_int_b = 
-  //if ((ppu.get_stat() & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
-
 
   if ((lcdc & FLAG_LCD_ON) == 0) {
     return tock_lcdoff(tphase, bus, vram_in, oam_in);
@@ -1127,6 +1122,7 @@ void PPU::dump(std::string& out) {
 
   sprintf(out, "frame   %d\n", frame_count);
   sprintf(out, "state   %d\n", state);
+
   /*
   sprintf(out, "%s %s %s %s\n",
     oam_phase    ? "OAM" : "   ",

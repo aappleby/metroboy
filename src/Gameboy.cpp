@@ -145,8 +145,13 @@ GameboyOut Gameboy::tock() {
   };
 
   if ((ppu.get_stat() & ppu.stat_int) && !ppu.old_stat_int) intf |= INT_STAT;
+
+  if (tphase == 0) ppu.old_stat_int = (ppu.stat & ppu.stat_int);
+
   ppu_out = ppu.tock(tphase, cpu_bus, vram_out, oam_out);
   if (ppu_out.y == 144 && ppu_out.counter == 4) intf |= INT_VBLANK;
+  if (timer_out.overflow)      intf |= INT_TIMER;
+  if (buttons_out.val != 0xFF) intf |= INT_JOYPAD;
 
   // Moving these before ppu.tock slightly breaks things
 
@@ -188,9 +193,6 @@ GameboyOut Gameboy::tock() {
   bool ce_echo = page == 7 && (cpu_bus.addr < 0xFE00);
 
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
-
-  if (timer_out.overflow)      intf |= INT_TIMER;
-  if (buttons_out.val != 0xFF) intf |= INT_JOYPAD;
 
   //-----------------------------------
   // oam bus mux

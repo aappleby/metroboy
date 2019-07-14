@@ -152,9 +152,9 @@ void Gameboy::tick() {
     if (fire_stat_lyc)    ppu.stat_int |= EI_LYC;
     if (fire_stat_glitch) ppu.stat_int |= EI_GLITCH;
 
+    // note that this happens _before_ we update the EI_OAM bit
     if (tphase == 0) {
-      // note that this happens _before_ we update the EI_OAM bit
-      new_stat_int = (ppu.stat & ppu.stat_int) != 0;
+      new_stat_int = (ppu.stat & ppu.stat_int);
     }
 
     if (tphase == 0) ppu.stat_int &= ~EI_OAM;
@@ -170,31 +170,30 @@ void Gameboy::tick() {
     if (imask & 0x10) z80.unhalt |= fire_int_buttons;
   }
 
+  bool fire_int_stat = false;
+  new_stat_int = (ppu.stat & ppu.stat_int);
+
+  if (ppu.lcdc & FLAG_LCD_ON && (tphase == 0 || tphase == 2)) {
+    if (new_stat_int && !ppu.old_stat_int) fire_int_stat = true;
+    ppu.old_stat_int = new_stat_int;
+  }
+
   //----------------------------------------
   // tick z80
 
   if (tphase == 0) {
     cpu_bus2 = z80.tick_t0(imask, intf, bus_in);
+    intf &= ~z80.int_ack_;
   }
 
   
   //----------------------------------------
   
-  bool fire_int_stat = false;
-
-  if (ppu.lcdc & FLAG_LCD_ON && (tphase == 0 || tphase == 2)) {
-    if ((ppu.stat & ppu.stat_int) && !ppu.old_stat_int) fire_int_stat = true;
-    ppu.old_stat_int = (ppu.stat & ppu.stat_int);
-  }
 
   if (fire_int_stat)    intf |= INT_STAT;
   if (fire_int_vblank)  intf |= INT_VBLANK;
   if (fire_int_timer)   intf |= INT_TIMER;
   if (fire_int_buttons) intf |= INT_JOYPAD;
-
-  if (tphase == 0) {
-    intf &= ~z80.int_ack_;
-  }
 }
 
 //-----------------------------------------------------------------------------

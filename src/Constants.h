@@ -109,6 +109,7 @@ const int samples_per_frame = output_hz / 60;
 #define INT_SERIAL  0b00001000
 #define INT_JOYPAD  0b00010000
 
+#define EI_GLITCH    0b10000000
 #define EI_LYC       0b01000000
 #define EI_OAM       0b00100000
 #define EI_VBLANK    0b00010000

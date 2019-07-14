@@ -115,6 +115,8 @@ const int samples_per_frame = output_hz / 60;
 #define EI_VBLANK    0b00010000
 #define EI_HBLANK    0b00001000
 
+#define STAT_LYC     0b00000100
+
 #define PPU_STATE_HBLANK 0
 #define PPU_STATE_VBLANK 1
 #define PPU_STATE_OAM    2

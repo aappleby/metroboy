@@ -168,10 +168,8 @@ void Gameboy::tick() {
     }
 
     if (tphase == 0 || tphase == 2) {
-      ppu.stat &= ~0x04;
-      if (fire_stat_lyc) {
-        ppu.stat |= 0x04;
-      }
+      ppu.stat &= ~STAT_LYC;
+      if (fire_stat_lyc) ppu.stat |= STAT_LYC;
     }
   }
 

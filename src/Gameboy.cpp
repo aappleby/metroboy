@@ -121,18 +121,16 @@ void Gameboy::tick() {
 
   PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus2);
 
-  bool fire_stat_oam = false;
-  if (ppu.line == 0 && ppu.counter == 4) fire_stat_oam = true;
-  if (ppu.line > 0 && ppu.line <= 144 && ppu.counter == 0) fire_stat_oam = true;
-
+  bool fire_stat_oam    = ((ppu.line == 0 && ppu.counter == 4) || (ppu.line > 0 && ppu.line <= 144 && ppu.counter == 0));
   bool fire_stat_hblank = ppu.hblank_delay2 < 7;
   bool fire_stat_vblank = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
-  bool fire_stat_lyc = ppu.compare_line == ppu.lyc;
+  bool fire_stat_lyc    = ppu.compare_line == ppu.lyc;
   bool fire_stat_glitch = cpu_bus2.write && cpu_bus2.addr == ADDR_STAT && ppu.stat_int != 0;
   
-  bool fire_int_timer = timer_out.overflow;
+  bool fire_int_timer   = timer_out.overflow;
   bool fire_int_buttons = buttons_out.val != 0xFF;
-  bool fire_int_vblank = ppu.line == 144 && ppu.counter == 4;
+  bool fire_int_vblank  = ppu.line == 144 && ppu.counter == 4;
+  bool fire_int_stat    = false;
 
   bool new_stat_int = false;
 
@@ -155,13 +153,10 @@ void Gameboy::tick() {
     // note that this happens _before_ we update the EI_OAM bit
     if (tphase == 0) {
       new_stat_int = (ppu.stat & ppu.stat_int);
+      ppu.stat_int &= ~EI_OAM;
+      if (fire_stat_oam) ppu.stat_int |= EI_OAM;
     }
-
-    if (tphase == 0) ppu.stat_int &= ~EI_OAM;
-
-    if (fire_stat_oam) ppu.stat_int |= EI_OAM;
   }
-
 
   if (tphase == 0) {
     if (imask & 0x01) z80.unhalt |= fire_int_vblank;
@@ -170,7 +165,6 @@ void Gameboy::tick() {
     if (imask & 0x10) z80.unhalt |= fire_int_buttons;
   }
 
-  bool fire_int_stat = false;
   new_stat_int = (ppu.stat & ppu.stat_int);
 
   if (ppu.lcdc & FLAG_LCD_ON && (tphase == 0 || tphase == 2)) {
@@ -185,10 +179,8 @@ void Gameboy::tick() {
     cpu_bus2 = z80.tick_t0(imask, intf, bus_in);
     intf &= ~z80.int_ack_;
   }
-
   
   //----------------------------------------
-  
 
   if (fire_int_stat)    intf |= INT_STAT;
   if (fire_int_vblank)  intf |= INT_VBLANK;

@@ -14,8 +14,6 @@ struct PPU {
 
   uint8_t  get_stat()       const { return stat; }
 
-  int new_stat_int = 0;
-  int old_stat_int = 0;
   int stat_int;
 
   void dump_tiles(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;

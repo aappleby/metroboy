@@ -85,8 +85,7 @@ private:
   int model = MODEL_DMG;
   int64_t tcycle = -1;
 
-  bool new_stat_int;
-  bool stat_int_delay;
+  bool old_stat_int = false;
 
   bool cpu_read_oam = false;
   bool cpu_read_vram = false;

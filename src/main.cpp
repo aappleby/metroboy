@@ -39,7 +39,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //metroboy.reset(0x100);
 
-  //run_microtests();
+  run_microtests();
   //run_screenshot_tests();
 
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS");
@@ -51,7 +51,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
-  //return 0;
+  return 0;
 
   //---------
 
@@ -62,7 +62,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
+  //load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");

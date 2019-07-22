@@ -12,7 +12,7 @@
 extern uint8_t rom_buf[];
 
 static const std::string micro_tests[] = {
-  "ppu_sprite0_scx0_a",
+  //"ppu_sprite0_scx0_a", // where did this one go?
   "ppu_sprite0_scx0_b",
   "ppu_sprite0_scx1_a",
   "ppu_sprite0_scx1_b",
@@ -388,6 +388,12 @@ void run_microtest(int model, const std::string& prefix, const std::string& name
 
   FILE* rom_file = NULL;
   rom_file = fopen(filename.c_str(), "rb");
+
+  if (rom_file == NULL) {
+    printf("?");
+    return;
+  }
+
   fseek(rom_file, 0, SEEK_END);
   size_t rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);

@@ -303,7 +303,6 @@ GameboyOut Gameboy::tock() {
     if (cpu_bus.addr == ADDR_IF) { 
       bus_out = 0b11100000 | intf; 
       bus_oe = true;
-      assert(bus_out == 0xE1);
     }
     if (cpu_bus.addr == ADDR_IE) { bus_out = imask; bus_oe = true; }
   }

@@ -48,12 +48,14 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  run_mooneye_acceptance();
+  //run_mooneye_acceptance();
   run_wpol_acceptance();
   //run_mealybug_tests();
   return 0;
 
   //---------
+
+  load("mooneye-gb/tests/build/acceptance/ppu/", "intr_2_0_timing");
 
   //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites");
   //load("wpol-gb/tests/build/acceptance/gpu", "lcdon_write_timing-GS");
@@ -61,7 +63,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
+  //load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");

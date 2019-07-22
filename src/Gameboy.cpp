@@ -132,16 +132,15 @@ void Gameboy::tick() {
   bool fire_int_vblank  = ppu.line == 144 && ppu.counter == 4;
   bool fire_int_stat    = false;
 
-  bool new_stat_int = false;
+  if ((imask & 0x01) && (tphase == 0)) z80.unhalt |= fire_int_vblank;
+  if ((imask & 0x02) && (tphase == 0)) z80.unhalt |= new_stat_int;
+  if ((imask & 0x04) && (tphase == 0)) z80.unhalt |= fire_int_timer;
+  if ((imask & 0x10) && (tphase == 0)) z80.unhalt |= fire_int_buttons;
 
   if (ppu.lcdc & FLAG_LCD_ON) {
-
     if (tphase == 0) {
       ppu.stat &= ~STAT_LYC;
-      ppu.stat_int &= ~EI_HBLANK;
-      ppu.stat_int &= ~EI_VBLANK;
-      ppu.stat_int &= ~EI_LYC;
-      ppu.stat_int &= ~EI_GLITCH;
+      ppu.stat_int = 0;
     }
 
     if (fire_stat_lyc)    ppu.stat |= STAT_LYC;
@@ -149,27 +148,14 @@ void Gameboy::tick() {
     if (fire_stat_vblank) ppu.stat_int |= EI_VBLANK;
     if (fire_stat_lyc)    ppu.stat_int |= EI_LYC;
     if (fire_stat_glitch) ppu.stat_int |= EI_GLITCH;
+    if (fire_stat_oam)    ppu.stat_int |= EI_OAM;
 
-    // note that this happens _before_ we update the EI_OAM bit
-    if (tphase == 0) {
-      new_stat_int = (ppu.stat & ppu.stat_int);
-      ppu.stat_int &= ~EI_OAM;
-      if (fire_stat_oam) ppu.stat_int |= EI_OAM;
+    new_stat_int = (ppu.stat & ppu.stat_int);
+
+    if ((tphase == 0) || (tphase == 2)) {
+      if (new_stat_int && !ppu.old_stat_int) fire_int_stat = true;
+      ppu.old_stat_int = new_stat_int;
     }
-  }
-
-  if (tphase == 0) {
-    if (imask & 0x01) z80.unhalt |= fire_int_vblank;
-    if (imask & 0x02) z80.unhalt |= new_stat_int;
-    if (imask & 0x04) z80.unhalt |= fire_int_timer;
-    if (imask & 0x10) z80.unhalt |= fire_int_buttons;
-  }
-
-  new_stat_int = (ppu.stat & ppu.stat_int);
-
-  if (ppu.lcdc & FLAG_LCD_ON && (tphase == 0 || tphase == 2)) {
-    if (new_stat_int && !ppu.old_stat_int) fire_int_stat = true;
-    ppu.old_stat_int = new_stat_int;
   }
 
   //----------------------------------------
@@ -182,10 +168,12 @@ void Gameboy::tick() {
   
   //----------------------------------------
 
-  if (fire_int_stat)    intf |= INT_STAT;
-  if (fire_int_vblank)  intf |= INT_VBLANK;
-  if (fire_int_timer)   intf |= INT_TIMER;
-  if (fire_int_buttons) intf |= INT_JOYPAD;
+  if ((tphase == 0) || (tphase == 2)) {
+    if (fire_int_stat)    intf |= INT_STAT;
+    if (fire_int_vblank)  intf |= INT_VBLANK;
+    if (fire_int_timer)   intf |= INT_TIMER;
+    if (fire_int_buttons) intf |= INT_JOYPAD;
+  }
 }
 
 //-----------------------------------------------------------------------------

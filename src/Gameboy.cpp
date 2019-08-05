@@ -83,48 +83,12 @@ void Gameboy::tick() {
 
   //----------------------------------------
 
-  if (tphase == 3) {
-    uint8_t bus_out_ = bus_out;
-    uint8_t bus_oe_ = bus_oe;
-
-    bus_out_ |= cpu_read_cart ? mmu_out.data : 0x00;
-    bus_out_ |= cpu_read_vram ? vram_out.data : 0x00;
-    bus_out_ |= cpu_read_iram ? iram_out.data : 0x00;
-    bus_out_ |= cpu_read_oam ? oam_out.data : 0x00;
-
-    bus_out_ |= ppu_out.data;
-    bus_out_ |= buttons_out.data;
-    bus_out_ |= serial_out.data;
-    bus_out_ |= spu_out.data;
-    bus_out_ |= timer_out.data;
-    bus_out_ |= zram_out.data;
-
-    bus_oe_ += cpu_read_cart;
-    bus_oe_ += cpu_read_vram;
-    bus_oe_ += cpu_read_iram;
-    bus_oe_ += cpu_read_oam;
-
-    bus_oe_ += ppu_out.oe;
-    bus_oe_ += buttons_out.oe;
-    bus_oe_ += serial_out.oe;
-    bus_oe_ += spu_out.oe;
-    bus_oe_ += timer_out.oe;
-    bus_oe_ += zram_out.oe;
-
-    assert(bus_oe_ <= 1);
-    if (!bus_oe_) bus_out_ = 0xFF;
-
-    bus_in = bus_out_;
-  }
-
-  //----------------------------------------
-
   PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus2);
 
   
   if ((tphase == 0) || (tphase == 2)) {
     bool fire_stat_oam = ((ppu.line == 0 && ppu.counter == 4) || (ppu.line > 0 && ppu.line <= 144 && ppu.counter == 0));
-    bool fire_stat_hblank = ppu.hblank_delay2 < 6;
+    bool fire_stat_hblank = ppu.hblank_delay2 <= 6;
     bool fire_stat_vblank = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
     bool fire_stat_lyc = ppu.compare_line == ppu.lyc;
     bool fire_stat_glitch = cpu_bus2.write && cpu_bus2.addr == ADDR_STAT && ppu.stat_int != 0;
@@ -157,7 +121,8 @@ void Gameboy::tick() {
     bool fire_int_vblank  = ppu.line == 144 && ppu.counter == 4;
 
     if (imask & 0x01) z80.unhalt |= fire_int_vblank;
-    if (imask & 0x02) z80.unhalt |= old_stat_int;
+    //if (imask & 0x02) z80.unhalt |= old_stat_int;
+    if (imask & 0x02) z80.unhalt |= fire_int_stat;
     if (imask & 0x04) z80.unhalt |= fire_int_timer;
     if (imask & 0x10) z80.unhalt |= fire_int_buttons;
 
@@ -175,6 +140,7 @@ void Gameboy::tick() {
     if (fire_int_vblank)  intf |= INT_VBLANK;
     if (fire_int_timer)   intf |= INT_TIMER;
     if (fire_int_buttons) intf |= INT_JOYPAD;
+
     old_stat_int = new_stat_int;
   }
 }
@@ -220,8 +186,6 @@ GameboyOut Gameboy::tock() {
 
   //-----------------------------------
 
-  bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
-
   int page = cpu_bus.addr >> 13;
 
   bool ce_rom  = page <= 3;
@@ -229,13 +193,12 @@ GameboyOut Gameboy::tock() {
   bool ce_cram = page == 5;
   bool ce_iram = page == 6;
   bool ce_echo = page == 7 && (cpu_bus.addr < 0xFE00);
-
-  CpuBus dma_bus = { dma_read_addr, 0, true, false };
+  bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
 
   //-----------------------------------
   // oam bus mux
 
-  CpuBus oam_bus;
+  CpuBus oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_read, false };
   cpu_read_oam = false;
 
   if (dma_mode_b != DMA_NONE) {
@@ -249,19 +212,13 @@ GameboyOut Gameboy::tock() {
   else {
     // Dirty hack - on tcycle 0 of a line, cpu write takes precendence over ppu read.
     if (ppu_out.counter == 0) {
-      if (cpu_bus.write && (cpu_bus.addr & 0xFF00) == 0xFE00) {
+      if (cpu_bus.write && ce_oam) {
         cpu_read_oam = cpu_bus.read && ce_oam;
         oam_bus = cpu_bus;
       }
-      else {
-        oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_read, false };
-      }
     }
     else {
-      if (ppu_out.oam_lock) {
-        oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_read, false };
-      }
-      else {
+      if (!ppu_out.oam_lock) {
         cpu_read_oam = cpu_bus.read && ce_oam;
         oam_bus = cpu_bus;
       }
@@ -277,15 +234,16 @@ GameboyOut Gameboy::tock() {
   cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
   cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_bus.read && (ce_rom || ce_cram);
 
-  vram_out = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_lock ? ppu_bus : cpu_bus);
-  iram_out = iram.tock_t2(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
-  mmu_out = mmu.tock_t2(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
+  CpuBus dma_bus = { dma_read_addr, 0, true, false };
 
+  vram_out    = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_lock ? ppu_bus : cpu_bus);
+  iram_out    = iram.tock_t2(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
+  mmu_out     = mmu.tock_t2(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
   buttons_out = buttons.tock(cpu_bus);
-  serial_out = serial.tock(cpu_bus);
-  zram_out = zram.tock(cpu_bus);
-  spu_out = spu.tock(tphase, cpu_bus);
-  timer_out = timer.tock(tphase, cpu_bus);
+  serial_out  = serial.tock(cpu_bus);
+  zram_out    = zram.tock(cpu_bus);
+  spu_out     = spu.tock(tphase, cpu_bus);
+  timer_out   = timer.tock(tphase, cpu_bus);
 
   //-----------------------------------
   // Z80
@@ -304,7 +262,10 @@ GameboyOut Gameboy::tock() {
       bus_out = 0b11100000 | intf; 
       bus_oe = true;
     }
-    if (cpu_bus.addr == ADDR_IE) { bus_out = imask; bus_oe = true; }
+    if (cpu_bus.addr == ADDR_IE) {
+      bus_out = imask;
+      bus_oe = true;
+    }
   }
 
   if (cpu_bus.write) {
@@ -323,6 +284,42 @@ GameboyOut Gameboy::tock() {
     if (cpu_bus.addr == ADDR_IE) {
       imask = cpu_bus.data;
     }
+  }
+
+  //-----------------------------------
+
+  if (tphase == 2) {
+    uint8_t bus_out_ = bus_out;
+    uint8_t bus_oe_ = bus_oe;
+
+    bus_out_ |= cpu_read_cart ? mmu_out.data : 0x00;
+    bus_out_ |= cpu_read_vram ? vram_out.data : 0x00;
+    bus_out_ |= cpu_read_iram ? iram_out.data : 0x00;
+    bus_out_ |= cpu_read_oam ? oam_out.data : 0x00;
+
+    bus_out_ |= ppu_out.data;
+    bus_out_ |= buttons_out.data;
+    bus_out_ |= serial_out.data;
+    bus_out_ |= spu_out.data;
+    bus_out_ |= timer_out.data;
+    bus_out_ |= zram_out.data;
+
+    bus_oe_ += cpu_read_cart;
+    bus_oe_ += cpu_read_vram;
+    bus_oe_ += cpu_read_iram;
+    bus_oe_ += cpu_read_oam;
+
+    bus_oe_ += ppu_out.oe;
+    bus_oe_ += buttons_out.oe;
+    bus_oe_ += serial_out.oe;
+    bus_oe_ += spu_out.oe;
+    bus_oe_ += timer_out.oe;
+    bus_oe_ += zram_out.oe;
+
+    assert(bus_oe_ <= 1);
+    if (!bus_oe_) bus_out_ = 0xFF;
+
+    bus_in = bus_out_;
   }
 
   //-----------------------------------

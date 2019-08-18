@@ -14,7 +14,8 @@ struct PPU {
 
   uint8_t  get_stat()       const { return stat; }
 
-  int stat_int;
+  int stat_int1;
+  int stat_int2;
 
   void dump_tiles(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
   void draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram, int sprite_index) const;

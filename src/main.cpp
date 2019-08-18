@@ -67,7 +67,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("Prehistorik Man (U)");
   //load("SML");
 
-  load("microtests/build/dmg", "hblank_int_scx0_halt_a");
+  load("microtests/build/dmg", "oam_int_halt_b");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");

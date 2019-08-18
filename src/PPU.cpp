@@ -83,7 +83,8 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 
   hblank_delay2 = HBLANK_DELAY_START;
 
-  stat_int = 0;
+  stat_int1 = 0;
+  stat_int2 = 0;
   compare_line = 0;
 
   //----------

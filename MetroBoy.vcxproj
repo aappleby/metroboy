@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -151,6 +151,9 @@
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="verilog\VRAM_test.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\verilator\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="microtests\000-oam_lock.s" />
@@ -262,22 +265,15 @@
     <None Include="microtests\vblank_int_inc_sled.s" />
     <None Include="microtests\vblank_int_nops_a.s" />
     <None Include="microtests\vblank_int_nops_b.s" />
-    <None Include="verilog\CPU.v">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="verilog\PPU.v">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
-    <CustomBuild Include="verilog\SPU.v">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"wsl" --exec /usr/local/bin/verilator</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj_dir/VSPU.cpp, obj_dir/VSPU.h</Outputs>
-    </CustomBuild>
-    <None Include="verilog\types.v" />
-    <None Include="verilog\VRAM.v">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
+    <None Include="verilog\classtest.sv" />
+    <None Include="verilog\CPU.sv" />
+    <None Include="verilog\IRAM.sv" />
+    <None Include="verilog\IRAM_test.sv" />
+    <None Include="verilog\PPU.sv" />
+    <None Include="verilog\SPU.sv" />
+    <None Include="verilog\types.sv" />
+    <None Include="verilog\VRAM.sv" />
+    <None Include="verilog\VRAM_test.sv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

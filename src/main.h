@@ -59,8 +59,8 @@ public:
   int overlay_mode = 0;
 
 
-  const int fb_width = 1024;
-  const int fb_height = 1024;
+  const int fb_width = 1600;
+  const int fb_height = 1000;
 
   const int gb_width = 160 * 2;
   const int gb_height = 144 * 2;
@@ -69,10 +69,10 @@ public:
   const int glyph_height = 12;
   const int glyph_stride = 256;
 
-  const int console_width = 80;
-  const int console_height = 10;
+  static const int console_width = 80;
+  static const int console_height = 10;
 
-  char console_buf[80 * 10];
+  char console_buf[console_width * console_height];
 
   int cursor_x = 0;
   int cursor_y = 0;

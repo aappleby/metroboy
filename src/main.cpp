@@ -62,12 +62,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  //load("gejmboj");
+  load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
 
-  load("microtests/build/dmg", "oam_int_halt_b");
+  //load("microtests/build/dmg", "oam_int_halt_b");
 
   //load("microtests/build/dmg", "oam_sprite_trashing");
   //load("microtests/build/dmg", "oam_write_l0_e");
@@ -250,10 +250,10 @@ void MetroBoyApp::loop() {
 
   SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
 
-  for (int y = 0; y < 1024; y++) {
-    for (int x = 0; x < 1024; x++) {
+  for (int y = 0; y < fb_height; y++) {
+    for (int x = 0; x < fb_width; x++) {
       int c = ((x ^ y) & 0x20) ? 0x10101010 : 0x15151515;
-      framebuffer[x + y * 1024] = c;
+      framebuffer[x + y * fb_width] = c;
     }
   }
 
@@ -291,7 +291,7 @@ void MetroBoyApp::loop() {
   // Gameboy screen
 
   const int gb_screenx = (fb_width / 2) - 160;
-  const int gb_screeny = (fb_height / 2) - 128;
+  const int gb_screeny = (fb_height / 2) - 144;
 
   if (overlay_mode == 0 || overlay_mode == 1) {
     for (int y = 0; y < 144; y++) {
@@ -382,14 +382,14 @@ void MetroBoyApp::loop() {
   //----------------------------------------
   // VRAM dump
 
-  gameboy.get_ppu().dump_tiles(framebuffer, fb_width, 736, 32, 2, gameboy.get_vram());
-  gameboy.get_ppu().draw_bg_map(framebuffer, fb_width, 736, 448, 1, gameboy.get_vram());
-  gameboy.get_ppu().draw_wm_map(framebuffer, fb_width, 736, 736, 1, gameboy.get_vram());
+  gameboy.get_ppu().dump_tiles(framebuffer,  fb_width, fb_width - 288,       32,  2, gameboy.get_vram());
+  gameboy.get_ppu().draw_bg_map(framebuffer, fb_width, fb_width - 288 - 288, 32,  1, gameboy.get_vram());
+  gameboy.get_ppu().draw_wm_map(framebuffer, fb_width, fb_width - 288 - 288, 256+32+32, 1, gameboy.get_vram());
 
   //----------------------------------------
   // Trace buffer
 
-  int trace_sx = 32 * 8;
+  int trace_sx = (fb_width / 2) - (456 / 2);
   int trace_sy = 32 * 22;
 
   for (int y = 0; y < 154; y++) {
@@ -406,13 +406,13 @@ void MetroBoyApp::loop() {
   smoothed_frame_time += (1000.0 * double(frame_time) / double(freq)) * 0.02;
 
   sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, (int)(cycles_end - cycles_begin) / 4);
-  render_text(736, 1024 - 12 - 4, text_buf.c_str());
+  render_text(fb_width - 288, fb_height - 12 - 4, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------
   // Console
 
-  //render_console(256 - 32, 1024 - glyph_height * console_height - 4, terminus_font);
+  //render_console(256 - 32, fb_height - glyph_height * console_height - 4, terminus_font);
 
   //----------------------------------------
   // Swap

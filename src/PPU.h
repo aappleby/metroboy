@@ -14,9 +14,6 @@ struct PPU {
 
   uint8_t  get_stat()       const { return stat; }
 
-  int stat_int1;
-  int stat_int2;
-
   void dump_tiles(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
   void draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram, int sprite_index) const;
   void draw_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* map, const uint8_t* tiles, uint8_t map_flip) const;
@@ -25,7 +22,19 @@ struct PPU {
 
 //private:
 
+  PpuOut tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
+  void emit_pixel(int tphase);
+  void merge_tile(int tphase);
+
+  void bus_read_early(uint16_t cpu_addr);
+  void bus_read_late(uint16_t cpu_addr);
+  void bus_write_early(uint16_t cpu_addr, uint8_t cpu_data);
+  void bus_write_late(uint16_t cpu_addr, uint8_t cpu_data);
+
   int model = MODEL_DMG;
+
+  uint8_t stat_int1;
+  uint8_t stat_int2;
 
   uint8_t bus_out;
   bool bus_oe;
@@ -39,15 +48,6 @@ struct PPU {
 
   uint8_t pix_out;
   bool pix_oe;
-
-  PpuOut tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
-  void emit_pixel(int tphase);
-  void merge_tile(int tphase);
-
-  void bus_read_early(uint16_t cpu_addr);
-  void bus_read_late(uint16_t cpu_addr);
-  void bus_write_early(uint16_t cpu_addr, uint8_t cpu_data);
-  void bus_write_late (uint16_t cpu_addr, uint8_t cpu_data);
 
   //----------
   // Registers

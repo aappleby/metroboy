@@ -24,11 +24,13 @@ BusOut OAM::tock(CpuBus bus) {
   return ret;
 }
 
-void OAM::dump(std::string& out) const {
+void OAM::dump(std::string& /*out*/) const {
+  /*
   for (int i = 0; i < 10; i++) {
     sprintf(out, "%2x ", ram[i]);
   }
   sprintf(out, "\n");
+  */
 }
 
 //-----------------------------------------------------------------------------

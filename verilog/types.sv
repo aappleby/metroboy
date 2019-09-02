@@ -30,6 +30,12 @@ typedef struct packed {
   bool oe;
 } BusOut;
 
+parameter uint8_t INT_VBLANK  = 8'b00000001;
+parameter uint8_t INT_STAT    = 8'b00000010;
+parameter uint8_t INT_TIMER   = 8'b00000100;
+parameter uint8_t INT_SERIAL  = 8'b00001000;
+parameter uint8_t INT_JOYPAD  = 8'b00010000;
+
 /* verilator lint_off VARHIDDEN */
 /* verilator lint_off IMPORTSTAR */
 

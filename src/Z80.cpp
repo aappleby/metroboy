@@ -175,19 +175,26 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   switch (state) {
   case Z80_STATE_DECODE:       tick_decode(); break;
-  case Z80_STATE_HALT:         tick_halt(); break;
-  case Z80_STATE_DELAY_A:      tick_delayA();       break;
+  case Z80_STATE_HALT:         break;
+  case Z80_STATE_DELAY_A:
+    if (RET_CC) {
+      setup_mem_read1();
+    }
+    else {
+      setup_mem_write1();
+    }
+    break;
   case Z80_STATE_MEM_READ1:    tick_mem_read1();    break;
   case Z80_STATE_MEM_READ2:    tick_mem_read2();    break;
-  case Z80_STATE_MEM_READ3:    tick_mem_read3();    break;
-  case Z80_STATE_DELAY_D:      tick_delayD();       break;
+  case Z80_STATE_MEM_READ3:    setup_decode();      break;
+  case Z80_STATE_DELAY_D:      setup_mem_write1();  break;
   case Z80_STATE_MEM_WRITE1:   tick_mem_write1();   break;
   case Z80_STATE_MEM_WRITE2:   tick_mem_write2();   break;
   case Z80_STATE_DECODE_CB:    tick_decode_cb();    break;
   case Z80_STATE_MEM_READ_CB:  tick_mem_read_cb();  break;
-  case Z80_STATE_MEM_WRITE_CB: tick_mem_write_cb(); break;
-  case Z80_STATE_DELAY_B:      tick_delayB();       break;
-  case Z80_STATE_DELAY_C:      tick_delayC();       break;
+  case Z80_STATE_MEM_WRITE_CB: setup_decode();      break;
+  case Z80_STATE_DELAY_B:      setup_decode();      break;
+  case Z80_STATE_DELAY_C:      setup_delayB();      break;
   }
 
   return {
@@ -205,19 +212,19 @@ CpuOut Z80::tock_t2() {
 
   switch (state_) {
   case Z80_STATE_DECODE:       tock_decode(); break;
-  case Z80_STATE_HALT:         tock_halt(); break;
-  case Z80_STATE_DELAY_A:      tock_delayA(); break;
-  case Z80_STATE_MEM_READ1:    tock_mem_read1(); break;
-  case Z80_STATE_MEM_READ2:    tock_mem_read2(); break;
-  case Z80_STATE_MEM_READ3:    tock_mem_read3(); break;
-  case Z80_STATE_DELAY_D:      tock_delayD(); break;
-  case Z80_STATE_MEM_WRITE1:   tock_mem_write1(); break;
+  case Z80_STATE_HALT:         break;
+  case Z80_STATE_DELAY_A:      break;
+  case Z80_STATE_MEM_READ1:    break;
+  case Z80_STATE_MEM_READ2:    break;
+  case Z80_STATE_MEM_READ3:    break;
+  case Z80_STATE_DELAY_D:      break;
+  case Z80_STATE_MEM_WRITE1:   break;
   case Z80_STATE_MEM_WRITE2:   tock_mem_write2(); break;
   case Z80_STATE_DECODE_CB:    tock_decode_cb(); break;
-  case Z80_STATE_MEM_READ_CB:  tock_mem_read_cb(); break;
-  case Z80_STATE_MEM_WRITE_CB: tock_mem_write_cb(); break;
-  case Z80_STATE_DELAY_B:      tock_delayB(); break;
-  case Z80_STATE_DELAY_C:      tock_delayC(); break;
+  case Z80_STATE_MEM_READ_CB:  break;
+  case Z80_STATE_MEM_WRITE_CB: break;
+  case Z80_STATE_DELAY_B:      break;
+  case Z80_STATE_DELAY_C:      break;
   }
 
   state = state_;
@@ -374,21 +381,21 @@ void Z80::tock_decode() {
     if (LD_A_AT_HLM) hl--;
   }
 
-  else if (LD_RR_D16) switch (row_ / 2) {
+  else if (LD_RR_D16) switch (row_ >> 1) {
   case 0: bc = data16_; break;
   case 1: de = data16_; break;
   case 2: hl = data16_; break;
   case 3: sp = data16_; break;
   }
 
-  else if (INC_RR) switch (row_ / 2) {
+  else if (INC_RR) switch (row_ >> 1) {
   case 0: bc++; break;
   case 1: de++; break;
   case 2: hl++; break;
   case 3: sp++; break;
   }
 
-  else if (DEC_RR) switch (row_ / 2) {
+  else if (DEC_RR) switch (row_ >> 1) {
   case 0: bc--; break;
   case 1: de--; break;
   case 2: hl--; break;
@@ -396,7 +403,7 @@ void Z80::tock_decode() {
   }
 
   else if (POP_RR) {
-    switch (row_ / 2) {
+    switch (row_ >> 1) {
     case 0: bc = data16_; break;
     case 1: de = data16_; break;
     case 2: hl = data16_; break;
@@ -629,12 +636,6 @@ void Z80::setup_halt() {
   unhalt = 0;
 }
 
-void Z80::tock_halt() {
-}
-
-void Z80::tick_halt() {
-}
-
 //-----------------------------------------------------------------------------
 
 void Z80::setup_delayA() {
@@ -642,18 +643,6 @@ void Z80::setup_delayA() {
   bus_tag_ = TAG_NONE;
   mem_read_ = false;
   mem_write_ = false;
-}
-
-void Z80::tock_delayA() {
-}
-
-void Z80::tick_delayA() {
-  if (RET_CC) {
-    setup_mem_read1();
-  }
-  else {
-    setup_mem_write1();
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -696,9 +685,6 @@ void Z80::setup_mem_read_cb() {
   mem_write_ = false;
 }
 
-void Z80::tock_mem_read_cb() {
-}
-
 void Z80::tick_mem_read_cb() {
   assert(bus_tag == TAG_ARG1);
 
@@ -722,13 +708,6 @@ void Z80::setup_mem_write_cb() {
   mem_out_ = (uint8_t)alu_out_;
 }
 
-void Z80::tock_mem_write_cb() {
-}
-
-void Z80::tick_mem_write_cb() {
-  setup_decode();
-}
-
 //-----------------------------------------------------------------------------
 
 void Z80::setup_mem_read1() {
@@ -745,9 +724,6 @@ void Z80::setup_mem_read1() {
 
   mem_read_ = true;
   mem_write_ = false;
-}
-
-void Z80::tock_mem_read1() {
 }
 
 void Z80::tick_mem_read1() {
@@ -789,9 +765,6 @@ void Z80::setup_mem_read2() {
 
   mem_read_ = true;
   mem_write_ = false;
-}
-
-void Z80::tock_mem_read2() {
 }
 
 void Z80::tick_mem_read2() {
@@ -838,13 +811,6 @@ void Z80::setup_mem_read3() {
   mem_write_ = false;
 }
 
-void Z80::tock_mem_read3() {
-}
-
-void Z80::tick_mem_read3() {
-  setup_decode();
-}
-
 //-----------------------------------------------------------------------------
 
 void Z80::setup_delayD() {
@@ -852,13 +818,6 @@ void Z80::setup_delayD() {
   bus_tag_ = TAG_NONE;
   mem_read_ = false;
   mem_write_ = false;
-}
-
-void Z80::tock_delayD() {
-}
-
-void Z80::tick_delayD() {
-  setup_mem_write1();
 }
 
 //-----------------------------------
@@ -918,9 +877,6 @@ void Z80::setup_mem_write1() {
 
   mem_read_ = false;
   mem_write_ = true;
-}
-
-void Z80::tock_mem_write1() {
 }
 
 void Z80::tick_mem_write1() {
@@ -996,13 +952,6 @@ void Z80::setup_delayB() {
   mem_write_ = false;
 }
 
-void Z80::tock_delayB() {
-}
-
-void Z80::tick_delayB() {
-  setup_decode();
-}
-
 //-----------------------------------------------------------------------------
 
 void Z80::setup_delayC() {
@@ -1010,13 +959,6 @@ void Z80::setup_delayC() {
   bus_tag_ = TAG_NONE;
   mem_read_ = false;
   mem_write_ = false;
-}
-
-void Z80::tock_delayC() {
-}
-
-void Z80::tick_delayC() {
-  setup_delayB();
 }
 
 //-----------------------------------------------------------------------------

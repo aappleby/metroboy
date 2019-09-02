@@ -1,5 +1,13 @@
-module IRAM(input types::bool rst, input types::bool clk, input types::CpuBus in_bus);
-  import types::*;
+`ifndef IRAM_SV
+`define IRAM_SV
+
+`include "types.sv"
+
+import types::*;
+
+module IRAM(input bool clk,
+            input bool rst,
+            input CpuBus in_bus);
 
   parameter uint16_t ADDR_IRAM_BEGIN = 16'hC000;
   parameter uint16_t ADDR_IRAM_END   = 16'hDFFF;
@@ -35,3 +43,5 @@ module IRAM(input types::bool rst, input types::bool clk, input types::CpuBus in
   end
 
 endmodule;
+
+`endif

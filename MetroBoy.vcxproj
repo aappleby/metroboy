@@ -148,12 +148,10 @@
     <ClCompile Include="src\test_wpol.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
+    <ClCompile Include="src\Wishbone.cpp" />
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="verilog\VRAM_test.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\verilator\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="microtests\000-oam_lock.s" />
@@ -266,14 +264,16 @@
     <None Include="microtests\vblank_int_nops_a.s" />
     <None Include="microtests\vblank_int_nops_b.s" />
     <None Include="verilog\classtest.sv" />
+    <None Include="verilog\Constants.sv" />
     <None Include="verilog\CPU.sv" />
     <None Include="verilog\IRAM.sv" />
-    <None Include="verilog\IRAM_test.sv" />
     <None Include="verilog\PPU.sv" />
     <None Include="verilog\SPU.sv" />
     <None Include="verilog\types.sv" />
     <None Include="verilog\VRAM.sv" />
-    <None Include="verilog\VRAM_test.sv" />
+    <None Include="verilog\VRAM_test.sh" />
+    <None Include="verilog\wishbone_device.sv" />
+    <None Include="verilog\wishbone_host.sv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

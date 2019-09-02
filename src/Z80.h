@@ -161,17 +161,9 @@ private:
   void tock_halt();
   void tock_decode();
   void tock_delayA();
-  void tock_mem_read1();
-  void tock_mem_read2();
-  void tock_mem_read3();
-  void tock_delayD();
-  void tock_mem_write1();
   void tock_mem_write2();
   void tock_decode_cb();
   void tock_mem_read_cb();
-  void tock_mem_write_cb();
-  void tock_delayB();
-  void tock_delayC();
 
   void setup_halt();
   void setup_decode();

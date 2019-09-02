@@ -1,3 +1,5 @@
+`ifndef SPU_SV
+`define SPU_SV
 `include "types.sv"
 
 import types::*;
@@ -124,8 +126,8 @@ endmodule;
 //-----------------------------------------------------------------------------
 
 module SPU(
-  input bool rst,
   input bool clk,
+  input bool rst,
   uint8_t tphase,
   input uint16_t addr,
   input uint8_t data,
@@ -680,3 +682,4 @@ end
 //-----------------------------------------------------------------------------
 
 endmodule
+`endif // SPU_SV

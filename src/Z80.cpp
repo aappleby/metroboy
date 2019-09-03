@@ -976,54 +976,62 @@ alu_out rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
 
   switch (op) {
   case 0: {
+    old_c = (x >> 7);
     new_c = (x >> 7);
-    out.x = (x << 1) | (x >> 7);
-    out.f = 0;
-    if (new_c) out.f |= F_CARRY;
+    out.x = (x << 1) | old_c;
     break;
   }
   case 1: {
+    old_c = x & 1;
     new_c = x & 1;
-    out.x = (x >> 1) | (x << 7);
-    out.f = 0;
+    out.x = (x >> 1) | (old_c << 7);
     break;
   }
   case 2: {
+    old_c = (f >> 4) & 1;
     new_c = (x >> 7);
     out.x = (x << 1) | old_c;
-    out.f = 0;
     break;
   }
   case 3: {
+    old_c = (f >> 4) & 1;
     new_c = x & 1;
     out.x = (x >> 1) | (old_c << 7);
-    out.f = 0;
     break;
   }
   case 4: {
-    out.f = f;
+    uint8_t lo = (x >> 0) & 0xF;
+    uint8_t hi = (x >> 4) & 0xF;
 
-    uint8_t adjust = old_n ? -6 : 6;
+    if (old_n) {
+      // correct lo
+      if (old_h) lo -= 6;
 
-    // correct lo
-    uint8_t lo = (x & 0xF);
-    bool bad_lo = (lo > 9) && !old_n;
-    if (bad_lo || old_h) lo += adjust;
+      // carry from lo to hi
+      if (lo > 0xF) hi -= 1;
 
-    // carry from lo to hi
-    uint8_t hi = (x >> 4);
-    if (lo > 0xF) hi += old_n ? -1 : 1;
+      // correct hi
+      if (old_c) hi -= 6;
+      new_c = old_c;
+    }
+    else {
+      // correct lo
+      bool bad_lo = (lo > 9) && !old_n;
+      if (bad_lo || old_h) lo += old_n ? -6 : 6;
 
-    // correct hi
-    bool bad_hi = (hi > 9) && !old_n;
-    if (bad_hi || old_c) hi += adjust;
+      // carry from lo to hi
+      if (lo > 0xF) hi += old_n ? -1 : 1;
+
+      // correct hi
+      bool bad_hi = (hi > 9) && !old_n;
+      if (bad_hi || old_c) hi += old_n ? -6 : 6;
+      new_c = old_c || bad_hi;
+    }
 
     // set carry flag and result
     out.x = (hi << 4) | (lo & 0xF);
-
-    out.f &= 0x40;
+    out.f = f & 0x40;
     if (out.x == 0) out.f |= F_ZERO;
-    if (old_c || bad_hi) out.f |= F_CARRY;
     break;
   }
   case 5: {

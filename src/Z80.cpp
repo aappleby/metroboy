@@ -955,12 +955,13 @@ alu_out alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f)
   uint8_t c2 = (op == 4) ? 1 : (d1 >> 4) & 1;
   uint8_t d2 = alu4(op, x >> 4, y >> 4, c2);
 
-  alu_out out = { 0 };
+  alu_out out;
   out.x = ((d2 & 0xF) << 4) | (d1 & 0xF);
+  out.f = 0;
 
   if (op == 2 || op == 3 || op == 7) out.f |= F_NEGATIVE;
-  if (c2) out.f |= F_HALF_CARRY;
-  if (d2 & 0x10) out.f |= F_CARRY;
+  if (c2)         out.f |= F_HALF_CARRY;
+  if (d2 & 0x10)  out.f |= F_CARRY;
   if (out.x == 0) out.f |= F_ZERO;
   return out;
 }
@@ -968,40 +969,39 @@ alu_out alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f)
 alu_out rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
   alu_out out = { 0 };
 
+  uint8_t old_c = (f >> 4) & 1;
+  uint8_t old_h = (f >> 5) & 1;
+  uint8_t old_n = (f >> 6) & 1;
+  uint8_t new_c = 0;
+
   switch (op) {
   case 0: {
+    new_c = (x >> 7);
     out.x = (x << 1) | (x >> 7);
-    out.f = 0;
-    if (out.x & 1) out.f |= F_CARRY;
-    break;
-  }
-  case 1: {
-    out.x = (x >> 1) | (x << 7);
-    out.f = 0;
-    if (out.x & 0x80) out.f |= F_CARRY;
-    break;
-  }
-  case 2: {
-    uint8_t old_c = (f & 0x10) ? 1 : 0;
-    uint8_t new_c = (x >> 7);
-    out.x = (x << 1) | old_c;
     out.f = 0;
     if (new_c) out.f |= F_CARRY;
     break;
   }
+  case 1: {
+    new_c = x & 1;
+    out.x = (x >> 1) | (x << 7);
+    out.f = 0;
+    break;
+  }
+  case 2: {
+    new_c = (x >> 7);
+    out.x = (x << 1) | old_c;
+    out.f = 0;
+    break;
+  }
   case 3: {
-    uint8_t old_c = (f & 0x10) ? 1 : 0;
-    uint8_t new_c = x & 1;
+    new_c = x & 1;
     out.x = (x >> 1) | (old_c << 7);
     out.f = 0;
-    if (new_c)    out.f |= F_CARRY;
     break;
   }
   case 4: {
     out.f = f;
-    bool old_n = (out.f & 0x40) ? true : false;
-    bool old_h = (out.f & 0x20) ? true : false;
-    bool old_c = (out.f & 0x10) ? true : false;
 
     uint8_t adjust = old_n ? -6 : 6;
 
@@ -1023,7 +1023,7 @@ alu_out rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
 
     out.f &= 0x40;
     if (out.x == 0) out.f |= F_ZERO;
-    if (old_c | bad_hi) out.f |= F_CARRY;
+    if (old_c || bad_hi) out.f |= F_CARRY;
     break;
   }
   case 5: {
@@ -1042,6 +1042,8 @@ alu_out rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
     break;
   }
   }
+
+  if (new_c) out.f |= F_CARRY;
 
   return out;
 }

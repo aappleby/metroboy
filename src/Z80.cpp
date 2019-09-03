@@ -981,26 +981,68 @@ void Z80::tick_exec() {
     uint8_t x = a;
     uint8_t z = (uint8_t)reg_in_;
     f_ = f;
+    bool old_c = (f & F_CARRY);
+
     switch(row_) {
-      case 0: alu_out_ = add2(a, (uint8_t)reg_in_, f_); break;
-      case 1: alu_out_ = adc2(a, (uint8_t)reg_in_, f_); break;
-      case 2: alu_out_ = sub2((uint8_t)reg_in_); break;
-      case 3: alu_out_ = sbc2((uint8_t)reg_in_); break;
-      case 4: {
-        x = x & z;
-        f_ = F_HALF_CARRY | (x ? 0x00 : F_ZERO);
-        alu_out_ = x;
-        break;
-      }
-      case 5: {
-        x = x ^ z;
-        f_ = x ? 0x00 : F_ZERO;
-        alu_out_ = x;
-        break;
-      }
-      case 6: alu_out_ = or2((uint8_t)reg_in_); break;
-      case 7: alu_out_ = cp2((uint8_t)reg_in_); break;
+    case 0: {
+      f_ = 0;
+      if ((x & 0xf) + (z & 0xf) > 0xF) f_ |= F_HALF_CARRY;
+      if ((uint16_t(x) + uint16_t(z)) > 0xFF) f_ |= F_CARRY;
+      x = x + z;
+      if (x == 0) f_ |= F_ZERO;
+      break;
     }
+    case 1: {
+      f_ = 0;
+      if (((x & 0xf) + (z & 0xf) + old_c) > 0xF) f_ |= F_HALF_CARRY;
+      if ((x + z + old_c) > 0xFF) f_ |= F_CARRY;
+      x = x + z + old_c;
+      if (x == 0) f_ |= F_ZERO;
+      break;
+    }
+    case 2: {
+      f_ = F_NEGATIVE;
+      if ((x & 0xF) < (z & 0xF)) f_ |= F_HALF_CARRY;
+      if (x < z) f_ |= F_CARRY;
+      x = x - z;
+      if (x == 0) f_ |= F_ZERO;
+      break;
+    }
+    case 3: {
+      //alu_out_ = sbc2((uint8_t)reg_in_);
+      f_ = F_NEGATIVE;
+      if ((x & 0xf) < (z & 0xf) + old_c) f_ |= F_HALF_CARRY;
+      if (x < z + old_c) f_ |= F_CARRY;
+      x = x - z - old_c;
+      if (x == 0) f_ |= F_ZERO;
+      break;
+    }
+    case 4: {
+      x = x & z;
+      f_ = F_HALF_CARRY | (x ? 0x00 : F_ZERO);
+      break;
+    }
+    case 5: {
+      x = x ^ z;
+      f_ = x ? 0x00 : F_ZERO;
+      break;
+    }
+    case 6: {
+      x = x | z;
+      f_ = x ? 0x00 : F_ZERO;
+      break;
+    }
+    case 7: {
+      f_ = F_NEGATIVE;
+      if ((x & 0xF) < (z & 0xF)) f_ |= F_HALF_CARRY;
+      if (x < z) f_ |= F_CARRY;
+      x = x - z;
+      if (x == 0) f_ |= F_ZERO;
+      x = a;
+      break;
+    }
+    }
+    alu_out_ = x;
   }
 }
 
@@ -1103,19 +1145,6 @@ uint8_t Z80::sbc2(uint8_t z) {
   x = x - z - old_c;
   if (x == 0) f_ |= F_ZERO;
   return x;
-}
-
-uint8_t Z80::or2(uint8_t z) {
-  f_ = f;
-  uint8_t x = a;
-  x = x | z;
-  f_ = x ? 0x00 : F_ZERO;
-  return x;
-}
-
-uint8_t Z80::cp2(uint8_t z) {
-  sub2(z);
-  return a;
 }
 
 uint8_t Z80::inc2(uint8_t x) {

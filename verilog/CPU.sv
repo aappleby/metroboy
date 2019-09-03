@@ -181,9 +181,6 @@ module CPU(input bool clk,
     mem_write_ <= false;
   endtask;
 
-  task tock_decode_cb();
-  endtask;
-
   task tick_decode_cb();
     uint8_t cb_opcode_ = bus_data_;
 

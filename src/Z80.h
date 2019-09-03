@@ -143,42 +143,22 @@ private:
 
 private:
 
-  void tick_halt();
   void tick_decode();
-  void tick_delayA();
   void tick_mem_read1();
   void tick_mem_read2();
-  void tick_mem_read3();
-  void tick_delayD();
   void tick_mem_write1();
   void tick_mem_write2();
   void tick_decode_cb();
   void tick_mem_read_cb();
-  void tick_mem_write_cb();
-  void tick_delayB();
-  void tick_delayC();
 
-  void tock_halt();
   void tock_decode();
-  void tock_delayA();
-  void tock_mem_write2();
-  void tock_decode_cb();
-  void tock_mem_read_cb();
 
-  void setup_halt();
   void setup_decode();
-  void setup_delayA();
   void setup_mem_read1();
   void setup_mem_read2();
   void setup_mem_read3();
-  void setup_delayD();
   void setup_mem_write1();
   void setup_mem_write2();
-  void setup_decode_cb();
-  void setup_mem_read_cb();
-  void setup_mem_write_cb();
-  void setup_delayB();
-  void setup_delayC();
 
   void tick_exec();
   void tick_exec_cb();
@@ -211,6 +191,15 @@ private:
   uint8_t bit(uint8_t x, uint8_t y);
   uint8_t res(uint8_t x, uint8_t y);
   uint8_t set(uint8_t x, uint8_t y);
+
+  struct alu_out {
+    uint8_t x;
+    uint8_t f;
+  };
+
+  static alu_out rlc(uint8_t x, uint8_t f);
+
+
 };
 
 //-----------------------------------------------------------------------------

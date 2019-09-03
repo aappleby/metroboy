@@ -48,7 +48,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
   //run_test("microtests/build/dmg/", "dma_timing_a");
 
-  //run_mooneye_acceptance();
+  run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
   //return 0;
@@ -62,10 +62,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
+  //load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
+  load("cpu_instrs");
+  runmode = RUN_FAST;
 
   //load("microtests/build/dmg", "oam_int_halt_b");
 
@@ -209,8 +211,9 @@ void MetroBoyApp::loop() {
   int64_t cycles_begin = metroboy.total_tcycles();
 
   if (runmode == RUN_FAST) {
-    fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
-    metroboy.run_fast(buttons, (int)fast_cycles);
+    //fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
+    //metroboy.run_fast(buttons, (int)fast_cycles);
+    metroboy.run_fast(buttons, 100000);
   }
   else if (runmode == RUN_VSYNC) {
     //printf("%d --------\n", frame_count);
@@ -262,6 +265,7 @@ void MetroBoyApp::loop() {
 
   Gameboy& gameboy = metroboy.gb();
 
+  /*
   gameboy.dump(text_buf);
   gameboy.get_oam().dump(text_buf);
   render_text(4, 4, text_buf.c_str());
@@ -274,10 +278,12 @@ void MetroBoyApp::loop() {
   gameboy.get_spu().dump(text_buf);
   render_text(280, 4, text_buf.c_str());
   text_buf.clear();
+  */
 
   //----------------------------------------
   // Wave thingy
 
+  /*
   for (int i = 0; i < 16; i++) {
     uint8_t a = (gameboy.get_spu().get_wave()[i] & 0x0F) >> 0;
     uint8_t b = (gameboy.get_spu().get_wave()[i] & 0xF0) >> 4;
@@ -286,6 +292,7 @@ void MetroBoyApp::loop() {
     framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;
     framebuffer[(512 + 2 * i + 1) + (100 + a) * fb_width] = color;
   }
+  */
 
   //----------------------------------------
   // Gameboy screen
@@ -382,13 +389,16 @@ void MetroBoyApp::loop() {
   //----------------------------------------
   // VRAM dump
 
+  /*
   gameboy.get_ppu().dump_tiles(framebuffer,  fb_width, fb_width - 288,       32,  2, gameboy.get_vram());
   gameboy.get_ppu().draw_bg_map(framebuffer, fb_width, fb_width - 288 - 288, 32,  1, gameboy.get_vram());
   gameboy.get_ppu().draw_wm_map(framebuffer, fb_width, fb_width - 288 - 288, 256+32+32, 1, gameboy.get_vram());
+  */
 
   //----------------------------------------
   // Trace buffer
 
+  /*
   int trace_sx = (fb_width / 2) - (456 / 2);
   int trace_sy = 32 * 22;
 
@@ -397,6 +407,7 @@ void MetroBoyApp::loop() {
       framebuffer[(trace_sx + x) + (trace_sy + y) * fb_width] = metroboy.get_trace()[x + y * 456];
     }
   }
+  */
 
   //----------------------------------------
   // Perf timer

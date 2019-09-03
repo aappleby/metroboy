@@ -1023,9 +1023,8 @@ alu_out rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
       if (bad_lo) hi += 1;
 
       // correct hi
-      bool bad_hi = (hi > 9);
-      if (bad_hi || old_c) hi += 6;
-      new_c = old_c || bad_hi;
+      new_c = (hi > 9) || old_c;
+      if (new_c) hi += 6;
     }
 
     // set carry flag and result

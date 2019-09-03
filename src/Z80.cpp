@@ -934,67 +934,90 @@ void Z80::setup_mem_write1() {
 
 //-----------------------------------------------------------------------------
 
-alu_out alu1(uint8_t x, uint8_t z, uint8_t f, uint8_t op) {
+alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
+  uint8_t xl = x & 0xF;
+  uint8_t xh = x >> 4;
+  uint8_t yl = y & 0xF;
+  uint8_t yh = y >> 4;
+
   bool old_c = (f & F_CARRY);
+  f = 0;
 
   switch (op) {
   case 0: {
-    f = 0;
-    if ((x & 0xf) + (z & 0xf) > 0xF) f |= F_HALF_CARRY;
-    if ((uint16_t(x) + uint16_t(z)) > 0xFF) f |= F_CARRY;
-    x = x + z;
-    if (x == 0) f |= F_ZERO;
+    uint8_t zl = xl + yl;
+    if (zl > 0xF) f |= F_HALF_CARRY;
+    
+    uint8_t zh = xh + yh + (zl >> 4);
+    if (zh > 0xF) f |= F_CARRY;
+
+    uint8_t z = (zh << 4) + (zl & 0xF);
+    if (z == 0) f |= F_ZERO;
+    return { z, f };
     break;
   }
   case 1: {
-    f = 0;
-    if (((x & 0xf) + (z & 0xf) + old_c) > 0xF) f |= F_HALF_CARRY;
-    if ((x + z + old_c) > 0xFF) f |= F_CARRY;
-    x = x + z + old_c;
+    if (((x & 0xf) + (y & 0xf) + old_c) > 0xF) f |= F_HALF_CARRY;
+    if ((x + y + old_c) > 0xFF) f |= F_CARRY;
+    x = x + y + old_c;
+    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
     if (x == 0) f |= F_ZERO;
+    return { x, f };
     break;
   }
   case 2: {
-    f = F_NEGATIVE;
-    if ((x & 0xF) < (z & 0xF)) f |= F_HALF_CARRY;
-    if (x < z) f |= F_CARRY;
-    x = x - z;
+    if ((x & 0xF) < (y & 0xF)) f |= F_HALF_CARRY;
+    if (x < y) f |= F_CARRY;
+    x = x - y;
+    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
     if (x == 0) f |= F_ZERO;
+    return { x, f };
     break;
   }
   case 3: {
-    f = F_NEGATIVE;
-    if ((x & 0xf) < (z & 0xf) + old_c) f |= F_HALF_CARRY;
-    if (x < z + old_c) f |= F_CARRY;
-    x = x - z - old_c;
+    if ((x & 0xf) < (y & 0xf) + old_c) f |= F_HALF_CARRY;
+    if (x < y + old_c) f |= F_CARRY;
+    x = x - y - old_c;
+    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
     if (x == 0) f |= F_ZERO;
+    return { x, f };
     break;
   }
   case 4: {
-    x = x & z;
-    f = F_HALF_CARRY | (x ? 0x00 : F_ZERO);
+    x = x & y;
+    f |= F_HALF_CARRY;
+    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
+    if (x == 0) f |= F_ZERO;
+    return { x, f };
     break;
   }
   case 5: {
-    x = x ^ z;
-    f = x ? 0x00 : F_ZERO;
+    x = x ^ y;
+    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
+    if (x == 0) f |= F_ZERO;
+    return { x, f };
     break;
   }
   case 6: {
-    x = x | z;
-    f = x ? 0x00 : F_ZERO;
+    x = x | y;
+    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
+    if (x == 0) f |= F_ZERO;
+    return { x, f };
     break;
   }
+
   case 7: {
-    f = F_NEGATIVE;
-    if ((x & 0xF) < (z & 0xF)) f |= F_HALF_CARRY;
-    if (x < z) f |= F_CARRY;
-    if (x == z) f |= F_ZERO;
+    if ((x & 0xF) < (y & 0xF)) f |= F_HALF_CARRY;
+    if (x < y) f |= F_CARRY;
+    x = x - y;
+    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
+    if (x == 0) f |= F_ZERO;
+    return { x, f };
     break;
   }
   }
 
-  return { x, f };
+  return { 0 };
 }
 
 //-----------------------------------------------------------------------------
@@ -1075,75 +1098,13 @@ void Z80::tick_exec() {
   }
   else if (ALU_OPS || ALU_A_D8) {
     auto out = alu1(a, (uint8_t)reg_in_, f, row_);
-    alu_out_ = out.x;
+    if (row_ == 7) {
+      alu_out_ = a;
+    }
+    else {
+      alu_out_ = out.x;
+    }
     f_ = out.f;
-
-    /*
-    uint8_t x = a;
-    uint8_t z = (uint8_t)reg_in_;
-    f_ = f;
-    bool old_c = (f & F_CARRY);
-
-    switch(row_) {
-    case 0: {
-      f_ = 0;
-      if ((x & 0xf) + (z & 0xf) > 0xF) f_ |= F_HALF_CARRY;
-      if ((uint16_t(x) + uint16_t(z)) > 0xFF) f_ |= F_CARRY;
-      x = x + z;
-      if (x == 0) f_ |= F_ZERO;
-      break;
-    }
-    case 1: {
-      f_ = 0;
-      if (((x & 0xf) + (z & 0xf) + old_c) > 0xF) f_ |= F_HALF_CARRY;
-      if ((x + z + old_c) > 0xFF) f_ |= F_CARRY;
-      x = x + z + old_c;
-      if (x == 0) f_ |= F_ZERO;
-      break;
-    }
-    case 2: {
-      f_ = F_NEGATIVE;
-      if ((x & 0xF) < (z & 0xF)) f_ |= F_HALF_CARRY;
-      if (x < z) f_ |= F_CARRY;
-      x = x - z;
-      if (x == 0) f_ |= F_ZERO;
-      break;
-    }
-    case 3: {
-      f_ = F_NEGATIVE;
-      if ((x & 0xf) < (z & 0xf) + old_c) f_ |= F_HALF_CARRY;
-      if (x < z + old_c) f_ |= F_CARRY;
-      x = x - z - old_c;
-      if (x == 0) f_ |= F_ZERO;
-      break;
-    }
-    case 4: {
-      x = x & z;
-      f_ = F_HALF_CARRY | (x ? 0x00 : F_ZERO);
-      break;
-    }
-    case 5: {
-      x = x ^ z;
-      f_ = x ? 0x00 : F_ZERO;
-      break;
-    }
-    case 6: {
-      x = x | z;
-      f_ = x ? 0x00 : F_ZERO;
-      break;
-    }
-    case 7: {
-      f_ = F_NEGATIVE;
-      if ((x & 0xF) < (z & 0xF)) f_ |= F_HALF_CARRY;
-      if (x < z) f_ |= F_CARRY;
-      x = x - z;
-      if (x == 0) f_ |= F_ZERO;
-      x = a;
-      break;
-    }
-    }
-    alu_out_ = x;
-    */
   }
 }
 

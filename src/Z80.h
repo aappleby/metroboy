@@ -162,23 +162,6 @@ private:
 
   uint8_t add2(uint8_t x, uint8_t z, uint8_t f);
   uint8_t adc2(uint8_t x, uint8_t z, uint8_t f);
-  uint8_t sub2(uint8_t z);
-  uint8_t sbc2(uint8_t z);
-  uint8_t or2(uint8_t z);
-  uint8_t cp2(uint8_t z);
-  uint8_t inc2(uint8_t z);
-  uint8_t dec2(uint8_t z);
-
-  uint8_t rlc(uint8_t x);
-  uint8_t rrc(uint8_t x);
-  uint8_t rl(uint8_t x);
-  uint8_t rr(uint8_t x);
-  uint8_t daa(uint8_t a);
-  uint8_t cpl(uint8_t x);
-  uint8_t scf(uint8_t x);
-  uint8_t ccf(uint8_t x);
-
-  static alu_out rlc(uint8_t x, uint8_t f);
 };
 
 //-----------------------------------------------------------------------------

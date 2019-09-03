@@ -969,19 +969,23 @@ alu_out alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f)
 //-----------------------------------------------------------------------------
 // idempotent
 
+//#define F_CARRY      0x10
+//#define F_HALF_CARRY 0x20
+//#define F_NEGATIVE   0x40
+//#define F_ZERO       0x80
+
 void Z80::tick_exec() {
   f_ = f;
 
   alu_out_ = reg_in_;
 
   if (INC_R) {
-    uint8_t x = (uint8_t)reg_in_;
-    f_ = f;
-    f_ &= 0x10;
-    if ((x & 0xf) > 0x0E) f_ |= F_HALF_CARRY;
-    x = x + 1;
-    if (x == 0) f_ |= F_ZERO;
-    alu_out_ = x;
+    auto out = alu(0, 1, (uint8_t)reg_in_, 0);
+    out.f &= ~F_CARRY;
+    out.f |= f & F_CARRY;
+
+    alu_out_ = out.x;
+    f_ = out.f;
   }
   else if (DEC_R) {
     uint8_t x = (uint8_t)reg_in_;

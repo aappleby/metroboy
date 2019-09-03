@@ -975,10 +975,23 @@ void Z80::tick_exec() {
   alu_out_ = reg_in_;
 
   if (INC_R) {
-    alu_out_ = inc2((uint8_t)reg_in_);
+    uint8_t x = (uint8_t)reg_in_;
+    f_ = f;
+    f_ &= 0x10;
+    if ((x & 0xf) > 0x0E) f_ |= F_HALF_CARRY;
+    x = x + 1;
+    if (x == 0) f_ |= F_ZERO;
+    alu_out_ = x;
   }
   else if (DEC_R) {
-    alu_out_ = dec2((uint8_t)reg_in_);
+    uint8_t x = (uint8_t)reg_in_;
+    f_ = f;
+    f_ &= 0x10;
+    if ((x & 0xf) == 0) f_ |= F_HALF_CARRY;
+    x = x - 1;
+    if (x == 0) f_ |= F_ZERO;
+    f_ |= F_NEGATIVE;
+    alu_out_ = x;
   }
   else if (ADD_HL_RR) {
     uint8_t lo = uint8_t(reg_in_ >> 0);
@@ -1000,29 +1013,68 @@ void Z80::tick_exec() {
     f_ = temp;
   }
   else if (ROTATE_OPS) {
+    uint8_t x = a;
     switch(row_) {
     case 0: {
-      alu_out_ = rlc(a);
-      f_ &= 0x70;
+      x = (x << 1) | (x >> 7);
+      f_ = 0;
+      if (x & 1)  f_ |= F_CARRY;
+      alu_out_ = x;
       break;
     }
     case 1: {
-      alu_out_ = rrc(a);
-      f_ &= 0x70;
+      x = (x >> 1) | (x << 7);
+      f_ = 0;
+      if (x & 0x80) f_ |= F_CARRY;
+      alu_out_ = x;
       break;
     }
     case 2: {
-      alu_out_ = rl(a);
-      f_ &= 0x70;
+      uint8_t old_c = (f & 0x10) ? 1 : 0;
+      uint8_t new_c = (x >> 7);
+      x = (x << 1) | old_c;
+      f_ = 0;
+      if (new_c)    f_ |= F_CARRY;
+      alu_out_ = x;
       break;
     }
     case 3: {
-      alu_out_ = rr(a);
-      f_ &= 0x70;
+      uint8_t old_c = (f & 0x10) ? 1 : 0;
+      uint8_t new_c = x & 1;
+      x = (x >> 1) | (old_c << 7);
+      f_ = 0;
+      if (new_c)    f_ |= F_CARRY;
+      alu_out_ = x;
       break;
     }
     case 4: {
-      alu_out_ = daa(a);
+      f_ = f;
+      bool old_n = (f_ & 0x40) ? true : false;
+      bool old_h = (f_ & 0x20) ? true : false;
+      bool old_c = (f_ & 0x10) ? true : false;
+
+      uint8_t adjust = old_n ? -6 : 6;
+
+      // correct lo
+      uint8_t lo = (x & 0xF);
+      bool bad_lo = (lo > 9) && !old_n;
+      if (bad_lo || old_h) lo += adjust;
+
+      // carry from lo to hi
+      uint8_t hi = (x >> 4);
+      if (lo > 0xF) hi += old_n ? -1 : 1;
+
+      // correct hi
+      bool bad_hi = (hi > 9) && !old_n;
+      if (bad_hi || old_c) hi += adjust;
+
+      // set carry flag and result
+      x = (hi << 4) | (lo & 0xF);
+
+      f_ &= 0x40;
+      if (x == 0) f_ |= F_ZERO;
+      if (old_c | bad_hi) f_ |= F_CARRY;
+      alu_out_ = x;
       break;
     }
     case 5: {
@@ -1129,144 +1181,6 @@ uint8_t Z80::adc2(uint8_t x, uint8_t z, uint8_t old_f) {
   if ((x + z + old_c) > 0xFF) f_ |= F_CARRY;
   x = x + z + old_c;
   if (x == 0) f_ |= F_ZERO;
-  return x;
-}
-
-uint8_t Z80::sub2(uint8_t z) {
-  f_ = f;
-  f_ = F_NEGATIVE;
-  uint8_t x = a;
-  if ((x & 0xF) < (z & 0xF)) f_ |= F_HALF_CARRY;
-  if (x < z) f_ |= F_CARRY;
-  x = x - z;
-  if (x == 0) f_ |= F_ZERO;
-  return x;
-}
-
-uint8_t Z80::sbc2(uint8_t z) {
-  f_ = f;
-  uint8_t x = a;
-  bool old_c = (f_ & F_CARRY);
-  f_ = F_NEGATIVE;
-  if ((x & 0xf) < (z & 0xf) + old_c) f_ |= F_HALF_CARRY;
-  if (x < z + old_c) f_ |= F_CARRY;
-  x = x - z - old_c;
-  if (x == 0) f_ |= F_ZERO;
-  return x;
-}
-
-uint8_t Z80::inc2(uint8_t x) {
-  f_ = f;
-  f_ &= 0x10;
-  if ((x & 0xf) > 0x0E) f_ |= F_HALF_CARRY;
-  x = x + 1;
-  if (x == 0) f_ |= F_ZERO;
-  return x;
-}
-
-uint8_t Z80::dec2(uint8_t x) {
-  f_ = f;
-  f_ &= 0x10;
-  if ((x & 0xf) == 0) f_ |= F_HALF_CARRY;
-  x = x - 1;
-  if (x == 0) f_ |= F_ZERO;
-  f_ |= F_NEGATIVE;
-  return x;
-}
-
-//-----------------------------------------------------------------------------
-// shifts and rotates
-
-uint8_t Z80::rlc(uint8_t x) {
-  f_ = f;
-  x = (x << 1) | (x >> 7);
-  f_ = 0;
-  if (x == 0) f_ |= F_ZERO;
-  if (x & 1)  f_ |= F_CARRY;
-  return x;
-}
-
-uint8_t Z80::rrc(uint8_t x) {
-  f_ = f;
-  x = (x >> 1) | (x << 7);
-  f_ = 0;
-  if (x == 0)   f_ |= F_ZERO;
-  if (x & 0x80) f_ |= F_CARRY;
-  return x;
-}
-
-uint8_t Z80::rl(uint8_t x) {
-  f_ = f;
-  uint8_t old_c = (f_ & 0x10) ? 1 : 0;
-  uint8_t new_c = (x >> 7);
-  x = (x << 1) | old_c;
-  f_ = 0;
-  if (x == 0)   f_ |= F_ZERO;
-  if (new_c)    f_ |= F_CARRY;
-  return x;
-}
-
-uint8_t Z80::rr(uint8_t x) {
-  f_ = f;
-  uint8_t old_c = (f_ & 0x10) ? 1 : 0;
-  uint8_t new_c = x & 1;
-  x = (x >> 1) | (old_c << 7);
-  f_ = 0;
-  if (x == 0)   f_ |= F_ZERO;
-  if (new_c)    f_ |= F_CARRY;
-  return x;
-}
-
-uint8_t Z80::daa(uint8_t x) {
-  f_ = f;
-  //bool old_z = (f_ & 0x80) ? true : false;
-  bool old_n = (f_ & 0x40) ? true : false;
-  bool old_h = (f_ & 0x20) ? true : false;
-  bool old_c = (f_ & 0x10) ? true : false;
-
-  uint8_t adjust = old_n ? -6 : 6;
-
-  // correct lo
-  uint8_t lo = (x & 0xF);
-  bool bad_lo = (lo > 9) && !old_n;
-  if (bad_lo || old_h) lo += adjust;
-
-  // carry from lo to hi
-  uint8_t hi = (x >> 4);
-  if (lo > 0xF) hi += old_n ? -1 : 1;
-
-  // correct hi
-  bool bad_hi = (hi > 9) && !old_n;
-  if (bad_hi || old_c) hi += adjust;
-
-  // set carry flag and result
-  x = (hi << 4) | (lo & 0xF);
-
-  f_ &= 0x40;
-  if (x == 0) f_ |= F_ZERO;
-  if (old_c | bad_hi) f_ |= F_CARRY;
-
-  return x;
-}
-
-uint8_t Z80::cpl(uint8_t x) {
-  f_ = f;
-  x = ~x;
-  f_ |= 0x60;
-  return x;
-}
-
-uint8_t Z80::scf(uint8_t x) {
-  f_ = f;
-  f_ &= 0x80;
-  f_ |= 0x10;
-  return x;
-}
-
-uint8_t Z80::ccf(uint8_t x) {
-  f_ = f;
-  f_ &= 0x90;
-  f_ ^= 0x10;
   return x;
 }
 

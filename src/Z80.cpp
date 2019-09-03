@@ -785,35 +785,36 @@ void Z80::tick_mem_read1() {
 
     mem_read_ = true;
     mem_write_ = false;
-    return;
   }
+  else {
+    reg_in_ = bus_data_;
+    tick_exec();
 
-  reg_in_ = bus_data_;
-  tick_exec();
-
-  if (any_write_) {
-    setup_mem_write1();
-  } else {
-    if (JR_R8 || (JR_CC_R8 && take_branch_)) {
-      state_ = Z80_STATE_DELAY_B;
-      bus_tag_ = TAG_NONE;
-      mem_read_ = false;
-      mem_write_ = false;
-    }
-    else if (ADD_SP_R8) {
-      state_ = Z80_STATE_DELAY_C;
-      bus_tag_ = TAG_NONE;
-      mem_read_ = false;
-      mem_write_ = false;
-    }
-    else if (LD_HL_SP_R8) {
-      state_ = Z80_STATE_DELAY_B;
-      bus_tag_ = TAG_NONE;
-      mem_read_ = false;
-      mem_write_ = false;
+    if (any_write_) {
+      setup_mem_write1();
     }
     else {
-      setup_decode();
+      if (JR_R8 || (JR_CC_R8 && take_branch_)) {
+        state_ = Z80_STATE_DELAY_B;
+        bus_tag_ = TAG_NONE;
+        mem_read_ = false;
+        mem_write_ = false;
+      }
+      else if (ADD_SP_R8) {
+        state_ = Z80_STATE_DELAY_C;
+        bus_tag_ = TAG_NONE;
+        mem_read_ = false;
+        mem_write_ = false;
+      }
+      else if (LD_HL_SP_R8) {
+        state_ = Z80_STATE_DELAY_B;
+        bus_tag_ = TAG_NONE;
+        mem_read_ = false;
+        mem_write_ = false;
+      }
+      else {
+        setup_decode();
+      }
     }
   }
 }
@@ -977,13 +978,26 @@ void Z80::tick_exec() {
     }
   }
   else if (ALU_OPS || ALU_A_D8) {
+    uint8_t x = a;
+    uint8_t z = (uint8_t)reg_in_;
+    f_ = f;
     switch(row_) {
       case 0: alu_out_ = add2(a, (uint8_t)reg_in_, f_); break;
       case 1: alu_out_ = adc2(a, (uint8_t)reg_in_, f_); break;
       case 2: alu_out_ = sub2((uint8_t)reg_in_); break;
       case 3: alu_out_ = sbc2((uint8_t)reg_in_); break;
-      case 4: alu_out_ = and2((uint8_t)reg_in_); break;
-      case 5: alu_out_ = xor2((uint8_t)reg_in_); break;
+      case 4: {
+        x = x & z;
+        f_ = F_HALF_CARRY | (x ? 0x00 : F_ZERO);
+        alu_out_ = x;
+        break;
+      }
+      case 5: {
+        x = x ^ z;
+        f_ = x ? 0x00 : F_ZERO;
+        alu_out_ = x;
+        break;
+      }
       case 6: alu_out_ = or2((uint8_t)reg_in_); break;
       case 7: alu_out_ = cp2((uint8_t)reg_in_); break;
     }
@@ -994,8 +1008,6 @@ void Z80::tick_exec() {
 // idempotent
 
 void Z80::tick_exec_cb() {
-  uint8_t old_c, new_c;
-
   uint8_t x = 0;
   switch(cb_col_) {
     case 0: x = b; break;
@@ -1009,12 +1021,11 @@ void Z80::tick_exec_cb() {
   }
   
   bool bit_mux = (x >> cb_row_) & 1;
+  uint8_t old_c = (f & 0x10) ? 1 : 0;
+  uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
 
   switch (cb_quad_) {
     case 0: {
-      old_c = (f & 0x10) ? 1 : 0;
-      new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
-
       switch (cb_row_) {
         case 0: x = (x << 1) | (x >> 7);     new_c = (x & 1);  break;
         case 1: x = (x >> 1) | (x << 7);     new_c = x & 0x80; break;
@@ -1091,22 +1102,6 @@ uint8_t Z80::sbc2(uint8_t z) {
   if (x < z + old_c) f_ |= F_CARRY;
   x = x - z - old_c;
   if (x == 0) f_ |= F_ZERO;
-  return x;
-}
-
-uint8_t Z80::and2(uint8_t z) {
-  f_ = f;
-  uint8_t x = a;
-  x = x & z;
-  f_ = F_HALF_CARRY | (x ? 0x00 : F_ZERO);
-  return x;
-}
-
-uint8_t Z80::xor2(uint8_t z) {
-  f_ = f;
-  uint8_t x = a;
-  x = x ^ z;
-  f_ = x ? 0x00 : F_ZERO;
   return x;
 }
 

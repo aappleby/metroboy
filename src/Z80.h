@@ -146,19 +146,11 @@ private:
   void tick_decode();
   void tick_mem_read1();
   void tick_mem_read2();
-  void tick_mem_write1();
-  void tick_mem_write2();
-  void tick_decode_cb();
-  void tick_mem_read_cb();
 
   void tock_decode();
 
   void setup_decode();
-  void setup_mem_read1();
-  void setup_mem_read2();
-  void setup_mem_read3();
   void setup_mem_write1();
-  void setup_mem_write2();
 
   void tick_exec();
   void tick_exec_cb();
@@ -167,8 +159,6 @@ private:
   uint8_t adc2(uint8_t x, uint8_t z, uint8_t f);
   uint8_t sub2(uint8_t z);
   uint8_t sbc2(uint8_t z);
-  uint8_t and2(uint8_t z);
-  uint8_t xor2(uint8_t z);
   uint8_t or2(uint8_t z);
   uint8_t cp2(uint8_t z);
   uint8_t inc2(uint8_t z);
@@ -182,15 +172,6 @@ private:
   uint8_t cpl(uint8_t x);
   uint8_t scf(uint8_t x);
   uint8_t ccf(uint8_t x);
-
-  uint8_t sla(uint8_t x);
-  uint8_t sra(uint8_t x);
-  uint8_t swap(uint8_t x);
-  uint8_t srl(uint8_t x);
-
-  uint8_t bit(uint8_t x, uint8_t y);
-  uint8_t res(uint8_t x, uint8_t y);
-  uint8_t set(uint8_t x, uint8_t y);
 
   struct alu_out {
     uint8_t x;

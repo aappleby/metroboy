@@ -3,6 +3,11 @@
 
 //-----------------------------------------------------------------------------
 
+struct alu_out {
+  uint8_t x;
+  uint8_t f;
+};
+
 struct Z80 {
   CpuOut reset(int new_model, uint16_t new_pc);
   CpuBus tick_t0(uint8_t imask, uint8_t intf, uint8_t mem_out);
@@ -173,14 +178,7 @@ private:
   uint8_t scf(uint8_t x);
   uint8_t ccf(uint8_t x);
 
-  struct alu_out {
-    uint8_t x;
-    uint8_t f;
-  };
-
   static alu_out rlc(uint8_t x, uint8_t f);
-
-
 };
 
 //-----------------------------------------------------------------------------

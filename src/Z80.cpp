@@ -933,6 +933,71 @@ void Z80::setup_mem_write1() {
 }
 
 //-----------------------------------------------------------------------------
+
+alu_out alu1(uint8_t x, uint8_t z, uint8_t f, uint8_t op) {
+  bool old_c = (f & F_CARRY);
+
+  switch (op) {
+  case 0: {
+    f = 0;
+    if ((x & 0xf) + (z & 0xf) > 0xF) f |= F_HALF_CARRY;
+    if ((uint16_t(x) + uint16_t(z)) > 0xFF) f |= F_CARRY;
+    x = x + z;
+    if (x == 0) f |= F_ZERO;
+    break;
+  }
+  case 1: {
+    f = 0;
+    if (((x & 0xf) + (z & 0xf) + old_c) > 0xF) f |= F_HALF_CARRY;
+    if ((x + z + old_c) > 0xFF) f |= F_CARRY;
+    x = x + z + old_c;
+    if (x == 0) f |= F_ZERO;
+    break;
+  }
+  case 2: {
+    f = F_NEGATIVE;
+    if ((x & 0xF) < (z & 0xF)) f |= F_HALF_CARRY;
+    if (x < z) f |= F_CARRY;
+    x = x - z;
+    if (x == 0) f |= F_ZERO;
+    break;
+  }
+  case 3: {
+    f = F_NEGATIVE;
+    if ((x & 0xf) < (z & 0xf) + old_c) f |= F_HALF_CARRY;
+    if (x < z + old_c) f |= F_CARRY;
+    x = x - z - old_c;
+    if (x == 0) f |= F_ZERO;
+    break;
+  }
+  case 4: {
+    x = x & z;
+    f = F_HALF_CARRY | (x ? 0x00 : F_ZERO);
+    break;
+  }
+  case 5: {
+    x = x ^ z;
+    f = x ? 0x00 : F_ZERO;
+    break;
+  }
+  case 6: {
+    x = x | z;
+    f = x ? 0x00 : F_ZERO;
+    break;
+  }
+  case 7: {
+    f = F_NEGATIVE;
+    if ((x & 0xF) < (z & 0xF)) f |= F_HALF_CARRY;
+    if (x < z) f |= F_CARRY;
+    if (x == z) f |= F_ZERO;
+    break;
+  }
+  }
+
+  return { x, f };
+}
+
+//-----------------------------------------------------------------------------
 // idempotent
 
 void Z80::tick_exec() {
@@ -967,17 +1032,53 @@ void Z80::tick_exec() {
   }
   else if (ROTATE_OPS) {
     switch(row_) {
-      case 0: alu_out_ = rlc(a); f_ &= 0x70; break;
-      case 1: alu_out_ = rrc(a); f_ &= 0x70; break;
-      case 2: alu_out_ = rl(a); f_ &= 0x70; break;
-      case 3: alu_out_ = rr(a); f_ &= 0x70; break;
-      case 4: alu_out_ = daa(a); break;
-      case 5: alu_out_ = ~a; f_ |= 0x60; break;
-      case 6: alu_out_ = a; f_ = (f_ & 0x80) | 0x10; break;
-      case 7: alu_out_ = a; f_ = (f_ & 0x90) ^ 0x10; break;
+    case 0: {
+      alu_out_ = rlc(a);
+      f_ &= 0x70;
+      break;
+    }
+    case 1: {
+      alu_out_ = rrc(a);
+      f_ &= 0x70;
+      break;
+    }
+    case 2: {
+      alu_out_ = rl(a);
+      f_ &= 0x70;
+      break;
+    }
+    case 3: {
+      alu_out_ = rr(a);
+      f_ &= 0x70;
+      break;
+    }
+    case 4: {
+      alu_out_ = daa(a);
+      break;
+    }
+    case 5: {
+      alu_out_ = ~a;
+      f_ |= 0x60;
+      break;
+    }
+    case 6: {
+      alu_out_ = a;
+      f_ = (f_ & 0x80) | 0x10;
+      break;
+    }
+    case 7: {
+      alu_out_ = a;
+      f_ = (f_ & 0x90) ^ 0x10;
+      break;
+    }
     }
   }
   else if (ALU_OPS || ALU_A_D8) {
+    auto out = alu1(a, (uint8_t)reg_in_, f, row_);
+    alu_out_ = out.x;
+    f_ = out.f;
+
+    /*
     uint8_t x = a;
     uint8_t z = (uint8_t)reg_in_;
     f_ = f;
@@ -1009,7 +1110,6 @@ void Z80::tick_exec() {
       break;
     }
     case 3: {
-      //alu_out_ = sbc2((uint8_t)reg_in_);
       f_ = F_NEGATIVE;
       if ((x & 0xf) < (z & 0xf) + old_c) f_ |= F_HALF_CARRY;
       if (x < z + old_c) f_ |= F_CARRY;
@@ -1043,6 +1143,7 @@ void Z80::tick_exec() {
     }
     }
     alu_out_ = x;
+    */
   }
 }
 

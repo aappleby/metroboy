@@ -980,7 +980,9 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     break;
   }
   case 3: {
-    if ((x & 0xf) < (y & 0xf) + old_c) f |= F_HALF_CARRY;
+    uint8_t zl = xl - yl - old_c;
+    if (zl > 0xF) f |= F_HALF_CARRY;
+
     if (x < y + old_c) f |= F_CARRY;
     x = x - y - old_c;
     if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;

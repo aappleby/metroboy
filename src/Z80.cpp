@@ -934,50 +934,36 @@ void Z80::setup_mem_write1() {
 
 //-----------------------------------------------------------------------------
 
-alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
-  uint8_t xl = x & 0xF;
-  uint8_t xh = x >> 4;
-  uint8_t yl = y & 0xF;
-  uint8_t yh = y >> 4;
-
-  uint8_t zl = 0, zh = 0, z = 0;
-
-  uint8_t c = (f >> 4) & 1;
-  f = 0;
-
-  if (op == 0 || op == 2) c = 0;
-
+uint8_t alu4(const uint8_t op, const uint8_t a, const uint8_t b, const uint8_t c) {
   switch (op) {
-  case 0: zl = xl + yl + c; break;
-  case 1: zl = xl + yl + c; break;
-  case 2: zl = xl - yl - c; break;
-  case 3: zl = xl - yl - c; break;
-  case 4: zl = xl & yl;     break;
-  case 5: zl = xl ^ yl;     break;
-  case 6: zl = xl | yl;     break;
-  case 7: zl = xl - yl;     break;
+  case 0: return a + b + c;
+  case 1: return a + b + c;
+  case 2: return a - b - c;
+  case 3: return a - b - c;
+  case 4: return a & b;    
+  case 5: return a ^ b;    
+  case 6: return a | b;    
+  case 7: return a - b - c;
   }
+  return 0;
+}
 
-  c = (zl >> 4) & 1;
-  if (op == 4) c = 1;
-  if (c) f |= F_HALF_CARRY;
+alu_out alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
 
-  switch (op) {
-  case 0: zh = xh + yh + c; break;
-  case 1: zh = xh + yh + c; break;
-  case 2: zh = xh - yh - c; break;
-  case 3: zh = xh - yh - c; break;
-  case 4: zh = xh & yh;     break;
-  case 5: zh = xh ^ yh;     break;
-  case 6: zh = xh | yh;     break;
-  case 7: zh = xh - yh - c; break;
-  }
+  uint8_t c1 = (op == 0 || op == 2 || op == 7) ? 0 : (f >> 4) & 1;
+  uint8_t d1 = alu4(op, x & 0xF, y & 0xF, c1);
 
-  if (zh & 0x10) f |= F_CARRY;
-  z = (zh << 4) + (zl & 0xF);
-  if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
-  if (z == 0) f |= F_ZERO;
-  return { z, f };
+  uint8_t c2 = (op == 4) ? 1 : (d1 >> 4) & 1;
+  uint8_t d2 = alu4(op, x >> 4, y >> 4, c2);
+
+  alu_out out = { 0 };
+  out.x = ((d2 & 0xF) << 4) | (d1 & 0xF);
+
+  if (op == 2 || op == 3 || op == 7) out.f |= F_NEGATIVE;
+  if (c2) out.f |= F_HALF_CARRY;
+  if (d2 & 0x10) out.f |= F_CARRY;
+  if (out.x == 0) out.f |= F_ZERO;
+  return out;
 }
 
 //-----------------------------------------------------------------------------
@@ -1057,7 +1043,7 @@ void Z80::tick_exec() {
     }
   }
   else if (ALU_OPS || ALU_A_D8) {
-    auto out = alu1(a, (uint8_t)reg_in_, f, row_);
+    auto out = alu(row_, a, (uint8_t)reg_in_, f);
     if (row_ == 7) {
       alu_out_ = a;
     }

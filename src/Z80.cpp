@@ -942,75 +942,35 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
 
   uint8_t zl = 0, zh = 0, z = 0;
 
-  bool old_c = (f & F_CARRY);
+  uint8_t c = (f >> 4) & 1;
   f = 0;
 
+  if (op == 0 || op == 2) c = 0;
+
   switch (op) {
-  case 0: {
-    zl = xl + yl;
-    if (zl & 0x10) f |= F_HALF_CARRY;
-    
-    zh = xh + yh + (zl >> 4);
-
-    break;
-  }
-  case 1: {
-    zl = xl + yl + old_c;
-    if (zl & 0x10) f |= F_HALF_CARRY;
-
-    zh = xh + yh + (zl >> 4);
-
-    break;
-  }
-  case 2: {
-    zl = xl - yl;
-    if (zl & 0x10) f |= F_HALF_CARRY;
-
-    zh = xh - yh - ((zl >> 4) & 1);
-
-    break;
-  }
-  case 3: {
-    zl = xl - yl - old_c;
-    if (zl & 0x10) f |= F_HALF_CARRY;
-
-    zh = xh - yh - ((zl >> 4) & 1);
-
-    break;
-  }
-  case 4: {
-    zl = (xl & yl) | 0x10;
-    if (zl & 0x10) f |= F_HALF_CARRY;
-
-    zh = xh & yh;
-
-    break;
-  }
-  case 5: {
-    zl = xl ^ yl;
-    if (zl & 0x10) f |= F_HALF_CARRY;
-
-    zh = xh ^ yh;
-
-    break;
-  }
-  case 6: {
-    zl = xl | yl;
-    if (zl & 0x10) f |= F_HALF_CARRY;
-
-    zh = xh | yh;
-
-    break;
+  case 0: zl = xl + yl + c; break;
+  case 1: zl = xl + yl + c; break;
+  case 2: zl = xl - yl - c; break;
+  case 3: zl = xl - yl - c; break;
+  case 4: zl = xl & yl;     break;
+  case 5: zl = xl ^ yl;     break;
+  case 6: zl = xl | yl;     break;
+  case 7: zl = xl - yl;     break;
   }
 
-  case 7: {
-    zl = xl - yl;
-    if (zl & 0x10) f |= F_HALF_CARRY;
+  c = (zl >> 4) & 1;
+  if (op == 4) c = 1;
+  if (c) f |= F_HALF_CARRY;
 
-    zh = xh - yh - ((zl >> 4) & 1);
-
-    break;
-  }
+  switch (op) {
+  case 0: zh = xh + yh + c; break;
+  case 1: zh = xh + yh + c; break;
+  case 2: zh = xh - yh - c; break;
+  case 3: zh = xh - yh - c; break;
+  case 4: zh = xh & yh;     break;
+  case 5: zh = xh ^ yh;     break;
+  case 6: zh = xh | yh;     break;
+  case 7: zh = xh - yh - c; break;
   }
 
   if (zh & 0x10) f |= F_CARRY;

@@ -951,9 +951,7 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     if (zl & 0x10) f |= F_HALF_CARRY;
     
     zh = xh + yh + (zl >> 4);
-    if (zh & 0x10) f |= F_CARRY;
 
-    z = (zh << 4) + (zl & 0xF);
     break;
   }
   case 1: {
@@ -961,9 +959,7 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     if (zl & 0x10) f |= F_HALF_CARRY;
 
     zh = xh + yh + (zl >> 4);
-    if (zh & 0x10) f |= F_CARRY;
 
-    z = (zh << 4) + (zl & 0xF);
     break;
   }
   case 2: {
@@ -971,9 +967,7 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     if (zl & 0x10) f |= F_HALF_CARRY;
 
     zh = xh - yh - ((zl >> 4) & 1);
-    if (zh & 0x10) f |= F_CARRY;
 
-    z = (zh << 4) + (zl & 0xF);
     break;
   }
   case 3: {
@@ -981,9 +975,7 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     if (zl & 0x10) f |= F_HALF_CARRY;
 
     zh = xh - yh - ((zl >> 4) & 1);
-    if (zh & 0x10) f |= F_CARRY;
 
-    z = (zh << 4) + (zl & 0xF);
     break;
   }
   case 4: {
@@ -991,9 +983,7 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     if (zl & 0x10) f |= F_HALF_CARRY;
 
     zh = xh & yh;
-    if (zh & 0x10) f |= F_CARRY;
 
-    z = (zh << 4) + (zl & 0xF);
     break;
   }
   case 5: {
@@ -1001,9 +991,7 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     if (zl & 0x10) f |= F_HALF_CARRY;
 
     zh = xh ^ yh;
-    if (zh & 0x10) f |= F_CARRY;
 
-    z = (zh << 4) + (zl & 0xF);
     break;
   }
   case 6: {
@@ -1011,9 +999,7 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     if (zl & 0x10) f |= F_HALF_CARRY;
 
     zh = xh | yh;
-    if (zh & 0x10) f |= F_CARRY;
 
-    z = (zh << 4) + (zl & 0xF);
     break;
   }
 
@@ -1022,13 +1008,13 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     if (zl & 0x10) f |= F_HALF_CARRY;
 
     zh = xh - yh - ((zl >> 4) & 1);
-    if (zh & 0x10) f |= F_CARRY;
 
-    z = (zh << 4) + (zl & 0xF);
     break;
   }
   }
 
+  if (zh & 0x10) f |= F_CARRY;
+  z = (zh << 4) + (zl & 0xF);
   if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
   if (z == 0) f |= F_ZERO;
   return { z, f };

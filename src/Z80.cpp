@@ -1016,15 +1016,15 @@ alu_out rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
     }
     else {
       // correct lo
-      bool bad_lo = (lo > 9) && !old_n;
-      if (bad_lo || old_h) lo += old_n ? -6 : 6;
+      bool bad_lo = (lo > 9);
+      if (bad_lo || old_h) lo += 6;
 
       // carry from lo to hi
-      if (lo > 0xF) hi += old_n ? -1 : 1;
+      if (bad_lo) hi += 1;
 
       // correct hi
-      bool bad_hi = (hi > 9) && !old_n;
-      if (bad_hi || old_c) hi += old_n ? -6 : 6;
+      bool bad_hi = (hi > 9);
+      if (bad_hi || old_c) hi += 6;
       new_c = old_c || bad_hi;
     }
 

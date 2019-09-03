@@ -966,6 +966,87 @@ alu_out alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f)
   return out;
 }
 
+alu_out rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
+  alu_out out = { 0 };
+
+  switch (op) {
+  case 0: {
+    out.x = (x << 1) | (x >> 7);
+    out.f = 0;
+    if (out.x & 1) out.f |= F_CARRY;
+    break;
+  }
+  case 1: {
+    out.x = (x >> 1) | (x << 7);
+    out.f = 0;
+    if (out.x & 0x80) out.f |= F_CARRY;
+    break;
+  }
+  case 2: {
+    uint8_t old_c = (f & 0x10) ? 1 : 0;
+    uint8_t new_c = (x >> 7);
+    out.x = (x << 1) | old_c;
+    out.f = 0;
+    if (new_c) out.f |= F_CARRY;
+    break;
+  }
+  case 3: {
+    uint8_t old_c = (f & 0x10) ? 1 : 0;
+    uint8_t new_c = x & 1;
+    out.x = (x >> 1) | (old_c << 7);
+    out.f = 0;
+    if (new_c)    out.f |= F_CARRY;
+    break;
+  }
+  case 4: {
+    out.f = f;
+    bool old_n = (out.f & 0x40) ? true : false;
+    bool old_h = (out.f & 0x20) ? true : false;
+    bool old_c = (out.f & 0x10) ? true : false;
+
+    uint8_t adjust = old_n ? -6 : 6;
+
+    // correct lo
+    uint8_t lo = (x & 0xF);
+    bool bad_lo = (lo > 9) && !old_n;
+    if (bad_lo || old_h) lo += adjust;
+
+    // carry from lo to hi
+    uint8_t hi = (x >> 4);
+    if (lo > 0xF) hi += old_n ? -1 : 1;
+
+    // correct hi
+    bool bad_hi = (hi > 9) && !old_n;
+    if (bad_hi || old_c) hi += adjust;
+
+    // set carry flag and result
+    out.x = (hi << 4) | (lo & 0xF);
+
+    out.f &= 0x40;
+    if (out.x == 0) out.f |= F_ZERO;
+    if (old_c | bad_hi) out.f |= F_CARRY;
+    break;
+  }
+  case 5: {
+    out.x = ~x;
+    out.f |= 0x60;
+    break;
+  }
+  case 6: {
+    out.x = x;
+    out.f = (f & 0x80) | 0x10;
+    break;
+  }
+  case 7: {
+    out.x = x;
+    out.f = (f & 0x90) ^ 0x10;
+    break;
+  }
+  }
+
+  return out;
+}
+
 //-----------------------------------------------------------------------------
 // idempotent
 
@@ -980,22 +1061,14 @@ void Z80::tick_exec() {
   alu_out_ = reg_in_;
 
   if (INC_R) {
-    auto out = alu(0, 1, (uint8_t)reg_in_, 0);
-    out.f &= ~F_CARRY;
-    out.f |= f & F_CARRY;
-
+    auto out = alu(0, (uint8_t)reg_in_, 1, 0);
     alu_out_ = out.x;
-    f_ = out.f;
+    f_ = (out.f & ~F_CARRY) | (f & F_CARRY);
   }
   else if (DEC_R) {
-    uint8_t x = (uint8_t)reg_in_;
-    f_ = f;
-    f_ &= 0x10;
-    if ((x & 0xf) == 0) f_ |= F_HALF_CARRY;
-    x = x - 1;
-    if (x == 0) f_ |= F_ZERO;
-    f_ |= F_NEGATIVE;
-    alu_out_ = x;
+    auto out = alu(2, (uint8_t)reg_in_, 1, 0);
+    alu_out_ = out.x;
+    f_ = (out.f & ~F_CARRY) | (f & F_CARRY);
   }
   else if (ADD_HL_RR) {
     uint8_t lo = uint8_t(reg_in_ >> 0);
@@ -1004,7 +1077,7 @@ void Z80::tick_exec() {
     uint8_t temp = (f & ~F_CARRY) | (f_ & F_CARRY);
     hi = adc2(h, hi, temp);
     alu_out_ = (hi << 8) | (lo << 0);
-    f_ = (f & 0x80) | (f_ & 0x70);
+    f_ = (f & F_ZERO) | (f_ & (0x70));
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
     alu_out_ = (int8_t)bus_data_;
@@ -1018,37 +1091,31 @@ void Z80::tick_exec() {
   }
   else if (ROTATE_OPS) {
     uint8_t x = a;
+    alu_out out = { 0 };
+
     switch(row_) {
     case 0: {
-      x = (x << 1) | (x >> 7);
-      f_ = 0;
-      if (x & 1)  f_ |= F_CARRY;
-      alu_out_ = x;
+      out = rlu(row_, a, f);
+      f_ = out.f;
+      alu_out_ = out.x;
       break;
     }
     case 1: {
-      x = (x >> 1) | (x << 7);
-      f_ = 0;
-      if (x & 0x80) f_ |= F_CARRY;
-      alu_out_ = x;
+      out = rlu(row_, a, f);
+      f_ = out.f;
+      alu_out_ = out.x;
       break;
     }
     case 2: {
-      uint8_t old_c = (f & 0x10) ? 1 : 0;
-      uint8_t new_c = (x >> 7);
-      x = (x << 1) | old_c;
-      f_ = 0;
-      if (new_c)    f_ |= F_CARRY;
-      alu_out_ = x;
+      out = rlu(row_, a, f);
+      f_ = out.f;
+      alu_out_ = out.x;
       break;
     }
     case 3: {
-      uint8_t old_c = (f & 0x10) ? 1 : 0;
-      uint8_t new_c = x & 1;
-      x = (x >> 1) | (old_c << 7);
-      f_ = 0;
-      if (new_c)    f_ |= F_CARRY;
-      alu_out_ = x;
+      out = rlu(row_, a, f);
+      f_ = out.f;
+      alu_out_ = out.x;
       break;
     }
     case 4: {

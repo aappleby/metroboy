@@ -987,21 +987,32 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
     break;
   }
   case 4: {
-    zl = xl & yl;
+    zl = (xl & yl) | 0x10;
+    if (zl & 0x10) f |= F_HALF_CARRY;
+
     zh = xh & yh;
+    if (zh & 0x10) f |= F_CARRY;
+
     z = (zh << 4) + (zl & 0xF);
-    f |= F_HALF_CARRY;
     break;
   }
   case 5: {
     zl = xl ^ yl;
+    if (zl & 0x10) f |= F_HALF_CARRY;
+
     zh = xh ^ yh;
+    if (zh & 0x10) f |= F_CARRY;
+
     z = (zh << 4) + (zl & 0xF);
     break;
   }
   case 6: {
     zl = xl | yl;
+    if (zl & 0x10) f |= F_HALF_CARRY;
+
     zh = xh | yh;
+    if (zh & 0x10) f |= F_CARRY;
+
     z = (zh << 4) + (zl & 0xF);
     break;
   }

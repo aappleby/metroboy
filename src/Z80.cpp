@@ -940,91 +940,73 @@ alu_out alu1(uint8_t x, uint8_t y, uint8_t f, uint8_t op) {
   uint8_t yl = y & 0xF;
   uint8_t yh = y >> 4;
 
+  uint8_t zl = 0, zh = 0, z = 0;
+
   bool old_c = (f & F_CARRY);
   f = 0;
 
   switch (op) {
   case 0: {
-    uint8_t zl = xl + yl;
-    if (zl > 0xF) f |= F_HALF_CARRY;
+    zl = xl + yl;
+    if (zl & 0x10) f |= F_HALF_CARRY;
     
-    uint8_t zh = xh + yh + (zl >> 4);
-    if (zh > 0xF) f |= F_CARRY;
+    zh = xh + yh + (zl >> 4);
+    if (zh & 0x10) f |= F_CARRY;
 
-    uint8_t z = (zh << 4) + (zl & 0xF);
-    if (z == 0) f |= F_ZERO;
-    return { z, f };
+    z = (zh << 4) + (zl & 0xF);
     break;
   }
   case 1: {
-    uint8_t zl = xl + yl + old_c;
-    if (zl > 0xF) f |= F_HALF_CARRY;
+    zl = xl + yl + old_c;
+    if (zl & 0x10) f |= F_HALF_CARRY;
 
-    uint8_t zh = xh + yh + (zl >> 4);
-    if (zh > 0xF) f |= F_CARRY;
+    zh = xh + yh + (zl >> 4);
+    if (zh & 0x10) f |= F_CARRY;
 
-    uint8_t z = (zh << 4) + (zl & 0xF);
-    if (z == 0) f |= F_ZERO;
-    return { z, f };
+    z = (zh << 4) + (zl & 0xF);
     break;
   }
   case 2: {
-    uint8_t zl = xl - yl;
-    if (zl > 0xF) f |= F_HALF_CARRY;
+    zl = xl - yl;
+    if (zl & 0x10) f |= F_HALF_CARRY;
 
     if (x < y) f |= F_CARRY;
-    x = x - y;
-    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
-    if (x == 0) f |= F_ZERO;
-    return { x, f };
+    z = x - y;
     break;
   }
   case 3: {
-    uint8_t zl = xl - yl - old_c;
-    if (zl > 0xF) f |= F_HALF_CARRY;
+    zl = xl - yl - old_c;
+    if (zl & 0x10) f |= F_HALF_CARRY;
 
     if (x < y + old_c) f |= F_CARRY;
-    x = x - y - old_c;
-    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
-    if (x == 0) f |= F_ZERO;
-    return { x, f };
+    z = x - y - old_c;
     break;
   }
   case 4: {
-    x = x & y;
+    z = x & y;
     f |= F_HALF_CARRY;
-    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
-    if (x == 0) f |= F_ZERO;
-    return { x, f };
     break;
   }
   case 5: {
-    x = x ^ y;
-    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
-    if (x == 0) f |= F_ZERO;
-    return { x, f };
+    z = x ^ y;
     break;
   }
   case 6: {
-    x = x | y;
-    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
-    if (x == 0) f |= F_ZERO;
-    return { x, f };
+    z = x | y;
     break;
   }
 
   case 7: {
     if ((x & 0xF) < (y & 0xF)) f |= F_HALF_CARRY;
     if (x < y) f |= F_CARRY;
-    x = x - y;
-    if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
-    if (x == 0) f |= F_ZERO;
-    return { x, f };
+    z = x - y;
     break;
   }
   }
 
-  return { 0 };
+  if (op == 2 || op == 3 || op == 7) f |= F_NEGATIVE;
+  if (z == 0) f |= F_ZERO;
+  return { z, f };
 }
 
 //-----------------------------------------------------------------------------

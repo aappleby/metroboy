@@ -949,7 +949,6 @@ uint8_t alu4(const uint8_t op, const uint8_t a, const uint8_t b, const uint8_t c
 }
 
 alu_out alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
-
   uint8_t c1 = (op == 0 || op == 2 || op == 7) ? 0 : (f >> 4) & 1;
   uint8_t d1 = alu4(op, x & 0xF, y & 0xF, c1);
 
@@ -1029,7 +1028,7 @@ alu_out rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
   }
   case 5: {
     out.x = ~x;
-    out.f |= 0x60;
+    out.f = f | 0x60;
     break;
   }
   case 6: {
@@ -1090,80 +1089,9 @@ void Z80::tick_exec() {
     f_ = temp;
   }
   else if (ROTATE_OPS) {
-    uint8_t x = a;
-    alu_out out = { 0 };
-
-    switch(row_) {
-    case 0: {
-      out = rlu(row_, a, f);
-      f_ = out.f;
-      alu_out_ = out.x;
-      break;
-    }
-    case 1: {
-      out = rlu(row_, a, f);
-      f_ = out.f;
-      alu_out_ = out.x;
-      break;
-    }
-    case 2: {
-      out = rlu(row_, a, f);
-      f_ = out.f;
-      alu_out_ = out.x;
-      break;
-    }
-    case 3: {
-      out = rlu(row_, a, f);
-      f_ = out.f;
-      alu_out_ = out.x;
-      break;
-    }
-    case 4: {
-      f_ = f;
-      bool old_n = (f_ & 0x40) ? true : false;
-      bool old_h = (f_ & 0x20) ? true : false;
-      bool old_c = (f_ & 0x10) ? true : false;
-
-      uint8_t adjust = old_n ? -6 : 6;
-
-      // correct lo
-      uint8_t lo = (x & 0xF);
-      bool bad_lo = (lo > 9) && !old_n;
-      if (bad_lo || old_h) lo += adjust;
-
-      // carry from lo to hi
-      uint8_t hi = (x >> 4);
-      if (lo > 0xF) hi += old_n ? -1 : 1;
-
-      // correct hi
-      bool bad_hi = (hi > 9) && !old_n;
-      if (bad_hi || old_c) hi += adjust;
-
-      // set carry flag and result
-      x = (hi << 4) | (lo & 0xF);
-
-      f_ &= 0x40;
-      if (x == 0) f_ |= F_ZERO;
-      if (old_c | bad_hi) f_ |= F_CARRY;
-      alu_out_ = x;
-      break;
-    }
-    case 5: {
-      alu_out_ = ~a;
-      f_ |= 0x60;
-      break;
-    }
-    case 6: {
-      alu_out_ = a;
-      f_ = (f_ & 0x80) | 0x10;
-      break;
-    }
-    case 7: {
-      alu_out_ = a;
-      f_ = (f_ & 0x90) ^ 0x10;
-      break;
-    }
-    }
+    alu_out out = rlu(row_, a, f);
+    f_ = out.f;
+    alu_out_ = out.x;
   }
   else if (ALU_OPS || ALU_A_D8) {
     auto out = alu(row_, a, (uint8_t)reg_in_, f);

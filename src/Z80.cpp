@@ -948,14 +948,14 @@ uint8_t alu4(const uint8_t op, const uint8_t a, const uint8_t b, const uint8_t c
   return 0;
 }
 
-alu_out alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
+AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
   uint8_t c1 = (op == 0 || op == 2 || op == 7) ? 0 : (f >> 4) & 1;
   uint8_t d1 = alu4(op, x & 0xF, y & 0xF, c1);
 
   uint8_t c2 = (op == 4) ? 1 : (d1 >> 4) & 1;
   uint8_t d2 = alu4(op, x >> 4, y >> 4, c2);
 
-  alu_out out;
+  AluOut out;
   out.x = ((d2 & 0xF) << 4) | (d1 & 0xF);
   out.f = 0;
 
@@ -966,91 +966,85 @@ alu_out alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f)
   return out;
 }
 
-alu_out rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
-  alu_out out = { 0 };
+//-----------------------------------------------------------------------------
+// The logic is more annoying, but this can be implemented as two 4-bit additions
 
-  uint8_t old_c = (f >> 4) & 1;
-  uint8_t old_h = (f >> 5) & 1;
-  uint8_t old_n = (f >> 6) & 1;
-  uint8_t new_c = 0;
+AluOut daa(uint8_t x, uint8_t f) {
+
+  uint8_t lo = (x >> 0) & 0xF;
+  uint8_t hi = (x >> 4) & 0xF;
+
+  bool c = f & F_CARRY;
+  bool h = f & F_HALF_CARRY;
+  bool n = f & F_NEGATIVE;
+
+  // low nibble
+  bool o = lo > 9;
+  uint8_t d = 0;
+  if (+h || +o) d = 0x6;
+  if (+h && +n) d = 0xA;
+  if (!h && +n) d = 0x0;
+
+  lo += d;
+
+  // high nibble
+  o = (lo >> 4) ? (hi > 8) : (hi > 9);
+  d = 0;
+  if (+n && (!h && +c)) d = 0xA;
+  if (+n && (+h && !c)) d = 0xF;
+  if (+n && (+h && +c)) d = 0x9;
+  if (!n && (+o || +c)) d = 0x6;
+
+  hi += d + (lo >> 4);
+
+  // output
+  AluOut out = {
+    uint8_t((hi << 4) | (lo & 0xF)),
+    uint8_t(f & 0x50)
+  };
+  if ((hi >> 4) && !n) out.f |= F_CARRY;
+  if (!out.x) out.f |= F_ZERO;
+  return out;
+}
+
+//-----------------------------------------------------------------------------
+
+AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
+  AluOut out = { 0 };
 
   switch (op) {
-  case 0: {
-    old_c = (x >> 7);
-    new_c = (x >> 7);
-    out.x = (x << 1) | old_c;
+  case 0:
+    out.x = (x << 1) | (x >> 7);
+    out.f = (x >> 7) ? F_CARRY : 0;
     break;
-  }
-  case 1: {
-    old_c = x & 1;
-    new_c = x & 1;
-    out.x = (x >> 1) | (old_c << 7);
+  case 1:
+    out.x = (x >> 1) | (x << 7);
+    out.f = (x & 1) ? F_CARRY : 0;
     break;
-  }
-  case 2: {
-    old_c = (f >> 4) & 1;
-    new_c = (x >> 7);
-    out.x = (x << 1) | old_c;
+  case 2:
+    out.x = (x << 1) | (f & F_CARRY ? 1 : 0);
+    out.f = (x >> 7) ? F_CARRY : 0;
     break;
-  }
-  case 3: {
-    old_c = (f >> 4) & 1;
-    new_c = x & 1;
-    out.x = (x >> 1) | (old_c << 7);
+  case 3:
+    out.x = (x >> 1) | ((f & F_CARRY ? 1 : 0) << 7);
+    out.f = (x & 1) ? F_CARRY : 0;
     break;
-  }
-  case 4: {
-    uint8_t lo = (x >> 0) & 0xF;
-    uint8_t hi = (x >> 4) & 0xF;
-
-    if (old_n) {
-      // correct lo
-      if (old_h) lo -= 6;
-
-      // carry from lo to hi
-      if (lo > 0xF) hi -= 1;
-
-      // correct hi
-      if (old_c) hi -= 6;
-      new_c = old_c;
-    }
-    else {
-      // correct lo
-      bool bad_lo = (lo > 9);
-      if (bad_lo || old_h) lo += 6;
-
-      // carry from lo to hi
-      if (bad_lo) hi += 1;
-
-      // correct hi
-      new_c = (hi > 9) || old_c;
-      if (new_c) hi += 6;
-    }
-
-    // set carry flag and result
-    out.x = (hi << 4) | (lo & 0xF);
-    out.f = f & 0x40;
-    if (out.x == 0) out.f |= F_ZERO;
+  case 4:
+    out = daa(x, f);
     break;
-  }
-  case 5: {
+  case 5:
     out.x = ~x;
     out.f = f | 0x60;
     break;
-  }
-  case 6: {
+  case 6:
     out.x = x;
     out.f = (f & 0x80) | 0x10;
     break;
-  }
-  case 7: {
+  case 7:
     out.x = x;
     out.f = (f & 0x90) ^ 0x10;
     break;
   }
-  }
-
-  if (new_c) out.f |= F_CARRY;
 
   return out;
 }
@@ -1098,7 +1092,7 @@ void Z80::tick_exec() {
     f_ = temp;
   }
   else if (ROTATE_OPS) {
-    alu_out out = rlu(row_, a, f);
+    AluOut out = rlu(row_, a, f);
     f_ = out.f;
     alu_out_ = out.x;
   }

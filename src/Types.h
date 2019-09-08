@@ -74,6 +74,16 @@ struct GameboyOut {
   sample_t out_l;
 };
 
+const uint8_t F_CARRY = 0x10;
+const uint8_t F_HALF_CARRY = 0x20;
+const uint8_t F_NEGATIVE = 0x40;
+const uint8_t F_ZERO = 0x8;
+
+struct AluOut {
+  uint8_t x;
+  uint8_t f;
+};
+
 //-----------------------------------------------------------------------------
 
 struct Sprite {

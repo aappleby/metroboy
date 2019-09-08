@@ -432,7 +432,9 @@ void Z80::setup_decode() {
 void Z80::tock_decode() {
   pc = pc_;
 
-  f = f_ & 0xF0;
+  uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
+  f = (f & ~mask) | (f_ & mask);
+
   if      (POP_AF)      f = data_lo_ & 0xF0;
   else if (ST_HLP_A)    reg_in_ = hl + 1;
   else if (LD_A_AT_HLP) reg_in_ = hl + 1;
@@ -936,14 +938,14 @@ void Z80::setup_mem_write1() {
 
 uint8_t alu4(const uint8_t op, const uint8_t a, const uint8_t b, const uint8_t c) {
   switch (op) {
-  case 0: return a + b + c;
-  case 1: return a + b + c;
-  case 2: return a - b - c;
-  case 3: return a - b - c;
-  case 4: return a & b;    
-  case 5: return a ^ b;    
-  case 6: return a | b;    
-  case 7: return a - b - c;
+  case 0: return a + b + c; // add
+  case 1: return a + b + c; // adc
+  case 2: return a - b - c; // sub
+  case 3: return a - b - c; // sbc
+  case 4: return a & b;     // and
+  case 5: return a ^ b;     // xor
+  case 6: return a | b;     // or
+  case 7: return a - b - c; // cp
   }
   return 0;
 }
@@ -955,10 +957,7 @@ AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) 
   uint8_t c2 = (op == 4) ? 1 : (d1 >> 4) & 1;
   uint8_t d2 = alu4(op, x >> 4, y >> 4, c2);
 
-  AluOut out;
-  out.x = ((d2 & 0xF) << 4) | (d1 & 0xF);
-  out.f = 0;
-
+  AluOut out = { uint8_t((d2 << 4) | (d1 & 0xF)), 0 };
   if (op == 2 || op == 3 || op == 7) out.f |= F_NEGATIVE;
   if (c2)         out.f |= F_HALF_CARRY;
   if (d2 & 0x10)  out.f |= F_CARRY;
@@ -1075,7 +1074,15 @@ void Z80::tick_exec() {
   else if (ADD_HL_RR) {
     uint8_t lo = uint8_t(reg_in_ >> 0);
     uint8_t hi = uint8_t(reg_in_ >> 8);
-    lo = add2(l, lo, f_);
+    
+    f_ = 0;
+    if ((l & 0xf) + (lo & 0xf) > 0xF) f_ |= F_HALF_CARRY;
+    if ((uint16_t(l) + uint16_t(lo)) > 0xFF) f_ |= F_CARRY;
+    l = l + lo;
+    if (l == 0) f_ |= F_ZERO;
+    lo = l;
+
+
     uint8_t temp = (f & ~F_CARRY) | (f_ & F_CARRY);
     hi = adc2(h, hi, temp);
     alu_out_ = (hi << 8) | (lo << 0);
@@ -1085,7 +1092,7 @@ void Z80::tick_exec() {
     alu_out_ = (int8_t)bus_data_;
     uint8_t lo = uint8_t(alu_out_ >> 0);
     uint8_t hi = uint8_t(alu_out_ >> 8);
-    lo = add2(p, lo, f_);
+    lo = add2(p, lo, f);
     uint8_t temp = f_ & 0x30;
     hi = adc2(s, hi, temp);
     alu_out_ = (hi << 8) | (lo << 0);

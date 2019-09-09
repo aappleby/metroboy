@@ -154,9 +154,6 @@ private:
 
   void tick_exec();
   void tick_exec_cb();
-
-  uint8_t add2(uint8_t x, uint8_t z, uint8_t f);
-  uint8_t adc2(uint8_t x, uint8_t z, uint8_t f);
 };
 
 //-----------------------------------------------------------------------------

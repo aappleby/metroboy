@@ -6,11 +6,6 @@
 
 //-----------------------------------------------------------------------------
 
-#define F_CARRY      0x10
-#define F_HALF_CARRY 0x20
-#define F_NEGATIVE   0x40
-#define F_ZERO       0x80
-
 #define ST_BC_A       (op_ == 0x02)
 #define ST_DE_A       (op_ == 0x12)
 #define ST_A8_A       (op_ == 0xE0)
@@ -1051,11 +1046,6 @@ AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
 //-----------------------------------------------------------------------------
 // idempotent
 
-//#define F_CARRY      0x10
-//#define F_HALF_CARRY 0x20
-//#define F_NEGATIVE   0x40
-//#define F_ZERO       0x80
-
 void Z80::tick_exec() {
   f_ = f;
 
@@ -1072,29 +1062,30 @@ void Z80::tick_exec() {
     f_ = (out.f & ~F_CARRY) | (f & F_CARRY);
   }
   else if (ADD_HL_RR) {
-    uint8_t lo = uint8_t(reg_in_ >> 0);
-    uint8_t hi = uint8_t(reg_in_ >> 8);
+    uint32_t accum = (reg_in_ & 0x0FFF) + (hl & 0x0FFF);
+    bool halfcarry = (accum > 0x0FFF);
+
+    accum = reg_in_ + hl;
+    bool carry = accum > 0xFFFF;
     
-    f_ = 0;
-    if ((l & 0xf) + (lo & 0xf) > 0xF) f_ |= F_HALF_CARRY;
-    if ((uint16_t(l) + uint16_t(lo)) > 0xFF) f_ |= F_CARRY;
-    l = l + lo;
-    if (l == 0) f_ |= F_ZERO;
-    lo = l;
-
-
-    uint8_t temp = (f & ~F_CARRY) | (f_ & F_CARRY);
-    hi = adc2(h, hi, temp);
-    alu_out_ = (hi << 8) | (lo << 0);
-    f_ = (f & F_ZERO) | (f_ & (0x70));
+    alu_out_ = uint16_t(accum);
+    f_ = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    alu_out_ = (int8_t)bus_data_;
-    uint8_t lo = uint8_t(alu_out_ >> 0);
-    uint8_t hi = uint8_t(alu_out_ >> 8);
-    lo = add2(p, lo, f);
+    uint8_t lo = bus_data_;
+    uint8_t hi = bus_data_ & 0x80 ? 0xFF : 0x00;
+
+    f_ = 0;
+    if ((p & 0xf) + (lo & 0xf) > 0xF) f_ |= F_HALF_CARRY;
+    if ((uint16_t(p) + uint16_t(lo)) > 0xFF) f_ |= F_CARRY;
+    lo += p;
+    if (lo == 0) f_ |= F_ZERO;
+
     uint8_t temp = f_ & 0x30;
-    hi = adc2(s, hi, temp);
+
+    bool old_c = (f_ & F_CARRY);
+    hi =  s + hi + old_c;
+
     alu_out_ = (hi << 8) | (lo << 0);
     f_ = temp;
   }
@@ -1168,29 +1159,6 @@ void Z80::tick_exec_cb() {
   }
 
   alu_out_ = x;
-}
-
-//-----------------------------------------------------------------------------
-// alu
-
-uint8_t Z80::add2(uint8_t x, uint8_t z, uint8_t /*old_f*/) {
-  f_ = 0;
-  if ((x & 0xf) + (z & 0xf) > 0xF) f_ |= F_HALF_CARRY;
-  if ((uint16_t(x) + uint16_t(z)) > 0xFF) f_ |= F_CARRY;
-  x = x + z;
-  if (x == 0) f_ |= F_ZERO;
-  return x;
-}
-
-uint8_t Z80::adc2(uint8_t x, uint8_t z, uint8_t old_f) {
-  f_ = old_f;
-  bool old_c = (f_ & F_CARRY);
-  f_ = 0;
-  if (((x & 0xf) + (z & 0xf) + old_c) > 0xF) f_ |= F_HALF_CARRY;
-  if ((x + z + old_c) > 0xFF) f_ |= F_CARRY;
-  x = x + z + old_c;
-  if (x == 0) f_ |= F_ZERO;
-  return x;
 }
 
 //-----------------------------------------------------------------------------

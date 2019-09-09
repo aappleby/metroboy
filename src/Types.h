@@ -77,7 +77,7 @@ struct GameboyOut {
 const uint8_t F_CARRY = 0x10;
 const uint8_t F_HALF_CARRY = 0x20;
 const uint8_t F_NEGATIVE = 0x40;
-const uint8_t F_ZERO = 0x8;
+const uint8_t F_ZERO = 0x80;
 
 struct AluOut {
   uint8_t x;

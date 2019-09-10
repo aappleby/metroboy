@@ -731,19 +731,6 @@ void Z80::tick_decode() {
       setup_mem_write1();
     }
 
-    if (RST_NN) {
-      state_ = Z80_STATE_DELAY_A;
-      bus_tag_ = TAG_NONE;
-      mem_read_ = false;
-      mem_write_ = false;
-    }
-      
-    if (PUSH_RR) {
-      state_ = Z80_STATE_DELAY_A;
-      bus_tag_ = TAG_NONE;
-      mem_read_ = false;
-      mem_write_ = false;
-    }
 
     if (RET_CC) {
       state_ = Z80_STATE_DELAY_B;
@@ -751,12 +738,27 @@ void Z80::tick_decode() {
       mem_read_ = false;
       mem_write_ = false;
     }
-    if (INC_RR || DEC_RR || ADD_HL_RR || (op_ == 0xF9)) {
-      state_ = Z80_STATE_DELAY_B;
-      bus_tag_ = TAG_NONE;
-      mem_read_ = false;
-      mem_write_ = false;
-    }
+  }
+
+  if (RST_NN) {
+    state_ = Z80_STATE_DELAY_A;
+    bus_tag_ = TAG_NONE;
+    mem_read_ = false;
+    mem_write_ = false;
+  }
+
+  if (PUSH_RR) {
+    state_ = Z80_STATE_DELAY_A;
+    bus_tag_ = TAG_NONE;
+    mem_read_ = false;
+    mem_write_ = false;
+  }
+
+  if (INC_RR || DEC_RR || ADD_HL_RR || (op_ == 0xF9)) {
+    state_ = Z80_STATE_DELAY_B;
+    bus_tag_ = TAG_NONE;
+    mem_read_ = false;
+    mem_write_ = false;
   }
 
   if (PREFIX_CB) {

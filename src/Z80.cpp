@@ -1081,6 +1081,75 @@ void Z80::tick_exec() {
 //-----------------------------------------------------------------------------
 // idempotent
 
+AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f) {
+  AluOut out = {0};
+
+  switch (quad) {
+  case 0: {
+    switch (row) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    {
+      out = rlu(row, x, f);
+      break;
+    }
+    // SLA
+    case 4: {
+      out.x = (x << 1) & 0xFF;
+      if (x >> 7)     out.f |= F_CARRY;
+      if (out.x == 0) out.f |= F_ZERO;
+      break;
+    }
+            // SRA
+    case 5: {
+      out.x = ((x >> 1) | (x & 0x80)) & 0xFF;
+      if (x & 1)      out.f |= F_CARRY;
+      if (out.x == 0) out.f |= F_ZERO;
+      break;
+    }
+            // SWAP
+    case 6: {
+      out.x = ((x << 4) | (x >> 4)) & 0xFF;
+      if (out.x == 0) out.f |= F_ZERO;
+      break;
+    }
+            // SRL
+    case 7: {
+      out.x = (x >> 1) & 0xFF;
+      if (x & 1)      out.f |= F_CARRY;
+      if (out.x == 0) out.f |= F_ZERO;
+      break;
+    }
+    }
+    break;
+  }
+          // BIT
+  case 1: {
+    bool bit_mux = (x >> row) & 1;
+    out.f = (f & 0x10) | 0x20;
+    if (!bit_mux) out.f |= F_ZERO;
+    out.x = x;
+    break;
+  }
+          // RES
+  case 2: {
+    out.f = f;
+    out.x = x & (~(1 << row));
+    break;
+  }
+          // SET
+  case 3: {
+    out.f = f;
+    out.x = x | (1 << row);
+    break;
+  }
+  }
+
+  return out;
+}
+
 void Z80::tick_exec_cb() {
   uint8_t x = 0;
   switch(cb_col_) {
@@ -1094,74 +1163,9 @@ void Z80::tick_exec_cb() {
     case 7: x = a; break;
   }
   
-  AluOut out = {0};
-
-  switch (cb_quad_) {
-    case 0: {
-      switch (cb_row_) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        {
-          out = rlu(cb_row_, x, f);
-          break;
-        }
-        // SLA
-        case 4: {
-          out.x = (x << 1) & 0xFF;
-          if (x >> 7)     out.f |= F_CARRY;
-          if (out.x == 0) out.f |= F_ZERO;
-          break;
-        }
-        // SRA
-        case 5: {
-          out.x = ((x >> 1) | (x & 0x80)) & 0xFF;
-          if (x & 1)      out.f |= F_CARRY;
-          if (out.x == 0) out.f |= F_ZERO;
-          break;
-        }
-        // SWAP
-        case 6: {
-          out.x = ((x << 4) | (x >> 4)) & 0xFF;
-          if (out.x == 0) out.f |= F_ZERO;
-          break;
-        }
-        // SRL
-        case 7: {
-          out.x = (x >> 1) & 0xFF;
-          if (x & 1)      out.f |= F_CARRY;
-          if (out.x == 0) out.f |= F_ZERO;
-          break;
-        }
-      }
-      break;
-    }
-    // BIT
-    case 1: {
-      bool bit_mux = (x >> cb_row_) & 1;
-      out.f = (f & 0x10) | 0x20;
-      if (!bit_mux) out.f |= F_ZERO;
-      out.x = x;
-      break;
-    }
-    // RES
-    case 2: {
-      out.f = f;
-      out.x = x & (~(1 << cb_row_));
-      break;
-    }
-    // SET
-    case 3: {
-      out.f = f;
-      out.x = x | (1 << cb_row_);
-      break;
-    }
-  }
-
+  AluOut out = cb(cb_quad_, cb_row_, x, f);
   alu_out_ = out.x;
   f_ = out.f;
-  return;
 }
 
 //-----------------------------------------------------------------------------

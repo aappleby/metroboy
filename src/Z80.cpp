@@ -723,21 +723,7 @@ void Z80::tick_decode() {
     mem_write_ = false;
   }
 
-  if (RET_CC) {
-    state_ = Z80_STATE_DELAY_A;
-    bus_tag_ = TAG_NONE;
-    mem_read_ = false;
-    mem_write_ = false;
-  }
-
-  if (RST_NN) {
-    state_ = Z80_STATE_DELAY_A;
-    bus_tag_ = TAG_NONE;
-    mem_read_ = false;
-    mem_write_ = false;
-  }
-
-  if (PUSH_RR) {
+  if (RET_CC || RST_NN || PUSH_RR) {
     state_ = Z80_STATE_DELAY_A;
     bus_tag_ = TAG_NONE;
     mem_read_ = false;

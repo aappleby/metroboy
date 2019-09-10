@@ -1033,6 +1033,9 @@ AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
     break;
   }
 
+  out.x &= 0xFF;
+  if (!out.x) out.f |= F_ZERO;
+
   return out;
 }
 
@@ -1064,6 +1067,7 @@ void Z80::tick_exec() {
   }
   else if (ROTATE_OPS) {
     out = rlu(row_, a, f);
+    if (row_ <= 3) out.f &= ~F_ZERO;
   }
   else if (ALU_OPS || ALU_A_D8) {
     out = alu(row_, a, (uint8_t)reg_in_, f);
@@ -1090,56 +1094,79 @@ void Z80::tick_exec_cb() {
     case 7: x = a; break;
   }
   
-  bool bit_mux = (x >> cb_row_) & 1;
-  uint8_t old_c = (f & 0x10) ? 1 : 0;
-  uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
-
   switch (cb_quad_) {
     case 0: {
       switch (cb_row_) {
-        case 0: {
-          x = (x << 1) | (x >> 7);
-          new_c = (x & 1);
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        {
+          auto out = rlu(cb_row_, x, f);
+          alu_out_ = out.x;
+          f_ = out.f;
+          return;
+        }
+        case 4: {
+          uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
+          x = (x << 1);
           f_ = 0;
           if (new_c)    f_ |= F_CARRY;
           if (x == 0)   f_ |= F_ZERO;
           alu_out_ = x;
-
-          //auto out = rlu(0, x, 0);
-          //alu_out_ = out.x;
-          //f_ = out.f;
-
           return;
         }
-        case 1: x = (x >> 1) | (x << 7);     new_c = x & 0x80; break;
-        case 2: x = (x << 1) | old_c;                          break;
-        case 3: x = (x >> 1) | (old_c << 7);                   break;
-        case 4: x = (x << 1);                                  break;
-        case 5: x = (x >> 1) | (x & 0x80);                     break;
-        case 6: x = (x << 4) | (x >> 4);     new_c = 0;        break;
-        case 7: x = (x >> 1);                                  break;
+        case 5: {
+          uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
+          x = (x >> 1) | (x & 0x80);
+          f_ = 0;
+          if (new_c)    f_ |= F_CARRY;
+          if (x == 0)   f_ |= F_ZERO;
+          alu_out_ = x;
+          return;
+        }
+        case 6: {
+          uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
+          x = (x << 4) | (x >> 4);
+          new_c = 0;
+          f_ = 0;
+          if (new_c)    f_ |= F_CARRY;
+          if (x == 0)   f_ |= F_ZERO;
+          alu_out_ = x;
+          return;
+        }
+        case 7: {
+          uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
+          x = (x >> 1);
+          f_ = 0;
+          if (new_c)    f_ |= F_CARRY;
+          if (x == 0)   f_ |= F_ZERO;
+          alu_out_ = x;
+          return;
+        }
       }
-
-      f_ = 0;
-      if (new_c)    f_ |= F_CARRY;
-      if (x == 0)   f_ |= F_ZERO;
-      break;
     }
-    case 1:
+    case 1: {
+      bool bit_mux = (x >> cb_row_) & 1;
       f_ = (f & 0x10) | 0x20;
       if (!bit_mux) f_ |= F_ZERO;
-      break;
-    case 2:
+      alu_out_ = x;
+      return;
+    }
+    case 2: {
       f_ = f;
       x &= ~(1 << cb_row_);
-      break;
-    case 3:
+      alu_out_ = x;
+      return;
+    }
+    case 3: {
       f_ = f;
       x |= (1 << cb_row_);
-      break;
+      alu_out_ = x;
+      return;
+    }
   }
 
-  alu_out_ = x;
 }
 
 //-----------------------------------------------------------------------------

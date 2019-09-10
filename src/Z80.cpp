@@ -703,6 +703,10 @@ void Z80::tick_decode() {
     }
   }
   
+  if (any_write_) {
+    setup_mem_write1();
+  }
+
   if (any_read_) {
     state_ = Z80_STATE_MEM_READ1;
 
@@ -717,11 +721,6 @@ void Z80::tick_decode() {
 
     mem_read_ = true;
     mem_write_ = false;
-  }
-  else {
-    if (any_write_) {
-      setup_mem_write1();
-    }
   }
 
   if (RET_CC) {

@@ -704,40 +704,31 @@ void Z80::tick_decode() {
   }
   
   if (any_read_) {
-    if (RET_CC) {
-      state_ = Z80_STATE_DELAY_A;
-      bus_tag_ = TAG_NONE;
-      mem_read_ = false;
-      mem_write_ = false;
-    }
-    else {
-      state_ = Z80_STATE_MEM_READ1;
+    state_ = Z80_STATE_MEM_READ1;
 
-      if (fetch_d8_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
-      else if (fetch_d16_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
-      else if (LD_A_AT_C) { bus_tag_ = TAG_DATA0; mem_addr_ = 0xFF00 | c; }
-      else if (LD_A_AT_BC) { bus_tag_ = TAG_DATA0; mem_addr_ = bc; }
-      else if (LD_A_AT_DE) { bus_tag_ = TAG_DATA0; mem_addr_ = de; }
-      else if (get_hl_) { bus_tag_ = TAG_DATA0; mem_addr_ = hl; }
-      else if (pop_d16_) { bus_tag_ = TAG_DATA0; mem_addr_ = sp; }
-      else { assert(false); }
+    if (fetch_d8_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
+    else if (fetch_d16_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
+    else if (LD_A_AT_C) { bus_tag_ = TAG_DATA0; mem_addr_ = 0xFF00 | c; }
+    else if (LD_A_AT_BC) { bus_tag_ = TAG_DATA0; mem_addr_ = bc; }
+    else if (LD_A_AT_DE) { bus_tag_ = TAG_DATA0; mem_addr_ = de; }
+    else if (get_hl_) { bus_tag_ = TAG_DATA0; mem_addr_ = hl; }
+    else if (pop_d16_) { bus_tag_ = TAG_DATA0; mem_addr_ = sp; }
+    else { assert(false); }
 
-      mem_read_ = true;
-      mem_write_ = false;
-    }
+    mem_read_ = true;
+    mem_write_ = false;
   }
   else {
     if (any_write_) {
       setup_mem_write1();
     }
+  }
 
-
-    if (RET_CC) {
-      state_ = Z80_STATE_DELAY_B;
-      bus_tag_ = TAG_NONE;
-      mem_read_ = false;
-      mem_write_ = false;
-    }
+  if (RET_CC) {
+    state_ = Z80_STATE_DELAY_A;
+    bus_tag_ = TAG_NONE;
+    mem_read_ = false;
+    mem_write_ = false;
   }
 
   if (RST_NN) {

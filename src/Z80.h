@@ -144,9 +144,6 @@ private:
 private:
 
   void tick_decode();
-  void tick_mem_read1();
-  void tick_mem_read2();
-
   void tock_decode();
 
   void setup_decode();

@@ -699,16 +699,11 @@ void Z80::tick_decode() {
       mem_read_ = true;
       mem_write_ = false;
       unhalt = 0;
+      return;
     }
   }
-  else if (PREFIX_CB) {
-    state_ = Z80_STATE_DECODE_CB;
-    bus_tag_ = TAG_OPCODE_CB;
-    mem_addr_ = pc + 1;
-    mem_read_ = true;
-    mem_write_ = false;
-  }
-  else if (any_read_) {
+  
+  if (any_read_) {
     if (RET_CC) {
       state_ = Z80_STATE_DELAY_A;
       bus_tag_ = TAG_NONE;
@@ -762,7 +757,14 @@ void Z80::tick_decode() {
       mem_read_ = false;
       mem_write_ = false;
     }
-   
+  }
+
+  if (PREFIX_CB) {
+    state_ = Z80_STATE_DECODE_CB;
+    bus_tag_ = TAG_OPCODE_CB;
+    mem_addr_ = pc + 1;
+    mem_read_ = true;
+    mem_write_ = false;
   }
 }
 

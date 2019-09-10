@@ -211,9 +211,9 @@ void MetroBoyApp::loop() {
   int64_t cycles_begin = metroboy.total_tcycles();
 
   if (runmode == RUN_FAST) {
-    fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
-    metroboy.run_fast(buttons, (int)fast_cycles);
-    //metroboy.run_fast(buttons, 100000);
+    //fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
+    //metroboy.run_fast(buttons, (int)fast_cycles);
+    metroboy.run_fast(buttons, 100000);
   }
   else if (runmode == RUN_VSYNC) {
     //printf("%d --------\n", frame_count);

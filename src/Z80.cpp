@@ -964,38 +964,32 @@ AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) 
 // The logic is more annoying, but this can be implemented as two 4-bit additions
 
 AluOut daa(uint8_t x, uint8_t f) {
-
-  uint8_t lo = (x >> 0) & 0xF;
-  uint8_t hi = (x >> 4) & 0xF;
-
   bool c = f & F_CARRY;
   bool h = f & F_HALF_CARRY;
   bool n = f & F_NEGATIVE;
 
   // low nibble
+  uint8_t lo = (x >> 0) & 0xF;
   bool o = lo > 9;
   uint8_t d = 0;
   if (+h || +o) d = 0x6;
   if (+h && +n) d = 0xA;
   if (!h && +n) d = 0x0;
-
   lo += d;
 
   // high nibble
+  uint8_t hi = (x >> 4) & 0xF;
   o = (lo >> 4) ? (hi > 8) : (hi > 9);
   d = 0;
   if (+n && (!h && +c)) d = 0xA;
   if (+n && (+h && !c)) d = 0xF;
   if (+n && (+h && +c)) d = 0x9;
   if (!n && (+o || +c)) d = 0x6;
-
   hi += d + (lo >> 4);
 
   // output
-  AluOut out = {
-    uint8_t((hi << 4) | (lo & 0xF)),
-    uint8_t(f & 0x50)
-  };
+  AluOut out = { uint8_t((hi << 4) | (lo & 0xF)), 0 };
+  if (c) out.f |= F_CARRY;
   if ((hi >> 4) && !n) out.f |= F_CARRY;
   if (!out.x) out.f |= F_ZERO;
   return out;
@@ -1024,8 +1018,7 @@ AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
     out.f = (x & 1) ? F_CARRY : 0;
     break;
   case 4:
-    out = daa(x, f);
-    break;
+    return daa(x, f);
   case 5:
     out.x = ~x;
     out.f = f | 0x60;
@@ -1047,47 +1040,30 @@ AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
 // idempotent
 
 void Z80::tick_exec() {
-  f_ = f;
-
-  alu_out_ = reg_in_;
-
   if (INC_R) {
     auto out = alu(0, (uint8_t)reg_in_, 1, 0);
     alu_out_ = out.x;
-    f_ = (out.f & ~F_CARRY) | (f & F_CARRY);
+    f_ = out.f;
   }
   else if (DEC_R) {
     auto out = alu(2, (uint8_t)reg_in_, 1, 0);
     alu_out_ = out.x;
-    f_ = (out.f & ~F_CARRY) | (f & F_CARRY);
+    f_ = out.f;
   }
   else if (ADD_HL_RR) {
-    uint32_t accum = (reg_in_ & 0x0FFF) + (hl & 0x0FFF);
-    bool halfcarry = (accum > 0x0FFF);
-
-    accum = reg_in_ + hl;
-    bool carry = accum > 0xFFFF;
+    bool halfcarry = ((reg_in_ & 0x0FFF) + (hl & 0x0FFF)) > 0x0FFF;
+    bool carry = (reg_in_ + hl) > 0xFFFF;
     
-    alu_out_ = uint16_t(accum);
+    alu_out_ = reg_in_ + hl;
     f_ = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    uint8_t lo = bus_data_;
-    uint8_t hi = bus_data_ & 0x80 ? 0xFF : 0x00;
-
     f_ = 0;
-    if ((p & 0xf) + (lo & 0xf) > 0xF) f_ |= F_HALF_CARRY;
-    if ((uint16_t(p) + uint16_t(lo)) > 0xFF) f_ |= F_CARRY;
-    lo += p;
-    if (lo == 0) f_ |= F_ZERO;
+    bool halfcarry = (p & 0xf) + (bus_data_ & 0xf) > 0xF;
+    bool carry = (p + bus_data_) > 0xFF;
 
-    uint8_t temp = f_ & 0x30;
-
-    bool old_c = (f_ & F_CARRY);
-    hi =  s + hi + old_c;
-
-    alu_out_ = (hi << 8) | (lo << 0);
-    f_ = temp;
+    alu_out_ = sp + (int8_t)bus_data_;
+    f_ = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ROTATE_OPS) {
     AluOut out = rlu(row_, a, f);
@@ -1096,12 +1072,7 @@ void Z80::tick_exec() {
   }
   else if (ALU_OPS || ALU_A_D8) {
     auto out = alu(row_, a, (uint8_t)reg_in_, f);
-    if (row_ == 7) {
-      alu_out_ = a;
-    }
-    else {
-      alu_out_ = out.x;
-    }
+    alu_out_ = (row_ == 7) ? a : out.x;
     f_ = out.f;
   }
 }
@@ -1129,7 +1100,20 @@ void Z80::tick_exec_cb() {
   switch (cb_quad_) {
     case 0: {
       switch (cb_row_) {
-        case 0: x = (x << 1) | (x >> 7);     new_c = (x & 1);  break;
+        case 0: {
+          x = (x << 1) | (x >> 7);
+          new_c = (x & 1);
+          f_ = 0;
+          if (new_c)    f_ |= F_CARRY;
+          if (x == 0)   f_ |= F_ZERO;
+          alu_out_ = x;
+
+          //auto out = rlu(0, x, 0);
+          //alu_out_ = out.x;
+          //f_ = out.f;
+
+          return;
+        }
         case 1: x = (x >> 1) | (x << 7);     new_c = x & 0x80; break;
         case 2: x = (x << 1) | old_c;                          break;
         case 3: x = (x >> 1) | (old_c << 7);                   break;

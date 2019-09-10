@@ -80,7 +80,8 @@ const uint8_t F_NEGATIVE = 0x40;
 const uint8_t F_ZERO = 0x80;
 
 struct AluOut {
-  uint8_t x;
+  //uint8_t x;
+  uint16_t x;
   uint8_t f;
 };
 

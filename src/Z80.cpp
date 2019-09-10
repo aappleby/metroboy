@@ -1040,41 +1040,38 @@ AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
 // idempotent
 
 void Z80::tick_exec() {
+  AluOut out = {0};
+
   if (INC_R) {
-    auto out = alu(0, (uint8_t)reg_in_, 1, 0);
-    alu_out_ = out.x;
-    f_ = out.f;
+    out = alu(0, (uint8_t)reg_in_, 1, 0);
   }
   else if (DEC_R) {
-    auto out = alu(2, (uint8_t)reg_in_, 1, 0);
-    alu_out_ = out.x;
-    f_ = out.f;
+    out = alu(2, (uint8_t)reg_in_, 1, 0);
   }
   else if (ADD_HL_RR) {
     bool halfcarry = ((reg_in_ & 0x0FFF) + (hl & 0x0FFF)) > 0x0FFF;
     bool carry = (reg_in_ + hl) > 0xFFFF;
     
-    alu_out_ = reg_in_ + hl;
-    f_ = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+    out.x = reg_in_ + hl;
+    out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    f_ = 0;
     bool halfcarry = (p & 0xf) + (bus_data_ & 0xf) > 0xF;
     bool carry = (p + bus_data_) > 0xFF;
 
-    alu_out_ = sp + (int8_t)bus_data_;
-    f_ = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+    out.x = sp + (int8_t)bus_data_;
+    out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ROTATE_OPS) {
-    AluOut out = rlu(row_, a, f);
-    f_ = out.f;
-    alu_out_ = out.x;
+    out = rlu(row_, a, f);
   }
   else if (ALU_OPS || ALU_A_D8) {
-    auto out = alu(row_, a, (uint8_t)reg_in_, f);
-    alu_out_ = (row_ == 7) ? a : out.x;
-    f_ = out.f;
+    out = alu(row_, a, (uint8_t)reg_in_, f);
+    out.x = (row_ == 7) ? a : out.x;
   }
+
+  alu_out_ = out.x;
+  f_ = out.f;
 }
 
 //-----------------------------------------------------------------------------

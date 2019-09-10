@@ -1107,41 +1107,44 @@ void Z80::tick_exec_cb() {
           f_ = out.f;
           return;
         }
+        // SLA
         case 4: {
-          uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
-          x = (x << 1);
+          uint8_t new_c = (x >> 7);
+          uint8_t new_x = (x << 1);
           f_ = 0;
-          if (new_c)    f_ |= F_CARRY;
-          if (x == 0)   f_ |= F_ZERO;
-          alu_out_ = x;
+          if (new_c)      f_ |= F_CARRY;
+          if (new_x == 0) f_ |= F_ZERO;
+          alu_out_ = new_x;
           return;
         }
+        // SRA
         case 5: {
-          uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
-          x = (x >> 1) | (x & 0x80);
+          uint8_t new_c = (x & 1);
+          uint8_t new_x = (x >> 1) | (x & 0x80);
           f_ = 0;
-          if (new_c)    f_ |= F_CARRY;
-          if (x == 0)   f_ |= F_ZERO;
-          alu_out_ = x;
+          if (new_c)      f_ |= F_CARRY;
+          if (new_x == 0) f_ |= F_ZERO;
+          alu_out_ = new_x;
           return;
         }
+        // SWAP
         case 6: {
-          uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
-          x = (x << 4) | (x >> 4);
-          new_c = 0;
+          uint8_t new_c = 0;
+          uint8_t new_x = (x << 4) | (x >> 4);
           f_ = 0;
-          if (new_c)    f_ |= F_CARRY;
-          if (x == 0)   f_ |= F_ZERO;
-          alu_out_ = x;
+          if (new_c)      f_ |= F_CARRY;
+          if (new_x == 0) f_ |= F_ZERO;
+          alu_out_ = new_x;
           return;
         }
+        // SRL
         case 7: {
-          uint8_t new_c = (cb_row_ & 1) ? (x & 1) : (x >> 7);
-          x = (x >> 1);
+          uint8_t new_c = (x & 1);
+          uint8_t new_x = (x >> 1);
           f_ = 0;
-          if (new_c)    f_ |= F_CARRY;
-          if (x == 0)   f_ |= F_ZERO;
-          alu_out_ = x;
+          if (new_c)      f_ |= F_CARRY;
+          if (new_x == 0) f_ |= F_ZERO;
+          alu_out_ = new_x;
           return;
         }
       }

@@ -216,26 +216,19 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
         setup_mem_write1();
       }
       else {
+        bus_tag_ = TAG_NONE;
+        mem_read_ = false;
+        mem_write_ = false;
+        setup_decode();
+
         if (JR_R8 || (JR_CC_R8 && take_branch_)) {
           state_ = Z80_STATE_DELAY_B;
-          bus_tag_ = TAG_NONE;
-          mem_read_ = false;
-          mem_write_ = false;
         }
         else if (ADD_SP_R8) {
           state_ = Z80_STATE_DELAY_C;
-          bus_tag_ = TAG_NONE;
-          mem_read_ = false;
-          mem_write_ = false;
         }
         else if (LD_HL_SP_R8) {
           state_ = Z80_STATE_DELAY_B;
-          bus_tag_ = TAG_NONE;
-          mem_read_ = false;
-          mem_write_ = false;
-        }
-        else {
-          setup_decode();
         }
       }
     }
@@ -251,43 +244,19 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
     else {
       tick_exec();
+      bus_tag_ = TAG_NONE;
+      mem_read_ = false;
+      mem_write_ = false;
+
+      setup_decode();
       if (any_write_) {
+        setup_mem_write1();
         if (CALL_CC_A16 || CALL_A16) {
           state_ = Z80_STATE_DELAY_D;
-          bus_tag_ = TAG_NONE;
-          mem_read_ = false;
-          mem_write_ = false;
-        }
-        else {
-          setup_mem_write1();
         }
       } else {
-        if (RET_CC) {
+        if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) {
           state_ = Z80_STATE_DELAY_B;
-          bus_tag_ = TAG_NONE;
-          mem_read_ = false;
-          mem_write_ = false;
-        }
-        else if (RET || RETI) {
-          state_ = Z80_STATE_DELAY_B;
-          bus_tag_ = TAG_NONE;
-          mem_read_ = false;
-          mem_write_ = false;
-        }
-        else if (JP_A16) {
-          state_ = Z80_STATE_DELAY_B;
-          bus_tag_ = TAG_NONE;
-          mem_read_ = false;
-          mem_write_ = false;
-        }
-        else if (JP_CC_A16 && take_branch_) {
-          state_ = Z80_STATE_DELAY_B;
-          bus_tag_ = TAG_NONE;
-          mem_read_ = false;
-          mem_write_ = false;
-        }
-        else {
-          setup_decode();
         }
       }
     }

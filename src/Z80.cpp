@@ -686,9 +686,11 @@ void Z80::tick_decode() {
 
   // Transition to next state.
 
+  tick_exec();
+  setup_decode();
+
   if (HALT) {
     if ((imask_ & intf_) && !ime) {
-      setup_decode();
     }
     else {
       state_ = Z80_STATE_HALT;
@@ -730,13 +732,8 @@ void Z80::tick_decode() {
     }
   }
   else {
-    tick_exec();
     if (any_write_) {
       setup_mem_write1();
-    }
-    else
-    {
-      setup_decode();
     }
 
     if (RST_NN) {

@@ -1109,63 +1109,86 @@ void Z80::tick_exec_cb() {
         }
         // SLA
         case 4: {
-          uint8_t new_c = (x >> 7);
-          uint8_t new_x = (x << 1);
-          f_ = 0;
-          if (new_c)      f_ |= F_CARRY;
-          if (new_x == 0) f_ |= F_ZERO;
-          alu_out_ = new_x;
+          AluOut out = {0};
+          
+          out.x = (x << 1) & 0xFF;
+          if (x >> 7)     out.f |= F_CARRY;
+          if (out.x == 0) out.f |= F_ZERO;
+
+          alu_out_ = out.x;
+          f_ = out.f;
           return;
         }
         // SRA
         case 5: {
-          uint8_t new_c = (x & 1);
-          uint8_t new_x = (x >> 1) | (x & 0x80);
-          f_ = 0;
-          if (new_c)      f_ |= F_CARRY;
-          if (new_x == 0) f_ |= F_ZERO;
-          alu_out_ = new_x;
+          AluOut out = {0};
+
+          out.x = ((x >> 1) | (x & 0x80)) & 0xFF;
+          if (x & 1)      out.f |= F_CARRY;
+          if (out.x == 0) out.f |= F_ZERO;
+
+          alu_out_ = out.x;
+          f_ = out.f;
           return;
         }
         // SWAP
         case 6: {
-          uint8_t new_c = 0;
-          uint8_t new_x = (x << 4) | (x >> 4);
-          f_ = 0;
-          if (new_c)      f_ |= F_CARRY;
-          if (new_x == 0) f_ |= F_ZERO;
-          alu_out_ = new_x;
+          AluOut out = {0};
+
+          out.x = ((x << 4) | (x >> 4)) & 0xFF;
+          if (out.x == 0) out.f |= F_ZERO;
+
+          alu_out_ = out.x;
+          f_ = out.f;
           return;
         }
         // SRL
         case 7: {
-          uint8_t new_c = (x & 1);
-          uint8_t new_x = (x >> 1);
-          f_ = 0;
-          if (new_c)      f_ |= F_CARRY;
-          if (new_x == 0) f_ |= F_ZERO;
-          alu_out_ = new_x;
+          AluOut out = {0};
+
+          out.x = (x >> 1) & 0xFF;
+          if (x & 1)      out.f |= F_CARRY;
+          if (out.x == 0) out.f |= F_ZERO;
+
+          alu_out_ = out.x;
+          f_ = out.f;
           return;
         }
       }
     }
+    // BIT
     case 1: {
+      AluOut out = {0};
+
       bool bit_mux = (x >> cb_row_) & 1;
-      f_ = (f & 0x10) | 0x20;
-      if (!bit_mux) f_ |= F_ZERO;
-      alu_out_ = x;
+      out.f = (f & 0x10) | 0x20;
+      if (!bit_mux) out.f |= F_ZERO;
+      out.x = x;
+
+      alu_out_ = out.x;
+      f_ = out.f;
       return;
     }
+    // RES
     case 2: {
-      f_ = f;
-      x &= ~(1 << cb_row_);
-      alu_out_ = x;
+      AluOut out = {0};
+
+      out.f = f;
+      out.x = x & (~(1 << cb_row_));
+
+      alu_out_ = out.x;
+      f_ = out.f;
       return;
     }
+    // SET
     case 3: {
-      f_ = f;
-      x |= (1 << cb_row_);
-      alu_out_ = x;
+      AluOut out = {0};
+
+      out.f = f;
+      out.x = x | (1 << cb_row_);
+
+      alu_out_ = out.x;
+      f_ = out.f;
       return;
     }
   }

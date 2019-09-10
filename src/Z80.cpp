@@ -1094,6 +1094,8 @@ void Z80::tick_exec_cb() {
     case 7: x = a; break;
   }
   
+  AluOut out = {0};
+
   switch (cb_quad_) {
     case 0: {
       switch (cb_row_) {
@@ -1102,97 +1104,64 @@ void Z80::tick_exec_cb() {
         case 2:
         case 3:
         {
-          auto out = rlu(cb_row_, x, f);
-          alu_out_ = out.x;
-          f_ = out.f;
-          return;
+          out = rlu(cb_row_, x, f);
+          break;
         }
         // SLA
         case 4: {
-          AluOut out = {0};
-          
           out.x = (x << 1) & 0xFF;
           if (x >> 7)     out.f |= F_CARRY;
           if (out.x == 0) out.f |= F_ZERO;
-
-          alu_out_ = out.x;
-          f_ = out.f;
-          return;
+          break;
         }
         // SRA
         case 5: {
-          AluOut out = {0};
-
           out.x = ((x >> 1) | (x & 0x80)) & 0xFF;
           if (x & 1)      out.f |= F_CARRY;
           if (out.x == 0) out.f |= F_ZERO;
-
-          alu_out_ = out.x;
-          f_ = out.f;
-          return;
+          break;
         }
         // SWAP
         case 6: {
-          AluOut out = {0};
-
           out.x = ((x << 4) | (x >> 4)) & 0xFF;
           if (out.x == 0) out.f |= F_ZERO;
-
-          alu_out_ = out.x;
-          f_ = out.f;
-          return;
+          break;
         }
         // SRL
         case 7: {
-          AluOut out = {0};
-
           out.x = (x >> 1) & 0xFF;
           if (x & 1)      out.f |= F_CARRY;
           if (out.x == 0) out.f |= F_ZERO;
-
-          alu_out_ = out.x;
-          f_ = out.f;
-          return;
+          break;
         }
       }
+      break;
     }
     // BIT
     case 1: {
-      AluOut out = {0};
-
       bool bit_mux = (x >> cb_row_) & 1;
       out.f = (f & 0x10) | 0x20;
       if (!bit_mux) out.f |= F_ZERO;
       out.x = x;
-
-      alu_out_ = out.x;
-      f_ = out.f;
-      return;
+      break;
     }
     // RES
     case 2: {
-      AluOut out = {0};
-
       out.f = f;
       out.x = x & (~(1 << cb_row_));
-
-      alu_out_ = out.x;
-      f_ = out.f;
-      return;
+      break;
     }
     // SET
     case 3: {
-      AluOut out = {0};
-
       out.f = f;
       out.x = x | (1 << cb_row_);
-
-      alu_out_ = out.x;
-      f_ = out.f;
-      return;
+      break;
     }
   }
 
+  alu_out_ = out.x;
+  f_ = out.f;
+  return;
 }
 
 //-----------------------------------------------------------------------------

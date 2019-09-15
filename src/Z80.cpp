@@ -680,12 +680,6 @@ CpuOut Z80::tock_t2() {
 // New opcode arrived, decode it and dispatch next state.
 
 void Z80::tick_decode() {
-  push_d16_ = false;
-  pop_d16_ = false;
-  fetch_d8_ = false;
-  fetch_d16_ = false;
-  any_read_ = false;
-  any_write_ = false;
   
   quad_ = (op_ >> 6) & 3;
   row_ = (op_ >> 3) & 7;
@@ -693,9 +687,6 @@ void Z80::tick_decode() {
   odd_row_ = row_ & 1;
 
   //----------
-  // take_branch
-
-  take_branch_ = false;
 
   bool cond_pass = false;
   switch (row_ & 3) {
@@ -705,36 +696,57 @@ void Z80::tick_decode() {
   case 3: cond_pass = (f & F_CARRY); break;
   }
 
-  if (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) take_branch_ = cond_pass;
-  if (CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN || JR_R8 || interrupt2) take_branch_ = true;
+  //----------
+  // take_branch
+
+  take_branch_ = CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN || JR_R8 || interrupt2;
+  take_branch_ |= (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_pass;
 
   //----------
   // get/put hl
 
-  get_hl_ = false;
-  put_hl_ = false;
+  get_hl_ = INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
+  get_hl_ |= (col_ == 6);
 
-  if (quad_ == 0) {
-    get_hl_ |= INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
-    put_hl_ |= INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
-  }
-  else if (quad_ == 1) {
-    get_hl_ |= (col_ == 6);
-    put_hl_ |= (row_ == 6);
-  }
-  else if (quad_ == 2) {
-    get_hl_ |= (col_ == 6);
-  }
+  put_hl_ = INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
+  put_hl_ |= (quad_ == 1) && (row_ == 6);
 
   //----------
+  // push/pop
+
+  push_d16_ = false;
+  pop_d16_ = false;
 
   if (interrupt2) {
     push_d16_ = true;
-    any_write_ = true;
   }
   else if (quad_ == 0) {
     push_d16_ = false;
     pop_d16_ = false;
+  }
+  else if (quad_ == 3) {
+    push_d16_ = (col_ == 5) || (col_ == 7);
+    pop_d16_ = (col_ == 1 && !odd_row_) || RET || RETI;
+
+    if (take_branch_ && CALL_CC_A16) push_d16_ = true;
+    if (take_branch_ && RET_CC) pop_d16_ = true;
+  }
+
+  //----------
+  // fetch d8/d16
+
+  fetch_d8_ = false;
+  fetch_d16_ = false;
+
+  //----------
+
+  any_read_ = false;
+  any_write_ = false;
+
+  if (interrupt2) {
+    any_write_ = true;
+  }
+  else if (quad_ == 0) {
     fetch_d8_ = (col_ == 6) || (col_ == 0 && row_ >= 3);
     fetch_d16_ = (col_ == 1 && !odd_row_) || ST_A16_SP;
     any_read_ = fetch_d8_ || fetch_d16_ || get_hl_ || LD_A_AT_BC || LD_A_AT_DE;
@@ -748,24 +760,18 @@ void Z80::tick_decode() {
     any_read_ = get_hl_;
   }
   else if (quad_ == 3) {
-    push_d16_ = (col_ == 5) || (col_ == 7);
-    pop_d16_ = (col_ == 1 && !odd_row_) || RET || RETI;
     fetch_d8_ = LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
     fetch_d16_ = (col_ == 2 && row_ <= 3) || (col_ == 4) || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
     any_read_ = fetch_d8_ || fetch_d16_ || pop_d16_ || LD_A_AT_C;
     any_write_ = push_d16_ || ST_A16_A || ST_A8_A || ST_C_A;
 
     if (take_branch_ && CALL_CC_A16) {
-      push_d16_ = true;
       any_write_ = true;
     }
     else if (take_branch_ && RET_CC) {
-      pop_d16_ = true;
       any_read_ = true;
     }
   }
-
-
 }
 
 //-----------------------------------------------------------------------------

@@ -199,18 +199,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     if (any_read_) {
       state_ = Z80_STATE_MEM_READ1;
-
-      if (fetch_d8_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
-      else if (fetch_d16_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
-      else if (LD_A_AT_C) { bus_tag_ = TAG_DATA0; mem_addr_ = 0xFF00 | c; }
-      else if (LD_A_AT_BC) { bus_tag_ = TAG_DATA0; mem_addr_ = bc; }
-      else if (LD_A_AT_DE) { bus_tag_ = TAG_DATA0; mem_addr_ = de; }
-      else if (get_hl_) { bus_tag_ = TAG_DATA0; mem_addr_ = hl; }
-      else if (pop_d16_) { bus_tag_ = TAG_DATA0; mem_addr_ = sp; }
-      else { assert(false); }
-
-      mem_read_ = true;
-      mem_write_ = false;
     }
 
     if (RET_CC || RST_NN || PUSH_RR) {
@@ -239,12 +227,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DELAY_A:
     if (RET_CC) {
       state_ = Z80_STATE_MEM_READ1;
-
-      bus_tag_ = TAG_DATA0;
-      mem_addr_ = sp;
-
-      mem_read_ = true;
-      mem_write_ = false;
     }
     else {
       state_ = Z80_STATE_MEM_WRITE1;
@@ -254,14 +236,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_MEM_READ1:
     if (LD_A_AT_A8 || fetch_d16_ || pop_d16_) {
       state_ = Z80_STATE_MEM_READ2;
-
-      if      (fetch_d16_) { bus_tag_ = TAG_ARG1;  mem_addr_ = pc + 2; }
-      else if (pop_d16_)   { bus_tag_ = TAG_DATA1; mem_addr_ = sp + 1; }
-      else if (LD_A_AT_A8) { bus_tag_ = TAG_DATA0; mem_addr_ = 0xFF00 | bus_data_; }
-      else                 { assert(false); }
-
-      mem_read_ = true;
-      mem_write_ = false;
     }
     else {
       reg_in_ = bus_data_;
@@ -352,20 +326,22 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     cb_col_ = (cb_opcode_ >> 0) & 7;
 
     tick_exec_cb();
-    state_ = Z80_STATE_DECODE;
 
     if (cb_col_ == 6) {
       state_ = Z80_STATE_MEM_READ_CB;
+    } else {
+      state_ = Z80_STATE_DECODE;
     }
     break;
 
   case Z80_STATE_MEM_READ_CB:
     assert(bus_tag == TAG_ARG1);
     tick_exec_cb();
-    state_ = Z80_STATE_DECODE;
 
     if (cb_col_ == 6 && cb_quad_ != 1) {
       state_ = Z80_STATE_MEM_WRITE_CB;
+    } else {
+      state_ = Z80_STATE_DECODE;
     }
     break;
   
@@ -384,25 +360,62 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-  //----------
+  //----------------------------------------
+
+  /*
+  enum Z80State {
+  Z80_STATE_DECODE = 0,
+  Z80_STATE_HALT,
+
+  Z80_STATE_DELAY_A,
+
+  Z80_STATE_MEM_READ1,
+  Z80_STATE_MEM_READ2,
+  Z80_STATE_MEM_READ3,
+
+  Z80_STATE_DELAY_D,
+
+  Z80_STATE_MEM_WRITE1,
+  Z80_STATE_MEM_WRITE2,
+
+  Z80_STATE_DECODE_CB,
+  Z80_STATE_MEM_READ_CB,
+  Z80_STATE_MEM_WRITE_CB,
+
+  Z80_STATE_DELAY_B,
+  Z80_STATE_DELAY_C,
+  };
+  */
 
   if (state_ == Z80_STATE_DECODE) {
     setup_decode();
   }
 
-  if (state_ == Z80_STATE_MEM_READ_CB) {
-    bus_tag_ = TAG_ARG1;
-    mem_addr_ = hl;
+  if (state_ == Z80_STATE_HALT) {
+  }
+
+  if (state_ == Z80_STATE_MEM_READ1) {
+    if (fetch_d8_)       { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
+    else if (fetch_d16_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
+    else if (LD_A_AT_C)  { bus_tag_ = TAG_DATA0; mem_addr_ = 0xFF00 | c; }
+    else if (LD_A_AT_BC) { bus_tag_ = TAG_DATA0; mem_addr_ = bc; }
+    else if (LD_A_AT_DE) { bus_tag_ = TAG_DATA0; mem_addr_ = de; }
+    else if (get_hl_)    { bus_tag_ = TAG_DATA0; mem_addr_ = hl; }
+    else if (pop_d16_)   { bus_tag_ = TAG_DATA0; mem_addr_ = sp; }
+    else if (RET_CC)     { bus_tag_ = TAG_DATA0; mem_addr_ = sp; }
+    else                 { assert(false); }
+
     mem_read_ = true;
     mem_write_ = false;
   }
 
-  if (state_ == Z80_STATE_MEM_WRITE_CB) {
-    bus_tag_ = TAG_NONE;
-    mem_addr_ = hl;
-    mem_read_ = false;
-    mem_write_ = true;
-    mem_out_ = (uint8_t)alu_out_;
+  if (state_ == Z80_STATE_MEM_READ2) {
+    if      (fetch_d16_) { bus_tag_ = TAG_ARG1;  mem_addr_ = pc + 2; }
+    else if (pop_d16_)   { bus_tag_ = TAG_DATA1; mem_addr_ = sp + 1; }
+    else if (LD_A_AT_A8) { bus_tag_ = TAG_DATA0; mem_addr_ = 0xFF00 | bus_data_; }
+    else                 { assert(false); }
+    mem_read_ = true;
+    mem_write_ = false;
   }
 
   if (state_ == Z80_STATE_MEM_WRITE1) {
@@ -435,6 +448,21 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     mem_read_ = false;
     mem_write_ = true;
+  }
+
+  if (state_ == Z80_STATE_MEM_READ_CB) {
+    bus_tag_ = TAG_ARG1;
+    mem_addr_ = hl;
+    mem_read_ = true;
+    mem_write_ = false;
+  }
+
+  if (state_ == Z80_STATE_MEM_WRITE_CB) {
+    bus_tag_ = TAG_NONE;
+    mem_addr_ = hl;
+    mem_read_ = false;
+    mem_write_ = true;
+    mem_out_ = (uint8_t)alu_out_;
   }
 
   //----------

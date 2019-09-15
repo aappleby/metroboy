@@ -186,7 +186,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
 
     tick_decode();
-    reg_fetch();
+    reg_in_ = reg_fetch();
     tick_exec();
     break;
   case Z80_STATE_DECODE_CB:
@@ -680,11 +680,15 @@ CpuOut Z80::tock_t2() {
 // New opcode arrived, decode it and dispatch next state.
 
 void Z80::tick_decode() {
-  // Decode the new opcode.
-
   get_hl_ = false;
   put_hl_ = false;
   push_d16_ = false;
+  pop_d16_ = false;
+  fetch_d8_ = false;
+  fetch_d16_ = false;
+  any_read_ = false;
+  any_write_ = false;
+  take_branch_ = false;
   
   quad_ = (op_ >> 6) & 3;
   row_ = (op_ >> 3) & 7;
@@ -692,13 +696,7 @@ void Z80::tick_decode() {
   odd_row_ = row_ & 1;
 
   if (interrupt2) {
-    get_hl_ = false;
-    put_hl_ = false;
     push_d16_ = true;
-    pop_d16_ = false;
-    fetch_d8_ = false;
-    fetch_d16_ = false;
-    any_read_ = false;
     any_write_ = true;
     take_branch_ = true;
   }
@@ -723,28 +721,14 @@ void Z80::tick_decode() {
   else if (quad_ == 1) {
     get_hl_ = (col_ == 6);
     put_hl_ = (row_ == 6);
-    push_d16_ = false;
-    pop_d16_ = false;
-    fetch_d8_ = false;
-    fetch_d16_ = false;
     any_read_ = get_hl_;
     any_write_ = put_hl_;
-    take_branch_ = false;
   }
   else if (quad_ == 2) {
     get_hl_ = (col_ == 6);
-    put_hl_ = false;
-    push_d16_ = false;
-    pop_d16_ = false;
-    fetch_d8_ = false;
-    fetch_d16_ = false;
     any_read_ = get_hl_;
-    any_write_ = false;
-    take_branch_ = false;
   }
   else if (quad_ == 3) {
-    get_hl_ = false;
-    put_hl_ = false;
     push_d16_ = (col_ == 5) || (col_ == 7);
     pop_d16_ = (col_ == 1 && !odd_row_) || RET || RETI;
     fetch_d8_ = LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
@@ -773,32 +757,34 @@ void Z80::tick_decode() {
 
 //-----------------------------------------------------------------------------
 
-void Z80::reg_fetch() {
+uint16_t Z80::reg_fetch() const {
   if (ROTATE_OPS) {
-    reg_in_ = a;
+    return a;
   }
   else if (ADD_HL_RR || INC_RR || DEC_RR) switch(row_ / 2) {
-    case 0: reg_in_ = bc; break;
-    case 1: reg_in_ = de; break;
-    case 2: reg_in_ = hl; break;
-    case 3: reg_in_ = sp; break;
+    case 0: return bc; break;
+    case 1: return de; break;
+    case 2: return hl; break;
+    case 3: return sp; break;
   }
   else if (PUSH_RR || POP_RR) switch(row_ / 2) {
-    case 0: reg_in_ = bc; break;
-    case 1: reg_in_ = de; break;
-    case 2: reg_in_ = hl; break;
-    case 3: reg_in_ = af; break;
+    case 0: return bc; break;
+    case 1: return de; break;
+    case 2: return hl; break;
+    case 3: return af; break;
   }
   else switch (quad_ == 0 ? row_ : col_) {
-    case 0: reg_in_ = b; break;
-    case 1: reg_in_ = c; break;
-    case 2: reg_in_ = d; break;
-    case 3: reg_in_ = e; break;
-    case 4: reg_in_ = h; break;
-    case 5: reg_in_ = l; break;
-    case 6: reg_in_ = 0; break;
-    case 7: reg_in_ = a; break;
+    case 0: return b; break;
+    case 1: return c; break;
+    case 2: return d; break;
+    case 3: return e; break;
+    case 4: return h; break;
+    case 5: return l; break;
+    case 6: return 0; break;
+    case 7: return a; break;
   }
+
+  return 0;
 }
 
 //-----------------------------------------------------------------------------

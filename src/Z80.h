@@ -145,7 +145,7 @@ private:
 
   void tick_decode();
   void tick_exec();
-  void reg_fetch();
+  uint16_t reg_fetch() const;
 };
 
 //-----------------------------------------------------------------------------

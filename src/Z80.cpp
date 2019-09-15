@@ -188,6 +188,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   case Z80_STATE_HALT:
     break;
+
   case Z80_STATE_MEM_READ1:
     reg_in_ = bus_data_;
     tick_exec();
@@ -201,20 +202,15 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     assert(bus_tag == TAG_ARG1);
     tick_exec_cb();
     break;
-  case Z80_STATE_MEM_WRITE1:
-    break;
-  case Z80_STATE_MEM_WRITE2:
-    break;
-  case Z80_STATE_MEM_WRITE_CB:
-    break;
-  case Z80_STATE_DELAY_A:
-    break;
-  case Z80_STATE_DELAY_B:
-    break;
-  case Z80_STATE_DELAY_C:
-    break;
-  case Z80_STATE_DELAY_D:
-    break;
+
+  case Z80_STATE_MEM_WRITE1: break;
+  case Z80_STATE_MEM_WRITE2: break;
+  case Z80_STATE_MEM_WRITE_CB: break;
+
+  case Z80_STATE_DELAY_A: break;
+  case Z80_STATE_DELAY_B: break;
+  case Z80_STATE_DELAY_C: break;
+  case Z80_STATE_DELAY_D: break;
   }
 
   //----------------------------------------
@@ -225,25 +221,21 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   switch (state) {
   case Z80_STATE_DECODE:
 
+    if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
+    if (any_read_)  state_ = Z80_STATE_MEM_READ1;
+
+    if (RET_CC || RST_NN || PUSH_RR) state_ = Z80_STATE_DELAY_A;
+    if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) state_ = Z80_STATE_DELAY_B;
+    if (PREFIX_CB) state_ = Z80_STATE_DECODE_CB;
+
     if (HALT) {
       if ((imask_ & intf_) && !ime) {
       }
       else {
         state_ = Z80_STATE_HALT;
-        break;
       }
     }
 
-    if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
-    if (any_read_)  state_ = Z80_STATE_MEM_READ1;
-
-    if (RET_CC || RST_NN || PUSH_RR) state_ = Z80_STATE_DELAY_A;
-
-    if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) {
-      state_ = Z80_STATE_DELAY_B;
-    }
-
-    if (PREFIX_CB) state_ = Z80_STATE_DECODE_CB;
     break;
   case Z80_STATE_DECODE_CB:
     if (cb_col_ == 6) state_ = Z80_STATE_MEM_READ_CB;

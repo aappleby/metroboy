@@ -696,50 +696,34 @@ void Z80::tick_decode() {
   // take_branch
 
   take_branch_ = false;
-  if (interrupt2) {
-    take_branch_ = true;
+
+  bool cond_pass = false;
+  switch (row_ & 3) {
+  case 0: cond_pass = !(f & F_ZERO); break;
+  case 1: cond_pass = (f & F_ZERO); break;
+  case 2: cond_pass = !(f & F_CARRY); break;
+  case 3: cond_pass = (f & F_CARRY); break;
   }
-  else if (quad_ == 0) {
-    take_branch_ = JR_R8;
-    if (JR_CC_R8) switch (row_ & 3) {
-    case 0: take_branch_ = !(f & F_ZERO); break;
-    case 1: take_branch_ = (f & F_ZERO); break;
-    case 2: take_branch_ = !(f & F_CARRY); break;
-    case 3: take_branch_ = (f & F_CARRY); break;
-    }
-  }
-  else if (quad_ == 1) {
-  }
-  else if (quad_ == 2) {
-  }
-  else if (quad_ == 3) {
-    take_branch_ = CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN;
-    if (RET_CC || JP_CC_A16 || CALL_CC_A16) switch (row_ & 3) {
-    case 0: take_branch_ = !(f & F_ZERO); break;
-    case 1: take_branch_ = (f & F_ZERO); break;
-    case 2: take_branch_ = !(f & F_CARRY); break;
-    case 3: take_branch_ = (f & F_CARRY); break;
-    }
-  }
+
+  if (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) take_branch_ = cond_pass;
+  if (CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN || JR_R8 || interrupt2) take_branch_ = true;
 
   //----------
   // get/put hl
 
+  get_hl_ = false;
+  put_hl_ = false;
+
   if (quad_ == 0) {
-    get_hl_ = INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
-    put_hl_ = INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
+    get_hl_ |= INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
+    put_hl_ |= INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
   }
   else if (quad_ == 1) {
-    get_hl_ = (col_ == 6);
-    put_hl_ = (row_ == 6);
+    get_hl_ |= (col_ == 6);
+    put_hl_ |= (row_ == 6);
   }
   else if (quad_ == 2) {
-    get_hl_ = (col_ == 6);
-    put_hl_ = false;
-  }
-  else {
-    get_hl_ = false;
-    put_hl_ = false;
+    get_hl_ |= (col_ == 6);
   }
 
   //----------

@@ -130,7 +130,6 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-
 CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   imask_ = imask;
   intf_ = intf;
@@ -149,77 +148,53 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   else if (bus_tag == TAG_ARG0)  data_lo_ = bus_data;
   else if (bus_tag == TAG_ARG1)  data_hi_ = bus_data;
 
-  if (state == Z80_STATE_HALT) {
-    if (unhalt) {
-      pc_ = pc + 1;
-      state_ = Z80_STATE_DECODE;
-      bus_tag_ = TAG_OPCODE;
-      mem_addr_ = pc_;
-      mem_out_ = 0;
-      mem_read_ = true;
-      mem_write_ = false;
-      unhalt = 0;
-    }
-    return {
-      mem_addr_,
-      mem_out_,
-      mem_read_,
-      mem_write_
-    };
-  }
-
-  uint8_t cb_opcode_;
-
   //----------------------------------------
   // execute previous state
 
   switch(state) {
   case Z80_STATE_DECODE:
-    interrupt2 = (imask_ & intf_) && ime;
+    op_ = bus_data_;
 
+    interrupt2 = (imask_ & intf_) && ime;
     if (interrupt2) {
       ime_ = false;
       op_ = 0x00;
     }
-    else {
-      op_ = bus_data_;
-    }
 
-    tick_decode();
+    decode();
     reg_in_ = reg_fetch();
-    tick_exec();
+    exec();
     break;
   case Z80_STATE_DECODE_CB:
     assert(bus_tag == TAG_OPCODE_CB);
-    cb_opcode_ = bus_data_;
-    cb_quad_ = (cb_opcode_ >> 6) & 3;
-    cb_row_ = (cb_opcode_ >> 3) & 7;
-    cb_col_ = (cb_opcode_ >> 0) & 7;
-    tick_exec();
+    cb_quad_ = (bus_data_ >> 6) & 3;
+    cb_row_ = (bus_data_ >> 3) & 7;
+    cb_col_ = (bus_data_ >> 0) & 7;
+    exec();
     break;
   case Z80_STATE_HALT:
     break;
 
   case Z80_STATE_MEM_READ1:
     reg_in_ = bus_data_;
-    tick_exec();
+    exec();
     break;
   case Z80_STATE_MEM_READ2:
-    tick_exec();
+    exec();
     break;
   case Z80_STATE_MEM_READ3:
-    tick_exec();
+    exec();
     break;
   case Z80_STATE_MEM_READ_CB:
     assert(bus_tag == TAG_ARG1);
-    tick_exec();
+    exec();
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    tick_exec();
+    exec();
     break;
   case Z80_STATE_MEM_WRITE2:
-    tick_exec();
+    exec();
     break;
   case Z80_STATE_MEM_WRITE_CB:
     // breaks something
@@ -257,6 +232,26 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_DECODE_CB:
     if (cb_col_ == 6) state_ = Z80_STATE_MEM_READ_CB;
+    break;
+
+  case Z80_STATE_HALT:
+    state_ = Z80_STATE_HALT;
+    if (unhalt) {
+      pc_ = pc + 1;
+      state_ = Z80_STATE_DECODE;
+      bus_tag_ = TAG_OPCODE;
+      mem_addr_ = pc_;
+      mem_out_ = 0;
+      mem_read_ = true;
+      mem_write_ = false;
+      unhalt = 0;
+    }
+    return {
+      mem_addr_,
+      mem_out_,
+      mem_read_,
+      mem_write_
+    };
     break;
 
 
@@ -668,7 +663,7 @@ CpuOut Z80::tock_t2() {
 //-----------------------------------
 // New opcode arrived, decode it and dispatch next state.
 
-void Z80::tick_decode() {
+void Z80::decode() {
   
   quad_ = (op_ >> 6) & 3;
   row_ = (op_ >> 3) & 7;
@@ -973,7 +968,7 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
 //-----------------------------------------------------------------------------
 // idempotent
 
-void Z80::tick_exec() {
+void Z80::exec() {
   if (PREFIX_CB) {
     uint8_t x = 0;
     switch(cb_col_) {

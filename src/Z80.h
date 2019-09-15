@@ -143,8 +143,8 @@ private:
 
 private:
 
-  void tick_decode();
-  void tick_exec();
+  void decode();
+  void exec();
   uint16_t reg_fetch() const;
 };
 

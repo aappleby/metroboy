@@ -688,44 +688,80 @@ void Z80::tick_decode() {
   fetch_d16_ = false;
   any_read_ = false;
   any_write_ = false;
-  take_branch_ = false;
   
   quad_ = (op_ >> 6) & 3;
   row_ = (op_ >> 3) & 7;
   col_ = (op_ >> 0) & 7;
   odd_row_ = row_ & 1;
 
+  //----------
+  // take_branch
+
+  take_branch_ = false;
   if (interrupt2) {
-    push_d16_ = true;
-    any_write_ = true;
     take_branch_ = true;
+  }
+  else if (quad_ == 0) {
+    take_branch_ = JR_R8;
+    if (JR_CC_R8) switch (row_ & 3) {
+    case 0: take_branch_ = !(f & F_ZERO); break;
+    case 1: take_branch_ = (f & F_ZERO); break;
+    case 2: take_branch_ = !(f & F_CARRY); break;
+    case 3: take_branch_ = (f & F_CARRY); break;
+    }
+  }
+  else if (quad_ == 1) {
+  }
+  else if (quad_ == 2) {
+  }
+  else if (quad_ == 3) {
+    take_branch_ = CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN;
+    if (RET_CC || JP_CC_A16 || CALL_CC_A16) switch (row_ & 3) {
+    case 0: take_branch_ = !(f & F_ZERO); break;
+    case 1: take_branch_ = (f & F_ZERO); break;
+    case 2: take_branch_ = !(f & F_CARRY); break;
+    case 3: take_branch_ = (f & F_CARRY); break;
+    }
+  }
+
+  //----------
+  // get/put hl
+
+  if (interrupt2) {
   }
   else if (quad_ == 0) {
     get_hl_ = INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
     put_hl_ = INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
+  }
+  else if (quad_ == 1) {
+    get_hl_ = (col_ == 6);
+    put_hl_ = (row_ == 6);
+  }
+  else if (quad_ == 2) {
+    get_hl_ = (col_ == 6);
+  }
+  else if (quad_ == 3) {
+  }
+
+  //----------
+
+  if (interrupt2) {
+    push_d16_ = true;
+    any_write_ = true;
+  }
+  else if (quad_ == 0) {
     push_d16_ = false;
     pop_d16_ = false;
     fetch_d8_ = (col_ == 6) || (col_ == 0 && row_ >= 3);
     fetch_d16_ = (col_ == 1 && !odd_row_) || ST_A16_SP;
     any_read_ = fetch_d8_ || fetch_d16_ || get_hl_ || LD_A_AT_BC || LD_A_AT_DE;
     any_write_ = put_hl_ || ST_BC_A || ST_DE_A || ST_A16_SP;
-    take_branch_ = JR_R8;
-
-    if (JR_CC_R8) switch (row_ & 3) {
-      case 0: take_branch_ = !(f & F_ZERO); break;
-      case 1: take_branch_ = (f & F_ZERO); break;
-      case 2: take_branch_ = !(f & F_CARRY); break;
-      case 3: take_branch_ = (f & F_CARRY); break;
-    }
   }
   else if (quad_ == 1) {
-    get_hl_ = (col_ == 6);
-    put_hl_ = (row_ == 6);
     any_read_ = get_hl_;
     any_write_ = put_hl_;
   }
   else if (quad_ == 2) {
-    get_hl_ = (col_ == 6);
     any_read_ = get_hl_;
   }
   else if (quad_ == 3) {
@@ -735,14 +771,6 @@ void Z80::tick_decode() {
     fetch_d16_ = (col_ == 2 && row_ <= 3) || (col_ == 4) || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
     any_read_ = fetch_d8_ || fetch_d16_ || pop_d16_ || LD_A_AT_C;
     any_write_ = push_d16_ || ST_A16_A || ST_A8_A || ST_C_A;
-    take_branch_ = CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN;
-
-    if (RET_CC || JP_CC_A16 || CALL_CC_A16) switch (row_ & 3) {
-      case 0: take_branch_ = !(f & F_ZERO); break;
-      case 1: take_branch_ = (f & F_ZERO); break;
-      case 2: take_branch_ = !(f & F_CARRY); break;
-      case 3: take_branch_ = (f & F_CARRY); break;
-    }
 
     if (take_branch_ && CALL_CC_A16) {
       push_d16_ = true;
@@ -753,6 +781,8 @@ void Z80::tick_decode() {
       any_read_ = true;
     }
   }
+
+
 }
 
 //-----------------------------------------------------------------------------

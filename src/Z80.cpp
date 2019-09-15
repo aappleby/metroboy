@@ -184,7 +184,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     cb_quad_ = (cb_opcode_ >> 6) & 3;
     cb_row_ = (cb_opcode_ >> 3) & 7;
     cb_col_ = (cb_opcode_ >> 0) & 7;
-    tick_exec_cb();
+    tick_exec();
     break;
   case Z80_STATE_HALT:
     break;
@@ -197,20 +197,32 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     tick_exec();
     break;
   case Z80_STATE_MEM_READ3:
+    tick_exec();
     break;
   case Z80_STATE_MEM_READ_CB:
     assert(bus_tag == TAG_ARG1);
-    tick_exec_cb();
+    tick_exec();
     break;
 
-  case Z80_STATE_MEM_WRITE1: break;
-  case Z80_STATE_MEM_WRITE2: break;
-  case Z80_STATE_MEM_WRITE_CB: break;
+  case Z80_STATE_MEM_WRITE1:
+    tick_exec();
+    break;
+  case Z80_STATE_MEM_WRITE2:
+    tick_exec();
+    break;
+  case Z80_STATE_MEM_WRITE_CB:
+    // breaks something
+    //tick_exec_cb();
+    break;
 
-  case Z80_STATE_DELAY_A: break;
-  case Z80_STATE_DELAY_B: break;
-  case Z80_STATE_DELAY_C: break;
-  case Z80_STATE_DELAY_D: break;
+  case Z80_STATE_DELAY_A:
+    break;
+  case Z80_STATE_DELAY_B:
+    break;
+  case Z80_STATE_DELAY_C:
+    break;
+  case Z80_STATE_DELAY_D:
+    break;
   }
 
   //----------------------------------------
@@ -901,45 +913,6 @@ AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
 //-----------------------------------------------------------------------------
 // idempotent
 
-void Z80::tick_exec() {
-  AluOut out = {0};
-
-  if (INC_R) {
-    out = alu(0, (uint8_t)reg_in_, 1, 0);
-  }
-  else if (DEC_R) {
-    out = alu(2, (uint8_t)reg_in_, 1, 0);
-  }
-  else if (ADD_HL_RR) {
-    bool halfcarry = ((reg_in_ & 0x0FFF) + (hl & 0x0FFF)) > 0x0FFF;
-    bool carry = (reg_in_ + hl) > 0xFFFF;
-    
-    out.x = reg_in_ + hl;
-    out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-  }
-  else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    bool halfcarry = (sp & 0x000F) + (bus_data_ & 0xf) > 0x000F;
-    bool carry = (sp & 0x00FF) + bus_data_ > 0x00FF;
-
-    out.x = sp + (int8_t)bus_data_;
-    out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-  }
-  else if (ROTATE_OPS) {
-    out = rlu(row_, a, f);
-    if (row_ <= 3) out.f &= ~F_ZERO;
-  }
-  else if (ALU_OPS || ALU_A_D8) {
-    out = alu(row_, a, (uint8_t)reg_in_, f);
-    out.x = (row_ == 7) ? a : out.x;
-  }
-
-  alu_out_ = out.x;
-  f_ = out.f;
-}
-
-//-----------------------------------------------------------------------------
-// idempotent
-
 AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f) {
   AluOut out = {0};
 
@@ -1009,9 +982,13 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
   return out;
 }
 
-void Z80::tick_exec_cb() {
-  uint8_t x = 0;
-  switch(cb_col_) {
+//-----------------------------------------------------------------------------
+// idempotent
+
+void Z80::tick_exec() {
+  if (PREFIX_CB) {
+    uint8_t x = 0;
+    switch(cb_col_) {
     case 0: x = b; break;
     case 1: x = c; break;
     case 2: x = d; break;
@@ -1020,9 +997,45 @@ void Z80::tick_exec_cb() {
     case 5: x = l; break;
     case 6: x = bus_data_; break;
     case 7: x = a; break;
+    }
+
+    AluOut out = cb(cb_quad_, cb_row_, x, f);
+    alu_out_ = out.x;
+    f_ = out.f;
+    return;
   }
-  
-  AluOut out = cb(cb_quad_, cb_row_, x, f);
+
+  AluOut out = {0};
+
+  if (INC_R) {
+    out = alu(0, (uint8_t)reg_in_, 1, 0);
+  }
+  else if (DEC_R) {
+    out = alu(2, (uint8_t)reg_in_, 1, 0);
+  }
+  else if (ADD_HL_RR) {
+    bool halfcarry = ((reg_in_ & 0x0FFF) + (hl & 0x0FFF)) > 0x0FFF;
+    bool carry = (reg_in_ + hl) > 0xFFFF;
+
+    out.x = reg_in_ + hl;
+    out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+  }
+  else if (ADD_SP_R8 || LD_HL_SP_R8) {
+    bool halfcarry = (sp & 0x000F) + (bus_data_ & 0xf) > 0x000F;
+    bool carry = (sp & 0x00FF) + bus_data_ > 0x00FF;
+
+    out.x = sp + (int8_t)bus_data_;
+    out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+  }
+  else if (ROTATE_OPS) {
+    out = rlu(row_, a, f);
+    if (row_ <= 3) out.f &= ~F_ZERO;
+  }
+  else if (ALU_OPS || ALU_A_D8) {
+    out = alu(row_, a, (uint8_t)reg_in_, f);
+    out.x = (row_ == 7) ? a : out.x;
+  }
+
   alu_out_ = out.x;
   f_ = out.f;
 }

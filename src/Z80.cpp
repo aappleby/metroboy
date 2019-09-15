@@ -175,7 +175,18 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   switch(state) {
   case Z80_STATE_DECODE:
+    interrupt2 = (imask_ & intf_) && ime;
+
+    if (interrupt2) {
+      ime_ = false;
+      op_ = 0x00;
+    }
+    else {
+      op_ = bus_data_;
+    }
+
     tick_decode();
+    reg_fetch();
     tick_exec();
     break;
   case Z80_STATE_DECODE_CB:
@@ -669,18 +680,6 @@ CpuOut Z80::tock_t2() {
 // New opcode arrived, decode it and dispatch next state.
 
 void Z80::tick_decode() {
-  assert(bus_tag == TAG_OPCODE);
-
-  interrupt2 = (imask_ & intf_) && ime;
-
-  if (interrupt2) {
-    ime_ = false;
-    op_ = 0x00;
-  }
-  else {
-    op_ = bus_data_;
-  }
-
   // Decode the new opcode.
 
   get_hl_ = false;
@@ -770,9 +769,11 @@ void Z80::tick_decode() {
       any_read_ = true;
     }
   }
-  
-  // Read our registers.
+}
 
+//-----------------------------------------------------------------------------
+
+void Z80::reg_fetch() {
   if (ROTATE_OPS) {
     reg_in_ = a;
   }

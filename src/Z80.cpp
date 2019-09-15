@@ -250,16 +250,11 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (RET_CC || RST_NN || PUSH_RR) state_ = Z80_STATE_DELAY_A;
     if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) state_ = Z80_STATE_DELAY_B;
     if (PREFIX_CB) state_ = Z80_STATE_DECODE_CB;
-
-    if (HALT) {
-      if ((imask_ & intf_) && !ime) {
-      }
-      else {
-        state_ = Z80_STATE_HALT;
-      }
-    }
+    if (HALT) state_ = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
 
     break;
+
+
   case Z80_STATE_DECODE_CB:
     if (cb_col_ == 6) state_ = Z80_STATE_MEM_READ_CB;
     break;
@@ -342,9 +337,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     // We're at the end of a tick() for a completed instruction.
     // Compute the new PC and put it on the bus so we can fetch the next instruction.
     // If we're jumping to an interrupt vector, ack the interrupt that triggered it.
-    if (cycle == 0) {
-      pc_ = pc;
-    }
 
     if (interrupt2) {
       // Someone could've changed the interrupt mask or flags while we were
@@ -360,9 +352,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
 
       if (actual_interrupt >= 0) {
-        //if (actual_interrupt == 0) printf("vblank interrupt!\n");
-        //if (actual_interrupt == 1) printf("stat interrupt!\n");
-
         pc_ = uint16_t(0x0040 + (actual_interrupt * 8));
         int_ack_ = 1 << actual_interrupt;
       }

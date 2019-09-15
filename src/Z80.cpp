@@ -316,7 +316,59 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   switch(state_) {
   case Z80_STATE_DECODE:
-    setup_decode();
+    // We're at the end of a tick() for a completed instruction.
+    // Compute the new PC and put it on the bus so we can fetch the next instruction.
+    // If we're jumping to an interrupt vector, ack the interrupt that triggered it.
+    if (cycle == 0) {
+      pc_ = pc;
+    }
+
+    if (interrupt2) {
+      // Someone could've changed the interrupt mask or flags while we were
+      // handling the interrupt, so we have to compute the new PC at the very
+      // last second.
+
+      int actual_interrupt = -1;
+      uint8_t interrupts = imask_latch & intf_;
+      if (interrupts & INT_JOYPAD) actual_interrupt = 4; // joypad
+      if (interrupts & INT_SERIAL) actual_interrupt = 3; // serial
+      if (interrupts & INT_TIMER)  actual_interrupt = 2; // timer
+      if (interrupts & INT_STAT)   actual_interrupt = 1; // lcd stat
+      if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
+
+      if (actual_interrupt >= 0) {
+        //if (actual_interrupt == 0) printf("vblank interrupt!\n");
+        //if (actual_interrupt == 1) printf("stat interrupt!\n");
+
+        pc_ = uint16_t(0x0040 + (actual_interrupt * 8));
+        int_ack_ = 1 << actual_interrupt;
+      }
+      else {
+        pc_ = 0x0000;
+      }
+    }
+    else if (take_branch_) {
+      bool jump16 = JP_CC_A16 || JP_A16 || CALL_CC_A16 || CALL_A16 || RET || RETI || RET_CC;
+
+      if (JP_HL)                  pc_ = hl;
+      else if (RST_NN)            pc_ = op_ - 0xC7;
+      else if (JR_CC_R8 || JR_R8) pc_ = pc + 2 + (int8_t)data_lo_;
+      else if (jump16)            pc_ = data16_;
+    }
+    else if (fetch_d16_) {
+      pc_ = pc + 3;
+    }
+    else if (fetch_d8_ || PREFIX_CB) {
+      pc_ = pc + 2;
+    }
+    else {
+      pc_ = pc + 1;
+    }
+
+    bus_tag_ = TAG_OPCODE;
+    mem_addr_ = pc_;
+    mem_read_ = true;
+    mem_write_ = false;
     break;
   case Z80_STATE_DECODE_CB:
     bus_tag_ = TAG_OPCODE_CB;
@@ -345,7 +397,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (RET_CC)     { bus_tag_ = TAG_DATA0; mem_addr_ = sp; }
     else                 { assert(false); }
     mem_read_ = true;
-    mem_write_ = false;
     break;
   case Z80_STATE_MEM_READ2:
     if      (fetch_d16_) { bus_tag_ = TAG_ARG1;  mem_addr_ = pc + 2; }
@@ -353,7 +404,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LD_A_AT_A8) { bus_tag_ = TAG_DATA0; mem_addr_ = 0xFF00 | bus_data_; }
     else                 { assert(false); }
     mem_read_ = true;
-    mem_write_ = false;
     break;
   case Z80_STATE_MEM_READ3:
     bus_tag_ = TAG_DATA0;
@@ -369,16 +419,58 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 
   case Z80_STATE_MEM_WRITE1:
-    setup_mem_write1();
+    bus_tag_ = TAG_NONE;
+
+    if (ST_RR_A) {
+      if      (ST_BC_A)  mem_addr_ = bc;
+      else if (ST_DE_A)  mem_addr_ = de;
+      else if (ST_HLP_A) mem_addr_ = hl;
+      else if (ST_HLM_A) mem_addr_ = hl;
+
+      mem_out_ = a;
+    }
+    else if (put_hl_) {
+      mem_addr_ = hl;
+
+      if      (INC_AT_HL)    mem_out_ = (uint8_t)alu_out_;
+      else if (DEC_AT_HL)    mem_out_ = (uint8_t)alu_out_;
+      else if (ST_HL_D8)     mem_out_ = (uint8_t)bus_data_;
+      else if (MV_OPS_ST_HL) mem_out_ = (uint8_t)reg_in_;
+    }
+    else if (push_d16_) {
+      mem_addr_ = sp - 1;
+      if (interrupt2)                    mem_out_ = (uint8_t)((pc) >> 8);
+      else  if (CALL_CC_A16 || CALL_A16) mem_out_ = (uint8_t)((pc + 3) >> 8);
+      else if (RST_NN)                   mem_out_ = (uint8_t)((pc + 1) >> 8);
+      else                               mem_out_ = (uint8_t)(reg_in_ >> 8);
+    }
+    else if (ST_A16_A) {
+      mem_addr_ = data16_;
+      mem_out_ = a;
+    }
+    else if (ST_A8_A) {
+      mem_addr_ = 0xFF00 | bus_data_;
+      mem_out_ = a;
+    }
+    else if (ST_C_A) {
+      mem_addr_ = 0xFF00 | c;
+      mem_out_ = a;
+    }
+    else if (ST_A16_SP) {
+      mem_addr_ = data16_;
+      mem_out_ = (uint8_t)sp;
+    }
+
+    mem_read_ = false;
+    mem_write_ = true;
     break;
   case Z80_STATE_MEM_WRITE2:
-    bus_tag_ = TAG_NONE;
     if (push_d16_) {
       mem_addr_ = sp - 2;
-      if (interrupt2) mem_out_ = (uint8_t)(pc);
+      if (interrupt2)                   mem_out_ = (uint8_t)(pc);
       else if (CALL_CC_A16 || CALL_A16) mem_out_ = (uint8_t)(pc + 3);
-      else if (RST_NN) mem_out_ = (uint8_t)(pc + 1);
-      else mem_out_ = (uint8_t)reg_in_;
+      else if (RST_NN)                  mem_out_ = (uint8_t)(pc + 1);
+      else                              mem_out_ = (uint8_t)reg_in_;
     }
     else if (ST_A16_SP) {
       mem_addr_ = data16_ + 1;
@@ -418,7 +510,129 @@ CpuOut Z80::tock_t2() {
   ime = ime_delay;
   
   if (state_ == Z80_STATE_DECODE) {
-    tock_decode();
+    // Write all our registers from the previous instruction before the new opcode shows up.
+    // Not idempotent yet
+    pc = pc_;
+
+    uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
+    f = (f & ~mask) | (f_ & mask);
+
+    if      (POP_AF)      f = data_lo_ & 0xF0;
+    else if (ST_HLP_A)    reg_in_ = hl + 1;
+    else if (LD_A_AT_HLP) reg_in_ = hl + 1;
+    else if (ST_HLM_A)    reg_in_ = hl - 1;
+    else if (LD_A_AT_HLM) reg_in_ = hl - 1;
+    else if (MV_SP_HL)    reg_in_ = hl;
+    else if (push_d16_)   reg_in_ = sp - 2;
+
+    opcount = opcount + 1;
+
+    if (PREFIX_CB) {
+      switch (cb_col_) {
+      case 0: b = (uint8_t)alu_out_; break;
+      case 1: c = (uint8_t)alu_out_; break;
+      case 2: d = (uint8_t)alu_out_; break;
+      case 3: e = (uint8_t)alu_out_; break;
+      case 4: h = (uint8_t)alu_out_; break;
+      case 5: l = (uint8_t)alu_out_; break;
+      case 6: break;
+      case 7: a = (uint8_t)alu_out_; break;
+      }
+    }
+
+    else if (INC_R || DEC_R) switch (row_) {
+    case 0: b = (uint8_t)alu_out_; break;
+    case 1: c = (uint8_t)alu_out_; break;
+    case 2: d = (uint8_t)alu_out_; break;
+    case 3: e = (uint8_t)alu_out_; break;
+    case 4: h = (uint8_t)alu_out_; break;
+    case 5: l = (uint8_t)alu_out_; break;
+    case 6: break;
+    case 7: a = (uint8_t)alu_out_; break;
+    }
+
+    else if (LD_R_D8 || MV_OPS) {
+      switch (row_) {
+      case 0: b = (uint8_t)reg_in_; break;
+      case 1: c = (uint8_t)reg_in_; break;
+      case 2: d = (uint8_t)reg_in_; break;
+      case 3: e = (uint8_t)reg_in_; break;
+      case 4: h = (uint8_t)reg_in_; break;
+      case 5: l = (uint8_t)reg_in_; break;
+      case 6: break;
+      case 7: a = (uint8_t)reg_in_; break;
+      }
+    }
+
+    else if (ALU_A_D8 || ALU_OPS || ROTATE_OPS) {
+      a = (uint8_t)alu_out_;
+    }
+
+    else if (LD_A_AT_RR || LD_A_AT_A8 || LD_A_AT_C || LD_A_AT_A16) {
+      a = data_lo_;
+      if (LD_A_AT_HLP) hl++;
+      if (LD_A_AT_HLM) hl--;
+    }
+
+    else if (LD_RR_D16) switch (row_ >> 1) {
+    case 0: bc = data16_; break;
+    case 1: de = data16_; break;
+    case 2: hl = data16_; break;
+    case 3: sp = data16_; break;
+    }
+
+    else if (INC_RR) switch (row_ >> 1) {
+    case 0: bc++; break;
+    case 1: de++; break;
+    case 2: hl++; break;
+    case 3: sp++; break;
+    }
+
+    else if (DEC_RR) switch (row_ >> 1) {
+    case 0: bc--; break;
+    case 1: de--; break;
+    case 2: hl--; break;
+    case 3: sp--; break;
+    }
+
+    else if (POP_RR) {
+      switch (row_ >> 1) {
+      case 0: bc = data16_; break;
+      case 1: de = data16_; break;
+      case 2: hl = data16_; break;
+      case 3: af = data16_ & 0xFFF0; break;
+      }
+      sp = sp + 2;
+    }
+
+    else if (ADD_HL_RR)   hl = alu_out_;
+    else if (LD_HL_SP_R8) hl = alu_out_;
+    else if (ST_HLP_A)    hl++;
+    else if (ST_HLM_A)    hl--;
+    else if (ADD_SP_R8)   sp = alu_out_;
+    else if (MV_SP_HL)    sp = hl;
+    else if (push_d16_)   sp = sp - 2;
+    else if ((RET_CC && take_branch_) || RET || RETI) sp = sp + 2;
+
+    //----------
+    // Update our interrupt master enable.
+
+    if (interrupt2) {
+      ime = false;
+      ime_delay = false;
+    }
+    else if (RETI) {
+      ime = true;
+      ime_delay = true;
+    }
+    else if (DI) {
+      // on dmg this should disable interrupts immediately?
+      ime = false;
+      ime_delay = false;
+    }
+    else if (EI) {
+      ime_delay = true;
+    }
   }
 
   if (state_ == Z80_STATE_MEM_WRITE2) {
@@ -437,205 +651,6 @@ CpuOut Z80::tock_t2() {
   cycle++;
 
   return { 0 };
-}
-
-//-----------------------------------------------------------------------------
-// We're at the end of a tick() for a completed instruction.
-// Compute the new PC and put it on the bus so we can fetch the next instruction.
-// If we're jumping to an interrupt vector, ack the interrupt that triggered it.
-
-void Z80::setup_decode() {
-  if (cycle == 0) {
-    pc_ = pc;
-  }
-  if (interrupt2) {
-    // Someone could've changed the interrupt mask or flags while we were
-    // handling the interrupt, so we have to compute the new PC at the very
-    // last second.
-
-    int actual_interrupt = -1;
-    uint8_t interrupts = imask_latch & intf_;
-    if (interrupts & INT_JOYPAD) actual_interrupt = 4; // joypad
-    if (interrupts & INT_SERIAL) actual_interrupt = 3; // serial
-    if (interrupts & INT_TIMER)  actual_interrupt = 2; // timer
-    if (interrupts & INT_STAT)   actual_interrupt = 1; // lcd stat
-    if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
-
-    if (actual_interrupt >= 0) {
-      //if (actual_interrupt == 0) printf("vblank interrupt!\n");
-      //if (actual_interrupt == 1) printf("stat interrupt!\n");
-
-      pc_ = uint16_t(0x0040 + (actual_interrupt * 8));
-      int_ack_ = 1 << actual_interrupt;
-    }
-    else {
-      pc_ = 0x0000;
-    }
-  }
-  else if (take_branch_) {
-    if (JP_HL) {
-      pc_ = hl;
-    }
-    else if (RST_NN) {
-      pc_ = op_ - 0xC7;
-    }
-    else if (JR_CC_R8 || JR_R8) {
-      pc_ = pc + 2 + (int8_t)data_lo_;
-    }
-    else if (JP_CC_A16 || JP_A16 || CALL_CC_A16 || CALL_A16) {
-      pc_ = data16_;
-    }
-    else if (RET || RETI || RET_CC) {
-      pc_ = data16_;
-    }
-    else {
-      assert(false);
-    }
-  }
-  else if (fetch_d16_) {
-    pc_ = pc + 3;
-  }
-  else if (fetch_d8_ || PREFIX_CB) {
-    pc_ = pc + 2;
-  }
-  else {
-    pc_ = pc + 1;
-  }
-
-  bus_tag_ = TAG_OPCODE;
-  mem_addr_ = pc_;
-  mem_read_ = true;
-  mem_write_ = false;
-}
-
-//-----------------------------------
-// Write all our registers from the previous instruction before the new opcode shows up.
-// Not idempotent yet
-
-void Z80::tock_decode() {
-  pc = pc_;
-
-  uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
-  f = (f & ~mask) | (f_ & mask);
-
-  if      (POP_AF)      f = data_lo_ & 0xF0;
-  else if (ST_HLP_A)    reg_in_ = hl + 1;
-  else if (LD_A_AT_HLP) reg_in_ = hl + 1;
-  else if (ST_HLM_A)    reg_in_ = hl - 1;
-  else if (LD_A_AT_HLM) reg_in_ = hl - 1;
-  else if (MV_SP_HL)    reg_in_ = hl;
-  else if (push_d16_)   reg_in_ = sp - 2;
-
-  opcount = opcount + 1;
-
-  if (PREFIX_CB) {
-    switch (cb_col_) {
-    case 0: b = (uint8_t)alu_out_; break;
-    case 1: c = (uint8_t)alu_out_; break;
-    case 2: d = (uint8_t)alu_out_; break;
-    case 3: e = (uint8_t)alu_out_; break;
-    case 4: h = (uint8_t)alu_out_; break;
-    case 5: l = (uint8_t)alu_out_; break;
-    case 6: break;
-    case 7: a = (uint8_t)alu_out_; break;
-    }
-
-    return;
-  }
-
-  else if (INC_R || DEC_R) switch (row_) {
-  case 0: b = (uint8_t)alu_out_; break;
-  case 1: c = (uint8_t)alu_out_; break;
-  case 2: d = (uint8_t)alu_out_; break;
-  case 3: e = (uint8_t)alu_out_; break;
-  case 4: h = (uint8_t)alu_out_; break;
-  case 5: l = (uint8_t)alu_out_; break;
-  case 6: break;
-  case 7: a = (uint8_t)alu_out_; break;
-  }
-
-  else if (LD_R_D8 || MV_OPS) {
-    switch (row_) {
-    case 0: b = (uint8_t)reg_in_; break;
-    case 1: c = (uint8_t)reg_in_; break;
-    case 2: d = (uint8_t)reg_in_; break;
-    case 3: e = (uint8_t)reg_in_; break;
-    case 4: h = (uint8_t)reg_in_; break;
-    case 5: l = (uint8_t)reg_in_; break;
-    case 6: break;
-    case 7: a = (uint8_t)reg_in_; break;
-    }
-  }
-
-  else if (ALU_A_D8 || ALU_OPS || ROTATE_OPS) {
-    a = (uint8_t)alu_out_;
-  }
-
-  else if (LD_A_AT_RR || LD_A_AT_A8 || LD_A_AT_C || LD_A_AT_A16) {
-    a = data_lo_;
-    if (LD_A_AT_HLP) hl++;
-    if (LD_A_AT_HLM) hl--;
-  }
-
-  else if (LD_RR_D16) switch (row_ >> 1) {
-  case 0: bc = data16_; break;
-  case 1: de = data16_; break;
-  case 2: hl = data16_; break;
-  case 3: sp = data16_; break;
-  }
-
-  else if (INC_RR) switch (row_ >> 1) {
-  case 0: bc++; break;
-  case 1: de++; break;
-  case 2: hl++; break;
-  case 3: sp++; break;
-  }
-
-  else if (DEC_RR) switch (row_ >> 1) {
-  case 0: bc--; break;
-  case 1: de--; break;
-  case 2: hl--; break;
-  case 3: sp--; break;
-  }
-
-  else if (POP_RR) {
-    switch (row_ >> 1) {
-    case 0: bc = data16_; break;
-    case 1: de = data16_; break;
-    case 2: hl = data16_; break;
-    case 3: af = data16_ & 0xFFF0; break;
-    }
-    sp = sp + 2;
-  }
-
-  else if (ADD_HL_RR)   hl = alu_out_;
-  else if (LD_HL_SP_R8) hl = alu_out_;
-  else if (ST_HLP_A)    hl++;
-  else if (ST_HLM_A)    hl--;
-  else if (ADD_SP_R8)   sp = alu_out_;
-  else if (MV_SP_HL)    sp = hl;
-  else if (push_d16_)   sp = sp - 2;
-  else if ((RET_CC && take_branch_) || RET || RETI) sp = sp + 2;
-
-  //----------
-  // Update our interrupt master enable.
-
-  if (interrupt2) {
-    ime = false;
-    ime_delay = false;
-  }
-  else if (RETI) {
-    ime = true;
-    ime_delay = true;
-  }
-  else if (DI) {
-    // on dmg this should disable interrupts immediately?
-    ime = false;
-    ime_delay = false;
-  }
-  else if (EI) {
-    ime_delay = true;
-  }
 }
 
 //-----------------------------------
@@ -771,64 +786,6 @@ void Z80::tick_decode() {
     case 6: reg_in_ = 0; break;
     case 7: reg_in_ = a; break;
   }
-}
-
-//-----------------------------------------------------------------------------
-
-void Z80::setup_mem_write1() {
-  bus_tag_ = TAG_NONE;
-
-  if (ST_RR_A) {
-    if      (ST_BC_A)  mem_addr_ = bc;
-    else if (ST_DE_A)  mem_addr_ = de;
-    else if (ST_HLP_A) mem_addr_ = hl;
-    else if (ST_HLM_A) mem_addr_ = hl;
-
-    mem_out_ = a;
-  }
-  else if (put_hl_) {
-    mem_addr_ = hl;
-    
-    if      (INC_AT_HL)    mem_out_ = (uint8_t)alu_out_;
-    else if (DEC_AT_HL)    mem_out_ = (uint8_t)alu_out_;
-    else if (ST_HL_D8)     mem_out_ = (uint8_t)bus_data_;
-    else if (MV_OPS_ST_HL) mem_out_ = (uint8_t)reg_in_;
-  }
-  else if (push_d16_) {
-    mem_addr_ = sp - 1;
-
-    if (interrupt2) {
-      mem_out_ = (uint8_t)((pc) >> 8);
-    }
-    else  if (CALL_CC_A16 || CALL_A16) {
-      mem_out_ = (uint8_t)((pc + 3) >> 8);
-    }
-    else if (RST_NN) {
-      mem_out_ = (uint8_t)((pc + 1) >> 8);
-    }
-    else {
-      mem_out_ = (uint8_t)(reg_in_ >> 8);
-    }
-  }
-  else if (ST_A16_A) {
-    mem_addr_ = data16_;
-    mem_out_ = a;
-  }
-  else if (ST_A8_A) {
-    mem_addr_ = 0xFF00 | bus_data_;
-    mem_out_ = a;
-  }
-  else if (ST_C_A) {
-    mem_addr_ = 0xFF00 | c;
-    mem_out_ = a;
-  }
-  else if (ST_A16_SP) {
-    mem_addr_ = data16_;
-    mem_out_ = (uint8_t)sp;
-  }
-
-  mem_read_ = false;
-  mem_write_ = true;
 }
 
 //-----------------------------------------------------------------------------

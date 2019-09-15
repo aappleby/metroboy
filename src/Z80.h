@@ -144,11 +144,6 @@ private:
 private:
 
   void tick_decode();
-  void tock_decode();
-
-  void setup_decode();
-  void setup_mem_write1();
-
   void tick_exec();
   void tick_exec_cb();
 };

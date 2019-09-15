@@ -714,23 +714,16 @@ void Z80::tick_decode() {
   //----------
   // push/pop
 
-  push_d16_ = false;
-  pop_d16_ = false;
+  push_d16_ = interrupt2;
+  pop_d16_ = RET || RETI;
 
-  if (interrupt2) {
-    push_d16_ = true;
+  if (quad_ == 3) {
+    push_d16_ |= (col_ == 5) || (col_ == 7);
+    pop_d16_ |= (col_ == 1 && !odd_row_);
   }
-  else if (quad_ == 0) {
-    push_d16_ = false;
-    pop_d16_ = false;
-  }
-  else if (quad_ == 3) {
-    push_d16_ = (col_ == 5) || (col_ == 7);
-    pop_d16_ = (col_ == 1 && !odd_row_) || RET || RETI;
 
-    if (take_branch_ && CALL_CC_A16) push_d16_ = true;
-    if (take_branch_ && RET_CC) pop_d16_ = true;
-  }
+  if (take_branch_ && CALL_CC_A16) push_d16_ = true;
+  if (take_branch_ && RET_CC) pop_d16_ = true;
 
   //----------
   // fetch d8/d16

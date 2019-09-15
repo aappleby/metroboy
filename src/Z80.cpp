@@ -680,8 +680,6 @@ CpuOut Z80::tock_t2() {
 // New opcode arrived, decode it and dispatch next state.
 
 void Z80::tick_decode() {
-  get_hl_ = false;
-  put_hl_ = false;
   push_d16_ = false;
   pop_d16_ = false;
   fetch_d8_ = false;
@@ -727,9 +725,7 @@ void Z80::tick_decode() {
   //----------
   // get/put hl
 
-  if (interrupt2) {
-  }
-  else if (quad_ == 0) {
+  if (quad_ == 0) {
     get_hl_ = INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
     put_hl_ = INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
   }
@@ -739,8 +735,11 @@ void Z80::tick_decode() {
   }
   else if (quad_ == 2) {
     get_hl_ = (col_ == 6);
+    put_hl_ = false;
   }
-  else if (quad_ == 3) {
+  else {
+    get_hl_ = false;
+    put_hl_ = false;
   }
 
   //----------

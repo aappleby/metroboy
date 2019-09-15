@@ -173,10 +173,34 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   switch (state) {
   case Z80_STATE_DECODE:
     tick_decode();
-    break;
 
-  case Z80_STATE_DELAY_A:
-    if (RET_CC) {
+    // Transition to next state.
+
+    tick_exec();
+    state_ = Z80_STATE_DECODE;
+
+    setup_decode();
+
+    if (HALT) {
+      if ((imask_ & intf_) && !ime) {
+      }
+      else {
+        state_ = Z80_STATE_HALT;
+        bus_tag_ = TAG_OPCODE;
+        mem_addr_ = pc;
+        mem_read_ = true;
+        mem_write_ = false;
+        unhalt = 0;
+        break;
+      }
+    }
+
+    if (any_write_) {
+      state_ = Z80_STATE_MEM_WRITE1;
+      setup_mem_write1();
+    }
+
+    if (any_read_) {
       state_ = Z80_STATE_MEM_READ1;
 
       if (fetch_d8_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
@@ -191,7 +215,42 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       mem_read_ = true;
       mem_write_ = false;
     }
+
+    if (RET_CC || RST_NN || PUSH_RR) {
+      state_ = Z80_STATE_DELAY_A;
+      bus_tag_ = TAG_NONE;
+      mem_read_ = false;
+      mem_write_ = false;
+    }
+
+    if (INC_RR || DEC_RR || ADD_HL_RR || (op_ == 0xF9)) {
+      state_ = Z80_STATE_DELAY_B;
+      bus_tag_ = TAG_NONE;
+      mem_read_ = false;
+      mem_write_ = false;
+    }
+
+    if (PREFIX_CB) {
+      state_ = Z80_STATE_DECODE_CB;
+      bus_tag_ = TAG_OPCODE_CB;
+      mem_addr_ = pc + 1;
+      mem_read_ = true;
+      mem_write_ = false;
+    }
+    break;
+
+  case Z80_STATE_DELAY_A:
+    if (RET_CC) {
+      state_ = Z80_STATE_MEM_READ1;
+
+      bus_tag_ = TAG_DATA0;
+      mem_addr_ = sp;
+
+      mem_read_ = true;
+      mem_write_ = false;
+    }
     else {
+      state_ = Z80_STATE_MEM_WRITE1;
       setup_mem_write1();
     }
     break;
@@ -213,12 +272,15 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       tick_exec();
 
       if (any_write_) {
+        state_ = Z80_STATE_MEM_WRITE1;
         setup_mem_write1();
       }
       else {
         bus_tag_ = TAG_NONE;
         mem_read_ = false;
         mem_write_ = false;
+        state_ = Z80_STATE_DECODE;
+
         setup_decode();
 
         if (JR_R8 || (JR_CC_R8 && take_branch_)) {
@@ -248,8 +310,11 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       mem_read_ = false;
       mem_write_ = false;
 
+      state_ = Z80_STATE_DECODE;
+
       setup_decode();
       if (any_write_) {
+        state_ = Z80_STATE_MEM_WRITE1;
         setup_mem_write1();
         if (CALL_CC_A16 || CALL_A16) {
           state_ = Z80_STATE_DELAY_D;
@@ -263,10 +328,13 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_DELAY_D:
+    state_ = Z80_STATE_MEM_WRITE1;
     setup_mem_write1();
     break;
 
   case Z80_STATE_MEM_WRITE1:
+    state_ = Z80_STATE_DECODE;
+
     setup_decode();
 
     if (push_d16_ || ST_A16_SP) {
@@ -300,6 +368,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_MEM_WRITE2:
+    state_ = Z80_STATE_DECODE;
+
     setup_decode();
 
     if (interrupt2) {
@@ -320,6 +390,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     cb_col_ = (cb_opcode_ >> 0) & 7;
 
     tick_exec_cb();
+    state_ = Z80_STATE_DECODE;
+
     setup_decode();
 
     if (cb_col_ == 6) {
@@ -334,6 +406,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_MEM_READ_CB:
     assert(bus_tag == TAG_ARG1);
     tick_exec_cb();
+    state_ = Z80_STATE_DECODE;
+
     setup_decode();
 
     if (cb_col_ == 6 && cb_quad_ != 1) {
@@ -349,6 +423,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_MEM_READ3:
   case Z80_STATE_MEM_WRITE_CB:
   case Z80_STATE_DELAY_B:
+    state_ = Z80_STATE_DECODE;
+
     setup_decode();
     break;
 
@@ -458,7 +534,6 @@ void Z80::setup_decode() {
     pc_ = pc + 1;
   }
 
-  state_ = Z80_STATE_DECODE;
   bus_tag_ = TAG_OPCODE;
   mem_addr_ = pc_;
   mem_read_ = true;
@@ -728,73 +803,11 @@ void Z80::tick_decode() {
     case 6: reg_in_ = 0; break;
     case 7: reg_in_ = a; break;
   }
-
-  // Transition to next state.
-
-  tick_exec();
-  setup_decode();
-
-  if (HALT) {
-    if ((imask_ & intf_) && !ime) {
-    }
-    else {
-      state_ = Z80_STATE_HALT;
-      bus_tag_ = TAG_OPCODE;
-      mem_addr_ = pc;
-      mem_read_ = true;
-      mem_write_ = false;
-      unhalt = 0;
-      return;
-    }
-  }
-  
-  if (any_write_) {
-    setup_mem_write1();
-  }
-
-  if (any_read_) {
-    state_ = Z80_STATE_MEM_READ1;
-
-    if (fetch_d8_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
-    else if (fetch_d16_) { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
-    else if (LD_A_AT_C) { bus_tag_ = TAG_DATA0; mem_addr_ = 0xFF00 | c; }
-    else if (LD_A_AT_BC) { bus_tag_ = TAG_DATA0; mem_addr_ = bc; }
-    else if (LD_A_AT_DE) { bus_tag_ = TAG_DATA0; mem_addr_ = de; }
-    else if (get_hl_) { bus_tag_ = TAG_DATA0; mem_addr_ = hl; }
-    else if (pop_d16_) { bus_tag_ = TAG_DATA0; mem_addr_ = sp; }
-    else { assert(false); }
-
-    mem_read_ = true;
-    mem_write_ = false;
-  }
-
-  if (RET_CC || RST_NN || PUSH_RR) {
-    state_ = Z80_STATE_DELAY_A;
-    bus_tag_ = TAG_NONE;
-    mem_read_ = false;
-    mem_write_ = false;
-  }
-
-  if (INC_RR || DEC_RR || ADD_HL_RR || (op_ == 0xF9)) {
-    state_ = Z80_STATE_DELAY_B;
-    bus_tag_ = TAG_NONE;
-    mem_read_ = false;
-    mem_write_ = false;
-  }
-
-  if (PREFIX_CB) {
-    state_ = Z80_STATE_DECODE_CB;
-    bus_tag_ = TAG_OPCODE_CB;
-    mem_addr_ = pc + 1;
-    mem_read_ = true;
-    mem_write_ = false;
-  }
 }
 
 //-----------------------------------------------------------------------------
 
 void Z80::setup_mem_write1() {
-  state_ = Z80_STATE_MEM_WRITE1;
   bus_tag_ = TAG_NONE;
 
   if (ST_RR_A) {
@@ -980,8 +993,8 @@ void Z80::tick_exec() {
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    bool halfcarry = (p & 0xf) + (bus_data_ & 0xf) > 0xF;
-    bool carry = (p + bus_data_) > 0xFF;
+    bool halfcarry = (sp & 0x000F) + (bus_data_ & 0xf) > 0x000F;
+    bool carry = (sp & 0x00FF) + bus_data_ > 0x00FF;
 
     out.x = sp + (int8_t)bus_data_;
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);

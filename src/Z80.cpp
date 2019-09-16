@@ -236,13 +236,13 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_HALT:
     state_ = Z80_STATE_HALT;
+
     if (unhalt) {
       unhalt = 0;
       state_ = Z80_STATE_DECODE;
     }
     else {
       pc_ = pc;
-      state_ = Z80_STATE_HALT;
       bus_tag_ = TAG_OPCODE;
       mem_addr_ = pc_;
       mem_out_ = 0;

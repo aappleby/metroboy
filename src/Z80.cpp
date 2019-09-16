@@ -658,6 +658,16 @@ void Z80::decode() {
 
   //----------
 
+  take_branch_ = false;
+  get_hl_ = false;
+  put_hl_ = false;
+  push_d16_ = false;
+  pop_d16_ = false;
+  fetch_d8_ = false;
+  fetch_d16_ = false;
+  any_read_ = false;
+  any_write_ = false;
+
   bool cond_pass = false;
   switch (row_ & 3) {
   case 0: cond_pass = !(f & F_ZERO); break;
@@ -669,13 +679,13 @@ void Z80::decode() {
   //----------
   // take_branch
 
-  take_branch_ = CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN || JR_R8 || interrupt2;
+  take_branch_ |= CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN || JR_R8;
   take_branch_ |= (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_pass;
 
   //----------
   // get/put hl
 
-  get_hl_ = INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
+  get_hl_ |= INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
   get_hl_ |= (col_ == 6);
 
   put_hl_ = INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
@@ -684,67 +694,64 @@ void Z80::decode() {
   //----------
   // push/pop
 
-  push_d16_ = interrupt2;
-  pop_d16_ = RET || RETI;
+  pop_d16_ |= RET || RETI;
 
   if (quad_ == 3) {
     push_d16_ |= (col_ == 5) || (col_ == 7);
     pop_d16_ |= (col_ == 1 && !odd_row_);
   }
 
-  if (take_branch_ && CALL_CC_A16) push_d16_ = true;
-  if (take_branch_ && RET_CC) pop_d16_ = true;
+  push_d16_ |= (take_branch_ && CALL_CC_A16);
+  pop_d16_ |= (take_branch_ && RET_CC);
 
   //----------
   // fetch d8/d16
 
-  fetch_d8_ = false;
-  fetch_d16_ = false;
-
   if (quad_ == 0) {
-    fetch_d8_ = (col_ == 6) || (col_ == 0 && row_ >= 3);
-    fetch_d16_ = (col_ == 1 && !odd_row_) || ST_A16_SP;
+    fetch_d8_ |= (col_ == 6) || (col_ == 0 && row_ >= 3);
   }
   
-  if (quad_ == 3) {
-    fetch_d8_ = LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
-    fetch_d16_ = (col_ == 2 && row_ <= 3) || (col_ == 4) || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
-  }
-
-  if (interrupt2) {
-    fetch_d8_ = false;
-    fetch_d16_ = false;
-  }
+  fetch_d8_ |= LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
 
   //----------
+  // fetch d16
 
-  any_read_ = false;
-  any_write_ = false;
+  if (quad_ == 0) {
+    fetch_d16_ |= (col_ == 1 && !odd_row_) || ST_A16_SP;
+  }
+
+  if (quad_ == 3) {
+    fetch_d16_ |= (col_ == 2 && row_ <= 3) || (col_ == 4) || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
+  }
+
+  fetch_d16_ |= ST_A16_SP || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
+
+  //----------
+  // any_read_
+
+  any_read_ |= fetch_d8_ || fetch_d16_ || get_hl_ || pop_d16_;
+  any_read_ |= LD_A_AT_BC || LD_A_AT_DE || LD_A_AT_C;
+
+  //----------
+  // any_write_
+
+  any_write_ |= put_hl_;
+  any_write_ |= push_d16_;
+  any_write_ |= ST_A16_A || ST_A8_A || ST_C_A || ST_BC_A || ST_DE_A || ST_A16_SP;
+
+  //----------
+  // special handling for interrupts
 
   if (interrupt2) {
+    take_branch_ = true;
+    get_hl_ = false;
+    put_hl_ = false;
+    push_d16_ = true;
+    pop_d16_ = false;
+    fetch_d8_ = false;
+    fetch_d16_ = false;
+    any_read_ = false;
     any_write_ = true;
-  }
-  else if (quad_ == 0) {
-    any_read_ = fetch_d8_ || fetch_d16_ || get_hl_ || LD_A_AT_BC || LD_A_AT_DE;
-    any_write_ = put_hl_ || ST_BC_A || ST_DE_A || ST_A16_SP;
-  }
-  else if (quad_ == 1) {
-    any_read_ = get_hl_;
-    any_write_ = put_hl_;
-  }
-  else if (quad_ == 2) {
-    any_read_ = get_hl_;
-  }
-  else if (quad_ == 3) {
-    any_read_ = fetch_d8_ || fetch_d16_ || pop_d16_ || LD_A_AT_C;
-    any_write_ = push_d16_ || ST_A16_A || ST_A8_A || ST_C_A;
-
-    if (take_branch_ && CALL_CC_A16) {
-      any_write_ = true;
-    }
-    else if (take_branch_ && RET_CC) {
-      any_read_ = true;
-    }
   }
 }
 

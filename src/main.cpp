@@ -66,7 +66,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
+
   load("cpu_instrs");
+  //load("instr_timing");
+
   runmode = RUN_FAST;
 
   //load("microtests/build/dmg", "oam_int_halt_b");

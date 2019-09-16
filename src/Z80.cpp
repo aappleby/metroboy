@@ -235,27 +235,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_HALT:
-    state_ = Z80_STATE_HALT;
-
-    if (unhalt) {
-      unhalt = 0;
-      state_ = Z80_STATE_DECODE;
-    }
-    else {
-      pc_ = pc;
-      bus_tag_ = TAG_OPCODE;
-      mem_addr_ = pc_;
-      mem_out_ = 0;
-      mem_read_ = true;
-      mem_write_ = false;
-
-      return {
-        mem_addr_,
-        mem_out_,
-        mem_read_,
-        mem_write_
-      };
-    }
+    state_ = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT;
     break;
 
 
@@ -324,9 +304,26 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   }
 
+  if (state == Z80_STATE_HALT) {
+    pc_ = pc;
+    bus_tag_ = TAG_OPCODE;
+    mem_addr_ = pc_;
+    mem_out_ = 0;
+    mem_read_ = true;
+    mem_write_ = false;
+
+    return {
+      mem_addr_,
+      mem_out_,
+      mem_read_,
+      mem_write_
+    };
+  }
+
   //----------------------------------------
   // switch to new state
 
+  unhalt = 0;
   bus_tag_ = TAG_NONE;
   mem_read_ = false;
   mem_write_ = false;

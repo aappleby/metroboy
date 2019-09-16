@@ -175,7 +175,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_MEM_READ1:
-    reg_in_ = data_lo_;
+    reg_in_ = bus_data_;
     exec();
     break;
   case Z80_STATE_MEM_READ2:
@@ -761,7 +761,7 @@ uint16_t Z80::reg_fetch() const {
     case 3: return e; break;
     case 4: return h; break;
     case 5: return l; break;
-    case 6: return data_lo; break;
+    case 6: return 0; break;
     case 7: return a; break;
   }
 

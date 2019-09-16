@@ -143,6 +143,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   data_lo_ = data_lo;
   data_hi_ = data_hi;
 
+  if      (bus_tag == TAG_OPCODE) op_ = bus_data;
+  if      (bus_tag == TAG_OPCODE_CB) op_cb_ = bus_data;
   if      (bus_tag == TAG_DATA0) data_lo_ = bus_data;
   else if (bus_tag == TAG_DATA1) data_hi_ = bus_data;
   else if (bus_tag == TAG_ARG0)  data_lo_ = bus_data;
@@ -153,8 +155,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   switch(state) {
   case Z80_STATE_DECODE:
-    op_ = bus_data_;
-
     interrupt2 = (imask_ & intf_) && ime;
     if (interrupt2) {
       ime_ = false;
@@ -166,17 +166,16 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     exec();
     break;
   case Z80_STATE_DECODE_CB:
-    assert(bus_tag == TAG_OPCODE_CB);
-    cb_quad_ = (bus_data_ >> 6) & 3;
-    cb_row_ = (bus_data_ >> 3) & 7;
-    cb_col_ = (bus_data_ >> 0) & 7;
+    cb_quad_ = (op_cb_ >> 6) & 3;
+    cb_row_ = (op_cb_ >> 3) & 7;
+    cb_col_ = (op_cb_ >> 0) & 7;
     exec();
     break;
   case Z80_STATE_HALT:
     break;
 
   case Z80_STATE_MEM_READ1:
-    reg_in_ = bus_data_;
+    reg_in_ = data_lo_;
     exec();
     break;
   case Z80_STATE_MEM_READ2:
@@ -304,27 +303,13 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   }
 
-  if (state == Z80_STATE_HALT) {
-    pc_ = pc;
-    bus_tag_ = TAG_OPCODE;
-    mem_addr_ = pc_;
-    mem_out_ = 0;
-    mem_read_ = true;
-    mem_write_ = false;
-
-    return {
-      mem_addr_,
-      mem_out_,
-      mem_read_,
-      mem_write_
-    };
-  }
-
   //----------------------------------------
   // switch to new state
 
-  unhalt = 0;
+  pc_ = pc;
   bus_tag_ = TAG_NONE;
+  mem_addr_ = 0;
+  mem_out_ = 0;
   mem_read_ = false;
   mem_write_ = false;
 
@@ -384,12 +369,11 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     mem_read_ = true;
     break;
   case Z80_STATE_HALT:
-    bus_tag_ = TAG_OPCODE;
-    mem_addr_ = pc;
-    mem_read_ = true;
     unhalt = 0;
+    bus_tag_ = TAG_OPCODE;
+    mem_addr_ = pc_;
+    mem_read_ = true;
     break;
-
 
 
 
@@ -777,7 +761,7 @@ uint16_t Z80::reg_fetch() const {
     case 3: return e; break;
     case 4: return h; break;
     case 5: return l; break;
-    case 6: return 0; break;
+    case 6: return data_lo; break;
     case 7: return a; break;
   }
 

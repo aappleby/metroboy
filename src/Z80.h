@@ -145,7 +145,7 @@ private:
 private:
 
   void decode();
-  void exec();
+  AluOut exec(uint8_t src) const;
   uint16_t reg_fetch() const;
 };
 

@@ -153,6 +153,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // execute previous state
 
+  AluOut out;
+
   switch(state) {
   case Z80_STATE_DECODE:
     interrupt2 = (imask_ & intf_) && ime;
@@ -163,39 +165,55 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     decode();
     reg_in_ = reg_fetch();
-    exec();
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
   case Z80_STATE_DECODE_CB:
     cb_quad_ = (op_cb_ >> 6) & 3;
     cb_row_ = (op_cb_ >> 3) & 7;
     cb_col_ = (op_cb_ >> 0) & 7;
     reg_in_ = reg_fetch();
-    exec();
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
   case Z80_STATE_HALT:
     break;
 
   case Z80_STATE_MEM_READ1:
     reg_in_ = bus_data_;
-    exec();
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
   case Z80_STATE_MEM_READ2:
-    exec();
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
   case Z80_STATE_MEM_READ3:
-    exec();
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
   case Z80_STATE_MEM_READ_CB:
     assert(bus_tag == TAG_ARG1);
     reg_in_ = bus_data_;
-    exec();
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    exec();
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
   case Z80_STATE_MEM_WRITE2:
-    exec();
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
   case Z80_STATE_MEM_WRITE_CB:
     // breaks something
@@ -974,21 +992,17 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
 //-----------------------------------------------------------------------------
 // idempotent
 
-void Z80::exec() {
-  if (PREFIX_CB) {
-    AluOut out = cb(cb_quad_, cb_row_, (uint8_t)reg_fetch(), f);
-    alu_out_ = out.x;
-    f_ = out.f;
-    return;
-  }
-
+AluOut Z80::exec(uint8_t src) const {
   AluOut out = {0};
 
-  if (INC_R) {
-    out = alu(0, (uint8_t)reg_in_, 1, 0);
+  if (PREFIX_CB) {
+    out = cb(cb_quad_, cb_row_, src, f);
+  }
+  else if (INC_R) {
+    out = alu(0, src, 1, 0);
   }
   else if (DEC_R) {
-    out = alu(2, (uint8_t)reg_in_, 1, 0);
+    out = alu(2, src, 1, 0);
   }
   else if (ADD_HL_RR) {
     bool halfcarry = ((reg_in_ & 0x0FFF) + (hl & 0x0FFF)) > 0x0FFF;
@@ -1005,16 +1019,15 @@ void Z80::exec() {
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ROTATE_OPS) {
-    out = rlu(row_, a, f);
+    out = rlu(row_, src, f);
     if (row_ <= 3) out.f &= ~F_ZERO;
   }
   else if (ALU_OPS || ALU_A_D8) {
-    out = alu(row_, a, (uint8_t)reg_in_, f);
+    out = alu(row_, a, src, f);
     out.x = (row_ == 7) ? a : out.x;
   }
 
-  alu_out_ = out.x;
-  f_ = out.f;
+  return out;
 }
 
 //-----------------------------------------------------------------------------

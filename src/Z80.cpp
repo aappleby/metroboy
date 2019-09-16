@@ -169,6 +169,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     cb_quad_ = (op_cb_ >> 6) & 3;
     cb_row_ = (op_cb_ >> 3) & 7;
     cb_col_ = (op_cb_ >> 0) & 7;
+    reg_in_ = reg_fetch();
     exec();
     break;
   case Z80_STATE_HALT:
@@ -186,6 +187,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   case Z80_STATE_MEM_READ_CB:
     assert(bus_tag == TAG_ARG1);
+    reg_in_ = bus_data_;
     exec();
     break;
 
@@ -739,22 +741,41 @@ void Z80::decode() {
 //-----------------------------------------------------------------------------
 
 uint16_t Z80::reg_fetch() const {
+  if (PREFIX_CB) {
+    uint8_t x = 0;
+    switch(cb_col_) {
+    case 0: x = b; break;
+    case 1: x = c; break;
+    case 2: x = d; break;
+    case 3: x = e; break;
+    case 4: x = h; break;
+    case 5: x = l; break;
+    case 6: x = bus_data_; break;
+    case 7: x = a; break;
+    }
+    return x;
+  }
+  
   if (ROTATE_OPS) {
     return a;
   }
-  else if (ADD_HL_RR || INC_RR || DEC_RR) switch(row_ / 2) {
+  
+  if (ADD_HL_RR || INC_RR || DEC_RR) switch(row_ / 2) {
     case 0: return bc; break;
     case 1: return de; break;
     case 2: return hl; break;
     case 3: return sp; break;
   }
-  else if (PUSH_RR || POP_RR) switch(row_ / 2) {
+  
+  if (PUSH_RR || POP_RR) switch(row_ / 2) {
     case 0: return bc; break;
     case 1: return de; break;
     case 2: return hl; break;
     case 3: return af; break;
   }
-  else switch (quad_ == 0 ? row_ : col_) {
+  
+  
+  switch (quad_ == 0 ? row_ : col_) {
     case 0: return b; break;
     case 1: return c; break;
     case 2: return d; break;
@@ -955,19 +976,7 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
 
 void Z80::exec() {
   if (PREFIX_CB) {
-    uint8_t x = 0;
-    switch(cb_col_) {
-    case 0: x = b; break;
-    case 1: x = c; break;
-    case 2: x = d; break;
-    case 3: x = e; break;
-    case 4: x = h; break;
-    case 5: x = l; break;
-    case 6: x = bus_data_; break;
-    case 7: x = a; break;
-    }
-
-    AluOut out = cb(cb_quad_, cb_row_, x, f);
+    AluOut out = cb(cb_quad_, cb_row_, (uint8_t)reg_fetch(), f);
     alu_out_ = out.x;
     f_ = out.f;
     return;

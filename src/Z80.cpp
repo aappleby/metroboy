@@ -153,7 +153,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // execute previous state
 
-  AluOut out;
+  AluOut out = {0};
 
   switch(state) {
   case Z80_STATE_DECODE:
@@ -164,8 +164,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
 
     decode();
-    reg_in_ = reg_fetch();
-    out = exec((uint8_t)reg_in_);
+    reg_in_ = reg_fetch(bus_data);
+    out = exec((uint8_t)reg_fetch(bus_data));
     alu_out_ = out.x;
     f_ = out.f;
     break;
@@ -173,8 +173,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     cb_quad_ = (op_cb_ >> 6) & 3;
     cb_row_ = (op_cb_ >> 3) & 7;
     cb_col_ = (op_cb_ >> 0) & 7;
-    reg_in_ = reg_fetch();
-    out = exec((uint8_t)reg_in_);
+    out = exec((uint8_t)reg_fetch(bus_data));
     alu_out_ = out.x;
     f_ = out.f;
     break;
@@ -305,13 +304,12 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_MEM_WRITE2:
-    if (interrupt2) state_ = Z80_STATE_DELAY_C;
+    state_ = interrupt2 ? Z80_STATE_DELAY_C : Z80_STATE_DECODE;
     break;
 
   
   case Z80_STATE_DELAY_A:
-    state_ = Z80_STATE_MEM_WRITE1;
-    if (RET_CC) state_ = Z80_STATE_MEM_READ1;
+    state_ = (RET_CC) ? Z80_STATE_MEM_READ1 : Z80_STATE_MEM_WRITE1;
     break;
 
   case Z80_STATE_DELAY_C:
@@ -758,7 +756,7 @@ void Z80::decode() {
 
 //-----------------------------------------------------------------------------
 
-uint16_t Z80::reg_fetch() const {
+uint16_t Z80::reg_fetch(uint8_t bus) const {
   if (PREFIX_CB) {
     uint8_t x = 0;
     switch(cb_col_) {
@@ -768,7 +766,7 @@ uint16_t Z80::reg_fetch() const {
     case 3: x = e; break;
     case 4: x = h; break;
     case 5: x = l; break;
-    case 6: x = bus_data_; break;
+    case 6: x = bus; break;
     case 7: x = a; break;
     }
     return x;

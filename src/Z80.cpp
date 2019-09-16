@@ -232,10 +232,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // choose new state
 
-  state_ = Z80_STATE_DECODE;
-
   switch (state) {
   case Z80_STATE_DECODE:
+    state_ = Z80_STATE_DECODE;
     if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
     if (any_read_)  state_ = Z80_STATE_MEM_READ1;
     if (RET_CC || RST_NN || PUSH_RR) state_ = Z80_STATE_DELAY_A;
@@ -245,14 +244,17 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_DECODE_CB:
+    state_ = Z80_STATE_DECODE;
     state_ = (cb_col_ == 6) ? Z80_STATE_MEM_READ_CB : Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_HALT:
+    state_ = Z80_STATE_DECODE;
     state_ = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT;
     break;
 
   case Z80_STATE_MEM_READ1:
+    state_ = Z80_STATE_DECODE;
     if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) state_ = Z80_STATE_DELAY_B;
     if (ADD_SP_R8) state_ = Z80_STATE_DELAY_C;
     if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
@@ -260,33 +262,53 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_MEM_READ2:
+    state_ = Z80_STATE_DECODE;
     if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) state_ = Z80_STATE_DELAY_B;
     if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
     if (CALL_CC_A16 || CALL_A16) state_ = Z80_STATE_DELAY_D;
     if (LD_A_AT_A16) state_ = Z80_STATE_MEM_READ3;
     break;
 
+  case Z80_STATE_MEM_READ3:
+    state_ = Z80_STATE_DECODE;
+    break;
+
   case Z80_STATE_MEM_READ_CB:
+    state_ = Z80_STATE_DECODE;
     state_ = (cb_col_ == 6 && cb_quad_ != 1) ? Z80_STATE_MEM_WRITE_CB : Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_MEM_WRITE1:
+    state_ = Z80_STATE_DECODE;
     state_ = (push_d16_ || ST_A16_SP) ? Z80_STATE_MEM_WRITE2 : Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_MEM_WRITE2:
+    state_ = Z80_STATE_DECODE;
     state_ = interrupt2 ? Z80_STATE_DELAY_C : Z80_STATE_DECODE;
     break;
 
+  case Z80_STATE_MEM_WRITE_CB:
+    state_ = Z80_STATE_DECODE;
+    break;
+
   case Z80_STATE_DELAY_A:
+    state_ = Z80_STATE_DECODE;
     state_ = (RET_CC) ? Z80_STATE_MEM_READ1 : Z80_STATE_MEM_WRITE1;
     break;
 
+  case Z80_STATE_DELAY_B:
+    state_ = Z80_STATE_DECODE;
+    state_ = Z80_STATE_DECODE;
+    break;
+
   case Z80_STATE_DELAY_C:
+    state_ = Z80_STATE_DECODE;
     state_ = Z80_STATE_DELAY_B;
     break;
 
   case Z80_STATE_DELAY_D:
+    state_ = Z80_STATE_DECODE;
     state_ = Z80_STATE_MEM_WRITE1;
     break;
 

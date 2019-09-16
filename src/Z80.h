@@ -63,8 +63,6 @@ private:
     Z80_STATE_DELAY_A,
     Z80_STATE_DELAY_B,
     Z80_STATE_DELAY_C,
-    Z80_STATE_DELAY_D,
-
   };
 
   Z80State state, state_;

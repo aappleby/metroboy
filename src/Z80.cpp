@@ -225,8 +225,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   case Z80_STATE_DELAY_C:
     break;
-  case Z80_STATE_DELAY_D:
-    break;
   }
 
   //----------------------------------------
@@ -305,11 +303,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     state_ = Z80_STATE_DELAY_B;
     if ((CALL_CC_A16 && take_branch_) || CALL_A16) state_ = Z80_STATE_MEM_WRITE1;
     break;
-
-  case Z80_STATE_DELAY_D:
-    state_ = Z80_STATE_MEM_WRITE1;
-    break;
-
   }
 
   //----------------------------------------
@@ -492,7 +485,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DELAY_A: break;
   case Z80_STATE_DELAY_B: break;
   case Z80_STATE_DELAY_C: break;
-  case Z80_STATE_DELAY_D: break;
   }
 
   //----------

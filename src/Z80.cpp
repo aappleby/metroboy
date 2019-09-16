@@ -265,7 +265,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     state_ = Z80_STATE_DECODE;
     if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) state_ = Z80_STATE_DELAY_B;
     if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
-    if (CALL_CC_A16 || CALL_A16) state_ = Z80_STATE_DELAY_D;
+    if ((CALL_CC_A16 && take_branch_) || CALL_A16) state_ = Z80_STATE_DELAY_D;
     if (LD_A_AT_A16) state_ = Z80_STATE_MEM_READ3;
     break;
 
@@ -293,8 +293,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_DELAY_A:
-    state_ = Z80_STATE_DECODE;
-    state_ = (RET_CC) ? Z80_STATE_MEM_READ1 : Z80_STATE_MEM_WRITE1;
+    state_ = Z80_STATE_MEM_WRITE1;
+    if (RET_CC) state_ = take_branch_ ? Z80_STATE_MEM_READ1  : Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_DELAY_B:

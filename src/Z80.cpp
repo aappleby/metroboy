@@ -692,38 +692,31 @@ void Z80::decode() {
   put_hl_ |= (quad_ == 1) && (row_ == 6);
 
   //----------
-  // push/pop
+  // push
+
+  push_d16_ |= (quad_ == 3) && ((col_ == 5) || (col_ == 7));
+  push_d16_ |= (take_branch_ && CALL_CC_A16);
+
+  //----------
+  // pop
 
   pop_d16_ |= RET || RETI;
-
-  if (quad_ == 3) {
-    push_d16_ |= (col_ == 5) || (col_ == 7);
-    pop_d16_ |= (col_ == 1 && !odd_row_);
-  }
-
-  push_d16_ |= (take_branch_ && CALL_CC_A16);
+  pop_d16_ |= (quad_ == 3) && (col_ == 1 && !odd_row_);
   pop_d16_ |= (take_branch_ && RET_CC);
 
   //----------
   // fetch d8/d16
 
-  if (quad_ == 0) {
-    fetch_d8_ |= (col_ == 6) || (col_ == 0 && row_ >= 3);
-  }
-  
+  fetch_d8_ |= (quad_ == 0) && (col_ == 6);
+  fetch_d8_ |= (quad_ == 0) && (col_ == 0 && row_ >= 3);
   fetch_d8_ |= LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
 
   //----------
   // fetch d16
 
-  if (quad_ == 0) {
-    fetch_d16_ |= (col_ == 1 && !odd_row_) || ST_A16_SP;
-  }
-
-  if (quad_ == 3) {
-    fetch_d16_ |= (col_ == 2 && row_ <= 3) || (col_ == 4) || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
-  }
-
+  fetch_d16_ |= (quad_ == 0) && (col_ == 1 && !odd_row_);
+  fetch_d16_ |= (quad_ == 3) && (col_ == 2 && row_ <= 3);
+  fetch_d16_ |= (quad_ == 3) && (col_ == 4);
   fetch_d16_ |= ST_A16_SP || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
 
   //----------

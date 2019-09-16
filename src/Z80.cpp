@@ -281,10 +281,10 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_MEM_WRITE1:
     state_ = Z80_STATE_DECODE;
     state_ = (push_d16_ || ST_A16_SP) ? Z80_STATE_MEM_WRITE2 : Z80_STATE_DECODE;
+    if (RST_NN) state_ = Z80_STATE_MEM_WRITE2;
     break;
 
   case Z80_STATE_MEM_WRITE2:
-    state_ = Z80_STATE_DECODE;
     state_ = interrupt2 ? Z80_STATE_DELAY_C : Z80_STATE_DECODE;
     break;
 
@@ -299,16 +299,13 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_DELAY_B:
     state_ = Z80_STATE_DECODE;
-    state_ = Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_DELAY_C:
-    state_ = Z80_STATE_DECODE;
     state_ = Z80_STATE_DELAY_B;
     break;
 
   case Z80_STATE_DELAY_D:
-    state_ = Z80_STATE_DECODE;
     state_ = Z80_STATE_MEM_WRITE1;
     break;
 

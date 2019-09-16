@@ -230,84 +230,79 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // choose new state
 
-  if (state == Z80_STATE_DECODE && (RET_CC || RST_NN || PUSH_RR)) {
-    state_ = Z80_STATE_DELAY_A;
-  }
-  else {
-    switch (state) {
-    case Z80_STATE_DECODE:
-      state_ = Z80_STATE_DECODE;
-      if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
-      if (any_read_)  state_ = Z80_STATE_MEM_READ1;
-      if (RET_CC || RST_NN || PUSH_RR) state_ = Z80_STATE_DELAY_A;
-      if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) state_ = Z80_STATE_DELAY_B;
-      if (PREFIX_CB) state_ = Z80_STATE_DECODE_CB;
-      if (HALT) state_ = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
-      break;
+  switch (state) {
+  case Z80_STATE_DECODE:
+    state_ = Z80_STATE_DECODE;
+    if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
+    if (any_read_)  state_ = Z80_STATE_MEM_READ1;
+    if (RET_CC || RST_NN || PUSH_RR) state_ = Z80_STATE_DELAY_A;
+    if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) state_ = Z80_STATE_DELAY_B;
+    if (PREFIX_CB) state_ = Z80_STATE_DECODE_CB;
+    if (HALT) state_ = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
+    break;
 
-    case Z80_STATE_DECODE_CB:
-      state_ = Z80_STATE_DECODE;
-      state_ = (cb_col_ == 6) ? Z80_STATE_MEM_READ_CB : Z80_STATE_DECODE;
-      break;
+  case Z80_STATE_DECODE_CB:
+    state_ = Z80_STATE_DECODE;
+    state_ = (cb_col_ == 6) ? Z80_STATE_MEM_READ_CB : Z80_STATE_DECODE;
+    break;
 
-    case Z80_STATE_HALT:
-      state_ = Z80_STATE_DECODE;
-      state_ = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT;
-      break;
+  case Z80_STATE_HALT:
+    state_ = Z80_STATE_DECODE;
+    state_ = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT;
+    break;
 
-    case Z80_STATE_MEM_READ1:
-      state_ = Z80_STATE_DECODE;
-      if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) state_ = Z80_STATE_DELAY_B;
-      if (ADD_SP_R8) state_ = Z80_STATE_DELAY_C;
-      if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
-      if (LD_A_AT_A8 || fetch_d16_ || pop_d16_) state_ = Z80_STATE_MEM_READ2;
-      break;
+  case Z80_STATE_MEM_READ1:
+    state_ = Z80_STATE_DECODE;
+    if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) state_ = Z80_STATE_DELAY_B;
+    if (ADD_SP_R8) state_ = Z80_STATE_DELAY_C;
+    if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
+    if (LD_A_AT_A8 || fetch_d16_ || pop_d16_) state_ = Z80_STATE_MEM_READ2;
+    break;
 
-    case Z80_STATE_MEM_READ2:
-      state_ = Z80_STATE_DECODE;
-      if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) state_ = Z80_STATE_DELAY_B;
-      if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
-      if ((CALL_CC_A16 && take_branch_) || CALL_A16) state_ = Z80_STATE_DELAY_C;
-      if (LD_A_AT_A16) state_ = Z80_STATE_MEM_READ3;
-      break;
+  case Z80_STATE_MEM_READ2:
+    state_ = Z80_STATE_DECODE;
+    if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) state_ = Z80_STATE_DELAY_B;
+    if (any_write_) state_ = Z80_STATE_MEM_WRITE1;
+    if ((CALL_CC_A16 && take_branch_) || CALL_A16) state_ = Z80_STATE_DELAY_C;
+    if (LD_A_AT_A16) state_ = Z80_STATE_MEM_READ3;
+    break;
 
-    case Z80_STATE_MEM_READ3:
-      state_ = Z80_STATE_DECODE;
-      break;
+  case Z80_STATE_MEM_READ3:
+    state_ = Z80_STATE_DECODE;
+    break;
 
-    case Z80_STATE_MEM_READ_CB:
-      state_ = Z80_STATE_DECODE;
-      state_ = (cb_col_ == 6 && cb_quad_ != 1) ? Z80_STATE_MEM_WRITE_CB : Z80_STATE_DECODE;
-      break;
+  case Z80_STATE_MEM_READ_CB:
+    state_ = Z80_STATE_DECODE;
+    state_ = (cb_col_ == 6 && cb_quad_ != 1) ? Z80_STATE_MEM_WRITE_CB : Z80_STATE_DECODE;
+    break;
 
-    case Z80_STATE_MEM_WRITE1:
-      state_ = Z80_STATE_DECODE;
-      state_ = (push_d16_ || ST_A16_SP) ? Z80_STATE_MEM_WRITE2 : Z80_STATE_DECODE;
-      if (RST_NN) state_ = Z80_STATE_MEM_WRITE2;
-      break;
+  case Z80_STATE_MEM_WRITE1:
+    state_ = Z80_STATE_DECODE;
+    state_ = (push_d16_ || ST_A16_SP) ? Z80_STATE_MEM_WRITE2 : Z80_STATE_DECODE;
+    if (RST_NN) state_ = Z80_STATE_MEM_WRITE2;
+    break;
 
-    case Z80_STATE_MEM_WRITE2:
-      state_ = interrupt2 ? Z80_STATE_DELAY_C : Z80_STATE_DECODE;
-      break;
+  case Z80_STATE_MEM_WRITE2:
+    state_ = interrupt2 ? Z80_STATE_DELAY_C : Z80_STATE_DECODE;
+    break;
 
-    case Z80_STATE_MEM_WRITE_CB:
-      state_ = Z80_STATE_DECODE;
-      break;
+  case Z80_STATE_MEM_WRITE_CB:
+    state_ = Z80_STATE_DECODE;
+    break;
 
-    case Z80_STATE_DELAY_A:
-      state_ = Z80_STATE_MEM_WRITE1;
-      if (RET_CC) state_ = take_branch_ ? Z80_STATE_MEM_READ1  : Z80_STATE_DECODE;
-      break;
+  case Z80_STATE_DELAY_A:
+    state_ = Z80_STATE_MEM_WRITE1;
+    if (RET_CC) state_ = take_branch_ ? Z80_STATE_MEM_READ1  : Z80_STATE_DECODE;
+    break;
 
-    case Z80_STATE_DELAY_B:
-      state_ = Z80_STATE_DECODE;
-      break;
+  case Z80_STATE_DELAY_B:
+    state_ = Z80_STATE_DECODE;
+    break;
 
-    case Z80_STATE_DELAY_C:
-      state_ = Z80_STATE_DELAY_B;
-      if ((CALL_CC_A16 && take_branch_) || CALL_A16) state_ = Z80_STATE_MEM_WRITE1;
-      break;
-    }
+  case Z80_STATE_DELAY_C:
+    state_ = Z80_STATE_DELAY_B;
+    if ((CALL_CC_A16 && take_branch_) || CALL_A16) state_ = Z80_STATE_MEM_WRITE1;
+    break;
   }
 
   //----------------------------------------
@@ -706,6 +701,21 @@ void Z80::decode() {
   fetch_d8_ = false;
   fetch_d16_ = false;
 
+  if (quad_ == 0) {
+    fetch_d8_ = (col_ == 6) || (col_ == 0 && row_ >= 3);
+    fetch_d16_ = (col_ == 1 && !odd_row_) || ST_A16_SP;
+  }
+  
+  if (quad_ == 3) {
+    fetch_d8_ = LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
+    fetch_d16_ = (col_ == 2 && row_ <= 3) || (col_ == 4) || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
+  }
+
+  if (interrupt2) {
+    fetch_d8_ = false;
+    fetch_d16_ = false;
+  }
+
   //----------
 
   any_read_ = false;
@@ -715,8 +725,6 @@ void Z80::decode() {
     any_write_ = true;
   }
   else if (quad_ == 0) {
-    fetch_d8_ = (col_ == 6) || (col_ == 0 && row_ >= 3);
-    fetch_d16_ = (col_ == 1 && !odd_row_) || ST_A16_SP;
     any_read_ = fetch_d8_ || fetch_d16_ || get_hl_ || LD_A_AT_BC || LD_A_AT_DE;
     any_write_ = put_hl_ || ST_BC_A || ST_DE_A || ST_A16_SP;
   }
@@ -728,8 +736,6 @@ void Z80::decode() {
     any_read_ = get_hl_;
   }
   else if (quad_ == 3) {
-    fetch_d8_ = LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
-    fetch_d16_ = (col_ == 2 && row_ <= 3) || (col_ == 4) || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
     any_read_ = fetch_d8_ || fetch_d16_ || pop_d16_ || LD_A_AT_C;
     any_write_ = push_d16_ || ST_A16_A || ST_A8_A || ST_C_A;
 

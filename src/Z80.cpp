@@ -153,8 +153,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // handle input data
 
-  AluOut out = {0};
-
   switch(state) {
   case Z80_STATE_DECODE:
     interrupt2 = (imask_ & intf_) && ime;
@@ -165,9 +163,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     decode();
     reg_in_ = reg_fetch(bus_data);
-    out = exec((uint8_t)reg_fetch(bus_data));
-    alu_out_ = out.x;
-    f_ = out.f;
     break;
   case Z80_STATE_DECODE_CB:
     cb_quad_ = (op_cb_ >> 6) & 3;
@@ -179,6 +174,47 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_MEM_READ1:
     reg_in_ = bus_data_;
+    break;
+  case Z80_STATE_MEM_READ2:
+    break;
+  case Z80_STATE_MEM_READ3:
+    break;
+  case Z80_STATE_MEM_READ_CB:
+    reg_in_ = bus_data_;
+    break;
+
+  case Z80_STATE_MEM_WRITE1:
+    break;
+  case Z80_STATE_MEM_WRITE2:
+    break;
+  case Z80_STATE_MEM_WRITE_CB:
+    break;
+
+  case Z80_STATE_DELAY_A:
+    break;
+  case Z80_STATE_DELAY_B:
+    break;
+  case Z80_STATE_DELAY_C:
+    break;
+  }
+
+  //----------------------------------------
+  // this alu chunk is moving down to tock()
+
+  AluOut out = {0};
+
+  switch(state) {
+  case Z80_STATE_DECODE:
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
+    break;
+  case Z80_STATE_DECODE_CB:
+    break;
+  case Z80_STATE_HALT:
+    break;
+
+  case Z80_STATE_MEM_READ1:
     out = exec((uint8_t)reg_in_);
     alu_out_ = out.x;
     f_ = out.f;
@@ -194,8 +230,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     f_ = out.f;
     break;
   case Z80_STATE_MEM_READ_CB:
-    assert(bus_tag == TAG_ARG1);
-    reg_in_ = bus_data_;
     out = exec((uint8_t)reg_in_);
     alu_out_ = out.x;
     f_ = out.f;
@@ -517,7 +551,7 @@ CpuOut Z80::tock_t2() {
     case Z80_STATE_MEM_READ1:
     case Z80_STATE_MEM_READ2:
     case Z80_STATE_MEM_READ3:
-    case Z80_STATE_MEM_READ_CB:
+    case Z80_STATE_MEM_READ_CB: {
       reg_in_ = bus_data_;
       AluOut out = exec((uint8_t)reg_in_);
       alu_out_ = out.x;
@@ -525,56 +559,23 @@ CpuOut Z80::tock_t2() {
       break;
     }
 
-    /*
-    switch(state) {
-    case Z80_STATE_MEM_READ1:
-    reg_in_ = bus_data_;
-    out = exec((uint8_t)reg_in_);
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
-    case Z80_STATE_MEM_READ2:
-    out = exec((uint8_t)reg_in_);
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
-    case Z80_STATE_MEM_READ3:
-    out = exec((uint8_t)reg_in_);
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
-    case Z80_STATE_MEM_READ_CB:
-    assert(bus_tag == TAG_ARG1);
-    reg_in_ = bus_data_;
-    out = exec((uint8_t)reg_in_);
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
-
     case Z80_STATE_MEM_WRITE1:
-    out = exec((uint8_t)reg_in_);
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
     case Z80_STATE_MEM_WRITE2:
-    out = exec((uint8_t)reg_in_);
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
     case Z80_STATE_MEM_WRITE_CB:
-    // breaks something
-    //tick_exec_cb();
-    break;
+    {
+      AluOut out = exec((uint8_t)reg_in_);
+      alu_out_ = out.x;
+      f_ = out.f;
+      break;
+    }
 
     case Z80_STATE_DELAY_A:
-    break;
     case Z80_STATE_DELAY_B:
-    break;
     case Z80_STATE_DELAY_C:
-    break;
+    {
+      break;
     }
-    */
-
+    }
 
     // Write all our registers from the previous instruction before the new opcode shows up.
     // Not idempotent yet

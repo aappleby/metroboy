@@ -173,27 +173,19 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_MEM_READ1:
-    reg_in_ = bus_data_;
-    break;
   case Z80_STATE_MEM_READ2:
-    break;
   case Z80_STATE_MEM_READ3:
-    break;
   case Z80_STATE_MEM_READ_CB:
     reg_in_ = bus_data_;
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    break;
   case Z80_STATE_MEM_WRITE2:
-    break;
   case Z80_STATE_MEM_WRITE_CB:
     break;
 
   case Z80_STATE_DELAY_A:
-    break;
   case Z80_STATE_DELAY_B:
-    break;
   case Z80_STATE_DELAY_C:
     break;
   }
@@ -362,6 +354,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   mem_read_ = false;
   mem_write_ = false;
 
+  if (state_ == Z80_STATE_HALT) unhalt = 0;
+
   switch(state_) {
   case Z80_STATE_DECODE:
     bus_tag_ = TAG_OPCODE;
@@ -375,14 +369,10 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     mem_read_ = true;
     break;
   case Z80_STATE_HALT:
-    unhalt = 0;
     bus_tag_ = TAG_OPCODE;
     mem_addr_ = pc_;
     mem_read_ = true;
     break;
-
-
-
 
   case Z80_STATE_MEM_READ1:
     if (fetch_d8_)       { bus_tag_ = TAG_ARG0;  mem_addr_ = pc + 1; }
@@ -413,8 +403,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     mem_addr_ = hl;
     mem_read_ = true;
     break;
-
-
 
   case Z80_STATE_MEM_WRITE1:
     bus_tag_ = TAG_NONE;

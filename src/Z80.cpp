@@ -515,6 +515,8 @@ CpuOut Z80::tock_t2() {
       break;
     }
     case Z80_STATE_MEM_READ1:
+    case Z80_STATE_MEM_READ2:
+    case Z80_STATE_MEM_READ3:
       reg_in_ = bus_data_;
       AluOut out = exec((uint8_t)reg_in_);
       alu_out_ = out.x;

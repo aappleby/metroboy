@@ -210,8 +210,14 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     f_ = out.f;
     break;
   case Z80_STATE_DECODE_CB:
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
   case Z80_STATE_HALT:
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
     break;
 
   case Z80_STATE_MEM_READ1:

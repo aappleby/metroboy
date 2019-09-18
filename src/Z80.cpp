@@ -921,8 +921,7 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
     case 0:
     case 1:
     case 2:
-    case 3:
-    {
+    case 3: {
       out = rlu(row, x, f);
       break;
     }
@@ -933,20 +932,23 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
       if (out.x == 0) out.f |= F_ZERO;
       break;
     }
-            // SRA
+    
+    // SRA
     case 5: {
       out.x = ((x >> 1) | (x & 0x80)) & 0xFF;
       if (x & 1)      out.f |= F_CARRY;
       if (out.x == 0) out.f |= F_ZERO;
       break;
     }
-            // SWAP
+
+    // SWAP
     case 6: {
       out.x = ((x << 4) | (x >> 4)) & 0xFF;
       if (out.x == 0) out.f |= F_ZERO;
       break;
     }
-            // SRL
+
+    // SRL
     case 7: {
       out.x = (x >> 1) & 0xFF;
       if (x & 1)      out.f |= F_CARRY;
@@ -997,15 +999,15 @@ AluOut Z80::exec(uint8_t src) const {
     out = alu(2, src, 1, 0);
   }
   else if (ADD_HL_RR) {
-    bool halfcarry = ((reg_in_ & 0x0FFF) + (hl & 0x0FFF)) > 0x0FFF;
-    bool carry = (reg_in_ + hl) > 0xFFFF;
+    bool halfcarry = (reg_in_ & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
+    bool carry =     (reg_in_ & 0xFFFF) + (hl & 0xFFFF) > 0xFFFF;
 
     out.x = reg_in_ + hl;
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    bool halfcarry = (sp & 0x000F) + (bus_data_ & 0xf) > 0x000F;
-    bool carry = (sp & 0x00FF) + bus_data_ > 0x00FF;
+    bool halfcarry = (sp & 0x000F) + (bus_data_ & 0x000F) > 0x000F;
+    bool carry =     (sp & 0x00FF) + (bus_data_ & 0x00FF) > 0x00FF;
 
     out.x = sp + (int8_t)bus_data_;
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);

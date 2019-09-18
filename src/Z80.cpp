@@ -418,8 +418,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (put_hl_) {
       mem_addr_ = hl;
 
-      if      (INC_AT_HL)    mem_out_ = (uint8_t)alu_out_;
-      else if (DEC_AT_HL)    mem_out_ = (uint8_t)alu_out_;
+      //if      (INC_AT_HL)    mem_out_ = (uint8_t)alu_out_;
+      if      (INC_AT_HL)    mem_out_ = bus_data_ + 1;
+      else if (DEC_AT_HL)    mem_out_ = bus_data_ - 1;
       else if (ST_HL_D8)     mem_out_ = (uint8_t)bus_data_;
       else if (MV_OPS_ST_HL) mem_out_ = (uint8_t)reg_in_;
     }

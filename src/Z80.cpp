@@ -308,14 +308,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   // set up new state
 
   pc_ = pc;
-  bus_tag_ = TAG_NONE;
-  mem_addr_ = 0;
-  mem_out_ = 0;
-  mem_read_ = false;
-  mem_write_ = false;
 
-  switch(state_) {
-  case Z80_STATE_DECODE:
+  if (state_ == Z80_STATE_DECODE) {
     // We're at the end of a tick() for a completed instruction.
     // Compute the new PC and put it on the bus so we can fetch the next instruction.
     // If we're jumping to an interrupt vector, ack the interrupt that triggered it.
@@ -358,7 +352,18 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else {
       pc_ = pc + 1;
     }
+  }
 
+  //----------------------------------------
+
+  bus_tag_ = TAG_NONE;
+  mem_addr_ = 0;
+  mem_out_ = 0;
+  mem_read_ = false;
+  mem_write_ = false;
+
+  switch(state_) {
+  case Z80_STATE_DECODE:
     bus_tag_ = TAG_OPCODE;
     mem_addr_ = pc_;
     mem_read_ = true;

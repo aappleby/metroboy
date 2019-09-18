@@ -8,13 +8,16 @@
 
 #define ST_BC_A       (op_ == 0x02)
 #define ST_DE_A       (op_ == 0x12)
+#define ST_HLP_A      (op_ == 0x22)
+#define ST_HLM_A      (op_ == 0x32)
+#define ST_RR_A       (quad_ == 0 && col_ == 2 && !odd_row_)
+
 #define ST_A8_A       (op_ == 0xE0)
 #define ST_C_A        (op_ == 0xE2)
 #define ST_A16_SP     (op_ == 0x08)
 #define ST_A16_A      (op_ == 0xEA)
 #define ST_HL_D8      (op_ == 0x36)
-#define ST_HLP_A      (op_ == 0x22)
-#define ST_HLM_A      (op_ == 0x32)
+
 #define ADD_SP_R8     (op_ == 0xE8)
 #define LD_HL_SP_R8   (op_ == 0xF8)
 #define INC_AT_HL     (op_ == 0x34)
@@ -40,10 +43,14 @@
 #define PREFIX_CB     (op_ == 0xCB)
 #define MV_SP_HL      (op_ == 0xF9)
 
+#define MV_OPS        (quad_ == 1)
+#define MV_OPS_ST_HL  (quad_ == 1 && row_ == 6)
+#define ALU_OPS       (quad_ == 2)
+#define ALU_A_D8      (quad_ == 3 && col_ == 6)
+
 #define JR_CC_R8      (quad_ == 0 && col_ == 0 && row_ >= 4)
 #define LD_RR_D16     (quad_ == 0 && col_ == 1 && !odd_row_)
 #define ADD_HL_RR     (quad_ == 0 && col_ == 1 && odd_row_)
-#define ST_RR_A       (quad_ == 0 && col_ == 2 && !odd_row_)
 #define LD_A_AT_RR    (quad_ == 0 && col_ == 2 && odd_row_)
 #define INC_RR        (quad_ == 0 && col_ == 3 && !odd_row_)
 #define DEC_RR        (quad_ == 0 && col_ == 3 && odd_row_)
@@ -52,19 +59,12 @@
 #define LD_R_D8       (quad_ == 0 && col_ == 6)
 #define ROTATE_OPS    (quad_ == 0 && col_ == 7)
 
-#define MV_OPS        (quad_ == 1)
-#define MV_OPS_LD_HL  (quad_ == 1 && col_ == 6)
-#define MV_OPS_ST_HL  (quad_ == 1 && row_ == 6)
 
-#define ALU_OPS       (quad_ == 2)
-#define ALU_OPS_LD_HL (quad_ == 2 && col_ == 6)
-
-#define RET_CC        (quad_ == 3 && col_ == 0 && row_ <= 3)
+#define PUSH_RR       (quad_ == 3 && col_ == 5 && !odd_row_)
 #define POP_RR        (quad_ == 3 && col_ == 1 && !odd_row_)
+#define RET_CC        (quad_ == 3 && col_ == 0 && row_ <= 3)
 #define JP_CC_A16     (quad_ == 3 && col_ == 2 && row_ <= 3)
 #define CALL_CC_A16   (quad_ == 3 && col_ == 4 && row_ <= 3)
-#define PUSH_RR       (quad_ == 3 && col_ == 5 && !odd_row_)
-#define ALU_A_D8      (quad_ == 3 && col_ == 6)
 #define RST_NN        (quad_ == 3 && col_ == 7)
 
 //-----------------------------------------------------------------------------
@@ -151,7 +151,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   else if (bus_tag == TAG_ARG1)  data_hi_ = bus_data;
 
   //----------------------------------------
-  // execute previous state
+  // handle input data
 
   AluOut out = {0};
 
@@ -173,9 +173,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     cb_quad_ = (op_cb_ >> 6) & 3;
     cb_row_ = (op_cb_ >> 3) & 7;
     cb_col_ = (op_cb_ >> 0) & 7;
-    out = exec((uint8_t)reg_fetch(bus_data));
-    alu_out_ = out.x;
-    f_ = out.f;
     break;
   case Z80_STATE_HALT:
     break;
@@ -306,7 +303,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
-  // switch to new state
+  // set up new state
 
   pc_ = pc;
   bus_tag_ = TAG_NONE;
@@ -501,8 +498,75 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 CpuOut Z80::tock_t2() {
   ime = ime_delay;
-  
+
   if (state_ == Z80_STATE_DECODE) {
+
+    // do final alu, etc.
+
+    switch(state) {
+    case Z80_STATE_DECODE:
+    case Z80_STATE_DECODE_CB:    
+    case Z80_STATE_HALT:
+    {
+      reg_in_ = reg_fetch(bus_data_);
+      AluOut out = exec((uint8_t)reg_in_);
+      alu_out_ = out.x;
+      f_ = out.f;
+      break;
+    }
+    }
+
+    /*
+    switch(state) {
+    case Z80_STATE_MEM_READ1:
+    reg_in_ = bus_data_;
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
+    break;
+    case Z80_STATE_MEM_READ2:
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
+    break;
+    case Z80_STATE_MEM_READ3:
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
+    break;
+    case Z80_STATE_MEM_READ_CB:
+    assert(bus_tag == TAG_ARG1);
+    reg_in_ = bus_data_;
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
+    break;
+
+    case Z80_STATE_MEM_WRITE1:
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
+    break;
+    case Z80_STATE_MEM_WRITE2:
+    out = exec((uint8_t)reg_in_);
+    alu_out_ = out.x;
+    f_ = out.f;
+    break;
+    case Z80_STATE_MEM_WRITE_CB:
+    // breaks something
+    //tick_exec_cb();
+    break;
+
+    case Z80_STATE_DELAY_A:
+    break;
+    case Z80_STATE_DELAY_B:
+    break;
+    case Z80_STATE_DELAY_C:
+    break;
+    }
+    */
+
+
     // Write all our registers from the previous instruction before the new opcode shows up.
     // Not idempotent yet
     pc = pc_;

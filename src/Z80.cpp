@@ -141,6 +141,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   int_ack_ = 0;
   data_lo_ = data_lo;
   data_hi_ = data_hi;
+  bus_data_ = bus_data;
 
   if      (bus_tag == TAG_OPCODE) op_ = bus_data;
   if      (bus_tag == TAG_OPCODE_CB) op_cb_ = bus_data;

@@ -150,6 +150,61 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   else if (bus_tag == TAG_ARG0)  data_lo_ = bus_data_;
   else if (bus_tag == TAG_ARG1)  data_hi_ = bus_data_;
 
+  switch (state) {
+  case Z80_STATE_DECODE:
+    assert(bus_tag == TAG_OPCODE);
+    break;
+
+  case Z80_STATE_DECODE_CB:
+    assert(bus_tag == TAG_OPCODE_CB);
+    break;
+
+  case Z80_STATE_HALT:
+    assert(bus_tag == TAG_OPCODE);
+    break;
+
+  case Z80_STATE_MEM_READ1:
+    assert(bus_tag == TAG_DATA0 || bus_tag == TAG_ARG0);
+    break;
+
+  case Z80_STATE_MEM_READ2:
+    assert(bus_tag == TAG_DATA0 || bus_tag == TAG_DATA1 || bus_tag == TAG_ARG1);
+    break;
+
+  case Z80_STATE_MEM_READ3:
+    assert(bus_tag == TAG_DATA0);
+    break;
+
+  case Z80_STATE_MEM_READ_CB:
+    assert(bus_tag == TAG_DATA0);
+    break;
+
+  case Z80_STATE_MEM_WRITE1:
+    assert(bus_tag == TAG_NONE);
+    break;
+
+  case Z80_STATE_MEM_WRITE2:
+    assert(bus_tag == TAG_NONE);
+    break;
+
+  case Z80_STATE_MEM_WRITE_CB:
+    assert(bus_tag == TAG_NONE);
+    break;
+
+  case Z80_STATE_DELAY_A:
+    assert(bus_tag == TAG_NONE);
+    break;
+
+  case Z80_STATE_DELAY_B:
+    assert(bus_tag == TAG_NONE);
+    break;
+
+  case Z80_STATE_DELAY_C:
+    assert(bus_tag == TAG_NONE);
+    break;
+  }
+
+
   //----------------------------------------
   // handle input data
 
@@ -392,14 +447,12 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     mem_read_ = true;
     break;
   case Z80_STATE_MEM_READ_CB:
-    bus_tag_ = TAG_ARG1;
+    bus_tag_ = TAG_DATA0;
     mem_addr_ = hl;
     mem_read_ = true;
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    bus_tag_ = TAG_NONE;
-
     if (ST_RR_A) {
       if      (ST_BC_A)  mem_addr_ = bc;
       else if (ST_DE_A)  mem_addr_ = de;

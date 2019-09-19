@@ -698,18 +698,11 @@ uint8_t Z80::reg_fetch8() const {
 
 uint16_t Z80::reg_fetch16() const {
 
-  if (ADD_HL_RR || INC_RR || DEC_RR) switch(row_ / 2) {
+  switch(row_ >> 1) {
   case 0: return bc; break;
   case 1: return de; break;
   case 2: return hl; break;
-  case 3: return sp; break;
-  }
-
-  if (PUSH_RR || POP_RR) switch(row_ / 2) {
-  case 0: return bc; break;
-  case 1: return de; break;
-  case 2: return hl; break;
-  case 3: return af; break;
+  case 3: return PUSH_RR || POP_RR ? af : sp; break;
   }
 
   return 0;

@@ -491,39 +491,21 @@ CpuOut Z80::tock_t2() {
     }
 
     else if (LD_RR_D16) {
-      switch (row_ >> 1) {
-      case 0: bc = data16_; break;
-      case 1: de = data16_; break;
-      case 2: hl = data16_; break;
-      case 3: sp = data16_; break;
-      }
+      reg_put16(row_ >> 1, data16_);
     }
 
     else if (INC_RR) {
-      switch (row_ >> 1) {
-      case 0: bc++; break;
-      case 1: de++; break;
-      case 2: hl++; break;
-      case 3: sp++; break;
-      }
+      uint16_t reg = reg_fetch16();
+      reg_put16(row_ >> 1, reg + 1);
     }
 
     else if (DEC_RR) {
-      switch (row_ >> 1) {
-      case 0: bc--; break;
-      case 1: de--; break;
-      case 2: hl--; break;
-      case 3: sp--; break;
-      }
+      uint16_t reg = reg_fetch16();
+      reg_put16(row_ >> 1, reg - 1);
     }
 
     else if (POP_RR) {
-      switch (row_ >> 1) {
-      case 0: bc = data16_; break;
-      case 1: de = data16_; break;
-      case 2: hl = data16_; break;
-      case 3: af = data16_ & 0xFFF0; break;
-      }
+      reg_put16(row_ >> 1, data16_);
       sp = sp + 2;
     }
 
@@ -702,8 +684,8 @@ void Z80::reg_put8(int mux, uint8_t reg) {
 void Z80::reg_put16(int mux, uint16_t reg) {
   switch(mux) {
   case 0: bc = reg; break;
-  case 1: de; break;
-  case 2: hl; break;
+  case 1: de = reg; break;
+  case 2: hl = reg; break;
   case 3: {
     if (POP_RR) {
       af = reg & 0xFFF0;

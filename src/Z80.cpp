@@ -133,7 +133,6 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
 CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   imask_ = imask;
   intf_ = intf;
-  bus_data_ = bus_data;
 
   pc_ = pc;
   bus_tag_ = TAG_NONE;
@@ -320,6 +319,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
   // this alu chunk is moving down to tock()
+
+  bus_data_ = bus_data;
 
   AluOut out = exec((uint8_t)reg_in_);
 

@@ -140,6 +140,7 @@ private:
 private:
 
   void decode();
+  Z80State next_state() const;
   AluOut exec(uint8_t src) const;
   uint8_t reg_fetch8() const;
   uint16_t reg_fetch16() const;

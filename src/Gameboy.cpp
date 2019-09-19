@@ -187,6 +187,7 @@ GameboyOut Gameboy::tock() {
   int tphase = tcycle & 3;
 
   CpuBus cpu_bus = {
+    0,
     cpu_bus2.addr,
     cpu_bus2.data,
     cpu_bus2.read && (tphase == 2),
@@ -195,7 +196,7 @@ GameboyOut Gameboy::tock() {
 
   ppu_out = ppu.tock(tphase, cpu_bus, vram_out, oam_out);
 
-  CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_read, false };
+  CpuBus ppu_bus = { 0, ppu_out.vram_addr, 0, ppu_out.vram_read, false };
 
   //-----------------------------------
   // DMA state machine
@@ -234,12 +235,12 @@ GameboyOut Gameboy::tock() {
   //-----------------------------------
   // oam bus mux
 
-  CpuBus oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_read, false };
+  CpuBus oam_bus = { 0, ppu_out.oam_addr, 0, ppu_out.oam_read, false };
   cpu_read_oam = false;
 
   if (dma_mode_b != DMA_NONE) {
     if (tphase == 0) {
-      oam_bus = { dma_write_addr, dma_data, false, true };
+      oam_bus = { 0, dma_write_addr, dma_data, false, true };
     }
     else {
       oam_bus = { 0, 0, false, false };
@@ -270,7 +271,7 @@ GameboyOut Gameboy::tock() {
   cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
   cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_bus.read && (ce_rom || ce_cram);
 
-  CpuBus dma_bus = { dma_read_addr, 0, true, false };
+  CpuBus dma_bus = { 0, dma_read_addr, 0, true, false };
 
   vram_out    = vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_lock ? ppu_bus : cpu_bus);
   iram_out    = iram.tock_t2(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);

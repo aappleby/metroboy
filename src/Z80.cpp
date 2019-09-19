@@ -448,6 +448,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------
 
   return {
+    (uint8_t)bus_tag_,
     mem_addr_,
     mem_out_,
     mem_read_,

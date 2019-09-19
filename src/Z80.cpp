@@ -293,40 +293,10 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   AluOut out;
 
-  switch(state) {
-  case Z80_STATE_DECODE:
-    out = exec((uint8_t)reg_fetch());
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
-  case Z80_STATE_DECODE_CB:
-    out = exec((uint8_t)reg_fetch());
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
-  case Z80_STATE_HALT:
-  case Z80_STATE_MEM_READ1:
-  case Z80_STATE_MEM_READ2:
-  case Z80_STATE_MEM_READ3:
-  case Z80_STATE_MEM_READ_CB:
-    out = exec((uint8_t)reg_fetch());
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
-  case Z80_STATE_MEM_WRITE1:
-  case Z80_STATE_MEM_WRITE2:
-  case Z80_STATE_MEM_WRITE_CB:
-  case Z80_STATE_DELAY_A:
-    out = exec((uint8_t)reg_fetch());
-    alu_out_ = out.x;
-    f_ = out.f;
-    break;
 
-  case Z80_STATE_DELAY_B:
-  case Z80_STATE_DELAY_C:
-    out = exec((uint8_t)reg_fetch());
-    break;
-  }
+  out = exec((uint8_t)reg_fetch());
+  alu_out_ = out.x;
+  f_ = out.f;
 
   //----------------------------------------
 

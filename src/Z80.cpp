@@ -79,7 +79,7 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
   int_ack_ = 0;
 
   state = state_ = Z80_STATE_DECODE;
-  reg_in = reg_in_ = 0;
+  reg_in_ = 0;
 
   if (new_pc == 0x100) {
     af = 0x01B0;
@@ -137,7 +137,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   pc_ = pc;
   bus_tag_ = TAG_NONE;
   state_ = state;
-  reg_in_ = reg_in;
   int_ack_ = 0;
   data_lo_ = data_lo;
   data_hi_ = data_hi;
@@ -639,7 +638,6 @@ CpuOut Z80::tock_t2() {
   }
 
   state = state_;
-  reg_in = reg_in_;
   bus_tag = bus_tag_;
   data_lo = data_lo_;
   data_hi = data_hi_;

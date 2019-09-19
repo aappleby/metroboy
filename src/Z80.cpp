@@ -292,7 +292,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
-  // this alu chunk is moving down to tock()
 
   AluOut out = exec(reg_fetch8());
   alu_out_ = out.x;
@@ -463,51 +462,20 @@ CpuOut Z80::tock_t2() {
     pc = pc_;
 
     uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
-    f = (f & ~mask) | (f_ & mask);
-
-    if (POP_AF)      f = data_lo_ & 0xF0;
+    f = POP_AF ? data_lo_ & 0xF0 : (f & ~mask) | (f_ & mask);
 
     opcount = opcount + 1;
 
-    if (PREFIX_CB) {
-      reg_put8(cb_col_, (uint8_t)alu_out_);
-    }
-    else if (INC_R || DEC_R) {
-      reg_put8(row_, (uint8_t)alu_out_);
-    }
-    else if (LD_R_D8) {
-      reg_put8(row_, data_lo_);
-    }
-    else if (MV_OPS) {
-      reg_put8(row_, reg_fetch8());
-    }
-    else if (ALU_A_D8 || ALU_OPS || ROTATE_OPS) {
-      reg_put8(7, (uint8_t)alu_out_);
-    }
-    else if (LD_A_AT_RR || LD_A_AT_A8 || LD_A_AT_C || LD_A_AT_A16) {
-      reg_put8(7, data_lo_);
-      if (LD_A_AT_HLP) hl++;
-      if (LD_A_AT_HLM) hl--;
-    }
-
-    else if (LD_RR_D16) {
-      reg_put16(row_ >> 1, data16_);
-    }
-
-    else if (INC_RR) {
-      uint16_t reg = reg_fetch16();
-      reg_put16(row_ >> 1, reg + 1);
-    }
-
-    else if (DEC_RR) {
-      uint16_t reg = reg_fetch16();
-      reg_put16(row_ >> 1, reg - 1);
-    }
-
-    else if (POP_RR) {
-      reg_put16(row_ >> 1, data16_);
-      sp = sp + 2;
-    }
+    if (PREFIX_CB) reg_put8(cb_col_, (uint8_t)alu_out_);
+    else if (INC_R || DEC_R) reg_put8(row_, (uint8_t)alu_out_);
+    else if (LD_R_D8) reg_put8(row_, data_lo_);
+    else if (MV_OPS) reg_put8(row_, reg_fetch8());
+    else if (ALU_A_D8 || ALU_OPS || ROTATE_OPS) reg_put8(7, (uint8_t)alu_out_);
+    else if (LD_A_AT_RR || LD_A_AT_A8 || LD_A_AT_C || LD_A_AT_A16) reg_put8(7, data_lo_);
+    else if (LD_RR_D16) reg_put16(row_ >> 1, data16_);
+    else if (INC_RR) reg_put16(row_ >> 1, reg_fetch16() + 1);
+    else if (DEC_RR) reg_put16(row_ >> 1, reg_fetch16() - 1);
+    else if (POP_RR) reg_put16(row_ >> 1, data16_);
 
     else if (ADD_HL_RR)   hl = alu_out_;
     else if (LD_HL_SP_R8) hl = alu_out_;
@@ -517,6 +485,10 @@ CpuOut Z80::tock_t2() {
     else if (MV_SP_HL)    sp = hl;
     else if (push_d16_)   sp = sp - 2;
     else if ((RET_CC && take_branch_) || RET || RETI) sp = sp + 2;
+
+    if (LD_A_AT_HLP) hl++;
+    if (LD_A_AT_HLM) hl--;
+    if (POP_RR) sp = sp + 2;
 
     //----------
     // Update our interrupt master enable.
@@ -556,8 +528,7 @@ CpuOut Z80::tock_t2() {
   return { 0 };
 }
 
-//-----------------------------------
-// New opcode arrived, decode it and dispatch next state.
+//-----------------------------------------------------------------------------
 
 void Z80::decode() {
   
@@ -637,7 +608,6 @@ void Z80::decode() {
 //-----------------------------------------------------------------------------
 
 uint8_t Z80::reg_fetch8() const {
-
   int mux = quad_ == 0 ? row_ : col_;
   if (PREFIX_CB) mux = cb_col_;
   if (ROTATE_OPS) mux = col_;

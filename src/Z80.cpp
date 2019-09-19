@@ -320,8 +320,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // this alu chunk is moving down to tock()
 
-  bus_data_ = bus_data;
-
   AluOut out = exec((uint8_t)reg_in_);
 
   switch(state) {
@@ -478,6 +476,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DELAY_B: break;
   case Z80_STATE_DELAY_C: break;
   }
+
+  bus_data_ = bus_data;
 
   //----------
 

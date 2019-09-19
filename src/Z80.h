@@ -6,6 +6,8 @@
 struct Z80 {
   CpuOut reset(int new_model, uint16_t new_pc);
   CpuBus tick_t0(uint8_t imask, uint8_t intf, uint8_t mem_out);
+  void   tock_t0();
+  void   tick_t2();
   CpuOut tock_t2();
 
   uint16_t get_pc() const { return pc; }

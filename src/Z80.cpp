@@ -448,6 +448,16 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 //-----------------------------------------------------------------------------
 
+void Z80::tock_t0() {
+}
+
+//-----------------------------------------------------------------------------
+
+void Z80::tick_t2() {
+}
+
+//-----------------------------------------------------------------------------
+
 CpuOut Z80::tock_t2() {
   ime = ime_delay;
 
@@ -488,25 +498,31 @@ CpuOut Z80::tock_t2() {
     case 7: a = (uint8_t)alu_out_; break;
     }
 
-    else if (LD_R_D8 || MV_OPS) {
-      uint16_t reg_in_ = any_read_ ? data_lo_ : reg_fetch();
+    else if (LD_R_D8) {
+      switch (row_) {
+      case 0: b = (uint8_t)data_lo_; break;
+      case 1: c = (uint8_t)data_lo_; break;
+      case 2: d = (uint8_t)data_lo_; break;
+      case 3: e = (uint8_t)data_lo_; break;
+      case 4: h = (uint8_t)data_lo_; break;
+      case 5: l = (uint8_t)data_lo_; break;
+      case 6: break;
+      case 7: a = (uint8_t)data_lo_; break;
+      }
+    }
 
-      if (ST_HLP_A)    reg_in_ = hl + 1;
-      if (LD_A_AT_HLP) reg_in_ = hl + 1;
-      if (ST_HLM_A)    reg_in_ = hl - 1;
-      if (LD_A_AT_HLM) reg_in_ = hl - 1;
-      if (MV_SP_HL)    reg_in_ = hl;
-      if (push_d16_)   reg_in_ = sp - 2;
+    else if (MV_OPS) {
+      uint16_t reg = reg_fetch();
 
       switch (row_) {
-      case 0: b = (uint8_t)reg_in_; break;
-      case 1: c = (uint8_t)reg_in_; break;
-      case 2: d = (uint8_t)reg_in_; break;
-      case 3: e = (uint8_t)reg_in_; break;
-      case 4: h = (uint8_t)reg_in_; break;
-      case 5: l = (uint8_t)reg_in_; break;
+      case 0: b = (uint8_t)reg; break;
+      case 1: c = (uint8_t)reg; break;
+      case 2: d = (uint8_t)reg; break;
+      case 3: e = (uint8_t)reg; break;
+      case 4: h = (uint8_t)reg; break;
+      case 5: l = (uint8_t)reg; break;
       case 6: break;
-      case 7: a = (uint8_t)reg_in_; break;
+      case 7: a = (uint8_t)reg; break;
       }
     }
 

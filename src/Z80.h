@@ -122,7 +122,7 @@ private:
   // Interrupt stuff
 
   bool interrupt2;
-  bool ime, ime_;
+  bool ime;
   bool ime_delay;
 
   uint8_t imask_latch;
@@ -141,6 +141,9 @@ private:
 
   void decode();
   Z80State next_state() const;
+  uint16_t next_pc(int next_interrupt) const;
+  int next_interrupt() const;
+
   AluOut exec(uint8_t src) const;
   uint8_t reg_fetch8() const;
   uint16_t reg_fetch16() const;

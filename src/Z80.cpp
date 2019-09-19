@@ -137,7 +137,7 @@ Z80::Z80State Z80::next_state() const {
     if (any_write_) next = Z80_STATE_MEM_WRITE1;
     if (any_read_)  next = Z80_STATE_MEM_READ1;
     if (RET_CC || RST_NN || PUSH_RR) next = Z80_STATE_DELAY_A;
-    if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) next = Z80_STATE_DELAY_B;
+    if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) next = Z80_STATE_DELAY_C;
     if (PREFIX_CB) next = Z80_STATE_DECODE_CB;
     if (HALT) {
       next = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
@@ -153,16 +153,16 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_MEM_READ1:
-    if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) next = Z80_STATE_DELAY_B;
-    if (ADD_SP_R8) next = Z80_STATE_DELAY_C;
+    if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) next = Z80_STATE_DELAY_C;
+    if (ADD_SP_R8) next = Z80_STATE_DELAY_B;
     if (any_write_) next = Z80_STATE_MEM_WRITE1;
     if (LD_A_AT_A8 || fetch_d16_ || pop_d16_) next = Z80_STATE_MEM_READ2;
     break;
 
   case Z80_STATE_MEM_READ2:
-    if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) next = Z80_STATE_DELAY_B;
+    if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) next = Z80_STATE_DELAY_C;
     if (any_write_) next = Z80_STATE_MEM_WRITE1;
-    if ((CALL_CC_A16 && take_branch_) || CALL_A16) next = Z80_STATE_DELAY_C;
+    if ((CALL_CC_A16 && take_branch_) || CALL_A16) next = Z80_STATE_DELAY_B;
     if (LD_A_AT_A16) next = Z80_STATE_MEM_READ3;
     break;
 
@@ -180,7 +180,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_MEM_WRITE2:
-    next = interrupt2 ? Z80_STATE_DELAY_C : Z80_STATE_DECODE;
+    next = interrupt2 ? Z80_STATE_DELAY_B : Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_MEM_WRITE_CB:
@@ -193,16 +193,77 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_DELAY_B:
-    next = Z80_STATE_DECODE;
+    next = Z80_STATE_DELAY_C;
+    if ((CALL_CC_A16 && take_branch_) || CALL_A16) next = Z80_STATE_MEM_WRITE1;
     break;
 
   case Z80_STATE_DELAY_C:
-    next = Z80_STATE_DELAY_B;
-    if ((CALL_CC_A16 && take_branch_) || CALL_A16) next = Z80_STATE_MEM_WRITE1;
+    next = Z80_STATE_DECODE;
     break;
   }
 
   return next;
+}
+
+//-----------------------------------------------------------------------------
+
+int Z80::next_interrupt() const {
+  if (state_ != Z80_STATE_DECODE) return -1;
+
+  if (interrupt2) {
+    // Someone could've changed the interrupt mask or flags while we were
+    // handling the interrupt, so we have to compute the new PC at the very
+    // last second.
+
+    int actual_interrupt = -1;
+    uint8_t interrupts = imask_latch & intf_;
+    if (interrupts & INT_JOYPAD) actual_interrupt = 4; // joypad
+    if (interrupts & INT_SERIAL) actual_interrupt = 3; // serial
+    if (interrupts & INT_TIMER)  actual_interrupt = 2; // timer
+    if (interrupts & INT_STAT)   actual_interrupt = 1; // lcd stat
+    if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
+
+    return actual_interrupt;
+  }
+
+  return -1;
+}
+
+//-----------------------------------------------------------------------------
+// We're at the end of a tick() for a completed instruction.
+// Compute the new PC and put it on the bus so we can fetch the next instruction.
+// If we're jumping to an interrupt vector, ack the interrupt that triggered it.
+
+uint16_t Z80::next_pc(int next_interrupt) const {
+  if (state_ != Z80_STATE_DECODE) return pc;
+
+  if (interrupt2) {
+    if (next_interrupt >= 0) {
+      return uint16_t(0x0040 + (next_interrupt * 8));
+    }
+    else {
+      return 0x0000;
+    }
+  }
+  else if (take_branch_) {
+    bool jump16 = JP_CC_A16 || JP_A16 || CALL_CC_A16 || CALL_A16 || RET || RETI || RET_CC;
+
+    if (JP_HL)                  return hl;
+    else if (RST_NN)            return op_ - 0xC7;
+    else if (JR_CC_R8 || JR_R8) return pc + 2 + (int8_t)data_lo_;
+    else if (jump16)            return data16_;
+  }
+  else if (fetch_d16_) {
+    return pc + 3;
+  }
+  else if (fetch_d8_ || PREFIX_CB) {
+    return pc + 2;
+  }
+  else {
+    return pc + 1;
+  }
+
+  return pc;
 }
 
 //-----------------------------------------------------------------------------
@@ -227,10 +288,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   if (state == Z80_STATE_DECODE) {
     interrupt2 = (imask_ & intf_) && ime;
-    if (interrupt2) {
-      ime_ = false;
-      op_ = 0x00;
-    }
+    if (interrupt2) op_ = 0x00;
   }
 
   decode();
@@ -244,52 +302,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // compute new pc
 
-  pc_ = pc;
-
-  if (state_ == Z80_STATE_DECODE) {
-    // We're at the end of a tick() for a completed instruction.
-    // Compute the new PC and put it on the bus so we can fetch the next instruction.
-    // If we're jumping to an interrupt vector, ack the interrupt that triggered it.
-
-    if (interrupt2) {
-      // Someone could've changed the interrupt mask or flags while we were
-      // handling the interrupt, so we have to compute the new PC at the very
-      // last second.
-
-      int actual_interrupt = -1;
-      uint8_t interrupts = imask_latch & intf_;
-      if (interrupts & INT_JOYPAD) actual_interrupt = 4; // joypad
-      if (interrupts & INT_SERIAL) actual_interrupt = 3; // serial
-      if (interrupts & INT_TIMER)  actual_interrupt = 2; // timer
-      if (interrupts & INT_STAT)   actual_interrupt = 1; // lcd stat
-      if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
-
-      if (actual_interrupt >= 0) {
-        pc_ = uint16_t(0x0040 + (actual_interrupt * 8));
-        int_ack_ = 1 << actual_interrupt;
-      }
-      else {
-        pc_ = 0x0000;
-      }
-    }
-    else if (take_branch_) {
-      bool jump16 = JP_CC_A16 || JP_A16 || CALL_CC_A16 || CALL_A16 || RET || RETI || RET_CC;
-
-      if (JP_HL)                  pc_ = hl;
-      else if (RST_NN)            pc_ = op_ - 0xC7;
-      else if (JR_CC_R8 || JR_R8) pc_ = pc + 2 + (int8_t)data_lo_;
-      else if (jump16)            pc_ = data16_;
-    }
-    else if (fetch_d16_) {
-      pc_ = pc + 3;
-    }
-    else if (fetch_d8_ || PREFIX_CB) {
-      pc_ = pc + 2;
-    }
-    else {
-      pc_ = pc + 1;
-    }
-  }
+  int next_int = next_interrupt();
+  pc_ = next_pc(next_int);
+  if (next_int >= 0) int_ack_ = 1 << next_int;
 
   //----------------------------------------
 

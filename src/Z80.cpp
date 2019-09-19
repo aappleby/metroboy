@@ -171,7 +171,10 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (RET_CC || RST_NN || PUSH_RR) state_ = Z80_STATE_DELAY_A;
     if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) state_ = Z80_STATE_DELAY_B;
     if (PREFIX_CB) state_ = Z80_STATE_DECODE_CB;
-    if (HALT) state_ = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
+    if (HALT) {
+      state_ = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
+      if (state_ == Z80_STATE_HALT) unhalt = 0;
+    }
     break;
 
   case Z80_STATE_DECODE_CB:
@@ -291,9 +294,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // this alu chunk is moving down to tock()
 
-  AluOut out;
-
-  out = exec(reg_fetch8());
+  AluOut out = exec(reg_fetch8());
   alu_out_ = out.x;
   f_ = out.f;
 
@@ -304,8 +305,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   mem_out_ = 0;
   mem_read_ = false;
   mem_write_ = false;
-
-  if (state_ == Z80_STATE_HALT) unhalt = 0;
 
   switch(state_) {
   case Z80_STATE_DECODE:

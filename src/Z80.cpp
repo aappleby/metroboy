@@ -483,7 +483,7 @@ CpuOut Z80::tock_t2() {
       reg_put(row_, data_lo_);
     }
     else if (MV_OPS) {
-      reg_put(row_, (uint8_t)reg_fetch());
+      reg_put(row_, reg_fetch8());
     }
     else if (ALU_A_D8 || ALU_OPS || ROTATE_OPS) {
       reg_put(7, (uint8_t)alu_out_);
@@ -675,40 +675,6 @@ void Z80::decode() {
 }
 
 //-----------------------------------------------------------------------------
-
-uint16_t Z80::reg_fetch() const {
-  
-  if (ADD_HL_RR || INC_RR || DEC_RR) switch(row_ / 2) {
-    case 0: return bc; break;
-    case 1: return de; break;
-    case 2: return hl; break;
-    case 3: return sp; break;
-  }
-  
-  if (PUSH_RR || POP_RR) switch(row_ / 2) {
-    case 0: return bc; break;
-    case 1: return de; break;
-    case 2: return hl; break;
-    case 3: return af; break;
-  }
-
-  int mux = quad_ == 0 ? row_ : col_;
-  if (PREFIX_CB) mux = cb_col_;
-  if (ROTATE_OPS) mux = col_;
-
-  switch(mux) {
-  case 0: return b;
-  case 1: return c;
-  case 2: return d;
-  case 3: return e;
-  case 4: return h;
-  case 5: return l;
-  case 6: return data_lo_;
-  case 7: return a;
-  }
-
-  return 0;
-}
 
 uint8_t Z80::reg_fetch8() const {
 

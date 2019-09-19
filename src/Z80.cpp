@@ -1040,10 +1040,10 @@ AluOut Z80::exec(uint8_t src) const {
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    bool halfcarry = (sp & 0x000F) + (bus_data_ & 0x000F) > 0x000F;
-    bool carry =     (sp & 0x00FF) + (bus_data_ & 0x00FF) > 0x00FF;
+    bool halfcarry = (sp & 0x000F) + (data_lo_ & 0x000F) > 0x000F;
+    bool carry =     (sp & 0x00FF) + (data_lo_ & 0x00FF) > 0x00FF;
 
-    out.x = sp + (int8_t)bus_data_;
+    out.x = sp + (int8_t)data_lo_;
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ROTATE_OPS) {

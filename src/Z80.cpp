@@ -1040,10 +1040,11 @@ AluOut Z80::exec(uint8_t src) const {
     out = alu(2, src, 1, 0);
   }
   else if (ADD_HL_RR) {
-    bool halfcarry = (reg_in_ & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
-    bool carry =     (reg_in_ & 0xFFFF) + (hl & 0xFFFF) > 0xFFFF;
+    uint16_t blah = reg_fetch();
+    bool halfcarry = (blah & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
+    bool carry =     (blah & 0xFFFF) + (hl & 0xFFFF) > 0xFFFF;
 
-    out.x = reg_in_ + hl;
+    out.x = blah + hl;
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {

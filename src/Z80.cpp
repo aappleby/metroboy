@@ -293,7 +293,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   AluOut out;
 
-  out = exec((uint8_t)reg_fetch());
+  out = exec(reg_fetch8());
   alu_out_ = out.x;
   f_ = out.f;
 
@@ -710,7 +710,7 @@ uint16_t Z80::reg_fetch() const {
   return 0;
 }
 
-uint16_t Z80::reg_fetch8() const {
+uint8_t Z80::reg_fetch8() const {
 
   int mux = quad_ == 0 ? row_ : col_;
   if (PREFIX_CB) mux = cb_col_;

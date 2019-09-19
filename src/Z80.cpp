@@ -371,7 +371,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       else if (DEC_AT_HL)    mem_out_ = data_lo_ - 1;
       else if (ST_HL_D8)     mem_out_ = (uint8_t)data_lo_;
       else if (MV_OPS_ST_HL) {
-        mem_out_ = (uint8_t)reg_fetch();
+        mem_out_ = reg_fetch8();
       }
     }
     else if (push_d16_) {
@@ -409,7 +409,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if (interrupt2)                   mem_out_ = (uint8_t)(pc);
       else if (CALL_CC_A16 || CALL_A16) mem_out_ = (uint8_t)(pc + 3);
       else if (RST_NN)                  mem_out_ = (uint8_t)(pc + 1);
-      else                              mem_out_ = (uint8_t)reg_fetch();
+      else                              mem_out_ = (uint8_t)reg_fetch16();
     }
     else if (ST_A16_SP) {
       mem_addr_ = data16_ + 1;
@@ -418,7 +418,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     mem_write_ = true;
     break;
   case Z80_STATE_MEM_WRITE_CB:
-    out = exec((uint8_t)reg_fetch());
+    out = exec((uint8_t)reg_fetch8());
     alu_out_ = out.x;
     f_ = out.f;
     mem_addr_ = hl;

@@ -96,8 +96,6 @@ private:
 
   // Signals
 
-  uint16_t reg_in_;
-
   uint8_t op_;
   uint8_t quad_;
   uint8_t row_;

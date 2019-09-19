@@ -79,7 +79,6 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
   int_ack_ = 0;
 
   state = state_ = Z80_STATE_DECODE;
-  reg_in_ = 0;
 
   if (new_pc == 0x100) {
     af = 0x01B0;
@@ -520,11 +519,7 @@ CpuOut Z80::tock_t2() {
     }
 
     else if (LD_R_D8 || MV_OPS) {
-      if (any_read_) {
-        reg_in_ = data_lo_;
-      } else {
-        reg_in_ = reg_fetch();
-      }
+      uint16_t reg_in_ = any_read_ ? data_lo_ : reg_fetch();
 
       if (ST_HLP_A)    reg_in_ = hl + 1;
       if (LD_A_AT_HLP) reg_in_ = hl + 1;

@@ -414,7 +414,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if (interrupt2)                    mem_out_ = (uint8_t)((pc) >> 8);
       else  if (CALL_CC_A16 || CALL_A16) mem_out_ = (uint8_t)((pc + 3) >> 8);
       else if (RST_NN)                   mem_out_ = (uint8_t)((pc + 1) >> 8);
-      else                               mem_out_ = (uint8_t)(reg_in_ >> 8);
+      else {
+        mem_out_ = (uint8_t)(reg_fetch() >> 8);
+      }
     }
     else if (ST_A16_A) {
       mem_addr_ = data16_;

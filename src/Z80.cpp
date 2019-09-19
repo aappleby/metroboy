@@ -142,26 +142,19 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   data_lo_ = data_lo;
   data_hi_ = data_hi;
 
-  if      (bus_tag == TAG_OPCODE)    op_ = bus_data;
-  if      (bus_tag == TAG_OPCODE_CB) op_cb_ = bus_data;
+  if      (bus_tag == TAG_OPCODE)    op_      = bus_data;
+  if      (bus_tag == TAG_OPCODE_CB) op_cb_   = bus_data;
   if      (bus_tag == TAG_DATA0)     data_lo_ = bus_data;
   else if (bus_tag == TAG_DATA1)     data_hi_ = bus_data;
   else if (bus_tag == TAG_ARG0)      data_lo_ = bus_data;
   else if (bus_tag == TAG_ARG1)      data_hi_ = bus_data;
 
-  //----------------------------------------
-  // handle input data
-
-  switch(state) {
-  case Z80_STATE_DECODE:
+  if (state == Z80_STATE_DECODE) {
     interrupt2 = (imask_ & intf_) && ime;
     if (interrupt2) {
       ime_ = false;
       op_ = 0x00;
     }
-    break;
-  case Z80_STATE_DECODE_CB:
-    break;
   }
 
   decode();
@@ -248,7 +241,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
-  // set up new state
+  // compute new pc
 
   pc_ = pc;
 
@@ -412,7 +405,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if      (INC_AT_HL)    mem_out_ = data_lo_ + 1;
       else if (DEC_AT_HL)    mem_out_ = data_lo_ - 1;
       else if (ST_HL_D8)     mem_out_ = (uint8_t)data_lo_;
-      else if (MV_OPS_ST_HL) mem_out_ = (uint8_t)reg_in_;
+      else if (MV_OPS_ST_HL) {
+        mem_out_ = (uint8_t)reg_fetch();
+      }
     }
     else if (push_d16_) {
       mem_addr_ = sp - 1;
@@ -456,6 +451,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     mem_write_ = true;
     break;
   case Z80_STATE_MEM_WRITE_CB:
+    out = exec((uint8_t)reg_fetch());
+    alu_out_ = out.x;
+    f_ = out.f;
     mem_addr_ = hl;
     mem_write_ = true;
     mem_out_ = (uint8_t)alu_out_; // this is why we can't move the alu execution down...

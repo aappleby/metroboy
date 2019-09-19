@@ -143,12 +143,12 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   data_hi_ = data_hi;
   bus_data_ = bus_data;
 
-  if      (bus_tag == TAG_OPCODE) op_ = bus_data;
-  if      (bus_tag == TAG_OPCODE_CB) op_cb_ = bus_data;
-  if      (bus_tag == TAG_DATA0) data_lo_ = bus_data;
-  else if (bus_tag == TAG_DATA1) data_hi_ = bus_data;
-  else if (bus_tag == TAG_ARG0)  data_lo_ = bus_data;
-  else if (bus_tag == TAG_ARG1)  data_hi_ = bus_data;
+  if      (bus_tag == TAG_OPCODE) op_ = bus_data_;
+  if      (bus_tag == TAG_OPCODE_CB) op_cb_ = bus_data_;
+  if      (bus_tag == TAG_DATA0) data_lo_ = bus_data_;
+  else if (bus_tag == TAG_DATA1) data_hi_ = bus_data_;
+  else if (bus_tag == TAG_ARG0)  data_lo_ = bus_data_;
+  else if (bus_tag == TAG_ARG1)  data_hi_ = bus_data_;
 
   //----------------------------------------
   // handle input data
@@ -176,7 +176,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_MEM_READ2:
   case Z80_STATE_MEM_READ3:
   case Z80_STATE_MEM_READ_CB:
-    reg_in_ = bus_data;
+    reg_in_ = bus_data_;
     break;
 
   case Z80_STATE_MEM_WRITE1:

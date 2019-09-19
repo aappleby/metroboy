@@ -487,8 +487,10 @@ CpuOut Z80::tock_t2() {
     reg_in_ = reg_fetch();
     break;
   case Z80_STATE_DECODE_CB:
+    reg_in_ = 0;
     break;
   case Z80_STATE_HALT:
+    reg_in_ = 0;
   case Z80_STATE_MEM_READ1:
   case Z80_STATE_MEM_READ2:
   case Z80_STATE_MEM_READ3:
@@ -501,6 +503,7 @@ CpuOut Z80::tock_t2() {
   case Z80_STATE_DELAY_A:
   case Z80_STATE_DELAY_B:
   case Z80_STATE_DELAY_C:
+    reg_in_ = 0;
     break;
   }
 

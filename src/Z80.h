@@ -16,7 +16,6 @@ struct Z80 {
 
   int model = 0;
   uint8_t int_ack_;
-  uint8_t bus_data_;
   uint8_t imask_;
   uint8_t intf_;
   bool unhalt;

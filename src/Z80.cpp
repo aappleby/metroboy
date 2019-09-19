@@ -494,9 +494,9 @@ CpuOut Z80::tock_t2() {
   case Z80_STATE_MEM_READ1:
   case Z80_STATE_MEM_READ2:
   case Z80_STATE_MEM_READ3:
-  case Z80_STATE_MEM_READ_CB:
     reg_in_ = data_lo_;
     break;
+  case Z80_STATE_MEM_READ_CB:
   case Z80_STATE_MEM_WRITE1:
   case Z80_STATE_MEM_WRITE2:
   case Z80_STATE_MEM_WRITE_CB:
@@ -516,13 +516,7 @@ CpuOut Z80::tock_t2() {
     uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
     f = (f & ~mask) | (f_ & mask);
 
-    if      (POP_AF)      f = data_lo_ & 0xF0;
-    else if (ST_HLP_A)    reg_in_ = hl + 1;
-    else if (LD_A_AT_HLP) reg_in_ = hl + 1;
-    else if (ST_HLM_A)    reg_in_ = hl - 1;
-    else if (LD_A_AT_HLM) reg_in_ = hl - 1;
-    else if (MV_SP_HL)    reg_in_ = hl;
-    else if (push_d16_)   reg_in_ = sp - 2;
+    if (POP_AF)      f = data_lo_ & 0xF0;
 
     opcount = opcount + 1;
 
@@ -551,6 +545,19 @@ CpuOut Z80::tock_t2() {
     }
 
     else if (LD_R_D8 || MV_OPS) {
+      if (any_read_) {
+        reg_in_ = data_lo_;
+      } else {
+        reg_in_ = reg_fetch();
+      }
+
+      if (ST_HLP_A)    reg_in_ = hl + 1;
+      if (LD_A_AT_HLP) reg_in_ = hl + 1;
+      if (ST_HLM_A)    reg_in_ = hl - 1;
+      if (LD_A_AT_HLM) reg_in_ = hl - 1;
+      if (MV_SP_HL)    reg_in_ = hl;
+      if (push_d16_)   reg_in_ = sp - 2;
+
       switch (row_) {
       case 0: b = (uint8_t)reg_in_; break;
       case 1: c = (uint8_t)reg_in_; break;

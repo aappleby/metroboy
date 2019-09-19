@@ -144,6 +144,7 @@ private:
   uint16_t next_pc(int next_interrupt) const;
   int next_interrupt() const;
 
+  CpuBus next_bus() const;
   AluOut exec(uint8_t src) const;
   uint8_t reg_fetch8() const;
   uint16_t reg_fetch16() const;

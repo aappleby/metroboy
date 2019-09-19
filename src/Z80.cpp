@@ -169,18 +169,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-  switch(state) {
-  case Z80_STATE_DECODE:
-    reg_in_ = reg_fetch();
-    break;
-  case Z80_STATE_MEM_READ1:
-  case Z80_STATE_MEM_READ2:
-  case Z80_STATE_MEM_READ3:
-  case Z80_STATE_MEM_READ_CB:
-    reg_in_ = bus_data_;
-    break;
-  }
-
   //----------------------------------------
   // choose new state
 
@@ -307,6 +295,18 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else {
       pc_ = pc + 1;
     }
+  }
+
+  switch(state) {
+  case Z80_STATE_DECODE:
+    reg_in_ = reg_fetch();
+    break;
+  case Z80_STATE_MEM_READ1:
+  case Z80_STATE_MEM_READ2:
+  case Z80_STATE_MEM_READ3:
+  case Z80_STATE_MEM_READ_CB:
+    reg_in_ = bus_data_;
+    break;
   }
 
   //----------------------------------------

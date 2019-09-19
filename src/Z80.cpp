@@ -465,29 +465,39 @@ CpuOut Z80::tock_t2() {
 
     opcount = opcount + 1;
 
-    if (PREFIX_CB) reg_put8(cb_col_, (uint8_t)alu_out_);
-    else if (INC_R || DEC_R) reg_put8(row_, (uint8_t)alu_out_);
-    else if (LD_R_D8) reg_put8(row_, data_lo_);
-    else if (MV_OPS) reg_put8(row_, reg_fetch8());
-    else if (ALU_A_D8 || ALU_OPS || ROTATE_OPS) reg_put8(7, (uint8_t)alu_out_);
-    else if (LD_A_AT_RR || LD_A_AT_A8 || LD_A_AT_C || LD_A_AT_A16) reg_put8(7, data_lo_);
-    else if (LD_RR_D16) reg_put16(row_ >> 1, data16_);
-    else if (INC_RR) reg_put16(row_ >> 1, reg_fetch16() + 1);
-    else if (DEC_RR) reg_put16(row_ >> 1, reg_fetch16() - 1);
-    else if (POP_RR) reg_put16(row_ >> 1, data16_);
+    if      (MV_OPS)      reg_put8(row_,    reg_fetch8());
+    else if (PREFIX_CB)   reg_put8(cb_col_, (uint8_t)alu_out_);
+    else if (INC_R)       reg_put8(row_,    (uint8_t)alu_out_);
+    else if (DEC_R)       reg_put8(row_,    (uint8_t)alu_out_);
+    else if (ALU_A_D8)    reg_put8(7,       (uint8_t)alu_out_);
+    else if (ALU_OPS)     reg_put8(7,       (uint8_t)alu_out_);
+    else if (ROTATE_OPS)  reg_put8(7,       (uint8_t)alu_out_);
+    else if (LD_R_D8)     reg_put8(row_,    data_lo_);
+    else if (LD_A_AT_RR)  reg_put8(7,       data_lo_);
+    else if (LD_A_AT_A8)  reg_put8(7,       data_lo_);
+    else if (LD_A_AT_C)   reg_put8(7,       data_lo_);
+    else if (LD_A_AT_A16) reg_put8(7,       data_lo_);
 
-    else if (ADD_HL_RR)   hl = alu_out_;
+
+    if      (LD_RR_D16)   reg_put16(row_ >> 1, data16_);
+    else if (INC_RR)      reg_put16(row_ >> 1, reg_fetch16() + 1);
+    else if (DEC_RR)      reg_put16(row_ >> 1, reg_fetch16() - 1);
+    else if (POP_RR)      reg_put16(row_ >> 1, data16_);
+
+    if      (ADD_HL_RR)   hl = alu_out_;
     else if (LD_HL_SP_R8) hl = alu_out_;
     else if (ST_HLP_A)    hl++;
     else if (ST_HLM_A)    hl--;
-    else if (ADD_SP_R8)   sp = alu_out_;
+    else if (LD_A_AT_HLP) hl++;
+    else if (LD_A_AT_HLM) hl--;
+    
+    if      (ADD_SP_R8)   sp = alu_out_;
     else if (MV_SP_HL)    sp = hl;
     else if (push_d16_)   sp = sp - 2;
-    else if ((RET_CC && take_branch_) || RET || RETI) sp = sp + 2;
-
-    if (LD_A_AT_HLP) hl++;
-    if (LD_A_AT_HLM) hl--;
-    if (POP_RR) sp = sp + 2;
+    else if (RET)         sp = sp + 2;
+    else if (RETI)        sp = sp + 2;
+    else if (POP_RR)      sp = sp + 2;
+    else if (RET_CC && take_branch_) sp = sp + 2;
   }
 
   //----------

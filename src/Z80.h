@@ -143,7 +143,8 @@ private:
   AluOut exec(uint8_t src) const;
   uint8_t reg_fetch8() const;
   uint16_t reg_fetch16() const;
-  void reg_put(int mux, uint8_t reg);
+  void reg_put8(int mux, uint8_t reg);
+  void reg_put16(int mux, uint16_t reg);
 };
 
 //-----------------------------------------------------------------------------

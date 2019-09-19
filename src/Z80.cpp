@@ -417,9 +417,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     mem_write_ = true;
     break;
   case Z80_STATE_MEM_WRITE_CB:
-    out = exec((uint8_t)reg_fetch8());
-    alu_out_ = out.x;
-    f_ = out.f;
     mem_addr_ = hl;
     mem_write_ = true;
     mem_out_ = (uint8_t)alu_out_; // this is why we can't move the alu execution down...
@@ -473,45 +470,51 @@ CpuOut Z80::tock_t2() {
     opcount = opcount + 1;
 
     if (PREFIX_CB) {
-      reg_put(cb_col_, (uint8_t)alu_out_);
+      reg_put8(cb_col_, (uint8_t)alu_out_);
     }
     else if (INC_R || DEC_R) {
-      reg_put(row_, (uint8_t)alu_out_);
+      reg_put8(row_, (uint8_t)alu_out_);
     }
     else if (LD_R_D8) {
-      reg_put(row_, data_lo_);
+      reg_put8(row_, data_lo_);
     }
     else if (MV_OPS) {
-      reg_put(row_, reg_fetch8());
+      reg_put8(row_, reg_fetch8());
     }
     else if (ALU_A_D8 || ALU_OPS || ROTATE_OPS) {
-      reg_put(7, (uint8_t)alu_out_);
+      reg_put8(7, (uint8_t)alu_out_);
     }
     else if (LD_A_AT_RR || LD_A_AT_A8 || LD_A_AT_C || LD_A_AT_A16) {
-      reg_put(7, data_lo_);
+      reg_put8(7, data_lo_);
       if (LD_A_AT_HLP) hl++;
       if (LD_A_AT_HLM) hl--;
     }
 
-    else if (LD_RR_D16) switch (row_ >> 1) {
-    case 0: bc = data16_; break;
-    case 1: de = data16_; break;
-    case 2: hl = data16_; break;
-    case 3: sp = data16_; break;
+    else if (LD_RR_D16) {
+      switch (row_ >> 1) {
+      case 0: bc = data16_; break;
+      case 1: de = data16_; break;
+      case 2: hl = data16_; break;
+      case 3: sp = data16_; break;
+      }
     }
 
-    else if (INC_RR) switch (row_ >> 1) {
-    case 0: bc++; break;
-    case 1: de++; break;
-    case 2: hl++; break;
-    case 3: sp++; break;
+    else if (INC_RR) {
+      switch (row_ >> 1) {
+      case 0: bc++; break;
+      case 1: de++; break;
+      case 2: hl++; break;
+      case 3: sp++; break;
+      }
     }
 
-    else if (DEC_RR) switch (row_ >> 1) {
-    case 0: bc--; break;
-    case 1: de--; break;
-    case 2: hl--; break;
-    case 3: sp--; break;
+    else if (DEC_RR) {
+      switch (row_ >> 1) {
+      case 0: bc--; break;
+      case 1: de--; break;
+      case 2: hl--; break;
+      case 3: sp--; break;
+      }
     }
 
     else if (POP_RR) {
@@ -601,14 +604,8 @@ void Z80::decode() {
   case 3: cond_pass = (f & F_CARRY); break;
   }
 
-  //----------
-  // take_branch
-
   take_branch_ |= CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN || JR_R8;
   take_branch_ |= (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_pass;
-
-  //----------
-  // get/put hl
 
   get_hl_ |= INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
   get_hl_ |= (col_ == 6);
@@ -616,42 +613,24 @@ void Z80::decode() {
   put_hl_ = INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
   put_hl_ |= (quad_ == 1) && (row_ == 6);
 
-  //----------
-  // push
-
   push_d16_ |= (quad_ == 3) && ((col_ == 5) || (col_ == 7));
   push_d16_ |= (take_branch_ && CALL_CC_A16);
-
-  //----------
-  // pop
 
   pop_d16_ |= RET || RETI;
   pop_d16_ |= (quad_ == 3) && (col_ == 1 && !odd_row_);
   pop_d16_ |= (take_branch_ && RET_CC);
 
-  //----------
-  // fetch d8/d16
-
   fetch_d8_ |= (quad_ == 0) && (col_ == 6);
   fetch_d8_ |= (quad_ == 0) && (col_ == 0 && row_ >= 3);
   fetch_d8_ |= LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
-
-  //----------
-  // fetch d16
 
   fetch_d16_ |= (quad_ == 0) && (col_ == 1 && !odd_row_);
   fetch_d16_ |= (quad_ == 3) && (col_ == 2 && row_ <= 3);
   fetch_d16_ |= (quad_ == 3) && (col_ == 4);
   fetch_d16_ |= ST_A16_SP || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
 
-  //----------
-  // any_read_
-
   any_read_ |= fetch_d8_ || fetch_d16_ || get_hl_ || pop_d16_;
   any_read_ |= LD_A_AT_BC || LD_A_AT_DE || LD_A_AT_C;
-
-  //----------
-  // any_write_
 
   any_write_ |= put_hl_;
   any_write_ |= push_d16_;
@@ -707,7 +686,7 @@ uint16_t Z80::reg_fetch16() const {
   return 0;
 }
 
-void Z80::reg_put(int mux, uint8_t reg) {
+void Z80::reg_put8(int mux, uint8_t reg) {
   switch (mux) {
   case 0: b = (uint8_t)reg; break;
   case 1: c = (uint8_t)reg; break;
@@ -717,6 +696,22 @@ void Z80::reg_put(int mux, uint8_t reg) {
   case 5: l = (uint8_t)reg; break;
   case 6: break;
   case 7: a = (uint8_t)reg; break;
+  }
+}
+
+void Z80::reg_put16(int mux, uint16_t reg) {
+  switch(mux) {
+  case 0: bc = reg; break;
+  case 1: de; break;
+  case 2: hl; break;
+  case 3: {
+    if (POP_RR) {
+      af = reg & 0xFFF0;
+    } else {
+      sp = reg;
+    }
+    break;
+  }
   }
 }
 

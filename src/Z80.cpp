@@ -160,33 +160,24 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       ime_ = false;
       op_ = 0x00;
     }
-
     decode();
-    reg_in_ = reg_fetch();
     break;
   case Z80_STATE_DECODE_CB:
     cb_quad_ = (op_cb_ >> 6) & 3;
     cb_row_ = (op_cb_ >> 3) & 7;
     cb_col_ = (op_cb_ >> 0) & 7;
     break;
-  case Z80_STATE_HALT:
-    break;
+  }
 
+  switch(state) {
+  case Z80_STATE_DECODE:
+    reg_in_ = reg_fetch();
+    break;
   case Z80_STATE_MEM_READ1:
   case Z80_STATE_MEM_READ2:
   case Z80_STATE_MEM_READ3:
   case Z80_STATE_MEM_READ_CB:
     reg_in_ = bus_data_;
-    break;
-
-  case Z80_STATE_MEM_WRITE1:
-  case Z80_STATE_MEM_WRITE2:
-  case Z80_STATE_MEM_WRITE_CB:
-    break;
-
-  case Z80_STATE_DELAY_A:
-  case Z80_STATE_DELAY_B:
-  case Z80_STATE_DELAY_C:
     break;
   }
 

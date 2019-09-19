@@ -293,7 +293,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   AluOut out;
 
-
   out = exec((uint8_t)reg_fetch());
   alu_out_ = out.x;
   f_ = out.f;
@@ -475,63 +474,22 @@ CpuOut Z80::tock_t2() {
     opcount = opcount + 1;
 
     if (PREFIX_CB) {
-      switch (cb_col_) {
-      case 0: b = (uint8_t)alu_out_; break;
-      case 1: c = (uint8_t)alu_out_; break;
-      case 2: d = (uint8_t)alu_out_; break;
-      case 3: e = (uint8_t)alu_out_; break;
-      case 4: h = (uint8_t)alu_out_; break;
-      case 5: l = (uint8_t)alu_out_; break;
-      case 6: break;
-      case 7: a = (uint8_t)alu_out_; break;
-      }
+      reg_put(cb_col_, (uint8_t)alu_out_);
     }
-
-    else if (INC_R || DEC_R) switch (row_) {
-    case 0: b = (uint8_t)alu_out_; break;
-    case 1: c = (uint8_t)alu_out_; break;
-    case 2: d = (uint8_t)alu_out_; break;
-    case 3: e = (uint8_t)alu_out_; break;
-    case 4: h = (uint8_t)alu_out_; break;
-    case 5: l = (uint8_t)alu_out_; break;
-    case 6: break;
-    case 7: a = (uint8_t)alu_out_; break;
+    else if (INC_R || DEC_R) {
+      reg_put(row_, (uint8_t)alu_out_);
     }
-
     else if (LD_R_D8) {
-      switch (row_) {
-      case 0: b = (uint8_t)data_lo_; break;
-      case 1: c = (uint8_t)data_lo_; break;
-      case 2: d = (uint8_t)data_lo_; break;
-      case 3: e = (uint8_t)data_lo_; break;
-      case 4: h = (uint8_t)data_lo_; break;
-      case 5: l = (uint8_t)data_lo_; break;
-      case 6: break;
-      case 7: a = (uint8_t)data_lo_; break;
-      }
+      reg_put(row_, data_lo_);
     }
-
     else if (MV_OPS) {
-      uint16_t reg = reg_fetch();
-
-      switch (row_) {
-      case 0: b = (uint8_t)reg; break;
-      case 1: c = (uint8_t)reg; break;
-      case 2: d = (uint8_t)reg; break;
-      case 3: e = (uint8_t)reg; break;
-      case 4: h = (uint8_t)reg; break;
-      case 5: l = (uint8_t)reg; break;
-      case 6: break;
-      case 7: a = (uint8_t)reg; break;
-      }
+      reg_put(row_, (uint8_t)reg_fetch());
     }
-
     else if (ALU_A_D8 || ALU_OPS || ROTATE_OPS) {
-      a = (uint8_t)alu_out_;
+      reg_put(7, (uint8_t)alu_out_);
     }
-
     else if (LD_A_AT_RR || LD_A_AT_A8 || LD_A_AT_C || LD_A_AT_A16) {
-      a = data_lo_;
+      reg_put(7, data_lo_);
       if (LD_A_AT_HLP) hl++;
       if (LD_A_AT_HLM) hl--;
     }
@@ -719,24 +677,6 @@ void Z80::decode() {
 //-----------------------------------------------------------------------------
 
 uint16_t Z80::reg_fetch() const {
-  if (PREFIX_CB) {
-    uint8_t x = 0;
-    switch(cb_col_) {
-    case 0: x = b; break;
-    case 1: x = c; break;
-    case 2: x = d; break;
-    case 3: x = e; break;
-    case 4: x = h; break;
-    case 5: x = l; break;
-    case 6: x = data_lo_; break;
-    case 7: x = a; break;
-    }
-    return x;
-  }
-  
-  if (ROTATE_OPS) {
-    return a;
-  }
   
   if (ADD_HL_RR || INC_RR || DEC_RR) switch(row_ / 2) {
     case 0: return bc; break;
@@ -751,20 +691,36 @@ uint16_t Z80::reg_fetch() const {
     case 2: return hl; break;
     case 3: return af; break;
   }
-  
-  
-  switch (quad_ == 0 ? row_ : col_) {
-    case 0: return b; break;
-    case 1: return c; break;
-    case 2: return d; break;
-    case 3: return e; break;
-    case 4: return h; break;
-    case 5: return l; break;
-    case 6: return data_lo_; break;
-    case 7: return a; break;
+
+  int mux = quad_ == 0 ? row_ : col_;
+  if (PREFIX_CB) mux = cb_col_;
+  if (ROTATE_OPS) mux = 7;
+
+  switch(mux) {
+  case 0: return b;
+  case 1: return c;
+  case 2: return d;
+  case 3: return e;
+  case 4: return h;
+  case 5: return l;
+  case 6: return data_lo_;
+  case 7: return a;
   }
 
   return 0;
+}
+
+void Z80::reg_put(int mux, uint8_t reg) {
+  switch (mux) {
+  case 0: b = (uint8_t)reg; break;
+  case 1: c = (uint8_t)reg; break;
+  case 2: d = (uint8_t)reg; break;
+  case 3: e = (uint8_t)reg; break;
+  case 4: h = (uint8_t)reg; break;
+  case 5: l = (uint8_t)reg; break;
+  case 6: break;
+  case 7: a = (uint8_t)reg; break;
+  }
 }
 
 //-----------------------------------------------------------------------------

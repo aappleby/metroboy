@@ -482,31 +482,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 CpuOut Z80::tock_t2() {
   ime = ime_delay;
 
-  switch(state) {
-  case Z80_STATE_DECODE:
-    reg_in_ = reg_fetch();
-    break;
-  case Z80_STATE_DECODE_CB:
-    reg_in_ = 0;
-    break;
-  case Z80_STATE_HALT:
-    reg_in_ = 0;
-  case Z80_STATE_MEM_READ1:
-  case Z80_STATE_MEM_READ2:
-  case Z80_STATE_MEM_READ3:
-    reg_in_ = data_lo_;
-    break;
-  case Z80_STATE_MEM_READ_CB:
-  case Z80_STATE_MEM_WRITE1:
-  case Z80_STATE_MEM_WRITE2:
-  case Z80_STATE_MEM_WRITE_CB:
-  case Z80_STATE_DELAY_A:
-  case Z80_STATE_DELAY_B:
-  case Z80_STATE_DELAY_C:
-    reg_in_ = 0;
-    break;
-  }
-
   if (state_ == Z80_STATE_DECODE) {
 
     // Write all our registers from the previous instruction before the new opcode shows up.

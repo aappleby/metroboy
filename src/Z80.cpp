@@ -284,39 +284,41 @@ CpuOut Z80::tock_t2() {
     else if (DEC_RR)      data16_ = reg_fetch16() - 1;
     else if (POP_RR)      data16_ = data16_;
 
+    if      (LD_RR_D16)   reg_put16(row_ >> 1, data16_);
+    else if (INC_RR)      reg_put16(row_ >> 1, data16_);
+    else if (DEC_RR)      reg_put16(row_ >> 1, data16_);
+    else if (POP_RR)      reg_put16(row_ >> 1, data16_);
+  }
+
+  if (state_ == Z80_STATE_DECODE) {
     if      (ADD_HL_RR)   data16_ = alu_out_;
     else if (LD_HL_SP_R8) data16_ = alu_out_;
     else if (ST_HLP_A)    data16_ = hl + 1;
     else if (ST_HLM_A)    data16_ = hl - 1;
-    //else if (LD_A_AT_HLP) data16_ = hl + 1;
-    //else if (LD_A_AT_HLM) data16_ = hl - 1;
+    else if (LD_A_AT_HLP) data16_ = hl + 1;
+    else if (LD_A_AT_HLM) data16_ = hl - 1;
 
     if      (ADD_SP_R8)   data16_ = alu_out_;
     else if (MV_SP_HL)    data16_ = hl;
     else if (push_d16_)   data16_ = sp - 2;
     else if (RET)         data16_ = sp + 2;
     else if (RETI)        data16_ = sp + 2;
-    //else if (POP_RR)      data16_ = sp + 2;
+    else if (POP_RR)      data16_ = sp + 2;
     else if (RET_CC && take_branch_) data16_ = sp + 2;
-
-    if      (LD_RR_D16)   reg_put16(row_ >> 1, data16_);
-    else if (INC_RR)      reg_put16(row_ >> 1, data16_);
-    else if (DEC_RR)      reg_put16(row_ >> 1, data16_);
-    else if (POP_RR)      reg_put16(row_ >> 1, data16_);
 
     if      (ADD_HL_RR)   hl = data16_;
     else if (LD_HL_SP_R8) hl = data16_;
     else if (ST_HLP_A)    hl = data16_;
     else if (ST_HLM_A)    hl = data16_;
-    else if (LD_A_AT_HLP) hl++;
-    else if (LD_A_AT_HLM) hl--;
+    else if (LD_A_AT_HLP) hl = data16_;
+    else if (LD_A_AT_HLM) hl = data16_;
 
     if      (ADD_SP_R8)   sp = data16_;
     else if (MV_SP_HL)    sp = data16_;
     else if (push_d16_)   sp = data16_;
     else if (RET)         sp = data16_;
     else if (RETI)        sp = data16_;
-    else if (POP_RR)      sp = sp + 2;
+    else if (POP_RR)      sp = data16_;
     else if (RET_CC && take_branch_) sp = data16_;
   }
 

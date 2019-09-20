@@ -383,6 +383,8 @@ Z80::Z80State Z80::next_state() const {
     }
     if (POP_RR) next = Z80_STATE_POP1;
     if (PUSH_RR) next = Z80_STATE_PUSH1;
+
+    if (fetch_d8_ || fetch_d16_) next = Z80_STATE_ARG1;
     break;
 
   case Z80_STATE_DECODE_CB:
@@ -400,32 +402,54 @@ Z80::Z80State Z80::next_state() const {
   case Z80_STATE_POP1:  next = Z80_STATE_POP2;   break;
   case Z80_STATE_POP2:  next = Z80_STATE_DECODE; break;
 
+  //----------
+
   case Z80_STATE_ARG1:
-    if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) next = Z80_STATE_DELAY_C;
-    if (ADD_SP_R8) next = Z80_STATE_DELAY_B;
-    if (any_write_) next = Z80_STATE_MEM_WRITE1;
-    if (LD_A_AT_A8 || fetch_d16_ || pop_d16_) next = Z80_STATE_MEM_READ2;
+    if (LD_A_AT_A8)  next = Z80_STATE_MEM_READ2;
+    if (ST_HL_D8)    next = Z80_STATE_MEM_WRITE1;
+    if (ST_A8_A)     next = Z80_STATE_MEM_WRITE1;
+    if (ADD_SP_R8)   next = Z80_STATE_DELAY_B;
+    if (LD_HL_SP_R8) next = Z80_STATE_DELAY_C;
+    if (JR_R8)       next = Z80_STATE_DELAY_C;
+
+    if (fetch_d16_) next = Z80_STATE_ARG2;
+
+    if (take_branch_) {
+      if (JR_CC_R8) next = Z80_STATE_DELAY_C;
+    }
+
     break;
 
   case Z80_STATE_ARG2:
-    if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) next = Z80_STATE_DELAY_C;
-    if (any_write_) next = Z80_STATE_MEM_WRITE1;
-    if ((CALL_CC_A16 && take_branch_) || CALL_A16) next = Z80_STATE_DELAY_B;
     if (LD_A_AT_A16) next = Z80_STATE_MEM_READ3;
+    if (ST_A16_A)    next = Z80_STATE_MEM_WRITE1;
+    if (ST_A16_SP)   next = Z80_STATE_MEM_WRITE1;
+    if (CALL_A16)    next = Z80_STATE_DELAY_B;
+    if (JP_A16)      next = Z80_STATE_DELAY_C;
+
+    if (take_branch_) {
+      if (CALL_CC_A16) next = Z80_STATE_DELAY_B;
+      if (JP_CC_A16)   next = Z80_STATE_DELAY_C;
+    }
     break;
 
+  //----------
+
   case Z80_STATE_MEM_READ1:
-    if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) next = Z80_STATE_DELAY_C;
-    if (ADD_SP_R8) next = Z80_STATE_DELAY_B;
     if (any_write_) next = Z80_STATE_MEM_WRITE1;
-    if (LD_A_AT_A8 || fetch_d16_ || pop_d16_) next = Z80_STATE_MEM_READ2;
+
+    if (RET)    next = Z80_STATE_MEM_READ2;
+    if (RETI)   next = Z80_STATE_MEM_READ2;
+    if (POP_RR) next = Z80_STATE_MEM_READ2;
+    if (RET_CC) next = Z80_STATE_MEM_READ2;
+
     break;
 
   case Z80_STATE_MEM_READ2:
-    if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) next = Z80_STATE_DELAY_C;
+    if (RET)    next = Z80_STATE_DELAY_C;
+    if (RETI)   next = Z80_STATE_DELAY_C;
+    if (RET_CC) next = Z80_STATE_DELAY_C;
     if (any_write_) next = Z80_STATE_MEM_WRITE1;
-    if ((CALL_CC_A16 && take_branch_) || CALL_A16) next = Z80_STATE_DELAY_B;
-    if (LD_A_AT_A16) next = Z80_STATE_MEM_READ3;
     break;
 
   case Z80_STATE_MEM_READ3:
@@ -573,6 +597,17 @@ CpuBus Z80::next_bus() const {
   case Z80_STATE_POP2:
     bus.tag = TAG_DATA1;
     bus.addr = sp + 1;
+    bus.read = true;
+    break;
+
+  case Z80_STATE_ARG1:
+    bus.tag = TAG_ARG0;
+    bus.addr = pc + 1;
+    bus.read = true;
+    break;
+  case Z80_STATE_ARG2:
+    bus.tag = TAG_ARG1;
+    bus.addr = pc + 2;
     bus.read = true;
     break;
 
@@ -736,11 +771,18 @@ void Z80::decode() {
   fetch_d16_ |= (quad_ == 3) && (col_ == 4);
   fetch_d16_ |= ST_A16_SP || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
 
-  any_read_ |= fetch_d8_ || fetch_d16_ || get_hl_ || pop_d16_;
+  any_read_ |= fetch_d8_ || fetch_d16_;
+  any_read_ |= INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
+  any_read_ |= (col_ == 6);
+  any_read_ |= RET || RETI;
+  any_read_ |= (quad_ == 3) && (col_ == 1 && !odd_row_);
+  any_read_ |= (take_branch_ && RET_CC);
   any_read_ |= LD_A_AT_BC || LD_A_AT_DE || LD_A_AT_C;
 
-  any_write_ |= put_hl_;
-  any_write_ |= push_d16_;
+  any_write_ = INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
+  any_write_ |= (quad_ == 1) && (row_ == 6);
+  any_write_ |= (quad_ == 3) && ((col_ == 5) || (col_ == 7));
+  any_write_ |= (take_branch_ && CALL_CC_A16);
   any_write_ |= ST_A16_A || ST_A8_A || ST_C_A || ST_BC_A || ST_DE_A || ST_A16_SP;
 
   //----------

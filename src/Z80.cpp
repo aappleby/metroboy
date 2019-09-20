@@ -301,10 +301,10 @@ CpuOut Z80::tock_t2() {
     else if (DEC_RR)      reg_put16(row_ >> 1, data16_);
     else if (POP_RR)      reg_put16(row_ >> 1, data16_);
 
-    if      (ADD_HL_RR)   hl = alu_out_;
-    else if (LD_HL_SP_R8) hl = alu_out_;
-    else if (ST_HLP_A)    hl++;
-    else if (ST_HLM_A)    hl--;
+    if      (ADD_HL_RR)   hl = data16_;
+    else if (LD_HL_SP_R8) hl = data16_;
+    else if (ST_HLP_A)    hl = data16_;
+    else if (ST_HLM_A)    hl = data16_;
     else if (LD_A_AT_HLP) hl++;
     else if (LD_A_AT_HLM) hl--;
 

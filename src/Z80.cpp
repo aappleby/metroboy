@@ -436,7 +436,9 @@ Z80::Z80State Z80::next_state() const {
   //----------
 
   case Z80_STATE_MEM_READ1:
-    if (any_write_) next = Z80_STATE_MEM_WRITE1;
+
+    if (INC_AT_HL || DEC_AT_HL || ST_HLP_A || ST_HLM_A) next = Z80_STATE_MEM_WRITE1;
+
 
     if (RET)    next = Z80_STATE_MEM_READ2;
     if (RETI)   next = Z80_STATE_MEM_READ2;

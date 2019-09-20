@@ -158,7 +158,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   cb_col_ = (op_cb_ >> 0) & 7;
 
   state_ = next_state();
-  if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
   //----------------------------------------
   // compute new pc
@@ -240,6 +239,8 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 
 
 CpuOut Z80::tock_t2() {
+
+  if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
   // Write all our registers from the previous instruction before the new opcode shows up.
   if (state_ == Z80_STATE_DECODE) {

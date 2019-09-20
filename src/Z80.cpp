@@ -45,7 +45,9 @@
 
 #define MV_OPS        (quad_ == 1)
 #define MV_OPS_ST_HL  (quad_ == 1 && row_ == 6)
+#define MV_OPS_LD_HL  (quad_ == 1 && col_ == 6)
 #define ALU_OPS       (quad_ == 2)
+#define ALU_OPS_LD_HL (quad_ == 2 && col_ == 6)
 #define ALU_A_D8      (quad_ == 3 && col_ == 6)
 
 #define JR_CC_R8      (quad_ == 0 && col_ == 0 && row_ >= 4)
@@ -772,40 +774,47 @@ void Z80::decode() {
   take_branch_ |= (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_pass;
 
   get_hl_ |= INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
-  get_hl_ |= (col_ == 6);
+  get_hl_ |= MV_OPS_LD_HL;
+  get_hl_ |= ALU_OPS_LD_HL;
 
   put_hl_ = INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
-  put_hl_ |= (quad_ == 1) && (row_ == 6);
+  put_hl_ |= MV_OPS_ST_HL;
 
-  push_d16_ |= (quad_ == 3) && ((col_ == 5) || (col_ == 7));
+  push_d16_ |= CALL_A16;
+  push_d16_ |= PUSH_RR;
+  push_d16_ |= RST_NN;
   push_d16_ |= (take_branch_ && CALL_CC_A16);
 
   pop_d16_ |= RET || RETI;
-  pop_d16_ |= (quad_ == 3) && (col_ == 1 && !odd_row_);
+  pop_d16_ |= POP_RR;
   pop_d16_ |= (take_branch_ && RET_CC);
 
-  fetch_d8_ |= (quad_ == 0) && (col_ == 6);
-  fetch_d8_ |= (quad_ == 0) && (col_ == 0 && row_ >= 3);
+  fetch_d8_ |= LD_R_D8;
+  fetch_d8_ |= JR_CC_R8;
+  fetch_d8_ |= JR_R8;
   fetch_d8_ |= LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
 
-  fetch_d16_ |= (quad_ == 0) && (col_ == 1 && !odd_row_);
-  fetch_d16_ |= (quad_ == 3) && (col_ == 2 && row_ <= 3);
-  fetch_d16_ |= (quad_ == 3) && (col_ == 4);
+  fetch_d16_ |= LD_RR_D16;
+  fetch_d16_ |= JP_CC_A16;
+  fetch_d16_ |= CALL_CC_A16;
   fetch_d16_ |= ST_A16_SP || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
 
   any_read_ |= fetch_d8_ || fetch_d16_;
   any_read_ |= INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM;
-  any_read_ |= (col_ == 6);
+  any_read_ |= MV_OPS_LD_HL;
+  any_read_ |= ALU_OPS_LD_HL;
   any_read_ |= RET || RETI;
-  any_read_ |= (quad_ == 3) && (col_ == 1 && !odd_row_);
-  any_read_ |= (take_branch_ && RET_CC);
+  any_read_ |= POP_RR;
   any_read_ |= LD_A_AT_BC || LD_A_AT_DE || LD_A_AT_C;
+  any_read_ |= (take_branch_ && RET_CC);
 
   any_write_ = INC_AT_HL || DEC_AT_HL || ST_HL_D8 || ST_HLP_A || ST_HLM_A;
-  any_write_ |= (quad_ == 1) && (row_ == 6);
-  any_write_ |= (quad_ == 3) && ((col_ == 5) || (col_ == 7));
-  any_write_ |= (take_branch_ && CALL_CC_A16);
+  any_write_ |= MV_OPS_ST_HL;
+  any_write_ |= CALL_A16;
+  any_write_ |= PUSH_RR;
+  any_write_ |= RST_NN;
   any_write_ |= ST_A16_A || ST_A8_A || ST_C_A || ST_BC_A || ST_DE_A || ST_A16_SP;
+  any_write_ |= (take_branch_ && CALL_CC_A16);
 
   //----------
   // special handling for interrupts

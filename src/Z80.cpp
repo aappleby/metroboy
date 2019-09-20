@@ -263,15 +263,13 @@ CpuOut Z80::tock_t2() {
     //else if (LD_A_AT_HLP) data16_ = hl + 1;
     //else if (LD_A_AT_HLM) data16_ = hl - 1;
 
-    /*
     if      (ADD_SP_R8)   data16_ = alu_out_;
     else if (MV_SP_HL)    data16_ = hl;
     else if (push_d16_)   data16_ = sp - 2;
     else if (RET)         data16_ = sp + 2;
     else if (RETI)        data16_ = sp + 2;
-    else if (POP_RR)      data16_ = sp + 2;
+    //else if (POP_RR)      data16_ = sp + 2;
     else if (RET_CC && take_branch_) data16_ = sp + 2;
-    */
   }
 
   if (state_ == Z80_STATE_DECODE) {
@@ -308,13 +306,13 @@ CpuOut Z80::tock_t2() {
     else if (LD_A_AT_HLP) hl++;
     else if (LD_A_AT_HLM) hl--;
 
-    if      (ADD_SP_R8)   sp = alu_out_;
-    else if (MV_SP_HL)    sp = hl;
-    else if (push_d16_)   sp = sp - 2;
-    else if (RET)         sp = sp + 2;
-    else if (RETI)        sp = sp + 2;
+    if      (ADD_SP_R8)   sp = data16_;
+    else if (MV_SP_HL)    sp = data16_;
+    else if (push_d16_)   sp = data16_;
+    else if (RET)         sp = data16_;
+    else if (RETI)        sp = data16_;
     else if (POP_RR)      sp = sp + 2;
-    else if (RET_CC && take_branch_) sp = sp + 2;
+    else if (RET_CC && take_branch_) sp = data16_;
   }
 
   if (state_ == Z80_STATE_DECODE) opcount = opcount + 1;

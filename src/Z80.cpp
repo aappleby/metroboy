@@ -257,9 +257,9 @@ CpuOut Z80::tock_t2() {
     else if (POP_RR)      data16_ = data16_;
 
     if      (ADD_HL_RR)   data16_ = alu_out_;
-    //else if (LD_HL_SP_R8) data16_ = alu_out_;
-    //else if (ST_HLP_A)    data16_ = hl + 1;
-    //else if (ST_HLM_A)    data16_ = hl - 1;
+    else if (LD_HL_SP_R8) data16_ = alu_out_;
+    else if (ST_HLP_A)    data16_ = hl + 1;
+    else if (ST_HLM_A)    data16_ = hl - 1;
     //else if (LD_A_AT_HLP) data16_ = hl + 1;
     //else if (LD_A_AT_HLM) data16_ = hl - 1;
 

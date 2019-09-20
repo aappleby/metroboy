@@ -379,9 +379,13 @@ Z80::Z80State Z80::next_state() const {
     if (MV_OPS_ST_HL) next = Z80_STATE_MEM_WRITE1;
     if (ST_C_A || ST_BC_A || ST_DE_A) next = Z80_STATE_MEM_WRITE1;
     
-    if (any_read_)  next = Z80_STATE_MEM_READ1;
-
-    if (RET_CC || RST_NN || PUSH_RR) next = Z80_STATE_DELAY_A;
+    if (INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM) next = Z80_STATE_MEM_READ1;
+    if (MV_OPS_LD_HL) next = Z80_STATE_MEM_READ1;
+    if (ALU_OPS_LD_HL) next = Z80_STATE_MEM_READ1;
+    if (RET || RETI) next = Z80_STATE_MEM_READ1;
+    if (LD_A_AT_BC || LD_A_AT_DE || LD_A_AT_C) next = Z80_STATE_MEM_READ1;
+    
+    if (RET_CC || RST_NN) next = Z80_STATE_DELAY_A;
     if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) next = Z80_STATE_DELAY_C;
     if (PREFIX_CB) next = Z80_STATE_DECODE_CB;
     if (HALT) {

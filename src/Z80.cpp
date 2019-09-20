@@ -394,9 +394,25 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_PUSH1: next = Z80_STATE_PUSH2;  break;
-  case Z80_STATE_PUSH2: next = Z80_STATE_DECODE; break;
+  case Z80_STATE_PUSH2: next = Z80_STATE_PUSH3; break;
+  case Z80_STATE_PUSH3: next = Z80_STATE_DECODE; break;
+
   case Z80_STATE_POP1:  next = Z80_STATE_POP2;   break;
   case Z80_STATE_POP2:  next = Z80_STATE_DECODE; break;
+
+  case Z80_STATE_ARG1:
+    if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) next = Z80_STATE_DELAY_C;
+    if (ADD_SP_R8) next = Z80_STATE_DELAY_B;
+    if (any_write_) next = Z80_STATE_MEM_WRITE1;
+    if (LD_A_AT_A8 || fetch_d16_ || pop_d16_) next = Z80_STATE_MEM_READ2;
+    break;
+
+  case Z80_STATE_ARG2:
+    if (RET_CC || RET || RETI || JP_A16 || (JP_CC_A16 && take_branch_)) next = Z80_STATE_DELAY_C;
+    if (any_write_) next = Z80_STATE_MEM_WRITE1;
+    if ((CALL_CC_A16 && take_branch_) || CALL_A16) next = Z80_STATE_DELAY_B;
+    if (LD_A_AT_A16) next = Z80_STATE_MEM_READ3;
+    break;
 
   case Z80_STATE_MEM_READ1:
     if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) next = Z80_STATE_DELAY_C;
@@ -536,12 +552,14 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_PUSH1:
+    break;
+  case Z80_STATE_PUSH2:
     bus.addr = sp - 1;
     bus.data = (uint8_t)(reg_fetch16() >> 8);
     bus.read = false;
     bus.write = true;
     break;
-  case Z80_STATE_PUSH2:
+  case Z80_STATE_PUSH3:
     bus.addr = sp - 2;
     bus.data = (uint8_t)reg_fetch16();
     bus.write = true;

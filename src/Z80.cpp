@@ -129,6 +129,256 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
+CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+  imask_ = imask;
+  intf_ = intf;
+
+  pc_ = pc;
+  bus_tag_ = TAG_NONE;
+  state_ = state;
+  int_ack_ = 0;
+  data_lo_ = data_lo;
+  data_hi_ = data_hi;
+
+  if      (bus_tag == TAG_OPCODE)    op_      = bus_data;
+  if      (bus_tag == TAG_OPCODE_CB) op_cb_   = bus_data;
+  if      (bus_tag == TAG_DATA0)     data_lo_ = bus_data;
+  else if (bus_tag == TAG_DATA1)     data_hi_ = bus_data;
+  else if (bus_tag == TAG_ARG0)      data_lo_ = bus_data;
+  else if (bus_tag == TAG_ARG1)      data_hi_ = bus_data;
+
+  if (state == Z80_STATE_DECODE) {
+    interrupt2 = (imask_ & intf_) && ime;
+    if (interrupt2) op_ = 0x00;
+  }
+
+  decode();
+  cb_quad_ = (op_cb_ >> 6) & 3;
+  cb_row_ = (op_cb_ >> 3) & 7;
+  cb_col_ = (op_cb_ >> 0) & 7;
+
+  state_ = next_state();
+  if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
+
+  //----------------------------------------
+  // compute new pc
+
+  int next_int = next_interrupt();
+  pc_ = next_pc(next_int);
+  if (next_int >= 0) int_ack_ = 1 << next_int;
+
+  //----------------------------------------
+
+  AluOut out = exec(reg_fetch8());
+  alu_out_ = out.x;
+  f_ = out.f;
+
+  //----------------------------------------
+
+  CpuBus next_bus2 = next_bus();
+
+  bus_tag_ = (MemTag)next_bus2.tag;
+  mem_addr_ = next_bus2.addr;
+  mem_out_ = next_bus2.data;
+  mem_read_ = next_bus2.read;
+  mem_write_ = next_bus2.write;
+
+  return next_bus2;
+}
+
+//-----------------------------------------------------------------------------
+
+void Z80::tock_t0() {
+}
+
+//-----------------------------------------------------------------------------
+
+void Z80::tick_t2() {
+}
+
+//-----------------------------------------------------------------------------
+
+/*
+static const uint8_t flag_mask[256] = {
+0,    0,    0,    0, 0xE0, 0xE0,    0, 0xF0,
+0, 0x70,    0,    0, 0xE0, 0xE0,    0, 0xF0,
+0,    0,    0,    0, 0xE0, 0xE0,    0, 0xF0,
+0, 0x70,    0,    0, 0xE0, 0xE0,    0, 0xF0,
+0,    0,    0,    0, 0xE0, 0xE0,    0, 0xB0,
+0, 0x70,    0,    0, 0xE0, 0xE0,    0, 0x60,
+0,    0,    0,    0, 0xE0, 0xE0,    0, 0x70,
+0, 0x70,    0,    0, 0xE0, 0xE0,    0, 0x70,
+
+0,    0,    0,    0,    0,    0,    0,    0,
+0,    0,    0,    0,    0,    0,    0,    0,
+0,    0,    0,    0,    0,    0,    0,    0,
+0,    0,    0,    0,    0,    0,    0,    0,
+0,    0,    0,    0,    0,    0,    0,    0,
+0,    0,    0,    0,    0,    0,    0,    0,
+0,    0,    0,    0,    0,    0,    0,    0,
+0,    0,    0,    0,    0,    0,    0,    0,
+
+0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
+0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
+0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
+0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
+0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
+0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
+0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
+0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
+
+   0,    0,    0,    0,    0,    0, 0xF0,    0,
+   0,    0,    0,    0,    0,    0, 0xF0,    0,
+   0,    0,    0,    0,    0,    0, 0xF0,    0,
+   0,    0,    0,    0,    0,    0, 0xF0,    0,
+   0,    0,    0,    0,    0,    0, 0xF0,    0,
+0xF0,    0,    0,    0,    0,    0, 0xF0,    0,
+   0, 0xF0,    0,    0,    0,    0, 0xF0,    0,
+0xF0,    0,    0,    0,    0,    0, 0xF0,    0,
+};
+
+static const uint8_t cb_flag_mask[4] = { 0xF0, 0xE0,    0, 0x0 };
+*/
+
+uint8_t flag_mask2(uint8_t op, uint8_t cb) {
+  uint8_t quad = (op >> 6) & 3;
+  uint8_t row = (op >> 3) & 7;
+  uint8_t col = (op >> 0) & 7;
+
+  if (op == 0xCB) {
+    quad = (cb >> 6) & 3;
+    if (quad == 0) return 0xF0;
+    if (quad == 1) return 0xE0;
+    return 0;
+  }
+
+  if (quad == 0) {
+    if (col == 1) return row & 1 ? 0x70 : 0x00;
+    if (col == 4) return 0xE0;
+    if (col == 5) return 0xE0;
+    if (col == 7) {
+      if (row == 0) return 0xF0;
+      if (row == 1) return 0xF0;
+      if (row == 2) return 0xF0;
+      if (row == 3) return 0xF0;
+      if (row == 4) return 0xB0;
+      if (row == 5) return 0x60;
+      if (row == 6) return 0x70;
+      if (row == 7) return 0x70;
+    }
+  }
+
+  if (quad == 1) return 0x00;
+  if (quad == 2) return 0xF0;
+
+  if (quad == 3) {
+    if (col == 6) return 0xF0;
+    if (op == 0xE8) return 0xF0;
+    if (op == 0xF1) return 0xF0;
+    if (op == 0xF8) return 0xF0;
+  }
+  return 0;
+}
+
+
+CpuOut Z80::tock_t2() {
+
+  if (state_ == Z80_STATE_DECODE) {
+
+    // Write all our registers from the previous instruction before the new opcode shows up.
+    // Not idempotent yet
+    pc = pc_;
+
+
+    uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
+
+    uint8_t mask2 = flag_mask2(op_, op_cb_);
+    if (mask != mask2) printf("x");
+    
+    f = POP_AF ? data_lo_ & 0xF0 : (f & ~mask) | (f_ & mask);
+
+    opcount = opcount + 1;
+
+    if      (MV_OPS)      reg_put8(row_,    reg_fetch8());
+    else if (PREFIX_CB)   reg_put8(cb_col_, (uint8_t)alu_out_);
+    else if (INC_R)       reg_put8(row_,    (uint8_t)alu_out_);
+    else if (DEC_R)       reg_put8(row_,    (uint8_t)alu_out_);
+    else if (ALU_A_D8)    reg_put8(7,       (uint8_t)alu_out_);
+    else if (ALU_OPS)     reg_put8(7,       (uint8_t)alu_out_);
+    else if (ROTATE_OPS)  reg_put8(7,       (uint8_t)alu_out_);
+    else if (LD_R_D8)     reg_put8(row_,    data_lo_);
+    else if (LD_A_AT_RR)  reg_put8(7,       data_lo_);
+    else if (LD_A_AT_A8)  reg_put8(7,       data_lo_);
+    else if (LD_A_AT_C)   reg_put8(7,       data_lo_);
+    else if (LD_A_AT_A16) reg_put8(7,       data_lo_);
+
+
+    if      (LD_RR_D16)   reg_put16(row_ >> 1, data16_);
+    else if (INC_RR)      reg_put16(row_ >> 1, reg_fetch16() + 1);
+    else if (DEC_RR)      reg_put16(row_ >> 1, reg_fetch16() - 1);
+    else if (POP_RR)      reg_put16(row_ >> 1, data16_);
+
+    if      (ADD_HL_RR)   hl = alu_out_;
+    else if (LD_HL_SP_R8) hl = alu_out_;
+    else if (ST_HLP_A)    hl++;
+    else if (ST_HLM_A)    hl--;
+    else if (LD_A_AT_HLP) hl++;
+    else if (LD_A_AT_HLM) hl--;
+
+    if      (ADD_SP_R8)   sp = alu_out_;
+    else if (MV_SP_HL)    sp = hl;
+    else if (push_d16_)   sp = sp - 2;
+    else if (RET)         sp = sp + 2;
+    else if (RETI)        sp = sp + 2;
+    else if (POP_RR)      sp = sp + 2;
+    else if (RET_CC && take_branch_) sp = sp + 2;
+  }
+
+  //----------
+  // When we finish an instruction, update our interrupt master enable.
+
+  ime = ime_delay;
+
+  if (state_ == Z80_STATE_DECODE) {
+    if (interrupt2) {
+      ime = false;
+      ime_delay = false;
+    }
+    else if (RETI) {
+      ime = true;
+      ime_delay = true;
+    }
+    else if (DI) {
+      // on dmg this should disable interrupts immediately?
+      ime = false;
+      ime_delay = false;
+    }
+    else if (EI) {
+      ime_delay = true;
+    }
+  }
+
+  //----------
+  // Gameboy weirdness - the "real" interrupt vector is determined by the
+  // state of imask/intf at the end of the first write cycle.
+
+  if (state_ == Z80_STATE_MEM_WRITE2) {
+    imask_latch = imask_;
+  }
+
+  state = state_;
+  bus_tag = bus_tag_;
+  data_lo = data_lo_;
+  data_hi = data_hi_;
+  mem_addr = mem_addr_;
+
+  cycle++;
+
+  return { 0 };
+}
+
+//-----------------------------------------------------------------------------
+
 Z80::Z80State Z80::next_state() const {
   Z80State next = Z80_STATE_DECODE;
 
@@ -393,168 +643,6 @@ CpuBus Z80::next_bus() const {
   }
 
   return bus;
-}
-
-//-----------------------------------------------------------------------------
-
-CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
-  imask_ = imask;
-  intf_ = intf;
-
-  pc_ = pc;
-  bus_tag_ = TAG_NONE;
-  state_ = state;
-  int_ack_ = 0;
-  data_lo_ = data_lo;
-  data_hi_ = data_hi;
-
-  if      (bus_tag == TAG_OPCODE)    op_      = bus_data;
-  if      (bus_tag == TAG_OPCODE_CB) op_cb_   = bus_data;
-  if      (bus_tag == TAG_DATA0)     data_lo_ = bus_data;
-  else if (bus_tag == TAG_DATA1)     data_hi_ = bus_data;
-  else if (bus_tag == TAG_ARG0)      data_lo_ = bus_data;
-  else if (bus_tag == TAG_ARG1)      data_hi_ = bus_data;
-
-  if (state == Z80_STATE_DECODE) {
-    interrupt2 = (imask_ & intf_) && ime;
-    if (interrupt2) op_ = 0x00;
-  }
-
-  decode();
-  cb_quad_ = (op_cb_ >> 6) & 3;
-  cb_row_ = (op_cb_ >> 3) & 7;
-  cb_col_ = (op_cb_ >> 0) & 7;
-
-  state_ = next_state();
-  if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
-
-  //----------------------------------------
-  // compute new pc
-
-  int next_int = next_interrupt();
-  pc_ = next_pc(next_int);
-  if (next_int >= 0) int_ack_ = 1 << next_int;
-
-  //----------------------------------------
-
-  AluOut out = exec(reg_fetch8());
-  alu_out_ = out.x;
-  f_ = out.f;
-
-  //----------------------------------------
-
-  CpuBus next_bus2 = next_bus();
-
-  bus_tag_ = (MemTag)next_bus2.tag;
-  mem_addr_ = next_bus2.addr;
-  mem_out_ = next_bus2.data;
-  mem_read_ = next_bus2.read;
-  mem_write_ = next_bus2.write;
-
-  return next_bus2;
-}
-
-//-----------------------------------------------------------------------------
-
-void Z80::tock_t0() {
-}
-
-//-----------------------------------------------------------------------------
-
-void Z80::tick_t2() {
-}
-
-//-----------------------------------------------------------------------------
-
-CpuOut Z80::tock_t2() {
-
-  if (state_ == Z80_STATE_DECODE) {
-
-    // Write all our registers from the previous instruction before the new opcode shows up.
-    // Not idempotent yet
-    pc = pc_;
-
-    uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
-    f = POP_AF ? data_lo_ & 0xF0 : (f & ~mask) | (f_ & mask);
-
-    opcount = opcount + 1;
-
-    if      (MV_OPS)      reg_put8(row_,    reg_fetch8());
-    else if (PREFIX_CB)   reg_put8(cb_col_, (uint8_t)alu_out_);
-    else if (INC_R)       reg_put8(row_,    (uint8_t)alu_out_);
-    else if (DEC_R)       reg_put8(row_,    (uint8_t)alu_out_);
-    else if (ALU_A_D8)    reg_put8(7,       (uint8_t)alu_out_);
-    else if (ALU_OPS)     reg_put8(7,       (uint8_t)alu_out_);
-    else if (ROTATE_OPS)  reg_put8(7,       (uint8_t)alu_out_);
-    else if (LD_R_D8)     reg_put8(row_,    data_lo_);
-    else if (LD_A_AT_RR)  reg_put8(7,       data_lo_);
-    else if (LD_A_AT_A8)  reg_put8(7,       data_lo_);
-    else if (LD_A_AT_C)   reg_put8(7,       data_lo_);
-    else if (LD_A_AT_A16) reg_put8(7,       data_lo_);
-
-
-    if      (LD_RR_D16)   reg_put16(row_ >> 1, data16_);
-    else if (INC_RR)      reg_put16(row_ >> 1, reg_fetch16() + 1);
-    else if (DEC_RR)      reg_put16(row_ >> 1, reg_fetch16() - 1);
-    else if (POP_RR)      reg_put16(row_ >> 1, data16_);
-
-    if      (ADD_HL_RR)   hl = alu_out_;
-    else if (LD_HL_SP_R8) hl = alu_out_;
-    else if (ST_HLP_A)    hl++;
-    else if (ST_HLM_A)    hl--;
-    else if (LD_A_AT_HLP) hl++;
-    else if (LD_A_AT_HLM) hl--;
-    
-    if      (ADD_SP_R8)   sp = alu_out_;
-    else if (MV_SP_HL)    sp = hl;
-    else if (push_d16_)   sp = sp - 2;
-    else if (RET)         sp = sp + 2;
-    else if (RETI)        sp = sp + 2;
-    else if (POP_RR)      sp = sp + 2;
-    else if (RET_CC && take_branch_) sp = sp + 2;
-  }
-
-  //----------
-  // When we finish an instruction, update our interrupt master enable.
-
-  ime = ime_delay;
-
-  if (state_ == Z80_STATE_DECODE) {
-    if (interrupt2) {
-      ime = false;
-      ime_delay = false;
-    }
-    else if (RETI) {
-      ime = true;
-      ime_delay = true;
-    }
-    else if (DI) {
-      // on dmg this should disable interrupts immediately?
-      ime = false;
-      ime_delay = false;
-    }
-    else if (EI) {
-      ime_delay = true;
-    }
-  }
-
-  //----------
-  // Gameboy weirdness - the "real" interrupt vector is determined by the
-  // state of imask/intf at the end of the first write cycle.
-
-  if (state_ == Z80_STATE_MEM_WRITE2) {
-    imask_latch = imask_;
-  }
-
-  state = state_;
-  bus_tag = bus_tag_;
-  data_lo = data_lo_;
-  data_hi = data_hi_;
-  mem_addr = mem_addr_;
-
-  cycle++;
-
-  return { 0 };
 }
 
 //-----------------------------------------------------------------------------

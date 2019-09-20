@@ -198,48 +198,6 @@ void Z80::tick_t2() {
 
 //-----------------------------------------------------------------------------
 
-/*
-static const uint8_t flag_mask[256] = {
-0,    0,    0,    0, 0xE0, 0xE0,    0, 0xF0,
-0, 0x70,    0,    0, 0xE0, 0xE0,    0, 0xF0,
-0,    0,    0,    0, 0xE0, 0xE0,    0, 0xF0,
-0, 0x70,    0,    0, 0xE0, 0xE0,    0, 0xF0,
-0,    0,    0,    0, 0xE0, 0xE0,    0, 0xB0,
-0, 0x70,    0,    0, 0xE0, 0xE0,    0, 0x60,
-0,    0,    0,    0, 0xE0, 0xE0,    0, 0x70,
-0, 0x70,    0,    0, 0xE0, 0xE0,    0, 0x70,
-
-0,    0,    0,    0,    0,    0,    0,    0,
-0,    0,    0,    0,    0,    0,    0,    0,
-0,    0,    0,    0,    0,    0,    0,    0,
-0,    0,    0,    0,    0,    0,    0,    0,
-0,    0,    0,    0,    0,    0,    0,    0,
-0,    0,    0,    0,    0,    0,    0,    0,
-0,    0,    0,    0,    0,    0,    0,    0,
-0,    0,    0,    0,    0,    0,    0,    0,
-
-0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
-0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
-0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
-0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
-0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
-0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
-0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
-0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
-
-   0,    0,    0,    0,    0,    0, 0xF0,    0,
-   0,    0,    0,    0,    0,    0, 0xF0,    0,
-   0,    0,    0,    0,    0,    0, 0xF0,    0,
-   0,    0,    0,    0,    0,    0, 0xF0,    0,
-   0,    0,    0,    0,    0,    0, 0xF0,    0,
-0xF0,    0,    0,    0,    0,    0, 0xF0,    0,
-   0, 0xF0,    0,    0,    0,    0, 0xF0,    0,
-0xF0,    0,    0,    0,    0,    0, 0xF0,    0,
-};
-
-static const uint8_t cb_flag_mask[4] = { 0xF0, 0xE0,    0, 0x0 };
-*/
-
 uint8_t flag_mask2(uint8_t op, uint8_t cb) {
   uint8_t quad = (op >> 6) & 3;
   uint8_t row = (op >> 3) & 7;
@@ -283,39 +241,64 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 
 CpuOut Z80::tock_t2() {
 
+  // Write all our registers from the previous instruction before the new opcode shows up.
+  if (state_ == Z80_STATE_DECODE) {
+    if      (MV_OPS)      data16_ = reg_fetch8();
+    else if (PREFIX_CB)   data16_ = alu_out_;
+    else if (INC_R)       data16_ = alu_out_;
+    else if (DEC_R)       data16_ = alu_out_;
+    else if (ALU_A_D8)    data16_ = alu_out_;
+    else if (ALU_OPS)     data16_ = alu_out_;
+    else if (ROTATE_OPS)  data16_ = alu_out_;
+
+    if      (LD_RR_D16)   data16_ = data16_;
+    else if (INC_RR)      data16_ = reg_fetch16() + 1;
+    else if (DEC_RR)      data16_ = reg_fetch16() - 1;
+    else if (POP_RR)      data16_ = data16_;
+
+    if      (ADD_HL_RR)   data16_ = alu_out_;
+    //else if (LD_HL_SP_R8) data16_ = alu_out_;
+    //else if (ST_HLP_A)    data16_ = hl + 1;
+    //else if (ST_HLM_A)    data16_ = hl - 1;
+    //else if (LD_A_AT_HLP) data16_ = hl + 1;
+    //else if (LD_A_AT_HLM) data16_ = hl - 1;
+
+    /*
+    if      (ADD_SP_R8)   data16_ = alu_out_;
+    else if (MV_SP_HL)    data16_ = hl;
+    else if (push_d16_)   data16_ = sp - 2;
+    else if (RET)         data16_ = sp + 2;
+    else if (RETI)        data16_ = sp + 2;
+    else if (POP_RR)      data16_ = sp + 2;
+    else if (RET_CC && take_branch_) data16_ = sp + 2;
+    */
+  }
+
   if (state_ == Z80_STATE_DECODE) {
 
-    // Write all our registers from the previous instruction before the new opcode shows up.
-    // Not idempotent yet
     pc = pc_;
 
-
     uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
-
-    uint8_t mask2 = flag_mask2(op_, op_cb_);
-    if (mask != mask2) printf("x");
+    if (POP_AF)  f = data_lo_ & 0xF0;
+    else         f = (f & ~mask) | (f_ & mask);
     
-    f = POP_AF ? data_lo_ & 0xF0 : (f & ~mask) | (f_ & mask);
-
-    opcount = opcount + 1;
-
-    if      (MV_OPS)      reg_put8(row_,    reg_fetch8());
-    else if (PREFIX_CB)   reg_put8(cb_col_, (uint8_t)alu_out_);
-    else if (INC_R)       reg_put8(row_,    (uint8_t)alu_out_);
-    else if (DEC_R)       reg_put8(row_,    (uint8_t)alu_out_);
-    else if (ALU_A_D8)    reg_put8(7,       (uint8_t)alu_out_);
-    else if (ALU_OPS)     reg_put8(7,       (uint8_t)alu_out_);
-    else if (ROTATE_OPS)  reg_put8(7,       (uint8_t)alu_out_);
-    else if (LD_R_D8)     reg_put8(row_,    data_lo_);
-    else if (LD_A_AT_RR)  reg_put8(7,       data_lo_);
-    else if (LD_A_AT_A8)  reg_put8(7,       data_lo_);
-    else if (LD_A_AT_C)   reg_put8(7,       data_lo_);
-    else if (LD_A_AT_A16) reg_put8(7,       data_lo_);
+    if      (MV_OPS)      reg_put8(row_,    (uint8_t)data16_);
+    else if (PREFIX_CB)   reg_put8(cb_col_, (uint8_t)data16_);
+    else if (INC_R)       reg_put8(row_,    (uint8_t)data16_);
+    else if (DEC_R)       reg_put8(row_,    (uint8_t)data16_);
+    else if (ALU_A_D8)    reg_put8(7,       (uint8_t)data16_);
+    else if (ALU_OPS)     reg_put8(7,       (uint8_t)data16_);
+    else if (ROTATE_OPS)  reg_put8(7,       (uint8_t)data16_);
+    else if (LD_R_D8)     reg_put8(row_,    (uint8_t)data16_);
+    else if (LD_A_AT_RR)  reg_put8(7,       (uint8_t)data16_);
+    else if (LD_A_AT_A8)  reg_put8(7,       (uint8_t)data16_);
+    else if (LD_A_AT_C)   reg_put8(7,       (uint8_t)data16_);
+    else if (LD_A_AT_A16) reg_put8(7,       (uint8_t)data16_);
 
 
     if      (LD_RR_D16)   reg_put16(row_ >> 1, data16_);
-    else if (INC_RR)      reg_put16(row_ >> 1, reg_fetch16() + 1);
-    else if (DEC_RR)      reg_put16(row_ >> 1, reg_fetch16() - 1);
+    else if (INC_RR)      reg_put16(row_ >> 1, data16_);
+    else if (DEC_RR)      reg_put16(row_ >> 1, data16_);
     else if (POP_RR)      reg_put16(row_ >> 1, data16_);
 
     if      (ADD_HL_RR)   hl = alu_out_;
@@ -333,6 +316,8 @@ CpuOut Z80::tock_t2() {
     else if (POP_RR)      sp = sp + 2;
     else if (RET_CC && take_branch_) sp = sp + 2;
   }
+
+  if (state_ == Z80_STATE_DECODE) opcount = opcount + 1;
 
   //----------
   // When we finish an instruction, update our interrupt master enable.

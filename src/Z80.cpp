@@ -375,36 +375,49 @@ Z80::Z80State Z80::next_state() const {
 
   switch (state) {
   case Z80_STATE_DECODE:
-    if (ST_HLP_A || ST_HLM_A) next = next = Z80_STATE_MEM_WRITE1;
-    if (MV_OPS_ST_HL) next = Z80_STATE_MEM_WRITE1;
-    if (ST_C_A || ST_BC_A || ST_DE_A) next = Z80_STATE_MEM_WRITE1;
-    
-    if (INC_AT_HL || DEC_AT_HL || LD_A_AT_HLP || LD_A_AT_HLM) next = Z80_STATE_MEM_READ1;
-    if (MV_OPS_LD_HL) next = Z80_STATE_MEM_READ1;
+    if (MV_OPS_ST_HL)  next = Z80_STATE_MEM_WRITE1;
+    if (ST_HLP_A)      next = Z80_STATE_MEM_WRITE1;
+    if (ST_HLM_A)      next = Z80_STATE_MEM_WRITE1;
+    if (ST_C_A)        next = Z80_STATE_MEM_WRITE1;
+    if (ST_BC_A)       next = Z80_STATE_MEM_WRITE1;
+    if (ST_DE_A)       next = Z80_STATE_MEM_WRITE1;
+
+    if (INC_AT_HL)     next = Z80_STATE_MEM_READ1;
+    if (DEC_AT_HL)     next = Z80_STATE_MEM_READ1;
+    if (LD_A_AT_HLP)   next = Z80_STATE_MEM_READ1;
+    if (LD_A_AT_HLM)   next = Z80_STATE_MEM_READ1;
+    if (MV_OPS_LD_HL)  next = Z80_STATE_MEM_READ1;
     if (ALU_OPS_LD_HL) next = Z80_STATE_MEM_READ1;
-    if (RET || RETI) next = Z80_STATE_MEM_READ1;
-    if (LD_A_AT_BC || LD_A_AT_DE || LD_A_AT_C) next = Z80_STATE_MEM_READ1;
-    
-    if (RET_CC || RST_NN) next = Z80_STATE_DELAY_A;
-    if (INC_RR || DEC_RR || ADD_HL_RR || MV_SP_HL) next = Z80_STATE_DELAY_C;
-    if (PREFIX_CB) next = Z80_STATE_DECODE_CB;
+    if (RET)           next = Z80_STATE_MEM_READ1;
+    if (RETI)          next = Z80_STATE_MEM_READ1;
+    if (LD_A_AT_BC)    next = Z80_STATE_MEM_READ1;
+    if (LD_A_AT_DE)    next = Z80_STATE_MEM_READ1;
+    if (LD_A_AT_C)     next = Z80_STATE_MEM_READ1;
+
+    if (RET_CC)        next = Z80_STATE_DELAY_A;
+    if (RST_NN)        next = Z80_STATE_DELAY_A;
+    if (INC_RR)        next = Z80_STATE_DELAY_C;
+    if (DEC_RR)        next = Z80_STATE_DELAY_C;
+    if (ADD_HL_RR)     next = Z80_STATE_DELAY_C;
+    if (MV_SP_HL)      next = Z80_STATE_DELAY_C;
+    if (PREFIX_CB)     next = Z80_STATE_DECODE_CB;
+
+    if (POP_RR)        next = Z80_STATE_POP1;
+    if (PUSH_RR)       next = Z80_STATE_PUSH1;
+
+    if (fetch_d8_)     next = Z80_STATE_ARG1;
+    if (LD_A_AT_A16)   next = Z80_STATE_ARG1;
+    if (LD_RR_D16)     next = Z80_STATE_ARG1;
+    if (ST_A16_A)      next = Z80_STATE_ARG1;
+    if (ST_A16_SP)     next = Z80_STATE_ARG1;
+    if (JP_A16)        next = Z80_STATE_ARG1;
+    if (JP_CC_A16)     next = Z80_STATE_ARG1;
+    if (CALL_A16)      next = Z80_STATE_ARG1;
+    if (CALL_CC_A16)   next = Z80_STATE_ARG1;
+
     if (HALT) {
       next = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
     }
-    if (POP_RR)     next = Z80_STATE_POP1;
-    if (PUSH_RR)    next = Z80_STATE_PUSH1;
-
-    if (fetch_d8_)  next = Z80_STATE_ARG1;
-
-    if (LD_A_AT_A16) next = Z80_STATE_ARG1;
-    if (LD_RR_D16)   next = Z80_STATE_ARG1;
-    if (ST_A16_A)    next = Z80_STATE_ARG1;
-    if (ST_A16_SP)   next = Z80_STATE_ARG1;
-    if (JP_A16)      next = Z80_STATE_ARG1;
-    if (JP_CC_A16)   next = Z80_STATE_ARG1;
-    if (CALL_A16)    next = Z80_STATE_ARG1;
-    if (CALL_CC_A16) next = Z80_STATE_ARG1;
-
     break;
 
   case Z80_STATE_DECODE_CB:
@@ -492,8 +505,9 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    if (push_d16_ || ST_A16_SP) next = Z80_STATE_MEM_WRITE2;
-    if (RST_NN) next = Z80_STATE_MEM_WRITE2;
+    if (push_d16_) next = Z80_STATE_MEM_WRITE2;
+    if (ST_A16_SP) next = Z80_STATE_MEM_WRITE2;
+    if (RST_NN)    next = Z80_STATE_MEM_WRITE2;
     break;
 
   case Z80_STATE_MEM_WRITE2:

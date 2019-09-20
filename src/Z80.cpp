@@ -382,6 +382,7 @@ Z80::Z80State Z80::next_state() const {
       next = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
     }
     if (POP_RR) next = Z80_STATE_POP1;
+    if (PUSH_RR) next = Z80_STATE_PUSH1;
     break;
 
   case Z80_STATE_DECODE_CB:
@@ -392,21 +393,10 @@ Z80::Z80State Z80::next_state() const {
     next = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT;
     break;
 
-  case Z80_STATE_PUSH1:
-    next = Z80_STATE_PUSH2;
-    break;
-
-  case Z80_STATE_PUSH2:
-    next = Z80_STATE_DECODE;
-    break;
-
-  case Z80_STATE_POP1:
-    next = Z80_STATE_POP2;
-    break;
-
-  case Z80_STATE_POP2:
-    next = Z80_STATE_DECODE;
-    break;
+  case Z80_STATE_PUSH1: next = Z80_STATE_PUSH2;  break;
+  case Z80_STATE_PUSH2: next = Z80_STATE_DECODE; break;
+  case Z80_STATE_POP1:  next = Z80_STATE_POP2;   break;
+  case Z80_STATE_POP2:  next = Z80_STATE_DECODE; break;
 
   case Z80_STATE_MEM_READ1:
     if (JR_R8 || (JR_CC_R8 && take_branch_) || LD_HL_SP_R8) next = Z80_STATE_DELAY_C;

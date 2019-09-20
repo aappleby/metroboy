@@ -264,6 +264,21 @@ CpuOut Z80::tock_t2() {
     else if (LD_A_AT_C)   data16_ = data16_;
     else if (LD_A_AT_A16) data16_ = data16_;
 
+    if      (MV_OPS)      reg_put8(row_,    (uint8_t)data16_);
+    else if (PREFIX_CB)   reg_put8(cb_col_, (uint8_t)data16_);
+    else if (INC_R)       reg_put8(row_,    (uint8_t)data16_);
+    else if (DEC_R)       reg_put8(row_,    (uint8_t)data16_);
+    else if (ALU_A_D8)    reg_put8(7,       (uint8_t)data16_);
+    else if (ALU_OPS)     reg_put8(7,       (uint8_t)data16_);
+    else if (ROTATE_OPS)  reg_put8(7,       (uint8_t)data16_);
+    else if (LD_R_D8)     reg_put8(row_,    (uint8_t)data16_);
+    else if (LD_A_AT_RR)  reg_put8(7,       (uint8_t)data16_);
+    else if (LD_A_AT_A8)  reg_put8(7,       (uint8_t)data16_);
+    else if (LD_A_AT_C)   reg_put8(7,       (uint8_t)data16_);
+    else if (LD_A_AT_A16) reg_put8(7,       (uint8_t)data16_);
+  }
+
+  if (state_ == Z80_STATE_DECODE) {
     if      (LD_RR_D16)   data16_ = data16_;
     else if (INC_RR)      data16_ = reg_fetch16() + 1;
     else if (DEC_RR)      data16_ = reg_fetch16() - 1;
@@ -283,21 +298,6 @@ CpuOut Z80::tock_t2() {
     else if (RETI)        data16_ = sp + 2;
     //else if (POP_RR)      data16_ = sp + 2;
     else if (RET_CC && take_branch_) data16_ = sp + 2;
-  }
-
-  if (state_ == Z80_STATE_DECODE) {
-    if      (MV_OPS)      reg_put8(row_,    (uint8_t)data16_);
-    else if (PREFIX_CB)   reg_put8(cb_col_, (uint8_t)data16_);
-    else if (INC_R)       reg_put8(row_,    (uint8_t)data16_);
-    else if (DEC_R)       reg_put8(row_,    (uint8_t)data16_);
-    else if (ALU_A_D8)    reg_put8(7,       (uint8_t)data16_);
-    else if (ALU_OPS)     reg_put8(7,       (uint8_t)data16_);
-    else if (ROTATE_OPS)  reg_put8(7,       (uint8_t)data16_);
-    else if (LD_R_D8)     reg_put8(row_,    (uint8_t)data16_);
-    else if (LD_A_AT_RR)  reg_put8(7,       (uint8_t)data16_);
-    else if (LD_A_AT_A8)  reg_put8(7,       (uint8_t)data16_);
-    else if (LD_A_AT_C)   reg_put8(7,       (uint8_t)data16_);
-    else if (LD_A_AT_A16) reg_put8(7,       (uint8_t)data16_);
 
     if      (LD_RR_D16)   reg_put16(row_ >> 1, data16_);
     else if (INC_RR)      reg_put16(row_ >> 1, data16_);

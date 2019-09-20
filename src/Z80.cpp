@@ -381,6 +381,7 @@ Z80::Z80State Z80::next_state() const {
     if (HALT) {
       next = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
     }
+    if (pop_d16_) next = Z80_STATE_POP1;
     break;
 
   case Z80_STATE_DECODE_CB:
@@ -389,6 +390,14 @@ Z80::Z80State Z80::next_state() const {
 
   case Z80_STATE_HALT:
     next = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT;
+    break;
+
+  case Z80_STATE_POP1:
+    next = Z80_STATE_POP2;
+    break;
+
+  case Z80_STATE_POP2:
+    next = Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_MEM_READ1:
@@ -525,6 +534,17 @@ CpuBus Z80::next_bus() const {
   case Z80_STATE_HALT:
     bus.tag = TAG_OPCODE;
     bus.addr = pc_;
+    bus.read = true;
+    break;
+
+  case Z80_STATE_POP1:
+    bus.tag = TAG_DATA0;
+    bus.addr = sp;
+    bus.read = true;
+    break;
+  case Z80_STATE_POP2:
+    bus.tag = TAG_DATA1;
+    bus.addr = sp + 1;
     bus.read = true;
     break;
 

@@ -239,6 +239,7 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
   return 0;
 }
 
+//-----------------------------------------------------------------------------
 
 CpuOut Z80::tock_t2() {
 
@@ -388,13 +389,10 @@ Z80::Z80State Z80::next_state() const {
     if (LD_A_AT_HLM)   next = Z80_STATE_MEM_READ1;
     if (MV_OPS_LD_HL)  next = Z80_STATE_MEM_READ1;
     if (ALU_OPS_LD_HL) next = Z80_STATE_MEM_READ1;
-    if (RET)           next = Z80_STATE_MEM_READ1;
-    if (RETI)          next = Z80_STATE_MEM_READ1;
     if (LD_A_AT_BC)    next = Z80_STATE_MEM_READ1;
     if (LD_A_AT_DE)    next = Z80_STATE_MEM_READ1;
     if (LD_A_AT_C)     next = Z80_STATE_MEM_READ1;
 
-    if (RET_CC)        next = Z80_STATE_DELAY_A;
     if (RST_NN)        next = Z80_STATE_DELAY_A;
     if (INC_RR)        next = Z80_STATE_DELAY_C;
     if (DEC_RR)        next = Z80_STATE_DELAY_C;
@@ -402,7 +400,12 @@ Z80::Z80State Z80::next_state() const {
     if (MV_SP_HL)      next = Z80_STATE_DELAY_C;
     if (PREFIX_CB)     next = Z80_STATE_DECODE_CB;
 
+    if (RET)           next = Z80_STATE_POP1;
+    if (RETI)          next = Z80_STATE_POP1;
+    if (RET_CC)        next = Z80_STATE_DELAY_A;
     if (POP_RR)        next = Z80_STATE_POP1;
+
+
     if (PUSH_RR)       next = Z80_STATE_PUSH1;
 
     if (fetch_d8_)     next = Z80_STATE_ARG1;
@@ -432,8 +435,19 @@ Z80::Z80State Z80::next_state() const {
   case Z80_STATE_PUSH2: next = Z80_STATE_PUSH3; break;
   case Z80_STATE_PUSH3: next = Z80_STATE_DECODE; break;
 
-  case Z80_STATE_POP1:  next = Z80_STATE_POP2;   break;
-  case Z80_STATE_POP2:  next = Z80_STATE_DECODE; break;
+  case Z80_STATE_POP1: {
+    next = Z80_STATE_POP2;
+    break;
+  }
+  case Z80_STATE_POP2: {
+    next = Z80_STATE_DECODE;
+
+    if (RET || RETI || RET_CC) {
+      next = Z80_STATE_DELAY_C;
+    }
+
+    break;
+  }
 
   //----------
 
@@ -476,24 +490,13 @@ Z80::Z80State Z80::next_state() const {
   //----------
 
   case Z80_STATE_MEM_READ1:
-
     if (INC_AT_HL) next = Z80_STATE_MEM_WRITE1;
     if (DEC_AT_HL) next = Z80_STATE_MEM_WRITE1;
     if (ST_HLP_A)  next = Z80_STATE_MEM_WRITE1;
     if (ST_HLM_A)  next = Z80_STATE_MEM_WRITE1;
-
-    if (RET)       next = Z80_STATE_MEM_READ2;
-    if (RETI)      next = Z80_STATE_MEM_READ2;
-    if (POP_RR)    next = Z80_STATE_MEM_READ2;
-    if (RET_CC)    next = Z80_STATE_MEM_READ2;
-
     break;
 
   case Z80_STATE_MEM_READ2:
-    if (RET)    next = Z80_STATE_DELAY_C;
-    if (RETI)   next = Z80_STATE_DELAY_C;
-    if (RET_CC) next = Z80_STATE_DELAY_C;
-
     break;
 
   case Z80_STATE_MEM_READ3:
@@ -520,7 +523,7 @@ Z80::Z80State Z80::next_state() const {
 
   case Z80_STATE_DELAY_A:
     next = Z80_STATE_MEM_WRITE1;
-    if (RET_CC) next = take_branch_ ? Z80_STATE_MEM_READ1  : Z80_STATE_DECODE;
+    if (RET_CC) next = take_branch_ ? Z80_STATE_POP1  : Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_DELAY_B:

@@ -475,7 +475,9 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_ARG2:
-    if (LD_A_AT_A16) next = Z80_STATE_MEM_READ3;
+    if (LD_A_AT_A16) {
+      next = Z80_STATE_MEM_READ1;
+    }
     if (ST_A16_A)    next = Z80_STATE_MEM_WRITE1;
     if (ST_A16_SP)   next = Z80_STATE_MEM_WRITE1;
     if (CALL_A16)    next = Z80_STATE_DELAY_B;
@@ -494,6 +496,9 @@ Z80::Z80State Z80::next_state() const {
     if (DEC_AT_HL) next = Z80_STATE_MEM_WRITE1;
     if (ST_HLP_A)  next = Z80_STATE_MEM_WRITE1;
     if (ST_HLM_A)  next = Z80_STATE_MEM_WRITE1;
+    if (LD_A_AT_A16) {
+      next = Z80_STATE_DECODE;
+    }
     break;
 
   case Z80_STATE_MEM_READ2:
@@ -661,6 +666,13 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_MEM_READ1:
+    if (LD_A_AT_A16) {
+      bus.tag = TAG_DATA0;
+      bus.addr = data16_;
+      bus.read = true;
+      break;
+    }
+
     if (fetch_d8_)       { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
     else if (fetch_d16_) { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
     else if (LD_A_AT_C)  { bus.tag = TAG_DATA0; bus.addr = 0xFF00 | c; }

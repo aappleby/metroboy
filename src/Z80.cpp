@@ -376,12 +376,6 @@ CpuOut Z80::tock_t2() {
 
   sp = sp2;
 
-  if (state_ == Z80_STATE_DECODE) {
-    if (sp2 != sp) {
-      printf("sp fail 0x%02x 0x%04x 0x%04x\n", op_, sp, sp2);
-    }
-  }
-
   //----------
   // When we finish an instruction, update our interrupt master enable.
 
@@ -897,18 +891,6 @@ uint8_t Z80::reg_fetch8() const {
   return 0;
 }
 
-uint16_t Z80::reg_fetch16() const {
-
-  switch(row_ >> 1) {
-  case 0: return bc; break;
-  case 1: return de; break;
-  case 2: return hl; break;
-  case 3: return PUSH_RR || POP_RR ? af : sp2; break;
-  }
-
-  return 0;
-}
-
 void Z80::reg_put8(int mux, uint8_t reg) {
   switch (mux) {
   case 0: b = (uint8_t)reg; break;
@@ -919,22 +901,6 @@ void Z80::reg_put8(int mux, uint8_t reg) {
   case 5: l = (uint8_t)reg; break;
   case 6: break;
   case 7: a = (uint8_t)reg; break;
-  }
-}
-
-void Z80::reg_put16(int mux, uint16_t reg) {
-  switch(mux) {
-  case 0: bc = reg; break;
-  case 1: de = reg; break;
-  case 2: hl = reg; break;
-  case 3: {
-    if (POP_RR) {
-      af = reg & 0xFFF0;
-    } else {
-      sp = reg;
-    }
-    break;
-  }
   }
 }
 
@@ -1182,7 +1148,7 @@ void Z80::dump(std::string& out) {
   sprintf(out, "bc 0x%04x\n", bc);
   sprintf(out, "de 0x%04x\n", de);
   sprintf(out, "hl 0x%04x\n", hl);
-  sprintf(out, "sp 0x%04x\n", sp);
+  sprintf(out, "sp 0x%04x\n", sp2);
   sprintf(out, "pc 0x%04x\n", pc);
   sprintf(out, "ime %d\n", ime);
   sprintf(out, "ime_delay %d\n", ime_delay);

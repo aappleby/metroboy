@@ -673,13 +673,32 @@ CpuBus Z80::next_bus() const {
       break;
     }
 
-    if (fetch_d8_)       { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
-    else if (fetch_d16_) { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    if      (LD_R_D8)       { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (JR_CC_R8)      { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (JR_R8)         { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (LD_A_AT_A8)    { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (LD_HL_SP_R8)   { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (ST_A8_A)       { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (ALU_A_D8)      { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (ADD_SP_R8)     { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+
+    else if (LD_RR_D16)     { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (JP_CC_A16)     { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (CALL_CC_A16)   { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (ST_A16_SP)     { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (CALL_A16)      { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (JP_A16)        { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (ST_A16_A)      { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (LD_A_AT_A16)   { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+
     else if (LD_A_AT_C)  { bus.tag = TAG_DATA0; bus.addr = 0xFF00 | c; }
     else if (LD_A_AT_BC) { bus.tag = TAG_DATA0; bus.addr = bc; }
     else if (LD_A_AT_DE) { bus.tag = TAG_DATA0; bus.addr = de; }
+    
     else if (get_hl_)    { bus.tag = TAG_DATA0; bus.addr = hl; }
+    
     else if (pop_d16_)   { bus.tag = TAG_DATA0; bus.addr = sp; }
+
     else if (RET_CC)     { bus.tag = TAG_DATA0; bus.addr = sp; }
     else                 { assert(false); }
     bus.read = true;

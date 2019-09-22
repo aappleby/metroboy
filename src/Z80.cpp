@@ -121,6 +121,8 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
   cycle = 0;
   unhalt = 0;
 
+  sp2 = sp;
+
   return { 0 };
 }
 
@@ -196,12 +198,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   mem_read_ = next_bus2.read;
   mem_write_ = next_bus2.write;
 
-  //----------------------------------------
-
-  AluOut out = exec(reg_fetch8());
-  alu_out_ = out.x;
-  f_ = out.f;
-
   return next_bus2;
 }
 
@@ -250,6 +246,17 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 //-----------------------------------------------------------------------------
 
 CpuOut Z80::tock_t2() {
+
+  //if (opcount == 0x0017519b) __debugbreak();
+
+  AluOut out = exec(reg_fetch8());
+  alu_out_ = out.x;
+  f_ = out.f;
+
+  if (state == Z80_STATE_PUSH1) sp2--;
+  if (state == Z80_STATE_PUSH2) sp2--;
+  if (state == Z80_STATE_POP1)  sp2++;
+  if (state == Z80_STATE_POP2)  sp2++;
 
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
@@ -303,39 +310,37 @@ CpuOut Z80::tock_t2() {
   }
 
   if (state_ == Z80_STATE_DECODE) {
-    if      (ADD_HL_RR)                   data16_ = alu_out_;
-    else if (LD_HL_SP_R8)                 data16_ = alu_out_;
-    else if (ADD_SP_R8)                   data16_ = alu_out_;
-    else if (ST_HLP_A)                    data16_ = hl + 1;
-    else if (ST_HLM_A)                    data16_ = hl - 1;
-    else if (LD_A_AT_HLP)                 data16_ = hl + 1;
-    else if (LD_A_AT_HLM)                 data16_ = hl - 1;
-    else if (MV_SP_HL)                    data16_ = hl;
-    else if (CALL_A16)                    data16_ = sp - 2;
-    else if (PUSH_RR)                     data16_ = sp - 2;
-    else if (RST_NN)                      data16_ = sp - 2;
-    else if (RET)                         data16_ = sp + 2;
-    else if (RETI)                        data16_ = sp + 2;
-    else if (POP_RR)                      data16_ = sp + 2;
-    else if (RET_CC && take_branch_)      data16_ = sp + 2;
-    else if (CALL_CC_A16 && take_branch_) data16_ = sp - 2;
+    if (op_ == 0x31) sp2 = data16_;
+    if (op_ == 0xF9) sp2 = hl;
+    if (op_ == 0x33) sp2++;
+    if (op_ == 0x3B) sp2--;
+    if (op_ == 0xE8) sp2 = sp2 + (int8_t)data_lo_;
+  }
 
-    if      (ADD_HL_RR)                   hl = data16_;
-    else if (LD_HL_SP_R8)                 hl = data16_;
-    else if (ST_HLP_A)                    hl = data16_;
-    else if (ST_HLM_A)                    hl = data16_;
-    else if (LD_A_AT_HLP)                 hl = data16_;
-    else if (LD_A_AT_HLM)                 hl = data16_;
-    else if (ADD_SP_R8)                   sp = data16_;
-    else if (MV_SP_HL)                    sp = data16_;
-    else if (CALL_A16)                    sp = data16_;
-    else if (PUSH_RR)                     sp = data16_;
-    else if (RST_NN)                      sp = data16_;
-    else if (RET)                         sp = data16_;
-    else if (RETI)                        sp = data16_;
-    else if (POP_RR)                      sp = data16_;
-    else if (RET_CC && take_branch_)      sp = data16_;
-    else if (CALL_CC_A16 && take_branch_) sp = data16_;
+  if (state_ == Z80_STATE_DECODE) {
+    if      (interrupt2)                  sp = sp - 2;
+    else if (ADD_HL_RR)                   hl = alu_out_;
+    else if (LD_HL_SP_R8)                 hl = alu_out_;
+    else if (ST_HLP_A)                    hl = hl + 1;
+    else if (ST_HLM_A)                    hl = hl - 1;
+    else if (LD_A_AT_HLP)                 hl = hl + 1;
+    else if (LD_A_AT_HLM)                 hl = hl - 1;
+    else if (ADD_SP_R8)                   sp = alu_out_;
+    else if (MV_SP_HL)                    sp = hl;
+    else if (CALL_A16)                    sp = sp - 2;
+    else if (PUSH_RR)                     sp = sp - 2;
+    else if (RST_NN)                      sp = sp - 2;
+    else if (RET)                         sp = sp + 2;
+    else if (RETI)                        sp = sp + 2;
+    else if (POP_RR)                      sp = sp + 2;
+    else if (RET_CC && take_branch_)      sp = sp + 2;
+    else if (CALL_CC_A16 && take_branch_) sp = sp - 2;
+  }
+
+  if (state_ == Z80_STATE_DECODE) {
+    if (sp2 != sp) {
+      //printf("sp fail 0x%02x 0x%04x 0x%04x\n", op_, sp, sp2);
+    }
   }
 
   //----------
@@ -352,9 +357,9 @@ CpuOut Z80::tock_t2() {
 
   //----------
   // Gameboy weirdness - the "real" interrupt vector is determined by the
-  // state of imask/intf at the end of the first write cycle.
+  // state of imask/intf after pushing the first byte of PC onto the stack.
 
-  if (state_ == Z80_STATE_MEM_WRITE2) {
+  if (interrupt2 && state_ == Z80_STATE_PUSH2) {
     imask_latch = imask_;
   }
 
@@ -379,6 +384,7 @@ Z80::Z80State Z80::next_state() const {
   switch (state) {
   case Z80_STATE_DECODE:
     if      (interrupt2)    next = Z80_STATE_PUSH1;
+    else if (HALT)          next = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
     else if (MV_OPS_ST_HL)  next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLP_A)      next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLM_A)      next = Z80_STATE_MEM_WRITE1;
@@ -438,8 +444,6 @@ Z80::Z80State Z80::next_state() const {
     else if (DEC_R)         next = Z80_STATE_DECODE;
     else if (ROTATE_OPS)    next = Z80_STATE_DECODE;
     else if (JP_HL)         next = Z80_STATE_DECODE;
-
-    else if (HALT)          next = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
 
     else {
       printf("fail 0x%02x\n", op_);

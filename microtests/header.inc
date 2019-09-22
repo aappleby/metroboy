@@ -322,6 +322,9 @@
 
 .define VBLANK_INT_VECTOR $40
 .define STAT_INT_VECTOR   $48
+.define TIMER_INT_VECTOR  $50
+.define SERIAL_INT_VECTOR $58
+.define JOYPAD_INT_VECTOR $60
 
 ;-------------------------------------------------------------------------------
 

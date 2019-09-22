@@ -299,49 +299,32 @@ CpuOut Z80::tock_t2() {
   }
 
   if (state_ == Z80_STATE_DECODE) {
-    if      (LD_RR_D16)   data16_ = data16_;
-    else if (POP_RR)      data16_ = data16_;
-    else if (INC_RR) {
-      switch(row_ >> 1) {
-      case 0: data16_ = bc; break;
-      case 1: data16_ = de; break;
-      case 2: data16_ = hl; break;
-      case 3: data16_ = sp2; break;
-      }
-      data16_++;
-    }
-    else if (DEC_RR) {
-      switch(row_ >> 1) {
-      case 0: data16_ = bc; break;
-      case 1: data16_ = de; break;
-      case 2: data16_ = hl; break;
-      case 3: data16_ = sp2; break;
-      }
-      data16_--;
-    }
-
     if      (LD_RR_D16) {
       switch(row_ >> 1) {
       case 0: bc = data16_; break;
       case 1: de = data16_; break;
       case 2: hl = data16_; break;
-      case 3: sp = data16_; break;
+      case 3: {
+        sp = data16_;
+        sp2 = data16_;
+        break;
+      }
       }
     }
     else if (INC_RR) {
       switch(row_ >> 1) {
-      case 0: bc = data16_; break;
-      case 1: de = data16_; break;
-      case 2: hl = data16_; break;
-      case 3: sp = data16_; break;
+      case 0: bc++; break;
+      case 1: de++; break;
+      case 2: hl++; break;
+      case 3: sp2++; break;
       }
     }
     else if (DEC_RR) {
       switch(row_ >> 1) {
-      case 0: bc = data16_; break;
-      case 1: de = data16_; break;
-      case 2: hl = data16_; break;
-      case 3: sp = data16_; break;
+      case 0: bc--; break;
+      case 1: de--; break;
+      case 2: hl--; break;
+      case 3: sp2--; break;
       }
     }
     else if (POP_RR)      {
@@ -353,18 +336,7 @@ CpuOut Z80::tock_t2() {
       }
 
     }
-  }
-
-  if (state_ == Z80_STATE_DECODE) {
-    if (op_ == 0x31) sp2 = data16_;
-    if (op_ == 0xF9) sp2 = hl;
-    if (op_ == 0x33) sp2++;
-    if (op_ == 0x3B) sp2--;
-    if (op_ == 0xE8) sp2 = sp2 + (int8_t)data_lo_;
-  }
-
-  if (state_ == Z80_STATE_DECODE) {
-         if (ADD_HL_RR)                   hl = alu_out_;
+    else if (ADD_HL_RR)                   hl = alu_out_;
     else if (LD_HL_SP_R8)                 hl = alu_out_;
     else if (ST_HLP_A)                    hl = hl + 1;
     else if (ST_HLM_A)                    hl = hl - 1;
@@ -372,6 +344,7 @@ CpuOut Z80::tock_t2() {
     else if (LD_A_AT_HLM)                 hl = hl - 1;
     else if (ADD_SP_R8)                   sp2 = alu_out_;
     else if (MV_SP_HL)                    sp2 = hl;
+    else if (ADD_SP_R8)                   sp2 = sp2 + (int8_t)data_lo_;
   }
 
   sp = sp2;

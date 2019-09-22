@@ -304,11 +304,38 @@ CpuOut Z80::tock_t2() {
     else if (INC_RR)      data16_ = reg_fetch16() + 1;
     else if (DEC_RR)      data16_ = reg_fetch16() - 1;
 
-    if      (LD_RR_D16)   reg_put16(row_ >> 1, data16_);
-    else if (INC_RR)      reg_put16(row_ >> 1, data16_);
-    else if (DEC_RR)      reg_put16(row_ >> 1, data16_);
+    if      (LD_RR_D16) {
+      switch(row_ >> 1) {
+      case 0: bc = data16_; break;
+      case 1: de = data16_; break;
+      case 2: hl = data16_; break;
+      case 3: sp = data16_; break;
+      }
+    }
+    else if (INC_RR) {
+      switch(row_ >> 1) {
+      case 0: bc = data16_; break;
+      case 1: de = data16_; break;
+      case 2: hl = data16_; break;
+      case 3: sp = data16_; break;
+      }
+    }
+    else if (DEC_RR) {
+      switch(row_ >> 1) {
+      case 0: bc = data16_; break;
+      case 1: de = data16_; break;
+      case 2: hl = data16_; break;
+      case 3: sp = data16_; break;
+      }
+    }
     else if (POP_RR)      {
-      reg_put16(row_ >> 1, data16_);
+      switch(row_ >> 1) {
+      case 0: bc = data16_; break;
+      case 1: de = data16_; break;
+      case 2: hl = data16_; break;
+      case 3: af = data16_ & 0xFFF0; break;
+      }
+
     }
   }
 

@@ -121,8 +121,6 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
   cycle = 0;
   unhalt = 0;
 
-  sp2 = sp;
-
   return { 0 };
 }
 
@@ -181,8 +179,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   state_ = next_state();
 
-  if (state_ == Z80_STATE_PUSH1) sp2--;
-  if (state_ == Z80_STATE_PUSH2) sp2--;
+  if (state_ == Z80_STATE_PUSH1) sp--;
+  if (state_ == Z80_STATE_PUSH2) sp--;
 
   //----------------------------------------
   // compute new pc
@@ -195,8 +193,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   CpuBus next_bus2 = next_bus();
 
-  if (state_ == Z80_STATE_POP1)  sp2++;
-  if (state_ == Z80_STATE_POP2)  sp2++;
+  if (state_ == Z80_STATE_POP1)  sp++;
+  if (state_ == Z80_STATE_POP2)  sp++;
 
   bus_tag_ = (MemTag)next_bus2.tag;
   mem_addr_ = next_bus2.addr;
@@ -291,7 +289,7 @@ CpuOut Z80::tock_t2() {
       case 0: bc = data16_; break;
       case 1: de = data16_; break;
       case 2: hl = data16_; break;
-      case 3: sp2 = data16_; break;
+      case 3: sp = data16_; break;
       }
     }
     else if (INC_RR) {
@@ -299,7 +297,7 @@ CpuOut Z80::tock_t2() {
       case 0: bc++; break;
       case 1: de++; break;
       case 2: hl++; break;
-      case 3: sp2++; break;
+      case 3: sp++; break;
       }
     }
     else if (DEC_RR) {
@@ -307,7 +305,7 @@ CpuOut Z80::tock_t2() {
       case 0: bc--; break;
       case 1: de--; break;
       case 2: hl--; break;
-      case 3: sp2--; break;
+      case 3: sp--; break;
       }
     }
     else if (POP_RR)      {
@@ -325,12 +323,10 @@ CpuOut Z80::tock_t2() {
     else if (ST_HLM_A)                    hl = hl - 1;
     else if (LD_A_AT_HLP)                 hl = hl + 1;
     else if (LD_A_AT_HLM)                 hl = hl - 1;
-    else if (ADD_SP_R8)                   sp2 = alu_out_;
-    else if (MV_SP_HL)                    sp2 = hl;
-    else if (ADD_SP_R8)                   sp2 = sp2 + (int8_t)data_lo_;
+    else if (ADD_SP_R8)                   sp = alu_out_;
+    else if (MV_SP_HL)                    sp = hl;
+    else if (ADD_SP_R8)                   sp = sp + (int8_t)data_lo_;
   }
-
-  sp = sp2;
 
   //----------
   // When we finish an instruction, update our interrupt master enable.
@@ -722,7 +718,7 @@ CpuBus Z80::next_bus() const {
     else if (CALL_CC_A16) bus.data = (uint8_t)((pc + 3) >> 8);
     else if (RST_NN)      bus.data = (uint8_t)((pc + 1) >> 8);
     else fail();
-    bus.addr = sp2;
+    bus.addr = sp;
     bus.write = true;
     break;
 
@@ -740,7 +736,7 @@ CpuBus Z80::next_bus() const {
     else if (CALL_CC_A16) bus.data = (uint8_t)(pc + 3);
     else if (RST_NN)      bus.data = (uint8_t)(pc + 1);
     else fail();
-    bus.addr = sp2;
+    bus.addr = sp;
     bus.write = true;
     break;
 
@@ -751,7 +747,7 @@ CpuBus Z80::next_bus() const {
     else if (POP_RR) {}
     else fail();
     bus.tag = TAG_DATA0;
-    bus.addr = sp2;
+    bus.addr = sp;
     bus.read = true;
     break;
 
@@ -761,7 +757,7 @@ CpuBus Z80::next_bus() const {
     else if (RET_CC) {}
     else if (POP_RR) {}
     bus.tag = TAG_DATA1;
-    bus.addr = sp2;
+    bus.addr = sp;
     bus.read = true;
     break;
 
@@ -807,13 +803,13 @@ CpuBus Z80::next_bus() const {
     else if (ST_A16_A)     { bus.addr = data16_; bus.data = a; }
     else if (ST_A8_A)      { bus.addr = 0xFF00 | data_lo_; bus.data = a; }
     else if (ST_C_A)       { bus.addr = 0xFF00 | c; bus.data = a; }
-    else if (ST_A16_SP)    { bus.addr = data16_; bus.data = (uint8_t)sp2; }
+    else if (ST_A16_SP)    { bus.addr = data16_; bus.data = (uint8_t)sp; }
     else fail();
     bus.write = true;
     break;
 
   case Z80_STATE_MEM_WRITE2:
-    if      (ST_A16_SP)   { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp2 >> 8); }
+    if      (ST_A16_SP)   { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp >> 8); }
     else fail();
     bus.write = true;
     break;
@@ -1065,7 +1061,7 @@ AluOut Z80::exec(uint8_t src) const {
     case 0: blah = bc; break;
     case 1: blah = de; break;
     case 2: blah = hl; break;
-    case 3: blah = sp2; break;
+    case 3: blah = sp; break;
     }
 
     bool halfcarry = (blah & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
@@ -1075,10 +1071,10 @@ AluOut Z80::exec(uint8_t src) const {
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    bool halfcarry = (sp2 & 0x000F) + (data_lo_ & 0x000F) > 0x000F;
-    bool carry =     (sp2 & 0x00FF) + (data_lo_ & 0x00FF) > 0x00FF;
+    bool halfcarry = (sp & 0x000F) + (data_lo_ & 0x000F) > 0x000F;
+    bool carry =     (sp & 0x00FF) + (data_lo_ & 0x00FF) > 0x00FF;
 
-    out.x = sp2 + (int8_t)data_lo_;
+    out.x = sp + (int8_t)data_lo_;
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ROTATE_OPS) {
@@ -1104,7 +1100,7 @@ void Z80::dump(std::string& out) {
   sprintf(out, "bc 0x%04x\n", bc);
   sprintf(out, "de 0x%04x\n", de);
   sprintf(out, "hl 0x%04x\n", hl);
-  sprintf(out, "sp 0x%04x\n", sp2);
+  sprintf(out, "sp 0x%04x\n", sp);
   sprintf(out, "pc 0x%04x\n", pc);
   sprintf(out, "ime %d\n", ime);
   sprintf(out, "ime_delay %d\n", ime_delay);

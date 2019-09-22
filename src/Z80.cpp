@@ -368,7 +368,7 @@ Z80::Z80State Z80::next_state() const {
 
   switch (state) {
   case Z80_STATE_DECODE:
-    if      (interrupt2)    next = Z80_STATE_PUSH1;
+    if      (interrupt2)    next = Z80_STATE_INTERRUPT;
     else if (HALT)          next = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
     else if (MV_OPS_ST_HL)  next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLP_A)      next = Z80_STATE_MEM_WRITE1;
@@ -445,10 +445,16 @@ Z80::Z80State Z80::next_state() const {
     else fail();
     break;
 
+  case Z80_STATE_INTERRUPT:
+    if (interrupt2) next = Z80_STATE_PUSH_DELAY;
+    else fail();
+    break;
+
   //----------
 
   case Z80_STATE_PUSH_DELAY:
-         if (PUSH_RR)       next = Z80_STATE_PUSH1;
+    if      (interrupt2)    next = Z80_STATE_PUSH1;
+    else if (PUSH_RR)       next = Z80_STATE_PUSH1;
     else if (CALL_CC_A16)   next = Z80_STATE_PUSH1;
     else if (CALL_A16)      next = Z80_STATE_PUSH1;
     else fail();
@@ -464,7 +470,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_PUSH2:
-    if      (interrupt2)    next = Z80_STATE_DELAY_B;
+    if      (interrupt2)    next = Z80_STATE_DECODE;
     else if (PUSH_RR)       next = Z80_STATE_DECODE;
     else if (CALL_A16)      next = Z80_STATE_DECODE;
     else if (CALL_CC_A16)   next = Z80_STATE_DECODE;
@@ -578,14 +584,12 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_DELAY_B:
-    if      (interrupt2)    next = Z80_STATE_DELAY_C;
-    else if (ADD_SP_R8)     next = Z80_STATE_DELAY_C;
+    if      (ADD_SP_R8)     next = Z80_STATE_DELAY_C;
     else fail();
     break;
 
   case Z80_STATE_DELAY_C:
-    if      (interrupt2)    next = Z80_STATE_DECODE;
-    else if (ADD_SP_R8)     next = Z80_STATE_DECODE;
+    if      (ADD_SP_R8)     next = Z80_STATE_DECODE;
     else if (INC_RR)        next = Z80_STATE_DECODE;
     else if (DEC_RR)        next = Z80_STATE_DECODE;
     else if (ADD_HL_RR)     next = Z80_STATE_DECODE;
@@ -706,6 +710,9 @@ CpuBus Z80::next_bus() const {
     bus.tag = TAG_OPCODE;
     bus.addr = pc_;
     bus.read = true;
+    break;
+
+  case Z80_STATE_INTERRUPT:
     break;
 
   case Z80_STATE_PUSH_DELAY:

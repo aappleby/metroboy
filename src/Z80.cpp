@@ -679,23 +679,16 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    if (ST_RR_A) {
-      if      (ST_BC_A)  bus.addr = bc;
-      else if (ST_DE_A)  bus.addr = de;
-      else if (ST_HLP_A) bus.addr = hl;
-      else if (ST_HLM_A) bus.addr = hl;
+    if      (ST_BC_A)  { bus.data = a; bus.addr = bc; }
+    else if (ST_DE_A)  { bus.data = a; bus.addr = de; }
+    else if (ST_HLP_A) { bus.data = a; bus.addr = hl; }
+    else if (ST_HLM_A) { bus.data = a; bus.addr = hl; }
 
-      bus.data = a;
-    }
     else if (put_hl_) {
-      bus.addr = hl;
-
-      if      (INC_AT_HL)    bus.data = data_lo_ + 1;
-      else if (DEC_AT_HL)    bus.data = data_lo_ - 1;
-      else if (ST_HL_D8)     bus.data = (uint8_t)data_lo_;
-      else if (MV_OPS_ST_HL) {
-        bus.data = reg_fetch8();
-      }
+      if      (INC_AT_HL)    { bus.addr = hl; bus.data = data_lo_ + 1; }
+      else if (DEC_AT_HL)    { bus.addr = hl; bus.data = data_lo_ - 1; }
+      else if (ST_HL_D8)     { bus.addr = hl; bus.data = (uint8_t)data_lo_; }
+      else if (MV_OPS_ST_HL) { bus.addr = hl; bus.data = reg_fetch8(); }
     }
     else if (push_d16_) {
       bus.addr = sp - 1;

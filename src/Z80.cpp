@@ -301,8 +301,24 @@ CpuOut Z80::tock_t2() {
   if (state_ == Z80_STATE_DECODE) {
     if      (LD_RR_D16)   data16_ = data16_;
     else if (POP_RR)      data16_ = data16_;
-    else if (INC_RR)      data16_ = reg_fetch16() + 1;
-    else if (DEC_RR)      data16_ = reg_fetch16() - 1;
+    else if (INC_RR) {
+      switch(row_ >> 1) {
+      case 0: data16_ = bc; break;
+      case 1: data16_ = de; break;
+      case 2: data16_ = hl; break;
+      case 3: data16_ = sp2; break;
+      }
+      data16_++;
+    }
+    else if (DEC_RR) {
+      switch(row_ >> 1) {
+      case 0: data16_ = bc; break;
+      case 1: data16_ = de; break;
+      case 2: data16_ = hl; break;
+      case 3: data16_ = sp2; break;
+      }
+      data16_--;
+    }
 
     if      (LD_RR_D16) {
       switch(row_ >> 1) {
@@ -751,7 +767,14 @@ CpuBus Z80::next_bus() const {
 
   case Z80_STATE_PUSH1:
     if      (interrupt2)  bus.data = (uint8_t)((pc) >> 8);
-    else if (PUSH_RR)     bus.data = (uint8_t)(reg_fetch16() >> 8);
+    else if (PUSH_RR) {
+      switch(row_ >> 1) {
+      case 0: bus.data = b; break;
+      case 1: bus.data = d; break;
+      case 2: bus.data = h; break;
+      case 3: bus.data = a; break;
+      }
+    }
     else if (CALL_A16)    bus.data = (uint8_t)((pc + 3) >> 8);
     else if (CALL_CC_A16) bus.data = (uint8_t)((pc + 3) >> 8);
     else if (RST_NN)      bus.data = (uint8_t)((pc + 1) >> 8);
@@ -762,7 +785,14 @@ CpuBus Z80::next_bus() const {
 
   case Z80_STATE_PUSH2:
     if      (interrupt2)  bus.data = (uint8_t)(pc);
-    else if (PUSH_RR)     bus.data = (uint8_t)reg_fetch16();
+    else if (PUSH_RR) {
+      switch(row_ >> 1) {
+      case 0: bus.data = c; break;
+      case 1: bus.data = e; break;
+      case 2: bus.data = l; break;
+      case 3: bus.data = f; break;
+      }
+    }
     else if (CALL_A16)    bus.data = (uint8_t)(pc + 3);
     else if (CALL_CC_A16) bus.data = (uint8_t)(pc + 3);
     else if (RST_NN)      bus.data = (uint8_t)(pc + 1);
@@ -1115,7 +1145,14 @@ AluOut Z80::exec(uint8_t src) const {
     out = alu(2, src, 1, 0);
   }
   else if (ADD_HL_RR) {
-    uint16_t blah = reg_fetch16();
+    uint16_t blah = 0;
+    switch(row_ >> 1) {
+    case 0: blah = bc; break;
+    case 1: blah = de; break;
+    case 2: blah = hl; break;
+    case 3: blah = sp2; break;
+    }
+
     bool halfcarry = (blah & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
     bool carry =     (blah & 0xFFFF) + (hl & 0xFFFF) > 0xFFFF;
 

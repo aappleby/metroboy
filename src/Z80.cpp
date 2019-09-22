@@ -307,7 +307,9 @@ CpuOut Z80::tock_t2() {
     if      (LD_RR_D16)   reg_put16(row_ >> 1, data16_);
     else if (INC_RR)      reg_put16(row_ >> 1, data16_);
     else if (DEC_RR)      reg_put16(row_ >> 1, data16_);
-    else if (POP_RR)      reg_put16(row_ >> 1, data16_);
+    else if (POP_RR)      {
+      reg_put16(row_ >> 1, data16_);
+    }
   }
 
   if (state_ == Z80_STATE_DECODE) {
@@ -805,13 +807,13 @@ CpuBus Z80::next_bus() const {
     else if (ST_A16_A)     { bus.addr = data16_; bus.data = a; }
     else if (ST_A8_A)      { bus.addr = 0xFF00 | data_lo_; bus.data = a; }
     else if (ST_C_A)       { bus.addr = 0xFF00 | c; bus.data = a; }
-    else if (ST_A16_SP)    { bus.addr = data16_; bus.data = (uint8_t)sp; }
+    else if (ST_A16_SP)    { bus.addr = data16_; bus.data = (uint8_t)sp2; }
     else fail();
     bus.write = true;
     break;
 
   case Z80_STATE_MEM_WRITE2:
-    if      (ST_A16_SP)   { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp >> 8); }
+    if      (ST_A16_SP)   { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp2 >> 8); }
     else fail();
     bus.write = true;
     break;
@@ -851,7 +853,7 @@ uint16_t Z80::reg_fetch16() const {
   case 0: return bc; break;
   case 1: return de; break;
   case 2: return hl; break;
-  case 3: return PUSH_RR || POP_RR ? af : sp; break;
+  case 3: return PUSH_RR || POP_RR ? af : sp2; break;
   }
 
   return 0;
@@ -1094,10 +1096,10 @@ AluOut Z80::exec(uint8_t src) const {
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    bool halfcarry = (sp & 0x000F) + (data_lo_ & 0x000F) > 0x000F;
-    bool carry =     (sp & 0x00FF) + (data_lo_ & 0x00FF) > 0x00FF;
+    bool halfcarry = (sp2 & 0x000F) + (data_lo_ & 0x000F) > 0x000F;
+    bool carry =     (sp2 & 0x00FF) + (data_lo_ & 0x00FF) > 0x00FF;
 
-    out.x = sp + (int8_t)data_lo_;
+    out.x = sp2 + (int8_t)data_lo_;
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ROTATE_OPS) {

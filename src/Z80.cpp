@@ -181,6 +181,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   state_ = next_state();
 
+  if (state_ == Z80_STATE_PUSH1) sp2--;
+  if (state_ == Z80_STATE_PUSH2) sp2--;
+
   //----------------------------------------
   // compute new pc
 
@@ -191,6 +194,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
 
   CpuBus next_bus2 = next_bus();
+
+  if (state_ == Z80_STATE_POP1)  sp2++;
+  if (state_ == Z80_STATE_POP2)  sp2++;
 
   bus_tag_ = (MemTag)next_bus2.tag;
   mem_addr_ = next_bus2.addr;
@@ -252,11 +258,6 @@ CpuOut Z80::tock_t2() {
   AluOut out = exec(reg_fetch8());
   alu_out_ = out.x;
   f_ = out.f;
-
-  if (state == Z80_STATE_PUSH1) sp2--;
-  if (state == Z80_STATE_PUSH2) sp2--;
-  if (state == Z80_STATE_POP1)  sp2++;
-  if (state == Z80_STATE_POP2)  sp2++;
 
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
@@ -726,7 +727,7 @@ CpuBus Z80::next_bus() const {
     else if (CALL_CC_A16) bus.data = (uint8_t)((pc + 3) >> 8);
     else if (RST_NN)      bus.data = (uint8_t)((pc + 1) >> 8);
     else fail();
-    bus.addr = sp - 1;
+    bus.addr = sp2;
     bus.write = true;
     break;
 
@@ -737,7 +738,7 @@ CpuBus Z80::next_bus() const {
     else if (CALL_CC_A16) bus.data = (uint8_t)(pc + 3);
     else if (RST_NN)      bus.data = (uint8_t)(pc + 1);
     else fail();
-    bus.addr = sp - 2;
+    bus.addr = sp2;
     bus.write = true;
     break;
 
@@ -748,7 +749,7 @@ CpuBus Z80::next_bus() const {
     else if (POP_RR) {}
     else fail();
     bus.tag = TAG_DATA0;
-    bus.addr = sp;
+    bus.addr = sp2;
     bus.read = true;
     break;
 
@@ -758,7 +759,7 @@ CpuBus Z80::next_bus() const {
     else if (RET_CC) {}
     else if (POP_RR) {}
     bus.tag = TAG_DATA1;
-    bus.addr = sp + 1;
+    bus.addr = sp2;
     bus.read = true;
     break;
 
@@ -800,7 +801,6 @@ CpuBus Z80::next_bus() const {
     else if (DEC_AT_HL)    { bus.addr = hl; bus.data = data_lo_ - 1; }
     else if (ST_HL_D8)     { bus.addr = hl; bus.data = (uint8_t)data_lo_; }
     else if (MV_OPS_ST_HL) { bus.addr = hl; bus.data = reg_fetch8(); }
-    //else if (PREFIX_CB)    { bus.addr = hl; bus.data = (uint8_t)alu_out_; }
     else if (PREFIX_CB)    { bus.addr = hl; bus.data = (uint8_t)cb(cb_quad_, cb_row_, reg_fetch8(), f).x; }
     else if (ST_A16_A)     { bus.addr = data16_; bus.data = a; }
     else if (ST_A8_A)      { bus.addr = 0xFF00 | data_lo_; bus.data = a; }

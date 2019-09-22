@@ -452,7 +452,7 @@ Z80::Z80State Z80::next_state() const {
   //----------
 
   case Z80_STATE_ARG1:
-    if (LD_A_AT_A8)  next = Z80_STATE_MEM_READ2;
+    if (LD_A_AT_A8)  next = Z80_STATE_MEM_READ1;
     if (ST_HL_D8)    next = Z80_STATE_MEM_WRITE1;
     if (ST_A8_A)     next = Z80_STATE_MEM_WRITE1;
     if (ADD_SP_R8)   next = Z80_STATE_DELAY_B;
@@ -475,9 +475,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_ARG2:
-    if (LD_A_AT_A16) {
-      next = Z80_STATE_MEM_READ1;
-    }
+    if (LD_A_AT_A16) next = Z80_STATE_MEM_READ1;
     if (ST_A16_A)    next = Z80_STATE_MEM_WRITE1;
     if (ST_A16_SP)   next = Z80_STATE_MEM_WRITE1;
     if (CALL_A16)    next = Z80_STATE_DELAY_B;
@@ -496,16 +494,6 @@ Z80::Z80State Z80::next_state() const {
     if (DEC_AT_HL) next = Z80_STATE_MEM_WRITE1;
     if (ST_HLP_A)  next = Z80_STATE_MEM_WRITE1;
     if (ST_HLM_A)  next = Z80_STATE_MEM_WRITE1;
-    if (LD_A_AT_A16) {
-      next = Z80_STATE_DECODE;
-    }
-    break;
-
-  case Z80_STATE_MEM_READ2:
-    break;
-
-  case Z80_STATE_MEM_READ3:
-    next = Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_MEM_READ_CB:
@@ -668,10 +656,11 @@ CpuBus Z80::next_bus() const {
   case Z80_STATE_MEM_READ1:
     if      (LD_A_AT_A16)   { bus.tag = TAG_DATA0; bus.addr = data16_; }
 
+    else if (LD_A_AT_A8)    { bus.tag = TAG_DATA0; bus.addr = 0xFF00 | data_lo_; }
     else if (LD_A_AT_C)     { bus.tag = TAG_DATA0; bus.addr = 0xFF00 | c; }
     else if (LD_A_AT_BC)    { bus.tag = TAG_DATA0; bus.addr = bc; }
     else if (LD_A_AT_DE)    { bus.tag = TAG_DATA0; bus.addr = de; }
-    
+
     else if (INC_AT_HL)     { bus.tag = TAG_DATA0; bus.addr = hl; }
     else if (DEC_AT_HL)     { bus.tag = TAG_DATA0; bus.addr = hl; }
     else if (LD_A_AT_HLP)   { bus.tag = TAG_DATA0; bus.addr = hl; }
@@ -679,21 +668,10 @@ CpuBus Z80::next_bus() const {
     else if (MV_OPS_LD_HL)  { bus.tag = TAG_DATA0; bus.addr = hl; }
     else if (ALU_OPS_LD_HL) { bus.tag = TAG_DATA0; bus.addr = hl; }
 
-    else                 { assert(false); }
+    else                    { assert(false); }
     bus.read = true;
     break;
-  case Z80_STATE_MEM_READ2:
-    if      (fetch_d16_) { bus.tag = TAG_ARG1;  bus.addr = pc + 2; }
-    else if (pop_d16_)   { bus.tag = TAG_DATA1; bus.addr = sp + 1; }
-    else if (LD_A_AT_A8) { bus.tag = TAG_DATA0; bus.addr = 0xFF00 | data_lo_; }
-    else                 { assert(false); }
-    bus.read = true;
-    break;
-  case Z80_STATE_MEM_READ3:
-    bus.tag = TAG_DATA0;
-    bus.addr = data16_;
-    bus.read = true;
-    break;
+
   case Z80_STATE_MEM_READ_CB:
     bus.tag = TAG_DATA0;
     bus.addr = hl;

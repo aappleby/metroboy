@@ -493,9 +493,10 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    if (push_d16_) next = Z80_STATE_MEM_WRITE2;
-    if (ST_A16_SP) next = Z80_STATE_MEM_WRITE2;
-    if (RST_NN)    next = Z80_STATE_MEM_WRITE2;
+    if      (CALL_A16)    next = Z80_STATE_MEM_WRITE2;
+    else if (CALL_CC_A16) next = Z80_STATE_MEM_WRITE2;
+    else if (ST_A16_SP)   next = Z80_STATE_MEM_WRITE2;
+    else if (RST_NN)      next = Z80_STATE_MEM_WRITE2;
     break;
 
   case Z80_STATE_MEM_WRITE2:

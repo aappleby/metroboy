@@ -52,7 +52,6 @@ private:
 
     Z80_STATE_PUSH1,
     Z80_STATE_PUSH2,
-    Z80_STATE_PUSH3,
 
     Z80_STATE_POP1,
     Z80_STATE_POP2,

@@ -404,7 +404,8 @@ Z80::Z80State Z80::next_state() const {
     
     else if (PREFIX_CB)     next = Z80_STATE_DECODE_CB;
     
-    else if (PUSH_RR)       next = Z80_STATE_PUSH1;
+    else if (PUSH_RR)       next = Z80_STATE_DELAY_B;
+
     else if (RET)           next = Z80_STATE_POP1;
     else if (RETI)          next = Z80_STATE_POP1;
     else if (POP_RR)        next = Z80_STATE_POP1;
@@ -461,11 +462,6 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_PUSH2:
-    if (PUSH_RR) next = Z80_STATE_PUSH3;
-    else fail();
-    break;
-
-  case Z80_STATE_PUSH3:
     if (PUSH_RR) next = Z80_STATE_DECODE;
     else fail();
     break;
@@ -587,6 +583,7 @@ Z80::Z80State Z80::next_state() const {
   case Z80_STATE_DELAY_B:
     if      (interrupt2)    next = Z80_STATE_DELAY_C;
     else if (ADD_SP_R8)     next = Z80_STATE_DELAY_C;
+    else if (PUSH_RR)       next = Z80_STATE_PUSH1;
     else if (CALL_CC_A16)   next = Z80_STATE_MEM_WRITE1;
     else if (CALL_A16)      next = Z80_STATE_MEM_WRITE1;
     else fail();
@@ -717,14 +714,12 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_PUSH1:
-    break;
-  case Z80_STATE_PUSH2:
     bus.addr = sp - 1;
     bus.data = (uint8_t)(reg_fetch16() >> 8);
     bus.read = false;
     bus.write = true;
     break;
-  case Z80_STATE_PUSH3:
+  case Z80_STATE_PUSH2:
     bus.addr = sp - 2;
     bus.data = (uint8_t)reg_fetch16();
     bus.write = true;

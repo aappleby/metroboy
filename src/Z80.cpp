@@ -363,6 +363,8 @@ CpuOut Z80::tock_t2() {
 
 //-----------------------------------------------------------------------------
 
+void fail() { printf("fail\n"); }
+
 Z80::Z80State Z80::next_state() const {
   Z80State next = Z80_STATE_DECODE;
 
@@ -489,7 +491,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_MEM_READ_CB:
-    if (cb_col_ == 6) next = Z80_STATE_MEM_WRITE_CB;
+    if (PREFIX_CB && cb_col_ == 6) next = Z80_STATE_MEM_WRITE_CB;
     break;
 
   case Z80_STATE_MEM_WRITE1:
@@ -508,14 +510,16 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_DELAY_A:
-    next = Z80_STATE_MEM_WRITE1;
-    if (RET_CC) next = take_branch_ ? Z80_STATE_POP1  : Z80_STATE_DECODE;
+    if      (RST_NN)                 next = Z80_STATE_MEM_WRITE1;
+    else if (RET_CC && take_branch_) next = Z80_STATE_POP1;
     break;
 
   case Z80_STATE_DELAY_B:
-    next = Z80_STATE_DELAY_C;
-    if (CALL_CC_A16 && take_branch_) next = Z80_STATE_MEM_WRITE1;
-    if (CALL_A16) next = Z80_STATE_MEM_WRITE1;
+    if      (interrupt2)  next = Z80_STATE_DELAY_C;
+    else if (ADD_SP_R8)   next = Z80_STATE_DELAY_C;
+    else if (CALL_CC_A16) next = Z80_STATE_MEM_WRITE1;
+    else if (CALL_A16)    next = Z80_STATE_MEM_WRITE1;
+    else fail();
     break;
 
   case Z80_STATE_DELAY_C:

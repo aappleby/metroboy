@@ -718,13 +718,11 @@ CpuBus Z80::next_bus() const {
     bus.write = true;
     break;
   case Z80_STATE_MEM_WRITE2:
-    if (push_d16_) {
-      if (interrupt2)                   { bus.addr = sp - 2; bus.data = (uint8_t)(pc); }
-      else if (CALL_CC_A16 || CALL_A16) { bus.addr = sp - 2; bus.data = (uint8_t)(pc + 3); }
-      else if (RST_NN)                  { bus.addr = sp - 2; bus.data = (uint8_t)(pc + 1); }
-      else                              { bus.addr = sp - 2; bus.data = (uint8_t)reg_fetch16(); }
-    }
-    else if (ST_A16_SP) { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp >> 8); }
+    if      (interrupt2)  { bus.addr = sp - 2; bus.data = (uint8_t)(pc); }
+    else if (CALL_A16)    { bus.addr = sp - 2; bus.data = (uint8_t)(pc + 3); }
+    else if (CALL_CC_A16) { bus.addr = sp - 2; bus.data = (uint8_t)(pc + 3); }
+    else if (RST_NN)      { bus.addr = sp - 2; bus.data = (uint8_t)(pc + 1); }
+    else if (ST_A16_SP)   { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp >> 8); }
     bus.write = true;
     break;
 

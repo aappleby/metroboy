@@ -318,7 +318,7 @@ CpuOut Z80::tock_t2() {
   }
 
   if (state_ == Z80_STATE_DECODE) {
-    if      (interrupt2)                  sp = sp - 2;
+    if      (interrupt2)                  sp = sp2;
     else if (ADD_HL_RR)                   hl = alu_out_;
     else if (LD_HL_SP_R8)                 hl = alu_out_;
     else if (ST_HLP_A)                    hl = hl + 1;
@@ -327,19 +327,19 @@ CpuOut Z80::tock_t2() {
     else if (LD_A_AT_HLM)                 hl = hl - 1;
     else if (ADD_SP_R8)                   sp = alu_out_;
     else if (MV_SP_HL)                    sp = hl;
-    else if (CALL_A16)                    sp = sp - 2;
-    else if (PUSH_RR)                     sp = sp - 2;
-    else if (RST_NN)                      sp = sp - 2;
-    else if (RET)                         sp = sp + 2;
-    else if (RETI)                        sp = sp + 2;
-    else if (POP_RR)                      sp = sp + 2;
-    else if (RET_CC && take_branch_)      sp = sp + 2;
-    else if (CALL_CC_A16 && take_branch_) sp = sp - 2;
+    else if (CALL_A16)                    sp = sp2;
+    else if (PUSH_RR)                     sp = sp2;
+    else if (RST_NN)                      sp = sp2;
+    else if (RET)                         sp = sp2;
+    else if (RETI)                        sp = sp2;
+    else if (POP_RR)                      sp = sp2;
+    else if (RET_CC && take_branch_)      sp = sp2;
+    else if (CALL_CC_A16 && take_branch_) sp = sp2;
   }
 
   if (state_ == Z80_STATE_DECODE) {
     if (sp2 != sp) {
-      //printf("sp fail 0x%02x 0x%04x 0x%04x\n", op_, sp, sp2);
+      printf("sp fail 0x%02x 0x%04x 0x%04x\n", op_, sp, sp2);
     }
   }
 

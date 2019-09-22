@@ -295,47 +295,39 @@ CpuOut Z80::tock_t2() {
   }
 
   if (state_ == Z80_STATE_DECODE) {
-    if      (ADD_HL_RR)   data16_ = alu_out_;
-    else if (LD_HL_SP_R8) data16_ = alu_out_;
-    else if (ST_HLP_A)    data16_ = hl + 1;
-    else if (ST_HLM_A)    data16_ = hl - 1;
-    else if (LD_A_AT_HLP) data16_ = hl + 1;
-    else if (LD_A_AT_HLM) data16_ = hl - 1;
+    if      (ADD_HL_RR)                   data16_ = alu_out_;
+    else if (LD_HL_SP_R8)                 data16_ = alu_out_;
+    else if (ADD_SP_R8)                   data16_ = alu_out_;
+    else if (ST_HLP_A)                    data16_ = hl + 1;
+    else if (ST_HLM_A)                    data16_ = hl - 1;
+    else if (LD_A_AT_HLP)                 data16_ = hl + 1;
+    else if (LD_A_AT_HLM)                 data16_ = hl - 1;
+    else if (MV_SP_HL)                    data16_ = hl;
+    else if (CALL_A16)                    data16_ = sp - 2;
+    else if (PUSH_RR)                     data16_ = sp - 2;
+    else if (RST_NN)                      data16_ = sp - 2;
+    else if (RET)                         data16_ = sp + 2;
+    else if (RETI)                        data16_ = sp + 2;
+    else if (POP_RR)                      data16_ = sp + 2;
+    else if (RET_CC && take_branch_)      data16_ = sp + 2;
+    else if (CALL_CC_A16 && take_branch_) data16_ = sp - 2;
 
-    if      (ADD_SP_R8)   data16_ = alu_out_;
-    else if (MV_SP_HL)    data16_ = hl;
-
-    else if (CALL_A16)   data16_ = sp - 2;
-    else if (PUSH_RR)    data16_ = sp - 2;
-    else if (RST_NN)     data16_ = sp - 2;
-    else if (CALL_CC_A16 && take_branch_)  data16_ = sp - 2;
-
-
-    else if (RET)         data16_ = sp + 2;
-    else if (RETI)        data16_ = sp + 2;
-    else if (POP_RR)      data16_ = sp + 2;
-    else if (RET_CC && take_branch_) data16_ = sp + 2;
-
-    if      (ADD_HL_RR)   hl = data16_;
-    else if (LD_HL_SP_R8) hl = data16_;
-    else if (ST_HLP_A)    hl = data16_;
-    else if (ST_HLM_A)    hl = data16_;
-    else if (LD_A_AT_HLP) hl = data16_;
-    else if (LD_A_AT_HLM) hl = data16_;
-
-    if      (ADD_SP_R8)   sp = data16_;
-    else if (MV_SP_HL)    sp = data16_;
-
-    else if (CALL_A16)   sp = data16_;
-    else if (PUSH_RR)    sp = data16_;
-    else if (RST_NN)     sp = data16_;
-    else if (CALL_CC_A16 && take_branch_)  sp = data16_;
-
-
-    else if (RET)         sp = data16_;
-    else if (RETI)        sp = data16_;
-    else if (POP_RR)      sp = data16_;
-    else if (RET_CC && take_branch_) sp = data16_;
+    if      (ADD_HL_RR)                   hl = data16_;
+    else if (LD_HL_SP_R8)                 hl = data16_;
+    else if (ST_HLP_A)                    hl = data16_;
+    else if (ST_HLM_A)                    hl = data16_;
+    else if (LD_A_AT_HLP)                 hl = data16_;
+    else if (LD_A_AT_HLM)                 hl = data16_;
+    else if (ADD_SP_R8)                   sp = data16_;
+    else if (MV_SP_HL)                    sp = data16_;
+    else if (CALL_A16)                    sp = data16_;
+    else if (PUSH_RR)                     sp = data16_;
+    else if (RST_NN)                      sp = data16_;
+    else if (RET)                         sp = data16_;
+    else if (RETI)                        sp = data16_;
+    else if (POP_RR)                      sp = data16_;
+    else if (RET_CC && take_branch_)      sp = data16_;
+    else if (CALL_CC_A16 && take_branch_) sp = data16_;
   }
 
   //----------

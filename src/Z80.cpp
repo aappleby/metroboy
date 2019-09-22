@@ -397,7 +397,7 @@ Z80::Z80State Z80::next_state() const {
     
     else if (PREFIX_CB)     next = Z80_STATE_DECODE_CB;
     
-    else if (PUSH_RR)       next = Z80_STATE_DELAY_B;
+    else if (PUSH_RR)       next = Z80_STATE_PUSH_DELAY;
 
     else if (RET)           next = Z80_STATE_POP1;
     else if (RETI)          next = Z80_STATE_POP1;
@@ -446,6 +446,13 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   //----------
+
+  case Z80_STATE_PUSH_DELAY:
+         if (PUSH_RR)       next = Z80_STATE_PUSH1;
+    else if (CALL_CC_A16)   next = Z80_STATE_PUSH1;
+    else if (CALL_A16)      next = Z80_STATE_PUSH1;
+    else fail();
+    break;
 
   case Z80_STATE_PUSH1:
     if      (interrupt2)    next = Z80_STATE_PUSH2;
@@ -511,10 +518,10 @@ Z80::Z80State Z80::next_state() const {
     if      (LD_A_AT_A16)   next = Z80_STATE_MEM_READ1;
     else if (ST_A16_A)      next = Z80_STATE_MEM_WRITE1;
     else if (ST_A16_SP)     next = Z80_STATE_MEM_WRITE1;
-    else if (CALL_A16)      next = Z80_STATE_DELAY_B;
+    else if (CALL_A16)      next = Z80_STATE_PUSH_DELAY;
     else if (JP_A16)        next = Z80_STATE_DELAY_C;
     else if (LD_RR_D16)     next = Z80_STATE_DECODE;
-    else if (CALL_CC_A16)   next = take_branch_ ? Z80_STATE_DELAY_B : Z80_STATE_DECODE;
+    else if (CALL_CC_A16)   next = take_branch_ ? Z80_STATE_PUSH_DELAY : Z80_STATE_DECODE;
     else if (JP_CC_A16)     next = take_branch_ ? Z80_STATE_DELAY_C : Z80_STATE_DECODE;
     else fail();
     break;
@@ -573,9 +580,6 @@ Z80::Z80State Z80::next_state() const {
   case Z80_STATE_DELAY_B:
     if      (interrupt2)    next = Z80_STATE_DELAY_C;
     else if (ADD_SP_R8)     next = Z80_STATE_DELAY_C;
-    else if (PUSH_RR)       next = Z80_STATE_PUSH1;
-    else if (CALL_CC_A16)   next = Z80_STATE_PUSH1;
-    else if (CALL_A16)      next = Z80_STATE_PUSH1;
     else fail();
     break;
 
@@ -702,6 +706,9 @@ CpuBus Z80::next_bus() const {
     bus.tag = TAG_OPCODE;
     bus.addr = pc_;
     bus.read = true;
+    break;
+
+  case Z80_STATE_PUSH_DELAY:
     break;
 
   case Z80_STATE_PUSH1:

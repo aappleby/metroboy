@@ -336,22 +336,10 @@ CpuOut Z80::tock_t2() {
   ime = ime_delay;
 
   if (state_ == Z80_STATE_DECODE) {
-    if (interrupt2) {
-      ime = false;
-      ime_delay = false;
-    }
-    else if (RETI) {
-      ime = true;
-      ime_delay = true;
-    }
-    else if (DI) {
-      // on dmg this should disable interrupts immediately?
-      ime = false;
-      ime_delay = false;
-    }
-    else if (EI) {
-      ime_delay = true;
-    }
+    if (interrupt2) { ime = false;     ime_delay = false; }
+    else if (RETI)  { ime = true;      ime_delay = true; }
+    else if (DI)    { ime = false;     ime_delay = false; }
+    else if (EI)    { ime = ime_delay; ime_delay = true; }
   }
 
   //----------
@@ -501,7 +489,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_MEM_READ_CB:
-    if (cb_col_ == 6 && cb_quad_ != 1) next = Z80_STATE_MEM_WRITE_CB;
+    if (cb_col_ == 6) next = Z80_STATE_MEM_WRITE_CB;
     break;
 
   case Z80_STATE_MEM_WRITE1:

@@ -70,6 +70,8 @@
 #define ALU_A_D8      (quad_ == 3 && col_ == 6)
 #define RST_NN        (quad_ == 3 && col_ == 7)
 
+AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
+
 //-----------------------------------------------------------------------------
 
 CpuOut Z80::reset(int new_model, uint16_t new_pc) {
@@ -186,12 +188,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  AluOut out = exec(reg_fetch8());
-  alu_out_ = out.x;
-  f_ = out.f;
-
-  //----------------------------------------
-
   CpuBus next_bus2 = next_bus();
 
   bus_tag_ = (MemTag)next_bus2.tag;
@@ -199,6 +195,12 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   mem_out_ = next_bus2.data;
   mem_read_ = next_bus2.read;
   mem_write_ = next_bus2.write;
+
+  //----------------------------------------
+
+  AluOut out = exec(reg_fetch8());
+  alu_out_ = out.x;
+  f_ = out.f;
 
   return next_bus2;
 }
@@ -484,14 +486,13 @@ Z80::Z80State Z80::next_state() const {
     else fail();
     break;
 
-  case Z80_STATE_POP2: {
+  case Z80_STATE_POP2:
     if      (RET)           next = Z80_STATE_DELAY_C;
     else if (RETI)          next = Z80_STATE_DELAY_C;
     else if (RET_CC)        next = Z80_STATE_DELAY_C;
     else if (POP_RR)        next = Z80_STATE_DECODE;
     else fail();
     break;
-  }
 
   //----------
 
@@ -795,7 +796,8 @@ CpuBus Z80::next_bus() const {
     else if (DEC_AT_HL)    { bus.addr = hl; bus.data = data_lo_ - 1; }
     else if (ST_HL_D8)     { bus.addr = hl; bus.data = (uint8_t)data_lo_; }
     else if (MV_OPS_ST_HL) { bus.addr = hl; bus.data = reg_fetch8(); }
-    else if (PREFIX_CB)    { bus.addr = hl; bus.data = (uint8_t)alu_out_; }
+    //else if (PREFIX_CB)    { bus.addr = hl; bus.data = (uint8_t)alu_out_; }
+    else if (PREFIX_CB)    { bus.addr = hl; bus.data = (uint8_t)cb(cb_quad_, cb_row_, reg_fetch8(), f).x; }
     else if (ST_A16_A)     { bus.addr = data16_; bus.data = a; }
     else if (ST_A8_A)      { bus.addr = 0xFF00 | data_lo_; bus.data = a; }
     else if (ST_C_A)       { bus.addr = 0xFF00 | c; bus.data = a; }

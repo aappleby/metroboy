@@ -163,10 +163,6 @@ void Gameboy::tick() {
       intf &= ~z80.int_ack_;
     }
 
-    if (tphase == 2) {
-      z80.tick_t2();
-    }
-  
     //----------------------------------------
 
     if (tphase == 0 || tphase == 2) {
@@ -285,9 +281,6 @@ GameboyOut Gameboy::tock() {
   //-----------------------------------
   // Z80
 
-  if (tphase == 0) {
-    z80.tock_t0();
-  }
   if (tphase == 2) {
     z80.tock_t2();
   }

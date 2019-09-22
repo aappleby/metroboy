@@ -6,8 +6,6 @@
 struct Z80 {
   CpuOut reset(int new_model, uint16_t new_pc);
   CpuBus tick_t0(uint8_t imask, uint8_t intf, uint8_t mem_out);
-  void   tock_t0();
-  void   tick_t2();
   CpuOut tock_t2();
 
   uint16_t get_pc() const { return pc; }
@@ -110,22 +108,12 @@ private:
   uint8_t quad_;
   uint8_t row_;
   uint8_t col_;
-  bool odd_row_;
-
+  bool    odd_row_;
   uint8_t op_cb_;
   uint8_t cb_quad_;
   uint8_t cb_row_;
   uint8_t cb_col_;
-
-  bool get_hl_;
-  bool put_hl_;
-  bool pop_d16_;
-  bool push_d16_;
-  bool fetch_d8_;
-  bool fetch_d16_;
-  bool any_read_;
-  bool any_write_;
-  bool take_branch_;
+  bool    take_branch_;
 
   // Interrupt stuff
 
@@ -147,7 +135,6 @@ private:
 
 private:
 
-  void decode();
   Z80State next_state() const;
   uint16_t next_pc(int next_interrupt) const;
   int next_interrupt() const;

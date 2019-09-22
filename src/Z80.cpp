@@ -251,6 +251,8 @@ CpuOut Z80::tock_t2() {
   if (state_ == Z80_STATE_POP1)  sp++;
   if (state_ == Z80_STATE_POP2)  sp++;
 
+  ime = ime_delay;
+
   //if (opcount == 0x0017519b) __debugbreak();
 
   AluOut out = exec(reg_fetch8());
@@ -266,9 +268,7 @@ CpuOut Z80::tock_t2() {
     uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
     if (POP_AF)  f = data_lo_ & 0xF0;
     else         f = (f & ~mask) | (f_ & mask);
-  }
 
-  if (state_ == Z80_STATE_DECODE) {
     if      (MV_OPS)      reg_put8(row_,    (uint8_t)reg_fetch8());
     else if (INC_R)       reg_put8(row_,    (uint8_t)alu_out_);
     else if (DEC_R)       reg_put8(row_,    (uint8_t)alu_out_);
@@ -281,9 +281,7 @@ CpuOut Z80::tock_t2() {
     else if (LD_A_AT_C)   reg_put8(7,       (uint8_t)data16_);
     else if (LD_A_AT_A16) reg_put8(7,       (uint8_t)data16_);
     else if (PREFIX_CB)   reg_put8(cb_col_, (uint8_t)alu_out_);
-  }
 
-  if (state_ == Z80_STATE_DECODE) {
     if      (LD_RR_D16) {
       switch(row_ >> 1) {
       case 0: bc = data16_; break;
@@ -330,8 +328,6 @@ CpuOut Z80::tock_t2() {
 
   //----------
   // When we finish an instruction, update our interrupt master enable.
-
-  ime = ime_delay;
 
   if (state_ == Z80_STATE_DECODE) {
     if (interrupt2) { ime = false;     ime_delay = false; }

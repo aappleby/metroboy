@@ -700,16 +700,10 @@ CpuBus Z80::next_bus() const {
     else if (DEC_AT_HL)    { bus.addr = hl; bus.data = data_lo_ - 1; }
     else if (ST_HL_D8)     { bus.addr = hl; bus.data = (uint8_t)data_lo_; }
     else if (MV_OPS_ST_HL) { bus.addr = hl; bus.data = reg_fetch8(); }
-    
-    else if (push_d16_) {
-      if (interrupt2)        { bus.addr = sp - 1; bus.data = (uint8_t)((pc) >> 8); }
-      else  if (CALL_A16)    { bus.addr = sp - 1; bus.data = (uint8_t)((pc + 3) >> 8); } 
-      else  if (CALL_CC_A16) { bus.addr = sp - 1; bus.data = (uint8_t)((pc + 3) >> 8); }
-      else if (RST_NN)       { bus.addr = sp - 1; bus.data = (uint8_t)((pc + 1) >> 8); }
-      else                   { bus.addr = sp - 1; bus.data = (uint8_t)(reg_fetch16() >> 8); }
-    }
-
-
+    else if (interrupt2)   { bus.addr = sp - 1; bus.data = (uint8_t)((pc) >> 8); }
+    else if (CALL_A16)     { bus.addr = sp - 1; bus.data = (uint8_t)((pc + 3) >> 8); } 
+    else if (CALL_CC_A16)  { bus.addr = sp - 1; bus.data = (uint8_t)((pc + 3) >> 8); }
+    else if (RST_NN)       { bus.addr = sp - 1; bus.data = (uint8_t)((pc + 1) >> 8); }
     else if (ST_A16_A)     { bus.addr = data16_; bus.data = a; }
     else if (ST_A8_A)      { bus.addr = 0xFF00 | data_lo_; bus.data = a; }
     else if (ST_C_A)       { bus.addr = 0xFF00 | c; bus.data = a; }

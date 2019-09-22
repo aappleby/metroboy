@@ -62,19 +62,19 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
+  //load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
 
-  //load("cpu_instrs");
+  load("cpu_instrs");
   //load("02-interrupts");
   //load("instr_timing");
 
   //load("microtests/build/dmg", "ei_timing");
   //load("microtests/build/dmg", "hblank_int_scx0_halt_a");
 
-  //runmode = RUN_FAST;
+  runmode = RUN_FAST;
 
   //load("microtests/build/dmg", "oam_int_halt_b");
 

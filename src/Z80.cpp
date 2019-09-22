@@ -569,25 +569,42 @@ uint16_t Z80::next_pc(int next_interrupt) const {
       return 0x0000;
     }
   }
-  else if (take_branch_) {
-    bool jump16 = JP_CC_A16 || JP_A16 || CALL_CC_A16 || CALL_A16 || RET || RETI || RET_CC;
-
-    if (JP_HL)                  return hl;
-    else if (RST_NN)            return op_ - 0xC7;
-    else if (JR_CC_R8 || JR_R8) return pc + 2 + (int8_t)data_lo_;
-    else if (jump16)            return data16_;
-  }
-  else if (fetch_d16_) {
-    return pc + 3;
-  }
-  else if (fetch_d8_ || PREFIX_CB) {
-    return pc + 2;
-  }
-  else {
-    return pc + 1;
+  
+  if (take_branch_) {
+    if      (JP_HL)       return hl;
+    else if (RST_NN)      return op_ - 0xC7;
+    else if (JR_R8)       return pc + 2 + (int8_t)data_lo_;
+    else if (JR_CC_R8)    return pc + 2 + (int8_t)data_lo_;
+    else if (JP_A16)      return data16_;
+    else if (JP_CC_A16)   return data16_;
+    else if (CALL_A16)    return data16_;
+    else if (CALL_CC_A16) return data16_;
+    else if (RET)         return data16_;
+    else if (RETI)        return data16_;
+    else if (RET_CC)      return data16_;
+    else                  return pc + 1; // do we ever get here?
   }
 
-  return pc;
+  else if (LD_RR_D16)   return pc + 3;
+  else if (LD_A_AT_A16) return pc + 3;
+  else if (ST_A16_SP)   return pc + 3;
+  else if (ST_A16_A)    return pc + 3;
+  else if (JP_A16)      return pc + 3;
+  else if (JP_CC_A16)   return pc + 3;
+  else if (CALL_A16)    return pc + 3;
+  else if (CALL_CC_A16) return pc + 3;
+
+  else if (LD_R_D8)     return pc + 2;
+  else if (JR_CC_R8)    return pc + 2;
+  else if (JR_R8)       return pc + 2;
+  else if (LD_A_AT_A8)  return pc + 2;
+  else if (LD_HL_SP_R8) return pc + 2;
+  else if (ST_A8_A)     return pc + 2;
+  else if (ALU_A_D8)    return pc + 2;
+  else if (ADD_SP_R8)   return pc + 2;
+  else if (PREFIX_CB)   return pc + 2;
+
+  else                  return pc + 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -778,9 +795,13 @@ void Z80::decode() {
   fetch_d8_ |= LD_A_AT_A8 || LD_HL_SP_R8 || ST_A8_A || ALU_A_D8 || ADD_SP_R8;
 
   fetch_d16_ |= LD_RR_D16;
+  fetch_d16_ |= LD_A_AT_A16;
+  fetch_d16_ |= ST_A16_SP;
+  fetch_d16_ |= ST_A16_A;
+  fetch_d16_ |= JP_A16;
   fetch_d16_ |= JP_CC_A16;
+  fetch_d16_ |= CALL_A16;
   fetch_d16_ |= CALL_CC_A16;
-  fetch_d16_ |= ST_A16_SP || CALL_A16 || JP_A16 || ST_A16_A || LD_A_AT_A16;
 
   any_read_ |= LD_R_D8;
   any_read_ |= JR_CC_R8;

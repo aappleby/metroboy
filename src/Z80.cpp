@@ -179,22 +179,17 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   state_ = next_state();
 
-  if (state_ == Z80_STATE_PUSH1) sp--;
-  if (state_ == Z80_STATE_PUSH2) sp--;
-
   //----------------------------------------
   // compute new pc
 
   int next_int = next_interrupt();
-  pc_ = next_pc(next_int);
   if (next_int >= 0) int_ack_ = 1 << next_int;
+
+  pc_ = next_pc(next_int);
 
   //----------------------------------------
 
   CpuBus next_bus2 = next_bus();
-
-  if (state_ == Z80_STATE_POP1)  sp++;
-  if (state_ == Z80_STATE_POP2)  sp++;
 
   bus_tag_ = (MemTag)next_bus2.tag;
   mem_addr_ = next_bus2.addr;
@@ -250,6 +245,11 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 //-----------------------------------------------------------------------------
 
 CpuOut Z80::tock_t2() {
+
+  if (state_ == Z80_STATE_PUSH_DELAY) sp--;
+  if (state_ == Z80_STATE_PUSH1) sp--;
+  if (state_ == Z80_STATE_POP1)  sp++;
+  if (state_ == Z80_STATE_POP2)  sp++;
 
   //if (opcount == 0x0017519b) __debugbreak();
 

@@ -666,13 +666,6 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_MEM_READ1:
-    if (LD_A_AT_A16) {
-      bus.tag = TAG_DATA0;
-      bus.addr = data16_;
-      bus.read = true;
-      break;
-    }
-
     if      (LD_R_D8)       { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
     else if (JR_CC_R8)      { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
     else if (JR_R8)         { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
@@ -689,15 +682,24 @@ CpuBus Z80::next_bus() const {
     else if (CALL_A16)      { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
     else if (JP_A16)        { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
     else if (ST_A16_A)      { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
-    else if (LD_A_AT_A16)   { bus.tag = TAG_ARG0;  bus.addr = pc + 1; }
+    else if (LD_A_AT_A16)   { bus.tag = TAG_DATA0; bus.addr = data16_; }
 
-    else if (LD_A_AT_C)  { bus.tag = TAG_DATA0; bus.addr = 0xFF00 | c; }
-    else if (LD_A_AT_BC) { bus.tag = TAG_DATA0; bus.addr = bc; }
-    else if (LD_A_AT_DE) { bus.tag = TAG_DATA0; bus.addr = de; }
+    else if (LD_A_AT_C)     { bus.tag = TAG_DATA0; bus.addr = 0xFF00 | c; }
+    else if (LD_A_AT_BC)    { bus.tag = TAG_DATA0; bus.addr = bc; }
+    else if (LD_A_AT_DE)    { bus.tag = TAG_DATA0; bus.addr = de; }
     
-    else if (get_hl_)    { bus.tag = TAG_DATA0; bus.addr = hl; }
-    
-    else if (pop_d16_)   { bus.tag = TAG_DATA0; bus.addr = sp; }
+    else if (INC_AT_HL)     { bus.tag = TAG_DATA0; bus.addr = hl; }
+    else if (DEC_AT_HL)     { bus.tag = TAG_DATA0; bus.addr = hl; }
+    else if (LD_A_AT_HLP)   { bus.tag = TAG_DATA0; bus.addr = hl; }
+    else if (LD_A_AT_HLM)   { bus.tag = TAG_DATA0; bus.addr = hl; }
+    else if (MV_OPS_LD_HL)  { bus.tag = TAG_DATA0; bus.addr = hl; }
+    else if (ALU_OPS_LD_HL) { bus.tag = TAG_DATA0; bus.addr = hl; }
+
+    else if (RET)           { bus.tag = TAG_DATA0; bus.addr = sp; }
+    else if (RETI)          { bus.tag = TAG_DATA0; bus.addr = sp; }
+    else if (POP_RR)        { bus.tag = TAG_DATA0; bus.addr = sp; }
+    else if (RET_CC)        { bus.tag = TAG_DATA0; bus.addr = sp; }
+    else if (RET_CC)        { bus.tag = TAG_DATA0; bus.addr = sp; }
 
     else if (RET_CC)     { bus.tag = TAG_DATA0; bus.addr = sp; }
     else                 { assert(false); }

@@ -679,64 +679,45 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    if      (ST_BC_A)  { bus.data = a; bus.addr = bc; }
-    else if (ST_DE_A)  { bus.data = a; bus.addr = de; }
-    else if (ST_HLP_A) { bus.data = a; bus.addr = hl; }
-    else if (ST_HLM_A) { bus.data = a; bus.addr = hl; }
-
-    else if (put_hl_) {
-      if      (INC_AT_HL)    { bus.addr = hl; bus.data = data_lo_ + 1; }
-      else if (DEC_AT_HL)    { bus.addr = hl; bus.data = data_lo_ - 1; }
-      else if (ST_HL_D8)     { bus.addr = hl; bus.data = (uint8_t)data_lo_; }
-      else if (MV_OPS_ST_HL) { bus.addr = hl; bus.data = reg_fetch8(); }
-    }
+    if      (ST_BC_A)      { bus.addr = bc; bus.data = a; }
+    else if (ST_DE_A)      { bus.addr = de; bus.data = a; }
+    else if (ST_HLP_A)     { bus.addr = hl; bus.data = a; }
+    else if (ST_HLM_A)     { bus.addr = hl; bus.data = a; }
+    else if (INC_AT_HL)    { bus.addr = hl; bus.data = data_lo_ + 1; }
+    else if (DEC_AT_HL)    { bus.addr = hl; bus.data = data_lo_ - 1; }
+    else if (ST_HL_D8)     { bus.addr = hl; bus.data = (uint8_t)data_lo_; }
+    else if (MV_OPS_ST_HL) { bus.addr = hl; bus.data = reg_fetch8(); }
+    
     else if (push_d16_) {
-      bus.addr = sp - 1;
-      if (interrupt2)                    bus.data = (uint8_t)((pc) >> 8);
-      else  if (CALL_CC_A16 || CALL_A16) bus.data = (uint8_t)((pc + 3) >> 8);
-      else if (RST_NN)                   bus.data = (uint8_t)((pc + 1) >> 8);
-      else {
-        bus.data = (uint8_t)(reg_fetch16() >> 8);
-      }
-    }
-    else if (ST_A16_A) {
-      bus.addr = data16_;
-      bus.data = a;
-    }
-    else if (ST_A8_A) {
-      bus.addr = 0xFF00 | data_lo_;
-      bus.data = a;
-    }
-    else if (ST_C_A) {
-      bus.addr = 0xFF00 | c;
-      bus.data = a;
-    }
-    else if (ST_A16_SP) {
-      bus.addr = data16_;
-      bus.data = (uint8_t)sp;
+      if (interrupt2)        { bus.addr = sp - 1; bus.data = (uint8_t)((pc) >> 8); }
+      else  if (CALL_A16)    { bus.addr = sp - 1; bus.data = (uint8_t)((pc + 3) >> 8); } 
+      else  if (CALL_CC_A16) { bus.addr = sp - 1; bus.data = (uint8_t)((pc + 3) >> 8); }
+      else if (RST_NN)       { bus.addr = sp - 1; bus.data = (uint8_t)((pc + 1) >> 8); }
+      else                   { bus.addr = sp - 1; bus.data = (uint8_t)(reg_fetch16() >> 8); }
     }
 
-    bus.read = false;
+
+    else if (ST_A16_A)     { bus.addr = data16_; bus.data = a; }
+    else if (ST_A8_A)      { bus.addr = 0xFF00 | data_lo_; bus.data = a; }
+    else if (ST_C_A)       { bus.addr = 0xFF00 | c; bus.data = a; }
+    else if (ST_A16_SP)    { bus.addr = data16_; bus.data = (uint8_t)sp; }
+
     bus.write = true;
     break;
   case Z80_STATE_MEM_WRITE2:
     if (push_d16_) {
-      bus.addr = sp - 2;
-      if (interrupt2)                   bus.data = (uint8_t)(pc);
-      else if (CALL_CC_A16 || CALL_A16) bus.data = (uint8_t)(pc + 3);
-      else if (RST_NN)                  bus.data = (uint8_t)(pc + 1);
-      else                              bus.data = (uint8_t)reg_fetch16();
+      if (interrupt2)                   { bus.addr = sp - 2; bus.data = (uint8_t)(pc); }
+      else if (CALL_CC_A16 || CALL_A16) { bus.addr = sp - 2; bus.data = (uint8_t)(pc + 3); }
+      else if (RST_NN)                  { bus.addr = sp - 2; bus.data = (uint8_t)(pc + 1); }
+      else                              { bus.addr = sp - 2; bus.data = (uint8_t)reg_fetch16(); }
     }
-    else if (ST_A16_SP) {
-      bus.addr = data16_ + 1;
-      bus.data = (uint8_t)(sp >> 8);
-    }
+    else if (ST_A16_SP) { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp >> 8); }
     bus.write = true;
     break;
+
   case Z80_STATE_MEM_WRITE_CB:
-    bus.addr = hl;
     bus.write = true;
-    bus.data = (uint8_t)alu_out_; // this is why we can't move the alu execution down...
+    if (PREFIX_CB) { bus.addr = hl; bus.data = (uint8_t)alu_out_; }
     break;
 
   case Z80_STATE_DELAY_A: break;

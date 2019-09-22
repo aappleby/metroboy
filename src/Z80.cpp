@@ -457,12 +457,16 @@ Z80::Z80State Z80::next_state() const {
   //----------
 
   case Z80_STATE_PUSH1:
-    if (PUSH_RR) next = Z80_STATE_PUSH2;
+    if      (PUSH_RR)       next = Z80_STATE_PUSH2;
+    else if (CALL_A16)      next = Z80_STATE_PUSH2;
+    else if (CALL_CC_A16)   next = Z80_STATE_PUSH2;
     else fail();
     break;
 
   case Z80_STATE_PUSH2:
-    if (PUSH_RR) next = Z80_STATE_DECODE;
+    if      (PUSH_RR)       next = Z80_STATE_DECODE;
+    else if (CALL_A16)      next = Z80_STATE_DECODE;
+    else if (CALL_CC_A16)   next = Z80_STATE_DECODE;
     else fail();
     break;
 
@@ -583,9 +587,11 @@ Z80::Z80State Z80::next_state() const {
   case Z80_STATE_DELAY_B:
     if      (interrupt2)    next = Z80_STATE_DELAY_C;
     else if (ADD_SP_R8)     next = Z80_STATE_DELAY_C;
+    
     else if (PUSH_RR)       next = Z80_STATE_PUSH1;
-    else if (CALL_CC_A16)   next = Z80_STATE_MEM_WRITE1;
-    else if (CALL_A16)      next = Z80_STATE_MEM_WRITE1;
+    else if (CALL_CC_A16)   next = Z80_STATE_PUSH1;
+    else if (CALL_A16)      next = Z80_STATE_PUSH1;
+    
     else fail();
     break;
 
@@ -715,22 +721,43 @@ CpuBus Z80::next_bus() const {
 
   case Z80_STATE_PUSH1:
     bus.addr = sp - 1;
-    bus.data = (uint8_t)(reg_fetch16() >> 8);
+
+    if      (PUSH_RR)     bus.data = (uint8_t)(reg_fetch16() >> 8);
+    else if (CALL_A16)    bus.data = (uint8_t)((pc + 3) >> 8);
+    else if (CALL_CC_A16) bus.data = (uint8_t)((pc + 3) >> 8);
+    else fail();
+
     bus.read = false;
     bus.write = true;
     break;
   case Z80_STATE_PUSH2:
     bus.addr = sp - 2;
-    bus.data = (uint8_t)reg_fetch16();
+
+    if      (PUSH_RR)     bus.data = (uint8_t)reg_fetch16();
+    else if (CALL_A16)    bus.data = (uint8_t)(pc + 3);
+    else if (CALL_CC_A16) bus.data = (uint8_t)(pc + 3);
+    else fail();
+
     bus.write = true;
     break;
 
   case Z80_STATE_POP1:
+    if      (RET)    {}
+    else if (RETI)   {}
+    else if (RET_CC) {}
+    else if (POP_RR) {}
+    else fail();
+
     bus.tag = TAG_DATA0;
     bus.addr = sp;
     bus.read = true;
     break;
   case Z80_STATE_POP2:
+    if      (RET)    {}
+    else if (RETI)   {}
+    else if (RET_CC) {}
+    else if (POP_RR) {}
+
     bus.tag = TAG_DATA1;
     bus.addr = sp + 1;
     bus.read = true;

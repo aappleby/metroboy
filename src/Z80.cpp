@@ -376,7 +376,7 @@ Z80::Z80State Z80::next_state() const {
 
   switch (state) {
   case Z80_STATE_DECODE:
-    if      (interrupt2)    next = Z80_STATE_MEM_WRITE1;
+    if      (interrupt2)    next = Z80_STATE_PUSH1;
     else if (MV_OPS_ST_HL)  next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLP_A)      next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLM_A)      next = Z80_STATE_MEM_WRITE1;
@@ -457,7 +457,8 @@ Z80::Z80State Z80::next_state() const {
   //----------
 
   case Z80_STATE_PUSH1:
-    if      (PUSH_RR)       next = Z80_STATE_PUSH2;
+    if      (interrupt2)    next = Z80_STATE_PUSH2;
+    else if (PUSH_RR)       next = Z80_STATE_PUSH2;
     else if (CALL_A16)      next = Z80_STATE_PUSH2;
     else if (CALL_CC_A16)   next = Z80_STATE_PUSH2;
     else if (RST_NN)        next = Z80_STATE_PUSH2;
@@ -465,7 +466,8 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_PUSH2:
-    if      (PUSH_RR)       next = Z80_STATE_DECODE;
+    if      (interrupt2)    next = Z80_STATE_DELAY_B;
+    else if (PUSH_RR)       next = Z80_STATE_DECODE;
     else if (CALL_A16)      next = Z80_STATE_DECODE;
     else if (CALL_CC_A16)   next = Z80_STATE_DECODE;
     else if (RST_NN)        next = Z80_STATE_DECODE;
@@ -551,8 +553,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    if      (interrupt2)    next = Z80_STATE_MEM_WRITE2;
-    else if (ST_A16_SP)     next = Z80_STATE_MEM_WRITE2;
+    if      (ST_A16_SP)     next = Z80_STATE_MEM_WRITE2;
     else if (INC_AT_HL)     next = Z80_STATE_DECODE;
     else if (DEC_AT_HL)     next = Z80_STATE_DECODE;
     else if (ST_HLP_A)      next = Z80_STATE_DECODE;
@@ -569,8 +570,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_MEM_WRITE2:
-    if      (interrupt2)    next = Z80_STATE_DELAY_B;
-    else if (ST_A16_SP)     next = Z80_STATE_DECODE;
+    if      (ST_A16_SP)     next = Z80_STATE_DECODE;
     else fail();
     break;
 
@@ -583,11 +583,9 @@ Z80::Z80State Z80::next_state() const {
   case Z80_STATE_DELAY_B:
     if      (interrupt2)    next = Z80_STATE_DELAY_C;
     else if (ADD_SP_R8)     next = Z80_STATE_DELAY_C;
-    
     else if (PUSH_RR)       next = Z80_STATE_PUSH1;
     else if (CALL_CC_A16)   next = Z80_STATE_PUSH1;
     else if (CALL_A16)      next = Z80_STATE_PUSH1;
-    
     else fail();
     break;
 
@@ -607,7 +605,6 @@ Z80::Z80State Z80::next_state() const {
     else if (JP_A16)        next = Z80_STATE_DECODE;
     else if (JP_CC_A16)     next = Z80_STATE_DECODE;
     else fail();
-
     break;
   }
 
@@ -704,11 +701,13 @@ CpuBus Z80::next_bus() const {
     bus.read = true;
     bus.write = false;
     break;
+
   case Z80_STATE_DECODE_CB:
     bus.tag = TAG_OPCODE_CB;
     bus.addr = pc + 1;
     bus.read = true;
     break;
+
   case Z80_STATE_HALT:
     bus.tag = TAG_OPCODE;
     bus.addr = pc_;
@@ -716,26 +715,24 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_PUSH1:
-    bus.addr = sp - 1;
-
-    if      (PUSH_RR)     bus.data = (uint8_t)(reg_fetch16() >> 8);
+    if      (interrupt2)  bus.data = (uint8_t)((pc) >> 8);
+    else if (PUSH_RR)     bus.data = (uint8_t)(reg_fetch16() >> 8);
     else if (CALL_A16)    bus.data = (uint8_t)((pc + 3) >> 8);
     else if (CALL_CC_A16) bus.data = (uint8_t)((pc + 3) >> 8);
     else if (RST_NN)      bus.data = (uint8_t)((pc + 1) >> 8);
     else fail();
-
-    bus.read = false;
+    bus.addr = sp - 1;
     bus.write = true;
     break;
-  case Z80_STATE_PUSH2:
-    bus.addr = sp - 2;
 
-    if      (PUSH_RR)     bus.data = (uint8_t)reg_fetch16();
+  case Z80_STATE_PUSH2:
+    if      (interrupt2)  bus.data = (uint8_t)(pc);
+    else if (PUSH_RR)     bus.data = (uint8_t)reg_fetch16();
     else if (CALL_A16)    bus.data = (uint8_t)(pc + 3);
     else if (CALL_CC_A16) bus.data = (uint8_t)(pc + 3);
     else if (RST_NN)      bus.data = (uint8_t)(pc + 1);
     else fail();
-
+    bus.addr = sp - 2;
     bus.write = true;
     break;
 
@@ -745,17 +742,16 @@ CpuBus Z80::next_bus() const {
     else if (RET_CC) {}
     else if (POP_RR) {}
     else fail();
-
     bus.tag = TAG_DATA0;
     bus.addr = sp;
     bus.read = true;
     break;
+
   case Z80_STATE_POP2:
     if      (RET)    {}
     else if (RETI)   {}
     else if (RET_CC) {}
     else if (POP_RR) {}
-
     bus.tag = TAG_DATA1;
     bus.addr = sp + 1;
     bus.read = true;
@@ -766,6 +762,7 @@ CpuBus Z80::next_bus() const {
     bus.addr = pc + 1;
     bus.read = true;
     break;
+
   case Z80_STATE_ARG2:
     bus.tag = TAG_ARG1;
     bus.addr = pc + 2;
@@ -774,12 +771,10 @@ CpuBus Z80::next_bus() const {
 
   case Z80_STATE_MEM_READ1:
     if      (LD_A_AT_A16)   { bus.tag = TAG_DATA0; bus.addr = data16_; }
-
     else if (LD_A_AT_A8)    { bus.tag = TAG_DATA0; bus.addr = 0xFF00 | data_lo_; }
     else if (LD_A_AT_C)     { bus.tag = TAG_DATA0; bus.addr = 0xFF00 | c; }
     else if (LD_A_AT_BC)    { bus.tag = TAG_DATA0; bus.addr = bc; }
     else if (LD_A_AT_DE)    { bus.tag = TAG_DATA0; bus.addr = de; }
-
     else if (INC_AT_HL)     { bus.tag = TAG_DATA0; bus.addr = hl; }
     else if (DEC_AT_HL)     { bus.tag = TAG_DATA0; bus.addr = hl; }
     else if (LD_A_AT_HLP)   { bus.tag = TAG_DATA0; bus.addr = hl; }
@@ -787,7 +782,6 @@ CpuBus Z80::next_bus() const {
     else if (MV_OPS_LD_HL)  { bus.tag = TAG_DATA0; bus.addr = hl; }
     else if (ALU_OPS_LD_HL) { bus.tag = TAG_DATA0; bus.addr = hl; }
     else if (PREFIX_CB)     { bus.tag = TAG_DATA0; bus.addr = hl; }
-
     else fail();
     bus.read = true;
     break;
@@ -802,18 +796,16 @@ CpuBus Z80::next_bus() const {
     else if (ST_HL_D8)     { bus.addr = hl; bus.data = (uint8_t)data_lo_; }
     else if (MV_OPS_ST_HL) { bus.addr = hl; bus.data = reg_fetch8(); }
     else if (PREFIX_CB)    { bus.addr = hl; bus.data = (uint8_t)alu_out_; }
-    else if (interrupt2)   { bus.addr = sp - 1; bus.data = (uint8_t)((pc) >> 8); }
     else if (ST_A16_A)     { bus.addr = data16_; bus.data = a; }
     else if (ST_A8_A)      { bus.addr = 0xFF00 | data_lo_; bus.data = a; }
     else if (ST_C_A)       { bus.addr = 0xFF00 | c; bus.data = a; }
     else if (ST_A16_SP)    { bus.addr = data16_; bus.data = (uint8_t)sp; }
     else fail();
-
     bus.write = true;
     break;
+
   case Z80_STATE_MEM_WRITE2:
-    if      (interrupt2)  { bus.addr = sp - 2; bus.data = (uint8_t)(pc); }
-    else if (ST_A16_SP)   { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp >> 8); }
+    if      (ST_A16_SP)   { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp >> 8); }
     else fail();
     bus.write = true;
     break;

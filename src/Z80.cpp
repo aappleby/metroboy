@@ -388,7 +388,7 @@ Z80::Z80State Z80::next_state() const {
     else if (LD_A_AT_C)     next = Z80_STATE_MEM_READ1;
     
     else if (RET_CC)        next = Z80_STATE_DELAY_A;
-    else if (RST_NN)        next = Z80_STATE_DELAY_A;
+    else if (RST_NN)        next = Z80_STATE_PUSH_DELAY;
     
     else if (INC_RR)        next = Z80_STATE_DELAY_C;
     else if (DEC_RR)        next = Z80_STATE_DELAY_C;
@@ -430,9 +430,7 @@ Z80::Z80State Z80::next_state() const {
     else if (ROTATE_OPS)    next = Z80_STATE_DECODE;
     else if (JP_HL)         next = Z80_STATE_DECODE;
 
-    else {
-      printf("fail 0x%02x\n", op_);
-    }
+    else fail();
     break;
 
   case Z80_STATE_DECODE_CB:
@@ -446,7 +444,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_INTERRUPT:
-    if (interrupt2) next = Z80_STATE_PUSH_DELAY;
+    if      (interrupt2)    next = Z80_STATE_PUSH_DELAY;
     else fail();
     break;
 
@@ -457,6 +455,7 @@ Z80::Z80State Z80::next_state() const {
     else if (PUSH_RR)       next = Z80_STATE_PUSH1;
     else if (CALL_CC_A16)   next = Z80_STATE_PUSH1;
     else if (CALL_A16)      next = Z80_STATE_PUSH1;
+    else if (RST_NN)        next = Z80_STATE_PUSH1;
     else fail();
     break;
 
@@ -578,8 +577,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_DELAY_A:
-    if      (RST_NN)        next = Z80_STATE_PUSH1;
-    else if (RET_CC)        next = take_branch_ ? Z80_STATE_POP1 : Z80_STATE_DECODE;
+    if      (RET_CC)        next = take_branch_ ? Z80_STATE_POP1 : Z80_STATE_DECODE;
     else fail();
     break;
 

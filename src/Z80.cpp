@@ -304,7 +304,13 @@ CpuOut Z80::tock_t2() {
 
     if      (ADD_SP_R8)   data16_ = alu_out_;
     else if (MV_SP_HL)    data16_ = hl;
-    else if (push_d16_)   data16_ = sp - 2;
+
+    else if (CALL_A16)   data16_ = sp - 2;
+    else if (PUSH_RR)    data16_ = sp - 2;
+    else if (RST_NN)     data16_ = sp - 2;
+    else if (CALL_CC_A16 && take_branch_)  data16_ = sp - 2;
+
+
     else if (RET)         data16_ = sp + 2;
     else if (RETI)        data16_ = sp + 2;
     else if (POP_RR)      data16_ = sp + 2;
@@ -319,7 +325,13 @@ CpuOut Z80::tock_t2() {
 
     if      (ADD_SP_R8)   sp = data16_;
     else if (MV_SP_HL)    sp = data16_;
-    else if (push_d16_)   sp = data16_;
+
+    else if (CALL_A16)   sp = data16_;
+    else if (PUSH_RR)    sp = data16_;
+    else if (RST_NN)     sp = data16_;
+    else if (CALL_CC_A16 && take_branch_)  sp = data16_;
+
+
     else if (RET)         sp = data16_;
     else if (RETI)        sp = data16_;
     else if (POP_RR)      sp = data16_;

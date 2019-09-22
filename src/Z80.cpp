@@ -6,6 +6,8 @@
 
 //-----------------------------------------------------------------------------
 
+#define NOP           (op_ == 0x00)
+
 #define ST_BC_A       (op_ == 0x02)
 #define ST_DE_A       (op_ == 0x12)
 #define ST_HLP_A      (op_ == 0x22)
@@ -378,6 +380,7 @@ Z80::Z80State Z80::next_state() const {
     else if (ST_C_A)        next = Z80_STATE_MEM_WRITE1;
     else if (ST_BC_A)       next = Z80_STATE_MEM_WRITE1;
     else if (ST_DE_A)       next = Z80_STATE_MEM_WRITE1;
+    
     else if (INC_AT_HL)     next = Z80_STATE_MEM_READ1;
     else if (DEC_AT_HL)     next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_HLP)   next = Z80_STATE_MEM_READ1;
@@ -387,17 +390,22 @@ Z80::Z80State Z80::next_state() const {
     else if (LD_A_AT_BC)    next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_DE)    next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_C)     next = Z80_STATE_MEM_READ1;
+    
     else if (RET_CC)        next = Z80_STATE_DELAY_A;
     else if (RST_NN)        next = Z80_STATE_DELAY_A;
+    
     else if (INC_RR)        next = Z80_STATE_DELAY_C;
     else if (DEC_RR)        next = Z80_STATE_DELAY_C;
     else if (ADD_HL_RR)     next = Z80_STATE_DELAY_C;
     else if (MV_SP_HL)      next = Z80_STATE_DELAY_C;
+    
     else if (PREFIX_CB)     next = Z80_STATE_DECODE_CB;
+    
     else if (PUSH_RR)       next = Z80_STATE_PUSH1;
     else if (RET)           next = Z80_STATE_POP1;
     else if (RETI)          next = Z80_STATE_POP1;
     else if (POP_RR)        next = Z80_STATE_POP1;
+
     else if (LD_R_D8)       next = Z80_STATE_ARG1;
     else if (JR_CC_R8)      next = Z80_STATE_ARG1;
     else if (JR_R8)         next = Z80_STATE_ARG1;
@@ -415,6 +423,20 @@ Z80::Z80State Z80::next_state() const {
     else if (CALL_A16)      next = Z80_STATE_ARG1;
     else if (CALL_CC_A16)   next = Z80_STATE_ARG1;
     else if (HALT)          next = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
+
+    else if (NOP)           next = Z80_STATE_DECODE;
+    else if (DI)            next = Z80_STATE_DECODE;
+    else if (EI)            next = Z80_STATE_DECODE;
+    else if (MV_OPS)        next = Z80_STATE_DECODE;
+    else if (ALU_OPS)       next = Z80_STATE_DECODE;
+    else if (INC_R)         next = Z80_STATE_DECODE;
+    else if (DEC_R)         next = Z80_STATE_DECODE;
+    else if (ROTATE_OPS)    next = Z80_STATE_DECODE;
+    else if (JP_HL)         next = Z80_STATE_DECODE;
+
+    else {
+      printf("fail 0x%02x\n", op_);
+    }
     break;
 
   case Z80_STATE_DECODE_CB:

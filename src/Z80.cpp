@@ -320,10 +320,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
+  // set up write
 
-  switch(state_) {
-
-  case Z80_STATE_PUSH1:
+  if (state_ == Z80_STATE_PUSH1) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
@@ -337,14 +336,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (CALL_A16)    data_out = (uint8_t)(pc >> 8);
     else if (CALL_CC_A16) data_out = (uint8_t)(pc >> 8);
     else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
+  }
 
-
-    bus.addr = addr;
-    bus.data = data_out;
-    bus.write = true;
-    break;
-
-  case Z80_STATE_PUSH2:
+  if (state_ == Z80_STATE_PUSH2) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp);
     if (PUSH_RR) {
@@ -358,13 +352,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (CALL_A16)    data_out = (uint8_t)(pc);
     if (CALL_CC_A16) data_out = (uint8_t)(pc);
     if (RST_NN)      data_out = (uint8_t)(pc);
+  }
 
-    bus.addr = addr;
-    bus.data = data_out;
-    bus.write = true;
-    break;
-
-  case Z80_STATE_MEM_WRITE1:
+  if (state_ == Z80_STATE_MEM_WRITE1) {
     if      (ST_BC_A)       { addr = bc;          data_out = a; }
     else if (ST_DE_A)       { addr = de;          data_out = a; }
     else if (ST_HLP_A)      { addr = hl;          data_out = a; }
@@ -378,23 +368,26 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (ST_A8_A)       { addr = 0xFF00 | lo; data_out = a; }
     else if (ST_C_A)        { addr = 0xFF00 | c;  data_out = a; }
     else if (ST_A16_SP)     { addr = temp;        data_out = (uint8_t)sp; }
+  }
 
-    bus.addr = addr;
-    bus.data = data_out;
-    bus.write = true;
-    break;
-
-  case Z80_STATE_MEM_WRITE2:
+  if (state_ == Z80_STATE_MEM_WRITE2) {
     addr = temp + 1;
     data_out = (uint8_t)(sp >> 8);
+  }
 
+  //----------------------------------------
+  // dispatch write
+
+  switch(state_) {
+  case Z80_STATE_PUSH1:
+  case Z80_STATE_PUSH2:
+  case Z80_STATE_MEM_WRITE1:
+  case Z80_STATE_MEM_WRITE2:
     bus.addr = addr;
     bus.data = data_out;
     bus.write = true;
     break;
   }
-
-  //----------------------------------------
 
   return bus;
 }

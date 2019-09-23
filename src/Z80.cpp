@@ -226,7 +226,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_DECODE_CB:
     state_ = CB_COL == 6 ? Z80_STATE_MEM_READ1 : Z80_STATE_DECODE;
-
     pc++;
     break;
 
@@ -259,7 +258,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_ARG1:
-    pc++;
     state_ = Z80_STATE_ARG2;
     if      (LD_A_AT_A8)    state_ = Z80_STATE_MEM_READ1;
     else if (ST_HL_D8)      state_ = Z80_STATE_MEM_WRITE1;
@@ -278,7 +276,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_ARG2:
-    pc++;
     if      (LD_A_AT_A16)   state_ = Z80_STATE_MEM_READ1;
     else if (ST_A16_A)      state_ = Z80_STATE_MEM_WRITE1;
     else if (ST_A16_SP)     state_ = Z80_STATE_MEM_WRITE1;
@@ -501,6 +498,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     imask_latch = imask_;
     break;
 
+  case Z80_STATE_ARG1:
+    pc++;
+    break;
+
   case Z80_STATE_ARG2:
     if (LD_RR_D16) {
       switch(OP_ROW >> 1) {
@@ -510,6 +511,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       case 3: sp = temp; break;
       }
     }
+    pc++;
     break;
 
   case Z80_STATE_POP2:

@@ -163,30 +163,32 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------
 
-  take_branch_ = false;
+  if (state == Z80_STATE_DECODE) {
+    take_branch_ = false;
 
-  bool cond_pass = false;
-  switch (row_ & 3) {
-  case 0: cond_pass = !(f & F_ZERO); break;
-  case 1: cond_pass = (f & F_ZERO); break;
-  case 2: cond_pass = !(f & F_CARRY); break;
-  case 3: cond_pass = (f & F_CARRY); break;
+    bool cond_pass = false;
+    switch (row_ & 3) {
+    case 0: cond_pass = !(f & F_ZERO); break;
+    case 1: cond_pass = (f & F_ZERO); break;
+    case 2: cond_pass = !(f & F_CARRY); break;
+    case 3: cond_pass = (f & F_CARRY); break;
+    }
+
+    take_branch_ |= CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN || JR_R8;
+    take_branch_ |= (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_pass;
+    take_branch_ |= (interrupt2 != 0);
+
+    bool cond_fail = false;
+
+    switch (row_ & 3) {
+    case 0: cond_fail = (f & F_ZERO); break;
+    case 1: cond_fail = !(f & F_ZERO); break;
+    case 2: cond_fail = (f & F_CARRY); break;
+    case 3: cond_fail = !(f & F_CARRY); break;
+    }
+
+    no_branch_ = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
   }
-
-  take_branch_ |= CALL_A16 || JP_A16 || RET || RETI || JP_HL || RST_NN || JR_R8;
-  take_branch_ |= (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_pass;
-  take_branch_ |= (interrupt2 != 0);
-
-  bool cond_fail = false;
-
-  switch (row_ & 3) {
-  case 0: cond_fail = (f & F_ZERO); break;
-  case 1: cond_fail = !(f & F_ZERO); break;
-  case 2: cond_fail = (f & F_CARRY); break;
-  case 3: cond_fail = !(f & F_CARRY); break;
-  }
-
-  no_branch_ = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
 
   //----------
 
@@ -258,6 +260,9 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 //-----------------------------------------------------------------------------
 
 CpuOut Z80::tock_t2() {
+  if (opcount == 0x1ff9) {
+    //printf("x");
+  }
 
   if (state_ == Z80_STATE_PUSH_DELAY) sp--;
   if (state_ == Z80_STATE_PUSH1) sp--;
@@ -274,16 +279,48 @@ CpuOut Z80::tock_t2() {
 
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
+  //----------------------------------------
+
+  if (state == Z80_STATE_DECODE)    pc2++;
+  if (state == Z80_STATE_DECODE_CB) pc2++;
+  if (state == Z80_STATE_ARG1)      pc2++;
+  if (state == Z80_STATE_ARG2)      pc2++;
+
   if (state_ == Z80_STATE_DECODE) {
-    pc2 = pc_;
+    int next_int = next_interrupt();
+
+    if (interrupt2) {
+      if (next_int >= 0) {
+        pc2 = uint16_t(0x0040 + (next_int * 8));
+      }
+      else {
+        pc2 = 0x0000;
+      }
+    }
+
+    if      (JP_HL)       pc2 = hl;
+    else if (RST_NN)      pc2 = op_ - 0xC7;
+    else if (JR_R8)       pc2 = pc2 + (int8_t)data_lo_;
+    else if (JP_A16)      pc2 = data16_;
+    else if (CALL_A16)    pc2 = data16_;
+    else if (RET)         pc2 = data16_;
+    else if (RETI)        pc2 = data16_;
+    else if (take_branch_) {
+      if      (JR_CC_R8)    pc2 = pc2 + (int8_t)data_lo_;
+      else if (JP_CC_A16)   pc2 = data16_;
+      else if (CALL_CC_A16) pc2 = data16_;
+      else if (RET_CC)      pc2 = data16_;
+    }
   }
+
+  //----------------------------------------
 
   // Write all our registers from the previous instruction before the new opcode shows up.
   if (state_ == Z80_STATE_DECODE) {
     pc = pc_;
 
     if (pc2 != pc) {
-      printf("pc2 fail 0x%02x\n", op_);
+      //printf("pc2 fail 0x%02x\n", op_);
     }
     opcount = opcount + 1;
     uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];

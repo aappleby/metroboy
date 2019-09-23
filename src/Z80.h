@@ -84,6 +84,8 @@ private:
   uint16_t pc, pc_;
   uint8_t f_;
 
+  uint16_t pc2;
+
   union {
     struct {
       uint8_t data_lo;

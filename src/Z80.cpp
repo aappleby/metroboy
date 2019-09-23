@@ -92,6 +92,7 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
     hl = 0x014D;
     sp = 0xFFFE;
     pc = pc_ = new_pc;
+    pc2 = pc;
   }
   else {
     af = 0x0000;
@@ -100,6 +101,7 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
     hl = 0x0000;
     sp = 0x0000;
     pc = pc_ = new_pc;
+    pc2 = pc;
   }
 
   op_ = 0;
@@ -272,9 +274,17 @@ CpuOut Z80::tock_t2() {
 
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
+  if (state_ == Z80_STATE_DECODE) {
+    pc2 = pc_;
+  }
+
   // Write all our registers from the previous instruction before the new opcode shows up.
   if (state_ == Z80_STATE_DECODE) {
     pc = pc_;
+
+    if (pc2 != pc) {
+      printf("pc2 fail 0x%02x\n", op_);
+    }
     opcount = opcount + 1;
     uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
     if (POP_AF)  f = data_lo_ & 0xF0;

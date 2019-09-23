@@ -110,6 +110,7 @@ private:
   AluOut   exec(uint8_t src) const;
   uint8_t  reg_fetch8() const;
   void     reg_put8(int mux, uint8_t reg);
+  Z80State next_state();
 };
 
 //-----------------------------------------------------------------------------

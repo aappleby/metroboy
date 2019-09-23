@@ -79,6 +79,8 @@
 #define ALU_A_D8      (OP_QUAD == 3 && OP_COL == 6)
 #define RST_NN        (OP_QUAD == 3 && OP_COL == 7)
 
+#define INTERRUPT     ((imask_ & intf_) && ime)
+
 AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
 
 //-----------------------------------------------------------------------------
@@ -111,7 +113,6 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
   interrupt2 = false;
   ime = false;
   ime_delay = false;
-  alu_out_ = 0;
   opcount = 0;
   cycle = 0;
   unhalt = 0;
@@ -258,33 +259,31 @@ CpuOut Z80::tock_t2() {
 
   //if (opcount == 0x0017519b) __debugbreak();
 
-  AluOut out = exec(reg_fetch8());
-  alu_out_ = out.x;
-  f_ = out.f;
-
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
   //----------------------------------------
 
   // Write all our registers from the previous instruction before the new opcode shows up.
   if (state_ == Z80_STATE_DECODE) {
+    AluOut out = exec(reg_fetch8());
+
     opcount = opcount + 1;
     uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op_];
     if (POP_AF)  f = data_lo_ & 0xF0;
-    else         f = (f & ~mask) | (f_ & mask);
+    else         f = (f & ~mask) | (out.f & mask);
 
     if      (MV_OPS)      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
-    else if (INC_R)       reg_put8(OP_ROW, (uint8_t)alu_out_);
-    else if (DEC_R)       reg_put8(OP_ROW, (uint8_t)alu_out_);
+    else if (INC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
+    else if (DEC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
     else if (LD_R_D8)     reg_put8(OP_ROW, (uint8_t)data16_);
-    else if (ALU_A_D8)    reg_put8(7,      (uint8_t)alu_out_);
-    else if (ALU_OPS)     reg_put8(7,      (uint8_t)alu_out_);
-    else if (ROTATE_OPS)  reg_put8(7,      (uint8_t)alu_out_);
+    else if (ALU_A_D8)    reg_put8(7,      (uint8_t)out.x);
+    else if (ALU_OPS)     reg_put8(7,      (uint8_t)out.x);
+    else if (ROTATE_OPS)  reg_put8(7,      (uint8_t)out.x);
     else if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)data16_);
     else if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)data16_);
     else if (LD_A_AT_C)   reg_put8(7,      (uint8_t)data16_);
     else if (LD_A_AT_A16) reg_put8(7,      (uint8_t)data16_);
-    else if (PREFIX_CB)   reg_put8(CB_COL, (uint8_t)alu_out_);
+    else if (PREFIX_CB)   reg_put8(CB_COL, (uint8_t)out.x);
 
     if      (LD_RR_D16) {
       switch(OP_ROW >> 1) {
@@ -319,13 +318,13 @@ CpuOut Z80::tock_t2() {
       }
 
     }
-    else if (ADD_HL_RR)                   hl = alu_out_;
-    else if (LD_HL_SP_R8)                 hl = alu_out_;
+    else if (ADD_HL_RR)                   hl = out.x;
+    else if (LD_HL_SP_R8)                 hl = out.x;
     else if (ST_HLP_A)                    hl = hl + 1;
     else if (ST_HLM_A)                    hl = hl - 1;
     else if (LD_A_AT_HLP)                 hl = hl + 1;
     else if (LD_A_AT_HLM)                 hl = hl - 1;
-    else if (ADD_SP_R8)                   sp = alu_out_;
+    else if (ADD_SP_R8)                   sp = out.x;
     else if (MV_SP_HL)                    sp = hl;
     else if (ADD_SP_R8)                   sp = sp + (int8_t)data_lo_;
   }

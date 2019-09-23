@@ -66,6 +66,9 @@ private:
   union { uint16_t af;   struct { uint8_t  f; uint8_t  a; }; };
   union { uint16_t sp;   struct { uint8_t  p; uint8_t  s; }; };
   union { uint16_t temp; struct { uint8_t lo; uint8_t hi; }; };
+
+  // internal address register
+  uint16_t addr;
 #pragma warning(pop)
 
   //----------
@@ -73,8 +76,6 @@ private:
 private:
 
   Z80State next_state(bool take_branch) const;
-  CpuBus   next_bus(uint8_t reg) const;
-
   AluOut   exec(uint8_t src) const;
   uint8_t  reg_fetch8() const;
   void     reg_put8(int mux, uint8_t reg);

@@ -462,14 +462,12 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_HALT:
-    if (state == Z80_STATE_DECODE) unhalt = 0;
     break;
 
   case Z80_STATE_INTERRUPT:
     break;
 
   case Z80_STATE_PUSH_DELAY:
-    sp--;
     break;
 
   case Z80_STATE_PUSH1:
@@ -487,7 +485,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (RST_NN)      bus.data = (uint8_t)(pc >> 8);
     bus.addr = sp;
     bus.write = true;
-    sp--;
     break;
 
   case Z80_STATE_PUSH2:
@@ -546,7 +543,29 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)intf;
   (void)bus_data;
 
+  //----------------------------------------
+
+  switch (state) {
+  case Z80_STATE_DECODE:
+    break;
+  }
+
+  //----------------------------------------
+
   switch(state_) {
+
+  case Z80_STATE_HALT:
+    if (state == Z80_STATE_DECODE) unhalt = 0;
+    break;
+
+  case Z80_STATE_PUSH_DELAY:
+    sp--;
+    break;
+
+  case Z80_STATE_PUSH1:
+    sp--;
+    break;
+
   case Z80_STATE_MEM_READ1:
     if      (LD_A_AT_A16)   { addr = temp; }
     else if (LD_A_AT_A8)    { addr = 0xFF00 | lo; }

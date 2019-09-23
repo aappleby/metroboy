@@ -73,14 +73,7 @@ private:
   // Signals
 
   uint8_t op_;
-  uint8_t quad_;
-  uint8_t row_;
-  uint8_t col_;
-  bool    odd_row_;
   uint8_t op_cb_;
-  uint8_t cb_quad_;
-  uint8_t cb_row_;
-  uint8_t cb_col_;
   bool    no_branch_;
 
   // Interrupt stuff

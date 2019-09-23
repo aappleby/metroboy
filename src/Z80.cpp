@@ -6,6 +6,15 @@
 
 //-----------------------------------------------------------------------------
 
+#define OP_QUAD       (op_ >> 6)
+#define OP_ROW        ((op_ >> 3) & 7)
+#define OP_ODD_ROW    ((op_ >> 3) & 1)
+#define OP_COL        ((op_ >> 0) & 7)
+
+#define CB_QUAD       (op_cb_ >> 6)
+#define CB_ROW        ((op_cb_ >> 3) & 7)
+#define CB_COL        ((op_cb_ >> 0) & 7)
+
 #define NOP           (op_ == 0x00)
 
 #define ST_BC_A       (op_ == 0x02)
@@ -44,31 +53,31 @@
 #define PREFIX_CB     (op_ == 0xCB)
 #define MV_SP_HL      (op_ == 0xF9)
 
-#define JR_CC_R8      (quad_ == 0 && col_ == 0 && row_ >= 4)
-#define LD_RR_D16     (quad_ == 0 && col_ == 1 && !odd_row_)
-#define ADD_HL_RR     (quad_ == 0 && col_ == 1 &&  odd_row_)
-#define LD_A_AT_RR    (quad_ == 0 && col_ == 2 &&  odd_row_)
-#define INC_RR        (quad_ == 0 && col_ == 3 && !odd_row_)
-#define DEC_RR        (quad_ == 0 && col_ == 3 &&  odd_row_)
-#define INC_R         (quad_ == 0 && col_ == 4)
-#define DEC_R         (quad_ == 0 && col_ == 5)
-#define LD_R_D8       (quad_ == 0 && col_ == 6)
-#define ROTATE_OPS    (quad_ == 0 && col_ == 7)
+#define JR_CC_R8      (OP_QUAD == 0 && OP_COL == 0 && OP_ROW >= 4)
+#define LD_RR_D16     (OP_QUAD == 0 && OP_COL == 1 && !OP_ODD_ROW)
+#define ADD_HL_RR     (OP_QUAD == 0 && OP_COL == 1 &&  OP_ODD_ROW)
+#define LD_A_AT_RR    (OP_QUAD == 0 && OP_COL == 2 &&  OP_ODD_ROW)
+#define INC_RR        (OP_QUAD == 0 && OP_COL == 3 && !OP_ODD_ROW)
+#define DEC_RR        (OP_QUAD == 0 && OP_COL == 3 &&  OP_ODD_ROW)
+#define INC_R         (OP_QUAD == 0 && OP_COL == 4)
+#define DEC_R         (OP_QUAD == 0 && OP_COL == 5)
+#define LD_R_D8       (OP_QUAD == 0 && OP_COL == 6)
+#define ROTATE_OPS    (OP_QUAD == 0 && OP_COL == 7)
 
-#define MV_OPS        (quad_ == 1)
-#define MV_OPS_ST_HL  (quad_ == 1 && row_ == 6)
-#define MV_OPS_LD_HL  (quad_ == 1 && col_ == 6)
+#define MV_OPS        (OP_QUAD == 1)
+#define MV_OPS_ST_HL  (OP_QUAD == 1 && OP_ROW == 6)
+#define MV_OPS_LD_HL  (OP_QUAD == 1 && OP_COL == 6)
 
-#define ALU_OPS       (quad_ == 2)
-#define ALU_OPS_LD_HL (quad_ == 2 && col_ == 6)
+#define ALU_OPS       (OP_QUAD == 2)
+#define ALU_OPS_LD_HL (OP_QUAD == 2 && OP_COL == 6)
 
-#define RET_CC        (quad_ == 3 && col_ == 0 && row_ <= 3)
-#define POP_RR        (quad_ == 3 && col_ == 1 && !odd_row_)
-#define JP_CC_A16     (quad_ == 3 && col_ == 2 && row_ <= 3)
-#define CALL_CC_A16   (quad_ == 3 && col_ == 4 && row_ <= 3)
-#define PUSH_RR       (quad_ == 3 && col_ == 5 && !odd_row_)
-#define ALU_A_D8      (quad_ == 3 && col_ == 6)
-#define RST_NN        (quad_ == 3 && col_ == 7)
+#define RET_CC        (OP_QUAD == 3 && OP_COL == 0 && OP_ROW <= 3)
+#define POP_RR        (OP_QUAD == 3 && OP_COL == 1 && !OP_ODD_ROW)
+#define JP_CC_A16     (OP_QUAD == 3 && OP_COL == 2 && OP_ROW <= 3)
+#define CALL_CC_A16   (OP_QUAD == 3 && OP_COL == 4 && OP_ROW <= 3)
+#define PUSH_RR       (OP_QUAD == 3 && OP_COL == 5 && !OP_ODD_ROW)
+#define ALU_A_D8      (OP_QUAD == 3 && OP_COL == 6)
+#define RST_NN        (OP_QUAD == 3 && OP_COL == 7)
 
 AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
 
@@ -98,14 +107,6 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
   }
 
   op_ = 0;
-  quad_ = 0;
-  row_ = 0;
-  col_ = 0;
-  odd_row_ = false;
-
-  cb_quad_ = 0;
-  cb_row_ = 0;
-  cb_col_ = 0;
 
   interrupt2 = false;
   ime = false;
@@ -135,16 +136,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       // slightly weird
       data16_ = pc;
     }
-    quad_ = (op_ >> 6) & 3;
-    row_ = (op_ >> 3) & 7;
-    col_ = (op_ >> 0) & 7;
-    odd_row_ = row_ & 1;
   }
   else if (state == Z80_STATE_DECODE_CB) {
     op_cb_   = bus_data;
-    cb_quad_ = (op_cb_ >> 6) & 3;
-    cb_row_ = (op_cb_ >> 3) & 7;
-    cb_col_ = (op_cb_ >> 0) & 7;
   }
   else if (state == Z80_STATE_ARG1) {
     data_lo_ = bus_data;
@@ -167,7 +161,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   if (state == Z80_STATE_DECODE) {
     bool cond_fail = false;
 
-    switch (row_ & 3) {
+    switch (OP_ROW & 3) {
     case 0: cond_fail = (f & F_ZERO); break;
     case 1: cond_fail = !(f & F_ZERO); break;
     case 2: cond_fail = (f & F_CARRY); break;
@@ -290,25 +284,25 @@ CpuOut Z80::tock_t2() {
   // Write all our registers from the previous instruction before the new opcode shows up.
   if (state_ == Z80_STATE_DECODE) {
     opcount = opcount + 1;
-    uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
+    uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op_];
     if (POP_AF)  f = data_lo_ & 0xF0;
     else         f = (f & ~mask) | (f_ & mask);
 
-    if      (MV_OPS)      reg_put8(row_,    (uint8_t)reg_fetch8());
-    else if (INC_R)       reg_put8(row_,    (uint8_t)alu_out_);
-    else if (DEC_R)       reg_put8(row_,    (uint8_t)alu_out_);
-    else if (LD_R_D8)     reg_put8(row_,    (uint8_t)data16_);
-    else if (ALU_A_D8)    reg_put8(7,       (uint8_t)alu_out_);
-    else if (ALU_OPS)     reg_put8(7,       (uint8_t)alu_out_);
-    else if (ROTATE_OPS)  reg_put8(7,       (uint8_t)alu_out_);
-    else if (LD_A_AT_RR)  reg_put8(7,       (uint8_t)data16_);
-    else if (LD_A_AT_A8)  reg_put8(7,       (uint8_t)data16_);
-    else if (LD_A_AT_C)   reg_put8(7,       (uint8_t)data16_);
-    else if (LD_A_AT_A16) reg_put8(7,       (uint8_t)data16_);
-    else if (PREFIX_CB)   reg_put8(cb_col_, (uint8_t)alu_out_);
+    if      (MV_OPS)      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
+    else if (INC_R)       reg_put8(OP_ROW, (uint8_t)alu_out_);
+    else if (DEC_R)       reg_put8(OP_ROW, (uint8_t)alu_out_);
+    else if (LD_R_D8)     reg_put8(OP_ROW, (uint8_t)data16_);
+    else if (ALU_A_D8)    reg_put8(7,      (uint8_t)alu_out_);
+    else if (ALU_OPS)     reg_put8(7,      (uint8_t)alu_out_);
+    else if (ROTATE_OPS)  reg_put8(7,      (uint8_t)alu_out_);
+    else if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)data16_);
+    else if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)data16_);
+    else if (LD_A_AT_C)   reg_put8(7,      (uint8_t)data16_);
+    else if (LD_A_AT_A16) reg_put8(7,      (uint8_t)data16_);
+    else if (PREFIX_CB)   reg_put8(CB_COL, (uint8_t)alu_out_);
 
     if      (LD_RR_D16) {
-      switch(row_ >> 1) {
+      switch(OP_ROW >> 1) {
       case 0: bc = data16_; break;
       case 1: de = data16_; break;
       case 2: hl = data16_; break;
@@ -316,7 +310,7 @@ CpuOut Z80::tock_t2() {
       }
     }
     else if (INC_RR) {
-      switch(row_ >> 1) {
+      switch(OP_ROW >> 1) {
       case 0: bc++; break;
       case 1: de++; break;
       case 2: hl++; break;
@@ -324,7 +318,7 @@ CpuOut Z80::tock_t2() {
       }
     }
     else if (DEC_RR) {
-      switch(row_ >> 1) {
+      switch(OP_ROW >> 1) {
       case 0: bc--; break;
       case 1: de--; break;
       case 2: hl--; break;
@@ -332,7 +326,7 @@ CpuOut Z80::tock_t2() {
       }
     }
     else if (POP_RR)      {
-      switch(row_ >> 1) {
+      switch(OP_ROW >> 1) {
       case 0: bc = data16_; break;
       case 1: de = data16_; break;
       case 2: hl = data16_; break;
@@ -451,7 +445,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_DECODE_CB:
-    if (PREFIX_CB)          next = cb_col_ == 6 ? Z80_STATE_MEM_READ1 : Z80_STATE_DECODE;
+    if (PREFIX_CB)          next = CB_COL == 6 ? Z80_STATE_MEM_READ1 : Z80_STATE_DECODE;
     else fail();
     break;
 
@@ -692,7 +686,7 @@ CpuBus Z80::next_bus() const {
   case Z80_STATE_PUSH1:
     if      (interrupt2)  bus.data = (uint8_t)(data16_ >> 8);
     else if (PUSH_RR) {
-      switch(row_ >> 1) {
+      switch(OP_ROW >> 1) {
       case 0: bus.data = b; break;
       case 1: bus.data = d; break;
       case 2: bus.data = h; break;
@@ -710,7 +704,7 @@ CpuBus Z80::next_bus() const {
   case Z80_STATE_PUSH2:
     if      (interrupt2)  bus.data = (uint8_t)(data16_);
     else if (PUSH_RR) {
-      switch(row_ >> 1) {
+      switch(OP_ROW >> 1) {
       case 0: bus.data = c; break;
       case 1: bus.data = e; break;
       case 2: bus.data = l; break;
@@ -780,7 +774,7 @@ CpuBus Z80::next_bus() const {
     else if (DEC_AT_HL)     { bus.addr = hl;                bus.data = data_lo_ - 1; }
     else if (ST_HL_D8)      { bus.addr = hl;                bus.data = (uint8_t)data_lo_; }
     else if (MV_OPS_ST_HL)  { bus.addr = hl;                bus.data = reg_fetch8(); }
-    else if (PREFIX_CB)     { bus.addr = hl;                bus.data = (uint8_t)cb(cb_quad_, cb_row_, reg_fetch8(), f).x; }
+    else if (PREFIX_CB)     { bus.addr = hl;                bus.data = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
     else if (ST_A16_A)      { bus.addr = data16_;           bus.data = a; }
     else if (ST_A8_A)       { bus.addr = 0xFF00 | data_lo_; bus.data = a; }
     else if (ST_C_A)        { bus.addr = 0xFF00 | c;        bus.data = a; }
@@ -806,9 +800,9 @@ CpuBus Z80::next_bus() const {
 //-----------------------------------------------------------------------------
 
 uint8_t Z80::reg_fetch8() const {
-  int mux = quad_ == 0 ? row_ : col_;
-  if (PREFIX_CB) mux = cb_col_;
-  if (ROTATE_OPS) mux = col_;
+  int mux = OP_QUAD == 0 ? OP_ROW : OP_COL;
+  if (PREFIX_CB) mux = CB_COL;
+  if (ROTATE_OPS) mux = OP_COL;
 
   switch(mux) {
   case 0: return b;
@@ -1028,7 +1022,7 @@ AluOut Z80::exec(uint8_t src) const {
   AluOut out = {0};
 
   if (PREFIX_CB) {
-    out = cb(cb_quad_, cb_row_, src, f);
+    out = cb(CB_QUAD, CB_ROW, src, f);
   }
   else if (INC_R) {
     out = alu(0, src, 1, 0);
@@ -1038,7 +1032,7 @@ AluOut Z80::exec(uint8_t src) const {
   }
   else if (ADD_HL_RR) {
     uint16_t blah = 0;
-    switch(row_ >> 1) {
+    switch(OP_ROW >> 1) {
     case 0: blah = bc; break;
     case 1: blah = de; break;
     case 2: blah = hl; break;
@@ -1059,12 +1053,12 @@ AluOut Z80::exec(uint8_t src) const {
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ROTATE_OPS) {
-    out = rlu(row_, src, f);
-    if (row_ <= 3) out.f &= ~F_ZERO;
+    out = rlu(OP_ROW, src, f);
+    if (OP_ROW <= 3) out.f &= ~F_ZERO;
   }
   else if (ALU_OPS || ALU_A_D8) {
-    out = alu(row_, a, src, f);
-    out.x = (row_ == 7) ? a : out.x;
+    out = alu(OP_ROW, a, src, f);
+    out.x = (OP_ROW == 7) ? a : out.x;
   }
 
   return out;

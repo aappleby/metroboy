@@ -6,52 +6,52 @@
 
 //-----------------------------------------------------------------------------
 
-#define OP_QUAD       (op_ >> 6)
-#define OP_ROW        ((op_ >> 3) & 7)
-#define OP_ODD_ROW    ((op_ >> 3) & 1)
-#define OP_COL        ((op_ >> 0) & 7)
+#define OP_QUAD       (op >> 6)
+#define OP_ROW        ((op >> 3) & 7)
+#define OP_ODD_ROW    ((op >> 3) & 1)
+#define OP_COL        ((op >> 0) & 7)
 
-#define CB_QUAD       (op_cb_ >> 6)
-#define CB_ROW        ((op_cb_ >> 3) & 7)
-#define CB_COL        ((op_cb_ >> 0) & 7)
+#define CB_QUAD       (op_cb >> 6)
+#define CB_ROW        ((op_cb >> 3) & 7)
+#define CB_COL        ((op_cb >> 0) & 7)
 
-#define NOP           (op_ == 0x00)
+#define NOP           (op == 0x00)
 
-#define ST_BC_A       (op_ == 0x02)
-#define ST_DE_A       (op_ == 0x12)
-#define ST_HLP_A      (op_ == 0x22)
-#define ST_HLM_A      (op_ == 0x32)
+#define ST_BC_A       (op == 0x02)
+#define ST_DE_A       (op == 0x12)
+#define ST_HLP_A      (op == 0x22)
+#define ST_HLM_A      (op == 0x32)
 
-#define ST_A8_A       (op_ == 0xE0)
-#define ST_C_A        (op_ == 0xE2)
-#define ST_A16_SP     (op_ == 0x08)
-#define ST_A16_A      (op_ == 0xEA)
-#define ST_HL_D8      (op_ == 0x36)
+#define ST_A8_A       (op == 0xE0)
+#define ST_C_A        (op == 0xE2)
+#define ST_A16_SP     (op == 0x08)
+#define ST_A16_A      (op == 0xEA)
+#define ST_HL_D8      (op == 0x36)
 
-#define ADD_SP_R8     (op_ == 0xE8)
-#define LD_HL_SP_R8   (op_ == 0xF8)
-#define INC_AT_HL     (op_ == 0x34)
-#define DEC_AT_HL     (op_ == 0x35)
-#define LD_A_AT_A16   (op_ == 0xFA)
-#define LD_A_AT_C     (op_ == 0xF2)
-#define LD_A_AT_A8    (op_ == 0xF0)
-#define LD_A_AT_BC    (op_ == 0x0A)
-#define LD_A_AT_DE    (op_ == 0x1A)
-#define LD_A_AT_HLP   (op_ == 0x2A)
-#define LD_A_AT_HLM   (op_ == 0x3A)
+#define ADD_SP_R8     (op == 0xE8)
+#define LD_HL_SP_R8   (op == 0xF8)
+#define INC_AT_HL     (op == 0x34)
+#define DEC_AT_HL     (op == 0x35)
+#define LD_A_AT_A16   (op == 0xFA)
+#define LD_A_AT_C     (op == 0xF2)
+#define LD_A_AT_A8    (op == 0xF0)
+#define LD_A_AT_BC    (op == 0x0A)
+#define LD_A_AT_DE    (op == 0x1A)
+#define LD_A_AT_HLP   (op == 0x2A)
+#define LD_A_AT_HLM   (op == 0x3A)
 
-#define JP_A16        (op_ == 0xC3)
-#define JR_R8         (op_ == 0x18)
-#define JP_HL         (op_ == 0xE9)
-#define CALL_A16      (op_ == 0xCD)
-#define RET           (op_ == 0xC9)
-#define RETI          (op_ == 0xD9)
-#define POP_AF        (op_ == 0xF1)
-#define DI            (op_ == 0xF3)
-#define EI            (op_ == 0xFB)
-#define HALT          (op_ == 0x76)
-#define PREFIX_CB     (op_ == 0xCB)
-#define MV_SP_HL      (op_ == 0xF9)
+#define JP_A16        (op == 0xC3)
+#define JR_R8         (op == 0x18)
+#define JP_HL         (op == 0xE9)
+#define CALL_A16      (op == 0xCD)
+#define RET           (op == 0xC9)
+#define RETI          (op == 0xD9)
+#define POP_AF        (op == 0xF1)
+#define DI            (op == 0xF3)
+#define EI            (op == 0xFB)
+#define HALT          (op == 0x76)
+#define PREFIX_CB     (op == 0xCB)
+#define MV_SP_HL      (op == 0xF9)
 
 #define JR_CC_R8      (OP_QUAD == 0 && OP_COL == 0 && OP_ROW >= 4)
 #define LD_RR_D16     (OP_QUAD == 0 && OP_COL == 1 && !OP_ODD_ROW)
@@ -86,9 +86,19 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
 //-----------------------------------------------------------------------------
 
 CpuOut Z80::reset(int new_model, uint16_t new_pc) {
-  model = new_model;
   int_ack_ = 0;
+  imask_ = 0;
+  intf_ = 0;
+  unhalt = 0;
 
+  model = new_model;
+  cycle = 0;
+  op = 0;
+  op_cb = 0;
+  ime = false;
+  ime_delay = false;
+  imask_latch = 0;
+  interrupt = false;
   state = state_ = Z80_STATE_DECODE;
 
   if (new_pc == 0x100) {
@@ -108,72 +118,88 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
     pc = new_pc;
   }
 
-  op_ = 0;
-
-  interrupt2 = false;
-  ime = false;
-  ime_delay = false;
-  opcount = 0;
-  cycle = 0;
-  unhalt = 0;
-
   return { 0 };
 }
 
 //-----------------------------------------------------------------------------
 
 CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+  int_ack_ = 0;
   imask_ = imask;
   intf_ = intf;
 
-  state_ = state;
-  int_ack_ = 0;
-
   if (state == Z80_STATE_DECODE) {
-    op_ = bus_data;
-    interrupt2 = (imask_ & intf_) && ime;
-    if (interrupt2) {
-      op_ = 0x00;
+    op = bus_data;
+    interrupt = (imask_ & intf_) && ime;
+    if (interrupt) {
+      op = 0x00;
       // slightly weird
-      data16_ = pc;
+      temp = pc;
     }
+    pc++;
   }
   else if (state == Z80_STATE_DECODE_CB) {
-    op_cb_   = bus_data;
+    op_cb   = bus_data;
+    pc++;
   }
   else if (state == Z80_STATE_ARG1) {
-    data_lo_ = bus_data;
+    lo = bus_data;
+    pc++;
   }
   else if (state == Z80_STATE_ARG2) {
-    data_hi_ = bus_data;
+    hi = bus_data;
+    pc++;
   }
   else if (state == Z80_STATE_POP1) {
-    data_lo_ = bus_data;
+    lo = bus_data;
   }
   else if (state == Z80_STATE_POP2) {
-    data_hi_ = bus_data;
+    hi = bus_data;
   }
   else if (state == Z80_STATE_MEM_READ1) {
-    data_lo_ = bus_data;
+    lo = bus_data;
   }
 
   //----------
 
-  state_ = next_state();
+  bool cond_fail = false;
+
+  switch (OP_ROW & 3) {
+  case 0: cond_fail = (f & F_ZERO); break;
+  case 1: cond_fail = !(f & F_ZERO); break;
+  case 2: cond_fail = (f & F_CARRY); break;
+  case 3: cond_fail = !(f & F_CARRY); break;
+  }
+
+  bool no_branch = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
+  bool take_branch = !no_branch;
+
+  state_ = next_state(take_branch);
 
   //----------------------------------------
   // compute new pc
 
-  int next_int = next_interrupt();
-  if (next_int >= 0) int_ack_ = 1 << next_int;
-
-  if (state == Z80_STATE_DECODE)    pc++;
-  if (state == Z80_STATE_DECODE_CB) pc++;
-  if (state == Z80_STATE_ARG1)      pc++;
-  if (state == Z80_STATE_ARG2)      pc++;
-
+  int next_int = -1;
   if (state_ == Z80_STATE_DECODE) {
-    if (interrupt2) {
+    if (interrupt) {
+      // Someone could've changed the interrupt mask or flags while we were
+      // handling the interrupt, so we have to compute the new PC at the very
+      // last second.
+
+      int actual_interrupt = -1;
+      uint8_t interrupts = imask_latch & intf_;
+      if (interrupts & INT_JOYPAD) actual_interrupt = 4; // joypad
+      if (interrupts & INT_SERIAL) actual_interrupt = 3; // serial
+      if (interrupts & INT_TIMER)  actual_interrupt = 2; // timer
+      if (interrupts & INT_STAT)   actual_interrupt = 1; // lcd stat
+      if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
+
+      next_int = actual_interrupt;
+    }
+
+    if (next_int >= 0) int_ack_ = 1 << next_int;
+
+    if (interrupt) {
       if (next_int >= 0) {
         pc = uint16_t(0x0040 + (next_int * 8));
       }
@@ -182,24 +208,24 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       }
     }
 
-    if      (JP_HL)       pc = hl;
-    else if (RST_NN)      pc = op_ - 0xC7;
-    else if (JR_R8)       pc = pc + (int8_t)data_lo_;
-    else if (JP_A16)      pc = data16_;
-    else if (CALL_A16)    pc = data16_;
-    else if (RET)         pc = data16_;
-    else if (RETI)        pc = data16_;
-    else if (next_branch()) {
-      if      (JR_CC_R8)    pc = pc + (int8_t)data_lo_;
-      else if (JP_CC_A16)   pc = data16_;
-      else if (CALL_CC_A16) pc = data16_;
-      else if (RET_CC)      pc = data16_;
+    if (take_branch) {
+      if      (JP_HL)       pc = hl;
+      else if (RST_NN)      pc = op - 0xC7;
+      else if (JR_R8)       pc = pc + (int8_t)lo;
+      else if (JR_CC_R8)    pc = pc + (int8_t)lo;
+      else if (JP_CC_A16)   pc = temp;
+      else if (CALL_CC_A16) pc = temp;
+      else if (RET_CC)      pc = temp;
+      else if (RET)         pc = temp;
+      else if (RETI)        pc = temp;
+      else if (JP_A16)      pc = temp;
+      else if (CALL_A16)    pc = temp;
     }
   }
 
   //----------------------------------------
 
-  CpuBus next_bus2 = next_bus();
+  CpuBus next_bus2 = next_bus(reg_fetch8());
 
   return next_bus2;
 }
@@ -257,8 +283,6 @@ CpuOut Z80::tock_t2() {
 
   ime = ime_delay;
 
-  //if (opcount == 0x0017519b) __debugbreak();
-
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
   //----------------------------------------
@@ -267,30 +291,29 @@ CpuOut Z80::tock_t2() {
   if (state_ == Z80_STATE_DECODE) {
     AluOut out = exec(reg_fetch8());
 
-    opcount = opcount + 1;
-    uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op_];
-    if (POP_AF)  f = data_lo_ & 0xF0;
+    uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+    if (POP_AF)  f = lo & 0xF0;
     else         f = (f & ~mask) | (out.f & mask);
 
     if      (MV_OPS)      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
     else if (INC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
     else if (DEC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
-    else if (LD_R_D8)     reg_put8(OP_ROW, (uint8_t)data16_);
+    else if (LD_R_D8)     reg_put8(OP_ROW, (uint8_t)temp);
     else if (ALU_A_D8)    reg_put8(7,      (uint8_t)out.x);
     else if (ALU_OPS)     reg_put8(7,      (uint8_t)out.x);
     else if (ROTATE_OPS)  reg_put8(7,      (uint8_t)out.x);
-    else if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)data16_);
-    else if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)data16_);
-    else if (LD_A_AT_C)   reg_put8(7,      (uint8_t)data16_);
-    else if (LD_A_AT_A16) reg_put8(7,      (uint8_t)data16_);
+    else if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)temp);
+    else if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)temp);
+    else if (LD_A_AT_C)   reg_put8(7,      (uint8_t)temp);
+    else if (LD_A_AT_A16) reg_put8(7,      (uint8_t)temp);
     else if (PREFIX_CB)   reg_put8(CB_COL, (uint8_t)out.x);
 
     if      (LD_RR_D16) {
       switch(OP_ROW >> 1) {
-      case 0: bc = data16_; break;
-      case 1: de = data16_; break;
-      case 2: hl = data16_; break;
-      case 3: sp = data16_; break;
+      case 0: bc = temp; break;
+      case 1: de = temp; break;
+      case 2: hl = temp; break;
+      case 3: sp = temp; break;
       }
     }
     else if (INC_RR) {
@@ -311,10 +334,10 @@ CpuOut Z80::tock_t2() {
     }
     else if (POP_RR)      {
       switch(OP_ROW >> 1) {
-      case 0: bc = data16_; break;
-      case 1: de = data16_; break;
-      case 2: hl = data16_; break;
-      case 3: af = data16_ & 0xFFF0; break;
+      case 0: bc = temp; break;
+      case 1: de = temp; break;
+      case 2: hl = temp; break;
+      case 3: af = temp & 0xFFF0; break;
       }
 
     }
@@ -326,14 +349,10 @@ CpuOut Z80::tock_t2() {
     else if (LD_A_AT_HLM)                 hl = hl - 1;
     else if (ADD_SP_R8)                   sp = out.x;
     else if (MV_SP_HL)                    sp = hl;
-    else if (ADD_SP_R8)                   sp = sp + (int8_t)data_lo_;
-  }
+    else if (ADD_SP_R8)                   sp = sp + (int8_t)lo;
 
-  //----------
-  // When we finish an instruction, update our interrupt master enable.
-
-  if (state_ == Z80_STATE_DECODE) {
-    if (interrupt2) { ime = false;     ime_delay = false; }
+    // When we finish an instruction, update our interrupt master enable.
+    if (interrupt) { ime = false;     ime_delay = false; }
     else if (RETI)  { ime = true;      ime_delay = true; }
     else if (DI)    { ime = false;     ime_delay = false; }
     else if (EI)    { ime = ime_delay; ime_delay = true; }
@@ -343,7 +362,7 @@ CpuOut Z80::tock_t2() {
   // Gameboy weirdness - the "real" interrupt vector is determined by the
   // state of imask/intf after pushing the first byte of PC onto the stack.
 
-  if (interrupt2 && state_ == Z80_STATE_PUSH2) {
+  if (interrupt && state_ == Z80_STATE_PUSH2) {
     imask_latch = imask_;
   }
 
@@ -358,13 +377,15 @@ CpuOut Z80::tock_t2() {
 
 void fail() { printf("fail\n"); }
 
-Z80::Z80State Z80::next_state() const {
+Z80State Z80::next_state(bool take_branch) const {
+  bool no_halt = ((imask_ & intf_) && !ime);
+
   Z80State next = Z80_STATE_DECODE;
 
   switch (state) {
   case Z80_STATE_DECODE:
-    if      (interrupt2)    next = Z80_STATE_INTERRUPT;
-    else if (HALT)          next = ((imask_ & intf_) && !ime) ? Z80_STATE_DECODE : Z80_STATE_HALT;
+    if      (interrupt)    next = Z80_STATE_INTERRUPT;
+    else if (HALT)          next = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT;
     else if (MV_OPS_ST_HL)  next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLP_A)      next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLM_A)      next = Z80_STATE_MEM_WRITE1;
@@ -445,14 +466,14 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_INTERRUPT:
-    if      (interrupt2)    next = Z80_STATE_PUSH_DELAY;
+    if      (interrupt)    next = Z80_STATE_PUSH_DELAY;
     else fail();
     break;
 
   //----------
 
   case Z80_STATE_PUSH_DELAY:
-    if      (interrupt2)    next = Z80_STATE_PUSH1;
+    if      (interrupt)    next = Z80_STATE_PUSH1;
     else if (PUSH_RR)       next = Z80_STATE_PUSH1;
     else if (CALL_CC_A16)   next = Z80_STATE_PUSH1;
     else if (CALL_A16)      next = Z80_STATE_PUSH1;
@@ -461,7 +482,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_PUSH1:
-    if      (interrupt2)    next = Z80_STATE_PUSH2;
+    if      (interrupt)    next = Z80_STATE_PUSH2;
     else if (PUSH_RR)       next = Z80_STATE_PUSH2;
     else if (CALL_A16)      next = Z80_STATE_PUSH2;
     else if (CALL_CC_A16)   next = Z80_STATE_PUSH2;
@@ -470,7 +491,7 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_PUSH2:
-    if      (interrupt2)    next = Z80_STATE_DECODE;
+    if      (interrupt)    next = Z80_STATE_DECODE;
     else if (PUSH_RR)       next = Z80_STATE_DECODE;
     else if (CALL_A16)      next = Z80_STATE_DECODE;
     else if (CALL_CC_A16)   next = Z80_STATE_DECODE;
@@ -518,7 +539,7 @@ Z80::Z80State Z80::next_state() const {
     else if (ALU_A_D8)      next = Z80_STATE_DECODE;
     else fail();
 
-    if (JR_CC_R8 && !next_branch()) next = Z80_STATE_DECODE;
+    if (JR_CC_R8 && !take_branch) next = Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_ARG2:
@@ -532,7 +553,7 @@ Z80::Z80State Z80::next_state() const {
     else if (CALL_CC_A16)   next = Z80_STATE_PUSH_DELAY;
     else fail();
 
-    if (!next_branch()) next = Z80_STATE_DECODE;
+    if (!take_branch) next = Z80_STATE_DECODE;
 
     break;
 
@@ -585,7 +606,7 @@ Z80::Z80State Z80::next_state() const {
     if      (RET_CC)        next = Z80_STATE_POP1;
     else fail();
 
-    if (!next_branch()) next = Z80_STATE_DECODE;
+    if (!take_branch) next = Z80_STATE_DECODE;
 
     break;
 
@@ -617,47 +638,7 @@ Z80::Z80State Z80::next_state() const {
 
 //-----------------------------------------------------------------------------
 
-int Z80::next_interrupt() const {
-  if (state_ != Z80_STATE_DECODE) return -1;
-
-  if (interrupt2) {
-    // Someone could've changed the interrupt mask or flags while we were
-    // handling the interrupt, so we have to compute the new PC at the very
-    // last second.
-
-    int actual_interrupt = -1;
-    uint8_t interrupts = imask_latch & intf_;
-    if (interrupts & INT_JOYPAD) actual_interrupt = 4; // joypad
-    if (interrupts & INT_SERIAL) actual_interrupt = 3; // serial
-    if (interrupts & INT_TIMER)  actual_interrupt = 2; // timer
-    if (interrupts & INT_STAT)   actual_interrupt = 1; // lcd stat
-    if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
-
-    return actual_interrupt;
-  }
-
-  return -1;
-}
-
-//-----------------------------------------------------------------------------
-
-bool Z80::next_branch() const {
-  bool cond_fail = false;
-
-  switch (OP_ROW & 3) {
-  case 0: cond_fail = (f & F_ZERO); break;
-  case 1: cond_fail = !(f & F_ZERO); break;
-  case 2: cond_fail = (f & F_CARRY); break;
-  case 3: cond_fail = !(f & F_CARRY); break;
-  }
-
-  bool no_branch = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
-  return !no_branch;
-}
-
-//-----------------------------------------------------------------------------
-
-CpuBus Z80::next_bus() const {
+CpuBus Z80::next_bus(uint8_t reg) const {
   CpuBus bus = {0, 0, false, false};
 
   switch(state_) {
@@ -684,7 +665,7 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_PUSH1:
-    if      (interrupt2)  bus.data = (uint8_t)(data16_ >> 8);
+    if      (interrupt)  bus.data = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
       switch(OP_ROW >> 1) {
       case 0: bus.data = b; break;
@@ -702,7 +683,7 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_PUSH2:
-    if      (interrupt2)  bus.data = (uint8_t)(data16_);
+    if      (interrupt)  bus.data = (uint8_t)(temp);
     else if (PUSH_RR) {
       switch(OP_ROW >> 1) {
       case 0: bus.data = c; break;
@@ -749,8 +730,8 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_MEM_READ1:
-    if      (LD_A_AT_A16)   { bus.addr = data16_; }
-    else if (LD_A_AT_A8)    { bus.addr = 0xFF00 | data_lo_; }
+    if      (LD_A_AT_A16)   { bus.addr = temp; }
+    else if (LD_A_AT_A8)    { bus.addr = 0xFF00 | lo; }
     else if (LD_A_AT_C)     { bus.addr = 0xFF00 | c; }
     else if (LD_A_AT_BC)    { bus.addr = bc; }
     else if (LD_A_AT_DE)    { bus.addr = de; }
@@ -766,25 +747,25 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    if      (ST_BC_A)       { bus.addr = bc;                bus.data = a; }
-    else if (ST_DE_A)       { bus.addr = de;                bus.data = a; }
-    else if (ST_HLP_A)      { bus.addr = hl;                bus.data = a; }
-    else if (ST_HLM_A)      { bus.addr = hl;                bus.data = a; }
-    else if (INC_AT_HL)     { bus.addr = hl;                bus.data = data_lo_ + 1; }
-    else if (DEC_AT_HL)     { bus.addr = hl;                bus.data = data_lo_ - 1; }
-    else if (ST_HL_D8)      { bus.addr = hl;                bus.data = (uint8_t)data_lo_; }
-    else if (MV_OPS_ST_HL)  { bus.addr = hl;                bus.data = reg_fetch8(); }
-    else if (PREFIX_CB)     { bus.addr = hl;                bus.data = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
-    else if (ST_A16_A)      { bus.addr = data16_;           bus.data = a; }
-    else if (ST_A8_A)       { bus.addr = 0xFF00 | data_lo_; bus.data = a; }
-    else if (ST_C_A)        { bus.addr = 0xFF00 | c;        bus.data = a; }
-    else if (ST_A16_SP)     { bus.addr = data16_;           bus.data = (uint8_t)sp; }
+    if      (ST_BC_A)       { bus.addr = bc;          bus.data = a; }
+    else if (ST_DE_A)       { bus.addr = de;          bus.data = a; }
+    else if (ST_HLP_A)      { bus.addr = hl;          bus.data = a; }
+    else if (ST_HLM_A)      { bus.addr = hl;          bus.data = a; }
+    else if (INC_AT_HL)     { bus.addr = hl;          bus.data = lo + 1; }
+    else if (DEC_AT_HL)     { bus.addr = hl;          bus.data = lo - 1; }
+    else if (ST_HL_D8)      { bus.addr = hl;          bus.data = (uint8_t)lo; }
+    else if (MV_OPS_ST_HL)  { bus.addr = hl;          bus.data = reg; }
+    else if (PREFIX_CB)     { bus.addr = hl;          bus.data = (uint8_t)cb(CB_QUAD, CB_ROW, reg, f).x; }
+    else if (ST_A16_A)      { bus.addr = temp;        bus.data = a; }
+    else if (ST_A8_A)       { bus.addr = 0xFF00 | lo; bus.data = a; }
+    else if (ST_C_A)        { bus.addr = 0xFF00 | c;  bus.data = a; }
+    else if (ST_A16_SP)     { bus.addr = temp;        bus.data = (uint8_t)sp; }
     else fail();
     bus.write = true;
     break;
 
   case Z80_STATE_MEM_WRITE2:
-    if      (ST_A16_SP)   { bus.addr = data16_ + 1; bus.data = (uint8_t)(sp >> 8); }
+    if      (ST_A16_SP)   { bus.addr = temp + 1; bus.data = (uint8_t)(sp >> 8); }
     else fail();
     bus.write = true;
     break;
@@ -811,7 +792,7 @@ uint8_t Z80::reg_fetch8() const {
   case 3: return e;
   case 4: return h;
   case 5: return l;
-  case 6: return data_lo_;
+  case 6: return lo;
   case 7: return a;
   }
 
@@ -1046,10 +1027,10 @@ AluOut Z80::exec(uint8_t src) const {
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    bool halfcarry = (sp & 0x000F) + (data_lo_ & 0x000F) > 0x000F;
-    bool carry =     (sp & 0x00FF) + (data_lo_ & 0x00FF) > 0x00FF;
+    bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
+    bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
 
-    out.x = sp + (int8_t)data_lo_;
+    out.x = sp + (int8_t)lo;
     out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
   }
   else if (ROTATE_OPS) {
@@ -1070,7 +1051,7 @@ void Z80::dump(std::string& out) {
   sprintf(out, "CYC %d\n", cycle);
   int bgb = (cycle * 2) + 0x00B2D5E6;
   sprintf(out, "BGB 0x%08x\n", bgb);
-  sprintf(out, "op 0x%02x\n", op_);
+  sprintf(out, "op 0x%02x\n", op);
   sprintf(out, "af 0x%04x\n", af);
   sprintf(out, "bc 0x%04x\n", bc);
   sprintf(out, "de 0x%04x\n", de);

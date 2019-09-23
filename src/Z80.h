@@ -22,13 +22,6 @@ struct Z80 {
 
 private:
 
-  uint16_t mem_addr_;
-  bool mem_read_;
-  bool mem_write_;
-  uint8_t mem_out_;
-
-  //----------
-
   enum Z80State {
     Z80_STATE_DECODE = 0,
     Z80_STATE_DECODE_CB,
@@ -70,14 +63,6 @@ private:
 
   union {
     struct {
-      uint8_t data_lo;
-      uint8_t data_hi;
-    };
-    uint16_t data16;
-  };
-
-  union {
-    struct {
       uint8_t data_lo_;
       uint8_t data_hi_;
     };
@@ -96,7 +81,6 @@ private:
   uint8_t cb_quad_;
   uint8_t cb_row_;
   uint8_t cb_col_;
-  bool    take_branch_;
   bool    no_branch_;
 
   // Interrupt stuff

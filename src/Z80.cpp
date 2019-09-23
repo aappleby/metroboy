@@ -260,10 +260,6 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 //-----------------------------------------------------------------------------
 
 CpuOut Z80::tock_t2() {
-  if (opcount == 0x1ff9) {
-    //printf("x");
-  }
-
   if (state_ == Z80_STATE_PUSH_DELAY) sp--;
   if (state_ == Z80_STATE_PUSH1) sp--;
   if (state_ == Z80_STATE_POP1)  sp++;
@@ -320,7 +316,7 @@ CpuOut Z80::tock_t2() {
     pc = pc_;
 
     if (pc2 != pc) {
-      //printf("pc2 fail 0x%02x\n", op_);
+      printf("pc2 fail 0x%02x\n", op_);
     }
     opcount = opcount + 1;
     uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
@@ -571,7 +567,7 @@ Z80::Z80State Z80::next_state() const {
     else if (ALU_A_D8)      next = Z80_STATE_DECODE;
     else fail();
 
-    if (no_branch_) next = Z80_STATE_DECODE;
+    if (JR_CC_R8 && no_branch_) next = Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_ARG2:

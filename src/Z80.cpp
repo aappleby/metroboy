@@ -171,7 +171,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // set up write
 
-  if (state_ == Z80_STATE_MEM_WRITE1) {
+  if (state == Z80_STATE_MEM_WRITE1) {
     if      (ST_BC_A)       { addr = bc;          data_out = a; }
     else if (ST_DE_A)       { addr = de;          data_out = a; }
     else if (ST_HLP_A)      { addr = hl;          data_out = a; }
@@ -187,28 +187,27 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (ST_A16_SP)     { addr = temp;        data_out = (uint8_t)sp; }
   }
 
-  if (state_ == Z80_STATE_MEM_WRITE2) {
+  if (state == Z80_STATE_MEM_WRITE2) {
     addr = temp + 1;
     data_out = (uint8_t)(sp >> 8);
+  }
+
+  if (state == Z80_STATE_MEM_WRITE1) {
+    return { addr, data_out, false, true };
+  }
+
+  if (state == Z80_STATE_MEM_WRITE2) {
+    return { addr, data_out, false, true };
   }
 
   //----------------------------------------
   // dispatch write
 
-  CpuBus bus = {0, 0, false, false};
-
-  switch(state_) {
-  case Z80_STATE_PUSH1:
-  case Z80_STATE_PUSH2:
-  case Z80_STATE_MEM_WRITE1:
-  case Z80_STATE_MEM_WRITE2:
-    bus.addr = addr;
-    bus.data = data_out;
-    bus.write = true;
-    break;
+  if (state_ == Z80_STATE_PUSH1 || state_ == Z80_STATE_PUSH2) {
+    return { addr, data_out, false, true };
   }
 
-  return bus;
+  return { 0, 0, false, false };
 }
 
 //-----------------------------------------------------------------------------
@@ -442,7 +441,10 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // set up write
 
-  if (state_ == Z80_STATE_PUSH_DELAY) {
+  state = state_;
+  cycle++;
+
+  if (state == Z80_STATE_PUSH_DELAY) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
@@ -458,7 +460,7 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
   }
 
-  if (state_ == Z80_STATE_PUSH1) {
+  if (state == Z80_STATE_PUSH1) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp);
     if (PUSH_RR) {
@@ -474,8 +476,6 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (RST_NN)      data_out = (uint8_t)(pc);
   }
 
-  state = state_;
-  cycle++;
 
 }
 

@@ -62,12 +62,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
+  //load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
 
-  //load("cpu_instrs");
+  load("cpu_instrs");
   //load("02-interrupts");
   //load("instr_timing");
 

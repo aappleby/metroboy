@@ -162,8 +162,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  CpuBus bus = {0, 0, false, false};
-
   state_ = Z80_STATE_DECODE;
 
   switch (state) {
@@ -297,8 +295,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    state_ = Z80_STATE_DECODE;
-    if (ST_A16_SP) state_ = Z80_STATE_MEM_WRITE2;
+    state_ = ST_A16_SP ? Z80_STATE_MEM_WRITE2 : Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_MEM_WRITE2:
@@ -306,8 +303,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_RET_DELAY:
-    state_ = Z80_STATE_POP1;
-    if (no_branch) state_ = Z80_STATE_DECODE;
+
+    state_ = no_branch ? Z80_STATE_DECODE : Z80_STATE_POP1;
     break;
 
   case Z80_STATE_DELAY_B:
@@ -345,6 +342,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
   // dispatch write
+
+  CpuBus bus = {0, 0, false, false};
 
   switch(state_) {
   case Z80_STATE_PUSH1:
@@ -588,13 +587,10 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
-  state = state_;
-  cycle++;
-
   //----------------------------------------
   // set up write
 
-  if (state == Z80_STATE_PUSH_DELAY) {
+  if (state_ == Z80_STATE_PUSH_DELAY) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
@@ -610,7 +606,7 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
   }
 
-  if (state == Z80_STATE_PUSH1) {
+  if (state_ == Z80_STATE_PUSH1) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp);
     if (PUSH_RR) {
@@ -625,6 +621,10 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (CALL_CC_A16) data_out = (uint8_t)(pc);
     if (RST_NN)      data_out = (uint8_t)(pc);
   }
+
+  state = state_;
+  cycle++;
+
 }
 
 //-----------------------------------------------------------------------------

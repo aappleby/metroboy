@@ -322,38 +322,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // set up write
 
-  if (state == Z80_STATE_PUSH_DELAY) {
-    addr = sp;
-    if      (interrupt)  data_out = (uint8_t)(temp >> 8);
-    else if (PUSH_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: data_out = b; break;
-      case 1: data_out = d; break;
-      case 2: data_out = h; break;
-      case 3: data_out = a; break;
-      }
-    }
-    else if (CALL_A16)    data_out = (uint8_t)(pc >> 8);
-    else if (CALL_CC_A16) data_out = (uint8_t)(pc >> 8);
-    else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
-  }
-
-  if (state == Z80_STATE_PUSH1) {
-    addr = sp;
-    if      (interrupt)  data_out = (uint8_t)(temp);
-    if (PUSH_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: data_out = c; break;
-      case 1: data_out = e; break;
-      case 2: data_out = l; break;
-      case 3: data_out = f; break;
-      }
-    }
-    if (CALL_A16)    data_out = (uint8_t)(pc);
-    if (CALL_CC_A16) data_out = (uint8_t)(pc);
-    if (RST_NN)      data_out = (uint8_t)(pc);
-  }
-
   if (state_ == Z80_STATE_MEM_WRITE1) {
     if      (ST_BC_A)       { addr = bc;          data_out = a; }
     else if (ST_DE_A)       { addr = de;          data_out = a; }
@@ -622,6 +590,41 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   state = state_;
   cycle++;
+
+  //----------------------------------------
+  // set up write
+
+  if (state == Z80_STATE_PUSH_DELAY) {
+    addr = sp;
+    if      (interrupt)  data_out = (uint8_t)(temp >> 8);
+    else if (PUSH_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: data_out = b; break;
+      case 1: data_out = d; break;
+      case 2: data_out = h; break;
+      case 3: data_out = a; break;
+      }
+    }
+    else if (CALL_A16)    data_out = (uint8_t)(pc >> 8);
+    else if (CALL_CC_A16) data_out = (uint8_t)(pc >> 8);
+    else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
+  }
+
+  if (state == Z80_STATE_PUSH1) {
+    addr = sp;
+    if      (interrupt)  data_out = (uint8_t)(temp);
+    if (PUSH_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: data_out = c; break;
+      case 1: data_out = e; break;
+      case 2: data_out = l; break;
+      case 3: data_out = f; break;
+      }
+    }
+    if (CALL_A16)    data_out = (uint8_t)(pc);
+    if (CALL_CC_A16) data_out = (uint8_t)(pc);
+    if (RST_NN)      data_out = (uint8_t)(pc);
+  }
 }
 
 //-----------------------------------------------------------------------------

@@ -152,9 +152,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   bool no_branch = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
   bool no_halt = ((imask_ & intf_) && !ime);
 
-  CpuBus bus = {0, 0, false, false};
-
   //----------------------------------------
+
+  CpuBus bus = {0, 0, false, false};
 
   state_ = Z80_STATE_DECODE;
 
@@ -502,13 +502,11 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_POP1:
     bus.addr = sp;
     bus.read = true;
-    sp++;
     break;
 
   case Z80_STATE_POP2:
     bus.addr = sp;
     bus.read = true;
-    sp++;
     break;
 
   case Z80_STATE_ARG1:
@@ -584,7 +582,131 @@ CpuBus Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)intf;
   (void)bus_data;
 
-  CpuBus bus = bus_temp;
+  //----------------------------------------
+
+  CpuBus bus = {0, 0, false, false};
+  bus.write = false;
+
+#if 0
+  switch (state) {
+  case Z80_STATE_DECODE: {
+    break;
+  }
+
+  case Z80_STATE_DECODE_CB:
+    break;
+
+  case Z80_STATE_HALT:
+    break;
+
+  case Z80_STATE_INTERRUPT:
+    break;
+
+  case Z80_STATE_PUSH_DELAY:
+    break;
+
+  case Z80_STATE_PUSH1:
+    break;
+
+  case Z80_STATE_PUSH2:
+    break;
+
+  case Z80_STATE_POP1:
+    break;
+
+  case Z80_STATE_POP2:
+    break;
+
+  case Z80_STATE_ARG1:
+    break;
+
+  case Z80_STATE_ARG2:
+    break;
+
+  case Z80_STATE_MEM_READ1:
+    break;
+
+  case Z80_STATE_MEM_WRITE1:
+    break;
+
+  case Z80_STATE_MEM_WRITE2:
+    break;
+
+  case Z80_STATE_RET_DELAY:
+    break;
+
+  case Z80_STATE_DELAY_B:
+    break;
+
+  case Z80_STATE_DELAY_C:
+    break;
+  }
+#endif
+
+  //----------------------------------------
+
+  switch(state_) {
+  case Z80_STATE_DECODE: {
+    bus.addr = pc;
+    bus.read = true;
+    break;
+  }
+
+  case Z80_STATE_DECODE_CB:
+    bus.addr = pc;
+    bus.read = true;
+    break;
+
+  case Z80_STATE_HALT:
+    bus.addr = pc;
+    bus.read = true;
+    break;
+
+  case Z80_STATE_INTERRUPT:
+    break;
+
+  case Z80_STATE_PUSH_DELAY:
+    break;
+
+  case Z80_STATE_PUSH1:
+    break;
+
+  case Z80_STATE_PUSH2:
+    break;
+
+  case Z80_STATE_POP1:
+    bus.addr = sp;
+    bus.read = true;
+    sp++;
+    break;
+
+  case Z80_STATE_POP2:
+    bus.addr = sp;
+    bus.read = true;
+    sp++;
+    break;
+
+  case Z80_STATE_ARG1:
+    bus.addr = pc;
+    bus.read = true;
+    break;
+
+  case Z80_STATE_ARG2:
+    bus.addr = pc;
+    bus.read = true;
+    break;
+
+  case Z80_STATE_MEM_READ1:
+    bus.addr = addr;
+    bus.read = true;
+    break;
+
+  case Z80_STATE_MEM_WRITE1:
+    break;
+
+  case Z80_STATE_MEM_WRITE2:
+    break;
+  }
 
   return bus;
 }

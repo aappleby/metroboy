@@ -318,9 +318,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  if (state == Z80_STATE_DECODE) pc++;
-  if (state == Z80_STATE_DECODE_CB) pc++;
-
   switch(state_) {
 
   case Z80_STATE_PUSH1:
@@ -408,6 +405,71 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
+  switch (state) {
+  case Z80_STATE_DECODE:
+    pc++;
+    break;
+
+  case Z80_STATE_DECODE_CB:
+    pc++;
+    break;
+
+  case Z80_STATE_PUSH1:
+    // Gameboy weirdness - the "real" interrupt vector is determined by the
+    // state of imask/intf after pushing the first byte of PC onto the stack.
+    imask_latch = imask_;
+    break;
+
+  case Z80_STATE_ARG1:
+    pc++;
+    break;
+
+  case Z80_STATE_ARG2:
+    if (LD_RR_D16) {
+      switch(OP_ROW >> 1) {
+      case 0: bc = temp; break;
+      case 1: de = temp; break;
+      case 2: hl = temp; break;
+      case 3: sp = temp; break;
+      }
+    }
+    pc++;
+    break;
+
+  case Z80_STATE_POP2:
+    if (POP_RR)      {
+      switch(OP_ROW >> 1) {
+      case 0: bc = temp; break;
+      case 1: de = temp; break;
+      case 2: hl = temp; break;
+      case 3: af = temp & 0xFFF0; break;
+      }
+    }
+    break;
+
+  case Z80_STATE_DELAY_C:
+    if (INC_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: bc++; break;
+      case 1: de++; break;
+      case 2: hl++; break;
+      case 3: sp++; break;
+      }
+    }
+    if (DEC_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: bc--; break;
+      case 1: de--; break;
+      case 2: hl--; break;
+      case 3: sp--; break;
+      }
+    }
+    break;
+  }
+
+  //----------------------------------------
+  // writeback
+
   if (state_ == Z80_STATE_DECODE) {
     int next_int = -1;
     if (interrupt) {
@@ -483,65 +545,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (LD_A_AT_HLP) hl = hl + 1;
     if (LD_A_AT_HLM) hl = hl - 1;
     if (MV_SP_HL)    sp = hl;
-  }
-
-  //----------------------------------------
-
-  switch (state) {
-  case Z80_STATE_DECODE:
-    break;
-
-  case Z80_STATE_PUSH1:
-    // Gameboy weirdness - the "real" interrupt vector is determined by the
-    // state of imask/intf after pushing the first byte of PC onto the stack.
-    imask_latch = imask_;
-    break;
-
-  case Z80_STATE_ARG1:
-    pc++;
-    break;
-
-  case Z80_STATE_ARG2:
-    if (LD_RR_D16) {
-      switch(OP_ROW >> 1) {
-      case 0: bc = temp; break;
-      case 1: de = temp; break;
-      case 2: hl = temp; break;
-      case 3: sp = temp; break;
-      }
-    }
-    pc++;
-    break;
-
-  case Z80_STATE_POP2:
-    if (POP_RR)      {
-      switch(OP_ROW >> 1) {
-      case 0: bc = temp; break;
-      case 1: de = temp; break;
-      case 2: hl = temp; break;
-      case 3: af = temp & 0xFFF0; break;
-      }
-    }
-    break;
-
-  case Z80_STATE_DELAY_C:
-    if (INC_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bc++; break;
-      case 1: de++; break;
-      case 2: hl++; break;
-      case 3: sp++; break;
-      }
-    }
-    if (DEC_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bc--; break;
-      case 1: de--; break;
-      case 2: hl--; break;
-      case 3: sp--; break;
-      }
-    }
-    break;
   }
 
   //----------------------------------------

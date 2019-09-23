@@ -157,7 +157,11 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   if (state == Z80_STATE_DECODE) {
     interrupt = (imask_ & intf_) && ime;
-    if (interrupt) op = 0x00;
+    if (interrupt) {
+      op = 0x00;
+      temp = pc;
+      addr = pc;
+    }
   }
 
   //----------------------------------------

@@ -422,10 +422,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       else if (CALL_A16)    pc = temp;
     }
 
-    bus.addr = pc;
-    bus.read = true;
-    bus.write = false;
-
     AluOut out = exec(reg_fetch8());
 
     uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
@@ -467,8 +463,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_HALT:
     if (state == Z80_STATE_DECODE) unhalt = 0;
-    bus.addr = pc;
-    bus.read = true;
     break;
 
   case Z80_STATE_INTERRUPT:
@@ -500,40 +494,18 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_POP1:
-    bus.addr = sp;
-    bus.read = true;
     break;
 
   case Z80_STATE_POP2:
-    bus.addr = sp;
-    bus.read = true;
     break;
 
   case Z80_STATE_ARG1:
-    bus.addr = pc;
-    bus.read = true;
     break;
 
   case Z80_STATE_ARG2:
-    bus.addr = pc;
-    bus.read = true;
     break;
 
   case Z80_STATE_MEM_READ1:
-    if      (LD_A_AT_A16)   { addr = temp; }
-    else if (LD_A_AT_A8)    { addr = 0xFF00 | lo; }
-    else if (LD_A_AT_C)     { addr = 0xFF00 | c; }
-    else if (LD_A_AT_BC)    { addr = bc; }
-    else if (LD_A_AT_DE)    { addr = de; }
-    else if (INC_AT_HL)     { addr = hl; }
-    else if (DEC_AT_HL)     { addr = hl; }
-    else if (LD_A_AT_HLP)   { addr = hl; }
-    else if (LD_A_AT_HLM)   { addr = hl; }
-    else if (MV_OPS_LD_HL)  { addr = hl; }
-    else if (ALU_OPS_LD_HL) { addr = hl; }
-    else if (PREFIX_CB)     { addr = hl; }
-    bus.addr = addr;
-    bus.read = true;
     break;
 
   case Z80_STATE_MEM_WRITE1:
@@ -573,6 +545,23 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)imask;
   (void)intf;
   (void)bus_data;
+
+  switch(state_) {
+  case Z80_STATE_MEM_READ1:
+    if      (LD_A_AT_A16)   { addr = temp; }
+    else if (LD_A_AT_A8)    { addr = 0xFF00 | lo; }
+    else if (LD_A_AT_C)     { addr = 0xFF00 | c; }
+    else if (LD_A_AT_BC)    { addr = bc; }
+    else if (LD_A_AT_DE)    { addr = de; }
+    else if (INC_AT_HL)     { addr = hl; }
+    else if (DEC_AT_HL)     { addr = hl; }
+    else if (LD_A_AT_HLP)   { addr = hl; }
+    else if (LD_A_AT_HLM)   { addr = hl; }
+    else if (MV_OPS_LD_HL)  { addr = hl; }
+    else if (ALU_OPS_LD_HL) { addr = hl; }
+    else if (PREFIX_CB)     { addr = hl; }
+    break;
+  }
 }
 
 //-----------------------------------------------------------------------------

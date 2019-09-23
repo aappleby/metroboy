@@ -158,7 +158,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  Z80State state_ = Z80_STATE_DECODE;
+  state_ = Z80_STATE_DECODE;
 
   switch (state) {
   case Z80_STATE_DECODE: {
@@ -566,10 +566,37 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
+  return bus;
+}
+
+//-----------------------------------------------------------------------------
+
+CpuOut Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+  (void)imask;
+  (void)intf;
+  (void)bus_data;
+  return { 0 };
+}
+
+//-----------------------------------------------------------------------------
+
+CpuOut Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+  (void)imask;
+  (void)intf;
+  (void)bus_data;
+  return { 0 };
+}
+
+//-----------------------------------------------------------------------------
+
+CpuOut Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+  (void)imask;
+  (void)intf;
+  (void)bus_data;
+
   ime = ime_delay;
 
   //----------------------------------------
-  // Write all our registers from the previous instruction before the new opcode shows up.
 
   if (state_ == Z80_STATE_DECODE) {
     // When we finish an instruction, update our interrupt master enable.
@@ -582,10 +609,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------
 
   state = state_;
-
   cycle++;
 
-  return bus;
+  return { 0 };
 }
 
 //-----------------------------------------------------------------------------
@@ -628,12 +654,6 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
     if (op == 0xF8) return 0xF0;
   }
   return 0;
-}
-
-//-----------------------------------------------------------------------------
-
-CpuOut Z80::tock_t2() {
-  return { 0 };
 }
 
 //-----------------------------------------------------------------------------

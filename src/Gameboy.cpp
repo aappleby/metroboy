@@ -162,6 +162,10 @@ void Gameboy::tick() {
       cpu_bus2 = z80.tick_t0(imask, intf, bus_in);
       intf &= ~z80.int_ack_;
     }
+    if (tphase == 2) {
+      /*cpu_bus2 =*/ z80.tick_t2(imask, intf, bus_in);
+      /*intf &= ~z80.int_ack_;*/
+    }
 
     //----------------------------------------
 
@@ -280,44 +284,43 @@ GameboyOut Gameboy::tock() {
   //-----------------------------------
   // Z80
 
+  if (tphase == 0) {
+    z80.tock_t0(imask, intf, bus_in);
+    if (cpu_bus.write) {
+      if (cpu_bus.addr == ADDR_DMA) {
+        if (cpu_bus.data <= 0x7F) dma_mode_x = DMA_CART;
+        if (0x80 <= cpu_bus.data && cpu_bus.data <= 0x9F) dma_mode_x = DMA_VRAM;
+        if (0xA0 <= cpu_bus.data && cpu_bus.data <= 0xBF) dma_mode_x = DMA_CART;
+        if (0xC0 <= cpu_bus.data && cpu_bus.data <= 0xFD) dma_mode_x = DMA_IRAM;
+        dma_count_x = 0;
+        dma_source_x = cpu_bus.data;
+      }
+
+      if (cpu_bus.addr == ADDR_IF) {
+        intf = cpu_bus.data | 0b11100000;
+      }
+      if (cpu_bus.addr == ADDR_IE) {
+        imask = cpu_bus.data;
+      }
+    }
+  }
+
   if (tphase == 2) {
-    z80.tock_t2();
+    z80.tock_t2(imask, intf, bus_in);
+    if (cpu_bus.read) {
+      bus_out = 0x00;
+      bus_oe = false;
+      if (cpu_bus.addr == ADDR_IF) { 
+        bus_out = 0b11100000 | intf; 
+        bus_oe = true;
+      }
+      if (cpu_bus.addr == ADDR_IE) {
+        bus_out = imask;
+        bus_oe = true;
+      }
+    }
   }
   
-  //-----------------------------------
-  // bus
-
-  if (cpu_bus.read) {
-    bus_out = 0x00;
-    bus_oe = false;
-    if (cpu_bus.addr == ADDR_IF) { 
-      bus_out = 0b11100000 | intf; 
-      bus_oe = true;
-    }
-    if (cpu_bus.addr == ADDR_IE) {
-      bus_out = imask;
-      bus_oe = true;
-    }
-  }
-
-  if (cpu_bus.write) {
-    if (cpu_bus.addr == ADDR_DMA) {
-      if (cpu_bus.data <= 0x7F) dma_mode_x = DMA_CART;
-      if (0x80 <= cpu_bus.data && cpu_bus.data <= 0x9F) dma_mode_x = DMA_VRAM;
-      if (0xA0 <= cpu_bus.data && cpu_bus.data <= 0xBF) dma_mode_x = DMA_CART;
-      if (0xC0 <= cpu_bus.data && cpu_bus.data <= 0xFD) dma_mode_x = DMA_IRAM;
-      dma_count_x = 0;
-      dma_source_x = cpu_bus.data;
-    }
-
-    if (cpu_bus.addr == ADDR_IF) {
-      intf = cpu_bus.data | 0b11100000;
-    }
-    if (cpu_bus.addr == ADDR_IE) {
-      imask = cpu_bus.data;
-    }
-  }
-
   //-----------------------------------
 
   if (tphase == 2) {

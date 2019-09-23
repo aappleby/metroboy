@@ -27,22 +27,6 @@ private:
   bool mem_write_;
   uint8_t mem_out_;
 
-  // What's on the bus?
-  enum MemTag {
-    TAG_OPCODE,
-    TAG_OPCODE_CB,
-    TAG_ARG0,
-    TAG_ARG1,
-
-    TAG_DATA0,
-    TAG_DATA1,
-
-    TAG_NONE,
-  };
-
-  MemTag bus_tag, bus_tag_;
-  uint16_t mem_addr;
-
   //----------
 
   enum Z80State {

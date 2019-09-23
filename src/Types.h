@@ -7,7 +7,6 @@ typedef int16_t sample_t;
 //-----------------------------------------------------------------------------
 
 struct CpuBus {
-  uint8_t tag;
   uint16_t addr;
   uint8_t data;
   bool read;

@@ -447,6 +447,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   switch(state_) {
 
   case Z80_STATE_PUSH1:
+    addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
       switch(OP_ROW >> 1) {
@@ -460,12 +461,14 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (CALL_CC_A16) data_out = (uint8_t)(pc >> 8);
     else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
 
-    bus.addr = sp;
+
+    bus.addr = addr;
     bus.data = data_out;
     bus.write = true;
     break;
 
   case Z80_STATE_PUSH2:
+    addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp);
     if (PUSH_RR) {
       switch(OP_ROW >> 1) {
@@ -478,7 +481,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (CALL_A16)    data_out = (uint8_t)(pc);
     if (CALL_CC_A16) data_out = (uint8_t)(pc);
     if (RST_NN)      data_out = (uint8_t)(pc);
-    bus.addr = sp;
+
+    bus.addr = addr;
     bus.data = data_out;
     bus.write = true;
     break;

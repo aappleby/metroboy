@@ -149,8 +149,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case 3: cond_fail = !(f & F_CARRY); break;
   }
 
-  bool no_branch = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
-  bool no_halt = ((imask_ & intf_) && !ime);
+  no_branch = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
+  no_halt = ((imask_ & intf_) && !ime);
 
   //----------------------------------------
 
@@ -343,103 +343,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_DELAY_C:
     state_ = Z80_STATE_DECODE;
-    if (INC_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bc++; break;
-      case 1: de++; break;
-      case 2: hl++; break;
-      case 3: sp++; break;
-      }
-    }
-    if (DEC_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bc--; break;
-      case 1: de--; break;
-      case 2: hl--; break;
-      case 3: sp--; break;
-      }
-    }
-
     break;
-  }
-
-  //----------------------------------------
-
-  if (state_ == Z80_STATE_DECODE) {
-    int next_int = -1;
-    if (interrupt) {
-      // Someone could've changed the interrupt mask or flags while we were
-      // handling the interrupt, so we have to compute the new PC at the very
-      // last second.
-
-      int actual_interrupt = -1;
-      uint8_t interrupts = imask_latch & intf_;
-      if (interrupts & INT_JOYPAD) actual_interrupt = 4; // joypad
-      if (interrupts & INT_SERIAL) actual_interrupt = 3; // serial
-      if (interrupts & INT_TIMER)  actual_interrupt = 2; // timer
-      if (interrupts & INT_STAT)   actual_interrupt = 1; // lcd stat
-      if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
-
-      next_int = actual_interrupt;
-    }
-
-    if (next_int >= 0) int_ack_ = 1 << next_int;
-
-    if (interrupt) {
-      if (next_int >= 0) {
-        pc = uint16_t(0x0040 + (next_int * 8));
-      }
-      else {
-        pc = 0x0000;
-      }
-    }
-
-    if (!no_branch) {
-      if      (JP_HL)       pc = hl;
-      else if (RST_NN)      pc = op - 0xC7;
-      else if (JR_R8)       pc = pc + (int8_t)lo;
-      else if (JR_CC_R8)    pc = pc + (int8_t)lo;
-      else if (JP_CC_A16)   pc = temp;
-      else if (CALL_CC_A16) pc = temp;
-      else if (RET_CC)      pc = temp;
-      else if (RET)         pc = temp;
-      else if (RETI)        pc = temp;
-      else if (JP_A16)      pc = temp;
-      else if (CALL_A16)    pc = temp;
-    }
-
-    AluOut out = exec(reg_fetch8());
-
-    uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
-    if (POP_AF)  f = lo & 0xF0;
-    else         f = (f & ~mask) | (out.f & mask);
-
-    if (MV_OPS)      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
-    if (LD_R_D8)     reg_put8(OP_ROW, (uint8_t)temp);
-
-    if (INC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
-    if (DEC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
-    if (ALU_A_D8)    reg_put8(7,      (uint8_t)out.x);
-    if (ALU_OPS)     reg_put8(7,      (uint8_t)out.x);
-    if (ROTATE_OPS)  reg_put8(7,      (uint8_t)out.x);
-    if (ADD_HL_RR)   hl = out.x;
-    if (LD_HL_SP_R8) hl = out.x;
-    if (ADD_SP_R8)   sp = out.x;
-
-    if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)temp);
-    if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)temp);
-    if (LD_A_AT_C)   reg_put8(7,      (uint8_t)temp);
-    if (LD_A_AT_A16) reg_put8(7,      (uint8_t)temp);
-
-    if (PREFIX_CB)   {
-      reg_put8(CB_COL, (uint8_t)out.x);
-    }
-
-    if (ST_HLP_A)    hl = hl + 1;
-    if (ST_HLM_A)    hl = hl - 1;
-    if (LD_A_AT_HLP) hl = hl + 1;
-    if (LD_A_AT_HLM) hl = hl - 1;
-    if (MV_SP_HL)    sp = hl;
   }
 
   //----------------------------------------
@@ -531,8 +435,105 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
+  if (state_ == Z80_STATE_DECODE) {
+    int next_int = -1;
+    if (interrupt) {
+      // Someone could've changed the interrupt mask or flags while we were
+      // handling the interrupt, so we have to compute the new PC at the very
+      // last second.
+
+      int actual_interrupt = -1;
+      uint8_t interrupts = imask_latch & intf_;
+      if (interrupts & INT_JOYPAD) actual_interrupt = 4; // joypad
+      if (interrupts & INT_SERIAL) actual_interrupt = 3; // serial
+      if (interrupts & INT_TIMER)  actual_interrupt = 2; // timer
+      if (interrupts & INT_STAT)   actual_interrupt = 1; // lcd stat
+      if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
+
+      next_int = actual_interrupt;
+    }
+
+    if (next_int >= 0) int_ack_ = 1 << next_int;
+
+    if (interrupt) {
+      if (next_int >= 0) {
+        pc = uint16_t(0x0040 + (next_int * 8));
+      }
+      else {
+        pc = 0x0000;
+      }
+    }
+
+    if (!no_branch) {
+      if      (JP_HL)       pc = hl;
+      else if (RST_NN)      pc = op - 0xC7;
+      else if (JR_R8)       pc = pc + (int8_t)lo;
+      else if (JR_CC_R8)    pc = pc + (int8_t)lo;
+      else if (JP_CC_A16)   pc = temp;
+      else if (CALL_CC_A16) pc = temp;
+      else if (RET_CC)      pc = temp;
+      else if (RET)         pc = temp;
+      else if (RETI)        pc = temp;
+      else if (JP_A16)      pc = temp;
+      else if (CALL_A16)    pc = temp;
+    }
+
+    AluOut out = exec(reg_fetch8());
+
+    uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+    if (POP_AF)  f = lo & 0xF0;
+    else         f = (f & ~mask) | (out.f & mask);
+
+    if (MV_OPS)      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
+    if (LD_R_D8)     reg_put8(OP_ROW, (uint8_t)temp);
+
+    if (INC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
+    if (DEC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
+    if (ALU_A_D8)    reg_put8(7,      (uint8_t)out.x);
+    if (ALU_OPS)     reg_put8(7,      (uint8_t)out.x);
+    if (ROTATE_OPS)  reg_put8(7,      (uint8_t)out.x);
+    if (ADD_HL_RR)   hl = out.x;
+    if (LD_HL_SP_R8) hl = out.x;
+    if (ADD_SP_R8)   sp = out.x;
+
+    if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)temp);
+    if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)temp);
+    if (LD_A_AT_C)   reg_put8(7,      (uint8_t)temp);
+    if (LD_A_AT_A16) reg_put8(7,      (uint8_t)temp);
+
+    if (PREFIX_CB)   {
+      reg_put8(CB_COL, (uint8_t)out.x);
+    }
+
+    if (ST_HLP_A)    hl = hl + 1;
+    if (ST_HLM_A)    hl = hl - 1;
+    if (LD_A_AT_HLP) hl = hl + 1;
+    if (LD_A_AT_HLM) hl = hl - 1;
+    if (MV_SP_HL)    sp = hl;
+  }
+
+  //----------------------------------------
+
   switch (state) {
   case Z80_STATE_DECODE:
+    break;
+  case Z80_STATE_DELAY_C:
+    if (INC_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: bc++; break;
+      case 1: de++; break;
+      case 2: hl++; break;
+      case 3: sp++; break;
+      }
+    }
+    if (DEC_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: bc--; break;
+      case 1: de--; break;
+      case 2: hl--; break;
+      case 3: sp--; break;
+      }
+    }
     break;
   }
 

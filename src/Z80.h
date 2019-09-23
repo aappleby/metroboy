@@ -74,6 +74,10 @@ private:
   // internal address register
   uint16_t addr;
   uint8_t data_out;
+
+  bool no_branch;
+  bool no_halt;
+
 #pragma warning(pop)
 
   //----------

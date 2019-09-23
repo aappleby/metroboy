@@ -131,7 +131,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   imask_ = imask;
   intf_ = intf;
 
-  if (state == Z80_STATE_DECODE) {
+  switch(state) {
+  case Z80_STATE_DECODE:
     op = bus_data;
     interrupt = (imask_ & intf_) && ime;
     if (interrupt) {
@@ -140,27 +141,48 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       temp = pc;
     }
     pc++;
-  }
-  else if (state == Z80_STATE_DECODE_CB) {
+    break;
+  case Z80_STATE_DECODE_CB:
     op_cb   = bus_data;
     pc++;
-  }
-  else if (state == Z80_STATE_ARG1) {
+    break;
+  case Z80_STATE_HALT:
+    break;
+  case Z80_STATE_INTERRUPT:
+    break;
+  case Z80_STATE_PUSH_DELAY:
+    break;
+  case Z80_STATE_PUSH1:
+    break;
+  case Z80_STATE_PUSH2:
+    break;
+  case Z80_STATE_POP1:
+    lo = bus_data;
+    break;
+  case Z80_STATE_POP2:
+    hi = bus_data;
+    break;
+  case Z80_STATE_ARG1:
     lo = bus_data;
     pc++;
-  }
-  else if (state == Z80_STATE_ARG2) {
+    break;
+  case Z80_STATE_ARG2:
     hi = bus_data;
     pc++;
-  }
-  else if (state == Z80_STATE_POP1) {
+    break;
+  case Z80_STATE_MEM_READ1:
     lo = bus_data;
-  }
-  else if (state == Z80_STATE_POP2) {
-    hi = bus_data;
-  }
-  else if (state == Z80_STATE_MEM_READ1) {
-    lo = bus_data;
+    break;
+  case Z80_STATE_MEM_WRITE1:
+    break;
+  case Z80_STATE_MEM_WRITE2:
+    break;
+  case Z80_STATE_DELAY_A:
+    break;
+  case Z80_STATE_DELAY_B:
+    break;
+  case Z80_STATE_DELAY_C:
+    break;
   }
 
   //----------
@@ -255,6 +277,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_PUSH_DELAY:
+    sp--;
     break;
 
   case Z80_STATE_PUSH1:
@@ -273,6 +296,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else fail();
     bus.addr = sp;
     bus.write = true;
+    sp--;
     break;
 
   case Z80_STATE_PUSH2:
@@ -291,6 +315,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else fail();
     bus.addr = sp;
     bus.write = true;
+    // Gameboy weirdness - the "real" interrupt vector is determined by the
+    // state of imask/intf after pushing the first byte of PC onto the stack.
+    imask_latch = imask_;
     break;
 
   case Z80_STATE_POP1:
@@ -301,6 +328,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else fail();
     bus.addr = sp;
     bus.read = true;
+    sp++;
     break;
 
   case Z80_STATE_POP2:
@@ -310,6 +338,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (POP_RR) {}
     bus.addr = sp;
     bus.read = true;
+    sp++;
     break;
 
   case Z80_STATE_ARG1:
@@ -367,11 +396,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DELAY_B: break;
   case Z80_STATE_DELAY_C: break;
   }
-
-  if (state_ == Z80_STATE_PUSH_DELAY) sp--;
-  if (state_ == Z80_STATE_PUSH1) sp--;
-  if (state_ == Z80_STATE_POP1)  sp++;
-  if (state_ == Z80_STATE_POP2)  sp++;
 
   ime = ime_delay;
 
@@ -449,12 +473,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------
-  // Gameboy weirdness - the "real" interrupt vector is determined by the
-  // state of imask/intf after pushing the first byte of PC onto the stack.
-
-  if (interrupt && state_ == Z80_STATE_PUSH2) {
-    imask_latch = imask_;
-  }
 
   state = state_;
 

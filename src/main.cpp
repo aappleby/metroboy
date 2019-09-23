@@ -39,7 +39,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //metroboy.reset(0x100);
 
-  //run_microtests();
+  run_microtests();
   //run_screenshot_tests();
 
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS");

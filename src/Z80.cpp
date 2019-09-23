@@ -141,6 +141,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     interrupt2 = (imask_ & intf_) && ime;
     if (interrupt2) {
       op_ = 0x00;
+      // slightly weird
+      data16_ = pc2;
     }
     quad_ = (op_ >> 6) & 3;
     row_ = (op_ >> 3) & 7;
@@ -172,10 +174,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------
 
   if (state == Z80_STATE_DECODE) {
-    if (HALT) {
-      printf("halt\n");
-    }
-
     take_branch_ = false;
 
     bool cond_pass = false;
@@ -320,10 +318,6 @@ CpuOut Z80::tock_t2() {
   // Write all our registers from the previous instruction before the new opcode shows up.
   if (state_ == Z80_STATE_DECODE) {
     pc = pc2;
-
-    if (pc2 != pc) {
-      printf("pc2 fail 0x%02x\n", op_);
-    }
     opcount = opcount + 1;
     uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
     if (POP_AF)  f = data_lo_ & 0xF0;
@@ -711,7 +705,7 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_DECODE_CB:
-    bus.addr = pc + 1;
+    bus.addr = pc2;
     bus.read = true;
     break;
 
@@ -727,7 +721,7 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_PUSH1:
-    if      (interrupt2)  bus.data = (uint8_t)((pc) >> 8);
+    if      (interrupt2)  bus.data = (uint8_t)(data16_ >> 8);
     else if (PUSH_RR) {
       switch(row_ >> 1) {
       case 0: bus.data = b; break;
@@ -736,16 +730,16 @@ CpuBus Z80::next_bus() const {
       case 3: bus.data = a; break;
       }
     }
-    else if (CALL_A16)    bus.data = (uint8_t)((pc + 3) >> 8);
-    else if (CALL_CC_A16) bus.data = (uint8_t)((pc + 3) >> 8);
-    else if (RST_NN)      bus.data = (uint8_t)((pc + 1) >> 8);
+    else if (CALL_A16)    bus.data = (uint8_t)(pc2 >> 8);
+    else if (CALL_CC_A16) bus.data = (uint8_t)(pc2 >> 8);
+    else if (RST_NN)      bus.data = (uint8_t)(pc2 >> 8);
     else fail();
     bus.addr = sp;
     bus.write = true;
     break;
 
   case Z80_STATE_PUSH2:
-    if      (interrupt2)  bus.data = (uint8_t)(pc);
+    if      (interrupt2)  bus.data = (uint8_t)(data16_);
     else if (PUSH_RR) {
       switch(row_ >> 1) {
       case 0: bus.data = c; break;
@@ -754,9 +748,9 @@ CpuBus Z80::next_bus() const {
       case 3: bus.data = f; break;
       }
     }
-    else if (CALL_A16)    bus.data = (uint8_t)(pc + 3);
-    else if (CALL_CC_A16) bus.data = (uint8_t)(pc + 3);
-    else if (RST_NN)      bus.data = (uint8_t)(pc + 1);
+    else if (CALL_A16)    bus.data = (uint8_t)(pc2);
+    else if (CALL_CC_A16) bus.data = (uint8_t)(pc2);
+    else if (RST_NN)      bus.data = (uint8_t)(pc2);
     else fail();
     bus.addr = sp;
     bus.write = true;

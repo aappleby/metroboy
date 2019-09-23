@@ -322,7 +322,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // set up write
 
-  if (state_ == Z80_STATE_PUSH1) {
+  if (state == Z80_STATE_PUSH_DELAY) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
@@ -338,7 +338,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
   }
 
-  if (state_ == Z80_STATE_PUSH2) {
+  if (state == Z80_STATE_PUSH1) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp);
     if (PUSH_RR) {

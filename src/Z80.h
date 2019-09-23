@@ -73,6 +73,7 @@ private:
 
   // internal address register
   uint16_t addr;
+  uint8_t data_out;
 #pragma warning(pop)
 
   //----------

@@ -379,8 +379,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  switch(state_) {
-  case Z80_STATE_DECODE: {
+  if (state_ == Z80_STATE_DECODE) {
     int next_int = -1;
     if (interrupt) {
       // Someone could've changed the interrupt mask or flags while we were
@@ -455,84 +454,62 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (LD_A_AT_HLP) hl = hl + 1;
     if (LD_A_AT_HLM) hl = hl - 1;
     if (MV_SP_HL)    sp = hl;
-
-    break;
   }
 
-  case Z80_STATE_DECODE_CB:
-    break;
+  //----------------------------------------
 
-  case Z80_STATE_HALT:
-    break;
-
-  case Z80_STATE_INTERRUPT:
-    break;
-
-  case Z80_STATE_PUSH_DELAY:
-    break;
+  switch(state_) {
 
   case Z80_STATE_PUSH1:
-    if      (interrupt)  bus.data = (uint8_t)(temp >> 8);
+    if      (interrupt)  data_out = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
       switch(OP_ROW >> 1) {
-      case 0: bus.data = b; break;
-      case 1: bus.data = d; break;
-      case 2: bus.data = h; break;
-      case 3: bus.data = a; break;
+      case 0: data_out = b; break;
+      case 1: data_out = d; break;
+      case 2: data_out = h; break;
+      case 3: data_out = a; break;
       }
     }
-    else if (CALL_A16)    bus.data = (uint8_t)(pc >> 8);
-    else if (CALL_CC_A16) bus.data = (uint8_t)(pc >> 8);
-    else if (RST_NN)      bus.data = (uint8_t)(pc >> 8);
+    else if (CALL_A16)    data_out = (uint8_t)(pc >> 8);
+    else if (CALL_CC_A16) data_out = (uint8_t)(pc >> 8);
+    else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
+
     bus.addr = sp;
+    bus.data = data_out;
     bus.write = true;
     break;
 
-  case Z80_STATE_PUSH2:
-    break;
-
-  case Z80_STATE_POP1:
-    break;
-
-  case Z80_STATE_POP2:
-    break;
-
-  case Z80_STATE_ARG1:
-    break;
-
-  case Z80_STATE_ARG2:
-    break;
-
-  case Z80_STATE_MEM_READ1:
-    break;
-
   case Z80_STATE_MEM_WRITE1:
-    if      (ST_BC_A)       { addr = bc;          bus.data = a; }
-    else if (ST_DE_A)       { addr = de;          bus.data = a; }
-    else if (ST_HLP_A)      { addr = hl;          bus.data = a; }
-    else if (ST_HLM_A)      { addr = hl;          bus.data = a; }
-    else if (INC_AT_HL)     { addr = hl;          bus.data = lo + 1; }
-    else if (DEC_AT_HL)     { addr = hl;          bus.data = lo - 1; }
-    else if (ST_HL_D8)      { addr = hl;          bus.data = lo; }
-    else if (MV_OPS_ST_HL)  { addr = hl;          bus.data = reg_fetch8(); }
-    else if (PREFIX_CB)     { addr = hl;          bus.data = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
-    else if (ST_A16_A)      { addr = temp;        bus.data = a; }
-    else if (ST_A8_A)       { addr = 0xFF00 | lo; bus.data = a; }
-    else if (ST_C_A)        { addr = 0xFF00 | c;  bus.data = a; }
-    else if (ST_A16_SP)     { addr = temp;        bus.data = (uint8_t)sp; }
+    if      (ST_BC_A)       { addr = bc;          data_out = a; }
+    else if (ST_DE_A)       { addr = de;          data_out = a; }
+    else if (ST_HLP_A)      { addr = hl;          data_out = a; }
+    else if (ST_HLM_A)      { addr = hl;          data_out = a; }
+    else if (INC_AT_HL)     { addr = hl;          data_out = lo + 1; }
+    else if (DEC_AT_HL)     { addr = hl;          data_out = lo - 1; }
+    else if (ST_HL_D8)      { addr = hl;          data_out = lo; }
+    else if (MV_OPS_ST_HL)  { addr = hl;          data_out = reg_fetch8(); }
+    else if (PREFIX_CB)     { addr = hl;          data_out = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
+    else if (ST_A16_A)      { addr = temp;        data_out = a; }
+    else if (ST_A8_A)       { addr = 0xFF00 | lo; data_out = a; }
+    else if (ST_C_A)        { addr = 0xFF00 | c;  data_out = a; }
+    else if (ST_A16_SP)     { addr = temp;        data_out = (uint8_t)sp; }
 
     bus.addr = addr;
+    bus.data = data_out;
     bus.write = true;
     break;
 
   case Z80_STATE_MEM_WRITE2:
-    if      (ST_A16_SP)   { addr = temp + 1; bus.data = (uint8_t)(sp >> 8); }
+    addr = temp + 1;
+    data_out = (uint8_t)(sp >> 8);
+
     bus.addr = addr;
+    bus.data = data_out;
     bus.write = true;
     break;
   }
 
-  bus_temp = bus;
+  //----------------------------------------
 
   return bus;
 }

@@ -260,6 +260,14 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_POP2:
     state_ = POP_RR ? Z80_STATE_DECODE : Z80_STATE_DELAY_C;
+    if (POP_RR)      {
+      switch(OP_ROW >> 1) {
+      case 0: bc = temp; break;
+      case 1: de = temp; break;
+      case 2: hl = temp; break;
+      case 3: af = temp & 0xFFF0; break;
+      }
+    }
     break;
 
   case Z80_STATE_ARG1:
@@ -473,27 +481,32 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_MEM_WRITE1:
-    if      (ST_BC_A)       { bus.addr = bc;          bus.data = a; }
-    else if (ST_DE_A)       { bus.addr = de;          bus.data = a; }
-    else if (ST_HLP_A)      { bus.addr = hl;          bus.data = a; }
-    else if (ST_HLM_A)      { bus.addr = hl;          bus.data = a; }
-    else if (INC_AT_HL)     { bus.addr = hl;          bus.data = lo + 1; }
-    else if (DEC_AT_HL)     { bus.addr = hl;          bus.data = lo - 1; }
-    else if (ST_HL_D8)      { bus.addr = hl;          bus.data = (uint8_t)lo; }
-    else if (MV_OPS_ST_HL)  { bus.addr = hl;          bus.data = reg_fetch8(); }
-    else if (PREFIX_CB)     { bus.addr = hl;          bus.data = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
-    else if (ST_A16_A)      { bus.addr = temp;        bus.data = a; }
-    else if (ST_A8_A)       { bus.addr = 0xFF00 | lo; bus.data = a; }
-    else if (ST_C_A)        { bus.addr = 0xFF00 | c;  bus.data = a; }
-    else if (ST_A16_SP)     { bus.addr = temp;        bus.data = (uint8_t)sp; }
+    if      (ST_BC_A)       { addr = bc;          bus.data = a; }
+    else if (ST_DE_A)       { addr = de;          bus.data = a; }
+    else if (ST_HLP_A)      { addr = hl;          bus.data = a; }
+    else if (ST_HLM_A)      { addr = hl;          bus.data = a; }
+    else if (INC_AT_HL)     { addr = hl;          bus.data = lo + 1; }
+    else if (DEC_AT_HL)     { addr = hl;          bus.data = lo - 1; }
+    else if (ST_HL_D8)      { addr = hl;          bus.data = lo; }
+    else if (MV_OPS_ST_HL)  { addr = hl;          bus.data = reg_fetch8(); }
+    else if (PREFIX_CB)     { addr = hl;          bus.data = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
+    else if (ST_A16_A)      { addr = temp;        bus.data = a; }
+    else if (ST_A8_A)       { addr = 0xFF00 | lo; bus.data = a; }
+    else if (ST_C_A)        { addr = 0xFF00 | c;  bus.data = a; }
+    else if (ST_A16_SP)     { addr = temp;        bus.data = (uint8_t)sp; }
+
+    bus.addr = addr;
     bus.write = true;
     break;
 
   case Z80_STATE_MEM_WRITE2:
-    if      (ST_A16_SP)   { bus.addr = temp + 1; bus.data = (uint8_t)(sp >> 8); }
+    if      (ST_A16_SP)   { addr = temp + 1; bus.data = (uint8_t)(sp >> 8); }
+    bus.addr = addr;
     bus.write = true;
     break;
   }
+
+  ime = ime_delay;
 
   //----------------------------------------
   // Write all our registers from the previous instruction before the new opcode shows up.
@@ -550,27 +563,13 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       case 3: sp--; break;
       }
     }
-    if (POP_RR)      {
-      switch(OP_ROW >> 1) {
-      case 0: bc = temp; break;
-      case 1: de = temp; break;
-      case 2: hl = temp; break;
-      case 3: af = temp & 0xFFF0; break;
-      }
-    }
 
     if (ST_HLP_A)    hl = hl + 1;
     if (ST_HLM_A)    hl = hl - 1;
     if (LD_A_AT_HLP) hl = hl + 1;
     if (LD_A_AT_HLM) hl = hl - 1;
     if (MV_SP_HL)    sp = hl;
-  }
 
-  //----------------------------------------
-
-  ime = ime_delay;
-
-  if (state_ == Z80_STATE_DECODE) {
     // When we finish an instruction, update our interrupt master enable.
     if (interrupt)  { ime = false;     ime_delay = false; }
     else if (RETI)  { ime = true;      ime_delay = true; }

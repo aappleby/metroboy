@@ -27,6 +27,29 @@ enum Z80State {
   Z80_STATE_DELAY_C,
 };
 
+/*
+switch (state) {
+case Z80_STATE_DECODE: break;
+case Z80_STATE_DECODE_CB: break;
+case Z80_STATE_HALT: break;
+case Z80_STATE_INTERRUPT: break;
+case Z80_STATE_PUSH_DELAY: break;
+case Z80_STATE_PUSH1: break;
+case Z80_STATE_PUSH2: break;
+case Z80_STATE_POP1: break;
+case Z80_STATE_POP2: break;
+case Z80_STATE_ARG1: break;
+case Z80_STATE_ARG2: break;
+case Z80_STATE_MEM_READ1: break;
+case Z80_STATE_MEM_WRITE1: break;
+case Z80_STATE_MEM_WRITE2: break;
+case Z80_STATE_RET_DELAY: break;
+case Z80_STATE_DELAY_B: break;
+case Z80_STATE_DELAY_C: break;
+}
+
+*/
+
 //-----------------------------------------------------------------------------
 
 struct Z80 {

@@ -128,6 +128,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   imask_ = imask;
   intf_ = intf;
 
+  //----------------------------------------
+  // Handle read
+
   switch(state) {
   case Z80_STATE_DECODE:    op = bus_data; break;
   case Z80_STATE_DECODE_CB: op_cb = bus_data; break;
@@ -404,6 +407,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)bus_data;
 
   //----------------------------------------
+  // Read complete, write dispatched
 
   switch (state) {
   case Z80_STATE_DECODE:
@@ -548,6 +552,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
+  // Set up read
 
   switch(state_) {
   case Z80_STATE_DECODE:
@@ -556,11 +561,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_ARG1:
   case Z80_STATE_ARG2:
     addr = pc;
-    break;
-
-  case Z80_STATE_PUSH_DELAY:
-  case Z80_STATE_PUSH1:
-    sp--;
     break;
 
   case Z80_STATE_POP1:
@@ -594,48 +594,7 @@ CpuBus Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)bus_data;
 
   //----------------------------------------
-
-  switch (state) {
-  case Z80_STATE_DECODE: break;
-  case Z80_STATE_DECODE_CB: break;
-  case Z80_STATE_HALT: break;
-  case Z80_STATE_INTERRUPT: break;
-  case Z80_STATE_PUSH_DELAY: break;
-  case Z80_STATE_PUSH1: break;
-  case Z80_STATE_PUSH2: break;
-  case Z80_STATE_POP1: break;
-  case Z80_STATE_POP2: break;
-  case Z80_STATE_ARG1: break;
-  case Z80_STATE_ARG2: break;
-  case Z80_STATE_MEM_READ1: break;
-  case Z80_STATE_MEM_WRITE1: break;
-  case Z80_STATE_MEM_WRITE2: break;
-  case Z80_STATE_RET_DELAY: break;
-  case Z80_STATE_DELAY_B: break;
-  case Z80_STATE_DELAY_C: break;
-  }
-
-  //----------------------------------------
-
-  switch(state_) {
-  case Z80_STATE_DECODE: break;
-  case Z80_STATE_DECODE_CB: break;
-  case Z80_STATE_HALT: break;
-  case Z80_STATE_ARG1: break;
-  case Z80_STATE_ARG2: break;
-  case Z80_STATE_POP1: break;
-  case Z80_STATE_POP2: break;
-  case Z80_STATE_MEM_READ1: break;
-  case Z80_STATE_INTERRUPT: break;
-  case Z80_STATE_PUSH_DELAY: break;
-  case Z80_STATE_PUSH1: break;
-  case Z80_STATE_PUSH2: break;
-  case Z80_STATE_MEM_WRITE1: break;
-  case Z80_STATE_MEM_WRITE2: break;
-  case Z80_STATE_RET_DELAY: break;
-  case Z80_STATE_DELAY_B: break;
-  case Z80_STATE_DELAY_C: break;
-  }
+  // Dispatch read
 
   CpuBus bus = { addr, 0, true, false };
   return bus;
@@ -651,6 +610,10 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   ime = ime_delay;
 
   //----------------------------------------
+  // Write complete, read dispatched
+
+  if (state_ == Z80_STATE_PUSH_DELAY) sp--;
+  if (state_ == Z80_STATE_PUSH1) sp--;
 
   if (state_ == Z80_STATE_DECODE) {
     // When we finish an instruction, update our interrupt master enable.

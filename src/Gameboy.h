@@ -69,7 +69,6 @@ private:
 
   CpuBus cpu_bus2;
 
-  CpuOut cpu_out;
   PpuOut ppu_out;
 
   SpuOut spu_out;
@@ -89,9 +88,6 @@ private:
   bool old_stat_int2 = false;
 
   bool cpu_read_oam = false;
-  bool cpu_read_vram = false;
-  bool cpu_read_iram = false;
-  bool cpu_read_cart = false;
 
   DMAMode  dma_mode_x = DMA_NONE;
   uint8_t  dma_count_x = 0;

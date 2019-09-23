@@ -85,7 +85,7 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
 
 //-----------------------------------------------------------------------------
 
-CpuOut Z80::reset(int new_model, uint16_t new_pc) {
+void Z80::reset(int new_model, uint16_t new_pc) {
   int_ack_ = 0;
   imask_ = 0;
   intf_ = 0;
@@ -119,8 +119,6 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
     pc = new_pc;
     addr = 0;
   }
-
-  return { 0 };
 }
 
 //-----------------------------------------------------------------------------
@@ -571,7 +569,15 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 //-----------------------------------------------------------------------------
 
-CpuOut Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+  (void)imask;
+  (void)intf;
+  (void)bus_data;
+}
+
+//-----------------------------------------------------------------------------
+
+CpuBus Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)imask;
   (void)intf;
   (void)bus_data;
@@ -580,16 +586,7 @@ CpuOut Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 //-----------------------------------------------------------------------------
 
-CpuOut Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
-  (void)imask;
-  (void)intf;
-  (void)bus_data;
-  return { 0 };
-}
-
-//-----------------------------------------------------------------------------
-
-CpuOut Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)imask;
   (void)intf;
   (void)bus_data;
@@ -610,8 +607,6 @@ CpuOut Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   state = state_;
   cycle++;
-
-  return { 0 };
 }
 
 //-----------------------------------------------------------------------------

@@ -28,7 +28,7 @@ Gameboy::Gameboy()
 }
 
 void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
-  cpu_out = z80.reset(new_model, new_pc);
+  z80.reset(new_model, new_pc);
   ppu_out = ppu.reset(new_pc == 0, new_model);
   
   oam_out = oam.reset();
@@ -45,9 +45,6 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   tcycle = -1;
 
   cpu_read_oam = false;
-  cpu_read_vram = false;
-  cpu_read_iram = false;
-  cpu_read_cart = true;
 
   dma_mode_x = DMA_NONE;
   dma_count_x = 0;
@@ -215,11 +212,6 @@ GameboyOut Gameboy::tock() {
   uint16_t dma_read_addr = (dma_source_a << 8) | dma_count_a;
   uint16_t dma_write_addr = ADDR_OAM_BEGIN + dma_count_b;
 
-  uint8_t dma_data = 0;
-  if (dma_mode_b == DMA_CART) dma_data = mmu_out.data;
-  if (dma_mode_b == DMA_VRAM) dma_data = vram_out.data;
-  if (dma_mode_b == DMA_IRAM) dma_data = iram_out.data;
-
   //-----------------------------------
 
   int page = cpu_bus.addr >> 13;
@@ -239,6 +231,10 @@ GameboyOut Gameboy::tock() {
 
   if (dma_mode_b != DMA_NONE) {
     if (tphase == 0) {
+      uint8_t dma_data = 0;
+      if (dma_mode_b == DMA_CART) dma_data = mmu_out.data;
+      if (dma_mode_b == DMA_VRAM) dma_data = vram_out.data;
+      if (dma_mode_b == DMA_IRAM) dma_data = iram_out.data;
       oam_bus = { dma_write_addr, dma_data, false, true };
     }
     else {
@@ -265,10 +261,6 @@ GameboyOut Gameboy::tock() {
 
   //-----------------------------------
   // vram bus mux
-
-  cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu_out.vram_lock && cpu_bus.read && ce_vram;
-  cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
-  cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_bus.read && (ce_rom || ce_cram);
 
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
 
@@ -305,6 +297,8 @@ GameboyOut Gameboy::tock() {
     }
   }
 
+  //-----------------------------------
+
   if (tphase == 2) {
     z80.tock_t2(imask, intf, bus_in);
     if (cpu_bus.read) {
@@ -319,13 +313,13 @@ GameboyOut Gameboy::tock() {
         bus_oe = true;
       }
     }
-  }
-  
-  //-----------------------------------
 
-  if (tphase == 2) {
     uint8_t bus_out_ = bus_out;
     uint8_t bus_oe_ = bus_oe;
+
+    bool cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu_out.vram_lock && cpu_bus.read && ce_vram;
+    bool cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
+    bool cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_bus.read && (ce_rom || ce_cram);
 
     bus_out_ |= cpu_read_cart ? mmu_out.data : 0x00;
     bus_out_ |= cpu_read_vram ? vram_out.data : 0x00;

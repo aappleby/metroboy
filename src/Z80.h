@@ -30,11 +30,11 @@ enum Z80State {
 //-----------------------------------------------------------------------------
 
 struct Z80 {
-  CpuOut reset(int new_model, uint16_t new_pc);
+  void   reset(int new_model, uint16_t new_pc);
   CpuBus tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data);
-  CpuOut tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data);
-  CpuOut tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data);
-  CpuOut tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data);
+  void   tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data);
+  CpuBus tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data);
+  void   tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data);
 
   uint16_t get_pc() const { return pc; }
   uint8_t  get_a()  const { return a; }

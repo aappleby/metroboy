@@ -167,6 +167,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       op = 0x00;
       // slightly weird
       temp = pc;
+      addr = pc;
     }
     pc++;
     state_ = Z80_STATE_DECODE;
@@ -189,7 +190,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LD_A_AT_DE)    state_ = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_C)     state_ = Z80_STATE_MEM_READ1;
 
-    else if (RET_CC)        state_ = Z80_STATE_DELAY_A;
+    else if (RET_CC)        state_ = Z80_STATE_RET_DELAY;
     else if (RST_NN)        state_ = Z80_STATE_PUSH_DELAY;
 
     else if (INC_RR)        state_ = Z80_STATE_DELAY_C;
@@ -268,9 +269,12 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (ST_HL_D8)      state_ = Z80_STATE_MEM_WRITE1;
     else if (ST_A8_A)       state_ = Z80_STATE_MEM_WRITE1;
     else if (ADD_SP_R8)     state_ = Z80_STATE_DELAY_B;
+
+    // second alu op delay
     else if (LD_HL_SP_R8)   state_ = Z80_STATE_DELAY_C;
     else if (JR_R8)         state_ = Z80_STATE_DELAY_C;
     else if (JR_CC_R8)      state_ = Z80_STATE_DELAY_C;
+
     else if (LD_R_D8)       state_ = Z80_STATE_DECODE;
     else if (ALU_A_D8)      state_ = Z80_STATE_DECODE;
 
@@ -303,14 +307,14 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_MEM_WRITE1:
     state_ = Z80_STATE_DECODE;
-    if      (ST_A16_SP)     state_ = Z80_STATE_MEM_WRITE2;
+    if (ST_A16_SP) state_ = Z80_STATE_MEM_WRITE2;
     break;
 
   case Z80_STATE_MEM_WRITE2:
     state_ = Z80_STATE_DECODE;
     break;
 
-  case Z80_STATE_DELAY_A:
+  case Z80_STATE_RET_DELAY:
     state_ = Z80_STATE_POP1;
     if (no_branch) state_ = Z80_STATE_DECODE;
     break;
@@ -452,18 +456,19 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_MEM_READ1:
-    if      (LD_A_AT_A16)   { bus.addr = temp; }
-    else if (LD_A_AT_A8)    { bus.addr = 0xFF00 | lo; }
-    else if (LD_A_AT_C)     { bus.addr = 0xFF00 | c; }
-    else if (LD_A_AT_BC)    { bus.addr = bc; }
-    else if (LD_A_AT_DE)    { bus.addr = de; }
-    else if (INC_AT_HL)     { bus.addr = hl; }
-    else if (DEC_AT_HL)     { bus.addr = hl; }
-    else if (LD_A_AT_HLP)   { bus.addr = hl; }
-    else if (LD_A_AT_HLM)   { bus.addr = hl; }
-    else if (MV_OPS_LD_HL)  { bus.addr = hl; }
-    else if (ALU_OPS_LD_HL) { bus.addr = hl; }
-    else if (PREFIX_CB)     { bus.addr = hl; }
+    if      (LD_A_AT_A16)   { addr = temp; }
+    else if (LD_A_AT_A8)    { addr = 0xFF00 | lo; }
+    else if (LD_A_AT_C)     { addr = 0xFF00 | c; }
+    else if (LD_A_AT_BC)    { addr = bc; }
+    else if (LD_A_AT_DE)    { addr = de; }
+    else if (INC_AT_HL)     { addr = hl; }
+    else if (DEC_AT_HL)     { addr = hl; }
+    else if (LD_A_AT_HLP)   { addr = hl; }
+    else if (LD_A_AT_HLM)   { addr = hl; }
+    else if (MV_OPS_LD_HL)  { addr = hl; }
+    else if (ALU_OPS_LD_HL) { addr = hl; }
+    else if (PREFIX_CB)     { addr = hl; }
+    bus.addr = addr;
     bus.read = true;
     break;
 
@@ -508,6 +513,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (ALU_A_D8)    reg_put8(7,      (uint8_t)out.x);
     if (ALU_OPS)     reg_put8(7,      (uint8_t)out.x);
     if (ROTATE_OPS)  reg_put8(7,      (uint8_t)out.x);
+    if (ADD_HL_RR)   hl = out.x;
+    if (LD_HL_SP_R8) hl = out.x;
+    if (ADD_SP_R8)   sp = out.x;
 
     if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)temp);
     if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)temp);
@@ -549,16 +557,12 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       case 2: hl = temp; break;
       case 3: af = temp & 0xFFF0; break;
       }
-
     }
 
-    if (ADD_HL_RR)   hl = out.x;
-    if (LD_HL_SP_R8) hl = out.x;
     if (ST_HLP_A)    hl = hl + 1;
     if (ST_HLM_A)    hl = hl - 1;
     if (LD_A_AT_HLP) hl = hl + 1;
     if (LD_A_AT_HLM) hl = hl - 1;
-    if (ADD_SP_R8)   sp = out.x;
     if (MV_SP_HL)    sp = hl;
   }
 

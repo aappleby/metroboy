@@ -251,20 +251,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     // Gameboy weirdness - the "real" interrupt vector is determined by the
     // state of imask/intf after pushing the first byte of PC onto the stack.
     imask_latch = imask_;
-    if      (interrupt)  bus.data = (uint8_t)(temp);
-    if (PUSH_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bus.data = c; break;
-      case 1: bus.data = e; break;
-      case 2: bus.data = l; break;
-      case 3: bus.data = f; break;
-      }
-    }
-    if (CALL_A16)    bus.data = (uint8_t)(pc);
-    if (CALL_CC_A16) bus.data = (uint8_t)(pc);
-    if (RST_NN)      bus.data = (uint8_t)(pc);
-    bus.addr = sp;
-    bus.write = true;
     break;
 
   case Z80_STATE_PUSH2:
@@ -479,6 +465,24 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     bus.write = true;
     break;
 
+  case Z80_STATE_PUSH2:
+    if      (interrupt)  data_out = (uint8_t)(temp);
+    if (PUSH_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: data_out = c; break;
+      case 1: data_out = e; break;
+      case 2: data_out = l; break;
+      case 3: data_out = f; break;
+      }
+    }
+    if (CALL_A16)    data_out = (uint8_t)(pc);
+    if (CALL_CC_A16) data_out = (uint8_t)(pc);
+    if (RST_NN)      data_out = (uint8_t)(pc);
+    bus.addr = sp;
+    bus.data = data_out;
+    bus.write = true;
+    break;
+
   case Z80_STATE_MEM_WRITE1:
     if      (ST_BC_A)       { addr = bc;          data_out = a; }
     else if (ST_DE_A)       { addr = de;          data_out = a; }
@@ -531,17 +535,25 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
 
   switch(state_) {
-
+  case Z80_STATE_DECODE:
+  case Z80_STATE_DECODE_CB:
   case Z80_STATE_HALT:
-    if (state == Z80_STATE_DECODE) unhalt = 0;
+  case Z80_STATE_ARG1:
+  case Z80_STATE_ARG2:
+    addr = pc;
+
+    if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
     break;
 
   case Z80_STATE_PUSH_DELAY:
+  case Z80_STATE_PUSH1:
     sp--;
     break;
 
-  case Z80_STATE_PUSH1:
-    sp--;
+  case Z80_STATE_POP1:
+  case Z80_STATE_POP2:
+    addr = sp;
+    sp++;
     break;
 
   case Z80_STATE_MEM_READ1:
@@ -570,130 +582,49 @@ CpuBus Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  CpuBus bus = {0, 0, false, false};
-  bus.write = false;
-
-#if 0
   switch (state) {
-  case Z80_STATE_DECODE: {
-    break;
+  case Z80_STATE_DECODE: break;
+  case Z80_STATE_DECODE_CB: break;
+  case Z80_STATE_HALT: break;
+  case Z80_STATE_INTERRUPT: break;
+  case Z80_STATE_PUSH_DELAY: break;
+  case Z80_STATE_PUSH1: break;
+  case Z80_STATE_PUSH2: break;
+  case Z80_STATE_POP1: break;
+  case Z80_STATE_POP2: break;
+  case Z80_STATE_ARG1: break;
+  case Z80_STATE_ARG2: break;
+  case Z80_STATE_MEM_READ1: break;
+  case Z80_STATE_MEM_WRITE1: break;
+  case Z80_STATE_MEM_WRITE2: break;
+  case Z80_STATE_RET_DELAY: break;
+  case Z80_STATE_DELAY_B: break;
+  case Z80_STATE_DELAY_C: break;
   }
-
-  case Z80_STATE_DECODE_CB:
-    break;
-
-  case Z80_STATE_HALT:
-    break;
-
-  case Z80_STATE_INTERRUPT:
-    break;
-
-  case Z80_STATE_PUSH_DELAY:
-    break;
-
-  case Z80_STATE_PUSH1:
-    break;
-
-  case Z80_STATE_PUSH2:
-    break;
-
-  case Z80_STATE_POP1:
-    break;
-
-  case Z80_STATE_POP2:
-    break;
-
-  case Z80_STATE_ARG1:
-    break;
-
-  case Z80_STATE_ARG2:
-    break;
-
-  case Z80_STATE_MEM_READ1:
-    break;
-
-  case Z80_STATE_MEM_WRITE1:
-    break;
-
-  case Z80_STATE_MEM_WRITE2:
-    break;
-
-  case Z80_STATE_RET_DELAY:
-    break;
-
-  case Z80_STATE_DELAY_B:
-    break;
-
-  case Z80_STATE_DELAY_C:
-    break;
-  }
-#endif
 
   //----------------------------------------
 
   switch(state_) {
-  case Z80_STATE_DECODE: {
-    bus.addr = pc;
-    bus.read = true;
-    break;
+  case Z80_STATE_DECODE: break;
+  case Z80_STATE_DECODE_CB: break;
+  case Z80_STATE_HALT: break;
+  case Z80_STATE_ARG1: break;
+  case Z80_STATE_ARG2: break;
+  case Z80_STATE_POP1: break;
+  case Z80_STATE_POP2: break;
+  case Z80_STATE_MEM_READ1: break;
+  case Z80_STATE_INTERRUPT: break;
+  case Z80_STATE_PUSH_DELAY: break;
+  case Z80_STATE_PUSH1: break;
+  case Z80_STATE_PUSH2: break;
+  case Z80_STATE_MEM_WRITE1: break;
+  case Z80_STATE_MEM_WRITE2: break;
+  case Z80_STATE_RET_DELAY: break;
+  case Z80_STATE_DELAY_B: break;
+  case Z80_STATE_DELAY_C: break;
   }
 
-  case Z80_STATE_DECODE_CB:
-    bus.addr = pc;
-    bus.read = true;
-    break;
-
-  case Z80_STATE_HALT:
-    bus.addr = pc;
-    bus.read = true;
-    break;
-
-  case Z80_STATE_INTERRUPT:
-    break;
-
-  case Z80_STATE_PUSH_DELAY:
-    break;
-
-  case Z80_STATE_PUSH1:
-    break;
-
-  case Z80_STATE_PUSH2:
-    break;
-
-  case Z80_STATE_POP1:
-    bus.addr = sp;
-    bus.read = true;
-    sp++;
-    break;
-
-  case Z80_STATE_POP2:
-    bus.addr = sp;
-    bus.read = true;
-    sp++;
-    break;
-
-  case Z80_STATE_ARG1:
-    bus.addr = pc;
-    bus.read = true;
-    break;
-
-  case Z80_STATE_ARG2:
-    bus.addr = pc;
-    bus.read = true;
-    break;
-
-  case Z80_STATE_MEM_READ1:
-    bus.addr = addr;
-    bus.read = true;
-    break;
-
-  case Z80_STATE_MEM_WRITE1:
-    break;
-
-  case Z80_STATE_MEM_WRITE2:
-    break;
-  }
-
+  CpuBus bus = { addr, 0, true, false };
   return bus;
 }
 

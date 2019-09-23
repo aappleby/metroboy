@@ -55,7 +55,7 @@ private:
   uint8_t imask_latch;
   bool interrupt;
 
-  Z80State state, state_;
+  Z80State state;
 
 #pragma warning(push)
 #pragma warning(disable : 4201)
@@ -75,7 +75,6 @@ private:
 
 private:
 
-  Z80State next_state(bool take_branch) const;
   AluOut   exec(uint8_t src) const;
   uint8_t  reg_fetch8() const;
   void     reg_put8(int mux, uint8_t reg);

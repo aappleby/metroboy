@@ -90,7 +90,7 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
     de = 0x00D8;
     hl = 0x014D;
     sp = 0xFFFE;
-    pc = pc_ = new_pc;
+    pc = new_pc;
     pc2 = pc;
   }
   else {
@@ -99,7 +99,7 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
     de = 0x0000;
     hl = 0x0000;
     sp = 0x0000;
-    pc = pc_ = new_pc;
+    pc = new_pc;
     pc2 = pc;
   }
 
@@ -131,7 +131,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   imask_ = imask;
   intf_ = intf;
 
-  pc_ = pc;
   state_ = state;
   int_ack_ = 0;
   data_lo_ = data_lo;
@@ -241,10 +240,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       else if (CALL_CC_A16) pc2 = data16_;
       else if (RET_CC)      pc2 = data16_;
     }
-  }
-
-  if (state_ == Z80_STATE_DECODE) {
-    pc_ = pc2;
   }
 
   //----------------------------------------
@@ -721,7 +716,7 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_HALT:
-    bus.addr = pc_;
+    bus.addr = pc2;
     bus.read = true;
     break;
 

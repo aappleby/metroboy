@@ -65,7 +65,7 @@ private:
   union { uint16_t hl; struct { uint8_t l; uint8_t h; }; };
   union { uint16_t af; struct { uint8_t f; uint8_t a; }; };
   union { uint16_t sp; struct { uint8_t p; uint8_t s; }; };
-  uint16_t pc, pc_;
+  uint16_t pc;
   uint8_t f_;
 
   uint16_t pc2;

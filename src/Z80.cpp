@@ -175,6 +175,17 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   take_branch_ |= (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_pass;
   take_branch_ |= (interrupt2 != 0);
 
+  bool cond_fail = false;
+
+  switch (row_ & 3) {
+  case 0: cond_fail = (f & F_ZERO); break;
+  case 1: cond_fail = !(f & F_ZERO); break;
+  case 2: cond_fail = (f & F_CARRY); break;
+  case 3: cond_fail = !(f & F_CARRY); break;
+  }
+
+  no_branch_ = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
+
   //----------
 
   state_ = next_state();
@@ -500,6 +511,7 @@ Z80::Z80State Z80::next_state() const {
     else if (ADD_SP_R8)     next = Z80_STATE_DELAY_B;
     else if (LD_HL_SP_R8)   next = Z80_STATE_DELAY_C;
     else if (JR_R8)         next = Z80_STATE_DELAY_C;
+    else if (JR_CC_R8)      next = Z80_STATE_DELAY_C;
     else if (LD_A_AT_A16)   next = Z80_STATE_ARG2;
     else if (LD_RR_D16)     next = Z80_STATE_ARG2;
     else if (ST_A16_A)      next = Z80_STATE_ARG2;
@@ -510,9 +522,9 @@ Z80::Z80State Z80::next_state() const {
     else if (CALL_CC_A16)   next = Z80_STATE_ARG2;
     else if (LD_R_D8)       next = Z80_STATE_DECODE;
     else if (ALU_A_D8)      next = Z80_STATE_DECODE;
-    else if (JR_CC_R8)      next = take_branch_ ? Z80_STATE_DELAY_C : Z80_STATE_DECODE;
     else fail();
 
+    if (no_branch_) next = Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_ARG2:
@@ -521,10 +533,13 @@ Z80::Z80State Z80::next_state() const {
     else if (ST_A16_SP)     next = Z80_STATE_MEM_WRITE1;
     else if (CALL_A16)      next = Z80_STATE_PUSH_DELAY;
     else if (JP_A16)        next = Z80_STATE_DELAY_C;
+    else if (JP_CC_A16)     next = Z80_STATE_DELAY_C;
     else if (LD_RR_D16)     next = Z80_STATE_DECODE;
-    else if (CALL_CC_A16)   next = take_branch_ ? Z80_STATE_PUSH_DELAY : Z80_STATE_DECODE;
-    else if (JP_CC_A16)     next = take_branch_ ? Z80_STATE_DELAY_C : Z80_STATE_DECODE;
+    else if (CALL_CC_A16)   next = Z80_STATE_PUSH_DELAY;
     else fail();
+
+    if (no_branch_) next = Z80_STATE_DECODE;
+
     break;
 
   //----------
@@ -573,8 +588,11 @@ Z80::Z80State Z80::next_state() const {
     break;
 
   case Z80_STATE_DELAY_A:
-    if      (RET_CC)        next = take_branch_ ? Z80_STATE_POP1 : Z80_STATE_DECODE;
+    if      (RET_CC)        next = Z80_STATE_POP1;
     else fail();
+
+    if (no_branch_) next = Z80_STATE_DECODE;
+
     break;
 
   case Z80_STATE_DELAY_B:
@@ -644,19 +662,18 @@ uint16_t Z80::next_pc(int next_interrupt) const {
     }
   }
   
-  if (take_branch_) {
-    if      (JP_HL)       return hl;
-    else if (RST_NN)      return op_ - 0xC7;
-    else if (JR_R8)       return pc + 2 + (int8_t)data_lo_;
-    else if (JR_CC_R8)    return pc + 2 + (int8_t)data_lo_;
-    else if (JP_A16)      return data16_;
+       if (JP_HL)       return hl;
+  else if (RST_NN)      return op_ - 0xC7;
+  else if (JR_R8)       return pc + 2 + (int8_t)data_lo_;
+  else if (JP_A16)      return data16_;
+  else if (CALL_A16)    return data16_;
+  else if (RET)         return data16_;
+  else if (RETI)        return data16_;
+  else if (take_branch_) {
+         if (JR_CC_R8)    return pc + 2 + (int8_t)data_lo_;
     else if (JP_CC_A16)   return data16_;
-    else if (CALL_A16)    return data16_;
     else if (CALL_CC_A16) return data16_;
-    else if (RET)         return data16_;
-    else if (RETI)        return data16_;
     else if (RET_CC)      return data16_;
-    else                  return pc + 1; // do we ever get here?
   }
 
   else if (LD_RR_D16)   return pc + 3;
@@ -678,7 +695,7 @@ uint16_t Z80::next_pc(int next_interrupt) const {
   else if (ADD_SP_R8)   return pc + 2;
   else if (PREFIX_CB)   return pc + 2;
 
-  else                  return pc + 1;
+  return pc + 1;
 }
 
 //-----------------------------------------------------------------------------

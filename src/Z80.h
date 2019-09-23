@@ -113,6 +113,7 @@ private:
   uint8_t cb_row_;
   uint8_t cb_col_;
   bool    take_branch_;
+  bool    no_branch_;
 
   // Interrupt stuff
 

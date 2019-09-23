@@ -212,6 +212,36 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   mem_read_ = next_bus2.read;
   mem_write_ = next_bus2.write;
 
+  if (state == Z80_STATE_DECODE)    pc2++;
+  if (state == Z80_STATE_DECODE_CB) pc2++;
+  if (state == Z80_STATE_ARG1)      pc2++;
+  if (state == Z80_STATE_ARG2)      pc2++;
+
+  if (state_ == Z80_STATE_DECODE) {
+    if (interrupt2) {
+      if (next_int >= 0) {
+        pc2 = uint16_t(0x0040 + (next_int * 8));
+      }
+      else {
+        pc2 = 0x0000;
+      }
+    }
+
+    if      (JP_HL)       pc2 = hl;
+    else if (RST_NN)      pc2 = op_ - 0xC7;
+    else if (JR_R8)       pc2 = pc2 + (int8_t)data_lo_;
+    else if (JP_A16)      pc2 = data16_;
+    else if (CALL_A16)    pc2 = data16_;
+    else if (RET)         pc2 = data16_;
+    else if (RETI)        pc2 = data16_;
+    else if (take_branch_) {
+      if      (JR_CC_R8)    pc2 = pc2 + (int8_t)data_lo_;
+      else if (JP_CC_A16)   pc2 = data16_;
+      else if (CALL_CC_A16) pc2 = data16_;
+      else if (RET_CC)      pc2 = data16_;
+    }
+  }
+
   return next_bus2;
 }
 
@@ -260,6 +290,7 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 //-----------------------------------------------------------------------------
 
 CpuOut Z80::tock_t2() {
+
   if (state_ == Z80_STATE_PUSH_DELAY) sp--;
   if (state_ == Z80_STATE_PUSH1) sp--;
   if (state_ == Z80_STATE_POP1)  sp++;
@@ -274,40 +305,6 @@ CpuOut Z80::tock_t2() {
   f_ = out.f;
 
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
-
-  //----------------------------------------
-
-  if (state == Z80_STATE_DECODE)    pc2++;
-  if (state == Z80_STATE_DECODE_CB) pc2++;
-  if (state == Z80_STATE_ARG1)      pc2++;
-  if (state == Z80_STATE_ARG2)      pc2++;
-
-  if (state_ == Z80_STATE_DECODE) {
-    int next_int = next_interrupt();
-
-    if (interrupt2) {
-      if (next_int >= 0) {
-        pc2 = uint16_t(0x0040 + (next_int * 8));
-      }
-      else {
-        pc2 = 0x0000;
-      }
-    }
-
-    if      (JP_HL)       pc2 = hl;
-    else if (RST_NN)      pc2 = op_ - 0xC7;
-    else if (JR_R8)       pc2 = pc2 + (int8_t)data_lo_;
-    else if (JP_A16)      pc2 = data16_;
-    else if (CALL_A16)    pc2 = data16_;
-    else if (RET)         pc2 = data16_;
-    else if (RETI)        pc2 = data16_;
-    else if (take_branch_) {
-      if      (JR_CC_R8)    pc2 = pc2 + (int8_t)data_lo_;
-      else if (JP_CC_A16)   pc2 = data16_;
-      else if (CALL_CC_A16) pc2 = data16_;
-      else if (RET_CC)      pc2 = data16_;
-    }
-  }
 
   //----------------------------------------
 

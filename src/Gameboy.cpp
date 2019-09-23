@@ -160,8 +160,8 @@ void Gameboy::tick() {
       intf &= ~z80.int_ack_;
     }
     if (tphase == 2) {
-      /*cpu_bus2 =*/ z80.tick_t2(imask, intf, bus_in);
-      /*intf &= ~z80.int_ack_;*/
+      cpu_bus2 = z80.tick_t2(imask, intf, bus_in);
+      intf &= ~z80.int_ack_;
     }
 
     //----------------------------------------

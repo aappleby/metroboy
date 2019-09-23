@@ -564,6 +564,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
+  bus_temp = bus;
+
   return bus;
 }
 
@@ -581,7 +583,10 @@ CpuBus Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)imask;
   (void)intf;
   (void)bus_data;
-  return { 0 };
+
+  CpuBus bus = bus_temp;
+
+  return bus;
 }
 
 //-----------------------------------------------------------------------------

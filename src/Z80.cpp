@@ -200,18 +200,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   int next_int = next_interrupt();
   if (next_int >= 0) int_ack_ = 1 << next_int;
 
-  pc_ = next_pc(next_int);
-
-  //----------------------------------------
-
-  CpuBus next_bus2 = next_bus();
-
-  bus_tag_ = (MemTag)next_bus2.tag;
-  mem_addr_ = next_bus2.addr;
-  mem_out_ = next_bus2.data;
-  mem_read_ = next_bus2.read;
-  mem_write_ = next_bus2.write;
-
   if (state == Z80_STATE_DECODE)    pc2++;
   if (state == Z80_STATE_DECODE_CB) pc2++;
   if (state == Z80_STATE_ARG1)      pc2++;
@@ -241,6 +229,20 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       else if (RET_CC)      pc2 = data16_;
     }
   }
+
+  if (state_ == Z80_STATE_DECODE) {
+    pc_ = pc2;
+  }
+
+  //----------------------------------------
+
+  CpuBus next_bus2 = next_bus();
+
+  bus_tag_ = (MemTag)next_bus2.tag;
+  mem_addr_ = next_bus2.addr;
+  mem_out_ = next_bus2.data;
+  mem_read_ = next_bus2.read;
+  mem_write_ = next_bus2.write;
 
   return next_bus2;
 }
@@ -686,59 +688,6 @@ int Z80::next_interrupt() const {
 }
 
 //-----------------------------------------------------------------------------
-// We're at the end of a tick() for a completed instruction.
-// Compute the new PC and put it on the bus so we can fetch the next instruction.
-// If we're jumping to an interrupt vector, ack the interrupt that triggered it.
-
-uint16_t Z80::next_pc(int next_interrupt) const {
-  if (state_ != Z80_STATE_DECODE) return pc;
-
-  if (interrupt2) {
-    if (next_interrupt >= 0) {
-      return uint16_t(0x0040 + (next_interrupt * 8));
-    }
-    else {
-      return 0x0000;
-    }
-  }
-  
-       if (JP_HL)       return hl;
-  else if (RST_NN)      return op_ - 0xC7;
-  else if (JR_R8)       return pc + 2 + (int8_t)data_lo_;
-  else if (JP_A16)      return data16_;
-  else if (CALL_A16)    return data16_;
-  else if (RET)         return data16_;
-  else if (RETI)        return data16_;
-  else if (take_branch_) {
-         if (JR_CC_R8)    return pc + 2 + (int8_t)data_lo_;
-    else if (JP_CC_A16)   return data16_;
-    else if (CALL_CC_A16) return data16_;
-    else if (RET_CC)      return data16_;
-  }
-
-  else if (LD_RR_D16)   return pc + 3;
-  else if (LD_A_AT_A16) return pc + 3;
-  else if (ST_A16_SP)   return pc + 3;
-  else if (ST_A16_A)    return pc + 3;
-  else if (JP_A16)      return pc + 3;
-  else if (JP_CC_A16)   return pc + 3;
-  else if (CALL_A16)    return pc + 3;
-  else if (CALL_CC_A16) return pc + 3;
-
-  else if (LD_R_D8)     return pc + 2;
-  else if (JR_CC_R8)    return pc + 2;
-  else if (JR_R8)       return pc + 2;
-  else if (LD_A_AT_A8)  return pc + 2;
-  else if (LD_HL_SP_R8) return pc + 2;
-  else if (ST_A8_A)     return pc + 2;
-  else if (ALU_A_D8)    return pc + 2;
-  else if (ADD_SP_R8)   return pc + 2;
-  else if (PREFIX_CB)   return pc + 2;
-
-  return pc + 1;
-}
-
-//-----------------------------------------------------------------------------
 
 CpuBus Z80::next_bus() const {
   CpuBus bus = {TAG_NONE, 0, 0, false, false};
@@ -746,7 +695,7 @@ CpuBus Z80::next_bus() const {
   switch(state_) {
   case Z80_STATE_DECODE:
     bus.tag = TAG_OPCODE;
-    bus.addr = pc_;
+    bus.addr = pc2;
     bus.read = true;
     bus.write = false;
     break;

@@ -138,7 +138,6 @@ private:
 private:
 
   Z80State next_state() const;
-  uint16_t next_pc(int next_interrupt) const;
   int next_interrupt() const;
 
   CpuBus next_bus() const;

@@ -167,7 +167,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       temp = pc;
       addr = pc;
     }
-    pc++;
     state_ = Z80_STATE_DECODE;
     if      (interrupt)     state_ = Z80_STATE_INTERRUPT;
     else if (HALT)          state_ = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT;
@@ -225,12 +224,14 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (CALL_A16)      state_ = Z80_STATE_ARG1;
     else if (CALL_CC_A16)   state_ = Z80_STATE_ARG1;
 
+    pc++;
     break;
   }
 
   case Z80_STATE_DECODE_CB:
-    pc++;
     state_ = CB_COL == 6 ? Z80_STATE_MEM_READ1 : Z80_STATE_DECODE;
+
+    pc++;
     break;
 
   case Z80_STATE_HALT:

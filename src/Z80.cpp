@@ -198,7 +198,11 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (ADD_HL_RR)     state_ = Z80_STATE_DELAY_C;
     else if (MV_SP_HL)      state_ = Z80_STATE_DELAY_C;
 
-    else if (PREFIX_CB)     state_ = Z80_STATE_DECODE_CB;
+    else if (PREFIX_CB) {
+      state_ = Z80_STATE_DECODE_CB;
+      bus.addr = pc;
+      bus.read = true;
+    }
 
     else if (PUSH_RR)       state_ = Z80_STATE_PUSH_DELAY;
 
@@ -248,6 +252,20 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     // Gameboy weirdness - the "real" interrupt vector is determined by the
     // state of imask/intf after pushing the first byte of PC onto the stack.
     imask_latch = imask_;
+    if      (interrupt)  bus.data = (uint8_t)(temp);
+    if (PUSH_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: bus.data = c; break;
+      case 1: bus.data = e; break;
+      case 2: bus.data = l; break;
+      case 3: bus.data = f; break;
+      }
+    }
+    if (CALL_A16)    bus.data = (uint8_t)(pc);
+    if (CALL_CC_A16) bus.data = (uint8_t)(pc);
+    if (RST_NN)      bus.data = (uint8_t)(pc);
+    bus.addr = sp;
+    bus.write = true;
     break;
 
   case Z80_STATE_PUSH2:
@@ -409,12 +427,44 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     bus.addr = pc;
     bus.read = true;
     bus.write = false;
+
+    AluOut out = exec(reg_fetch8());
+
+    uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+    if (POP_AF)  f = lo & 0xF0;
+    else         f = (f & ~mask) | (out.f & mask);
+
+    if (MV_OPS)      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
+    if (LD_R_D8)     reg_put8(OP_ROW, (uint8_t)temp);
+
+    if (INC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
+    if (DEC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
+    if (ALU_A_D8)    reg_put8(7,      (uint8_t)out.x);
+    if (ALU_OPS)     reg_put8(7,      (uint8_t)out.x);
+    if (ROTATE_OPS)  reg_put8(7,      (uint8_t)out.x);
+    if (ADD_HL_RR)   hl = out.x;
+    if (LD_HL_SP_R8) hl = out.x;
+    if (ADD_SP_R8)   sp = out.x;
+
+    if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)temp);
+    if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)temp);
+    if (LD_A_AT_C)   reg_put8(7,      (uint8_t)temp);
+    if (LD_A_AT_A16) reg_put8(7,      (uint8_t)temp);
+
+    if (PREFIX_CB)   {
+      reg_put8(CB_COL, (uint8_t)out.x);
+    }
+
+    if (ST_HLP_A)    hl = hl + 1;
+    if (ST_HLM_A)    hl = hl - 1;
+    if (LD_A_AT_HLP) hl = hl + 1;
+    if (LD_A_AT_HLM) hl = hl - 1;
+    if (MV_SP_HL)    sp = hl;
+
     break;
   }
 
   case Z80_STATE_DECODE_CB:
-    bus.addr = pc;
-    bus.read = true;
     break;
 
   case Z80_STATE_HALT:
@@ -449,20 +499,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_PUSH2:
-    if      (interrupt)  bus.data = (uint8_t)(temp);
-    else if (PUSH_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bus.data = c; break;
-      case 1: bus.data = e; break;
-      case 2: bus.data = l; break;
-      case 3: bus.data = f; break;
-      }
-    }
-    else if (CALL_A16)    bus.data = (uint8_t)(pc);
-    else if (CALL_CC_A16) bus.data = (uint8_t)(pc);
-    else if (RST_NN)      bus.data = (uint8_t)(pc);
-    bus.addr = sp;
-    bus.write = true;
     break;
 
   case Z80_STATE_POP1:
@@ -536,39 +572,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   // Write all our registers from the previous instruction before the new opcode shows up.
 
   if (state_ == Z80_STATE_DECODE) {
-    AluOut out = exec(reg_fetch8());
-
-    uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
-    if (POP_AF)  f = lo & 0xF0;
-    else         f = (f & ~mask) | (out.f & mask);
-
-    if (MV_OPS)      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
-    if (LD_R_D8)     reg_put8(OP_ROW, (uint8_t)temp);
-
-    if (INC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
-    if (DEC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
-    if (ALU_A_D8)    reg_put8(7,      (uint8_t)out.x);
-    if (ALU_OPS)     reg_put8(7,      (uint8_t)out.x);
-    if (ROTATE_OPS)  reg_put8(7,      (uint8_t)out.x);
-    if (ADD_HL_RR)   hl = out.x;
-    if (LD_HL_SP_R8) hl = out.x;
-    if (ADD_SP_R8)   sp = out.x;
-
-    if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)temp);
-    if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)temp);
-    if (LD_A_AT_C)   reg_put8(7,      (uint8_t)temp);
-    if (LD_A_AT_A16) reg_put8(7,      (uint8_t)temp);
-    
-    if (PREFIX_CB)   {
-      reg_put8(CB_COL, (uint8_t)out.x);
-    }
-
-    if (ST_HLP_A)    hl = hl + 1;
-    if (ST_HLM_A)    hl = hl - 1;
-    if (LD_A_AT_HLP) hl = hl + 1;
-    if (LD_A_AT_HLM) hl = hl - 1;
-    if (MV_SP_HL)    sp = hl;
-
     // When we finish an instruction, update our interrupt master enable.
     if (interrupt)  { ime = false;     ime_delay = false; }
     else if (RETI)  { ime = true;      ime_delay = true; }

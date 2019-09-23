@@ -312,7 +312,7 @@ CpuOut Z80::tock_t2() {
 
   // Write all our registers from the previous instruction before the new opcode shows up.
   if (state_ == Z80_STATE_DECODE) {
-    pc = pc_;
+    pc = pc2;
 
     if (pc2 != pc) {
       printf("pc2 fail 0x%02x\n", op_);

@@ -91,7 +91,6 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
     hl = 0x014D;
     sp = 0xFFFE;
     pc = new_pc;
-    pc2 = pc;
   }
   else {
     af = 0x0000;
@@ -100,7 +99,6 @@ CpuOut Z80::reset(int new_model, uint16_t new_pc) {
     hl = 0x0000;
     sp = 0x0000;
     pc = new_pc;
-    pc2 = pc;
   }
 
   op_ = 0;
@@ -142,7 +140,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (interrupt2) {
       op_ = 0x00;
       // slightly weird
-      data16_ = pc2;
+      data16_ = pc;
     }
     quad_ = (op_ >> 6) & 3;
     row_ = (op_ >> 3) & 7;
@@ -210,33 +208,33 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   int next_int = next_interrupt();
   if (next_int >= 0) int_ack_ = 1 << next_int;
 
-  if (state == Z80_STATE_DECODE)    pc2++;
-  if (state == Z80_STATE_DECODE_CB) pc2++;
-  if (state == Z80_STATE_ARG1)      pc2++;
-  if (state == Z80_STATE_ARG2)      pc2++;
+  if (state == Z80_STATE_DECODE)    pc++;
+  if (state == Z80_STATE_DECODE_CB) pc++;
+  if (state == Z80_STATE_ARG1)      pc++;
+  if (state == Z80_STATE_ARG2)      pc++;
 
   if (state_ == Z80_STATE_DECODE) {
     if (interrupt2) {
       if (next_int >= 0) {
-        pc2 = uint16_t(0x0040 + (next_int * 8));
+        pc = uint16_t(0x0040 + (next_int * 8));
       }
       else {
-        pc2 = 0x0000;
+        pc = 0x0000;
       }
     }
 
-    if      (JP_HL)       pc2 = hl;
-    else if (RST_NN)      pc2 = op_ - 0xC7;
-    else if (JR_R8)       pc2 = pc2 + (int8_t)data_lo_;
-    else if (JP_A16)      pc2 = data16_;
-    else if (CALL_A16)    pc2 = data16_;
-    else if (RET)         pc2 = data16_;
-    else if (RETI)        pc2 = data16_;
+    if      (JP_HL)       pc = hl;
+    else if (RST_NN)      pc = op_ - 0xC7;
+    else if (JR_R8)       pc = pc + (int8_t)data_lo_;
+    else if (JP_A16)      pc = data16_;
+    else if (CALL_A16)    pc = data16_;
+    else if (RET)         pc = data16_;
+    else if (RETI)        pc = data16_;
     else if (take_branch_) {
-      if      (JR_CC_R8)    pc2 = pc2 + (int8_t)data_lo_;
-      else if (JP_CC_A16)   pc2 = data16_;
-      else if (CALL_CC_A16) pc2 = data16_;
-      else if (RET_CC)      pc2 = data16_;
+      if      (JR_CC_R8)    pc = pc + (int8_t)data_lo_;
+      else if (JP_CC_A16)   pc = data16_;
+      else if (CALL_CC_A16) pc = data16_;
+      else if (RET_CC)      pc = data16_;
     }
   }
 
@@ -317,7 +315,6 @@ CpuOut Z80::tock_t2() {
 
   // Write all our registers from the previous instruction before the new opcode shows up.
   if (state_ == Z80_STATE_DECODE) {
-    pc = pc2;
     opcount = opcount + 1;
     uint8_t mask = PREFIX_CB ? cb_flag_mask[cb_quad_] : flag_mask[op_];
     if (POP_AF)  f = data_lo_ & 0xF0;
@@ -699,18 +696,18 @@ CpuBus Z80::next_bus() const {
 
   switch(state_) {
   case Z80_STATE_DECODE:
-    bus.addr = pc2;
+    bus.addr = pc;
     bus.read = true;
     bus.write = false;
     break;
 
   case Z80_STATE_DECODE_CB:
-    bus.addr = pc2;
+    bus.addr = pc;
     bus.read = true;
     break;
 
   case Z80_STATE_HALT:
-    bus.addr = pc2;
+    bus.addr = pc;
     bus.read = true;
     break;
 
@@ -730,9 +727,9 @@ CpuBus Z80::next_bus() const {
       case 3: bus.data = a; break;
       }
     }
-    else if (CALL_A16)    bus.data = (uint8_t)(pc2 >> 8);
-    else if (CALL_CC_A16) bus.data = (uint8_t)(pc2 >> 8);
-    else if (RST_NN)      bus.data = (uint8_t)(pc2 >> 8);
+    else if (CALL_A16)    bus.data = (uint8_t)(pc >> 8);
+    else if (CALL_CC_A16) bus.data = (uint8_t)(pc >> 8);
+    else if (RST_NN)      bus.data = (uint8_t)(pc >> 8);
     else fail();
     bus.addr = sp;
     bus.write = true;
@@ -748,9 +745,9 @@ CpuBus Z80::next_bus() const {
       case 3: bus.data = f; break;
       }
     }
-    else if (CALL_A16)    bus.data = (uint8_t)(pc2);
-    else if (CALL_CC_A16) bus.data = (uint8_t)(pc2);
-    else if (RST_NN)      bus.data = (uint8_t)(pc2);
+    else if (CALL_A16)    bus.data = (uint8_t)(pc);
+    else if (CALL_CC_A16) bus.data = (uint8_t)(pc);
+    else if (RST_NN)      bus.data = (uint8_t)(pc);
     else fail();
     bus.addr = sp;
     bus.write = true;
@@ -776,12 +773,12 @@ CpuBus Z80::next_bus() const {
     break;
 
   case Z80_STATE_ARG1:
-    bus.addr = pc + 1;
+    bus.addr = pc;
     bus.read = true;
     break;
 
   case Z80_STATE_ARG2:
-    bus.addr = pc + 2;
+    bus.addr = pc;
     bus.read = true;
     break;
 

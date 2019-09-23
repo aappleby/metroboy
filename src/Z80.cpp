@@ -300,7 +300,14 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LD_RR_D16)     state_ = Z80_STATE_DECODE;
     else if (CALL_CC_A16)   state_ = Z80_STATE_PUSH_DELAY;
     if (no_branch) state_ = Z80_STATE_DECODE;
-
+    if (LD_RR_D16) {
+      switch(OP_ROW >> 1) {
+      case 0: bc = temp; break;
+      case 1: de = temp; break;
+      case 2: hl = temp; break;
+      case 3: sp = temp; break;
+      }
+    }
     break;
 
   case Z80_STATE_MEM_READ1:
@@ -333,6 +340,23 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_DELAY_C:
     state_ = Z80_STATE_DECODE;
+    if (INC_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: bc++; break;
+      case 1: de++; break;
+      case 2: hl++; break;
+      case 3: sp++; break;
+      }
+    }
+    if (DEC_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: bc--; break;
+      case 1: de--; break;
+      case 2: hl--; break;
+      case 3: sp--; break;
+      }
+    }
+
     break;
   }
 
@@ -537,31 +561,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     
     if (PREFIX_CB)   {
       reg_put8(CB_COL, (uint8_t)out.x);
-    }
-
-    if (LD_RR_D16) {
-      switch(OP_ROW >> 1) {
-      case 0: bc = temp; break;
-      case 1: de = temp; break;
-      case 2: hl = temp; break;
-      case 3: sp = temp; break;
-      }
-    }
-    if (INC_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bc++; break;
-      case 1: de++; break;
-      case 2: hl++; break;
-      case 3: sp++; break;
-      }
-    }
-    if (DEC_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bc--; break;
-      case 1: de--; break;
-      case 2: hl--; break;
-      case 3: sp--; break;
-      }
     }
 
     if (ST_HLP_A)    hl = hl + 1;

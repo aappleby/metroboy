@@ -74,7 +74,6 @@ private:
 
   uint8_t op_;
   uint8_t op_cb_;
-  bool    no_branch_;
 
   // Interrupt stuff
 
@@ -99,6 +98,7 @@ private:
   Z80State next_state() const;
   int next_interrupt() const;
 
+  bool next_branch() const;
   CpuBus next_bus() const;
   AluOut exec(uint8_t src) const;
   uint8_t reg_fetch8() const;

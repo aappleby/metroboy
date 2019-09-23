@@ -158,21 +158,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------
 
-  if (state == Z80_STATE_DECODE) {
-    bool cond_fail = false;
-
-    switch (OP_ROW & 3) {
-    case 0: cond_fail = (f & F_ZERO); break;
-    case 1: cond_fail = !(f & F_ZERO); break;
-    case 2: cond_fail = (f & F_CARRY); break;
-    case 3: cond_fail = !(f & F_CARRY); break;
-    }
-
-    no_branch_ = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
-  }
-
-  //----------
-
   state_ = next_state();
 
   //----------------------------------------
@@ -203,7 +188,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (CALL_A16)    pc = data16_;
     else if (RET)         pc = data16_;
     else if (RETI)        pc = data16_;
-    else if (!no_branch_) {
+    else if (next_branch()) {
       if      (JR_CC_R8)    pc = pc + (int8_t)data_lo_;
       else if (JP_CC_A16)   pc = data16_;
       else if (CALL_CC_A16) pc = data16_;
@@ -534,7 +519,7 @@ Z80::Z80State Z80::next_state() const {
     else if (ALU_A_D8)      next = Z80_STATE_DECODE;
     else fail();
 
-    if (JR_CC_R8 && no_branch_) next = Z80_STATE_DECODE;
+    if (JR_CC_R8 && !next_branch()) next = Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_ARG2:
@@ -548,7 +533,7 @@ Z80::Z80State Z80::next_state() const {
     else if (CALL_CC_A16)   next = Z80_STATE_PUSH_DELAY;
     else fail();
 
-    if (no_branch_) next = Z80_STATE_DECODE;
+    if (!next_branch()) next = Z80_STATE_DECODE;
 
     break;
 
@@ -601,7 +586,7 @@ Z80::Z80State Z80::next_state() const {
     if      (RET_CC)        next = Z80_STATE_POP1;
     else fail();
 
-    if (no_branch_) next = Z80_STATE_DECODE;
+    if (!next_branch()) next = Z80_STATE_DECODE;
 
     break;
 
@@ -653,6 +638,22 @@ int Z80::next_interrupt() const {
   }
 
   return -1;
+}
+
+//-----------------------------------------------------------------------------
+
+bool Z80::next_branch() const {
+  bool cond_fail = false;
+
+  switch (OP_ROW & 3) {
+  case 0: cond_fail = (f & F_ZERO); break;
+  case 1: cond_fail = !(f & F_ZERO); break;
+  case 2: cond_fail = (f & F_CARRY); break;
+  case 3: cond_fail = !(f & F_CARRY); break;
+  }
+
+  bool no_branch = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
+  return !no_branch;
 }
 
 //-----------------------------------------------------------------------------

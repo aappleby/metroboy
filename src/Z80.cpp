@@ -152,6 +152,11 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   no_branch = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
   no_halt = ((imask_ & intf_) && !ime);
 
+  if (state == Z80_STATE_DECODE) {
+    interrupt = (imask_ & intf_) && ime;
+    if (interrupt) op = 0x00;
+  }
+
   //----------------------------------------
 
   CpuBus bus = {0, 0, false, false};
@@ -160,13 +165,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   switch (state) {
   case Z80_STATE_DECODE: {
-    interrupt = (imask_ & intf_) && ime;
-    if (interrupt) {
-      op = 0x00;
-      // slightly weird
-      //temp = pc;
-      //addr = pc;
-    }
     state_ = Z80_STATE_DECODE;
     if      (interrupt)     state_ = Z80_STATE_INTERRUPT;
     else if (HALT)          state_ = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT;
@@ -220,13 +218,11 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (CALL_A16)      state_ = Z80_STATE_ARG1;
     else if (CALL_CC_A16)   state_ = Z80_STATE_ARG1;
 
-    pc++;
     break;
   }
 
   case Z80_STATE_DECODE_CB:
     state_ = CB_COL == 6 ? Z80_STATE_MEM_READ1 : Z80_STATE_DECODE;
-    pc++;
     break;
 
   case Z80_STATE_HALT:
@@ -321,6 +317,9 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
+
+  if (state == Z80_STATE_DECODE) pc++;
+  if (state == Z80_STATE_DECODE_CB) pc++;
 
   switch(state_) {
 

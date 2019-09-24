@@ -216,16 +216,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  if (state == Z80_STATE_DECODE || state == Z80_STATE_DECODE_CB || state == Z80_STATE_ARG1 || state == Z80_STATE_ARG2) {
-    pc++;
-  }
-
-  if (state == Z80_STATE_ALU_LO && !ALU_A_HL) {
-    pc++;
-  }
-
-  //----------------------------------------
-
   switch (state) {
   case Z80_STATE_DECODE: {
     break;
@@ -479,6 +469,17 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
+
+  if (state == Z80_STATE_ARG1) pc++;
+  if (state == Z80_STATE_ARG2) pc++;
+
+  if (state == Z80_STATE_DECODE || state == Z80_STATE_DECODE_CB) {
+    pc++;
+  }
+
+  if (state == Z80_STATE_ALU_LO && !ALU_A_HL) {
+    pc++;
+  }
 
   if (state_ == Z80_STATE_DECODE) {
     int next_int = -1;

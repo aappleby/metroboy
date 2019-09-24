@@ -84,6 +84,7 @@
 #define INTERRUPT     ((imask_ & intf_) && ime)
 
 AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
+AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f);
 
 //-----------------------------------------------------------------------------
 
@@ -282,10 +283,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   if (state_ == Z80_STATE_DECODE) {
 
-    AluOut out = exec(reg_fetch8());
-    uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
-    f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-
     if (MV_OPS) {
       reg_put8(OP_ROW, (uint8_t)reg_fetch8());
     }
@@ -294,42 +291,72 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
 
     if (INC_R) {
+      AluOut out = alu(0, reg_fetch8(), 1, 0);
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }
 
     if (DEC_R) {
+      AluOut out = alu(2, reg_fetch8(), 1, 0);
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }
 
     if (ALU_A_D8) {
+      AluOut out = exec(reg_fetch8());
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       reg_put8(7,      (uint8_t)out.x);
     }
 
     if (ALU_R) {
+      AluOut out = exec(reg_fetch8());
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       reg_put8(7,      (uint8_t)out.x);
     }
 
     if (ALU_HL) {
+      AluOut out = exec(reg_fetch8());
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       reg_put8(7,      (uint8_t)out.x);
     }
 
     if (ROTATE_OPS) {
+      AluOut out = exec(reg_fetch8());
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       reg_put8(7,      (uint8_t)out.x);
     }
 
     if (ADD_HL_RR) {
+      AluOut out = exec(reg_fetch8());
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       hl = out.x;
     }
 
     if (LD_HL_SP_R8) {
+      AluOut out = exec(reg_fetch8());
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       hl = out.x;
     }
 
     if (ADD_SP_R8) {
+      AluOut out = exec(reg_fetch8());
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       sp = out.x;
     }
 
     if (PREFIX_CB)   {
+      AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       reg_put8(CB_COL, (uint8_t)out.x);
     }
 
@@ -543,7 +570,7 @@ Z80State Z80::next_state() {
   case Z80_STATE_DECODE: {
     if      (interrupt)     next = Z80_STATE_INTERRUPT;
     else if (HALT)          next = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT;
-    else if (MV_RHL)  next = Z80_STATE_MEM_WRITE1;
+    else if (MV_RHL)        next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLP_A)      next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLM_A)      next = Z80_STATE_MEM_WRITE1;
     else if (ST_C_A)        next = Z80_STATE_MEM_WRITE1;
@@ -553,8 +580,8 @@ Z80State Z80::next_state() {
     else if (DEC_AT_HL)     next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_HLP)   next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_HLM)   next = Z80_STATE_MEM_READ1;
-    else if (MV_HLR)         next = Z80_STATE_MEM_READ1;
-    else if (ALU_HL)    next = Z80_STATE_MEM_READ1;
+    else if (MV_HLR)        next = Z80_STATE_MEM_READ1;
+    else if (ALU_HL)        next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_BC)    next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_DE)    next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_C)     next = Z80_STATE_MEM_READ1;
@@ -955,16 +982,7 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
 AluOut Z80::exec(uint8_t src) const {
   AluOut out = {0};
 
-  if (PREFIX_CB) {
-    out = cb(CB_QUAD, CB_ROW, src, f);
-  }
-  else if (INC_R) {
-    out = alu(0, src, 1, 0);
-  }
-  else if (DEC_R) {
-    out = alu(2, src, 1, 0);
-  }
-  else if (ADD_HL_RR) {
+  if (ADD_HL_RR) {
     uint16_t blah = 0;
     switch(OP_ROW >> 1) {
     case 0: blah = bc; break;

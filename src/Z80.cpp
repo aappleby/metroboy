@@ -235,64 +235,65 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
 
   case Z80_STATE_ALU_LO: {
-    AluOut out = {0};
-    uint8_t mask = flag_mask[op];
-
     if (MV_R_R) {
       reg_put8(OP_ROW, (uint8_t)reg_fetch8());
-      f = (f & ~mask) | (out.f & mask);
     }
     if (ALU_A_R) {
-      out = alu(OP_ROW, a, reg_fetch8(), f);
+      AluOut out = alu(OP_ROW, a, reg_fetch8(), f);
       out.x = (OP_ROW == 7) ? a : out.x;
       a = (uint8_t)out.x;
+      uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
     }
     if (INC_R) {
-      out = alu(0, reg_fetch8(), 1, 0);
+      AluOut out = alu(0, reg_fetch8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
+      uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
     }
     if (RLU_R) {
-      out = rlu(OP_ROW, reg_fetch8(), f);
+      AluOut out = rlu(OP_ROW, reg_fetch8(), f);
       if (OP_ROW <= 3) out.f &= ~F_ZERO;
       a = (uint8_t)out.x;
+      uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
     }
     if (DEC_R) {
-      out = alu(2, reg_fetch8(), 1, 0);
+      AluOut out = alu(2, reg_fetch8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
+      uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
     }
    
     if (ALU_A_HL) {
-      out = alu(OP_ROW, a, bus_data, f);
+      AluOut out = alu(OP_ROW, a, bus_data, f);
       out.x = (OP_ROW == 7) ? a : out.x;
-      f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
+      uint8_t mask = flag_mask[op];
+      f = (f & ~mask) | (out.f & mask);
     }
 
     if (ADD_HL_RR) {
-      /*
-      uint8)t blah = 0;
+      uint16_t x = 0, y = 0, hc = 0, cr = 0;
+      uint8_t f_, mask;
+
+      x = l;
       switch(OP_ROW >> 1) {
-      case 0: blah = bc; break;
-      case 1: blah = de; break;
-      case 2: blah = hl; break;
-      case 3: blah = sp; break;
+      case 0: y = c; break;
+      case 1: y = e; break;
+      case 2: y = l; break;
+      case 3: y = p; break;
       }
 
-      bool halfcarry = (blah & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
-      bool carry =     (blah & 0xFFFF) + (hl & 0xFFFF) > 0xFFFF;
+      cr = 0;
+      uint16_t zl = (x + y + cr);
+      hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
+      cr = zl >> 8;
+      l = (uint8_t)zl;
 
-      AluOut out;
-      out.x = blah + hl;
-      out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
-      hl = out.x;
-      */
+      f_ = (hc ? F_HALF_CARRY : 0) | (cr ? F_CARRY : 0);
+      mask = flag_mask[op];
+      f = (f & ~mask) | (f_ & mask);
     }
 
     break;
@@ -302,52 +303,28 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 
   case Z80_STATE_ALU_HI:
+
     if (ADD_HL_RR) {
-      {
-        uint16_t x = 0, y = 0, hc = 0, cr = 0;
-        uint8_t f_, mask;
+      uint16_t x = 0, y = 0, hc = 0, cr = 0;
+      uint8_t f_, mask;
 
-        x = l;
-        switch(OP_ROW >> 1) {
-        case 0: y = c; break;
-        case 1: y = e; break;
-        case 2: y = l; break;
-        case 3: y = p; break;
-        }
-
-        cr = 0;
-        uint16_t zl = (x + y + cr);
-        hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
-        cr = zl >> 8;
-        l = (uint8_t)zl;
-
-        f_ = (hc ? F_HALF_CARRY : 0) | (cr ? F_CARRY : 0);
-        mask = flag_mask[op];
-        f = (f & ~mask) | (f_ & mask);
+      x = h;
+      switch(OP_ROW >> 1) {
+      case 0: y = b; break;
+      case 1: y = d; break;
+      case 2: y = h; break;
+      case 3: y = s; break;
       }
 
-      {
-        uint16_t x = 0, y = 0, hc = 0, cr = 0;
-        uint8_t f_, mask;
+      cr = (f & F_CARRY) ? 1 : 0;
+      uint16_t zh = (x + y + cr);
+      hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
+      cr = zh >> 8;
+      h = (uint8_t)zh;
 
-        x = h;
-        switch(OP_ROW >> 1) {
-        case 0: y = b; break;
-        case 1: y = d; break;
-        case 2: y = h; break;
-        case 3: y = s; break;
-        }
-
-        cr = (f & F_CARRY) ? 1 : 0;
-        uint16_t zh = (x + y + cr);
-        hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
-        cr = zh >> 8;
-        h = (uint8_t)zh;
-
-        f_ = (hc ? F_HALF_CARRY : 0) | (cr ? F_CARRY : 0);
-        mask = flag_mask[op];
-        f = (f & ~mask) | (f_ & mask);
-      }
+      f_ = (hc ? F_HALF_CARRY : 0) | (cr ? F_CARRY : 0);
+      mask = flag_mask[op];
+      f = (f & ~mask) | (f_ & mask);
     }
     break;
 

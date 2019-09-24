@@ -127,7 +127,17 @@ void Z80::reset(int new_model, uint16_t new_pc) {
   }
 }
 
+
+
+
+
+
+
+
+
 //-----------------------------------------------------------------------------
+// TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0
+
 
 CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   int_ack_ = 0;
@@ -176,18 +186,33 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // set up write
 
+  CpuBus bus;
+
   if (state == Z80_STATE_MEM_WRITE1 ||
       state == Z80_STATE_MEM_WRITE2 ||
       state == Z80_STATE_PUSH1 ||
       state == Z80_STATE_PUSH2) {
-    return { addr, data_out, false, true };
+    bus = { addr, data_out, false, true };
   }
   else {
-    return { 0, 0, false, false };
+    bus = { 0, 0, false, false };
   }
+
+  return bus;
 }
 
+
+
+
+
+
+
+
+
+
+
 //-----------------------------------------------------------------------------
+// TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0
 
 void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)imask;
@@ -489,17 +514,34 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
 //-----------------------------------------------------------------------------
+// TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2
 
 CpuBus Z80::tick_t2() const {
-
-  //----------------------------------------
-  // Dispatch read
-
   return { addr, 0, true, false };
 }
 
+
+
+
+
+
+
+
+
+
 //-----------------------------------------------------------------------------
+// TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2
 
 void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)imask;
@@ -584,6 +626,26 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   state = state_;
   cycle++;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //-----------------------------------------------------------------------------
 

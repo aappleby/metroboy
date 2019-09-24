@@ -333,21 +333,45 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
 
     if (ADD_HL_RR) {
-      AluOut out = exec(reg_fetch8());
+      uint16_t blah = 0;
+      switch(OP_ROW >> 1) {
+      case 0: blah = bc; break;
+      case 1: blah = de; break;
+      case 2: blah = hl; break;
+      case 3: blah = sp; break;
+      }
+
+      bool halfcarry = (blah & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
+      bool carry =     (blah & 0xFFFF) + (hl & 0xFFFF) > 0xFFFF;
+
+      AluOut out;
+      out.x = blah + hl;
+      out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       hl = out.x;
     }
 
     if (LD_HL_SP_R8) {
-      AluOut out = exec(reg_fetch8());
+      AluOut out = {0};
+      bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
+
+      out.x = sp + (int8_t)lo;
+      out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       hl = out.x;
     }
 
     if (ADD_SP_R8) {
-      AluOut out = exec(reg_fetch8());
+      AluOut out = {0};
+      bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
+
+      out.x = sp + (int8_t)lo;
+      out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       sp = out.x;
@@ -980,40 +1004,21 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
 // idempotent
 
 AluOut Z80::exec(uint8_t src) const {
-  AluOut out = {0};
 
-  if (ADD_HL_RR) {
-    uint16_t blah = 0;
-    switch(OP_ROW >> 1) {
-    case 0: blah = bc; break;
-    case 1: blah = de; break;
-    case 2: blah = hl; break;
-    case 3: blah = sp; break;
-    }
-
-    bool halfcarry = (blah & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
-    bool carry =     (blah & 0xFFFF) + (hl & 0xFFFF) > 0xFFFF;
-
-    out.x = blah + hl;
-    out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-  }
-  else if (ADD_SP_R8 || LD_HL_SP_R8) {
-    bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
-    bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
-
-    out.x = sp + (int8_t)lo;
-    out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-  }
-  else if (ROTATE_OPS) {
+  if (ROTATE_OPS) {
+    AluOut out = {0};
     out = rlu(OP_ROW, src, f);
     if (OP_ROW <= 3) out.f &= ~F_ZERO;
+    return out;
   }
   else if (ALU_OPS || ALU_A_D8) {
+    AluOut out = {0};
     out = alu(OP_ROW, a, src, f);
     out.x = (OP_ROW == 7) ? a : out.x;
+    return out;
   }
 
-  return out;
+  return {0};
 }
 
 //-----------------------------------------------------------------------------

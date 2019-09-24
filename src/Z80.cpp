@@ -293,15 +293,23 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       a = (uint8_t)out.x;
     }
 
+    if (LD_RR_D16) {
+      switch(OP_ROW >> 1) {
+      case 0: c = lo; break;
+      case 1: e = lo; break;
+      case 2: l = lo; break;
+      case 3: p = lo; break;
+      }
+    }
     break;
 
   case Z80_STATE_ARG2:
     if (LD_RR_D16) {
       switch(OP_ROW >> 1) {
-      case 0: bc = temp; break;
-      case 1: de = temp; break;
-      case 2: hl = temp; break;
-      case 3: sp = temp; break;
+      case 0: b = hi; break;
+      case 1: d = hi; break;
+      case 2: h = hi; break;
+      case 3: s = hi; break;
       }
     }
     break;

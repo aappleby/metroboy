@@ -280,15 +280,24 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   case Z80_STATE_PUSH2: break;
 
-  case Z80_STATE_POP1: break;
+  case Z80_STATE_POP1:
+    if (POP_RR) {
+      switch(OP_ROW >> 1) {
+      case 0: c = bus_data; break;
+      case 1: e = bus_data; break;
+      case 2: l = bus_data; break;
+      case 3: f = bus_data & 0xF0; break;
+      }
+    }
+    break;
 
   case Z80_STATE_POP2:
     if (POP_RR) {
       switch(OP_ROW >> 1) {
-      case 0: bc = temp; break;
-      case 1: de = temp; break;
-      case 2: hl = temp; break;
-      case 3: af = temp & 0xFFF0; break;
+      case 0: b = bus_data; break;
+      case 1: d = bus_data; break;
+      case 2: h = bus_data; break;
+      case 3: a = bus_data; break;
       }
     }
     break;
@@ -309,10 +318,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     if (LD_RR_D16) {
       switch(OP_ROW >> 1) {
-      case 0: c = lo; break;
-      case 1: e = lo; break;
-      case 2: l = lo; break;
-      case 3: p = lo; break;
+      case 0: c = bus_data; break;
+      case 1: e = bus_data; break;
+      case 2: l = bus_data; break;
+      case 3: p = bus_data; break;
       }
     }
     break;
@@ -320,20 +329,20 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_ARG2:
     if (LD_RR_D16) {
       switch(OP_ROW >> 1) {
-      case 0: b = hi; break;
-      case 1: d = hi; break;
-      case 2: h = hi; break;
-      case 3: s = hi; break;
+      case 0: b = bus_data; break;
+      case 1: d = bus_data; break;
+      case 2: h = bus_data; break;
+      case 3: s = bus_data; break;
       }
     }
     break;
 
   case Z80_STATE_MEM_READ1: {
-    if (LDM_A_RR)  reg_put8(7,      lo);
-    if (LDM_A_A8)  reg_put8(7,      lo);
-    if (LDM_A_C)   reg_put8(7,      lo);
-    if (LDM_A_A16) reg_put8(7,      lo);
-    if (LDM_R_HL)  reg_put8(OP_ROW, lo);
+    if (LDM_A_RR)  reg_put8(7,      bus_data);
+    if (LDM_A_A8)  reg_put8(7,      bus_data);
+    if (LDM_A_C)   reg_put8(7,      bus_data);
+    if (LDM_A_A16) reg_put8(7,      bus_data);
+    if (LDM_R_HL)  reg_put8(OP_ROW, bus_data);
 
     if (ALU_A_HL) {
       AluOut out = {0};

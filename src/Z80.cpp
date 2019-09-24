@@ -363,6 +363,15 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       hl = out.x;
     }
     if (LD_SP_HL)    sp = hl;
+
+    if (LD_HL_SP_R8) {
+      bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
+
+      hl = sp + (int8_t)lo;
+      f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+    }
+
     break;
   }
 
@@ -393,14 +402,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       a = (uint8_t)out.x;
     }
 
-
-    if (LD_HL_SP_R8) {
-      bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
-
-      hl = sp + (int8_t)lo;
-      f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-    }
 
     if (ADD_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;

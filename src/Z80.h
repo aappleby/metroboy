@@ -63,7 +63,7 @@ struct Z80 {
   void   reset(int new_model, uint16_t new_pc);
   CpuBus tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data);
   void   tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data);
-  CpuBus tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data);
+  CpuBus tick_t2() const;
   void   tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data);
 
   uint16_t get_pc() const { return pc; }
@@ -114,7 +114,6 @@ private:
 
 private:
 
-  AluOut   exec(uint8_t src) const;
   uint8_t  reg_fetch8() const;
   void     reg_put8(int mux, uint8_t reg);
   

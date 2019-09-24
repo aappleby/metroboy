@@ -482,8 +482,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (DEC_AT_HL)     { addr = hl; }
     else if (LD_A_AT_HLP)   { addr = hl; }
     else if (LD_A_AT_HLM)   { addr = hl; }
-    else if (MV_HLR)         { addr = hl; }
-    else if (ALU_HL)    { addr = hl; }
+    else if (MV_HLR)        { addr = hl; }
+    else if (ALU_HL)        { addr = hl; }
     else if (PREFIX_CB)     { addr = hl; }
     break;
   }
@@ -491,16 +491,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 //-----------------------------------------------------------------------------
 
-CpuBus Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
-  (void)imask;
-  (void)intf;
-  (void)bus_data;
+CpuBus Z80::tick_t2() const {
 
   //----------------------------------------
   // Dispatch read
 
-  CpuBus bus = { addr, 0, true, false };
-  return bus;
+  return { addr, 0, true, false };
 }
 
 //-----------------------------------------------------------------------------
@@ -1014,21 +1010,6 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
   }
 
   return out;
-}
-
-//-----------------------------------------------------------------------------
-// idempotent
-
-AluOut Z80::exec(uint8_t src) const {
-
-  if (ALU_OPS || ALU_A_D8) {
-    AluOut out = {0};
-    out = alu(OP_ROW, a, src, f);
-    out.x = (OP_ROW == 7) ? a : out.x;
-    return out;
-  }
-
-  return {0};
 }
 
 //-----------------------------------------------------------------------------

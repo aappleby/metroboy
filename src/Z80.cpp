@@ -178,6 +178,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
 
   if (state == Z80_STATE_DECODE) {
+    if (interrupt)  { ime = false;     ime_delay = false; }
+    else if (RETI)  { ime = true;      ime_delay = true; }
+    else if (DI)    { ime = false;     ime_delay = false; }
+    else if (EI)    { ime = ime_delay; ime_delay = true; }
+
     int_ack_ = 0;
     imask_ = imask;
     intf_ = intf;
@@ -561,18 +566,10 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  if (state_ == Z80_STATE_DECODE) {
-    // When we finish an instruction, update our interrupt master enable.
-    if (interrupt)  { ime = false;     ime_delay = false; }
-    else if (RETI)  { ime = true;      ime_delay = true; }
-    else if (DI)    { ime = false;     ime_delay = false; }
-    else if (EI)    { ime = ime_delay; ime_delay = true; }
-  }
-
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
   //----------------------------------------
-  // set up write
+  // set up addr/data_out for write
 
   if (state_ == Z80_STATE_MEM_WRITE1) {
     if      (STM_BC_A)       { addr = bc;          data_out = a; }

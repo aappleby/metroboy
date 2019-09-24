@@ -323,14 +323,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     if (INC_R) {
       AluOut out = alu(0, reg_fetch8(), 1, 0);
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      uint8_t mask = flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }
 
     if (DEC_R) {
       AluOut out = alu(2, reg_fetch8(), 1, 0);
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      uint8_t mask = flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }
@@ -339,7 +339,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       AluOut out = {0};
       out = alu(OP_ROW, a, lo, f);
       out.x = (OP_ROW == 7) ? a : out.x;
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      uint8_t mask = flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
@@ -348,7 +348,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       AluOut out = {0};
       out = alu(OP_ROW, a, reg_fetch8(), f);
       out.x = (OP_ROW == 7) ? a : out.x;
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      uint8_t mask = flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
@@ -357,7 +357,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       AluOut out = {0};
       out = alu(OP_ROW, a, lo, f);
       out.x = (OP_ROW == 7) ? a : out.x;
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      uint8_t mask = flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
@@ -366,7 +366,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       AluOut out = {0};
       out = rlu(OP_ROW, reg_fetch8(), f);
       if (OP_ROW <= 3) out.f &= ~F_ZERO;
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      uint8_t mask = flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
@@ -387,46 +387,31 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       out.x = blah + hl;
       out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
 
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      uint8_t mask = flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       hl = out.x;
     }
 
     if (LD_HL_SP_R8) {
-      AluOut out = {0};
       bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
       bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
 
-      out.x = sp + (int8_t)lo;
-      out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-      hl = out.x;
+      hl = sp + (int8_t)lo;
+      f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
     }
 
     if (ADD_SP_R8) {
-      AluOut out = {0};
       bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
       bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
 
-      out.x = sp + (int8_t)lo;
-      out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-      sp = out.x;
+      sp = sp + (int8_t)lo;
+      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
     }
 
-    if (OP_CB_R) {
+    if (OP_CB_R || OP_CB_HL) {
       AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-      reg_put8(CB_COL, (uint8_t)out.x);
-    }
-
-    if (OP_CB_HL) {
-      AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
-      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
+      uint8_t mask = cb_flag_mask[CB_QUAD];
+      f = (f & ~mask) | (out.f & mask);
       reg_put8(CB_COL, (uint8_t)out.x);
     }
 
@@ -514,7 +499,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LD_A_AT_HLM)   { addr = hl; }
     else if (MV_HLR)        { addr = hl; }
     else if (ALU_HL)        { addr = hl; }
-    else if (PREFIX_CB)     { addr = hl; }
+    else if (OP_CB_HL)      { addr = hl; }
     break;
   }
 }
@@ -579,8 +564,8 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (INC_AT_HL)     { addr = hl;          data_out = lo + 1; }
     else if (DEC_AT_HL)     { addr = hl;          data_out = lo - 1; }
     else if (ST_HL_D8)      { addr = hl;          data_out = lo; }
-    else if (MV_RHL)  { addr = hl;          data_out = reg_fetch8(); }
-    else if (PREFIX_CB)     { addr = hl;          data_out = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
+    else if (MV_RHL)        { addr = hl;          data_out = reg_fetch8(); }
+    else if (OP_CB_HL)      { addr = hl;          data_out = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
     else if (ST_A16_A)      { addr = temp;        data_out = a; }
     else if (ST_A8_A)       { addr = 0xFF00 | lo; data_out = a; }
     else if (ST_C_A)        { addr = 0xFF00 | c;  data_out = a; }
@@ -694,7 +679,8 @@ Z80State Z80::next_state() {
     else if (DEC_RR)        next = Z80_STATE_DELAY_C;
     else if (ADD_HL_RR)     next = Z80_STATE_DELAY_C;
     else if (MV_SP_HL)      next = Z80_STATE_DELAY_C;
-    else if (PREFIX_CB)     next = Z80_STATE_DECODE_CB;
+    else if (OP_CB_R)       next = Z80_STATE_DECODE_CB;
+    else if (OP_CB_HL)      next = Z80_STATE_DECODE_CB;
     else if (PUSH_RR)       next = Z80_STATE_PUSH_DELAY;
     else if (RET)           next = Z80_STATE_POP1;
     else if (RETI)          next = Z80_STATE_POP1;

@@ -417,10 +417,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (LDM_A_C)   reg_put8(7,      bus_data);
     if (LDM_A_A16) reg_put8(7,      bus_data);
     if (LDM_R_HL)  reg_put8(OP_ROW, bus_data);
-
-    if (LDM_A_HLP) hl = hl + 1;
-    if (LDM_A_HLM) hl = hl - 1;
-
     break;
   }
 
@@ -578,8 +574,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LDM_A_BC)    { addr = bc; }
     else if (LDM_A_DE)    { addr = de; }
     else if (LDM_R_HL)    { addr = hl; }
-    else if (LDM_A_HLP)   { addr = hl; }
-    else if (LDM_A_HLM)   { addr = hl; }
+    else if (LDM_A_HLP)   { addr = hl; hl++; }
+    else if (LDM_A_HLM)   { addr = hl; hl--; }
     else if (INC_AT_HL)   { addr = hl; }
     else if (DEC_AT_HL)   { addr = hl; }
     else if (OP_CB_HL)    { addr = hl; }

@@ -69,7 +69,8 @@
 #define MV_OPS_LD_HL  (OP_QUAD == 1 && OP_COL == 6)
 
 #define ALU_OPS       (OP_QUAD == 2)
-#define ALU_OPS_LD_HL (OP_QUAD == 2 && OP_COL == 6)
+#define ALU_OPS_REG   (OP_QUAD == 2 && OP_COL != 6)
+#define ALU_OPS_HL    (OP_QUAD == 2 && OP_COL == 6)
 
 #define RET_CC        (OP_QUAD == 3 && OP_COL == 0 && OP_ROW <= 3)
 #define POP_RR        (OP_QUAD == 3 && OP_COL == 1 && !OP_ODD_ROW)
@@ -144,6 +145,8 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
 
   if (state == Z80_STATE_DECODE) {
+    state = first_state(op);
+
     bool cond_fail = false;
 
     switch (OP_ROW & 3) {
@@ -195,17 +198,23 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DECODE_CB:
     pc++;
     break;
-
   case Z80_STATE_HALT: break;
   case Z80_STATE_INTERRUPT: break;
-  case Z80_STATE_PUSH_DELAY: break;
 
+  case Z80_STATE_ALU_LO: {
+    pc++;
+    break;
+  }
+  case Z80_STATE_ALU_HI: {
+    break;
+  }
+
+  case Z80_STATE_PUSH_DELAY: break;
   case Z80_STATE_PUSH1:
     // Gameboy weirdness - the "real" interrupt vector is determined by the
     // state of imask/intf after pushing the first byte of PC onto the stack.
     imask_latch = imask_;
     break;
-
   case Z80_STATE_PUSH2: break;
 
   case Z80_STATE_POP1: break;
@@ -237,7 +246,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     pc++;
     break;
 
-  case Z80_STATE_MEM_READ1: break;
+  case Z80_STATE_MEM_READ1: {
+    if (LD_A_AT_RR)  reg_put8(7,      lo);
+    if (LD_A_AT_A8)  reg_put8(7,      lo);
+    if (LD_A_AT_C)   reg_put8(7,      lo);
+    if (LD_A_AT_A16) reg_put8(7,      lo);
+    break;
+  }
+
   case Z80_STATE_MEM_WRITE1: break;
   case Z80_STATE_MEM_WRITE2: break;
   case Z80_STATE_RET_DELAY: break;
@@ -284,11 +300,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (ADD_HL_RR)   hl = out.x;
     if (LD_HL_SP_R8) hl = out.x;
     if (ADD_SP_R8)   sp = out.x;
-
-    if (LD_A_AT_RR)  reg_put8(7,      (uint8_t)temp);
-    if (LD_A_AT_A8)  reg_put8(7,      (uint8_t)temp);
-    if (LD_A_AT_C)   reg_put8(7,      (uint8_t)temp);
-    if (LD_A_AT_A16) reg_put8(7,      (uint8_t)temp);
 
     if (PREFIX_CB)   {
       reg_put8(CB_COL, (uint8_t)out.x);
@@ -377,7 +388,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LD_A_AT_HLP)   { addr = hl; }
     else if (LD_A_AT_HLM)   { addr = hl; }
     else if (MV_OPS_LD_HL)  { addr = hl; }
-    else if (ALU_OPS_LD_HL) { addr = hl; }
+    else if (ALU_OPS_HL) { addr = hl; }
     else if (PREFIX_CB)     { addr = hl; }
     break;
   }
@@ -485,6 +496,18 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 //-----------------------------------------------------------------------------
 
+Z80State Z80::first_state(uint8_t op2) {
+  (void)op2;
+
+  if (ALU_OPS_REG) {
+    return Z80_STATE_ALU_LO;
+  }
+
+  return Z80_STATE_DECODE;
+}
+
+//-----------------------------------------------------------------------------
+
 Z80State Z80::next_state() {
   Z80State next = Z80_STATE_DECODE;
 
@@ -503,7 +526,7 @@ Z80State Z80::next_state() {
     else if (LD_A_AT_HLP)   next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_HLM)   next = Z80_STATE_MEM_READ1;
     else if (MV_OPS_LD_HL)  next = Z80_STATE_MEM_READ1;
-    else if (ALU_OPS_LD_HL) next = Z80_STATE_MEM_READ1;
+    else if (ALU_OPS_HL) next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_BC)    next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_DE)    next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_C)     next = Z80_STATE_MEM_READ1;
@@ -547,6 +570,14 @@ Z80State Z80::next_state() {
 
   case Z80_STATE_INTERRUPT:
     next = Z80_STATE_PUSH_DELAY;
+    break;
+
+  case Z80_STATE_ALU_LO:
+    next = Z80_STATE_DECODE;
+    break;
+
+  case Z80_STATE_ALU_HI:
+    next = Z80_STATE_DECODE;
     break;
 
   case Z80_STATE_PUSH_DELAY:

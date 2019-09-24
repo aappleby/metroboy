@@ -7,6 +7,9 @@ enum Z80State {
   Z80_STATE_HALT,
   Z80_STATE_INTERRUPT,
 
+  Z80_STATE_ALU_LO,
+  Z80_STATE_ALU_HI,
+
   Z80_STATE_PUSH_DELAY,
   Z80_STATE_PUSH1,
   Z80_STATE_PUSH2,
@@ -33,6 +36,10 @@ case Z80_STATE_DECODE: break;
 case Z80_STATE_DECODE_CB: break;
 case Z80_STATE_HALT: break;
 case Z80_STATE_INTERRUPT: break;
+
+case Z80_STATE_ALU_LO: break;
+case Z80_STATE_ALU_HI: break;
+
 case Z80_STATE_PUSH_DELAY: break;
 case Z80_STATE_PUSH1: break;
 case Z80_STATE_PUSH2: break;
@@ -110,6 +117,8 @@ private:
   AluOut   exec(uint8_t src) const;
   uint8_t  reg_fetch8() const;
   void     reg_put8(int mux, uint8_t reg);
+  
+  Z80State first_state(uint8_t op);
   Z80State next_state();
 };
 

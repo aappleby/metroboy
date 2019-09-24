@@ -307,7 +307,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     if (ALU_A_D8) {
       AluOut out = {0};
-      out = alu(OP_ROW, a, reg_fetch8(), f);
+      out = alu(OP_ROW, a, lo, f);
       out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
@@ -325,7 +325,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     if (ALU_HL) {
       AluOut out = {0};
-      out = alu(OP_ROW, a, reg_fetch8(), f);
+      out = alu(OP_ROW, a, lo, f);
       out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);

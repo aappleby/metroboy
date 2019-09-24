@@ -168,8 +168,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   switch(state) {
   case Z80_STATE_DECODE:    op = bus_data; break;
   case Z80_STATE_DECODE_CB: op_cb = bus_data; break;
-  case Z80_STATE_POP1:      lo = bus_data; break;
-  case Z80_STATE_POP2:      hi = bus_data; break;
+  
+  case Z80_STATE_POP2:      lo = bus_data; break;
+  case Z80_STATE_POP3:      hi = bus_data; break;
+
   case Z80_STATE_ARG1:      lo = bus_data; break;
   case Z80_STATE_ARG2:      hi = bus_data; break;
   case Z80_STATE_MEM_READ1: lo = bus_data; break;
@@ -217,9 +219,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
 
   switch (state) {
-  case Z80_STATE_DECODE: {
+  case Z80_STATE_DECODE:
     break;
-  }
+
   case Z80_STATE_DECODE_CB: {
     if (OP_CB_R) {
       AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
@@ -343,7 +345,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   case Z80_STATE_PUSH2: break;
 
+  //----------------------------------------
+
   case Z80_STATE_POP1:
+    break;
+
+  case Z80_STATE_POP2:
     if (POP_RR) {
       switch(OP_ROW >> 1) {
       case 0: c = bus_data; break;
@@ -354,7 +361,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
     break;
 
-  case Z80_STATE_POP2:
+  case Z80_STATE_POP3:
     if (POP_RR) {
       switch(OP_ROW >> 1) {
       case 0: b = bus_data; break;
@@ -505,6 +512,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     pc++;
   }
 
+  if (state == Z80_STATE_POP1) pc++;
+
   if (state == Z80_STATE_ALU_LO && !ALU_A_HL) {
     pc++;
   }
@@ -565,10 +574,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     addr = pc;
     break;
 
-  case Z80_STATE_POP1:
   case Z80_STATE_POP2:
+  case Z80_STATE_POP3:
     addr = sp;
-    sp++;
     break;
 
   case Z80_STATE_MEM_READ1:
@@ -589,6 +597,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (ALU_A_HL)         { addr = hl; }
     break;
   }
+
+
+  if (state_ == Z80_STATE_POP2) sp++;
+  if (state_ == Z80_STATE_POP3) sp++;
+
+  //----------------------------------------
 
   if (OP_CB_HL)  { data_out = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
   if (INC_AT_HL) { data_out = lo + 1; }
@@ -711,13 +725,16 @@ void Z80::tock_t2() {
 
 Z80State Z80::first_state() {
   
-  if (ALU_A_R) return Z80_STATE_ALU_LO;
-  if (INC_R)   return Z80_STATE_ALU_LO;
-  if (DEC_R)   return Z80_STATE_ALU_LO;
-  if (RLU_R)   return Z80_STATE_ALU_LO;
-  if (MV_R_R)  return Z80_STATE_ALU_LO;
-
+  if (ALU_A_R)   return Z80_STATE_ALU_LO;
+  if (INC_R)     return Z80_STATE_ALU_LO;
+  if (DEC_R)     return Z80_STATE_ALU_LO;
+  if (RLU_R)     return Z80_STATE_ALU_LO;
+  if (MV_R_R)    return Z80_STATE_ALU_LO;
   if (ADD_HL_RR) return Z80_STATE_ALU_LO;
+  
+  if (POP_RR) {
+    return Z80_STATE_POP1;
+  }
 
   return Z80_STATE_DECODE;
 }
@@ -764,9 +781,9 @@ Z80State Z80::next_state() {
 
     else if (PUSH_RR)       next = Z80_STATE_PUSH_DELAY;
 
-    else if (RET)           next = Z80_STATE_POP1;
-    else if (RETI)          next = Z80_STATE_POP1;
-    else if (POP_RR)        next = Z80_STATE_POP1;
+    else if (RET)           next = Z80_STATE_POP2;
+    else if (RETI)          next = Z80_STATE_POP2;
+    else if (POP_RR)        next = Z80_STATE_POP2;
 
     else if (LD_R_D8)       next = Z80_STATE_ARG1;
     else if (JR_CC_R8)      next = Z80_STATE_ARG1;
@@ -825,6 +842,10 @@ Z80State Z80::next_state() {
     break;
 
   case Z80_STATE_POP2:
+    next = Z80_STATE_POP3;
+    break;
+
+  case Z80_STATE_POP3:
     next = POP_RR ? Z80_STATE_DECODE : Z80_STATE_DELAY_C;
     break;
 
@@ -875,7 +896,7 @@ Z80State Z80::next_state() {
 
   case Z80_STATE_RET_DELAY:
 
-    next = no_branch ? Z80_STATE_DECODE : Z80_STATE_POP1;
+    next = no_branch ? Z80_STATE_DECODE : Z80_STATE_POP2;
     break;
 
   case Z80_STATE_DELAY_B:

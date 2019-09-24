@@ -226,6 +226,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (MV_RR) {
       reg_put8(OP_ROW, (uint8_t)reg_fetch8());
     }
+    if (ROTATE_OPS) {
+      AluOut out = {0};
+      out = rlu(OP_ROW, reg_fetch8(), f);
+      if (OP_ROW <= 3) out.f &= ~F_ZERO;
+      uint8_t mask = flag_mask[op];
+      f = (f & ~mask) | (out.f & mask);
+      a = (uint8_t)out.x;
+    }
     break;
   }
   case Z80_STATE_DECODE_CB: break;
@@ -336,14 +344,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (INC_R) {
       AluOut out = alu(0, reg_fetch8(), 1, 0);
       uint8_t mask = flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
+      f = (f & ~mask) | (out.f & mask);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }
 
     if (DEC_R) {
       AluOut out = alu(2, reg_fetch8(), 1, 0);
       uint8_t mask = flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
+      f = (f & ~mask) | (out.f & mask);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }
 
@@ -352,7 +360,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       out = alu(OP_ROW, a, lo, f);
       out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
+      f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
 
@@ -361,7 +369,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       out = alu(OP_ROW, a, reg_fetch8(), f);
       out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
+      f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
 
@@ -370,16 +378,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       out = alu(OP_ROW, a, lo, f);
       out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-      a = (uint8_t)out.x;
-    }
-
-    if (ROTATE_OPS) {
-      AluOut out = {0};
-      out = rlu(OP_ROW, reg_fetch8(), f);
-      if (OP_ROW <= 3) out.f &= ~F_ZERO;
-      uint8_t mask = flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
+      f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
 

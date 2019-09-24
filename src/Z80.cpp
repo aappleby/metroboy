@@ -65,12 +65,13 @@
 #define ROTATE_OPS    (OP_QUAD == 0 && OP_COL == 7)
 
 #define MV_OPS        (OP_QUAD == 1)
-#define MV_OPS_ST_HL  (OP_QUAD == 1 && OP_ROW == 6)
-#define MV_OPS_LD_HL  (OP_QUAD == 1 && OP_COL == 6)
+#define MV_HLR        (OP_QUAD == 1 && OP_COL == 6 && !HALT)
+#define MV_RHL        (OP_QUAD == 1 && OP_ROW == 6 && !HALT)
+#define MV_RR         (OP_QUAD == 1 && OP_COL != 6 && OP_ROW != 6)
 
 #define ALU_OPS       (OP_QUAD == 2)
-#define ALU_OPS_REG   (OP_QUAD == 2 && OP_COL != 6)
-#define ALU_OPS_HL    (OP_QUAD == 2 && OP_COL == 6)
+#define ALU_R         (OP_QUAD == 2 && OP_COL != 6)
+#define ALU_HL        (OP_QUAD == 2 && OP_COL == 6)
 
 #define RET_CC        (OP_QUAD == 3 && OP_COL == 0 && OP_ROW <= 3)
 #define POP_RR        (OP_QUAD == 3 && OP_COL == 1 && !OP_ODD_ROW)
@@ -165,6 +166,7 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       temp = pc;
       addr = pc;
     }
+    pc++;
   }
 
   //----------------------------------------
@@ -190,24 +192,23 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)intf;
   (void)bus_data;
 
+  if (state == Z80_STATE_DECODE_CB || state == Z80_STATE_ARG1 || state == Z80_STATE_ARG2) {
+    pc++;
+  }
+
   //----------------------------------------
   // Read complete, write dispatched
 
   switch (state) {
-  case Z80_STATE_DECODE:
-  case Z80_STATE_DECODE_CB:
-    pc++;
-    break;
+  case Z80_STATE_DECODE: break;
+  case Z80_STATE_DECODE_CB: break;
   case Z80_STATE_HALT: break;
   case Z80_STATE_INTERRUPT: break;
 
   case Z80_STATE_ALU_LO: {
-    pc++;
     break;
   }
-  case Z80_STATE_ALU_HI: {
-    break;
-  }
+  case Z80_STATE_ALU_HI: break;
 
   case Z80_STATE_PUSH_DELAY: break;
   case Z80_STATE_PUSH1:
@@ -231,7 +232,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_ARG1:
-    pc++;
     break;
 
   case Z80_STATE_ARG2:
@@ -243,7 +243,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       case 3: sp = temp; break;
       }
     }
-    pc++;
     break;
 
   case Z80_STATE_MEM_READ1: {
@@ -284,22 +283,51 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   if (state_ == Z80_STATE_DECODE) {
 
     AluOut out = exec(reg_fetch8());
-
     uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
-    if (POP_AF)  f = lo & 0xF0;
-    else         f = (f & ~mask) | (out.f & mask);
+    f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
 
-    if (MV_OPS)      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
-    if (LD_R_D8)     reg_put8(OP_ROW, (uint8_t)temp);
+    if (MV_OPS) {
+      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
+    }
+    if (LD_R_D8) {
+      reg_put8(OP_ROW, (uint8_t)temp);
+    }
 
-    if (INC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
-    if (DEC_R)       reg_put8(OP_ROW, (uint8_t)out.x);
-    if (ALU_A_D8)    reg_put8(7,      (uint8_t)out.x);
-    if (ALU_OPS)     reg_put8(7,      (uint8_t)out.x);
-    if (ROTATE_OPS)  reg_put8(7,      (uint8_t)out.x);
-    if (ADD_HL_RR)   hl = out.x;
-    if (LD_HL_SP_R8) hl = out.x;
-    if (ADD_SP_R8)   sp = out.x;
+    if (INC_R) {
+      reg_put8(OP_ROW, (uint8_t)out.x);
+    }
+
+    if (DEC_R) {
+      reg_put8(OP_ROW, (uint8_t)out.x);
+    }
+
+    if (ALU_A_D8) {
+      reg_put8(7,      (uint8_t)out.x);
+    }
+
+    if (ALU_R) {
+      reg_put8(7,      (uint8_t)out.x);
+    }
+
+    if (ALU_HL) {
+      reg_put8(7,      (uint8_t)out.x);
+    }
+
+    if (ROTATE_OPS) {
+      reg_put8(7,      (uint8_t)out.x);
+    }
+
+    if (ADD_HL_RR) {
+      hl = out.x;
+    }
+
+    if (LD_HL_SP_R8) {
+      hl = out.x;
+    }
+
+    if (ADD_SP_R8) {
+      sp = out.x;
+    }
 
     if (PREFIX_CB)   {
       reg_put8(CB_COL, (uint8_t)out.x);
@@ -387,8 +415,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (DEC_AT_HL)     { addr = hl; }
     else if (LD_A_AT_HLP)   { addr = hl; }
     else if (LD_A_AT_HLM)   { addr = hl; }
-    else if (MV_OPS_LD_HL)  { addr = hl; }
-    else if (ALU_OPS_HL) { addr = hl; }
+    else if (MV_HLR)         { addr = hl; }
+    else if (ALU_HL)    { addr = hl; }
     else if (PREFIX_CB)     { addr = hl; }
     break;
   }
@@ -441,7 +469,7 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (INC_AT_HL)     { addr = hl;          data_out = lo + 1; }
     else if (DEC_AT_HL)     { addr = hl;          data_out = lo - 1; }
     else if (ST_HL_D8)      { addr = hl;          data_out = lo; }
-    else if (MV_OPS_ST_HL)  { addr = hl;          data_out = reg_fetch8(); }
+    else if (MV_RHL)  { addr = hl;          data_out = reg_fetch8(); }
     else if (PREFIX_CB)     { addr = hl;          data_out = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
     else if (ST_A16_A)      { addr = temp;        data_out = a; }
     else if (ST_A8_A)       { addr = 0xFF00 | lo; data_out = a; }
@@ -499,7 +527,7 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 Z80State Z80::first_state(uint8_t op2) {
   (void)op2;
 
-  if (ALU_OPS_REG) {
+  if (ALU_R) {
     return Z80_STATE_ALU_LO;
   }
 
@@ -515,7 +543,7 @@ Z80State Z80::next_state() {
   case Z80_STATE_DECODE: {
     if      (interrupt)     next = Z80_STATE_INTERRUPT;
     else if (HALT)          next = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT;
-    else if (MV_OPS_ST_HL)  next = Z80_STATE_MEM_WRITE1;
+    else if (MV_RHL)  next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLP_A)      next = Z80_STATE_MEM_WRITE1;
     else if (ST_HLM_A)      next = Z80_STATE_MEM_WRITE1;
     else if (ST_C_A)        next = Z80_STATE_MEM_WRITE1;
@@ -525,8 +553,8 @@ Z80State Z80::next_state() {
     else if (DEC_AT_HL)     next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_HLP)   next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_HLM)   next = Z80_STATE_MEM_READ1;
-    else if (MV_OPS_LD_HL)  next = Z80_STATE_MEM_READ1;
-    else if (ALU_OPS_HL) next = Z80_STATE_MEM_READ1;
+    else if (MV_HLR)         next = Z80_STATE_MEM_READ1;
+    else if (ALU_HL)    next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_BC)    next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_DE)    next = Z80_STATE_MEM_READ1;
     else if (LD_A_AT_C)     next = Z80_STATE_MEM_READ1;

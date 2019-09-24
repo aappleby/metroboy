@@ -140,20 +140,11 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 
 
 CpuBus Z80::tick_t0() const {
-
-  CpuBus bus;
-
-  if (state == Z80_STATE_MEM_WRITE1 ||
-      state == Z80_STATE_MEM_WRITE2 ||
-      state == Z80_STATE_PUSH1 ||
-      state == Z80_STATE_PUSH2) {
-    bus = { addr, data_out, false, true };
-  }
-  else {
-    bus = { 0, 0, false, false };
-  }
-
-  return bus;
+  bool write = (state == Z80_STATE_MEM_WRITE1 ||
+                state == Z80_STATE_MEM_WRITE2 ||
+                state == Z80_STATE_PUSH1 ||
+                state == Z80_STATE_PUSH2);
+  return { addr, data_out, false, write };
 }
 
 
@@ -539,7 +530,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 // TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2
 
 CpuBus Z80::tick_t2() const {
-  return { addr, 0, true, false };
+  return { addr, data_out, true, false };
 }
 
 
@@ -562,7 +553,6 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   ime = ime_delay;
 
   //----------------------------------------
-  // Write complete, read dispatched
 
   if (state_ == Z80_STATE_DECODE) {
     // When we finish an instruction, update our interrupt master enable.
@@ -679,22 +669,22 @@ Z80State Z80::next_state() {
   case Z80_STATE_DECODE: {
     if      (interrupt)     next = Z80_STATE_INTERRUPT;
     else if (HALT)          next = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT;
-    else if (STM_HL_R)        next = Z80_STATE_MEM_WRITE1;
-    else if (STM_HLP_A)      next = Z80_STATE_MEM_WRITE1;
-    else if (STM_HLM_A)      next = Z80_STATE_MEM_WRITE1;
-    else if (STM_C_A)        next = Z80_STATE_MEM_WRITE1;
-    else if (STM_BC_A)       next = Z80_STATE_MEM_WRITE1;
-    else if (STM_DE_A)       next = Z80_STATE_MEM_WRITE1;
+    else if (STM_HL_R)      next = Z80_STATE_MEM_WRITE1;
+    else if (STM_HLP_A)     next = Z80_STATE_MEM_WRITE1;
+    else if (STM_HLM_A)     next = Z80_STATE_MEM_WRITE1;
+    else if (STM_C_A)       next = Z80_STATE_MEM_WRITE1;
+    else if (STM_BC_A)      next = Z80_STATE_MEM_WRITE1;
+    else if (STM_DE_A)      next = Z80_STATE_MEM_WRITE1;
 
     else if (INC_AT_HL)     next = Z80_STATE_MEM_READ1;
     else if (DEC_AT_HL)     next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_HLP)   next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_HLM)   next = Z80_STATE_MEM_READ1;
-    else if (LDM_R_HL)        next = Z80_STATE_MEM_READ1;
-    else if (ALU_A_HL)        next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_BC)    next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_DE)    next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_C)     next = Z80_STATE_MEM_READ1;
+    else if (LDM_A_HLP)     next = Z80_STATE_MEM_READ1;
+    else if (LDM_A_HLM)     next = Z80_STATE_MEM_READ1;
+    else if (LDM_R_HL)      next = Z80_STATE_MEM_READ1;
+    else if (ALU_A_HL)      next = Z80_STATE_MEM_READ1;
+    else if (LDM_A_BC)      next = Z80_STATE_MEM_READ1;
+    else if (LDM_A_DE)      next = Z80_STATE_MEM_READ1;
+    else if (LDM_A_C)       next = Z80_STATE_MEM_READ1;
 
     else if (RET_CC)        next = Z80_STATE_RET_DELAY;
     else if (RST_NN)        next = Z80_STATE_PUSH_DELAY;
@@ -716,15 +706,15 @@ Z80State Z80::next_state() {
     else if (LD_R_D8)       next = Z80_STATE_ARG1;
     else if (JR_CC_R8)      next = Z80_STATE_ARG1;
     else if (JR_R8)         next = Z80_STATE_ARG1;
-    else if (LDM_A_A8)    next = Z80_STATE_ARG1;
+    else if (LDM_A_A8)      next = Z80_STATE_ARG1;
     else if (LD_HL_SP_R8)   next = Z80_STATE_ARG1;
-    else if (STM_A8_A)       next = Z80_STATE_ARG1;
+    else if (STM_A8_A)      next = Z80_STATE_ARG1;
     else if (ALU_A_D8)      next = Z80_STATE_ARG1;
     else if (ADD_SP_R8)     next = Z80_STATE_ARG1;
-    else if (LDM_A_A16)   next = Z80_STATE_ARG1;
+    else if (LDM_A_A16)     next = Z80_STATE_ARG1;
     else if (LD_RR_D16)     next = Z80_STATE_ARG1;
-    else if (STM_A16_A)      next = Z80_STATE_ARG1;
-    else if (STM_A16_SP)     next = Z80_STATE_ARG1;
+    else if (STM_A16_A)     next = Z80_STATE_ARG1;
+    else if (STM_A16_SP)    next = Z80_STATE_ARG1;
     else if (JP_A16)        next = Z80_STATE_ARG1;
     else if (JP_CC_A16)     next = Z80_STATE_ARG1;
     else if (CALL_A16)      next = Z80_STATE_ARG1;

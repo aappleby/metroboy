@@ -305,9 +305,18 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   if (state_ == Z80_STATE_DECODE) {
 
-    if (MV_OPS) {
+    if (MV_RR) {
       reg_put8(OP_ROW, (uint8_t)reg_fetch8());
     }
+
+    if (MV_RHL) {
+      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
+    }
+
+    if (MV_HLR) {
+      reg_put8(OP_ROW, (uint8_t)reg_fetch8());
+    }
+
     if (LD_R_D8) {
       reg_put8(OP_ROW, (uint8_t)temp);
     }

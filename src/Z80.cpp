@@ -54,8 +54,10 @@
 #define LDM_A_RR      (OP_QUAD == 0 && OP_COL == 2 &&  OP_ODD_ROW)
 #define INC_RR        (OP_QUAD == 0 && OP_COL == 3 && !OP_ODD_ROW)
 #define DEC_RR        (OP_QUAD == 0 && OP_COL == 3 &&  OP_ODD_ROW)
-#define INC_R         (OP_QUAD == 0 && OP_COL == 4)
-#define DEC_R         (OP_QUAD == 0 && OP_COL == 5)
+
+#define INC_R         (OP_QUAD == 0 && OP_COL == 4 && OP_ROW != 6)
+#define DEC_R         (OP_QUAD == 0 && OP_COL == 5 && OP_ROW != 6)
+
 #define LD_R_D8       (OP_QUAD == 0 && OP_COL == 6)
 #define ROTATE_OPS    (OP_QUAD == 0 && OP_COL == 7)
 
@@ -232,6 +234,18 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
+    if (INC_R) {
+      AluOut out = alu(0, reg_fetch8(), 1, 0);
+      uint8_t mask = flag_mask[op];
+      f = (f & ~mask) | (out.f & mask);
+      reg_put8(OP_ROW, (uint8_t)out.x);
+    }
+    if (DEC_R) {
+      AluOut out = alu(2, reg_fetch8(), 1, 0);
+      uint8_t mask = flag_mask[op];
+      f = (f & ~mask) | (out.f & mask);
+      reg_put8(OP_ROW, (uint8_t)out.x);
+    }
     break;
   }
   case Z80_STATE_DECODE_CB: {
@@ -344,6 +358,20 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       f = (f & ~mask) | (out.f & mask);
       reg_put8(CB_COL, (uint8_t)out.x);
     }
+    if (INC_AT_HL) {
+      AluOut out = alu(0, reg_fetch8(), 1, 0);
+      uint8_t mask = flag_mask[op];
+      f = (f & ~mask) | (out.f & mask);
+      reg_put8(OP_ROW, (uint8_t)out.x);
+    }
+
+
+    if (DEC_AT_HL) {
+      AluOut out = alu(2, reg_fetch8(), 1, 0);
+      uint8_t mask = flag_mask[op];
+      f = (f & ~mask) | (out.f & mask);
+      reg_put8(OP_ROW, (uint8_t)out.x);
+    }
     break;
   }
 
@@ -414,27 +442,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-  state_ = next_state();
-
-  if (state_ == Z80_STATE_DECODE) {
-
-    if (INC_R) {
-      AluOut out = alu(0, reg_fetch8(), 1, 0);
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
-      reg_put8(OP_ROW, (uint8_t)out.x);
-    }
-
-    if (DEC_R) {
-      AluOut out = alu(2, reg_fetch8(), 1, 0);
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
-      reg_put8(OP_ROW, (uint8_t)out.x);
-    }
-  }
-
   //----------------------------------------
-  // writeback
+
+  state_ = next_state();
 
   if (state_ == Z80_STATE_DECODE) {
     int next_int = -1;

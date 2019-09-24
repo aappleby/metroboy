@@ -11,10 +11,6 @@
 #define OP_ODD_ROW    ((op >> 3) & 1)
 #define OP_COL        ((op >> 0) & 7)
 
-#define CB_QUAD       (op_cb >> 6)
-#define CB_ROW        ((op_cb >> 3) & 7)
-#define CB_COL        ((op_cb >> 0) & 7)
-
 #define NOP           (op == 0x00)
 
 #define ST_BC_A       (op == 0x02)
@@ -50,7 +46,6 @@
 #define DI            (op == 0xF3)
 #define EI            (op == 0xFB)
 #define HALT          (op == 0x76)
-#define PREFIX_CB     (op == 0xCB)
 #define MV_SP_HL      (op == 0xF9)
 
 #define JR_CC_R8      (OP_QUAD == 0 && OP_COL == 0 && OP_ROW >= 4)
@@ -81,10 +76,18 @@
 #define ALU_A_D8      (OP_QUAD == 3 && OP_COL == 6)
 #define RST_NN        (OP_QUAD == 3 && OP_COL == 7)
 
+#define PREFIX_CB     (op == 0xCB)
+#define CB_QUAD       (op_cb >> 6)
+#define CB_ROW        ((op_cb >> 3) & 7)
+#define CB_COL        ((op_cb >> 0) & 7)
+#define OP_CB_R       (PREFIX_CB && CB_COL != 6)
+#define OP_CB_HL      (PREFIX_CB && CB_COL == 6)
+
 #define INTERRUPT     ((imask_ & intf_) && ime)
 
 AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
 AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f);
+AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f);
 
 //-----------------------------------------------------------------------------
 
@@ -182,8 +185,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   else {
     return { 0, 0, false, false };
   }
-
-
 }
 
 //-----------------------------------------------------------------------------
@@ -305,31 +306,39 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
 
     if (ALU_A_D8) {
-      AluOut out = exec(reg_fetch8());
+      AluOut out = {0};
+      out = alu(OP_ROW, a, reg_fetch8(), f);
+      out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-      reg_put8(7,      (uint8_t)out.x);
+      a = (uint8_t)out.x;
     }
 
     if (ALU_R) {
-      AluOut out = exec(reg_fetch8());
+      AluOut out = {0};
+      out = alu(OP_ROW, a, reg_fetch8(), f);
+      out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-      reg_put8(7,      (uint8_t)out.x);
+      a = (uint8_t)out.x;
     }
 
     if (ALU_HL) {
-      AluOut out = exec(reg_fetch8());
+      AluOut out = {0};
+      out = alu(OP_ROW, a, reg_fetch8(), f);
+      out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-      reg_put8(7,      (uint8_t)out.x);
+      a = (uint8_t)out.x;
     }
 
     if (ROTATE_OPS) {
-      AluOut out = exec(reg_fetch8());
+      AluOut out = {0};
+      out = rlu(OP_ROW, reg_fetch8(), f);
+      if (OP_ROW <= 3) out.f &= ~F_ZERO;
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-      reg_put8(7,      (uint8_t)out.x);
+      a = (uint8_t)out.x;
     }
 
     if (ADD_HL_RR) {
@@ -377,7 +386,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       sp = out.x;
     }
 
-    if (PREFIX_CB)   {
+    if (OP_CB_R) {
+      AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
+      uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
+      reg_put8(CB_COL, (uint8_t)out.x);
+    }
+
+    if (OP_CB_HL) {
       AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
       uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
@@ -1005,13 +1021,7 @@ AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t 
 
 AluOut Z80::exec(uint8_t src) const {
 
-  if (ROTATE_OPS) {
-    AluOut out = {0};
-    out = rlu(OP_ROW, src, f);
-    if (OP_ROW <= 3) out.f &= ~F_ZERO;
-    return out;
-  }
-  else if (ALU_OPS || ALU_A_D8) {
+  if (ALU_OPS || ALU_A_D8) {
     AluOut out = {0};
     out = alu(OP_ROW, a, src, f);
     out.x = (OP_ROW == 7) ? a : out.x;

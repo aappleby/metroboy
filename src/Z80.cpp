@@ -244,29 +244,35 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     if (MV_R_R) {
       reg_put8(OP_ROW, (uint8_t)reg_fetch8());
+      f = (f & ~mask) | (out.f & mask);
     }
     if (ALU_A_R) {
       out = alu(OP_ROW, a, reg_fetch8(), f);
       out.x = (OP_ROW == 7) ? a : out.x;
       a = (uint8_t)out.x;
+      f = (f & ~mask) | (out.f & mask);
     }
     if (INC_R) {
       out = alu(0, reg_fetch8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
+      f = (f & ~mask) | (out.f & mask);
     }
     if (RLU_R) {
       out = rlu(OP_ROW, reg_fetch8(), f);
       if (OP_ROW <= 3) out.f &= ~F_ZERO;
       a = (uint8_t)out.x;
+      f = (f & ~mask) | (out.f & mask);
     }
     if (DEC_R) {
       out = alu(2, reg_fetch8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
+      f = (f & ~mask) | (out.f & mask);
     }
-    f = (f & ~mask) | (out.f & mask);
     break;
   }
-  case Z80_STATE_ALU_HI: break;
+
+  case Z80_STATE_ALU_HI:
+    break;
 
   case Z80_STATE_PUSH_DELAY:
     sp--;
@@ -570,12 +576,7 @@ CpuBus Z80::tick_t2() const {
 //-----------------------------------------------------------------------------
 // TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2
 
-void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
-  (void)imask;
-  (void)intf;
-  (void)bus_data;
-
-  //----------------------------------------
+void Z80::tock_t2() {
 
   if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
 
@@ -597,13 +598,11 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (DEC_AT_HL)      { addr = hl;          data_out = data_out; }
     else if (OP_CB_HL)       { addr = hl;          data_out = data_out; }
   }
-
-  if (state_ == Z80_STATE_MEM_WRITE2) {
+  else if (state_ == Z80_STATE_MEM_WRITE2) {
     addr = temp + 1;
     data_out = (uint8_t)(sp >> 8);
   }
-
-  if (state_ == Z80_STATE_PUSH1) {
+  else if (state_ == Z80_STATE_PUSH1) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
@@ -618,8 +617,7 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (CALL_CC_A16) data_out = (uint8_t)(pc >> 8);
     else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
   }
-
-  if (state_ == Z80_STATE_PUSH2) {
+  else if (state_ == Z80_STATE_PUSH2) {
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp);
     if (PUSH_RR) {

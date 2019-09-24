@@ -300,7 +300,7 @@ GameboyOut Gameboy::tock() {
   //-----------------------------------
 
   if (tphase == 2) {
-    z80.tock_t2(imask, intf, bus_in);
+    z80.tock_t2();
     if (cpu_bus.read) {
       bus_out = 0x00;
       bus_oe = false;

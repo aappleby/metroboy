@@ -65,7 +65,7 @@ struct Z80 {
   CpuBus tick_t0() const;
   void   tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data);
   CpuBus tick_t2() const;
-  void   tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data);
+  void   tock_t2();
 
   uint16_t get_pc() const { return pc; }
   uint8_t  get_a()  const { return a; }

@@ -140,6 +140,45 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 
 
 CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+  (void)imask;
+  (void)intf;
+  (void)bus_data;
+
+  //----------------------------------------
+  // set up write
+
+  CpuBus bus;
+
+  if (state == Z80_STATE_MEM_WRITE1 ||
+      state == Z80_STATE_MEM_WRITE2 ||
+      state == Z80_STATE_PUSH1 ||
+      state == Z80_STATE_PUSH2) {
+    bus = { addr, data_out, false, true };
+  }
+  else {
+    bus = { 0, 0, false, false };
+  }
+
+  return bus;
+}
+
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+// TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0
+
+void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
+
+  //----------------------------------------
+
   int_ack_ = 0;
   imask_ = imask;
   intf_ = intf;
@@ -184,40 +223,6 @@ CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
-  // set up write
-
-  CpuBus bus;
-
-  if (state == Z80_STATE_MEM_WRITE1 ||
-      state == Z80_STATE_MEM_WRITE2 ||
-      state == Z80_STATE_PUSH1 ||
-      state == Z80_STATE_PUSH2) {
-    bus = { addr, data_out, false, true };
-  }
-  else {
-    bus = { 0, 0, false, false };
-  }
-
-  return bus;
-}
-
-
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------
-// TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0
-
-void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
-  (void)imask;
-  (void)intf;
-  (void)bus_data;
 
   if (state == Z80_STATE_DECODE_CB || state == Z80_STATE_ARG1 || state == Z80_STATE_ARG2) {
     pc++;

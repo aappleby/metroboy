@@ -211,6 +211,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
   }
 
+  // reads interrupt, no_branch, no_halt, unhalt
+  state_ = next_state();
+
   //----------------------------------------
 
   if (state == Z80_STATE_DECODE || state == Z80_STATE_ALU_LO || state == Z80_STATE_DECODE_CB || state == Z80_STATE_ARG1 || state == Z80_STATE_ARG2) {
@@ -441,8 +444,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
-
-  state_ = next_state();
 
   if (state_ == Z80_STATE_DECODE) {
     int next_int = -1;

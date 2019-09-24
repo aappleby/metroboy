@@ -247,6 +247,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_INTERRUPT: break;
 
   case Z80_STATE_ALU_LO: {
+    if (ALU_A_R) {
+      AluOut out = {0};
+      out = alu(OP_ROW, a, reg_fetch8(), f);
+      out.x = (OP_ROW == 7) ? a : out.x;
+      uint8_t mask = flag_mask[op];
+      f = (f & ~mask) | (out.f & mask);
+      a = (uint8_t)out.x;
+    }
     break;
   }
   case Z80_STATE_ALU_HI: break;
@@ -422,15 +430,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
       reg_put8(OP_ROW, (uint8_t)out.x);
-    }
-
-    if (ALU_A_R) {
-      AluOut out = {0};
-      out = alu(OP_ROW, a, reg_fetch8(), f);
-      out.x = (OP_ROW == 7) ? a : out.x;
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
-      a = (uint8_t)out.x;
     }
   }
 

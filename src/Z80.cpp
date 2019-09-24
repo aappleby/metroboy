@@ -172,12 +172,6 @@ CpuBus Z80::tick_t0() const {
 void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
-
-  int_ack_ = 0;
-  imask_ = imask;
-  intf_ = intf;
-
-  //----------------------------------------
   // Handle read
 
   switch(state) {
@@ -193,6 +187,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
 
   if (state == Z80_STATE_DECODE) {
+    int_ack_ = 0;
+    imask_ = imask;
+    intf_ = intf;
+
     state = first_state(op);
 
     bool cond_fail = false;
@@ -223,7 +221,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
-  // Read complete, write dispatched
 
   switch (state) {
   case Z80_STATE_DECODE: break;

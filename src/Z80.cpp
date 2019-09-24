@@ -272,6 +272,26 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   case Z80_STATE_ALU_HI:
+    if (ADD_HL_RR) {
+      uint16_t blah = 0;
+      switch(OP_ROW >> 1) {
+      case 0: blah = bc; break;
+      case 1: blah = de; break;
+      case 2: blah = hl; break;
+      case 3: blah = sp; break;
+      }
+
+      bool halfcarry = (blah & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
+      bool carry =     (blah & 0xFFFF) + (hl & 0xFFFF) > 0xFFFF;
+
+      AluOut out;
+      out.x = blah + hl;
+      out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+
+      uint8_t mask = flag_mask[op];
+      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
+      hl = out.x;
+    }
     break;
 
   case Z80_STATE_PUSH_DELAY:
@@ -422,27 +442,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (LD_SP_HL)    sp = hl;
 
     // the rest do
-    if (ADD_HL_RR) {
-      uint16_t blah = 0;
-      switch(OP_ROW >> 1) {
-      case 0: blah = bc; break;
-      case 1: blah = de; break;
-      case 2: blah = hl; break;
-      case 3: blah = sp; break;
-      }
-
-      bool halfcarry = (blah & 0x0FFF) + (hl & 0x0FFF) > 0x0FFF;
-      bool carry =     (blah & 0xFFFF) + (hl & 0xFFFF) > 0xFFFF;
-
-      AluOut out;
-      out.x = blah + hl;
-      out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-
-      uint8_t mask = flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
-      hl = out.x;
-    }
-
     if (LD_HL_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
       bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
@@ -669,6 +668,8 @@ Z80State Z80::first_state() {
   if (RLU_R)   return Z80_STATE_ALU_LO;
   if (MV_R_R)  return Z80_STATE_ALU_LO;
 
+  if (ADD_HL_RR) return Z80_STATE_ALU_LO;
+
   return Z80_STATE_DECODE;
 }
 
@@ -748,6 +749,7 @@ Z80State Z80::next_state() {
 
   case Z80_STATE_ALU_LO:
     next = Z80_STATE_DECODE;
+    if (ADD_HL_RR)          next = Z80_STATE_ALU_HI;
     break;
 
   case Z80_STATE_ALU_HI:

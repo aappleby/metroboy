@@ -234,7 +234,15 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
     break;
   }
-  case Z80_STATE_DECODE_CB: break;
+  case Z80_STATE_DECODE_CB: {
+    if (OP_CB_R) {
+      AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
+      uint8_t mask = cb_flag_mask[CB_QUAD];
+      f = (f & ~mask) | (out.f & mask);
+      reg_put8(CB_COL, (uint8_t)out.x);
+    }
+    break;
+  }
   case Z80_STATE_HALT: break;
   case Z80_STATE_INTERRUPT: break;
 
@@ -321,6 +329,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_MEM_WRITE1: {
     if (STM_HLP_A)    hl = hl + 1;
     if (STM_HLM_A)    hl = hl - 1;
+   
+    if (OP_CB_HL) {
+      AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
+      uint8_t mask = cb_flag_mask[CB_QUAD];
+      f = (f & ~mask) | (out.f & mask);
+      reg_put8(CB_COL, (uint8_t)out.x);
+    }
     break;
   }
 
@@ -416,14 +431,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
-    }
-
-
-    if (OP_CB_R || OP_CB_HL) {
-      AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
-      uint8_t mask = cb_flag_mask[CB_QUAD];
-      f = (f & ~mask) | (out.f & mask);
-      reg_put8(CB_COL, (uint8_t)out.x);
     }
   }
 

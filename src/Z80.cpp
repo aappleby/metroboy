@@ -177,6 +177,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
+  ime = ime_delay;
+
   if (state == Z80_STATE_DECODE) {
     if (interrupt)  { ime = false;     ime_delay = false; }
     else if (RETI)  { ime = true;      ime_delay = true; }
@@ -561,8 +563,6 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   (void)imask;
   (void)intf;
   (void)bus_data;
-
-  ime = ime_delay;
 
   //----------------------------------------
 

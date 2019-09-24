@@ -238,6 +238,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_HALT: break;
   case Z80_STATE_INTERRUPT: break;
 
+  //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
+
   case Z80_STATE_ALU_LO: {
     AluOut out = {0};
     uint8_t mask = flag_mask[op];
@@ -271,6 +273,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
+  //*(*(*(*(*(*(*(*(*(*(*(*(*(*
+
+
   case Z80_STATE_ALU_HI:
     if (ADD_HL_RR) {
       uint16_t blah = 0;
@@ -289,10 +294,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       out.f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
 
       uint8_t mask = flag_mask[op];
-      f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
+      f = (f & ~mask) | (out.f & mask);
       hl = out.x;
     }
     break;
+
+  //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
+
 
   case Z80_STATE_PUSH_DELAY:
     sp--;
@@ -330,12 +338,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_ARG1:
     if (LD_R_D8) {
-      reg_put8(OP_ROW, (uint8_t)temp);
+      reg_put8(OP_ROW, bus_data);
     }
 
     if (ALU_A_D8) {
       AluOut out = {0};
-      out = alu(OP_ROW, a, lo, f);
+      out = alu(OP_ROW, a, bus_data, f);
       out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
@@ -372,7 +380,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     if (ALU_A_HL) {
       AluOut out = {0};
-      out = alu(OP_ROW, a, lo, f);
+      out = alu(OP_ROW, a, bus_data, f);
       out.x = (OP_ROW == 7) ? a : out.x;
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
@@ -441,7 +449,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
     if (LD_SP_HL)    sp = hl;
 
-    // the rest do
     if (LD_HL_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
       bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;

@@ -505,19 +505,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  if (state == Z80_STATE_ARG1) pc++;
-  if (state == Z80_STATE_ARG2) pc++;
-
-  if (state == Z80_STATE_DECODE || state == Z80_STATE_DECODE_CB) {
-    pc++;
-  }
-
-  if (state == Z80_STATE_POP1) pc++;
-
-  if (state == Z80_STATE_ALU_LO && !ALU_A_HL) {
-    pc++;
-  }
-
   if (state_ == Z80_STATE_DECODE) {
     int next_int = -1;
     if (interrupt) {
@@ -568,15 +555,20 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   switch(state_) {
   case Z80_STATE_DECODE:
   case Z80_STATE_DECODE_CB:
-  case Z80_STATE_HALT:
   case Z80_STATE_ARG1:
   case Z80_STATE_ARG2:
+    addr = pc;
+    pc++;
+    break;
+
+  case Z80_STATE_HALT:
     addr = pc;
     break;
 
   case Z80_STATE_POP2:
   case Z80_STATE_POP3:
     addr = sp;
+    sp++;
     break;
 
   case Z80_STATE_MEM_READ1:
@@ -598,9 +590,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-
-  if (state_ == Z80_STATE_POP2) sp++;
-  if (state_ == Z80_STATE_POP3) sp++;
 
   //----------------------------------------
 

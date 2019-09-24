@@ -229,37 +229,31 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_INTERRUPT: break;
 
   case Z80_STATE_ALU_LO: {
+    AluOut out = {0};
+    uint8_t mask = flag_mask[op];
+
     if (MV_R_R) {
       reg_put8(OP_ROW, (uint8_t)reg_fetch8());
     }
     if (ALU_A_R) {
-      AluOut out = {0};
       out = alu(OP_ROW, a, reg_fetch8(), f);
       out.x = (OP_ROW == 7) ? a : out.x;
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
     if (INC_R) {
-      AluOut out = alu(0, reg_fetch8(), 1, 0);
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
+      out = alu(0, reg_fetch8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }
     if (RLU_R) {
-      AluOut out = {0};
       out = rlu(OP_ROW, reg_fetch8(), f);
       if (OP_ROW <= 3) out.f &= ~F_ZERO;
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
     if (DEC_R) {
-      AluOut out = alu(2, reg_fetch8(), 1, 0);
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
+      out = alu(2, reg_fetch8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }
+    f = (f & ~mask) | (out.f & mask);
     break;
   }
   case Z80_STATE_ALU_HI: break;

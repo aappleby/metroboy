@@ -330,13 +330,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       a = (uint8_t)out.x;
     }
 
-    if (LDM_A_HLP) {
-      hl = hl + 1;
-    }
-
-    if (LDM_A_HLM) {
-      hl = hl - 1;
-    }
+    if (LDM_A_HLP) hl = hl + 1;
+    if (LDM_A_HLM) hl = hl - 1;
 
     break;
   }
@@ -378,6 +373,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_DELAY_C:
+    // these three do not use the alu
     if (INC_RR) {
       switch(OP_ROW >> 1) {
       case 0: bc++; break;
@@ -394,6 +390,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       case 3: sp--; break;
       }
     }
+    if (LD_SP_HL)    sp = hl;
+
+    // the rest do
     if (ADD_HL_RR) {
       uint16_t blah = 0;
       switch(OP_ROW >> 1) {
@@ -414,7 +413,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       f = POP_AF ? lo & 0xF0 : (f & ~mask) | (out.f & mask);
       hl = out.x;
     }
-    if (LD_SP_HL)    sp = hl;
 
     if (LD_HL_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
@@ -516,6 +514,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (OP_CB_HL)    { addr = hl; }
     break;
   }
+
+  if (state_ == Z80_STATE_PUSH1) sp--;
+  if (state_ == Z80_STATE_PUSH2) sp--;
 }
 
 
@@ -569,6 +570,8 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // set up write
 
+  if (OP_CB_HL) { data_out = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
+
   if (state_ == Z80_STATE_MEM_WRITE1) {
     if      (STM_BC_A)       { addr = bc;          data_out = a; }
     else if (STM_DE_A)       { addr = de;          data_out = a; }
@@ -582,7 +585,7 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (STM_A16_SP)     { addr = temp;        data_out = (uint8_t)sp; }
     else if (INC_AT_HL)      { addr = hl;          data_out = lo + 1; }
     else if (DEC_AT_HL)      { addr = hl;          data_out = lo - 1; }
-    else if (OP_CB_HL)       { addr = hl;          data_out = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
+    else if (OP_CB_HL)       { addr = hl;          data_out = data_out; }
   }
 
   if (state_ == Z80_STATE_MEM_WRITE2) {
@@ -591,7 +594,6 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   if (state_ == Z80_STATE_PUSH1) {
-    sp--;
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
@@ -608,7 +610,6 @@ void Z80::tock_t2(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   if (state_ == Z80_STATE_PUSH2) {
-    sp--;
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp);
     if (PUSH_RR) {

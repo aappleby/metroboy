@@ -334,11 +334,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
 
   case Z80_STATE_PUSH_DELAY:
-    sp--;
     break;
 
   case Z80_STATE_PUSH1:
-    sp--;
     // Gameboy weirdness - the "real" interrupt vector is determined by the
     // state of imask/intf after pushing the first byte of PC onto the stack.
     imask_latch = imask_;
@@ -423,9 +421,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
 
   case Z80_STATE_MEM_WRITE1: {
-    if (STM_HLP_A)    hl = hl + 1;
-    if (STM_HLM_A)    hl = hl - 1;
-   
     if (OP_CB_HL) {
       AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
       uint8_t mask = cb_flag_mask[CB_QUAD];
@@ -554,7 +549,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_ARG1:
   case Z80_STATE_ARG2:
     addr = pc;
-    pc++;
+    pc = addr + 1; // this is the only pc increment
     break;
 
   case Z80_STATE_HALT:
@@ -564,7 +559,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_POP2:
   case Z80_STATE_POP3:
     addr = sp;
-    sp++;
+    sp = addr + 1;
     break;
 
   case Z80_STATE_MEM_READ1:
@@ -633,8 +628,8 @@ void Z80::tock_t2() {
   if (state_ == Z80_STATE_MEM_WRITE1) {
     if      (STM_BC_A)       { addr = bc;          data_out = a; }
     else if (STM_DE_A)       { addr = de;          data_out = a; }
-    else if (STM_HLP_A)      { addr = hl;          data_out = a; }
-    else if (STM_HLM_A)      { addr = hl;          data_out = a; }
+    else if (STM_HLP_A)      { addr = hl;          data_out = a; hl++; }
+    else if (STM_HLM_A)      { addr = hl;          data_out = a; hl--; }
     else if (STM_HL_D8)      { addr = hl;          data_out = lo; }
     else if (STM_HL_R)       { addr = hl;          data_out = reg_fetch8(); }
     else if (STM_A16_A)      { addr = temp;        data_out = a; }
@@ -650,6 +645,7 @@ void Z80::tock_t2() {
     data_out = (uint8_t)(sp >> 8);
   }
   else if (state_ == Z80_STATE_PUSH1) {
+    sp--;
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp >> 8);
     else if (PUSH_RR) {
@@ -665,6 +661,7 @@ void Z80::tock_t2() {
     else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
   }
   else if (state_ == Z80_STATE_PUSH2) {
+    sp--;
     addr = sp;
     if      (interrupt)  data_out = (uint8_t)(temp);
     if (PUSH_RR) {

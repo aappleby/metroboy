@@ -118,7 +118,7 @@ private:
   uint8_t  reg_fetch8() const;
   void     reg_put8(int mux, uint8_t reg);
   
-  Z80State first_state(uint8_t op);
+  Z80State first_state();
   Z80State next_state();
 };
 

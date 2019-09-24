@@ -139,13 +139,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 // TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0
 
 
-CpuBus Z80::tick_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
-  (void)imask;
-  (void)intf;
-  (void)bus_data;
-
-  //----------------------------------------
-  // set up write
+CpuBus Z80::tick_t0() const {
 
   CpuBus bus;
 

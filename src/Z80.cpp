@@ -307,6 +307,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       a = (uint8_t)out.x;
     }
 
+    if (LDM_A_HLP) {
+      hl = hl + 1;
+    }
+
+    if (LDM_A_HLM) {
+      hl = hl - 1;
+    }
+
     break;
   }
 
@@ -372,6 +380,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
     }
 
+    if (ADD_SP_R8) {
+      bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
+
+      sp = sp + (int8_t)lo;
+      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+    }
+
     break;
   }
 
@@ -403,27 +419,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
 
 
-    if (ADD_SP_R8) {
-      bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
-
-      sp = sp + (int8_t)lo;
-      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-    }
-
     if (OP_CB_R || OP_CB_HL) {
       AluOut out = cb(CB_QUAD, CB_ROW, reg_fetch8(), f);
       uint8_t mask = cb_flag_mask[CB_QUAD];
       f = (f & ~mask) | (out.f & mask);
       reg_put8(CB_COL, (uint8_t)out.x);
-    }
-
-    if (LDM_A_HLP) {
-      hl = hl + 1;
-    }
-
-    if (LDM_A_HLM) {
-      hl = hl - 1;
     }
   }
 

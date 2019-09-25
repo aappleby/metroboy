@@ -232,7 +232,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
   case Z80_STATE_HALT1: break;
-  case Z80_STATE_INTERRUPT: break;
+  case Z80_STATE_INT1: break;
 
   //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
 
@@ -563,7 +563,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_ALU_LO:
     if (ALU_A_HL) {
-      if (state != Z80_STATE_MEM_READ0) printf("x");
       addr = hl;
     }
     break;
@@ -702,7 +701,8 @@ void Z80::tock_t2() {
 //-----------------------------------------------------------------------------
 
 Z80State Z80::first_state() {
-  
+  //if (interrupt)   return Z80_STATE_INT0;
+
   if (PREFIX_CB)   return Z80_STATE_CB0;
 
 
@@ -770,7 +770,7 @@ Z80State Z80::next_state() {
 
   switch (state) {
   case Z80_STATE_DECODE: {
-    if      (interrupt)     next = Z80_STATE_INTERRUPT;
+    if      (interrupt)     next = Z80_STATE_INT1;
     else if (NOP)           next = Z80_STATE_DECODE;
     else if (DI)            next = Z80_STATE_DECODE;
     else if (EI)            next = Z80_STATE_DECODE;
@@ -793,7 +793,11 @@ Z80State Z80::next_state() {
 
   //----------
 
-  case Z80_STATE_INTERRUPT:
+  case Z80_STATE_INT0:
+    next = Z80_STATE_INT1;
+    break;
+
+  case Z80_STATE_INT1:
     next = Z80_STATE_PUSH0;
     break;
 

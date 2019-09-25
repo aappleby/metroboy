@@ -354,10 +354,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_PUSHN: break;
   case Z80_STATE_PUSH0: break;
-  case Z80_STATE_PUSH1: imask_latch = imask_; break;
+  case Z80_STATE_PUSH1:
+    imask_latch = imask_;
+    break;
   case Z80_STATE_PUSH2: 
     // fixme
-    if (RST_NN) pc = op - 0xC7;
+    if (RST_NN)      pc = op - 0xC7;
+    if (CALL_A16)    pc = temp;
+    if (CALL_CC_A16) pc = temp;
     break;
 
   //----------
@@ -518,9 +522,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       ime_delay = false;
     }
     else {
-      if (CALL_A16) pc = temp;
-      if (CALL_CC_A16 && !no_branch) pc = temp;
-
       addr = pc;
 
       // still not sure if this is the right place to increment pc

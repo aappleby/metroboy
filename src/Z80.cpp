@@ -560,9 +560,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_ALU_LO:
-    if (ALU_A_HL) {
-      addr = hl;
-    }
+    if (ALU_A_HL) addr = hl;
     break;
   }
 
@@ -618,7 +616,8 @@ void Z80::tock_t2() {
   //----------------------------------------
   // set up addr/data_out for write
 
-  if (state_ == Z80_STATE_MEM_WRITE1) {
+  switch (state_) {
+  case Z80_STATE_MEM_WRITE1: {
     if      (STM_BC_A)       { addr = bc;          data_out = a; }
     else if (STM_DE_A)       { addr = de;          data_out = a; }
     else if (STM_HLP_A)      { addr = hl;          data_out = a; hl++; }
@@ -632,12 +631,16 @@ void Z80::tock_t2() {
     else if (INC_AT_HL)      { addr = hl;          data_out = data_out; }
     else if (DEC_AT_HL)      { addr = hl;          data_out = data_out; }
     else if (OP_CB_HL)       { addr = hl;          data_out = data_out; }
+    break;
   }
-  else if (state_ == Z80_STATE_MEM_WRITE2) {
+
+  case Z80_STATE_MEM_WRITE2: {
     addr = temp + 1;
     data_out = (uint8_t)(sp >> 8);
+    break;
   }
-  else if (state_ == Z80_STATE_PUSH1) {
+
+  case Z80_STATE_PUSH1: {
     sp--;
     addr = sp;
     if (PUSH_RR) {
@@ -651,8 +654,10 @@ void Z80::tock_t2() {
     else if (CALL_A16)    data_out = (uint8_t)(pc >> 8);
     else if (CALL_CC_A16) data_out = (uint8_t)(pc >> 8);
     else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
+    break;
   }
-  else if (state_ == Z80_STATE_PUSH2) {
+
+  case Z80_STATE_PUSH2: {
     sp--;
     addr = sp;
     if (PUSH_RR) {
@@ -666,16 +671,22 @@ void Z80::tock_t2() {
     if (CALL_A16)    data_out = (uint8_t)(pc);
     if (CALL_CC_A16) data_out = (uint8_t)(pc);
     if (RST_NN)      data_out = (uint8_t)(pc);
+    break;
   }
-  else if (state_ == Z80_STATE_INT3) {
+
+  case Z80_STATE_INT3: {
     sp--;
     addr = sp;
     data_out = (uint8_t)(pc >> 8);
+    break;
   }
-  else if (state_ == Z80_STATE_INT4) {
+
+  case Z80_STATE_INT4: {
     sp--;
     addr = sp;
     data_out = (uint8_t)(pc >> 0);
+    break;
+  }
   }
 
   //----------------------------------------

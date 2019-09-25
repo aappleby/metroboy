@@ -66,6 +66,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
+  //load("tetris");
 
   load("cpu_instrs");
   //load("02-interrupts");

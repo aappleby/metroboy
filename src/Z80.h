@@ -24,6 +24,7 @@ enum Z80State {
   Z80_STATE_PUSH1,
   Z80_STATE_PUSH2,
 
+  Z80_STATE_POPN,
   Z80_STATE_POP0,
   Z80_STATE_POP1,
   Z80_STATE_POP2,
@@ -40,6 +41,8 @@ enum Z80State {
   Z80_STATE_MEM_WRITE2,
 
   Z80_STATE_DELAY_C,
+
+  Z80_STATE_INVALID
 };
 
 //-----------------------------------------------------------------------------

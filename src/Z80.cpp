@@ -415,6 +415,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (LDM_A_C)   reg_put8(7,      bus_data);
     if (LDM_A_A16) reg_put8(7,      bus_data);
     if (LDM_R_HL)  reg_put8(OP_ROW, bus_data);
+
+
+    if (OP_CB_HL)  data_out = (uint8_t)cb(CB_QUAD, CB_ROW, bus_data, f).x;
+    if (INC_AT_HL) data_out = bus_data + 1;
+    if (DEC_AT_HL) data_out = bus_data - 1;
     break;
   }
 
@@ -552,10 +557,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     pc = addr + 1; // this is the only pc increment
     break;
 
-  case Z80_STATE_HALT:
-    addr = pc;
-    break;
-
   case Z80_STATE_POP2:
   case Z80_STATE_POP3:
     addr = sp;
@@ -568,6 +569,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LDM_A_C)     { addr = 0xFF00 | c; }
     else if (LDM_A_BC)    { addr = bc; }
     else if (LDM_A_DE)    { addr = de; }
+
     else if (LDM_R_HL)    { addr = hl; }
     else if (LDM_A_HLP)   { addr = hl; hl++; }
     else if (LDM_A_HLM)   { addr = hl; hl--; }
@@ -576,17 +578,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (OP_CB_HL)    { addr = hl; }
     break;
 
+  case Z80_STATE_FETCH_HL:
+    addr = hl;
+    break;
+
   case Z80_STATE_ALU_LO:
     if (ALU_A_HL)         { addr = hl; }
     break;
   }
-
-
-  //----------------------------------------
-
-  if (OP_CB_HL)  { data_out = (uint8_t)cb(CB_QUAD, CB_ROW, reg_fetch8(), f).x; }
-  if (INC_AT_HL) { data_out = lo + 1; }
-  if (DEC_AT_HL) { data_out = lo - 1; }
 }
 
 

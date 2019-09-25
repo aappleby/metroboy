@@ -566,7 +566,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_ARG2:
     if (state != Z80_STATE_ARG1) {
-      //printf("fail1");
+      printf("fail1");
     }
     addr = pc;
     pc = addr + 1; // this is the only pc increment
@@ -574,7 +574,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_ARG3:
     if (state != Z80_STATE_ARG2) {
-      //printf("fail2");
+      printf("fail2");
     }
     addr = pc;
     pc = addr + 1; // this is the only pc increment

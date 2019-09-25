@@ -752,6 +752,13 @@ Z80State Z80::first_state() {
   if (LDM_A_DE)    return Z80_STATE_MEM_READ0;
   if (LDM_A_C)     return Z80_STATE_MEM_READ0;
 
+  if (STM_HL_R)    return Z80_STATE_MEM_WRITE0;
+  if (STM_HLP_A)   return Z80_STATE_MEM_WRITE0;
+  if (STM_HLM_A)   return Z80_STATE_MEM_WRITE0;
+  if (STM_C_A)     return Z80_STATE_MEM_WRITE0;
+  if (STM_BC_A)    return Z80_STATE_MEM_WRITE0;
+  if (STM_DE_A)    return Z80_STATE_MEM_WRITE0;
+
   return Z80_STATE_DECODE;
 }
 
@@ -768,12 +775,6 @@ Z80State Z80::next_state() {
     else if (EI)            next = Z80_STATE_DECODE;
     else if (JP_HL)         next = Z80_STATE_DECODE;
     else if (HALT)          next = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT;
-    else if (STM_HL_R)      next = Z80_STATE_MEM_WRITE1;
-    else if (STM_HLP_A)     next = Z80_STATE_MEM_WRITE1;
-    else if (STM_HLM_A)     next = Z80_STATE_MEM_WRITE1;
-    else if (STM_C_A)       next = Z80_STATE_MEM_WRITE1;
-    else if (STM_BC_A)      next = Z80_STATE_MEM_WRITE1;
-    else if (STM_DE_A)      next = Z80_STATE_MEM_WRITE1;
 
     else if (ALU_A_HL)      next = Z80_STATE_ALU_LO;
 

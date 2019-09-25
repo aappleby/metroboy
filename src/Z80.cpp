@@ -760,8 +760,7 @@ Z80State Z80::next_state() const {
 
   // TODO - get rid of these
   case Z80_STATE_DECODE:
-    if      (interrupt)      return Z80_STATE_INT1;
-    else if (NOP)            return Z80_STATE_DECODE;
+    if      (NOP)            return Z80_STATE_DECODE;
     else if (DI)             return Z80_STATE_DECODE;
     else if (EI)             return Z80_STATE_DECODE;
     else if (JP_HL)          return Z80_STATE_DECODE;

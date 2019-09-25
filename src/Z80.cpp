@@ -730,10 +730,10 @@ Z80State Z80::first_state() {
   // ret_cc has an extra delay cycle before pop
 
   if (LD_R_D8)     return Z80_STATE_ARG0;
+  if (LDM_A_A8)    return Z80_STATE_ARG0;
   if (STM_HL_D8)   return Z80_STATE_ARG0;
   if (JR_CC_R8)    return Z80_STATE_ARG0;
   if (JR_R8)       return Z80_STATE_ARG0;
-  if (LDM_A_A8)    return Z80_STATE_ARG0;
   if (LD_HL_SP_R8) return Z80_STATE_ARG0;
   if (STM_A8_A)    return Z80_STATE_ARG0;
   if (ALU_A_D8)    return Z80_STATE_ARG0;
@@ -743,8 +743,10 @@ Z80State Z80::first_state() {
   if (LD_RR_D16)   return Z80_STATE_ARG0;
   if (STM_A16_A)   return Z80_STATE_ARG0;
   if (STM_A16_SP)  return Z80_STATE_ARG0;
+  
   if (JP_A16)      return Z80_STATE_ARG0;
   if (JP_CC_A16)   return Z80_STATE_ARG0;
+
   if (CALL_A16)    return Z80_STATE_ARG0;
   if (CALL_CC_A16) return Z80_STATE_ARG0;
 
@@ -788,7 +790,6 @@ Z80State Z80::next_state() {
 
     else if (INC_RR)        next = Z80_STATE_DELAY_C;
     else if (DEC_RR)        next = Z80_STATE_DELAY_C;
-    else if (ADD_HL_RR)     next = Z80_STATE_DELAY_C;
     else if (LD_SP_HL)      next = Z80_STATE_DELAY_C;
 
     else if (PUSH_RR)       next = Z80_STATE_PUSH0;
@@ -892,7 +893,7 @@ Z80State Z80::next_state() {
     if      (LDM_A_A8)      next = Z80_STATE_MEM_READ1;
     else if (STM_HL_D8)     next = Z80_STATE_MEM_WRITE1;
     else if (STM_A8_A)      next = Z80_STATE_MEM_WRITE1;
-    else if (ADD_SP_R8)     next = Z80_STATE_DELAY_B;
+    else if (ADD_SP_R8)     next = Z80_STATE_ALU_HI;
     else if (LD_HL_SP_R8)   next = Z80_STATE_ALU_HI;
     else if (JR_R8)         next = Z80_STATE_DELAY_C;
     else if (JR_CC_R8)      next = Z80_STATE_DELAY_C;

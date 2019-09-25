@@ -169,6 +169,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DECODE:    op = bus_data; break;
   case Z80_STATE_CB1:       op_cb = bus_data; break;
   
+  case Z80_STATE_INT3:      lo = bus_data; break;
+  case Z80_STATE_INT4:      hi = bus_data; break;
+
   case Z80_STATE_POP1:      lo = bus_data; break;
   case Z80_STATE_POP2:      hi = bus_data; break;
 
@@ -205,7 +208,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     interrupt = (imask_ & intf_) && ime;
 
-    if (interrupt) op = 0x00;
+    if (interrupt) {
+      op = 0x00;
+    }
     state = first_state();
   }
 
@@ -218,6 +223,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DECODE:
     break;
 
+  case Z80_STATE_CB0: break;
   case Z80_STATE_CB1: {
     if (OP_CB_R) {
       AluOut out = cb(CB_QUAD, CB_ROW, reg_get8(), f);
@@ -227,8 +233,15 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
     break;
   }
+
+  case Z80_STATE_HALT0: break;
   case Z80_STATE_HALT1: break;
+
+  case Z80_STATE_INT0: break;
   case Z80_STATE_INT1: break;
+  case Z80_STATE_INT2: break;
+  case Z80_STATE_INT3: break;
+  case Z80_STATE_INT4: break;
 
   //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
 
@@ -337,21 +350,16 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
 
+  // Gameboy weirdness - the "real" interrupt vector is determined by the
+  // state of imask/intf after pushing the first byte of PC onto the stack.
 
-  case Z80_STATE_PUSH0:
-    break;
-
-  case Z80_STATE_PUSH1:
-    // Gameboy weirdness - the "real" interrupt vector is determined by the
-    // state of imask/intf after pushing the first byte of PC onto the stack.
-    imask_latch = imask_;
-    break;
+  case Z80_STATE_PUSH0: break;
+  case Z80_STATE_PUSH1: imask_latch = imask_; break;
   case Z80_STATE_PUSH2: break;
 
   //----------------------------------------
 
-  case Z80_STATE_POP0:
-    break;
+  case Z80_STATE_POP0: break;
 
   case Z80_STATE_POP1:
     if (POP_RR) {
@@ -377,8 +385,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  case Z80_STATE_ARG0:
-    break;
+  case Z80_STATE_ARG0: break;
 
   case Z80_STATE_ARG1:
     if (LD_R_D8) {
@@ -493,7 +500,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-  //----------------------------------------
+  //--------------------------------------------------------------------------------
 
   if (state_ == Z80_STATE_DECODE) {
     int next_int = -1;
@@ -539,7 +546,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
   }
 
-  //----------------------------------------
+  //--------------------------------------------------------------------------------
   // Set up read
 
   switch(state_) {
@@ -667,6 +674,16 @@ void Z80::tock_t2() {
     if (CALL_CC_A16) data_out = (uint8_t)(pc);
     if (RST_NN)      data_out = (uint8_t)(pc);
   }
+  else if (state_ == Z80_STATE_INT3) {
+    sp--;
+    addr = sp;
+    data_out = (uint8_t)(pc >> 8);
+  }
+  else if (state_ == Z80_STATE_INT4) {
+    sp--;
+    addr = sp;
+    data_out = (uint8_t)(pc >> 0);
+  }
 
   //----------------------------------------
 
@@ -790,7 +807,7 @@ Z80State Z80::next_state() {
   //----------
 
   case Z80_STATE_INT0: next = Z80_STATE_INT1; break;
-  case Z80_STATE_INT1: next = Z80_STATE_PUSH0; break;
+  case Z80_STATE_INT1: next = Z80_STATE_INT2; break;
   case Z80_STATE_INT2: next = Z80_STATE_INT3; break;
   case Z80_STATE_INT3: next = Z80_STATE_INT4; break;
   case Z80_STATE_INT4: next = Z80_STATE_DECODE; break;

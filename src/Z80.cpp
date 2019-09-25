@@ -133,8 +133,8 @@
 
 #define INTERRUPT     ((imask_ & intf_) && ime)
 
-Z80State _first_state(uint8_t op);
-Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool no_halt, bool unhalt);
+Z80State first_state(uint8_t op);
+Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool no_halt, bool unhalt);
 AluOut alu_cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
 AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f);
 AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f);
@@ -251,11 +251,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       state = Z80_STATE_INT0;
     }
     else {
-      state = _first_state(op);
+      state = first_state(op);
     }
   }
 
-  state_ = _next_state(state, op, cb, no_branch, no_halt, unhalt);
+  state_ = next_state(state, op, cb, no_branch, no_halt, unhalt);
 
   //----------------------------------------
   // Do the meat of executing the instruction
@@ -454,6 +454,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_MEM_WRITE0: break;
   case Z80_STATE_MEM_WRITE1: break;
   case Z80_STATE_MEM_WRITE2: break;
+
+  //----------
+
+  case Z80_STATE_SET_PC0: break;
+  case Z80_STATE_SET_PC1:
+    break;
 
   //----------
   // move this elsewhere?
@@ -692,7 +698,7 @@ void Z80::set_flag(uint8_t f_) {
 
 //-----------------------------------------------------------------------------
 
-Z80State _first_state(uint8_t op) {
+Z80State first_state(uint8_t op) {
   if (PREFIX_CB)   return Z80_STATE_CB0;
 
   if (HALT)        return Z80_STATE_HALT0;
@@ -755,7 +761,7 @@ Z80State _first_state(uint8_t op) {
 
 //-----------------------------------------------------------------------------
 
-Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool no_halt, bool unhalt) {
+Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool no_halt, bool unhalt) {
   switch (state) {
 
   // TODO - get rid of these
@@ -807,9 +813,9 @@ Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, boo
 
   case Z80_STATE_POP2:
     if      (POP_RR)         return Z80_STATE_DECODE;
-    else if (RET)            return Z80_STATE_DELAY_C;
-    else if (RETI)           return Z80_STATE_DELAY_C;
-    else if (RET_CC)         return Z80_STATE_DELAY_C;
+    else if (RET)            return Z80_STATE_SET_PC1;
+    else if (RETI)           return Z80_STATE_SET_PC1;
+    else if (RET_CC)         return Z80_STATE_SET_PC1;
     break;
 
   //----------
@@ -822,8 +828,8 @@ Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, boo
     else if (STM_A8_A)       return Z80_STATE_MEM_WRITE1;
     else if (ADD_SP_R8)      return Z80_STATE_ALU_HI;
     else if (LD_HL_SP_R8)    return Z80_STATE_ALU_HI;
-    else if (JR_R8)          return Z80_STATE_DELAY_C;
-    else if (JR_CC_R8)       return no_branch ? Z80_STATE_DECODE : Z80_STATE_DELAY_C;
+    else if (JR_R8)          return Z80_STATE_SET_PC1;
+    else if (JR_CC_R8)       return no_branch ? Z80_STATE_DECODE : Z80_STATE_SET_PC1;
     else if (LD_R_D8)        return Z80_STATE_DECODE;
     else if (ALU_A_D8)       return Z80_STATE_DECODE;
     else                     return Z80_STATE_ARG2;
@@ -834,9 +840,9 @@ Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, boo
     else if (STM_A16_A)      return Z80_STATE_MEM_WRITE1;
     else if (STM_A16_SP)     return Z80_STATE_MEM_WRITE1;
     else if (CALL_A16)       return Z80_STATE_PUSH0;
-    else if (JP_A16)         return Z80_STATE_DELAY_C;
+    else if (JP_A16)         return Z80_STATE_SET_PC1;
     else if (LD_RR_D16)      return Z80_STATE_DECODE;
-    else if (JP_CC_A16)      return no_branch ? Z80_STATE_DECODE : Z80_STATE_DELAY_C;
+    else if (JP_CC_A16)      return no_branch ? Z80_STATE_DECODE : Z80_STATE_SET_PC1;
     else if (CALL_CC_A16)    return no_branch ? Z80_STATE_DECODE : Z80_STATE_PUSH0;
     else                     return Z80_STATE_DECODE;
     break;
@@ -865,6 +871,10 @@ Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, boo
   case Z80_STATE_MEM_WRITE2: return Z80_STATE_DECODE;
 
   //----------
+
+  case Z80_STATE_SET_PC0:    return Z80_STATE_SET_PC1;
+  case Z80_STATE_SET_PC1:    return Z80_STATE_DECODE;
+
   // get rid of this state
   case Z80_STATE_DELAY_C:    return Z80_STATE_DECODE;
   }

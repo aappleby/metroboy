@@ -59,7 +59,6 @@
 #define DEC_R         (OP_QUAD == 0 && OP_COL == 5 && OP_ROW != 6)
 
 #define LD_R_D8       (OP_QUAD == 0 && OP_COL == 6 && OP_ROW != 6)
-#define LD_HL_D8      (op == 0x36)
 #define RLU_R         (OP_QUAD == 0 && OP_COL == 7)
 
 #define LDM_R_HL      (OP_QUAD == 1 && OP_COL == 6 && !HALT)
@@ -377,9 +376,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (LD_R_D8) {
       reg_put8(OP_ROW, bus_data);
     }
-    if (LD_HL_D8) {
-      data_out = bus_data;
-    }
 
     if (ALU_A_D8) {
       AluOut out = {0};
@@ -427,7 +423,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       AluOut out = alu(0, bus_data, 1, 0);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
-      reg_put8(OP_ROW, (uint8_t)out.x);
     }
 
 
@@ -771,7 +766,7 @@ Z80State Z80::next_state() {
     else if (POP_RR)        next = Z80_STATE_POP2;
 
     else if (LD_R_D8)       next = Z80_STATE_ARG1;
-    else if (LD_HL_D8)      next = Z80_STATE_ARG1;
+    else if (STM_HL_D8)     next = Z80_STATE_ARG1;
     else if (JR_CC_R8)      next = Z80_STATE_ARG1;
     else if (JR_R8)         next = Z80_STATE_ARG1;
     else if (LDM_A_A8)      next = Z80_STATE_ARG1;
@@ -845,7 +840,6 @@ Z80State Z80::next_state() {
     else if (JR_R8)         next = Z80_STATE_DELAY_C;
     else if (JR_CC_R8)      next = Z80_STATE_DELAY_C;
     else if (LD_R_D8)       next = Z80_STATE_DECODE;
-    else if (LD_HL_D8)      next = Z80_STATE_DECODE; // wait what
     else if (ALU_A_D8)      next = Z80_STATE_DECODE;
 
     if (JR_CC_R8 && no_branch) next = Z80_STATE_DECODE;

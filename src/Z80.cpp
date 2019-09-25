@@ -47,6 +47,10 @@
 #define HALT          (op == 0x76)
 #define LD_SP_HL      (op == 0xF9)
 
+#define LD_BC_D16     (op == 0x01)
+#define LD_DE_D16     (op == 0x11)
+#define LD_HL_D16     (op == 0x21)
+#define LD_SP_D16     (op == 0x31)
 #define LD_RR_D16     ((op & 0b11001111) == 0b00000001)
 
 #define ADD_HL_BC     (op == 0x09)
@@ -406,14 +410,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_POP2:
-    if (POP_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: b = bus_data; break;
-      case 1: d = bus_data; break;
-      case 2: h = bus_data; break;
-      case 3: a = bus_data; break;
-      }
-    }
+    if (POP_BC) b = bus_data;
+    if (POP_DE) d = bus_data;
+    if (POP_HL) h = bus_data;
+    if (POP_AF) a = bus_data;
     break;
 
   //----------------------------------------
@@ -434,14 +434,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       a = (uint8_t)out.x;
     }
 
-    if (LD_RR_D16) {
-      switch(OP_ROW >> 1) {
-      case 0: c = bus_data; break;
-      case 1: e = bus_data; break;
-      case 2: l = bus_data; break;
-      case 3: p = bus_data; break;
-      }
-    }
+    if (LD_BC_D16) c = bus_data;
+    if (LD_DE_D16) e = bus_data;
+    if (LD_HL_D16) l = bus_data;
+    if (LD_SP_D16) p = bus_data;
 
     if (ADD_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
@@ -454,14 +450,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_ARG2:
-    if (LD_RR_D16) {
-      switch(OP_ROW >> 1) {
-      case 0: b = bus_data; break;
-      case 1: d = bus_data; break;
-      case 2: h = bus_data; break;
-      case 3: s = bus_data; break;
-      }
-    }
+    if (LD_BC_D16) b = bus_data;
+    if (LD_DE_D16) d = bus_data;
+    if (LD_HL_D16) h = bus_data;
+    if (LD_SP_D16) s = bus_data;
     break;
 
   //----------------------------------------

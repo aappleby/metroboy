@@ -205,11 +205,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     interrupt = (imask_ & intf_) && ime;
 
-    state = first_state();
 
-    if (interrupt) {
-      op = 0x00;
-    }
+    if (interrupt) op = 0x00;
+    state = first_state();
   }
 
   // reads interrupt, no_branch, no_halt, unhalt

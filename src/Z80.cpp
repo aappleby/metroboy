@@ -562,7 +562,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_ALU_LO:
-    if (ALU_A_HL)         { addr = hl; }
+    if (ALU_A_HL) {
+      if (state != Z80_STATE_MEM_READ0) printf("x");
+      addr = hl;
+    }
     break;
   }
 

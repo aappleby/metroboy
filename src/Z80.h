@@ -10,7 +10,7 @@ enum Z80State {
   Z80_STATE_ALU_LO,
   Z80_STATE_ALU_HI,
 
-  Z80_STATE_PUSH_DELAY,
+  Z80_STATE_PUSH0,
   Z80_STATE_PUSH1,
   Z80_STATE_PUSH2,
 
@@ -22,44 +22,16 @@ enum Z80State {
   Z80_STATE_ARG1,
   Z80_STATE_ARG2,
 
-  Z80_STATE_FETCH_HL,
-
+  Z80_STATE_MEM_READ0,
   Z80_STATE_MEM_READ1,
 
+  Z80_STATE_MEM_WRITE0,
   Z80_STATE_MEM_WRITE1,
   Z80_STATE_MEM_WRITE2,
 
-  Z80_STATE_RET_DELAY,
   Z80_STATE_DELAY_B,
   Z80_STATE_DELAY_C,
 };
-
-/*
-switch (state) {
-case Z80_STATE_DECODE: break;
-case Z80_STATE_DECODE_CB: break;
-case Z80_STATE_HALT: break;
-case Z80_STATE_INTERRUPT: break;
-
-case Z80_STATE_ALU_LO: break;
-case Z80_STATE_ALU_HI: break;
-
-case Z80_STATE_PUSH_DELAY: break;
-case Z80_STATE_PUSH1: break;
-case Z80_STATE_PUSH2: break;
-case Z80_STATE_POP1: break;
-case Z80_STATE_POP2: break;
-case Z80_STATE_ARG1: break;
-case Z80_STATE_ARG2: break;
-case Z80_STATE_MEM_READ1: break;
-case Z80_STATE_MEM_WRITE1: break;
-case Z80_STATE_MEM_WRITE2: break;
-case Z80_STATE_RET_DELAY: break;
-case Z80_STATE_DELAY_B: break;
-case Z80_STATE_DELAY_C: break;
-}
-
-*/
 
 //-----------------------------------------------------------------------------
 

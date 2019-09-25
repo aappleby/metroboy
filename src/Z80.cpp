@@ -342,7 +342,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
 
 
-  case Z80_STATE_PUSH_DELAY:
+  case Z80_STATE_PUSH0:
     break;
 
   case Z80_STATE_PUSH1:
@@ -380,6 +380,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   //----------------------------------------
+
+  case Z80_STATE_ARG0:
+    break;
 
   case Z80_STATE_ARG1:
     if (LD_R_D8) {
@@ -427,6 +430,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
+  case Z80_STATE_MEM_READ0:
+    break;
+
   case Z80_STATE_MEM_READ1: {
 
     if (LDM_A_RR)  reg_put8(7,      bus_data);
@@ -462,17 +468,16 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  case Z80_STATE_MEM_WRITE1: {
+  case Z80_STATE_MEM_WRITE0:
     break;
-  }
+
+  case Z80_STATE_MEM_WRITE1:
+    break;
 
   case Z80_STATE_MEM_WRITE2:
     break;
 
   //----------------------------------------
-
-  case Z80_STATE_RET_DELAY:
-    break;
 
   case Z80_STATE_DELAY_B:
     break;
@@ -549,25 +554,15 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // Set up read
 
-  switch(state) {
-  case Z80_STATE_ARG0:
+  switch(state_) {
+  case Z80_STATE_DECODE:
+  case Z80_STATE_DECODE_CB:
     addr = pc;
     pc = addr + 1;
     break;
 
   case Z80_STATE_ARG1:
-    if (LDM_A_A16 || LD_RR_D16 || STM_A16_A || STM_A16_SP || JP_A16 || JP_CC_A16 || CALL_A16 || CALL_CC_A16) {
-      addr = pc;
-      pc = addr + 1;
-    }
-    break;
-  }
-
-  //----------
-
-  switch(state_) {
-  case Z80_STATE_DECODE:
-  case Z80_STATE_DECODE_CB:
+  case Z80_STATE_ARG2:
     addr = pc;
     pc = addr + 1;
     break;
@@ -591,10 +586,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (INC_AT_HL)   { addr = hl; }
     else if (DEC_AT_HL)   { addr = hl; }
     else if (OP_CB_HL)    { addr = hl; }
-    break;
-
-  case Z80_STATE_FETCH_HL:
-    addr = hl;
     break;
 
   case Z80_STATE_ALU_LO:
@@ -731,6 +722,7 @@ Z80State Z80::first_state() {
   if (POP_RR)      return Z80_STATE_POP0;
   if (RET)         return Z80_STATE_POP0;
   if (RETI)        return Z80_STATE_POP0;
+  // ret_cc has an extra delay cycle before pop
 
   if (LD_R_D8)     return Z80_STATE_ARG0;
   if (STM_HL_D8)   return Z80_STATE_ARG0;
@@ -785,8 +777,8 @@ Z80State Z80::next_state() {
 
     else if (ALU_A_HL)      next = Z80_STATE_ALU_LO;
 
-    else if (RET_CC)        next = Z80_STATE_RET_DELAY;
-    else if (RST_NN)        next = Z80_STATE_PUSH_DELAY;
+    else if (RET_CC)        next = Z80_STATE_POP0;
+    else if (RST_NN)        next = Z80_STATE_PUSH0;
 
     else if (INC_RR)        next = Z80_STATE_DELAY_C;
     else if (DEC_RR)        next = Z80_STATE_DELAY_C;
@@ -795,7 +787,7 @@ Z80State Z80::next_state() {
 
     else if (PREFIX_CB)     next = Z80_STATE_DECODE_CB;
 
-    else if (PUSH_RR)       next = Z80_STATE_PUSH_DELAY;
+    else if (PUSH_RR)       next = Z80_STATE_PUSH0;
 
     else {
       printf("?");
@@ -812,8 +804,10 @@ Z80State Z80::next_state() {
     break;
 
   case Z80_STATE_INTERRUPT:
-    next = Z80_STATE_PUSH_DELAY;
+    next = Z80_STATE_PUSH0;
     break;
+
+  //----------
 
   case Z80_STATE_ALU_LO:
     next = Z80_STATE_DECODE;
@@ -824,7 +818,9 @@ Z80State Z80::next_state() {
     next = Z80_STATE_DECODE;
     break;
 
-  case Z80_STATE_PUSH_DELAY:
+  //----------
+
+  case Z80_STATE_PUSH0:
     next = Z80_STATE_PUSH1;
     break;
 
@@ -840,6 +836,9 @@ Z80State Z80::next_state() {
 
   case Z80_STATE_POP0:
     next = Z80_STATE_POP1;
+    if (RET_CC) {
+      next = no_branch ? Z80_STATE_DECODE : Z80_STATE_POP1;
+    }
     break;
 
   case Z80_STATE_POP1:
@@ -867,24 +866,7 @@ Z80State Z80::next_state() {
   //----------
 
   case Z80_STATE_ARG0:
-    if      (LD_R_D8)       next = Z80_STATE_ARG1;
-    else if (STM_HL_D8)     next = Z80_STATE_ARG1;
-    else if (JR_CC_R8)      next = Z80_STATE_ARG1;
-    else if (JR_R8)         next = Z80_STATE_ARG1;
-    else if (LDM_A_A8)      next = Z80_STATE_ARG1;
-    else if (LD_HL_SP_R8)   next = Z80_STATE_ARG1;
-    else if (STM_A8_A)      next = Z80_STATE_ARG1;
-    else if (ALU_A_D8)      next = Z80_STATE_ARG1;
-    else if (ADD_SP_R8)     next = Z80_STATE_ARG1;
-    else if (LDM_A_A16)     next = Z80_STATE_ARG1;
-    else if (LD_RR_D16)     next = Z80_STATE_ARG1;
-    else if (STM_A16_A)     next = Z80_STATE_ARG1;
-    else if (STM_A16_SP)    next = Z80_STATE_ARG1;
-    else if (JP_A16)        next = Z80_STATE_ARG1;
-    else if (JP_CC_A16)     next = Z80_STATE_ARG1;
-    else if (CALL_A16)      next = Z80_STATE_ARG1;
-    else if (CALL_CC_A16)   next = Z80_STATE_ARG1;
-    else printf("?");
+    next = Z80_STATE_ARG1;
     break;
 
   case Z80_STATE_ARG1:
@@ -906,12 +888,18 @@ Z80State Z80::next_state() {
     if      (LDM_A_A16)     next = Z80_STATE_MEM_READ1;
     else if (STM_A16_A)     next = Z80_STATE_MEM_WRITE1;
     else if (STM_A16_SP)    next = Z80_STATE_MEM_WRITE1;
-    else if (CALL_A16)      next = Z80_STATE_PUSH_DELAY;
+    else if (CALL_A16)      next = Z80_STATE_PUSH0;
     else if (JP_A16)        next = Z80_STATE_DELAY_C;
     else if (JP_CC_A16)     next = Z80_STATE_DELAY_C;
     else if (LD_RR_D16)     next = Z80_STATE_DECODE;
-    else if (CALL_CC_A16)   next = Z80_STATE_PUSH_DELAY;
+    else if (CALL_CC_A16)   next = Z80_STATE_PUSH0;
     if (no_branch) next = Z80_STATE_DECODE;
+    break;
+
+  //----------
+
+  case Z80_STATE_MEM_READ0:
+    next = Z80_STATE_MEM_READ1;
     break;
 
   case Z80_STATE_MEM_READ1:
@@ -924,6 +912,12 @@ Z80State Z80::next_state() {
 
     break;
 
+  //----------
+
+  case Z80_STATE_MEM_WRITE0:
+    next = Z80_STATE_MEM_WRITE1;
+    break;
+
   case Z80_STATE_MEM_WRITE1:
     next = STM_A16_SP ? Z80_STATE_MEM_WRITE2 : Z80_STATE_DECODE;
     break;
@@ -932,10 +926,7 @@ Z80State Z80::next_state() {
     next = Z80_STATE_DECODE;
     break;
 
-  case Z80_STATE_RET_DELAY:
-
-    next = no_branch ? Z80_STATE_DECODE : Z80_STATE_POP1;
-    break;
+  //----------
 
   case Z80_STATE_DELAY_B:
     next = Z80_STATE_DELAY_C;

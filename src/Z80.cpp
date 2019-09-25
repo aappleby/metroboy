@@ -302,60 +302,46 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_ALU_LO: {
     if (MV_R_R) {
       reg_put8(OP_ROW, (uint8_t)reg_get8());
+      break;
     }
-    else if (ALU_A_R) {
-      AluOut out = alu(OP_ROW, a, reg_get8(), f);
+
+    AluOut out = {0};
+    if (ALU_A_R) {
+      out = alu(OP_ROW, a, reg_get8(), f);
       out.x = (OP_ROW == 7) ? a : out.x;
       a = (uint8_t)out.x;
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
     }
     else if (INC_R) {
-      AluOut out = adder(reg_get8(), 1, 0);
+      out = adder(reg_get8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
     }
     else if (RLU_R) {
-      AluOut out = rlu(OP_ROW, reg_get8(), f);
+      out = rlu(OP_ROW, reg_get8(), f);
       if (OP_ROW <= 3) out.f &= ~F_ZERO;
       a = (uint8_t)out.x;
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
     }
     else if (DEC_R) {
-      AluOut out = alu(2, reg_get8(), 1, 0);
+      out = alu(2, reg_get8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
     }  
     else if (ALU_A_HL) {
-      AluOut out = alu(OP_ROW, a, bus_data, f);
+      out = alu(OP_ROW, a, bus_data, f);
       out.x = (OP_ROW == 7) ? a : out.x;
       a = (uint8_t)out.x;
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
     }
     else if (ADD_HL_RR) {
-      uint16_t x = 0, y = 0, hc = 0, cr = 0;
-      uint8_t f_, mask;
-
-      x = l;
+      uint8_t x = l;
+      uint8_t y = 0;
       if (ADD_HL_BC) y = c;
       if (ADD_HL_DE) y = e;
       if (ADD_HL_HL) y = l;
       if (ADD_HL_SP) y = p;
 
-      cr = 0;
-      uint16_t zl = (x + y + cr);
-      hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
-      cr = zl >> 8;
-      l = (uint8_t)zl;
-
-      f_ = (hc ? F_HALF_CARRY : 0) | (cr ? F_CARRY : 0);
-      mask = flag_mask[op];
-      f = (f & ~mask) | (f_ & mask);
+      out = adder(x, y, 0);
+      l = (uint8_t)out.x;
     }
+    uint8_t mask = flag_mask[op];
+    f = (f & ~mask) | (out.f & mask);
 
     break;
   }
@@ -1083,6 +1069,7 @@ AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) 
   if (c2)         out.f |= F_HALF_CARRY;
   if (d2 & 0x10)  out.f |= F_CARRY;
   if (out.x == 0) out.f |= F_ZERO;
+  if (op == 7) out.x = x;
   return out;
 }
 

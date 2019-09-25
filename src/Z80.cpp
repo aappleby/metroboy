@@ -549,12 +549,33 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
   // Set up read
 
+  switch(state) {
+  case Z80_STATE_ARG1:
+  case Z80_STATE_ARG2:
+    break;
+  }
+
+  //----------
+
   switch(state_) {
   case Z80_STATE_DECODE:
   case Z80_STATE_DECODE_CB:
+    addr = pc;
+    pc = addr + 1;
+    break;
 
   case Z80_STATE_ARG2:
+    if (state != Z80_STATE_ARG1) {
+      //printf("fail1");
+    }
+    addr = pc;
+    pc = addr + 1; // this is the only pc increment
+    break;
+
   case Z80_STATE_ARG3:
+    if (state != Z80_STATE_ARG2) {
+      //printf("fail2");
+    }
     addr = pc;
     pc = addr + 1; // this is the only pc increment
     break;
@@ -719,7 +740,23 @@ Z80State Z80::first_state() {
     return Z80_STATE_POP1;
   }
 
-  if (LD_R_D8) return Z80_STATE_ARG1;
+  if      (LD_R_D8)     return Z80_STATE_ARG1;
+  else if (STM_HL_D8)   return Z80_STATE_ARG1;
+  else if (JR_CC_R8)    return Z80_STATE_ARG1;
+  else if (JR_R8)       return Z80_STATE_ARG1;
+  else if (LDM_A_A8)    return Z80_STATE_ARG1;
+  else if (LD_HL_SP_R8) return Z80_STATE_ARG1;
+  else if (STM_A8_A)    return Z80_STATE_ARG1;
+  else if (ALU_A_D8)    return Z80_STATE_ARG1;
+  else if (ADD_SP_R8)   return Z80_STATE_ARG1;
+  else if (LDM_A_A16)   return Z80_STATE_ARG1;
+  else if (LD_RR_D16)   return Z80_STATE_ARG1;
+  else if (STM_A16_A)   return Z80_STATE_ARG1;
+  else if (STM_A16_SP)  return Z80_STATE_ARG1;
+  else if (JP_A16)      return Z80_STATE_ARG1;
+  else if (JP_CC_A16)   return Z80_STATE_ARG1;
+  else if (CALL_A16)    return Z80_STATE_ARG1;
+  else if (CALL_CC_A16) return Z80_STATE_ARG1;
 
   return Z80_STATE_DECODE;
 }
@@ -732,6 +769,10 @@ Z80State Z80::next_state() {
   switch (state) {
   case Z80_STATE_DECODE: {
     if      (interrupt)     next = Z80_STATE_INTERRUPT;
+    else if (NOP)           next = Z80_STATE_DECODE;
+    else if (DI)            next = Z80_STATE_DECODE;
+    else if (EI)            next = Z80_STATE_DECODE;
+    else if (JP_HL)         next = Z80_STATE_DECODE;
     else if (HALT)          next = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT;
     else if (STM_HL_R)      next = Z80_STATE_MEM_WRITE1;
     else if (STM_HLP_A)     next = Z80_STATE_MEM_WRITE1;
@@ -749,9 +790,7 @@ Z80State Z80::next_state() {
     else if (LDM_A_DE)      next = Z80_STATE_MEM_READ1;
     else if (LDM_A_C)       next = Z80_STATE_MEM_READ1;
 
-    else if (ALU_A_HL)      {
-      next = Z80_STATE_ALU_LO;
-    }
+    else if (ALU_A_HL)      next = Z80_STATE_ALU_LO;
 
     else if (RET_CC)        next = Z80_STATE_RET_DELAY;
     else if (RST_NN)        next = Z80_STATE_PUSH_DELAY;
@@ -769,23 +808,9 @@ Z80State Z80::next_state() {
     else if (RETI)          next = Z80_STATE_POP2;
     else if (POP_RR)        next = Z80_STATE_POP2;
 
-    else if (LD_R_D8)       next = Z80_STATE_ARG2;
-    else if (STM_HL_D8)     next = Z80_STATE_ARG2;
-    else if (JR_CC_R8)      next = Z80_STATE_ARG2;
-    else if (JR_R8)         next = Z80_STATE_ARG2;
-    else if (LDM_A_A8)      next = Z80_STATE_ARG2;
-    else if (LD_HL_SP_R8)   next = Z80_STATE_ARG2;
-    else if (STM_A8_A)      next = Z80_STATE_ARG2;
-    else if (ALU_A_D8)      next = Z80_STATE_ARG2;
-    else if (ADD_SP_R8)     next = Z80_STATE_ARG2;
-    else if (LDM_A_A16)     next = Z80_STATE_ARG2;
-    else if (LD_RR_D16)     next = Z80_STATE_ARG2;
-    else if (STM_A16_A)     next = Z80_STATE_ARG2;
-    else if (STM_A16_SP)    next = Z80_STATE_ARG2;
-    else if (JP_A16)        next = Z80_STATE_ARG2;
-    else if (JP_CC_A16)     next = Z80_STATE_ARG2;
-    else if (CALL_A16)      next = Z80_STATE_ARG2;
-    else if (CALL_CC_A16)   next = Z80_STATE_ARG2;
+    else {
+      printf("?");
+    }
     break;
   }
 
@@ -835,7 +860,24 @@ Z80State Z80::next_state() {
     break;
 
   case Z80_STATE_ARG1:
-    if (LD_R_D8)            next = Z80_STATE_ARG2;
+    if      (LD_R_D8)       next = Z80_STATE_ARG2;
+    else if (STM_HL_D8)     next = Z80_STATE_ARG2;
+    else if (JR_CC_R8)      next = Z80_STATE_ARG2;
+    else if (JR_R8)         next = Z80_STATE_ARG2;
+    else if (LDM_A_A8)      next = Z80_STATE_ARG2;
+    else if (LD_HL_SP_R8)   next = Z80_STATE_ARG2;
+    else if (STM_A8_A)      next = Z80_STATE_ARG2;
+    else if (ALU_A_D8)      next = Z80_STATE_ARG2;
+    else if (ADD_SP_R8)     next = Z80_STATE_ARG2;
+    else if (LDM_A_A16)     next = Z80_STATE_ARG2;
+    else if (LD_RR_D16)     next = Z80_STATE_ARG2;
+    else if (STM_A16_A)     next = Z80_STATE_ARG2;
+    else if (STM_A16_SP)    next = Z80_STATE_ARG2;
+    else if (JP_A16)        next = Z80_STATE_ARG2;
+    else if (JP_CC_A16)     next = Z80_STATE_ARG2;
+    else if (CALL_A16)      next = Z80_STATE_ARG2;
+    else if (CALL_CC_A16)   next = Z80_STATE_ARG2;
+    else printf("?");
     break;
 
   case Z80_STATE_ARG2:

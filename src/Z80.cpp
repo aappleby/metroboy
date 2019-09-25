@@ -231,7 +231,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
     break;
   }
-  case Z80_STATE_HALT: break;
+  case Z80_STATE_HALT1: break;
   case Z80_STATE_INTERRUPT: break;
 
   //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
@@ -625,7 +625,7 @@ CpuBus Z80::tick_t2() const {
 
 void Z80::tock_t2() {
 
-  if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT) unhalt = 0;
+  if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT1) unhalt = 0;
 
   //----------------------------------------
   // set up addr/data_out for write
@@ -712,6 +712,8 @@ void Z80::tock_t2() {
 
 Z80State Z80::first_state() {
   
+  if (HALT)        return Z80_STATE_HALT0;
+
   if (ALU_A_R)     return Z80_STATE_ALU_LO;
   if (INC_R)       return Z80_STATE_ALU_LO;
   if (DEC_R)       return Z80_STATE_ALU_LO;
@@ -774,7 +776,6 @@ Z80State Z80::next_state() {
     else if (DI)            next = Z80_STATE_DECODE;
     else if (EI)            next = Z80_STATE_DECODE;
     else if (JP_HL)         next = Z80_STATE_DECODE;
-    else if (HALT)          next = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT;
 
     else if (ALU_A_HL)      next = Z80_STATE_ALU_LO;
 
@@ -800,12 +801,18 @@ Z80State Z80::next_state() {
     next = CB_COL == 6 ? Z80_STATE_MEM_READ1 : Z80_STATE_DECODE;
     break;
 
-  case Z80_STATE_HALT:
-    next = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT;
-    break;
-
   case Z80_STATE_INTERRUPT:
     next = Z80_STATE_PUSH0;
+    break;
+
+  //----------
+
+  case Z80_STATE_HALT0:
+    next = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
+    break;
+
+  case Z80_STATE_HALT1:
+    next = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
     break;
 
   //----------

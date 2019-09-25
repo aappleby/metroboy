@@ -394,6 +394,23 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       case 3: p = bus_data; break;
       }
     }
+
+    if (LD_HL_SP_R8) {
+      bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
+
+      hl = sp + (int8_t)lo;
+      f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+    }
+
+    if (ADD_SP_R8) {
+      bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
+
+      sp = sp + (int8_t)lo;
+      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+    }
+
     break;
 
   case Z80_STATE_ARG2:
@@ -478,22 +495,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       }
     }
     if (LD_SP_HL)    sp = hl;
-
-    if (LD_HL_SP_R8) {
-      bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
-
-      hl = sp + (int8_t)lo;
-      f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-    }
-
-    if (ADD_SP_R8) {
-      bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
-
-      sp = sp + (int8_t)lo;
-      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-    }
 
     break;
   }

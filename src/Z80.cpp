@@ -213,10 +213,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   switch(state) {
   case Z80_STATE_DECODE:    op = bus_data; break;
   case Z80_STATE_CB1:       cb = bus_data; break;
-  
   case Z80_STATE_POP1:      lo = bus_data; break;
   case Z80_STATE_POP2:      hi = bus_data; break;
-
   case Z80_STATE_ARG1:      lo = bus_data; break;
   case Z80_STATE_ARG2:      hi = bus_data; break;
   case Z80_STATE_MEM_READ1: lo = bus_data; break;
@@ -285,7 +283,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_INT3: break;
   case Z80_STATE_INT4: break;
 
-  //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
+  //----------
 
   case Z80_STATE_ALU_LO: {
     if (MV_R_R) {
@@ -334,9 +332,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-  //*(*(*(*(*(*(*(*(*(*(*(*(*(*
-
-
   case Z80_STATE_ALU_HI:
 
     if (ADD_HL_RR) {
@@ -361,8 +356,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     break;
 
-  //*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(*(
-
+  //----------
   // Gameboy weirdness - the "real" interrupt vector is determined by the
   // state of imask/intf after pushing the first byte of PC onto the stack.
 
@@ -370,7 +364,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_PUSH1: imask_latch = imask_; break;
   case Z80_STATE_PUSH2: break;
 
-  //----------------------------------------
+  //----------
 
   case Z80_STATE_POP0:
     break;
@@ -389,7 +383,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (POP_AF) a = bus_data;
     break;
 
-  //----------------------------------------
+  //----------
 
   case Z80_STATE_ARG0: break;
 
@@ -426,7 +420,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LD_SP_D16) s = bus_data;
     break;
 
-  //----------------------------------------
+  //----------
 
   case Z80_STATE_MEM_READ0:
     break;
@@ -438,17 +432,19 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LDM_A_C)   reg_put8(7,      bus_data);
     else if (LDM_A_A16) reg_put8(7,      bus_data);
     else if (LDM_R_HL)  reg_put8(OP_ROW, bus_data);
+
+    // this and dec should move to the alu state
     else if (INC_AT_HL) {
       AluOut out = alu(0, bus_data, 1, 0);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
-      data_out = bus_data + 1;
+      data_out = (uint8_t)out.x;
     }
     else if (DEC_AT_HL) {
       AluOut out = alu(2, bus_data, 1, 0);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
-      data_out = bus_data - 1;
+      data_out = (uint8_t)out.x;
     }
     else if (OP_CB_HL) {
       AluOut out = alu_cb(CB_QUAD, CB_ROW, bus_data, f);
@@ -459,34 +455,25 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-  //----------------------------------------
+  //----------
 
   case Z80_STATE_MEM_WRITE0: break;
   case Z80_STATE_MEM_WRITE1: break;
   case Z80_STATE_MEM_WRITE2: break;
 
-  //----------------------------------------
+  //----------
+  // move this elsewhere?
 
   case Z80_STATE_DELAY_C:
-    // these three do not use the alu
-    if (INC_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bc++; break;
-      case 1: de++; break;
-      case 2: hl++; break;
-      case 3: sp++; break;
-      }
-    }
-    else if (DEC_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: bc--; break;
-      case 1: de--; break;
-      case 2: hl--; break;
-      case 3: sp--; break;
-      }
-    }
-    else if (LD_SP_HL)    sp = hl;
-
+    if      (INC_BC)   bc++;
+    else if (INC_DE)   de++;
+    else if (INC_HL)   hl++;
+    else if (INC_SP)   sp++;
+    else if (DEC_BC)   bc--;
+    else if (DEC_DE)   de--;
+    else if (DEC_HL)   hl--;
+    else if (DEC_SP)   sp--;
+    else if (LD_SP_HL) sp = hl;
     break;
   }
 
@@ -515,29 +502,30 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
         pc = 0x0000;
       }
       addr = pc;
+      ime = false;
+      ime_delay = false;
     }
     else {
-      if (!no_branch) {
-        if      (JP_HL)       pc = hl;
-        else if (RST_NN)      pc = op - 0xC7;
-        else if (JR_R8)       pc = pc + (int8_t)lo;
-        else if (JR_CC_R8)    pc = pc + (int8_t)lo;
-        else if (JP_CC_A16)   pc = temp;
-        else if (CALL_CC_A16) pc = temp;
-        else if (RET_CC)      pc = temp;
-        else if (RET)         pc = temp;
-        else if (RETI)        pc = temp;
-        else if (JP_A16)      pc = temp;
-        else if (CALL_A16)    pc = temp;
-      }
+      if      (JP_HL)       pc = hl;
+      else if (JR_R8)       pc = pc + (int8_t)lo;
+      else if (JP_A16)      pc = temp;
+      else if (CALL_A16)    pc = temp;
+      else if (RET)         pc = temp;
+      else if (RETI)        pc = temp;
+      else if (JR_CC_R8)    pc = no_branch ? pc : pc + (int8_t)lo;
+      else if (JP_CC_A16)   pc = no_branch ? pc : temp;
+      else if (CALL_CC_A16) pc = no_branch ? pc : temp;
+      else if (RET_CC)      pc = no_branch ? pc : temp;
+      else if (RST_NN)      pc = op - 0xC7;
+
       addr = pc;
       pc = addr + 1;
+
+      if (RETI)  { ime = true;      ime_delay = true; }
+      if (DI)    { ime = false;     ime_delay = false; }
+      if (EI)    { ime = ime_delay; ime_delay = true; }
     }
 
-    if (interrupt)  { ime = false;     ime_delay = false; }
-    else if (RETI)  { ime = true;      ime_delay = true; }
-    else if (DI)    { ime = false;     ime_delay = false; }
-    else if (EI)    { ime = ime_delay; ime_delay = true; }
     break;
   }
 
@@ -555,11 +543,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_ALU_LO:
+    // this is kinda janky
     if (ALU_A_HL) addr = hl;
     break;
-  }
 
-  if (state_ == Z80_STATE_MEM_READ1) {
+  case Z80_STATE_MEM_READ1:
     if      (LDM_A_A16)   { addr = temp; }
     else if (LDM_A_A8)    { addr = 0xFF00 | lo; }
     else if (LDM_A_C)     { addr = 0xFF00 | c; }
@@ -572,6 +560,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (INC_AT_HL)   { addr = hl; }
     else if (DEC_AT_HL)   { addr = hl; }
     else if (OP_CB_HL)    { addr = hl; }
+    break;
   }
 }
 

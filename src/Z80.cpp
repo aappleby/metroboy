@@ -719,6 +719,8 @@ Z80State Z80::first_state() {
     return Z80_STATE_POP1;
   }
 
+  if (LD_R_D8) return Z80_STATE_ARG1;
+
   return Z80_STATE_DECODE;
 }
 
@@ -830,6 +832,10 @@ Z80State Z80::next_state() {
 
   case Z80_STATE_POP3:
     next = POP_RR ? Z80_STATE_DECODE : Z80_STATE_DELAY_C;
+    break;
+
+  case Z80_STATE_ARG1:
+    if (LD_R_D8)            next = Z80_STATE_ARG2;
     break;
 
   case Z80_STATE_ARG2:

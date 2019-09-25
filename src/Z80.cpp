@@ -691,7 +691,7 @@ void Z80::set_flag(uint8_t f_) {
 
 //-----------------------------------------------------------------------------
 
-Z80State Z80::first_state() const {
+Z80State _first_state(uint8_t op) {
   if (PREFIX_CB)   return Z80_STATE_CB0;
 
   if (HALT)        return Z80_STATE_HALT0;
@@ -752,10 +752,14 @@ Z80State Z80::first_state() const {
   return Z80_STATE_DECODE;
 }
 
+Z80State Z80::first_state() const {
+  return _first_state(op);
+}
+
 //-----------------------------------------------------------------------------
 
 
-Z80State Z80::next_state() const {
+Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool no_halt, bool unhalt) {
   switch (state) {
 
   // TODO - get rid of these
@@ -873,6 +877,9 @@ Z80State Z80::next_state() const {
   return Z80_STATE_INVALID;
 }
 
+Z80State Z80::next_state() const {
+  return _next_state(state, op, cb, no_branch, no_halt, unhalt);
+}
 //-----------------------------------------------------------------------------
 
 uint8_t flag_mask2(uint8_t op, uint8_t cb) {

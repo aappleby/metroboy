@@ -330,12 +330,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       uint8_t f_, mask;
 
       x = l;
-      switch(OP_ROW >> 1) {
-      case 0: y = c; break;
-      case 1: y = e; break;
-      case 2: y = l; break;
-      case 3: y = p; break;
-      }
+      if (ADD_HL_BC) y = c;
+      if (ADD_HL_DE) y = e;
+      if (ADD_HL_HL) y = l;
+      if (ADD_HL_SP) y = p;
 
       cr = 0;
       uint16_t zl = (x + y + cr);
@@ -361,12 +359,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       uint8_t f_, mask;
 
       x = h;
-      switch(OP_ROW >> 1) {
-      case 0: y = b; break;
-      case 1: y = d; break;
-      case 2: y = h; break;
-      case 3: y = s; break;
-      }
+      if (ADD_HL_BC) y = b;
+      if (ADD_HL_DE) y = d;
+      if (ADD_HL_HL) y = h;
+      if (ADD_HL_SP) y = s;
 
       cr = (f & F_CARRY) ? 1 : 0;
       uint16_t zh = (x + y + cr);
@@ -403,14 +399,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_POP0: break;
 
   case Z80_STATE_POP1:
-    if (POP_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: c = bus_data; break;
-      case 1: e = bus_data; break;
-      case 2: l = bus_data; break;
-      case 3: f = bus_data & 0xF0; break;
-      }
-    }
+    if (POP_BC) c = bus_data;
+    if (POP_DE) e = bus_data;
+    if (POP_HL) l = bus_data;
+    if (POP_AF) f = bus_data & 0xF0;
     break;
 
   case Z80_STATE_POP2:

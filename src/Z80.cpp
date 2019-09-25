@@ -522,15 +522,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
     else {
       addr = pc;
-
-      // still not sure if this is the right place to increment pc
-      pc = addr + 1;
-
       if (RETI)  { ime = true;      ime_delay = true; }
       if (DI)    { ime = false;     ime_delay = false; }
       if (EI)    { ime = ime_delay; ime_delay = true; }
     }
 
+    // still not sure if this is the right place to increment pc
+    pc = addr + 1;
     break;
   }
 

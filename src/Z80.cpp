@@ -205,7 +205,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     interrupt = (imask_ & intf_) && ime;
 
-
     if (interrupt) op = 0x00;
     state = first_state();
   }
@@ -698,7 +697,7 @@ void Z80::tock_t2() {
 //-----------------------------------------------------------------------------
 
 Z80State Z80::first_state() {
-  //if (interrupt)   return Z80_STATE_INT0;
+  if (interrupt)   return Z80_STATE_INT0;
 
   if (PREFIX_CB)   return Z80_STATE_CB0;
 
@@ -790,13 +789,11 @@ Z80State Z80::next_state() {
 
   //----------
 
-  case Z80_STATE_INT0:
-    next = Z80_STATE_INT1;
-    break;
-
-  case Z80_STATE_INT1:
-    next = Z80_STATE_PUSH0;
-    break;
+  case Z80_STATE_INT0: next = Z80_STATE_INT1; break;
+  case Z80_STATE_INT1: next = Z80_STATE_PUSH0; break;
+  case Z80_STATE_INT2: next = Z80_STATE_INT3; break;
+  case Z80_STATE_INT3: next = Z80_STATE_INT4; break;
+  case Z80_STATE_INT4: next = Z80_STATE_DECODE; break;
 
   //----------
 

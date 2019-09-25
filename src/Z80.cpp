@@ -294,42 +294,40 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (MV_R_R) {
       reg_put8(OP_ROW, (uint8_t)reg_get8());
     }
-    if (ALU_A_R) {
+    else if (ALU_A_R) {
       AluOut out = alu(OP_ROW, a, reg_get8(), f);
       out.x = (OP_ROW == 7) ? a : out.x;
       a = (uint8_t)out.x;
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
     }
-    if (INC_R) {
+    else if (INC_R) {
       AluOut out = alu(0, reg_get8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
     }
-    if (RLU_R) {
+    else if (RLU_R) {
       AluOut out = rlu(OP_ROW, reg_get8(), f);
       if (OP_ROW <= 3) out.f &= ~F_ZERO;
       a = (uint8_t)out.x;
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
     }
-    if (DEC_R) {
+    else if (DEC_R) {
       AluOut out = alu(2, reg_get8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
-    }
-   
-    if (ALU_A_HL) {
+    }  
+    else if (ALU_A_HL) {
       AluOut out = alu(OP_ROW, a, bus_data, f);
       out.x = (OP_ROW == 7) ? a : out.x;
       a = (uint8_t)out.x;
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
     }
-
-    if (ADD_HL_RR) {
+    else if (ADD_HL_RR) {
       uint16_t x = 0, y = 0, hc = 0, cr = 0;
       uint8_t f_, mask;
 
@@ -378,8 +376,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       mask = flag_mask[op];
       f = (f & ~mask) | (f_ & mask);
     }
-
-    if (LD_HL_SP_R8) {
+    else if (LD_HL_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
       bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
 
@@ -424,8 +421,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (LD_R_D8) {
       reg_put8(OP_ROW, bus_data);
     }
-
-    if (ALU_A_D8) {
+    else if (ALU_A_D8) {
       AluOut out = {0};
       out = alu(OP_ROW, a, bus_data, f);
       out.x = (OP_ROW == 7) ? a : out.x;
@@ -433,13 +429,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
-
-    if (LD_BC_D16) c = bus_data;
-    if (LD_DE_D16) e = bus_data;
-    if (LD_HL_D16) l = bus_data;
-    if (LD_SP_D16) p = bus_data;
-
-    if (ADD_SP_R8) {
+    else if (LD_BC_D16) c = bus_data;
+    else if (LD_DE_D16) e = bus_data;
+    else if (LD_HL_D16) l = bus_data;
+    else if (LD_SP_D16) p = bus_data;
+    else if (ADD_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
       bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
 
@@ -450,10 +444,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_ARG2:
-    if (LD_BC_D16) b = bus_data;
-    if (LD_DE_D16) d = bus_data;
-    if (LD_HL_D16) h = bus_data;
-    if (LD_SP_D16) s = bus_data;
+    if      (LD_BC_D16) b = bus_data;
+    else if (LD_DE_D16) d = bus_data;
+    else if (LD_HL_D16) h = bus_data;
+    else if (LD_SP_D16) s = bus_data;
     break;
 
   //----------------------------------------
@@ -463,29 +457,24 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_MEM_READ1: {
 
-    if (LDM_A_RR)  reg_put8(7,      bus_data);
-    if (LDM_A_A8)  reg_put8(7,      bus_data);
-    if (LDM_A_C)   reg_put8(7,      bus_data);
-    if (LDM_A_A16) reg_put8(7,      bus_data);
-    if (LDM_R_HL)  reg_put8(OP_ROW, bus_data);
-
-
-    if (INC_AT_HL) {
+    if      (LDM_A_RR)  reg_put8(7,      bus_data);
+    else if (LDM_A_A8)  reg_put8(7,      bus_data);
+    else if (LDM_A_C)   reg_put8(7,      bus_data);
+    else if (LDM_A_A16) reg_put8(7,      bus_data);
+    else if (LDM_R_HL)  reg_put8(OP_ROW, bus_data);
+    else if (INC_AT_HL) {
       AluOut out = alu(0, bus_data, 1, 0);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
       data_out = bus_data + 1;
     }
-
-
-    if (DEC_AT_HL) {
+    else if (DEC_AT_HL) {
       AluOut out = alu(2, bus_data, 1, 0);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
       data_out = bus_data - 1;
     }
-
-    if (OP_CB_HL) {
+    else if (OP_CB_HL) {
       AluOut out = cb(CB_QUAD, CB_ROW, bus_data, f);
       uint8_t mask = cb_flag_mask[CB_QUAD];
       f = (f & ~mask) | (out.f & mask);
@@ -512,7 +501,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       case 3: sp++; break;
       }
     }
-    if (DEC_RR) {
+    else if (DEC_RR) {
       switch(OP_ROW >> 1) {
       case 0: bc--; break;
       case 1: de--; break;
@@ -520,7 +509,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       case 3: sp--; break;
       }
     }
-    if (LD_SP_HL)    sp = hl;
+    else if (LD_SP_HL)    sp = hl;
 
     break;
   }

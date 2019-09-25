@@ -51,10 +51,17 @@
 #define HALT          (op == 0x76)
 #define LD_SP_HL      (op == 0xF9)
 
-#define LD_RR_D16     (QUAD_0 && OP_COL == 1 && !OP_ODD_ROW)
+#define LD_RR_D16     ((op & 0b11001111) == 0b00000001)
+
 #define ADD_HL_RR     (QUAD_0 && OP_COL == 1 &&  OP_ODD_ROW)
 #define LDM_A_RR      (QUAD_0 && OP_COL == 2 &&  OP_ODD_ROW)
-#define INC_RR        (QUAD_0 && OP_COL == 3 && !OP_ODD_ROW)
+
+#define INC_BC        (op == 0b00000011)
+#define INC_DE        (op == 0b00010011)
+#define INC_HL        (op == 0b00100011)
+#define INC_SP        (op == 0b00110011)
+#define INC_RR        ((op & 0b11001111) == 0b00000011)
+
 #define DEC_RR        (QUAD_0 && OP_COL == 3 &&  OP_ODD_ROW)
 
 #define INC_R         (QUAD_0 && OP_COL == 4 && !INC_AT_HL)
@@ -68,9 +75,8 @@
 #define STM_HL_R      (QUAD_1 && OP_ROW == 6 && !HALT)
 #define MV_R_R        (QUAD_1 && OP_COL != 6 && OP_ROW != 6)
 
-#define ALU_A_R       (QUAD_2 && OP_COL != 6)
-
 #define ALU_A_HL      ((op & 0b11000111) == 0b10000110)
+#define ALU_A_R       (QUAD_2 && !ALU_A_HL)
 
 #define JR_NZ_R8      (op == 0b00100000)
 #define JR_Z_R8       (op == 0b00101000)

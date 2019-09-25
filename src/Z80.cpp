@@ -191,8 +191,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     imask_ = imask;
     intf_ = intf;
 
-    state = first_state();
-
     bool cond_fail = false;
 
     switch (OP_ROW & 3) {
@@ -206,6 +204,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     no_halt = ((imask_ & intf_) && !ime);
 
     interrupt = (imask_ & intf_) && ime;
+
+    state = first_state();
+
     if (interrupt) {
       op = 0x00;
       temp = pc;

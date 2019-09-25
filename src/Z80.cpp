@@ -182,11 +182,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   ime = ime_delay;
 
   if (state == Z80_STATE_DECODE) {
-    if (interrupt)  { ime = false;     ime_delay = false; }
-    else if (RETI)  { ime = true;      ime_delay = true; }
-    else if (DI)    { ime = false;     ime_delay = false; }
-    else if (EI)    { ime = ime_delay; ime_delay = true; }
-
     int_ack_ = 0;
     imask_ = imask;
     intf_ = intf;
@@ -207,8 +202,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     if (interrupt) {
       op = 0x00;
+      state = Z80_STATE_INT0;
     }
-    state = first_state();
+    else {
+      state = first_state();
+    }
   }
 
   // reads interrupt, no_branch, no_halt, unhalt
@@ -501,8 +499,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   // Set up read
 
   switch(state_) {
-  case Z80_STATE_DECODE:{
-    if (interrupt) {
+  case Z80_STATE_DECODE: {
+    if (state == Z80_STATE_INT4) {
       // Someone could've changed the interrupt mask or flags while we were
       // handling the interrupt, so we have to compute the new PC at the very
       // last second.
@@ -540,6 +538,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       addr = pc;
       pc = addr + 1;
     }
+
+    if (interrupt)  { ime = false;     ime_delay = false; }
+    else if (RETI)  { ime = true;      ime_delay = true; }
+    else if (DI)    { ime = false;     ime_delay = false; }
+    else if (EI)    { ime = ime_delay; ime_delay = true; }
     break;
   }
 
@@ -637,8 +640,7 @@ void Z80::tock_t2() {
   else if (state_ == Z80_STATE_PUSH1) {
     sp--;
     addr = sp;
-    if      (interrupt)  data_out = (uint8_t)(temp >> 8);
-    else if (PUSH_RR) {
+    if (PUSH_RR) {
       switch(OP_ROW >> 1) {
       case 0: data_out = b; break;
       case 1: data_out = d; break;
@@ -653,7 +655,6 @@ void Z80::tock_t2() {
   else if (state_ == Z80_STATE_PUSH2) {
     sp--;
     addr = sp;
-    if      (interrupt)  data_out = (uint8_t)(temp);
     if (PUSH_RR) {
       switch(OP_ROW >> 1) {
       case 0: data_out = c; break;
@@ -706,8 +707,6 @@ void Z80::tock_t2() {
 //-----------------------------------------------------------------------------
 
 Z80State Z80::first_state() {
-  if (interrupt)   return Z80_STATE_INT0;
-
   if (PREFIX_CB)   return Z80_STATE_CB0;
 
 

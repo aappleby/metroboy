@@ -167,7 +167,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   switch(state) {
   case Z80_STATE_DECODE:    op = bus_data; break;
-  case Z80_STATE_DECODE_CB: op_cb = bus_data; break;
+  case Z80_STATE_CB1:       op_cb = bus_data; break;
   
   case Z80_STATE_POP1:      lo = bus_data; break;
   case Z80_STATE_POP2:      hi = bus_data; break;
@@ -222,7 +222,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DECODE:
     break;
 
-  case Z80_STATE_DECODE_CB: {
+  case Z80_STATE_CB1: {
     if (OP_CB_R) {
       AluOut out = cb(CB_QUAD, CB_ROW, reg_get8(), f);
       uint8_t mask = cb_flag_mask[CB_QUAD];
@@ -556,7 +556,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   switch(state_) {
   case Z80_STATE_DECODE:
-  case Z80_STATE_DECODE_CB:
+  case Z80_STATE_CB1:
     addr = pc;
     pc = addr + 1;
     break;
@@ -712,6 +712,9 @@ void Z80::tock_t2() {
 
 Z80State Z80::first_state() {
   
+  if (PREFIX_CB)   return Z80_STATE_CB0;
+
+
   if (HALT)        return Z80_STATE_HALT0;
 
   if (ALU_A_R)     return Z80_STATE_ALU_LO;
@@ -787,8 +790,6 @@ Z80State Z80::next_state() {
     else if (ADD_HL_RR)     next = Z80_STATE_DELAY_C;
     else if (LD_SP_HL)      next = Z80_STATE_DELAY_C;
 
-    else if (PREFIX_CB)     next = Z80_STATE_DECODE_CB;
-
     else if (PUSH_RR)       next = Z80_STATE_PUSH0;
 
     else {
@@ -797,9 +798,7 @@ Z80State Z80::next_state() {
     break;
   }
 
-  case Z80_STATE_DECODE_CB:
-    next = CB_COL == 6 ? Z80_STATE_MEM_READ1 : Z80_STATE_DECODE;
-    break;
+  //----------
 
   case Z80_STATE_INTERRUPT:
     next = Z80_STATE_PUSH0;
@@ -813,6 +812,16 @@ Z80State Z80::next_state() {
 
   case Z80_STATE_HALT1:
     next = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
+    break;
+
+  //----------
+
+  case Z80_STATE_CB0:
+    next = Z80_STATE_CB1;
+    break;
+
+  case Z80_STATE_CB1:
+    next = CB_COL == 6 ? Z80_STATE_MEM_READ1 : Z80_STATE_DECODE;
     break;
 
   //----------

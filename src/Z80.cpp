@@ -53,7 +53,13 @@
 
 #define LD_RR_D16     ((op & 0b11001111) == 0b00000001)
 
-#define ADD_HL_RR     (QUAD_0 && OP_COL == 1 &&  OP_ODD_ROW)
+#define ADD_HL_BC     (op == 0x09)
+#define ADD_HL_DE     (op == 0x19)
+#define ADD_HL_HL     (op == 0x29)
+#define ADD_HL_SP     (op == 0x39)
+#define ADD_HL_RR     ((op & 0b11001111) == 0b00001001)
+
+
 #define LDM_A_RR      (QUAD_0 && OP_COL == 2 &&  OP_ODD_ROW)
 
 #define INC_BC        (op == 0b00000011)

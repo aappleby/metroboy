@@ -6,10 +6,14 @@
 
 //-----------------------------------------------------------------------------
 
-#define OP_QUAD       (op >> 6)
+#define QUAD_0        ((op & 0b11000000) == 0b00000000)
+#define QUAD_1        ((op & 0b11000000) == 0b01000000)
+#define QUAD_2        ((op & 0b11000000) == 0b10000000)
+#define QUAD_3        ((op & 0b11000000) == 0b11000000)
+
 #define OP_ROW        ((op >> 3) & 7)
 #define OP_ODD_ROW    ((op >> 3) & 1)
-#define OP_COL        ((op >> 0) & 7)
+#define OP_COL        (op & 0x07)
 
 #define NOP           (op == 0x00)
 
@@ -47,25 +51,32 @@
 #define HALT          (op == 0x76)
 #define LD_SP_HL      (op == 0xF9)
 
-#define JR_CC_R8      (OP_QUAD == 0 && OP_COL == 0 && OP_ROW >= 4)
-#define LD_RR_D16     (OP_QUAD == 0 && OP_COL == 1 && !OP_ODD_ROW)
-#define ADD_HL_RR     (OP_QUAD == 0 && OP_COL == 1 &&  OP_ODD_ROW)
-#define LDM_A_RR      (OP_QUAD == 0 && OP_COL == 2 &&  OP_ODD_ROW)
-#define INC_RR        (OP_QUAD == 0 && OP_COL == 3 && !OP_ODD_ROW)
-#define DEC_RR        (OP_QUAD == 0 && OP_COL == 3 &&  OP_ODD_ROW)
+#define LD_RR_D16     (QUAD_0 && OP_COL == 1 && !OP_ODD_ROW)
+#define ADD_HL_RR     (QUAD_0 && OP_COL == 1 &&  OP_ODD_ROW)
+#define LDM_A_RR      (QUAD_0 && OP_COL == 2 &&  OP_ODD_ROW)
+#define INC_RR        (QUAD_0 && OP_COL == 3 && !OP_ODD_ROW)
+#define DEC_RR        (QUAD_0 && OP_COL == 3 &&  OP_ODD_ROW)
 
-#define INC_R         (OP_QUAD == 0 && OP_COL == 4 && OP_ROW != 6)
-#define DEC_R         (OP_QUAD == 0 && OP_COL == 5 && OP_ROW != 6)
+#define INC_R         (QUAD_0 && OP_COL == 4 && !INC_AT_HL)
+#define DEC_R         (QUAD_0 && OP_COL == 5 && !DEC_AT_HL)
 
-#define LD_R_D8       (OP_QUAD == 0 && OP_COL == 6 && OP_ROW != 6)
-#define RLU_R         (OP_QUAD == 0 && OP_COL == 7)
+#define LD_R_D8       (QUAD_0 && OP_COL == 6 && !STM_HL_D8)
 
-#define LDM_R_HL      (OP_QUAD == 1 && OP_COL == 6 && !HALT)
-#define STM_HL_R      (OP_QUAD == 1 && OP_ROW == 6 && !HALT)
-#define MV_R_R        (OP_QUAD == 1 && OP_COL != 6 && OP_ROW != 6)
+#define RLU_R         ((op & 0b11000111) == 0b00000111)
 
-#define ALU_A_R       (OP_QUAD == 2 && OP_COL != 6)
-#define ALU_A_HL      (OP_QUAD == 2 && OP_COL == 6)
+#define LDM_R_HL      (QUAD_1 && OP_COL == 6 && !HALT)
+#define STM_HL_R      (QUAD_1 && OP_ROW == 6 && !HALT)
+#define MV_R_R        (QUAD_1 && OP_COL != 6 && OP_ROW != 6)
+
+#define ALU_A_R       (QUAD_2 && OP_COL != 6)
+
+#define ALU_A_HL      ((op & 0b11000111) == 0b10000110)
+
+#define JR_NZ_R8      (op == 0b00100000)
+#define JR_Z_R8       (op == 0b00101000)
+#define JR_NC_R8      (op == 0b00110000)
+#define JR_C_R8       (op == 0b00111000)
+#define JR_CC_R8      ((op & 0b11100111) == 0b00100000)
 
 #define RET_NZ        (op == 0b11000000)
 #define RET_Z         (op == 0b11001000)
@@ -97,8 +108,8 @@
 #define POP_AF        (op == 0b11110001)
 #define POP_RR        ((op & 0b11001111) == 0b11000001)
 
-#define ALU_A_D8      (OP_QUAD == 3 && OP_COL == 6)
-#define RST_NN        (OP_QUAD == 3 && OP_COL == 7)
+#define ALU_A_D8      (QUAD_3 && OP_COL == 6)
+#define RST_NN        (QUAD_3 && OP_COL == 7)
 
 #define PREFIX_CB     (op == 0xCB)
 #define CB_QUAD       (op_cb >> 6)
@@ -1014,7 +1025,7 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 //-----------------------------------------------------------------------------
 
 uint8_t Z80::reg_get8() const {
-  int mux = OP_QUAD == 0 ? OP_ROW : OP_COL;
+  int mux = QUAD_0 ? OP_ROW : OP_COL;
   if (PREFIX_CB) mux = CB_COL;
   if (RLU_R) mux = OP_COL;
 

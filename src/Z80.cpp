@@ -221,6 +221,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //----------------------------------------
+  // Update interrupt & state
 
   ime = ime_delay;
 
@@ -256,6 +257,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   state_ = next_state();
 
   //----------------------------------------
+  // Do the meat of executing the instruction
+
+  AluOut out = {0};
 
   switch (state) {
   case Z80_STATE_DECODE: break;
@@ -263,7 +267,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_CB0: break;
   case Z80_STATE_CB1: {
     if (OP_CB_R) {
-      AluOut out = alu_cb(CB_QUAD, CB_ROW, reg_get8(), f);
+      out = alu_cb(CB_QUAD, CB_ROW, reg_get8(), f);
+      // need set_flag_cb
       uint8_t mask = cb_flag_mask[CB_QUAD];
       f = (f & ~mask) | (out.f & mask);
       reg_put8(CB_COL, (uint8_t)out.x);
@@ -271,11 +276,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-  case Z80_STATE_HALT0:
-    unhalt = 0;
-    break;
-  case Z80_STATE_HALT1:
-    break;
+  case Z80_STATE_HALT0: unhalt = 0; break;
+  case Z80_STATE_HALT1: break;
 
   case Z80_STATE_INT0: break;
   case Z80_STATE_INT1: break;
@@ -291,7 +293,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       break;
     }
 
-    AluOut out = {0};
     if (ALU_A_R) {
       out = alu(OP_ROW, a, reg_get8(), f);
       a = (uint8_t)out.x;
@@ -313,38 +314,27 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       reg_put8(OP_ROW, (uint8_t)out.x);
     }  
     else if (ADD_HL_RR) {
-      uint8_t y = 0;
-      if (ADD_HL_BC) y = c;
-      if (ADD_HL_DE) y = e;
-      if (ADD_HL_HL) y = l;
-      if (ADD_HL_SP) y = p;
-
-      out = alu(1, l, y, 0);
+      if (ADD_HL_BC) out = alu(1, l, c, 0);
+      if (ADD_HL_DE) out = alu(1, l, e, 0);
+      if (ADD_HL_HL) out = alu(1, l, l, 0);
+      if (ADD_HL_SP) out = alu(1, l, p, 0);
       l = (uint8_t)out.x;
     }
 
-    uint8_t mask = flag_mask[op];
-    f = (f & ~mask) | (out.f & mask);
-
-    // RLCA, RRCA, RLA, and RRA always clear the zero bit - hardware bug?
-    if ((op & 0b11100111) == 0b00000111) f &= ~F_ZERO;
-
+    set_flag(out.f);
     break;
   }
 
-  case Z80_STATE_ALU_HI:
+  case Z80_STATE_ALU_HI: {
 
     if (ADD_HL_RR) {
-      uint8_t y = 0;
-      if (ADD_HL_BC) y = b;
-      if (ADD_HL_DE) y = d;
-      if (ADD_HL_HL) y = h;
-      if (ADD_HL_SP) y = s;
+      if (ADD_HL_BC) out = alu(1, h, b, f);
+      if (ADD_HL_DE) out = alu(1, h, d, f);
+      if (ADD_HL_HL) out = alu(1, h, h, f);
+      if (ADD_HL_SP) out = alu(1, h, s, f);
 
-      AluOut out = alu(1, h, y, f);
-      uint8_t mask = flag_mask[op];
       h = (uint8_t)out.x;
-      f = (f & ~mask) | (out.f & mask);
+      set_flag(out.f);
     }
     else if (LD_HL_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
@@ -355,46 +345,48 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
 
     break;
+  }
 
   //----------
   // Gameboy weirdness - the "real" interrupt vector is determined by the
   // state of imask/intf after pushing the first byte of PC onto the stack.
 
+  case Z80_STATE_PUSHN: break;
   case Z80_STATE_PUSH0: break;
   case Z80_STATE_PUSH1: imask_latch = imask_; break;
   case Z80_STATE_PUSH2: break;
 
   //----------
 
-  case Z80_STATE_POP0:
-    break;
+  case Z80_STATE_POP0: break;
 
-  case Z80_STATE_POP1:
+  case Z80_STATE_POP1: {
     if (POP_BC) c = bus_data;
     if (POP_DE) e = bus_data;
     if (POP_HL) l = bus_data;
     if (POP_AF) f = bus_data & 0xF0;
     break;
+  }
 
-  case Z80_STATE_POP2:
+  case Z80_STATE_POP2: {
     if (POP_BC) b = bus_data;
     if (POP_DE) d = bus_data;
     if (POP_HL) h = bus_data;
     if (POP_AF) a = bus_data;
     break;
+  }
 
   //----------
 
   case Z80_STATE_ARG0: break;
-
-  case Z80_STATE_ARG1:
+  case Z80_STATE_ARG1: {
     if (LD_R_D8) {
       reg_put8(OP_ROW, bus_data);
       break;
     }
 
     if (ALU_A_D8) {
-      AluOut out = alu(OP_ROW, a, bus_data, f);
+      out = alu(OP_ROW, a, bus_data, f);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
@@ -412,19 +404,19 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LD_SP_D16) p = bus_data;
 
     break;
+  }
 
-  case Z80_STATE_ARG2:
+  case Z80_STATE_ARG2: {
     if      (LD_BC_D16) b = bus_data;
     else if (LD_DE_D16) d = bus_data;
     else if (LD_HL_D16) h = bus_data;
     else if (LD_SP_D16) s = bus_data;
     break;
+  }
 
   //----------
 
-  case Z80_STATE_MEM_READ0:
-    break;
-
+  case Z80_STATE_MEM_READ0: break;
   case Z80_STATE_MEM_READ1: {
 
     if      (LDM_A_RR)  reg_put8(7,      bus_data);
@@ -435,21 +427,22 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     // this and dec should move to the alu state
     else if (INC_AT_HL) {
-      AluOut out = alu(0, bus_data, 1, 0);
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
+      out = alu(0, bus_data, 1, 0);
+      set_flag(out.f);
       data_out = (uint8_t)out.x;
     }
     else if (DEC_AT_HL) {
-      AluOut out = alu(2, bus_data, 1, 0);
-      uint8_t mask = flag_mask[op];
-      f = (f & ~mask) | (out.f & mask);
+      out = alu(2, bus_data, 1, 0);
+      set_flag(out.f);
       data_out = (uint8_t)out.x;
     }
     else if (OP_CB_HL) {
-      AluOut out = alu_cb(CB_QUAD, CB_ROW, bus_data, f);
+      out = alu_cb(CB_QUAD, CB_ROW, bus_data, f);
+      // need set_flag_cb or something
       uint8_t mask = cb_flag_mask[CB_QUAD];
       f = (f & ~mask) | (out.f & mask);
+
+      // store in lo
       data_out = (uint8_t)out.x;
     }
     break;
@@ -464,7 +457,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------
   // move this elsewhere?
 
-  case Z80_STATE_DELAY_C:
+  case Z80_STATE_DELAY_C: {
     if      (INC_BC)   bc++;
     else if (INC_DE)   de++;
     else if (INC_HL)   hl++;
@@ -475,6 +468,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (DEC_SP)   sp--;
     else if (LD_SP_HL) sp = hl;
     break;
+  }
   }
 
   //--------------------------------------------------------------------------------
@@ -681,7 +675,13 @@ void Z80::tock_t2() {
 
 
 
+void Z80::set_flag(uint8_t f_) {
+  uint8_t mask = flag_mask[op];
+  f = (f & ~mask) | (f_ & mask);
 
+  // RLCA, RRCA, RLA, and RRA always clear the zero bit - hardware bug?
+  if ((op & 0b11100111) == 0b00000111) f &= ~F_ZERO;
+}
 
 
 
@@ -703,6 +703,8 @@ Z80State Z80::first_state() {
   if (MV_R_R)      return Z80_STATE_ALU_LO;
   if (ADD_HL_RR)   return Z80_STATE_ALU_LO;
   
+  if (PUSH_RR)     return Z80_STATE_PUSHN;
+
   if (POP_RR)      return Z80_STATE_POP0;
   if (RET)         return Z80_STATE_POP0;
   if (RETI)        return Z80_STATE_POP0;
@@ -756,6 +758,8 @@ Z80State Z80::next_state() {
 
   switch (state) {
   case Z80_STATE_DECODE: {
+    // TODO - get rid of these
+
     if      (interrupt)     next = Z80_STATE_INT1;
     else if (NOP)           next = Z80_STATE_DECODE;
     else if (DI)            next = Z80_STATE_DECODE;
@@ -768,8 +772,6 @@ Z80State Z80::next_state() {
     else if (INC_RR)        next = Z80_STATE_DELAY_C;
     else if (DEC_RR)        next = Z80_STATE_DELAY_C;
     else if (LD_SP_HL)      next = Z80_STATE_DELAY_C;
-
-    else if (PUSH_RR)       next = Z80_STATE_PUSH0;
 
     else {
       printf("?");
@@ -817,6 +819,7 @@ Z80State Z80::next_state() {
 
   //----------
 
+  case Z80_STATE_PUSHN: next = Z80_STATE_PUSH0; break;
   case Z80_STATE_PUSH0: next = Z80_STATE_PUSH1; break;
   case Z80_STATE_PUSH1: next = Z80_STATE_PUSH2; break;
   case Z80_STATE_PUSH2: next = Z80_STATE_DECODE; break;
@@ -908,9 +911,9 @@ Z80State Z80::next_state() {
 
   //----------
 
-  case Z80_STATE_DELAY_C:
-    next = Z80_STATE_DECODE;
-    break;
+  case Z80_STATE_DELAY_C: next = Z80_STATE_DECODE; break;
+
+  default: printf("fail!\n"); break;
   }
 
   return next;

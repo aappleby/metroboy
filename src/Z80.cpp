@@ -308,7 +308,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     AluOut out = {0};
     if (ALU_A_R) {
       out = alu(OP_ROW, a, reg_get8(), f);
-      out.x = (OP_ROW == 7) ? a : out.x;
       a = (uint8_t)out.x;
     }
     else if (INC_R) {
@@ -317,7 +316,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
     else if (RLU_R) {
       out = rlu(OP_ROW, reg_get8(), f);
-      if (OP_ROW <= 3) out.f &= ~F_ZERO;
       a = (uint8_t)out.x;
     }
     else if (DEC_R) {
@@ -326,7 +324,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }  
     else if (ALU_A_HL) {
       out = alu(OP_ROW, a, bus_data, f);
-      out.x = (OP_ROW == 7) ? a : out.x;
       a = (uint8_t)out.x;
     }
     else if (ADD_HL_RR) {
@@ -340,6 +337,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       out = adder(x, y, 0);
       l = (uint8_t)out.x;
     }
+
+    // RLCA, RRCA, RLA, and RRA always clear the zero bit - hardware bug?
+    if ((op & 0b11100111) == 0b00000111) out.f &= ~F_ZERO;
+
     uint8_t mask = flag_mask[op];
     f = (f & ~mask) | (out.f & mask);
 

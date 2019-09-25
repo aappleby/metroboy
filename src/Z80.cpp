@@ -127,15 +127,15 @@
 #define RST_NN        (QUAD_3 && OP_COL == 7)
 
 #define PREFIX_CB     (op == 0xCB)
-#define CB_QUAD       (op_cb >> 6)
-#define CB_ROW        ((op_cb >> 3) & 7)
-#define CB_COL        ((op_cb >> 0) & 7)
+#define CB_QUAD       ((cb >> 6) & 3)
+#define CB_ROW        ((cb >> 3) & 7)
+#define CB_COL        ((cb >> 0) & 7)
 #define OP_CB_R       (PREFIX_CB && CB_COL != 6)
 #define OP_CB_HL      (PREFIX_CB && CB_COL == 6)
 
 #define INTERRUPT     ((imask_ & intf_) && ime)
 
-AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
+AluOut alu_cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
 AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f);
 AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f);
 
@@ -150,7 +150,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
   model = new_model;
   cycle = 0;
   op = 0;
-  op_cb = 0;
+  cb = 0;
   ime = false;
   ime_delay = false;
   imask_latch = 0;
@@ -227,7 +227,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   switch(state) {
   case Z80_STATE_DECODE:    op = bus_data; break;
-  case Z80_STATE_CB1:       op_cb = bus_data; break;
+  case Z80_STATE_CB1:       cb = bus_data; break;
   
   case Z80_STATE_POP1:      lo = bus_data; break;
   case Z80_STATE_POP2:      hi = bus_data; break;
@@ -280,7 +280,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_CB0: break;
   case Z80_STATE_CB1: {
     if (OP_CB_R) {
-      AluOut out = cb(CB_QUAD, CB_ROW, reg_get8(), f);
+      AluOut out = alu_cb(CB_QUAD, CB_ROW, reg_get8(), f);
       uint8_t mask = cb_flag_mask[CB_QUAD];
       f = (f & ~mask) | (out.f & mask);
       reg_put8(CB_COL, (uint8_t)out.x);
@@ -288,8 +288,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-  case Z80_STATE_HALT0: break;
-  case Z80_STATE_HALT1: break;
+  case Z80_STATE_HALT0:
+    unhalt = 0;
+    break;
+  case Z80_STATE_HALT1:
+    break;
 
   case Z80_STATE_INT0: break;
   case Z80_STATE_INT1: break;
@@ -337,11 +340,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       l = (uint8_t)out.x;
     }
 
-    // RLCA, RRCA, RLA, and RRA always clear the zero bit - hardware bug?
-    if ((op & 0b11100111) == 0b00000111) out.f &= ~F_ZERO;
-
     uint8_t mask = flag_mask[op];
     f = (f & ~mask) | (out.f & mask);
+
+    // RLCA, RRCA, RLA, and RRA always clear the zero bit - hardware bug?
+    if ((op & 0b11100111) == 0b00000111) f &= ~F_ZERO;
 
     break;
   }
@@ -384,7 +387,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  case Z80_STATE_POP0: break;
+  case Z80_STATE_POP0:
+    break;
 
   case Z80_STATE_POP1:
     if (POP_BC) c = bus_data;
@@ -407,19 +411,15 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_ARG1:
     if (LD_R_D8) {
       reg_put8(OP_ROW, bus_data);
+      break;
     }
-    else if (ALU_A_D8) {
-      AluOut out = {0};
-      out = alu(OP_ROW, a, bus_data, f);
-      out.x = (OP_ROW == 7) ? a : out.x;
+
+    if (ALU_A_D8) {
+      AluOut out = alu(OP_ROW, a, bus_data, f);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
-    else if (LD_BC_D16) c = bus_data;
-    else if (LD_DE_D16) e = bus_data;
-    else if (LD_HL_D16) l = bus_data;
-    else if (LD_SP_D16) p = bus_data;
     else if (ADD_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
       bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
@@ -427,6 +427,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       sp = sp + (int8_t)lo;
       f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
     }
+    else if (LD_BC_D16) c = bus_data;
+    else if (LD_DE_D16) e = bus_data;
+    else if (LD_HL_D16) l = bus_data;
+    else if (LD_SP_D16) p = bus_data;
 
     break;
 
@@ -462,7 +466,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       data_out = bus_data - 1;
     }
     else if (OP_CB_HL) {
-      AluOut out = cb(CB_QUAD, CB_ROW, bus_data, f);
+      AluOut out = alu_cb(CB_QUAD, CB_ROW, bus_data, f);
       uint8_t mask = cb_flag_mask[CB_QUAD];
       f = (f & ~mask) | (out.f & mask);
       data_out = (uint8_t)out.x;
@@ -617,8 +621,6 @@ CpuBus Z80::tick_t2() const {
 
 void Z80::tock_t2() {
 
-  if (state == Z80_STATE_DECODE && state_ == Z80_STATE_HALT1) unhalt = 0;
-
   //----------------------------------------
   // set up addr/data_out for write
 
@@ -647,16 +649,12 @@ void Z80::tock_t2() {
   }
 
   case Z80_STATE_PUSH1: {
-    sp--;
-    addr = sp;
-    if (PUSH_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: data_out = b; break;
-      case 1: data_out = d; break;
-      case 2: data_out = h; break;
-      case 3: data_out = a; break;
-      }
-    }
+    addr = sp - 1;
+    sp   = sp - 1;
+    if      (PUSH_BC)     data_out = b;
+    else if (PUSH_DE)     data_out = d;
+    else if (PUSH_HL)     data_out = h;
+    else if (PUSH_AF)     data_out = a;
     else if (CALL_A16)    data_out = (uint8_t)(pc >> 8);
     else if (CALL_CC_A16) data_out = (uint8_t)(pc >> 8);
     else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
@@ -664,19 +662,15 @@ void Z80::tock_t2() {
   }
 
   case Z80_STATE_PUSH2: {
-    sp--;
-    addr = sp;
-    if (PUSH_RR) {
-      switch(OP_ROW >> 1) {
-      case 0: data_out = c; break;
-      case 1: data_out = e; break;
-      case 2: data_out = l; break;
-      case 3: data_out = f; break;
-      }
-    }
-    if (CALL_A16)    data_out = (uint8_t)(pc);
-    if (CALL_CC_A16) data_out = (uint8_t)(pc);
-    if (RST_NN)      data_out = (uint8_t)(pc);
+    addr = sp - 1;
+    sp   = sp - 1;
+    if      (PUSH_BC)     data_out = c;
+    else if (PUSH_DE)     data_out = e;
+    else if (PUSH_HL)     data_out = l;
+    else if (PUSH_AF)     data_out = f;
+    else if (CALL_A16)    data_out = (uint8_t)(pc);
+    else if (CALL_CC_A16) data_out = (uint8_t)(pc);
+    else if (RST_NN)      data_out = (uint8_t)(pc);
     break;
   }
 
@@ -725,7 +719,6 @@ void Z80::tock_t2() {
 
 Z80State Z80::first_state() {
   if (PREFIX_CB)   return Z80_STATE_CB0;
-
 
   if (HALT)        return Z80_STATE_HALT0;
 
@@ -778,8 +771,6 @@ Z80State Z80::first_state() {
   if (STM_C_A)     return Z80_STATE_MEM_WRITE0;
   if (STM_BC_A)    return Z80_STATE_MEM_WRITE0;
   if (STM_DE_A)    return Z80_STATE_MEM_WRITE0;
-
-
 
   return Z80_STATE_DECODE;
 }
@@ -955,41 +946,30 @@ Z80State Z80::next_state() {
 
 uint8_t flag_mask2(uint8_t op, uint8_t cb) {
   uint8_t quad = (op >> 6) & 3;
-  uint8_t row = (op >> 3) & 7;
-  uint8_t col = (op >> 0) & 7;
+  uint8_t row  = (op >> 3) & 7;
+  uint8_t col  = (op >> 0) & 7;
 
-  if (op == 0xCB) {
-    quad = (cb >> 6) & 3;
-    if (quad == 0) return 0xF0;
-    if (quad == 1) return 0xE0;
-    return 0;
-  }
-
-  if (quad == 0) {
-    if (col == 1) return row & 1 ? 0x70 : 0x00;
-    if (col == 4) return 0xE0;
-    if (col == 5) return 0xE0;
-    if (col == 7) {
-      if (row == 0) return 0xF0;
-      if (row == 1) return 0xF0;
-      if (row == 2) return 0xF0;
-      if (row == 3) return 0xF0;
-      if (row == 4) return 0xB0;
-      if (row == 5) return 0x60;
-      if (row == 6) return 0x70;
-      if (row == 7) return 0x70;
-    }
-  }
-
-  if (quad == 1) return 0x00;
   if (quad == 2) return 0xF0;
+  if (quad == 0 && col == 1) return row & 1 ? 0x70 : 0x00;
+  if (quad == 0 && col == 4) return 0xE0;
+  if (quad == 0 && col == 5) return 0xE0;
+  if (quad == 3 && col == 6) return 0xF0;
 
-  if (quad == 3) {
-    if (col == 6) return 0xF0;
-    if (op == 0xE8) return 0xF0;
-    if (op == 0xF1) return 0xF0;
-    if (op == 0xF8) return 0xF0;
-  }
+  if (op == 0xCB && (cb >> 6) == 0) return 0xF0;
+  if (op == 0xCB && (cb >> 6) == 1) return 0xE0;
+
+  if (op == 0x07) return 0xF0;
+  if (op == 0x0F) return 0xF0;
+  if (op == 0x17) return 0xF0;
+  if (op == 0x1F) return 0xF0;
+  if (op == 0x27) return 0xB0;
+  if (op == 0x2F) return 0x60;
+  if (op == 0x37) return 0x70;
+  if (op == 0x3F) return 0x70;
+  if (op == 0xE8) return 0xF0;
+  if (op == 0xF1) return 0xF0;
+  if (op == 0xF8) return 0xF0;
+
   return 0;
 }
 
@@ -1034,7 +1014,9 @@ void Z80::reg_put8(int mux, uint8_t reg) {
 }
 
 //-----------------------------------------------------------------------------
+// 4-bit-at-a-time ALU just for amusement
 
+#if 0
 uint8_t alu4(const uint8_t op, const uint8_t a, const uint8_t b, const uint8_t c) {
   switch (op) {
   case 0: return a + b + c; // add
@@ -1049,7 +1031,6 @@ uint8_t alu4(const uint8_t op, const uint8_t a, const uint8_t b, const uint8_t c
   return 0;
 }
 
-#if 0
 AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
   uint8_t c1 = (op == 0 || op == 2 || op == 7) ? 0 : (f >> 4) & 1;
   uint8_t d1 = alu4(op, x & 0xF, y & 0xF, c1);
@@ -1068,69 +1049,26 @@ AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) 
 #endif
 
 AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
-  AluOut out = {0};
+  uint16_t d1 = 0, d2 = 0, c = ((f >> 4) & 1);
 
-  if (op == 0) {
-    uint16_t d1 = (x & 0xF) + (y & 0xF);
-    uint16_t d2 = x + y;
+  if (op == 0) { d1 = (x & 0xF) + (y & 0xF);     d2 = x + y; }
+  if (op == 1) { d1 = (x & 0xF) + (y & 0xF) + c; d2 = x + y + c; }
+  if (op == 2) { d1 = (x & 0xF) - (y & 0xF);     d2 = x - y; }
+  if (op == 3) { d1 = (x & 0xF) - (y & 0xF) - c; d2 = x - y - c; }
+  if (op == 4) { d1 = 0xFFF;                     d2 = x & y; }
+  if (op == 5) { d1 = 0x000;                     d2 = x ^ y; }
+  if (op == 6) { d1 = 0x000;                     d2 = x | y; }
+  if (op == 7) { d1 = (x & 0xF) - (y & 0xF);     d2 = x - y; }
 
-    out = { (uint8_t)d2, 0 };
-    if (d1 & 0x010) out.f |= F_HALF_CARRY;
-    if (d2 & 0x100) out.f |= F_CARRY;
-    if (!out.x)     out.f |= F_ZERO;
-  }
-  else if (op == 1) {
-    uint16_t d1 = (x & 0xF) + (y & 0xF) + ((f >> 4) & 1);
-    uint16_t d2 = x + y + ((f >> 4) & 1);
+  uint8_t z = (uint8_t)d2;
+  uint8_t g = (op == 2 || op == 3 || op == 7) ? F_NEGATIVE : 0;
 
-    out = { (uint8_t)d2, 0 };
-    if (d1 & 0x010) out.f |= F_HALF_CARRY;
-    if (d2 & 0x100) out.f |= F_CARRY;
-    if (!out.x)     out.f |= F_ZERO;
-  }
-  else if (op == 2) {
-    uint16_t d1 = (x & 0x0F) - (y & 0x0F);
-    uint16_t d2 = x - y;
+  if (d1 & 0x010) g |= F_HALF_CARRY;
+  if (d2 & 0x100) g |= F_CARRY;
+  if (z == 0x000) g |= F_ZERO;
+  if (op == 7)    z = x;
 
-    out = { (uint8_t)d2, F_NEGATIVE };
-    if (d1 & 0x010) out.f |= F_HALF_CARRY;
-    if (d2 & 0x100) out.f |= F_CARRY;
-    if (!out.x)     out.f |= F_ZERO;
-  }
-  else if (op == 3) {
-    uint16_t d1 = (x & 0xF) - (y & 0xF) - ((f >> 4) & 1);
-    uint16_t d2 = x - y - ((f >> 4) & 1);
-
-    out = { (uint8_t)d2, F_NEGATIVE };
-    if (d1 & 0x010) out.f |= F_HALF_CARRY;
-    if (d2 & 0x100) out.f |= F_CARRY;
-    if (!out.x)     out.f |= F_ZERO;
-  }
-  else if (op == 4) {
-    out = { uint16_t(x & y), F_HALF_CARRY };
-    if (!out.x) out.f |= F_ZERO;
-  }
-  else if (op == 5) {
-    out = { uint16_t(x ^ y), 0 };
-    if (!out.x) out.f |= F_ZERO;
-  }
-  else if (op == 6) {
-    out = { uint16_t(x | y), 0 };
-    if (!out.x) out.f |= F_ZERO;
-  }
-  else if (op == 7) {
-    uint16_t d1 = (x & 0x0F) - (y & 0x0F);
-    uint16_t d2 = x - y;
-
-    out = { (uint8_t)d2, F_NEGATIVE };
-    if (d1 & 0x010) out.f |= F_HALF_CARRY;
-    if (d2 & 0x100) out.f |= F_CARRY;
-    if (!out.x)     out.f |= F_ZERO;
-  }
-
-  if (op == 7) out.x = x;
-
-  return out;
+  return {z, g};
 }
 
 //-----------------------------------------------------------------------------
@@ -1215,7 +1153,7 @@ AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f) {
 //-----------------------------------------------------------------------------
 // idempotent
 
-AluOut cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f) {
+AluOut alu_cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f) {
   AluOut out = {0};
 
   switch (quad) {

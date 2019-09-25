@@ -68,7 +68,7 @@ private:
 
   int model = 0;
   int cycle;
-  uint8_t op, op_cb;
+  uint8_t op, cb;
   bool ime;
   bool ime_delay;
   uint8_t imask_latch;

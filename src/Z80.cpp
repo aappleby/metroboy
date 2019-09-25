@@ -204,7 +204,7 @@ CpuBus Z80::tick_t0() const {
 
 
 
-AluOut adder(uint16_t x, uint16_t y, uint8_t f) {
+AluOut add(uint16_t x, uint16_t y, uint8_t f) {
   uint16_t cr = ((f & F_CARRY) ? 1 : 0);
   uint16_t zh = (x + y + cr);
   uint16_t hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
@@ -310,22 +310,22 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       out = alu(OP_ROW, a, reg_get8(), f);
       a = (uint8_t)out.x;
     }
-    else if (INC_R) {
-      out = adder(reg_get8(), 1, 0);
-      reg_put8(OP_ROW, (uint8_t)out.x);
+    else if (ALU_A_HL) {
+      out = alu(OP_ROW, a, bus_data, f);
+      a = (uint8_t)out.x;
     }
     else if (RLU_R) {
       out = rlu(OP_ROW, reg_get8(), f);
       a = (uint8_t)out.x;
     }
+    else if (INC_R) {
+      out = add(reg_get8(), 1, 0);
+      reg_put8(OP_ROW, (uint8_t)out.x);
+    }
     else if (DEC_R) {
       out = alu(2, reg_get8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }  
-    else if (ALU_A_HL) {
-      out = alu(OP_ROW, a, bus_data, f);
-      a = (uint8_t)out.x;
-    }
     else if (ADD_HL_RR) {
       uint8_t x = l;
       uint8_t y = 0;
@@ -334,7 +334,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if (ADD_HL_HL) y = l;
       if (ADD_HL_SP) y = p;
 
-      out = adder(x, y, 0);
+      out = add(x, y, 0);
       l = (uint8_t)out.x;
     }
 
@@ -353,24 +353,17 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_ALU_HI:
 
     if (ADD_HL_RR) {
-      uint16_t x = 0, y = 0, hc = 0, cr = 0;
-      uint8_t f_, mask;
-
-      x = h;
+      uint8_t x = h;
+      uint8_t y = 0;
       if (ADD_HL_BC) y = b;
       if (ADD_HL_DE) y = d;
       if (ADD_HL_HL) y = h;
       if (ADD_HL_SP) y = s;
 
-      cr = (f & F_CARRY) ? 1 : 0;
-      uint16_t zh = (x + y + cr);
-      hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
-      cr = zh >> 8;
-      h = (uint8_t)zh;
-
-      f_ = (hc ? F_HALF_CARRY : 0) | (cr ? F_CARRY : 0);
-      mask = flag_mask[op];
-      f = (f & ~mask) | (f_ & mask);
+      AluOut out = add(x, y, f);
+      uint8_t mask = flag_mask[op];
+      h = (uint8_t)out.x;
+      f = (f & ~mask) | (out.f & mask);
     }
     else if (LD_HL_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;

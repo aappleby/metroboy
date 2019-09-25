@@ -410,6 +410,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
 
   case Z80_STATE_MEM_READ1: {
+
     if (LDM_A_RR)  reg_put8(7,      bus_data);
     if (LDM_A_A8)  reg_put8(7,      bus_data);
     if (LDM_A_C)   reg_put8(7,      bus_data);
@@ -417,12 +418,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (LDM_R_HL)  reg_put8(OP_ROW, bus_data);
 
 
-    if (OP_CB_HL)  data_out = (uint8_t)cb(CB_QUAD, CB_ROW, bus_data, f).x;
-
     if (INC_AT_HL) {
       AluOut out = alu(0, bus_data, 1, 0);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
+      data_out = bus_data + 1;
     }
 
 
@@ -430,15 +430,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       AluOut out = alu(2, bus_data, 1, 0);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
+      data_out = bus_data - 1;
     }
-
-    if (INC_AT_HL) data_out = bus_data + 1;
-    if (DEC_AT_HL) data_out = bus_data - 1;
 
     if (OP_CB_HL) {
       AluOut out = cb(CB_QUAD, CB_ROW, bus_data, f);
       uint8_t mask = cb_flag_mask[CB_QUAD];
       f = (f & ~mask) | (out.f & mask);
+      data_out = (uint8_t)out.x;
     }
     break;
   }

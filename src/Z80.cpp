@@ -35,10 +35,6 @@
 #define LDM_A_A16     (op == 0xFA)
 #define LDM_A_C       (op == 0xF2)
 #define LDM_A_A8      (op == 0xF0)
-#define LDM_A_BC      (op == 0x0A)
-#define LDM_A_DE      (op == 0x1A)
-#define LDM_A_HLP     (op == 0x2A)
-#define LDM_A_HLM     (op == 0x3A)
 
 #define JP_A16        (op == 0xC3)
 #define JR_R8         (op == 0x18)
@@ -59,8 +55,11 @@
 #define ADD_HL_SP     (op == 0x39)
 #define ADD_HL_RR     ((op & 0b11001111) == 0b00001001)
 
-
-#define LDM_A_RR      (QUAD_0 && OP_COL == 2 &&  OP_ODD_ROW)
+#define LDM_A_BC      (op == 0x0A)
+#define LDM_A_DE      (op == 0x1A)
+#define LDM_A_HLP     (op == 0x2A)
+#define LDM_A_HLM     (op == 0x3A)
+#define LDM_A_RR      ((op & 0b11001111) == 0b00001010)
 
 #define INC_BC        (op == 0b00000011)
 #define INC_DE        (op == 0b00010011)

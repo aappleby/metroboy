@@ -209,10 +209,10 @@ AluOut add(uint16_t x, uint16_t y, uint8_t f) {
   uint16_t zh = (x + y + cr);
   uint16_t hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
   
-  uint8_t z = (uint8_t)zh;
-  uint8_t f2 = (hc ? F_HALF_CARRY : 0) | ((zh >> 8) ? F_CARRY : 0) | (z ? 0 : F_ZERO);
-
-  return { z, f2 };
+  return {
+    zh,
+    uint8_t((hc ? F_HALF_CARRY : 0) | ((zh >> 8) ? F_CARRY : 0) | (zh & 0xFF ? 0 : F_ZERO))
+  };
 }
 
 
@@ -327,14 +327,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       reg_put8(OP_ROW, (uint8_t)out.x);
     }  
     else if (ADD_HL_RR) {
-      uint8_t x = l;
       uint8_t y = 0;
       if (ADD_HL_BC) y = c;
       if (ADD_HL_DE) y = e;
       if (ADD_HL_HL) y = l;
       if (ADD_HL_SP) y = p;
 
-      out = add(x, y, 0);
+      out = add(l, y, 0);
       l = (uint8_t)out.x;
     }
 
@@ -353,14 +352,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_ALU_HI:
 
     if (ADD_HL_RR) {
-      uint8_t x = h;
       uint8_t y = 0;
       if (ADD_HL_BC) y = b;
       if (ADD_HL_DE) y = d;
       if (ADD_HL_HL) y = h;
       if (ADD_HL_SP) y = s;
 
-      AluOut out = add(x, y, f);
+      AluOut out = add(h, y, f);
       uint8_t mask = flag_mask[op];
       h = (uint8_t)out.x;
       f = (f & ~mask) | (out.f & mask);
@@ -1052,6 +1050,9 @@ uint8_t alu4(const uint8_t op, const uint8_t a, const uint8_t b, const uint8_t c
 }
 
 AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
+  if (op == 0) return add(x, y, 0);
+  if (op == 1) return add(x, y, f);
+
   uint8_t c1 = (op == 0 || op == 2 || op == 7) ? 0 : (f >> 4) & 1;
   uint8_t d1 = alu4(op, x & 0xF, y & 0xF, c1);
 

@@ -106,9 +106,6 @@ private:
   uint8_t  reg_get8() const;
   void     reg_put8(int mux, uint8_t reg);
   void     set_flag(uint8_t f_);
-  
-  Z80State first_state() const;
-  Z80State next_state() const;
 };
 
 //-----------------------------------------------------------------------------

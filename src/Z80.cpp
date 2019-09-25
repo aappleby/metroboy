@@ -133,6 +133,8 @@
 
 #define INTERRUPT     ((imask_ & intf_) && ime)
 
+Z80State _first_state(uint8_t op);
+Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool no_halt, bool unhalt);
 AluOut alu_cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
 AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f);
 AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f);
@@ -249,12 +251,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       state = Z80_STATE_INT0;
     }
     else {
-      state = first_state();
+      state = _first_state(op);
     }
   }
 
-  // reads interrupt, no_branch, no_halt, unhalt
-  state_ = next_state();
+  state_ = _next_state(state, op, cb, no_branch, no_halt, unhalt);
 
   //----------------------------------------
   // Do the meat of executing the instruction
@@ -752,12 +753,7 @@ Z80State _first_state(uint8_t op) {
   return Z80_STATE_DECODE;
 }
 
-Z80State Z80::first_state() const {
-  return _first_state(op);
-}
-
 //-----------------------------------------------------------------------------
-
 
 Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool no_halt, bool unhalt) {
   switch (state) {
@@ -877,9 +873,6 @@ Z80State _next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, boo
   return Z80_STATE_INVALID;
 }
 
-Z80State Z80::next_state() const {
-  return _next_state(state, op, cb, no_branch, no_halt, unhalt);
-}
 //-----------------------------------------------------------------------------
 
 uint8_t flag_mask2(uint8_t op, uint8_t cb) {

@@ -479,9 +479,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------------------------------------
 
-  case Z80_STATE_DELAY_B:
-    break;
-
   case Z80_STATE_DELAY_C:
     // these three do not use the alu
     if (INC_RR) {
@@ -947,10 +944,6 @@ Z80State Z80::next_state() {
     break;
 
   //----------
-
-  case Z80_STATE_DELAY_B:
-    next = Z80_STATE_DELAY_C;
-    break;
 
   case Z80_STATE_DELAY_C:
     next = Z80_STATE_DECODE;

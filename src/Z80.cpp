@@ -204,6 +204,16 @@ CpuBus Z80::tick_t0() const {
 
 
 
+AluOut adder(uint16_t x, uint16_t y, uint8_t f) {
+  uint16_t cr = ((f & F_CARRY) ? 1 : 0);
+  uint16_t zh = (x + y + cr);
+  uint16_t hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
+  
+  uint8_t z = (uint8_t)zh;
+  uint8_t f2 = (hc ? F_HALF_CARRY : 0) | ((zh >> 8) ? F_CARRY : 0) | (z ? 0 : F_ZERO);
+
+  return { z, f2 };
+}
 
 
 
@@ -265,8 +275,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------------------------------------
 
   switch (state) {
-  case Z80_STATE_DECODE:
-    break;
+  case Z80_STATE_DECODE: break;
 
   case Z80_STATE_CB0: break;
   case Z80_STATE_CB1: {
@@ -302,7 +311,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       f = (f & ~mask) | (out.f & mask);
     }
     else if (INC_R) {
-      AluOut out = alu(0, reg_get8(), 1, 0);
+      AluOut out = adder(reg_get8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);

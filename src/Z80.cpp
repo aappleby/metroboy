@@ -1068,73 +1068,56 @@ AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) 
 #endif
 
 AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
-  if (op == 0) return add(x, y, 0);
-  if (op == 1) return add(x, y, f);
+  AluOut out = {0};
 
-  if (op == 2) {
+  if (op == 0) {
+    return add(x, y, 0);
+  }
+  else if (op == 1) {
+    return add(x, y, f);
+  }
+  else if (op == 2) {
     uint16_t d1 = (x & 0x0F) - (y & 0x0F);
     uint16_t d2 = x - y;
 
-    AluOut out = { (uint8_t)d2, F_NEGATIVE };
+    out = { (uint8_t)d2, F_NEGATIVE };
     if (d1 & 0x010) out.f |= F_HALF_CARRY;
     if (d2 & 0x100) out.f |= F_CARRY;
     if (!out.x)     out.f |= F_ZERO;
-    return out;
   }
-
-  if (op == 3) {
+  else if (op == 3) {
     uint16_t d1 = (x & 0xF) - (y & 0xF) - ((f >> 4) & 1);
     uint16_t d2 = x - y - ((f >> 4) & 1);
 
-    AluOut out = { (uint8_t)d2, F_NEGATIVE };
+    out = { (uint8_t)d2, F_NEGATIVE };
     if (d1 & 0x010) out.f |= F_HALF_CARRY;
     if (d2 & 0x100) out.f |= F_CARRY;
     if (!out.x)     out.f |= F_ZERO;
-    return out;
   }
-
-  if (op == 4) {
-    AluOut out = { uint16_t(x & y), F_HALF_CARRY };
+  else if (op == 4) {
+    out = { uint16_t(x & y), F_HALF_CARRY };
     if (!out.x) out.f |= F_ZERO;
-    return out;
   }
-
-  if (op == 5) {
-    AluOut out = { uint16_t(x ^ y), 0 };
+  else if (op == 5) {
+    out = { uint16_t(x ^ y), 0 };
     if (!out.x) out.f |= F_ZERO;
-    return out;
   }
-
-  if (op == 6) {
-    AluOut out = { uint16_t(x | y), 0 };
+  else if (op == 6) {
+    out = { uint16_t(x | y), 0 };
     if (!out.x) out.f |= F_ZERO;
-    return out;
   }
-
-  if (op == 7) {
+  else if (op == 7) {
     uint16_t d1 = (x & 0x0F) - (y & 0x0F);
     uint16_t d2 = x - y;
 
-    AluOut out = { (uint8_t)d2, F_NEGATIVE };
+    out = { (uint8_t)d2, F_NEGATIVE };
     if (d1 & 0x010) out.f |= F_HALF_CARRY;
     if (d2 & 0x100) out.f |= F_CARRY;
     if (!out.x)     out.f |= F_ZERO;
-    out.x = x;
-    return out;
   }
 
-  uint8_t c1 = (op == 0 || op == 2 || op == 7) ? 0 : (f >> 4) & 1;
-  uint8_t d1 = alu4(op, x & 0xF, y & 0xF, c1);
-
-  uint8_t c2 = (op == 4) ? 1 : (d1 >> 4) & 1;
-  uint8_t d2 = alu4(op, x >> 4, y >> 4, c2);
-
-  AluOut out = { uint8_t((d2 << 4) | (d1 & 0xF)), 0 };
-  if (op == 2 || op == 3 || op == 7) out.f |= F_NEGATIVE;
-  if (c2)         out.f |= F_HALF_CARRY;
-  if (d2 & 0x10)  out.f |= F_CARRY;
-  if (out.x == 0) out.f |= F_ZERO;
   if (op == 7) out.x = x;
+
   return out;
 }
 

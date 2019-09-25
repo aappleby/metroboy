@@ -496,21 +496,20 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //--------------------------------------------------------------------------------
   // Set up read
 
+  uint8_t interrupts = imask_latch & intf_;
+  int vector = -1;
+  if (interrupts & INT_JOYPAD) vector = 4; // joypad
+  if (interrupts & INT_SERIAL) vector = 3; // serial
+  if (interrupts & INT_TIMER)  vector = 2; // timer
+  if (interrupts & INT_STAT)   vector = 1; // lcd stat
+  if (interrupts & INT_VBLANK) vector = 0; // vblank
+
   switch(state_) {
   case Z80_STATE_DECODE: {
     if (state == Z80_STATE_INT4) {
       // Someone could've changed the interrupt mask or flags while we were
       // handling the interrupt, so we have to compute the new PC at the very
       // last second.
-
-      uint8_t interrupts = imask_latch & intf_;
-      int vector = -1;
-      if (interrupts & INT_JOYPAD) vector = 4; // joypad
-      if (interrupts & INT_SERIAL) vector = 3; // serial
-      if (interrupts & INT_TIMER)  vector = 2; // timer
-      if (interrupts & INT_STAT)   vector = 1; // lcd stat
-      if (interrupts & INT_VBLANK) vector = 0; // vblank
-
       if (vector >= 0) {
         int_ack_ = 1 << vector;
         pc = uint16_t(0x0040 + (vector << 3));
@@ -559,13 +558,15 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LDM_A_C)     { addr = 0xFF00 | c; }
     else if (LDM_A_BC)    { addr = bc; }
     else if (LDM_A_DE)    { addr = de; }
-
     else if (LDM_R_HL)    { addr = hl; }
     else if (LDM_A_HLP)   { addr = hl; hl++; }
     else if (LDM_A_HLM)   { addr = hl; hl--; }
     else if (INC_AT_HL)   { addr = hl; }
     else if (DEC_AT_HL)   { addr = hl; }
     else if (OP_CB_HL)    { addr = hl; }
+    else {
+      printf("?");
+    }
     break;
   }
 }

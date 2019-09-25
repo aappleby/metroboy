@@ -1071,10 +1071,22 @@ AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) 
   AluOut out = {0};
 
   if (op == 0) {
-    return add(x, y, 0);
+    uint16_t d1 = (x & 0xF) + (y & 0xF);
+    uint16_t d2 = x + y;
+
+    out = { (uint8_t)d2, 0 };
+    if (d1 & 0x010) out.f |= F_HALF_CARRY;
+    if (d2 & 0x100) out.f |= F_CARRY;
+    if (!out.x)     out.f |= F_ZERO;
   }
   else if (op == 1) {
-    return add(x, y, f);
+    uint16_t d1 = (x & 0xF) + (y & 0xF) + ((f >> 4) & 1);
+    uint16_t d2 = x + y + ((f >> 4) & 1);
+
+    out = { (uint8_t)d2, 0 };
+    if (d1 & 0x010) out.f |= F_HALF_CARRY;
+    if (d2 & 0x100) out.f |= F_CARRY;
+    if (!out.x)     out.f |= F_ZERO;
   }
   else if (op == 2) {
     uint16_t d1 = (x & 0x0F) - (y & 0x0F);

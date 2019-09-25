@@ -169,9 +169,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DECODE:    op = bus_data; break;
   case Z80_STATE_CB1:       op_cb = bus_data; break;
   
-  case Z80_STATE_INT3:      lo = bus_data; break;
-  case Z80_STATE_INT4:      hi = bus_data; break;
-
   case Z80_STATE_POP1:      lo = bus_data; break;
   case Z80_STATE_POP2:      hi = bus_data; break;
 
@@ -501,56 +498,51 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   //--------------------------------------------------------------------------------
+  // Set up read
 
-  if (state_ == Z80_STATE_DECODE) {
-    int next_int = -1;
+  switch(state_) {
+  case Z80_STATE_DECODE:{
     if (interrupt) {
       // Someone could've changed the interrupt mask or flags while we were
       // handling the interrupt, so we have to compute the new PC at the very
       // last second.
 
-      int actual_interrupt = -1;
       uint8_t interrupts = imask_latch & intf_;
-      if (interrupts & INT_JOYPAD) actual_interrupt = 4; // joypad
-      if (interrupts & INT_SERIAL) actual_interrupt = 3; // serial
-      if (interrupts & INT_TIMER)  actual_interrupt = 2; // timer
-      if (interrupts & INT_STAT)   actual_interrupt = 1; // lcd stat
-      if (interrupts & INT_VBLANK) actual_interrupt = 0; // vblank
+      int vector = -1;
+      if (interrupts & INT_JOYPAD) vector = 4; // joypad
+      if (interrupts & INT_SERIAL) vector = 3; // serial
+      if (interrupts & INT_TIMER)  vector = 2; // timer
+      if (interrupts & INT_STAT)   vector = 1; // lcd stat
+      if (interrupts & INT_VBLANK) vector = 0; // vblank
 
-      next_int = actual_interrupt;
-    }
-
-    if (next_int >= 0) int_ack_ = 1 << next_int;
-
-    if (interrupt) {
-      if (next_int >= 0) {
-        pc = uint16_t(0x0040 + (next_int * 8));
-      }
-      else {
+      if (vector >= 0) {
+        int_ack_ = 1 << vector;
+        pc = uint16_t(0x0040 + (vector << 3));
+      } else {
         pc = 0x0000;
       }
+      addr = pc;
     }
-
-    if (!no_branch) {
-      if      (JP_HL)       pc = hl;
-      else if (RST_NN)      pc = op - 0xC7;
-      else if (JR_R8)       pc = pc + (int8_t)lo;
-      else if (JR_CC_R8)    pc = pc + (int8_t)lo;
-      else if (JP_CC_A16)   pc = temp;
-      else if (CALL_CC_A16) pc = temp;
-      else if (RET_CC)      pc = temp;
-      else if (RET)         pc = temp;
-      else if (RETI)        pc = temp;
-      else if (JP_A16)      pc = temp;
-      else if (CALL_A16)    pc = temp;
+    else {
+      if (!no_branch) {
+        if      (JP_HL)       pc = hl;
+        else if (RST_NN)      pc = op - 0xC7;
+        else if (JR_R8)       pc = pc + (int8_t)lo;
+        else if (JR_CC_R8)    pc = pc + (int8_t)lo;
+        else if (JP_CC_A16)   pc = temp;
+        else if (CALL_CC_A16) pc = temp;
+        else if (RET_CC)      pc = temp;
+        else if (RET)         pc = temp;
+        else if (RETI)        pc = temp;
+        else if (JP_A16)      pc = temp;
+        else if (CALL_A16)    pc = temp;
+      }
+      addr = pc;
+      pc = addr + 1;
     }
+    break;
   }
 
-  //--------------------------------------------------------------------------------
-  // Set up read
-
-  switch(state_) {
-  case Z80_STATE_DECODE:
   case Z80_STATE_CB1:
   case Z80_STATE_ARG1:
   case Z80_STATE_ARG2:

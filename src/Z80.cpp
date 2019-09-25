@@ -729,6 +729,8 @@ Z80State Z80::first_state() {
   if (ADD_HL_RR)   return Z80_STATE_ALU_LO;
   
   if (POP_RR)      return Z80_STATE_POP0;
+  if (RET)         return Z80_STATE_POP0;
+  if (RETI)        return Z80_STATE_POP0;
 
   if (LD_R_D8)     return Z80_STATE_ARG0;
   if (STM_HL_D8)   return Z80_STATE_ARG0;
@@ -795,10 +797,6 @@ Z80State Z80::next_state() {
 
     else if (PUSH_RR)       next = Z80_STATE_PUSH_DELAY;
 
-    else if (RET)           next = Z80_STATE_POP1;
-    else if (RETI)          next = Z80_STATE_POP1;
-    else if (POP_RR)        next = Z80_STATE_POP1;
-
     else {
       printf("?");
     }
@@ -838,6 +836,8 @@ Z80State Z80::next_state() {
     next = Z80_STATE_DECODE;
     break;
 
+  //----------
+
   case Z80_STATE_POP0:
     next = Z80_STATE_POP1;
     break;
@@ -847,8 +847,24 @@ Z80State Z80::next_state() {
     break;
 
   case Z80_STATE_POP2:
-    next = POP_RR ? Z80_STATE_DECODE : Z80_STATE_DELAY_C;
+    if (POP_RR) {
+      next = Z80_STATE_DECODE;
+    }
+    else if (RET) {
+      next = Z80_STATE_DELAY_C;
+    }
+    else if (RETI) {
+      next = Z80_STATE_DELAY_C;
+    }
+    else if (RET_CC) {
+      next = Z80_STATE_DELAY_C;
+    }
+    else {
+      printf("fail");
+    }
     break;
+
+  //----------
 
   case Z80_STATE_ARG0:
     if      (LD_R_D8)       next = Z80_STATE_ARG1;

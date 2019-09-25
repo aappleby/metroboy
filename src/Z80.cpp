@@ -202,19 +202,6 @@ CpuBus Z80::tick_t0() const {
 
 
 
-AluOut add(uint16_t x, uint16_t y, uint8_t f) {
-  uint16_t cr = ((f & F_CARRY) ? 1 : 0);
-  uint16_t zh = (x + y + cr);
-  uint16_t hc = ((x & 0xF) + (y & 0xF) + cr) >> 4;
-  
-  return {
-    zh,
-    uint8_t((hc ? F_HALF_CARRY : 0) | ((zh >> 8) ? F_CARRY : 0) | (zh & 0xFF ? 0 : F_ZERO))
-  };
-}
-
-
-
 //-----------------------------------------------------------------------------
 // TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0
 
@@ -320,7 +307,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       a = (uint8_t)out.x;
     }
     else if (INC_R) {
-      out = add(reg_get8(), 1, 0);
+      out = alu(1, reg_get8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
     }
     else if (DEC_R) {
@@ -334,7 +321,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if (ADD_HL_HL) y = l;
       if (ADD_HL_SP) y = p;
 
-      out = add(l, y, 0);
+      out = alu(1, l, y, 0);
       l = (uint8_t)out.x;
     }
 
@@ -359,7 +346,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if (ADD_HL_HL) y = h;
       if (ADD_HL_SP) y = s;
 
-      AluOut out = add(h, y, f);
+      AluOut out = alu(1, h, y, f);
       uint8_t mask = flag_mask[op];
       h = (uint8_t)out.x;
       f = (f & ~mask) | (out.f & mask);
@@ -1015,6 +1002,7 @@ void Z80::reg_put8(int mux, uint8_t reg) {
 // 4-bit-at-a-time ALU just for amusement
 
 #if 0
+
 uint8_t alu4(const uint8_t op, const uint8_t a, const uint8_t b, const uint8_t c) {
   switch (op) {
   case 0: return a + b + c; // add
@@ -1029,7 +1017,7 @@ uint8_t alu4(const uint8_t op, const uint8_t a, const uint8_t b, const uint8_t c
   return 0;
 }
 
-AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
+__declspec(noinline) AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
   uint8_t c1 = (op == 0 || op == 2 || op == 7) ? 0 : (f >> 4) & 1;
   uint8_t d1 = alu4(op, x & 0xF, y & 0xF, c1);
 
@@ -1044,19 +1032,22 @@ AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) 
   if (op == 7) out.x = x;
   return out;
 }
-#endif
 
-AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
+#else
+
+__declspec(noinline) AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) {
   uint16_t d1 = 0, d2 = 0, c = ((f >> 4) & 1);
 
-  if (op == 0) { d1 = (x & 0xF) + (y & 0xF);     d2 = x + y; }
-  if (op == 1) { d1 = (x & 0xF) + (y & 0xF) + c; d2 = x + y + c; }
-  if (op == 2) { d1 = (x & 0xF) - (y & 0xF);     d2 = x - y; }
-  if (op == 3) { d1 = (x & 0xF) - (y & 0xF) - c; d2 = x - y - c; }
-  if (op == 4) { d1 = 0xFFF;                     d2 = x & y; }
-  if (op == 5) { d1 = 0x000;                     d2 = x ^ y; }
-  if (op == 6) { d1 = 0x000;                     d2 = x | y; }
-  if (op == 7) { d1 = (x & 0xF) - (y & 0xF);     d2 = x - y; }
+  switch(op) {
+  case 0: d1 = (x & 0xF) + (y & 0xF);     d2 = x + y;     break;
+  case 1: d1 = (x & 0xF) + (y & 0xF) + c; d2 = x + y + c; break;
+  case 2: d1 = (x & 0xF) - (y & 0xF);     d2 = x - y;     break;
+  case 3: d1 = (x & 0xF) - (y & 0xF) - c; d2 = x - y - c; break;
+  case 4: d1 = 0xFFF;                     d2 = x & y;     break;
+  case 5: d1 = 0x000;                     d2 = x ^ y;     break;
+  case 6: d1 = 0x000;                     d2 = x | y;     break;
+  case 7: d1 = (x & 0xF) - (y & 0xF);     d2 = x - y;     break;
+  }
 
   uint8_t z = (uint8_t)d2;
   uint8_t g = (op == 2 || op == 3 || op == 7) ? F_NEGATIVE : 0;
@@ -1068,6 +1059,8 @@ AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) 
 
   return {z, g};
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 // The logic is more annoying, but this can be implemented as two 4-bit additions

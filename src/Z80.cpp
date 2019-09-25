@@ -23,14 +23,11 @@
 #define STM_HLM_A     (op == 0x32)
 #define STM_A8_A      (op == 0xE0)
 #define STM_C_A       (op == 0xE2)
-#define STM_HL_D8     (op == 0x36)
 #define STM_A16_SP    (op == 0x08)
 #define STM_A16_A     (op == 0xEA)
 
 #define ADD_SP_R8     (op == 0xE8)
 #define LD_HL_SP_R8   (op == 0xF8)
-#define INC_AT_HL     (op == 0x34)
-#define DEC_AT_HL     (op == 0x35)
 
 #define LDM_A_A16     (op == 0xFA)
 #define LDM_A_C       (op == 0xF2)
@@ -71,18 +68,25 @@
 #define INC_SP        (op == 0b00110011)
 #define INC_RR        ((op & 0b11001111) == 0b00000011)
 
-#define DEC_RR        (QUAD_0 && OP_COL == 3 &&  OP_ODD_ROW)
+#define DEC_BC        (op == 0x0B)
+#define DEC_DE        (op == 0x1B)
+#define DEC_HL        (op == 0x2B)
+#define DEC_SP        (op == 0x3B)
+#define DEC_RR        ((op & 0b11001111) == 0b00001011)
 
-#define INC_R         (QUAD_0 && OP_COL == 4 && !INC_AT_HL)
-#define DEC_R         (QUAD_0 && OP_COL == 5 && !DEC_AT_HL)
+#define INC_AT_HL     (op == 0x34)
+#define DEC_AT_HL     (op == 0x35)
+#define INC_R         ((op & 0b11000111) == 0b00000100 && !INC_AT_HL)
+#define DEC_R         ((op & 0b11000111) == 0b00000101 && !DEC_AT_HL)
 
-#define LD_R_D8       (QUAD_0 && OP_COL == 6 && !STM_HL_D8)
+#define STM_HL_D8     (op == 0x36)
+#define LD_R_D8       ((op & 0b11000111) == 0b00000110 && !STM_HL_D8)
 
 #define RLU_R         ((op & 0b11000111) == 0b00000111)
 
-#define LDM_R_HL      (QUAD_1 && OP_COL == 6 && !HALT)
-#define STM_HL_R      (QUAD_1 && OP_ROW == 6 && !HALT)
-#define MV_R_R        (QUAD_1 && OP_COL != 6 && OP_ROW != 6)
+#define LDM_R_HL      ((op & 0b11000111) == 0b01000110 && !HALT)
+#define STM_HL_R      ((op & 0b11111000) == 0b01110000 && !HALT)
+#define MV_R_R        (((op & 0b11000000) == 0b01000000) && ((op & 0b00000111) != 0b00000110) && ((op & 0b00111000) != 0b00110000))
 
 #define ALU_A_HL      ((op & 0b11000111) == 0b10000110)
 #define ALU_A_R       (QUAD_2 && !ALU_A_HL)
@@ -123,8 +127,8 @@
 #define POP_AF        (op == 0b11110001)
 #define POP_RR        ((op & 0b11001111) == 0b11000001)
 
-#define ALU_A_D8      (QUAD_3 && OP_COL == 6)
-#define RST_NN        (QUAD_3 && OP_COL == 7)
+#define ALU_A_D8      ((op & 0b11000111) == 0b11000110)
+#define RST_NN        ((op & 0b11000111) == 0b11000111)
 
 #define PREFIX_CB     (op == 0xCB)
 #define CB_QUAD       ((cb >> 6) & 3)

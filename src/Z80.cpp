@@ -1093,6 +1093,12 @@ AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f) 
     return out;
   }
 
+  if (op == 4) {
+    AluOut out = { uint16_t(x & y), F_HALF_CARRY };
+    if (!(x & y)) out.f |= F_ZERO;
+    return out;
+  }
+
   uint8_t c1 = (op == 0 || op == 2 || op == 7) ? 0 : (f >> 4) & 1;
   uint8_t d1 = alu4(op, x & 0xF, y & 0xF, c1);
 

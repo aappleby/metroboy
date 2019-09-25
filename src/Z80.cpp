@@ -6,13 +6,7 @@
 
 //-----------------------------------------------------------------------------
 
-#define QUAD_0        ((op & 0b11000000) == 0b00000000)
-#define QUAD_1        ((op & 0b11000000) == 0b01000000)
-#define QUAD_2        ((op & 0b11000000) == 0b10000000)
-#define QUAD_3        ((op & 0b11000000) == 0b11000000)
-
 #define OP_ROW        ((op >> 3) & 7)
-#define OP_ODD_ROW    ((op >> 3) & 1)
 #define OP_COL        (op & 0x07)
 
 #define NOP           (op == 0x00)
@@ -86,10 +80,10 @@
 
 #define LDM_R_HL      ((op & 0b11000111) == 0b01000110 && !HALT)
 #define STM_HL_R      ((op & 0b11111000) == 0b01110000 && !HALT)
-#define MV_R_R        (((op & 0b11000000) == 0b01000000) && ((op & 0b00000111) != 0b00000110) && ((op & 0b00111000) != 0b00110000))
+#define MV_R_R        ((op & 0b11000000) == 0b01000000 && (op & 0b00000111) != 0b00000110 && (op & 0b00111000) != 0b00110000)
 
 #define ALU_A_HL      ((op & 0b11000111) == 0b10000110)
-#define ALU_A_R       (QUAD_2 && !ALU_A_HL)
+#define ALU_A_R       ((op & 0b11000000) == 0b10000000 && (op & 0b11000111) != 0b10000110)
 
 #define JR_NZ_R8      (op == 0b00100000)
 #define JR_Z_R8       (op == 0b00101000)
@@ -980,7 +974,7 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 //-----------------------------------------------------------------------------
 
 uint8_t Z80::reg_get8() const {
-  int mux = QUAD_0 ? OP_ROW : OP_COL;
+  int mux = (op & 0b11000000) ? OP_COL : OP_ROW;
   if (PREFIX_CB) mux = CB_COL;
   if (RLU_R) mux = OP_COL;
 

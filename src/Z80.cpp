@@ -743,6 +743,15 @@ Z80State Z80::first_state() {
   if (CALL_A16)    return Z80_STATE_ARG0;
   if (CALL_CC_A16) return Z80_STATE_ARG0;
 
+  if (INC_AT_HL)   return Z80_STATE_MEM_READ0;
+  if (DEC_AT_HL)   return Z80_STATE_MEM_READ0;
+  if (LDM_A_HLP)   return Z80_STATE_MEM_READ0;
+  if (LDM_A_HLM)   return Z80_STATE_MEM_READ0;
+  if (LDM_R_HL)    return Z80_STATE_MEM_READ0;
+  if (LDM_A_BC)    return Z80_STATE_MEM_READ0;
+  if (LDM_A_DE)    return Z80_STATE_MEM_READ0;
+  if (LDM_A_C)     return Z80_STATE_MEM_READ0;
+
   return Z80_STATE_DECODE;
 }
 
@@ -765,15 +774,6 @@ Z80State Z80::next_state() {
     else if (STM_C_A)       next = Z80_STATE_MEM_WRITE1;
     else if (STM_BC_A)      next = Z80_STATE_MEM_WRITE1;
     else if (STM_DE_A)      next = Z80_STATE_MEM_WRITE1;
-
-    else if (INC_AT_HL)     next = Z80_STATE_MEM_READ1;
-    else if (DEC_AT_HL)     next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_HLP)     next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_HLM)     next = Z80_STATE_MEM_READ1;
-    else if (LDM_R_HL)      next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_BC)      next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_DE)      next = Z80_STATE_MEM_READ1;
-    else if (LDM_A_C)       next = Z80_STATE_MEM_READ1;
 
     else if (ALU_A_HL)      next = Z80_STATE_ALU_LO;
 

@@ -286,11 +286,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_HALT0: unhalt = 0; break;
   case Z80_STATE_HALT1: break;
 
-  case Z80_STATE_INT0: break;
-  case Z80_STATE_INT1: break;
-  case Z80_STATE_INT2: break;
-  case Z80_STATE_INT3: break;
-  case Z80_STATE_INT4: break;
+  case Z80_STATE_INT0: state_ = Z80_STATE_INT1;   break;
+  case Z80_STATE_INT1: state_ = Z80_STATE_INT2;   break;
+  case Z80_STATE_INT2: state_ = Z80_STATE_INT3;   break;
+  case Z80_STATE_INT3: state_ = Z80_STATE_INT4;   break;
+  case Z80_STATE_INT4: state_ = Z80_STATE_DECODE; break;
 
   //----------
 
@@ -846,11 +846,11 @@ Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool
 
   //----------
 
-  case Z80_STATE_INT0:       return Z80_STATE_INT1;
-  case Z80_STATE_INT1:       return Z80_STATE_INT2;
-  case Z80_STATE_INT2:       return Z80_STATE_INT3;
-  case Z80_STATE_INT3:       return Z80_STATE_INT4;
-  case Z80_STATE_INT4:       return Z80_STATE_DECODE;
+  case Z80_STATE_INT0:       return Z80_STATE_INVALID;
+  case Z80_STATE_INT1:       return Z80_STATE_INVALID;
+  case Z80_STATE_INT2:       return Z80_STATE_INVALID;
+  case Z80_STATE_INT3:       return Z80_STATE_INVALID;
+  case Z80_STATE_INT4:       return Z80_STATE_INVALID;
 
   case Z80_STATE_HALT0:      return no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
   case Z80_STATE_HALT1:      return unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
@@ -946,7 +946,7 @@ Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool
 
   }
 
-  printf("fail");
+  printf("fail next_state");
   return Z80_STATE_INVALID;
 }
 

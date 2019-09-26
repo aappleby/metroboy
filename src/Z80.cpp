@@ -292,6 +292,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       state_ = Z80_STATE_DECODE;
     }
     else if (OP_CB_HL) {
+      addr = hl;
       state_ = Z80_STATE_MEM_READ1;
     }
     else {
@@ -510,7 +511,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LDM_A_A16)    { state_ = Z80_STATE_ARG2; }
     else if (ADD_SP_R8)    { state_ = Z80_STATE_ALU2; }
     else if (LD_HL_SP_R8)  { state_ = Z80_STATE_ALU2; }
-    else if (LDM_A_A8)     { state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_A8)     { addr = 0xFF00 | lo; state_ = Z80_STATE_MEM_READ1; }
     else if (STM_A8_A)     { state_ = Z80_STATE_MEM_WRITE1; }
     else if (STM_HL_D8)    { state_ = Z80_STATE_MEM_WRITE1; }
     else if (JR_R8)        { state_ = Z80_STATE_PTR1; }
@@ -526,7 +527,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LD_DE_D16)   { d = bus_data; state_ = Z80_STATE_DECODE; }
     else if (LD_HL_D16)   { h = bus_data; state_ = Z80_STATE_DECODE; }
     else if (LD_SP_D16)   { s = bus_data; state_ = Z80_STATE_DECODE; }
-    else if (LDM_A_A16)   { state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_A16)   { addr = temp; state_ = Z80_STATE_MEM_READ1; }
     else if (STM_A16_A)   { state_ = Z80_STATE_MEM_WRITE1; }
     else if (STM_A16_SP)  { state_ = Z80_STATE_MEM_WRITE1; }
     else if (JP_A16)      { state_ = Z80_STATE_PTR1; }
@@ -541,11 +542,16 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_MEM_READ0:
     if      (ALU_A_HL)  { addr = hl; state_ = Z80_STATE_ALU1; }
-    else if (INC_AT_HL) { state_ = Z80_STATE_MEM_READ1; }
-    else if (DEC_AT_HL) { state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_R_HL)  { state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_RR)  { state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_C)   { state_ = Z80_STATE_MEM_READ1; }
+    else if (INC_AT_HL) { addr = hl; state_ = Z80_STATE_MEM_READ1; }
+    else if (DEC_AT_HL) { addr = hl; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_R_HL)  { addr = hl; state_ = Z80_STATE_MEM_READ1; }
+    
+    else if (LDM_A_BC)  { addr = bc; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_DE)  { addr = de; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_HLP) { addr = hl; hl++; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_HLM) { addr = hl; hl--; state_ = Z80_STATE_MEM_READ1; }
+
+    else if (LDM_A_C)   { addr = 0xFF00 | c; state_ = Z80_STATE_MEM_READ1; }
     else printf("fail read0");
     break;
 
@@ -634,8 +640,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //--------------------------------------------------------------------------------
   // Set up read
 
-  switch(state_) {
-  case Z80_STATE_DECODE: {
+  if (state_ == Z80_STATE_DECODE) {
     if (state == Z80_STATE_INT4) {
       // Someone could've changed the interrupt mask or flags while we were
       // handling the interrupt, so we have to compute the new PC at the very
@@ -659,25 +664,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
     // still not sure if this is the right place to increment pc
     pc = addr + 1;
-    break;
-  }
-
-  case Z80_STATE_MEM_READ1:
-    if      (LDM_A_A16)   { addr = temp; }
-    else if (LDM_A_A8)    { addr = 0xFF00 | lo; }
-    else if (LDM_A_C)     { addr = 0xFF00 | c; }
-    else if (LDM_A_BC)    { addr = bc; }
-    else if (LDM_A_DE)    { addr = de; }
-    else if (LDM_R_HL)    { addr = hl; }
-    else if (LDM_A_HLP)   { addr = hl; hl++; }
-    else if (LDM_A_HLM)   { addr = hl; hl--; }
-    else if (INC_AT_HL)   { addr = hl; }
-    else if (DEC_AT_HL)   { addr = hl; }
-    else if (OP_CB_HL)    { addr = hl; }
-    else {
-      printf("?");
-    }
-    break;
   }
 }
 

@@ -274,6 +274,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       f = (f & ~mask) | (out.f & mask);
       reg_put8(CB_COL, (uint8_t)out.x);
     }
+    else if (OP_CB_HL) {
+      // we're just here on our way to MEM_READ1
+    }
+    else {
+      printf("fail cb1");
+    }
     break;
   }
 
@@ -320,7 +326,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if (ADD_HL_SP) out = alu(1, l, p, 0);
       l = (uint8_t)out.x;
     }
-    else printf("fail");
+    else {
+      printf("fail alu1");
+    }
 
 
     //if      (NOP)            return Z80_STATE_DECODE;
@@ -349,7 +357,17 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       h = (uint8_t)out.x;
       set_flag(out.f);
     }
-    else printf("fail");
+    else if (ADD_SP_R8) {
+      // this should be in the alu block
+      bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
+
+      sp = sp + (int8_t)lo;
+      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+    }
+    else {
+      printf("fail alu2");
+    }
 
     break;
   }
@@ -361,13 +379,19 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_PUSHN: break;
   case Z80_STATE_PUSH0: break;
   case Z80_STATE_PUSH1:
+    if      (RST_NN);
+    else if (CALL_A16);
+    else if (CALL_CC_A16);
+    else if (PUSH_RR);
+    else printf("fail push1");
     imask_latch = imask_;
     break;
   case Z80_STATE_PUSH2: 
-    // fixme
-    if (RST_NN)      pc = op - 0xC7;
-    if (CALL_A16)    pc = temp;
-    if (CALL_CC_A16) pc = temp;
+    if      (RST_NN)      pc = op - 0xC7;
+    else if (CALL_A16)    pc = temp;
+    else if (CALL_CC_A16) pc = temp;
+    else if (PUSH_RR);
+    else printf("fail push2");
     break;
 
   //----------
@@ -375,18 +399,26 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_POP0: break;
 
   case Z80_STATE_POP1: {
-    if (POP_BC) c = bus_data;
-    if (POP_DE) e = bus_data;
-    if (POP_HL) l = bus_data;
-    if (POP_AF) f = bus_data & 0xF0;
+    if      (POP_BC) c = bus_data;
+    else if (POP_DE) e = bus_data;
+    else if (POP_HL) l = bus_data;
+    else if (POP_AF) f = bus_data & 0xF0;
+    else if (RET);
+    else if (RETI);
+    else if (RET_CC);
+    else printf("fail pop1");
     break;
   }
 
   case Z80_STATE_POP2: {
-    if (POP_BC) b = bus_data;
-    if (POP_DE) d = bus_data;
-    if (POP_HL) h = bus_data;
-    if (POP_AF) a = bus_data;
+    if      (POP_BC) b = bus_data;
+    else if (POP_DE) d = bus_data;
+    else if (POP_HL) h = bus_data;
+    else if (POP_AF) a = bus_data;
+    else if (RET);
+    else if (RETI);
+    else if (RET_CC);
+    else printf("fail pop2");
     break;
   }
 
@@ -404,19 +436,25 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
     }
-    else if (ADD_SP_R8) {
-      // this should be in the alu block
-      bool halfcarry = (sp & 0x000F) + (bus_data & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (bus_data & 0x00FF) > 0x00FF;
-
-      sp = sp + (int8_t)lo;
-      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-    }
     else if (LD_BC_D16) c = bus_data;
     else if (LD_DE_D16) e = bus_data;
     else if (LD_HL_D16) l = bus_data;
     else if (LD_SP_D16) p = bus_data;
-
+    else if (ADD_SP_R8);
+    else if (JR_R8);
+    else if (JR_CC_R8);
+    else if (JP_A16);
+    else if (JP_CC_A16);
+    else if (CALL_A16);
+    else if (CALL_CC_A16);
+    else if (STM_A8_A);
+    else if (STM_A16_A);
+    else if (STM_A16_SP);
+    else if (LDM_A_A8);
+    else if (LDM_A_A16);
+    else if (LD_HL_SP_R8);
+    else if (STM_HL_D8);
+    else printf("fail arg1");
     break;
   }
 
@@ -425,6 +463,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LD_DE_D16) d = bus_data;
     else if (LD_HL_D16) h = bus_data;
     else if (LD_SP_D16) s = bus_data;
+    else if (JP_A16);
+    else if (JP_CC_A16);
+    else if (CALL_A16);
+    else if (CALL_CC_A16);
+    else if (STM_A16_A);
+    else if (STM_A16_SP);
+    else if (LDM_A_A16);
+    else printf("fail arg2");
     break;
   }
 
@@ -459,6 +505,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       // store in lo
       data_out = (uint8_t)out.x;
     }
+    else printf("fail read1");
     break;
   }
 
@@ -489,7 +536,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (DEC_HL)      hl--;
     else if (DEC_SP)      sp--;
     else if (LD_SP_HL)    sp = hl;
-    else printf("fail");
+    else printf("fail ptr1");
     break;
 
   }

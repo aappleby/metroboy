@@ -11,10 +11,7 @@
 
 #define NOP           (op == 0x00)
 
-#define STM_BC_A      (op == 0x02)
-#define STM_DE_A      (op == 0x12)
-#define STM_HLP_A     (op == 0x22)
-#define STM_HLM_A     (op == 0x32)
+
 #define STM_A8_A      (op == 0xE0)
 #define STM_C_A       (op == 0xE2)
 #define STM_A16_SP    (op == 0x08)
@@ -50,11 +47,18 @@
 #define ADD_HL_SP     (op == 0x39)
 #define ADD_HL_RR     ((op & 0b11001111) == 0b00001001)
 
+#define STM_BC_A      (op == 0x02)
+#define STM_DE_A      (op == 0x12)
+#define STM_HLP_A     (op == 0x22)
+#define STM_HLM_A     (op == 0x32)
+#define STM_RR_A      ((op & 0b11001111) == 0b00000010)
+
 #define LDM_A_BC      (op == 0x0A)
 #define LDM_A_DE      (op == 0x1A)
 #define LDM_A_HLP     (op == 0x2A)
 #define LDM_A_HLM     (op == 0x3A)
 #define LDM_A_RR      ((op & 0b11001111) == 0b00001010)
+
 
 #define INC_BC        (op == 0b00000011)
 #define INC_DE        (op == 0b00010011)
@@ -389,27 +393,50 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   // Gameboy weirdness - the "real" interrupt vector is determined by the
   // state of imask/intf after pushing the first byte of PC onto the stack.
 
-  case Z80_STATE_PUSHN: break;
-  case Z80_STATE_PUSH0: break;
+  case Z80_STATE_PUSHN:
+    state_ = Z80_STATE_PUSH0;
+    break;
+
+  case Z80_STATE_PUSH0:
+    state_ = Z80_STATE_PUSH1;
+    break;
+
   case Z80_STATE_PUSH1:
     if      (RST_NN);
     else if (CALL_A16);
     else if (CALL_CC_A16);
     else if (PUSH_RR);
     else printf("fail push1");
+    
     imask_latch = imask_;
+    state_ = Z80_STATE_PUSH2;
     break;
+
   case Z80_STATE_PUSH2: 
     if      (RST_NN)      pc = op - 0xC7;
     else if (CALL_A16)    pc = temp;
     else if (CALL_CC_A16) pc = temp;
     else if (PUSH_RR);
     else printf("fail push2");
+    
+    state_ = Z80_STATE_DECODE;
     break;
 
   //----------
 
-  case Z80_STATE_POP0: break;
+  case Z80_STATE_POPN:
+    state_ = Z80_STATE_POP0;
+    break;
+
+
+  case Z80_STATE_POP0:
+    if      (RET)            state_ = Z80_STATE_POP1;
+    else if (RETI)           state_ = Z80_STATE_POP1;
+    else if (POP_RR)         state_ = Z80_STATE_POP1;
+    else if (RET_CC)         state_ = no_branch ? Z80_STATE_DECODE : Z80_STATE_POP1;
+    else printf("fail pop0");
+    
+    break;
 
   case Z80_STATE_POP1: {
     if      (POP_BC) c = bus_data;
@@ -420,17 +447,18 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (RETI);
     else if (RET_CC);
     else printf("fail pop1");
+    state_ = Z80_STATE_POP2;
     break;
   }
 
   case Z80_STATE_POP2: {
-    if      (POP_BC) b = bus_data;
-    else if (POP_DE) d = bus_data;
-    else if (POP_HL) h = bus_data;
-    else if (POP_AF) a = bus_data;
-    else if (RET);
-    else if (RETI);
-    else if (RET_CC);
+    if      (POP_BC) {b = bus_data; state_ = Z80_STATE_DECODE; }
+    else if (POP_DE) {d = bus_data; state_ = Z80_STATE_DECODE; }
+    else if (POP_HL) {h = bus_data; state_ = Z80_STATE_DECODE; }
+    else if (POP_AF) {a = bus_data; state_ = Z80_STATE_DECODE; }
+    else if (RET)    state_ = Z80_STATE_PTR1;
+    else if (RETI)   state_ = Z80_STATE_PTR1;
+    else if (RET_CC) state_ = Z80_STATE_PTR1;
     else printf("fail pop2");
     break;
   }
@@ -781,24 +809,22 @@ Z80State first_state(uint8_t op) {
   if (HALT)        return Z80_STATE_HALT0;
 
   if (NOP)         return Z80_STATE_ALU1;
-  if (DI)          return Z80_STATE_ALU1;
-  if (EI)          return Z80_STATE_ALU1;
   if (ALU_A_R)     return Z80_STATE_ALU1;
   if (INC_R)       return Z80_STATE_ALU1;
   if (DEC_R)       return Z80_STATE_ALU1;
   if (RLU_R)       return Z80_STATE_ALU1;
   if (MV_R_R)      return Z80_STATE_ALU1;
   if (ADD_HL_RR)   return Z80_STATE_ALU1;
-  
+  if (DI)          return Z80_STATE_ALU1;
+  if (EI)          return Z80_STATE_ALU1;
+
   if (PUSH_RR)     return Z80_STATE_PUSHN;
   if (RST_NN)      return Z80_STATE_PUSHN;
 
-  if (POP_RR)      return Z80_STATE_POP0;
   if (RET)         return Z80_STATE_POP0;
   if (RETI)        return Z80_STATE_POP0;
-
-  // ret_cc has an extra delay cycle before pop
-  if (RET_CC)      return Z80_STATE_POPN;
+  if (RET_CC)      return Z80_STATE_POPN; // ret_cc has an extra delay cycle before pop
+  if (POP_RR)      return Z80_STATE_POP0;
 
   if (LD_R_D8)     return Z80_STATE_ARG0;
   if (LDM_A_A8)    return Z80_STATE_ARG0;
@@ -809,43 +835,30 @@ Z80State first_state(uint8_t op) {
   if (STM_A8_A)    return Z80_STATE_ARG0;
   if (ALU_A_D8)    return Z80_STATE_ARG0;
   if (ADD_SP_R8)   return Z80_STATE_ARG0;
-
   if (LDM_A_A16)   return Z80_STATE_ARG0;
   if (LD_RR_D16)   return Z80_STATE_ARG0;
   if (STM_A16_A)   return Z80_STATE_ARG0;
   if (STM_A16_SP)  return Z80_STATE_ARG0;
-  
   if (JP_A16)      return Z80_STATE_ARG0;
   if (JP_CC_A16)   return Z80_STATE_ARG0;
-
   if (CALL_A16)    return Z80_STATE_ARG0;
   if (CALL_CC_A16) return Z80_STATE_ARG0;
 
+  if (ALU_A_HL)    return Z80_STATE_MEM_READ0;
   if (INC_AT_HL)   return Z80_STATE_MEM_READ0;
   if (DEC_AT_HL)   return Z80_STATE_MEM_READ0;
   if (LDM_R_HL)    return Z80_STATE_MEM_READ0;
-
-  if (LDM_A_HLP)   return Z80_STATE_MEM_READ0;
-  if (LDM_A_HLM)   return Z80_STATE_MEM_READ0;
-  if (LDM_A_BC)    return Z80_STATE_MEM_READ0;
-  if (LDM_A_DE)    return Z80_STATE_MEM_READ0;
+  if (LDM_A_RR)    return Z80_STATE_MEM_READ0;
   if (LDM_A_C)     return Z80_STATE_MEM_READ0;
-  
-  if (ALU_A_HL)    return Z80_STATE_MEM_READ0;
-
-  if (STM_BC_A)    return Z80_STATE_MEM_WRITE0;
-  if (STM_DE_A)    return Z80_STATE_MEM_WRITE0;
-  if (STM_HLP_A)   return Z80_STATE_MEM_WRITE0;
-  if (STM_HLM_A)   return Z80_STATE_MEM_WRITE0;
 
   if (STM_HL_R)    return Z80_STATE_MEM_WRITE0;
+  if (STM_RR_A)    return Z80_STATE_MEM_WRITE0;
   if (STM_C_A)     return Z80_STATE_MEM_WRITE0;
-
-  if (JP_HL)       return Z80_STATE_PTR1;
 
   if (INC_RR)      return Z80_STATE_PTR0;
   if (DEC_RR)      return Z80_STATE_PTR0;
   if (LD_SP_HL)    return Z80_STATE_PTR0;
+  if (JP_HL)       return Z80_STATE_PTR1;
 
   printf("fail first_state");
   return Z80_STATE_INVALID;
@@ -879,30 +892,17 @@ Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool
   case Z80_STATE_ALU1:       return Z80_STATE_INVALID;
   case Z80_STATE_ALU2:       return Z80_STATE_INVALID;
 
-  case Z80_STATE_PUSHN:      return Z80_STATE_PUSH0;
-  case Z80_STATE_PUSH0:      return Z80_STATE_PUSH1;
-  case Z80_STATE_PUSH1:      return Z80_STATE_PUSH2;
-  case Z80_STATE_PUSH2:      return Z80_STATE_DECODE;
+  case Z80_STATE_PUSHN:      return Z80_STATE_INVALID;
+  case Z80_STATE_PUSH0:      return Z80_STATE_INVALID;
+  case Z80_STATE_PUSH1:      return Z80_STATE_INVALID;
+  case Z80_STATE_PUSH2:      return Z80_STATE_INVALID;
 
   //----------
 
-  case Z80_STATE_POPN:       return Z80_STATE_POP0;
-
-  case Z80_STATE_POP0:
-    if      (RET)            return Z80_STATE_POP1;
-    else if (RETI)           return Z80_STATE_POP1;
-    else if (POP_RR)         return Z80_STATE_POP1;
-    else if (RET_CC)         return no_branch ? Z80_STATE_DECODE : Z80_STATE_POP1;
-    break;
-
-  case Z80_STATE_POP1:       return Z80_STATE_POP2;
-
-  case Z80_STATE_POP2:
-    if      (POP_RR)         return Z80_STATE_DECODE;
-    else if (RET)            return Z80_STATE_PTR1;
-    else if (RETI)           return Z80_STATE_PTR1;
-    else if (RET_CC)         return Z80_STATE_PTR1;
-    break;
+  case Z80_STATE_POPN:       return Z80_STATE_INVALID;
+  case Z80_STATE_POP0:       return Z80_STATE_INVALID;
+  case Z80_STATE_POP1:       return Z80_STATE_INVALID;
+  case Z80_STATE_POP2:       return Z80_STATE_INVALID;
 
   //----------
 

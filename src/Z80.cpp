@@ -487,22 +487,34 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_PUSH0:
-    state_ = Z80_STATE_PUSH1;
+    if      (PUSH_BC)     { addr = --sp; data_out = b;                  state_ = Z80_STATE_PUSH1; }
+    else if (PUSH_DE)     { addr = --sp; data_out = d;                  state_ = Z80_STATE_PUSH1; }
+    else if (PUSH_HL)     { addr = --sp; data_out = h;                  state_ = Z80_STATE_PUSH1; }
+    else if (PUSH_AF)     { addr = --sp; data_out = a;                  state_ = Z80_STATE_PUSH1; }
+    else if (RST_NN)      { addr = --sp; data_out = (uint8_t)(pc >> 8); state_ = Z80_STATE_PUSH1; }
+    else if (CALL_A16)    { addr = --sp; data_out = (uint8_t)(pc >> 8); state_ = Z80_STATE_PUSH1; }
+    else if (CALL_CC_A16) { addr = --sp; data_out = (uint8_t)(pc >> 8); state_ = Z80_STATE_PUSH1; }
+    else {
+      printf("fail push0");
+    }
     break;
 
   case Z80_STATE_PUSH1:
-    if      (RST_NN)      { state_ = Z80_STATE_PUSH2; }
+    if      (PUSH_BC)     { state_ = Z80_STATE_PUSH2; }
+    else if (PUSH_DE)     { state_ = Z80_STATE_PUSH2; }
+    else if (PUSH_HL)     { state_ = Z80_STATE_PUSH2; }
+    else if (PUSH_AF)     { state_ = Z80_STATE_PUSH2; }
+    else if (RST_NN)      { state_ = Z80_STATE_PUSH2; }
     else if (CALL_A16)    { state_ = Z80_STATE_PUSH2; }
     else if (CALL_CC_A16) { state_ = Z80_STATE_PUSH2; }
-    else if (PUSH_RR)     { state_ = Z80_STATE_PUSH2; }
     else printf("fail push1");
     break;
 
   case Z80_STATE_PUSH2: 
-    if      (RST_NN)      { pc = op - 0xC7; addr = pc++; state_ = Z80_STATE_DECODE; }
+    if      (PUSH_RR)     {                 addr = pc++; state_ = Z80_STATE_DECODE; }
+    else if (RST_NN)      { pc = op - 0xC7; addr = pc++; state_ = Z80_STATE_DECODE; }
     else if (CALL_A16)    { pc = temp;      addr = pc++; state_ = Z80_STATE_DECODE; }
     else if (CALL_CC_A16) { pc = temp;      addr = pc++; state_ = Z80_STATE_DECODE; }
-    else if (PUSH_RR)     {                 addr = pc++; state_ = Z80_STATE_DECODE; }
     else printf("fail push2");
     break;
 
@@ -762,17 +774,6 @@ void Z80::tock_t2() {
     else if (INC_AT_HL)      { addr = hl;          data_out = data_out; }
     else if (DEC_AT_HL)      { addr = hl;          data_out = data_out; }
     else if (OP_CB_HL)       { addr = hl;          data_out = data_out; }
-    break;
-  }
-
-  case Z80_STATE_PUSH1: {
-    if      (PUSH_BC)     { addr = --sp; data_out = b; }
-    else if (PUSH_DE)     { addr = --sp; data_out = d; }
-    else if (PUSH_HL)     { addr = --sp; data_out = h; }
-    else if (PUSH_AF)     { addr = --sp; data_out = a; }
-    else if (CALL_A16)    { addr = --sp; data_out = (uint8_t)(pc >> 8); }
-    else if (CALL_CC_A16) { addr = --sp; data_out = (uint8_t)(pc >> 8); }
-    else if (RST_NN)      { addr = --sp; data_out = (uint8_t)(pc >> 8); }
     break;
   }
 

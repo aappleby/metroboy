@@ -722,7 +722,9 @@ Z80State first_state(uint8_t op) {
   if (POP_RR)      return Z80_STATE_POP0;
   if (RET)         return Z80_STATE_POP0;
   if (RETI)        return Z80_STATE_POP0;
+
   // ret_cc has an extra delay cycle before pop
+  if (RET_CC)      return Z80_STATE_POPN;
 
   if (LD_R_D8)     return Z80_STATE_ARG0;
   if (LDM_A_A8)    return Z80_STATE_ARG0;
@@ -782,8 +784,6 @@ Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool
     if      (NOP)            return Z80_STATE_DECODE;
     else if (DI)             return Z80_STATE_DECODE;
     else if (EI)             return Z80_STATE_DECODE;
-    else if (JP_HL)          return Z80_STATE_DECODE;
-    else if (RET_CC)         return Z80_STATE_POP0;
     else printf("fail");
     break;
 

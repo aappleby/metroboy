@@ -269,6 +269,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_DECODE: break;
 
   case Z80_STATE_CB0:
+    addr = pc;
+    pc = addr + 1;
     state_ = Z80_STATE_CB1;
     break;
 
@@ -465,6 +467,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------
 
   case Z80_STATE_ARG0:
+    addr = pc;
+    pc = addr + 1;
     state_ = Z80_STATE_ARG1;
     break;
 
@@ -481,10 +485,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       a = (uint8_t)out.x;
       state_ = Z80_STATE_DECODE;
     }
-    else if (LD_BC_D16) { c = bus_data; state_ = Z80_STATE_ARG2; }
-    else if (LD_DE_D16) { e = bus_data; state_ = Z80_STATE_ARG2; }
-    else if (LD_HL_D16) { l = bus_data; state_ = Z80_STATE_ARG2; }
-    else if (LD_SP_D16) { p = bus_data; state_ = Z80_STATE_ARG2; }
+    else if (LD_BC_D16)    { c = bus_data; state_ = Z80_STATE_ARG2; }
+    else if (LD_DE_D16)    { e = bus_data; state_ = Z80_STATE_ARG2; }
+    else if (LD_HL_D16)    { l = bus_data; state_ = Z80_STATE_ARG2; }
+    else if (LD_SP_D16)    { p = bus_data; state_ = Z80_STATE_ARG2; }
     else if (ADD_SP_R8)    state_ = Z80_STATE_ALU2;
     else if (LD_HL_SP_R8)  state_ = Z80_STATE_ALU2;
     else if (LDM_A_A8)     state_ = Z80_STATE_MEM_READ1;
@@ -501,6 +505,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (LDM_A_A16)    state_ = Z80_STATE_ARG2;
     else printf("fail arg1");
 
+    if (state_ == Z80_STATE_ARG2) { addr = pc; pc = addr + 1; }
     break;
   }
 
@@ -606,10 +611,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   }
 
   if (state_ == Z80_STATE_INVALID) {
-    printf("x");
+    printf("fail state invalid");
   }
-
-
+  
   //--------------------------------------------------------------------------------
   // Set up read
 
@@ -620,20 +624,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   if (interrupts & INT_TIMER)  vector = 2; // timer
   if (interrupts & INT_STAT)   vector = 1; // lcd stat
   if (interrupts & INT_VBLANK) vector = 0; // vblank
-
-
-  switch(state) {
-  case Z80_STATE_CB0:
-  case Z80_STATE_ARG0:
-  case Z80_STATE_ARG1:
-    //addr = pc;
-    //pc = addr + 1;
-    break;
-  }
-
-  if (state == Z80_STATE_CB0)   { addr = pc; pc = addr + 1; }
-  if (state == Z80_STATE_ARG0)  { addr = pc; pc = addr + 1; }
-  if (state_ == Z80_STATE_ARG2) { addr = pc; pc = addr + 1; }
 
   switch(state_) {
   case Z80_STATE_DECODE: {

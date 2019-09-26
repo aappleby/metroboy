@@ -311,9 +311,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   case Z80_STATE_CB1: {
     if (OP_CB_R) {
       out = alu_cb(CB_QUAD, CB_ROW, r, f);
-      // need set_flag_cb
-      uint8_t mask = cb_flag_mask[CB_QUAD];
-      f = (f & ~mask) | (out.f & mask);
+      set_flag(out.f);
       reg_put8(CB_COL, (uint8_t)out.x);
 
       addr = pc++;
@@ -677,7 +675,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   case Z80_STATE_MEM_READ1: {
     if      (INC_AT_HL)       { out = alu(0, bus, 1, 0);                set_flag(out.f); }
     else if (DEC_AT_HL)       { out = alu(2, bus, 1, 0);                set_flag(out.f); }
-    else if (OP_CB_HL)        { out = alu_cb(CB_QUAD, CB_ROW, bus, f);  uint8_t mask = cb_flag_mask[CB_QUAD]; f = (f & ~mask) | (out.f & mask); }
+    else if (OP_CB_HL)        { out = alu_cb(CB_QUAD, CB_ROW, bus, f);  set_flag(out.f); }
 
     if      (LDM_A_RR)        { a = bus;               addr = pc++; write = false; state_ = Z80_STATE_DECODE; }
     else if (LDM_A_A8)        { a = bus;               addr = pc++; write = false; state_ = Z80_STATE_DECODE; }
@@ -812,7 +810,7 @@ void Z80::tock_t2() {
 
 
 void Z80::set_flag(uint8_t f_) {
-  uint8_t mask = flag_mask[op];
+  uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
   f = (f & ~mask) | (f_ & mask);
 
   // RLCA, RRCA, RLA, and RRA always clear the zero bit - hardware bug?

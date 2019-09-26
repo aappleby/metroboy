@@ -467,14 +467,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_POP0:
-    if      (RET)            state_ = Z80_STATE_POP1;
-    else if (RETI)           state_ = Z80_STATE_POP1;
-    else if (POP_RR)         state_ = Z80_STATE_POP1;
-    else if (RET_CC)         state_ = no_branch ? Z80_STATE_DECODE : Z80_STATE_POP1;
+    if      (RET)                  {        state_ = Z80_STATE_POP1; }
+    else if (RETI)                 {        state_ = Z80_STATE_POP1; }
+    else if (POP_RR)               {        state_ = Z80_STATE_POP1; }
+    else if (RET_CC && no_branch)  {        state_ = Z80_STATE_DECODE; }
+    else if (RET_CC && !no_branch) {        state_ = Z80_STATE_POP1; }
     else printf("fail pop0");
     if (state_ == Z80_STATE_POP1) {
-      addr = sp;
-      sp = addr + 1;
+      addr = sp++;
     }
     break;
 

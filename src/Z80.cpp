@@ -213,7 +213,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
     hl = 0x014D;
     sp = 0xFFFE;
     pc = new_pc;
-    addr = 0;
+    addr = new_pc - 1;
   }
   else {
     af = 0x0000;
@@ -222,7 +222,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
     hl = 0x0000;
     sp = 0x0000;
     pc = new_pc;
-    addr = 0;
+    addr = new_pc - 1;
   }
 }
 
@@ -264,6 +264,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     int_ack_ = 0;
     imask_ = imask;
     intf_ = intf;
+    pc = addr + 1;
 
     bool cond_fail = false;
 

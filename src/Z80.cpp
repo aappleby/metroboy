@@ -293,8 +293,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       reg_put8(OP_ROW, (uint8_t)reg_get8());
       break;
     }
-
-    if (ALU_A_R) {
+    else if (ALU_A_R) {
       out = alu(OP_ROW, a, reg_get8(), f);
       a = (uint8_t)out.x;
     }
@@ -321,6 +320,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if (ADD_HL_SP) out = alu(1, l, p, 0);
       l = (uint8_t)out.x;
     }
+    else printf("fail");
+
+
+    //if      (NOP)            return Z80_STATE_DECODE;
+    //else if (DI)             return Z80_STATE_DECODE;
+    //else if (EI)             return Z80_STATE_DECODE;
 
     set_flag(out.f);
     break;
@@ -344,6 +349,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       h = (uint8_t)out.x;
       set_flag(out.f);
     }
+    else printf("fail");
 
     break;
   }

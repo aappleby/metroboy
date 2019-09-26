@@ -658,7 +658,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (CALL_CC_A16 && tb) { hi = bus;               pc = addr + 1;    addr = sp;                write = false; state_ = Z80_STATE_PUSH0; }
     else if (LDM_A_A16)         { hi = bus;               pc = addr + 1;    addr = temp;              write = false; state_ = Z80_STATE_MEM_READ1; }
     else if (STM_A16_A)         { hi = bus; data_out = a; pc = addr + 1;    addr = temp;              write = true;  state_ = Z80_STATE_MEM_WRITE1; }
-    else if (STM_A16_SP)        { hi = bus; data_out = p; pc = addr + 1;    addr = temp++;            write = true;  state_ = Z80_STATE_MEM_WRITE1; }
+    else if (STM_A16_SP)        { hi = bus; data_out = p; pc = addr + 1;    addr = temp;              write = true;  state_ = Z80_STATE_MEM_WRITE1; }
     else if (JP_A16)            { hi = bus;               pc = addr + 1;                              write = false; state_ = Z80_STATE_PTR1; }
     else if (JP_CC_A16 && tb)   { hi = bus;               pc = addr + 1;                              write = false; state_ = Z80_STATE_PTR1; }
     else printf("fail arg2");

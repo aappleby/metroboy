@@ -514,50 +514,49 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   // state of imask/intf after pushing the first byte of PC onto the stack.
 
   case Z80_STATE_PUSHN:
-    if      (PUSH_BC)     {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
-    else if (PUSH_DE)     {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
-    else if (PUSH_HL)     {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
-    else if (PUSH_AF)     {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
-    else if (RST_NN)      {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
+    if      (PUSH_BC)      {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
+    else if (PUSH_DE)      {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
+    else if (PUSH_HL)      {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
+    else if (PUSH_AF)      {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
+    else if (RST_NN)       {                                addr = sp; write = false; state_ = Z80_STATE_PUSH0; }
     else printf("fail pushn");
     break;
 
   case Z80_STATE_PUSH0:
-    if      (PUSH_BC)     { data_out = b;   sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH1; }
-    else if (PUSH_DE)     { data_out = d;   sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH1; }
-    else if (PUSH_HL)     { data_out = h;   sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH1; }
-    else if (PUSH_AF)     { data_out = a;   sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH1; }
-    else if (RST_NN)      { data_out = pch; sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH1; }
-    else if (CALL_A16)    { data_out = pch; sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH1; }
-    else if (CALL_CC_A16) { data_out = pch; sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH1; }
+    if      (PUSH_BC)      { data_out = b;   sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH1; }
+    else if (PUSH_DE)      { data_out = d;   sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH1; }
+    else if (PUSH_HL)      { data_out = h;   sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH1; }
+    else if (PUSH_AF)      { data_out = a;   sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH1; }
+    else if (RST_NN)       { data_out = pch; sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH1; }
+    else if (CALL_A16)     { data_out = pch; sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH1; }
+    else if (CALL_CC_A16)  { data_out = pch; sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH1; }
     else printf("fail push0");
     break;
 
   case Z80_STATE_PUSH1:
-    if      (PUSH_BC)     { data_out = c;   sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH2; }
-    else if (PUSH_DE)     { data_out = e;   sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH2; }
-    else if (PUSH_HL)     { data_out = l;   sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH2; }
-    else if (PUSH_AF)     { data_out = f;   sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH2; }
-    else if (RST_NN)      { data_out = pcl; sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH2; }
-    else if (CALL_A16)    { data_out = pcl; sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH2; }
-    else if (CALL_CC_A16) { data_out = pcl; sp = addr - 1; addr = sp; write = true; state_ = Z80_STATE_PUSH2; }
+    if      (PUSH_BC)      { data_out = c;   sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH2; }
+    else if (PUSH_DE)      { data_out = e;   sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH2; }
+    else if (PUSH_HL)      { data_out = l;   sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH2; }
+    else if (PUSH_AF)      { data_out = f;   sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH2; }
+    else if (RST_NN)       { data_out = pcl; sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH2; }
+    else if (CALL_A16)     { data_out = pcl; sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH2; }
+    else if (CALL_CC_A16)  { data_out = pcl; sp = addr - 1; addr = sp; write = true;  state_ = Z80_STATE_PUSH2; }
     else printf("fail push1");
     break;
 
   case Z80_STATE_PUSH2: 
-    if      (PUSH_RR)     {                                addr = pc; write = false; state_ = Z80_STATE_DECODE; }
-    else if (RST_NN)      { pc = op - 0xC7;                addr = pc; write = false; state_ = Z80_STATE_DECODE; }
-    else if (CALL_A16)    { pc = temp;                     addr = pc; write = false; state_ = Z80_STATE_DECODE; }
-    else if (CALL_CC_A16) { pc = temp;                     addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    if      (PUSH_RR)      {                                addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (RST_NN)       { pc = op - 0xC7;                addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (CALL_A16)     { pc = temp;                     addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (CALL_CC_A16)  { pc = temp;                     addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else printf("fail push2");
     break;
 
   //----------
 
   case Z80_STATE_POPN:
-    addr = pc;
-    write = false;
-    state_ = Z80_STATE_POP0;
+    if      (RET_CC)       { /* flag test go here? */       addr = pc; write = false; state_ = Z80_STATE_POP0; }
+    else printf("fail popn");
     break;
 
   case Z80_STATE_POP0:
@@ -581,23 +580,37 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     break;
 
   case Z80_STATE_POP2:
-    if      (POP_BC)       { b = bus;        sp = addr + 1; addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
-    else if (POP_DE)       { d = bus;        sp = addr + 1; addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
-    else if (POP_HL)       { h = bus;        sp = addr + 1; addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
-    else if (POP_AF)       { a = bus;        sp = addr + 1; addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
-    else if (RET)          { hi = bus;       sp = addr + 1;              write = false; state_ = Z80_STATE_PTR1; }
-    else if (RETI)         { hi = bus;       sp = addr + 1;              write = false; state_ = Z80_STATE_PTR1; }
-    else if (RET_CC)       { hi = bus;       sp = addr + 1;              write = false; state_ = Z80_STATE_PTR1; }
+    if      (POP_BC)       { b = bus;        sp = addr + 1; addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (POP_DE)       { d = bus;        sp = addr + 1; addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (POP_HL)       { h = bus;        sp = addr + 1; addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (POP_AF)       { a = bus;        sp = addr + 1; addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (RET)          { hi = bus;       sp = addr + 1;            write = false; state_ = Z80_STATE_PTR1; }
+    else if (RETI)         { hi = bus;       sp = addr + 1;            write = false; state_ = Z80_STATE_PTR1; }
+    else if (RET_CC)       { hi = bus;       sp = addr + 1;            write = false; state_ = Z80_STATE_PTR1; }
     else printf("fail pop2");
     break;
 
   //----------
 
   case Z80_STATE_ARG0:
-    addr = pc;
-    pc = addr + 1;
-    write = false;
-    state_ = Z80_STATE_ARG1;
+    if      (LD_R_D8)     { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (LDM_A_A8)    { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (STM_HL_D8)   { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (JR_CC_R8)    { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (JR_R8)       { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (LD_HL_SP_R8) { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (STM_A8_A)    { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (ALU_A_D8)    { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (ADD_SP_R8)   { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (LDM_A_A16)   { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (LD_RR_D16)   { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (STM_A16_A)   { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (STM_A16_SP)  { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (JP_A16)      { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (JP_CC_A16)   { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (CALL_A16)    { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else if (CALL_CC_A16) { addr = pc; pc = addr + 1; write = false; state_ = Z80_STATE_ARG1; }
+    else printf("fail arg0");
     break;
 
   case Z80_STATE_ARG1: {

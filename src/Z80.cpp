@@ -647,6 +647,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------
 
   case Z80_STATE_MEM_WRITE0:
+    if      (STM_BC_A)  { addr = bc;         data_out = a; }
+    else if (STM_DE_A)  { addr = de;         data_out = a; }
+    else if (STM_HLP_A) { addr = hl++;       data_out = a; }
+    else if (STM_HLM_A) { addr = hl--;       data_out = a; }
+    else if (STM_HL_R)  { addr = hl;         data_out = reg_get8();}
+    else if (STM_C_A)   { addr = 0xFF00 | c; data_out = a;}
+    else printf("fail write0");
+
     state_ = Z80_STATE_MEM_WRITE1;
     break;
 
@@ -747,15 +755,9 @@ void Z80::tock_t2() {
 
   switch (state_) {
   case Z80_STATE_MEM_WRITE1: {
-    if      (STM_BC_A)       { addr = bc;          data_out = a; }
-    else if (STM_DE_A)       { addr = de;          data_out = a; }
-    else if (STM_HLP_A)      { addr = hl;          data_out = a; hl++; }
-    else if (STM_HLM_A)      { addr = hl;          data_out = a; hl--; }
-    else if (STM_HL_D8)      { addr = hl;          data_out = lo; }
-    else if (STM_HL_R)       { addr = hl;          data_out = reg_get8(); }
+    if      (STM_HL_D8)      { addr = hl;          data_out = lo; }
     else if (STM_A16_A)      { addr = temp;        data_out = a; }
     else if (STM_A8_A)       { addr = 0xFF00 | lo; data_out = a; }
-    else if (STM_C_A)        { addr = 0xFF00 | c;  data_out = a; }
     else if (STM_A16_SP)     { addr = temp;        data_out = (uint8_t)sp; }
     else if (INC_AT_HL)      { addr = hl;          data_out = data_out; }
     else if (DEC_AT_HL)      { addr = hl;          data_out = data_out; }
@@ -764,28 +766,24 @@ void Z80::tock_t2() {
   }
 
   case Z80_STATE_PUSH1: {
-    addr = sp - 1;
-    sp   = sp - 1;
-    if      (PUSH_BC)     data_out = b;
-    else if (PUSH_DE)     data_out = d;
-    else if (PUSH_HL)     data_out = h;
-    else if (PUSH_AF)     data_out = a;
-    else if (CALL_A16)    data_out = (uint8_t)(pc >> 8);
-    else if (CALL_CC_A16) data_out = (uint8_t)(pc >> 8);
-    else if (RST_NN)      data_out = (uint8_t)(pc >> 8);
+    if      (PUSH_BC)     { addr = --sp; data_out = b; }
+    else if (PUSH_DE)     { addr = --sp; data_out = d; }
+    else if (PUSH_HL)     { addr = --sp; data_out = h; }
+    else if (PUSH_AF)     { addr = --sp; data_out = a; }
+    else if (CALL_A16)    { addr = --sp; data_out = (uint8_t)(pc >> 8); }
+    else if (CALL_CC_A16) { addr = --sp; data_out = (uint8_t)(pc >> 8); }
+    else if (RST_NN)      { addr = --sp; data_out = (uint8_t)(pc >> 8); }
     break;
   }
 
   case Z80_STATE_PUSH2: {
-    addr = sp - 1;
-    sp   = sp - 1;
-    if      (PUSH_BC)     data_out = c;
-    else if (PUSH_DE)     data_out = e;
-    else if (PUSH_HL)     data_out = l;
-    else if (PUSH_AF)     data_out = f;
-    else if (CALL_A16)    data_out = (uint8_t)(pc);
-    else if (CALL_CC_A16) data_out = (uint8_t)(pc);
-    else if (RST_NN)      data_out = (uint8_t)(pc);
+    if      (PUSH_BC)     { addr = --sp; data_out = c; }
+    else if (PUSH_DE)     { addr = --sp; data_out = e; }
+    else if (PUSH_HL)     { addr = --sp; data_out = l; }
+    else if (PUSH_AF)     { addr = --sp; data_out = f; }
+    else if (CALL_A16)    { addr = --sp; data_out = (uint8_t)(pc); }
+    else if (CALL_CC_A16) { addr = --sp; data_out = (uint8_t)(pc); }
+    else if (RST_NN)      { addr = --sp; data_out = (uint8_t)(pc); }
     break;
   }
   }

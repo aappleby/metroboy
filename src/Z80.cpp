@@ -465,10 +465,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------
 
-  case Z80_STATE_ARG0: break;
+  case Z80_STATE_ARG0:
+    state_ = Z80_STATE_ARG1;
+    break;
+
   case Z80_STATE_ARG1: {
     if (LD_R_D8) {
       reg_put8(OP_ROW, bus_data);
+      state_ = Z80_STATE_DECODE;
     }
     else if (ALU_A_D8) {
       // this should be in the alu block
@@ -476,41 +480,43 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
+      state_ = Z80_STATE_DECODE;
     }
-    else if (LD_BC_D16) c = bus_data;
-    else if (LD_DE_D16) e = bus_data;
-    else if (LD_HL_D16) l = bus_data;
-    else if (LD_SP_D16) p = bus_data;
-    else if (ADD_SP_R8);
-    else if (JR_R8);
-    else if (JR_CC_R8);
-    else if (JP_A16);
-    else if (JP_CC_A16);
-    else if (CALL_A16);
-    else if (CALL_CC_A16);
-    else if (STM_A8_A);
-    else if (STM_A16_A);
-    else if (STM_A16_SP);
-    else if (LDM_A_A8);
-    else if (LDM_A_A16);
-    else if (LD_HL_SP_R8);
-    else if (STM_HL_D8);
+    else if (LD_BC_D16) { c = bus_data; state_ = Z80_STATE_ARG2; }
+    else if (LD_DE_D16) { e = bus_data; state_ = Z80_STATE_ARG2; }
+    else if (LD_HL_D16) { l = bus_data; state_ = Z80_STATE_ARG2; }
+    else if (LD_SP_D16) { p = bus_data; state_ = Z80_STATE_ARG2; }
+    else if (ADD_SP_R8)    state_ = Z80_STATE_ALU2;
+    else if (LD_HL_SP_R8)  state_ = Z80_STATE_ALU2;
+    else if (LDM_A_A8)     state_ = Z80_STATE_MEM_READ1;
+    else if (STM_A8_A)     state_ = Z80_STATE_MEM_WRITE1;
+    else if (STM_HL_D8)    state_ = Z80_STATE_MEM_WRITE1;
+    else if (JR_R8)        state_ = Z80_STATE_PTR1;
+    else if (JR_CC_R8)     state_ = no_branch ? Z80_STATE_DECODE : Z80_STATE_PTR1;
+    else if (JP_A16)       state_ = Z80_STATE_ARG2;
+    else if (JP_CC_A16)    state_ = Z80_STATE_ARG2;
+    else if (CALL_A16)     state_ = Z80_STATE_ARG2;
+    else if (CALL_CC_A16)  state_ = Z80_STATE_ARG2;
+    else if (STM_A16_A)    state_ = Z80_STATE_ARG2;
+    else if (STM_A16_SP)   state_ = Z80_STATE_ARG2;
+    else if (LDM_A_A16)    state_ = Z80_STATE_ARG2;
     else printf("fail arg1");
+
     break;
   }
 
   case Z80_STATE_ARG2: {
-    if      (LD_BC_D16) b = bus_data;
-    else if (LD_DE_D16) d = bus_data;
-    else if (LD_HL_D16) h = bus_data;
-    else if (LD_SP_D16) s = bus_data;
-    else if (JP_A16);
-    else if (JP_CC_A16);
-    else if (CALL_A16);
-    else if (CALL_CC_A16);
-    else if (STM_A16_A);
-    else if (STM_A16_SP);
-    else if (LDM_A_A16);
+    if      (LD_BC_D16)   { b = bus_data; state_ = Z80_STATE_DECODE; }
+    else if (LD_DE_D16)   { d = bus_data; state_ = Z80_STATE_DECODE; }
+    else if (LD_HL_D16)   { h = bus_data; state_ = Z80_STATE_DECODE; }
+    else if (LD_SP_D16)   { s = bus_data; state_ = Z80_STATE_DECODE; }
+    else if (LDM_A_A16)   state_ = Z80_STATE_MEM_READ1;
+    else if (STM_A16_A)   state_ = Z80_STATE_MEM_WRITE1;
+    else if (STM_A16_SP)  state_ = Z80_STATE_MEM_WRITE1;
+    else if (JP_A16)      state_ = Z80_STATE_PTR1;
+    else if (CALL_A16)    state_ = Z80_STATE_PUSH0;
+    else if (JP_CC_A16)   state_ = no_branch ? Z80_STATE_DECODE : Z80_STATE_PTR1;
+    else if (CALL_CC_A16) state_ = no_branch ? Z80_STATE_DECODE : Z80_STATE_PUSH0;
     else printf("fail arg2");
     break;
   }
@@ -866,7 +872,7 @@ Z80State first_state(uint8_t op) {
 
 //-----------------------------------------------------------------------------
 
-Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool, bool) {
+Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool, bool, bool) {
   switch (state) {
 
   // TODO - get rid of these
@@ -906,32 +912,9 @@ Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool
 
   //----------
 
-  case Z80_STATE_ARG0:       return Z80_STATE_ARG1;
-
-  case Z80_STATE_ARG1:
-    if      (LDM_A_A8)       return Z80_STATE_MEM_READ1;
-    else if (STM_HL_D8)      return Z80_STATE_MEM_WRITE1;
-    else if (STM_A8_A)       return Z80_STATE_MEM_WRITE1;
-    else if (ADD_SP_R8)      return Z80_STATE_ALU2;
-    else if (LD_HL_SP_R8)    return Z80_STATE_ALU2;
-    else if (JR_R8)          return Z80_STATE_PTR1;
-    else if (JR_CC_R8)       return no_branch ? Z80_STATE_DECODE : Z80_STATE_PTR1;
-    else if (LD_R_D8)        return Z80_STATE_DECODE;
-    else if (ALU_A_D8)       return Z80_STATE_DECODE;
-    else                     return Z80_STATE_ARG2;
-    break;
-
-  case Z80_STATE_ARG2:
-    if      (LDM_A_A16)      return Z80_STATE_MEM_READ1;
-    else if (STM_A16_A)      return Z80_STATE_MEM_WRITE1;
-    else if (STM_A16_SP)     return Z80_STATE_MEM_WRITE1;
-    else if (CALL_A16)       return Z80_STATE_PUSH0;
-    else if (JP_A16)         return Z80_STATE_PTR1;
-    else if (LD_RR_D16)      return Z80_STATE_DECODE;
-    else if (JP_CC_A16)      return no_branch ? Z80_STATE_DECODE : Z80_STATE_PTR1;
-    else if (CALL_CC_A16)    return no_branch ? Z80_STATE_DECODE : Z80_STATE_PUSH0;
-    else                     return Z80_STATE_DECODE;
-    break;
+  case Z80_STATE_ARG0:       return Z80_STATE_INVALID;
+  case Z80_STATE_ARG1:       return Z80_STATE_INVALID;
+  case Z80_STATE_ARG2:       return Z80_STATE_INVALID;
 
   //----------
 

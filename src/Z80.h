@@ -1,51 +1,7 @@
 #pragma once
 #include "Types.h"
 
-enum Z80State {
-  Z80_STATE_DECODE = 0,
-
-  Z80_STATE_INT0,
-  Z80_STATE_INT1,
-  Z80_STATE_INT2,
-  Z80_STATE_INT3,
-  Z80_STATE_INT4,
-
-  Z80_STATE_HALT0,
-  Z80_STATE_HALT1,
-
-  Z80_STATE_CB0,
-  Z80_STATE_CB1,
-
-  Z80_STATE_ALU0,
-  Z80_STATE_ALU1,
-  Z80_STATE_ALU2,
-
-  Z80_STATE_PUSHN,
-  Z80_STATE_PUSH0,
-  Z80_STATE_PUSH1,
-  Z80_STATE_PUSH2,
-
-  Z80_STATE_POPN,
-  Z80_STATE_POP0,
-  Z80_STATE_POP1,
-  Z80_STATE_POP2,
-
-  Z80_STATE_ARG0,
-  Z80_STATE_ARG1,
-  Z80_STATE_ARG2,
-
-  Z80_STATE_MEM_READ0,
-  Z80_STATE_MEM_READ1,
-
-  Z80_STATE_MEM_WRITE0,
-  Z80_STATE_MEM_WRITE1,
-  Z80_STATE_MEM_WRITE2,
-
-  Z80_STATE_PTR0,
-  Z80_STATE_PTR1,
-
-  Z80_STATE_INVALID
-};
+enum Z80State;
 
 //-----------------------------------------------------------------------------
 
@@ -95,6 +51,7 @@ private:
   // internal address register
   uint16_t addr;
   uint8_t data_out;
+  bool write;
 
   bool no_branch;
   bool no_halt;

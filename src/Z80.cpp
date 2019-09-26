@@ -592,49 +592,33 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------
 
   case Z80_STATE_MEM_READ0:
-    if      (ALU_A_HL)  { addr = hl;         state_ = Z80_STATE_ALU1; }
-    else if (INC_AT_HL) { addr = hl;         state_ = Z80_STATE_MEM_READ1; }
-    else if (DEC_AT_HL) { addr = hl;         state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_R_HL)  { addr = hl;         state_ = Z80_STATE_MEM_READ1; }
-    
-    else if (LDM_A_BC)  { addr = bc;         state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_DE)  { addr = de;         state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_HLP) { addr = hl; hl++;   state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_HLM) { addr = hl; hl--;   state_ = Z80_STATE_MEM_READ1; }
-
-    else if (LDM_A_C)   { addr = 0xFF00 | c; state_ = Z80_STATE_MEM_READ1; }
+    if      (ALU_A_HL)          { addr = hl;         state_ = Z80_STATE_ALU1; }
+    else if (INC_AT_HL)         { addr = hl;         state_ = Z80_STATE_MEM_READ1; }
+    else if (DEC_AT_HL)         { addr = hl;         state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_R_HL)          { addr = hl;         state_ = Z80_STATE_MEM_READ1; }
+                                
+    else if (LDM_A_BC)          { addr = bc;         state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_DE)          { addr = de;         state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_HLP)         { addr = hl; hl++;   state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_HLM)         { addr = hl; hl--;   state_ = Z80_STATE_MEM_READ1; }
+                                
+    else if (LDM_A_C)           { addr = 0xFF00 | c; state_ = Z80_STATE_MEM_READ1; }
     else printf("fail read0");
     break;
 
   case Z80_STATE_MEM_READ1: {
+    if      (INC_AT_HL) { out = alu(0, bus_data, 1, 0);                set_flag(out.f); }
+    else if (DEC_AT_HL) { out = alu(2, bus_data, 1, 0);                set_flag(out.f); }
+    else if (OP_CB_HL)  { out = alu_cb(CB_QUAD, CB_ROW, bus_data, f);  uint8_t mask = cb_flag_mask[CB_QUAD]; f = (f & ~mask) | (out.f & mask); }
 
     if      (LDM_A_RR)  { reg_put8(7,      bus_data); addr = pc; state_ = Z80_STATE_DECODE; }
     else if (LDM_A_A8)  { reg_put8(7,      bus_data); addr = pc; state_ = Z80_STATE_DECODE; }
     else if (LDM_A_C)   { reg_put8(7,      bus_data); addr = pc; state_ = Z80_STATE_DECODE; }
     else if (LDM_A_A16) { reg_put8(7,      bus_data); addr = pc; state_ = Z80_STATE_DECODE; }
     else if (LDM_R_HL)  { reg_put8(OP_ROW, bus_data); addr = pc; state_ = Z80_STATE_DECODE; }
-    else if (INC_AT_HL) {
-      out = alu(0, bus_data, 1, 0);
-      set_flag(out.f);
-      data_out = (uint8_t)out.x;
-      state_ = Z80_STATE_MEM_WRITE1;
-    }
-    else if (DEC_AT_HL) {
-      out = alu(2, bus_data, 1, 0);
-      set_flag(out.f);
-      data_out = (uint8_t)out.x;
-      state_ = Z80_STATE_MEM_WRITE1;
-    }
-    else if (OP_CB_HL) {
-      out = alu_cb(CB_QUAD, CB_ROW, bus_data, f);
-      // need set_flag_cb or something
-      uint8_t mask = cb_flag_mask[CB_QUAD];
-      f = (f & ~mask) | (out.f & mask);
-
-      // store in lo
-      data_out = (uint8_t)out.x;
-      state_ = Z80_STATE_MEM_WRITE1;
-    }
+    else if (INC_AT_HL) { data_out = (uint8_t)out.x;             state_ = Z80_STATE_MEM_WRITE1; }
+    else if (DEC_AT_HL) { data_out = (uint8_t)out.x;             state_ = Z80_STATE_MEM_WRITE1; }
+    else if (OP_CB_HL)  { data_out = (uint8_t)out.x;             state_ = Z80_STATE_MEM_WRITE1; }
     else printf("fail read1");
 
     break;

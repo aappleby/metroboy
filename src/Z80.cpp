@@ -289,6 +289,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       uint8_t mask = cb_flag_mask[CB_QUAD];
       f = (f & ~mask) | (out.f & mask);
       reg_put8(CB_COL, (uint8_t)out.x);
+
+      addr = pc;
       state_ = Z80_STATE_DECODE;
     }
     else if (OP_CB_HL) {
@@ -301,6 +303,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
+  //----------
+
   case Z80_STATE_HALT0:
     state_ = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
     unhalt = 0;
@@ -308,6 +312,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_HALT1:
     state_ = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
     break;
+
+
+  //----------
+  // this goes here somewhere
+  //imask_latch = imask_;
 
   case Z80_STATE_INT0:
     state_ = Z80_STATE_INT1;
@@ -326,7 +335,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_INT4:
-    state_ = Z80_STATE_DECODE;
 
     // Someone could've changed the interrupt mask or flags while we were
     // handling the interrupt, so we have to compute the new PC at the very
@@ -337,10 +345,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     } else {
       pc = 0x0000;
     }
-    addr = pc;
     ime = false;
     ime_delay = false;
 
+    addr = pc;
+    state_ = Z80_STATE_DECODE;
     break;
 
   //----------
@@ -351,33 +360,51 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_ALU1: {
     if (NOP) {
+      addr = pc;
+      state_ = Z80_STATE_DECODE;
     }
     else if (DI) {
+      addr = pc;
+      state_ = Z80_STATE_DECODE;
     }
     else if (EI) {
+      addr = pc;
+      state_ = Z80_STATE_DECODE;
     }
     else if (MV_R_R) {
       reg_put8(OP_ROW, (uint8_t)reg_get8());
+      addr = pc;
+      state_ = Z80_STATE_DECODE;
     }
     else if (ALU_A_R) {
       out = alu(OP_ROW, a, reg_get8(), f);
       a = (uint8_t)out.x;
+      addr = pc;
+      state_ = Z80_STATE_DECODE;
     }
     else if (ALU_A_HL) {
       out = alu(OP_ROW, a, bus_data, f);
       a = (uint8_t)out.x;
+      addr = pc;
+      state_ = Z80_STATE_DECODE;
     }
     else if (RLU_R) {
       out = rlu(OP_ROW, reg_get8(), f);
       a = (uint8_t)out.x;
+      addr = pc;
+      state_ = Z80_STATE_DECODE;
     }
     else if (INC_R) {
       out = alu(1, reg_get8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
+      addr = pc;
+      state_ = Z80_STATE_DECODE;
     }
     else if (DEC_R) {
       out = alu(2, reg_get8(), 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
+      addr = pc;
+      state_ = Z80_STATE_DECODE;
     }  
     else if (ADD_HL_RR) {
       if (ADD_HL_BC) out = alu(1, l, c, 0);
@@ -385,11 +412,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       if (ADD_HL_HL) out = alu(1, l, l, 0);
       if (ADD_HL_SP) out = alu(1, l, p, 0);
       l = (uint8_t)out.x;
+      state_ = Z80_STATE_ALU2;
     }
     else {
       printf("fail alu1");
     }
-    state_ = ADD_HL_RR ? Z80_STATE_ALU2 : Z80_STATE_DECODE;
     set_flag(out.f);
     break;
   }
@@ -423,6 +450,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else {
       printf("fail alu2");
     }
+
+    addr = pc;
     state_ = Z80_STATE_DECODE;
     break;
   }
@@ -440,24 +469,19 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_PUSH1:
-    if      (RST_NN);
-    else if (CALL_A16);
-    else if (CALL_CC_A16);
-    else if (PUSH_RR);
+    if      (RST_NN)      { state_ = Z80_STATE_PUSH2; }
+    else if (CALL_A16)    { state_ = Z80_STATE_PUSH2; }
+    else if (CALL_CC_A16) { state_ = Z80_STATE_PUSH2; }
+    else if (PUSH_RR)     { state_ = Z80_STATE_PUSH2; }
     else printf("fail push1");
-    
-    imask_latch = imask_;
-    state_ = Z80_STATE_PUSH2;
     break;
 
   case Z80_STATE_PUSH2: 
-    if      (RST_NN)      pc = op - 0xC7;
-    else if (CALL_A16)    pc = temp;
-    else if (CALL_CC_A16) pc = temp;
-    else if (PUSH_RR);
+    if      (RST_NN)      { pc = op - 0xC7; addr = pc; state_ = Z80_STATE_DECODE;}
+    else if (CALL_A16)    { pc = temp;      addr = pc; state_ = Z80_STATE_DECODE;}
+    else if (CALL_CC_A16) { pc = temp;      addr = pc; state_ = Z80_STATE_DECODE;}
+    else if (PUSH_RR)     {                 addr = pc; state_ = Z80_STATE_DECODE; }
     else printf("fail push2");
-    
-    state_ = Z80_STATE_DECODE;
     break;
 
   //----------
@@ -467,15 +491,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_POP0:
-    if      (RET)                  {        state_ = Z80_STATE_POP1; }
-    else if (RETI)                 {        state_ = Z80_STATE_POP1; }
-    else if (POP_RR)               {        state_ = Z80_STATE_POP1; }
-    else if (RET_CC && no_branch)  {        state_ = Z80_STATE_DECODE; }
-    else if (RET_CC && !no_branch) {        state_ = Z80_STATE_POP1; }
+    if      (RET)                  { addr = sp++; state_ = Z80_STATE_POP1; }
+    else if (RETI)                 { addr = sp++; state_ = Z80_STATE_POP1; }
+    else if (POP_RR)               { addr = sp++; state_ = Z80_STATE_POP1; }
+    else if (RET_CC && no_branch)  { addr = pc;   state_ = Z80_STATE_DECODE; }
+    else if (RET_CC && !no_branch) { addr = sp++; state_ = Z80_STATE_POP1; }
     else printf("fail pop0");
-    if (state_ == Z80_STATE_POP1) {
-      addr = sp++;
-    }
     break;
 
   case Z80_STATE_POP1: {
@@ -516,6 +537,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_ARG1: {
     if (LD_R_D8) {
       reg_put8(OP_ROW, bus_data);
+      addr = pc;
       state_ = Z80_STATE_DECODE;
     }
     else if (ALU_A_D8) {
@@ -524,6 +546,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       uint8_t mask = flag_mask[op];
       f = (f & ~mask) | (out.f & mask);
       a = (uint8_t)out.x;
+      addr = pc;
       state_ = Z80_STATE_DECODE;
     }
     else if (LD_BC_D16)    { c = bus_data;       state_ = Z80_STATE_ARG2; }
@@ -681,6 +704,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     if (state == Z80_STATE_INT4) {
     }
     else {
+      if (addr != pc) {
+        //printf("x");
+      }
+
       addr = pc;
       if (RETI)  { ime = true;      ime_delay = true; }
       if (DI)    { ime = false;     ime_delay = false; }

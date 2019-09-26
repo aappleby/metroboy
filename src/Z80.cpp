@@ -138,7 +138,6 @@
 #define INTERRUPT     ((imask_ & intf_) && ime)
 
 Z80State first_state(uint8_t op);
-Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool no_halt, bool unhalt);
 AluOut alu_cb(const uint8_t quad, const uint8_t row, const uint8_t x, const uint8_t f);
 AluOut alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_t f);
 AluOut rlu(const uint8_t op, const uint8_t x, const uint8_t f);
@@ -259,7 +258,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
   }
 
-  state_ = next_state(state, op, cb, no_branch, no_halt, unhalt);
+  state_ = Z80_STATE_INVALID;
 
   //----------------------------------------
   // Do the meat of executing the instruction
@@ -564,13 +563,24 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   //----------
 
-  case Z80_STATE_MEM_WRITE0: break;
-  case Z80_STATE_MEM_WRITE1: break;
-  case Z80_STATE_MEM_WRITE2: break;
+  case Z80_STATE_MEM_WRITE0:
+    state_ = Z80_STATE_MEM_WRITE1;
+    break;
+
+  case Z80_STATE_MEM_WRITE1:
+    state_ = STM_A16_SP ? Z80_STATE_MEM_WRITE2 : Z80_STATE_DECODE;
+    break;
+
+  case Z80_STATE_MEM_WRITE2:
+    state_ = Z80_STATE_DECODE;
+    break;
 
   //----------
 
-  case Z80_STATE_PTR0: break;
+  case Z80_STATE_PTR0:
+    state_ = Z80_STATE_PTR1;
+    break;
+
   case Z80_STATE_PTR1:
     if      (JP_HL)       pc = hl;
     else if (RET)         pc = temp;
@@ -590,6 +600,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else if (DEC_SP)      sp--;
     else if (LD_SP_HL)    sp = hl;
     else printf("fail ptr1");
+    state_ = Z80_STATE_DECODE;
     break;
 
   }
@@ -873,74 +884,6 @@ Z80State first_state(uint8_t op) {
   if (JP_HL)       return Z80_STATE_PTR1;
 
   printf("fail first_state");
-  return Z80_STATE_INVALID;
-}
-
-//-----------------------------------------------------------------------------
-
-Z80State next_state(Z80State state, uint8_t op, uint8_t, bool, bool, bool) {
-  switch (state) {
-
-  // TODO - get rid of these
-  case Z80_STATE_DECODE:
-    printf("fail");
-    break;
-
-  //----------
-
-  case Z80_STATE_INT0:       return Z80_STATE_INVALID;
-  case Z80_STATE_INT1:       return Z80_STATE_INVALID;
-  case Z80_STATE_INT2:       return Z80_STATE_INVALID;
-  case Z80_STATE_INT3:       return Z80_STATE_INVALID;
-  case Z80_STATE_INT4:       return Z80_STATE_INVALID;
-
-  case Z80_STATE_HALT0:      return Z80_STATE_INVALID;
-  case Z80_STATE_HALT1:      return Z80_STATE_INVALID;
-
-  case Z80_STATE_CB0:        return Z80_STATE_INVALID;
-  case Z80_STATE_CB1:        return Z80_STATE_INVALID;
-
-  case Z80_STATE_ALU0:       return Z80_STATE_INVALID;
-  case Z80_STATE_ALU1:       return Z80_STATE_INVALID;
-  case Z80_STATE_ALU2:       return Z80_STATE_INVALID;
-
-  case Z80_STATE_PUSHN:      return Z80_STATE_INVALID;
-  case Z80_STATE_PUSH0:      return Z80_STATE_INVALID;
-  case Z80_STATE_PUSH1:      return Z80_STATE_INVALID;
-  case Z80_STATE_PUSH2:      return Z80_STATE_INVALID;
-
-  //----------
-
-  case Z80_STATE_POPN:       return Z80_STATE_INVALID;
-  case Z80_STATE_POP0:       return Z80_STATE_INVALID;
-  case Z80_STATE_POP1:       return Z80_STATE_INVALID;
-  case Z80_STATE_POP2:       return Z80_STATE_INVALID;
-
-  //----------
-
-  case Z80_STATE_ARG0:       return Z80_STATE_INVALID;
-  case Z80_STATE_ARG1:       return Z80_STATE_INVALID;
-  case Z80_STATE_ARG2:       return Z80_STATE_INVALID;
-
-  //----------
-
-  case Z80_STATE_MEM_READ0:  return Z80_STATE_INVALID;
-  case Z80_STATE_MEM_READ1:  return Z80_STATE_INVALID;
-
-  //----------
-
-  case Z80_STATE_MEM_WRITE0: return Z80_STATE_MEM_WRITE1;
-  case Z80_STATE_MEM_WRITE1: return STM_A16_SP ? Z80_STATE_MEM_WRITE2 : Z80_STATE_DECODE;
-  case Z80_STATE_MEM_WRITE2: return Z80_STATE_DECODE;
-
-  //----------
-
-  case Z80_STATE_PTR0:       return Z80_STATE_PTR1;
-  case Z80_STATE_PTR1:       return Z80_STATE_DECODE;
-
-  }
-
-  printf("fail next_state");
   return Z80_STATE_INVALID;
 }
 

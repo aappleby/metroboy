@@ -544,10 +544,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     break;
 
   case Z80_STATE_PUSH2: 
-    if      (PUSH_RR)     {                 addr = pc++; write = false; state_ = Z80_STATE_DECODE; }
-    else if (RST_NN)      { pc = op - 0xC7; addr = pc++; write = false; state_ = Z80_STATE_DECODE; }
-    else if (CALL_A16)    { pc = temp;      addr = pc++; write = false; state_ = Z80_STATE_DECODE; }
-    else if (CALL_CC_A16) { pc = temp;      addr = pc++; write = false; state_ = Z80_STATE_DECODE; }
+    if      (PUSH_RR)     {                 addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (RST_NN)      { pc = op - 0xC7; addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (CALL_A16)    { pc = temp;      addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (CALL_CC_A16) { pc = temp;      addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else printf("fail push2");
     break;
 
@@ -560,33 +560,33 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     break;
 
   case Z80_STATE_POP0:
-    if      (RET)          {                      addr = sp++; write = false; state_ = Z80_STATE_POP1; }
-    else if (RETI)         {                      addr = sp++; write = false; state_ = Z80_STATE_POP1; }
-    else if (POP_RR)       {                      addr = sp++; write = false; state_ = Z80_STATE_POP1; }
-    else if (RET_CC && nb) {                      addr = pc++; write = false; state_ = Z80_STATE_DECODE; }
-    else if (RET_CC && tb) {                      addr = sp++; write = false; state_ = Z80_STATE_POP1; }
+    if      (RET_CC && nb) {                                addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (RET)          {                                addr = sp; write = false; state_ = Z80_STATE_POP1; }
+    else if (RETI)         {                                addr = sp; write = false; state_ = Z80_STATE_POP1; }
+    else if (POP_RR)       {                                addr = sp; write = false; state_ = Z80_STATE_POP1; }
+    else if (RET_CC && tb) {                                addr = sp; write = false; state_ = Z80_STATE_POP1; }
     else printf("fail pop0");
     break;
 
   case Z80_STATE_POP1:
-    if      (POP_BC)       { c = bus;        addr = sp++; write = false; state_ = Z80_STATE_POP2;}
-    else if (POP_DE)       { e = bus;        addr = sp++; write = false; state_ = Z80_STATE_POP2;}
-    else if (POP_HL)       { l = bus;        addr = sp++; write = false; state_ = Z80_STATE_POP2;}
-    else if (POP_AF)       { f = bus & 0xF0; addr = sp++; write = false; state_ = Z80_STATE_POP2;}
-    else if (RET)          { lo = bus;       addr = sp++; write = false; state_ = Z80_STATE_POP2;}
-    else if (RETI)         { lo = bus;       addr = sp++; write = false; state_ = Z80_STATE_POP2;}
-    else if (RET_CC)       { lo = bus;       addr = sp++; write = false; state_ = Z80_STATE_POP2;}
+    if      (POP_BC)       { c = bus;        sp = addr + 1; addr = sp; write = false; state_ = Z80_STATE_POP2;}
+    else if (POP_DE)       { e = bus;        sp = addr + 1; addr = sp; write = false; state_ = Z80_STATE_POP2;}
+    else if (POP_HL)       { l = bus;        sp = addr + 1; addr = sp; write = false; state_ = Z80_STATE_POP2;}
+    else if (POP_AF)       { f = bus & 0xF0; sp = addr + 1; addr = sp; write = false; state_ = Z80_STATE_POP2;}
+    else if (RET)          { lo = bus;       sp = addr + 1; addr = sp; write = false; state_ = Z80_STATE_POP2;}
+    else if (RETI)         { lo = bus;       sp = addr + 1; addr = sp; write = false; state_ = Z80_STATE_POP2;}
+    else if (RET_CC)       { lo = bus;       sp = addr + 1; addr = sp; write = false; state_ = Z80_STATE_POP2;}
     else printf("fail pop1");
     break;
 
   case Z80_STATE_POP2:
-    if      (POP_BC)       { b = bus;        addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
-    else if (POP_DE)       { d = bus;        addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
-    else if (POP_HL)       { h = bus;        addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
-    else if (POP_AF)       { a = bus;        addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
-    else if (RET)          { hi = bus;                    write = false; state_ = Z80_STATE_PTR1; }
-    else if (RETI)         { hi = bus;                    write = false; state_ = Z80_STATE_PTR1; }
-    else if (RET_CC)       { hi = bus;                    write = false; state_ = Z80_STATE_PTR1; }
+    if      (POP_BC)       { b = bus;        sp = addr + 1; addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
+    else if (POP_DE)       { d = bus;        sp = addr + 1; addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
+    else if (POP_HL)       { h = bus;        sp = addr + 1; addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
+    else if (POP_AF)       { a = bus;        sp = addr + 1; addr = pc;   write = false; state_ = Z80_STATE_DECODE; }
+    else if (RET)          { hi = bus;       sp = addr + 1;              write = false; state_ = Z80_STATE_PTR1; }
+    else if (RETI)         { hi = bus;       sp = addr + 1;              write = false; state_ = Z80_STATE_PTR1; }
+    else if (RET_CC)       { hi = bus;       sp = addr + 1;              write = false; state_ = Z80_STATE_PTR1; }
     else printf("fail pop2");
     break;
 

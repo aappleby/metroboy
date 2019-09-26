@@ -664,8 +664,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (LDM_R_HL)          { pc = addr + 1;              addr = hl;                write = false; state_ = Z80_STATE_MEM_READ1; }
     else if (LDM_A_BC)          { pc = addr + 1;              addr = bc;                write = false; state_ = Z80_STATE_MEM_READ1; }
     else if (LDM_A_DE)          { pc = addr + 1;              addr = de;                write = false; state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_HLP)         { pc = addr + 1;              addr = hl; hl++;          write = false; state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_HLM)         { pc = addr + 1;              addr = hl; hl--;          write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_HLP)         { pc = addr + 1;              addr = hl;                write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_HLM)         { pc = addr + 1;              addr = hl;                write = false; state_ = Z80_STATE_MEM_READ1; }
     else if (LDM_A_C)           { pc = addr + 1;              addr = 0xFF00 | c;        write = false; state_ = Z80_STATE_MEM_READ1; }
     else printf("fail read0");
     break;
@@ -675,7 +675,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (DEC_AT_HL)         { out = alu(2, bus, 1, 0);                set_flag(out.f); }
     else if (OP_CB_HL)          { out = alu_cb(CB_QUAD, CB_ROW, bus, f);  set_flag(out.f); }
 
-    if      (LDM_A_RR)          { a = bus;                    addr = pc++;              write = false; state_ = Z80_STATE_DECODE; }
+    if      (LDM_A_BC)          { a = bus;                    addr = pc++;              write = false; state_ = Z80_STATE_DECODE; }
+    else if (LDM_A_DE)          { a = bus;                    addr = pc++;              write = false; state_ = Z80_STATE_DECODE; }
+    else if (LDM_A_HLP)         { a = bus; hl = addr + 1;     addr = pc++;              write = false; state_ = Z80_STATE_DECODE; }
+    else if (LDM_A_HLM)         { a = bus; hl = addr - 1;     addr = pc++;              write = false; state_ = Z80_STATE_DECODE; }
     else if (LDM_A_A8)          { a = bus;                    addr = pc++;              write = false; state_ = Z80_STATE_DECODE; }
     else if (LDM_A_C)           { a = bus;                    addr = pc++;              write = false; state_ = Z80_STATE_DECODE; }
     else if (LDM_A_A16)         { a = bus;                    addr = pc++;              write = false; state_ = Z80_STATE_DECODE; }

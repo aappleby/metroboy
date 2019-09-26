@@ -341,10 +341,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   case Z80_STATE_INT2:
+    addr = --sp;
+    data_out = (uint8_t)(pc >> 8);
     state_ = Z80_STATE_INT3;
     break;
 
   case Z80_STATE_INT3:
+    addr = --sp;
+    data_out = (uint8_t)(pc >> 0);
     state_ = Z80_STATE_INT4;
     break;
 
@@ -648,6 +652,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
 
   case Z80_STATE_MEM_WRITE1:
     if (STM_A16_SP) {
+      addr = temp + 1;
+      data_out = (uint8_t)(sp >> 8);
       state_ = Z80_STATE_MEM_WRITE2;
     }
     else {
@@ -757,12 +763,6 @@ void Z80::tock_t2() {
     break;
   }
 
-  case Z80_STATE_MEM_WRITE2: {
-    addr = temp + 1;
-    data_out = (uint8_t)(sp >> 8);
-    break;
-  }
-
   case Z80_STATE_PUSH1: {
     addr = sp - 1;
     sp   = sp - 1;
@@ -786,20 +786,6 @@ void Z80::tock_t2() {
     else if (CALL_A16)    data_out = (uint8_t)(pc);
     else if (CALL_CC_A16) data_out = (uint8_t)(pc);
     else if (RST_NN)      data_out = (uint8_t)(pc);
-    break;
-  }
-
-  case Z80_STATE_INT3: {
-    sp--;
-    addr = sp;
-    data_out = (uint8_t)(pc >> 8);
-    break;
-  }
-
-  case Z80_STATE_INT4: {
-    sp--;
-    addr = sp;
-    data_out = (uint8_t)(pc >> 0);
     break;
   }
   }

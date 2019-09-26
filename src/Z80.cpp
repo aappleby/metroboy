@@ -658,15 +658,15 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   //----------
 
   case Z80_STATE_MEM_READ0:
-    if      (ALU_A_HL)          {                             addr = hl;                write = false; state_ = Z80_STATE_ALU1; }
-    else if (INC_AT_HL)         {                             addr = hl;                write = false; state_ = Z80_STATE_MEM_READ1; }
-    else if (DEC_AT_HL)         {                             addr = hl;                write = false; state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_R_HL)          {                             addr = hl;                write = false; state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_BC)          {                             addr = bc;                write = false; state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_DE)          {                             addr = de;                write = false; state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_HLP)         {                             addr = hl; hl++;          write = false; state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_HLM)         {                             addr = hl; hl--;          write = false; state_ = Z80_STATE_MEM_READ1; }
-    else if (LDM_A_C)           {                             addr = 0xFF00 | c;        write = false; state_ = Z80_STATE_MEM_READ1; }
+    if      (ALU_A_HL)          { pc = addr + 1;              addr = hl;                write = false; state_ = Z80_STATE_ALU1; }
+    else if (INC_AT_HL)         { pc = addr + 1;              addr = hl;                write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (DEC_AT_HL)         { pc = addr + 1;              addr = hl;                write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_R_HL)          { pc = addr + 1;              addr = hl;                write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_BC)          { pc = addr + 1;              addr = bc;                write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_DE)          { pc = addr + 1;              addr = de;                write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_HLP)         { pc = addr + 1;              addr = hl; hl++;          write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_HLM)         { pc = addr + 1;              addr = hl; hl--;          write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (LDM_A_C)           { pc = addr + 1;              addr = 0xFF00 | c;        write = false; state_ = Z80_STATE_MEM_READ1; }
     else printf("fail read0");
     break;
 

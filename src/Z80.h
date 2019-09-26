@@ -51,7 +51,7 @@ private:
   // internal address register
   uint16_t addr;
   uint8_t data_out;
-  bool write;
+  uint8_t write;
 
   bool no_branch;
   bool no_halt;

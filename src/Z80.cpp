@@ -295,7 +295,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   //----------
 
   case Z80_STATE_ALU1: {
-    if (MV_R_R) {
+    if (NOP) {
+    }
+    else if (DI) {
+    }
+    else if (EI) {
+    }
+    else if (MV_R_R) {
       reg_put8(OP_ROW, (uint8_t)reg_get8());
       break;
     }
@@ -329,11 +335,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else {
       printf("fail alu1");
     }
-
-
-    //if      (NOP)            return Z80_STATE_DECODE;
-    //else if (DI)             return Z80_STATE_DECODE;
-    //else if (EI)             return Z80_STATE_DECODE;
 
     set_flag(out.f);
     break;
@@ -762,6 +763,9 @@ Z80State first_state(uint8_t op) {
 
   if (HALT)        return Z80_STATE_HALT0;
 
+  if (NOP)         return Z80_STATE_ALU1;
+  if (DI)          return Z80_STATE_ALU1;
+  if (EI)          return Z80_STATE_ALU1;
   if (ALU_A_R)     return Z80_STATE_ALU1;
   if (INC_R)       return Z80_STATE_ALU1;
   if (DEC_R)       return Z80_STATE_ALU1;
@@ -802,27 +806,29 @@ Z80State first_state(uint8_t op) {
 
   if (INC_AT_HL)   return Z80_STATE_MEM_READ0;
   if (DEC_AT_HL)   return Z80_STATE_MEM_READ0;
+  if (LDM_R_HL)    return Z80_STATE_MEM_READ0;
+
   if (LDM_A_HLP)   return Z80_STATE_MEM_READ0;
   if (LDM_A_HLM)   return Z80_STATE_MEM_READ0;
-  if (LDM_R_HL)    return Z80_STATE_MEM_READ0;
   if (LDM_A_BC)    return Z80_STATE_MEM_READ0;
   if (LDM_A_DE)    return Z80_STATE_MEM_READ0;
   if (LDM_A_C)     return Z80_STATE_MEM_READ0;
   
   if (ALU_A_HL)    return Z80_STATE_MEM_READ0;
 
-  if (STM_HL_R)    return Z80_STATE_MEM_WRITE0;
-  if (STM_HLP_A)   return Z80_STATE_MEM_WRITE0;
-  if (STM_HLM_A)   return Z80_STATE_MEM_WRITE0;
-  if (STM_C_A)     return Z80_STATE_MEM_WRITE0;
   if (STM_BC_A)    return Z80_STATE_MEM_WRITE0;
   if (STM_DE_A)    return Z80_STATE_MEM_WRITE0;
+  if (STM_HLP_A)   return Z80_STATE_MEM_WRITE0;
+  if (STM_HLM_A)   return Z80_STATE_MEM_WRITE0;
+
+  if (STM_HL_R)    return Z80_STATE_MEM_WRITE0;
+  if (STM_C_A)     return Z80_STATE_MEM_WRITE0;
 
   if (JP_HL)       return Z80_STATE_PTR1;
 
-  if (INC_RR)         return Z80_STATE_PTR0;
-  if (DEC_RR)         return Z80_STATE_PTR0;
-  if (LD_SP_HL)       return Z80_STATE_PTR0;
+  if (INC_RR)      return Z80_STATE_PTR0;
+  if (DEC_RR)      return Z80_STATE_PTR0;
+  if (LD_SP_HL)    return Z80_STATE_PTR0;
 
   return Z80_STATE_DECODE;
 }
@@ -834,10 +840,7 @@ Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool
 
   // TODO - get rid of these
   case Z80_STATE_DECODE:
-    if      (NOP)            return Z80_STATE_DECODE;
-    else if (DI)             return Z80_STATE_DECODE;
-    else if (EI)             return Z80_STATE_DECODE;
-    else printf("fail");
+    printf("fail");
     break;
 
   //----------

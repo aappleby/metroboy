@@ -830,7 +830,8 @@ Z80State first_state(uint8_t op) {
   if (DEC_RR)      return Z80_STATE_PTR0;
   if (LD_SP_HL)    return Z80_STATE_PTR0;
 
-  return Z80_STATE_DECODE;
+  printf("fail first_state");
+  return Z80_STATE_INVALID;
 }
 
 //-----------------------------------------------------------------------------

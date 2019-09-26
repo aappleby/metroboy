@@ -265,7 +265,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   switch (state) {
   case Z80_STATE_DECODE: break;
 
-  case Z80_STATE_CB0: break;
+  case Z80_STATE_CB0:
+    state_ = Z80_STATE_CB1;
+    break;
+
   case Z80_STATE_CB1: {
     if (OP_CB_R) {
       out = alu_cb(CB_QUAD, CB_ROW, reg_get8(), f);
@@ -273,9 +276,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
       uint8_t mask = cb_flag_mask[CB_QUAD];
       f = (f & ~mask) | (out.f & mask);
       reg_put8(CB_COL, (uint8_t)out.x);
+      state_ = Z80_STATE_DECODE;
     }
     else if (OP_CB_HL) {
-      // we're just here on our way to MEM_READ1
+      state_ = Z80_STATE_MEM_READ1;
     }
     else {
       printf("fail cb1");
@@ -283,8 +287,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
   }
 
-  case Z80_STATE_HALT0: unhalt = 0; break;
-  case Z80_STATE_HALT1: break;
+  case Z80_STATE_HALT0:
+    state_ = no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
+    unhalt = 0;
+    break;
+  case Z80_STATE_HALT1:
+    state_ = unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
+    break;
 
   case Z80_STATE_INT0: state_ = Z80_STATE_INT1;   break;
   case Z80_STATE_INT1: state_ = Z80_STATE_INT2;   break;
@@ -293,6 +302,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
   case Z80_STATE_INT4: state_ = Z80_STATE_DECODE; break;
 
   //----------
+
+  case Z80_STATE_ALU0:
+    state_ = Z80_STATE_ALU1;
+    break;
 
   case Z80_STATE_ALU1: {
     if (NOP) {
@@ -303,7 +316,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     }
     else if (MV_R_R) {
       reg_put8(OP_ROW, (uint8_t)reg_get8());
-      break;
     }
     else if (ALU_A_R) {
       out = alu(OP_ROW, a, reg_get8(), f);
@@ -335,7 +347,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else {
       printf("fail alu1");
     }
-
+    state_ = ADD_HL_RR ? Z80_STATE_ALU2 : Z80_STATE_DECODE;
     set_flag(out.f);
     break;
   }
@@ -369,7 +381,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     else {
       printf("fail alu2");
     }
-
+    state_ = Z80_STATE_DECODE;
     break;
   }
 
@@ -541,6 +553,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data) {
     break;
 
   }
+
+  if (state_ == Z80_STATE_INVALID) {
+    printf("x");
+  }
+
 
   //--------------------------------------------------------------------------------
   // Set up read
@@ -836,7 +853,7 @@ Z80State first_state(uint8_t op) {
 
 //-----------------------------------------------------------------------------
 
-Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool no_halt, bool unhalt) {
+Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool, bool) {
   switch (state) {
 
   // TODO - get rid of these
@@ -852,15 +869,15 @@ Z80State next_state(Z80State state, uint8_t op, uint8_t cb, bool no_branch, bool
   case Z80_STATE_INT3:       return Z80_STATE_INVALID;
   case Z80_STATE_INT4:       return Z80_STATE_INVALID;
 
-  case Z80_STATE_HALT0:      return no_halt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
-  case Z80_STATE_HALT1:      return unhalt ? Z80_STATE_DECODE : Z80_STATE_HALT1;
+  case Z80_STATE_HALT0:      return Z80_STATE_INVALID;
+  case Z80_STATE_HALT1:      return Z80_STATE_INVALID;
 
-  case Z80_STATE_CB0:        return Z80_STATE_CB1;
-  case Z80_STATE_CB1:        return CB_COL == 6 ? Z80_STATE_MEM_READ1 : Z80_STATE_DECODE;
+  case Z80_STATE_CB0:        return Z80_STATE_INVALID;
+  case Z80_STATE_CB1:        return Z80_STATE_INVALID;
 
-  case Z80_STATE_ALU0:       return Z80_STATE_ALU1;
-  case Z80_STATE_ALU1:       return ADD_HL_RR ? Z80_STATE_ALU2 : Z80_STATE_DECODE;
-  case Z80_STATE_ALU2:       return Z80_STATE_DECODE;
+  case Z80_STATE_ALU0:       return Z80_STATE_INVALID;
+  case Z80_STATE_ALU1:       return Z80_STATE_INVALID;
+  case Z80_STATE_ALU2:       return Z80_STATE_INVALID;
 
   case Z80_STATE_PUSHN:      return Z80_STATE_PUSH0;
   case Z80_STATE_PUSH0:      return Z80_STATE_PUSH1;

@@ -305,21 +305,25 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
 
   switch (state) {
   case Z80_STATE_CB0:
-    if (PREFIX_CB) { addr = pc++; write = false; state_ = Z80_STATE_CB1; }
+    if (PREFIX_CB) { addr = pc; write = false; state_ = Z80_STATE_CB1; }
     else printf("fail cb0");
     break;
 
   case Z80_STATE_CB1: {
     if (OP_CB_R) {
+      pc = addr + 1;
       out = alu_cb(CB_QUAD, CB_ROW, r, f);
       set_flag(out.f);
       reg_put8(CB_COL, (uint8_t)out.x);
 
-      addr = pc++;
+      addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
     }
-    else if (OP_CB_HL) { addr = hl; write = false; state_ = Z80_STATE_MEM_READ1; }
+    else if (OP_CB_HL) {
+      pc = addr + 1;
+      addr = hl; write = false; state_ = Z80_STATE_MEM_READ1;
+    }
     else printf("fail cb1");
     break;
   }

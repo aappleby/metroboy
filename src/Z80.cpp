@@ -489,20 +489,22 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     }
     else if (ADD_SP_R8)         {
       pc = addr + 1;
-
-      bool halfcarry = (sp & 0x000F) + (bus & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (bus & 0x00FF) > 0x00FF;
-      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
       lo = bus;
+
+      bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
+      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
 
       addr = pc; write = false; state_ = Z80_STATE_ALU2;
     }
     else if (LD_HL_SP_R8) {
       bool halfcarry = (sp & 0x000F) + (bus & 0x000F) > 0x000F;
       bool carry =     (sp & 0x00FF) + (bus & 0x00FF) > 0x00FF;
-
-      hl = sp + (int8_t)bus;
       f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+
+      hl = sp + lo;
+      hl = hl + ((lo & 0x80) ? 0xFF00 : 0x0000);
+
       addr = pc; write = false; state_ = Z80_STATE_ALU2;
     }
     else {
@@ -518,8 +520,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (ADD_HL_HL) { out = alu(1, h, h, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_HL_SP) { out = alu(1, h, s, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_SP_R8) {
-      int16_t delta = (int8_t)lo;
-      sp = sp + delta;
+      sp = sp + lo;
+      sp = sp + ((lo & 0x80) ? 0xFF00 : 0x0000);
       addr = pc; write = false; state_ = Z80_STATE_DECODE;
     }
     else if (LD_HL_SP_R8) {

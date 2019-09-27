@@ -491,11 +491,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
       pc = addr + 1;
       lo = bus;
 
-      bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
-      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-
-      sp = sp + lo;
+      out = alu(0, p, lo, f);
+      p = (uint8_t)out.x;
+      set_flag(out.f);
 
       addr = pc; write = false; state_ = Z80_STATE_ALU2;
     }
@@ -503,11 +501,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
       pc = addr + 1;
       lo = bus;
 
-      bool halfcarry = (sp & 0x000F) + (lo & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (lo & 0x00FF) > 0x00FF;
-      f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-
-      hl = sp + lo;
+      out = alu(0, p, lo, f);
+      l = (uint8_t)out.x;
+      set_flag(out.f);
 
       addr = pc; write = false; state_ = Z80_STATE_ALU2;
     }
@@ -518,21 +514,18 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   }
 
   case Z80_STATE_ALU2: {
-
-         if (ADD_HL_BC) { out = alu(1, h, b, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    if      (ADD_HL_BC) { out = alu(1, h, b, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_HL_DE) { out = alu(1, h, d, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_HL_HL) { out = alu(1, h, h, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_HL_SP) { out = alu(1, h, s, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_SP_R8) {
-      sp = sp + ((lo & 0x80) ? 0xFF00 : 0x0000);
+      out = alu(1, s, (lo & 0x80) ? 0xFF : 0x00, f);
+      s = (uint8_t)out.x;
       addr = pc; write = false; state_ = Z80_STATE_DECODE;
     }
     else if (LD_HL_SP_R8) {
-
-      out = alu(0, h, (lo & 0x80) ? 0xFF : 0x00, 0);
+      out = alu(1, s, (lo & 0x80) ? 0xFF : 0x00, f);
       h = (uint8_t)out.x;
-
-      //hl = hl + ((lo & 0x80) ? 0xFF00 : 0x0000);
       addr = pc; write = false; state_ = Z80_STATE_DECODE;
     }
     else printf("fail alu2");
@@ -866,6 +859,9 @@ void Z80::set_flag(uint8_t f_) {
 
   // RLCA, RRCA, RLA, and RRA always clear the zero bit - hardware bug?
   if ((op & 0b11100111) == 0b00000111) f &= ~F_ZERO;
+
+  // ADD_SP_R8 and LD_HL_SP_R8 always clear the zero bit and negative bit.
+  if ((op & 0b11101111) == 0b11101000) f &= ~(F_ZERO | F_NEGATIVE);
 }
 
 

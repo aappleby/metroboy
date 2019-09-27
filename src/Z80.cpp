@@ -484,15 +484,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
       hl = sp + (int8_t)lo;
       f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
     }
-    else  if (ADD_HL_RR) {
-      if (ADD_HL_BC) out = alu(1, h, b, f);
-      if (ADD_HL_DE) out = alu(1, h, d, f);
-      if (ADD_HL_HL) out = alu(1, h, h, f);
-      if (ADD_HL_SP) out = alu(1, h, s, f);
-
-      h = (uint8_t)out.x;
-      set_flag(out.f);
-    }
+    else if (ADD_HL_BC) { out = alu(1, h, b, f); h = (uint8_t)out.x; set_flag(out.f); }
+    else if (ADD_HL_DE) { out = alu(1, h, d, f); h = (uint8_t)out.x; set_flag(out.f); }
+    else if (ADD_HL_HL) { out = alu(1, h, h, f); h = (uint8_t)out.x; set_flag(out.f); }
+    else if (ADD_HL_SP) { out = alu(1, h, s, f); h = (uint8_t)out.x; set_flag(out.f); }
     else if (ADD_SP_R8) {
       // this should be in the alu block
       bool halfcarry = (sp & 0x000F) + (bus & 0x000F) > 0x000F;

@@ -409,6 +409,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
 
   case Z80_STATE_ALU1: {
     if (NOP) {
+      set_flag(out.f);
       addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
@@ -416,6 +417,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (DI) {
       ime = false;
       ime_delay = false;
+      set_flag(out.f);
       addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
@@ -423,12 +425,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (EI) {
       ime = ime_delay;
       ime_delay = true;
+      set_flag(out.f);
       addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
     }
     else if (MV_R_R) {
       reg_put8(OP_ROW, r);
+      set_flag(out.f);
       addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
@@ -436,6 +440,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (ALU_A_R) {
       out = alu(OP_ROW, a, r, f);
       a = (uint8_t)out.x;
+      set_flag(out.f);
       addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
@@ -443,6 +448,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (ALU_A_HL) {
       out = alu(OP_ROW, a, bus, f);
       a = (uint8_t)out.x;
+      set_flag(out.f);
       addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
@@ -450,6 +456,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (RLU_R) {
       out = rlu(OP_ROW, r, f);
       a = (uint8_t)out.x;
+      set_flag(out.f);
       addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
@@ -457,6 +464,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (INC_R) {
       out = alu(1, r, 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
+      set_flag(out.f);
       addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
@@ -464,6 +472,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (DEC_R) {
       out = alu(2, r, 1, 0);
       reg_put8(OP_ROW, (uint8_t)out.x);
+      set_flag(out.f);
       addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
@@ -474,13 +483,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
       if (ADD_HL_HL) out = alu(1, l, l, 0);
       if (ADD_HL_SP) out = alu(1, l, p, 0);
       l = (uint8_t)out.x;
+      set_flag(out.f);
       write = false;
       state_ = Z80_STATE_ALU2;
     }
     else {
       printf("fail alu1");
     }
-    set_flag(out.f);
     break;
   }
 

@@ -487,7 +487,25 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
       write = false;
       state_ = Z80_STATE_ALU2;
     }
-    else if (ADD_SP_R8)         { lo = bus;               pc = addr + 1;                              write = false; state_ = Z80_STATE_ALU2; }
+    else if (ADD_SP_R8)         {
+      bool halfcarry = (sp & 0x000F) + (bus & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (bus & 0x00FF) > 0x00FF;
+
+      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+
+      lo = bus;
+      pc = addr + 1;
+      write = false;
+      state_ = Z80_STATE_ALU2;
+    }
+    else if (LD_HL_SP_R8) {
+      bool halfcarry = (sp & 0x000F) + (bus & 0x000F) > 0x000F;
+      bool carry =     (sp & 0x00FF) + (bus & 0x00FF) > 0x00FF;
+
+      hl = sp + (int8_t)bus;
+      f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+      addr = pc; write = false; state_ = Z80_STATE_ALU2;
+    }
     else {
       printf("fail alu1");
     }
@@ -496,25 +514,18 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
 
   case Z80_STATE_ALU2: {
 
-    if (LD_HL_SP_R8) {
-      bool halfcarry = (sp & 0x000F) + (bus & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (bus & 0x00FF) > 0x00FF;
-
-      hl = sp + (int8_t)lo;
-      f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
-      addr = pc; write = false; state_ = Z80_STATE_DECODE;
-    }
-    else if (ADD_HL_BC) { out = alu(1, h, b, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+         if (ADD_HL_BC) { out = alu(1, h, b, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_HL_DE) { out = alu(1, h, d, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_HL_HL) { out = alu(1, h, h, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_HL_SP) { out = alu(1, h, s, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_SP_R8) {
-      // this should be in the alu block
-      bool halfcarry = (sp & 0x000F) + (bus & 0x000F) > 0x000F;
-      bool carry =     (sp & 0x00FF) + (bus & 0x00FF) > 0x00FF;
-
-      sp = sp + (int8_t)lo;
-      f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+      int16_t delta = (int8_t)lo;
+      sp = sp + delta;
+      addr = pc;
+      write = false;
+      state_ = Z80_STATE_DECODE;
+    }
+    else if (LD_HL_SP_R8) {
       addr = pc; write = false; state_ = Z80_STATE_DECODE;
     }
     else printf("fail alu2");
@@ -648,7 +659,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     else if (STM_A16_A)         { lo = bus;               pc = addr + 1;    addr = pc;                write = false; state_ = Z80_STATE_ARG2; }
     else if (STM_A16_SP)        { lo = bus;               pc = addr + 1;    addr = pc;                write = false; state_ = Z80_STATE_ARG2; }
     else if (LDM_A_A16)         { lo = bus;               pc = addr + 1;    addr = pc;                write = false; state_ = Z80_STATE_ARG2; }
-    else if (LD_HL_SP_R8)       { lo = bus;               pc = addr + 1;                              write = false; state_ = Z80_STATE_ALU2; }
+    else if (LD_HL_SP_R8)       { lo = bus;               pc = addr + 1;                              write = false; state_ = Z80_STATE_ALU1; }
     else if (LDM_A_A8)          { lo = bus;               pc = addr + 1;    addr = 0xFF00 | bus;      write = false; state_ = Z80_STATE_MEM_READ1; }
     else if (STM_A8_A)          { data_out = a;           pc = addr + 1;    addr = 0xFF00 | bus;      write = true;  state_ = Z80_STATE_MEM_WRITE1; }
     else if (STM_HL_D8)         { data_out = bus;         pc = addr + 1;    addr = hl;                write = true;  state_ = Z80_STATE_MEM_WRITE1; }

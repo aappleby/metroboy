@@ -322,7 +322,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     }
     else if (OP_CB_HL) {
       pc = addr + 1;
-      addr = hl; write = false; state_ = Z80_STATE_MEM_READ1;
+      addr = hl;
+      write = false;
+      state_ = Z80_STATE_MEM_READ1;
     }
     else printf("fail cb1");
     break;
@@ -342,6 +344,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
 
 
   //----------
+  // interrupts are probably totally broken, run some microtests later
 
   case Z80_STATE_INT0:
     addr = pc;
@@ -350,7 +353,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     break;
 
   case Z80_STATE_INT1:
-    addr = pc;
+    addr = sp;
     write = false;
     state_ = Z80_STATE_INT2;
     break;
@@ -358,7 +361,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   case Z80_STATE_INT2:
     addr = sp;
     data_out = pch;
-    write = false;
+    write = true;
     state_ = Z80_STATE_INT3;
     break;
 
@@ -369,7 +372,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
 
     addr = sp;
     data_out = pcl;
-    write = false;
+    write = true;
     state_ = Z80_STATE_INT4;
     break;
 
@@ -489,11 +492,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
 
       hl = sp + (int8_t)lo;
       f  = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+      addr = pc; write = false; state_ = Z80_STATE_DECODE;
     }
-    else if (ADD_HL_BC) { out = alu(1, h, b, f); h = (uint8_t)out.x; set_flag(out.f); }
-    else if (ADD_HL_DE) { out = alu(1, h, d, f); h = (uint8_t)out.x; set_flag(out.f); }
-    else if (ADD_HL_HL) { out = alu(1, h, h, f); h = (uint8_t)out.x; set_flag(out.f); }
-    else if (ADD_HL_SP) { out = alu(1, h, s, f); h = (uint8_t)out.x; set_flag(out.f); }
+    else if (ADD_HL_BC) { out = alu(1, h, b, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (ADD_HL_DE) { out = alu(1, h, d, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (ADD_HL_HL) { out = alu(1, h, h, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (ADD_HL_SP) { out = alu(1, h, s, f); h = (uint8_t)out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else if (ADD_SP_R8) {
       // this should be in the alu block
       bool halfcarry = (sp & 0x000F) + (bus & 0x000F) > 0x000F;
@@ -501,12 +505,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
 
       sp = sp + (int8_t)lo;
       f = (halfcarry ? F_HALF_CARRY : 0) | (carry ? F_CARRY : 0);
+      addr = pc; write = false; state_ = Z80_STATE_DECODE;
     }
     else printf("fail alu2");
 
-    addr = pc;
-    write = false;
-    state_ = Z80_STATE_DECODE;
     break;
   }
 

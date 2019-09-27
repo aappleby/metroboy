@@ -356,23 +356,25 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     break;
 
   case Z80_STATE_INT2:
-    addr = --sp;
+    addr = sp;
     data_out = pch;
     write = false;
     state_ = Z80_STATE_INT3;
     break;
 
   case Z80_STATE_INT3:
+    sp = addr - 1;
     // gameboy interrupt quirk thingy
     imask_latch = imask_;
 
-    addr = --sp;
+    addr = sp;
     data_out = pcl;
     write = false;
     state_ = Z80_STATE_INT4;
     break;
 
   case Z80_STATE_INT4: {
+    sp = addr - 1;
 
     uint8_t interrupts = imask_latch & intf_;
     int vector = -1;
@@ -394,7 +396,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     ime = false;
     ime_delay = false;
 
-    addr = pc++;
+    addr = pc;
     write = false;
     state_ = Z80_STATE_DECODE;
     break;
@@ -404,34 +406,34 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
 
   case Z80_STATE_ALU1: {
     if (NOP) {
-      addr = pc++;
+      addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
     }
     else if (DI) {
       ime = false;
       ime_delay = false;
-      addr = pc++;
+      addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
     }
     else if (EI) {
       ime = ime_delay;
       ime_delay = true;
-      addr = pc++;
+      addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
     }
     else if (MV_R_R) {
       reg_put8(OP_ROW, r);
-      addr = pc++;
+      addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
     }
     else if (ALU_A_R) {
       out = alu(OP_ROW, a, r, f);
       a = (uint8_t)out.x;
-      addr = pc++;
+      addr = pc;
       write = false;
       state_ = Z80_STATE_DECODE;
     }

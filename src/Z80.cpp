@@ -304,45 +304,24 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   uint8_t r = reg_get8();
   write = 0xFF;
 
+
+  if (PREFIX_CB && state == CB0) {                                                                                               addr = pc; write = false; state_ = CB1; }
+  if (OP_CB_R   && state == CB1) { pc = addr + 1; out = alu_cb(CB_QUAD, CB_ROW, r, f); set_flag(out.f); reg_put8(CB_COL, out.x); addr = pc; write = false; state_ = DECODE; }
+  if (OP_CB_HL  && state == CB1) { pc = addr + 1;                                                                                addr = hl; write = false; state_ = MEM_READ1; }
+
   switch (state) {
-  case CB0:
-    if (PREFIX_CB) { addr = pc; write = false; state_ = CB1; }
-    else printf("fail cb0");
-    break;
-
-  case CB1: {
-    if (OP_CB_R) {
-      pc = addr + 1;
-      out = alu_cb(CB_QUAD, CB_ROW, r, f);
-      set_flag(out.f);
-      reg_put8(CB_COL, out.x);
-
-      addr = pc;
-      write = false;
-      state_ = DECODE;
-    }
-    else if (OP_CB_HL) {
-      pc = addr + 1;
-      addr = hl;
-      write = false;
-      state_ = MEM_READ1;
-    }
-    else printf("fail cb1");
-    break;
-  }
-
-  //----------
 
   case HALT0:
-    if (no_halt) { addr = pc;   write = false; state_ = DECODE; }
-    else         { unhalt = 0;  write = false; state_ = HALT1; }
+    if      (HALT && no_halt)  {              addr = pc; write = false; state_ = DECODE; }
+    else if (HALT && !no_halt) { unhalt = 0;  addr = pc; write = false; state_ = HALT1; }
+    else printf("fail halt0");
     break;
 
   case HALT1:
-    if (unhalt)  { addr = pc;   write = false; state_ = DECODE; }
-    else         {              write = false; state_ = HALT1; }
+    if      (HALT && unhalt)  {               addr = pc; write = false; state_ = DECODE; }
+    else if (HALT && !unhalt) {               addr = pc; write = false; state_ = HALT1; }
+    else printf("fail halt1");
     break;
-
 
   //----------
   // interrupts are probably totally broken, run some microtests later
@@ -358,26 +337,21 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
     break;
 
   case INT2:
-    addr = sp;
-    data_out = pch;
-    write = true;
-    state_ = INT3;
+    if (interrupt) { addr = sp; data_out = pch; write = true; state_ = INT3; }
+    else printf("fail int2");
     break;
 
   case INT3:
-    sp = addr - 1;
     // gameboy interrupt quirk thingy
     imask_latch = imask_;
-
-    addr = sp;
-    data_out = pcl;
-    write = true;
-    state_ = INT4;
+    if (interrupt) { sp = addr - 1; data_out = pcl; addr = sp; write = true; state_ = INT4; }
+    else printf("fail int3");
     break;
 
   case INT4: {
     sp = addr - 1;
 
+    // move to int3?
     uint8_t interrupts = imask_latch & intf_;
     int vector = -1;
     if (interrupts & INT_JOYPAD) vector = 4; // joypad

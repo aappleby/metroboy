@@ -296,7 +296,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   //----------------------------------------
   // Do the meat of executing the instruction
 
-  AluOut out = {0};
+  AluOut& out = alu_out;
+  //AluOut out = {0};
   bool nb = no_branch;
   bool tb = !no_branch;
   state_ = Z80_STATE_INVALID;
@@ -507,9 +508,35 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
 
       addr = pc; write = false; state_ = Z80_STATE_ALU2;
     }
-    else if (JR_R8)             { lo = bus;               pc = addr + 1;    addr = pc; write = false; state_ = Z80_STATE_ALU2; }
-    else if (JR_CC_R8 && tb)    { lo = bus;               pc = addr + 1;    addr = pc; write = false; state_ = Z80_STATE_ALU2; }
-    else if (JR_CC_R8 && nb)    { lo = bus;               pc = addr + 1;    addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (JR_R8) {
+      lo = bus;
+      pc = addr + 1;
+
+      out = alu(0, pcl, lo, 0);
+      pcl = out.x;
+
+      addr = pc;
+      write = false;
+      state_ = Z80_STATE_ALU2;
+    }
+    else if (JR_CC_R8 && tb) {
+      lo = bus;
+      pc = addr + 1;
+
+      out = alu(0, pcl, lo, 0);
+      pcl = out.x;
+
+      addr = pc;
+      write = false;
+      state_ = Z80_STATE_ALU2;
+    }
+    else if (JR_CC_R8 && nb) {
+      pc = addr + 1;
+      lo = bus;
+      // no branch
+      addr = pc;
+      write = false;
+      state_ = Z80_STATE_DECODE; }
     else {
       printf("fail alu1");
     }
@@ -531,8 +558,18 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
       h = out.x;
       addr = pc; write = false; state_ = Z80_STATE_DECODE;
     }
-    else if (JR_R8)             { pc = pc + (int8_t)lo;       addr = pc;                write = false; state_ = Z80_STATE_DECODE;}
-    else if (JR_CC_R8 && tb)    { pc = pc + (int8_t)lo;       addr = pc;                write = false; state_ = Z80_STATE_DECODE;}
+    else if (JR_R8) {
+      out = alu(1, pch, (lo & 0x80) ? 0xFF : 0x00, alu_out.f);
+      pch = out.x;
+
+      addr = pc; write = false; state_ = Z80_STATE_DECODE;
+    }
+    else if (JR_CC_R8 && tb) {
+      out = alu(1, pch, (lo & 0x80) ? 0xFF : 0x00, alu_out.f);
+      pch = out.x;
+
+      addr = pc; write = false; state_ = Z80_STATE_DECODE;
+    }
     else printf("fail alu2");
 
     break;

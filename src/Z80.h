@@ -56,6 +56,8 @@ private:
   bool no_branch;
   bool no_halt;
 
+  AluOut alu_out;
+
 #pragma warning(pop)
 
   //----------

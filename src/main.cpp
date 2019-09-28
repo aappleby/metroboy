@@ -27,6 +27,7 @@ void run_test(const std::string& prefix, const std::string& name);
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+  printf("Hello World");
   MetroBoyApp* app = new MetroBoyApp();
   int ret = app->main_(argc, argv);
   delete app;
@@ -34,6 +35,7 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
+  printf("Hello World\n");
   //test_codegen();
   //return 0;
 
@@ -452,6 +454,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   }
 
   if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_INDEX8) {
+    printf("Loaded i8 golden\n");
     uint8_t* src = (uint8_t*)golden_surface->pixels;
     uint32_t* pal = (uint32_t*)golden_surface->format->palette->colors;
     for (int y = 0; y < 144; y++) {
@@ -470,6 +473,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   }
 
   else if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_BGR24) {
+    printf("Loaded argb golden\n");
     uint8_t* src = (uint8_t*)golden_surface->pixels;
     for (int y = 0; y < 144; y++) {
       for (int x = 0; x < 160; x++) {
@@ -486,6 +490,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
     overlay_mode = 1;
   }
 
+  printf("Loading rom %s\n", gb_filename.c_str());
   memset(rom_buf, 0, 1024 * 1024);
   metroboy.load_rom(MODEL_DMG, gb_filename.c_str(), false);
   rom_loaded = true;

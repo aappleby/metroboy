@@ -348,15 +348,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   // interrupts are probably totally broken, run some microtests later
 
   case Z80_STATE_INT0:
-    addr = pc;
-    write = false;
-    state_ = Z80_STATE_INT1;
+    if (interrupt) { addr = pc; write = false; state_ = Z80_STATE_INT1; }
+    else printf("fail int0");
     break;
 
   case Z80_STATE_INT1:
-    addr = sp;
-    write = false;
-    state_ = Z80_STATE_INT2;
+    if (interrupt) { addr = sp; write = false; state_ = Z80_STATE_INT2; }
+    else printf("fail int1");
     break;
 
   case Z80_STATE_INT2:
@@ -409,167 +407,37 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus) {
   //----------
 
   case Z80_STATE_ALU1: {
-    if (NOP) {
-      set_flag(out.f);
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE;
-    }
-    else if (DI) {
-      ime = false;
-      ime_delay = false;
-      set_flag(out.f);
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE;
-    }
-    else if (EI) {
-      ime = ime_delay;
-      ime_delay = true;
-      set_flag(out.f);
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE;
-    }
-    else if (MV_R_R) {
-      reg_put8(OP_ROW, r);
-      set_flag(out.f);
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE;
-    }
-    else if (ALU_A_R) {
-      out = alu(OP_ROW, a, r, f);
-      a = out.x;
-      set_flag(out.f);
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE;
-    }
-    else if (ALU_A_HL) {
-      out = alu(OP_ROW, a, bus, f);
-      a = out.x;
-      set_flag(out.f);
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE;
-    }
-    else if (RLU_R) {
-      out = rlu(OP_ROW, r, f);
-      a = out.x;
-      set_flag(out.f);
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE;
-    }
-    else if (INC_R) {
-      out = alu(1, r, 1, 0);
-      reg_put8(OP_ROW, out.x);
-      set_flag(out.f);
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE;
-    }
-    else if (DEC_R) {
-      out = alu(2, r, 1, 0);
-      reg_put8(OP_ROW, out.x);
-      set_flag(out.f);
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE;
-    }  
-    else if (ADD_HL_RR) {
-      if (ADD_HL_BC) out = alu(1, l, c, 0);
-      if (ADD_HL_DE) out = alu(1, l, e, 0);
-      if (ADD_HL_HL) out = alu(1, l, l, 0);
-      if (ADD_HL_SP) out = alu(1, l, p, 0);
-      l = out.x;
-      set_flag(out.f);
-      write = false;
-      state_ = Z80_STATE_ALU2;
-    }
-    else if (ADD_SP_R8)         {
-      pc = addr + 1;
-      lo = bus;
-
-      out = alu(0, p, lo, f);
-      p = out.x;
-      set_flag(out.f);
-
-      addr = pc; write = false; state_ = Z80_STATE_ALU2;
-    }
-    else if (LD_HL_SP_R8) {
-      pc = addr + 1;
-      lo = bus;
-
-      out = alu(0, p, lo, f);
-      l = out.x;
-      set_flag(out.f);
-
-      addr = pc; write = false; state_ = Z80_STATE_ALU2;
-    }
-    else if (JR_R8) {
-      lo = bus;
-      pc = addr + 1;
-
-      out = alu(0, pcl, lo, 0);
-      pcl = out.x;
-
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_ALU2;
-    }
-    else if (JR_CC_R8 && tb) {
-      lo = bus;
-      pc = addr + 1;
-
-      out = alu(0, pcl, lo, 0);
-      pcl = out.x;
-
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_ALU2;
-    }
-    else if (JR_CC_R8 && nb) {
-      pc = addr + 1;
-      lo = bus;
-      // no branch
-      addr = pc;
-      write = false;
-      state_ = Z80_STATE_DECODE; }
-    else {
-      printf("fail alu1");
-    }
+    if      (NOP)            {                                                                                                            set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (DI)             { ime = false; ime_delay = false;                                                                            set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (EI)             { ime = ime_delay; ime_delay = true;                                                                         set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (MV_R_R)         {                                                                                   reg_put8(OP_ROW, r);     set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (ALU_A_R)        {                          out = alu(OP_ROW, a, r, f);                              a = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (ALU_A_HL)       {                          out = alu(OP_ROW, a, bus, f);                            a = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (RLU_R)          {                          out = rlu(OP_ROW, r, f);                                 a = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (INC_R)          {                          out = alu(1, r, 1, 0);                                   reg_put8(OP_ROW, out.x); set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (DEC_R)          {                          out = alu(2, r, 1, 0);                                   reg_put8(OP_ROW, out.x); set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }  
+    else if (ADD_HL_BC)      {                          out = alu(1, l, c, 0);                                   l = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_ALU2; }
+    else if (ADD_HL_DE)      {                          out = alu(1, l, e, 0);                                   l = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_ALU2; }
+    else if (ADD_HL_HL)      {                          out = alu(1, l, l, 0);                                   l = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_ALU2; }
+    else if (ADD_HL_SP)      {                          out = alu(1, l, p, 0);                                   l = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_ALU2; }
+    else if (ADD_SP_R8)      { pc = addr + 1; lo = bus; out = alu(0, p, lo, f);                                  p = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_ALU2; }
+    else if (LD_HL_SP_R8)    { pc = addr + 1; lo = bus; out = alu(0, p, lo, f);                                  l = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_ALU2; }
+    else if (JR_R8)          { pc = addr + 1; lo = bus; out = alu(0, pcl, lo, 0);                                pcl = out.x;                              addr = pc; write = false; state_ = Z80_STATE_ALU2; }
+    else if (JR_CC_R8 && tb) { pc = addr + 1; lo = bus; out = alu(0, pcl, lo, 0);                                pcl = out.x;                              addr = pc; write = false; state_ = Z80_STATE_ALU2; }
+    else if (JR_CC_R8 && nb) { pc = addr + 1; lo = bus;                                                                                                    addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else printf("fail alu1");
     break;
   }
 
   case Z80_STATE_ALU2: {
-    if      (ADD_HL_BC) { out = alu(1, h, b, f); h = out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
-    else if (ADD_HL_DE) { out = alu(1, h, d, f); h = out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
-    else if (ADD_HL_HL) { out = alu(1, h, h, f); h = out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
-    else if (ADD_HL_SP) { out = alu(1, h, s, f); h = out.x; set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
-    else if (ADD_SP_R8) {
-      out = alu(1, s, (lo & 0x80) ? 0xFF : 0x00, f);
-      s = out.x;
-      addr = pc; write = false; state_ = Z80_STATE_DECODE;
-    }
-    else if (LD_HL_SP_R8) {
-      out = alu(1, s, (lo & 0x80) ? 0xFF : 0x00, f);
-      h = out.x;
-      addr = pc; write = false; state_ = Z80_STATE_DECODE;
-    }
-    else if (JR_R8) {
-      out = alu(1, pch, (lo & 0x80) ? 0xFF : 0x00, alu_out.f);
-      pch = out.x;
-
-      addr = pc; write = false; state_ = Z80_STATE_DECODE;
-    }
-    else if (JR_CC_R8 && tb) {
-      out = alu(1, pch, (lo & 0x80) ? 0xFF : 0x00, alu_out.f);
-      pch = out.x;
-
-      addr = pc; write = false; state_ = Z80_STATE_DECODE;
-    }
+    if      (ADD_HL_BC)      {                          out = alu(1, h, b, f);                                   h = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (ADD_HL_DE)      {                          out = alu(1, h, d, f);                                   h = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (ADD_HL_HL)      {                          out = alu(1, h, h, f);                                   h = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (ADD_HL_SP)      {                          out = alu(1, h, s, f);                                   h = out.x;               set_flag(out.f); addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (ADD_SP_R8)      {                          out = alu(1, s, (lo & 0x80) ? 0xFF : 0x00, f);           s = out.x;                                addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (LD_HL_SP_R8)    {                          out = alu(1, s, (lo & 0x80) ? 0xFF : 0x00, f);           h = out.x;                                addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (JR_R8)          {                          out = alu(1, pch, (lo & 0x80) ? 0xFF : 0x00, alu_out.f); pch = out.x;                              addr = pc; write = false; state_ = Z80_STATE_DECODE; }
+    else if (JR_CC_R8 && tb) {                          out = alu(1, pch, (lo & 0x80) ? 0xFF : 0x00, alu_out.f); pch = out.x;                              addr = pc; write = false; state_ = Z80_STATE_DECODE; }
     else printf("fail alu2");
 
     break;

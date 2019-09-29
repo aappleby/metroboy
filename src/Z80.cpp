@@ -282,7 +282,16 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
 
     if (interrupt) {
-      if (INC_R || DEC_R) pc = addr + 1;
+      if (INC_R) {
+        pc = addr + 1;
+      }
+      else if (DEC_R) {
+        printf("-");
+        pc = addr + 1;
+      }
+      else {
+        printf("?");
+      }
       op = 0x00;
       state = INT0;
     }

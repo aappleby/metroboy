@@ -265,7 +265,11 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     int_ack_ = 0;
     imask_ = imask;
     intf_ = intf;
-    pc = addr + 1;
+
+    if (PUSH_RR || POP_RR) {
+    } else {
+      pc = addr + 1;
+    }
 
     bool cond_fail = false;
 
@@ -428,14 +432,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (LD_HL_SP_R8       && state == ALU1)   { pc = addr + 1; lo = bus; out = alu(0, p, lo, f);                                  l = out.x;               set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
   if (LD_HL_SP_R8       && state == ALU2)   {                          out = alu(1, s, (lo & 0x80) ? 0xFF : 0x00, f);           h = out.x;                                addr = pc;           write = false; state_ = DECODE; }
 
-  if (LDM_A_BC          && state == READ0)  {                         pc = addr + 1;                                                                                      addr = bc;           write = false; state_ = READ1; }
+  if (LDM_A_BC          && state == READ0)  {                                                                                                                             addr = bc;           write = false; state_ = READ1; }
   if (LDM_A_BC          && state == READ1)  { a = bus;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
-  if (LDM_A_DE          && state == READ0)  {                         pc = addr + 1;                                                                                      addr = de;           write = false; state_ = READ1; }
+  if (LDM_A_DE          && state == READ0)  {                                                                                                                             addr = de;           write = false; state_ = READ1; }
   if (LDM_A_DE          && state == READ1)  { a = bus;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
-  if (LDM_A_HLP         && state == READ0)  {                         pc = addr + 1;                                                                                      addr = hl;           write = false; state_ = READ1; }
-  if (LDM_A_HLP         && state == READ1)  { a = bus; hl = addr + 1;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
-  if (LDM_A_HLM         && state == READ0)  {                         pc = addr + 1;                                                                                      addr = hl;           write = false; state_ = READ1; }
-  if (LDM_A_HLM         && state == READ1)  { a = bus; hl = addr - 1;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
+  if (LDM_A_HLP         && state == READ0)  {                                                                                                                             addr = hl;           write = false; state_ = READ1; }
+  if (LDM_A_HLP         && state == READ1)  { hl = addr + 1; a = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
+  if (LDM_A_HLM         && state == READ0)  {                                                                                                                             addr = hl;           write = false; state_ = READ1; }
+  if (LDM_A_HLM         && state == READ1)  { hl = addr - 1; a = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
 
   if (LD_R_D8           && state == ARG0)   {                                                                                                                             addr = pc;           write = false; state_ = ARG1; }
   if (LD_R_D8           && state == ARG1)   { reg_put8(OP_ROW, bus);  pc = addr + 1;                                                                                      addr = pc;           write = false; state_ = DECODE; }
@@ -452,26 +456,26 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (LDM_A_A8          && state == ARG1)   { lo = bus;               pc = addr + 1;                                                                                      addr = 0xFF00 | bus; write = false; state_ = READ1; }
   if (LDM_A_A8          && state == READ1)  { a = bus;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
 
-  if (LDM_A_C           && state == READ0)  {                         pc = addr + 1;                                                                                      addr = 0xFF00 | c;   write = false; state_ = READ1; }
+  if (LDM_A_C           && state == READ0)  {                                                                                                                             addr = 0xFF00 | c;   write = false; state_ = READ1; }
   if (LDM_A_C           && state == READ1)  { a = bus;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
 
-  if (LDM_R_HL          && state == READ0)  {                         pc = addr + 1;                                                                                      addr = hl;           write = false; state_ = READ1; }
+  if (LDM_R_HL          && state == READ0)  {                                                                                                                             addr = hl;           write = false; state_ = READ1; }
   if (LDM_R_HL          && state == READ1)  { reg_put8(OP_ROW, bus);                                                                                                      addr = pc;           write = false; state_ = DECODE; }
 
-  if (POP_RR            && state == POP0)   {                                                                                                                             addr = sp;           write = false; state_ = POP1; }
-  if (POP_AF            && state == POP1)   { f = bus & 0xF0; sp = addr + 1;                                                                                              addr = sp;           write = false; state_ = POP2;}
-  if (POP_AF            && state == POP2)   { a = bus;        sp = addr + 1;                                                                                              addr = pc;           write = false; state_ = DECODE; }
-  if (POP_BC            && state == POP1)   { c = bus;        sp = addr + 1;                                                                                              addr = sp;           write = false; state_ = POP2;}
-  if (POP_BC            && state == POP2)   { b = bus;        sp = addr + 1;                                                                                              addr = pc;           write = false; state_ = DECODE; }
-  if (POP_DE            && state == POP1)   { e = bus;        sp = addr + 1;                                                                                              addr = sp;           write = false; state_ = POP2;}
-  if (POP_DE            && state == POP2)   { d = bus;        sp = addr + 1;                                                                                              addr = pc;           write = false; state_ = DECODE; }
-  if (POP_HL            && state == POP1)   { l = bus;        sp = addr + 1;                                                                                              addr = sp;           write = false; state_ = POP2;}
-  if (POP_HL            && state == POP2)   { h = bus;        sp = addr + 1;                                                                                              addr = pc;           write = false; state_ = DECODE; }
+  if (POP_RR            && state == POP0)   { pc = addr + 1;                                                                                                              addr = sp;           write = false; state_ = POP1; }
+  if (POP_BC            && state == POP1)   { sp = addr + 1; c = bus;                                                                                                     addr = sp;           write = false; state_ = POP2;}
+  if (POP_DE            && state == POP1)   { sp = addr + 1; e = bus;                                                                                                     addr = sp;           write = false; state_ = POP2;}
+  if (POP_HL            && state == POP1)   { sp = addr + 1; l = bus;                                                                                                     addr = sp;           write = false; state_ = POP2;}
+  if (POP_AF            && state == POP1)   { sp = addr + 1; f = bus & 0xF0;                                                                                              addr = sp;           write = false; state_ = POP2;}
+  if (POP_BC            && state == POP2)   { sp = addr + 1; b = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
+  if (POP_DE            && state == POP2)   { sp = addr + 1; d = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
+  if (POP_HL            && state == POP2)   { sp = addr + 1; h = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
+  if (POP_AF            && state == POP2)   { sp = addr + 1; a = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
 
-  if (PUSH_BC           && state == PUSHN)  {                                                                                                                             addr = sp;           write = false; state_ = PUSH0; }
-  if (PUSH_DE           && state == PUSHN)  {                                                                                                                             addr = sp;           write = false; state_ = PUSH0; }
-  if (PUSH_HL           && state == PUSHN)  {                                                                                                                             addr = sp;           write = false; state_ = PUSH0; }
-  if (PUSH_AF           && state == PUSHN)  {                                                                                                                             addr = sp;           write = false; state_ = PUSH0; }
+  if (PUSH_BC           && state == PUSHN)  { pc = addr + 1;                                                                                                              addr = sp;           write = false; state_ = PUSH0; }
+  if (PUSH_DE           && state == PUSHN)  { pc = addr + 1;                                                                                                              addr = sp;           write = false; state_ = PUSH0; }
+  if (PUSH_HL           && state == PUSHN)  { pc = addr + 1;                                                                                                              addr = sp;           write = false; state_ = PUSH0; }
+  if (PUSH_AF           && state == PUSHN)  { pc = addr + 1;                                                                                                              addr = sp;           write = false; state_ = PUSH0; }
   if (PUSH_BC           && state == PUSH0)  { sp = addr - 1;                                                                  data_out = b;                               addr = sp;           write = true;  state_ = PUSH1; }
   if (PUSH_DE           && state == PUSH0)  { sp = addr - 1;                                                                  data_out = d;                               addr = sp;           write = true;  state_ = PUSH1; }
   if (PUSH_HL           && state == PUSH0)  { sp = addr - 1;                                                                  data_out = h;                               addr = sp;           write = true;  state_ = PUSH1; }
@@ -483,8 +487,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (PUSH_RR           && state == PUSH2)  {                                                                                                                             addr = pc;           write = false; state_ = DECODE; }
 
   if (RET               && state == POP0)   {                                                                                                                             addr = sp;           write = false; state_ = POP1; }
-  if (RET               && state == POP1)   { lo = bus;       sp = addr + 1;                                                                                              addr = sp;           write = false; state_ = POP2;}
-  if (RET               && state == POP2)   { hi = bus;       sp = addr + 1;                                                                                              addr = pc;           write = false; state_ = PTR1; }
+  if (RET               && state == POP1)   { sp = addr + 1; lo = bus;                                                                                                    addr = sp;           write = false; state_ = POP2;}
+  if (RET               && state == POP2)   { sp = addr + 1; hi = bus;                                                                                                    addr = pc;           write = false; state_ = PTR1; }
   if (RET               && state == PTR1)   { pc = temp;                                                                                                                  addr = pc;           write = false; state_ = DECODE;}
 
   if (RET_CC            && state == POPN)   { /* flag test go here? */                                                                                                    addr = pc;           write = false; state_ = POP0; }

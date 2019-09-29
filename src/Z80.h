@@ -47,6 +47,8 @@ private:
   union { uint16_t sp;   struct { uint8_t   p; uint8_t   s; }; };
   union { uint16_t temp; struct { uint8_t  lo; uint8_t  hi; }; };
 
+  uint8_t bus;
+
   // internal address register
   uint16_t addr;
   uint8_t data_out;

@@ -286,7 +286,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
     interrupt = (imask_ & intf_) && ime;
 
-    state = interrupt ? INT0 : first_state(op);
+    if (interrupt) {
+      state = INT0;
+      ime = false;
+      ime_ = false;
+    } else {
+      state = first_state(op);
+    }
   }
 
   //----------------------------------------
@@ -322,19 +328,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     state_ = INT3;
   }
   if (state == INT3) {
-    ime = false;
-    ime_ = false;
-
-    // should probably be in int3
-    int vector = -1;
-    if (imask_ & intf_ & INT_JOYPAD) { vector = 4; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
-    if (imask_ & intf_ & INT_SERIAL) { vector = 3; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
-    if (imask_ & intf_ & INT_TIMER)  { vector = 2; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
-    if (imask_ & intf_ & INT_STAT)   { vector = 1; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
-    if (imask_ & intf_ & INT_VBLANK) { vector = 0; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
+    if (imask_ & intf_ & INT_JOYPAD) { temp = 0x0060; int_ack_ = INT_JOYPAD; }
+    if (imask_ & intf_ & INT_SERIAL) { temp = 0x0058; int_ack_ = INT_SERIAL; }
+    if (imask_ & intf_ & INT_TIMER)  { temp = 0x0050; int_ack_ = INT_TIMER; }
+    if (imask_ & intf_ & INT_STAT)   { temp = 0x0048; int_ack_ = INT_STAT; }
+    if (imask_ & intf_ & INT_VBLANK) { temp = 0x0040; int_ack_ = INT_VBLANK; }
     
-    if (vector >= 0) int_ack_ = 1 << vector;
-
     addr = sp;
     write = false;
     state_ = INT4;

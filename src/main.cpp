@@ -40,7 +40,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
-  return 0;
+  //return 0;
 
   //---------
 

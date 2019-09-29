@@ -310,31 +310,29 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     state_ = INT1;
   }
   if (state == INT1) {
-    addr = sp;
-    sp = addr - 1;
+    addr = sp--;
     data_out = pch;
     write = true;
     state_ = INT2;
   }
   if (state == INT2) {
-    addr = sp;
-    sp = addr - 1;
+    addr = sp--;
     data_out = pcl;
     write = true;
     state_ = INT3;
   }
   if (state == INT3) {
-    // should probably be in int3
-    uint8_t interrupts = imask_ & intf_;
-    int vector = -1;
-    if (interrupts & INT_JOYPAD) vector = 4; // joypad
-    if (interrupts & INT_SERIAL) vector = 3; // serial
-    if (interrupts & INT_TIMER)  vector = 2; // timer
-    if (interrupts & INT_STAT)   vector = 1; // lcd stat
-    if (interrupts & INT_VBLANK) vector = 0; // vblank
-    temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000;
     ime = false;
     ime_ = false;
+
+    // should probably be in int3
+    int vector = -1;
+    if (imask_ & intf_ & INT_JOYPAD) { vector = 4; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
+    if (imask_ & intf_ & INT_SERIAL) { vector = 3; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
+    if (imask_ & intf_ & INT_TIMER)  { vector = 2; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
+    if (imask_ & intf_ & INT_STAT)   { vector = 1; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
+    if (imask_ & intf_ & INT_VBLANK) { vector = 0; temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000; }
+    
     if (vector >= 0) int_ack_ = 1 << vector;
 
     addr = sp;
@@ -347,6 +345,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     write = false;
     state_ = DECODE;
   }
+
+  if (CALL_A16          && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
+  if (CALL_A16          && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }
+  if (CALL_A16          && state == ARG2)   { pc = addr + 1;   hi = bus;                                                                                                    addr = sp;           write = false; state_ = PUSH0; }
+  if (CALL_A16          && state == PUSH0)  { sp = addr - 1;                                                          data_out = pch;                                       addr = sp;           write = true;  state_ = PUSH1; }
+  if (CALL_A16          && state == PUSH1)  { sp = addr - 1;                                                          data_out = pcl;                                       addr = sp;           write = true;  state_ = PUSH2; }
+  if (CALL_A16          && state == PUSH2)  { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
 
 
 
@@ -383,13 +388,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (ALU_A_D8          && state == ARG1)   { pc = addr + 1;                   out = alu(OP_ROW, a, bus, f);          a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (ALU_A_HL          && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = ALU1; }
   if (ALU_A_HL          && state == ALU1)   {                                  out = alu(OP_ROW, a, bus, f);          a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-                                                               
-  if (CALL_A16          && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
-  if (CALL_A16          && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }
-  if (CALL_A16          && state == ARG2)   { pc = addr + 1;   hi = bus;                                                                                                    addr = sp;           write = false; state_ = PUSH0; }
-  if (CALL_A16          && state == PUSH0)  { sp = addr - 1;                                                          data_out = pch;                                       addr = sp;           write = true;  state_ = PUSH1; }
-  if (CALL_A16          && state == PUSH1)  { sp = addr - 1;                                                          data_out = pcl;                                       addr = sp;           write = true;  state_ = PUSH2; }
-  if (CALL_A16          && state == PUSH2)  { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
                                                                
   if (CALL_CC_A16       && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
   if (CALL_CC_A16       && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }

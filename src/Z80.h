@@ -26,8 +26,6 @@ struct Z80 {
 
 private:
 
-  CpuBus bus_temp;
-
   int model = 0;
   int cycle;
   uint8_t op, cb;

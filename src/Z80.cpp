@@ -205,28 +205,35 @@ void Z80::reset(int new_model, uint16_t new_pc) {
   ime_ = false;
   imask_latch = 0;
   interrupt = false;
-  state = DECODE;
+  state = state_ = DECODE;
 
   if (new_pc == 0x100) {
-    af = 0x01B0;
+    pc = new_pc;
     bc = 0x0013;
     de = 0x00D8;
     hl = 0x014D;
+    af = 0x01B0;
     sp = 0xFFFE;
-    pc = new_pc;
-    addr = new_pc - 1;
+    temp = 0x0000;
   }
   else {
-    af = 0x0000;
+    pc = new_pc;
     bc = 0x0000;
     de = 0x0000;
     hl = 0x0000;
+    af = 0x0000;
     sp = 0x0000;
-    pc = new_pc;
-    addr = new_pc - 1;
+    temp = 0x0000;
   }
-}
 
+  addr = new_pc - 1;
+  bus = 0x00;
+  data_out = 0x00;
+  write = false;
+  no_branch = false;
+  no_halt = false;
+  alu_out = { 0, 0 };
+}
 
 
 

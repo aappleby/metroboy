@@ -320,8 +320,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (ADD_HL_SP         && state == ALU2)   {                          out = alu(1, h, s, f);                                   h = out.x;               set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
 
   if (ADD_SP_R8         && state == ARG0)   {                                                                                                                             addr = pc;           write = false; state_ = ALU1; }
-  if (ADD_SP_R8         && state == ALU1)   { lo = bus;                out = alu(0, p, lo, f);                                  p = out.x;               set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
-  if (ADD_SP_R8         && state == ALU2)   { pc = addr + 1;           out = alu(1, s, (lo & 0x80) ? 0xFF : 0x00, f);           s = out.x;                                addr = pc;           write = false; state_ = DECODE; }
+  if (ADD_SP_R8         && state == ALU1)   {                          out = alu(0, p, bus, f);                                  p = out.x;              set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
+  if (ADD_SP_R8         && state == ALU2)   { pc = addr + 1;           out = alu(1, s, (bus & 0x80) ? 0xFF : 0x00, f);           s = out.x;                               addr = pc;           write = false; state_ = DECODE; }
 
   if (ALU_A_D8          && state == ARG0)   {                                                                                                                             addr = pc;           write = false; state_ = ARG1; }
   if (ALU_A_D8          && state == ARG1)   { pc = addr + 1;           out = alu(OP_ROW, a, bus, f);                            a = out.x;               set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }

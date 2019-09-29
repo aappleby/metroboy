@@ -282,16 +282,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
 
     if (interrupt) {
-      if (INC_R) {
+      if (DEC_R) {
         pc = addr + 1;
+        printf("\n");
+        printf("******************");
+        printf("\n");
       }
-      else if (DEC_R) {
-        printf("-");
-        pc = addr + 1;
-      }
-      else {
-        printf("?");
-      }
+
       op = 0x00;
       state = INT0;
     }
@@ -350,7 +347,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (NOP               && state == ALU1)   { pc = addr + 1;                                                                                               set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
 
   if (DEC_R             && state == ALU1)   {                                  out = alu(2, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }  
-  if (INC_R             && state == ALU1)   {                                  out = alu(1, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+  if (INC_R             && state == ALU1)   { pc = addr + 1;                   out = alu(1, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (INC_AT_HL         && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
   if (INC_AT_HL         && state == READ1)  {                                  out = alu(0, bus, 1, 0);               data_out = out.x;                    set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
   if (INC_AT_HL         && state == WRITE1) {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }

@@ -311,22 +311,19 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   }
   if (state == INT1) {
     addr = sp;
+    sp = addr - 1;
     data_out = pch;
     write = true;
     state_ = INT2;
   }
   if (state == INT2) {
-    sp = addr - 1;
     addr = sp;
+    sp = addr - 1;
     data_out = pcl;
     write = true;
     state_ = INT3;
   }
   if (state == INT3) {
-    addr = sp;
-    write = false;
-    state_ = INT4;
-    sp = addr - 1;
     // should probably be in int3
     uint8_t interrupts = imask_ & intf_;
     int vector = -1;
@@ -336,11 +333,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     if (interrupts & INT_STAT)   vector = 1; // lcd stat
     if (interrupts & INT_VBLANK) vector = 0; // vblank
     temp = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000;
-
     ime = false;
     ime_ = false;
     if (vector >= 0) int_ack_ = 1 << vector;
 
+    addr = sp;
+    write = false;
+    state_ = INT4;
   }
   if (state == INT4) {
     pc = temp;

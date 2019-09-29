@@ -300,34 +300,57 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
   write = 0xFF;
 
-  // move to int3?
-  uint8_t interrupts = imask_latch & intf_;
-  int vector = -1;
-  if (interrupts & INT_JOYPAD) vector = 4; // joypad
-  if (interrupts & INT_SERIAL) vector = 3; // serial
-  if (interrupts & INT_TIMER)  vector = 2; // timer
-  if (interrupts & INT_STAT)   vector = 1; // lcd stat
-  if (interrupts & INT_VBLANK) vector = 0; // vblank
-  uint16_t int_vec = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000;
 
   // STATE------------------------------------ADDR-------------BUS-------------ALU------------------------------------WRITEBACK----------------------------FLAG-------------ADDR-----------------WRITE----------STATE----------
                                                                
   // interrupts are probably totally broken, run some microtests later
-  if (state == INT0)                        { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = INT1; }
-  if (state == INT1)                        {                                                                                                                               addr = sp;           write = false; state_ = INT2; }
-  if (state == INT2)                        {                                                                         data_out = pch;                                       addr = sp;           write = true;  state_ = INT3; }
-  if (state == INT3)                        { sp = addr - 1;                   imask_latch = imask_;                  data_out = pcl;                                       addr = sp;           write = true;  state_ = INT4; }
-  if (state == INT4)                        { sp = addr - 1;
-    pc = int_vec;
+  if (state == INT0) {
+    pc = addr + 1;
+    addr = pc;
+    write = false;
+    state_ = INT1;
+  }
+  if (state == INT1) {
+    addr = sp;
+    write = false;
+    state_ = INT2;
+  }
+  if (state == INT2) {
+    data_out = pch;
+    addr = sp;
+    write = true;
+    state_ = INT3;
+  }
+  if (state == INT3) {
+    sp = addr - 1;
+    imask_latch = imask_;
+    data_out = pcl;
+    addr = sp;
+    write = true;
+    state_ = INT4;
+  }
+  if (state == INT4) {
+    sp = addr - 1;
+
+    // move to int3?
+    uint8_t interrupts = imask_latch & intf_;
+    int vector = -1;
+    if (interrupts & INT_JOYPAD) vector = 4; // joypad
+    if (interrupts & INT_SERIAL) vector = 3; // serial
+    if (interrupts & INT_TIMER)  vector = 2; // timer
+    if (interrupts & INT_STAT)   vector = 1; // lcd stat
+    if (interrupts & INT_VBLANK) vector = 0; // vblank
+    pc = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000;
+
     ime = false;
     ime_ = false;
+    if (vector >= 0) int_ack_ = 1 << vector;
 
     addr = pc;
     write = false;
     state_ = DECODE;
   }
 
-  if (state == INT4 && vector >= 0) int_ack_ = 1 << vector;
 
 
   if (NOP               && state == ALU1)   { pc = addr + 1;                                                                                               set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }

@@ -268,7 +268,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
     if (PUSH_RR || POP_RR || INC_RR || DEC_RR || RST_NN || RET || RETI || RET_CC ||
         DI || EI || MV_R_R || NOP || RLU_R || ALU_A_R || ADD_HL_RR || ADD_SP_R8 ||
-        ALU_A_HL || CALL_A16 || CALL_CC_A16 || INC_AT_HL || DEC_AT_HL || HALT
+        ALU_A_HL || CALL_A16 || CALL_CC_A16 || INC_AT_HL || DEC_AT_HL || HALT || JP_A16 || JP_CC_A16 || JR_R8 || JR_CC_R8 || LD_RR_D16 || LD_HL_SP_R8
       
       ) {
     } else {
@@ -380,23 +380,23 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (DEC_HL            && state == PTR1)   { hl = addr - 1;                                                                                                                addr = pc;           write = false; state_ = DECODE;}
   if (INC_SP            && state == PTR1)   { sp = addr + 1;                                                                                                                addr = pc;           write = false; state_ = DECODE;}
   if (DEC_SP            && state == PTR1)   { sp = addr - 1;                                                                                                                addr = pc;           write = false; state_ = DECODE;}
-  if (JP_A16            && state == ARG0)   {                                                                                                                               addr = pc;           write = false; state_ = ARG1; }
+  if (JP_A16            && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
   if (JP_A16            && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }
   if (JP_A16            && state == ARG2)   { pc = addr + 1;   hi = bus;                                                                                                    addr = pc;           write = false; state_ = PTR1; }
   if (JP_A16            && state == PTR1)   { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE;}
-  if (JP_CC_A16         && state == ARG0)   {                                                                                                                               addr = pc;           write = false; state_ = ARG1; }
+  if (JP_CC_A16         && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
   if (JP_CC_A16         && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }
   if (JP_CC_A16 && nb   && state == ARG2)   { pc = addr + 1;   hi = bus;                                                                                                    addr = pc;           write = false; state_ = DECODE; }
   if (JP_CC_A16 && tb   && state == ARG2)   { pc = addr + 1;   hi = bus;                                                                                                    addr = pc;           write = false; state_ = PTR1; }
   if (JP_CC_A16         && state == PTR1)   { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE;}
-  if (JR_CC_R8          && state == ARG0)   {                                                                                                                               addr = pc;           write = false; state_ = ALU1; }
+  if (JR_CC_R8          && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ALU1; }
   if (JR_CC_R8 && nb    && state == ALU1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = DECODE; }
   if (JR_CC_R8 && tb    && state == ALU1)   { pc = addr + 1;   lo = bus;       out = alu(0, pcl, lo, 0);              pcl = out.x;                                          addr = pc;           write = false; state_ = ALU2; }
   if (JR_CC_R8          && state == ALU2)   {                                  out = alu(1, pch, sxt(lo), alu_out.f); pch = out.x;                                          addr = pc;           write = false; state_ = DECODE; }
-  if (JR_R8             && state == ARG0)   {                                                                                                                               addr = pc;           write = false; state_ = ALU1; }
+  if (JR_R8             && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ALU1; }
   if (JR_R8             && state == ALU1)   { pc = addr + 1;   lo = bus;       out = alu(0, pcl, lo, 0);              pcl = out.x;                                          addr = pc;           write = false; state_ = ALU2; }
   if (JR_R8             && state == ALU2)   {                                  out = alu(1, pch, sxt(lo), alu_out.f); pch = out.x;                                          addr = pc;           write = false; state_ = DECODE; }
-  if (LD_RR_D16         && state == ARG0)   {                                                                                                                               addr = pc;           write = false; state_ = ARG1; }
+  if (LD_RR_D16         && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
   if (LD_BC_D16         && state == ARG1)   { pc = addr + 1;   c = bus;                                                                                                     addr = pc;           write = false; state_ = ARG2; }
   if (LD_BC_D16         && state == ARG2)   { pc = addr + 1;   b = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
   if (LD_DE_D16         && state == ARG1)   { pc = addr + 1;   e = bus;                                                                                                     addr = pc;           write = false; state_ = ARG2; }
@@ -405,7 +405,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (LD_HL_D16         && state == ARG2)   { pc = addr + 1;   h = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
   if (LD_SP_D16         && state == ARG1)   { pc = addr + 1;   p = bus;                                                                                                     addr = pc;           write = false; state_ = ARG2; }
   if (LD_SP_D16         && state == ARG2)   { pc = addr + 1;   s = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
-  if (LD_HL_SP_R8       && state == ARG0)   {                                                                                                                               addr = pc;           write = false; state_ = ALU1; }
+  if (LD_HL_SP_R8       && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ALU1; }
   if (LD_HL_SP_R8       && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ALU1; }
   if (LD_HL_SP_R8       && state == ALU1)   { pc = addr + 1;   lo = bus;       out = alu(0, p, lo, f);                l = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
   if (LD_HL_SP_R8       && state == ALU2)   {                                  out = alu(1, s, sxt(lo), f);           h = out.x;                                            addr = pc;           write = false; state_ = DECODE; }

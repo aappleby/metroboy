@@ -27,7 +27,7 @@ void run_test(const std::string& prefix, const std::string& name);
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-  printf("Hello World");
+  printf("Hello World\n");
   MetroBoyApp* app = new MetroBoyApp();
   int ret = app->main_(argc, argv);
   delete app;
@@ -35,7 +35,6 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  printf("Hello World\n");
   //test_codegen();
   //return 0;
 
@@ -76,7 +75,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("microtests/build/dmg", "ei_timing");
   //load("microtests/build/dmg", "hblank_int_scx0_halt_a");
+  //load("microtests/build/dmg", "hblank_int_inc_sled");
+  //load("microtests/build/dmg", "hblank_int_inc_sled2");
 
+  //runmode = STEP_CYCLE;
   runmode = RUN_FAST;
 
   //load("microtests/build/dmg", "oam_int_halt_b");

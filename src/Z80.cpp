@@ -224,7 +224,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
     sp = 0x0000;
     temp = 0x0000;
   }
-
+  pc2 = pc;
   addr = new_pc - 1;
   bus = 0x00;
   data_out = 0x00;
@@ -267,6 +267,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   ime = ime_;
 
   if (state == DECODE) {
+    pc2 = pc;
     op = bus;
     int_ack_ = 0;
     imask_ = imask;
@@ -310,19 +311,21 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
                                                                
   // interrupts are probably totally broken, run some microtests later
   if (state == INT0) {
-    pc = addr + 1;
+    pc = addr;
     addr = sp;
     write = false;
     state_ = INT1;
   }
   if (state == INT1) {
-    addr = sp--;
+    sp = addr - 1;
+    addr = sp;
     data_out = pch;
     write = true;
     state_ = INT2;
   }
   if (state == INT2) {
-    addr = sp--;
+    sp = addr - 1;
+    addr = sp;
     data_out = pcl;
     write = true;
     state_ = INT3;
@@ -977,17 +980,55 @@ AluOut alu_cb(uint8_t cb, const uint8_t x, const uint8_t f) {
 
 //-----------------------------------------------------------------------------
 
+const char* state_name(Z80State state) {
+  switch(state) {
+  case DECODE: return "DECODE";
+  case INT0: return "INT0";
+  case INT1: return "INT1";
+  case INT2: return "INT2";
+  case INT3: return "INT3";
+  case INT4: return "INT4";
+  case HALT0: return "HALT0";
+  case HALT1: return "HALT1";
+  case CB0: return "CB0";
+  case CB1: return "CB1";
+  case ALU1: return "ALU1";
+  case ALU2: return "ALU2";
+  case PUSHN: return "PUSHN";
+  case PUSH0: return "PUSH0";
+  case PUSH1: return "PUSH1";
+  case PUSH2: return "PUSH2";
+  case POPN: return "POPN";
+  case POP0: return "POP0";
+  case POP1: return "POP1";
+  case POP2: return "POP2";
+  case ARG0: return "ARG0";
+  case ARG1: return "ARG1";
+  case ARG2: return "ARG2";
+  case READ0: return "READ0";
+  case READ1: return "READ1";
+  case WRITE0: return "WRITE0";
+  case WRITE1: return "WRITE1";
+  case WRITE2: return "WRITE2";
+  case PTR0: return "PTR0";
+  case PTR1: return "PTR1";
+  default: return "<invalid>";
+  }
+}
+
 void Z80::dump(std::string& out) {
   sprintf(out, "CYC %d\n", cycle);
   int bgb = (cycle * 2) + 0x00B2D5E6;
   sprintf(out, "BGB 0x%08x\n", bgb);
   sprintf(out, "op 0x%02x\n", op);
+  sprintf(out, "state %s\n", state_name(state));
   sprintf(out, "af 0x%04x\n", af);
   sprintf(out, "bc 0x%04x\n", bc);
   sprintf(out, "de 0x%04x\n", de);
   sprintf(out, "hl 0x%04x\n", hl);
   sprintf(out, "sp 0x%04x\n", sp);
-  sprintf(out, "pc 0x%04x\n", pc);
+  sprintf(out, "pc2 0x%04x\n", pc2);
+  sprintf(out, "pc1 0x%04x\n", pc);
   sprintf(out, "ime %d\n", ime);
   sprintf(out, "ime_ %d\n", ime_);
 }

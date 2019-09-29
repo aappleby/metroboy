@@ -21,6 +21,7 @@ MetroBoy::MetroBoy()
 {
   memset(current_gameboy->framebuffer, 0, sizeof(current_gameboy->framebuffer));
   memset(tracebuffer, 0, sizeof(tracebuffer));
+  gb_out = {0};
 }
 
 //-----------------------------------------------------------------------------

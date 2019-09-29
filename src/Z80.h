@@ -13,7 +13,7 @@ struct Z80 {
   CpuBus tick_t2() const;
   void   tock_t2();
 
-  uint16_t get_pc() const { return pc; }
+  uint16_t get_pc() const { return pc2; }
   uint8_t  get_a()  const { return a; }
   uint8_t  get_op() const { return op; }
 
@@ -23,6 +23,7 @@ struct Z80 {
   uint8_t imask_;
   uint8_t intf_;
   bool    unhalt;
+  uint16_t pc2;
 
 private:
 

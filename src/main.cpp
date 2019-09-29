@@ -35,12 +35,12 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  //run_microtests();
+  run_microtests();
   //run_screenshot_tests();
   run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
-  //return 0;
+  return 0;
 
   //---------
 
@@ -60,6 +60,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "timer_div_phase_c");
   //load("microtests/build/dmg", "timer_div_phase_d");
 
+  //load("microtests/build/dmg", "timer_tima_write_a");
+  load("microtests/build/dmg", "timer_tima_write_b");
+
   // all pass
   //load("gb-test-roms/cpu_instrs/individual", "01-special");
   //load("gb-test-roms/cpu_instrs/individual", "02-interrupts");
@@ -74,13 +77,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("gb-test-roms/cpu_instrs/individual", "10-bit ops");
   //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  //load("mooneye-gb/tests/build/acceptance/timer", "div_write"); // pass
-  //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle"); // pass
-  //load("mooneye-gb/tests/build/acceptance/timer", "tim00"); // fail
-  //load("mooneye-gb/tests/build/acceptance/timer", "tim00_div_trigger"); // pass
-  //load("mooneye-gb/tests/build/acceptance/timer", "tim01"); // fail
-  //load("mooneye-gb/tests/build/acceptance/timer", "tim01_div_trigger"); // fail
-  //load("mooneye-gb/tests/build/acceptance/timer", "tim10"); // fail
+  load("mooneye-gb/tests/build/acceptance/timer", "tima_write_reloading");
 
   //runmode = STEP_CYCLE;
   runmode = RUN_FAST;

@@ -10,15 +10,13 @@ struct Timer {
 
 private:
 
-  bool overflow;
-  void do_tima();
-
   uint16_t counter;  // FF04
   uint8_t  old_tima; // FF05
   uint8_t  new_tima;
   uint8_t  tma;      // FF06
   uint8_t  tac;      // FF07
   bool     tick;
+  bool     overflow;
 };
 
 //-----------------------------------------------------------------------------

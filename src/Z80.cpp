@@ -280,29 +280,13 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
     interrupt = (imask_ & intf_) && ime;
 
-
-    if (interrupt) {
-      if (DEC_R) {
-        pc = addr + 1;
-        printf("\n");
-        printf("******************");
-        printf("\n");
-      }
-
-      op = 0x00;
-      state = INT0;
-    }
-    else {
-      if (INC_R || DEC_R) pc = addr + 1;
-      state = first_state(op);
-    }
+    state = interrupt ? INT0 : first_state(op);
   }
 
   //----------------------------------------
   // Do the meat of executing the instruction
 
   AluOut& out = alu_out;
-  //AluOut out = {0};
   bool nb = no_branch;
   bool tb = !no_branch;
   state_ = INVALID;
@@ -317,11 +301,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (interrupts & INT_TIMER)  vector = 2; // timer
   if (interrupts & INT_STAT)   vector = 1; // lcd stat
   if (interrupts & INT_VBLANK) vector = 0; // vblank
+  uint16_t int_vec = vector >= 0 ? uint16_t(0x0040 + (vector << 3)) : 0x0000;
 
   // STATE------------------------------------ADDR-------------BUS-------------ALU------------------------------------WRITEBACK----------------------------FLAG-------------ADDR-----------------WRITE----------STATE----------
                                                                
   // interrupts are probably totally broken, run some microtests later
-  if (state == INT0)                        {                                                                                                                               addr = pc;           write = false; state_ = INT1; }
+  if (state == INT0)                        { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = INT1; }
   if (state == INT1)                        {                                                                                                                               addr = sp;           write = false; state_ = INT2; }
   if (state == INT2)                        {                                                                         data_out = pch;                                       addr = sp;           write = true;  state_ = INT3; }
   if (state == INT3)                        { sp = addr - 1;                   imask_latch = imask_;                  data_out = pcl;                                       addr = sp;           write = true;  state_ = INT4; }
@@ -331,10 +316,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     // last second.
     if (vector >= 0) {
       int_ack_ = 1 << vector;
-      pc = uint16_t(0x0040 + (vector << 3));
-    } else {
-      pc = 0x0000;
     }
+    pc = int_vec;
     ime = false;
     ime_ = false;
 
@@ -346,7 +329,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
   if (NOP               && state == ALU1)   { pc = addr + 1;                                                                                               set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
 
-  if (DEC_R             && state == ALU1)   {                                  out = alu(2, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }  
+  if (DEC_R             && state == ALU1)   { pc = addr + 1;                   out = alu(2, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }  
   if (INC_R             && state == ALU1)   { pc = addr + 1;                   out = alu(1, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (INC_AT_HL         && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
   if (INC_AT_HL         && state == READ1)  {                                  out = alu(0, bus, 1, 0);               data_out = out.x;                    set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }

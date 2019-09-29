@@ -31,8 +31,7 @@ private:
   int model = 0;
   int cycle;
   uint8_t op, cb;
-  bool ime;
-  bool ime_delay;
+  bool ime, ime_;
   uint8_t imask_latch;
   bool interrupt;
 

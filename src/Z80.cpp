@@ -203,7 +203,6 @@ void Z80::reset(int new_model, uint16_t new_pc) {
   cb = 0;
   ime = false;
   ime_ = false;
-  imask_latch = 0;
   interrupt = false;
   state = state_ = DECODE;
 
@@ -324,7 +323,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     state_ = INT3;
   }
   if (state == INT3) {
-    imask_latch = imask_;
     addr = sp;
     write = false;
     state_ = INT4;
@@ -332,8 +330,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (state == INT4) {
     sp = addr - 1;
 
-    // move to int3?
-    uint8_t interrupts = imask_latch & intf_;
+    // should probably be in int3
+    uint8_t interrupts = imask_ & intf_;
     int vector = -1;
     if (interrupts & INT_JOYPAD) vector = 4; // joypad
     if (interrupts & INT_SERIAL) vector = 3; // serial

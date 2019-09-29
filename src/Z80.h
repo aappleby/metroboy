@@ -30,7 +30,6 @@ private:
   int cycle;
   uint8_t op, cb;
   bool ime, ime_;
-  uint8_t imask_latch;
   bool interrupt;
 
   Z80State state, state_;

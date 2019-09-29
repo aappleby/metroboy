@@ -334,7 +334,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     if (imask_ & intf_ & INT_STAT)   { temp = 0x0048; int_ack_ = INT_STAT; }
     if (imask_ & intf_ & INT_VBLANK) { temp = 0x0040; int_ack_ = INT_VBLANK; }
     
-    addr = sp;
+    addr = pc;
     write = false;
     state_ = INT4;
   }
@@ -471,6 +471,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (LDM_A_C           && state == READ1)  {                  a = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
   if (LDM_R_HL          && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
   if (LDM_R_HL          && state == READ1)  {                                                                         reg_put8(OP_ROW, bus);                                addr = pc;           write = false; state_ = DECODE; }
+
   if (POP_RR            && state == POP0)   { pc = addr + 1;                                                                                                                addr = sp;           write = false; state_ = POP1; }
   if (POP_BC            && state == POP1)   { sp = addr + 1;   c = bus;                                                                                                     addr = sp;           write = false; state_ = POP2;}
   if (POP_DE            && state == POP1)   { sp = addr + 1;   e = bus;                                                                                                     addr = sp;           write = false; state_ = POP2;}

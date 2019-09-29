@@ -520,10 +520,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
       if (OP_CB_HL) cb = bus;
     }
 
-    if (OP_CB_R           && state == CB1)    { pc = addr + 1; out = alu_cb(CB_QUAD, CB_ROW, reg_get8(), f);                      reg_put8(CB_COL, out.x); set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+    if (OP_CB_R           && state == CB1)    { pc = addr + 1; out = alu_cb(CB_QUAD, CB_ROW, reg_get8(CB_COL), f);                reg_put8(CB_COL, out.x); set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
     if (OP_CB_HL          && state == CB1)    { pc = addr + 1;                                                                                                              addr = hl;           write = false; state_ = READ1; }
 
-    if (OP_CB_HL          && state == READ1)  {                out = alu_cb(CB_QUAD, CB_ROW, reg_get8(), f);                      data_out = out.x;        set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
+    if (OP_CB_HL          && state == READ1)  {                out = alu_cb(CB_QUAD, CB_ROW, reg_get8(CB_COL), f);                data_out = out.x;        set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
     if (OP_CB_HL          && state == WRITE1) {                                                                                                                             addr = pc;           write = false; state_ = DECODE; }
   }
 
@@ -943,11 +943,7 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 
 //-----------------------------------------------------------------------------
 
-uint8_t Z80::reg_get8() const {
-  int mux = (op & 0b11000000) ? OP_COL : OP_ROW;
-  if (PREFIX_CB) mux = CB_COL;
-  if (RLU_R) mux = OP_COL;
-
+uint8_t Z80::reg_get8(int mux) const {
   switch(mux) {
   case 0: return b;
   case 1: return c;
@@ -958,23 +954,26 @@ uint8_t Z80::reg_get8() const {
   case 6: return bus;
   case 7: return a;
   }
-
+  printf("reg_get8 fail");
   return 0;
+}
+
+uint8_t Z80::reg_get8() const {
+  int mux = (op & 0b11000000) ? OP_COL : OP_ROW;
+  if (RLU_R) mux = OP_COL;
+  return reg_get8(mux);
 }
 
 void Z80::reg_put8(int mux, uint8_t reg) {
   switch (mux) {
-  case 0: b = (uint8_t)reg; break;
-  case 1: c = (uint8_t)reg; break;
-  case 2: d = (uint8_t)reg; break;
-  case 3: e = (uint8_t)reg; break;
-  case 4: h = (uint8_t)reg; break;
-  case 5: l = (uint8_t)reg; break;
-  case 6: {
-    printf("reg_put8 fail\n");
-    break;
-  }
-  case 7: a = (uint8_t)reg; break;
+  case 0: b = reg; break;
+  case 1: c = reg; break;
+  case 2: d = reg; break;
+  case 3: e = reg; break;
+  case 4: h = reg; break;
+  case 5: l = reg; break;
+  case 6: data_out = reg; break;  // can probably merge with bus reg later
+  case 7: a = reg; break;
   }
 }
 

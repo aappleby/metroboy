@@ -523,7 +523,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     if (OP_CB_R           && state == CB1)    { pc = addr + 1; out = alu_cb(CB_QUAD, CB_ROW, reg_get8(), f);                      reg_put8(CB_COL, out.x); set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
     if (OP_CB_HL          && state == CB1)    { pc = addr + 1;                                                                                                              addr = hl;           write = false; state_ = READ1; }
 
-    if (OP_CB_HL          && state == READ1)  {                out = alu_cb(CB_QUAD, CB_ROW, bus, f);                             data_out = out.x;        set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
+    if (OP_CB_HL          && state == READ1)  {                out = alu_cb(CB_QUAD, CB_ROW, reg_get8(), f);                      data_out = out.x;        set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
     if (OP_CB_HL          && state == WRITE1) {                                                                                                                             addr = pc;           write = false; state_ = DECODE; }
   }
 

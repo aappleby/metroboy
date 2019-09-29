@@ -7,7 +7,7 @@ const char* to_binary(uint8_t b);
 
 TimerOut Timer::reset() {
   overflow = false;
-  counter = 0x2AF3;
+  counter = 9826;
   old_tima = 0x00;
   new_tima = 0x00;
   tma = 0x00;
@@ -31,6 +31,11 @@ TimerOut Timer::tock(int tphase, CpuBus bus) {
     if (bus.addr == ADDR_TIMA) { out.oe = true; out.data = new_tima; }
   }
 
+  if (bus.write) {
+    if (bus.addr == ADDR_DIV) counter = 0;
+    if (bus.addr == ADDR_TIMA) new_tima = bus.data;
+  }
+
   if (tphase == 0) {
     counter = counter + 1;
     old_tima = new_tima;
@@ -49,8 +54,6 @@ TimerOut Timer::tock(int tphase, CpuBus bus) {
   out.overflow = overflow;
 
   if (bus.write) {
-    if (bus.addr == ADDR_TIMA) new_tima = bus.data;
-    if (bus.addr == ADDR_DIV) counter = 0;
     if (bus.addr == ADDR_TAC) tac = bus.data;
     if (bus.addr == ADDR_TMA) tma = bus.data;
   }

@@ -178,12 +178,14 @@ void run_mooneye(const std::string& prefix, const std::string& name) {
 }
 
 void run_mooneye_acceptance() {
+  /*
   printf("-----Generic tests-----\n");
   for (auto name : generic_tests) {
     std::string prefix = "mooneye-gb/tests/build/acceptance/";
     run_mooneye(prefix, name);
   }
   printf("\n");
+  */
 
   printf("-----Timer tests-----\n");
   for (auto name : timer_tests) {
@@ -201,10 +203,12 @@ void run_mooneye_acceptance() {
   printf("\n");
   */
 
+  /*
   printf("-----PPU tests-----\n");
   for (auto name : ppu_tests) {
     std::string prefix = "mooneye-gb/tests/build/acceptance/ppu/";
     run_mooneye(prefix, name);
   }
   printf("\n");
+  */
 }

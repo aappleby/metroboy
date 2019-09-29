@@ -12,6 +12,12 @@
 extern uint8_t rom_buf[];
 
 static const std::string micro_tests[] = {
+  "004-tima_boot_phase",
+};
+
+static const std::string micro_tests2[] = {
+  "004-tima_boot_phase",
+
   //"ppu_sprite0_scx0_a", // where did this one go?
   "ppu_sprite0_scx0_b",
   "ppu_sprite0_scx1_a",

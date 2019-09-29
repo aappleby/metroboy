@@ -35,31 +35,14 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  //test_codegen();
-  //return 0;
-
-  //metroboy.reset(0x100);
-
-  run_microtests();
+  //run_microtests();
   //run_screenshot_tests();
-
-  //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS");
-  //run_test("mooneye-gb/tests/build/acceptance/ppu/", "lcdon_write_timing-GS");
-  //run_test("wpol-gb/tests/build/acceptance/gpu/",    "intr_2_timing");
-  //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
-  //run_test("microtests/build/dmg/", "dma_timing_a");
-
-  //run_mooneye_acceptance();
+  run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
   //return 0;
 
   //---------
-
-  //load("mooneye-gb/tests/build/acceptance/ppu/", "intr_2_0_timing");
-  //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites");
-  //load("wpol-gb/tests/build/acceptance/gpu", "lcdon_write_timing-GS");
-  //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites_nops");
 
   //load("oh"); // broken eye
   //load("pocket");
@@ -69,50 +52,38 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("SML");
   //load("tetris");
 
-  load("cpu_instrs");
-  //load("02-interrupts");
+  //load("cpu_instrs");
   //load("instr_timing");
 
-  //load("microtests/build/dmg", "ei_timing");
-  //load("microtests/build/dmg", "hblank_int_scx0_halt_a");
-  //load("microtests/build/dmg", "hblank_int_inc_sled");
-  //load("microtests/build/dmg", "hblank_int_inc_sled2");
-  load("microtests/build/dmg", "lcdon_to_ly1_b");
+  //load("microtests/build/dmg", "timer_div_phase_a");
+  //load("microtests/build/dmg", "timer_div_phase_b");
+  //load("microtests/build/dmg", "timer_div_phase_c");
+  //load("microtests/build/dmg", "timer_div_phase_d");
 
-  runmode = STEP_CYCLE;
-  //runmode = RUN_FAST;
+  // all pass
+  //load("gb-test-roms/cpu_instrs/individual", "01-special");
+  //load("gb-test-roms/cpu_instrs/individual", "02-interrupts");
+  //load("gb-test-roms/cpu_instrs/individual", "03-op sp,hl");
+  //load("gb-test-roms/cpu_instrs/individual", "04-op r,imm");
+  //load("gb-test-roms/cpu_instrs/individual", "05-op rp");
+  //load("gb-test-roms/cpu_instrs/individual", "05-op rp");
+  //load("gb-test-roms/cpu_instrs/individual", "06-ld r,r");
+  //load("gb-test-roms/cpu_instrs/individual", "07-jr,jp,call,ret,rst");
+  //load("gb-test-roms/cpu_instrs/individual", "08-misc instrs");
+  //load("gb-test-roms/cpu_instrs/individual", "09-op r,r");
+  //load("gb-test-roms/cpu_instrs/individual", "10-bit ops");
+  //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  //load("microtests/build/dmg", "oam_int_halt_b");
+  //load("mooneye-gb/tests/build/acceptance/timer", "div_write"); // pass
+  //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle"); // pass
+  //load("mooneye-gb/tests/build/acceptance/timer", "tim00"); // fail
+  //load("mooneye-gb/tests/build/acceptance/timer", "tim00_div_trigger"); // pass
+  //load("mooneye-gb/tests/build/acceptance/timer", "tim01"); // fail
+  //load("mooneye-gb/tests/build/acceptance/timer", "tim01_div_trigger"); // fail
+  //load("mooneye-gb/tests/build/acceptance/timer", "tim10"); // fail
 
-  //load("microtests/build/dmg", "oam_sprite_trashing");
-  //load("microtests/build/dmg", "oam_write_l0_e");
-  //load("microtests/build/dmg", "stat_write_glitch_l1_a");
-
-  //load("microtests/build/dmg", "ppu_spritex_vs_scx");
-
-  //load("microtests/build/dmg", "win13_a");
-
-  //load("microtests/build/dmg", "ppu_scx_vs_bgp");
-  //load("microtests/build/dmg", "ppu_win_vs_wx");
-  //load("microtests/build/dmg", "ppu_sprite_testbench");
-  //load("microtests/build/dmg", "ppu_wx_early");
-  
-  //load("microtests/build/dmg", "ppu_sprite0_scx1_a");
-
-  //load("microtests/build/dmg", "temp");
-
-  //load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
-
-  //load("mealybug", "m3_lcdc_bg_en_change");              // tiny error top left
-
-  //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail top left, black bar bottom right, something about bgp
-  //load("mealybug", "m3_lcdc_obj_size_change");           // nope
-  //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
-  
-  //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // off by one-ish, missing dots
-  //load("mealybug", "m3_wx_4_change");                    // a few wrong pixels, window retriggering?
-  //load("mealybug", "m3_wx_4_change_sprites");            // no dots
-  //load("mealybug", "m3_wx_5_change");                    // a few wrong pixels now
+  //runmode = STEP_CYCLE;
+  runmode = RUN_FAST;
 
   //----------
 
@@ -224,9 +195,9 @@ void MetroBoyApp::loop() {
   int64_t cycles_begin = metroboy.total_tcycles();
 
   if (runmode == RUN_FAST) {
-    //fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
-    //metroboy.run_fast(buttons, (int)fast_cycles);
-    metroboy.run_fast(buttons, 100000);
+    fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
+    metroboy.run_fast(buttons, (int)fast_cycles);
+    //metroboy.run_fast(buttons, 100000);
   }
   else if (runmode == RUN_VSYNC) {
     //printf("%d --------\n", frame_count);

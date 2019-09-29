@@ -268,7 +268,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
     if (PUSH_RR || POP_RR || INC_RR || DEC_RR || RST_NN || RET || RETI || RET_CC ||
         DI || EI || MV_R_R || NOP || RLU_R || ALU_A_R || ADD_HL_RR || ADD_SP_R8 ||
-        ALU_A_HL || CALL_A16 || CALL_CC_A16
+        ALU_A_HL || CALL_A16 || CALL_CC_A16 || INC_AT_HL || DEC_AT_HL || HALT
       
       ) {
     } else {
@@ -354,14 +354,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (RST_NN            && state == PUSH0)  { sp = addr - 1;                                                          data_out = pch;                                       addr = sp;           write = true;  state_ = PUSH1; }
   if (RST_NN            && state == PUSH1)  { sp = addr - 1;                                                          data_out = pcl;                                       addr = sp;           write = true;  state_ = PUSH2; }
   if (RST_NN            && state == PUSH2)  { pc = op-0xC7;                                                                                                                 addr = pc;           write = false; state_ = DECODE; }
-  if (INC_AT_HL         && state == READ0)  {                                                                                                                               addr = hl;           write = false; state_ = READ1; }
+  if (INC_AT_HL         && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
   if (INC_AT_HL         && state == READ1)  {                                  out = alu(0, bus, 1, 0);               data_out = out.x;                    set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
   if (INC_AT_HL         && state == WRITE1) {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }
-  if (DEC_AT_HL         && state == READ0)  {                                                                                                                               addr = hl;           write = false; state_ = READ1; }
+  if (DEC_AT_HL         && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
   if (DEC_AT_HL         && state == READ1)  {                                  out = alu(2, bus, 1, 0);               data_out = out.x;                    set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
   if (DEC_AT_HL         && state == WRITE1) {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }
-  if (HALT && !no_halt  && state == HALT0)  {                                                                         unhalt = 0;                                           addr = pc;           write = false; state_ = HALT1; }
-  if (HALT && no_halt   && state == HALT0)  {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }
+  if (HALT && !no_halt  && state == HALT0)  { pc = addr + 1;                                                          unhalt = 0;                                           addr = pc;           write = false; state_ = HALT1; }
+  if (HALT && no_halt   && state == HALT0)  { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = DECODE; }
   if (HALT && !unhalt   && state == HALT1)  {                                                                                                                               addr = pc;           write = false; state_ = HALT1; }
   if (HALT && unhalt    && state == HALT1)  {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }
   if (INC_BC            && state == PTR0)   { pc = addr + 1;                                                                                                                addr = bc;           write = false; state_ = PTR1; }

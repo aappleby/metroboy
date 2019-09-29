@@ -306,27 +306,27 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   // interrupts are probably totally broken, run some microtests later
   if (state == INT0) {
     pc = addr + 1;
-    addr = pc;
+    addr = sp;
     write = false;
     state_ = INT1;
   }
   if (state == INT1) {
     addr = sp;
-    write = false;
+    data_out = pch;
+    write = true;
     state_ = INT2;
   }
   if (state == INT2) {
-    data_out = pch;
+    sp = addr - 1;
     addr = sp;
+    data_out = pcl;
     write = true;
     state_ = INT3;
   }
   if (state == INT3) {
-    sp = addr - 1;
     imask_latch = imask_;
-    data_out = pcl;
     addr = sp;
-    write = true;
+    write = false;
     state_ = INT4;
   }
   if (state == INT4) {

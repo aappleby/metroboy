@@ -266,23 +266,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     imask_ = imask;
     intf_ = intf;
 
-    if (PUSH_RR || POP_RR || INC_RR || DEC_RR || RST_NN || RET || RETI || RET_CC ||
-        DI || EI || MV_R_R || NOP || RLU_R || ALU_A_R || ADD_HL_RR || ADD_SP_R8 ||
-        ALU_A_HL || CALL_A16 || CALL_CC_A16 || INC_AT_HL || DEC_AT_HL || HALT ||
-        JP_A16 || JP_CC_A16 || JR_R8 || JR_CC_R8 || LD_RR_D16 || LD_HL_SP_R8 ||
-        LDM_A_RR || LD_R_D8 || LD_SP_HL || LDM_A_A16 || LDM_A_A8 || LDM_A_C || LDM_R_HL ||
-        STM_A16_A || STM_A8_A || STM_C_A || STM_HL_D8 || STM_HL_R || STM_RR_A || PREFIX_CB || ALU_A_D8 || JP_HL || STM_A16_SP
-      
-      ) {
-    }
-    else if (INC_R || DEC_R) {
-      pc = addr + 1;
-    }
-    else {
-      printf("x");
-      pc = addr + 1;
-    }
-
     bool cond_fail = false;
 
     switch (OP_ROW & 3) {
@@ -297,11 +280,14 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
     interrupt = (imask_ & intf_) && ime;
 
+
     if (interrupt) {
+      if (INC_R || DEC_R) pc = addr + 1;
       op = 0x00;
       state = INT0;
     }
     else {
+      if (INC_R || DEC_R) pc = addr + 1;
       state = first_state(op);
     }
   }
@@ -319,6 +305,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
   // STATE------------------------------------ADDR-------------BUS-------------ALU------------------------------------WRITEBACK----------------------------FLAG-------------ADDR-----------------WRITE----------STATE----------
                                                                
+  if (NOP               && state == ALU1)   { pc = addr + 1;                                                                                               set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+
   if (DEC_R             && state == ALU1)   {                                  out = alu(2, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }  
   if (INC_R             && state == ALU1)   {                                  out = alu(1, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (INC_AT_HL         && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
@@ -333,7 +321,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (EI                && state == ALU1)   { pc = addr + 1;                                                          ime = ime_; ime_ = true;             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (JP_HL             && state == PTR1)   { pc = hl;                                                                                                                      addr = pc;           write = false; state_ = DECODE; }
   if (MV_R_R            && state == ALU1)   { pc = addr + 1;                                                          reg_put8(OP_ROW, reg_get8());        set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-  if (NOP               && state == ALU1)   { pc = addr + 1;                                                                                               set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (RLU_R             && state == ALU1)   { pc = addr + 1;                   out = rlu(OP_ROW, reg_get8(), f);      a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (ALU_A_R           && state == ALU1)   { pc = addr + 1;                   out = alu(OP_ROW, a, reg_get8(), f);   a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (ADD_HL_BC         && state == ALU1)   { pc = addr + 1;                   out = alu(1, l, c, 0);                 l = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
@@ -520,34 +507,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     if (OP_CB_HL        && state == WRITE1) {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }
   }
 
-  switch (state) {
-
-  //----------
   // interrupts are probably totally broken, run some microtests later
-
-  case INT0:
-    if (interrupt) { addr = pc; write = false; state_ = INT1; }
-    else printf("fail int0");
-    break;
-
-  case INT1:
-    if (interrupt) { addr = sp; write = false; state_ = INT2; }
-    else printf("fail int1");
-    break;
-
-  case INT2:
-    if (interrupt) { addr = sp; data_out = pch; write = true; state_ = INT3; }
-    else printf("fail int2");
-    break;
-
-  case INT3:
-    // gameboy interrupt quirk thingy
-    imask_latch = imask_;
-    if (interrupt) { sp = addr - 1; data_out = pcl; addr = sp; write = true; state_ = INT4; }
-    else printf("fail int3");
-    break;
-
-  case INT4: {
+  if (state == INT0) { addr = pc; write = false; state_ = INT1; }
+  if (state == INT1) { addr = sp; write = false; state_ = INT2; }
+  if (state == INT2) { addr = sp; data_out = pch; write = true; state_ = INT3; }
+  if (state == INT3) { imask_latch = imask_; sp = addr - 1; data_out = pcl; addr = sp; write = true; state_ = INT4; }
+  if (state == INT4) {
     sp = addr - 1;
 
     // move to int3?
@@ -559,9 +524,9 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     if (interrupts & INT_STAT)   vector = 1; // lcd stat
     if (interrupts & INT_VBLANK) vector = 0; // vblank
 
-    // Someone could've changed the interrupt mask or flags while we were
-    // handling the interrupt, so we have to compute the new PC at the very
-    // last second.
+                                             // Someone could've changed the interrupt mask or flags while we were
+                                             // handling the interrupt, so we have to compute the new PC at the very
+                                             // last second.
     if (vector >= 0) {
       int_ack_ = 1 << vector;
       pc = uint16_t(0x0040 + (vector << 3));
@@ -574,8 +539,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     addr = pc;
     write = false;
     state_ = DECODE;
-    break;
-  }
   }
 
   if (write == 0xFF) printf("write fail");

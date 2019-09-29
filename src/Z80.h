@@ -33,7 +33,7 @@ private:
   bool ime, ime_;
   bool interrupt;
 
-  Z80State state, state_;
+  Z80State state, state2, state_;
 
 #pragma warning(push)
 #pragma warning(disable : 4201)

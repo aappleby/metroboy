@@ -40,7 +40,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //metroboy.reset(0x100);
 
-  //run_microtests();
+  run_microtests();
   //run_screenshot_tests();
 
   //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS");
@@ -77,9 +77,10 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "hblank_int_scx0_halt_a");
   //load("microtests/build/dmg", "hblank_int_inc_sled");
   //load("microtests/build/dmg", "hblank_int_inc_sled2");
+  load("microtests/build/dmg", "lcdon_to_ly1_b");
 
-  //runmode = STEP_CYCLE;
-  runmode = RUN_FAST;
+  runmode = STEP_CYCLE;
+  //runmode = RUN_FAST;
 
   //load("microtests/build/dmg", "oam_int_halt_b");
 

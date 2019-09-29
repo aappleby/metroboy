@@ -379,9 +379,9 @@ static const std::string micro_tests[] = {
   "stat_write_glitch_l1_d",
 };
 
-void run_microtest(int model, const std::string& prefix, const std::string& name) {
+bool run_microtest(int model, const std::string& prefix, const std::string& name) {
   if (name[0] == '-') {
-    return;
+    return true;
   }
 
   std::string filename = prefix + name + ".gb";
@@ -391,7 +391,7 @@ void run_microtest(int model, const std::string& prefix, const std::string& name
 
   if (rom_file == NULL) {
     printf("?");
-    return;
+    return false;
   }
 
   fseek(rom_file, 0, SEEK_END);
@@ -421,15 +421,18 @@ void run_microtest(int model, const std::string& prefix, const std::string& name
   if (i == ticks) {
     printf("%-50s ", name.c_str());
     printf("? TIMEOUT @ %d\n", i);
+    return false;
   }
   else if (result == 0x55) {
     printf(".");
+    return true;
     //printf("  0x%02x PASS @ %d\n", result, i);
   }
   else {
     printf("\n");
     printf("%-50s ", name.c_str());
     printf("X 0x%02x FAIL @ %d\n", result, i);
+    return false;
   }
 }
 
@@ -443,11 +446,13 @@ void run_microtests() {
 
   printf("---------- Microtests in %s: ----------\n", prefix.c_str());
 
+  int fails = 0;
   for (auto name : micro_tests) {
-    run_microtest(model, prefix, name);
+    bool pass = run_microtest(model, prefix, name);
+    if (!pass) fails++;
   }
   printf("\n");
 
   double end = (double)SDL_GetPerformanceCounter();
-  printf("---------- Microtests took %f seconds ----------\n", (end - begin) / freq);
+  printf("---------- Microtests took %f seconds, %d failures ----------\n", (end - begin) / freq, fails);
 }

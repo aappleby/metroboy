@@ -204,7 +204,7 @@ void Z80::reset(int new_model, uint16_t new_pc) {
   ime = false;
   ime_ = false;
   interrupt = false;
-  state = state_ = DECODE;
+  state = state2 = state_ = DECODE;
 
   if (new_pc == 0x100) {
     pc = new_pc;
@@ -266,6 +266,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
   ime = ime_;
 
+  state2 = state;
+
   if (state == DECODE) {
     pc2 = pc;
     op = bus;
@@ -293,6 +295,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
       ime_ = false;
     } else {
       state = first_state(op);
+      state2 = state;
     }
   }
 
@@ -1021,7 +1024,8 @@ void Z80::dump(std::string& out) {
   int bgb = (cycle * 2) + 0x00B2D5E6;
   sprintf(out, "BGB 0x%08x\n", bgb);
   sprintf(out, "op 0x%02x\n", op);
-  sprintf(out, "state %s\n", state_name(state));
+  sprintf(out, "state  %s\n", state_name(state2));
+  sprintf(out, "state_ %s\n", state_name(state_));
   sprintf(out, "af 0x%04x\n", af);
   sprintf(out, "bc 0x%04x\n", bc);
   sprintf(out, "de 0x%04x\n", de);

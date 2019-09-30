@@ -1,3 +1,5 @@
+; pass - dmg
+
 .include "header.inc"
 
 .define DELAY 8

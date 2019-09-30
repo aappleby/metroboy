@@ -421,8 +421,8 @@ void Gameboy::dump(std::string& out) {
   timer.dump(out);
   sprintf(out, "\n");
 
-  ppu.dump(out);
-  sprintf(out, "\n");
+  //ppu.dump(out);
+  //sprintf(out, "\n");
 
   /*
   {

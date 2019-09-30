@@ -16,8 +16,31 @@ static const std::string micro_tests[] = {
   "timer_div_phase_b",
   "timer_div_phase_c",
   "timer_div_phase_d",
+
+  "timer_tima_phase_a",
+  "timer_tima_phase_b",
+  "timer_tima_phase_c",
+  "timer_tima_phase_d",
+  "timer_tima_phase_e",
+  "timer_tima_phase_f",
+  "timer_tima_phase_g",
+  "timer_tima_phase_h",
+  "timer_tima_phase_i",
+  "timer_tima_phase_j",
+
   "timer_tima_write_a",
   "timer_tima_write_b",
+  "timer_tima_write_c",
+  "timer_tima_write_d",
+
+  /*
+  "timer_tma_load_a",
+  "timer_tma_load_b",
+  "timer_tma_load_c",
+
+  "timer_tma_write_a",
+  "timer_tma_write_b",
+  */
 };
 
 static const std::string micro_tests2[] = {

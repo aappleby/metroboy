@@ -11,10 +11,10 @@ test:
   ldh (TIMA), a
   ldh (DIV),a
 
-  nops 27
+  nops 28
 
   ld a, $7f
   ldh (TIMA),a
 
   ldh a,(TIMA)
-  test_finish_a $7F
+  test_finish_a $FE

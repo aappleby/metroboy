@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
   //run_screenshot_tests();
-  run_mooneye_acceptance();
+  //run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
   //return 0;
@@ -61,7 +61,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "timer_div_phase_d");
 
   //load("microtests/build/dmg", "timer_tima_write_a");
-  load("microtests/build/dmg", "timer_tima_write_b");
+  //load("microtests/build/dmg", "timer_tima_write_b");
+  load("microtests/build/dmg", "timer_tima_write_c");
+  //load("microtests/build/dmg", "timer_tima_write_d");
+
+  //load("microtests/build/dmg", "timer_tma_write_a");
+  //load("microtests/build/dmg", "timer_tma_write_b");
 
   // all pass
   //load("gb-test-roms/cpu_instrs/individual", "01-special");
@@ -77,7 +82,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("gb-test-roms/cpu_instrs/individual", "10-bit ops");
   //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  load("mooneye-gb/tests/build/acceptance/timer", "tima_write_reloading");
+  //load("mooneye-gb/tests/build/acceptance/timer", "tima_write_reloading");
 
   //runmode = STEP_CYCLE;
   runmode = RUN_FAST;
@@ -247,7 +252,7 @@ void MetroBoyApp::loop() {
   Gameboy& gameboy = metroboy.gb();
 
   gameboy.dump(text_buf);
-  gameboy.get_oam().dump(text_buf);
+  //gameboy.get_oam().dump(text_buf);
   render_text(4, 4, text_buf.c_str());
   text_buf.clear();
 
@@ -255,9 +260,9 @@ void MetroBoyApp::loop() {
   render_text(140, 4, text_buf.c_str());
   text_buf.clear();
 
-  gameboy.get_spu().dump(text_buf);
-  render_text(280, 4, text_buf.c_str());
-  text_buf.clear();
+  //gameboy.get_spu().dump(text_buf);
+  //render_text(280, 4, text_buf.c_str());
+  //text_buf.clear();
 
   //----------------------------------------
   // Wave thingy

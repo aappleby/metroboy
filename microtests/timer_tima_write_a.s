@@ -1,18 +1,20 @@
 .include "header.inc"
 
-main:
-  ld a, %00000101
-  ldh ($07), a
+test:
+  ld a, $fe
+  ldh (TMA),a
 
-  xor a
-  ldh ($04), a
+  ld a, %00000110
+  ldh (TAC), a
 
-  nops 2
+  ld a, $ff
+  ldh (TIMA), a
+  ldh (DIV),a
 
-  ld a, 10
-  ldh ($05), a
-  ldh a, ($05)
-  add $55 - 11
-end:
-  ld ($8000), a
-  jr end
+  nops 26
+
+  ld a, $7f
+  ldh (TIMA),a
+
+  ldh a,(TIMA)
+  test_finish_a $80

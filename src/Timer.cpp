@@ -49,11 +49,22 @@ TimerOut Timer::tock(int tphase, CpuBus bus) {
   bool new_tick = (counter & masks[tac & 3]) && (tac & TAC_RUN);
 
   uint8_t old_tima = tima;
-  uint8_t new_tima = (old_tick && !new_tick) ? old_tima + 1 : old_tima;
-  if (bus0.write && bus0.addr == ADDR_TIMA) new_tima = bus0.data;
+  uint8_t new_tima = tima;
+
+  bool o = overflow;
+  bool t = old_tick && !new_tick;
+  bool w = bus0.write && bus0.addr == ADDR_TIMA;
+
+  if (!o && !t && !w) new_tima = old_tima;
+  if (!o && !t &&  w) new_tima = bus0.data;
+  if (!o &&  t && !w) new_tima = new_tima + 1;
+  if (!o &&  t &&  w) new_tima = bus0.data + 1;
+  if ( o && !t && !w) new_tima = tma;
+  if ( o && !t &&  w) new_tima = bus0.data;
+  if ( o &&  t && !w) new_tima = tma;
+  if ( o &&  t &&  w) new_tima = bus0.data;
 
   overflow = (old_tima == 0xFF) && (new_tima == 0x00);
-  if (overflow) new_tima = tma;
 
   // read after counter inc
   if (bus2.read && bus2.addr == ADDR_DIV)  { out.oe = true; out.data = uint8_t(counter >> 6); } 

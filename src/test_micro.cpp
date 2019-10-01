@@ -30,12 +30,10 @@ static const std::string micro_tests[] = {
   "timer_tima_phase_i",
   "timer_tima_phase_j",
 
-  /*
   "timer_tima_write_a",
   "timer_tima_write_b",
   "timer_tima_write_c",
   "timer_tima_write_d",
-  */
 
   /*
   "timer_tma_load_a",

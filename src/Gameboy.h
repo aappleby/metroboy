@@ -67,7 +67,7 @@ private:
   Serial serial;
   ZRAM zram;
 
-  CpuBus cpu_bus2;
+  CpuBus cpu_bus;
 
   PpuOut ppu_out;
 

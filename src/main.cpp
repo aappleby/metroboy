@@ -47,7 +47,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
-  //load("LinksAwakening");
+  load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
   //load("tetris");
@@ -65,7 +65,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("microtests/build/dmg", "timer_tima_write_a");
   //load("microtests/build/dmg", "timer_tima_write_b");
-  load("microtests/build/dmg", "timer_tima_write_c");
+  //load("microtests/build/dmg", "timer_tima_write_c");
   //load("microtests/build/dmg", "timer_tima_write_d");
 
   //load("microtests/build/dmg", "timer_tma_write_a");

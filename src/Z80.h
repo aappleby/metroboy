@@ -8,10 +8,7 @@ enum Z80State;
 struct Z80 {
   void   reset(int new_model, uint16_t new_pc);
 
-  CpuBus tick_t0() const;
-  void   tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_data);
-  CpuBus tick_t2() const;
-  void   tock_t2();
+  CpuBus tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_);
 
   uint16_t get_pc() const { return pc2; }
   uint8_t  get_a()  const { return a; }
@@ -63,6 +60,7 @@ private:
 
 private:
 
+  void     state_machine();
   uint8_t  reg_get8(int mux) const;
   uint8_t  reg_get8() const;
   void     reg_put8(int mux, uint8_t reg);

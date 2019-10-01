@@ -4,6 +4,8 @@
 
 #include <assert.h>
 
+#pragma warning(disable : 4100)
+
 //-----------------------------------------------------------------------------
 
 #define OP_ROW        ((op >> 3) & 7)
@@ -242,23 +244,12 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 
 
 //-----------------------------------------------------------------------------
-// TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0 TICK 0
+// TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2
 
+CpuBus Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_) {
+  state = state_;
+  cycle++;
 
-CpuBus Z80::tick_t0() const {
-  return { addr, data_out, false, (bool)write };
-}
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------
-// TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0 TOCK 0
-
-void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   bus = bus_;
 
   //----------------------------------------
@@ -297,9 +288,45 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   }
 
   state2 = state;
+  state_machine();
+  return { addr, data_out, true, (bool)write };
+}
 
-  //----------------------------------------
-  // Do the meat of executing the instruction
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+
+void Z80::set_flag(uint8_t f_) {
+  uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
+  f = (f & ~mask) | (f_ & mask);
+
+  // RLCA, RRCA, RLA, and RRA always clear the zero bit - hardware bug?
+  if ((op & 0b11100111) == 0b00000111) f &= ~F_ZERO;
+
+  // ADD_SP_R8 and LD_HL_SP_R8 always clear the zero bit and negative bit.
+  if ((op & 0b11101111) == 0b11101000) f &= ~(F_ZERO | F_NEGATIVE);
+}
+
+
+
+
+
+//-----------------------------------------------------------------------------
+// Do the meat of executing the instruction
+
+void Z80::state_machine() {
 
   AluOut& out = alu_out;
   bool nb = no_branch;
@@ -308,9 +335,8 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
   write = 0xFF;
 
-
   // STATE------------------------------------ADDR-------------BUS-------------ALU------------------------------------WRITEBACK----------------------------FLAG-------------ADDR-----------------WRITE----------STATE----------
-                                                               
+
   // interrupts are probably totally broken, run some microtests later
   if (state == INT0) {
     pc = addr;
@@ -338,7 +364,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
     if (imask_ & intf_ & INT_TIMER)  { temp = 0x0050; int_ack_ = INT_TIMER; }
     if (imask_ & intf_ & INT_STAT)   { temp = 0x0048; int_ack_ = INT_STAT; }
     if (imask_ & intf_ & INT_VBLANK) { temp = 0x0040; int_ack_ = INT_VBLANK; }
-    
+
     addr = pc;
     write = false;
     state_ = INT4;
@@ -392,7 +418,7 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (ALU_A_D8          && state == ARG1)   { pc = addr + 1;                   out = alu(OP_ROW, a, bus, f);          a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (ALU_A_HL          && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = ALU1; }
   if (ALU_A_HL          && state == ALU1)   {                                  out = alu(OP_ROW, a, bus, f);          a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-                                                               
+
   if (CALL_CC_A16       && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
   if (CALL_CC_A16       && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }
   if (CALL_CC_A16 && nb && state == ARG2)   { pc = addr + 1;   hi = bus;                                                                                                    addr = pc;           write = false; state_ = DECODE; }
@@ -551,12 +577,12 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (PREFIX_CB) {                                             
     if (OP_CB_R         && state == CB0)    { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = CB1; }
     if (OP_CB_HL        && state == CB0)    { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = CB1; }
-                                                               
+
     if (state == CB1) {                                        
       if (OP_CB_R)  cb = bus;                                  
       if (OP_CB_HL) cb = bus;                                  
     }                                                          
-                                                               
+
     if (OP_CB_R         && state == CB1)    { pc = addr + 1;                   out = alu_cb(cb, reg_get8(CB_COL), f); reg_put8(CB_COL, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
     if (OP_CB_HL        && state == CB1)    { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
     if (OP_CB_HL        && state == READ1)  {                                  out = alu_cb(cb, reg_get8(CB_COL), f); reg_put8(CB_COL, out.x);             set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
@@ -566,69 +592,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
   if (write == 0xFF) printf("write fail");
   if (state_ == INVALID) printf("fail state invalid");
 }
-
-
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------
-// TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2
-
-CpuBus Z80::tick_t2() const {
-  return { addr, data_out, true, false };
-}
-
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------
-// TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2 TOCK 2
-
-void Z80::tock_t2() {
-  state = state_;
-  cycle++;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-void Z80::set_flag(uint8_t f_) {
-  uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
-  f = (f & ~mask) | (f_ & mask);
-
-  // RLCA, RRCA, RLA, and RRA always clear the zero bit - hardware bug?
-  if ((op & 0b11100111) == 0b00000111) f &= ~F_ZERO;
-
-  // ADD_SP_R8 and LD_HL_SP_R8 always clear the zero bit and negative bit.
-  if ((op & 0b11101111) == 0b11101000) f &= ~(F_ZERO | F_NEGATIVE);
-}
-
-
-
-
-
-
 
 //-----------------------------------------------------------------------------
 

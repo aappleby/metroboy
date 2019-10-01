@@ -64,7 +64,7 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   intf = 0xE1;
   imask = 0x00;
 
-  cpu_bus2 = {0};
+  cpu_bus = {0};
 
   memset(framebuffer, 0, 160 * 144);
 }
@@ -82,7 +82,7 @@ void Gameboy::tick() {
 
   //----------------------------------------
 
-  PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus2);
+  PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus);
 
   
   if ((tphase == 0) || (tphase == 2)) {
@@ -94,7 +94,7 @@ void Gameboy::tick() {
     bool fire_stat_hblank1 = ppu.hblank_delay2 <= 6;
     bool fire_stat_vblank1 = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
     bool fire_stat_lyc1 = ppu.compare_line == ppu.lyc;
-    bool fire_stat_glitch1 = cpu_bus2.write && cpu_bus2.addr == ADDR_STAT && ppu.stat_int1 != 0;
+    bool fire_stat_glitch1 = cpu_bus.write && cpu_bus.addr == ADDR_STAT && ppu.stat_int1 != 0;
 
     bool fire_stat_oam2 =
       ((ppu.line == 0 && ppu.counter == 4) || (ppu.line > 0 && ppu.line <= 144 && ppu.counter == 4));
@@ -104,7 +104,7 @@ void Gameboy::tick() {
     bool fire_stat_hblank2 = ppu.hblank_delay2 <= 6;
     bool fire_stat_vblank2 = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
     bool fire_stat_lyc2 = ppu.compare_line == ppu.lyc;
-    bool fire_stat_glitch2 = cpu_bus2.write && cpu_bus2.addr == ADDR_STAT && ppu.stat_int2 != 0;
+    bool fire_stat_glitch2 = cpu_bus.write && cpu_bus.addr == ADDR_STAT && ppu.stat_int2 != 0;
 
     if (ppu.lcdc & FLAG_LCD_ON) {
       if (tphase == 0) {
@@ -157,12 +157,8 @@ void Gameboy::tick() {
     //----------------------------------------
     // tick z80
 
-    if (tphase == 0) {
-      cpu_bus2 = z80.tick_t0();
-      intf &= ~z80.int_ack_;
-    }
     if (tphase == 2) {
-      cpu_bus2 = z80.tick_t2();
+      cpu_bus = z80.tick_t2(imask, intf, bus_in);
       intf &= ~z80.int_ack_;
     }
 
@@ -184,13 +180,6 @@ void Gameboy::tick() {
 
 GameboyOut Gameboy::tock() {
   int tphase = tcycle & 3;
-
-  CpuBus cpu_bus = {
-    cpu_bus2.addr,
-    cpu_bus2.data,
-    cpu_bus2.read && (tphase == 2),
-    cpu_bus2.write && (tphase == 0),
-  };
 
   ppu_out = ppu.tock(tphase, cpu_bus, vram_out, oam_out);
 
@@ -276,10 +265,9 @@ GameboyOut Gameboy::tock() {
   timer_out   = timer.tock(tphase, cpu_bus);
 
   //-----------------------------------
-  // Z80
+  // writes happen on t0
 
   if (tphase == 0) {
-    z80.tock_t0(imask, intf, bus_in);
     if (cpu_bus.write) {
       if (cpu_bus.addr == ADDR_DMA) {
         if (cpu_bus.data <= 0x7F) dma_mode_x = DMA_CART;
@@ -300,9 +288,9 @@ GameboyOut Gameboy::tock() {
   }
 
   //-----------------------------------
+  // reads happen on t2
 
   if (tphase == 2) {
-    z80.tock_t2();
     if (cpu_bus.read) {
       bus_out = 0x00;
       bus_oe = false;
@@ -400,10 +388,10 @@ void Gameboy::dump(std::string& out) {
 
   sprintf(out, "tcycle %zd\n", tcycle);
 
-  sprintf(out, "z80 mem addr 0x%04x\n", cpu_bus2.addr);
-  sprintf(out, "z80 mem data 0x%02x\n", cpu_bus2.data);
-  sprintf(out, "z80 mem read %d\n", cpu_bus2.read);
-  sprintf(out, "z80 mem write %d\n", cpu_bus2.write);
+  sprintf(out, "z80 mem addr 0x%04x\n", cpu_bus.addr);
+  sprintf(out, "z80 mem data 0x%02x\n", cpu_bus.data);
+  sprintf(out, "z80 mem read %d\n", cpu_bus.read);
+  sprintf(out, "z80 mem write %d\n", cpu_bus.write);
 
   //sprintf(out, "bus out2 %02x\n", bus_out2);
   //sprintf(out, "bus oe2 %d\n", bus_oe2);

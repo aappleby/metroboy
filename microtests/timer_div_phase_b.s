@@ -3,6 +3,8 @@
 .include "header.inc"
 
 main:
+
+
   nops 6
   ldh a, (DIV)
   xor ($55 ~ %10101100)

@@ -64,6 +64,8 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   intf = 0xE1;
   imask = 0x00;
 
+  cpu_bus2 = {0};
+
   memset(framebuffer, 0, 160 * 144);
 }
 

@@ -20,43 +20,49 @@ TimerOut Timer::reset() {
 
 static const int masks[] = { 0x80, 0x02, 0x08, 0x20 };
 
+/*
+!o !t !w - old_tima
+!o !t  w - bus
+!o  t !w - tima + 1
+!o  t  w - bus + 1
+o !t !w - tma
+o !t  w - bus
+o  t !w - tma
+o  t  w - bus
+*/
+
 TimerOut Timer::tock(int tphase, CpuBus bus) {
+  if (tphase == 0) bus0 = bus;
+  if (tphase == 2) bus2 = bus;
+  if (tphase != 2) return { 0, 0, overflow };
 
   out.data = 0;
   out.oe = false;
 
-  if (tphase == 2) {
-    if (bus.read && bus.addr == ADDR_TAC)  { out.oe = true; out.data = tac; }
-    if (bus.read && bus.addr == ADDR_TMA)  { out.oe = true; out.data = tma; }
-    if (bus.read && bus.addr == ADDR_DIV)  { out.oe = true; out.data = uint8_t(counter >> 6); }
-    if (bus.read && bus.addr == ADDR_TIMA) { out.oe = true; out.data = tima; }
-  }
+  if (bus0.write && bus0.addr == ADDR_TMA)  tma = bus0.data;
+  if (bus0.write && bus0.addr == ADDR_TAC)  tac = bus0.data | 0b11111000;
+  if (bus0.write && bus0.addr == ADDR_DIV)  counter = 0; 
 
-  if (tphase == 0) {
-    uint8_t old_tima = tima;
-    bool old_tick = tick;
-    bool old_overflow = overflow;
+  counter = counter + 1;
+  
+  bool old_tick = tick;
+  bool new_tick = (counter & masks[tac & 3]) && (tac & TAC_RUN);
 
-    if (bus.write && bus.addr == ADDR_DIV)  counter = 0;
-    counter = counter + 1;
-    
-    bool new_tick = (counter & masks[tac & 3]) && (tac & TAC_RUN);
-    
-    uint8_t new_tima = (old_tick && !new_tick) ? old_tima + 1 : old_tima;
+  uint8_t old_tima = tima;
+  uint8_t new_tima = (old_tick && !new_tick) ? old_tima + 1 : old_tima;
+  if (bus0.write && bus0.addr == ADDR_TIMA) new_tima = bus0.data;
 
-    if (old_overflow) new_tima = tma;
-    bool new_overflow = (old_tima == 0xFF) && (new_tima == 0x00);
+  overflow = (old_tima == 0xFF) && (new_tima == 0x00);
+  if (overflow) new_tima = tma;
 
-    tima = new_tima;
-    tick = new_tick;
-    overflow = new_overflow;
+  // read after counter inc
+  if (bus2.read && bus2.addr == ADDR_DIV)  { out.oe = true; out.data = uint8_t(counter >> 6); } 
+  if (bus2.read && bus2.addr == ADDR_TMA)  { out.oe = true; out.data = tma; }
+  if (bus2.read && bus2.addr == ADDR_TAC)  { out.oe = true; out.data = tac; }
+  if (bus2.read && bus2.addr == ADDR_TIMA) { out.oe = true; out.data = new_tima; }
 
-    if (bus.write && bus.addr == ADDR_TIMA) tima = bus.data;
-    if (bus.write && bus.addr == ADDR_TAC)  tac = bus.data | 0b11111000;
-    if (bus.write && bus.addr == ADDR_TMA)  tma = bus.data;
-
-  }
-
+  tima = new_tima;
+  tick = new_tick;
   out.overflow = overflow;
   return out;
 }

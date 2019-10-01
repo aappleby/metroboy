@@ -266,8 +266,6 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
   ime = ime_;
 
-  state2 = state;
-
   if (state == DECODE) {
     pc2 = pc;
     op = bus;
@@ -295,9 +293,10 @@ void Z80::tock_t0(uint8_t imask, uint8_t intf, uint8_t bus_) {
       ime_ = false;
     } else {
       state = first_state(op);
-      state2 = state;
     }
   }
+
+  state2 = state;
 
   //----------------------------------------
   // Do the meat of executing the instruction

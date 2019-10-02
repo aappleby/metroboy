@@ -18,9 +18,6 @@ private:
   bool     overflow;
 
   TimerOut out;
-
-  CpuBus bus0;
-  CpuBus bus2;
 };
 
 //-----------------------------------------------------------------------------

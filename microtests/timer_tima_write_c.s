@@ -2,7 +2,15 @@
 
 .include "header.inc"
 
+// 25 - 7F
+// 26 - 80
+// 27 - 80
+// 28 - 7F
+// 29 - FE
+// 30 - 7F
+
 test:
+  ld hl, $FF05
   ld a, $fe
   ldh (TMA),a
 
@@ -13,10 +21,9 @@ test:
   ldh (TIMA), a
   ldh (DIV),a
 
-  nops 28
+  nops 27
 
   ld a, $7f
-  ldh (TIMA),a
-
-  ldh a,(TIMA)
-  test_finish_a $FE
+  ld (hl),a
+  ld a,(hl)
+  test_finish_a $80

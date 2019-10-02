@@ -247,9 +247,6 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 // TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2 TICK 2
 
 CpuBus Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_) {
-  state = state_;
-  cycle++;
-
   bus = bus_;
 
   //----------------------------------------
@@ -289,6 +286,8 @@ CpuBus Z80::tick_t2(uint8_t imask, uint8_t intf, uint8_t bus_) {
 
   state2 = state;
   state_machine();
+  state = state_;
+  cycle++;
   return { addr, data_out, true, (bool)write };
 }
 

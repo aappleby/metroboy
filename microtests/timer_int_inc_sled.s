@@ -14,7 +14,7 @@ main:
   ei
 
   xor a
-.repeat 6
+.repeat 20
   inc a
 .endr
   test_fail

@@ -21,7 +21,7 @@ test:
   ldh (TIMA), a
   ldh (DIV),a
 
-  nops 25
+  nops 30
 
   ld a, $7f
   ld (hl),a

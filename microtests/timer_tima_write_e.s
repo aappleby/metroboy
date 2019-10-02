@@ -21,9 +21,9 @@ test:
   ldh (TIMA), a
   ldh (DIV),a
 
-  nops 25
+  nops 29
 
   ld a, $7f
   ld (hl),a
   ld a,(hl)
-  test_finish_a $7F
+  test_finish_a $FE

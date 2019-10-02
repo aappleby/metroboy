@@ -12,7 +12,7 @@
 extern uint8_t rom_buf[];
 
 static const std::string micro_tests[] = {
-  //"timer_int_inc_sled",
+  "timer_int_inc_sled",
 
   "timer_div_phase_a",
   "timer_div_phase_b",
@@ -37,14 +37,12 @@ static const std::string micro_tests[] = {
   "timer_tima_write_e",
   "timer_tima_write_f",
 
-  /*
   "timer_tma_load_a",
   "timer_tma_load_b",
   "timer_tma_load_c",
 
   "timer_tma_write_a",
   "timer_tma_write_b",
-  */
 };
 
 static const std::string micro_tests2[] = {

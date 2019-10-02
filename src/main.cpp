@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
   //run_screenshot_tests();
-  //run_mooneye_acceptance();
+  run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
   //return 0;
@@ -47,7 +47,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
-  //load("LinksAwakening");
+  load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
   //load("tetris");
@@ -55,7 +55,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  load("microtests/build/dmg", "timer_int_inc_sled");
+  //load("microtests/build/dmg", "timer_int_inc_sled");
 
   //load("microtests/build/dmg", "timer_div_phase_a");
   //load("microtests/build/dmg", "timer_div_phase_b");
@@ -67,6 +67,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "timer_tima_write_b");
   //load("microtests/build/dmg", "timer_tima_write_c");
   //load("microtests/build/dmg", "timer_tima_write_d");
+  load("microtests/build/dmg", "timer_tima_write_e");
+  //load("microtests/build/dmg", "timer_tima_write_f");
 
   //load("microtests/build/dmg", "timer_tma_write_a");
   //load("microtests/build/dmg", "timer_tma_write_b");

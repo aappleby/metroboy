@@ -61,7 +61,7 @@ struct ButtonsOut {
 struct TimerOut {
   uint8_t data;
   bool oe;
-  bool overflow;
+  bool interrupt;
 };
 
 struct GameboyOut {

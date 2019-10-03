@@ -139,7 +139,7 @@ void Gameboy::tick() {
 
     bool fire_int_vblank1 = ppu.line == 144 && ppu.counter == 4;
     bool fire_int_stat1    = ((ppu.stat & ppu.stat_int1) && !old_stat_int1);
-    bool fire_int_timer1   = timer_out.overflow;
+    bool fire_int_timer1   = timer_out.interrupt;
     bool fire_int_buttons1 = buttons_out.val != 0xFF;
 
     //bool fire_int_vblank2 = ppu.line == 144 && ppu.counter == 4;
@@ -154,9 +154,10 @@ void Gameboy::tick() {
       if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
     }
 
-    if (tphase == 2) {
-      if (fire_int_timer1)   intf |= INT_TIMER;
-    }
+    if (fire_int_timer1)   intf |= INT_TIMER;
+    if (fire_int_stat1)    intf |= INT_STAT;
+    if (fire_int_vblank1)  intf |= INT_VBLANK;
+    if (fire_int_buttons1) intf |= INT_JOYPAD;
 
     //----------------------------------------
     // tick z80
@@ -167,12 +168,6 @@ void Gameboy::tick() {
     }
 
     //----------------------------------------
-
-    if (tphase == 0 || tphase == 2) {
-      if (fire_int_stat1)    intf |= INT_STAT;
-      if (fire_int_vblank1)  intf |= INT_VBLANK;
-      if (fire_int_buttons1) intf |= INT_JOYPAD;
-    }
 
     old_stat_int1 = (ppu.stat & ppu.stat_int1);
     old_stat_int2 = (ppu.stat & ppu.stat_int2);

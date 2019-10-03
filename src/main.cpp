@@ -35,12 +35,12 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  //run_microtests();
+  run_microtests();
   //run_screenshot_tests();
-  //run_mooneye_acceptance();
+  run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
-  //return 0;
+  return 0;
 
   //---------
 
@@ -53,11 +53,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("tetris");
 
   //load("cpu_instrs");
-  load("instr_timing");
+  //load("instr_timing");
 
   //load("microtests/build/dmg", "timer_int_inc_sled");
+  //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle");
 
-  //load("microtests/build/dmg", "timer_div_phase_a");
+  load("microtests/build/dmg", "timer_div_phase_a");
   //load("microtests/build/dmg", "timer_div_phase_b");
   //load("microtests/build/dmg", "timer_div_phase_c");
   //load("microtests/build/dmg", "timer_div_phase_d");
@@ -89,7 +90,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("gb-test-roms/cpu_instrs/individual", "10-bit ops");
   //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle");
 
   //runmode = STEP_CYCLE;
   runmode = RUN_FAST;

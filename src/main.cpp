@@ -35,9 +35,9 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  run_microtests();
+  //run_microtests();
   //run_screenshot_tests();
-  run_mooneye_acceptance();
+  //run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
   //return 0;
@@ -47,13 +47,13 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
-  load("LinksAwakening");
+  //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
   //load("tetris");
 
   //load("cpu_instrs");
-  //load("instr_timing");
+  load("instr_timing");
 
   //load("microtests/build/dmg", "timer_int_inc_sled");
 
@@ -67,11 +67,13 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "timer_tima_write_b");
   //load("microtests/build/dmg", "timer_tima_write_c");
   //load("microtests/build/dmg", "timer_tima_write_d");
-  load("microtests/build/dmg", "timer_tima_write_e");
+  //load("microtests/build/dmg", "timer_tima_write_e");
   //load("microtests/build/dmg", "timer_tima_write_f");
 
   //load("microtests/build/dmg", "timer_tma_write_a");
   //load("microtests/build/dmg", "timer_tma_write_b");
+  
+  //load("microtests/build/dmg", "timer_tac_toggle");
 
   // all pass
   //load("gb-test-roms/cpu_instrs/individual", "01-special");
@@ -87,7 +89,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("gb-test-roms/cpu_instrs/individual", "10-bit ops");
   //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  //load("mooneye-gb/tests/build/acceptance/timer", "tima_write_reloading");
+  //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle");
 
   //runmode = STEP_CYCLE;
   runmode = RUN_FAST;

@@ -154,6 +154,10 @@ void Gameboy::tick() {
       if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
     }
 
+    if (tphase == 2) {
+      if (fire_int_timer1)   intf |= INT_TIMER;
+    }
+
     //----------------------------------------
     // tick z80
 
@@ -167,7 +171,6 @@ void Gameboy::tick() {
     if (tphase == 0 || tphase == 2) {
       if (fire_int_stat1)    intf |= INT_STAT;
       if (fire_int_vblank1)  intf |= INT_VBLANK;
-      if (fire_int_timer1)   intf |= INT_TIMER;
       if (fire_int_buttons1) intf |= INT_JOYPAD;
     }
 

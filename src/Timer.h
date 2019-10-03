@@ -17,7 +17,9 @@ private:
   uint8_t  tma;      // FF06
   uint8_t  tac;      // FF07
   bool     tick;
-  
+
+  bool overflow;
+  bool old_overflow;
   TimerOut out;
 };
 

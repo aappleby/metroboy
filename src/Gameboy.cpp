@@ -194,15 +194,22 @@ GameboyOut Gameboy::tock() {
   vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_lock ? ppu_bus : cpu_bus);
   iram.tock(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
   mmu.tock(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
+  buttons.tock(cpu_bus);
+  serial.tock(cpu_bus);
 
   vram_out = vram.tick();
   iram_out = iram.tick();
   mmu_out = mmu.tick();
+  buttons_out = buttons.tick();
+  serial_out  = serial.tick();;
 
-  buttons_out = buttons.tock(cpu_bus);
-  serial_out  = serial.tock(cpu_bus);
+
+  
+
   zram_out    = zram.tock(cpu_bus);
-  spu_out     = spu.tock(tphase, cpu_bus);
+
+  spu.tock(tphase, cpu_bus);
+  spu_out     = spu.tick();
   timer_out   = timer.tock(tphase, cpu_bus);
 
   // FIXME should not be reading new vram_out/oam_out here

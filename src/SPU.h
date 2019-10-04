@@ -5,11 +5,15 @@
 
 struct SPU {
   SpuOut reset();
-  SpuOut tock(int tphase, CpuBus bus);
+
+  SpuOut tick() const;
+  void tock(int tphase, CpuBus bus);
   void  dump(std::string& out) const;
   const uint8_t* get_wave() const { return s3_wave; }
   
 private:
+
+  SpuOut out;
 
   void bus_read(uint16_t addr, SpuOut& ret);
   void bus_write(uint16_t addr, uint8_t data);

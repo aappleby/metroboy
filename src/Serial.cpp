@@ -12,8 +12,12 @@ BusOut Serial::reset() {
 
 //-----------------------------------------------------------------------------
 
-BusOut Serial::tock(CpuBus bus) {
-  BusOut out = { 0,0 };
+BusOut Serial::tick() const {
+  return out;
+}
+
+void Serial::tock(CpuBus bus) {
+  out = { 0,0 };
 
   if (bus.write) {
     if (bus.addr == ADDR_SB) sb = bus.data;
@@ -30,8 +34,6 @@ BusOut Serial::tock(CpuBus bus) {
       out.oe = true;
     }
   }
-
-  return out;
 }
 
 //-----------------------------------------------------------------------------

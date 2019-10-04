@@ -9,16 +9,20 @@ ButtonsOut Buttons::reset() {
   return { 0, false, val };
 }
 
-ButtonsOut Buttons::tock(CpuBus bus) {
-  ButtonsOut ret = { 0, false, 0 };
+ButtonsOut Buttons::tick() const {
+  return out;
+}
+
+void Buttons::tock(CpuBus bus) {
+  out = { 0, false, 0 };
 
   if (bus.write && bus.addr == ADDR_P1) {
     p1 = (p1 & 0xCF) | (bus.data & 0x30);
   }
 
   if (bus.read && bus.addr == ADDR_P1) {
-    ret.data = p1;
-    ret.oe = true;
+    out.data = p1;
+    out.oe = true;
   }
 
   //-----------------------------------
@@ -29,12 +33,11 @@ ButtonsOut Buttons::tock(CpuBus bus) {
   case 0x20: p1 = (p1 & 0xF0) | ((val >> 0) & 0xF); break;
   }
 
-  ret.val = val;
-  return ret;
+  out.val = val;
 }
 
-void Buttons::dump(std::string& out) const {
-  sprintf(out, "%c %c %c %c %c %c %c %c\n",
+void Buttons::dump(std::string& d) const {
+  sprintf(d, "%c %c %c %c %c %c %c %c\n",
           val & 0x01 ? '-' : 'R',
           val & 0x02 ? '-' : 'L',
           val & 0x04 ? '-' : 'U',

@@ -68,15 +68,19 @@ SpuOut SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-SpuOut SPU::tock(int tphase, CpuBus bus) {
-  SpuOut ret = {};
+SpuOut SPU::tick() const {
+  return out;
+}
+
+void SPU::tock(int tphase, CpuBus bus) {
+  out = {0};
   bool sound_on = (nr52 & 0x80);
   uint16_t spu_clock_ = (spu_clock + 1) & 0x3FFF;
   uint16_t clock_flip = (~spu_clock) & spu_clock_;
 
-  if (bus.read)  bus_read(bus.addr, ret);
+  if (bus.read)  bus_read(bus.addr, out);
   if (bus.write && (sound_on || bus.addr == 0xFF26)) bus_write(bus.addr, bus.data);
-  if (tphase != 0) return ret;
+  if (tphase != 0) return;
 
   if (!sound_on) {
     s1_out = 0;
@@ -84,9 +88,9 @@ SpuOut SPU::tock(int tphase, CpuBus bus) {
     s3_out = 0;
     s4_out = 0;
 
-    ret.out_r = 0;
-    ret.out_l = 0;
-    return ret;
+    out.out_r = 0;
+    out.out_l = 0;
+    return;
   }
 
   //----------
@@ -301,27 +305,25 @@ SpuOut SPU::tock(int tphase, CpuBus bus) {
   //----------
   // mixer & master volume
 
-  ret.out_r = 0;
-  ret.out_l = 0;
+  out.out_r = 0;
+  out.out_l = 0;
 
-  if (nr51 & 0b00000001) ret.out_r += s1_out;
-  if (nr51 & 0b00000010) ret.out_r += s2_out;
-  if (nr51 & 0b00000100) ret.out_r += s3_out;
-  if (nr51 & 0b00001000) ret.out_r += s4_out;
-  if (nr51 & 0b00010000) ret.out_l += s1_out;
-  if (nr51 & 0b00100000) ret.out_l += s2_out;
-  if (nr51 & 0b01000000) ret.out_l += s3_out;
-  if (nr51 & 0b10000000) ret.out_l += s4_out;
+  if (nr51 & 0b00000001) out.out_r += s1_out;
+  if (nr51 & 0b00000010) out.out_r += s2_out;
+  if (nr51 & 0b00000100) out.out_r += s3_out;
+  if (nr51 & 0b00001000) out.out_r += s4_out;
+  if (nr51 & 0b00010000) out.out_l += s1_out;
+  if (nr51 & 0b00100000) out.out_l += s2_out;
+  if (nr51 & 0b01000000) out.out_l += s3_out;
+  if (nr51 & 0b10000000) out.out_l += s4_out;
 
   const uint8_t volume_r = ((nr50 & 0b00000111) >> 0) + 1;
   const uint8_t volume_l = ((nr50 & 0b01110000) >> 4) + 1;
 
-  ret.out_r *= volume_r;
-  ret.out_l *= volume_l;
+  out.out_r *= volume_r;
+  out.out_l *= volume_l;
 
   spu_clock = spu_clock_;
-
-  return ret;
 }
 
 //-----------------------------------------------------------------------------
@@ -515,42 +517,42 @@ void SPU::bus_write(uint16_t addr, uint8_t data) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::dump(std::string& out) const {
-  sprintf(out, "nr10 %s\n", to_binary(nr10));
-  sprintf(out, "nr11 %s\n", to_binary(nr11));
-  sprintf(out, "nr12 %s\n", to_binary(nr12));
-  sprintf(out, "nr13 %s\n", to_binary(nr13));
-  sprintf(out, "nr14 %s\n", to_binary(nr14));
+void SPU::dump(std::string& d) const {
+  sprintf(d, "nr10 %s\n", to_binary(nr10));
+  sprintf(d, "nr11 %s\n", to_binary(nr11));
+  sprintf(d, "nr12 %s\n", to_binary(nr12));
+  sprintf(d, "nr13 %s\n", to_binary(nr13));
+  sprintf(d, "nr14 %s\n", to_binary(nr14));
 
-  sprintf(out, "nr20 %s\n", to_binary(nr20));
-  sprintf(out, "nr21 %s\n", to_binary(nr21));
-  sprintf(out, "nr22 %s\n", to_binary(nr22));
-  sprintf(out, "nr23 %s\n", to_binary(nr23));
-  sprintf(out, "nr24 %s\n", to_binary(nr24));
+  sprintf(d, "nr20 %s\n", to_binary(nr20));
+  sprintf(d, "nr21 %s\n", to_binary(nr21));
+  sprintf(d, "nr22 %s\n", to_binary(nr22));
+  sprintf(d, "nr23 %s\n", to_binary(nr23));
+  sprintf(d, "nr24 %s\n", to_binary(nr24));
 
-  sprintf(out, "nr30 %s\n", to_binary(nr30));
-  sprintf(out, "nr31 %s\n", to_binary(nr31));
-  sprintf(out, "nr32 %s\n", to_binary(nr32));
-  sprintf(out, "nr33 %s\n", to_binary(nr33));
-  sprintf(out, "nr34 %s\n", to_binary(nr34));
+  sprintf(d, "nr30 %s\n", to_binary(nr30));
+  sprintf(d, "nr31 %s\n", to_binary(nr31));
+  sprintf(d, "nr32 %s\n", to_binary(nr32));
+  sprintf(d, "nr33 %s\n", to_binary(nr33));
+  sprintf(d, "nr34 %s\n", to_binary(nr34));
 
-  sprintf(out, "nr40 %s\n", to_binary(nr40));
-  sprintf(out, "nr41 %s\n", to_binary(nr41));
-  sprintf(out, "nr42 %s\n", to_binary(nr42));
-  sprintf(out, "nr43 %s\n", to_binary(nr43));
-  sprintf(out, "nr44 %s\n", to_binary(nr44));
+  sprintf(d, "nr40 %s\n", to_binary(nr40));
+  sprintf(d, "nr41 %s\n", to_binary(nr41));
+  sprintf(d, "nr42 %s\n", to_binary(nr42));
+  sprintf(d, "nr43 %s\n", to_binary(nr43));
+  sprintf(d, "nr44 %s\n", to_binary(nr44));
 
-  sprintf(out, "nr50 %s\n", to_binary(nr50));
-  sprintf(out, "nr51 %s\n", to_binary(nr51));
-  sprintf(out, "nr52 %s\n", to_binary(nr52));
+  sprintf(d, "nr50 %s\n", to_binary(nr50));
+  sprintf(d, "nr51 %s\n", to_binary(nr51));
+  sprintf(d, "nr52 %s\n", to_binary(nr52));
 
   const char* bar = "===============";
 
   uint8_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
-  sprintf(out, "s1 vol %s\n", bar + (15 - s1_volume));
+  sprintf(d, "s1 vol %s\n", bar + (15 - s1_volume));
 
   uint8_t s2_volume = (nr22 & 0x08) ? s2_env_volume : 15 ^ s2_env_volume;
-  sprintf(out, "s2 vol %s\n", bar + (15 - s2_volume));
+  sprintf(d, "s2 vol %s\n", bar + (15 - s2_volume));
 
   uint8_t s3_volume = 0;
   switch ((nr32 & 0b01100000) >> 5) {
@@ -559,10 +561,10 @@ void SPU::dump(std::string& out) const {
   case 2: s3_volume = 7; break;
   case 3: s3_volume = 3; break;
   }
-  sprintf(out, "s3 vol %s\n", bar + (15 - s3_volume));
+  sprintf(d, "s3 vol %s\n", bar + (15 - s3_volume));
 
   uint8_t s4_volume = (nr42 & 0x08) ? s4_env_volume : 15 ^ s4_env_volume;
-  sprintf(out, "s4 vol %s\n", bar + (15 - s4_volume));
+  sprintf(d, "s4 vol %s\n", bar + (15 - s4_volume));
 
   /*
   char buf[33];
@@ -575,7 +577,7 @@ void SPU::dump(std::string& out) const {
   }
 
   buf[32] = 0;
-  sprintf(out, "[%s]\n", buf);
+  sprintf(d, "[%s]\n", buf);
   */
 }
 

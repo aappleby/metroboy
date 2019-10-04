@@ -60,7 +60,11 @@ BusOut MMU::reset(uint16_t new_pc) {
 
 //-------------------------------------
 
-BusOut MMU::tock_t2(CpuBus bus) {
+BusOut MMU::tick() const {
+  return out;
+}
+
+void MMU::tock(CpuBus bus) {
   if (bus.write) {
     if (bus.addr <= 0x1FFF) {
       ram_enable = (bus.data & 0x0F) == 0x0A;
@@ -142,7 +146,7 @@ BusOut MMU::tock_t2(CpuBus bus) {
     }
   }
 
-  return { _bus_out, _bus_oe };
+  out = { _bus_out, _bus_oe };
 }
 
 //-----------------------------------------------------------------------------

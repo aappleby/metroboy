@@ -193,8 +193,13 @@ GameboyOut Gameboy::tock() {
 
   vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_lock ? ppu_bus : cpu_bus);
   vram_out = vram.tick();
-  iram_out    = iram.tock_t2(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
-  mmu_out     = mmu.tock_t2(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
+
+  iram.tock(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
+  iram_out = iram.tick();
+
+  mmu.tock(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
+  mmu_out = mmu.tick();
+
   buttons_out = buttons.tock(cpu_bus);
   serial_out  = serial.tock(cpu_bus);
   zram_out    = zram.tock(cpu_bus);

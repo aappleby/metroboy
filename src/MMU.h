@@ -6,12 +6,15 @@
 struct MMU {
   BusOut reset(size_t new_rom_size, uint16_t new_pc);
   BusOut reset(uint16_t new_pc);
-  BusOut tock_t2(CpuBus bus);
+
+  BusOut tick() const;
+  void tock(CpuBus bus);
 
   uint8_t* get_flat_ptr(uint16_t addr);
   size_t get_rom_size() const { return rom_size; }
 
 private:
+  BusOut out;
 
   size_t rom_size = 0;
 

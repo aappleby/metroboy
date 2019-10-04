@@ -41,7 +41,7 @@ BusOut VRAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-BusOut VRAM::tick() {
+BusOut VRAM::tick() const {
   return out;
 }
 

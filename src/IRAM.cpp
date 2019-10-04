@@ -7,8 +7,12 @@ BusOut IRAM::reset() {
   return { 0 };
 }
 
-BusOut IRAM::tock_t2(CpuBus bus) {
-  BusOut out = { 0,0 };
+BusOut IRAM::tick() const {
+  return out;
+}
+
+void IRAM::tock(CpuBus bus) {
+  out = { 0,0 };
 
   if (bus.read) {
     if (ADDR_IRAM_BEGIN <= bus.addr && bus.addr <= ADDR_IRAM_END) {
@@ -29,6 +33,4 @@ BusOut IRAM::tock_t2(CpuBus bus) {
       ram[bus.addr - ADDR_ECHO_BEGIN] = bus.data;
     }
   }
-
-  return out;
 }

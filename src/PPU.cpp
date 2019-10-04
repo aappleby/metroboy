@@ -155,10 +155,10 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
     line_delay2 = 153;
     line_delay3 = 153;
 
-    counter = 403;
-    counter_delay1 = 402;
-    counter_delay2 = 401;
-    counter_delay3 = 400;
+    counter = 404;
+    counter_delay1 = 403;
+    counter_delay2 = 402;
+    counter_delay3 = 401;
 
     lcdc = 0x91;
     palettes[0] = 0xfc;
@@ -176,24 +176,6 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
 PpuTickOut PPU::tick(int tphase, CpuBus cpu_bus) {
-  counter_delay3 = counter_delay2;
-  counter_delay2 = counter_delay1;
-  counter_delay1 = counter;
-
-  line_delay3 = line_delay2;
-  line_delay2 = line_delay1;
-  line_delay1 = line;
-
-  counter++;
-  if (counter == TCYCLES_LINE) {
-    counter = 0;
-    line++;
-    if (line == 154) {
-      line = 0;
-      frame_count++;
-    }
-  }
-
   if (tphase == 0 || tphase == 2) {
     if (lcdc & FLAG_LCD_ON) {
       frame_start = (counter == 0) && (line == 0);
@@ -710,6 +692,24 @@ PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
   if (bus.read)  bus_read_late(bus.addr);
   if (bus.write) bus_write_late(bus.addr, bus.data);
 
+  counter_delay3 = counter_delay2;
+  counter_delay2 = counter_delay1;
+  counter_delay1 = counter;
+
+  line_delay3 = line_delay2;
+  line_delay2 = line_delay1;
+  line_delay1 = line;
+
+  counter++;
+  if (counter == TCYCLES_LINE) {
+    counter = 0;
+    line++;
+    if (line == 154) {
+      line = 0;
+      frame_count++;
+    }
+  }
+
   return {
     bus_out,
     bus_oe,
@@ -780,6 +780,24 @@ PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /
 
   if (bus.read)  bus_read_late(bus.addr);
   if (bus.write) bus_write_late(bus.addr, bus.data);
+
+  counter_delay3 = counter_delay2;
+  counter_delay2 = counter_delay1;
+  counter_delay1 = counter;
+
+  line_delay3 = line_delay2;
+  line_delay2 = line_delay1;
+  line_delay1 = line;
+
+  counter++;
+  if (counter == TCYCLES_LINE) {
+    counter = 0;
+    line++;
+    if (line == 154) {
+      line = 0;
+      frame_count++;
+    }
+  }
 
   return {
     bus_out,

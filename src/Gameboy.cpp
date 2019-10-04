@@ -85,6 +85,10 @@ void Gameboy::tick() {
   tcycle++;
   int tphase = tcycle & 3;
 
+  if (tphase == 3) {
+    cpu_bus = z80.tick();
+  }
+
   //----------------------------------------
 
   PpuTickOut ppu_tick = ppu.tick(tphase, cpu_bus);
@@ -200,7 +204,6 @@ GameboyOut Gameboy::tock() {
   spu.tock(tphase, cpu_bus);
   timer.tock(tphase, cpu_bus);
 
-  vram_out = vram.tick();
   iram_out = iram.tick();
   mmu_out = mmu.tick();
   buttons_out = buttons.tick();
@@ -208,11 +211,14 @@ GameboyOut Gameboy::tock() {
   zram_out    = zram.tick();
   spu_out     = spu.tick();
   timer_out   = timer.tickB();
+
   oam_out = oam.tick();
 
   // FIXME should not be reading new vram_out/oam_out here
   ppu.tock(tphase, cpu_bus, vram_out, oam_out);
   ppu_out = ppu.tickB();
+
+  vram_out = vram.tick();
 
   //-----------------------------------
   // writes happen on t0
@@ -296,7 +302,6 @@ GameboyOut Gameboy::tock() {
 
   if (tphase == 2) {
     z80.tock(imask, intf, bus_in);
-    cpu_bus = z80.tick();
   }
 
   //-----------------------------------

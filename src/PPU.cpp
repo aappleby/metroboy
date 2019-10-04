@@ -176,78 +176,6 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
 PpuTickOut PPU::tick(int tphase, CpuBus cpu_bus) {
-  //----------------------------------------
-  // locking
-
-  if (tphase == 0 || tphase == 2) {
-    if (lcdc & FLAG_LCD_ON) {
-
-      const int oam_start = 0;
-      const int oam_end = 80;
-      const int render_start = 82;
-      const int render_start_l0 = 84;
-
-      if (frame_count == 0 && line == 0) {
-        if (counter == render_start_l0) {
-          oam_lock = true;
-          vram_lock = true;
-        }
-      }
-      else {
-        if (counter == oam_start) {
-          oam_lock = true;
-        }
-        else if (counter == oam_end) {
-          oam_lock = false;
-        }
-        else if (counter == render_start) {
-          oam_lock = true;
-          vram_lock = true;
-        }
-      }
-
-      if (hblank_delay2 < 8 || line >= 144) {
-        oam_lock = false;
-        vram_lock = false;
-      }
-    }
-  }
-
-  //-----------------------------------
-  // lyc_match
-
-  if (tphase == 0 || tphase == 2) {
-    if (lcdc & FLAG_LCD_ON) {
-
-      if (line == 0) {
-        if (counter == 0) compare_line = 0;
-        if (counter == 0) ly = line;
-
-        if (counter == 4) compare_line = ly;
-        if (counter == 4) ly = line;
-      }
-      else if (line < 153) {
-        if (counter == 0) compare_line = -1;
-        if (counter == 0) ly = line;
-
-        if (counter == 4) compare_line = ly;
-        if (counter == 4) ly = line;
-      }
-      else if (line == 153) {
-        if (counter == 0) compare_line = -1;
-        if (counter == 0) ly = line;
-
-        if (counter == 4) compare_line = ly;
-        if (counter == 4) ly = 0;
-
-        if (counter == 8) compare_line = -1;
-        if (counter == 8) ly = 0;
-
-        if (counter == 12) compare_line = 0;
-        if (counter == 12) ly = 0;
-      }
-    }
-  }
 
   PpuTickOut out = {0};
 
@@ -739,6 +667,80 @@ PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     }
   }
 
+  //----------------------------------------
+  // locking
+
+  if (tphase == 1 || tphase == 3) {
+    if (lcdc & FLAG_LCD_ON) {
+
+      const int oam_start = 0;
+      const int oam_end = 80;
+      const int render_start = 82;
+      const int render_start_l0 = 84;
+
+      if (frame_count == 0 && line == 0) {
+        if (counter == render_start_l0) {
+          oam_lock = true;
+          vram_lock = true;
+        }
+      }
+      else {
+        if (counter == oam_start) {
+          oam_lock = true;
+        }
+        else if (counter == oam_end) {
+          oam_lock = false;
+        }
+        else if (counter == render_start) {
+          oam_lock = true;
+          vram_lock = true;
+        }
+      }
+
+      if (hblank_delay2 < 8 || line >= 144) {
+        oam_lock = false;
+        vram_lock = false;
+      }
+    }
+  }
+
+  //-----------------------------------
+  // lyc_match
+
+  if (tphase == 1 || tphase == 3) {
+    if (lcdc & FLAG_LCD_ON) {
+
+      if (line == 0) {
+        if (counter == 0) compare_line = 0;
+        if (counter == 0) ly = line;
+
+        if (counter == 4) compare_line = ly;
+        if (counter == 4) ly = line;
+      }
+      else if (line < 153) {
+        if (counter == 0) compare_line = -1;
+        if (counter == 0) ly = line;
+
+        if (counter == 4) compare_line = ly;
+        if (counter == 4) ly = line;
+      }
+      else if (line == 153) {
+        if (counter == 0) compare_line = -1;
+        if (counter == 0) ly = line;
+
+        if (counter == 4) compare_line = ly;
+        if (counter == 4) ly = 0;
+
+        if (counter == 8) compare_line = -1;
+        if (counter == 8) ly = 0;
+
+        if (counter == 12) compare_line = 0;
+        if (counter == 12) ly = 0;
+      }
+    }
+  }
+
+
   return out;
 } // PPU::tock
 
@@ -830,6 +832,80 @@ PpuOut PPU::tock_lcdoff(int tphase, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam
       }
     }
   }
+
+  //----------------------------------------
+  // locking
+
+  if (tphase == 1 || tphase == 3) {
+    if (lcdc & FLAG_LCD_ON) {
+
+      const int oam_start = 0;
+      const int oam_end = 80;
+      const int render_start = 82;
+      const int render_start_l0 = 84;
+
+      if (frame_count == 0 && line == 0) {
+        if (counter == render_start_l0) {
+          oam_lock = true;
+          vram_lock = true;
+        }
+      }
+      else {
+        if (counter == oam_start) {
+          oam_lock = true;
+        }
+        else if (counter == oam_end) {
+          oam_lock = false;
+        }
+        else if (counter == render_start) {
+          oam_lock = true;
+          vram_lock = true;
+        }
+      }
+
+      if (hblank_delay2 < 8 || line >= 144) {
+        oam_lock = false;
+        vram_lock = false;
+      }
+    }
+  }
+
+  //-----------------------------------
+  // lyc_match
+
+  if (tphase == 1 || tphase == 3) {
+    if (lcdc & FLAG_LCD_ON) {
+
+      if (line == 0) {
+        if (counter == 0) compare_line = 0;
+        if (counter == 0) ly = line;
+
+        if (counter == 4) compare_line = ly;
+        if (counter == 4) ly = line;
+      }
+      else if (line < 153) {
+        if (counter == 0) compare_line = -1;
+        if (counter == 0) ly = line;
+
+        if (counter == 4) compare_line = ly;
+        if (counter == 4) ly = line;
+      }
+      else if (line == 153) {
+        if (counter == 0) compare_line = -1;
+        if (counter == 0) ly = line;
+
+        if (counter == 4) compare_line = ly;
+        if (counter == 4) ly = 0;
+
+        if (counter == 8) compare_line = -1;
+        if (counter == 8) ly = 0;
+
+        if (counter == 12) compare_line = 0;
+        if (counter == 12) ly = 0;
+      }
+    }
+  }
+
 
   return out;
 }

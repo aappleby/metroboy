@@ -176,17 +176,6 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
 PpuTickOut PPU::tick(int tphase, CpuBus cpu_bus) {
-  if (tphase == 0 || tphase == 2) {
-    if (lcdc & FLAG_LCD_ON) {
-      frame_start = (counter == 0) && (line == 0);
-      frame_done = (counter == 0) && (line == 144);
-
-      if (counter == 0) {
-        hblank_delay2 = HBLANK_DELAY_START;
-      }
-    }
-  }
-
   //----------------------------------------
   // locking
 
@@ -739,12 +728,23 @@ PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     pix_oe
   };
 
+  if (tphase == 1 || tphase == 3) {
+    if (lcdc & FLAG_LCD_ON) {
+      frame_start = (counter == 0) && (line == 0);
+      frame_done = (counter == 0) && (line == 144);
+
+      if (counter == 0) {
+        hblank_delay2 = HBLANK_DELAY_START;
+      }
+    }
+  }
+
   return out;
 } // PPU::tock
 
 //-----------------------------------------------------------------------------
 
-PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
+PpuOut PPU::tock_lcdoff(int tphase, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
   counter = 4;
   counter_delay1 = 3;
   counter_delay2 = 2;
@@ -819,6 +819,17 @@ PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /
     pix_out,
     pix_oe
   };
+
+  if (tphase == 1 || tphase == 3) {
+    if (lcdc & FLAG_LCD_ON) {
+      frame_start = (counter == 0) && (line == 0);
+      frame_done = (counter == 0) && (line == 144);
+
+      if (counter == 0) {
+        hblank_delay2 = HBLANK_DELAY_START;
+      }
+    }
+  }
 
   return out;
 }

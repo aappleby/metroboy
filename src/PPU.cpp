@@ -354,10 +354,10 @@ PpuOut PPU::tick(int tphase, CpuBus /*bus*/) {
 //-----------------------------------------------------------------------------
 
 PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
-  counter = 4;
-  counter_delay1 = 3;
-  counter_delay2 = 2;
-  counter_delay3 = 1;
+  counter = 7;
+  counter_delay1 = 6;
+  counter_delay2 = 5;
+  counter_delay3 = 4;
 
   line = 0;
   line_delay1 = 0;
@@ -591,8 +591,13 @@ PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
           tile_map = vram_in.data;
           map_x++;
         }
-        if (fetch_state == FETCH_LO)   tile_lo = vram_in.data;
-        if (fetch_state == FETCH_HI) { tile_hi = vram_in.data; tile_latched = 1; }
+        if (fetch_state == FETCH_LO) {
+          tile_lo = vram_in.data;
+        }
+        if (fetch_state == FETCH_HI) {
+          tile_hi = vram_in.data;
+          tile_latched = 1;
+        }
       }
       else if (fetch_type == FETCH_SPRITE) {
         if (fetch_state == FETCH_LO) sprite_lo = vram_in.data;
@@ -729,6 +734,7 @@ PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     }
   }
 
+
   if ((pix_count2 + pix_discard_pad == 168) && hblank_delay2) {
     hblank_delay2--;
   }
@@ -808,7 +814,6 @@ uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map)
   uint16_t base = (lcdc & FLAG_TILE_0) ? ADDR_TILE0 : ADDR_TILE1;
   map = (lcdc & FLAG_TILE_0) ? map : map ^ 0x80;
   uint8_t ty = (scy + line) & 7;
-
   return pack_tile_addr(base, map, ty);
 }
 

@@ -12,6 +12,27 @@
 extern uint8_t rom_buf[];
 
 static const std::string micro_tests[] = {
+  "lcdon_to_stat0_a",
+  "lcdon_to_stat0_b",
+  "lcdon_to_stat0_c",
+  "lcdon_to_stat0_d",
+
+  "lcdon_to_stat1_a",
+  "lcdon_to_stat1_b",
+  "lcdon_to_stat1_c",
+  "lcdon_to_stat1_d",
+  "lcdon_to_stat1_e",
+
+  "lcdon_to_stat2_a",
+  "lcdon_to_stat2_b",
+  "lcdon_to_stat2_c",
+  "lcdon_to_stat2_d",
+
+  "lcdon_to_stat3_a",
+  "lcdon_to_stat3_b",
+  "lcdon_to_stat3_c",
+  "lcdon_to_stat3_d",
+
   "timer_int_inc_sled",
   "timer_int_inc_sled_a",
   "timer_int_inc_sled_b",
@@ -45,6 +66,22 @@ static const std::string micro_tests[] = {
 
   "timer_tma_write_a",
   "timer_tma_write_b",
+
+  "-----",
+  "lcdon_to_hblank_int_l0",
+  "lcdon_to_hblank_int_l1",
+  "lcdon_to_hblank_int_l2",
+  "lcdon_to_hblank_int_scx0",
+  "lcdon_to_hblank_int_scx1",
+  "lcdon_to_hblank_int_scx2",
+  "lcdon_to_hblank_int_scx3",
+  "lcdon_to_hblank_int_scx4",
+  "lcdon_to_hblank_int_scx5",
+  "lcdon_to_hblank_int_scx6",
+  "lcdon_to_hblank_int_scx7",
+
+  "lcdon_to_hblank_di_timing_a",
+  "lcdon_to_hblank_di_timing_b",
 
 #if 0
   "004-tima_boot_phase",
@@ -293,21 +330,6 @@ static const std::string micro_tests[] = {
   "vblank2_int_if_c",
   "vblank2_int_if_d",
 
-  "-----",
-  "lcdon_to_hblank_int_l0",
-  "lcdon_to_hblank_int_l1",
-  "lcdon_to_hblank_int_l2",
-  "lcdon_to_hblank_int_scx0",
-  "lcdon_to_hblank_int_scx1",
-  "lcdon_to_hblank_int_scx2",
-  "lcdon_to_hblank_int_scx3",
-  "lcdon_to_hblank_int_scx4",
-  "lcdon_to_hblank_int_scx5",
-  "lcdon_to_hblank_int_scx6",
-  "lcdon_to_hblank_int_scx7",
-
-  "lcdon_to_hblank_di_timing_a",
-  "lcdon_to_hblank_di_timing_b",
 #endif
 
 #if 0
@@ -328,26 +350,6 @@ static const std::string micro_tests[] = {
   "lcdon_to_oam_int_l2",
 
   "-----",
-  "lcdon_to_stat0_a",
-  "lcdon_to_stat0_b",
-  "lcdon_to_stat0_c",
-  "lcdon_to_stat0_d",
-
-  "lcdon_to_stat1_a",
-  "lcdon_to_stat1_b",
-  "lcdon_to_stat1_c",
-  "lcdon_to_stat1_d",
-  "lcdon_to_stat1_e",
-
-  "lcdon_to_stat2_a",
-  "lcdon_to_stat2_b",
-  "lcdon_to_stat2_c",
-  "lcdon_to_stat2_d",
-
-  "lcdon_to_stat3_a",
-  "lcdon_to_stat3_b",
-  "lcdon_to_stat3_c",
-  "lcdon_to_stat3_d",
 #endif
 
 #if 0

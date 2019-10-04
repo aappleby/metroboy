@@ -60,14 +60,14 @@ extern const uint8_t DMG_ROM_bin[] = {
 };
 
 extern const char* op_strings[256] = {
-  "nop",                "ld bc, $%04hx",  "ld (bc), a",     "inc bc",      "inc b",          "dec b",        "ld b, %hhu",      "rlca",
-  "ld ($%04hx), sp",    "add hl, bc",     "ld a, (bc)",     "dec bc",      "inc c",          "dec c",        "ld c, %hhu",      "rrca",
-  "stop",               "ld de, $%04hx",  "ld (de), a",     "inc de",      "inc d",          "dec d",        "ld d, %hhu",      "rla",
-  "jr %hhd",            "add hl, de",     "ld a, (de)",     "dec de",      "inc e",          "dec e",        "ld e, %hhu",      "rra",
-  "jr nz, %hhd",        "ld hl, $%04hx",  "ld (hl+), a",    "inc hl",      "inc h",          "dec h",        "ld h, %hhu",      "daa",
-  "jr z, %hhd",         "add hl, hl",     "ld a, (hl+)",    "dec hl",      "inc l",          "dec l",        "ld l, %hhu",      "cpl",
-  "jr nc, %hhd",        "ld sp, $%04hx",  "ld (hl-), a",    "inc sp",      "inc (hl)",       "dec (hl)",     "ld (hl), %hhu",   "scf",
-  "jr c, %hhd",         "add hl, sp",     "ld a, (hl-)",    "dec sp",      "inc a",          "dec a",        "ld a, %hhu",      "ccf",
+  "nop",                "ld bc, $%04hx",  "ld (bc), a",     "inc bc",      "inc b",          "dec b",        "ld b, $%02hhx",      "rlca",
+  "ld ($%04hx), sp",    "add hl, bc",     "ld a, (bc)",     "dec bc",      "inc c",          "dec c",        "ld c, $%02hhx",      "rrca",
+  "stop",               "ld de, $%04hx",  "ld (de), a",     "inc de",      "inc d",          "dec d",        "ld d, $%02hhx",      "rla",
+  "jr %hhd",            "add hl, de",     "ld a, (de)",     "dec de",      "inc e",          "dec e",        "ld e, $%02hhx",      "rra",
+  "jr nz, %hhd",        "ld hl, $%04hx",  "ld (hl+), a",    "inc hl",      "inc h",          "dec h",        "ld h, $%02hhx",      "daa",
+  "jr z, %hhd",         "add hl, hl",     "ld a, (hl+)",    "dec hl",      "inc l",          "dec l",        "ld l, $%02hhx",      "cpl",
+  "jr nc, %hhd",        "ld sp, $%04hx",  "ld (hl-), a",    "inc sp",      "inc (hl)",       "dec (hl)",     "ld (hl), $%02hhx",   "scf",
+  "jr c, %hhd",         "add hl, sp",     "ld a, (hl-)",    "dec sp",      "inc a",          "dec a",        "ld a, $%02hhx",      "ccf",
 
   "ld b, b",            "ld b, c",        "ld b, d",        "ld b, e",     "ld b, h",        "ld b, l",      "ld b, (hl)",    "ld b, a",
   "ld c, b",            "ld c, c",        "ld c, d",        "ld c, e",     "ld c, h",        "ld c, l",      "ld c, (hl)",    "ld c, a",
@@ -87,14 +87,14 @@ extern const char* op_strings[256] = {
   "or b",               "or c",           "or d",           "or e",        "or h",           "or l",         "or (hl)",       "or a",
   "cp b",               "cp c",           "cp d",           "cp e",        "cp h",           "cp l",         "cp (hl)",       "cp a",
                                           
-  "ret nz",             "pop bc",         "jp nz, $%04hx",   "jp $%04hx",   "call nz, $%04hx", "push bc",      "add %hhu",        "rst $00",
-  "ret z",              "ret",            "jp z, $%04hx",    "prefix cb",   "call z, $%04hx",  "call $%04hx",  "adc %hhu",        "rst $08",
-  "ret nc",             "pop de",         "jp nc, $%04hx",   "undefined1",  "call nc, $%04hx", "push de",      "sub %hhu",        "rst $10",
-  "ret c",              "reti",           "jp c, $%04hx",    "undefined2",  "call c, $%04hx",  "undefined3",   "sbc %hhu",        "rst $18",
-  "ldh ($%02hhx), a",   "pop hl",         "ldh (c), a",      "undefined4",  "undefined5",      "push hl",      "and %hhu",        "rst $20",
-  "add sp, %d",         "jp hl",          "ld ($%04hx), a",  "undefined6",  "undefined7",      "undefined8",   "xor %hhu",        "rst $28",
-  "ldh a, ($%02hhx)",   "pop af",         "ldh a, (c)",      "di",          "undefined9",      "push af",      "or %hhu",        "rst $30",
-  "ld hl, sp + %d",     "ld sp, hl",      "ld a, ($%04hx)",  "ei",          "undefined10",     "undefined11",  "cp %hhu",        "rst $38",
+  "ret nz",             "pop bc",         "jp nz, $%04hx",   "jp $%04hx",   "call nz, $%04hx", "push bc",      "add $%02hhx",        "rst $00",
+  "ret z",              "ret",            "jp z, $%04hx",    "prefix cb",   "call z, $%04hx",  "call $%04hx",  "adc $%02hhx",        "rst $08",
+  "ret nc",             "pop de",         "jp nc, $%04hx",   "undefined1",  "call nc, $%04hx", "push de",      "sub $%02hhx",        "rst $10",
+  "ret c",              "reti",           "jp c, $%04hx",    "undefined2",  "call c, $%04hx",  "undefined3",   "sbc $%02hhx",        "rst $18",
+  "ldh ($%02hhx), a",   "pop hl",         "ldh (c), a",      "undefined4",  "undefined5",      "push hl",      "and $%02hhx",        "rst $20",
+  "add sp, %d",         "jp hl",          "ld ($%04hx), a",  "undefined6",  "undefined7",      "undefined8",   "xor $%02hhx",        "rst $28",
+  "ldh a, ($%02hhx)",   "pop af",         "ldh a, (c)",      "di",          "undefined9",      "push af",      "or $%02hhx",        "rst $30",
+  "ld hl, sp + %d",     "ld sp, hl",      "ld a, ($%04hx)",  "ei",          "undefined10",     "undefined11",  "cp $%02hhx",        "rst $38",
 };
 
 extern const char* cb_strings[256] = {

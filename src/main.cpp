@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  run_microtests();
+  //run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
@@ -46,8 +46,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
-  //load("LinksAwakening");
+  //load("gejmboj");
+  load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
   //load("tetris");

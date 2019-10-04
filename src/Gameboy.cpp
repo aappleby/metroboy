@@ -331,8 +331,8 @@ void Gameboy::dump(std::string& out) {
   z80.dump(out);
   sprintf(out, "imask %s\n", to_binary(imask));
   sprintf(out, "intf  %s\n", to_binary(intf));
-  sprintf(out, "old stat int1 %d\n", ppu.old_stat_int1);
-  sprintf(out, "old stat int2 %d\n", ppu.old_stat_int2);
+  sprintf(out, "old stat int1 %d\n", ppu.get_old_stat_int1());
+  sprintf(out, "old stat int2 %d\n", ppu.get_old_stat_int2());
   sprintf(out, "\n");
 
   sprintf(out, "tcycle %zd\n", tcycle);

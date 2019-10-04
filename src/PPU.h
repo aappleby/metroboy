@@ -20,7 +20,10 @@ struct PPU {
   void draw_bg_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
   void draw_wm_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
 
-//private:
+  bool get_old_stat_int1() const { return old_stat_int2; }
+  bool get_old_stat_int2() const { return old_stat_int2; }
+
+private:
 
   PpuOut tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void emit_pixel(int tphase);

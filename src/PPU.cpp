@@ -184,11 +184,14 @@ PpuTickOut PPU::tick(int tphase, CpuBus cpu_bus) {
       if (counter == 0) {
         hblank_delay2 = HBLANK_DELAY_START;
       }
+    }
+  }
 
-      bool vblank = line >= 144;
+  //----------------------------------------
+  // locking
 
-      //----------------------------------------
-      // locking
+  if (tphase == 0 || tphase == 2) {
+    if (lcdc & FLAG_LCD_ON) {
 
       const int oam_start = 0;
       const int oam_end = 80;
@@ -214,13 +217,18 @@ PpuTickOut PPU::tick(int tphase, CpuBus cpu_bus) {
         }
       }
 
-      if (hblank_delay2 < 8 || vblank) {
+      if (hblank_delay2 < 8 || line >= 144) {
         oam_lock = false;
         vram_lock = false;
       }
+    }
+  }
 
-      //-----------------------------------
-      // lyc_match
+  //-----------------------------------
+  // lyc_match
+
+  if (tphase == 0 || tphase == 2) {
+    if (lcdc & FLAG_LCD_ON) {
 
       if (line == 0) {
         if (counter == 0) compare_line = 0;

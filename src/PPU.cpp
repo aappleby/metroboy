@@ -175,8 +175,7 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-PpuTickOut PPU::tick(int /*tphase*/, CpuBus /*cpu_bus*/) {
-
+PpuTickOut PPU::tick(int /*tphase*/, CpuBus /*cpu_bus*/) const {
   return {
     fire_int_stat1,
     fire_int_stat2,

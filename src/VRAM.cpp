@@ -41,15 +41,18 @@ BusOut VRAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-BusOut VRAM::tock(CpuBus bus) {
-  BusOut out = { 0,0 };
+BusOut VRAM::tick() {
+  return out;
+}
+
+void VRAM::tock(CpuBus bus) {
+  out = { 0,0 };
   if ((bus.addr & 0xE000) == 0x8000) {
     if (bus.read) {
       out.data = ram[bus.addr - ADDR_VRAM_BEGIN];
     }
     if (bus.write) ram[bus.addr - ADDR_VRAM_BEGIN] = bus.data;
   }
-  return out;
 }
 
 //-----------------------------------------------------------------------------

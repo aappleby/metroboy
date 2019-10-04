@@ -33,7 +33,7 @@ struct Gameboy {
   const OAM& get_oam() const { return oam; }
 
   int64_t        get_tcycle()     const { return tcycle; }
-  const uint8_t* get_vram()       const { return vram.ram; }
+  const uint8_t* get_vram()       const { return vram.get_ram(); }
 
   void set_buttons(uint8_t v) { buttons.set(v); }
 

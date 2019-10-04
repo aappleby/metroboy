@@ -5,7 +5,13 @@
 
 struct VRAM {
   BusOut reset();
-  BusOut tock(CpuBus bus);
+
+  BusOut tick();
+  void   tock(CpuBus bus_);
+  const  uint8_t* get_ram() const { return ram; }
+
+private:
+  BusOut out;
   uint8_t ram[8192];
 };
 

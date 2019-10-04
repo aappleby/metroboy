@@ -127,6 +127,10 @@ void MetroBoy::step_frame() {
 
   do {
     mcycle();
+  } while (gb_out.y == 144);
+
+  do {
+    mcycle();
   } while (gb_out.y != 144);
 }
 

@@ -180,7 +180,7 @@ void Assembler::disassemble_one(const uint8_t* code, std::string& out) {
 //-----------------------------------------------------------------------------
 
 void Assembler::disassemble(
-    const uint8_t* code, size_t code_size, uint16_t /*code_base*/,
+    const uint8_t* code, size_t code_size, uint16_t code_base,
     int opcount, std::string& out, bool collapse_nops) {
   int code_cursor = 0;
   for (int i = 0; i < opcount; i++) {
@@ -189,7 +189,7 @@ void Assembler::disassemble(
     uint8_t op0 = code[code_cursor + 0];
 
 
-    sprintf(out, "  ");
+    sprintf(out, "%04x: ", code_base + code_cursor);
     if (collapse_nops && op0 == 0) {
       int nop_count = 0;
       while (code[code_cursor] == 0) {

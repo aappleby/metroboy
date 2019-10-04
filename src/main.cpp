@@ -228,11 +228,11 @@ void MetroBoyApp::loop() {
     }
   }
   else if (runmode == STEP_FRAME) {
-    while (step_forward--) metroboy.step_frame();
+    while (step_forward--)  metroboy.step_frame();
     while (step_backward--) metroboy.unstep_frame();
   }
   else if (runmode == STEP_LINE) {
-    while (step_forward--) metroboy.step_line();
+    while (step_forward--)  metroboy.step_line();
     while (step_backward--) metroboy.unstep_line();
   }
 

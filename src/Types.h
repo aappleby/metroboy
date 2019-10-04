@@ -32,8 +32,10 @@ struct SpuOut {
 };
 
 struct PpuTickOut {
-  bool fire_int_stat;
-  bool fire_int_vblank;
+  bool fire_int_stat1;
+  bool fire_int_stat2;
+  bool fire_int_vblank1;
+  bool fire_int_vblank2;
 };
 
 struct PpuOut {

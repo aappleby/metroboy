@@ -175,7 +175,7 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-PpuTickOut PPU::tick(int tphase) {
+PpuTickOut PPU::tick(int tphase, CpuBus cpu_bus) {
   counter_delay3 = counter_delay2;
   counter_delay2 = counter_delay1;
   counter_delay1 = counter;
@@ -270,7 +270,78 @@ PpuTickOut PPU::tick(int tphase) {
     }
   }
 
-  return {0};
+  PpuTickOut out = {0};
+
+  if (tphase != 0 && tphase != 2) return out;
+
+  PPU& ppu = *this;
+
+  bool fire_stat_oam1 =
+    (ppu.line > 0) &&
+    (ppu.line < 144) &&
+    (ppu.counter == 0);
+
+  bool fire_stat_hblank1 = ppu.hblank_delay2 <= 6;
+  bool fire_stat_vblank1 = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
+  bool fire_stat_lyc1 = ppu.compare_line == ppu.lyc;
+  bool fire_stat_glitch1 = cpu_bus.write && cpu_bus.addr == ADDR_STAT && ppu.stat_int1 != 0;
+
+  bool fire_stat_oam2 =
+    ((ppu.line == 0 && ppu.counter == 4) || (ppu.line > 0 && ppu.line <= 144 && ppu.counter == 4));
+
+  //bool fire_stat_oam2 = (ppu.line > 0) && (ppu.line < 144) && (ppu.counter == 0);
+
+  bool fire_stat_hblank2 = ppu.hblank_delay2 <= 6;
+  bool fire_stat_vblank2 = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
+  bool fire_stat_lyc2 = ppu.compare_line == ppu.lyc;
+  bool fire_stat_glitch2 = cpu_bus.write && cpu_bus.addr == ADDR_STAT && ppu.stat_int2 != 0;
+
+  if (ppu.lcdc & FLAG_LCD_ON) {
+    if (tphase == 0) {
+      ppu.stat &= ~STAT_LYC;
+      ppu.stat_int1 = 0;
+      ppu.stat_int2 = 0;
+    }
+  }
+  else {
+    fire_stat_oam1 = false;
+    fire_stat_hblank1 = false;
+    fire_stat_vblank1 = false;
+    fire_stat_lyc1 = false;
+    fire_stat_glitch1 = false;
+  }
+
+  if (tphase == 0 || tphase == 2) {
+    if (fire_stat_lyc1)    ppu.stat |= STAT_LYC;
+
+    if (fire_stat_hblank1) ppu.stat_int1 |= EI_HBLANK;
+    if (fire_stat_vblank1) ppu.stat_int1 |= EI_VBLANK;
+    if (fire_stat_lyc1)    ppu.stat_int1 |= EI_LYC;
+    if (fire_stat_glitch1) ppu.stat_int1 |= EI_GLITCH;
+    if (fire_stat_oam1)    ppu.stat_int1 |= EI_OAM;
+
+    if (fire_stat_hblank2) ppu.stat_int2 |= EI_HBLANK;
+    if (fire_stat_vblank2) ppu.stat_int2 |= EI_VBLANK;
+    if (fire_stat_lyc2)    ppu.stat_int2 |= EI_LYC;
+    if (fire_stat_glitch2) ppu.stat_int2 |= EI_GLITCH;
+    if (fire_stat_oam2)    ppu.stat_int2 |= EI_OAM;
+  }
+
+  bool fire_int_vblank1 = ppu.line == 144 && ppu.counter == 4;
+  bool fire_int_stat1    = ((ppu.stat & ppu.stat_int1) && !ppu.old_stat_int1);
+
+  bool fire_int_vblank2 = ppu.line == 144 && ppu.counter == 4;
+  bool fire_int_stat2 = ((ppu.stat & ppu.stat_int2) && !ppu.old_stat_int2);
+
+  ppu.old_stat_int1 = (ppu.stat & ppu.stat_int1);
+  ppu.old_stat_int2 = (ppu.stat & ppu.stat_int2);
+
+  return {
+    fire_int_stat1,
+    fire_int_stat2,
+    fire_int_vblank1,
+    fire_int_vblank2,
+  };
 }
 
 //-----------------------------------------------------------------------------

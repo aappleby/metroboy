@@ -205,12 +205,14 @@ GameboyOut Gameboy::tock() {
 
 
   
-
-  zram_out    = zram.tock(cpu_bus);
+  zram.tock(cpu_bus);
+  zram_out    = zram.tick();
 
   spu.tock(tphase, cpu_bus);
   spu_out     = spu.tick();
-  timer_out   = timer.tock(tphase, cpu_bus);
+  
+  timer.tock(tphase, cpu_bus);
+  timer_out   = timer.tickB();
 
   // FIXME should not be reading new vram_out/oam_out here
   ppu.tock(tphase, cpu_bus, vram_out, oam_out);

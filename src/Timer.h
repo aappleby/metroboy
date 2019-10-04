@@ -5,7 +5,9 @@
 
 struct Timer {
   TimerOut reset();
-  TimerOut tock(int tphase, CpuBus bus);
+
+  TimerOut tickB() const;
+  void tock(int tphase, CpuBus bus);
   void dump(std::string& out);
 
 private:

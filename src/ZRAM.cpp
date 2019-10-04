@@ -11,11 +11,15 @@ BusOut ZRAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-BusOut ZRAM::tock(CpuBus bus) {
-  BusOut out = { 0,0 };
+BusOut ZRAM::tick() const {
+  return out;
+}
+
+void ZRAM::tock(CpuBus bus) {
+  out = { 0,0 };
 
   if (bus.addr < ADDR_ZEROPAGE_BEGIN || ADDR_ZEROPAGE_END < bus.addr) {
-    return out;
+    return;
   }
 
   if (bus.write) {
@@ -26,8 +30,6 @@ BusOut ZRAM::tock(CpuBus bus) {
     out.data = ram[bus.addr - ADDR_ZEROPAGE_BEGIN];
     out.oe = true;
   }
-
-  return out;
 }
 
 //-----------------------------------------------------------------------------

@@ -21,8 +21,12 @@ TimerOut Timer::reset() {
 
 static const uint16_t masks[] = { 0x200, 0x08, 0x20, 0x80 };
 
-TimerOut Timer::tock(int tphase, CpuBus bus) {
-  if (tphase != 0 && tphase != 2) return out;
+TimerOut Timer::tickB() const {
+  return out;
+}
+
+void Timer::tock(int tphase, CpuBus bus) {
+  if (tphase != 0 && tphase != 2) return;
 
   uint16_t tima_ = tima;
   bool tick_ = tick;
@@ -55,8 +59,6 @@ TimerOut Timer::tock(int tphase, CpuBus bus) {
 
   tima = tima_;
   tick = tick_;
-
-  return out;
 }
 
 //-----------------------------------------------------------------------------

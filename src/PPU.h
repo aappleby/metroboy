@@ -9,7 +9,11 @@ struct PPU {
   PpuOut reset(bool run_bootrom, int new_model);
 
   PpuTickOut tick(int tphase, CpuBus cpu_bus) const;
-  PpuOut tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
+
+  PpuOut tickB() const;
+
+  void tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
+
   void dump(std::string& out);
 
   uint8_t  get_stat()       const { return stat; }
@@ -25,7 +29,9 @@ struct PPU {
 
 private:
 
-  PpuOut tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
+  PpuOut out;
+
+  void tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
 

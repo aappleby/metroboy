@@ -192,12 +192,11 @@ GameboyOut Gameboy::tock() {
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
 
   vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_lock ? ppu_bus : cpu_bus);
-  vram_out = vram.tick();
-
   iram.tock(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
-  iram_out = iram.tick();
-
   mmu.tock(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
+
+  vram_out = vram.tick();
+  iram_out = iram.tick();
   mmu_out = mmu.tick();
 
   buttons_out = buttons.tock(cpu_bus);
@@ -207,7 +206,8 @@ GameboyOut Gameboy::tock() {
   timer_out   = timer.tock(tphase, cpu_bus);
 
   // FIXME should not be reading new vram_out/oam_out here
-  ppu_out     = ppu.tock(tphase, cpu_bus, vram_out, oam_out);
+  ppu.tock(tphase, cpu_bus, vram_out, oam_out);
+  ppu_out = ppu.tickB();
 
   //-----------------------------------
   // writes happen on t0

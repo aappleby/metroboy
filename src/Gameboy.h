@@ -25,7 +25,7 @@ struct Gameboy {
   GameboyOut tick() const;
   void tock();
 
-  uint32_t trace();
+  uint32_t trace() const { return trace_val; }
 
   const Z80& get_cpu() const { return z80; }
   const SPU& get_spu() const { return spu; }
@@ -44,7 +44,7 @@ struct Gameboy {
 
   uint8_t framebuffer[160 * 144];
 
-  PpuOut get_ppu_out() { return ppu_out; }
+  //PpuOut get_ppu_out() { return ppu_out; }
 
 private:
 
@@ -69,15 +69,7 @@ private:
   Serial serial;
   ZRAM zram;
 
-  CpuBus cpu_bus;
-
-  PpuOut ppu_out;
-
-  SpuOut spu_out;
-  BusOut vram_out;
-  BusOut zram_out;
-  TimerOut timer_out;
-  BusOut oam_out;
+  uint32_t trace_val;
 
   int model = MODEL_DMG;
   int64_t tcycle = -1;

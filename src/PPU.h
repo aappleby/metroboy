@@ -8,8 +8,7 @@
 struct PPU {
   PpuOut reset(bool run_bootrom, int new_model);
 
-  PpuTickOut tick(int tphase, CpuBus cpu_bus) const;
-
+  PpuTickOut tick() const;
   PpuOut tickB() const;
 
   void tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);

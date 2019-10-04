@@ -175,7 +175,7 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-PpuTickOut PPU::tick(int /*tphase*/, CpuBus /*cpu_bus*/) const {
+PpuTickOut PPU::tick() const {
   return {
     fire_int_stat1,
     fire_int_stat2,
@@ -573,25 +573,6 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     }
   }
 
-  out = {
-    bus_out,
-    bus_oe,
-
-    vram_lock,
-    vram_addr,
-    vram_addr != 0,
-
-    oam_lock,
-    oam_addr,
-    oam_read,
-
-    pix_count2,
-    line,
-    counter,
-    pix_out,
-    pix_oe
-  };
-
   if (tphase == 1 || tphase == 3) {
     if (lcdc & FLAG_LCD_ON) {
       frame_start = (counter == 0) && (line == 0);
@@ -743,6 +724,25 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     old_stat_int1 = (stat_ & stat_int1_);
     old_stat_int2 = (stat_ & stat_int2_);
   }
+
+  out = {
+    bus_out,
+    bus_oe,
+
+    vram_lock,
+    vram_addr,
+    vram_addr != 0,
+
+    oam_lock,
+    oam_addr,
+    oam_read,
+
+    pix_count2,
+    line,
+    counter,
+    pix_out,
+    pix_oe
+  };
 } // PPU::tock
 
 //-----------------------------------------------------------------------------

@@ -29,17 +29,17 @@ Gameboy::Gameboy()
 
 void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   z80.reset(new_model, new_pc);
-  ppu_out = ppu.reset(new_pc == 0, new_model);
+  ppu.reset(new_pc == 0, new_model);
   
-  oam_out = oam.reset();
+  oam.reset();
   mmu.reset(new_rom_size, new_pc);
-  timer_out = timer.reset();
-  vram_out = vram.reset();
+  timer.reset();
+  vram.reset();
   iram.reset();
   buttons.reset();
   serial.reset();
-  zram_out = zram.reset();
-  spu_out = spu.reset();
+  zram.reset();
+  spu.reset();
 
   model = new_model;
   tcycle = -1;
@@ -63,13 +63,6 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
 
   intf = 0xE1;
   imask = 0x00;
-
-  cpu_bus = {
-    new_pc,
-    0,
-    true,
-    false
-  };
 
   memset(framebuffer, 0, 160 * 144);
 }
@@ -95,14 +88,32 @@ void Gameboy::tock() {
   BusOut mmu_out = mmu.tick();
   ButtonsOut buttons_out = buttons.tick();
   BusOut serial_out  = serial.tick();;
-  zram_out    = zram.tick();
-  spu_out     = spu.tick();
-  timer_out   = timer.tickB();
-  vram_out = vram.tick();
-  ppu_out = ppu.tickB();
-  if (tphase == 3) cpu_bus = z80.tick();
+  BusOut zram_out    = zram.tick();
+  SpuOut spu_out     = spu.tick();
+  TimerOut timer_out   = timer.tickB();
+  BusOut vram_out = vram.tick();
+  PpuOut ppu_out = ppu.tickB();
+  CpuBus cpu_bus = z80.tick();
+  PpuTickOut ppu_tick = ppu.tick();
 
-  PpuTickOut ppu_tick = ppu.tick(tphase, cpu_bus);
+  {
+    //return z80.get_state() << 4;
+
+    //return z80.get_op();
+
+    //return z80.op_ == 0x76 ? 0xFFFFFFFF : 0; // moderately interesting
+    //return z80.op_ == 0x00 ? 0xFFFFFFFF : 0; // moderately interesting
+    //return z80.op_ == 0xcb ? 0xFFFFFFFF : 0; // moderately interesting
+    //return (z80.get_op() & 0b11000000) == 0b10000000 ? 0xFFFFFFFF : 0; // moderately interesting
+
+    //return (z80.mem_addr >= ADDR_SPU_BEGIN && z80.mem_addr < ADDR_SPU_END) ? -1 : 0; // sparse
+
+    //return ppu.sprite_index << 4; // also pretty cool
+
+    //return cpu_bus.addr;
+    trace_val = ppu_out.vram_addr; // this one's pretty cool
+    //return cpu_bus.write ? 0xFFFFFFFF : 0x00000000;
+  }
 
   if (tphase == 0 || tphase == 2) {
     bool fire_int_timer1   = timer_out.interrupt;
@@ -124,8 +135,6 @@ void Gameboy::tock() {
   if (tphase == 0) {
     intf &= ~cpu_bus.int_ack;
   }
-
-  CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_read, false };
 
   //-----------------------------------
   // DMA state machine
@@ -193,9 +202,13 @@ void Gameboy::tock() {
 
   //-----------------------------------
 
-  oam.tock(oam_bus);
-
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
+
+  oam.tock(oam_bus);
+  // moving this after ppu.tock() breaks sprites at the moment
+  BusOut oam_out = oam.tick();
+
+  CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_read, false };
 
   vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_lock ? ppu_bus : cpu_bus);
   iram.tock(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
@@ -205,9 +218,6 @@ void Gameboy::tock() {
   zram.tock(cpu_bus);
   spu.tock(tphase, cpu_bus);
   timer.tock(tphase, cpu_bus);
-
-  // moving this after ppu.tock() breaks sprites at the moment
-  oam_out = oam.tick();
 
   // FIXME should not be reading new vram_out/oam_out here
   ppu.tock(tphase, cpu_bus, vram_out, oam_out);
@@ -311,30 +321,10 @@ void Gameboy::tock() {
 
 //-----------------------------------------------------------------------------
 
-uint32_t Gameboy::trace() {
-
-  //return z80.get_state() << 4;
-
-  //return z80.get_op();
-
-  //return z80.op_ == 0x76 ? 0xFFFFFFFF : 0; // moderately interesting
-  //return z80.op_ == 0x00 ? 0xFFFFFFFF : 0; // moderately interesting
-  //return z80.op_ == 0xcb ? 0xFFFFFFFF : 0; // moderately interesting
-  //return (z80.get_op() & 0b11000000) == 0b10000000 ? 0xFFFFFFFF : 0; // moderately interesting
-
-  //return (z80.mem_addr >= ADDR_SPU_BEGIN && z80.mem_addr < ADDR_SPU_END) ? -1 : 0; // sparse
-
-  //return ppu.sprite_index << 4; // also pretty cool
-
-  //return cpu_bus.addr;
-  return ppu_out.vram_addr; // this one's pretty cool
-  //return cpu_bus.write ? 0xFFFFFFFF : 0x00000000;
-}
-
-//-----------------------------------------------------------------------------
-
 void Gameboy::dump(std::string& out) {
   //uint16_t pc = z80.get_pc();
+
+  CpuBus cpu_bus = z80.tick();
 
   buttons.dump(out);
 

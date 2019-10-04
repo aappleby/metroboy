@@ -113,8 +113,8 @@ int run_screenshot_test(int model, const std::string& prefix, const std::string&
     GameboyOut gb_out = gameboy.tick();
 
     if (gb_out.pix_oe) {
-      int x = gameboy.get_ppu_out().x - 1;
-      int y = gameboy.get_ppu_out().y;
+      int x = gb_out.x;
+      int y = gb_out.y;
 
       if (x >= 0 && x < 160 && y >= 0 && y < 144) {
         gameboy.framebuffer[x + y * 160] = gb_out.pix;

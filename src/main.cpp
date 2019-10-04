@@ -37,16 +37,16 @@ int main(int argc, char** argv) {
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   run_microtests();
   //run_screenshot_tests();
-  run_mooneye_acceptance();
+  //run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
-  return 0;
+  //return 0;
 
   //---------
 
   //load("oh"); // broken eye
   //load("pocket");
-  //load("gejmboj");
+  load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
@@ -56,7 +56,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("instr_timing");
 
   //load("microtests/build/dmg", "hblank_int_inc_sled");
-  load("microtests/build/dmg", "lcdon_to_stat0_a");
+  //load("microtests/build/dmg", "lcdon_to_stat0_a");
 
   //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle");
 
@@ -93,8 +93,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
 
-  //runmode = STEP_CYCLE;
-  runmode = RUN_FAST;
+  runmode = STEP_CYCLE;
+  //runmode = RUN_FAST;
 
   //----------
 

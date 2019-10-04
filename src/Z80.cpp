@@ -196,9 +196,9 @@ enum Z80State {
 //-----------------------------------------------------------------------------
 
 void Z80::reset(int new_model, uint16_t new_pc) {
-  int_ack_ = 0;
-  imask_ = 0;
-  intf_ = 0;
+  int_ack = 0;
+  imask = 0;
+  intf = 0;
   unhalt = 0;
 
   model = new_model;
@@ -229,10 +229,12 @@ void Z80::reset(int new_model, uint16_t new_pc) {
     temp = 0x0000;
   }
   pc2 = pc;
-  addr = new_pc - 1;
-  bus = 0x00;
+
+  addr = new_pc;
   data_out = 0x00;
+  bus = 0x00;
   write = false;
+
   no_branch = false;
   no_halt = false;
   alu_out = { 0, 0 };
@@ -247,20 +249,17 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-CpuBus Z80::tick(uint8_t imask, uint8_t intf, uint8_t bus_) {
+CpuBus Z80::tock(uint8_t imask_, uint8_t intf_, uint8_t bus_) {
   bus = bus_;
-
-  //----------------------------------------
-  // Update interrupt & state
 
   ime = ime_;
 
   if (state == DECODE) {
     pc2 = pc;
     op = bus;
-    int_ack_ = 0;
-    imask_ = imask;
-    intf_ = intf;
+    int_ack = 0;
+    imask = imask_;
+    intf = intf_;
 
     bool cond_fail = false;
 
@@ -272,9 +271,9 @@ CpuBus Z80::tick(uint8_t imask, uint8_t intf, uint8_t bus_) {
     }
 
     no_branch = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
-    no_halt = ((imask_ & intf_) && !ime);
+    no_halt = ((imask & intf) && !ime);
 
-    interrupt = (imask_ & intf_) && ime;
+    interrupt = (imask & intf) && ime;
 
     if (interrupt) {
       state = INT0;
@@ -289,22 +288,9 @@ CpuBus Z80::tick(uint8_t imask, uint8_t intf, uint8_t bus_) {
   state_machine();
   state = state_;
   cycle++;
-  return { addr, data_out, true, (bool)write };
+
+  return { addr, data_out, true, (bool)write, int_ack };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -336,11 +322,11 @@ void Z80::state_machine() {
   write = 0xFF;
 
   if (state == INT3) {
-    if (imask_ & intf_ & INT_JOYPAD) { temp = 0x0060; int_ack_ = INT_JOYPAD; }
-    if (imask_ & intf_ & INT_SERIAL) { temp = 0x0058; int_ack_ = INT_SERIAL; }
-    if (imask_ & intf_ & INT_TIMER)  { temp = 0x0050; int_ack_ = INT_TIMER; }
-    if (imask_ & intf_ & INT_STAT)   { temp = 0x0048; int_ack_ = INT_STAT; }
-    if (imask_ & intf_ & INT_VBLANK) { temp = 0x0040; int_ack_ = INT_VBLANK; }
+    if (imask & intf & INT_JOYPAD) { temp = 0x0060; int_ack = INT_JOYPAD; }
+    if (imask & intf & INT_SERIAL) { temp = 0x0058; int_ack = INT_SERIAL; }
+    if (imask & intf & INT_TIMER)  { temp = 0x0050; int_ack = INT_TIMER; }
+    if (imask & intf & INT_STAT)   { temp = 0x0048; int_ack = INT_STAT; }
+    if (imask & intf & INT_VBLANK) { temp = 0x0040; int_ack = INT_VBLANK; }
   }
 
   // STATE------------------------------------ADDR-------------BUS-------------ALU------------------------------------WRITEBACK----------------------------FLAG-------------ADDR-----------------WRITE----------STATE----------
@@ -984,6 +970,10 @@ void Z80::dump(std::string& out) {
   sprintf(out, "pc1 0x%04x\n", pc);
   sprintf(out, "ime %d\n", ime);
   sprintf(out, "ime_ %d\n", ime_);
+
+  sprintf(out, "addr  0x%04x\n", addr);
+  sprintf(out, "bus   0x%02x\n", data_out);
+  sprintf(out, "write %d\n",     write);
 }
 
 //-----------------------------------------------------------------------------

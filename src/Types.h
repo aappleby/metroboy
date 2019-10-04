@@ -11,6 +11,7 @@ struct CpuBus {
   uint8_t data;
   bool read;
   bool write;
+  uint8_t int_ack;
 };
 
 struct CpuOut {

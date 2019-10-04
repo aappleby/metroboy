@@ -8,7 +8,7 @@ enum Z80State;
 struct Z80 {
   void   reset(int new_model, uint16_t new_pc);
 
-  CpuBus tick(uint8_t imask, uint8_t intf, uint8_t bus_);
+  CpuBus tock(uint8_t imask, uint8_t intf, uint8_t bus_);
 
   uint16_t get_pc() const { return pc2; }
   uint8_t  get_a()  const { return a; }
@@ -17,11 +17,7 @@ struct Z80 {
 
   void dump(std::string& out);
 
-  uint8_t int_ack_;
-  uint8_t imask_;
-  uint8_t intf_;
   bool    unhalt;
-  uint16_t pc2;
 
 private:
 
@@ -42,6 +38,7 @@ private:
   union { uint16_t af;   struct { uint8_t   f; uint8_t   a; }; };
   union { uint16_t sp;   struct { uint8_t   p; uint8_t   s; }; };
   union { uint16_t temp; struct { uint8_t  lo; uint8_t  hi; }; };
+#pragma warning(pop)
 
   uint8_t bus;
 
@@ -55,7 +52,10 @@ private:
 
   AluOut alu_out;
 
-#pragma warning(pop)
+  uint8_t int_ack;
+  uint8_t imask;
+  uint8_t intf;
+  uint16_t pc2;
 
   //----------
 

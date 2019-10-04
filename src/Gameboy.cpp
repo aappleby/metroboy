@@ -64,7 +64,12 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   intf = 0xE1;
   imask = 0x00;
 
-  cpu_bus = {0};
+  cpu_bus = {
+    new_pc,
+    0,
+    true,
+    false
+  };
 
   memset(framebuffer, 0, 160 * 144);
 }
@@ -84,94 +89,92 @@ void Gameboy::tick() {
 
   PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus);
 
-  
-  if ((tphase == 0) || (tphase == 2)) {
-    bool fire_stat_oam1 =
-      (ppu.line > 0) &&
-      (ppu.line < 144) &&
-      (ppu.counter == 0);
+  if (tphase != 0 && tphase != 2) return;
+ 
+  bool fire_stat_oam1 =
+    (ppu.line > 0) &&
+    (ppu.line < 144) &&
+    (ppu.counter == 0);
 
-    bool fire_stat_hblank1 = ppu.hblank_delay2 <= 6;
-    bool fire_stat_vblank1 = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
-    bool fire_stat_lyc1 = ppu.compare_line == ppu.lyc;
-    bool fire_stat_glitch1 = cpu_bus.write && cpu_bus.addr == ADDR_STAT && ppu.stat_int1 != 0;
+  bool fire_stat_hblank1 = ppu.hblank_delay2 <= 6;
+  bool fire_stat_vblank1 = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
+  bool fire_stat_lyc1 = ppu.compare_line == ppu.lyc;
+  bool fire_stat_glitch1 = cpu_bus.write && cpu_bus.addr == ADDR_STAT && ppu.stat_int1 != 0;
 
-    bool fire_stat_oam2 =
-      ((ppu.line == 0 && ppu.counter == 4) || (ppu.line > 0 && ppu.line <= 144 && ppu.counter == 4));
+  bool fire_stat_oam2 =
+    ((ppu.line == 0 && ppu.counter == 4) || (ppu.line > 0 && ppu.line <= 144 && ppu.counter == 4));
 
-    //bool fire_stat_oam2 = (ppu.line > 0) && (ppu.line < 144) && (ppu.counter == 0);
+  //bool fire_stat_oam2 = (ppu.line > 0) && (ppu.line < 144) && (ppu.counter == 0);
 
-    bool fire_stat_hblank2 = ppu.hblank_delay2 <= 6;
-    bool fire_stat_vblank2 = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
-    bool fire_stat_lyc2 = ppu.compare_line == ppu.lyc;
-    bool fire_stat_glitch2 = cpu_bus.write && cpu_bus.addr == ADDR_STAT && ppu.stat_int2 != 0;
+  bool fire_stat_hblank2 = ppu.hblank_delay2 <= 6;
+  bool fire_stat_vblank2 = (ppu.line == 144 && ppu.counter >= 4) || (ppu.line >= 145);
+  bool fire_stat_lyc2 = ppu.compare_line == ppu.lyc;
+  bool fire_stat_glitch2 = cpu_bus.write && cpu_bus.addr == ADDR_STAT && ppu.stat_int2 != 0;
 
-    if (ppu.lcdc & FLAG_LCD_ON) {
-      if (tphase == 0) {
-        ppu.stat &= ~STAT_LYC;
-        ppu.stat_int1 = 0;
-        ppu.stat_int2 = 0;
-      }
-    }
-    else {
-      fire_stat_oam1 = false;
-      fire_stat_hblank1 = false;
-      fire_stat_vblank1 = false;
-      fire_stat_lyc1 = false;
-      fire_stat_glitch1 = false;
-    }
-
-    if (tphase == 0 || tphase == 2) {
-      if (fire_stat_lyc1)    ppu.stat |= STAT_LYC;
-
-      if (fire_stat_hblank1) ppu.stat_int1 |= EI_HBLANK;
-      if (fire_stat_vblank1) ppu.stat_int1 |= EI_VBLANK;
-      if (fire_stat_lyc1)    ppu.stat_int1 |= EI_LYC;
-      if (fire_stat_glitch1) ppu.stat_int1 |= EI_GLITCH;
-      if (fire_stat_oam1)    ppu.stat_int1 |= EI_OAM;
-
-      if (fire_stat_hblank2) ppu.stat_int2 |= EI_HBLANK;
-      if (fire_stat_vblank2) ppu.stat_int2 |= EI_VBLANK;
-      if (fire_stat_lyc2)    ppu.stat_int2 |= EI_LYC;
-      if (fire_stat_glitch2) ppu.stat_int2 |= EI_GLITCH;
-      if (fire_stat_oam2)    ppu.stat_int2 |= EI_OAM;
-    }
-
-    bool fire_int_vblank1 = ppu.line == 144 && ppu.counter == 4;
-    bool fire_int_stat1    = ((ppu.stat & ppu.stat_int1) && !old_stat_int1);
-    bool fire_int_timer1   = timer_out.interrupt;
-    bool fire_int_buttons1 = buttons_out.val != 0xFF;
-
-    //bool fire_int_vblank2 = ppu.line == 144 && ppu.counter == 4;
-    bool fire_int_stat2 = ((ppu.stat & ppu.stat_int2) && !old_stat_int2);
-    //bool fire_int_timer2 = timer_out.overflow;
-    //bool fire_int_buttons2 = buttons_out.val != 0xFF;
-
-    if (tphase == 0 || tphase == 2) {
-      if (imask & 0x01) z80.unhalt |= fire_int_vblank1;
-      if (imask & 0x02) z80.unhalt |= fire_int_stat2;
-      if (imask & 0x04) z80.unhalt |= fire_int_timer1;
-      if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
-    }
-
-    if (fire_int_timer1)   intf |= INT_TIMER;
-    if (fire_int_stat1)    intf |= INT_STAT;
-    if (fire_int_vblank1)  intf |= INT_VBLANK;
-    if (fire_int_buttons1) intf |= INT_JOYPAD;
-
-    //----------------------------------------
-    // tick z80
-
+  if (ppu.lcdc & FLAG_LCD_ON) {
     if (tphase == 0) {
-      cpu_bus = z80.tick(imask, intf, bus_in);
-      intf &= ~z80.int_ack_;
+      ppu.stat &= ~STAT_LYC;
+      ppu.stat_int1 = 0;
+      ppu.stat_int2 = 0;
     }
-
-    //----------------------------------------
-
-    old_stat_int1 = (ppu.stat & ppu.stat_int1);
-    old_stat_int2 = (ppu.stat & ppu.stat_int2);
   }
+  else {
+    fire_stat_oam1 = false;
+    fire_stat_hblank1 = false;
+    fire_stat_vblank1 = false;
+    fire_stat_lyc1 = false;
+    fire_stat_glitch1 = false;
+  }
+
+  if (tphase == 0 || tphase == 2) {
+    if (fire_stat_lyc1)    ppu.stat |= STAT_LYC;
+
+    if (fire_stat_hblank1) ppu.stat_int1 |= EI_HBLANK;
+    if (fire_stat_vblank1) ppu.stat_int1 |= EI_VBLANK;
+    if (fire_stat_lyc1)    ppu.stat_int1 |= EI_LYC;
+    if (fire_stat_glitch1) ppu.stat_int1 |= EI_GLITCH;
+    if (fire_stat_oam1)    ppu.stat_int1 |= EI_OAM;
+
+    if (fire_stat_hblank2) ppu.stat_int2 |= EI_HBLANK;
+    if (fire_stat_vblank2) ppu.stat_int2 |= EI_VBLANK;
+    if (fire_stat_lyc2)    ppu.stat_int2 |= EI_LYC;
+    if (fire_stat_glitch2) ppu.stat_int2 |= EI_GLITCH;
+    if (fire_stat_oam2)    ppu.stat_int2 |= EI_OAM;
+  }
+
+  bool fire_int_vblank1 = ppu.line == 144 && ppu.counter == 4;
+  bool fire_int_stat1    = ((ppu.stat & ppu.stat_int1) && !old_stat_int1);
+  bool fire_int_timer1   = timer_out.interrupt;
+  bool fire_int_buttons1 = buttons_out.val != 0xFF;
+
+  //bool fire_int_vblank2 = ppu.line == 144 && ppu.counter == 4;
+  bool fire_int_stat2 = ((ppu.stat & ppu.stat_int2) && !old_stat_int2);
+  //bool fire_int_timer2 = timer_out.overflow;
+  //bool fire_int_buttons2 = buttons_out.val != 0xFF;
+
+  if (tphase == 0 || tphase == 2) {
+    if (imask & 0x01) z80.unhalt |= fire_int_vblank1;
+    if (imask & 0x02) z80.unhalt |= fire_int_stat2;
+    if (imask & 0x04) z80.unhalt |= fire_int_timer1;
+    if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
+  }
+
+  if (fire_int_timer1)   intf |= INT_TIMER;
+  if (fire_int_stat1)    intf |= INT_STAT;
+  if (fire_int_vblank1)  intf |= INT_VBLANK;
+  if (fire_int_buttons1) intf |= INT_JOYPAD;
+
+  //----------------------------------------
+  // tick z80
+
+  if (tphase == 0) {
+    intf &= ~cpu_bus.int_ack;
+  }
+
+  //----------------------------------------
+
+  old_stat_int1 = (ppu.stat & ppu.stat_int1);
+  old_stat_int2 = (ppu.stat & ppu.stat_int2);
 }
 
 //-----------------------------------------------------------------------------
@@ -337,6 +340,13 @@ GameboyOut Gameboy::tock() {
     if (!bus_oe_) bus_out_ = 0xFF;
 
     bus_in = bus_out_;
+  }
+
+  //-----------------------------------
+  // z80 tocks last
+
+  if (tphase == 2) {
+    cpu_bus = z80.tock(imask, intf, bus_in);
   }
 
   //-----------------------------------

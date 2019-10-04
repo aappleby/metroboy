@@ -31,16 +31,6 @@ struct SpuOut {
   sample_t out_l;
 };
 
-struct PpuTickOut {
-  bool fire_int_stat1;
-  bool fire_int_stat2;
-  bool fire_int_vblank1;
-  bool fire_int_vblank2;
-  uint8_t stat_;
-  uint8_t stat_int1_;
-  uint8_t stat_int2_;
-};
-
 struct PpuOut {
   uint8_t data;
   bool oe;
@@ -59,8 +49,10 @@ struct PpuOut {
   uint8_t pix_out;
   bool pix_oe;
 
-  bool vblank_int;
-  bool stat_int;
+  bool fire_int_stat1;
+  bool fire_int_stat2;
+  bool fire_int_vblank1;
+  bool fire_int_vblank2;
 };
 
 struct ButtonsOut {
@@ -83,6 +75,7 @@ struct GameboyOut {
   bool pix_oe;
   sample_t out_r;
   sample_t out_l;
+  uint32_t trace;
 };
 
 const uint8_t F_CARRY = 0x10;

@@ -25,8 +25,6 @@ struct Gameboy {
   GameboyOut tick() const;
   void tock();
 
-  uint32_t trace() const { return trace_val; }
-
   const Z80& get_cpu() const { return z80; }
   const SPU& get_spu() const { return spu; }
   const PPU& get_ppu() const { return ppu; }
@@ -48,8 +46,6 @@ struct Gameboy {
 
 private:
 
-  GameboyOut gb_out;
-
   enum DMAMode {
     DMA_NONE,
     DMA_VRAM,
@@ -69,12 +65,9 @@ private:
   Serial serial;
   ZRAM zram;
 
-  uint32_t trace_val;
-
   int model = MODEL_DMG;
   int64_t tcycle = -1;
-
-  bool cpu_read_oam = false;
+  uint32_t trace_val;
 
   DMAMode  dma_mode_x = DMA_NONE;
   uint8_t  dma_count_x = 0;
@@ -87,13 +80,6 @@ private:
   DMAMode  dma_mode_b = DMA_NONE;
   uint8_t  dma_count_b = 0;
   uint8_t  dma_data_b = 0;
-
-  uint8_t oam_bus_out = 0;
-  bool oam_bus_oe = false;
-
-  uint8_t bus_out = 0;
-  bool bus_oe = false;
-  uint8_t bus_in = 0;
 
   uint8_t intf = 0;
   uint8_t imask = 0;

@@ -237,7 +237,7 @@ void MetroBoy::cycle() {
   gb_out = current_gameboy->tick();
 
   if (trace) {
-    tracebuffer[gb_out.y * 456 + gb_out.counter] = current_gameboy->trace();
+    tracebuffer[gb_out.y * 456 + gb_out.counter] = gb_out.trace;
   }
 
   if (gb_out.pix_oe) {

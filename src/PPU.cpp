@@ -175,18 +175,7 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-PpuTickOut PPU::tick() const {
-  return {
-    fire_int_stat1,
-    fire_int_stat2,
-    fire_int_vblank1,
-    fire_int_vblank2,
-  };
-}
-
-//-----------------------------------------------------------------------------
-
-PpuOut PPU::tickB() const {
+PpuOut PPU::tick() const {
   return out;
 }
 
@@ -741,7 +730,12 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     line,
     counter,
     pix_out,
-    pix_oe
+    pix_oe,
+
+    fire_int_stat1,
+    fire_int_stat2,
+    fire_int_vblank1,
+    fire_int_vblank2,
   };
 } // PPU::tock
 

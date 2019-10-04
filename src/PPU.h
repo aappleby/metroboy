@@ -102,6 +102,11 @@ private:
 
   int compare_line;
 
+  bool fire_int_stat1 = false;
+  bool fire_int_stat2 = false;
+  bool fire_int_vblank1 = false;
+  bool fire_int_vblank2 = false;
+
   bool old_stat_int1 = false;
   bool old_stat_int2 = false;
 

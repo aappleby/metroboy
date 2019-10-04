@@ -36,6 +36,9 @@ struct PpuTickOut {
   bool fire_int_stat2;
   bool fire_int_vblank1;
   bool fire_int_vblank2;
+  uint8_t stat_;
+  uint8_t stat_int1_;
+  uint8_t stat_int2_;
 };
 
 struct PpuOut {

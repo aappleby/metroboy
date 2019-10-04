@@ -184,10 +184,10 @@ GameboyOut Gameboy::tock() {
     }
   }
 
-  oam_out = oam.tock(oam_bus);
 
   //-----------------------------------
-  // vram bus mux
+
+  oam.tock(oam_bus);
 
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
 
@@ -196,23 +196,19 @@ GameboyOut Gameboy::tock() {
   mmu.tock(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
   buttons.tock(cpu_bus);
   serial.tock(cpu_bus);
+  zram.tock(cpu_bus);
+  spu.tock(tphase, cpu_bus);
+  timer.tock(tphase, cpu_bus);
 
   vram_out = vram.tick();
   iram_out = iram.tick();
   mmu_out = mmu.tick();
   buttons_out = buttons.tick();
   serial_out  = serial.tick();;
-
-
-  
-  zram.tock(cpu_bus);
   zram_out    = zram.tick();
-
-  spu.tock(tphase, cpu_bus);
   spu_out     = spu.tick();
-  
-  timer.tock(tphase, cpu_bus);
   timer_out   = timer.tickB();
+  oam_out = oam.tick();
 
   // FIXME should not be reading new vram_out/oam_out here
   ppu.tock(tphase, cpu_bus, vram_out, oam_out);
@@ -299,7 +295,8 @@ GameboyOut Gameboy::tock() {
   // z80 tocks last
 
   if (tphase == 2) {
-    cpu_bus = z80.tock(imask, intf, bus_in);
+    z80.tock(imask, intf, bus_in);
+    cpu_bus = z80.tick();
   }
 
   //-----------------------------------

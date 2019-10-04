@@ -249,7 +249,11 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-CpuBus Z80::tock(uint8_t imask_, uint8_t intf_, uint8_t bus_) {
+CpuBus Z80::tick() const {
+  return out;
+}
+
+void Z80::tock(uint8_t imask_, uint8_t intf_, uint8_t bus_) {
   bus = bus_;
 
   ime = ime_;
@@ -289,7 +293,7 @@ CpuBus Z80::tock(uint8_t imask_, uint8_t intf_, uint8_t bus_) {
   state = state_;
   cycle++;
 
-  return { addr, data_out, true, (bool)write, int_ack };
+  out = { addr, data_out, true, (bool)write, int_ack };
 }
 
 //-----------------------------------------------------------------------------
@@ -314,7 +318,7 @@ void Z80::set_flag(uint8_t f_) {
 
 void Z80::state_machine() {
 
-  AluOut& out = alu_out;
+  AluOut& ao = alu_out;
   bool nb = no_branch;
   bool tb = !no_branch;
   state_ = INVALID;
@@ -344,41 +348,41 @@ void Z80::state_machine() {
   if (CALL_A16          && state == PUSH1)  { sp = addr - 1;                                                          data_out = pcl;                                       addr = sp;           write = true;  state_ = PUSH2; }
   if (CALL_A16          && state == PUSH2)  { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
 
-  if (NOP               && state == ALU1)   { pc = addr + 1;                                                                                               set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+  if (NOP               && state == ALU1)   { pc = addr + 1;                                                                                               set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
 
-  if (DEC_R             && state == ALU1)   { pc = addr + 1;                   out = alu(2, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }  
-  if (INC_R             && state == ALU1)   { pc = addr + 1;                   out = alu(1, reg_get8(), 1, 0);        reg_put8(OP_ROW, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+  if (DEC_R             && state == ALU1)   { pc = addr + 1;                   ao = alu(2, reg_get8(), 1, 0);        reg_put8(OP_ROW, ao.x);             set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }  
+  if (INC_R             && state == ALU1)   { pc = addr + 1;                   ao = alu(1, reg_get8(), 1, 0);        reg_put8(OP_ROW, ao.x);             set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
   if (INC_AT_HL         && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
-  if (INC_AT_HL         && state == READ1)  {                                  out = alu(0, bus, 1, 0);               data_out = out.x;                    set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
+  if (INC_AT_HL         && state == READ1)  {                                  ao = alu(0, bus, 1, 0);               data_out = ao.x;                    set_flag(ao.f); addr = hl;           write = true;  state_ = WRITE1; }
   if (INC_AT_HL         && state == WRITE1) {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }
   if (DEC_AT_HL         && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
-  if (DEC_AT_HL         && state == READ1)  {                                  out = alu(2, bus, 1, 0);               data_out = out.x;                    set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
+  if (DEC_AT_HL         && state == READ1)  {                                  ao = alu(2, bus, 1, 0);               data_out = ao.x;                    set_flag(ao.f); addr = hl;           write = true;  state_ = WRITE1; }
   if (DEC_AT_HL         && state == WRITE1) {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }
 
-  if (DI                && state == ALU1)   { pc = addr + 1;                                                          ime = false; ime_ = false;           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-  if (EI                && state == ALU1)   { pc = addr + 1;                                                          ime = ime_; ime_ = true;             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+  if (DI                && state == ALU1)   { pc = addr + 1;                                                          ime = false; ime_ = false;           set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
+  if (EI                && state == ALU1)   { pc = addr + 1;                                                          ime = ime_; ime_ = true;             set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
   if (JP_HL             && state == PTR1)   { pc = hl;                                                                                                                      addr = pc;           write = false; state_ = DECODE; }
-  if (MV_R_R            && state == ALU1)   { pc = addr + 1;                                                          reg_put8(OP_ROW, reg_get8());        set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-  if (RLU_R             && state == ALU1)   { pc = addr + 1;                   out = rlu(OP_ROW, reg_get8(), f);      a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-  if (ALU_A_R           && state == ALU1)   { pc = addr + 1;                   out = alu(OP_ROW, a, reg_get8(), f);   a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-  if (ADD_HL_BC         && state == ALU1)   { pc = addr + 1;                   out = alu(1, l, c, 0);                 l = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
-  if (ADD_HL_BC         && state == ALU2)   {                                  out = alu(1, h, b, f);                 h = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-  if (ADD_HL_DE         && state == ALU1)   { pc = addr + 1;                   out = alu(1, l, e, 0);                 l = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
-  if (ADD_HL_DE         && state == ALU2)   {                                  out = alu(1, h, d, f);                 h = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-  if (ADD_HL_HL         && state == ALU1)   { pc = addr + 1;                   out = alu(1, l, l, 0);                 l = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
-  if (ADD_HL_HL         && state == ALU2)   {                                  out = alu(1, h, h, f);                 h = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
-  if (ADD_HL_SP         && state == ALU1)   { pc = addr + 1;                   out = alu(1, l, p, 0);                 l = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
-  if (ADD_HL_SP         && state == ALU2)   {                                  out = alu(1, h, s, f);                 h = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+  if (MV_R_R            && state == ALU1)   { pc = addr + 1;                                                          reg_put8(OP_ROW, reg_get8());        set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
+  if (RLU_R             && state == ALU1)   { pc = addr + 1;                   ao = rlu(OP_ROW, reg_get8(), f);      a = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
+  if (ALU_A_R           && state == ALU1)   { pc = addr + 1;                   ao = alu(OP_ROW, a, reg_get8(), f);    a = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
+  if (ADD_HL_BC         && state == ALU1)   { pc = addr + 1;                   ao = alu(1, l, c, 0);                  l = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = ALU2; }
+  if (ADD_HL_BC         && state == ALU2)   {                                  ao = alu(1, h, b, f);                  h = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
+  if (ADD_HL_DE         && state == ALU1)   { pc = addr + 1;                   ao = alu(1, l, e, 0);                  l = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = ALU2; }
+  if (ADD_HL_DE         && state == ALU2)   {                                  ao = alu(1, h, d, f);                  h = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
+  if (ADD_HL_HL         && state == ALU1)   { pc = addr + 1;                   ao = alu(1, l, l, 0);                  l = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = ALU2; }
+  if (ADD_HL_HL         && state == ALU2)   {                                  ao = alu(1, h, h, f);                  h = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
+  if (ADD_HL_SP         && state == ALU1)   { pc = addr + 1;                   ao = alu(1, l, p, 0);                  l = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = ALU2; }
+  if (ADD_HL_SP         && state == ALU2)   {                                  ao = alu(1, h, s, f);                  h = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
 
   if (ADD_SP_R8         && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ALU1; }
-  if (ADD_SP_R8         && state == ALU1)   {                                  out = alu(0, p, bus, f);               lo = out.x;                          set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
-  if (ADD_SP_R8         && state == ALU2)   { pc = addr + 1;                   out = alu(1, s, sxt(bus), f);          hi = out.x;                                           addr = pc;           write = false; state_ = DELAY; }
+  if (ADD_SP_R8         && state == ALU1)   {                                  ao = alu(0, p, bus, f);                lo = ao.x;                          set_flag(ao.f); addr = pc;           write = false; state_ = ALU2; }
+  if (ADD_SP_R8         && state == ALU2)   { pc = addr + 1;                   ao = alu(1, s, sxt(bus), f);           hi = ao.x;                                           addr = pc;           write = false; state_ = DELAY; }
   if (ADD_SP_R8         && state == DELAY)  { sp = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
 
   if (ALU_A_D8          && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
-  if (ALU_A_D8          && state == ARG1)   { pc = addr + 1;                   out = alu(OP_ROW, a, bus, f);          a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+  if (ALU_A_D8          && state == ARG1)   { pc = addr + 1;                   ao = alu(OP_ROW, a, bus, f);          a = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
   if (ALU_A_HL          && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = ALU1; }
-  if (ALU_A_HL          && state == ALU1)   {                                  out = alu(OP_ROW, a, bus, f);          a = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+  if (ALU_A_HL          && state == ALU1)   {                                  ao = alu(OP_ROW, a, bus, f);          a = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
 
   if (CALL_CC_A16       && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
   if (CALL_CC_A16       && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }
@@ -424,11 +428,11 @@ void Z80::state_machine() {
   if (JP_CC_A16         && state == PTR1)   { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE;}
   if (JR_CC_R8          && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ALU1; }
   if (JR_CC_R8 && nb    && state == ALU1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = DECODE; }
-  if (JR_CC_R8 && tb    && state == ALU1)   { pc = addr + 1;   lo = bus;       out = alu(0, pcl, lo, 0);              pcl = out.x;                                          addr = pc;           write = false; state_ = ALU2; }
-  if (JR_CC_R8          && state == ALU2)   {                                  out = alu(1, pch, sxt(lo), alu_out.f); pch = out.x;                                          addr = pc;           write = false; state_ = DECODE; }
+  if (JR_CC_R8 && tb    && state == ALU1)   { pc = addr + 1;   lo = bus;       ao = alu(0, pcl, lo, 0);              pcl = ao.x;                                          addr = pc;           write = false; state_ = ALU2; }
+  if (JR_CC_R8          && state == ALU2)   {                                  ao = alu(1, pch, sxt(lo), alu_out.f); pch = ao.x;                                          addr = pc;           write = false; state_ = DECODE; }
   if (JR_R8             && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ALU1; }
-  if (JR_R8             && state == ALU1)   { pc = addr + 1;   lo = bus;       out = alu(0, pcl, lo, 0);              pcl = out.x;                                          addr = pc;           write = false; state_ = ALU2; }
-  if (JR_R8             && state == ALU2)   {                                  out = alu(1, pch, sxt(lo), alu_out.f); pch = out.x;                                          addr = pc;           write = false; state_ = DECODE; }
+  if (JR_R8             && state == ALU1)   { pc = addr + 1;   lo = bus;       ao = alu(0, pcl, lo, 0);              pcl = ao.x;                                          addr = pc;           write = false; state_ = ALU2; }
+  if (JR_R8             && state == ALU2)   {                                  ao = alu(1, pch, sxt(lo), alu_out.f); pch = ao.x;                                          addr = pc;           write = false; state_ = DECODE; }
   if (LD_RR_D16         && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
   if (LD_BC_D16         && state == ARG1)   { pc = addr + 1;   c = bus;                                                                                                     addr = pc;           write = false; state_ = ARG2; }
   if (LD_BC_D16         && state == ARG2)   { pc = addr + 1;   b = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
@@ -440,8 +444,8 @@ void Z80::state_machine() {
   if (LD_SP_D16         && state == ARG2)   { pc = addr + 1;   s = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
   if (LD_HL_SP_R8       && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ALU1; }
   if (LD_HL_SP_R8       && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ALU1; }
-  if (LD_HL_SP_R8       && state == ALU1)   { pc = addr + 1;   lo = bus;       out = alu(0, p, lo, f);                l = out.x;                           set_flag(out.f); addr = pc;           write = false; state_ = ALU2; }
-  if (LD_HL_SP_R8       && state == ALU2)   {                                  out = alu(1, s, sxt(lo), f);           h = out.x;                                            addr = pc;           write = false; state_ = DECODE; }
+  if (LD_HL_SP_R8       && state == ALU1)   { pc = addr + 1;   lo = bus;       ao = alu(0, p, lo, f);                l = ao.x;                           set_flag(ao.f); addr = pc;           write = false; state_ = ALU2; }
+  if (LD_HL_SP_R8       && state == ALU2)   {                                  ao = alu(1, s, sxt(lo), f);           h = ao.x;                                            addr = pc;           write = false; state_ = DECODE; }
   if (LDM_A_BC          && state == READ0)  { pc = addr + 1;                                                                                                                addr = bc;           write = false; state_ = READ1; }
   if (LDM_A_BC          && state == READ1)  {                  a = bus;                                                                                                     addr = pc;           write = false; state_ = DECODE; }
   if (LDM_A_DE          && state == READ0)  { pc = addr + 1;                                                                                                                addr = de;           write = false; state_ = READ1; }
@@ -543,12 +547,12 @@ void Z80::state_machine() {
     if (PREFIX_CB && state == CB0) { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = CB1; }
     if (PREFIX_CB && state == CB1) { cb = bus; }                                                          
 
-    if (OP_CB_R         && state == CB1)    { cb = bus; pc = addr + 1;                   out = alu_cb(cb, reg_get8(CB_COL), f); reg_put8(CB_COL, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
+    if (OP_CB_R         && state == CB1)    { cb = bus; pc = addr + 1;                   ao = alu_cb(cb, reg_get8(CB_COL), f); reg_put8(CB_COL, ao.x);             set_flag(ao.f); addr = pc;           write = false; state_ = DECODE; }
     if (OP_CB_HL        && state == CB1)    { cb = bus; pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
     if (OP_CB_HL        && state == READ1)  { 
-      out = alu_cb(cb, reg_get8(CB_COL), f);
-      reg_put8(CB_COL, out.x);
-      set_flag(out.f);
+      ao = alu_cb(cb, reg_get8(CB_COL), f);
+      reg_put8(CB_COL, ao.x);
+      set_flag(ao.f);
       if (CB_QUAD == 1) {
         addr = pc;
         write = false;
@@ -954,26 +958,26 @@ const char* state_name(Z80State state) {
   }
 }
 
-void Z80::dump(std::string& out) {
-  sprintf(out, "CYC %d\n", cycle);
+void Z80::dump(std::string& ds) {
+  sprintf(ds, "CYC %d\n", cycle);
   int bgb = (cycle * 2) + 0x00B2D5E6;
-  sprintf(out, "BGB 0x%08x\n", bgb);
-  sprintf(out, "op 0x%02x\n", op);
-  sprintf(out, "state  %s\n", state_name(state2));
-  sprintf(out, "state_ %s\n", state_name(state_));
-  sprintf(out, "af 0x%04x\n", af);
-  sprintf(out, "bc 0x%04x\n", bc);
-  sprintf(out, "de 0x%04x\n", de);
-  sprintf(out, "hl 0x%04x\n", hl);
-  sprintf(out, "sp 0x%04x\n", sp);
-  sprintf(out, "pc2 0x%04x\n", pc2);
-  sprintf(out, "pc1 0x%04x\n", pc);
-  sprintf(out, "ime %d\n", ime);
-  sprintf(out, "ime_ %d\n", ime_);
+  sprintf(ds, "BGB 0x%08x\n", bgb);
+  sprintf(ds, "op 0x%02x\n", op);
+  sprintf(ds, "state  %s\n", state_name(state2));
+  sprintf(ds, "state_ %s\n", state_name(state_));
+  sprintf(ds, "af 0x%04x\n", af);
+  sprintf(ds, "bc 0x%04x\n", bc);
+  sprintf(ds, "de 0x%04x\n", de);
+  sprintf(ds, "hl 0x%04x\n", hl);
+  sprintf(ds, "sp 0x%04x\n", sp);
+  sprintf(ds, "pc2 0x%04x\n", pc2);
+  sprintf(ds, "pc1 0x%04x\n", pc);
+  sprintf(ds, "ime %d\n", ime);
+  sprintf(ds, "ime_ %d\n", ime_);
 
-  sprintf(out, "addr  0x%04x\n", addr);
-  sprintf(out, "bus   0x%02x\n", data_out);
-  sprintf(out, "write %d\n",     write);
+  sprintf(ds, "addr  0x%04x\n", addr);
+  sprintf(ds, "bus   0x%02x\n", data_out);
+  sprintf(ds, "write %d\n",     write);
 }
 
 //-----------------------------------------------------------------------------

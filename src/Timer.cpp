@@ -25,7 +25,7 @@ TimerOut Timer::tickB() const {
   return out;
 }
 
-void Timer::tock(int tphase, CpuBus bus) {
+void Timer::tock(int tphase, const CpuBus bus) {
   if (tphase != 0 && tphase != 2) return;
 
   uint16_t tima_ = tima;

@@ -73,7 +73,6 @@ SpuOut SPU::tick() const {
 }
 
 void SPU::tock(int tphase, CpuBus bus) {
-  out = {0};
   bool sound_on = (nr52 & 0x80);
   uint16_t spu_clock_ = (spu_clock + 1) & 0x3FFF;
   uint16_t clock_flip = (~spu_clock) & spu_clock_;

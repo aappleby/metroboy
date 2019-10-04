@@ -32,12 +32,12 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   ppu_out = ppu.reset(new_pc == 0, new_model);
   
   oam_out = oam.reset();
-  mmu_out = mmu.reset(new_rom_size, new_pc);
+  mmu.reset(new_rom_size, new_pc);
   timer_out = timer.reset();
   vram_out = vram.reset();
-  iram_out = iram.reset();
-  buttons_out = buttons.reset();
-  serial_out = serial.reset();
+  iram.reset();
+  buttons.reset();
+  serial.reset();
   zram_out = zram.reset();
   spu_out = spu.reset();
 
@@ -81,47 +81,49 @@ void Gameboy::reset(uint16_t new_pc) {
 //-----------------------------------------------------------------------------
 // 4 mhz tick/tock
 
-void Gameboy::tick() {
-  tcycle++;
-  int tphase = tcycle & 3;
-
-  if (tphase == 3) {
-    cpu_bus = z80.tick();
-  }
-
-  //----------------------------------------
-
-  PpuTickOut ppu_tick = ppu.tick(tphase, cpu_bus);
-
-  if (tphase != 0 && tphase != 2) return;
- 
-  bool fire_int_timer1   = timer_out.interrupt;
-  bool fire_int_buttons1 = buttons_out.val != 0xFF;
-  //bool fire_int_timer2 = timer_out.overflow;
-  //bool fire_int_buttons2 = buttons_out.val != 0xFF;
-
-  if (imask & 0x01) z80.unhalt |= ppu_tick.fire_int_vblank1;
-  if (imask & 0x02) z80.unhalt |= ppu_tick.fire_int_stat2;
-  if (imask & 0x04) z80.unhalt |= fire_int_timer1;
-  if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
-
-  if (ppu_tick.fire_int_vblank1)  intf |= INT_VBLANK;
-  if (ppu_tick.fire_int_stat1)    intf |= INT_STAT;
-  if (fire_int_timer1)   intf |= INT_TIMER;
-  if (fire_int_buttons1) intf |= INT_JOYPAD;
-
-  //----------------------------------------
-  // tick z80
-
-  if (tphase == 0) {
-    intf &= ~cpu_bus.int_ack;
-  }
+GameboyOut Gameboy::tick() const {
+  return gb_out;
 }
 
 //-----------------------------------------------------------------------------
 
-GameboyOut Gameboy::tock() {
+void Gameboy::tock() {
+  tcycle++;
   int tphase = tcycle & 3;
+
+  BusOut iram_out = iram.tick();
+  BusOut mmu_out = mmu.tick();
+  ButtonsOut buttons_out = buttons.tick();
+  BusOut serial_out  = serial.tick();;
+  zram_out    = zram.tick();
+  spu_out     = spu.tick();
+  timer_out   = timer.tickB();
+  vram_out = vram.tick();
+  ppu_out = ppu.tickB();
+  if (tphase == 3) cpu_bus = z80.tick();
+
+  PpuTickOut ppu_tick = ppu.tick(tphase, cpu_bus);
+
+  if (tphase == 0 || tphase == 2) {
+    bool fire_int_timer1   = timer_out.interrupt;
+    bool fire_int_buttons1 = buttons_out.val != 0xFF;
+    //bool fire_int_timer2 = timer_out.overflow;
+    //bool fire_int_buttons2 = buttons_out.val != 0xFF;
+
+    if (imask & 0x01) z80.unhalt |= ppu_tick.fire_int_vblank1;
+    if (imask & 0x02) z80.unhalt |= ppu_tick.fire_int_stat2;
+    if (imask & 0x04) z80.unhalt |= fire_int_timer1;
+    if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
+
+    if (ppu_tick.fire_int_vblank1)  intf |= INT_VBLANK;
+    if (ppu_tick.fire_int_stat1)    intf |= INT_STAT;
+    if (fire_int_timer1)            intf |= INT_TIMER;
+    if (fire_int_buttons1)          intf |= INT_JOYPAD;
+  }
+
+  if (tphase == 0) {
+    intf &= ~cpu_bus.int_ack;
+  }
 
   CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_read, false };
 
@@ -204,21 +206,11 @@ GameboyOut Gameboy::tock() {
   spu.tock(tphase, cpu_bus);
   timer.tock(tphase, cpu_bus);
 
-  iram_out = iram.tick();
-  mmu_out = mmu.tick();
-  buttons_out = buttons.tick();
-  serial_out  = serial.tick();;
-  zram_out    = zram.tick();
-  spu_out     = spu.tick();
-  timer_out   = timer.tickB();
-
+  // moving this after ppu.tock() breaks sprites at the moment
   oam_out = oam.tick();
 
   // FIXME should not be reading new vram_out/oam_out here
   ppu.tock(tphase, cpu_bus, vram_out, oam_out);
-  ppu_out = ppu.tickB();
-
-  vram_out = vram.tick();
 
   //-----------------------------------
   // writes happen on t0
@@ -306,7 +298,7 @@ GameboyOut Gameboy::tock() {
 
   //-----------------------------------
 
-  return {
+  gb_out = {
     ppu_out.x,
     ppu_out.y,
     ppu_out.counter,

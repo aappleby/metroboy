@@ -109,8 +109,8 @@ int run_screenshot_test(int model, const std::string& prefix, const std::string&
   int i = 0;
   const int ticks = 400000;
   for (; i < ticks; i++) {
-    gameboy.tick();
-    GameboyOut gb_out = gameboy.tock();
+    gameboy.tock();   
+    GameboyOut gb_out = gameboy.tick();
 
     if (gb_out.pix_oe) {
       int x = gameboy.get_ppu_out().x - 1;

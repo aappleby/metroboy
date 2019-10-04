@@ -22,8 +22,8 @@ struct Gameboy {
   void reset(int new_model, size_t new_rom_size, uint16_t new_pc);
   void reset(uint16_t new_pc);
 
-  void tick();
-  GameboyOut tock();
+  GameboyOut tick() const;
+  void tock();
 
   uint32_t trace();
 
@@ -47,6 +47,8 @@ struct Gameboy {
   PpuOut get_ppu_out() { return ppu_out; }
 
 private:
+
+  GameboyOut gb_out;
 
   enum DMAMode {
     DMA_NONE,
@@ -72,11 +74,7 @@ private:
   PpuOut ppu_out;
 
   SpuOut spu_out;
-  ButtonsOut buttons_out;
-  BusOut iram_out;
-  BusOut serial_out;
   BusOut vram_out;
-  BusOut mmu_out;
   BusOut zram_out;
   TimerOut timer_out;
   BusOut oam_out;

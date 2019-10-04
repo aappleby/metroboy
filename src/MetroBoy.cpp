@@ -233,8 +233,8 @@ void MetroBoy::clear_cycle_history() {
 //-----------------------------------------------------------------------------
 
 void MetroBoy::cycle() {
-  current_gameboy->tick();
-  gb_out = current_gameboy->tock();
+  current_gameboy->tock();
+  gb_out = current_gameboy->tick();
 
   if (trace) {
     tracebuffer[gb_out.y * 456 + gb_out.counter] = current_gameboy->trace();

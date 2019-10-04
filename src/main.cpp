@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  //run_microtests();
+  run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
@@ -47,7 +47,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
-  load("LinksAwakening");
+  //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
   //load("tetris");
@@ -56,7 +56,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("instr_timing");
 
   //load("microtests/build/dmg", "hblank_int_inc_sled");
-  //load("microtests/build/dmg", "lcdon_to_stat0_a");
+  load("microtests/build/dmg", "lcdon_to_hblank_int_l0");
 
   //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle");
 

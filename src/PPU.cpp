@@ -354,10 +354,10 @@ PpuOut PPU::tick(int tphase, CpuBus /*bus*/) {
 //-----------------------------------------------------------------------------
 
 PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
-  counter = 7;
-  counter_delay1 = 6;
-  counter_delay2 = 5;
-  counter_delay3 = 4;
+  counter = 3;
+  counter_delay1 = 2;
+  counter_delay2 = 1;
+  counter_delay3 = 0;
 
   line = 0;
   line_delay1 = 0;

@@ -87,7 +87,7 @@ void Gameboy::tick() {
 
   //----------------------------------------
 
-  PpuOut ppu_tick_out = ppu.tick(tphase, cpu_bus);
+  PpuTickOut ppu_tick = ppu.tick(tphase);
 
   if (tphase != 0 && tphase != 2) return;
  
@@ -143,14 +143,18 @@ void Gameboy::tick() {
   }
 
   bool fire_int_vblank1 = ppu.line == 144 && ppu.counter == 4;
-  bool fire_int_stat1    = ((ppu.stat & ppu.stat_int1) && !old_stat_int1);
+  bool fire_int_stat1    = ((ppu.stat & ppu.stat_int1) && !ppu.old_stat_int1);
   bool fire_int_timer1   = timer_out.interrupt;
   bool fire_int_buttons1 = buttons_out.val != 0xFF;
 
   //bool fire_int_vblank2 = ppu.line == 144 && ppu.counter == 4;
-  bool fire_int_stat2 = ((ppu.stat & ppu.stat_int2) && !old_stat_int2);
+  bool fire_int_stat2 = ((ppu.stat & ppu.stat_int2) && !ppu.old_stat_int2);
   //bool fire_int_timer2 = timer_out.overflow;
   //bool fire_int_buttons2 = buttons_out.val != 0xFF;
+
+  ppu.old_stat_int1 = (ppu.stat & ppu.stat_int1);
+  ppu.old_stat_int2 = (ppu.stat & ppu.stat_int2);
+
 
   if (tphase == 0 || tphase == 2) {
     if (imask & 0x01) z80.unhalt |= fire_int_vblank1;
@@ -170,11 +174,6 @@ void Gameboy::tick() {
   if (tphase == 0) {
     intf &= ~cpu_bus.int_ack;
   }
-
-  //----------------------------------------
-
-  old_stat_int1 = (ppu.stat & ppu.stat_int1);
-  old_stat_int2 = (ppu.stat & ppu.stat_int2);
 }
 
 //-----------------------------------------------------------------------------
@@ -394,8 +393,8 @@ void Gameboy::dump(std::string& out) {
   z80.dump(out);
   sprintf(out, "imask %s\n", to_binary(imask));
   sprintf(out, "intf  %s\n", to_binary(intf));
-  sprintf(out, "old stat int1 %d\n", old_stat_int1);
-  sprintf(out, "old stat int2 %d\n", old_stat_int2);
+  sprintf(out, "old stat int1 %d\n", ppu.old_stat_int1);
+  sprintf(out, "old stat int2 %d\n", ppu.old_stat_int2);
   sprintf(out, "\n");
 
   sprintf(out, "tcycle %zd\n", tcycle);

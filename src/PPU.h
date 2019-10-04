@@ -8,7 +8,7 @@
 struct PPU {
   PpuOut reset(bool run_bootrom, int new_model);
 
-  PpuOut tick(int tphase, CpuBus cpu_bus);
+  PpuTickOut tick(int tphase);
   PpuOut tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
   void dump(std::string& out);
 
@@ -98,6 +98,9 @@ struct PPU {
   uint8_t hblank_delay2;
 
   int compare_line;
+
+  bool old_stat_int1 = false;
+  bool old_stat_int2 = false;
 
   //----------
   // Sprites

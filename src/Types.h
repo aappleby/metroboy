@@ -31,6 +31,11 @@ struct SpuOut {
   sample_t out_l;
 };
 
+struct PpuTickOut {
+  bool fire_int_stat;
+  bool fire_int_vblank;
+};
+
 struct PpuOut {
   uint8_t data;
   bool oe;

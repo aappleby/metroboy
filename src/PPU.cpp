@@ -175,7 +175,7 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-PpuOut PPU::tick(int tphase, CpuBus /*bus*/) {
+PpuTickOut PPU::tick(int tphase) {
   counter_delay3 = counter_delay2;
   counter_delay2 = counter_delay1;
   counter_delay1 = counter;
@@ -183,9 +183,6 @@ PpuOut PPU::tick(int tphase, CpuBus /*bus*/) {
   line_delay3 = line_delay2;
   line_delay2 = line_delay1;
   line_delay1 = line;
-
-  bool tick_vblank_int = false;
-  bool tick_stat_int = false;
 
   counter++;
   if (counter == TCYCLES_LINE) {
@@ -197,234 +194,101 @@ PpuOut PPU::tick(int tphase, CpuBus /*bus*/) {
     }
   }
 
-  if (tphase == 1 || tphase == 3) {
-    return {
-      bus_out,
-      bus_oe,
+  if (tphase == 0 || tphase == 2) {
+    if (lcdc & FLAG_LCD_ON) {
+      frame_start = (counter == 0) && (line == 0);
+      frame_done = (counter == 0) && (line == 144);
 
-      vram_lock,
-      vram_addr,
-      vram_addr != 0,
+      if (counter == 0) {
+        hblank_delay2 = HBLANK_DELAY_START;
+      }
 
-      oam_lock,
-      oam_addr,
-      oam_read,
+      bool vblank = line >= 144;
 
-      pix_count2,
-      line,
-      counter,
-      pix_out,
-      pix_oe,
+      //----------------------------------------
+      // locking
 
-      tick_vblank_int,
-      tick_stat_int,
-    };
-  }
-  if (!(lcdc & FLAG_LCD_ON)) {
-    return {
-      bus_out,
-      bus_oe,
+      const int oam_start = 0;
+      const int oam_end = 80;
+      const int render_start = 82;
+      const int render_start_l0 = 84;
 
-      vram_lock,
-      vram_addr,
-      vram_addr != 0,
+      if (frame_count == 0 && line == 0) {
+        if (counter == render_start_l0) {
+          oam_lock = true;
+          vram_lock = true;
+        }
+      }
+      else {
+        if (counter == oam_start) {
+          oam_lock = true;
+        }
+        else if (counter == oam_end) {
+          oam_lock = false;
+        }
+        else if (counter == render_start) {
+          oam_lock = true;
+          vram_lock = true;
+        }
+      }
 
-      oam_lock,
-      oam_addr,
-      oam_read,
+      if (hblank_delay2 < 8 || vblank) {
+        oam_lock = false;
+        vram_lock = false;
+      }
 
-      pix_count2,
-      line,
-      counter,
-      pix_out,
-      pix_oe,
+      //-----------------------------------
+      // lyc_match
 
-      tick_vblank_int,
-      tick_stat_int,
-    };
-  }
+      if (line == 0) {
+        if (counter == 0) compare_line = 0;
+        if (counter == 0) ly = line;
 
-  frame_start = (counter == 0) && (line == 0);
-  frame_done = (counter == 0) && (line == 144);
+        if (counter == 4) compare_line = ly;
+        if (counter == 4) ly = line;
+      }
+      else if (line < 153) {
+        if (counter == 0) compare_line = -1;
+        if (counter == 0) ly = line;
 
-  if (counter == 0) {
-    hblank_delay2 = HBLANK_DELAY_START;
-  }
+        if (counter == 4) compare_line = ly;
+        if (counter == 4) ly = line;
+      }
+      else if (line == 153) {
+        if (counter == 0) compare_line = -1;
+        if (counter == 0) ly = line;
 
-  bool vblank = line >= 144;
+        if (counter == 4) compare_line = ly;
+        if (counter == 4) ly = 0;
 
-  //----------------------------------------
-  // locking
+        if (counter == 8) compare_line = -1;
+        if (counter == 8) ly = 0;
 
-  const int oam_start = 0;
-  const int oam_end = 80;
-  const int render_start = 82;
-  const int render_start_l0 = 84;
-
-  if (frame_count == 0 && line == 0) {
-    if (counter == render_start_l0) {
-      oam_lock = true;
-      vram_lock = true;
-    }
-  }
-  else {
-    if (counter == oam_start) {
-      oam_lock = true;
-    }
-    else if (counter == oam_end) {
-      oam_lock = false;
-    }
-    else if (counter == render_start) {
-      oam_lock = true;
-      vram_lock = true;
+        if (counter == 12) compare_line = 0;
+        if (counter == 12) ly = 0;
+      }
     }
   }
 
-  if (hblank_delay2 < 8 || vblank) {
-    oam_lock = false;
-    vram_lock = false;
-  }
-
-  //-----------------------------------
-  // lyc_match
-
-  if (line == 0) {
-    if (counter == 0) compare_line = 0;
-    if (counter == 0) ly = line;
-
-    if (counter == 4) compare_line = ly;
-    if (counter == 4) ly = line;
-  }
-  else if (line < 153) {
-    if (counter == 0) compare_line = -1;
-    if (counter == 0) ly = line;
-
-    if (counter == 4) compare_line = ly;
-    if (counter == 4) ly = line;
-  }
-  else if (line == 153) {
-    if (counter == 0) compare_line = -1;
-    if (counter == 0) ly = line;
-
-    if (counter == 4) compare_line = ly;
-    if (counter == 4) ly = 0;
-
-    if (counter == 8) compare_line = -1;
-    if (counter == 8) ly = 0;
-
-    if (counter == 12) compare_line = 0;
-    if (counter == 12) ly = 0;
-  }
-
-  //----------------------------------------
-  // Update state machiney stuff
-
-  if (counter == 0) state = PPU_STATE_HBLANK;
-  if (counter == 4 && (frame_count != 0 || line != 0)) state = PPU_STATE_OAM;
-  if (counter == 84) state = PPU_STATE_VRAM;
-  if (counter > 84 && (pix_count2 + pix_discard_pad == 168)) state = PPU_STATE_HBLANK;
-  if ((line == 144 && counter >= 4) || (line >= 145)) state = PPU_STATE_VBLANK;
-
-  //----------------------------------------
-  // interrupts
-
-  return {
-    bus_out,
-    bus_oe,
-
-    vram_lock,
-    vram_addr,
-    vram_addr != 0,
-
-    oam_lock,
-    oam_addr,
-    oam_read,
-
-    pix_count2,
-    line,
-    counter,
-    pix_out,
-    pix_oe,
-
-    tick_vblank_int,
-    tick_stat_int,
-  };
-}
-
-//-----------------------------------------------------------------------------
-
-PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
-  counter = 3;
-  counter_delay1 = 2;
-  counter_delay2 = 1;
-  counter_delay3 = 0;
-
-  line = 0;
-  line_delay1 = 0;
-  line_delay2 = 0;
-  line_delay3 = 0;
-
-  if (bus.read)  bus_read_early(bus.addr);
-  if (bus.write) bus_write_early(bus.addr, bus.data);
-
-  ly = 0;
-  frame_count = 0;
-  frame_done = false;
-  frame_start = false;
-
-  hblank_delay2 = HBLANK_DELAY_START;
-  fetch_state = FETCH_IDLE;
-
-  pix_count2 = 0;
-  pix_discard_scx = 0;
-  pix_discard_pad = 0;
-  pix_out = 0;
-  pix_oe = false;
-  sprite_count = 0;
-  sprite_index = -1;
-  tile_latched = false;
-
-  compare_line = 0;
-
-  vram_addr = 0;
-  oam_addr = 0;
-  oam_read = false;
-
-  state = PPU_STATE_HBLANK;
-  stat &= 0b11111100;
-
-  vram_lock = false;
-  oam_lock = false;
-
-  bus_oe = 0;
-  bus_out = 0;
-
-  if (bus.read)  bus_read_late(bus.addr);
-  if (bus.write) bus_write_late(bus.addr, bus.data);
-
-  return {
-    bus_out,
-    bus_oe,
-
-    vram_lock,
-    vram_addr,
-    vram_addr != 0,
-
-    oam_lock,
-    oam_addr,
-    oam_read,
-
-    pix_count2,
-    line,
-    counter,
-    pix_out,
-    pix_oe
-  };
+  return {0};
 }
 
 //-----------------------------------------------------------------------------
 
 PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
+  if (tphase == 0 || tphase == 2) {
+    if (lcdc & FLAG_LCD_ON) {
+      //----------------------------------------
+      // Update state machiney stuff
+
+      if (counter == 0) state = PPU_STATE_HBLANK;
+      if (counter == 4 && (frame_count != 0 || line != 0)) state = PPU_STATE_OAM;
+      if (counter == 84) state = PPU_STATE_VRAM;
+      if (counter > 84 && (pix_count2 + pix_discard_pad == 168)) state = PPU_STATE_HBLANK;
+      if ((line == 144 && counter >= 4) || (line >= 145)) state = PPU_STATE_VBLANK;
+    }
+  }
+
   if ((lcdc & FLAG_LCD_ON) == 0) {
     return tock_lcdoff(tphase, bus, vram_in, oam_in);
   }
@@ -794,6 +658,77 @@ PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     pix_oe
   };
 } // PPU::tock
+
+//-----------------------------------------------------------------------------
+
+PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
+  counter = 3;
+  counter_delay1 = 2;
+  counter_delay2 = 1;
+  counter_delay3 = 0;
+
+  line = 0;
+  line_delay1 = 0;
+  line_delay2 = 0;
+  line_delay3 = 0;
+
+  if (bus.read)  bus_read_early(bus.addr);
+  if (bus.write) bus_write_early(bus.addr, bus.data);
+
+  ly = 0;
+  frame_count = 0;
+  frame_done = false;
+  frame_start = false;
+
+  hblank_delay2 = HBLANK_DELAY_START;
+  fetch_state = FETCH_IDLE;
+
+  pix_count2 = 0;
+  pix_discard_scx = 0;
+  pix_discard_pad = 0;
+  pix_out = 0;
+  pix_oe = false;
+  sprite_count = 0;
+  sprite_index = -1;
+  tile_latched = false;
+
+  compare_line = 0;
+
+  vram_addr = 0;
+  oam_addr = 0;
+  oam_read = false;
+
+  state = PPU_STATE_HBLANK;
+  stat &= 0b11111100;
+
+  vram_lock = false;
+  oam_lock = false;
+
+  bus_oe = 0;
+  bus_out = 0;
+
+  if (bus.read)  bus_read_late(bus.addr);
+  if (bus.write) bus_write_late(bus.addr, bus.data);
+
+  return {
+    bus_out,
+    bus_oe,
+
+    vram_lock,
+    vram_addr,
+    vram_addr != 0,
+
+    oam_lock,
+    oam_addr,
+    oam_read,
+
+    pix_count2,
+    line,
+    counter,
+    pix_out,
+    pix_oe
+  };
+}
 
 //-----------------------------------------------------------------------------
 

@@ -84,9 +84,6 @@ private:
   int model = MODEL_DMG;
   int64_t tcycle = -1;
 
-  bool old_stat_int1 = false;
-  bool old_stat_int2 = false;
-
   bool cpu_read_oam = false;
 
   DMAMode  dma_mode_x = DMA_NONE;

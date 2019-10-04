@@ -335,46 +335,21 @@ void Z80::state_machine() {
 
   write = 0xFF;
 
-  // STATE------------------------------------ADDR-------------BUS-------------ALU------------------------------------WRITEBACK----------------------------FLAG-------------ADDR-----------------WRITE----------STATE----------
-
-  // interrupts are probably totally broken, run some microtests later
-  if (state == INT0) {
-    pc = addr;
-    addr = sp;
-    write = false;
-    state_ = INT1;
-  }
-  if (state == INT1) {
-    sp = addr - 1;
-    addr = sp;
-    data_out = pch;
-    write = true;
-    state_ = INT2;
-  }
-  if (state == INT2) {
-    sp = addr - 1;
-    addr = sp;
-    data_out = pcl;
-    write = true;
-    state_ = INT3;
-  }
   if (state == INT3) {
     if (imask_ & intf_ & INT_JOYPAD) { temp = 0x0060; int_ack_ = INT_JOYPAD; }
     if (imask_ & intf_ & INT_SERIAL) { temp = 0x0058; int_ack_ = INT_SERIAL; }
     if (imask_ & intf_ & INT_TIMER)  { temp = 0x0050; int_ack_ = INT_TIMER; }
     if (imask_ & intf_ & INT_STAT)   { temp = 0x0048; int_ack_ = INT_STAT; }
     if (imask_ & intf_ & INT_VBLANK) { temp = 0x0040; int_ack_ = INT_VBLANK; }
+  }
 
-    addr = pc;
-    write = false;
-    state_ = INT4;
-  }
-  if (state == INT4) {
-    pc = temp;
-    addr = pc;
-    write = false;
-    state_ = DECODE;
-  }
+  // STATE------------------------------------ADDR-------------BUS-------------ALU------------------------------------WRITEBACK----------------------------FLAG-------------ADDR-----------------WRITE----------STATE----------
+
+  if (                     state == INT0)   { pc = addr;                                                                                                                    addr = sp;           write = false; state_ = INT1; }
+  if (                     state == INT1)   { sp = addr - 1;                                                          data_out = pch;                                       addr = sp;           write = true;  state_ = INT2; }
+  if (                     state == INT2)   { sp = addr - 1;                                                          data_out = pcl;                                       addr = sp;           write = true;  state_ = INT3; }
+  if (                     state == INT3)   {                                                                                                                               addr = pc;           write = false; state_ = INT4; }
+  if (                     state == INT4)   { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
 
   if (CALL_A16          && state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
   if (CALL_A16          && state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }
@@ -382,8 +357,6 @@ void Z80::state_machine() {
   if (CALL_A16          && state == PUSH0)  { sp = addr - 1;                                                          data_out = pch;                                       addr = sp;           write = true;  state_ = PUSH1; }
   if (CALL_A16          && state == PUSH1)  { sp = addr - 1;                                                          data_out = pcl;                                       addr = sp;           write = true;  state_ = PUSH2; }
   if (CALL_A16          && state == PUSH2)  { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
-
-
 
   if (NOP               && state == ALU1)   { pc = addr + 1;                                                                                               set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
 
@@ -395,7 +368,6 @@ void Z80::state_machine() {
   if (DEC_AT_HL         && state == READ0)  { pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }
   if (DEC_AT_HL         && state == READ1)  {                                  out = alu(2, bus, 1, 0);               data_out = out.x;                    set_flag(out.f); addr = hl;           write = true;  state_ = WRITE1; }
   if (DEC_AT_HL         && state == WRITE1) {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }
-
 
   if (DI                && state == ALU1)   { pc = addr + 1;                                                          ime = false; ime_ = false;           set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
   if (EI                && state == ALU1)   { pc = addr + 1;                                                          ime = ime_; ime_ = true;             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
@@ -429,10 +401,12 @@ void Z80::state_machine() {
   if (CALL_CC_A16       && state == PUSH0)  { sp = addr - 1;                                                          data_out = pch;                                       addr = sp;           write = true;  state_ = PUSH1; }
   if (CALL_CC_A16       && state == PUSH1)  { sp = addr - 1;                                                          data_out = pcl;                                       addr = sp;           write = true;  state_ = PUSH2; }
   if (CALL_CC_A16       && state == PUSH2)  { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE; }
+
   if (RST_NN            && state == PUSHN)  { pc = addr + 1;                                                                                                                addr = sp;           write = false; state_ = PUSH0; }
   if (RST_NN            && state == PUSH0)  { sp = addr - 1;                                                          data_out = pch;                                       addr = sp;           write = true;  state_ = PUSH1; }
   if (RST_NN            && state == PUSH1)  { sp = addr - 1;                                                          data_out = pcl;                                       addr = sp;           write = true;  state_ = PUSH2; }
-  if (RST_NN            && state == PUSH2)  { pc = op-0xC7;                                                                                                                 addr = pc;           write = false; state_ = DECODE; }
+  if (RST_NN            && state == PUSH2)  { pc = op - 0xC7;                                                                                                               addr = pc;           write = false; state_ = DECODE; }
+
   if (HALT && !no_halt  && state == HALT0)  { pc = addr + 1;                                                          unhalt = 0;                                           addr = pc;           write = false; state_ = HALT1; }
   if (HALT && no_halt   && state == HALT0)  { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = DECODE; }
   if (HALT && !unhalt   && state == HALT1)  {                                                                                                                               addr = pc;           write = false; state_ = HALT1; }
@@ -577,14 +551,11 @@ void Z80::state_machine() {
   if (STM_A16_SP        && state == ARG2)   { pc = addr + 1;   hi = bus;                                              data_out = p;                                         addr = temp;         write = true;  state_ = WRITE1; }
   if (STM_A16_SP        && state == WRITE1) { temp = addr + 1;                                                        data_out = s;                                         addr = temp;         write = true;  state_ = WRITE2; }
   if (STM_A16_SP        && state == WRITE2) {                                                                                                                               addr = pc;           write = false; state_ = DECODE; }
-  if (PREFIX_CB) {                                             
-    if (OP_CB_R         && state == CB0)    { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = CB1; }
-    if (OP_CB_HL        && state == CB0)    { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = CB1; }
 
-    if (state == CB1) {                                        
-      cb = bus;                                  
-      cb = bus;                                  
-    }                                                          
+
+  if (PREFIX_CB) {                                             
+    if (PREFIX_CB && state == CB0) { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = CB1; }
+    if (PREFIX_CB && state == CB1) { cb = bus; }                                                          
 
     if (OP_CB_R         && state == CB1)    { cb = bus; pc = addr + 1;                   out = alu_cb(cb, reg_get8(CB_COL), f); reg_put8(CB_COL, out.x);             set_flag(out.f); addr = pc;           write = false; state_ = DECODE; }
     if (OP_CB_HL        && state == CB1)    { cb = bus; pc = addr + 1;                                                                                                                addr = hl;           write = false; state_ = READ1; }

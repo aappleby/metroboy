@@ -13,6 +13,7 @@ struct Z80 {
   uint16_t get_pc() const { return pc2; }
   uint8_t  get_a()  const { return a; }
   uint8_t  get_op() const { return op; }
+  int      get_state() const { return state; }
 
   void dump(std::string& out);
 

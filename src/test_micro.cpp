@@ -45,9 +45,8 @@ static const std::string micro_tests[] = {
 
   "timer_tma_write_a",
   "timer_tma_write_b",
-};
 
-static const std::string micro_tests2[] = {
+#if 0
   "004-tima_boot_phase",
 
   //"ppu_sprite0_scx0_a", // where did this one go?
@@ -309,7 +308,9 @@ static const std::string micro_tests2[] = {
 
   "lcdon_to_hblank_di_timing_a",
   "lcdon_to_hblank_di_timing_b",
+#endif
 
+#if 0
   "-----",
   "lcdon_to_ly1_a",
   "lcdon_to_ly1_b",
@@ -347,7 +348,9 @@ static const std::string micro_tests2[] = {
   "lcdon_to_stat3_b",
   "lcdon_to_stat3_c",
   "lcdon_to_stat3_d",
+#endif
 
+#if 0
   "-----",
   "line_153_ly_a",
   "line_153_ly_b",
@@ -415,6 +418,7 @@ static const std::string micro_tests2[] = {
   "stat_write_glitch_l1_b",
   "stat_write_glitch_l1_c",
   "stat_write_glitch_l1_d",
+#endif
 };
 
 bool run_microtest(int model, const std::string& prefix, const std::string& name) {

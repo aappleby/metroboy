@@ -55,10 +55,12 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  //load("microtests/build/dmg", "timer_int_inc_sled");
+  //load("microtests/build/dmg", "hblank_int_inc_sled");
+  load("microtests/build/dmg", "lcdon_to_stat0_a");
+
   //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle");
 
-  load("microtests/build/dmg", "timer_div_phase_a");
+  //load("microtests/build/dmg", "timer_div_phase_a");
   //load("microtests/build/dmg", "timer_div_phase_b");
   //load("microtests/build/dmg", "timer_div_phase_c");
   //load("microtests/build/dmg", "timer_div_phase_d");

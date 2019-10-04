@@ -356,18 +356,22 @@ GameboyOut Gameboy::tock() {
 
 uint32_t Gameboy::trace() {
 
-  //return z80.state << 4;
+  //return z80.get_state() << 4;
+
+  //return z80.get_op();
 
   //return z80.op_ == 0x76 ? 0xFFFFFFFF : 0; // moderately interesting
   //return z80.op_ == 0x00 ? 0xFFFFFFFF : 0; // moderately interesting
   //return z80.op_ == 0xcb ? 0xFFFFFFFF : 0; // moderately interesting
-  //return (z80.op_ & 0b11000000) == 0b10000000 ? 0xFFFFFFFF : 0; // moderately interesting
+  //return (z80.get_op() & 0b11000000) == 0b10000000 ? 0xFFFFFFFF : 0; // moderately interesting
 
   //return (z80.mem_addr >= ADDR_SPU_BEGIN && z80.mem_addr < ADDR_SPU_END) ? -1 : 0; // sparse
 
   //return ppu.sprite_index << 4; // also pretty cool
 
+  //return cpu_bus.addr;
   return ppu_out.vram_addr; // this one's pretty cool
+  //return cpu_bus.write ? 0xFFFFFFFF : 0x00000000;
 }
 
 //-----------------------------------------------------------------------------
@@ -409,8 +413,8 @@ void Gameboy::dump(std::string& out) {
   timer.dump(out);
   sprintf(out, "\n");
 
-  //ppu.dump(out);
-  //sprintf(out, "\n");
+  ppu.dump(out);
+  sprintf(out, "\n");
 
   /*
   {

@@ -76,10 +76,10 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
   line_delay2 = 0;
   line_delay3 = 0;
 
-  counter = 3;
-  counter_delay1 = 2;
-  counter_delay2 = 1;
-  counter_delay3 = 0;
+  counter = 4;
+  counter_delay1 = 3;
+  counter_delay2 = 2;
+  counter_delay3 = 1;
 
   hblank_delay2 = HBLANK_DELAY_START;
 
@@ -318,12 +318,14 @@ PpuTickOut PPU::tick(int tphase, CpuBus cpu_bus) {
   ppu.old_stat_int1 = (ppu.stat & ppu.stat_int1);
   ppu.old_stat_int2 = (ppu.stat & ppu.stat_int2);
 
-  return {
+  out = {
     fire_int_stat1,
     fire_int_stat2,
     fire_int_vblank1,
     fire_int_vblank2,
   };
+
+  return out;
 }
 
 //-----------------------------------------------------------------------------
@@ -710,7 +712,7 @@ PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     }
   }
 
-  return {
+  PpuOut out = {
     bus_out,
     bus_oe,
 
@@ -728,15 +730,17 @@ PpuOut PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     pix_out,
     pix_oe
   };
+
+  return out;
 } // PPU::tock
 
 //-----------------------------------------------------------------------------
 
 PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
-  counter = 3;
-  counter_delay1 = 2;
-  counter_delay2 = 1;
-  counter_delay3 = 0;
+  counter = 4;
+  counter_delay1 = 3;
+  counter_delay2 = 2;
+  counter_delay3 = 1;
 
   line = 0;
   line_delay1 = 0;
@@ -789,17 +793,7 @@ PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /
   line_delay2 = line_delay1;
   line_delay1 = line;
 
-  counter++;
-  if (counter == TCYCLES_LINE) {
-    counter = 0;
-    line++;
-    if (line == 154) {
-      line = 0;
-      frame_count++;
-    }
-  }
-
-  return {
+  PpuOut out = {
     bus_out,
     bus_oe,
 
@@ -817,6 +811,8 @@ PpuOut PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, BusOut /*vram_in*/, BusOut /
     pix_out,
     pix_oe
   };
+
+  return out;
 }
 
 //-----------------------------------------------------------------------------

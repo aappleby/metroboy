@@ -58,15 +58,19 @@ void Gameboy::reset(uint16_t new_pc) {
 // 4 mhz tick/tock
 
 GameboyOut Gameboy::tick() const {
-  PpuOut ppu_out = ppu.tick();
+  int64_t tcycle_ = tcycle + 1;
+  int tphase_ = tcycle_ & 3;
+
+  //PpuOut ppu_out = ppu.tick(tphase_);
+  PpuOut ppu_out2 = ppu.tick(tphase_);
   SpuOut spu_out = spu.tick();
 
   return {
-    ppu_out.x,
-    ppu_out.y,
-    ppu_out.counter,
-    ppu_out.pix_out,
-    ppu_out.pix_oe,
+    ppu_out2.x,
+    ppu_out2.y,
+    ppu_out2.counter,
+    ppu_out2.pix_out,
+    ppu_out2.pix_oe,
     spu_out.out_r,
     spu_out.out_l,
     ppu_out.vram_addr
@@ -76,19 +80,25 @@ GameboyOut Gameboy::tick() const {
 //-----------------------------------------------------------------------------
 
 void Gameboy::tock() {
-  const BusOut iram_out = iram.tick();
-  const BusOut mmu_out = mmu.tick();
-  const ButtonsOut buttons_out = buttons.tick();
-  const BusOut serial_out = serial.tick();;
-  const BusOut zram_out = zram.tick();
-  const SpuOut spu_out = spu.tick();
-  const TimerOut timer_out = timer.tickB();
-  const BusOut vram_out = vram.tick();
-  const PpuOut ppu_out = ppu.tick();
-  const CpuBus cpu_bus = z80.tick();
-
   tcycle++;
   int tphase = tcycle & 3;
+
+  const auto iram_out    = iram.tick();
+  const auto mmu_out     = mmu.tick();
+  const auto buttons_out = buttons.tick();
+  const auto serial_out  = serial.tick();;
+  const auto zram_out    = zram.tick();
+  const auto spu_out     = spu.tick();
+  const auto timer_out   = timer.tickB();
+  const auto vram_out    = vram.tick();
+  const auto cpu_bus     = z80.tick();
+  
+  //const auto oam_out     = oam.tick();
+  oam_out     = oam.tick();
+
+  //const auto ppu_out     = ppu.tick(tphase);
+  ppu_out     = ppu.tick(tphase);
+
 
   //-----------------------------------
   // DMA state machine
@@ -121,7 +131,6 @@ void Gameboy::tock() {
 
   CpuBus oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_read, false };
   bool cpu_read_oam = false;
-  bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
 
   if (dma_mode_b != DMA_NONE) {
     if (tphase == 0) {
@@ -138,7 +147,9 @@ void Gameboy::tock() {
     }
   }
   else {
+    /*
     // Dirty hack - on tcycle 0 of a line, cpu write takes precendence over ppu read.
+    bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
     if (ppu_out.counter == 0) {
       if (cpu_bus.write && ce_oam) {
         cpu_read_oam = cpu_bus.read && ce_oam;
@@ -151,16 +162,8 @@ void Gameboy::tock() {
         oam_bus = cpu_bus;
       }
     }
+    */
   }
-
-  //-----------------------------------
-
-  oam.tock(oam_bus);
-
-  // FIXME moving this after ppu.tock() breaks sprites at the moment
-  BusOut oam_out = oam.tick();
-
-  ppu.tock(tphase, cpu_bus, vram_out, oam_out);
 
   //-----------------------------------
   // interrupt stuff
@@ -278,6 +281,8 @@ void Gameboy::tock() {
   zram.tock(cpu_bus);
   spu.tock(tphase, cpu_bus);
   timer.tock(tphase, cpu_bus);
+  oam.tock(oam_bus);
+  ppu.tock(tphase, cpu_bus, vram_out, oam_out);
 
   intf = intf_;
   imask = imask_;
@@ -343,6 +348,17 @@ void Gameboy::dump(std::string& out) {
   sprintf(out, "dma mode b %d\n", dma_mode_b);
   sprintf(out, "dma count b %d\n", dma_count_b);
   sprintf(out, "dma data b %d\n", dma_data_b);
+
+  sprintf(out, "\n");
+
+  sprintf(out, "ppu_out.oam_lock  %d\n",     ppu_out.oam_lock);
+  sprintf(out, "ppu_out.oam_addr  0x%04x\n", ppu_out.oam_addr);
+  sprintf(out, "ppu_out.oam_read  %d\n",     ppu_out.oam_read);
+  sprintf(out, "\n");
+
+  sprintf(out, "oam_out.addr      0x%04x\n", oam_out.addr);
+  sprintf(out, "oam_out.data      0x%02x\n", oam_out.data);
+  sprintf(out, "oam_out.oe        %d\n",     oam_out.oe);
 
   sprintf(out, "\n");
 

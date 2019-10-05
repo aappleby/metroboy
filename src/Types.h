@@ -22,6 +22,7 @@ struct CpuOut {
 struct BusOut {
   uint8_t data;
   bool oe;
+  uint16_t addr;
 };
 
 struct SpuOut {

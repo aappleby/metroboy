@@ -62,6 +62,9 @@ private:
   Serial serial;
   ZRAM zram;
 
+  PpuOut ppu_out;
+  BusOut oam_out;
+
   int model = MODEL_DMG;
   int64_t tcycle = -1;
   uint32_t trace_val;

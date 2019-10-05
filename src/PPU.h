@@ -8,7 +8,7 @@
 struct PPU {
   PpuOut reset(bool run_bootrom, int new_model);
 
-  PpuOut tick() const;
+  PpuOut tick(int tphase) const;
   void tock(int tphase, CpuBus cpu_bus, BusOut vram_out, BusOut oam_out);
 
   void dump(std::string& out);
@@ -49,8 +49,8 @@ private:
   uint16_t vram_addr;
 
   bool oam_lock;
-  uint16_t oam_addr;
-  bool oam_read;
+  //uint16_t oam_addr;
+  //bool oam_read;
 
   uint8_t pix_out;
   bool pix_oe;

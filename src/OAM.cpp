@@ -14,9 +14,16 @@ BusOut OAM::tick() const {
 }
 
 void OAM::tock(CpuBus bus) {
-  if (bus.read && ADDR_OAM_BEGIN <= bus.addr && bus.addr <= ADDR_OAM_END) {
-    out.data = ram[bus.addr - ADDR_OAM_BEGIN];
-    out.oe = true;
+  out.addr = 0;
+  out.data = 0;
+  out.oe = false;
+
+  if (bus.read) {
+    if (ADDR_OAM_BEGIN <= bus.addr && bus.addr <= ADDR_OAM_END) {
+      out.addr = bus.addr;
+      out.data = ram[bus.addr - ADDR_OAM_BEGIN];
+      out.oe = true;
+    }
   }
 
   if (bus.write && ADDR_OAM_BEGIN <= bus.addr && bus.addr <= ADDR_OAM_END) {

@@ -11,19 +11,7 @@ const char* to_binary(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
-Gameboy::Gameboy()
-: z80(),
-  mmu(),
-  ppu(),
-  oam(),
-  spu(),
-  timer(),
-  vram(),
-  iram(),
-  buttons(),
-  serial(),
-  zram()
-{
+Gameboy::Gameboy() {
   reset(MODEL_DMG, 0, 0);
 }
 
@@ -88,40 +76,19 @@ GameboyOut Gameboy::tick() const {
 //-----------------------------------------------------------------------------
 
 void Gameboy::tock() {
+  const BusOut iram_out = iram.tick();
+  const BusOut mmu_out = mmu.tick();
+  const ButtonsOut buttons_out = buttons.tick();
+  const BusOut serial_out = serial.tick();;
+  const BusOut zram_out = zram.tick();
+  const SpuOut spu_out = spu.tick();
+  const TimerOut timer_out = timer.tickB();
+  const BusOut vram_out = vram.tick();
+  const PpuOut ppu_out = ppu.tick();
+  const CpuBus cpu_bus = z80.tick();
+
   tcycle++;
   int tphase = tcycle & 3;
-
-  BusOut iram_out = iram.tick();
-  BusOut mmu_out = mmu.tick();
-  ButtonsOut buttons_out = buttons.tick();
-  BusOut serial_out  = serial.tick();;
-  BusOut zram_out    = zram.tick();
-  SpuOut spu_out     = spu.tick();
-  TimerOut timer_out   = timer.tickB();
-  BusOut vram_out = vram.tick();
-  PpuOut ppu_out = ppu.tick();
-  CpuBus cpu_bus = z80.tick();
-
-  if (tphase == 0 || tphase == 2) {
-    bool fire_int_timer1   = timer_out.interrupt;
-    bool fire_int_buttons1 = buttons_out.val != 0xFF;
-    //bool fire_int_timer2 = timer_out.overflow;
-    //bool fire_int_buttons2 = buttons_out.val != 0xFF;
-
-    if (imask & 0x01) z80.unhalt |= ppu_out.fire_int_vblank1;
-    if (imask & 0x02) z80.unhalt |= ppu_out.fire_int_stat2;
-    if (imask & 0x04) z80.unhalt |= fire_int_timer1;
-    if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
-
-    if (ppu_out.fire_int_vblank1)  intf |= INT_VBLANK;
-    if (ppu_out.fire_int_stat1)    intf |= INT_STAT;
-    if (fire_int_timer1)            intf |= INT_TIMER;
-    if (fire_int_buttons1)          intf |= INT_JOYPAD;
-  }
-
-  if (tphase == 0) {
-    intf &= ~cpu_bus.int_ack;
-  }
 
   //-----------------------------------
   // DMA state machine
@@ -136,27 +103,25 @@ void Gameboy::tock() {
 
     if (dma_mode_x != DMA_NONE) dma_count_x++;
     if (dma_count_x == 160) dma_mode_x = DMA_NONE;
+
+    if (cpu_bus.write) {
+      if (cpu_bus.addr == ADDR_DMA) {
+        if (cpu_bus.data <= 0x7F) dma_mode_x = DMA_CART;
+        if (0x80 <= cpu_bus.data && cpu_bus.data <= 0x9F) dma_mode_x = DMA_VRAM;
+        if (0xA0 <= cpu_bus.data && cpu_bus.data <= 0xBF) dma_mode_x = DMA_CART;
+        if (0xC0 <= cpu_bus.data && cpu_bus.data <= 0xFD) dma_mode_x = DMA_IRAM;
+        dma_count_x = 0;
+        dma_source_x = cpu_bus.data;
+      }
+    }
   }
-
-  uint16_t dma_read_addr = (dma_source_a << 8) | dma_count_a;
-  uint16_t dma_write_addr = ADDR_OAM_BEGIN + dma_count_b;
-
-  //-----------------------------------
-
-  int page = cpu_bus.addr >> 13;
-
-  bool ce_rom  = page <= 3;
-  bool ce_vram = page == 4;
-  bool ce_cram = page == 5;
-  bool ce_iram = page == 6;
-  bool ce_echo = page == 7 && (cpu_bus.addr < 0xFE00);
-  bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
 
   //-----------------------------------
   // oam bus mux
 
   CpuBus oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_read, false };
   bool cpu_read_oam = false;
+  bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
 
   if (dma_mode_b != DMA_NONE) {
     if (tphase == 0) {
@@ -164,6 +129,8 @@ void Gameboy::tock() {
       if (dma_mode_b == DMA_CART) dma_data = mmu_out.data;
       if (dma_mode_b == DMA_VRAM) dma_data = vram_out.data;
       if (dma_mode_b == DMA_IRAM) dma_data = iram_out.data;
+
+      uint16_t dma_write_addr = ADDR_OAM_BEGIN + dma_count_b;
       oam_bus = { dma_write_addr, dma_data, false, true };
     }
     else {
@@ -186,38 +153,47 @@ void Gameboy::tock() {
     }
   }
 
-
   //-----------------------------------
 
-
   oam.tock(oam_bus);
-  // moving this after ppu.tock() breaks sprites at the moment
+
+  // FIXME moving this after ppu.tock() breaks sprites at the moment
   BusOut oam_out = oam.tick();
 
-  // FIXME should not be reading new vram_out/oam_out here
   ppu.tock(tphase, cpu_bus, vram_out, oam_out);
 
   //-----------------------------------
-  // writes happen on t0
+  // interrupt stuff
 
-  // FIXME intf/imask RAW?
+  uint8_t intf_ = intf;
+  uint8_t imask_ = imask;
 
-  if (tphase == 0) {
-    if (cpu_bus.write) {
-      if (cpu_bus.addr == ADDR_DMA) {
-        if (cpu_bus.data <= 0x7F) dma_mode_x = DMA_CART;
-        if (0x80 <= cpu_bus.data && cpu_bus.data <= 0x9F) dma_mode_x = DMA_VRAM;
-        if (0xA0 <= cpu_bus.data && cpu_bus.data <= 0xBF) dma_mode_x = DMA_CART;
-        if (0xC0 <= cpu_bus.data && cpu_bus.data <= 0xFD) dma_mode_x = DMA_IRAM;
-        dma_count_x = 0;
-        dma_source_x = cpu_bus.data;
-      }
+  if (tphase == 0 || tphase == 2) {
+    bool fire_int_timer1   = timer_out.interrupt;
+    bool fire_int_buttons1 = buttons_out.val != 0xFF;
+    //bool fire_int_timer2 = timer_out.overflow;
+    //bool fire_int_buttons2 = buttons_out.val != 0xFF;
 
-      if (cpu_bus.addr == ADDR_IF) {
-        intf = cpu_bus.data | 0b11100000;
-      }
-      if (cpu_bus.addr == ADDR_IE) {
-        imask = cpu_bus.data;
+    if (imask & 0x01) z80.unhalt |= ppu_out.fire_int_vblank1;
+    if (imask & 0x02) z80.unhalt |= ppu_out.fire_int_stat2;
+    if (imask & 0x04) z80.unhalt |= fire_int_timer1;
+    if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
+
+    if (ppu_out.fire_int_vblank1)  intf_ |= INT_VBLANK;
+    if (ppu_out.fire_int_stat1)    intf_ |= INT_STAT;
+    if (fire_int_timer1)           intf_ |= INT_TIMER;
+    if (fire_int_buttons1)         intf_ |= INT_JOYPAD;
+
+    if (tphase == 0) intf_ &= ~cpu_bus.int_ack;
+
+    if (tphase == 0) {
+      if (cpu_bus.write) {
+        if (cpu_bus.addr == ADDR_IF) {
+          intf_ = cpu_bus.data | 0b11100000;
+        }
+        if (cpu_bus.addr == ADDR_IE) {
+          imask_ = cpu_bus.data;
+        }
       }
     }
   }
@@ -231,14 +207,24 @@ void Gameboy::tock() {
 
     if (cpu_bus.read) {
       if (cpu_bus.addr == ADDR_IF) { 
-        bus_out_ = 0b11100000 | intf; 
+        // FIXME intf or intf_?
+        bus_out_ = 0b11100000 | intf_; 
         bus_oe_ = true;
       }
       if (cpu_bus.addr == ADDR_IE) {
-        bus_out_ = imask;
+        // FIXME imask or imask_?
+        bus_out_ = imask_;
         bus_oe_ = true;
       }
     }
+
+    int page = cpu_bus.addr >> 13;
+
+    bool ce_rom  = page <= 3;
+    bool ce_vram = page == 4;
+    bool ce_cram = page == 5;
+    bool ce_iram = page == 6;
+    bool ce_echo = page == 7 && (cpu_bus.addr < 0xFE00);
 
     bool cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu_out.vram_lock && cpu_bus.read && ce_vram;
     bool cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
@@ -274,10 +260,12 @@ void Gameboy::tock() {
     //-----------------------------------
     // z80 tocks last
 
-    z80.tock(imask, intf, bus_out_);
+    z80.tock(imask_, intf_, bus_out_);
   }
 
   //-----------------------------------
+
+  uint16_t dma_read_addr = (dma_source_a << 8) | dma_count_a;
 
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
   CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_read, false };
@@ -290,6 +278,9 @@ void Gameboy::tock() {
   zram.tock(cpu_bus);
   spu.tock(tphase, cpu_bus);
   timer.tock(tphase, cpu_bus);
+
+  intf = intf_;
+  imask = imask_;
 }
 
 //-----------------------------------------------------------------------------
@@ -323,6 +314,8 @@ void Gameboy::dump(std::string& out) {
   CpuBus cpu_bus = z80.tick();
 
   buttons.dump(out);
+
+  sprintf(out, "TCYC %d\n", tcycle);
 
   z80.dump(out);
   sprintf(out, "imask %s\n", to_binary(imask));
@@ -358,24 +351,6 @@ void Gameboy::dump(std::string& out) {
 
   ppu.dump(out);
   sprintf(out, "\n");
-
-  /*
-  {
-    uint8_t* ram = ppu.get_oam_ram();
-    for (int i = 0; i < 16; i++) {
-      sprintf(out, "%02x ", ram[i]);
-    }
-    sprintf(out, "\n");
-  }
-
-  {
-    uint8_t* ram = vram.ram;
-    for (int i = 0; i < 16; i++) {
-      sprintf(out, "%02x ", ram[i]);
-    }
-    sprintf(out, "\n");
-  }
-  */
 }
 
 //-----------------------------------------------------------------------------

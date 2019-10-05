@@ -959,9 +959,9 @@ const char* state_name(Z80State state) {
 }
 
 void Z80::dump(std::string& ds) {
-  sprintf(ds, "CYC %d\n", cycle);
+  sprintf(ds, "CYC  %d\n", cycle);
   int bgb = (cycle * 2) + 0x00B2D5E6;
-  sprintf(ds, "BGB 0x%08x\n", bgb);
+  sprintf(ds, "BGB  0x%08x\n", bgb);
   sprintf(ds, "op 0x%02x\n", op);
   sprintf(ds, "state  %s\n", state_name(state2));
   sprintf(ds, "state_ %s\n", state_name(state_));

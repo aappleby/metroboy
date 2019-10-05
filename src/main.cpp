@@ -374,7 +374,7 @@ void MetroBoyApp::loop() {
   };
 
   sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
-  render_text(32 * 11, 32 * 11 + 18, text_buf.c_str());
+  render_text(645, 655, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------

@@ -28,7 +28,6 @@ struct Gameboy {
   const Z80& get_cpu() const { return z80; }
   const SPU& get_spu() const { return spu; }
   const PPU& get_ppu() const { return ppu; }
-  const OAM& get_oam() const { return oam; }
 
   int64_t        get_tcycle()     const { return tcycle; }
   const uint8_t* get_vram()       const { return vram.get_ram(); }
@@ -41,8 +40,6 @@ struct Gameboy {
   void dump_disasm(std::string& out);
 
   uint8_t framebuffer[160 * 144];
-
-  //PpuOut get_ppu_out() { return ppu_out; }
 
 private:
 

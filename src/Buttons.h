@@ -8,7 +8,7 @@ struct Buttons {
   void tock(CpuBus bus);
 
   void set(uint8_t new_val) { val = new_val; }
-  void dump(std::string& out) const;
+  void dump(std::string& d) const;
 
 private:
 

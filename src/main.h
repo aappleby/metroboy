@@ -58,7 +58,6 @@ public:
   uint8_t buttons = 0;
   int overlay_mode = 0;
 
-
   const int fb_width = 1600;
   const int fb_height = 1000;
 

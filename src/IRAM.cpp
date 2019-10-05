@@ -12,9 +12,8 @@ BusOut IRAM::tick() const {
 }
 
 void IRAM::tock(CpuBus bus) {
-  out = { 0,0 };
-
   if (bus.read) {
+    out = { 0,0 };
     if (ADDR_IRAM_BEGIN <= bus.addr && bus.addr <= ADDR_IRAM_END) {
       out.data = ram[bus.addr - ADDR_IRAM_BEGIN];
       out.oe = true;

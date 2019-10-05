@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct OAM {
-  BusOut reset();
+  void reset();
 
   BusOut tick() const;
   void tock(const CpuBus bus);

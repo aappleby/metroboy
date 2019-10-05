@@ -4,9 +4,9 @@
 
 //-----------------------------------------------------------------------------
 
-BusOut OAM::reset() {
+void OAM::reset() {
+  out = {0};
   for (int i = 0; i < 256; i++) ram[i] = 0;
-  return { 0 };
 }
 
 BusOut OAM::tick() const {
@@ -14,8 +14,6 @@ BusOut OAM::tick() const {
 }
 
 void OAM::tock(CpuBus bus) {
-  out = { 0,false };
-
   if (bus.read && ADDR_OAM_BEGIN <= bus.addr && bus.addr <= ADDR_OAM_END) {
     out.data = ram[bus.addr - ADDR_OAM_BEGIN];
     out.oe = true;

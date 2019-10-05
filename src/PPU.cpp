@@ -242,23 +242,12 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
     int sy = spriteY - 16;
     int sx = spriteX;
 
-    if (lcdc & FLAG_TALL_SPRITES) {
-      uint8_t sprite_height = 15;
-      if ((sx < 168) && (sy <= line) && (line <= sy + sprite_height)) {
-        sprite_x[sprite_count] = spriteX;
-        sprite_y[sprite_count] = spriteY;
-        sprite_i[sprite_count] = (uint8_t)si;
-        sprite_count++;
-      }
-    }
-    else {
-      uint8_t sprite_height = 7;
-      if ((sx < 168) && (sy <= line) && (line <= sy + sprite_height)) {
-        sprite_x[sprite_count] = spriteX;
-        sprite_y[sprite_count] = spriteY;
-        sprite_i[sprite_count] = (uint8_t)si;
-        sprite_count++;
-      }
+    uint8_t sprite_height = (lcdc & FLAG_TALL_SPRITES) ? 16 : 8;
+    if ((sx < 168) && (sy <= line) && (line < sy + sprite_height)) {
+      sprite_x[sprite_count] = spriteX;
+      sprite_y[sprite_count] = spriteY;
+      sprite_i[sprite_count] = (uint8_t)si;
+      sprite_count++;
     }
   }
 

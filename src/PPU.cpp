@@ -6,7 +6,6 @@ extern const uint32_t gb_colors[];
 
 const char* to_binary(uint8_t b);
 
-uint16_t pack_map_addr(uint16_t base, uint8_t map_x, uint8_t map_y);
 uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty);
 
 uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y);
@@ -86,6 +85,11 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
 PpuOut PPU::tick(int /*tphase*/) const {
   auto out2 = out;
+
+  out2.x = pix_count2;
+  out2.y = line;
+  out2.counter = counter;
+  out2.vram_read = out.vram_addr != 0;
 
   uint16_t counter_ = counter;
   uint8_t line_ = line;
@@ -203,14 +207,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   }
 
   //-----------------------------------
-  // this needs to go somewhere else
-
-  if (tphase == 0 || tphase == 2) {
-    stat &= 0b11111100;
-    stat |= state;
-  }
-
-  //-----------------------------------
   // Bus write
 
   if (bus.read)  bus_read_early(bus.addr);
@@ -321,8 +317,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Actual rendering
 
-  uint16_t oam_addr_ = 0;
-  bool oam_read_ = false;
   out.vram_addr = 0;
 
   bool sprite_latched = false;
@@ -376,96 +370,82 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   if (rendering) emit_pixel(tphase);
   if (rendering) merge_tile(tphase);
 
-  if (rendering) {
-    if (pix_count2 + pix_discard_pad == 168) {
-      fetch_type = FETCH_NONE;
-      fetch_state = FETCH_IDLE;
-      fetch_delay = false;
-    }
-    else {
-      if (fetch_delay) {
-        fetch_delay = false;
-      }
-      else {
-        if (fetch_state == FETCH_MAP) {
-          fetch_state = FETCH_LO;
-          fetch_delay = true;
-        }
-        else if (fetch_state == FETCH_LO) {
-          fetch_state = FETCH_HI;
-          fetch_delay = true;
-        }
-        else if (fetch_state == FETCH_HI) {
-          fetch_state = FETCH_IDLE;
-          fetch_type = FETCH_NONE;
-        }
-
-        if (fetch_state == FETCH_IDLE) {
-          if (!tile_latched) {
-            if (in_window_old && (lcdc & FLAG_WIN_ON)) {
-              fetch_type = FETCH_WINDOW;
-              fetch_state = FETCH_MAP;
-              fetch_delay = true;
-            }
-            else {
-              fetch_type = FETCH_BACKGROUND;
-              fetch_state = FETCH_MAP;
-              fetch_delay = true;
-            }
-          }
-          else if (sprite_index != -1) {
-            fetch_type = FETCH_SPRITE;
-            fetch_state = FETCH_MAP;
-            fetch_delay = true;
-          }
-        }
-      }
-
-      if (fetch_type == FETCH_BACKGROUND) {
-        if (fetch_state == FETCH_MAP) {
-          uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
-          uint8_t map_y = ((scy + line) >> 3) & 31;
-          out.vram_addr = tile_map_address(lcdc, new_map_x, map_y);
-        }
-        else if (fetch_state == FETCH_LO) {
-          out.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
-        }
-        else if (fetch_state == FETCH_HI) {
-          out.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
-        }
-      }
-      else if (fetch_type == FETCH_WINDOW) {
-        if (fetch_state == FETCH_MAP) {
-          out.vram_addr = win_map_address(lcdc, map_x, win_y_latch);
-        }
-        else if (fetch_state == FETCH_LO) {
-          out.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
-        }
-        else if (fetch_state == FETCH_HI) {
-          out.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
-        }
-      }
-      else if (fetch_type == FETCH_SPRITE) {
-        if (fetch_state == FETCH_MAP) {
-          oam_addr_ = (sprite_index << 2) + 2;
-          oam_addr_ += ADDR_OAM_BEGIN;
-          oam_read_ = true;
-        }
-        else if (fetch_state == FETCH_LO) {
-          out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
-        }
-        else if (fetch_state == FETCH_HI) {
-          out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
-        }
-      }
-    }
-  }
-
   if ((pix_count2 + pix_discard_pad == 168) && hblank_delay2) {
     hblank_delay2--;
   }
 
   //-----------------------------------
+  // Fetcher state machine
+
+  if (fetch_delay) {
+    fetch_delay = false;
+  }
+  else {
+    if (fetch_state == FETCH_MAP) {
+      fetch_state = FETCH_LO;
+    }
+    else if (fetch_state == FETCH_LO) {
+      fetch_state = FETCH_HI;
+      fetch_delay = true;
+    }
+    else if (fetch_state == FETCH_HI) {
+      fetch_state = FETCH_IDLE;
+      fetch_type = FETCH_NONE;
+    }
+
+    if (fetch_state == FETCH_IDLE) {
+      if (!tile_latched) {
+        if (in_window_old && (lcdc & FLAG_WIN_ON)) {
+          fetch_type = FETCH_WINDOW;
+          fetch_state = FETCH_MAP;
+        }
+        else {
+          fetch_type = FETCH_BACKGROUND;
+          fetch_state = FETCH_MAP;
+        }
+      }
+      else if (sprite_index != -1) {
+        fetch_type = FETCH_SPRITE;
+        fetch_state = FETCH_MAP;
+      }
+    }
+
+    if (fetch_state != FETCH_IDLE) fetch_delay = true;
+  }
+
+  uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
+  uint8_t map_y = ((scy + line) >> 3) & 31;
+
+  if (fetch_type == FETCH_BACKGROUND) {
+    if      (fetch_state == FETCH_MAP) out.vram_addr = tile_map_address(lcdc, new_map_x, map_y);
+    else if (fetch_state == FETCH_LO)  out.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
+    else if (fetch_state == FETCH_HI)  out.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
+  }
+  else if (fetch_type == FETCH_WINDOW) {
+    if      (fetch_state == FETCH_MAP) out.vram_addr = win_map_address(lcdc, map_x, win_y_latch);
+    else if (fetch_state == FETCH_LO)  out.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
+    else if (fetch_state == FETCH_HI)  out.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
+  }
+  else if (fetch_type == FETCH_SPRITE) {
+    if      (fetch_state == FETCH_MAP) { out.oam_addr = (sprite_index << 2) + 2; out.oam_addr += ADDR_OAM_BEGIN; out.oam_read = true; }
+    else if (fetch_state == FETCH_LO)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
+    else if (fetch_state == FETCH_HI)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
+  }
+
+  if (pix_count2 + pix_discard_pad == 168) {
+    fetch_type = FETCH_NONE;
+    fetch_state = FETCH_IDLE;
+    fetch_delay = false;
+    out.oam_addr = 0;
+    out.oam_read = 0;
+    out.vram_addr = 0;
+    out.vram_read = 0;
+    out.oam_lock = 0;
+    out.vram_lock = 0;
+  }
+
+  //-----------------------------------
+  // check for sprite hit for _next_ cycle
 
   int next_pix = pix_count2 + pix_discard_pad;
 
@@ -482,6 +462,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     if (next_pix == sprite_x[1]) sprite_hit = 1;
     if (next_pix == sprite_x[0]) sprite_hit = 0;
 
+#if SPRITE_AT_ZERO_GLITCH
     if (sprite_hit == 15) {
       if (sprite_x[9] == 0) sprite_hit = 9;
       if (sprite_x[8] == 0) sprite_hit = 8;
@@ -494,9 +475,17 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
       if (sprite_x[1] == 0) sprite_hit = 1;
       if (sprite_x[0] == 0) sprite_hit = 0;
     }
+#endif
   }
 
   //-----------------------------------
+
+  // this needs to go somewhere else
+
+  if (tphase == 0 || tphase == 2) {
+    stat &= 0b11111100;
+    stat |= state;
+  }
 
   if (bus.read)  bus_read_late(bus.addr);
   if (bus.write) bus_write_late(bus.addr, bus.data);
@@ -504,75 +493,68 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //----------------------------------------
   // locking
 
-  if (tphase == 1 || tphase == 3) {
-    if (lcdc & FLAG_LCD_ON) {
+  const int oam_start = 0;
+  const int oam_end = 80;
+  const int render_start = 82;
+  const int render_start_l0 = 84;
 
-      const int oam_start = 0;
-      const int oam_end = 80;
-      const int render_start = 82;
-      const int render_start_l0 = 84;
-
-      if (frame_count == 0 && line == 0) {
-        if (counter == render_start_l0) {
-          out.oam_lock = true;
-          out.vram_lock = true;
-        }
-      }
-      else {
-        if (counter == oam_start) {
-          out.oam_lock = true;
-        }
-        else if (counter == oam_end) {
-          out.oam_lock = false;
-        }
-        else if (counter == render_start) {
-          out.oam_lock = true;
-          out.vram_lock = true;
-        }
-      }
-
-      if (hblank_delay2 < 8 || line >= 144) {
-        out.oam_lock = false;
-        out.vram_lock = false;
-      }
+  if (frame_count == 0 && line == 0) {
+    if (counter == render_start_l0) {
+      out.oam_lock = true;
+      out.vram_lock = true;
     }
+  }
+  else {
+    if (counter == oam_start) {
+      out.oam_lock = true;
+    }
+    else if (counter == oam_end) {
+      out.oam_lock = false;
+    }
+    else if (counter == render_start) {
+      out.oam_lock = true;
+      out.vram_lock = true;
+    }
+  }
+
+  if (hblank_delay2 < 8 || line >= 144) {
+    out.oam_lock = false;
+    out.vram_lock = false;
   }
 
   //-----------------------------------
   // lyc_match
 
-  if (tphase == 1 || tphase == 3) {
-    if (lcdc & FLAG_LCD_ON) {
+  if (line == 0) {
+    if (counter == 0) compare_line = 0;
+    if (counter == 0) ly = line;
 
-      if (line == 0) {
-        if (counter == 0) compare_line = 0;
-        if (counter == 0) ly = line;
-
-        if (counter == 4) compare_line = ly;
-        if (counter == 4) ly = line;
-      }
-      else if (line < 153) {
-        if (counter == 0) compare_line = -1;
-        if (counter == 0) ly = line;
-
-        if (counter == 4) compare_line = ly;
-        if (counter == 4) ly = line;
-      }
-      else if (line == 153) {
-        if (counter == 0) compare_line = -1;
-        if (counter == 0) ly = line;
-
-        if (counter == 4) compare_line = ly;
-        if (counter == 4) ly = 0;
-
-        if (counter == 8) compare_line = -1;
-        if (counter == 8) ly = 0;
-
-        if (counter == 12) compare_line = 0;
-        if (counter == 12) ly = 0;
-      }
-    }
+    if (counter == 4) compare_line = ly;
+    if (counter == 4) ly = line;
   }
+  else if (line < 153) {
+    if (counter == 0) compare_line = -1;
+    if (counter == 0) ly = line;
+
+    if (counter == 4) compare_line = ly;
+    if (counter == 4) ly = line;
+  }
+  else if (line == 153) {
+    if (counter == 0) compare_line = -1;
+    if (counter == 0) ly = line;
+
+    if (counter == 4) compare_line = ly;
+    if (counter == 4) ly = 0;
+
+    if (counter == 8) compare_line = -1;
+    if (counter == 8) ly = 0;
+
+    if (counter == 12) compare_line = 0;
+    if (counter == 12) ly = 0;
+  }
+
+  //-----------------------------------
+  // interrupt generation
 
   if (tphase == 1 || tphase == 3) {
     bool fire_stat_oam1 =
@@ -642,13 +624,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     old_stat_int2 = (stat_ & stat_int2_);
   }
 
-  out.x = pix_count2;
-  out.y = line;
-  out.counter = counter;
-  out.oam_addr = oam_addr_;
-  out.oam_read = oam_read_;
-  out.vram_read = out.vram_addr != 0;
-
 } // PPU::tock
 
 //-----------------------------------------------------------------------------
@@ -695,17 +670,13 @@ void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, VRAM::Out /*vram_out*/, OAM::O
 
 //-----------------------------------------------------------------------------
 
-uint16_t pack_map_addr(uint16_t base, uint8_t map_x, uint8_t map_y) {
-  return base + (map_y << 5) + map_x;
-}
-
 uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty) {
   return base + (tile << 4) + (ty << 1);
 }
 
 uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y) {
   uint16_t base = (lcdc & FLAG_BG_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
-  return pack_map_addr(base, map_x, map_y);
+  return base + (map_y << 5) + map_x;
 }
 
 uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map) {
@@ -717,7 +688,8 @@ uint16_t tile_base_address(uint8_t lcdc, uint8_t scy, uint8_t line, uint8_t map)
 
 uint16_t win_map_address(uint8_t lcdc, uint8_t map_x, int wy_counter) {
   uint16_t base = (lcdc & FLAG_WIN_MAP_1) ? ADDR_MAP1 : ADDR_MAP0;
-  return pack_map_addr(base, map_x, uint8_t(wy_counter >> 3));
+  uint8_t win_y = uint8_t(wy_counter >> 3);
+  return base + (win_y << 5) + map_x;
 }
 
 uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map) {
@@ -729,8 +701,6 @@ uint16_t win_base_address(uint8_t lcdc, int wy_counter, uint8_t map) {
 uint16_t sprite_base_address(uint8_t /*lcdc*/, uint8_t line, uint8_t sprite_y, uint8_t map, uint8_t flags) {
   uint8_t sprite_dy = line + 16 - sprite_y;
   if (flags & SPRITE_FLIP_Y) {
-    //if (lcdc & FLAG_TALL_SPRITES) map &= 0xFE;
-    //uint8_t sprite_height = lcdc & FLAG_TALL_SPRITES ? 15 : 7;
     uint8_t sprite_height = 7;
     sprite_dy ^= sprite_height;
   }

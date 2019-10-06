@@ -150,22 +150,11 @@ void Gameboy::tock() {
     }
   }
   else {
-    /*
-    // Dirty hack - on tcycle 0 of a line, cpu write takes precendence over ppu read.
-    bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
-    if (ppu_out.counter == 0) {
-      if (cpu_bus.write && ce_oam) {
-        cpu_read_oam = cpu_bus.read && ce_oam;
-        oam_bus = cpu_bus;
-      }
+    if (!ppu_out.oam_read) {
+      bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
+      cpu_read_oam = cpu_bus.read && ce_oam;
+      oam_bus = cpu_bus;
     }
-    else {
-      if (!ppu_out.oam_lock) {
-        cpu_read_oam = cpu_bus.read && ce_oam;
-        oam_bus = cpu_bus;
-      }
-    }
-    */
   }
 
   //-----------------------------------
@@ -232,7 +221,7 @@ void Gameboy::tock() {
     bool ce_iram = page == 6;
     bool ce_echo = page == 7 && (cpu_bus.addr < 0xFE00);
 
-    bool cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu_out.vram_lock && cpu_bus.read && ce_vram;
+    bool cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu_out.vram_read && cpu_bus.read && ce_vram;
     bool cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
     bool cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_bus.read && (ce_rom || ce_cram);
 
@@ -276,7 +265,7 @@ void Gameboy::tock() {
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
   CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_read, false };
 
-  vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_lock ? ppu_bus : cpu_bus);
+  vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_read ? ppu_bus : cpu_bus);
   iram.tock(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
   mmu.tock(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
   buttons.tock(cpu_bus);
@@ -352,7 +341,6 @@ void Gameboy::dump(std::string& out) {
 
   sprintf(out, "\n");
 
-  sprintf(out, "ppu_out.oam_lock  %d\n",     ppu_out.oam_lock);
   sprintf(out, "ppu_out.oam_addr  0x%04x\n", ppu_out.oam_addr);
   sprintf(out, "ppu_out.oam_read  %d\n",     ppu_out.oam_read);
   sprintf(out, "\n");

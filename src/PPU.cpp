@@ -168,9 +168,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     pix_count2 = 0;
     pix_discard_scx = 0;
     pix_discard_pad = 0;
-
-    pix_count2 = 0;
-    pix_discard_pad = 0;
     hblank_delay2 = HBLANK_DELAY_START;
     frame_start = (line == 0);
     frame_done = (line == 144);
@@ -285,7 +282,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     fetch_delay = false;
     pipe_count = 0;
     tile_latched = false;
-    out.vram_addr = 0;
 
     bg_pix_lo = 0;
     bg_pix_hi = 0;
@@ -317,58 +313,78 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Actual rendering
 
-  out.vram_addr = 0;
-
-  bool sprite_latched = false;
-
-  if (!fetch_delay) {
-    if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
-      if (fetch_state == FETCH_MAP) map_x++;
-      if (fetch_state == FETCH_HI) tile_latched = 1;
+  if (!fetch_delay && (fetch_type == FETCH_SPRITE) && (fetch_state == FETCH_HI))  {
+    if (spriteF & SPRITE_FLIP_X) {
+      sprite_lo = flip2(sprite_lo);
+      sprite_hi = flip2(sprite_hi);
     }
-    else if (fetch_type == FETCH_SPRITE) {
-      if (fetch_state == FETCH_HI) sprite_latched = true;
+
+    uint8_t sprite_pal_lo = spriteF & SPRITE_PAL ? 0b11111111 : 0b00000000;
+    uint8_t sprite_pal_hi = 0b11111111;
+
+    // sprites don't draw where we already drew sprites
+    uint8_t mask = ob_pix_lo | ob_pix_hi;
+
+    ob_pix_lo |= (sprite_lo & ~mask);
+    ob_pix_hi |= (sprite_hi & ~mask);
+    ob_pal_lo |= (sprite_pal_lo & ~mask);
+    ob_pal_hi |= (sprite_pal_hi & ~mask);
+    sprite_index = -1;
+  }
+
+  int next_pix = pix_count2 + pix_discard_pad;
+
+  sprite_hit = 15;
+  if (lcdc & FLAG_OBJ_ON) {
+    if (next_pix == sprite_x[9]) sprite_hit = 9;
+    if (next_pix == sprite_x[8]) sprite_hit = 8;
+    if (next_pix == sprite_x[7]) sprite_hit = 7;
+    if (next_pix == sprite_x[6]) sprite_hit = 6;
+    if (next_pix == sprite_x[5]) sprite_hit = 5;
+    if (next_pix == sprite_x[4]) sprite_hit = 4;
+    if (next_pix == sprite_x[3]) sprite_hit = 3;
+    if (next_pix == sprite_x[2]) sprite_hit = 2;
+    if (next_pix == sprite_x[1]) sprite_hit = 1;
+    if (next_pix == sprite_x[0]) sprite_hit = 0;
+
+#if SPRITE_AT_ZERO_GLITCH
+    if (sprite_hit == 15) {
+      if (sprite_x[9] == 0) sprite_hit = 9;
+      if (sprite_x[8] == 0) sprite_hit = 8;
+      if (sprite_x[7] == 0) sprite_hit = 7;
+      if (sprite_x[6] == 0) sprite_hit = 6;
+      if (sprite_x[5] == 0) sprite_hit = 5;
+      if (sprite_x[4] == 0) sprite_hit = 4;
+      if (sprite_x[3] == 0) sprite_hit = 3;
+      if (sprite_x[2] == 0) sprite_hit = 2;
+      if (sprite_x[1] == 0) sprite_hit = 1;
+      if (sprite_x[0] == 0) sprite_hit = 0;
     }
+#endif
+      }
+
+  if ((sprite_index == -1) && sprite_hit != 15) {
+    sprite_index = sprite_i[sprite_hit];
+    spriteX = sprite_x[sprite_hit];
+    spriteY = sprite_y[sprite_hit];
+
+    sprite_i[sprite_hit] = 255;
+    sprite_x[sprite_hit] = 255;
+    sprite_y[sprite_hit] = 255;
   }
 
   // if this isn't 87 stuff breaks :/
   bool rendering = counter >= 87 && (pix_count2 + pix_discard_pad != 168) && line < 144;
 
+  if (rendering) emit_pixel(tphase);
   if (rendering) {
-    if (sprite_latched) {
-      if (spriteF & SPRITE_FLIP_X) {
-        sprite_lo = flip2(sprite_lo);
-        sprite_hi = flip2(sprite_hi);
-      }
-
-      uint8_t sprite_pal_lo = spriteF & SPRITE_PAL ? 0b11111111 : 0b00000000;
-      uint8_t sprite_pal_hi = 0b11111111;
-
-      // sprites don't draw where we already drew sprites
-      uint8_t mask = ob_pix_lo | ob_pix_hi;
-
-      ob_pix_lo |= (sprite_lo & ~mask);
-      ob_pix_hi |= (sprite_hi & ~mask);
-      ob_pal_lo |= (sprite_pal_lo & ~mask);
-      ob_pal_hi |= (sprite_pal_hi & ~mask);
-      sprite_index = -1;
-    }
-
-    if (sprite_index == -1) {
-      if (sprite_hit != 15) {
-        sprite_index = sprite_i[sprite_hit];
-        spriteX = sprite_x[sprite_hit];
-        spriteY = sprite_y[sprite_hit];
-
-        sprite_i[sprite_hit] = 255;
-        sprite_x[sprite_hit] = 255;
-        sprite_y[sprite_hit] = 255;
-      }
+    if (pipe_count == 0 && tile_latched) {
+      bg_pix_lo = tile_lo;
+      bg_pix_hi = tile_hi;
+      pipe_count = 8;
+      tile_latched = 0;
     }
   }
-
-  if (rendering) emit_pixel(tphase);
-  if (rendering) merge_tile(tphase);
 
   if ((pix_count2 + pix_discard_pad == 168) && hblank_delay2) {
     hblank_delay2--;
@@ -376,6 +392,13 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
 
   //-----------------------------------
   // Fetcher state machine
+
+  if (!fetch_delay) {
+    if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
+      if (fetch_state == FETCH_MAP) map_x++;
+      if (fetch_state == FETCH_HI) tile_latched = 1;
+    }
+  }
 
   if (fetch_delay) {
     fetch_delay = false;
@@ -413,6 +436,8 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     if (fetch_state != FETCH_IDLE) fetch_delay = true;
   }
 
+  out.vram_addr = 0;
+
   uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
   uint8_t map_y = ((scy + line) >> 3) & 31;
 
@@ -432,6 +457,9 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     else if (fetch_state == FETCH_HI)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
   }
 
+  //-----------------------------------
+  // Turn fetcher off once line is done
+
   if (pix_count2 + pix_discard_pad == 168) {
     fetch_type = FETCH_NONE;
     fetch_state = FETCH_IDLE;
@@ -440,42 +468,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     out.oam_read = 0;
     out.vram_addr = 0;
     out.vram_read = 0;
-    out.oam_lock = 0;
-    out.vram_lock = 0;
-  }
-
-  //-----------------------------------
-  // check for sprite hit for _next_ cycle
-
-  int next_pix = pix_count2 + pix_discard_pad;
-
-  sprite_hit = 15;
-  if (lcdc & FLAG_OBJ_ON) {
-    if (next_pix == sprite_x[9]) sprite_hit = 9;
-    if (next_pix == sprite_x[8]) sprite_hit = 8;
-    if (next_pix == sprite_x[7]) sprite_hit = 7;
-    if (next_pix == sprite_x[6]) sprite_hit = 6;
-    if (next_pix == sprite_x[5]) sprite_hit = 5;
-    if (next_pix == sprite_x[4]) sprite_hit = 4;
-    if (next_pix == sprite_x[3]) sprite_hit = 3;
-    if (next_pix == sprite_x[2]) sprite_hit = 2;
-    if (next_pix == sprite_x[1]) sprite_hit = 1;
-    if (next_pix == sprite_x[0]) sprite_hit = 0;
-
-#if SPRITE_AT_ZERO_GLITCH
-    if (sprite_hit == 15) {
-      if (sprite_x[9] == 0) sprite_hit = 9;
-      if (sprite_x[8] == 0) sprite_hit = 8;
-      if (sprite_x[7] == 0) sprite_hit = 7;
-      if (sprite_x[6] == 0) sprite_hit = 6;
-      if (sprite_x[5] == 0) sprite_hit = 5;
-      if (sprite_x[4] == 0) sprite_hit = 4;
-      if (sprite_x[3] == 0) sprite_hit = 3;
-      if (sprite_x[2] == 0) sprite_hit = 2;
-      if (sprite_x[1] == 0) sprite_hit = 1;
-      if (sprite_x[0] == 0) sprite_hit = 0;
-    }
-#endif
   }
 
   //-----------------------------------
@@ -489,38 +481,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
 
   if (bus.read)  bus_read_late(bus.addr);
   if (bus.write) bus_write_late(bus.addr, bus.data);
-
-  //----------------------------------------
-  // locking
-
-  const int oam_start = 0;
-  const int oam_end = 80;
-  const int render_start = 82;
-  const int render_start_l0 = 84;
-
-  if (frame_count == 0 && line == 0) {
-    if (counter == render_start_l0) {
-      out.oam_lock = true;
-      out.vram_lock = true;
-    }
-  }
-  else {
-    if (counter == oam_start) {
-      out.oam_lock = true;
-    }
-    else if (counter == oam_end) {
-      out.oam_lock = false;
-    }
-    else if (counter == render_start) {
-      out.oam_lock = true;
-      out.vram_lock = true;
-    }
-  }
-
-  if (hblank_delay2 < 8 || line >= 144) {
-    out.oam_lock = false;
-    out.vram_lock = false;
-  }
 
   //-----------------------------------
   // lyc_match
@@ -623,7 +583,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     old_stat_int1 = (stat_ & stat_int1_);
     old_stat_int2 = (stat_ & stat_int2_);
   }
-
 } // PPU::tock
 
 //-----------------------------------------------------------------------------
@@ -777,19 +736,6 @@ void PPU::emit_pixel(int /*tphase*/) {
     out.pix_out = (palettes[pal] >> (pix << 1)) & 3;
     pix_count2++;
   }
-}
-
-//-----------------------------------------------------------------------------
-
-void PPU::merge_tile(int /*tphase*/) {
-  if (pipe_count) return;
-  if (!tile_latched) return;
-
-  bg_pix_lo = tile_lo;
-  bg_pix_hi = tile_hi;
-
-  pipe_count = 8;
-  tile_latched = 0;
 }
 
 //-----------------------------------------------------------------------------

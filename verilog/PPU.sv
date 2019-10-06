@@ -21,10 +21,8 @@ module PPU (
   uint8_t bus_out;
   bool bus_oe;
 
-  bool vram_lock;
   uint16_t vram_addr;
 
-  bool oam_lock;
   uint16_t oam_addr;
   bool oam_read;
 
@@ -164,9 +162,6 @@ module PPU (
     pix_oe = 0;
 
     vram_addr = 0;
-
-    oam_lock = false;
-    vram_lock = false;
 
     //----------
     // Registers

@@ -149,9 +149,9 @@ private:
   uint8_t tile_hi;
   bool    tile_latched;
 
-  int pix_count2;
-  int pix_discard_scx;
-  int pix_discard_pad;
+  uint8_t pix_count2;
+  uint8_t pix_discard_scx;
+  uint8_t pix_discard_pad;
   uint8_t pipe_count;
 
   uint8_t bg_pix_lo;

@@ -46,8 +46,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  //load("gejmboj");
-  load("LinksAwakening");
+  load("gejmboj");
+  //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
   //load("tetris");
@@ -93,8 +93,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
 
-  runmode = STEP_CYCLE;
+  //runmode = STEP_CYCLE;
   //runmode = RUN_FAST;
+  runmode = RUN_VSYNC;
 
   //----------
 

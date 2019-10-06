@@ -35,8 +35,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   //----------
   // Timers and states
 
-  state = PPU_STATE_HBLANK;
-
   counter = 4;
   counter_delay1 = 3;
   counter_delay2 = 2;
@@ -47,18 +45,12 @@ void PPU::reset(bool run_bootrom, int new_model) {
   //----------
   // Sprites
 
+  sprite_hit = 15;
   sprite_index = -1;
+
   for (int i = 0; i < 10; i++) sprite_x[i] = 0xFF;
   for (int i = 0; i < 10; i++) sprite_y[i] = 0xFF;
   for (int i = 0; i < 10; i++) sprite_i[i] = 0xFF;
-
-  //----------
-  // Pixel pipe
-
-  fetch_type = FETCH_NONE;
-  fetch_state = FETCH_IDLE;
-  fetch_delay = false;
-  sprite_hit = 15;
 
   //----------
   // Fixup if we're not running the bootrom
@@ -134,61 +126,90 @@ PpuOut PPU::tick(int /*tphase*/) const {
 //-----------------------------------------------------------------------------
 
 void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
-  uint16_t counter_ = counter;
-  uint8_t line_ = line;
-  int frame_count_ = frame_count;
-
-  counter_++;
-  if (counter_ == TCYCLES_LINE) {
-    counter_ = 0;
-    line_++;
-    if (line_ == 154) {
-      line_ = 0;
-      frame_count_++;
-    }
-  }
-
-  if (tphase == 0 || tphase == 2) {
-    if (lcdc & FLAG_LCD_ON) {
-      //----------------------------------------
-      // Update state machiney stuff
-
-      if (counter == 0)                                          this->state = PPU_STATE_HBLANK;
-      if (counter == 4 && (frame_count != 0 || line != 0))       this->state = PPU_STATE_OAM;
-      if (counter == 84)                                         this->state = PPU_STATE_VRAM;
-      if (counter > 84 && (pix_count2 + pix_discard_pad == 168)) this->state = PPU_STATE_HBLANK;
-      if ((line == 144 && counter >= 4) || (line >= 145))        this->state = PPU_STATE_VBLANK;
-    }
-  }
-
   if ((lcdc & FLAG_LCD_ON) == 0) {
     this->tock_lcdoff(tphase, bus, vram_out, oam_out);
     return;
   }
 
-  if (counter > 84 && (pix_count2 + pix_discard_pad == 168)) {
-    this->vram_addr = 0;
-    this->fetch_delay = false;
-    this->fetch_state = PPU::FETCH_IDLE;
+  //----------------------------------------
+  // Update state machiney stuff
+
+  counter_delay3 = counter_delay2;
+  counter_delay2 = counter_delay1;
+  counter_delay1 = counter;
+
+  line_delay3 = line_delay2;
+  line_delay2 = line_delay1;
+  line_delay1 = line;
+
+  counter++;
+  if (counter == TCYCLES_LINE) {
+    counter = 0;
+    line++;
+    if (line == 154) {
+      line = 0;
+      frame_count++;
+    }
   }
 
   if (counter == 0) {
-    this->in_window_old = false;
-    this->in_window_new = false;
-    this->in_window_new_early = false;
-    this->window_retrigger_old = false;
-    this->window_retrigger_new = false;
-    this->pipe_count = 0;
-    this->sprite_index = -1;
-    this->sprite_count = 0;
-    this->pix_count2 = 0;
-    this->pix_discard_scx = 0;
-    this->pix_discard_pad = 0;
+    state = PPU_STATE_HBLANK;
+    in_window_old = false;
+    in_window_new = false;
+    in_window_new_early = false;
+    window_retrigger_old = false;
+    window_retrigger_new = false;
+    pipe_count = 0;
+    sprite_index = -1;
+    sprite_count = 0;
+    pix_count2 = 0;
+    pix_discard_scx = 0;
+    pix_discard_pad = 0;
+
+    pix_count2 = 0;
+    pix_discard_pad = 0;
+    hblank_delay2 = HBLANK_DELAY_START;
+    frame_start = (line == 0);
+    frame_done = (line == 144);
   }
 
+  if (counter == 4 && (frame_count != 0 || line != 0)) {
+    this->state = PPU_STATE_OAM;
+  }
+
+  if (counter == 84) {
+    state = PPU_STATE_VRAM;
+  }
+
+  if (counter > 84 && (pix_count2 + pix_discard_pad == 168)) {
+    state = PPU_STATE_HBLANK;
+    vram_addr = 0;
+    fetch_delay = false;
+    fetch_state = PPU::FETCH_IDLE;
+  }
+
+  if ((line == 144 && counter >= 4) || (line >= 145)) {
+    state = PPU_STATE_VBLANK;
+  }
+
+  if (counter == 86) {
+
+    tile_latched = true;
+
+    if (line == 0) {
+      win_y_counter = 0;
+      win_y_latch = 0;
+    }
+    map_x = 0;
+    scx_latch = scx;
+  }
+
+  //-----------------------------------
+  // this needs to go somewhere else
+
   if (tphase == 0 || tphase == 2) {
-    this->stat &= 0b11111100;
-    this->stat |= state;
+    stat &= 0b11111100;
+    stat |= state;
   }
 
   //-----------------------------------
@@ -230,7 +251,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     int sx = spriteX;
 
     uint8_t sprite_height = (lcdc & FLAG_TALL_SPRITES) ? 16 : 8;
-    if ((sx < 168) && (sy <= line_) && (line_ < sy + sprite_height)) {
+    if ((sx < 168) && (sy <= line) && (line < sy + sprite_height)) {
       this->sprite_x[sprite_count] = spriteX;
       this->sprite_y[sprite_count] = spriteY;
       this->sprite_i[sprite_count] = (uint8_t)si;
@@ -239,19 +260,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   }
 
   //-----------------------------------
-  // Render phase
-
-  if (counter == 86) {
-
-    tile_latched = true;
-
-    if (line == 0) {
-      win_y_counter = 0;
-      win_y_latch = 0;
-    }
-    map_x = 0;
-    scx_latch = scx;
-  }
+  // Window stuff
 
   window_retrigger_old = window_retrigger_new;
   window_retrigger_new = in_window_old && in_window_new_early;
@@ -309,42 +318,12 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
 
   in_window_old |= in_window_new;
 
+  //-----------------------------------
+  // Actual rendering
+
   uint16_t oam_addr_ = 0;
   bool oam_read_ = false;
   vram_addr = 0;
-
-  /*
-  #define ADDR_VRAM_BEGIN 0x8000
-  #define ADDR_TILE0      0x8000
-  #define ADDR_TILE1      0x8800
-  #define ADDR_MAP0       0x9800
-  #define ADDR_MAP1       0x9C00
-  */
-
-  if (vram_out.oe && !fetch_delay) {
-    if (fetch_type == FETCH_SPRITE) {
-      if (vram_out.addr & 1) {
-        sprite_hi = vram_out.data;
-      }
-      else {
-        sprite_lo = vram_out.data;
-      }
-    }
-    else {
-      if (vram_out.addr >= ADDR_MAP0) {
-        tile_map = vram_out.data;
-      }
-      else if (vram_out.addr & 1) {
-        if (fetch_type != FETCH_BACKGROUND && fetch_type != FETCH_WINDOW && fetch_state != FETCH_LO) {
-          //printf("x");
-        }
-        //tile_hi = vram_out.data;
-      }
-      else {
-        //tile_lo = vram_out.data;
-      }
-    }
-  }
 
   bool sprite_latched = false;
 
@@ -358,8 +337,10 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     }
   }
 
-  // if this isn't 86 stuff breaks :/
-  if (counter >= 86 && (pix_count2 + pix_discard_pad != 168) && line < 144) {
+  // if this isn't 87 stuff breaks :/
+  bool rendering = counter >= 87 && (pix_count2 + pix_discard_pad != 168) && line < 144;
+
+  if (rendering) {
     if (sprite_latched) {
       if (spriteF & SPRITE_FLIP_X) {
         sprite_lo = flip2(sprite_lo);
@@ -390,11 +371,12 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
         sprite_y[sprite_hit] = 255;
       }
     }
+  }
 
-    emit_pixel(tphase);
+  if (rendering) emit_pixel(tphase);
+  if (rendering) merge_tile(tphase);
 
-    merge_tile(tphase);
-
+  if (rendering) {
     if (pix_count2 + pix_discard_pad == 168) {
       fetch_type = FETCH_NONE;
       fetch_state = FETCH_IDLE;
@@ -443,7 +425,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
       if (fetch_type == FETCH_BACKGROUND) {
         if (fetch_state == FETCH_MAP) {
           uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
-          map_y = ((scy + line) >> 3) & 31;
+          uint8_t map_y = ((scy + line) >> 3) & 31;
           vram_addr = tile_map_address(lcdc, new_map_x, map_y);
         }
         else if (fetch_state == FETCH_LO) {
@@ -519,35 +501,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
 
   if (bus.read)  bus_read_late(bus.addr);
   if (bus.write) bus_write_late(bus.addr, bus.data);
-
-  counter_delay3 = counter_delay2;
-  counter_delay2 = counter_delay1;
-  counter_delay1 = counter;
-
-  line_delay3 = line_delay2;
-  line_delay2 = line_delay1;
-  line_delay1 = line;
-
-  counter++;
-  if (counter == TCYCLES_LINE) {
-    counter = 0;
-    line++;
-    if (line == 154) {
-      line = 0;
-      frame_count++;
-    }
-  }
-
-  if (tphase == 1 || tphase == 3) {
-    if (lcdc & FLAG_LCD_ON) {
-      frame_start = (counter == 0) && (line == 0);
-      frame_done = (counter == 0) && (line == 144);
-
-      if (counter == 0) {
-        hblank_delay2 = HBLANK_DELAY_START;
-      }
-    }
-  }
 
   //----------------------------------------
   // locking

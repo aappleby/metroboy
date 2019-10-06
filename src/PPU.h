@@ -75,8 +75,8 @@ private:
 
 
   uint8_t scx_latch;
-  uint8_t win_y_latch = 0;
-  uint8_t win_y_counter = 0;
+  uint8_t win_y_latch;
+  uint8_t win_y_counter;
 
   //----------
   // Timers and states
@@ -114,6 +114,7 @@ private:
 
   uint8_t sprite_count;
   int8_t sprite_index;
+  int sprite_hit;
   uint8_t sprite_x[10]; // 80 bits
   uint8_t sprite_y[10]; // 80 bits
   uint8_t sprite_i[10]; // 60 bits?
@@ -130,23 +131,22 @@ private:
   // Vram Fetcher
 
   enum FetchType {
+    FETCH_NONE,
     FETCH_BACKGROUND,
     FETCH_WINDOW,
     FETCH_SPRITE,
-    FETCH_NONE
   };
 
   enum FetchState {
+    FETCH_IDLE,
     FETCH_MAP,
     FETCH_LO,
     FETCH_HI,
-    FETCH_IDLE,
   };
 
-  FetchType fetch_type = FETCH_NONE;
+  FetchType fetch_type;
   FetchState fetch_state;
-  bool fetch_delay = false;
-  int sprite_hit;
+  bool fetch_delay;
 
   bool in_window_old;
   bool in_window_new;
@@ -160,7 +160,6 @@ private:
   // Pixel pipe
 
   uint8_t map_x;
-  uint8_t map_y;
 
   uint8_t tile_map;
   uint8_t tile_lo;

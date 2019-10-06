@@ -131,9 +131,9 @@ PPU::Out PPU::tick(int /*tphase*/) const {
     else if (fetch_state == FETCH_HI)  out2.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
   }
   else if (fetch_type == FETCH_SPRITE) {
-    if      (fetch_state == FETCH_MAP) { out2.oam_addr = (sprite_index << 2) + 2; out2.oam_addr += ADDR_OAM_BEGIN; }
-    else if (fetch_state == FETCH_LO)  out2.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
-    else if (fetch_state == FETCH_HI)  out2.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
+    if      (fetch_state == FETCH_SPRITE_MAP) { out2.oam_addr = (sprite_index << 2) + 2; out2.oam_addr += ADDR_OAM_BEGIN; }
+    else if (fetch_state == FETCH_SPRITE_LO)  out2.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
+    else if (fetch_state == FETCH_SPRITE_HI)  out2.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
   }
 
   if (pix_count2 + pix_discard_pad == 168) {
@@ -278,8 +278,8 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
       if (fetch_state == FETCH_HI)  tile_hi = vram_out.data;
     }
     else if (fetch_type == FETCH_SPRITE) {
-      if (fetch_state == FETCH_LO) sprite_lo = vram_out.data;
-      if (fetch_state == FETCH_HI) sprite_hi = vram_out.data;
+      if (fetch_state == FETCH_SPRITE_LO) sprite_lo = vram_out.data;
+      if (fetch_state == FETCH_SPRITE_HI) sprite_hi = vram_out.data;
     }
   }
 
@@ -361,7 +361,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Actual rendering
 
-  if (!fetch_delay && (fetch_type == FETCH_SPRITE) && (fetch_state == FETCH_HI))  {
+  if (!fetch_delay && (fetch_type == FETCH_SPRITE) && (fetch_state == FETCH_SPRITE_HI))  {
     if (spriteF & SPRITE_FLIP_X) {
       sprite_lo = flip2(sprite_lo);
       sprite_hi = flip2(sprite_hi);
@@ -462,6 +462,18 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
       fetch_type = FETCH_NONE;
     }
 
+    if (fetch_state == FETCH_SPRITE_MAP) {
+      fetch_state = FETCH_SPRITE_LO;
+    }
+    else if (fetch_state == FETCH_SPRITE_LO) {
+      fetch_state = FETCH_SPRITE_HI;
+      fetch_delay = true;
+    }
+    else if (fetch_state == FETCH_SPRITE_HI) {
+      fetch_state = FETCH_IDLE;
+      fetch_type = FETCH_NONE;
+    }
+
     if (fetch_state == FETCH_IDLE) {
       if (!tile_latched) {
         if (in_window_old && (lcdc & FLAG_WIN_ON)) {
@@ -475,7 +487,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
       }
       else if (sprite_index != -1) {
         fetch_type = FETCH_SPRITE;
-        fetch_state = FETCH_MAP;
+        fetch_state = FETCH_SPRITE_MAP;
       }
     }
 

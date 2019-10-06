@@ -144,6 +144,10 @@ private:
     FETCH_MAP,
     FETCH_LO,
     FETCH_HI,
+
+    FETCH_SPRITE_MAP,
+    FETCH_SPRITE_LO,
+    FETCH_SPRITE_HI,
   };
 
   FetchType fetch_type;

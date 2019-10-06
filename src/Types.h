@@ -41,10 +41,7 @@ struct PpuOut {
   bool oe;
 
   uint16_t vram_addr;
-  bool vram_read;
-
   uint16_t oam_addr;
-  bool oam_read;
 
   int x;
   int y;

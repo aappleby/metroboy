@@ -132,7 +132,7 @@ void Gameboy::tock() {
   //-----------------------------------
   // oam bus mux
 
-  CpuBus oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_read, false };
+  CpuBus oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_addr != 0, false };
   bool cpu_read_oam = false;
 
   if (dma_mode_b != DMA_NONE) {
@@ -150,7 +150,7 @@ void Gameboy::tock() {
     }
   }
   else {
-    if (!ppu_out.oam_read) {
+    if (ppu_out.oam_addr == 0) {
       bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
       cpu_read_oam = cpu_bus.read && ce_oam;
       oam_bus = cpu_bus;
@@ -221,7 +221,7 @@ void Gameboy::tock() {
     bool ce_iram = page == 6;
     bool ce_echo = page == 7 && (cpu_bus.addr < 0xFE00);
 
-    bool cpu_read_vram = (dma_mode_a != DMA_VRAM) && !ppu_out.vram_read && cpu_bus.read && ce_vram;
+    bool cpu_read_vram = (dma_mode_a != DMA_VRAM) && (ppu_out.vram_addr == 0) && cpu_bus.read && ce_vram;
     bool cpu_read_iram = (dma_mode_a != DMA_IRAM) && cpu_bus.read && (ce_iram || ce_echo);
     bool cpu_read_cart = (dma_mode_a != DMA_CART) && cpu_bus.read && (ce_rom || ce_cram);
 
@@ -263,9 +263,9 @@ void Gameboy::tock() {
   uint16_t dma_read_addr = (dma_source_a << 8) | dma_count_a;
 
   CpuBus dma_bus = { dma_read_addr, 0, true, false };
-  CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_read, false };
+  CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_addr != 0, false };
 
-  vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_read ? ppu_bus : cpu_bus);
+  vram.tock(dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_addr ? ppu_bus : cpu_bus);
   iram.tock(dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
   mmu.tock(dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
   buttons.tock(cpu_bus);
@@ -342,7 +342,6 @@ void Gameboy::dump(std::string& out) {
   sprintf(out, "\n");
 
   sprintf(out, "ppu_out.oam_addr  0x%04x\n", ppu_out.oam_addr);
-  sprintf(out, "ppu_out.oam_read  %d\n",     ppu_out.oam_read);
   sprintf(out, "\n");
 
   sprintf(out, "oam_out.addr      0x%04x\n", oam_out.addr);

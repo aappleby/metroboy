@@ -89,7 +89,6 @@ PpuOut PPU::tick(int /*tphase*/) const {
   out2.x = pix_count2;
   out2.y = line;
   out2.counter = counter;
-  out2.vram_read = out.vram_addr != 0;
 
   uint16_t counter_ = counter;
   uint8_t line_ = line;
@@ -107,20 +106,16 @@ PpuOut PPU::tick(int /*tphase*/) const {
 
   if (lcdc & FLAG_LCD_ON) {
     uint16_t oam_addr_ = out.oam_addr;
-    bool oam_read_ = out.oam_read;
 
     if (frame_count_ == 0 && line_ == 0 && counter_ < 84) {
       oam_addr_ = 0;
-      oam_read_ = false;
     }
     else if (counter_ < 80 && ((counter_ & 1) == 0)) {
       // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
       oam_addr_ = ADDR_OAM_BEGIN + ((counter_ << 1) & 0b11111100);
-      oam_read_ = true;
     }
 
     out2.oam_addr = oam_addr_;
-    out2.oam_read = oam_read_;
   }
 
   return out2;
@@ -437,6 +432,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   }
 
   out.vram_addr = 0;
+  out.oam_addr = 0;
 
   uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
   uint8_t map_y = ((scy + line) >> 3) & 31;
@@ -452,7 +448,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     else if (fetch_state == FETCH_HI)  out.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
   }
   else if (fetch_type == FETCH_SPRITE) {
-    if      (fetch_state == FETCH_MAP) { out.oam_addr = (sprite_index << 2) + 2; out.oam_addr += ADDR_OAM_BEGIN; out.oam_read = true; }
+    if      (fetch_state == FETCH_MAP) { out.oam_addr = (sprite_index << 2) + 2; out.oam_addr += ADDR_OAM_BEGIN; }
     else if (fetch_state == FETCH_LO)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
     else if (fetch_state == FETCH_HI)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
   }
@@ -465,9 +461,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     fetch_state = FETCH_IDLE;
     fetch_delay = false;
     out.oam_addr = 0;
-    out.oam_read = 0;
     out.vram_addr = 0;
-    out.vram_read = 0;
   }
 
   //-----------------------------------
@@ -967,7 +961,6 @@ void PPU::dump(std::string& d) {
 
   sprintf(d, "sprite idx %d\n", sprite_index);
   sprintf(d, "oam addr  %04x\n", out.oam_addr);
-  sprintf(d, "oam read  %04x\n", out.oam_read);
   sprintf(d, "vram addr  %04x\n", out.vram_addr);
   sprintf(d, "\n");
 

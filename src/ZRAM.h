@@ -4,10 +4,10 @@
 //-----------------------------------------------------------------------------
 
 struct ZRAM {
-  BusOut reset();
-
+  void   reset();
   BusOut tick() const;
-  void tock(CpuBus bus);
+  void   tock(CpuBus bus);
+
   const uint8_t* get() const { return ram; }
 
 private:

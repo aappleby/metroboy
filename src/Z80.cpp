@@ -196,19 +196,9 @@ enum Z80State {
 //-----------------------------------------------------------------------------
 
 void Z80::reset(int new_model, uint16_t new_pc) {
-  int_ack = 0;
-  imask = 0;
-  intf = 0;
-  unhalt = 0;
+  *this = {};
 
   model = new_model;
-  cycle = 0;
-  op = 0;
-  cb = 0;
-  ime = false;
-  ime_ = false;
-  interrupt = false;
-  state = state2 = state_ = DECODE;
 
   if (new_pc == 0x100) {
     pc = new_pc;
@@ -231,13 +221,6 @@ void Z80::reset(int new_model, uint16_t new_pc) {
   pc2 = pc;
 
   addr = new_pc;
-  data_out = 0x00;
-  bus = 0x00;
-  write = false;
-
-  no_branch = false;
-  no_halt = false;
-  alu_out = { 0, 0 };
 }
 
 

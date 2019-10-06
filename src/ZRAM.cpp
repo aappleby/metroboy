@@ -4,9 +4,8 @@
 
 //-----------------------------------------------------------------------------
 
-BusOut ZRAM::reset() {
-  memset(ram, 0, sizeof(ram));
-  return { 0 };
+void ZRAM::reset() {
+  *this = {};
 }
 
 //-----------------------------------------------------------------------------
@@ -16,7 +15,7 @@ BusOut ZRAM::tick() const {
 }
 
 void ZRAM::tock(CpuBus bus) {
-  out = { 0,0 };
+  out = {};
 
   if (bus.addr < ADDR_ZEROPAGE_BEGIN || ADDR_ZEROPAGE_END < bus.addr) {
     return;

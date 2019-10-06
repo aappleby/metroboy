@@ -4,14 +4,21 @@
 //-----------------------------------------------------------------------------
 
 struct VRAM {
-  BusOut reset();
 
-  BusOut tick() const;
-  void   tock(CpuBus bus_);
-  const  uint8_t* get_ram() const { return ram; }
+  struct Out {
+    uint16_t addr;
+    uint8_t data;
+    bool oe;
+  };
+
+  void  reset();
+  Out   tick() const;
+  void  tock(CpuBus bus_);
+
+  const uint8_t* get_ram() const { return ram; }
 
 private:
-  BusOut out;
+  Out out;
   uint8_t ram[8192];
 };
 

@@ -2,13 +2,13 @@
 #include "Types.h"
 
 struct IRAM {
-  BusOut reset();
+  void reset();
   
   BusOut tick() const;
   void tock(CpuBus bus);
 
   const uint8_t* get() { return ram; }
 private:
-  uint8_t ram[8192];
   BusOut out;
+  uint8_t ram[8192];
 };

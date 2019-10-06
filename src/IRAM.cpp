@@ -2,9 +2,8 @@
 
 #include "Constants.h"
 
-BusOut IRAM::reset() {
-  memset(ram, 0, sizeof(ram));
-  return { 0 };
+void IRAM::reset() {
+  *this = {};
 }
 
 BusOut IRAM::tick() const {
@@ -13,7 +12,7 @@ BusOut IRAM::tick() const {
 
 void IRAM::tock(CpuBus bus) {
   if (bus.read) {
-    out = { 0,0 };
+    out = {};
     if (ADDR_IRAM_BEGIN <= bus.addr && bus.addr <= ADDR_IRAM_END) {
       out.data = ram[bus.addr - ADDR_IRAM_BEGIN];
       out.oe = true;

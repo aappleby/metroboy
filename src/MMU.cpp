@@ -9,18 +9,10 @@ extern const uint8_t DMG_ROM_bin[];
 
 //-----------------------------------------------------------------------------
 
-BusOut MMU::reset(size_t new_rom_size, uint16_t new_pc) {
+void MMU::reset(size_t new_rom_size, uint16_t new_pc) {
+  *this = {};
+
   rom_size = new_rom_size;
-  return reset(new_pc);
-}
-
-BusOut MMU::reset(uint16_t new_pc) {
-  memset(ram_buf, 0, sizeof(ram_buf));
-  ram_enable = false;
-
-  mode = 0;
-  bank_latch1 = 0;
-  bank_latch2 = 0;
 
   int rom_banks = rom_buf[0x0148];
   switch (rom_banks) {
@@ -31,14 +23,11 @@ BusOut MMU::reset(uint16_t new_pc) {
   case 0x04: rom_bank_count = 32; break;
   case 0x05: rom_bank_count = 64; break;
   case 0x06: rom_bank_count = 128; break;
-
   case 0x52: assert(false); rom_bank_count = 72; break;
   case 0x53: assert(false); rom_bank_count = 80; break;
   case 0x54: assert(false); rom_bank_count = 96; break;
-
   default:   rom_bank_count = 0; break;
   }
-
   assert(rom_bank_count <= 32);
 
   int ram_banks = rom_buf[0x0149];
@@ -50,12 +39,13 @@ BusOut MMU::reset(uint16_t new_pc) {
   case 0x05: ram_bank_count = 8; break;
   default:   ram_bank_count = 0; break;
   }
-
   assert(ram_bank_count <= 1);
 
-  disable_boot_rom = !(new_pc == 0x0000);
+  disable_boot_rom = new_pc != 0x0000;
+}
 
-  return { 0 };
+void MMU::reset(uint16_t new_pc) {
+  reset(rom_size, new_pc);
 }
 
 //-------------------------------------

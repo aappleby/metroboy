@@ -13,7 +13,11 @@ public:
   MetroBoy& operator=(const MetroBoy&) = delete;
 
   Gameboy& gb() {
-    return *current_gameboy;
+    return *current_gb;
+  }
+
+  Framebuffer& fb() {
+    return *current_fb;
   }
 
   int64_t total_tcycles() {
@@ -52,11 +56,16 @@ public:
 
 private:
 
-  Gameboy* current_gameboy;
+  Gameboy*     current_gb;
+  Framebuffer* current_fb;
 
-  std::vector<Gameboy*> history_frame;
-  std::vector<Gameboy*> history_line;
-  std::vector<Gameboy*> history_cycle;
+  std::vector<Framebuffer*> fb_frame;
+  std::vector<Framebuffer*> fb_line;
+  std::vector<Framebuffer*> fb_cycle;
+
+  std::vector<Gameboy*> gb_frame;
+  std::vector<Gameboy*> gb_line;
+  std::vector<Gameboy*> gb_cycle;
 
   int64_t cycles;
   bool trace;

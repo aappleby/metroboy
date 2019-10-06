@@ -93,8 +93,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
 
-  //runmode = STEP_CYCLE;
-  runmode = RUN_FAST;
+  runmode = STEP_CYCLE;
+  //runmode = RUN_FAST;
 
   //----------
 
@@ -259,6 +259,7 @@ void MetroBoyApp::loop() {
   // Left column text
 
   Gameboy& gameboy = metroboy.gb();
+  Framebuffer& fb = metroboy.fb();
 
   gameboy.dump(text_buf);
   //gameboy.get_oam().dump(text_buf);
@@ -296,7 +297,7 @@ void MetroBoyApp::loop() {
       uint32_t* line1 = &framebuffer[(y * 2 + gb_screeny + 0) * fb_width + gb_screenx];
       uint32_t* lineM2 = &framebuffer[(y * 2 + gb_screeny + 1) * fb_width + gb_screenx];
       for (int x = 0; x < 160; x++) {
-        uint32_t c = gb_colors[gameboy.framebuffer[x + (y * 160)] & 7];
+        uint32_t c = gb_colors[fb.buf[x + (y * 160)] & 7];
         *line1++ = c; *line1++ = c;
         *lineM2++ = c; *lineM2++ = c;
       }
@@ -330,7 +331,7 @@ void MetroBoyApp::loop() {
       uint32_t* line1 = &framebuffer[(y * 2 + gb_screeny + 0) * fb_width + gb_screenx];
       uint32_t* lineM2 = &framebuffer[(y * 2 + gb_screeny + 1) * fb_width + gb_screenx];
       for (int x = 0; x < 160; x++) {
-        int c = gameboy.framebuffer[x + (y * 160)];
+        int c = fb.buf[x + (y * 160)];
         if (c != golden[x + y * 160]) {
           *line1++ += 0x808000;
           *line1++ += 0x808000;

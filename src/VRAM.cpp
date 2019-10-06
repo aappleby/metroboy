@@ -33,25 +33,29 @@ uint8_t bootrom_logo[] = {
 
 //-----------------------------------------------------------------------------
 
-BusOut VRAM::reset() {
-  memset(ram, 0, sizeof(ram));
+void VRAM::reset() {
+  *this = {};
   memcpy(ram, bootrom_logo, sizeof(bootrom_logo));
-  return { 0 };
 }
 
 //-----------------------------------------------------------------------------
 
-BusOut VRAM::tick() const {
+VRAM::Out VRAM::tick() const {
   return out;
 }
 
 void VRAM::tock(CpuBus bus) {
-  out = { 0,0 };
+  out = {};
+
   if ((bus.addr & 0xE000) == 0x8000) {
     if (bus.read) {
+      out.addr = bus.addr;
       out.data = ram[bus.addr - ADDR_VRAM_BEGIN];
+      out.oe = true;
     }
-    if (bus.write) ram[bus.addr - ADDR_VRAM_BEGIN] = bus.data;
+    if (bus.write) {
+      ram[bus.addr - ADDR_VRAM_BEGIN] = bus.data;
+    }
   }
 }
 

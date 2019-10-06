@@ -2,11 +2,10 @@
 
 #include "Constants.h"
 
-ButtonsOut Buttons::reset() {
+void Buttons::reset() {
+  *this = {};
   val = 0xFF;
   p1 = 0xCF;
-
-  return { 0, false, val };
 }
 
 ButtonsOut Buttons::tick() const {
@@ -14,7 +13,7 @@ ButtonsOut Buttons::tick() const {
 }
 
 void Buttons::tock(CpuBus bus) {
-  out = { 0, false, 0 };
+  out = {};
 
   if (bus.write && bus.addr == ADDR_P1) {
     p1 = (p1 & 0xCF) | (bus.data & 0x30);

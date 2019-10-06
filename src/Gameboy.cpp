@@ -17,20 +17,23 @@ Gameboy::Gameboy() {
 
 void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   z80.reset(new_model, new_pc);
-  ppu.reset(new_pc == 0, new_model);
-  
-  oam.reset();
   mmu.reset(new_rom_size, new_pc);
+  ppu.reset(new_pc == 0, new_model);
+  oam.reset();
+  spu.reset();
   timer.reset();
   vram.reset();
   iram.reset();
   buttons.reset();
   serial.reset();
   zram.reset();
-  spu.reset();
+
+  ppu_out = {};
+  oam_out = {};
 
   model = new_model;
   tcycle = -1;
+  trace_val = 0;
 
   dma_mode_x = DMA_NONE;
   dma_count_x = 0;
@@ -47,7 +50,7 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   intf = 0xE1;
   imask = 0x00;
 
-  memset(framebuffer, 0, 160 * 144);
+  sentinel = 0xDEADBEEF;
 }
 
 void Gameboy::reset(uint16_t new_pc) {
@@ -143,7 +146,7 @@ void Gameboy::tock() {
       oam_bus = { dma_write_addr, dma_data, false, true };
     }
     else {
-      oam_bus = { 0, 0, false, false };
+      oam_bus = {};
     }
   }
   else {
@@ -325,8 +328,6 @@ void Gameboy::dump(std::string& out) {
   z80.dump(out);
   sprintf(out, "imask %s\n", to_binary(imask));
   sprintf(out, "intf  %s\n", to_binary(intf));
-  sprintf(out, "old stat int1 %d\n", ppu.get_old_stat_int1());
-  sprintf(out, "old stat int2 %d\n", ppu.get_old_stat_int2());
   sprintf(out, "\n");
 
   sprintf(out, "tcycle %zd\n", tcycle);

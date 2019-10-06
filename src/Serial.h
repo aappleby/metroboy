@@ -4,8 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct Serial {
-  BusOut reset();
-
+  void reset();
   BusOut tick() const;
   void tock(CpuBus bus);
 

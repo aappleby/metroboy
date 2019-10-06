@@ -23,58 +23,19 @@ uint8_t flip2(uint8_t b) {
 
 //-----------------------------------------------------------------------------
 
-PpuOut PPU::reset(bool run_bootrom, int new_model) {
+void PPU::reset(bool run_bootrom, int new_model) {
+  *this = {};
   model = new_model;
-
-  bus_out = 0;
-  bus_oe = 0;
-
-  pix_out = 0;
-  pix_oe = 0;
-
-  vram_addr = 0;
-
-  oam_lock = false;
-  vram_lock = false;
 
   //----------
   // Registers
 
-  lcdc = 0;
   stat = 0x80;
-  scy = 0;
-  scx = 0;
-  ly = 0;
-  lyc = 0;
-  dma = 0;
-  bgp = 0;
-  obp0 = 0;
-  obp1 = 0;
-  wy = 0;
-  wx = 0;
-
-  palettes[0] = 0;
-  palettes[1] = 0;
-  palettes[2] = 0;
-  palettes[3] = 0;
-
-  scx_latch = 0;
-  win_y_latch = 0;
-  win_y_counter = 0;
 
   //----------
   // Timers and states
 
   state = PPU_STATE_HBLANK;
-
-  frame_start = 0;
-  frame_done = 0;
-  frame_count = 0;
-
-  line = 0;
-  line_delay1 = 0;
-  line_delay2 = 0;
-  line_delay3 = 0;
 
   counter = 4;
   counter_delay1 = 3;
@@ -83,62 +44,21 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
 
   hblank_delay2 = HBLANK_DELAY_START;
 
-  stat_int1 = 0;
-  stat_int2 = 0;
-  compare_line = 0;
-
   //----------
   // Sprites
 
-  //oam_addr = 0;
-  //oam_read = false;
-
-  sprite_count = 0;
   sprite_index = -1;
   for (int i = 0; i < 10; i++) sprite_x[i] = 0xFF;
   for (int i = 0; i < 10; i++) sprite_y[i] = 0xFF;
   for (int i = 0; i < 10; i++) sprite_i[i] = 0xFF;
 
-  spriteY = 0;
-  spriteX = 0;
-  spriteP = 0;
-  spriteF = 0;
-
-  sprite_lo = 0;
-  sprite_hi = 0;
-
   //----------
   // Pixel pipe
 
+  fetch_type = FETCH_NONE;
   fetch_state = FETCH_IDLE;
   fetch_delay = false;
   sprite_hit = 15;
-
-  in_window_old = false;
-  in_window_new = false;
-  in_window_new_early = false;
-  window_retrigger_old = false;
-  window_retrigger_new = false;
-
-  tile_map = 0;
-  tile_lo = 0;
-  tile_hi = 0;
-  tile_latched = 0;
-
-  pix_count2 = 0;
-  pipe_count = 0;
-  pix_discard_scx = 0;
-  pix_discard_pad = 0;
-
-  bg_pix_lo = 0;
-  bg_pix_hi = 0;
-  bg_pal_lo = 0;
-  bg_pal_hi = 0;
-
-  ob_pix_lo = 0;
-  ob_pix_hi = 0;
-  ob_pal_lo = 0;
-  ob_pal_hi = 0;
 
   //----------
   // Fixup if we're not running the bootrom
@@ -166,10 +86,7 @@ PpuOut PPU::reset(bool run_bootrom, int new_model) {
     pix_discard_scx = 0;
     pix_discard_pad = 8;
   }
-
-  return { 0 };
 }
-
 
 //-----------------------------------------------------------------------------
 // interrupt glitch - oam stat fires on vblank
@@ -216,7 +133,7 @@ PpuOut PPU::tick(int /*tphase*/) const {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, OAM::Out oam_in) {
+void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   uint16_t counter_ = counter;
   uint8_t line_ = line;
   int frame_count_ = frame_count;
@@ -245,7 +162,7 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, OAM::Out oam_in) {
   }
 
   if ((lcdc & FLAG_LCD_ON) == 0) {
-    this->tock_lcdoff(tphase, bus, vram_in, oam_in);
+    this->tock_lcdoff(tphase, bus, vram_out, oam_out);
     return;
   }
 
@@ -283,73 +200,43 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, OAM::Out oam_in) {
   //-----------------------------------
   // Handle OAM reads from the previous cycle
 
-  if (oam_in.oe) {
-    if (oam_in.addr & 2) {
-      this->spriteP = uint8_t(oam_in.data16 >> 0);
-      this->spriteF = uint8_t(oam_in.data16 >> 8);
+  if (oam_out.oe) {
+    if (oam_out.addr & 2) {
+      this->spriteP = uint8_t(oam_out.data16 >> 0);
+      this->spriteF = uint8_t(oam_out.data16 >> 8);
     }
     else {
-      this->spriteY = uint8_t(oam_in.data16 >> 0);
-      this->spriteX = uint8_t(oam_in.data16 >> 8);
-    }
-
-    if ((oam_in.addr & 3) == 0 && sprite_count < 10) {
-      int si = (oam_in.addr - ADDR_OAM_BEGIN) >> 2;
-      int sy = spriteY - 16;
-      int sx = spriteX;
-
-      uint8_t sprite_height = (lcdc & FLAG_TALL_SPRITES) ? 16 : 8;
-      if ((sx < 168) && (sy <= line_) && (line_ < sy + sprite_height)) {
-        this->sprite_x[sprite_count] = spriteX;
-        this->sprite_y[sprite_count] = spriteY;
-        this->sprite_i[sprite_count] = (uint8_t)si;
-        this->sprite_count++;
-      }
+      this->spriteY = uint8_t(oam_out.data16 >> 0);
+      this->spriteX = uint8_t(oam_out.data16 >> 8);
     }
   }
 
-#if 0
-  uint16_t oam_addr_ = 0;
-  bool oam_read_ = false;
-
-  if (frame_count == 0 && line == 0 && counter < 84) {
-    oam_addr_ = 0;
-    oam_read_ = false;
+  if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
+    if (fetch_state == FETCH_MAP) tile_map = vram_out.data;
+    if (fetch_state == FETCH_LO)  tile_lo = vram_out.data;
+    if (fetch_state == FETCH_HI)  tile_hi = vram_out.data;
   }
-  else if (counter < 80) {
-    // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-    oam_addr_ = ((counter << 1) & 0b11111100) | (counter & 1);
-    oam_addr_ += ADDR_OAM_BEGIN;
-    oam_read_ = true;
-  }
-  else {
-    oam_read_ = false;
+  else if (fetch_type == FETCH_SPRITE) {
+    if (fetch_state == FETCH_LO) sprite_lo = vram_out.data;
+    if (fetch_state == FETCH_HI) sprite_hi = vram_out.data;
   }
 
-  if (oam_read) {
-    if ((oam_addr & 3) == 0) this->spriteY = oam_in.data;
-    if ((oam_addr & 3) == 1) this->spriteX = oam_in.data;
-    if ((oam_addr & 3) == 2) this->spriteP = oam_in.data;
-    if ((oam_addr & 3) == 3) this->spriteF = oam_in.data;
+  //-----------------------------------
+  // Build sprite table
 
-    if ((oam_addr & 3) == 1 && sprite_count < 10) {
-      int si = (counter - 1) >> 1;
-      int sy = spriteY - 16;
-      int sx = spriteX;
+  if (oam_out.oe && counter < 86 && sprite_count < 10) {
+    int si = (oam_out.addr - ADDR_OAM_BEGIN) >> 2;
+    int sy = spriteY - 16;
+    int sx = spriteX;
 
-      uint8_t sprite_height = (lcdc & FLAG_TALL_SPRITES) ? 16 : 8;
-      if ((sx < 168) && (sy <= line) && (line < sy + sprite_height)) {
-        this->sprite_x[sprite_count] = spriteX;
-        this->sprite_y[sprite_count] = spriteY;
-        this->sprite_i[sprite_count] = (uint8_t)si;
-        this->sprite_count++;
-      }
+    uint8_t sprite_height = (lcdc & FLAG_TALL_SPRITES) ? 16 : 8;
+    if ((sx < 168) && (sy <= line_) && (line_ < sy + sprite_height)) {
+      this->sprite_x[sprite_count] = spriteX;
+      this->sprite_y[sprite_count] = spriteY;
+      this->sprite_i[sprite_count] = (uint8_t)si;
+      this->sprite_count++;
     }
   }
-
-  this->oam_addr = oam_addr_;
-  this->oam_read = oam_read_;
-#endif
 
   //-----------------------------------
   // Render phase
@@ -424,35 +311,55 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, OAM::Out oam_in) {
 
   uint16_t oam_addr_ = 0;
   bool oam_read_ = false;
+  vram_addr = 0;
+
+  /*
+  #define ADDR_VRAM_BEGIN 0x8000
+  #define ADDR_TILE0      0x8000
+  #define ADDR_TILE1      0x8800
+  #define ADDR_MAP0       0x9800
+  #define ADDR_MAP1       0x9C00
+  */
+
+  if (vram_out.oe && !fetch_delay) {
+    if (fetch_type == FETCH_SPRITE) {
+      if (vram_out.addr & 1) {
+        sprite_hi = vram_out.data;
+      }
+      else {
+        sprite_lo = vram_out.data;
+      }
+    }
+    else {
+      if (vram_out.addr >= ADDR_MAP0) {
+        tile_map = vram_out.data;
+      }
+      else if (vram_out.addr & 1) {
+        if (fetch_type != FETCH_BACKGROUND && fetch_type != FETCH_WINDOW && fetch_state != FETCH_LO) {
+          //printf("x");
+        }
+        //tile_hi = vram_out.data;
+      }
+      else {
+        //tile_lo = vram_out.data;
+      }
+    }
+  }
+
+  bool sprite_latched = false;
+
+  if (!fetch_delay) {
+    if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
+      if (fetch_state == FETCH_MAP) map_x++;
+      if (fetch_state == FETCH_HI) tile_latched = 1;
+    }
+    else if (fetch_type == FETCH_SPRITE) {
+      if (fetch_state == FETCH_HI) sprite_latched = true;
+    }
+  }
 
   // if this isn't 86 stuff breaks :/
   if (counter >= 86 && (pix_count2 + pix_discard_pad != 168) && line < 144) {
-
-    bool sprite_latched = false;
-    if (!fetch_delay) {
-      if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
-        if (fetch_state == FETCH_MAP) {
-          tile_map = vram_in.data;
-          map_x++;
-        }
-        if (fetch_state == FETCH_LO) {
-          tile_lo = vram_in.data;
-        }
-        if (fetch_state == FETCH_HI) {
-          tile_hi = vram_in.data;
-          tile_latched = 1;
-        }
-      }
-      else if (fetch_type == FETCH_SPRITE) {
-        if (fetch_state == FETCH_LO) sprite_lo = vram_in.data;
-        if (fetch_state == FETCH_HI) {
-          sprite_hi = vram_in.data;
-          sprite_latched = true;
-        }
-      }
-      vram_addr = 0;
-    }
-
     if (sprite_latched) {
       if (spriteF & SPRITE_FLIP_X) {
         sprite_lo = flip2(sprite_lo);
@@ -559,9 +466,7 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, OAM::Out oam_in) {
       }
       else if (fetch_type == FETCH_SPRITE) {
         if (fetch_state == FETCH_MAP) {
-          // bogus address just to keep the state machine running
-          vram_addr = 0;
-          oam_addr_ = (sprite_index << 2) + (counter & 1) + 2;
+          oam_addr_ = (sprite_index << 2) + 2;
           oam_addr_ += ADDR_OAM_BEGIN;
           oam_read_ = true;
         }
@@ -572,12 +477,8 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, OAM::Out oam_in) {
           vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
         }
       }
-      else {
-        vram_addr = 0;
-      }
     }
   }
-
 
   if ((pix_count2 + pix_discard_pad == 168) && hblank_delay2) {
     hblank_delay2--;
@@ -812,11 +713,17 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, OAM::Out oam_in) {
     fire_int_vblank1,
     fire_int_vblank2,
   };
+
+  if (vram_addr != 0) {
+    if (fetch_type == FETCH_NONE || fetch_state == FETCH_IDLE) {
+      printf("x");
+    }
+  }
 } // PPU::tock
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_lcdoff(int tphase, CpuBus bus, BusOut /*vram_in*/, OAM::Out /*oam_in*/) {
+void PPU::tock_lcdoff(int tphase, CpuBus bus, VRAM::Out /*vram_out*/, OAM::Out /*oam_out*/) {
   counter = 4;
   counter_delay1 = 3;
   counter_delay2 = 2;
@@ -1240,6 +1147,9 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
 //-----------------------------------------------------------------------------
 
 void PPU::dump(std::string& d) {
+  //sprintf(out, "old stat int1 %d\n", ppu.get_old_stat_int1());
+  //sprintf(out, "old stat int2 %d\n", ppu.get_old_stat_int2());
+
   /*
   sprintf(d, "LCDC %s\n", to_binary(lcdc));
   sprintf(d, "STAT %s\n", to_binary(stat));

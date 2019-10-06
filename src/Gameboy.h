@@ -39,8 +39,6 @@ struct Gameboy {
   void dump(std::string& out);
   void dump_disasm(std::string& out);
 
-  uint8_t framebuffer[160 * 144];
-
 private:
 
   enum DMAMode {
@@ -65,26 +63,26 @@ private:
   PpuOut ppu_out;
   OAM::Out oam_out;
 
-  int model = MODEL_DMG;
-  int64_t tcycle = -1;
+  int model;
+  int64_t tcycle;
   uint32_t trace_val;
 
-  DMAMode  dma_mode_x = DMA_NONE;
-  uint8_t  dma_count_x = 0;
-  uint16_t dma_source_x = 0;
+  DMAMode  dma_mode_x;
+  uint8_t  dma_count_x;
+  uint16_t dma_source_x;
 
-  DMAMode  dma_mode_a = DMA_NONE;
-  uint8_t  dma_count_a = 0;
-  uint16_t dma_source_a = 0;
+  DMAMode  dma_mode_a;
+  uint8_t  dma_count_a;
+  uint16_t dma_source_a;
 
-  DMAMode  dma_mode_b = DMA_NONE;
-  uint8_t  dma_count_b = 0;
-  uint8_t  dma_data_b = 0;
+  DMAMode  dma_mode_b;
+  uint8_t  dma_count_b;
+  uint8_t  dma_data_b;
 
-  uint8_t intf = 0;
-  uint8_t imask = 0;
+  uint8_t intf;
+  uint8_t imask;
 
-  uint32_t sentinel = 0xDEADBEEF;
+  uint32_t sentinel;
 };
 
 //-----------------------------------------------------------------------------

@@ -2,8 +2,7 @@
 #include "Types.h"
 
 struct Buttons {
-  ButtonsOut reset();
-
+  void reset();
   ButtonsOut tick() const;
   void tock(CpuBus bus);
 

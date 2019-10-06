@@ -1,19 +1,19 @@
 #pragma once
 #include <stdint.h>
 #include "OAM.h"
+#include "VRAM.h"
 #include "Constants.h"
 
 //-----------------------------------------------------------------------------
 
 struct PPU {
-  PpuOut reset(bool run_bootrom, int new_model);
-
+  void reset(bool run_bootrom, int new_model);
   PpuOut tick(int tphase) const;
-  void tock(int tphase, CpuBus cpu_bus, BusOut vram_out, OAM::Out oam_out);
+  void tock(int tphase, CpuBus cpu_bus, VRAM::Out vram_out, OAM::Out oam_out);
 
   void dump(std::string& out);
 
-  uint8_t  get_stat()       const { return stat; }
+  uint8_t get_stat()       const { return stat; }
 
   void dump_tiles(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
   void draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram, int sprite_index) const;
@@ -26,9 +26,7 @@ struct PPU {
 
 private:
 
-  PpuOut out;
-
-  void tock_lcdoff(int tphase, CpuBus cpu_bus, BusOut vram_out, OAM::Out oam_in);
+  void tock_lcdoff(int tphase, CpuBus cpu_bus, VRAM::Out vram_out, OAM::Out oam_in);
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
 
@@ -37,7 +35,9 @@ private:
   void bus_write_early(uint16_t cpu_addr, uint8_t cpu_data);
   void bus_write_late(uint16_t cpu_addr, uint8_t cpu_data);
 
-  int model = MODEL_DMG;
+  PpuOut out;
+
+  int model;
 
   uint8_t stat_int1;
   uint8_t stat_int2;
@@ -45,15 +45,13 @@ private:
   uint8_t bus_out;
   bool bus_oe;
 
+  uint8_t pix_out;
+  bool pix_oe;
+
   bool vram_lock;
   uint16_t vram_addr;
 
   bool oam_lock;
-  //uint16_t oam_addr;
-  //bool oam_read;
-
-  uint8_t pix_out;
-  bool pix_oe;
 
   //----------
   // Registers
@@ -86,15 +84,13 @@ private:
   int state;
 
   uint16_t counter;
-  uint8_t line;
-
   uint16_t counter_delay1;
-  uint8_t line_delay1;
-
   uint16_t counter_delay2;
-  uint8_t line_delay2;
-
   uint16_t counter_delay3;
+
+  uint8_t line;
+  uint8_t line_delay1;
+  uint8_t line_delay2;
   uint8_t line_delay3;
 
   bool frame_start;
@@ -105,13 +101,13 @@ private:
 
   int compare_line;
 
-  bool fire_int_stat1 = false;
-  bool fire_int_stat2 = false;
-  bool fire_int_vblank1 = false;
-  bool fire_int_vblank2 = false;
+  bool fire_int_stat1;
+  bool fire_int_stat2;
+  bool fire_int_vblank1;
+  bool fire_int_vblank2;
 
-  bool old_stat_int1 = false;
-  bool old_stat_int2 = false;
+  bool old_stat_int1;
+  bool old_stat_int2;
 
   //----------
   // Sprites
@@ -148,8 +144,8 @@ private:
   };
 
   FetchType fetch_type = FETCH_NONE;
-  bool fetch_delay = false;
   FetchState fetch_state;
+  bool fetch_delay = false;
   int sprite_hit;
 
   bool in_window_old;

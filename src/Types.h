@@ -6,6 +6,10 @@ typedef int16_t sample_t;
 
 //-----------------------------------------------------------------------------
 
+struct Framebuffer {
+  uint8_t buf[160*144];
+};
+
 struct CpuBus {
   uint16_t addr;
   uint8_t data;

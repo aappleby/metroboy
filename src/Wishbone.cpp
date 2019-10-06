@@ -35,7 +35,7 @@ public:
   void reset();
   void tick();
   WishboneOut tock(WishboneBus bus) {
-    WishboneOut ret = { 0 };
+    WishboneOut ret = {};
 
     switch (state) {
     case WB_OFF:

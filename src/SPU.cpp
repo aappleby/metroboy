@@ -6,7 +6,9 @@ const char* to_binary(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
-SpuOut SPU::reset() {
+void SPU::reset() {
+  *this = {};
+
   nr10 = 0x80;
   nr11 = 0xBF;
   nr12 = 0xF3;
@@ -30,40 +32,9 @@ SpuOut SPU::reset() {
   nr51 = 0xF3;
   nr52 = 0xF1;
 
-  memset(s3_wave, 0, 16);
   s4_lfsr = 0x7FFF;
 
-  spu_clock = 0;
-
   s1_enable = true;
-  s2_enable = false;
-  s3_enable = false;
-  s4_enable = false;
-
-  s1_sweep_clock = 0;
-  s1_sweep_freq = 0;
-
-  s1_duration = 0;
-  s2_duration = 0;
-  s3_duration = 0;
-  s4_duration = 0;
-
-  s1_env_clock = 0;
-  s2_env_clock = 0;
-  s4_env_clock = 0;
-  s1_env_volume = 0;
-  s2_env_volume = 0;
-  s4_env_volume = 0;
-
-  s1_phase_clock = 2047;
-  s2_phase_clock = 2047;
-  s3_phase_clock = 2047;
-  s4_phase_clock = 2047;
-  s1_phase = 0;
-  s2_phase = 0;
-  s3_phase = 0;
-
-  return {0};
 }
 
 //-----------------------------------------------------------------------------

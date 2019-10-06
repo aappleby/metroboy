@@ -4,10 +4,10 @@
 
 //-----------------------------------------------------------------------------
 
-BusOut Serial::reset() {
+void Serial::reset() {
+  *this = {};
   sb = 0x00;
   sc = 0x7E;
-  return { 0 };
 }
 
 //-----------------------------------------------------------------------------
@@ -17,7 +17,7 @@ BusOut Serial::tick() const {
 }
 
 void Serial::tock(CpuBus bus) {
-  out = { 0,0 };
+  out = {};
 
   if (bus.write) {
     if (bus.addr == ADDR_SB) sb = bus.data;

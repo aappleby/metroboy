@@ -201,10 +201,9 @@ PpuOut PPU::tick(int /*tphase*/) const {
       oam_addr_ = 0;
       oam_read_ = false;
     }
-    else if (counter_ < 80) {
+    else if (counter_ < 80 && ((counter_ & 1) == 0)) {
       // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-      oam_addr_ = ((counter_ << 1) & 0b11111100) | (counter_ & 1);
-      oam_addr_ += ADDR_OAM_BEGIN;
+      oam_addr_ = ADDR_OAM_BEGIN + ((counter_ << 1) & 0b11111100);
       oam_read_ = true;
     }
 
@@ -285,12 +284,16 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, OAM::Out oam_in) {
   // Handle OAM reads from the previous cycle
 
   if (oam_in.oe) {
-    if ((oam_in.addr & 3) == 0) this->spriteY = oam_in.data;
-    if ((oam_in.addr & 3) == 1) this->spriteX = oam_in.data;
-    if ((oam_in.addr & 3) == 2) this->spriteP = oam_in.data;
-    if ((oam_in.addr & 3) == 3) this->spriteF = oam_in.data;
+    if (oam_in.addr & 2) {
+      this->spriteP = uint8_t(oam_in.data16 >> 0);
+      this->spriteF = uint8_t(oam_in.data16 >> 8);
+    }
+    else {
+      this->spriteY = uint8_t(oam_in.data16 >> 0);
+      this->spriteX = uint8_t(oam_in.data16 >> 8);
+    }
 
-    if ((oam_in.addr & 3) == 1 && sprite_count < 10) {
+    if ((oam_in.addr & 3) == 0 && sprite_count < 10) {
       int si = (oam_in.addr - ADDR_OAM_BEGIN) >> 2;
       int sy = spriteY - 16;
       int sx = spriteX;

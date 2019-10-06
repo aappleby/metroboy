@@ -63,7 +63,7 @@ private:
   ZRAM zram;
 
   PpuOut ppu_out;
-  BusOut oam_out;
+  OAM::Out oam_out;
 
   int model = MODEL_DMG;
   int64_t tcycle = -1;

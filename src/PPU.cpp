@@ -217,7 +217,7 @@ PpuOut PPU::tick(int /*tphase*/) const {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
+void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, OAM::Out oam_in) {
   uint16_t counter_ = counter;
   uint8_t line_ = line;
   int frame_count_ = frame_count;
@@ -510,11 +510,6 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
         }
 
         if (fetch_state == FETCH_IDLE) {
-          if (sprite_index != -1) {
-            fetch_type = FETCH_SPRITE;
-            fetch_state = FETCH_MAP;
-            fetch_delay = true;
-          }
           if (!tile_latched) {
             if (in_window_old && (lcdc & FLAG_WIN_ON)) {
               fetch_type = FETCH_WINDOW;
@@ -526,6 +521,11 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
               fetch_state = FETCH_MAP;
               fetch_delay = true;
             }
+          }
+          else if (sprite_index != -1) {
+            fetch_type = FETCH_SPRITE;
+            fetch_state = FETCH_MAP;
+            fetch_delay = true;
           }
         }
       }
@@ -813,7 +813,7 @@ void PPU::tock(int tphase, CpuBus bus, BusOut vram_in, BusOut oam_in) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_lcdoff(int tphase, CpuBus bus, BusOut /*vram_in*/, BusOut /*oam_in*/) {
+void PPU::tock_lcdoff(int tphase, CpuBus bus, BusOut /*vram_in*/, OAM::Out /*oam_in*/) {
   counter = 4;
   counter_delay1 = 3;
   counter_delay2 = 2;

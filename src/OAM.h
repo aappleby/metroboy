@@ -6,15 +6,22 @@
 struct OAM {
   void reset();
 
-  BusOut tick() const;
+  struct Out {
+    uint16_t addr;
+    uint8_t  data;
+    uint16_t data16;
+    bool     oe;
+  };
+
+  Out tick() const;
   void tock(const CpuBus bus);
 
   void dump(std::string& out) const;
-  const uint8_t* get() const { return ram; }
+  const uint8_t* get() const { return (uint8_t*)ram; }
 
 private:
-  BusOut out;
-  uint8_t ram[256];
+  Out out;
+  uint16_t ram[128];
 };
 
 //-----------------------------------------------------------------------------

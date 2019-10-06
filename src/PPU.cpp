@@ -83,8 +83,63 @@ void PPU::reset(bool run_bootrom, int new_model) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-PpuOut PPU::tick(int /*tphase*/) const {
-  auto out2 = out;
+PPU::Out PPU::tick(int /*tphase*/) const {
+  //-----------------------------------
+  // OAM/VRAM address generator
+
+  PPU::Out out2 = out;
+
+  /*
+  struct Out {
+    uint8_t data;
+    bool oe;
+
+    uint16_t vram_addr;
+    uint16_t oam_addr;
+
+    int x;
+    int y;
+    int counter;
+    uint8_t pix_out;
+    bool pix_oe;
+
+    bool fire_int_stat1;
+    bool fire_int_stat2;
+    bool fire_int_vblank1;
+    bool fire_int_vblank2;
+  };
+  */
+
+  out2.vram_addr = 0;
+  out2.oam_addr = 0;
+
+  if (!(lcdc & FLAG_LCD_ON)) {
+    return out2;
+  }
+
+  uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
+  uint8_t map_y = ((scy + line) >> 3) & 31;
+
+  if (fetch_type == FETCH_BACKGROUND) {
+    if      (fetch_state == FETCH_MAP) out2.vram_addr = tile_map_address(lcdc, new_map_x, map_y);
+    else if (fetch_state == FETCH_LO)  out2.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
+    else if (fetch_state == FETCH_HI)  out2.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
+  }
+  else if (fetch_type == FETCH_WINDOW) {
+    if      (fetch_state == FETCH_MAP) out2.vram_addr = win_map_address(lcdc, map_x, win_y_latch);
+    else if (fetch_state == FETCH_LO)  out2.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
+    else if (fetch_state == FETCH_HI)  out2.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
+  }
+  else if (fetch_type == FETCH_SPRITE) {
+    if      (fetch_state == FETCH_MAP) { out2.oam_addr = (sprite_index << 2) + 2; out2.oam_addr += ADDR_OAM_BEGIN; }
+    else if (fetch_state == FETCH_LO)  out2.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
+    else if (fetch_state == FETCH_HI)  out2.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
+  }
+
+  if (pix_count2 + pix_discard_pad == 168) {
+    out2.oam_addr = 0;
+    out2.vram_addr = 0;
+  }
 
   out2.x = pix_count2;
   out2.y = line;
@@ -104,19 +159,17 @@ PpuOut PPU::tick(int /*tphase*/) const {
     }
   }
 
-  if (lcdc & FLAG_LCD_ON) {
-    uint16_t oam_addr_ = out.oam_addr;
+  uint16_t oam_addr_ = out2.oam_addr;
 
-    if (frame_count_ == 0 && line_ == 0 && counter_ < 84) {
-      oam_addr_ = 0;
-    }
-    else if (counter_ < 80 && ((counter_ & 1) == 0)) {
-      // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-      oam_addr_ = ADDR_OAM_BEGIN + ((counter_ << 1) & 0b11111100);
-    }
-
-    out2.oam_addr = oam_addr_;
+  if (frame_count_ == 0 && line_ == 0 && counter_ < 84) {
+    oam_addr_ = 0;
   }
+  else if (counter_ < 80 && ((counter_ & 1) == 0)) {
+    // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
+    oam_addr_ = ADDR_OAM_BEGIN + ((counter_ << 1) & 0b11111100);
+  }
+
+  out2.oam_addr = oam_addr_;
 
   return out2;
 }
@@ -388,17 +441,15 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Fetcher state machine
 
-  if (!fetch_delay) {
-    if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
-      if (fetch_state == FETCH_MAP) map_x++;
-      if (fetch_state == FETCH_HI) tile_latched = 1;
-    }
-  }
-
   if (fetch_delay) {
     fetch_delay = false;
   }
   else {
+    if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
+      if (fetch_state == FETCH_MAP) map_x++;
+      if (fetch_state == FETCH_HI) tile_latched = 1;
+    }
+
     if (fetch_state == FETCH_MAP) {
       fetch_state = FETCH_LO;
     }
@@ -431,28 +482,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     if (fetch_state != FETCH_IDLE) fetch_delay = true;
   }
 
-  out.vram_addr = 0;
-  out.oam_addr = 0;
-
-  uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
-  uint8_t map_y = ((scy + line) >> 3) & 31;
-
-  if (fetch_type == FETCH_BACKGROUND) {
-    if      (fetch_state == FETCH_MAP) out.vram_addr = tile_map_address(lcdc, new_map_x, map_y);
-    else if (fetch_state == FETCH_LO)  out.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
-    else if (fetch_state == FETCH_HI)  out.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
-  }
-  else if (fetch_type == FETCH_WINDOW) {
-    if      (fetch_state == FETCH_MAP) out.vram_addr = win_map_address(lcdc, map_x, win_y_latch);
-    else if (fetch_state == FETCH_LO)  out.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
-    else if (fetch_state == FETCH_HI)  out.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
-  }
-  else if (fetch_type == FETCH_SPRITE) {
-    if      (fetch_state == FETCH_MAP) { out.oam_addr = (sprite_index << 2) + 2; out.oam_addr += ADDR_OAM_BEGIN; }
-    else if (fetch_state == FETCH_LO)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
-    else if (fetch_state == FETCH_HI)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
-  }
-
   //-----------------------------------
   // Turn fetcher off once line is done
 
@@ -460,8 +489,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     fetch_type = FETCH_NONE;
     fetch_state = FETCH_IDLE;
     fetch_delay = false;
-    out.oam_addr = 0;
-    out.vram_addr = 0;
   }
 
   //-----------------------------------
@@ -511,44 +538,26 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   // interrupt generation
 
   if (tphase == 1 || tphase == 3) {
-    bool fire_stat_oam1 =
-      (line > 0) &&
-      (line < 144) &&
-      (counter == 0);
-
     bool fire_stat_hblank1 = hblank_delay2 <= 6;
     bool fire_stat_vblank1 = (line == 144 && counter >= 4) || (line >= 145);
-    bool fire_stat_lyc1 = compare_line == lyc;
+    bool fire_stat_lyc1    = compare_line == lyc;
     bool fire_stat_glitch1 = bus.write && bus.addr == ADDR_STAT && stat_int1 != 0;
-
-    bool fire_stat_oam2 =
-      ((line == 0 && counter == 4) || (line > 0 && line <= 144 && counter == 4));
-
-    //bool fire_stat_oam2 = (line > 0) && (line < 144) && (counter == 0);
+    bool fire_stat_oam1    = (line > 0) && (line < 144) && (counter == 0);
 
     bool fire_stat_hblank2 = hblank_delay2 <= 6;
     bool fire_stat_vblank2 = (line == 144 && counter >= 4) || (line >= 145);
-    bool fire_stat_lyc2 = compare_line == lyc;
+    bool fire_stat_lyc2    = compare_line == lyc;
     bool fire_stat_glitch2 = bus.write && bus.addr == ADDR_STAT && stat_int2 != 0;
+    bool fire_stat_oam2   = ((line == 0 && counter == 4) || (line > 0 && line <= 144 && counter == 4));
 
     uint8_t stat_ = stat;
     uint8_t stat_int1_ = stat_int1;
     uint8_t stat_int2_ = stat_int2;
 
-    if (lcdc & FLAG_LCD_ON) {
-      if (tphase == 3) {
-        stat_ &= ~STAT_LYC;
-        stat_int1_ = 0;
-        stat_int2_ = 0;
-      }
-    }
-
-    if (!(lcdc & FLAG_LCD_ON)) {
-      fire_stat_oam1 = false;
-      fire_stat_hblank1 = false;
-      fire_stat_vblank1 = false;
-      fire_stat_lyc1 = false;
-      fire_stat_glitch1 = false;
+    if (tphase == 3) {
+      stat_ &= ~STAT_LYC;
+      stat_int1_ = 0;
+      stat_int2_ = 0;
     }
 
     if (fire_stat_lyc1)    stat_ |= STAT_LYC;
@@ -665,9 +674,6 @@ uint16_t sprite_base_address(uint8_t /*lcdc*/, uint8_t line, uint8_t sprite_y, u
 // Emit pixel if we have some in the pipe and we're not stalled.
 
 void PPU::emit_pixel(int /*tphase*/) {
-  out.pix_oe = false;
-  out.pix_out = 0;
-
   if (pipe_count == 0) {
     return;
   }
@@ -710,6 +716,11 @@ void PPU::emit_pixel(int /*tphase*/) {
   }
 
   pipe_count--;
+
+  // move to tick()?
+
+  out.pix_oe = false;
+  out.pix_out = 0;
 
   if (pix_discard_scx < (scx_latch & 7)) {
     out.pix_oe = false;

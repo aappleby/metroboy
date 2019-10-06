@@ -64,8 +64,7 @@ GameboyOut Gameboy::tick() const {
   int64_t tcycle_ = tcycle + 1;
   int tphase_ = tcycle_ & 3;
 
-  //PpuOut ppu_out = ppu.tick(tphase_);
-  PpuOut ppu_out2 = ppu.tick(tphase_);
+  PPU::Out ppu_out2 = ppu.tick(tphase_);
   SpuOut spu_out = spu.tick();
 
   return {

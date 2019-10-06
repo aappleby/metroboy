@@ -36,25 +36,6 @@ struct SpuOut {
   sample_t out_l;
 };
 
-struct PpuOut {
-  uint8_t data;
-  bool oe;
-
-  uint16_t vram_addr;
-  uint16_t oam_addr;
-
-  int x;
-  int y;
-  int counter;
-  uint8_t pix_out;
-  bool pix_oe;
-
-  bool fire_int_stat1;
-  bool fire_int_stat2;
-  bool fire_int_vblank1;
-  bool fire_int_vblank2;
-};
-
 struct ButtonsOut {
   uint8_t data;
   bool oe;

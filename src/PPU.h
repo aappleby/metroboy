@@ -7,8 +7,27 @@
 //-----------------------------------------------------------------------------
 
 struct PPU {
+  struct Out {
+    uint8_t data;
+    bool oe;
+
+    uint16_t vram_addr;
+    uint16_t oam_addr;
+
+    int x;
+    int y;
+    int counter;
+    uint8_t pix_out;
+    bool pix_oe;
+
+    bool fire_int_stat1;
+    bool fire_int_stat2;
+    bool fire_int_vblank1;
+    bool fire_int_vblank2;
+  };
+
   void reset(bool run_bootrom, int new_model);
-  PpuOut tick(int tphase) const;
+  Out  tick(int tphase) const;
   void tock(int tphase, CpuBus cpu_bus, VRAM::Out vram_out, OAM::Out oam_out);
 
   void dump(std::string& out);
@@ -35,7 +54,7 @@ private:
   void bus_write_early(uint16_t cpu_addr, uint8_t cpu_data);
   void bus_write_late(uint16_t cpu_addr, uint8_t cpu_data);
 
-  PpuOut out;
+  Out out;
 
   int model;
 

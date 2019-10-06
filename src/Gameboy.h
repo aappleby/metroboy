@@ -60,7 +60,7 @@ private:
   Serial serial;
   ZRAM zram;
 
-  PpuOut ppu_out;
+  PPU::Out ppu_out;
   OAM::Out oam_out;
 
   int model;

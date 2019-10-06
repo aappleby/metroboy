@@ -42,17 +42,6 @@ private:
   uint8_t stat_int1;
   uint8_t stat_int2;
 
-  uint8_t bus_out;
-  bool bus_oe;
-
-  uint8_t pix_out;
-  bool pix_oe;
-
-  bool vram_lock;
-  uint16_t vram_addr;
-
-  bool oam_lock;
-
   //----------
   // Registers
 
@@ -72,7 +61,6 @@ private:
   uint8_t bgp_early;
 
   uint8_t palettes[4];
-
 
   uint8_t scx_latch;
   uint8_t win_y_latch;
@@ -100,11 +88,6 @@ private:
   uint8_t hblank_delay2;
 
   int compare_line;
-
-  bool fire_int_stat1;
-  bool fire_int_stat2;
-  bool fire_int_vblank1;
-  bool fire_int_vblank2;
 
   bool old_stat_int1;
   bool old_stat_int2;

@@ -261,7 +261,7 @@ void Gameboy::tock() {
     bus_oe_ += zram_out.oe;
 
     assert(bus_oe_ <= 1);
-    if (!bus_oe_) bus_out_ = 0xFF;
+    if (!bus_oe_) bus_out_ = 0x00;
 
     //-----------------------------------
     // z80 tocks last

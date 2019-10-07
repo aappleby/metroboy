@@ -429,17 +429,13 @@ void MetroBoyApp::loop() {
   smoothed_frame_time *= 0.98;
   smoothed_frame_time += (1000.0 * double(frame_time) / double(freq)) * 0.02;
 
-  //sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, (int)(cycles_end - cycles_begin) / 4);
-
   {
     char source_buf[1024];
     snprintf(source_buf, 1024, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, (int)(cycles_end - cycles_begin) / 4);
     text_buf.append(source_buf);
   }
-
   
-  //render_text(fb_width - 288, fb_height - 12 - 4, text_buf.c_str());
-  render_text(0, 0, text_buf.c_str());
+  render_text(fb_width - 256, fb_height - 12, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------

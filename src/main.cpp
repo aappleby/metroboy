@@ -18,6 +18,7 @@
 
 #pragma warning(disable : 4996)
 #pragma warning(disable : 4702)
+#pragma warning(disable : 4100)
 
 extern const uint32_t gb_colors[];
 extern uint8_t rom_buf[];
@@ -27,10 +28,12 @@ void run_test(const std::string& prefix, const std::string& name);
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-  printf("Hello World\n");
+  printf("Hello Metroboy\n");
+
   MetroBoyApp* app = new MetroBoyApp();
   int ret = app->main_(argc, argv);
   delete app;
+
   return ret;
 }
 
@@ -115,6 +118,16 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   audio_init();
 
+  background = new uint32_t[fb_width * fb_height];
+  //framebuffer = new uint32_t[fb_width * fb_height];
+
+  for (int y = 0; y < fb_height; y++) {
+    for (int x = 0; x < fb_width; x++) {
+      int c = ((x ^ y) & 0x20) ? 0x10101010 : 0x15151515;
+      background[x + y * fb_width] = c;
+    }
+  }
+
   while (!quit) loop();
 
   audio_stop();
@@ -161,6 +174,7 @@ void MetroBoyApp::loop() {
 
   //----------------------------------------
   // Button input
+  int64_t cycles_begin = metroboy.total_tcycles();
 
   buttons = 0;
   if (keyboard_state[SDL_SCANCODE_RIGHT])  buttons |= 0x01;
@@ -208,7 +222,6 @@ void MetroBoyApp::loop() {
   //----------------------------------------
   // Run simulation
 
-  int64_t cycles_begin = metroboy.total_tcycles();
 
   if (runmode == RUN_FAST) {
     fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
@@ -247,18 +260,11 @@ void MetroBoyApp::loop() {
   step_down = false;
 
   int64_t cycles_end = metroboy.total_tcycles();
-
   //----------------------------------------
   // Clear screen
 
   SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
-
-  for (int y = 0; y < fb_height; y++) {
-    for (int x = 0; x < fb_width; x++) {
-      int c = ((x ^ y) & 0x20) ? 0x10101010 : 0x15151515;
-      framebuffer[x + y * fb_width] = c;
-    }
-  }
+  memcpy(framebuffer, background, fb_width * fb_height * 4);
 
   //----------------------------------------
   // Left column text
@@ -423,8 +429,17 @@ void MetroBoyApp::loop() {
   smoothed_frame_time *= 0.98;
   smoothed_frame_time += (1000.0 * double(frame_time) / double(freq)) * 0.02;
 
-  sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, (int)(cycles_end - cycles_begin) / 4);
-  render_text(fb_width - 288, fb_height - 12 - 4, text_buf.c_str());
+  //sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, (int)(cycles_end - cycles_begin) / 4);
+
+  {
+    char source_buf[1024];
+    snprintf(source_buf, 1024, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, (int)(cycles_end - cycles_begin) / 4);
+    text_buf.append(source_buf);
+  }
+
+  
+  //render_text(fb_width - 288, fb_height - 12 - 4, text_buf.c_str());
+  render_text(0, 0, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------

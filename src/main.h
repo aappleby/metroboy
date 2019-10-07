@@ -32,7 +32,10 @@ public:
   std::string text_buf;
   uint64_t frame_begin, frame_end, frame_time = 0;
   double fast_cycles = 114 * 154;
-  uint32_t* framebuffer = NULL;
+
+  uint32_t* background = nullptr;
+  uint32_t* framebuffer = nullptr;
+  
   int pitch = 0;
 
   uint64_t freq;

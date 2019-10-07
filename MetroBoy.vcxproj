@@ -148,6 +148,7 @@
     <ClCompile Include="src\test_screenshot.cpp" />
     <ClCompile Include="src\test_wpol.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\Types.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
     <ClCompile Include="src\Wishbone.cpp" />
     <ClCompile Include="src\Z80.cpp" />

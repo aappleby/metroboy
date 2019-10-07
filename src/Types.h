@@ -88,6 +88,8 @@ struct Sprite {
 
 //-----------------------------------------------------------------------------
 
+#pragma warning(disable:4100)
+
 template<typename ... Args>
 void sprintf(std::string& out, const char* format, Args ... args)
 {

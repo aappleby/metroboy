@@ -4,8 +4,6 @@
 
 extern const uint32_t gb_colors[];
 
-const char* to_binary(uint8_t b);
-
 uint16_t pack_tile_addr(uint16_t base, uint8_t tile, uint8_t ty);
 
 uint16_t tile_map_address(uint8_t lcdc, uint8_t map_x, uint8_t map_y);
@@ -22,9 +20,8 @@ uint8_t flip2(uint8_t b) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::reset(bool run_bootrom, int new_model) {
+void PPU::reset(bool run_bootrom, int /*new_model*/) {
   *this = {};
-  model = new_model;
 
   //----------
   // Registers
@@ -57,7 +54,6 @@ void PPU::reset(bool run_bootrom, int new_model) {
   if (!run_bootrom) {
     dma = 0xFF;
     bgp = 0xFC;
-    bgp_early = 0xFC;
     obp0 = 0xFF;
     obp1 = 0xFF;
 
@@ -73,7 +69,7 @@ void PPU::reset(bool run_bootrom, int new_model) {
 
     lcdc = 0x91;
     palettes[0] = 0xfc;
-    pix_count2 = 160;
+    pix_count = 160;
     pix_discard_scx = 0;
     pix_discard_pad = 8;
   }
@@ -103,9 +99,9 @@ PPU::Out PPU::tick(int /*tphase*/) const {
     uint8_t pix_out;
     bool pix_oe;
 
-    bool fire_int_stat1;
-    bool fire_int_stat2;
-    bool fire_int_vblank1;
+    bool stat1;
+    bool stat2;
+    bool vblank1;
     bool fire_int_vblank2;
   };
   */
@@ -121,14 +117,14 @@ PPU::Out PPU::tick(int /*tphase*/) const {
   uint8_t map_y = ((scy + line) >> 3) & 31;
 
   if (fetch_type == FETCH_BACKGROUND) {
-    if      (fetch_state == FETCH_MAP) out2.vram_addr = tile_map_address(lcdc, new_map_x, map_y);
-    else if (fetch_state == FETCH_LO)  out2.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
-    else if (fetch_state == FETCH_HI)  out2.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
+    if      (fetch_state == FETCH_TILE_MAP) out2.vram_addr = tile_map_address(lcdc, new_map_x, map_y);
+    else if (fetch_state == FETCH_TILE_LO)  out2.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
+    else if (fetch_state == FETCH_TILE_HI)  out2.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
   }
   else if (fetch_type == FETCH_WINDOW) {
-    if      (fetch_state == FETCH_MAP) out2.vram_addr = win_map_address(lcdc, map_x, win_y_latch);
-    else if (fetch_state == FETCH_LO)  out2.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
-    else if (fetch_state == FETCH_HI)  out2.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
+    if      (fetch_state == FETCH_TILE_MAP) out2.vram_addr = win_map_address(lcdc, map_x, win_y_latch);
+    else if (fetch_state == FETCH_TILE_LO)  out2.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
+    else if (fetch_state == FETCH_TILE_HI)  out2.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
   }
   else if (fetch_type == FETCH_SPRITE) {
     if      (fetch_state == FETCH_SPRITE_MAP) { out2.oam_addr = (sprite_index << 2) + 2; out2.oam_addr += ADDR_OAM_BEGIN; }
@@ -136,12 +132,12 @@ PPU::Out PPU::tick(int /*tphase*/) const {
     else if (fetch_state == FETCH_SPRITE_HI)  out2.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
   }
 
-  if (pix_count2 + pix_discard_pad == 168) {
+  if (pix_count + pix_discard_pad == 168) {
     out2.oam_addr = 0;
     out2.vram_addr = 0;
   }
 
-  out2.x = pix_count2;
+  out2.x = pix_count;
   out2.y = line;
   out2.counter = counter;
 
@@ -207,13 +203,13 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     state = PPU_STATE_HBLANK;
     in_window_old = false;
     in_window_new = false;
-    in_window_new_early = false;
-    window_retrigger_old = false;
-    window_retrigger_new = false;
+    in_window_early = false;
+    win_retrig_old = false;
+    win_retrig_new = false;
     pipe_count = 0;
     sprite_index = -1;
     sprite_count = 0;
-    pix_count2 = 0;
+    pix_count = 0;
     pix_discard_scx = 0;
     pix_discard_pad = 0;
     hblank_delay2 = HBLANK_DELAY_START;
@@ -229,7 +225,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     state = PPU_STATE_VRAM;
   }
 
-  if (counter > 84 && (pix_count2 + pix_discard_pad == 168)) {
+  if (counter > 84 && (pix_count + pix_discard_pad == 168)) {
     state = PPU_STATE_HBLANK;
     fetch_delay = false;
     fetch_state = PPU::FETCH_IDLE;
@@ -237,18 +233,6 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
 
   if ((line == 144 && counter >= 4) || (line >= 145)) {
     state = PPU_STATE_VBLANK;
-  }
-
-  if (counter == 86) {
-
-    tile_latched = true;
-
-    if (line == 0) {
-      win_y_counter = 0;
-      win_y_latch = 0;
-    }
-    map_x = 0;
-    scx_latch = scx;
   }
 
   //-----------------------------------
@@ -273,14 +257,33 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
 
   if (vram_out.oe) {
     if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
-      if (fetch_state == FETCH_MAP) tile_map = vram_out.data;
-      if (fetch_state == FETCH_LO)  tile_lo = vram_out.data;
-      if (fetch_state == FETCH_HI)  tile_hi = vram_out.data;
+      if (fetch_state == FETCH_TILE_MAP) tile_map = vram_out.data;
+      if (fetch_state == FETCH_TILE_LO)  tile_lo = vram_out.data;
+      if (fetch_state == FETCH_TILE_HI)  tile_hi = vram_out.data;
     }
     else if (fetch_type == FETCH_SPRITE) {
       if (fetch_state == FETCH_SPRITE_LO) sprite_lo = vram_out.data;
       if (fetch_state == FETCH_SPRITE_HI) sprite_hi = vram_out.data;
     }
+  }
+
+  if (!fetch_delay && (fetch_state == FETCH_SPRITE_HI))  {
+    if (spriteF & SPRITE_FLIP_X) {
+      sprite_lo = flip2(sprite_lo);
+      sprite_hi = flip2(sprite_hi);
+    }
+
+    uint8_t sprite_pal_lo = spriteF & SPRITE_PAL ? 0b11111111 : 0b00000000;
+    uint8_t sprite_pal_hi = 0b11111111;
+
+    // sprites don't draw where we already drew sprites
+    uint8_t mask = ob_pix_lo | ob_pix_hi;
+
+    ob_pix_lo |= (sprite_lo & ~mask);
+    ob_pix_hi |= (sprite_hi & ~mask);
+    ob_pal_lo |= (sprite_pal_lo & ~mask);
+    ob_pal_hi |= (sprite_pal_hi & ~mask);
+    sprite_index = -1;
   }
 
   //-----------------------------------
@@ -303,22 +306,22 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Window stuff
 
-  window_retrigger_old = window_retrigger_new;
-  window_retrigger_new = in_window_old && in_window_new_early;
+  win_retrig_old = win_retrig_new;
+  win_retrig_new = in_window_old && in_window_early;
 
   // check window hit
-  in_window_new = in_window_new_early | in_window_late;
-  in_window_new_early =
+  in_window_new = in_window_early | in_window_late;
+  in_window_early =
     (lcdc & FLAG_WIN_ON) &&
     (line >= wy) &&
-    (pix_count2 + pix_discard_pad == wx);
+    (pix_count + pix_discard_pad == wx);
 
   in_window_late = false;
   if (bus.write && bus.addr == 0xFF40 && (bus.data & FLAG_WIN_ON)) {
     in_window_late =
       (lcdc & FLAG_WIN_ON) &&
       (line >= wy) &&
-      (pix_count2 + pix_discard_pad == wx + 1);
+      (pix_count + pix_discard_pad == wx + 1);
   }
 
   if (!in_window_old && in_window_new) {
@@ -337,14 +340,14 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     bg_pal_hi = 0;
   }
 
-  if (!window_retrigger_old && window_retrigger_new) {
+  if (!win_retrig_old && win_retrig_new) {
     //win_y_latch = win_y_counter;
     //win_y_counter++;
     //map_x = 0;
 
     //fetch_state = FETCH_IDLE;
     //fetch_delay = false;
-    //if (in_window_new_early) {
+    //if (in_window_early) {
     //pipe_count++;
     //}
     //tile_latched = false;
@@ -361,26 +364,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Actual rendering
 
-  if (!fetch_delay && (fetch_type == FETCH_SPRITE) && (fetch_state == FETCH_SPRITE_HI))  {
-    if (spriteF & SPRITE_FLIP_X) {
-      sprite_lo = flip2(sprite_lo);
-      sprite_hi = flip2(sprite_hi);
-    }
-
-    uint8_t sprite_pal_lo = spriteF & SPRITE_PAL ? 0b11111111 : 0b00000000;
-    uint8_t sprite_pal_hi = 0b11111111;
-
-    // sprites don't draw where we already drew sprites
-    uint8_t mask = ob_pix_lo | ob_pix_hi;
-
-    ob_pix_lo |= (sprite_lo & ~mask);
-    ob_pix_hi |= (sprite_hi & ~mask);
-    ob_pal_lo |= (sprite_pal_lo & ~mask);
-    ob_pal_hi |= (sprite_pal_hi & ~mask);
-    sprite_index = -1;
-  }
-
-  int next_pix = pix_count2 + pix_discard_pad;
+  int next_pix = pix_count + pix_discard_pad;
 
   sprite_hit = 15;
   if (lcdc & FLAG_OBJ_ON) {
@@ -421,11 +405,24 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     sprite_y[sprite_hit] = 255;
   }
 
-  // if this isn't 87 stuff breaks :/
-  bool rendering = counter >= 87 && (pix_count2 + pix_discard_pad != 168) && line < 144;
+  if (counter == 86) {
 
-  if (rendering) emit_pixel(tphase);
+    tile_latched = true;
+
+    if (line == 0) {
+      win_y_counter = 0;
+      win_y_latch = 0;
+    }
+    map_x = 0;
+    scx_latch = scx;
+  }
+
+  // if this isn't 87 stuff breaks :/
+  bool rendering = counter >= 87 && (pix_count + pix_discard_pad != 168) && line < 144;
+
   if (rendering) {
+    emit_pixel(tphase);
+
     if (pipe_count == 0 && tile_latched) {
       bg_pix_lo = tile_lo;
       bg_pix_hi = tile_hi;
@@ -434,7 +431,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     }
   }
 
-  if ((pix_count2 + pix_discard_pad == 168) && hblank_delay2) {
+  if ((pix_count + pix_discard_pad == 168) && hblank_delay2) {
     hblank_delay2--;
   }
 
@@ -445,44 +442,25 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     fetch_delay = false;
   }
   else {
-    if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
-      if (fetch_state == FETCH_MAP) map_x++;
-      if (fetch_state == FETCH_HI) tile_latched = 1;
-    }
+    if (fetch_state == FETCH_TILE_MAP) map_x++;
+    if (fetch_state == FETCH_TILE_HI) tile_latched = 1;
 
-    if (fetch_state == FETCH_MAP) {
-      fetch_state = FETCH_LO;
-    }
-    else if (fetch_state == FETCH_LO) {
-      fetch_state = FETCH_HI;
-      fetch_delay = true;
-    }
-    else if (fetch_state == FETCH_HI) {
-      fetch_state = FETCH_IDLE;
-      fetch_type = FETCH_NONE;
-    }
-
-    if (fetch_state == FETCH_SPRITE_MAP) {
-      fetch_state = FETCH_SPRITE_LO;
-    }
-    else if (fetch_state == FETCH_SPRITE_LO) {
-      fetch_state = FETCH_SPRITE_HI;
-      fetch_delay = true;
-    }
-    else if (fetch_state == FETCH_SPRITE_HI) {
-      fetch_state = FETCH_IDLE;
-      fetch_type = FETCH_NONE;
-    }
+    if      (fetch_state == FETCH_TILE_MAP)   fetch_state = FETCH_TILE_LO;
+    else if (fetch_state == FETCH_TILE_LO)    fetch_state = FETCH_TILE_HI;
+    else if (fetch_state == FETCH_TILE_HI)    fetch_state = FETCH_IDLE;
+    else if (fetch_state == FETCH_SPRITE_MAP) fetch_state = FETCH_SPRITE_LO;
+    else if (fetch_state == FETCH_SPRITE_LO)  fetch_state = FETCH_SPRITE_HI;
+    else if (fetch_state == FETCH_SPRITE_HI)  fetch_state = FETCH_IDLE;
 
     if (fetch_state == FETCH_IDLE) {
       if (!tile_latched) {
         if (in_window_old && (lcdc & FLAG_WIN_ON)) {
           fetch_type = FETCH_WINDOW;
-          fetch_state = FETCH_MAP;
+          fetch_state = FETCH_TILE_MAP;
         }
         else {
           fetch_type = FETCH_BACKGROUND;
-          fetch_state = FETCH_MAP;
+          fetch_state = FETCH_TILE_MAP;
         }
       }
       else if (sprite_index != -1) {
@@ -491,13 +469,18 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
       }
     }
 
-    if (fetch_state != FETCH_IDLE) fetch_delay = true;
+    if (fetch_state != FETCH_IDLE) {
+      fetch_delay = true;
+    }
+    else {
+      fetch_type = FETCH_NONE;
+    }
   }
 
   //-----------------------------------
   // Turn fetcher off once line is done
 
-  if (pix_count2 + pix_discard_pad == 168) {
+  if (pix_count + pix_discard_pad == 168) {
     fetch_type = FETCH_NONE;
     fetch_state = FETCH_IDLE;
     fetch_delay = false;
@@ -586,11 +569,11 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     if (fire_stat_glitch2) stat_int2_ |= EI_GLITCH;
     if (fire_stat_oam2)    stat_int2_ |= EI_OAM;
 
-    out.fire_int_vblank1 = line == 144 && counter == 4;
-    out.fire_int_stat1    = ((stat_ & stat_int1_) && !old_stat_int1);
+    out.vblank1 = line == 144 && counter == 4;
+    out.stat1   = ((stat_ & stat_int1_) && !old_stat_int1);
 
-    out.fire_int_vblank2 = line == 144 && counter == 4;
-    out.fire_int_stat2 = ((stat_ & stat_int2_) && !old_stat_int2);
+    out.vblank2 = line == 144 && counter == 4;
+    out.stat2   = ((stat_ & stat_int2_) && !old_stat_int2);
 
     stat = stat_;
     stat_int1 = stat_int1_;
@@ -624,7 +607,7 @@ void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, VRAM::Out /*vram_out*/, OAM::O
   hblank_delay2 = HBLANK_DELAY_START;
   fetch_state = FETCH_IDLE;
 
-  pix_count2 = 0;
+  pix_count = 0;
   pix_discard_scx = 0;
   pix_discard_pad = 0;
   sprite_count = 0;
@@ -744,14 +727,14 @@ void PPU::emit_pixel(int /*tphase*/) {
     out.pix_out = 0;
     pix_discard_pad++;
   }
-  else if (pix_count2 + pix_discard_pad == 168) {
+  else if (pix_count + pix_discard_pad == 168) {
     out.pix_oe = false;
     out.pix_out = 0;
   }
   else {
     out.pix_oe = true;
     out.pix_out = (palettes[pal] >> (pix << 1)) & 3;
-    pix_count2++;
+    pix_count++;
   }
 }
 
@@ -811,7 +794,7 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
       lcdc |= data & 0b01111100;
 
       // dmg glitch hack
-      if (pix_count2 == 0) {
+      if (pix_count == 0) {
         if ((data & 2) == 0) {
           lcdc &= ~2;
         }
@@ -849,9 +832,9 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
       if (!(lcdc & FLAG_WIN_ON)) {
         in_window_old = false;
         in_window_new = false;
-        in_window_new_early = false;
-        window_retrigger_old = false;
-        window_retrigger_new = false;
+        in_window_early = false;
+        win_retrig_old = false;
+        win_retrig_new = false;
       }
       break;
     };
@@ -888,85 +871,135 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::dump(std::string& d) {
-  //sprintf(out, "old stat int1 %d\n", ppu.get_old_stat_int1());
-  //sprintf(out, "old stat int2 %d\n", ppu.get_old_stat_int2());
+const char* state_names[] = {
+  "HBLANK",
+  "VBLANK",
+  "OAM",
+  "VRAM"
+};
+
+const char* fetch_names1[] = {
+  "FETCH_NONE",
+  "FETCH_BACKGROUND",
+  "FETCH_WINDOW",
+  "FETCH_SPRITE",
+};
+
+const char* fetch_names2[] = {
+  "FETCH_IDLE",
+  "FETCH_TILE_MAP",
+  "FETCH_TILE_LO",
+  "FETCH_TILE_HI",
+  "FETCH_SPRITE_MAP",
+  "FETCH_SPRITE_LO",
+  "FETCH_SPRITE_HI",
+};
+
+
+void PPU::dump(std::string& d) const {
+
+  sprintf(d, "LCDC      %s\n", byte_to_bits(lcdc));
+  sprintf(d, "STAT      %s\n", byte_to_bits(stat));
+  sprintf(d, "SCY       %d\n", scy);
+  sprintf(d, "SCX       %d\n", scx);
+  sprintf(d, "LY        %d\n", ly);
+  sprintf(d, "LYC       %d\n", lyc);
+  sprintf(d, "DMA       %d\n", dma);
+  sprintf(d, "BGP       0x%02x\n", palettes[0]);
+  sprintf(d, "OBP0      0x%02x\n", palettes[2]);
+  sprintf(d, "OBP1      0x%02x\n", palettes[3]);
+  sprintf(d, "WY        %d\n", wy);
+  sprintf(d, "WX        %d\n", wx);
+  sprintf(d, "wyc       %d\n", win_y_counter);
+  sprintf(d, "\n");
+
+  sprintf(d, "frame     %d\n", frame_count);
+  sprintf(d, "line      %d\n", line);
+  sprintf(d, "state     %s\n", state_names[state]);
+  sprintf(d, "counter   %d\n", counter);
+  sprintf(d, "hdelay    %d\n", hblank_delay2);
+  sprintf(d, "\n");
 
   /*
-  sprintf(d, "LCDC %s\n", to_binary(lcdc));
-  sprintf(d, "STAT %s\n", to_binary(stat));
-  sprintf(d, "SCY  %d\n", scy);
-  sprintf(d, "SCX  %d\n", scx);
-  sprintf(d, "LY   %d\n", ly);
-  sprintf(d, "LYC  %d\n", lyc);
-  sprintf(d, "DMA  %d\n", dma);
-  sprintf(d, "BGP  0x%02x\n", palettes[0]);
-  sprintf(d, "OBP0 0x%02x\n", palettes[2]);
-  sprintf(d, "OBP1 0x%02x\n", palettes[3]);
-  sprintf(d, "WY   %d\n", wy);
-  sprintf(d, "WX   %d\n", wx);
-  sprintf(d, "wyc   %d\n", win_y_counter);
+  sprintf(d, "pal[0]    0x%02x\n", palettes[0]);
+  sprintf(d, "pal[1]    0x%02x\n", palettes[1]);
+  sprintf(d, "pal[2]    0x%02x\n", palettes[2]);
+  sprintf(d, "pal[3]    0x%02x\n", palettes[3]);
   sprintf(d, "\n");
   */
 
-  const char* fetch_names1[] = {
-    "FETCH_BACKGROUND",
-    "FETCH_WINDOW",
-    "FETCH_SPRITE",
-    "FETCH_NONE",
-  };
-
-  const char* fetch_names2[] = {
-    "FETCH_MAP",
-    "FETCH_LO",
-    "FETCH_HI",
-    "FETCH_IDLE",
-  };
-
-  sprintf(d, "frame   %d\n", frame_count);
-  sprintf(d, "state   %d\n", state);
-
-  /*
-  sprintf(d, "%s %s %s %s\n",
-    oam_phase    ? "OAM" : "   ",
-    render_phase ? "VRM" : "   ",
-    hblank_phase ? "HBK" : "   ",
-    vblank_phase ? "VBK" : "   ");
-  */
-
-  /*
-  if (stat_int) {
-    sprintf(d, "%s %s %s %s %s\n",
-      stat_int_lyc ? "#LYC" : "    ",
-      stat_int_oam ? "#OAM" : "    ",
-      stat_int_hblank ? "#HBK" : "    ",
-      stat_int_vblank ? "#VBK" : "    ",
-      stat_int_glitch ? "#GLT" : "    ");
-  }
-  else {
-    sprintf(d, "%s %s %s %s %s\n",
-      stat_int_lyc ? "-LYC" : "    ",
-      stat_int_oam ? "-OAM" : "    ",
-      stat_int_hblank ? "-HBK" : "    ",
-      stat_int_vblank ? "-VBK" : "    ",
-      stat_int_glitch ? "-GLT" : "    ");
-  }
-  */
-
-  sprintf(d, "clockP2 %3d:%3d\n", line, counter);
-
-  sprintf(d, "hbdly   %d\n", hblank_delay2);
-  //sprintf(d, "vblank int %d\n", vblank_int);
-  //sprintf(d, "stat int %d\n", stat_int);
+  sprintf(d, "compare_line  %d\n", compare_line);
+  sprintf(d, "stat_int1     %d\n", stat_int1);
+  sprintf(d, "stat_int2     %d\n", stat_int2);
+  sprintf(d, "old_stat_int1 %d\n", old_stat_int1);
+  sprintf(d, "old_stat_int2 %d\n", old_stat_int2);
+  sprintf(d, "scx_latch     %d\n", scx_latch);
+  sprintf(d, "win_y_latch   %d\n", win_y_latch);
+  sprintf(d, "win_y_counter %d\n", win_y_counter);
   sprintf(d, "\n");
-  
+
+  //----------
+  // Sprites
+
+  sprintf(d, "sprite_count %d\n",     sprite_count);
+  sprintf(d, "sprite_index %d\n",     sprite_index);
+  sprintf(d, "sprite_hit   %d\n",     sprite_hit);
+  sprintf(d, "spriteY      %d\n",     spriteY);
+  sprintf(d, "spriteX      %d\n",     spriteX);
+  sprintf(d, "spriteP      %d\n",     spriteP);
+  sprintf(d, "spriteF      %d\n",     spriteF);
+  sprintf(d, "sprite_lo    0x%02x\n", sprite_lo);
+  sprintf(d, "sprite_hi    0x%02x\n", sprite_hi);
+  sprintf(d, "\n");
+
+  //----------
+  // Vram Fetcher
+
+  sprintf(d, "fetch_type      %s\n", fetch_names1[fetch_type]);
+  sprintf(d, "fetch_state     %s\n", fetch_names2[fetch_state]);
+  sprintf(d, "fetch_delay     %d\n", fetch_delay);
+  sprintf(d, "in_window_old   %d\n", in_window_old);
+  sprintf(d, "in_window_new   %d\n", in_window_new);
+  sprintf(d, "in_window_early %d\n", in_window_early);
+  sprintf(d, "in_window_late  %d\n", in_window_late);
+  sprintf(d, "win_retrig_old  %d\n", in_window_late);
+  sprintf(d, "win_retrig_new  %d\n", in_window_late);
+  sprintf(d, "\n");
+
+  //----------
+  // Pixel pipe
+
+  sprintf(d, "map_x           %d\n", map_x);
+
+  sprintf(d, "tile_map        %d\n", tile_map);
+  sprintf(d, "tile_lo         %d\n", tile_lo);
+  sprintf(d, "tile_hi         %d\n", tile_hi);
+  sprintf(d, "tile_latched    %d\n", tile_latched);
+
+  sprintf(d, "pix_count       %d\n", pix_count);
+  sprintf(d, "pix_discard_scx %d\n", pix_count);
+  sprintf(d, "pix_discard_pad %d\n", pix_count);
+  sprintf(d, "pipe_count      %d\n", pix_count);
+
+  sprintf(d, "bg_pix_lo       %s\n", byte_to_bits(bg_pix_lo));
+  sprintf(d, "bg_pix_hi       %s\n", byte_to_bits(bg_pix_hi));
+  sprintf(d, "bg_pal_lo       %s\n", byte_to_bits(bg_pal_lo));
+  sprintf(d, "bg_pal_hi       %s\n", byte_to_bits(bg_pal_hi));
+
+  sprintf(d, "ob_pix_lo       %s\n", byte_to_bits(ob_pix_lo));
+  sprintf(d, "ob_pix_hi       %s\n", byte_to_bits(ob_pix_hi));
+  sprintf(d, "ob_pal_lo       %s\n", byte_to_bits(ob_pal_lo));
+  sprintf(d, "ob_pal_hi       %s\n", byte_to_bits(ob_pal_hi));
+
+  sprintf(d, "\n");
+
   /*
   sprintf(d, "%s\n", in_window_old ? "in_window_old" : "");
   sprintf(d, "%s\n", in_window_new ? "in_window_new" : "");
-  sprintf(d, "%s\n", in_window_new_early ? "in_window_new_early" : "");
+  sprintf(d, "%s\n", in_window_early ? "in_window_early" : "");
   sprintf(d, "%s\n", in_window_late ? "in_window_late" : "");
-  sprintf(d, "%s\n", window_retrigger_old ? "window_retrigger_old" : "");
-  sprintf(d, "%s\n", window_retrigger_new ? "window_retrigger_new" : "");
+  sprintf(d, "%s\n", win_retrig_old ? "win_retrig_old" : "");
+  sprintf(d, "%s\n", win_retrig_new ? "win_retrig_new" : "");
   sprintf(d, "map x   %d\n", map_x);
   sprintf(d, "map y   %d\n", map_y);
   */
@@ -974,18 +1007,13 @@ void PPU::dump(std::string& d) {
   /*
   sprintf(d, "scx disc %d\n", pix_discard_scx);
   sprintf(d, "pad disc %d\n", pix_discard_pad);
-  sprintf(d, "pix      %d\n", pix_count2);
+  sprintf(d, "pix      %d\n", pix_count);
   sprintf(d, "pipe     %d\n", pipe_count);
   sprintf(d, "fetch    %s\n", fetch_names1[fetch_type]);
   sprintf(d, "         %s\n", fetch_names2[fetch_state]);
   sprintf(d, "latched  %d\n", tile_latched);
   sprintf(d, "\n");
   */
-
-  sprintf(d, "sprite idx %d\n", sprite_index);
-  sprintf(d, "oam addr  %04x\n", out.oam_addr);
-  sprintf(d, "vram addr  %04x\n", out.vram_addr);
-  sprintf(d, "\n");
 
   /*
   sprintf(d, "stat_int_lyc    %d %d\n", stat_int_lyc, bool(stat & EI_LYC));
@@ -994,12 +1022,7 @@ void PPU::dump(std::string& d) {
   sprintf(d, "stat_int_hblank %d %d\n", stat_int_vblank, bool(stat & EI_HBLANK));
   */
 
-  sprintf(d, "spriteX %d\n", spriteX);
-  sprintf(d, "spriteY %d\n", spriteY);
-  sprintf(d, "spriteP %d\n", spriteP);
-  sprintf(d, "spriteF %d\n", spriteF);
-  sprintf(d, "\n");
-
+  /*
   uint8_t* si = sprite_i;
   uint8_t* sx = sprite_x;
   uint8_t* sy = sprite_y;
@@ -1007,6 +1030,21 @@ void PPU::dump(std::string& d) {
   sprintf(d, "sprite_i [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", si[0], si[1], si[2], si[3], si[4], si[5], si[6], si[7], si[8], si[9]);
   sprintf(d, "sprite_x [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sx[0], sx[1], sx[2], sx[3], sx[4], sx[5], sx[6], sx[7], sx[8], sx[9]);
   sprintf(d, "sprite_y [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sy[0], sy[1], sy[2], sy[3], sy[4], sy[5], sy[6], sy[7], sy[8], sy[9]);
+  */
+
+  dumpit(out.data      ,"0x%02x");
+  dumpit(out.oe        ,"%d");
+  dumpit(out.vram_addr ,"0x%04x");
+  dumpit(out.oam_addr  ,"0x%04x");
+  dumpit(out.x         ,"%d");
+  dumpit(out.y         ,"%d");
+  dumpit(out.counter   ,"%d");
+  dumpit(out.pix_out   ,"0x%02x");
+  dumpit(out.pix_oe    ,"%d");
+  dumpit(out.stat1     ,"%d");
+  dumpit(out.stat2     ,"%d");
+  dumpit(out.vblank1   ,"%d");
+  dumpit(out.vblank2   ,"%d");
 }
 
 //-----------------------------------------------------------------------------

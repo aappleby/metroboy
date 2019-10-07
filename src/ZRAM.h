@@ -4,14 +4,17 @@
 //-----------------------------------------------------------------------------
 
 struct ZRAM {
-  void   reset();
-  BusOut tick() const;
-  void   tock(CpuBus bus);
+  typedef BusOut Out;
+
+  void reset();
+  Out  tick() const;
+  void tock(CpuBus bus);
+  void dump(std::string& d);
 
   const uint8_t* get() const { return ram; }
 
 private:
-  BusOut out;
+  Out out;
   uint8_t ram[127];
 };
 

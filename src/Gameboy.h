@@ -36,7 +36,7 @@ struct Gameboy {
 
   void check_sentinel() { assert(sentinel == 0xDEADBEEF); }
 
-  void dump(std::string& out);
+  void dump1(std::string& out);
   void dump_disasm(std::string& out);
 
 private:

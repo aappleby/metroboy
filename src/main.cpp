@@ -60,6 +60,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle");
 
+  //load("microtests/build/dmg", "timer_int_inc_sled");
+
   //load("microtests/build/dmg", "timer_div_phase_a");
   //load("microtests/build/dmg", "timer_div_phase_b");
   //load("microtests/build/dmg", "timer_div_phase_c");
@@ -72,6 +74,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("microtests/build/dmg", "timer_tima_write_d");
   //load("microtests/build/dmg", "timer_tima_write_e");
   //load("microtests/build/dmg", "timer_tima_write_f");
+
+  //load("microtests/build/dmg", "timer_tma_load_a");
 
   //load("microtests/build/dmg", "timer_tma_write_a");
   //load("microtests/build/dmg", "timer_tma_write_b");
@@ -93,9 +97,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
 
-  //runmode = STEP_CYCLE;
+  runmode = STEP_CYCLE;
   //runmode = RUN_FAST;
-  runmode = RUN_VSYNC;
+  //runmode = RUN_VSYNC;
 
   //----------
 
@@ -262,13 +266,25 @@ void MetroBoyApp::loop() {
   Gameboy& gameboy = metroboy.gb();
   Framebuffer& fb = metroboy.fb();
 
-  gameboy.dump(text_buf);
+  int spacing = 192;
+
+  gameboy.dump1(text_buf);
   //gameboy.get_oam().dump(text_buf);
-  render_text(4, 4, text_buf.c_str());
+  render_text(spacing * 0 + 4, 4, text_buf.c_str());
+  text_buf.clear();
+
+  sprintf(text_buf, "-----PPU-----\n");
+  gameboy.get_ppu().dump(text_buf);
+  render_text(spacing * 1 + 4, 4, text_buf.c_str());
+  text_buf.clear();
+
+  sprintf(text_buf, "-----SPU-----\n");
+  gameboy.get_spu().dump(text_buf);
+  render_text(spacing * 2 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   gameboy.dump_disasm(text_buf);
-  render_text(140, 4, text_buf.c_str());
+  render_text(spacing * 3 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   //gameboy.get_spu().dump(text_buf);
@@ -278,6 +294,7 @@ void MetroBoyApp::loop() {
   //----------------------------------------
   // Wave thingy
 
+  /*
   for (int i = 0; i < 16; i++) {
     uint8_t a = (gameboy.get_spu().get_wave()[i] & 0x0F) >> 0;
     uint8_t b = (gameboy.get_spu().get_wave()[i] & 0xF0) >> 4;
@@ -286,12 +303,13 @@ void MetroBoyApp::loop() {
     framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;
     framebuffer[(512 + 2 * i + 1) + (100 + a) * fb_width] = color;
   }
+  */
 
   //----------------------------------------
   // Gameboy screen
 
-  const int gb_screenx = (fb_width / 2) - 160;
-  const int gb_screeny = (fb_height / 2) - 144;
+  const int gb_screenx = 32 * 27 - 16;
+  const int gb_screeny = 32 * 10;
 
   if (overlay_mode == 0 || overlay_mode == 1) {
     for (int y = 0; y < 144; y++) {
@@ -376,20 +394,20 @@ void MetroBoyApp::loop() {
   };
 
   sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
-  render_text(645, 655, text_buf.c_str());
+  render_text(32 * 27, 32 * 20, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------
   // VRAM dump
 
-  gameboy.get_ppu().dump_tiles(framebuffer,  fb_width, fb_width - 288,       32,  2, gameboy.get_vram());
-  gameboy.get_ppu().draw_bg_map(framebuffer, fb_width, fb_width - 288 - 288, 32,  1, gameboy.get_vram());
-  gameboy.get_ppu().draw_wm_map(framebuffer, fb_width, fb_width - 288 - 288, 256+32+32, 1, gameboy.get_vram());
+  gameboy.get_ppu().dump_tiles(framebuffer,  fb_width, fb_width - 288,             32,  2, gameboy.get_vram());
+  gameboy.get_ppu().draw_bg_map(framebuffer, fb_width, fb_width - 288 - 288 - 288, 32,  1, gameboy.get_vram());
+  gameboy.get_ppu().draw_wm_map(framebuffer, fb_width, fb_width - 288 - 288,       32, 1, gameboy.get_vram());
 
   //----------------------------------------
   // Trace buffer
 
-  int trace_sx = (fb_width / 2) - (456 / 2);
+  int trace_sx = 32 * 26;
   int trace_sy = 32 * 22;
 
   for (int y = 0; y < 154; y++) {

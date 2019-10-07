@@ -37,7 +37,12 @@ void OAM::tock(CpuBus bus) {
   }
 }
 
-void OAM::dump(std::string& /*out*/) const {
+void OAM::dump(std::string& d) const {
+  dumpit(out.addr,   "0x%04x");
+  dumpit(out.data,   "0x%02x");
+  dumpit(out.data16, "0x%04x");
+  dumpit(out.oe,     "%d");
+
   /*
   for (int i = 0; i < 10; i++) {
     sprintf(out, "%2x ", ram[i]);

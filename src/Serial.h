@@ -4,12 +4,15 @@
 //-----------------------------------------------------------------------------
 
 struct Serial {
+  typedef BusOut Out;
+
   void reset();
-  BusOut tick() const;
+  Out  tick() const;
   void tock(CpuBus bus);
+  void dump(std::string& d);
 
 private:
-  BusOut out;
+  Out out;
   uint8_t sb; // FF01
   uint8_t sc; // FF02
 };

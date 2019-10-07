@@ -2,7 +2,7 @@
 
 #include "Constants.h"
 
-const char* to_binary(uint8_t b);
+const char* byte_to_bits(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
@@ -488,33 +488,29 @@ void SPU::bus_write(uint16_t addr, uint8_t data) {
 //-----------------------------------------------------------------------------
 
 void SPU::dump(std::string& d) const {
-  sprintf(d, "nr10 %s\n", to_binary(nr10));
-  sprintf(d, "nr11 %s\n", to_binary(nr11));
-  sprintf(d, "nr12 %s\n", to_binary(nr12));
-  sprintf(d, "nr13 %s\n", to_binary(nr13));
-  sprintf(d, "nr14 %s\n", to_binary(nr14));
-
-  sprintf(d, "nr20 %s\n", to_binary(nr20));
-  sprintf(d, "nr21 %s\n", to_binary(nr21));
-  sprintf(d, "nr22 %s\n", to_binary(nr22));
-  sprintf(d, "nr23 %s\n", to_binary(nr23));
-  sprintf(d, "nr24 %s\n", to_binary(nr24));
-
-  sprintf(d, "nr30 %s\n", to_binary(nr30));
-  sprintf(d, "nr31 %s\n", to_binary(nr31));
-  sprintf(d, "nr32 %s\n", to_binary(nr32));
-  sprintf(d, "nr33 %s\n", to_binary(nr33));
-  sprintf(d, "nr34 %s\n", to_binary(nr34));
-
-  sprintf(d, "nr40 %s\n", to_binary(nr40));
-  sprintf(d, "nr41 %s\n", to_binary(nr41));
-  sprintf(d, "nr42 %s\n", to_binary(nr42));
-  sprintf(d, "nr43 %s\n", to_binary(nr43));
-  sprintf(d, "nr44 %s\n", to_binary(nr44));
-
-  sprintf(d, "nr50 %s\n", to_binary(nr50));
-  sprintf(d, "nr51 %s\n", to_binary(nr51));
-  sprintf(d, "nr52 %s\n", to_binary(nr52));
+  sprintf(d, "NR10 %s\n", byte_to_bits(nr10));
+  sprintf(d, "NR11 %s\n", byte_to_bits(nr11));
+  sprintf(d, "NR12 %s\n", byte_to_bits(nr12));
+  sprintf(d, "NR13 %s\n", byte_to_bits(nr13));
+  sprintf(d, "NR14 %s\n", byte_to_bits(nr14));
+  sprintf(d, "NR20 %s\n", byte_to_bits(nr20));
+  sprintf(d, "NR21 %s\n", byte_to_bits(nr21));
+  sprintf(d, "NR22 %s\n", byte_to_bits(nr22));
+  sprintf(d, "NR23 %s\n", byte_to_bits(nr23));
+  sprintf(d, "NR24 %s\n", byte_to_bits(nr24));
+  sprintf(d, "NR30 %s\n", byte_to_bits(nr30));
+  sprintf(d, "NR31 %s\n", byte_to_bits(nr31));
+  sprintf(d, "NR32 %s\n", byte_to_bits(nr32));
+  sprintf(d, "NR33 %s\n", byte_to_bits(nr33));
+  sprintf(d, "NR34 %s\n", byte_to_bits(nr34));
+  sprintf(d, "NR40 %s\n", byte_to_bits(nr40));
+  sprintf(d, "NR41 %s\n", byte_to_bits(nr41));
+  sprintf(d, "NR42 %s\n", byte_to_bits(nr42));
+  sprintf(d, "NR43 %s\n", byte_to_bits(nr43));
+  sprintf(d, "NR44 %s\n", byte_to_bits(nr44));
+  sprintf(d, "NR50 %s\n", byte_to_bits(nr50));
+  sprintf(d, "NR51 %s\n", byte_to_bits(nr51));
+  sprintf(d, "NR52 %s\n", byte_to_bits(nr52));
 
   const char* bar = "===============";
 

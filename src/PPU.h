@@ -20,17 +20,16 @@ struct PPU {
     uint8_t pix_out;
     bool pix_oe;
 
-    bool fire_int_stat1;
-    bool fire_int_stat2;
-    bool fire_int_vblank1;
-    bool fire_int_vblank2;
+    bool stat1;
+    bool stat2;
+    bool vblank1;
+    bool vblank2;
   };
 
   void reset(bool run_bootrom, int new_model);
   Out  tick(int tphase) const;
   void tock(int tphase, CpuBus cpu_bus, VRAM::Out vram_out, OAM::Out oam_out);
-
-  void dump(std::string& out);
+  void dump(std::string& out) const;
 
   uint8_t get_stat()       const { return stat; }
 
@@ -54,12 +53,26 @@ private:
   void bus_write_early(uint16_t cpu_addr, uint8_t cpu_data);
   void bus_write_late(uint16_t cpu_addr, uint8_t cpu_data);
 
-  Out out;
+  //----------
+  // Timers and states
 
-  int model;
+  int  frame_count;
+  bool frame_start;
+  bool frame_done;
 
-  uint8_t stat_int1;
-  uint8_t stat_int2;
+  uint8_t line;
+  uint8_t line_delay1;
+  uint8_t line_delay2;
+  uint8_t line_delay3;
+
+  int state;
+
+  uint16_t counter;
+  uint16_t counter_delay1;
+  uint16_t counter_delay2;
+  uint16_t counter_delay3;
+
+  uint8_t hblank_delay2;
 
   //----------
   // Registers
@@ -77,39 +90,22 @@ private:
   uint8_t wy;   // FF4A
   uint8_t wx;   // FF4B
 
-  uint8_t bgp_early;
-
   uint8_t palettes[4];
+
+  //----------
+  // interrupt stuff
+
+  int compare_line;
+
+  uint8_t stat_int1;
+  uint8_t stat_int2;
+
+  bool old_stat_int1;
+  bool old_stat_int2;
 
   uint8_t scx_latch;
   uint8_t win_y_latch;
   uint8_t win_y_counter;
-
-  //----------
-  // Timers and states
-
-  int state;
-
-  uint16_t counter;
-  uint16_t counter_delay1;
-  uint16_t counter_delay2;
-  uint16_t counter_delay3;
-
-  uint8_t line;
-  uint8_t line_delay1;
-  uint8_t line_delay2;
-  uint8_t line_delay3;
-
-  bool frame_start;
-  bool frame_done;
-  int frame_count;
-
-  uint8_t hblank_delay2;
-
-  int compare_line;
-
-  bool old_stat_int1;
-  bool old_stat_int2;
 
   //----------
   // Sprites
@@ -117,9 +113,6 @@ private:
   uint8_t sprite_count;
   int8_t sprite_index;
   int sprite_hit;
-  uint8_t sprite_x[10]; // 80 bits
-  uint8_t sprite_y[10]; // 80 bits
-  uint8_t sprite_i[10]; // 60 bits?
 
   uint8_t spriteY;
   uint8_t spriteX;
@@ -128,6 +121,10 @@ private:
 
   uint8_t sprite_lo;
   uint8_t sprite_hi;
+
+  uint8_t sprite_x[10]; // 80 bits
+  uint8_t sprite_y[10]; // 80 bits
+  uint8_t sprite_i[10]; // 60 bits?
 
   //----------
   // Vram Fetcher
@@ -141,9 +138,10 @@ private:
 
   enum FetchState {
     FETCH_IDLE,
-    FETCH_MAP,
-    FETCH_LO,
-    FETCH_HI,
+    
+    FETCH_TILE_MAP,
+    FETCH_TILE_LO,
+    FETCH_TILE_HI,
 
     FETCH_SPRITE_MAP,
     FETCH_SPRITE_LO,
@@ -156,11 +154,11 @@ private:
 
   bool in_window_old;
   bool in_window_new;
-  bool in_window_new_early;
+  bool in_window_early;
   bool in_window_late;
 
-  bool window_retrigger_old;
-  bool window_retrigger_new;
+  bool win_retrig_old;
+  bool win_retrig_new;
 
   //----------
   // Pixel pipe
@@ -172,7 +170,7 @@ private:
   uint8_t tile_hi;
   bool    tile_latched;
 
-  uint8_t pix_count2;
+  uint8_t pix_count;
   uint8_t pix_discard_scx;
   uint8_t pix_discard_pad;
   uint8_t pipe_count;
@@ -186,6 +184,8 @@ private:
   uint8_t ob_pix_hi;
   uint8_t ob_pal_lo;
   uint8_t ob_pal_hi;
+
+  Out out;
 };
 
 //-----------------------------------------------------------------------------

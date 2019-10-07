@@ -941,26 +941,29 @@ const char* state_name(Z80State state) {
   }
 }
 
-void Z80::dump(std::string& ds) {
-  sprintf(ds, "CYC  %d\n", cycle);
-  int bgb = (cycle * 2) + 0x00B2D5E6;
-  sprintf(ds, "BGB  0x%08x\n", bgb);
-  sprintf(ds, "op 0x%02x\n", op);
-  sprintf(ds, "state  %s\n", state_name(state2));
-  sprintf(ds, "state_ %s\n", state_name(state_));
-  sprintf(ds, "af 0x%04x\n", af);
-  sprintf(ds, "bc 0x%04x\n", bc);
-  sprintf(ds, "de 0x%04x\n", de);
-  sprintf(ds, "hl 0x%04x\n", hl);
-  sprintf(ds, "sp 0x%04x\n", sp);
-  sprintf(ds, "pc2 0x%04x\n", pc2);
-  sprintf(ds, "pc1 0x%04x\n", pc);
-  sprintf(ds, "ime %d\n", ime);
-  sprintf(ds, "ime_ %d\n", ime_);
+void Z80::dump(std::string& o) {
+  sprintf(o, "cpu_bus.addr  0x%04x\n", out.addr);
+  sprintf(o, "cpu_bus.data  0x%02x\n", out.data);
+  sprintf(o, "cpu_bus.read  %d\n",     out.read);
+  sprintf(o, "cpu_bus.write %d\n",     out.write);
 
-  sprintf(ds, "addr  0x%04x\n", addr);
-  sprintf(ds, "bus   0x%02x\n", data_out);
-  sprintf(ds, "write %d\n",     write);
+  sprintf(o, "CYC           %d\n", cycle);
+  sprintf(o, "BGB           0x%08x\n", (cycle * 2) + 0x00B2D5E6);
+  sprintf(o, "op            0x%02x\n", op);
+  sprintf(o, "af            0x%04x\n", af);
+  sprintf(o, "bc            0x%04x\n", bc);
+  sprintf(o, "de            0x%04x\n", de);
+  sprintf(o, "hl            0x%04x\n", hl);
+  sprintf(o, "sp            0x%04x\n", sp);
+  sprintf(o, "pc2           0x%04x\n", pc2);
+  sprintf(o, "pc1           0x%04x\n", pc);
+  sprintf(o, "ime           %d\n", ime);
+  sprintf(o, "ime_          %d\n", ime_);
+  sprintf(o, "state         %s\n", state_name(state2));
+  sprintf(o, "state_        %s\n", state_name(state_));
+  sprintf(o, "addr          0x%04x\n", addr);
+  sprintf(o, "bus           0x%02x\n", data_out);
+  sprintf(o, "write         %d\n",     write);
 }
 
 //-----------------------------------------------------------------------------

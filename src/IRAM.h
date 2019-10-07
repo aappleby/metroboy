@@ -2,10 +2,12 @@
 #include "Types.h"
 
 struct IRAM {
+  typedef BusOut Out;
+
   void reset();
-  
-  BusOut tick() const;
+  Out  tick() const;
   void tock(CpuBus bus);
+  void dump(std::string& d);
 
   const uint8_t* get() { return ram; }
 private:

@@ -9,6 +9,7 @@ struct MMU {
 
   BusOut tick() const;
   void tock(CpuBus bus);
+  void dump(std::string& d);
 
   uint8_t* get_flat_ptr(uint16_t addr);
   size_t get_rom_size() const { return rom_size; }

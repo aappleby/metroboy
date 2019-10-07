@@ -4,9 +4,15 @@
 //-----------------------------------------------------------------------------
 
 struct Timer {
-  void     reset();
-  TimerOut tickB() const;
-  void     tock(int tphase, const CpuBus bus);
+  struct Out {
+    uint8_t data;
+    bool oe;
+    bool interrupt;
+  };
+
+  void reset();
+  Out  tick() const;
+  void tock(int tphase, const CpuBus bus);
 
   void dump(std::string& out);
 
@@ -17,9 +23,8 @@ private:
   uint8_t  tma;      // FF06
   uint8_t  tac;      // FF07
   
-  bool tick;
-  TimerOut out;
-
+  bool do_tick;
+  Out out;
 };
 
 //-----------------------------------------------------------------------------

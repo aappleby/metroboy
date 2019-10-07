@@ -7,7 +7,6 @@
 
 extern uint8_t rom_buf[];
 extern const uint8_t DMG_ROM_bin[];
-const char* to_binary(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
@@ -91,7 +90,7 @@ void Gameboy::tock() {
   const auto serial_out  = serial.tick();;
   const auto zram_out    = zram.tick();
   const auto spu_out     = spu.tick();
-  const auto timer_out   = timer.tickB();
+  const auto timer_out   = timer.tick();
   const auto vram_out    = vram.tick();
   const auto cpu_bus     = z80.tick();
   
@@ -168,15 +167,15 @@ void Gameboy::tock() {
     //bool fire_int_timer2 = timer_out.overflow;
     //bool fire_int_buttons2 = buttons_out.val != 0xFF;
 
-    if (imask & 0x01) z80.unhalt |= ppu_out.fire_int_vblank1;
-    if (imask & 0x02) z80.unhalt |= ppu_out.fire_int_stat2;
+    if (imask & 0x01) z80.unhalt |= ppu_out.vblank1;
+    if (imask & 0x02) z80.unhalt |= ppu_out.stat2;
     if (imask & 0x04) z80.unhalt |= fire_int_timer1;
     if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
 
-    if (ppu_out.fire_int_vblank1)  intf_ |= INT_VBLANK;
-    if (ppu_out.fire_int_stat1)    intf_ |= INT_STAT;
-    if (fire_int_timer1)           intf_ |= INT_TIMER;
-    if (fire_int_buttons1)         intf_ |= INT_JOYPAD;
+    if (ppu_out.vblank1)   intf_ |= INT_VBLANK;
+    if (ppu_out.stat1)     intf_ |= INT_STAT;
+    if (fire_int_timer1)   intf_ |= INT_TIMER;
+    if (fire_int_buttons1) intf_ |= INT_JOYPAD;
 
     if (tphase == 0) intf_ &= ~cpu_bus.int_ack;
 
@@ -304,56 +303,55 @@ trace_val = ppu_out.vram_addr; // this one's pretty cool
 
 //-----------------------------------------------------------------------------
 
-void Gameboy::dump(std::string& out) {
-  //uint16_t pc = z80.get_pc();
+void Gameboy::dump1(std::string& d) {
 
-  CpuBus cpu_bus = z80.tick();
+  sprintf(d, "-----BUTTONS-----\n");
+  buttons.dump(d);
+  sprintf(d, "\n");
 
-  buttons.dump(out);
+  sprintf(d, "-----TOP-----\n");
+  sprintf(d, "model        %d\n", model);
+  sprintf(d, "tcycle       %d\n", tcycle);
+  sprintf(d, "dma_mode_a   %d\n", dma_mode_a);
+  sprintf(d, "dma_count_a  %d\n", dma_count_a);
+  sprintf(d, "dma_source_a 0x%04x\n", dma_source_a);
+  sprintf(d, "dma_mode_b   %d\n", dma_mode_b);
+  sprintf(d, "dma_count_b  %d\n", dma_count_b);
+  sprintf(d, "dma_data_b   %d\n", dma_data_b);
+  sprintf(d, "imask        %s\n", byte_to_bits(imask));
+  sprintf(d, "intf         %s\n", byte_to_bits(intf));
+  sprintf(d, "\n");
 
-  sprintf(out, "TCYC %d\n", tcycle);
+  sprintf(d, "-----CPU-----\n");
+  z80.dump(d);
+  sprintf(d, "\n");
 
-  z80.dump(out);
-  sprintf(out, "imask %s\n", to_binary(imask));
-  sprintf(out, "intf  %s\n", to_binary(intf));
-  sprintf(out, "\n");
+  sprintf(d, "-----TIMER-----\n");
+  timer.dump(d);
+  sprintf(d, "\n");
 
-  sprintf(out, "tcycle %zd\n", tcycle);
+  sprintf(d, "-----MMU-----\n");
+  mmu.dump(d);
+  sprintf(d, "\n");
 
-  sprintf(out, "z80 mem addr 0x%04x\n", cpu_bus.addr);
-  sprintf(out, "z80 mem data 0x%02x\n", cpu_bus.data);
-  sprintf(out, "z80 mem read %d\n", cpu_bus.read);
-  sprintf(out, "z80 mem write %d\n", cpu_bus.write);
+  sprintf(d, "-----OAM-----\n");
+  oam.dump(d);
+  sprintf(d, "\n");
 
-  //sprintf(out, "bus out2 %02x\n", bus_out2);
-  //sprintf(out, "bus oe2 %d\n", bus_oe2);
-  sprintf(out, "\n");
+  sprintf(d, "-----VRAM-----\n");
+  vram.dump(d);
+  sprintf(d, "\n");
 
-  sprintf(out, "dma mode a %d\n", dma_mode_a);
-  sprintf(out, "dma count a %d\n", dma_count_a);
-  sprintf(out, "dma source a 0x%04x\n", dma_source_a);
-  sprintf(out, "\n");
+  sprintf(d, "-----IRAM-----\n");
+  iram.dump(d);
+  sprintf(d, "\n");
 
-  sprintf(out, "dma mode b %d\n", dma_mode_b);
-  sprintf(out, "dma count b %d\n", dma_count_b);
-  sprintf(out, "dma data b %d\n", dma_data_b);
+  sprintf(d, "-----ZRAM-----\n");
+  zram.dump(d);
+  sprintf(d, "\n");
 
-  sprintf(out, "\n");
-
-  sprintf(out, "ppu_out.oam_addr  0x%04x\n", ppu_out.oam_addr);
-  sprintf(out, "\n");
-
-  sprintf(out, "oam_out.addr      0x%04x\n", oam_out.addr);
-  sprintf(out, "oam_out.data      0x%02x\n", oam_out.data);
-  sprintf(out, "oam_out.oe        %d\n",     oam_out.oe);
-
-  sprintf(out, "\n");
-
-  timer.dump(out);
-  sprintf(out, "\n");
-
-  ppu.dump(out);
-  sprintf(out, "\n");
+  sprintf(d, "-----SERIAL-----\n");
+  serial.dump(d);
 }
 
 //-----------------------------------------------------------------------------

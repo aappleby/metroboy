@@ -1,8 +1,6 @@
 #include "Timer.h"
 #include "Constants.h"
 
-const char* to_binary(uint8_t b);
-
 //-----------------------------------------------------------------------------
 
 void Timer::reset() {
@@ -18,7 +16,7 @@ void Timer::reset() {
 
 static const uint16_t masks[] = { 0x200, 0x08, 0x20, 0x80 };
 
-TimerOut Timer::tickB() const {
+Timer::Out Timer::tick() const {
   return out;
 }
 
@@ -26,13 +24,13 @@ void Timer::tock(int tphase, const CpuBus bus) {
   if (tphase != 0 && tphase != 2) return;
 
   uint16_t tima_ = tima;
-  bool tick_ = tick;
+  bool tick_ = do_tick;
 
   counter++;
   counter++;
 
   tick_ = (counter & masks[tac & 3]) && (tac & 0b100);
-  if (tick && !tick_) tima_ = tima + 1;
+  if (do_tick && !tick_) tima_ = tima + 1;
 
   if (tphase == 0) {
     if (bus.write && bus.addr == ADDR_DIV)  counter = 0;
@@ -55,17 +53,21 @@ void Timer::tock(int tphase, const CpuBus bus) {
   }
 
   tima = tima_;
-  tick = tick_;
+  do_tick = tick_;
 }
 
 //-----------------------------------------------------------------------------
 
-void Timer::dump(std::string& dump_out) {
-  sprintf(dump_out, "CNT      0x%08x\n", counter);
-  sprintf(dump_out, "DIV      0x%02x\n", (counter >> 8) & 0xFF);
-  sprintf(dump_out, "TIMA     0x%02x\n", tima);
-  sprintf(dump_out, "TMA      0x%02x\n", tma);
-  sprintf(dump_out, "TAC      %s\n",     to_binary(tac));
+void Timer::dump(std::string& d) {
+  sprintf(d, "CNT            0x%04x\n", counter);
+  sprintf(d, "DIV            0x%02x\n", (counter >> 8) & 0xFF);
+  sprintf(d, "TIMA           0x%02x\n", tima);
+  sprintf(d, "TMA            0x%02x\n", tma);
+  sprintf(d, "TAC            %s\n",     byte_to_bits(tac));
+
+  dumpit(out.data, "0x%02x");
+  dumpit(out.oe,   "%d");
+  dumpit(out.interrupt, "%d");
 }
 
 //-----------------------------------------------------------------------------

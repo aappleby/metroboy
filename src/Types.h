@@ -4,6 +4,8 @@
 
 typedef int16_t sample_t;
 
+#define dumpit(a, b) sprintf(d, "%-14s " b "\n", #a, a);
+
 //-----------------------------------------------------------------------------
 
 struct Framebuffer {
@@ -40,12 +42,6 @@ struct ButtonsOut {
   uint8_t data;
   bool oe;
   uint8_t val;
-};
-
-struct TimerOut {
-  uint8_t data;
-  bool oe;
-  bool interrupt;
 };
 
 struct GameboyOut {

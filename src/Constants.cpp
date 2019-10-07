@@ -249,48 +249,6 @@ extern const int op_times_max[256] = {
   3, 2, 4, 1, 0, 0, 2, 4,
 };
 
-
-//-----------------------------------------------------------------------------
-// FIXME std::string?
-
-char binarybuf[256];
-
-const char* to_binary(uint8_t b) {
-  binarybuf[0] = (b & 0x80) ? '1' : '0';
-  binarybuf[1] = (b & 0x40) ? '1' : '0';
-  binarybuf[2] = (b & 0x20) ? '1' : '0';
-  binarybuf[3] = (b & 0x10) ? '1' : '0';
-  binarybuf[4] = ':';
-  binarybuf[5] = (b & 0x08) ? '1' : '0';
-  binarybuf[6] = (b & 0x04) ? '1' : '0';
-  binarybuf[7] = (b & 0x02) ? '1' : '0';
-  binarybuf[8] = (b & 0x01) ? '1' : '0';
-  binarybuf[9] = 0;
-  return binarybuf;
-}
-
-const char* to_binary(uint8_t lo, uint8_t hi) {
-  for (int i = 0; i < 8; i++) {
-    int a = (lo >> (7 - i)) & 1;
-    int b = (hi >> (7 - i)) & 1;
-    int c = b * 2 + a;
-    binarybuf[i] = char('0' + c);
-  }
-  binarybuf[8] = 0;
-  return binarybuf;
-}
-
-const char* to_binary(uint16_t lo, uint16_t hi) {
-  for (int i = 0; i < 16; i++) {
-    int a = (lo >> (15 - i)) & 1;
-    int b = (hi >> (15 - i)) & 1;
-    int c = b * 2 + a;
-    binarybuf[i] = char('0' + c);
-  }
-  binarybuf[16] = 0;
-  return binarybuf;
-}
-
 //-----------------------------------------------------------------------------
 
 uint8_t flip(uint8_t x) {

@@ -238,8 +238,8 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Bus write
 
-  if (bus.read)  bus_read_early(bus.addr);
-  if (bus.write) bus_write_early(bus.addr, bus.data);
+  if (tphase == 0 && bus.read)  bus_read_early(bus.addr);
+  if (tphase == 2 && bus.write) bus_write_early(bus.addr, bus.data);
 
   //-----------------------------------
   // Handle OAM/VRAM reads
@@ -438,42 +438,44 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Fetcher state machine
 
-  if (fetch_delay) {
-    fetch_delay = false;
-  }
-  else {
-    if (fetch_state == FETCH_TILE_MAP) map_x++;
-    if (fetch_state == FETCH_TILE_HI) tile_latched = 1;
-
-    if      (fetch_state == FETCH_TILE_MAP)   fetch_state = FETCH_TILE_LO;
-    else if (fetch_state == FETCH_TILE_LO)    fetch_state = FETCH_TILE_HI;
-    else if (fetch_state == FETCH_TILE_HI)    fetch_state = FETCH_IDLE;
-    else if (fetch_state == FETCH_SPRITE_MAP) fetch_state = FETCH_SPRITE_LO;
-    else if (fetch_state == FETCH_SPRITE_LO)  fetch_state = FETCH_SPRITE_HI;
-    else if (fetch_state == FETCH_SPRITE_HI)  fetch_state = FETCH_IDLE;
-
-    if (fetch_state == FETCH_IDLE) {
-      if (!tile_latched) {
-        if (in_window_old && (lcdc & FLAG_WIN_ON)) {
-          fetch_type = FETCH_WINDOW;
-          fetch_state = FETCH_TILE_MAP;
-        }
-        else {
-          fetch_type = FETCH_BACKGROUND;
-          fetch_state = FETCH_TILE_MAP;
-        }
-      }
-      else if (sprite_index != -1) {
-        fetch_type = FETCH_SPRITE;
-        fetch_state = FETCH_SPRITE_MAP;
-      }
-    }
-
-    if (fetch_state != FETCH_IDLE) {
-      fetch_delay = true;
+  if (rendering) {
+    if (fetch_delay) {
+      fetch_delay = false;
     }
     else {
-      fetch_type = FETCH_NONE;
+      if (fetch_state == FETCH_TILE_MAP) map_x++;
+      if (fetch_state == FETCH_TILE_HI) tile_latched = 1;
+
+      if      (fetch_state == FETCH_TILE_MAP)   fetch_state = FETCH_TILE_LO;
+      else if (fetch_state == FETCH_TILE_LO)    fetch_state = FETCH_TILE_HI;
+      else if (fetch_state == FETCH_TILE_HI)    fetch_state = FETCH_IDLE;
+      else if (fetch_state == FETCH_SPRITE_MAP) fetch_state = FETCH_SPRITE_LO;
+      else if (fetch_state == FETCH_SPRITE_LO)  fetch_state = FETCH_SPRITE_HI;
+      else if (fetch_state == FETCH_SPRITE_HI)  fetch_state = FETCH_IDLE;
+
+      if (fetch_state == FETCH_IDLE) {
+        if (!tile_latched) {
+          if (in_window_old && (lcdc & FLAG_WIN_ON)) {
+            fetch_type = FETCH_WINDOW;
+            fetch_state = FETCH_TILE_MAP;
+          }
+          else {
+            fetch_type = FETCH_BACKGROUND;
+            fetch_state = FETCH_TILE_MAP;
+          }
+        }
+        else if (sprite_index != -1) {
+          fetch_type = FETCH_SPRITE;
+          fetch_state = FETCH_SPRITE_MAP;
+        }
+      }
+
+      if (fetch_state != FETCH_IDLE) {
+        fetch_delay = true;
+      }
+      else {
+        fetch_type = FETCH_NONE;
+      }
     }
   }
 
@@ -495,8 +497,8 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     stat |= state;
   }
 
-  if (bus.read)  bus_read_late(bus.addr);
-  if (bus.write) bus_write_late(bus.addr, bus.data);
+  if (tphase == 0 && bus.read)  bus_read_late(bus.addr);
+  if (tphase == 2 && bus.write) bus_write_late(bus.addr, bus.data);
 
   //-----------------------------------
   // lyc_match
@@ -585,7 +587,7 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, VRAM::Out /*vram_out*/, OAM::Out /*oam_out*/) {
+void PPU::tock_lcdoff(int tphase, CpuBus bus, VRAM::Out /*vram_out*/, OAM::Out /*oam_out*/) {
   counter = 4;
   counter_delay1 = 3;
   counter_delay2 = 2;
@@ -596,8 +598,8 @@ void PPU::tock_lcdoff(int /*tphase*/, CpuBus bus, VRAM::Out /*vram_out*/, OAM::O
   line_delay2 = 0;
   line_delay3 = 0;
 
-  if (bus.read)  bus_read_early(bus.addr);
-  if (bus.write) bus_write_early(bus.addr, bus.data);
+  if (tphase == 0 && bus.read)  bus_read_early(bus.addr);
+  if (tphase == 2 && bus.write) bus_write_early(bus.addr, bus.data);
 
   ly = 0;
   frame_count = 0;
@@ -741,23 +743,23 @@ void PPU::emit_pixel(int /*tphase*/) {
 //-----------------------------------------------------------------------------
 
 void PPU::bus_read_early(uint16_t addr) {
-  out.oe = 0;
-  out.data = 0;
-
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
+    out.addr = 0;
+    out.data = 0;
+    out.oe = 0;
     switch (addr) {
-    case ADDR_LCDC: out.oe = 1; out.data = lcdc; break;
-    case ADDR_STAT: out.oe = 1; out.data = stat; break;
-    case ADDR_SCY:  out.oe = 1; out.data = scy; break;
-    case ADDR_SCX:  out.oe = 1; out.data = scx; break;
-    case ADDR_LY:   out.oe = 1; out.data = ly; break;
-    case ADDR_LYC:  out.oe = 1; out.data = lyc; break;
-    case ADDR_DMA:  out.oe = 1; out.data = dma; break;
-    case ADDR_BGP:  out.oe = 1; out.data = bgp; break;
-    case ADDR_OBP0: out.oe = 1; out.data = obp0; break;
-    case ADDR_OBP1: out.oe = 1; out.data = obp1; break;
-    case ADDR_WY:   out.oe = 1; out.data = wy; break;
-    case ADDR_WX:   out.oe = 1; out.data = wx; break;
+    case ADDR_LCDC: out.addr = addr; out.oe = 1; out.data = lcdc; break;
+    case ADDR_STAT: out.addr = addr; out.oe = 1; out.data = stat; break;
+    case ADDR_SCY:  out.addr = addr; out.oe = 1; out.data = scy; break;
+    case ADDR_SCX:  out.addr = addr; out.oe = 1; out.data = scx; break;
+    case ADDR_LY:   out.addr = addr; out.oe = 1; out.data = ly; break;
+    case ADDR_LYC:  out.addr = addr; out.oe = 1; out.data = lyc; break;
+    case ADDR_DMA:  out.addr = addr; out.oe = 1; out.data = dma; break;
+    case ADDR_BGP:  out.addr = addr; out.oe = 1; out.data = bgp; break;
+    case ADDR_OBP0: out.addr = addr; out.oe = 1; out.data = obp0; break;
+    case ADDR_OBP1: out.addr = addr; out.oe = 1; out.data = obp1; break;
+    case ADDR_WY:   out.addr = addr; out.oe = 1; out.data = wy; break;
+    case ADDR_WX:   out.addr = addr; out.oe = 1; out.data = wx; break;
     }
   }
 }
@@ -768,18 +770,18 @@ void PPU::bus_read_late(uint16_t addr) {
 
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
-    case ADDR_LCDC: out.oe = 1; out.data = lcdc; break;
-    case ADDR_STAT: out.oe = 1; out.data = stat; break;
-    case ADDR_SCY:  out.oe = 1; out.data = scy; break;
-    case ADDR_SCX:  out.oe = 1; out.data = scx; break;
-    case ADDR_LY:   out.oe = 1; out.data = ly; break;
-    case ADDR_LYC:  out.oe = 1; out.data = lyc; break;
-    case ADDR_DMA:  out.oe = 1; out.data = dma; break;
-    case ADDR_BGP:  out.oe = 1; out.data = bgp; break;
-    case ADDR_OBP0: out.oe = 1; out.data = obp0; break;
-    case ADDR_OBP1: out.oe = 1; out.data = obp1; break;
-    case ADDR_WY:   out.oe = 1; out.data = wy; break;
-    case ADDR_WX:   out.oe = 1; out.data = wx; break;
+    case ADDR_LCDC: out.addr = addr; out.oe = 1; out.data = lcdc; break;
+    case ADDR_STAT: out.addr = addr; out.oe = 1; out.data = stat; break;
+    case ADDR_SCY:  out.addr = addr; out.oe = 1; out.data = scy; break;
+    case ADDR_SCX:  out.addr = addr; out.oe = 1; out.data = scx; break;
+    case ADDR_LY:   out.addr = addr; out.oe = 1; out.data = ly; break;
+    case ADDR_LYC:  out.addr = addr; out.oe = 1; out.data = lyc; break;
+    case ADDR_DMA:  out.addr = addr; out.oe = 1; out.data = dma; break;
+    case ADDR_BGP:  out.addr = addr; out.oe = 1; out.data = bgp; break;
+    case ADDR_OBP0: out.addr = addr; out.oe = 1; out.data = obp0; break;
+    case ADDR_OBP1: out.addr = addr; out.oe = 1; out.data = obp1; break;
+    case ADDR_WY:   out.addr = addr; out.oe = 1; out.data = wy; break;
+    case ADDR_WX:   out.addr = addr; out.oe = 1; out.data = wx; break;
     }
   }
 }

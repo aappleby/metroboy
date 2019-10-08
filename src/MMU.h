@@ -7,15 +7,21 @@ struct MMU {
   void reset(size_t new_rom_size, uint16_t new_pc);
   void reset(uint16_t new_pc);
 
-  BusOut tick() const;
-  void tock(CpuBus bus);
+  struct Out {
+    uint16_t addr;
+    uint8_t data;
+    bool oe;
+  };
+
+  Out tick() const;
+  void tock(int tphase, CpuBus bus);
   void dump(std::string& d);
 
   uint8_t* get_flat_ptr(uint16_t addr);
   size_t get_rom_size() const { return rom_size; }
 
 private:
-  BusOut out;
+  Out out;
   size_t rom_size;
   int rom_bank_count;
   int ram_bank_count;

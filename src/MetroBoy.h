@@ -52,7 +52,7 @@ public:
   void clear_line_history();
   void clear_cycle_history();
 
-  GameboyOut gb_out;
+  Gameboy::HostOut gb_out;
 
 private:
 

@@ -261,8 +261,8 @@ void MetroBoy::clear_cycle_history() {
 //-----------------------------------------------------------------------------
 
 void MetroBoy::cycle() {
-  gb_out = current_gb->tick();
-  current_gb->tock();
+  current_gb->tick();
+  gb_out = current_gb->tock();
 
   if (trace) {
     tracebuffer[gb_out.y * 456 + gb_out.counter] = gb_out.trace;

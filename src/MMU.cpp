@@ -50,52 +50,16 @@ void MMU::reset(uint16_t new_pc) {
 
 //-------------------------------------
 
-BusOut MMU::tick() const {
+MMU::Out MMU::tick() const {
   return out;
 }
 
-void MMU::tock(CpuBus bus) {
-  if (bus.write) {
-    if (bus.addr <= 0x1FFF) {
-      ram_enable = (bus.data & 0x0F) == 0x0A;
-    }
-    else if (bus.addr >= 0x2000 && bus.addr <= 0x3FFF) {
-      bank_latch1 = bus.data & 0b00011111;
+void MMU::tock(int tphase, CpuBus bus) {
+  if (tphase == 0 && bus.read) {
+    out = {};
+    uint8_t _bus_out = 0x00;
+    bool _bus_oe = false;
 
-      int bank = ((bank_latch2 << 5) | bank_latch1);
-      if (bank_latch1 == 0) {
-        bank |= 0b00000001;
-      }
-    }
-    else if (bus.addr >= 0x4000 && bus.addr <= 0x5FFF) {
-      bank_latch2 = bus.data & 0b00000011;
-
-      int bank = ((bank_latch2 << 5) | bank_latch1);
-      if (bank_latch1 == 0) {
-        bank |= 0b00000001;
-      }
-    }
-    else if (bus.addr >= 0x6000 && bus.addr <= 0x7FFF) {
-      mode = bus.data & 1;
-    }
-    else if (bus.addr >= 0xA000 && bus.addr <= 0xBFFF) {
-      if (ram_enable && ram_bank_count) {
-        int bank = mode ? bank_latch2 : 0;
-        bank &= (ram_bank_count - 1);
-        ram_buf[(bus.addr - 0xA000) | (bank << 13)] = bus.data;
-        ram_dirty = true;
-        //printf("ram_dirty 0x%04x 0x%02x\n", addr, data);
-      }
-    }
-    else if (bus.addr == ADDR_DISABLE_BOOTROM) {
-      disable_boot_rom |= (bus.data != 0);
-    }
-  }
-
-  uint8_t _bus_out = 0x00;
-  bool _bus_oe = false;
-
-  if (bus.read) {
     if (bus.addr <= 0x00FF && !disable_boot_rom) {
       _bus_out = DMG_ROM_bin[bus.addr];
       _bus_oe = true;
@@ -134,9 +98,48 @@ void MMU::tock(CpuBus bus) {
         _bus_oe = true;
       }
     }
+
+    out.addr = bus.addr;
+    out.data = _bus_out;
+    out.oe = _bus_oe;
   }
 
-  out = { _bus_out, _bus_oe };
+  if (tphase == 2 && bus.write) {
+    if (bus.addr <= 0x1FFF) {
+      ram_enable = (bus.data & 0x0F) == 0x0A;
+    }
+    else if (bus.addr >= 0x2000 && bus.addr <= 0x3FFF) {
+      bank_latch1 = bus.data & 0b00011111;
+
+      int bank = ((bank_latch2 << 5) | bank_latch1);
+      if (bank_latch1 == 0) {
+        bank |= 0b00000001;
+      }
+    }
+    else if (bus.addr >= 0x4000 && bus.addr <= 0x5FFF) {
+      bank_latch2 = bus.data & 0b00000011;
+
+      int bank = ((bank_latch2 << 5) | bank_latch1);
+      if (bank_latch1 == 0) {
+        bank |= 0b00000001;
+      }
+    }
+    else if (bus.addr >= 0x6000 && bus.addr <= 0x7FFF) {
+      mode = bus.data & 1;
+    }
+    else if (bus.addr >= 0xA000 && bus.addr <= 0xBFFF) {
+      if (ram_enable && ram_bank_count) {
+        int bank = mode ? bank_latch2 : 0;
+        bank &= (ram_bank_count - 1);
+        ram_buf[(bus.addr - 0xA000) | (bank << 13)] = bus.data;
+        ram_dirty = true;
+        //printf("ram_dirty 0x%04x 0x%02x\n", addr, data);
+      }
+    }
+    else if (bus.addr == ADDR_DISABLE_BOOTROM) {
+      disable_boot_rom |= (bus.data != 0);
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------

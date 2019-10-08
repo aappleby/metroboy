@@ -12,6 +12,26 @@
 extern uint8_t rom_buf[];
 
 static const std::string micro_tests[] = {
+  "timer_div_phase_a",
+  "timer_div_phase_b",
+  "timer_div_phase_c",
+  "timer_div_phase_d",
+
+  "break",
+
+  "timer_tima_phase_a",
+  "timer_tima_phase_b",
+  "timer_tima_phase_c",
+  "timer_tima_phase_d",
+  "timer_tima_phase_e",
+  "timer_tima_phase_f",
+  "timer_tima_phase_g",
+  "timer_tima_phase_h",
+  "timer_tima_phase_i",
+  "timer_tima_phase_j",
+
+  "break",
+
   "lcdon_to_stat0_a",
   "lcdon_to_stat0_b",
   "lcdon_to_stat0_c",
@@ -33,25 +53,32 @@ static const std::string micro_tests[] = {
   "lcdon_to_stat3_c",
   "lcdon_to_stat3_d",
 
+  "break",
+
+  "lcdon_to_ly1_a",
+  "lcdon_to_ly1_b",
+  "lcdon_to_ly2_a",
+  "lcdon_to_ly2_b",
+  "lcdon_to_ly3_a",
+  "lcdon_to_ly3_b",
+
+  "break",
+
+  "lcdon_to_lyc1_int",
+  "lcdon_to_lyc2_int",
+  "lcdon_to_lyc3_int",
+
+  "break",
+
+  "lcdon_to_oam_int_l0",
+  "lcdon_to_oam_int_l1",
+  "lcdon_to_oam_int_l2",
+
+  "break",
+
   "timer_int_inc_sled",
   "timer_int_inc_sled_a",
   "timer_int_inc_sled_b",
-
-  "timer_div_phase_a",
-  "timer_div_phase_b",
-  "timer_div_phase_c",
-  "timer_div_phase_d",
-
-  "timer_tima_phase_a",
-  "timer_tima_phase_b",
-  "timer_tima_phase_c",
-  "timer_tima_phase_d",
-  "timer_tima_phase_e",
-  "timer_tima_phase_f",
-  "timer_tima_phase_g",
-  "timer_tima_phase_h",
-  "timer_tima_phase_i",
-  "timer_tima_phase_j",
 
   "timer_tima_write_a",
   "timer_tima_write_b",
@@ -329,22 +356,6 @@ static const std::string micro_tests[] = {
   "vblank2_int_if_d",
 
   "-----",
-  "lcdon_to_ly1_a",
-  "lcdon_to_ly1_b",
-  "lcdon_to_ly2_a",
-  "lcdon_to_ly2_b",
-  "lcdon_to_ly3_a",
-  "lcdon_to_ly3_b",
-  "lcdon_to_lyc1_int",
-  "lcdon_to_lyc2_int",
-  "lcdon_to_lyc3_int",
-
-  "-----",
-  "lcdon_to_oam_int_l0",
-  "lcdon_to_oam_int_l1",
-  "lcdon_to_oam_int_l2",
-
-  "-----",
   "line_153_ly_a",
   "line_153_ly_b",
   "line_153_ly_c",
@@ -482,6 +493,7 @@ void run_microtests() {
 
   int fails = 0;
   for (auto name : micro_tests) {
+    if (name == "break") break;
     bool pass = run_microtest(model, prefix, name);
     if (!pass) fails++;
   }

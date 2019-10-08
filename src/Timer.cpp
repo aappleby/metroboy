@@ -32,24 +32,28 @@ void Timer::tock(int tphase, const CpuBus bus) {
   tick_ = (counter & masks[tac & 3]) && (tac & 0b100);
   if (do_tick && !tick_) tima_ = tima + 1;
 
-  if (tphase == 0) {
-    if (bus.write && bus.addr == ADDR_DIV)  counter = 0;
-    if (bus.write && bus.addr == ADDR_TIMA) tima_ = bus.data;
-    if (bus.write && bus.addr == ADDR_TMA)  tma = bus.data;
-    if (bus.write && bus.addr == ADDR_TAC)  tac = bus.data;
-
-    out.interrupt = tima >> 8;
-    if (out.interrupt) tima_ = tma;
-  }
-
-  if (tphase == 2) {
-    out.data = 0x00;
+  if (tphase == 0 && bus.read) {
+    out.addr = 0;
+    out.data = 0;
     out.oe = false;
 
-    if (bus.read && bus.addr == ADDR_DIV)  { out.oe = true; out.data = uint8_t(counter >> 8); }
-    if (bus.read && bus.addr == ADDR_TIMA) { out.oe = true; out.data = uint8_t(tima); }
-    if (bus.read && bus.addr == ADDR_TMA)  { out.oe = true; out.data = tma; }
-    if (bus.read && bus.addr == ADDR_TAC)  { out.oe = true; out.data = tac | 0b11111000; }
+    if (bus.addr == ADDR_DIV)  { out.addr = bus.addr; out.oe = true; out.data = uint8_t(counter >> 8); }
+    if (bus.addr == ADDR_TIMA) { out.addr = bus.addr; out.oe = true; out.data = uint8_t(tima); }
+    if (bus.addr == ADDR_TMA)  { out.addr = bus.addr; out.oe = true; out.data = tma; }
+    if (bus.addr == ADDR_TAC)  { out.addr = bus.addr; out.oe = true; out.data = tac | 0b11111000; }
+  }
+
+  if (tphase == 2 && bus.write) {
+    if (bus.addr == ADDR_DIV)  counter = 0;
+    if (bus.addr == ADDR_TIMA) tima_ = bus.data;
+    if (bus.addr == ADDR_TMA)  tma = bus.data;
+    if (bus.addr == ADDR_TAC)  tac = bus.data;
+  }
+
+  // should this go in tphase 0 now?
+  if (tphase == 2) {
+    out.interrupt = tima >> 8;
+    if (out.interrupt) tima_ = tma;
   }
 
   tima = tima_;
@@ -64,9 +68,11 @@ void Timer::dump(std::string& d) {
   sprintf(d, "TIMA           0x%02x\n", tima);
   sprintf(d, "TMA            0x%02x\n", tma);
   sprintf(d, "TAC            %s\n",     byte_to_bits(tac));
+  sprintf(d, "\n");
 
-  dumpit(out.data, "0x%02x");
-  dumpit(out.oe,   "%d");
+  dumpit(out.addr,      "0x%04x");
+  dumpit(out.data,      "0x%02x");
+  dumpit(out.oe,        "%d");
   dumpit(out.interrupt, "%d");
 }
 

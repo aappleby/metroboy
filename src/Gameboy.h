@@ -19,11 +19,29 @@
 struct Gameboy {
   Gameboy();
 
-  void reset(int new_model, size_t new_rom_size, uint16_t new_pc);
-  void reset(uint16_t new_pc);
+  struct Out {
+    uint16_t addr;
+    uint8_t data;
+    bool oe;
+  };
 
-  GameboyOut tick() const;
-  void tock();
+  struct HostOut {
+    int x;
+    int y;
+    int counter;
+    uint8_t pix;
+    bool pix_oe;
+    sample_t out_r;
+    sample_t out_l;
+    uint32_t trace;
+  };
+
+  void    reset(int new_model, size_t new_rom_size, uint16_t new_pc);
+  void    reset(uint16_t new_pc);
+  Out     tick() const;
+  HostOut tock();
+  void    dump(std::string& out);
+  void    dump_disasm(std::string& out);
 
   const Z80& get_cpu() const { return z80; }
   const SPU& get_spu() const { return spu; }
@@ -36,10 +54,11 @@ struct Gameboy {
 
   void check_sentinel() { assert(sentinel == 0xDEADBEEF); }
 
-  void dump1(std::string& out);
-  void dump_disasm(std::string& out);
-
 private:
+
+  Out     gb_out;
+  HostOut host_out;
+  CpuIn   cpu_in;
 
   enum DMAMode {
     DMA_NONE,
@@ -49,16 +68,17 @@ private:
   };
 
   Z80 z80;
-  MMU mmu;
-  PPU ppu;
-  OAM oam;
-  SPU spu;
   Timer timer;
+  MMU mmu;
+  OAM oam;
   VRAM vram;
   IRAM iram;
+  ZRAM zram;
   Buttons buttons;
   Serial serial;
-  ZRAM zram;
+
+  PPU ppu;
+  SPU spu;
 
   PPU::Out ppu_out;
   OAM::Out oam_out;

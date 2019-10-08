@@ -8,51 +8,24 @@ typedef int16_t sample_t;
 
 //-----------------------------------------------------------------------------
 
-struct Framebuffer {
-  uint8_t buf[160*144];
+struct CpuIn {
+  uint16_t addr;
+  uint8_t  data;
+  uint8_t  oe;
+  uint8_t  imask;
+  uint8_t  intf;
 };
 
 struct CpuBus {
   uint16_t addr;
-  uint8_t data;
-  bool read;
-  bool write;
-  uint8_t int_ack;
+  uint8_t  data;
+  bool     read;
+  bool     write;
+  uint8_t  int_ack;
 };
 
-struct CpuOut {
-  uint8_t data;
-  bool oe;
-};
-
-struct BusOut {
-  uint8_t data;
-  bool oe;
-  uint16_t addr;
-};
-
-struct SpuOut {
-  uint8_t data;
-  bool oe;
-  sample_t out_r;
-  sample_t out_l;
-};
-
-struct ButtonsOut {
-  uint8_t data;
-  bool oe;
-  uint8_t val;
-};
-
-struct GameboyOut {
-  int x;
-  int y;
-  int counter;
-  uint8_t pix;
-  bool pix_oe;
-  sample_t out_r;
-  sample_t out_l;
-  uint32_t trace;
+struct Framebuffer {
+  uint8_t buf[160*144];
 };
 
 const uint8_t F_CARRY = 0x10;

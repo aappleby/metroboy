@@ -6,23 +6,23 @@ enum Z80State;
 //-----------------------------------------------------------------------------
 
 struct Z80 {
-  void   reset(int new_model, uint16_t new_pc);
+  typedef CpuBus Out;
 
-  CpuBus tick() const;
-  void tock(uint8_t imask, uint8_t intf, uint8_t bus_);
+  void   reset(int new_model, uint16_t new_pc);
+  Out    tick() const;
+  void   tock(CpuIn in);
+  void   dump(std::string& d);
 
   uint16_t get_pc() const { return pc2; }
   uint8_t  get_a()  const { return a; }
   uint8_t  get_op() const { return op; }
   int      get_state() const { return state; }
-
-  void dump(std::string& d);
-
+  
   bool    unhalt;
 
 private:
 
-  CpuBus out;
+  Out out;
 
   int model = 0;
   int cycle;

@@ -8,6 +8,7 @@
 
 struct PPU {
   struct Out {
+    uint16_t addr;
     uint8_t data;
     bool oe;
 

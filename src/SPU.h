@@ -4,8 +4,16 @@
 //-----------------------------------------------------------------------------
 
 struct SPU {
+  struct Out {
+    uint16_t addr;
+    uint8_t  data;
+    uint8_t  oe;
+    sample_t out_r;
+    sample_t out_l;
+  };
+
   void reset();
-  SpuOut tick() const;
+  Out  tick() const;
   void tock(int tphase, CpuBus bus);
 
   void  dump(std::string& out) const;
@@ -13,10 +21,10 @@ struct SPU {
   
 private:
 
-  SpuOut out;
+  Out out;
 
-  void bus_read(uint16_t addr, SpuOut& ret);
-  void bus_write(uint16_t addr, uint8_t data);
+  void bus_read (int tphase, CpuBus bus);
+  void bus_write(int tphase, CpuBus bus);
 
   //----------
 

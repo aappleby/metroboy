@@ -10,24 +10,24 @@ void ZRAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-BusOut ZRAM::tick() const {
+ZRAM::Out ZRAM::tick() const {
   return out;
 }
 
-void ZRAM::tock(CpuBus bus) {
-  out = {};
-
-  if (bus.addr < ADDR_ZEROPAGE_BEGIN || ADDR_ZEROPAGE_END < bus.addr) {
-    return;
+void ZRAM::tock(int tphase, CpuBus bus) {
+  if (tphase == 0 && bus.read) {
+    out = {};
+    if (ADDR_ZEROPAGE_BEGIN <= bus.addr && bus.addr <= ADDR_ZEROPAGE_END) {
+      out.addr = bus.addr;
+      out.data = ram[bus.addr - ADDR_ZEROPAGE_BEGIN];
+      out.oe = true;
+    }
   }
 
-  if (bus.write) {
-    ram[bus.addr - ADDR_ZEROPAGE_BEGIN] = bus.data;
-  }
-
-  if (bus.read) {
-    out.data = ram[bus.addr - ADDR_ZEROPAGE_BEGIN];
-    out.oe = true;
+  if (tphase == 2 && bus.write) {
+    if (ADDR_ZEROPAGE_BEGIN <= bus.addr && bus.addr <= ADDR_ZEROPAGE_END) {
+      ram[bus.addr - ADDR_ZEROPAGE_BEGIN] = bus.data;
+    }
   }
 }
 

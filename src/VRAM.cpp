@@ -44,16 +44,21 @@ VRAM::Out VRAM::tick() const {
   return out;
 }
 
-void VRAM::tock(CpuBus bus) {
-  out = {};
+// note this has to dispatch read/write on any phase
 
-  if ((bus.addr & 0xE000) == 0x8000) {
-    if (bus.read) {
+void VRAM::tock(int /*tphase*/, CpuBus bus) {
+
+  if (bus.read) {
+    out = {};
+    if (ADDR_VRAM_BEGIN <= bus.addr && bus.addr <= ADDR_VRAM_END) {
       out.addr = bus.addr;
       out.data = ram[bus.addr - ADDR_VRAM_BEGIN];
       out.oe = true;
     }
-    if (bus.write) {
+  }
+
+  if (bus.write) {
+    if (ADDR_VRAM_BEGIN <= bus.addr && bus.addr <= ADDR_VRAM_END) {
       ram[bus.addr - ADDR_VRAM_BEGIN] = bus.data;
     }
   }

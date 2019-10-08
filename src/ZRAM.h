@@ -4,11 +4,15 @@
 //-----------------------------------------------------------------------------
 
 struct ZRAM {
-  typedef BusOut Out;
+  struct Out {
+    uint16_t addr;
+    uint8_t data;
+    bool oe;
+  };
 
   void reset();
   Out  tick() const;
-  void tock(CpuBus bus);
+  void tock(int tphase, CpuBus bus);
   void dump(std::string& d);
 
   const uint8_t* get() const { return ram; }

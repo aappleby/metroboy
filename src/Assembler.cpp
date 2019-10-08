@@ -187,9 +187,10 @@ void Assembler::disassemble(
     if (code_cursor >= code_size) return;
 
     uint8_t op0 = code[code_cursor + 0];
+    int size = op_sizes[op0];
+    const char* op_string = op_strings[op0];
 
-
-    sprintf(out, "%04x: ", code_base + code_cursor);
+    /*
     if (collapse_nops && op0 == 0) {
       int nop_count = 0;
       while (code[code_cursor] == 0) {
@@ -209,39 +210,40 @@ void Assembler::disassemble(
       }
       continue;
     }
+    */
+
+    sprintf(out, "%04x: ", code_base + code_cursor);
+
+    int arg = 0;
 
     if (op0 == 0xCB) {
+      sprintf(out, "%02x", op0);
       uint8_t op1 = code[code_cursor + 1];
-      const char* op_string = cb_strings[op1];
-      int size = 2;
-      //sprintf(out, "%04x: %02x%02x   ", code_base + code_cursor, op0, op1);
-      sprintf(out, "%s", op_string);
-      sprintf(out, "\n");
-      code_cursor += size;
-      continue;
+      sprintf(out, "%02x   ", op1);
+      op_string = cb_strings[op1];
+      size = 2;
     }
-
-    const char* op_string = op_strings[op0];
-    int size = op_sizes[op0];
-
-    if (size == 1) {
-      //sprintf(out, "%04x: %02x     ", code_base + code_cursor, op0);
-      sprintf(out, "%s", op_string);
+    else if (size == 1) {
+      sprintf(out, "%02x     ", op0);
+      arg = 0;
     }
     if (size == 2) {
-      int op1 = int8_t(code[code_cursor + 1]);
-      //sprintf(out, "%04x: %02x%02x   ", code_base + code_cursor, op0, op1);
-      sprintf(out, op_string, op1);
+      sprintf(out, "%02x", op0);
+      uint8_t lo = code[code_cursor + 1];
+      sprintf(out, "%02x   ", lo);
+      arg = lo;
     }
     if (size == 3) {
-      uint8_t lo = (int)code[code_cursor + 1];
-      uint8_t hi = (int)code[code_cursor + 2];
+      sprintf(out, "%02x", op0);
+      uint8_t lo = code[code_cursor + 1];
+      sprintf(out, "%02x", lo);
+      uint8_t hi = code[code_cursor + 2];
+      sprintf(out, "%02x ", hi);
+      arg = ((hi << 8) | lo);
 
-      int arg = ((hi << 8) | lo);
-
-      //sprintf(out, "%04x: %02x%02x%02x ", code_base + code_cursor, op0, op1, op2);
-      sprintf(out, op_string, arg);
     }
+
+    sprintf(out, op_string, arg);
     sprintf(out, "\n");
     code_cursor += size;
   }

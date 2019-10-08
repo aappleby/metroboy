@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct OAM {
-  void reset();
 
   struct Out {
     uint16_t addr;
@@ -13,10 +12,11 @@ struct OAM {
     bool     oe;
   };
 
-  Out tick() const;
-  void tock(const CpuBus bus);
-
+  void reset();
+  Out  tick() const;
+  void tock(int tphase, const CpuBus bus);
   void dump(std::string& out) const;
+
   const uint8_t* get() const { return (uint8_t*)ram; }
 
 private:

@@ -49,8 +49,8 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
-  //load("LinksAwakening");
+  //load("gejmboj");
+  load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
   //load("tetris");
@@ -65,7 +65,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("microtests/build/dmg", "timer_int_inc_sled");
 
-  //load("microtests/build/dmg", "timer_div_phase_a");
+  load("microtests/build/dmg", "timer_div_phase_a");
   //load("microtests/build/dmg", "timer_div_phase_b");
   //load("microtests/build/dmg", "timer_div_phase_c");
   //load("microtests/build/dmg", "timer_div_phase_d");
@@ -151,8 +151,22 @@ void MetroBoyApp::loop() {
     case SDLK_v:      runmode = RUN_VSYNC; break;
     case SDLK_s:      runmode = STEP_FRAME; break;
     case SDLK_o:      overlay_mode = (overlay_mode + 1) % 3; break;
-    case SDLK_RIGHT:  step_forward++; break;
-    case SDLK_LEFT:   step_backward++; break;
+    case SDLK_RIGHT:  {
+      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+        step_forward += 10;
+      } else {
+        step_forward++;
+      }
+      break;
+    }
+    case SDLK_LEFT:   {
+      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+        step_backward += 10; 
+      } else {
+        step_backward++; 
+      }
+      break;
+    }
     case SDLK_UP:     step_up = true; break;
     case SDLK_DOWN:   step_down = true; break;
 
@@ -274,24 +288,25 @@ void MetroBoyApp::loop() {
 
   int spacing = 192;
 
-  gameboy.dump1(text_buf);
+  gameboy.dump(text_buf);
   //gameboy.get_oam().dump(text_buf);
   render_text(spacing * 0 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
-  sprintf(text_buf, "-----PPU-----\n");
+  sprintf(text_buf, "--------------PPU--------------\n");
   gameboy.get_ppu().dump(text_buf);
   render_text(spacing * 1 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
-  sprintf(text_buf, "-----SPU-----\n");
-  gameboy.get_spu().dump(text_buf);
+  gameboy.dump_disasm(text_buf);
   render_text(spacing * 2 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
-  gameboy.dump_disasm(text_buf);
-  render_text(spacing * 3 + 4, 4, text_buf.c_str());
+  sprintf(text_buf, "--------------SPU--------------\n");
+  gameboy.get_spu().dump(text_buf);
+  render_text(spacing * 2 + 4, 640 + 4, text_buf.c_str());
   text_buf.clear();
+
 
   //gameboy.get_spu().dump(text_buf);
   //render_text(280, 4, text_buf.c_str());

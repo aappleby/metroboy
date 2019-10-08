@@ -12,12 +12,11 @@ OAM::Out OAM::tick() const {
   return out;
 }
 
-void OAM::tock(CpuBus bus) {
-  out.addr = 0;
-  out.data = 0;
-  out.oe = false;
+// note this has to dispatch read/write on any phase
 
+void OAM::tock(int tphase, CpuBus bus) {
   if (bus.read) {
+    out = {};
     if (ADDR_OAM_BEGIN <= bus.addr && bus.addr <= ADDR_OAM_END) {
       out.addr = bus.addr;
       out.data16 = ram[(bus.addr - ADDR_OAM_BEGIN) >> 1];
@@ -26,13 +25,15 @@ void OAM::tock(CpuBus bus) {
     }
   }
 
-  if (bus.write && ADDR_OAM_BEGIN <= bus.addr && bus.addr <= ADDR_OAM_END) {
-    uint16_t& d = ram[(bus.addr - ADDR_OAM_BEGIN) >> 1];
-    if (bus.addr & 1) {
-      d = (d & 0x00FF) | (bus.data << 8);
-    }
-    else {
-      d = (d & 0xFF00) | (bus.data << 0);
+  if (bus.write) {
+    if (ADDR_OAM_BEGIN <= bus.addr && bus.addr <= ADDR_OAM_END) {
+      uint16_t& d = ram[(bus.addr - ADDR_OAM_BEGIN) >> 1];
+      if (bus.addr & 1) {
+        d = (d & 0x00FF) | (bus.data << 8);
+      }
+      else {
+        d = (d & 0xFF00) | (bus.data << 0);
+      }
     }
   }
 }

@@ -743,10 +743,10 @@ void PPU::emit_pixel(int /*tphase*/) {
 //-----------------------------------------------------------------------------
 
 void PPU::bus_read_early(uint16_t addr) {
+  out.addr = 0;
+  out.data = 0;
+  out.oe = 0;
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
-    out.addr = 0;
-    out.data = 0;
-    out.oe = 0;
     switch (addr) {
     case ADDR_LCDC: out.addr = addr; out.oe = 1; out.data = lcdc; break;
     case ADDR_STAT: out.addr = addr; out.oe = 1; out.data = stat; break;
@@ -767,7 +767,6 @@ void PPU::bus_read_early(uint16_t addr) {
 //----------------------------------------
 
 void PPU::bus_read_late(uint16_t addr) {
-
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
     case ADDR_LCDC: out.addr = addr; out.oe = 1; out.data = lcdc; break;
@@ -1034,6 +1033,7 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "sprite_y [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sy[0], sy[1], sy[2], sy[3], sy[4], sy[5], sy[6], sy[7], sy[8], sy[9]);
   */
 
+  dumpit(out.addr      ,"0x%04x");
   dumpit(out.data      ,"0x%02x");
   dumpit(out.oe        ,"%d");
   dumpit(out.vram_addr ,"0x%04x");

@@ -12,6 +12,14 @@
 extern uint8_t rom_buf[];
 
 static const std::string micro_tests[] = {
+  "poweron_000_div",
+  "poweron_004_div",
+  "poweron_005_div",
+
+  "poweron_000_ly",
+  "poweron_119_ly",
+  "poweron_120_ly",
+
   "poweron_000_stat",
   "poweron_005_stat",
   "poweron_006_stat",
@@ -30,6 +38,30 @@ static const std::string micro_tests[] = {
   "poweron_234_stat",
   "poweron_235_stat",
 
+  "poweron_000_oam",
+  "poweron_005_oam",
+  "poweron_006_oam",
+  "poweron_069_oam",
+  "poweron_070_oam",
+  "poweron_119_oam",
+  "poweron_120_oam",
+  "poweron_121_oam",
+  "poweron_183_oam",
+  "poweron_184_oam",
+  "poweron_233_oam",
+  "poweron_234_oam",
+  "poweron_235_oam",
+
+  "poweron_000_vram",
+  "poweron_025_vram",
+  "poweron_026_vram",
+  "poweron_069_vram",
+  "poweron_070_vram",
+  "poweron_139_vram",
+  "poweron_140_vram",
+  "poweron_183_vram",
+  "poweron_184_vram",
+
   "break",
 
   "poweron_oam_read_a",
@@ -39,8 +71,6 @@ static const std::string micro_tests[] = {
 
   "break",
 
-  "timer_div_phase_a",
-  "timer_div_phase_b",
   "timer_div_phase_c",
   "timer_div_phase_d",
 

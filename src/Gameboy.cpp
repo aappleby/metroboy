@@ -261,7 +261,9 @@ Gameboy::HostOut Gameboy::tock() {
 
     cpu_in.imask = imask_;
     cpu_in.intf = intf_;
+  }
 
+  if (tphase == 2) {
     z80.tock(cpu_in);
   }
 

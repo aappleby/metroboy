@@ -286,6 +286,15 @@
   test_end
 .endm
 
+.macro test_finish_not_a ARGS expected
+  cp expected
+  jr nz, +
+  ld a, $FF
+  test_end
++ ld a, $55
+  test_end
+.endm
+
 .macro test_finish_b ARGS expected
   ld a, b
   sub <expected

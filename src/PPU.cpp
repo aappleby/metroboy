@@ -62,10 +62,10 @@ void PPU::reset(bool run_bootrom, int /*new_model*/) {
     line_delay2 = 153;
     line_delay3 = 153;
 
-    counter = 400;
-    counter_delay1 = 399;
-    counter_delay2 = 398;
-    counter_delay3 = 397;
+    counter = 401;
+    counter_delay1 = 400;
+    counter_delay2 = 399;
+    counter_delay3 = 398;
 
     lcdc = 0x91;
     palettes[0] = 0xfc;
@@ -106,35 +106,8 @@ PPU::Out PPU::tick(int /*tphase*/) const {
   };
   */
 
-  out2.vram_addr = 0;
-  out2.oam_addr = 0;
-
   if (!(lcdc & FLAG_LCD_ON)) {
     return out2;
-  }
-
-  uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
-  uint8_t map_y = ((scy + line) >> 3) & 31;
-
-  if (fetch_type == FETCH_BACKGROUND) {
-    if      (fetch_state == FETCH_TILE_MAP) out2.vram_addr = tile_map_address(lcdc, new_map_x, map_y);
-    else if (fetch_state == FETCH_TILE_LO)  out2.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
-    else if (fetch_state == FETCH_TILE_HI)  out2.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
-  }
-  else if (fetch_type == FETCH_WINDOW) {
-    if      (fetch_state == FETCH_TILE_MAP) out2.vram_addr = win_map_address(lcdc, map_x, win_y_latch);
-    else if (fetch_state == FETCH_TILE_LO)  out2.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
-    else if (fetch_state == FETCH_TILE_HI)  out2.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
-  }
-  else if (fetch_type == FETCH_SPRITE) {
-    if      (fetch_state == FETCH_SPRITE_MAP) { out2.oam_addr = (sprite_index << 2) + 2; out2.oam_addr += ADDR_OAM_BEGIN; }
-    else if (fetch_state == FETCH_SPRITE_LO)  out2.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
-    else if (fetch_state == FETCH_SPRITE_HI)  out2.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
-  }
-
-  if (pix_count + pix_discard_pad == 168) {
-    out2.oam_addr = 0;
-    out2.vram_addr = 0;
   }
 
   out2.x = pix_count;
@@ -583,6 +556,35 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     old_stat_int1 = (stat_ & stat_int1_);
     old_stat_int2 = (stat_ & stat_int2_);
   }
+
+  out.vram_addr = 0;
+  out.oam_addr = 0;
+
+  uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
+  uint8_t map_y = ((scy + line) >> 3) & 31;
+
+  if (fetch_type == FETCH_BACKGROUND) {
+    if      (fetch_state == FETCH_TILE_MAP) out.vram_addr = tile_map_address(lcdc, new_map_x, map_y);
+    else if (fetch_state == FETCH_TILE_LO)  out.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
+    else if (fetch_state == FETCH_TILE_HI)  out.vram_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
+  }
+  else if (fetch_type == FETCH_WINDOW) {
+    if      (fetch_state == FETCH_TILE_MAP) out.vram_addr = win_map_address(lcdc, map_x, win_y_latch);
+    else if (fetch_state == FETCH_TILE_LO)  out.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
+    else if (fetch_state == FETCH_TILE_HI)  out.vram_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
+  }
+  else if (fetch_type == FETCH_SPRITE) {
+    if      (fetch_state == FETCH_SPRITE_MAP) { out.oam_addr = (sprite_index << 2) + 2; out.oam_addr += ADDR_OAM_BEGIN; }
+    else if (fetch_state == FETCH_SPRITE_LO)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
+    else if (fetch_state == FETCH_SPRITE_HI)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
+  }
+
+  if (pix_count + pix_discard_pad == 168) {
+    out.oam_addr = 0;
+    out.vram_addr = 0;
+  }
+
+
 } // PPU::tock
 
 //-----------------------------------------------------------------------------

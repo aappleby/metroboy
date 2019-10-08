@@ -13,7 +13,9 @@ struct PPU {
     bool oe;
 
     uint16_t vram_addr;
+    bool vram_lock;
     uint16_t oam_addr;
+    bool oam_lock;
 
     int x;
     int y;

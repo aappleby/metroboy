@@ -49,7 +49,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  //load("gejmboj");
+  load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
@@ -58,7 +58,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  load("microtests/build/dmg", "poweron_oam_read_a");
+  //load("microtests/build/dmg", "poweron_006_oam");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;

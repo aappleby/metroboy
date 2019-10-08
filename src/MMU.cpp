@@ -57,24 +57,25 @@ MMU::Out MMU::tick() const {
 void MMU::tock(int tphase, CpuBus bus) {
   if (tphase == 0 && bus.read) {
     out = {};
-    uint8_t _bus_out = 0x00;
-    bool _bus_oe = false;
 
     if (bus.addr <= 0x00FF && !disable_boot_rom) {
-      _bus_out = DMG_ROM_bin[bus.addr];
-      _bus_oe = true;
+      out.addr = bus.addr;
+      out.data = DMG_ROM_bin[bus.addr];
+      out.oe = true;
     }
     else if (bus.addr <= 0x3FFF) {
       if (mode == 0) {
-        _bus_out = rom_buf[bus.addr];
-        _bus_oe = true;
+        out.addr = bus.addr;
+        out.data = rom_buf[bus.addr];
+        out.oe = true;
       }
       else {
         int bank = (bank_latch2 << 5);
         bank &= (rom_bank_count - 1);
         if (rom_bank_count == 0) bank = 0;
-        _bus_out = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
-        _bus_oe = true;
+        out.addr = bus.addr;
+        out.data = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
+        out.oe = true;
       }
     }
     else if (bus.addr >= 0x4000 && bus.addr <= 0x7FFF) {
@@ -86,22 +87,21 @@ void MMU::tock(int tphase, CpuBus bus) {
 
       bank &= (rom_bank_count - 1);
 
-      _bus_out = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
-      _bus_oe = true;
+      out.addr = bus.addr;
+      out.data = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
+      out.oe = true;
     }
     else if (bus.addr >= 0xA000 && bus.addr <= 0xBFFF) {
       if (ram_enable && ram_bank_count) {
         int bank = mode ? bank_latch2 : 0;
         bank &= (ram_bank_count - 1);
         if (rom_bank_count == 0) bank = 0;
-        _bus_out = ram_buf[(bus.addr - 0xA000) | (bank << 13)];
-        _bus_oe = true;
+        out.addr = bus.addr;
+        out.data = ram_buf[(bus.addr - 0xA000) | (bank << 13)];
+        out.oe = true;
       }
     }
 
-    out.addr = bus.addr;
-    out.data = _bus_out;
-    out.oe = _bus_oe;
   }
 
   if (tphase == 2 && bus.write) {

@@ -12,6 +12,24 @@
 extern uint8_t rom_buf[];
 
 static const std::string micro_tests[] = {
+  "poweron_stat_read_a",
+  "poweron_stat_read_b",
+  "poweron_stat_read_c",
+  "poweron_stat_read_d",
+  "poweron_stat_read_e",
+  "poweron_stat_read_f",
+  "poweron_stat_read_g",
+  "poweron_stat_read_h",
+
+  "break",
+
+  "poweron_oam_read_a",
+  "poweron_oam_read_b",
+  "poweron_oam_read_c",
+  "poweron_oam_read_d",
+
+  "break",
+
   "timer_div_phase_a",
   "timer_div_phase_b",
   "timer_div_phase_c",

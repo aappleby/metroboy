@@ -256,6 +256,7 @@ void Z80::tock(CpuIn in) {
     int_ack = 0;
     imask = in.imask;
     intf = in.intf;
+    data_out = 0x00;
 
     bool cond_fail = false;
 

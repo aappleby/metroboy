@@ -73,9 +73,7 @@ Gameboy::HostOut Gameboy::tock() {
   tcycle++;
   int tphase = tcycle & 3;
 
-  auto cpu_bus     = z80.tick();
-  if (tphase != 0) cpu_bus.read = 0;
-  if (tphase != 2) cpu_bus.write = 0;
+  auto cpu_bus = z80.tick();
 
   const auto iram_out    = iram.tick();
   const auto mmu_out     = mmu.tick();
@@ -184,7 +182,7 @@ Gameboy::HostOut Gameboy::tock() {
       // FIXME imask or imask_?
       gb_out.addr = cpu_bus.addr;
       gb_out.data = imask_;
-      gb_out.oe = 1;;
+      gb_out.oe = 1;
     }
   }
 
@@ -256,6 +254,9 @@ Gameboy::HostOut Gameboy::tock() {
 
     if (cpu_in.oe > 1) {
       printf("BUS COLLISION\n");
+    }
+    else if (cpu_in.oe == 0) {
+      cpu_in.data = 0xFF;
     }
 
     cpu_in.imask = imask_;

@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  //run_microtests();
+  run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
@@ -49,7 +49,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
+  //load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
@@ -58,47 +58,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  //load("microtests/build/dmg", "hblank_int_inc_sled");
-  //load("microtests/build/dmg", "lcdon_to_hblank_int_l0");
-
-  //load("mooneye-gb/tests/build/acceptance/timer", "rapid_toggle");
-
-  //load("microtests/build/dmg", "timer_int_inc_sled");
-
-  //load("microtests/build/dmg", "timer_div_phase_a");
-  //load("microtests/build/dmg", "timer_div_phase_b");
-  //load("microtests/build/dmg", "timer_div_phase_c");
-  //load("microtests/build/dmg", "timer_div_phase_d");
-
-
-  //load("microtests/build/dmg", "timer_tima_write_a");
-  //load("microtests/build/dmg", "timer_tima_write_b");
-  //load("microtests/build/dmg", "timer_tima_write_c");
-  //load("microtests/build/dmg", "timer_tima_write_d");
-  //load("microtests/build/dmg", "timer_tima_write_e");
-  //load("microtests/build/dmg", "timer_tima_write_f");
-
-  //load("microtests/build/dmg", "timer_tma_load_a");
-
-  //load("microtests/build/dmg", "timer_tma_write_a");
-  //load("microtests/build/dmg", "timer_tma_write_b");
-  
-  //load("microtests/build/dmg", "timer_tac_toggle");
-
-  // all pass
-  //load("gb-test-roms/cpu_instrs/individual", "01-special");
-  //load("gb-test-roms/cpu_instrs/individual", "02-interrupts");
-  //load("gb-test-roms/cpu_instrs/individual", "03-op sp,hl");
-  //load("gb-test-roms/cpu_instrs/individual", "04-op r,imm");
-  //load("gb-test-roms/cpu_instrs/individual", "05-op rp");
-  //load("gb-test-roms/cpu_instrs/individual", "05-op rp");
-  //load("gb-test-roms/cpu_instrs/individual", "06-ld r,r");
-  //load("gb-test-roms/cpu_instrs/individual", "07-jr,jp,call,ret,rst");
-  //load("gb-test-roms/cpu_instrs/individual", "08-misc instrs");
-  //load("gb-test-roms/cpu_instrs/individual", "09-op r,r");
-  //load("gb-test-roms/cpu_instrs/individual", "10-bit ops");
-  //load("gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
-
+  load("microtests/build/dmg", "poweron_oam_read_a");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;

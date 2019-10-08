@@ -62,10 +62,10 @@ void PPU::reset(bool run_bootrom, int /*new_model*/) {
     line_delay2 = 153;
     line_delay3 = 153;
 
-    counter = 404;
-    counter_delay1 = 403;
-    counter_delay2 = 402;
-    counter_delay3 = 401;
+    counter = 400;
+    counter_delay1 = 399;
+    counter_delay2 = 398;
+    counter_delay3 = 397;
 
     lcdc = 0x91;
     palettes[0] = 0xfc;

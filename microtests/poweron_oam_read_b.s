@@ -10,7 +10,7 @@
 // 114 = FF
 
 main:
-  ld a, RESULT
+  ld a, $F0
   ld (ADDR), a
   nops DELAY
   ld a, (ADDR)

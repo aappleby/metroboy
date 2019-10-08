@@ -558,7 +558,9 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   }
 
   out.vram_addr = 0;
+  out.vram_lock = (state == PPU_STATE_VRAM);
   out.oam_addr = 0;
+  out.oam_lock = (state == PPU_STATE_OAM) || (state == PPU_STATE_VRAM);
 
   uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
   uint8_t map_y = ((scy + line) >> 3) & 31;
@@ -579,9 +581,14 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
     else if (fetch_state == FETCH_SPRITE_HI)  out.vram_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
   }
 
+  out.oam_lock |= out.oam_addr != 0;
+  out.vram_lock |= out.vram_addr != 0;
+
   if (pix_count + pix_discard_pad == 168) {
     out.oam_addr = 0;
+    out.oam_lock = false;
     out.vram_addr = 0;
+    out.vram_lock = false;
   }
 
 

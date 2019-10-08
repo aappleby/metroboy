@@ -114,34 +114,6 @@ Gameboy::HostOut Gameboy::tock() {
   }
 
   //-----------------------------------
-  // oam bus mux
-
-  CpuBus oam_bus = { ppu_out.oam_addr, 0, ppu_out.oam_addr != 0, false };
-  bool cpu_read_oam = false;
-
-  if (dma_mode_b != DMA_NONE) {
-    if (tphase == 0) {
-      uint8_t dma_data = 0;
-      if (dma_mode_b == DMA_CART) dma_data = mmu_out.data;
-      if (dma_mode_b == DMA_VRAM) dma_data = vram_out.data;
-      if (dma_mode_b == DMA_IRAM) dma_data = iram_out.data;
-
-      uint16_t dma_write_addr = ADDR_OAM_BEGIN + dma_count_b;
-      oam_bus = { dma_write_addr, dma_data, false, true };
-    }
-    else {
-      oam_bus = {};
-    }
-  }
-  else {
-    if (ppu_out.oam_addr == 0) {
-      bool ce_oam  = (cpu_bus.addr & 0xFF00) == 0xFE00;
-      cpu_read_oam = cpu_bus.read && ce_oam;
-      oam_bus = cpu_bus;
-    }
-  }
-
-  //-----------------------------------
   // interrupt stuff
 
   uint8_t intf_ = intf;
@@ -167,7 +139,7 @@ Gameboy::HostOut Gameboy::tock() {
   }
 
   //-----------------------------------
-  // reads happen on t2
+  // Internal read/write for intf/imask
 
   if (tphase == 0 && cpu_bus.read) {
     gb_out = {};
@@ -196,11 +168,9 @@ Gameboy::HostOut Gameboy::tock() {
   }
 
   //-----------------------------------
-  // z80 tocks last
+  // Z80 bus mux & tock
 
   if (tphase == 2) {
-    cpu_in = {};
-
     int page = cpu_bus.addr >> 13;
 
     bool ce_rom  = page <= 3;
@@ -208,10 +178,14 @@ Gameboy::HostOut Gameboy::tock() {
     bool ce_cram = page == 5;
     bool ce_iram = page == 6;
     bool ce_echo = page == 7 && (cpu_bus.addr < 0xFE00);
+    bool ce_oam  = (0xFE00 <= cpu_bus.addr) && (cpu_bus.addr <= 0xFE9F);
 
     bool cpu_read_vram = (dma_mode_a != DMA_VRAM) && (ppu_out.vram_addr == 0) && ce_vram;
     bool cpu_read_iram = (dma_mode_a != DMA_IRAM) && (ce_iram || ce_echo);
     bool cpu_read_cart = (dma_mode_a != DMA_CART) && (ce_rom || ce_cram);
+    bool cpu_read_oam = cpu_bus.read && ce_oam;
+
+    cpu_in = {};
 
     cpu_in.addr |= cpu_read_cart ? mmu_out.addr : 0x0000;
     cpu_in.addr |= cpu_read_vram ? vram_out.addr : 0x0000;
@@ -268,15 +242,34 @@ Gameboy::HostOut Gameboy::tock() {
   }
 
   //-----------------------------------
+  // Peripheral bus mux & tocks
 
   uint16_t dma_read_addr = (dma_source_a << 8) | dma_count_a;
+  uint16_t dma_write_addr = ADDR_OAM_BEGIN + dma_count_b;
+  uint8_t dma_data = 0;
+  if (dma_mode_b == DMA_CART) dma_data = mmu_out.data;
+  if (dma_mode_b == DMA_VRAM) dma_data = vram_out.data;
+  if (dma_mode_b == DMA_IRAM) dma_data = iram_out.data;
 
-  CpuBus dma_bus = { dma_read_addr, 0, true, false };
-  CpuBus ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_addr != 0, false };
+  CpuBus dma_read_bus  = { dma_read_addr,         0, true,  false };
+  CpuBus dma_write_bus = { dma_write_addr, dma_data, false, true  };
 
-  vram.tock   (tphase, dma_mode_a == DMA_VRAM ? dma_bus : ppu_out.vram_addr ? ppu_bus : cpu_bus);
-  iram.tock   (tphase, dma_mode_a == DMA_IRAM ? dma_bus : cpu_bus);
-  mmu.tock    (tphase, dma_mode_a == DMA_CART ? dma_bus : cpu_bus);
+  CpuBus vram_bus = cpu_bus;
+  CpuBus iram_bus = cpu_bus;
+  CpuBus mmu_bus = cpu_bus;
+  CpuBus oam_bus = cpu_bus;
+
+  if (ppu_out.vram_lock) vram_bus = { ppu_out.vram_addr, 0, ppu_out.vram_addr != 0, false };
+  if (ppu_out.oam_lock)  oam_bus =  { ppu_out.oam_addr,  0, ppu_out.oam_addr != 0,  false };
+
+  if (dma_mode_a == DMA_VRAM) vram_bus = dma_read_bus;
+  if (dma_mode_a == DMA_IRAM) iram_bus = dma_read_bus;
+  if (dma_mode_a == DMA_CART) mmu_bus  = dma_read_bus;
+  if (dma_mode_b != DMA_NONE) oam_bus  = dma_write_bus;
+
+  vram.tock   (tphase, vram_bus);
+  iram.tock   (tphase, iram_bus);
+  mmu.tock    (tphase, mmu_bus);
   buttons.tock(tphase, cpu_bus);
   serial.tock (tphase, cpu_bus);
   zram.tock   (tphase, cpu_bus);

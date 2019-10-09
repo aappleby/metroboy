@@ -185,12 +185,16 @@ Gameboy::HostOut Gameboy::tock() {
     bool cpu_read_cart = (dma_mode_a != DMA_CART) && (ce_rom || ce_cram);
     bool cpu_read_oam = cpu_bus.read && ce_oam;
 
+    if (ppu_out.vram_lock) cpu_read_vram = false;
+    if (ppu_out.oam_lock) cpu_read_oam = false;
+
+
     cpu_in = {};
 
     cpu_in.addr |= cpu_read_cart ? mmu_out.addr : 0x0000;
-    cpu_in.addr |= cpu_read_vram ? vram_out.addr : 0x0000;
+    cpu_in.addr |= cpu_read_vram ? vram_out.cpu_addr : 0x0000;
     cpu_in.addr |= cpu_read_iram ? iram_out.addr : 0x0000;
-    cpu_in.addr |= cpu_read_oam  ? oam_out.addr : 0x0000;
+    cpu_in.addr |= cpu_read_oam  ? oam_out.cpu_addr : 0x0000;
 
     cpu_in.addr |= ppu_out.addr;
     cpu_in.addr |= buttons_out.addr;
@@ -201,9 +205,9 @@ Gameboy::HostOut Gameboy::tock() {
     cpu_in.addr |= gb_out.addr;
 
     cpu_in.data |= cpu_read_cart ? mmu_out.data : 0x00;
-    cpu_in.data |= cpu_read_vram ? vram_out.data : 0x00;
+    cpu_in.data |= cpu_read_vram ? vram_out.cpu_data : 0x00;
     cpu_in.data |= cpu_read_iram ? iram_out.data : 0x00;
-    cpu_in.data |= cpu_read_oam  ? oam_out.data : 0x00;
+    cpu_in.data |= cpu_read_oam  ? oam_out.cpu_data : 0x00;
 
     cpu_in.data |= ppu_out.data;
     cpu_in.data |= buttons_out.data;
@@ -230,6 +234,7 @@ Gameboy::HostOut Gameboy::tock() {
       printf("BUS COLLISION\n");
     }
     else if (cpu_in.oe == 0) {
+      //printf("BUS BLOCKED\n");
       cpu_in.data = 0xFF;
     }
 
@@ -248,26 +253,24 @@ Gameboy::HostOut Gameboy::tock() {
   uint16_t dma_write_addr = ADDR_OAM_BEGIN + dma_count_b;
   uint8_t dma_data = 0;
   if (dma_mode_b == DMA_CART) dma_data = mmu_out.data;
-  if (dma_mode_b == DMA_VRAM) dma_data = vram_out.data;
+  if (dma_mode_b == DMA_VRAM) dma_data = vram_out.cpu_data;
   if (dma_mode_b == DMA_IRAM) dma_data = iram_out.data;
 
   CpuBus dma_read_bus  = { dma_read_addr,         0, true,  false };
   CpuBus dma_write_bus = { dma_write_addr, dma_data, false, true  };
 
-  CpuBus vram_bus = cpu_bus;
-  CpuBus iram_bus = cpu_bus;
-  CpuBus mmu_bus = cpu_bus;
-  CpuBus oam_bus = cpu_bus;
 
-  if (ppu_out.vram_lock) vram_bus = { ppu_out.vram_addr, 0, ppu_out.vram_addr != 0, false };
-  if (ppu_out.oam_lock)  oam_bus =  { ppu_out.oam_addr,  0, ppu_out.oam_addr != 0,  false };
+  CpuBus iram_bus     = (dma_mode_a == DMA_IRAM) ? dma_read_bus : cpu_bus;
+  CpuBus mmu_bus      = (dma_mode_a == DMA_CART) ? dma_read_bus : cpu_bus;
+  CpuBus vram_cpu_bus = (dma_mode_a == DMA_VRAM) ? dma_read_bus : cpu_bus;
+  CpuBus oam_cpu_bus  = (dma_mode_b != DMA_NONE) ? dma_write_bus : cpu_bus;
 
-  if (dma_mode_a == DMA_VRAM) vram_bus = dma_read_bus;
-  if (dma_mode_a == DMA_IRAM) iram_bus = dma_read_bus;
-  if (dma_mode_a == DMA_CART) mmu_bus  = dma_read_bus;
-  if (dma_mode_b != DMA_NONE) oam_bus  = dma_write_bus;
+  CpuBus vram_ppu_bus = { ppu_out.vram_addr, 0, ppu_out.vram_addr != 0, false };
+  CpuBus oam_ppu_bus  = { ppu_out.oam_addr,  0, ppu_out.oam_addr != 0,  false };
 
-  vram.tock   (tphase, vram_bus);
+  vram.tock   (tphase, ppu_out.vram_lock, vram_cpu_bus, vram_ppu_bus);
+  oam.tock    (tphase, ppu_out.oam_lock,  oam_cpu_bus,  oam_ppu_bus);
+
   iram.tock   (tphase, iram_bus);
   mmu.tock    (tphase, mmu_bus);
   buttons.tock(tphase, cpu_bus);
@@ -275,7 +278,6 @@ Gameboy::HostOut Gameboy::tock() {
   zram.tock   (tphase, cpu_bus);
   spu.tock    (tphase, cpu_bus);
   timer.tock  (tphase, cpu_bus);
-  oam.tock    (tphase, oam_bus);
   ppu.tock    (tphase, cpu_bus, vram_out, oam_out);
 
   intf = intf_;
@@ -321,7 +323,7 @@ trace_val = ppu_out.vram_addr; // this one's pretty cool
 
 //-----------------------------------------------------------------------------
 
-void Gameboy::dump(std::string& d) {
+void Gameboy::dump1(std::string& d) {
 
   sprintf(d, "--------------TOP--------------\n");
   sprintf(d, "model          %d\n", model);
@@ -353,9 +355,11 @@ void Gameboy::dump(std::string& d) {
   z80.dump(d);
   sprintf(d, "\n");
 
+  /*
   sprintf(d, "--------------TIMER------------\n");
   timer.dump(d);
   sprintf(d, "\n");
+  */
 
   sprintf(d, "--------------MMU--------------\n");
   mmu.dump(d);
@@ -368,7 +372,11 @@ void Gameboy::dump(std::string& d) {
   sprintf(d, "--------------VRAM-------------\n");
   vram.dump(d);
   sprintf(d, "\n");
+}
 
+//-----------------------------------------------------------------------------
+
+void Gameboy::dump2(std::string& d) {
   sprintf(d, "--------------IRAM-------------\n");
   iram.dump(d);
   sprintf(d, "\n");
@@ -377,21 +385,17 @@ void Gameboy::dump(std::string& d) {
   zram.dump(d);
   sprintf(d, "\n");
 
-  /*
   sprintf(d, "--------------BUTTONS----------\n");
   buttons.dump(d);
   sprintf(d, "\n");
-  */
 
-  /*
   sprintf(d, "--------------SERIAL-----------\n");
   serial.dump(d);
-  */
 }
 
 //-----------------------------------------------------------------------------
 
-void Gameboy::dump_disasm(std::string& out) {
+void Gameboy::dump3(std::string& out) {
   sprintf(out, "--------------DISASM-----------\n");
 
   uint16_t pc = z80.get_pc();

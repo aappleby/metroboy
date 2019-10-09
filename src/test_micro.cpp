@@ -19,6 +19,8 @@ static const std::string micro_tests[] = {
   "poweron_000_ly",
   "poweron_119_ly",
   "poweron_120_ly",
+  "poweron_233_ly",
+  "poweron_234_ly",
 
   "poweron_000_stat",
   "poweron_005_stat",

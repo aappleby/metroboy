@@ -32,7 +32,7 @@ struct PPU {
   void reset(bool run_bootrom, int new_model);
   Out  tick(int tphase) const;
   void tock(int tphase, CpuBus cpu_bus, VRAM::Out vram_out, OAM::Out oam_out);
-  void dump(std::string& out) const;
+  void dump(int tphase, std::string& out) const;
 
   uint8_t get_stat()       const { return stat; }
 

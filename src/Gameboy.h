@@ -40,8 +40,9 @@ struct Gameboy {
   void    reset(uint16_t new_pc);
   Out     tick() const;
   HostOut tock();
-  void    dump(std::string& out);
-  void    dump_disasm(std::string& out);
+  void    dump1(std::string& out);
+  void    dump2(std::string& out);
+  void    dump3(std::string& out);
 
   const Z80& get_cpu() const { return z80; }
   const SPU& get_spu() const { return spu; }

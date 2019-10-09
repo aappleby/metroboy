@@ -128,17 +128,42 @@ PPU::Out PPU::tick(int /*tphase*/) const {
     }
   }
 
-  uint16_t oam_addr_ = out2.oam_addr;
-
-  if (frame_count_ == 0 && line_ == 0 && counter_ < 84) {
-    oam_addr_ = 0;
-  }
-  else if (counter_ < 80 && ((counter_ & 1) == 0)) {
+  //if (frame_count_ == 0 && line_ == 0 && counter_ < 84) {
+  //  oam_addr_ = 0;
+  //}
+  //else
+  if (counter_ < 80 && ((counter_ & 1) == 0)) {
     // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-    oam_addr_ = ADDR_OAM_BEGIN + ((counter_ << 1) & 0b11111100);
+    out2.oam_addr = ADDR_OAM_BEGIN + ((counter_ << 1) & 0b11111100);
   }
 
-  out2.oam_addr = oam_addr_;
+  //----------------------------------------
+  // locking
+
+  const int oam_start = 0;
+  const int oam_end = 80;
+  const int render_start = 82;
+  const int render_start_l0 = 84;
+
+  bool in_blank = (hblank_delay2 < 8) || (line >= 144);
+
+  out2.oam_lock = false;
+  out2.vram_lock = false;
+
+  if (frame_count_ == 0 && line_ == 0) {
+    out2.oam_lock  = (counter_ >= render_start_l0);
+    out2.vram_lock = (counter_ >= render_start_l0);
+  }
+  else {
+    out2.oam_lock  |= (oam_start <= counter_) && (counter_ < oam_end);
+    out2.oam_lock  |= (render_start <= counter_);
+    out2.vram_lock |= (render_start <= counter_);
+  }
+
+  if (in_blank) {
+    out2.oam_lock = false;
+    out2.vram_lock = false;
+  }
 
   return out2;
 }
@@ -217,26 +242,26 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Handle OAM/VRAM reads
 
-  if (oam_out.oe) {
-    if (oam_out.addr & 2) {
-      this->spriteP = uint8_t(oam_out.data16 >> 0);
-      this->spriteF = uint8_t(oam_out.data16 >> 8);
+  if (oam_out.ppu_oe) {
+    if (oam_out.ppu_addr & 2) {
+      this->spriteP = uint8_t(oam_out.ppu_data16 >> 0);
+      this->spriteF = uint8_t(oam_out.ppu_data16 >> 8);
     }
     else {
-      this->spriteY = uint8_t(oam_out.data16 >> 0);
-      this->spriteX = uint8_t(oam_out.data16 >> 8);
+      this->spriteY = uint8_t(oam_out.ppu_data16 >> 0);
+      this->spriteX = uint8_t(oam_out.ppu_data16 >> 8);
     }
   }
 
-  if (vram_out.oe) {
+  if (vram_out.ppu_oe) {
     if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
-      if (fetch_state == FETCH_TILE_MAP) tile_map = vram_out.data;
-      if (fetch_state == FETCH_TILE_LO)  tile_lo = vram_out.data;
-      if (fetch_state == FETCH_TILE_HI)  tile_hi = vram_out.data;
+      if (fetch_state == FETCH_TILE_MAP) tile_map = vram_out.ppu_data;
+      if (fetch_state == FETCH_TILE_LO)  tile_lo = vram_out.ppu_data;
+      if (fetch_state == FETCH_TILE_HI)  tile_hi = vram_out.ppu_data;
     }
     else if (fetch_type == FETCH_SPRITE) {
-      if (fetch_state == FETCH_SPRITE_LO) sprite_lo = vram_out.data;
-      if (fetch_state == FETCH_SPRITE_HI) sprite_hi = vram_out.data;
+      if (fetch_state == FETCH_SPRITE_LO) sprite_lo = vram_out.ppu_data;
+      if (fetch_state == FETCH_SPRITE_HI) sprite_hi = vram_out.ppu_data;
     }
   }
 
@@ -262,8 +287,8 @@ void PPU::tock(int tphase, CpuBus bus, VRAM::Out vram_out, OAM::Out oam_out) {
   //-----------------------------------
   // Build sprite table
 
-  if (oam_out.oe && counter < 86 && sprite_count < 10) {
-    int si = (oam_out.addr - ADDR_OAM_BEGIN) >> 2;
+  if (oam_out.ppu_oe && counter < 86 && sprite_count < 10) {
+    int si = (oam_out.ppu_addr - ADDR_OAM_BEGIN) >> 2;
     int sy = spriteY - 16;
     int sx = spriteX;
 
@@ -906,7 +931,7 @@ const char* fetch_names2[] = {
 };
 
 
-void PPU::dump(std::string& d) const {
+void PPU::dump(int tphase, std::string& d) const {
 
   sprintf(d, "LCDC      %s\n", byte_to_bits(lcdc));
   sprintf(d, "STAT      %s\n", byte_to_bits(stat));
@@ -987,10 +1012,12 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "tile_latched    %d\n", tile_latched);
 
   sprintf(d, "pix_count       %d\n", pix_count);
-  sprintf(d, "pix_discard_scx %d\n", pix_count);
-  sprintf(d, "pix_discard_pad %d\n", pix_count);
-  sprintf(d, "pipe_count      %d\n", pix_count);
+  sprintf(d, "pix_discard_scx %d\n", pix_discard_scx);
+  sprintf(d, "pix_discard_pad %d\n", pix_discard_pad);
+  sprintf(d, "pipe_count      %d\n", pipe_count);
+  sprintf(d, "\n");
 
+  /*
   sprintf(d, "bg_pix_lo       %s\n", byte_to_bits(bg_pix_lo));
   sprintf(d, "bg_pix_hi       %s\n", byte_to_bits(bg_pix_hi));
   sprintf(d, "bg_pal_lo       %s\n", byte_to_bits(bg_pal_lo));
@@ -1000,8 +1027,8 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "ob_pix_hi       %s\n", byte_to_bits(ob_pix_hi));
   sprintf(d, "ob_pal_lo       %s\n", byte_to_bits(ob_pal_lo));
   sprintf(d, "ob_pal_hi       %s\n", byte_to_bits(ob_pal_hi));
-
   sprintf(d, "\n");
+  */
 
   /*
   sprintf(d, "%s\n", in_window_old ? "in_window_old" : "");
@@ -1042,20 +1069,27 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "sprite_y [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sy[0], sy[1], sy[2], sy[3], sy[4], sy[5], sy[6], sy[7], sy[8], sy[9]);
   */
 
-  dumpit(out.addr      ,"0x%04x");
-  dumpit(out.data      ,"0x%02x");
-  dumpit(out.oe        ,"%d");
-  dumpit(out.vram_addr ,"0x%04x");
-  dumpit(out.oam_addr  ,"0x%04x");
-  dumpit(out.x         ,"%d");
-  dumpit(out.y         ,"%d");
-  dumpit(out.counter   ,"%d");
-  dumpit(out.pix_out   ,"0x%02x");
-  dumpit(out.pix_oe    ,"%d");
-  dumpit(out.stat1     ,"%d");
-  dumpit(out.stat2     ,"%d");
-  dumpit(out.vblank1   ,"%d");
-  dumpit(out.vblank2   ,"%d");
+#pragma warning(disable : 4458)
+  {
+    auto out = tick(tphase);
+
+    dumpit(out.addr      ,"0x%04x");
+    dumpit(out.data      ,"0x%02x");
+    dumpit(out.oe        ,"%d");
+    dumpit(out.vram_addr ,"0x%04x");
+    dumpit(out.vram_lock ,"%d");
+    dumpit(out.oam_addr  ,"0x%04x");
+    dumpit(out.oam_lock  ,"%d");
+    dumpit(out.x         ,"%d");
+    dumpit(out.y         ,"%d");
+    dumpit(out.counter   ,"%d");
+    dumpit(out.pix_out   ,"0x%02x");
+    dumpit(out.pix_oe    ,"%d");
+    dumpit(out.stat1     ,"%d");
+    dumpit(out.stat2     ,"%d");
+    dumpit(out.vblank1   ,"%d");
+    dumpit(out.vblank2   ,"%d");
+  }
 }
 
 //-----------------------------------------------------------------------------

@@ -49,7 +49,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   //load("oh"); // broken eye
   //load("pocket");
-  load("gejmboj");
+  //load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
   //load("SML");
@@ -58,7 +58,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  //load("microtests/build/dmg", "poweron_006_oam");
+  load("microtests/build/dmg", "poweron_069_oam");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;
@@ -246,19 +246,22 @@ void MetroBoyApp::loop() {
   Gameboy& gameboy = metroboy.gb();
   Framebuffer& fb = metroboy.fb();
 
-  int spacing = 192;
+  int spacing = 192 + 32;
 
-  gameboy.dump(text_buf);
+  gameboy.dump1(text_buf);
   //gameboy.get_oam().dump(text_buf);
   render_text(spacing * 0 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   sprintf(text_buf, "--------------PPU--------------\n");
-  gameboy.get_ppu().dump(text_buf);
+  
+  int tcycle = (int)gameboy.get_tcycle();
+  gameboy.get_ppu().dump((tcycle + 1) & 3, text_buf);
+
   render_text(spacing * 1 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
-  gameboy.dump_disasm(text_buf);
+  gameboy.dump3(text_buf);
   render_text(spacing * 2 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
@@ -289,7 +292,8 @@ void MetroBoyApp::loop() {
   //----------------------------------------
   // Gameboy screen
 
-  const int gb_screenx = 32 * 27 - 16;
+  //const int gb_screenx = 32 * 27 - 16;
+  const int gb_screenx = fb_width - 288 - 288 - 288;
   const int gb_screeny = 32 * 10;
 
   if (overlay_mode == 0 || overlay_mode == 1) {
@@ -375,7 +379,7 @@ void MetroBoyApp::loop() {
   };
 
   sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
-  render_text(32 * 27, 32 * 20, text_buf.c_str());
+  render_text(gb_screenx, 32 * 20, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------
@@ -388,7 +392,7 @@ void MetroBoyApp::loop() {
   //----------------------------------------
   // Trace buffer
 
-  int trace_sx = 32 * 26;
+  int trace_sx = gb_screenx;
   int trace_sy = 32 * 22;
 
   for (int y = 0; y < 154; y++) {

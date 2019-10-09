@@ -19,6 +19,9 @@ struct Buttons {
 
 private:
 
-  Out out;
+  uint16_t addr;
+  uint8_t data;
+  bool oe;
+  uint8_t val;
   uint8_t p1 = 0; // FF00
 };

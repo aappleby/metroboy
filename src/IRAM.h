@@ -15,6 +15,8 @@ struct IRAM {
 
   const uint8_t* get() { return ram; }
 private:
-  Out out;
+  uint16_t addr;
+  uint8_t data;
+  bool oe;
   uint8_t ram[8192];
 };

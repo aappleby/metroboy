@@ -21,7 +21,10 @@ struct MMU {
   size_t get_rom_size() const { return rom_size; }
 
 private:
-  Out out;
+  uint16_t out_addr;
+  uint8_t out_data;
+  bool out_oe;
+
   size_t rom_size;
   int rom_bank_count;
   int ram_bank_count;

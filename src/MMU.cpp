@@ -51,31 +51,37 @@ void MMU::reset(uint16_t new_pc) {
 //-------------------------------------
 
 MMU::Out MMU::tick() const {
-  return out;
+  return {
+    out_addr,
+    out_data,
+    out_oe
+  };
 }
 
 void MMU::tock(int tphase, CpuBus bus) {
   if (tphase == 0 && bus.read) {
-    out = {};
+    out_addr = 0;
+    out_data = 0;
+    out_oe = 0;
 
     if (bus.addr <= 0x00FF && !disable_boot_rom) {
-      out.addr = bus.addr;
-      out.data = DMG_ROM_bin[bus.addr];
-      out.oe = true;
+      out_addr = bus.addr;
+      out_data = DMG_ROM_bin[bus.addr];
+      out_oe = true;
     }
     else if (bus.addr <= 0x3FFF) {
       if (mode == 0) {
-        out.addr = bus.addr;
-        out.data = rom_buf[bus.addr];
-        out.oe = true;
+        out_addr = bus.addr;
+        out_data = rom_buf[bus.addr];
+        out_oe = true;
       }
       else {
         int bank = (bank_latch2 << 5);
         bank &= (rom_bank_count - 1);
         if (rom_bank_count == 0) bank = 0;
-        out.addr = bus.addr;
-        out.data = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
-        out.oe = true;
+        out_addr = bus.addr;
+        out_data = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
+        out_oe = true;
       }
     }
     else if (bus.addr >= 0x4000 && bus.addr <= 0x7FFF) {
@@ -87,18 +93,18 @@ void MMU::tock(int tphase, CpuBus bus) {
 
       bank &= (rom_bank_count - 1);
 
-      out.addr = bus.addr;
-      out.data = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
-      out.oe = true;
+      out_addr = bus.addr;
+      out_data = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
+      out_oe = true;
     }
     else if (bus.addr >= 0xA000 && bus.addr <= 0xBFFF) {
       if (ram_enable && ram_bank_count) {
         int bank = mode ? bank_latch2 : 0;
         bank &= (ram_bank_count - 1);
         if (rom_bank_count == 0) bank = 0;
-        out.addr = bus.addr;
-        out.data = ram_buf[(bus.addr - 0xA000) | (bank << 13)];
-        out.oe = true;
+        out_addr = bus.addr;
+        out_data = ram_buf[(bus.addr - 0xA000) | (bank << 13)];
+        out_oe = true;
       }
     }
 
@@ -189,9 +195,9 @@ uint8_t* MMU::get_flat_ptr(uint16_t addr) {
 //-----------------------------------------------------------------------------
 
 void MMU::dump(std::string& d) {
-  dumpit(out.addr, "0x%04x");
-  dumpit(out.data, "0x%02x");
-  dumpit(out.oe,   "%d");
+  dumpit(out_addr, "0x%04x");
+  dumpit(out_data, "0x%02x");
+  dumpit(out_oe,   "%d");
 }
 
 //-----------------------------------------------------------------------------

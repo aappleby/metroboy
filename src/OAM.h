@@ -23,7 +23,15 @@ struct OAM {
   const uint8_t* get() const { return (uint8_t*)ram; }
 
 private:
-  Out out;
+
+  uint16_t cpu_addr;
+  uint8_t  cpu_data;
+  bool     cpu_oe;
+
+  uint16_t ppu_addr;
+  uint16_t ppu_data16;
+  bool     ppu_oe;
+
   uint16_t ram[128];
 };
 

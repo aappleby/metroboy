@@ -222,11 +222,11 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 
   addr = new_pc;
 
-  out.addr = new_pc;
-  out.data = 0x00;
-  out.read = 1;
-  out.write = 0;
-  out.int_ack = 0;
+  out_addr = new_pc;
+  out_data = 0x00;
+  out_read = 1;
+  out_write = 0;
+  out_int_ack = 0;
 }
 
 
@@ -239,7 +239,13 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 //-----------------------------------------------------------------------------
 
 Z80::Out Z80::tick() const {
-  return out;
+  return {
+    out_addr,
+    out_data,
+    out_read,
+    out_write,
+    out_int_ack
+  };
 }
 
 void Z80::tock(CpuIn in) {
@@ -286,11 +292,11 @@ void Z80::tock(CpuIn in) {
   state = state_;
   cycle++;
 
-  out.addr = addr;
-  out.data = data_out;
-  out.read = true;
-  out.write = (bool)write;
-  out.int_ack = int_ack;
+  out_addr = addr;
+  out_data = data_out;
+  out_read = true;
+  out_write = (bool)write;
+  out_int_ack = int_ack;
 }
 
 //-----------------------------------------------------------------------------
@@ -1011,11 +1017,11 @@ void Z80::dump(std::string& d) {
   //sprintf(d, "write          %d\n",     write);
   sprintf(d, "\n");
 
-  dumpit(out.addr,    "0x%04x");
-  dumpit(out.data,    "0x%02x");
-  dumpit(out.read,    "%d");
-  dumpit(out.write,   "%d");
-  dumpit(out.int_ack, "0x%02x");
+  dumpit(out_addr,    "0x%04x");
+  dumpit(out_data,    "0x%02x");
+  dumpit(out_read,    "%d");
+  dumpit(out_write,   "%d");
+  dumpit(out_int_ack, "0x%02x");
 }
 
 //-----------------------------------------------------------------------------

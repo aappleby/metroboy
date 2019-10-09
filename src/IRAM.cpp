@@ -11,21 +11,27 @@ void IRAM::reset() {
 //-----------------------------------------------------------------------------
 
 IRAM::Out IRAM::tick() const {
-  return out;
+  return {
+    addr,
+    data,
+    oe
+  };
 }
 
 void IRAM::tock(int tphase, CpuBus bus) {
   if (tphase == 0 && bus.read) {
-    out = {};
+    addr = 0;
+    data = 0;
+    oe = 0;
     if (ADDR_IRAM_BEGIN <= bus.addr && bus.addr <= ADDR_IRAM_END) {
-      out.addr = bus.addr;
-      out.data = ram[bus.addr - ADDR_IRAM_BEGIN];
-      out.oe = true;
+      addr = bus.addr;
+      data = ram[bus.addr - ADDR_IRAM_BEGIN];
+      oe = true;
     }
     else if (ADDR_ECHO_BEGIN <= bus.addr && bus.addr <= ADDR_ECHO_END) {
-      out.addr = bus.addr;
-      out.data = ram[bus.addr - ADDR_ECHO_BEGIN];
-      out.oe = true;
+      addr = bus.addr;
+      data = ram[bus.addr - ADDR_ECHO_BEGIN];
+      oe = true;
     }   
   }
 
@@ -42,9 +48,9 @@ void IRAM::tock(int tphase, CpuBus bus) {
 //-----------------------------------------------------------------------------
 
 void IRAM::dump(std::string& d) {
-  dumpit(out.addr, "0x%04x");
-  dumpit(out.data, "0x%02x");
-  dumpit(out.oe,   "%d");
+  dumpit(addr, "0x%04x");
+  dumpit(data, "0x%02x");
+  dumpit(oe,   "%d");
 }
 
 //-----------------------------------------------------------------------------

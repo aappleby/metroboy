@@ -22,7 +22,11 @@ struct Z80 {
 
 private:
 
-  Out out;
+  uint16_t out_addr;
+  uint8_t out_data;
+  bool out_read;
+  bool out_write;
+  uint8_t out_int_ack;
 
   int model = 0;
   int cycle;

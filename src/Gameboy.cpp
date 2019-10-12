@@ -254,22 +254,16 @@ void Gameboy::tock() {
   mmu.tock    (tphase, cpu_to_bus, dma_to_bus);
   vram.tock   (tphase, cpu_to_bus, dma_to_bus, ppu_to_vram);
 
-  dma_to_oam = {};
-  if (dma_mode_b != DMA_NONE) {
-    dma_to_oam = {
-      uint16_t(ADDR_OAM_BEGIN + dma_count_b),
-      0,
-      false,
-      dma_mode_b != DMA_NONE,
-      false,
-      true,
-      false
-    };
-  }
-
-  if (dma_mode_b == DMA_CART) dma_to_oam.data = mmu_to_dma.data;
-  if (dma_mode_b == DMA_VRAM) dma_to_oam.data = vram_to_dma.data;
-  if (dma_mode_b == DMA_IRAM) dma_to_oam.data = iram_to_dma.data;
+  dma_to_oam = {
+    uint16_t(ADDR_OAM_BEGIN + dma_count_b),
+    uint16_t(mmu_to_dma.data | vram_to_dma.data | iram_to_dma.data),
+    false,
+    true,
+    false,
+    true,
+    false
+  };
+  if (dma_mode_b == DMA_NONE) dma_to_oam = {};
 
   oam.tock    (tphase, cpu_to_bus, dma_to_oam, ppu_to_oam);
 

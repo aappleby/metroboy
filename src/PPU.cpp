@@ -246,8 +246,8 @@ void PPU::tock(int tphase_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) 
   //-----------------------------------
   // Bus write
 
-  if (tphase == 0 && bus_to_ppu.read)  bus_read_early(bus_to_ppu.addr);
-  if (tphase == 2 && bus_to_ppu.write) bus_write_early(bus_to_ppu.addr, (uint8_t)bus_to_ppu.data);
+  if (bus_to_ppu.read)  bus_read_early(bus_to_ppu.addr);
+  if (bus_to_ppu.write) bus_write_early(bus_to_ppu.addr, (uint8_t)bus_to_ppu.data);
 
   //-----------------------------------
   // Handle OAM/VRAM reads
@@ -505,8 +505,8 @@ void PPU::tock(int tphase_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) 
     stat |= state;
   }
 
-  if (tphase == 0 && bus_to_ppu.read)  bus_read_late(bus_to_ppu.addr);
-  if (tphase == 2 && bus_to_ppu.write) bus_write_late(bus_to_ppu.addr, (uint8_t)bus_to_ppu.data);
+  if (bus_to_ppu.read)  bus_read_late(bus_to_ppu.addr);
+  if (bus_to_ppu.write) bus_write_late(bus_to_ppu.addr, (uint8_t)bus_to_ppu.data);
 
   //-----------------------------------
   // lyc_match

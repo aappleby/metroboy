@@ -29,16 +29,15 @@ void Timer::tock(int tphase_, Bus bus_to_timer_) {
   bus_to_timer = bus_to_timer_;
   timer_to_bus = {};
 
-  if (tphase != 0 && tphase != 2) return;
-
   uint16_t tima_ = tima;
   bool tick_ = do_tick;
 
-  counter++;
-  counter++;
-
-  tick_ = (counter & masks[tac & 3]) && (tac & 0b100);
-  if (do_tick && !tick_) tima_ = tima + 1;
+  if (tphase == 0 || tphase == 2) {
+    counter++;
+    counter++;
+    tick_ = (counter & masks[tac & 3]) && (tac & 0b100);
+    if (do_tick && !tick_) tima_ = tima + 1;
+  }
 
   if (bus_to_timer.write) {
     if (bus_to_timer.addr == ADDR_DIV)  counter = 0;
@@ -54,29 +53,245 @@ void Timer::tock(int tphase_, Bus bus_to_timer_) {
   }
 
   // should this go in tphase 0 now?
-  if (tphase == 2) {
-    do_interrupt = tima >> 8;
-    if (do_interrupt) tima_ = tma;
-  }
+  do_interrupt = tima >> 8;
+  if (do_interrupt) tima_ = tma;
 
   tima = tima_;
   do_tick = tick_;
 }
 
 //-----------------------------------------------------------------------------
+// not sure if the mux2s are top=0 bot=1 or reverse...
+// and level-triggered dtffs are probably wrong...
+
+bool TOLA_NA1;
+bool FF04_D1;
+bool FROM_CPU5;
+bool _INT_TIMER;
+
+//-----------------------------------------------------------------------------
+
+uint8_t sch_timer(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU_RD, bool CPU_WR) {
+  bool BOGA1MHZ = tcycle & 0x02;
+  bool CLK_256K = tcycle & 0x08;
+  bool CLK_64K  = tcycle & 0x20;
+  bool CLK_16K  = tcycle & 0x80;
+
+  bool A2 = addr & 0x04;
+  bool A1 = addr & 0x02;
+  bool A0 = addr & 0x01;
+
+  bool D7 = data & 0x80;
+  bool D6 = data & 0x40;
+  bool D5 = data & 0x20;
+  bool D4 = data & 0x10;
+  bool D3 = data & 0x08;
+  bool D2 = data & 0x04;
+  bool D1 = data & 0x02;
+  bool D0 = data & 0x01;
+
+  const bool FFXX   = (addr & 0xFF00) == 0xFF00;
+  const bool A00_07 = (addr & 0x00FF) <= 0x0007;
+
+  const bool RYFO = (A2 && A00_07 && FFXX);
+  const bool FF04_FF07 = RYFO;
+
+  // TAC
+  static bool SABO = 0;
+  static bool SAMY = 0;
+  static bool SOPU = 0;
+
+  const bool SARA = !(A0 && A1 && CPU_WR && FF04_FF07);
+  const bool SORA = (FF04_FF07 && CPU_RD && A1 && A0);
+  const bool UVYR = !CLK_64K;
+  const bool UBOT = !CLK_256K;
+
+  if (SARA) {
+    SABO = RESET2 ? 0 : D2;
+    SAMY = RESET2 ? 0 : D1;
+    SOPU = RESET2 ? 0 : D0;
+  }
+
+  const bool SUPE = SORA ? SABO : 0;
+  const bool ROTE = SORA ? SAMY : 0;
+  const bool RYLA = SORA ? SOPU : 0;
+
+  if (SORA) {
+    D2 = SABO;
+    D1 = SAMY;
+    D0 = SOPU;
+  }
+
+  const bool UKAP = SOPU ? CLK_16K : UVYR;
+  const bool TEKO = SOPU ? UBOT : !FF04_D1;
+  const bool TECY = SAMY ? UKAP : TEKO;
+    
+  const bool SOGU = !(TECY || SABO);
+
+  const bool TOPE = (A0 && TOLA_NA1 && CPU_WR && FF04_FF07);
+  const bool MUZU = FROM_CPU5 | TOPE;
+  const bool MEKE = !_INT_TIMER;
+  const bool MEXU = !(MUZU && RESET2 && MEKE);
+
+  const bool MULO = !RESET2;
+  const bool TOVY = !A0;
+  const bool TOVY_NA0 = TOVY;
+  const bool TUBY = (FF04_FF07 && CPU_RD && A1 && TOVY);
+  const bool TYJU = (TOVY && A1 && CPU_WR && FF04_FF07);
+
+  // TMA
+  static bool PETO = 0;
+  static bool MURU = 0;
+  static bool NYKE = 0;
+  static bool SETA = 0;
+  static bool SABU = 0;
+  static bool TYRU = 0;
+  static bool SUFY = 0;
+  static bool TYVA = 0;
+
+  if (TYJU) {
+    PETO = D6;
+    MURU = D2;
+    NYKE = D1;
+    SETA = D7;
+    SABU = D0;
+    TYRU = D4;
+    SUFY = D5;
+    TYVA = D3;
+  }
+
+  const bool REVA = TUBY ? PETO : 0;
+  const bool NOLA = TUBY ? MURU : 0;
+  const bool PYRE = TUBY ? NYKE : 0;
+  const bool SAPU = TUBY ? SETA : 0;
+  const bool SETE = TUBY ? SABU : 0;
+  const bool SUPO = TUBY ? TYRU : 0;
+  const bool SOTU = TUBY ? SUFY : 0;
+  const bool SALU = TUBY ? TYVA : 0;
+
+  if (TUBY) {
+    D6 = REVA;
+    D2 = NOLA;
+    D1 = PYRE;
+    D7 = SAPU;
+    D0 = SETE;
+    D4 = SUPO;
+    D5 = SOTU;
+    D3 = SALU;
+  }
+
+  const bool REFU = TOPE ? D6 : PETO;
+  const bool NYKU = TOPE ? D2 : MURU;
+  const bool PETU = TOPE ? D1 : NYKE;
+  const bool RATO = TOPE ? D7 : SETA;
+  const bool ROKE = TOPE ? D0 : SABU;
+  const bool SALA = TOPE ? D4 : TYRU;
+  const bool SYRU = TOPE ? D5 : SUFY;
+  const bool SOCE = TOPE ? D3 : TYVA;
+
+  const bool PYMA = !(REFU || MULO);
+  const bool NADA = !(NYKU || MULO);
+  const bool NERO = !(PETO || MULO);
+  const bool PAGU = !(RATO || MULO);
+  const bool PUXY = !(ROKE || MULO);
+  const bool ROLU = !(SALA || MULO);
+  const bool RUGY = !(SYRU || MULO);
+  const bool REPA = !(SOCE || MULO);
+
+  // TIMA
+
+  static bool REGA = 0;
+  static bool POVY = 0;
+  static bool PERU = 0;
+  static bool RATE = 0;
+  static bool RUBY = 0;
+  static bool RAGE = 0;
+  static bool PEDA = 0;
+  static bool NUGA = 0;
+
+  if (MEXU) {
+    REGA = PUXY;
+    POVY = NERO;
+    PERU = NADA;
+    RATE = REPA;
+    RUBY = ROLU;
+    RAGE = RUGY;
+    PEDA = PYMA;
+    NUGA = PAGU;
+  }
+
+  bool NUGA_COUT = 0;
+
+  if (SOGU) {
+    uint16_t x = (REGA << 0) | (POVY << 1) | (PERU << 2) | (RATE << 3) | (RUBY << 4) | (RAGE << 5) | (PEDA << 6) | (NUGA << 7);
+    x++;
+    REGA = x & 0x01;
+    POVY = x & 0x02;
+    PERU = x & 0x04;
+    RATE = x & 0x08;
+    RUBY = x & 0x10;
+    RAGE = x & 0x20;
+    PEDA = x & 0x40;
+    NUGA = x & 0x80;
+    NUGA_COUT = x & 0x100;
+  }
+
+  bool TEDA = (FF04_FF07 && CPU_RD && TOLA_NA1 && A0);
+
+  const bool SOKU = TEDA ? REGA : 0;
+  const bool RACY = TEDA ? POVY : 0;
+  const bool RAVY = TEDA ? PERU : 0;
+  const bool SOSY = TEDA ? RATE : 0;
+  const bool SOMU = TEDA ? RUBY : 0;
+  const bool SURO = TEDA ? RAGE : 0;
+  const bool ROWU = TEDA ? PEDA : 0;
+  const bool PUSO = TEDA ? NUGA : 0;
+
+  if (TEDA) {
+    D0 = SOKU;
+    D1 = RACY;
+    D2 = RAVY;
+    D3 = SOSY;
+    D4 = SOMU;
+    D5 = SURO;
+    D6 = ROWU;
+    D7 = PUSO;
+  }
+
+  static bool NYDU = 0;
+
+  const bool MUGY = !MEXU;
+
+  if (BOGA1MHZ) {
+    NYDU = MUGY ? 0 : NUGA_COUT;
+  }
+
+  const bool MERY = !(!NYDU || NUGA_COUT);
+
+  static bool MOBA = 0;
+
+  if (BOGA1MHZ) {
+    MOBA = RESET2 ? 0 : MERY;
+  }
+
+  _INT_TIMER = MOBA;
+
+  data = (D0 << 0) | (D1 << 1) | (D2 << 2) | (D3 << 3) | (D4 << 4) | (D5 << 5) | (D6 << 6) | (D7 << 7);
+  return data;
+}
+
+//-----------------------------------------------------------------------------
 
 void Timer::dump(std::string& d) {
-  sprintf(d, "tphase %d\n", tphase);
+  sprintf(d,   "CNT         0x%04x\n", counter);
+  sprintf(d,   "DIV         0x%02x\n", (counter >> 8) & 0xFF);
+  sprintf(d,   "TIMA        0x%02x\n", tima);
+  sprintf(d,   "TMA         0x%02x\n", tma);
+  sprintf(d,   "TAC         %s\n",     byte_to_bits(tac));
+  sprintf(d,   "do_int      %d\n", do_interrupt);
+  sprintf(d,   "\n");
   print_bus(d, "bus_to_tmr", bus_to_timer);
   print_bus(d, "tmr_to_bus", timer_to_bus);
-  sprintf(d, "do_interrupt %d\n", do_interrupt);
-
-  sprintf(d, "CNT            0x%04x\n", counter);
-  sprintf(d, "DIV            0x%02x\n", (counter >> 8) & 0xFF);
-  sprintf(d, "TIMA           0x%02x\n", tima);
-  sprintf(d, "TMA            0x%02x\n", tma);
-  sprintf(d, "TAC            %s\n",     byte_to_bits(tac));
-  sprintf(d, "\n");
 }
 
 //-----------------------------------------------------------------------------

@@ -269,6 +269,9 @@ void MetroBoyApp::loop() {
   render_text(spacing * 2 + 4, 640 + 4, text_buf.c_str());
   text_buf.clear();
 
+  gameboy.dump4(text_buf);
+  render_text(spacing * 3 + 4, 4, text_buf.c_str());
+  text_buf.clear();
 
   //gameboy.get_spu().dump(text_buf);
   //render_text(280, 4, text_buf.c_str());

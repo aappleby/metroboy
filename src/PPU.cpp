@@ -110,6 +110,8 @@ PPU::Out PPU::tick(int /*tphase*/) const {
   out.x       = pix_count;
   out.y       = line;
   out.counter = counter;
+  out.pix_out = pix_out;
+  out.pix_oe  = pix_oe;
 
   if (!(lcdc & FLAG_LCD_ON)) {
     return out;
@@ -1034,12 +1036,12 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "pipe_count      %d\n", pipe_count);
   sprintf(d, "\n");
 
-  /*
   sprintf(d, "bg_pix_lo       %s\n", byte_to_bits(bg_pix_lo));
   sprintf(d, "bg_pix_hi       %s\n", byte_to_bits(bg_pix_hi));
   sprintf(d, "bg_pal_lo       %s\n", byte_to_bits(bg_pal_lo));
   sprintf(d, "bg_pal_hi       %s\n", byte_to_bits(bg_pal_hi));
 
+  /*
   sprintf(d, "ob_pix_lo       %s\n", byte_to_bits(ob_pix_lo));
   sprintf(d, "ob_pix_hi       %s\n", byte_to_bits(ob_pix_hi));
   sprintf(d, "ob_pal_lo       %s\n", byte_to_bits(ob_pal_lo));

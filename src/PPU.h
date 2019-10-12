@@ -8,14 +8,9 @@
 
 struct PPU {
   struct Out {
-    uint16_t addr;
-    uint8_t data;
-    bool oe;
-
-    uint16_t vram_addr;
-    bool vram_lock;
-    uint16_t oam_addr;
-    bool oam_lock;
+    Bus ppu_to_bus;
+    Bus ppu_to_vram;
+    Bus ppu_to_oam;
 
     int x;
     int y;
@@ -31,8 +26,8 @@ struct PPU {
 
   void reset(bool run_bootrom, int new_model);
   Out  tick(int tphase) const;
-  void tock(int tphase, CpuBus cpu_bus, VRAM::Out vram_out, OAM::Out oam_out);
-  void dump(int tphase, std::string& out) const;
+  void tock(int tphase_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_);
+  void dump(std::string& out) const;
 
   uint8_t get_stat()       const { return stat; }
 
@@ -47,7 +42,7 @@ struct PPU {
 
 private:
 
-  void tock_lcdoff(int tphase, CpuBus cpu_bus, VRAM::Out vram_out, OAM::Out oam_in);
+  void tock_lcdoff(int tphase_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_);
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
 
@@ -55,6 +50,18 @@ private:
   void bus_read_late(uint16_t cpu_addr);
   void bus_write_early(uint16_t cpu_addr, uint8_t cpu_data);
   void bus_write_late(uint16_t cpu_addr, uint8_t cpu_data);
+
+  //----------
+  // Buses
+
+  int tphase;
+  Bus bus_to_ppu;
+  Bus vram_to_ppu;
+  Bus oam_to_ppu;
+
+  Bus ppu_to_bus;
+  Bus ppu_to_vram;
+  Bus ppu_to_oam;
 
   //----------
   // Timers and states
@@ -188,7 +195,13 @@ private:
   uint8_t ob_pal_lo;
   uint8_t ob_pal_hi;
 
-  Out out;
+  uint8_t pix_out;
+  bool pix_oe;
+
+  bool stat1;
+  bool stat2;
+  bool vblank1;
+  bool vblank2;
 };
 
 //-----------------------------------------------------------------------------

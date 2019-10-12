@@ -4,27 +4,23 @@
 //-----------------------------------------------------------------------------
 
 struct SPU {
-  struct Out {
-    uint16_t addr;
-    uint8_t  data;
-    uint8_t  oe;
-    sample_t out_r;
-    sample_t out_l;
-  };
-
   void reset();
-  Out  tick() const;
-  void tock(int tphase, CpuBus bus);
+  Bus  tick() const;
+  sample_t get_l() const { return out_l; }
+  sample_t get_r() const { return out_r; }
+  void tock(int tphase_, Bus cpu_in_);
 
   void  dump(std::string& out) const;
   const uint8_t* get_wave() const { return s3_wave; }
   
 private:
 
-  Out out;
+  int tphase;
+  Bus cpu_in;
+  Bus cpu_out;
 
-  void bus_read (int tphase, CpuBus bus);
-  void bus_write(int tphase, CpuBus bus);
+  void bus_read (int tphase, Bus cpu_in_);
+  void bus_write(int tphase, Bus cpu_in_);
 
   //----------
 
@@ -98,6 +94,9 @@ private:
   uint8_t s2_out;
   uint8_t s3_out;
   uint8_t s4_out;
+
+  sample_t out_r;
+  sample_t out_l;
 };
 
 //-----------------------------------------------------------------------------

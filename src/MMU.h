@@ -4,26 +4,27 @@
 //-----------------------------------------------------------------------------
 
 struct MMU {
+  struct Out {
+    Bus mmu_to_bus;
+    Bus mmu_to_dma;
+  };
+
   void reset(size_t new_rom_size, uint16_t new_pc);
   void reset(uint16_t new_pc);
 
-  struct Out {
-    uint16_t addr;
-    uint8_t data;
-    bool oe;
-  };
-
-  Out tick() const;
-  void tock(int tphase, CpuBus bus);
+  Out  tick() const;
+  void tock(int tphase_, Bus bus_to_mmus_, Bus dma_to_mmu_);
   void dump(std::string& d);
 
   uint8_t* get_flat_ptr(uint16_t addr);
   size_t get_rom_size() const { return rom_size; }
 
 private:
-  uint16_t out_addr;
-  uint8_t out_data;
-  bool out_oe;
+  int tphase;
+  Bus bus_to_mmu;
+  Bus dma_to_mmu;
+  Bus mmu_to_bus;
+  Bus mmu_to_dma;
 
   size_t rom_size;
   int rom_bank_count;

@@ -48,43 +48,84 @@ void MMU::reset(uint16_t new_pc) {
   reset(rom_size, new_pc);
 }
 
-//-------------------------------------
+//-----------------------------------------------------------------------------
 
 MMU::Out MMU::tick() const {
   return {
-    out_addr,
-    out_data,
-    out_oe
+    mmu_to_bus,
+    mmu_to_dma
   };
 }
 
-void MMU::tock(int tphase, CpuBus bus) {
-  if (tphase == 0 && bus.read) {
-    out_addr = 0;
-    out_data = 0;
-    out_oe = 0;
+void MMU::tock(int tphase_, Bus bus_to_mmu_, Bus dma_to_mmu_) {
+  tphase = tphase_;
+  bus_to_mmu = bus_to_mmu_;
+  dma_to_mmu = dma_to_mmu_;
+  mmu_to_bus = {};
+  mmu_to_dma = {};
 
-    if (bus.addr <= 0x00FF && !disable_boot_rom) {
-      out_addr = bus.addr;
-      out_data = DMG_ROM_bin[bus.addr];
-      out_oe = true;
+  bool bus_hit = (bus_to_mmu.addr <= 0x7FFF) | (0xA000 <= bus_to_mmu.addr && bus_to_mmu.addr <= 0xBFFF);
+  bool dma_hit = (dma_to_mmu.addr <= 0x7FFF) | (0xA000 <= dma_to_mmu.addr && dma_to_mmu.addr <= 0xBFFF);
+
+  bus_hit &= (bus_to_mmu.read || bus_to_mmu.write);
+  dma_hit &= (dma_to_mmu.read != 0);
+
+  uint16_t addr = dma_hit ? dma_to_mmu.addr : bus_to_mmu.addr;
+  uint16_t data = dma_hit ? dma_to_mmu.data : bus_to_mmu.data;
+  bool read     = dma_hit ? dma_to_mmu.read : bus_to_mmu.read;
+  bool write    = dma_hit ? dma_to_mmu.write : bus_to_mmu.write;
+
+  if (write) {
+    if (0x0000 <= addr && addr <= 0x1FFF) {
+      ram_enable = (data & 0x0F) == 0x0A;
     }
-    else if (bus.addr <= 0x3FFF) {
+    else if (0x2000 <= addr && addr <= 0x3FFF) {
+      bank_latch1 = data & 0b00011111;
+
+      int bank = ((bank_latch2 << 5) | bank_latch1);
+      if (bank_latch1 == 0) {
+        bank |= 0b00000001;
+      }
+    }
+    else if (0x4000 <= addr && addr <= 0x5FFF) {
+      bank_latch2 = data & 0b00000011;
+
+      int bank = ((bank_latch2 << 5) | bank_latch1);
+      if (bank_latch1 == 0) {
+        bank |= 0b00000001;
+      }
+    }
+    else if (0x6000 <= addr && addr <= 0x7FFF) {
+      mode = data & 1;
+    }
+    else if (0xA000 <= addr && addr <= 0xBFFF) {
+      if (ram_enable && ram_bank_count) {
+        int bank = mode ? bank_latch2 : 0;
+        bank &= (ram_bank_count - 1);
+        ram_buf[(addr - 0xA000) | (bank << 13)] = (uint8_t)data;
+        ram_dirty = true;
+      }
+    }
+    else if (addr == ADDR_DISABLE_BOOTROM) {
+      disable_boot_rom |= (data != 0);
+    }
+  }
+  else if (read) {
+    if (addr <= 0x00FF && !disable_boot_rom) {
+      data = DMG_ROM_bin[addr];
+    }
+    else if (0x0000 <= addr && addr <= 0x3FFF) {
       if (mode == 0) {
-        out_addr = bus.addr;
-        out_data = rom_buf[bus.addr];
-        out_oe = true;
+        data = rom_buf[addr];
       }
       else {
         int bank = (bank_latch2 << 5);
         bank &= (rom_bank_count - 1);
         if (rom_bank_count == 0) bank = 0;
-        out_addr = bus.addr;
-        out_data = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
-        out_oe = true;
+        data = rom_buf[(addr & 0x3FFF) | (bank << 14)];
       }
     }
-    else if (bus.addr >= 0x4000 && bus.addr <= 0x7FFF) {
+    else if (0x4000 <= addr && addr <= 0x7FFF) {
       // so one doc says this should ignore bank_latch2 if mode == 1, but that breaks the mooneye test...
       int bank = ((bank_latch2 << 5) | bank_latch1);
       if (bank_latch1 == 0) {
@@ -92,59 +133,27 @@ void MMU::tock(int tphase, CpuBus bus) {
       }
 
       bank &= (rom_bank_count - 1);
-
-      out_addr = bus.addr;
-      out_data = rom_buf[(bus.addr & 0x3FFF) | (bank << 14)];
-      out_oe = true;
+      data = rom_buf[(addr & 0x3FFF) | (bank << 14)];
     }
-    else if (bus.addr >= 0xA000 && bus.addr <= 0xBFFF) {
+    else if (0xA000 <= addr && addr <= 0xBFFF) {
       if (ram_enable && ram_bank_count) {
         int bank = mode ? bank_latch2 : 0;
         bank &= (ram_bank_count - 1);
         if (rom_bank_count == 0) bank = 0;
-        out_addr = bus.addr;
-        out_data = ram_buf[(bus.addr - 0xA000) | (bank << 13)];
-        out_oe = true;
+        data = ram_buf[(addr - 0xA000) | (bank << 13)];
       }
     }
-
   }
 
-  if (tphase == 2 && bus.write) {
-    if (bus.addr <= 0x1FFF) {
-      ram_enable = (bus.data & 0x0F) == 0x0A;
-    }
-    else if (bus.addr >= 0x2000 && bus.addr <= 0x3FFF) {
-      bank_latch1 = bus.data & 0b00011111;
-
-      int bank = ((bank_latch2 << 5) | bank_latch1);
-      if (bank_latch1 == 0) {
-        bank |= 0b00000001;
-      }
-    }
-    else if (bus.addr >= 0x4000 && bus.addr <= 0x5FFF) {
-      bank_latch2 = bus.data & 0b00000011;
-
-      int bank = ((bank_latch2 << 5) | bank_latch1);
-      if (bank_latch1 == 0) {
-        bank |= 0b00000001;
-      }
-    }
-    else if (bus.addr >= 0x6000 && bus.addr <= 0x7FFF) {
-      mode = bus.data & 1;
-    }
-    else if (bus.addr >= 0xA000 && bus.addr <= 0xBFFF) {
-      if (ram_enable && ram_bank_count) {
-        int bank = mode ? bank_latch2 : 0;
-        bank &= (ram_bank_count - 1);
-        ram_buf[(bus.addr - 0xA000) | (bank << 13)] = bus.data;
-        ram_dirty = true;
-        //printf("ram_dirty 0x%04x 0x%02x\n", addr, data);
-      }
-    }
-    else if (bus.addr == ADDR_DISABLE_BOOTROM) {
-      disable_boot_rom |= (bus.data != 0);
-    }
+  if (dma_hit) {
+    mmu_to_dma = dma_to_mmu;
+    mmu_to_dma.data = data;
+    mmu_to_dma.ack = true;
+  }
+  else if (bus_hit) {
+    mmu_to_bus = bus_to_mmu;
+    mmu_to_bus.data = data;
+    mmu_to_bus.ack = true;
   }
 }
 
@@ -195,9 +204,11 @@ uint8_t* MMU::get_flat_ptr(uint16_t addr) {
 //-----------------------------------------------------------------------------
 
 void MMU::dump(std::string& d) {
-  dumpit(out_addr, "0x%04x");
-  dumpit(out_data, "0x%02x");
-  dumpit(out_oe,   "%d");
+  print_bus(d, "bus_to_mmu", bus_to_mmu);
+  print_bus(d, "mmu_to_bus", mmu_to_bus);
+  sprintf(d, "\n");
+  print_bus(d, "dma_to_mmu", dma_to_mmu);
+  print_bus(d, "mmu_to_dma", mmu_to_dma);
 }
 
 //-----------------------------------------------------------------------------

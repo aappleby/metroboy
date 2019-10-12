@@ -58,7 +58,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  load("microtests/build/dmg", "poweron_069_oam");
+  load("microtests/build/dmg", "poweron_000_div");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;
@@ -68,7 +68,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
 
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
-  window = SDL_CreateWindow("MetroBoy Gameboy Simulator", 4, 34, fb_width, fb_height, SDL_WINDOW_SHOWN);
+  window = SDL_CreateWindow("MetroBoy Gameboy Simulator", 100, 100, fb_width, fb_height, SDL_WINDOW_SHOWN);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   fb_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, fb_width, fb_height);
   terminus_surface = SDL_LoadBMP("terminus2.bmp");
@@ -253,10 +253,9 @@ void MetroBoyApp::loop() {
   render_text(spacing * 0 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
-  sprintf(text_buf, "--------------PPU--------------\n");
+  sprintf(text_buf, "\003--------------PPU--------------\001\n");
   
-  int tcycle = (int)gameboy.get_tcycle();
-  gameboy.get_ppu().dump((tcycle + 1) & 3, text_buf);
+  gameboy.get_ppu().dump(text_buf);
 
   render_text(spacing * 1 + 4, 4, text_buf.c_str());
   text_buf.clear();
@@ -265,7 +264,7 @@ void MetroBoyApp::loop() {
   render_text(spacing * 2 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
-  sprintf(text_buf, "--------------SPU--------------\n");
+  sprintf(text_buf, "\003--------------SPU--------------\001\n");
   gameboy.get_spu().dump(text_buf);
   render_text(spacing * 2 + 4, 640 + 4, text_buf.c_str());
   text_buf.clear();
@@ -497,14 +496,24 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
 void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
   int xcursor = 0;
   int ycursor = 0;
-  const char* c = text;
 
-  while (*c) {
-    if (*c == '\n') {
+  uint32_t color = 0xFFCCCCCC;
+
+  for (const char* c = text; *c; c++) {
+    switch(*c) {
+    case 1: color = 0xFFCCCCCC; continue;
+    case 2: color = 0xFFFF8888; continue;
+    case 3: color = 0xFF88FF88; continue;
+    case 4: color = 0xFF8888FF; continue;
+    case 5: color = 0xFF88FFFF; continue;
+    case 6: color = 0xFFFF88FF; continue;
+    case 7: color = 0xFFFFFF88; continue;
+    case '\n':
       xcursor = 0;
       ycursor += glyph_height;
-      c++;
       continue;
+    default:
+      break;
     }
 
     int row = ((*c) >> 5) * 16 + 3;
@@ -514,7 +523,7 @@ void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
 
     for (int y = 0; y < glyph_height; y++) {
       for (int x = 0; x < glyph_width; x++) {
-        if (terminus_font[src_cursor]) framebuffer[dst_cursor] = 0xFF00FF00;
+        if (terminus_font[src_cursor]) framebuffer[dst_cursor] = color;
         src_cursor++;
         dst_cursor++;
       }
@@ -527,7 +536,6 @@ void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
       xcursor = 0;
       ycursor += glyph_height;
     }
-    c++;
   }
 }
 

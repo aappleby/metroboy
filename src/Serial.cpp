@@ -12,37 +12,41 @@ void Serial::reset() {
 
 //-----------------------------------------------------------------------------
 
-Serial::Out Serial::tick() const {
-  return out;
+Bus Serial::tick() const {
+  return serial_to_bus;
 }
 
-void Serial::tock(int tphase, CpuBus bus) {
-  if (tphase == 0 && bus.read) {
-    out = {};
-    if (bus.addr == ADDR_SB) {
-      out.addr = bus.addr;
-      out.data = sb;
-      out.oe = true;
+void Serial::tock(int tphase_, Bus bus_to_serial_) {
+  tphase = tphase_;
+  bus_to_serial = bus_to_serial_;
+  serial_to_bus = {};
+
+  if (bus_to_serial.write) {
+    if (bus_to_serial.addr == ADDR_SB) {
+      sb = (uint8_t)bus_to_serial.data;
+      serial_to_bus = { bus_to_serial.addr, sb, false, true };
     }
-    if (bus.addr == ADDR_SC) {
-      out.addr = bus.addr;
-      out.data = sc;
-      out.oe = true;
+    if (bus_to_serial.addr == ADDR_SC) {
+      sc = (uint8_t)bus_to_serial.data | 0b01111110;
+      serial_to_bus = { bus_to_serial.addr, sc, false, true };
+    }
+  }
+  else if (bus_to_serial.read) {
+    if (bus_to_serial.addr == ADDR_SB) {
+      serial_to_bus = { bus_to_serial.addr, sb, true, false };
+    }
+    if (bus_to_serial.addr == ADDR_SC) {
+      serial_to_bus = { bus_to_serial.addr, sc, true, false };
     }
   }
 
-  if (tphase == 2 && bus.write) {
-    if (bus.addr == ADDR_SB) sb = bus.data;
-    if (bus.addr == ADDR_SC) sc = bus.data | 0b01111110;
-  }
 }
 
 //-----------------------------------------------------------------------------
 
 void Serial::dump(std::string& d) {
-  dumpit(out.addr, "0x%04x");
-  dumpit(out.data, "0x%02x");
-  dumpit(out.oe,   "%d");
+  print_bus(d, "bus_to_serial", bus_to_serial);
+  print_bus(d, "serial_to_bus", serial_to_bus);
 }
 
 //-----------------------------------------------------------------------------

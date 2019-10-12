@@ -222,10 +222,11 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 
   addr = new_pc;
 
-  out_addr = new_pc;
-  out_data = 0x00;
-  out_read = 1;
-  out_write = 0;
+  cpu_to_bus.addr = new_pc;
+  cpu_to_bus.data = 0x00;
+  cpu_to_bus.read = 1;
+  cpu_to_bus.write = 0;
+
   out_int_ack = 0;
 }
 
@@ -238,30 +239,32 @@ void Z80::reset(int new_model, uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-Z80::Out Z80::tick() const {
-  return {
-    out_addr,
-    out_data,
-    out_read,
-    out_write,
-    out_int_ack
-  };
+Bus Z80::tick() const {
+  return cpu_to_bus;
 }
 
-void Z80::tock(CpuIn in) {
+uint8_t Z80::get_int_ack() const {
+  return out_int_ack;
+}
+
+void Z80::tock(int tphase_, Bus bus_to_cpu_, uint8_t imask_, uint8_t intf_) {
+  tphase = tphase_;
+  bus_to_cpu = bus_to_cpu_;
+  cpu_to_bus = {};
+
   // these won't match if the cpu tries to read from vram/oam during lock
   //assert(in.addr == out.addr);
   //assert(in.oe == (uint8_t)out.read);
 
-  bus = in.data;
+  bus = (uint8_t)bus_to_cpu_.data;
   ime = ime_;
 
   if (state == DECODE) {
     pc2 = pc;
     op = bus;
     int_ack = 0;
-    imask = in.imask;
-    intf = in.intf;
+    imask = imask_;
+    intf = intf_;
     data_out = 0x00;
 
     bool cond_fail = false;
@@ -292,10 +295,10 @@ void Z80::tock(CpuIn in) {
   state = state_;
   cycle++;
 
-  out_addr = addr;
-  out_data = data_out;
-  out_read = true;
-  out_write = (bool)write;
+  cpu_to_bus.addr = addr;
+  cpu_to_bus.data = data_out;
+  cpu_to_bus.read = true;
+  cpu_to_bus.write = (bool)write;
   out_int_ack = int_ack;
 }
 
@@ -1017,10 +1020,8 @@ void Z80::dump(std::string& d) {
   //sprintf(d, "write          %d\n",     write);
   sprintf(d, "\n");
 
-  dumpit(out_addr,    "0x%04x");
-  dumpit(out_data,    "0x%02x");
-  dumpit(out_read,    "%d");
-  dumpit(out_write,   "%d");
+  print_bus(d, "bus_to_cpu",  bus_to_cpu);
+  print_bus(d, "cpu_to_bus", cpu_to_bus);
   dumpit(out_int_ack, "0x%02x");
 }
 

@@ -91,7 +91,7 @@ void MetroBoy::run_vsync(uint8_t buttons) {
 
   for (int i = 0; i < 154 * 114; i++) {
     mcycle();
-    audio_post(gb_out.out_l, gb_out.out_r);
+    audio_post(current_gb->get_host_data().out_l, current_gb->get_host_data().out_r);
   }
 
   audio_end();
@@ -262,7 +262,9 @@ void MetroBoy::clear_cycle_history() {
 
 void MetroBoy::cycle() {
   current_gb->tick();
-  gb_out = current_gb->tock();
+  current_gb->tock();
+
+  gb_out = current_gb->get_host_data();
 
   if (trace) {
     tracebuffer[gb_out.y * 456 + gb_out.counter] = gb_out.trace;

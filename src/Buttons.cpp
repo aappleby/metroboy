@@ -8,24 +8,21 @@ void Buttons::reset() {
   p1 = 0xCF;
 }
 
-Buttons::Out Buttons::tick() const {
-  return {
-    addr,
-    data,
-    oe,
-    val
-  };
+Bus Buttons::tick() const {
+  return buttons_to_bus;
 }
 
-void Buttons::tock(int tphase, CpuBus bus) {
-  if (tphase == 0 && bus.read) {
-    addr = 0;
-    data = 0;
-    oe = 0;
-    if (bus.addr == ADDR_P1) {
-      addr = bus.addr;
-      data = p1;
-      oe = true;
+void Buttons::tock(int tphase_, Bus bus_to_buttons_) {
+  tphase = tphase_;
+  bus_to_buttons = bus_to_buttons_;
+  buttons_to_bus = {};
+
+  if (bus_to_buttons.read) {
+    if (bus_to_buttons.addr == ADDR_P1) {
+      buttons_to_bus.addr = bus_to_buttons.addr;
+      buttons_to_bus.data = p1;
+      buttons_to_bus.read = true;
+      buttons_to_bus.write = false;
     }
   }
 
@@ -36,8 +33,8 @@ void Buttons::tock(int tphase, CpuBus bus) {
   }
 
   if (tphase == 2) {
-    if (bus.write && bus.addr == ADDR_P1) {
-      p1 = (p1 & 0xCF) | (bus.data & 0x30);
+    if (bus_to_buttons.write && bus_to_buttons.addr == ADDR_P1) {
+      p1 = (p1 & 0xCF) | (bus_to_buttons.data & 0x30);
     }
   }
 }
@@ -56,7 +53,7 @@ void Buttons::dump(std::string& d) const {
           val & 0x20 ? '-' : 'B',
           val & 0x40 ? '-' : 'E',
           val & 0x80 ? '-' : 'S');
-  dumpit(addr, "0x%04x");
-  dumpit(data, "0x%02x");
-  dumpit(oe,   "%d");
+
+  print_bus(d, "bus_to_buttons", bus_to_buttons);
+  print_bus(d, "buttons_to_bus", buttons_to_bus);
 }

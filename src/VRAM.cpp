@@ -15,36 +15,68 @@ void VRAM::reset() {
 
 VRAM::Out VRAM::tick() const {
   return {
-    cpu_addr,
-    cpu_data,
-    cpu_oe,
-    ppu_addr,
-    ppu_data,
-    ppu_oe,
+    vram_to_bus,
+    vram_to_dma,
+    vram_to_ppu,
   };
 }
 
-void VRAM::tock(int tphase, bool vram_lock, CpuBus cpu_bus, CpuBus ppu_bus) {
-  if (vram_lock) {
-    if (ppu_bus.read) {
-      ppu_addr = ppu_bus.addr;
-      ppu_data = ram[ppu_bus.addr - ADDR_VRAM_BEGIN];
-      ppu_oe = true;
-    }
-    return;
-  }
+void VRAM::tock(int tphase_, Bus bus_to_vram_, Bus dma_to_vram_, Bus ppu_to_vram_) {
+  tphase = tphase_;
+  bus_to_vram = bus_to_vram_;
+  dma_to_vram = dma_to_vram_;
+  ppu_to_vram = ppu_to_vram_;
 
-  if (cpu_bus.read) {
-    if (ADDR_VRAM_BEGIN <= cpu_bus.addr && cpu_bus.addr <= ADDR_VRAM_END) {
-      cpu_addr = cpu_bus.addr;
-      cpu_data = ram[cpu_bus.addr - ADDR_VRAM_BEGIN];
-      cpu_oe = true;
+  vram_to_bus = {};
+  vram_to_dma = {};
+  vram_to_ppu = {};
+
+  if (ppu_to_vram.lock) {
+    if (ppu_to_vram.read) {
+      vram_to_ppu.addr  = ppu_to_vram.addr;
+      vram_to_ppu.data  = ram[ppu_to_vram.addr - ADDR_VRAM_BEGIN];
+      vram_to_ppu.read  = true;
+      vram_to_ppu.write = false;
+      vram_to_ppu.lock  = true;
+      vram_to_ppu.dma   = false;
+      vram_to_ppu.ack   = true;
     }
   }
+  else {
+    if (dma_to_vram.read) {
+      if (ADDR_VRAM_BEGIN <= dma_to_vram.addr && dma_to_vram.addr <= ADDR_VRAM_END) {
+        vram_to_dma.addr  = dma_to_vram.addr;
+        vram_to_dma.data  = ram[dma_to_vram.addr - ADDR_VRAM_BEGIN];
+        vram_to_dma.read  = true;
+        vram_to_dma.write = false;
+        vram_to_dma.lock  = false;
+        vram_to_dma.dma   = true;
+        vram_to_dma.ack   = true;
+      }
+    }
+    else if (bus_to_vram.write) {
+      if (ADDR_VRAM_BEGIN <= bus_to_vram.addr && bus_to_vram.addr <= ADDR_VRAM_END) {
+        ram[bus_to_vram.addr - ADDR_VRAM_BEGIN] = uint8_t(bus_to_vram.data);
 
-  if (cpu_bus.write) {
-    if (ADDR_VRAM_BEGIN <= cpu_bus.addr && cpu_bus.addr <= ADDR_VRAM_END) {
-      ram[cpu_bus.addr - ADDR_VRAM_BEGIN] = cpu_bus.data;
+        vram_to_bus.addr  = bus_to_vram.addr;
+        vram_to_bus.data  = bus_to_vram.data;
+        vram_to_bus.read  = false;
+        vram_to_bus.write = true;
+        vram_to_bus.lock  = false;
+        vram_to_bus.dma   = false;
+        vram_to_bus.ack   = true;
+      }
+    }
+    else if (bus_to_vram.read) {
+      if (ADDR_VRAM_BEGIN <= bus_to_vram.addr && bus_to_vram.addr <= ADDR_VRAM_END) {
+        vram_to_bus.addr  = bus_to_vram.addr;
+        vram_to_bus.data  = ram[bus_to_vram.addr - ADDR_VRAM_BEGIN];
+        vram_to_bus.read  = true;
+        vram_to_bus.write = false;
+        vram_to_bus.lock  = false;
+        vram_to_bus.dma   = false;
+        vram_to_bus.ack   = true;
+      }
     }
   }
 }
@@ -52,12 +84,16 @@ void VRAM::tock(int tphase, bool vram_lock, CpuBus cpu_bus, CpuBus ppu_bus) {
 //-----------------------------------------------------------------------------
 
 void VRAM::dump(std::string& d) {
-  dumpit(cpu_addr, "0x%04x");
-  dumpit(cpu_data, "0x%02x");
-  dumpit(cpu_oe,   "%d");
-  dumpit(ppu_addr, "0x%04x");
-  dumpit(ppu_data, "0x%02x");
-  dumpit(ppu_oe,   "%d");
+  print_bus(d, "bus_to_vram", bus_to_vram);
+  print_bus(d, "vram_to_bus", vram_to_bus);
+  sprintf(d, "\n");
+
+  print_bus(d, "dma_to_vram", dma_to_vram);
+  print_bus(d, "vram_to_dma", vram_to_dma);
+  sprintf(d, "\n");
+
+  print_bus(d, "ppu_to_vram", ppu_to_vram);
+  print_bus(d, "vram_to_ppu", vram_to_ppu);
 }
 
 //-----------------------------------------------------------------------------

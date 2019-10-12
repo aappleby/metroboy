@@ -4,20 +4,17 @@
 //-----------------------------------------------------------------------------
 
 struct Timer {
-  struct Out {
-    uint16_t addr;
-    uint8_t data;
-    bool oe;
-    bool interrupt;
-  };
-
   void reset();
-  Out  tick() const;
-  void tock(int tphase, const CpuBus bus);
+  Bus  tick() const;
+  bool get_interrupt() const;
+  void tock(int tphase_, Bus bus_to_timer_);
 
   void dump(std::string& out);
 
 private:
+  int tphase;
+  Bus bus_to_timer;
+  Bus timer_to_bus;
 
   uint16_t counter;  // FF04
   uint16_t tima;     // FF05
@@ -25,7 +22,7 @@ private:
   uint8_t  tac;      // FF07
   
   bool do_tick;
-  Out out;
+  bool do_interrupt;
 };
 
 //-----------------------------------------------------------------------------

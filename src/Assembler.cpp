@@ -181,7 +181,7 @@ void Assembler::disassemble_one(const uint8_t* code, std::string& out) {
 
 void Assembler::disassemble(
     const uint8_t* code, size_t code_size, uint16_t code_base,
-    int opcount, std::string& out, bool collapse_nops) {
+    int opcount, std::string& out, bool /*collapse_nops*/) {
   int code_cursor = 0;
   for (int i = 0; i < opcount; i++) {
     if (code_cursor >= code_size) return;

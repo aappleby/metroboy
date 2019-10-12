@@ -6,31 +6,28 @@
 struct OAM {
 
   struct Out {
-    uint16_t cpu_addr;
-    uint8_t  cpu_data;
-    bool     cpu_oe;
-
-    uint16_t ppu_addr;
-    uint16_t ppu_data16;
-    bool     ppu_oe;
+    Bus oam_to_bus;
+    Bus oam_to_ppu;
   };
 
   void reset();
   Out  tick() const;
-  void tock(int tphase, bool oam_lock, const CpuBus cpu_bus, CpuBus ppu_bus);
+  void tock(int tphase_, const Bus bus_to_oam_, Bus dma_to_oam_, Bus ppu_to_oam_);
   void dump(std::string& out) const;
 
   const uint8_t* get() const { return (uint8_t*)ram; }
 
 private:
 
-  uint16_t cpu_addr;
-  uint8_t  cpu_data;
-  bool     cpu_oe;
+  int tphase;
+  bool oam_lock;
+  
+  Bus bus_to_oam;
+  Bus dma_to_oam;
+  Bus ppu_to_oam;
 
-  uint16_t ppu_addr;
-  uint16_t ppu_data16;
-  bool     ppu_oe;
+  Bus oam_to_bus;
+  Bus oam_to_ppu;
 
   uint16_t ram[128];
 };

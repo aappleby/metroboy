@@ -10,33 +10,35 @@ void ZRAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-ZRAM::Out ZRAM::tick() const {
-  return out;
+Bus ZRAM::tick() const {
+  return zram_to_bus;
 }
 
-void ZRAM::tock(int tphase, CpuBus bus) {
-  if (tphase == 0 && bus.read) {
-    out = {};
-    if (ADDR_ZEROPAGE_BEGIN <= bus.addr && bus.addr <= ADDR_ZEROPAGE_END) {
-      out.addr = bus.addr;
-      out.data = ram[bus.addr - ADDR_ZEROPAGE_BEGIN];
-      out.oe = true;
+void ZRAM::tock(int tphase_, Bus bus_to_zram_) {
+  tphase = tphase_;
+  bus_to_zram = bus_to_zram_;
+  zram_to_bus = {};
+
+  if (bus_to_zram.write) {
+    if (ADDR_ZEROPAGE_BEGIN <= bus_to_zram.addr && bus_to_zram.addr <= ADDR_ZEROPAGE_END) {
+      ram[bus_to_zram.addr - ADDR_ZEROPAGE_BEGIN] = (uint8_t)bus_to_zram.data;
+      zram_to_bus = { bus_to_zram.addr, bus_to_zram.data, false, true };
+    }
+  }
+  else if (bus_to_zram.read) {
+    if (ADDR_ZEROPAGE_BEGIN <= bus_to_zram.addr && bus_to_zram.addr <= ADDR_ZEROPAGE_END) {
+      zram_to_bus = { bus_to_zram.addr, ram[bus_to_zram.addr - ADDR_ZEROPAGE_BEGIN], true, false };
     }
   }
 
-  if (tphase == 2 && bus.write) {
-    if (ADDR_ZEROPAGE_BEGIN <= bus.addr && bus.addr <= ADDR_ZEROPAGE_END) {
-      ram[bus.addr - ADDR_ZEROPAGE_BEGIN] = bus.data;
-    }
-  }
 }
 
 //-----------------------------------------------------------------------------
 
 void ZRAM::dump(std::string& d) {
-  dumpit(out.addr, "0x%04x");
-  dumpit(out.data, "0x%02x");
-  dumpit(out.oe,   "%d");
+  sprintf(d, "tphase %d\n", tphase);
+  print_bus(d, "bus_to_zram", bus_to_zram);
+  print_bus(d, "zram_to_bus", zram_to_bus);
 }
 
 //-----------------------------------------------------------------------------

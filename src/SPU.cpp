@@ -39,17 +39,20 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-SPU::Out SPU::tick() const {
-  return out;
+Bus SPU::tick() const {
+  return cpu_out;
 }
 
-void SPU::tock(int tphase, CpuBus bus) {
+void SPU::tock(int tphase_, Bus cpu_in_) {
+  tphase = tphase_;
+  cpu_in = cpu_in_;
+
   bool sound_on = (nr52 & 0x80);
   uint16_t spu_clock_ = (spu_clock + 1) & 0x3FFF;
   uint16_t clock_flip = (~spu_clock) & spu_clock_;
 
-  bus_read(tphase, bus);
-  bus_write(tphase, bus);
+  bus_read(tphase, cpu_in);
+  bus_write(tphase, cpu_in);
 
   if (tphase != 0) return;
 
@@ -59,8 +62,8 @@ void SPU::tock(int tphase, CpuBus bus) {
     s3_out = 0;
     s4_out = 0;
 
-    out.out_r = 0;
-    out.out_l = 0;
+    out_r = 0;
+    out_l = 0;
     return;
   }
 
@@ -276,70 +279,68 @@ void SPU::tock(int tphase, CpuBus bus) {
   //----------
   // mixer & master volume
 
-  out.out_r = 0;
-  out.out_l = 0;
+  out_r = 0;
+  out_l = 0;
 
-  if (nr51 & 0b00000001) out.out_r += s1_out;
-  if (nr51 & 0b00000010) out.out_r += s2_out;
-  if (nr51 & 0b00000100) out.out_r += s3_out;
-  if (nr51 & 0b00001000) out.out_r += s4_out;
-  if (nr51 & 0b00010000) out.out_l += s1_out;
-  if (nr51 & 0b00100000) out.out_l += s2_out;
-  if (nr51 & 0b01000000) out.out_l += s3_out;
-  if (nr51 & 0b10000000) out.out_l += s4_out;
+  if (nr51 & 0b00000001) out_r += s1_out;
+  if (nr51 & 0b00000010) out_r += s2_out;
+  if (nr51 & 0b00000100) out_r += s3_out;
+  if (nr51 & 0b00001000) out_r += s4_out;
+  if (nr51 & 0b00010000) out_l += s1_out;
+  if (nr51 & 0b00100000) out_l += s2_out;
+  if (nr51 & 0b01000000) out_l += s3_out;
+  if (nr51 & 0b10000000) out_l += s4_out;
 
   const uint8_t volume_r = ((nr50 & 0b00000111) >> 0) + 1;
   const uint8_t volume_l = ((nr50 & 0b01110000) >> 4) + 1;
 
-  out.out_r *= volume_r;
-  out.out_l *= volume_l;
+  out_r *= volume_r;
+  out_l *= volume_l;
 
   spu_clock = spu_clock_;
 }
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_read(int tphase, CpuBus bus) {
-  if (tphase != 0) return;
-  if (!bus.read) return;
+void SPU::bus_read(int tphase_, Bus cpu_in_) {
+  if (tphase_ != 0) return;
+  if (!cpu_in_.read) return;
 
-  out.addr = 0;
-  out.data = 0;
-  out.oe = 0;
+  cpu_out = {};
 
-  if (bus.addr < 0xFF10) return;
-  if (bus.addr > 0xFF3F) return;
+  if (cpu_in_.addr < 0xFF10) return;
+  if (cpu_in_.addr > 0xFF3F) return;
   
-  out.addr = bus.addr;
-  out.oe = 1;
+  cpu_out.addr = cpu_in_.addr;
+  cpu_out.read = 1;
 
-  switch (bus.addr) {
-  case 0xFF10: out.data = nr10 | 0x80; break;
-  case 0xFF11: out.data = nr11 | 0x3F; break;
-  case 0xFF12: out.data = nr12 | 0x00; break;
-  case 0xFF13: out.data = nr13 | 0xFF; break;
-  case 0xFF14: out.data = nr14 | 0xBF; break;
+  switch (cpu_in_.addr) {
+  case 0xFF10: cpu_out.data = nr10 | 0x80; break;
+  case 0xFF11: cpu_out.data = nr11 | 0x3F; break;
+  case 0xFF12: cpu_out.data = nr12 | 0x00; break;
+  case 0xFF13: cpu_out.data = nr13 | 0xFF; break;
+  case 0xFF14: cpu_out.data = nr14 | 0xBF; break;
 
-  case 0xFF15: out.data = nr20 | 0xFF; break;
-  case 0xFF16: out.data = nr21 | 0x3F; break;
-  case 0xFF17: out.data = nr22 | 0x00; break;
-  case 0xFF18: out.data = nr23 | 0xFF; break;
-  case 0xFF19: out.data = nr24 | 0xBF; break;
+  case 0xFF15: cpu_out.data = nr20 | 0xFF; break;
+  case 0xFF16: cpu_out.data = nr21 | 0x3F; break;
+  case 0xFF17: cpu_out.data = nr22 | 0x00; break;
+  case 0xFF18: cpu_out.data = nr23 | 0xFF; break;
+  case 0xFF19: cpu_out.data = nr24 | 0xBF; break;
   
-  case 0xFF1A: out.data = nr30 | 0x7F; break;
-  case 0xFF1B: out.data = nr31 | 0xFF; break;
-  case 0xFF1C: out.data = nr32 | 0x9F; break;
-  case 0xFF1D: out.data = nr33 | 0xFF; break;
-  case 0xFF1E: out.data = nr34 | 0xBF; break;
+  case 0xFF1A: cpu_out.data = nr30 | 0x7F; break;
+  case 0xFF1B: cpu_out.data = nr31 | 0xFF; break;
+  case 0xFF1C: cpu_out.data = nr32 | 0x9F; break;
+  case 0xFF1D: cpu_out.data = nr33 | 0xFF; break;
+  case 0xFF1E: cpu_out.data = nr34 | 0xBF; break;
   
-  case 0xFF1F: out.data = nr40 | 0xFF; break;
-  case 0xFF20: out.data = nr41 | 0xFF; break;
-  case 0xFF21: out.data = nr42 | 0x00; break;
-  case 0xFF22: out.data = nr43 | 0x00; break;
-  case 0xFF23: out.data = nr44 | 0xBF; break;
+  case 0xFF1F: cpu_out.data = nr40 | 0xFF; break;
+  case 0xFF20: cpu_out.data = nr41 | 0xFF; break;
+  case 0xFF21: cpu_out.data = nr42 | 0x00; break;
+  case 0xFF22: cpu_out.data = nr43 | 0x00; break;
+  case 0xFF23: cpu_out.data = nr44 | 0xBF; break;
 
-  case 0xFF24: out.data = nr50 | 0x00; break;
-  case 0xFF25: out.data = nr51 | 0x00; break;
+  case 0xFF24: cpu_out.data = nr50 | 0x00; break;
+  case 0xFF25: cpu_out.data = nr51 | 0x00; break;
 
   case 0xFF26: {
     uint8_t bus_out_ = (nr52 & 0x80) | 0x70;
@@ -347,14 +348,12 @@ void SPU::bus_read(int tphase, CpuBus bus) {
     if (s2_enable) bus_out_ |= 0b00000010;
     if (s3_enable) bus_out_ |= 0b00000100;
     if (s4_enable) bus_out_ |= 0b00001000;
-    out.data = bus_out_;
+    cpu_out.data = bus_out_;
     break;
   }
 
   default: {
-    out.addr = 0;
-    out.data = 0;
-    out.oe = 0;
+    cpu_out = {};
     break;
   }
   }
@@ -362,25 +361,24 @@ void SPU::bus_read(int tphase, CpuBus bus) {
   //----------
   // wavetable
 
-  if (bus.addr >= 0xFF30 && bus.addr <= 0xFF3F) {
-    out.data = s3_wave[bus.addr & 0xF];
-    out.oe = 1;
+  if (cpu_in_.addr >= 0xFF30 && cpu_in_.addr <= 0xFF3F) {
+    cpu_out = { cpu_in_.addr, s3_wave[cpu_in_.addr & 0xF], true, false };
   }
 }
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_write(int tphase, CpuBus bus) {
-  if (tphase != 2) return;
-  if (!bus.write) return;
-  if (bus.addr < 0xFF10) return;
-  if (bus.addr > 0xFF3F) return;
+void SPU::bus_write(int tphase_, Bus cpu_in_) {
+  if (tphase_ != 2) return;
+  if (!cpu_in_.write) return;
+  if (cpu_in_.addr < 0xFF10) return;
+  if (cpu_in_.addr > 0xFF3F) return;
 
   bool sound_on = (nr52 & 0x80);
 
   if (!sound_on) {
-    if (bus.addr == 0xFF26) {
-      nr52 = bus.data | 0b01110000;
+    if (cpu_in_.addr == 0xFF26) {
+      nr52 = (uint8_t)cpu_in_.data | 0b01110000;
       if (nr52 & 0x80) reset();
     }
     return;
@@ -389,63 +387,63 @@ void SPU::bus_write(int tphase, CpuBus bus) {
   //----------
   // glitches n stuff
 
-  if (bus.addr == 0xFF12) {
+  if (cpu_in_.addr == 0xFF12) {
     if ((nr12 & 0x08) && s1_enable) s1_env_volume = (s1_env_volume + 1) & 15;
-    if ((bus.data & 0xF8) == 0) s1_enable = false;
+    if ((cpu_in_.data & 0xF8) == 0) s1_enable = false;
   }
 
-  if (bus.addr == 0xFF17) {
+  if (cpu_in_.addr == 0xFF17) {
     if ((nr22 & 0x08) && s2_enable) s2_env_volume = (s2_env_volume + 1) & 15;
-    if ((bus.data & 0xF8) == 0) s2_enable = false;
+    if ((cpu_in_.data & 0xF8) == 0) s2_enable = false;
   }
 
-  if (bus.addr == 0xFF21) {
+  if (cpu_in_.addr == 0xFF21) {
     if ((nr42 & 0x08) && s4_enable) s4_env_volume = (s4_env_volume + 1) & 15;
-    if ((bus.data & 0xF8) == 0) s4_enable = false;
+    if ((cpu_in_.data & 0xF8) == 0) s4_enable = false;
   }
 
   //----------
   // registers
 
-  switch (bus.addr) {
-  case 0xFF10: nr10 = bus.data | 0b10000000; break;
-  case 0xFF11: nr11 = bus.data | 0b00000000; break;
-  case 0xFF12: nr12 = bus.data | 0b00000000; break;
-  case 0xFF13: nr13 = bus.data | 0b00000000; break;
-  case 0xFF14: nr14 = bus.data | 0b00111000; break;
-  case 0xFF16: nr21 = bus.data | 0b00000000; break;
-  case 0xFF17: nr22 = bus.data | 0b00000000; break;
-  case 0xFF18: nr23 = bus.data | 0b00000000; break;
-  case 0xFF19: nr24 = bus.data | 0b00111000; break;
-  case 0xFF1A: nr30 = bus.data | 0b01111111; break;
-  case 0xFF1B: nr31 = bus.data | 0b00000000; break;
-  case 0xFF1C: nr32 = bus.data | 0b10011111; break;
-  case 0xFF1D: nr33 = bus.data | 0b00000000; break;
-  case 0xFF1E: nr34 = bus.data | 0b00111000; break;
-  case 0xFF20: nr41 = bus.data | 0b11000000; break;
-  case 0xFF21: nr42 = bus.data | 0b00000000; break;
-  case 0xFF22: nr43 = bus.data | 0b00000000; break;
-  case 0xFF23: nr44 = bus.data | 0b00111111; break;
-  case 0xFF24: nr50 = bus.data | 0b00000000; break;
-  case 0xFF25: nr51 = bus.data | 0b00000000; break;
-  case 0xFF26: nr52 = bus.data | 0b01110000; break;
+  switch (cpu_in_.addr) {
+  case 0xFF10: nr10 = (uint8_t)cpu_in_.data | 0b10000000; break;
+  case 0xFF11: nr11 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF12: nr12 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF13: nr13 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF14: nr14 = (uint8_t)cpu_in_.data | 0b00111000; break;
+  case 0xFF16: nr21 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF17: nr22 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF18: nr23 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF19: nr24 = (uint8_t)cpu_in_.data | 0b00111000; break;
+  case 0xFF1A: nr30 = (uint8_t)cpu_in_.data | 0b01111111; break;
+  case 0xFF1B: nr31 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF1C: nr32 = (uint8_t)cpu_in_.data | 0b10011111; break;
+  case 0xFF1D: nr33 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF1E: nr34 = (uint8_t)cpu_in_.data | 0b00111000; break;
+  case 0xFF20: nr41 = (uint8_t)cpu_in_.data | 0b11000000; break;
+  case 0xFF21: nr42 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF22: nr43 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF23: nr44 = (uint8_t)cpu_in_.data | 0b00111111; break;
+  case 0xFF24: nr50 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF25: nr51 = (uint8_t)cpu_in_.data | 0b00000000; break;
+  case 0xFF26: nr52 = (uint8_t)cpu_in_.data | 0b01110000; break;
   }
 
   //----------
   // wavetable
 
-  if (bus.addr >= 0xFF30 && bus.addr <= 0xFF3F) {
-    s3_wave[bus.addr & 0xF] = bus.data;
+  if (cpu_in_.addr >= 0xFF30 && cpu_in_.addr <= 0xFF3F) {
+    s3_wave[cpu_in_.addr & 0xF] = (uint8_t)cpu_in_.data;
   }
 
   //----------
   // triggers
 
   {
-    bool s1_trigger_ = bus.addr == 0xFF14 && (bus.data & 0x80);
-    bool s2_trigger_ = bus.addr == 0xFF19 && (bus.data & 0x80);
-    bool s3_trigger_ = bus.addr == 0xFF1E && (bus.data & 0x80);
-    bool s4_trigger_ = bus.addr == 0xFF23 && (bus.data & 0x80);
+    bool s1_trigger_ = cpu_in_.addr == 0xFF14 && (cpu_in_.data & 0x80);
+    bool s2_trigger_ = cpu_in_.addr == 0xFF19 && (cpu_in_.data & 0x80);
+    bool s3_trigger_ = cpu_in_.addr == 0xFF1E && (cpu_in_.data & 0x80);
+    bool s4_trigger_ = cpu_in_.addr == 0xFF23 && (cpu_in_.data & 0x80);
 
     if (s1_trigger_) {
       uint8_t s1_sweep_period = (nr10 & 0b01110000) >> 4;

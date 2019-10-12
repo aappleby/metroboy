@@ -6,31 +6,28 @@
 struct VRAM {
 
   struct Out {
-    uint16_t cpu_addr;
-    uint8_t  cpu_data;
-    bool     cpu_oe;
-
-    uint16_t ppu_addr;
-    uint8_t  ppu_data;
-    bool     ppu_oe;
+    Bus vram_to_bus;
+    Bus vram_to_dma;
+    Bus vram_to_ppu;
   };
 
   void  reset();
   Out   tick() const;
-  void  tock(int tphase, bool vram_lock, CpuBus cpu_bus, CpuBus ppu_bus);
+  void  tock(int tphase_, Bus bus_to_vram_, Bus dma_to_vram_, Bus ppu_to_vram_);
   void  dump(std::string& d);
 
   const uint8_t* get_ram() const { return ram; }
 
 private:
 
-  uint16_t cpu_addr;
-  uint8_t  cpu_data;
-  bool     cpu_oe;
+  int tphase;
+  Bus bus_to_vram;
+  Bus dma_to_vram;
+  Bus ppu_to_vram;
 
-  uint16_t ppu_addr;
-  uint8_t  ppu_data;
-  bool     ppu_oe;
+  Bus vram_to_bus;
+  Bus vram_to_dma;
+  Bus vram_to_ppu;
 
   uint8_t ram[8192];
 };

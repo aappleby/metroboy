@@ -6,7 +6,7 @@
 struct Serial {
   void reset();
   Bus  tick() const;
-  void tock(int tphase_, Bus bus_to_serial_);
+  void tock(int tcycle_, Bus bus_to_serial_);
   void dump(std::string& d);
 
 private:

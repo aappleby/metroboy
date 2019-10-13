@@ -13,7 +13,7 @@ struct MMU {
   void reset(uint16_t new_pc);
 
   Out  tick() const;
-  void tock(int tphase_, Bus bus_to_mmus_, Bus dma_to_mmu_);
+  void tock(int tcycle_, Bus bus_to_mmus_, Bus dma_to_mmu_);
   void dump(std::string& d);
 
   uint8_t* get_flat_ptr(uint16_t addr);

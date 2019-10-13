@@ -24,8 +24,8 @@ bool Timer::get_interrupt() const {
   return do_interrupt;
 }
 
-void Timer::tock(int tphase_, Bus bus_to_timer_) {
-  tphase = tphase_;
+void Timer::tock(int tcycle_, Bus bus_to_timer_) {
+  tphase = tcycle_ & 3;
   bus_to_timer = bus_to_timer_;
   timer_to_bus = {};
 
@@ -61,17 +61,24 @@ void Timer::tock(int tphase_, Bus bus_to_timer_) {
 }
 
 //-----------------------------------------------------------------------------
+
+void Timer::dump(std::string& d) {
+  sprintf(d,   "CNT         0x%04x\n", counter);
+  sprintf(d,   "DIV         0x%02x\n", (counter >> 8) & 0xFF);
+  sprintf(d,   "TIMA        0x%02x\n", tima);
+  sprintf(d,   "TMA         0x%02x\n", tma);
+  sprintf(d,   "TAC         %s\n",     byte_to_bits(tac));
+  sprintf(d,   "do_int      %d\n", do_interrupt);
+  sprintf(d,   "\n");
+  print_bus(d, "bus_to_tmr", bus_to_timer);
+  print_bus(d, "tmr_to_bus", timer_to_bus);
+}
+
+//-----------------------------------------------------------------------------
 // not sure if the mux2s are top=0 bot=1 or reverse...
 // and level-triggered dtffs are probably wrong...
 
-bool TOLA_NA1;
-bool FF04_D1;
-bool FROM_CPU5;
-bool _INT_TIMER;
-
-//-----------------------------------------------------------------------------
-
-uint8_t sch_timer(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU_RD, bool CPU_WR) {
+uint8_t HardTimer::tock(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU_RD, bool CPU_WR) {
   bool BOGA1MHZ = tcycle & 0x02;
   bool CLK_256K = tcycle & 0x08;
   bool CLK_64K  = tcycle & 0x20;
@@ -95,11 +102,6 @@ uint8_t sch_timer(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU
 
   const bool RYFO = (A2 && A00_07 && FFXX);
   const bool FF04_FF07 = RYFO;
-
-  // TAC
-  static bool SABO = 0;
-  static bool SAMY = 0;
-  static bool SOPU = 0;
 
   const bool SARA = !(A0 && A1 && CPU_WR && FF04_FF07);
   const bool SORA = (FF04_FF07 && CPU_RD && A1 && A0);
@@ -139,16 +141,6 @@ uint8_t sch_timer(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU
   const bool TUBY = (FF04_FF07 && CPU_RD && A1 && TOVY);
   const bool TYJU = (TOVY && A1 && CPU_WR && FF04_FF07);
 
-  // TMA
-  static bool PETO = 0;
-  static bool MURU = 0;
-  static bool NYKE = 0;
-  static bool SETA = 0;
-  static bool SABU = 0;
-  static bool TYRU = 0;
-  static bool SUFY = 0;
-  static bool TYVA = 0;
-
   if (TYJU) {
     PETO = D6;
     MURU = D2;
@@ -180,14 +172,14 @@ uint8_t sch_timer(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU
     D3 = SALU;
   }
 
-  const bool REFU = TOPE ? D6 : PETO;
-  const bool NYKU = TOPE ? D2 : MURU;
-  const bool PETU = TOPE ? D1 : NYKE;
-  const bool RATO = TOPE ? D7 : SETA;
-  const bool ROKE = TOPE ? D0 : SABU;
-  const bool SALA = TOPE ? D4 : TYRU;
-  const bool SYRU = TOPE ? D5 : SUFY;
-  const bool SOCE = TOPE ? D3 : TYVA;
+  const bool REFU = TOPE ? PETO : D6;
+  const bool NYKU = TOPE ? MURU : D2;
+  const bool PETU = TOPE ? NYKE : D1;
+  const bool RATO = TOPE ? SETA : D7;
+  const bool ROKE = TOPE ? SABU : D0;
+  const bool SALA = TOPE ? TYRU : D4;
+  const bool SYRU = TOPE ? SUFY : D5;
+  const bool SOCE = TOPE ? TYVA : D3;
 
   const bool PYMA = !(REFU || MULO);
   const bool NADA = !(NYKU || MULO);
@@ -197,17 +189,6 @@ uint8_t sch_timer(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU
   const bool ROLU = !(SALA || MULO);
   const bool RUGY = !(SYRU || MULO);
   const bool REPA = !(SOCE || MULO);
-
-  // TIMA
-
-  static bool REGA = 0;
-  static bool POVY = 0;
-  static bool PERU = 0;
-  static bool RATE = 0;
-  static bool RUBY = 0;
-  static bool RAGE = 0;
-  static bool PEDA = 0;
-  static bool NUGA = 0;
 
   if (MEXU) {
     REGA = PUXY;
@@ -258,8 +239,6 @@ uint8_t sch_timer(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU
     D7 = PUSO;
   }
 
-  static bool NYDU = 0;
-
   const bool MUGY = !MEXU;
 
   if (BOGA1MHZ) {
@@ -267,8 +246,6 @@ uint8_t sch_timer(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU
   }
 
   const bool MERY = !(!NYDU || NUGA_COUT);
-
-  static bool MOBA = 0;
 
   if (BOGA1MHZ) {
     MOBA = RESET2 ? 0 : MERY;
@@ -278,20 +255,6 @@ uint8_t sch_timer(int tcycle, bool RESET2, uint16_t addr, uint8_t data, bool CPU
 
   data = (D0 << 0) | (D1 << 1) | (D2 << 2) | (D3 << 3) | (D4 << 4) | (D5 << 5) | (D6 << 6) | (D7 << 7);
   return data;
-}
-
-//-----------------------------------------------------------------------------
-
-void Timer::dump(std::string& d) {
-  sprintf(d,   "CNT         0x%04x\n", counter);
-  sprintf(d,   "DIV         0x%02x\n", (counter >> 8) & 0xFF);
-  sprintf(d,   "TIMA        0x%02x\n", tima);
-  sprintf(d,   "TMA         0x%02x\n", tma);
-  sprintf(d,   "TAC         %s\n",     byte_to_bits(tac));
-  sprintf(d,   "do_int      %d\n", do_interrupt);
-  sprintf(d,   "\n");
-  print_bus(d, "bus_to_tmr", bus_to_timer);
-  print_bus(d, "tmr_to_bus", timer_to_bus);
 }
 
 //-----------------------------------------------------------------------------

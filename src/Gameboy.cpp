@@ -70,7 +70,7 @@ void Gameboy::tock() {
   const auto mmu_out = mmu.tick();
   const auto vram_out = vram.tick();
   const auto oam_out = oam.tick();
-  const auto ppu_out = ppu.tick(tphase);
+  const auto ppu_out = ppu.tick(tcycle);
 
 
   iram_to_bus = iram_out.iram_to_bus;
@@ -143,9 +143,9 @@ void Gameboy::tock() {
     if (ppu_out.stat1)     intf_ |= INT_STAT;
     if (fire_int_timer1)   intf_ |= INT_TIMER;
     if (fire_int_buttons1) intf_ |= INT_JOYPAD;
-
-    if (tphase == 0) intf_ &= ~z80.get_int_ack();
   }
+
+  if (tphase == 0) intf_ &= ~z80.get_int_ack();
 
   //-----------------------------------
   // Internal read/write for intf/imask
@@ -223,7 +223,7 @@ void Gameboy::tock() {
   bus_to_cpu.ack = bus_to_cpu.read;
 
   if (bus_to_cpu.read > 1) {
-    printf("BUS COLLISION @ %lld\n", tcycle);
+    printf("BUS COLLISION @ %d\n", tcycle);
   }
   else if (bus_to_cpu.read == 0) {
     //printf("BUS BLOCKED\n");
@@ -250,9 +250,9 @@ void Gameboy::tock() {
     };
   }
 
-  iram.tock   (tphase, cpu_to_bus, dma_to_bus);
-  mmu.tock    (tphase, cpu_to_bus, dma_to_bus);
-  vram.tock   (tphase, cpu_to_bus, dma_to_bus, ppu_to_vram);
+  iram.tock   (tcycle, cpu_to_bus, dma_to_bus);
+  mmu.tock    (tcycle, cpu_to_bus, dma_to_bus);
+  vram.tock   (tcycle, cpu_to_bus, dma_to_bus, ppu_to_vram);
 
   dma_to_oam = {
     uint16_t(ADDR_OAM_BEGIN + dma_count_b),
@@ -265,14 +265,14 @@ void Gameboy::tock() {
   };
   if (dma_mode_b == DMA_NONE) dma_to_oam = {};
 
-  oam.tock    (tphase, cpu_to_bus, dma_to_oam, ppu_to_oam);
+  oam.tock    (tcycle, cpu_to_bus, dma_to_oam, ppu_to_oam);
 
-  buttons.tock(tphase, cpu_to_bus);
-  serial.tock (tphase, cpu_to_bus);
-  zram.tock   (tphase, cpu_to_bus);
-  spu.tock    (tphase, cpu_to_bus);
-  timer.tock  (tphase, cpu_to_bus);
-  ppu.tock    (tphase, cpu_to_bus, vram_to_ppu, oam_to_ppu);
+  buttons.tock(tcycle, cpu_to_bus);
+  serial.tock (tcycle, cpu_to_bus);
+  zram.tock   (tcycle, cpu_to_bus);
+  spu.tock    (tcycle, cpu_to_bus);
+  timer.tock  (tcycle, cpu_to_bus);
+  ppu.tock    (tcycle, cpu_to_bus, vram_to_ppu, oam_to_ppu);
 
   intf = intf_;
   imask = imask_;

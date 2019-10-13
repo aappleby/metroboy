@@ -12,8 +12,8 @@ Bus Buttons::tick() const {
   return buttons_to_bus;
 }
 
-void Buttons::tock(int tphase_, Bus bus_to_buttons_) {
-  tphase = tphase_;
+void Buttons::tock(int tcycle_, Bus bus_to_buttons_) {
+  tphase = tcycle_ & 3;
   bus_to_buttons = bus_to_buttons_;
   buttons_to_bus = {};
 

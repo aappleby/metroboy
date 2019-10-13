@@ -25,8 +25,8 @@ struct PPU {
   };
 
   void reset(bool run_bootrom, int new_model);
-  Out  tick(int tphase) const;
-  void tock(int tphase_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_);
+  Out  tick(int tcycle_) const;
+  void tock(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_);
   void dump(std::string& out) const;
 
   uint8_t get_stat()       const { return stat; }

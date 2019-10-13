@@ -14,8 +14,8 @@ Bus ZRAM::tick() const {
   return zram_to_bus;
 }
 
-void ZRAM::tock(int tphase_, Bus bus_to_zram_) {
-  tphase = tphase_;
+void ZRAM::tock(int tcycle_, Bus bus_to_zram_) {
+  tphase = tcycle_ & 3;
   bus_to_zram = bus_to_zram_;
   zram_to_bus = {};
 

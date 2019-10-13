@@ -17,8 +17,8 @@ IRAM::Out IRAM::tick() const {
   };
 }
 
-void IRAM::tock(int tphase_, Bus bus_to_iram_, Bus dma_to_iram_) {
-  tphase = tphase_;
+void IRAM::tock(int tcycle_, Bus bus_to_iram_, Bus dma_to_iram_) {
+  tphase = tcycle_ & 3;
   bus_to_iram = bus_to_iram_;
   dma_to_iram = dma_to_iram_;
   iram_to_bus = {};

@@ -13,7 +13,7 @@ struct VRAM {
 
   void  reset();
   Out   tick() const;
-  void  tock(int tphase_, Bus bus_to_vram_, Bus dma_to_vram_, Bus ppu_to_vram_);
+  void  tock(int tcycle_, Bus bus_to_vram_, Bus dma_to_vram_, Bus ppu_to_vram_);
   void  dump(std::string& d);
 
   const uint8_t* get_ram() const { return ram; }

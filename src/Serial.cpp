@@ -16,8 +16,8 @@ Bus Serial::tick() const {
   return serial_to_bus;
 }
 
-void Serial::tock(int tphase_, Bus bus_to_serial_) {
-  tphase = tphase_;
+void Serial::tock(int tcycle_, Bus bus_to_serial_) {
+  tphase = tcycle_ & 3;
   bus_to_serial = bus_to_serial_;
   serial_to_bus = {};
 

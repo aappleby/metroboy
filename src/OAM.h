@@ -12,7 +12,7 @@ struct OAM {
 
   void reset();
   Out  tick() const;
-  void tock(int tphase_, const Bus bus_to_oam_, Bus dma_to_oam_, Bus ppu_to_oam_);
+  void tock(int tcycle_, const Bus bus_to_oam_, Bus dma_to_oam_, Bus ppu_to_oam_);
   void dump(std::string& out) const;
 
   const uint8_t* get() const { return (uint8_t*)ram; }

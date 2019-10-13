@@ -17,8 +17,8 @@ OAM::Out OAM::tick() const {
   };
 }
 
-void OAM::tock(int tphase_, const Bus bus_to_oam_, Bus dma_to_oam_, Bus ppu_to_oam_) {
-  tphase = tphase_;
+void OAM::tock(int tcycle_, const Bus bus_to_oam_, Bus dma_to_oam_, Bus ppu_to_oam_) {
+  tphase = tcycle_ & 3;
   bus_to_oam = bus_to_oam_;
   dma_to_oam = dma_to_oam_;
   ppu_to_oam = ppu_to_oam_;

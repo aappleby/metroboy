@@ -57,8 +57,8 @@ MMU::Out MMU::tick() const {
   };
 }
 
-void MMU::tock(int tphase_, Bus bus_to_mmu_, Bus dma_to_mmu_) {
-  tphase = tphase_;
+void MMU::tock(int tcycle_, Bus bus_to_mmu_, Bus dma_to_mmu_) {
+  tphase = tcycle_ & 3;
   bus_to_mmu = bus_to_mmu_;
   dma_to_mmu = dma_to_mmu_;
   mmu_to_bus = {};

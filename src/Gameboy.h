@@ -100,7 +100,7 @@ private:
   SPU spu;
 
   int model;
-  int64_t tcycle;
+  int tcycle;
   uint32_t trace_val;
 
   DMAMode  dma_mode_x;

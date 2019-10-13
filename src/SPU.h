@@ -8,7 +8,7 @@ struct SPU {
   Bus  tick() const;
   sample_t get_l() const { return out_l; }
   sample_t get_r() const { return out_r; }
-  void tock(int tphase_, Bus cpu_in_);
+  void tock(int tcycle_, Bus cpu_in_);
 
   void  dump(std::string& out) const;
   const uint8_t* get_wave() const { return s3_wave; }

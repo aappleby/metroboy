@@ -79,7 +79,7 @@ void PPU::reset(bool run_bootrom, int /*new_model*/) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-PPU::Out PPU::tick(int /*tphase*/) const {
+PPU::Out PPU::tick(int /*tcycle_*/) const {
   //-----------------------------------
   // OAM/VRAM address generator
 
@@ -174,13 +174,13 @@ PPU::Out PPU::tick(int /*tphase*/) const {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int tphase_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) {
+void PPU::tock(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) {
   if ((lcdc & FLAG_LCD_ON) == 0) {
-    this->tock_lcdoff(tphase_, bus_to_ppu_, vram_to_ppu_, oam_to_ppu_);
+    this->tock_lcdoff(tcycle_, bus_to_ppu_, vram_to_ppu_, oam_to_ppu_);
     return;
   }
 
-  tphase = tphase_;
+  tphase = tcycle_ & 3;
   bus_to_ppu = bus_to_ppu_;
   vram_to_ppu = vram_to_ppu_;
   oam_to_ppu = oam_to_ppu_;
@@ -628,8 +628,8 @@ void PPU::tock(int tphase_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) 
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_lcdoff(int tphase_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) {
-  tphase = tphase_;
+void PPU::tock_lcdoff(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) {
+  tphase = tcycle_ & 3;
   bus_to_ppu = bus_to_ppu_;
   vram_to_ppu = vram_to_ppu_;
   oam_to_ppu = oam_to_ppu_;

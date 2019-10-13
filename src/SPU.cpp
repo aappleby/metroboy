@@ -43,8 +43,8 @@ Bus SPU::tick() const {
   return cpu_out;
 }
 
-void SPU::tock(int tphase_, Bus cpu_in_) {
-  tphase = tphase_;
+void SPU::tock(int tcycle_, Bus cpu_in_) {
+  tphase = tcycle_ & 3;
   cpu_in = cpu_in_;
 
   bool sound_on = (nr52 & 0x80);

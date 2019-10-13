@@ -6,7 +6,7 @@
 struct ZRAM {
   void reset();
   Bus  tick() const;
-  void tock(int tphase_, Bus bus_to_zram_);
+  void tock(int tcycle_, Bus bus_to_zram_);
   void dump(std::string& d);
 
   const uint8_t* get() const { return ram; }

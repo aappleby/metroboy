@@ -5,7 +5,7 @@ struct Buttons {
 
   void reset();
   Bus  tick() const;
-  void tock(int tphase_, Bus bus_to_buttons_);
+  void tock(int tcycle_, Bus bus_to_buttons_);
   void dump(std::string& d) const;
 
   uint8_t get() const { return val; }

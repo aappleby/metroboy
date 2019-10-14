@@ -48,14 +48,14 @@ bool OAM_A_CS;
 bool OAM_B_CS;
 
 //----------
+// sprite index bus
 
-bool WEZA;
-bool WUCO;
-bool WYDA;
-bool ZYSU;
-bool WYSE;
-bool WUZY;
-//bool WEFE;
+extern bool WEZA;
+extern bool WUCO;
+extern bool WYDA;
+extern bool ZYSU;
+extern bool WYSE;
+extern bool WUZY;
 
 //----------
 // registers

@@ -2,26 +2,35 @@
 
 #include <stdint.h>
 
-inline bool nor  (bool a, bool b)                 { return !(a || b); }
-inline bool nor  (bool a, bool b, bool c)         { return !(a || b || c); }
-inline bool nor  (bool a, bool b, bool c, bool d) { return !(a || b || c || d); }
-inline bool nand (bool a, bool b)                 { return !(a && b); }
-inline bool nand (bool a, bool b, bool c)         { return !(a && b && c); }
-inline bool nand (bool a, bool b, bool c, bool d) { return !(a && b && c && d); }
-inline bool or   (bool a, bool b)                 { return (a || b);  }
-inline bool or   (bool a, bool b, bool c)         { return (a || b || c);  }
-inline bool or   (bool a, bool b, bool c, bool d) { return (a || b || c || d);  }
-inline bool and  (bool a, bool b)                 { return (a && b);  }
-inline bool and  (bool a, bool b, bool c)         { return (a && b && c);  }
-inline bool and  (bool a, bool b, bool c, bool d) { return (a && b && c && d);  }
-inline bool not  (bool a)         { return !a; }
-inline bool mux2 (bool m, bool a, bool b)         { return m ? a : b; }
+inline bool and  (bool a, bool b)                         { return (a && b);  }
+inline bool and  (bool a, bool b, bool c)                 { return (a && b && c);  }
+inline bool and  (bool a, bool b, bool c, bool d)         { return (a && b && c && d);  }
+
+inline bool or   (bool a, bool b)                         { return (a || b);  }
+inline bool or   (bool a, bool b, bool c)                 { return (a || b || c);  }
+inline bool or   (bool a, bool b, bool c, bool d)         { return (a || b || c || d);  }
+
+inline bool xor  (bool a, bool b)                         { return (a ^ b); }
+
+inline bool nor  (bool a, bool b)                         { return !(a || b); }
+inline bool nor  (bool a, bool b, bool c)                 { return !(a || b || c); }
+inline bool nor  (bool a, bool b, bool c, bool d)         { return !(a || b || c || d); }
+
+inline bool nand (bool a, bool b)                         { return !(a && b); }
+inline bool nand (bool a, bool b, bool c)                 { return !(a && b && c); }
+inline bool nand (bool a, bool b, bool c, bool d)         { return !(a && b && c && d); }
+inline bool nand (bool a, bool b, bool c, bool d, bool e) { return !(a && b && c && d && e); }
+inline bool nand (bool a, bool b, bool c, bool d, bool e, bool f) { return !(a && b && c && d && e && f); }
+
+inline bool not  (bool a)                                 { return !a; }
+inline bool mux2 (bool m, bool a, bool b)                 { return m ? a : b; }
 
 // definitely not right...
-inline bool unk2 (bool a, bool b)                 { return a ^ b; }
-inline bool unk3 (bool a, bool b, bool c)         { return a ^ b ^ c; }
+inline bool unk2 (bool a, bool b)                         { return a ^ b; }
+inline bool unk3 (bool a, bool b, bool c)                 { return a ^ b ^ c; }
+inline bool unk1 (bool a, bool b, bool c, bool d)         { return a ^ b ^ c ^ d; }
 
-// probably not right
+// maybe not right
 inline bool amux2(bool a0, bool b0, bool a1, bool b1) {
   return (a0 & b0) | (a1 & b1);
 }
@@ -174,4 +183,21 @@ extern bool OAM_A4;
 extern bool OAM_A5;
 extern bool OAM_A6;
 extern bool OAM_A7;
+
+extern bool V0;
+extern bool V1;
+extern bool V2;
+extern bool V3;
+extern bool V4;
+extern bool V5;
+extern bool V6;
+extern bool V7;
+
+// sprite index bus
+extern bool WEZA;
+extern bool WUCO;
+extern bool WYDA;
+extern bool ZYSU;
+extern bool WYSE;
+extern bool WUZY;
 

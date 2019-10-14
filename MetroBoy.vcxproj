@@ -147,6 +147,9 @@
     <ClCompile Include="src\PPU.cpp" />
     <ClCompile Include="src\Schematics.cpp" />
     <ClCompile Include="src\Serial.cpp" />
+    <ClCompile Include="src\SpriteControl_sch.cpp" />
+    <ClCompile Include="src\SpriteStore_sch.cpp" />
+    <ClCompile Include="src\SpriteXMatcher_sch.cpp" />
     <ClCompile Include="src\SPU.cpp" />
     <ClCompile Include="src\test_codegen.cpp" />
     <ClCompile Include="src\test_micro.cpp" />

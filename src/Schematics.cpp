@@ -9,6 +9,10 @@ bool XYMU;
 bool FROM_CPU5;
 bool CLK1;
 bool RESET6;
+bool CEHA;
+bool BYVA;
+bool WUTY;
+
 
 bool FF46;
 bool FF47;
@@ -193,6 +197,22 @@ bool OAM_A4;
 bool OAM_A5;
 bool OAM_A6;
 bool OAM_A7;
+
+bool V0;
+bool V1;
+bool V2;
+bool V3;
+bool V4;
+bool V5;
+bool V6;
+bool V7;
+
+bool WEZA;
+bool WUCO;
+bool WYDA;
+bool ZYSU;
+bool WYSE;
+bool WUZY;
 
 #if 0
 

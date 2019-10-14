@@ -297,7 +297,7 @@ void Z80::tock(int tphase_, Bus bus_to_cpu_, uint8_t imask_, uint8_t intf_) {
 
   cpu_to_bus.addr = addr;
   cpu_to_bus.data = data_out;
-  cpu_to_bus.read = true;
+  cpu_to_bus.read = !((bool)write);
   cpu_to_bus.write = (bool)write;
   out_int_ack = int_ack;
 }

@@ -140,6 +140,7 @@
     <ClCompile Include="src\MMU.cpp" />
     <ClCompile Include="src\OAM.cpp" />
     <ClCompile Include="src\PPU.cpp" />
+    <ClCompile Include="src\Schematics.cpp" />
     <ClCompile Include="src\Serial.cpp" />
     <ClCompile Include="src\SPU.cpp" />
     <ClCompile Include="src\test_codegen.cpp" />

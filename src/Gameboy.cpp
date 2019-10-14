@@ -64,7 +64,6 @@ void Gameboy::tock() {
   tcycle++;
   int tphase = tcycle & 3;
   cpu_to_bus = z80.tick();
-  gb_to_bus = {};
 
   const auto iram_out = iram.tick();
   const auto mmu_out = mmu.tick();
@@ -146,33 +145,6 @@ void Gameboy::tock() {
   }
 
   if (tphase == 0) intf_ &= ~z80.get_int_ack();
-
-  //-----------------------------------
-  // Internal read/write for intf/imask
-
-  if (cpu_to_bus.write) {
-    if (cpu_to_bus.addr == ADDR_IF) {
-      intf_ = (uint8_t)cpu_to_bus.data | 0b11100000;
-    }
-    if (cpu_to_bus.addr == ADDR_IE) {
-      imask_ = (uint8_t)cpu_to_bus.data;
-    }
-  }
-  else if (cpu_to_bus.read) {
-    if (cpu_to_bus.addr == ADDR_IF) { 
-      // FIXME intf or intf_?
-      gb_to_bus.addr = cpu_to_bus.addr;
-      gb_to_bus.data = 0b11100000 | intf_;
-      gb_to_bus.read = true;
-    }
-    if (cpu_to_bus.addr == ADDR_IE) {
-      // FIXME imask or imask_?
-      gb_to_bus.addr = cpu_to_bus.addr;
-      gb_to_bus.data = imask_;
-      gb_to_bus.read = true;
-    }
-  }
-
 
   //-----------------------------------
   // Z80 bus mux & tock
@@ -276,6 +248,33 @@ void Gameboy::tock() {
 
   intf = intf_;
   imask = imask_;
+
+  //-----------------------------------
+  // Internal read/write for intf/imask
+
+  gb_to_bus = {};
+  if (cpu_to_bus.write) {
+    if (cpu_to_bus.addr == ADDR_IF) {
+      intf_ = (uint8_t)cpu_to_bus.data | 0b11100000;
+    }
+    if (cpu_to_bus.addr == ADDR_IE) {
+      imask_ = (uint8_t)cpu_to_bus.data;
+    }
+  }
+  else if (cpu_to_bus.read) {
+    if (cpu_to_bus.addr == ADDR_IF) { 
+      // FIXME intf or intf_?
+      gb_to_bus.addr = cpu_to_bus.addr;
+      gb_to_bus.data = 0b11100000 | intf_;
+      gb_to_bus.read = true;
+    }
+    if (cpu_to_bus.addr == ADDR_IE) {
+      // FIXME imask or imask_?
+      gb_to_bus.addr = cpu_to_bus.addr;
+      gb_to_bus.data = imask_;
+      gb_to_bus.read = true;
+    }
+  }
 
   //----------
 

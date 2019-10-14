@@ -58,7 +58,11 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  load("microtests/build/dmg", "poweron_000_ly");
+  //load("microtests/build/dmg", "just_timer");
+  //load("microtests/build/dmg", "timer_tima_phase_f");
+  //load("microtests/build/dmg", "poweron_000_div");
+
+  load("microtests/build/dmg", "timer_div_phase_d");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;

@@ -15,6 +15,41 @@ static const std::string micro_tests[] = {
   "poweron_000_div",
   "poweron_004_div",
   "poweron_005_div",
+  "timer_div_phase_c",
+  "timer_div_phase_d",
+
+  "timer_tima_write_a",
+  "timer_tima_write_b",
+  "timer_tima_write_c",
+  "timer_tima_write_d",
+  "timer_tima_write_e",
+  "timer_tima_write_f",
+
+  "timer_tma_load_a",
+  "timer_tma_load_b",
+  "timer_tma_load_c",
+
+  "timer_tma_write_a",
+  "timer_tma_write_b",
+
+  "timer_tima_phase_a",
+  "timer_tima_phase_b",
+  "timer_tima_phase_c",
+  "timer_tima_phase_d",
+  "timer_tima_phase_e",
+  "timer_tima_phase_f",
+  "timer_tima_phase_g",
+  "timer_tima_phase_h",
+  "timer_tima_phase_i",
+  "timer_tima_phase_j",
+
+  //"break",
+
+  "timer_int_inc_sled",
+  "timer_int_inc_sled_a",
+  "timer_int_inc_sled_b",
+
+  "break",
 
   "poweron_000_ly",
   "poweron_119_ly",
@@ -64,30 +99,12 @@ static const std::string micro_tests[] = {
   "poweron_183_vram",
   "poweron_184_vram",
 
-  "break",
+  //"break",
 
   "poweron_oam_read_a",
   "poweron_oam_read_b",
   "poweron_oam_read_c",
   "poweron_oam_read_d",
-
-  "break",
-
-  "timer_div_phase_c",
-  "timer_div_phase_d",
-
-  "break",
-
-  "timer_tima_phase_a",
-  "timer_tima_phase_b",
-  "timer_tima_phase_c",
-  "timer_tima_phase_d",
-  "timer_tima_phase_e",
-  "timer_tima_phase_f",
-  "timer_tima_phase_g",
-  "timer_tima_phase_h",
-  "timer_tima_phase_i",
-  "timer_tima_phase_j",
 
   "break",
 
@@ -134,24 +151,6 @@ static const std::string micro_tests[] = {
   "lcdon_to_oam_int_l2",
 
   "break",
-
-  "timer_int_inc_sled",
-  "timer_int_inc_sled_a",
-  "timer_int_inc_sled_b",
-
-  "timer_tima_write_a",
-  "timer_tima_write_b",
-  "timer_tima_write_c",
-  "timer_tima_write_d",
-  "timer_tima_write_e",
-  "timer_tima_write_f",
-
-  "timer_tma_load_a",
-  "timer_tma_load_b",
-  "timer_tma_load_c",
-
-  "timer_tma_write_a",
-  "timer_tma_write_b",
 
   "-----",
   "lcdon_to_hblank_int_l0",

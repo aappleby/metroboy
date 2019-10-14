@@ -302,8 +302,7 @@ void SPU::tock(int tcycle_, Bus cpu_in_) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_read(int tphase_, Bus cpu_in_) {
-  if (tphase_ != 0) return;
+void SPU::bus_read(int /*tphase_*/, Bus cpu_in_) {
   if (!cpu_in_.read) return;
 
   cpu_out = {};
@@ -368,8 +367,7 @@ void SPU::bus_read(int tphase_, Bus cpu_in_) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_write(int tphase_, Bus cpu_in_) {
-  if (tphase_ != 2) return;
+void SPU::bus_write(int /*tphase_*/, Bus cpu_in_) {
   if (!cpu_in_.write) return;
   if (cpu_in_.addr < 0xFF10) return;
   if (cpu_in_.addr > 0xFF3F) return;

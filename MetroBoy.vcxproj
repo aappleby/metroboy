@@ -115,6 +115,7 @@
     <ClInclude Include="src\OAM.h" />
     <ClInclude Include="src\Opcodes.h" />
     <ClInclude Include="src\PPU.h" />
+    <ClInclude Include="src\Schematics.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\SPU.h" />
     <ClInclude Include="src\test_codegen.h" />
@@ -134,11 +135,13 @@
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Buttons.cpp" />
     <ClCompile Include="src\Constants.cpp" />
+    <ClCompile Include="src\DMA_sch.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\MMU.cpp" />
     <ClCompile Include="src\OAM.cpp" />
+    <ClCompile Include="src\OAM_sch.cpp" />
     <ClCompile Include="src\PPU.cpp" />
     <ClCompile Include="src\Schematics.cpp" />
     <ClCompile Include="src\Serial.cpp" />

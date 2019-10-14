@@ -1,47 +1,19 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
-#include <stdint.h>
+#include "Schematics.h"
 
-inline bool nor  (bool a, bool b)                 { return !(a || b); }
-inline bool nor  (bool a, bool b, bool c)         { return !(a || b || c); }
-inline bool nor  (bool a, bool b, bool c, bool d) { return !(a || b || c || d); }
-inline bool nand (bool a, bool b)                 { return !(a && b); }
-inline bool nand (bool a, bool b, bool c)         { return !(a && b && c); }
-inline bool nand (bool a, bool b, bool c, bool d) { return !(a && b && c && d); }
-inline bool or   (bool a, bool b)                 { return (a || b);  }
-inline bool or   (bool a, bool b, bool c)         { return (a || b || c);  }
-inline bool or   (bool a, bool b, bool c, bool d) { return (a || b || c || d);  }
-inline bool and  (bool a, bool b)                 { return (a && b);  }
-inline bool and  (bool a, bool b, bool c)         { return (a && b && c);  }
-inline bool and  (bool a, bool b, bool c, bool d) { return (a && b && c && d);  }
-inline bool not  (bool a)         { return !a; }
-inline bool mux2 (bool m, bool a, bool b)         { return m ? a : b; }
-
-// definitely not right...
-inline bool un3  (bool a, bool b, bool c)         { return a ^ b ^ c; }
-
-void pack(uint8_t& x, bool d0, bool d1, bool d2, bool d3, bool d4, bool d5, bool d6, bool d7) {
-  x = (d0 << 0) | (d1 << 1) | (d2 << 2) | (d3 << 3) | (d4 << 4) | (d5 << 5) | (d6 << 6) | (d7 << 7);
-}
-
-void unpack(uint8_t x, bool& d0, bool& d1, bool& d2, bool& d3, bool& d4, bool& d5, bool& d6, bool& d7) {
-  d0 = x & 0x01;
-  d1 = x & 0x02;
-  d2 = x & 0x04;
-  d3 = x & 0x08;
-  d4 = x & 0x10;
-  d5 = x & 0x20;
-  d6 = x & 0x40;
-  d7 = x & 0x80;
-}
+extern bool MATU_Q;
+extern bool MOPA_PHI;
+extern bool P10_B;
+extern bool SARO;
+extern bool TUVO;
+extern bool VRAM_TO_OAM;
+extern bool XYMU;
+extern bool LUMA;
 
 //----------
 // mystery signals
 
-bool MATU_Q;
-bool MOPA_PHI;
-bool TUVO;
-bool SARO;
 bool TACU;
 bool ACYL;
 bool XYSO;
@@ -54,16 +26,31 @@ bool CPU_RD_SYNC;
 bool AFAS;
 bool MWR_IN;
 bool MCS_IN;
-bool XYMU;
-bool VRAM_TO_OAM;
 bool MYMA;
 bool LENA;
 bool BEDO;
-bool P10_B;
 bool T1N_T2;
 bool RORU;
 bool FEXXFFXXN;
 bool LULA;
+bool LEKO;
+bool TYVY;
+bool NETA;
+bool PORE;
+bool POTU;
+bool XUHA;
+bool VYNO;
+bool VUJO;
+bool VYMU;
+bool FF40_D4;
+bool PYJU;
+bool POWY;
+bool POJU;
+bool PULO;
+bool POXA;
+bool PYZO;
+bool POZO;
+bool RAWU;
 
 //----------
 
@@ -73,105 +60,8 @@ bool MCS_A;
 bool MOE_A;
 bool MWR_A;
 bool MWR_D;
-
 bool MD_B;
 
-bool A0;
-bool A1;
-bool A2;
-bool A3;
-bool A4;
-bool A5;
-bool A6;
-bool A7;
-bool A8;
-bool A9;
-bool A10;
-bool A11;
-bool A12;
-bool A13;
-bool A14;
-bool A15;
-
-bool D0_IN;
-bool D1_IN;
-bool D2_IN;
-bool D3_IN;
-bool D4_IN;
-bool D5_IN;
-bool D6_IN;
-bool D7_IN;
-
-bool MD0_A;
-bool MD3_A;
-bool MD4_A;
-bool MD7_A;
-bool MD6_A;
-bool MD1_A;
-bool MD5_A;
-bool MD2_A;
-
-bool MD0_IN;
-bool MD1_IN;
-bool MD2_IN;
-bool MD3_IN;
-bool MD4_IN;
-bool MD5_IN;
-bool MD6_IN;
-bool MD7_IN;
-
-bool MD0_OUT;
-bool MD1_OUT;
-bool MD2_OUT;
-bool MD3_OUT;
-bool MD4_OUT;
-bool MD5_OUT;
-bool MD6_OUT;
-bool MD7_OUT;
-
-//----------
-// tri-buses
-
-bool D0 = 0;
-bool D1 = 0;
-bool D2 = 0;
-bool D3 = 0;
-bool D4 = 0;
-bool D5 = 0;
-bool D6 = 0;
-bool D7 = 0;
-
-bool D0_A = 0;
-bool D1_A = 0;
-bool D2_A = 0;
-bool D3_A = 0;
-bool D4_A = 0;
-bool D5_A = 0;
-bool D6_A = 0;
-bool D7_A = 0;
-
-bool MD0 = 0;
-bool MD1 = 0;
-bool MD2 = 0;
-bool MD3 = 0;
-bool MD4 = 0;
-bool MD5 = 0;
-bool MD6 = 0;
-bool MD7 = 0;
-
-bool MA0 = 0;
-bool MA1 = 0;
-bool MA2 = 0;
-bool MA3 = 0;
-bool MA4 = 0;
-bool MA5 = 0;
-bool MA7 = 0;
-bool MA8 = 0;
-bool MA9 = 0;
-bool MA6 = 0;
-bool MA10 = 0;
-bool MA11 = 0;
-bool MA12 = 0;
 
 //----------
 // registers
@@ -202,7 +92,7 @@ void tock_vram() {
   D6_A = RAFY;
   D0_A = RUXA;
 
-  bool CUFE = un3(SARO, MATU_Q, MOPA_PHI);
+  bool CUFE = unk3(SARO, MATU_Q, MOPA_PHI);
   bool VAPE = and(TACU, TUVO);
   bool AVER = and(ACYL, XYSO);
   bool XUJY = not(VAPE);
@@ -459,10 +349,130 @@ void tock_vram() {
   MD5_A = REVU;
   MD2_A = RAZO;
 
+  bool CEDE = not(LUMA);
+  bool SYZO = not(D7_IN);
+  bool TUNE = not(D1_IN);
+  bool SERA = not(D2_IN);
+  bool SYSA = not(D4_IN);
+  bool TUBE = not(D6_IN);
+  bool SUGY = not(D5_IN);
+  bool RALO = not(D0_IN);
+  bool TENU = not(D3_IN);
+
+  bool BAPE = not(SYZO);
+  bool BYPY = not(SYZO);
+  bool BOMO = not(TUNE);
+  bool BUBO = not(TUNE);
+  bool BASA = not(SERA);
+  bool BETU = not(SERA);
+  bool BUMA = not(SYSA);
+  bool BAXU = not(SYSA);
+  bool BASY = not(TUBE);
+  bool BYNY = not(TUBE);
+  bool BUPY = not(SUGY);
+  bool BUHU = not(SUGY);
+  bool WASA = not(RALO);
+  bool WEJO = not(RALO);
+  bool CAKO = not(TENU);
+  bool CYME = not(TENU);
+
+  if (CEDE) {
+    OAM_B_D7 = BAPE;
+    OAM_A_D7 = BYPY;
+    OAM_B_D1 = BOMO;
+    OAM_A_D1 = BUBO;
+    OAM_B_D2 = BASA;
+    OAM_A_D2 = BETU;
+    OAM_B_D4 = BUMA;
+    OAM_A_D4 = BAXU;
+    OAM_B_D6 = BASY;
+    OAM_A_D6 = BYNY;
+    OAM_B_D5 = BUPY;
+    OAM_A_D5 = BUHU;
+    OAM_B_D0 = WASA;
+    OAM_A_D0 = WEJO;
+    OAM_B_D3 = CAKO;
+    OAM_A_D3 = CYME;
+  }
+
+  bool TYVU = nand(SERE, LEKO);
+  bool SEBY = not(TYVY);
+
+  bool RORO = not(MD5);
+  bool RERY = not(MD0);
+  bool RONA = not(MD2);
+  bool RUNA = not(MD1);
+  bool RUNO = not(MD3);
+  bool SAME = not(MD7);
+  bool SANA = not(MD4);
+  bool RABO = not(MD6);
+
+  bool REXU = not(RORO);
+  bool RUGA = not(RERY);
+  bool RYBU = not(RONA);
+  bool ROTA = not(RUNA);
+  bool RAJU = not(RUNO);
+  bool TOKU = not(SAME);
+  bool TYJA = not(SANA);
+  bool RUPY = not(RABO);
+
+  if (SEBY) {
+    D5 = REXU;
+    D0 = RUGA;
+    D2 = RYBU;
+    D1 = ROTA;
+    D3 = RAJU;
+    D7 = TOKU;
+    D4 = TYJA;
+    D6 = RUPY;
+  }
+
+  bool XUCY = nand(NETA, PORE);
+  bool XEZE = nand(POTU, PORE);
+  bool WUKO = not(XEZE);
+
+  bool XONU = not(XUHA);
+  bool WUDO = not(VYNO);
+  bool WAWE = not(VUJO);
+  bool WOLU = not(VYMU);
+
+  if (XUCY) {
+    MA0 = XONU;
+    MA1 = WUDO;
+    MA2 = WAWE;
+    MA3 = WOLU;
+  }
+
+  bool VUZA = nor(FF40_D4, PYJU);
+
+  bool VURY = not(VUZA);
+  bool TOBO = not(PYJU);
+  bool SUVO = not(POWY);
+  bool RESO = not(POJU);
+  bool ROHA = not(PULO);
+  bool RUSA = not(POXA);
+  bool VEJY = not(PYZO);
+  bool SEZU = not(POZO);
+  bool VAPY = not(RAWU);
+
+  if (NETA) {
+    MA12 = VURY;
+    MA11 = TOBO;
+    MA10 = SUVO;
+    MA9 = RESO;
+    MA8 = ROHA;
+    MA7 = RUSA;
+    MA6 = VEJY;
+    MA5 = SEZU;
+    MA4 = VAPY;
+  }
+
   //----------
   // unsunk signals
 
   (void)COTA;
+  (void)TYVU;
+  (void)WUKO;
 
   //----------
   // registers

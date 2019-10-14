@@ -1,5 +1,148 @@
 #include "Types.h"
 
+// mystery signals 
+bool MATU_Q;
+bool P10_B;
+bool SARO;
+bool TUVO;
+bool XYMU;
+bool FROM_CPU5;
+bool CLK1;
+bool RESET6;
+bool FF46;
+bool PHI_OUTN;
+
+// buses
+
+bool A0;
+bool A1;
+bool A2;
+bool A3;
+bool A4;
+bool A5;
+bool A6;
+bool A7;
+bool A8;
+bool A9;
+bool A10;
+bool A11;
+bool A12;
+bool A13;
+bool A14;
+bool A15;
+
+bool D0;
+bool D1;
+bool D2;
+bool D3;
+bool D4;
+bool D5;
+bool D6;
+bool D7;
+
+bool D0_A;
+bool D1_A;
+bool D2_A;
+bool D3_A;
+bool D4_A;
+bool D5_A;
+bool D6_A;
+bool D7_A;
+
+bool D0_IN;
+bool D1_IN;
+bool D2_IN;
+bool D3_IN;
+bool D4_IN;
+bool D5_IN;
+bool D6_IN;
+bool D7_IN;
+
+bool MD0_A;
+bool MD3_A;
+bool MD4_A;
+bool MD7_A;
+bool MD6_A;
+bool MD1_A;
+bool MD5_A;
+bool MD2_A;
+
+bool MD0_IN;
+bool MD1_IN;
+bool MD2_IN;
+bool MD3_IN;
+bool MD4_IN;
+bool MD5_IN;
+bool MD6_IN;
+bool MD7_IN;
+
+bool MD0_OUT;
+bool MD1_OUT;
+bool MD2_OUT;
+bool MD3_OUT;
+bool MD4_OUT;
+bool MD5_OUT;
+bool MD6_OUT;
+bool MD7_OUT;
+
+bool MD0;
+bool MD1;
+bool MD2;
+bool MD3;
+bool MD4;
+bool MD5;
+bool MD6;
+bool MD7;
+
+bool MA0;
+bool MA1;
+bool MA2;
+bool MA3;
+bool MA4;
+bool MA5;
+bool MA7;
+bool MA8;
+bool MA9;
+bool MA6;
+bool MA10;
+bool MA11;
+bool MA12;
+
+bool OAM_A_D0;
+bool OAM_A_D1;
+bool OAM_A_D2;
+bool OAM_A_D3;
+bool OAM_A_D4;
+bool OAM_A_D5;
+bool OAM_A_D6;
+bool OAM_A_D7;
+
+bool OAM_B_D0;
+bool OAM_B_D1;
+bool OAM_B_D2;
+bool OAM_B_D3;
+bool OAM_B_D4;
+bool OAM_B_D5;
+bool OAM_B_D6;
+bool OAM_B_D7;
+
+bool DMA_A0;
+bool DMA_A1;
+bool DMA_A2;
+bool DMA_A3;
+bool DMA_A4;
+bool DMA_A5;
+bool DMA_A6;
+bool DMA_A7;
+
+bool OAM_A1;
+bool OAM_A2;
+bool OAM_A3;
+bool OAM_A4;
+bool OAM_A5;
+bool OAM_A6;
+bool OAM_A7;
+
 #if 0
 
 #pragma warning(disable : 4100)

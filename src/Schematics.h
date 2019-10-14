@@ -26,6 +26,10 @@ inline bool amux2(bool a0, bool b0, bool a1, bool b1) {
   return (a0 & b0) | (a1 & b1);
 }
 
+inline bool amux4(bool a0, bool b0, bool a1, bool b1, bool a2, bool b2, bool a3, bool b3) {
+  return (a0 & b0) | (a1 & b1) | (a2 & b2) | (a3 & b3);
+}
+
 inline void pack(uint8_t& x, bool d0, bool d1, bool d2, bool d3, bool d4, bool d5, bool d6, bool d7) {
   x = (d0 << 0) | (d1 << 1) | (d2 << 2) | (d3 << 3) | (d4 << 4) | (d5 << 5) | (d6 << 6) | (d7 << 7);
 }

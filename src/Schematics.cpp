@@ -12,7 +12,78 @@ bool RESET6;
 bool FF46;
 bool PHI_OUTN;
 
+bool FF40_D0;
+bool FF40_D1;
+
+bool VAVA3;
+
 // buses
+
+bool SPR_PIX_A_0;
+bool SPR_PIX_A_1;
+bool SPR_PIX_A_2;
+bool SPR_PIX_A_3;
+bool SPR_PIX_A_4;
+bool SPR_PIX_A_5;
+bool SPR_PIX_A_6;
+bool SPR_PIX_A_7;
+
+bool SPR_PIX_B_0;
+bool SPR_PIX_B_1;
+bool SPR_PIX_B_2;
+bool SPR_PIX_B_3;
+bool SPR_PIX_B_4;
+bool SPR_PIX_B_5;
+bool SPR_PIX_B_6;
+bool SPR_PIX_B_7;
+
+bool BG_PIX_A_0;
+bool BG_PIX_A_1;
+bool BG_PIX_A_2;
+bool BG_PIX_A_3;
+bool BG_PIX_A_4;
+bool BG_PIX_A_5;
+bool BG_PIX_A_6;
+bool BG_PIX_A_7;
+
+bool BG_PIX_B_0;
+bool BG_PIX_B_1;
+bool BG_PIX_B_2;
+bool BG_PIX_B_3;
+bool BG_PIX_B_4;
+bool BG_PIX_B_5;
+bool BG_PIX_B_6;
+bool BG_PIX_B_7;
+
+bool OBP0PIXELN;
+bool OBP1PIXELN;
+
+bool BGP_D0;
+bool BGP_D1;
+bool BGP_D2;
+bool BGP_D3;
+bool BGP_D4;
+bool BGP_D5;
+bool BGP_D6;
+bool BGP_D7;
+
+bool OBP0_D0;
+bool OBP0_D1;
+bool OBP0_D2;
+bool OBP0_D3;
+bool OBP0_D4;
+bool OBP0_D5;
+bool OBP0_D6;
+bool OBP0_D7;
+
+bool OBP1_D0;
+bool OBP1_D1;
+bool OBP1_D2;
+bool OBP1_D3;
+bool OBP1_D4;
+bool OBP1_D5;
+bool OBP1_D6;
+bool OBP1_D7;
 
 bool A0;
 bool A1;

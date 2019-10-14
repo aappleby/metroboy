@@ -9,11 +9,18 @@ bool XYMU;
 bool FROM_CPU5;
 bool CLK1;
 bool RESET6;
+
 bool FF46;
+bool FF47;
+bool FF48;
+bool FF49;
+
 bool PHI_OUTN;
 
 bool FF40_D0;
 bool FF40_D1;
+
+
 
 bool VAVA3;
 
@@ -57,33 +64,6 @@ bool BG_PIX_B_7;
 
 bool OBP0PIXELN;
 bool OBP1PIXELN;
-
-bool BGP_D0;
-bool BGP_D1;
-bool BGP_D2;
-bool BGP_D3;
-bool BGP_D4;
-bool BGP_D5;
-bool BGP_D6;
-bool BGP_D7;
-
-bool OBP0_D0;
-bool OBP0_D1;
-bool OBP0_D2;
-bool OBP0_D3;
-bool OBP0_D4;
-bool OBP0_D5;
-bool OBP0_D6;
-bool OBP0_D7;
-
-bool OBP1_D0;
-bool OBP1_D1;
-bool OBP1_D2;
-bool OBP1_D3;
-bool OBP1_D4;
-bool OBP1_D5;
-bool OBP1_D6;
-bool OBP1_D7;
 
 bool A0;
 bool A1;

@@ -20,7 +20,7 @@ uint8_t flip2(uint8_t b) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::reset(bool run_bootrom, int /*new_model*/) {
+void PPU::reset(bool run_bootrom) {
   *this = {};
 
   //----------
@@ -79,7 +79,9 @@ void PPU::reset(bool run_bootrom, int /*new_model*/) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-PPU::Out PPU::tick(int /*tcycle_*/) const {
+PPU::Out PPU::tick(const int tcycle_) const {
+  (void)tcycle_;
+
   //-----------------------------------
   // OAM/VRAM address generator
 
@@ -174,19 +176,67 @@ PPU::Out PPU::tick(int /*tcycle_*/) const {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) {
+void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_) {
+  const int tphase = tcycle_ & 3;
   if ((lcdc & FLAG_LCD_ON) == 0) {
     this->tock_lcdoff(tcycle_, bus_to_ppu_, vram_to_ppu_, oam_to_ppu_);
     return;
   }
 
-  tphase = tcycle_ & 3;
+  tcycle = tcycle_;
   bus_to_ppu = bus_to_ppu_;
   vram_to_ppu = vram_to_ppu_;
   oam_to_ppu = oam_to_ppu_;
 
   ppu_to_vram = {};
   ppu_to_oam = {};
+
+  if (tphase == 0) {
+    uint16_t addr = bus_to_ppu.addr;
+    uint8_t data = (uint8_t)bus_to_ppu.data;
+    bool ack = (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END);
+
+    if (ack && bus_to_ppu.read) {
+      switch (addr) {
+      case ADDR_LCDC: data = lcdc; break;
+      case ADDR_STAT: data = stat; break;
+      case ADDR_SCY:  data = scy; break;
+      case ADDR_SCX:  data = scx; break;
+      case ADDR_LY:   data = ly; break;
+      case ADDR_LYC:  data = lyc; break;
+      case ADDR_DMA:  data = dma; break;
+      case ADDR_BGP:  data = bgp; break;
+      case ADDR_OBP0: data = obp0; break;
+      case ADDR_OBP1: data = obp1; break;
+      case ADDR_WY:   data = wy; break;
+      case ADDR_WX:   data = wx; break;
+      }
+    }
+
+    if (ack && bus_to_ppu.write) {
+      switch (addr) {
+      case ADDR_LCDC: lcdc = data; break;
+      case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
+      case ADDR_SCY:  scy = data;  break;
+      case ADDR_SCX:  scx = data;  break;
+      case ADDR_LY:   ly = data;   break;
+      case ADDR_LYC:  lyc = data;  break;
+      case ADDR_DMA:  dma = data;  break;
+      case ADDR_BGP:  bgp = palettes[0] = data;
+      case ADDR_OBP0: obp0 = palettes[2] = data; break;
+      case ADDR_OBP1: obp1 = palettes[3] = data; break;
+      case ADDR_WY:   wy = data;   break;
+      case ADDR_WX:   wx = data;   break;
+      };
+    }
+
+    ppu_to_bus = {};
+    if (ack) {
+      ppu_to_bus = bus_to_ppu;
+      ppu_to_bus.data = data;
+      ppu_to_bus.ack = true;
+    }
+  }
 
   //----------------------------------------
   // Update state machiney stuff
@@ -244,12 +294,6 @@ void PPU::tock(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) 
   if ((line == 144 && counter >= 4) || (line >= 145)) {
     state = PPU_STATE_VBLANK;
   }
-
-  //-----------------------------------
-  // Bus write
-
-  if (bus_to_ppu.read)  bus_read_early(bus_to_ppu.addr);
-  if (bus_to_ppu.write) bus_write_early(bus_to_ppu.addr, (uint8_t)bus_to_ppu.data);
 
   //-----------------------------------
   // Handle OAM/VRAM reads
@@ -507,9 +551,6 @@ void PPU::tock(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) 
     stat |= state;
   }
 
-  if (bus_to_ppu.read)  bus_read_late(bus_to_ppu.addr);
-  if (bus_to_ppu.write) bus_write_late(bus_to_ppu.addr, (uint8_t)bus_to_ppu.data);
-
   //-----------------------------------
   // lyc_match
 
@@ -628,11 +669,59 @@ void PPU::tock(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) 
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_lcdoff(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_) {
-  tphase = tcycle_ & 3;
+void PPU::tock_lcdoff(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_) {
+  const int tphase = tcycle_ & 3;
+  tcycle = tcycle_;
   bus_to_ppu = bus_to_ppu_;
   vram_to_ppu = vram_to_ppu_;
   oam_to_ppu = oam_to_ppu_;
+
+  if (tphase == 0) {
+    uint16_t addr = bus_to_ppu.addr;
+    uint8_t data = (uint8_t)bus_to_ppu.data;
+    bool ack = (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END);
+
+    if (ack && bus_to_ppu.read) {
+      switch (addr) {
+      case ADDR_LCDC: data = lcdc; break;
+      case ADDR_STAT: data = stat; break;
+      case ADDR_SCY:  data = scy; break;
+      case ADDR_SCX:  data = scx; break;
+      case ADDR_LY:   data = ly; break;
+      case ADDR_LYC:  data = lyc; break;
+      case ADDR_DMA:  data = dma; break;
+      case ADDR_BGP:  data = bgp; break;
+      case ADDR_OBP0: data = obp0; break;
+      case ADDR_OBP1: data = obp1; break;
+      case ADDR_WY:   data = wy; break;
+      case ADDR_WX:   data = wx; break;
+      }
+    }
+
+    if (ack && bus_to_ppu.write) {
+      switch (addr) {
+      case ADDR_LCDC: lcdc = data; break;
+      case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
+      case ADDR_SCY:  scy = data;  break;
+      case ADDR_SCX:  scx = data;  break;
+      case ADDR_LY:   ly = data;   break;
+      case ADDR_LYC:  lyc = data;  break;
+      case ADDR_DMA:  dma = data;  break;
+      case ADDR_BGP:  bgp = palettes[0] = data;
+      case ADDR_OBP0: obp0 = palettes[2] = data; break;
+      case ADDR_OBP1: obp1 = palettes[3] = data; break;
+      case ADDR_WY:   wy = data;   break;
+      case ADDR_WX:   wx = data;   break;
+      };
+    }
+
+    ppu_to_bus = {};
+    if (ack) {
+      ppu_to_bus = bus_to_ppu;
+      ppu_to_bus.data = data;
+      ppu_to_bus.ack = true;
+    }
+  }
 
   counter = 4;
   counter_delay1 = 3;
@@ -643,9 +732,6 @@ void PPU::tock_lcdoff(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to
   line_delay1 = 0;
   line_delay2 = 0;
   line_delay3 = 0;
-
-  if (tphase == 0 && bus_to_ppu_.read)  bus_read_early(bus_to_ppu_.addr);
-  if (tphase == 2 && bus_to_ppu_.write) bus_write_early(bus_to_ppu_.addr, (uint8_t)bus_to_ppu_.data);
 
   ly = 0;
   frame_count = 0;
@@ -667,10 +753,6 @@ void PPU::tock_lcdoff(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to
   state = PPU_STATE_HBLANK;
   stat &= 0b11111100;
 
-  if (bus_to_ppu_.read)  bus_read_late(bus_to_ppu_.addr);
-  if (bus_to_ppu_.write) bus_write_late(bus_to_ppu_.addr, (uint8_t)bus_to_ppu_.data);
-
-  ppu_to_bus = {};
   ppu_to_vram = {};
   ppu_to_oam = {};
   stat1 = 0;
@@ -794,52 +876,7 @@ void PPU::emit_pixel(int /*tphase*/) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::bus_read_early(uint16_t /*addr*/) {
-  /*
-  ppu_to_bus = {};
-  if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
-    switch (addr) {
-    case ADDR_LCDC: out.addr = addr; out.read = 1; out.data = lcdc; break;
-    case ADDR_STAT: out.addr = addr; out.read = 1; out.data = stat; break;
-    case ADDR_SCY:  out.addr = addr; out.read = 1; out.data = scy; break;
-    case ADDR_SCX:  out.addr = addr; out.read = 1; out.data = scx; break;
-    case ADDR_LY:   out.addr = addr; out.read = 1; out.data = ly; break;
-    case ADDR_LYC:  out.addr = addr; out.read = 1; out.data = lyc; break;
-    case ADDR_DMA:  out.addr = addr; out.read = 1; out.data = dma; break;
-    case ADDR_BGP:  out.addr = addr; out.read = 1; out.data = bgp; break;
-    case ADDR_OBP0: out.addr = addr; out.read = 1; out.data = obp0; break;
-    case ADDR_OBP1: out.addr = addr; out.read = 1; out.data = obp1; break;
-    case ADDR_WY:   out.addr = addr; out.read = 1; out.data = wy; break;
-    case ADDR_WX:   out.addr = addr; out.read = 1; out.data = wx; break;
-    }
-  }
-  */
-}
-
-//----------------------------------------
-
-void PPU::bus_read_late(uint16_t addr) {
-  ppu_to_bus = {};
-  if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
-    switch (addr) {
-    case ADDR_LCDC: ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = lcdc; break;
-    case ADDR_STAT: ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = stat; break;
-    case ADDR_SCY:  ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = scy; break;
-    case ADDR_SCX:  ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = scx; break;
-    case ADDR_LY:   ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = ly; break;
-    case ADDR_LYC:  ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = lyc; break;
-    case ADDR_DMA:  ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = dma; break;
-    case ADDR_BGP:  ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = bgp; break;
-    case ADDR_OBP0: ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = obp0; break;
-    case ADDR_OBP1: ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = obp1; break;
-    case ADDR_WY:   ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = wy; break;
-    case ADDR_WX:   ppu_to_bus.addr = addr; ppu_to_bus.read = 1; ppu_to_bus.data = wx; break;
-    }
-  }
-}
-
-//----------------------------------------
-
+#if 0
 void PPU::bus_write_early(uint16_t addr, uint8_t data) {
   if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
     switch (addr) {
@@ -922,6 +959,7 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
     };
   }
 }
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -1089,7 +1127,7 @@ void PPU::dump(std::string& d) const {
   */
 
   {
-    auto out = tick(tphase);
+    auto out = tick(tcycle);
 
     print_bus(d, "bus_to_ppu",  bus_to_ppu);
     print_bus(d, "ppu_to_bus",  out.ppu_to_bus);

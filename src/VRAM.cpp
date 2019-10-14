@@ -22,7 +22,7 @@ VRAM::Out VRAM::tick() const {
 }
 
 void VRAM::tock(int tcycle_, Bus bus_to_vram_, Bus dma_to_vram_, Bus ppu_to_vram_) {
-  tphase = tcycle_ & 3;
+  tcycle = tcycle_;
   bus_to_vram = bus_to_vram_;
   dma_to_vram = dma_to_vram_;
   ppu_to_vram = ppu_to_vram_;

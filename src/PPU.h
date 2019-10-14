@@ -24,9 +24,9 @@ struct PPU {
     bool vblank2;
   };
 
-  void reset(bool run_bootrom, int new_model);
-  Out  tick(int tcycle_) const;
-  void tock(int tcycle_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_);
+  void reset(bool run_bootrom);
+  Out  tick(const int tcycle_) const;
+  void tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_);
   void dump(std::string& out) const;
 
   uint8_t get_stat()       const { return stat; }
@@ -42,19 +42,14 @@ struct PPU {
 
 private:
 
-  void tock_lcdoff(int tphase_, Bus bus_to_ppu_, Bus vram_to_ppu_, Bus oam_to_ppu_);
+  void tock_lcdoff(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_);
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
-
-  void bus_read_early(uint16_t cpu_addr);
-  void bus_read_late(uint16_t cpu_addr);
-  void bus_write_early(uint16_t cpu_addr, uint8_t cpu_data);
-  void bus_write_late(uint16_t cpu_addr, uint8_t cpu_data);
 
   //----------
   // Buses
 
-  int tphase;
+  int tcycle;
   Bus bus_to_ppu;
   Bus vram_to_ppu;
   Bus oam_to_ppu;

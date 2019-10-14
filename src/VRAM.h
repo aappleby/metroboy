@@ -19,8 +19,7 @@ struct VRAM {
   const uint8_t* get_ram() const { return ram; }
 
 private:
-
-  int tphase;
+  int tcycle;
   Bus bus_to_vram;
   Bus dma_to_vram;
   Bus ppu_to_vram;

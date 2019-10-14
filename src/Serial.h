@@ -10,7 +10,7 @@ struct Serial {
   void dump(std::string& d);
 
 private:
-  int tphase;
+  int tcycle;
   Bus bus_to_serial;
   Bus serial_to_bus;
 

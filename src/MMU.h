@@ -20,7 +20,7 @@ struct MMU {
   size_t get_rom_size() const { return rom_size; }
 
 private:
-  int tphase;
+  int tcycle;
   Bus bus_to_mmu;
   Bus dma_to_mmu;
   Bus mmu_to_bus;

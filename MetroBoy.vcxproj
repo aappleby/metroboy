@@ -151,6 +151,7 @@
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Types.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
+    <ClCompile Include="src\VRAM_sch.cpp" />
     <ClCompile Include="src\Wishbone.cpp" />
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />

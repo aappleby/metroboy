@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  run_microtests();
+  //run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
@@ -58,11 +58,7 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  //load("microtests/build/dmg", "just_timer");
-  //load("microtests/build/dmg", "timer_tima_phase_f");
-  //load("microtests/build/dmg", "poweron_000_div");
-
-  load("microtests/build/dmg", "timer_div_phase_d");
+  load("microtests/build/dmg", "poweron_000_div");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;
@@ -143,7 +139,7 @@ void MetroBoyApp::loop() {
     if (event.type == SDL_QUIT) quit = true;
 
     if (event.type == SDL_DROPFILE) {
-      metroboy.load_rom(MODEL_DMG, event.drop.file, false);
+      metroboy.load_rom(event.drop.file, false);
       rom_loaded = true;
       runmode = RUN_VSYNC;
       SDL_free(event.drop.file);
@@ -493,7 +489,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
 
   printf("Loading rom %s\n", gb_filename.c_str());
   memset(rom_buf, 0, 1024 * 1024);
-  metroboy.load_rom(MODEL_DMG, gb_filename.c_str(), false);
+  metroboy.load_rom(gb_filename.c_str(), false);
   rom_loaded = true;
   runmode = RUN_VSYNC;
 }

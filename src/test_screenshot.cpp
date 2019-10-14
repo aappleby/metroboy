@@ -86,7 +86,7 @@ bool load_bmp(const std::string& prefix, const std::string& name, uint8_t* out_g
   return false;
 }
 
-int run_screenshot_test(int model, const std::string& prefix, const std::string& name) {
+int run_screenshot_test(const std::string& prefix, const std::string& name) {
   std::string filename = prefix + name + ".gb";
 
   uint8_t golden[160 * 144];
@@ -105,7 +105,7 @@ int run_screenshot_test(int model, const std::string& prefix, const std::string&
 
   Gameboy gameboy;
   Framebuffer fb;
-  gameboy.reset(model, rom_size, 0x100);
+  gameboy.reset(rom_size, 0x100);
 
   int i = 0;
   const int ticks = 400000;
@@ -146,7 +146,7 @@ void run_mealybug_tests() {
   bool dots = true;
   for (auto name : mealybug_tests) {
     if (name[0] == '-') continue;
-    int diff = run_screenshot_test(MODEL_DMG, "mealybug/", name);
+    int diff = run_screenshot_test("mealybug/", name);
     if (diff == 0) {
       printf(".");
       dots = true;
@@ -172,9 +172,7 @@ void run_screenshot_tests() {
   double freq = (double)SDL_GetPerformanceFrequency();
   double begin = (double)SDL_GetPerformanceCounter();
 
-  int model = MODEL_DMG;
-  std::string model_string = (model == MODEL_DMG ? "dmg" : "ags");
-  std::string prefix = "microtests/build/" + model_string + "/";
+  std::string prefix = "microtests/build/dmg/";
 
   printf("---------- Screenshot tests in %s: ----------\n", prefix.c_str());
 

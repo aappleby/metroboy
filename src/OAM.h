@@ -18,10 +18,7 @@ struct OAM {
   const uint8_t* get() const { return (uint8_t*)ram; }
 
 private:
-
-  int tphase;
-  bool oam_lock;
-  
+  int tcycle;
   Bus bus_to_oam;
   Bus dma_to_oam;
   Bus ppu_to_oam;

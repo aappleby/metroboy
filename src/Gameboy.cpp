@@ -10,12 +10,12 @@ extern const uint8_t DMG_ROM_bin[];
 
 //-----------------------------------------------------------------------------
 
-void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
+void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
   *this = {};
 
-  z80.reset(new_model, new_pc);
+  z80.reset(new_pc);
   mmu.reset(new_rom_size, new_pc);
-  ppu.reset(new_pc == 0, new_model);
+  ppu.reset(new_pc == 0);
   oam.reset();
   spu.reset();
   timer.reset();
@@ -25,7 +25,6 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
   serial.reset();
   zram.reset();
 
-  model = new_model;
   tcycle = -1;
   trace_val = 0;
 
@@ -48,7 +47,7 @@ void Gameboy::reset(int new_model, size_t new_rom_size, uint16_t new_pc) {
 }
 
 void Gameboy::reset(uint16_t new_pc) {
-  reset(model, mmu.get_rom_size(), new_pc);
+  reset(mmu.get_rom_size(), new_pc);
 }
 
 //-----------------------------------------------------------------------------
@@ -62,7 +61,7 @@ Bus Gameboy::tick() const {
 
 void Gameboy::tock() {
   tcycle++;
-  int tphase = tcycle & 3;
+  const int tphase = tcycle & 3;
   cpu_to_bus = z80.tick();
 
   const auto iram_out = iram.tick();
@@ -82,7 +81,7 @@ void Gameboy::tock() {
   serial_to_bus  = serial.tick();;
   zram_to_bus    = zram.tick();
   spu_to_bus     = spu.tick();
-  timer_to_bus   = timer.tick();
+  timer_to_bus   = timer.to_bus();
   
   ppu_to_bus  = ppu_out.ppu_to_bus;
   ppu_to_vram = ppu_out.ppu_to_vram;
@@ -144,8 +143,6 @@ void Gameboy::tock() {
     if (fire_int_buttons1) intf_ |= INT_JOYPAD;
   }
 
-  if (tphase == 0) intf_ &= ~z80.get_int_ack();
-
   //-----------------------------------
   // Z80 bus mux & tock
 
@@ -202,9 +199,8 @@ void Gameboy::tock() {
     bus_to_cpu.data = 0xFF;
   }
 
-  if (tphase == 2) {
-    z80.tock(tphase, bus_to_cpu, imask_, intf_);
-  }
+  intf_ &= ~z80.get_int_ack();
+  z80.tock(tcycle, bus_to_cpu, imask_, intf_);
 
   //-----------------------------------
   // Peripheral bus mux & tocks
@@ -320,7 +316,6 @@ void Gameboy::dump1(std::string& d) {
   sprintf(d, "\n");
 
   sprintf(d, "\003--------------BUS--------------\001\n");
-  //sprintf(d, "model          %d\n", model);
   sprintf(d, "tcycle         %d\n", tcycle);
   //sprintf(d, "dma_mode_a     %d\n", dma_mode_a);
   sprintf(d, "dma_count_a    %d\n", dma_count_a);

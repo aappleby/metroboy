@@ -23,7 +23,7 @@ MetroBoy::MetroBoy()
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::load_rom(int model, const char* filename, bool run_bootrom) {
+void MetroBoy::load_rom(const char* filename, bool run_bootrom) {
   FILE* rom_file = fopen(filename, "rb");
   fseek(rom_file, 0, SEEK_END);
   size_t rom_size = ftell(rom_file);
@@ -31,7 +31,7 @@ void MetroBoy::load_rom(int model, const char* filename, bool run_bootrom) {
   rom_size = fread(rom_buf, 1, rom_size, rom_file);
   fclose(rom_file);
 
-  current_gb->reset(model, rom_size, run_bootrom ? 0x0000 : 0x0100);
+  current_gb->reset(rom_size, run_bootrom ? 0x0000 : 0x0100);
 }
 
 void MetroBoy::load_dump() {

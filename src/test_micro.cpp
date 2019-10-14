@@ -15,8 +15,11 @@ static const std::string micro_tests[] = {
   "poweron_000_div",
   "poweron_004_div",
   "poweron_005_div",
+
   "timer_div_phase_c",
   "timer_div_phase_d",
+
+  "break",
 
   "timer_tima_write_a",
   "timer_tima_write_b",
@@ -482,7 +485,7 @@ static const std::string micro_tests[] = {
   "stat_write_glitch_l1_d",
 };
 
-bool run_microtest(int model, const std::string& prefix, const std::string& name) {
+bool run_microtest(const std::string& prefix, const std::string& name) {
   if (name[0] == '-') {
     return true;
   }
@@ -504,7 +507,7 @@ bool run_microtest(int model, const std::string& prefix, const std::string& name
   fclose(rom_file);
 
   Gameboy gameboy;
-  gameboy.reset(model, rom_size, 0x100);
+  gameboy.reset(rom_size, 0x100);
 
   uint8_t result = 0xFF;
   int i = 0;
@@ -543,16 +546,14 @@ void run_microtests() {
   double freq = (double)SDL_GetPerformanceFrequency();
   double begin = (double)SDL_GetPerformanceCounter();
 
-  int model = MODEL_DMG;
-  std::string model_string = (model == MODEL_DMG ? "dmg" : "ags");
-  std::string prefix = "microtests/build/" + model_string + "/";
+  std::string prefix = "microtests/build/dmg/";
 
   printf("---------- Microtests in %s: ----------\n", prefix.c_str());
 
   int fails = 0;
   for (auto name : micro_tests) {
     if (name == "break") break;
-    bool pass = run_microtest(model, prefix, name);
+    bool pass = run_microtest(prefix, name);
     if (!pass) fails++;
   }
   printf("\n");

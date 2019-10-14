@@ -43,8 +43,11 @@ Bus SPU::tick() const {
   return cpu_out;
 }
 
-void SPU::tock(int tcycle_, Bus cpu_in_) {
-  tphase = tcycle_ & 3;
+void SPU::tock(const int tcycle_, const Bus cpu_in_) {
+  const int tphase = tcycle_ & 3;
+  if (tphase != 0) return;
+
+  tcycle = tcycle_;
   cpu_in = cpu_in_;
 
   bool sound_on = (nr52 & 0x80);
@@ -53,8 +56,6 @@ void SPU::tock(int tcycle_, Bus cpu_in_) {
 
   bus_read(tphase, cpu_in);
   bus_write(tphase, cpu_in);
-
-  if (tphase != 0) return;
 
   if (!sound_on) {
     s1_out = 0;
@@ -302,7 +303,7 @@ void SPU::tock(int tcycle_, Bus cpu_in_) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_read(int /*tphase_*/, Bus cpu_in_) {
+void SPU::bus_read(const int /*tphase_*/, const Bus cpu_in_) {
   if (!cpu_in_.read) return;
 
   cpu_out = {};
@@ -367,7 +368,7 @@ void SPU::bus_read(int /*tphase_*/, Bus cpu_in_) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_write(int /*tphase_*/, Bus cpu_in_) {
+void SPU::bus_write(const int /*tphase_*/, const Bus cpu_in_) {
   if (!cpu_in_.write) return;
   if (cpu_in_.addr < 0xFF10) return;
   if (cpu_in_.addr > 0xFF3F) return;

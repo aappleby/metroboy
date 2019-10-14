@@ -195,10 +195,10 @@ enum Z80State {
 
 //-----------------------------------------------------------------------------
 
-void Z80::reset(int new_model, uint16_t new_pc) {
+void Z80::reset(uint16_t new_pc) {
   *this = {};
 
-  model = new_model;
+  tcycle = -1;
 
   if (new_pc == 0x100) {
     pc = new_pc;
@@ -243,18 +243,13 @@ Bus Z80::tick() const {
   return cpu_to_bus;
 }
 
-uint8_t Z80::get_int_ack() const {
-  return out_int_ack;
-}
+void Z80::tock(const int tcycle_, const Bus bus_to_cpu_, const uint8_t imask_, const uint8_t intf_) {
+  const int tphase = tcycle_ & 3;
+  if (tphase != 0) return;
 
-void Z80::tock(int tphase_, Bus bus_to_cpu_, uint8_t imask_, uint8_t intf_) {
-  tphase = tphase_;
+  tcycle = tcycle_;
   bus_to_cpu = bus_to_cpu_;
   cpu_to_bus = {};
-
-  // these won't match if the cpu tries to read from vram/oam during lock
-  //assert(in.addr == out.addr);
-  //assert(in.oe == (uint8_t)out.read);
 
   bus = (uint8_t)bus_to_cpu_.data;
   ime = ime_;
@@ -293,7 +288,6 @@ void Z80::tock(int tphase_, Bus bus_to_cpu_, uint8_t imask_, uint8_t intf_) {
   state2 = state;
   state_machine();
   state = state_;
-  cycle++;
 
   cpu_to_bus.addr = addr;
   cpu_to_bus.data = data_out;
@@ -1001,8 +995,8 @@ const char* state_name(Z80State state) {
 #pragma warning(disable:4458)
 
 void Z80::dump(std::string& d) {
-  sprintf(d, "cycle          %d\n", cycle);
-  sprintf(d, "bgb cycle      0x%08x\n", (cycle * 2) + 0x00B2D5E6);
+  sprintf(d, "tcycle         %d\n", tcycle);
+  sprintf(d, "bgb cycle      0x%08x\n", (tcycle * 8) + 0x00B2D5E6);
   sprintf(d, "OP             0x%02x\n", op);
   sprintf(d, "AF             0x%04x\n", af);
   sprintf(d, "BC             0x%04x\n", bc);

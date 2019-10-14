@@ -12,7 +12,7 @@ struct Buttons {
   void set(uint8_t new_val);
 
 private:
-  int tphase;
+  int tcycle;
   Bus bus_to_buttons;
   Bus buttons_to_bus;
 

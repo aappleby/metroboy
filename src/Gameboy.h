@@ -28,7 +28,7 @@ struct Gameboy {
     uint32_t trace;
   };
 
-  void    reset(int new_model, size_t new_rom_size, uint16_t new_pc);
+  void    reset(size_t new_rom_size, uint16_t new_pc);
   void    reset(uint16_t new_pc);
   Bus     tick() const;
   HostOut get_host_data() const { return gb_to_host; }
@@ -99,7 +99,6 @@ private:
   PPU ppu;
   SPU spu;
 
-  int model;
   int tcycle;
   uint32_t trace_val;
 

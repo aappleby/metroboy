@@ -26,7 +26,7 @@ public:
 
   const uint32_t* get_trace() const { return tracebuffer; }
 
-  void load_rom(int model, const char* filename, bool run_bootrom);
+  void load_rom(const char* filename, bool run_bootrom);
   void load_dump();
   void save_dump();
 

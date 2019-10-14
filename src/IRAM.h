@@ -14,7 +14,7 @@ struct IRAM {
 
   const uint8_t* get() { return ram; }
 private:
-  int tphase;
+  int tcycle;
   Bus bus_to_iram;
   Bus dma_to_iram;
   Bus iram_to_bus;

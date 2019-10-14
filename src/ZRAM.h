@@ -6,13 +6,13 @@
 struct ZRAM {
   void reset();
   Bus  tick() const;
-  void tock(int tcycle_, Bus bus_to_zram_);
+  void tock(const int tcycle_, const Bus bus_to_zram_);
   void dump(std::string& d);
 
   const uint8_t* get() const { return ram; }
 
 private:
-  int tphase;
+  int tcycle;
   Bus bus_to_zram;
   Bus zram_to_bus;
 

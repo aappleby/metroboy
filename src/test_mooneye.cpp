@@ -149,7 +149,7 @@ void run_mooneye(const std::string& prefix, const std::string& name) {
   fclose(rom_file);
 
   Gameboy gameboy;
-  gameboy.reset(MODEL_DMG, rom_size, 0x100);
+  gameboy.reset(rom_size, 0x100);
 
   uint8_t result = 0xFF;
   int i = 0;

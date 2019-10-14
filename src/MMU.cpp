@@ -42,6 +42,16 @@ void MMU::reset(size_t new_rom_size, uint16_t new_pc) {
   assert(ram_bank_count <= 1);
 
   disable_boot_rom = new_pc != 0x0000;
+
+  mmu_to_bus = {
+    new_pc,
+    rom_buf[new_pc],
+    true,
+    false,
+    false,
+    false,
+    true
+  };
 }
 
 void MMU::reset(uint16_t new_pc) {
@@ -58,7 +68,10 @@ MMU::Out MMU::tick() const {
 }
 
 void MMU::tock(int tcycle_, Bus bus_to_mmu_, Bus dma_to_mmu_) {
-  tphase = tcycle_ & 3;
+  const int tphase = tcycle_ & 3;
+  if (tphase != 0) return;
+
+  tcycle = tcycle_;
   bus_to_mmu = bus_to_mmu_;
   dma_to_mmu = dma_to_mmu_;
   mmu_to_bus = {};
@@ -204,6 +217,7 @@ uint8_t* MMU::get_flat_ptr(uint16_t addr) {
 //-----------------------------------------------------------------------------
 
 void MMU::dump(std::string& d) {
+  sprintf(d, "tcycle %d\n", tcycle);
   print_bus(d, "bus_to_mmu", bus_to_mmu);
   print_bus(d, "mmu_to_bus", mmu_to_bus);
   sprintf(d, "\n");

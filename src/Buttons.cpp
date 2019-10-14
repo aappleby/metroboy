@@ -13,16 +13,21 @@ Bus Buttons::tick() const {
 }
 
 void Buttons::tock(int tcycle_, Bus bus_to_buttons_) {
-  tphase = tcycle_ & 3;
+  const int tphase = tcycle_ & 3;
+  if (tphase != 0) return;
+
+  tcycle = tcycle_;
   bus_to_buttons = bus_to_buttons_;
   buttons_to_bus = {};
 
+  if (bus_to_buttons.addr == ADDR_P1) {
+    buttons_to_bus = bus_to_buttons;
+    buttons_to_bus.ack = true;
+  }
+
   if (bus_to_buttons.read) {
     if (bus_to_buttons.addr == ADDR_P1) {
-      buttons_to_bus.addr = bus_to_buttons.addr;
       buttons_to_bus.data = p1;
-      buttons_to_bus.read = true;
-      buttons_to_bus.write = false;
     }
   }
 
@@ -32,10 +37,8 @@ void Buttons::tock(int tcycle_, Bus bus_to_buttons_) {
   case 0x20: p1 = (p1 & 0xF0) | ((val >> 0) & 0xF); break;
   }
 
-  if (tphase == 2) {
-    if (bus_to_buttons.write && bus_to_buttons.addr == ADDR_P1) {
-      p1 = (p1 & 0xCF) | (bus_to_buttons.data & 0x30);
-    }
+  if (bus_to_buttons.write) {
+    if (bus_to_buttons.addr == ADDR_P1) p1 = (p1 & 0xCF) | (bus_to_buttons.data & 0x30);
   }
 }
 

@@ -8,12 +8,16 @@
 extern bool MATU_Q;
 extern bool MOPA_PHI;
 extern bool P10_B;
+extern bool VRAM_TO_OAM;
+extern bool OAM_ADDR_DMA;
+
 extern bool SARO;
 extern bool TUVO;
-extern bool VRAM_TO_OAM;
 extern bool XYMU;
 extern bool CATY;
-extern bool OAM_ADDR_DMA;
+extern bool CATU;
+extern bool AVAP;
+extern bool XOCE;
 
 //----------
 // outputs
@@ -23,29 +27,26 @@ bool AMAB;
 //----------
 // mystery signals
 
-bool XUPY;
-bool CLK3;
-bool OAM_CLK;
-bool RESET_VIDEO;
-bool RESET_VIDEO2N;
-bool CATU;
-bool ABEZ;
-bool AVAP;
-bool CPU_WR2;
-bool XOCE;
-bool TYFO_QN;
-bool CPU_RD2;
-bool WARU;
-bool RESET7N;
-bool XARE;
-bool WYJA;
+extern bool XUPY;
+extern bool CLK3;
+extern bool OAM_CLK;
+extern bool RESET_VIDEO;
+extern bool RESET_VIDEO2N;
+extern bool ABEZ;
+extern bool CPU_WR2;
+extern bool TYFO_QN;
+extern bool CPU_RD2;
+extern bool WARU;
+extern bool RESET7N;
+extern bool XARE;
+extern bool WYJA;
 
-bool OAM_ADDR_RENDER;
-bool OAM_ADDR_PARSE;
-bool OAM_ADDR_CPU;
+extern bool OAM_ADDR_RENDER;
+extern bool OAM_ADDR_PARSE;
+extern bool OAM_ADDR_CPU;
 
-bool OAM_A_CS;
-bool OAM_B_CS;
+extern bool OAM_A_CS;
+extern bool OAM_B_CS;
 
 //----------
 // sprite index bus
@@ -94,7 +95,6 @@ void tick_oam() {
 
   bool ATAR = not(RESET_VIDEO);
   RESET_VIDEO2N = ATAR;
-
 
   bool AWOH = not(XUPY);
   bool ABAF = not(CATU);

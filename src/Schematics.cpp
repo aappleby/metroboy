@@ -3,28 +3,90 @@
 // mystery signals 
 bool MATU_Q;
 bool P10_B;
-bool SARO;
-bool TUVO;
-bool XYMU;
 bool FROM_CPU5;
 bool CLK1;
 bool RESET6;
-bool CEHA;
-bool BYVA;
-bool WUTY;
-
-
+bool CPU_RD2;
+bool CPU_WR2;
+bool CLK2;
 bool FF46;
 bool FF47;
 bool FF48;
 bool FF49;
-
 bool PHI_OUTN;
-
 bool FF40_D0;
 bool FF40_D1;
 
 
+bool CEHA;
+bool BYVA;
+bool WUTY;
+bool SARO;
+bool TUVO;
+bool XYMU;
+bool XUPY;
+bool CLK3;
+bool OAM_CLK;
+bool RESET_VIDEO;
+bool RESET_VIDEO2N;
+bool ABEZ;
+bool TYFO_QN;
+bool WARU;
+bool RESET7N;
+bool XARE;
+bool WYJA;
+bool OAM_ADDR_RENDER;
+bool OAM_ADDR_PARSE;
+bool OAM_ADR_CPU;
+bool OAM_A_CS;
+bool OAM_B_CS;
+bool FF40_D2;
+bool BESU;
+bool FETO;
+bool ANOM;
+bool XYVO;
+bool SELA;
+bool WUME;
+bool COTA;
+bool TEXY;
+bool TAVA;
+bool TULY;
+bool OAM_ADDR_CPU;
+bool CPU_RD_SYNC;
+bool NET02;
+bool MOE_IN;
+bool MWR_IN;
+bool MCS_IN;
+bool T1N_T2;
+bool FEXXFFXXN;
+bool FF40_D4;
+bool TACU;
+bool ACYL;
+bool TEXO;
+bool ABUZ;
+bool AFAS;
+bool MYMA;
+bool LENA;
+bool BEDO;
+bool RORU;
+bool LULA;
+bool LEKO;
+bool TYVY;
+bool NETA;
+bool PORE;
+bool POTU;
+bool XUHA;
+bool VYNO;
+bool VUJO;
+bool VYMU;
+bool PYJU;
+bool POWY;
+bool POJU;
+bool PULO;
+bool POXA;
+bool PYZO;
+bool POZO;
+bool RAWU;
 
 bool VAVA3;
 

@@ -2,57 +2,58 @@
 
 #include "Schematics.h"
 
+//----------
+// inputs
+
+extern bool CPU_RD_SYNC;
+extern bool NET02;
+extern bool MOE_IN;
+extern bool MWR_IN;
+extern bool MCS_IN;
+extern bool T1N_T2;
+extern bool FEXXFFXXN;
+extern bool FF40_D4;
 extern bool MATU_Q;
 extern bool MOPA_PHI;
 extern bool P10_B;
+extern bool VRAM_TO_OAM;
+
 extern bool SARO;
 extern bool TUVO;
-extern bool VRAM_TO_OAM;
 extern bool XYMU;
 extern bool LUMA;
+extern bool XYSO;
+extern bool TACU;
+extern bool ACYL;
+extern bool TEXY;
+extern bool TEXO;
+extern bool ABUZ;
+extern bool AFAS;
+extern bool MYMA;
+extern bool LENA;
+extern bool BEDO;
+extern bool RORU;
+extern bool LULA;
+extern bool LEKO;
+extern bool TYVY;
+extern bool NETA;
+extern bool PORE;
+extern bool POTU;
+extern bool XUHA;
+extern bool VYNO;
+extern bool VUJO;
+extern bool VYMU;
+extern bool PYJU;
+extern bool POWY;
+extern bool POJU;
+extern bool PULO;
+extern bool POXA;
+extern bool PYZO;
+extern bool POZO;
+extern bool RAWU;
 
 //----------
-// mystery signals
-
-bool TACU;
-bool ACYL;
-bool XYSO;
-bool TEXY;
-bool TEXO;
-bool NET02;
-bool MOE_IN;
-bool ABUZ;
-bool CPU_RD_SYNC;
-bool AFAS;
-bool MWR_IN;
-bool MCS_IN;
-bool MYMA;
-bool LENA;
-bool BEDO;
-bool T1N_T2;
-bool RORU;
-bool FEXXFFXXN;
-bool LULA;
-bool LEKO;
-bool TYVY;
-bool NETA;
-bool PORE;
-bool POTU;
-bool XUHA;
-bool VYNO;
-bool VUJO;
-bool VYMU;
-bool FF40_D4;
-bool PYJU;
-bool POWY;
-bool POJU;
-bool PULO;
-bool POXA;
-bool PYZO;
-bool POZO;
-bool RAWU;
-
-//----------
+// outputs
 
 bool MOE_D;
 bool MCS_D;
@@ -61,7 +62,6 @@ bool MOE_A;
 bool MWR_A;
 bool MWR_D;
 bool MD_B;
-
 
 //----------
 // registers

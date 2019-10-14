@@ -5,14 +5,23 @@
 //----------
 // inputs
 
+extern bool RESET_VIDEO;
+extern bool RESET_VIDEO2N;
+
 extern bool FF40_D1;
 extern bool FF40_D2;
 extern bool P10_B;
 
 extern bool CLK1;
+extern bool CLK2;
 extern bool CLK3;
 
-extern bool CEHA;
+extern bool BESU;
+extern bool FETO;
+extern bool ANOM;
+extern bool XYVO;
+extern bool SELA;
+
 extern bool XYMU;
 extern bool BYVA;
 extern bool WUTY;
@@ -55,6 +64,13 @@ extern bool EKES;
 
 bool SPR_MATCH;
 bool FEPO;
+
+bool XYSO;
+bool XOCE;
+bool DYTY;
+bool BUZA;
+bool CATU;
+bool AVAP;
 
 bool DEGE;
 bool DABY;
@@ -129,20 +145,26 @@ bool TOBU;
 bool VONU;
 bool TAVA_CLK;
 
-bool WUVU;
+bool WUVU_Q;
 bool XOTA_CLK;
 
-bool WOSU;
+bool WOSU_Q;
 bool XYFY_CLK;
 
-bool CENO;
-bool CATU;
-bool BYBA;
+bool CENO_Q;
+bool CATU_Q;
+bool BYBA_Q;
 bool XUPY_CLK;
+
+bool DOBA_Q;
+bool CLK2_CLK;
 
 //-----------------------------------------------------------------------------
 
 void tick_spritecontrol() {
+  bool CENO_N = not(CENO_Q);
+  bool CEHA = not(CENO_N);
+
   bool BYJO = not(CEHA);
   bool AZEM = and(BYJO, XYMU);
   bool AROR = and(AZEM, FF40_D1);
@@ -357,8 +379,28 @@ void tick_spritecontrol() {
   bool GESE = not(WOTA);
   SPR_MATCH = GESE;
 
+  bool WUVU_N = not(WUVU_Q);
+  bool WOSU_N = not(WOSU_Q);
+  bool BYBA_N = not(BYBA_Q);
+
   bool XYVA = not(CLK1);
   bool XOTA = not(XYVA);
+  bool XYFY = not(XOTA);
+  bool XUPY = not(WUVU_N);
+  bool ABEZ = not(RESET_VIDEO2N);
+  bool BALU = not(ANOM);
+  bool BAGY = not(BALU);
+  bool WOJO = nor(WUVU_N, WOSU_N);
+  XOCE = not(WOSU_Q);
+  XYSO = not(WOJO);
+  bool ALES = not(XYVO);
+  bool ABOV = and(SELA, ALES);
+  BUZA = and(CENO_N, XYMU);
+  bool CARE = or(XOCE, CEHA, SPR_MATCH);
+  DYTY = not(CARE);
+
+  bool BEBU = or(DOBA_Q, BALU, BYBA_N);
+  AVAP = not(BEBU);
 
   //----------
   // registers
@@ -403,8 +445,8 @@ void tick_spritecontrol() {
   }
   YWOK_CLK = YWOK_CLK_;
 
-  bool TOBU_;
-  bool VONU_;
+  bool TOBU_ = TOBU;
+  bool VONU_ = VONU;
   bool TAVA_CLK_ = TAVA;
   if (TAVA_CLK && !TAVA_CLK_) {
     TOBU_ = TULY;
@@ -417,4 +459,65 @@ void tick_spritecontrol() {
   TOBU = TOBU_;
   VONU = VONU_;
   TAVA_CLK = TAVA_CLK_;
+
+  bool WUVU_Q_ = WUVU_Q;
+  bool WUVU_N_ = WUVU_N;
+  bool XOTA_CLK_ = XOTA;
+  if (XOTA_CLK && !XOTA_CLK_) {
+    WUVU_Q_ = WUVU_N;
+    WUVU_N_ = !WUVU_Q_;
+  }
+  if (!RESET_VIDEO) {
+    WUVU_Q_ = 0;
+    WUVU_N_ = !WUVU_Q_;
+  }
+  WUVU_N = !WUVU_Q_;
+  XOTA_CLK = XOTA_CLK_;
+
+  bool WOSU_Q_ = WOSU_Q;
+  bool WOSU_N_ = WOSU_N;
+  bool XYFY_CLK_ = XYFY;
+  if (XYFY_CLK && !XYFY_CLK_) {
+    WOSU_Q_ = WUVU_N;
+    WOSU_N_ = !WOSU_Q_;
+  }
+  if (!RESET_VIDEO) {
+    WOSU_Q_ = 0;
+    WOSU_N_ = !WOSU_Q_;
+  }
+  WOSU_Q = WOSU_Q_;
+  WOSU_N = WOSU_N_;
+  XYFY_CLK = XYFY_CLK_;
+
+  bool CENO_Q_ = CENO_Q;
+  bool CATU_Q_ = CATU_Q;
+  bool BYBA_Q_ = BYBA_Q;
+  bool XUPY_CLK_ = XUPY;
+  if (XUPY_CLK && !XUPY_CLK_) {
+    CENO_Q_ = BESU;
+    CATU_Q_ = ABOV;
+    BYBA_Q_ = FETO;
+  }
+  if (!ABEZ) {
+    CENO_Q_ = 0;
+    CATU_Q_ = 0;
+  }
+  if (!BAGY) {
+    BYBA_Q_ = 0;
+  }
+
+  CENO_Q = CENO_Q_;
+  CATU_Q = CATU_Q_;
+  BYBA_Q = BYBA_Q_;
+
+
+
+
+  bool CLK2_CLK_ = CLK2;
+  bool DOBA_Q_ = (CLK2_CLK && !CLK2_CLK_) ? BYBA_Q : DOBA_Q;
+  if (!BAGY) DOBA_Q_ = 0;
+
+  DOBA_Q = DOBA_Q_;
+  CLK2_CLK = CLK2_CLK_;
+
 }

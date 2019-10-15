@@ -87,6 +87,7 @@ bool POXA;
 bool PYZO;
 bool POZO;
 bool RAWU;
+bool AZYB;
 
 bool VAVA3;
 

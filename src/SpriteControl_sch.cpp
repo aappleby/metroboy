@@ -16,28 +16,24 @@ extern bool CLK1;
 extern bool CLK2;
 extern bool CLK3;
 
+extern bool AZYB;
+extern bool BAXO;
 extern bool BESU;
 extern bool FETO;
 extern bool ANOM;
 extern bool XYVO;
 extern bool SELA;
-
 extern bool XYMU;
 extern bool BYVA;
-extern bool WUTY;
 extern bool WUME;
 extern bool COTA;
-extern bool TEXY;
-
 extern bool TAVA;
 extern bool TULY;
 extern bool XYMU;
-
 extern bool YZOS;
 extern bool WENU;
 extern bool CUCU;
 extern bool CEGA;
-
 extern bool XEBA;
 extern bool ZAKO;
 extern bool YWOS;
@@ -101,6 +97,18 @@ bool GAMY;
 bool DOKU;
 bool DYNA;
 
+// sprite hit flags or something
+bool CACU; bool BUZY; bool FUKE;
+bool ZAPE; bool WUSE; bool ZURU;
+bool FEFO; bool GECY; bool WABE;
+bool FEKA; bool XYHA; bool YFAG;
+bool CEXU; bool AKOL; bool BYMY;
+bool FUXU; bool ENOB; bool GENY;
+bool WEME; bool WUFA; bool FAKA;
+bool CYLA; bool DYMO; bool BUCY;
+bool WOFO; bool WYLU; bool EWOT;
+bool ASYS; bool AHOF; bool BYVY;
+
 //----------
 // mystery signals
 
@@ -108,41 +116,41 @@ bool DYNA;
 // registers
 
 // sprite hit regs
-bool FONO;
-bool EXUQ;
-bool WAPO;
-bool WOMY;
-bool WAFY;
-bool XUDY;
-bool GOTA;
-bool EGAV;
-bool CEDY;
-bool EBOJ;
+bool FONO_Q;
+bool EXUQ_Q;
+bool WAPO_Q;
+bool WOMY_Q;
+bool WAFY_Q;
+bool XUDY_Q;
+bool GOTA_Q;
+bool EGAV_Q;
+bool CEDY_Q;
+bool EBOJ_Q;
 bool WUTY_CLK;
 
 // oam_b latch
-bool YCEB;
-bool ZUCA;
-bool WONE;
-bool ZAXE;
-bool XAFU;
-bool YSES;
-bool ZECA;
-bool YDYV;
+bool YCEB_L;
+bool ZUCA_L;
+bool WONE_L;
+bool ZAXE_L;
+bool XAFU_L;
+bool YSES_L;
+bool ZECA_L;
+bool YDYV_L;
 
 // sprite y comparator reg?
-bool XEGU;
-bool YJEX;
-bool XYJU;
-bool YBOG;
-bool WYSO;
-bool XOTE;
-bool YZAB;
-bool XUSO;
+bool XEGU_Q;
+bool YJEX_Q;
+bool XYJU_Q;
+bool YBOG_Q;
+bool WYSO_Q;
+bool XOTE_Q;
+bool YZAB_Q;
+bool XUSO_Q;
 bool YWOK_CLK;
 
-bool TOBU;
-bool VONU;
+bool TOBU_Q;
+bool VONU_Q;
 bool TAVA_CLK;
 
 bool WUVU_Q;
@@ -158,6 +166,23 @@ bool XUPY_CLK;
 
 bool DOBA_Q;
 bool CLK2_CLK;
+
+bool TYFO_Q;
+bool SEBA_Q;
+bool TOXE_Q;
+bool TULY_Q;
+bool TESE_Q;
+
+bool LAPE_CLK;
+bool TOMA_CLK;
+
+bool DEZY_Q;
+bool BESE_Q;
+bool CUXY_Q;
+bool BEGO_Q;
+bool DYBE_Q;
+bool CLK1_CLK;
+bool CAKE_CLK;
 
 //-----------------------------------------------------------------------------
 
@@ -238,16 +263,16 @@ void tick_spritecontrol() {
 
   bool DYBA = not(BYVA);
 
-  bool DUBU = or(DYBA, FONO);
-  bool GORO = or(DYBA, EXUQ);
-  bool GUKY = or(DYBA, WAPO);
-  bool WACY = or(DYBA, WOMY);
-  bool FEVE = or(DYBA, WAFY);
-  bool WOHU = or(DYBA, XUDY);
-  bool GAKE = or(DYBA, GOTA);
-  bool FOKO = or(DYBA, EGAV);
-  bool EFEV = or(DYBA, CEDY);
-  bool DYWE = or(DYBA, EBOJ);
+  bool DUBU = or(DYBA, FONO_Q);
+  bool GORO = or(DYBA, EXUQ_Q);
+  bool GUKY = or(DYBA, WAPO_Q);
+  bool WACY = or(DYBA, WOMY_Q);
+  bool FEVE = or(DYBA, WAFY_Q);
+  bool WOHU = or(DYBA, XUDY_Q);
+  bool GAKE = or(DYBA, GOTA_Q);
+  bool FOKO = or(DYBA, EGAV_Q);
+  bool EFEV = or(DYBA, CEDY_Q);
+  bool DYWE = or(DYBA, EBOJ_Q);
 
   DOSY = not(DUBU);
   WUZO = not(GORO);
@@ -264,24 +289,24 @@ void tick_spritecontrol() {
 
   // active low latch?
   if (CLK3) {
-    YCEB = OAM_B_D1;
-    ZUCA = OAM_B_D2;
-    WONE = OAM_B_D3;
-    ZAXE = OAM_B_D4;
-    XAFU = OAM_B_D5;
-    YSES = OAM_B_D6;
-    ZECA = OAM_B_D7;
-    YDYV = OAM_B_D0;
+    YCEB_L = OAM_B_D1;
+    ZUCA_L = OAM_B_D2;
+    WONE_L = OAM_B_D3;
+    ZAXE_L = OAM_B_D4;
+    XAFU_L = OAM_B_D5;
+    YSES_L = OAM_B_D6;
+    ZECA_L = OAM_B_D7;
+    YDYV_L = OAM_B_D0;
   }
 
-  bool XELE = YCEB;
-  bool YPON = ZUCA;
-  bool XUVO = WONE;
-  bool ZYSA = ZAXE;
-  bool YWEG = XAFU;
-  bool XABU = YSES;
-  bool YTUX = ZECA;
-  bool YFAP = YDYV;
+  bool XELE = YCEB_L;
+  bool YPON = ZUCA_L;
+  bool XUVO = WONE_L;
+  bool ZYSA = ZAXE_L;
+  bool YWEG = XAFU_L;
+  bool XABU = YSES_L;
+  bool YTUX = ZECA_L;
+  bool YFAP = YDYV_L;
 
   if (WUME) {
     D1 = XELE;
@@ -294,17 +319,23 @@ void tick_spritecontrol() {
     D0 = YFAP;
   }
 
+  bool TEPA = not(XYMU);
+  bool SAKY = nor(TULY_Q, VONU_Q);
+  bool TYSO = or(SAKY, TEPA);
+  bool TEXY = not(TYSO);
+  bool XONO = and(BAXO, TEXY);
+
   bool YWOK = not(COTA);
   bool ABON = not(TEXY);
 
   // only 7 of these?
-  bool FUGY = not(!XEGU);
-  bool GAVO = not(!YJEX);
-  bool WYGA = not(!XYJU);
-  bool WUNE = not(!YBOG);
-  bool GOTU = not(!WYSO);
-  bool GEGU = not(!XOTE);
-  bool XEHE = not(!YZAB);
+  bool FUGY = not(!XEGU_Q);
+  bool GAVO = not(!YJEX_Q);
+  bool WYGA = not(!XYJU_Q);
+  bool WUNE = not(!YBOG_Q);
+  bool GOTU = not(!WYSO_Q);
+  bool GEGU = not(!XOTE_Q);
+  bool XEHE = not(!YZAB_Q);
 
   if (ABON) {
     MA5 = FUGY;
@@ -322,7 +353,7 @@ void tick_spritecontrol() {
   bool BORE = xor(WUKY, WENU);
   bool BUVY = xor(WUKY, CEGA);
 
-  bool XUQU = not(!VONU);
+  bool XUQU = not(!VONU_Q);
   bool BAXE = not(CYVU);
   bool ARAS = not(BORE);
   bool AGAG = not(BUVY);
@@ -347,14 +378,14 @@ void tick_spritecontrol() {
   bool GUSU = not(V7);
 
   // FIXME totally wrong, probably a counter...
-  bool ERUC = unk1(/*CIN=*/P10_B, /*COUT=*/0, EBOS, !XUSO);
-  bool ENEF = unk1(/*CIN=*/0,     /*COUT=*/0, DASA, !XEGU);
-  bool FECO = unk1(/*CIN=*/0,     /*COUT=*/0, FUKY, !YJEX);
-  bool GYKY = unk1(/*CIN=*/0,     /*COUT=*/0, FUVE, !XYJU);
-  bool GOPU = unk1(/*CIN=*/0,     /*COUT=*/0, FEPU, !YBOG);
-  bool FUWA = unk1(/*CIN=*/0,     /*COUT=*/0, FOFA, !WYSO);
-  bool GOJU = unk1(/*CIN=*/0,     /*COUT=*/0, FEMO, !XOTE);
-  bool WUHU = unk1(/*CIN=*/0,     /*COUT=*/0, GUSU, !YZAB);
+  bool ERUC = unk1(/*CIN=*/P10_B, /*COUT=*/0, EBOS, !XUSO_Q);
+  bool ENEF = unk1(/*CIN=*/0,     /*COUT=*/0, DASA, !XEGU_Q);
+  bool FECO = unk1(/*CIN=*/0,     /*COUT=*/0, FUKY, !YJEX_Q);
+  bool GYKY = unk1(/*CIN=*/0,     /*COUT=*/0, FUVE, !XYJU_Q);
+  bool GOPU = unk1(/*CIN=*/0,     /*COUT=*/0, FEPU, !YBOG_Q);
+  bool FUWA = unk1(/*CIN=*/0,     /*COUT=*/0, FOFA, !WYSO_Q);
+  bool GOJU = unk1(/*CIN=*/0,     /*COUT=*/0, FEMO, !XOTE_Q);
+  bool WUHU = unk1(/*CIN=*/0,     /*COUT=*/0, GUSU, !YZAB_Q);
 
   DEGE = not(ERUC);
   DABY = not(ENEF);
@@ -367,7 +398,7 @@ void tick_spritecontrol() {
   
   bool GOVU = or(GYKY, FF40_D2);
   bool FUFO = not(FF40_D2);
-  bool GEJY = amux2(!XUSO, FUFO, FF40_D2, WAGO);
+  bool GEJY = amux2(!XUSO_Q, FUFO, FF40_D2, WAGO);
   bool FAMU = not(GEJY);
 
   if (ABON) {
@@ -402,122 +433,247 @@ void tick_spritecontrol() {
   bool BEBU = or(DOBA_Q, BALU, BYBA_N);
   AVAP = not(BEBU);
 
+  bool LAPE = not(CLK2);
+  bool TYNO = nand(TOXE_Q, SEBA_Q, VONU_Q);
+  bool VUSA = or(!TYFO_Q, TYNO);
+  bool WUTY = not(VUSA);
+  bool XEFY = not(WUTY);
+
+  bool TUVO = or(TEPA, TULY_Q, TESE_Q);
+  bool TAME = nand(TESE_Q, TOXE_Q);
+  bool TOMA = nand(LAPE, TAME);
+
+  bool TYTU = not(TAME);
+  bool SYCU = nor(TYTU, TEPA, TYFO_Q);
+  bool TACU = nand(TYTU, TYFO_Q);
+  bool TOPU = and(TULY, SYCU);
+  bool RACA = and(VONU_Q, SYCU);
+  bool VYWA = not(TOPU);
+  bool WENY = not(VYWA);
+  bool XADO = not(WENY);
+  bool PEBY = not(RACA);
+  bool NYBE = not(PEBY);
+  bool PUCO = not(NYBE);
+
+  bool BAKY = and(CUXY_Q, DYBE_Q);
+  bool CAKE = or(BAKY, DEZY_Q);
+  bool EDEN = not(BESE_Q);
+  bool FYCU = not(EDEN);
+  bool CYPY = not(CUXY_Q);
+  bool FONE = not(CYPY);
+  bool CAPE = not(BEGO_Q);
+  bool EKUD = not(CAPE);
+  bool CAXU = not(DYBE_Q);
+  bool ELYG = not(CAXU);
+
+  // CAXU ELYG CAPE EKUD CYPY FYCU EDEN FONE
+
+  bool GEBU = nand(EDEN, FONE, CAPE, CAXU);
+  bool WOMU = nand(EDEN, FONE, EKUD, CAXU);
+  bool GUNA = nand(FYCU, FONE, EKUD, CAXU);
+  bool FOCO = nand(FYCU, FONE, CAPE, CAXU);
+  bool DEWY = nand(EDEN, CYPY, CAPE, ELYG);
+  bool DEZO = nand(EDEN, CYPY, CAPE, CAXU);
+  bool DOGU = nand(FYCU, CYPY, CAPE, ELYG);
+  bool CUGU = nand(FYCU, CYPY, EKUD, CAPE); // this one is weird... schematic probably wrong, these all decode to numbers...
+  bool CUPE = nand(EDEN, CYPY, EKUD, CAXU);
+  bool CUVA = nand(FYCU, CYPY, CAPE, CAXU); // also bit weird? schematic says 0?01 but it seems to be a normal decode...
+
+  bool WYXO = or(DYTY, GEBU);
+  bool XUJO = or(DYTY, WOMU);
+  bool GAPE = or(DYTY, GUNA);
+  bool GUVE = or(DYTY, FOCO);
+  bool CAHO = or(DYTY, DEWY);
+  bool CEMY = or(DYTY, DEZO);
+  bool CATO = or(DYTY, DOGU);
+  bool CADO = or(DYTY, CUGU);
+  bool CECU = or(DYTY, CUPE);
+  bool BYBY = or(DYTY, CUVA);
+
+  // why so many signals?
+  bool GYFO = not(WYXO);
+  bool WEKA = not(XUJO);
+  bool GYVO = not(GAPE);
+  bool GUSA = not(GUVE);
+  bool BUKA = not(CAHO);
+  bool DYHU = not(CEMY);
+  bool DECU = not(CATO);
+  bool BEDE = not(CADO);
+  bool DUKE = not(CECU);
+  bool BUCO = not(BYBY);
+
+  CACU = not(GYFO); BUZY = not(GYFO); FUKE = not(GYFO);
+  ZAPE = not(WEKA); WUSE = not(WEKA); ZURU = not(WEKA);
+  FEFO = not(GYVO); GECY = not(GYVO); WABE = not(GYVO);
+  FEKA = not(GUSA); XYHA = not(GUSA); YFAG = not(GUSA);
+  CEXU = not(BUKA); AKOL = not(BUKA); BYMY = not(BUKA);
+  FUXU = not(DYHU); ENOB = not(DYHU); GENY = not(DYHU);
+  WEME = not(DECU); WUFA = not(DECU); FAKA = not(DECU);
+  CYLA = not(BEDE); DYMO = not(BEDE); BUCY = not(BEDE);
+  WOFO = not(DUKE); WYLU = not(DUKE); EWOT = not(DUKE);
+  ASYS = not(BUCO); AHOF = not(BUCO); BYVY = not(BUCO);
+
   //----------
   // registers
 
   bool WUTY_CLK_ = WUTY;
   if (WUTY_CLK && !WUTY_CLK_) {
-    FONO = GUZE;
-    EXUQ = DENY;
-    WAPO = GUGY;
-    WOMY = XYME;
-    WAFY = GYGY;
-    XUDY = GOWO;
-    GOTA = GYMA;
-    EGAV = FAME;
-    CEDY = DYDO;
-    EBOJ = FURO;
+    FONO_Q = GUZE;
+    EXUQ_Q = DENY;
+    WAPO_Q = GUGY;
+    WOMY_Q = XYME;
+    WAFY_Q = GYGY;
+    XUDY_Q = GOWO;
+    GOTA_Q = GYMA;
+    EGAV_Q = FAME;
+    CEDY_Q = DYDO;
+    EBOJ_Q = FURO;
   }
   if (!BYVA) {
-    FONO = 0;
-    EXUQ = 0;
-    WAPO = 0;
-    WOMY = 0;
-    WAFY = 0;
-    XUDY = 0;
-    GOTA = 0;
-    EGAV = 0;
-    CEDY = 0;
-    EBOJ = 0;
+    FONO_Q = 0;
+    EXUQ_Q = 0;
+    WAPO_Q = 0;
+    WOMY_Q = 0;
+    WAFY_Q = 0;
+    XUDY_Q = 0;
+    GOTA_Q = 0;
+    EGAV_Q = 0;
+    CEDY_Q = 0;
+    EBOJ_Q = 0;
   }
   WUTY_CLK = WUTY_CLK_;
 
   bool YWOK_CLK_ = YWOK;
   if (YWOK_CLK && !YWOK_CLK_) {
-    XEGU = YCEB;
-    YJEX = ZUCA;
-    XYJU = WONE;
-    YBOG = ZAXE;
-    WYSO = XAFU;
-    XOTE = YSES;
-    YZAB = ZECA;
-    XUSO = YDYV;
+    XEGU_Q = YCEB_L;
+    YJEX_Q = ZUCA_L;
+    XYJU_Q = WONE_L;
+    YBOG_Q = ZAXE_L;
+    WYSO_Q = XAFU_L;
+    XOTE_Q = YSES_L;
+    YZAB_Q = ZECA_L;
+    XUSO_Q = YDYV_L;
   }
   YWOK_CLK = YWOK_CLK_;
 
-  bool TOBU_ = TOBU;
-  bool VONU_ = VONU;
+  bool TOBU_Q_ = TOBU_Q;
+  bool VONU_Q_ = VONU_Q;
   bool TAVA_CLK_ = TAVA;
   if (TAVA_CLK && !TAVA_CLK_) {
-    TOBU_ = TULY;
-    VONU_ = !TOBU;
+    TOBU_Q_ = TULY;
+    VONU_Q_ = !TOBU_Q;
   }
   if (!XYMU) {
-    TOBU = 0;
-    VONU = 0;
+    TOBU_Q_ = 0;
+    VONU_Q_ = 0;
   }
-  TOBU = TOBU_;
-  VONU = VONU_;
+  TOBU_Q = TOBU_Q_;
+  VONU_Q = VONU_Q_;
   TAVA_CLK = TAVA_CLK_;
 
+  //----------
+  // more registers
+
   bool WUVU_Q_ = WUVU_Q;
-  bool WUVU_N_ = WUVU_N;
-  bool XOTA_CLK_ = XOTA;
-  if (XOTA_CLK && !XOTA_CLK_) {
-    WUVU_Q_ = WUVU_N;
-    WUVU_N_ = !WUVU_Q_;
-  }
-  if (!RESET_VIDEO) {
-    WUVU_Q_ = 0;
-    WUVU_N_ = !WUVU_Q_;
-  }
-  WUVU_N = !WUVU_Q_;
-  XOTA_CLK = XOTA_CLK_;
-
   bool WOSU_Q_ = WOSU_Q;
-  bool WOSU_N_ = WOSU_N;
-  bool XYFY_CLK_ = XYFY;
-  if (XYFY_CLK && !XYFY_CLK_) {
-    WOSU_Q_ = WUVU_N;
-    WOSU_N_ = !WOSU_Q_;
-  }
-  if (!RESET_VIDEO) {
-    WOSU_Q_ = 0;
-    WOSU_N_ = !WOSU_Q_;
-  }
-  WOSU_Q = WOSU_Q_;
-  WOSU_N = WOSU_N_;
-  XYFY_CLK = XYFY_CLK_;
-
   bool CENO_Q_ = CENO_Q;
   bool CATU_Q_ = CATU_Q;
   bool BYBA_Q_ = BYBA_Q;
-  bool XUPY_CLK_ = XUPY;
-  if (XUPY_CLK && !XUPY_CLK_) {
-    CENO_Q_ = BESU;
-    CATU_Q_ = ABOV;
-    BYBA_Q_ = FETO;
-  }
-  if (!ABEZ) {
-    CENO_Q_ = 0;
-    CATU_Q_ = 0;
-  }
-  if (!BAGY) {
-    BYBA_Q_ = 0;
-  }
+  bool DOBA_Q_ = DOBA_Q;
 
+  bool XOTA_CLK_ = XOTA;
+  bool XYFY_CLK_ = XYFY;
+  bool XUPY_CLK_ = XUPY;
+  bool CLK2_CLK_ = CLK2;
+
+  if (XOTA_CLK && !XOTA_CLK_) WUVU_Q_ = WUVU_N;
+  if (XYFY_CLK && !XYFY_CLK_) WOSU_Q_ = WUVU_N;
+  if (XUPY_CLK && !XUPY_CLK_) CENO_Q_ = BESU;
+  if (XUPY_CLK && !XUPY_CLK_) CATU_Q_ = ABOV;
+  if (XUPY_CLK && !XUPY_CLK_) BYBA_Q_ = FETO;
+  if (CLK2_CLK && !CLK2_CLK_) DOBA_Q_ = BYBA_Q;
+
+  if (!RESET_VIDEO) WUVU_Q_ = 0;
+  if (!RESET_VIDEO) WOSU_Q_ = 0;
+  if (!ABEZ) CENO_Q_ = 0;
+  if (!ABEZ) CATU_Q_ = 0;
+  if (!BAGY) BYBA_Q_ = 0;
+  if (!BAGY) DOBA_Q_ = 0;
+
+  WUVU_Q = WUVU_Q_;
+  WOSU_Q = WOSU_Q_;
   CENO_Q = CENO_Q_;
   CATU_Q = CATU_Q_;
   BYBA_Q = BYBA_Q_;
-
-
-
-
-  bool CLK2_CLK_ = CLK2;
-  bool DOBA_Q_ = (CLK2_CLK && !CLK2_CLK_) ? BYBA_Q : DOBA_Q;
-  if (!BAGY) DOBA_Q_ = 0;
-
   DOBA_Q = DOBA_Q_;
+
+  XOTA_CLK = XOTA_CLK_;
+  XYFY_CLK = XYFY_CLK_;
+  XUPY_CLK = XUPY_CLK_;
   CLK2_CLK = CLK2_CLK_;
 
+  //----------
+  // more registers
+
+  bool TYFO_Q_ = TYFO_Q;
+  bool SEBA_Q_ = SEBA_Q;
+  bool TOXE_Q_ = TOXE_Q;
+  bool TULY_Q_ = TULY_Q;
+  bool TESE_Q_ = TESE_Q;
+
+  if (LAPE_CLK && !LAPE)  TYFO_Q_ = TAME;
+  if (LAPE_CLK && !LAPE)  SEBA_Q_ = VONU_Q;
+  if (TOMA_CLK && !TOMA)  TOXE_Q_ = !TOXE_Q;
+  if (!TOXE_Q && TOXE_Q_) TULY_Q_ = !TULY_Q;
+  if (!TULY_Q && TULY_Q_) TESE_Q_ = !TESE_Q;
+
+  TYFO_Q = TYFO_Q_;
+  SEBA_Q = SEBA_Q_;
+  TOXE_Q = TOXE_Q_;
+  TULY_Q = TULY_Q_;
+  TESE_Q = TESE_Q_;
+
+  LAPE_CLK = LAPE;
+  TOMA_CLK = TOMA;
+
+  //----------
+  // more registers
+
+  bool DEZY_Q_ = DEZY_Q;
+  bool BESE_Q_ = BESE_Q;
+  bool CUXY_Q_ = CUXY_Q;
+  bool BEGO_Q_ = BEGO_Q;
+  bool DYBE_Q_ = DYBE_Q;
+
+    // not sure if this will tick right...
+  if (CLK1_CLK && !CLK1) DEZY_Q_ = DYTY;
+  if (CAKE_CLK && !CAKE) BESE_Q_ = !BESE_Q;
+  if (!BESE_Q && BESE_Q_) CUXY_Q_ = !CUXY_Q;
+  if (!CUXY_Q && CUXY_Q_) BEGO_Q_ = !BEGO_Q;
+  if (!BEGO_Q && BEGO_Q_) DYBE_Q_ = !DYBE_Q;
+
+  if (!RESET_VIDEO) DEZY_Q_ = 0;
+  if (!AZYB) BESE_Q_ = 0;
+  if (!AZYB) CUXY_Q_ = 0;
+  if (!AZYB) BEGO_Q_ = 0;
+  if (!AZYB) DYBE_Q_ = 0;
+
+  DEZY_Q = DEZY_Q_;
+  BESE_Q = BESE_Q_;
+  CUXY_Q = CUXY_Q_;
+  BEGO_Q = BEGO_Q_;
+  DYBE_Q = DYBE_Q_;
+
+  CLK1_CLK = CLK1;
+  CAKE_CLK = CAKE;
+
+  //----------
+  // unsunk signals
+
+  (void)XADO;
+  (void)TACU;
+  (void)XONO;
+  (void)TUVO;
+  (void)XEFY;
+  (void)PUCO;
 }

@@ -1,10 +1,17 @@
 #include "Types.h"
 
 // mystery signals 
-bool CLK1;
-bool CLK2;
-bool CLK_16384;
 bool ABOL_1MHZ;
+bool CLKIN_A;
+bool CLKIN_B;
+bool ATAL_4MHZ;
+bool CYBO_4MHZ;
+bool AJER_2MHZ;
+bool APU_RESET;
+
+bool FERO_Q;
+bool UMER;
+bool APU_RESET5n;
 
 bool CPU_RD;
 bool CPU_WR;
@@ -16,19 +23,19 @@ bool CPU_RAW_RD;
 
 bool A15_C;
 
-bool FEXXFFXXN;
+bool FEXXFFXXn;
 bool FF00RD;
 bool FF00WR;
-bool FF04_D0N;
-bool FF04_D1N;
 bool FF46;
 bool FF47;
 bool FF48;
 bool FF49;
 bool FF60_D0;
+bool FF04_FF07;
 bool FFXX;
+bool FF60_D1;
 
-bool TOVY_A0N;
+bool TOVY_A0n;
 
 bool FROM_CPU;
 bool FROM_CPU3;
@@ -48,14 +55,9 @@ bool OAM_ADR_CPU;
 bool OAM_B_CS;
 bool OAM_CLK;
 
-bool PHI_OUTN;
-
-bool RESET2;
-bool RESET6;
+bool RESET;
 bool RESET7;
-bool RESET7N;
-bool RESET_VIDEO2N;
-bool RESET_VIDEO;
+bool RESET_VIDEO2n;
 
 bool MATU_Q;
 bool MCS_IN;
@@ -63,15 +65,16 @@ bool MOE_IN;
 bool MWR_IN;
 bool NET02;
 
-bool T1N_T2;
-bool T1_T2N;
+bool T1nT2;
+bool T1T2n;
+bool T1nT2n;
 
-bool TYFO_QN;
 bool VAVA3;
 bool RUTU_OUT;
 bool NAPO_OUT;
 bool BURO_Q;
 
+bool TABA;
 bool MATE;
 bool ROXY;
 bool PURE;
@@ -174,8 +177,8 @@ bool BG_PIX_B_5;
 bool BG_PIX_B_6;
 bool BG_PIX_B_7;
 
-bool OBP0PIXELN;
-bool OBP1PIXELN;
+bool OBP0PIXELn;
+bool OBP1PIXELn;
 
 bool A0;
 bool A1;
@@ -382,9 +385,9 @@ void hard_div_tock(int tcycle, Bus bus) {
   const bool PHI_OUT = false;
   const bool BOGA1MHZ_NEG = false;
 
-  const bool T1N_T2N = false; // fixme
-  const bool T1N_T2 = false; // fixme
-  const bool T1_T2N = false;
+  const bool T1nT2n = false; // fixme
+  const bool T1nT2 = false; // fixme
+  const bool T1T2n = false;
   */
 
   //----------------------------------------
@@ -436,7 +439,7 @@ void hard_div_tock(int tcycle, Bus bus) {
   const bool AGUT = (AJAX ^ AROV ^ FROM_CPU4);
 
   const bool BATE = !(BUGO || AROV || ABOL_1MHZ);
-  const bool AWOD = (T1N_T2 || AGUT);
+  const bool AWOD = (T1nT2 || AGUT);
   const bool ABUZ = !AWOD;
   const bool BASU = !BATE;
   const bool BUKE = !BASU;
@@ -447,7 +450,7 @@ void hard_div_tock(int tcycle, Bus bus) {
   const bool TUBO = ABOL_1MHZ ^ UPYF;
   const bool UPOF = (div & 0x8000);
   const bool UNUT = (UPOF && TUBO);
-  const bool TABA = (T1N_T2 || T1_T2N || UNUT);
+  const bool TABA = (T1nT2 || T1T2n || UNUT);
 
   const bool BELE = !BUTO;
   const bool ATEZ = !CLKIN_A;
@@ -469,7 +472,7 @@ void hard_div_tock(int tcycle, Bus bus) {
 
   static bool AFER = 0;
   if (BOMA_NEG)   AFER = ASOL;
-  if (!T1N_T2N) AFER = 0;
+  if (!T1nT2n) AFER = 0;
 
   const bool BOWA = !BEDO;
   const bool AVOR = (AFER | ASOL);

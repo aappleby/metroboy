@@ -9,8 +9,8 @@ extern bool CLK2;
 
 extern bool NAPO_OUT;
 extern bool RUTU_OUT;
-extern bool FF04_D0N;
-extern bool FF04_D1N;
+extern bool FF04_D0n;
+extern bool FF04_D1n;
 extern bool FF40_D7;
 extern bool RESET_VIDEO;
 
@@ -65,7 +65,7 @@ void tick_lcdcontrol() {
 
   bool LOFU = not(RUTU_OUT);
   
-  bool NERU = !(V7 || V6 || V5 || V4 || V3 || V2 || V1 || V1); // biiig nor
+  bool NERU = !(V7 || V6 || V5 || V4 || V3 || V2 || V1); // biiig nor
   bool MURE = not(MEDA_Q);
 
   PIN_S = MURE;
@@ -74,8 +74,8 @@ void tick_lcdcontrol() {
   bool MECO = not(MAGU);
   bool KEBO = not(MECO);
   bool KASA = not(PURE);
-  bool UMOB = not(FF04_D0N);
-  bool USEC = not(FF04_D1N);
+  bool UMOB = not(FF04_D0n);
+  bool USEC = not(FF04_D1n);
   bool KEDY = not(FF40_D7);
   bool KAHE = amux2(FF40_D7, KASA, KEDY, UMOB);
   bool KUPA = amux2(FF40_D7, KEBO, KEDY, USEC);

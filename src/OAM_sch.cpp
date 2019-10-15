@@ -31,13 +31,13 @@ extern bool XUPY;
 extern bool CLK3;
 extern bool OAM_CLK;
 extern bool RESET_VIDEO;
-extern bool RESET_VIDEO2N;
+extern bool RESET_VIDEO2n;
 extern bool ABEZ;
 extern bool CPU_WR2;
-extern bool TYFO_QN;
+extern bool TYFO_Qn;
 extern bool CPU_RD2;
 extern bool WARU;
-extern bool RESET7N;
+extern bool RESET7n;
 extern bool XARE;
 extern bool WYJA;
 
@@ -94,20 +94,20 @@ void tick_oam() {
   OAM_CLK = ZODO;
 
   bool ATAR = not(RESET_VIDEO);
-  RESET_VIDEO2N = ATAR;
+  RESET_VIDEO2n = ATAR;
 
   bool AWOH = not(XUPY);
   bool ABAF = not(CATU);
 
   bool BYHA = unk3(ANEL, ABAF, ABEZ);
   bool ATEJ = not(BYHA);
-  bool ANOM = nor(RESET_VIDEO2N, ATEJ);
+  bool ANOM = nor(RESET_VIDEO2n, ATEJ);
   bool AZYB = not(ATEJ);
   bool AMYG = not(RESET_VIDEO);
   bool ABAK = or(ATEJ, AMYG);
   bool BYVA = not(ABAK);
 
-  bool ASEN = or(RESET_VIDEO2N, AVAP);
+  bool ASEN = or(RESET_VIDEO2n, AVAP);
   bool BOGE = not(MATU_Q);
   bool BESU = unk2(CATU, ASEN);
   bool AJON = and(XYMU, BOGE);
@@ -128,7 +128,7 @@ void tick_oam() {
   bool XUPA = not(WUJE);
 
   bool AJEP = and(ACYL, XOCE);
-  bool WEFY = and(TUVO, TYFO_QN);
+  bool WEFY = and(TUVO, TYFO_Qn);
   bool XUJA = not(WEFY);
   bool BOFE = not(CATY);
   bool BOTA = nor(BOFE, SARO, CPU_RD2);
@@ -310,7 +310,7 @@ void tick_oam() {
   bool XECY_ = XECY;
   bool XECY_CLK_ = XUCA;
   if (XECY_CLK && !XECY_CLK_) {
-    XECY_ = RESET7N;
+    XECY_ = RESET7n;
   }
   XECY_CLK = XECY_CLK_;
 

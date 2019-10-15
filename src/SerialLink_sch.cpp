@@ -5,19 +5,19 @@
 //----------
 // inputs
 
-extern bool TOVY_A0N;
+extern bool TOVY_A0n;
 extern bool RESET2;
 extern bool SCK_IN;
 extern bool SCK_DIR;
 extern bool CLK_16384;
 extern bool FFXX;
-extern bool TOLA_A1N;
+extern bool TOLA_A1n;
 extern bool SIN_IN;
 
 //----------
 // outputs
 
-bool SER_TICKN;
+bool SER_TICKn;
 bool INT_SERIAL;
 bool A00_07;
 
@@ -49,8 +49,8 @@ void tick_serial() {
   bool SARE = nor(A7, A7, A7, A4, A3);
   bool SEFY = not(A2);
   bool SANO = and(SARE, SEFY, FFXX);
-  bool UWAM = nand(TOVY_A0N, A1, CPU_WR, SANO);
-  bool UCOM = nand(SANO, CPU_RD, A1, TOVY_A0N);
+  bool UWAM = nand(TOVY_A0n, A1, CPU_WR, SANO);
+  bool UCOM = nand(SANO, CPU_RD, A1, TOVY_A0n);
   bool CARO = and(UWAM, RESET2);
   bool CAVE = mux2(COTY_Q, SCK_IN, CULY_Q);
   bool DAWA = or(CAVE, !ETAF_Q);
@@ -66,7 +66,7 @@ void tick_serial() {
   bool JAGO = not(SCK_DIR);
   bool KUJO = nor(JAGO, DAWA);
   bool EDYL = not(DAWA);
-  SER_TICKN = EDYL;
+  SER_TICKn = EDYL;
   bool COBA = CALY_Q;
   bool CABY = and(COBA, RESET2);
 
@@ -75,9 +75,9 @@ void tick_serial() {
 
   A00_07 = SARE;
 
-  bool URYS = nand(SANO, CPU_WR, TOLA_A1N, A0);
+  bool URYS = nand(SANO, CPU_WR, TOLA_A1n, A0);
   bool DAKU = not(URYS);
-  bool EPYT = not(SER_TICKN);
+  bool EPYT = not(SER_TICKn);
   bool DEHO = not(EPYT);
   bool DAWE = not(DEHO);
   bool CAGE = not(SIN_IN);
@@ -109,7 +109,7 @@ void tick_serial() {
   bool EFAB = not(!EROD_Q);
   bool ETAK = not(!EDER_Q);
 
-  bool UFEG = and(SANO, CPU_RD, TOLA_A1N, A0);
+  bool UFEG = and(SANO, CPU_RD, TOLA_A1n, A0);
   if (UFEG) {
     D0 = CUGY;
     D1 = DUDE;
@@ -186,7 +186,7 @@ void tick_serial() {
   if (EROD_CLK && !EPYT) EROD_Q_ = EJAB_Q;
   if (EDER_CLK && !EPYT) EDER_Q_ = EROD_Q;
 
-  if (ELYS_CLK && !SER_TICKN) ELYS_Q_ = EDER_Q;
+  if (ELYS_CLK && !SER_TICKn) ELYS_Q_ = EDER_Q;
 
   // this doesn't seem right... not sure UNK4 is really a sr ff
   
@@ -218,7 +218,7 @@ void tick_serial() {
   EJAB_CLK = EPYT;
   EROD_CLK = EPYT;
   EDER_CLK = EPYT;
-  ELYS_CLK = SER_TICKN;
+  ELYS_CLK = SER_TICKn;
 
   CUBA_Q = CUBA_Q_;
   DEGU_Q = DEGU_Q_;

@@ -40,8 +40,39 @@ inline bool amux4(bool a0, bool b0, bool a1, bool b1, bool a2, bool b2, bool a3,
   return (a0 & b0) | (a1 & b1) | (a2 & b2) | (a3 & b3);
 }
 
+inline uint16_t pack4(uint8_t n0, uint8_t n1, uint8_t n2, uint8_t n3) {
+  return (n0 << 0) | (n1 << 4) | (n2 << 8) | (n3 << 12);
+}
+
+inline uint8_t pack(bool d0, bool d1) {
+  return (d0 << 0) | (d1 << 1);
+}
+
+inline uint8_t pack(bool d0, bool d1, bool d2, bool d3) {
+  return (d0 << 0) | (d1 << 1) | (d2 << 2) | (d3 << 3);
+}
+
 inline void pack(uint8_t& x, bool d0, bool d1, bool d2, bool d3, bool d4, bool d5, bool d6, bool d7) {
   x = (d0 << 0) | (d1 << 1) | (d2 << 2) | (d3 << 3) | (d4 << 4) | (d5 << 5) | (d6 << 6) | (d7 << 7);
+}
+
+inline void unpack4(uint16_t x, uint8_t& n0, uint8_t& n1, uint8_t& n2, uint8_t& n3) {
+  n0 = (x >> 0) & 0x0F;
+  n1 = (x >> 4) & 0x0F;
+  n2 = (x >> 8) & 0x0F;
+  n3 = (x >> 12) & 0x0F;
+}
+
+inline void unpack(uint8_t x, bool& d0, bool& d1) {
+  d0 = x & 0x01;
+  d1 = x & 0x02;
+}
+
+inline void unpack(uint8_t x, bool& d0, bool& d1, bool& d2, bool& d3) {
+  d0 = x & 0x01;
+  d1 = x & 0x02;
+  d2 = x & 0x04;
+  d3 = x & 0x08;
 }
 
 inline void unpack(uint8_t x, bool& d0, bool& d1, bool& d2, bool& d3, bool& d4, bool& d5, bool& d6, bool& d7) {

@@ -10,8 +10,8 @@ extern bool NET02;
 extern bool MOE_IN;
 extern bool MWR_IN;
 extern bool MCS_IN;
-extern bool T1N_T2;
-extern bool FEXXFFXXN;
+extern bool T1nT2;
+extern bool FEXXFFXXn;
 extern bool FF40_D4;
 extern bool MATU_Q;
 extern bool MOPA_PHI;
@@ -67,7 +67,7 @@ bool MD_B;
 // registers
 
 static bool SOTO_Q = 0;
-static bool SOTO_N = 1;
+static bool SOTO_Qn = 1;
 static bool SOTO_CLK = 0;
 
 //----------
@@ -99,7 +99,7 @@ void tock_vram() {
   bool BYCU = nor(CUFE, XUJY, AVER);
   bool COTA = not(BYCU);
 
-  bool SYRO = not(FEXXFFXXN);
+  bool SYRO = not(FEXXFFXXn);
   bool TEFA = nor(SYRO, TEXO);
   bool SOSE = and(A15, TEFA); // odd...
   bool SOHO = and(TACU, TEXY);
@@ -111,7 +111,7 @@ void tock_vram() {
   bool TUJA = and(SOSE, CPU_RD_SYNC);
   bool TEGU = and(SOSE, AFAS);
   bool TAVY = not(MOE_IN);
-  bool TUTO = and(NET02, SOTO_N);
+  bool TUTO = and(NET02, SOTO_Qn);
   bool SUDO = not(MWR_IN);
   bool TEFY = not(MCS_IN);
 
@@ -289,7 +289,7 @@ void tock_vram() {
     MA1 = XUXU;
   }
 
-  bool LYRA = nand(T1N_T2, RORU);
+  bool LYRA = nand(T1nT2, RORU);
 
   bool RYBA = not(D7_IN);
   bool RUZY = not(D1_IN);
@@ -479,8 +479,8 @@ void tock_vram() {
 
   bool SOTO_CLK_ = SYCY;
   if (SOTO_CLK && !SOTO_CLK_) {
-    SOTO_Q = SOTO_N;
-    SOTO_N = !SOTO_Q;
+    SOTO_Q  = SOTO_Qn;
+    SOTO_Qn = !SOTO_Q;
   }
   SOTO_CLK = SOTO_CLK_;
 }

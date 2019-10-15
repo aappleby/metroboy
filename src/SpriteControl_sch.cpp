@@ -6,7 +6,7 @@
 // inputs
 
 extern bool RESET_VIDEO;
-extern bool RESET_VIDEO2N;
+extern bool RESET_VIDEO2n;
 
 extern bool FF40_D1;
 extern bool FF40_D2;
@@ -60,6 +60,7 @@ extern bool EKES;
 
 bool SPR_MATCH;
 bool FEPO;
+bool TYFO_Qn;
 
 bool XYSO;
 bool XOCE;
@@ -418,7 +419,7 @@ void tick_spritecontrol() {
   bool XOTA = not(XYVA);
   bool XYFY = not(XOTA);
   bool XUPY = not(WUVU_N);
-  bool ABEZ = not(RESET_VIDEO2N);
+  bool ABEZ = not(RESET_VIDEO2n);
   bool BALU = not(ANOM);
   bool BAGY = not(BALU);
   bool WOJO = nor(WUVU_N, WOSU_N);
@@ -627,7 +628,7 @@ void tick_spritecontrol() {
   if (!TOXE_Q && TOXE_Q_) TULY_Q_ = !TULY_Q;
   if (!TULY_Q && TULY_Q_) TESE_Q_ = !TESE_Q;
 
-  TYFO_Q = TYFO_Q_;
+  TYFO_Q = TYFO_Q_; TYFO_Qn = !TYFO_Q_;
   SEBA_Q = SEBA_Q_;
   TOXE_Q = TOXE_Q_;
   TULY_Q = TULY_Q_;

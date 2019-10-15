@@ -46,8 +46,8 @@ extern bool FF40_D1;
 
 extern bool VAVA3;
 
-extern bool OBP0PIXELN;
-extern bool OBP1PIXELN;
+extern bool OBP0PIXELn;
+extern bool OBP1PIXELn;
 
 extern bool BGP_D0;
 extern bool BGP_D1;
@@ -103,7 +103,7 @@ void tick_pixelmux() {
   bool POKA = nor(NULY, RUTA, RYFU);
   BGPIXELN = POKA;
 
-  bool LAVA = not(OBP0PIXELN);
+  bool LAVA = not(OBP0PIXELn);
   bool WOLO = not(WELE);
   bool WYRU = not(VUMU);
 
@@ -116,7 +116,7 @@ void tick_pixelmux() {
   bool WALY = amux4(VYRO, OBP0_D6, VATA, OBP0_D4, VOLO, OBP0_D2, VUGO, OBP0_D0);
 
   bool MABY = not(XULA);
-  bool LUKU = not(OBP1PIXELN);
+  bool LUKU = not(OBP1PIXELn);
   bool MEXA = not(WOXA);
   bool LOZO = not(MEXA);
   bool LYLE = not(MABY);

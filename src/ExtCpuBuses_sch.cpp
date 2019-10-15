@@ -8,7 +8,7 @@
 extern bool PIN_A0;
 
 extern bool ABUZ;
-extern bool FEXXFFXXN;
+extern bool FEXXFFXXn;
 extern bool CPU_WR_WAT;
 extern bool CPU_RAW_RD;
 extern bool CPU_RD_SYNC;
@@ -29,8 +29,8 @@ extern bool DMA_A13;
 extern bool DMA_A14;
 extern bool DMA_A15;
 
-extern bool T1N_T2;
-extern bool T1_T2N;
+extern bool T1nT2;
+extern bool T1T2n;
 
 //----------
 // outputs
@@ -88,7 +88,7 @@ bool D5_D;
 bool A15;
 bool NET01;
 bool CS_OUT;
-bool TOLA_A1N;
+bool TOLA_A1n;
 
 //----------
 // registers
@@ -115,27 +115,27 @@ void tick_extbus() {
   bool SORE = not(A15);
   bool TEVY = and(A13, A14, SORE);
   bool TEXO = and(FROM_CPU4, TEVY);
-  bool MULE = not(T1_T2N);
-  bool LOXO = unk3(MULE, TEXO, T1_T2N);
+  bool MULE = not(T1T2n);
+  bool LOXO = unk3(MULE, TEXO, T1T2n);
   bool LASY = not(LOXO);
   bool MATE = not(LASY);
   bool TOLA = not(A1);
 
-  TOLA_A1N = TOLA;
+  TOLA_A1n = TOLA;
 
   bool LEVO = not(TEXO);
   bool LAGU = unk3(CPU_RAW_RD, LEVO, FROM_CPU3);
   bool LYWE = not(LAGU);
-  bool MOCA = nor(TEXO, T1_T2N);
+  bool MOCA = nor(TEXO, T1T2n);
   bool MEXO = not(CPU_RD_SYNC);
   bool NEVY = or(MEXO, MOCA);
   bool MOTY = or(MOCA, LYWE);
   bool PUVA = or(NEVY, LUMA);
   bool TYMU = or(LUMA, MOTY);
-  bool USUF = nor(T1N_T2, PUVA);
+  bool USUF = nor(T1nT2, PUVA);
   bool UVER = nand(PUVA, NET01);
   bool UGAC = nand(NET01, TYMU);
-  bool URUN = nor(TYMU, T1N_T2);
+  bool URUN = nor(TYMU, T1nT2);
 
   WR_C = USUF;
   WR_A = UVER;
@@ -146,7 +146,7 @@ void tick_extbus() {
   bool SOGY = not(A14);
   bool TUMA = and(A13, SOGY, A15);
   bool TYNU = unk3(A15, A14, TUMA);
-  bool TOZA = and(TYNU, ABUZ, FEXXFFXXN);
+  bool TOZA = and(TYNU, ABUZ, FEXXFFXXn);
   bool SOBY = nor(A15, CPU_WR_WAT); // schematic has a question mark?
   bool SEPY = nand(ABUZ, SOBY);
 
@@ -184,28 +184,28 @@ void tick_extbus() {
   bool MASU = mux2(DMA_A9, LYSA_L, LUMA);
   bool MANO = mux2(DMA_A8, LUNO_L, LUMA);
 
-  bool TOVA = not(T1N_T2);
+  bool TOVA = not(T1nT2);
   NET01 = TOVA;
 
-  bool PAHY = nor(T1N_T2, PEGE);
+  bool PAHY = nor(T1nT2, PEGE);
   bool PUHE = nand(PEGE, TOVA);
 
-  bool LEVA = nor(T1N_T2, MUCE);
+  bool LEVA = nor(T1nT2, MUCE);
   bool LABE = nand(MUCE, TOVA);
 
-  bool LOSO = nor(T1N_T2, MOJY);
+  bool LOSO = nor(T1nT2, MOJY);
   bool LUCE = nand(MOJY, TOVA);
 
-  bool LYNY = nor(T1N_T2, MALE);
+  bool LYNY = nor(T1nT2, MALE);
   bool LEPY = nand(MALE, TOVA);
 
-  bool RORE = nor(T1N_T2, PAMY);
+  bool RORE = nor(T1nT2, PAMY);
   bool ROXU = nand(PAMY, TOVA);
 
-  bool MENY = nor(T1N_T2, MASU);
+  bool MENY = nor(T1nT2, MASU);
   bool MUNE = nand(MASU, TOVA);
 
-  bool MEGO = nor(T1N_T2, MANO);
+  bool MEGO = nor(T1nT2, MANO);
   bool MYNY = nand(MANO, TOVA);
 
   A14_D = PAHY;
@@ -278,7 +278,7 @@ void tick_extbus() {
   A0_A = KUPO;
 
   bool REDU = not(CPU_RD);
-  RORU = mux2(REDU, MOTY, T1N_T2);
+  RORU = mux2(REDU, MOTY, T1nT2);
   LULA = not(RORU);
 
   bool ROGY = nor(RORU, D6);

@@ -11,7 +11,7 @@ extern bool RESET6;
 extern bool FF46;
 extern bool CPU_RD2;
 extern bool CPU_WR2;
-extern bool PHI_OUTN;
+extern bool PHI_OUTn;
 extern bool AMAB;
 
 //----------
@@ -38,6 +38,8 @@ bool VRAM_TO_OAM;
 
 //----------
 // registers
+
+// FIXME _Q everything
 
 bool MAKA = 0;
 bool MAKA_CLK =  0;
@@ -84,11 +86,11 @@ void tick_dma() {
   CATY = not(DECY);
   bool NAXY = nor(MAKA, LUVY);
 
-  bool MOPA = not(PHI_OUTN);
+  bool MOPA = not(PHI_OUTn);
   MOPA_PHI = MOPA;
 
-  bool LENE_N = not(LENE);
-  bool LOKO = nand(RESET6, LENE_N);
+  bool LENE_Qn = not(LENE);
+  bool LOKO = nand(RESET6, LENE_Qn);
 
   bool MOLU = nand(FF46, CPU_RD2);
   bool LAVY = nand(FF46, CPU_WR2);
@@ -101,11 +103,11 @@ void tick_dma() {
 
   bool POWU = and(MATU, NAXY);
 
-  bool MYTE_N = not(MYTE);
+  bool MYTE_Qn = not(MYTE);
 
   // FIXME loopy thing, glitch filter? def broken.
-  bool LARA = nand(/*LOKY,*/ MYTE_N, RESET6);
-  bool LOKY = nand(LARA, LENE_N);
+  bool LARA = nand(/*LOKY,*/ MYTE_Qn, RESET6);
+  bool LOKY = nand(LARA, LENE_Qn);
 
   // dma_a == 159
   bool NAVO = nand(nand(DMA_A0, DMA_A1, DMA_A2), nand(DMA_A3, DMA_A4, DMA_A7));
@@ -162,7 +164,7 @@ void tick_dma() {
   }
 
   bool LAPA = not(LOKO);
-  bool META = and(PHI_OUTN, LOKY);
+  bool META = and(PHI_OUTn, LOKY);
 
   DMA_A0 = NAKY;
   DMA_A1 = PYRO;
@@ -217,7 +219,7 @@ void tick_dma() {
   }
 
   bool LUVY_ = LUVY;
-  bool LUVY_CLK_ = PHI_OUTN;
+  bool LUVY_CLK_ = PHI_OUTn;
   if (LUVY_CLK && !LUVY_CLK_) {
     LUVY_ = LUPA;
   }
@@ -235,7 +237,7 @@ void tick_dma() {
   }
 
   bool MATU_ = MATU;
-  bool MATU_CLK_ = PHI_OUTN;
+  bool MATU_CLK_ = PHI_OUTn;
   if (MATU_CLK && !MATU_CLK_) {
     MATU_ = LOKY;
   }

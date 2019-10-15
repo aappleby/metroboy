@@ -302,6 +302,8 @@ void tick_extbus() {
   bool LAVO = nand(CPU_RAW_RD, TEXO, FROM_CPU5);
 
   // the rest of this is bus muxes...
+  // A0-A7 tristate driven by external pins when NET01 is high? but a5 driven off a5_c?
+  // and A8-A14 but not A15?
 
   (void)LAVO;
 }

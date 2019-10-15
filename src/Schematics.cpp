@@ -4,13 +4,13 @@
 bool CLK1;
 bool CLK2;
 bool CLK_16384;
+bool ABOL_1MHZ;
 
 bool CPU_RD;
 bool CPU_WR;
 bool CPU_WR_WAT;
 
 bool CPU_RD2;
-bool CPU_RD_SYNC;
 bool CPU_WR2;
 bool CPU_RAW_RD;
 

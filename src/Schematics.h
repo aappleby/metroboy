@@ -2,24 +2,25 @@
 
 #include <stdint.h>
 
-inline bool and  (bool a, bool b)                         { return (a && b);  }
-inline bool and  (bool a, bool b, bool c)                 { return (a && b && c);  }
-inline bool and  (bool a, bool b, bool c, bool d)         { return (a && b && c && d);  }
-
-inline bool or   (bool a, bool b)                         { return (a || b);  }
-inline bool or   (bool a, bool b, bool c)                 { return (a || b || c);  }
-inline bool or   (bool a, bool b, bool c, bool d)         { return (a || b || c || d);  }
-
-inline bool xor  (bool a, bool b)                         { return (a ^ b); }
-
-inline bool nor  (bool a, bool b)                         { return !(a || b); }
-inline bool nor  (bool a, bool b, bool c)                 { return !(a || b || c); }
-inline bool nor  (bool a, bool b, bool c, bool d)         { return !(a || b || c || d); }
-
-inline bool nand (bool a, bool b)                         { return !(a && b); }
-inline bool nand (bool a, bool b, bool c)                 { return !(a && b && c); }
-inline bool nand (bool a, bool b, bool c, bool d)         { return !(a && b && c && d); }
-inline bool nand (bool a, bool b, bool c, bool d, bool e) { return !(a && b && c && d && e); }
+inline bool and  (bool a, bool b)                                 { return (a && b);  }
+inline bool and  (bool a, bool b, bool c)                         { return (a && b && c);  }
+inline bool and  (bool a, bool b, bool c, bool d)                 { return (a && b && c && d);  }
+                                                                  
+inline bool or   (bool a, bool b)                                 { return (a || b);  }
+inline bool or   (bool a, bool b, bool c)                         { return (a || b || c);  }
+inline bool or   (bool a, bool b, bool c, bool d)                 { return (a || b || c || d);  }
+                                                                  
+inline bool xor  (bool a, bool b)                                 { return (a ^ b); }
+                                                                  
+inline bool nor  (bool a, bool b)                                 { return !(a || b); }
+inline bool nor  (bool a, bool b, bool c)                         { return !(a || b || c); }
+inline bool nor  (bool a, bool b, bool c, bool d)                 { return !(a || b || c || d); }
+inline bool nor  (bool a, bool b, bool c, bool d, bool e)         { return !(a || b || c || d || e); }
+                                                                  
+inline bool nand (bool a, bool b)                                 { return !(a && b); }
+inline bool nand (bool a, bool b, bool c)                         { return !(a && b && c); }
+inline bool nand (bool a, bool b, bool c, bool d)                 { return !(a && b && c && d); }
+inline bool nand (bool a, bool b, bool c, bool d, bool e)         { return !(a && b && c && d && e); }
 inline bool nand (bool a, bool b, bool c, bool d, bool e, bool f) { return !(a && b && c && d && e && f); }
 
 inline bool not  (bool a)                                 { return !a; }
@@ -54,6 +55,8 @@ inline void unpack(uint8_t x, bool& d0, bool& d1, bool& d2, bool& d3, bool& d4, 
   d7 = x & 0x80;
 }
 
+extern bool CPU_RD;
+extern bool CPU_WR;
 
 extern bool A0;
 extern bool A1;

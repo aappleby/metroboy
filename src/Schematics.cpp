@@ -3,6 +3,10 @@
 // mystery signals 
 bool CLK1;
 bool CLK2;
+bool CLK_16384;
+
+bool CPU_RD;
+bool CPU_WR;
 bool CPU_RD2;
 bool CPU_RD_SYNC;
 bool CPU_WR2;
@@ -17,11 +21,18 @@ bool FF47;
 bool FF48;
 bool FF49;
 bool FF60_D0;
+bool FFXX;
+
+bool TOLA_A1N;
+bool TOVY_A0N;
 
 bool FROM_CPU;
 bool FROM_CPU5;
 
+bool SCK_IN;
+bool SCK_DIR;
 bool SER_OUT;
+bool SIN_IN;
 
 bool OAM_A_CS;
 bool OAM_ADDR_CPU;

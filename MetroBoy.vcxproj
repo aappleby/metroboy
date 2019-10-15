@@ -138,6 +138,7 @@
     <ClCompile Include="src\DMA_sch.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
+    <ClCompile Include="src\LcdControl_scd.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\MMU.cpp" />
     <ClCompile Include="src\OAM.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="src\test_wpol.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Types.cpp" />
+    <ClCompile Include="src\VideoRegs_sch.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
     <ClCompile Include="src\VRAM_sch.cpp" />
     <ClCompile Include="src\Wishbone.cpp" />

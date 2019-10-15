@@ -42,43 +42,40 @@ bool OBP1_D2;
 bool OBP1_D0;
 
 //----------
-// mystery signals
-
-//----------
 // registers
 
 // BGP
-bool MENA = 0;
-bool MORU = 0;
-bool MAXY = 0;
-bool NUSY = 0;
-bool MOGY = 0;
-bool MUKE = 0;
-bool PYLU = 0;
-bool PAVO = 0;
-bool BGP_CLK;
+static bool MENA;
+static bool MORU;
+static bool MAXY;
+static bool NUSY;
+static bool MOGY;
+static bool MUKE;
+static bool PYLU;
+static bool PAVO;
+static bool BGP_CLK;
 
 // OBP0
-bool XANA = 0;
-bool XYZE = 0;
-bool XALO = 0;
-bool XUKY = 0;
-bool XUPO = 0;
-bool XERU = 0;
-bool XOVA = 0;
-bool XUFU = 0;
-bool OBP0_CLK = 0;
+static bool XANA;
+static bool XYZE;
+static bool XALO;
+static bool XUKY;
+static bool XUPO;
+static bool XERU;
+static bool XOVA;
+static bool XUFU;
+static bool OBP0_CLK;
 
 // OBP1
-bool LUXO = 0;
-bool LUGU = 0;
-bool LOSE = 0;
-bool LAWO = 0;
-bool LEPU = 0;
-bool LUNE = 0;
-bool MOSA = 0;
-bool MOXY = 0;
-bool OBP1_CLK = 0;
+static bool LUXO;
+static bool LUGU;
+static bool LOSE;
+static bool LAWO;
+static bool LEPU;
+static bool LUNE;
+static bool MOSA;
+static bool MOXY;
+static bool OBP1_CLK;
 
 //-----------------------------------------------------------------------------
 

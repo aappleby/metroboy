@@ -116,73 +116,73 @@ bool ASYS; bool AHOF; bool BYVY;
 // registers
 
 // sprite hit regs
-bool FONO_Q;
-bool EXUQ_Q;
-bool WAPO_Q;
-bool WOMY_Q;
-bool WAFY_Q;
-bool XUDY_Q;
-bool GOTA_Q;
-bool EGAV_Q;
-bool CEDY_Q;
-bool EBOJ_Q;
-bool WUTY_CLK;
+static bool FONO_Q;
+static bool EXUQ_Q;
+static bool WAPO_Q;
+static bool WOMY_Q;
+static bool WAFY_Q;
+static bool XUDY_Q;
+static bool GOTA_Q;
+static bool EGAV_Q;
+static bool CEDY_Q;
+static bool EBOJ_Q;
+static bool WUTY_CLK;
 
 // oam_b latch
-bool YCEB_L;
-bool ZUCA_L;
-bool WONE_L;
-bool ZAXE_L;
-bool XAFU_L;
-bool YSES_L;
-bool ZECA_L;
-bool YDYV_L;
+static bool YCEB_L;
+static bool ZUCA_L;
+static bool WONE_L;
+static bool ZAXE_L;
+static bool XAFU_L;
+static bool YSES_L;
+static bool ZECA_L;
+static bool YDYV_L;
 
 // sprite y comparator reg?
-bool XEGU_Q;
-bool YJEX_Q;
-bool XYJU_Q;
-bool YBOG_Q;
-bool WYSO_Q;
-bool XOTE_Q;
-bool YZAB_Q;
-bool XUSO_Q;
-bool YWOK_CLK;
+static bool XEGU_Q;
+static bool YJEX_Q;
+static bool XYJU_Q;
+static bool YBOG_Q;
+static bool WYSO_Q;
+static bool XOTE_Q;
+static bool YZAB_Q;
+static bool XUSO_Q;
+static bool YWOK_CLK;
 
-bool TOBU_Q;
-bool VONU_Q;
-bool TAVA_CLK;
+static bool TOBU_Q;
+static bool VONU_Q;
+static bool TAVA_CLK;
 
-bool WUVU_Q;
-bool XOTA_CLK;
+static bool WUVU_Q;
+static bool XOTA_CLK;
 
-bool WOSU_Q;
-bool XYFY_CLK;
+static bool WOSU_Q;
+static bool XYFY_CLK;
 
-bool CENO_Q;
-bool CATU_Q;
-bool BYBA_Q;
-bool XUPY_CLK;
+static bool CENO_Q;
+static bool CATU_Q;
+static bool BYBA_Q;
+static bool XUPY_CLK;
 
-bool DOBA_Q;
-bool CLK2_CLK;
+static bool DOBA_Q;
+static bool CLK2_CLK;
 
-bool TYFO_Q;
-bool SEBA_Q;
-bool TOXE_Q;
-bool TULY_Q;
-bool TESE_Q;
+static bool TYFO_Q;
+static bool SEBA_Q;
+static bool TOXE_Q;
+static bool TULY_Q;
+static bool TESE_Q;
 
-bool LAPE_CLK;
-bool TOMA_CLK;
+static bool LAPE_CLK;
+static bool TOMA_CLK;
 
-bool DEZY_Q;
-bool BESE_Q;
-bool CUXY_Q;
-bool BEGO_Q;
-bool DYBE_Q;
-bool CLK1_CLK;
-bool CAKE_CLK;
+static bool DEZY_Q;
+static bool BESE_Q;
+static bool CUXY_Q;
+static bool BEGO_Q;
+static bool DYBE_Q;
+static bool CLK1_CLK;
+static bool CAKE_CLK;
 
 //-----------------------------------------------------------------------------
 

@@ -62,22 +62,22 @@ extern bool WUZY;
 // registers
 
 // sprite scan counter
-bool YFEL;
-bool WEWY;
-bool GOSO;
-bool ELYN;
-bool FAHA;
-bool FONY;
-bool YFEL_CLK = 0;
+static bool YFEL;
+static bool WEWY;
+static bool GOSO;
+static bool ELYN;
+static bool FAHA;
+static bool FONY;
+static bool YFEL_CLK = 0;
 
-bool ANEL;
-bool ANEL_CLK;
+static bool ANEL;
+static bool ANEL_CLK;
 
-bool XECY;
-bool XECY_CLK;
+static bool XECY;
+static bool XECY_CLK;
 
-bool XUVA;
-bool XUVA_CLK;
+static bool XUVA;
+static bool XUVA_CLK;
 
 //-----------------------------------------------------------------------------
 // 28_OAM.png

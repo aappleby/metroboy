@@ -36,12 +36,12 @@ bool WENU;
 //----------
 // registers
 
-bool XECU;
-bool YDUF;
-bool XOBE;
-bool ZUZE;
-bool XEDY;
-bool XADU;
+static bool XECU;
+static bool YDUF;
+static bool XOBE;
+static bool ZUZE;
+static bool XEDY;
+static bool XADU;
 
 //-----------------------------------------------------------------------------
 // (the sprite store is just a 10-bit memory...)

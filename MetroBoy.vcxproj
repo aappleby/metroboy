@@ -138,6 +138,7 @@
     <ClCompile Include="src\DMA_sch.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
+    <ClCompile Include="src\Joypad_sch.cpp" />
     <ClCompile Include="src\LcdControl_scd.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\MMU.cpp" />

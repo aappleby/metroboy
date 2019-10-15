@@ -193,11 +193,32 @@ extern bool V5;
 extern bool V6;
 extern bool V7;
 
-// sprite index bus
-extern bool WEZA;
-extern bool WUCO;
-extern bool WYDA;
-extern bool ZYSU;
-extern bool WYSE;
-extern bool WUZY;
+extern bool P10_A;
+extern bool P10_B;
+extern bool P10_C;
+extern bool P10_D;
 
+extern bool P11_A;
+extern bool P11_B;
+extern bool P11_C;
+extern bool P11_D;
+
+extern bool P12_A;
+extern bool P12_B;
+extern bool P12_C;
+extern bool P12_D;
+
+extern bool P13_A;
+extern bool P13_B;
+extern bool P13_C;
+extern bool P13_D;
+
+extern bool P14_A;
+extern bool P14_B;
+extern bool P14_C;
+extern bool P14_D;
+
+extern bool P15_A;
+extern bool P15_B;
+extern bool P15_C;
+extern bool P15_D;

@@ -6,21 +6,21 @@ bool CLK2;
 bool CPU_RD2;
 bool CPU_RD_SYNC;
 bool CPU_WR2;
-bool FEXXFFXXN;
 
+bool FEXXFFXXN;
+bool FF00RD;
 bool FF04_D0N;
 bool FF04_D1N;
-
 bool FF46;
 bool FF47;
 bool FF48;
 bool FF49;
+bool FF60_D0;
+
+bool FROM_CPU;
 bool FROM_CPU5;
-bool MATU_Q;
-bool MCS_IN;
-bool MOE_IN;
-bool MWR_IN;
-bool NET02;
+
+
 bool OAM_A_CS;
 bool OAM_ADDR_CPU;
 bool OAM_ADDR_PARSE;
@@ -28,7 +28,7 @@ bool OAM_ADDR_RENDER;
 bool OAM_ADR_CPU;
 bool OAM_B_CS;
 bool OAM_CLK;
-bool P10_B;
+
 bool PHI_OUTN;
 
 bool RESET6;
@@ -37,11 +37,17 @@ bool RESET7N;
 bool RESET_VIDEO2N;
 bool RESET_VIDEO;
 
+bool MATU_Q;
+bool MCS_IN;
+bool MOE_IN;
+bool MWR_IN;
+bool NET02;
 bool T1N_T2;
 bool TYFO_QN;
 bool VAVA3;
 bool RUTU_OUT;
 bool NAPO_OUT;
+bool BURO_Q;
 
 bool ROXY;
 bool PURE;
@@ -286,6 +292,36 @@ bool V4;
 bool V5;
 bool V6;
 bool V7;
+
+bool P10_A;
+bool P10_B;
+bool P10_C;
+bool P10_D;
+
+bool P11_A;
+bool P11_B;
+bool P11_C;
+bool P11_D;
+
+bool P12_A;
+bool P12_B;
+bool P12_C;
+bool P12_D;
+
+bool P13_A;
+bool P13_B;
+bool P13_C;
+bool P13_D;
+
+bool P14_A;
+bool P14_B;
+bool P14_C;
+bool P14_D;
+
+bool P15_A;
+bool P15_B;
+bool P15_C;
+bool P15_D;
 
 #if 0
 

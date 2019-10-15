@@ -12,6 +12,7 @@ bool CPU_WR_WAT;
 bool CPU_RD2;
 bool CPU_RD_SYNC;
 bool CPU_WR2;
+bool CPU_RAW_RD;
 
 bool A15_C;
 
@@ -27,10 +28,11 @@ bool FF49;
 bool FF60_D0;
 bool FFXX;
 
-bool TOLA_A1N;
 bool TOVY_A0N;
 
 bool FROM_CPU;
+bool FROM_CPU3;
+bool FROM_CPU4;
 bool FROM_CPU5;
 
 bool SCK_IN;
@@ -60,7 +62,10 @@ bool MCS_IN;
 bool MOE_IN;
 bool MWR_IN;
 bool NET02;
+
 bool T1N_T2;
+bool T1_T2N;
+
 bool TYFO_QN;
 bool VAVA3;
 bool RUTU_OUT;
@@ -92,7 +97,6 @@ bool COTA;
 bool FETO;
 bool LEKO;
 bool LENA;
-bool LULA;
 bool MOSU;
 bool MYMA;
 bool NETA;
@@ -106,7 +110,6 @@ bool PULO;
 bool PYJU;
 bool PYZO;
 bool RAWU;
-bool RORU;
 bool SARO;
 bool SELA;
 bool TACU;
@@ -206,7 +209,7 @@ bool D3_A;
 bool D4_A;
 bool D5_A;
 bool D6_A;
-bool D7_A;
+//bool D7_A; // extcpubuses_sch
 
 bool D0_IN;
 bool D1_IN;

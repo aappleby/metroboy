@@ -5,13 +5,20 @@
 //----------
 // inputs
 
+extern bool PIN_A0;
+
 extern bool ABUZ;
 extern bool FEXXFFXXN;
 extern bool CPU_WR_WAT;
+extern bool CPU_RAW_RD;
+extern bool CPU_RD_SYNC;
 extern bool NET02;
 extern bool A15_C;
 extern bool LUMA;
-extern bool MATE;
+
+extern bool FROM_CPU3;
+extern bool FROM_CPU4;
+extern bool FROM_CPU5;
 
 extern bool DMA_A8;
 extern bool DMA_A9;
@@ -23,10 +30,35 @@ extern bool DMA_A14;
 extern bool DMA_A15;
 
 extern bool T1N_T2;
+extern bool T1_T2N;
 
 //----------
 // outputs
 
+bool LULA;
+bool RORU;
+
+bool RD_A;
+bool RD_C;
+bool WR_A;
+bool WR_C;
+
+bool A0_D;
+bool A0_A;
+bool A1_D;
+bool A1_A;
+bool A2_D;
+bool A2_A;
+bool A3_D;
+bool A3_A;
+bool A4_D;
+bool A4_A;
+bool A5_D;
+bool A5_A;
+bool A6_D;
+bool A6_A;
+bool A7_D;
+bool A7_A;
 bool A8_D;
 bool A8_A;
 bool A9_D;
@@ -41,26 +73,76 @@ bool A13_D;
 bool A13_A;
 bool A14_D;
 bool A14_A;
-bool A15;
 bool A15_D;
 bool A15_A;
+
+bool D6_D;
+bool D7_A; // why A?
+bool D0_D;
+bool D4_D;
+bool D1_D;
+bool D2_D;
+bool D3_D;
+bool D5_D;
+
+bool A15;
 bool NET01;
 bool CS_OUT;
+bool TOLA_A1N;
 
 //----------
 // registers
 
-bool NYRE_L;
-bool LONU_L;
-bool LOBU_L;
-bool LUMY_L;
-bool PATE_L;
-bool LYSA_L;
-bool LUNO_L;
+static bool NYRE_L;
+static bool LONU_L;
+static bool LOBU_L;
+static bool LUMY_L;
+static bool PATE_L;
+static bool LYSA_L;
+static bool LUNO_L;
+static bool ARYM_L;
+static bool AROS_L;
+static bool ATEV_L;
+static bool AVYS_L;
+static bool ARET_L;
+static bool ALYR_L;
+static bool APUR_L;
+static bool ALOR_L;
 
 //-----------------------------------------------------------------------------
 
 void tick_extbus() {
+  bool SORE = not(A15);
+  bool TEVY = and(A13, A14, SORE);
+  bool TEXO = and(FROM_CPU4, TEVY);
+  bool MULE = not(T1_T2N);
+  bool LOXO = unk3(MULE, TEXO, T1_T2N);
+  bool LASY = not(LOXO);
+  bool MATE = not(LASY);
+  bool TOLA = not(A1);
+
+  TOLA_A1N = TOLA;
+
+  bool LEVO = not(TEXO);
+  bool LAGU = unk3(CPU_RAW_RD, LEVO, FROM_CPU3);
+  bool LYWE = not(LAGU);
+  bool MOCA = nor(TEXO, T1_T2N);
+  bool MEXO = not(CPU_RD_SYNC);
+  bool NEVY = or(MEXO, MOCA);
+  bool MOTY = or(MOCA, LYWE);
+  bool PUVA = or(NEVY, LUMA);
+  bool TYMU = or(LUMA, MOTY);
+  bool USUF = nor(T1N_T2, PUVA);
+  bool UVER = nand(PUVA, NET01);
+  bool UGAC = nand(NET01, TYMU);
+  bool URUN = nor(TYMU, T1N_T2);
+
+  WR_C = USUF;
+  WR_A = UVER;
+  RD_A = UGAC;
+  RD_C = URUN;
+
+
   bool SOGY = not(A14);
   bool TUMA = and(A13, SOGY, A15);
   bool TYNU = unk3(A15, A14, TUMA);
@@ -83,6 +165,7 @@ void tick_extbus() {
   A15_D = RULO;
   A15_A = SUZE;
 
+  // FIXME what trigger kind of latch
   if (MATE) {
     NYRE_L = A14;
     LONU_L = A13;
@@ -139,4 +222,86 @@ void tick_extbus() {
   A9_A = MUNE;
   A8_D = MEGO;
   A8_A = MYNY;
+
+  if (MATE) {
+    ARYM_L = A7;
+    AROS_L = A6;
+    ATEV_L = A5;
+    AVYS_L = A4;
+    ARET_L = A3;
+    ALYR_L = A2;
+    APUR_L = A1;
+    ALOR_L = A0;
+  }
+
+  bool ASUR = mux2(DMA_A7, ARYM_L, LUMA);
+  bool ATYR = mux2(DMA_A6, AROS_L, LUMA);
+  bool ATOV = mux2(DMA_A5, ATEV_L, LUMA);
+  bool ATEM = mux2(DMA_A4, AVYS_L, LUMA);
+  bool AMER = mux2(DMA_A3, ARET_L, LUMA);
+  bool APOK = mux2(DMA_A2, ALYR_L, LUMA);
+  bool ATOL = mux2(DMA_A1, APUR_L, LUMA);
+  bool AMET = mux2(DMA_A0, ALOR_L, LUMA);
+
+  bool COLO = nor (NET02, ASUR);
+  bool DEFY = nand(NET01, ASUR);
+  bool CYKA = nor (NET02, ATYR);
+  bool CEPU = nand(NET01, ATYR);
+  bool AJAV = nor (NET02, ATOV);
+  bool BADU = nand(NET01, ATOV);
+  bool BEVO = nor (NET02, ATEM);
+  bool BYLA = nand(NET01, ATEM);
+  bool BOLA = nor (NET02, AMER);
+  bool BOTY = nand(NET01, AMER);
+  bool BAJO = nor (NET02, APOK);
+  bool BOKU = nand(NET01, APOK);
+  bool COTU = nor (NET02, ATOL);
+  bool CABA = nand(NET01, ATOL);
+  bool KOTY = nor (NET02, AMET);
+  bool KUPO = nand(NET01, AMET);
+
+  A7_D = COLO;
+  A7_A = DEFY;
+  A6_D = CYKA;
+  A6_A = CEPU;
+  A5_D = AJAV;
+  A5_A = BADU;
+  A4_D = BEVO;
+  A4_A = BYLA;
+  A3_D = BOLA;
+  A3_A = BOTY;
+  A2_D = BAJO;
+  A2_A = BOKU;
+  A1_D = COTU;
+  A1_A = CABA;
+  A0_D = KOTY;
+  A0_A = KUPO;
+
+  bool REDU = not(CPU_RD);
+  RORU = mux2(REDU, MOTY, T1N_T2);
+  LULA = not(RORU);
+
+  bool ROGY = nor(RORU, D6);
+  bool RYDA = nor(RORU, D7);
+  bool RUNE = nor(RORU, D0);
+  bool RESY = nor(RORU, D4);
+  bool RYPU = nor(RORU, D1);
+  bool SULY = nor(RORU, D2);
+  bool SEZE = nor(RORU, D3);
+  bool TAMU = nor(RORU, D5);
+
+  D6_D = ROGY;
+  D7_A = RYDA;
+  D0_D = RUNE;
+  D4_D = RESY;
+  D1_D = RYPU;
+  D2_D = SULY;
+  D3_D = SEZE;
+  D5_D = TAMU;
+
+  bool LAVO = nand(CPU_RAW_RD, TEXO, FROM_CPU5);
+
+  // the rest of this is bus muxes...
+
+  (void)LAVO;
 }

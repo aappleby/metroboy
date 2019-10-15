@@ -11,29 +11,30 @@ extern bool FF00RD;
 extern bool BURO_Q;
 extern bool BEDO;
 extern bool FROM_CPU;
-
 extern bool FF60_D0;
-
+extern bool SER_OUT;
 
 //----------
 // outputs
 
+bool SOUT;
+
 //----------
 // registers
 
-bool KYME_Q, KYME_CLK;
-bool KUKO_Q, KUKO_CLK;
-bool KERU_Q, KERU_CLK;
-bool JALE_Q, JALE_CLK;
-bool KENA_Q, KENA_CLK;
-bool KOLO_L;
-bool KEJA_L;
-bool KEVU_L;
-bool KAPA_L;
-bool KELY_Q, KELY_CLK;
-bool COFY_Q, COFY_CLK;
-bool JUTE_Q, JUTE_CLK;
-bool KECY_Q, KECY_CLK;
+static bool KYME_Q, KYME_CLK;
+static bool KUKO_Q, KUKO_CLK;
+static bool KERU_Q, KERU_CLK;
+static bool JALE_Q, JALE_CLK;
+static bool KELY_Q, KELY_CLK;
+static bool COFY_Q, COFY_CLK;
+static bool JUTE_Q, JUTE_CLK;
+static bool KECY_Q, KECY_CLK;
+
+static bool KOLO_L;
+static bool KEJA_L;
+static bool KEVU_L;
+static bool KAPA_L;
 
 //-----------------------------------------------------------------------------
 
@@ -47,6 +48,9 @@ void tick_joypad() {
   bool KASY = nor(FF60_D0, KURA);
   bool KYHU = nand(FF60_D0, JALE_Q);
   bool BYZO = not(FF00RD);
+
+  bool KENA = mux2(KUKO_Q, SER_OUT, BURO_Q);
+  SOUT = KENA;
 
   if (BYZO) {
     KOLO_L = P13_C;
@@ -124,5 +128,53 @@ void tick_joypad() {
   // unused
   (void)KORE;
   (void)KYWE;
+
+  //----------
+  // registers
+
+  bool KYME_Q_ = KYME_Q;
+  bool KUKO_Q_ = KUKO_Q;
+  bool KERU_Q_ = KERU_Q;
+  bool JALE_Q_ = JALE_Q;
+  bool KELY_Q_ = KELY_Q;
+  bool COFY_Q_ = COFY_Q;
+  bool JUTE_Q_ = JUTE_Q;
+  bool KECY_Q_ = KECY_Q;
+
+  if (KYME_CLK && !FF00WR) KYME_Q_ = D3;
+  if (KUKO_CLK && !FF00WR) KUKO_Q_ = D6;
+  if (KERU_CLK && !FF00WR) KERU_Q_ = D7;
+  if (JALE_CLK && !FF00WR) JALE_Q_ = D2;
+  if (KELY_CLK && !FF00WR) KELY_Q_ = D4;
+  if (COFY_CLK && !FF00WR) COFY_Q_ = D6;
+  if (JUTE_CLK && !FF00WR) JUTE_Q_ = D0;
+  if (KECY_CLK && !FF00WR) KECY_Q_ = D1;
+  
+  if (!RESET2) KYME_Q_ = 0;
+  if (!RESET2) KUKO_Q_ = 0;
+  if (!RESET2) KERU_Q_ = 0;
+  if (!RESET2) JALE_Q_ = 0;
+  if (!RESET2) KELY_Q_ = 0;
+  if (!RESET2) COFY_Q_ = 0;
+  if (!RESET2) JUTE_Q_ = 0;
+  if (!RESET2) KECY_Q_ = 0;
+
+  KYME_Q = KYME_Q_;
+  KUKO_Q = KUKO_Q_;
+  KERU_Q = KERU_Q_;
+  JALE_Q = JALE_Q_;
+  KELY_Q = KELY_Q_;
+  COFY_Q = COFY_Q_;
+  JUTE_Q = JUTE_Q_;
+  KECY_Q = KECY_Q_;
+
+  KYME_CLK = FF00WR;
+  KUKO_CLK = FF00WR;
+  KERU_CLK = FF00WR;
+  JALE_CLK = FF00WR;
+  KELY_CLK = FF00WR;
+  COFY_CLK = FF00WR;
+  JUTE_CLK = FF00WR;
+  KECY_CLK = FF00WR;
 
 }

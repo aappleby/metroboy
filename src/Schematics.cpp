@@ -9,6 +9,7 @@ bool CPU_WR2;
 
 bool FEXXFFXXN;
 bool FF00RD;
+bool FF00WR;
 bool FF04_D0N;
 bool FF04_D1N;
 bool FF46;
@@ -20,6 +21,7 @@ bool FF60_D0;
 bool FROM_CPU;
 bool FROM_CPU5;
 
+bool SER_OUT;
 
 bool OAM_A_CS;
 bool OAM_ADDR_CPU;
@@ -31,6 +33,7 @@ bool OAM_CLK;
 
 bool PHI_OUTN;
 
+bool RESET2;
 bool RESET6;
 bool RESET7;
 bool RESET7N;

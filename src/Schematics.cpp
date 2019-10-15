@@ -7,9 +7,13 @@ bool CLK_16384;
 
 bool CPU_RD;
 bool CPU_WR;
+bool CPU_WR_WAT;
+
 bool CPU_RD2;
 bool CPU_RD_SYNC;
 bool CPU_WR2;
+
+bool A15_C;
 
 bool FEXXFFXXN;
 bool FF00RD;
@@ -63,6 +67,7 @@ bool RUTU_OUT;
 bool NAPO_OUT;
 bool BURO_Q;
 
+bool MATE;
 bool ROXY;
 bool PURE;
 bool NYPE;
@@ -184,7 +189,6 @@ bool A11;
 bool A12;
 bool A13;
 bool A14;
-bool A15;
 
 bool D0;
 bool D1;

@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="src\Assembler.cpp" />
     <ClCompile Include="src\Audio.cpp" />
+    <ClCompile Include="src\Background_sch.cpp" />
     <ClCompile Include="src\Buttons.cpp" />
     <ClCompile Include="src\ClocksReset_sch.cpp" />
     <ClCompile Include="src\Constants.cpp" />
@@ -169,7 +170,7 @@
     <ClCompile Include="src\VideoControl_sch.cpp" />
     <ClCompile Include="src\VideoRegs_sch.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
-    <ClCompile Include="src\VRAM_sch.cpp" />
+    <ClCompile Include="src\VramInterface_sch.cpp" />
     <ClCompile Include="src\Wishbone.cpp" />
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />

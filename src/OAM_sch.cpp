@@ -24,6 +24,7 @@ extern bool XOCE;
 
 bool AMAB;
 bool ATEJ;
+bool WEFE;
 
 //----------
 // mystery signals
@@ -87,7 +88,7 @@ void tick_oam() {
   bool FETO = and(YFEL, WEWY, FONY, GOSO);
   bool GAVA = or(FETO, XUPY);
 
-  bool WEFE = not(P10_B);
+  WEFE = not(P10_B);
   bool YVAL = not(CLK3);
   bool YRYV = not(YVAL);
   bool ZODO = not(YRYV);

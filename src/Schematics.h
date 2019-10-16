@@ -20,6 +20,14 @@ inline bool unk2 (bool a, bool b)                 { return a ^ b; }
 inline bool unk3 (bool a, bool b, bool c)         { return a ^ b ^ c; }
 inline bool unk1 (bool a, bool b, bool c, bool d) { return a ^ b ^ c ^ d; }
 
+inline bool add_c(bool a, bool b, bool c) {
+  return (a + b + c) & 2;
+}
+
+inline bool add_s(bool a, bool b, bool c) {
+  return (a + b + c) & 1;
+}
+
 // maybe not right
 inline bool amux2(bool a0, bool b0, bool a1, bool b1) {
   return (a0 & b0) | (a1 & b1);

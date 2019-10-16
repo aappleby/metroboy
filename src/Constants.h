@@ -97,11 +97,11 @@ const int samples_per_frame = output_hz / 60;
 //-----------------------------------------------------------------------------
 // Flags
 
-#define INT_VBLANK  0b00000001
-#define INT_STAT    0b00000010
-#define INT_TIMER   0b00000100
-#define INT_SERIAL  0b00001000
-#define INT_JOYPAD  0b00010000
+#define INT_VBLANK_MASK  0b00000001
+#define INT_STAT_MASK    0b00000010
+#define INT_TIMER_MASK   0b00000100
+#define INT_SERIAL_MASK  0b00001000
+#define INT_JOYPAD_MASK  0b00010000
 
 #define EI_GLITCH    0b10000000
 #define EI_LYC       0b01000000

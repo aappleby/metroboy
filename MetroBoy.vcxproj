@@ -139,6 +139,7 @@
     <ClCompile Include="src\DMA_sch.cpp" />
     <ClCompile Include="src\ExtCpuBuses_sch.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
+    <ClCompile Include="src\Interrupts_sch.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
     <ClCompile Include="src\Joypad_sch.cpp" />
     <ClCompile Include="src\LcdControl_scd.cpp" />
@@ -156,13 +157,16 @@
     <ClCompile Include="src\SpriteStore_sch.cpp" />
     <ClCompile Include="src\SpriteXMatcher_sch.cpp" />
     <ClCompile Include="src\SPU.cpp" />
+    <ClCompile Include="src\SysDecode_sch.cpp" />
     <ClCompile Include="src\test_codegen.cpp" />
     <ClCompile Include="src\test_micro.cpp" />
     <ClCompile Include="src\test_mooneye.cpp" />
     <ClCompile Include="src\test_screenshot.cpp" />
     <ClCompile Include="src\test_wpol.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\Timer_sch.cpp" />
     <ClCompile Include="src\Types.cpp" />
+    <ClCompile Include="src\VideoControl_sch.cpp" />
     <ClCompile Include="src\VideoRegs_sch.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
     <ClCompile Include="src\VRAM_sch.cpp" />

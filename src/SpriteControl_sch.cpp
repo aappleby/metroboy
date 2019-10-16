@@ -407,7 +407,7 @@ void tick_spritecontrol() {
   }
 
   // FIXME
-  bool WOTA = nand(GACE, GUVU, GYDA, GEWY, /*WUHU_COUT*/0, GOVU);
+  bool WOTA = nand(GACE, GUVU, GYDA, GEWY, /*WUHU_COUT*/false, GOVU);
   bool GESE = not(WOTA);
   SPR_MATCH = GESE;
 

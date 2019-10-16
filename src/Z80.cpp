@@ -326,11 +326,11 @@ void Z80::state_machine() {
   write = 0xFF;
 
   if (state == INT3) {
-    if (imask & intf & INT_JOYPAD) { temp = 0x0060; int_ack = INT_JOYPAD; }
-    if (imask & intf & INT_SERIAL) { temp = 0x0058; int_ack = INT_SERIAL; }
-    if (imask & intf & INT_TIMER)  { temp = 0x0050; int_ack = INT_TIMER; }
-    if (imask & intf & INT_STAT)   { temp = 0x0048; int_ack = INT_STAT; }
-    if (imask & intf & INT_VBLANK) { temp = 0x0040; int_ack = INT_VBLANK; }
+    if (imask & intf & INT_JOYPAD_MASK) { temp = 0x0060; int_ack = INT_JOYPAD_MASK; }
+    if (imask & intf & INT_SERIAL_MASK) { temp = 0x0058; int_ack = INT_SERIAL_MASK; }
+    if (imask & intf & INT_TIMER_MASK)  { temp = 0x0050; int_ack = INT_TIMER_MASK; }
+    if (imask & intf & INT_STAT_MASK)   { temp = 0x0048; int_ack = INT_STAT_MASK; }
+    if (imask & intf & INT_VBLANK_MASK) { temp = 0x0040; int_ack = INT_VBLANK_MASK; }
   }
 
   // STATE------------------------------------ADDR-------------BUS-------------ALU------------------------------------WRITEBACK----------------------------FLAG-------------ADDR-----------------WRITE----------STATE----------

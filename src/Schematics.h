@@ -2,26 +2,23 @@
 
 #include <stdint.h>
 
+/*
 inline bool and  (bool a, bool b)                                 { return (a && b);  }
 inline bool and  (bool a, bool b, bool c)                         { return (a && b && c);  }
 inline bool and  (bool a, bool b, bool c, bool d)                 { return (a && b && c && d);  }
-                                                                  
-inline bool or   (bool a, bool b)                                 { return (a || b);  }
-inline bool or   (bool a, bool b, bool c)                         { return (a || b || c);  }
-inline bool or   (bool a, bool b, bool c, bool d)                 { return (a || b || c || d);  }
-                                                                  
-inline bool xor  (bool a, bool b)                                 { return (a ^ b); }
-                                                                  
-inline bool nor  (bool a, bool b)                                 { return !(a || b); }
-inline bool nor  (bool a, bool b, bool c)                         { return !(a || b || c); }
-inline bool nor  (bool a, bool b, bool c, bool d)                 { return !(a || b || c || d); }
-inline bool nor  (bool a, bool b, bool c, bool d, bool e)         { return !(a || b || c || d || e); }
-                                                                  
-inline bool nand (bool a, bool b)                                 { return !(a && b); }
-inline bool nand (bool a, bool b, bool c)                         { return !(a && b && c); }
-inline bool nand (bool a, bool b, bool c, bool d)                 { return !(a && b && c && d); }
-inline bool nand (bool a, bool b, bool c, bool d, bool e)         { return !(a && b && c && d && e); }
-inline bool nand (bool a, bool b, bool c, bool d, bool e, bool f) { return !(a && b && c && d && e && f); }
+*/
+
+template<typename T> T and(T a, T b) { return a & b; }
+template<typename T, typename... Args> T and(T first, Args... args) { return first & and(args...); }
+
+template<typename T> T or(T a, T b) { return a & b; }
+template<typename T, typename... Args> T or(T first, Args... args) { return first & and(args...); }
+
+template<typename T> T xor(T a, T b) { return a & b; }
+template<typename T, typename... Args> T xor(T first, Args... args) { return first & and(args...); }
+
+template<typename T, typename... Args> T nor(T first, Args... args) { return !or(first, args...); }
+template<typename T, typename... Args> T nand(T first, Args... args) { return !and(first, args...); }
 
 inline bool not  (bool a)                                 { return !a; }
 inline bool mux2 (bool m, bool a, bool b)                 { return m ? a : b; }
@@ -226,33 +223,3 @@ extern bool V4;
 extern bool V5;
 extern bool V6;
 extern bool V7;
-
-extern bool P10_A;
-extern bool P10_B;
-extern bool P10_C;
-extern bool P10_D;
-
-extern bool P11_A;
-extern bool P11_B;
-extern bool P11_C;
-extern bool P11_D;
-
-extern bool P12_A;
-extern bool P12_B;
-extern bool P12_C;
-extern bool P12_D;
-
-extern bool P13_A;
-extern bool P13_B;
-extern bool P13_C;
-extern bool P13_D;
-
-extern bool P14_A;
-extern bool P14_B;
-extern bool P14_C;
-extern bool P14_D;
-
-extern bool P15_A;
-extern bool P15_B;
-extern bool P15_C;
-extern bool P15_D;

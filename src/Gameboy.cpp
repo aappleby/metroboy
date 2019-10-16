@@ -137,10 +137,10 @@ void Gameboy::tock() {
     if (imask & 0x04) z80.unhalt |= fire_int_timer1;
     if (imask & 0x10) z80.unhalt |= fire_int_buttons1;
 
-    if (ppu_out.vblank1)   intf_ |= INT_VBLANK;
-    if (ppu_out.stat1)     intf_ |= INT_STAT;
-    if (fire_int_timer1)   intf_ |= INT_TIMER;
-    if (fire_int_buttons1) intf_ |= INT_JOYPAD;
+    if (ppu_out.vblank1)   intf_ |= INT_VBLANK_MASK;
+    if (ppu_out.stat1)     intf_ |= INT_STAT_MASK;
+    if (fire_int_timer1)   intf_ |= INT_TIMER_MASK;
+    if (fire_int_buttons1) intf_ |= INT_JOYPAD_MASK;
   }
 
   //-----------------------------------

@@ -19,6 +19,39 @@ extern bool SER_OUT;
 
 bool SOUT;
 
+bool P10;
+bool P12;
+
+bool P10_A;
+bool P10_B;
+bool P10_C;
+bool P10_D;
+
+bool P11_A;
+bool P11_B;
+bool P11_C;
+bool P11_D;
+
+bool P12_A;
+bool P12_B;
+bool P12_C;
+bool P12_D;
+
+bool P13_A;
+bool P13_B;
+bool P13_C;
+bool P13_D;
+
+bool P14_A;
+bool P14_B;
+bool P14_C;
+bool P14_D;
+
+bool P15_A;
+bool P15_B;
+bool P15_C;
+bool P15_D;
+
 //----------
 // registers
 

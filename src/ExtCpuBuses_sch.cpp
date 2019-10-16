@@ -112,20 +112,14 @@ static bool ALOR_L;
 //-----------------------------------------------------------------------------
 
 void tick_extbus() {
+
   bool SORE = not(A15);
   bool TEVY = and(A13, A14, SORE);
   bool TEXO = and(FROM_CPU4, TEVY);
-  bool MULE = not(T1T2n);
-  bool LOXO = unk3(MULE, TEXO, T1T2n);
-  bool LASY = not(LOXO);
-  bool MATE = not(LASY);
-  bool TOLA = not(A1);
-
-  TOLA_A1n = TOLA;
-
   bool LEVO = not(TEXO);
   bool LAGU = unk3(CPU_RAW_RD, LEVO, FROM_CPU3);
   bool LYWE = not(LAGU);
+
   bool MOCA = nor(TEXO, T1T2n);
   bool MEXO = not(CPU_RD_SYNC);
   bool NEVY = or(MEXO, MOCA);
@@ -142,6 +136,21 @@ void tick_extbus() {
   RD_A = UGAC;
   RD_C = URUN;
 
+  //----------
+
+  bool TOLA = not(A1);
+  TOLA_A1n = TOLA;
+
+  //----------
+
+  bool MULE = not(T1T2n);
+  bool LOXO = unk3(MULE, TEXO, T1T2n);
+  bool LASY = not(LOXO);
+  bool MATE = not(LASY);
+
+  //----------
+
+  //----------
 
   bool SOGY = not(A14);
   bool TUMA = and(A13, SOGY, A15);
@@ -165,6 +174,7 @@ void tick_extbus() {
   A15_D = RULO;
   A15_A = SUZE;
 
+  //----------
   // FIXME what trigger kind of latch
   if (MATE) {
     NYRE_L = A14;
@@ -223,6 +233,8 @@ void tick_extbus() {
   A8_D = MEGO;
   A8_A = MYNY;
 
+  //----------
+
   if (MATE) {
     ARYM_L = A7;
     AROS_L = A6;
@@ -277,6 +289,8 @@ void tick_extbus() {
   A0_D = KOTY;
   A0_A = KUPO;
 
+  //----------
+
   bool REDU = not(CPU_RD);
   RORU = mux2(REDU, MOTY, T1nT2);
   LULA = not(RORU);
@@ -298,6 +312,8 @@ void tick_extbus() {
   D2_D = SULY;
   D3_D = SEZE;
   D5_D = TAMU;
+
+  //----------
 
   bool LAVO = nand(CPU_RAW_RD, TEXO, FROM_CPU5);
 

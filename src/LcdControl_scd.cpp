@@ -88,7 +88,7 @@ void tick_lcdcontrol() {
 
   // FIXME another logic loop...
   bool TOFU = not(RESET_VIDEO);
-  bool POME = nor(AVAP, /*POFY*/0);
+  bool POME = nor(AVAP, /*POFY*/false);
   bool SACU = nor(SEGU, ROXY);
   bool RUJU = or(PAHO_Q, TOFU, POME);
   bool POFY = not(RUJU);

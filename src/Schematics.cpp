@@ -11,7 +11,6 @@ bool WESY;
 bool POVA;
 bool TADY;
 
-bool XEHO_Q;
 bool SAVY;
 bool XODU;
 bool TUKY;

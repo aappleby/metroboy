@@ -23,6 +23,7 @@ extern bool XOCE;
 // outputs
 
 bool AMAB;
+bool ATEJ;
 
 //----------
 // mystery signals
@@ -100,7 +101,7 @@ void tick_oam() {
   bool ABAF = not(CATU);
 
   bool BYHA = unk3(ANEL, ABAF, ABEZ);
-  bool ATEJ = not(BYHA);
+  ATEJ = not(BYHA);
   bool ANOM = nor(RESET_VIDEO2n, ATEJ);
   bool AZYB = not(ATEJ);
   bool AMYG = not(RESET_VIDEO);

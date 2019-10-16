@@ -14,6 +14,7 @@ extern bool FF45_D2;
 extern bool FF45_D1;
 extern bool FF45_D0;
 
+extern bool ATEJ;
 extern bool XEHO_Q;
 extern bool SAVY;
 extern bool XODU;
@@ -40,7 +41,6 @@ extern bool WESY;
 extern bool PALY;
 extern bool AVAP;
 extern bool POVA;
-extern bool TADY;
 
 //----------
 // outputs
@@ -92,6 +92,18 @@ bool REFE_Q, REFE_CLK;
 bool ROPO_Q, ROPO_CLK;
 bool RUFO_Q, RUFO_CLK;
 bool ROXE_Q, ROXE_CLK;
+
+//----------
+// x counter
+
+bool XEHO_Q, XEHO_CLK;
+bool SAVY_Q, SAVY_CLK;
+bool XODU_Q, XODU_CLK;
+bool XYDO_Q, XYDO_CLK;
+bool TUHU_Q, TUHU_CLK;
+bool TUKY_Q, TUKY_CLK;
+bool TAKO_Q, TAKO_CLK;
+bool SYBE_Q, SYBE_CLK;
 
 //-----------------------------------------------------------------------------
 
@@ -236,6 +248,43 @@ void tick_videocontrol() {
   }
 
   //----------
+  // x counter
+
+  bool TADY = nor(ATEJ, TOFU);
+  bool XUKE = and(XEHO_Q, SAVY_Q);
+  bool XYLE = and(XODU_Q, XUKE);
+  bool RYBO = xor(SAVY_Q, XEHO_Q);
+  bool XEGY = xor(XODU_Q, XUKE);
+  bool XORA = xor(XYDO_Q, XYLE);
+  
+  bool ACAM = not(XEHO_Q);
+  bool AZUB = not(SAVY_Q);
+  bool AMEL = not(XODU_Q);
+  bool AHAL = not(XYDO_Q);
+
+  bool TOCA = not(XYDO_Q);
+  bool TYBA = and(TUKY_Q, TUHU_Q);
+  bool SURY = and(TAKO_Q, TYBA);
+  bool SAKE = xor(TUKY_Q, TUHU_Q);
+  bool TYGE = xor(TAKO_Q, TYBA);
+  bool ROKU = xor(SYBE_Q, SURY);
+
+  bool APUX = not(TUHU_Q);
+  bool ABEF = not(TUKY_Q);
+  bool ADAZ = not(TAKO_Q);
+  bool ASAH = not(SYBE_Q);
+
+  // x counter probably goes to ppu...
+  (void)ACAM;
+  (void)AZUB;
+  (void)AMEL;
+  (void)AHAL;
+  (void)APUX;
+  (void)ABEF;
+  (void)ADAZ;
+  (void)ASAH;
+
+  //----------
   // registers
 
   bool VENA_Q_ = VENA_Q;
@@ -344,4 +393,45 @@ void tick_videocontrol() {
   ROPO_Q = ROPO_Q_;
   RUFO_Q = RUFO_Q_;
   ROXE_Q = ROXE_Q_;
+
+  //----------
+  // x counter registers
+
+  bool XEHO_Q_ = XEHO_Q;
+  bool SAVY_Q_ = SAVY_Q;
+  bool XODU_Q_ = XODU_Q;
+  bool XYDO_Q_ = XYDO_Q;
+  bool TUHU_Q_ = TUHU_Q;
+  bool TUKY_Q_ = TUKY_Q;
+  bool TAKO_Q_ = TAKO_Q;
+  bool SYBE_Q_ = SYBE_Q;
+
+  if (XEHO_CLK && !CLKPIPE) XEHO_Q_ = !XEHO_Q;
+  if (SAVY_CLK && !CLKPIPE) SAVY_Q_ = RYBO;
+  if (XODU_CLK && !CLKPIPE) XODU_Q_ = XEGY;
+  if (XYDO_CLK && !CLKPIPE) XYDO_Q_ = XORA;
+
+  if (TUHU_CLK && !TOCA) TUHU_Q_ = !TUHU_Q;
+  if (TUKY_CLK && !TOCA) TUKY_Q_ = SAKE;
+  if (TAKO_CLK && !TOCA) TAKO_Q_ = TYGE;
+  if (SYBE_CLK && !TOCA) SYBE_Q_ = ROKU;
+
+  XEHO_CLK = CLKPIPE;
+  SAVY_CLK = CLKPIPE;
+  XODU_CLK = CLKPIPE;
+  XYDO_CLK = CLKPIPE;
+
+  TUHU_CLK = TOCA;
+  TUKY_CLK = TOCA;
+  TAKO_CLK = TOCA;
+  SYBE_CLK = TOCA;
+
+  XEHO_Q = XEHO_Q_;
+  SAVY_Q = SAVY_Q_;
+  XODU_Q = XODU_Q_;
+  XYDO_Q = XYDO_Q_;
+  TUHU_Q = TUHU_Q_;
+  TUKY_Q = TUKY_Q_;
+  TAKO_Q = TAKO_Q_;
+  SYBE_Q = SYBE_Q_;
 }

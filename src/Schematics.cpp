@@ -3,6 +3,13 @@
 // mystery signals 
 
 bool ANAP;
+bool LYHA;
+bool FF41;
+bool TOFU;
+bool XEHO;
+bool WESY;
+bool POVA;
+bool TADY;
 
 bool XEHO_Q;
 bool SAVY;
@@ -14,8 +21,6 @@ bool RUTU;
 bool T1;
 bool T2;
 bool CPU_WR_RAW;
-
-bool INT_STAT;
 
 bool ABOL_1MHZ;
 bool CLKIN_A;
@@ -88,13 +93,11 @@ bool NET02;
 
 bool VAVA3;
 bool RUTU_OUT;
-bool NAPO_OUT;
 bool BURO_Q;
 
 bool MATE;
 bool ROXY;
 bool PURE;
-bool NYPE;
 bool LYFE;
 bool LYRY;
 bool MYVO;

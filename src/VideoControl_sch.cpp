@@ -50,6 +50,9 @@ bool CP; // lcd clock signal
 bool PALY; // ly compare match
 bool XYVO; // line >= 144;
 
+bool LYHA; // !RESET_VIDEO
+bool LYFE; // !!RESET_VIDEO
+
 bool INT_OAM;
 bool INT_HBL;
 bool INT_VBL;
@@ -59,6 +62,15 @@ bool INT_STAT;
 bool NAPO_OUT;
 bool NYPE;
 bool PIN_CPG;
+
+bool V0;
+bool V1;
+bool V2;
+bool V3;
+bool V4;
+bool V5;
+bool V6;
+bool V7;
 
 //-----------------------------------------------------------------------------
 // registers
@@ -104,6 +116,20 @@ bool TUHU_Q, TUHU_CLK;
 bool TUKY_Q, TUKY_CLK;
 bool TAKO_Q, TAKO_CLK;
 bool SYBE_Q, SYBE_CLK;
+
+//----------
+// y counter
+
+bool MYTA_Q, MYTA_CLK;
+
+bool MUWY_Q, MUWY_CLK;
+bool MYRO_Q, MYRO_CLK;
+bool LEXA_Q, LEXA_CLK;
+bool LYDO_Q, LYDO_CLK;
+bool LOVU_Q, LOVU_CLK;
+bool LEMA_Q, LEMA_CLK;
+bool MATO_Q, MATO_CLK;
+bool LAFO_Q, LAFO_CLK;
 
 //-----------------------------------------------------------------------------
 
@@ -285,6 +311,14 @@ void tick_videocontrol() {
   (void)ASAH;
 
   //----------
+  // y counter
+
+  bool NOKO = and(V7, V4, V0, V1);
+  LYHA = not(RESET_VIDEO);
+  LYFE = not(LYHA);
+  bool LAMA = nor(MYTA_Q, LYHA);
+
+  //----------
   // registers
 
   bool VENA_Q_ = VENA_Q;
@@ -434,4 +468,58 @@ void tick_videocontrol() {
   TUKY_Q = TUKY_Q_;
   TAKO_Q = TAKO_Q_;
   SYBE_Q = SYBE_Q_;
+
+  //----------
+  // y counter registers
+
+  bool MYTA_Q_ = MYTA_Q;
+  bool MUWY_Q_ = MUWY_Q;
+  bool MYRO_Q_ = MYRO_Q;
+  bool LEXA_Q_ = LEXA_Q;
+  bool LYDO_Q_ = LYDO_Q;
+  bool LOVU_Q_ = LOVU_Q;
+  bool LEMA_Q_ = LEMA_Q;
+  bool MATO_Q_ = MATO_Q;
+  bool LAFO_Q_ = LAFO_Q;
+
+  if (MYTA_CLK && !NYPE) MYTA_Q_ = NOKO;
+
+  if (MUWY_CLK && !RUTU)    MUWY_Q_ = !MUWY_Q;
+  if (MYRO_CLK && !!MUWY_Q) MYRO_Q_ = !MYRO_Q;
+  if (LEXA_CLK && !!MYRO_Q) LEXA_Q_ = !LEXA_Q;
+  if (LYDO_CLK && !!LEXA_Q) LYDO_Q_ = !LYDO_Q;
+  if (LOVU_CLK && !!LYDO_Q) LOVU_Q_ = !LOVU_Q;
+  if (LEMA_CLK && !!LOVU_Q) LEMA_Q_ = !LEMA_Q;
+  if (MATO_CLK && !!LEMA_Q) MATO_Q_ = !MATO_Q;
+  if (LAFO_CLK && !!MATO_Q) LAFO_Q_ = !LAFO_Q;
+
+  if (!LYFE) MYTA_Q_ = 0;
+  if (!LAMA) MUWY_Q_ = 0;
+  if (!LAMA) MYRO_Q_ = 0;
+  if (!LAMA) LEXA_Q_ = 0;
+  if (!LAMA) LYDO_Q_ = 0;
+  if (!LAMA) LOVU_Q_ = 0;
+  if (!LAMA) LEMA_Q_ = 0;
+  if (!LAMA) MATO_Q_ = 0;
+  if (!LAMA) LAFO_Q_ = 0;
+
+  MYTA_Q = MYTA_Q_;
+  MUWY_Q = MUWY_Q_;
+  MYRO_Q = MYRO_Q_;
+  LEXA_Q = LEXA_Q_;
+  LYDO_Q = LYDO_Q_;
+  LOVU_Q = LOVU_Q_;
+  LEMA_Q = LEMA_Q_;
+  MATO_Q = MATO_Q_;
+  LAFO_Q = LAFO_Q_;
+
+  V0 = MUWY_Q;
+  V1 = MYRO_Q;
+  V2 = LEXA_Q;
+  V3 = LYDO_Q;
+  V4 = LOVU_Q;
+  V5 = LEMA_Q;
+  V6 = MATO_Q;
+  V7 = LAFO_Q;
+
 }

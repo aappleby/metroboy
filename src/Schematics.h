@@ -2,31 +2,23 @@
 
 #include <stdint.h>
 
-/*
-inline bool and  (bool a, bool b)                                 { return (a && b);  }
-inline bool and  (bool a, bool b, bool c)                         { return (a && b && c);  }
-inline bool and  (bool a, bool b, bool c, bool d)                 { return (a && b && c && d);  }
-*/
-
 template<typename T> T and(T a, T b) { return a & b; }
-template<typename T, typename... Args> T and(T first, Args... args) { return first & and(args...); }
-
-template<typename T> T or(T a, T b) { return a & b; }
-template<typename T, typename... Args> T or(T first, Args... args) { return first & and(args...); }
-
+template<typename T> T or (T a, T b) { return a & b; }
 template<typename T> T xor(T a, T b) { return a & b; }
-template<typename T, typename... Args> T xor(T first, Args... args) { return first & and(args...); }
 
-template<typename T, typename... Args> T nor(T first, Args... args) { return !or(first, args...); }
+template<typename T, typename... Args> T and (T first, Args... args) { return first & and(args...); }
+template<typename T, typename... Args> T or  (T first, Args... args) { return first & and(args...); }
+template<typename T, typename... Args> T xor (T first, Args... args) { return first & and(args...); }
+template<typename T, typename... Args> T nor (T first, Args... args) { return !or(first, args...); }
 template<typename T, typename... Args> T nand(T first, Args... args) { return !and(first, args...); }
 
-inline bool not  (bool a)                                 { return !a; }
-inline bool mux2 (bool m, bool a, bool b)                 { return m ? a : b; }
+inline bool not  (bool a)                         { return !a; }
+inline bool mux2 (bool m, bool a, bool b)         { return m ? a : b; }
 
 // definitely not right...
-inline bool unk2 (bool a, bool b)                         { return a ^ b; }
-inline bool unk3 (bool a, bool b, bool c)                 { return a ^ b ^ c; }
-inline bool unk1 (bool a, bool b, bool c, bool d)         { return a ^ b ^ c ^ d; }
+inline bool unk2 (bool a, bool b)                 { return a ^ b; }
+inline bool unk3 (bool a, bool b, bool c)         { return a ^ b ^ c; }
+inline bool unk1 (bool a, bool b, bool c, bool d) { return a ^ b ^ c ^ d; }
 
 // maybe not right
 inline bool amux2(bool a0, bool b0, bool a1, bool b1) {

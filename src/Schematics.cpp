@@ -3,7 +3,6 @@
 // mystery signals 
 
 bool ANAP;
-bool LYHA;
 bool FF41;
 bool TOFU;
 bool XEHO;
@@ -97,7 +96,6 @@ bool BURO_Q;
 bool MATE;
 bool ROXY;
 bool PURE;
-bool LYFE;
 bool LYRY;
 bool MYVO;
 bool SYLO;
@@ -323,12 +321,3 @@ bool OAM_A4;
 bool OAM_A5;
 bool OAM_A6;
 bool OAM_A7;
-
-bool V0;
-bool V1;
-bool V2;
-bool V3;
-bool V4;
-bool V5;
-bool V6;
-bool V7;

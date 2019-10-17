@@ -20,8 +20,28 @@ extern bool XOCE;
 
 extern reg CATU;
 
+extern reg TYFO;
+extern bool XUPY;
+extern bool CLK3;
+extern bool RESET_VIDEO;
+extern bool RESET_VIDEO2n;
+extern bool ABEZ;
+extern bool CPU_WR2;
+extern bool CPU_RD2;
+extern bool WARU;
+extern bool RESET7n;
+extern bool XARE;
+extern bool WYJA;
+
 //----------
 // outputs
+
+bool OAM_CLK;
+bool OAM_ADDR_RENDER;
+bool OAM_ADDR_PARSE;
+bool OAM_ADDR_CPU;
+bool OAM_A_CS;
+bool OAM_B_CS;
 
 bool AMAB;
 bool ATEJ;
@@ -35,30 +55,6 @@ bool WUME;
 bool WEWU;
 bool FETO;
 bool LEKO;
-
-//----------
-// mystery signals
-
-extern bool XUPY;
-extern bool CLK3;
-bool OAM_CLK;
-extern bool RESET_VIDEO;
-extern bool RESET_VIDEO2n;
-extern bool ABEZ;
-extern bool CPU_WR2;
-extern reg TYFO;
-extern bool CPU_RD2;
-extern bool WARU;
-extern bool RESET7n;
-extern bool XARE;
-extern bool WYJA;
-
-bool OAM_ADDR_RENDER;
-bool OAM_ADDR_PARSE;
-bool OAM_ADDR_CPU;
-
-bool OAM_A_CS;
-bool OAM_B_CS;
 
 //----------
 // sprite index bus
@@ -318,8 +314,6 @@ void tick_oam() {
 
   OAM_A_CS = ZONE;
   OAM_B_CS = ZOFE;
-
-  //---------------------------------------------------------------------------
 
   ANEL.tock(AWOH, ABEZ, CATU_Q);
   bool XECY_Q = XECY.tock(XUCA, 0, RESET7n); // ? weird

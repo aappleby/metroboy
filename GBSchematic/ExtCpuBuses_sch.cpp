@@ -96,21 +96,21 @@ bool TEXO;
 //----------
 // registers
 
-static bool NYRE_L;
-static bool LONU_L;
-static bool LOBU_L;
-static bool LUMY_L;
-static bool PATE_L;
-static bool LYSA_L;
-static bool LUNO_L;
-static bool ARYM_L;
-static bool AROS_L;
-static bool ATEV_L;
-static bool AVYS_L;
-static bool ARET_L;
-static bool ALYR_L;
-static bool APUR_L;
-static bool ALOR_L;
+bool NYRE_L;
+bool LONU_L;
+bool LOBU_L;
+bool LUMY_L;
+bool PATE_L;
+bool LYSA_L;
+bool LUNO_L;
+bool ARYM_L;
+bool AROS_L;
+bool ATEV_L;
+bool AVYS_L;
+bool ARET_L;
+bool ALYR_L;
+bool APUR_L;
+bool ALOR_L;
 
 //-----------------------------------------------------------------------------
 

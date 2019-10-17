@@ -33,6 +33,15 @@ extern bool RESET7n;
 extern bool XARE;
 extern bool WYJA;
 
+// sprite index bus
+
+extern bool WEZA;
+extern bool WUCO;
+extern bool WYDA;
+extern bool ZYSU;
+extern bool WYSE;
+extern bool WUZY;
+
 //----------
 // outputs
 
@@ -57,29 +66,19 @@ bool FETO;
 bool LEKO;
 
 //----------
-// sprite index bus
-
-extern bool WEZA;
-extern bool WUCO;
-extern bool WYDA;
-extern bool ZYSU;
-extern bool WYSE;
-extern bool WUZY;
-
-//----------
 // registers
 
 // sprite scan counter
-static reg YFEL;
-static reg WEWY;
-static reg GOSO;
-static reg ELYN;
-static reg FAHA;
-static reg FONY;
+reg YFEL;
+reg WEWY;
+reg GOSO;
+reg ELYN;
+reg FAHA;
+reg FONY;
 
-static reg ANEL;
-static reg XECY;
-static reg XUVA;
+reg ANEL;
+reg XECY;
+reg XUVA;
 
 //-----------------------------------------------------------------------------
 // 28_OAM.png

@@ -45,37 +45,37 @@ bool OBP1_D0;
 // registers
 
 // BGP
-static bool MENA;
-static bool MORU;
-static bool MAXY;
-static bool NUSY;
-static bool MOGY;
-static bool MUKE;
-static bool PYLU;
-static bool PAVO;
-static bool BGP_CLK;
+bool MENA;
+bool MORU;
+bool MAXY;
+bool NUSY;
+bool MOGY;
+bool MUKE;
+bool PYLU;
+bool PAVO;
+bool BGP_CLK;
 
 // OBP0
-static bool XANA;
-static bool XYZE;
-static bool XALO;
-static bool XUKY;
-static bool XUPO;
-static bool XERU;
-static bool XOVA;
-static bool XUFU;
-static bool OBP0_CLK;
+bool XANA;
+bool XYZE;
+bool XALO;
+bool XUKY;
+bool XUPO;
+bool XERU;
+bool XOVA;
+bool XUFU;
+bool OBP0_CLK;
 
 // OBP1
-static bool LUXO;
-static bool LUGU;
-static bool LOSE;
-static bool LAWO;
-static bool LEPU;
-static bool LUNE;
-static bool MOSA;
-static bool MOXY;
-static bool OBP1_CLK;
+bool LUXO;
+bool LUGU;
+bool LOSE;
+bool LAWO;
+bool LEPU;
+bool LUNE;
+bool MOSA;
+bool MOXY;
+bool OBP1_CLK;
 
 //-----------------------------------------------------------------------------
 

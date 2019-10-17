@@ -24,24 +24,24 @@ bool A00_07;
 //----------
 // registers
 
-static bool COTY_Q, COTY_CLK;
-static bool ETAF_Q, ETAF_CLK;
-static bool CULY_Q, CULY_CLK;
-static bool CAFA_Q, CAFA_CLK;
-static bool CYLO_Q, CYLO_CLK;
-static bool CYDE_Q, CYDE_CLK;
-static bool CALY_Q, CALY_CLK;
+bool COTY_Q, COTY_CLK;
+bool ETAF_Q, ETAF_CLK;
+bool CULY_Q, CULY_CLK;
+bool CAFA_Q, CAFA_CLK;
+bool CYLO_Q, CYLO_CLK;
+bool CYDE_Q, CYDE_CLK;
+bool CALY_Q, CALY_CLK;
 
-static bool CUBA_Q, CUBA_CLK;
-static bool DEGU_Q, DEGU_CLK;
-static bool DYRA_Q, DYRA_CLK;
-static bool DOJO_Q, DOJO_CLK;
-static bool DOVU_Q, DOVU_CLK;
-static bool EJAB_Q, EJAB_CLK;
-static bool EROD_Q, EROD_CLK;
-static bool EDER_Q, EDER_CLK;
+bool CUBA_Q, CUBA_CLK;
+bool DEGU_Q, DEGU_CLK;
+bool DYRA_Q, DYRA_CLK;
+bool DOJO_Q, DOJO_CLK;
+bool DOVU_Q, DOVU_CLK;
+bool EJAB_Q, EJAB_CLK;
+bool EROD_Q, EROD_CLK;
+bool EDER_Q, EDER_CLK;
 
-static bool ELYS_Q, ELYS_CLK;
+bool ELYS_Q, ELYS_CLK;
 
 //-----------------------------------------------------------------------------
 

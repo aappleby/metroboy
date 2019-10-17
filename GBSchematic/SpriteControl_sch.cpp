@@ -18,7 +18,10 @@ extern bool CLK3;
 
 extern bool VYPO;
 extern bool AZYB;
-extern bool BAXO;
+
+extern reg BAXO;
+extern reg YZOS;
+
 extern bool BESU;
 extern bool FETO;
 extern bool ANOM;
@@ -31,7 +34,6 @@ extern bool COTA;
 extern bool TAVA;
 extern bool SECA;
 extern bool XYMU;
-extern bool YZOS;
 extern bool WENU;
 extern bool CUCU;
 extern bool CEGA;
@@ -126,62 +128,62 @@ bool ASYS; bool AHOF; bool BYVY;
 // registers
 
 // sprite hit regs
-static reg FONO;
-static reg EXUQ;
-static reg WAPO;
-static reg WOMY;
-static reg WAFY;
-static reg XUDY;
-static reg GOTA;
-static reg EGAV;
-static reg CEDY;
-static reg EBOJ;
+reg FONO;
+reg EXUQ;
+reg WAPO;
+reg WOMY;
+reg WAFY;
+reg XUDY;
+reg GOTA;
+reg EGAV;
+reg CEDY;
+reg EBOJ;
 
 // sprite y comparator reg?
 
 
 reg WUVU;
-static reg WOSU;
-static reg CENO;
+reg WOSU;
+reg CENO;
 reg CATU;
-static reg BYBA;
-static reg DOBA;
+reg BYBA;
+reg DOBA;
 
 
 reg TYFO;
-static reg SEBA;
-static reg TOXE;
-static reg TULY;
-static reg TESE;
+reg SEBA;
+reg TOXE;
+reg TULY;
+reg TESE;
 
 // Sprite Y Comparator
 
-static reg YCEB; // oam_b latch
-static reg ZUCA;
-static reg WONE;
-static reg ZAXE;
-static reg XAFU;
-static reg YSES;
-static reg ZECA;
-static reg YDYV;
+reg YCEB; // oam_b latch
+reg ZUCA;
+reg WONE;
+reg ZAXE;
+reg XAFU;
+reg YSES;
+reg ZECA;
+reg YDYV;
 
-static reg XEGU; // oam_b temp reg?
-static reg YJEX;
-static reg XYJU;
-static reg YBOG;
-static reg WYSO;
-static reg XOTE;
-static reg YZAB;
-static reg XUSO;
+reg XEGU; // oam_b temp reg?
+reg YJEX;
+reg XYJU;
+reg YBOG;
+reg WYSO;
+reg XOTE;
+reg YZAB;
+reg XUSO;
 
-static reg TOBU;
-static reg VONU;
+reg TOBU;
+reg VONU;
 
-static reg DEZY;
-static reg BESE; // "Count from 0 to A"
-static reg CUXY;
-static reg BEGO;
-static reg DYBE;
+reg DEZY;
+reg BESE; // "Count from 0 to A"
+reg CUXY;
+reg BEGO;
+reg DYBE;
 
 //-----------------------------------------------------------------------------
 
@@ -245,7 +247,8 @@ void tick_spritecontrol() {
   bool SAKY = nor(TULY_Q, VONU_Q);
   bool TYSO = or(SAKY, TEPA);
   TEXY = not(TYSO);
-  XONO = and(BAXO, TEXY);
+  bool BAXO_Q = BAXO.q();
+  XONO = and(BAXO_Q, TEXY);
 
   TUVO = or(TEPA, TULY_Q, TESE_Q);
   bool TAME = nand(TESE_Q, TOXE_Q);
@@ -451,7 +454,8 @@ void tick_spritecontrol() {
   bool GYDA = not(GOJU_S);
   bool GEWY = not(WUHU_S);
 
-  bool WUKY = not(YZOS);
+  bool YZOS_Q = YZOS.q();
+  bool WUKY = not(YZOS_Q);
   bool WAGO = xor(WUKY, WENU);
   bool CYVU = xor(WUKY, CUCU);
   bool BORE = xor(WUKY, WENU);

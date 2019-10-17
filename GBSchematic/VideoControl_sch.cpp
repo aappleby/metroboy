@@ -68,14 +68,9 @@ bool V5;
 bool V6;
 bool V7;
 
-bool ACAM;
-bool AZUB;
-bool AMEL;
-bool AHAL;
-bool APUX;
-bool ABEF;
-bool ADAZ;
-bool ASAH;
+// screen x coordinate
+bool ACAM, AZUB, AMEL, AHAL, APUX, ABEF, ADAZ, ASAH;
+
 bool WODU;
 bool SELA;
 bool XYMU;

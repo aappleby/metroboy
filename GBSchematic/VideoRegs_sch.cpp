@@ -91,64 +91,64 @@ bool FF4B_D7;
 // registers
 
 // FF40 LCDC
-static reg XYLO;
-static reg XAFO;
-static reg XYMO;
-static reg XONA;
-static reg WYMO;
-static reg WEXU;
-static reg WOKY;
-static reg VYXE;
+reg XYLO;
+reg XAFO;
+reg XYMO;
+reg XONA;
+reg WYMO;
+reg WEXU;
+reg WOKY;
+reg VYXE;
 
 // FF42 SCY
-static reg FEZU;
-static reg FUNY;
-static reg DEDE;
-static reg FOTY;
-static reg FOHA;
-static reg FYMO;
-static reg GAVE;
-static reg FUJO;
+reg FEZU;
+reg FUNY;
+reg DEDE;
+reg FOTY;
+reg FOHA;
+reg FYMO;
+reg GAVE;
+reg FUJO;
 
 // FF43 SCX
-static reg CYXU;
-static reg BAKE;
-static reg BEMY;
-static reg CUZY;
-static reg CABU;
-static reg DUZU;
-static reg DATY;
-static reg GUBO;
+reg CYXU;
+reg BAKE;
+reg BEMY;
+reg CUZY;
+reg CABU;
+reg DUZU;
+reg DATY;
+reg GUBO;
 
 // FF45 LYC
-static reg SOTA;
-static reg SYRY;
-static reg SALO;
-static reg SEDY;
-static reg VEVO;
-static reg VAFA;
-static reg VUCE;
-static reg RAHA;
+reg SOTA;
+reg SYRY;
+reg SALO;
+reg SEDY;
+reg VEVO;
+reg VAFA;
+reg VUCE;
+reg RAHA;
 
 // FF4A WY
-static reg NAFU;
-static reg MELA;
-static reg NYRO;
-static reg NAGA;
-static reg NULO;
-static reg NUKA;
-static reg NENE;
-static reg NESO;
+reg NAFU;
+reg MELA;
+reg NYRO;
+reg NAGA;
+reg NULO;
+reg NUKA;
+reg NENE;
+reg NESO;
 
 // FF4B WX
-static reg MYCE;
-static reg MYPA;
-static reg NOFE;
-static reg NUKU;
-static reg MYPU;
-static reg MUVO;
-static reg MEBY;
-static reg NOKE;
+reg MYCE;
+reg MYPA;
+reg NOFE;
+reg NUKU;
+reg MYPU;
+reg MUVO;
+reg MEBY;
+reg NOKE;
 
 //-----------------------------------------------------------------------------
 

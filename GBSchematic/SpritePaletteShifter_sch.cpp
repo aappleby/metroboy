@@ -6,7 +6,7 @@
 // inputs
 
 extern bool XEFY;
-extern bool GOMO;
+extern reg GOMO;
 extern bool P10_B;
 extern bool CLKPIPE;
 extern bool BGPIXELn;
@@ -41,14 +41,14 @@ bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU;
 //----------
 // registers
 
-static reg RUGO;
-static reg SATA;
-static reg ROSA;
-static reg SOMY;
-static reg PALU;
-static reg NUKE;
-static reg MODA;
-static reg LYME;
+reg RUGO;
+reg SATA;
+reg ROSA;
+reg SOMY;
+reg PALU;
+reg NUKE;
+reg MODA;
+reg LYME;
 
 //-----------------------------------------------------------------------------
 
@@ -71,37 +71,39 @@ void tick_spritepaletteshifter() {
   SOKA = not(TORY);
   XOVU = not(WOPE);
 
-  bool SYPY = not(GOMO);
-  bool TOTU = not(GOMO);
-  bool NARO = not(GOMO);
-  bool WEXY = not(GOMO);
-  bool RYZY = not(GOMO);
-  bool RYFE = not(GOMO);
-  bool LADY = not(GOMO);
-  bool LAFY = not(GOMO);
+  bool GOMO_Q = GOMO.q();
 
-  bool PUME = nand(LESY, GOMO);
+  bool SYPY = not(GOMO_Q);
+  bool TOTU = not(GOMO_Q);
+  bool NARO = not(GOMO_Q);
+  bool WEXY = not(GOMO_Q);
+  bool RYZY = not(GOMO_Q);
+  bool RYFE = not(GOMO_Q);
+  bool LADY = not(GOMO_Q);
+  bool LAFY = not(GOMO_Q);
+
+  bool PUME = nand(LESY, GOMO_Q);
   bool SUCO = nand(LESY, SYPY);
 
-  bool SORO = nand(LOTA, GOMO);
+  bool SORO = nand(LOTA, GOMO_Q);
   bool TAFA = nand(LOTA, TOTU);
 
-  bool PAMO = nand(LYKU, GOMO);
+  bool PAMO = nand(LYKU, GOMO_Q);
   bool PYZY = nand(LYKU, NARO);
 
-  bool SUKY = nand(ROBY, GOMO);
+  bool SUKY = nand(ROBY, GOMO_Q);
   bool TOWA = nand(ROBY, WEXY);
 
-  bool RORA = nand(TYTA, GOMO);
+  bool RORA = nand(TYTA, GOMO_Q);
   bool RUDU = nand(TYTA, RYZY);
 
-  bool MENE = nand(TYCO, GOMO);
+  bool MENE = nand(TYCO, GOMO_Q);
   bool PAZO = nand(TYCO, RYFE);
 
-  bool LUKE = nand(SOKA, GOMO);
+  bool LUKE = nand(SOKA, GOMO_Q);
   bool LOWA = nand(SOKA, LADY);
 
-  bool LAMY = nand(XOVU, GOMO);
+  bool LAMY = nand(XOVU, GOMO_Q);
   bool LUNU = nand(XOVU, LAFY);
 
   bool RUGO_Q = RUGO.srtock(CLKPIPE, PUME, SUCO, P10_B);

@@ -38,40 +38,40 @@ bool SPR_PIX_B_7;
 //----------
 // registers
 
-static reg PUDU;
-static reg RAMU;
-static reg SELE;
-static reg SAJA;
-static reg MYTU;
-static reg MOFO;
-static reg SUNY;
-static reg SUTO;
-static reg PEFO;
-static reg REWO;
-static reg RYDU;
-static reg SEGA;
-static reg PEBA;
-static reg ROKA;
-static reg RAMA;
-static reg SEMO;
+reg PUDU;
+reg RAMU;
+reg SELE;
+reg SAJA;
+reg MYTU;
+reg MOFO;
+reg SUNY;
+reg SUTO;
+reg PEFO;
+reg REWO;
+reg RYDU;
+reg SEGA;
+reg PEBA;
+reg ROKA;
+reg RAMA;
+reg SEMO;
 
-static reg NURO;
-static reg MASO;
-static reg LEFE;
-static reg LESU;
-static reg WYHO;
-static reg WORA;
-static reg VAFO;
-static reg WUFY;
+reg NURO;
+reg MASO;
+reg LEFE;
+reg LESU;
+reg WYHO;
+reg WORA;
+reg VAFO;
+reg WUFY;
 
-static reg NYLU;
-static reg PEFU;
-static reg NATY;
-static reg PYJO;
-static reg VARE;
-static reg WEBA;
-static reg VANU;
-static reg VUPY;
+reg NYLU;
+reg PEFU;
+reg NATY;
+reg PYJO;
+reg VARE;
+reg WEBA;
+reg VANU;
+reg VUPY;
 
 //-----------------------------------------------------------------------------
 

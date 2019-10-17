@@ -75,40 +75,39 @@ bool BUKE;
 //----------
 // registers
 
+reg ADYK;
+reg AFUR;
+reg ALEF;
+reg APUK;
+reg AFER;
+reg CERY;
 
-static reg ADYK;
-static reg AFUR;
-static reg ALEF;
-static reg APUK;
-static reg AFER;
-static reg CERY;
+reg TAMA;
+reg UNYK;
+reg TERO;
+reg UNER;
+reg UFOR;
+reg UKUP;
 
-static reg TAMA;
-static reg UNYK;
-static reg TERO;
-static reg UNER;
-static reg UFOR;
-static reg UKUP;
+reg BARA;
+reg CARU;
+reg BYLU;
 
-static reg BARA;
-static reg CARU;
-static reg BYLU;
-
-static reg ATYK;
-static reg AVOK;
-static reg JESO;
+reg ATYK;
+reg AVOK;
+reg JESO;
 
 // FF04, DIV
-static reg UGOT;
-static reg TULU;
-static reg TUGO;
-static reg TOFE;
-static reg TERU;
-static reg SOLA;
-static reg SUBU;
-static reg TEKA;
-static reg UKET;
-static reg UPOF;
+reg UGOT;
+reg TULU;
+reg TUGO;
+reg TOFE;
+reg TERU;
+reg SOLA;
+reg SUBU;
+reg TEKA;
+reg UKET;
+reg UPOF;
 
 //-----------------------------------------------------------------------------
 

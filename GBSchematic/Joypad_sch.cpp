@@ -57,19 +57,19 @@ bool P15_D;
 //----------
 // registers
 
-static bool KYME_Q, KYME_CLK;
-static bool KUKO_Q, KUKO_CLK;
-static bool KERU_Q, KERU_CLK;
-static bool JALE_Q, JALE_CLK;
-static bool KELY_Q, KELY_CLK;
-static bool COFY_Q, COFY_CLK;
-static bool JUTE_Q, JUTE_CLK;
-static bool KECY_Q, KECY_CLK;
+bool KYME_Q, KYME_CLK;
+bool KUKO_Q, KUKO_CLK;
+bool KERU_Q, KERU_CLK;
+bool JALE_Q, JALE_CLK;
+bool KELY_Q, KELY_CLK;
+bool COFY_Q, COFY_CLK;
+bool JUTE_Q, JUTE_CLK;
+bool KECY_Q, KECY_CLK;
 
-static bool KOLO_L;
-static bool KEJA_L;
-static bool KEVU_L;
-static bool KAPA_L;
+bool KOLO_L;
+bool KEJA_L;
+bool KEVU_L;
+bool KAPA_L;
 
 //-----------------------------------------------------------------------------
 

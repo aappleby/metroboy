@@ -4,16 +4,17 @@
 
 bool ANAP;
 bool TYVY;
-bool WEZA;
-bool WUCO;
-bool WUZY;
-bool WYDA;
-bool WYSE;
-bool ZYSU;
 bool FERO_Q;
 bool UMER;
 
 // non-four-character signals
+
+bool OAM_A_A7;
+bool OAM_A_A6;
+bool OAM_A_A5;
+bool OAM_A_A4;
+bool OAM_A_A3;
+bool OAM_A_A2;
 
 bool CUBA1;
 bool MCS_IN;

@@ -28,19 +28,19 @@ bool TOVY_A0n;
 // registers
 
 // tac
-static bool SABO_Q, SABO_CLK;
-static bool SAMY_Q, SAMY_CLK;
-static bool SOPU_Q, SOPU_CLK;
+bool SABO_Q, SABO_CLK;
+bool SAMY_Q, SAMY_CLK;
+bool SOPU_Q, SOPU_CLK;
 
 // tima counter
-static bool REGA_Q, REGA_CLK;
-static bool POVY_Q, POVY_CLK;
-static bool PERU_Q, PERU_CLK;
-static bool RATE_Q, RATE_CLK;
-static bool RUBY_Q, RUBY_CLK;
-static bool RAGE_Q, RAGE_CLK;
-static bool PEDA_Q, PEDA_CLK;
-static bool NUGA_Q, NUGA_CLK;
+bool REGA_Q, REGA_CLK;
+bool POVY_Q, POVY_CLK;
+bool PERU_Q, PERU_CLK;
+bool RATE_Q, RATE_CLK;
+bool RUBY_Q, RUBY_CLK;
+bool RAGE_Q, RAGE_CLK;
+bool PEDA_Q, PEDA_CLK;
+bool NUGA_Q, NUGA_CLK;
 
 bool NYDU_Q, NYDU_CLK;
 bool MOBA_Q, MOBA_CLK;

@@ -89,43 +89,43 @@ bool XUHA;
 //----------
 // registers
 
-static reg SOBU;
-static reg SUDA;
-static reg SARY;
-static reg NOPA;
-static reg PYCO;
-static reg NUNU;
+reg SOBU;
+reg SUDA;
+reg SARY;
+reg NOPA;
+reg PYCO;
+reg NUNU;
 
-static reg RYKU;
-static reg ROGA;
-static reg RUBU;
-static reg NYZE;
-static reg PUXA;
+reg RYKU;
+reg ROGA;
+reg RUBU;
+reg NYZE;
+reg PUXA;
 
-static reg RYFA;
-static reg SOVY;
-static reg RENE;
-static reg LYZU;
-static reg LAXU;
-static reg MESU;
-static reg NYVA;
-static reg LOVY;
+reg RYFA;
+reg SOVY;
+reg RENE;
+reg LYZU;
+reg LAXU;
+reg MESU;
+reg NYVA;
+reg LOVY;
 
 // big address bus, bottom right
 
 reg VYNO;
 reg VUJO;
 reg VYMU;
-static reg TUFU;
-static reg TAXA;
-static reg TOZO;
-static reg TATE;
-static reg TEKE;
-static reg WYKA;
-static reg WODY;
-static reg WOBO;
-static reg WYKO;
-static reg XOLO;
+reg TUFU;
+reg TAXA;
+reg TOZO;
+reg TATE;
+reg TEKE;
+reg WYKA;
+reg WODY;
+reg WOBO;
+reg WYKO;
+reg XOLO;
 
 //-----------------------------------------------------------------------------
 

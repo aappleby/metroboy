@@ -37,31 +37,31 @@ bool VRAM_TO_OAM;
 //----------
 // registers
 
-static reg MAKA;
-static reg LUVY;
-static reg MYTE;
-static reg LENE;
+reg MAKA;
+reg LUVY;
+reg MYTE;
+reg LENE;
 reg MATU;
 
 // DMA base reg
-static reg NAFA;
-static reg NYGY;
-static reg PARA;
-static reg PYNE;
-static reg PULA;
-static reg NYDO;
-static reg POKU;
-static reg MARU;
+reg NAFA;
+reg NYGY;
+reg PARA;
+reg PYNE;
+reg PULA;
+reg NYDO;
+reg POKU;
+reg MARU;
 
 // DMA counter reg
-static reg NAKY;
-static reg PYRO;
-static reg NEFY;
-static reg MUTY;
-static reg NYKO;
-static reg PYLO;
-static reg NUTO;
-static reg MUGU;
+reg NAKY;
+reg PYRO;
+reg NEFY;
+reg MUTY;
+reg NYKO;
+reg PYLO;
+reg NUTO;
+reg MUGU;
 
 //-----------------------------------------------------------------------------
 // 4_DMA.png

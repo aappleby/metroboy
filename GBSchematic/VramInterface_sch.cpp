@@ -69,7 +69,7 @@ bool COTA;
 //----------
 // registers
 
-static reg SOTO;
+reg SOTO;
 
 //----------
 // 25_VRAM_INTERFACE.png

@@ -18,7 +18,7 @@ extern bool FF43_D0, FF43_D1, FF43_D2, FF43_D3, FF43_D4, FF43_D5, FF43_D6, FF43_
 
 extern reg XEHO, SAVY, XODU, XYDO, TUHU, TUKY, TAKO, SYBE; // x counter
 
-extern bool DEPO;
+extern reg DEPO;
 
 extern bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU;
 
@@ -32,7 +32,7 @@ bool VAVA3;
 //----------
 // registers - background pixel pipe?
 
-static reg VEZO, WURU, VOSA, WYFU, XETE, WODA, VUMO, VAVA;
+reg VEZO, WURU, VOSA, WYFU, XETE, WODA, VUMO, VAVA;
 
 //-----------------------------------------------------------------------------
 
@@ -156,37 +156,39 @@ void tick_background() {
   //----------
   // some shift register connected to VAVA3?
 
-  bool XOGA = not(DEPO);
-  bool XURA = not(DEPO);
-  bool TAJO = not(DEPO);
-  bool XENU = not(DEPO);
-  bool XYKE = not(DEPO);
-  bool XABA = not(DEPO);
-  bool TAFU = not(DEPO);
-  bool XUHO = not(DEPO);
+  bool DEPO_Q = DEPO.q();
 
-  bool TEDE = nand(DEPO, LESY);
+  bool XOGA = not(DEPO_Q);
+  bool XURA = not(DEPO_Q);
+  bool TAJO = not(DEPO_Q);
+  bool XENU = not(DEPO_Q);
+  bool XYKE = not(DEPO_Q);
+  bool XABA = not(DEPO_Q);
+  bool TAFU = not(DEPO_Q);
+  bool XUHO = not(DEPO_Q);
+
+  bool TEDE = nand(DEPO_Q, LESY);
   bool WOKA = nand(XOGA, LESY);
 
-  bool XALA = nand(LOTA, DEPO);
+  bool XALA = nand(LOTA, DEPO_Q);
   bool WEDE = nand(LOTA, XURA);
 
-  bool TYRA = nand(DEPO, LYKU);
+  bool TYRA = nand(DEPO_Q, LYKU);
   bool TUFO = nand(TAJO, LYKU);
   
-  bool XYRU = nand(DEPO, ROBY);
+  bool XYRU = nand(DEPO_Q, ROBY);
   bool WEVO = nand(XENU, ROBY);
 
-  bool XUKU = nand(DEPO, TYTA);
+  bool XUKU = nand(DEPO_Q, TYTA);
   bool WEDY = nand(XYKE, TYTA);
   
-  bool XELY = nand(DEPO, TYCO);
+  bool XELY = nand(DEPO_Q, TYCO);
   bool WUJA = nand(TYCO, XABA);
 
-  bool TYKO = nand(DEPO, SOKA);
+  bool TYKO = nand(DEPO_Q, SOKA);
   bool TENA = nand(TAFU, SOKA);
 
-  bool TUWU = nand(DEPO, XOVU);
+  bool TUWU = nand(DEPO_Q, XOVU);
   bool WUBU = nand(XUHO, XOVU);
 
   //----------

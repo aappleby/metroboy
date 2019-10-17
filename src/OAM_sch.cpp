@@ -88,15 +88,15 @@ void tick_oam() {
   //----------
   // sprite scan counter
 
-  bool YFEL_Q = YFEL.q();
-  bool WEWY_Q = WEWY.q();
-  bool GOSO_Q = GOSO.q();
-  bool ELYN_Q = ELYN.q();
-  bool FAHA_Q = FAHA.q();
-  bool FONY_Q = FONY.q();
+  wire YFEL_Q = YFEL.q();
+  wire WEWY_Q = WEWY.q();
+  wire GOSO_Q = GOSO.q();
+  wire ELYN_Q = ELYN.q();
+  wire FAHA_Q = FAHA.q();
+  wire FONY_Q = FONY.q();
 
   FETO = and(YFEL_Q, WEWY_Q, FONY_Q, GOSO_Q);
-  bool GAVA = or(FETO, XUPY);
+  wire GAVA = or(FETO, XUPY);
 
   YFEL.flip(GAVA,    ANOM);
   WEWY.flip(!YFEL_Q, ANOM);
@@ -107,83 +107,102 @@ void tick_oam() {
 
   //----------
 
-  bool CATU_Q = CATU.q();
+  wire CATU_Q = CATU.q();
+  wire ANEL_Q = ANEL.q();
+  wire MATU_Q = MATU.q();
 
   WEFE = not(P10_B);
-  bool YVAL = not(CLK3);
-  bool YRYV = not(YVAL);
-  bool ZODO = not(YRYV);
+  wire YVAL = not(CLK3);
+  wire YRYV = not(YVAL);
+  wire ZODO = not(YRYV);
 
-  OAM_CLK = ZODO;
 
-  bool ATAR = not(RESET_VIDEO);
-  RESET_VIDEO2n = ATAR;
+  wire ATAR = not(RESET_VIDEO);
 
-  bool AWOH = not(XUPY);
-  bool ABAF = not(CATU_Q);
+  wire AWOH = not(XUPY);
+  wire ABAF = not(CATU_Q);
 
-  bool ANEL_Q = ANEL.q();
-  bool BYHA = unk3(ANEL_Q, ABAF, ABEZ);
+  wire BYHA = unk3(ANEL_Q, ABAF, ABEZ);
   ATEJ = not(BYHA);
   ANOM = nor(RESET_VIDEO2n, ATEJ);
   AZYB = not(ATEJ);
-  bool AMYG = not(RESET_VIDEO);
-  bool ABAK = or(ATEJ, AMYG);
+  wire AMYG = not(RESET_VIDEO);
+  wire ABAK = or(ATEJ, AMYG);
   BYVA = not(ABAK);
 
-  bool ASEN = or(RESET_VIDEO2n, AVAP);
-  bool MATU_Q = MATU.q();
-  bool BOGE = not(MATU_Q);
+  wire ASEN = or(RESET_VIDEO2n, AVAP);
+  wire BOGE = not(MATU_Q);
   BESU = unk2(CATU_Q, ASEN);
-  bool AJON = and(XYMU, BOGE);
+  wire AJON = and(XYMU, BOGE);
   ACYL = and(BOGE, BESU);
-  bool BETE = not(AJON);
-  OAM_ADDR_RENDER = BETE;
-  bool APAR = not(ACYL);
-  OAM_ADDR_PARSE = APAR;
-  bool AJUJ = nor(MATU_Q, ACYL, AJON);
-  bool ASAM = or(ACYL, XYMU, MATU_Q);
-  OAM_ADDR_CPU = ASAM;
-  
-  bool XYNY = not(MOPA_PHI);
-  bool XUTO = and(SARO, CPU_WR2);
+  wire BETE = not(AJON);
+  wire APAR = not(ACYL);
+  wire AJUJ = nor(MATU_Q, ACYL, AJON);
+  wire ASAM = or(ACYL, XYMU, MATU_Q);
+
+  wire XYNY = not(MOPA_PHI);
+  wire XUTO = and(SARO, CPU_WR2);
   AMAB = and(SARO, AJUJ);
-  bool ADAH = not(SARO);
+  wire ADAH = not(SARO);
 
-  bool WUJE = unk2(XYNY, XUTO);
-  bool XUPA = not(WUJE);
+  wire WUJE = unk2(XYNY, XUTO);
+  wire XUPA = not(WUJE);
 
-  bool AJEP = and(ACYL, XOCE);
-  bool WEFY = and(TUVO, !TYFO.q());
-  bool XUJA = not(WEFY);
-  bool BOFE = not(CATY);
-  bool BOTA = nor(BOFE, SARO, CPU_RD2);
-  bool ASYT = and(AJEP, XUJA, BOTA);
-  bool BODE = not(ASYT);
+  wire AJEP = and(ACYL, XOCE);
+  wire WEFY = and(TUVO, !TYFO.q());
+  wire XUJA = not(WEFY);
+  wire BOFE = not(CATY);
+  wire BOTA = nor(BOFE, SARO, CPU_RD2);
+  wire ASYT = and(AJEP, XUJA, BOTA);
+  wire BODE = not(ASYT);
+
+  wire XUCA = not(WARU);
+  wire APAG = amux2(XUPA, AMAB, AJUJ, ADAH);
+
+  wire ZAXA = not(D0);
+  wire ZAMY = not(D0);
+  wire ZAKY = not(D1);
+  wire ZOPU = not(D1);
+  wire WULE = not(D2);
+  wire WYKY = not(D2);
+  wire ZOZO = not(D3);
+  wire ZAJA = not(D3);
+
+  wire ZUFO = not(D4);
+  wire ZUGA = not(D4);
+  wire ZATO = not(D5);
+  wire ZUMO = not(D5);
+  wire YVUC = not(D6);
+  wire XYTO = not(D6);
+  wire ZUFE = not(D7);
+  wire ZYFA = not(D7);
+
+  wire WUZU = not(MD0);
+  wire WOWA = not(MD0);
+  wire AXER = not(MD1);
+  wire AVEB = not(MD1);
+  wire ASOX = not(MD2);
+  wire AMUH = not(MD2);
+  wire CETU = not(MD3);
+  wire COFO = not(MD3);
+
+  wire ARYN = not(MD4);
+  wire AZOZ = not(MD4);
+  wire ACOT = not(MD5);
+  wire AGYK = not(MD5);
+  wire CUJE = not(MD6);
+  wire BUSE = not(MD6);
+  wire ATER = not(MD7);
+  wire ANUM = not(MD7);
+
+  OAM_CLK = ZODO;
+  OAM_ADDR_RENDER = BETE;
+  OAM_ADDR_PARSE = APAR;
+  RESET_VIDEO2n = ATAR;
+  OAM_ADDR_CPU = ASAM;
   CLK3 = BODE;
 
-  bool XUCA = not(WARU);
-  bool APAG = amux2(XUPA, AMAB, AJUJ, ADAH);
-  bool AZUL = not(APAG);
-
-  bool ZAXA = not(D0);
-  bool ZAMY = not(D0);
-  bool ZAKY = not(D1);
-  bool ZOPU = not(D1);
-  bool WULE = not(D2);
-  bool WYKY = not(D2);
-  bool ZOZO = not(D3);
-  bool ZAJA = not(D3);
-
-  bool ZUFO = not(D4);
-  bool ZUGA = not(D4);
-  bool ZATO = not(D5);
-  bool ZUMO = not(D5);
-  bool YVUC = not(D6);
-  bool XYTO = not(D6);
-  bool ZUFE = not(D7);
-  bool ZYFA = not(D7);
-
+  wire AZUL = not(APAG);
   if (AZUL) {
     OAM_A_D0 = ZAXA;
     OAM_B_D0 = ZAMY;
@@ -204,26 +223,7 @@ void tick_oam() {
     OAM_B_D7 = ZYFA;
   }
 
-  bool AZAR = not(VRAM_TO_OAM);
-
-  bool WUZU = not(MD0);
-  bool WOWA = not(MD0);
-  bool AXER = not(MD1);
-  bool AVEB = not(MD1);
-  bool ASOX = not(MD2);
-  bool AMUH = not(MD2);
-  bool CETU = not(MD3);
-  bool COFO = not(MD3);
-
-  bool ARYN = not(MD4);
-  bool AZOZ = not(MD4);
-  bool ACOT = not(MD5);
-  bool AGYK = not(MD5);
-  bool CUJE = not(MD6);
-  bool BUSE = not(MD6);
-  bool ATER = not(MD7);
-  bool ANUM = not(MD7);
-
+  wire AZAR = not(VRAM_TO_OAM);
   if (AZAR) {
     OAM_A_D0 = WUZU;
     OAM_B_D0 = WOWA;
@@ -246,51 +246,70 @@ void tick_oam() {
 
   //----------
 
-  bool FOBY = not(A7);
-  bool WAXA = not(A6);
-  bool GERA = not(A5);
-  bool FEVU = not(A4);
-  bool WAPE = not(A3);
-  bool GOSE = not(A2);
-  bool WACU = not(A1);
-  bool GARO = not(A0);
+  wire FOBY = not(A7);
+  wire WAXA = not(A6);
+  wire GERA = not(A5);
+  wire FEVU = not(A4);
+  wire WAPE = not(A3);
+  wire GOSE = not(A2);
+  wire WACU = not(A1);
+  wire GARO = not(A0);
 
-  bool FYKE = not(WEZA);
-  bool FUGU = not(WUCO);
-  bool FACO = not(WYDA);
-  bool FABY = not(ZYSU);
-  bool GYKA = not(WYSE);
-  bool GYBU = not(WUZY);
-  bool WYDU = not(WEFE);
-  bool GECA = not(WEFE);
+  wire FYKE = not(WEZA);
+  wire FUGU = not(WUCO);
+  wire FACO = not(WYDA);
+  wire FABY = not(ZYSU);
+  wire GYKA = not(WYSE);
+  wire GYBU = not(WUZY);
+  wire WYDU = not(WEFE);
+  wire GECA = not(WEFE);
 
-  bool GOBY = not(FONY_Q);
-  bool GAMA = not(FAHA_Q);
-  bool FAKU = not(ELYN_Q);
-  bool FUTO = not(GOSO_Q);
-  bool GEMA = not(WEWY_Q);
-  bool GUSE = not(YFEL_Q);
-  bool WUWE = not(P10_B);
-  bool GEFY = not(P10_B);
+  wire GOBY = not(FONY_Q);
+  wire GAMA = not(FAHA_Q);
+  wire FAKU = not(ELYN_Q);
+  wire FUTO = not(GOSO_Q);
+  wire GEMA = not(WEWY_Q);
+  wire GUSE = not(YFEL_Q);
+  wire WUWE = not(P10_B);
+  wire GEFY = not(P10_B);
 
-  bool FETU = not(DMA_A7);
-  bool FYDU = not(DMA_A6);
-  bool EDOL = not(DMA_A5);
-  bool ELUG = not(DMA_A4);
-  bool FYKY = not(DMA_A3);
-  bool FAGO = not(DMA_A2);
-  bool FESA = not(DMA_A1);
-  bool FODO = not(DMA_A0);
+  wire FETU = not(DMA_A7);
+  wire FYDU = not(DMA_A6);
+  wire EDOL = not(DMA_A5);
+  wire ELUG = not(DMA_A4);
+  wire FYKY = not(DMA_A3);
+  wire FAGO = not(DMA_A2);
+  wire FESA = not(DMA_A1);
+  wire FODO = not(DMA_A0);
 
-  bool YZET = not((FOBY & OAM_ADDR_CPU) | (FYKE & OAM_ADDR_RENDER) | (GOBY & OAM_ADDR_PARSE) | (FETU & OAM_ADDR_DMA));
-  bool XEMU = not((WAXA & OAM_ADDR_CPU) | (FUGU & OAM_ADDR_RENDER) | (GAMA & OAM_ADDR_PARSE) | (FYDU & OAM_ADDR_DMA));
-  bool YMEV = not((GERA & OAM_ADDR_CPU) | (FACO & OAM_ADDR_RENDER) | (FAKU & OAM_ADDR_PARSE) | (EDOL & OAM_ADDR_DMA));
-  bool YVOM = not((FEVU & OAM_ADDR_CPU) | (FABY & OAM_ADDR_RENDER) | (FUTO & OAM_ADDR_PARSE) | (ELUG & OAM_ADDR_DMA));
-  bool YFOC = not((WAPE & OAM_ADDR_CPU) | (GYKA & OAM_ADDR_RENDER) | (GEMA & OAM_ADDR_PARSE) | (FYKY & OAM_ADDR_DMA));
-  bool YFOT = not((GOSE & OAM_ADDR_CPU) | (GYBU & OAM_ADDR_RENDER) | (GUSE & OAM_ADDR_PARSE) | (FAGO & OAM_ADDR_DMA));
-  bool ZYFO = not((WACU & OAM_ADDR_CPU) | (WYDU & OAM_ADDR_RENDER) | (WUWE & OAM_ADDR_PARSE) | (FESA & OAM_ADDR_DMA));
-  bool GEKA = not((GARO & OAM_ADDR_CPU) | (GECA & OAM_ADDR_RENDER) | (GEFY & OAM_ADDR_PARSE) | (FODO & OAM_ADDR_DMA));
+  wire YZET = not((FOBY & OAM_ADDR_CPU) | (FYKE & OAM_ADDR_RENDER) | (GOBY & OAM_ADDR_PARSE) | (FETU & OAM_ADDR_DMA));
+  wire XEMU = not((WAXA & OAM_ADDR_CPU) | (FUGU & OAM_ADDR_RENDER) | (GAMA & OAM_ADDR_PARSE) | (FYDU & OAM_ADDR_DMA));
+  wire YMEV = not((GERA & OAM_ADDR_CPU) | (FACO & OAM_ADDR_RENDER) | (FAKU & OAM_ADDR_PARSE) | (EDOL & OAM_ADDR_DMA));
+  wire YVOM = not((FEVU & OAM_ADDR_CPU) | (FABY & OAM_ADDR_RENDER) | (FUTO & OAM_ADDR_PARSE) | (ELUG & OAM_ADDR_DMA));
+  wire YFOC = not((WAPE & OAM_ADDR_CPU) | (GYKA & OAM_ADDR_RENDER) | (GEMA & OAM_ADDR_PARSE) | (FYKY & OAM_ADDR_DMA));
+  wire YFOT = not((GOSE & OAM_ADDR_CPU) | (GYBU & OAM_ADDR_RENDER) | (GUSE & OAM_ADDR_PARSE) | (FAGO & OAM_ADDR_DMA));
+  wire ZYFO = not((WACU & OAM_ADDR_CPU) | (WYDU & OAM_ADDR_RENDER) | (WUWE & OAM_ADDR_PARSE) | (FESA & OAM_ADDR_DMA));
+  wire GEKA = not((GARO & OAM_ADDR_CPU) | (GECA & OAM_ADDR_RENDER) | (GEFY & OAM_ADDR_PARSE) | (FODO & OAM_ADDR_DMA));
 
+  wire MYNU = nand(CPU_RD2, CATY);
+  LEKO = not(MYNU);
+  wire WAFO = not(GEKA);
+  wire GUKO = and(WAFO, AMAB, LEKO);
+  wire WUKU = and(LEKO, AMAB, GEKA);
+  wire YLYC = and(WYJA, GEKA);
+  wire YNYC = and(WYJA, WAFO);
+
+  WUME = not(GUKO);
+  WEWU = not(WUKU);
+  wire ZONE = not(YLYC);
+  wire ZOFE = not(YNYC);
+
+  ANEL.tock(AWOH, ABEZ, CATU_Q);
+  wire XECY_Q = XECY.tock(XUCA, 0, RESET7n); // ? weird
+  XUVA.tock(XYNY, XARE, XECY_Q);
+
+  OAM_A_CS = ZONE;
+  OAM_B_CS = ZOFE;
   OAM_A7 = YZET;
   OAM_A6 = XEMU;
   OAM_A5 = YMEV;
@@ -298,26 +317,6 @@ void tick_oam() {
   OAM_A3 = YFOC;
   OAM_A2 = YFOT;
   OAM_A1 = ZYFO;
-
-  bool MYNU = nand(CPU_RD2, CATY);
-  LEKO = not(MYNU);
-  bool WAFO = not(GEKA);
-  bool GUKO = and(WAFO, AMAB, LEKO);
-  bool WUKU = and(LEKO, AMAB, GEKA);
-  bool YLYC = and(WYJA, GEKA);
-  bool YNYC = and(WYJA, WAFO);
-
-  WUME = not(GUKO);
-  WEWU = not(WUKU);
-  bool ZONE = not(YLYC);
-  bool ZOFE = not(YNYC);
-
-  OAM_A_CS = ZONE;
-  OAM_B_CS = ZOFE;
-
-  ANEL.tock(AWOH, ABEZ, CATU_Q);
-  bool XECY_Q = XECY.tock(XUCA, 0, RESET7n); // ? weird
-  XUVA.tock(XYNY, XARE, XECY_Q);
 }
 
 //-----------------------------------------------------------------------------

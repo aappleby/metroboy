@@ -18,6 +18,8 @@ extern bool AMAB;
 // outputs
 
 bool CATY;
+bool LUMA;
+bool WYJA;
 bool MOPA_PHI;
 
 bool DMA_A8;
@@ -29,67 +31,56 @@ bool DMA_A11;
 bool DMA_A14;
 bool DMA_A15;
 
-bool LUMA;
 bool OAM_ADDR_DMA;
 bool VRAM_TO_OAM;
 
 //----------
-// mystery signals
-
-//----------
 // registers
 
-// FIXME _Q everything
-
-bool MAKA = 0;
-bool MAKA_CLK =  0;
-
-bool LUVY = 0;
-bool LUVY_CLK = 0;
-
-bool LENE = 0;
-bool LENE_CLK = 0;
-
-bool MATU = 0;
-bool MATU_CLK = 0;
-
-bool MYTE = 0;
-bool MYTE_CLK = 0;
+static reg MAKA;
+static reg LUVY;
+static reg MYTE;
+static reg LENE;
+reg MATU;
 
 // DMA base reg
-bool NAFA = 0;
-bool NYGY = 0;
-bool PARA = 0;
-bool PYNE = 0;
-bool PULA = 0;
-bool NYDO = 0;
-bool POKU = 0;
-bool MARU = 0;
-bool DMA_CLK1 = 0;
+static reg NAFA;
+static reg NYGY;
+static reg PARA;
+static reg PYNE;
+static reg PULA;
+static reg NYDO;
+static reg POKU;
+static reg MARU;
 
 // DMA counter reg
-bool NAKY = 0;
-bool PYRO = 0;
-bool NEFY = 0;
-bool MUTY = 0;
-bool NYKO = 0;
-bool PYLO = 0;
-bool NUTO = 0;
-bool MUGU = 0;
-bool DMA_CLK2 = 0;
+static reg NAKY;
+static reg PYRO;
+static reg NEFY;
+static reg MUTY;
+static reg NYKO;
+static reg PYLO;
+static reg NUTO;
+static reg MUGU;
 
 //-----------------------------------------------------------------------------
 // 4_DMA.png
 
 void tick_dma() {
+  bool MAKA_Q = MAKA.q();
+  bool LUVY_Q = LUVY.q();
+  bool MYTE_Q = MYTE.q();
+  bool LENE_Q = LENE.q();
+  bool MATU_Q = MATU.q();
+
   bool DECY = not(FROM_CPU5);
   CATY = not(DECY);
-  bool NAXY = nor(MAKA, LUVY);
+  bool NAXY = nor(MAKA_Q, LUVY_Q);
 
   bool MOPA = not(PHI_OUTn);
   MOPA_PHI = MOPA;
 
-  bool LENE_Qn = not(LENE);
+  bool LENE_Qn = not(LENE_Q);
   bool LOKO = nand(RESET6, LENE_Qn);
 
   bool MOLU = nand(FF46, CPU_RD2);
@@ -101,12 +92,10 @@ void tick_dma() {
 
   bool LUPA = nor(LAVY, LYXE);
 
-  bool POWU = and(MATU, NAXY);
-
-  bool MYTE_Qn = not(MYTE);
+  bool POWU = and(MATU_Q, NAXY);
 
   // FIXME loopy thing, glitch filter? def broken.
-  bool LARA = nand(/*LOKY,*/ MYTE_Qn, RESET6);
+  bool LARA = nand(/*LOKY,*/ !MYTE_Q, RESET6);
   bool LOKY = nand(LARA, LENE_Qn);
 
   // dma_a == 159
@@ -114,19 +103,85 @@ void tick_dma() {
 
   bool NOLO = not(NAVO);
 
-  bool WYJA = unk3(AMAB, CPU_WR2, POWU);
+  WYJA = unk3(AMAB, CPU_WR2, POWU);
+
+  bool NAFA_Q = NAFA.tock(LORU, 0, D0);
+  bool NYGY_Q = NYGY.tock(LORU, 0, D4);
+  bool PARA_Q = PARA.tock(LORU, 0, D2);
+  bool PYNE_Q = PYNE.tock(LORU, 0, D1);
+  bool PULA_Q = PULA.tock(LORU, 0, D5);
+  bool NYDO_Q = NYDO.tock(LORU, 0, D3);
+  bool POKU_Q = POKU.tock(LORU, 0, D6);
+  bool MARU_Q = MARU.tock(LORU, 0, D7);
+
+  bool POLY = not(!NAFA_Q);
+  bool PARE = not(!NYGY_Q);
+  bool REMA = not(!PARA_Q);
+  bool ROFO = not(!PYNE_Q);
+  bool RALY = not(!PULA_Q);
+  bool PANE = not(!NYDO_Q);
+  bool RESU = not(!POKU_Q);
+  bool NUVY = not(!MARU_Q);
+
+  DMA_A8  = NAFA_Q;
+  DMA_A12 = NYGY_Q;
+  DMA_A10 = PARA_Q;
+  DMA_A9  = PYNE_Q;
+  DMA_A13 = PULA_Q;
+  DMA_A11 = NYDO_Q;
+  DMA_A14 = POKU_Q;
+  DMA_A15 = MARU_Q;
+
+  bool EVAX = not(NAFA_Q);
+  bool EXYF = not(NYGY_Q);
+  bool ERAF = not(PARA_Q);
+  bool DUVE = not(PYNE_Q);
+  bool FUSY = not(NYDO_Q);
+
+
+  bool LAPA = not(LOKO);
+  bool META = and(PHI_OUTn, LOKY);
+
+  bool NAKY_Q = NAKY.flip(META,    LAPA);
+  bool PYRO_Q = PYRO.flip(!NAKY_Q, LAPA);
+  bool NEFY_Q = NEFY.flip(!PYRO_Q, LAPA);
+  bool MUTY_Q = MUTY.flip(!NEFY_Q, LAPA);
+  bool NYKO_Q = NYKO.flip(!MUTY_Q, LAPA);
+  bool PYLO_Q = PYLO.flip(!NYKO_Q, LAPA);
+  bool NUTO_Q = NUTO.flip(!PYLO_Q, LAPA);
+  bool MUGU_Q = MUGU.flip(!NUTO_Q, LAPA);
+
+  DMA_A0 = NAKY_Q;
+  DMA_A1 = PYRO_Q;
+  DMA_A2 = NEFY_Q;
+  DMA_A3 = MUTY_Q;
+  DMA_A4 = NYKO_Q;
+  DMA_A5 = PYLO_Q;
+  DMA_A6 = NUTO_Q;
+  DMA_A7 = MUGU_Q;
+
+  // tribuffer, not inverter? FIXME - check this elsewhere, we could be driving inverted signals onto the tribus
+  bool ECAL = NAKY_Q;
+  bool EGEZ = PYRO_Q;
+  bool FUHE = NEFY_Q;
+  bool FYZY = MUTY_Q;
+  bool DAMU = NYKO_Q;
+  bool DAVA = PYLO_Q;
+  bool ETEG = NUTO_Q;
+  bool EREW = MUGU_Q;
+
+  bool LEBU = not(DMA_A15);
+  bool MUDA = nor(DMA_A13, DMA_A14, LEBU);
+  bool LOGO = not(MUDA);
+  bool MUHO = nand(MATU_Q, MUDA);
+  bool MORY = nand(MATU_Q, LOGO);
+  bool DUGA = not(MATU_Q);
+  bool LUFA = not(MUHO);
+  LUMA = not(MORY);
+  OAM_ADDR_DMA = DUGA;
+  VRAM_TO_OAM = LUFA;
 
   bool PUSY = not(NYGO);
-
-  bool POLY = not(!NAFA);
-  bool PARE = not(!NYGY);
-  bool REMA = not(!PARA);
-  bool ROFO = not(!PYNE);
-  bool RALY = not(!PULA);
-  bool PANE = not(!NYDO);
-  bool RESU = not(!POKU);
-  bool NUVY = not(!MARU);
-
   if (PUSY) {
     D0 = POLY;
     D4 = PARE;
@@ -138,52 +193,7 @@ void tick_dma() {
     D7 = NUVY;
   }
 
-  DMA_A8 = NAFA;
-  DMA_A12 = NYGY;
-  DMA_A10 = PARA;
-  DMA_A9 = PYNE;
-  DMA_A13 = PULA;
-  DMA_A11 = NYDO;
-  DMA_A14 = POKU;
-  DMA_A15 = MARU;
-
-  bool EVAX = not(NAFA);
-  bool EXYF = not(NYGY);
-  bool ERAF = not(PARA);
-  bool DUVE = not(PYNE);
-  bool FUSY = not(NYDO);
-
   bool AHOC = not(VRAM_TO_OAM);
-
-  if (AHOC) {
-    MA8 = EVAX;
-    MA12 = EXYF;
-    MA10 = ERAF;
-    MA9 = DUVE;
-    MA11 = FUSY;
-  }
-
-  bool LAPA = not(LOKO);
-  bool META = and(PHI_OUTn, LOKY);
-
-  DMA_A0 = NAKY;
-  DMA_A1 = PYRO;
-  DMA_A2 = NEFY;
-  DMA_A3 = MUTY;
-  DMA_A4 = NYKO;
-  DMA_A5 = PYLO;
-  DMA_A6 = NUTO;
-  DMA_A7 = MUGU;
-
-  bool ECAL = not(NAKY);
-  bool EGEZ = not(PYRO);
-  bool FUHE = not(NEFY);
-  bool FYZY = not(MUTY);
-  bool DAMU = not(NYKO);
-  bool DAVA = not(PYLO);
-  bool ETEG = not(NUTO);
-  bool EREW = not(MUGU);
-
   if (AHOC) {
     MA0 = ECAL;
     MA1 = EGEZ;
@@ -193,119 +203,19 @@ void tick_dma() {
     MA5 = DAVA;
     MA6 = ETEG;
     MA7 = EREW;
+    MA8 = EVAX;
+    MA9 = DUVE;
+    MA10 = ERAF;
+    MA11 = FUSY;
+    MA12 = EXYF;
   }
-
-  bool LEBU = not(DMA_A15);
-  bool MUDA = nor(DMA_A13, DMA_A14, LEBU);
-  bool LOGO = not(MUDA);
-  bool MUHO = nand(MATU, MUDA);
-  bool MORY = nand(MATU, LOGO);
-  bool DUGA = not(MATU);
-  bool LUFA = not(MUHO);
-  LUMA = not(MORY);
-  OAM_ADDR_DMA = DUGA;
-  VRAM_TO_OAM = LUFA;
 
   //----------
   // registers
 
-  bool MAKA_ = MAKA;
-  bool MAKA_CLK_ = CLK1;
-  if (MAKA_CLK && !MAKA_CLK_) {
-    MAKA_ = CATY;
-  }
-  if(!RESET6) {
-    MAKA_ = 0;
-  }
-
-  bool LUVY_ = LUVY;
-  bool LUVY_CLK_ = PHI_OUTn;
-  if (LUVY_CLK && !LUVY_CLK_) {
-    LUVY_ = LUPA;
-  }
-  if (!RESET6) {
-    LUVY_ = 0;
-  }
-
-  bool LENE_ = LENE;
-  bool LENE_CLK_ = MOPA;
-  if (LENE_CLK && !LENE_CLK_) {
-    LENE_ = LUVY;
-  }
-  if (!RESET6) {
-    LENE_ = 0;
-  }
-
-  bool MATU_ = MATU;
-  bool MATU_CLK_ = PHI_OUTn;
-  if (MATU_CLK && !MATU_CLK_) {
-    MATU_ = LOKY;
-  }
-  if (!RESET6) {
-    MATU_ = 0;
-  }
-
-  bool MYTE_ = MYTE;
-  bool MYTE_CLK_ = MOPA;
-  if (MYTE_CLK && !MYTE_CLK_) {
-    MYTE_ = NOLO;
-  }
-  if (!RESET6) {
-    MYTE_ = 0;
-  }
-
-  bool DMA_CLK1_ = LORU;
-  if (DMA_CLK1 && !DMA_CLK1_) {
-    NAFA = D0;
-    NYGY = D4;
-    PARA = D2;
-    PYNE = D1;
-    PULA = D5;
-    NYDO = D3;
-    POKU = D6;
-    MARU = D7;
-  }
-  DMA_CLK1 = DMA_CLK1_;
-
-  bool DMA_CLK2_ = META;
-  if (DMA_CLK2 && !DMA_CLK2_) {
-    // increment dma counter
-  }
-  if (!LAPA) {
-    // clear dma counter
-    NAKY = 0;
-    PYRO = 0;
-    NEFY = 0;
-    MUTY = 0;
-    NYKO = 0;
-    PYLO = 0;
-    NUTO = 0;
-    MUGU = 0;
-  }
-  DMA_CLK2 = DMA_CLK2_;
-
-  //----------
-  // writebacks
-
-  LUVY = LUVY_;
-  LUVY_CLK =  LUVY_CLK_;
-
-  MAKA = MAKA_;
-  MAKA_CLK = MAKA_CLK_;
-
-  LENE = LENE_;
-  LENE_CLK = LENE_CLK_;
-
-  MATU = MATU_;
-  MATU_CLK = MATU_CLK_;
-
-  MYTE = MYTE_;
-  MYTE_CLK = MYTE_CLK_;
-
-  //----------
-  // unsunk signals
-
-  (void)NYGO;
-  (void)POWU;
-  (void)WYJA;
+  MAKA.tock(CLK1,     RESET6, CATY);
+  LUVY.tock(PHI_OUTn, RESET6, LUPA);
+  LENE.tock(MOPA,     RESET6, LUVY_Q);
+  MATU.tock(PHI_OUTn, RESET6, LOKY);
+  MYTE.tock(MOPA,     LAPA,   NOLO);
 }

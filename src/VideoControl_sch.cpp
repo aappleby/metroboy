@@ -76,6 +76,9 @@ bool APUX;
 bool ABEF;
 bool ADAZ;
 bool ASAH;
+bool WODU;
+bool SELA;
+bool XYMU;
 
 //-----------------------------------------------------------------------------
 // registers
@@ -92,7 +95,7 @@ static reg SUDE;
 static reg TAHA;
 static reg TYRY;
 
-static reg RUTU;
+reg RUTU;
 static reg SYGU;
 
 //----------
@@ -264,10 +267,10 @@ void tick_videocontrol() {
   bool XANO = not(XUGU);
   bool PARU = not(!POPU_Q);
   INT_VBL = PARU;
-  bool WODU = and(XENA, XANO);
+  WODU = and(XENA, XANO);
 
   PURE = not(RUTU_Q);
-  bool SELA = not(PURE);
+  SELA = not(PURE);
   bool TOLU = not(PARU);
   bool TAPA = and(SELA, TOLU);
   INT_OAM = TAPA;
@@ -283,7 +286,7 @@ void tick_videocontrol() {
   bool VOGA_Q = VOGA.tock(CLK2, TADY, WODU);
   bool WEGO = or(TOFU, VOGA_Q);
   bool XAJO = and(XEHO_Q, XYDO_Q);
-  bool XYMU = unk2(WEGO, AVAP);
+  XYMU = unk2(WEGO, AVAP);
   bool WUSA = unk2(XAJO, WEGO);
   bool TOBA = and(CLKPIPE, WUSA);
   bool SADU = nor(XYMU, PARU);

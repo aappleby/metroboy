@@ -61,17 +61,23 @@ extern bool EKES;
 
 bool SPR_MATCH;
 bool FEPO;
-
+bool ABEZ;
+bool CEHA;
 bool XYSO;
 bool XOCE;
 bool DYTY;
 bool BUZA;
 bool AVAP;
-
 bool DEGE;
 bool DABY;
 bool DABU;
 bool GYSA;
+bool TACU;
+bool TEXY;
+bool TUVO;
+bool WUTY;
+bool XUPY;
+bool LAPE;
 
 // sprite hit flags
 bool FADO;
@@ -191,14 +197,14 @@ void tick_spritecontrol() {
   bool XYFY = not(XOTA);
   bool ALES = not(XYVO);
   bool ABOV = and(SELA, ALES);
-  bool XUPY = not(!WUVU_Q);
-  bool ABEZ = not(RESET_VIDEO2n);
+  XUPY = not(!WUVU_Q);
+  ABEZ = not(RESET_VIDEO2n);
   bool BALU = not(ANOM);
   bool BAGY = not(BALU);
   bool WOJO = nor(!WUVU_Q, !WOSU_Q);
   XOCE = not(WOSU_Q);
   XYSO = not(WOJO);
-  bool CEHA = not(!CENO_Q);
+  CEHA = not(!CENO_Q);
   BUZA = and(!CENO_Q, XYMU);
   bool CARE = or(XOCE, CEHA, SPR_MATCH);
   DYTY = not(CARE);
@@ -224,26 +230,26 @@ void tick_spritecontrol() {
   bool TULY_Q = TULY.q();
   bool TESE_Q = TESE.q();
 
-  bool LAPE = not(CLK2);
+  LAPE = not(CLK2);
   bool TEPA = not(XYMU);
 
   bool TYNO = nand(TOXE_Q, SEBA_Q, VONU_Q);
   bool VUSA = or(!TYFO_Q, TYNO);
-  bool WUTY = not(VUSA);
+  WUTY = not(VUSA);
   bool XEFY = not(WUTY);
 
   bool SAKY = nor(TULY_Q, VONU_Q);
   bool TYSO = or(SAKY, TEPA);
-  bool TEXY = not(TYSO);
+  TEXY = not(TYSO);
   bool XONO = and(BAXO, TEXY);
 
-  bool TUVO = or(TEPA, TULY_Q, TESE_Q);
+  TUVO = or(TEPA, TULY_Q, TESE_Q);
   bool TAME = nand(TESE_Q, TOXE_Q);
   bool TOMA = nand(LAPE, TAME);
 
   bool TYTU = not(TAME);
   bool SYCU = nor(TYTU, TEPA, TYFO_Q);
-  bool TACU = nand(TYTU, TYFO_Q);
+  TACU = nand(TYTU, TYFO_Q);
   bool TOPU = and(TULY_Q, SYCU);
   bool RACA = and(VONU_Q, SYCU);
   bool VYWA = not(TOPU);

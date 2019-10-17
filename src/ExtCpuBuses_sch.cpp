@@ -91,6 +91,7 @@ bool CS_OUT;
 bool TOLA_A1n;
 
 bool MATE;
+bool TEXO;
 
 //----------
 // registers
@@ -117,7 +118,7 @@ void tick_extbus() {
 
   bool SORE = not(A15);
   bool TEVY = and(A13, A14, SORE);
-  bool TEXO = and(FROM_CPU4, TEVY);
+  TEXO = and(FROM_CPU4, TEVY);
   bool LEVO = not(TEXO);
   bool LAGU = unk3(CPU_RAW_RD, LEVO, FROM_CPU3);
   bool LYWE = not(LAGU);

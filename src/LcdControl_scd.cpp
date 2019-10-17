@@ -8,7 +8,7 @@
 extern bool CLK2;
 
 extern bool NAPO_OUT;
-extern bool RUTU_OUT;
+extern reg RUTU;
 extern bool FF04_D0n;
 extern bool FF04_D1n;
 extern bool FF40_D7;
@@ -24,7 +24,7 @@ extern bool LYRY;
 extern bool MYVO;
 extern bool SYLO;
 extern bool WODU;
-extern bool XYDO;
+extern reg XYDO;
 extern reg NYPE;
 extern bool LYFE;
 extern bool FEPO;
@@ -42,6 +42,8 @@ bool LOBY;
 bool POKY;
 bool ROXO;
 bool TOMU;
+bool TOFU;
+bool SEGU;
 
 //----------
 // registers
@@ -73,10 +75,11 @@ void tick_lcdcontrol() {
   bool SOCY = not(TOMU);
   bool VYBO = nor(FEPO, WODU, MYVO);
   bool TYFA = and(SOCY, POKY, VYBO);
-  bool SEGU = not(TYFA);
+  SEGU = not(TYFA);
   ROXO = not(SEGU);
 
-  bool LOFU = not(RUTU_OUT);
+  bool RUTU_Q = RUTU.q();
+  bool LOFU = not(RUTU_Q);
   
   bool NERU = !(V7 || V6 || V5 || V4 || V3 || V2 || V1); // biiig nor
   bool MURE = not(MEDA_Q);
@@ -100,7 +103,7 @@ void tick_lcdcontrol() {
   PIN_FR = KOFO;
 
   // FIXME another logic loop...
-  bool TOFU = not(RESET_VIDEO);
+  TOFU = not(RESET_VIDEO);
   bool POME = nor(AVAP, /*POFY*/false);
   bool SACU = nor(SEGU, ROXY);
   bool RUJU = or(PAHO_Q, TOFU, POME);
@@ -114,7 +117,8 @@ void tick_lcdcontrol() {
   PORY.tock(MYVO, NAFY, NYKA_Q);
   PYGO.tock(CLK2, XYMU, PORY_Q);
 
-  PAHO.tock(ROXO, XYMU, XYDO);
+  bool XYDO_Q = XYDO.q();
+  PAHO.tock(ROXO, XYMU, XYDO_Q);
 
   LUCA.tock(LOFU,    LYFE, !LUCA_Q);
   LEBE.tock(!LUCA_Q, LYFE, !LEBE_Q);

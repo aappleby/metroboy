@@ -13,7 +13,7 @@ extern bool MCS_IN;
 extern bool T1nT2;
 extern bool FEXXFFXXn;
 extern bool FF40_D4;
-extern bool MATU_Q;
+extern reg MATU;
 extern bool MOPA_PHI;
 extern bool P10_B;
 extern bool VRAM_TO_OAM;
@@ -49,9 +49,9 @@ extern bool NETA;
 extern bool PORE;
 extern bool POTU;
 extern bool XUHA;
-extern bool VYNO;
-extern bool VUJO;
-extern bool VYMU;
+extern reg VYNO;
+extern reg VUJO;
+extern reg VYMU;
 
 //----------
 // outputs
@@ -65,6 +65,7 @@ bool MWR_D;
 bool MD_B;
 
 bool WUKO;
+bool COTA;
 
 //----------
 // registers
@@ -95,12 +96,13 @@ void tock_vram() {
   D6_A = RAFY;
   D0_A = RUXA;
 
+  bool MATU_Q = MATU.q();
   bool CUFE = unk3(SARO, MATU_Q, MOPA_PHI);
   bool VAPE = and(TACU, TUVO);
   bool AVER = and(ACYL, XYSO);
   bool XUJY = not(VAPE);
   bool BYCU = nor(CUFE, XUJY, AVER);
-  bool COTA = not(BYCU);
+  COTA = not(BYCU);
 
   bool SYRO = not(FEXXFFXXn);
   bool TEFA = nor(SYRO, TEXO);
@@ -434,10 +436,14 @@ void tock_vram() {
   bool XEZE = nand(POTU, PORE);
   WUKO = not(XEZE);
 
+  bool VYNO_Q = VYNO.q();
+  bool VUJO_Q = VUJO.q();
+  bool VYMU_Q = VYMU.q();
+
   bool XONU = not(XUHA);
-  bool WUDO = not(VYNO);
-  bool WAWE = not(VUJO);
-  bool WOLU = not(VYMU);
+  bool WUDO = not(VYNO_Q);
+  bool WAWE = not(VUJO_Q);
+  bool WOLU = not(VYMU_Q);
 
   if (XUCY) {
     MA0 = XONU;

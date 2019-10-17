@@ -74,47 +74,58 @@ bool VYPO;
 bool ROXY;
 bool LYRY;
 bool SECA;
+bool POVA;
+bool MYVO;
+bool SYLO;
+bool LENA;
+bool MOSU;
+bool MYMA;
+bool NETA;
+bool PORE;
+bool POTU;
+bool TAVA;
+bool XUHA;
 
 //----------
 // registers
 
-reg SOBU;
-reg SUDA;
-reg SARY;
-reg NOPA;
-reg PYCO;
-reg NUNU;
+static reg SOBU;
+static reg SUDA;
+static reg SARY;
+static reg NOPA;
+static reg PYCO;
+static reg NUNU;
 
-reg RYKU;
-reg ROGA;
-reg RUBU;
-reg NYZE;
-reg PUXA;
+static reg RYKU;
+static reg ROGA;
+static reg RUBU;
+static reg NYZE;
+static reg PUXA;
 
-reg RYFA;
-reg SOVY;
-reg RENE;
-reg LYZU;
-reg LAXU;
-reg MESU;
-reg NYVA;
-reg LOVY;
+static reg RYFA;
+static reg SOVY;
+static reg RENE;
+static reg LYZU;
+static reg LAXU;
+static reg MESU;
+static reg NYVA;
+static reg LOVY;
 
 // big address bus, bottom right
 
 reg VYNO;
 reg VUJO;
 reg VYMU;
-reg TUFU;
-reg TAXA;
-reg TOZO;
-reg TATE;
-reg TEKE;
-reg WYKA;
-reg WODY;
-reg WOBO;
-reg WYKO;
-reg XOLO;
+static reg TUFU;
+static reg TAXA;
+static reg TOZO;
+static reg TATE;
+static reg TEKE;
+static reg WYKA;
+static reg WODY;
+static reg WOBO;
+static reg WYKO;
+static reg XOLO;
 
 //-----------------------------------------------------------------------------
 
@@ -189,7 +200,7 @@ void tick_windowmap() {
   bool PUXA_Q = PUXA.q();
 
   wire ROZE = nand(RYKU_Q, ROGA_Q, RUBU_Q);
-  wire POVA = and(!NYZE_Q, PUXA_Q);
+  POVA = and(!NYZE_Q, PUXA_Q);
   wire PAHA = not(XYMU);
   ROXY = unk2(PAHA, POVA);
   wire SUHA = xor(FF43_D0, RYKU_Q);
@@ -210,14 +221,14 @@ void tick_windowmap() {
   wire PYNU = unk2(NUNU_Q, XOFO);
   wire NUNY = and(!NOPA_Q, PYNU);
   wire NOCU = not(PYNU);
-  wire PORE = not(NOCU);
+  PORE = not(NOCU);
 
   // glitch filter loop, FIXME double check if this logic is correct
   // bool PUKU = nor(NUNY, RYDY);
   // bool RYDY = nor(PUKU, RESET_VIDEOn, PORY);
   wire RYDY = NUNY && !(RESET_VIDEOn || PORY.q());
 
-  wire SYLO = not(RYDY);
+  SYLO = not(RYDY);
   wire TUXY = nand(SOVY_Q, SYLO);
   wire SUZU = not(TUXY);
   wire TEVO = nor(SEKO, SUZU, TAVE);
@@ -226,7 +237,7 @@ void tick_windowmap() {
   wire ROCO = not(SEGU);
   wire MEHE = not(CLK2);
   wire NYFO = not(NUNY);
-  wire MOSU = not(NYFO);
+  MOSU = not(NYFO);
   NYXU = nor(AVAP, MOSU, TEVO);
   wire WAZY = not(PORE);
   wire SYNY = not(REPU);
@@ -246,7 +257,7 @@ void tick_windowmap() {
 
   wire MOCE = nand(LAXU_Q, NYVA_Q, NYXU);
   wire LEBO = nand(CLK2, MOCE);
-  wire MYVO = not(CLK2);
+  MYVO = not(CLK2);
   LYRY = not(MOCE);
   wire LAXE = not(LAXU_Q);
   wire MYSO = nor(LOBY, LAXE, LYZU_Q);
@@ -255,15 +266,15 @@ void tick_windowmap() {
   MOFU = and(MYSO, NAKO);
   wire NOGU = nand(NAKO, NOFU);
   NYDY = nand(MYSO, MESU_Q, NOFU);
-  wire XUHA = not(NOFU);
+  XUHA = not(NOFU);
   wire NENY = not(NOGU);
   wire LURY = and(!LOVY_Q, XYMU);
   wire LONY = unk2(LURY, !LOVY_Q);
-  wire MYMA = not(LONY);
+  MYMA = not(LONY);
   wire LUSU = not(LONY);
-  wire LENA = not(LUSU);
-  wire POTU = and(LENA, NENY);
-  wire NETA = and(LENA, NOGU);
+  LENA = not(LUSU);
+  POTU = and(LENA, NENY);
+  NETA = and(LENA, NOGU);
 
   LYZU.tock(CLK2,    XYMU, LAXU_Q);
   LAXU.flip(LEBO,    NYXU);
@@ -333,7 +344,7 @@ void tick_windowmap() {
   wire TUKU = not(TOMU);
   wire SOWO = not(TAKA);
   wire TEKY = and(FEPO, TUKU, LYRY, SOWO);
-  wire TAVA = not(LAPE);
+  TAVA = not(LAPE);
 
   //----------
   // registers

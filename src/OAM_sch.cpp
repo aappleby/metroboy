@@ -5,7 +5,7 @@
 //----------
 // inputs
 
-extern bool MATU_Q;
+extern reg MATU;
 extern bool MOPA_PHI;
 extern bool P10_B;
 extern bool VRAM_TO_OAM;
@@ -26,6 +26,15 @@ extern reg CATU;
 bool AMAB;
 bool ATEJ;
 bool WEFE;
+bool ACYL;
+bool ANOM;
+bool AZYB;
+bool BESU;
+bool BYVA;
+bool WUME;
+bool WEWU;
+bool FETO;
+bool LEKO;
 
 //----------
 // mystery signals
@@ -88,7 +97,7 @@ static bool XUVA_CLK;
 void tick_oam() {
   bool CATU_Q = CATU.q();
 
-  bool FETO = and(YFEL, WEWY, FONY, GOSO);
+  FETO = and(YFEL, WEWY, FONY, GOSO);
   bool GAVA = or(FETO, XUPY);
 
   WEFE = not(P10_B);
@@ -106,17 +115,18 @@ void tick_oam() {
 
   bool BYHA = unk3(ANEL, ABAF, ABEZ);
   ATEJ = not(BYHA);
-  bool ANOM = nor(RESET_VIDEO2n, ATEJ);
-  bool AZYB = not(ATEJ);
+  ANOM = nor(RESET_VIDEO2n, ATEJ);
+  AZYB = not(ATEJ);
   bool AMYG = not(RESET_VIDEO);
   bool ABAK = or(ATEJ, AMYG);
-  bool BYVA = not(ABAK);
+  BYVA = not(ABAK);
 
   bool ASEN = or(RESET_VIDEO2n, AVAP);
+  bool MATU_Q = MATU.q();
   bool BOGE = not(MATU_Q);
-  bool BESU = unk2(CATU_Q, ASEN);
+  BESU = unk2(CATU_Q, ASEN);
   bool AJON = and(XYMU, BOGE);
-  bool ACYL = and(BOGE, BESU);
+  ACYL = and(BOGE, BESU);
   bool BETE = not(AJON);
   OAM_ADDR_RENDER = BETE;
   bool APAR = not(ACYL);
@@ -279,15 +289,15 @@ void tick_oam() {
   OAM_A1 = ZYFO;
 
   bool MYNU = nand(CPU_RD2, CATY);
-  bool LEKO = not(MYNU);
+  LEKO = not(MYNU);
   bool WAFO = not(GEKA);
   bool GUKO = and(WAFO, AMAB, LEKO);
   bool WUKU = and(LEKO, AMAB, GEKA);
   bool YLYC = and(WYJA, GEKA);
   bool YNYC = and(WYJA, WAFO);
 
-  bool WUME = not(GUKO);
-  bool WEWU = not(WUKU);
+  WUME = not(GUKO);
+  WEWU = not(WUKU);
   bool ZONE = not(YLYC);
   bool ZOFE = not(YNYC);
 
@@ -345,9 +355,6 @@ void tick_oam() {
   // unsunk signals
 
   (void)ASAM;
-  (void)BYVA;
-  (void)AZYB;
-  (void)WUME;
   (void)WEWU;
 }
 

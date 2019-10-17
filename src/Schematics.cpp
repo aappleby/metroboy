@@ -2,60 +2,59 @@
 
 // mystery signals 
 
-bool CUBA1;
-bool LAPE;
-bool SEGU;
-
 // probably tile fetch for something
-bool LESY;
-bool LOTA;
-bool LYKU;
-bool ROBY;
-bool TYTA;
-bool TYCO;
-bool SOKA;
-bool XOVU;
+bool LESY;bool LOTA;bool LYKU;bool ROBY;bool TYTA;bool TYCO;bool SOKA;bool XOVU;
 
 bool ANAP;
-bool FF41;
-bool TOFU;
-bool XEHO;
-bool WESY;
-bool POVA;
+bool TYVY;
+bool WEZA;
+bool WUCO;
+bool WUZY;
+bool WYDA;
+bool WYSE;
+bool ZYSU;
+bool FERO_Q;
+bool UMER;
 
-bool SAVY;
-bool XODU;
-bool TUKY;
-bool SYBE;
-bool RUTU;
+// non-four-character signals
 
+bool CUBA1;
+bool MCS_IN;
+bool MOE_IN;
+bool MWR_IN;
+bool NET02;
+bool VAVA3;
+
+// external debug mode pins
 bool T1;
 bool T2;
-bool CPU_WR_RAW;
 
-bool ABOL_1MHZ;
 bool CLKIN_A;
 bool CLKIN_B;
-
 bool CLK_16k;
 bool CLK_64k;
 bool CLK_256k;
+bool CLK3;
 
 bool ATAL_4MHZ;
 bool CYBO_4MHZ;
 bool AJER_2MHZ;
+bool ABOL_1MHZ;
+
 bool APU_RESET;
-
-bool FERO_Q;
-bool UMER;
 bool APU_RESET5n;
+bool RESET;
+bool RESET7;
+bool RESET_VIDEO2n;
 
+bool CPU_WR_RAW;
 bool CPU_WR_WAT;
 bool CPU_RAW_RD;
+bool CPU; // wat?
 bool WR_IN;
 bool RD_B;
 
-bool A15_C;
+bool A15_C; // ???
 
 bool FF00RD;
 bool FF00WR;
@@ -64,10 +63,8 @@ bool FF47;
 bool FF48;
 bool FF49;
 bool FF04_FF07;
-
+bool FF41;
 bool FF0F;
-
-bool CPU; // wat?
 
 bool FROM_CPU;
 bool FROM_CPU3;
@@ -91,70 +88,6 @@ bool OAM_ADDR_RENDER;
 bool OAM_ADR_CPU;
 bool OAM_B_CS;
 bool OAM_CLK;
-
-bool RESET;
-bool RESET7;
-bool RESET_VIDEO2n;
-
-bool MATU_Q;
-bool MCS_IN;
-bool MOE_IN;
-bool MWR_IN;
-bool NET02;
-
-bool VAVA3;
-bool RUTU_OUT;
-bool BURO_Q;
-
-bool MYVO;
-bool SYLO;
-bool WODU;
-bool XYDO;
-bool ABEZ;
-bool ABUZ;
-bool ACYL;
-bool AFAS;
-bool ANOM;
-bool AZYB;
-bool BEDO;
-bool BESU;
-bool BYVA;
-bool CEHA;
-bool CLK3;
-bool COTA;
-bool FETO;
-bool LEKO;
-bool LENA;
-bool MOSU;
-bool MYMA;
-bool NETA;
-bool POJU;
-bool PORE;
-bool POTU;
-
-bool SELA;
-bool TACU;
-bool TAVA;
-bool TEXO;
-bool TEXY;
-bool TULY;
-bool TUVO;
-bool TYVY;
-bool VUJO;
-bool VYMU;
-bool VYNO;
-bool WEZA;
-bool WUCO;
-bool WUME;
-bool WUTY;
-bool WUZY;
-bool WYDA;
-bool WYJA;
-bool WYSE;
-bool XUHA;
-bool XUPY;
-bool XYMU;
-bool ZYSU;
 
 // buses
 
@@ -196,7 +129,7 @@ bool D3_A;
 bool D4_A;
 bool D5_A;
 bool D6_A;
-//bool D7_A; // extcpubuses_sch
+//bool D7_A; // extcpubuses_sch for some reason
 
 bool D0_IN;
 bool D1_IN;

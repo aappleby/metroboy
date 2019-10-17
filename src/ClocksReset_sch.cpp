@@ -63,6 +63,11 @@ bool BYFE_128;
 bool FF04_D0n;
 bool FF04_D1n;
 
+bool WESY;
+bool ABUZ;
+bool AFAS;
+bool BEDO;
+
 //----------
 // registers
 
@@ -147,7 +152,7 @@ void tick_clocks_reset() {
   bool ATYP = not(AFUR_Q);
   bool AFEP = not(ALEF_Q);
   bool AROV = not(APUK_Q);
-  bool AFAS = nor(ADAR, ATYP);
+  AFAS = nor(ADAR, ATYP);
   bool AJAX = not(ATYP);
   bool BUGO = not(AFEP);
   bool AREV = nand(FROM_CPU3, AFAS);
@@ -156,7 +161,7 @@ void tick_clocks_reset() {
   bool APOV = not(AREV);
   bool AWOD = or(T1nT2, AGUT);
   bool BASU = not(BATE);
-  bool ABUZ = not(AWOD);
+  ABUZ = not(AWOD);
   bool BUKE = not(BASU);
 
   bool BAPY = nor(ABOL_1MHZ, AROV, ATYP);
@@ -191,7 +196,7 @@ void tick_clocks_reset() {
   bool ASOL = unk2(AFAR, RESET);
   bool BOMA = not(BOGA);
   bool BYXO = not(BUVU);
-  bool BEDO = not(BYXO);
+  BEDO = not(BYXO);
   bool BOWA = not(BEDO);
   TO_CPU = BOWA;
   
@@ -224,7 +229,7 @@ void tick_clocks_reset() {
 
   RESET7 = XORE;
 
-  bool WESY = not(XORE);
+  WESY = not(XORE);
   bool WALU = not(XORE);
 
   RESET6 = CUNU;

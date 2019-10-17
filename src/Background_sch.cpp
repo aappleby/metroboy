@@ -49,23 +49,25 @@ extern bool TYTA;
 extern bool TYCO;
 extern bool SOKA;
 extern bool XOVU;
+
 extern bool CLKPIPE;
 
 //----------
 // outputs
 
+bool VAVA3;
+
 //----------
 // registers - background pixel pipe?
 
-bool BG_CLK;
-bool VEZO_Q;
-bool WURU_Q;
-bool VOSA_Q;
-bool WYFU_Q;
-bool XETE_Q;
-bool WODA_Q;
-bool VUMO_Q;
-bool VAVA_Q;
+static reg VEZO;
+static reg WURU;
+static reg VOSA;
+static reg WYFU;
+static reg XETE;
+static reg WODA;
+static reg VUMO;
+static reg VAVA;
 
 //-----------------------------------------------------------------------------
 
@@ -225,51 +227,13 @@ void tick_background() {
   //----------
   // registers = background pixel pipe?
 
-  bool VEZO_Q_ = VEZO_Q;
-  bool WURU_Q_ = WURU_Q;
-  bool VOSA_Q_ = VOSA_Q;
-  bool WYFU_Q_ = WYFU_Q;
-  bool XETE_Q_ = XETE_Q;
-  bool WODA_Q_ = WODA_Q;
-  bool VUMO_Q_ = VUMO_Q;
-  bool VAVA_Q_ = VAVA_Q;
-
-  if (BG_CLK && !CLKPIPE) {
-    VEZO_Q_ = 0;
-    WURU_Q_ = VEZO_Q;
-    VOSA_Q_ = WURU_Q;
-    WYFU_Q_ = VOSA_Q;
-    XETE_Q_ = WYFU_Q;
-    WODA_Q_ = XETE_Q;
-    VUMO_Q_ = WODA_Q;
-    VAVA_Q_ = VUMO_Q;
-  }
-
-  if (!TEDE) VEZO_Q_ = 1;
-  if (!WOKA) VEZO_Q_ = 0;
-  if (!XALA) WURU_Q_ = 1;
-  if (!WEDE) WURU_Q_ = 0;
-  if (!TYRA) VOSA_Q_ = 1;
-  if (!TUFO) VOSA_Q_ = 0;
-  if (!XYRU) WYFU_Q_ = 1;
-  if (!WEVO) WYFU_Q_ = 0;
-  if (!XUKU) XETE_Q_ = 1;
-  if (!WEDY) XETE_Q_ = 0;
-  if (!XELY) WODA_Q_ = 1;
-  if (!WUJA) WODA_Q_ = 0;
-  if (!TYKO) VUMO_Q_ = 1;
-  if (!TENA) VUMO_Q_ = 0;
-  if (!TUWU) VAVA_Q_ = 1;
-  if (!WUBU) VAVA_Q_ = 0;
-
-  BG_CLK = CLKPIPE;
-
-  VEZO_Q = VEZO_Q_;
-  WURU_Q = WURU_Q_;
-  VOSA_Q = VOSA_Q_;
-  WYFU_Q = WYFU_Q_;
-  XETE_Q = XETE_Q_;
-  WODA_Q = WODA_Q_;
-  VUMO_Q = VUMO_Q_;
-  VAVA_Q = VAVA_Q_;
+  bool VEZO_Q = VEZO.srtock(CLKPIPE, TEDE, WOKA, 0);
+  bool WURU_Q = WURU.srtock(CLKPIPE, XALA, WEDE, VEZO_Q);
+  bool VOSA_Q = VOSA.srtock(CLKPIPE, TYRA, TUFO, WURU_Q);
+  bool WYFU_Q = WYFU.srtock(CLKPIPE, XYRU, WEVO, VOSA_Q);
+  bool XETE_Q = XETE.srtock(CLKPIPE, XUKU, WEDY, WYFU_Q);
+  bool WODA_Q = WODA.srtock(CLKPIPE, XELY, WUJA, XETE_Q);
+  bool VUMO_Q = VUMO.srtock(CLKPIPE, TYKO, TENA, WODA_Q);
+  bool VAVA_Q = VAVA.srtock(CLKPIPE, TUWU, WUBU, VUMO_Q);
+  VAVA3 = VAVA_Q;
 }

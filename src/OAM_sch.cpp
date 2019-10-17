@@ -41,7 +41,7 @@ bool LEKO;
 
 extern bool XUPY;
 extern bool CLK3;
-extern bool OAM_CLK;
+bool OAM_CLK;
 extern bool RESET_VIDEO;
 extern bool RESET_VIDEO2n;
 extern bool ABEZ;
@@ -53,12 +53,12 @@ extern bool RESET7n;
 extern bool XARE;
 extern bool WYJA;
 
-extern bool OAM_ADDR_RENDER;
-extern bool OAM_ADDR_PARSE;
-extern bool OAM_ADDR_CPU;
+bool OAM_ADDR_RENDER;
+bool OAM_ADDR_PARSE;
+bool OAM_ADDR_CPU;
 
-extern bool OAM_A_CS;
-extern bool OAM_B_CS;
+bool OAM_A_CS;
+bool OAM_B_CS;
 
 //----------
 // sprite index bus
@@ -133,6 +133,7 @@ void tick_oam() {
   OAM_ADDR_PARSE = APAR;
   bool AJUJ = nor(MATU_Q, ACYL, AJON);
   bool ASAM = or(ACYL, XYMU, MATU_Q);
+  OAM_ADDR_CPU = ASAM;
   
   bool XYNY = not(MOPA_PHI);
   bool XUTO = and(SARO, CPU_WR2);
@@ -350,12 +351,6 @@ void tick_oam() {
   ANEL = ANEL_; ANEL_CLK = ANEL_CLK_;
   XECY = XECY_; XECY_CLK = XECY_CLK_;
   XUVA = XUVA_; XUVA_CLK = XUVA_CLK_;
-
-  //---------------------------------------------------------------------------
-  // unsunk signals
-
-  (void)ASAM;
-  (void)WEWU;
 }
 
 //-----------------------------------------------------------------------------

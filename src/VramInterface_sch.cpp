@@ -44,7 +44,6 @@ extern bool BEDO;
 extern bool RORU;
 extern bool LULA;
 extern bool LEKO;
-extern bool TYVY;
 extern bool NETA;
 extern bool PORE;
 extern bool POTU;
@@ -70,14 +69,14 @@ bool COTA;
 //----------
 // registers
 
-static bool SOTO_Q = 0;
-static bool SOTO_Qn = 1;
-static bool SOTO_CLK = 0;
+static reg SOTO;
 
 //----------
 // 25_VRAM_INTERFACE.png
 
 void tock_vram() {
+  bool SOTO_Q = SOTO.q();
+
   bool RYVO = nand(D5, LULA);
   bool RERA = nand(D3, LULA);
   bool RABY = nand(D2, LULA);
@@ -116,7 +115,7 @@ void tock_vram() {
   bool TUJA = and(SOSE, CPU_RD_SYNC);
   bool TEGU = and(SOSE, AFAS);
   bool TAVY = not(MOE_IN);
-  bool TUTO = and(NET02, SOTO_Qn);
+  bool TUTO = and(NET02, !SOTO_Q);
   bool SUDO = not(MWR_IN);
   bool TEFY = not(MCS_IN);
 
@@ -400,7 +399,7 @@ void tock_vram() {
     OAM_A_D3 = CYME;
   }
 
-  bool TYVU = nand(SERE, LEKO);
+  bool TYVY = nand(SERE, LEKO);
   bool SEBY = not(TYVY);
 
   bool RORO = not(MD5);
@@ -477,20 +476,5 @@ void tock_vram() {
     MA4 = VAPY;
   }
 
-  //----------
-  // unsunk signals
-
-  (void)COTA;
-  (void)TYVU;
-  (void)WUKO;
-
-  //----------
-  // registers
-
-  bool SOTO_CLK_ = SYCY;
-  if (SOTO_CLK && !SOTO_CLK_) {
-    SOTO_Q  = SOTO_Qn;
-    SOTO_Qn = !SOTO_Q;
-  }
-  SOTO_CLK = SOTO_CLK_;
+  SOTO.flip(SYCY, 0);
 }

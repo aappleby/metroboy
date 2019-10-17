@@ -23,7 +23,6 @@ bool MCS_IN;
 bool MOE_IN;
 bool MWR_IN;
 bool NET02;
-bool VAVA3;
 
 // external debug mode pins
 bool T1;
@@ -31,9 +30,6 @@ bool T2;
 
 bool CLKIN_A;
 bool CLKIN_B;
-bool CLK_16k;
-bool CLK_64k;
-bool CLK_256k;
 bool CLK3;
 
 bool ATAL_4MHZ;
@@ -80,14 +76,6 @@ bool SCK_IN;
 bool SCK_DIR;
 bool SER_OUT;
 bool SIN_IN;
-
-bool OAM_A_CS;
-bool OAM_ADDR_CPU;
-bool OAM_ADDR_PARSE;
-bool OAM_ADDR_RENDER;
-bool OAM_ADR_CPU;
-bool OAM_B_CS;
-bool OAM_CLK;
 
 // buses
 

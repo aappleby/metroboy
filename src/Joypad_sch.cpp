@@ -160,9 +160,9 @@ void tick_joypad() {
     D7 = BEDA;
   }
 
-  // unused
-  (void)KORE;
-  (void)KYWE;
+ 
+  (void)KORE; // unused in schematic
+  (void)KYWE; // unused in schematic
 
   //----------
   // registers

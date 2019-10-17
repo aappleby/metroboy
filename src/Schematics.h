@@ -9,6 +9,7 @@ struct reg {
 
   wire q() const  { return val; }
 
+  // returns the _old_ q
   wire tock(wire clk2, wire r, wire d) {
     wire old = val;
     if (!r) val = 0;
@@ -17,6 +18,7 @@ struct reg {
     return old;
   }
 
+  // returns the _old_ q
   wire flip(bool clk2, bool r) {
     wire old = val;
     if (!r) val = 0;
@@ -25,6 +27,7 @@ struct reg {
     return old;
   }
 
+  // returns the _old_ q
   // FIXME set is 0-triggered?
   wire srtock(wire clk2, wire s, wire r, wire d) {
     wire old = val;

@@ -9,7 +9,7 @@ extern bool TOVY_A0n;
 extern bool RESET2;
 extern bool SCK_IN;
 extern bool SCK_DIR;
-extern bool CLK_16384;
+extern bool CLK_16k;
 extern bool FFXX;
 extern bool TOLA_A1n;
 extern bool SIN_IN;
@@ -132,7 +132,7 @@ void tick_serial() {
   bool CYDE_Q_ = CYDE_Q;
   bool CALY_Q_ = CALY_Q;
 
-  if (COTY_CLK && !CLK_16384) COTY_Q_ = !COTY_Q;
+  if (COTY_CLK && !CLK_16k) COTY_Q_ = !COTY_Q;
   if (ETAF_CLK && !UWAM) ETAF_Q_ = D7;
   if (CAFA_CLK && !DAWA) CAFA_Q_ = !CAFA_Q;
   if (CYLO_CLK && !!CAFA_Q) CYLO_Q_ = !CYLO_Q;
@@ -146,7 +146,7 @@ void tick_serial() {
   if (!CARO) CYDE_Q_ = 0;
   if (!CARO) CALY_Q_ = 0;
 
-  COTY_CLK = CLK_16384;
+  COTY_CLK = CLK_16k;
   ETAF_CLK = UWAM;
   CULY_CLK = UWAM;
   CAFA_CLK = DAWA;

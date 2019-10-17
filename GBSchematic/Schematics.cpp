@@ -2,9 +2,6 @@
 
 // mystery signals 
 
-// probably tile fetch for something
-bool LESY;bool LOTA;bool LYKU;bool ROBY;bool TYTA;bool TYCO;bool SOKA;bool XOVU;
-
 bool ANAP;
 bool TYVY;
 bool WEZA;
@@ -78,9 +75,6 @@ bool SER_OUT;
 bool SIN_IN;
 
 // buses
-
-bool OBP0PIXELn;
-bool OBP1PIXELn;
 
 bool A0;
 bool A1;

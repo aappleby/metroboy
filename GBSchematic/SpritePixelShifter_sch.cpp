@@ -12,14 +12,7 @@ extern bool XONO;
 extern bool XADO;
 extern bool PUCO;
 
-extern bool ROBY;
-extern bool TYTA;
-extern bool LYKU;
-extern bool TYCO;
-extern bool LESY;
-extern bool XOVU;
-extern bool LOTA;
-extern bool SOKA;
+extern bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU;
 
 //----------
 // outputs

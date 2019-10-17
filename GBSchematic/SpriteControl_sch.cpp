@@ -81,6 +81,7 @@ bool LAPE;
 bool XONO;
 bool XADO;
 bool PUCO;
+bool XEFY;
 
 // sprite hit flags
 bool FADO;
@@ -239,7 +240,7 @@ void tick_spritecontrol() {
   bool TYNO = nand(TOXE_Q, SEBA_Q, VONU_Q);
   bool VUSA = or(!TYFO_Q, TYNO);
   WUTY = not(VUSA);
-  bool XEFY = not(WUTY);
+  XEFY = not(WUTY);
 
   bool SAKY = nor(TULY_Q, VONU_Q);
   bool TYSO = or(SAKY, TEPA);
@@ -573,14 +574,4 @@ void tick_spritecontrol() {
   CUXY.flip(!BESE_Q, AZYB);
   BEGO.flip(!CUXY_Q, AZYB);
   DYBE.flip(!BEGO_Q, AZYB);
-
-  //----------
-  // unsunk signals
-
-  (void)XADO;
-  (void)TACU;
-  (void)XONO;
-  (void)TUVO;
-  (void)XEFY;
-  (void)PUCO;
 }

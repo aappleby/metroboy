@@ -1,0 +1,124 @@
+// This file should contain the schematics as directly translated to C, no modifications or simplifications
+
+#include "Schematics.h"
+
+//----------
+// inputs
+
+extern bool XEFY;
+extern bool GOMO;
+extern bool P10_B;
+extern bool CLKPIPE;
+extern bool BGPIXELn;
+
+extern bool SPR_PIX_A_0;
+extern bool SPR_PIX_A_1;
+extern bool SPR_PIX_A_2;
+extern bool SPR_PIX_A_3;
+extern bool SPR_PIX_A_4;
+extern bool SPR_PIX_A_5;
+extern bool SPR_PIX_A_6;
+extern bool SPR_PIX_A_7;
+
+extern bool SPR_PIX_B_0;
+extern bool SPR_PIX_B_1;
+extern bool SPR_PIX_B_2;
+extern bool SPR_PIX_B_3;
+extern bool SPR_PIX_B_4;
+extern bool SPR_PIX_B_5;
+extern bool SPR_PIX_B_6;
+extern bool SPR_PIX_B_7;
+
+//----------
+// ouptuts
+
+bool OBP0PIXELn;
+bool OBP1PIXELn;
+
+// sprite pixels
+bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU;
+
+//----------
+// registers
+
+static reg RUGO;
+static reg SATA;
+static reg ROSA;
+static reg SOMY;
+static reg PALU;
+static reg NUKE;
+static reg MODA;
+static reg LYME;
+
+//-----------------------------------------------------------------------------
+
+void tick_spritepaletteshifter() {
+  bool MEFU = or(XEFY, SPR_PIX_A_0, SPR_PIX_B_0);
+  bool MEVE = or(XEFY, SPR_PIX_A_1, SPR_PIX_B_1);
+  bool MYZO = or(XEFY, SPR_PIX_A_2, SPR_PIX_B_2);
+  bool RUDA = or(XEFY, SPR_PIX_A_3, SPR_PIX_B_3);
+  bool VOTO = or(XEFY, SPR_PIX_A_4, SPR_PIX_B_4);
+  bool VYSA = or(XEFY, SPR_PIX_A_5, SPR_PIX_B_5);
+  bool TORY = or(XEFY, SPR_PIX_A_6, SPR_PIX_B_6);
+  bool WOPE = or(XEFY, SPR_PIX_A_7, SPR_PIX_B_7);
+
+  LESY = not(MEFU);
+  LOTA = not(MEVE);
+  LYKU = not(MYZO);
+  ROBY = not(RUDA);
+  TYTA = not(VOTO);
+  TYCO = not(VYSA);
+  SOKA = not(TORY);
+  XOVU = not(WOPE);
+
+  bool SYPY = not(GOMO);
+  bool TOTU = not(GOMO);
+  bool NARO = not(GOMO);
+  bool WEXY = not(GOMO);
+  bool RYZY = not(GOMO);
+  bool RYFE = not(GOMO);
+  bool LADY = not(GOMO);
+  bool LAFY = not(GOMO);
+
+  bool PUME = nand(LESY, GOMO);
+  bool SUCO = nand(LESY, SYPY);
+
+  bool SORO = nand(LOTA, GOMO);
+  bool TAFA = nand(LOTA, TOTU);
+
+  bool PAMO = nand(LYKU, GOMO);
+  bool PYZY = nand(LYKU, NARO);
+
+  bool SUKY = nand(ROBY, GOMO);
+  bool TOWA = nand(ROBY, WEXY);
+
+  bool RORA = nand(TYTA, GOMO);
+  bool RUDU = nand(TYTA, RYZY);
+
+  bool MENE = nand(TYCO, GOMO);
+  bool PAZO = nand(TYCO, RYFE);
+
+  bool LUKE = nand(SOKA, GOMO);
+  bool LOWA = nand(SOKA, LADY);
+
+  bool LAMY = nand(XOVU, GOMO);
+  bool LUNU = nand(XOVU, LAFY);
+
+  bool RUGO_Q = RUGO.srtock(CLKPIPE, PUME, SUCO, P10_B);
+  bool SATA_Q = SATA.srtock(CLKPIPE, SORO, TAFA, RUGO_Q);
+  bool ROSA_Q = ROSA.srtock(CLKPIPE, PAMO, PYZY, SATA_Q);
+  bool SOMY_Q = SOMY.srtock(CLKPIPE, SUKY, TOWA, ROSA_Q);
+  bool PALU_Q = PALU.srtock(CLKPIPE, RORA, RUDU, SOMY_Q);
+  bool NUKE_Q = NUKE.srtock(CLKPIPE, MENE, PAZO, PALU_Q);
+  bool MODA_Q = MODA.srtock(CLKPIPE, LUKE, LOWA, NUKE_Q);
+  bool LYME_Q = LYME.srtock(CLKPIPE, LAMY, LUNU, MODA_Q);
+
+  bool LOME = not(LYME_Q);
+  bool LAFU = nand(LOME, BGPIXELn);
+  bool LEKA = nand(LYME_Q, BGPIXELn);
+
+  OBP0PIXELn = LAFU;
+  OBP1PIXELn = LEKA;
+
+
+}

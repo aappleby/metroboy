@@ -41,14 +41,8 @@ extern reg TAKO;
 extern reg SYBE;
 
 extern bool DEPO;
-extern bool LESY;
-extern bool LOTA;
-extern bool LYKU;
-extern bool ROBY;
-extern bool TYTA;
-extern bool TYCO;
-extern bool SOKA;
-extern bool XOVU;
+
+extern bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU;
 
 extern bool CLKPIPE;
 

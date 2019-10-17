@@ -182,6 +182,7 @@
     <ClCompile Include="Schematics.cpp" />
     <ClCompile Include="SerialLink_sch.cpp" />
     <ClCompile Include="SpriteControl_sch.cpp" />
+    <ClCompile Include="SpritePaletteShifter_sch.cpp" />
     <ClCompile Include="SpritePixelShifter_sch.cpp" />
     <ClCompile Include="SpriteStore_sch.cpp" />
     <ClCompile Include="SpriteXMatcher_sch.cpp" />

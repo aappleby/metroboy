@@ -79,7 +79,7 @@ extern bool OBP1_D7;
 //----------
 // outputs
 
-bool BGPIXELN;
+bool BGPIXELn;
 
 bool LD0;
 bool LD1;
@@ -101,7 +101,7 @@ void tick_pixelmux() {
   bool RUTA = and(TADE, VAVA3);
   bool RYFU = and(RAJY, VAVA3);
   bool POKA = nor(NULY, RUTA, RYFU);
-  BGPIXELN = POKA;
+  BGPIXELn = POKA;
 
   bool LAVA = not(OBP0PIXELn);
   bool WOLO = not(WELE);
@@ -131,7 +131,7 @@ void tick_pixelmux() {
   bool SOBA = not(RAJY);
   bool VYCO = not(TADE);
 
-  bool MUVE = not(BGPIXELN);
+  bool MUVE = not(BGPIXELn);
   bool NUPO = not(SOBA);
   bool NALE = not(VYCO);
   bool NYPO = and(NALE, NUPO, MUVE);

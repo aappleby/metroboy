@@ -78,6 +78,9 @@ bool TUVO;
 bool WUTY;
 bool XUPY;
 bool LAPE;
+bool XONO;
+bool XADO;
+bool PUCO;
 
 // sprite hit flags
 bool FADO;
@@ -241,7 +244,7 @@ void tick_spritecontrol() {
   bool SAKY = nor(TULY_Q, VONU_Q);
   bool TYSO = or(SAKY, TEPA);
   TEXY = not(TYSO);
-  bool XONO = and(BAXO, TEXY);
+  XONO = and(BAXO, TEXY);
 
   TUVO = or(TEPA, TULY_Q, TESE_Q);
   bool TAME = nand(TESE_Q, TOXE_Q);
@@ -254,10 +257,10 @@ void tick_spritecontrol() {
   bool RACA = and(VONU_Q, SYCU);
   bool VYWA = not(TOPU);
   bool WENY = not(VYWA);
-  bool XADO = not(WENY);
+  XADO = not(WENY);
   bool PEBY = not(RACA);
   bool NYBE = not(PEBY);
-  bool PUCO = not(NYBE);
+  PUCO = not(NYBE);
 
   TYFO.tock(LAPE, VYPO, TAME);
   SEBA.tock(LAPE, XYMU, VONU_Q);

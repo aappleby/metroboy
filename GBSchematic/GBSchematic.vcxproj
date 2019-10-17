@@ -86,15 +86,24 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <SupportJustMyCode>false</SupportJustMyCode>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -135,23 +144,56 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Background_sch.cpp" />
+    <ClCompile Include="BgPixelShifter_sch.cpp" />
+    <ClCompile Include="ClocksReset_sch.cpp" />
+    <ClCompile Include="DMA_sch.cpp" />
+    <ClCompile Include="ExtCpuBuses_sch.cpp" />
     <ClCompile Include="GBSchematic.cpp" />
+    <ClCompile Include="Interrupts_sch.cpp" />
+    <ClCompile Include="Joypad_sch.cpp" />
+    <ClCompile Include="LcdControl_sch.cpp" />
+    <ClCompile Include="OAM_sch.cpp" />
+    <ClCompile Include="Palettes_sch.cpp" />
+    <ClCompile Include="PixelMux_sch.cpp" />
+    <ClCompile Include="Schematics.cpp" />
+    <ClCompile Include="SerialLink_sch.cpp" />
+    <ClCompile Include="SpriteControl_sch.cpp" />
+    <ClCompile Include="SpritePixelShifter_sch.cpp" />
+    <ClCompile Include="SpriteStore_sch.cpp" />
+    <ClCompile Include="SpriteXMatcher_sch.cpp" />
+    <ClCompile Include="SysDecode_sch.cpp" />
+    <ClCompile Include="Timer_sch.cpp" />
+    <ClCompile Include="VideoControl_sch.cpp" />
+    <ClCompile Include="VideoRegs_sch.cpp" />
+    <ClCompile Include="VramInterface_sch.cpp" />
+    <ClCompile Include="WindowMap_sch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Schematics.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

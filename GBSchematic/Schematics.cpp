@@ -79,9 +79,6 @@ bool SIN_IN;
 
 // buses
 
-bool SPR_PIX_A_7;
-bool SPR_PIX_B_7;
-
 bool OBP0PIXELn;
 bool OBP1PIXELn;
 

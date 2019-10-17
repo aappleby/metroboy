@@ -171,6 +171,7 @@
     <ClCompile Include="src\VideoRegs_sch.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
     <ClCompile Include="src\VramInterface_sch.cpp" />
+    <ClCompile Include="src\WindowMap_sch.cpp" />
     <ClCompile Include="src\Wishbone.cpp" />
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />

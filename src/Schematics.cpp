@@ -2,6 +2,28 @@
 
 // mystery signals 
 
+bool WUKO;
+bool LOBY;
+bool NYKA;
+bool POKY;
+bool PORY;
+bool ROXO;
+bool CUBA1;
+bool TALU;
+bool TOMU;
+bool LAPE;
+bool SEGU;
+
+// probably tile fetch for something
+bool LESY;
+bool LOTA;
+bool LYKU;
+bool ROBY;
+bool TYTA;
+bool TYCO;
+bool SOKA;
+bool XOVU;
+
 bool ANAP;
 bool FF41;
 bool TOFU;

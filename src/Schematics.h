@@ -26,6 +26,22 @@ struct reg {
     return old;
   }
 
+  // FIXME set is 0-triggered?
+  wire srtock(wire clk2, wire s, wire r, wire d) {
+    wire old = val;
+    if (!s) val = 1;
+    if (!r) val = 0;
+    else if (clk && !clk2) val = d;
+    clk = clk2;
+    return old;
+  }
+
+  // FIXME what sort of trigger?
+  wire latch(wire clk2, wire d) {
+    if (!clk2) val = d;
+    return val;
+  }
+
 private:
 
   bool val;

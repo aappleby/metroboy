@@ -134,6 +134,7 @@
     <ClCompile Include="src\Assembler.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Background_sch.cpp" />
+    <ClCompile Include="src\BgPixelShifter_sch.cpp" />
     <ClCompile Include="src\Buttons.cpp" />
     <ClCompile Include="src\ClocksReset_sch.cpp" />
     <ClCompile Include="src\Constants.cpp" />

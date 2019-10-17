@@ -177,41 +177,8 @@ bool ZYSU;
 
 // buses
 
-bool SPR_PIX_A_0;
-bool SPR_PIX_A_1;
-bool SPR_PIX_A_2;
-bool SPR_PIX_A_3;
-bool SPR_PIX_A_4;
-bool SPR_PIX_A_5;
-bool SPR_PIX_A_6;
 bool SPR_PIX_A_7;
-
-bool SPR_PIX_B_0;
-bool SPR_PIX_B_1;
-bool SPR_PIX_B_2;
-bool SPR_PIX_B_3;
-bool SPR_PIX_B_4;
-bool SPR_PIX_B_5;
-bool SPR_PIX_B_6;
 bool SPR_PIX_B_7;
-
-bool BG_PIX_A_0;
-bool BG_PIX_A_1;
-bool BG_PIX_A_2;
-bool BG_PIX_A_3;
-bool BG_PIX_A_4;
-bool BG_PIX_A_5;
-bool BG_PIX_A_6;
-bool BG_PIX_A_7;
-
-bool BG_PIX_B_0;
-bool BG_PIX_B_1;
-bool BG_PIX_B_2;
-bool BG_PIX_B_3;
-bool BG_PIX_B_4;
-bool BG_PIX_B_5;
-bool BG_PIX_B_6;
-bool BG_PIX_B_7;
 
 bool OBP0PIXELn;
 bool OBP1PIXELn;

@@ -64,6 +64,10 @@ extern bool FF43_D2;
 // outputs
 
 bool RESET_VIDEOn;
+bool MOFU;
+bool NYDY;
+bool NYXU;
+bool VYPO;
 
 //----------
 // registers
@@ -128,7 +132,7 @@ void tick_windowmap() {
   wire PAFU = nand(NELE, NAZE, PEBO, POMO, NEVU);
   wire ROGE = not(PAFU);
 
-  wire VYPO = not(CUBA1);
+  VYPO = not(CUBA1);
 
   wire SARY_Q = SARY.tock(TALU, RESET_VIDEO, ROGE);
 
@@ -209,7 +213,7 @@ void tick_windowmap() {
   wire MEHE = not(CLK2);
   wire NYFO = not(NUNY);
   wire MOSU = not(NYFO);
-  wire NYXU = nor(AVAP, MOSU, TEVO);
+  NYXU = nor(AVAP, MOSU, TEVO);
   wire WAZY = not(PORE);
   wire SYNY = not(REPU);
 
@@ -234,9 +238,9 @@ void tick_windowmap() {
   wire MYSO = nor(LOBY, LAXE, LYZU_Q);
   wire NAKO = not(MESU_Q);
   wire NOFU = not(NYVA_Q);
-  wire MOFU = and(MYSO, NAKO);
+  MOFU = and(MYSO, NAKO);
   wire NOGU = nand(NAKO, NOFU);
-  wire NYDY = nand(MYSO, MESU_Q, NOFU);
+  NYDY = nand(MYSO, MESU_Q, NOFU);
   wire XUHA = not(NOFU);
   wire NENY = not(NOGU);
   wire LURY = and(!LOVY_Q, XYMU);

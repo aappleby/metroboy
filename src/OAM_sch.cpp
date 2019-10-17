@@ -74,31 +74,44 @@ extern bool WUZY;
 // registers
 
 // sprite scan counter
-static bool YFEL;
-static bool WEWY;
-static bool GOSO;
-static bool ELYN;
-static bool FAHA;
-static bool FONY;
-static bool YFEL_CLK = 0;
+static reg YFEL;
+static reg WEWY;
+static reg GOSO;
+static reg ELYN;
+static reg FAHA;
+static reg FONY;
 
-static bool ANEL;
-static bool ANEL_CLK;
-
-static bool XECY;
-static bool XECY_CLK;
-
-static bool XUVA;
-static bool XUVA_CLK;
+static reg ANEL;
+static reg XECY;
+static reg XUVA;
 
 //-----------------------------------------------------------------------------
 // 28_OAM.png
 
 void tick_oam() {
-  bool CATU_Q = CATU.q();
+  //----------
+  // sprite scan counter
 
-  FETO = and(YFEL, WEWY, FONY, GOSO);
+  bool YFEL_Q = YFEL.q();
+  bool WEWY_Q = WEWY.q();
+  bool GOSO_Q = GOSO.q();
+  bool ELYN_Q = ELYN.q();
+  bool FAHA_Q = FAHA.q();
+  bool FONY_Q = FONY.q();
+
+  FETO = and(YFEL_Q, WEWY_Q, FONY_Q, GOSO_Q);
   bool GAVA = or(FETO, XUPY);
+
+  YFEL.flip(GAVA,    ANOM);
+  WEWY.flip(!YFEL_Q, ANOM);
+  GOSO.flip(!WEWY_Q, ANOM);
+  ELYN.flip(!GOSO_Q, ANOM);
+  FAHA.flip(!ELYN_Q, ANOM);
+  FONY.flip(!FAHA_Q, ANOM);
+
+  //----------
+
+  bool CATU_Q = CATU.q();
 
   WEFE = not(P10_B);
   bool YVAL = not(CLK3);
@@ -113,7 +126,8 @@ void tick_oam() {
   bool AWOH = not(XUPY);
   bool ABAF = not(CATU_Q);
 
-  bool BYHA = unk3(ANEL, ABAF, ABEZ);
+  bool ANEL_Q = ANEL.q();
+  bool BYHA = unk3(ANEL_Q, ABAF, ABEZ);
   ATEJ = not(BYHA);
   ANOM = nor(RESET_VIDEO2n, ATEJ);
   AZYB = not(ATEJ);
@@ -254,12 +268,12 @@ void tick_oam() {
   bool WYDU = not(WEFE);
   bool GECA = not(WEFE);
 
-  bool GOBY = not(FONY);
-  bool GAMA = not(FAHA);
-  bool FAKU = not(ELYN);
-  bool FUTO = not(GOSO);
-  bool GEMA = not(WEWY);
-  bool GUSE = not(YFEL);
+  bool GOBY = not(FONY_Q);
+  bool GAMA = not(FAHA_Q);
+  bool FAKU = not(ELYN_Q);
+  bool FUTO = not(GOSO_Q);
+  bool GEMA = not(WEWY_Q);
+  bool GUSE = not(YFEL_Q);
   bool WUWE = not(P10_B);
   bool GEFY = not(P10_B);
 
@@ -307,50 +321,9 @@ void tick_oam() {
 
   //---------------------------------------------------------------------------
 
-  bool YFEL_CLK_ = GAVA;
-  if (YFEL_CLK && !YFEL_CLK_) {
-    // FIXME increment YFEL:WEWY:GOSO:ELYN:FAHA:FONY
-  }
-  YFEL_CLK = YFEL_CLK_;
-  
-  bool ANEL_ = ANEL;
-  bool ANEL_CLK_ = AWOH;
-  if (ANEL_CLK && !ANEL_CLK_) {
-    ANEL_ = CATU_Q;
-  }
-  ANEL_CLK = ANEL_CLK_;
-  if (!ABEZ) {
-    ANEL_ = 0;
-  }
-
-  bool XECY_ = XECY;
-  bool XECY_CLK_ = XUCA;
-  if (XECY_CLK && !XECY_CLK_) {
-    XECY_ = RESET7n;
-  }
-  XECY_CLK = XECY_CLK_;
-
-  bool XUVA_ = XUVA;
-  bool XUVA_CLK_ = XYNY;
-  if (XUVA_CLK && !XUVA_CLK_) {
-    XUVA = XECY;
-  }
-  if (!XARE) {
-    XUVA = 0;
-  }
-
-  if (ANOM) {
-    YFEL = 0;
-    WEWY = 0;
-    GOSO = 0;
-    ELYN = 0;
-    FAHA = 0;
-    FONY = 0;
-  }
-
-  ANEL = ANEL_; ANEL_CLK = ANEL_CLK_;
-  XECY = XECY_; XECY_CLK = XECY_CLK_;
-  XUVA = XUVA_; XUVA_CLK = XUVA_CLK_;
+  ANEL.tock(AWOH, ABEZ, CATU_Q);
+  bool XECY_Q = XECY.tock(XUCA, 0, RESET7n); // ? weird
+  XUVA.tock(XYNY, XARE, XECY_Q);
 }
 
 //-----------------------------------------------------------------------------

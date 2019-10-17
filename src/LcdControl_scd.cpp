@@ -25,7 +25,7 @@ extern bool MYVO;
 extern bool SYLO;
 extern bool WODU;
 extern bool XYDO;
-extern bool NYPE;
+extern reg NYPE;
 extern bool LYFE;
 extern bool FEPO;
 
@@ -38,30 +38,43 @@ bool PIN_CPL;
 bool PIN_FR;
 bool CLKPIPE;
 
+bool LOBY;
+bool POKY;
+bool ROXO;
+bool TOMU;
+
 //----------
 // registers
 
-static bool NYKA_Q, NYKA_CLK;
-static bool PORY_Q, PORY_CLK;
-static bool PYGO_Q, PYGO_CLK;
-static bool PAHO_Q, PAHO_CLK;
-static bool LUCA_Q, LUCA_CLK;
-static bool LEBE_Q, LEBE_CLK;
-static bool MEDA_Q, MEDA_CLK;
+reg NYKA;
+reg PORY;
+reg PYGO;
+reg PAHO;
+reg LUCA;
+reg LEBE;
+reg MEDA;
 
 //-----------------------------------------------------------------------------
 
 void tick_lcdcontrol() {
-  bool LOBY = not(XYMU);
+  wire NYKA_Q = NYKA.q();
+  wire PORY_Q = PORY.q();
+  wire PYGO_Q = PYGO.q();
+  wire PAHO_Q = PAHO.q();
+  wire LUCA_Q = LUCA.q();
+  wire LEBE_Q = LEBE.q();
+  wire MEDA_Q = MEDA.q();
+
+  LOBY = not(XYMU);
   bool NAFY = nor(MOSU, LOBY);
 
-  bool POKY = unk2(PYGO_Q, LOBY);
-  bool TOMU = not(SYLO);
+  POKY = unk2(PYGO_Q, LOBY);
+  TOMU = not(SYLO);
   bool SOCY = not(TOMU);
   bool VYBO = nor(FEPO, WODU, MYVO);
   bool TYFA = and(SOCY, POKY, VYBO);
   bool SEGU = not(TYFA);
-  bool ROXO = not(SEGU);
+  ROXO = not(SEGU);
 
   bool LOFU = not(RUTU_OUT);
   
@@ -97,49 +110,15 @@ void tick_lcdcontrol() {
   PIN_ST = RUZE;
   CLKPIPE = SACU;
 
-  (void)LOBY;
-  (void)NAFY;
+  NYKA.tock(CLK2, NAFY, LYRY);
+  PORY.tock(MYVO, NAFY, NYKA_Q);
+  PYGO.tock(CLK2, XYMU, PORY_Q);
 
-  //----------
-  // registers
+  PAHO.tock(ROXO, XYMU, XYDO);
 
-  bool NYKA_Q_ = NYKA_Q;
-  bool PORY_Q_ = PORY_Q;
-  bool PYGO_Q_ = PYGO_Q;
-  bool PAHO_Q_ = PAHO_Q;
-  bool LUCA_Q_ = LUCA_Q;
-  bool LEBE_Q_ = LEBE_Q;
-  bool MEDA_Q_ = MEDA_Q;
-  
-  if (NYKA_CLK && !CLK2) NYKA_Q_ = LYRY;
-  if (PORY_CLK && !MYVO) PORY_Q_ = NYKA_Q;
-  if (PYGO_CLK && !CLK2) PYGO_Q_ = PORY_Q;
-  if (PAHO_CLK && !ROXO) PAHO_Q_ = XYDO;
-  if (LUCA_CLK && !LOFU) LUCA_Q_ = !LUCA_Q;
-  if (LEBE_CLK && !!LUCA_Q) LEBE_Q_ = !LEBE_Q; // weird...
-  if (MEDA_CLK && !NYPE) MEDA_Q_ = NERU;
+  LUCA.tock(LOFU,    LYFE, !LUCA_Q);
+  LEBE.tock(!LUCA_Q, LYFE, !LEBE_Q);
 
-  if (!NAFY) NYKA_Q_ = 0;
-  if (!NAFY) PORY_Q_ = 0;
-  if (!XYMU) PYGO_Q_ = 0;
-  if (!XYMU) PAHO_Q_ = 0;
-  if (!LYFE) LUCA_Q_ = 0;
-  if (!LYFE) LEBE_Q_ = 0;
-  if (!LYFE) MEDA_Q_ = 0;
-
-  NYKA_Q = NYKA_Q_;
-  PORY_Q = PORY_Q_;
-  PYGO_Q = PYGO_Q_;
-  PAHO_Q = PAHO_Q_;
-  LUCA_Q = LUCA_Q_;
-  LEBE_Q = LEBE_Q_;
-  MEDA_Q = MEDA_Q_;
-
-  NYKA_CLK = CLK2;
-  PORY_CLK = MYVO;
-  PYGO_CLK = CLK2;
-  PAHO_CLK = ROXO;
-  LUCA_CLK = LOFU;
-  LEBE_CLK = !!LUCA_Q;
-  MEDA_CLK = NYPE;
+  bool NYPE_Q = NYPE.q();
+  MEDA.tock(NYPE_Q,    LYFE, NERU);
 }

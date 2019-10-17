@@ -18,6 +18,15 @@ extern bool MOPA_PHI;
 extern bool P10_B;
 extern bool VRAM_TO_OAM;
 
+extern reg RAWU;
+extern reg POZO;
+extern reg PYZO;
+extern reg POXA;
+extern reg PULO;
+extern reg POJU;
+extern reg POWY;
+extern reg PYJU;
+
 extern bool SARO;
 extern bool TUVO;
 extern bool XYMU;
@@ -43,14 +52,6 @@ extern bool XUHA;
 extern bool VYNO;
 extern bool VUJO;
 extern bool VYMU;
-extern bool PYJU;
-extern bool POWY;
-extern bool POJU;
-extern bool PULO;
-extern bool POXA;
-extern bool PYZO;
-extern bool POZO;
-extern bool RAWU;
 
 //----------
 // outputs
@@ -62,6 +63,8 @@ bool MOE_A;
 bool MWR_A;
 bool MWR_D;
 bool MD_B;
+
+bool WUKO;
 
 //----------
 // registers
@@ -429,7 +432,7 @@ void tock_vram() {
 
   bool XUCY = nand(NETA, PORE);
   bool XEZE = nand(POTU, PORE);
-  bool WUKO = not(XEZE);
+  WUKO = not(XEZE);
 
   bool XONU = not(XUHA);
   bool WUDO = not(VYNO);
@@ -443,17 +446,18 @@ void tock_vram() {
     MA3 = WOLU;
   }
 
-  bool VUZA = nor(FF40_D4, PYJU);
+  bool VUZA = nor(FF40_D4, PYJU.q());
 
   bool VURY = not(VUZA);
-  bool TOBO = not(PYJU);
-  bool SUVO = not(POWY);
-  bool RESO = not(POJU);
-  bool ROHA = not(PULO);
-  bool RUSA = not(POXA);
-  bool VEJY = not(PYZO);
-  bool SEZU = not(POZO);
-  bool VAPY = not(RAWU);
+
+  bool TOBO = not(PYJU.q());
+  bool SUVO = not(POWY.q());
+  bool RESO = not(POJU.q());
+  bool ROHA = not(PULO.q());
+  bool RUSA = not(POXA.q());
+  bool VEJY = not(PYZO.q());
+  bool SEZU = not(POZO.q());
+  bool VAPY = not(RAWU.q());
 
   if (NETA) {
     MA12 = VURY;

@@ -8,11 +8,13 @@
 extern bool RESET2;
 extern bool FF00WR;
 extern bool FF00RD;
-extern bool BURO_Q;
-extern bool BEDO;
 extern bool FROM_CPU;
 extern bool FF60_D0;
 extern bool SER_OUT;
+
+extern bool BEDO;
+
+extern reg BURO;
 
 //----------
 // outputs
@@ -72,8 +74,8 @@ static bool KAPA_L;
 //-----------------------------------------------------------------------------
 
 void tick_joypad() {
-  bool JEVA = not(BURO_Q);
-  bool KORE = nand(KERU_Q, BURO_Q);
+  bool JEVA = not(BURO.q());
+  bool KORE = nand(KERU_Q, BURO.q());
   bool KYWE = nor(JEVA, KERU_Q);
   bool KORY = nand(KYME_Q, FF60_D0);
   bool KURA = not(FF60_D0);
@@ -82,7 +84,7 @@ void tick_joypad() {
   bool KYHU = nand(FF60_D0, JALE_Q);
   bool BYZO = not(FF00RD);
 
-  bool KENA = mux2(KUKO_Q, SER_OUT, BURO_Q);
+  bool KENA = mux2(KUKO_Q, SER_OUT, BURO.q());
   SOUT = KENA;
 
   if (BYZO) {

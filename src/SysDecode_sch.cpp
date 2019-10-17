@@ -67,13 +67,15 @@ bool BOOTROM_A1A0;
 //----------
 // registers
 
-static bool TEPU_Q, TEPU_CLK;
-static bool AMUT_Q, AMUT_CLK;
-static bool BURO_Q, BURO_CLK;
+reg TEPU;
+reg AMUT;
+reg BURO;
 
 //-----------------------------------------------------------------------------
 
 void tick_sysdecode() {
+  bool TEPU_Q = TEPU.q();
+
   //----------
 
   bool TYRO = nor(A7, A5, A3, A2, A1, A0);
@@ -240,26 +242,7 @@ void tick_sysdecode() {
   //----------
   // registers
 
-  bool TEPU_Q_ = TEPU_Q;
-  if (TEPU_CLK && !TUGE) TEPU_Q_ = SATO;
-  if (!RESET2) TEPU_Q_ = 0;
-  TEPU_Q = TEPU_Q_;
-  TEPU_CLK = TUGE;
-
-  //----------
-
-  bool AMUT_Q_ = AMUT_Q;
-  bool BURO_Q_ = BURO_Q;
-
-  if (AMUT_CLK && !APER) AMUT_Q_ = D1;
-  if (BURO_CLK && !APER) BURO_Q_ = D0;
-  if (!RESET2) AMUT_Q_ = 0;
-  if (!RESET2) BURO_Q_ = 0;
-
-  AMUT_CLK = APER;
-  BURO_CLK = APER;
-
-  AMUT_Q = AMUT_Q_;
-  BURO_Q = BURO_Q_;
-
+  TEPU.tock(TUGE, RESET2, SATO);
+  AMUT.tock(APER, RESET2, D1);
+  BURO.tock(APER, RESET2, D0);
 }

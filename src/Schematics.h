@@ -8,7 +8,6 @@ typedef const bool wire;
 struct reg {
 
   wire q() const  { return val; }
-  wire qn() const { return !val; }
 
   wire tock(wire clk2, wire r, wire d) {
     wire old = val;

@@ -10,7 +10,6 @@ extern bool PORE;
 extern bool NETA;
 extern bool POTU;
 extern bool XUHA;
-extern bool XEHO;
 
 extern bool FF40_D3;
 
@@ -32,14 +31,14 @@ extern bool FF43_D5;
 extern bool FF43_D6;
 extern bool FF43_D7;
 
-extern bool XEHO_Q;
-extern bool SAVY_Q;
-extern bool XODU_Q;
-extern bool XYDO_Q;
-extern bool TUHU_Q;
-extern bool TUKY_Q;
-extern bool TAKO_Q;
-extern bool SYBE_Q;
+extern reg XEHO;
+extern reg SAVY;
+extern reg XODU;
+extern reg XYDO;
+extern reg TUHU;
+extern reg TUKY;
+extern reg TAKO;
+extern reg SYBE;
 
 extern bool DEPO;
 extern bool LESY;
@@ -132,8 +131,17 @@ void tick_background() {
   //----------
   // x + scx
 
-  //bool ATAD_S = add_s(XEHO,   FF43_D0, 0);
-  bool ATAD_C = add_c(XEHO,   FF43_D0, 0);
+  bool XEHO_Q = XEHO.q();
+  bool SAVY_Q = SAVY.q();
+  bool XODU_Q = XODU.q();
+  bool XYDO_Q = XYDO.q();
+  bool TUHU_Q = TUHU.q();
+  bool TUKY_Q = TUKY.q();
+  bool TAKO_Q = TAKO.q();
+  bool SYBE_Q = SYBE.q();
+
+  //bool ATAD_S = add_s(XEHO_Q, FF43_D0, 0);
+  bool ATAD_C = add_c(XEHO_Q, FF43_D0, 0);
 
   //bool BEHU_S = add_s(SAVY_Q, FF43_D1, ATAD_C);
   bool BEHU_C = add_c(SAVY_Q, FF43_D1, ATAD_C);

@@ -90,6 +90,8 @@ bool NET01;
 bool CS_OUT;
 bool TOLA_A1n;
 
+bool MATE;
+
 //----------
 // registers
 
@@ -146,7 +148,7 @@ void tick_extbus() {
   bool MULE = not(T1T2n);
   bool LOXO = unk3(MULE, TEXO, T1T2n);
   bool LASY = not(LOXO);
-  bool MATE = not(LASY);
+  MATE = not(LASY);
 
   //----------
 

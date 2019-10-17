@@ -2,15 +2,7 @@
 
 // mystery signals 
 
-bool WUKO;
-bool LOBY;
-bool NYKA;
-bool POKY;
-bool PORY;
-bool ROXO;
 bool CUBA1;
-bool TALU;
-bool TOMU;
 bool LAPE;
 bool SEGU;
 
@@ -30,7 +22,6 @@ bool TOFU;
 bool XEHO;
 bool WESY;
 bool POVA;
-bool TADY;
 
 bool SAVY;
 bool XODU;
@@ -115,10 +106,6 @@ bool VAVA3;
 bool RUTU_OUT;
 bool BURO_Q;
 
-bool MATE;
-bool ROXY;
-bool PURE;
-bool LYRY;
 bool MYVO;
 bool SYLO;
 bool WODU;
@@ -144,13 +131,7 @@ bool NETA;
 bool POJU;
 bool PORE;
 bool POTU;
-bool POWY;
-bool POXA;
-bool POZO;
-bool PULO;
-bool PYJU;
-bool PYZO;
-bool RAWU;
+
 bool SELA;
 bool TACU;
 bool TAVA;

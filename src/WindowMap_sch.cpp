@@ -5,12 +5,15 @@
 //----------
 // inputs
 
+extern reg NYKA;
+extern reg PORY;
+
+extern bool ROXO;
 extern bool WUKO;
 extern bool LOBY;
-extern bool NYKA;
 extern bool POKY;
-extern bool PORY;
-extern bool ROXO;
+
+
 extern bool XYMU;
 extern bool AVAP;
 extern bool CUBA1;
@@ -47,14 +50,14 @@ extern bool FF4B_D6;
 extern bool FF4B_D7;
 
 // pixel x
-extern bool XEHO_Q;
-extern bool SAVY_Q;
-extern bool XODU_Q;
-extern bool XYDO_Q;
-extern bool TUHU_Q;
-extern bool TUKY_Q;
-extern bool TAKO_Q;
-extern bool SYBE_Q;
+extern reg XEHO;
+extern reg SAVY;
+extern reg XODU;
+extern reg XYDO;
+extern reg TUHU;
+extern reg TUKY;
+extern reg TAKO;
+extern reg SYBE;
 
 extern bool FF43_D0;
 extern bool FF43_D1;
@@ -68,6 +71,9 @@ bool MOFU;
 bool NYDY;
 bool NYXU;
 bool VYPO;
+bool ROXY;
+bool LYRY;
+bool SECA;
 
 //----------
 // registers
@@ -113,7 +119,6 @@ reg XOLO;
 //-----------------------------------------------------------------------------
 
 void tick_windowmap() {
-
   //----------
   // Window Y match
 
@@ -144,6 +149,15 @@ void tick_windowmap() {
   wire REPU = or(INT_VBL, PYRY);
   wire REJO = unk2(SARY_Q, REPU);
   
+  bool XEHO_Q = XEHO.q();
+  bool SAVY_Q = SAVY.q();
+  bool XODU_Q = XODU.q();
+  bool XYDO_Q = XYDO.q();
+  bool TUHU_Q = TUHU.q();
+  bool TUKY_Q = TUKY.q();
+  bool TAKO_Q = TAKO.q();
+  bool SYBE_Q = SYBE.q();
+
   wire NEZO = xor(TUHU_Q, FF4B_D4);
   wire NORY = xor(TUKY_Q, FF4B_D5);
   wire NONO = xor(TAKO_Q, FF4B_D6);
@@ -177,7 +191,7 @@ void tick_windowmap() {
   wire ROZE = nand(RYKU_Q, ROGA_Q, RUBU_Q);
   wire POVA = and(!NYZE_Q, PUXA_Q);
   wire PAHA = not(XYMU);
-  wire ROXY = unk2(PAHA, POVA);
+  ROXY = unk2(PAHA, POVA);
   wire SUHA = xor(FF43_D0, RYKU_Q);
   wire SYBY = xor(FF43_D1, ROGA_Q);
   wire SOZU = xor(FF43_D2, RUBU_Q);
@@ -188,7 +202,7 @@ void tick_windowmap() {
   wire PANY = nor(NUKO, ROZE);
   wire SEKO = nor(RENE_Q, !RYFA_Q);
   wire ROMO = not(POKY);
-  wire SUVU = nand(XYMU, ROMO, NYKA, PORY);
+  wire SUVU = nand(XYMU, ROMO, NYKA.q(), PORY.q());
   wire TAVE = not(SUVU);
   wire XAHY = not(ATEJ);
   wire XOFO = nand(FF40_D5, XAHY, RESET_VIDEO);
@@ -201,7 +215,7 @@ void tick_windowmap() {
   // glitch filter loop, FIXME double check if this logic is correct
   // bool PUKU = nor(NUNY, RYDY);
   // bool RYDY = nor(PUKU, RESET_VIDEOn, PORY);
-  wire RYDY = NUNY && !(RESET_VIDEOn || PORY);
+  wire RYDY = NUNY && !(RESET_VIDEOn || PORY.q());
 
   wire SYLO = not(RYDY);
   wire TUXY = nand(SOVY_Q, SYLO);
@@ -233,7 +247,7 @@ void tick_windowmap() {
   wire MOCE = nand(LAXU_Q, NYVA_Q, NYXU);
   wire LEBO = nand(CLK2, MOCE);
   wire MYVO = not(CLK2);
-  wire LYRY = not(MOCE);
+  LYRY = not(MOCE);
   wire LAXE = not(LAXU_Q);
   wire MYSO = nor(LOBY, LAXE, LYZU_Q);
   wire NAKO = not(MESU_Q);
@@ -313,7 +327,7 @@ void tick_windowmap() {
 
   wire RYCE = and(SOBU_Q, !SUDA_Q);
   wire ROSY = not(RESET_VIDEO);
-  wire SECA = nor(RYCE, ROSY, ATEJ);
+  SECA = nor(RYCE, ROSY, ATEJ);
   wire VEKU = nor(WUTY, TAVE);
   wire TAKA = unk2(VEKU, SECA);
   wire TUKU = not(TOMU);

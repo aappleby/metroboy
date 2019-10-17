@@ -13,32 +13,10 @@ extern bool XUHA;
 
 extern bool FF40_D3;
 
-extern bool FF42_D0;
-extern bool FF42_D1;
-extern bool FF42_D2;
-extern bool FF42_D3;
-extern bool FF42_D4;
-extern bool FF42_D5;
-extern bool FF42_D6;
-extern bool FF42_D7;
+extern bool FF42_D0, FF42_D1, FF42_D2, FF42_D3, FF42_D4, FF42_D5, FF42_D6, FF42_D7;
+extern bool FF43_D0, FF43_D1, FF43_D2, FF43_D3, FF43_D4, FF43_D5, FF43_D6, FF43_D7;
 
-extern bool FF43_D0;
-extern bool FF43_D1;
-extern bool FF43_D2;
-extern bool FF43_D3;
-extern bool FF43_D4;
-extern bool FF43_D5;
-extern bool FF43_D6;
-extern bool FF43_D7;
-
-extern reg XEHO;
-extern reg SAVY;
-extern reg XODU;
-extern reg XYDO;
-extern reg TUHU;
-extern reg TUKY;
-extern reg TAKO;
-extern reg SYBE;
+extern reg XEHO, SAVY, XODU, XYDO, TUHU, TUKY, TAKO, SYBE; // x counter
 
 extern bool DEPO;
 
@@ -54,14 +32,7 @@ bool VAVA3;
 //----------
 // registers - background pixel pipe?
 
-static reg VEZO;
-static reg WURU;
-static reg VOSA;
-static reg WYFU;
-static reg XETE;
-static reg WODA;
-static reg VUMO;
-static reg VAVA;
+static reg VEZO, WURU, VOSA, WYFU, XETE, WODA, VUMO, VAVA;
 
 //-----------------------------------------------------------------------------
 

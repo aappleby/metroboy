@@ -179,6 +179,7 @@
     <ClCompile Include="OAM_sch.cpp" />
     <ClCompile Include="Palettes_sch.cpp" />
     <ClCompile Include="PixelMux_sch.cpp" />
+    <ClCompile Include="PpuDecode_sch.cpp" />
     <ClCompile Include="Schematics.cpp" />
     <ClCompile Include="SerialLink_sch.cpp" />
     <ClCompile Include="SpriteControl_sch.cpp" />

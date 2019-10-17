@@ -87,13 +87,7 @@ bool XYMU;
 
 static reg VENA;
 
-static reg SAXO;
-static reg TYPO;
-static reg VYZO;
-static reg TELU;
-static reg SUDE;
-static reg TAHA;
-static reg TYRY;
+static reg SAXO, TYPO, VYZO, TELU, SUDE, TAHA, TYRY;
 
 reg RUTU;
 static reg SYGU;
@@ -113,31 +107,10 @@ static reg ROPO;
 static reg RUFO;
 static reg ROXE;
 
-//----------
-// x counter
-
-reg XEHO;
-reg SAVY;
-reg XODU;
-reg XYDO;
-reg TUHU;
-reg TUKY;
-reg TAKO;
-reg SYBE;
-
-//----------
-// y counter
-
 reg MYTA;
 
-reg MUWY;
-reg MYRO;
-reg LEXA;
-reg LYDO;
-reg LOVU;
-reg LEMA;
-reg MATO;
-reg LAFO;
+reg XEHO, SAVY, XODU, XYDO, TUHU, TUKY, TAKO, SYBE; // x counter
+reg MUWY, MYRO, LEXA, LYDO, LOVU, LEMA, MATO, LAFO; // y counter
 
 //-----------------------------------------------------------------------------
 
@@ -362,5 +335,4 @@ void tick_videocontrol() {
   V5 = LEMA_Q;
   V6 = MATO_Q;
   V7 = LAFO_Q;
-
 }

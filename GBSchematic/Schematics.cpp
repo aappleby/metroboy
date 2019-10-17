@@ -51,12 +51,7 @@ bool A15_C; // ???
 
 bool FF00RD;
 bool FF00WR;
-bool FF46;
-bool FF47;
-bool FF48;
-bool FF49;
 bool FF04_FF07;
-bool FF41;
 bool FF0F;
 
 bool FROM_CPU;

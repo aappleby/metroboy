@@ -1,5 +1,6 @@
 #pragma once
 
+#if 0
 // clock/reset/etc
 extern bool RSTn;
 extern bool X0;
@@ -41,3 +42,4 @@ bool CSn;
 bool A0, A1, A2, A3, A4, A5, A6, A7;
 bool A8, A9, A10, A11, A12, A13, A14, A15;
 bool D0, D1, D2, D3, D4, D5, D6, D7;
+#endif

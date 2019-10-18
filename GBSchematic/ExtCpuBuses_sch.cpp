@@ -33,61 +33,49 @@ extern bool T1nT2;
 extern bool T1T2n;
 extern bool NET01;
 
-extern bool D0_D, D1_D, D2_D, D3_D, D4_D, D5_D, D6_D, D7_D;
-
-extern bool D0_IN, D1_IN, D2_IN, D3_IN, D4_IN, D5_IN, D6_IN, D7_IN;
-
 //----------
 // outputs
-
-bool LULA;
-bool RORU;
-
-bool RD_A;
-bool RD_C;
-bool WR_A;
-bool WR_C;
-
-bool A0_D;
-bool A0_A;
-bool A1_D;
-bool A1_A;
-bool A2_D;
-bool A2_A;
-bool A3_D;
-bool A3_A;
-bool A4_D;
-bool A4_A;
-bool A5_D;
-bool A5_A;
-bool A6_D;
-bool A6_A;
-bool A7_D;
-bool A7_A;
-bool A8_D;
-bool A8_A;
-bool A9_D;
-bool A9_A;
-bool A10_D;
-bool A10_A;
-bool A11_D;
-bool A11_A;
-bool A12_D;
-bool A12_A;
-bool A13_D;
-bool A13_A;
-bool A14_D;
-bool A14_A;
-bool A15_D;
-bool A15_A;
-
-//bool A15;
 
 bool CS_OUT;
 bool TOLA_A1n;
 
-bool MATE;
-bool TEXO;
+bool LULA;
+bool RORU;
+bool TEXO; // used by vram interface
+
+// package RD/WR
+extern bool WR_A;
+extern bool WR_C;
+extern bool RD_A;
+extern bool RD_C;
+
+// package address bus
+extern bool A0_A,  A0_D,  A0_IN,  A0;
+extern bool A1_A,  A1_D,  A1_IN,  A1;
+extern bool A2_A,  A2_D,  A2_IN,  A2;
+extern bool A3_A,  A3_D,  A3_IN,  A3;
+extern bool A4_A,  A4_D,  A4_IN,  A4;
+extern bool A5_A,  A5_D,  A5_IN,  A5;
+extern bool A6_A,  A6_D,  A6_IN,  A6;
+extern bool A7_A,  A7_D,  A7_IN,  A7;
+extern bool A8_A,  A8_D,  A8_IN,  A8;
+extern bool A9_A,  A9_D,  A9_IN,  A9;
+extern bool A10_A, A10_D, A10_IN, A10;
+extern bool A11_A, A11_D, A11_IN, A11;
+extern bool A12_A, A12_D, A12_IN, A12;
+extern bool A13_A, A13_D, A13_IN, A13;
+extern bool A14_A, A14_D, A14_IN, A14;
+extern bool A15_A, A15_D, A15_IN, A15;
+
+// package data bus
+extern bool D0_A, D0_D, D0_IN, D0;
+extern bool D1_A, D1_D, D1_IN, D1;
+extern bool D2_A, D2_D, D2_IN, D2;
+extern bool D3_A, D3_D, D3_IN, D3;
+extern bool D4_A, D4_D, D4_IN, D4;
+extern bool D5_A, D5_D, D5_IN, D5;
+extern bool D6_A, D6_D, D6_IN, D6;
+extern bool D7_A, D7_D, D7_IN, D7;
 
 //----------
 // registers
@@ -157,7 +145,7 @@ void tick_extbus() {
   wire MULE = not(T1T2n);
   wire LOXO = unk3(MULE, TEXO, T1T2n);
   wire LASY = not(LOXO);
-  MATE = not(LASY);
+  wire MATE = not(LASY);
 
   //----------
   // left center
@@ -352,5 +340,59 @@ void tick_extbus() {
     D6 = SEVU;
     D5 = SAFO;
     D7 = TAJU;
+  }
+
+  //----------
+  // some debugging mode thing to drive the internal address bus from the external pins?
+
+  bool BASE = not(A3_IN);
+  bool AFEC = not(A4_IN);
+  bool BUXU = not(A2_IN);
+  bool CAMU = not(A1_IN);
+  bool CYGU = not(A6_IN);
+  bool COGO = not(A7_IN);
+  bool KOVA = not(A0_IN);
+  bool LAHE = not(A12_IN);
+  bool LURA = not(A13_IN);
+  bool MUJY = not(A8_IN);
+  bool PEVO = not(A14_IN);
+  bool MADY = not(A11_IN);
+  bool NENA = not(A9_IN);
+  bool SURA = not(A10_IN);
+  bool ABUP = not(A5_IN);
+
+  bool ANAR = not(BASE);
+  bool AZUV = not(AFEC);
+  bool AKAN = not(BUXU);
+  bool BYXE = not(CAMU);
+  bool BYNE = not(CYGU);
+  bool BYNA = not(COGO);
+  bool KEJO = not(KOVA);
+  bool LYNA = not(LAHE);
+  bool LEFY = not(LURA);
+  bool LOFA = not(MUJY);
+  bool NEFE = not(PEVO);
+  bool LORA = not(MADY);
+  bool MAPU = not(NENA);
+  bool RALA = not(SURA);
+  bool AJOV = not(ABUP);
+
+  // if NET01 high, drive external address bus onto internal address bus (?)
+  if (NET01) {
+    A3  = ANAR;
+    A4  = AZUV;
+    A2  = AKAN;
+    A1  = BYXE;
+    A6  = BYNE;
+    A7  = BYNA;
+    A0  = KEJO;
+    A12 = LYNA;
+    A13 = LEFY;
+    A8  = LOFA;
+    A14 = NEFE;
+    A11 = LORA;
+    A9  = MAPU;
+    A10 = RALA;
+    A5  = AJOV;
   }
 }

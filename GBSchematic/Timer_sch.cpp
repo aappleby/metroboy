@@ -1,6 +1,8 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "MemBus.h"
+#include "CpuBus.h"
 
 //----------
 // inputs
@@ -15,17 +17,15 @@ extern bool A00_07;
 extern bool FFXX;
 extern bool TOLA_A1n;
 
-extern bool FROM_CPU5;
 extern bool RESET2;
 
 //----------
 // outputs
 
-bool INT_TIMER;
 bool TOVY_A0n;
 
 //----------
-// registers
+// registers FIXME reg
 
 // tac
 bool SABO_Q, SABO_CLK;

@@ -1,6 +1,9 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "CpuBus.h"
+#include "MemBus.h"
+#include "ExtBus.h"
 
 //----------
 // inputs
@@ -9,35 +12,14 @@ extern bool BOGA1MHZ;
 
 extern bool FF0F_WR;
 extern bool FF0F_RD;
-extern bool FF0F; // wtf?
-
-extern bool FROM_CPU7; // the int ack lines?
-extern bool FROM_CPU8;
-extern bool FROM_CPU9;
-extern bool FROM_CPU10;
+extern bool FF0F;
 
 extern bool CPU; // wtf?
 
 extern bool RESET2;
 
-extern bool INT_VBL_BUF;
-extern bool INT_SERIAL;
-extern bool INT_JP;
-extern bool INT_STAT;
-extern bool INT_TIMER;
-
-extern bool P10_B;
-
-extern bool P13_C;
-extern bool P12;
-extern bool P11_C;
-extern bool P10;
-
 //----------
 // outputs
-
-bool INT_JP;
-bool TO_CPU2;
 
 //----------
 // registers

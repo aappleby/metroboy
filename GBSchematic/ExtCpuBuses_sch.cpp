@@ -1,81 +1,29 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "CpuBus.h"
+#include "ExtBus.h"
+#include "MemBus.h"
+#include "DmaBus.h"
 
 //----------
 // inputs
 
-extern bool PIN_A0;
+extern bool ABUZ; // from clocksreset
+extern bool LUMA; // from dma?
 
-extern bool ABUZ;
 extern bool FEXXFFXXn;
-extern bool CPU_WR_WAT;
-extern bool CPU_RAW_RD;
-extern bool CPU_RD_SYNC;
-extern bool NET02;
-extern bool A15_C;
-extern bool LUMA;
-
-extern bool FROM_CPU3;
-extern bool FROM_CPU4;
-extern bool FROM_CPU5;
-
-extern bool DMA_A8;
-extern bool DMA_A9;
-extern bool DMA_A10;
-extern bool DMA_A11;
-extern bool DMA_A12;
-extern bool DMA_A13;
-extern bool DMA_A14;
-extern bool DMA_A15;
-
-extern bool T1nT2;
-extern bool T1T2n;
-extern bool NET01;
+extern bool CPU_RD_SYNC; // not directly from cpu
+extern bool A15_C; // ?
 
 //----------
 // outputs
 
-bool CS_OUT;
 bool TOLA_A1n;
 
 bool LULA;
 bool RORU;
 bool TEXO; // used by vram interface
-
-// package RD/WR
-extern bool WR_A;
-extern bool WR_C;
-extern bool RD_A;
-extern bool RD_C;
-
-// package address bus
-extern bool A0_A,  A0_D,  A0_IN,  A0;
-extern bool A1_A,  A1_D,  A1_IN,  A1;
-extern bool A2_A,  A2_D,  A2_IN,  A2;
-extern bool A3_A,  A3_D,  A3_IN,  A3;
-extern bool A4_A,  A4_D,  A4_IN,  A4;
-extern bool A5_A,  A5_D,  A5_IN,  A5;
-extern bool A6_A,  A6_D,  A6_IN,  A6;
-extern bool A7_A,  A7_D,  A7_IN,  A7;
-extern bool A8_A,  A8_D,  A8_IN,  A8;
-extern bool A9_A,  A9_D,  A9_IN,  A9;
-extern bool A10_A, A10_D, A10_IN, A10;
-extern bool A11_A, A11_D, A11_IN, A11;
-extern bool A12_A, A12_D, A12_IN, A12;
-extern bool A13_A, A13_D, A13_IN, A13;
-extern bool A14_A, A14_D, A14_IN, A14;
-extern bool A15_A, A15_D, A15_IN, A15;
-
-// package data bus
-extern bool D0_A, D0_D, D0_IN, D0;
-extern bool D1_A, D1_D, D1_IN, D1;
-extern bool D2_A, D2_D, D2_IN, D2;
-extern bool D3_A, D3_D, D3_IN, D3;
-extern bool D4_A, D4_D, D4_IN, D4;
-extern bool D5_A, D5_D, D5_IN, D5;
-extern bool D6_A, D6_D, D6_IN, D6;
-extern bool D7_A, D7_D, D7_IN, D7;
 
 //----------
 // registers

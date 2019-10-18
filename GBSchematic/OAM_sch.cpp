@@ -1,15 +1,21 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "ExtBus.h"
+#include "MemBus.h"
+#include "DmaBus.h"
+#include "VramBus.h"
+#include "OamBus.h"
+#include "VideoRegs_sch.h"
 
 //----------
 // inputs
 
-extern reg MATU;
+extern bool CPU_WR2;
+extern bool CPU_RD2;
+extern bool RESET7n;
 extern bool MOPA_PHI;
-extern bool P10_B;
 extern bool VRAM_TO_OAM;
-extern bool OAM_ADDR_DMA;
 
 extern bool SARO;
 extern bool TUVO;
@@ -17,19 +23,15 @@ extern bool XYMU;
 extern bool CATY;
 extern bool AVAP;
 extern bool XOCE;
-
-extern reg CATU;
-
-extern reg TYFO;
 extern bool XUPY;
-extern bool RESET_VIDEO;
 extern bool ABEZ;
-extern bool CPU_WR2;
-extern bool CPU_RD2;
 extern bool WARU;
-extern bool RESET7n;
 extern bool XARE;
 extern bool WYJA;
+
+extern reg MATU;
+extern reg CATU;
+extern reg TYFO;
 
 // sprite index bus
 
@@ -58,43 +60,6 @@ bool LEKO;
 
 bool CLK3; // sprites use this clock
 bool RESET_VIDEO2n;
-
-//----------
-// pins to OAM
-
-bool OAM_CLK;
-bool OAM_ADDR_RENDER;
-bool OAM_ADDR_PARSE;
-bool OAM_ADDR_CPU;
-
-bool OAM_A_CS;
-bool OAM_B_CS;
-
-bool OAM_A1;
-bool OAM_A2;
-bool OAM_A3;
-bool OAM_A4;
-bool OAM_A5;
-bool OAM_A6;
-bool OAM_A7;
-
-bool OAM_A_D0;
-bool OAM_A_D1;
-bool OAM_A_D2;
-bool OAM_A_D3;
-bool OAM_A_D4;
-bool OAM_A_D5;
-bool OAM_A_D6;
-bool OAM_A_D7;
-
-bool OAM_B_D0;
-bool OAM_B_D1;
-bool OAM_B_D2;
-bool OAM_B_D3;
-bool OAM_B_D4;
-bool OAM_B_D5;
-bool OAM_B_D6;
-bool OAM_B_D7;
 
 //----------
 // registers

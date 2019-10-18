@@ -1,43 +1,30 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "CpuBus.h"
+#include "MemBus.h"
+#include "ExtBus.h"
 
 //----------
 // inputs
 
 extern bool BEDO;
-extern bool T1T2n;
-extern bool RESET;
 extern bool RESET2;
-extern bool CPU_WR_RAW;
-extern bool T1; // these are special-function-control pins on the cpu
-extern bool T2;
-extern bool P10_B;
 
-extern bool NET02;
 extern bool ANAP;
 
 extern bool WR_IN;
 extern bool CPU_RD_SYNC;
-extern bool T1nT2;
-extern bool RD_B;
-extern bool CPU_RAW_RD;
-extern bool FROM_CPU6;
+extern bool RD_B; // it's an input that feeds into SysDecode and has something to do with a debug mode
 
 //----------
 // outputs
 
-bool PIN_NC;
-bool CPU_RD;
-bool CPU_RD2;
+bool BOOT_CS; // output enables boot rom bus override?
+bool HRAM_CS; // output enables hram bus override?
 
-bool CPU_WR;
-bool CPU_WR2;
-
-bool BOOT_CS;
 bool FF0F_RD;
 bool FF0F_WR;
-bool HRAM_CS;
 
 bool FF60_D0;
 bool FF60_D1;
@@ -47,10 +34,7 @@ bool FFXX;
 bool FFXXn;
 bool SARO;
 
-bool T1nT2n;
-bool T1nT2;
-bool T1T2n;
-
+// all output only
 bool BOOTROM_A7n;
 bool BOOTROM_A6n;
 bool BOOTROM_A5nA4n;

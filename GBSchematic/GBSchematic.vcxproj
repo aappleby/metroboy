@@ -170,17 +170,23 @@
     <ClCompile Include="Background_sch.cpp" />
     <ClCompile Include="BgPixelShifter_sch.cpp" />
     <ClCompile Include="ClocksReset_sch.cpp" />
-    <ClCompile Include="CpuPackage_sch.cpp" />
+    <ClCompile Include="CpuBus.cpp" />
+    <ClCompile Include="ExtBus.cpp" />
+    <ClCompile Include="DmaBus.cpp" />
     <ClCompile Include="DMA_sch.cpp" />
     <ClCompile Include="ExtCpuBuses_sch.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Interrupts_sch.cpp" />
     <ClCompile Include="Joypad_sch.cpp" />
     <ClCompile Include="LcdControl_sch.cpp" />
+    <ClCompile Include="MemBus.cpp" />
+    <ClCompile Include="OamBus.cpp" />
     <ClCompile Include="OAM_sch.cpp" />
     <ClCompile Include="Palettes_sch.cpp" />
     <ClCompile Include="PixelMux_sch.cpp" />
     <ClCompile Include="PpuDecode_sch.cpp" />
+    <ClCompile Include="PpuRegs.cpp" />
+    <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
     <ClCompile Include="SerialLink_sch.cpp" />
     <ClCompile Include="SpriteControl_sch.cpp" />
@@ -192,12 +198,22 @@
     <ClCompile Include="Timer_sch.cpp" />
     <ClCompile Include="VideoControl_sch.cpp" />
     <ClCompile Include="VideoRegs_sch.cpp" />
+    <ClCompile Include="VramBus.cpp" />
     <ClCompile Include="VramInterface_sch.cpp" />
     <ClCompile Include="WindowMap_sch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CpuPackage_sch.h" />
+    <ClInclude Include="Clocks.h" />
+    <ClInclude Include="CpuBus.h" />
+    <ClInclude Include="ExtBus.h" />
+    <ClInclude Include="DmaBus.h" />
+    <ClInclude Include="MemBus.h" />
+    <ClInclude Include="OamBus.h" />
+    <ClInclude Include="PpuRegs.h" />
+    <ClInclude Include="Register.h" />
     <ClInclude Include="Schematics.h" />
+    <ClInclude Include="VideoRegs_sch.h" />
+    <ClInclude Include="VramBus.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

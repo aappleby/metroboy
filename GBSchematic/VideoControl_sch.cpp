@@ -1,45 +1,34 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "CpuBus.h"
+#include "ExtBus.h"
+#include "MemBus.h"
+#include "VideoRegs_sch.h"
+#include "PpuRegs.h"
 
 //----------
 // inputs
 
-extern bool FF45_D7;
-extern bool FF45_D6;
-extern bool FF45_D5;
-extern bool FF45_D4;
-extern bool FF45_D3;
-extern bool FF45_D2;
-extern bool FF45_D1;
-extern bool FF45_D0;
-
-extern bool ATEJ;
-
-
-extern bool FEPO;
-extern bool LYFE;
-extern bool LYHA;
-extern reg WUVU;
-extern bool RESET_VIDEO;
-extern bool CLKPIPE;
 extern bool CPU_RD2;
 extern bool CPU_WR2;
 extern bool FF41;
 extern bool CLK2;
 
+extern bool ATEJ;
+extern bool FEPO;
+extern bool LYFE;
+extern bool LYHA;
 extern bool TOFU;
-
 extern bool ACYL;
 extern bool WESY;
 extern bool PALY;
 extern bool AVAP;
 extern bool POVA;
+extern reg WUVU;
 
 //----------
 // outputs
-
-bool CP; // lcd clock signal
 
 bool PALY; // ly compare match
 bool XYVO; // line >= 144;
@@ -53,23 +42,8 @@ bool TALU;
 bool INT_OAM;
 bool INT_HBL;
 bool INT_VBL;
-bool INT_VBL_BUF;
-bool INT_STAT;
 
 bool NAPO_OUT;
-bool PIN_CPG;
-
-bool V0;
-bool V1;
-bool V2;
-bool V3;
-bool V4;
-bool V5;
-bool V6;
-bool V7;
-
-// screen x coordinate
-bool ACAM, AZUB, AMEL, AHAL, APUX, ABEF, ADAZ, ASAH;
 
 bool WODU;
 bool SELA;
@@ -80,27 +54,27 @@ bool XYMU;
 
 //----------
 
-static reg VENA;
+reg VENA;
 
-static reg SAXO, TYPO, VYZO, TELU, SUDE, TAHA, TYRY;
+reg SAXO, TYPO, VYZO, TELU, SUDE, TAHA, TYRY;
 
 reg RUTU;
-static reg SYGU;
+reg SYGU;
 
 //----------
 // FF41 STAT
 
 reg NYPE;
-static reg POPU;
-static reg NAPO;
+reg POPU;
+reg NAPO;
 
-static reg VOGA;
+reg VOGA;
 
-static reg RUGU;
-static reg REFE;
-static reg ROPO;
-static reg RUFO;
-static reg ROXE;
+reg RUGU;
+reg REFE;
+reg ROPO;
+reg RUFO;
+reg ROXE;
 
 reg MYTA;
 

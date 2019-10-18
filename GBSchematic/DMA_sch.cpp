@@ -1,18 +1,22 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "MemBus.h"
+#include "VramBus.h"
+#include "DmaBus.h"
+#include "OamBus.h"
+#include "CpuBus.h"
 
 //----------
 // inputs
 
-extern bool FROM_CPU5;
 extern bool CLK1;
 extern bool RESET6;
 extern bool FF46;
 extern bool CPU_RD2;
 extern bool CPU_WR2;
 extern bool PHI_OUTn;
-extern bool AMAB;
+extern bool AMAB; // from oam
 
 //----------
 // outputs
@@ -22,26 +26,7 @@ bool LUMA;
 bool WYJA;
 bool MOPA_PHI;
 
-bool DMA_A8;
-bool DMA_A12;
-bool DMA_A10;
-bool DMA_A9;
-bool DMA_A13;
-bool DMA_A11;
-bool DMA_A14;
-bool DMA_A15;
-
-bool OAM_ADDR_DMA;
 bool VRAM_TO_OAM;
-
-bool DMA_A0;
-bool DMA_A1;
-bool DMA_A2;
-bool DMA_A3;
-bool DMA_A4;
-bool DMA_A5;
-bool DMA_A6;
-bool DMA_A7;
 
 //----------
 // registers

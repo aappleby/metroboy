@@ -1,28 +1,27 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "CpuBus.h"
+#include "MemBus.h"
+#include "ExtBus.h"
+#include "VideoRegs_sch.h"
 
 //----------
 // inputs
 
-extern bool RESET;
-extern bool T1nT2n;
-extern bool T1nT2;
-
 extern bool ABOL_1MHZ;
-extern bool FROM_CPU3;
-extern bool FROM_CPU4;
-extern bool CLKIN_A;
+extern bool AJER_2MHZ;
+extern bool CYBO_4MHZ;
+
 extern bool FF04_FF07;
+
 extern bool TOLA_A1n;
 extern bool TOVY_A0n;
-extern bool FF40_D7;
-extern bool CLKIN_B;
-extern bool CYBO_4MHZ;
-extern bool APU_RESET;
-extern bool AJER_2MHZ;
+
 extern bool FF60_D1;
 extern bool FERO_Q;
+
+extern bool APU_RESET;
 extern bool APU_RESET5n;
 
 //----------

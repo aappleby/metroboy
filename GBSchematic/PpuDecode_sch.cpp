@@ -1,12 +1,12 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "MemBus.h"
 
 //----------
 // inputs
 
 extern bool FFXX;
-extern bool A0, A1, A2, A3, A4, A5, A6, A7;
 
 //----------
 // outputs

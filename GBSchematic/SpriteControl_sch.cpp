@@ -1,16 +1,16 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "OamBus.h"
+#include "ExtBus.h"
+#include "MemBus.h"
+#include "VramBus.h"
+#include "VideoRegs_sch.h"
 
 //----------
 // inputs
 
-extern bool RESET_VIDEO;
 extern bool RESET_VIDEO2n;
-
-extern bool FF40_D1;
-extern bool FF40_D2;
-extern bool P10_B;
 
 extern bool CLK1;
 extern bool CLK2;
@@ -57,8 +57,6 @@ extern bool COGY;
 extern bool FYMA;
 extern bool CEHU;
 extern bool EKES;
-
-extern bool V0, V1, V2, V3, V4, V5, V6, V7;
 
 //----------
 // outputs
@@ -122,9 +120,6 @@ bool WEME; bool WUFA; bool FAKA;
 bool CYLA; bool DYMO; bool BUCY;
 bool WOFO; bool WYLU; bool EWOT;
 bool ASYS; bool AHOF; bool BYVY;
-
-//----------
-// mystery signals
 
 //----------
 // registers

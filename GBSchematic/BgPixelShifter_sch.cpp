@@ -1,12 +1,13 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "VramBus.h"
+#include "ExtBus.h"
+#include "PpuRegs.h"
 
 //----------
 // inputs
 
-extern bool CLKPIPE;
-extern bool P10_B;
 extern bool MOFU;
 extern bool NYDY;
 extern bool NYXU;
@@ -15,51 +16,8 @@ extern bool VYPO;
 //----------
 // outputs
 
-bool BG_PIX_A_7;
-bool BG_PIX_B_7;
-
 //----------
 // registers
-
-// tile reg?
-reg RAWU;
-reg POZO;
-reg PYZO;
-reg POXA;
-reg PULO;
-reg POJU;
-reg POWY;
-reg PYJU;
-
-// tile latch?
-reg LEGU;
-reg NUDU;
-reg MUKU;
-reg LUZO;
-reg MEGU;
-reg MYJY;
-reg NASA;
-reg NEFO;
-
-// bg_pix_b
-reg TOMY;
-reg TACA;
-reg SADY;
-reg RYSA;
-reg SOBO;
-reg SETU;
-reg RALU;
-reg SOHU;
-
-// bg_pix_a
-reg MYDE;
-reg NOZO;
-reg MOJU;
-reg MACU;
-reg NEPO;
-reg MODU;
-reg NEDA;
-reg PYBO;
 
 //-----------------------------------------------------------------------------
 

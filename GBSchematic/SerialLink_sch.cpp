@@ -1,24 +1,23 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "MemBus.h"
+#include "CpuBus.h"
+#include "ExtBus.h"
 
 //----------
 // inputs
 
 extern bool TOVY_A0n;
 extern bool RESET2;
-extern bool SCK_IN;
-extern bool SCK_DIR;
 extern bool CLK_16k;
 extern bool FFXX;
 extern bool TOLA_A1n;
-extern bool SIN_IN;
 
 //----------
 // outputs
 
 bool SER_TICKn;
-bool INT_SERIAL;
 bool A00_07;
 
 // probably mislabeled CUBA_Q?

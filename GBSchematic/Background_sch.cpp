@@ -1,6 +1,9 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "VramBus.h"
+#include "VideoRegs_sch.h"
+#include "PpuRegs.h"
 
 //----------
 // inputs
@@ -11,31 +14,12 @@ extern bool NETA;
 extern bool POTU;
 extern bool XUHA;
 
-extern bool FF40_D3;
-
-extern bool FF42_D0, FF42_D1, FF42_D2, FF42_D3, FF42_D4, FF42_D5, FF42_D6, FF42_D7;
-extern bool FF43_D0, FF43_D1, FF43_D2, FF43_D3, FF43_D4, FF43_D5, FF43_D6, FF43_D7;
-
-extern reg XEHO, SAVY, XODU, XYDO, TUHU, TUKY, TAKO, SYBE; // x counter
-
 extern reg DEPO;
-
-extern bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU; // sprite pixels
-
-extern bool CLKPIPE;
-
-extern bool V0, V1, V2, V3, V4, V5, V6, V7;
-
 
 //----------
 // outputs
 
 bool VAVA3;
-
-//----------
-// registers - background pixel pipe?
-
-reg VEZO, WURU, VOSA, WYFU, XETE, WODA, VUMO, VAVA;
 
 //-----------------------------------------------------------------------------
 
@@ -139,6 +123,7 @@ void tick_background() {
   bool COVE = not(WEFE);
 
   // maybe the 'unk1' block inverts its sum out? otherwise we'd be putting the inverted sum on the bus...
+  // or maybe these are not inverters...
   bool AXEP = not(BABE_S);
   bool AFEB = not(ABOD_S);
   bool ALEL = not(BEWY_S);

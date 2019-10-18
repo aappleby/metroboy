@@ -1,41 +1,18 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "ExtBus.h"
+#include "PpuRegs.h"
 
 //----------
 // inputs
 
 extern bool XEFY;
 extern reg GOMO;
-extern bool P10_B;
 extern bool CLKPIPE;
-extern bool BGPIXELn;
-
-extern bool SPR_PIX_A_0;
-extern bool SPR_PIX_A_1;
-extern bool SPR_PIX_A_2;
-extern bool SPR_PIX_A_3;
-extern bool SPR_PIX_A_4;
-extern bool SPR_PIX_A_5;
-extern bool SPR_PIX_A_6;
-extern bool SPR_PIX_A_7;
-
-extern bool SPR_PIX_B_0;
-extern bool SPR_PIX_B_1;
-extern bool SPR_PIX_B_2;
-extern bool SPR_PIX_B_3;
-extern bool SPR_PIX_B_4;
-extern bool SPR_PIX_B_5;
-extern bool SPR_PIX_B_6;
-extern bool SPR_PIX_B_7;
 
 //----------
-// ouptuts
-
-bool OBP0PIXELn;
-bool OBP1PIXELn;
-
-bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU; // sprite pixels
+// outputs
 
 //----------
 // registers

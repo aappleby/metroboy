@@ -1,6 +1,9 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "VideoRegs_sch.h"
+#include "ExtBus.h"
+#include "PpuRegs.h"
 
 //----------
 // inputs
@@ -8,11 +11,8 @@
 extern bool CLK2;
 
 extern bool NAPO_OUT;
-extern reg RUTU;
 extern bool FF04_D0n;
 extern bool FF04_D1n;
-extern bool FF40_D7;
-extern bool RESET_VIDEO;
 
 extern bool AVAP;
 extern bool ROXY;
@@ -24,21 +24,15 @@ extern bool LYRY;
 extern bool MYVO;
 extern bool SYLO;
 extern bool WODU;
-extern reg XYDO;
-extern reg NYPE;
 extern bool LYFE;
 extern bool FEPO;
 
-extern bool V0, V1, V2, V3, V4, V5, V6, V7;
+extern reg RUTU;
+extern reg XYDO;
+extern reg NYPE;
 
 //----------
 // outputs
-
-bool PIN_S;
-bool PIN_ST;
-bool PIN_CPL;
-bool PIN_FR;
-bool CLKPIPE;
 
 bool LOBY;
 bool POKY;

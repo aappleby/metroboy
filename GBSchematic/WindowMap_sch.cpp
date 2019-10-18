@@ -1,6 +1,8 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "VideoRegs_sch.h"
+#include "VramBus.h"
 
 //----------
 // inputs
@@ -13,7 +15,6 @@ extern bool WUKO;
 extern bool LOBY;
 extern bool POKY;
 
-
 extern bool XYMU;
 extern bool AVAP;
 extern bool CUBA1;
@@ -22,32 +23,11 @@ extern bool WUTY;
 extern bool TOMU;
 extern bool FEPO;
 extern bool LAPE;
-extern bool RESET_VIDEO;
 extern bool ATEJ;
 extern bool SEGU;
 extern bool CLK2;
 
 extern bool INT_VBL;
-extern bool FF40_D5;
-extern bool FF40_D6;
-
-extern bool FF4A_D0;
-extern bool FF4A_D1;
-extern bool FF4A_D2;
-extern bool FF4A_D3;
-extern bool FF4A_D4;
-extern bool FF4A_D5;
-extern bool FF4A_D6;
-extern bool FF4A_D7;
-
-extern bool FF4B_D0;
-extern bool FF4B_D1;
-extern bool FF4B_D2;
-extern bool FF4B_D3;
-extern bool FF4B_D4;
-extern bool FF4B_D5;
-extern bool FF4B_D6;
-extern bool FF4B_D7;
 
 // pixel x
 extern reg XEHO;
@@ -58,12 +38,6 @@ extern reg TUHU;
 extern reg TUKY;
 extern reg TAKO;
 extern reg SYBE;
-
-extern bool FF43_D0;
-extern bool FF43_D1;
-extern bool FF43_D2;
-
-extern bool V0, V1, V2, V3, V4, V5, V6, V7;
 
 //----------
 // outputs

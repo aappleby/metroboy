@@ -1,21 +1,19 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "MemBus.h"
+#include "VramBus.h"
+#include "OamBus.h"
+#include "ExtBus.h"
+#include "VideoRegs_sch.h"
 
 //----------
 // inputs
 
 extern bool CPU_RD_SYNC;
-extern bool NET02;
-extern bool MOE_IN;
-extern bool MWR_IN;
-extern bool MCS_IN;
-extern bool T1nT2;
 extern bool FEXXFFXXn;
-extern bool FF40_D4;
 extern reg MATU;
 extern bool MOPA_PHI;
-extern bool P10_B;
 extern bool VRAM_TO_OAM;
 
 extern reg RAWU;
@@ -52,87 +50,10 @@ extern reg VYNO;
 extern reg VUJO;
 extern reg VYMU;
 
-extern bool MD_B;
-
-extern bool D0_A;
-extern bool D1_A;
-extern bool D2_A;
-extern bool D3_A;
-extern bool D4_A;
-extern bool D5_A;
-extern bool D6_A;
-extern bool D7_A;
-
-extern bool D0_IN;
-extern bool D1_IN;
-extern bool D2_IN;
-extern bool D3_IN;
-extern bool D4_IN;
-extern bool D5_IN;
-extern bool D6_IN;
-extern bool D7_IN;
+extern bool MD_B; // this has gotta be one of the vram wr/cs/oe pins or something
 
 //----------
 // outputs
-
-bool MCS_A; // why are these in A/D pairs? is one OE?
-bool MCS_D;
-bool MOE_A;
-bool MOE_D;
-bool MWR_A;
-bool MWR_D;
-
-// chip-to-vram data bus. what are the control signals?
-bool MD0;
-bool MD1;
-bool MD2;
-bool MD3;
-bool MD4;
-bool MD5;
-bool MD6;
-bool MD7;
-
-bool MD0_A;
-bool MD1_A;
-bool MD2_A;
-bool MD3_A;
-bool MD4_A;
-bool MD5_A;
-bool MD6_A;
-bool MD7_A;
-
-bool MD0_IN;
-bool MD1_IN;
-bool MD2_IN;
-bool MD3_IN;
-bool MD4_IN;
-bool MD5_IN;
-bool MD6_IN;
-bool MD7_IN;
-
-bool MD0_OUT;
-bool MD1_OUT;
-bool MD2_OUT;
-bool MD3_OUT;
-bool MD4_OUT;
-bool MD5_OUT;
-bool MD6_OUT;
-bool MD7_OUT;
-
-// chip output
-bool MA0;
-bool MA1;
-bool MA2;
-bool MA3;
-bool MA4;
-bool MA5;
-bool MA7;
-bool MA8;
-bool MA9;
-bool MA6;
-bool MA10;
-bool MA11;
-bool MA12;
 
 bool WUKO; // controls something window
 bool COTA; // controls something sprite related
@@ -157,6 +78,7 @@ void tock_vram() {
   bool RAFY = nand(D6, LULA);
   bool RUXA = nand(D0, LULA);
 
+  // why is this writing to the _A part of the data bus but not the _D?
   D5_A = RYVO;
   D3_A = RERA;
   D2_A = RABY;
@@ -222,12 +144,12 @@ void tock_vram() {
   bool SYSY = not(TAXY);
   bool RAGU = not(SOFY);
 
-  MOE_D = SAHA;
-  MCS_D = SETY;
   MCS_A = SOKY;
-  MOE_A = REFO;
+  MCS_D = SETY;
   MWR_A = SYSY;
   MWR_D = RAGU;
+  MOE_A = REFO;
+  MOE_D = SAHA;
 
   // this is some pulse generator sorta thing?
   bool RYJE = not(SAZO);
@@ -242,14 +164,15 @@ void tock_vram() {
   // typo? this doesn't go anywhere
   MD_B = ROFA;
 
-  bool RAKU = not(MD7_IN);
-  bool ROCE = not(MD4_IN);
-  bool REMO = not(MD3_IN);
-  bool ROPU = not(MD5_IN);
-  bool RETA = not(MD6_IN);
-  bool RYDO = not(MD2_IN);
-  bool RODY = not(MD0_IN);
-  bool REBA = not(MD1_IN);
+  // buffer or inverter? looks like buffer...
+  bool RAKU = !not(MD7_IN);
+  bool ROCE = !not(MD4_IN);
+  bool REMO = !not(MD3_IN);
+  bool ROPU = !not(MD5_IN);
+  bool RETA = !not(MD6_IN);
+  bool RYDO = !not(MD2_IN);
+  bool RODY = !not(MD0_IN);
+  bool REBA = !not(MD1_IN);
 
   if (RENA) {
     MD7 = RAKU;

@@ -22,9 +22,7 @@ extern reg CATU;
 
 extern reg TYFO;
 extern bool XUPY;
-extern bool CLK3;
 extern bool RESET_VIDEO;
-extern bool RESET_VIDEO2n;
 extern bool ABEZ;
 extern bool CPU_WR2;
 extern bool CPU_RD2;
@@ -57,6 +55,9 @@ bool WUME;
 bool WEWU;
 bool FETO;
 bool LEKO;
+
+bool CLK3; // sprites use this clock
+bool RESET_VIDEO2n;
 
 //----------
 // pins to OAM

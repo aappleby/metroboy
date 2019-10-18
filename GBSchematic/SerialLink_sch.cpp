@@ -21,6 +21,9 @@ bool SER_TICKn;
 bool INT_SERIAL;
 bool A00_07;
 
+// probably mislabeled CUBA_Q?
+bool CUBA1;
+
 //----------
 // registers
 

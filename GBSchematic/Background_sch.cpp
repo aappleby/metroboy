@@ -24,6 +24,9 @@ extern bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU; // sprite pixels
 
 extern bool CLKPIPE;
 
+extern bool V0, V1, V2, V3, V4, V5, V6, V7;
+
+
 //----------
 // outputs
 

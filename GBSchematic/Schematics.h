@@ -159,15 +159,6 @@ extern bool D5;
 extern bool D6;
 extern bool D7;
 
-extern bool D0_A;
-extern bool D1_A;
-extern bool D2_A;
-extern bool D3_A;
-extern bool D4_A;
-extern bool D5_A;
-extern bool D6_A;
-extern bool D7_A;
-
 extern bool MD0;
 extern bool MD1;
 extern bool MD2;
@@ -225,12 +216,3 @@ extern bool OAM_A4;
 extern bool OAM_A5;
 extern bool OAM_A6;
 extern bool OAM_A7;
-
-extern bool V0;
-extern bool V1;
-extern bool V2;
-extern bool V3;
-extern bool V4;
-extern bool V5;
-extern bool V6;
-extern bool V7;

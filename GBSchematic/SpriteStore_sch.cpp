@@ -9,12 +9,13 @@ extern bool XUPY;
 extern bool WEFE;
 extern bool BUZA;
 
-extern bool OAM_A_A7;
-extern bool OAM_A_A6;
-extern bool OAM_A_A5;
-extern bool OAM_A_A4;
-extern bool OAM_A_A3;
-extern bool OAM_A_A2;
+// these are probably named wrong and are actually the oam address lines?
+bool OAM_A_A7;
+bool OAM_A_A6;
+bool OAM_A_A5;
+bool OAM_A_A4;
+bool OAM_A_A3;
+bool OAM_A_A2;
 
 extern bool FEPO;
 extern bool DABY;

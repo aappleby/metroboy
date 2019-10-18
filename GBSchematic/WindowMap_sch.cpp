@@ -63,6 +63,8 @@ extern bool FF43_D0;
 extern bool FF43_D1;
 extern bool FF43_D2;
 
+extern bool V0, V1, V2, V3, V4, V5, V6, V7;
+
 //----------
 // outputs
 

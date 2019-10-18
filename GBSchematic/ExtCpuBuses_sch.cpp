@@ -31,6 +31,11 @@ extern bool DMA_A15;
 
 extern bool T1nT2;
 extern bool T1T2n;
+extern bool NET01;
+
+extern bool D0_D, D1_D, D2_D, D3_D, D4_D, D5_D, D6_D, D7_D;
+
+extern bool D0_IN, D1_IN, D2_IN, D3_IN, D4_IN, D5_IN, D6_IN, D7_IN;
 
 //----------
 // outputs
@@ -76,17 +81,8 @@ bool A14_A;
 bool A15_D;
 bool A15_A;
 
-bool D6_D;
-bool D7_A; // why A?
-bool D0_D;
-bool D4_D;
-bool D1_D;
-bool D2_D;
-bool D3_D;
-bool D5_D;
+//bool A15;
 
-bool A15;
-bool NET01;
 bool CS_OUT;
 bool TOLA_A1n;
 
@@ -96,43 +92,56 @@ bool TEXO;
 //----------
 // registers
 
-bool NYRE_L;
-bool LONU_L;
-bool LOBU_L;
-bool LUMY_L;
-bool PATE_L;
-bool LYSA_L;
-bool LUNO_L;
-bool ARYM_L;
-bool AROS_L;
-bool ATEV_L;
-bool AVYS_L;
-bool ARET_L;
-bool ALYR_L;
-bool APUR_L;
-bool ALOR_L;
+reg NYRE;
+reg LONU;
+reg LOBU;
+reg LUMY;
+reg PATE;
+reg LYSA;
+reg LUNO;
+reg ARYM;
+reg AROS;
+reg ATEV;
+reg AVYS;
+reg ARET;
+reg ALYR;
+reg APUR;
+reg ALOR;
+
+// DX_IN latch
+reg SODY;
+reg SELO;
+reg RONY;
+reg SOMA;
+reg RAXY;
+reg RUPA;
+reg SAGO;
+reg SAZY;
 
 //-----------------------------------------------------------------------------
 
 void tick_extbus() {
 
-  bool SORE = not(A15);
-  bool TEVY = and(A13, A14, SORE);
-  TEXO = and(FROM_CPU4, TEVY);
-  bool LEVO = not(TEXO);
-  bool LAGU = unk3(CPU_RAW_RD, LEVO, FROM_CPU3);
-  bool LYWE = not(LAGU);
+  //----------
+  // center right
 
-  bool MOCA = nor(TEXO, T1T2n);
-  bool MEXO = not(CPU_RD_SYNC);
-  bool NEVY = or(MEXO, MOCA);
-  bool MOTY = or(MOCA, LYWE);
-  bool PUVA = or(NEVY, LUMA);
-  bool TYMU = or(LUMA, MOTY);
-  bool USUF = nor(T1nT2, PUVA);
-  bool UVER = nand(PUVA, NET01);
-  bool UGAC = nand(NET01, TYMU);
-  bool URUN = nor(TYMU, T1nT2);
+  wire SORE = not(A15);
+  wire TEVY = and(A13, A14, SORE);
+  TEXO = and(FROM_CPU4, TEVY);
+  wire LEVO = not(TEXO);
+  wire LAGU = unk3(CPU_RAW_RD, LEVO, FROM_CPU3);
+  wire LYWE = not(LAGU);
+
+  wire MOCA = nor(TEXO, T1T2n);
+  wire MEXO = not(CPU_RD_SYNC);
+  wire NEVY = or(MEXO, MOCA);
+  wire MOTY = or(MOCA, LYWE);
+  wire PUVA = or(NEVY, LUMA);
+  wire TYMU = or(LUMA, MOTY);
+  wire USUF = nor(T1nT2, PUVA);
+  wire UVER = nand(PUVA, NET01);
+  wire UGAC = nand(NET01, TYMU);
+  wire URUN = nor(TYMU, T1nT2);
 
   WR_C = USUF;
   WR_A = UVER;
@@ -140,140 +149,132 @@ void tick_extbus() {
   RD_C = URUN;
 
   //----------
+  // top center
 
-  bool TOLA = not(A1);
+  wire TOLA = not(A1);
   TOLA_A1n = TOLA;
 
-  //----------
-
-  bool MULE = not(T1T2n);
-  bool LOXO = unk3(MULE, TEXO, T1T2n);
-  bool LASY = not(LOXO);
+  wire MULE = not(T1T2n);
+  wire LOXO = unk3(MULE, TEXO, T1T2n);
+  wire LASY = not(LOXO);
   MATE = not(LASY);
 
   //----------
+  // left center
 
-  //----------
+  wire SOGY = not(A14);
+  wire TUMA = and(A13, SOGY, A15);
+  wire TYNU = unk3(A15, A14, TUMA);
+  wire TOZA = and(TYNU, ABUZ, FEXXFFXXn);
+  wire SOBY = nor(A15, CPU_WR_WAT); // schematic has a question mark?
+  wire SEPY = nand(ABUZ, SOBY);
 
-  bool SOGY = not(A14);
-  bool TUMA = and(A13, SOGY, A15);
-  bool TYNU = unk3(A15, A14, TUMA);
-  bool TOZA = and(TYNU, ABUZ, FEXXFFXXn);
-  bool SOBY = nor(A15, CPU_WR_WAT); // schematic has a question mark?
-  bool SEPY = nand(ABUZ, SOBY);
-
-  bool TYHO = mux2(DMA_A15, TOZA, LUMA);
+  wire TYHO = mux2(DMA_A15, TOZA, LUMA);
   CS_OUT = TYHO;
 
-  bool TAZY = mux2(DMA_A15, SEPY, LUMA);
+  wire TAZY = mux2(DMA_A15, SEPY, LUMA);
 
-  bool RYCA = not(NET02);
-  bool RAZA = not(A15_C);
-  bool SYZU = not(RAZA);
+  wire RYCA = not(NET02);
+  wire RAZA = not(A15_C); // typo?
+  wire SYZU = not(RAZA);
   A15 = SYZU;
-  bool RULO = nor(TAZY, NET02);
-  bool SUZE = nand(TAZY, RYCA);
+  wire RULO = nor(TAZY, NET02);
+  wire SUZE = nand(TAZY, RYCA);
 
   A15_D = RULO;
   A15_A = SUZE;
 
   //----------
-  // FIXME what trigger kind of latch
-  if (MATE) {
-    NYRE_L = A14;
-    LONU_L = A13;
-    LOBU_L = A12;
-    LUMY_L = A11;
-    PATE_L = A10;
-    LYSA_L = A9;
-    LUNO_L = A8;
-  }
+  // bottom left
 
-  bool PEGE = mux2(DMA_A14, NYRE_L, LUMA);
-  bool MUCE = mux2(DMA_A13, LONU_L, LUMA);
-  bool MOJY = mux2(DMA_A12, LOBU_L, LUMA);
-  bool MALE = mux2(DMA_A11, LUMY_L, LUMA);
-  bool PAMY = mux2(DMA_A10, PATE_L, LUMA);
-  bool MASU = mux2(DMA_A9, LYSA_L, LUMA);
-  bool MANO = mux2(DMA_A8, LUNO_L, LUMA);
-
-  bool TOVA = not(T1nT2);
+  wire TOVA = not(T1nT2);
   NET01 = TOVA;
 
-  bool PAHY = nor(T1nT2, PEGE);
-  bool PUHE = nand(PEGE, TOVA);
+  wire NYRE_Q = NYRE.latch(MATE, A14);
+  wire LONU_Q = LONU.latch(MATE, A13);
+  wire LOBU_Q = LOBU.latch(MATE, A12);
+  wire LUMY_Q = LUMY.latch(MATE, A11);
+  wire PATE_Q = PATE.latch(MATE, A10);
+  wire LYSA_Q = LYSA.latch(MATE, A9);
+  wire LUNO_Q = LUNO.latch(MATE, A8);
 
-  bool LEVA = nor(T1nT2, MUCE);
-  bool LABE = nand(MUCE, TOVA);
+  wire PEGE = mux2(DMA_A14, NYRE_Q, LUMA);
+  wire MUCE = mux2(DMA_A13, LONU_Q, LUMA);
+  wire MOJY = mux2(DMA_A12, LOBU_Q, LUMA);
+  wire MALE = mux2(DMA_A11, LUMY_Q, LUMA);
+  wire PAMY = mux2(DMA_A10, PATE_Q, LUMA);
+  wire MASU = mux2(DMA_A9,  LYSA_Q, LUMA);
+  wire MANO = mux2(DMA_A8,  LUNO_Q, LUMA);
 
-  bool LOSO = nor(T1nT2, MOJY);
-  bool LUCE = nand(MOJY, TOVA);
+  wire PAHY = nor(T1nT2, PEGE);
+  wire LEVA = nor(T1nT2, MUCE);
+  wire LOSO = nor(T1nT2, MOJY);
+  wire LYNY = nor(T1nT2, MALE);
+  wire RORE = nor(T1nT2, PAMY);
+  wire MENY = nor(T1nT2, MASU);
+  wire MEGO = nor(T1nT2, MANO);
 
-  bool LYNY = nor(T1nT2, MALE);
-  bool LEPY = nand(MALE, TOVA);
-
-  bool RORE = nor(T1nT2, PAMY);
-  bool ROXU = nand(PAMY, TOVA);
-
-  bool MENY = nor(T1nT2, MASU);
-  bool MUNE = nand(MASU, TOVA);
-
-  bool MEGO = nor(T1nT2, MANO);
-  bool MYNY = nand(MANO, TOVA);
+  wire PUHE = nand(PEGE, TOVA);
+  wire LABE = nand(MUCE, TOVA);
+  wire LUCE = nand(MOJY, TOVA);
+  wire LEPY = nand(MALE, TOVA);
+  wire ROXU = nand(PAMY, TOVA);
+  wire MUNE = nand(MASU, TOVA);
+  wire MYNY = nand(MANO, TOVA);
 
   A14_D = PAHY;
-  A14_A = PUHE;
   A13_D = LEVA;
-  A13_A = LABE;
   A12_D = LOSO;
-  A12_A = LUCE;
   A11_D = LYNY;
-  A11_A = LEPY;
   A10_D = RORE;
-  A10_A = ROXU;
   A9_D = MENY;
-  A9_A = MUNE;
   A8_D = MEGO;
+
+  A14_A = PUHE;
+  A13_A = LABE;
+  A12_A = LUCE;
+  A11_A = LEPY;
+  A10_A = ROXU;
+  A9_A = MUNE;
   A8_A = MYNY;
 
   //----------
+  // the rest of the address latch, center
 
-  if (MATE) {
-    ARYM_L = A7;
-    AROS_L = A6;
-    ATEV_L = A5;
-    AVYS_L = A4;
-    ARET_L = A3;
-    ALYR_L = A2;
-    APUR_L = A1;
-    ALOR_L = A0;
-  }
+  wire ARYM_Q = ARYM.latch(MATE, A7);
+  wire AROS_Q = ARYM.latch(MATE, A6);
+  wire ATEV_Q = ARYM.latch(MATE, A5);
+  wire AVYS_Q = ARYM.latch(MATE, A4);
+  wire ARET_Q = ARYM.latch(MATE, A3);
+  wire ALYR_Q = ARYM.latch(MATE, A2);
+  wire APUR_Q = ARYM.latch(MATE, A1);
+  wire ALOR_Q = ARYM.latch(MATE, A0);
 
-  bool ASUR = mux2(DMA_A7, ARYM_L, LUMA);
-  bool ATYR = mux2(DMA_A6, AROS_L, LUMA);
-  bool ATOV = mux2(DMA_A5, ATEV_L, LUMA);
-  bool ATEM = mux2(DMA_A4, AVYS_L, LUMA);
-  bool AMER = mux2(DMA_A3, ARET_L, LUMA);
-  bool APOK = mux2(DMA_A2, ALYR_L, LUMA);
-  bool ATOL = mux2(DMA_A1, APUR_L, LUMA);
-  bool AMET = mux2(DMA_A0, ALOR_L, LUMA);
+  wire ASUR = mux2(DMA_A7, ARYM_Q, LUMA);
+  wire ATYR = mux2(DMA_A6, AROS_Q, LUMA);
+  wire ATOV = mux2(DMA_A5, ATEV_Q, LUMA);
+  wire ATEM = mux2(DMA_A4, AVYS_Q, LUMA);
+  wire AMER = mux2(DMA_A3, ARET_Q, LUMA);
+  wire APOK = mux2(DMA_A2, ALYR_Q, LUMA);
+  wire ATOL = mux2(DMA_A1, APUR_Q, LUMA);
+  wire AMET = mux2(DMA_A0, ALOR_Q, LUMA);
 
-  bool COLO = nor (NET02, ASUR);
-  bool DEFY = nand(NET01, ASUR);
-  bool CYKA = nor (NET02, ATYR);
-  bool CEPU = nand(NET01, ATYR);
-  bool AJAV = nor (NET02, ATOV);
-  bool BADU = nand(NET01, ATOV);
-  bool BEVO = nor (NET02, ATEM);
-  bool BYLA = nand(NET01, ATEM);
-  bool BOLA = nor (NET02, AMER);
-  bool BOTY = nand(NET01, AMER);
-  bool BAJO = nor (NET02, APOK);
-  bool BOKU = nand(NET01, APOK);
-  bool COTU = nor (NET02, ATOL);
-  bool CABA = nand(NET01, ATOL);
-  bool KOTY = nor (NET02, AMET);
-  bool KUPO = nand(NET01, AMET);
+  wire COLO = nor (NET02, ASUR);
+  wire DEFY = nand(NET01, ASUR);
+  wire CYKA = nor (NET02, ATYR);
+  wire CEPU = nand(NET01, ATYR);
+  wire AJAV = nor (NET02, ATOV);
+  wire BADU = nand(NET01, ATOV);
+  wire BEVO = nor (NET02, ATEM);
+  wire BYLA = nand(NET01, ATEM);
+  wire BOLA = nor (NET02, AMER);
+  wire BOTY = nand(NET01, AMER);
+  wire BAJO = nor (NET02, APOK);
+  wire BOKU = nand(NET01, APOK);
+  wire COTU = nor (NET02, ATOL);
+  wire CABA = nand(NET01, ATOL);
+  wire KOTY = nor (NET02, AMET);
+  wire KUPO = nand(NET01, AMET);
 
   A7_D = COLO;
   A7_A = DEFY;
@@ -293,22 +294,23 @@ void tick_extbus() {
   A0_A = KUPO;
 
   //----------
+  // bottom right
 
-  bool REDU = not(CPU_RD);
+  wire REDU = not(CPU_RD);
   RORU = mux2(REDU, MOTY, T1nT2);
   LULA = not(RORU);
 
-  bool ROGY = nor(RORU, D6);
-  bool RYDA = nor(RORU, D7);
-  bool RUNE = nor(RORU, D0);
-  bool RESY = nor(RORU, D4);
-  bool RYPU = nor(RORU, D1);
-  bool SULY = nor(RORU, D2);
-  bool SEZE = nor(RORU, D3);
-  bool TAMU = nor(RORU, D5);
+  wire ROGY = nor(RORU, D6);
+  wire RYDA = nor(RORU, D7);
+  wire RUNE = nor(RORU, D0);
+  wire RESY = nor(RORU, D4);
+  wire RYPU = nor(RORU, D1);
+  wire SULY = nor(RORU, D2);
+  wire SEZE = nor(RORU, D3);
+  wire TAMU = nor(RORU, D5);
 
   D6_D = ROGY;
-  D7_A = RYDA;
+  D7_D = RYDA; // was D7_A on schematic, probably a typo?
   D0_D = RUNE;
   D4_D = RESY;
   D1_D = RYPU;
@@ -317,12 +319,38 @@ void tick_extbus() {
   D5_D = TAMU;
 
   //----------
+  // DX_IN latch, bottom right
 
-  bool LAVO = nand(CPU_RAW_RD, TEXO, FROM_CPU5);
+  wire LAVO = nand(CPU_RAW_RD, TEXO, FROM_CPU5);
 
-  // the rest of this is bus muxes...
-  // A0-A7 tristate driven by external pins when NET01 is high? but a5 driven off a5_c?
-  // and A8-A14 but not A15?
+  wire SODY_Q = SODY.latch(D4_IN, LAVO);
+  wire SELO_Q = SELO.latch(D3_IN, LAVO);
+  wire RONY_Q = RONY.latch(D1_IN, LAVO);
+  wire SOMA_Q = SOMA.latch(D0_IN, LAVO);
+  wire RAXY_Q = RAXY.latch(D2_IN, LAVO);
+  wire RUPA_Q = RUPA.latch(D6_IN, LAVO);
+  wire SAGO_Q = SAGO.latch(D5_IN, LAVO);
+  wire SAZY_Q = SAZY.latch(D7_IN, LAVO); // schematic mislabeled PIN_D7
 
-  (void)LAVO;
+  // looks non-inverting?
+  wire TEPE = SODY_Q;
+  wire TAVO = SELO_Q;
+  wire RUVO = RONY_Q;
+  wire RYMA = SOMA_Q;
+  wire RYKO = RAXY_Q;
+  wire SEVU = RUPA_Q;
+  wire SAFO = SAGO_Q;
+  wire TAJU = SAZY_Q;
+
+  // why would you latch and buffer with the same signal?
+  if (LAVO) {
+    D4 = TEPE;
+    D3 = TAVO;
+    D1 = RUVO;
+    D0 = RYMA;
+    D2 = RYKO;
+    D6 = SEVU;
+    D5 = SAFO;
+    D7 = TAJU;
+  }
 }

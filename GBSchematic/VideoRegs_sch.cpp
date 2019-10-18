@@ -21,6 +21,8 @@ extern bool FF45;
 extern bool FF4A;
 extern bool FF4B;
 
+extern bool V0, V1, V2, V3, V4, V5, V6, V7;
+
 //----------
 // outputs
 

@@ -52,34 +52,54 @@ extern reg VYNO;
 extern reg VUJO;
 extern reg VYMU;
 
-bool D0_IN;
-bool D1_IN;
-bool D2_IN;
-bool D3_IN;
-bool D4_IN;
-bool D5_IN;
-bool D6_IN;
-bool D7_IN;
+extern bool MD_B;
+
+extern bool D0_A;
+extern bool D1_A;
+extern bool D2_A;
+extern bool D3_A;
+extern bool D4_A;
+extern bool D5_A;
+extern bool D6_A;
+extern bool D7_A;
+
+extern bool D0_IN;
+extern bool D1_IN;
+extern bool D2_IN;
+extern bool D3_IN;
+extern bool D4_IN;
+extern bool D5_IN;
+extern bool D6_IN;
+extern bool D7_IN;
 
 //----------
 // outputs
 
-bool MD0_A;
-bool MD3_A;
-bool MD4_A;
-bool MD7_A;
-bool MD6_A;
-bool MD1_A;
-bool MD5_A;
-bool MD2_A;
-
-bool MOE_D;
+bool MCS_A; // why are these in A/D pairs? is one OE?
 bool MCS_D;
-bool MCS_A;
 bool MOE_A;
+bool MOE_D;
 bool MWR_A;
 bool MWR_D;
-bool MD_B;
+
+// chip-to-vram data bus. what are the control signals?
+bool MD0;
+bool MD1;
+bool MD2;
+bool MD3;
+bool MD4;
+bool MD5;
+bool MD6;
+bool MD7;
+
+bool MD0_A;
+bool MD1_A;
+bool MD2_A;
+bool MD3_A;
+bool MD4_A;
+bool MD5_A;
+bool MD6_A;
+bool MD7_A;
 
 bool MD0_IN;
 bool MD1_IN;
@@ -100,16 +120,6 @@ bool MD6_OUT;
 bool MD7_OUT;
 
 // chip output
-bool MD0;
-bool MD1;
-bool MD2;
-bool MD3;
-bool MD4;
-bool MD5;
-bool MD6;
-bool MD7;
-
-// chip output
 bool MA0;
 bool MA1;
 bool MA2;
@@ -124,8 +134,8 @@ bool MA10;
 bool MA11;
 bool MA12;
 
-bool WUKO;
-bool COTA;
+bool WUKO; // controls something window
+bool COTA; // controls something sprite related
 
 //----------
 // registers
@@ -171,6 +181,7 @@ void tock_vram() {
   bool RAWA = not(SOHO);
 
   bool SYCY = not(NET02);
+  SOTO.flip(SYCY, 0);
 
   bool TUCA = and(SOSE, ABUZ);
   bool TUJA = and(SOSE, CPU_RD_SYNC);
@@ -228,6 +239,7 @@ void tock_vram() {
   bool RAHU = not(ROCY);
   bool ROFA = not(RENA);
 
+  // typo? this doesn't go anywhere
   MD_B = ROFA;
 
   bool RAKU = not(MD7_IN);
@@ -536,6 +548,4 @@ void tock_vram() {
     MA5 = SEZU;
     MA4 = VAPY;
   }
-
-  SOTO.flip(SYCY, 0);
 }

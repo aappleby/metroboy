@@ -170,9 +170,10 @@
     <ClCompile Include="Background_sch.cpp" />
     <ClCompile Include="BgPixelShifter_sch.cpp" />
     <ClCompile Include="ClocksReset_sch.cpp" />
+    <ClCompile Include="CpuPackage_sch.cpp" />
     <ClCompile Include="DMA_sch.cpp" />
     <ClCompile Include="ExtCpuBuses_sch.cpp" />
-    <ClCompile Include="GBSchematic.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Interrupts_sch.cpp" />
     <ClCompile Include="Joypad_sch.cpp" />
     <ClCompile Include="LcdControl_sch.cpp" />
@@ -195,6 +196,7 @@
     <ClCompile Include="WindowMap_sch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CpuPackage_sch.h" />
     <ClInclude Include="Schematics.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

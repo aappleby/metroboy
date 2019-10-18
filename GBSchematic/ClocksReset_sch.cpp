@@ -5,28 +5,24 @@
 //----------
 // inputs
 
-extern bool ABOL_1MHZ;
+extern bool RESET;
 extern bool T1nT2n;
 extern bool T1nT2;
+
+extern bool ABOL_1MHZ;
 extern bool FROM_CPU3;
 extern bool FROM_CPU4;
 extern bool CLKIN_A;
-extern bool RESET;
 extern bool FF04_FF07;
 extern bool TOLA_A1n;
 extern bool TOVY_A0n;
-extern bool RESET2;
 extern bool FF40_D7;
-extern bool RESET7;
 extern bool CLKIN_B;
 extern bool CYBO_4MHZ;
 extern bool APU_RESET;
 extern bool AJER_2MHZ;
-
 extern bool FF60_D1;
-
 extern bool FERO_Q;
-
 extern bool APU_RESET5n;
 
 //----------
@@ -54,6 +50,7 @@ bool CLK_16k;
 bool CLK_64k;
 bool CLK_256k;
 
+bool RESET7;
 bool RESET7n;
 bool RESET6;
 bool RESET8;

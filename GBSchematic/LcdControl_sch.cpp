@@ -29,6 +29,8 @@ extern reg NYPE;
 extern bool LYFE;
 extern bool FEPO;
 
+extern bool V0, V1, V2, V3, V4, V5, V6, V7;
+
 //----------
 // outputs
 
@@ -81,6 +83,7 @@ void tick_lcdcontrol() {
   bool RUTU_Q = RUTU.q();
   bool LOFU = not(RUTU_Q);
   
+  // FIXME why 7
   bool NERU = !(V7 || V6 || V5 || V4 || V3 || V2 || V1); // biiig nor
   bool MURE = not(MEDA_Q);
 

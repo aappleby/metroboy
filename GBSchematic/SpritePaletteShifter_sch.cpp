@@ -73,37 +73,37 @@ void tick_spritepaletteshifter() {
 
   bool GOMO_Q = GOMO.q();
 
-  bool SYPY = not(GOMO_Q);
-  bool TOTU = not(GOMO_Q);
-  bool NARO = not(GOMO_Q);
-  bool WEXY = not(GOMO_Q);
-  bool RYZY = not(GOMO_Q);
-  bool RYFE = not(GOMO_Q);
-  bool LADY = not(GOMO_Q);
-  bool LAFY = not(GOMO_Q);
+  bool SYPY = not(!GOMO_Q);
+  bool TOTU = not(!GOMO_Q);
+  bool NARO = not(!GOMO_Q);
+  bool WEXY = not(!GOMO_Q);
+  bool RYZY = not(!GOMO_Q);
+  bool RYFE = not(!GOMO_Q);
+  bool LADY = not(!GOMO_Q);
+  bool LAFY = not(!GOMO_Q);
 
-  bool PUME = nand(LESY, GOMO_Q);
+  bool PUME = nand(LESY, !GOMO_Q);
   bool SUCO = nand(LESY, SYPY);
 
-  bool SORO = nand(LOTA, GOMO_Q);
+  bool SORO = nand(LOTA, !GOMO_Q);
   bool TAFA = nand(LOTA, TOTU);
 
-  bool PAMO = nand(LYKU, GOMO_Q);
+  bool PAMO = nand(LYKU, !GOMO_Q);
   bool PYZY = nand(LYKU, NARO);
 
-  bool SUKY = nand(ROBY, GOMO_Q);
+  bool SUKY = nand(ROBY, !GOMO_Q);
   bool TOWA = nand(ROBY, WEXY);
 
-  bool RORA = nand(TYTA, GOMO_Q);
+  bool RORA = nand(TYTA, !GOMO_Q);
   bool RUDU = nand(TYTA, RYZY);
 
-  bool MENE = nand(TYCO, GOMO_Q);
+  bool MENE = nand(TYCO, !GOMO_Q);
   bool PAZO = nand(TYCO, RYFE);
 
-  bool LUKE = nand(SOKA, GOMO_Q);
+  bool LUKE = nand(SOKA, !GOMO_Q);
   bool LOWA = nand(SOKA, LADY);
 
-  bool LAMY = nand(XOVU, GOMO_Q);
+  bool LAMY = nand(XOVU, !GOMO_Q);
   bool LUNU = nand(XOVU, LAFY);
 
   bool RUGO_Q = RUGO.srtock(CLKPIPE, PUME, SUCO, P10_B);

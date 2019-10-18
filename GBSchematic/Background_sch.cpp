@@ -158,37 +158,37 @@ void tick_background() {
 
   bool DEPO_Q = DEPO.q();
 
-  bool XOGA = not(DEPO_Q);
-  bool XURA = not(DEPO_Q);
-  bool TAJO = not(DEPO_Q);
-  bool XENU = not(DEPO_Q);
-  bool XYKE = not(DEPO_Q);
-  bool XABA = not(DEPO_Q);
-  bool TAFU = not(DEPO_Q);
-  bool XUHO = not(DEPO_Q);
+  bool XOGA = not(!DEPO_Q);
+  bool XURA = not(!DEPO_Q);
+  bool TAJO = not(!DEPO_Q);
+  bool XENU = not(!DEPO_Q);
+  bool XYKE = not(!DEPO_Q);
+  bool XABA = not(!DEPO_Q);
+  bool TAFU = not(!DEPO_Q);
+  bool XUHO = not(!DEPO_Q);
 
-  bool TEDE = nand(DEPO_Q, LESY);
+  bool TEDE = nand(!DEPO_Q, LESY);
   bool WOKA = nand(XOGA, LESY);
 
-  bool XALA = nand(LOTA, DEPO_Q);
+  bool XALA = nand(LOTA, !DEPO_Q);
   bool WEDE = nand(LOTA, XURA);
 
-  bool TYRA = nand(DEPO_Q, LYKU);
+  bool TYRA = nand(!DEPO_Q, LYKU);
   bool TUFO = nand(TAJO, LYKU);
   
-  bool XYRU = nand(DEPO_Q, ROBY);
+  bool XYRU = nand(!DEPO_Q, ROBY);
   bool WEVO = nand(XENU, ROBY);
 
-  bool XUKU = nand(DEPO_Q, TYTA);
+  bool XUKU = nand(!DEPO_Q, TYTA);
   bool WEDY = nand(XYKE, TYTA);
   
-  bool XELY = nand(DEPO_Q, TYCO);
+  bool XELY = nand(!DEPO_Q, TYCO);
   bool WUJA = nand(TYCO, XABA);
 
-  bool TYKO = nand(DEPO_Q, SOKA);
+  bool TYKO = nand(!DEPO_Q, SOKA);
   bool TENA = nand(TAFU, SOKA);
 
-  bool TUWU = nand(DEPO_Q, XOVU);
+  bool TUWU = nand(!DEPO_Q, XOVU);
   bool WUBU = nand(XUHO, XOVU);
 
   //----------

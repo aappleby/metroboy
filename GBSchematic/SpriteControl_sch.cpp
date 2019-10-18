@@ -248,7 +248,7 @@ void tick_spritecontrol() {
   bool TYSO = or(SAKY, TEPA);
   TEXY = not(TYSO);
   bool BAXO_Q = BAXO.q();
-  XONO = and(BAXO_Q, TEXY);
+  XONO = and(!BAXO_Q, TEXY);
 
   TUVO = or(TEPA, TULY_Q, TESE_Q);
   bool TAME = nand(TESE_Q, TOXE_Q);
@@ -455,7 +455,7 @@ void tick_spritecontrol() {
   bool GEWY = not(WUHU_S);
 
   bool YZOS_Q = YZOS.q();
-  bool WUKY = not(YZOS_Q);
+  bool WUKY = not(!YZOS_Q);
   bool WAGO = xor(WUKY, WENU);
   bool CYVU = xor(WUKY, CUCU);
   bool BORE = xor(WUKY, WENU);

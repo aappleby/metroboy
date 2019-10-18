@@ -35,6 +35,84 @@ reg XANA,XYZE,XALO,XUKY,XUPO,XERU,XOVA,XUFU;
 // FF49 OBP1
 reg LUXO,LUGU,LOSE,LAWO,LEPU,LUNE,MOSA,MOXY;
 
+// FF40 LCDC
+reg XYLO,XAFO,XYMO,XONA,WYMO,WEXU,WOKY,VYXE;
+
+// FF42 SCY
+reg FEZU,FUNY,DEDE,FOTY,FOHA,FYMO,GAVE,FUJO;
+
+// FF43 SCX
+reg CYXU,BAKE,BEMY,CUZY,CABU,DUZU,DATY,GUBO;
+
+// FF45 LYC
+reg SOTA,SYRY,SALO,SEDY,VEVO,VAFA,VUCE,RAHA;
+
+// FF4A WY
+reg NAFU,MELA,NYRO,NAGA,NULO,NUKA,NENE,NESO;
+
+// FF4B WX
+reg MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE;
+
+// FF40 LCDC
+bool FF40_D0;
+bool FF40_D1;
+bool FF40_D2;
+bool FF40_D3;
+bool FF40_D4;
+bool FF40_D5;
+bool FF40_D6;
+bool FF40_D7;
+
+// FF42 SCY
+bool FF42_D0;
+bool FF42_D1;
+bool FF42_D2;
+bool FF42_D3;
+bool FF42_D4;
+bool FF42_D5;
+bool FF42_D6;
+bool FF42_D7;
+
+// FF43 SCX
+bool FF43_D0;
+bool FF43_D1;
+bool FF43_D2;
+bool FF43_D3;
+bool FF43_D4;
+bool FF43_D5;
+bool FF43_D6;
+bool FF43_D7;
+
+// FF45 LYC
+bool FF45_D0;
+bool FF45_D1;
+bool FF45_D2;
+bool FF45_D3;
+bool FF45_D4;
+bool FF45_D5;
+bool FF45_D6;
+bool FF45_D7;
+
+// FF4A WY
+bool FF4A_D0;
+bool FF4A_D1;
+bool FF4A_D2;
+bool FF4A_D3;
+bool FF4A_D4;
+bool FF4A_D5;
+bool FF4A_D6;
+bool FF4A_D7;
+
+// FF4B WX
+bool FF4B_D0;
+bool FF4B_D1;
+bool FF4B_D2;
+bool FF4B_D3;
+bool FF4B_D4;
+bool FF4B_D5;
+bool FF4B_D6;
+bool FF4B_D7;
+
 bool BGPIXELn;
 
 bool OBP0PIXELn;

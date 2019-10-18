@@ -36,6 +36,87 @@ extern reg XANA,XYZE,XALO,XUKY,XUPO,XERU,XOVA,XUFU;
 // FF49 OBP1
 extern reg LUXO,LUGU,LOSE,LAWO,LEPU,LUNE,MOSA,MOXY;
 
+// FF40 LCDC
+extern reg XYLO,XAFO,XYMO,XONA,WYMO,WEXU,WOKY,VYXE;
+
+// FF42 SCY
+extern reg FEZU,FUNY,DEDE,FOTY,FOHA,FYMO,GAVE,FUJO;
+
+// FF43 SCX
+extern reg CYXU,BAKE,BEMY,CUZY,CABU,DUZU,DATY,GUBO;
+
+// FF45 LYC
+extern reg SOTA,SYRY,SALO,SEDY,VEVO,VAFA,VUCE,RAHA;
+
+// FF4A WY
+extern reg NAFU,MELA,NYRO,NAGA,NULO,NUKA,NENE,NESO;
+
+// FF4B WX
+extern reg MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE;
+
+
+// FF40 LCDC
+extern bool FF40_D0;
+extern bool FF40_D1;
+extern bool FF40_D2;
+extern bool FF40_D3;
+extern bool FF40_D4;
+extern bool FF40_D5;
+extern bool FF40_D6;
+extern bool FF40_D7;
+
+// FF42 SCY
+extern bool FF42_D0;
+extern bool FF42_D1;
+extern bool FF42_D2;
+extern bool FF42_D3;
+extern bool FF42_D4;
+extern bool FF42_D5;
+extern bool FF42_D6;
+extern bool FF42_D7;
+
+// FF43 SCX
+extern bool FF43_D0;
+extern bool FF43_D1;
+extern bool FF43_D2;
+extern bool FF43_D3;
+extern bool FF43_D4;
+extern bool FF43_D5;
+extern bool FF43_D6;
+extern bool FF43_D7;
+
+// FF45 LYC
+extern bool FF45_D0;
+extern bool FF45_D1;
+extern bool FF45_D2;
+extern bool FF45_D3;
+extern bool FF45_D4;
+extern bool FF45_D5;
+extern bool FF45_D6;
+extern bool FF45_D7;
+
+// FF4A WY
+extern bool FF4A_D0;
+extern bool FF4A_D1;
+extern bool FF4A_D2;
+extern bool FF4A_D3;
+extern bool FF4A_D4;
+extern bool FF4A_D5;
+extern bool FF4A_D6;
+extern bool FF4A_D7;
+
+// FF4B WX
+extern bool FF4B_D0;
+extern bool FF4B_D1;
+extern bool FF4B_D2;
+extern bool FF4B_D3;
+extern bool FF4B_D4;
+extern bool FF4B_D5;
+extern bool FF4B_D6;
+extern bool FF4B_D7;
+
+
+
 extern bool BGPIXELn;
 
 extern bool OBP0PIXELn;

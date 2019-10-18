@@ -6,14 +6,14 @@
 #include "DmaBus.h"
 #include "VramBus.h"
 #include "OamBus.h"
-#include "VideoRegs_sch.h"
+#include "PpuRegs.h"
+#include "Clocks.h"
 
 //----------
 // inputs
 
 extern bool CPU_WR2;
 extern bool CPU_RD2;
-extern bool RESET7n;
 extern bool MOPA_PHI;
 extern bool VRAM_TO_OAM;
 
@@ -57,9 +57,6 @@ bool WUME;
 bool WEWU;
 bool FETO;
 bool LEKO;
-
-bool CLK3; // sprites use this clock
-bool RESET_VIDEO2n;
 
 //----------
 // registers

@@ -143,6 +143,7 @@ void tick_background() {
 
   //----------
   // some shift register connected to VAVA3?
+  // this is the "draw background here" shift register, it should probably move to pixelmux
 
   bool DEPO_Q = DEPO.q();
 
@@ -156,27 +157,21 @@ void tick_background() {
   bool XUHO = not(!DEPO_Q);
 
   bool TEDE = nand(!DEPO_Q, LESY);
-  bool WOKA = nand(XOGA, LESY);
-
-  bool XALA = nand(LOTA, !DEPO_Q);
-  bool WEDE = nand(LOTA, XURA);
-
+  bool XALA = nand(!DEPO_Q, LOTA);
   bool TYRA = nand(!DEPO_Q, LYKU);
-  bool TUFO = nand(TAJO, LYKU);
-  
   bool XYRU = nand(!DEPO_Q, ROBY);
-  bool WEVO = nand(XENU, ROBY);
-
   bool XUKU = nand(!DEPO_Q, TYTA);
-  bool WEDY = nand(XYKE, TYTA);
-  
   bool XELY = nand(!DEPO_Q, TYCO);
-  bool WUJA = nand(TYCO, XABA);
-
   bool TYKO = nand(!DEPO_Q, SOKA);
-  bool TENA = nand(TAFU, SOKA);
-
   bool TUWU = nand(!DEPO_Q, XOVU);
+
+  bool WOKA = nand(XOGA, LESY);
+  bool WEDE = nand(LOTA, XURA);
+  bool TUFO = nand(TAJO, LYKU);
+  bool WEVO = nand(XENU, ROBY);
+  bool WEDY = nand(XYKE, TYTA);
+  bool WUJA = nand(TYCO, XABA);
+  bool TENA = nand(TAFU, SOKA);
   bool WUBU = nand(XUHO, XOVU);
 
   //----------

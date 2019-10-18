@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClCompile Include="Background_sch.cpp" />
     <ClCompile Include="BgPixelShifter_sch.cpp" />
+    <ClCompile Include="Clocks.cpp" />
     <ClCompile Include="ClocksReset_sch.cpp" />
     <ClCompile Include="CpuBus.cpp" />
     <ClCompile Include="ExtBus.cpp" />

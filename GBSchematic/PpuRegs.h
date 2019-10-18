@@ -1,59 +1,20 @@
 #pragma once
 #include "Schematics.h"
 
+extern bool RESET_VIDEO;
 extern bool CLKPIPE;
+extern bool BGPIXELn;
+extern bool OBP0PIXELn;
+extern bool OBP1PIXELn;
 
 // screen y coordinate
-extern bool V0, V1, V2, V3, V4, V5, V6, V7;
+extern bool V0,V1,V2,V3,V4,V5,V6,V7;
 
 // screen x coordinate
-extern bool ACAM, AZUB, AMEL, AHAL, APUX, ABEF, ADAZ, ASAH;
+extern bool ACAM,AZUB,AMEL,AHAL,APUX,ABEF,ADAZ,ASAH;
 
-// sprite pixels
-extern bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU; 
-
-// background pixel pipe?
-extern reg VEZO, WURU, VOSA, WYFU, XETE, WODA, VUMO, VAVA;
-
-// tile reg?
-extern reg RAWU, POZO, PYZO, POXA, PULO, POJU, POWY, PYJU;
-
-// tile latch?
-extern reg LEGU, NUDU, MUKU, LUZO, MEGU, MYJY, NASA, NEFO;
-
-// bg_pix_b
-extern reg TOMY, TACA, SADY, RYSA, SOBO, SETU, RALU, SOHU;
-
-// bg_pix_a
-extern reg MYDE, NOZO, MOJU, MACU, NEPO, MODU, NEDA, PYBO;
-
-// FF47 BGP
-extern reg MENA,MORU,MAXY,NUSY,MOGY,MUKE,PYLU,PAVO;
-
-// FF48 OBP0
-extern reg XANA,XYZE,XALO,XUKY,XUPO,XERU,XOVA,XUFU;
-
-// FF49 OBP1
-extern reg LUXO,LUGU,LOSE,LAWO,LEPU,LUNE,MOSA,MOXY;
-
-// FF40 LCDC
-extern reg XYLO,XAFO,XYMO,XONA,WYMO,WEXU,WOKY,VYXE;
-
-// FF42 SCY
-extern reg FEZU,FUNY,DEDE,FOTY,FOHA,FYMO,GAVE,FUJO;
-
-// FF43 SCX
-extern reg CYXU,BAKE,BEMY,CUZY,CABU,DUZU,DATY,GUBO;
-
-// FF45 LYC
-extern reg SOTA,SYRY,SALO,SEDY,VEVO,VAFA,VUCE,RAHA;
-
-// FF4A WY
-extern reg NAFU,MELA,NYRO,NAGA,NULO,NUKA,NENE,NESO;
-
-// FF4B WX
-extern reg MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE;
-
+// true where sprite pixel != 0
+extern bool LESY,LOTA,LYKU,ROBY,TYTA,TYCO,SOKA,XOVU; 
 
 // FF40 LCDC
 extern bool FF40_D0;
@@ -114,13 +75,6 @@ extern bool FF4B_D4;
 extern bool FF4B_D5;
 extern bool FF4B_D6;
 extern bool FF4B_D7;
-
-
-
-extern bool BGPIXELn;
-
-extern bool OBP0PIXELn;
-extern bool OBP1PIXELn;
 
 extern bool SPR_PIX_A_0;
 extern bool SPR_PIX_A_1;
@@ -184,3 +138,55 @@ extern bool OBP1_D4;
 extern bool OBP1_D5;
 extern bool OBP1_D6;
 extern bool OBP1_D7;
+
+//-----------------------------------------------------------------------------
+// actual regs
+
+// x counter
+extern reg XEHO,SAVY,XODU,XYDO,TUHU,TUKY,TAKO,SYBE; 
+
+// y counter
+extern reg MUWY,MYRO,LEXA,LYDO,LOVU,LEMA,MATO,LAFO; 
+
+// background pixel pipe?
+extern reg VEZO,WURU,VOSA,WYFU,XETE,WODA,VUMO,VAVA;
+
+// tile reg?
+extern reg RAWU,POZO,PYZO,POXA,PULO,POJU,POWY,PYJU;
+
+// tile latch?
+extern reg LEGU,NUDU,MUKU,LUZO,MEGU,MYJY,NASA,NEFO;
+
+// bg_pix_b
+extern reg TOMY,TACA,SADY,RYSA,SOBO,SETU,RALU,SOHU;
+
+// bg_pix_a
+extern reg MYDE,NOZO,MOJU,MACU,NEPO,MODU,NEDA,PYBO;
+
+// FF47 BGP
+extern reg MENA,MORU,MAXY,NUSY,MOGY,MUKE,PYLU,PAVO;
+
+// FF48 OBP0
+extern reg XANA,XYZE,XALO,XUKY,XUPO,XERU,XOVA,XUFU;
+
+// FF49 OBP1
+extern reg LUXO,LUGU,LOSE,LAWO,LEPU,LUNE,MOSA,MOXY;
+
+// FF40 LCDC
+extern reg XYLO,XAFO,XYMO,XONA,WYMO,WEXU,WOKY,VYXE;
+
+// FF42 SCY
+extern reg FEZU,FUNY,DEDE,FOTY,FOHA,FYMO,GAVE,FUJO;
+
+// FF43 SCX
+extern reg CYXU,BAKE,BEMY,CUZY,CABU,DUZU,DATY,GUBO;
+
+// FF45 LYC
+extern reg SOTA,SYRY,SALO,SEDY,VEVO,VAFA,VUCE,RAHA;
+
+// FF4A WY
+extern reg NAFU,MELA,NYRO,NAGA,NULO,NUKA,NENE,NESO;
+
+// FF4B WX
+extern reg MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE;
+

@@ -5,7 +5,7 @@
 #include "VramBus.h"
 #include "OamBus.h"
 #include "ExtBus.h"
-#include "VideoRegs_sch.h"
+#include "PpuRegs.h"
 
 //----------
 // inputs

@@ -5,16 +5,13 @@
 #include "ExtBus.h"
 #include "MemBus.h"
 #include "VramBus.h"
-#include "VideoRegs_sch.h"
+#include "PpuRegs.h"
+#include "Clocks.h"
 
 //----------
 // inputs
 
 extern bool RESET_VIDEO2n;
-
-extern bool CLK1;
-extern bool CLK2;
-extern bool CLK3;
 
 extern bool VYPO;
 extern bool AZYB;

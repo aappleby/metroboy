@@ -4,7 +4,6 @@
 #include "CpuBus.h"
 #include "ExtBus.h"
 #include "MemBus.h"
-#include "VideoRegs_sch.h"
 #include "PpuRegs.h"
 
 //----------
@@ -77,9 +76,6 @@ reg RUFO;
 reg ROXE;
 
 reg MYTA;
-
-reg XEHO, SAVY, XODU, XYDO, TUHU, TUKY, TAKO, SYBE; // x counter
-reg MUWY, MYRO, LEXA, LYDO, LOVU, LEMA, MATO, LAFO; // y counter
 
 //-----------------------------------------------------------------------------
 

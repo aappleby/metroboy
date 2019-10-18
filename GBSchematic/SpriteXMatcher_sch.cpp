@@ -2,7 +2,7 @@
 
 #include "Schematics.h"
 #include "OamBus.h"
-#include "VideoRegs_sch.h"
+#include "PpuRegs.h"
 #include "MemBus.h"
 
 //----------
@@ -14,10 +14,10 @@ extern bool COTA;
 extern bool WEWU;
 
 // sprite resets
-extern bool DYNA, WUPA, GAFY, ASYS, ZAPE, WUNU, WUZO, DOSY, EJAD, CACU;
+extern bool DYNA,WUPA,GAFY,ASYS,ZAPE,WUNU,WUZO,DOSY,EJAD,CACU;
 
 // sprite clocks
-extern bool FUXU, YFAG, GECY, DOKU, XAHO, WOFO, CEXU, WEME, CYLA, GAMY;
+extern bool FUXU,YFAG,GECY,DOKU,XAHO,WOFO,CEXU,WEME,CYLA,GAMY;
 
 //----------
 // outputs

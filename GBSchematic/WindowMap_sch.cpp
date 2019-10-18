@@ -1,7 +1,7 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
-#include "VideoRegs_sch.h"
+#include "PpuRegs.h"
 #include "VramBus.h"
 
 //----------
@@ -261,49 +261,52 @@ void tick_windowmap() {
   //----------
   // address output bus
 
-  wire VYNO_Q = VYNO.flip(   WAZY, SYNY);
-  wire VUJO_Q = VUJO.flip(!VYNO_Q, SYNY);
-  wire VYMU_Q = VYMU.flip(!VUJO_Q, SYNY);
-  wire TUFU_Q = TUFU.flip(!VYMU_Q, SYNY);
-  wire TAXA_Q = TAXA.flip(!TUFU_Q, SYNY);
-  wire TOZO_Q = TOZO.flip(!TAXA_Q, SYNY);
-  wire TATE_Q = TATE.flip(!TOZO_Q, SYNY);
-  wire TEKE_Q = TEKE.flip(!TATE_Q, SYNY);
-
   wire WYKA_Q = WYKA.flip(   VETU, XACO);
   wire WODY_Q = WODY.flip(!WYKA_Q, XACO);
   wire WOBO_Q = WOBO.flip(!WODY_Q, XACO);
   wire WYKO_Q = WYKO.flip(!WOBO_Q, XACO);
   wire XOLO_Q = XOLO.flip(!WYKO_Q, XACO);
 
-  wire VEVY = not(FF40_D6);
-  wire VOGU = not(VYPO);
-  wire VEZA = not(VYPO);
-  wire VYTO = not(TUFU_Q);
-  wire VEHA = not(TAXA_Q);
-  wire VACE = not(TOZO_Q);
-  wire VOVO = not(TATE_Q);
-  wire VULO = not(TEKE_Q);
+  wire VYNO_Q = VYNO.flip(   WAZY, SYNY);
+  wire VUJO_Q = VUJO.flip(!VYNO_Q, SYNY);
+  wire VYMU_Q = VYMU.flip(!VUJO_Q, SYNY);
+
+  wire TUFU_Q = TUFU.flip(!VYMU_Q, SYNY);
+  wire TAXA_Q = TAXA.flip(!TUFU_Q, SYNY);
+  wire TOZO_Q = TOZO.flip(!TAXA_Q, SYNY);
+  wire TATE_Q = TATE.flip(!TOZO_Q, SYNY);
+  wire TEKE_Q = TEKE.flip(!TATE_Q, SYNY);
+  
   wire XEJA = not(WYKA_Q);
   wire XAMO = not(WODY_Q);
   wire XAHE = not(WOBO_Q);
   wire XULO = not(WYKO_Q);
   wire WUJU = not(XOLO_Q);
 
+  wire VYTO = not(TUFU_Q);
+  wire VEHA = not(TAXA_Q);
+  wire VACE = not(TOZO_Q);
+  wire VOVO = not(TATE_Q);
+  wire VULO = not(TEKE_Q);
+
+  wire VEVY = not(FF40_D6);
+  wire VEZA = not(VYPO);
+  wire VOGU = not(VYPO);
+
   if (WUKO) {
-    MA10 = VEVY;
-    MA12 = VOGU;
-    MA11 = VEZA;
-    MA5 = VYTO;
-    MA6 = VEHA;
-    MA7 = VACE;
-    MA8 = VOVO;
-    MA9 = VULO;
     MA0 = XEJA;
     MA1 = XAMO;
     MA2 = XAHE;
     MA3 = XULO;
     MA4 = WUJU;
+    MA5 = VYTO;
+    MA6 = VEHA;
+    MA7 = VACE;
+    MA8 = VOVO;
+    MA9 = VULO;
+    MA10 = VEVY;
+    MA11 = VEZA;
+    MA12 = VOGU;
   }
   
   //----------

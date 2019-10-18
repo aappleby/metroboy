@@ -4,7 +4,8 @@
 #include "CpuBus.h"
 #include "MemBus.h"
 #include "ExtBus.h"
-#include "VideoRegs_sch.h"
+#include "PpuRegs.h"
+#include "Clocks.h"
 
 //----------
 // inputs
@@ -31,33 +32,6 @@ bool PHI_OUT;
 bool PHI_OUTn; // same as PHI_N?
 bool PHIn;
 bool CPU_RD_SYNC;
-bool BOGA1MHZ;
-bool TO_CPU;
-bool RESET2;
-bool RESET_DIVn;
-bool CLKIN_An;
-bool RESET_VIDEO;
-
-bool CLK1;
-bool CLK2;
-bool CERY_2MHZ;
-bool BAVU_1MHZ;
-bool JESO_512K;
-bool HAMA_512Kn;
-
-bool CLK_16k;
-bool CLK_64k;
-bool CLK_256k;
-
-bool RESET7;
-bool RESET7n;
-bool RESET6;
-bool RESET8;
-bool RESET9;
-
-bool HORU_512;
-bool BUFY_256;
-bool BYFE_128;
 
 bool FF04_D0n;
 bool FF04_D1n;

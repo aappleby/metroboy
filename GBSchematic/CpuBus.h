@@ -21,4 +21,5 @@ extern bool INT_TIMER;
 extern bool INT_JP;
 extern bool INT_SERIAL;
 
+extern bool TO_CPU;
 extern bool TO_CPU2;

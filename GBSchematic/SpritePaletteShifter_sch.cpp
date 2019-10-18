@@ -35,8 +35,7 @@ extern bool SPR_PIX_B_7;
 bool OBP0PIXELn;
 bool OBP1PIXELn;
 
-// sprite pixels
-bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU;
+bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU; // sprite pixels
 
 //----------
 // registers

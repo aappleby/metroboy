@@ -20,7 +20,7 @@ extern reg XEHO, SAVY, XODU, XYDO, TUHU, TUKY, TAKO, SYBE; // x counter
 
 extern reg DEPO;
 
-extern bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU;
+extern bool LESY, LOTA, LYKU, ROBY, TYTA, TYCO, SOKA, XOVU; // sprite pixels
 
 extern bool CLKPIPE;
 

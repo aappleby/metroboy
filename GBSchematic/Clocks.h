@@ -1,5 +1,9 @@
 #pragma once
 
+extern bool RESET_VIDEO;
+extern bool RESET_VIDEOn;
+extern bool CLKPIPE;
+
 extern bool CLK1;
 extern bool CLK2;
 extern bool CLK3; // sprites use this clock
@@ -30,3 +34,12 @@ extern bool RESET9;
 extern bool HORU_512;
 extern bool BUFY_256;
 extern bool BYFE_128;
+
+extern bool APU_RESET;
+extern bool APU_RESET5n;
+
+
+extern bool ABOL_1MHZ;
+extern bool AJER_2MHZ;
+extern bool CYBO_4MHZ;
+

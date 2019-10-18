@@ -1,11 +1,5 @@
 #include "MemBus.h"
 
-bool CPU_RD;
-bool CPU_RD2;
-
-bool CPU_WR;
-bool CPU_WR2;
-
 bool A0;
 bool A1;
 bool A2;
@@ -31,3 +25,7 @@ bool D4;
 bool D5;
 bool D6;
 bool D7;
+
+bool TOVY_A0n;
+bool TOLA_A1n;
+

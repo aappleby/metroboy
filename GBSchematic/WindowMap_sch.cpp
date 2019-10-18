@@ -1,6 +1,7 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "Clocks.h"
 #include "PpuRegs.h"
 #include "VramBus.h"
 
@@ -27,7 +28,7 @@ extern bool ATEJ;
 extern bool SEGU;
 extern bool CLK2;
 
-extern bool INT_VBL;
+extern bool INT_VBL; // this is the one that feeds INT_STAT
 
 // pixel x
 extern reg XEHO;
@@ -42,7 +43,6 @@ extern reg SYBE;
 //----------
 // outputs
 
-bool RESET_VIDEOn;
 bool MOFU;
 bool NYDY;
 bool NYXU;

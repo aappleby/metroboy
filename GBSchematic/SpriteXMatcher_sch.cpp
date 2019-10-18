@@ -4,11 +4,10 @@
 #include "OamBus.h"
 #include "PpuRegs.h"
 #include "MemBus.h"
+#include "Clocks.h"
 
 //----------
 // inputs
-
-extern bool CLK3;
 
 extern bool COTA;
 extern bool WEWU;

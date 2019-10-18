@@ -1,28 +1,18 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "AddressDecoder.h"
 #include "MemBus.h"
 #include "CpuBus.h"
+#include "Clocks.h"
 
 //----------
 // inputs
 
-extern bool CLK_16k;
-extern bool CLK_64k;
-extern bool CLK_256k;
-extern bool BOGA1MHZ;
-
 extern bool FF04_D1n;
-extern bool A00_07;
-extern bool FFXX;
-extern bool TOLA_A1n;
-
-extern bool RESET2;
 
 //----------
 // outputs
-
-bool TOVY_A0n;
 
 //----------
 // registers FIXME reg
@@ -60,7 +50,7 @@ bool TYVA_Q;
 
 void tick_timer() {
   bool RYFO = and(A2, A00_07, FFXX);
-  bool FF04_FF07 = RYFO;
+  FF04_FF07 = RYFO;
   bool TOPE = nand(A0, TOLA_A1n, CPU_WR, FF04_FF07);
 
   //----------

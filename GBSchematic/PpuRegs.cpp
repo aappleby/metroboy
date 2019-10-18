@@ -1,7 +1,5 @@
 #include "PpuRegs.h"
 
-bool RESET_VIDEO;
-bool CLKPIPE;
 bool BGPIXELn;
 bool OBP0PIXELn;
 bool OBP1PIXELn;

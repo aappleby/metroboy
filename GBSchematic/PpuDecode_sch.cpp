@@ -1,17 +1,14 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "AddressDecoder.h"
 #include "MemBus.h"
 
 //----------
 // inputs
 
-extern bool FFXX;
-
 //----------
 // outputs
-
-bool FF40, FF41, FF42, FF43, FF44, FF45, FF46, FF47, FF48, FF49, FF4A, FF4B;
 
 //----------
 // registers

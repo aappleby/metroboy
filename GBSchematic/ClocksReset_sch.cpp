@@ -6,15 +6,10 @@
 #include "ExtBus.h"
 #include "PpuRegs.h"
 #include "Clocks.h"
+#include "AddressDecoder.h"
 
 //----------
 // inputs
-
-extern bool ABOL_1MHZ;
-extern bool AJER_2MHZ;
-extern bool CYBO_4MHZ;
-
-extern bool FF04_FF07;
 
 extern bool TOLA_A1n;
 extern bool TOVY_A0n;
@@ -22,16 +17,12 @@ extern bool TOVY_A0n;
 extern bool FF60_D1;
 extern bool FERO_Q;
 
-extern bool APU_RESET;
-extern bool APU_RESET5n;
-
 //----------
 // outputs
 
 bool PHI_OUT;
 bool PHI_OUTn; // same as PHI_N?
 bool PHIn;
-bool CPU_RD_SYNC;
 
 bool FF04_D0n;
 bool FF04_D1n;

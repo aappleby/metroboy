@@ -6,15 +6,12 @@
 #include "DmaBus.h"
 #include "OamBus.h"
 #include "CpuBus.h"
+#include "AddressDecoder.h"
+#include "Clocks.h"
 
 //----------
 // inputs
 
-extern bool CLK1;
-extern bool RESET6;
-extern bool FF46;
-extern bool CPU_RD2;
-extern bool CPU_WR2;
 extern bool PHI_OUTn;
 extern bool AMAB; // from oam
 

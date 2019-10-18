@@ -1,24 +1,19 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "AddressDecoder.h"
 #include "MemBus.h"
 #include "CpuBus.h"
 #include "ExtBus.h"
+#include "Clocks.h"
 
 //----------
 // inputs
-
-extern bool TOVY_A0n;
-extern bool RESET2;
-extern bool CLK_16k;
-extern bool FFXX;
-extern bool TOLA_A1n;
 
 //----------
 // outputs
 
 bool SER_TICKn;
-bool A00_07;
 
 // probably mislabeled CUBA_Q?
 bool CUBA1;

@@ -1,11 +1,5 @@
 #pragma once
 
-extern bool CPU_RD;
-extern bool CPU_RD2;
-
-extern bool CPU_WR;
-extern bool CPU_WR2;
-
 extern bool A0;
 extern bool A1;
 extern bool A2;
@@ -31,3 +25,7 @@ extern bool D4;
 extern bool D5;
 extern bool D6;
 extern bool D7;
+
+extern bool TOVY_A0n;
+extern bool TOLA_A1n;
+

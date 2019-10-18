@@ -11,8 +11,6 @@
 //----------
 // inputs
 
-extern bool RESET_VIDEO2n;
-
 extern bool VYPO;
 extern bool AZYB;
 

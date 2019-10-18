@@ -5,6 +5,7 @@
 #include "ExtBus.h"
 #include "MemBus.h"
 #include "DmaBus.h"
+#include "AddressDecoder.h"
 
 //----------
 // inputs
@@ -12,14 +13,10 @@
 extern bool ABUZ; // from clocksreset
 extern bool LUMA; // from dma?
 
-extern bool FEXXFFXXn;
-extern bool CPU_RD_SYNC; // not directly from cpu
 extern bool A15_C; // ?
 
 //----------
 // outputs
-
-bool TOLA_A1n;
 
 bool LULA;
 bool RORU;

@@ -1,8 +1,6 @@
 #pragma once
 #include "Schematics.h"
 
-extern bool RESET_VIDEO;
-extern bool CLKPIPE;
 extern bool BGPIXELn;
 extern bool OBP0PIXELn;
 extern bool OBP1PIXELn;

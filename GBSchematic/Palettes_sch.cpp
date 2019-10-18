@@ -1,17 +1,13 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "AddressDecoder.h"
 #include "MemBus.h"
 #include "PpuRegs.h"
+#include "CpuBus.h"
 
 //----------
 // inputs
-
-extern bool CPU_RD2;
-extern bool CPU_WR2;
-extern bool FF47;
-extern bool FF48;
-extern bool FF49;
 
 //----------
 // outputs

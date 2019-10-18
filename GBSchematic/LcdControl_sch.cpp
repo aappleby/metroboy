@@ -4,11 +4,10 @@
 #include "VideoRegs_sch.h"
 #include "ExtBus.h"
 #include "PpuRegs.h"
+#include "Clocks.h"
 
 //----------
 // inputs
-
-extern bool CLK2;
 
 extern bool NAPO_OUT;
 extern bool FF04_D0n;

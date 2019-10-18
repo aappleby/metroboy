@@ -8,12 +8,11 @@
 #include "OamBus.h"
 #include "PpuRegs.h"
 #include "Clocks.h"
+#include "CpuBus.h"
 
 //----------
 // inputs
 
-extern bool CPU_WR2;
-extern bool CPU_RD2;
 extern bool MOPA_PHI;
 extern bool VRAM_TO_OAM;
 

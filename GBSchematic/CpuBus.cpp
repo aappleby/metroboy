@@ -1,5 +1,11 @@
 #include "CpuBus.h"
 
+bool CPU_RD;
+bool CPU_RD2;
+
+bool CPU_WR;
+bool CPU_WR2;
+
 bool CPU_WR_RAW;
 bool CPU_RAW_RD;
 bool CPU_WR_WAT;
@@ -23,3 +29,5 @@ bool INT_SERIAL;
 
 bool TO_CPU;
 bool TO_CPU2;
+
+bool CPU_RD_SYNC;

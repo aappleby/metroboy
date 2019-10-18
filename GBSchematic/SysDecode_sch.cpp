@@ -1,20 +1,20 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "AddressDecoder.h"
 #include "CpuBus.h"
 #include "MemBus.h"
 #include "ExtBus.h"
+#include "Clocks.h"
 
 //----------
 // inputs
 
 extern bool BEDO;
-extern bool RESET2;
 
 extern bool ANAP;
 
-extern bool WR_IN;
-extern bool CPU_RD_SYNC;
+extern bool WR_IN; // debug mode related
 extern bool RD_B; // it's an input that feeds into SysDecode and has something to do with a debug mode
 
 //----------
@@ -23,15 +23,10 @@ extern bool RD_B; // it's an input that feeds into SysDecode and has something t
 bool BOOT_CS; // output enables boot rom bus override?
 bool HRAM_CS; // output enables hram bus override?
 
-bool FF0F_RD;
-bool FF0F_WR;
 
 bool FF60_D0;
 bool FF60_D1;
 
-bool FEXXFFXXn;
-bool FFXX;
-bool FFXXn;
 bool SARO;
 
 // all output only

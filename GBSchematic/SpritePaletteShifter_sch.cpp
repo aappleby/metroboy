@@ -1,6 +1,7 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "Clocks.h"
 #include "ExtBus.h"
 #include "PpuRegs.h"
 
@@ -9,7 +10,6 @@
 
 extern bool XEFY;
 extern reg GOMO;
-extern bool CLKPIPE;
 
 //----------
 // outputs

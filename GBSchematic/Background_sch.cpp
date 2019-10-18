@@ -1,6 +1,7 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "Clocks.h"
 #include "VramBus.h"
 #include "VideoRegs_sch.h"
 #include "PpuRegs.h"

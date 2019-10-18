@@ -1,11 +1,15 @@
 #include "Clocks.h"
 
+bool RESET_VIDEO;
+bool CLKPIPE;
+
 bool CLK1;
 bool CLK2;
 bool CLK3; // sprites use this clock
 
 bool RESET7n;
 bool RESET_VIDEO2n;
+bool RESET_VIDEOn;
 
 bool BOGA1MHZ;
 bool RESET2;

@@ -1,6 +1,7 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "Clocks.h"
 #include "CpuBus.h"
 #include "ExtBus.h"
 #include "MemBus.h"
@@ -9,8 +10,6 @@
 //----------
 // inputs
 
-extern bool CPU_RD2;
-extern bool CPU_WR2;
 extern bool FF41;
 extern bool CLK2;
 

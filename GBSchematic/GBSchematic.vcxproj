@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AddressDecoder.cpp" />
     <ClCompile Include="Background_sch.cpp" />
     <ClCompile Include="BgPixelShifter_sch.cpp" />
     <ClCompile Include="Clocks.cpp" />
@@ -204,6 +205,7 @@
     <ClCompile Include="WindowMap_sch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AddressDecoder.h" />
     <ClInclude Include="Clocks.h" />
     <ClInclude Include="CpuBus.h" />
     <ClInclude Include="ExtBus.h" />

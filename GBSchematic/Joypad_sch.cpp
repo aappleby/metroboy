@@ -1,16 +1,15 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "AddressDecoder.h"
 #include "MemBus.h"
 #include "ExtBus.h"
+#include "Clocks.h"
+#include "CpuBus.h"
 
 //----------
 // inputs
 
-extern bool RESET2;
-extern bool FF00WR;
-extern bool FF00RD;
-extern bool FROM_CPU;
 extern bool FF60_D0;
 extern bool SER_OUT;
 extern bool BEDO;

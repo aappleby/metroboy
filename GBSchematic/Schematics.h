@@ -168,42 +168,6 @@ extern bool D5_A;
 extern bool D6_A;
 extern bool D7_A;
 
-extern bool D0_IN;
-extern bool D1_IN;
-extern bool D2_IN;
-extern bool D3_IN;
-extern bool D4_IN;
-extern bool D5_IN;
-extern bool D6_IN;
-extern bool D7_IN;
-
-extern bool MD0_A;
-extern bool MD3_A;
-extern bool MD4_A;
-extern bool MD7_A;
-extern bool MD6_A;
-extern bool MD1_A;
-extern bool MD5_A;
-extern bool MD2_A;
-
-extern bool MD0_IN;
-extern bool MD1_IN;
-extern bool MD2_IN;
-extern bool MD3_IN;
-extern bool MD4_IN;
-extern bool MD5_IN;
-extern bool MD6_IN;
-extern bool MD7_IN;
-
-extern bool MD0_OUT;
-extern bool MD1_OUT;
-extern bool MD2_OUT;
-extern bool MD3_OUT;
-extern bool MD4_OUT;
-extern bool MD5_OUT;
-extern bool MD6_OUT;
-extern bool MD7_OUT;
-
 extern bool MD0;
 extern bool MD1;
 extern bool MD2;

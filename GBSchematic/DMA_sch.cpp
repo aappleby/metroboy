@@ -34,6 +34,15 @@ bool DMA_A15;
 bool OAM_ADDR_DMA;
 bool VRAM_TO_OAM;
 
+bool DMA_A0;
+bool DMA_A1;
+bool DMA_A2;
+bool DMA_A3;
+bool DMA_A4;
+bool DMA_A5;
+bool DMA_A6;
+bool DMA_A7;
+
 //----------
 // registers
 

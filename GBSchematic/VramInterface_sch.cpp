@@ -52,8 +52,26 @@ extern reg VYNO;
 extern reg VUJO;
 extern reg VYMU;
 
+bool D0_IN;
+bool D1_IN;
+bool D2_IN;
+bool D3_IN;
+bool D4_IN;
+bool D5_IN;
+bool D6_IN;
+bool D7_IN;
+
 //----------
 // outputs
+
+bool MD0_A;
+bool MD3_A;
+bool MD4_A;
+bool MD7_A;
+bool MD6_A;
+bool MD1_A;
+bool MD5_A;
+bool MD2_A;
 
 bool MOE_D;
 bool MCS_D;
@@ -62,6 +80,49 @@ bool MOE_A;
 bool MWR_A;
 bool MWR_D;
 bool MD_B;
+
+bool MD0_IN;
+bool MD1_IN;
+bool MD2_IN;
+bool MD3_IN;
+bool MD4_IN;
+bool MD5_IN;
+bool MD6_IN;
+bool MD7_IN;
+
+bool MD0_OUT;
+bool MD1_OUT;
+bool MD2_OUT;
+bool MD3_OUT;
+bool MD4_OUT;
+bool MD5_OUT;
+bool MD6_OUT;
+bool MD7_OUT;
+
+// chip output
+bool MD0;
+bool MD1;
+bool MD2;
+bool MD3;
+bool MD4;
+bool MD5;
+bool MD6;
+bool MD7;
+
+// chip output
+bool MA0;
+bool MA1;
+bool MA2;
+bool MA3;
+bool MA4;
+bool MA5;
+bool MA7;
+bool MA8;
+bool MA9;
+bool MA6;
+bool MA10;
+bool MA11;
+bool MA12;
 
 bool WUKO;
 bool COTA;

@@ -108,20 +108,20 @@ void tick_oam() {
   wire ZODO = not(YRYV);
 
 
-  wire ATAR = not(RESET_VIDEO);
+  wire ATAR = not(rst.RESET_VIDEO);
 
   wire AWOH = not(XUPY);
   wire ABAF = not(CATU_Q);
 
   wire BYHA = unk3(ANEL_Q, ABAF, ABEZ);
   ATEJ = not(BYHA);
-  ANOM = nor(RESET_VIDEO2n, ATEJ);
+  ANOM = nor(rst.RESET_VIDEO2n, ATEJ);
   AZYB = not(ATEJ);
-  wire AMYG = not(RESET_VIDEO);
+  wire AMYG = not(rst.RESET_VIDEO);
   wire ABAK = or(ATEJ, AMYG);
   BYVA = not(ABAK);
 
-  wire ASEN = or(RESET_VIDEO2n, AVAP);
+  wire ASEN = or(rst.RESET_VIDEO2n, AVAP);
   wire BOGE = not(MATU_Q);
   BESU = unk2(CATU_Q, ASEN);
   wire AJON = and(XYMU, BOGE);
@@ -132,7 +132,7 @@ void tick_oam() {
   wire ASAM = or(ACYL, XYMU, MATU_Q);
 
   wire XYNY = not(MOPA_PHI);
-  wire XUTO = and(SARO, CPU_WR2);
+  wire XUTO = and(SARO, cpu.CPU_WR2);
   AMAB = and(SARO, AJUJ);
   wire ADAH = not(SARO);
 
@@ -143,7 +143,7 @@ void tick_oam() {
   wire WEFY = and(TUVO, !TYFO.q());
   wire XUJA = not(WEFY);
   wire BOFE = not(CATY);
-  wire BOTA = nor(BOFE, SARO, CPU_RD2);
+  wire BOTA = nor(BOFE, SARO, cpu.CPU_RD2);
   wire ASYT = and(AJEP, XUJA, BOTA);
   wire BODE = not(ASYT);
 
@@ -189,7 +189,7 @@ void tick_oam() {
   oam.OAM_CLK = ZODO;
   oam.OAM_ADDR_RENDER = BETE;
   oam.OAM_ADDR_PARSE = APAR;
-  RESET_VIDEO2n = ATAR;
+  rst.RESET_VIDEO2n = ATAR;
   oam.OAM_ADDR_CPU = ASAM;
   CLK3 = BODE;
 
@@ -282,7 +282,7 @@ void tick_oam() {
   wire ZYFO = not((WACU & oam.OAM_ADDR_CPU) | (WYDU & oam.OAM_ADDR_RENDER) | (WUWE & oam.OAM_ADDR_PARSE) | (FESA & oam.OAM_ADDR_DMA));
   wire GEKA = not((GARO & oam.OAM_ADDR_CPU) | (GECA & oam.OAM_ADDR_RENDER) | (GEFY & oam.OAM_ADDR_PARSE) | (FODO & oam.OAM_ADDR_DMA));
 
-  wire MYNU = nand(CPU_RD2, CATY);
+  wire MYNU = nand(cpu.CPU_RD2, CATY);
   LEKO = not(MYNU);
   wire WAFO = not(GEKA);
   wire GUKO = and(WAFO, AMAB, LEKO);
@@ -296,7 +296,7 @@ void tick_oam() {
   wire ZOFE = not(YNYC);
 
   ANEL.tock(AWOH, ABEZ, CATU_Q);
-  wire XECY_Q = XECY.tock(XUCA, 0, RESET7n); // ? weird
+  wire XECY_Q = XECY.tock(XUCA, 0, rst.RESET7n); // ? weird
   XUVA.tock(XYNY, XARE, XECY_Q);
 
   oam.OAM_A_CS = ZONE;

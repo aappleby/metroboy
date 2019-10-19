@@ -151,14 +151,14 @@ void tick_joypad() {
   if (JUTE_CLK && !FF00WR) JUTE_Q_ = mem.D0;
   if (KECY_CLK && !FF00WR) KECY_Q_ = mem.D1;
   
-  if (!RESET2) KYME_Q_ = 0;
-  if (!RESET2) KUKO_Q_ = 0;
-  if (!RESET2) KERU_Q_ = 0;
-  if (!RESET2) JALE_Q_ = 0;
-  if (!RESET2) KELY_Q_ = 0;
-  if (!RESET2) COFY_Q_ = 0;
-  if (!RESET2) JUTE_Q_ = 0;
-  if (!RESET2) KECY_Q_ = 0;
+  if (!rst.RESET2) KYME_Q_ = 0;
+  if (!rst.RESET2) KUKO_Q_ = 0;
+  if (!rst.RESET2) KERU_Q_ = 0;
+  if (!rst.RESET2) JALE_Q_ = 0;
+  if (!rst.RESET2) KELY_Q_ = 0;
+  if (!rst.RESET2) COFY_Q_ = 0;
+  if (!rst.RESET2) JUTE_Q_ = 0;
+  if (!rst.RESET2) KECY_Q_ = 0;
 
   KYME_Q = KYME_Q_;
   KUKO_Q = KUKO_Q_;

@@ -46,9 +46,9 @@ void tick_serial() {
   bool SARE = nor(mem.A7, mem.A7, mem.A7, mem.A4, mem.A3);
   bool SEFY = not(mem.A2);
   bool SANO = and(SARE, SEFY, FFXX);
-  bool UWAM = nand(TOVY_A0n, mem.A1, CPU_WR, SANO);
-  bool UCOM = nand(SANO, CPU_RD, mem.A1, TOVY_A0n);
-  bool CARO = and(UWAM, RESET2);
+  bool UWAM = nand(TOVY_A0n, mem.A1, cpu.CPU_WR, SANO);
+  bool UCOM = nand(SANO, cpu.CPU_RD, mem.A1, TOVY_A0n);
+  bool CARO = and(UWAM, rst.RESET2);
   bool CAVE = mux2(COTY_Q, ext.SCK_IN, CULY_Q);
   bool DAWA = or(CAVE, !ETAF_Q);
   bool ELUV = not(!ETAF_Q);
@@ -65,28 +65,28 @@ void tick_serial() {
   bool EDYL = not(DAWA);
   SER_TICKn = EDYL;
   bool COBA = CALY_Q;
-  bool CABY = and(COBA, RESET2);
+  bool CABY = and(COBA, rst.RESET2);
 
-  INT_SERIAL = CALY_Q;
+  cpu.INT_SERIAL = CALY_Q;
 
 
   A00_07 = SARE;
 
-  bool URYS = nand(SANO, CPU_WR, TOLA_A1n, mem.A0);
+  bool URYS = nand(SANO, cpu.CPU_WR, TOLA_A1n, mem.A0);
   bool DAKU = not(URYS);
   bool EPYT = not(SER_TICKn);
   bool DEHO = not(EPYT);
   bool DAWE = not(DEHO);
   bool CAGE = not(ext.SIN_IN);
 
-  bool COHY = unk3(URYS, mem.D0, RESET2);
-  bool DUMO = unk3(URYS, mem.D1, RESET2);
-  bool DYBO = unk3(URYS, mem.D2, RESET2);
-  bool DAJU = unk3(URYS, mem.D3, RESET2);
-  bool DYLY = unk3(URYS, mem.D4, RESET2);
-  bool EHUJ = unk3(URYS, mem.D5, RESET2);
-  bool EFAK = unk3(URYS, mem.D6, RESET2);
-  bool EGUV = unk3(URYS, mem.D7, RESET2);
+  bool COHY = unk3(URYS, mem.D0, rst.RESET2);
+  bool DUMO = unk3(URYS, mem.D1, rst.RESET2);
+  bool DYBO = unk3(URYS, mem.D2, rst.RESET2);
+  bool DAJU = unk3(URYS, mem.D3, rst.RESET2);
+  bool DYLY = unk3(URYS, mem.D4, rst.RESET2);
+  bool EHUJ = unk3(URYS, mem.D5, rst.RESET2);
+  bool EFAK = unk3(URYS, mem.D6, rst.RESET2);
+  bool EGUV = unk3(URYS, mem.D7, rst.RESET2);
 
   bool CUFU = nand(mem.D0, DAKU);
   bool DOCU = nand(mem.D1, DAKU);
@@ -106,7 +106,7 @@ void tick_serial() {
   bool EFAB = not(!EROD_Q);
   bool ETAK = not(!EDER_Q);
 
-  bool UFEG = and(SANO, CPU_RD, TOLA_A1n, mem.A0);
+  bool UFEG = and(SANO, cpu.CPU_RD, TOLA_A1n, mem.A0);
   if (UFEG) {
     mem.D0 = CUGY;
     mem.D1 = DUDE;
@@ -205,7 +205,7 @@ void tick_serial() {
   if (!EFAK) EROD_Q_ = 0;
   if (!EGUV) EDER_Q_ = 0;
 
-  if (!RESET2) ELYS_Q_ = 0;
+  if (!rst.RESET2) ELYS_Q_ = 0;
 
   CUBA_CLK = DAWE;
   DEGU_CLK = DAWE;

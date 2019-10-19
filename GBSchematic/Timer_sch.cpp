@@ -12,19 +12,19 @@
 void Timer::tick(bool FF04_D1n) {
   bool RYFO = and(mem.A2, A00_07, FFXX);
   FF04_FF07 = RYFO;
-  bool TOPE = nand(CPU_WR, FF04_FF07, mem.A0, TOLA_A1n);
+  bool TOPE = nand(cpu.CPU_WR, FF04_FF07, mem.A0, TOLA_A1n);
   bool MUZU = or(cpu.FROM_CPU5, TOPE);
-  bool MEKE = not(INT_TIMER);
-  bool MEXU = nand(MUZU, RESET2, MEKE);
+  bool MEKE = not(cpu.INT_TIMER);
+  bool MEXU = nand(MUZU, rst.RESET2, MEKE);
 
   //----------
   // tac
 
-  bool SARA = nand(CPU_WR, FF04_FF07, mem.A0, mem.A1);
-  bool SORA = and(CPU_RD, FF04_FF07, mem.A1, mem.A0);
-  bool SABO_Q = SABO.tock(SARA, RESET2, mem.D2);
-  bool SAMY_Q = SAMY.tock(SARA, RESET2, mem.D1);
-  bool SOPU_Q = SOPU.tock(SARA, RESET2, mem.D0);
+  bool SARA = nand(cpu.CPU_WR, FF04_FF07, mem.A0, mem.A1);
+  bool SORA = and(cpu.CPU_RD, FF04_FF07, mem.A1, mem.A0);
+  bool SABO_Q = SABO.tock(SARA, rst.RESET2, mem.D2);
+  bool SAMY_Q = SAMY.tock(SARA, rst.RESET2, mem.D1);
+  bool SOPU_Q = SOPU.tock(SARA, rst.RESET2, mem.D0);
 
   bool SUPE = not(!SABO_Q);
   bool ROTE = not(!SAMY_Q);
@@ -49,17 +49,17 @@ void Timer::tick(bool FF04_D1n) {
 
   bool TOVY = not(mem.A0);
   TOVY_A0n = TOVY;
-  bool TUBY = and(FF04_FF07, CPU_RD, mem.A1, TOVY);
-  bool TYJU = nand(TOVY, mem.A1, CPU_WR, FF04_FF07);
+  bool TUBY = and(FF04_FF07, cpu.CPU_RD, mem.A1, TOVY);
+  bool TYJU = nand(TOVY, mem.A1, cpu.CPU_WR, FF04_FF07);
 
-  bool PETO_Q = PETO.tock(TYJU, RESET2, mem.D6);
-  bool MURU_Q = MURU.tock(TYJU, RESET2, mem.D2);
-  bool NYKE_Q = NYKE.tock(TYJU, RESET2, mem.D1);
-  bool SETA_Q = SETA.tock(TYJU, RESET2, mem.D7);
-  bool SABU_Q = SABU.tock(TYJU, RESET2, mem.D0);
-  bool TYRU_Q = TYRU.tock(TYJU, RESET2, mem.D4);
-  bool SUFY_Q = SUFY.tock(TYJU, RESET2, mem.D5);
-  bool TYVA_Q = TYVA.tock(TYJU, RESET2, mem.D3);
+  bool PETO_Q = PETO.tock(TYJU, rst.RESET2, mem.D6);
+  bool MURU_Q = MURU.tock(TYJU, rst.RESET2, mem.D2);
+  bool NYKE_Q = NYKE.tock(TYJU, rst.RESET2, mem.D1);
+  bool SETA_Q = SETA.tock(TYJU, rst.RESET2, mem.D7);
+  bool SABU_Q = SABU.tock(TYJU, rst.RESET2, mem.D0);
+  bool TYRU_Q = TYRU.tock(TYJU, rst.RESET2, mem.D4);
+  bool SUFY_Q = SUFY.tock(TYJU, rst.RESET2, mem.D5);
+  bool TYVA_Q = TYVA.tock(TYJU, rst.RESET2, mem.D3);
 
   bool REVA = not(!PETO_Q);
   bool NOLA = not(!MURU_Q);
@@ -90,7 +90,7 @@ void Timer::tick(bool FF04_D1n) {
   bool SYRU = mux2(SUFY_Q, mem.D5, TOPE);
   bool SOCE = mux2(TYVA_Q, mem.D3, TOPE);
 
-  bool MULO = not(RESET2);
+  bool MULO = not(rst.RESET2);
 
   bool PYMA = nor(MULO, REFU);
   bool NADA = nor(MULO, NYKU);
@@ -104,7 +104,7 @@ void Timer::tick(bool FF04_D1n) {
   //----------
   // tima
 
-  bool TEDA = and(FF04_FF07, CPU_RD, TOLA_A1n, mem.A0);
+  bool TEDA = and(FF04_FF07, cpu.CPU_RD, TOLA_A1n, mem.A0);
 
   bool REGA_Q = REGA.count(SOGU,   MEXU, PUXY);
   bool POVY_Q = POVY.count(REGA_Q, MEXU, NERO);
@@ -138,6 +138,6 @@ void Timer::tick(bool FF04_D1n) {
   bool MUGY = not(MEXU);
   bool NYDU_Q = NYDU.tock(BOGA1MHZ, MUGY, NUGA_Q);
   bool MERY = nor(!NYDU_Q, NUGA_Q);
-  bool MOBA_Q = MOBA.tock(BOGA1MHZ, RESET2, MERY);
-  INT_TIMER = MOBA_Q;
+  bool MOBA_Q = MOBA.tock(BOGA1MHZ, rst.RESET2, MERY);
+  cpu.INT_TIMER = MOBA_Q;
 }

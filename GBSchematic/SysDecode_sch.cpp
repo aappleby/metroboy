@@ -57,9 +57,9 @@ void tick_sysdecode() {
 
   bool TYRO = nor(mem.A7, mem.A5, mem.A3, mem.A2, mem.A1, mem.A0);
   bool TUFA = and(mem.A4, mem.A6);
-  bool TUGE = nand(TYRO, TUFA, FFXX, CPU_WR);
+  bool TUGE = nand(TYRO, TUFA, FFXX, cpu.CPU_WR);
   bool SATO = or(mem.D0, TEPU_Q);
-  bool TEXE = and(CPU_RD, FFXX, TUFA, TYRO);
+  bool TEXE = and(cpu.CPU_RD, FFXX, TUFA, TYRO);
   bool SYPU = not(TEPU_Q);
 
   if (TEXE) {
@@ -72,7 +72,7 @@ void tick_sysdecode() {
   bool YAZA = not(dbg.T1T2n);
   bool ZORO = nor(mem.A15, mem.A14, mem.A13, mem.A12);
   bool ZADU = nor(mem.A11, mem.A10, mem.A9, mem.A8);
-  bool YULA = and(YAZA, TUTU, CPU_RD);
+  bool YULA = and(YAZA, TUTU, cpu.CPU_RD);
   bool ZUFA = and(ZORO, ZADU);
   bool ZADO = nand(YULA, ZUFA);
   bool ZERY = not(ZADO);
@@ -83,8 +83,8 @@ void tick_sysdecode() {
 
   bool SEMY = nor(mem.A7, mem.A6, mem.A5, mem.A4);
   bool SAPA = and(mem.A0, mem.A1, mem.A2, mem.A3);
-  bool ROLO = and(SEMY, SAPA, FFXX, CPU_RD);
-  bool REFA = and(SEMY, SAPA, FFXX, CPU_WR_RAW);
+  bool ROLO = and(SEMY, SAPA, FFXX, cpu.CPU_RD);
+  bool REFA = and(SEMY, SAPA, FFXX, cpu.CPU_WR_RAW);
 
   FF0F_RD = ROLO;
   FF0F_WR = REFA;
@@ -183,25 +183,25 @@ void tick_sysdecode() {
   //----------
 
   bool APET = or(NET02, dbg.T1T2n);
-  bool APER = nand(APET, mem.A5, mem.A6, CPU_WR, ANAP);
+  bool APER = nand(APET, mem.A5, mem.A6, cpu.CPU_WR, ANAP);
 
   //----------
 
   // FIXME mux is probably backwards, we should probably be selecting WR_IN/RD_B if T1nT2 is high
 
-  bool UBAL = mux2(ext.WR_IN, CPU_RD_SYNC, dbg.T1nT2);
+  bool UBAL = mux2(ext.WR_IN, cpu.CPU_RD_SYNC, dbg.T1nT2);
   bool TAPU = not(UBAL);
-  CPU_WR = TAPU;
+  cpu.CPU_WR = TAPU;
   bool DYKY = not(TAPU);
   bool CUPA = not(DYKY);
-  CPU_WR2 = CUPA;
+  cpu.CPU_WR2 = CUPA;
 
-  bool UJYV = mux2(ext.RD_B, CPU_RAW_RD, dbg.T1nT2);
+  bool UJYV = mux2(ext.RD_B, cpu.CPU_RAW_RD, dbg.T1nT2);
   bool TEDO = not(UJYV);
-  CPU_RD = TEDO;
+  cpu.CPU_RD = TEDO;
   bool AJAS = not(TEDO);
   bool ASOT = not(AJAS);
-  CPU_RD2 = ASOT;
+  cpu.CPU_RD2 = ASOT;
 
   bool LEXY = not(cpu.FROM_CPU6);
   ext.PIN_NC = LEXY;
@@ -209,7 +209,7 @@ void tick_sysdecode() {
   //----------
   // registers
 
-  TEPU.tock(TUGE, RESET2, SATO);
-  AMUT.tock(APER, RESET2, mem.D1);
-  BURO.tock(APER, RESET2, mem.D0);
+  TEPU.tock(TUGE, rst.RESET2, SATO);
+  AMUT.tock(APER, rst.RESET2, mem.D1);
+  BURO.tock(APER, rst.RESET2, mem.D0);
 }

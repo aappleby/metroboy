@@ -101,7 +101,7 @@ void tick_videocontrol() {
   // top center
 
   bool WUVU_Q = WUVU.q();
-  bool VENA_Q = VENA.flip(!WUVU_Q, RESET_VIDEO);
+  bool VENA_Q = VENA.flip(!WUVU_Q, rst.RESET_VIDEO);
   bool RUTU_Q = RUTU.q();
   bool SYGU_Q = SYGU.q();
   
@@ -214,11 +214,11 @@ void tick_videocontrol() {
   bool TARU = and(TOLU, WODU);
   INT_HBL = TARU;
   bool VYPU = not(TOLU);
-  INT_VBL_BUF = VYPU;
+  cpu.INT_VBL_BUF = VYPU;
 
   //---
 
-  bool SEPA = and(CPU_WR2, FF41);
+  bool SEPA = and(cpu.CPU_WR2, FF41);
 
   bool VOGA_Q = VOGA.tock(CLK2, TADY, WODU);
   bool WEGO = or(TOFU, VOGA_Q);
@@ -257,9 +257,9 @@ void tick_videocontrol() {
 
   // pin output?
   ext.CP = RYPO;
-  INT_STAT = VOTY;
+  cpu.INT_STAT = VOTY;
 
-  bool TOBE = and(CPU_RD2, FF41);
+  bool TOBE = and(cpu.CPU_RD2, FF41);
   bool VAVE = TOBE; // buffer, not inverter
   if (TOBE) {
     mem.D0 = TEBY;
@@ -277,7 +277,7 @@ void tick_videocontrol() {
   // y counter
 
   bool NOKO = and(V7, V4, V0, V1);
-  LYHA = not(RESET_VIDEO);
+  LYHA = not(rst.RESET_VIDEO);
   LYFE = not(LYHA);
   bool MYTA_Q = MYTA.tock(NYPE_Q, LYFE, NOKO);
   bool LAMA = nor(MYTA_Q, LYHA);

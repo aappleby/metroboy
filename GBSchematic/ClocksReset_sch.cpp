@@ -77,12 +77,12 @@ void tick_clocks_reset() {
   //----------
   // FF04 DIV
 
-  bool UKUP_Q = UKUP.flip(BOGA1MHZ, RESET_DIVn);
-  bool UFOR_Q = UFOR.flip(!UKUP_Q,  RESET_DIVn);
-  bool UNER_Q = UNER.flip(!UFOR_Q,  RESET_DIVn);
-  bool TERO_Q = TERO.flip(!UNER_Q,  RESET_DIVn);
-  bool UNYK_Q = UNYK.flip(!TERO_Q,  RESET_DIVn);
-  bool TAMA_Q = TAMA.flip(!UNYK_Q,  RESET_DIVn);
+  bool UKUP_Q = UKUP.flip(BOGA1MHZ, rst.RESET_DIVn);
+  bool UFOR_Q = UFOR.flip(!UKUP_Q,  rst.RESET_DIVn);
+  bool UNER_Q = UNER.flip(!UFOR_Q,  rst.RESET_DIVn);
+  bool TERO_Q = TERO.flip(!UNER_Q,  rst.RESET_DIVn);
+  bool UNYK_Q = UNYK.flip(!TERO_Q,  rst.RESET_DIVn);
+  bool TAMA_Q = TAMA.flip(!UNYK_Q,  rst.RESET_DIVn);
 
   bool UVYN = not(TAMA_Q);
 
@@ -92,16 +92,16 @@ void tick_clocks_reset() {
 
   bool ULUR = mux2(BOGA1MHZ, !TAMA_Q, FF60_D1);
 
-  bool UGOT_Q = UGOT.flip(ULUR,    RESET_DIVn); // FIXME double negative?
-  bool TULU_Q = TULU.flip(!UGOT_Q, RESET_DIVn);
-  bool TUGO_Q = TUGO.flip(!TULU_Q, RESET_DIVn);
-  bool TOFE_Q = TOFE.flip(!TUGO_Q, RESET_DIVn);
-  bool TERU_Q = TERU.flip(!TOFE_Q, RESET_DIVn);
-  bool SOLA_Q = SOLA.flip(!TERU_Q, RESET_DIVn);
-  bool SUBU_Q = SUBU.flip(!SOLA_Q, RESET_DIVn);
-  bool TEKA_Q = TEKA.flip(!SUBU_Q, RESET_DIVn);
-  bool UKET_Q = UKET.flip(!TEKA_Q, RESET_DIVn);
-  bool UPOF_Q = UPOF.flip(!UKET_Q, RESET_DIVn);
+  bool UGOT_Q = UGOT.flip(ULUR,    rst.RESET_DIVn); // FIXME double negative?
+  bool TULU_Q = TULU.flip(!UGOT_Q, rst.RESET_DIVn);
+  bool TUGO_Q = TUGO.flip(!TULU_Q, rst.RESET_DIVn);
+  bool TOFE_Q = TOFE.flip(!TUGO_Q, rst.RESET_DIVn);
+  bool TERU_Q = TERU.flip(!TOFE_Q, rst.RESET_DIVn);
+  bool SOLA_Q = SOLA.flip(!TERU_Q, rst.RESET_DIVn);
+  bool SUBU_Q = SUBU.flip(!SOLA_Q, rst.RESET_DIVn);
+  bool TEKA_Q = TEKA.flip(!SUBU_Q, rst.RESET_DIVn);
+  bool UKET_Q = UKET.flip(!TEKA_Q, rst.RESET_DIVn);
+  bool UPOF_Q = UPOF.flip(!UKET_Q, rst.RESET_DIVn);
 
   bool UMEK = not(UGOT_Q);
   bool UREK = not(TULU_Q);
@@ -124,7 +124,7 @@ void tick_clocks_reset() {
   bool SAWA = not(RYSO);
   bool TATU = not(UDOR);
 
-  bool TAGY = and(FF04_FF07, CPU_RD, TOLA_A1n, TOVY_A0n);
+  bool TAGY = and(FF04_FF07, cpu.CPU_RD, TOLA_A1n, TOVY_A0n);
   if (TAGY) {
     mem.D0 = TAWU;
     mem.D1 = TAKU;
@@ -174,7 +174,7 @@ void tick_clocks_reset() {
   bool ALET = not(ZEME);
   CLK2 = ALET;
 
-  bool BELA = not(APU_RESET);
+  bool BELA = not(rst.APU_RESET);
   CERY_2MHZ = CERY_Q;
 
   // comment about clock rates on schematic is wrong
@@ -194,7 +194,7 @@ void tick_clocks_reset() {
   ABUZ = not(AWOD);
   BUKE = not(BASU);
 
-  CPU_RD_SYNC = APOV;
+  cpu.CPU_RD_SYNC = APOV;
 
   bool BAPY = nor(ABOL_1MHZ, AROV, ATYP);
   bool NULE = nor(ATYP, ABOL_1MHZ);
@@ -238,45 +238,45 @@ void tick_clocks_reset() {
   bool UVYT = not(ext.PHI_OUT);
   PHI_OUTn = UVYT;
 
-  RESET2 = ALUR;
+  rst.RESET2 = ALUR;
 
   bool DOVA = not(BUDE);
   PHIn = DOVA;
 
-  bool TAPE = and(FF04_FF07, CPU_WR, TOLA_A1n, TOVY_A0n);
+  bool TAPE = and(FF04_FF07, cpu.CPU_WR, TOLA_A1n, TOVY_A0n);
 
   bool UFOL = nor(CLKIN_An, ext.RESET, TAPE);
-  RESET_DIVn = UFOL;
+  rst.RESET_DIVn = UFOL;
 
-  bool DULA = not(RESET2);
-  bool XEBE = not(RESET7);
+  bool DULA = not(rst.RESET2);
+  bool XEBE = not(rst.RESET7);
   bool UCOB = not(ext.CLKIN_A);
   bool CUNU = not(DULA);
   bool XODO = and(FF40_D7, XEBE);
 
-  RESET7n = XEBE;
+  rst.RESET7n = XEBE;
   CLKIN_An = UCOB;
 
   bool XORE = not(CUNU);
 
-  RESET7 = XORE;
+  rst.RESET7 = XORE;
 
   WESY = not(XORE);
   bool WALU = not(XORE);
 
-  RESET6 = CUNU;
+  rst.RESET6 = CUNU;
   bool XAPO = not(XODO);
 
-  RESET_VIDEO = XAPO;
+  rst.RESET_VIDEO = XAPO;
 
-  RESET9 = WESY;
-  RESET8 = WALU;
+  rst.RESET9 = WESY;
+  rst.RESET8 = WALU;
 
   bool BARA_Q = BARA.q();
   bool CARU_Q = CARU.q();
   bool BYLU_Q = BYLU.q();
 
-  bool ATUS = not(APU_RESET);
+  bool ATUS = not(rst.APU_RESET);
   bool COKE = not(AJER_2MHZ);
   bool BURE = not(!BARA_Q);
   bool FYNE = not(BURE);
@@ -298,11 +298,11 @@ void tick_clocks_reset() {
   BUFY_256 = BUFY;
   BYFE_128 = BYFE;
 
-  bool BOPO = not(APU_RESET);
+  bool BOPO = not(rst.APU_RESET);
   bool ATYK_Q = ATYK.flip(ARYF_4MHZ, BOPO);
   bool AVOK_Q = AVOK.flip(ATYK_Q, BOPO);
   bool BAVU = not(AVOK_Q);
-  bool JESO_Q = JESO.flip(BAVU, APU_RESET5n);
+  bool JESO_Q = JESO.flip(BAVU, rst.APU_RESET5n);
   JESO_512K = JESO_Q;
   BAVU_1MHZ = BAVU;
   bool HAMA = not(JESO_Q);

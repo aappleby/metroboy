@@ -196,7 +196,7 @@ void tick_spritecontrol() {
   bool ALES = not(XYVO);
   bool ABOV = and(SELA, ALES);
   XUPY = not(!WUVU_Q);
-  ABEZ = not(RESET_VIDEO2n);
+  ABEZ = not(rst.RESET_VIDEO2n);
   bool BALU = not(ANOM);
   bool BAGY = not(BALU);
   bool WOJO = nor(!WUVU_Q, !WOSU_Q);
@@ -209,8 +209,8 @@ void tick_spritecontrol() {
   bool BEBU = or(DOBA_Q, BALU, !BYBA_Q);
   AVAP = not(BEBU);
 
-  WUVU.flip(XOTA, RESET_VIDEO);
-  WOSU.tock(XYFY, RESET_VIDEO, !WUVU_Q);
+  WUVU.flip(XOTA, rst.RESET_VIDEO);
+  WOSU.tock(XYFY, rst.RESET_VIDEO, !WUVU_Q);
   CENO.tock(XUPY, ABEZ, BESU);
   CATU.tock(XUPY, ABEZ, ABOV);
   BYBA.tock(XUPY, BAGY, FETO);
@@ -565,7 +565,7 @@ void tick_spritecontrol() {
   WOFO = not(DUKE); WYLU = not(DUKE); EWOT = not(DUKE);
   ASYS = not(BUCO); AHOF = not(BUCO); BYVY = not(BUCO);
 
-  DEZY.tock(CLK1, RESET_VIDEO, DYTY);
+  DEZY.tock(CLK1, rst.RESET_VIDEO, DYTY);
   BESE.flip(CAKE,    AZYB);
   CUXY.flip(!BESE_Q, AZYB);
   BEGO.flip(!CUXY_Q, AZYB);

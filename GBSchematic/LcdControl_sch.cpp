@@ -98,7 +98,7 @@ void tick_lcdcontrol() {
   ext.PIN_FR = KOFO;
 
   // FIXME another logic loop...
-  TOFU = not(RESET_VIDEO);
+  TOFU = not(rst.RESET_VIDEO);
   bool POME = nor(AVAP, /*POFY*/false);
   bool SACU = nor(SEGU, ROXY);
   bool RUJU = or(PAHO_Q, TOFU, POME);

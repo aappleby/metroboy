@@ -21,11 +21,11 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA) {
   wire TEVY = and(mem.A13, mem.A14, SORE);
   TEXO = and(cpu.FROM_CPU4, TEVY);
   wire LEVO = not(TEXO);
-  wire LAGU = unk3(CPU_RAW_RD, LEVO, cpu.FROM_CPU3);
+  wire LAGU = unk3(cpu.CPU_RAW_RD, LEVO, cpu.FROM_CPU3);
   wire LYWE = not(LAGU);
 
   wire MOCA = nor(TEXO, dbg.T1T2n);
-  wire MEXO = not(CPU_RD_SYNC);
+  wire MEXO = not(cpu.CPU_RD_SYNC);
   wire NEVY = or(MEXO, MOCA);
   wire MOTY = or(MOCA, LYWE);
   wire PUVA = or(NEVY, LUMA);
@@ -58,7 +58,7 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA) {
   wire TUMA = and(mem.A13, SOGY, mem.A15);
   wire TYNU = unk3(mem.A15, mem.A14, TUMA);
   wire TOZA = and(TYNU, ABUZ, FEXXFFXXn);
-  wire SOBY = nor(mem.A15, CPU_WRQ); // schematic has a question mark?
+  wire SOBY = nor(mem.A15, cpu.CPU_WRQ); // schematic has a question mark?
   wire SEPY = nand(ABUZ, SOBY);
 
   wire TYHO = mux2(dma.DMA_A15, TOZA, LUMA);
@@ -133,62 +133,64 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA) {
   //----------
   // the rest of the address latch, center
 
-  wire ARYM_Q = ARYM.latch(MATE, mem.A7);
-  wire AROS_Q = ARYM.latch(MATE, mem.A6);
-  wire ATEV_Q = ARYM.latch(MATE, mem.A5);
-  wire AVYS_Q = ARYM.latch(MATE, mem.A4);
-  wire ARET_Q = ARYM.latch(MATE, mem.A3);
-  wire ALYR_Q = ARYM.latch(MATE, mem.A2);
-  wire APUR_Q = ARYM.latch(MATE, mem.A1);
   wire ALOR_Q = ARYM.latch(MATE, mem.A0);
+  wire APUR_Q = ARYM.latch(MATE, mem.A1);
+  wire ALYR_Q = ARYM.latch(MATE, mem.A2);
+  wire ARET_Q = ARYM.latch(MATE, mem.A3);
+  wire AVYS_Q = ARYM.latch(MATE, mem.A4);
+  wire ATEV_Q = ARYM.latch(MATE, mem.A5);
+  wire AROS_Q = ARYM.latch(MATE, mem.A6);
+  wire ARYM_Q = ARYM.latch(MATE, mem.A7);
 
-  wire ASUR = mux2(dma.DMA_A7, ARYM_Q, LUMA);
-  wire ATYR = mux2(dma.DMA_A6, AROS_Q, LUMA);
-  wire ATOV = mux2(dma.DMA_A5, ATEV_Q, LUMA);
-  wire ATEM = mux2(dma.DMA_A4, AVYS_Q, LUMA);
-  wire AMER = mux2(dma.DMA_A3, ARET_Q, LUMA);
-  wire APOK = mux2(dma.DMA_A2, ALYR_Q, LUMA);
-  wire ATOL = mux2(dma.DMA_A1, APUR_Q, LUMA);
   wire AMET = mux2(dma.DMA_A0, ALOR_Q, LUMA);
+  wire ATOL = mux2(dma.DMA_A1, APUR_Q, LUMA);
+  wire APOK = mux2(dma.DMA_A2, ALYR_Q, LUMA);
+  wire AMER = mux2(dma.DMA_A3, ARET_Q, LUMA);
+  wire ATEM = mux2(dma.DMA_A4, AVYS_Q, LUMA);
+  wire ATOV = mux2(dma.DMA_A5, ATEV_Q, LUMA);
+  wire ATYR = mux2(dma.DMA_A6, AROS_Q, LUMA);
+  wire ASUR = mux2(dma.DMA_A7, ARYM_Q, LUMA);
 
-  wire COLO = nor (NET02, ASUR);
-  wire DEFY = nand(dbg.NET01, ASUR);
-  wire CYKA = nor (NET02, ATYR);
-  wire CEPU = nand(dbg.NET01, ATYR);
-  wire AJAV = nor (NET02, ATOV);
-  wire BADU = nand(dbg.NET01, ATOV);
-  wire BEVO = nor (NET02, ATEM);
-  wire BYLA = nand(dbg.NET01, ATEM);
-  wire BOLA = nor (NET02, AMER);
-  wire BOTY = nand(dbg.NET01, AMER);
-  wire BAJO = nor (NET02, APOK);
-  wire BOKU = nand(dbg.NET01, APOK);
-  wire COTU = nor (NET02, ATOL);
-  wire CABA = nand(dbg.NET01, ATOL);
-  wire KOTY = nor (NET02, AMET);
   wire KUPO = nand(dbg.NET01, AMET);
+  wire CABA = nand(dbg.NET01, ATOL);
+  wire BOKU = nand(dbg.NET01, APOK);
+  wire BOTY = nand(dbg.NET01, AMER);
+  wire BYLA = nand(dbg.NET01, ATEM);
+  wire BADU = nand(dbg.NET01, ATOV);
+  wire CEPU = nand(dbg.NET01, ATYR);
+  wire DEFY = nand(dbg.NET01, ASUR);
 
-  ext.A7_D = COLO;
-  ext.A7_A = DEFY;
-  ext.A6_D = CYKA;
-  ext.A6_A = CEPU;
-  ext.A5_D = AJAV;
-  ext.A5_A = BADU;
-  ext.A4_D = BEVO;
-  ext.A4_A = BYLA;
-  ext.A3_D = BOLA;
-  ext.A3_A = BOTY;
-  ext.A2_D = BAJO;
-  ext.A2_A = BOKU;
-  ext.A1_D = COTU;
-  ext.A1_A = CABA;
-  ext.A0_D = KOTY;
   ext.A0_A = KUPO;
+  ext.A1_A = CABA;
+  ext.A2_A = BOKU;
+  ext.A3_A = BOTY;
+  ext.A4_A = BYLA;
+  ext.A5_A = BADU;
+  ext.A6_A = CEPU;
+  ext.A7_A = DEFY;
+
+  wire KOTY = nor (NET02, AMET);
+  wire COTU = nor (NET02, ATOL);
+  wire BAJO = nor (NET02, APOK);
+  wire BOLA = nor (NET02, AMER);
+  wire BEVO = nor (NET02, ATEM);
+  wire AJAV = nor (NET02, ATOV);
+  wire CYKA = nor (NET02, ATYR);
+  wire COLO = nor (NET02, ASUR);
+
+  ext.A0_D = KOTY;
+  ext.A1_D = COTU;
+  ext.A2_D = BAJO;
+  ext.A3_D = BOLA;
+  ext.A4_D = BEVO;
+  ext.A5_D = AJAV;
+  ext.A6_D = CYKA;
+  ext.A7_D = COLO;
 
   //----------
   // bottom right
 
-  wire REDU = not(CPU_RD);
+  wire REDU = not(cpu.CPU_RD);
   RORU = mux2(REDU, MOTY, dbg.T1nT2);
   LULA = not(RORU);
 
@@ -213,7 +215,7 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA) {
   //----------
   // DX_IN latch, bottom right
 
-  wire LAVO = nand(CPU_RAW_RD, TEXO, cpu.FROM_CPU5);
+  wire LAVO = nand(cpu.CPU_RAW_RD, TEXO, cpu.FROM_CPU5);
 
   wire SODY_Q = SODY.latch(ext.D4_IN, LAVO);
   wire SELO_Q = SELO.latch(ext.D3_IN, LAVO);
@@ -247,56 +249,23 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA) {
   }
 
   //----------
-  // some debugging mode thing to drive the internal address bus from the external pins?
+  // if NET01 high, drive external address bus onto internal address bus for debugging.
 
-  bool BASE = not(ext.A3_IN);
-  bool AFEC = not(ext.A4_IN);
-  bool BUXU = not(ext.A2_IN);
-  bool CAMU = not(ext.A1_IN);
-  bool CYGU = not(ext.A6_IN);
-  bool COGO = not(ext.A7_IN);
-  bool KOVA = not(ext.A0_IN);
-  bool LAHE = not(ext.A12_IN);
-  bool LURA = not(ext.A13_IN);
-  bool MUJY = not(ext.A8_IN);
-  bool PEVO = not(ext.A14_IN);
-  bool MADY = not(ext.A11_IN);
-  bool NENA = not(ext.A9_IN);
-  bool SURA = not(ext.A10_IN);
-  bool ABUP = not(ext.A5_IN);
-
-  bool ANAR = not(BASE);
-  bool AZUV = not(AFEC);
-  bool AKAN = not(BUXU);
-  bool BYXE = not(CAMU);
-  bool BYNE = not(CYGU);
-  bool BYNA = not(COGO);
-  bool KEJO = not(KOVA);
-  bool LYNA = not(LAHE);
-  bool LEFY = not(LURA);
-  bool LOFA = not(MUJY);
-  bool NEFE = not(PEVO);
-  bool LORA = not(MADY);
-  bool MAPU = not(NENA);
-  bool RALA = not(SURA);
-  bool AJOV = not(ABUP);
-
-  // if NET01 high, drive external address bus onto internal address bus (?)
   if (dbg.NET01) {
-    mem.A3  = ANAR;
-    mem.A4  = AZUV;
-    mem.A2  = AKAN;
-    mem.A1  = BYXE;
-    mem.A6  = BYNE;
-    mem.A7  = BYNA;
-    mem.A0  = KEJO;
-    mem.A12 = LYNA;
-    mem.A13 = LEFY;
-    mem.A8  = LOFA;
-    mem.A14 = NEFE;
-    mem.A11 = LORA;
-    mem.A9  = MAPU;
-    mem.A10 = RALA;
-    mem.A5  = AJOV;
+    wire KOVA = not(ext.A0_IN);  wire KEJO = not(KOVA); mem.A0  = KEJO;
+    wire CAMU = not(ext.A1_IN);  wire BYXE = not(CAMU); mem.A1  = BYXE;
+    wire BUXU = not(ext.A2_IN);  wire AKAN = not(BUXU); mem.A2  = AKAN;
+    wire BASE = not(ext.A3_IN);  wire ANAR = not(BASE); mem.A3  = ANAR;
+    wire AFEC = not(ext.A4_IN);  wire AZUV = not(AFEC); mem.A4  = AZUV;
+    wire ABUP = not(ext.A5_IN);  wire AJOV = not(ABUP); mem.A5  = AJOV;
+    wire CYGU = not(ext.A6_IN);  wire BYNE = not(CYGU); mem.A6  = BYNE;
+    wire COGO = not(ext.A7_IN);  wire BYNA = not(COGO); mem.A7  = BYNA;
+    wire MUJY = not(ext.A8_IN);  wire LOFA = not(MUJY); mem.A8  = LOFA;
+    wire NENA = not(ext.A9_IN);  wire MAPU = not(NENA); mem.A9  = MAPU;
+    wire SURA = not(ext.A10_IN); wire RALA = not(SURA); mem.A10 = RALA;
+    wire MADY = not(ext.A11_IN); wire LORA = not(MADY); mem.A11 = LORA;
+    wire LAHE = not(ext.A12_IN); wire LYNA = not(LAHE); mem.A12 = LYNA;
+    wire LURA = not(ext.A13_IN); wire LEFY = not(LURA); mem.A13 = LEFY;
+    wire PEVO = not(ext.A14_IN); wire NEFE = not(PEVO); mem.A14 = NEFE;
   }
 }

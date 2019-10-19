@@ -8,11 +8,11 @@
 #include "ExtBus.h"
 #include "PpuRegs.h"
 #include "Debug.h"
+#include "CpuBus.h"
 
 //----------
 // inputs
 
-extern bool CPU_RD_SYNC;
 extern bool FEXXFFXXn;
 extern reg MATU;
 extern bool MOPA_PHI;
@@ -107,7 +107,7 @@ void tock_vram() {
   SOTO.flip(SYCY, 0);
 
   bool TUCA = and(SOSE, ABUZ);
-  bool TUJA = and(SOSE, CPU_RD_SYNC);
+  bool TUJA = and(SOSE, cpu.CPU_RD_SYNC);
   bool TEGU = and(SOSE, AFAS);
   bool TAVY = not(ext.MOE_IN);
   bool TUTO = and(NET02, !SOTO_Q);

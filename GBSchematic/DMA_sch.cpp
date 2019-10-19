@@ -72,10 +72,10 @@ void tick_dma() {
   MOPA_PHI = MOPA;
 
   bool LENE_Qn = not(LENE_Q);
-  bool LOKO = nand(RESET6, LENE_Qn);
+  bool LOKO = nand(rst.RESET6, LENE_Qn);
 
-  bool MOLU = nand(FF46, CPU_RD2);
-  bool LAVY = nand(FF46, CPU_WR2);
+  bool MOLU = nand(FF46, cpu.CPU_RD2);
+  bool LAVY = nand(FF46, cpu.CPU_WR2);
   bool NYGO = not(MOLU);
   bool LORU = not(LAVY);
 
@@ -86,7 +86,7 @@ void tick_dma() {
   bool POWU = and(MATU_Q, NAXY);
 
   // FIXME loopy thing, glitch filter? def broken.
-  bool LARA = nand(/*LOKY,*/ !MYTE_Q, RESET6);
+  bool LARA = nand(/*LOKY,*/ !MYTE_Q, rst.RESET6);
   bool LOKY = nand(LARA, LENE_Qn);
 
   // dma_a == 159
@@ -94,7 +94,7 @@ void tick_dma() {
 
   bool NOLO = not(NAVO);
 
-  WYJA = unk3(AMAB, CPU_WR2, POWU);
+  WYJA = unk3(AMAB, cpu.CPU_WR2, POWU);
 
   bool NAFA_Q = NAFA.tock(LORU, 0, mem.D0);
   bool NYGY_Q = NYGY.tock(LORU, 0, mem.D4);
@@ -204,9 +204,9 @@ void tick_dma() {
   //----------
   // registers
 
-  MAKA.tock(CLK1,     RESET6, CATY);
-  LUVY.tock(PHI_OUTn, RESET6, LUPA);
-  LENE.tock(MOPA,     RESET6, LUVY_Q);
-  MATU.tock(PHI_OUTn, RESET6, LOKY);
+  MAKA.tock(CLK1,     rst.RESET6, CATY);
+  LUVY.tock(PHI_OUTn, rst.RESET6, LUPA);
+  LENE.tock(MOPA,     rst.RESET6, LUVY_Q);
+  MATU.tock(PHI_OUTn, rst.RESET6, LOKY);
   MYTE.tock(MOPA,     LAPA,   NOLO);
 }

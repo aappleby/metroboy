@@ -39,9 +39,9 @@ void tick_apudecode() {
   ANAP = and(AMUS, FFXX);
   bool BYKO = not(mem.A5);
   bool AKUG = not(mem.A6);
-  bool ATOZ = nand(BYKO, AKUG, CPU_WR, ANAP);
+  bool ATOZ = nand(BYKO, AKUG, cpu.CPU_WR, ANAP);
   FF00WR = ATOZ;
-  bool ACAT = and(ANAP, CPU_RD, AKUG, BYKO);
+  bool ACAT = and(ANAP, cpu.CPU_RD, AKUG, BYKO);
   FF00RD = ACAT;
 
   bool BOXY = not(mem.A5);
@@ -66,7 +66,7 @@ void tick_apudecode() {
   bool DOXY = and(CONA, XXX6);
   FF26 = DOXY;
 
-  bool BAFU = not(CPU_WR);
+  bool BAFU = not(cpu.CPU_WR);
   bool BOGY = not(BAFU);
   APU_WR = BOGY;
 

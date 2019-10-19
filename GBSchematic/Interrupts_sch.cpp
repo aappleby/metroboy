@@ -38,12 +38,12 @@ void tick_interrupts() {
   cpu.TO_CPU2 = AWOB_Q; // for unhalt?
 
   // Sort of a deglitcher, only passes INT_JP if high for 4 cycles?
-  bool BATU_Q = BATU.tock(BOGA1MHZ, RESET2, KERY);
-  bool ACEF_Q = ACEF.tock(BOGA1MHZ, RESET2, BATU_Q);
-  bool AGEM_Q = AGEM.tock(BOGA1MHZ, RESET2, ACEF_Q);
-  bool APUG_Q = APUG.tock(BOGA1MHZ, RESET2, AGEM_Q);
+  bool BATU_Q = BATU.tock(BOGA1MHZ, rst.RESET2, KERY);
+  bool ACEF_Q = ACEF.tock(BOGA1MHZ, rst.RESET2, BATU_Q);
+  bool AGEM_Q = AGEM.tock(BOGA1MHZ, rst.RESET2, ACEF_Q);
+  bool APUG_Q = APUG.tock(BOGA1MHZ, rst.RESET2, AGEM_Q);
   bool ASOK = and(APUG_Q, BATU_Q);
-  INT_JP = ASOK;
+  cpu.INT_JP = ASOK;
 
 
   bool ROTU = not(FF0F_WR);
@@ -59,27 +59,27 @@ void tick_interrupts() {
   bool RAKE = or(mem.D2, FF0F);
 
   bool MYZU = nand(ROTU, LETY, mem.D0);
-  bool LYTA = and(MUXE, LETY, RESET2);
+  bool LYTA = and(MUXE, LETY, rst.RESET2);
 
   bool TOME = nand(ROTU, LUFE, mem.D3);
-  bool TUNY = and(SULO, LUFE, RESET2);
+  bool TUNY = and(SULO, LUFE, rst.RESET2);
   
   bool TOGA = nand(ROTU, LAMO, mem.D4);
-  bool TYME = and(SEME, LAMO, RESET2);
+  bool TYME = and(SEME, LAMO, rst.RESET2);
 
   bool MODY = nand(ROTU, LEJA, mem.D1);
-  bool MOVU = and(NABE, LEJA, RESET2);
+  bool MOVU = and(NABE, LEJA, rst.RESET2);
 
   bool PYHU = nand(ROTU, LESA, mem.D2);
-  bool PYGA = and(RAKE, LESA, RESET2);
+  bool PYGA = and(RAKE, LESA, rst.RESET2);
 
   bool PESU = not(ext.P10_B);
 
-  bool LOPE_Q = LOPE.srtock(PESU, MYZU, LYTA, INT_VBL_BUF);
-  bool UBUL_Q = UBUL.srtock(PESU, TOME, TUNY, INT_SERIAL);
-  bool ULAK_Q = ULAK.srtock(PESU, TOGA, TYME, INT_JP);
-  bool LALU_Q = LALU.srtock(PESU, MODY, MOVU, INT_STAT);
-  bool NYBO_Q = NYBO.srtock(PESU, PYHU, PYGA, INT_TIMER);
+  bool LOPE_Q = LOPE.srtock(PESU, MYZU, LYTA, cpu.INT_VBL_BUF);
+  bool UBUL_Q = UBUL.srtock(PESU, TOME, TUNY, cpu.INT_SERIAL);
+  bool ULAK_Q = ULAK.srtock(PESU, TOGA, TYME, cpu.INT_JP);
+  bool LALU_Q = LALU.srtock(PESU, MODY, MOVU, cpu.INT_STAT);
+  bool NYBO_Q = NYBO.srtock(PESU, PYHU, PYGA, cpu.INT_TIMER);
 
   CPU_INT_VBLANK = LOPE_Q;
   CPU_INT_SERIAL = UBUL_Q;

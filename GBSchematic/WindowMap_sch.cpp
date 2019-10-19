@@ -126,13 +126,13 @@ void tick_windowmap() {
 
   VYPO = not(CUBA1);
 
-  wire SARY_Q = SARY.tock(TALU, RESET_VIDEO, ROGE);
+  wire SARY_Q = SARY.tock(TALU, rst.RESET_VIDEO, ROGE);
 
   //----------
   // Window X match
 
-  wire PYRY = not(RESET_VIDEO);
-  RESET_VIDEOn = PYRY;
+  wire PYRY = not(rst.RESET_VIDEO);
+  rst.RESET_VIDEOn = PYRY;
   wire REPU = or(INT_VBL, PYRY);
   wire REJO = unk2(SARY_Q, REPU);
   
@@ -192,7 +192,7 @@ void tick_windowmap() {
   wire SUVU = nand(XYMU, ROMO, NYKA.q(), PORY.q());
   wire TAVE = not(SUVU);
   wire XAHY = not(ATEJ);
-  wire XOFO = nand(FF40_D5, XAHY, RESET_VIDEO);
+  wire XOFO = nand(FF40_D5, XAHY, rst.RESET_VIDEO);
   wire XACO = not(XOFO);
   wire PYNU = unk2(NUNU_Q, XOFO);
   wire NUNY = and(!NOPA_Q, PYNU);
@@ -202,7 +202,7 @@ void tick_windowmap() {
   // glitch filter loop, FIXME double check if this logic is correct
   // bool PUKU = nor(NUNY, RYDY);
   // bool RYDY = nor(PUKU, RESET_VIDEOn, PORY);
-  wire RYDY = NUNY && !(RESET_VIDEOn || PORY.q());
+  wire RYDY = NUNY && !(rst.RESET_VIDEOn || PORY.q());
 
   SYLO = not(RYDY);
   wire TUXY = nand(SOVY_Q, SYLO);
@@ -218,9 +218,9 @@ void tick_windowmap() {
   wire WAZY = not(PORE);
   wire SYNY = not(REPU);
 
-  NOPA.tock(CLK2, RESET_VIDEO, PYNU);
-  PYCO.tock(ROCO, RESET_VIDEO, NUKO);
-  NUNU.tock(MEHE, RESET_VIDEO, PYCO_Q);
+  NOPA.tock(CLK2, rst.RESET_VIDEO, PYNU);
+  PYCO.tock(ROCO, rst.RESET_VIDEO, NUKO);
+  NUNU.tock(MEHE, rst.RESET_VIDEO, PYCO_Q);
 
   //----------
   // dunno, top right
@@ -316,7 +316,7 @@ void tick_windowmap() {
   wire SUDA_Q = SUDA.q();
 
   wire RYCE = and(SOBU_Q, !SUDA_Q);
-  wire ROSY = not(RESET_VIDEO);
+  wire ROSY = not(rst.RESET_VIDEO);
   SECA = nor(RYCE, ROSY, ATEJ);
   wire VEKU = nor(WUTY, TAVE);
   wire TAKA = unk2(VEKU, SECA);
@@ -340,5 +340,5 @@ void tick_windowmap() {
 
   RYFA.tock(SEGU, XYMU, PANY);
   RENE.tock(CLK2, XYMU, RYFA_Q);
-  SOVY.tock(CLK2, RESET_VIDEO, RYDY);
+  SOVY.tock(CLK2, rst.RESET_VIDEO, RYDY);
 }

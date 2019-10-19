@@ -1,5 +1,8 @@
 #include "Clocks.h"
 
+struct Clocks clk;
+struct Resets rst;
+
 bool CLKIN_An;
 bool CLKPIPE;
 
@@ -25,20 +28,3 @@ bool HORU_512;
 bool BUFY_256;
 bool BYFE_128;
 
-bool RESET7n;
-bool RESET_VIDEO;
-bool RESET_VIDEO2n;
-bool RESET_VIDEOn;
-bool RESET2;
-bool RESET_DIVn;
-bool RESET7;
-bool RESET6;
-bool RESET8;
-bool RESET9;
-
-bool APU_RESET;
-bool APU_RESETn;
-bool APU_RESET2n;
-bool APU_RESET3n;
-bool APU_RESET4n;
-bool APU_RESET5n;

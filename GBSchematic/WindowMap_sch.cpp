@@ -30,16 +30,6 @@ extern bool SEGU;
 
 extern bool INT_VBL; // this is the one that feeds INT_STAT
 
-// pixel x
-extern reg XEHO;
-extern reg SAVY;
-extern reg XODU;
-extern reg XYDO;
-extern reg TUHU;
-extern reg TUKY;
-extern reg TAKO;
-extern reg SYBE;
-
 //----------
 // outputs
 
@@ -109,15 +99,15 @@ void tick_windowmap() {
   //----------
   // Window Y match
 
-  wire NOJO = xor(FF4A_D4, V4);
-  wire PAGA = xor(FF4A_D5, V5);
-  wire PEZO = xor(FF4A_D6, V6);
-  wire NUPA = xor(FF4A_D7, V7);
+  wire NOJO = xor(ppu.FF4A_D4, ppu.V4);
+  wire PAGA = xor(ppu.FF4A_D5, ppu.V5);
+  wire PEZO = xor(ppu.FF4A_D6, ppu.V6);
+  wire NUPA = xor(ppu.FF4A_D7, ppu.V7);
 
-  wire NAZE = xor(FF4A_D0, V0);
-  wire PEBO = xor(FF4A_D1, V1);
-  wire POMO = xor(FF4A_D2, V2);
-  wire NEVU = xor(FF4A_D3, V3);
+  wire NAZE = xor(ppu.FF4A_D0, ppu.V0);
+  wire PEBO = xor(ppu.FF4A_D1, ppu.V1);
+  wire POMO = xor(ppu.FF4A_D2, ppu.V2);
+  wire NEVU = xor(ppu.FF4A_D3, ppu.V3);
 
   wire PALO = nand(ppu.FF40_D5, NOJO, PAGA, PEZO, NUPA);
   wire NELE = not(PALO);
@@ -136,23 +126,23 @@ void tick_windowmap() {
   wire REPU = or(INT_VBL, PYRY);
   wire REJO = unk2(SARY_Q, REPU);
   
-  bool XEHO_Q = XEHO.q();
-  bool SAVY_Q = SAVY.q();
-  bool XODU_Q = XODU.q();
-  bool XYDO_Q = XYDO.q();
-  bool TUHU_Q = TUHU.q();
-  bool TUKY_Q = TUKY.q();
-  bool TAKO_Q = TAKO.q();
-  bool SYBE_Q = SYBE.q();
+  bool XEHO_Q = ppu.XEHO.q();
+  bool SAVY_Q = ppu.SAVY.q();
+  bool XODU_Q = ppu.XODU.q();
+  bool XYDO_Q = ppu.XYDO.q();
+  bool TUHU_Q = ppu.TUHU.q();
+  bool TUKY_Q = ppu.TUKY.q();
+  bool TAKO_Q = ppu.TAKO.q();
+  bool SYBE_Q = ppu.SYBE.q();
 
-  wire NEZO = xor(TUHU_Q, FF4B_D4);
-  wire NORY = xor(TUKY_Q, FF4B_D5);
-  wire NONO = xor(TAKO_Q, FF4B_D6);
-  wire PASE = xor(SYBE_Q, FF4B_D7);
-  wire MYLO = xor(XEHO_Q, FF4B_D0);
-  wire PUWU = xor(SAVY_Q, FF4B_D1);
-  wire PUHO = xor(XODU_Q, FF4B_D2);
-  wire NYTU = xor(XYDO_Q, FF4B_D3);
+  wire NEZO = xor(TUHU_Q, ppu.FF4B_D4);
+  wire NORY = xor(TUKY_Q, ppu.FF4B_D5);
+  wire NONO = xor(TAKO_Q, ppu.FF4B_D6);
+  wire PASE = xor(SYBE_Q, ppu.FF4B_D7);
+  wire MYLO = xor(XEHO_Q, ppu.FF4B_D0);
+  wire PUWU = xor(SAVY_Q, ppu.FF4B_D1);
+  wire PUHO = xor(XODU_Q, ppu.FF4B_D2);
+  wire NYTU = xor(XYDO_Q, ppu.FF4B_D3);
 
   wire PUKY = nand(REJO, NEZO, NORY, NONO, PASE);
   wire NUFA = not(PUKY);
@@ -179,9 +169,9 @@ void tick_windowmap() {
   POVA = and(!NYZE_Q, PUXA_Q);
   wire PAHA = not(XYMU);
   ROXY = unk2(PAHA, POVA);
-  wire SUHA = xor(FF43_D0, RYKU_Q);
-  wire SYBY = xor(FF43_D1, ROGA_Q);
-  wire SOZU = xor(FF43_D2, RUBU_Q);
+  wire SUHA = xor(ppu.FF43_D0, RYKU_Q);
+  wire SYBY = xor(ppu.FF43_D1, ROGA_Q);
+  wire SOZU = xor(ppu.FF43_D2, RUBU_Q);
   wire PECU = nand(ROXO, ROZE);
   wire RONE = nand(ROXY, SUHA, SYBY, SOZU);
   wire POHU = not(RONE);

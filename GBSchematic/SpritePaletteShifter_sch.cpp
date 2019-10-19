@@ -29,23 +29,23 @@ reg LYME;
 //-----------------------------------------------------------------------------
 
 void tick_spritepaletteshifter() {
-  bool MEFU = or(XEFY, SPR_PIX_A_0, SPR_PIX_B_0);
-  bool MEVE = or(XEFY, SPR_PIX_A_1, SPR_PIX_B_1);
-  bool MYZO = or(XEFY, SPR_PIX_A_2, SPR_PIX_B_2);
-  bool RUDA = or(XEFY, SPR_PIX_A_3, SPR_PIX_B_3);
-  bool VOTO = or(XEFY, SPR_PIX_A_4, SPR_PIX_B_4);
-  bool VYSA = or(XEFY, SPR_PIX_A_5, SPR_PIX_B_5);
-  bool TORY = or(XEFY, SPR_PIX_A_6, SPR_PIX_B_6);
-  bool WOPE = or(XEFY, SPR_PIX_A_7, SPR_PIX_B_7);
+  bool MEFU = or(XEFY, ppu.SPR_PIX_A_0, ppu.SPR_PIX_B_0);
+  bool MEVE = or(XEFY, ppu.SPR_PIX_A_1, ppu.SPR_PIX_B_1);
+  bool MYZO = or(XEFY, ppu.SPR_PIX_A_2, ppu.SPR_PIX_B_2);
+  bool RUDA = or(XEFY, ppu.SPR_PIX_A_3, ppu.SPR_PIX_B_3);
+  bool VOTO = or(XEFY, ppu.SPR_PIX_A_4, ppu.SPR_PIX_B_4);
+  bool VYSA = or(XEFY, ppu.SPR_PIX_A_5, ppu.SPR_PIX_B_5);
+  bool TORY = or(XEFY, ppu.SPR_PIX_A_6, ppu.SPR_PIX_B_6);
+  bool WOPE = or(XEFY, ppu.SPR_PIX_A_7, ppu.SPR_PIX_B_7);
 
-  LESY = not(MEFU);
-  LOTA = not(MEVE);
-  LYKU = not(MYZO);
-  ROBY = not(RUDA);
-  TYTA = not(VOTO);
-  TYCO = not(VYSA);
-  SOKA = not(TORY);
-  XOVU = not(WOPE);
+  ppu.LESY = not(MEFU);
+  ppu.LOTA = not(MEVE);
+  ppu.LYKU = not(MYZO);
+  ppu.ROBY = not(RUDA);
+  ppu.TYTA = not(VOTO);
+  ppu.TYCO = not(VYSA);
+  ppu.SOKA = not(TORY);
+  ppu.XOVU = not(WOPE);
 
   bool GOMO_Q = GOMO.q();
 
@@ -58,29 +58,29 @@ void tick_spritepaletteshifter() {
   bool LADY = not(!GOMO_Q);
   bool LAFY = not(!GOMO_Q);
 
-  bool PUME = nand(LESY, !GOMO_Q);
-  bool SUCO = nand(LESY, SYPY);
+  bool PUME = nand(ppu.LESY, !GOMO_Q);
+  bool SUCO = nand(ppu.LESY, SYPY);
 
-  bool SORO = nand(LOTA, !GOMO_Q);
-  bool TAFA = nand(LOTA, TOTU);
+  bool SORO = nand(ppu.LOTA, !GOMO_Q);
+  bool TAFA = nand(ppu.LOTA, TOTU);
 
-  bool PAMO = nand(LYKU, !GOMO_Q);
-  bool PYZY = nand(LYKU, NARO);
+  bool PAMO = nand(ppu.LYKU, !GOMO_Q);
+  bool PYZY = nand(ppu.LYKU, NARO);
 
-  bool SUKY = nand(ROBY, !GOMO_Q);
-  bool TOWA = nand(ROBY, WEXY);
+  bool SUKY = nand(ppu.ROBY, !GOMO_Q);
+  bool TOWA = nand(ppu.ROBY, WEXY);
 
-  bool RORA = nand(TYTA, !GOMO_Q);
-  bool RUDU = nand(TYTA, RYZY);
+  bool RORA = nand(ppu.TYTA, !GOMO_Q);
+  bool RUDU = nand(ppu.TYTA, RYZY);
 
-  bool MENE = nand(TYCO, !GOMO_Q);
-  bool PAZO = nand(TYCO, RYFE);
+  bool MENE = nand(ppu.TYCO, !GOMO_Q);
+  bool PAZO = nand(ppu.TYCO, RYFE);
 
-  bool LUKE = nand(SOKA, !GOMO_Q);
-  bool LOWA = nand(SOKA, LADY);
+  bool LUKE = nand(ppu.SOKA, !GOMO_Q);
+  bool LOWA = nand(ppu.SOKA, LADY);
 
-  bool LAMY = nand(XOVU, !GOMO_Q);
-  bool LUNU = nand(XOVU, LAFY);
+  bool LAMY = nand(ppu.XOVU, !GOMO_Q);
+  bool LUNU = nand(ppu.XOVU, LAFY);
 
   bool RUGO_Q = RUGO.srtock(clk.CLKPIPE, PUME, SUCO, ext.P10_B);
   bool SATA_Q = SATA.srtock(clk.CLKPIPE, SORO, TAFA, RUGO_Q);
@@ -92,11 +92,9 @@ void tick_spritepaletteshifter() {
   bool LYME_Q = LYME.srtock(clk.CLKPIPE, LAMY, LUNU, MODA_Q);
 
   bool LOME = not(LYME_Q);
-  bool LAFU = nand(LOME, BGPIXELn);
-  bool LEKA = nand(LYME_Q, BGPIXELn);
+  bool LAFU = nand(LOME, ppu.BGPIXELn);
+  bool LEKA = nand(LYME_Q, ppu.BGPIXELn);
 
-  OBP0PIXELn = LAFU;
-  OBP1PIXELn = LEKA;
-
-
+  ppu.OBP0PIXELn = LAFU;
+  ppu.OBP1PIXELn = LEKA;
 }

@@ -18,14 +18,6 @@ extern reg MATU;
 extern bool MOPA_PHI;
 extern bool VRAM_TO_OAM;
 
-extern reg RAWU;
-extern reg POZO;
-extern reg PYZO;
-extern reg POXA;
-extern reg PULO;
-extern reg POJU;
-extern reg POWY;
-extern reg PYJU;
 
 extern bool SARO;
 extern bool TUVO;
@@ -446,18 +438,18 @@ void tock_vram() {
     vram.MA3 = WOLU;
   }
 
-  bool VUZA = nor(ppu.FF40_D4, PYJU.q());
+  bool VUZA = nor(ppu.FF40_D4, ppu.PYJU.q());
 
   bool VURY = not(VUZA);
 
-  bool TOBO = not(PYJU.q());
-  bool SUVO = not(POWY.q());
-  bool RESO = not(POJU.q());
-  bool ROHA = not(PULO.q());
-  bool RUSA = not(POXA.q());
-  bool VEJY = not(PYZO.q());
-  bool SEZU = not(POZO.q());
-  bool VAPY = not(RAWU.q());
+  bool TOBO = not(ppu.PYJU.q());
+  bool SUVO = not(ppu.POWY.q());
+  bool RESO = not(ppu.POJU.q());
+  bool ROHA = not(ppu.PULO.q());
+  bool RUSA = not(ppu.POXA.q());
+  bool VEJY = not(ppu.PYZO.q());
+  bool SEZU = not(ppu.POZO.q());
+  bool VAPY = not(ppu.RAWU.q());
 
   if (NETA) {
     vram.MA12 = VURY;

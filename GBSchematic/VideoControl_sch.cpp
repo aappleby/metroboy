@@ -81,14 +81,14 @@ void tick_videocontrol() {
   //----------
   // LY compare
 
-  bool SYFU = xor(V7, FF45_D7);
-  bool TERY = xor(V6, FF45_D6);
-  bool TUCY = xor(V5, FF45_D5);
-  bool TYKU = xor(V4, FF45_D4);
-  bool RASY = xor(V3, FF45_D3);
-  bool REDA = xor(V2, FF45_D2);
-  bool TYDE = xor(V1, FF45_D1);
-  bool RYME = xor(V0, FF45_D0);
+  bool SYFU = xor(ppu.V7, ppu.FF45_D7);
+  bool TERY = xor(ppu.V6, ppu.FF45_D6);
+  bool TUCY = xor(ppu.V5, ppu.FF45_D5);
+  bool TYKU = xor(ppu.V4, ppu.FF45_D4);
+  bool RASY = xor(ppu.V3, ppu.FF45_D3);
+  bool REDA = xor(ppu.V2, ppu.FF45_D2);
+  bool TYDE = xor(ppu.V1, ppu.FF45_D1);
+  bool RYME = xor(ppu.V0, ppu.FF45_D0);
 
   bool SOVU = nor(SYFU, TERY, TUCY, TYKU);
   bool SUBO = nor(RASY, REDA, TYDE, RYME);
@@ -145,10 +145,10 @@ void tick_videocontrol() {
 
   bool TADY = nor(ATEJ, TOFU);
 
-  bool XEHO_Q = XEHO.q();
-  bool SAVY_Q = SAVY.q();
-  bool XODU_Q = XODU.q();
-  bool XYDO_Q = XYDO.q();
+  bool XEHO_Q = ppu.XEHO.q();
+  bool SAVY_Q = ppu.SAVY.q();
+  bool XODU_Q = ppu.XODU.q();
+  bool XYDO_Q = ppu.XYDO.q();
 
   bool XUKE = and(XEHO_Q, SAVY_Q);
   bool XYLE = and(XODU_Q, XUKE);
@@ -156,17 +156,17 @@ void tick_videocontrol() {
   bool XEGY = xor(XODU_Q, XUKE);
   bool XORA = xor(XYDO_Q, XYLE);
 
-  XEHO.tock(clk.CLKPIPE, TADY, !XEHO_Q);
-  SAVY.tock(clk.CLKPIPE, TADY, RYBO);
-  XODU.tock(clk.CLKPIPE, TADY, XEGY);
-  XYDO.tock(clk.CLKPIPE, TADY, XORA);
+  ppu.XEHO.tock(clk.CLKPIPE, TADY, !XEHO_Q);
+  ppu.SAVY.tock(clk.CLKPIPE, TADY, RYBO);
+  ppu.XODU.tock(clk.CLKPIPE, TADY, XEGY);
+  ppu.XYDO.tock(clk.CLKPIPE, TADY, XORA);
 
   bool TOCA = not(XYDO_Q);
 
-  bool TUHU_Q = TUHU.q();
-  bool TUKY_Q = TUKY.q();
-  bool TAKO_Q = TAKO.q();
-  bool SYBE_Q = SYBE.q();
+  bool TUHU_Q = ppu.TUHU.q();
+  bool TUKY_Q = ppu.TUKY.q();
+  bool TAKO_Q = ppu.TAKO.q();
+  bool SYBE_Q = ppu.SYBE.q();
 
   bool TYBA = and(TUKY_Q, TUHU_Q);
   bool SURY = and(TAKO_Q, TYBA);
@@ -174,24 +174,24 @@ void tick_videocontrol() {
   bool TYGE = xor(TAKO_Q, TYBA);
   bool ROKU = xor(SYBE_Q, SURY);
 
-  TUHU.tock(TOCA, TADY, !TUHU_Q);
-  TUKY.tock(TOCA, TADY, SAKE);
-  TAKO.tock(TOCA, TADY, TYGE);
-  SYBE.tock(TOCA, TADY, ROKU);
+  ppu.TUHU.tock(TOCA, TADY, !TUHU_Q);
+  ppu.TUKY.tock(TOCA, TADY, SAKE);
+  ppu.TAKO.tock(TOCA, TADY, TYGE);
+  ppu.SYBE.tock(TOCA, TADY, ROKU);
 
-  ACAM = not(XEHO_Q);
-  AZUB = not(SAVY_Q);
-  AMEL = not(XODU_Q);
-  AHAL = not(XYDO_Q);
-  APUX = not(TUHU_Q);
-  ABEF = not(TUKY_Q);
-  ADAZ = not(TAKO_Q);
-  ASAH = not(SYBE_Q);
+  ppu.ACAM = not(XEHO_Q);
+  ppu.AZUB = not(SAVY_Q);
+  ppu.AMEL = not(XODU_Q);
+  ppu.AHAL = not(XYDO_Q);
+  ppu.APUX = not(TUHU_Q);
+  ppu.ABEF = not(TUKY_Q);
+  ppu.ADAZ = not(TAKO_Q);
+  ppu.ASAH = not(SYBE_Q);
 
   //----------
   // FF41 STAT
 
-  XYVO = and(V4, V7);
+  XYVO = and(ppu.V4, ppu.V7);
 
   bool NYPE_Q = NYPE.tock(TALU,   LYFE, RUTU_Q); // RUTU_OUT on the schematic?
   bool POPU_Q = POPU.tock(NYPE_Q, LYFE, XYVO);
@@ -274,27 +274,27 @@ void tick_videocontrol() {
   //----------
   // y counter
 
-  bool NOKO = and(V7, V4, V0, V1);
+  bool NOKO = and(ppu.V7, ppu.V4, ppu.V0, ppu.V1);
   LYHA = not(rst.RESET_VIDEO);
   LYFE = not(LYHA);
   bool MYTA_Q = MYTA.tock(NYPE_Q, LYFE, NOKO);
   bool LAMA = nor(MYTA_Q, LYHA);
 
-  bool MUWY_Q = MUWY.flip(RUTU_Q,  LAMA);
-  bool MYRO_Q = MYRO.flip(!MUWY_Q, LAMA);
-  bool LEXA_Q = LEXA.flip(!MYRO_Q, LAMA);
-  bool LYDO_Q = LYDO.flip(!LEXA_Q, LAMA);
-  bool LOVU_Q = LOVU.flip(!LYDO_Q, LAMA);
-  bool LEMA_Q = LEMA.flip(!LOVU_Q, LAMA);
-  bool MATO_Q = MATO.flip(!LEMA_Q, LAMA);
-  bool LAFO_Q = LAFO.flip(!MATO_Q, LAMA);
+  bool MUWY_Q = ppu.MUWY.flip(RUTU_Q,  LAMA);
+  bool MYRO_Q = ppu.MYRO.flip(!MUWY_Q, LAMA);
+  bool LEXA_Q = ppu.LEXA.flip(!MYRO_Q, LAMA);
+  bool LYDO_Q = ppu.LYDO.flip(!LEXA_Q, LAMA);
+  bool LOVU_Q = ppu.LOVU.flip(!LYDO_Q, LAMA);
+  bool LEMA_Q = ppu.LEMA.flip(!LOVU_Q, LAMA);
+  bool MATO_Q = ppu.MATO.flip(!LEMA_Q, LAMA);
+  bool LAFO_Q = ppu.LAFO.flip(!MATO_Q, LAMA);
 
-  V0 = MUWY_Q;
-  V1 = MYRO_Q;
-  V2 = LEXA_Q;
-  V3 = LYDO_Q;
-  V4 = LOVU_Q;
-  V5 = LEMA_Q;
-  V6 = MATO_Q;
-  V7 = LAFO_Q;
+  ppu.V0 = MUWY_Q;
+  ppu.V1 = MYRO_Q;
+  ppu.V2 = LEXA_Q;
+  ppu.V3 = LYDO_Q;
+  ppu.V4 = LOVU_Q;
+  ppu.V5 = LEMA_Q;
+  ppu.V6 = MATO_Q;
+  ppu.V7 = LAFO_Q;
 }

@@ -28,14 +28,14 @@ void tick_videoregs() {
   bool XUBO = not(WARU);
   XARE = not(rst.RESET7);
 
-  bool XYLO_Q = XYLO.tock(XUBO, XARE, mem.D1);
-  bool XAFO_Q = XYLO.tock(XUBO, XARE, mem.D3);
-  bool XYMO_Q = XYLO.tock(XUBO, XARE, mem.D2);
-  bool XONA_Q = XYLO.tock(XUBO, XARE, mem.D7);
-  bool WYMO_Q = XYLO.tock(XUBO, XARE, mem.D5);
-  bool WEXU_Q = XYLO.tock(XUBO, XARE, mem.D4);
-  bool WOKY_Q = XYLO.tock(XUBO, XARE, mem.D6);
-  bool VYXE_Q = XYLO.tock(XUBO, XARE, mem.D0);
+  bool XYLO_Q = ppu.XYLO.tock(XUBO, XARE, mem.D1);
+  bool XAFO_Q = ppu.XAFO.tock(XUBO, XARE, mem.D3);
+  bool XYMO_Q = ppu.XYMO.tock(XUBO, XARE, mem.D2);
+  bool XONA_Q = ppu.XONA.tock(XUBO, XARE, mem.D7);
+  bool WYMO_Q = ppu.WYMO.tock(XUBO, XARE, mem.D5);
+  bool WEXU_Q = ppu.WEXU.tock(XUBO, XARE, mem.D4);
+  bool WOKY_Q = ppu.WOKY.tock(XUBO, XARE, mem.D6);
+  bool VYXE_Q = ppu.VYXE.tock(XUBO, XARE, mem.D0);
  
   ppu.FF40_D1 = XYLO_Q;
   ppu.FF40_D3 = XAFO_Q;
@@ -73,23 +73,23 @@ void tick_videoregs() {
   bool VYCU = not(WYZE);
   bool VOXU = not(WUZA);
 
-  bool MYCE_Q = MYCE.tock(VOXU, rst.RESET8, mem.D5);
-  bool MYPA_Q = MYPA.tock(VOXU, rst.RESET8, mem.D0);
-  bool NOFE_Q = NOFE.tock(VOXU, rst.RESET8, mem.D1);
-  bool NUKU_Q = NUKU.tock(VOXU, rst.RESET8, mem.D7);
-  bool MYPU_Q = MYPU.tock(VOXU, rst.RESET8, mem.D4);
-  bool MUVO_Q = MUVO.tock(VOXU, rst.RESET8, mem.D6);
-  bool MEBY_Q = MEBY.tock(VOXU, rst.RESET8, mem.D3);
-  bool NOKE_Q = NOKE.tock(VOXU, rst.RESET8, mem.D2);
+  bool MYCE_Q = ppu.MYCE.tock(VOXU, rst.RESET8, mem.D5);
+  bool MYPA_Q = ppu.MYPA.tock(VOXU, rst.RESET8, mem.D0);
+  bool NOFE_Q = ppu.NOFE.tock(VOXU, rst.RESET8, mem.D1);
+  bool NUKU_Q = ppu.NUKU.tock(VOXU, rst.RESET8, mem.D7);
+  bool MYPU_Q = ppu.MYPU.tock(VOXU, rst.RESET8, mem.D4);
+  bool MUVO_Q = ppu.MUVO.tock(VOXU, rst.RESET8, mem.D6);
+  bool MEBY_Q = ppu.MEBY.tock(VOXU, rst.RESET8, mem.D3);
+  bool NOKE_Q = ppu.NOKE.tock(VOXU, rst.RESET8, mem.D2);
 
-  FF4B_D5 = MYCE_Q;
-  FF4B_D0 = MYPA_Q;
-  FF4B_D1 = NOFE_Q;
-  FF4B_D7 = NUKU_Q;
-  FF4B_D4 = MYPU_Q;
-  FF4B_D6 = MUVO_Q;
-  FF4B_D3 = MEBY_Q;
-  FF4B_D2 = NOKE_Q;
+  ppu.FF4B_D5 = MYCE_Q;
+  ppu.FF4B_D0 = MYPA_Q;
+  ppu.FF4B_D1 = NOFE_Q;
+  ppu.FF4B_D7 = NUKU_Q;
+  ppu.FF4B_D4 = MYPU_Q;
+  ppu.FF4B_D6 = MUVO_Q;
+  ppu.FF4B_D3 = MEBY_Q;
+  ppu.FF4B_D2 = NOKE_Q;
 
   bool MUFE = not(!MYCE_Q);
   bool LOVA = not(!MYPA_Q);
@@ -116,23 +116,23 @@ void tick_videoregs() {
   bool WEKO = and(cpu.CPU_WR2, dec.FF4A);
   bool VEFU = not(WEKO);
 
-  bool NAFU_Q = NAFU.tock(VEFU, rst.RESET8, mem.D7);
-  bool MELA_Q = MELA.tock(VEFU, rst.RESET8, mem.D3);
-  bool NYRO_Q = NYRO.tock(VEFU, rst.RESET8, mem.D1);
-  bool NAGA_Q = NAGA.tock(VEFU, rst.RESET8, mem.D2);
-  bool NULO_Q = NULO.tock(VEFU, rst.RESET8, mem.D4);
-  bool NUKA_Q = NUKA.tock(VEFU, rst.RESET8, mem.D6);
-  bool NENE_Q = NENE.tock(VEFU, rst.RESET8, mem.D5);
-  bool NESO_Q = NESO.tock(VEFU, rst.RESET8, mem.D0);
+  bool NAFU_Q = ppu.NAFU.tock(VEFU, rst.RESET8, mem.D7);
+  bool MELA_Q = ppu.MELA.tock(VEFU, rst.RESET8, mem.D3);
+  bool NYRO_Q = ppu.NYRO.tock(VEFU, rst.RESET8, mem.D1);
+  bool NAGA_Q = ppu.NAGA.tock(VEFU, rst.RESET8, mem.D2);
+  bool NULO_Q = ppu.NULO.tock(VEFU, rst.RESET8, mem.D4);
+  bool NUKA_Q = ppu.NUKA.tock(VEFU, rst.RESET8, mem.D6);
+  bool NENE_Q = ppu.NENE.tock(VEFU, rst.RESET8, mem.D5);
+  bool NESO_Q = ppu.NESO.tock(VEFU, rst.RESET8, mem.D0);
 
-  FF4B_D7 = NAFU_Q;
-  FF4B_D3 = MELA_Q;
-  FF4B_D1 = NYRO_Q;
-  FF4B_D2 = NAGA_Q;
-  FF4B_D4 = NULO_Q;
-  FF4B_D6 = NUKA_Q;
-  FF4B_D5 = NENE_Q;
-  FF4B_D0 = NESO_Q;
+  ppu.FF4B_D7 = NAFU_Q;
+  ppu.FF4B_D3 = MELA_Q;
+  ppu.FF4B_D1 = NYRO_Q;
+  ppu.FF4B_D2 = NAGA_Q;
+  ppu.FF4B_D4 = NULO_Q;
+  ppu.FF4B_D6 = NUKA_Q;
+  ppu.FF4B_D5 = NENE_Q;
+  ppu.FF4B_D0 = NESO_Q;
 
   bool MERA = not(!NAFU_Q);
   bool LOKA = not(!MELA_Q);
@@ -160,23 +160,23 @@ void tick_videoregs() {
   bool ARUR = and(dec.FF43, cpu.CPU_WR2);
   bool AMUN = not(ARUR);
 
-  bool CYXU_Q = CYXU.tock(AMUN, rst.RESET6, mem.D2);
-  bool BAKE_Q = BAKE.tock(AMUN, rst.RESET6, mem.D7);
-  bool BEMY_Q = BEMY.tock(AMUN, rst.RESET6, mem.D4);
-  bool CUZY_Q = CUZY.tock(AMUN, rst.RESET6, mem.D5);
-  bool CABU_Q = CABU.tock(AMUN, rst.RESET6, mem.D6);
-  bool DUZU_Q = DUZU.tock(AMUN, rst.RESET6, mem.D1);
-  bool DATY_Q = DATY.tock(AMUN, rst.RESET6, mem.D0);
-  bool GUBO_Q = GUBO.tock(AMUN, rst.RESET6, mem.D3);
+  bool CYXU_Q = ppu.CYXU.tock(AMUN, rst.RESET6, mem.D2);
+  bool BAKE_Q = ppu.BAKE.tock(AMUN, rst.RESET6, mem.D7);
+  bool BEMY_Q = ppu.BEMY.tock(AMUN, rst.RESET6, mem.D4);
+  bool CUZY_Q = ppu.CUZY.tock(AMUN, rst.RESET6, mem.D5);
+  bool CABU_Q = ppu.CABU.tock(AMUN, rst.RESET6, mem.D6);
+  bool DUZU_Q = ppu.DUZU.tock(AMUN, rst.RESET6, mem.D1);
+  bool DATY_Q = ppu.DATY.tock(AMUN, rst.RESET6, mem.D0);
+  bool GUBO_Q = ppu.GUBO.tock(AMUN, rst.RESET6, mem.D3);
 
-  FF43_D2 = CYXU_Q;
-  FF43_D7 = BAKE_Q;
-  FF43_D4 = BEMY_Q;
-  FF43_D5 = CUZY_Q;
-  FF43_D6 = CABU_Q;
-  FF43_D1 = DUZU_Q;
-  FF43_D0 = DATY_Q;
-  FF43_D3 = GUBO_Q;
+  ppu.FF43_D2 = CYXU_Q;
+  ppu.FF43_D7 = BAKE_Q;
+  ppu.FF43_D4 = BEMY_Q;
+  ppu.FF43_D5 = CUZY_Q;
+  ppu.FF43_D6 = CABU_Q;
+  ppu.FF43_D1 = DUZU_Q;
+  ppu.FF43_D0 = DATY_Q;
+  ppu.FF43_D3 = GUBO_Q;
 
   bool CUGA = not(!CYXU_Q);
   bool CASY = not(!BAKE_Q);
@@ -204,23 +204,23 @@ void tick_videoregs() {
   bool BEDY = and(cpu.CPU_WR2, dec.FF42);
   bool CAVO = not(BEDY);
 
-  bool FEZU_Q = FEZU.tock(CAVO, rst.RESET6, mem.D2);
-  bool FUNY_Q = FUNY.tock(CAVO, rst.RESET6, mem.D7);
-  bool DEDE_Q = DEDE.tock(CAVO, rst.RESET6, mem.D4);
-  bool FOTY_Q = FOTY.tock(CAVO, rst.RESET6, mem.D5);
-  bool FOHA_Q = FOHA.tock(CAVO, rst.RESET6, mem.D6);
-  bool FYMO_Q = FYMO.tock(CAVO, rst.RESET6, mem.D1);
-  bool GAVE_Q = GAVE.tock(CAVO, rst.RESET6, mem.D0);
-  bool FUJO_Q = FUJO.tock(CAVO, rst.RESET6, mem.D3);
+  bool FEZU_Q = ppu.FEZU.tock(CAVO, rst.RESET6, mem.D2);
+  bool FUNY_Q = ppu.FUNY.tock(CAVO, rst.RESET6, mem.D7);
+  bool DEDE_Q = ppu.DEDE.tock(CAVO, rst.RESET6, mem.D4);
+  bool FOTY_Q = ppu.FOTY.tock(CAVO, rst.RESET6, mem.D5);
+  bool FOHA_Q = ppu.FOHA.tock(CAVO, rst.RESET6, mem.D6);
+  bool FYMO_Q = ppu.FYMO.tock(CAVO, rst.RESET6, mem.D1);
+  bool GAVE_Q = ppu.GAVE.tock(CAVO, rst.RESET6, mem.D0);
+  bool FUJO_Q = ppu.FUJO.tock(CAVO, rst.RESET6, mem.D3);
 
-  FF42_D2 = FEZU_Q;
-  FF42_D7 = FUNY_Q;
-  FF42_D4 = DEDE_Q;
-  FF42_D5 = FOTY_Q;
-  FF42_D6 = FOHA_Q;
-  FF42_D1 = FYMO_Q;
-  FF42_D0 = GAVE_Q;
-  FF42_D3 = FUJO_Q;
+  ppu.FF42_D2 = FEZU_Q;
+  ppu.FF42_D7 = FUNY_Q;
+  ppu.FF42_D4 = DEDE_Q;
+  ppu.FF42_D5 = FOTY_Q;
+  ppu.FF42_D6 = FOHA_Q;
+  ppu.FF42_D1 = FYMO_Q;
+  ppu.FF42_D0 = GAVE_Q;
+  ppu.FF42_D3 = FUJO_Q;
 
   bool GONU = not(!FEZU_Q);
   bool GYZA = not(!FUNY_Q);
@@ -248,23 +248,23 @@ void tick_videoregs() {
   bool XUFA = and(cpu.CPU_WR2, dec.FF45);
   bool WANE = not(XUFA);
 
-  bool SOTA_Q = SOTA.tock(WANE, rst.RESET9, mem.D4);
-  bool SYRY_Q = SYRY.tock(WANE, rst.RESET9, mem.D0);
-  bool SALO_Q = SALO.tock(WANE, rst.RESET9, mem.D3);
-  bool SEDY_Q = SEDY.tock(WANE, rst.RESET9, mem.D2);
-  bool VEVO_Q = VEVO.tock(WANE, rst.RESET9, mem.D6);
-  bool VAFA_Q = VAFA.tock(WANE, rst.RESET9, mem.D5);
-  bool VUCE_Q = VUCE.tock(WANE, rst.RESET9, mem.D1);
-  bool RAHA_Q = RAHA.tock(WANE, rst.RESET9, mem.D7);
+  bool SOTA_Q = ppu.SOTA.tock(WANE, rst.RESET9, mem.D4);
+  bool SYRY_Q = ppu.SYRY.tock(WANE, rst.RESET9, mem.D0);
+  bool SALO_Q = ppu.SALO.tock(WANE, rst.RESET9, mem.D3);
+  bool SEDY_Q = ppu.SEDY.tock(WANE, rst.RESET9, mem.D2);
+  bool VEVO_Q = ppu.VEVO.tock(WANE, rst.RESET9, mem.D6);
+  bool VAFA_Q = ppu.VAFA.tock(WANE, rst.RESET9, mem.D5);
+  bool VUCE_Q = ppu.VUCE.tock(WANE, rst.RESET9, mem.D1);
+  bool RAHA_Q = ppu.RAHA.tock(WANE, rst.RESET9, mem.D7);
 
-  FF45_D4 = SOTA_Q;
-  FF45_D0 = SYRY_Q;
-  FF45_D3 = SALO_Q;
-  FF45_D2 = SEDY_Q;
-  FF45_D6 = VEVO_Q;
-  FF45_D5 = VAFA_Q;
-  FF45_D1 = VUCE_Q;
-  FF45_D7 = RAHA_Q;
+  ppu.FF45_D4 = SOTA_Q;
+  ppu.FF45_D0 = SYRY_Q;
+  ppu.FF45_D3 = SALO_Q;
+  ppu.FF45_D2 = SEDY_Q;
+  ppu.FF45_D6 = VEVO_Q;
+  ppu.FF45_D5 = VAFA_Q;
+  ppu.FF45_D1 = VUCE_Q;
+  ppu.FF45_D7 = RAHA_Q;
 
   bool RACE = not(!SOTA_Q);
   bool RETU = not(!SYRY_Q);
@@ -290,14 +290,14 @@ void tick_videoregs() {
   // FF44 LY
   bool WAFU = and(cpu.CPU_RD2, dec.FF44);
 
-  bool WATA = not(V4);
-  bool XAGA = not(V5);
-  bool XEPO = not(V1);
-  bool XUHY = not(V3);
-  bool XOWO = not(V7);
-  bool XUCE = not(V6);
-  bool WURY = not(V0);
-  bool MYFA = not(V2);
+  bool WATA = not(ppu.V4);
+  bool XAGA = not(ppu.V5);
+  bool XEPO = not(ppu.V1);
+  bool XUHY = not(ppu.V3);
+  bool XOWO = not(ppu.V7);
+  bool XUCE = not(ppu.V6);
+  bool WURY = not(ppu.V0);
+  bool MYFA = not(ppu.V2);
 
   bool VYNE = not(WATA);
   bool WAMA = not(XAGA);

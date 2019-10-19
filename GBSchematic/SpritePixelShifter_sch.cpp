@@ -103,45 +103,45 @@ void tick_spritepixelshifter() {
   bool SERY = not(RAMU_Q);
   bool SULU = not(RAMU_Q);
 
-  bool LUFY = nand(LUBO,   ROBY);
-  bool MAME = nand(PUDU_Q, ROBY);
-  bool REHU = nand(SOLO,   ROBY);
-  bool RANO = nand(RAMU_Q, ROBY);
+  bool LUFY = nand(LUBO,   ppu.ROBY);
+  bool MAME = nand(PUDU_Q, ppu.ROBY);
+  bool REHU = nand(SOLO,   ppu.ROBY);
+  bool RANO = nand(RAMU_Q, ppu.ROBY);
 
-  bool WAXO = nand(VOBY,   TYTA);
-  bool TYGA = nand(SELE_Q, TYTA);
-  bool XATO = nand(WERY,   TYTA);
-  bool VEXU = nand(SAJA_Q, TYTA);
+  bool WAXO = nand(VOBY,   ppu.TYTA);
+  bool TYGA = nand(SELE_Q, ppu.TYTA);
+  bool XATO = nand(WERY,   ppu.TYTA);
+  bool VEXU = nand(SAJA_Q, ppu.TYTA);
 
-  bool MAJO = nand(LUMO,   LYKU);
-  bool MYXA = nand(MYTU_Q, LYKU);
-  bool LYDE = nand(LASE,   LYKU);
-  bool LELA = nand(MOFO_Q, LYKU);
+  bool MAJO = nand(LUMO,   ppu.LYKU);
+  bool MYXA = nand(MYTU_Q, ppu.LYKU);
+  bool LYDE = nand(LASE,   ppu.LYKU);
+  bool LELA = nand(MOFO_Q, ppu.LYKU);
 
-  bool XEXU = nand(WURA,   TYCO);
-  bool VABY = nand(SUNY_Q, TYCO);
-  bool XOLE = nand(WYCO,   TYCO);
-  bool VUME = nand(SUTO_Q, TYCO);
+  bool XEXU = nand(WURA,   ppu.TYCO);
+  bool VABY = nand(SUNY_Q, ppu.TYCO);
+  bool XOLE = nand(WYCO,   ppu.TYCO);
+  bool VUME = nand(SUTO_Q, ppu.TYCO);
 
-  bool MOFY = nand(LOZA,   LESY);
-  bool MEZU = nand(PEFO_Q, LESY);
-  bool PYZU = nand(RATA,   LESY);
-  bool PABE = nand(REWO_Q, LESY);
+  bool MOFY = nand(LOZA,   ppu.LESY);
+  bool MEZU = nand(PEFO_Q, ppu.LESY);
+  bool PYZU = nand(RATA,   ppu.LESY);
+  bool PABE = nand(REWO_Q, ppu.LESY);
 
-  bool TULA = nand(SELU,   XOVU);
-  bool TESO = nand(RYDU_Q, XOVU);
-  bool XYVE = nand(WAMY,   XOVU);
-  bool VUNE = nand(SEGA_Q, XOVU);
+  bool TULA = nand(SELU,   ppu.XOVU);
+  bool TESO = nand(RYDU_Q, ppu.XOVU);
+  bool XYVE = nand(WAMY,   ppu.XOVU);
+  bool VUNE = nand(SEGA_Q, ppu.XOVU);
 
-  bool MADA = nand(NUCA,   LOTA);
-  bool MYTO = nand(PEBA_Q, LOTA);
-  bool RUCA = nand(SYBO,   LOTA);
-  bool RUSY = nand(ROKA_Q, LOTA);
+  bool MADA = nand(NUCA,   ppu.LOTA);
+  bool MYTO = nand(PEBA_Q, ppu.LOTA);
+  bool RUCA = nand(SYBO,   ppu.LOTA);
+  bool RUSY = nand(ROKA_Q, ppu.LOTA);
 
-  bool TABY = nand(SERY,   SOKA);
-  bool TAPO = nand(RAMA_Q, SOKA);
-  bool TUPE = nand(SULU,   SOKA);
-  bool TUXA = nand(SEMO_Q, SOKA);
+  bool TABY = nand(SERY,   ppu.SOKA);
+  bool TAPO = nand(RAMA_Q, ppu.SOKA);
+  bool TUPE = nand(SULU,   ppu.SOKA);
+  bool TUXA = nand(SEMO_Q, ppu.SOKA);
 
   bool NURO_Q = NURO.srtock(clk.CLKPIPE, PABE, PYZU, ext.P10_B);
   bool MASO_Q = MASO.srtock(clk.CLKPIPE, MYTO, MADA, NURO_Q);
@@ -161,21 +161,21 @@ void tick_spritepixelshifter() {
   bool VANU_Q = VANU.srtock(clk.CLKPIPE, TAPO, TABY, WEBA_Q);
   bool VUPY_Q = VUPY.srtock(clk.CLKPIPE, TESO, TULA, VANU_Q);
 
-  SPR_PIX_B_0 = NURO_Q;
-  SPR_PIX_B_1 = MASO_Q;
-  SPR_PIX_B_2 = LEFE_Q;
-  SPR_PIX_B_3 = LESU_Q;
-  SPR_PIX_B_4 = WYHO_Q;
-  SPR_PIX_B_5 = WORA_Q;
-  SPR_PIX_B_6 = VAFO_Q;
-  SPR_PIX_B_7 = WUFY_Q;
+  ppu.SPR_PIX_B_0 = NURO_Q;
+  ppu.SPR_PIX_B_1 = MASO_Q;
+  ppu.SPR_PIX_B_2 = LEFE_Q;
+  ppu.SPR_PIX_B_3 = LESU_Q;
+  ppu.SPR_PIX_B_4 = WYHO_Q;
+  ppu.SPR_PIX_B_5 = WORA_Q;
+  ppu.SPR_PIX_B_6 = VAFO_Q;
+  ppu.SPR_PIX_B_7 = WUFY_Q;
 
-  SPR_PIX_A_0 = NYLU_Q;
-  SPR_PIX_A_1 = PEFU_Q;
-  SPR_PIX_A_2 = NATY_Q;
-  SPR_PIX_A_3 = PYJO_Q;
-  SPR_PIX_A_4 = VARE_Q;
-  SPR_PIX_A_5 = WEBA_Q;
-  SPR_PIX_A_6 = VANU_Q;
-  SPR_PIX_A_7 = VUPY_Q;
+  ppu.SPR_PIX_A_0 = NYLU_Q;
+  ppu.SPR_PIX_A_1 = PEFU_Q;
+  ppu.SPR_PIX_A_2 = NATY_Q;
+  ppu.SPR_PIX_A_3 = PYJO_Q;
+  ppu.SPR_PIX_A_4 = VARE_Q;
+  ppu.SPR_PIX_A_5 = WEBA_Q;
+  ppu.SPR_PIX_A_6 = VANU_Q;
+  ppu.SPR_PIX_A_7 = VUPY_Q;
 }

@@ -117,14 +117,14 @@ void tick_spritexmatcher() {
   bool ZOLA_Q = ZOLA.tock(FUXU, DYNA, YPUR);
   bool ZULU_Q = ZULU.tock(FUXU, DYNA, YVOK);
 
-  bool WOJU = xor(WELO_Q, APUX);
-  bool YFUN = xor(XUNY_Q, ABEF);
-  bool WYZA = xor(WOTE_Q, ADAZ);
-  bool YPUK = xor(XAKO_Q, ASAH);
-  bool ZOGY = xor(XEPE_Q, ACAM);
-  bool ZEBA = xor(YLAH_Q, AZUB);
-  bool ZAHA = xor(ZOLA_Q, AMEL);
-  bool ZOKY = xor(ZULU_Q, AHAL);
+  bool WOJU = xor(WELO_Q, ppu.APUX);
+  bool YFUN = xor(XUNY_Q, ppu.ABEF);
+  bool WYZA = xor(WOTE_Q, ppu.ADAZ);
+  bool YPUK = xor(XAKO_Q, ppu.ASAH);
+  bool ZOGY = xor(XEPE_Q, ppu.ACAM);
+  bool ZEBA = xor(YLAH_Q, ppu.AZUB);
+  bool ZAHA = xor(ZOLA_Q, ppu.AMEL);
+  bool ZOKY = xor(ZULU_Q, ppu.AHAL);
   XEBA = nor(WOJU, YFUN, WYZA, YPUK);
   ZAKO = nor(ZOGY, ZEBA, ZAHA, ZOKY);
 
@@ -138,14 +138,14 @@ void tick_spritexmatcher() {
   bool XABE_Q = XABE.tock(YFAG, WUPA, YPUR);
   bool XEKA_Q = XEKA.tock(YFAG, WUPA, YVOK);
 
-  bool YVAP = xor(XOMY_Q, APUX);
-  bool XENY = xor(WUHA_Q, ABEF);
-  bool XAVU = xor(WYNA_Q, ADAZ);
-  bool XEVA = xor(WECO_Q, ASAH);
-  bool YHOK = xor(XOLY_Q, ACAM);
-  bool YCAH = xor(XYBA_Q, AZUB);
-  bool YDAJ = xor(XABE_Q, AMEL);
-  bool YVUZ = xor(XEKA_Q, AHAL);
+  bool YVAP = xor(XOMY_Q, ppu.APUX);
+  bool XENY = xor(WUHA_Q, ppu.ABEF);
+  bool XAVU = xor(WYNA_Q, ppu.ADAZ);
+  bool XEVA = xor(WECO_Q, ppu.ASAH);
+  bool YHOK = xor(XOLY_Q, ppu.ACAM);
+  bool YCAH = xor(XYBA_Q, ppu.AZUB);
+  bool YDAJ = xor(XABE_Q, ppu.AMEL);
+  bool YVUZ = xor(XEKA_Q, ppu.AHAL);
   YWOS = nor(YVAP, XENY, XAVU, XEVA);
   ZURE = nor(YHOK, YCAH, YDAJ, YVUZ);
 
@@ -159,14 +159,14 @@ void tick_spritexmatcher() {
   bool EROL_Q = EROL.tock(GECY, GAFY, YPUR);
   bool EHYN_Q = EHYN.tock(GECY, GAFY, YVOK);
 
-  bool EJOT = xor(FAZU_Q, APUX);
-  bool ESAJ = xor(FAXE_Q, ABEF);
-  bool DUCU = xor(EXUK_Q, ADAZ);
-  bool EWUD = xor(FEDE_Q, ASAH);
-  bool DUSE = xor(ERAZ_Q, ACAM);
-  bool DAGU = xor(EPUM_Q, AZUB);
-  bool DYZE = xor(EROL_Q, AMEL);
-  bool DESO = xor(EHYN_Q, AHAL);
+  bool EJOT = xor(FAZU_Q, ppu.APUX);
+  bool ESAJ = xor(FAXE_Q, ppu.ABEF);
+  bool DUCU = xor(EXUK_Q, ppu.ADAZ);
+  bool EWUD = xor(FEDE_Q, ppu.ASAH);
+  bool DUSE = xor(ERAZ_Q, ppu.ACAM);
+  bool DAGU = xor(EPUM_Q, ppu.AZUB);
+  bool DYZE = xor(EROL_Q, ppu.AMEL);
+  bool DESO = xor(EHYN_Q, ppu.AHAL);
   DAJE = nor(EJOT, ESAJ, DUCU, EWUD);
   CYCO = nor(DUSE, DAGU, DYZE, DESO);
 
@@ -180,14 +180,14 @@ void tick_spritexmatcher() {
   bool DESU_Q = DESU.tock(ASYS, DOKU, YPUR);
   bool DAZO_Q = DAZO.tock(ASYS, DOKU, YVOK);
 
-  bool COLA = xor(DAKE_Q, APUX);
-  bool BOBA = xor(CESO_Q, ABEF);
-  bool COLU = xor(DYFU_Q, ADAZ);
-  bool BAHU = xor(CUSY_Q, ASAH);
-  bool EDYM = xor(DANY_Q, ACAM);
-  bool EMYB = xor(DUKO_Q, AZUB);
-  bool EBEF = xor(DESU_Q, AMEL);
-  bool EWOK = xor(DAZO_Q, AHAL);
+  bool COLA = xor(DAKE_Q, ppu.APUX);
+  bool BOBA = xor(CESO_Q, ppu.ABEF);
+  bool COLU = xor(DYFU_Q, ppu.ADAZ);
+  bool BAHU = xor(CUSY_Q, ppu.ASAH);
+  bool EDYM = xor(DANY_Q, ppu.ACAM);
+  bool EMYB = xor(DUKO_Q, ppu.AZUB);
+  bool EBEF = xor(DESU_Q, ppu.AMEL);
+  bool EWOK = xor(DAZO_Q, ppu.AHAL);
   CYVY = nor(COLA, BOBA, COLU, BAHU);
   EWAM = nor(EDYM, EMYB, EBEF, EWOK);
 
@@ -201,14 +201,14 @@ void tick_spritexmatcher() {
   bool YMEM_Q = YMEM.tock(ZAPE, XAHO, YPUR);
   bool YVAG_Q = YVAG.tock(ZAPE, XAHO, YVOK);
 
-  bool ZARE = xor(ZOLY_Q, APUX);
-  bool ZEMU = xor(ZOGO_Q, ABEF);
-  bool ZYGO = xor(ZECU_Q, ADAZ);
-  bool ZUZY = xor(ZESA_Q, ASAH);
-  bool XOSU = xor(YCOL_Q, ACAM);
-  bool ZUVU = xor(YRAC_Q, AZUB);
-  bool XUCO = xor(YMEM_Q, AMEL);
-  bool ZULO = xor(YVAG_Q, AHAL);
+  bool ZARE = xor(ZOLY_Q, ppu.APUX);
+  bool ZEMU = xor(ZOGO_Q, ppu.ABEF);
+  bool ZYGO = xor(ZECU_Q, ppu.ADAZ);
+  bool ZUZY = xor(ZESA_Q, ppu.ASAH);
+  bool XOSU = xor(YCOL_Q, ppu.ACAM);
+  bool ZUVU = xor(YRAC_Q, ppu.AZUB);
+  bool XUCO = xor(YMEM_Q, ppu.AMEL);
+  bool ZULO = xor(YVAG_Q, ppu.AHAL);
   YWAP = nor(ZARE, ZEMU, ZYGO, ZUZY);
   YDOT = nor(XOSU, ZUVU, XUCO, ZULO);
 
@@ -222,14 +222,14 @@ void tick_spritexmatcher() {
   bool ZYJO_Q = ZYJO.tock(WUNU, WOFO, YPUR);
   bool XURY_Q = XURY.tock(WUNU, WOFO, YVOK);
 
-  bool ZYKU = xor(YBED_Q, APUX);
-  bool ZYPU = xor(ZALA_Q, ABEF);
-  bool XAHA = xor(WYDE_Q, ADAZ);
-  bool ZEFE = xor(XEPA_Q, ASAH);
-  bool XEJU = xor(WEDU_Q, ACAM);
-  bool ZATE = xor(YGAJ_Q, AZUB);
-  bool ZAKU = xor(ZYJO_Q, AMEL);
-  bool YBOX = xor(XURY_Q, AHAL);
+  bool ZYKU = xor(YBED_Q, ppu.APUX);
+  bool ZYPU = xor(ZALA_Q, ppu.ABEF);
+  bool XAHA = xor(WYDE_Q, ppu.ADAZ);
+  bool ZEFE = xor(XEPA_Q, ppu.ASAH);
+  bool XEJU = xor(WEDU_Q, ppu.ACAM);
+  bool ZATE = xor(YGAJ_Q, ppu.AZUB);
+  bool ZAKU = xor(ZYJO_Q, ppu.AMEL);
+  bool YBOX = xor(XURY_Q, ppu.AHAL);
   YKOK = nor(ZYKU, ZYPU, XAHA, ZEFE);
   YNAZ = nor(XEJU, ZATE, ZAKU, YBOX);
 
@@ -243,14 +243,14 @@ void tick_spritexmatcher() {
   bool GADY_Q = GADY.tock(CEXU, WUZO, YPUR);
   bool GAZA_Q = GAZA.tock(CEXU, WUZO, YVOK);
 
-  bool DUZE = xor(EZUF_Q, APUX);
-  bool DAGA = xor(ENAD_Q, ABEF);
-  bool DAWU = xor(EBOW_Q, ADAZ);
-  bool EJAW = xor(FYCA_Q, ASAH);
-  bool GOHO = xor(GAVY_Q, ACAM);
-  bool GASU = xor(GYPU_Q, AZUB);
-  bool GABU = xor(GADY_Q, AMEL);
-  bool GAFE = xor(GAZA_Q, AHAL);
+  bool DUZE = xor(EZUF_Q, ppu.APUX);
+  bool DAGA = xor(ENAD_Q, ppu.ABEF);
+  bool DAWU = xor(EBOW_Q, ppu.ADAZ);
+  bool EJAW = xor(FYCA_Q, ppu.ASAH);
+  bool GOHO = xor(GAVY_Q, ppu.ACAM);
+  bool GASU = xor(GYPU_Q, ppu.AZUB);
+  bool GABU = xor(GADY_Q, ppu.AMEL);
+  bool GAFE = xor(GAZA_Q, ppu.AHAL);
   DAMA = nor(DUZE, DAGA, DAWU, EJAW);
   FEHA = nor(GOHO, GASU, GABU, GAFE);
   
@@ -264,14 +264,14 @@ void tick_spritexmatcher() {
   bool XUZO_Q = XUZO.tock(WEME, DOSY, YPUR);
   bool XEXA_Q = XEXA.tock(WEME, DOSY, YVOK);
 
-  bool ZYWU = xor(YPOD_Q, APUX);
-  bool ZUZA = xor(YROP_Q, ABEF);
-  bool ZEJO = xor(YNEP_Q, ADAZ);
-  bool ZEDA = xor(YZOF_Q, ASAH);
-  bool YMAM = xor(XUVY_Q, ACAM);
-  bool YTYP = xor(XERE_Q, AZUB);
-  bool YFOP = xor(XUZO_Q, AMEL);
-  bool YVAC = xor(XEXA_Q, AHAL);
+  bool ZYWU = xor(YPOD_Q, ppu.APUX);
+  bool ZUZA = xor(YROP_Q, ppu.ABEF);
+  bool ZEJO = xor(YNEP_Q, ppu.ADAZ);
+  bool ZEDA = xor(YZOF_Q, ppu.ASAH);
+  bool YMAM = xor(XUVY_Q, ppu.ACAM);
+  bool YTYP = xor(XERE_Q, ppu.AZUB);
+  bool YFOP = xor(XUZO_Q, ppu.AMEL);
+  bool YVAC = xor(XEXA_Q, ppu.AHAL);
   YTUB = nor(ZYWU, ZUZA, ZEJO, ZEDA);
   YLEV = nor(YMAM, YTYP, YFOP, YVAC);
 
@@ -285,14 +285,14 @@ void tick_spritexmatcher() {
   bool FOZY_Q = FOZY.tock(CYLA, EJAD, YPUR);
   bool FESY_Q = FESY.tock(CYLA, EJAD, YVOK);
 
-  bool BAZY = xor(CYWE_Q, APUX);
-  bool CYLE = xor(DYBY_Q, ABEF);
-  bool CEVA = xor(DURY_Q, ADAZ);
-  bool BUMY = xor(CUVY_Q, ASAH);
-  bool GUZO = xor(FUSA_Q, ACAM);
-  bool GOLA = xor(FAXA_Q, AZUB);
-  bool GEVE = xor(FOZY_Q, AMEL);
-  bool GUDE = xor(FESY_Q, AHAL);
+  bool BAZY = xor(CYWE_Q, ppu.APUX);
+  bool CYLE = xor(DYBY_Q, ppu.ABEF);
+  bool CEVA = xor(DURY_Q, ppu.ADAZ);
+  bool BUMY = xor(CUVY_Q, ppu.ASAH);
+  bool GUZO = xor(FUSA_Q, ppu.ACAM);
+  bool GOLA = xor(FAXA_Q, ppu.AZUB);
+  bool GEVE = xor(FOZY_Q, ppu.AMEL);
+  bool GUDE = xor(FESY_Q, ppu.AHAL);
   COGY = nor(BAZY, CYLE, CEVA, BUMY);
   FYMA = nor(GUZO, GOLA, GEVE, GUDE);
 
@@ -306,14 +306,14 @@ void tick_spritexmatcher() {
   bool FUBY_Q = FUBY.tock(CACU, GAMY, YPUR);
   bool GOXU_Q = GOXU.tock(CACU, GAMY, YVOK);
 
-  bool CEKO = xor(DUHY_Q, APUX);
-  bool DETY = xor(EJUF_Q, ABEF);
-  bool DOZO = xor(ENOR_Q, ADAZ);
-  bool CONY = xor(DEPY_Q, ASAH);
-  bool FUZU = xor(FOKA_Q, ACAM);
-  bool FESO = xor(FYTY_Q, AZUB);
-  bool FOKY = xor(FUBY_Q, AMEL);
-  bool FYVA = xor(GOXU_Q, AHAL);
+  bool CEKO = xor(DUHY_Q, ppu.APUX);
+  bool DETY = xor(EJUF_Q, ppu.ABEF);
+  bool DOZO = xor(ENOR_Q, ppu.ADAZ);
+  bool CONY = xor(DEPY_Q, ppu.ASAH);
+  bool FUZU = xor(FOKA_Q, ppu.ACAM);
+  bool FESO = xor(FYTY_Q, ppu.AZUB);
+  bool FOKY = xor(FUBY_Q, ppu.AMEL);
+  bool FYVA = xor(GOXU_Q, ppu.AHAL);
   CEHU = nor(CEKO, DETY, DOZO, CONY);
   EKES = nor(FUZU, FESO, FOKY, FYVA);
 }

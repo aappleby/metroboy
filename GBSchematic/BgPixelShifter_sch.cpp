@@ -32,23 +32,23 @@ void tick_bgpixelshifter() {
   wire LOZE = not(NYXU);
   wire LUXA = not(NYXU);
 
-  wire RAWU_Q = RAWU.tock(LABU, VYPO, vram.MD0);
-  wire POZO_Q = POZO.tock(LABU, VYPO, vram.MD1);
-  wire PYZO_Q = PYZO.tock(LABU, VYPO, vram.MD2);
-  wire POXA_Q = POXA.tock(LABU, VYPO, vram.MD3);
-  wire PULO_Q = POXA.tock(LABU, VYPO, vram.MD4);
-  wire POJU_Q = POXA.tock(LABU, VYPO, vram.MD5);
-  wire POWY_Q = POXA.tock(LABU, VYPO, vram.MD6);
-  wire PYJU_Q = POXA.tock(LABU, VYPO, vram.MD7);
+  wire RAWU_Q = ppu.RAWU.tock(LABU, VYPO, vram.MD0);
+  wire POZO_Q = ppu.POZO.tock(LABU, VYPO, vram.MD1);
+  wire PYZO_Q = ppu.PYZO.tock(LABU, VYPO, vram.MD2);
+  wire POXA_Q = ppu.POXA.tock(LABU, VYPO, vram.MD3);
+  wire PULO_Q = ppu.PULO.tock(LABU, VYPO, vram.MD4);
+  wire POJU_Q = ppu.POJU.tock(LABU, VYPO, vram.MD5);
+  wire POWY_Q = ppu.POWY.tock(LABU, VYPO, vram.MD6);
+  wire PYJU_Q = ppu.PYJU.tock(LABU, VYPO, vram.MD7);
 
-  wire LEGU_Q = LEGU.latch(LOMA, vram.MD0);
-  wire NUDU_Q = LEGU.latch(LOMA, vram.MD1);
-  bool MUKU_Q = MUKU.latch(LOMA, vram.MD2);
-  bool LUZO_Q = MUKU.latch(LOMA, vram.MD3);
-  bool MEGU_Q = MEGU.latch(LOMA, vram.MD4);
-  bool MYJY_Q = MYJY.latch(LOMA, vram.MD5);
-  bool NASA_Q = NASA.latch(LOMA, vram.MD6);
-  bool NEFO_Q = NEFO.latch(LOMA, vram.MD7);
+  wire LEGU_Q = ppu.LEGU.latch(LOMA, vram.MD0);
+  wire NUDU_Q = ppu.NUDU.latch(LOMA, vram.MD1);
+  bool MUKU_Q = ppu.MUKU.latch(LOMA, vram.MD2);
+  bool LUZO_Q = ppu.LUZO.latch(LOMA, vram.MD3);
+  bool MEGU_Q = ppu.MEGU.latch(LOMA, vram.MD4);
+  bool MYJY_Q = ppu.MYJY.latch(LOMA, vram.MD5);
+  bool NASA_Q = ppu.NASA.latch(LOMA, vram.MD6);
+  bool NEFO_Q = ppu.NEFO.latch(LOMA, vram.MD7);
 
   bool TOSA = not(!RAWU_Q);
   bool RUCO = not(!POZO_Q);
@@ -104,25 +104,25 @@ void tick_bgpixelshifter() {
   bool NUTE = nand(LOZE, NASA_Q);
   bool NAJA = nand(LOZE, NEFO_Q);
 
-  bool TOMY_Q = TOMY.srtock(clk.CLKPIPE, TUXE, SEJA, ext.P10_B);
-  bool TACA_Q = TACA.srtock(clk.CLKPIPE, SOLY, SENO, TOMY_Q);
-  bool SADY_Q = SADY.srtock(clk.CLKPIPE, RUCE, SURE, TACA_Q);
-  bool RYSA_Q = RYSA.srtock(clk.CLKPIPE, RYJA, SEBO, SADY_Q);
-  bool SOBO_Q = SOBO.srtock(clk.CLKPIPE, RUTO, SUCA, RYSA_Q);
-  bool SETU_Q = SETU.srtock(clk.CLKPIPE, RAJA, SYWE, SOBO_Q);
-  bool RALU_Q = RALU.srtock(clk.CLKPIPE, RAJO, SUPU, SETU_Q);
-  bool SOHU_Q = SOHU.srtock(clk.CLKPIPE, RAGA, RYJY, RALU_Q);
+  bool TOMY_Q = ppu.TOMY.srtock(clk.CLKPIPE, TUXE, SEJA, ext.P10_B);
+  bool TACA_Q = ppu.TACA.srtock(clk.CLKPIPE, SOLY, SENO, TOMY_Q);
+  bool SADY_Q = ppu.SADY.srtock(clk.CLKPIPE, RUCE, SURE, TACA_Q);
+  bool RYSA_Q = ppu.RYSA.srtock(clk.CLKPIPE, RYJA, SEBO, SADY_Q);
+  bool SOBO_Q = ppu.SOBO.srtock(clk.CLKPIPE, RUTO, SUCA, RYSA_Q);
+  bool SETU_Q = ppu.SETU.srtock(clk.CLKPIPE, RAJA, SYWE, SOBO_Q);
+  bool RALU_Q = ppu.RALU.srtock(clk.CLKPIPE, RAJO, SUPU, SETU_Q);
+  bool SOHU_Q = ppu.SOHU.srtock(clk.CLKPIPE, RAGA, RYJY, RALU_Q);
 
-  BG_PIX_B_7 = SOHU_Q;
+  ppu.BG_PIX_B_7 = SOHU_Q;
 
-  bool MYDE_Q = MYDE.srtock(clk.CLKPIPE, LAKY, LOTY, ext.P10_B);
-  bool NOZO_Q = NOZO.srtock(clk.CLKPIPE, NYXO, NEXA, MYDE_Q);
-  bool MOJU_Q = MOJU.srtock(clk.CLKPIPE, LOTO, LUTU, NOZO_Q);
-  bool MACU_Q = MACU.srtock(clk.CLKPIPE, LYDU, LUJA, MOJU_Q);
-  bool NEPO_Q = NEPO.srtock(clk.CLKPIPE, MYVY, MOSY, MACU_Q);
-  bool MODU_Q = MODU.srtock(clk.CLKPIPE, LODO, LERU, NEPO_Q);
-  bool NEDA_Q = NEDA.srtock(clk.CLKPIPE, NUTE, NYHA, MODU_Q);
-  bool PYBO_Q = PYBO.srtock(clk.CLKPIPE, NAJA, NADY, NEDA_Q);
+  bool MYDE_Q = ppu.MYDE.srtock(clk.CLKPIPE, LAKY, LOTY, ext.P10_B);
+  bool NOZO_Q = ppu.NOZO.srtock(clk.CLKPIPE, NYXO, NEXA, MYDE_Q);
+  bool MOJU_Q = ppu.MOJU.srtock(clk.CLKPIPE, LOTO, LUTU, NOZO_Q);
+  bool MACU_Q = ppu.MACU.srtock(clk.CLKPIPE, LYDU, LUJA, MOJU_Q);
+  bool NEPO_Q = ppu.NEPO.srtock(clk.CLKPIPE, MYVY, MOSY, MACU_Q);
+  bool MODU_Q = ppu.MODU.srtock(clk.CLKPIPE, LODO, LERU, NEPO_Q);
+  bool NEDA_Q = ppu.NEDA.srtock(clk.CLKPIPE, NUTE, NYHA, MODU_Q);
+  bool PYBO_Q = ppu.PYBO.srtock(clk.CLKPIPE, NAJA, NADY, NEDA_Q);
 
-  BG_PIX_A_7 = PYBO_Q;
+  ppu.BG_PIX_A_7 = PYBO_Q;
 }

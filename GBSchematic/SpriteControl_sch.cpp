@@ -411,14 +411,14 @@ void tick_spritecontrol() {
   bool GEGU = not(!XOTE_Q);
   bool XEHE = not(!YZAB_Q);
 
-  bool EBOS = not(V0);
-  bool DASA = not(V1);
-  bool FUKY = not(V2);
-  bool FUVE = not(V3);
-  bool FEPU = not(V4);
-  bool FOFA = not(V5);
-  bool FEMO = not(V6);
-  bool GUSU = not(V7);
+  bool EBOS = not(ppu.V0);
+  bool DASA = not(ppu.V1);
+  bool FUKY = not(ppu.V2);
+  bool FUVE = not(ppu.V3);
+  bool FEPU = not(ppu.V4);
+  bool FOFA = not(ppu.V5);
+  bool FEMO = not(ppu.V6);
+  bool GUSU = not(ppu.V7);
 
   bool ERUC_S = add_s(EBOS, !XUSO_Q, ext.P10_B);
   bool ERUC_C = add_c(EBOS, !XUSO_Q, ext.P10_B);

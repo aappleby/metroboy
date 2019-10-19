@@ -25,7 +25,7 @@ extern bool LYFE;
 extern bool FEPO;
 
 extern reg RUTU;
-extern reg XYDO;
+
 extern reg NYPE;
 
 //----------
@@ -75,7 +75,7 @@ void tick_lcdcontrol() {
   bool LOFU = not(RUTU_Q);
   
   // FIXME why 7
-  bool NERU = !(V7 || V6 || V5 || V4 || V3 || V2 || V1); // biiig nor
+  bool NERU = !(ppu.V7 || ppu.V6 || ppu.V5 || ppu.V4 || ppu.V3 || ppu.V2 || ppu.V1); // biiig nor
   bool MURE = not(MEDA_Q);
 
   ext.PIN_S = MURE;
@@ -111,7 +111,7 @@ void tick_lcdcontrol() {
   PORY.tock(MYVO, NAFY, NYKA_Q);
   PYGO.tock(clk.CLK2, XYMU, PORY_Q);
 
-  bool XYDO_Q = XYDO.q();
+  bool XYDO_Q = ppu.XYDO.q();
   PAHO.tock(ROXO, XYMU, XYDO_Q);
 
   LUCA.tock(LOFU,    LYFE, !LUCA_Q);

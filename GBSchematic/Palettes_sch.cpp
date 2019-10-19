@@ -24,23 +24,23 @@ void tick_palettes() {
   bool TEPY = not(VUSO);
   bool TEPO = not(VELY);
 
-  bool MENA_Q = MENA.tock(TEPO, 0, mem.D7);
-  bool MORU_Q = MORU.tock(TEPO, 0, mem.D5);
-  bool MAXY_Q = MAXY.tock(TEPO, 0, mem.D3);
-  bool NUSY_Q = NUSY.tock(TEPO, 0, mem.D1);
-  bool MOGY_Q = MOGY.tock(TEPO, 0, mem.D6);
-  bool MUKE_Q = MUKE.tock(TEPO, 0, mem.D4);
-  bool PYLU_Q = PYLU.tock(TEPO, 0, mem.D2);
-  bool PAVO_Q = PAVO.tock(TEPO, 0, mem.D0);
+  bool MENA_Q = ppu.MENA.tock(TEPO, 0, mem.D7);
+  bool MORU_Q = ppu.MORU.tock(TEPO, 0, mem.D5);
+  bool MAXY_Q = ppu.MAXY.tock(TEPO, 0, mem.D3);
+  bool NUSY_Q = ppu.NUSY.tock(TEPO, 0, mem.D1);
+  bool MOGY_Q = ppu.MOGY.tock(TEPO, 0, mem.D6);
+  bool MUKE_Q = ppu.MUKE.tock(TEPO, 0, mem.D4);
+  bool PYLU_Q = ppu.PYLU.tock(TEPO, 0, mem.D2);
+  bool PAVO_Q = ppu.PAVO.tock(TEPO, 0, mem.D0);
 
-  BGP_D7 = MENA_Q;
-  BGP_D5 = MORU_Q;
-  BGP_D3 = MAXY_Q;
-  BGP_D1 = NUSY_Q;
-  BGP_D6 = MOGY_Q;
-  BGP_D4 = MUKE_Q;
-  BGP_D2 = PYLU_Q;
-  BGP_D0 = PAVO_Q;
+  ppu.BGP_D7 = MENA_Q;
+  ppu.BGP_D5 = MORU_Q;
+  ppu.BGP_D3 = MAXY_Q;
+  ppu.BGP_D1 = NUSY_Q;
+  ppu.BGP_D6 = MOGY_Q;
+  ppu.BGP_D4 = MUKE_Q;
+  ppu.BGP_D2 = PYLU_Q;
+  ppu.BGP_D0 = PAVO_Q;
 
   bool LARY = not(!MENA_Q);
   bool LYKA = not(!MORU_Q);
@@ -68,23 +68,23 @@ void tick_palettes() {
   bool XOZY = not(XUFY);
   bool XELO = not(XOMA);
 
-  bool XANA_Q = XANA.tock(XELO, 0, mem.D7);
-  bool XYZE_Q = XYZE.tock(XELO, 0, mem.D5);
-  bool XALO_Q = XALO.tock(XELO, 0, mem.D3);
-  bool XUKY_Q = XUKY.tock(XELO, 0, mem.D1);
-  bool XUPO_Q = XUPO.tock(XELO, 0, mem.D6);
-  bool XERU_Q = XERU.tock(XELO, 0, mem.D4);
-  bool XOVA_Q = XOVA.tock(XELO, 0, mem.D2);
-  bool XUFU_Q = XUFU.tock(XELO, 0, mem.D0);
+  bool XANA_Q = ppu.XANA.tock(XELO, 0, mem.D7);
+  bool XYZE_Q = ppu.XYZE.tock(XELO, 0, mem.D5);
+  bool XALO_Q = ppu.XALO.tock(XELO, 0, mem.D3);
+  bool XUKY_Q = ppu.XUKY.tock(XELO, 0, mem.D1);
+  bool XUPO_Q = ppu.XUPO.tock(XELO, 0, mem.D6);
+  bool XERU_Q = ppu.XERU.tock(XELO, 0, mem.D4);
+  bool XOVA_Q = ppu.XOVA.tock(XELO, 0, mem.D2);
+  bool XUFU_Q = ppu.XUFU.tock(XELO, 0, mem.D0);
 
-  OBP0_D7 = XANA_Q;
-  OBP0_D5 = XYZE_Q;
-  OBP0_D3 = XALO_Q;
-  OBP0_D1 = XUKY_Q;
-  OBP0_D6 = XUPO_Q;
-  OBP0_D4 = XERU_Q;
-  OBP0_D2 = XOVA_Q;
-  OBP0_D0 = XUFU_Q;
+  ppu.OBP0_D7 = XANA_Q;
+  ppu.OBP0_D5 = XYZE_Q;
+  ppu.OBP0_D3 = XALO_Q;
+  ppu.OBP0_D1 = XUKY_Q;
+  ppu.OBP0_D6 = XUPO_Q;
+  ppu.OBP0_D4 = XERU_Q;
+  ppu.OBP0_D2 = XOVA_Q;
+  ppu.OBP0_D0 = XUFU_Q;
 
   bool XAWO = not(!XANA_Q);
   bool XOBO = not(!XYZE_Q);
@@ -112,23 +112,23 @@ void tick_palettes() {
   bool LOTE = not(MUMY);
   bool LEHO = not(MYXE);
 
-  bool LUXO_Q = LUXO.tock(LEHO, 0, mem.D7);
-  bool LUGU_Q = LUGU.tock(LEHO, 0, mem.D5);
-  bool LOSE_Q = LOSE.tock(LEHO, 0, mem.D3);
-  bool LAWO_Q = LAWO.tock(LEHO, 0, mem.D1);
-  bool LEPU_Q = LEPU.tock(LEHO, 0, mem.D6);
-  bool LUNE_Q = LUNE.tock(LEHO, 0, mem.D4);
-  bool MOSA_Q = MOSA.tock(LEHO, 0, mem.D2);
-  bool MOXY_Q = MOXY.tock(LEHO, 0, mem.D0);
+  bool LUXO_Q = ppu.LUXO.tock(LEHO, 0, mem.D7);
+  bool LUGU_Q = ppu.LUGU.tock(LEHO, 0, mem.D5);
+  bool LOSE_Q = ppu.LOSE.tock(LEHO, 0, mem.D3);
+  bool LAWO_Q = ppu.LAWO.tock(LEHO, 0, mem.D1);
+  bool LEPU_Q = ppu.LEPU.tock(LEHO, 0, mem.D6);
+  bool LUNE_Q = ppu.LUNE.tock(LEHO, 0, mem.D4);
+  bool MOSA_Q = ppu.MOSA.tock(LEHO, 0, mem.D2);
+  bool MOXY_Q = ppu.MOXY.tock(LEHO, 0, mem.D0);
 
-  OBP1_D7 = LUXO_Q;
-  OBP1_D5 = LUGU_Q;
-  OBP1_D3 = LOSE_Q;
-  OBP1_D1 = LAWO_Q;
-  OBP1_D6 = LEPU_Q;
-  OBP1_D4 = LUNE_Q;
-  OBP1_D2 = MOSA_Q;
-  OBP1_D0 = MOXY_Q;
+  ppu.OBP1_D7 = LUXO_Q;
+  ppu.OBP1_D5 = LUGU_Q;
+  ppu.OBP1_D3 = LOSE_Q;
+  ppu.OBP1_D1 = LAWO_Q;
+  ppu.OBP1_D6 = LEPU_Q;
+  ppu.OBP1_D4 = LUNE_Q;
+  ppu.OBP1_D2 = MOSA_Q;
+  ppu.OBP1_D0 = MOXY_Q;
 
   bool LELU = not(!LUXO_Q);
   bool LUGA = not(!LUGU_Q);

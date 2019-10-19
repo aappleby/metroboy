@@ -184,8 +184,8 @@ void tick_clocks_reset() {
   AFAS = nor(ADAR, ATYP);
   bool AJAX = not(ATYP);
   bool BUGO = not(AFEP);
-  bool AREV = nand(FROM_CPU3, AFAS);
-  bool AGUT = unk3(AJAX, AROV, FROM_CPU4);
+  bool AREV = nand(cpu.FROM_CPU3, AFAS);
+  bool AGUT = unk3(AJAX, AROV, cpu.FROM_CPU4);
   bool BATE = nor(BUGO, AROV, ABOL_1MHZ);
   bool APOV = not(AREV);
   bool AWOD = or(T1nT2, AGUT);
@@ -229,7 +229,7 @@ void tick_clocks_reset() {
   bool BYXO = not(BUVU);
   BEDO = not(BYXO);
   bool BOWA = not(BEDO);
-  TO_CPU = BOWA;
+  cpu.TO_CPU = BOWA;
   
   bool AVOR = or(AFER_Q, ASOL);
   bool ALUR = not(AVOR);

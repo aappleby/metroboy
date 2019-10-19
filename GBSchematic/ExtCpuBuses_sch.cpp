@@ -58,9 +58,9 @@ void tick_extbus() {
 
   wire SORE = not(mem.A15);
   wire TEVY = and(mem.A13, mem.A14, SORE);
-  TEXO = and(FROM_CPU4, TEVY);
+  TEXO = and(cpu.FROM_CPU4, TEVY);
   wire LEVO = not(TEXO);
-  wire LAGU = unk3(CPU_RAW_RD, LEVO, FROM_CPU3);
+  wire LAGU = unk3(CPU_RAW_RD, LEVO, cpu.FROM_CPU3);
   wire LYWE = not(LAGU);
 
   wire MOCA = nor(TEXO, T1T2n);
@@ -252,7 +252,7 @@ void tick_extbus() {
   //----------
   // DX_IN latch, bottom right
 
-  wire LAVO = nand(CPU_RAW_RD, TEXO, FROM_CPU5);
+  wire LAVO = nand(CPU_RAW_RD, TEXO, cpu.FROM_CPU5);
 
   wire SODY_Q = SODY.latch(ext.D4_IN, LAVO);
   wire SELO_Q = SELO.latch(ext.D3_IN, LAVO);

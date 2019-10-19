@@ -104,7 +104,7 @@ void tick_joypad() {
 
   bool AXYN = not(BEDO);
   bool ADYR = not(AXYN);
-  bool APYS = nor(FROM_CPU, ADYR);
+  bool APYS = nor(cpu.FROM_CPU, ADYR);
   bool AFOP = not(APYS);
 
   bool ANOC = not(P10_B);

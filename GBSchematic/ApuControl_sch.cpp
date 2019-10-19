@@ -88,7 +88,7 @@ void tick_apucontrol() {
 
   bool KEPY = not(JYRO);
   bool ETUC = and(CPU_WRQ, FF26);
-  bool EFOP = and(mem.D4, FROM_CPU);
+  bool EFOP = and(mem.D4, cpu.FROM_CPU);
   bool FOKU = not(ETUC);
   FERO_Q = FERO.tock(FOKU, KEPY, EFOP);
   bool EDEK = not(!FERO_Q);

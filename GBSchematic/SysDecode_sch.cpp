@@ -215,7 +215,7 @@ void tick_sysdecode() {
   bool ASOT = not(AJAS);
   CPU_RD2 = ASOT;
 
-  bool LEXY = not(FROM_CPU6);
+  bool LEXY = not(cpu.FROM_CPU6);
   PIN_NC = LEXY;
 
   //----------

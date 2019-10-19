@@ -35,7 +35,7 @@ reg MATY, NEJY, NUTY, MOPO, PAVY;
 void tick_interrupts() {
   bool KERY = or(P13_C, P12, P11_C, P10);
   bool AWOB_Q = AWOB.latch(BOGA1MHZ, KERY);
-  TO_CPU2 = AWOB_Q; // for unhalt?
+  cpu.TO_CPU2 = AWOB_Q; // for unhalt?
 
   // Sort of a deglitcher, only passes INT_JP if high for 4 cycles?
   bool BATU_Q = BATU.tock(BOGA1MHZ, RESET2, KERY);
@@ -47,15 +47,15 @@ void tick_interrupts() {
 
 
   bool ROTU = not(FF0F_WR);
-  bool LETY = not(FROM_CPU9);
+  bool LETY = not(cpu.FROM_CPU9);
   bool MUXE = or(mem.D0, FF0F);
-  bool LUFE = not(FROM_CPU7);
+  bool LUFE = not(cpu.FROM_CPU7);
   bool SULO = or(mem.D3, FF0F_WR);
   bool LAMO = not(CPU); // !?!?!?! this has gotta be FROM_CPU11
   bool SEME = or(mem.D4, FF0F);
-  bool LEJA = not(FROM_CPU8);
+  bool LEJA = not(cpu.FROM_CPU8);
   bool NABE = or(mem.D1, FF0F);
-  bool LESA = not(FROM_CPU10);
+  bool LESA = not(cpu.FROM_CPU10);
   bool RAKE = or(mem.D2, FF0F);
 
   bool MYZU = nand(ROTU, LETY, mem.D0);

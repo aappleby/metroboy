@@ -107,10 +107,10 @@ void tock_vram() {
   bool TUCA = and(SOSE, ABUZ);
   bool TUJA = and(SOSE, CPU_RD_SYNC);
   bool TEGU = and(SOSE, AFAS);
-  bool TAVY = not(MOE_IN);
+  bool TAVY = not(ext.MOE_IN);
   bool TUTO = and(NET02, !SOTO_Q);
-  bool SUDO = not(MWR_IN);
-  bool TEFY = not(MCS_IN);
+  bool SUDO = not(ext.MWR_IN);
+  bool TEFY = not(ext.MCS_IN);
 
   bool SALE = mux2(TUTO, TAVY, TEGU);
   bool TYJY = mux2(TUTO, SUDO, TUJA);
@@ -143,12 +143,12 @@ void tock_vram() {
   bool SYSY = not(TAXY);
   bool RAGU = not(SOFY);
 
-  MCS_A = SOKY;
-  MCS_D = SETY;
-  MWR_A = SYSY;
-  MWR_D = RAGU;
-  MOE_A = REFO;
-  MOE_D = SAHA;
+  ext.MCS_A = SOKY;
+  ext.MCS_D = SETY;
+  ext.MWR_A = SYSY;
+  ext.MWR_D = RAGU;
+  ext.MOE_A = REFO;
+  ext.MOE_D = SAHA;
 
   // this is some pulse generator sorta thing?
   bool RYJE = not(SAZO);
@@ -163,14 +163,14 @@ void tock_vram() {
   MD_B = ROFA; // something about vram pins...
 
   // buffer or inverter? looks like buffer...
-  bool RAKU = !not(MD7_IN);
-  bool ROCE = !not(MD4_IN);
-  bool REMO = !not(MD3_IN);
-  bool ROPU = !not(MD5_IN);
-  bool RETA = !not(MD6_IN);
-  bool RYDO = !not(MD2_IN);
-  bool RODY = !not(MD0_IN);
-  bool REBA = !not(MD1_IN);
+  bool RAKU = !not(ext.MD7_IN);
+  bool ROCE = !not(ext.MD4_IN);
+  bool REMO = !not(ext.MD3_IN);
+  bool ROPU = !not(ext.MD5_IN);
+  bool RETA = !not(ext.MD6_IN);
+  bool RYDO = !not(ext.MD2_IN);
+  bool RODY = !not(ext.MD0_IN);
+  bool REBA = !not(ext.MD1_IN);
 
   if (RENA) {
     vram.MD7 = RAKU;
@@ -245,14 +245,14 @@ void tock_vram() {
   bool RYTY = not(SEDO);
   bool RADY = not(SAWU);
 
-  MD0_OUT = RURA;
-  MD1_OUT = RULY;
-  MD2_OUT = RARE;
-  MD3_OUT = RODU;
-  MD4_OUT = RUBE;
-  MD5_OUT = RUMU;
-  MD6_OUT = RYTY;
-  MD7_OUT = RADY;
+  ext.MD0_OUT = RURA;
+  ext.MD1_OUT = RULY;
+  ext.MD2_OUT = RARE;
+  ext.MD3_OUT = RODU;
+  ext.MD4_OUT = RUBE;
+  ext.MD5_OUT = RUMU;
+  ext.MD6_OUT = RYTY;
+  ext.MD7_OUT = RADY;
 
   bool XANE = nor(VRAM_TO_OAM, XYMU);
   bool XEDU = not(XANE);
@@ -338,14 +338,14 @@ void tock_vram() {
   const bool REVU = not(SAZU);
   const bool RAZO = not(SEFU);
 
-  MD0_A = REGE;
-  MD3_A = RADA;
-  MD4_A = RYRO;
-  MD7_A = RYZE;
-  MD6_A = REKU;
-  MD1_A = RYKY;
-  MD5_A = REVU;
-  MD2_A = RAZO;
+  ext.MD0_A = REGE;
+  ext.MD3_A = RADA;
+  ext.MD4_A = RYRO;
+  ext.MD7_A = RYZE;
+  ext.MD6_A = REKU;
+  ext.MD1_A = RYKY;
+  ext.MD5_A = REVU;
+  ext.MD2_A = RAZO;
 
   bool CEDE = not(LUMA);
   bool SYZO = not(ext.D7_IN);

@@ -13,7 +13,7 @@ void Timer::tick(bool FF04_D1n) {
   bool RYFO = and(mem.A2, A00_07, FFXX);
   FF04_FF07 = RYFO;
   bool TOPE = nand(CPU_WR, FF04_FF07, mem.A0, TOLA_A1n);
-  bool MUZU = or(FROM_CPU5, TOPE);
+  bool MUZU = or(cpu.FROM_CPU5, TOPE);
   bool MEKE = not(INT_TIMER);
   bool MEXU = nand(MUZU, RESET2, MEKE);
 

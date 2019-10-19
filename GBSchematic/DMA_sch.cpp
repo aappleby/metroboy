@@ -64,7 +64,7 @@ void tick_dma() {
   bool LENE_Q = LENE.q();
   bool MATU_Q = MATU.q();
 
-  bool DECY = not(FROM_CPU5);
+  bool DECY = not(cpu.FROM_CPU5);
   CATY = not(DECY);
   bool NAXY = nor(MAKA_Q, LUVY_Q);
 

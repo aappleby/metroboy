@@ -2,13 +2,14 @@
 
 bool CPU_RD;
 bool CPU_RD2;
+bool CPU_RDn;
+bool CPU_RAW_RD;
+bool CPU_RD_SYNC;
 
 bool CPU_WR;
 bool CPU_WR2;
-
 bool CPU_WR_RAW;
-bool CPU_RAW_RD;
-bool CPU_WR_WAT;
+bool CPU_WRQ; // schematic has a question mark
 
 bool FROM_CPU;
 // no FROM_CPU2 - maybe in APU?
@@ -29,5 +30,3 @@ bool INT_SERIAL;
 
 bool TO_CPU;
 bool TO_CPU2;
-
-bool CPU_RD_SYNC;

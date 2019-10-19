@@ -36,10 +36,18 @@ extern bool BUFY_256;
 extern bool BYFE_128;
 
 extern bool APU_RESET;
+extern bool APU_RESETn;
+extern bool APU_RESET2n;
+extern bool APU_RESET3n;
+extern bool APU_RESET4n;
 extern bool APU_RESET5n;
-
 
 extern bool ABOL_1MHZ;
 extern bool AJER_2MHZ;
 extern bool CYBO_4MHZ;
 
+extern bool APUV_4MHZ;
+
+
+extern bool AJER_2MHZn;
+extern bool DYFA_1MHZ;

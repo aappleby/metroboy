@@ -99,7 +99,7 @@ void tick_extbus() {
   wire TUMA = and(A13, SOGY, A15);
   wire TYNU = unk3(A15, A14, TUMA);
   wire TOZA = and(TYNU, ABUZ, FEXXFFXXn);
-  wire SOBY = nor(A15, CPU_WR_WAT); // schematic has a question mark?
+  wire SOBY = nor(A15, CPU_WRQ); // schematic has a question mark?
   wire SEPY = nand(ABUZ, SOBY);
 
   wire TYHO = mux2(DMA_A15, TOZA, LUMA);

@@ -1,5 +1,7 @@
 #include "ExtBus.h"
 
+// all the address lines are bidir
+
 /* 01 */ bool A0_A,  A0_D,  A0_IN;
 /* 02 */ bool A1_A,  A1_D,  A1_IN;
 /* 03 */ bool A2_A,  A2_D,  A2_IN;
@@ -15,8 +17,9 @@
 /* 13 */ bool A12_A, A12_D, A12_IN;
 /* 14 */ bool A13_A, A13_D, A13_IN;
 /* 15 */ bool A14_A, A14_D, A14_IN;
-/* 16 */ bool A15_A, A15_D, A15_IN;
+/* 16 */ bool A15_A, A15_D, A15_IN, A15_C; // ???
 
+// all the data lines are bidir
 /* 17 */ bool D0_A, D0_D, D0_IN;
 /* 18 */ bool D1_A, D1_D, D1_IN;
 /* 19 */ bool D2_A, D2_D, D2_IN;
@@ -26,8 +29,11 @@
 /* 23 */ bool D6_A, D6_D, D6_IN;
 /* 24 */ bool D7_A, D7_D, D7_IN;
 
-// (vram bus)
+// all the vram data lines are bidir
+// vram address lines are output-only
+// mcs, moe, mwr are bidir
 
+// lcd pins are output
 /* 50 */ bool LD0;
 /* 51 */ bool LD1;
 /* 52 */ bool PIN_CPG;
@@ -37,75 +43,83 @@
 /* 56 */ bool PIN_FR;
 /* 57 */ bool PIN_S;
 
-/* 62 */
+/* 58 VCC */
+/* 59 ROUT */
+/* 60 LOUT */
+/* 61 VIN */
+
+/* 62 OUTPUT */
 bool P15_A; // output
 //bool P15_B;
 //bool P15_C;
 //bool P15_D;
 
-/* 63 */
+/* 63 OUTPUT */
 bool P14_A; // output
 bool P14_B; // output
 //bool P14_C;
 //bool P14_D;
 
-/* 64 */
+/* 64 BIDIR */
 bool P13_A; // output ?
 //bool P13_B;
 bool P13_C; // input _and_ output? wat? i think there's a typo...
 //bool P13_D;
 
-/* 65 */
+/* 65 BIDIR */
 bool P12;
 bool P12_A; // output?
 //bool P12_B;
 bool P12_C; // input
 bool P12_D; // output
 
-/* 66 */
+/* 66 BIDIR */
 // bool P11_A;
 bool P11_B; // output
 bool P11_C; // input
 bool P11_D; // output
 
-/* 67 - the 1997 schematic is wrooooong */ 
+/* 67 BIDIR */ 
 bool P10; // used for interrupt
 //bool P10_A;
 bool P10_B; // weirdly muxed with debug stuff
 bool P10_C; // input
 bool P10_D; // output
 
-/* 68 */
-/* 69 */
-/* 70 */
+/* 68 BIDIR */
 bool SCK_IN;  // input
 bool SCK_DIR; // input?
-bool SER_OUT; // input?
+
+/* 69 BIDIR */
 bool SIN_IN;  // input?
 
-/* 71 */
+/* 70 OUTPUT */
+bool SER_OUT; // input?
+
+/* 71 INPUT */
 bool RESET;
-/* 73 */
+/* 72 GND */
+/* 73 OUTPUT */
 bool CLKIN_A;
-/* 74 */
+/* 74 INPUT */
 bool CLKIN_B;
 
-/* 75 */
-// CLK? goes here
+/* 75 OUTPUT */
+bool PHI_OUT;
 
-/* 76 */
+/* 76 INPUT */
 bool T2;
 
-/* 77 */
+/* 77 INPUT */
 bool T1;
 
-/* 78 */
-bool WR_A, WR_C;
+/* 78 OUTPUT.. but it has more pins? */
+bool WR_A, WR_C, WR_IN; // ???
 
-/* 79 */
-bool RD_A, RD_C;
+/* 79 OUTPUT... but it has more pins?*/
+bool RD_A, RD_B, RD_C;
 
-/* 80 */
+/* 80 OUTPUT*/
 bool CS_OUT;
 
 bool NET01; // not(T1nT2)

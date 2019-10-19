@@ -1,13 +1,14 @@
 #pragma once
 
 extern bool CPU_RD;
+extern bool CPU_RDn;
 extern bool CPU_RD2;
+extern bool CPU_RAW_RD;
+extern bool CPU_RD_SYNC; // not directly from cpu
 
 extern bool CPU_WR;
 extern bool CPU_WR2;
-
-extern bool CPU_RAW_RD;
-extern bool CPU_WR_WAT; // schematic has a question mark?
+extern bool CPU_WRQ; // schematic has a question mark?
 extern bool CPU_WR_RAW;
 
 extern bool FROM_CPU;
@@ -30,4 +31,3 @@ extern bool INT_SERIAL;
 extern bool TO_CPU;
 extern bool TO_CPU2;
 
-extern bool CPU_RD_SYNC; // not directly from cpu

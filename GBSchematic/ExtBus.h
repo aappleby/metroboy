@@ -1,8 +1,8 @@
 #pragma once
 
 // package RD/WR
-extern bool WR_A, WR_C;
-extern bool RD_A, RD_C;
+extern bool WR_A, WR_C, WR_IN; // is this supposed to be the input of the /WR gpio?
+extern bool RD_A, RD_B, RD_C;  // what is the B for?
 extern bool CS_OUT; // output chip select
 
 // package address bus
@@ -21,7 +21,7 @@ extern bool A11_A, A11_D, A11_IN;
 extern bool A12_A, A12_D, A12_IN;
 extern bool A13_A, A13_D, A13_IN;
 extern bool A14_A, A14_D, A14_IN;
-extern bool A15_A, A15_D, A15_IN;
+extern bool A15_A, A15_D, A15_IN, A15_C; // ???
 
 // package data bus
 extern bool D0_A, D0_D, D0_IN;

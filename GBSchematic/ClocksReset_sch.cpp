@@ -20,7 +20,6 @@ extern bool FERO_Q;
 //----------
 // outputs
 
-bool PHI_OUT;
 bool PHI_OUTn; // same as PHI_N?
 bool PHIn;
 
@@ -166,8 +165,8 @@ void tick_clocks_reset() {
   bool AMUK = not(ATAG);
   //bool AMUK_4MHZ = AMUK;
   bool ZEME = not(ZAXY);
-  //bool APUV = not(AMUK);
-  //bool APUV_4MHZ = APUV;
+  bool APUV = not(AMUK);
+  APUV_4MHZ = APUV;
   bool ARYF = not(AMUK);
   bool ARYF_4MHZ = ARYF;
   CLK1 = ZEME;

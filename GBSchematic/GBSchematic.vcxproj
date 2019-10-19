@@ -168,6 +168,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AddressDecoder.cpp" />
+    <ClCompile Include="ApuControl_sch.cpp" />
+    <ClCompile Include="ApuDecode_sch.cpp" />
     <ClCompile Include="Background_sch.cpp" />
     <ClCompile Include="BgPixelShifter_sch.cpp" />
     <ClCompile Include="Clocks.cpp" />

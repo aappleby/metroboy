@@ -5,7 +5,7 @@
 #include "ExtBus.h"
 #include "MemBus.h"
 #include "VramBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 #include "Clocks.h"
 
 //----------

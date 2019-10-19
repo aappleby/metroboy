@@ -2,7 +2,7 @@
 
 #include "Schematics.h"
 #include "OamBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 #include "MemBus.h"
 #include "Clocks.h"
 

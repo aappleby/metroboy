@@ -6,7 +6,7 @@
 #include "DmaBus.h"
 #include "VramBus.h"
 #include "OamBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 #include "Clocks.h"
 #include "CpuBus.h"
 

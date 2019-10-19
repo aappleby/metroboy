@@ -6,7 +6,7 @@
 #include "VramBus.h"
 #include "OamBus.h"
 #include "ExtBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 #include "Debug.h"
 #include "CpuBus.h"
 #include "AddressDecoder.h"

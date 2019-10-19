@@ -4,7 +4,7 @@
 #include "Clocks.h"
 #include "VramBus.h"
 #include "ExtBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 
 //----------
 // inputs

@@ -2,7 +2,7 @@
 
 #include "Schematics.h"
 #include "ExtBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 #include "Clocks.h"
 
 //----------

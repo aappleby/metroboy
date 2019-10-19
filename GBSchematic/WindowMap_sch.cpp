@@ -2,7 +2,7 @@
 
 #include "Schematics.h"
 #include "Clocks.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 #include "VramBus.h"
 
 //----------

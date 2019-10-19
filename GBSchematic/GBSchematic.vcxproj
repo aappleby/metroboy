@@ -189,8 +189,8 @@
     <ClCompile Include="OAM_sch.cpp" />
     <ClCompile Include="Palettes_sch.cpp" />
     <ClCompile Include="PixelMux_sch.cpp" />
+    <ClCompile Include="Ppu.cpp" />
     <ClCompile Include="PpuDecode_sch.cpp" />
-    <ClCompile Include="PpuRegs.cpp" />
     <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
     <ClCompile Include="SerialLink_sch.cpp" />
@@ -217,7 +217,7 @@
     <ClInclude Include="ExtCpuBuses_sch.h" />
     <ClInclude Include="MemBus.h" />
     <ClInclude Include="OamBus.h" />
-    <ClInclude Include="PpuRegs.h" />
+    <ClInclude Include="Ppu.h" />
     <ClInclude Include="Register.h" />
     <ClInclude Include="Schematics.h" />
     <ClInclude Include="Timer_sch.h" />

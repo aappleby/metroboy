@@ -2,7 +2,7 @@
 
 #include "Schematics.h"
 #include "MemBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 #include "CpuBus.h"
 #include "Clocks.h"
 #include "AddressDecoder.h"

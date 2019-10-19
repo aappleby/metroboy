@@ -3,7 +3,7 @@
 #include "Schematics.h"
 #include "Clocks.h"
 #include "VramBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 
 //----------
 // inputs

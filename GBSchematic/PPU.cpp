@@ -1,4 +1,4 @@
-#include "PpuRegs.h"
+#include "PPU.h"
 
 struct Ppu ppu;
 

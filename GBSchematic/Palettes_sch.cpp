@@ -3,7 +3,7 @@
 #include "Schematics.h"
 #include "AddressDecoder.h"
 #include "MemBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 #include "CpuBus.h"
 
 //----------

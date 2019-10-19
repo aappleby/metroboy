@@ -4,7 +4,7 @@
 #include "CpuBus.h"
 #include "MemBus.h"
 #include "ExtBus.h"
-#include "PpuRegs.h"
+#include "PPU.h"
 #include "Clocks.h"
 #include "AddressDecoder.h"
 #include "Debug.h"

@@ -1,23 +1,7 @@
 #include "ExtBus.h"
 
-// all the address lines are bidir
+ExtBus ext;
 
-/* 01 */ bool A0_A,  A0_D,  A0_IN;
-/* 02 */ bool A1_A,  A1_D,  A1_IN;
-/* 03 */ bool A2_A,  A2_D,  A2_IN;
-/* 04 */ bool A3_A,  A3_D,  A3_IN;
-/* 05 */ bool A4_A,  A4_D,  A4_IN;
-/* 06 */ bool A5_A,  A5_D,  A5_IN;
-/* 07 */ bool A6_A,  A6_D,  A6_IN;
-/* 08 */ bool A7_A,  A7_D,  A7_IN;
-/* 09 */ bool A8_A,  A8_D,  A8_IN;
-/* 10 */ bool A9_A,  A9_D,  A9_IN;
-/* 11 */ bool A10_A, A10_D, A10_IN;
-/* 12 */ bool A11_A, A11_D, A11_IN;
-/* 13 */ bool A12_A, A12_D, A12_IN;
-/* 14 */ bool A13_A, A13_D, A13_IN;
-/* 15 */ bool A14_A, A14_D, A14_IN;
-/* 16 */ bool A15_A, A15_D, A15_IN, A15_C; // ???
 
 // all the data lines are bidir
 /* 17 */ bool D0_A, D0_D, D0_IN;

@@ -264,14 +264,14 @@ void tick_oam() {
   wire WUWE = not(P10_B);
   wire GEFY = not(P10_B);
 
-  wire FETU = not(DMA_A7);
-  wire FYDU = not(DMA_A6);
-  wire EDOL = not(DMA_A5);
-  wire ELUG = not(DMA_A4);
-  wire FYKY = not(DMA_A3);
-  wire FAGO = not(DMA_A2);
-  wire FESA = not(DMA_A1);
-  wire FODO = not(DMA_A0);
+  wire FETU = not(dma.DMA_A7);
+  wire FYDU = not(dma.DMA_A6);
+  wire EDOL = not(dma.DMA_A5);
+  wire ELUG = not(dma.DMA_A4);
+  wire FYKY = not(dma.DMA_A3);
+  wire FAGO = not(dma.DMA_A2);
+  wire FESA = not(dma.DMA_A1);
+  wire FODO = not(dma.DMA_A0);
 
   wire YZET = not((FOBY & OAM_ADDR_CPU) | (FYKE & OAM_ADDR_RENDER) | (GOBY & OAM_ADDR_PARSE) | (FETU & OAM_ADDR_DMA));
   wire XEMU = not((WAXA & OAM_ADDR_CPU) | (FUGU & OAM_ADDR_RENDER) | (GAMA & OAM_ADDR_PARSE) | (FYDU & OAM_ADDR_DMA));

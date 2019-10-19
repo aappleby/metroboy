@@ -13,8 +13,6 @@
 extern bool ABUZ; // from clocksreset
 extern bool LUMA; // from dma?
 
-extern bool A15_C; // ?
-
 //----------
 // outputs
 
@@ -102,20 +100,20 @@ void tick_extbus() {
   wire SOBY = nor(mem.A15, CPU_WRQ); // schematic has a question mark?
   wire SEPY = nand(ABUZ, SOBY);
 
-  wire TYHO = mux2(DMA_A15, TOZA, LUMA);
+  wire TYHO = mux2(dma.DMA_A15, TOZA, LUMA);
   CS_OUT = TYHO;
 
-  wire TAZY = mux2(DMA_A15, SEPY, LUMA);
+  wire TAZY = mux2(dma.DMA_A15, SEPY, LUMA);
 
   wire RYCA = not(NET02);
-  wire RAZA = not(A15_C); // typo?
+  wire RAZA = not(ext.A15_C);
   wire SYZU = not(RAZA);
   mem.A15 = SYZU;
   wire RULO = nor(TAZY, NET02);
   wire SUZE = nand(TAZY, RYCA);
 
-  A15_D = RULO;
-  A15_A = SUZE;
+  ext.A15_D = RULO;
+  ext.A15_A = SUZE;
 
   //----------
   // bottom left
@@ -131,13 +129,13 @@ void tick_extbus() {
   wire LYSA_Q = LYSA.latch(MATE, mem.A9);
   wire LUNO_Q = LUNO.latch(MATE, mem.A8);
 
-  wire PEGE = mux2(DMA_A14, NYRE_Q, LUMA);
-  wire MUCE = mux2(DMA_A13, LONU_Q, LUMA);
-  wire MOJY = mux2(DMA_A12, LOBU_Q, LUMA);
-  wire MALE = mux2(DMA_A11, LUMY_Q, LUMA);
-  wire PAMY = mux2(DMA_A10, PATE_Q, LUMA);
-  wire MASU = mux2(DMA_A9,  LYSA_Q, LUMA);
-  wire MANO = mux2(DMA_A8,  LUNO_Q, LUMA);
+  wire PEGE = mux2(dma.DMA_A14, NYRE_Q, LUMA);
+  wire MUCE = mux2(dma.DMA_A13, LONU_Q, LUMA);
+  wire MOJY = mux2(dma.DMA_A12, LOBU_Q, LUMA);
+  wire MALE = mux2(dma.DMA_A11, LUMY_Q, LUMA);
+  wire PAMY = mux2(dma.DMA_A10, PATE_Q, LUMA);
+  wire MASU = mux2(dma.DMA_A9,  LYSA_Q, LUMA);
+  wire MANO = mux2(dma.DMA_A8,  LUNO_Q, LUMA);
 
   wire PAHY = nor(T1nT2, PEGE);
   wire LEVA = nor(T1nT2, MUCE);
@@ -155,21 +153,21 @@ void tick_extbus() {
   wire MUNE = nand(MASU, TOVA);
   wire MYNY = nand(MANO, TOVA);
 
-  A14_D = PAHY;
-  A13_D = LEVA;
-  A12_D = LOSO;
-  A11_D = LYNY;
-  A10_D = RORE;
-  A9_D = MENY;
-  A8_D = MEGO;
+  ext.A14_D = PAHY;
+  ext.A13_D = LEVA;
+  ext.A12_D = LOSO;
+  ext.A11_D = LYNY;
+  ext.A10_D = RORE;
+  ext.A9_D = MENY;
+  ext.A8_D = MEGO;
 
-  A14_A = PUHE;
-  A13_A = LABE;
-  A12_A = LUCE;
-  A11_A = LEPY;
-  A10_A = ROXU;
-  A9_A = MUNE;
-  A8_A = MYNY;
+  ext.A14_A = PUHE;
+  ext.A13_A = LABE;
+  ext.A12_A = LUCE;
+  ext.A11_A = LEPY;
+  ext.A10_A = ROXU;
+  ext.A9_A = MUNE;
+  ext.A8_A = MYNY;
 
   //----------
   // the rest of the address latch, center
@@ -183,14 +181,14 @@ void tick_extbus() {
   wire APUR_Q = ARYM.latch(MATE, mem.A1);
   wire ALOR_Q = ARYM.latch(MATE, mem.A0);
 
-  wire ASUR = mux2(DMA_A7, ARYM_Q, LUMA);
-  wire ATYR = mux2(DMA_A6, AROS_Q, LUMA);
-  wire ATOV = mux2(DMA_A5, ATEV_Q, LUMA);
-  wire ATEM = mux2(DMA_A4, AVYS_Q, LUMA);
-  wire AMER = mux2(DMA_A3, ARET_Q, LUMA);
-  wire APOK = mux2(DMA_A2, ALYR_Q, LUMA);
-  wire ATOL = mux2(DMA_A1, APUR_Q, LUMA);
-  wire AMET = mux2(DMA_A0, ALOR_Q, LUMA);
+  wire ASUR = mux2(dma.DMA_A7, ARYM_Q, LUMA);
+  wire ATYR = mux2(dma.DMA_A6, AROS_Q, LUMA);
+  wire ATOV = mux2(dma.DMA_A5, ATEV_Q, LUMA);
+  wire ATEM = mux2(dma.DMA_A4, AVYS_Q, LUMA);
+  wire AMER = mux2(dma.DMA_A3, ARET_Q, LUMA);
+  wire APOK = mux2(dma.DMA_A2, ALYR_Q, LUMA);
+  wire ATOL = mux2(dma.DMA_A1, APUR_Q, LUMA);
+  wire AMET = mux2(dma.DMA_A0, ALOR_Q, LUMA);
 
   wire COLO = nor (NET02, ASUR);
   wire DEFY = nand(NET01, ASUR);
@@ -209,22 +207,22 @@ void tick_extbus() {
   wire KOTY = nor (NET02, AMET);
   wire KUPO = nand(NET01, AMET);
 
-  A7_D = COLO;
-  A7_A = DEFY;
-  A6_D = CYKA;
-  A6_A = CEPU;
-  A5_D = AJAV;
-  A5_A = BADU;
-  A4_D = BEVO;
-  A4_A = BYLA;
-  A3_D = BOLA;
-  A3_A = BOTY;
-  A2_D = BAJO;
-  A2_A = BOKU;
-  A1_D = COTU;
-  A1_A = CABA;
-  A0_D = KOTY;
-  A0_A = KUPO;
+  ext.A7_D = COLO;
+  ext.A7_A = DEFY;
+  ext.A6_D = CYKA;
+  ext.A6_A = CEPU;
+  ext.A5_D = AJAV;
+  ext.A5_A = BADU;
+  ext.A4_D = BEVO;
+  ext.A4_A = BYLA;
+  ext.A3_D = BOLA;
+  ext.A3_A = BOTY;
+  ext.A2_D = BAJO;
+  ext.A2_A = BOKU;
+  ext.A1_D = COTU;
+  ext.A1_A = CABA;
+  ext.A0_D = KOTY;
+  ext.A0_A = KUPO;
 
   //----------
   // bottom right
@@ -290,21 +288,21 @@ void tick_extbus() {
   //----------
   // some debugging mode thing to drive the internal address bus from the external pins?
 
-  bool BASE = not(A3_IN);
-  bool AFEC = not(A4_IN);
-  bool BUXU = not(A2_IN);
-  bool CAMU = not(A1_IN);
-  bool CYGU = not(A6_IN);
-  bool COGO = not(A7_IN);
-  bool KOVA = not(A0_IN);
-  bool LAHE = not(A12_IN);
-  bool LURA = not(A13_IN);
-  bool MUJY = not(A8_IN);
-  bool PEVO = not(A14_IN);
-  bool MADY = not(A11_IN);
-  bool NENA = not(A9_IN);
-  bool SURA = not(A10_IN);
-  bool ABUP = not(A5_IN);
+  bool BASE = not(ext.A3_IN);
+  bool AFEC = not(ext.A4_IN);
+  bool BUXU = not(ext.A2_IN);
+  bool CAMU = not(ext.A1_IN);
+  bool CYGU = not(ext.A6_IN);
+  bool COGO = not(ext.A7_IN);
+  bool KOVA = not(ext.A0_IN);
+  bool LAHE = not(ext.A12_IN);
+  bool LURA = not(ext.A13_IN);
+  bool MUJY = not(ext.A8_IN);
+  bool PEVO = not(ext.A14_IN);
+  bool MADY = not(ext.A11_IN);
+  bool NENA = not(ext.A9_IN);
+  bool SURA = not(ext.A10_IN);
+  bool ABUP = not(ext.A5_IN);
 
   bool ANAR = not(BASE);
   bool AZUV = not(AFEC);

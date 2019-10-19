@@ -90,7 +90,7 @@ void tick_dma() {
   bool LOKY = nand(LARA, LENE_Qn);
 
   // dma_a == 159
-  bool NAVO = nand(nand(DMA_A0, DMA_A1, DMA_A2), nand(DMA_A3, DMA_A4, DMA_A7));
+  bool NAVO = nand(nand(dma.DMA_A0, dma.DMA_A1, dma.DMA_A2), nand(dma.DMA_A3, dma.DMA_A4, dma.DMA_A7));
 
   bool NOLO = not(NAVO);
 
@@ -114,14 +114,14 @@ void tick_dma() {
   bool RESU = not(!POKU_Q);
   bool NUVY = not(!MARU_Q);
 
-  DMA_A8  = NAFA_Q;
-  DMA_A12 = NYGY_Q;
-  DMA_A10 = PARA_Q;
-  DMA_A9  = PYNE_Q;
-  DMA_A13 = PULA_Q;
-  DMA_A11 = NYDO_Q;
-  DMA_A14 = POKU_Q;
-  DMA_A15 = MARU_Q;
+  dma.DMA_A8  = NAFA_Q;
+  dma.DMA_A12 = NYGY_Q;
+  dma.DMA_A10 = PARA_Q;
+  dma.DMA_A9  = PYNE_Q;
+  dma.DMA_A13 = PULA_Q;
+  dma.DMA_A11 = NYDO_Q;
+  dma.DMA_A14 = POKU_Q;
+  dma.DMA_A15 = MARU_Q;
 
   bool EVAX = not(NAFA_Q);
   bool EXYF = not(NYGY_Q);
@@ -142,14 +142,14 @@ void tick_dma() {
   bool NUTO_Q = NUTO.flip(!PYLO_Q, LAPA);
   bool MUGU_Q = MUGU.flip(!NUTO_Q, LAPA);
 
-  DMA_A0 = NAKY_Q;
-  DMA_A1 = PYRO_Q;
-  DMA_A2 = NEFY_Q;
-  DMA_A3 = MUTY_Q;
-  DMA_A4 = NYKO_Q;
-  DMA_A5 = PYLO_Q;
-  DMA_A6 = NUTO_Q;
-  DMA_A7 = MUGU_Q;
+  dma.DMA_A0 = NAKY_Q;
+  dma.DMA_A1 = PYRO_Q;
+  dma.DMA_A2 = NEFY_Q;
+  dma.DMA_A3 = MUTY_Q;
+  dma.DMA_A4 = NYKO_Q;
+  dma.DMA_A5 = PYLO_Q;
+  dma.DMA_A6 = NUTO_Q;
+  dma.DMA_A7 = MUGU_Q;
 
   // tribuffer, not inverter? FIXME - check this elsewhere, we could be driving inverted signals onto the tribus
   bool ECAL = NAKY_Q;
@@ -161,8 +161,8 @@ void tick_dma() {
   bool ETEG = NUTO_Q;
   bool EREW = MUGU_Q;
 
-  bool LEBU = not(DMA_A15);
-  bool MUDA = nor(DMA_A13, DMA_A14, LEBU);
+  bool LEBU = not(dma.DMA_A15);
+  bool MUDA = nor(dma.DMA_A13, dma.DMA_A14, LEBU);
   bool LOGO = not(MUDA);
   bool MUHO = nand(MATU_Q, MUDA);
   bool MORY = nand(MATU_Q, LOGO);

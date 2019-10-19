@@ -153,6 +153,9 @@ struct ExtBus {
 
   // not sure if this is connected to anything...
   bool PIN_NC;
+
+  // this has gotta be one of the vram wr/cs/oe pins or something
+  bool MD_B; 
 };
 
 extern ExtBus ext;

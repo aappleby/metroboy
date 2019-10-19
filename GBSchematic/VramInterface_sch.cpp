@@ -55,7 +55,6 @@ extern reg VYMU;
 //----------
 // outputs
 
-bool MD_B; // this has gotta be one of the vram wr/cs/oe pins or something
 bool WUKO; // controls something window
 bool COTA; // controls something sprite related
 
@@ -162,7 +161,7 @@ void tock_vram() {
   bool RAHU = not(ROCY);
   bool ROFA = not(RENA);
 
-  MD_B = ROFA; // something about vram pins...
+  ext.MD_B = ROFA; // something about vram pins...
 
   // buffer or inverter? looks like buffer...
   bool RAKU = !not(ext.MD7_IN);

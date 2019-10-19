@@ -17,7 +17,7 @@
 
 void tick_ppudecode() {
   bool XALY = nor(mem.A7, mem.A5, mem.A4);
-  bool WUTU = nand(FFXX, mem.A6, XALY);
+  bool WUTU = nand(dec.FFXX, mem.A6, XALY);
   bool WERO = not(WUTU);
 
   bool XOLA = not(mem.A0);

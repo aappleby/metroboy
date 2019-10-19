@@ -1,6 +1,23 @@
 #pragma once
 
 struct AddressDecoder {
+  bool A00_07;
+  bool XXX6;
+  bool FEXXFFXXn;
+  bool FF04_FF07;
+
+  bool FFXXn;
+  bool FF1Xn;
+  bool FF2X;
+  bool FF3X;
+  bool FFXX;
+
+  bool FF2Xn;
+
+  //----------
+
+  bool FF0F;
+
   bool FF10;
   bool FF11;
   bool FF12;
@@ -42,20 +59,7 @@ struct AddressDecoder {
 
 extern AddressDecoder dec;
 
-extern bool A00_07;
-extern bool XXX6;
-extern bool FEXXFFXXn;
 extern bool FF00RD;
 extern bool FF00WR;
-extern bool FF04_FF07;
-extern bool FF0F;
 extern bool FF0F_RD;
 extern bool FF0F_WR;
-
-extern bool FF1Xn;
-extern bool FF2X;
-extern bool FF2Xn;
-extern bool FF3X;
-extern bool FFXX;
-extern bool FFXXn;
-

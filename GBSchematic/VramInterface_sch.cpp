@@ -9,11 +9,11 @@
 #include "PpuRegs.h"
 #include "Debug.h"
 #include "CpuBus.h"
+#include "AddressDecoder.h"
 
 //----------
 // inputs
 
-extern bool FEXXFFXXn;
 extern reg MATU;
 extern bool MOPA_PHI;
 extern bool VRAM_TO_OAM;
@@ -97,7 +97,7 @@ void tock_vram() {
   bool BYCU = nor(CUFE, XUJY, AVER);
   COTA = not(BYCU);
 
-  bool SYRO = not(FEXXFFXXn);
+  bool SYRO = not(dec.FEXXFFXXn);
   bool TEFA = nor(SYRO, ext_sch.TEXO);
   bool SOSE = and(mem.A15, TEFA); // odd...
   bool SOHO = and(TACU, TEXY);

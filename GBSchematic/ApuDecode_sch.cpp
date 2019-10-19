@@ -36,7 +36,7 @@ bool CH4_AMP_ENn;
 
 void tick_apudecode() {
   bool AMUS = nor(mem.A0, mem.A1, mem.A2, mem.A3, mem.A4, mem.A7);
-  ANAP = and(AMUS, FFXX);
+  ANAP = and(AMUS, dec.FFXX);
   bool BYKO = not(mem.A5);
   bool AKUG = not(mem.A6);
   bool ATOZ = nand(BYKO, AKUG, cpu.CPU_WR, ANAP);
@@ -46,24 +46,24 @@ void tick_apudecode() {
 
   bool BOXY = not(mem.A5);
   bool AWET = or(mem.A4, BOXY, mem.A6, mem.A7);
-  bool BEZY = or(AWET, FFXXn);
-  FF2Xn = BEZY;
+  bool BEZY = or(AWET, dec.FFXXn);
+  dec.FF2Xn = BEZY;
 
   bool AVUN = not(mem.A7);
   bool ASAD = not(mem.A6);
   bool ACOM = nand(AVUN, ASAD, mem.A5, mem.A4);
-  bool BARO = nor(ACOM, FFXXn);
-  FF3X = BARO;
+  bool BARO = nor(ACOM, dec.FFXXn);
+  dec.FF3X = BARO;
 
   bool ATUP = not(mem.A4);
   bool ATEG = or(ATUP, mem.A5, mem.A6, mem.A7);
-  bool BUNO = nor(FFXXn, ATEG);
+  bool BUNO = nor(dec.FFXXn, ATEG);
   bool BANU = not(BUNO);
-  FF1Xn = BANU;
+  dec.FF1Xn = BANU;
 
-  bool CONA = not(FF2Xn);
-  FF2X = CONA;
-  bool DOXY = and(CONA, XXX6);
+  bool CONA = not(dec.FF2Xn);
+  dec.FF2X = CONA;
+  bool DOXY = and(CONA, dec.XXX6);
   dec.FF26 = DOXY;
 
   bool BAFU = not(cpu.CPU_WR);
@@ -88,7 +88,7 @@ void tick_apudecode() {
   //    1    0    1    0    1    0    1    0
 
   bool DUPO = nand(ACOL, ABUB, AFOB, DYTE); // 0000
-  bool DYVA = nor(DUPO, FF1Xn);
+  bool DYVA = nor(DUPO, dec.FF1Xn);
   dec.FF10 = DYVA;
  
  

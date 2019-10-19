@@ -48,15 +48,15 @@ void tick_interrupts() {
 
   bool ROTU = not(FF0F_WR);
   bool LETY = not(cpu.FROM_CPU9);
-  bool MUXE = or(mem.D0, FF0F);
+  bool MUXE = or(mem.D0, dec.FF0F);
   bool LUFE = not(cpu.FROM_CPU7);
   bool SULO = or(mem.D3, FF0F_WR);
   bool LAMO = not(CPU); // !?!?!?! this has gotta be FROM_CPU11
-  bool SEME = or(mem.D4, FF0F);
+  bool SEME = or(mem.D4, dec.FF0F);
   bool LEJA = not(cpu.FROM_CPU8);
-  bool NABE = or(mem.D1, FF0F);
+  bool NABE = or(mem.D1, dec.FF0F);
   bool LESA = not(cpu.FROM_CPU10);
-  bool RAKE = or(mem.D2, FF0F);
+  bool RAKE = or(mem.D2, dec.FF0F);
 
   bool MYZU = nand(ROTU, LETY, mem.D0);
   bool LYTA = and(MUXE, LETY, rst.RESET2);

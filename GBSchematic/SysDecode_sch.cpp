@@ -57,9 +57,9 @@ void tick_sysdecode() {
 
   bool TYRO = nor(mem.A7, mem.A5, mem.A3, mem.A2, mem.A1, mem.A0);
   bool TUFA = and(mem.A4, mem.A6);
-  bool TUGE = nand(TYRO, TUFA, FFXX, cpu.CPU_WR);
+  bool TUGE = nand(TYRO, TUFA, dec.FFXX, cpu.CPU_WR);
   bool SATO = or(mem.D0, TEPU_Q);
-  bool TEXE = and(cpu.CPU_RD, FFXX, TUFA, TYRO);
+  bool TEXE = and(cpu.CPU_RD, dec.FFXX, TUFA, TYRO);
   bool SYPU = not(TEPU_Q);
 
   if (TEXE) {
@@ -83,8 +83,8 @@ void tick_sysdecode() {
 
   bool SEMY = nor(mem.A7, mem.A6, mem.A5, mem.A4);
   bool SAPA = and(mem.A0, mem.A1, mem.A2, mem.A3);
-  bool ROLO = and(SEMY, SAPA, FFXX, cpu.CPU_RD);
-  bool REFA = and(SEMY, SAPA, FFXX, cpu.CPU_WR_RAW);
+  bool ROLO = and(SEMY, SAPA, dec.FFXX, cpu.CPU_RD);
+  bool REFA = and(SEMY, SAPA, dec.FFXX, cpu.CPU_WR_RAW);
 
   FF0F_RD = ROLO;
   FF0F_WR = REFA;
@@ -92,7 +92,7 @@ void tick_sysdecode() {
   //----------
 
   bool WALE = nand(mem.A0, mem.A1, mem.A2, mem.A3, mem.A4, mem.A5, mem.A6);
-  bool WOLY = nand(WALE, mem.A7, FFXX);
+  bool WOLY = nand(WALE, mem.A7, dec.FFXX);
   bool WUTA = not(WOLY);
 
   HRAM_CS = WUTA;
@@ -125,14 +125,14 @@ void tick_sysdecode() {
 
   bool TONA = not(mem.A8);
   bool TUNA = nand(mem.A15, mem.A14, mem.A13, mem.A12, mem.A11, mem.A10, mem.A9);
-  FEXXFFXXn = TUNA;
+  dec.FEXXFFXXn = TUNA;
   bool SYKE = nor(TONA, TUNA);
   bool RYCU = not(TUNA);
-  bool SOHA = not(FFXX);
+  bool SOHA = not(dec.FFXX);
   bool ROPE = nand(RYCU, SOHA);
-  FFXX = SYKE;
+  dec.FFXX = SYKE;
   bool BAKO = not(SYKE);
-  FFXXn = BAKO;
+  dec.FFXXn = BAKO;
   SARO = not(ROPE);
 
   //----------

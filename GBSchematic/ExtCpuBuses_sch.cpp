@@ -57,7 +57,7 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA) {
   wire SOGY = not(mem.A14);
   wire TUMA = and(mem.A13, SOGY, mem.A15);
   wire TYNU = unk3(mem.A15, mem.A14, TUMA);
-  wire TOZA = and(TYNU, ABUZ, FEXXFFXXn);
+  wire TOZA = and(TYNU, ABUZ, dec.FEXXFFXXn);
   wire SOBY = nor(mem.A15, cpu.CPU_WRQ); // schematic has a question mark?
   wire SEPY = nand(ABUZ, SOBY);
 

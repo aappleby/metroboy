@@ -124,7 +124,7 @@ void tick_clocks_reset() {
   bool SAWA = not(RYSO);
   bool TATU = not(UDOR);
 
-  bool TAGY = and(FF04_FF07, cpu.CPU_RD, TOLA_A1n, TOVY_A0n);
+  bool TAGY = and(dec.FF04_FF07, cpu.CPU_RD, TOLA_A1n, TOVY_A0n);
   if (TAGY) {
     mem.D0 = TAWU;
     mem.D1 = TAKU;
@@ -243,7 +243,7 @@ void tick_clocks_reset() {
   bool DOVA = not(BUDE);
   PHIn = DOVA;
 
-  bool TAPE = and(FF04_FF07, cpu.CPU_WR, TOLA_A1n, TOVY_A0n);
+  bool TAPE = and(dec.FF04_FF07, cpu.CPU_WR, TOLA_A1n, TOVY_A0n);
 
   bool UFOL = nor(clk.CLKIN_An, ext.RESET, TAPE);
   rst.RESET_DIVn = UFOL;

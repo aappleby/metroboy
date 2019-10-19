@@ -45,7 +45,7 @@ bool ELYS_Q, ELYS_CLK;
 void tick_serial() {
   bool SARE = nor(mem.A7, mem.A7, mem.A7, mem.A4, mem.A3);
   bool SEFY = not(mem.A2);
-  bool SANO = and(SARE, SEFY, FFXX);
+  bool SANO = and(SARE, SEFY, dec.FFXX);
   bool UWAM = nand(TOVY_A0n, mem.A1, cpu.CPU_WR, SANO);
   bool UCOM = nand(SANO, cpu.CPU_RD, mem.A1, TOVY_A0n);
   bool CARO = and(UWAM, rst.RESET2);
@@ -70,7 +70,7 @@ void tick_serial() {
   cpu.INT_SERIAL = CALY_Q;
 
 
-  A00_07 = SARE;
+  dec.A00_07 = SARE;
 
   bool URYS = nand(SANO, cpu.CPU_WR, TOLA_A1n, mem.A0);
   bool DAKU = not(URYS);

@@ -102,7 +102,7 @@ void tick_oam() {
   wire ANEL_Q = ANEL.q();
   wire MATU_Q = MATU.q();
 
-  WEFE = not(P10_B);
+  WEFE = not(ext.P10_B);
   wire YVAL = not(CLK3);
   wire YRYV = not(YVAL);
   wire ZODO = not(YRYV);
@@ -261,8 +261,8 @@ void tick_oam() {
   wire FUTO = not(GOSO_Q);
   wire GEMA = not(WEWY_Q);
   wire GUSE = not(YFEL_Q);
-  wire WUWE = not(P10_B);
-  wire GEFY = not(P10_B);
+  wire WUWE = not(ext.P10_B);
+  wire GEFY = not(ext.P10_B);
 
   wire FETU = not(dma.DMA_A7);
   wire FYDU = not(dma.DMA_A6);

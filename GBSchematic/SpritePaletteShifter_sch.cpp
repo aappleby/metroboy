@@ -82,7 +82,7 @@ void tick_spritepaletteshifter() {
   bool LAMY = nand(XOVU, !GOMO_Q);
   bool LUNU = nand(XOVU, LAFY);
 
-  bool RUGO_Q = RUGO.srtock(CLKPIPE, PUME, SUCO, P10_B);
+  bool RUGO_Q = RUGO.srtock(CLKPIPE, PUME, SUCO, ext.P10_B);
   bool SATA_Q = SATA.srtock(CLKPIPE, SORO, TAFA, RUGO_Q);
   bool ROSA_Q = ROSA.srtock(CLKPIPE, PAMO, PYZY, SATA_Q);
   bool SOMY_Q = SOMY.srtock(CLKPIPE, SUKY, TOWA, ROSA_Q);

@@ -33,7 +33,7 @@ reg MATY, NEJY, NUTY, MOPO, PAVY;
 //-----------------------------------------------------------------------------
 
 void tick_interrupts() {
-  bool KERY = or(P13_C, P12, P11_C, P10);
+  bool KERY = or(ext.P13_C, ext.P12, ext.P11_C, ext.P10);
   bool AWOB_Q = AWOB.latch(BOGA1MHZ, KERY);
   cpu.TO_CPU2 = AWOB_Q; // for unhalt?
 
@@ -73,7 +73,7 @@ void tick_interrupts() {
   bool PYHU = nand(ROTU, LESA, mem.D2);
   bool PYGA = and(RAKE, LESA, RESET2);
 
-  bool PESU = not(P10_B);
+  bool PESU = not(ext.P10_B);
 
   bool LOPE_Q = LOPE.srtock(PESU, MYZU, LYTA, INT_VBL_BUF);
   bool UBUL_Q = UBUL.srtock(PESU, TOME, TUNY, INT_SERIAL);

@@ -6,6 +6,7 @@
 #include "MemBus.h"
 #include "ExtBus.h"
 #include "Clocks.h"
+#include "Debug.h"
 
 //----------
 // inputs
@@ -13,9 +14,6 @@
 extern bool BEDO;
 
 extern bool ANAP;
-
-extern bool WR_IN; // debug mode related
-extern bool RD_B; // it's an input that feeds into SysDecode and has something to do with a debug mode
 
 //----------
 // outputs
@@ -71,7 +69,7 @@ void tick_sysdecode() {
   bool TERA = not(TEPU_Q);
   bool TULO = nor(mem.A15, mem.A14, mem.A13, mem.A12, mem.A11, mem.A10, mem.A9, mem.A8);
   bool TUTU = and(TERA, TULO);
-  bool YAZA = not(T1T2n);
+  bool YAZA = not(dbg.T1T2n);
   bool ZORO = nor(mem.A15, mem.A14, mem.A13, mem.A12);
   bool ZADU = nor(mem.A11, mem.A10, mem.A9, mem.A8);
   bool YULA = and(YAZA, TUTU, CPU_RD);
@@ -101,28 +99,16 @@ void tick_sysdecode() {
 
   //----------
 
-  bool UBET = not(T1);
-  bool UVAR = not(T2);
-  bool UPOJ = nand(UBET, UVAR, RESET);
-  bool UNOR = and(T2, UBET);
-  bool UMUT = and(T1, UVAR);
+  bool LECO = nor(BEDO, dbg.T1nT2);
 
-  T1nT2n = UPOJ;
-  T1nT2 = UNOR;
-  T1T2n = UMUT;
-
-  //----------
-
-  bool LECO = nor(BEDO, T1nT2);
-
-  bool RARU = not(P10_B);
-  bool ROWE = not(P10_B);
-  bool RYKE = not(P10_B);
-  bool RYNE = not(P10_B);
-  bool RASE = not(P10_B);
-  bool REJY = not(P10_B);
-  bool REKA = not(P10_B);
-  bool ROMY = not(P10_B);
+  bool RARU = not(ext.P10_B);
+  bool ROWE = not(ext.P10_B);
+  bool RYKE = not(ext.P10_B);
+  bool RYNE = not(ext.P10_B);
+  bool RASE = not(ext.P10_B);
+  bool REJY = not(ext.P10_B);
+  bool REKA = not(ext.P10_B);
+  bool ROMY = not(ext.P10_B);
 
   if (LECO) {
     mem.D7 = RARU;
@@ -196,19 +182,21 @@ void tick_sysdecode() {
 
   //----------
 
-  bool APET = or(NET02, T1T2n);
+  bool APET = or(NET02, dbg.T1T2n);
   bool APER = nand(APET, mem.A5, mem.A6, CPU_WR, ANAP);
 
   //----------
 
-  bool UBAL = mux2(WR_IN, CPU_RD_SYNC, T1nT2);
+  // FIXME mux is probably backwards, we should probably be selecting WR_IN/RD_B if T1nT2 is high
+
+  bool UBAL = mux2(ext.WR_IN, CPU_RD_SYNC, dbg.T1nT2);
   bool TAPU = not(UBAL);
   CPU_WR = TAPU;
   bool DYKY = not(TAPU);
   bool CUPA = not(DYKY);
   CPU_WR2 = CUPA;
 
-  bool UJYV = mux2(RD_B, CPU_RAW_RD, T1nT2);
+  bool UJYV = mux2(ext.RD_B, CPU_RAW_RD, dbg.T1nT2);
   bool TEDO = not(UJYV);
   CPU_RD = TEDO;
   bool AJAS = not(TEDO);
@@ -216,7 +204,7 @@ void tick_sysdecode() {
   CPU_RD2 = ASOT;
 
   bool LEXY = not(cpu.FROM_CPU6);
-  PIN_NC = LEXY;
+  ext.PIN_NC = LEXY;
 
   //----------
   // registers

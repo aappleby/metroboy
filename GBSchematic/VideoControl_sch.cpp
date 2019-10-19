@@ -137,7 +137,7 @@ void tick_videocontrol() {
 
   bool RYNO = or(SYGU_Q, RUTU_Q);
   bool POGU = not(RYNO);
-  PIN_CPG = POGU;
+  ext.PIN_CPG = POGU;
 
   RUTU.tock(SONO, LYFE, SANU);
   SYGU.tock(SONO, LYFE, TEGY);
@@ -256,7 +256,7 @@ void tick_videocontrol() {
   bool SEGO = not(RUPO);
 
   // pin output?
-  CP = RYPO;
+  ext.CP = RYPO;
   INT_STAT = VOTY;
 
   bool TOBE = and(CPU_RD2, FF41);

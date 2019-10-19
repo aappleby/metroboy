@@ -49,7 +49,7 @@ void tick_serial() {
   bool UWAM = nand(TOVY_A0n, mem.A1, CPU_WR, SANO);
   bool UCOM = nand(SANO, CPU_RD, mem.A1, TOVY_A0n);
   bool CARO = and(UWAM, RESET2);
-  bool CAVE = mux2(COTY_Q, SCK_IN, CULY_Q);
+  bool CAVE = mux2(COTY_Q, ext.SCK_IN, CULY_Q);
   bool DAWA = or(CAVE, !ETAF_Q);
   bool ELUV = not(!ETAF_Q);
   bool CORE = not(!CULY_Q);
@@ -59,8 +59,8 @@ void tick_serial() {
     mem.D0 = CORE;
   }
 
-  bool KEXU = nand(DAWA, SCK_DIR);
-  bool JAGO = not(SCK_DIR);
+  bool KEXU = nand(DAWA, ext.SCK_DIR);
+  bool JAGO = not(ext.SCK_DIR);
   bool KUJO = nor(JAGO, DAWA);
   bool EDYL = not(DAWA);
   SER_TICKn = EDYL;
@@ -77,7 +77,7 @@ void tick_serial() {
   bool EPYT = not(SER_TICKn);
   bool DEHO = not(EPYT);
   bool DAWE = not(DEHO);
-  bool CAGE = not(SIN_IN);
+  bool CAGE = not(ext.SIN_IN);
 
   bool COHY = unk3(URYS, mem.D0, RESET2);
   bool DUMO = unk3(URYS, mem.D1, RESET2);

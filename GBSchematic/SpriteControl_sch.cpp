@@ -288,8 +288,8 @@ void tick_spritecontrol() {
   FEPO = or(FEFY, FOVE);
 
   bool WEFU = not(YDUG);
-  bool GEZE = or(WEFU, P10_B);
-  bool GUVA = nor(YDUG, P10_B);
+  bool GEZE = or(WEFU, ext.P10_B);
+  bool GUVA = nor(YDUG, ext.P10_B);
 
   bool GAJA = not(DYDU);
   bool FUMA = or(GAJA, GEZE);
@@ -420,8 +420,8 @@ void tick_spritecontrol() {
   bool FEMO = not(V6);
   bool GUSU = not(V7);
 
-  bool ERUC_S = add_s(EBOS, !XUSO_Q, P10_B);
-  bool ERUC_C = add_c(EBOS, !XUSO_Q, P10_B);
+  bool ERUC_S = add_s(EBOS, !XUSO_Q, ext.P10_B);
+  bool ERUC_C = add_c(EBOS, !XUSO_Q, ext.P10_B);
   bool ENEF_C = add_c(DASA, !XEGU_Q, ERUC_C);
   bool ENEF_S = add_s(DASA, !XEGU_Q, ERUC_C);
   bool FECO_C = add_c(FUKY, !YJEX_Q, ENEF_C);
@@ -458,7 +458,7 @@ void tick_spritecontrol() {
   bool ARAS = not(BORE);
   bool AGAG = not(BUVY);
   bool ABEM = not(XUQU);
-  bool DYSO = not(P10_B);
+  bool DYSO = not(ext.P10_B);
 
   bool FUFO = not(FF40_D2);
   bool GEJY = amux2(!XUSO_Q, FUFO, FF40_D2, WAGO);

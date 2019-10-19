@@ -143,7 +143,7 @@ void tick_spritepixelshifter() {
   bool TUPE = nand(SULU,   SOKA);
   bool TUXA = nand(SEMO_Q, SOKA);
 
-  bool NURO_Q = NURO.srtock(CLKPIPE, PABE, PYZU, P10_B);
+  bool NURO_Q = NURO.srtock(CLKPIPE, PABE, PYZU, ext.P10_B);
   bool MASO_Q = MASO.srtock(CLKPIPE, MYTO, MADA, NURO_Q);
   bool LEFE_Q = LEFE.srtock(CLKPIPE, LELA, LYDE, MASO_Q);
   bool LESU_Q = LESU.srtock(CLKPIPE, MAME, LUFY, LEFE_Q);
@@ -152,7 +152,7 @@ void tick_spritepixelshifter() {
   bool VAFO_Q = VAFO.srtock(CLKPIPE, TUXA, TUPE, WORA_Q);
   bool WUFY_Q = WUFY.srtock(CLKPIPE, VUNE, XYVE, VAFO_Q);
 
-  bool NYLU_Q = NYLU.srtock(CLKPIPE, MEZU, MOFY, P10_B);
+  bool NYLU_Q = NYLU.srtock(CLKPIPE, MEZU, MOFY, ext.P10_B);
   bool PEFU_Q = PEFU.srtock(CLKPIPE, RUSY, RUCA, NYLU_Q);
   bool NATY_Q = NATY.srtock(CLKPIPE, MYXA, MAJO, PEFU_Q);
   bool PYJO_Q = PYJO.srtock(CLKPIPE, RANO, REHU, NATY_Q);

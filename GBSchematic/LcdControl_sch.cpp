@@ -79,7 +79,7 @@ void tick_lcdcontrol() {
   bool NERU = !(V7 || V6 || V5 || V4 || V3 || V2 || V1); // biiig nor
   bool MURE = not(MEDA_Q);
 
-  PIN_S = MURE;
+  ext.PIN_S = MURE;
 
   bool MAGU = xor(NAPO_OUT, LUCA_Q);
   bool MECO = not(MAGU);
@@ -94,8 +94,8 @@ void tick_lcdcontrol() {
   bool KYMO = not(KAHE);
   bool KOFO = not(KUPA);
 
-  PIN_CPL = KYMO;
-  PIN_FR = KOFO;
+  ext.PIN_CPL = KYMO;
+  ext.PIN_FR = KOFO;
 
   // FIXME another logic loop...
   TOFU = not(RESET_VIDEO);
@@ -105,7 +105,7 @@ void tick_lcdcontrol() {
   bool POFY = not(RUJU);
   bool RUZE = not(POFY);
 
-  PIN_ST = RUZE;
+  ext.PIN_ST = RUZE;
   CLKPIPE = SACU;
 
   NYKA.tock(CLK2, NAFY, LYRY);

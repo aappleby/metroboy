@@ -1,11 +1,13 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
 #include "Schematics.h"
+#include "ExtCpuBuses_sch.h"
 #include "MemBus.h"
 #include "VramBus.h"
 #include "OamBus.h"
 #include "ExtBus.h"
 #include "PpuRegs.h"
+#include "Debug.h"
 
 //----------
 // inputs
@@ -33,14 +35,14 @@ extern bool XYSO;
 extern bool TACU;
 extern bool ACYL;
 extern bool TEXY;
-extern bool TEXO;
+
 extern bool ABUZ;
 extern bool AFAS;
 extern bool MYMA;
 extern bool LENA;
 extern bool BEDO;
-extern bool RORU;
-extern bool LULA;
+
+
 extern bool LEKO;
 extern bool NETA;
 extern bool PORE;
@@ -68,14 +70,14 @@ reg SOTO;
 void tock_vram() {
   bool SOTO_Q = SOTO.q();
 
-  bool RYVO = nand(mem.D5, LULA);
-  bool RERA = nand(mem.D3, LULA);
-  bool RABY = nand(mem.D2, LULA);
-  bool RORY = nand(mem.D4, LULA);
-  bool RUJA = nand(mem.D1, LULA);
-  bool RAVU = nand(mem.D7, LULA);
-  bool RAFY = nand(mem.D6, LULA);
-  bool RUXA = nand(mem.D0, LULA);
+  bool RYVO = nand(mem.D5, ext_sch.LULA);
+  bool RERA = nand(mem.D3, ext_sch.LULA);
+  bool RABY = nand(mem.D2, ext_sch.LULA);
+  bool RORY = nand(mem.D4, ext_sch.LULA);
+  bool RUJA = nand(mem.D1, ext_sch.LULA);
+  bool RAVU = nand(mem.D7, ext_sch.LULA);
+  bool RAFY = nand(mem.D6, ext_sch.LULA);
+  bool RUXA = nand(mem.D0, ext_sch.LULA);
 
   // why is this writing to the _A part of the data bus but not the _D?
   ext.D5_A = RYVO;
@@ -96,7 +98,7 @@ void tock_vram() {
   COTA = not(BYCU);
 
   bool SYRO = not(FEXXFFXXn);
-  bool TEFA = nor(SYRO, TEXO);
+  bool TEFA = nor(SYRO, ext_sch.TEXO);
   bool SOSE = and(mem.A15, TEFA); // odd...
   bool SOHO = and(TACU, TEXY);
   bool RAWA = not(SOHO);
@@ -185,7 +187,7 @@ void tock_vram() {
 
   bool TUSO = nor(NET02, BEDO);
   bool SOLE = not(TUSO);
-  bool RUNY = not(P10_B);
+  bool RUNY = not(ext.P10_B);
 
   bool TAHY = not(SOLE);
   bool TESU = not(SOLE);
@@ -287,7 +289,7 @@ void tock_vram() {
     vram.MA1 = XUXU;
   }
 
-  bool LYRA = nand(T1nT2, RORU);
+  bool LYRA = nand(dbg.T1nT2, ext_sch.RORU);
 
   bool RYBA = not(ext.D7_IN);
   bool RUZY = not(ext.D1_IN);

@@ -104,7 +104,7 @@ void tick_bgpixelshifter() {
   bool NUTE = nand(LOZE, NASA_Q);
   bool NAJA = nand(LOZE, NEFO_Q);
 
-  bool TOMY_Q = TOMY.srtock(CLKPIPE, TUXE, SEJA, P10_B);
+  bool TOMY_Q = TOMY.srtock(CLKPIPE, TUXE, SEJA, ext.P10_B);
   bool TACA_Q = TACA.srtock(CLKPIPE, SOLY, SENO, TOMY_Q);
   bool SADY_Q = SADY.srtock(CLKPIPE, RUCE, SURE, TACA_Q);
   bool RYSA_Q = RYSA.srtock(CLKPIPE, RYJA, SEBO, SADY_Q);
@@ -115,7 +115,7 @@ void tick_bgpixelshifter() {
 
   BG_PIX_B_7 = SOHU_Q;
 
-  bool MYDE_Q = MYDE.srtock(CLKPIPE, LAKY, LOTY, P10_B);
+  bool MYDE_Q = MYDE.srtock(CLKPIPE, LAKY, LOTY, ext.P10_B);
   bool NOZO_Q = NOZO.srtock(CLKPIPE, NYXO, NEXA, MYDE_Q);
   bool MOJU_Q = MOJU.srtock(CLKPIPE, LOTO, LUTU, NOZO_Q);
   bool MACU_Q = MACU.srtock(CLKPIPE, LYDU, LUJA, MOJU_Q);

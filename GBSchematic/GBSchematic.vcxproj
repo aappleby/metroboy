@@ -175,6 +175,7 @@
     <ClCompile Include="Clocks.cpp" />
     <ClCompile Include="ClocksReset_sch.cpp" />
     <ClCompile Include="CpuBus.cpp" />
+    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="ExtBus.cpp" />
     <ClCompile Include="DmaBus.cpp" />
     <ClCompile Include="DMA_sch.cpp" />
@@ -210,8 +211,10 @@
     <ClInclude Include="AddressDecoder.h" />
     <ClInclude Include="Clocks.h" />
     <ClInclude Include="CpuBus.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="ExtBus.h" />
     <ClInclude Include="DmaBus.h" />
+    <ClInclude Include="ExtCpuBuses_sch.h" />
     <ClInclude Include="MemBus.h" />
     <ClInclude Include="OamBus.h" />
     <ClInclude Include="PpuRegs.h" />

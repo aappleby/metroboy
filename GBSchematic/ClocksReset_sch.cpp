@@ -7,6 +7,7 @@
 #include "PpuRegs.h"
 #include "Clocks.h"
 #include "AddressDecoder.h"
+#include "Debug.h"
 
 //----------
 // inputs
@@ -146,16 +147,16 @@ void tick_clocks_reset() {
   wire AFER_Q = AFER.q();
   wire CERY_Q = CERY.q();
 
-  bool UPYF = or(RESET, CLKIN_An);
+  bool UPYF = or(ext.RESET, CLKIN_An);
   bool TUBO = unk2(ABOL_1MHZ, UPYF);
   bool UNUT = and(TUBO, UPOF_Q);
-  bool TABA = or(T1nT2, T1nT2n, UNUT);
+  bool TABA = or(dbg.T1nT2, dbg.T1nT2n, UNUT);
 
   // combi clock deglitcher, skipping it
   //bool ARYS = not(CLKIN_B);
   //bool ANOS = nand(CLKIN_B, AVET);
   //bool AVET = nand(ANOS, ARYS);
-  bool AVET = CLKIN_B;
+  bool AVET = ext.CLKIN_B;
 
   bool ATAL = not(AVET);
   bool ATAL_4MHZ = ATAL;
@@ -188,7 +189,7 @@ void tick_clocks_reset() {
   bool AGUT = unk3(AJAX, AROV, cpu.FROM_CPU4);
   bool BATE = nor(BUGO, AROV, ABOL_1MHZ);
   bool APOV = not(AREV);
-  bool AWOD = or(T1nT2, AGUT);
+  bool AWOD = or(dbg.T1nT2, AGUT);
   bool BASU = not(BATE);
   ABUZ = not(AWOD);
   BUKE = not(BASU);
@@ -213,18 +214,18 @@ void tick_clocks_reset() {
   bool BAZE = not(BELO);
   bool BUTO = nand(AFEP, ATYP, BAZE);
   bool BELE = not(BUTO);
-  bool ATEZ = not(CLKIN_A);
+  bool ATEZ = not(ext.CLKIN_A);
   bool BYJU = nor(BELE, ATEZ);
   bool ALYP = not(TABA);
   bool BUTY = not(ABOL_1MHZ);
   bool BALY = not(BYJU);
-  bool AFAR = nor(ALYP, RESET);
+  bool AFAR = nor(ALYP, ext.RESET);
   bool BUVU = and(BUTY, BALY);
   bool BOGA = not(BALY);
 
   BOGA1MHZ = BOGA;
 
-  bool ASOL = unk2(AFAR, RESET);
+  bool ASOL = unk2(AFAR, ext.RESET);
   bool BOMA = not(BOGA);
   bool BYXO = not(BUVU);
   BEDO = not(BYXO);
@@ -234,7 +235,7 @@ void tick_clocks_reset() {
   bool AVOR = or(AFER_Q, ASOL);
   bool ALUR = not(AVOR);
 
-  bool UVYT = not(PHI_OUT);
+  bool UVYT = not(ext.PHI_OUT);
   PHI_OUTn = UVYT;
 
   RESET2 = ALUR;
@@ -244,12 +245,12 @@ void tick_clocks_reset() {
 
   bool TAPE = and(FF04_FF07, CPU_WR, TOLA_A1n, TOVY_A0n);
 
-  bool UFOL = nor(CLKIN_An, RESET, TAPE);
+  bool UFOL = nor(CLKIN_An, ext.RESET, TAPE);
   RESET_DIVn = UFOL;
 
   bool DULA = not(RESET2);
   bool XEBE = not(RESET7);
-  bool UCOB = not(CLKIN_A);
+  bool UCOB = not(ext.CLKIN_A);
   bool CUNU = not(DULA);
   bool XODO = and(FF40_D7, XEBE);
 
@@ -310,12 +311,12 @@ void tick_clocks_reset() {
   //----------
   // registers
 
-  ADYK.tock(ATAL_4MHZ, T1nT2n, APUK_Q);
-  AFUR.tock(ATAL_4MHZ, T1nT2n, !ADYK_Q);
-  ALEF.tock(ATAL_4MHZ, T1nT2n, !AFUR_Q);
-  APUK.tock(ATAL_4MHZ, T1nT2n, !ALEF_Q);
+  ADYK.tock(ATAL_4MHZ, dbg.T1nT2n, APUK_Q);
+  AFUR.tock(ATAL_4MHZ, dbg.T1nT2n, !ADYK_Q);
+  ALEF.tock(ATAL_4MHZ, dbg.T1nT2n, !AFUR_Q);
+  APUK.tock(ATAL_4MHZ, dbg.T1nT2n, !ALEF_Q);
 
-  AFER.tock(BOMA, T1nT2n, ASOL);
+  AFER.tock(BOMA, dbg.T1nT2n, ASOL);
   CERY.flip(CYBO_4MHZ, BELA);
 
   //----------

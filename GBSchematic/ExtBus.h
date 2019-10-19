@@ -29,74 +29,134 @@ struct ExtBus {
   /* 23 */ bool D6_A, D6_D, D6_IN;
   /* 24 */ bool D7_A, D7_D, D7_IN;
 
+  /* 25 */ bool MD7_A, MD7_OUT, MD7_IN;
+  /* 26 */ bool MD6_A, MD6_OUT, MD6_IN;
+  /* 27 */ bool MD5_A, MD5_OUT, MD5_IN;
+  /* 28 */ bool MD4_A, MD4_OUT, MD4_IN;
+  /* 29 */ bool MD3_A, MD3_OUT, MD3_IN;
+  /* 30 */ bool MD2_A, MD2_OUT, MD2_IN;
+  /* 31 */ bool MD1_A, MD1_OUT, MD1_IN;
+  /* 32 GND */ 
+  /* 33 */ bool MD0_A, MD0_OUT, MD0_IN;
+
+  /* 34 MA0 */
+  /* 35 MA1 */
+  /* 36 MA2 */
+  /* 37 MA3 */
+  /* 38 MA4 */
+  /* 39 MA5 */
+  /* 40 MA6 */
+  /* 41 MA7 */
+  /* 42 MA12 */
+
+  /* 43 MCS */
   bool MCS_A, MCS_D, MCS_IN;
+
+  /* 44 MA10 */
+  /* 45 MOE */
   bool MOE_A, MOE_D, MOE_IN;
+
+  /* 46 MA11 */
+  /* 47 MA9 */
+  /* 48 MA8 */
+  /* 49 MWR */
   bool MWR_A, MWR_D, MWR_IN;
 
-  // chip-to-vram data bus
-  bool MD0_A, MD0_OUT, MD0_IN;
-  bool MD1_A, MD1_OUT, MD1_IN;
-  bool MD2_A, MD2_OUT, MD2_IN;
-  bool MD3_A, MD3_OUT, MD3_IN;
-  bool MD4_A, MD4_OUT, MD4_IN;
-  bool MD5_A, MD5_OUT, MD5_IN;
-  bool MD6_A, MD6_OUT, MD6_IN;
-  bool MD7_A, MD7_OUT, MD7_IN;
+  // lcd pins are output
+  /* 50 */ bool LD0;
+  /* 51 */ bool LD1;
+  /* 52 */ bool PIN_CPG;
+  /* 53 */ bool CP; // lcd clock signal
+  /* 54 */ bool PIN_ST;
+  /* 55 */ bool PIN_CPL;
+  /* 56 */ bool PIN_FR;
+  /* 57 */ bool PIN_S;
+
+  /* 58 VCC */
+  /* 59 ROUT */
+  /* 60 LOUT */
+  /* 61 VIN */
+
+  /* 62 OUTPUT */
+  bool P15_A; // output
+  //bool P15_B;
+  //bool P15_C;
+  //bool P15_D;
+
+  /* 63 OUTPUT */
+  bool P14_A; // output
+  bool P14_B; // output
+  //bool P14_C;
+  //bool P14_D;
+
+  /* 64 BIDIR */
+  bool P13_A; // output ?
+  //bool P13_B;
+  bool P13_C; // input _and_ output? wat? i think there's a typo...
+  //bool P13_D;
+
+  /* 65 BIDIR */
+  bool P12;
+  bool P12_A; // output?
+  //bool P12_B;
+  bool P12_C; // input
+  bool P12_D; // output
+
+  /* 66 BIDIR */
+  // bool P11_A;
+  bool P11_B; // output
+  bool P11_C; // input
+  bool P11_D; // output
+
+  /* 67 BIDIR */ 
+  bool P10; // used for interrupt
+  //bool P10_A;
+  bool P10_B; // weirdly muxed with debug stuff
+  bool P10_C; // input
+  bool P10_D; // output
+
+  /* 68 BIDIR */
+  bool SCK_IN;  // input
+  bool SCK_DIR; // input?
+
+  /* 69 BIDIR */
+  bool SIN_IN;  // input?
+
+  /* 70 OUTPUT */
+  bool SER_OUT; // input?
+
+  /* 71 INPUT */
+  bool RESET;
+  /* 72 GND */
+  /* 73 OUTPUT */
+  bool CLKIN_A;
+  /* 74 INPUT */
+  bool CLKIN_B;
+
+  /* 75 OUTPUT */
+  bool PHI_OUT;
+
+  /* 76 INPUT */
+  bool T2;
+
+  /* 77 INPUT */
+  bool T1;
+
+  /* 78 OUTPUT.. but it has more pins? */
+  bool WR_A, WR_C, WR_IN; // ???
+
+  /* 79 OUTPUT... but it has more pins?*/
+  bool RD_A, RD_B, RD_C;
+
+  /* 80 OUTPUT*/
+  bool CS_OUT;
+
+  // not sure if this is connected to anything...
+  bool PIN_NC;
 };
 
 extern ExtBus ext;
 
-// package RD/WR
-extern bool WR_A, WR_C, WR_IN; // is this supposed to be the input of the /WR gpio?
-extern bool RD_A, RD_B, RD_C;  // what is the B for?
-extern bool CS_OUT; // output chip select
-
-extern bool CLKIN_A;
-extern bool CLKIN_B;
-
-extern bool RESET;
-extern bool T1, T2;
-extern bool T1nT2n;
-extern bool T1nT2;
-extern bool T1T2n;
-
-extern bool NET01; // not(T1nT2)
 extern bool NET02; // don't know where this is driven yet, but probably similar
 
-extern bool PHI_OUT;
-
-extern bool P10; // why are these not _ABCD
-extern bool P12;
-
-extern bool P10_B; // weirdly muxed with debug stuff
-extern bool P10_C; // input
-extern bool P10_D; // output
-extern bool P11_B; // output
-extern bool P11_C; // input
-extern bool P11_D; // output
-extern bool P12_A; // output?
-extern bool P12_C; // input
-extern bool P12_D; // output
-extern bool P13_A; // output
-extern bool P13_C; // input _and_ output? wat? i think there's a typo...
-extern bool P14_A; // output
-extern bool P14_B; // output
-extern bool P15_A; // output
-
-// lcd interface
-extern bool LD1;
-extern bool LD0;
-extern bool PIN_CPG;
-extern bool CP;
-extern bool PIN_ST;
-extern bool PIN_CPL;
-extern bool PIN_FR;
-extern bool PIN_S;
-
-extern bool SCK_IN;  // input
-extern bool SCK_DIR; // input?
-extern bool SER_OUT; // input?
-extern bool SIN_IN;  // input?
-
-extern bool PIN_NC;
 

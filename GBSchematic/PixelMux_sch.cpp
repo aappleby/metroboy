@@ -75,6 +75,6 @@ void tick_pixelmux() {
   bool RAVO = not(PATY);
   bool REMY = not(PERO);
 
-  LD1 = RAVO;
-  LD0 = REMY;
+  ext.LD1 = RAVO;
+  ext.LD0 = REMY;
 }

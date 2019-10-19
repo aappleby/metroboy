@@ -11,7 +11,6 @@
 // inputs
 
 extern bool FF60_D0;
-extern bool SER_OUT;
 extern bool BEDO;
 
 extern reg BURO;
@@ -51,14 +50,14 @@ void tick_joypad() {
   bool KYHU = nand(FF60_D0, JALE_Q);
   bool BYZO = not(FF00RD);
 
-  bool KENA = mux2(KUKO_Q, SER_OUT, BURO.q());
+  bool KENA = mux2(KUKO_Q, ext.SER_OUT, BURO.q());
   SOUT = KENA;
 
   if (BYZO) {
-    KOLO_L = P13_C;
-    KEJA_L = P12_C;
-    KEVU_L = P10_C;
-    KAPA_L = P11_C;
+    KOLO_L = ext.P13_C;
+    KEJA_L = ext.P12_C;
+    KEVU_L = ext.P10_C;
+    KAPA_L = ext.P11_C;
   }
 
   bool JEKU = not(KOLO_L);
@@ -85,36 +84,36 @@ void tick_joypad() {
   bool KYTO = nand(KECY_Q, FF60_D0);
   bool KABU = nor(KECY_Q, KURA);
   
-  P10_B = KOLE;
-  P10_D = KYBU;
+  ext.P10_B = KOLE;
+  ext.P10_D = KYBU;
 
-  P11_B = KYTO;
-  P11_D = KABU;
+  ext.P11_B = KYTO;
+  ext.P11_D = KABU;
 
-  P12_A = KYHU;
-  P12_D = KASY;
+  ext.P12_A = KYHU;
+  ext.P12_D = KASY;
 
-  P13_A = KORY;
-  P13_C = KALE;
+  ext.P13_A = KORY;
+  ext.P13_C = KALE;
 
-  P14_A = KARU;
-  P14_B = !KELY_Q;
+  ext.P14_A = KARU;
+  ext.P14_B = !KELY_Q;
 
-  P15_A = CELA;
+  ext.P15_A = CELA;
 
   bool AXYN = not(BEDO);
   bool ADYR = not(AXYN);
   bool APYS = nor(cpu.FROM_CPU, ADYR);
   bool AFOP = not(APYS);
 
-  bool ANOC = not(P10_B);
-  bool AJEC = not(P10_B);
-  bool ARAR = not(P10_B);
-  bool BENU = not(P10_B);
-  bool AKAJ = not(P10_B);
-  bool ASUZ = not(P10_B);
-  bool ATAJ = not(P10_B);
-  bool BEDA = not(P10_B);
+  bool ANOC = not(ext.P10_B);
+  bool AJEC = not(ext.P10_B);
+  bool ARAR = not(ext.P10_B);
+  bool BENU = not(ext.P10_B);
+  bool AKAJ = not(ext.P10_B);
+  bool ASUZ = not(ext.P10_B);
+  bool ATAJ = not(ext.P10_B);
+  bool BEDA = not(ext.P10_B);
 
   if (AFOP) {
     mem.D0 = ANOC;

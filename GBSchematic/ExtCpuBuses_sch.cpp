@@ -1,57 +1,18 @@
 // This file should contain the schematics as directly translated to C, no modifications or simplifications
 
-#include "Schematics.h"
+#include "ExtCpuBuses_sch.h"
 #include "CpuBus.h"
 #include "ExtBus.h"
 #include "MemBus.h"
 #include "DmaBus.h"
 #include "AddressDecoder.h"
+#include "Debug.h"
 
-//----------
-// inputs
-
-extern bool ABUZ; // from clocksreset
-extern bool LUMA; // from dma?
-
-//----------
-// outputs
-
-bool LULA;
-bool RORU;
-bool TEXO; // used by vram interface
-
-//----------
-// registers
-
-reg NYRE;
-reg LONU;
-reg LOBU;
-reg LUMY;
-reg PATE;
-reg LYSA;
-reg LUNO;
-reg ARYM;
-reg AROS;
-reg ATEV;
-reg AVYS;
-reg ARET;
-reg ALYR;
-reg APUR;
-reg ALOR;
-
-// DX_IN latch
-reg SODY;
-reg SELO;
-reg RONY;
-reg SOMA;
-reg RAXY;
-reg RUPA;
-reg SAGO;
-reg SAZY;
+ExtCpuBuses_sch ext_sch;
 
 //-----------------------------------------------------------------------------
 
-void tick_extbus() {
+void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA) {
 
   //----------
   // center right
@@ -63,21 +24,21 @@ void tick_extbus() {
   wire LAGU = unk3(CPU_RAW_RD, LEVO, cpu.FROM_CPU3);
   wire LYWE = not(LAGU);
 
-  wire MOCA = nor(TEXO, T1T2n);
+  wire MOCA = nor(TEXO, dbg.T1T2n);
   wire MEXO = not(CPU_RD_SYNC);
   wire NEVY = or(MEXO, MOCA);
   wire MOTY = or(MOCA, LYWE);
   wire PUVA = or(NEVY, LUMA);
   wire TYMU = or(LUMA, MOTY);
-  wire USUF = nor(T1nT2, PUVA);
-  wire UVER = nand(PUVA, NET01);
-  wire UGAC = nand(NET01, TYMU);
-  wire URUN = nor(TYMU, T1nT2);
+  wire USUF = nor(dbg.T1nT2, PUVA);
+  wire UVER = nand(PUVA, dbg.NET01);
+  wire UGAC = nand(dbg.NET01, TYMU);
+  wire URUN = nor(TYMU, dbg.T1nT2);
 
-  WR_C = USUF;
-  WR_A = UVER;
-  RD_A = UGAC;
-  RD_C = URUN;
+  ext.WR_C = USUF;
+  ext.WR_A = UVER;
+  ext.RD_A = UGAC;
+  ext.RD_C = URUN;
 
   //----------
   // top center
@@ -85,8 +46,8 @@ void tick_extbus() {
   wire TOLA = not(mem.A1);
   TOLA_A1n = TOLA;
 
-  wire MULE = not(T1T2n);
-  wire LOXO = unk3(MULE, TEXO, T1T2n);
+  wire MULE = not(dbg.T1T2n);
+  wire LOXO = unk3(MULE, TEXO, dbg.T1T2n);
   wire LASY = not(LOXO);
   wire MATE = not(LASY);
 
@@ -101,7 +62,7 @@ void tick_extbus() {
   wire SEPY = nand(ABUZ, SOBY);
 
   wire TYHO = mux2(dma.DMA_A15, TOZA, LUMA);
-  CS_OUT = TYHO;
+  ext.CS_OUT = TYHO;
 
   wire TAZY = mux2(dma.DMA_A15, SEPY, LUMA);
 
@@ -118,8 +79,8 @@ void tick_extbus() {
   //----------
   // bottom left
 
-  wire TOVA = not(T1nT2);
-  NET01 = TOVA;
+  wire TOVA = not(dbg.T1nT2);
+  dbg.NET01 = TOVA;
 
   wire NYRE_Q = NYRE.latch(MATE, mem.A14);
   wire LONU_Q = LONU.latch(MATE, mem.A13);
@@ -137,13 +98,13 @@ void tick_extbus() {
   wire MASU = mux2(dma.DMA_A9,  LYSA_Q, LUMA);
   wire MANO = mux2(dma.DMA_A8,  LUNO_Q, LUMA);
 
-  wire PAHY = nor(T1nT2, PEGE);
-  wire LEVA = nor(T1nT2, MUCE);
-  wire LOSO = nor(T1nT2, MOJY);
-  wire LYNY = nor(T1nT2, MALE);
-  wire RORE = nor(T1nT2, PAMY);
-  wire MENY = nor(T1nT2, MASU);
-  wire MEGO = nor(T1nT2, MANO);
+  wire PAHY = nor(dbg.T1nT2, PEGE);
+  wire LEVA = nor(dbg.T1nT2, MUCE);
+  wire LOSO = nor(dbg.T1nT2, MOJY);
+  wire LYNY = nor(dbg.T1nT2, MALE);
+  wire RORE = nor(dbg.T1nT2, PAMY);
+  wire MENY = nor(dbg.T1nT2, MASU);
+  wire MEGO = nor(dbg.T1nT2, MANO);
 
   wire PUHE = nand(PEGE, TOVA);
   wire LABE = nand(MUCE, TOVA);
@@ -191,21 +152,21 @@ void tick_extbus() {
   wire AMET = mux2(dma.DMA_A0, ALOR_Q, LUMA);
 
   wire COLO = nor (NET02, ASUR);
-  wire DEFY = nand(NET01, ASUR);
+  wire DEFY = nand(dbg.NET01, ASUR);
   wire CYKA = nor (NET02, ATYR);
-  wire CEPU = nand(NET01, ATYR);
+  wire CEPU = nand(dbg.NET01, ATYR);
   wire AJAV = nor (NET02, ATOV);
-  wire BADU = nand(NET01, ATOV);
+  wire BADU = nand(dbg.NET01, ATOV);
   wire BEVO = nor (NET02, ATEM);
-  wire BYLA = nand(NET01, ATEM);
+  wire BYLA = nand(dbg.NET01, ATEM);
   wire BOLA = nor (NET02, AMER);
-  wire BOTY = nand(NET01, AMER);
+  wire BOTY = nand(dbg.NET01, AMER);
   wire BAJO = nor (NET02, APOK);
-  wire BOKU = nand(NET01, APOK);
+  wire BOKU = nand(dbg.NET01, APOK);
   wire COTU = nor (NET02, ATOL);
-  wire CABA = nand(NET01, ATOL);
+  wire CABA = nand(dbg.NET01, ATOL);
   wire KOTY = nor (NET02, AMET);
-  wire KUPO = nand(NET01, AMET);
+  wire KUPO = nand(dbg.NET01, AMET);
 
   ext.A7_D = COLO;
   ext.A7_A = DEFY;
@@ -228,7 +189,7 @@ void tick_extbus() {
   // bottom right
 
   wire REDU = not(CPU_RD);
-  RORU = mux2(REDU, MOTY, T1nT2);
+  RORU = mux2(REDU, MOTY, dbg.T1nT2);
   LULA = not(RORU);
 
   wire ROGY = nor(RORU, mem.D6);
@@ -321,7 +282,7 @@ void tick_extbus() {
   bool AJOV = not(ABUP);
 
   // if NET01 high, drive external address bus onto internal address bus (?)
-  if (NET01) {
+  if (dbg.NET01) {
     mem.A3  = ANAR;
     mem.A4  = AZUV;
     mem.A2  = AKAN;

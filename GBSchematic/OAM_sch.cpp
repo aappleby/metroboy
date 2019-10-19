@@ -186,53 +186,53 @@ void tick_oam() {
   wire ATER = not(vram.MD7);
   wire ANUM = not(vram.MD7);
 
-  OAM_CLK = ZODO;
-  OAM_ADDR_RENDER = BETE;
-  OAM_ADDR_PARSE = APAR;
+  oam.OAM_CLK = ZODO;
+  oam.OAM_ADDR_RENDER = BETE;
+  oam.OAM_ADDR_PARSE = APAR;
   RESET_VIDEO2n = ATAR;
-  OAM_ADDR_CPU = ASAM;
+  oam.OAM_ADDR_CPU = ASAM;
   CLK3 = BODE;
 
   wire AZUL = not(APAG);
   if (AZUL) {
-    OAM_A_D0 = ZAXA;
-    OAM_B_D0 = ZAMY;
-    OAM_A_D1 = ZAKY;
-    OAM_B_D1 = ZOPU;
-    OAM_A_D2 = WULE;
-    OAM_B_D2 = WYKY;
-    OAM_A_D3 = ZOZO;
-    OAM_B_D3 = ZAJA;
+    oam.OAM_A_D0 = ZAXA;
+    oam.OAM_B_D0 = ZAMY;
+    oam.OAM_A_D1 = ZAKY;
+    oam.OAM_B_D1 = ZOPU;
+    oam.OAM_A_D2 = WULE;
+    oam.OAM_B_D2 = WYKY;
+    oam.OAM_A_D3 = ZOZO;
+    oam.OAM_B_D3 = ZAJA;
 
-    OAM_A_D4 = ZUFO;
-    OAM_B_D4 = ZUGA;
-    OAM_A_D5 = ZATO;
-    OAM_B_D5 = ZUMO;
-    OAM_A_D6 = YVUC;
-    OAM_B_D6 = XYTO;
-    OAM_A_D7 = ZUFE;
-    OAM_B_D7 = ZYFA;
+    oam.OAM_A_D4 = ZUFO;
+    oam.OAM_B_D4 = ZUGA;
+    oam.OAM_A_D5 = ZATO;
+    oam.OAM_B_D5 = ZUMO;
+    oam.OAM_A_D6 = YVUC;
+    oam.OAM_B_D6 = XYTO;
+    oam.OAM_A_D7 = ZUFE;
+    oam.OAM_B_D7 = ZYFA;
   }
 
   wire AZAR = not(VRAM_TO_OAM);
   if (AZAR) {
-    OAM_A_D0 = WUZU;
-    OAM_B_D0 = WOWA;
-    OAM_A_D1 = AXER;
-    OAM_B_D1 = AVEB;
-    OAM_A_D2 = ASOX;
-    OAM_B_D2 = AMUH;
-    OAM_A_D3 = CETU;
-    OAM_B_D3 = COFO;
+    oam.OAM_A_D0 = WUZU;
+    oam.OAM_B_D0 = WOWA;
+    oam.OAM_A_D1 = AXER;
+    oam.OAM_B_D1 = AVEB;
+    oam.OAM_A_D2 = ASOX;
+    oam.OAM_B_D2 = AMUH;
+    oam.OAM_A_D3 = CETU;
+    oam.OAM_B_D3 = COFO;
 
-    OAM_A_D4 = ARYN;
-    OAM_B_D4 = AZOZ;
-    OAM_A_D5 = ACOT;
-    OAM_B_D5 = AGYK;
-    OAM_A_D6 = CUJE;
-    OAM_B_D6 = BUSE;
-    OAM_A_D7 = ATER;
-    OAM_B_D7 = ANUM;
+    oam.OAM_A_D4 = ARYN;
+    oam.OAM_B_D4 = AZOZ;
+    oam.OAM_A_D5 = ACOT;
+    oam.OAM_B_D5 = AGYK;
+    oam.OAM_A_D6 = CUJE;
+    oam.OAM_B_D6 = BUSE;
+    oam.OAM_A_D7 = ATER;
+    oam.OAM_B_D7 = ANUM;
   }
 
   //----------
@@ -273,14 +273,14 @@ void tick_oam() {
   wire FESA = not(dma.DMA_A1);
   wire FODO = not(dma.DMA_A0);
 
-  wire YZET = not((FOBY & OAM_ADDR_CPU) | (FYKE & OAM_ADDR_RENDER) | (GOBY & OAM_ADDR_PARSE) | (FETU & OAM_ADDR_DMA));
-  wire XEMU = not((WAXA & OAM_ADDR_CPU) | (FUGU & OAM_ADDR_RENDER) | (GAMA & OAM_ADDR_PARSE) | (FYDU & OAM_ADDR_DMA));
-  wire YMEV = not((GERA & OAM_ADDR_CPU) | (FACO & OAM_ADDR_RENDER) | (FAKU & OAM_ADDR_PARSE) | (EDOL & OAM_ADDR_DMA));
-  wire YVOM = not((FEVU & OAM_ADDR_CPU) | (FABY & OAM_ADDR_RENDER) | (FUTO & OAM_ADDR_PARSE) | (ELUG & OAM_ADDR_DMA));
-  wire YFOC = not((WAPE & OAM_ADDR_CPU) | (GYKA & OAM_ADDR_RENDER) | (GEMA & OAM_ADDR_PARSE) | (FYKY & OAM_ADDR_DMA));
-  wire YFOT = not((GOSE & OAM_ADDR_CPU) | (GYBU & OAM_ADDR_RENDER) | (GUSE & OAM_ADDR_PARSE) | (FAGO & OAM_ADDR_DMA));
-  wire ZYFO = not((WACU & OAM_ADDR_CPU) | (WYDU & OAM_ADDR_RENDER) | (WUWE & OAM_ADDR_PARSE) | (FESA & OAM_ADDR_DMA));
-  wire GEKA = not((GARO & OAM_ADDR_CPU) | (GECA & OAM_ADDR_RENDER) | (GEFY & OAM_ADDR_PARSE) | (FODO & OAM_ADDR_DMA));
+  wire YZET = not((FOBY & oam.OAM_ADDR_CPU) | (FYKE & oam.OAM_ADDR_RENDER) | (GOBY & oam.OAM_ADDR_PARSE) | (FETU & oam.OAM_ADDR_DMA));
+  wire XEMU = not((WAXA & oam.OAM_ADDR_CPU) | (FUGU & oam.OAM_ADDR_RENDER) | (GAMA & oam.OAM_ADDR_PARSE) | (FYDU & oam.OAM_ADDR_DMA));
+  wire YMEV = not((GERA & oam.OAM_ADDR_CPU) | (FACO & oam.OAM_ADDR_RENDER) | (FAKU & oam.OAM_ADDR_PARSE) | (EDOL & oam.OAM_ADDR_DMA));
+  wire YVOM = not((FEVU & oam.OAM_ADDR_CPU) | (FABY & oam.OAM_ADDR_RENDER) | (FUTO & oam.OAM_ADDR_PARSE) | (ELUG & oam.OAM_ADDR_DMA));
+  wire YFOC = not((WAPE & oam.OAM_ADDR_CPU) | (GYKA & oam.OAM_ADDR_RENDER) | (GEMA & oam.OAM_ADDR_PARSE) | (FYKY & oam.OAM_ADDR_DMA));
+  wire YFOT = not((GOSE & oam.OAM_ADDR_CPU) | (GYBU & oam.OAM_ADDR_RENDER) | (GUSE & oam.OAM_ADDR_PARSE) | (FAGO & oam.OAM_ADDR_DMA));
+  wire ZYFO = not((WACU & oam.OAM_ADDR_CPU) | (WYDU & oam.OAM_ADDR_RENDER) | (WUWE & oam.OAM_ADDR_PARSE) | (FESA & oam.OAM_ADDR_DMA));
+  wire GEKA = not((GARO & oam.OAM_ADDR_CPU) | (GECA & oam.OAM_ADDR_RENDER) | (GEFY & oam.OAM_ADDR_PARSE) | (FODO & oam.OAM_ADDR_DMA));
 
   wire MYNU = nand(CPU_RD2, CATY);
   LEKO = not(MYNU);
@@ -299,15 +299,15 @@ void tick_oam() {
   wire XECY_Q = XECY.tock(XUCA, 0, RESET7n); // ? weird
   XUVA.tock(XYNY, XARE, XECY_Q);
 
-  OAM_A_CS = ZONE;
-  OAM_B_CS = ZOFE;
-  OAM_A7 = YZET;
-  OAM_A6 = XEMU;
-  OAM_A5 = YMEV;
-  OAM_A4 = YVOM;
-  OAM_A3 = YFOC;
-  OAM_A2 = YFOT;
-  OAM_A1 = ZYFO;
+  oam.OAM_A_CS = ZONE;
+  oam.OAM_B_CS = ZOFE;
+  oam.OAM_A7 = YZET;
+  oam.OAM_A6 = XEMU;
+  oam.OAM_A5 = YMEV;
+  oam.OAM_A4 = YVOM;
+  oam.OAM_A3 = YFOC;
+  oam.OAM_A2 = YFOT;
+  oam.OAM_A1 = ZYFO;
 }
 
 //-----------------------------------------------------------------------------

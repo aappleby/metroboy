@@ -374,14 +374,14 @@ void tick_spritecontrol() {
   //----------
   // Sprite y comparator
 
-  bool YCEB_Q = YCEB.latch(CLK3, OAM_B_D1); // order is weird? does it matter?
-  bool ZUCA_Q = YCEB.latch(CLK3, OAM_B_D2);
-  bool WONE_Q = YCEB.latch(CLK3, OAM_B_D3);
-  bool ZAXE_Q = YCEB.latch(CLK3, OAM_B_D4);
-  bool XAFU_Q = YCEB.latch(CLK3, OAM_B_D5);
-  bool YSES_Q = YCEB.latch(CLK3, OAM_B_D6);
-  bool ZECA_Q = YCEB.latch(CLK3, OAM_B_D7);
-  bool YDYV_Q = YCEB.latch(CLK3, OAM_B_D0);
+  bool YCEB_Q = YCEB.latch(CLK3, oam.OAM_B_D1); // order is weird? does it matter?
+  bool ZUCA_Q = YCEB.latch(CLK3, oam.OAM_B_D2);
+  bool WONE_Q = YCEB.latch(CLK3, oam.OAM_B_D3);
+  bool ZAXE_Q = YCEB.latch(CLK3, oam.OAM_B_D4);
+  bool XAFU_Q = YCEB.latch(CLK3, oam.OAM_B_D5);
+  bool YSES_Q = YCEB.latch(CLK3, oam.OAM_B_D6);
+  bool ZECA_Q = YCEB.latch(CLK3, oam.OAM_B_D7);
+  bool YDYV_Q = YCEB.latch(CLK3, oam.OAM_B_D0);
 
   bool XELE = not(YCEB_Q);
   bool YPON = not(ZUCA_Q);

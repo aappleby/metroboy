@@ -375,22 +375,22 @@ void tock_vram() {
   bool CYME = not(TENU);
 
   if (CEDE) {
-    OAM_B_D7 = BAPE;
-    OAM_A_D7 = BYPY;
-    OAM_B_D1 = BOMO;
-    OAM_A_D1 = BUBO;
-    OAM_B_D2 = BASA;
-    OAM_A_D2 = BETU;
-    OAM_B_D4 = BUMA;
-    OAM_A_D4 = BAXU;
-    OAM_B_D6 = BASY;
-    OAM_A_D6 = BYNY;
-    OAM_B_D5 = BUPY;
-    OAM_A_D5 = BUHU;
-    OAM_B_D0 = WASA;
-    OAM_A_D0 = WEJO;
-    OAM_B_D3 = CAKO;
-    OAM_A_D3 = CYME;
+    oam.OAM_B_D7 = BAPE;
+    oam.OAM_A_D7 = BYPY;
+    oam.OAM_B_D1 = BOMO;
+    oam.OAM_A_D1 = BUBO;
+    oam.OAM_B_D2 = BASA;
+    oam.OAM_A_D2 = BETU;
+    oam.OAM_B_D4 = BUMA;
+    oam.OAM_A_D4 = BAXU;
+    oam.OAM_B_D6 = BASY;
+    oam.OAM_A_D6 = BYNY;
+    oam.OAM_B_D5 = BUPY;
+    oam.OAM_A_D5 = BUHU;
+    oam.OAM_B_D0 = WASA;
+    oam.OAM_A_D0 = WEJO;
+    oam.OAM_B_D3 = CAKO;
+    oam.OAM_A_D3 = CYME;
   }
 
   bool TYVY = nand(SERE, LEKO);

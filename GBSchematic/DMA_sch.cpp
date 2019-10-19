@@ -169,7 +169,7 @@ void tick_dma() {
   bool DUGA = not(MATU_Q);
   bool LUFA = not(MUHO);
   LUMA = not(MORY);
-  OAM_ADDR_DMA = DUGA;
+  oam.OAM_ADDR_DMA = DUGA;
   VRAM_TO_OAM = LUFA;
 
   bool PUSY = not(NYGO);

@@ -18,6 +18,16 @@ struct ExtBus {
   /* 14 */ bool A13_A, A13_D, A13_IN;
   /* 15 */ bool A14_A, A14_D, A14_IN;
   /* 16 */ bool A15_A, A15_D, A15_IN, A15_C; // ???
+
+  // all the data lines are bidir
+  /* 17 */ bool D0_A, D0_D, D0_IN;
+  /* 18 */ bool D1_A, D1_D, D1_IN;
+  /* 19 */ bool D2_A, D2_D, D2_IN;
+  /* 20 */ bool D3_A, D3_D, D3_IN;
+  /* 21 */ bool D4_A, D4_D, D4_IN;
+  /* 22 */ bool D5_A, D5_D, D5_IN;
+  /* 23 */ bool D6_A, D6_D, D6_IN;
+  /* 24 */ bool D7_A, D7_D, D7_IN;
 };
 
 extern ExtBus ext;
@@ -26,16 +36,6 @@ extern ExtBus ext;
 extern bool WR_A, WR_C, WR_IN; // is this supposed to be the input of the /WR gpio?
 extern bool RD_A, RD_B, RD_C;  // what is the B for?
 extern bool CS_OUT; // output chip select
-
-// package data bus
-extern bool D0_A, D0_D, D0_IN;
-extern bool D1_A, D1_D, D1_IN;
-extern bool D2_A, D2_D, D2_IN;
-extern bool D3_A, D3_D, D3_IN;
-extern bool D4_A, D4_D, D4_IN;
-extern bool D5_A, D5_D, D5_IN;
-extern bool D6_A, D6_D, D6_IN;
-extern bool D7_A, D7_D, D7_IN;
 
 extern bool CLKIN_A;
 extern bool CLKIN_B;

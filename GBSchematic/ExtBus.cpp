@@ -2,17 +2,6 @@
 
 ExtBus ext;
 
-
-// all the data lines are bidir
-/* 17 */ bool D0_A, D0_D, D0_IN;
-/* 18 */ bool D1_A, D1_D, D1_IN;
-/* 19 */ bool D2_A, D2_D, D2_IN;
-/* 20 */ bool D3_A, D3_D, D3_IN;
-/* 21 */ bool D4_A, D4_D, D4_IN;
-/* 22 */ bool D5_A, D5_D, D5_IN;
-/* 23 */ bool D6_A, D6_D, D6_IN;
-/* 24 */ bool D7_A, D7_D, D7_IN;
-
 // all the vram data lines are bidir
 // vram address lines are output-only
 // mcs, moe, mwr are bidir

@@ -78,14 +78,14 @@ void tock_vram() {
   bool RUXA = nand(mem.D0, LULA);
 
   // why is this writing to the _A part of the data bus but not the _D?
-  D5_A = RYVO;
-  D3_A = RERA;
-  D2_A = RABY;
-  D4_A = RORY;
-  D1_A = RUJA;
-  D7_A = RAVU;
-  D6_A = RAFY;
-  D0_A = RUXA;
+  ext.D5_A = RYVO;
+  ext.D3_A = RERA;
+  ext.D2_A = RABY;
+  ext.D4_A = RORY;
+  ext.D1_A = RUJA;
+  ext.D7_A = RAVU;
+  ext.D6_A = RAFY;
+  ext.D0_A = RUXA;
 
   bool MATU_Q = MATU.q();
   bool CUFE = unk3(SARO, MATU_Q, MOPA_PHI);
@@ -289,14 +289,14 @@ void tock_vram() {
 
   bool LYRA = nand(T1nT2, RORU);
 
-  bool RYBA = not(D7_IN);
-  bool RUZY = not(D1_IN);
-  bool ROME = not(D2_IN);
-  bool TEHE = not(D4_IN);
-  bool SOCA = not(D6_IN);
-  bool RATU = not(D5_IN);
-  bool TOVO = not(D0_IN);
-  bool SAZA = not(D3_IN);
+  bool RYBA = not(ext.D7_IN);
+  bool RUZY = not(ext.D1_IN);
+  bool ROME = not(ext.D2_IN);
+  bool TEHE = not(ext.D4_IN);
+  bool SOCA = not(ext.D6_IN);
+  bool RATU = not(ext.D5_IN);
+  bool TOVO = not(ext.D0_IN);
+  bool SAZA = not(ext.D3_IN);
 
   bool ROPA = not(RYBA);
   bool SYWA = not(RUZY);
@@ -348,14 +348,14 @@ void tock_vram() {
   MD2_A = RAZO;
 
   bool CEDE = not(LUMA);
-  bool SYZO = not(D7_IN);
-  bool TUNE = not(D1_IN);
-  bool SERA = not(D2_IN);
-  bool SYSA = not(D4_IN);
-  bool TUBE = not(D6_IN);
-  bool SUGY = not(D5_IN);
-  bool RALO = not(D0_IN);
-  bool TENU = not(D3_IN);
+  bool SYZO = not(ext.D7_IN);
+  bool TUNE = not(ext.D1_IN);
+  bool SERA = not(ext.D2_IN);
+  bool SYSA = not(ext.D4_IN);
+  bool TUBE = not(ext.D6_IN);
+  bool SUGY = not(ext.D5_IN);
+  bool RALO = not(ext.D0_IN);
+  bool TENU = not(ext.D3_IN);
 
   bool BAPE = not(SYZO);
   bool BYPY = not(SYZO);

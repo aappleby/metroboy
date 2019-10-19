@@ -240,28 +240,28 @@ void tick_extbus() {
   wire SEZE = nor(RORU, mem.D3);
   wire TAMU = nor(RORU, mem.D5);
 
-  D6_D = ROGY;
-  D7_D = RYDA; // was D7_A on schematic, probably a typo?
-  D0_D = RUNE;
-  D4_D = RESY;
-  D1_D = RYPU;
-  D2_D = SULY;
-  D3_D = SEZE;
-  D5_D = TAMU;
+  ext.D6_D = ROGY;
+  ext.D7_D = RYDA; // was D7_A on schematic, probably a typo?
+  ext.D0_D = RUNE;
+  ext.D4_D = RESY;
+  ext.D1_D = RYPU;
+  ext.D2_D = SULY;
+  ext.D3_D = SEZE;
+  ext.D5_D = TAMU;
 
   //----------
   // DX_IN latch, bottom right
 
   wire LAVO = nand(CPU_RAW_RD, TEXO, FROM_CPU5);
 
-  wire SODY_Q = SODY.latch(D4_IN, LAVO);
-  wire SELO_Q = SELO.latch(D3_IN, LAVO);
-  wire RONY_Q = RONY.latch(D1_IN, LAVO);
-  wire SOMA_Q = SOMA.latch(D0_IN, LAVO);
-  wire RAXY_Q = RAXY.latch(D2_IN, LAVO);
-  wire RUPA_Q = RUPA.latch(D6_IN, LAVO);
-  wire SAGO_Q = SAGO.latch(D5_IN, LAVO);
-  wire SAZY_Q = SAZY.latch(D7_IN, LAVO); // schematic mislabeled PIN_D7
+  wire SODY_Q = SODY.latch(ext.D4_IN, LAVO);
+  wire SELO_Q = SELO.latch(ext.D3_IN, LAVO);
+  wire RONY_Q = RONY.latch(ext.D1_IN, LAVO);
+  wire SOMA_Q = SOMA.latch(ext.D0_IN, LAVO);
+  wire RAXY_Q = RAXY.latch(ext.D2_IN, LAVO);
+  wire RUPA_Q = RUPA.latch(ext.D6_IN, LAVO);
+  wire SAGO_Q = SAGO.latch(ext.D5_IN, LAVO);
+  wire SAZY_Q = SAZY.latch(ext.D7_IN, LAVO); // schematic mislabeled PIN_D7
 
   // looks non-inverting?
   wire TEPE = SODY_Q;

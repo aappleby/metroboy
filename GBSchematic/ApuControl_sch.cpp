@@ -74,7 +74,7 @@ void tick_apucontrol() {
   
   bool HAPO = not(RESET2);
   bool GUFO = not(HAPO);
-  bool HADA_Q = HADA.tock(HAWU, GUFO, D7);
+  bool HADA_Q = HADA.tock(HAWU, GUFO, mem.D7);
   bool JYRO = or(HAPO, !HADA_Q);
   
   bool KUBY = not(JYRO);
@@ -83,18 +83,18 @@ void tick_apucontrol() {
 
   bool HOPE = not(!HADA_Q);
   if (JURE) {
-    D7 = HOPE;
+    mem.D7 = HOPE;
   }
 
   bool KEPY = not(JYRO);
   bool ETUC = and(CPU_WRQ, FF26);
-  bool EFOP = and(D4, FROM_CPU);
+  bool EFOP = and(mem.D4, FROM_CPU);
   bool FOKU = not(ETUC);
   FERO_Q = FERO.tock(FOKU, KEPY, EFOP);
   bool EDEK = not(!FERO_Q);
   NET03 = EDEK;
 
-  bool BOWY_Q = BOWY.tock(BOPY, KEPY, D5);
+  bool BOWY_Q = BOWY.tock(BOPY, KEPY, mem.D5);
   bool BAZA_Q = BAZA.tock(AJER_2MHZn, APU_RESET3n, BOWY_Q);
   bool CELY = mux2(BAZA_Q, BYFE_128, NET03);
   bool CONE = not(CELY);
@@ -114,17 +114,17 @@ void tick_apucontrol() {
 
   bool BAXY = not(BOSU);
   bool BUBU = not(BAXY);
-  bool BEDU_Q = BEDU.tock(BUBU, JYRO, D7);
-  bool COZU_Q = COZU.tock(BUBU, JYRO, D6);
-  bool BUMO_Q = BUMO.tock(BUBU, JYRO, D5);
-  bool BYRE_Q = BYRE.tock(BUBU, JYRO, D4);
+  bool BEDU_Q = BEDU.tock(BUBU, JYRO, mem.D7);
+  bool COZU_Q = COZU.tock(BUBU, JYRO, mem.D6);
+  bool BUMO_Q = BUMO.tock(BUBU, JYRO, mem.D5);
+  bool BYRE_Q = BYRE.tock(BUBU, JYRO, mem.D4);
 
   bool BOWE = not(BOSU);
   bool ATAF = not(BOWE);
-  bool APOS_Q = APOS.tock(ATAF, JYRO, D3);
-  bool AGER_Q = AGER.tock(ATAF, JYRO, D2);
-  bool BYGA_Q = BYGA.tock(ATAF, JYRO, D1);
-  bool APEG_Q = APEG.tock(ATAF, JYRO, D0);
+  bool APOS_Q = APOS.tock(ATAF, JYRO, mem.D3);
+  bool AGER_Q = AGER.tock(ATAF, JYRO, mem.D2);
+  bool BYGA_Q = BYGA.tock(ATAF, JYRO, mem.D1);
+  bool APEG_Q = APEG.tock(ATAF, JYRO, mem.D0);
 
   bool ATUM = not(!BEDU_Q);
   bool BOCY = not(!COZU_Q);
@@ -136,14 +136,14 @@ void tick_apucontrol() {
   bool AKOD = not(!APEG_Q);
 
   if (ADAK) {
-    D7 = ATUM;
-    D6 = BOCY;
-    D5 = ARUX;
-    D4 = AMAD;
-    D3 = AXEM;
-    D2 = AVUD;
-    D1 = AWED;
-    D0 = AKOD;
+    mem.D7 = ATUM;
+    mem.D6 = BOCY;
+    mem.D5 = ARUX;
+    mem.D4 = AMAD;
+    mem.D3 = AXEM;
+    mem.D2 = AVUD;
+    mem.D1 = AWED;
+    mem.D0 = AKOD;
   }
 
   //----------
@@ -153,14 +153,14 @@ void tick_apucontrol() {
   bool BONO = not(BUPO);
   bool BYFA = not(BUPO);
 
-  bool BOGU_Q = BOGU.tock(BONO, JYRO, D1);
-  bool BAFO_Q = BAFO.tock(BONO, JYRO, D2);
-  bool ATUF_Q = ATUF.tock(BONO, JYRO, D3);
-  bool ANEV_Q = ANEV.tock(BONO, JYRO, D0);
-  bool BEPU_Q = BEPU.tock(BYFA, JYRO, D7);
-  bool BEFO_Q = BEFO.tock(BYFA, JYRO, D6);
-  bool BUME_Q = BUME.tock(BYFA, JYRO, D4);
-  bool BOFA_Q = BOFA.tock(BYFA, JYRO, D5);
+  bool BOGU_Q = BOGU.tock(BONO, JYRO, mem.D1);
+  bool BAFO_Q = BAFO.tock(BONO, JYRO, mem.D2);
+  bool ATUF_Q = ATUF.tock(BONO, JYRO, mem.D3);
+  bool ANEV_Q = ANEV.tock(BONO, JYRO, mem.D0);
+  bool BEPU_Q = BEPU.tock(BYFA, JYRO, mem.D7);
+  bool BEFO_Q = BEFO.tock(BYFA, JYRO, mem.D6);
+  bool BUME_Q = BUME.tock(BYFA, JYRO, mem.D4);
+  bool BOFA_Q = BOFA.tock(BYFA, JYRO, mem.D5);
 
   bool GEPA = not(FF25);
   bool HEFA = nor(GEPA, CPU_RDn);
@@ -176,14 +176,14 @@ void tick_apucontrol() {
   bool CUDU = not(!BOFA_Q);
 
   if (GUMU) {
-    D1 = CAPU;
-    D2 = CAGA;
-    D3 = BOCA;
-    D0 = BUZU;
-    D7 = CERE;
-    D6 = CADA;
-    D4 = CAVU;
-    D5 = CUDU;
+    mem.D1 = CAPU;
+    mem.D2 = CAGA;
+    mem.D3 = BOCA;
+    mem.D0 = BUZU;
+    mem.D7 = CERE;
+    mem.D6 = CADA;
+    mem.D4 = CAVU;
+    mem.D5 = CUDU;
   }
 
   //----------
@@ -204,8 +204,8 @@ void tick_apucontrol() {
   bool EFUS = not(CH2_ACTIVEn);
   bool FATE = not(CH3_ACTIVEn);
 
-  if (DOLE) D0 = COTO;
-  if (KAMU) D3 = KOGE;
-  if (DURU) D1 = EFUS;
-  if (FEWA) D2 = FATE;
+  if (DOLE) mem.D0 = COTO;
+  if (KAMU) mem.D3 = KOGE;
+  if (DURU) mem.D1 = EFUS;
+  if (FEWA) mem.D2 = FATE;
 }

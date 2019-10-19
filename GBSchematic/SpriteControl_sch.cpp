@@ -469,14 +469,14 @@ void tick_spritecontrol() {
   SPR_MATCH = GESE;
 
   if (WUME) {
-    D0 = YFAP;
-    D1 = XELE;
-    D2 = YPON;
-    D3 = XUVO;
-    D4 = ZYSA;
-    D5 = YWEG;
-    D6 = XABU;
-    D7 = YTUX;
+    mem.D0 = YFAP;
+    mem.D1 = XELE;
+    mem.D2 = YPON;
+    mem.D3 = XUVO;
+    mem.D4 = ZYSA;
+    mem.D5 = YWEG;
+    mem.D6 = XABU;
+    mem.D7 = YTUX;
   }
 
   bool ABON = not(TEXY);

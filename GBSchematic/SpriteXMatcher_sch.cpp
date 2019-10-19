@@ -76,14 +76,14 @@ void tick_spritexmatcher() {
   bool FYRA = not(!ECED_Q);
 
   if (WEWU) {
-    D0 = XACA;
-    D1 = XAGU;
-    D2 = XEPU;
-    D3 = XYGU;
-    D4 = XUNA;
-    D5 = DEVE;
-    D6 = ZEHA;
-    D7 = FYRA;
+    mem.D0 = XACA;
+    mem.D1 = XAGU;
+    mem.D2 = XEPU;
+    mem.D3 = XYGU;
+    mem.D4 = XUNA;
+    mem.D5 = DEVE;
+    mem.D6 = ZEHA;
+    mem.D7 = FYRA;
   }
 
   bool XEGA = not(COTA);

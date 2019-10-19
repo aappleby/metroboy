@@ -48,29 +48,29 @@ void tick_interrupts() {
 
   bool ROTU = not(FF0F_WR);
   bool LETY = not(FROM_CPU9);
-  bool MUXE = or(D0, FF0F);
+  bool MUXE = or(mem.D0, FF0F);
   bool LUFE = not(FROM_CPU7);
-  bool SULO = or(D3, FF0F_WR);
+  bool SULO = or(mem.D3, FF0F_WR);
   bool LAMO = not(CPU); // !?!?!?! this has gotta be FROM_CPU11
-  bool SEME = or(D4, FF0F);
+  bool SEME = or(mem.D4, FF0F);
   bool LEJA = not(FROM_CPU8);
-  bool NABE = or(D1, FF0F);
+  bool NABE = or(mem.D1, FF0F);
   bool LESA = not(FROM_CPU10);
-  bool RAKE = or(D2, FF0F);
+  bool RAKE = or(mem.D2, FF0F);
 
-  bool MYZU = nand(ROTU, LETY, D0);
+  bool MYZU = nand(ROTU, LETY, mem.D0);
   bool LYTA = and(MUXE, LETY, RESET2);
 
-  bool TOME = nand(ROTU, LUFE, D3);
+  bool TOME = nand(ROTU, LUFE, mem.D3);
   bool TUNY = and(SULO, LUFE, RESET2);
   
-  bool TOGA = nand(ROTU, LAMO, D4);
+  bool TOGA = nand(ROTU, LAMO, mem.D4);
   bool TYME = and(SEME, LAMO, RESET2);
 
-  bool MODY = nand(ROTU, LEJA, D1);
+  bool MODY = nand(ROTU, LEJA, mem.D1);
   bool MOVU = and(NABE, LEJA, RESET2);
 
-  bool PYHU = nand(ROTU, LESA, D2);
+  bool PYHU = nand(ROTU, LESA, mem.D2);
   bool PYGA = and(RAKE, LESA, RESET2);
 
   bool PESU = not(P10_B);
@@ -101,11 +101,11 @@ void tick_interrupts() {
   bool ROVA = not(PAVY_Q);
 
   if (POLA) {
-    D0 = NELA;
-    D3 = PADO;
-    D4 = PEGY;
-    D1 = NABO;
-    D2 = ROVA;
+    mem.D0 = NELA;
+    mem.D3 = PADO;
+    mem.D4 = PEGY;
+    mem.D1 = NABO;
+    mem.D2 = ROVA;
   }
 
 }

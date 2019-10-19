@@ -217,8 +217,11 @@
     <ClInclude Include="PpuRegs.h" />
     <ClInclude Include="Register.h" />
     <ClInclude Include="Schematics.h" />
-    <ClInclude Include="VideoRegs_sch.h" />
+    <ClInclude Include="Timer_sch.h" />
     <ClInclude Include="VramBus.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="notes.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

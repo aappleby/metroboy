@@ -125,15 +125,15 @@ void tick_clocks_reset() {
 
   bool TAGY = and(FF04_FF07, CPU_RD, TOLA_A1n, TOVY_A0n);
   if (TAGY) {
-    D0 = TAWU;
-    D1 = TAKU;
-    D2 = TEMU;
-    D3 = TUSE;
+    mem.D0 = TAWU;
+    mem.D1 = TAKU;
+    mem.D2 = TEMU;
+    mem.D3 = TUSE;
     // these two are switched on the schematic, def not right...
-    D4 = UPUG;
-    D5 = SEPU;
-    D6 = SAWA;
-    D7 = TATU;
+    mem.D4 = UPUG;
+    mem.D5 = SEPU;
+    mem.D6 = SAWA;
+    mem.D7 = TATU;
   }
 
   //----------

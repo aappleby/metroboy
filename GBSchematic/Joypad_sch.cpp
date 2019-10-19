@@ -69,12 +69,12 @@ void tick_joypad() {
   bool CUDY = not(!COFY_Q);
 
   if (BYZO) {
-    D3 = JEKU;
-    D2 = KUVE;
-    D0 = KEMA;
-    D1 = KURO;
-    D4 = KOCE;
-    D5 = CUDY;
+    mem.D3 = JEKU;
+    mem.D2 = KUVE;
+    mem.D0 = KEMA;
+    mem.D1 = KURO;
+    mem.D4 = KOCE;
+    mem.D5 = CUDY;
   }
 
   bool KARU = or(KURA, !KELY_Q);
@@ -117,14 +117,14 @@ void tick_joypad() {
   bool BEDA = not(P10_B);
 
   if (AFOP) {
-    D0 = ANOC;
-    D2 = AJEC;
-    D6 = ARAR;
-    D4 = BENU;
-    D5 = AKAJ;
-    D3 = ASUZ;
-    D1 = ATAJ;
-    D7 = BEDA;
+    mem.D0 = ANOC;
+    mem.D2 = AJEC;
+    mem.D6 = ARAR;
+    mem.D4 = BENU;
+    mem.D5 = AKAJ;
+    mem.D3 = ASUZ;
+    mem.D1 = ATAJ;
+    mem.D7 = BEDA;
   }
 
  
@@ -143,14 +143,14 @@ void tick_joypad() {
   bool JUTE_Q_ = JUTE_Q;
   bool KECY_Q_ = KECY_Q;
 
-  if (KYME_CLK && !FF00WR) KYME_Q_ = D3;
-  if (KUKO_CLK && !FF00WR) KUKO_Q_ = D6;
-  if (KERU_CLK && !FF00WR) KERU_Q_ = D7;
-  if (JALE_CLK && !FF00WR) JALE_Q_ = D2;
-  if (KELY_CLK && !FF00WR) KELY_Q_ = D4;
-  if (COFY_CLK && !FF00WR) COFY_Q_ = D6;
-  if (JUTE_CLK && !FF00WR) JUTE_Q_ = D0;
-  if (KECY_CLK && !FF00WR) KECY_Q_ = D1;
+  if (KYME_CLK && !FF00WR) KYME_Q_ = mem.D3;
+  if (KUKO_CLK && !FF00WR) KUKO_Q_ = mem.D6;
+  if (KERU_CLK && !FF00WR) KERU_Q_ = mem.D7;
+  if (JALE_CLK && !FF00WR) JALE_Q_ = mem.D2;
+  if (KELY_CLK && !FF00WR) KELY_Q_ = mem.D4;
+  if (COFY_CLK && !FF00WR) COFY_Q_ = mem.D6;
+  if (JUTE_CLK && !FF00WR) JUTE_Q_ = mem.D0;
+  if (KECY_CLK && !FF00WR) KECY_Q_ = mem.D1;
   
   if (!RESET2) KYME_Q_ = 0;
   if (!RESET2) KUKO_Q_ = 0;

@@ -43,11 +43,11 @@ bool ELYS_Q, ELYS_CLK;
 //-----------------------------------------------------------------------------
 
 void tick_serial() {
-  bool SARE = nor(A7, A7, A7, A4, A3);
-  bool SEFY = not(A2);
+  bool SARE = nor(mem.A7, mem.A7, mem.A7, mem.A4, mem.A3);
+  bool SEFY = not(mem.A2);
   bool SANO = and(SARE, SEFY, FFXX);
-  bool UWAM = nand(TOVY_A0n, A1, CPU_WR, SANO);
-  bool UCOM = nand(SANO, CPU_RD, A1, TOVY_A0n);
+  bool UWAM = nand(TOVY_A0n, mem.A1, CPU_WR, SANO);
+  bool UCOM = nand(SANO, CPU_RD, mem.A1, TOVY_A0n);
   bool CARO = and(UWAM, RESET2);
   bool CAVE = mux2(COTY_Q, SCK_IN, CULY_Q);
   bool DAWA = or(CAVE, !ETAF_Q);
@@ -55,8 +55,8 @@ void tick_serial() {
   bool CORE = not(!CULY_Q);
 
   if (UCOM) {
-    D7 = ELUV;
-    D0 = CORE;
+    mem.D7 = ELUV;
+    mem.D0 = CORE;
   }
 
   bool KEXU = nand(DAWA, SCK_DIR);
@@ -72,30 +72,30 @@ void tick_serial() {
 
   A00_07 = SARE;
 
-  bool URYS = nand(SANO, CPU_WR, TOLA_A1n, A0);
+  bool URYS = nand(SANO, CPU_WR, TOLA_A1n, mem.A0);
   bool DAKU = not(URYS);
   bool EPYT = not(SER_TICKn);
   bool DEHO = not(EPYT);
   bool DAWE = not(DEHO);
   bool CAGE = not(SIN_IN);
 
-  bool COHY = unk3(URYS, D0, RESET2);
-  bool DUMO = unk3(URYS, D1, RESET2);
-  bool DYBO = unk3(URYS, D2, RESET2);
-  bool DAJU = unk3(URYS, D3, RESET2);
-  bool DYLY = unk3(URYS, D4, RESET2);
-  bool EHUJ = unk3(URYS, D5, RESET2);
-  bool EFAK = unk3(URYS, D6, RESET2);
-  bool EGUV = unk3(URYS, D7, RESET2);
+  bool COHY = unk3(URYS, mem.D0, RESET2);
+  bool DUMO = unk3(URYS, mem.D1, RESET2);
+  bool DYBO = unk3(URYS, mem.D2, RESET2);
+  bool DAJU = unk3(URYS, mem.D3, RESET2);
+  bool DYLY = unk3(URYS, mem.D4, RESET2);
+  bool EHUJ = unk3(URYS, mem.D5, RESET2);
+  bool EFAK = unk3(URYS, mem.D6, RESET2);
+  bool EGUV = unk3(URYS, mem.D7, RESET2);
 
-  bool CUFU = nand(D0, DAKU);
-  bool DOCU = nand(D1, DAKU);
-  bool DELA = nand(D2, DAKU);
-  bool DYGE = nand(D3, DAKU);
-  bool DOLA = nand(D4, DAKU);
-  bool ELOK = nand(D5, DAKU);
-  bool EDEL = nand(D6, DAKU);
-  bool EFEF = nand(D7, DAKU);
+  bool CUFU = nand(mem.D0, DAKU);
+  bool DOCU = nand(mem.D1, DAKU);
+  bool DELA = nand(mem.D2, DAKU);
+  bool DYGE = nand(mem.D3, DAKU);
+  bool DOLA = nand(mem.D4, DAKU);
+  bool ELOK = nand(mem.D5, DAKU);
+  bool EDEL = nand(mem.D6, DAKU);
+  bool EFEF = nand(mem.D7, DAKU);
 
   bool CUGY = not(!CUBA_Q);
   bool DUDE = not(!DEGU_Q);
@@ -106,16 +106,16 @@ void tick_serial() {
   bool EFAB = not(!EROD_Q);
   bool ETAK = not(!EDER_Q);
 
-  bool UFEG = and(SANO, CPU_RD, TOLA_A1n, A0);
+  bool UFEG = and(SANO, CPU_RD, TOLA_A1n, mem.A0);
   if (UFEG) {
-    D0 = CUGY;
-    D1 = DUDE;
-    D2 = DETU;
-    D3 = DASO;
-    D4 = DAME;
-    D5 = EVOK;
-    D6 = EFAB;
-    D7 = ETAK;
+    mem.D0 = CUGY;
+    mem.D1 = DUDE;
+    mem.D2 = DETU;
+    mem.D3 = DASO;
+    mem.D4 = DAME;
+    mem.D5 = EVOK;
+    mem.D6 = EFAB;
+    mem.D7 = ETAK;
   }
 
   //----------
@@ -130,7 +130,7 @@ void tick_serial() {
   bool CALY_Q_ = CALY_Q;
 
   if (COTY_CLK && !CLK_16k) COTY_Q_ = !COTY_Q;
-  if (ETAF_CLK && !UWAM) ETAF_Q_ = D7;
+  if (ETAF_CLK && !UWAM) ETAF_Q_ = mem.D7;
   if (CAFA_CLK && !DAWA) CAFA_Q_ = !CAFA_Q;
   if (CYLO_CLK && !!CAFA_Q) CYLO_Q_ = !CYLO_Q;
   if (CYDE_CLK && !!CYLO_Q) CYDE_Q_ = !CYDE_Q;

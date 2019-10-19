@@ -57,23 +57,23 @@ void tick_sysdecode() {
 
   //----------
 
-  bool TYRO = nor(A7, A5, A3, A2, A1, A0);
-  bool TUFA = and(A4, A6);
+  bool TYRO = nor(mem.A7, mem.A5, mem.A3, mem.A2, mem.A1, mem.A0);
+  bool TUFA = and(mem.A4, mem.A6);
   bool TUGE = nand(TYRO, TUFA, FFXX, CPU_WR);
-  bool SATO = or(D0, TEPU_Q);
+  bool SATO = or(mem.D0, TEPU_Q);
   bool TEXE = and(CPU_RD, FFXX, TUFA, TYRO);
   bool SYPU = not(TEPU_Q);
 
   if (TEXE) {
-    D0 = SYPU;
+    mem.D0 = SYPU;
   }
 
   bool TERA = not(TEPU_Q);
-  bool TULO = nor(A15, A14, A13, A12, A11, A10, A9, A8);
+  bool TULO = nor(mem.A15, mem.A14, mem.A13, mem.A12, mem.A11, mem.A10, mem.A9, mem.A8);
   bool TUTU = and(TERA, TULO);
   bool YAZA = not(T1T2n);
-  bool ZORO = nor(A15, A14, A13, A12);
-  bool ZADU = nor(A11, A10, A9, A8);
+  bool ZORO = nor(mem.A15, mem.A14, mem.A13, mem.A12);
+  bool ZADU = nor(mem.A11, mem.A10, mem.A9, mem.A8);
   bool YULA = and(YAZA, TUTU, CPU_RD);
   bool ZUFA = and(ZORO, ZADU);
   bool ZADO = nand(YULA, ZUFA);
@@ -83,8 +83,8 @@ void tick_sysdecode() {
 
   //----------
 
-  bool SEMY = nor(A7, A6, A5, A4);
-  bool SAPA = and(A0, A1, A2, A3);
+  bool SEMY = nor(mem.A7, mem.A6, mem.A5, mem.A4);
+  bool SAPA = and(mem.A0, mem.A1, mem.A2, mem.A3);
   bool ROLO = and(SEMY, SAPA, FFXX, CPU_RD);
   bool REFA = and(SEMY, SAPA, FFXX, CPU_WR_RAW);
 
@@ -93,8 +93,8 @@ void tick_sysdecode() {
 
   //----------
 
-  bool WALE = nand(A0, A1, A2, A3, A4, A5, A6);
-  bool WOLY = nand(WALE, A7, FFXX);
+  bool WALE = nand(mem.A0, mem.A1, mem.A2, mem.A3, mem.A4, mem.A5, mem.A6);
+  bool WOLY = nand(WALE, mem.A7, FFXX);
   bool WUTA = not(WOLY);
 
   HRAM_CS = WUTA;
@@ -125,20 +125,20 @@ void tick_sysdecode() {
   bool ROMY = not(P10_B);
 
   if (LECO) {
-    D7 = RARU;
-    D5 = ROWE;
-    D6 = RYKE;
-    D1 = RYNE;
-    D3 = RASE;
-    D2 = REJY;
-    D4 = REKA;
-    D0 = ROMY;
+    mem.D7 = RARU;
+    mem.D5 = ROWE;
+    mem.D6 = RYKE;
+    mem.D1 = RYNE;
+    mem.D3 = RASE;
+    mem.D2 = REJY;
+    mem.D4 = REKA;
+    mem.D0 = ROMY;
   }
 
   //----------
 
-  bool TONA = not(A8);
-  bool TUNA = nand(A15, A14, A13, A12, A11, A10, A9);
+  bool TONA = not(mem.A8);
+  bool TUNA = nand(mem.A15, mem.A14, mem.A13, mem.A12, mem.A11, mem.A10, mem.A9);
   FEXXFFXXn = TUNA;
   bool SYKE = nor(TONA, TUNA);
   bool RYCU = not(TUNA);
@@ -151,10 +151,10 @@ void tick_sysdecode() {
 
   //----------
 
-  bool ZYRA = not(A7);
-  bool ZAGE = not(A6);
-  bool ZABU = not(A3);
-  bool ZOKE = not(A2);
+  bool ZYRA = not(mem.A7);
+  bool ZAGE = not(mem.A6);
+  bool ZABU = not(mem.A3);
+  bool ZOKE = not(mem.A2);
 
   BOOTROM_A7n = ZYRA;
   BOOTROM_A6n = ZAGE;
@@ -163,12 +163,12 @@ void tick_sysdecode() {
 
   //----------
 
-  bool ZERA = not(A5);
-  bool ZUFY = not(A4);
+  bool ZERA = not(mem.A5);
+  bool ZUFY = not(mem.A4);
   bool ZYKY = and(ZERA, ZUFY);
-  bool ZYGA = and(ZERA, A4);
-  bool ZOVY = and(A5, ZUFY);
-  bool ZUKO = and(A5, A4);
+  bool ZYGA = and(ZERA, mem.A4);
+  bool ZOVY = and(mem.A5, ZUFY);
+  bool ZUKO = and(mem.A5, mem.A4);
 
   BOOTROM_A5nA4n = ZYKY;
   BOOTROM_A5nA4 = ZYGA;
@@ -177,12 +177,12 @@ void tick_sysdecode() {
 
   //----------
 
-  bool ZUVY = not(A1);
-  bool ZYBA = not(A0);
+  bool ZUVY = not(mem.A1);
+  bool ZYBA = not(mem.A0);
   bool ZOLE = and(ZUVY, ZYBA);
-  bool ZAJE = and(ZUVY, A0);
-  bool ZUBU = and(ZYBA, A1);
-  bool ZAPY = and(A1, A0);
+  bool ZAJE = and(ZUVY, mem.A0);
+  bool ZUBU = and(ZYBA, mem.A1);
+  bool ZAPY = and(mem.A1, mem.A0);
 
   bool ZETE = not(ZOLE);
   bool ZEFU = not(ZAJE);
@@ -197,7 +197,7 @@ void tick_sysdecode() {
   //----------
 
   bool APET = or(NET02, T1T2n);
-  bool APER = nand(APET, A5, A6, CPU_WR, ANAP);
+  bool APER = nand(APET, mem.A5, mem.A6, CPU_WR, ANAP);
 
   //----------
 
@@ -222,6 +222,6 @@ void tick_sysdecode() {
   // registers
 
   TEPU.tock(TUGE, RESET2, SATO);
-  AMUT.tock(APER, RESET2, D1);
-  BURO.tock(APER, RESET2, D0);
+  AMUT.tock(APER, RESET2, mem.D1);
+  BURO.tock(APER, RESET2, mem.D0);
 }

@@ -24,14 +24,14 @@ void tick_palettes() {
   bool TEPY = not(VUSO);
   bool TEPO = not(VELY);
 
-  bool MENA_Q = MENA.tock(TEPO, 0, D7);
-  bool MORU_Q = MORU.tock(TEPO, 0, D5);
-  bool MAXY_Q = MAXY.tock(TEPO, 0, D3);
-  bool NUSY_Q = NUSY.tock(TEPO, 0, D1);
-  bool MOGY_Q = MOGY.tock(TEPO, 0, D6);
-  bool MUKE_Q = MUKE.tock(TEPO, 0, D4);
-  bool PYLU_Q = PYLU.tock(TEPO, 0, D2);
-  bool PAVO_Q = PAVO.tock(TEPO, 0, D0);
+  bool MENA_Q = MENA.tock(TEPO, 0, mem.D7);
+  bool MORU_Q = MORU.tock(TEPO, 0, mem.D5);
+  bool MAXY_Q = MAXY.tock(TEPO, 0, mem.D3);
+  bool NUSY_Q = NUSY.tock(TEPO, 0, mem.D1);
+  bool MOGY_Q = MOGY.tock(TEPO, 0, mem.D6);
+  bool MUKE_Q = MUKE.tock(TEPO, 0, mem.D4);
+  bool PYLU_Q = PYLU.tock(TEPO, 0, mem.D2);
+  bool PAVO_Q = PAVO.tock(TEPO, 0, mem.D0);
 
   BGP_D7 = MENA_Q;
   BGP_D5 = MORU_Q;
@@ -52,14 +52,14 @@ void tick_palettes() {
   bool RARO = not(!PAVO_Q);
 
   if (TEPY) {
-    D7 = LARY;
-    D5 = LYKA;
-    D3 = LOBE;
-    D1 = PABA;
-    D6 = LODY;
-    D4 = LACE;
-    D2 = REDO;
-    D0 = RARO;
+    mem.D7 = LARY;
+    mem.D5 = LYKA;
+    mem.D3 = LOBE;
+    mem.D1 = PABA;
+    mem.D6 = LODY;
+    mem.D4 = LACE;
+    mem.D2 = REDO;
+    mem.D0 = RARO;
   }
 
   // OBP0
@@ -68,14 +68,14 @@ void tick_palettes() {
   bool XOZY = not(XUFY);
   bool XELO = not(XOMA);
 
-  bool XANA_Q = XANA.tock(XELO, 0, D7);
-  bool XYZE_Q = XYZE.tock(XELO, 0, D5);
-  bool XALO_Q = XALO.tock(XELO, 0, D3);
-  bool XUKY_Q = XUKY.tock(XELO, 0, D1);
-  bool XUPO_Q = XUPO.tock(XELO, 0, D6);
-  bool XERU_Q = XERU.tock(XELO, 0, D4);
-  bool XOVA_Q = XOVA.tock(XELO, 0, D2);
-  bool XUFU_Q = XUFU.tock(XELO, 0, D0);
+  bool XANA_Q = XANA.tock(XELO, 0, mem.D7);
+  bool XYZE_Q = XYZE.tock(XELO, 0, mem.D5);
+  bool XALO_Q = XALO.tock(XELO, 0, mem.D3);
+  bool XUKY_Q = XUKY.tock(XELO, 0, mem.D1);
+  bool XUPO_Q = XUPO.tock(XELO, 0, mem.D6);
+  bool XERU_Q = XERU.tock(XELO, 0, mem.D4);
+  bool XOVA_Q = XOVA.tock(XELO, 0, mem.D2);
+  bool XUFU_Q = XUFU.tock(XELO, 0, mem.D0);
 
   OBP0_D7 = XANA_Q;
   OBP0_D5 = XYZE_Q;
@@ -96,14 +96,14 @@ void tick_palettes() {
   bool XARY = not(!XUFU_Q);
 
   if (XOZY) {
-    D7 = XAWO;
-    D5 = XOBO;
-    D3 = XUBY;
-    D1 = XOKE;
-    D6 = XAXA;
-    D4 = XAJU;
-    D2 = XUNO;
-    D0 = XARY;
+    mem.D7 = XAWO;
+    mem.D5 = XOBO;
+    mem.D3 = XUBY;
+    mem.D1 = XOKE;
+    mem.D6 = XAXA;
+    mem.D4 = XAJU;
+    mem.D2 = XUNO;
+    mem.D0 = XARY;
   }
 
   // OBP1
@@ -112,14 +112,14 @@ void tick_palettes() {
   bool LOTE = not(MUMY);
   bool LEHO = not(MYXE);
 
-  bool LUXO_Q = LUXO.tock(LEHO, 0, D7);
-  bool LUGU_Q = LUGU.tock(LEHO, 0, D5);
-  bool LOSE_Q = LOSE.tock(LEHO, 0, D3);
-  bool LAWO_Q = LAWO.tock(LEHO, 0, D1);
-  bool LEPU_Q = LEPU.tock(LEHO, 0, D6);
-  bool LUNE_Q = LUNE.tock(LEHO, 0, D4);
-  bool MOSA_Q = MOSA.tock(LEHO, 0, D2);
-  bool MOXY_Q = MOXY.tock(LEHO, 0, D0);
+  bool LUXO_Q = LUXO.tock(LEHO, 0, mem.D7);
+  bool LUGU_Q = LUGU.tock(LEHO, 0, mem.D5);
+  bool LOSE_Q = LOSE.tock(LEHO, 0, mem.D3);
+  bool LAWO_Q = LAWO.tock(LEHO, 0, mem.D1);
+  bool LEPU_Q = LEPU.tock(LEHO, 0, mem.D6);
+  bool LUNE_Q = LUNE.tock(LEHO, 0, mem.D4);
+  bool MOSA_Q = MOSA.tock(LEHO, 0, mem.D2);
+  bool MOXY_Q = MOXY.tock(LEHO, 0, mem.D0);
 
   OBP1_D7 = LUXO_Q;
   OBP1_D5 = LUGU_Q;
@@ -140,13 +140,13 @@ void tick_palettes() {
   bool LAJU = not(!MOXY_Q);
 
   if (LOTE) {
-    D7 = LELU;
-    D5 = LUGA;
-    D3 = LYZA;
-    D1 = LEPA;
-    D6 = LEBA;
-    D4 = LUKY;
-    D2 = LODE;
-    D0 = LAJU;
+    mem.D7 = LELU;
+    mem.D5 = LUGA;
+    mem.D3 = LYZA;
+    mem.D1 = LEPA;
+    mem.D6 = LEBA;
+    mem.D4 = LUKY;
+    mem.D2 = LODE;
+    mem.D0 = LAJU;
   }
 }

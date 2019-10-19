@@ -45,6 +45,8 @@ extern bool T1T2n;
 extern bool NET01; // not(T1nT2)
 extern bool NET02; // don't know where this is driven yet, but probably similar
 
+extern bool PHI_OUT;
+
 extern bool P10; // why are these not _ABCD
 extern bool P12;
 

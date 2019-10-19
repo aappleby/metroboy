@@ -96,14 +96,14 @@ void tick_dma() {
 
   WYJA = unk3(AMAB, CPU_WR2, POWU);
 
-  bool NAFA_Q = NAFA.tock(LORU, 0, D0);
-  bool NYGY_Q = NYGY.tock(LORU, 0, D4);
-  bool PARA_Q = PARA.tock(LORU, 0, D2);
-  bool PYNE_Q = PYNE.tock(LORU, 0, D1);
-  bool PULA_Q = PULA.tock(LORU, 0, D5);
-  bool NYDO_Q = NYDO.tock(LORU, 0, D3);
-  bool POKU_Q = POKU.tock(LORU, 0, D6);
-  bool MARU_Q = MARU.tock(LORU, 0, D7);
+  bool NAFA_Q = NAFA.tock(LORU, 0, mem.D0);
+  bool NYGY_Q = NYGY.tock(LORU, 0, mem.D4);
+  bool PARA_Q = PARA.tock(LORU, 0, mem.D2);
+  bool PYNE_Q = PYNE.tock(LORU, 0, mem.D1);
+  bool PULA_Q = PULA.tock(LORU, 0, mem.D5);
+  bool NYDO_Q = NYDO.tock(LORU, 0, mem.D3);
+  bool POKU_Q = POKU.tock(LORU, 0, mem.D6);
+  bool MARU_Q = MARU.tock(LORU, 0, mem.D7);
 
   bool POLY = not(!NAFA_Q);
   bool PARE = not(!NYGY_Q);
@@ -174,14 +174,14 @@ void tick_dma() {
 
   bool PUSY = not(NYGO);
   if (PUSY) {
-    D0 = POLY;
-    D4 = PARE;
-    D2 = REMA;
-    D1 = ROFO;
-    D5 = RALY;
-    D3 = PANE;
-    D6 = RESU;
-    D7 = NUVY;
+    mem.D0 = POLY;
+    mem.D4 = PARE;
+    mem.D2 = REMA;
+    mem.D1 = ROFO;
+    mem.D5 = RALY;
+    mem.D3 = PANE;
+    mem.D6 = RESU;
+    mem.D7 = NUVY;
   }
 
   bool AHOC = not(VRAM_TO_OAM);

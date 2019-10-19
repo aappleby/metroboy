@@ -45,6 +45,16 @@ struct reg {
     return val;
   }
 
+  wire count(wire clk2, wire load, wire d) {
+    wire old = val;
+    if (clk && !clk2) {
+      if (load) val = d;
+      else val = !val;
+    }
+    clk = clk2;
+    return old;
+  }
+
 private:
 
   bool val;

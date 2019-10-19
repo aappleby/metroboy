@@ -236,11 +236,11 @@ void tick_videocontrol() {
   //---
 
   bool RYVE = not(SEPA);
-  bool RUGU_Q = RUGU.tock(RYVE, WESY, D6);
-  bool REFE_Q = REFE.tock(RYVE, WESY, D5);
-  bool ROPO_Q = ROPO.tock(TALU, WESY, PALY);
-  bool RUFO_Q = RUFO.tock(RYVE, WESY, D4);
-  bool ROXE_Q = ROXE.tock(RYVE, WESY, D3);
+  bool RUGU_Q = RUGU.tock(RYVE, WESY, mem.D6);
+  bool REFE_Q = REFE.tock(RYVE, WESY, mem.D5);
+  bool ROPO_Q = ROPO.tock(TALU, WESY, PALY); // this seems odd
+  bool RUFO_Q = RUFO.tock(RYVE, WESY, mem.D4);
+  bool ROXE_Q = ROXE.tock(RYVE, WESY, mem.D3);
 
   bool PUZO = not(!ROXE_Q);
   bool SASY = not(!REFE_Q);
@@ -262,15 +262,15 @@ void tick_videocontrol() {
   bool TOBE = and(CPU_RD2, FF41);
   bool VAVE = TOBE; // buffer, not inverter
   if (TOBE) {
-    D0 = TEBY;
-    D1 = WUGA;
-    D2 = SEGO;
+    mem.D0 = TEBY;
+    mem.D1 = WUGA;
+    mem.D2 = SEGO;
   }
   if (VAVE) {
-    D3 = PUZO;
-    D4 = POFO;
-    D5 = SASY;
-    D6 = POTE;
+    mem.D3 = PUZO;
+    mem.D4 = POFO;
+    mem.D5 = SASY;
+    mem.D6 = POTE;
   }
 
   //----------

@@ -35,28 +35,28 @@ bool CH4_AMP_ENn;
 //-----------------------------------------------------------------------------
 
 void tick_apudecode() {
-  bool AMUS = nor(A0, A1, A2, A3, A4, A7);
+  bool AMUS = nor(mem.A0, mem.A1, mem.A2, mem.A3, mem.A4, mem.A7);
   ANAP = and(AMUS, FFXX);
-  bool BYKO = not(A5);
-  bool AKUG = not(A6);
+  bool BYKO = not(mem.A5);
+  bool AKUG = not(mem.A6);
   bool ATOZ = nand(BYKO, AKUG, CPU_WR, ANAP);
   FF00WR = ATOZ;
   bool ACAT = and(ANAP, CPU_RD, AKUG, BYKO);
   FF00RD = ACAT;
 
-  bool BOXY = not(A5);
-  bool AWET = or(A4, BOXY, A6, A7);
+  bool BOXY = not(mem.A5);
+  bool AWET = or(mem.A4, BOXY, mem.A6, mem.A7);
   bool BEZY = or(AWET, FFXXn);
   FF2Xn = BEZY;
 
-  bool AVUN = not(A7);
-  bool ASAD = not(A6);
-  bool ACOM = nand(AVUN, ASAD, A5, A4);
+  bool AVUN = not(mem.A7);
+  bool ASAD = not(mem.A6);
+  bool ACOM = nand(AVUN, ASAD, mem.A5, mem.A4);
   bool BARO = nor(ACOM, FFXXn);
   FF3X = BARO;
 
-  bool ATUP = not(A4);
-  bool ATEG = or(ATUP, A5, A6, A7);
+  bool ATUP = not(mem.A4);
+  bool ATEG = or(ATUP, mem.A5, mem.A6, mem.A7);
   bool BUNO = nor(FFXXn, ATEG);
   bool BANU = not(BUNO);
   FF1Xn = BANU;
@@ -75,13 +75,13 @@ void tick_apudecode() {
 
   // Biiiig decoder
 
-  bool DYTE = not(A0);
+  bool DYTE = not(mem.A0);
   bool DOSO = not(DYTE);
-  bool AFOB = not(A1);
+  bool AFOB = not(mem.A1);
   bool DUPA = not(AFOB);
-  bool ABUB = not(A2);
+  bool ABUB = not(mem.A2);
   bool DENO = not(ABUB);
-  bool ACOL = not(A3);
+  bool ACOL = not(mem.A3);
   DUCE = not(ACOL);
 
   // DUCE ACOL DENO ABUB DUPA AFOB DOSO DYTE

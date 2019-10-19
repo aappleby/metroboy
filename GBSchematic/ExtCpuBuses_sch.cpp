@@ -58,8 +58,8 @@ void tick_extbus() {
   //----------
   // center right
 
-  wire SORE = not(A15);
-  wire TEVY = and(A13, A14, SORE);
+  wire SORE = not(mem.A15);
+  wire TEVY = and(mem.A13, mem.A14, SORE);
   TEXO = and(FROM_CPU4, TEVY);
   wire LEVO = not(TEXO);
   wire LAGU = unk3(CPU_RAW_RD, LEVO, FROM_CPU3);
@@ -84,7 +84,7 @@ void tick_extbus() {
   //----------
   // top center
 
-  wire TOLA = not(A1);
+  wire TOLA = not(mem.A1);
   TOLA_A1n = TOLA;
 
   wire MULE = not(T1T2n);
@@ -95,11 +95,11 @@ void tick_extbus() {
   //----------
   // left center
 
-  wire SOGY = not(A14);
-  wire TUMA = and(A13, SOGY, A15);
-  wire TYNU = unk3(A15, A14, TUMA);
+  wire SOGY = not(mem.A14);
+  wire TUMA = and(mem.A13, SOGY, mem.A15);
+  wire TYNU = unk3(mem.A15, mem.A14, TUMA);
   wire TOZA = and(TYNU, ABUZ, FEXXFFXXn);
-  wire SOBY = nor(A15, CPU_WRQ); // schematic has a question mark?
+  wire SOBY = nor(mem.A15, CPU_WRQ); // schematic has a question mark?
   wire SEPY = nand(ABUZ, SOBY);
 
   wire TYHO = mux2(DMA_A15, TOZA, LUMA);
@@ -110,7 +110,7 @@ void tick_extbus() {
   wire RYCA = not(NET02);
   wire RAZA = not(A15_C); // typo?
   wire SYZU = not(RAZA);
-  A15 = SYZU;
+  mem.A15 = SYZU;
   wire RULO = nor(TAZY, NET02);
   wire SUZE = nand(TAZY, RYCA);
 
@@ -123,13 +123,13 @@ void tick_extbus() {
   wire TOVA = not(T1nT2);
   NET01 = TOVA;
 
-  wire NYRE_Q = NYRE.latch(MATE, A14);
-  wire LONU_Q = LONU.latch(MATE, A13);
-  wire LOBU_Q = LOBU.latch(MATE, A12);
-  wire LUMY_Q = LUMY.latch(MATE, A11);
-  wire PATE_Q = PATE.latch(MATE, A10);
-  wire LYSA_Q = LYSA.latch(MATE, A9);
-  wire LUNO_Q = LUNO.latch(MATE, A8);
+  wire NYRE_Q = NYRE.latch(MATE, mem.A14);
+  wire LONU_Q = LONU.latch(MATE, mem.A13);
+  wire LOBU_Q = LOBU.latch(MATE, mem.A12);
+  wire LUMY_Q = LUMY.latch(MATE, mem.A11);
+  wire PATE_Q = PATE.latch(MATE, mem.A10);
+  wire LYSA_Q = LYSA.latch(MATE, mem.A9);
+  wire LUNO_Q = LUNO.latch(MATE, mem.A8);
 
   wire PEGE = mux2(DMA_A14, NYRE_Q, LUMA);
   wire MUCE = mux2(DMA_A13, LONU_Q, LUMA);
@@ -174,14 +174,14 @@ void tick_extbus() {
   //----------
   // the rest of the address latch, center
 
-  wire ARYM_Q = ARYM.latch(MATE, A7);
-  wire AROS_Q = ARYM.latch(MATE, A6);
-  wire ATEV_Q = ARYM.latch(MATE, A5);
-  wire AVYS_Q = ARYM.latch(MATE, A4);
-  wire ARET_Q = ARYM.latch(MATE, A3);
-  wire ALYR_Q = ARYM.latch(MATE, A2);
-  wire APUR_Q = ARYM.latch(MATE, A1);
-  wire ALOR_Q = ARYM.latch(MATE, A0);
+  wire ARYM_Q = ARYM.latch(MATE, mem.A7);
+  wire AROS_Q = ARYM.latch(MATE, mem.A6);
+  wire ATEV_Q = ARYM.latch(MATE, mem.A5);
+  wire AVYS_Q = ARYM.latch(MATE, mem.A4);
+  wire ARET_Q = ARYM.latch(MATE, mem.A3);
+  wire ALYR_Q = ARYM.latch(MATE, mem.A2);
+  wire APUR_Q = ARYM.latch(MATE, mem.A1);
+  wire ALOR_Q = ARYM.latch(MATE, mem.A0);
 
   wire ASUR = mux2(DMA_A7, ARYM_Q, LUMA);
   wire ATYR = mux2(DMA_A6, AROS_Q, LUMA);
@@ -233,14 +233,14 @@ void tick_extbus() {
   RORU = mux2(REDU, MOTY, T1nT2);
   LULA = not(RORU);
 
-  wire ROGY = nor(RORU, D6);
-  wire RYDA = nor(RORU, D7);
-  wire RUNE = nor(RORU, D0);
-  wire RESY = nor(RORU, D4);
-  wire RYPU = nor(RORU, D1);
-  wire SULY = nor(RORU, D2);
-  wire SEZE = nor(RORU, D3);
-  wire TAMU = nor(RORU, D5);
+  wire ROGY = nor(RORU, mem.D6);
+  wire RYDA = nor(RORU, mem.D7);
+  wire RUNE = nor(RORU, mem.D0);
+  wire RESY = nor(RORU, mem.D4);
+  wire RYPU = nor(RORU, mem.D1);
+  wire SULY = nor(RORU, mem.D2);
+  wire SEZE = nor(RORU, mem.D3);
+  wire TAMU = nor(RORU, mem.D5);
 
   D6_D = ROGY;
   D7_D = RYDA; // was D7_A on schematic, probably a typo?
@@ -277,14 +277,14 @@ void tick_extbus() {
 
   // why would you latch and buffer with the same signal?
   if (LAVO) {
-    D4 = TEPE;
-    D3 = TAVO;
-    D1 = RUVO;
-    D0 = RYMA;
-    D2 = RYKO;
-    D6 = SEVU;
-    D5 = SAFO;
-    D7 = TAJU;
+    mem.D4 = TEPE;
+    mem.D3 = TAVO;
+    mem.D1 = RUVO;
+    mem.D0 = RYMA;
+    mem.D2 = RYKO;
+    mem.D6 = SEVU;
+    mem.D5 = SAFO;
+    mem.D7 = TAJU;
   }
 
   //----------
@@ -324,20 +324,20 @@ void tick_extbus() {
 
   // if NET01 high, drive external address bus onto internal address bus (?)
   if (NET01) {
-    A3  = ANAR;
-    A4  = AZUV;
-    A2  = AKAN;
-    A1  = BYXE;
-    A6  = BYNE;
-    A7  = BYNA;
-    A0  = KEJO;
-    A12 = LYNA;
-    A13 = LEFY;
-    A8  = LOFA;
-    A14 = NEFE;
-    A11 = LORA;
-    A9  = MAPU;
-    A10 = RALA;
-    A5  = AJOV;
+    mem.A3  = ANAR;
+    mem.A4  = AZUV;
+    mem.A2  = AKAN;
+    mem.A1  = BYXE;
+    mem.A6  = BYNE;
+    mem.A7  = BYNA;
+    mem.A0  = KEJO;
+    mem.A12 = LYNA;
+    mem.A13 = LEFY;
+    mem.A8  = LOFA;
+    mem.A14 = NEFE;
+    mem.A11 = LORA;
+    mem.A9  = MAPU;
+    mem.A10 = RALA;
+    mem.A5  = AJOV;
   }
 }

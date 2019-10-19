@@ -68,14 +68,14 @@ reg SOTO;
 void tock_vram() {
   bool SOTO_Q = SOTO.q();
 
-  bool RYVO = nand(D5, LULA);
-  bool RERA = nand(D3, LULA);
-  bool RABY = nand(D2, LULA);
-  bool RORY = nand(D4, LULA);
-  bool RUJA = nand(D1, LULA);
-  bool RAVU = nand(D7, LULA);
-  bool RAFY = nand(D6, LULA);
-  bool RUXA = nand(D0, LULA);
+  bool RYVO = nand(mem.D5, LULA);
+  bool RERA = nand(mem.D3, LULA);
+  bool RABY = nand(mem.D2, LULA);
+  bool RORY = nand(mem.D4, LULA);
+  bool RUJA = nand(mem.D1, LULA);
+  bool RAVU = nand(mem.D7, LULA);
+  bool RAFY = nand(mem.D6, LULA);
+  bool RUXA = nand(mem.D0, LULA);
 
   // why is this writing to the _A part of the data bus but not the _D?
   D5_A = RYVO;
@@ -97,7 +97,7 @@ void tock_vram() {
 
   bool SYRO = not(FEXXFFXXn);
   bool TEFA = nor(SYRO, TEXO);
-  bool SOSE = and(A15, TEFA); // odd...
+  bool SOSE = and(mem.A15, TEFA); // odd...
   bool SOHO = and(TACU, TEXY);
   bool RAWA = not(SOHO);
 
@@ -197,24 +197,24 @@ void tock_vram() {
   bool SEDU = not(SOLE);
 
   if (RUNY) {
-    D4 = TAHY;
-    D5 = TESU;
-    D3 = TAXO;
-    D0 = TOVU;
-    D6 = TAZU;
-    D7 = TEWA;
-    D1 = SOSA;
-    D2 = SEDU;
+    mem.D4 = TAHY;
+    mem.D5 = TESU;
+    mem.D3 = TAXO;
+    mem.D0 = TOVU;
+    mem.D6 = TAZU;
+    mem.D7 = TEWA;
+    mem.D1 = SOSA;
+    mem.D2 = SEDU;
   }
 
-  bool TEME = not(D0);
-  bool TEWU = not(D1);
-  bool TYGO = not(D2);
-  bool SOTE = not(D3);
-  bool SEKE = not(D4);
-  bool RUJO = not(D5);
-  bool TOFA = not(D6);
-  bool SUZA = not(D7);
+  bool TEME = not(mem.D0);
+  bool TEWU = not(mem.D1);
+  bool TYGO = not(mem.D2);
+  bool SOTE = not(mem.D3);
+  bool SEKE = not(mem.D4);
+  bool RUJO = not(mem.D5);
+  bool TOFA = not(mem.D6);
+  bool SUZA = not(mem.D7);
 
   if (RAHU) {
     MD0 = TEME;
@@ -257,19 +257,19 @@ void tock_vram() {
   bool XANE = nor(VRAM_TO_OAM, XYMU);
   bool XEDU = not(XANE);
 
-  bool XECA = !A4;
-  bool XYBO = !A7;
-  bool RYSU = !A8;
-  bool RUSE = !A10;
-  bool RUMO = !A12;
-  bool XYNE = !A2;
-  bool XOBA = !A5;
-  bool XODY = !A3;
-  bool RYNA = !A11;
-  bool RESE = !A9;
-  bool XAKY = !A0;
-  bool XOPO = !A6;
-  bool XUXU = !A1;
+  bool XECA = !mem.A4;
+  bool XYBO = !mem.A7;
+  bool RYSU = !mem.A8;
+  bool RUSE = !mem.A10;
+  bool RUMO = !mem.A12;
+  bool XYNE = !mem.A2;
+  bool XOBA = !mem.A5;
+  bool XODY = !mem.A3;
+  bool RYNA = !mem.A11;
+  bool RESE = !mem.A9;
+  bool XAKY = !mem.A0;
+  bool XOPO = !mem.A6;
+  bool XUXU = !mem.A1;
 
   if (XEDU) {
     MA4 = XECA;
@@ -308,14 +308,14 @@ void tock_vram() {
   bool TAWO = not(SAZA);
 
   if (LYRA) {
-    D7 = ROPA;
-    D1 = SYWA;
-    D2 = SUGU;
-    D4 = TUTE;
-    D6 = TEMY;
-    D5 = SAJO;
-    D0 = TUTY;
-    D3 = TAWO;
+    mem.D7 = ROPA;
+    mem.D1 = SYWA;
+    mem.D2 = SUGU;
+    mem.D4 = TUTE;
+    mem.D6 = TEMY;
+    mem.D5 = SAJO;
+    mem.D0 = TUTY;
+    mem.D3 = TAWO;
   }
 
   const bool ROVE = not(RAHU);
@@ -415,14 +415,14 @@ void tock_vram() {
   bool RUPY = not(RABO);
 
   if (SEBY) {
-    D5 = REXU;
-    D0 = RUGA;
-    D2 = RYBU;
-    D1 = ROTA;
-    D3 = RAJU;
-    D7 = TOKU;
-    D4 = TYJA;
-    D6 = RUPY;
+    mem.D5 = REXU;
+    mem.D0 = RUGA;
+    mem.D2 = RYBU;
+    mem.D1 = ROTA;
+    mem.D3 = RAJU;
+    mem.D7 = TOKU;
+    mem.D4 = TYJA;
+    mem.D6 = RUPY;
   }
 
   bool XUCY = nand(NETA, PORE);

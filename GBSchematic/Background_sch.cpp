@@ -3,7 +3,6 @@
 #include "Schematics.h"
 #include "Clocks.h"
 #include "VramBus.h"
-#include "VideoRegs_sch.h"
 #include "PpuRegs.h"
 
 //----------

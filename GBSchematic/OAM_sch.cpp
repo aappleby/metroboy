@@ -150,23 +150,23 @@ void tick_oam() {
   wire XUCA = not(WARU);
   wire APAG = amux2(XUPA, AMAB, AJUJ, ADAH);
 
-  wire ZAXA = not(D0);
-  wire ZAMY = not(D0);
-  wire ZAKY = not(D1);
-  wire ZOPU = not(D1);
-  wire WULE = not(D2);
-  wire WYKY = not(D2);
-  wire ZOZO = not(D3);
-  wire ZAJA = not(D3);
+  wire ZAXA = not(mem.D0);
+  wire ZAMY = not(mem.D0);
+  wire ZAKY = not(mem.D1);
+  wire ZOPU = not(mem.D1);
+  wire WULE = not(mem.D2);
+  wire WYKY = not(mem.D2);
+  wire ZOZO = not(mem.D3);
+  wire ZAJA = not(mem.D3);
 
-  wire ZUFO = not(D4);
-  wire ZUGA = not(D4);
-  wire ZATO = not(D5);
-  wire ZUMO = not(D5);
-  wire YVUC = not(D6);
-  wire XYTO = not(D6);
-  wire ZUFE = not(D7);
-  wire ZYFA = not(D7);
+  wire ZUFO = not(mem.D4);
+  wire ZUGA = not(mem.D4);
+  wire ZATO = not(mem.D5);
+  wire ZUMO = not(mem.D5);
+  wire YVUC = not(mem.D6);
+  wire XYTO = not(mem.D6);
+  wire ZUFE = not(mem.D7);
+  wire ZYFA = not(mem.D7);
 
   wire WUZU = not(MD0);
   wire WOWA = not(MD0);
@@ -237,14 +237,14 @@ void tick_oam() {
 
   //----------
 
-  wire FOBY = not(A7);
-  wire WAXA = not(A6);
-  wire GERA = not(A5);
-  wire FEVU = not(A4);
-  wire WAPE = not(A3);
-  wire GOSE = not(A2);
-  wire WACU = not(A1);
-  wire GARO = not(A0);
+  wire FOBY = not(mem.A7);
+  wire WAXA = not(mem.A6);
+  wire GERA = not(mem.A5);
+  wire FEVU = not(mem.A4);
+  wire WAPE = not(mem.A3);
+  wire GOSE = not(mem.A2);
+  wire WACU = not(mem.A1);
+  wire GARO = not(mem.A0);
 
   wire FYKE = not(WEZA);
   wire FUGU = not(WUCO);

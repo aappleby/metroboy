@@ -16,14 +16,14 @@
 //-----------------------------------------------------------------------------
 
 void tick_ppudecode() {
-  bool XALY = nor(A7, A5, A4);
-  bool WUTU = nand(FFXX, A6, XALY);
+  bool XALY = nor(mem.A7, mem.A5, mem.A4);
+  bool WUTU = nand(FFXX, mem.A6, XALY);
   bool WERO = not(WUTU);
 
-  bool XOLA = not(A0);
-  bool XENO = not(A1);
-  bool XUSY = not(A2);
-  bool XERA = not(A3);
+  bool XOLA = not(mem.A0);
+  bool XENO = not(mem.A1);
+  bool XUSY = not(mem.A2);
+  bool XERA = not(mem.A3);
   bool WADO = not(XOLA);
   bool WESA = not(XENO);
   bool WALO = not(XUSY);

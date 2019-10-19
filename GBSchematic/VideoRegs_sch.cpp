@@ -37,14 +37,14 @@ void tick_videoregs() {
   bool WOKY_Q = XYLO.tock(XUBO, XARE, mem.D6);
   bool VYXE_Q = XYLO.tock(XUBO, XARE, mem.D0);
  
-  FF40_D1 = XYLO_Q;
-  FF40_D3 = XAFO_Q;
-  FF40_D2 = XYMO_Q;
-  FF40_D7 = XONA_Q;
-  FF40_D5 = WYMO_Q;
-  FF40_D4 = WEXU_Q;
-  FF40_D6 = WOKY_Q;
-  FF40_D0 = VYXE_Q;
+  ppu.FF40_D1 = XYLO_Q;
+  ppu.FF40_D3 = XAFO_Q;
+  ppu.FF40_D2 = XYMO_Q;
+  ppu.FF40_D7 = XONA_Q;
+  ppu.FF40_D5 = WYMO_Q;
+  ppu.FF40_D4 = WEXU_Q;
+  ppu.FF40_D6 = WOKY_Q;
+  ppu.FF40_D0 = VYXE_Q;
 
   bool XERO = not(!XYLO_Q);
   bool WUKA = not(!XAFO_Q);

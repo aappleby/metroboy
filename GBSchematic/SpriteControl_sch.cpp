@@ -269,7 +269,7 @@ void tick_spritecontrol() {
 
   bool BYJO = not(CEHA);
   bool AZEM = and(BYJO, XYMU);
-  bool AROR = and(AZEM, FF40_D1);
+  bool AROR = and(AZEM, ppu.FF40_D1);
 
   bool XAGE = nand(AROR, YNAZ, YKOK);
   bool YLOZ = nand(AROR, ZURE, YWOS);
@@ -460,10 +460,10 @@ void tick_spritecontrol() {
   bool ABEM = not(XUQU);
   bool DYSO = not(ext.P10_B);
 
-  bool FUFO = not(FF40_D2);
-  bool GEJY = amux2(!XUSO_Q, FUFO, FF40_D2, WAGO);
+  bool FUFO = not(ppu.FF40_D2);
+  bool GEJY = amux2(!XUSO_Q, FUFO, ppu.FF40_D2, WAGO);
   bool FAMU = not(GEJY);
-  bool GOVU = or(GYKY_S, FF40_D2);
+  bool GOVU = or(GYKY_S, ppu.FF40_D2);
   bool WOTA = nand(GACE, GUVU, GYDA, GEWY, WUHU_C, GOVU);
   bool GESE = not(WOTA);
   SPR_MATCH = GESE;

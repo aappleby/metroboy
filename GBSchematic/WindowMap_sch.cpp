@@ -119,7 +119,7 @@ void tick_windowmap() {
   wire POMO = xor(FF4A_D2, V2);
   wire NEVU = xor(FF4A_D3, V3);
 
-  wire PALO = nand(FF40_D5, NOJO, PAGA, PEZO, NUPA);
+  wire PALO = nand(ppu.FF40_D5, NOJO, PAGA, PEZO, NUPA);
   wire NELE = not(PALO);
   wire PAFU = nand(NELE, NAZE, PEBO, POMO, NEVU);
   wire ROGE = not(PAFU);
@@ -192,7 +192,7 @@ void tick_windowmap() {
   wire SUVU = nand(XYMU, ROMO, NYKA.q(), PORY.q());
   wire TAVE = not(SUVU);
   wire XAHY = not(ATEJ);
-  wire XOFO = nand(FF40_D5, XAHY, rst.RESET_VIDEO);
+  wire XOFO = nand(ppu.FF40_D5, XAHY, rst.RESET_VIDEO);
   wire XACO = not(XOFO);
   wire PYNU = unk2(NUNU_Q, XOFO);
   wire NUNY = and(!NOPA_Q, PYNU);
@@ -289,7 +289,7 @@ void tick_windowmap() {
   wire VOVO = not(TATE_Q);
   wire VULO = not(TEKE_Q);
 
-  wire VEVY = not(FF40_D6);
+  wire VEVY = not(ppu.FF40_D6);
   wire VEZA = not(VYPO);
   wire VOGU = not(VYPO);
 

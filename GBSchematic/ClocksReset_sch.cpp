@@ -252,7 +252,7 @@ void tick_clocks_reset() {
   bool XEBE = not(rst.RESET7);
   bool UCOB = not(ext.CLKIN_A);
   bool CUNU = not(DULA);
-  bool XODO = and(FF40_D7, XEBE);
+  bool XODO = and(ppu.FF40_D7, XEBE);
 
   rst.RESET7n = XEBE;
   clk.CLKIN_An = UCOB;

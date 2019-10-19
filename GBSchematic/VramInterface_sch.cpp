@@ -446,7 +446,7 @@ void tock_vram() {
     vram.MA3 = WOLU;
   }
 
-  bool VUZA = nor(FF40_D4, PYJU.q());
+  bool VUZA = nor(ppu.FF40_D4, PYJU.q());
 
   bool VURY = not(VUZA);
 

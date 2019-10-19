@@ -118,7 +118,7 @@ void tick_background() {
   bool ACUL_S = add_s(SYBE_Q, FF43_D7, BYCA_C);
   //bool ACUL_C = add_c(SYBE_Q, FF43_D7, BYCA_C);
 
-  bool AMUV = not(FF40_D3);
+  bool AMUV = not(ppu.FF40_D3);
   bool COXO = not(WEFE);
   bool COVE = not(WEFE);
 

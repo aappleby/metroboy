@@ -1,6 +1,24 @@
 #pragma once
 #include "Schematics.h"
 
+struct Ppu {
+public:
+
+  // FF40 LCDC
+  bool FF40_D0;
+  bool FF40_D1;
+  bool FF40_D2;
+  bool FF40_D3;
+  bool FF40_D4;
+  bool FF40_D5;
+  bool FF40_D6;
+  bool FF40_D7;
+
+private:
+};
+
+extern Ppu ppu;
+
 extern bool BGPIXELn;
 extern bool OBP0PIXELn;
 extern bool OBP1PIXELn;
@@ -13,16 +31,6 @@ extern bool ACAM,AZUB,AMEL,AHAL,APUX,ABEF,ADAZ,ASAH;
 
 // true where sprite pixel != 0
 extern bool LESY,LOTA,LYKU,ROBY,TYTA,TYCO,SOKA,XOVU; 
-
-// FF40 LCDC
-extern bool FF40_D0;
-extern bool FF40_D1;
-extern bool FF40_D2;
-extern bool FF40_D3;
-extern bool FF40_D4;
-extern bool FF40_D5;
-extern bool FF40_D6;
-extern bool FF40_D7;
 
 // FF42 SCY
 extern bool FF42_D0;

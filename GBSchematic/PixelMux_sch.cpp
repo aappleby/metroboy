@@ -18,10 +18,10 @@ extern bool VAVA3;
 //-----------------------------------------------------------------------------
 
 void tick_pixelmux() {
-  bool WOXA = and(FF40_D1, SPR_PIX_A_7);
-  bool XULA = and(FF40_D1, SPR_PIX_B_7);
-  bool TADE = and(FF40_D0, BG_PIX_B_7);
-  bool RAJY = and(FF40_D0, BG_PIX_A_7);
+  bool WOXA = and(ppu.FF40_D1, SPR_PIX_A_7);
+  bool XULA = and(ppu.FF40_D1, SPR_PIX_B_7);
+  bool TADE = and(ppu.FF40_D0, BG_PIX_B_7);
+  bool RAJY = and(ppu.FF40_D0, BG_PIX_A_7);
 
   bool WELE = not(XULA);
   bool VUMU = not(WOXA);

@@ -1,5 +1,7 @@
 #include "PpuRegs.h"
 
+struct Ppu ppu;
+
 bool BGPIXELn;
 bool OBP0PIXELn;
 bool OBP1PIXELn;

@@ -86,9 +86,9 @@ void tick_lcdcontrol() {
   bool KASA = not(PURE);
   bool UMOB = not(FF04_D0n);
   bool USEC = not(FF04_D1n);
-  bool KEDY = not(FF40_D7);
-  bool KAHE = amux2(FF40_D7, KASA, KEDY, UMOB);
-  bool KUPA = amux2(FF40_D7, KEBO, KEDY, USEC);
+  bool KEDY = not(ppu.FF40_D7);
+  bool KAHE = amux2(ppu.FF40_D7, KASA, KEDY, UMOB);
+  bool KUPA = amux2(ppu.FF40_D7, KEBO, KEDY, USEC);
 
   bool KYMO = not(KAHE);
   bool KOFO = not(KUPA);

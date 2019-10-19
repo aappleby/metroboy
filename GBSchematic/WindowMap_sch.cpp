@@ -294,19 +294,19 @@ void tick_windowmap() {
   wire VOGU = not(VYPO);
 
   if (WUKO) {
-    MA0 = XEJA;
-    MA1 = XAMO;
-    MA2 = XAHE;
-    MA3 = XULO;
-    MA4 = WUJU;
-    MA5 = VYTO;
-    MA6 = VEHA;
-    MA7 = VACE;
-    MA8 = VOVO;
-    MA9 = VULO;
-    MA10 = VEVY;
-    MA11 = VEZA;
-    MA12 = VOGU;
+    vram.MA0 = XEJA;
+    vram.MA1 = XAMO;
+    vram.MA2 = XAHE;
+    vram.MA3 = XULO;
+    vram.MA4 = WUJU;
+    vram.MA5 = VYTO;
+    vram.MA6 = VEHA;
+    vram.MA7 = VACE;
+    vram.MA8 = VOVO;
+    vram.MA9 = VULO;
+    vram.MA10 = VEVY;
+    vram.MA11 = VEZA;
+    vram.MA12 = VOGU;
   }
   
   //----------

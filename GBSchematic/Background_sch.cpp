@@ -68,18 +68,18 @@ void tick_background() {
   bool DAFE = not(EJOK_S);
 
   if (BEJE) {
-    MA0 = ASUM;
-    MA1 = EVAD;
-    MA2 = DAHU;
-    MA3 = DODE;
+    vram.MA0 = ASUM;
+    vram.MA1 = EVAD;
+    vram.MA2 = DAHU;
+    vram.MA3 = DODE;
   }
 
   if (BAFY) {
-    MA5 = DUHO;
-    MA6 = CASE;
-    MA7 = CYPO;
-    MA8 = CETA;
-    MA9 = DAFE;
+    vram.MA5 = DUHO;
+    vram.MA6 = CASE;
+    vram.MA7 = CYPO;
+    vram.MA8 = CETA;
+    vram.MA9 = DAFE;
   }
 
   //----------
@@ -131,14 +131,14 @@ void tick_background() {
   bool AJAN = not(ACUL_S);
 
   if (BAFY) {
-    MA10 = AMUV;
-    MA12 = COXO;
-    MA11 = COVE;
-    MA0 = AXEP;
-    MA1 = AFEB;
-    MA2 = ALEL;
-    MA3 = COLY;
-    MA4 = AJAN;
+    vram.MA10 = AMUV;
+    vram.MA12 = COXO;
+    vram.MA11 = COVE;
+    vram.MA0 = AXEP;
+    vram.MA1 = AFEB;
+    vram.MA2 = ALEL;
+    vram.MA3 = COLY;
+    vram.MA4 = AJAN;
   }
 
   //----------

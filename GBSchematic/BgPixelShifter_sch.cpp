@@ -32,23 +32,23 @@ void tick_bgpixelshifter() {
   wire LOZE = not(NYXU);
   wire LUXA = not(NYXU);
 
-  wire RAWU_Q = RAWU.tock(LABU, VYPO, MD0);
-  wire POZO_Q = POZO.tock(LABU, VYPO, MD1);
-  wire PYZO_Q = PYZO.tock(LABU, VYPO, MD2);
-  wire POXA_Q = POXA.tock(LABU, VYPO, MD3);
-  wire PULO_Q = POXA.tock(LABU, VYPO, MD4);
-  wire POJU_Q = POXA.tock(LABU, VYPO, MD5);
-  wire POWY_Q = POXA.tock(LABU, VYPO, MD6);
-  wire PYJU_Q = POXA.tock(LABU, VYPO, MD7);
+  wire RAWU_Q = RAWU.tock(LABU, VYPO, vram.MD0);
+  wire POZO_Q = POZO.tock(LABU, VYPO, vram.MD1);
+  wire PYZO_Q = PYZO.tock(LABU, VYPO, vram.MD2);
+  wire POXA_Q = POXA.tock(LABU, VYPO, vram.MD3);
+  wire PULO_Q = POXA.tock(LABU, VYPO, vram.MD4);
+  wire POJU_Q = POXA.tock(LABU, VYPO, vram.MD5);
+  wire POWY_Q = POXA.tock(LABU, VYPO, vram.MD6);
+  wire PYJU_Q = POXA.tock(LABU, VYPO, vram.MD7);
 
-  wire LEGU_Q = LEGU.latch(LOMA, MD0);
-  wire NUDU_Q = LEGU.latch(LOMA, MD1);
-  bool MUKU_Q = MUKU.latch(LOMA, MD2);
-  bool LUZO_Q = MUKU.latch(LOMA, MD3);
-  bool MEGU_Q = MEGU.latch(LOMA, MD4);
-  bool MYJY_Q = MYJY.latch(LOMA, MD5);
-  bool NASA_Q = NASA.latch(LOMA, MD6);
-  bool NEFO_Q = NEFO.latch(LOMA, MD7);
+  wire LEGU_Q = LEGU.latch(LOMA, vram.MD0);
+  wire NUDU_Q = LEGU.latch(LOMA, vram.MD1);
+  bool MUKU_Q = MUKU.latch(LOMA, vram.MD2);
+  bool LUZO_Q = MUKU.latch(LOMA, vram.MD3);
+  bool MEGU_Q = MEGU.latch(LOMA, vram.MD4);
+  bool MYJY_Q = MYJY.latch(LOMA, vram.MD5);
+  bool NASA_Q = NASA.latch(LOMA, vram.MD6);
+  bool NEFO_Q = NEFO.latch(LOMA, vram.MD7);
 
   bool TOSA = not(!RAWU_Q);
   bool RUCO = not(!POZO_Q);

@@ -186,19 +186,19 @@ void tick_dma() {
 
   bool AHOC = not(VRAM_TO_OAM);
   if (AHOC) {
-    MA0 = ECAL;
-    MA1 = EGEZ;
-    MA2 = FUHE;
-    MA3 = FYZY;
-    MA4 = DAMU;
-    MA5 = DAVA;
-    MA6 = ETEG;
-    MA7 = EREW;
-    MA8 = EVAX;
-    MA9 = DUVE;
-    MA10 = ERAF;
-    MA11 = FUSY;
-    MA12 = EXYF;
+    vram.MA0 = ECAL;
+    vram.MA1 = EGEZ;
+    vram.MA2 = FUHE;
+    vram.MA3 = FYZY;
+    vram.MA4 = DAMU;
+    vram.MA5 = DAVA;
+    vram.MA6 = ETEG;
+    vram.MA7 = EREW;
+    vram.MA8 = EVAX;
+    vram.MA9 = DUVE;
+    vram.MA10 = ERAF;
+    vram.MA11 = FUSY;
+    vram.MA12 = EXYF;
   }
 
   //----------

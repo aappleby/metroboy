@@ -173,14 +173,14 @@ void tock_vram() {
   bool REBA = !not(MD1_IN);
 
   if (RENA) {
-    MD7 = RAKU;
-    MD4 = ROCE;
-    MD3 = REMO;
-    MD5 = ROPU;
-    MD6 = RETA;
-    MD2 = RYDO;
-    MD0 = RODY;
-    MD1 = REBA;
+    vram.MD7 = RAKU;
+    vram.MD4 = ROCE;
+    vram.MD3 = REMO;
+    vram.MD5 = ROPU;
+    vram.MD6 = RETA;
+    vram.MD2 = RYDO;
+    vram.MD0 = RODY;
+    vram.MD1 = REBA;
   }
 
   bool TUSO = nor(NET02, BEDO);
@@ -217,24 +217,24 @@ void tock_vram() {
   bool SUZA = not(mem.D7);
 
   if (RAHU) {
-    MD0 = TEME;
-    MD1 = TEWU;
-    MD2 = TYGO;
-    MD3 = SOTE;
-    MD4 = SEKE;
-    MD5 = RUJO;
-    MD6 = TOFA;
-    MD7 = SUZA;
+    vram.MD0 = TEME;
+    vram.MD1 = TEWU;
+    vram.MD2 = TYGO;
+    vram.MD3 = SOTE;
+    vram.MD4 = SEKE;
+    vram.MD5 = RUJO;
+    vram.MD6 = TOFA;
+    vram.MD7 = SUZA;
   }
 
-  bool SYNU = or(RAHU, MD0);
-  bool SYMA = or(RAHU, MD1);
-  bool ROKO = or(RAHU, MD2);
-  bool SYBU = or(RAHU, MD3);
-  bool SAKO = or(RAHU, MD4);
-  bool SEJY = or(RAHU, MD5);
-  bool SEDO = or(RAHU, MD6);
-  bool SAWU = or(RAHU, MD7);
+  bool SYNU = or(RAHU, vram.MD0);
+  bool SYMA = or(RAHU, vram.MD1);
+  bool ROKO = or(RAHU, vram.MD2);
+  bool SYBU = or(RAHU, vram.MD3);
+  bool SAKO = or(RAHU, vram.MD4);
+  bool SEJY = or(RAHU, vram.MD5);
+  bool SEDO = or(RAHU, vram.MD6);
+  bool SAWU = or(RAHU, vram.MD7);
 
   bool RURA = not(SYNU);
   bool RULY = not(SYMA);
@@ -272,19 +272,19 @@ void tock_vram() {
   bool XUXU = !mem.A1;
 
   if (XEDU) {
-    MA4 = XECA;
-    MA7 = XYBO;
-    MA8 = RYSU;
-    MA10 = RUSE;
-    MA12 = RUMO;
-    MA2 = XYNE;
-    MA5 = XOBA;
-    MA3 = XODY;
-    MA11 = RYNA;
-    MA9 = RESE;
-    MA0 = XAKY;
-    MA6 = XOPO;
-    MA1 = XUXU;
+    vram.MA4 = XECA;
+    vram.MA7 = XYBO;
+    vram.MA8 = RYSU;
+    vram.MA10 = RUSE;
+    vram.MA12 = RUMO;
+    vram.MA2 = XYNE;
+    vram.MA5 = XOBA;
+    vram.MA3 = XODY;
+    vram.MA11 = RYNA;
+    vram.MA9 = RESE;
+    vram.MA0 = XAKY;
+    vram.MA6 = XOPO;
+    vram.MA1 = XUXU;
   }
 
   bool LYRA = nand(T1nT2, RORU);
@@ -320,14 +320,14 @@ void tock_vram() {
 
   const bool ROVE = not(RAHU);
 
-  const bool SEFA = and(MD0, ROVE);
-  const bool SUNA = and(MD3, ROVE);
-  const bool SUMO = and(MD4, ROVE);
-  const bool SUKE = and(MD7, ROVE);
-  const bool SAMO = and(MD6, ROVE);
-  const bool SOGO = and(MD1, ROVE);
-  const bool SAZU = and(MD5, ROVE);
-  const bool SEFU = and(MD2, ROVE);
+  const bool SEFA = and(vram.MD0, ROVE);
+  const bool SUNA = and(vram.MD3, ROVE);
+  const bool SUMO = and(vram.MD4, ROVE);
+  const bool SUKE = and(vram.MD7, ROVE);
+  const bool SAMO = and(vram.MD6, ROVE);
+  const bool SOGO = and(vram.MD1, ROVE);
+  const bool SAZU = and(vram.MD5, ROVE);
+  const bool SEFU = and(vram.MD2, ROVE);
 
   const bool REGE = not(SEFA);
   const bool RADA = not(SUNA);
@@ -396,14 +396,14 @@ void tock_vram() {
   bool TYVY = nand(SERE, LEKO);
   bool SEBY = not(TYVY);
 
-  bool RORO = not(MD5);
-  bool RERY = not(MD0);
-  bool RONA = not(MD2);
-  bool RUNA = not(MD1);
-  bool RUNO = not(MD3);
-  bool SAME = not(MD7);
-  bool SANA = not(MD4);
-  bool RABO = not(MD6);
+  bool RORO = not(vram.MD5);
+  bool RERY = not(vram.MD0);
+  bool RONA = not(vram.MD2);
+  bool RUNA = not(vram.MD1);
+  bool RUNO = not(vram.MD3);
+  bool SAME = not(vram.MD7);
+  bool SANA = not(vram.MD4);
+  bool RABO = not(vram.MD6);
 
   bool REXU = not(RORO);
   bool RUGA = not(RERY);
@@ -439,10 +439,10 @@ void tock_vram() {
   bool WOLU = not(VYMU_Q);
 
   if (XUCY) {
-    MA0 = XONU;
-    MA1 = WUDO;
-    MA2 = WAWE;
-    MA3 = WOLU;
+    vram.MA0 = XONU;
+    vram.MA1 = WUDO;
+    vram.MA2 = WAWE;
+    vram.MA3 = WOLU;
   }
 
   bool VUZA = nor(FF40_D4, PYJU.q());
@@ -459,14 +459,14 @@ void tock_vram() {
   bool VAPY = not(RAWU.q());
 
   if (NETA) {
-    MA12 = VURY;
-    MA11 = TOBO;
-    MA10 = SUVO;
-    MA9 = RESO;
-    MA8 = ROHA;
-    MA7 = RUSA;
-    MA6 = VEJY;
-    MA5 = SEZU;
-    MA4 = VAPY;
+    vram.MA12 = VURY;
+    vram.MA11 = TOBO;
+    vram.MA10 = SUVO;
+    vram.MA9 = RESO;
+    vram.MA8 = ROHA;
+    vram.MA7 = RUSA;
+    vram.MA6 = VEJY;
+    vram.MA5 = SEZU;
+    vram.MA4 = VAPY;
   }
 }

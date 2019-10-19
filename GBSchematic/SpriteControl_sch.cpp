@@ -481,19 +481,19 @@ void tick_spritecontrol() {
 
   bool ABON = not(TEXY);
   if (ABON) {
-    MA0 = ABEM;
-    MA1 = BAXE;
-    MA2 = ARAS;
-    MA3 = AGAG;
-    MA4 = FAMU;
-    MA5 = FUGY;
-    MA6 = GAVO;
-    MA7 = WYGA;
-    MA8 = WUNE;
-    MA9 = GOTU;
-    MA10 = GEGU;
-    MA11 = XEHE;
-    MA12 = DYSO;
+    vram.MA0 = ABEM;
+    vram.MA1 = BAXE;
+    vram.MA2 = ARAS;
+    vram.MA3 = AGAG;
+    vram.MA4 = FAMU;
+    vram.MA5 = FUGY;
+    vram.MA6 = GAVO;
+    vram.MA7 = WYGA;
+    vram.MA8 = WUNE;
+    vram.MA9 = GOTU;
+    vram.MA10 = GEGU;
+    vram.MA11 = XEHE;
+    vram.MA12 = DYSO;
   }
 
   TOBU.tock(TAVA, XYMU, TULY_Q);

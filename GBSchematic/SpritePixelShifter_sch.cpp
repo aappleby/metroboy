@@ -58,14 +58,14 @@ reg VUPY;
 
 void tick_spritepixelshifter() {
   // sprite x flip
-  bool POBE = mux2(MD4, MD3, XONO);
-  bool PACY = mux2(MD3, MD4, XONO);
-  bool PONO = mux2(MD5, MD2, XONO);
-  bool PUGU = mux2(MD2, MD5, XONO);
-  bool PUTE = mux2(MD7, MD0, XONO);
-  bool PULY = mux2(MD0, MD7, XONO);
-  bool PELO = mux2(MD6, MD1, XONO);
-  bool PAWE = mux2(MD1, MD6, XONO);
+  bool POBE = mux2(vram.MD4, vram.MD3, XONO);
+  bool PACY = mux2(vram.MD3, vram.MD4, XONO);
+  bool PONO = mux2(vram.MD5, vram.MD2, XONO);
+  bool PUGU = mux2(vram.MD2, vram.MD5, XONO);
+  bool PUTE = mux2(vram.MD7, vram.MD0, XONO);
+  bool PULY = mux2(vram.MD0, vram.MD7, XONO);
+  bool PELO = mux2(vram.MD6, vram.MD1, XONO);
+  bool PAWE = mux2(vram.MD1, vram.MD6, XONO);
 
   // the schematic layout is slightly inconsistent, might have some of these swapped
 

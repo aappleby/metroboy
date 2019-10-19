@@ -168,23 +168,23 @@ void tick_oam() {
   wire ZUFE = not(mem.D7);
   wire ZYFA = not(mem.D7);
 
-  wire WUZU = not(MD0);
-  wire WOWA = not(MD0);
-  wire AXER = not(MD1);
-  wire AVEB = not(MD1);
-  wire ASOX = not(MD2);
-  wire AMUH = not(MD2);
-  wire CETU = not(MD3);
-  wire COFO = not(MD3);
+  wire WUZU = not(vram.MD0);
+  wire WOWA = not(vram.MD0);
+  wire AXER = not(vram.MD1);
+  wire AVEB = not(vram.MD1);
+  wire ASOX = not(vram.MD2);
+  wire AMUH = not(vram.MD2);
+  wire CETU = not(vram.MD3);
+  wire COFO = not(vram.MD3);
 
-  wire ARYN = not(MD4);
-  wire AZOZ = not(MD4);
-  wire ACOT = not(MD5);
-  wire AGYK = not(MD5);
-  wire CUJE = not(MD6);
-  wire BUSE = not(MD6);
-  wire ATER = not(MD7);
-  wire ANUM = not(MD7);
+  wire ARYN = not(vram.MD4);
+  wire AZOZ = not(vram.MD4);
+  wire ACOT = not(vram.MD5);
+  wire AGYK = not(vram.MD5);
+  wire CUJE = not(vram.MD6);
+  wire BUSE = not(vram.MD6);
+  wire ATER = not(vram.MD7);
+  wire ANUM = not(vram.MD7);
 
   OAM_CLK = ZODO;
   OAM_ADDR_RENDER = BETE;

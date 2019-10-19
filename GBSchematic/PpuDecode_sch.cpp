@@ -58,16 +58,16 @@ void tick_ppudecode() {
   bool TEGO = not(VAMA);
   bool WERA = not(WYBO);
 
-  FF48 = XAYO;
-  FF44 = XOGY;
-  FF40 = VOCA;
-  FF46 = XEDA;
-  FF4A = VYGA;
-  FF45 = XAYU;
-  FF41 = VARY;
-  FF43 = XAVY;
-  FF4B = VUMY;
-  FF42 = XARO;
-  FF49 = TEGO;
-  FF47 = WERA;
+  dec.FF48 = XAYO;
+  dec.FF44 = XOGY;
+  dec.FF40 = VOCA;
+  dec.FF46 = XEDA;
+  dec.FF4A = VYGA;
+  dec.FF45 = XAYU;
+  dec.FF41 = VARY;
+  dec.FF43 = XAVY;
+  dec.FF4B = VUMY;
+  dec.FF42 = XARO;
+  dec.FF49 = TEGO;
+  dec.FF47 = WERA;
 }

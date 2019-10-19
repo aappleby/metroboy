@@ -25,6 +25,19 @@ struct AddressDecoder {
   bool FF25;
   bool FF26;
   bool FF27;
+
+  bool FF40;
+  bool FF41;
+  bool FF42;
+  bool FF43;
+  bool FF44;
+  bool FF45;
+  bool FF46;
+  bool FF47;
+  bool FF48;
+  bool FF49;
+  bool FF4A;
+  bool FF4B;
 };
 
 extern AddressDecoder dec;
@@ -43,18 +56,6 @@ extern bool FF1Xn;
 extern bool FF2X;
 extern bool FF2Xn;
 extern bool FF3X;
-extern bool FF40;
-extern bool FF41;
-extern bool FF42;
-extern bool FF43;
-extern bool FF44;
-extern bool FF45;
-extern bool FF46;
-extern bool FF47;
-extern bool FF48;
-extern bool FF49;
-extern bool FF4A;
-extern bool FF4B;
 extern bool FFXX;
 extern bool FFXXn;
 

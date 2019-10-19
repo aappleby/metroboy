@@ -74,8 +74,8 @@ void tick_dma() {
   bool LENE_Qn = not(LENE_Q);
   bool LOKO = nand(rst.RESET6, LENE_Qn);
 
-  bool MOLU = nand(FF46, cpu.CPU_RD2);
-  bool LAVY = nand(FF46, cpu.CPU_WR2);
+  bool MOLU = nand(dec.FF46, cpu.CPU_RD2);
+  bool LAVY = nand(dec.FF46, cpu.CPU_WR2);
   bool NYGO = not(MOLU);
   bool LORU = not(LAVY);
 

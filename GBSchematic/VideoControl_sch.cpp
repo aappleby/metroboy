@@ -6,11 +6,10 @@
 #include "ExtBus.h"
 #include "MemBus.h"
 #include "PpuRegs.h"
+#include "AddressDecoder.h"
 
 //----------
 // inputs
-
-extern bool FF41;
 
 extern bool ATEJ;
 extern bool FEPO;
@@ -217,7 +216,7 @@ void tick_videocontrol() {
 
   //---
 
-  bool SEPA = and(cpu.CPU_WR2, FF41);
+  bool SEPA = and(cpu.CPU_WR2, dec.FF41);
 
   bool VOGA_Q = VOGA.tock(clk.CLK2, TADY, WODU);
   bool WEGO = or(TOFU, VOGA_Q);
@@ -258,7 +257,7 @@ void tick_videocontrol() {
   ext.CP = RYPO;
   cpu.INT_STAT = VOTY;
 
-  bool TOBE = and(cpu.CPU_RD2, FF41);
+  bool TOBE = and(cpu.CPU_RD2, dec.FF41);
   bool VAVE = TOBE; // buffer, not inverter
   if (TOBE) {
     mem.D0 = TEBY;

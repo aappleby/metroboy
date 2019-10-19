@@ -18,18 +18,3 @@ bool FF2Xn;
 bool FF3X;
 bool FFXX;
 bool FFXXn;
-
-bool FF40;
-bool FF41;
-bool FF42;
-bool FF43;
-bool FF44;
-bool FF45;
-bool FF46;
-bool FF47;
-bool FF48;
-bool FF49;
-bool FF4A;
-bool FF4B;
-
-

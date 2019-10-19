@@ -5,17 +5,10 @@
 #include "PpuRegs.h"
 #include "CpuBus.h"
 #include "Clocks.h"
+#include "AddressDecoder.h"
 
 //----------
 // inputs
-
-extern bool FF40;
-extern bool FF42;
-extern bool FF43;
-extern bool FF44;
-extern bool FF45;
-extern bool FF4A;
-extern bool FF4B;
 
 //----------
 // outputs
@@ -30,8 +23,8 @@ bool XARE;
 
 void tick_videoregs() {
   // FF40 LCDC
-  bool VYRE = and(FF40, cpu.CPU_RD2);
-  WARU = and(FF40, cpu.CPU_WR2);
+  bool VYRE = and(dec.FF40, cpu.CPU_RD2);
+  WARU = and(dec.FF40, cpu.CPU_WR2);
   bool XUBO = not(WARU);
   XARE = not(rst.RESET7);
 
@@ -75,8 +68,8 @@ void tick_videoregs() {
   }
 
   // FF4B WX
-  bool WYZE = and(cpu.CPU_RD2, FF4B);
-  bool WUZA = and(cpu.CPU_WR2, FF4B);
+  bool WYZE = and(cpu.CPU_RD2, dec.FF4B);
+  bool WUZA = and(cpu.CPU_WR2, dec.FF4B);
   bool VYCU = not(WYZE);
   bool VOXU = not(WUZA);
 
@@ -119,8 +112,8 @@ void tick_videoregs() {
   }
 
   // FF4A WY
-  bool WAXU = and(cpu.CPU_RD2, FF4A);
-  bool WEKO = and(cpu.CPU_WR2, FF4A);
+  bool WAXU = and(cpu.CPU_RD2, dec.FF4A);
+  bool WEKO = and(cpu.CPU_WR2, dec.FF4A);
   bool VEFU = not(WEKO);
 
   bool NAFU_Q = NAFU.tock(VEFU, rst.RESET8, mem.D7);
@@ -163,8 +156,8 @@ void tick_videoregs() {
   }
 
   // FF43 SCX
-  bool AVOG = and(FF43, cpu.CPU_RD2);
-  bool ARUR = and(FF43, cpu.CPU_WR2);
+  bool AVOG = and(dec.FF43, cpu.CPU_RD2);
+  bool ARUR = and(dec.FF43, cpu.CPU_WR2);
   bool AMUN = not(ARUR);
 
   bool CYXU_Q = CYXU.tock(AMUN, rst.RESET6, mem.D2);
@@ -207,8 +200,8 @@ void tick_videoregs() {
   }
 
   // FF42 SCY
-  bool ANYP = and(cpu.CPU_RD2, FF42);
-  bool BEDY = and(cpu.CPU_WR2, FF42);
+  bool ANYP = and(cpu.CPU_RD2, dec.FF42);
+  bool BEDY = and(cpu.CPU_WR2, dec.FF42);
   bool CAVO = not(BEDY);
 
   bool FEZU_Q = FEZU.tock(CAVO, rst.RESET6, mem.D2);
@@ -251,8 +244,8 @@ void tick_videoregs() {
   }
 
   // FF45 LYC
-  bool XYLY = and(cpu.CPU_RD2, FF45);
-  bool XUFA = and(cpu.CPU_WR2, FF45);
+  bool XYLY = and(cpu.CPU_RD2, dec.FF45);
+  bool XUFA = and(cpu.CPU_WR2, dec.FF45);
   bool WANE = not(XUFA);
 
   bool SOTA_Q = SOTA.tock(WANE, rst.RESET9, mem.D4);
@@ -295,7 +288,7 @@ void tick_videoregs() {
   }
 
   // FF44 LY
-  bool WAFU = and(cpu.CPU_RD2, FF44);
+  bool WAFU = and(cpu.CPU_RD2, dec.FF44);
 
   bool WATA = not(V4);
   bool XAGA = not(V5);

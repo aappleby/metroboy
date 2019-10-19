@@ -19,8 +19,8 @@
 
 void tick_palettes() {
   // BGP
-  bool VUSO = and(cpu.CPU_RD2, FF47);
-  bool VELY = and(cpu.CPU_WR2, FF47);
+  bool VUSO = and(cpu.CPU_RD2, dec.FF47);
+  bool VELY = and(cpu.CPU_WR2, dec.FF47);
   bool TEPY = not(VUSO);
   bool TEPO = not(VELY);
 
@@ -63,8 +63,8 @@ void tick_palettes() {
   }
 
   // OBP0
-  bool XUFY = and(cpu.CPU_RD2, FF48);
-  bool XOMA = and(cpu.CPU_WR2, FF48);
+  bool XUFY = and(cpu.CPU_RD2, dec.FF48);
+  bool XOMA = and(cpu.CPU_WR2, dec.FF48);
   bool XOZY = not(XUFY);
   bool XELO = not(XOMA);
 
@@ -107,8 +107,8 @@ void tick_palettes() {
   }
 
   // OBP1
-  bool MUMY = and(cpu.CPU_RD2, FF49);
-  bool MYXE = and(cpu.CPU_WR2, FF49);
+  bool MUMY = and(cpu.CPU_RD2, dec.FF49);
+  bool MYXE = and(cpu.CPU_WR2, dec.FF49);
   bool LOTE = not(MUMY);
   bool LEHO = not(MYXE);
 

@@ -1,6 +1,33 @@
 #pragma once
 
 struct Clocks {
+  bool CLKIN_An;
+  bool CLKPIPE;
+
+  bool CLK1;
+  bool CLK2;
+  bool CLK3; // sprites use this clock
+
+  bool BOGA1MHZ;
+
+  // apu sequencer clocks
+  bool CLK_16k;
+  bool CLK_64k;
+  bool CLK_256k;
+
+  bool CERY_2MHZ;
+  bool BAVU_1MHZ;
+  bool JESO_512K;
+  bool HAMA_512Kn;
+  bool HORU_512;
+  bool BUFY_256;
+  bool BYFE_128;
+  bool ABOL_1MHZ;
+  bool AJER_2MHZ;
+  bool CYBO_4MHZ;
+  bool APUV_4MHZ;
+  bool AJER_2MHZn;
+  bool DYFA_1MHZ;
 };
 
 extern Clocks clk;
@@ -29,35 +56,3 @@ struct Resets {
 };
 
 extern Resets rst;
-
-extern bool CLKPIPE;
-
-extern bool CLK1;
-extern bool CLK2;
-extern bool CLK3; // sprites use this clock
-
-extern bool BOGA1MHZ;
-extern bool CLKIN_An;
-
-extern bool CERY_2MHZ;
-extern bool BAVU_1MHZ;
-extern bool JESO_512K;
-extern bool HAMA_512Kn;
-
-extern bool CLK_16k;
-extern bool CLK_64k;
-extern bool CLK_256k;
-
-extern bool HORU_512;
-extern bool BUFY_256;
-extern bool BYFE_128;
-
-extern bool ABOL_1MHZ;
-extern bool AJER_2MHZ;
-extern bool CYBO_4MHZ;
-
-extern bool APUV_4MHZ;
-
-
-extern bool AJER_2MHZn;
-extern bool DYFA_1MHZ;

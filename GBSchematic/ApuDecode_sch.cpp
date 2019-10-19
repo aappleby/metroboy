@@ -64,7 +64,7 @@ void tick_apudecode() {
   bool CONA = not(FF2Xn);
   FF2X = CONA;
   bool DOXY = and(CONA, XXX6);
-  FF26 = DOXY;
+  dec.FF26 = DOXY;
 
   bool BAFU = not(cpu.CPU_WR);
   bool BOGY = not(BAFU);
@@ -89,7 +89,7 @@ void tick_apudecode() {
 
   bool DUPO = nand(ACOL, ABUB, AFOB, DYTE); // 0000
   bool DYVA = nor(DUPO, FF1Xn);
-  FF10 = DYVA;
+  dec.FF10 = DYVA;
  
  
   // FIXME finish these

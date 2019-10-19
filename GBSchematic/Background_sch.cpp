@@ -177,13 +177,13 @@ void tick_background() {
   //----------
   // registers = background pixel pipe?
 
-  bool VEZO_Q = VEZO.srtock(CLKPIPE, TEDE, WOKA, 0);
-  bool WURU_Q = WURU.srtock(CLKPIPE, XALA, WEDE, VEZO_Q);
-  bool VOSA_Q = VOSA.srtock(CLKPIPE, TYRA, TUFO, WURU_Q);
-  bool WYFU_Q = WYFU.srtock(CLKPIPE, XYRU, WEVO, VOSA_Q);
-  bool XETE_Q = XETE.srtock(CLKPIPE, XUKU, WEDY, WYFU_Q);
-  bool WODA_Q = WODA.srtock(CLKPIPE, XELY, WUJA, XETE_Q);
-  bool VUMO_Q = VUMO.srtock(CLKPIPE, TYKO, TENA, WODA_Q);
-  bool VAVA_Q = VAVA.srtock(CLKPIPE, TUWU, WUBU, VUMO_Q);
+  bool VEZO_Q = VEZO.srtock(clk.CLKPIPE, TEDE, WOKA, 0);
+  bool WURU_Q = WURU.srtock(clk.CLKPIPE, XALA, WEDE, VEZO_Q);
+  bool VOSA_Q = VOSA.srtock(clk.CLKPIPE, TYRA, TUFO, WURU_Q);
+  bool WYFU_Q = WYFU.srtock(clk.CLKPIPE, XYRU, WEVO, VOSA_Q);
+  bool XETE_Q = XETE.srtock(clk.CLKPIPE, XUKU, WEDY, WYFU_Q);
+  bool WODA_Q = WODA.srtock(clk.CLKPIPE, XELY, WUJA, XETE_Q);
+  bool VUMO_Q = VUMO.srtock(clk.CLKPIPE, TYKO, TENA, WODA_Q);
+  bool VAVA_Q = VAVA.srtock(clk.CLKPIPE, TUWU, WUBU, VUMO_Q);
   VAVA3 = VAVA_Q;
 }

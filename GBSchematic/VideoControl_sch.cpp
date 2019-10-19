@@ -11,7 +11,6 @@
 // inputs
 
 extern bool FF41;
-extern bool CLK2;
 
 extern bool ATEJ;
 extern bool FEPO;
@@ -158,10 +157,10 @@ void tick_videocontrol() {
   bool XEGY = xor(XODU_Q, XUKE);
   bool XORA = xor(XYDO_Q, XYLE);
 
-  XEHO.tock(CLKPIPE, TADY, !XEHO_Q);
-  SAVY.tock(CLKPIPE, TADY, RYBO);
-  XODU.tock(CLKPIPE, TADY, XEGY);
-  XYDO.tock(CLKPIPE, TADY, XORA);
+  XEHO.tock(clk.CLKPIPE, TADY, !XEHO_Q);
+  SAVY.tock(clk.CLKPIPE, TADY, RYBO);
+  XODU.tock(clk.CLKPIPE, TADY, XEGY);
+  XYDO.tock(clk.CLKPIPE, TADY, XORA);
 
   bool TOCA = not(XYDO_Q);
 
@@ -220,12 +219,12 @@ void tick_videocontrol() {
 
   bool SEPA = and(cpu.CPU_WR2, FF41);
 
-  bool VOGA_Q = VOGA.tock(CLK2, TADY, WODU);
+  bool VOGA_Q = VOGA.tock(clk.CLK2, TADY, WODU);
   bool WEGO = or(TOFU, VOGA_Q);
   bool XAJO = and(XEHO_Q, XYDO_Q);
   XYMU = unk2(WEGO, AVAP);
   bool WUSA = unk2(XAJO, WEGO);
-  bool TOBA = and(CLKPIPE, WUSA);
+  bool TOBA = and(clk.CLKPIPE, WUSA);
   bool SADU = nor(XYMU, PARU);
   bool XATY = nor(ACYL, XYMU);
   bool SEMU = or(TOBA, POVA);

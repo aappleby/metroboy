@@ -103,7 +103,7 @@ void tick_oam() {
   wire MATU_Q = MATU.q();
 
   WEFE = not(ext.P10_B);
-  wire YVAL = not(CLK3);
+  wire YVAL = not(clk.CLK3);
   wire YRYV = not(YVAL);
   wire ZODO = not(YRYV);
 
@@ -191,7 +191,7 @@ void tick_oam() {
   oam.OAM_ADDR_PARSE = APAR;
   rst.RESET_VIDEO2n = ATAR;
   oam.OAM_ADDR_CPU = ASAM;
-  CLK3 = BODE;
+  clk.CLK3 = BODE;
 
   wire AZUL = not(APAG);
   if (AZUL) {

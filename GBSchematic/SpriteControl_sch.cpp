@@ -190,7 +190,7 @@ void tick_spritecontrol() {
   bool BYBA_Q = BYBA.q();
   bool DOBA_Q = DOBA.q(); 
 
-  bool XYVA = not(CLK1);
+  bool XYVA = not(clk.CLK1);
   bool XOTA = not(XYVA);
   bool XYFY = not(XOTA);
   bool ALES = not(XYVO);
@@ -214,7 +214,7 @@ void tick_spritecontrol() {
   CENO.tock(XUPY, ABEZ, BESU);
   CATU.tock(XUPY, ABEZ, ABOV);
   BYBA.tock(XUPY, BAGY, FETO);
-  DOBA.tock(CLK2, BAGY, BYBA_Q);
+  DOBA.tock(clk.CLK2, BAGY, BYBA_Q);
 
   //----------
   // center thing
@@ -228,7 +228,7 @@ void tick_spritecontrol() {
   bool TULY_Q = TULY.q();
   bool TESE_Q = TESE.q();
 
-  LAPE = not(CLK2);
+  LAPE = not(clk.CLK2);
   bool TEPA = not(XYMU);
 
   bool TYNO = nand(TOXE_Q, SEBA_Q, VONU_Q);
@@ -374,14 +374,14 @@ void tick_spritecontrol() {
   //----------
   // Sprite y comparator
 
-  bool YCEB_Q = YCEB.latch(CLK3, oam.OAM_B_D1); // order is weird? does it matter?
-  bool ZUCA_Q = YCEB.latch(CLK3, oam.OAM_B_D2);
-  bool WONE_Q = YCEB.latch(CLK3, oam.OAM_B_D3);
-  bool ZAXE_Q = YCEB.latch(CLK3, oam.OAM_B_D4);
-  bool XAFU_Q = YCEB.latch(CLK3, oam.OAM_B_D5);
-  bool YSES_Q = YCEB.latch(CLK3, oam.OAM_B_D6);
-  bool ZECA_Q = YCEB.latch(CLK3, oam.OAM_B_D7);
-  bool YDYV_Q = YCEB.latch(CLK3, oam.OAM_B_D0);
+  bool YCEB_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D1); // order is weird? does it matter?
+  bool ZUCA_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D2);
+  bool WONE_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D3);
+  bool ZAXE_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D4);
+  bool XAFU_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D5);
+  bool YSES_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D6);
+  bool ZECA_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D7);
+  bool YDYV_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D0);
 
   bool XELE = not(YCEB_Q);
   bool YPON = not(ZUCA_Q);
@@ -565,7 +565,7 @@ void tick_spritecontrol() {
   WOFO = not(DUKE); WYLU = not(DUKE); EWOT = not(DUKE);
   ASYS = not(BUCO); AHOF = not(BUCO); BYVY = not(BUCO);
 
-  DEZY.tock(CLK1, rst.RESET_VIDEO, DYTY);
+  DEZY.tock(clk.CLK1, rst.RESET_VIDEO, DYTY);
   BESE.flip(CAKE,    AZYB);
   CUXY.flip(!BESE_Q, AZYB);
   BEGO.flip(!CUXY_Q, AZYB);

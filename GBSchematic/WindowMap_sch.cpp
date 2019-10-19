@@ -26,7 +26,7 @@ extern bool FEPO;
 extern bool LAPE;
 extern bool ATEJ;
 extern bool SEGU;
-extern bool CLK2;
+
 
 extern bool INT_VBL; // this is the one that feeds INT_STAT
 
@@ -185,7 +185,7 @@ void tick_windowmap() {
   wire PECU = nand(ROXO, ROZE);
   wire RONE = nand(ROXY, SUHA, SYBY, SOZU);
   wire POHU = not(RONE);
-  wire MOXE = not(CLK2);
+  wire MOXE = not(clk.CLK2);
   wire PANY = nor(NUKO, ROZE);
   wire SEKO = nor(RENE_Q, !RYFA_Q);
   wire ROMO = not(POKY);
@@ -211,14 +211,14 @@ void tick_windowmap() {
   wire PASO = nor(TEVO, PAHA);
   wire VETU = and(TEVO, PORE);
   wire ROCO = not(SEGU);
-  wire MEHE = not(CLK2);
+  wire MEHE = not(clk.CLK2);
   wire NYFO = not(NUNY);
   MOSU = not(NYFO);
   NYXU = nor(AVAP, MOSU, TEVO);
   wire WAZY = not(PORE);
   wire SYNY = not(REPU);
 
-  NOPA.tock(CLK2, rst.RESET_VIDEO, PYNU);
+  NOPA.tock(clk.CLK2, rst.RESET_VIDEO, PYNU);
   PYCO.tock(ROCO, rst.RESET_VIDEO, NUKO);
   NUNU.tock(MEHE, rst.RESET_VIDEO, PYCO_Q);
 
@@ -232,8 +232,8 @@ void tick_windowmap() {
   bool LOVY_Q = LOVY.q();
 
   wire MOCE = nand(LAXU_Q, NYVA_Q, NYXU);
-  wire LEBO = nand(CLK2, MOCE);
-  MYVO = not(CLK2);
+  wire LEBO = nand(clk.CLK2, MOCE);
+  MYVO = not(clk.CLK2);
   LYRY = not(MOCE);
   wire LAXE = not(LAXU_Q);
   wire MYSO = nor(LOBY, LAXE, LYZU_Q);
@@ -252,7 +252,7 @@ void tick_windowmap() {
   POTU = and(LENA, NENY);
   NETA = and(LENA, NOGU);
 
-  LYZU.tock(CLK2,    XYMU, LAXU_Q);
+  LYZU.tock(clk.CLK2,    XYMU, LAXU_Q);
   LAXU.flip(LEBO,    NYXU);
   MESU.flip(!LAXU_Q, NYXU);
   NYVA.flip(!MESU_Q, NYXU);
@@ -339,6 +339,6 @@ void tick_windowmap() {
   PUXA.tock(ROXO, XYMU, POHU);
 
   RYFA.tock(SEGU, XYMU, PANY);
-  RENE.tock(CLK2, XYMU, RYFA_Q);
-  SOVY.tock(CLK2, rst.RESET_VIDEO, RYDY);
+  RENE.tock(clk.CLK2, XYMU, RYFA_Q);
+  SOVY.tock(clk.CLK2, rst.RESET_VIDEO, RYDY);
 }

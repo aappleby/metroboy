@@ -37,9 +37,9 @@ void Timer::tick(bool FF04_D1n) {
   }
 
   // clock mux
-  bool UVYR = not(CLK_64k);
-  bool UKAP = mux2(CLK_16k, UVYR, SOPU_Q);
-  bool UBOT = not(CLK_256k);
+  bool UVYR = not(clk.CLK_64k);
+  bool UKAP = mux2(clk.CLK_16k, UVYR, SOPU_Q);
+  bool UBOT = not(clk.CLK_256k);
   bool TEKO = mux2(UBOT, FF04_D1n, SOPU_Q);
   bool TECY = mux2(UKAP, TEKO, SAMY_Q);
   bool SOGU = nor(TECY, !SABO_Q);
@@ -136,8 +136,8 @@ void Timer::tick(bool FF04_D1n) {
   }
 
   bool MUGY = not(MEXU);
-  bool NYDU_Q = NYDU.tock(BOGA1MHZ, MUGY, NUGA_Q);
+  bool NYDU_Q = NYDU.tock(clk.BOGA1MHZ, MUGY, NUGA_Q);
   bool MERY = nor(!NYDU_Q, NUGA_Q);
-  bool MOBA_Q = MOBA.tock(BOGA1MHZ, rst.RESET2, MERY);
+  bool MOBA_Q = MOBA.tock(clk.BOGA1MHZ, rst.RESET2, MERY);
   cpu.INT_TIMER = MOBA_Q;
 }

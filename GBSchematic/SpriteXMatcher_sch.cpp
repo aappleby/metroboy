@@ -56,14 +56,14 @@ reg DUHY, EJUF, ENOR, DEPY, FOKA, FYTY, FUBY, GOXU;
 //-----------------------------------------------------------------------------
 
 void tick_spritexmatcher() {
-  bool WYNO_Q = WYNO.latch(CLK3, oam.OAM_A_D4);
-  bool CYRA_Q = CYRA.latch(CLK3, oam.OAM_A_D5);
-  bool ZUVE_Q = ZUVE.latch(CLK3, oam.OAM_A_D6);
-  bool ECED_Q = ECED.latch(CLK3, oam.OAM_A_D7);
-  bool XYKY_Q = XYKY.latch(CLK3, oam.OAM_A_D0);
-  bool YRUM_Q = YRUM.latch(CLK3, oam.OAM_A_D1);
-  bool YSEX_Q = YSEX.latch(CLK3, oam.OAM_A_D2);
-  bool YVEL_Q = YVEL.latch(CLK3, oam.OAM_A_D3);
+  bool WYNO_Q = WYNO.latch(clk.CLK3, oam.OAM_A_D4);
+  bool CYRA_Q = CYRA.latch(clk.CLK3, oam.OAM_A_D5);
+  bool ZUVE_Q = ZUVE.latch(clk.CLK3, oam.OAM_A_D6);
+  bool ECED_Q = ECED.latch(clk.CLK3, oam.OAM_A_D7);
+  bool XYKY_Q = XYKY.latch(clk.CLK3, oam.OAM_A_D0);
+  bool YRUM_Q = YRUM.latch(clk.CLK3, oam.OAM_A_D1);
+  bool YSEX_Q = YSEX.latch(clk.CLK3, oam.OAM_A_D2);
+  bool YVEL_Q = YVEL.latch(clk.CLK3, oam.OAM_A_D3);
 
   // ordering is weird
   bool XACA = not(!XYKY_Q);

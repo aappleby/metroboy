@@ -34,14 +34,14 @@ reg MATY, NEJY, NUTY, MOPO, PAVY;
 
 void tick_interrupts() {
   bool KERY = or(ext.P13_C, ext.P12, ext.P11_C, ext.P10);
-  bool AWOB_Q = AWOB.latch(BOGA1MHZ, KERY);
+  bool AWOB_Q = AWOB.latch(clk.BOGA1MHZ, KERY);
   cpu.TO_CPU2 = AWOB_Q; // for unhalt?
 
   // Sort of a deglitcher, only passes INT_JP if high for 4 cycles?
-  bool BATU_Q = BATU.tock(BOGA1MHZ, rst.RESET2, KERY);
-  bool ACEF_Q = ACEF.tock(BOGA1MHZ, rst.RESET2, BATU_Q);
-  bool AGEM_Q = AGEM.tock(BOGA1MHZ, rst.RESET2, ACEF_Q);
-  bool APUG_Q = APUG.tock(BOGA1MHZ, rst.RESET2, AGEM_Q);
+  bool BATU_Q = BATU.tock(clk.BOGA1MHZ, rst.RESET2, KERY);
+  bool ACEF_Q = ACEF.tock(clk.BOGA1MHZ, rst.RESET2, BATU_Q);
+  bool AGEM_Q = AGEM.tock(clk.BOGA1MHZ, rst.RESET2, ACEF_Q);
+  bool APUG_Q = APUG.tock(clk.BOGA1MHZ, rst.RESET2, AGEM_Q);
   bool ASOK = and(APUG_Q, BATU_Q);
   cpu.INT_JP = ASOK;
 

@@ -143,23 +143,23 @@ void tick_spritepixelshifter() {
   bool TUPE = nand(SULU,   SOKA);
   bool TUXA = nand(SEMO_Q, SOKA);
 
-  bool NURO_Q = NURO.srtock(CLKPIPE, PABE, PYZU, ext.P10_B);
-  bool MASO_Q = MASO.srtock(CLKPIPE, MYTO, MADA, NURO_Q);
-  bool LEFE_Q = LEFE.srtock(CLKPIPE, LELA, LYDE, MASO_Q);
-  bool LESU_Q = LESU.srtock(CLKPIPE, MAME, LUFY, LEFE_Q);
-  bool WYHO_Q = WYHO.srtock(CLKPIPE, VEXU, XATO, LESU_Q);
-  bool WORA_Q = WORA.srtock(CLKPIPE, VABY, XEXU, WYHO_Q);
-  bool VAFO_Q = VAFO.srtock(CLKPIPE, TUXA, TUPE, WORA_Q);
-  bool WUFY_Q = WUFY.srtock(CLKPIPE, VUNE, XYVE, VAFO_Q);
+  bool NURO_Q = NURO.srtock(clk.CLKPIPE, PABE, PYZU, ext.P10_B);
+  bool MASO_Q = MASO.srtock(clk.CLKPIPE, MYTO, MADA, NURO_Q);
+  bool LEFE_Q = LEFE.srtock(clk.CLKPIPE, LELA, LYDE, MASO_Q);
+  bool LESU_Q = LESU.srtock(clk.CLKPIPE, MAME, LUFY, LEFE_Q);
+  bool WYHO_Q = WYHO.srtock(clk.CLKPIPE, VEXU, XATO, LESU_Q);
+  bool WORA_Q = WORA.srtock(clk.CLKPIPE, VABY, XEXU, WYHO_Q);
+  bool VAFO_Q = VAFO.srtock(clk.CLKPIPE, TUXA, TUPE, WORA_Q);
+  bool WUFY_Q = WUFY.srtock(clk.CLKPIPE, VUNE, XYVE, VAFO_Q);
 
-  bool NYLU_Q = NYLU.srtock(CLKPIPE, MEZU, MOFY, ext.P10_B);
-  bool PEFU_Q = PEFU.srtock(CLKPIPE, RUSY, RUCA, NYLU_Q);
-  bool NATY_Q = NATY.srtock(CLKPIPE, MYXA, MAJO, PEFU_Q);
-  bool PYJO_Q = PYJO.srtock(CLKPIPE, RANO, REHU, NATY_Q);
-  bool VARE_Q = VARE.srtock(CLKPIPE, TYGA, WAXO, PYJO_Q);
-  bool WEBA_Q = WEBA.srtock(CLKPIPE, VUME, XOLE, VARE_Q);
-  bool VANU_Q = VANU.srtock(CLKPIPE, TAPO, TABY, WEBA_Q);
-  bool VUPY_Q = VUPY.srtock(CLKPIPE, TESO, TULA, VANU_Q);
+  bool NYLU_Q = NYLU.srtock(clk.CLKPIPE, MEZU, MOFY, ext.P10_B);
+  bool PEFU_Q = PEFU.srtock(clk.CLKPIPE, RUSY, RUCA, NYLU_Q);
+  bool NATY_Q = NATY.srtock(clk.CLKPIPE, MYXA, MAJO, PEFU_Q);
+  bool PYJO_Q = PYJO.srtock(clk.CLKPIPE, RANO, REHU, NATY_Q);
+  bool VARE_Q = VARE.srtock(clk.CLKPIPE, TYGA, WAXO, PYJO_Q);
+  bool WEBA_Q = WEBA.srtock(clk.CLKPIPE, VUME, XOLE, VARE_Q);
+  bool VANU_Q = VANU.srtock(clk.CLKPIPE, TAPO, TABY, WEBA_Q);
+  bool VUPY_Q = VUPY.srtock(clk.CLKPIPE, TESO, TULA, VANU_Q);
 
   SPR_PIX_B_0 = NURO_Q;
   SPR_PIX_B_1 = MASO_Q;

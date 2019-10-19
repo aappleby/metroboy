@@ -1,5 +1,7 @@
 #include "AddressDecoder.h"
 
+AddressDecoder dec;
+
 bool A00_07;
 bool XXX6;
 bool FEXXFFXXn;
@@ -9,31 +11,14 @@ bool FF04_FF07;
 bool FF0F;
 bool FF0F_RD;
 bool FF0F_WR;
-bool FF10;
-bool FF11;
-bool FF12;
-bool FF13;
-bool FF14;
-bool FF16;
-bool FF17;
-bool FF18;
-bool FF19;
-bool FF1A;
-bool FF1B;
-bool FF1C;
-bool FF1D;
-bool FF1E;
+
 bool FF1Xn;
-bool FF20;
-bool FF21;
-bool FF22;
-bool FF23;
-bool FF24;
-bool FF25;
-bool FF26;
 bool FF2X;
 bool FF2Xn;
 bool FF3X;
+bool FFXX;
+bool FFXXn;
+
 bool FF40;
 bool FF41;
 bool FF42;
@@ -46,6 +31,5 @@ bool FF48;
 bool FF49;
 bool FF4A;
 bool FF4B;
-bool FFXX;
-bool FFXXn;
+
 

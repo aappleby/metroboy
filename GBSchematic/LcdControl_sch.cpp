@@ -17,7 +17,6 @@ extern bool ROXY;
 extern bool PURE;
 extern bool XYMU;
 extern bool MOSU;
-extern bool CLK2;
 extern bool LYRY;
 extern bool MYVO;
 extern bool SYLO;
@@ -106,11 +105,11 @@ void tick_lcdcontrol() {
   bool RUZE = not(POFY);
 
   ext.PIN_ST = RUZE;
-  CLKPIPE = SACU;
+  clk.CLKPIPE = SACU;
 
-  NYKA.tock(CLK2, NAFY, LYRY);
+  NYKA.tock(clk.CLK2, NAFY, LYRY);
   PORY.tock(MYVO, NAFY, NYKA_Q);
-  PYGO.tock(CLK2, XYMU, PORY_Q);
+  PYGO.tock(clk.CLK2, XYMU, PORY_Q);
 
   bool XYDO_Q = XYDO.q();
   PAHO.tock(ROXO, XYMU, XYDO_Q);

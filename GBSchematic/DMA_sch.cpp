@@ -204,7 +204,7 @@ void tick_dma() {
   //----------
   // registers
 
-  MAKA.tock(CLK1,     rst.RESET6, CATY);
+  MAKA.tock(clk.CLK1,     rst.RESET6, CATY);
   LUVY.tock(PHI_OUTn, rst.RESET6, LUPA);
   LENE.tock(MOPA,     rst.RESET6, LUVY_Q);
   MATU.tock(PHI_OUTn, rst.RESET6, LOKY);

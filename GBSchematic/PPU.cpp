@@ -1,3 +1,3 @@
 #include "PPU.h"
 
-struct Ppu ppu;
+struct PPU ppu;

@@ -2,57 +2,9 @@
 
 #include "Sprites.h"
 
-//----------
-// inputs
-
-// these are probably named wrong and are actually the oam address lines?
-bool OAM_A_A7;
-bool OAM_A_A6;
-bool OAM_A_A5;
-bool OAM_A_A4;
-bool OAM_A_A3;
-bool OAM_A_A2;
-
-//----------
-// outputs
-
-bool WEZA;
-bool WUCO;
-bool WYDA;
-bool ZYSU;
-bool WYSE;
-bool WUZY;
-
-bool CUCA;
-bool CEGA;
-bool CUCU;
-bool WENU;
-
-//----------
-// registers
-
-reg XECU;
-reg YDUF;
-reg XOBE;
-reg ZUZE;
-reg XEDY;
-reg XADU;
-
-// Sprite store
-reg AXUV, BADA, APEV, BADO, BEXY, BYHE, AFYM, AZAP, AFUT, AFYX;
-reg GECU, FOXY, GOHU, FOGO, GACY, GABO, ZUBE, ZUMY, ZEXO, ZAFU;
-reg XYNU, XEGE, XABO, WANU, XEFE, XAVE, CUMU, CAPO, CONO, CAJU;
-reg FUZO, GESY, FYSU, FEFA, GYNO, GULE, XYGO, XYNA, XAKU, YGUM;
-reg CAJY, CUZA, COMA, CUFA, CEBO, CADU, ABUG, AMES, ABOP, AROF;
-reg EKAP, ETAV, EBEX, GORU, ETYM, EKOP, ANED, ACEP, ABUX, ABEG;
-reg DAFU, DEBA, DUHA, DUNY, DESE, DEVY, ZURY, ZURO, ZENE, ZYLU;
-reg BOXA, BUNA, BULU, BECA, BYHU, BUHE, YKUK, YLOV, XAZY, XOSY;
-reg XUFO, XUTE, XOTU, XYFE, YZOR, YBER, DEWU, CANA, DYSY, FOFO;
-reg YGUS, YSOK, YZEP, WYTE, ZONY, YWAK, FYHY, GYHO, BOZU, CUFO;
-
 //-----------------------------------------------------------------------------
 
-void tick_spritestore() {
+void Sprites::tick_spritestore() {
   bool CYKE = not(spr.XUPY);
   bool WUDA = not(CYKE);
 

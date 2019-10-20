@@ -7,32 +7,9 @@
 #include "ExtBus.h"
 #include "Clocks.h"
 
-//----------
-// inputs
-
-bool CPU; // wat?
-
-//----------
-// outputs
-
-bool CPU_INT_VBLANK;
-bool CPU_INT_SERIAL;
-bool CPU_INT_JP;
-bool CPU_INT_STAT;
-bool CPU_INT_TIMER;
-
-//----------
-// registers
-
-reg BATU, ACEF, AGEM, APUG;
-reg AWOB;
-
-reg LOPE, UBUL, ULAK, LALU, NYBO;
-reg MATY, NEJY, NUTY, MOPO, PAVY;
-
 //-----------------------------------------------------------------------------
 
-void tick_interrupts() {
+void CpuBus::tick_interrupts() {
   bool KERY = or(ext.P13_C, ext.P12, ext.P11_C, ext.P10);
   bool AWOB_Q = AWOB.latch(clk.BOGA1MHZ, KERY);
   cpu.TO_CPU2 = AWOB_Q; // for unhalt?

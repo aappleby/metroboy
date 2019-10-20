@@ -41,6 +41,45 @@ struct Clocks {
   bool AFAS;
   bool BEDO;
   bool BUKE;
+
+  void tick();
+
+private:
+
+  reg ADYK;
+  reg AFUR;
+  reg ALEF;
+  reg APUK;
+  reg AFER;
+  reg CERY;
+
+  reg TAMA;
+  reg UNYK;
+  reg TERO;
+  reg UNER;
+  reg UFOR;
+  reg UKUP;
+
+  reg BARA;
+  reg CARU;
+  reg BYLU;
+
+  reg ATYK;
+  reg AVOK;
+  reg JESO;
+
+  // FF04, DIV
+  reg UGOT;
+  reg TULU;
+  reg TUGO;
+  reg TOFE;
+  reg TERU;
+  reg SOLA;
+  reg SUBU;
+  reg TEKA;
+  reg UKET;
+  reg UPOF;
+
 };
 
 extern Clocks clk;

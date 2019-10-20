@@ -8,17 +8,6 @@
 #include "Window.h"
 #include "LCD.h"
 
-//----------
-// inputs
-
-extern bool WUKO;
-
-extern bool XYMU;
-extern bool CUBA1;
-extern bool TALU;
-
-extern bool INT_VBL; // this is the one that feeds INT_STAT
-
 //-----------------------------------------------------------------------------
 
 void Window::tick() {
@@ -42,14 +31,14 @@ void Window::tick() {
 
   VYPO = not(CUBA1);
 
-  wire SARY_Q = SARY.tock(TALU, rst.RESET_VIDEO, ROGE);
+  wire SARY_Q = SARY.tock(ppu.TALU, rst.RESET_VIDEO, ROGE);
 
   //----------
   // Window X match
 
   wire PYRY = not(rst.RESET_VIDEO);
   rst.RESET_VIDEOn = PYRY;
-  wire REPU = or(INT_VBL, PYRY);
+  wire REPU = or(ppu.INT_VBL, PYRY);
   wire REJO = unk2(SARY_Q, REPU);
   
   bool XEHO_Q = ppu.XEHO.q();
@@ -93,7 +82,7 @@ void Window::tick() {
 
   wire ROZE = nand(RYKU_Q, ROGA_Q, RUBU_Q);
   POVA = and(!NYZE_Q, PUXA_Q);
-  wire PAHA = not(XYMU);
+  wire PAHA = not(ppu.XYMU);
   ROXY = unk2(PAHA, POVA);
   wire SUHA = xor(ppu.FF43_D0, RYKU_Q);
   wire SYBY = xor(ppu.FF43_D1, ROGA_Q);
@@ -105,7 +94,7 @@ void Window::tick() {
   wire PANY = nor(NUKO, ROZE);
   wire SEKO = nor(RENE_Q, !RYFA_Q);
   wire ROMO = not(lcd.POKY);
-  wire SUVU = nand(XYMU, ROMO, lcd.NYKA.q(), lcd.PORY.q());
+  wire SUVU = nand(ppu.XYMU, ROMO, lcd.NYKA.q(), lcd.PORY.q());
   wire TAVE = not(SUVU);
   wire XAHY = not(spr.ATEJ);
   wire XOFO = nand(ppu.FF40_D5, XAHY, rst.RESET_VIDEO);
@@ -160,7 +149,7 @@ void Window::tick() {
   NYDY = nand(MYSO, MESU_Q, NOFU);
   XUHA = not(NOFU);
   wire NENY = not(NOGU);
-  wire LURY = and(!LOVY_Q, XYMU);
+  wire LURY = and(!LOVY_Q, ppu.XYMU);
   wire LONY = unk2(LURY, !LOVY_Q);
   MYMA = not(LONY);
   wire LUSU = not(LONY);
@@ -168,7 +157,7 @@ void Window::tick() {
   POTU = and(LENA, NENY);
   NETA = and(LENA, NOGU);
 
-  LYZU.tock(clk.CLK2,    XYMU, LAXU_Q);
+  LYZU.tock(clk.CLK2,    ppu.XYMU, LAXU_Q);
   LAXU.flip(LEBO,    NYXU);
   MESU.flip(!LAXU_Q, NYXU);
   NYVA.flip(!MESU_Q, NYXU);
@@ -251,10 +240,10 @@ void Window::tick() {
   ROGA.flip(!RYKU_Q, PASO);
   RUBU.flip(!ROGA_Q, PASO);
 
-  NYZE.tock(MOXE, XYMU, PUXA_Q);
-  PUXA.tock(lcd.ROXO, XYMU, POHU);
+  NYZE.tock(MOXE, ppu.XYMU, PUXA_Q);
+  PUXA.tock(lcd.ROXO, ppu.XYMU, POHU);
 
-  RYFA.tock(lcd.SEGU, XYMU, PANY);
-  RENE.tock(clk.CLK2, XYMU, RYFA_Q);
+  RYFA.tock(lcd.SEGU, ppu.XYMU, PANY);
+  RENE.tock(clk.CLK2, ppu.XYMU, RYFA_Q);
   SOVY.tock(clk.CLK2, rst.RESET_VIDEO, RYDY);
 }

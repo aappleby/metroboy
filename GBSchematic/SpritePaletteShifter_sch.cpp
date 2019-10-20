@@ -6,27 +6,9 @@
 #include "PPU.h"
 #include "Sprites.h"
 
-//----------
-// inputs
-
-//----------
-// outputs
-
-//----------
-// registers
-
-reg RUGO;
-reg SATA;
-reg ROSA;
-reg SOMY;
-reg PALU;
-reg NUKE;
-reg MODA;
-reg LYME;
-
 //-----------------------------------------------------------------------------
 
-void tick_spritepaletteshifter() {
+void Sprites::tick_paletteshifter() {
   bool MEFU = or(spr.XEFY, ppu.SPR_PIX_A_0, ppu.SPR_PIX_B_0);
   bool MEVE = or(spr.XEFY, ppu.SPR_PIX_A_1, ppu.SPR_PIX_B_1);
   bool MYZO = or(spr.XEFY, ppu.SPR_PIX_A_2, ppu.SPR_PIX_B_2);

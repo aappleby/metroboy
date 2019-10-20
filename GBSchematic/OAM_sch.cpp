@@ -13,25 +13,7 @@
 #include "System.h"
 #include "Sprites.h"
 
-//----------
-// inputs
-
-extern bool XYMU;
-
-extern reg CATU;
-extern reg TYFO;
-
-// sprite index bus
-
-extern bool WEZA;
-extern bool WUCO;
-extern bool WYDA;
-extern bool ZYSU;
-extern bool WYSE;
-extern bool WUZY;
-
 //-----------------------------------------------------------------------------
-// 28_OAM.png
 
 void Sprites::tick() {
   //----------
@@ -79,12 +61,12 @@ void Sprites::tick() {
   wire ASEN = or(rst.RESET_VIDEO2n, AVAP);
   wire BOGE = not(MATU_Q);
   BESU = unk2(CATU_Q, ASEN);
-  wire AJON = and(XYMU, BOGE);
+  wire AJON = and(ppu.XYMU, BOGE);
   ACYL = and(BOGE, BESU);
   wire BETE = not(AJON);
   wire APAR = not(ACYL);
   wire AJUJ = nor(MATU_Q, ACYL, AJON);
-  wire ASAM = or(ACYL, XYMU, MATU_Q);
+  wire ASAM = or(ACYL, ppu.XYMU, MATU_Q);
 
   wire XYNY = not(dma.MOPA_PHI);
   wire XUTO = and(sys.SARO, cpu.CPU_WR2);

@@ -8,14 +8,6 @@
 #include "Window.h"
 #include "LCD.h"
 
-extern bool NAPO_OUT;
-extern bool PURE;
-extern bool XYMU;
-extern bool WODU;
-extern bool LYFE;
-extern reg RUTU;
-extern reg NYPE;
-
 //-----------------------------------------------------------------------------
 
 void LCD::tick() {
@@ -27,18 +19,18 @@ void LCD::tick() {
   wire LEBE_Q = LEBE.q();
   wire MEDA_Q = MEDA.q();
 
-  LOBY = not(XYMU);
+  LOBY = not(ppu.XYMU);
   bool NAFY = nor(win.MOSU, LOBY);
 
   POKY = unk2(PYGO_Q, LOBY);
   TOMU = not(win.SYLO);
   bool SOCY = not(TOMU);
-  bool VYBO = nor(spr.FEPO, WODU, win.MYVO);
+  bool VYBO = nor(spr.FEPO, ppu.WODU, win.MYVO);
   bool TYFA = and(SOCY, POKY, VYBO);
   SEGU = not(TYFA);
   ROXO = not(SEGU);
 
-  bool RUTU_Q = RUTU.q();
+  bool RUTU_Q = ppu.RUTU.q();
   bool LOFU = not(RUTU_Q);
   
   // FIXME why 7
@@ -47,10 +39,10 @@ void LCD::tick() {
 
   ext.PIN_S = MURE;
 
-  bool MAGU = xor(NAPO_OUT, LUCA_Q);
+  bool MAGU = xor(ppu.NAPO_OUT, LUCA_Q);
   bool MECO = not(MAGU);
   bool KEBO = not(MECO);
-  bool KASA = not(PURE);
+  bool KASA = not(ppu.PURE);
   bool UMOB = not(clk.FF04_D0n);
   bool USEC = not(clk.FF04_D1n);
   bool KEDY = not(ppu.FF40_D7);
@@ -76,14 +68,14 @@ void LCD::tick() {
 
   NYKA.tock(clk.CLK2, NAFY, win.LYRY);
   PORY.tock(win.MYVO, NAFY, NYKA_Q);
-  PYGO.tock(clk.CLK2, XYMU, PORY_Q);
+  PYGO.tock(clk.CLK2, ppu.XYMU, PORY_Q);
 
   bool XYDO_Q = ppu.XYDO.q();
-  PAHO.tock(ROXO, XYMU, XYDO_Q);
+  PAHO.tock(ROXO, ppu.XYMU, XYDO_Q);
 
-  LUCA.tock(LOFU,    LYFE, !LUCA_Q);
-  LEBE.tock(!LUCA_Q, LYFE, !LEBE_Q);
+  LUCA.tock(LOFU,    ppu.LYFE, !LUCA_Q);
+  LEBE.tock(!LUCA_Q, ppu.LYFE, !LEBE_Q);
 
-  bool NYPE_Q = NYPE.q();
-  MEDA.tock(NYPE_Q,    LYFE, NERU);
+  bool NYPE_Q = ppu.NYPE.q();
+  MEDA.tock(NYPE_Q,    ppu.LYFE, NERU);
 }

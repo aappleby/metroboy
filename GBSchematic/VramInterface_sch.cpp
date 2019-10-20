@@ -16,11 +16,6 @@
 #include "Sprites.h"
 #include "Window.h"
 
-//----------
-// inputs
-
-extern bool XYMU;
-
 //-----------------------------------------------------------------------------
 // 25_VRAM_INTERFACE.png
 
@@ -75,7 +70,7 @@ void Vram::tick() {
   bool TYJY = mux2(TUTO, SUDO, TUJA);
   bool TOLE = mux2(TUTO, TEFY, TUCA);
 
-  bool ROPY = not(XYMU);
+  bool ROPY = not(ppu.XYMU);
   bool RYLU = nand(SALE, ROPY);
 
   bool APAM = not(dma.VRAM_TO_OAM);
@@ -213,7 +208,7 @@ void Vram::tick() {
   ext.MD6_OUT = RYTY;
   ext.MD7_OUT = RADY;
 
-  bool XANE = nor(dma.VRAM_TO_OAM, XYMU);
+  bool XANE = nor(dma.VRAM_TO_OAM, ppu.XYMU);
   bool XEDU = not(XANE);
 
   bool XECA = !mem.A4;

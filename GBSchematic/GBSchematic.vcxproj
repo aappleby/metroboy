@@ -182,6 +182,7 @@
     <ClCompile Include="DmaBus.cpp" />
     <ClCompile Include="DMA_sch.cpp" />
     <ClCompile Include="ExtCpuBuses_sch.cpp" />
+    <ClCompile Include="Joypad.cpp" />
     <ClCompile Include="LCD.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Interrupts_sch.cpp" />
@@ -196,6 +197,7 @@
     <ClCompile Include="PpuDecode_sch.cpp" />
     <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
+    <ClCompile Include="Serial.cpp" />
     <ClCompile Include="SerialLink_sch.cpp" />
     <ClCompile Include="SpriteControl_sch.cpp" />
     <ClCompile Include="SpritePaletteShifter_sch.cpp" />
@@ -223,12 +225,14 @@
     <ClInclude Include="ExtBus.h" />
     <ClInclude Include="DmaBus.h" />
     <ClInclude Include="ExtCpuBuses_sch.h" />
+    <ClInclude Include="Joypad.h" />
     <ClInclude Include="LCD.h" />
     <ClInclude Include="MemBus.h" />
     <ClInclude Include="OamBus.h" />
     <ClInclude Include="PPU.h" />
     <ClInclude Include="Register.h" />
     <ClInclude Include="Schematics.h" />
+    <ClInclude Include="Serial.h" />
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Timer_sch.h" />

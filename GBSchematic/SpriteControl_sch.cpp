@@ -10,21 +10,6 @@
 #include "Sprites.h"
 #include "Window.h"
 
-//----------
-// inputs
-
-extern reg BAXO;
-extern reg YZOS;
-
-extern bool XYVO;
-extern bool SELA;
-extern bool XYMU;
-
-extern bool XYMU;
-extern bool WENU;
-extern bool CUCU;
-extern bool CEGA;
-
 //-----------------------------------------------------------------------------
 
 void Sprites::tick_control() {
@@ -41,8 +26,8 @@ void Sprites::tick_control() {
   wire XYVA = not(clk.CLK1);
   wire XOTA = not(XYVA);
   wire XYFY = not(XOTA);
-  wire ALES = not(XYVO);
-  wire ABOV = and(SELA, ALES);
+  wire ALES = not(ppu.XYVO);
+  wire ABOV = and(ppu.SELA, ALES);
   spr.XUPY = not(!WUVU_Q);
   spr.ABEZ = not(rst.RESET_VIDEO2n);
   wire BALU = not(spr.ANOM);
@@ -51,7 +36,7 @@ void Sprites::tick_control() {
   spr.XOCE = not(WOSU_Q);
   spr.XYSO = not(WOJO);
   spr.CEHA = not(!CENO_Q);
-  spr.BUZA = and(!CENO_Q, XYMU);
+  spr.BUZA = and(!CENO_Q, ppu.XYMU);
   wire CARE = or(spr.XOCE, spr.CEHA, spr.SPR_MATCH);
   spr.DYTY = not(CARE);
   wire BEBU = or(DOBA_Q, BALU, !BYBA_Q);
@@ -77,7 +62,7 @@ void Sprites::tick_control() {
   wire TESE_Q = TESE.q();
 
   spr.LAPE = not(clk.CLK2);
-  wire TEPA = not(XYMU);
+  wire TEPA = not(ppu.XYMU);
 
   wire TYNO = nand(TOXE_Q, SEBA_Q, VONU_Q);
   wire VUSA = or(!TYFO_Q, TYNO);
@@ -107,7 +92,7 @@ void Sprites::tick_control() {
   spr.PUCO = not(NYBE);
 
   TYFO.tock(spr.LAPE, win.VYPO, TAME);
-  SEBA.tock(spr.LAPE, XYMU, VONU_Q);
+  SEBA.tock(spr.LAPE, ppu.XYMU, VONU_Q);
   TOXE.flip(TOMA,    win.SECA);
   TULY.flip(!TOXE_Q, win.SECA);
   TESE.flip(!TULY_Q, win.SECA);
@@ -116,7 +101,7 @@ void Sprites::tick_control() {
   // Sprite priority
 
   wire BYJO = not(spr.CEHA);
-  wire AZEM = and(BYJO, XYMU);
+  wire AZEM = and(BYJO, ppu.XYMU);
   wire AROR = and(AZEM, ppu.FF40_D1);
 
   wire XAGE = nand(AROR, spr.YNAZ, spr.YKOK);
@@ -344,8 +329,8 @@ void Sprites::tick_control() {
     vram.MA12 = DYSO;
   }
 
-  TOBU.tock(win.TAVA, XYMU, TULY_Q);
-  VONU.tock(win.TAVA, XYMU, !TOBU_Q);
+  TOBU.tock(win.TAVA, ppu.XYMU, TULY_Q);
+  VONU.tock(win.TAVA, ppu.XYMU, !TOBU_Q);
 
   //----------
 

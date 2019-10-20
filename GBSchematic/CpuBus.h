@@ -1,4 +1,5 @@
 #pragma once
+#include "Schematics.h"
 
 struct CpuBus {
   bool CPU_RD;
@@ -31,6 +32,27 @@ struct CpuBus {
 
   bool TO_CPU;
   bool TO_CPU2;
+
+  void tick_interrupts();
+
+private:
+
+  bool CPU; // wat?
+
+  //----------
+  // registers
+
+  reg BATU, ACEF, AGEM, APUG;
+  reg AWOB;
+
+  reg LOPE, UBUL, ULAK, LALU, NYBO;
+  reg MATY, NEJY, NUTY, MOPO, PAVY;
+
+  bool CPU_INT_VBLANK;
+  bool CPU_INT_SERIAL;
+  bool CPU_INT_JP;
+  bool CPU_INT_STAT;
+  bool CPU_INT_TIMER;
 };
 
 extern CpuBus cpu;

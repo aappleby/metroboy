@@ -26,10 +26,9 @@ struct MemBus {
   bool D5;
   bool D6;
   bool D7;
+
+  bool TOVY_A0n;
+  bool TOLA_A1n;
 };
 
 extern MemBus mem;
-
-extern bool TOVY_A0n;
-extern bool TOLA_A1n;
-

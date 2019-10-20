@@ -11,52 +11,9 @@
 #include "Debug.h"
 #include "System.h"
 
-//----------
-// inputs
-
-extern bool TOLA_A1n;
-extern bool TOVY_A0n;
-
-//----------
-// registers
-
-reg ADYK;
-reg AFUR;
-reg ALEF;
-reg APUK;
-reg AFER;
-reg CERY;
-
-reg TAMA;
-reg UNYK;
-reg TERO;
-reg UNER;
-reg UFOR;
-reg UKUP;
-
-reg BARA;
-reg CARU;
-reg BYLU;
-
-reg ATYK;
-reg AVOK;
-reg JESO;
-
-// FF04, DIV
-reg UGOT;
-reg TULU;
-reg TUGO;
-reg TOFE;
-reg TERU;
-reg SOLA;
-reg SUBU;
-reg TEKA;
-reg UKET;
-reg UPOF;
-
 //-----------------------------------------------------------------------------
 
-void tick_clocks_reset() {
+void Clocks::tick() {
 
   //----------
   // FF04 DIV
@@ -108,7 +65,7 @@ void tick_clocks_reset() {
   bool SAWA = not(RYSO);
   bool TATU = not(UDOR);
 
-  bool TAGY = and(dec.FF04_FF07, cpu.CPU_RD, TOLA_A1n, TOVY_A0n);
+  bool TAGY = and(dec.FF04_FF07, cpu.CPU_RD, mem.TOLA_A1n, mem.TOVY_A0n);
   if (TAGY) {
     mem.D0 = TAWU;
     mem.D1 = TAKU;
@@ -227,7 +184,7 @@ void tick_clocks_reset() {
   bool DOVA = not(BUDE);
   clk.PHIn = DOVA;
 
-  bool TAPE = and(dec.FF04_FF07, cpu.CPU_WR, TOLA_A1n, TOVY_A0n);
+  bool TAPE = and(dec.FF04_FF07, cpu.CPU_WR, mem.TOLA_A1n, mem.TOVY_A0n);
 
   bool UFOL = nor(clk.CLKIN_An, ext.RESET, TAPE);
   rst.RESET_DIVn = UFOL;

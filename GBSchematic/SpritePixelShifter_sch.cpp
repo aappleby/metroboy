@@ -7,53 +7,9 @@
 #include "PPU.h"
 #include "Sprites.h"
 
-//----------
-// inputs
-
-//----------
-// outputs
-
-//----------
-// registers
-
-reg PUDU;
-reg RAMU;
-reg SELE;
-reg SAJA;
-reg MYTU;
-reg MOFO;
-reg SUNY;
-reg SUTO;
-reg PEFO;
-reg REWO;
-reg RYDU;
-reg SEGA;
-reg PEBA;
-reg ROKA;
-reg RAMA;
-reg SEMO;
-
-reg NURO;
-reg MASO;
-reg LEFE;
-reg LESU;
-reg WYHO;
-reg WORA;
-reg VAFO;
-reg WUFY;
-
-reg NYLU;
-reg PEFU;
-reg NATY;
-reg PYJO;
-reg VARE;
-reg WEBA;
-reg VANU;
-reg VUPY;
-
 //-----------------------------------------------------------------------------
 
-void tick_spritepixelshifter() {
+void Sprites::tick_pixelshifter() {
   // sprite x flip
   bool POBE = mux2(vram.MD4, vram.MD3, spr.XONO);
   bool PACY = mux2(vram.MD3, vram.MD4, spr.XONO);

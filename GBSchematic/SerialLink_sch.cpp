@@ -6,48 +6,16 @@
 #include "CpuBus.h"
 #include "ExtBus.h"
 #include "Clocks.h"
-
-//----------
-// inputs
-
-//----------
-// outputs
-
-bool SER_TICKn;
-
-// probably mislabeled CUBA_Q?
-bool CUBA1;
-
-//----------
-// registers
-
-bool COTY_Q, COTY_CLK;
-bool ETAF_Q, ETAF_CLK;
-bool CULY_Q, CULY_CLK;
-bool CAFA_Q, CAFA_CLK;
-bool CYLO_Q, CYLO_CLK;
-bool CYDE_Q, CYDE_CLK;
-bool CALY_Q, CALY_CLK;
-
-bool CUBA_Q, CUBA_CLK;
-bool DEGU_Q, DEGU_CLK;
-bool DYRA_Q, DYRA_CLK;
-bool DOJO_Q, DOJO_CLK;
-bool DOVU_Q, DOVU_CLK;
-bool EJAB_Q, EJAB_CLK;
-bool EROD_Q, EROD_CLK;
-bool EDER_Q, EDER_CLK;
-
-bool ELYS_Q, ELYS_CLK;
+#include "Serial.h"
 
 //-----------------------------------------------------------------------------
 
-void tick_serial() {
+void Serial::tick() {
   bool SARE = nor(mem.A7, mem.A7, mem.A7, mem.A4, mem.A3);
   bool SEFY = not(mem.A2);
   bool SANO = and(SARE, SEFY, dec.FFXX);
-  bool UWAM = nand(TOVY_A0n, mem.A1, cpu.CPU_WR, SANO);
-  bool UCOM = nand(SANO, cpu.CPU_RD, mem.A1, TOVY_A0n);
+  bool UWAM = nand(mem.TOVY_A0n, mem.A1, cpu.CPU_WR, SANO);
+  bool UCOM = nand(SANO, cpu.CPU_RD, mem.A1, mem.TOVY_A0n);
   bool CARO = and(UWAM, rst.RESET2);
   bool CAVE = mux2(COTY_Q, ext.SCK_IN, CULY_Q);
   bool DAWA = or(CAVE, !ETAF_Q);
@@ -72,7 +40,7 @@ void tick_serial() {
 
   dec.A00_07 = SARE;
 
-  bool URYS = nand(SANO, cpu.CPU_WR, TOLA_A1n, mem.A0);
+  bool URYS = nand(SANO, cpu.CPU_WR, mem.TOLA_A1n, mem.A0);
   bool DAKU = not(URYS);
   bool EPYT = not(SER_TICKn);
   bool DEHO = not(EPYT);
@@ -106,7 +74,7 @@ void tick_serial() {
   bool EFAB = not(!EROD_Q);
   bool ETAK = not(!EDER_Q);
 
-  bool UFEG = and(SANO, cpu.CPU_RD, TOLA_A1n, mem.A0);
+  bool UFEG = and(SANO, cpu.CPU_RD, mem.TOLA_A1n, mem.A0);
   if (UFEG) {
     mem.D0 = CUGY;
     mem.D1 = DUDE;

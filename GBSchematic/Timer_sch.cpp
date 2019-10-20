@@ -12,7 +12,7 @@
 void Timer::tick(bool FF04_D1n) {
   bool RYFO = and(mem.A2, dec.A00_07, dec.FFXX);
   dec.FF04_FF07 = RYFO;
-  bool TOPE = nand(cpu.CPU_WR, dec.FF04_FF07, mem.A0, TOLA_A1n);
+  bool TOPE = nand(cpu.CPU_WR, dec.FF04_FF07, mem.A0, mem.TOLA_A1n);
   bool MUZU = or(cpu.FROM_CPU5, TOPE);
   bool MEKE = not(cpu.INT_TIMER);
   bool MEXU = nand(MUZU, rst.RESET2, MEKE);
@@ -48,7 +48,7 @@ void Timer::tick(bool FF04_D1n) {
   // tma
 
   bool TOVY = not(mem.A0);
-  TOVY_A0n = TOVY;
+  mem.TOVY_A0n = TOVY;
   bool TUBY = and(dec.FF04_FF07, cpu.CPU_RD, mem.A1, TOVY);
   bool TYJU = nand(TOVY, mem.A1, cpu.CPU_WR, dec.FF04_FF07);
 
@@ -104,7 +104,7 @@ void Timer::tick(bool FF04_D1n) {
   //----------
   // tima
 
-  bool TEDA = and(dec.FF04_FF07, cpu.CPU_RD, TOLA_A1n, mem.A0);
+  bool TEDA = and(dec.FF04_FF07, cpu.CPU_RD, mem.TOLA_A1n, mem.A0);
 
   bool REGA_Q = REGA.count(SOGU,   MEXU, PUXY);
   bool POVY_Q = POVY.count(REGA_Q, MEXU, NERO);

@@ -35,6 +35,10 @@ public:
   reg VYMU;
 
 private:
+  
+  // probably mislabeled CUBA_Q
+  bool CUBA1;
+  
   //----------
   // registers
 

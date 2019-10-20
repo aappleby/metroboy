@@ -44,7 +44,7 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA) {
   // top center
 
   wire TOLA = not(mem.A1);
-  TOLA_A1n = TOLA;
+  mem.TOLA_A1n = TOLA;
 
   wire MULE = not(dbg.T1T2n);
   wire LOXO = unk3(MULE, TEXO, dbg.T1T2n);

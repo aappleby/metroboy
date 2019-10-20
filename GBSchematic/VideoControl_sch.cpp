@@ -11,65 +11,9 @@
 #include "Window.h"
 #include "LCD.h"
 
-//----------
-// inputs
-
-extern bool PALY;
-
-//----------
-// outputs
-
-bool PALY; // ly compare match
-bool XYVO; // line >= 144;
-
-bool LYHA; // !RESET_VIDEO
-bool LYFE; // !!RESET_VIDEO
-
-bool PURE;
-bool TALU;
-
-bool INT_OAM;
-bool INT_HBL;
-bool INT_VBL;
-
-bool NAPO_OUT;
-
-bool WODU;
-bool SELA;
-bool XYMU;
-
-//-----------------------------------------------------------------------------
-// registers
-
-//----------
-
-reg VENA;
-
-reg SAXO, TYPO, VYZO, TELU, SUDE, TAHA, TYRY;
-
-reg RUTU;
-reg SYGU;
-
-//----------
-// FF41 STAT
-
-reg NYPE;
-reg POPU;
-reg NAPO;
-
-reg VOGA;
-
-reg RUGU;
-reg REFE;
-reg ROPO;
-reg RUFO;
-reg ROXE;
-
-reg MYTA;
-
 //-----------------------------------------------------------------------------
 
-void tick_videocontrol() {
+void PPU::tick_videocontrol() {
 
   //----------
   // LY compare

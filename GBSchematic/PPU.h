@@ -1,7 +1,7 @@
 #pragma once
 #include "Schematics.h"
 
-struct Ppu {
+struct PPU {
 public:
 
   // screen y coordinate
@@ -189,7 +189,54 @@ public:
   //reg MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE;
   reg WX_R0, WX_R1, WX_R2, WX_R3, WX_R4, WX_R5, WX_R6, WX_R7;
 
+  void tick_videocontrol();
+
+  reg RUTU;
+  reg NYPE;
+
+  //----------
+  // outputs
+
+  bool PALY; // ly compare match
+  bool XYVO; // line >= 144;
+
+  bool LYHA; // !RESET_VIDEO
+  bool LYFE; // !!RESET_VIDEO
+
+  bool PURE;
+  bool TALU;
+
+  bool INT_OAM;
+  bool INT_HBL;
+  bool INT_VBL;
+
+  bool NAPO_OUT;
+
+  bool WODU;
+  bool SELA;
+  bool XYMU; // clock?
+
 private:
+
+  reg VENA;
+
+  reg SAXO, TYPO, VYZO, TELU, SUDE, TAHA, TYRY;
+
+  reg SYGU;
+
+  //----------
+  // FF41 STAT
+
+  reg POPU;
+  reg NAPO;
+  reg VOGA;
+  reg RUGU;
+  reg REFE;
+  reg ROPO;
+  reg RUFO;
+  reg ROXE;
+
+  reg MYTA;
 };
 
-extern Ppu ppu;
+extern PPU ppu;

@@ -7,15 +7,6 @@
 #include "Clocks.h"
 #include "AddressDecoder.h"
 
-//----------
-// inputs
-
-//----------
-// outputs
-
-//----------
-// registers
-
 //-----------------------------------------------------------------------------
 
 void tick_videoregs() {

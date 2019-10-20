@@ -4,15 +4,6 @@
 #include "AddressDecoder.h"
 #include "MemBus.h"
 
-//----------
-// inputs
-
-//----------
-// outputs
-
-//----------
-// registers
-
 //-----------------------------------------------------------------------------
 
 void tick_ppudecode() {

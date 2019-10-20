@@ -158,7 +158,7 @@ public:
   bool LYFE; // !!RESET_VIDEO
 
   bool PURE;
-  bool TALU;
+  bool TALU; // drives the window y match ff
 
   bool INT_OAM;
   bool INT_HBL;
@@ -168,7 +168,7 @@ public:
 
   bool WODU;
   bool SELA;
-  bool XYMU; // clock?
+  bool XYMU; // if this is high, we put the cpu address on the vram address bus
 
 private:
 

@@ -144,7 +144,7 @@ void tick_sysdecode(const APU& apu, const Resets& rst, AddressDecoder& dec) {
 
   //----------
 
-  bool APET = or(NET02, dbg.T1T2n);
+  bool APET = or(dbg.NET02, dbg.T1T2n);
   bool APER = nand(APET, mem.A5, mem.A6, cpu.CPU_WR, apu.ANAP);
 
   //----------

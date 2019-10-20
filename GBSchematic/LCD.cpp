@@ -65,9 +65,9 @@ void LCD::tick(const Resets& rst, const Window& win) {
   ext.PIN_ST = RUZE;
   clk.CLKPIPE = SACU;
 
-  NYKA.tock(clk.CLK2, NAFY, win.LYRY);
+  NYKA.tock(clk.CLK_4M_B, NAFY, win.LYRY);
   PORY.tock(win.MYVO, NAFY, NYKA_Q);
-  PYGO.tock(clk.CLK2, ppu.XYMU, PORY_Q);
+  PYGO.tock(clk.CLK_4M_B, ppu.XYMU, PORY_Q);
 
   bool XYDO_Q = ppu.X_R3.q();
   PAHO.tock(ROXO, ppu.XYMU, XYDO_Q);

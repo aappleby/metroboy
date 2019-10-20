@@ -45,7 +45,7 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   bool SYGU_Q = SYGU.q();
 
   bool MUDE = nor(RUTU_Q, LYHA); // schematic says RUTU_OUT, but I think this is just RUTU_Q?
-  TALU = not(!VENA_Q);
+  TALU = VENA_Q;
 
   bool SAXO_Q = SAXO.flip(TALU,    MUDE);
   bool TYPO_Q = TYPO.flip(!SAXO_Q, MUDE);
@@ -84,6 +84,9 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   //----------
   // x counter
 
+  // ok, so this should be a control signal that keeps the x coord from
+  // incrementing if the pipe is stalled... but it's going into the reset
+  // input?
   bool TADY = nor(spr.ATEJ, lcd.TOFU);
 
   bool X_Q0 = X_R0.q();
@@ -146,7 +149,7 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
 
   bool SEPA = and(cpu.CPU_WR2, dec.FF41);
 
-  bool VOGA_Q = VOGA.tock(clk.CLK2, TADY, WODU);
+  bool VOGA_Q = VOGA.tock(clk.CLK_4M_B, TADY, WODU);
   bool WEGO = or(lcd.TOFU, VOGA_Q);
   bool XAJO = and(X_Q0, X_Q3);
   XYMU = unk2(WEGO, spr.AVAP);

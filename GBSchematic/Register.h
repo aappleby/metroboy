@@ -5,6 +5,7 @@ typedef const bool wire;
 typedef const uint8_t wire8;
 
 //-----------------------------------------------------------------------------
+// Sync or async reset? Probably async...
 
 struct reg {
 

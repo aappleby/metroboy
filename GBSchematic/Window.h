@@ -10,6 +10,8 @@ public:
 
   void tick(const Resets& rst, const LCD& lcd, Vram& vram);
 
+  bool TAVA; // this is actually a clock used by the ppu
+
   //----------
   // outputs
 
@@ -29,7 +31,6 @@ public:
   bool NETA;
   bool PORE;
   bool POTU;
-  bool TAVA;
   bool XUHA;
 
   //bool WUKO; // controls something window

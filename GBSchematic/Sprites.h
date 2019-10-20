@@ -85,7 +85,7 @@ public:
   //----------
   // outputs
 
-  bool ATEJ; // this is a clock that controls whether the x position increments or not
+  bool ATEJ;
 
   bool AMAB;
   bool WEFE;
@@ -252,7 +252,7 @@ private:
   reg XUSO;
 
   reg TOBU;
-  reg VONU;
+  reg FETCH_LOHI;
 
   reg DEZY;
   reg BESE; // "Count from 0 to A"

@@ -164,6 +164,4 @@ struct ExtBus {
 
 extern ExtBus ext;
 
-extern bool NET02; // don't know where this is driven yet, but probably similar
-
 

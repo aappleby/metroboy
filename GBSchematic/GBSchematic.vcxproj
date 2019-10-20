@@ -190,7 +190,6 @@
     <ClCompile Include="SpritePaletteShifter_sch.cpp" />
     <ClCompile Include="SpritePixelShifter_sch.cpp" />
     <ClCompile Include="Sprites.cpp" />
-    <ClCompile Include="SpriteStore_sch.cpp" />
     <ClCompile Include="SysDecode_sch.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Timer.cpp" />

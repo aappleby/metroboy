@@ -22,40 +22,33 @@ void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
   wire PEZO = xor(ppu.WY_D6, ppu.V6);
   wire NUPA = xor(ppu.WY_D7, ppu.V7);
 
+  // Either the schematic should have a nor instead of a nand, or i've got the polarity of the y counter flipped
+
+  /*
   wire PALO = nand(ppu.LCDC_WINEN, NOJO, PAGA, PEZO, NUPA);
   wire NELE = not(PALO);
   wire PAFU = nand(NELE, NAZE, PEBO, POMO, NEVU);
   wire ROGE = not(PAFU);
+  */
 
-  VYPO = not(CUBA1);
+  wire match = and(ppu.LCDC_WINEN, nor(NAZE, PEBO, POMO, NEVU, NOJO, PAGA, PEZO, NUPA));
 
-  wire SARY_Q = SARY.tock(ppu.TALU, rst.RESET_VIDEO, ROGE);
+  wire SARY_Q = SARY.tock(ppu.TALU, rst.RESET_VIDEO, match);
 
   //----------
   // Window X match
 
-  wire PYRY = not(rst.RESET_VIDEO);
-  wire REPU = or(ppu.INT_VBL, PYRY);
+  wire MYLO = xor(ppu.X_R0.q(), ppu.WX_D0);
+  wire PUWU = xor(ppu.X_R1.q(), ppu.WX_D1);
+  wire PUHO = xor(ppu.X_R2.q(), ppu.WX_D2);
+  wire NYTU = xor(ppu.X_R3.q(), ppu.WX_D3);
+  wire NEZO = xor(ppu.X_R4.q(), ppu.WX_D4);
+  wire NORY = xor(ppu.X_R5.q(), ppu.WX_D5);
+  wire NONO = xor(ppu.X_R6.q(), ppu.WX_D6);
+  wire PASE = xor(ppu.X_R7.q(), ppu.WX_D7);
+
+  wire REPU = or(ppu.INT_VBL, not(rst.RESET_VIDEO));
   wire REJO = unk2(SARY_Q, REPU);
-
-  bool XEHO_Q = ppu.X_R0.q();
-  bool SAVY_Q = ppu.X_R1.q();
-  bool XODU_Q = ppu.X_R2.q();
-  bool XYDO_Q = ppu.X_R3.q();
-  bool TUHU_Q = ppu.X_R4.q();
-  bool TUKY_Q = ppu.X_R5.q();
-  bool TAKO_Q = ppu.X_R6.q();
-  bool SYBE_Q = ppu.X_R7.q();
-
-  wire MYLO = xor(XEHO_Q, ppu.WX_D0);
-  wire PUWU = xor(SAVY_Q, ppu.WX_D1);
-  wire PUHO = xor(XODU_Q, ppu.WX_D2);
-  wire NYTU = xor(XYDO_Q, ppu.WX_D3);
-  wire NEZO = xor(TUHU_Q, ppu.WX_D4);
-  wire NORY = xor(TUKY_Q, ppu.WX_D5);
-  wire NONO = xor(TAKO_Q, ppu.WX_D6);
-  wire PASE = xor(SYBE_Q, ppu.WX_D7);
-
   wire PUKY = nand(REJO, NEZO, NORY, NONO, PASE);
   wire NUFA = not(PUKY);
   wire NOGY = nand(NUFA, MYLO, PUWU, PUHO, NYTU);
@@ -81,13 +74,14 @@ void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
   POVA = and(!NYZE_Q, PUXA_Q);
   wire PAHA = not(ppu.XYMU);
   ROXY = unk2(PAHA, POVA);
+
   wire SUHA = xor(ppu.SCX_D0, RYKU_Q);
   wire SYBY = xor(ppu.SCX_D1, ROGA_Q);
   wire SOZU = xor(ppu.SCX_D2, RUBU_Q);
   wire PECU = nand(lcd.ROXO, ROZE);
   wire RONE = nand(ROXY, SUHA, SYBY, SOZU);
   wire POHU = not(RONE);
-  wire MOXE = not(clk.CLK2);
+  wire MOXE = not(clk.CLK_4M_B);
   wire PANY = nor(NUKO, ROZE);
   wire SEKO = nor(RENE_Q, !RYFA_Q);
   wire ROMO = not(lcd.POKY);
@@ -113,14 +107,14 @@ void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
   wire PASO = nor(TEVO, PAHA);
   wire VETU = and(TEVO, PORE);
   wire ROCO = not(lcd.SEGU);
-  wire MEHE = not(clk.CLK2);
+  wire MEHE = not(clk.CLK_4M_B);
   wire NYFO = not(NUNY);
   MOSU = not(NYFO);
   NYXU = nor(spr.AVAP, MOSU, TEVO);
   wire WAZY = not(PORE);
   wire SYNY = not(REPU);
 
-  NOPA.tock(clk.CLK2, rst.RESET_VIDEO, PYNU);
+  NOPA.tock(clk.CLK_4M_B, rst.RESET_VIDEO, PYNU);
   PYCO.tock(ROCO, rst.RESET_VIDEO, NUKO);
   NUNU.tock(MEHE, rst.RESET_VIDEO, PYCO_Q);
 
@@ -134,8 +128,8 @@ void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
   bool LOVY_Q = LOVY.q();
 
   wire MOCE = nand(LAXU_Q, NYVA_Q, NYXU);
-  wire LEBO = nand(clk.CLK2, MOCE);
-  MYVO = not(clk.CLK2);
+  wire LEBO = nand(clk.CLK_4M_B, MOCE);
+  MYVO = not(clk.CLK_4M_B);
   LYRY = not(MOCE);
   wire LAXE = not(LAXU_Q);
   wire MYSO = nor(lcd.LOBY, LAXE, LYZU_Q);
@@ -154,7 +148,7 @@ void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
   POTU = and(LENA, NENY);
   NETA = and(LENA, NOGU);
 
-  LYZU.tock(clk.CLK2,    ppu.XYMU, LAXU_Q);
+  LYZU.tock(clk.CLK_4M_B,    ppu.XYMU, LAXU_Q);
   LAXU.flip(LEBO,    NYXU);
   MESU.flip(!LAXU_Q, NYXU);
   NYVA.flip(!MESU_Q, NYXU);
@@ -192,6 +186,8 @@ void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
   wire VULO = not(TEKE_Q);
 
   wire VEVY = not(ppu.LCDC_WINMAP);
+
+  VYPO = not(CUBA1);
   wire VEZA = not(VYPO);
   wire VOGU = not(VYPO);
 
@@ -225,8 +221,7 @@ void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
   wire VEKU = nor(spr.WUTY, TAVE);
   wire TAKA = unk2(VEKU, SECA);
   wire TUKU = not(lcd.TOMU);
-  wire SOWO = not(TAKA);
-  wire TEKY = and(spr.FEPO, TUKU, LYRY, SOWO);
+  wire TEKY = and(spr.FEPO, TUKU, LYRY, not(TAKA));
   TAVA = not(spr.LAPE);
 
   //----------
@@ -243,6 +238,6 @@ void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
   PUXA.tock(lcd.ROXO, ppu.XYMU, POHU);
 
   RYFA.tock(lcd.SEGU, ppu.XYMU, PANY);
-  RENE.tock(clk.CLK2, ppu.XYMU, RYFA_Q);
-  SOVY.tock(clk.CLK2, rst.RESET_VIDEO, RYDY);
+  RENE.tock(clk.CLK_4M_B, ppu.XYMU, RYFA_Q);
+  SOVY.tock(clk.CLK_4M_B, rst.RESET_VIDEO, RYDY);
 }

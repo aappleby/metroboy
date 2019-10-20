@@ -11,8 +11,8 @@ struct Clocks {
   bool CLKIN_An;
   bool CLKPIPE;
 
-  bool CLK1;
-  bool CLK2;
+  bool CLK_4M_A;
+  bool CLK_4M_B;
   bool CLK3; // sprites use this clock
 
   bool BOGA1MHZ;
@@ -29,7 +29,7 @@ struct Clocks {
   bool HORU_512;
   bool BUFY_256;
   bool BYFE_128;
-  bool ABOL_1MHZ;
+  bool ABOL_1MHZ; // nobody's driving this thing......
   bool AJER_2MHZ;
   bool CYBO_4MHZ;
   bool APUV_4MHZ;
@@ -69,11 +69,13 @@ private:
 
 
 
+  // these are four 1 mhz clocks 90 degrees out of phase... uh, are they actually 512 khz?
+  // that doesn't make sense for them to be 512 khz... could clock on both edges?
+  reg CLK_1M_A; // {ADYK}
+  reg CLK_1M_B; // {AFUR}
+  reg CLK_1M_C; // {ALEF}
+  reg CLK_1M_D; // {APUK}
 
-  reg ADYK;
-  reg AFUR;
-  reg ALEF;
-  reg APUK;
   reg AFER;
   reg CERY;
 
@@ -98,8 +100,6 @@ struct Resets {
   bool RESET8;
   bool RESET9;
 
-  bool RESET_DIVn;
-
   bool RESET_VIDEO;
   bool RESET_VIDEOn;
   bool RESET_VIDEO2n;
@@ -113,11 +113,4 @@ struct Resets {
 
   bool XARE;
   bool WESY;
-
-  void tick() {
-    XARE = not(RESET7);
-
-    wire ATAR = not(RESET_VIDEO);
-    RESET_VIDEO2n = ATAR;
-  }
 };

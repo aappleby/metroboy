@@ -9,34 +9,27 @@
 #include "Debug.h"
 
 //-----------------------------------------------------------------------------
+// ABUZ is a funny clock
+// LUMA is some dma signal
 
 void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA, const AddressDecoder& dec) {
 
   //----------
   // center right
 
-  wire SORE = not(mem.A15);
-  wire TEVY = and(mem.A13, mem.A14, SORE);
-  TEXO = and(cpu.FROM_CPU4, TEVY);
+  TEXO = and(cpu.FROM_CPU4, mem.A13, mem.A14, not(mem.A15));
   wire LEVO = not(TEXO);
   wire LAGU = unk3(cpu.CPU_RAW_RD, LEVO, cpu.FROM_CPU3);
   wire LYWE = not(LAGU);
 
   wire MOCA = nor(TEXO, dbg.T1T2n);
   wire MEXO = not(cpu.CPU_RD_SYNC);
-  wire NEVY = or(MEXO, MOCA);
   wire MOTY = or(MOCA, LYWE);
-  wire PUVA = or(NEVY, LUMA);
-  wire TYMU = or(LUMA, MOTY);
-  wire USUF = nor(dbg.T1nT2, PUVA);
-  wire UVER = nand(PUVA, dbg.NET01);
-  wire UGAC = nand(dbg.NET01, TYMU);
-  wire URUN = nor(TYMU, dbg.T1nT2);
 
-  ext.WR_C = USUF;
-  ext.WR_A = UVER;
-  ext.RD_A = UGAC;
-  ext.RD_C = URUN;
+  ext.WR_C = nor(dbg.T1nT2, or(or(MEXO, MOCA), LUMA));
+  ext.WR_A = nand(or(or(MEXO, MOCA), LUMA), dbg.NET01);
+  ext.RD_A = nand(dbg.NET01, or(LUMA, MOTY));
+  ext.RD_C = nor(or(LUMA, MOTY), dbg.T1nT2);
 
   //----------
   // top center
@@ -52,33 +45,22 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA, const AddressDecoder& dec) {
   //----------
   // left center
 
-  wire SOGY = not(mem.A14);
-  wire TUMA = and(mem.A13, SOGY, mem.A15);
-  wire TYNU = unk3(mem.A15, mem.A14, TUMA);
-  wire TOZA = and(TYNU, ABUZ, dec.FEXXFFXXn);
+  wire TYNU = unk3(mem.A15, mem.A14, and(mem.A13, not(mem.A14), mem.A15));
   wire SOBY = nor(mem.A15, cpu.CPU_WRQ); // schematic has a question mark?
-  wire SEPY = nand(ABUZ, SOBY);
+
+  wire TOZA = and(TYNU, ABUZ, dec.FEXXFFXXn);
+  wire SEPY = nand(ABUZ, nor(mem.A15, cpu.CPU_WRQ));
 
   wire TYHO = mux2(dma.DMA_A15, TOZA, LUMA);
-  ext.CS_OUT = TYHO;
-
   wire TAZY = mux2(dma.DMA_A15, SEPY, LUMA);
 
-  wire RYCA = not(NET02);
-  wire RAZA = not(ext.A15_C);
-  wire SYZU = not(RAZA);
-  mem.A15 = SYZU;
-  wire RULO = nor(TAZY, NET02);
-  wire SUZE = nand(TAZY, RYCA);
-
-  ext.A15_D = RULO;
-  ext.A15_A = SUZE;
+  ext.CS_OUT = TYHO;
+  mem.A15 = ext.A15_C;
+  ext.A15_A = nand(TAZY, not(dbg.NET02));
+  ext.A15_D = nor(TAZY, dbg.NET02);
 
   //----------
   // bottom left
-
-  wire TOVA = not(dbg.T1nT2);
-  dbg.NET01 = TOVA;
 
   wire NYRE_Q = NYRE.latch(MATE, mem.A14);
   wire LONU_Q = LONU.latch(MATE, mem.A13);
@@ -88,45 +70,29 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA, const AddressDecoder& dec) {
   wire LYSA_Q = LYSA.latch(MATE, mem.A9);
   wire LUNO_Q = LUNO.latch(MATE, mem.A8);
 
-  wire PEGE = mux2(dma.DMA_A14, NYRE_Q, LUMA);
-  wire MUCE = mux2(dma.DMA_A13, LONU_Q, LUMA);
-  wire MOJY = mux2(dma.DMA_A12, LOBU_Q, LUMA);
-  wire MALE = mux2(dma.DMA_A11, LUMY_Q, LUMA);
-  wire PAMY = mux2(dma.DMA_A10, PATE_Q, LUMA);
-  wire MASU = mux2(dma.DMA_A9,  LYSA_Q, LUMA);
   wire MANO = mux2(dma.DMA_A8,  LUNO_Q, LUMA);
+  wire MASU = mux2(dma.DMA_A9,  LYSA_Q, LUMA);
+  wire PAMY = mux2(dma.DMA_A10, PATE_Q, LUMA);
+  wire MALE = mux2(dma.DMA_A11, LUMY_Q, LUMA);
+  wire MOJY = mux2(dma.DMA_A12, LOBU_Q, LUMA);
+  wire MUCE = mux2(dma.DMA_A13, LONU_Q, LUMA);
+  wire PEGE = mux2(dma.DMA_A14, NYRE_Q, LUMA);
 
-  wire PAHY = nor(dbg.T1nT2, PEGE);
-  wire LEVA = nor(dbg.T1nT2, MUCE);
-  wire LOSO = nor(dbg.T1nT2, MOJY);
-  wire LYNY = nor(dbg.T1nT2, MALE);
-  wire RORE = nor(dbg.T1nT2, PAMY);
-  wire MENY = nor(dbg.T1nT2, MASU);
-  wire MEGO = nor(dbg.T1nT2, MANO);
+  ext.A8_D  = nor(dbg.T1nT2, MANO);
+  ext.A9_D  = nor(dbg.T1nT2, MASU);
+  ext.A10_D = nor(dbg.T1nT2, PAMY);
+  ext.A11_D = nor(dbg.T1nT2, MALE);
+  ext.A12_D = nor(dbg.T1nT2, MOJY);
+  ext.A13_D = nor(dbg.T1nT2, MUCE);
+  ext.A14_D = nor(dbg.T1nT2, PEGE);
 
-  wire PUHE = nand(PEGE, TOVA);
-  wire LABE = nand(MUCE, TOVA);
-  wire LUCE = nand(MOJY, TOVA);
-  wire LEPY = nand(MALE, TOVA);
-  wire ROXU = nand(PAMY, TOVA);
-  wire MUNE = nand(MASU, TOVA);
-  wire MYNY = nand(MANO, TOVA);
-
-  ext.A14_D = PAHY;
-  ext.A13_D = LEVA;
-  ext.A12_D = LOSO;
-  ext.A11_D = LYNY;
-  ext.A10_D = RORE;
-  ext.A9_D = MENY;
-  ext.A8_D = MEGO;
-
-  ext.A14_A = PUHE;
-  ext.A13_A = LABE;
-  ext.A12_A = LUCE;
-  ext.A11_A = LEPY;
-  ext.A10_A = ROXU;
-  ext.A9_A = MUNE;
-  ext.A8_A = MYNY;
+  ext.A8_A  = nand(MANO, not(dbg.T1nT2));
+  ext.A9_A  = nand(MASU, not(dbg.T1nT2));
+  ext.A10_A = nand(PAMY, not(dbg.T1nT2));
+  ext.A14_A = nand(PEGE, not(dbg.T1nT2));
+  ext.A11_A = nand(MALE, not(dbg.T1nT2));
+  ext.A12_A = nand(MOJY, not(dbg.T1nT2));
+  ext.A13_A = nand(MUCE, not(dbg.T1nT2));
 
   //----------
   // the rest of the address latch, center
@@ -149,41 +115,23 @@ void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA, const AddressDecoder& dec) {
   wire ATYR = mux2(dma.DMA_A6, AROS_Q, LUMA);
   wire ASUR = mux2(dma.DMA_A7, ARYM_Q, LUMA);
 
-  wire KUPO = nand(dbg.NET01, AMET);
-  wire CABA = nand(dbg.NET01, ATOL);
-  wire BOKU = nand(dbg.NET01, APOK);
-  wire BOTY = nand(dbg.NET01, AMER);
-  wire BYLA = nand(dbg.NET01, ATEM);
-  wire BADU = nand(dbg.NET01, ATOV);
-  wire CEPU = nand(dbg.NET01, ATYR);
-  wire DEFY = nand(dbg.NET01, ASUR);
+  ext.A0_A = nand(dbg.NET01, AMET);
+  ext.A1_A = nand(dbg.NET01, ATOL);
+  ext.A2_A = nand(dbg.NET01, APOK);
+  ext.A3_A = nand(dbg.NET01, AMER);
+  ext.A4_A = nand(dbg.NET01, ATEM);
+  ext.A5_A = nand(dbg.NET01, ATOV);
+  ext.A6_A = nand(dbg.NET01, ATYR);
+  ext.A7_A = nand(dbg.NET01, ASUR);
 
-  ext.A0_A = KUPO;
-  ext.A1_A = CABA;
-  ext.A2_A = BOKU;
-  ext.A3_A = BOTY;
-  ext.A4_A = BYLA;
-  ext.A5_A = BADU;
-  ext.A6_A = CEPU;
-  ext.A7_A = DEFY;
-
-  wire KOTY = nor (NET02, AMET);
-  wire COTU = nor (NET02, ATOL);
-  wire BAJO = nor (NET02, APOK);
-  wire BOLA = nor (NET02, AMER);
-  wire BEVO = nor (NET02, ATEM);
-  wire AJAV = nor (NET02, ATOV);
-  wire CYKA = nor (NET02, ATYR);
-  wire COLO = nor (NET02, ASUR);
-
-  ext.A0_D = KOTY;
-  ext.A1_D = COTU;
-  ext.A2_D = BAJO;
-  ext.A3_D = BOLA;
-  ext.A4_D = BEVO;
-  ext.A5_D = AJAV;
-  ext.A6_D = CYKA;
-  ext.A7_D = COLO;
+  ext.A0_D = nor (dbg.NET02, AMET);
+  ext.A1_D = nor (dbg.NET02, ATOL);
+  ext.A2_D = nor (dbg.NET02, APOK);
+  ext.A3_D = nor (dbg.NET02, AMER);
+  ext.A4_D = nor (dbg.NET02, ATEM);
+  ext.A5_D = nor (dbg.NET02, ATOV);
+  ext.A6_D = nor (dbg.NET02, ATYR);
+  ext.A7_D = nor (dbg.NET02, ASUR);
 
   //----------
   // bottom right

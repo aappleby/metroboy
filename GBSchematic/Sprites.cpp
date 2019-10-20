@@ -44,15 +44,9 @@ void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const
   wire MATU_Q = dma.MATU.q();
 
   WEFE = not(ext.P10_B);
-  wire YVAL = not(clk.CLK3);
-  wire YRYV = not(YVAL);
-  wire ZODO = not(YRYV);
 
-  wire AWOH = not(XUPY);
-  wire ABAF = not(CATU_Q);
+  ATEJ = not(unk3(ANEL_Q, not(CATU_Q), ABEZ));
 
-  wire BYHA = unk3(ANEL_Q, ABAF, ABEZ);
-  ATEJ = not(BYHA);
   ANOM = nor(rst.RESET_VIDEO2n, ATEJ);
   AZYB = not(ATEJ);
   wire AMYG = not(rst.RESET_VIDEO);
@@ -90,99 +84,53 @@ void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const
   wire XUCA = not(WARU);
   wire APAG = amux2(XUPA, AMAB, AJUJ, ADAH);
 
-  oam.OAM_CLK = ZODO;
+  oam.OAM_CLK = not(clk.CLK3);
   oam.OAM_ADDR_RENDER = BETE;
   oam.OAM_ADDR_PARSE = APAR;
   oam.OAM_ADDR_CPU = ASAM;
 
-  wire AZUL = not(APAG);
-  if (AZUL) {
-    wire ZAXA = not(mem.D0);
-    wire ZAMY = not(mem.D0);
-    wire ZAKY = not(mem.D1);
-    wire ZOPU = not(mem.D1);
-    wire WULE = not(mem.D2);
-    wire WYKY = not(mem.D2);
-    wire ZOZO = not(mem.D3);
-    wire ZAJA = not(mem.D3);
+  if (not(APAG)) {
+    oam.OAM_A_D0 = mem.D0;
+    oam.OAM_A_D1 = mem.D1;
+    oam.OAM_A_D2 = mem.D2;
+    oam.OAM_A_D3 = mem.D3;
+    oam.OAM_A_D4 = mem.D4;
+    oam.OAM_A_D5 = mem.D5;
+    oam.OAM_A_D6 = mem.D6;
+    oam.OAM_A_D7 = mem.D7;
 
-    wire ZUFO = not(mem.D4);
-    wire ZUGA = not(mem.D4);
-    wire ZATO = not(mem.D5);
-    wire ZUMO = not(mem.D5);
-    wire YVUC = not(mem.D6);
-    wire XYTO = not(mem.D6);
-    wire ZUFE = not(mem.D7);
-    wire ZYFA = not(mem.D7);
-
-    oam.OAM_A_D0 = ZAXA;
-    oam.OAM_B_D0 = ZAMY;
-    oam.OAM_A_D1 = ZAKY;
-    oam.OAM_B_D1 = ZOPU;
-    oam.OAM_A_D2 = WULE;
-    oam.OAM_B_D2 = WYKY;
-    oam.OAM_A_D3 = ZOZO;
-    oam.OAM_B_D3 = ZAJA;
-
-    oam.OAM_A_D4 = ZUFO;
-    oam.OAM_B_D4 = ZUGA;
-    oam.OAM_A_D5 = ZATO;
-    oam.OAM_B_D5 = ZUMO;
-    oam.OAM_A_D6 = YVUC;
-    oam.OAM_B_D6 = XYTO;
-    oam.OAM_A_D7 = ZUFE;
-    oam.OAM_B_D7 = ZYFA;
+    oam.OAM_B_D0 = mem.D0;
+    oam.OAM_B_D1 = mem.D1;
+    oam.OAM_B_D2 = mem.D2;
+    oam.OAM_B_D3 = mem.D3;
+    oam.OAM_B_D4 = mem.D4;
+    oam.OAM_B_D5 = mem.D5;
+    oam.OAM_B_D6 = mem.D6;
+    oam.OAM_B_D7 = mem.D7;
   }
 
-  wire AZAR = not(dma.VRAM_TO_OAM);
-  if (AZAR) {
-    wire WUZU = not(vram.MD0);
-    wire WOWA = not(vram.MD0);
-    wire AXER = not(vram.MD1);
-    wire AVEB = not(vram.MD1);
-    wire ASOX = not(vram.MD2);
-    wire AMUH = not(vram.MD2);
-    wire CETU = not(vram.MD3);
-    wire COFO = not(vram.MD3);
+  if (not(dma.VRAM_TO_OAM)) {
+    oam.OAM_A_D0 = vram.MD0;
+    oam.OAM_A_D1 = vram.MD1;
+    oam.OAM_A_D2 = vram.MD2;
+    oam.OAM_A_D3 = vram.MD3;
+    oam.OAM_A_D4 = vram.MD4;
+    oam.OAM_A_D5 = vram.MD5;
+    oam.OAM_A_D6 = vram.MD6;
+    oam.OAM_A_D7 = vram.MD7;
 
-    wire ARYN = not(vram.MD4);
-    wire AZOZ = not(vram.MD4);
-    wire ACOT = not(vram.MD5);
-    wire AGYK = not(vram.MD5);
-    wire CUJE = not(vram.MD6);
-    wire BUSE = not(vram.MD6);
-    wire ATER = not(vram.MD7);
-    wire ANUM = not(vram.MD7);
-
-    oam.OAM_A_D0 = WUZU;
-    oam.OAM_B_D0 = WOWA;
-    oam.OAM_A_D1 = AXER;
-    oam.OAM_B_D1 = AVEB;
-    oam.OAM_A_D2 = ASOX;
-    oam.OAM_B_D2 = AMUH;
-    oam.OAM_A_D3 = CETU;
-    oam.OAM_B_D3 = COFO;
-
-    oam.OAM_A_D4 = ARYN;
-    oam.OAM_B_D4 = AZOZ;
-    oam.OAM_A_D5 = ACOT;
-    oam.OAM_B_D5 = AGYK;
-    oam.OAM_A_D6 = CUJE;
-    oam.OAM_B_D6 = BUSE;
-    oam.OAM_A_D7 = ATER;
-    oam.OAM_B_D7 = ANUM;
+    oam.OAM_B_D0 = vram.MD0;
+    oam.OAM_B_D1 = vram.MD1;
+    oam.OAM_B_D2 = vram.MD2;
+    oam.OAM_B_D3 = vram.MD3;
+    oam.OAM_B_D4 = vram.MD4;
+    oam.OAM_B_D5 = vram.MD5;
+    oam.OAM_B_D6 = vram.MD6;
+    oam.OAM_B_D7 = vram.MD7;
   }
 
   //----------
 
-  wire FOBY = not(mem.A7);
-  wire WAXA = not(mem.A6);
-  wire GERA = not(mem.A5);
-  wire FEVU = not(mem.A4);
-  wire WAPE = not(mem.A3);
-  wire GOSE = not(mem.A2);
-  wire WACU = not(mem.A1);
-  wire GARO = not(mem.A0);
 
   wire FYKE = not(WEZA);
   wire FUGU = not(WUCO);
@@ -211,41 +159,27 @@ void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const
   wire FESA = not(dma.DMA_A1);
   wire FODO = not(dma.DMA_A0);
 
-  wire YZET = not((FOBY & oam.OAM_ADDR_CPU) | (FYKE & oam.OAM_ADDR_RENDER) | (GOBY & oam.OAM_ADDR_PARSE) | (FETU & oam.OAM_ADDR_DMA));
-  wire XEMU = not((WAXA & oam.OAM_ADDR_CPU) | (FUGU & oam.OAM_ADDR_RENDER) | (GAMA & oam.OAM_ADDR_PARSE) | (FYDU & oam.OAM_ADDR_DMA));
-  wire YMEV = not((GERA & oam.OAM_ADDR_CPU) | (FACO & oam.OAM_ADDR_RENDER) | (FAKU & oam.OAM_ADDR_PARSE) | (EDOL & oam.OAM_ADDR_DMA));
-  wire YVOM = not((FEVU & oam.OAM_ADDR_CPU) | (FABY & oam.OAM_ADDR_RENDER) | (FUTO & oam.OAM_ADDR_PARSE) | (ELUG & oam.OAM_ADDR_DMA));
-  wire YFOC = not((WAPE & oam.OAM_ADDR_CPU) | (GYKA & oam.OAM_ADDR_RENDER) | (GEMA & oam.OAM_ADDR_PARSE) | (FYKY & oam.OAM_ADDR_DMA));
-  wire YFOT = not((GOSE & oam.OAM_ADDR_CPU) | (GYBU & oam.OAM_ADDR_RENDER) | (GUSE & oam.OAM_ADDR_PARSE) | (FAGO & oam.OAM_ADDR_DMA));
-  wire ZYFO = not((WACU & oam.OAM_ADDR_CPU) | (WYDU & oam.OAM_ADDR_RENDER) | (WUWE & oam.OAM_ADDR_PARSE) | (FESA & oam.OAM_ADDR_DMA));
+  wire GARO = not(mem.A0);
   wire GEKA = not((GARO & oam.OAM_ADDR_CPU) | (GECA & oam.OAM_ADDR_RENDER) | (GEFY & oam.OAM_ADDR_PARSE) | (FODO & oam.OAM_ADDR_DMA));
 
-  wire MYNU = nand(cpu.CPU_RD2, dma.CATY);
-  LEKO = not(MYNU);
-  wire WAFO = not(GEKA);
-  wire GUKO = and(WAFO, AMAB, LEKO);
-  wire WUKU = and(LEKO, AMAB, GEKA);
-  wire YLYC = and(dma.WYJA, GEKA);
-  wire YNYC = and(dma.WYJA, WAFO);
+  WUME = not(and(not(GEKA), AMAB, not(nand(cpu.CPU_RD2, dma.CATY))));
+  WEWU = not(and(not(nand(cpu.CPU_RD2, dma.CATY)), AMAB, GEKA));
 
-  WUME = not(GUKO);
-  WEWU = not(WUKU);
-  wire ZONE = not(YLYC);
-  wire ZOFE = not(YNYC);
+  ANEL.tock(not(XUPY), ABEZ, CATU_Q);
 
-  ANEL.tock(AWOH, ABEZ, CATU_Q);
   wire XECY_Q = XECY.tock(XUCA, 0, rst.RESET7n); // ? weird
   XUVA.tock(XYNY, rst.XARE, XECY_Q);
 
-  oam.OAM_A_CS = ZONE;
-  oam.OAM_B_CS = ZOFE;
-  oam.OAM_A7 = YZET;
-  oam.OAM_A6 = XEMU;
-  oam.OAM_A5 = YMEV;
-  oam.OAM_A4 = YVOM;
-  oam.OAM_A3 = YFOC;
-  oam.OAM_A2 = YFOT;
-  oam.OAM_A1 = ZYFO;
+  oam.OAM_A_CS = nand(dma.WYJA, GEKA);
+  oam.OAM_B_CS = nand(dma.WYJA, not(GEKA));
+
+  oam.OAM_A7 = not((mem.A7 & oam.OAM_ADDR_CPU) | (FYKE & oam.OAM_ADDR_RENDER) | (GOBY & oam.OAM_ADDR_PARSE) | (FETU & oam.OAM_ADDR_DMA));
+  oam.OAM_A6 = not((mem.A6 & oam.OAM_ADDR_CPU) | (FUGU & oam.OAM_ADDR_RENDER) | (GAMA & oam.OAM_ADDR_PARSE) | (FYDU & oam.OAM_ADDR_DMA));
+  oam.OAM_A5 = not((mem.A5 & oam.OAM_ADDR_CPU) | (FACO & oam.OAM_ADDR_RENDER) | (FAKU & oam.OAM_ADDR_PARSE) | (EDOL & oam.OAM_ADDR_DMA));
+  oam.OAM_A4 = not((mem.A4 & oam.OAM_ADDR_CPU) | (FABY & oam.OAM_ADDR_RENDER) | (FUTO & oam.OAM_ADDR_PARSE) | (ELUG & oam.OAM_ADDR_DMA));
+  oam.OAM_A3 = not((mem.A3 & oam.OAM_ADDR_CPU) | (GYKA & oam.OAM_ADDR_RENDER) | (GEMA & oam.OAM_ADDR_PARSE) | (FYKY & oam.OAM_ADDR_DMA));
+  oam.OAM_A2 = not((mem.A2 & oam.OAM_ADDR_CPU) | (GYBU & oam.OAM_ADDR_RENDER) | (GUSE & oam.OAM_ADDR_PARSE) | (FAGO & oam.OAM_ADDR_DMA));
+  oam.OAM_A1 = not((mem.A1 & oam.OAM_ADDR_CPU) | (WYDU & oam.OAM_ADDR_RENDER) | (WUWE & oam.OAM_ADDR_PARSE) | (FESA & oam.OAM_ADDR_DMA));
 }
 
 //-----------------------------------------------------------------------------
@@ -261,37 +195,28 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire BYBA_Q = BYBA.q();
   wire DOBA_Q = DOBA.q(); 
 
-  wire XYVA = not(clk.CLK1);
-  wire XOTA = not(XYVA);
-  wire XYFY = not(XOTA);
-  wire ALES = not(ppu.XYVO);
-  wire ABOV = and(ppu.SELA, ALES);
-  spr.XUPY = not(!WUVU_Q);
-  spr.ABEZ = not(rst.RESET_VIDEO2n);
-  wire BALU = not(spr.ANOM);
-  wire BAGY = not(BALU);
-  wire WOJO = nor(!WUVU_Q, !WOSU_Q);
-  spr.XOCE = not(WOSU_Q);
-  spr.XYSO = not(WOJO);
-  spr.CEHA = not(!CENO_Q);
-  spr.BUZA = and(!CENO_Q, ppu.XYMU);
-  wire CARE = or(spr.XOCE, spr.CEHA, spr.SPR_MATCH);
-  spr.DYTY = not(CARE);
-  wire BEBU = or(DOBA_Q, BALU, !BYBA_Q);
-  spr.AVAP = not(BEBU);
+  XUPY = not(!WUVU_Q);
+  ABEZ = not(rst.RESET_VIDEO2n);
+  XOCE = not(WOSU_Q);
+  XYSO = or(!WUVU_Q, !WOSU_Q);
+  CEHA = not(!CENO_Q);
+  BUZA = and(!CENO_Q, ppu.XYMU);
+  DYTY = nor(XOCE, CEHA, SPR_MATCH);
+  AVAP = nor(DOBA_Q, not(ANOM), !BYBA_Q);
 
-  WUVU.flip(XOTA, rst.RESET_VIDEO);
-  WOSU.tock(XYFY, rst.RESET_VIDEO, !WUVU_Q);
-  CENO.tock(spr.XUPY, spr.ABEZ, spr.BESU);
-  CATU.tock(spr.XUPY, spr.ABEZ, ABOV);
-  BYBA.tock(spr.XUPY, BAGY, spr.FETO);
-  DOBA.tock(clk.CLK2, BAGY, BYBA_Q);
+  WUVU.flip(clk.CLK_4M_A, rst.RESET_VIDEO);
+  WOSU.tock(not(clk.CLK_4M_A), rst.RESET_VIDEO, !WUVU_Q);
+
+  CENO.tock(XUPY, rst.RESET_VIDEO, BESU);
+  CATU.tock(XUPY, rst.RESET_VIDEO, and(ppu.SELA, not(ppu.XYVO)));
+  BYBA.tock(XUPY, ANOM, FETO);
+  DOBA.tock(clk.CLK_4M_B, ANOM, BYBA_Q);
 
   //----------
   // center thing
 
   wire TOBU_Q = TOBU.q();
-  wire VONU_Q = VONU.q();
+  wire FETCH_LOHI_Q = FETCH_LOHI.q();
 
   wire TYFO_Q = TYFO.q();
   wire SEBA_Q = SEBA.q();
@@ -299,83 +224,64 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire TULY_Q = TULY.q();
   wire TESE_Q = TESE.q();
 
-  spr.LAPE = not(clk.CLK2);
-  wire TEPA = not(ppu.XYMU);
+  LAPE = not(clk.CLK_4M_B);
 
-  wire TYNO = nand(TOXE_Q, SEBA_Q, VONU_Q);
-  wire VUSA = or(!TYFO_Q, TYNO);
-  spr.WUTY = not(VUSA);
-  spr.XEFY = not(spr.WUTY);
+  WUTY = nor(!TYFO_Q, nand(TOXE_Q, SEBA_Q, FETCH_LOHI_Q));
+  XEFY = not(WUTY);
 
-  wire SAKY = nor(TULY_Q, VONU_Q);
-  wire TYSO = or(SAKY, TEPA);
-  spr.TEXY = not(TYSO);
+  TEXY = nor(nor(TULY_Q, FETCH_LOHI_Q), not(ppu.XYMU));
+
   wire BAXO_Q = BAXO.q();
-  spr.XONO = and(!BAXO_Q, spr.TEXY);
+  XONO = and(!BAXO_Q, TEXY);
 
-  spr.TUVO = or(TEPA, TULY_Q, TESE_Q);
-  wire TAME = nand(TESE_Q, TOXE_Q);
-  wire TOMA = nand(spr.LAPE, TAME);
+  TUVO = or(not(ppu.XYMU), TULY_Q, TESE_Q);
 
-  wire TYTU = not(TAME);
-  wire SYCU = nor(TYTU, TEPA, TYFO_Q);
-  spr.TACU = nand(TYTU, TYFO_Q);
-  wire TOPU = and(TULY_Q, SYCU);
-  wire RACA = and(VONU_Q, SYCU);
-  wire VYWA = not(TOPU);
-  wire WENY = not(VYWA);
-  spr.XADO = not(WENY);
-  wire PEBY = not(RACA);
-  wire NYBE = not(PEBY);
-  spr.PUCO = not(NYBE);
+  wire TYTU = not(nand(TESE_Q, TOXE_Q));
+  TACU = nand(TYTU, TYFO_Q);
+  XADO = not(and(TULY_Q, nor(TYTU, not(ppu.XYMU), TYFO_Q)));
+  PUCO = not(and(FETCH_LOHI_Q, nor(TYTU, not(ppu.XYMU), TYFO_Q)));
 
-  TYFO.tock(spr.LAPE, win.VYPO, TAME);
-  SEBA.tock(spr.LAPE, ppu.XYMU, VONU_Q);
-  TOXE.flip(TOMA,    win.SECA);
+  TYFO.tock(not(clk.CLK_4M_B), win.VYPO, nand(TESE_Q, TOXE_Q));
+  SEBA.tock(not(clk.CLK_4M_B), ppu.XYMU, FETCH_LOHI_Q);
+  TOXE.flip(nand(not(clk.CLK_4M_B), nand(TESE_Q, TOXE_Q)),    win.SECA);
   TULY.flip(!TOXE_Q, win.SECA);
   TESE.flip(!TULY_Q, win.SECA);
 
   //----------
   // Sprite priority
 
-  wire BYJO = not(spr.CEHA);
-  wire AZEM = and(BYJO, ppu.XYMU);
+  wire AZEM = and(not(CEHA), ppu.XYMU);
   wire AROR = and(AZEM, ppu.LCDC_SPREN);
 
-  wire XAGE = nand(AROR, spr.YNAZ, spr.YKOK);
-  wire YLOZ = nand(AROR, spr.ZURE, spr.YWOS);
-  wire DEGO = nand(AROR, spr.EKES, spr.CEHU);
-  wire DYDU = nand(AROR, spr.EWAM, spr.CYVY);
-  wire YDUG = nand(AROR, spr.ZAKO, spr.XEBA);
+  wire XAGE = nand(AROR, YNAZ, YKOK);
+  wire YLOZ = nand(AROR, ZURE, YWOS);
+  wire DEGO = nand(AROR, EKES, CEHU);
+  wire DYDU = nand(AROR, EWAM, CYVY);
+  wire YDUG = nand(AROR, ZAKO, XEBA);
 
-  wire YGEM = nand(AROR, spr.YLEV, spr.YTUB);
-  wire EFYL = nand(AROR, spr.FEHA, spr.DAMA);
-  wire DYKA = nand(AROR, spr.CYCO, spr.DAJE);
-  wire YBEZ = nand(AROR, spr.YDOT, spr.YWAP);
-  wire EGOM = nand(AROR, spr.FYMA, spr.COGY);
+  wire YGEM = nand(AROR, YLEV, YTUB);
+  wire EFYL = nand(AROR, FEHA, DAMA);
+  wire DYKA = nand(AROR, CYCO, DAJE);
+  wire YBEZ = nand(AROR, YDOT, YWAP);
+  wire EGOM = nand(AROR, FYMA, COGY);
 
   wire FEFY = nand(XAGE, YLOZ, DEGO, DYDU, YDUG);
   wire FOVE = nand(YGEM, EFYL, DYKA, YBEZ, EGOM);
-  spr.FEPO = or(FEFY, FOVE);
+  FEPO = or(FEFY, FOVE);
 
-  wire WEFU = not(YDUG);
-  wire GEZE = or(WEFU, ext.P10_B);
+  wire GEZE = or(not(YDUG), ext.P10_B);
   wire GUVA = nor(YDUG, ext.P10_B);
 
-  wire GAJA = not(DYDU);
-  wire FUMA = or(GAJA, GEZE);
+  wire FUMA = or(not(DYDU), GEZE);
   wire ENUT = nor(DYDU, GEZE);
 
-  wire GUPO = not(DEGO);
-  wire GEDE = or(GUPO, FUMA);
+  wire GEDE = or(not(DEGO), FUMA);
   wire EMOL = nor(DEGO, FUMA);
 
-  wire WEBO = not(YLOZ);
-  wire WUTO = or(WEBO, GEDE);
+  wire WUTO = or(not(YLOZ), GEDE);
   wire GYFY = nor(YLOZ, GEDE);
 
-  wire WUNA = not(XAGE);
-  wire XYLA = or(WUNA, WUTO);
+  wire XYLA = or(not(XAGE), WUTO);
   wire GONO = nor(XAGE, WUTO);
 
   wire GABA = not(EGOM);
@@ -396,29 +302,29 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
 
   wire GUZE = nor(YGEM, GYGA);
 
-  spr.FADO = not(GUZE);
-  spr.DENY = not(FOXA);
-  spr.GUGY = not(GUTU);
-  spr.XYME = not(XOJA);
-  spr.GYGY = not(GEGA);
-  spr.GOWO = not(GONO);
-  spr.GYMA = not(GYFY);
-  spr.FAME = not(EMOL);
-  spr.DYDO = not(ENUT);
-  spr.FURO = not(GUVA);
+  FADO = not(GUZE);
+  DENY = not(FOXA);
+  GUGY = not(GUTU);
+  XYME = not(XOJA);
+  GYGY = not(GEGA);
+  GOWO = not(GONO);
+  GYMA = not(GYFY);
+  FAME = not(EMOL);
+  DYDO = not(ENUT);
+  FURO = not(GUVA);
 
-  wire FONO_Q = FONO.tock(spr.WUTY, spr.BYVA, GUZE);
-  wire EXUQ_Q = FONO.tock(spr.WUTY, spr.BYVA, spr.DENY);
-  wire WAPO_Q = FONO.tock(spr.WUTY, spr.BYVA, spr.GUGY);
-  wire WOMY_Q = FONO.tock(spr.WUTY, spr.BYVA, spr.XYME);
-  wire WAFY_Q = FONO.tock(spr.WUTY, spr.BYVA, spr.GYGY);
-  wire XUDY_Q = FONO.tock(spr.WUTY, spr.BYVA, spr.GOWO);
-  wire GOTA_Q = FONO.tock(spr.WUTY, spr.BYVA, spr.GYMA);
-  wire EGAV_Q = FONO.tock(spr.WUTY, spr.BYVA, spr.FAME);
-  wire CEDY_Q = FONO.tock(spr.WUTY, spr.BYVA, spr.DYDO);
-  wire EBOJ_Q = FONO.tock(spr.WUTY, spr.BYVA, spr.FURO);
+  wire FONO_Q = FONO.tock(WUTY, BYVA, GUZE);
+  wire EXUQ_Q = EXUQ.tock(WUTY, BYVA, DENY);
+  wire WAPO_Q = WAPO.tock(WUTY, BYVA, GUGY);
+  wire WOMY_Q = WOMY.tock(WUTY, BYVA, XYME);
+  wire WAFY_Q = WAFY.tock(WUTY, BYVA, GYGY);
+  wire XUDY_Q = XUDY.tock(WUTY, BYVA, GOWO);
+  wire GOTA_Q = GOTA.tock(WUTY, BYVA, GYMA);
+  wire EGAV_Q = EGAV.tock(WUTY, BYVA, FAME);
+  wire CEDY_Q = CEDY.tock(WUTY, BYVA, DYDO);
+  wire EBOJ_Q = EBOJ.tock(WUTY, BYVA, FURO);
 
-  wire DYBA = not(spr.BYVA);
+  wire DYBA = not(BYVA);
 
   wire DUBU = or(DYBA, FONO_Q);
   wire GORO = or(DYBA, EXUQ_Q);
@@ -431,43 +337,34 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire EFEV = or(DYBA, CEDY_Q);
   wire DYWE = or(DYBA, EBOJ_Q);
 
-  spr.DOSY = not(DUBU);
-  spr.WUZO = not(GORO);
-  spr.GAFY = not(GUKY);
-  spr.XAHO = not(WACY);
-  spr.EJAD = not(FEVE);
-  spr.WUNU = not(WOHU);
-  spr.WUPA = not(GAKE);
-  spr.GAMY = not(FOKO);
-  spr.DOKU = not(EFEV);
-  spr.DYNA = not(DYWE);
+  DOSY = not(DUBU);
+  WUZO = not(GORO);
+  GAFY = not(GUKY);
+  XAHO = not(WACY);
+  EJAD = not(FEVE);
+  WUNU = not(WOHU);
+  WUPA = not(GAKE);
+  GAMY = not(FOKO);
+  DOKU = not(EFEV);
+  DYNA = not(DYWE);
 
   //----------
   // Sprite y comparator
 
-  wire YCEB_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D1); // order is weird? does it matter?
+  wire YDYV_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D0);
+  wire YCEB_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D1);
   wire ZUCA_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D2);
   wire WONE_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D3);
   wire ZAXE_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D4);
   wire XAFU_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D5);
   wire YSES_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D6);
   wire ZECA_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D7);
-  wire YDYV_Q = YCEB.latch(clk.CLK3, oam.OAM_B_D0);
-
-  wire XELE = not(YCEB_Q);
-  wire YPON = not(ZUCA_Q);
-  wire XUVO = not(WONE_Q);
-  wire ZYSA = not(ZAXE_Q);
-  wire YWEG = not(XAFU_Q);
-  wire XABU = not(YSES_Q);
-  wire YTUX = not(ZECA_Q);
-  wire YFAP = not(YDYV_Q);
 
   bool MATU_Q = dma.MATU.q();
   bool CUFE = unk3(sys.SARO, MATU_Q, dma.MOPA_PHI);
 
-  bool VAPE = and(spr.TACU, spr.TUVO);
-  bool AVER = and(spr.ACYL, spr.XYSO);
+  bool VAPE = and(TACU, TUVO);
+  bool AVER = and(ACYL, XYSO);
   bool XUJY = not(VAPE);
   bool BYCU = nor(CUFE, XUJY, AVER);
   COTA = not(BYCU);
@@ -483,14 +380,6 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire YZAB_Q = YZAB.tock(YWOK, 0, ZECA_Q);
   wire XUSO_Q = XUSO.tock(YWOK, 0, YDYV_Q);
 
-  wire FUGY = not(!XEGU_Q); // only 7 of these?
-  wire GAVO = not(!YJEX_Q);
-  wire WYGA = not(!XYJU_Q);
-  wire WUNE = not(!YBOG_Q);
-  wire GOTU = not(!WYSO_Q);
-  wire GEGU = not(!XOTE_Q);
-  wire XEHE = not(!YZAB_Q);
-
   wire EBOS = not(ppu.V0);
   wire DASA = not(ppu.V1);
   wire FUKY = not(ppu.V2);
@@ -499,6 +388,9 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire FOFA = not(ppu.V5);
   wire FEMO = not(ppu.V6);
   wire GUSU = not(ppu.V7);
+
+  // this is adding the sprite y to the screen y and getting the corresponding line of the sprite to render
+  // maybe the "adder" is expecting its inputs to be negated?
 
   wire ERUC_S = add_s(EBOS, !XUSO_Q, ext.P10_B);
   wire ERUC_C = add_c(EBOS, !XUSO_Q, ext.P10_B);
@@ -517,10 +409,10 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire WUHU_C = add_c(GUSU, !YZAB_Q, GOJU_C);
   wire WUHU_S = add_s(GUSU, !YZAB_Q, GOJU_C);
 
-  spr.DEGE = not(ERUC_S);
-  spr.DABY = not(ENEF_S);
-  spr.DABU = not(FECO_S);
-  spr.GYSA = not(GYKY_S);
+  DEGE = not(ERUC_S);
+  DABY = not(ENEF_S);
+  DABU = not(FECO_S);
+  GYSA = not(GYKY_S);
   wire GACE = not(GOPU_S);
   wire GUVU = not(FUWA_S);
   wire GYDA = not(GOJU_S);
@@ -532,52 +424,55 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire CYVU = xor(WUKY, CUCU);
   wire BORE = xor(WUKY, WENU);
   wire BUVY = xor(WUKY, CEGA);
-  wire XUQU = not(!VONU_Q);
 
-  wire BAXE = not(CYVU);
-  wire ARAS = not(BORE);
-  wire AGAG = not(BUVY);
-  wire ABEM = not(XUQU);
-  wire DYSO = not(ext.P10_B);
 
   wire FUFO = not(ppu.LCDC_SPRSIZE);
-  wire GEJY = amux2(!XUSO_Q, FUFO, ppu.LCDC_SPRSIZE, WAGO);
-  wire FAMU = not(GEJY);
   wire GOVU = or(GYKY_S, ppu.LCDC_SPRSIZE);
   wire WOTA = nand(GACE, GUVU, GYDA, GEWY, WUHU_C, GOVU);
   wire GESE = not(WOTA);
-  spr.SPR_MATCH = GESE;
+  SPR_MATCH = GESE;
 
-  if (spr.WUME) {
-    mem.D0 = YFAP;
-    mem.D1 = XELE;
-    mem.D2 = YPON;
-    mem.D3 = XUVO;
-    mem.D4 = ZYSA;
-    mem.D5 = YWEG;
-    mem.D6 = XABU;
-    mem.D7 = YTUX;
+  if (WUME) {
+    mem.D0 = YDYV_Q;
+    mem.D1 = YCEB_Q;
+    mem.D2 = ZUCA_Q;
+    mem.D3 = WONE_Q;
+    mem.D4 = ZAXE_Q;
+    mem.D5 = XAFU_Q;
+    mem.D6 = YSES_Q;
+    mem.D7 = ZECA_Q;
   }
 
-  wire ABON = not(spr.TEXY);
-  if (ABON) {
-    vram.MA0 = ABEM;
+  if (not(TEXY)) {
+    vram.MA0 = not(FETCH_LOHI_Q); // so this is selecting lo/hi sprite byte
+
+    wire GEJY = amux2(!XUSO_Q, FUFO, ppu.LCDC_SPRSIZE, WAGO);
+
+    wire BAXE = not(CYVU);
+    wire ARAS = not(BORE);
+    wire AGAG = not(BUVY);
+    wire FAMU = not(GEJY);
+
     vram.MA1 = BAXE;
     vram.MA2 = ARAS;
     vram.MA3 = AGAG;
     vram.MA4 = FAMU;
-    vram.MA5 = FUGY;
-    vram.MA6 = GAVO;
-    vram.MA7 = WYGA;
-    vram.MA8 = WUNE;
-    vram.MA9 = GOTU;
-    vram.MA10 = GEGU;
-    vram.MA11 = XEHE;
-    vram.MA12 = DYSO;
+
+    // only 7 of these?
+    vram.MA5  = XEGU_Q;
+    vram.MA6  = YJEX_Q;
+    vram.MA7  = XYJU_Q;
+    vram.MA8  = YBOG_Q;
+    vram.MA9  = WYSO_Q;
+    vram.MA10 = XOTE_Q;
+    vram.MA11 = YZAB_Q;
+
+    // wat?
+    vram.MA12 = not(ext.P10_B);
   }
 
   TOBU.tock(win.TAVA, ppu.XYMU, TULY_Q);
-  VONU.tock(win.TAVA, ppu.XYMU, !TOBU_Q);
+  FETCH_LOHI.tock(win.TAVA, ppu.XYMU, !TOBU_Q);
 
   //----------
 
@@ -611,45 +506,35 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire CUPE = nand(EDEN, CYPY, EKUD, CAXU);
   wire CUVA = nand(FYCU, CYPY, CAPE, CAXU); // also bit weird? schematic says 0?01 but it seems to be a normal decode...
 
-  wire WYXO = or(spr.DYTY, GEBU);
-  wire XUJO = or(spr.DYTY, WOMU);
-  wire GAPE = or(spr.DYTY, GUNA);
-  wire GUVE = or(spr.DYTY, FOCO);
-  wire CAHO = or(spr.DYTY, DEWY);
-  wire CEMY = or(spr.DYTY, DEZO);
-  wire CATO = or(spr.DYTY, DOGU);
-  wire CADO = or(spr.DYTY, CUGU);
-  wire CECU = or(spr.DYTY, CUPE);
-  wire BYBY = or(spr.DYTY, CUVA);
+  wire WYXO = or(DYTY, GEBU);
+  wire XUJO = or(DYTY, WOMU);
+  wire GAPE = or(DYTY, GUNA);
+  wire GUVE = or(DYTY, FOCO);
+  wire CAHO = or(DYTY, DEWY);
+  wire CEMY = or(DYTY, DEZO);
+  wire CATO = or(DYTY, DOGU);
+  wire CADO = or(DYTY, CUGU);
+  wire CECU = or(DYTY, CUPE);
+  wire BYBY = or(DYTY, CUVA);
 
   // why so many signals?
-  wire GYFO = not(WYXO);
-  wire WEKA = not(XUJO);
-  wire GYVO = not(GAPE);
-  wire GUSA = not(GUVE);
-  wire BUKA = not(CAHO);
-  wire DYHU = not(CEMY);
-  wire DECU = not(CATO);
-  wire BEDE = not(CADO);
-  wire DUKE = not(CECU);
-  wire BUCO = not(BYBY);
 
-  spr.CACU = not(GYFO); spr.BUZY = not(GYFO); spr.FUKE = not(GYFO);
-  spr.ZAPE = not(WEKA); spr.WUSE = not(WEKA); spr.ZURU = not(WEKA);
-  spr.FEFO = not(GYVO); spr.GECY = not(GYVO); spr.WABE = not(GYVO);
-  spr.FEKA = not(GUSA); spr.XYHA = not(GUSA); spr.YFAG = not(GUSA);
-  spr.CEXU = not(BUKA); spr.AKOL = not(BUKA); spr.BYMY = not(BUKA);
-  spr.FUXU = not(DYHU); spr.ENOB = not(DYHU); spr.GENY = not(DYHU);
-  spr.WEME = not(DECU); spr.WUFA = not(DECU); spr.FAKA = not(DECU);
-  spr.CYLA = not(BEDE); spr.DYMO = not(BEDE); spr.BUCY = not(BEDE);
-  spr.WOFO = not(DUKE); spr.WYLU = not(DUKE); spr.EWOT = not(DUKE);
-  spr.ASYS = not(BUCO); spr.AHOF = not(BUCO); spr.BYVY = not(BUCO);
+  CACU = WYXO; BUZY = WYXO; FUKE = WYXO;
+  ZAPE = XUJO; WUSE = XUJO; ZURU = XUJO;
+  FEFO = GAPE; GECY = GAPE; WABE = GAPE;
+  FEKA = GUVE; XYHA = GUVE; YFAG = GUVE;
+  CEXU = CAHO; AKOL = CAHO; BYMY = CAHO;
+  FUXU = CEMY; ENOB = CEMY; GENY = CEMY;
+  WEME = CATO; WUFA = CATO; FAKA = CATO;
+  CYLA = CADO; DYMO = CADO; BUCY = CADO;
+  WOFO = CECU; WYLU = CECU; EWOT = CECU;
+  ASYS = BYBY; AHOF = BYBY; BYVY = BYBY;
 
-  DEZY.tock(clk.CLK1, rst.RESET_VIDEO, spr.DYTY);
-  BESE.flip(CAKE,    spr.AZYB);
-  CUXY.flip(!BESE_Q, spr.AZYB);
-  BEGO.flip(!CUXY_Q, spr.AZYB);
-  DYBE.flip(!BEGO_Q, spr.AZYB);
+  DEZY.tock(clk.CLK_4M_A, rst.RESET_VIDEO, DYTY);
+  BESE.flip(CAKE,    AZYB);
+  CUXY.flip(!BESE_Q, AZYB);
+  BEGO.flip(!CUXY_Q, AZYB);
+  DYBE.flip(!BEGO_Q, AZYB);
 }
 
 //-----------------------------------------------------------------------------
@@ -665,7 +550,7 @@ void Sprites::tick_matcher(const OAM& oam) {
   bool ECED_Q = ECED.latch(clk.CLK3, oam.OAM_A_D7);
 
   // this seems out of place...
-  if (spr.WEWU) {
+  if (WEWU) {
     mem.D0 = XYKY_Q;
     mem.D1 = YRUM_Q;
     mem.D2 = YSEX_Q;
@@ -698,14 +583,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   // CHECK CLK/RESET WIRES
 
   // matcher 1
-  bool XEPE_Q = XEPE.tock(spr.FUXU, spr.DYNA, ZAGO);
-  bool YLAH_Q = YLAH.tock(spr.FUXU, spr.DYNA, ZOCY);
-  bool ZOLA_Q = ZOLA.tock(spr.FUXU, spr.DYNA, YPUR);
-  bool ZULU_Q = ZULU.tock(spr.FUXU, spr.DYNA, YVOK);
-  bool WELO_Q = WELO.tock(spr.FUXU, spr.DYNA, COSE);
-  bool XUNY_Q = XUNY.tock(spr.FUXU, spr.DYNA, AROP);
-  bool WOTE_Q = WOTE.tock(spr.FUXU, spr.DYNA, XATU);
-  bool XAKO_Q = XAKO.tock(spr.FUXU, spr.DYNA, BADY);
+  bool XEPE_Q = XEPE.tock(FUXU, DYNA, ZAGO);
+  bool YLAH_Q = YLAH.tock(FUXU, DYNA, ZOCY);
+  bool ZOLA_Q = ZOLA.tock(FUXU, DYNA, YPUR);
+  bool ZULU_Q = ZULU.tock(FUXU, DYNA, YVOK);
+  bool WELO_Q = WELO.tock(FUXU, DYNA, COSE);
+  bool XUNY_Q = XUNY.tock(FUXU, DYNA, AROP);
+  bool WOTE_Q = WOTE.tock(FUXU, DYNA, XATU);
+  bool XAKO_Q = XAKO.tock(FUXU, DYNA, BADY);
 
   bool ZOGY = xor(XEPE_Q, ppu.X0);
   bool ZEBA = xor(YLAH_Q, ppu.X1);
@@ -720,14 +605,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   XEBA = nor(WOJU, YFUN, WYZA, YPUK);
 
   // matcher 2
-  bool XOLY_Q = XOLY.tock(spr.YFAG, spr.WUPA, ZAGO);
-  bool XYBA_Q = XYBA.tock(spr.YFAG, spr.WUPA, ZOCY);
-  bool XABE_Q = XABE.tock(spr.YFAG, spr.WUPA, YPUR);
-  bool XEKA_Q = XEKA.tock(spr.YFAG, spr.WUPA, YVOK);
-  bool XOMY_Q = XOMY.tock(spr.YFAG, spr.WUPA, COSE);
-  bool WUHA_Q = WUHA.tock(spr.YFAG, spr.WUPA, AROP);
-  bool WYNA_Q = WYNA.tock(spr.YFAG, spr.WUPA, XATU);
-  bool WECO_Q = WECO.tock(spr.YFAG, spr.WUPA, BADY);
+  bool XOLY_Q = XOLY.tock(YFAG, WUPA, ZAGO);
+  bool XYBA_Q = XYBA.tock(YFAG, WUPA, ZOCY);
+  bool XABE_Q = XABE.tock(YFAG, WUPA, YPUR);
+  bool XEKA_Q = XEKA.tock(YFAG, WUPA, YVOK);
+  bool XOMY_Q = XOMY.tock(YFAG, WUPA, COSE);
+  bool WUHA_Q = WUHA.tock(YFAG, WUPA, AROP);
+  bool WYNA_Q = WYNA.tock(YFAG, WUPA, XATU);
+  bool WECO_Q = WECO.tock(YFAG, WUPA, BADY);
 
   bool YHOK = xor(XOLY_Q, ppu.X0);
   bool YCAH = xor(XYBA_Q, ppu.X1);
@@ -741,14 +626,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   ZURE = nor(YHOK, YCAH, YDAJ, YVUZ);
 
   // matcher 3
-  bool ERAZ_Q = ERAZ.tock(spr.GECY, spr.GAFY, ZAGO);
-  bool EPUM_Q = EPUM.tock(spr.GECY, spr.GAFY, ZOCY);
-  bool EROL_Q = EROL.tock(spr.GECY, spr.GAFY, YPUR);
-  bool EHYN_Q = EHYN.tock(spr.GECY, spr.GAFY, YVOK);
-  bool FAZU_Q = FAZU.tock(spr.GECY, spr.GAFY, COSE);
-  bool FAXE_Q = FAXE.tock(spr.GECY, spr.GAFY, AROP);
-  bool EXUK_Q = EXUK.tock(spr.GECY, spr.GAFY, XATU);
-  bool FEDE_Q = FEDE.tock(spr.GECY, spr.GAFY, BADY);
+  bool ERAZ_Q = ERAZ.tock(GECY, GAFY, ZAGO);
+  bool EPUM_Q = EPUM.tock(GECY, GAFY, ZOCY);
+  bool EROL_Q = EROL.tock(GECY, GAFY, YPUR);
+  bool EHYN_Q = EHYN.tock(GECY, GAFY, YVOK);
+  bool FAZU_Q = FAZU.tock(GECY, GAFY, COSE);
+  bool FAXE_Q = FAXE.tock(GECY, GAFY, AROP);
+  bool EXUK_Q = EXUK.tock(GECY, GAFY, XATU);
+  bool FEDE_Q = FEDE.tock(GECY, GAFY, BADY);
 
   bool DUSE = xor(ERAZ_Q, ppu.X0);
   bool DAGU = xor(EPUM_Q, ppu.X1);
@@ -762,14 +647,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   CYCO = nor(DUSE, DAGU, DYZE, DESO);
 
   // matcher 4
-  bool DANY_Q = DANY.tock(spr.ASYS, spr.DOKU, ZAGO);
-  bool DUKO_Q = DUKO.tock(spr.ASYS, spr.DOKU, ZOCY);
-  bool DESU_Q = DESU.tock(spr.ASYS, spr.DOKU, YPUR);
-  bool DAZO_Q = DAZO.tock(spr.ASYS, spr.DOKU, YVOK);
-  bool DAKE_Q = DAKE.tock(spr.ASYS, spr.DOKU, COSE);
-  bool CESO_Q = CESO.tock(spr.ASYS, spr.DOKU, AROP);
-  bool DYFU_Q = DYFU.tock(spr.ASYS, spr.DOKU, XATU);
-  bool CUSY_Q = CUSY.tock(spr.ASYS, spr.DOKU, BADY);
+  bool DANY_Q = DANY.tock(ASYS, DOKU, ZAGO);
+  bool DUKO_Q = DUKO.tock(ASYS, DOKU, ZOCY);
+  bool DESU_Q = DESU.tock(ASYS, DOKU, YPUR);
+  bool DAZO_Q = DAZO.tock(ASYS, DOKU, YVOK);
+  bool DAKE_Q = DAKE.tock(ASYS, DOKU, COSE);
+  bool CESO_Q = CESO.tock(ASYS, DOKU, AROP);
+  bool DYFU_Q = DYFU.tock(ASYS, DOKU, XATU);
+  bool CUSY_Q = CUSY.tock(ASYS, DOKU, BADY);
 
   bool EDYM = xor(DANY_Q, ppu.X0);
   bool EMYB = xor(DUKO_Q, ppu.X1);
@@ -783,14 +668,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   EWAM = nor(EDYM, EMYB, EBEF, EWOK);
 
   // matcher 5
-  bool YCOL_Q = YCOL.tock(spr.ZAPE, spr.XAHO, ZAGO);
-  bool YRAC_Q = YRAC.tock(spr.ZAPE, spr.XAHO, ZOCY);
-  bool YMEM_Q = YMEM.tock(spr.ZAPE, spr.XAHO, YPUR);
-  bool YVAG_Q = YVAG.tock(spr.ZAPE, spr.XAHO, YVOK);
-  bool ZOLY_Q = ZOLY.tock(spr.ZAPE, spr.XAHO, COSE);
-  bool ZOGO_Q = ZOGO.tock(spr.ZAPE, spr.XAHO, AROP);
-  bool ZECU_Q = ZECU.tock(spr.ZAPE, spr.XAHO, XATU);
-  bool ZESA_Q = ZESA.tock(spr.ZAPE, spr.XAHO, BADY);
+  bool YCOL_Q = YCOL.tock(ZAPE, XAHO, ZAGO);
+  bool YRAC_Q = YRAC.tock(ZAPE, XAHO, ZOCY);
+  bool YMEM_Q = YMEM.tock(ZAPE, XAHO, YPUR);
+  bool YVAG_Q = YVAG.tock(ZAPE, XAHO, YVOK);
+  bool ZOLY_Q = ZOLY.tock(ZAPE, XAHO, COSE);
+  bool ZOGO_Q = ZOGO.tock(ZAPE, XAHO, AROP);
+  bool ZECU_Q = ZECU.tock(ZAPE, XAHO, XATU);
+  bool ZESA_Q = ZESA.tock(ZAPE, XAHO, BADY);
 
   bool XOSU = xor(YCOL_Q, ppu.X0);
   bool ZUVU = xor(YRAC_Q, ppu.X1);
@@ -804,14 +689,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   YDOT = nor(XOSU, ZUVU, XUCO, ZULO);
 
   // matcher 6
-  bool WEDU_Q = WEDU.tock(spr.WUNU, spr.WOFO, ZAGO);
-  bool YGAJ_Q = YGAJ.tock(spr.WUNU, spr.WOFO, ZOCY);
-  bool ZYJO_Q = ZYJO.tock(spr.WUNU, spr.WOFO, YPUR);
-  bool XURY_Q = XURY.tock(spr.WUNU, spr.WOFO, YVOK);
-  bool YBED_Q = YBED.tock(spr.WUNU, spr.WOFO, COSE);
-  bool ZALA_Q = ZALA.tock(spr.WUNU, spr.WOFO, AROP);
-  bool WYDE_Q = WYDE.tock(spr.WUNU, spr.WOFO, XATU);
-  bool XEPA_Q = XEPA.tock(spr.WUNU, spr.WOFO, BADY);
+  bool WEDU_Q = WEDU.tock(WUNU, WOFO, ZAGO);
+  bool YGAJ_Q = YGAJ.tock(WUNU, WOFO, ZOCY);
+  bool ZYJO_Q = ZYJO.tock(WUNU, WOFO, YPUR);
+  bool XURY_Q = XURY.tock(WUNU, WOFO, YVOK);
+  bool YBED_Q = YBED.tock(WUNU, WOFO, COSE);
+  bool ZALA_Q = ZALA.tock(WUNU, WOFO, AROP);
+  bool WYDE_Q = WYDE.tock(WUNU, WOFO, XATU);
+  bool XEPA_Q = XEPA.tock(WUNU, WOFO, BADY);
 
   bool XEJU = xor(WEDU_Q, ppu.X0);
   bool ZATE = xor(YGAJ_Q, ppu.X1);
@@ -825,14 +710,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   YNAZ = nor(XEJU, ZATE, ZAKU, YBOX);
 
   // matcher 7
-  bool GAVY_Q = GAVY.tock(spr.CEXU, spr.WUZO, ZAGO);
-  bool GYPU_Q = GYPU.tock(spr.CEXU, spr.WUZO, ZOCY);
-  bool GADY_Q = GADY.tock(spr.CEXU, spr.WUZO, YPUR);
-  bool GAZA_Q = GAZA.tock(spr.CEXU, spr.WUZO, YVOK);
-  bool EZUF_Q = EZUF.tock(spr.CEXU, spr.WUZO, COSE);
-  bool ENAD_Q = ENAD.tock(spr.CEXU, spr.WUZO, AROP);
-  bool EBOW_Q = EBOW.tock(spr.CEXU, spr.WUZO, XATU);
-  bool FYCA_Q = FYCA.tock(spr.CEXU, spr.WUZO, BADY);
+  bool GAVY_Q = GAVY.tock(CEXU, WUZO, ZAGO);
+  bool GYPU_Q = GYPU.tock(CEXU, WUZO, ZOCY);
+  bool GADY_Q = GADY.tock(CEXU, WUZO, YPUR);
+  bool GAZA_Q = GAZA.tock(CEXU, WUZO, YVOK);
+  bool EZUF_Q = EZUF.tock(CEXU, WUZO, COSE);
+  bool ENAD_Q = ENAD.tock(CEXU, WUZO, AROP);
+  bool EBOW_Q = EBOW.tock(CEXU, WUZO, XATU);
+  bool FYCA_Q = FYCA.tock(CEXU, WUZO, BADY);
 
   bool GOHO = xor(GAVY_Q, ppu.X0);
   bool GASU = xor(GYPU_Q, ppu.X1);
@@ -846,14 +731,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   FEHA = nor(GOHO, GASU, GABU, GAFE);
 
   // matcher 8
-  bool XUVY_Q = XUVY.tock(spr.WEME, spr.DOSY, ZAGO);
-  bool XERE_Q = XERE.tock(spr.WEME, spr.DOSY, ZOCY);
-  bool XUZO_Q = XUZO.tock(spr.WEME, spr.DOSY, YPUR);
-  bool XEXA_Q = XEXA.tock(spr.WEME, spr.DOSY, YVOK);
-  bool YPOD_Q = YPOD.tock(spr.WEME, spr.DOSY, COSE);
-  bool YROP_Q = YROP.tock(spr.WEME, spr.DOSY, AROP);
-  bool YNEP_Q = YNEP.tock(spr.WEME, spr.DOSY, XATU);
-  bool YZOF_Q = YZOF.tock(spr.WEME, spr.DOSY, BADY);
+  bool XUVY_Q = XUVY.tock(WEME, DOSY, ZAGO);
+  bool XERE_Q = XERE.tock(WEME, DOSY, ZOCY);
+  bool XUZO_Q = XUZO.tock(WEME, DOSY, YPUR);
+  bool XEXA_Q = XEXA.tock(WEME, DOSY, YVOK);
+  bool YPOD_Q = YPOD.tock(WEME, DOSY, COSE);
+  bool YROP_Q = YROP.tock(WEME, DOSY, AROP);
+  bool YNEP_Q = YNEP.tock(WEME, DOSY, XATU);
+  bool YZOF_Q = YZOF.tock(WEME, DOSY, BADY);
 
   bool YMAM = xor(XUVY_Q, ppu.X0);
   bool YTYP = xor(XERE_Q, ppu.X1);
@@ -867,14 +752,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   YLEV = nor(YMAM, YTYP, YFOP, YVAC);
 
   // matcher 9
-  bool FUSA_Q = FUSA.tock(spr.CYLA, spr.EJAD, ZAGO);
-  bool FAXA_Q = FAXA.tock(spr.CYLA, spr.EJAD, ZOCY);
-  bool FOZY_Q = FOZY.tock(spr.CYLA, spr.EJAD, YPUR);
-  bool FESY_Q = FESY.tock(spr.CYLA, spr.EJAD, YVOK);
-  bool CYWE_Q = CYWE.tock(spr.CYLA, spr.EJAD, COSE);
-  bool DYBY_Q = DYBY.tock(spr.CYLA, spr.EJAD, AROP);
-  bool DURY_Q = DURY.tock(spr.CYLA, spr.EJAD, XATU);
-  bool CUVY_Q = CUVY.tock(spr.CYLA, spr.EJAD, BADY);
+  bool FUSA_Q = FUSA.tock(CYLA, EJAD, ZAGO);
+  bool FAXA_Q = FAXA.tock(CYLA, EJAD, ZOCY);
+  bool FOZY_Q = FOZY.tock(CYLA, EJAD, YPUR);
+  bool FESY_Q = FESY.tock(CYLA, EJAD, YVOK);
+  bool CYWE_Q = CYWE.tock(CYLA, EJAD, COSE);
+  bool DYBY_Q = DYBY.tock(CYLA, EJAD, AROP);
+  bool DURY_Q = DURY.tock(CYLA, EJAD, XATU);
+  bool CUVY_Q = CUVY.tock(CYLA, EJAD, BADY);
 
   bool GUZO = xor(FUSA_Q, ppu.X0);
   bool GOLA = xor(FAXA_Q, ppu.X1);
@@ -888,14 +773,14 @@ void Sprites::tick_matcher(const OAM& oam) {
   FYMA = nor(GUZO, GOLA, GEVE, GUDE);
 
   // matcher 10
-  bool FOKA_Q = FOKA.tock(spr.CACU, spr.GAMY, ZAGO);
-  bool FYTY_Q = FYTY.tock(spr.CACU, spr.GAMY, ZOCY);
-  bool FUBY_Q = FUBY.tock(spr.CACU, spr.GAMY, YPUR);
-  bool GOXU_Q = GOXU.tock(spr.CACU, spr.GAMY, YVOK);
-  bool DUHY_Q = DUHY.tock(spr.CACU, spr.GAMY, COSE);
-  bool EJUF_Q = EJUF.tock(spr.CACU, spr.GAMY, AROP);
-  bool ENOR_Q = ENOR.tock(spr.CACU, spr.GAMY, XATU);
-  bool DEPY_Q = DEPY.tock(spr.CACU, spr.GAMY, BADY);
+  bool FOKA_Q = FOKA.tock(CACU, GAMY, ZAGO);
+  bool FYTY_Q = FYTY.tock(CACU, GAMY, ZOCY);
+  bool FUBY_Q = FUBY.tock(CACU, GAMY, YPUR);
+  bool GOXU_Q = GOXU.tock(CACU, GAMY, YVOK);
+  bool DUHY_Q = DUHY.tock(CACU, GAMY, COSE);
+  bool EJUF_Q = EJUF.tock(CACU, GAMY, AROP);
+  bool ENOR_Q = ENOR.tock(CACU, GAMY, XATU);
+  bool DEPY_Q = DEPY.tock(CACU, GAMY, BADY);
 
   bool FUZU = xor(FOKA_Q, ppu.X0);
   bool FESO = xor(FYTY_Q, ppu.X1);
@@ -913,33 +798,33 @@ void Sprites::tick_matcher(const OAM& oam) {
 
 void Sprites::tick_pixelshifter(const Vram& vram) {
   // sprite x flip
-  bool POBE = mux2(vram.MD4, vram.MD3, spr.XONO);
-  bool PACY = mux2(vram.MD3, vram.MD4, spr.XONO);
-  bool PONO = mux2(vram.MD5, vram.MD2, spr.XONO);
-  bool PUGU = mux2(vram.MD2, vram.MD5, spr.XONO);
-  bool PUTE = mux2(vram.MD7, vram.MD0, spr.XONO);
-  bool PULY = mux2(vram.MD0, vram.MD7, spr.XONO);
-  bool PELO = mux2(vram.MD6, vram.MD1, spr.XONO);
-  bool PAWE = mux2(vram.MD1, vram.MD6, spr.XONO);
+  bool POBE = mux2(vram.MD4, vram.MD3, XONO);
+  bool PACY = mux2(vram.MD3, vram.MD4, XONO);
+  bool PONO = mux2(vram.MD5, vram.MD2, XONO);
+  bool PUGU = mux2(vram.MD2, vram.MD5, XONO);
+  bool PUTE = mux2(vram.MD7, vram.MD0, XONO);
+  bool PULY = mux2(vram.MD0, vram.MD7, XONO);
+  bool PELO = mux2(vram.MD6, vram.MD1, XONO);
+  bool PAWE = mux2(vram.MD1, vram.MD6, XONO);
 
   // the schematic layout is slightly inconsistent, might have some of these swapped
 
-  bool PUDU_Q = PUDU.latch(spr.XADO, POBE);
-  bool RAMU_Q = RAMU.latch(spr.PUCO, POBE);
-  bool SELE_Q = SELE.latch(spr.PUCO, PACY);
-  bool SAJA_Q = SAJA.latch(spr.XADO, PACY);
-  bool MYTU_Q = MYTU.latch(spr.XADO, PONO);
-  bool MOFO_Q = MOFO.latch(spr.PUCO, PONO);
-  bool SUNY_Q = SUNY.latch(spr.XADO, PUGU);
-  bool SUTO_Q = SUTO.latch(spr.PUCO, PUGU);
-  bool PEFO_Q = PEFO.latch(spr.XADO, PUTE);
-  bool REWO_Q = REWO.latch(spr.PUCO, PUTE);
-  bool RYDU_Q = RYDU.latch(spr.PUCO, PULY);
-  bool SEGA_Q = RYDU.latch(spr.XADO, PULY);
-  bool PEBA_Q = PEBA.latch(spr.XADO, PELO);
-  bool ROKA_Q = ROKA.latch(spr.PUCO, PELO);
-  bool RAMA_Q = RAMA.latch(spr.PUCO, PAWE);
-  bool SEMO_Q = SEMO.latch(spr.XADO, PAWE);
+  bool PUDU_Q = PUDU.latch(XADO, POBE);
+  bool RAMU_Q = RAMU.latch(PUCO, POBE);
+  bool SELE_Q = SELE.latch(PUCO, PACY);
+  bool SAJA_Q = SAJA.latch(XADO, PACY);
+  bool MYTU_Q = MYTU.latch(XADO, PONO);
+  bool MOFO_Q = MOFO.latch(PUCO, PONO);
+  bool SUNY_Q = SUNY.latch(XADO, PUGU);
+  bool SUTO_Q = SUTO.latch(PUCO, PUGU);
+  bool PEFO_Q = PEFO.latch(XADO, PUTE);
+  bool REWO_Q = REWO.latch(PUCO, PUTE);
+  bool RYDU_Q = RYDU.latch(PUCO, PULY);
+  bool SEGA_Q = RYDU.latch(XADO, PULY);
+  bool PEBA_Q = PEBA.latch(XADO, PELO);
+  bool ROKA_Q = ROKA.latch(PUCO, PELO);
+  bool RAMA_Q = RAMA.latch(PUCO, PAWE);
+  bool SEMO_Q = SEMO.latch(XADO, PAWE);
 
   bool LUBO = not(PUDU_Q);
   bool SOLO = not(RAMU_Q);
@@ -1033,4 +918,276 @@ void Sprites::tick_pixelshifter(const Vram& vram) {
   ppu.SPR_PIX_A_5 = WEBA_Q;
   ppu.SPR_PIX_A_6 = VANU_Q;
   ppu.SPR_PIX_A_7 = VUPY_Q;
+}
+
+//-----------------------------------------------------------------------------
+
+void Sprites::tick_spritestore() {
+  bool CYKE = not(spr.XUPY);
+  bool WUDA = not(CYKE);
+
+  bool XECU_Q = XECU.tock(WUDA, spr.WEFE, OAM_A_A7);
+  bool YDUF_Q = YDUF.tock(WUDA, spr.WEFE, OAM_A_A6);
+  bool XOBE_Q = XOBE.tock(WUDA, spr.WEFE, OAM_A_A5);
+  bool ZUZE_Q = ZUZE.tock(WUDA, spr.WEFE, OAM_A_A4);
+  bool XEDY_Q = XEDY.tock(WUDA, spr.WEFE, OAM_A_A3);
+  bool XADU_Q = XADU.tock(WUDA, spr.WEFE, OAM_A_A2);
+
+  if (spr.BUZA) {
+    WEZA = XECU_Q;
+    WUCO = YDUF_Q;
+    WYDA = XOBE_Q;
+    ZYSU = ZUZE_Q;
+    WYSE = XEDY_Q;
+    WUZY = XADU_Q;
+  }
+
+  if (spr.FEPO) {
+    CUCA = spr.DABY;
+    CEGA = spr.DABU;
+    CUCU = spr.DEGE;
+    WENU = spr.GYSA;
+  }
+
+  // Sprite store 1 of 10
+  bool AXUV_Q = AXUV.q(); bool ADYB = not(!AXUV_Q); AXUV.tock(spr.AKOL, 0, WEZA);
+  bool BADA_Q = BADA.q(); bool APOB = not(!BADA_Q); BADA.tock(spr.AKOL, 0, WUCO);
+  bool APEV_Q = APEV.q(); bool APYV = not(!APEV_Q); APEV.tock(spr.AKOL, 0, WYDA);
+  bool BADO_Q = BADO.q(); bool AFEN = not(!BADO_Q); BADO.tock(spr.AKOL, 0, ZYSU);
+  bool BEXY_Q = BEXY.q(); bool AKYH = not(!BEXY_Q); BEXY.tock(spr.AKOL, 0, WYSE);
+  bool BYHE_Q = BYHE.q(); bool APOC = not(!BYHE_Q); BYHE.tock(spr.AKOL, 0, WUZY);
+  bool AFYM_Q = AFYM.q(); bool BUJY = not(!AFYM_Q); AFYM.tock(spr.BYMY, 0, CUCA);
+  bool AZAP_Q = AZAP.q(); bool BOSO = not(!AZAP_Q); AZAP.tock(spr.BYMY, 0, CEGA);
+  bool AFUT_Q = AFUT.q(); bool AHAC = not(!AFUT_Q); AFUT.tock(spr.BYMY, 0, CUCU);
+  bool AFYX_Q = AFYX.q(); bool BAZU = not(!AFYX_Q); AFYX.tock(spr.BYMY, 0, WENU);
+
+  if (spr.DENY) {
+    WEZA = ADYB; WUCO = APOB; WYDA = APYV; ZYSU = AFEN; WYSE = AKYH; WUZY = APOC;
+    CUCA = BUJY; CEGA = BOSO; CUCU = AHAC; WENU = BAZU;
+  }
+
+  // Sprite store 2 of 10
+  bool GECU_Q = GECU.q(); bool WOCY = not(!GECU_Q); GECU.tock(spr.WUSE, 0, WEZA);
+  bool FOXY_Q = FOXY.q(); bool ELYC = not(!FOXY_Q); FOXY.tock(spr.WUSE, 0, WUCO);
+  bool GOHU_Q = GOHU.q(); bool WABO = not(!GOHU_Q); GOHU.tock(spr.WUSE, 0, WYDA);
+  bool FOGO_Q = FOGO.q(); bool EZOC = not(!FOGO_Q); FOGO.tock(spr.WUSE, 0, ZYSU);
+  bool GACY_Q = GACY.q(); bool WYWY = not(!GACY_Q); GACY.tock(spr.WUSE, 0, WYSE);
+  bool GABO_Q = GABO.q(); bool WATO = not(!GABO_Q); GABO.tock(spr.WUSE, 0, WUZY);
+  bool ZUBE_Q = ZUBE.q(); bool ZUDO = not(!ZUBE_Q); ZUBE.tock(spr.ZURU, 0, CUCA);
+  bool ZUMY_Q = ZUMY.q(); bool YBUK = not(!ZUMY_Q); ZUMY.tock(spr.ZURU, 0, CEGA);
+  bool ZEXO_Q = ZEXO.q(); bool ZYTO = not(!ZEXO_Q); ZEXO.tock(spr.ZURU, 0, CUCU);
+  bool ZAFU_Q = ZAFU.q(); bool YKOZ = not(!ZAFU_Q); ZAFU.tock(spr.ZURU, 0, WENU);
+
+  if (spr.XYME) {
+    WEZA = WOCY;
+    WUCO = ELYC;
+    WYDA = WABO;
+    ZYSU = EZOC;
+    WYSE = WYWY;
+    WUZY = WATO;
+    CUCA = ZUDO;
+    CEGA = YBUK;
+    CUCU = ZYTO;
+    WENU = YKOZ;
+  }
+
+  // Sprite store 3 of 10
+  bool XYNU_Q = XYNU.q(); bool WAJA = not(!XYNU_Q); XYNU.tock(spr.WYLU, 0, WEZA);
+  bool XEGE_Q = XEGE.q(); bool WOXY = not(!XEGE_Q); XEGE.tock(spr.WYLU, 0, WUCO);
+  bool XABO_Q = XABO.q(); bool XYRE = not(!XABO_Q); XABO.tock(spr.WYLU, 0, WYDA);
+  bool WANU_Q = WANU.q(); bool WERU = not(!WANU_Q); WANU.tock(spr.WYLU, 0, ZYSU);
+  bool XEFE_Q = XEFE.q(); bool WEPY = not(!XEFE_Q); XEFE.tock(spr.WYLU, 0, WYSE);
+  bool XAVE_Q = XAVE.q(); bool WUXU = not(!XAVE_Q); XAVE.tock(spr.WYLU, 0, WUZY);
+  bool CUMU_Q = CUMU.q(); bool BYDO = not(!CUMU_Q); CUMU.tock(spr.EWOT, 0, CUCA);
+  bool CAPO_Q = CAPO.q(); bool BUCE = not(!CAPO_Q); CAPO.tock(spr.EWOT, 0, CEGA);
+  bool CONO_Q = CONO.q(); bool BOVE = not(!CONO_Q); CONO.tock(spr.EWOT, 0, CUCU);
+  bool CAJU_Q = CAJU.q(); bool BEVY = not(!CAJU_Q); CAJU.tock(spr.EWOT, 0, WENU);
+
+  if (spr.GOWO) {
+    WEZA = WAJA;
+    WUCO = WOXY;
+    WYDA = XYRE;
+    ZYSU = WERU;
+    WYSE = WEPY;
+    WUZY = WUXU;
+    CUCA = BYDO;
+    CEGA = BUCE;
+    CUCU = BOVE;
+    WENU = BEVY;
+  }
+
+  // Sprite store 4 of 10
+  bool FUZO_Q = FUZO.q(); bool EVYT = not(!FUZO_Q); FUZO.tock(spr.FEFO, 0, WEZA);
+  bool GESY_Q = GESY.q(); bool WABA = not(!GESY_Q); GESY.tock(spr.FEFO, 0, WUCO);
+  bool FYSU_Q = FYSU.q(); bool ETAD = not(!FYSU_Q); FYSU.tock(spr.FEFO, 0, WYDA);
+  bool FEFA_Q = FEFA.q(); bool ELEP = not(!FEFA_Q); FEFA.tock(spr.FEFO, 0, ZYSU);
+  bool GYNO_Q = GYNO.q(); bool WYGO = not(!GYNO_Q); GYNO.tock(spr.FEFO, 0, WYSE);
+  bool GULE_Q = GULE.q(); bool WAKO = not(!GULE_Q); GULE.tock(spr.FEFO, 0, WUZY);
+  bool XYGO_Q = XYGO.q(); bool WANA = not(!XYGO_Q); XYGO.tock(spr.WABE, 0, CUCA);
+  bool XYNA_Q = XYNA.q(); bool WAXE = not(!XYNA_Q); XYNA.tock(spr.WABE, 0, CEGA);
+  bool XAKU_Q = XAKU.q(); bool WABU = not(!XAKU_Q); XAKU.tock(spr.WABE, 0, CUCU);
+  bool YGUM_Q = YGUM.q(); bool YPOZ = not(!YGUM_Q); YGUM.tock(spr.WABE, 0, WENU);
+
+  if (spr.GUGY) {
+    WEZA = EVYT;
+    WUCO = WABA;
+    WYDA = ETAD;
+    ZYSU = ELEP;
+    WYSE = WYGO;
+    WUZY = WAKO;
+    CUCA = WANA;
+    CEGA = WAXE;
+    CUCU = WABU;
+    WENU = YPOZ;
+  }
+
+  // Sprite store 5 of 10
+  bool CAJY_Q = CAJY.q(); bool BEMO = not(!CAJY_Q); CAJY.tock(spr.BYVY, 0, WEZA);
+  bool CUZA_Q = CUZA.q(); bool CYBY = not(!CUZA_Q); CUZA.tock(spr.BYVY, 0, WUCO);
+  bool COMA_Q = COMA.q(); bool BETY = not(!COMA_Q); COMA.tock(spr.BYVY, 0, WYDA);
+  bool CUFA_Q = CUFA.q(); bool CEGY = not(!CUFA_Q); CUFA.tock(spr.BYVY, 0, ZYSU);
+  bool CEBO_Q = CEBO.q(); bool CELU = not(!CEBO_Q); CEBO.tock(spr.BYVY, 0, WYSE);
+  bool CADU_Q = CADU.q(); bool CUBO = not(!CADU_Q); CADU.tock(spr.BYVY, 0, WUZY);
+  bool ABUG_Q = ABUG.q(); bool BEFE = not(!ABUG_Q); ABUG.tock(spr.AHOF, 0, CUCA);
+  bool AMES_Q = AMES.q(); bool BYRO = not(!AMES_Q); AMES.tock(spr.AHOF, 0, CEGA);
+  bool ABOP_Q = ABOP.q(); bool BACO = not(!ABOP_Q); ABOP.tock(spr.AHOF, 0, CUCU);
+  bool AROF_Q = AROF.q(); bool AHUM = not(!AROF_Q); AROF.tock(spr.AHOF, 0, WENU);
+
+  if (spr.DYDO) {
+    WEZA = BEMO;
+    WUCO = CYBY;
+    WYDA = BETY;
+    ZYSU = CEGY;
+    WYSE = CELU;
+    WUZY = CUBO;
+    CUCA = BEFE;
+    CEGA = BYRO;
+    CUCU = BACO;
+    WENU = AHUM;
+  }
+
+  // Sprite store 6 of 10
+  bool EKAP_Q = EKAP.q(); bool DALO = not(!EKAP_Q); EKAP.tock(spr.DYMO, 0, WEZA);
+  bool ETAV_Q = ETAV.q(); bool DALY = not(!ETAV_Q); ETAV.tock(spr.DYMO, 0, WUCO);
+  bool EBEX_Q = EBEX.q(); bool DUZA = not(!EBEX_Q); EBEX.tock(spr.DYMO, 0, WYDA);
+  bool GORU_Q = GORU.q(); bool WAGA = not(!GORU_Q); GORU.tock(spr.DYMO, 0, ZYSU);
+  bool ETYM_Q = ETYM.q(); bool DYNY = not(!ETYM_Q); ETYM.tock(spr.DYMO, 0, WYSE);
+  bool EKOP_Q = EKOP.q(); bool DOBO = not(!EKOP_Q); EKOP.tock(spr.DYMO, 0, WUZY);
+  bool ANED_Q = ANED.q(); bool AWAT = not(!ANED_Q); ANED.tock(spr.BUCY, 0, CUCA);
+  bool ACEP_Q = ACEP.q(); bool BACE = not(!ACEP_Q); ACEP.tock(spr.BUCY, 0, CEGA);
+  bool ABUX_Q = ABUX.q(); bool BODU = not(!ABUX_Q); ABUX.tock(spr.BUCY, 0, CUCU);
+  bool ABEG_Q = ABEG.q(); bool BUJA = not(!ABEG_Q); ABEG.tock(spr.BUCY, 0, WENU);
+
+  if (spr.GYGY) {
+    WEZA = DALO;
+    WUCO = DALY;
+    WYDA = DUZA;
+    ZYSU = WAGA;
+    WYSE = DYNY;
+    WUZY = DOBO;
+    CUCA = AWAT;
+    CEGA = BACE;
+    CUCU = BODU;
+    WENU = BUJA;
+  }
+
+  // Sprite store 7 of 10
+  bool DAFU_Q = DAFU.q(); bool DEZU = not(!DAFU_Q); DAFU.tock(spr.FEKA, 0, WEZA);
+  bool DEBA_Q = DEBA.q(); bool EFUD = not(!DEBA_Q); DEBA.tock(spr.FEKA, 0, WUCO);
+  bool DUHA_Q = DUHA.q(); bool DONY = not(!DUHA_Q); DUHA.tock(spr.FEKA, 0, WYDA);
+  bool DUNY_Q = DUNY.q(); bool DOWA = not(!DUNY_Q); DUNY.tock(spr.FEKA, 0, ZYSU);
+  bool DESE_Q = DESE.q(); bool DYGO = not(!DESE_Q); DESE.tock(spr.FEKA, 0, WYSE);
+  bool DEVY_Q = DEVY.q(); bool ENAP = not(!DEVY_Q); DEVY.tock(spr.FEKA, 0, WUZY);
+  bool ZURY_Q = ZURY.q(); bool ZYPO = not(!ZURY_Q); ZURY.tock(spr.XYHA, 0, CUCA);
+  bool ZURO_Q = ZURO.q(); bool ZEXE = not(!ZURO_Q); ZURO.tock(spr.XYHA, 0, CEGA);
+  bool ZENE_Q = ZENE.q(); bool YJEM = not(!ZENE_Q); ZENE.tock(spr.XYHA, 0, CUCU);
+  bool ZYLU_Q = ZYLU.q(); bool YWAV = not(!ZYLU_Q); ZYLU.tock(spr.XYHA, 0, WENU);
+
+  if (spr.GYMA) {
+    WEZA = DEZU;
+    WUCO = EFUD;
+    WYDA = DONY;
+    ZYSU = DOWA;
+    WYSE = DYGO;
+    WUZY = ENAP;
+    CUCA = ZYPO;
+    CEGA = ZEXE;
+    CUCU = YJEM;
+    WENU = YWAV;
+  }
+
+  // Sprite store 8 of 10
+  bool BOXA_Q = BOXA.q(); bool AXEC = not(!BOXA_Q); BOXA.tock(spr.BUZY, 0, WEZA);
+  bool BUNA_Q = BUNA.q(); bool CYRO = not(!BUNA_Q); BUNA.tock(spr.BUZY, 0, WUCO);
+  bool BULU_Q = BULU.q(); bool CUVU = not(!BULU_Q); BULU.tock(spr.BUZY, 0, WYDA);
+  bool BECA_Q = BECA.q(); bool APON = not(!BECA_Q); BECA.tock(spr.BUZY, 0, ZYSU);
+  bool BYHU_Q = BYHU.q(); bool AFOZ = not(!BYHU_Q); BYHU.tock(spr.BUZY, 0, WYSE);
+  bool BUHE_Q = BUHE.q(); bool CUBE = not(!BUHE_Q); BUHE.tock(spr.BUZY, 0, WUZY);
+  bool YKUK_Q = YKUK.q(); bool ZABY = not(!YKUK_Q); YKUK.tock(spr.FUKE, 0, CUCA);
+  bool YLOV_Q = YLOV.q(); bool ZUKE = not(!YLOV_Q); YLOV.tock(spr.FUKE, 0, CEGA);
+  bool XAZY_Q = XAZY.q(); bool WUXE = not(!XAZY_Q); XAZY.tock(spr.FUKE, 0, CUCU);
+  bool XOSY_Q = XOSY.q(); bool WERE = not(!XOSY_Q); XOSY.tock(spr.FUKE, 0, WENU);
+
+  if (spr.FAME) {
+    WEZA = AXEC;
+    WUCO = CYRO;
+    WYDA = CUVU;
+    ZYSU = APON;
+    WYSE = AFOZ;
+    WUZY = CUBE;
+    CUCA = ZABY;
+    CEGA = ZUKE;
+    CUCU = WUXE;
+    WENU = WERE;
+  }
+
+  // Sprite store 9 of 10
+  bool XUFO_Q = XUFO.q(); bool YHAL = not(!XUFO_Q); XUFO.tock(spr.WUFA, 0, WEZA);
+  bool XUTE_Q = XUTE.q(); bool YRAD = not(!XUTE_Q); XUTE.tock(spr.WUFA, 0, WUCO);
+  bool XOTU_Q = XOTU.q(); bool XYRA = not(!XOTU_Q); XOTU.tock(spr.WUFA, 0, WYDA);
+  bool XYFE_Q = XYFE.q(); bool YNEV = not(!XYFE_Q); XYFE.tock(spr.WUFA, 0, ZYSU);
+  bool YZOR_Q = YZOR.q(); bool ZOJY = not(!YZOR_Q); YZOR.tock(spr.WUFA, 0, WYSE);
+  bool YBER_Q = YBER.q(); bool ZARO = not(!YBER_Q); YBER.tock(spr.WUFA, 0, WUZY);
+  bool DEWU_Q = DEWU.q(); bool CAWO = not(!DEWU_Q); DEWU.tock(spr.FAKA, 0, CUCA);
+  bool CANA_Q = CANA.q(); bool BYME = not(!CANA_Q); CANA.tock(spr.FAKA, 0, CEGA);
+  bool DYSY_Q = DYSY.q(); bool COHO = not(!DYSY_Q); DYSY.tock(spr.FAKA, 0, CUCU);
+  bool FOFO_Q = FOFO.q(); bool GATE = not(!FOFO_Q); FOFO.tock(spr.FAKA, 0, WENU);
+
+  if (spr.FADO) {
+    WEZA = YHAL;
+    WUCO = YRAD;
+    WYDA = XYRA;
+    ZYSU = YNEV;
+    WYSE = ZOJY;
+    WUZY = ZARO;
+    CUCA = CAWO;
+    CEGA = BYME;
+    CUCU = COHO;
+    WENU = GATE;
+  }
+
+  // Sprite store 10 of 10
+  bool YGUS_Q = YGUS.q(); bool ZETU = not(!YGUS_Q); YGUS.tock(spr.GENY, 0, WEZA);
+  bool YSOK_Q = YSOK.q(); bool ZECE = not(!YSOK_Q); YSOK.tock(spr.GENY, 0, WUCO);
+  bool YZEP_Q = YZEP.q(); bool ZAVE = not(!YZEP_Q); YZEP.tock(spr.GENY, 0, WYDA);
+  bool WYTE_Q = WYTE.q(); bool WOKO = not(!WYTE_Q); WYTE.tock(spr.GENY, 0, ZYSU);
+  bool ZONY_Q = ZONY.q(); bool ZUMU = not(!ZONY_Q); ZONY.tock(spr.GENY, 0, WYSE);
+  bool YWAK_Q = YWAK.q(); bool ZEDY = not(!YWAK_Q); YWAK.tock(spr.GENY, 0, WUZY);
+  bool FYHY_Q = FYHY.q(); bool GOFO = not(!FYHY_Q); FYHY.tock(spr.ENOB, 0, CUCA);
+  bool GYHO_Q = GYHO.q(); bool WEHE = not(!GYHO_Q); GYHO.tock(spr.ENOB, 0, CEGA);
+  bool BOZU_Q = BOZU.q(); bool AJAL = not(!BOZU_Q); BOZU.tock(spr.ENOB, 0, CUCU);
+  bool CUFO_Q = CUFO.q(); bool BUKY = not(!CUFO_Q); CUFO.tock(spr.ENOB, 0, WENU);
+
+  if (spr.FURO) {
+    WEZA = ZETU;
+    WUCO = ZECE;
+    WYDA = ZAVE;
+    ZYSU = WOKO;
+    WYSE = ZUMU;
+    WUZY = ZEDY;
+    CUCA = GOFO;
+    CEGA = WEHE;
+    CUCU = AJAL;
+    WENU = BUKY;
+  }
 }

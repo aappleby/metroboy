@@ -41,7 +41,7 @@ private:
 
   reg MAKA;
   reg LUVY;
-  reg MYTE;
+  reg DMA_DONE; // {MYTE}
   reg LENE;
 
   // DMA base reg

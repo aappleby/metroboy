@@ -19,64 +19,41 @@ void Clocks::tick(const APU& apu, Resets& rst, const AddressDecoder& dec) {
   //----------
   // FF04 DIV
 
-  bool UKUP_Q = UKUP.flip(clk.BOGA1MHZ, rst.RESET_DIVn);
-  bool UFOR_Q = UFOR.flip(!UKUP_Q,  rst.RESET_DIVn);
-  bool UNER_Q = UNER.flip(!UFOR_Q,  rst.RESET_DIVn);
-  bool TERO_Q = TERO.flip(!UNER_Q,  rst.RESET_DIVn);
-  bool UNYK_Q = UNYK.flip(!TERO_Q,  rst.RESET_DIVn);
-  bool TAMA_Q = TAMA.flip(!UNYK_Q,  rst.RESET_DIVn);
+  wire DIV_Q0 = DIV_R0.flip(clk.BOGA1MHZ, rst.RESET_DIVn);
+  wire DIV_Q1 = DIV_R1.flip(!DIV_Q0,  rst.RESET_DIVn);
+  wire DIV_Q2 = DIV_R2.flip(!DIV_Q1,  rst.RESET_DIVn);
+  wire DIV_Q3 = DIV_R3.flip(!DIV_Q2,  rst.RESET_DIVn);
+  wire DIV_Q4 = DIV_R4.flip(!DIV_Q3,  rst.RESET_DIVn);
+  wire DIV_Q5 = DIV_R5.flip(!DIV_Q4,  rst.RESET_DIVn);
 
-  bool UVYN = not(TAMA_Q);
+  wire ULUR = mux2(clk.BOGA1MHZ, !DIV_Q5, sys.FF60_D1);
 
-  clk.CLK_16k = UVYN;
-  clk.CLK_64k = TERO_Q;
-  clk.CLK_256k = UFOR_Q;
+  wire DIV_Q6  = DIV_R6. flip(ULUR,     rst.RESET_DIVn);
+  wire DIV_Q7  = DIV_R7. flip(!DIV_Q6,  rst.RESET_DIVn);
+  wire DIV_Q8  = DIV_R8. flip(!DIV_Q7,  rst.RESET_DIVn);
+  wire DIV_Q9  = DIV_R9. flip(!DIV_Q8,  rst.RESET_DIVn);
+  wire DIV_Q10 = DIV_R10.flip(!DIV_Q9,  rst.RESET_DIVn);
+  wire DIV_Q11 = DIV_R11.flip(!DIV_Q10, rst.RESET_DIVn);
+  wire DIV_Q12 = DIV_R12.flip(!DIV_Q11, rst.RESET_DIVn);
+  wire DIV_Q13 = DIV_R13.flip(!DIV_Q12, rst.RESET_DIVn);
+  wire DIV_Q14 = DIV_R14.flip(!DIV_Q13, rst.RESET_DIVn);
+  wire DIV_Q15 = DIV_R15.flip(!DIV_Q14, rst.RESET_DIVn);
 
-  bool ULUR = mux2(clk.BOGA1MHZ, !TAMA_Q, sys.FF60_D1);
+  clk.CLK_16k  = not(DIV_Q5); // is this really inverted?
+  clk.CLK_64k  = DIV_Q3;
+  clk.CLK_256k = DIV_Q1;
+  clk.FF04_D0n = not(DIV_Q6);
+  clk.FF04_D1n = not(DIV_Q7);
 
-  bool UGOT_Q = UGOT.flip(ULUR,    rst.RESET_DIVn); // FIXME double negative?
-  bool TULU_Q = TULU.flip(!UGOT_Q, rst.RESET_DIVn);
-  bool TUGO_Q = TUGO.flip(!TULU_Q, rst.RESET_DIVn);
-  bool TOFE_Q = TOFE.flip(!TUGO_Q, rst.RESET_DIVn);
-  bool TERU_Q = TERU.flip(!TOFE_Q, rst.RESET_DIVn);
-  bool SOLA_Q = SOLA.flip(!TERU_Q, rst.RESET_DIVn);
-  bool SUBU_Q = SUBU.flip(!SOLA_Q, rst.RESET_DIVn);
-  bool TEKA_Q = TEKA.flip(!SUBU_Q, rst.RESET_DIVn);
-  bool UKET_Q = UKET.flip(!TEKA_Q, rst.RESET_DIVn);
-  bool UPOF_Q = UPOF.flip(!UKET_Q, rst.RESET_DIVn);
-
-  bool UMEK = not(UGOT_Q);
-  bool UREK = not(TULU_Q);
-  bool UTOK = not(TUGO_Q);
-  bool SAPY = not(TOFE_Q);
-  bool UMER = not(TERU_Q);
-  bool RAVE = not(SOLA_Q);
-  bool RYSO = not(SUBU_Q);
-  bool UDOR = not(TEKA_Q);
-
-  clk.FF04_D0n = UMEK;
-  clk.FF04_D1n = UREK;
-
-  bool TAWU = not(UMEK);
-  bool TAKU = not(UREK);
-  bool TEMU = not(UTOK);
-  bool TUSE = not(SAPY);
-  bool UPUG = not(UMER);
-  bool SEPU = not(RAVE);
-  bool SAWA = not(RYSO);
-  bool TATU = not(UDOR);
-
-  bool TAGY = and(dec.FF04_FF07, cpu.CPU_RD, mem.TOLA_A1n, mem.TOVY_A0n);
-  if (TAGY) {
-    mem.D0 = TAWU;
-    mem.D1 = TAKU;
-    mem.D2 = TEMU;
-    mem.D3 = TUSE;
-    // these two are switched on the schematic, def not right...
-    mem.D4 = UPUG;
-    mem.D5 = SEPU;
-    mem.D6 = SAWA;
-    mem.D7 = TATU;
+  if (and(dec.FF04_FF07, cpu.CPU_RD, mem.TOLA_A1n, mem.TOVY_A0n)) {
+    mem.D0 = DIV_Q6;
+    mem.D1 = DIV_Q7;
+    mem.D2 = DIV_Q8;
+    mem.D3 = DIV_Q9;
+    mem.D4 = DIV_Q10;
+    mem.D5 = DIV_Q11;
+    mem.D6 = DIV_Q12;
+    mem.D7 = DIV_Q13;
   }
 
   //----------
@@ -87,184 +64,81 @@ void Clocks::tick(const APU& apu, Resets& rst, const AddressDecoder& dec) {
   wire APUK_Q = APUK.q();
 
   wire AFER_Q = AFER.q();
-  wire CERY_Q = CERY.q();
 
-  bool UPYF = or(ext.RESET, clk.CLKIN_An);
-  bool TUBO = unk2(clk.ABOL_1MHZ, UPYF);
-  bool UNUT = and(TUBO, UPOF_Q);
-  bool TABA = or(dbg.T1nT2, dbg.T1nT2n, UNUT);
 
-  // combi clock deglitcher, skipping it
-  //bool ARYS = not(CLKIN_B);
-  //bool ANOS = nand(CLKIN_B, AVET);
-  //bool AVET = nand(ANOS, ARYS);
-  bool AVET = ext.CLKIN_B;
+  // combi clock deglitcher on CLKIN_B, skipping it
 
-  bool ATAL = not(AVET);
-  bool ATAL_4MHZ = ATAL;
-  bool AZOF = not(ATAL);
-  bool ATAG = not(AZOF);
-  bool ZAXY = not(AZOF);
-  bool AMUK = not(ATAG);
-  //bool AMUK_4MHZ = AMUK;
-  bool ZEME = not(ZAXY);
-  bool APUV = not(AMUK);
-  clk.APUV_4MHZ = APUV;
-  bool ARYF = not(AMUK);
-  bool ARYF_4MHZ = ARYF;
-  clk.CLK1 = ZEME;
-  bool ALET = not(ZEME);
-  clk.CLK2 = ALET;
+  clk.CLKIN_An  = not(ext.CLKIN_A);
+  clk.CLK1      = ext.CLKIN_B;
+  clk.CLK2      = not(ext.CLKIN_B);
+  clk.APUV_4MHZ = not(ext.CLKIN_B);
 
-  bool BELA = not(rst.APU_RESET);
-  clk.CERY_2MHZ = CERY_Q;
+  // guess this is used in the apu somewhere? still dunno who drives CYBO_4MHZ
+  clk.CERY_2MHZ = CERY.flip(clk.CYBO_4MHZ, not(rst.APU_RESET));
 
   // comment about clock rates on schematic is wrong
-  bool ADAR = not(ADYK_Q);
-  bool ATYP = not(AFUR_Q);
-  bool AFEP = not(ALEF_Q);
-  bool AROV = not(APUK_Q);
-  clk.AFAS = nor(ADAR, ATYP);
-  bool AJAX = not(ATYP);
-  bool BUGO = not(AFEP);
-  bool AREV = nand(cpu.FROM_CPU3, clk.AFAS);
-  bool AGUT = unk3(AJAX, AROV, cpu.FROM_CPU4);
-  bool BATE = nor(BUGO, AROV, clk.ABOL_1MHZ);
-  bool APOV = not(AREV);
-  bool AWOD = or(dbg.T1nT2, AGUT);
-  bool BASU = not(BATE);
-  clk.ABUZ = not(AWOD);
-  clk.BUKE = not(BASU);
+  clk.AFAS = and(ADYK_Q, AFUR_Q);
+  clk.ABUZ = nor(dbg.T1nT2, unk3(not(not(AFUR_Q)), not(APUK_Q), cpu.FROM_CPU4));
+  clk.BUKE = and(not(ALEF_Q), APUK_Q, not(clk.ABOL_1MHZ));
 
-  cpu.CPU_RD_SYNC = APOV;
+  cpu.CPU_RD_SYNC = and(cpu.FROM_CPU3, ADYK_Q, AFUR_Q);
 
-  bool BAPY = nor(clk.ABOL_1MHZ, AROV, ATYP);
-  bool NULE = nor(ATYP, clk.ABOL_1MHZ);
-  bool BERU = not(BAPY);
-  bool BYRY = not(NULE);
-  bool BUFA = not(BERU);
-  //bool BYLY = not(BERU);
-  bool BUDE = not(BYRY);
-  //bool BEVA = not(BYRY);
-  bool BOLO = not(BUFA);
-  bool BYDA = not(BUFA);
-  bool BEKO = not(BUDE);
-  bool BAVY = not(BUDE);
-  bool BEJA = nand(BOLO, BYDA, BEKO, BAVY);
-  bool BANE = not(BEJA);
-  bool BELO = not(BANE);
-  bool BAZE = not(BELO);
-  bool BUTO = nand(AFEP, ATYP, BAZE);
-  bool BELE = not(BUTO);
-  bool ATEZ = not(ext.CLKIN_A);
-  bool BYJU = nor(BELE, ATEZ);
-  bool ALYP = not(TABA);
-  bool BUTY = not(clk.ABOL_1MHZ);
-  bool BALY = not(BYJU);
-  bool AFAR = nor(ALYP, ext.RESET);
-  bool BUVU = and(BUTY, BALY);
-  bool BOGA = not(BALY);
+  wire BAPY = nor(clk.ABOL_1MHZ, not(APUK_Q), not(AFUR_Q));
+  wire BEJA = nand(not(BAPY), not(nor(not(AFUR_Q), clk.ABOL_1MHZ)));
+  wire BALY = or(and(not(ALEF_Q), not(AFUR_Q), not(BEJA)), not(ext.CLKIN_A));
+  clk.BOGA1MHZ = not(BALY);
 
-  clk.BOGA1MHZ = BOGA;
+  clk.BEDO = and(not(clk.ABOL_1MHZ), BALY);
+  cpu.TO_CPU = not(and(not(clk.ABOL_1MHZ), BALY));
 
-  bool ASOL = unk2(AFAR, ext.RESET);
-  bool BOMA = not(BOGA);
-  bool BYXO = not(BUVU);
-  clk.BEDO = not(BYXO);
-  bool BOWA = not(clk.BEDO);
-  cpu.TO_CPU = BOWA;
+  clk.PHI_OUTn = not(ext.PHI_OUT);
 
-  bool AVOR = or(AFER_Q, ASOL);
-  bool ALUR = not(AVOR);
+  {
+    wire TUBO = unk2(clk.ABOL_1MHZ, or(ext.RESET, clk.CLKIN_An));
+    wire TABA = or(dbg.T1nT2, dbg.T1nT2n, and(TUBO, DIV_Q15));
+    wire ASOL = unk2(nor(not(TABA), ext.RESET), ext.RESET);
+    rst.RESET2 = not(or(AFER_Q, ASOL));
+    AFER.tock(BALY, dbg.T1nT2n, ASOL);
+  }
 
-  bool UVYT = not(ext.PHI_OUT);
-  clk.PHI_OUTn = UVYT;
+  clk.PHIn = not(nor(not(AFUR_Q), clk.ABOL_1MHZ));
 
-  rst.RESET2 = ALUR;
+  rst.RESET_DIVn = nor(clk.CLKIN_An, ext.RESET, and(dec.FF04_FF07, cpu.CPU_WR, mem.TOLA_A1n, mem.TOVY_A0n));
 
-  bool DOVA = not(BUDE);
-  clk.PHIn = DOVA;
+  rst.RESET7 = not(rst.RESET2);
+  rst.RESET7n = rst.RESET2;
+  rst.WESY    = rst.RESET2;
+  rst.RESET9  = rst.RESET2;
+  rst.RESET8  = rst.RESET2;
+  rst.RESET6  = rst.RESET2;
 
-  bool TAPE = and(dec.FF04_FF07, cpu.CPU_WR, mem.TOLA_A1n, mem.TOVY_A0n);
+  rst.RESET_VIDEO  = nand(ppu.LCDC_LCDEN, not(rst.RESET7));
+  rst.RESET_VIDEOn = and(ppu.LCDC_LCDEN, not(rst.RESET7));
 
-  bool UFOL = nor(clk.CLKIN_An, ext.RESET, TAPE);
-  rst.RESET_DIVn = UFOL;
+  wire BARA_Q = BARA.q();
+  wire CARU_Q = CARU.q();
+  wire BYLU_Q = BYLU.q();
 
-  bool DULA = not(rst.RESET2);
-  bool XEBE = not(rst.RESET7);
-  bool UCOB = not(ext.CLKIN_A);
-  bool CUNU = not(DULA);
-  bool XODO = and(ppu.LCDC_LCDEN, XEBE);
+  clk.HORU_512 = mux2(clk.HAMA_512Kn, !BARA_Q, apu.FERO_Q);
+  clk.BUFY_256 = mux2(clk.HAMA_512Kn, not(!CARU_Q), apu.FERO_Q);
+  clk.BYFE_128 = mux2(clk.HAMA_512Kn, not(!BYLU_Q), apu.FERO_Q);
 
-  rst.RESET7n = XEBE;
-  clk.CLKIN_An = UCOB;
-
-  bool XORE = not(CUNU);
-
-  rst.RESET7 = XORE;
-
-  rst.WESY = not(XORE);
-  bool WALU = not(XORE);
-
-  rst.RESET6 = CUNU;
-  bool XAPO = not(XODO);
-
-  rst.RESET_VIDEO = XAPO;
-  rst.RESET_VIDEOn = not(XAPO);
-
-  rst.RESET9 = rst.WESY;
-  rst.RESET8 = WALU;
-
-  bool BARA_Q = BARA.q();
-  bool CARU_Q = CARU.q();
-  bool BYLU_Q = BYLU.q();
-
-  bool ATUS = not(rst.APU_RESET);
-  bool COKE = not(clk.AJER_2MHZ);
-  bool BURE = not(!BARA_Q);
-  bool FYNE = not(BURE);
-  bool CULO = not(!CARU_Q);
-  bool APEF = not(!BYLU_Q);
-
-  bool GALE = mux2(clk.HAMA_512Kn, FYNE, apu.FERO_Q);
-  bool BEZE = mux2(clk.HAMA_512Kn, CULO, apu.FERO_Q);
-  bool BULE = mux2(clk.HAMA_512Kn, APEF, apu.FERO_Q);
-
-  bool GEXY = not(GALE);
-  bool COFU = not(BEZE);
-  bool BARU = not(BULE);
-  bool HORU = not(GEXY);
-  bool BUFY = not(COFU);
-  bool BYFE = not(BARU);
-
-  clk.HORU_512 = HORU;
-  clk.BUFY_256 = BUFY;
-  clk.BYFE_128 = BYFE;
-
-  bool BOPO = not(rst.APU_RESET);
-  bool ATYK_Q = ATYK.flip(ARYF_4MHZ, BOPO);
-  bool AVOK_Q = AVOK.flip(ATYK_Q, BOPO);
-  bool BAVU = not(AVOK_Q);
-  bool JESO_Q = JESO.flip(BAVU, rst.APU_RESET5n);
+  wire ATYK_Q = ATYK.flip(not(ext.CLKIN_B),   not(rst.APU_RESET));
+  wire AVOK_Q = AVOK.flip(ATYK_Q,      not(rst.APU_RESET));
+  wire JESO_Q = JESO.flip(not(AVOK_Q), rst.APU_RESET5n);
   clk.JESO_512K = JESO_Q;
-  clk.BAVU_1MHZ = BAVU;
-  bool HAMA = not(JESO_Q);
-  clk.HAMA_512Kn = HAMA;
+  clk.BAVU_1MHZ = not(AVOK_Q);
+  clk.HAMA_512Kn = not(JESO_Q);
+
+  BARA.tock(not(clk.AJER_2MHZ), not(rst.APU_RESET), not(DIV_Q10));
+  CARU.flip(BARA_Q, not(rst.APU_RESET));
+  BYLU.flip(!CARU_Q, not(rst.APU_RESET));
 
   //----------
   // registers
 
-  ADYK.tock(ATAL_4MHZ, dbg.T1nT2n, APUK_Q);
-  AFUR.tock(ATAL_4MHZ, dbg.T1nT2n, !ADYK_Q);
-  ALEF.tock(ATAL_4MHZ, dbg.T1nT2n, !AFUR_Q);
-  APUK.tock(ATAL_4MHZ, dbg.T1nT2n, !ALEF_Q);
-
-  AFER.tock(BOMA, dbg.T1nT2n, ASOL);
-  CERY.flip(clk.CYBO_4MHZ, BELA);
-
-  //----------
-
-  BARA.tock(COKE, ATUS, UMER);
-  CARU.flip(BURE, ATUS);
-  BYLU.flip(!CARU_Q, ATUS);
+  ADYK.tock(not(ext.CLKIN_B), dbg.T1nT2n, APUK_Q);
+  AFUR.tock(not(ext.CLKIN_B), dbg.T1nT2n, !ADYK_Q);
+  ALEF.tock(not(ext.CLKIN_B), dbg.T1nT2n, !AFUR_Q);
+  APUK.tock(not(ext.CLKIN_B), dbg.T1nT2n, !ALEF_Q);
 }

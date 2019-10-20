@@ -85,8 +85,9 @@ public:
   //----------
   // outputs
 
+  bool ATEJ; // this is a clock that controls whether the x position increments or not
+
   bool AMAB;
-  bool ATEJ;
   bool WEFE;
   bool ACYL;
   bool ANOM;

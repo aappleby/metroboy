@@ -95,29 +95,17 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   bool X_Q6 = X_R6.q();
   bool X_Q7 = X_R7.q();
 
-  bool XUKE = and(X_Q0, X_Q1);
-  bool XYLE = and(X_Q2, XUKE);
-  bool RYBO = xor(X_Q1, X_Q0);
-  bool XEGY = xor(X_Q2, XUKE);
-  bool XORA = xor(X_Q3, XYLE);
-
   X_R0.tock(clk.CLKPIPE, TADY, !X_Q0);
-  X_R1.tock(clk.CLKPIPE, TADY, RYBO);
-  X_R2.tock(clk.CLKPIPE, TADY, XEGY);
-  X_R3.tock(clk.CLKPIPE, TADY, XORA);
+  X_R1.tock(clk.CLKPIPE, TADY, xor(X_Q1, X_Q0));
+  X_R2.tock(clk.CLKPIPE, TADY, xor(X_Q2, and(X_Q0, X_Q1)));
+  X_R3.tock(clk.CLKPIPE, TADY, xor(X_Q3, and(X_Q2, and(X_Q0, X_Q1))));
 
   bool TOCA = not(X_Q3);
 
-  bool TYBA = and(X_Q5, X_Q4);
-  bool SURY = and(X_Q6, TYBA);
-  bool SAKE = xor(X_Q5, X_Q4);
-  bool TYGE = xor(X_Q6, TYBA);
-  bool ROKU = xor(X_Q7, SURY);
-
   X_R4.tock(TOCA, TADY, !X_Q4);
-  X_R5.tock(TOCA, TADY, SAKE);
-  X_R6.tock(TOCA, TADY, TYGE);
-  X_R7.tock(TOCA, TADY, ROKU);
+  X_R5.tock(TOCA, TADY, xor(X_Q5, X_Q4));
+  X_R6.tock(TOCA, TADY, xor(X_Q6, and(X_Q5, X_Q4)));
+  X_R7.tock(TOCA, TADY, xor(X_Q7, and(X_Q6, and(X_Q5, X_Q4))));
 
   X0 = not(X_Q0);
   X1 = not(X_Q1);

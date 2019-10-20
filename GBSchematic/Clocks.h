@@ -49,6 +49,27 @@ struct Clocks {
 
 private:
 
+  reg DIV_R0; // DIV_0
+  reg DIV_R1;
+  reg DIV_R2;
+  reg DIV_R3;
+  reg DIV_R4;
+  reg DIV_R5;
+  reg DIV_R6;
+  reg DIV_R7;
+  reg DIV_R8;
+  reg DIV_R9;
+  reg DIV_R10;
+  reg DIV_R11;
+  reg DIV_R12;
+  reg DIV_R13;
+  reg DIV_R14;
+  reg DIV_R15;
+
+
+
+
+
   reg ADYK;
   reg AFUR;
   reg ALEF;
@@ -56,12 +77,6 @@ private:
   reg AFER;
   reg CERY;
 
-  reg TAMA;
-  reg UNYK;
-  reg TERO;
-  reg UNER;
-  reg UFOR;
-  reg UKUP;
 
   reg BARA;
   reg CARU;
@@ -70,19 +85,6 @@ private:
   reg ATYK;
   reg AVOK;
   reg JESO;
-
-  // FF04, DIV
-  reg UGOT;
-  reg TULU;
-  reg TUGO;
-  reg TOFE;
-  reg TERU;
-  reg SOLA;
-  reg SUBU;
-  reg TEKA;
-  reg UKET;
-  reg UPOF;
-
 };
 
 extern Clocks clk;

@@ -5,17 +5,18 @@ struct Resets;
 struct OAM;
 struct AddressDecoder;
 struct Window;
+struct Vram;
 
 struct Sprites {
 public:
 
-  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec);
-  void tick_control(const OAM& oam, const Resets& rst, const Window& win);
+  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const Vram& vram);
+  void tick_control(const OAM& oam, const Resets& rst, const Window& win, Vram& vram);
 
   void tick_matcher(const OAM& oam);
   void tick_spritestore();
   void tick_paletteshifter();
-  void tick_pixelshifter();
+  void tick_pixelshifter(const Vram& vram);
 
 
   bool SPR_MATCH;
@@ -132,6 +133,8 @@ public:
   bool WENU;
 
 private:
+
+  bool COTA;
 
   // these are probably named wrong and are actually the oam address lines?
   bool OAM_A_A7;

@@ -11,17 +11,15 @@ public:
 
 private:
 
+  reg NYDU;
+  reg MOBA;
+
   // tac
   reg SABO,SAMY,SOPU;
 
   // tima
   reg REGA,POVY,PERU,RATE,RUBY,RAGE,PEDA,NUGA;
 
-  reg NYDU;
-  reg MOBA;
-
   // tma
   reg PETO,MURU,NYKE,SETA,SABU,TYRU,SUFY,TYVA;
 };
-
-extern Timer tim;

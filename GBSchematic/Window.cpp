@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-void Window::tick(const Resets& rst) {
+void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
   //----------
   // Window Y match
 

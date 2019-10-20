@@ -14,12 +14,10 @@
 #include "Sprites.h"
 #include "Window.h"
 
-Vram vram;
-
 //-----------------------------------------------------------------------------
 // 25_VRAM_INTERFACE.png
 
-void Vram::tick(OAM& oam, const AddressDecoder& dec, const Window& win) {
+void Vram::tick(OAM& oam, const AddressDecoder& dec, const Window& win, Vram& vram) {
   bool SOTO_Q = SOTO.q();
 
   bool RYVO = nand(mem.D5, ext_sch.LULA);
@@ -40,14 +38,6 @@ void Vram::tick(OAM& oam, const AddressDecoder& dec, const Window& win) {
   ext.D7_A = RAVU;
   ext.D6_A = RAFY;
   ext.D0_A = RUXA;
-
-  bool MATU_Q = dma.MATU.q();
-  bool CUFE = unk3(sys.SARO, MATU_Q, dma.MOPA_PHI);
-  bool VAPE = and(spr.TACU, spr.TUVO);
-  bool AVER = and(spr.ACYL, spr.XYSO);
-  bool XUJY = not(VAPE);
-  bool BYCU = nor(CUFE, XUJY, AVER);
-  COTA = not(BYCU);
 
   bool SYRO = not(dec.FEXXFFXXn);
   bool TEFA = nor(SYRO, ext_sch.TEXO);
@@ -127,14 +117,14 @@ void Vram::tick(OAM& oam, const AddressDecoder& dec, const Window& win) {
   bool REBA = !not(ext.MD1_IN);
 
   if (RENA) {
-    vram.MD7 = RAKU;
-    vram.MD4 = ROCE;
-    vram.MD3 = REMO;
-    vram.MD5 = ROPU;
-    vram.MD6 = RETA;
-    vram.MD2 = RYDO;
-    vram.MD0 = RODY;
-    vram.MD1 = REBA;
+    MD7 = RAKU;
+    MD4 = ROCE;
+    MD3 = REMO;
+    MD5 = ROPU;
+    MD6 = RETA;
+    MD2 = RYDO;
+    MD0 = RODY;
+    MD1 = REBA;
   }
 
   bool TUSO = nor(NET02, clk.BEDO);
@@ -171,14 +161,14 @@ void Vram::tick(OAM& oam, const AddressDecoder& dec, const Window& win) {
   bool SUZA = not(mem.D7);
 
   if (RAHU) {
-    vram.MD0 = TEME;
-    vram.MD1 = TEWU;
-    vram.MD2 = TYGO;
-    vram.MD3 = SOTE;
-    vram.MD4 = SEKE;
-    vram.MD5 = RUJO;
-    vram.MD6 = TOFA;
-    vram.MD7 = SUZA;
+    MD0 = TEME;
+    MD1 = TEWU;
+    MD2 = TYGO;
+    MD3 = SOTE;
+    MD4 = SEKE;
+    MD5 = RUJO;
+    MD6 = TOFA;
+    MD7 = SUZA;
   }
 
   bool SYNU = or(RAHU, vram.MD0);
@@ -211,140 +201,141 @@ void Vram::tick(OAM& oam, const AddressDecoder& dec, const Window& win) {
   bool XANE = nor(dma.VRAM_TO_OAM, ppu.XYMU);
   bool XEDU = not(XANE);
 
+  // probably not actually inverters...
+  bool XAKY = !mem.A0;
+  bool XUXU = !mem.A1;
+  bool XYNE = !mem.A2;
+  bool XODY = !mem.A3;
   bool XECA = !mem.A4;
+  bool XOBA = !mem.A5;
+  bool XOPO = !mem.A6;
   bool XYBO = !mem.A7;
   bool RYSU = !mem.A8;
-  bool RUSE = !mem.A10;
-  bool RUMO = !mem.A12;
-  bool XYNE = !mem.A2;
-  bool XOBA = !mem.A5;
-  bool XODY = !mem.A3;
-  bool RYNA = !mem.A11;
   bool RESE = !mem.A9;
-  bool XAKY = !mem.A0;
-  bool XOPO = !mem.A6;
-  bool XUXU = !mem.A1;
+  bool RUSE = !mem.A10;
+  bool RYNA = !mem.A11;
+  bool RUMO = !mem.A12;
 
   if (XEDU) {
-    vram.MA4 = XECA;
-    vram.MA7 = XYBO;
-    vram.MA8 = RYSU;
-    vram.MA10 = RUSE;
-    vram.MA12 = RUMO;
-    vram.MA2 = XYNE;
-    vram.MA5 = XOBA;
-    vram.MA3 = XODY;
-    vram.MA11 = RYNA;
-    vram.MA9 = RESE;
-    vram.MA0 = XAKY;
-    vram.MA6 = XOPO;
-    vram.MA1 = XUXU;
+    MA0  = XAKY;
+    MA1  = XUXU;
+    MA2  = XYNE;
+    MA3  = XODY;
+    MA4  = XECA;
+    MA5  = XOBA;
+    MA6  = XOPO;
+    MA7  = XYBO;
+    MA8  = RYSU;
+    MA9  = RESE;
+    MA10 = RUSE;
+    MA11 = RYNA;
+    MA12 = RUMO;
   }
 
   bool LYRA = nand(dbg.T1nT2, ext_sch.RORU);
 
-  bool RYBA = not(ext.D7_IN);
+  bool TOVO = not(ext.D0_IN);
   bool RUZY = not(ext.D1_IN);
   bool ROME = not(ext.D2_IN);
-  bool TEHE = not(ext.D4_IN);
-  bool SOCA = not(ext.D6_IN);
-  bool RATU = not(ext.D5_IN);
-  bool TOVO = not(ext.D0_IN);
   bool SAZA = not(ext.D3_IN);
+  bool TEHE = not(ext.D4_IN);
+  bool RATU = not(ext.D5_IN);
+  bool SOCA = not(ext.D6_IN);
+  bool RYBA = not(ext.D7_IN);
 
-  bool ROPA = not(RYBA);
+  bool TUTY = not(TOVO);
   bool SYWA = not(RUZY);
   bool SUGU = not(ROME);
-  bool TUTE = not(TEHE);
-  bool TEMY = not(SOCA);
-  bool SAJO = not(RATU);
-  bool TUTY = not(TOVO);
   bool TAWO = not(SAZA);
+  bool TUTE = not(TEHE);
+  bool SAJO = not(RATU);
+  bool TEMY = not(SOCA);
+  bool ROPA = not(RYBA);
 
   if (LYRA) {
-    mem.D7 = ROPA;
+    mem.D0 = TUTY;
     mem.D1 = SYWA;
     mem.D2 = SUGU;
-    mem.D4 = TUTE;
-    mem.D6 = TEMY;
-    mem.D5 = SAJO;
-    mem.D0 = TUTY;
     mem.D3 = TAWO;
+    mem.D4 = TUTE;
+    mem.D5 = SAJO;
+    mem.D6 = TEMY;
+    mem.D7 = ROPA;
   }
 
   const bool ROVE = not(RAHU);
 
   const bool SEFA = and(vram.MD0, ROVE);
+  const bool SOGO = and(vram.MD1, ROVE);
+  const bool SEFU = and(vram.MD2, ROVE);
   const bool SUNA = and(vram.MD3, ROVE);
   const bool SUMO = and(vram.MD4, ROVE);
-  const bool SUKE = and(vram.MD7, ROVE);
-  const bool SAMO = and(vram.MD6, ROVE);
-  const bool SOGO = and(vram.MD1, ROVE);
   const bool SAZU = and(vram.MD5, ROVE);
-  const bool SEFU = and(vram.MD2, ROVE);
+  const bool SAMO = and(vram.MD6, ROVE);
+  const bool SUKE = and(vram.MD7, ROVE);
 
   const bool REGE = not(SEFA);
+  const bool RYKY = not(SOGO);
+  const bool RAZO = not(SEFU);
   const bool RADA = not(SUNA);
   const bool RYRO = not(SUMO);
-  const bool RYZE = not(SUKE);
-  const bool REKU = not(SAMO);
-  const bool RYKY = not(SOGO);
   const bool REVU = not(SAZU);
-  const bool RAZO = not(SEFU);
-
+  const bool REKU = not(SAMO);
+  const bool RYZE = not(SUKE);
+  
   ext.MD0_A = REGE;
+  ext.MD1_A = RYKY;
+  ext.MD2_A = RAZO;
   ext.MD3_A = RADA;
   ext.MD4_A = RYRO;
-  ext.MD7_A = RYZE;
-  ext.MD6_A = REKU;
-  ext.MD1_A = RYKY;
   ext.MD5_A = REVU;
-  ext.MD2_A = RAZO;
+  ext.MD6_A = REKU;
+  ext.MD7_A = RYZE;
 
-  bool CEDE = not(dma.LUMA);
-  bool SYZO = not(ext.D7_IN);
+  bool RALO = not(ext.D0_IN);
   bool TUNE = not(ext.D1_IN);
   bool SERA = not(ext.D2_IN);
-  bool SYSA = not(ext.D4_IN);
-  bool TUBE = not(ext.D6_IN);
-  bool SUGY = not(ext.D5_IN);
-  bool RALO = not(ext.D0_IN);
   bool TENU = not(ext.D3_IN);
+  bool SYSA = not(ext.D4_IN);
+  bool SUGY = not(ext.D5_IN);
+  bool TUBE = not(ext.D6_IN);
+  bool SYZO = not(ext.D7_IN);
 
-  bool BAPE = not(SYZO);
-  bool BYPY = not(SYZO);
+  bool WASA = not(RALO);
+  bool WEJO = not(RALO);
   bool BOMO = not(TUNE);
   bool BUBO = not(TUNE);
   bool BASA = not(SERA);
   bool BETU = not(SERA);
-  bool BUMA = not(SYSA);
-  bool BAXU = not(SYSA);
-  bool BASY = not(TUBE);
-  bool BYNY = not(TUBE);
-  bool BUPY = not(SUGY);
-  bool BUHU = not(SUGY);
-  bool WASA = not(RALO);
-  bool WEJO = not(RALO);
   bool CAKO = not(TENU);
   bool CYME = not(TENU);
+  bool BUMA = not(SYSA);
+  bool BAXU = not(SYSA);
+  bool BUPY = not(SUGY);
+  bool BUHU = not(SUGY);
+  bool BASY = not(TUBE);
+  bool BYNY = not(TUBE);
+  bool BAPE = not(SYZO);
+  bool BYPY = not(SYZO);
 
+  bool CEDE = not(dma.LUMA);
   if (CEDE) {
-    oam.OAM_B_D7 = BAPE;
-    oam.OAM_A_D7 = BYPY;
+    oam.OAM_B_D0 = WASA;
+    oam.OAM_A_D0 = WEJO;
     oam.OAM_B_D1 = BOMO;
     oam.OAM_A_D1 = BUBO;
     oam.OAM_B_D2 = BASA;
     oam.OAM_A_D2 = BETU;
-    oam.OAM_B_D4 = BUMA;
-    oam.OAM_A_D4 = BAXU;
-    oam.OAM_B_D6 = BASY;
-    oam.OAM_A_D6 = BYNY;
-    oam.OAM_B_D5 = BUPY;
-    oam.OAM_A_D5 = BUHU;
-    oam.OAM_B_D0 = WASA;
-    oam.OAM_A_D0 = WEJO;
     oam.OAM_B_D3 = CAKO;
     oam.OAM_A_D3 = CYME;
+    oam.OAM_B_D4 = BUMA;
+    oam.OAM_A_D4 = BAXU;
+    oam.OAM_B_D5 = BUPY;
+    oam.OAM_A_D5 = BUHU;
+    oam.OAM_B_D6 = BASY;
+    oam.OAM_A_D6 = BYNY;
+    oam.OAM_B_D7 = BAPE;
+    oam.OAM_A_D7 = BYPY;
   }
 
   bool TYVY = nand(SERE, spr.LEKO);

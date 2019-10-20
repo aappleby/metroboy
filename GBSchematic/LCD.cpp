@@ -7,8 +7,6 @@
 #include "Window.h"
 #include "LCD.h"
 
-LCD lcd;
-
 //-----------------------------------------------------------------------------
 
 void LCD::tick(const Resets& rst, const Window& win) {

@@ -26,5 +26,3 @@ private:
   reg LEBE;
   reg MEDA;
 };
-
-extern LCD lcd;

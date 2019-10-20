@@ -15,7 +15,7 @@ DmaBus dma;
 //-----------------------------------------------------------------------------
 // 4_DMA.png
 
-void DmaBus::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec) {
+void DmaBus::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, Vram& vram) {
   bool MAKA_Q = MAKA.q();
   bool LUVY_Q = LUVY.q();
   bool MYTE_Q = MYTE.q();

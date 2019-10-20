@@ -4,11 +4,12 @@
 struct OAM;
 struct AddressDecoder;
 struct Window;
+struct Vram;
 
 struct Vram {
 public:
 
-  void tick(OAM& oam, const AddressDecoder& dec, const Window& win);
+  void tick(OAM& oam, const AddressDecoder& dec, const Window& win, Vram& vram);
 
   bool MA0;
   bool MA1;
@@ -33,12 +34,7 @@ public:
   bool MD6;
   bool MD7;
 
-  bool COTA; // controls something sprite related
-
 private:
 
   reg SOTO;
 };
-
-extern Vram vram;
-

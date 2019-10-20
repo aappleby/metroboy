@@ -7,19 +7,11 @@
 #include "Window.h"
 #include "Sprites.h"
 
-Background bg;
-
 //-----------------------------------------------------------------------------
 
-void Background::tick(const Window& win) {
+void Background::tick(const Window& win, Vram& vram) {
   //----------
   // y + scy;
-
-  bool AXAD = not(win.PORE);
-  bool ASUL = and(AXAD, win.NETA);
-  bool ACEN = and(AXAD, win.POTU);
-  bool BEJE = not(ASUL);
-  bool BAFY = not(ACEN);
 
   bool FAFO_S = add_s(ppu.V0, ppu.FF42_D0, 0);
   bool FAFO_C = add_c(ppu.V0, ppu.FF42_D0, 0);
@@ -55,19 +47,14 @@ void Background::tick(const Window& win) {
   bool CETA = not(EFYK_S);
   bool DAFE = not(EJOK_S);
 
+  bool AXAD = not(win.PORE);
+  bool ASUL = and(AXAD, win.NETA);
+  bool BEJE = not(ASUL);
   if (BEJE) {
     vram.MA0 = ASUM;
     vram.MA1 = EVAD;
     vram.MA2 = DAHU;
     vram.MA3 = DODE;
-  }
-
-  if (BAFY) {
-    vram.MA5 = DUHO;
-    vram.MA6 = CASE;
-    vram.MA7 = CYPO;
-    vram.MA8 = CETA;
-    vram.MA9 = DAFE;
   }
 
   //----------
@@ -118,15 +105,23 @@ void Background::tick(const Window& win) {
   bool COLY = not(BYCA_S);
   bool AJAN = not(ACUL_S);
 
+  bool ACEN = and(AXAD, win.POTU);
+  bool BAFY = not(ACEN);
   if (BAFY) {
-    vram.MA10 = AMUV;
-    vram.MA12 = COXO;
-    vram.MA11 = COVE;
     vram.MA0 = AXEP;
     vram.MA1 = AFEB;
     vram.MA2 = ALEL;
     vram.MA3 = COLY;
     vram.MA4 = AJAN;
+
+    vram.MA5 = DUHO;
+    vram.MA6 = CASE;
+    vram.MA7 = CYPO;
+    vram.MA8 = CETA;
+    vram.MA9 = DAFE;
+    vram.MA10 = AMUV;
+    vram.MA12 = COXO;
+    vram.MA11 = COVE;
   }
 
   //----------
@@ -177,16 +172,11 @@ void Background::tick(const Window& win) {
 }
 //-----------------------------------------------------------------------------
 
-void tick_bgpixelshifter(const Window& win) {
+void Background::tick_bgpixelshifter(const Window& win, const Vram& vram) {
 
   wire LESO = not(win.MOFU);
   wire AJAR = not(LESO);
   wire LABU = not(AJAR);
-  wire METE = not(win.NYDY);
-  wire LOMA = not(METE);
-  wire LOZE = not(win.NYXU);
-  wire LUXA = not(win.NYXU);
-
   wire RAWU_Q = ppu.RAWU.tock(LABU, win.VYPO, vram.MD0);
   wire POZO_Q = ppu.POZO.tock(LABU, win.VYPO, vram.MD1);
   wire PYZO_Q = ppu.PYZO.tock(LABU, win.VYPO, vram.MD2);
@@ -196,6 +186,8 @@ void tick_bgpixelshifter(const Window& win) {
   wire POWY_Q = ppu.POWY.tock(LABU, win.VYPO, vram.MD6);
   wire PYJU_Q = ppu.PYJU.tock(LABU, win.VYPO, vram.MD7);
 
+  wire METE = not(win.NYDY);
+  wire LOMA = not(METE);
   wire LEGU_Q = ppu.LEGU.latch(LOMA, vram.MD0);
   wire NUDU_Q = ppu.NUDU.latch(LOMA, vram.MD1);
   bool MUKU_Q = ppu.MUKU.latch(LOMA, vram.MD2);
@@ -223,6 +215,7 @@ void tick_bgpixelshifter(const Window& win) {
   bool NEZE = not(NASA_Q);
   bool NOBO = not(NEFO_Q);
 
+  wire LUXA = not(win.NYXU);
   bool SEJA = nand(TOSA, LUXA);
   bool SENO = nand(RUCO, LUXA);
   bool SURE = nand(TYCE, LUXA);
@@ -241,6 +234,7 @@ void tick_bgpixelshifter(const Window& win) {
   bool RAJO = nand(LUXA, !POWY_Q);
   bool RAGA = nand(LUXA, !PYJU_Q);
 
+  wire LOZE = not(win.NYXU);
   bool LOTY = nand(LUHE, LOZE);
   bool NEXA = nand(NOLY, LOZE);
   bool LUTU = nand(LEKE, LOZE);

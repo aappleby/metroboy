@@ -4,11 +4,12 @@
 struct Resets;
 struct AddressDecoder;
 struct Window;
+struct LCD;
 
 struct PPU {
 public:
 
-  void tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const Window& win);
+  void tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const Window& win, const LCD& lcd);
 
   // screen y coordinate
   bool V0,V1,V2,V3,V4,V5,V6,V7;

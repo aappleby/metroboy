@@ -2,11 +2,13 @@
 #include "Schematics.h"
 
 struct Resets;
+struct LCD;
+struct Vram;
 
 struct Window {
 public:
 
-  void tick(const Resets& rst);
+  void tick(const Resets& rst, const LCD& lcd, Vram& vram);
 
   //----------
   // outputs

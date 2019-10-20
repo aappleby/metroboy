@@ -7,7 +7,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_pixelmux() {
+void tick_pixelmux(const Background& bg) {
   bool WOXA = and(ppu.FF40_D1, ppu.SPR_PIX_A_7);
   bool XULA = and(ppu.FF40_D1, ppu.SPR_PIX_B_7);
   bool TADE = and(ppu.FF40_D0, ppu.BG_PIX_B_7);

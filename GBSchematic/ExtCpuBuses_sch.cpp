@@ -12,7 +12,7 @@
 // ABUZ is a funny clock
 // LUMA is some dma signal
 
-void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA, const AddressDecoder& dec) {
+void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA, const AddressDecoder& dec, MemBus& mem) {
 
   //----------
   // center right

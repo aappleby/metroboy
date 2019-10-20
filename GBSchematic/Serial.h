@@ -1,6 +1,7 @@
 #pragma once
 #include "Schematics.h"
 
+struct MemBus;
 struct Resets;
 struct AddressDecoder;
 
@@ -8,7 +9,7 @@ struct Serial {
 
   bool SER_TICKn;
 
-  void tick(const Resets& rst, const AddressDecoder& dec);
+  void tick(const Resets& rst, const AddressDecoder& dec, MemBus& mem);
 
 private:
 

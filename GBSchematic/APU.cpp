@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_apucontrol(APU& apu, Resets& rst, const AddressDecoder& dec) {
+void tick_apucontrol(APU& apu, Resets& rst, const AddressDecoder& dec, MemBus& mem) {
   //----------
   // top left
 
@@ -179,7 +179,7 @@ void tick_apucontrol(APU& apu, Resets& rst, const AddressDecoder& dec) {
 
 //-----------------------------------------------------------------------------
 
-void tick_apudecode(APU& apu, AddressDecoder& dec) {
+void tick_apudecode(APU& apu, AddressDecoder& dec, const MemBus& mem) {
 
   bool BOXY = not(mem.A5);
   bool AWET = or(mem.A4, BOXY, mem.A6, mem.A7);

@@ -6,11 +6,12 @@ struct AddressDecoder;
 struct Window;
 struct Vram;
 struct ExtCpuBuses_sch;
+struct MemBus;
 
 struct Vram {
 public:
 
-  void tick(OAM& oam, const AddressDecoder& dec, const Window& win, Vram& vram, const ExtCpuBuses_sch& ext_sch);
+  void tick(OAM& oam, const AddressDecoder& dec, const Window& win, Vram& vram, const ExtCpuBuses_sch& ext_sch, MemBus& mem);
 
   bool MA0;
   bool MA1;

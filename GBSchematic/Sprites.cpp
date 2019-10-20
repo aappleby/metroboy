@@ -16,7 +16,7 @@ Sprites spr;
 
 //-----------------------------------------------------------------------------
 
-void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const Vram& vram) {
+void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const Vram& vram, const MemBus& mem) {
   //----------
   // sprite scan counter
 
@@ -156,7 +156,7 @@ void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const
 
 //-----------------------------------------------------------------------------
 
-void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win, Vram& vram) {
+void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win, Vram& vram, MemBus& mem) {
 
   //----------
   // bottom

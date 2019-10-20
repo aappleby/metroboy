@@ -2,11 +2,12 @@
 #include "Schematics.h"
 
 struct AddressDecoder;
+struct MemBus;
 
 struct ExtCpuBuses_sch {
 public:
 
-  void tick(bool ABUZ, bool LUMA, const AddressDecoder& dec);
+  void tick(bool ABUZ, bool LUMA, const AddressDecoder& dec, MemBus& mem);
 
   //----------
   // outputs

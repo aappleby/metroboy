@@ -6,12 +6,13 @@ struct OAM;
 struct AddressDecoder;
 struct Window;
 struct Vram;
+struct MemBus;
 
 struct Sprites {
 public:
 
-  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const Vram& vram);
-  void tick_control(const OAM& oam, const Resets& rst, const Window& win, Vram& vram);
+  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const Vram& vram, const MemBus& mem);
+  void tick_control(const OAM& oam, const Resets& rst, const Window& win, Vram& vram, MemBus& mem);
 
   void tick_matcher(const OAM& oam);
   void tick_spritestore();

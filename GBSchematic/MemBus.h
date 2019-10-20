@@ -63,5 +63,3 @@ struct MemBus {
   bool TOVY_A0n;
   bool TOLA_A1n;
 };
-
-extern MemBus mem;

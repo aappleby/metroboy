@@ -1,12 +1,13 @@
 #pragma once
 #include "Schematics.h"
 
+struct MemBus;
 struct Resets;
 struct AddressDecoder;
 
 struct Joypad {
 
-  void tick(const Resets& rst);
+  void tick(const Resets& rst, MemBus& mem);
 
 private:
 

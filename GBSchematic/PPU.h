@@ -6,13 +6,14 @@ struct AddressDecoder;
 struct Window;
 struct LCD;
 struct Background;
+struct MemBus;
 
 struct PPU {
 public:
 
-  void tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const Window& win, const LCD& lcd);
-  void tick_videoregs(const Resets& rst, const AddressDecoder& dec);
-  void tick_palettes(const AddressDecoder& dec);
+  void tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const Window& win, const LCD& lcd, MemBus& mem);
+  void tick_videoregs(const Resets& rst, const AddressDecoder& dec, MemBus& mem);
+  void tick_palettes(const AddressDecoder& dec, MemBus& mem);
   void tick_pixelmux(const Background& bg);
 
   // screen y coordinate

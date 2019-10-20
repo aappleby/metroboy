@@ -3,9 +3,10 @@
 
 struct Resets;
 struct AddressDecoder;
+struct MemBus;
 
 struct CpuBus {
-  void tick_interrupts(const Resets& rst, const AddressDecoder& dec);
+  void tick_interrupts(const Resets& rst, const AddressDecoder& dec, MemBus& mem);
 
   bool CPU_RD;
   bool CPU_RDn;

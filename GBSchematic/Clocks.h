@@ -4,9 +4,10 @@
 struct APU;
 struct Resets;
 struct AddressDecoder;
+struct MemBus;
 
 struct Clocks {
-  void tick(const APU& apu, Resets& rst, const AddressDecoder& dec);
+  void tick(const APU& apu, Resets& rst, const AddressDecoder& dec, MemBus& mem);
 
   bool CLKIN_An;
   bool CLKPIPE;

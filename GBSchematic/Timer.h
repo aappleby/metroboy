@@ -3,11 +3,12 @@
 
 struct Resets;
 struct AddressDecoder;
+struct MemBus;
 
 struct Timer {
 public:
 
-  void tick(bool FF04_D1n, const Resets& rst, AddressDecoder& dec);
+  void tick(bool FF04_D1n, const Resets& rst, AddressDecoder& dec, MemBus& mem);
 
 private:
 

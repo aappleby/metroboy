@@ -5,9 +5,10 @@ struct OAM;
 struct Resets;
 struct AddressDecoder;
 struct Vram;
+struct MemBus;
 
 struct DmaBus {
-  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, Vram& vram);
+  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, Vram& vram, MemBus& mem);
 
   bool DMA_A0;
   bool DMA_A1;

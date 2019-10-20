@@ -44,9 +44,9 @@ void LCD::tick(const Resets& rst, const Window& win) {
   bool KASA = not(ppu.PURE);
   bool UMOB = not(clk.FF04_D0n);
   bool USEC = not(clk.FF04_D1n);
-  bool KEDY = not(ppu.FF40_D7);
-  bool KAHE = amux2(ppu.FF40_D7, KASA, KEDY, UMOB);
-  bool KUPA = amux2(ppu.FF40_D7, KEBO, KEDY, USEC);
+  bool KEDY = not(ppu.LCDC_EN);
+  bool KAHE = amux2(ppu.LCDC_EN, KASA, KEDY, UMOB);
+  bool KUPA = amux2(ppu.LCDC_EN, KEBO, KEDY, USEC);
 
   bool KYMO = not(KAHE);
   bool KOFO = not(KUPA);

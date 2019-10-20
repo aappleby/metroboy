@@ -194,7 +194,7 @@ void Clocks::tick(const APU& apu, Resets& rst, const AddressDecoder& dec) {
   bool XEBE = not(rst.RESET7);
   bool UCOB = not(ext.CLKIN_A);
   bool CUNU = not(DULA);
-  bool XODO = and(ppu.FF40_D7, XEBE);
+  bool XODO = and(ppu.LCDC_EN, XEBE);
 
   rst.RESET7n = XEBE;
   clk.CLKIN_An = UCOB;

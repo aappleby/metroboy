@@ -14,8 +14,8 @@ public:
   // screen y coordinate
   bool V0,V1,V2,V3,V4,V5,V6,V7;
 
-  // screen x coordinate
-  bool ACAM,AZUB,AMEL,AHAL,APUX,ABEF,ADAZ,ASAH;
+  // screen x coordinate - {ACAM,AZUB,AMEL,AHAL,APUX,ABEF,ADAZ,ASAH}
+  bool X0,X1,X2,X3,X4,X5,X6,X7;
 
   // true where sprite pixel != 0
   bool LESY,LOTA,LYKU,ROBY,TYTA,TYCO,SOKA,XOVU; 
@@ -25,14 +25,14 @@ public:
   bool OBP1PIXELn;
 
   // FF40 LCDC
-  bool FF40_D0;
-  bool FF40_D1;
-  bool FF40_D2;
-  bool FF40_D3;
-  bool FF40_D4;
-  bool FF40_D5;
-  bool FF40_D6;
-  bool FF40_D7;
+  bool FF40_D0; // LCDC_BGEN
+  bool FF40_D1; // LCDC_SPEN
+  bool FF40_D2; // LCDC_SIZE
+  bool FF40_D3; // LCDC_BGMAP
+  bool FF40_D4; // LCDC_BGTILE
+  bool FF40_D5; // LCDC_WINEN
+  bool FF40_D6; // LCDC_WINMAP
+  bool LCDC_EN;
 
   // FF42 SCY
   bool FF42_D0;
@@ -138,14 +138,9 @@ public:
   bool OBP0_D6;
   bool OBP0_D7;
 
-  bool OBP1_D0;
-  bool OBP1_D1;
-  bool OBP1_D2;
-  bool OBP1_D3;
-  bool OBP1_D4;
-  bool OBP1_D5;
-  bool OBP1_D6;
-  bool OBP1_D7;
+  // FF48 OBP0 - {XUFU,XUKY,XOVA,XALO,XERU,XYZE,XUPO,XANA}
+  reg  OBP0_R0,OBP0_R1,OBP0_R2,OBP0_R3,OBP0_R4,OBP0_R5,OBP0_R6,OBP0_R7;
+  bool OBP1_D0,OBP1_D1,OBP1_D2,OBP1_D3,OBP1_D4,OBP1_D5,OBP1_D6,OBP1_D7;
 
   // x counter
   reg XEHO,SAVY,XODU,XYDO,TUHU,TUKY,TAKO,SYBE; 
@@ -183,8 +178,6 @@ public:
   // FF47 BGP
   reg MENA,MORU,MAXY,NUSY,MOGY,MUKE,PYLU,PAVO;
 
-  // FF48 OBP0
-  reg XANA,XYZE,XALO,XUKY,XUPO,XERU,XOVA,XUFU;
 
   // FF49 OBP1
   reg LUXO,LUGU,LOSE,LAWO,LEPU,LUNE,MOSA,MOXY;
@@ -192,8 +185,7 @@ public:
   // FF4A WY
   reg NAFU,MELA,NYRO,NAGA,NULO,NUKA,NENE,NESO;
 
-  // FF4B WX = (MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE);
-  //reg MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE;
+  // FF4B WX = {MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE}
   reg WX_R0, WX_R1, WX_R2, WX_R3, WX_R4, WX_R5, WX_R6, WX_R7;
 
   reg RUTU;

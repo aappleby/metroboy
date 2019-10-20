@@ -1,6 +1,10 @@
 #pragma once
 
 struct ExtBus {
+
+  //---------------------------------------------------------------------------
+  // PINS
+
   // all the address lines are bidir
   /* 01 */ bool A0_A,  A0_D,  A0_IN;
   /* 02 */ bool A1_A,  A1_D,  A1_IN;

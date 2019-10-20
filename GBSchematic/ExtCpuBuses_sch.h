@@ -48,4 +48,3 @@ private:
 
 };
 
-extern ExtCpuBuses_sch ext_sch;

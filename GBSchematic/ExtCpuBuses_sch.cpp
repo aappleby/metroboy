@@ -8,8 +8,6 @@
 #include "AddressDecoder.h"
 #include "Debug.h"
 
-ExtCpuBuses_sch ext_sch;
-
 //-----------------------------------------------------------------------------
 
 void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA, const AddressDecoder& dec) {

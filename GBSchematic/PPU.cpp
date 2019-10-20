@@ -117,14 +117,14 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   ppu.TAKO.tock(TOCA, TADY, TYGE);
   ppu.SYBE.tock(TOCA, TADY, ROKU);
 
-  ppu.ACAM = not(XEHO_Q);
-  ppu.AZUB = not(SAVY_Q);
-  ppu.AMEL = not(XODU_Q);
-  ppu.AHAL = not(XYDO_Q);
-  ppu.APUX = not(TUHU_Q);
-  ppu.ABEF = not(TUKY_Q);
-  ppu.ADAZ = not(TAKO_Q);
-  ppu.ASAH = not(SYBE_Q);
+  ppu.X0 = not(XEHO_Q);
+  ppu.X1 = not(SAVY_Q);
+  ppu.X2 = not(XODU_Q);
+  ppu.X3 = not(XYDO_Q);
+  ppu.X4 = not(TUHU_Q);
+  ppu.X5 = not(TUKY_Q);
+  ppu.X6 = not(TAKO_Q);
+  ppu.X7 = not(SYBE_Q);
 
   //----------
   // FF41 STAT

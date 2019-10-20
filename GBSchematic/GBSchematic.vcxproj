@@ -169,8 +169,6 @@
   <ItemGroup>
     <ClCompile Include="AddressDecoder.cpp" />
     <ClCompile Include="APU.cpp" />
-    <ClCompile Include="ApuControl_sch.cpp" />
-    <ClCompile Include="ApuDecode_sch.cpp" />
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Clocks.cpp" />
     <ClCompile Include="CpuBus.cpp" />

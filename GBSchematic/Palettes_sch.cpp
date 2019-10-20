@@ -59,14 +59,14 @@ void tick_palettes(const AddressDecoder& dec) {
   bool XOZY = not(XUFY);
   bool XELO = not(XOMA);
 
-  bool XANA_Q = ppu.XANA.tock(XELO, 0, mem.D7);
-  bool XYZE_Q = ppu.XYZE.tock(XELO, 0, mem.D5);
-  bool XALO_Q = ppu.XALO.tock(XELO, 0, mem.D3);
-  bool XUKY_Q = ppu.XUKY.tock(XELO, 0, mem.D1);
-  bool XUPO_Q = ppu.XUPO.tock(XELO, 0, mem.D6);
-  bool XERU_Q = ppu.XERU.tock(XELO, 0, mem.D4);
-  bool XOVA_Q = ppu.XOVA.tock(XELO, 0, mem.D2);
-  bool XUFU_Q = ppu.XUFU.tock(XELO, 0, mem.D0);
+  bool XUFU_Q = ppu.OBP0_R0.tock(XELO, 0, mem.D0);
+  bool XUKY_Q = ppu.OBP0_R1.tock(XELO, 0, mem.D1);
+  bool XOVA_Q = ppu.OBP0_R2.tock(XELO, 0, mem.D2);
+  bool XALO_Q = ppu.OBP0_R3.tock(XELO, 0, mem.D3);
+  bool XERU_Q = ppu.OBP0_R4.tock(XELO, 0, mem.D4);
+  bool XYZE_Q = ppu.OBP0_R5.tock(XELO, 0, mem.D5);
+  bool XUPO_Q = ppu.OBP0_R6.tock(XELO, 0, mem.D6);
+  bool XANA_Q = ppu.OBP0_R7.tock(XELO, 0, mem.D7);
 
   ppu.OBP0_D7 = XANA_Q;
   ppu.OBP0_D5 = XYZE_Q;

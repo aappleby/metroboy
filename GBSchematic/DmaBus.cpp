@@ -4,7 +4,7 @@
 #include "MemBus.h"
 #include "VramBus.h"
 #include "DmaBus.h"
-#include "OamBus.h"
+#include "OAM.h"
 #include "CpuBus.h"
 #include "AddressDecoder.h"
 #include "Clocks.h"
@@ -15,7 +15,7 @@ DmaBus dma;
 //-----------------------------------------------------------------------------
 // 4_DMA.png
 
-void DmaBus::tick(const Resets& rst) {
+void DmaBus::tick(OAM& oam, const Resets& rst) {
   bool MAKA_Q = MAKA.q();
   bool LUVY_Q = LUVY.q();
   bool MYTE_Q = MYTE.q();

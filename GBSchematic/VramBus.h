@@ -1,8 +1,12 @@
 #pragma once
 #include "Schematics.h"
 
+struct OAM;
+
 struct Vram {
 public:
+
+  void tick(OAM& oam);
 
   bool MA0;
   bool MA1;
@@ -26,8 +30,6 @@ public:
   bool MD5;
   bool MD6;
   bool MD7;
-
-  void tick();
 
   bool COTA; // controls something sprite related
 

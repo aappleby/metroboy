@@ -1,6 +1,6 @@
 #pragma once
 
-struct OamBus {
+struct OAM {
   bool OAM_CLK;
   bool OAM_ADDR_RENDER;
   bool OAM_ADDR_PARSE;
@@ -36,6 +36,4 @@ struct OamBus {
   bool OAM_B_D6;
   bool OAM_B_D7;
 };
-
-extern OamBus oam;
 

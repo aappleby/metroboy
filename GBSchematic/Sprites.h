@@ -2,9 +2,19 @@
 #include "Schematics.h"
 
 struct Resets;
+struct OAM;
 
 struct Sprites {
 public:
+
+  void tick(OAM& oam, const Resets& rst);
+  void tick_control(const OAM& oam, const Resets& rst);
+
+  void tick_matcher(const OAM& oam);
+  void tick_spritestore();
+  void tick_paletteshifter();
+  void tick_pixelshifter();
+
 
   bool SPR_MATCH;
   bool FEPO;
@@ -98,14 +108,6 @@ public:
   bool YTUB, YLEV;
   bool COGY, FYMA;
   bool CEHU, EKES;
-
-  void tick(const Resets& rst);
-  void tick_control(const Resets& rst);
-
-  void tick_matcher();
-  void tick_spritestore();
-  void tick_paletteshifter();
-  void tick_pixelshifter();
 
   // note, these use !Q as their output signal
   reg GOMO, DEPO;

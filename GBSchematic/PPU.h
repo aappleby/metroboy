@@ -2,11 +2,12 @@
 #include "Schematics.h"
 
 struct Resets;
+struct AddressDecoder;
 
 struct PPU {
 public:
 
-  void tick_videocontrol(const Resets& rst);
+  void tick_videocontrol(const Resets& rst, const AddressDecoder& dec);
 
   // screen y coordinate
   bool V0,V1,V2,V3,V4,V5,V6,V7;

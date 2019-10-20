@@ -8,7 +8,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_palettes() {
+void tick_palettes(const AddressDecoder& dec) {
   // BGP
   bool VUSO = and(cpu.CPU_RD2, dec.FF47);
   bool VELY = and(cpu.CPU_WR2, dec.FF47);

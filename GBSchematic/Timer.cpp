@@ -7,7 +7,7 @@
 
 //-----------------------------------------------------------------------------
 
-void Timer::tick(bool FF04_D1n, const Resets& rst) {
+void Timer::tick(bool FF04_D1n, const Resets& rst, AddressDecoder& dec) {
   bool RYFO = and(mem.A2, dec.A00_07, dec.FFXX);
   dec.FF04_FF07 = RYFO;
   bool TOPE = nand(cpu.CPU_WR, dec.FF04_FF07, mem.A0, mem.TOLA_A1n);

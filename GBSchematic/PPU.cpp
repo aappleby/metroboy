@@ -14,7 +14,7 @@ struct PPU ppu;
 
 //-----------------------------------------------------------------------------
 
-void PPU::tick_videocontrol(const Resets& rst) {
+void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec) {
 
   //----------
   // LY compare

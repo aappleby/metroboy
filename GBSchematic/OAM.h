@@ -1,6 +1,8 @@
 #pragma once
 
 struct OAM {
+  void tick();
+
   bool OAM_CLK;
   bool OAM_ADDR_RENDER;
   bool OAM_ADDR_PARSE;

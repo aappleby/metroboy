@@ -19,7 +19,7 @@ Vram vram;
 //-----------------------------------------------------------------------------
 // 25_VRAM_INTERFACE.png
 
-void Vram::tick(OAM& oam) {
+void Vram::tick(OAM& oam, const AddressDecoder& dec) {
   bool SOTO_Q = SOTO.q();
 
   bool RYVO = nand(mem.D5, ext_sch.LULA);

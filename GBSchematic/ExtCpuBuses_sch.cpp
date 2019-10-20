@@ -12,7 +12,7 @@ ExtCpuBuses_sch ext_sch;
 
 //-----------------------------------------------------------------------------
 
-void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA) {
+void ExtCpuBuses_sch::tick(bool ABUZ, bool LUMA, const AddressDecoder& dec) {
 
   //----------
   // center right

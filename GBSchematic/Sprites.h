@@ -3,11 +3,12 @@
 
 struct Resets;
 struct OAM;
+struct AddressDecoder;
 
 struct Sprites {
 public:
 
-  void tick(OAM& oam, const Resets& rst);
+  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec);
   void tick_control(const OAM& oam, const Resets& rst);
 
   void tick_matcher(const OAM& oam);

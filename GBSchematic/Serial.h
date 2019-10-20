@@ -2,12 +2,13 @@
 #include "Schematics.h"
 
 struct Resets;
+struct AddressDecoder;
 
 struct Serial {
 
   bool SER_TICKn;
 
-  void tick(const Resets& rst);
+  void tick(const Resets& rst, const AddressDecoder& dec);
 
 private:
 

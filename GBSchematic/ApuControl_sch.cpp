@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_apucontrol(APU& apu, Resets& rst) {
+void tick_apucontrol(APU& apu, Resets& rst, const AddressDecoder& dec) {
   //----------
   // top left
 

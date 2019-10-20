@@ -3,8 +3,11 @@
 
 struct OAM;
 struct Resets;
+struct AddressDecoder;
 
 struct DmaBus {
+  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec);
+
   bool DMA_A0;
   bool DMA_A1;
   bool DMA_A2;
@@ -28,8 +31,6 @@ struct DmaBus {
   bool MOPA_PHI;
 
   bool VRAM_TO_OAM;
-
-  void tick(OAM& oam, const Resets& rst);
 
   reg MATU;
 

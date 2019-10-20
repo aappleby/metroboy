@@ -11,10 +11,11 @@ Serial ser;
 
 //-----------------------------------------------------------------------------
 
-void Serial::tick(const Resets& rst) {
-  bool SARE = nor(mem.A7, mem.A7, mem.A7, mem.A4, mem.A3);
+void Serial::tick(const Resets& rst, const AddressDecoder& dec) {
+
+
   bool SEFY = not(mem.A2);
-  bool SANO = and(SARE, SEFY, dec.FFXX);
+  bool SANO = and(dec.A00_07, SEFY, dec.FFXX);
   bool UWAM = nand(mem.TOVY_A0n, mem.A1, cpu.CPU_WR, SANO);
   bool UCOM = nand(SANO, cpu.CPU_RD, mem.A1, mem.TOVY_A0n);
   bool CARO = and(UWAM, rst.RESET2);
@@ -37,9 +38,6 @@ void Serial::tick(const Resets& rst) {
   bool CABY = and(COBA, rst.RESET2);
 
   cpu.INT_SERIAL = CALY_Q;
-
-
-  dec.A00_07 = SARE;
 
   bool URYS = nand(SANO, cpu.CPU_WR, mem.TOLA_A1n, mem.A0);
   bool DAKU = not(URYS);

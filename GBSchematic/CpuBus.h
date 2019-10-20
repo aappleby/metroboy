@@ -2,8 +2,11 @@
 #include "Schematics.h"
 
 struct Resets;
+struct AddressDecoder;
 
 struct CpuBus {
+  void tick_interrupts(const Resets& rst, const AddressDecoder& dec);
+
   bool CPU_RD;
   bool CPU_RDn;
   bool CPU_RD2;
@@ -35,7 +38,8 @@ struct CpuBus {
   bool TO_CPU;
   bool TO_CPU2;
 
-  void tick_interrupts(const Resets& rst);
+  bool FF0F_RD;
+  bool FF0F_WR;
 
 private:
 

@@ -1,8 +1,12 @@
 #pragma once
 #include "Schematics.h"
 
+struct AddressDecoder;
+
 struct ExtCpuBuses_sch {
 public:
+
+  void tick(bool ABUZ, bool LUMA, const AddressDecoder& dec);
 
   //----------
   // outputs
@@ -10,8 +14,6 @@ public:
   bool LULA;
   bool RORU;
   bool TEXO; // used by vram interface
-
-  void tick(bool ABUZ, bool LUMA);
 
 private:
 

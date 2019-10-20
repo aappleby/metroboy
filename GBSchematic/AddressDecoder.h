@@ -1,6 +1,11 @@
 #pragma once
+#include "Schematics.h"
+
+struct MemBus;
 
 struct AddressDecoder {
+  void tick(const MemBus& mem);
+
   bool A00_07;
   bool XXX6;
   bool FEXXFFXXn;
@@ -56,10 +61,3 @@ struct AddressDecoder {
   bool FF4A;
   bool FF4B;
 };
-
-extern AddressDecoder dec;
-
-extern bool FF00RD;
-extern bool FF00WR;
-extern bool FF0F_RD;
-extern bool FF0F_WR;

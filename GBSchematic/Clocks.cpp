@@ -14,7 +14,7 @@ struct Clocks clk;
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tick(const APU& apu, Resets& rst) {
+void Clocks::tick(const APU& apu, Resets& rst, const AddressDecoder& dec) {
 
   //----------
   // FF04 DIV

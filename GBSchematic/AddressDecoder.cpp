@@ -1,8 +1,8 @@
 #include "AddressDecoder.h"
 
-AddressDecoder dec;
+#include "MemBus.h"
 
-bool FF00RD;
-bool FF00WR;
-bool FF0F_RD;
-bool FF0F_WR;
+void AddressDecoder::tick(const MemBus& mem2) {
+  bool SARE = nor(mem2.A7, mem2.A7, mem2.A7, mem2.A4, mem2.A3);
+  A00_07 = SARE;
+}

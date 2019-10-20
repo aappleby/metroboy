@@ -10,7 +10,7 @@ CpuBus cpu;
 
 //-----------------------------------------------------------------------------
 
-void CpuBus::tick_interrupts(const Resets& rst) {
+void CpuBus::tick_interrupts(const Resets& rst, const AddressDecoder& dec) {
   bool KERY = or(ext.P13_C, ext.P12, ext.P11_C, ext.P10);
   bool AWOB_Q = AWOB.latch(clk.BOGA1MHZ, KERY);
   cpu.TO_CPU2 = AWOB_Q; // for unhalt?

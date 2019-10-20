@@ -16,7 +16,7 @@ Sprites spr;
 
 //-----------------------------------------------------------------------------
 
-void Sprites::tick(OAM& oam, const Resets& rst) {
+void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec) {
   //----------
   // sprite scan counter
 

@@ -6,7 +6,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_ppudecode() {
+void tick_ppudecode(AddressDecoder& dec) {
   bool XALY = nor(mem.A7, mem.A5, mem.A4);
   bool WUTU = nand(dec.FFXX, mem.A6, XALY);
   bool WERO = not(WUTU);

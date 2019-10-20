@@ -12,7 +12,16 @@ Joypad joy;
 
 //-----------------------------------------------------------------------------
 
-void Joypad::tick(const Resets& rst) {
+void Joypad::tick(const Resets& rst, const AddressDecoder& dec) {
+  bool AMUS = nor(mem.A0, mem.A1, mem.A2, mem.A3, mem.A4, mem.A7);
+  bool ANAP = and(AMUS, dec.FFXX);
+  bool BYKO = not(mem.A5);
+  bool AKUG = not(mem.A6);
+  bool ATOZ = nand(BYKO, AKUG, cpu.CPU_WR, ANAP);
+  bool FF00WR = ATOZ;
+  bool ACAT = and(ANAP, cpu.CPU_RD, AKUG, BYKO);
+  bool FF00RD = ACAT;
+
   bool JEVA = not(sys.BURO.q());
   bool KORE = nand(KERU_Q, sys.BURO.q());
   bool KYWE = nor(JEVA, KERU_Q);

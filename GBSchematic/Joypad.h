@@ -2,10 +2,11 @@
 #include "Schematics.h"
 
 struct Resets;
+struct AddressDecoder;
 
 struct Joypad {
 
-  void tick(const Resets& rst);
+  void tick(const Resets& rst, const AddressDecoder& dec);
 
 private:
 

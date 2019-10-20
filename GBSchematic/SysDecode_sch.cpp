@@ -12,7 +12,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_sysdecode(const APU& apu, const Resets& rst) {
+void tick_sysdecode(const APU& apu, const Resets& rst, AddressDecoder& dec) {
   bool TEPU_Q = sys.TEPU.q();
 
   //----------
@@ -48,8 +48,8 @@ void tick_sysdecode(const APU& apu, const Resets& rst) {
   bool ROLO = and(SEMY, SAPA, dec.FFXX, cpu.CPU_RD);
   bool REFA = and(SEMY, SAPA, dec.FFXX, cpu.CPU_WR_RAW);
 
-  FF0F_RD = ROLO;
-  FF0F_WR = REFA;
+  cpu.FF0F_RD = ROLO;
+  cpu.FF0F_WR = REFA;
 
   //----------
 

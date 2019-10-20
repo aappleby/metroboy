@@ -1,9 +1,13 @@
 #pragma once
 #include "Schematics.h"
+
 struct APU;
 struct Resets;
+struct AddressDecoder;
 
 struct Clocks {
+  void tick(const APU& apu, Resets& rst, const AddressDecoder& dec);
+
   bool CLKIN_An;
   bool CLKPIPE;
 
@@ -43,8 +47,6 @@ struct Clocks {
   bool AFAS;
   bool BEDO;
   bool BUKE;
-
-  void tick(const APU& apu, Resets& rst);
 
 private:
 

@@ -2,11 +2,12 @@
 #include "Schematics.h"
 
 struct OAM;
+struct AddressDecoder;
 
 struct Vram {
 public:
 
-  void tick(OAM& oam);
+  void tick(OAM& oam, const AddressDecoder& dec);
 
   bool MA0;
   bool MA1;

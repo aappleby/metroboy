@@ -2,11 +2,12 @@
 #include "Schematics.h"
 
 struct Resets;
+struct AddressDecoder;
 
 struct Timer {
 public:
 
-  void tick(bool FF04_D1n, const Resets& rst);
+  void tick(bool FF04_D1n, const Resets& rst, AddressDecoder& dec);
 
 private:
 

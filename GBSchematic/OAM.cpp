@@ -1,3 +1,4 @@
 #include "OAM.h"
 
-OAM oam;
+void OAM::tick() {
+}

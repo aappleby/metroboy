@@ -8,15 +8,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_apudecode(APU& apu) {
-  bool AMUS = nor(mem.A0, mem.A1, mem.A2, mem.A3, mem.A4, mem.A7);
-  apu.ANAP = and(AMUS, dec.FFXX);
-  bool BYKO = not(mem.A5);
-  bool AKUG = not(mem.A6);
-  bool ATOZ = nand(BYKO, AKUG, cpu.CPU_WR, apu.ANAP);
-  FF00WR = ATOZ;
-  bool ACAT = and(apu.ANAP, cpu.CPU_RD, AKUG, BYKO);
-  FF00RD = ACAT;
+void tick_apudecode(APU& apu, AddressDecoder& dec) {
 
   bool BOXY = not(mem.A5);
   bool AWET = or(mem.A4, BOXY, mem.A6, mem.A7);

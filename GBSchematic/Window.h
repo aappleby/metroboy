@@ -30,7 +30,7 @@ public:
   bool TAVA;
   bool XUHA;
 
-  bool WUKO; // controls something window
+  //bool WUKO; // controls something window
 
   reg VYNO;
   reg VUJO;
@@ -79,5 +79,3 @@ private:
   reg WYKO;
   reg XOLO;
 };
-
-extern Window win;

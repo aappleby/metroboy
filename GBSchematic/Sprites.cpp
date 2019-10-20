@@ -250,7 +250,7 @@ void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec) {
 
 //-----------------------------------------------------------------------------
 
-void Sprites::tick_control(const OAM & oam, const Resets& rst) {
+void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win) {
 
   //----------
   // bottom

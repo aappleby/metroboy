@@ -11,7 +11,7 @@ LCD lcd;
 
 //-----------------------------------------------------------------------------
 
-void LCD::tick(const Resets& rst) {
+void LCD::tick(const Resets& rst, const Window& win) {
   wire NYKA_Q = NYKA.q();
   wire PORY_Q = PORY.q();
   wire PYGO_Q = PYGO.q();

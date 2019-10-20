@@ -2,8 +2,11 @@
 #include "Schematics.h"
 
 struct Resets;
+struct Window;
 
 struct LCD {
+
+  void tick(const Resets& rst, const Window& win);
 
   bool LOBY;
   bool POKY;
@@ -11,8 +14,6 @@ struct LCD {
   bool TOMU;
   bool TOFU;
   bool SEGU;
-
-  void tick(const Resets& rst);
 
   reg NYKA;
   reg PORY;

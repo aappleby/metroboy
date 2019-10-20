@@ -7,8 +7,6 @@
 #include "Window.h"
 #include "LCD.h"
 
-Window win;
-
 //-----------------------------------------------------------------------------
 
 void Window::tick(const Resets& rst) {
@@ -198,6 +196,8 @@ void Window::tick(const Resets& rst) {
   wire VEZA = not(VYPO);
   wire VOGU = not(VYPO);
 
+  bool XEZE = nand(POTU, PORE);
+  bool WUKO = not(XEZE);
   if (WUKO) {
     vram.MA0 = XEJA;
     vram.MA1 = XAMO;

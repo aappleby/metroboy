@@ -1,10 +1,12 @@
 #pragma once
 #include "Schematics.h"
 
+struct Window;
+
 struct Background {
   bool VAVA3;
 
-  void tick();
+  void tick(const Window& win);
 
 };
 

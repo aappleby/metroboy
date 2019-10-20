@@ -172,8 +172,6 @@
     <ClCompile Include="ApuControl_sch.cpp" />
     <ClCompile Include="ApuDecode_sch.cpp" />
     <ClCompile Include="Background.cpp" />
-    <ClCompile Include="Background_sch.cpp" />
-    <ClCompile Include="BgPixelShifter_sch.cpp" />
     <ClCompile Include="Clocks.cpp" />
     <ClCompile Include="CpuBus.cpp" />
     <ClCompile Include="Debug.cpp" />
@@ -196,13 +194,11 @@
     <ClCompile Include="SpritePixelShifter_sch.cpp" />
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="SpriteStore_sch.cpp" />
-    <ClCompile Include="SpriteXMatcher_sch.cpp" />
     <ClCompile Include="SysDecode_sch.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VideoRegs_sch.cpp" />
     <ClCompile Include="VramBus.cpp" />
-    <ClCompile Include="VramInterface_sch.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>

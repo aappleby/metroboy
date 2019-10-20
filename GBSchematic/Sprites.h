@@ -4,12 +4,13 @@
 struct Resets;
 struct OAM;
 struct AddressDecoder;
+struct Window;
 
 struct Sprites {
 public:
 
   void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec);
-  void tick_control(const OAM& oam, const Resets& rst);
+  void tick_control(const OAM& oam, const Resets& rst, const Window& win);
 
   void tick_matcher(const OAM& oam);
   void tick_spritestore();

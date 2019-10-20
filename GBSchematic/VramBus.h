@@ -3,11 +3,12 @@
 
 struct OAM;
 struct AddressDecoder;
+struct Window;
 
 struct Vram {
 public:
 
-  void tick(OAM& oam, const AddressDecoder& dec);
+  void tick(OAM& oam, const AddressDecoder& dec, const Window& win);
 
   bool MA0;
   bool MA1;

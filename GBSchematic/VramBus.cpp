@@ -19,7 +19,7 @@ Vram vram;
 //-----------------------------------------------------------------------------
 // 25_VRAM_INTERFACE.png
 
-void Vram::tick(OAM& oam, const AddressDecoder& dec) {
+void Vram::tick(OAM& oam, const AddressDecoder& dec, const Window& win) {
   bool SOTO_Q = SOTO.q();
 
   bool RYVO = nand(mem.D5, ext_sch.LULA);
@@ -361,10 +361,6 @@ void Vram::tick(OAM& oam, const AddressDecoder& dec) {
     mem.D7 = vram.MD7;
   }
 
-  bool XUCY = nand(win.NETA, win.PORE);
-  bool XEZE = nand(win.POTU, win.PORE);
-  win.WUKO = not(XEZE);
-
   bool VYNO_Q = win.VYNO.q();
   bool VUJO_Q = win.VUJO.q();
   bool VYMU_Q = win.VYMU.q();
@@ -374,6 +370,7 @@ void Vram::tick(OAM& oam, const AddressDecoder& dec) {
   bool WAWE = not(VUJO_Q);
   bool WOLU = not(VYMU_Q);
 
+  bool XUCY = nand(win.NETA, win.PORE);
   if (XUCY) {
     vram.MA0 = XONU;
     vram.MA1 = WUDO;

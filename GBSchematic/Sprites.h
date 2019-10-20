@@ -1,6 +1,8 @@
 #pragma once
 #include "Schematics.h"
 
+struct Resets;
+
 struct Sprites {
 public:
 
@@ -97,10 +99,10 @@ public:
   bool COGY, FYMA;
   bool CEHU, EKES;
 
-  void tick();
+  void tick(const Resets& rst);
+  void tick_control(const Resets& rst);
 
   void tick_matcher();
-  void tick_control();
   void tick_spritestore();
   void tick_paletteshifter();
   void tick_pixelshifter();

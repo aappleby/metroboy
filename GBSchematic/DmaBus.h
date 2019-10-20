@@ -1,6 +1,8 @@
 #pragma once
 #include "Schematics.h"
 
+struct Resets;
+
 struct DmaBus {
   bool DMA_A0;
   bool DMA_A1;
@@ -26,7 +28,7 @@ struct DmaBus {
 
   bool VRAM_TO_OAM;
 
-  void tick();
+  void tick(const Resets& rst);
 
   reg MATU;
 

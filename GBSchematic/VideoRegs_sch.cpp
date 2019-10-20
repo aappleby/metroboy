@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_videoregs() {
+void tick_videoregs(const Resets& rst) {
   // FF40 LCDC
   bool WARU = and(dec.FF40, cpu.CPU_WR2);
   bool XUBO = not(WARU);

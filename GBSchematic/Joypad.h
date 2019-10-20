@@ -1,9 +1,11 @@
 #pragma once
 #include "Schematics.h"
 
+struct Resets;
+
 struct Joypad {
 
-  void tick();
+  void tick(const Resets& rst);
 
 private:
 

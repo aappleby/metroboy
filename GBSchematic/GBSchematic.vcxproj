@@ -175,22 +175,16 @@
     <ClCompile Include="Background_sch.cpp" />
     <ClCompile Include="BgPixelShifter_sch.cpp" />
     <ClCompile Include="Clocks.cpp" />
-    <ClCompile Include="ClocksReset_sch.cpp" />
     <ClCompile Include="CpuBus.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="ExtBus.cpp" />
     <ClCompile Include="DmaBus.cpp" />
-    <ClCompile Include="DMA_sch.cpp" />
     <ClCompile Include="ExtCpuBuses_sch.cpp" />
     <ClCompile Include="Joypad.cpp" />
     <ClCompile Include="LCD.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Interrupts_sch.cpp" />
-    <ClCompile Include="Joypad_sch.cpp" />
-    <ClCompile Include="LcdControl_sch.cpp" />
     <ClCompile Include="MemBus.cpp" />
     <ClCompile Include="OamBus.cpp" />
-    <ClCompile Include="OAM_sch.cpp" />
     <ClCompile Include="Palettes_sch.cpp" />
     <ClCompile Include="PixelMux_sch.cpp" />
     <ClCompile Include="PPU.cpp" />
@@ -198,8 +192,6 @@
     <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
     <ClCompile Include="Serial.cpp" />
-    <ClCompile Include="SerialLink_sch.cpp" />
-    <ClCompile Include="SpriteControl_sch.cpp" />
     <ClCompile Include="SpritePaletteShifter_sch.cpp" />
     <ClCompile Include="SpritePixelShifter_sch.cpp" />
     <ClCompile Include="Sprites.cpp" />
@@ -207,7 +199,7 @@
     <ClCompile Include="SpriteXMatcher_sch.cpp" />
     <ClCompile Include="SysDecode_sch.cpp" />
     <ClCompile Include="System.cpp" />
-    <ClCompile Include="Timer_sch.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VideoControl_sch.cpp" />
     <ClCompile Include="VideoRegs_sch.cpp" />
     <ClCompile Include="VramBus.cpp" />
@@ -235,7 +227,7 @@
     <ClInclude Include="Serial.h" />
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="System.h" />
-    <ClInclude Include="Timer_sch.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="VramBus.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

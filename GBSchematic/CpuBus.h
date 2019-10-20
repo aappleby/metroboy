@@ -1,6 +1,8 @@
 #pragma once
 #include "Schematics.h"
 
+struct Resets;
+
 struct CpuBus {
   bool CPU_RD;
   bool CPU_RDn;
@@ -33,7 +35,7 @@ struct CpuBus {
   bool TO_CPU;
   bool TO_CPU2;
 
-  void tick_interrupts();
+  void tick_interrupts(const Resets& rst);
 
 private:
 

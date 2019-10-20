@@ -44,5 +44,3 @@ struct APU {
   // FF25 NR51
   reg BOGU,BAFO,ATUF,ANEV,BEPU,BEFO,BUME,BOFA;
 };
-
-extern APU apu;

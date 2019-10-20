@@ -1,5 +1,7 @@
 #pragma once
 #include "Schematics.h"
+struct APU;
+struct Resets;
 
 struct Clocks {
   bool CLKIN_An;
@@ -42,7 +44,7 @@ struct Clocks {
   bool BEDO;
   bool BUKE;
 
-  void tick();
+  void tick(const APU& apu, Resets& rst);
 
 private:
 
@@ -115,5 +117,3 @@ struct Resets {
     RESET_VIDEO2n = ATAR;
   }
 };
-
-extern Resets rst;

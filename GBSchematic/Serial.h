@@ -1,11 +1,13 @@
 #pragma once
 #include "Schematics.h"
 
+struct Resets;
+
 struct Serial {
 
   bool SER_TICKn;
 
-  void tick();
+  void tick(const Resets& rst);
 
 private:
 

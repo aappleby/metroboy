@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_apucontrol() {
+void tick_apucontrol(APU& apu, Resets& rst) {
   //----------
   // top left
 

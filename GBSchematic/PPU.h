@@ -1,8 +1,12 @@
 #pragma once
 #include "Schematics.h"
 
+struct Resets;
+
 struct PPU {
 public:
+
+  void tick_videocontrol(const Resets& rst);
 
   // screen y coordinate
   bool V0,V1,V2,V3,V4,V5,V6,V7;
@@ -188,8 +192,6 @@ public:
   // FF4B WX = (MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE);
   //reg MYCE,MYPA,NOFE,NUKU,MYPU,MUVO,MEBY,NOKE;
   reg WX_R0, WX_R1, WX_R2, WX_R3, WX_R4, WX_R5, WX_R6, WX_R7;
-
-  void tick_videocontrol();
 
   reg RUTU;
   reg NYPE;

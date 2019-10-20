@@ -8,7 +8,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_apudecode() {
+void tick_apudecode(APU& apu) {
   bool AMUS = nor(mem.A0, mem.A1, mem.A2, mem.A3, mem.A4, mem.A7);
   apu.ANAP = and(AMUS, dec.FFXX);
   bool BYKO = not(mem.A5);

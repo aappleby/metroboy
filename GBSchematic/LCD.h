@@ -1,6 +1,8 @@
 #pragma once
 #include "Schematics.h"
 
+struct Resets;
+
 struct LCD {
 
   bool LOBY;
@@ -10,7 +12,7 @@ struct LCD {
   bool TOFU;
   bool SEGU;
 
-  void tick();
+  void tick(const Resets& rst);
 
   reg NYKA;
   reg PORY;

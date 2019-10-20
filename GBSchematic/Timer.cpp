@@ -1,7 +1,5 @@
-// This file should contain the schematics as directly translated to C, no modifications or simplifications
+#include "Timer.h"
 
-#include "Timer_sch.h"
-#include "Schematics.h"
 #include "AddressDecoder.h"
 #include "MemBus.h"
 #include "CpuBus.h"
@@ -9,7 +7,7 @@
 
 //-----------------------------------------------------------------------------
 
-void Timer::tick(bool FF04_D1n) {
+void Timer::tick(bool FF04_D1n, const Resets& rst) {
   bool RYFO = and(mem.A2, dec.A00_07, dec.FFXX);
   dec.FF04_FF07 = RYFO;
   bool TOPE = nand(cpu.CPU_WR, dec.FF04_FF07, mem.A0, mem.TOLA_A1n);

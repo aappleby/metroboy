@@ -1,10 +1,12 @@
 #pragma once
 #include "Schematics.h"
 
+struct Resets;
+
 struct Window {
 public:
 
-  void tick();
+  void tick(const Resets& rst);
 
   //----------
   // outputs

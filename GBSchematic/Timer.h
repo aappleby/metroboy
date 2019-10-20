@@ -1,10 +1,12 @@
 #pragma once
 #include "Schematics.h"
 
+struct Resets;
+
 struct Timer {
 public:
 
-  void tick(bool FF04_D1n);
+  void tick(bool FF04_D1n, const Resets& rst);
 
 private:
 
@@ -20,3 +22,5 @@ private:
   // tma
   reg PETO,MURU,NYKE,SETA,SABU,TYRU,SUFY,TYVA;
 };
+
+extern Timer tim;

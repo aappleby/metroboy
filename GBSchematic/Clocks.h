@@ -1,4 +1,5 @@
 #pragma once
+#include "Schematics.h"
 
 struct Clocks {
   bool CLKIN_An;
@@ -28,6 +29,18 @@ struct Clocks {
   bool APUV_4MHZ;
   bool AJER_2MHZn;
   bool DYFA_1MHZ;
+
+  bool PHI_OUTn; // same as PHI_N?
+  bool PHIn;
+
+  bool FF04_D0n;
+  bool FF04_D1n;
+
+  bool WESY;
+  bool ABUZ;
+  bool AFAS;
+  bool BEDO;
+  bool BUKE;
 };
 
 extern Clocks clk;
@@ -53,6 +66,15 @@ struct Resets {
   bool APU_RESET3n;
   bool APU_RESET4n;
   bool APU_RESET5n;
+
+  bool XARE;
+
+  void tick() {
+    XARE = not(RESET7);
+
+    wire ATAR = not(RESET_VIDEO);
+    RESET_VIDEO2n = ATAR;
+  }
 };
 
 extern Resets rst;

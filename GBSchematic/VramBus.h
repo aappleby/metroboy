@@ -1,6 +1,9 @@
 #pragma once
+#include "Schematics.h"
 
 struct Vram {
+public:
+
   bool MA0;
   bool MA1;
   bool MA2;
@@ -23,6 +26,14 @@ struct Vram {
   bool MD5;
   bool MD6;
   bool MD7;
+
+  void tick();
+
+  bool COTA; // controls something sprite related
+
+private:
+
+  reg SOTO;
 };
 
 extern Vram vram;

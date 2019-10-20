@@ -10,55 +10,21 @@
 #include "Debug.h"
 #include "CpuBus.h"
 #include "AddressDecoder.h"
+#include "System.h"
+#include "Clocks.h"
+#include "DmaBus.h"
+#include "Sprites.h"
+#include "Window.h"
 
 //----------
 // inputs
 
-extern reg MATU;
-extern bool MOPA_PHI;
-extern bool VRAM_TO_OAM;
-
-
-extern bool SARO;
-extern bool TUVO;
 extern bool XYMU;
-extern bool LUMA;
-extern bool XYSO;
-extern bool TACU;
-extern bool ACYL;
-extern bool TEXY;
 
-extern bool ABUZ;
-extern bool AFAS;
-extern bool MYMA;
-extern bool LENA;
-extern bool BEDO;
-
-
-extern bool LEKO;
-extern bool NETA;
-extern bool PORE;
-extern bool POTU;
-extern bool XUHA;
-extern reg VYNO;
-extern reg VUJO;
-extern reg VYMU;
-
-//----------
-// outputs
-
-bool WUKO; // controls something window
-bool COTA; // controls something sprite related
-
-//----------
-// registers
-
-reg SOTO;
-
-//----------
+//-----------------------------------------------------------------------------
 // 25_VRAM_INTERFACE.png
 
-void tock_vram() {
+void Vram::tick() {
   bool SOTO_Q = SOTO.q();
 
   bool RYVO = nand(mem.D5, ext_sch.LULA);
@@ -80,10 +46,10 @@ void tock_vram() {
   ext.D6_A = RAFY;
   ext.D0_A = RUXA;
 
-  bool MATU_Q = MATU.q();
-  bool CUFE = unk3(SARO, MATU_Q, MOPA_PHI);
-  bool VAPE = and(TACU, TUVO);
-  bool AVER = and(ACYL, XYSO);
+  bool MATU_Q = dma.MATU.q();
+  bool CUFE = unk3(sys.SARO, MATU_Q, dma.MOPA_PHI);
+  bool VAPE = and(spr.TACU, spr.TUVO);
+  bool AVER = and(spr.ACYL, spr.XYSO);
   bool XUJY = not(VAPE);
   bool BYCU = nor(CUFE, XUJY, AVER);
   COTA = not(BYCU);
@@ -91,15 +57,15 @@ void tock_vram() {
   bool SYRO = not(dec.FEXXFFXXn);
   bool TEFA = nor(SYRO, ext_sch.TEXO);
   bool SOSE = and(mem.A15, TEFA); // odd...
-  bool SOHO = and(TACU, TEXY);
+  bool SOHO = and(spr.TACU, spr.TEXY);
   bool RAWA = not(SOHO);
 
   bool SYCY = not(NET02);
   SOTO.flip(SYCY, 0);
 
-  bool TUCA = and(SOSE, ABUZ);
+  bool TUCA = and(SOSE, clk.ABUZ);
   bool TUJA = and(SOSE, cpu.CPU_RD_SYNC);
-  bool TEGU = and(SOSE, AFAS);
+  bool TEGU = and(SOSE, clk.AFAS);
   bool TAVY = not(ext.MOE_IN);
   bool TUTO = and(NET02, !SOTO_Q);
   bool SUDO = not(ext.MWR_IN);
@@ -112,14 +78,14 @@ void tock_vram() {
   bool ROPY = not(XYMU);
   bool RYLU = nand(SALE, ROPY);
 
-  bool APAM = not(VRAM_TO_OAM);
+  bool APAM = not(dma.VRAM_TO_OAM);
   bool RUVY = not(SALE);
   bool SERE = and(TOLE, ROPY);
   bool SOHY = nand(TYJY, SERE);
 
-  bool SUTU = nor(LENA, VRAM_TO_OAM, TEXY, SERE);
+  bool SUTU = nor(win.LENA, dma.VRAM_TO_OAM, spr.TEXY, SERE);
   bool SAZO = and(RUVY, SERE);
-  bool RACU = and(RYLU, RAWA, MYMA, APAM);
+  bool RACU = and(RYLU, RAWA, win.MYMA, APAM);
   bool RACO = not(TUTO);
 
   bool RUTE = or(TUTO, RACO); // wat? or of a signal with its own inverse...
@@ -176,7 +142,7 @@ void tock_vram() {
     vram.MD1 = REBA;
   }
 
-  bool TUSO = nor(NET02, BEDO);
+  bool TUSO = nor(NET02, clk.BEDO);
   bool SOLE = not(TUSO);
   bool RUNY = not(ext.P10_B);
 
@@ -247,7 +213,7 @@ void tock_vram() {
   ext.MD6_OUT = RYTY;
   ext.MD7_OUT = RADY;
 
-  bool XANE = nor(VRAM_TO_OAM, XYMU);
+  bool XANE = nor(dma.VRAM_TO_OAM, XYMU);
   bool XEDU = not(XANE);
 
   bool XECA = !mem.A4;
@@ -340,7 +306,7 @@ void tock_vram() {
   ext.MD5_A = REVU;
   ext.MD2_A = RAZO;
 
-  bool CEDE = not(LUMA);
+  bool CEDE = not(dma.LUMA);
   bool SYZO = not(ext.D7_IN);
   bool TUNE = not(ext.D1_IN);
   bool SERA = not(ext.D2_IN);
@@ -386,47 +352,29 @@ void tock_vram() {
     oam.OAM_A_D3 = CYME;
   }
 
-  bool TYVY = nand(SERE, LEKO);
+  bool TYVY = nand(SERE, spr.LEKO);
   bool SEBY = not(TYVY);
 
-  bool RORO = not(vram.MD5);
-  bool RERY = not(vram.MD0);
-  bool RONA = not(vram.MD2);
-  bool RUNA = not(vram.MD1);
-  bool RUNO = not(vram.MD3);
-  bool SAME = not(vram.MD7);
-  bool SANA = not(vram.MD4);
-  bool RABO = not(vram.MD6);
-
-  bool REXU = not(RORO);
-  bool RUGA = not(RERY);
-  bool RYBU = not(RONA);
-  bool ROTA = not(RUNA);
-  bool RAJU = not(RUNO);
-  bool TOKU = not(SAME);
-  bool TYJA = not(SANA);
-  bool RUPY = not(RABO);
-
   if (SEBY) {
-    mem.D5 = REXU;
-    mem.D0 = RUGA;
-    mem.D2 = RYBU;
-    mem.D1 = ROTA;
-    mem.D3 = RAJU;
-    mem.D7 = TOKU;
-    mem.D4 = TYJA;
-    mem.D6 = RUPY;
+    mem.D0 = vram.MD0;
+    mem.D1 = vram.MD1;
+    mem.D2 = vram.MD2;
+    mem.D3 = vram.MD3;
+    mem.D4 = vram.MD4;
+    mem.D5 = vram.MD5;
+    mem.D6 = vram.MD6;
+    mem.D7 = vram.MD7;
   }
 
-  bool XUCY = nand(NETA, PORE);
-  bool XEZE = nand(POTU, PORE);
-  WUKO = not(XEZE);
+  bool XUCY = nand(win.NETA, win.PORE);
+  bool XEZE = nand(win.POTU, win.PORE);
+  win.WUKO = not(XEZE);
 
-  bool VYNO_Q = VYNO.q();
-  bool VUJO_Q = VUJO.q();
-  bool VYMU_Q = VYMU.q();
+  bool VYNO_Q = win.VYNO.q();
+  bool VUJO_Q = win.VUJO.q();
+  bool VYMU_Q = win.VYMU.q();
 
-  bool XONU = not(XUHA);
+  bool XONU = not(win.XUHA);
   bool WUDO = not(VYNO_Q);
   bool WAWE = not(VUJO_Q);
   bool WOLU = not(VYMU_Q);
@@ -451,7 +399,7 @@ void tock_vram() {
   bool SEZU = not(ppu.POZO.q());
   bool VAPY = not(ppu.RAWU.q());
 
-  if (NETA) {
+  if (win.NETA) {
     vram.MA12 = VURY;
     vram.MA11 = TOBO;
     vram.MA10 = SUVO;

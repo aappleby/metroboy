@@ -4,54 +4,21 @@
 #include "ExtBus.h"
 #include "PPU.h"
 #include "Clocks.h"
-
-//----------
-// inputs
+#include "Sprites.h"
+#include "Window.h"
+#include "LCD.h"
 
 extern bool NAPO_OUT;
-extern bool FF04_D0n;
-extern bool FF04_D1n;
-
-extern bool AVAP;
-extern bool ROXY;
 extern bool PURE;
 extern bool XYMU;
-extern bool MOSU;
-extern bool LYRY;
-extern bool MYVO;
-extern bool SYLO;
 extern bool WODU;
 extern bool LYFE;
-extern bool FEPO;
-
 extern reg RUTU;
-
 extern reg NYPE;
-
-//----------
-// outputs
-
-bool LOBY;
-bool POKY;
-bool ROXO;
-bool TOMU;
-bool TOFU;
-bool SEGU;
-
-//----------
-// registers
-
-reg NYKA;
-reg PORY;
-reg PYGO;
-reg PAHO;
-reg LUCA;
-reg LEBE;
-reg MEDA;
 
 //-----------------------------------------------------------------------------
 
-void tick_lcdcontrol() {
+void LCD::tick() {
   wire NYKA_Q = NYKA.q();
   wire PORY_Q = PORY.q();
   wire PYGO_Q = PYGO.q();
@@ -61,12 +28,12 @@ void tick_lcdcontrol() {
   wire MEDA_Q = MEDA.q();
 
   LOBY = not(XYMU);
-  bool NAFY = nor(MOSU, LOBY);
+  bool NAFY = nor(win.MOSU, LOBY);
 
   POKY = unk2(PYGO_Q, LOBY);
-  TOMU = not(SYLO);
+  TOMU = not(win.SYLO);
   bool SOCY = not(TOMU);
-  bool VYBO = nor(FEPO, WODU, MYVO);
+  bool VYBO = nor(spr.FEPO, WODU, win.MYVO);
   bool TYFA = and(SOCY, POKY, VYBO);
   SEGU = not(TYFA);
   ROXO = not(SEGU);
@@ -84,8 +51,8 @@ void tick_lcdcontrol() {
   bool MECO = not(MAGU);
   bool KEBO = not(MECO);
   bool KASA = not(PURE);
-  bool UMOB = not(FF04_D0n);
-  bool USEC = not(FF04_D1n);
+  bool UMOB = not(clk.FF04_D0n);
+  bool USEC = not(clk.FF04_D1n);
   bool KEDY = not(ppu.FF40_D7);
   bool KAHE = amux2(ppu.FF40_D7, KASA, KEDY, UMOB);
   bool KUPA = amux2(ppu.FF40_D7, KEBO, KEDY, USEC);
@@ -98,8 +65,8 @@ void tick_lcdcontrol() {
 
   // FIXME another logic loop...
   TOFU = not(rst.RESET_VIDEO);
-  bool POME = nor(AVAP, /*POFY*/false);
-  bool SACU = nor(SEGU, ROXY);
+  bool POME = nor(spr.AVAP, /*POFY*/false);
+  bool SACU = nor(SEGU, win.ROXY);
   bool RUJU = or(PAHO_Q, TOFU, POME);
   bool POFY = not(RUJU);
   bool RUZE = not(POFY);
@@ -107,8 +74,8 @@ void tick_lcdcontrol() {
   ext.PIN_ST = RUZE;
   clk.CLKPIPE = SACU;
 
-  NYKA.tock(clk.CLK2, NAFY, LYRY);
-  PORY.tock(MYVO, NAFY, NYKA_Q);
+  NYKA.tock(clk.CLK2, NAFY, win.LYRY);
+  PORY.tock(win.MYVO, NAFY, NYKA_Q);
   PYGO.tock(clk.CLK2, XYMU, PORY_Q);
 
   bool XYDO_Q = ppu.XYDO.q();

@@ -9,26 +9,15 @@
 #include "PPU.h"
 #include "Clocks.h"
 #include "CpuBus.h"
+#include "AddressDecoder.h"
+#include "System.h"
+#include "Sprites.h"
 
 //----------
 // inputs
 
-extern bool MOPA_PHI;
-extern bool VRAM_TO_OAM;
-
-extern bool SARO;
-extern bool TUVO;
 extern bool XYMU;
-extern bool CATY;
-extern bool AVAP;
-extern bool XOCE;
-extern bool XUPY;
-extern bool ABEZ;
-extern bool WARU;
-extern bool XARE;
-extern bool WYJA;
 
-extern reg MATU;
 extern reg CATU;
 extern reg TYFO;
 
@@ -41,41 +30,10 @@ extern bool ZYSU;
 extern bool WYSE;
 extern bool WUZY;
 
-//----------
-// outputs
-
-bool AMAB;
-bool ATEJ;
-bool WEFE;
-bool ACYL;
-bool ANOM;
-bool AZYB;
-bool BESU;
-bool BYVA;
-bool WUME;
-bool WEWU;
-bool FETO;
-bool LEKO;
-
-//----------
-// registers
-
-// sprite scan counter
-reg YFEL;
-reg WEWY;
-reg GOSO;
-reg ELYN;
-reg FAHA;
-reg FONY;
-
-reg ANEL;
-reg XECY;
-reg XUVA;
-
 //-----------------------------------------------------------------------------
 // 28_OAM.png
 
-void tick_oam() {
+void Sprites::tick() {
   //----------
   // sprite scan counter
 
@@ -100,15 +58,12 @@ void tick_oam() {
 
   wire CATU_Q = CATU.q();
   wire ANEL_Q = ANEL.q();
-  wire MATU_Q = MATU.q();
+  wire MATU_Q = dma.MATU.q();
 
   WEFE = not(ext.P10_B);
   wire YVAL = not(clk.CLK3);
   wire YRYV = not(YVAL);
   wire ZODO = not(YRYV);
-
-
-  wire ATAR = not(rst.RESET_VIDEO);
 
   wire AWOH = not(XUPY);
   wire ABAF = not(CATU_Q);
@@ -131,10 +86,10 @@ void tick_oam() {
   wire AJUJ = nor(MATU_Q, ACYL, AJON);
   wire ASAM = or(ACYL, XYMU, MATU_Q);
 
-  wire XYNY = not(MOPA_PHI);
-  wire XUTO = and(SARO, cpu.CPU_WR2);
-  AMAB = and(SARO, AJUJ);
-  wire ADAH = not(SARO);
+  wire XYNY = not(dma.MOPA_PHI);
+  wire XUTO = and(sys.SARO, cpu.CPU_WR2);
+  AMAB = and(sys.SARO, AJUJ);
+  wire ADAH = not(sys.SARO);
 
   wire WUJE = unk2(XYNY, XUTO);
   wire XUPA = not(WUJE);
@@ -142,59 +97,41 @@ void tick_oam() {
   wire AJEP = and(ACYL, XOCE);
   wire WEFY = and(TUVO, !TYFO.q());
   wire XUJA = not(WEFY);
-  wire BOFE = not(CATY);
-  wire BOTA = nor(BOFE, SARO, cpu.CPU_RD2);
+  wire BOFE = not(dma.CATY);
+  wire BOTA = nor(BOFE, sys.SARO, cpu.CPU_RD2);
   wire ASYT = and(AJEP, XUJA, BOTA);
   wire BODE = not(ASYT);
+  clk.CLK3 = BODE;
 
+  wire WARU = and(dec.FF40, cpu.CPU_WR2);
   wire XUCA = not(WARU);
   wire APAG = amux2(XUPA, AMAB, AJUJ, ADAH);
-
-  wire ZAXA = not(mem.D0);
-  wire ZAMY = not(mem.D0);
-  wire ZAKY = not(mem.D1);
-  wire ZOPU = not(mem.D1);
-  wire WULE = not(mem.D2);
-  wire WYKY = not(mem.D2);
-  wire ZOZO = not(mem.D3);
-  wire ZAJA = not(mem.D3);
-
-  wire ZUFO = not(mem.D4);
-  wire ZUGA = not(mem.D4);
-  wire ZATO = not(mem.D5);
-  wire ZUMO = not(mem.D5);
-  wire YVUC = not(mem.D6);
-  wire XYTO = not(mem.D6);
-  wire ZUFE = not(mem.D7);
-  wire ZYFA = not(mem.D7);
-
-  wire WUZU = not(vram.MD0);
-  wire WOWA = not(vram.MD0);
-  wire AXER = not(vram.MD1);
-  wire AVEB = not(vram.MD1);
-  wire ASOX = not(vram.MD2);
-  wire AMUH = not(vram.MD2);
-  wire CETU = not(vram.MD3);
-  wire COFO = not(vram.MD3);
-
-  wire ARYN = not(vram.MD4);
-  wire AZOZ = not(vram.MD4);
-  wire ACOT = not(vram.MD5);
-  wire AGYK = not(vram.MD5);
-  wire CUJE = not(vram.MD6);
-  wire BUSE = not(vram.MD6);
-  wire ATER = not(vram.MD7);
-  wire ANUM = not(vram.MD7);
 
   oam.OAM_CLK = ZODO;
   oam.OAM_ADDR_RENDER = BETE;
   oam.OAM_ADDR_PARSE = APAR;
-  rst.RESET_VIDEO2n = ATAR;
   oam.OAM_ADDR_CPU = ASAM;
-  clk.CLK3 = BODE;
 
   wire AZUL = not(APAG);
   if (AZUL) {
+    wire ZAXA = not(mem.D0);
+    wire ZAMY = not(mem.D0);
+    wire ZAKY = not(mem.D1);
+    wire ZOPU = not(mem.D1);
+    wire WULE = not(mem.D2);
+    wire WYKY = not(mem.D2);
+    wire ZOZO = not(mem.D3);
+    wire ZAJA = not(mem.D3);
+
+    wire ZUFO = not(mem.D4);
+    wire ZUGA = not(mem.D4);
+    wire ZATO = not(mem.D5);
+    wire ZUMO = not(mem.D5);
+    wire YVUC = not(mem.D6);
+    wire XYTO = not(mem.D6);
+    wire ZUFE = not(mem.D7);
+    wire ZYFA = not(mem.D7);
+
     oam.OAM_A_D0 = ZAXA;
     oam.OAM_B_D0 = ZAMY;
     oam.OAM_A_D1 = ZAKY;
@@ -214,8 +151,26 @@ void tick_oam() {
     oam.OAM_B_D7 = ZYFA;
   }
 
-  wire AZAR = not(VRAM_TO_OAM);
+  wire AZAR = not(dma.VRAM_TO_OAM);
   if (AZAR) {
+    wire WUZU = not(vram.MD0);
+    wire WOWA = not(vram.MD0);
+    wire AXER = not(vram.MD1);
+    wire AVEB = not(vram.MD1);
+    wire ASOX = not(vram.MD2);
+    wire AMUH = not(vram.MD2);
+    wire CETU = not(vram.MD3);
+    wire COFO = not(vram.MD3);
+
+    wire ARYN = not(vram.MD4);
+    wire AZOZ = not(vram.MD4);
+    wire ACOT = not(vram.MD5);
+    wire AGYK = not(vram.MD5);
+    wire CUJE = not(vram.MD6);
+    wire BUSE = not(vram.MD6);
+    wire ATER = not(vram.MD7);
+    wire ANUM = not(vram.MD7);
+
     oam.OAM_A_D0 = WUZU;
     oam.OAM_B_D0 = WOWA;
     oam.OAM_A_D1 = AXER;
@@ -282,13 +237,13 @@ void tick_oam() {
   wire ZYFO = not((WACU & oam.OAM_ADDR_CPU) | (WYDU & oam.OAM_ADDR_RENDER) | (WUWE & oam.OAM_ADDR_PARSE) | (FESA & oam.OAM_ADDR_DMA));
   wire GEKA = not((GARO & oam.OAM_ADDR_CPU) | (GECA & oam.OAM_ADDR_RENDER) | (GEFY & oam.OAM_ADDR_PARSE) | (FODO & oam.OAM_ADDR_DMA));
 
-  wire MYNU = nand(cpu.CPU_RD2, CATY);
+  wire MYNU = nand(cpu.CPU_RD2, dma.CATY);
   LEKO = not(MYNU);
   wire WAFO = not(GEKA);
   wire GUKO = and(WAFO, AMAB, LEKO);
   wire WUKU = and(LEKO, AMAB, GEKA);
-  wire YLYC = and(WYJA, GEKA);
-  wire YNYC = and(WYJA, WAFO);
+  wire YLYC = and(dma.WYJA, GEKA);
+  wire YNYC = and(dma.WYJA, WAFO);
 
   WUME = not(GUKO);
   WEWU = not(WUKU);
@@ -297,7 +252,7 @@ void tick_oam() {
 
   ANEL.tock(AWOH, ABEZ, CATU_Q);
   wire XECY_Q = XECY.tock(XUCA, 0, rst.RESET7n); // ? weird
-  XUVA.tock(XYNY, XARE, XECY_Q);
+  XUVA.tock(XYNY, rst.XARE, XECY_Q);
 
   oam.OAM_A_CS = ZONE;
   oam.OAM_B_CS = ZOFE;

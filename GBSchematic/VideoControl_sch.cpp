@@ -7,21 +7,14 @@
 #include "MemBus.h"
 #include "PPU.h"
 #include "AddressDecoder.h"
+#include "Sprites.h"
+#include "Window.h"
+#include "LCD.h"
 
 //----------
 // inputs
 
-extern bool ATEJ;
-extern bool FEPO;
-extern bool LYFE;
-extern bool LYHA;
-extern bool TOFU;
-extern bool ACYL;
-extern bool WESY;
 extern bool PALY;
-extern bool AVAP;
-extern bool POVA;
-extern reg WUVU;
 
 //----------
 // outputs
@@ -98,7 +91,7 @@ void tick_videocontrol() {
   //----------
   // top center
 
-  bool WUVU_Q = WUVU.q();
+  bool WUVU_Q = spr.WUVU.q();
   bool VENA_Q = VENA.flip(!WUVU_Q, rst.RESET_VIDEO);
   bool RUTU_Q = RUTU.q();
   bool SYGU_Q = SYGU.q();
@@ -143,7 +136,7 @@ void tick_videocontrol() {
   //----------
   // x counter
 
-  bool TADY = nor(ATEJ, TOFU);
+  bool TADY = nor(spr.ATEJ, lcd.TOFU);
 
   bool XEHO_Q = ppu.XEHO.q();
   bool SAVY_Q = ppu.SAVY.q();
@@ -198,7 +191,7 @@ void tick_videocontrol() {
   NAPO.flip(POPU_Q, LYFE);
 
   bool XUGU = nand(XEHO_Q, SAVY_Q, XODU_Q, TUKY_Q, SYBE_Q);
-  bool XENA = not(FEPO);
+  bool XENA = not(spr.FEPO);
   bool XANO = not(XUGU);
   bool PARU = not(!POPU_Q);
   INT_VBL = PARU;
@@ -219,26 +212,26 @@ void tick_videocontrol() {
   bool SEPA = and(cpu.CPU_WR2, dec.FF41);
 
   bool VOGA_Q = VOGA.tock(clk.CLK2, TADY, WODU);
-  bool WEGO = or(TOFU, VOGA_Q);
+  bool WEGO = or(lcd.TOFU, VOGA_Q);
   bool XAJO = and(XEHO_Q, XYDO_Q);
-  XYMU = unk2(WEGO, AVAP);
+  XYMU = unk2(WEGO, spr.AVAP);
   bool WUSA = unk2(XAJO, WEGO);
   bool TOBA = and(clk.CLKPIPE, WUSA);
   bool SADU = nor(XYMU, PARU);
-  bool XATY = nor(ACYL, XYMU);
-  bool SEMU = or(TOBA, POVA);
+  bool XATY = nor(spr.ACYL, XYMU);
+  bool SEMU = or(TOBA, win.POVA);
   bool RYJU = not(SEPA);
   bool RYPO = not(SEMU);
-  bool PAGO = or(WESY, RYJU);
+  bool PAGO = or(clk.WESY, RYJU);
 
   //---
 
   bool RYVE = not(SEPA);
-  bool RUGU_Q = RUGU.tock(RYVE, WESY, mem.D6);
-  bool REFE_Q = REFE.tock(RYVE, WESY, mem.D5);
-  bool ROPO_Q = ROPO.tock(TALU, WESY, PALY); // this seems odd
-  bool RUFO_Q = RUFO.tock(RYVE, WESY, mem.D4);
-  bool ROXE_Q = ROXE.tock(RYVE, WESY, mem.D3);
+  bool RUGU_Q = RUGU.tock(RYVE, clk.WESY, mem.D6);
+  bool REFE_Q = REFE.tock(RYVE, clk.WESY, mem.D5);
+  bool ROPO_Q = ROPO.tock(TALU, clk.WESY, PALY); // this seems odd
+  bool RUFO_Q = RUFO.tock(RYVE, clk.WESY, mem.D4);
+  bool ROXE_Q = ROXE.tock(RYVE, clk.WESY, mem.D3);
 
   bool PUZO = not(!ROXE_Q);
   bool SASY = not(!REFE_Q);

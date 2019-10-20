@@ -4,12 +4,10 @@
 #include "Clocks.h"
 #include "ExtBus.h"
 #include "PPU.h"
+#include "Sprites.h"
 
 //----------
 // inputs
-
-extern bool XEFY;
-extern reg GOMO;
 
 //----------
 // outputs
@@ -29,14 +27,14 @@ reg LYME;
 //-----------------------------------------------------------------------------
 
 void tick_spritepaletteshifter() {
-  bool MEFU = or(XEFY, ppu.SPR_PIX_A_0, ppu.SPR_PIX_B_0);
-  bool MEVE = or(XEFY, ppu.SPR_PIX_A_1, ppu.SPR_PIX_B_1);
-  bool MYZO = or(XEFY, ppu.SPR_PIX_A_2, ppu.SPR_PIX_B_2);
-  bool RUDA = or(XEFY, ppu.SPR_PIX_A_3, ppu.SPR_PIX_B_3);
-  bool VOTO = or(XEFY, ppu.SPR_PIX_A_4, ppu.SPR_PIX_B_4);
-  bool VYSA = or(XEFY, ppu.SPR_PIX_A_5, ppu.SPR_PIX_B_5);
-  bool TORY = or(XEFY, ppu.SPR_PIX_A_6, ppu.SPR_PIX_B_6);
-  bool WOPE = or(XEFY, ppu.SPR_PIX_A_7, ppu.SPR_PIX_B_7);
+  bool MEFU = or(spr.XEFY, ppu.SPR_PIX_A_0, ppu.SPR_PIX_B_0);
+  bool MEVE = or(spr.XEFY, ppu.SPR_PIX_A_1, ppu.SPR_PIX_B_1);
+  bool MYZO = or(spr.XEFY, ppu.SPR_PIX_A_2, ppu.SPR_PIX_B_2);
+  bool RUDA = or(spr.XEFY, ppu.SPR_PIX_A_3, ppu.SPR_PIX_B_3);
+  bool VOTO = or(spr.XEFY, ppu.SPR_PIX_A_4, ppu.SPR_PIX_B_4);
+  bool VYSA = or(spr.XEFY, ppu.SPR_PIX_A_5, ppu.SPR_PIX_B_5);
+  bool TORY = or(spr.XEFY, ppu.SPR_PIX_A_6, ppu.SPR_PIX_B_6);
+  bool WOPE = or(spr.XEFY, ppu.SPR_PIX_A_7, ppu.SPR_PIX_B_7);
 
   ppu.LESY = not(MEFU);
   ppu.LOTA = not(MEVE);
@@ -47,7 +45,7 @@ void tick_spritepaletteshifter() {
   ppu.SOKA = not(TORY);
   ppu.XOVU = not(WOPE);
 
-  bool GOMO_Q = GOMO.q();
+  bool GOMO_Q = spr.GOMO.q();
 
   bool SYPY = not(!GOMO_Q);
   bool TOTU = not(!GOMO_Q);

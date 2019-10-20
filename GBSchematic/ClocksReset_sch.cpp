@@ -5,33 +5,17 @@
 #include "MemBus.h"
 #include "ExtBus.h"
 #include "PPU.h"
+#include "APU.h"
 #include "Clocks.h"
 #include "AddressDecoder.h"
 #include "Debug.h"
+#include "System.h"
 
 //----------
 // inputs
 
 extern bool TOLA_A1n;
 extern bool TOVY_A0n;
-
-extern bool FF60_D1;
-extern bool FERO_Q;
-
-//----------
-// outputs
-
-bool PHI_OUTn; // same as PHI_N?
-bool PHIn;
-
-bool FF04_D0n;
-bool FF04_D1n;
-
-bool WESY;
-bool ABUZ;
-bool AFAS;
-bool BEDO;
-bool BUKE;
 
 //----------
 // registers
@@ -90,7 +74,7 @@ void tick_clocks_reset() {
   clk.CLK_64k = TERO_Q;
   clk.CLK_256k = UFOR_Q;
 
-  bool ULUR = mux2(clk.BOGA1MHZ, !TAMA_Q, FF60_D1);
+  bool ULUR = mux2(clk.BOGA1MHZ, !TAMA_Q, sys.FF60_D1);
 
   bool UGOT_Q = UGOT.flip(ULUR,    rst.RESET_DIVn); // FIXME double negative?
   bool TULU_Q = TULU.flip(!UGOT_Q, rst.RESET_DIVn);
@@ -112,8 +96,8 @@ void tick_clocks_reset() {
   bool RYSO = not(SUBU_Q);
   bool UDOR = not(TEKA_Q);
 
-  FF04_D0n = UMEK;
-  FF04_D1n = UREK;
+  clk.FF04_D0n = UMEK;
+  clk.FF04_D1n = UREK;
 
   bool TAWU = not(UMEK);
   bool TAKU = not(UREK);
@@ -182,17 +166,17 @@ void tick_clocks_reset() {
   bool ATYP = not(AFUR_Q);
   bool AFEP = not(ALEF_Q);
   bool AROV = not(APUK_Q);
-  AFAS = nor(ADAR, ATYP);
+  clk.AFAS = nor(ADAR, ATYP);
   bool AJAX = not(ATYP);
   bool BUGO = not(AFEP);
-  bool AREV = nand(cpu.FROM_CPU3, AFAS);
+  bool AREV = nand(cpu.FROM_CPU3, clk.AFAS);
   bool AGUT = unk3(AJAX, AROV, cpu.FROM_CPU4);
   bool BATE = nor(BUGO, AROV, clk.ABOL_1MHZ);
   bool APOV = not(AREV);
   bool AWOD = or(dbg.T1nT2, AGUT);
   bool BASU = not(BATE);
-  ABUZ = not(AWOD);
-  BUKE = not(BASU);
+  clk.ABUZ = not(AWOD);
+  clk.BUKE = not(BASU);
 
   cpu.CPU_RD_SYNC = APOV;
 
@@ -228,20 +212,20 @@ void tick_clocks_reset() {
   bool ASOL = unk2(AFAR, ext.RESET);
   bool BOMA = not(BOGA);
   bool BYXO = not(BUVU);
-  BEDO = not(BYXO);
-  bool BOWA = not(BEDO);
+  clk.BEDO = not(BYXO);
+  bool BOWA = not(clk.BEDO);
   cpu.TO_CPU = BOWA;
   
   bool AVOR = or(AFER_Q, ASOL);
   bool ALUR = not(AVOR);
 
   bool UVYT = not(ext.PHI_OUT);
-  PHI_OUTn = UVYT;
+  clk.PHI_OUTn = UVYT;
 
   rst.RESET2 = ALUR;
 
   bool DOVA = not(BUDE);
-  PHIn = DOVA;
+  clk.PHIn = DOVA;
 
   bool TAPE = and(dec.FF04_FF07, cpu.CPU_WR, TOLA_A1n, TOVY_A0n);
 
@@ -261,7 +245,7 @@ void tick_clocks_reset() {
 
   rst.RESET7 = XORE;
 
-  WESY = not(XORE);
+  clk.WESY = not(XORE);
   bool WALU = not(XORE);
 
   rst.RESET6 = CUNU;
@@ -269,7 +253,7 @@ void tick_clocks_reset() {
 
   rst.RESET_VIDEO = XAPO;
 
-  rst.RESET9 = WESY;
+  rst.RESET9 = clk.WESY;
   rst.RESET8 = WALU;
 
   bool BARA_Q = BARA.q();
@@ -283,9 +267,9 @@ void tick_clocks_reset() {
   bool CULO = not(!CARU_Q);
   bool APEF = not(!BYLU_Q);
 
-  bool GALE = mux2(clk.HAMA_512Kn, FYNE, FERO_Q);
-  bool BEZE = mux2(clk.HAMA_512Kn, CULO, FERO_Q);
-  bool BULE = mux2(clk.HAMA_512Kn, APEF, FERO_Q);
+  bool GALE = mux2(clk.HAMA_512Kn, FYNE, apu.FERO_Q);
+  bool BEZE = mux2(clk.HAMA_512Kn, CULO, apu.FERO_Q);
+  bool BULE = mux2(clk.HAMA_512Kn, APEF, apu.FERO_Q);
 
   bool GEXY = not(GALE);
   bool COFU = not(BEZE);

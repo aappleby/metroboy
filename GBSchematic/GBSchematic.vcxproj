@@ -168,8 +168,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AddressDecoder.cpp" />
+    <ClCompile Include="APU.cpp" />
     <ClCompile Include="ApuControl_sch.cpp" />
     <ClCompile Include="ApuDecode_sch.cpp" />
+    <ClCompile Include="Background.cpp" />
     <ClCompile Include="Background_sch.cpp" />
     <ClCompile Include="BgPixelShifter_sch.cpp" />
     <ClCompile Include="Clocks.cpp" />
@@ -180,6 +182,7 @@
     <ClCompile Include="DmaBus.cpp" />
     <ClCompile Include="DMA_sch.cpp" />
     <ClCompile Include="ExtCpuBuses_sch.cpp" />
+    <ClCompile Include="LCD.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Interrupts_sch.cpp" />
     <ClCompile Include="Joypad_sch.cpp" />
@@ -189,7 +192,7 @@
     <ClCompile Include="OAM_sch.cpp" />
     <ClCompile Include="Palettes_sch.cpp" />
     <ClCompile Include="PixelMux_sch.cpp" />
-    <ClCompile Include="Ppu.cpp" />
+    <ClCompile Include="PPU.cpp" />
     <ClCompile Include="PpuDecode_sch.cpp" />
     <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
@@ -197,31 +200,40 @@
     <ClCompile Include="SpriteControl_sch.cpp" />
     <ClCompile Include="SpritePaletteShifter_sch.cpp" />
     <ClCompile Include="SpritePixelShifter_sch.cpp" />
+    <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="SpriteStore_sch.cpp" />
     <ClCompile Include="SpriteXMatcher_sch.cpp" />
     <ClCompile Include="SysDecode_sch.cpp" />
+    <ClCompile Include="System.cpp" />
     <ClCompile Include="Timer_sch.cpp" />
     <ClCompile Include="VideoControl_sch.cpp" />
     <ClCompile Include="VideoRegs_sch.cpp" />
     <ClCompile Include="VramBus.cpp" />
     <ClCompile Include="VramInterface_sch.cpp" />
+    <ClCompile Include="Window.cpp" />
     <ClCompile Include="WindowMap_sch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddressDecoder.h" />
+    <ClInclude Include="APU.h" />
+    <ClInclude Include="Background.h" />
     <ClInclude Include="Clocks.h" />
     <ClInclude Include="CpuBus.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="ExtBus.h" />
     <ClInclude Include="DmaBus.h" />
     <ClInclude Include="ExtCpuBuses_sch.h" />
+    <ClInclude Include="LCD.h" />
     <ClInclude Include="MemBus.h" />
     <ClInclude Include="OamBus.h" />
-    <ClInclude Include="Ppu.h" />
+    <ClInclude Include="PPU.h" />
     <ClInclude Include="Register.h" />
     <ClInclude Include="Schematics.h" />
+    <ClInclude Include="Sprites.h" />
+    <ClInclude Include="System.h" />
     <ClInclude Include="Timer_sch.h" />
     <ClInclude Include="VramBus.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="notes.txt" />

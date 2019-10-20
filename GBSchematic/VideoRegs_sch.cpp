@@ -13,9 +13,6 @@
 //----------
 // outputs
 
-bool WARU;
-bool XARE;
-
 //----------
 // registers
 
@@ -23,19 +20,17 @@ bool XARE;
 
 void tick_videoregs() {
   // FF40 LCDC
-  bool VYRE = and(dec.FF40, cpu.CPU_RD2);
-  WARU = and(dec.FF40, cpu.CPU_WR2);
+  bool WARU = and(dec.FF40, cpu.CPU_WR2);
   bool XUBO = not(WARU);
-  XARE = not(rst.RESET7);
 
-  bool XYLO_Q = ppu.XYLO.tock(XUBO, XARE, mem.D1);
-  bool XAFO_Q = ppu.XAFO.tock(XUBO, XARE, mem.D3);
-  bool XYMO_Q = ppu.XYMO.tock(XUBO, XARE, mem.D2);
-  bool XONA_Q = ppu.XONA.tock(XUBO, XARE, mem.D7);
-  bool WYMO_Q = ppu.WYMO.tock(XUBO, XARE, mem.D5);
-  bool WEXU_Q = ppu.WEXU.tock(XUBO, XARE, mem.D4);
-  bool WOKY_Q = ppu.WOKY.tock(XUBO, XARE, mem.D6);
-  bool VYXE_Q = ppu.VYXE.tock(XUBO, XARE, mem.D0);
+  bool XYLO_Q = ppu.XYLO.tock(XUBO, rst.XARE, mem.D1);
+  bool XAFO_Q = ppu.XAFO.tock(XUBO, rst.XARE, mem.D3);
+  bool XYMO_Q = ppu.XYMO.tock(XUBO, rst.XARE, mem.D2);
+  bool XONA_Q = ppu.XONA.tock(XUBO, rst.XARE, mem.D7);
+  bool WYMO_Q = ppu.WYMO.tock(XUBO, rst.XARE, mem.D5);
+  bool WEXU_Q = ppu.WEXU.tock(XUBO, rst.XARE, mem.D4);
+  bool WOKY_Q = ppu.WOKY.tock(XUBO, rst.XARE, mem.D6);
+  bool VYXE_Q = ppu.VYXE.tock(XUBO, rst.XARE, mem.D0);
  
   ppu.FF40_D1 = XYLO_Q;
   ppu.FF40_D3 = XAFO_Q;
@@ -46,25 +41,15 @@ void tick_videoregs() {
   ppu.FF40_D6 = WOKY_Q;
   ppu.FF40_D0 = VYXE_Q;
 
-  bool XERO = not(!XYLO_Q);
-  bool WUKA = not(!XAFO_Q);
-  bool WYJU = not(!XYMO_Q);
-  bool XEBU = not(!XONA_Q);
-  bool VATO = not(!WYMO_Q);
-  bool VOKE = not(!WEXU_Q);
-  bool VAHA = not(!WOKY_Q);
-  bool WYPO = not(!VYXE_Q);
-
-  bool WYCE = not(VYRE);
-  if (WYCE) {
-    mem.D1 = XERO;
-    mem.D3 = WUKA;
-    mem.D2 = WYJU;
-    mem.D7 = XEBU;
-    mem.D5 = VATO;
-    mem.D5 = VOKE;
-    mem.D6 = VAHA;
-    mem.D0 = WYPO;
+  if (nand(dec.FF40, cpu.CPU_RD2)) {
+    mem.D1 = XYLO_Q;
+    mem.D3 = XAFO_Q;
+    mem.D2 = XYMO_Q;
+    mem.D7 = XONA_Q;
+    mem.D5 = WYMO_Q;
+    mem.D5 = WEXU_Q;
+    mem.D6 = WOKY_Q;
+    mem.D0 = VYXE_Q;
   }
 
   // FF4B WX
@@ -73,42 +58,24 @@ void tick_videoregs() {
   bool VYCU = not(WYZE);
   bool VOXU = not(WUZA);
 
-  bool MYCE_Q = ppu.MYCE.tock(VOXU, rst.RESET8, mem.D5);
-  bool MYPA_Q = ppu.MYPA.tock(VOXU, rst.RESET8, mem.D0);
-  bool NOFE_Q = ppu.NOFE.tock(VOXU, rst.RESET8, mem.D1);
-  bool NUKU_Q = ppu.NUKU.tock(VOXU, rst.RESET8, mem.D7);
-  bool MYPU_Q = ppu.MYPU.tock(VOXU, rst.RESET8, mem.D4);
-  bool MUVO_Q = ppu.MUVO.tock(VOXU, rst.RESET8, mem.D6);
-  bool MEBY_Q = ppu.MEBY.tock(VOXU, rst.RESET8, mem.D3);
-  bool NOKE_Q = ppu.NOKE.tock(VOXU, rst.RESET8, mem.D2);
-
-  ppu.FF4B_D5 = MYCE_Q;
-  ppu.FF4B_D0 = MYPA_Q;
-  ppu.FF4B_D1 = NOFE_Q;
-  ppu.FF4B_D7 = NUKU_Q;
-  ppu.FF4B_D4 = MYPU_Q;
-  ppu.FF4B_D6 = MUVO_Q;
-  ppu.FF4B_D3 = MEBY_Q;
-  ppu.FF4B_D2 = NOKE_Q;
-
-  bool MUFE = not(!MYCE_Q);
-  bool LOVA = not(!MYPA_Q);
-  bool MUKA = not(!NOFE_Q);
-  bool MARA = not(!NUKU_Q);
-  bool MELE = not(!MYPU_Q);
-  bool MULY = not(!MUVO_Q);
-  bool LOLE = not(!MEBY_Q);
-  bool MOKO = not(!NOKE_Q);
+  ppu.FF4B_D0 = ppu.WX_R0.tock(VOXU, rst.RESET8, mem.D0);
+  ppu.FF4B_D1 = ppu.WX_R1.tock(VOXU, rst.RESET8, mem.D1);
+  ppu.FF4B_D2 = ppu.WX_R2.tock(VOXU, rst.RESET8, mem.D2);
+  ppu.FF4B_D3 = ppu.WX_R3.tock(VOXU, rst.RESET8, mem.D3);
+  ppu.FF4B_D4 = ppu.WX_R4.tock(VOXU, rst.RESET8, mem.D4);
+  ppu.FF4B_D5 = ppu.WX_R5.tock(VOXU, rst.RESET8, mem.D5);
+  ppu.FF4B_D6 = ppu.WX_R6.tock(VOXU, rst.RESET8, mem.D6);
+  ppu.FF4B_D7 = ppu.WX_R7.tock(VOXU, rst.RESET8, mem.D7);
 
   if (VYCU) {
-    mem.D5 = MUFE;
-    mem.D0 = LOVA;
-    mem.D1 = MUKA;
-    mem.D7 = MARA;
-    mem.D4 = MELE;
-    mem.D6 = MULY;
-    mem.D3 = LOLE;
-    mem.D2 = MOKO;
+    mem.D0 = ppu.FF4B_D0;
+    mem.D1 = ppu.FF4B_D1;
+    mem.D2 = ppu.FF4B_D2;
+    mem.D3 = ppu.FF4B_D3;
+    mem.D4 = ppu.FF4B_D4;
+    mem.D5 = ppu.FF4B_D5;
+    mem.D6 = ppu.FF4B_D6;
+    mem.D7 = ppu.FF4B_D7;
   }
 
   // FF4A WY

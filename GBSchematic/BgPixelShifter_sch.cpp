@@ -5,41 +5,28 @@
 #include "VramBus.h"
 #include "ExtBus.h"
 #include "PPU.h"
-
-//----------
-// inputs
-
-extern bool MOFU;
-extern bool NYDY;
-extern bool NYXU;
-extern bool VYPO;
-
-//----------
-// outputs
-
-//----------
-// registers
+#include "Window.h"
 
 //-----------------------------------------------------------------------------
 
 void tick_bgpixelshifter() {
 
-  wire LESO = not(MOFU);
+  wire LESO = not(win.MOFU);
   wire AJAR = not(LESO);
   wire LABU = not(AJAR);
-  wire METE = not(NYDY);
+  wire METE = not(win.NYDY);
   wire LOMA = not(METE);
-  wire LOZE = not(NYXU);
-  wire LUXA = not(NYXU);
+  wire LOZE = not(win.NYXU);
+  wire LUXA = not(win.NYXU);
 
-  wire RAWU_Q = ppu.RAWU.tock(LABU, VYPO, vram.MD0);
-  wire POZO_Q = ppu.POZO.tock(LABU, VYPO, vram.MD1);
-  wire PYZO_Q = ppu.PYZO.tock(LABU, VYPO, vram.MD2);
-  wire POXA_Q = ppu.POXA.tock(LABU, VYPO, vram.MD3);
-  wire PULO_Q = ppu.PULO.tock(LABU, VYPO, vram.MD4);
-  wire POJU_Q = ppu.POJU.tock(LABU, VYPO, vram.MD5);
-  wire POWY_Q = ppu.POWY.tock(LABU, VYPO, vram.MD6);
-  wire PYJU_Q = ppu.PYJU.tock(LABU, VYPO, vram.MD7);
+  wire RAWU_Q = ppu.RAWU.tock(LABU, win.VYPO, vram.MD0);
+  wire POZO_Q = ppu.POZO.tock(LABU, win.VYPO, vram.MD1);
+  wire PYZO_Q = ppu.PYZO.tock(LABU, win.VYPO, vram.MD2);
+  wire POXA_Q = ppu.POXA.tock(LABU, win.VYPO, vram.MD3);
+  wire PULO_Q = ppu.PULO.tock(LABU, win.VYPO, vram.MD4);
+  wire POJU_Q = ppu.POJU.tock(LABU, win.VYPO, vram.MD5);
+  wire POWY_Q = ppu.POWY.tock(LABU, win.VYPO, vram.MD6);
+  wire PYJU_Q = ppu.PYJU.tock(LABU, win.VYPO, vram.MD7);
 
   wire LEGU_Q = ppu.LEGU.latch(LOMA, vram.MD0);
   wire NUDU_Q = ppu.NUDU.latch(LOMA, vram.MD1);

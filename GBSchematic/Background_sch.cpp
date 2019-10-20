@@ -4,32 +4,19 @@
 #include "Clocks.h"
 #include "VramBus.h"
 #include "PPU.h"
-
-//----------
-// inputs
-
-extern bool WEFE;
-extern bool PORE;
-extern bool NETA;
-extern bool POTU;
-extern bool XUHA;
-
-extern reg DEPO;
-
-//----------
-// outputs
-
-bool VAVA3;
+#include "Sprites.h"
+#include "Window.h"
+#include "Background.h"
 
 //-----------------------------------------------------------------------------
 
-void tick_background() {
+void Background::tick() {
   //----------
   // y + scy;
 
-  bool AXAD = not(PORE);
-  bool ASUL = and(AXAD, NETA);
-  bool ACEN = and(AXAD, POTU);
+  bool AXAD = not(win.PORE);
+  bool ASUL = and(AXAD, win.NETA);
+  bool ACEN = and(AXAD, win.POTU);
   bool BEJE = not(ASUL);
   bool BAFY = not(ACEN);
 
@@ -57,7 +44,7 @@ void tick_background() {
   bool EJOK_S = add_s(ppu.V7, ppu.FF42_D7, EFYK_C);
   //bool EJOK_C = add_c(ppu.V7, ppu.FF42_D7, EFYK_C);
 
-  bool ASUM = not(XUHA);
+  bool ASUM = not(win.XUHA);
   bool EVAD = not(FAFO_S);
   bool DAHU = not(EMUX_S);
   bool DODE = not(ECAB_S);
@@ -119,8 +106,8 @@ void tick_background() {
   //bool ACUL_C = add_c(SYBE_Q, ppu.FF43_D7, BYCA_C);
 
   bool AMUV = not(ppu.FF40_D3);
-  bool COXO = not(WEFE);
-  bool COVE = not(WEFE);
+  bool COXO = not(spr.WEFE);
+  bool COVE = not(spr.WEFE);
 
   // maybe the 'unk1' block inverts its sum out? otherwise we'd be putting the inverted sum on the bus...
   // or maybe these are not inverters...
@@ -145,7 +132,7 @@ void tick_background() {
   // some shift register connected to VAVA3?
   // this is the "draw background here" shift register, it should probably move to pixelmux
 
-  bool DEPO_Q = DEPO.q();
+  bool DEPO_Q = spr.DEPO.q();
 
   bool XOGA = not(!DEPO_Q);
   bool XURA = not(!DEPO_Q);

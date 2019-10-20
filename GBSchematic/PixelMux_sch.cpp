@@ -3,17 +3,7 @@
 #include "Schematics.h"
 #include "ExtBus.h"
 #include "PPU.h"
-
-//----------
-// inputs
-
-extern bool VAVA3;
-
-//----------
-// outputs
-
-//----------
-// registers
+#include "Background.h"
 
 //-----------------------------------------------------------------------------
 
@@ -26,8 +16,8 @@ void tick_pixelmux() {
   bool WELE = not(XULA);
   bool VUMU = not(WOXA);
   bool NULY = nor(WOXA, XULA);
-  bool RUTA = and(TADE, VAVA3);
-  bool RYFU = and(RAJY, VAVA3);
+  bool RUTA = and(TADE, bg.VAVA3);
+  bool RYFU = and(RAJY, bg.VAVA3);
   bool POKA = nor(NULY, RUTA, RYFU);
   ppu.BGPIXELn = POKA;
 

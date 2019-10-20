@@ -6,14 +6,10 @@
 #include "ExtBus.h"
 #include "Clocks.h"
 #include "CpuBus.h"
+#include "System.h"
 
 //----------
 // inputs
-
-extern bool FF60_D0;
-extern bool BEDO;
-
-extern reg BURO;
 
 //----------
 // outputs
@@ -40,17 +36,17 @@ bool KAPA_L;
 //-----------------------------------------------------------------------------
 
 void tick_joypad() {
-  bool JEVA = not(BURO.q());
-  bool KORE = nand(KERU_Q, BURO.q());
+  bool JEVA = not(sys.BURO.q());
+  bool KORE = nand(KERU_Q, sys.BURO.q());
   bool KYWE = nor(JEVA, KERU_Q);
-  bool KORY = nand(KYME_Q, FF60_D0);
-  bool KURA = not(FF60_D0);
+  bool KORY = nand(KYME_Q, sys.FF60_D0);
+  bool KURA = not(sys.FF60_D0);
   bool KALE = nor(KYME_Q, KURA);
-  bool KASY = nor(FF60_D0, KURA);
-  bool KYHU = nand(FF60_D0, JALE_Q);
+  bool KASY = nor(sys.FF60_D0, KURA);
+  bool KYHU = nand(sys.FF60_D0, JALE_Q);
   bool BYZO = not(FF00RD);
 
-  bool KENA = mux2(KUKO_Q, ext.SER_OUT, BURO.q());
+  bool KENA = mux2(KUKO_Q, ext.SER_OUT, sys.BURO.q());
   SOUT = KENA;
 
   if (BYZO) {
@@ -79,9 +75,9 @@ void tick_joypad() {
   bool KARU = or(KURA, !KELY_Q);
 
   bool CELA = or(!COFY_Q, KURA);
-  bool KOLE = nand(JUTE_Q, FF60_D0);
+  bool KOLE = nand(JUTE_Q, sys.FF60_D0);
   bool KYBU = nor(JUTE_Q, KURA);
-  bool KYTO = nand(KECY_Q, FF60_D0);
+  bool KYTO = nand(KECY_Q, sys.FF60_D0);
   bool KABU = nor(KECY_Q, KURA);
   
   ext.P10_B = KOLE;
@@ -101,7 +97,7 @@ void tick_joypad() {
 
   ext.P15_A = CELA;
 
-  bool AXYN = not(BEDO);
+  bool AXYN = not(clk.BEDO);
   bool ADYR = not(AXYN);
   bool APYS = nor(cpu.FROM_CPU, ADYR);
   bool AFOP = not(APYS);

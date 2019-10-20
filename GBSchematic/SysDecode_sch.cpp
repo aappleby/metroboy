@@ -7,51 +7,16 @@
 #include "ExtBus.h"
 #include "Clocks.h"
 #include "Debug.h"
+#include "System.h"
+#include "APU.h"
 
 //----------
 // inputs
 
-extern bool BEDO;
-
-extern bool ANAP;
-
-//----------
-// outputs
-
-bool BOOT_CS; // output enables boot rom bus override?
-bool HRAM_CS; // output enables hram bus override?
-
-
-bool FF60_D0;
-bool FF60_D1;
-
-bool SARO;
-
-// all output only
-bool BOOTROM_A7n;
-bool BOOTROM_A6n;
-bool BOOTROM_A5nA4n;
-bool BOOTROM_A5nA4;
-bool BOOTROM_A5A4n;
-bool BOOTROM_A5AA4;
-bool BOOTROM_A3n;
-bool BOOTROM_A2n;
-bool BOOTROM_A1nA0n;
-bool BOOTROM_A1nA0;
-bool BOOTROM_A1A0n;
-bool BOOTROM_A1A0;
-
-//----------
-// registers
-
-reg TEPU;
-reg AMUT;
-reg BURO;
-
 //-----------------------------------------------------------------------------
 
 void tick_sysdecode() {
-  bool TEPU_Q = TEPU.q();
+  bool TEPU_Q = sys.TEPU.q();
 
   //----------
 
@@ -77,7 +42,7 @@ void tick_sysdecode() {
   bool ZADO = nand(YULA, ZUFA);
   bool ZERY = not(ZADO);
 
-  BOOT_CS = ZERY;
+  sys.BOOT_CS = ZERY;
 
   //----------
 
@@ -95,11 +60,11 @@ void tick_sysdecode() {
   bool WOLY = nand(WALE, mem.A7, dec.FFXX);
   bool WUTA = not(WOLY);
 
-  HRAM_CS = WUTA;
+  sys.HRAM_CS = WUTA;
 
   //----------
 
-  bool LECO = nor(BEDO, dbg.T1nT2);
+  bool LECO = nor(clk.BEDO, dbg.T1nT2);
 
   bool RARU = not(ext.P10_B);
   bool ROWE = not(ext.P10_B);
@@ -133,7 +98,7 @@ void tick_sysdecode() {
   dec.FFXX = SYKE;
   bool BAKO = not(SYKE);
   dec.FFXXn = BAKO;
-  SARO = not(ROPE);
+  sys.SARO = not(ROPE);
 
   //----------
 
@@ -142,10 +107,10 @@ void tick_sysdecode() {
   bool ZABU = not(mem.A3);
   bool ZOKE = not(mem.A2);
 
-  BOOTROM_A7n = ZYRA;
-  BOOTROM_A6n = ZAGE;
-  BOOTROM_A3n = ZABU;
-  BOOTROM_A2n = ZOKE;
+  sys.BOOTROM_A7n = ZYRA;
+  sys.BOOTROM_A6n = ZAGE;
+  sys.BOOTROM_A3n = ZABU;
+  sys.BOOTROM_A2n = ZOKE;
 
   //----------
 
@@ -156,10 +121,10 @@ void tick_sysdecode() {
   bool ZOVY = and(mem.A5, ZUFY);
   bool ZUKO = and(mem.A5, mem.A4);
 
-  BOOTROM_A5nA4n = ZYKY;
-  BOOTROM_A5nA4 = ZYGA;
-  BOOTROM_A5A4n = ZOVY;
-  BOOTROM_A5AA4 = ZUKO;
+  sys.BOOTROM_A5nA4n = ZYKY;
+  sys.BOOTROM_A5nA4 = ZYGA;
+  sys.BOOTROM_A5A4n = ZOVY;
+  sys.BOOTROM_A5AA4 = ZUKO;
 
   //----------
 
@@ -175,15 +140,15 @@ void tick_sysdecode() {
   bool ZYRO = not(ZUBU);
   bool ZAPA = not(ZAPY);
 
-  BOOTROM_A1nA0n = ZETE;
-  BOOTROM_A1nA0 = ZEFU;
-  BOOTROM_A1A0n = ZYRO;
-  BOOTROM_A1A0 = ZAPA;
+  sys.BOOTROM_A1nA0n = ZETE;
+  sys.BOOTROM_A1nA0 = ZEFU;
+  sys.BOOTROM_A1A0n = ZYRO;
+  sys.BOOTROM_A1A0 = ZAPA;
 
   //----------
 
   bool APET = or(NET02, dbg.T1T2n);
-  bool APER = nand(APET, mem.A5, mem.A6, cpu.CPU_WR, ANAP);
+  bool APER = nand(APET, mem.A5, mem.A6, cpu.CPU_WR, apu.ANAP);
 
   //----------
 
@@ -209,7 +174,7 @@ void tick_sysdecode() {
   //----------
   // registers
 
-  TEPU.tock(TUGE, rst.RESET2, SATO);
-  AMUT.tock(APER, rst.RESET2, mem.D1);
-  BURO.tock(APER, rst.RESET2, mem.D0);
+  sys.TEPU.tock(TUGE, rst.RESET2, SATO);
+  sys.AMUT.tock(APER, rst.RESET2, mem.D1);
+  sys.BURO.tock(APER, rst.RESET2, mem.D0);
 }

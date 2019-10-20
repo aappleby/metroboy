@@ -8,56 +8,12 @@
 #include "CpuBus.h"
 #include "AddressDecoder.h"
 #include "Clocks.h"
-
-//----------
-// inputs
-
-extern bool PHI_OUTn;
-extern bool AMAB; // from oam
-
-//----------
-// outputs
-
-bool CATY;
-bool LUMA;
-bool WYJA;
-bool MOPA_PHI;
-
-bool VRAM_TO_OAM;
-
-//----------
-// registers
-
-reg MAKA;
-reg LUVY;
-reg MYTE;
-reg LENE;
-reg MATU;
-
-// DMA base reg
-reg NAFA;
-reg NYGY;
-reg PARA;
-reg PYNE;
-reg PULA;
-reg NYDO;
-reg POKU;
-reg MARU;
-
-// DMA counter reg
-reg NAKY;
-reg PYRO;
-reg NEFY;
-reg MUTY;
-reg NYKO;
-reg PYLO;
-reg NUTO;
-reg MUGU;
+#include "Sprites.h"
 
 //-----------------------------------------------------------------------------
 // 4_DMA.png
 
-void tick_dma() {
+void DmaBus::tick() {
   bool MAKA_Q = MAKA.q();
   bool LUVY_Q = LUVY.q();
   bool MYTE_Q = MYTE.q();
@@ -65,11 +21,11 @@ void tick_dma() {
   bool MATU_Q = MATU.q();
 
   bool DECY = not(cpu.FROM_CPU5);
-  CATY = not(DECY);
+  dma.CATY = not(DECY);
   bool NAXY = nor(MAKA_Q, LUVY_Q);
 
-  bool MOPA = not(PHI_OUTn);
-  MOPA_PHI = MOPA;
+  bool MOPA = not(clk.PHI_OUTn);
+  dma.MOPA_PHI = MOPA;
 
   bool LENE_Qn = not(LENE_Q);
   bool LOKO = nand(rst.RESET6, LENE_Qn);
@@ -94,7 +50,7 @@ void tick_dma() {
 
   bool NOLO = not(NAVO);
 
-  WYJA = unk3(AMAB, cpu.CPU_WR2, POWU);
+  dma.WYJA = unk3(spr.AMAB, cpu.CPU_WR2, POWU);
 
   bool NAFA_Q = NAFA.tock(LORU, 0, mem.D0);
   bool NYGY_Q = NYGY.tock(LORU, 0, mem.D4);
@@ -131,7 +87,7 @@ void tick_dma() {
 
 
   bool LAPA = not(LOKO);
-  bool META = and(PHI_OUTn, LOKY);
+  bool META = and(clk.PHI_OUTn, LOKY);
 
   bool NAKY_Q = NAKY.flip(META,    LAPA);
   bool PYRO_Q = PYRO.flip(!NAKY_Q, LAPA);
@@ -168,9 +124,9 @@ void tick_dma() {
   bool MORY = nand(MATU_Q, LOGO);
   bool DUGA = not(MATU_Q);
   bool LUFA = not(MUHO);
-  LUMA = not(MORY);
+  dma.LUMA = not(MORY);
   oam.OAM_ADDR_DMA = DUGA;
-  VRAM_TO_OAM = LUFA;
+  dma.VRAM_TO_OAM = LUFA;
 
   bool PUSY = not(NYGO);
   if (PUSY) {
@@ -184,7 +140,7 @@ void tick_dma() {
     mem.D7 = NUVY;
   }
 
-  bool AHOC = not(VRAM_TO_OAM);
+  bool AHOC = not(dma.VRAM_TO_OAM);
   if (AHOC) {
     vram.MA0 = ECAL;
     vram.MA1 = EGEZ;
@@ -204,9 +160,9 @@ void tick_dma() {
   //----------
   // registers
 
-  MAKA.tock(clk.CLK1,     rst.RESET6, CATY);
-  LUVY.tock(PHI_OUTn, rst.RESET6, LUPA);
+  MAKA.tock(clk.CLK1,     rst.RESET6, dma.CATY);
+  LUVY.tock(clk.PHI_OUTn, rst.RESET6, LUPA);
   LENE.tock(MOPA,     rst.RESET6, LUVY_Q);
-  MATU.tock(PHI_OUTn, rst.RESET6, LOKY);
+  MATU.tock(clk.PHI_OUTn, rst.RESET6, LOKY);
   MYTE.tock(MOPA,     LAPA,   NOLO);
 }

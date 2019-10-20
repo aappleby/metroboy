@@ -4,98 +4,24 @@
 #include "Clocks.h"
 #include "PPU.h"
 #include "VramBus.h"
+#include "Sprites.h"
+#include "Window.h"
+#include "LCD.h"
 
 //----------
 // inputs
 
-extern reg NYKA;
-extern reg PORY;
-
-extern bool ROXO;
 extern bool WUKO;
-extern bool LOBY;
-extern bool POKY;
 
 extern bool XYMU;
-extern bool AVAP;
 extern bool CUBA1;
 extern bool TALU;
-extern bool WUTY;
-extern bool TOMU;
-extern bool FEPO;
-extern bool LAPE;
-extern bool ATEJ;
-extern bool SEGU;
-
 
 extern bool INT_VBL; // this is the one that feeds INT_STAT
 
-//----------
-// outputs
-
-bool MOFU;
-bool NYDY;
-bool NYXU;
-bool VYPO;
-bool ROXY;
-bool LYRY;
-bool SECA;
-bool POVA;
-bool MYVO;
-bool SYLO;
-bool LENA;
-bool MOSU;
-bool MYMA;
-bool NETA;
-bool PORE;
-bool POTU;
-bool TAVA;
-bool XUHA;
-
-//----------
-// registers
-
-reg SOBU;
-reg SUDA;
-reg SARY;
-reg NOPA;
-reg PYCO;
-reg NUNU;
-
-reg RYKU;
-reg ROGA;
-reg RUBU;
-reg NYZE;
-reg PUXA;
-
-reg RYFA;
-reg SOVY;
-reg RENE;
-reg LYZU;
-reg LAXU;
-reg MESU;
-reg NYVA;
-reg LOVY;
-
-// big address bus, bottom right
-
-reg VYNO;
-reg VUJO;
-reg VYMU;
-reg TUFU;
-reg TAXA;
-reg TOZO;
-reg TATE;
-reg TEKE;
-reg WYKA;
-reg WODY;
-reg WOBO;
-reg WYKO;
-reg XOLO;
-
 //-----------------------------------------------------------------------------
 
-void tick_windowmap() {
+void Window::tick() {
   //----------
   // Window Y match
 
@@ -172,16 +98,16 @@ void tick_windowmap() {
   wire SUHA = xor(ppu.FF43_D0, RYKU_Q);
   wire SYBY = xor(ppu.FF43_D1, ROGA_Q);
   wire SOZU = xor(ppu.FF43_D2, RUBU_Q);
-  wire PECU = nand(ROXO, ROZE);
+  wire PECU = nand(lcd.ROXO, ROZE);
   wire RONE = nand(ROXY, SUHA, SYBY, SOZU);
   wire POHU = not(RONE);
   wire MOXE = not(clk.CLK2);
   wire PANY = nor(NUKO, ROZE);
   wire SEKO = nor(RENE_Q, !RYFA_Q);
-  wire ROMO = not(POKY);
-  wire SUVU = nand(XYMU, ROMO, NYKA.q(), PORY.q());
+  wire ROMO = not(lcd.POKY);
+  wire SUVU = nand(XYMU, ROMO, lcd.NYKA.q(), lcd.PORY.q());
   wire TAVE = not(SUVU);
-  wire XAHY = not(ATEJ);
+  wire XAHY = not(spr.ATEJ);
   wire XOFO = nand(ppu.FF40_D5, XAHY, rst.RESET_VIDEO);
   wire XACO = not(XOFO);
   wire PYNU = unk2(NUNU_Q, XOFO);
@@ -192,7 +118,7 @@ void tick_windowmap() {
   // glitch filter loop, FIXME double check if this logic is correct
   // bool PUKU = nor(NUNY, RYDY);
   // bool RYDY = nor(PUKU, RESET_VIDEOn, PORY);
-  wire RYDY = NUNY && !(rst.RESET_VIDEOn || PORY.q());
+  wire RYDY = NUNY && !(rst.RESET_VIDEOn || lcd.PORY.q());
 
   SYLO = not(RYDY);
   wire TUXY = nand(SOVY_Q, SYLO);
@@ -200,11 +126,11 @@ void tick_windowmap() {
   wire TEVO = nor(SEKO, SUZU, TAVE);
   wire PASO = nor(TEVO, PAHA);
   wire VETU = and(TEVO, PORE);
-  wire ROCO = not(SEGU);
+  wire ROCO = not(lcd.SEGU);
   wire MEHE = not(clk.CLK2);
   wire NYFO = not(NUNY);
   MOSU = not(NYFO);
-  NYXU = nor(AVAP, MOSU, TEVO);
+  NYXU = nor(spr.AVAP, MOSU, TEVO);
   wire WAZY = not(PORE);
   wire SYNY = not(REPU);
 
@@ -226,7 +152,7 @@ void tick_windowmap() {
   MYVO = not(clk.CLK2);
   LYRY = not(MOCE);
   wire LAXE = not(LAXU_Q);
-  wire MYSO = nor(LOBY, LAXE, LYZU_Q);
+  wire MYSO = nor(lcd.LOBY, LAXE, LYZU_Q);
   wire NAKO = not(MESU_Q);
   wire NOFU = not(NYVA_Q);
   MOFU = and(MYSO, NAKO);
@@ -307,28 +233,28 @@ void tick_windowmap() {
 
   wire RYCE = and(SOBU_Q, !SUDA_Q);
   wire ROSY = not(rst.RESET_VIDEO);
-  SECA = nor(RYCE, ROSY, ATEJ);
-  wire VEKU = nor(WUTY, TAVE);
+  SECA = nor(RYCE, ROSY, spr.ATEJ);
+  wire VEKU = nor(spr.WUTY, TAVE);
   wire TAKA = unk2(VEKU, SECA);
-  wire TUKU = not(TOMU);
+  wire TUKU = not(lcd.TOMU);
   wire SOWO = not(TAKA);
-  wire TEKY = and(FEPO, TUKU, LYRY, SOWO);
-  TAVA = not(LAPE);
+  wire TEKY = and(spr.FEPO, TUKU, LYRY, SOWO);
+  TAVA = not(spr.LAPE);
 
   //----------
   // registers
 
   SOBU.tock(TAVA, VYPO, TEKY);
-  SUDA.tock(LAPE, VYPO, SOBU_Q);
+  SUDA.tock(spr.LAPE, VYPO, SOBU_Q);
 
   RYKU.flip(PECU, PASO);
   ROGA.flip(!RYKU_Q, PASO);
   RUBU.flip(!ROGA_Q, PASO);
 
   NYZE.tock(MOXE, XYMU, PUXA_Q);
-  PUXA.tock(ROXO, XYMU, POHU);
+  PUXA.tock(lcd.ROXO, XYMU, POHU);
 
-  RYFA.tock(SEGU, XYMU, PANY);
+  RYFA.tock(lcd.SEGU, XYMU, PANY);
   RENE.tock(clk.CLK2, XYMU, RYFA_Q);
   SOVY.tock(clk.CLK2, rst.RESET_VIDEO, RYDY);
 }

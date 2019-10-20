@@ -194,7 +194,7 @@ void Clocks::tick(const APU& apu, Resets& rst, const AddressDecoder& dec) {
   bool XEBE = not(rst.RESET7);
   bool UCOB = not(ext.CLKIN_A);
   bool CUNU = not(DULA);
-  bool XODO = and(ppu.LCDC_EN, XEBE);
+  bool XODO = and(ppu.LCDC_LCDEN, XEBE);
 
   rst.RESET7n = XEBE;
   clk.CLKIN_An = UCOB;
@@ -203,7 +203,7 @@ void Clocks::tick(const APU& apu, Resets& rst, const AddressDecoder& dec) {
 
   rst.RESET7 = XORE;
 
-  clk.WESY = not(XORE);
+  rst.WESY = not(XORE);
   bool WALU = not(XORE);
 
   rst.RESET6 = CUNU;
@@ -212,7 +212,7 @@ void Clocks::tick(const APU& apu, Resets& rst, const AddressDecoder& dec) {
   rst.RESET_VIDEO = XAPO;
   rst.RESET_VIDEOn = not(XAPO);
 
-  rst.RESET9 = clk.WESY;
+  rst.RESET9 = rst.WESY;
   rst.RESET8 = WALU;
 
   bool BARA_Q = BARA.q();

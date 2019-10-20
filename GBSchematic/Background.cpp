@@ -13,29 +13,23 @@ void Background::tick(const Window& win, Vram& vram) {
   //----------
   // y + scy;
 
-  bool FAFO_S = add_s(ppu.V0, ppu.FF42_D0, 0);
-  bool FAFO_C = add_c(ppu.V0, ppu.FF42_D0, 0);
-
-  bool EMUX_S = add_s(ppu.V1, ppu.FF42_D1, FAFO_C);
-  bool EMUX_C = add_c(ppu.V1, ppu.FF42_D1, FAFO_C);
-
-  bool ECAB_S = add_s(ppu.V2, ppu.FF42_D2, EMUX_C);
-  bool ECAB_C = add_c(ppu.V2, ppu.FF42_D2, EMUX_C);
-
-  bool ETAM_S = add_s(ppu.V3, ppu.FF42_D3, ECAB_C);
-  bool ETAM_C = add_c(ppu.V3, ppu.FF42_D3, ECAB_C);
-
-  bool DOTO_S = add_s(ppu.V4, ppu.FF42_D4, ETAM_C);
-  bool DOTO_C = add_c(ppu.V4, ppu.FF42_D4, ETAM_C);
-
-  bool DABA_S = add_s(ppu.V5, ppu.FF42_D5, DOTO_C);
-  bool DABA_C = add_c(ppu.V5, ppu.FF42_D5, DOTO_C);
-
-  bool EFYK_S = add_s(ppu.V6, ppu.FF42_D6, DABA_C);
-  bool EFYK_C = add_c(ppu.V6, ppu.FF42_D6, DABA_C);
-
-  bool EJOK_S = add_s(ppu.V7, ppu.FF42_D7, EFYK_C);
-  //bool EJOK_C = add_c(ppu.V7, ppu.FF42_D7, EFYK_C);
+  bool FAFO_S = add_s(ppu.V0, ppu.SCY_D0, 0);
+  bool FAFO_C = add_c(ppu.V0, ppu.SCY_D0, 0);
+  bool EMUX_S = add_s(ppu.V1, ppu.SCY_D1, FAFO_C);
+  bool EMUX_C = add_c(ppu.V1, ppu.SCY_D1, FAFO_C);
+  bool ECAB_S = add_s(ppu.V2, ppu.SCY_D2, EMUX_C);
+  bool ECAB_C = add_c(ppu.V2, ppu.SCY_D2, EMUX_C);
+  bool ETAM_S = add_s(ppu.V3, ppu.SCY_D3, ECAB_C);
+  bool ETAM_C = add_c(ppu.V3, ppu.SCY_D3, ECAB_C);
+  bool DOTO_S = add_s(ppu.V4, ppu.SCY_D4, ETAM_C);
+  bool DOTO_C = add_c(ppu.V4, ppu.SCY_D4, ETAM_C);
+  bool DABA_S = add_s(ppu.V5, ppu.SCY_D5, DOTO_C);
+  bool DABA_C = add_c(ppu.V5, ppu.SCY_D5, DOTO_C);
+  bool EFYK_S = add_s(ppu.V6, ppu.SCY_D6, DABA_C);
+  bool EFYK_C = add_c(ppu.V6, ppu.SCY_D6, DABA_C);
+  bool EJOK_S = add_s(ppu.V7, ppu.SCY_D7, EFYK_C);
+  bool EJOK_C = add_c(ppu.V7, ppu.SCY_D7, EFYK_C);
+  (void)EJOK_C;
 
   bool ASUM = not(win.XUHA);
   bool EVAD = not(FAFO_S);
@@ -60,40 +54,40 @@ void Background::tick(const Window& win, Vram& vram) {
   //----------
   // x + scx
 
-  bool XEHO_Q = ppu.XEHO.q();
-  bool SAVY_Q = ppu.SAVY.q();
-  bool XODU_Q = ppu.XODU.q();
-  bool XYDO_Q = ppu.XYDO.q();
-  bool TUHU_Q = ppu.TUHU.q();
-  bool TUKY_Q = ppu.TUKY.q();
-  bool TAKO_Q = ppu.TAKO.q();
-  bool SYBE_Q = ppu.SYBE.q();
+  bool XEHO_Q = ppu.X_R0.q();
+  bool SAVY_Q = ppu.X_R1.q();
+  bool XODU_Q = ppu.X_R2.q();
+  bool XYDO_Q = ppu.X_R3.q();
+  bool TUHU_Q = ppu.X_R4.q();
+  bool TUKY_Q = ppu.X_R5.q();
+  bool TAKO_Q = ppu.X_R6.q();
+  bool SYBE_Q = ppu.X_R7.q();
 
   //bool ATAD_S = add_s(XEHO_Q, ppu.FF43_D0, 0);
-  bool ATAD_C = add_c(XEHO_Q, ppu.FF43_D0, 0);
+  bool ATAD_C = add_c(XEHO_Q, ppu.SCX_D0, 0);
 
   //bool BEHU_S = add_s(SAVY_Q, ppu.FF43_D1, ATAD_C);
-  bool BEHU_C = add_c(SAVY_Q, ppu.FF43_D1, ATAD_C);
+  bool BEHU_C = add_c(SAVY_Q, ppu.SCX_D1, ATAD_C);
 
   //bool APYH_S = add_s(XODU_Q, ppu.FF43_D2, BEHU_C);
-  bool APYH_C = add_c(XODU_Q, ppu.FF43_D2, BEHU_C);
+  bool APYH_C = add_c(XODU_Q, ppu.SCX_D2, BEHU_C);
 
-  bool BABE_S = add_s(XYDO_Q, ppu.FF43_D3, APYH_C);
-  bool BABE_C = add_c(XYDO_Q, ppu.FF43_D3, APYH_C);
+  bool BABE_S = add_s(XYDO_Q, ppu.SCX_D3, APYH_C);
+  bool BABE_C = add_c(XYDO_Q, ppu.SCX_D3, APYH_C);
 
-  bool ABOD_S = add_s(TUHU_Q, ppu.FF43_D4, BABE_C);
-  bool ABOD_C = add_c(TUHU_Q, ppu.FF43_D4, BABE_C);
+  bool ABOD_S = add_s(TUHU_Q, ppu.SCX_D4, BABE_C);
+  bool ABOD_C = add_c(TUHU_Q, ppu.SCX_D4, BABE_C);
 
-  bool BEWY_S = add_s(TUKY_Q, ppu.FF43_D5, ABOD_C);
-  bool BEWY_C = add_c(TUKY_Q, ppu.FF43_D5, ABOD_C);
+  bool BEWY_S = add_s(TUKY_Q, ppu.SCX_D5, ABOD_C);
+  bool BEWY_C = add_c(TUKY_Q, ppu.SCX_D5, ABOD_C);
 
-  bool BYCA_S = add_s(TAKO_Q, ppu.FF43_D6, BEWY_C);
-  bool BYCA_C = add_c(TAKO_Q, ppu.FF43_D6, BEWY_C);
+  bool BYCA_S = add_s(TAKO_Q, ppu.SCX_D6, BEWY_C);
+  bool BYCA_C = add_c(TAKO_Q, ppu.SCX_D6, BEWY_C);
 
-  bool ACUL_S = add_s(SYBE_Q, ppu.FF43_D7, BYCA_C);
+  bool ACUL_S = add_s(SYBE_Q, ppu.SCX_D7, BYCA_C);
   //bool ACUL_C = add_c(SYBE_Q, ppu.FF43_D7, BYCA_C);
 
-  bool AMUV = not(ppu.FF40_D3);
+  bool AMUV = not(ppu.LCDC_BGMAP);
   bool COXO = not(spr.WEFE);
   bool COVE = not(spr.WEFE);
 

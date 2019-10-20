@@ -42,7 +42,6 @@ struct Clocks {
   bool FF04_D0n;
   bool FF04_D1n;
 
-  bool WESY;
   bool ABUZ;
   bool AFAS;
   bool BEDO;
@@ -111,6 +110,7 @@ struct Resets {
   bool APU_RESET5n;
 
   bool XARE;
+  bool WESY;
 
   void tick() {
     XARE = not(RESET7);

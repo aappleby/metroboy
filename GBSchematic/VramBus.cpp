@@ -369,7 +369,7 @@ void Vram::tick(OAM& oam, const AddressDecoder& dec, const Window& win, Vram& vr
     vram.MA3 = WOLU;
   }
 
-  bool VUZA = nor(ppu.FF40_D4, ppu.PYJU.q());
+  bool VUZA = nor(ppu.LCDC_BGTILE, ppu.PYJU.q());
 
   bool VURY = not(VUZA);
 

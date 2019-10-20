@@ -44,9 +44,9 @@ void LCD::tick(const Resets& rst, const Window& win) {
   bool KASA = not(ppu.PURE);
   bool UMOB = not(clk.FF04_D0n);
   bool USEC = not(clk.FF04_D1n);
-  bool KEDY = not(ppu.LCDC_EN);
-  bool KAHE = amux2(ppu.LCDC_EN, KASA, KEDY, UMOB);
-  bool KUPA = amux2(ppu.LCDC_EN, KEBO, KEDY, USEC);
+  bool KEDY = not(ppu.LCDC_LCDEN);
+  bool KAHE = amux2(ppu.LCDC_LCDEN, KASA, KEDY, UMOB);
+  bool KUPA = amux2(ppu.LCDC_LCDEN, KEBO, KEDY, USEC);
 
   bool KYMO = not(KAHE);
   bool KOFO = not(KUPA);
@@ -69,7 +69,7 @@ void LCD::tick(const Resets& rst, const Window& win) {
   PORY.tock(win.MYVO, NAFY, NYKA_Q);
   PYGO.tock(clk.CLK2, ppu.XYMU, PORY_Q);
 
-  bool XYDO_Q = ppu.XYDO.q();
+  bool XYDO_Q = ppu.X_R3.q();
   PAHO.tock(ROXO, ppu.XYMU, XYDO_Q);
 
   LUCA.tock(LOFU,    ppu.LYFE, !LUCA_Q);

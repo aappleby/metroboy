@@ -181,7 +181,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MemBus.cpp" />
     <ClCompile Include="OAM.cpp" />
-    <ClCompile Include="Palettes_sch.cpp" />
     <ClCompile Include="PixelMux_sch.cpp" />
     <ClCompile Include="PPU.cpp" />
     <ClCompile Include="PpuDecode_sch.cpp" />
@@ -195,7 +194,6 @@
     <ClCompile Include="SysDecode_sch.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="VideoRegs_sch.cpp" />
     <ClCompile Include="VramBus.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

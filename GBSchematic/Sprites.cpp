@@ -340,7 +340,7 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
 
   wire BYJO = not(spr.CEHA);
   wire AZEM = and(BYJO, ppu.XYMU);
-  wire AROR = and(AZEM, ppu.FF40_D1);
+  wire AROR = and(AZEM, ppu.LCDC_SPREN);
 
   wire XAGE = nand(AROR, spr.YNAZ, spr.YKOK);
   wire YLOZ = nand(AROR, spr.ZURE, spr.YWOS);
@@ -540,10 +540,10 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire ABEM = not(XUQU);
   wire DYSO = not(ext.P10_B);
 
-  wire FUFO = not(ppu.FF40_D2);
-  wire GEJY = amux2(!XUSO_Q, FUFO, ppu.FF40_D2, WAGO);
+  wire FUFO = not(ppu.LCDC_SPRSIZE);
+  wire GEJY = amux2(!XUSO_Q, FUFO, ppu.LCDC_SPRSIZE, WAGO);
   wire FAMU = not(GEJY);
-  wire GOVU = or(GYKY_S, ppu.FF40_D2);
+  wire GOVU = or(GYKY_S, ppu.LCDC_SPRSIZE);
   wire WOTA = nand(GACE, GUVU, GYDA, GEWY, WUHU_C, GOVU);
   wire GESE = not(WOTA);
   spr.SPR_MATCH = GESE;

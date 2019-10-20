@@ -8,156 +8,68 @@
 #include "System.h"
 #include "Joypad.h"
 
-Joypad joy;
-
 //-----------------------------------------------------------------------------
 
-void Joypad::tick(const Resets& rst, const AddressDecoder& dec) {
-  bool AMUS = nor(mem.A0, mem.A1, mem.A2, mem.A3, mem.A4, mem.A7);
-  bool ANAP = and(AMUS, dec.FFXX);
-  bool BYKO = not(mem.A5);
-  bool AKUG = not(mem.A6);
-  bool ATOZ = nand(BYKO, AKUG, cpu.CPU_WR, ANAP);
-  bool FF00WR = ATOZ;
-  bool ACAT = and(ANAP, cpu.CPU_RD, AKUG, BYKO);
-  bool FF00RD = ACAT;
+void Joypad::tick(const Resets& rst) {
+  bool FF00 = mem.match(0xFF00);
+  bool FF00WR = nand(cpu.CPU_WR, FF00);
 
-  bool JEVA = not(sys.BURO.q());
-  bool KORE = nand(KERU_Q, sys.BURO.q());
-  bool KYWE = nor(JEVA, KERU_Q);
-  bool KORY = nand(KYME_Q, sys.FF60_D0);
-  bool KURA = not(sys.FF60_D0);
-  bool KALE = nor(KYME_Q, KURA);
-  bool KASY = nor(sys.FF60_D0, KURA);
-  bool KYHU = nand(sys.FF60_D0, JALE_Q);
-  bool BYZO = not(FF00RD);
+  bool JOYP_RAQ = JOYP_RA.tock(FF00WR, rst.RESET2, mem.D0);
+  bool JOYP_LBQ = JOYP_LB.tock(FF00WR, rst.RESET2, mem.D1);
+  bool JOYP_UCQ = JOYP_UC.tock(FF00WR, rst.RESET2, mem.D2);
+  bool JOYP_DSQ = JOYP_DS.tock(FF00WR, rst.RESET2, mem.D3);
+  
+  bool JOYP_DIRQ = JOYP_DIR.tock(FF00WR, rst.RESET2, mem.D4);
+  bool JOYP_BTNQ = JOYP_BTN.tock(FF00WR, rst.RESET2, mem.D5);
+  
+  bool JOYP_D6Q = JOYP_D6.tock(FF00WR, rst.RESET2, mem.D6);
+  //bool JOYP_D7Q = JOYP_D7.tock(FF00WR, rst.RESET2, mem.D7);
 
-  bool KENA = mux2(KUKO_Q, ext.SER_OUT, sys.BURO.q());
-  SOUT = KENA;
+  // debug muxing a joypad register pin to serial?
+  SOUT = mux2(JOYP_D6Q, ext.SER_OUT, sys.BURO.q());
 
-  if (BYZO) {
-    KOLO_L = ext.P13_C;
-    KEJA_L = ext.P12_C;
-    KEVU_L = ext.P10_C;
-    KAPA_L = ext.P11_C;
+  ext.P10_B = nand(JOYP_RAQ,     sys.FF60_D0);
+  ext.P10_D = nor (JOYP_RAQ, not(sys.FF60_D0));
+
+  ext.P11_B = nand(JOYP_LBQ,     sys.FF60_D0);
+  ext.P11_D = nor (JOYP_LBQ, not(sys.FF60_D0));
+
+  ext.P12_A = nand(JOYP_UCQ,     sys.FF60_D0);
+  ext.P12_D = nor (JOYP_UCQ, not(sys.FF60_D0));
+
+  ext.P13_A = nand(JOYP_DSQ,     sys.FF60_D0);
+  ext.P13_C = nor (JOYP_DSQ, not(sys.FF60_D0));
+
+  ext.P14_A = or(!JOYP_DIRQ, not(sys.FF60_D0));
+  ext.P14_B = !JOYP_DIRQ;
+
+  ext.P15_A = or(!JOYP_BTNQ, not(sys.FF60_D0));
+
+  bool FF00RD = nand(cpu.CPU_RD, FF00);
+  bool P10_Q = P10_L.latch(FF00RD, ext.P10_C);
+  bool P11_Q = P11_L.latch(FF00RD, ext.P11_C);
+  bool P12_Q = P12_L.latch(FF00RD, ext.P12_C);
+  bool P13_Q = P13_L.latch(FF00RD, ext.P13_C);
+
+  if (nand(cpu.CPU_RD, FF00)) {
+    mem.D0 = P10_Q;
+    mem.D1 = P11_Q;
+    mem.D2 = P12_Q;
+    mem.D3 = P13_Q;
+    mem.D4 = JOYP_DIRQ;
+    mem.D5 = JOYP_BTNQ;
   }
 
-  bool JEKU = not(KOLO_L);
-  bool KUVE = not(KEJA_L);
-  bool KEMA = not(KEVU_L);
-  bool KURO = not(KAPA_L);
-  bool KOCE = not(!KELY_Q);
-  bool CUDY = not(!COFY_Q);
-
-  if (BYZO) {
-    mem.D3 = JEKU;
-    mem.D2 = KUVE;
-    mem.D0 = KEMA;
-    mem.D1 = KURO;
-    mem.D4 = KOCE;
-    mem.D5 = CUDY;
+  // this is weird.  polarity?
+  if (or(cpu.FROM_CPU, clk.BEDO)) {
+    mem.D0 = ext.P10_B;
+    mem.D2 = ext.P10_B;
+    mem.D6 = ext.P10_B;
+    mem.D4 = ext.P10_B;
+    mem.D5 = ext.P10_B;
+    mem.D3 = ext.P10_B;
+    mem.D1 = ext.P10_B;
+    mem.D7 = ext.P10_B;
   }
-
-  bool KARU = or(KURA, !KELY_Q);
-
-  bool CELA = or(!COFY_Q, KURA);
-  bool KOLE = nand(JUTE_Q, sys.FF60_D0);
-  bool KYBU = nor(JUTE_Q, KURA);
-  bool KYTO = nand(KECY_Q, sys.FF60_D0);
-  bool KABU = nor(KECY_Q, KURA);
-
-  ext.P10_B = KOLE;
-  ext.P10_D = KYBU;
-
-  ext.P11_B = KYTO;
-  ext.P11_D = KABU;
-
-  ext.P12_A = KYHU;
-  ext.P12_D = KASY;
-
-  ext.P13_A = KORY;
-  ext.P13_C = KALE;
-
-  ext.P14_A = KARU;
-  ext.P14_B = !KELY_Q;
-
-  ext.P15_A = CELA;
-
-  bool AXYN = not(clk.BEDO);
-  bool ADYR = not(AXYN);
-  bool APYS = nor(cpu.FROM_CPU, ADYR);
-  bool AFOP = not(APYS);
-
-  bool ANOC = not(ext.P10_B);
-  bool AJEC = not(ext.P10_B);
-  bool ARAR = not(ext.P10_B);
-  bool BENU = not(ext.P10_B);
-  bool AKAJ = not(ext.P10_B);
-  bool ASUZ = not(ext.P10_B);
-  bool ATAJ = not(ext.P10_B);
-  bool BEDA = not(ext.P10_B);
-
-  if (AFOP) {
-    mem.D0 = ANOC;
-    mem.D2 = AJEC;
-    mem.D6 = ARAR;
-    mem.D4 = BENU;
-    mem.D5 = AKAJ;
-    mem.D3 = ASUZ;
-    mem.D1 = ATAJ;
-    mem.D7 = BEDA;
-  }
-
-
-  (void)KORE; // unused in schematic
-  (void)KYWE; // unused in schematic
-
-              //----------
-              // registers
-
-  bool KYME_Q_ = KYME_Q;
-  bool KUKO_Q_ = KUKO_Q;
-  bool KERU_Q_ = KERU_Q;
-  bool JALE_Q_ = JALE_Q;
-  bool KELY_Q_ = KELY_Q;
-  bool COFY_Q_ = COFY_Q;
-  bool JUTE_Q_ = JUTE_Q;
-  bool KECY_Q_ = KECY_Q;
-
-  if (KYME_CLK && !FF00WR) KYME_Q_ = mem.D3;
-  if (KUKO_CLK && !FF00WR) KUKO_Q_ = mem.D6;
-  if (KERU_CLK && !FF00WR) KERU_Q_ = mem.D7;
-  if (JALE_CLK && !FF00WR) JALE_Q_ = mem.D2;
-  if (KELY_CLK && !FF00WR) KELY_Q_ = mem.D4;
-  if (COFY_CLK && !FF00WR) COFY_Q_ = mem.D6;
-  if (JUTE_CLK && !FF00WR) JUTE_Q_ = mem.D0;
-  if (KECY_CLK && !FF00WR) KECY_Q_ = mem.D1;
-
-  if (!rst.RESET2) KYME_Q_ = 0;
-  if (!rst.RESET2) KUKO_Q_ = 0;
-  if (!rst.RESET2) KERU_Q_ = 0;
-  if (!rst.RESET2) JALE_Q_ = 0;
-  if (!rst.RESET2) KELY_Q_ = 0;
-  if (!rst.RESET2) COFY_Q_ = 0;
-  if (!rst.RESET2) JUTE_Q_ = 0;
-  if (!rst.RESET2) KECY_Q_ = 0;
-
-  KYME_Q = KYME_Q_;
-  KUKO_Q = KUKO_Q_;
-  KERU_Q = KERU_Q_;
-  JALE_Q = JALE_Q_;
-  KELY_Q = KELY_Q_;
-  COFY_Q = COFY_Q_;
-  JUTE_Q = JUTE_Q_;
-  KECY_Q = KECY_Q_;
-
-  KYME_CLK = FF00WR;
-  KUKO_CLK = FF00WR;
-  KERU_CLK = FF00WR;
-  JALE_CLK = FF00WR;
-  KELY_CLK = FF00WR;
-  COFY_CLK = FF00WR;
-  JUTE_CLK = FF00WR;
-  KECY_CLK = FF00WR;
 
 }

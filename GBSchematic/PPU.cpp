@@ -16,9 +16,6 @@ struct PPU ppu;
 
 void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const Window& win, const LCD& lcd) {
 
-  LYHA = not(rst.RESET_VIDEO);
-  LYFE = not(LYHA);
-
   //----------
   // LY compare
 
@@ -39,15 +36,15 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   //----------
   // top center
 
-  bool WUVU_Q = spr.WUVU.q();
-  bool VENA_Q = VENA.flip(!WUVU_Q, rst.RESET_VIDEO);
+  bool SPR_CLK_2MQ = spr.SPR_CLK_2M.q();
+  bool VENA_Q = VENA.flip(!SPR_CLK_2MQ, rst.RESET_VIDEO);
   bool RUTU_Q = RUTU.q();
   bool SYGU_Q = SYGU.q();
 
-  bool MUDE = nor(RUTU_Q, LYHA); // schematic says RUTU_OUT, but I think this is just RUTU_Q?
+  bool MUDE = nor(RUTU_Q, not(rst.RESET_VIDEO)); // schematic says RUTU_OUT, but I think this is just RUTU_Q?
   TALU = VENA_Q;
 
-  bool SAXO_Q = SAXO.flip(TALU,    MUDE);
+  bool SAXO_Q = SAXO.flip(VENA_Q,  MUDE);
   bool TYPO_Q = TYPO.flip(!SAXO_Q, MUDE);
   bool VYZO_Q = TYPO.flip(!SAXO_Q, MUDE);
   bool TELU_Q = TYPO.flip(!SAXO_Q, MUDE);
@@ -64,22 +61,15 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   bool TUDA = not(TAHA_Q);
   bool VATE = not(TYRY_Q);
 
+
+  ext.PIN_CPG = nor(SYGU_Q, RUTU_Q);
+  RUTU.tock(not(VENA_Q), rst.RESET_VIDEO, nand(TYRY_Q, TAHA_Q, SUDE_Q, SAXO_Q));
+
   bool VOKU = nand(TUJU,   TAFY,   TUDA,   VATE,   VUTY,   VEPE,   TOCU);
   bool TOZU = nand(TUJU,   TAFY,   TUDA,   VATE,   VYZO_Q, TYPO_Q, SAXO_Q);
   bool TECE = nand(TUJU,   TAHA_Q, TUDA,   TELU_Q, VYZO_Q, VEPE,   SAXO_Q);
   bool TEBO = nand(TYRY_Q, TAFY,   SUDE_Q, VATE,   VUTY,   TYPO_Q, SAXO_Q);
-
-  bool TEGY = nand(VOKU, TOZU, TECE, TEBO);
-  bool SANU = nand(TYRY_Q, TAHA_Q, SUDE_Q, SAXO_Q);
-
-  bool SONO = not(TALU);
-
-  bool RYNO = or(SYGU_Q, RUTU_Q);
-  bool POGU = not(RYNO);
-  ext.PIN_CPG = POGU;
-
-  RUTU.tock(SONO, LYFE, SANU);
-  SYGU.tock(SONO, LYFE, TEGY);
+  SYGU.tock(not(VENA_Q), rst.RESET_VIDEO, nand(VOKU, TOZU, TECE, TEBO));
 
   //----------
   // x counter
@@ -124,9 +114,9 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
 
   XYVO = and(V4, V7);
 
-  bool NYPE_Q = NYPE.tock(TALU,   LYFE, RUTU_Q); // RUTU_OUT on the schematic?
-  bool POPU_Q = POPU.tock(NYPE_Q, LYFE, XYVO);
-  NAPO.flip(POPU_Q, LYFE);
+  bool NYPE_Q = NYPE.tock(TALU,   rst.RESET_VIDEO, RUTU_Q); // RUTU_OUT on the schematic?
+  bool POPU_Q = POPU.tock(NYPE_Q, rst.RESET_VIDEO, XYVO);
+  NAPO.flip(POPU_Q, rst.RESET_VIDEO);
 
   bool XUGU = nand(X_Q0, X_Q1, X_Q2, X_Q5, X_Q7);
   bool XENA = not(spr.FEPO);
@@ -136,7 +126,7 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   WODU = and(XENA, XANO);
 
   PURE = not(RUTU_Q);
-  SELA = not(PURE);
+  SELA = RUTU_Q;
   bool TOLU = not(PARU);
   bool TAPA = and(SELA, TOLU);
   INT_OAM = TAPA;
@@ -155,16 +145,16 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   XYMU = unk2(WEGO, spr.AVAP);
   bool SADU = nor(XYMU, PARU);
   bool XATY = nor(spr.ACYL, XYMU);
-  bool PAGO = or(rst.WESY, not(SEPA));
+  bool PAGO = or(rst.RESET2, not(SEPA));
 
   //---
 
   bool RYVE = not(SEPA);
-  bool RUGU_Q = RUGU.tock(RYVE, rst.WESY, mem.D6);
-  bool REFE_Q = REFE.tock(RYVE, rst.WESY, mem.D5);
-  bool ROPO_Q = ROPO.tock(TALU, rst.WESY, PALY); // this seems odd
-  bool RUFO_Q = RUFO.tock(RYVE, rst.WESY, mem.D4);
-  bool ROXE_Q = ROXE.tock(RYVE, rst.WESY, mem.D3);
+  bool RUGU_Q = RUGU.tock(RYVE, rst.RESET2, mem.D6);
+  bool REFE_Q = REFE.tock(RYVE, rst.RESET2, mem.D5);
+  bool ROPO_Q = ROPO.tock(TALU, rst.RESET2, PALY); // this seems odd
+  bool RUFO_Q = RUFO.tock(RYVE, rst.RESET2, mem.D4);
+  bool ROXE_Q = ROXE.tock(RYVE, rst.RESET2, mem.D3);
 
   bool PUZO = not(!ROXE_Q);
   bool SASY = not(!REFE_Q);
@@ -205,8 +195,8 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   // y counter
 
   bool NOKO = and(V7, V4, V0, V1);
-  bool MYTA_Q = MYTA.tock(NYPE_Q, LYFE, NOKO);
-  bool LAMA = nor(MYTA_Q, LYHA);
+  bool MYTA_Q = MYTA.tock(NYPE_Q, rst.RESET_VIDEO, NOKO);
+  bool LAMA = nor(MYTA_Q, not(rst.RESET_VIDEO));
 
   V0 = Y_R0.flip(RUTU_Q, LAMA);;
   V1 = Y_R1.flip(!V0,    LAMA);;
@@ -224,14 +214,14 @@ void PPU::tick_videoregs(const Resets& rst, const AddressDecoder& dec) {
   // FF40 LCDC
   bool WARU = and(dec.FF40, cpu.CPU_WR2);
   bool XUBO = not(WARU);
-  LCDC_BGEN    = BGEN   .tock(XUBO, rst.XARE, mem.D0);
-  LCDC_SPREN   = SPREN  .tock(XUBO, rst.XARE, mem.D1);
-  LCDC_SPRSIZE = SPRSIZE.tock(XUBO, rst.XARE, mem.D2);
-  LCDC_BGMAP   = BGMAP  .tock(XUBO, rst.XARE, mem.D3);
-  LCDC_BGTILE  = BGTILE .tock(XUBO, rst.XARE, mem.D4);
-  LCDC_WINEN   = WINEN  .tock(XUBO, rst.XARE, mem.D5);
-  LCDC_WINMAP  = WINMAP .tock(XUBO, rst.XARE, mem.D6);
-  LCDC_LCDEN   = LCDEN  .tock(XUBO, rst.XARE, mem.D7);
+  LCDC_BGEN    = BGEN   .tock(XUBO, rst.RESET2, mem.D0);
+  LCDC_SPREN   = SPREN  .tock(XUBO, rst.RESET2, mem.D1);
+  LCDC_SPRSIZE = SPRSIZE.tock(XUBO, rst.RESET2, mem.D2);
+  LCDC_BGMAP   = BGMAP  .tock(XUBO, rst.RESET2, mem.D3);
+  LCDC_BGTILE  = BGTILE .tock(XUBO, rst.RESET2, mem.D4);
+  LCDC_WINEN   = WINEN  .tock(XUBO, rst.RESET2, mem.D5);
+  LCDC_WINMAP  = WINMAP .tock(XUBO, rst.RESET2, mem.D6);
+  LCDC_LCDEN   = LCDEN  .tock(XUBO, rst.RESET2, mem.D7);
 
   if (and(dec.FF40, cpu.CPU_RD2)) {
     mem.D0 = LCDC_BGEN;
@@ -247,14 +237,14 @@ void PPU::tick_videoregs(const Resets& rst, const AddressDecoder& dec) {
   // FF4B WX
   bool WUZA = and(cpu.CPU_WR2, dec.FF4B);
   bool VOXU = not(WUZA);
-  WX_D0 = WX_R0.tock(VOXU, rst.RESET8, mem.D0);
-  WX_D1 = WX_R1.tock(VOXU, rst.RESET8, mem.D1);
-  WX_D2 = WX_R2.tock(VOXU, rst.RESET8, mem.D2);
-  WX_D3 = WX_R3.tock(VOXU, rst.RESET8, mem.D3);
-  WX_D4 = WX_R4.tock(VOXU, rst.RESET8, mem.D4);
-  WX_D5 = WX_R5.tock(VOXU, rst.RESET8, mem.D5);
-  WX_D6 = WX_R6.tock(VOXU, rst.RESET8, mem.D6);
-  WX_D7 = WX_R7.tock(VOXU, rst.RESET8, mem.D7);
+  WX_D0 = WX_R0.tock(VOXU, rst.RESET2, mem.D0);
+  WX_D1 = WX_R1.tock(VOXU, rst.RESET2, mem.D1);
+  WX_D2 = WX_R2.tock(VOXU, rst.RESET2, mem.D2);
+  WX_D3 = WX_R3.tock(VOXU, rst.RESET2, mem.D3);
+  WX_D4 = WX_R4.tock(VOXU, rst.RESET2, mem.D4);
+  WX_D5 = WX_R5.tock(VOXU, rst.RESET2, mem.D5);
+  WX_D6 = WX_R6.tock(VOXU, rst.RESET2, mem.D6);
+  WX_D7 = WX_R7.tock(VOXU, rst.RESET2, mem.D7);
 
   if (and(cpu.CPU_RD2, dec.FF4B)) {
     mem.D0 = WX_D0;
@@ -270,14 +260,14 @@ void PPU::tick_videoregs(const Resets& rst, const AddressDecoder& dec) {
   // FF4A WY
   bool WEKO = and(cpu.CPU_WR2, dec.FF4A);
   bool VEFU = not(WEKO);
-  WY_D0 = NESO.tock(VEFU, rst.RESET8, mem.D0);
-  WY_D1 = NYRO.tock(VEFU, rst.RESET8, mem.D1);
-  WY_D2 = NAGA.tock(VEFU, rst.RESET8, mem.D2);
-  WY_D3 = MELA.tock(VEFU, rst.RESET8, mem.D3);
-  WY_D4 = NULO.tock(VEFU, rst.RESET8, mem.D4);
-  WY_D5 = NENE.tock(VEFU, rst.RESET8, mem.D5);
-  WY_D6 = NUKA.tock(VEFU, rst.RESET8, mem.D6);
-  WY_D7 = NAFU.tock(VEFU, rst.RESET8, mem.D7);
+  WY_D0 = NESO.tock(VEFU, rst.RESET2, mem.D0);
+  WY_D1 = NYRO.tock(VEFU, rst.RESET2, mem.D1);
+  WY_D2 = NAGA.tock(VEFU, rst.RESET2, mem.D2);
+  WY_D3 = MELA.tock(VEFU, rst.RESET2, mem.D3);
+  WY_D4 = NULO.tock(VEFU, rst.RESET2, mem.D4);
+  WY_D5 = NENE.tock(VEFU, rst.RESET2, mem.D5);
+  WY_D6 = NUKA.tock(VEFU, rst.RESET2, mem.D6);
+  WY_D7 = NAFU.tock(VEFU, rst.RESET2, mem.D7);
 
   if (and(cpu.CPU_RD2, dec.FF4A)) {
     mem.D0 = WY_D0;
@@ -294,14 +284,14 @@ void PPU::tick_videoregs(const Resets& rst, const AddressDecoder& dec) {
   bool ARUR = and(dec.FF43, cpu.CPU_WR2);
   bool AMUN = not(ARUR);
 
-  SCX_D0 = DATY.tock(AMUN, rst.RESET6, mem.D0);
-  SCX_D1 = DUZU.tock(AMUN, rst.RESET6, mem.D1);
-  SCX_D2 = CYXU.tock(AMUN, rst.RESET6, mem.D2);
-  SCX_D3 = GUBO.tock(AMUN, rst.RESET6, mem.D3);
-  SCX_D4 = BEMY.tock(AMUN, rst.RESET6, mem.D4);
-  SCX_D5 = CUZY.tock(AMUN, rst.RESET6, mem.D5);
-  SCX_D6 = CABU.tock(AMUN, rst.RESET6, mem.D6);
-  SCX_D7 = BAKE.tock(AMUN, rst.RESET6, mem.D7);
+  SCX_D0 = DATY.tock(AMUN, rst.RESET2, mem.D0);
+  SCX_D1 = DUZU.tock(AMUN, rst.RESET2, mem.D1);
+  SCX_D2 = CYXU.tock(AMUN, rst.RESET2, mem.D2);
+  SCX_D3 = GUBO.tock(AMUN, rst.RESET2, mem.D3);
+  SCX_D4 = BEMY.tock(AMUN, rst.RESET2, mem.D4);
+  SCX_D5 = CUZY.tock(AMUN, rst.RESET2, mem.D5);
+  SCX_D6 = CABU.tock(AMUN, rst.RESET2, mem.D6);
+  SCX_D7 = BAKE.tock(AMUN, rst.RESET2, mem.D7);
 
   if (and(dec.FF43, cpu.CPU_RD2)) {
     mem.D0 = SCX_D0;
@@ -318,14 +308,14 @@ void PPU::tick_videoregs(const Resets& rst, const AddressDecoder& dec) {
   bool BEDY = and(cpu.CPU_WR2, dec.FF42);
   bool CAVO = not(BEDY);
 
-  SCY_D0 = SCY_R0.tock(CAVO, rst.RESET6, mem.D0);
-  SCY_D1 = SCY_R1.tock(CAVO, rst.RESET6, mem.D1);
-  SCY_D2 = SCY_R2.tock(CAVO, rst.RESET6, mem.D2);
-  SCY_D3 = SCY_R3.tock(CAVO, rst.RESET6, mem.D3);
-  SCY_D4 = SCY_R4.tock(CAVO, rst.RESET6, mem.D4);
-  SCY_D5 = SCY_R5.tock(CAVO, rst.RESET6, mem.D5);
-  SCY_D6 = SCY_R6.tock(CAVO, rst.RESET6, mem.D6);
-  SCY_D7 = SCY_R7.tock(CAVO, rst.RESET6, mem.D7);
+  SCY_D0 = SCY_R0.tock(CAVO, rst.RESET2, mem.D0);
+  SCY_D1 = SCY_R1.tock(CAVO, rst.RESET2, mem.D1);
+  SCY_D2 = SCY_R2.tock(CAVO, rst.RESET2, mem.D2);
+  SCY_D3 = SCY_R3.tock(CAVO, rst.RESET2, mem.D3);
+  SCY_D4 = SCY_R4.tock(CAVO, rst.RESET2, mem.D4);
+  SCY_D5 = SCY_R5.tock(CAVO, rst.RESET2, mem.D5);
+  SCY_D6 = SCY_R6.tock(CAVO, rst.RESET2, mem.D6);
+  SCY_D7 = SCY_R7.tock(CAVO, rst.RESET2, mem.D7);
 
   if (and(cpu.CPU_RD2, dec.FF42)) {
     mem.D0 = SCY_D0;
@@ -342,14 +332,14 @@ void PPU::tick_videoregs(const Resets& rst, const AddressDecoder& dec) {
   bool XUFA = and(cpu.CPU_WR2, dec.FF45);
   bool WANE = not(XUFA);
 
-  LYC_D0 = SYRY.tock(WANE, rst.RESET9, mem.D0);
-  LYC_D1 = VUCE.tock(WANE, rst.RESET9, mem.D1);
-  LYC_D2 = SEDY.tock(WANE, rst.RESET9, mem.D2);
-  LYC_D3 = SALO.tock(WANE, rst.RESET9, mem.D3);
-  LYC_D4 = SOTA.tock(WANE, rst.RESET9, mem.D4);
-  LYC_D5 = VAFA.tock(WANE, rst.RESET9, mem.D5);
-  LYC_D6 = VEVO.tock(WANE, rst.RESET9, mem.D6);
-  LYC_D7 = RAHA.tock(WANE, rst.RESET9, mem.D7);
+  LYC_D0 = SYRY.tock(WANE, rst.RESET2, mem.D0);
+  LYC_D1 = VUCE.tock(WANE, rst.RESET2, mem.D1);
+  LYC_D2 = SEDY.tock(WANE, rst.RESET2, mem.D2);
+  LYC_D3 = SALO.tock(WANE, rst.RESET2, mem.D3);
+  LYC_D4 = SOTA.tock(WANE, rst.RESET2, mem.D4);
+  LYC_D5 = VAFA.tock(WANE, rst.RESET2, mem.D5);
+  LYC_D6 = VEVO.tock(WANE, rst.RESET2, mem.D6);
+  LYC_D7 = RAHA.tock(WANE, rst.RESET2, mem.D7);
 
   if (and(cpu.CPU_RD2, dec.FF45)) {
     mem.D0 = LYC_D0;

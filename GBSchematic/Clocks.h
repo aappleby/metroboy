@@ -94,15 +94,8 @@ extern Clocks clk;
 
 struct Resets {
   bool RESET2;
-  bool RESET7;
-  bool RESET7n;
-  bool RESET6;
-  bool RESET8;
-  bool RESET9;
 
   bool RESET_VIDEO;
-  bool RESET_VIDEOn;
-  bool RESET_VIDEO2n;
 
   bool APU_RESET;
   bool APU_RESETn;
@@ -110,7 +103,4 @@ struct Resets {
   bool APU_RESET3n;
   bool APU_RESET4n;
   bool APU_RESET5n;
-
-  bool XARE;
-  bool WESY;
 };

@@ -145,7 +145,7 @@ public:
   // bg_pix_a
   reg MYDE,NOZO,MOJU,MACU,NEPO,MODU,NEDA,PYBO;
 
-  reg RUTU;
+  reg RUTU; // start of new line?
   reg NYPE;
 
   //----------
@@ -153,9 +153,6 @@ public:
 
   bool PALY; // ly compare match
   bool XYVO; // line >= 144;
-
-  bool LYHA; // !RESET_VIDEO
-  bool LYFE; // !!RESET_VIDEO
 
   bool PURE;
   bool TALU; // drives the window y match ff

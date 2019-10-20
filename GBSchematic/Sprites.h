@@ -21,7 +21,7 @@ public:
 
   bool SPR_MATCH;
   bool FEPO;
-  bool ABEZ;
+  //bool ABEZ; // RESET_VIDEO2
   bool CEHA;
   bool XYSO;
   bool XOCE;
@@ -96,7 +96,7 @@ public:
   bool BYVA;
   bool WUME;
   bool WEWU;
-  bool FETO;
+  bool SPRITE_SCAN_DONE; // {FETO}
   bool LEKO;
 
   //----------
@@ -116,7 +116,7 @@ public:
   // note, these use !Q as their output signal
   reg GOMO, DEPO;
 
-  reg WUVU;
+  reg SPR_CLK_2M; //{WUVU}
 
   //----------
   // outputs

@@ -109,16 +109,7 @@ void Clocks::tick(const APU& apu, Resets& rst, const AddressDecoder& dec) {
 
   clk.PHIn = not(nor(not(CLK_1M_BQ), clk.ABOL_1MHZ));
 
-  rst.RESET7 = not(rst.RESET2);
-  rst.RESET7n = rst.RESET2;
-  rst.WESY    = rst.RESET2;
-  rst.RESET9  = rst.RESET2;
-  rst.RESET8  = rst.RESET2;
-  rst.RESET6  = rst.RESET2;
-  rst.XARE = not(rst.RESET7);
-  rst.RESET_VIDEO  = nand(ppu.LCDC_LCDEN, not(rst.RESET7));
-  rst.RESET_VIDEOn = and(ppu.LCDC_LCDEN, not(rst.RESET7));
-  rst.RESET_VIDEO2n = not(rst.RESET_VIDEO);
+  rst.RESET_VIDEO = nand(ppu.LCDC_LCDEN, rst.RESET2);
 
   wire BARA_Q = BARA.q();
   wire CARU_Q = CARU.q();

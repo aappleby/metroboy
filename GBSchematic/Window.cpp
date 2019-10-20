@@ -97,8 +97,8 @@ void Window::tick(const Resets& rst, const LCD& lcd, Vram& vram) {
 
   // glitch filter loop, FIXME double check if this logic is correct
   // bool PUKU = nor(NUNY, RYDY);
-  // bool RYDY = nor(PUKU, RESET_VIDEOn, PORY);
-  wire RYDY = NUNY && !(rst.RESET_VIDEOn || lcd.PORY.q());
+  // bool RYDY = nor(PUKU, not(rst.RESET_VIDEO), PORY);
+  wire RYDY = NUNY && !(not(rst.RESET_VIDEO) || lcd.PORY.q());
 
   SYLO = not(RYDY);
   wire TUXY = nand(SOVY_Q, SYLO);

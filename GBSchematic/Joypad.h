@@ -6,7 +6,7 @@ struct AddressDecoder;
 
 struct Joypad {
 
-  void tick(const Resets& rst, const AddressDecoder& dec);
+  void tick(const Resets& rst);
 
 private:
 
@@ -15,20 +15,17 @@ private:
   //----------
   // registers
 
-  bool KYME_Q, KYME_CLK;
-  bool KUKO_Q, KUKO_CLK;
-  bool KERU_Q, KERU_CLK;
-  bool JALE_Q, JALE_CLK;
-  bool KELY_Q, KELY_CLK;
-  bool COFY_Q, COFY_CLK;
-  bool JUTE_Q, JUTE_CLK;
-  bool KECY_Q, KECY_CLK;
+  reg JOYP_RA;  /*JUTE*/ // right/a
+  reg JOYP_LB;  /*KECY*/ // left/b
+  reg JOYP_UC;  /*JALE*/ // up/select
+  reg JOYP_DS;  /*KYME*/ // down/start
+  reg JOYP_DIR; /*KELY*/
+  reg JOYP_BTN; /*COFY*/
+  reg JOYP_D6;  /*KUKO*/
+  reg JOYP_D7;  /*KERU*/
 
-  bool KOLO_L;
-  bool KEJA_L;
-  bool KEVU_L;
-  bool KAPA_L;
-
+  reg P10_L; /*KEVU*/
+  reg P11_L; /*KAPA*/
+  reg P12_L; /*KEJA*/
+  reg P13_L; /*KOLO*/
 };
-
-extern Joypad joy;

@@ -23,7 +23,7 @@ void DmaBus::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, Vram& 
   bool MATU_Q = MATU.q();
 
   dma.CATY = cpu.FROM_CPU5;
-  MAKA.tock(clk.CLK_4M_A, rst.RESET6, dma.CATY);
+  MAKA.tock(clk.CLK_4M_A, rst.RESET2, dma.CATY);
 
   dma.MOPA_PHI = not(clk.PHI_OUTn);
 
@@ -50,19 +50,19 @@ void DmaBus::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, Vram& 
   dma.DMA_A15 = MARU_Q;
 
   // FIXME loopy thing, glitch filter? def broken.
-  bool LARA = nand(/*LOKY,*/ !DMA_DONE_Q, rst.RESET6);
+  bool LARA = nand(/*LOKY,*/ !DMA_DONE_Q, rst.RESET2);
   bool LOKY = nand(LARA, not(LENE_Q));
-  MATU.tock(clk.PHI_OUTn, rst.RESET6, LOKY);
+  MATU.tock(clk.PHI_OUTn, rst.RESET2, LOKY);
 
   bool META = and(clk.PHI_OUTn, LOKY);
-  bool NAKY_Q = NAKY.flip(META,    and(rst.RESET6, not(LENE_Q)));
-  bool PYRO_Q = PYRO.flip(!NAKY_Q, and(rst.RESET6, not(LENE_Q)));
-  bool NEFY_Q = NEFY.flip(!PYRO_Q, and(rst.RESET6, not(LENE_Q)));
-  bool MUTY_Q = MUTY.flip(!NEFY_Q, and(rst.RESET6, not(LENE_Q)));
-  bool NYKO_Q = NYKO.flip(!MUTY_Q, and(rst.RESET6, not(LENE_Q)));
-  bool PYLO_Q = PYLO.flip(!NYKO_Q, and(rst.RESET6, not(LENE_Q)));
-  bool NUTO_Q = NUTO.flip(!PYLO_Q, and(rst.RESET6, not(LENE_Q)));
-  bool MUGU_Q = MUGU.flip(!NUTO_Q, and(rst.RESET6, not(LENE_Q)));
+  bool NAKY_Q = NAKY.flip(META,    and(rst.RESET2, not(LENE_Q)));
+  bool PYRO_Q = PYRO.flip(!NAKY_Q, and(rst.RESET2, not(LENE_Q)));
+  bool NEFY_Q = NEFY.flip(!PYRO_Q, and(rst.RESET2, not(LENE_Q)));
+  bool MUTY_Q = MUTY.flip(!NEFY_Q, and(rst.RESET2, not(LENE_Q)));
+  bool NYKO_Q = NYKO.flip(!MUTY_Q, and(rst.RESET2, not(LENE_Q)));
+  bool PYLO_Q = PYLO.flip(!NYKO_Q, and(rst.RESET2, not(LENE_Q)));
+  bool NUTO_Q = NUTO.flip(!PYLO_Q, and(rst.RESET2, not(LENE_Q)));
+  bool MUGU_Q = MUGU.flip(!NUTO_Q, and(rst.RESET2, not(LENE_Q)));
 
   dma.DMA_A0 = NAKY_Q;
   dma.DMA_A1 = PYRO_Q;
@@ -112,14 +112,14 @@ void DmaBus::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, Vram& 
   // registers
 
   // so this probably resets the dma counter when there's a write to FF46
-  bool LYXE = unk2(and(dec.FF46, cpu.CPU_WR2), nand(rst.RESET6, not(LENE_Q)));
+  bool LYXE = unk2(and(dec.FF46, cpu.CPU_WR2), nand(rst.RESET2, not(LENE_Q)));
   bool LUPA = nor(nand(dec.FF46, cpu.CPU_WR2), LYXE);
-  LUVY.tock(clk.PHI_OUTn, rst.RESET6, LUPA);
+  LUVY.tock(clk.PHI_OUTn, rst.RESET2, LUPA);
 
-  LENE.tock(not(clk.PHI_OUTn), rst.RESET6, LUVY_Q);
+  LENE.tock(not(clk.PHI_OUTn), rst.RESET2, LUVY_Q);
   
 
   // dma_a == 159
   bool NOLO = not(nand(dma.DMA_A0, dma.DMA_A1, dma.DMA_A2, dma.DMA_A3, dma.DMA_A4, dma.DMA_A7));
-  DMA_DONE.tock(not(clk.PHI_OUTn),     and(rst.RESET6, not(LENE_Q)),   NOLO);
+  DMA_DONE.tock(not(clk.PHI_OUTn),     and(rst.RESET2, not(LENE_Q)),   NOLO);
 }

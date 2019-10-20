@@ -72,9 +72,9 @@ void LCD::tick(const Resets& rst, const Window& win) {
   bool XYDO_Q = ppu.X_R3.q();
   PAHO.tock(ROXO, ppu.XYMU, XYDO_Q);
 
-  LUCA.tock(LOFU,    ppu.LYFE, !LUCA_Q);
-  LEBE.tock(!LUCA_Q, ppu.LYFE, !LEBE_Q);
+  LUCA.tock(LOFU,    rst.RESET_VIDEO, !LUCA_Q);
+  LEBE.tock(!LUCA_Q, rst.RESET_VIDEO, !LEBE_Q);
 
   bool NYPE_Q = ppu.NYPE.q();
-  MEDA.tock(NYPE_Q,    ppu.LYFE, NERU);
+  MEDA.tock(NYPE_Q,    rst.RESET_VIDEO, NERU);
 }

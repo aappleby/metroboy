@@ -7,7 +7,7 @@ struct AddressDecoder;
 
 struct Joypad {
 
-  void tick(const Resets& rst, MemBus& mem);
+  void tick(const Resets& rst, MemBus& mem, const Clocks& clk);
 
 private:
 

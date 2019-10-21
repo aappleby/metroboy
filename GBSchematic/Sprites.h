@@ -11,13 +11,13 @@ struct MemBus;
 struct Sprites {
 public:
 
-  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const Vram& vram, const MemBus& mem);
-  void tick_control(const OAM& oam, const Resets& rst, const Window& win, Vram& vram, MemBus& mem);
+  void tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const Vram& vram, const MemBus& mem, Clocks& clk);
+  void tick_control(const OAM& oam, const Resets& rst, const Window& win, Vram& vram, MemBus& mem, const Clocks& clk);
 
-  void tick_matcher(const OAM& oam);
+  void tick_matcher(const OAM& oam, const Clocks& clk);
   void tick_spritestore();
-  void tick_paletteshifter();
-  void tick_pixelshifter(const Vram& vram);
+  void tick_paletteshifter(const Clocks& clk);
+  void tick_pixelshifter(const Vram& vram, const Clocks& clk);
 
 
   bool SPR_MATCH;
@@ -117,7 +117,7 @@ public:
   // note, these use !Q as their output signal
   reg GOMO, DEPO;
 
-  reg SPR_CLK_2M; //{WUVU}
+  reg CLK_1256; //{WUVU}
 
   //----------
   // outputs

@@ -14,7 +14,7 @@ struct PPU ppu;
 
 //-----------------------------------------------------------------------------
 
-void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const Window& win, const LCD& lcd, MemBus& mem) {
+void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const Window& win, const LCD& lcd, MemBus& mem, const Clocks& clk) {
 
   //----------
   // LY compare
@@ -36,15 +36,15 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
   //----------
   // top center
 
-  bool SPR_CLK_2MQ = spr.SPR_CLK_2M.q();
-  bool VENA_Q = VENA.flip(!SPR_CLK_2MQ, rst.RESET_VIDEO);
+  bool SPR_CLK_2MQ = spr.CLK_1256.q();
+  bool SPR_CLK_1MQ = SPR_CLK_1M.flip(!SPR_CLK_2MQ, rst.RESET_VIDEO);
   bool RUTU_Q = RUTU.q();
   bool SYGU_Q = SYGU.q();
 
   bool MUDE = nor(RUTU_Q, not(rst.RESET_VIDEO)); // schematic says RUTU_OUT, but I think this is just RUTU_Q?
-  TALU = VENA_Q;
+  TALU = SPR_CLK_1MQ;
 
-  bool SAXO_Q = SAXO.flip(VENA_Q,  MUDE);
+  bool SAXO_Q = SAXO.flip(SPR_CLK_1MQ,  MUDE);
   bool TYPO_Q = TYPO.flip(!SAXO_Q, MUDE);
   bool VYZO_Q = TYPO.flip(!SAXO_Q, MUDE);
   bool TELU_Q = TYPO.flip(!SAXO_Q, MUDE);
@@ -63,13 +63,13 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
 
 
   ext.PIN_CPG = nor(SYGU_Q, RUTU_Q);
-  RUTU.tock(not(VENA_Q), rst.RESET_VIDEO, nand(TYRY_Q, TAHA_Q, SUDE_Q, SAXO_Q));
+  RUTU.tock(not(SPR_CLK_1MQ), rst.RESET_VIDEO, nand(TYRY_Q, TAHA_Q, SUDE_Q, SAXO_Q));
 
   bool VOKU = nand(TUJU,   TAFY,   TUDA,   VATE,   VUTY,   VEPE,   TOCU);
   bool TOZU = nand(TUJU,   TAFY,   TUDA,   VATE,   VYZO_Q, TYPO_Q, SAXO_Q);
   bool TECE = nand(TUJU,   TAHA_Q, TUDA,   TELU_Q, VYZO_Q, VEPE,   SAXO_Q);
   bool TEBO = nand(TYRY_Q, TAFY,   SUDE_Q, VATE,   VUTY,   TYPO_Q, SAXO_Q);
-  SYGU.tock(not(VENA_Q), rst.RESET_VIDEO, nand(VOKU, TOZU, TECE, TEBO));
+  SYGU.tock(not(SPR_CLK_1MQ), rst.RESET_VIDEO, nand(VOKU, TOZU, TECE, TEBO));
 
   //----------
   // x counter
@@ -139,7 +139,7 @@ void PPU::tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const 
 
   bool SEPA = and(cpu.CPU_WR2, dec.FF41);
 
-  bool VOGA_Q = VOGA.tock(clk.CLK_4M_B, TADY, WODU);
+  bool VOGA_Q = VOGA.tock(clk.CLK_0246, TADY, WODU);
   bool WEGO = or(lcd.TOFU, VOGA_Q);
   bool XAJO = and(X_Q0, X_Q3);
   XYMU = unk2(WEGO, spr.AVAP);

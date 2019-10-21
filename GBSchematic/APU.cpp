@@ -9,10 +9,11 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_apucontrol(APU& apu, Resets& rst, const AddressDecoder& dec, MemBus& mem) {
+void tick_apucontrol(APU& apu, Resets& rst, const AddressDecoder& dec, MemBus& mem, Clocks& clk) {
   //----------
   // top left
 
+  // move to clocks.cpp
   clk.AJER_2MHZ = apu.AJER.flip(clk.APUV_4MHZ, rst.APU_RESET3n);
   clk.AJER_2MHZn = not(clk.AJER_2MHZ);
 
@@ -33,35 +34,23 @@ void tick_apucontrol(APU& apu, Resets& rst, const AddressDecoder& dec, MemBus& m
   rst.APU_RESET3n = ATYV;
   rst.APU_RESET5n = KAME;
 
-  bool KYDU = not(cpu.CPU_RDn);
+  bool SOUND_ONQ = apu.SOUND_ON.tock(nand(dec.FF26, cpu.CPU_WRQ), rst.RESET2, mem.D7);
 
-  bool HAWU = nand(dec.FF26, cpu.CPU_WRQ);
-  bool BOPY = nand(cpu.CPU_WRQ, dec.FF26);
-  bool JURE = nand(KYDU, dec.FF26);
+  rst.APU_RESET = or(not(rst.RESET2), !SOUND_ONQ);
 
-  bool HAPO = not(rst.RESET2);
-  bool GUFO = not(HAPO);
-  bool HADA_Q = apu.HADA.tock(HAWU, GUFO, mem.D7);
-  bool JYRO = or(HAPO, !HADA_Q);
-
-  bool KUBY = not(JYRO);
-  bool KEBA = not(KUBY);
-  rst.APU_RESET = KEBA;
-
-  bool HOPE = not(!HADA_Q);
-  if (JURE) {
-    mem.D7 = HOPE;
+  if (nand(cpu.CPU_RD, dec.FF26)) {
+    mem.D7 = SOUND_ONQ;
   }
 
-  bool KEPY = not(JYRO);
-  bool ETUC = and(cpu.CPU_WRQ, dec.FF26);
-  bool EFOP = and(mem.D4, cpu.FROM_CPU);
-  bool FOKU = not(ETUC);
-  apu.FERO_Q = apu.FERO.tock(FOKU, KEPY, EFOP);
-  bool EDEK = not(!apu.FERO_Q);
-  apu.NET03 = EDEK;
+  apu.FERO_Q = apu.FERO.tock(
+    nand(cpu.CPU_WRQ, dec.FF26),
+    not(rst.APU_RESET),
+    and(mem.D4, cpu.FROM_CPU)
+  );
 
-  bool BOWY_Q = apu.BOWY.tock(BOPY, KEPY, mem.D5);
+  apu.NET03 = not(!apu.FERO_Q);
+
+  bool BOWY_Q = apu.BOWY.tock(nand(cpu.CPU_WRQ, dec.FF26), not(rst.APU_RESET), mem.D5);
   bool BAZA_Q = apu.BAZA.tock(clk.AJER_2MHZn, rst.APU_RESET3n, BOWY_Q);
   bool CELY = mux2(BAZA_Q, clk.BYFE_128, apu.NET03);
   bool CONE = not(CELY);
@@ -81,17 +70,17 @@ void tick_apucontrol(APU& apu, Resets& rst, const AddressDecoder& dec, MemBus& m
 
   bool BAXY = not(BOSU);
   bool BUBU = not(BAXY);
-  bool BEDU_Q = apu.BEDU.tock(BUBU, JYRO, mem.D7);
-  bool COZU_Q = apu.COZU.tock(BUBU, JYRO, mem.D6);
-  bool BUMO_Q = apu.BUMO.tock(BUBU, JYRO, mem.D5);
-  bool BYRE_Q = apu.BYRE.tock(BUBU, JYRO, mem.D4);
+  bool BEDU_Q = apu.BEDU.tock(BUBU, rst.APU_RESET, mem.D7);
+  bool COZU_Q = apu.COZU.tock(BUBU, rst.APU_RESET, mem.D6);
+  bool BUMO_Q = apu.BUMO.tock(BUBU, rst.APU_RESET, mem.D5);
+  bool BYRE_Q = apu.BYRE.tock(BUBU, rst.APU_RESET, mem.D4);
 
   bool BOWE = not(BOSU);
   bool ATAF = not(BOWE);
-  bool APOS_Q = apu.APOS.tock(ATAF, JYRO, mem.D3);
-  bool AGER_Q = apu.AGER.tock(ATAF, JYRO, mem.D2);
-  bool BYGA_Q = apu.BYGA.tock(ATAF, JYRO, mem.D1);
-  bool APEG_Q = apu.APEG.tock(ATAF, JYRO, mem.D0);
+  bool APOS_Q = apu.APOS.tock(ATAF, rst.APU_RESET, mem.D3);
+  bool AGER_Q = apu.AGER.tock(ATAF, rst.APU_RESET, mem.D2);
+  bool BYGA_Q = apu.BYGA.tock(ATAF, rst.APU_RESET, mem.D1);
+  bool APEG_Q = apu.APEG.tock(ATAF, rst.APU_RESET, mem.D0);
 
   bool ATUM = not(!BEDU_Q);
   bool BOCY = not(!COZU_Q);
@@ -120,14 +109,14 @@ void tick_apucontrol(APU& apu, Resets& rst, const AddressDecoder& dec, MemBus& m
   bool BONO = not(BUPO);
   bool BYFA = not(BUPO);
 
-  bool BOGU_Q = apu.BOGU.tock(BONO, JYRO, mem.D1);
-  bool BAFO_Q = apu.BAFO.tock(BONO, JYRO, mem.D2);
-  bool ATUF_Q = apu.ATUF.tock(BONO, JYRO, mem.D3);
-  bool ANEV_Q = apu.ANEV.tock(BONO, JYRO, mem.D0);
-  bool BEPU_Q = apu.BEPU.tock(BYFA, JYRO, mem.D7);
-  bool BEFO_Q = apu.BEFO.tock(BYFA, JYRO, mem.D6);
-  bool BUME_Q = apu.BUME.tock(BYFA, JYRO, mem.D4);
-  bool BOFA_Q = apu.BOFA.tock(BYFA, JYRO, mem.D5);
+  bool BOGU_Q = apu.BOGU.tock(BONO, rst.APU_RESET, mem.D1);
+  bool BAFO_Q = apu.BAFO.tock(BONO, rst.APU_RESET, mem.D2);
+  bool ATUF_Q = apu.ATUF.tock(BONO, rst.APU_RESET, mem.D3);
+  bool ANEV_Q = apu.ANEV.tock(BONO, rst.APU_RESET, mem.D0);
+  bool BEPU_Q = apu.BEPU.tock(BYFA, rst.APU_RESET, mem.D7);
+  bool BEFO_Q = apu.BEFO.tock(BYFA, rst.APU_RESET, mem.D6);
+  bool BUME_Q = apu.BUME.tock(BYFA, rst.APU_RESET, mem.D4);
+  bool BOFA_Q = apu.BOFA.tock(BYFA, rst.APU_RESET, mem.D5);
 
   bool GEPA = not(dec.FF25);
   bool HEFA = nor(GEPA, cpu.CPU_RDn);

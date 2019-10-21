@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------
 
-void Background::tick(const Window& win, Vram& vram) {
+void Background::tick(const Window& win, Vram& vram, const Clocks& clk) {
   //----------
   // y + scy;
 
@@ -166,7 +166,7 @@ void Background::tick(const Window& win, Vram& vram) {
 }
 //-----------------------------------------------------------------------------
 
-void Background::tick_bgpixelshifter(const Window& win, const Vram& vram) {
+void Background::tick_bgpixelshifter(const Window& win, const Vram& vram, const Clocks& clk) {
 
   wire LESO = not(win.MOFU);
   wire AJAR = not(LESO);

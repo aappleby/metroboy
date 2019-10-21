@@ -16,7 +16,7 @@ Sprites spr;
 
 //-----------------------------------------------------------------------------
 
-void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const Vram& vram, const MemBus& mem) {
+void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const Vram& vram, const MemBus& mem, Clocks& clk) {
   //----------
   // sprite scan counter
 
@@ -28,7 +28,7 @@ void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const
   wire FONY_Q = FONY.q();
 
   SPRITE_SCAN_DONE = and(YFEL_Q, WEWY_Q, GOSO_Q, FONY_Q);
-  wire GAVA = or(SPRITE_SCAN_DONE, SPR_CLK_2M.q());
+  wire GAVA = or(SPRITE_SCAN_DONE, CLK_1256.q());
 
   YFEL.flip(GAVA,    ANOM);
   WEWY.flip(!YFEL_Q, ANOM);
@@ -73,12 +73,9 @@ void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const
 
   wire AJEP = and(ACYL, XOCE);
   wire WEFY = and(TUVO, !TYFO.q());
-  wire XUJA = not(WEFY);
-  wire BOFE = not(dma.CATY);
-  wire BOTA = nor(BOFE, sys.SARO, cpu.CPU_RD2);
-  wire ASYT = and(AJEP, XUJA, BOTA);
-  wire BODE = not(ASYT);
-  clk.CLK3 = BODE;
+
+  // move to clocks.cpp
+  clk.CLK3 = not(and(AJEP, not(WEFY), nor(not(dma.CATY), sys.SARO, cpu.CPU_RD2)));
 
   wire WARU = and(dec.FF40, cpu.CPU_WR2);
   wire XUCA = not(WARU);
@@ -139,7 +136,7 @@ void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const
   WUME = not(and(not(GEKA), AMAB, not(nand(cpu.CPU_RD2, dma.CATY))));
   WEWU = not(and(not(nand(cpu.CPU_RD2, dma.CATY)), AMAB, GEKA));
 
-  ANEL.tock(not(SPR_CLK_2M.q()), rst.RESET_VIDEO, CATU_Q);
+  ANEL.tock(not(CLK_1256.q()), rst.RESET_VIDEO, CATU_Q);
 
   wire XECY_Q = XECY.tock(XUCA, 0, rst.RESET2);
   XUVA.tock(XYNY, rst.RESET2, XECY_Q);
@@ -156,18 +153,18 @@ void Sprites::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, const
 
 //-----------------------------------------------------------------------------
 
-void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win, Vram& vram, MemBus& mem) {
+void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win, Vram& vram, MemBus& mem, const Clocks& clk) {
 
   //----------
   // bottom
 
-  wire SPR_CLK_2MQ = SPR_CLK_2M.q();
+  wire SPR_CLK_2MQ = CLK_1256.q();
   wire WOSU_Q = WOSU.q();
   wire CENO_Q = CENO.q();
   wire BYBA_Q = BYBA.q();
   wire DOBA_Q = DOBA.q(); 
 
-  XUPY = SPR_CLK_2M.q();
+  XUPY = CLK_1256.q();
   XOCE = not(WOSU_Q);
   XYSO = or(!SPR_CLK_2MQ, !WOSU_Q);
   CEHA = not(!CENO_Q);
@@ -175,16 +172,16 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   DYTY = nor(XOCE, CEHA, SPR_MATCH);
   AVAP = nor(DOBA_Q, not(ANOM), !BYBA_Q);
 
-  SPR_CLK_2M.flip(clk.CLK_4M_A, rst.RESET_VIDEO);
+  CLK_1256.flip(clk.CLK_1357, rst.RESET_VIDEO);
 
-  WOSU.tock(not(clk.CLK_4M_A), rst.RESET_VIDEO, !SPR_CLK_2MQ);
+  WOSU.tock(clk.CLK_0246, rst.RESET_VIDEO, !SPR_CLK_2MQ);
 
   CENO.tock(SPR_CLK_2MQ, rst.RESET_VIDEO, BESU);
 
   CATU.tock(SPR_CLK_2MQ, rst.RESET_VIDEO, and(ppu.SELA, not(ppu.XYVO)));
 
   BYBA.tock(SPR_CLK_2MQ, ANOM, SPRITE_SCAN_DONE);
-  DOBA.tock(clk.CLK_4M_B, ANOM, BYBA_Q);
+  DOBA.tock(clk.CLK_0246, ANOM, BYBA_Q);
 
   //----------
   // center thing
@@ -198,7 +195,7 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   wire TULY_Q = TULY.q();
   wire TESE_Q = TESE.q();
 
-  LAPE = not(clk.CLK_4M_B);
+  LAPE = not(clk.CLK_0246);
 
   WUTY = nor(!TYFO_Q, nand(TOXE_Q, SEBA_Q, FETCH_LOHI_Q));
   XEFY = not(WUTY);
@@ -212,9 +209,9 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   XADO = not(and(TULY_Q, nor(TYTU, not(ppu.XYMU), TYFO_Q)));
   PUCO = not(and(FETCH_LOHI_Q, nor(TYTU, not(ppu.XYMU), TYFO_Q)));
 
-  TYFO.tock(not(clk.CLK_4M_B), win.VYPO, nand(TESE_Q, TOXE_Q));
-  SEBA.tock(not(clk.CLK_4M_B), ppu.XYMU, FETCH_LOHI_Q);
-  TOXE.flip(nand(not(clk.CLK_4M_B), nand(TESE_Q, TOXE_Q)),    win.SECA);
+  TYFO.tock(not(clk.CLK_0246), win.VYPO, nand(TESE_Q, TOXE_Q));
+  SEBA.tock(not(clk.CLK_0246), ppu.XYMU, FETCH_LOHI_Q);
+  TOXE.flip(nand(not(clk.CLK_0246), nand(TESE_Q, TOXE_Q)),    win.SECA);
   TULY.flip(!TOXE_Q, win.SECA);
   TESE.flip(!TULY_Q, win.SECA);
 
@@ -439,8 +436,8 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
     vram.MA12 = not(ext.P10_B);
   }
 
-  TOBU.tock(win.TAVA, ppu.XYMU, TULY_Q);
-  FETCH_LOHI.tock(win.TAVA, ppu.XYMU, !TOBU_Q);
+  TOBU.tock(clk.CLK_0246,       ppu.XYMU, TULY_Q);
+  FETCH_LOHI.tock(clk.CLK_0246, ppu.XYMU, !TOBU_Q);
 
   //----------
 
@@ -498,7 +495,7 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
   WOFO = CECU; WYLU = CECU; EWOT = CECU;
   ASYS = BYBY; AHOF = BYBY; BYVY = BYBY;
 
-  DEZY.tock(clk.CLK_4M_A, rst.RESET_VIDEO, DYTY);
+  DEZY.tock(clk.CLK_1357, rst.RESET_VIDEO, DYTY);
   BESE.flip(CAKE,    AZYB);
   CUXY.flip(!BESE_Q, AZYB);
   BEGO.flip(!CUXY_Q, AZYB);
@@ -751,7 +748,7 @@ void Sprites::tick_control(const OAM & oam, const Resets& rst, const Window& win
 
 //-----------------------------------------------------------------------------
 
-void Sprites::tick_pixelshifter(const Vram& vram) {
+void Sprites::tick_pixelshifter(const Vram& vram, const Clocks& clk) {
   // sprite x flip
   bool POBE = mux2(vram.MD4, vram.MD3, XONO);
   bool PACY = mux2(vram.MD3, vram.MD4, XONO);
@@ -878,8 +875,8 @@ void Sprites::tick_pixelshifter(const Vram& vram) {
 //-----------------------------------------------------------------------------
 
 void Sprites::tick_spritestore() {
-  bool SPR_CLK_2MQ = SPR_CLK_2M.q();
-  bool CYKE = not(SPR_CLK_2MQ);
+  bool CLK_1256Q = CLK_1256.q();
+  bool CYKE = not(CLK_1256Q);
   bool WUDA = not(CYKE);
 
   bool XECU_Q = XECU.tock(WUDA, spr.WEFE, OAM_A_A7);

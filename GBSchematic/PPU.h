@@ -11,7 +11,7 @@ struct MemBus;
 struct PPU {
 public:
 
-  void tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const Window& win, const LCD& lcd, MemBus& mem);
+  void tick_videocontrol(const Resets& rst, const AddressDecoder& dec, const Window& win, const LCD& lcd, MemBus& mem, const Clocks& clk);
   void tick_videoregs(const Resets& rst, const AddressDecoder& dec, MemBus& mem);
   void tick_palettes(const AddressDecoder& dec, MemBus& mem);
   void tick_pixelmux(const Background& bg);
@@ -166,7 +166,7 @@ public:
 
   bool WODU;
   bool SELA;
-  bool XYMU; // if this is high, we put the cpu address on the vram address bus
+  bool XYMU; // if this is high, we put the cpu address on the vram address bus. is this the vram address lock?
 
 private:
 
@@ -204,7 +204,7 @@ private:
   reg WINMAP;
   reg LCDEN;
 
-  reg VENA;
+  reg SPR_CLK_1M; /*VENA*/
 
   reg SAXO, TYPO, VYZO, TELU, SUDE, TAHA, TYRY;
 

@@ -12,7 +12,7 @@
 
 //-----------------------------------------------------------------------------
 
-void tick_sysdecode(const APU& apu, const Resets& rst, AddressDecoder& dec, MemBus& mem) {
+void tick_sysdecode(const APU& apu, const Resets& rst, AddressDecoder& dec, MemBus& mem, const Clocks& clk) {
   bool TEPU_Q = sys.TEPU.q();
 
   //----------

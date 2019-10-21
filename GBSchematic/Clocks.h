@@ -7,13 +7,12 @@ struct AddressDecoder;
 struct MemBus;
 
 struct Clocks {
-  void tick(const APU& apu, Resets& rst, const AddressDecoder& dec, MemBus& mem);
+  void tick(const APU& apu, Resets& rst, MemBus& mem);
 
-  bool CLKIN_An;
   bool CLKPIPE;
 
-  bool CLK_4M_A;
-  bool CLK_4M_B;
+  bool CLK_1357;
+  bool CLK_0246;
   bool CLK3; // sprites use this clock
 
   bool BOGA1MHZ;
@@ -89,9 +88,6 @@ private:
   reg AVOK;
   reg JESO;
 };
-
-extern Clocks clk;
-
 
 struct Resets {
   bool RESET2;

@@ -9,6 +9,11 @@ typedef const uint8_t wire8;
 
 struct reg {
 
+  reg() {
+    val = 0;
+    clk = 0;
+  }
+
   wire q() const  { return val; }
 
   // returns the _old_ q
@@ -16,6 +21,15 @@ struct reg {
     wire old = val;
     if (!r) val = 0;
     else if (clk && !clk2) val = d;
+    clk = clk2;
+    return old;
+  }
+
+  // ticks on both clock edges, returns the _old_ q
+  wire dtock(wire clk2, wire r, wire d) {
+    wire old = val;
+    if (!r) val = 0;
+    else if (clk != clk2) val = d;
     clk = clk2;
     return old;
   }

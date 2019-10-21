@@ -9,7 +9,7 @@ struct Serial {
 
   bool SER_TICKn;
 
-  void tick(const Resets& rst, const AddressDecoder& dec, MemBus& mem);
+  void tick(const Resets& rst, const AddressDecoder& dec, MemBus& mem, const Clocks& clk);
 
 private:
 

@@ -1,14 +1,10 @@
 #pragma once
 #include "Schematics.h"
 
-struct Resets;
-struct AddressDecoder;
-struct MemBus;
-
 struct Timer {
 public:
 
-  void tick(bool FF04_D1n, const Resets& rst, AddressDecoder& dec, MemBus& mem);
+  void tick(bool FF04_D1n, const Resets& rst, AddressDecoder& dec, MemBus& mem, const Clocks& clk);
 
 private:
 

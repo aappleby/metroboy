@@ -15,7 +15,7 @@ DmaBus dma;
 //-----------------------------------------------------------------------------
 // 4_DMA.png
 
-void DmaBus::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, Vram& vram, MemBus& mem) {
+void DmaBus::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, Vram& vram, MemBus& mem, const Clocks& clk) {
   bool MAKA_Q = MAKA.q();
   bool LUVY_Q = LUVY.q();
   bool DMA_DONE_Q = DMA_DONE.q();
@@ -23,7 +23,7 @@ void DmaBus::tick(OAM& oam, const Resets& rst, const AddressDecoder& dec, Vram& 
   bool MATU_Q = MATU.q();
 
   dma.CATY = cpu.FROM_CPU5;
-  MAKA.tock(clk.CLK_4M_A, rst.RESET2, dma.CATY);
+  MAKA.tock(clk.CLK_1357, rst.RESET2, dma.CATY);
 
   dma.MOPA_PHI = not(clk.PHI_OUTn);
 

@@ -10,7 +10,7 @@
 
 //-----------------------------------------------------------------------------
 
-void Joypad::tick(const Resets& rst, MemBus& mem) {
+void Joypad::tick(const Resets& rst, MemBus& mem, const Clocks& clk) {
   bool FF00 = mem.match(0xFF00);
   bool FF00WR = nand(cpu.CPU_WR, FF00);
 

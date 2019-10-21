@@ -1,12 +1,9 @@
 #pragma once
 #include "Schematics.h"
-
-struct Resets;
-struct AddressDecoder;
-struct MemBus;
+#include "Register.h"
 
 struct CpuBus {
-  void tick_interrupts(const Resets& rst, const AddressDecoder& dec, MemBus& mem);
+  void tick_interrupts(const Resets& rst, const AddressDecoder& dec, MemBus& mem, const Clocks& clk);
 
   bool CPU_RD;
   bool CPU_RDn;

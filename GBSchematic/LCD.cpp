@@ -9,72 +9,49 @@
 
 //-----------------------------------------------------------------------------
 
-void LCD::tick(const Resets& rst, const Window& win) {
+void LCD::tick(const Resets& rst, const Window& win, Clocks& clk) {
   wire NYKA_Q = NYKA.q();
   wire PORY_Q = PORY.q();
   wire PYGO_Q = PYGO.q();
   wire PAHO_Q = PAHO.q();
   wire LUCA_Q = LUCA.q();
   wire LEBE_Q = LEBE.q();
-  wire MEDA_Q = MEDA.q();
+  wire VSYNC_Q = VSYNC.q();
 
-  LOBY = not(ppu.XYMU);
-  bool NAFY = nor(win.MOSU, LOBY);
-
-  POKY = unk2(PYGO_Q, LOBY);
-  TOMU = not(win.SYLO);
-  bool SOCY = not(TOMU);
-  bool VYBO = nor(spr.FEPO, ppu.WODU, win.MYVO);
-  bool TYFA = and(SOCY, POKY, VYBO);
-  SEGU = not(TYFA);
+  SEGU = not(and(win.SYLO, unk2(PYGO_Q, not(ppu.XYMU)), nor(spr.FEPO, ppu.WODU, win.MYVO)));
   ROXO = not(SEGU);
 
-  bool RUTU_Q = ppu.RUTU.q();
-  bool LOFU = not(RUTU_Q);
+  ext.PIN_S = not(VSYNC_Q);
 
-  // FIXME why 7
-  bool NERU = !(ppu.V7 || ppu.V6 || ppu.V5 || ppu.V4 || ppu.V3 || ppu.V2 || ppu.V1); // biiig nor
-  bool MURE = not(MEDA_Q);
-
-  ext.PIN_S = MURE;
-
-  bool MAGU = xor(ppu.NAPO_OUT, LUCA_Q);
-  bool MECO = not(MAGU);
-  bool KEBO = not(MECO);
-  bool KASA = not(ppu.PURE);
-  bool UMOB = not(clk.FF04_D0n);
-  bool USEC = not(clk.FF04_D1n);
-  bool KEDY = not(ppu.LCDC_LCDEN);
-  bool KAHE = amux2(ppu.LCDC_LCDEN, KASA, KEDY, UMOB);
-  bool KUPA = amux2(ppu.LCDC_LCDEN, KEBO, KEDY, USEC);
-
-  bool KYMO = not(KAHE);
-  bool KOFO = not(KUPA);
-
-  ext.PIN_CPL = KYMO;
-  ext.PIN_FR = KOFO;
+  // polarity?
+  ext.PIN_CPL = amux2(ppu.LCDC_LCDEN, not(ppu.PURE),             not(ppu.LCDC_LCDEN), not(clk.FF04_D0n));
+  ext.PIN_FR  = amux2(ppu.LCDC_LCDEN, xor(ppu.NAPO_OUT, LUCA_Q), not(ppu.LCDC_LCDEN), not(clk.FF04_D1n));
 
   // FIXME another logic loop...
   TOFU = not(rst.RESET_VIDEO);
   bool POME = nor(spr.AVAP, /*POFY*/false);
-  bool SACU = nor(SEGU, win.ROXY);
   bool RUJU = or(PAHO_Q, TOFU, POME);
   bool POFY = not(RUJU);
   bool RUZE = not(POFY);
 
   ext.PIN_ST = RUZE;
-  clk.CLKPIPE = SACU;
+  // move to clocks.cpp
+  clk.CLKPIPE = nor(SEGU, win.ROXY);
 
-  NYKA.tock(clk.CLK_4M_B, NAFY, win.LYRY);
+  bool NAFY = nor(win.MOSU, not(ppu.XYMU));
+  NYKA.tock(clk.CLK_0246, NAFY, win.LYRY);
   PORY.tock(win.MYVO, NAFY, NYKA_Q);
-  PYGO.tock(clk.CLK_4M_B, ppu.XYMU, PORY_Q);
+  PYGO.tock(clk.CLK_0246, ppu.XYMU, PORY_Q);
 
   bool XYDO_Q = ppu.X_R3.q();
   PAHO.tock(ROXO, ppu.XYMU, XYDO_Q);
 
-  LUCA.tock(LOFU,    rst.RESET_VIDEO, !LUCA_Q);
+  bool RUTU_Q = ppu.RUTU.q();
+  LUCA.tock(!RUTU_Q, rst.RESET_VIDEO, !LUCA_Q);
   LEBE.tock(!LUCA_Q, rst.RESET_VIDEO, !LEBE_Q);
 
   bool NYPE_Q = ppu.NYPE.q();
-  MEDA.tock(NYPE_Q,    rst.RESET_VIDEO, NERU);
+
+  bool NERU = !(ppu.V7 || ppu.V6 || ppu.V5 || ppu.V4 || ppu.V3 || ppu.V2 || ppu.V1); // biiig nor
+  VSYNC.tock(NYPE_Q,    rst.RESET_VIDEO, NERU);
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "Schematics.h"
+#include "Register.h"
 
 struct APU {
   bool CH1_AMP_ENn, CH2_AMP_ENn, FF1A_D7n, CH4_AMP_ENn;
@@ -33,7 +33,7 @@ struct APU {
   reg AJER;
   reg CALO;
 
-  reg HADA;
+  reg SOUND_ON; /*HADA*/
   reg BOWY;
   reg BAZA;
   reg FERO;

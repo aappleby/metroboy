@@ -6,7 +6,7 @@ struct Window;
 
 struct LCD {
 
-  void tick(const Resets& rst, const Window& win);
+  void tick(const Resets& rst, const Window& win, Clocks& clk);
 
   bool LOBY;
   bool POKY;
@@ -22,7 +22,8 @@ private:
 
   reg PYGO;
   reg PAHO;
-  reg LUCA;
-  reg LEBE;
-  reg MEDA;
+  reg LUCA; // some sort of counter
+  reg LEBE; // some sort of counter
+  
+  reg VSYNC; /*MEDA*/
 };

@@ -11,7 +11,7 @@ Serial ser;
 
 //-----------------------------------------------------------------------------
 
-void Serial::tick(const Resets& rst, const AddressDecoder& dec, MemBus& mem) {
+void Serial::tick(const Resets& rst, const AddressDecoder& dec, MemBus& mem, const Clocks& clk) {
   bool SEFY = not(mem.A2);
   bool SANO = and(dec.A00_07, SEFY, dec.FFXX);
   bool UWAM = nand(mem.TOVY_A0n, mem.A1, cpu.CPU_WR, SANO);

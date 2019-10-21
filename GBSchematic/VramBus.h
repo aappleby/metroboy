@@ -11,7 +11,7 @@ struct MemBus;
 struct Vram {
 public:
 
-  void tick(OAM& oam, const AddressDecoder& dec, const Window& win, Vram& vram, const ExtCpuBuses_sch& ext_sch, MemBus& mem);
+  void tick(OAM& oam, const AddressDecoder& dec, const Window& win, Vram& vram, const ExtCpuBuses_sch& ext_sch, MemBus& mem, const Clocks& clk);
 
   bool MA0;
   bool MA1;

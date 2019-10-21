@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
+void test_p1();
+
 int main()
 {
-  printf("Hello World\n");
+  test_p1();
 }

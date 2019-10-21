@@ -1,16 +1,10 @@
 #pragma once
 #include "Schematics.h"
 
-struct Resets;
-struct LCD;
-struct Vram;
-
 struct Window {
 public:
 
-  void tick(const Resets& rst, const LCD& lcd, Vram& vram);
-
-  bool TAVA; // this is actually a clock used by the ppu
+  void tick(const Resets& rst, const LCD& lcd, Vram& vram, const Clocks& clk);
 
   //----------
   // outputs
@@ -35,9 +29,8 @@ public:
 
   //bool WUKO; // controls something window
 
-  reg VYNO;
-  reg VUJO;
-  reg VYMU;
+  // some 8 bit counter
+  reg VYNO,VUJO,VYMU,TUFU,TAXA,TOZO,TATE,TEKE;
 
 private:
   
@@ -48,11 +41,12 @@ private:
   // registers
 
   reg SOBU;
-  reg SUDA;
-  reg SARY;
+  reg SUDA; // delayed SOBU
+
+  reg WIN_Y_MATCH; /*SARY*/
   reg NOPA;
-  reg PYCO;
-  reg NUNU;
+  reg WIN_X_MATCH; /*PYCO*/
+  reg WIN_X_MATCH_DELAY; /*NUNU*/
 
   reg RYKU;
   reg ROGA;
@@ -64,21 +58,13 @@ private:
   reg SOVY;
   reg RENE;
   reg LYZU;
-  reg LAXU;
-  reg MESU;
-  reg NYVA;
   reg LOVY;
 
   // big address bus, bottom right
 
-  reg TUFU;
-  reg TAXA;
-  reg TOZO;
-  reg TATE;
-  reg TEKE;
-  reg WYKA;
-  reg WODY;
-  reg WOBO;
-  reg WYKO;
-  reg XOLO;
+  // looks like a 3 bit counter
+  reg LAXU,MESU,NYVA;
+
+  // some 5 bit counter
+  reg WYKA,WODY,WOBO,WYKO,XOLO;
 };

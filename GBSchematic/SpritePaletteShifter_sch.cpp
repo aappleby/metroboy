@@ -8,7 +8,7 @@
 
 //-----------------------------------------------------------------------------
 
-void Sprites::tick_paletteshifter() {
+void Sprites::tick_paletteshifter(const Clocks& clk) {
   bool MEFU = or(spr.XEFY, ppu.SPR_PIX_A_0, ppu.SPR_PIX_B_0);
   bool MEVE = or(spr.XEFY, ppu.SPR_PIX_A_1, ppu.SPR_PIX_B_1);
   bool MYZO = or(spr.XEFY, ppu.SPR_PIX_A_2, ppu.SPR_PIX_B_2);

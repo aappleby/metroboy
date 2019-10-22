@@ -185,6 +185,7 @@
     <ClCompile Include="P1_ClocksReset_Hax.cpp" />
     <ClCompile Include="P1_Clocks_Reset.cpp" />
     <ClCompile Include="P2_Interrupts.cpp" />
+    <ClCompile Include="P3_Timer.cpp" />
     <ClCompile Include="PixelMux_sch.cpp" />
     <ClCompile Include="PPU.cpp" />
     <ClCompile Include="PpuDecode_sch.cpp" />

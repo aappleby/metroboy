@@ -73,7 +73,6 @@ struct P1_ClocksReset {
     bool BUFY_256Hz;
     bool PHI_OUT;
     bool PHIn;
-    bool CLKIN_An;
     bool CLK2;
     bool CLK1;
     bool BYFE_128Hz;
@@ -459,7 +458,6 @@ void P1_ClocksReset::tick(int i)
   out.BUFY_256Hz = BUFY_256Hz;
   out.PHI_OUT = PHI_OUT;
   out.PHIn = PHIn;
-  out.CLKIN_An = CLKIN_An;
   out.CLK2 = CLK2;
   out.CLK1 = CLK1;
   out.BYFE_128Hz = BYFE_128Hz;

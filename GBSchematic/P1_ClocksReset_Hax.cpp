@@ -30,17 +30,16 @@ void print_at(int x, int y, const char *format, ...)
 struct P1_ClocksReset {
 
   struct Input {
-    bool RESET;
-    bool CLKIN_A;
+    bool RESET; // low = reset, high = run
+    bool CLK_GOOD;
     bool CLKIN_B;
-    bool ABOL_1MHZ; // dunno
+    bool ABOL; // dunno
 
     bool FROM_CPU3;
     bool FROM_CPU4;
 
-    bool T1T2n;   // true for debugging
-    bool T1nT2;   // true for debugging
-    bool T1nT2n;  // true for normal mode
+    bool T1;
+    bool T2;
   };
 
   struct Output {
@@ -48,7 +47,6 @@ struct P1_ClocksReset {
     bool BOGA1MHZ;
     bool PHI_OUT;
     bool PHIn;
-    bool CLKIN_An;
     bool CLK2;
     bool CLK1;
     bool RESET2;
@@ -76,11 +74,6 @@ struct P1_ClocksReset {
 
 //-----------------------------------------------------------------------------
 
-wire unk3_test(wire a, wire b, wire c) {
-  return a ^ b ^ c;
-}
-
-
 void P1_ClocksReset::tick(int i)
 {
   bool TAMA_Q = TAMA.q();
@@ -98,7 +91,7 @@ void P1_ClocksReset::tick(int i)
   bool SUBU_Q = SUBU.q();
   bool TEKA_Q = TEKA.q();
   bool UKET_Q = UKET.q();
-  bool UPOF_Q = UPOF.q();
+  bool RESET_TIMEOUT = UPOF.q();
 
   bool ADYK_Q = ADYK.q();
   bool AFUR_Q = AFUR.q();
@@ -108,195 +101,149 @@ void P1_ClocksReset::tick(int i)
   bool AFER_Q = AFER.q();
 
   //----------
-  // bottom left
 
-  bool UCOB = not(in.CLKIN_A);
-  bool CLKIN_An = UCOB;
+  if (in.T1 || in.T2) {
+    bool T1nT2  = and(in.T2, not(in.T1));
 
-  bool ATAL = not(in.CLKIN_B);
-  bool ATAL_4MHZ = ATAL;
-  bool AZOF = not(ATAL);
+    out.AFAS = and(ADYK_Q, AFUR_Q);
+    out.ABUZ = nor(T1nT2, unk3(AFUR_Q, not(APUK_Q), in.FROM_CPU4));
+    out.CPU_RD_SYNC = and(in.FROM_CPU3, ADYK_Q, AFUR_Q);
+    out.BOGA1MHZ = (ALEF_Q && AFUR_Q) || in.CLK_GOOD;
 
-  bool ZAXY = not(AZOF);
+    out.TO_CPU = in.ABOL || (in.CLK_GOOD && (ALEF_Q || AFUR_Q));
+    out.BUKE = nor(ALEF_Q, not(APUK_Q), in.ABOL);
+    out.PHI_OUT = and(AFUR_Q, not(in.ABOL));
 
-  bool ZEME = not(ZAXY);
+    bool ASOL;
 
-  bool ALET = not(ZEME);
+    if (in.RESET) {
+      ASOL = unk2(0, 1);
+    }
+    else {
+      ASOL = unk2(1, 0);
+    }
 
-  bool CLK1 = ZEME;
-  bool CLK2 = ALET;
+    if (ASOL) {
+      out.RESET2 = 0;
+      AFER.tock(not(out.BOGA1MHZ), 1, 1);
+    }
+    else {
+      out.RESET2 = not(AFER_Q);
+      AFER.tock(not(out.BOGA1MHZ), 1, 0);
+    }
+
+    ADYK.dtock(not(in.CLKIN_B), 1, APUK_Q);
+    AFUR.dtock(not(in.CLKIN_B), 1, !ADYK_Q);
+    ALEF.dtock(not(in.CLKIN_B), 1, AFUR_Q);
+    APUK.dtock(not(in.CLKIN_B), 1, ALEF_Q);
+  }
+  else {
+
+    out.AFAS = and(ADYK_Q, AFUR_Q);
+    out.ABUZ = nor(false, unk3(AFUR_Q, not(APUK_Q), in.FROM_CPU4));
+    out.CPU_RD_SYNC = and(in.FROM_CPU3, ADYK_Q, AFUR_Q);
+    out.BOGA1MHZ = (ALEF_Q && AFUR_Q) || in.CLK_GOOD;
+
+    if (in.ABOL) {
+      out.TO_CPU  = 1;
+      out.BUKE    = 0;
+      out.PHI_OUT = 0;
+    }
+    else {
+      out.TO_CPU  = (in.CLK_GOOD && (ALEF_Q || AFUR_Q));
+      out.BUKE    = and(not(ALEF_Q), APUK_Q);
+      out.PHI_OUT = AFUR_Q;
+    }
+
+    /*
+    // as in schematic
+    bool UPYF = or(in.RESET, not(in.CLK_GOOD));
+    bool TUBO = unk2(in.ABOL, UPYF);
+    bool UNUT = and(RESET_TIMEOUT, TUBO);
+    bool TABA = UNUT;
+    bool ALYP = not(TABA);
+    bool AFAR = nor(ALYP, in.RESET);
+    bool ASOL = unk2(AFAR, in.RESET);
+    bool AVOR = or(AFER_Q, ASOL);
+    bool ALUR = not(AVOR);
+    out.RESET2 = ALUR;
+    AFER.tock(not(out.BOGA1MHZ), !in.RESET, ASOL);
+
+    // flattened down to unk2()s
+    bool TUBO = unk2(in.ABOL, or(in.RESET, not(in.CLK_GOOD)));
+    bool ASOL = unk2(nor(nand(RESET_TIMEOUT, TUBO), in.RESET), in.RESET);
+    out.RESET2 = nor(AFER_Q, ASOL);
+    AFER.tock(not(out.BOGA1MHZ), !in.RESET, ASOL);
+
+    // or just one line, sort of?
+    bool STOP = unk2(nor(nand(RESET_TIMEOUT, unk2(in.ABOL, or(in.RESET, not(in.CLK_GOOD)))), in.RESET), in.RESET);
+
+    // the sane possibilities
+    // unk2 0001 - runs during reset
+    // unk2 0110 - if ABOL is high, we run when the clock is bad. probably wrong.
+    // unk2 0111 - winner winner chicken dinner. this is just "or". :/
+    // unk2 1000 - oscillates
+    // unk2 1001 - oscillates
+    // unk2 1110 - oscillates
+    */
+
+    bool STOP = false;
+    if (in.ABOL || !in.CLK_GOOD) STOP = RESET_TIMEOUT;
+    if (in.RESET) STOP = true;
+
+    if (STOP) {
+      out.RESET2 = 0;
+      AFER.tock(not(out.BOGA1MHZ), 0, 1);
+    }
+    else {
+      out.RESET2 = not(AFER_Q);
+      AFER.tock(not(out.BOGA1MHZ), 1, 0);
+    }
+
+
+    ADYK.dtock(not(in.CLKIN_B),  !in.RESET, APUK_Q);
+    AFUR.dtock(not(in.CLKIN_B),  !in.RESET, !ADYK_Q);
+    ALEF.dtock(not(in.CLKIN_B),  !in.RESET, AFUR_Q);
+    APUK.dtock(not(in.CLKIN_B),  !in.RESET, ALEF_Q);
+  }
 
   //----------
-  // bottom right
 
-  bool UPYF = or(in.RESET, CLKIN_An);
-  bool TUBO = unk2(in.ABOL_1MHZ, UPYF);
-  bool UNUT = and(TUBO, UPOF_Q);
-  bool TABA = or(in.T1nT2, in.T1T2n, UNUT);
-
-  //----------
-  // top left
-
-  bool ADAR = not(ADYK_Q);
-  bool ATYP = not(AFUR_Q);
-  bool AFEP = not(ALEF_Q);
-  bool AROV = not(APUK_Q);
-
-  bool AFAS = nor(ADAR, ATYP);
-  bool AJAX = not(ATYP);
-  bool BUGO = not(AFEP);
-
-  bool AREV = nand(in.FROM_CPU3, AFAS);
-  bool AGUT = unk3_test(AJAX, AROV, in.FROM_CPU4);
-  bool BATE = nor(BUGO, AROV, in.ABOL_1MHZ);
-
-  bool APOV = not(AREV);
-  bool CPU_RD_SYNC = APOV;
-  bool AWOD = or(in.T1nT2, AGUT);
-  bool BASU = not(BATE);
-
-  bool ABUZ = not(AWOD);
-  bool BUKE = not(BASU);
-
-  bool BAPY = nor(in.ABOL_1MHZ, AROV, ATYP);
-  bool NULE = nor(ATYP, in.ABOL_1MHZ);
-
-  bool BERU = not(BAPY);
-  bool BYRY = not(NULE);
-
-  bool BUFA = not(BERU);
-  bool BYLY = not(BERU);
-  bool BUDE = not(BYRY);
-  bool BEVA = not(BYRY);
-  bool PHI_OUT = BEVA;
-  bool DOVA = not(BEVA);
-  bool PHIn = DOVA;
-
-  bool BOLO = not(BUFA);
-  bool BYDA = not(BYLY);
-  bool BEKO = not(BUDE);
-  bool BAVY = not(BEVA);
-
-  bool BEJA = nand(BOLO, BYDA, BEKO, BAVY);
-  bool BANE = not(BEJA);
-  bool BELO = not(BANE);
-  bool BAZE = not(BELO);
-  bool BUTO = nand(AFEP, ATYP, BAZE);
-
-  bool BELE = not(BUTO);
-  bool ATEZ = not(in.CLKIN_A);
-
-  bool BYJU = nor(BELE, ATEZ);
-  bool ALYP = not(TABA);
-
-  bool BUTY = not(in.ABOL_1MHZ);
-  bool BALY = not(BYJU);
-  bool AFAR = nor(ALYP, in.RESET);
-
-  bool BUVU = and(BUTY, BALY);
-  bool BYXO = not(BUVU);
-  bool BEDO = not(BYXO);
-  bool BOWA = not(BEDO);
-  bool TO_CPU = BOWA;
-
-  bool BOGA = not(BALY);
-  bool BOGA1MHZ = BOGA;
-  bool BOMA = not(BOGA);
-
-  bool ASOL = unk2(AFAR, in.RESET);
-  bool AVOR = or(AFER_Q, ASOL);
-  bool ALUR = not(AVOR);
-  bool RESET2 = ALUR;
 
   //----------
 
-  bool RESET_DIVn = nor(CLKIN_An, in.RESET);
+  bool RESET_DIV = in.RESET || not(in.CLK_GOOD);
+
+  UKUP.tock(out.BOGA1MHZ, not(RESET_DIV), !UKUP_Q);
+  UFOR.tock(!UKUP.q(),    not(RESET_DIV), !UFOR_Q);
+  UNER.tock(!UFOR.q(),    not(RESET_DIV), !UNER_Q);
+  TERO.tock(!UNER.q(),    not(RESET_DIV), !TERO_Q);
+  UNYK.tock(!TERO.q(),    not(RESET_DIV), !UNYK_Q);
+  TAMA.tock(!UNYK.q(),    not(RESET_DIV), !TAMA_Q);
+  UGOT.tock(!TAMA.q(),    not(RESET_DIV), !UGOT_Q);
+  TULU.tock(!UGOT.q(),    not(RESET_DIV), !TULU_Q);
+  TUGO.tock(!TULU.q(),    not(RESET_DIV), !TUGO_Q);
+  TOFE.tock(!TUGO.q(),    not(RESET_DIV), !TOFE_Q);
+  TERU.tock(!TOFE.q(),    not(RESET_DIV), !TERU_Q);
+  SOLA.tock(!TERU.q(),    not(RESET_DIV), !SOLA_Q);
+  SUBU.tock(!SOLA.q(),    not(RESET_DIV), !SUBU_Q);
+  TEKA.tock(!SUBU.q(),    not(RESET_DIV), !TEKA_Q);
+  UKET.tock(!TEKA.q(),    not(RESET_DIV), !UKET_Q);
+  UPOF.tock(!UKET.q(),    not(RESET_DIV), !RESET_TIMEOUT);
 
   //----------
 
-  UKUP.tock(BOGA1MHZ,   RESET_DIVn, !UKUP_Q);
-  UFOR.tock(!UKUP.q(),  RESET_DIVn, !UFOR_Q);
-  UNER.tock(!UFOR.q(),  RESET_DIVn, !UNER_Q);
-  TERO.tock(!UNER.q(),  RESET_DIVn, !TERO_Q);
-  UNYK.tock(!TERO.q(),  RESET_DIVn, !UNYK_Q);
-  TAMA.tock(!UNYK.q(),  RESET_DIVn, !TAMA_Q);
-  UGOT.tock(BOGA1MHZ,   RESET_DIVn, !UGOT_Q);
-  TULU.tock(!UGOT.q(),  RESET_DIVn, !TULU_Q);
-  TUGO.tock(!TULU.q(),  RESET_DIVn, !TUGO_Q);
-  TOFE.tock(!TUGO.q(),  RESET_DIVn, !TOFE_Q);
-  TERU.tock(!TOFE.q(),  RESET_DIVn, !TERU_Q);
-  SOLA.tock(!TERU.q(),  RESET_DIVn, !SOLA_Q);
-  SUBU.tock(!SOLA.q(),  RESET_DIVn, !SUBU_Q);
-  TEKA.tock(!SUBU.q(),  RESET_DIVn, !TEKA_Q);
-  UKET.tock(!TEKA.q(),  RESET_DIVn, !UKET_Q);
-  UPOF.tock(!UKET.q(),  RESET_DIVn, !UPOF_Q);
+  out.ATAL_4MHZ = not(in.CLKIN_B);
+  out.PHIn      = not(out.PHI_OUT);
+  out.CLK2      = not(in.CLKIN_B);
+  out.CLK1      = in.CLKIN_B;
 
+  //----------
 
-  ADYK.dtock(ATAL_4MHZ, in.T1nT2n, APUK_Q);
-  AFUR.dtock(ATAL_4MHZ, in.T1nT2n, !ADYK_Q);
-  ALEF.dtock(ATAL_4MHZ, in.T1nT2n, AFUR_Q);
-  APUK.dtock(ATAL_4MHZ, in.T1nT2n, ALEF_Q);
-
-  AFER.tock(BOMA, in.T1nT2n, ASOL);
-
-  //r("ADYK", i, 2, ADYK_Q);
   int y = 3;
-  r(i, y++, "CLK_A", in.CLKIN_A);
+  r(i, y++, "CLK_A", in.CLK_GOOD);
   r(i, y++, "CLK_B", in.CLKIN_B);
   y++;
-
-  r(i, y++, "ADYK", ADYK_Q);
-  r(i, y++, "AFUR", AFUR_Q);
-  r(i, y++, "ALEF", ALEF_Q);
-  r(i, y++, "APUK", APUK_Q);
-  y++;
-
-  r(i, y++, "ADAR", ADAR);
-  r(i, y++, "ATYP", ATYP);
-  r(i, y++, "AFEP", AFEP);
-  r(i, y++, "AROV", AROV);
-  y++;
-
-  r(i, y++, "AFAS", AFAS);
-  r(i, y++, "AJAX", AJAX);
-  r(i, y++, "BUGO", BUGO);
-  y++;
-
-  r(i, y++, "AREV", AREV);
-  r(i, y++, "AGUT", AGUT);
-  r(i, y++, "BATE", BATE);
-  y++;
-
-  r(i, y++, "BELE", BELE);
-  r(i, y++, "ATEZ", ATEZ);
-  r(i, y++, "BYJU", BYJU);
-  r(i, y++, "BALY", BALY);
-  r(i, y++, "BOGA", BOGA);
-  y++;
-
-  r(i, y++, "UKUP", UKUP_Q);
-  r(i, y++, "UFOR", UFOR_Q);
-  r(i, y++, "UNER", UNER_Q);
-  r(i, y++, "TERO", TERO_Q);
-  y++;
-
-  r(i, y++, "PHI_OUT", PHI_OUT);
-
-  //----------
-
-  out.ATAL_4MHZ = ATAL_4MHZ;
-  out.BOGA1MHZ = BOGA1MHZ;
-  out.PHI_OUT = PHI_OUT;
-  out.PHIn = PHIn;
-  out.CLKIN_An = CLKIN_An;
-  out.CLK2 = CLK2;
-  out.CLK1 = CLK1;
-  out.RESET2 = RESET2;
-  out.TO_CPU = TO_CPU;
-  out.CPU_RD_SYNC = CPU_RD_SYNC;
-  out.BUKE = BUKE;
-  out.ABUZ = ABUZ;
-  out.AFAS = AFAS;
 }
 
 //-----------------------------------------------------------------------------
@@ -306,20 +253,19 @@ void test_p1() {
 
   auto blah = [&sch]() { return sch.ADYK.q(); };
 
-  sch.in.RESET = 0;
-  sch.in.CLKIN_A = 0;
+  sch.in.RESET = 1;
+  sch.in.CLK_GOOD = 0;
   sch.in.CLKIN_B = 0;
-  sch.in.ABOL_1MHZ = 0;
+  sch.in.ABOL = 0;
 
   sch.in.FROM_CPU3 = 1;
   sch.in.FROM_CPU4 = 0;
 
-  sch.in.T1T2n = 0;
-  sch.in.T1nT2 = 0;
-  sch.in.T1nT2n = 1;
+  sch.in.T1 = 0;
+  sch.in.T2 = 0;
 
   for (int i = 0; i < 128; i++) {
-    sch.in.CLKIN_A = 1;
+    sch.in.CLK_GOOD = 1;
     sch.in.CLKIN_B = (~((i + 0) >> 0)) & 1;
 
     sch.tick(i);

@@ -188,6 +188,7 @@
     <ClCompile Include="P3_Timer.cpp" />
     <ClCompile Include="P4_DMA.cpp" />
     <ClCompile Include="P5_Joypad_IO.cpp" />
+    <ClCompile Include="P6_Serial_Link.cpp" />
     <ClCompile Include="PixelMux_sch.cpp" />
     <ClCompile Include="PPU.cpp" />
     <ClCompile Include="PpuDecode_sch.cpp" />

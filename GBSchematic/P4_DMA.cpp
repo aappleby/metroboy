@@ -31,22 +31,7 @@ struct P4_DMA {
     bool MA_OE;
     bool MA0,MA1,MA2,MA3,MA4,MA5,MA6,MA7,MA8,MA9,MA10,MA11,MA12;
 
-    bool DMA_A0;
-    bool DMA_A1;
-    bool DMA_A2;
-    bool DMA_A3;
-    bool DMA_A4;
-    bool DMA_A5;
-    bool DMA_A6;
-    bool DMA_A7;
-    bool DMA_A8;
-    bool DMA_A9;
-    bool DMA_A10;
-    bool DMA_A11;
-    bool DMA_A12;
-    bool DMA_A13;
-    bool DMA_A14;
-    bool DMA_A15;
+    bool DMA_A0,DMA_A1,DMA_A2,DMA_A3,DMA_A4,DMA_A5,DMA_A6,DMA_A7,DMA_A8,DMA_A9,DMA_A10,DMA_A11,DMA_A12,DMA_A13,DMA_A14,DMA_A15;
   };
 
   // FF46 DMA

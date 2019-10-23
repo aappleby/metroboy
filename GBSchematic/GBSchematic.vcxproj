@@ -190,6 +190,7 @@
     <ClCompile Include="P5_Joypad_IO.cpp" />
     <ClCompile Include="P6_Serial_Link.cpp" />
     <ClCompile Include="P7_Sys_Decode.cpp" />
+    <ClCompile Include="P8_Ext_Cpu_Buses.cpp" />
     <ClCompile Include="PixelMux_sch.cpp" />
     <ClCompile Include="PPU.cpp" />
     <ClCompile Include="PpuDecode_sch.cpp" />

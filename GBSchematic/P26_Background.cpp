@@ -4,7 +4,6 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-
 struct P26_Background {
   struct Input {
     bool CLKPIPE;

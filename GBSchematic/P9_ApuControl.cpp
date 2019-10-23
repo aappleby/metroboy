@@ -4,8 +4,6 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-//-----------------------------------------------------------------------------
-
 struct P9_ApuControl {
   struct Input {
     bool APUV_4MHZ;

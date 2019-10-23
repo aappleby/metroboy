@@ -187,6 +187,7 @@
     <ClCompile Include="P1_ClocksReset_Hax.cpp" />
     <ClCompile Include="P1_Clocks_Reset.cpp" />
     <ClCompile Include="P21_VideoControl.cpp" />
+    <ClCompile Include="P22_PpuDecode.cpp" />
     <ClCompile Include="P2_Interrupts.cpp" />
     <ClCompile Include="P3_Timer.cpp" />
     <ClCompile Include="P4_DMA.cpp" />

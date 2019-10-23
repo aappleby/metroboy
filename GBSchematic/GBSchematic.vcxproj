@@ -183,6 +183,7 @@
     <ClCompile Include="MemBus.cpp" />
     <ClCompile Include="OAM.cpp" />
     <ClCompile Include="P10_ApuDecode.cpp" />
+    <ClCompile Include="P17_WaveRam.cpp" />
     <ClCompile Include="P1_ClocksReset_Hax.cpp" />
     <ClCompile Include="P1_Clocks_Reset.cpp" />
     <ClCompile Include="P2_Interrupts.cpp" />

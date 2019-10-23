@@ -47,20 +47,20 @@ struct P23_VideoRegs {
 
   void tick_videoregs(const Input& in, Output& out) {
     // FF40 LCDC
-    bool VYRE = and(in.FF40, in.CPU_RD2);
-    bool WARU = and(in.FF40, in.CPU_WR2);
-    bool WYCE = not(VYRE);
-    bool XUBO = not(WARU);
-    bool XARE = not(in.RESET7);
+    wire VYRE = and(in.FF40, in.CPU_RD2);
+    wire WARU = and(in.FF40, in.CPU_WR2);
+    wire WYCE = not(VYRE);
+    wire XUBO = not(WARU);
+    wire XARE = not(in.RESET7);
 
-    bool XYLO_Q = XYLO.tock(XUBO, XARE, in.D1);
-    bool XAFO_Q = XAFO.tock(XUBO, XARE, in.D3);
-    bool XYMO_Q = XYMO.tock(XUBO, XARE, in.D2);
-    bool XONA_Q = XONA.tock(XUBO, XARE, in.D7);
-    bool WYMO_Q = WYMO.tock(XUBO, XARE, in.D5);
-    bool WEXU_Q = WEXU.tock(XUBO, XARE, in.D4);
-    bool WOKY_Q = WOKY.tock(XUBO, XARE, in.D6);
-    bool VYXE_Q = VYXE.tock(XUBO, XARE, in.D0);
+    wire XYLO_Q = XYLO.tock(XUBO, XARE, in.D1);
+    wire XAFO_Q = XAFO.tock(XUBO, XARE, in.D3);
+    wire XYMO_Q = XYMO.tock(XUBO, XARE, in.D2);
+    wire XONA_Q = XONA.tock(XUBO, XARE, in.D7);
+    wire WYMO_Q = WYMO.tock(XUBO, XARE, in.D5);
+    wire WEXU_Q = WEXU.tock(XUBO, XARE, in.D4);
+    wire WOKY_Q = WOKY.tock(XUBO, XARE, in.D6);
+    wire VYXE_Q = VYXE.tock(XUBO, XARE, in.D0);
 
     out.FF40_D1 = XYLO_Q;
     out.FF40_D3 = XAFO_Q;
@@ -84,28 +84,28 @@ struct P23_VideoRegs {
     }
 
     // FF4B WX
-    bool WYZE = and(in.CPU_RD2, in.FF4B);
-    bool WUZA = and(in.CPU_WR2, in.FF4B);
-    bool VYCU = not(WYZE);
-    bool VOXU = not(WUZA);
+    wire WYZE = and(in.CPU_RD2, in.FF4B);
+    wire WUZA = and(in.CPU_WR2, in.FF4B);
+    wire VYCU = not(WYZE);
+    wire VOXU = not(WUZA);
 
-    bool MYCE_Q = MYCE.tock(VOXU, in.RESET8, in.D5);
-    bool MYPA_Q = MYPA.tock(VOXU, in.RESET8, in.D0);
-    bool NOFE_Q = NOFE.tock(VOXU, in.RESET8, in.D1);
-    bool NUKU_Q = NUKU.tock(VOXU, in.RESET8, in.D7);
-    bool MYPU_Q = MYPU.tock(VOXU, in.RESET8, in.D4);
-    bool MUVO_Q = MUVO.tock(VOXU, in.RESET8, in.D6);
-    bool MEBY_Q = MEBY.tock(VOXU, in.RESET8, in.D3);
-    bool NOKE_Q = NOKE.tock(VOXU, in.RESET8, in.D2);
+    wire MYCE_Q = MYCE.tock(VOXU, in.RESET8, in.D5);
+    wire MYPA_Q = MYPA.tock(VOXU, in.RESET8, in.D0);
+    wire NOFE_Q = NOFE.tock(VOXU, in.RESET8, in.D1);
+    wire NUKU_Q = NUKU.tock(VOXU, in.RESET8, in.D7);
+    wire MYPU_Q = MYPU.tock(VOXU, in.RESET8, in.D4);
+    wire MUVO_Q = MUVO.tock(VOXU, in.RESET8, in.D6);
+    wire MEBY_Q = MEBY.tock(VOXU, in.RESET8, in.D3);
+    wire NOKE_Q = NOKE.tock(VOXU, in.RESET8, in.D2);
 
-    bool MUFE = not(!MYCE_Q);
-    bool LOVA = not(!MYPA_Q);
-    bool MUKA = not(!NOFE_Q);
-    bool MARA = not(!NUKU_Q);
-    bool MELE = not(!MYPU_Q);
-    bool MULY = not(!MUVO_Q);
-    bool LOLE = not(!MEBY_Q);
-    bool MOKO = not(!NOKE_Q);
+    wire MUFE = not(!MYCE_Q);
+    wire LOVA = not(!MYPA_Q);
+    wire MUKA = not(!NOFE_Q);
+    wire MARA = not(!NUKU_Q);
+    wire MELE = not(!MYPU_Q);
+    wire MULY = not(!MUVO_Q);
+    wire LOLE = not(!MEBY_Q);
+    wire MOKO = not(!NOKE_Q);
 
     out.FF4B_D5 = MYCE_Q;
     out.FF4B_D0 = MYPA_Q;
@@ -129,18 +129,18 @@ struct P23_VideoRegs {
     }
 
     // FF4A WY
-    bool WAXU = and(in.CPU_RD2, in.FF4A);
-    bool WEKO = and(in.CPU_WR2, in.FF4A);
-    bool VEFU = not(WEKO);
+    wire WAXU = and(in.CPU_RD2, in.FF4A);
+    wire WEKO = and(in.CPU_WR2, in.FF4A);
+    wire VEFU = not(WEKO);
 
-    bool NAFU_Q = NAFU.tock(VEFU, in.RESET8, in.D7);
-    bool MELA_Q = MELA.tock(VEFU, in.RESET8, in.D3);
-    bool NYRO_Q = NYRO.tock(VEFU, in.RESET8, in.D1);
-    bool NAGA_Q = NAGA.tock(VEFU, in.RESET8, in.D2);
-    bool NULO_Q = NULO.tock(VEFU, in.RESET8, in.D4);
-    bool NUKA_Q = NUKA.tock(VEFU, in.RESET8, in.D6);
-    bool NENE_Q = NENE.tock(VEFU, in.RESET8, in.D5);
-    bool NESO_Q = NESO.tock(VEFU, in.RESET8, in.D0);
+    wire NAFU_Q = NAFU.tock(VEFU, in.RESET8, in.D7);
+    wire MELA_Q = MELA.tock(VEFU, in.RESET8, in.D3);
+    wire NYRO_Q = NYRO.tock(VEFU, in.RESET8, in.D1);
+    wire NAGA_Q = NAGA.tock(VEFU, in.RESET8, in.D2);
+    wire NULO_Q = NULO.tock(VEFU, in.RESET8, in.D4);
+    wire NUKA_Q = NUKA.tock(VEFU, in.RESET8, in.D6);
+    wire NENE_Q = NENE.tock(VEFU, in.RESET8, in.D5);
+    wire NESO_Q = NESO.tock(VEFU, in.RESET8, in.D0);
 
     out.FF4B_D7 = NAFU_Q;
     out.FF4B_D3 = MELA_Q;
@@ -151,16 +151,16 @@ struct P23_VideoRegs {
     out.FF4B_D5 = NENE_Q;
     out.FF4B_D0 = NESO_Q;
 
-    bool MERA = not(!NAFU_Q);
-    bool LOKA = not(!MELA_Q);
-    bool PODA = not(!NYRO_Q);
-    bool PYGU = not(!NAGA_Q);
-    bool MEGA = not(!NULO_Q);
-    bool POLO = not(!NUKA_Q);
-    bool PELA = not(!NENE_Q);
-    bool PUNU = not(!NESO_Q);
+    wire MERA = not(!NAFU_Q);
+    wire LOKA = not(!MELA_Q);
+    wire PODA = not(!NYRO_Q);
+    wire PYGU = not(!NAGA_Q);
+    wire MEGA = not(!NULO_Q);
+    wire POLO = not(!NUKA_Q);
+    wire PELA = not(!NENE_Q);
+    wire PUNU = not(!NESO_Q);
 
-    bool VOMY = not(WAXU);
+    wire VOMY = not(WAXU);
     if (VOMY) {
       out.D_OE = true;
       out.D7 = MERA;
@@ -174,18 +174,18 @@ struct P23_VideoRegs {
     }
 
     // FF43 SCX
-    bool AVOG = and(in.FF43, in.CPU_RD2);
-    bool ARUR = and(in.FF43, in.CPU_WR2);
-    bool AMUN = not(ARUR);
+    wire AVOG = and(in.FF43, in.CPU_RD2);
+    wire ARUR = and(in.FF43, in.CPU_WR2);
+    wire AMUN = not(ARUR);
 
-    bool CYXU_Q = CYXU.tock(AMUN, in.RESET6, in.D2);
-    bool BAKE_Q = BAKE.tock(AMUN, in.RESET6, in.D7);
-    bool BEMY_Q = BEMY.tock(AMUN, in.RESET6, in.D4);
-    bool CUZY_Q = CUZY.tock(AMUN, in.RESET6, in.D5);
-    bool CABU_Q = CABU.tock(AMUN, in.RESET6, in.D6);
-    bool DUZU_Q = DUZU.tock(AMUN, in.RESET6, in.D1);
-    bool DATY_Q = DATY.tock(AMUN, in.RESET6, in.D0);
-    bool GUBO_Q = GUBO.tock(AMUN, in.RESET6, in.D3);
+    wire CYXU_Q = CYXU.tock(AMUN, in.RESET6, in.D2);
+    wire BAKE_Q = BAKE.tock(AMUN, in.RESET6, in.D7);
+    wire BEMY_Q = BEMY.tock(AMUN, in.RESET6, in.D4);
+    wire CUZY_Q = CUZY.tock(AMUN, in.RESET6, in.D5);
+    wire CABU_Q = CABU.tock(AMUN, in.RESET6, in.D6);
+    wire DUZU_Q = DUZU.tock(AMUN, in.RESET6, in.D1);
+    wire DATY_Q = DATY.tock(AMUN, in.RESET6, in.D0);
+    wire GUBO_Q = GUBO.tock(AMUN, in.RESET6, in.D3);
 
     out.FF43_D2 = CYXU_Q;
     out.FF43_D7 = BAKE_Q;
@@ -196,16 +196,16 @@ struct P23_VideoRegs {
     out.FF43_D0 = DATY_Q;
     out.FF43_D3 = GUBO_Q;
 
-    bool CUGA = not(!CYXU_Q);
-    bool CASY = not(!BAKE_Q);
-    bool CEDU = not(!BEMY_Q);
-    bool CATA = not(!CUZY_Q);
-    bool DOXE = not(!CABU_Q);
-    bool EKOB = not(!DUZU_Q);
-    bool EDOS = not(!DATY_Q);
-    bool WONY = not(!GUBO_Q);
+    wire CUGA = not(!CYXU_Q);
+    wire CASY = not(!BAKE_Q);
+    wire CEDU = not(!BEMY_Q);
+    wire CATA = not(!CUZY_Q);
+    wire DOXE = not(!CABU_Q);
+    wire EKOB = not(!DUZU_Q);
+    wire EDOS = not(!DATY_Q);
+    wire WONY = not(!GUBO_Q);
 
-    bool BEBA = not(AVOG);
+    wire BEBA = not(AVOG);
     if (BEBA) {
       out.D_OE = true;
       out.D2 = CUGA;
@@ -219,18 +219,18 @@ struct P23_VideoRegs {
     }
 
     // FF42 SCY
-    bool ANYP = and(in.CPU_RD2, in.FF42);
-    bool BEDY = and(in.CPU_WR2, in.FF42);
-    bool CAVO = not(BEDY);
+    wire ANYP = and(in.CPU_RD2, in.FF42);
+    wire BEDY = and(in.CPU_WR2, in.FF42);
+    wire CAVO = not(BEDY);
 
-    bool FEZU_Q = FEZU.tock(CAVO, in.RESET6, in.D2);
-    bool FUNY_Q = FUNY.tock(CAVO, in.RESET6, in.D7);
-    bool DEDE_Q = DEDE.tock(CAVO, in.RESET6, in.D4);
-    bool FOTY_Q = FOTY.tock(CAVO, in.RESET6, in.D5);
-    bool FOHA_Q = FOHA.tock(CAVO, in.RESET6, in.D6);
-    bool FYMO_Q = FYMO.tock(CAVO, in.RESET6, in.D1);
-    bool GAVE_Q = GAVE.tock(CAVO, in.RESET6, in.D0);
-    bool FUJO_Q = FUJO.tock(CAVO, in.RESET6, in.D3);
+    wire FEZU_Q = FEZU.tock(CAVO, in.RESET6, in.D2);
+    wire FUNY_Q = FUNY.tock(CAVO, in.RESET6, in.D7);
+    wire DEDE_Q = DEDE.tock(CAVO, in.RESET6, in.D4);
+    wire FOTY_Q = FOTY.tock(CAVO, in.RESET6, in.D5);
+    wire FOHA_Q = FOHA.tock(CAVO, in.RESET6, in.D6);
+    wire FYMO_Q = FYMO.tock(CAVO, in.RESET6, in.D1);
+    wire GAVE_Q = GAVE.tock(CAVO, in.RESET6, in.D0);
+    wire FUJO_Q = FUJO.tock(CAVO, in.RESET6, in.D3);
 
     out.FF42_D2 = FEZU_Q;
     out.FF42_D7 = FUNY_Q;
@@ -241,16 +241,16 @@ struct P23_VideoRegs {
     out.FF42_D0 = GAVE_Q;
     out.FF42_D3 = FUJO_Q;
 
-    bool GONU = not(!FEZU_Q);
-    bool GYZA = not(!FUNY_Q);
-    bool CUSA = not(!DEDE_Q);
-    bool GYZO = not(!FOTY_Q);
-    bool GUNE = not(!FOHA_Q);
-    bool GOBA = not(!FYMO_Q);
-    bool WARE = not(!GAVE_Q);
-    bool GODO = not(!FUJO_Q);
+    wire GONU = not(!FEZU_Q);
+    wire GYZA = not(!FUNY_Q);
+    wire CUSA = not(!DEDE_Q);
+    wire GYZO = not(!FOTY_Q);
+    wire GUNE = not(!FOHA_Q);
+    wire GOBA = not(!FYMO_Q);
+    wire WARE = not(!GAVE_Q);
+    wire GODO = not(!FUJO_Q);
 
-    bool BUWY = not(ANYP);
+    wire BUWY = not(ANYP);
     if (BUWY) {
       out.D_OE = true;
       out.D2 = GONU;
@@ -264,18 +264,18 @@ struct P23_VideoRegs {
     }
 
     // FF45 LYC
-    bool XYLY = and(in.CPU_RD2, in.FF45);
-    bool XUFA = and(in.CPU_WR2, in.FF45);
-    bool WANE = not(XUFA);
+    wire XYLY = and(in.CPU_RD2, in.FF45);
+    wire XUFA = and(in.CPU_WR2, in.FF45);
+    wire WANE = not(XUFA);
 
-    bool SOTA_Q = SOTA.tock(WANE, in.RESET9, in.D4);
-    bool SYRY_Q = SYRY.tock(WANE, in.RESET9, in.D0);
-    bool SALO_Q = SALO.tock(WANE, in.RESET9, in.D3);
-    bool SEDY_Q = SEDY.tock(WANE, in.RESET9, in.D2);
-    bool VEVO_Q = VEVO.tock(WANE, in.RESET9, in.D6);
-    bool VAFA_Q = VAFA.tock(WANE, in.RESET9, in.D5);
-    bool VUCE_Q = VUCE.tock(WANE, in.RESET9, in.D1);
-    bool RAHA_Q = RAHA.tock(WANE, in.RESET9, in.D7);
+    wire SOTA_Q = SOTA.tock(WANE, in.RESET9, in.D4);
+    wire SYRY_Q = SYRY.tock(WANE, in.RESET9, in.D0);
+    wire SALO_Q = SALO.tock(WANE, in.RESET9, in.D3);
+    wire SEDY_Q = SEDY.tock(WANE, in.RESET9, in.D2);
+    wire VEVO_Q = VEVO.tock(WANE, in.RESET9, in.D6);
+    wire VAFA_Q = VAFA.tock(WANE, in.RESET9, in.D5);
+    wire VUCE_Q = VUCE.tock(WANE, in.RESET9, in.D1);
+    wire RAHA_Q = RAHA.tock(WANE, in.RESET9, in.D7);
 
     out.FF45_D4 = SOTA_Q;
     out.FF45_D0 = SYRY_Q;
@@ -286,16 +286,16 @@ struct P23_VideoRegs {
     out.FF45_D1 = VUCE_Q;
     out.FF45_D7 = RAHA_Q;
 
-    bool RACE = not(!SOTA_Q);
-    bool RETU = not(!SYRY_Q);
-    bool REDY = not(!SALO_Q);
-    bool RAZU = not(!SEDY_Q);
-    bool VAFE = not(!VEVO_Q);
-    bool VAZU = not(!VAFA_Q);
-    bool VOJO = not(!VUCE_Q);
-    bool PUFY = not(!RAHA_Q);
+    wire RACE = not(!SOTA_Q);
+    wire RETU = not(!SYRY_Q);
+    wire REDY = not(!SALO_Q);
+    wire RAZU = not(!SEDY_Q);
+    wire VAFE = not(!VEVO_Q);
+    wire VAZU = not(!VAFA_Q);
+    wire VOJO = not(!VUCE_Q);
+    wire PUFY = not(!RAHA_Q);
 
-    bool WEKU = not(XYLY);
+    wire WEKU = not(XYLY);
     if (WEKU) {
       out.D_OE = true;
       out.D4 = RACE;
@@ -309,27 +309,27 @@ struct P23_VideoRegs {
     }
 
     // FF44 LY
-    bool WAFU = and(in.CPU_RD2, in.FF44);
+    wire WAFU = and(in.CPU_RD2, in.FF44);
 
-    bool WATA = not(in.V4);
-    bool XAGA = not(in.V5);
-    bool XEPO = not(in.V1);
-    bool XUHY = not(in.V3);
-    bool XOWO = not(in.V7);
-    bool XUCE = not(in.V6);
-    bool WURY = not(in.V0);
-    bool MYFA = not(in.V2);
+    wire WATA = not(in.V4);
+    wire XAGA = not(in.V5);
+    wire XEPO = not(in.V1);
+    wire XUHY = not(in.V3);
+    wire XOWO = not(in.V7);
+    wire XUCE = not(in.V6);
+    wire WURY = not(in.V0);
+    wire MYFA = not(in.V2);
 
-    bool VYNE = not(WATA);
-    bool WAMA = not(XAGA);
-    bool WUVA = not(XEPO);
-    bool WOJY = not(XUHY);
-    bool WEZE = not(XOWO);
-    bool WAVO = not(XUCE);
-    bool VEGA = not(WURY);
-    bool LYCO = not(MYFA);
+    wire VYNE = not(WATA);
+    wire WAMA = not(XAGA);
+    wire WUVA = not(XEPO);
+    wire WOJY = not(XUHY);
+    wire WEZE = not(XOWO);
+    wire WAVO = not(XUCE);
+    wire VEGA = not(WURY);
+    wire LYCO = not(MYFA);
 
-    bool VARO = not(WAFU);
+    wire VARO = not(WAFU);
     if (VARO) {
       out.D_OE = true;
       out.D4 = VYNE;

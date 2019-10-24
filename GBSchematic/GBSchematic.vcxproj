@@ -202,6 +202,7 @@
     <ClCompile Include="P33_SpritePixelShifter.cpp" />
     <ClCompile Include="P34_SpritePaletteShifter.cpp" />
     <ClCompile Include="P35_PixelMux.cpp" />
+    <ClCompile Include="P36_Palettes.cpp" />
     <ClCompile Include="P3_Timer.cpp" />
     <ClCompile Include="P4_DMA.cpp" />
     <ClCompile Include="P5_Joypad_IO.cpp" />

@@ -7,13 +7,15 @@
 struct P1_ClocksReset {
 
   struct Input {
+    // physical pins
+    bool CPU_RD;
+    bool CPU_WR;
     bool RESET;       // active high!
     bool CLKIN_A;     // this is actually CLOCK_GOOD or similar
     bool CLKIN_B;     // the master 4mhz clock
+
     bool ABOL_1MHZ;   // this is actually CPU_RESET or similar
     bool AJER_2MHZ;   // on apu sheet
-    bool CPU_RD;
-    bool CPU_WR;
     bool FROM_CPU3;
     bool FROM_CPU4;
     bool APU_RESET;

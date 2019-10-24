@@ -199,6 +199,7 @@
     <ClCompile Include="P30_SpriteStore.cpp" />
     <ClCompile Include="P31_SpriteXMatchers.cpp" />
     <ClCompile Include="P32_BgPixelShifter.cpp" />
+    <ClCompile Include="P33_SpritePixelShifter.cpp" />
     <ClCompile Include="P3_Timer.cpp" />
     <ClCompile Include="P4_DMA.cpp" />
     <ClCompile Include="P5_Joypad_IO.cpp" />

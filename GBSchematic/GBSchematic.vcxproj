@@ -194,6 +194,7 @@
     <ClCompile Include="P26_Background.cpp" />
     <ClCompile Include="P27_WindowMapLookup.cpp" />
     <ClCompile Include="P28_OAM.cpp" />
+    <ClCompile Include="P29_SpriteControl.cpp" />
     <ClCompile Include="P2_Interrupts.cpp" />
     <ClCompile Include="P3_Timer.cpp" />
     <ClCompile Include="P4_DMA.cpp" />

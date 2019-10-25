@@ -11,7 +11,6 @@ struct P14_Ch2Regs {
     bool APU_RESET2n;
     bool APU_RESET;
     bool ELOX_Q;
-    bool CPU_WRQ;
     bool NET03;
     bool DERA_OUT;
     bool GANE_QN;
@@ -101,14 +100,16 @@ struct P14_Ch2Regs {
     //----------
     // FF17 NR22
 
-    bool ENUF = and(in.FF17, in.CPU_WRQ);
+    // BUG APU_WR
+    bool ENUF = and(in.FF17, in.APU_WR);
     bool JYBU = not(in.APU_RESET);
     bool FYRY = not(in.FF17);
     bool GURU = or(FYRY, in.CPU_RDn);
     
     bool GURE = not(in.FF17);
     bool GEXA = or(GURE, in.CPU_RDn);
-    bool GERE = and(in.CPU_WRQ, in.FF17);
+    // BUG APU_WR
+    bool GERE = and(in.APU_WR, in.FF17);
     bool JEDE = not(GERE);
 
     bool GATA_Q = GATA.tock(ENUF, JYBU, in.D4);
@@ -148,10 +149,13 @@ struct P14_Ch2Regs {
     //----------
     // FF18 NR23
 
-    bool DOSA = and(in.FF18, in.CPU_WRQ);
+    // BUG - APU_WR
+    bool DOSA = and(in.FF18, in.APU_WR);
     bool HUDE = not(in.APU_RESET);
     bool ESUR = not(DOSA);
-    bool EXUC = and(in.FF18, in.CPU_WRQ);
+
+    // BUG - APU_WR
+    bool EXUC = and(in.FF18, in.APU_WR);
     bool FYXO = not(EXUC);
     bool FERY = not(in.DUCE);
     bool GUZA = nor(FERY, FAPE);
@@ -205,7 +209,8 @@ struct P14_Ch2Regs {
     // FF19 NR24
 
     bool KYPU = not(in.APU_RESET);
-    bool JENU = and(in.FF19, in.CPU_WRQ);
+    // BUG APU_WR
+    bool JENU = and(in.FF19, in.APU_WR);
     bool KYSA = not(JENU);
 
     bool JUPY_Q = JUPY.tock(KYSA, KYPU, in.D2);
@@ -216,7 +221,8 @@ struct P14_Ch2Regs {
     out.FF19_D1 = JANY_Q;
     out.FF19_D0 = JEFU_Q;
 
-    bool DETA = nand(in.CPU_WRQ, in.FF19);
+    // BUG APU_WR
+    bool DETA = nand(in.APU_WR, in.FF19);
     bool GOTE = not(in.FF19);
     bool ETAP_Q = ETAP.tock(DETA, in.DERA_OUT, in.D7);
     out.FF19_D0 = ETAP_Q;

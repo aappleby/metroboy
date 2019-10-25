@@ -9,15 +9,72 @@ overlay trace CPU_WR?
 TUTU = and(TERA, TULO);
 SOBY = nor(in.A15, TUTU);
 CPU_INsomething = TUTU
+YULA = and(YAZA, TUTU, CPU_RD)
 
 
+cells connected to APU_WR (driven by BOGY)
+  ?CAZE
+  ?HUDA
+  ?HAGA
+  ?HOSO
+  +CENU
+  +BORO
+  +BYZA
+  +AGYN
+  +GAXU - FF12, apu_wr (stroke error), 
+  +HAFU - APU_WR (stroke), FF12(stroke), 
+  +BACU - APU_WR(over), FF16 (in pieces)
+  xBOSU
+  xDEBY
+  xDOSA
+  xDEPU - APU_WR(stroke), FF13
+   EXUC (missing stroke))
+   ETUC (overlap)
+   ENUF (overlap)
+   GERE (overlap)
+   HAWY (overlap)
+   JAFA (overlap)
+   JONA (overlap)
+   EPYX (overlap)
+   BUPO (overlap)
+   BOGY (overlap output)
+   BOPY (overlap)
+   BACU (overlap)
+   CAZU (overlap)
+   COVU (overlap)
+   CUZU (overlap)
+   DACO (overlap)
+   DERY (overlap)
+   DETA (overlap)
+   EPYX (overlap)
+   ENUF (overlap)
+   FOXE (overlap)
+   FAVY (overlap)
+   FOMY (overlap)
+   GERE (overlap)
+   GOKO (overlap)
+   GETU (overlap)
+   HUMO (overlap)
+   HAWU (overlap)
+   JONA (overlap)
+   JAVA (overlap)
+   DOGE (missing stroke)
+   JENU (missing stroke)
+   (some wires aren't traced on overlay)
 
 yeah these totally don't match
 
+EXUC should also be APU_WR? but didn't see on schematic?
+
+//-----------------------------------------------------------------
 // schematic
 
 wire SOBY = nor(in.A15, in.CPU_WRQ); // schematic has a question mark?
+wire SEPY = nand(in.ABUZ, SOBY);
 
+
+bool TERA = not(TEPU_Q);
+bool TULO = nor(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A9, in.A8);
 bool TUTU = and(TERA, TULO);
 
 bool YAZA = not(out.T1T2n);
@@ -27,52 +84,19 @@ bool YULA = and(YAZA, TUTU, out.CPU_RD);
 
 
 
+references to APU_WR
+    out.APU_WR = BOGY;
+    +wire CENU = and(in.APU_WR, in.FF10);
+    +wire GAXU = nand(in.FF12, in.APU_WR);
+    +wire HAFU = and(in.APU_WR, in.FF12);
+    +bool BORO = nand(in.APU_WR, in.FF11);
+    +bool AGYN = nand(in.APU_WR, in.FF16);
+    +bool BACU = and(in.FF16, in.APU_WR);
+    +wire BYZA = and(in.APU_WR, in.FF3X);
 
 
-
-
-
-
-
-
-
-
-
-
-
-wire BAFU = not(in.CPU_WR);
-wire BOGY = not(BAFU);
-out.APU_WR = BOGY;
-
-wire HAWU = nand(in.FF26, in.CPU_WRQ);
-wire BOPY = nand(in.CPU_WRQ, in.FF26);
-
-
-
-wire SOBY = nor(in.A15, in.CPU_WRQ); // schematic has a question mark?
-wire SEPY = nand(in.ABUZ, SOBY);
-wire SEPY = or(in.A15, in.CPU_WRQ);
-
-
-bool TERA = not(TEPU_Q);
-bool TULO = nor(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A9, in.A8);
-bool TUTU = and(TERA, TULO);
-    
-// these two cells are weirdly off by themselves next to wave ram
-bool YAZA = not(out.T1T2n);
-
-
-
-wire JURE = nand(KYDU, in.FF26);
-wire ETUC = and(in.CPU_WRQ, in.FF26);
-wire KAMU = nand(in.FF26, KAZO);
-
-
-
-
-bool DOSA = and(in.CPU_WRQ, in.FF18);
-bool AGYN = nand(in.APU_WR, in.FF16);
-bool BORO = nand(in.APU_WR, in.FF11);
-wire BYZA = and(in.APU_WR,  in.FF3X);
-wire DEBY = and(in.CPU_WRQ, in.FF14);
-wire CENU = and(in.APU_WR,  in.FF10); // schematic image cut off, this could be APU_WR or CPU_WR
+missing references to APU_WR
+    wire BOSU = nand(in.FF24, in.CPU_WRQ);
+    wire DEBY = and(in.CPU_WRQ, in.FF14);
+    wire DOSA = and(in.FF18, in.CPU_WRQ);
+    wire DEPU = nand(in.CPU_WRQ, in.FF13);

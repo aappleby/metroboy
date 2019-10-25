@@ -9,7 +9,6 @@ struct P13_Channel1 {
     bool HORU_512HZ;
     bool ABOL_1MHZ;
     bool PHIn;
-    bool CPU_WRQ;
     bool CEPO;
     bool COPE;
     bool AJER_2MHZ;
@@ -189,7 +188,8 @@ struct P13_Channel1 {
 
 
     bool EZEC_Q = EZEC.q();
-    bool DOGE = nand(in.CPU_WRQ, in.FF14_D6);
+    // BUG - APU_WR
+    bool DOGE = nand(in.APU_WR, in.FF14_D6);
     bool DADO = nor(in.APU_RESET, EZEC_Q);
     bool DUPE_Q = DUPE.tock(DOGE, DADO, in.D7);
     bool DUKA = not(in.APU_RESET);

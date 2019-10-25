@@ -9,7 +9,6 @@ struct P8_ExtCpuBuses {
     bool CPU_RD;
     bool CPU_RD_SYNC;
     bool CPU_RAW_RD;
-    bool CPU_WRQ; // must be one of the signals from the cpu, but I don't thnk it's a write
 
     bool FROM_CPU3;
     bool FROM_CPU4;
@@ -20,6 +19,7 @@ struct P8_ExtCpuBuses {
     bool FEXXFFXXn;
     bool NET02;
 
+    bool TUTU; // P07, this is the "use bootrom" signal
     bool LUMA;
     bool ABUZ; // P01, controlled by FROM_CPU4
 
@@ -42,7 +42,7 @@ struct P8_ExtCpuBuses {
     bool RD_A;
     bool RD_C;
 
-    bool NET01;
+    bool NET01;  // equal to not(T1nT2)
 
     bool TOLA_A1n;
 
@@ -75,7 +75,7 @@ struct P8_ExtCpuBuses {
     out.NET01 = TOVA;
 
     //----------
-    // center right
+    // center right, generating the external read/write signals to the cart
 
     wire SORE = not(in.A15);
     wire TEVY = and(in.A13, in.A14, SORE);
@@ -119,7 +119,12 @@ struct P8_ExtCpuBuses {
     wire TUMA = and(in.A13, SOGY, in.A15);
     wire TYNU = unk3(in.A15, in.A14, TUMA);
     wire TOZA = and(TYNU, in.ABUZ, in.FEXXFFXXn);
-    wire SOBY = nor(in.A15, in.CPU_WRQ); // schematic has a question mark?
+
+    // BUG this is from TUTU, not CPU_WRQ
+    // TUTU is the "use bootrom" signal, so this is saying "if our address is
+    // not in the high half and we're not running the bootrom, read from the
+    // cart
+    wire SOBY = nor(in.A15, in.TUTU);
     wire SEPY = nand(in.ABUZ, SOBY);
 
     wire TYHO = mux2(in.DMA_A15, TOZA, in.LUMA);

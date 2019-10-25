@@ -183,7 +183,7 @@ struct P25_VramInterface {
     wire SYRO = not(in.FEXXFFXXn);
     wire TEFA = nor(SYRO, in.TEXO);
     wire SOSE = and(in.A15, TEFA); // odd...
-    wire TUCA = and(SOSE, in.ABUZ);
+    wire TUCA = and(SOSE, in.ABUZ); // ABUZ is a clocky type signal from P01, but that doesn't make sense
     wire TUJA = and(SOSE, in.CPU_RD_SYNC);
     wire TEGU = and(SOSE, in.AFAS);
     wire TAVY = not(in.MOE_IN);

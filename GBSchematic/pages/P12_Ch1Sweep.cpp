@@ -6,7 +6,7 @@
 
 struct P11_Ch1Sweep {
   struct Input {
-    bool CPU_WRQ;
+    bool APU_WR;
     bool FF14;
     bool FF13;
     bool APU_RESET;
@@ -38,8 +38,9 @@ struct P11_Ch1Sweep {
 
   void tick(const Input& in, Output& out) {
 
-    wire DEPU = nand(in.CPU_WRQ, in.FF13);
-    wire DEBY = and(in.CPU_WRQ, in.FF14);
+    // BUG - APU_WR
+    wire DEPU = nand(in.APU_WR, in.FF13);
+    wire DEBY = and(in.APU_WR, in.FF14);
     wire DYLA = not(DEPU);
 
     wire BYFU = not(in.D2);

@@ -118,6 +118,8 @@ struct P7_Sys_Decode {
     TEPU.tock(TUGE, in.RESET2, SATO);
     bool TERA = not(TEPU_Q);
     bool TULO = nor(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A9, in.A8);
+
+    // this is the "use bootrom" signal
     bool TUTU = and(TERA, TULO);
     
     // these two cells are weirdly off by themselves next to wave ram

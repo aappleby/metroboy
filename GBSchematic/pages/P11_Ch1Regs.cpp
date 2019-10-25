@@ -11,7 +11,6 @@ struct P11_Ch1Regs {
 
     bool CPU_RD;
     bool CPU_RDn;
-    bool CPU_WRQ;
     bool CPU_WR;
     bool APU_WR;
 
@@ -101,7 +100,8 @@ struct P11_Ch1Regs {
     //----------
     // FF11 NR11
 
-    wire COVU = and(in.CPU_WRQ, in.FF11);
+    // BUG APU_WR
+    wire COVU = and(in.APU_WR, in.FF11);
     wire CEPO = not(in.APU_RESET);
     wire DAFO = not(COVU);
     wire CENA_Q = CENA.tock(DAFO, CEPO, in.D6);

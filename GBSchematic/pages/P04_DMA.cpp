@@ -21,7 +21,7 @@ struct P4_DMA {
     bool CATY;
     bool WYJA;
     bool MOPA_PHI;
-    bool LUMA;
+    bool LUMA;    // This is the "DMA READING NOW" signal, it overrides the cpu on the cart wr/rd pins
     bool OAM_ADDR_DMA;
     bool VRAM_TO_OAM;
 

@@ -11,7 +11,7 @@ struct P9_ApuControl {
     bool RESET2;
 
     bool CPU_RD;
-    bool CPU_WRQ;
+    bool APU_WR;
     bool FROM_CPU;
 
     bool FF24;
@@ -90,8 +90,9 @@ struct P9_ApuControl {
     //----------
     // main logic chunk
 
-    wire HAWU = nand(in.FF26, in.CPU_WRQ);
-    wire BOPY = nand(in.CPU_WRQ, in.FF26);
+    // BUG - APU_WR
+    wire HAWU = nand(in.FF26, in.APU_WR);
+    wire BOPY = nand(in.APU_WR, in.FF26);
     wire HAPO = not(in.RESET2);
 
     wire GUFO = not(HAPO);
@@ -104,7 +105,8 @@ struct P9_ApuControl {
     wire KEBA = not(KUBY);
     out.APU_RESET = KEBA;
 
-    wire ETUC = and(in.CPU_WRQ, in.FF26);
+    // BUG - APU_WR
+    wire ETUC = and(in.APU_WR, in.FF26);
     wire EFOP = and(in.D4, in.FROM_CPU);
     wire FOKU = not(ETUC);
     out.FERO_Q = FERO.tock(FOKU, KEPY, EFOP);
@@ -134,7 +136,8 @@ struct P9_ApuControl {
     wire BEFU = nor(AGUZ, BYMA);
     wire ADAK = not(BEFU);
 
-    wire BOSU = nand(in.FF24, in.CPU_WRQ);
+    // BUG - APU_WR
+    wire BOSU = nand(in.FF24, in.APU_WR);
     wire BAXY = not(BOSU);
     wire BUBU = not(BAXY);
     wire BOWE = not(BOSU);
@@ -173,7 +176,8 @@ struct P9_ApuControl {
     //----------
     // FF25 NR51
 
-    wire BUPO = nand(in.FF25, in.CPU_WRQ);
+    // BUG APU_WR
+    wire BUPO = nand(in.FF25, in.APU_WR);
     wire BONO = not(BUPO);
     wire BYFA = not(BUPO);
 

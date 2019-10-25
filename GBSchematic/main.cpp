@@ -191,7 +191,7 @@ void loop() {
     in.FF40_D7 = false;
     in.FF60_D1 = false;
 
-    timer.tock(in, tp);
+    timer.tock1(in, tp);
   }
 
   std::string temp;

@@ -13,7 +13,7 @@ struct P7_Sys_Decode {
     bool RESET;
     bool CPU_WR_RAW;
     bool ANAP;
-    bool NET02;
+    bool NET02; // FIXME this should be T1nT2
     bool WR_IN;
     bool CPU_RD_SYNC;
     bool CPU_RAW_RD;
@@ -119,8 +119,11 @@ struct P7_Sys_Decode {
     bool TERA = not(TEPU_Q);
     bool TULO = nor(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A9, in.A8);
     bool TUTU = and(TERA, TULO);
+    
+    // these two cells are weirdly off by themselves next to wave ram
     bool YAZA = not(out.T1T2n);
     bool YULA = and(YAZA, TUTU, out.CPU_RD);
+
     bool ZORO = nor(in.A15, in.A14, in.A13, in.A12);
     bool ZADU = nor(in.A11, in.A10, in.A9, in.A8);
     bool ZUFA = and(ZORO, ZADU);

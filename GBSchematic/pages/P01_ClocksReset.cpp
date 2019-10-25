@@ -16,8 +16,8 @@ struct P1_ClocksReset {
 
     bool ABOL_1MHZ;   // this is actually CPU_RESET or similar
     bool AJER_2MHZ;   // on apu sheet
-    bool FROM_CPU3;
-    bool FROM_CPU4;
+    bool FROM_CPU3;   // this is the cpu's read signal
+    bool FROM_CPU4;   // controls ABUZ
     bool APU_RESET;
     bool APU_RESET5n;
     bool FERO_Q;      // something debug-related
@@ -67,6 +67,8 @@ struct P1_ClocksReset {
     bool BUKE;
     bool ABUZ;
     bool AFAS;
+
+    bool D_OE;
     bool D0,D1,D2,D3,D4,D5,D6,D7;
   };
 
@@ -105,11 +107,6 @@ struct P1_ClocksReset {
     wire TEKA_Q = TEKA.q();
     wire UKET_Q = UKET.q();
     wire UPOF_Q = UPOF.q();
-
-    wire ADYK_Q = ADYK.q();
-    wire AFUR_Q = AFUR.q();
-    wire ALEF_Q = ALEF.q();
-    wire APUK_Q = APUK.q();
 
     wire AFER_Q = AFER.q();
 
@@ -157,6 +154,11 @@ struct P1_ClocksReset {
 
     //----------
     // top left
+
+    wire ADYK_Q = ADYK.q();
+    wire AFUR_Q = AFUR.q();
+    wire ALEF_Q = ALEF.q();
+    wire APUK_Q = APUK.q();
 
     wire ADAR = not(ADYK_Q);
     wire ATYP = not(AFUR_Q);
@@ -266,6 +268,7 @@ struct P1_ClocksReset {
     wire TATU = not(UDOR);
 
     // so this is not quite right...
+    wire D_OE = TAGY;
     wire D0 = TAGY ? TAWU : 0;
     wire D1 = TAGY ? TAKU : 0;
     wire D2 = TAGY ? TEMU : 0;
@@ -400,6 +403,7 @@ struct P1_ClocksReset {
     out.BUKE = BUKE;
     out.ABUZ = ABUZ;
     out.AFAS = AFAS;
+    out.D_OE = D_OE;
     out.D0 = D0;
     out.D1 = D1;
     out.D2 = D2;

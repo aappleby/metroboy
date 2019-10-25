@@ -93,17 +93,20 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>$(SolutionDir)/SDL2</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalDependencies>SDL2.lib;SDL2Main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\SDL2\lib\x64</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -167,9 +170,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\TextPainter.cpp" />
     <ClCompile Include="AddressDecoder.cpp" />
     <ClCompile Include="APU.cpp" />
-    <ClCompile Include="APU_Ch1.cpp" />
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Clocks.cpp" />
     <ClCompile Include="CpuBus.cpp" />
@@ -231,6 +234,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\TextPainter.h" />
     <ClInclude Include="AddressDecoder.h" />
     <ClInclude Include="APU.h" />
     <ClInclude Include="Background.h" />

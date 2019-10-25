@@ -9,7 +9,7 @@ struct P8_ExtCpuBuses {
     bool CPU_RD;
     bool CPU_RD_SYNC;
     bool CPU_RAW_RD;
-    bool CPU_WRQ;
+    bool CPU_WRQ; // must be one of the signals from the cpu, but I don't thnk it's a write
 
     bool FROM_CPU3;
     bool FROM_CPU4;
@@ -21,7 +21,7 @@ struct P8_ExtCpuBuses {
     bool NET02;
 
     bool LUMA;
-    bool ABUZ;
+    bool ABUZ; // P01, controlled by FROM_CPU4
 
     // wat?
     bool A15_C;
@@ -79,6 +79,7 @@ struct P8_ExtCpuBuses {
 
     wire SORE = not(in.A15);
     wire TEVY = and(in.A13, in.A14, SORE);
+
     wire TEXO = and(in.FROM_CPU4, TEVY);
     wire LEVO = not(TEXO);
     wire LAGU = unk3(in.CPU_RAW_RD, LEVO, in.FROM_CPU3);

@@ -8,23 +8,6 @@
 
 namespace {
 
-void r(int i, int y, const char* name, int v) {
-  if (i == 0) {
-    printf("\033[%d;%dH%s", y, 0, name);
-  }
-
-  printf("\033[%d;%dH%c", y, i + 15 + (i/8), v ? 219 : 176);
-}
-
-void print_at(int x, int y, const char *format, ...)
-{
-  va_list args;
-  va_start(args, format);
-  printf("\033[%d;%dH", y, x);
-  vprintf(format, args);
-  va_end(args);
-}
-
 //-----------------------------------------------------------------------------
 
 struct P1_ClocksReset {
@@ -59,8 +42,8 @@ struct P1_ClocksReset {
 
   void tick(int i);
 
-  Input in;
-  Output out;
+  Input in = {};
+  Output out = {};
 
   // 1mhz phase generator
   reg ADYK,AFUR,ALEF,APUK;

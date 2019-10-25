@@ -4,6 +4,23 @@
 #include <stdio.h>
 #include "Register.h"
 
+inline void r(int i, int y, const char* name, int v) {
+  if (i == 0) {
+    printf("\033[%d;%dH%s", y, 0, name);
+  }
+
+  printf("\033[%d;%dH%c", y, i + 15 + (i/8), v ? 219 : 176);
+}
+
+inline void print_at(int x, int y, const char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  printf("\033[%d;%dH", y, x);
+  vprintf(format, args);
+  va_end(args);
+}
+
 typedef const bool wire;
 
 template<typename T> const T and(const T a, const T b) { return a & b; }
@@ -11,8 +28,8 @@ template<typename T> const T or (const T a, const T b) { return a | b; }
 template<typename T> const T xor(const T a, const T b) { return a ^ b; }
 
 template<typename T, typename... Args> const T and (const T first, Args... args) { return first & and(args...); }
-template<typename T, typename... Args> const T or  (const T first, Args... args) { return first | and(args...); }
-template<typename T, typename... Args> const T xor (const T first, Args... args) { return first ^ and(args...); }
+template<typename T, typename... Args> const T or  (const T first, Args... args) { return first | or(args...); }
+template<typename T, typename... Args> const T xor (const T first, Args... args) { return first ^ xor(args...); }
 template<typename T, typename... Args> const T nor (const T first, Args... args) { return !or(first, args...); }
 template<typename T, typename... Args> const T nand(const T first, Args... args) { return !and(first, args...); }
 
@@ -21,7 +38,7 @@ inline const wire mux2 (wire m, wire a, wire b)   { return m ? a : b; }
 
 // definitely not right...
 inline wire unk2 (wire a, wire b)                 { return a ^ b; }
-inline wire unk3 (wire a, wire b, wire c)         { return a ^ b ^ c; }
+inline wire unk3 (wire a, wire b, wire c)         { /*return a ^ b ^ c;*/  return (a & b) | c; }
 inline wire unk1 (wire a, wire b, wire c, wire d) { return a ^ b ^ c ^ d; }
 
 inline wire add_c(wire a, wire b, wire c) {
@@ -77,21 +94,3 @@ struct System;
 struct Timer;
 struct Vram;
 struct Window;
-
-inline void r(int i, int y, const char* name, int v) {
-  if (i == 0) {
-    printf("\033[%d;%dH%s", y, 0, name);
-  }
-
-  printf("\033[%d;%dH%c", y, i + 15 + (i/8), v ? 219 : 176);
-}
-
-inline void print_at(int x, int y, const char *format, ...)
-{
-  va_list args;
-  va_start(args, format);
-  printf("\033[%d;%dH", y, x);
-  vprintf(format, args);
-  va_end(args);
-}
-

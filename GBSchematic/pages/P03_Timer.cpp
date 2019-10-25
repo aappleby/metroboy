@@ -7,19 +7,25 @@
 struct P3_Timer {
 
   struct Input {
-    bool A00_07;
-    bool FFXX;
-    bool TOLA_A1n;
-    bool CPU_WR;
-    bool CPU_RD;
-    bool FROM_CPU5;
-    bool INT_TIMER;
-    bool A0,A1,A2,A3,A4,A5,A6,A7;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-    bool RESET2;
     bool CLK_64k;
     bool CLK_16k;
     bool CLK_256k;
+    bool RESET2;
+
+    bool CPU_RD;
+    bool CPU_WR;
+
+    bool FROM_CPU5;
+
+    bool A00_07;
+    bool FFXX;
+    bool TOLA_A1n;
+
+    bool INT_TIMER;
+
+    bool A0,A1,A2,A3,A4,A5,A6,A7;
+    bool D0,D1,D2,D3,D4,D5,D6,D7;
+
     bool FF04_D1n;
     bool BOGA1MHZ;
   };

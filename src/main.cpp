@@ -88,6 +88,14 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
     }
   }
 
+  tp.glyph_width = glyph_width;
+  tp.glyph_height = glyph_height;
+  tp.glyph_stride = glyph_stride;
+  tp.fb_width = fb_width;
+  tp.fb_height = fb_height;
+  tp.framebuffer = framebuffer;
+  tp.font = terminus_font;
+
   while (!quit) loop();
 
   audio_stop();
@@ -240,6 +248,8 @@ void MetroBoyApp::loop() {
   SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
   memcpy(framebuffer, background, fb_width * fb_height * 4);
 
+  tp.framebuffer = framebuffer;
+
   //----------------------------------------
   // Left column text
 
@@ -250,27 +260,27 @@ void MetroBoyApp::loop() {
 
   gameboy.dump1(text_buf);
   //gameboy.get_oam().dump(text_buf);
-  render_text(spacing * 0 + 4, 4, text_buf.c_str());
+  tp.render_text(spacing * 0 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   sprintf(text_buf, "\003--------------PPU--------------\001\n");
   
   gameboy.get_ppu().dump(text_buf);
 
-  render_text(spacing * 1 + 4, 4, text_buf.c_str());
+  tp.render_text(spacing * 1 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   gameboy.dump3(text_buf);
-  render_text(spacing * 2 + 4, 4, text_buf.c_str());
+  tp.render_text(spacing * 2 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   sprintf(text_buf, "\003--------------SPU--------------\001\n");
   gameboy.get_spu().dump(text_buf);
-  render_text(spacing * 2 + 4, 640 + 4, text_buf.c_str());
+  tp.render_text(spacing * 2 + 4, 640 + 4, text_buf.c_str());
   text_buf.clear();
 
   gameboy.dump4(text_buf);
-  render_text(spacing * 3 + 4, 4, text_buf.c_str());
+  tp.render_text(spacing * 3 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   //gameboy.get_spu().dump(text_buf);
@@ -310,8 +320,8 @@ void MetroBoyApp::loop() {
     }
   }
 
-  draw_bbox(gb_screenx - 2, gb_screeny - 2, 320 + 3, 288 + 3, 0x505050);
-  draw_bbox(gb_screenx - 1, gb_screeny - 1, 320+1, 288+1, 0x101010);
+  tp.draw_bbox(gb_screenx - 2, gb_screeny - 2, 320 + 3, 288 + 3, 0x505050);
+  tp.draw_bbox(gb_screenx - 1, gb_screeny - 1, 320+1, 288+1, 0x101010);
 
   //----------------------------------------
   // Reference image
@@ -381,7 +391,7 @@ void MetroBoyApp::loop() {
   };
 
   sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
-  render_text(gb_screenx, 32 * 20, text_buf.c_str());
+  tp.render_text(gb_screenx, 32 * 20, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------
@@ -416,7 +426,7 @@ void MetroBoyApp::loop() {
     text_buf.append(source_buf);
   }
   
-  render_text(fb_width - 256, fb_height - 12, text_buf.c_str());
+  tp.render_text(fb_width - 256, fb_height - 12, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------
@@ -496,6 +506,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
+#if 0
 void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
   int xcursor = 0;
   int ycursor = 0;
@@ -541,66 +552,7 @@ void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
     }
   }
 }
-
-//-----------------------------------------------------------------------------
-
-void MetroBoyApp::draw_bbox(int sx, int sy, int w, int h, uint32_t color) {
-  int ax = sx;
-  int bx = sx + w;
-  int ay = sy;
-  int by = sy + h;
-  int x, y;
-
-  for (x = ax, y = ay; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
-
-  for (x = ax, y = by; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
-
-  for (x = ax, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
-
-  for (x = bx, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
-}
-
-
-//-----------------------------------------------------------------------------
-// Console
-
-void MetroBoyApp::render_console(int sx, int sy, uint8_t* font) {
-
-  for (int cy = 0; cy < console_height; cy++) {
-    char* line = &console_buf[(((cy + cursor_y)) % console_height) * console_width];
-
-    for (int cx = 0; cx < console_width; cx++) {
-      char c = *line;
-      int row = (c >> 5) * 16 + 3;
-      int col = (c & 31) * 8;
-
-      int src_cursor = col + (row * glyph_stride);
-      int dst_cursor = (sx + (cx * glyph_width)) + (sy + (cy * glyph_height)) * fb_width;
-
-      for (int y = 0; y < glyph_height; y++) {
-        for (int x = 0; x < glyph_width; x++) {
-          if (font[src_cursor]) framebuffer[dst_cursor] = 0xFF00FF00;
-          src_cursor++;
-          dst_cursor++;
-        }
-        src_cursor += (glyph_stride - glyph_width);
-        dst_cursor += (fb_width - glyph_width);
-      }
-
-      line++;
-    }
-  }
-
-  draw_bbox(sx - 2, sy - 2, console_width * glyph_width + 4, console_height * glyph_height + 4, 0xFF00FF00);
-}
+#endif
 
 //-----------------------------------------------------------------------------
 

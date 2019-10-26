@@ -2,99 +2,444 @@
 
 //-----------------------------------------------------------------------------
 
-// const int glyph_width = 6;
-// const int glyph_height = 12;
+uint32_t pal(char c) {
+  if (c == '.') return 0xFF383355 + 0x00101010;
+  if (c == '|') return 0x00000000;
+  if (c == '#') return 0xFFCCCC99;
 
-//   012345
-// 0 
-// 1 
-// 2 .
-// 3 .
-// 4 .
-// 5 .
-// 6 .
-// 7 .
-// 8 .
-// 9 ######
-// A
-// B
+  return 0x00000000;
+}
 
-//   012345
-// 0 
-// 1 
-// 2 ######
-// 3 #.....
-// 4 #.....
-// 5 #.....
-// 6 #.....
-// 7 #.....
-// 8 #.....
-// 9 #.....
-// A
-// B
 
-const char* trace_hi = 
-"      "
-"|#####"
-"|#####"
-"|#####"
-"|#####"
-"|#####"
-"|#####"
-"|#####"
-"|#####"
-"|#####"
-"......"
-"      ";
+void draw_icon(uint32_t* framebuffer, int fb_width,
+               const char* icon, int icon_width, int icon_height,
+               int dst_x, int dst_y, bool highlight) {
+  //dst_x *= 2;
+  //dst_y *= 2;
+  for (int y = 0; y < icon_height; y++) {
+    for (int x = 0; x < icon_width; x++) {
+      char p = icon[x + y * icon_width];
 
-const char* trace_lo = 
-"      "
-"|     "
-"|     "
-"|     "
-"|     "
-"|     "
-"|     "
-"|     "
-"|     "
-"|     "
-"......"
-"      ";
+      uint32_t c2 = pal(p);
 
-void TextPainter::trace(const char* name, bool c) {
-  int dst_x = trace_x + col * glyph_width;
-  int dst_y = trace_y + row * glyph_height;
+      //if (x == 0 && c2 == 0)              c2 = 0x00335533;
+      //if (x == icon_width - 1 && c2 == 0) c2 = 0x00335533;
+
+      if (c2) {
+        if (highlight) c2 += 0x00303030;
+        framebuffer[(x * 1 + 0 + dst_x) + (y * 1 + 0 + dst_y) * fb_width] = c2;
+        //framebuffer[(x * 2 + 0 + dst_x) + (y * 2 + 0 + dst_y) * fb_width] = c2;
+        //framebuffer[(x * 2 + 1 + dst_x) + (y * 2 + 0 + dst_y) * fb_width] = c2;
+        //framebuffer[(x * 2 + 0 + dst_x) + (y * 2 + 1 + dst_y) * fb_width] = c2;
+        //framebuffer[(x * 2 + 1 + dst_x) + (y * 2 + 1 + dst_y) * fb_width] = c2;
+      }
+    }
+  }
+}
+
+const char* trace_0000 = 
+"            "
+"            "
+"............"
+"............"
+"............"
+"............"
+"............"
+"............"
+"............"
+"............"
+"            "
+"            ";
+
+const char* trace_0101 = 
+"            "
+"            "
+"............"
+"............"
+"............"
+"............"
+"............"
+"............"
+"............"
+"............"
+"            "
+"            ";
+
+const char* trace_0001 = 
+"            "
+"            "
+"........|||."
+".......|||.."
+"......|||..."
+".....|||...."
+"....|||....."
+"...|||......"
+"..|||......."
+".|||........"
+"            "
+"            ";
+
+const char* trace_0100 = 
+"            "
+"            "
+".|||........"
+"..|||......."
+"...|||......"
+"....|||....."
+".....|||...."
+"......|||..."
+".......|||.."
+"........|||."
+"            "
+"            ";
+
+//-----------------------------------------------------------------------------
+
+const char* trace_0010 = 
+"            "
+"            "
+"......######"
+".......#####"
+"........####"
+".........###"
+".........###"
+"........####"
+".......#####"
+"......######"
+"            "
+"            ";
+
+const char* trace_0111 = 
+"            "
+"            "
+"......######"
+".......#####"
+"........####"
+".........###"
+".........###"
+"........####"
+".......#####"
+"......######"
+"            "
+"            ";
+
+const char* trace_0011 = 
+"            "
+"            "
+"........|||#"
+".......|||##"
+"......|||###"
+".....|||####"
+"....|||#####"
+"...|||######"
+"..|||#######"
+".|||########"
+"            "
+"            ";
+
+const char* trace_0110 = 
+"            "
+"            "
+".|||########"
+"..|||#######"
+"...|||######"
+"....|||#####"
+".....|||####"
+"......|||###"
+".......|||##"
+"........|||#"
+"            "
+"            ";
+
+//-----------------------------------------------------------------------------
+
+const char* trace_1000 = 
+"            "
+"            "
+"######......"
+"#######....."
+"########...."
+"#########..."
+"#########..."
+"########...."
+"#######....."
+"######......"
+"            "
+"            ";
+
+const char* trace_1101 = 
+"            "
+"            "
+"######......"
+"#######....."
+"########...."
+"#########..."
+"#########..."
+"########...."
+"#######....."
+"######......"
+"            "
+"            ";
+
+const char* trace_1001 = 
+"            "
+"            "
+"########|||."
+"#######|||.."
+"######|||..."
+"#####|||...."
+"####|||....."
+"###|||......"
+"##|||......."
+"#|||........"
+"            "
+"            ";
+
+const char* trace_1100 = 
+"            "
+"            "
+"#|||........"
+"##|||......."
+"###|||......"
+"####|||....."
+"#####|||...."
+"######|||..."
+"#######|||.."
+"########|||."
+"            "
+"            ";
+
+//-----------------------------------------------------------------------------
+
+const char* trace_1010 = 
+"            "
+"            "
+"############"
+"############"
+"############"
+"############"
+"############"
+"############"
+"############"
+"############"
+"            "
+"            ";
+
+const char* trace_1111 = 
+"            "
+"            "
+"############"
+"############"
+"############"
+"############"
+"############"
+"############"
+"############"
+"############"
+"            "
+"            ";
+
+const char* trace_1011 = 
+"            "
+"            "
+"########|||#"
+"#######|||##"
+"######|||###"
+"#####|||####"
+"####|||#####"
+"###|||######"
+"##|||#######"
+"#|||########"
+"            "
+"            ";
+
+const char* trace_1110 = 
+"            "
+"            "
+"#|||########"
+"##|||#######"
+"###|||######"
+"####|||#####"
+"#####|||####"
+"######|||###"
+"#######|||##"
+"########|||#"
+"            "
+"            ";
+
+//-----------------------------------------------------------------------------
+
+
+const char* trace_dot_hi = 
+"            "
+"            "
+"  ########  "
+"  ########  "
+"  ########  "
+"  ########  "
+"  ########  "
+"  ########  "
+"  ########  "
+"  ########  "
+"            "
+"            ";
+
+const char* trace_dot_lo = 
+"            "
+"            "
+"  ........  "
+"  ........  "
+"  ........  "
+"  ........  "
+"  ........  "
+"  ........  "
+"  ........  "
+"  ........  "
+"            "
+"            ";
+
+
+
+
+
+
+
+
+
+/*
+const char* trace_dot_hi = 
+"            "
+"     #      "
+"    ###     "
+"   #####    "
+"  #######   "
+" #########  "
+"  #######   "
+"   #####    "
+"    ###     "
+"     #      "
+"            "
+"            ";
+
+const char* trace_dot_lo = 
+"            "
+"     .      "
+"    ...     "
+"   .....    "
+"  .......   "
+" .........  "
+"  .......   "
+"   .....    "
+"    ...     "
+"     .      "
+"            "
+"            ";
+*/
+
+const char* trace_icons[16] = {
+  trace_0000,
+  trace_0001,
+  trace_0010,
+  trace_0011,
+  trace_0100,
+  trace_0101,
+  trace_0110,
+  trace_0111,
+  trace_1000,
+  trace_1001,
+  trace_1010,
+  trace_1011,
+  trace_1100,
+  trace_1101,
+  trace_1110,
+  trace_1111,
+};
+
+void TextPainter::trace_q(const char* name, bool q) {
+  int icon_width  = 12;
+  int icon_height = 12;
+
+  int dst_x = trace_x + (col * 1 + 0) * icon_width ;
+  int dst_y = trace_y + row * icon_height;
 
   if (clock == 0) {
     render_text(dst_x - (6 * 12), dst_y, name);
   }
 
+  const char* src_q = q ? trace_dot_hi : trace_dot_lo;
 
-  int dst_cursor = dst_x + dst_y * fb_width;
+  draw_icon(framebuffer, fb_width,
+            src_q, icon_width, icon_height,
+            dst_x, dst_y,
+            col == highlight_col);
+  row++;
+}
 
-  const char* src = c ? trace_hi : trace_lo;
+void TextPainter::trace_s(const char* name, bool s) {
+  int icon_width  = 12;
+  int icon_height = 12;
 
-  for (int y = 0; y < glyph_height; y++) {
-    for (int x = 0; x < glyph_width; x++) {
-      char p = src[x + y * glyph_width];
+  int dst_x = trace_x + (col * 1 + 0) * icon_width ;
+  int dst_y = trace_y + row * icon_height;
 
-      uint32_t c2 = 0x00000000;
-
-      if (p == ' ') c2 = 0x00000000;
-      if (p == '|') c2 = 0xFF444444;
-      if (p == '.') c2 = 0xFF666666;
-      if (p == '#') c2 = 0xFF888888;
-
-      if (row == highlight_row) c2 += 0x00003000;
-      if (col == highlight_col) c2 += 0x00404000;
-
-      if (c2) {
-        framebuffer[dst_cursor] = c2;
-      }
-      dst_cursor++;
-    }
-    dst_cursor += (fb_width - glyph_width);
+  if (clock == 0) {
+    int x = trace_x + col * 3 * icon_width;
+    render_text(x - (6 * 12), dst_y, name);
   }
+
+  const char* src_s = s ? trace_dot_hi : trace_dot_lo;
+
+  draw_icon(framebuffer, fb_width,
+    src_s, icon_width, icon_height,
+    dst_x, dst_y,
+    col == highlight_col);
+
+  row++;
+}
+
+void TextPainter::trace_d(const char* name, bool d) {
+  int icon_width  = 12;
+  int icon_height = 12;
+
+  int dst_x = trace_x + (col * 1 + 0) * icon_width ;
+  int dst_y = trace_y + row * icon_height;
+
+  if (clock == 0) {
+    int x = trace_x + col * 3 * icon_width;
+    render_text(x - (6 * 12), dst_y, name);
+  }
+
+  const char* src_d = d ? trace_dot_hi : trace_dot_lo;
+
+  draw_icon(framebuffer, fb_width,
+    src_d, icon_width, icon_height,
+    dst_x, dst_y,
+    col == highlight_col);
+
+  row++;
+}
+
+void TextPainter::trace_qd(const char* name, bool q, bool qc, bool d, bool dc) {
+  int icon_width  = 12;
+  int icon_height = 12;
+
+  int dst_x = trace_x + (col * 1 + 0) * icon_width ;
+  int dst_y = trace_y + row * icon_height;
+
+  if (clock == 0) {
+    render_text(dst_x - (6 * 12), dst_y, name);
+  }
+
+  //q = 0;
+  //d = 0;
+
+  int t = (q << 3) | (qc << 2) | (d << 1) | (dc << 0);
+
+  const char* src = trace_icons[t];
+  draw_icon(framebuffer, fb_width,
+    src, icon_width, icon_height,
+    dst_x, dst_y,
+    col == highlight_col);
   row++;
 }
 

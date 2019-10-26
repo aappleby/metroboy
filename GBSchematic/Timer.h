@@ -6,10 +6,8 @@ struct Timer {
 
   struct Input {
     bool RESET;       // active high!
-    bool APU_RESET;
-    bool APU_RESET5n;
 
-    bool CLKIN_A;     // this is actually CLOCK_GOOD or similar
+    bool CLK_GOOD;    // {CLKIN_A}
     bool CLKIN_B;     // the master 4mhz clock
 
     bool INT_TIMER;
@@ -17,21 +15,15 @@ struct Timer {
     bool CPU_RD;
     bool CPU_WR;
 
-    bool ABOL_1MHZ;   // this is actually CPU_RESET or similar
+    bool CPU_RESET;   // {ABOL}
     bool AJER_2MHZ;   // on apu sheet
 
     bool FROM_CPU3;   // controls CPU_RD_SYNC?
-    bool FROM_CPU4;
-    bool FROM_CPU5;
+    bool FROM_CPU4;   // only used by ABUZ
+    bool FROM_CPU5;   // affects TIMA reload?
 
-    bool FERO_Q;      // something debug-related
-    
-    bool A00_07;
-    bool FFXX;
-    bool FF04_FF07;
-    bool TOLA_A1n;
-    bool TOVY_A0n;
-    
+    uint16_t addr;
+  
     bool T1T2n;       // true for debugging
     bool T1nT2;       // true for debugging
     bool T1nT2n;      // true for normal mode
@@ -45,81 +37,47 @@ struct Timer {
   };
 
   struct Output {
-    bool RESET2;      // active low!
-    bool RESET6;
-    bool RESET7;
-    bool RESET7n;
-    bool RESET8;
-    bool RESET9;
-    bool RESET_VIDEO;
-    bool RESET_DIVn;
-
     bool INT_TIMER;
 
-    bool CPU_RD_SYNC; 
-
-    bool CLK1;
-    bool CLK2;
-    bool BYFE_128Hz;
-    bool JESO_512K;
-    bool ATAL_4MHZ;
-    bool AMUK_4MHZ;
-    bool ARYF_4MHZ;
-    bool APUV_4MHZ;
-    bool BAVU_1MHZ;
-    bool BOGA1MHZ;
-    bool TAMA16384;
-    bool CLK_16K;
-    bool CLK_64K;
-    bool CLK_256K;
-    bool HAMA_512Kn;
-    bool HORU_512Hz;
-    bool BUFY_256Hz;
-
-    bool PHI_OUT;     // cartridge clock
-    bool PHIn;
-
-    bool TOVY_A0n;
-    bool FF04_FF07;
-    bool FF04_D0n;
-    bool FF04_D1n;
-
-    bool TO_CPU;
-    bool BUKE;
-    bool ABUZ;
-    bool AFAS;
+    bool TO_CPU;  // or(in.CPU_RESET, BOGA1MHZ)
+    bool BUKE;    // nor(PHASE_B_Q, not(PHASE_C_Q), in.CPU_RESET)
+    bool ABUZ;    // nor(in.T1nT2, unk3(CLK_ABCD_Q, not(PHASE_C_Q), in.FROM_CPU4))
+    bool AFAS;    // and(PHASE_D_Q, CLK_ABCD_Q)
 
     bool D_OE;
     bool D0,D1,D2,D3,D4,D5,D6,D7;
 };
 
   // 1mhz phase generator
-  reg ADYK,AFUR,ALEF,APUK;
+  //reg AFUR,ALEF,APUK,ADYK;
+  reg CLK_ABCD;
+  reg CLK_BCDE;
+  reg CLK_CDEF;
+  reg CLK_DEFG;
 
   // register for the RESET2 signal, roughly
-  reg AFER;
+  reg RESET_REG;
 
   // div
-  reg UKUP,UFOR,UNER,TERO,UNYK,TAMA,UGOT,TULU,TUGO,TOFE,TERU,SOLA,SUBU,TEKA,UKET,UPOF;
-
-  // clock divider for apu sequencer
-  reg BARA,CARU,BYLU;
-
-  // clock divider for something else...
-  reg ATYK,AVOK,JESO;
+  reg DIV_0,DIV_1,DIV_2,DIV_3,DIV_4,DIV_5;
+  reg DIV_6,DIV_7,DIV_8,DIV_9,DIV_A,DIV_B,DIV_C,DIV_D,DIV_E,DIV_F;
 
   // FF05 TIMA
-  reg REGA,POVY,PERU,RATE,RUBY,RAGE,PEDA,NUGA;
+  //reg REGA,POVY,PERU,RATE,RUBY,RAGE,PEDA,NUGA;
+  reg TIMA_0,TIMA_1,TIMA_2,TIMA_3,TIMA_4,TIMA_5,TIMA_6,TIMA_7;
 
   // FF06 TMA
-  reg PETO,MURU,NYKE,SETA,SABU,TYRU,SUFY,TYVA;
+  //reg SABU,NYKE,MURU,TYVA,TYRU,SUFY,PETO,SETA;
+  reg TMA_0,TMA_1,TMA_2,TMA_3,TMA_4,TMA_5,TMA_6,TMA_7;
 
   // FF07 TAC
-  reg SABO,SAMY,SOPU;
+  //reg SOPU,SAMY,SABO;
+  reg TAC_0,TAC_1,TAC_2;
 
   // INT_TIMER delay
-  reg NYDU,MOBA;
+  //reg NYDU,MOBA;
+  reg INT_TIMER_DELAY_0;
+  reg INT_TIMER_DELAY_1;
 
   Output tock1(const Input& in, TextPainter& tp);
-  Output tock2(const Input& in, TextPainter& tp);
 };

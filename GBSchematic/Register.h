@@ -14,7 +14,8 @@ struct reg {
     clk = 0;
   }
 
-  wire q() const  { return val; }
+  wire q() const { return val; }
+  wire c() const { return clk; }
 
   // returns the _old_ q
   wire tock(wire clk2, wire r, wire d) {

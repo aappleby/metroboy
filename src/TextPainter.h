@@ -28,7 +28,12 @@ struct TextPainter {
   int col = 0;
 
   void render_glyph(int dst_x, int dst_y, char c, uint32_t color);
-  void trace(const char* name, bool c);
+
+  void trace_q(const char* name, bool c);
+  void trace_s(const char* name, bool c);
+  void trace_d(const char* name, bool c);
+  void trace_qd(const char* name, bool q, bool qc, bool d, bool dc);
+
   void render_text(int dst_x, int dst_y, const char* text);
   void draw_bbox(int sx, int sy, int w, int h, uint32_t color);
 };

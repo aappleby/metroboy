@@ -96,7 +96,7 @@ void loop() {
     if (event.type == SDL_KEYDOWN) {
       switch (event.key.keysym.sym) {
       case SDLK_RIGHT:  {
-        if (highlight_col < 200) highlight_col++;
+        if (highlight_col < 64) highlight_col++;
         break;
       }
       case SDLK_LEFT:   {
@@ -130,7 +130,7 @@ void loop() {
 
   Timer timer;
 
-  for (int i = 0; i < 256; i++) {
+  for (int i = 0; i < 64; i++) {
     tp.clock = i;
     tp.trace_x = 100;
     tp.trace_y = 32;
@@ -169,21 +169,15 @@ void loop() {
 
     in.CPU_RD = true;
     in.RESET = false;
-    in.CLKIN_A = true;
+    in.CLK_GOOD = true;
     in.CLKIN_B = i & 1;
 
-    in.ABOL_1MHZ = false;
+    in.CPU_RESET = false;
     in.AJER_2MHZ = false;
     in.FROM_CPU3 = true;
     in.FROM_CPU4 = false;
-    in.APU_RESET = false;
-    in.APU_RESET5n = false;
-    in.FERO_Q = false;
 
     in.CPU_WR = false;
-    in.FF04_FF07 = true;
-    in.TOLA_A1n = true;
-    in.TOVY_A0n = true;
 
     in.T1nT2 = false;
     in.T1T2n = false;

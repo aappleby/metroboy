@@ -16,8 +16,8 @@ struct P1_ClocksReset {
 
     bool ABOL_1MHZ;   // this is actually CPU_RESET or similar
     bool AJER_2MHZ;   // on apu sheet
-    bool FROM_CPU3;   // this is the cpu's read signal
-    bool FROM_CPU4;   // controls ABUZ
+    bool FROM_CPU3;   // probably CPU_RAW_WR
+    bool FROM_CPU4;   // controls ABUZ, sets WR_A/WR_C/RD_A/RD_C to 0 if low
     bool APU_RESET;
     bool APU_RESET5n;
     bool FERO_Q;      // something debug-related
@@ -416,38 +416,5 @@ struct P1_ClocksReset {
     out.RESET7n = RESET7n;
 
     return out;
-  }
-
-  static void test() {
-    Input in = {};
-    in.RESET = 0;
-    in.CLKIN_A = 1;
-    in.CLKIN_B = 0;
-    in.ABOL_1MHZ = 0;
-    in.AJER_2MHZ = 0;
-    in.CPU_RD = 0;
-    in.CPU_WR = 0;
-    in.FROM_CPU3 = 1;
-    in.FROM_CPU4 = 0;
-    in.APU_RESET = 0;
-    in.APU_RESET5n = 1;
-    in.FERO_Q = 0;
-    in.FF04_FF07 = 0;
-    in.TOLA_A1n = 0;
-    in.TOVY_A0n = 0;
-    in.T1T2n = 0;
-    in.T1nT2 = 0;
-    in.T1nT2n = 1;
-    in.FF40_D7 = 1;
-    in.FF60_D1 = 0;
-
-    P1_ClocksReset sch;
-    for (int i = 0; i < 128; i++) {
-      in.CLKIN_B = (~((i + 0) >> 0)) & 1;
-      // dunno the phase of these yet
-      in.AJER_2MHZ = ((i + 0) >> 1) & 1;
-
-      sch.tick(in);
-    }
   }
 };

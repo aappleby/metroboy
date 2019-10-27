@@ -255,7 +255,7 @@ struct P8_ExtCpuBuses {
 
     wire REDU = not(in.CPU_RD);
     wire RORU = mux2(REDU, MOTY, in.T1nT2);
-    wire LULA = not(RORU);
+    wire LULA = not(RORU); // this is the "output enable" for the data pins or similar
 
     wire ROGY = nor(RORU, in.D6);
     wire RYDA = nor(RORU, in.D7);
@@ -313,25 +313,42 @@ struct P8_ExtCpuBuses {
     }
 
     //----------
-    // if NET01 high, drive external address bus onto internal address bus for debugging.
+    // if NET01 high, drive external address bus onto internal address
 
+    wire KOVA = not(in.A0_IN);  wire KEJO = not(KOVA); 
+    wire CAMU = not(in.A1_IN);  wire BYXE = not(CAMU); 
+    wire BUXU = not(in.A2_IN);  wire AKAN = not(BUXU); 
+    wire BASE = not(in.A3_IN);  wire ANAR = not(BASE); 
+    wire AFEC = not(in.A4_IN);  wire AZUV = not(AFEC); 
+    wire ABUP = not(in.A5_IN);  wire AJOV = not(ABUP); 
+    wire CYGU = not(in.A6_IN);  wire BYNE = not(CYGU); 
+    wire COGO = not(in.A7_IN);  wire BYNA = not(COGO); 
+    wire MUJY = not(in.A8_IN);  wire LOFA = not(MUJY); 
+    wire NENA = not(in.A9_IN);  wire MAPU = not(NENA); 
+    wire SURA = not(in.A10_IN); wire RALA = not(SURA); 
+    wire MADY = not(in.A11_IN); wire LORA = not(MADY); 
+    wire LAHE = not(in.A12_IN); wire LYNA = not(LAHE); 
+    wire LURA = not(in.A13_IN); wire LEFY = not(LURA); 
+    wire PEVO = not(in.A14_IN); wire NEFE = not(PEVO); 
+
+    // this is probably inverted, NET01 is high during normal operation and it doesn't make sense to have the feedback pin drive the bus
     if (out.NET01) {
       out.A_OE= true;
-      wire KOVA = not(in.A0_IN);  wire KEJO = not(KOVA); out.A0  = KEJO;
-      wire CAMU = not(in.A1_IN);  wire BYXE = not(CAMU); out.A1  = BYXE;
-      wire BUXU = not(in.A2_IN);  wire AKAN = not(BUXU); out.A2  = AKAN;
-      wire BASE = not(in.A3_IN);  wire ANAR = not(BASE); out.A3  = ANAR;
-      wire AFEC = not(in.A4_IN);  wire AZUV = not(AFEC); out.A4  = AZUV;
-      wire ABUP = not(in.A5_IN);  wire AJOV = not(ABUP); out.A5  = AJOV;
-      wire CYGU = not(in.A6_IN);  wire BYNE = not(CYGU); out.A6  = BYNE;
-      wire COGO = not(in.A7_IN);  wire BYNA = not(COGO); out.A7  = BYNA;
-      wire MUJY = not(in.A8_IN);  wire LOFA = not(MUJY); out.A8  = LOFA;
-      wire NENA = not(in.A9_IN);  wire MAPU = not(NENA); out.A9  = MAPU;
-      wire SURA = not(in.A10_IN); wire RALA = not(SURA); out.A10 = RALA;
-      wire MADY = not(in.A11_IN); wire LORA = not(MADY); out.A11 = LORA;
-      wire LAHE = not(in.A12_IN); wire LYNA = not(LAHE); out.A12 = LYNA;
-      wire LURA = not(in.A13_IN); wire LEFY = not(LURA); out.A13 = LEFY;
-      wire PEVO = not(in.A14_IN); wire NEFE = not(PEVO); out.A14 = NEFE;
+      out.A0  = KEJO;
+      out.A1  = BYXE;
+      out.A2  = AKAN;
+      out.A3  = ANAR;
+      out.A4  = AZUV;
+      out.A5  = AJOV;
+      out.A6  = BYNE;
+      out.A7  = BYNA;
+      out.A8  = LOFA;
+      out.A9  = MAPU;
+      out.A10 = RALA;
+      out.A11 = LORA;
+      out.A12 = LYNA;
+      out.A13 = LEFY;
+      out.A14 = NEFE;
     }
   }
 };

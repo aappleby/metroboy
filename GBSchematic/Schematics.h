@@ -21,8 +21,6 @@ inline void print_at(int x, int y, const char *format, ...)
   va_end(args);
 }
 
-typedef const bool wire;
-
 template<typename T> const T and(const T a, const T b) { return a & b; }
 template<typename T> const T or (const T a, const T b) { return a | b; }
 template<typename T> const T xor(const T a, const T b) { return a ^ b; }
@@ -33,13 +31,37 @@ template<typename T, typename... Args> const T xor (const T first, Args... args)
 template<typename T, typename... Args> const T nor (const T first, Args... args) { return !or(first, args...); }
 template<typename T, typename... Args> const T nand(const T first, Args... args) { return !and(first, args...); }
 
-inline const wire not  (wire a)                   { return !a; }
-inline const wire mux2 (wire m, wire a, wire b)   { return m ? a : b; }
+template<typename T>
+inline const T not(T a) { return !a; }
+
+template<typename T>
+inline const T mux2 (T a, T b, bool m)   { return m ? a : b; }
+
+// this is def or
+template<typename T>
+inline T unk2 (T a, T b) { return a | b; }
+
+// probably not right...
+template<typename T>
+inline T unk3 (T a, T b, T c) { return (a & b) | c; }
 
 // definitely not right...
-inline wire unk2 (wire a, wire b)                 { return a ^ b; }
-inline wire unk3 (wire a, wire b, wire c)         { /*return a ^ b ^ c;*/  return (a & b) | c; }
-inline wire unk1 (wire a, wire b, wire c, wire d) { return a ^ b ^ c ^ d; }
+template<typename T>
+inline T unk1 (T a, T b, T c, T d) { return a ^ b ^ c ^ d; }
+
+template<typename T>
+inline T amux2(T a0, bool b0, T a1, bool b1) {
+  return (b0 ? a0 : 0) | (b1 ? a1 : 0);
+}
+
+template<typename T>
+inline T amux4(T a0, bool b0, T a1, bool b1, T a2, bool b2, T a3, bool b3) {
+  return (b0 ? a0 : 0) | (b1 ? a1 : 0) | (b2 ? a2 : 0) | (b3 ? a3 : 0);
+}
+
+//-----------------------------------------------------------------------------
+
+typedef const bool wire;
 
 inline wire add_c(wire a, wire b, wire c) {
   return (a + b + c) & 2;
@@ -49,13 +71,7 @@ inline wire add_s(wire a, wire b, wire c) {
   return (a + b + c) & 1;
 }
 
-inline wire amux2(wire a0, wire b0, wire a1, wire b1) {
-  return (a0 & b0) | (a1 & b1);
-}
-
-inline wire amux4(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3) {
-  return (a0 & b0) | (a1 & b1) | (a2 & b2) | (a3 & b3);
-}
+//-----------------------------------------------------------------------------
 
 inline const uint32_t pack(bool b) {
   return (uint32_t)b;
@@ -73,6 +89,8 @@ template<typename... Args> void unpack(uint32_t x, bool& first, Args&... args) {
   first = bool(x & 1);
   unpack(x >> 1, args...);
 }
+
+//-----------------------------------------------------------------------------
 
 struct Resets;
 struct AddressDecoder;
@@ -94,3 +112,4 @@ struct System;
 struct Timer;
 struct Vram;
 struct Window;
+

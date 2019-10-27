@@ -173,17 +173,10 @@ void loop() {
     in.CLKIN_B = i & 1;
 
     in.CPU_RESET = false;
-    in.AJER_2MHZ = false;
     in.FROM_CPU3 = true;
     in.FROM_CPU4 = false;
 
     in.CPU_WR = false;
-
-    in.T1nT2 = false;
-    in.T1T2n = false;
-    in.T1nT2n = true;
-    in.FF40_D7 = false;
-    in.FF60_D1 = false;
 
     timer.tock1(in, tp);
   }

@@ -12,11 +12,10 @@ struct Timer {
 
     bool INT_TIMER;
 
-    bool CPU_RD;
+    bool CPU_RD;  // need to derive these from master clock
     bool CPU_WR;
 
     bool CPU_RESET;   // {ABOL}
-    bool AJER_2MHZ;   // on apu sheet
 
     bool FROM_CPU3;   // controls CPU_RD_SYNC?
     bool FROM_CPU4;   // only used by ABUZ
@@ -24,16 +23,7 @@ struct Timer {
 
     uint16_t addr;
   
-    bool T1T2n;       // true for debugging
-    bool T1nT2;       // true for debugging
-    bool T1nT2n;      // true for normal mode
-    
-    bool FF04_D1n;
-    bool FF40_D7;     // lcd on
-    bool FF60_D1;     // debugging
-
-    bool A0,A1,A2,A3,A4,A5,A6,A7;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
+    uint8_t D;
   };
 
   struct Output {
@@ -45,7 +35,7 @@ struct Timer {
     bool AFAS;    // and(PHASE_D_Q, CLK_ABCD_Q)
 
     bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
+    uint8_t D;
 };
 
   // 1mhz phase generator
@@ -59,20 +49,24 @@ struct Timer {
   reg RESET_REG;
 
   // div
-  reg DIV_0,DIV_1,DIV_2,DIV_3,DIV_4,DIV_5;
-  reg DIV_6,DIV_7,DIV_8,DIV_9,DIV_A,DIV_B,DIV_C,DIV_D,DIV_E,DIV_F;
+  //reg DIV_0,DIV_1,DIV_2,DIV_3,DIV_4,DIV_5;
+  //reg DIV_6,DIV_7,DIV_8,DIV_9,DIV_A,DIV_B,DIV_C,DIV_D,DIV_E,DIV_F;
+  reg16 DIV;
 
   // FF05 TIMA
   //reg REGA,POVY,PERU,RATE,RUBY,RAGE,PEDA,NUGA;
-  reg TIMA_0,TIMA_1,TIMA_2,TIMA_3,TIMA_4,TIMA_5,TIMA_6,TIMA_7;
+  //reg TIMA_0,TIMA_1,TIMA_2,TIMA_3,TIMA_4,TIMA_5,TIMA_6,TIMA_7;
+  reg8 TIMA;
 
   // FF06 TMA
   //reg SABU,NYKE,MURU,TYVA,TYRU,SUFY,PETO,SETA;
-  reg TMA_0,TMA_1,TMA_2,TMA_3,TMA_4,TMA_5,TMA_6,TMA_7;
+  //reg TMA_0,TMA_1,TMA_2,TMA_3,TMA_4,TMA_5,TMA_6,TMA_7;
+  reg8 TMA;
 
   // FF07 TAC
   //reg SOPU,SAMY,SABO;
-  reg TAC_0,TAC_1,TAC_2;
+  //reg TAC_0,TAC_1,TAC_2;
+  reg TAC;
 
   // INT_TIMER delay
   //reg NYDU,MOBA;

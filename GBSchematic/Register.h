@@ -3,6 +3,7 @@
 
 typedef const bool wire;
 typedef const uint8_t wire8;
+typedef const uint16_t wire16;
 
 //-----------------------------------------------------------------------------
 // Sync or async reset? Probably async...
@@ -84,7 +85,7 @@ struct reg8 {
   wire8 q() const  { return val; }
 
   // returns the _old_ q
-  wire8 tock(wire clk2, wire8 r, wire8 d) {
+  wire8 tock(wire clk2, bool r, wire8 d) {
     wire8 old = val;
     if (!r) val = 0;
     else if (clk && !clk2) val = d;
@@ -92,30 +93,14 @@ struct reg8 {
     return old;
   }
 
-  // returns the _old_ q
-  wire8 inc(wire clk2, bool r) {
+  wire8 count(wire clk2, wire load, wire8 d) {
     wire8 old = val;
-    if (!r) val = 0;
-    else if (clk && !clk2) val++;
+    if (clk && !clk2) {
+      if (load) val = d;
+      else val = val + 1;
+    }
     clk = clk2;
     return old;
-  }
-
-  // returns the _old_ q
-  // FIXME set is 0-triggered?
-  wire8 srtock(wire clk2, wire8 s, wire8 r, wire8 d) {
-    wire8 old = val;
-    if (!s) val = 1;
-    if (!r) val = 0;
-    else if (clk && !clk2) val = d;
-    clk = clk2;
-    return old;
-  }
-
-  // FIXME what sort of trigger?
-  wire8 latch(wire8 clk2, wire8 d) {
-    if (!clk2) val = d;
-    return val;
   }
 
   void unpack(bool& d0, bool& d1, bool& d2, bool& d3, bool& d4, bool& d5, bool& d6, bool& d7) {
@@ -132,6 +117,48 @@ struct reg8 {
 private:
 
   uint8_t val;
+  bool clk;
+};
+
+//-----------------------------------------------------------------------------
+
+struct reg16 {
+
+  wire16 q() const  { return val; }
+
+  // returns the _old_ q
+  wire16 tock(wire clk2, bool r, wire16 d) {
+    wire16 old = val;
+    if (!r) val = 0;
+    else if (clk && !clk2) val = d;
+    clk = clk2;
+    return old;
+  }
+
+  wire16 count(wire clk2, wire load, wire16 d) {
+    wire16 old = val;
+    if (clk && !clk2) {
+      if (load) val = d;
+      else val = val + 1;
+    }
+    clk = clk2;
+    return old;
+  }
+
+  void unpack(bool& d0, bool& d1, bool& d2, bool& d3, bool& d4, bool& d5, bool& d6, bool& d7) {
+    d0 = val & 0x01;
+    d1 = val & 0x02;
+    d2 = val & 0x04;
+    d3 = val & 0x08;
+    d4 = val & 0x10;
+    d5 = val & 0x20;
+    d6 = val & 0x40;
+    d7 = val & 0x80;
+  }
+
+private:
+
+  uint16_t val;
   bool clk;
 };
 

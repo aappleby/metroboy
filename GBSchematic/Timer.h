@@ -73,5 +73,10 @@ struct Timer {
   reg INT_TIMER_DELAY_0;
   reg INT_TIMER_DELAY_1;
 
-  Output tock1(const Input& in, TextPainter& tp);
+  Output tock1(const Input& in);
+
+  void tock_phase_generator(bool CLKIN_B);
+
+  bool tick_BOGA1MHZ(bool CPU_RESET, bool CLK_GOOD) const;
+  bool tick_RESET2(bool CPU_RESET, bool RESET, bool CLK_GOOD);
 };

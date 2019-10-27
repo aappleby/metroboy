@@ -72,7 +72,11 @@ struct reg {
     return old;
   }
 
-private:
+  void set()        { val = 1; }
+  void reset()      { val = 0; }
+  void load(bool v) { val = v; }
+
+//private:
 
   bool val;
   bool clk;
@@ -113,6 +117,10 @@ struct reg8 {
     d6 = val & 0x40;
     d7 = val & 0x80;
   }
+
+  void set()        { val = 0xFF; }
+  void reset()      { val = 0x00; }
+  void load(bool v) { val = v; }
 
 private:
 

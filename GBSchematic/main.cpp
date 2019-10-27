@@ -178,7 +178,26 @@ void loop() {
 
     in.CPU_WR = false;
 
-    timer.tock1(in, tp);
+    Timer timer2 = timer;
+
+    timer2.tock1(in);
+
+    tp.trace_qd("CLK_ABCD_Q", timer.CLK_ABCD, timer2.CLK_ABCD);
+    tp.trace_qd("CLK_BCDE_Q", timer.CLK_BCDE, timer2.CLK_BCDE);
+    tp.trace_qd("CLK_CDEF_Q", timer.CLK_CDEF, timer2.CLK_CDEF);
+    tp.trace_qd("CLK_DEFG_Q", timer.CLK_DEFG, timer2.CLK_DEFG);
+
+    /*
+    tp.trace_qd("CLK_ABCD_Q", CLK_ABCD_Q, CLK_ABCD_C, CLK_ABCD.q(), CLK_ABCD.c());
+    tp.trace_qd("CLK_BCDE_Q", CLK_BCDE_Q, CLK_BCDE_C, CLK_BCDE.q(), CLK_BCDE.c());
+    tp.trace_qd("CLK_CDEF_Q", CLK_CDEF_Q, CLK_CDEF_C, CLK_CDEF.q(), CLK_CDEF.c());
+    tp.trace_qd("CLK_DEFG_Q", CLK_DEFG_Q, CLK_DEFG_C, CLK_DEFG.q(), CLK_DEFG.c());
+    */
+
+    //tp.trace_s("CLK_ABCD", CLK_ABCD_Q);
+
+
+    timer = timer2;
   }
 
   std::string temp;

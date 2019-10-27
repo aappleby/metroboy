@@ -443,6 +443,27 @@ void TextPainter::trace_qd(const char* name, bool q, bool qc, bool d, bool dc) {
   row++;
 }
 
+void TextPainter::trace_qd(const char* name, const reg& q, const reg& d) {
+  int icon_width  = 12;
+  int icon_height = 12;
+
+  int dst_x = trace_x + (col * 1 + 0) * icon_width ;
+  int dst_y = trace_y + row * icon_height;
+
+  if (clock == 0) {
+    render_text(dst_x - (6 * 12), dst_y, name);
+  }
+
+  int t = (q.q() << 3) | (q.c() << 2) | (d.q() << 1) | (d.c() << 0);
+
+  const char* src = trace_icons[t];
+  draw_icon(framebuffer, fb_width,
+    src, icon_width, icon_height,
+    dst_x, dst_y,
+    col == highlight_col);
+  row++;
+}
+
 void TextPainter::render_glyph(int dst_x, int dst_y, char c, uint32_t color) {
   int glyph_row = (c >> 5) * 16 + 2;
   int glyph_col = (c & 31) * 8;

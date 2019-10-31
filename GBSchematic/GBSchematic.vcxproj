@@ -161,12 +161,15 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <AdditionalIncludeDirectories>$(SolutionDir)/SDL2</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)\SDL2\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2Main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -205,13 +208,23 @@
     <ClCompile Include="pages\P36_Palettes.cpp" />
     <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
+    <ClCompile Include="SignalTree.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TimerHax.cpp" />
+    <ClCompile Include="TraceLog.cpp" />
+    <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\TextPainter.h" />
+    <ClInclude Include="pages\P01_ClocksReset.h" />
+    <ClInclude Include="pages\P02_Interrupts.h" />
+    <ClInclude Include="pages\P03_Timer.h" />
     <ClInclude Include="Register.h" />
     <ClInclude Include="Schematics.h" />
+    <ClInclude Include="SignalTree.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TraceLog.h" />
+    <ClInclude Include="TraceViewer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="notes.txt" />

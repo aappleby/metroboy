@@ -79,7 +79,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   audio_init();
 
   background = new uint32_t[fb_width * fb_height];
-  //framebuffer = new uint32_t[fb_width * fb_height];
 
   for (int y = 0; y < fb_height; y++) {
     for (int x = 0; x < fb_width; x++) {
@@ -87,14 +86,6 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
       background[x + y * fb_width] = c;
     }
   }
-
-  tp.glyph_width = glyph_width;
-  tp.glyph_height = glyph_height;
-  tp.glyph_stride = glyph_stride;
-  tp.fb_width = fb_width;
-  tp.fb_height = fb_height;
-  tp.framebuffer = framebuffer;
-  tp.font = terminus_font;
 
   while (!quit) loop();
 
@@ -247,8 +238,7 @@ void MetroBoyApp::loop() {
 
   SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
   memcpy(framebuffer, background, fb_width * fb_height * 4);
-
-  tp.framebuffer = framebuffer;
+  tp.begin_frame(framebuffer, fb_width, fb_height);
 
   //----------------------------------------
   // Left column text

@@ -1,7 +1,40 @@
 #include "Timer.h"
 
-#define wire bool
-typedef const uint8_t wire8;
+std::vector<SignalData> Timer::signals1() {
+  return 
+  {
+    SignalData("CLK_ABCD_Q", offsetof(Timer, CLK_ABCD), 0, 1),
+    SignalData("CLK_BCDE_Q", offsetof(Timer, CLK_BCDE), 0, 1),
+    SignalData("CLK_CDEF_Q", offsetof(Timer, CLK_CDEF), 0, 1),
+    SignalData("CLK_DEFG_Q", offsetof(Timer, CLK_DEFG), 0, 1),
+    /*
+    SignalData("DIV",        offsetof(Timer, DIV),  0, 16),
+    SignalData("TIMA",       offsetof(Timer, TIMA), 0, 8),
+    SignalData("TMA",        offsetof(Timer, TMA),  0, 8),
+    SignalData("TAC",        offsetof(Timer, TAC),  0, 8),
+    SignalData("INT0",       offsetof(Timer, INT_TIMER_DELAY_0), 0, 1),
+    SignalData("INT1",       offsetof(Timer, INT_TIMER_DELAY_1), 0, 1),
+    */
+  };
+}
+
+std::vector<SignalData> Timer::signals2() {
+  return 
+  {
+    /*
+    SignalData("CLK_ABCD_Q", offsetof(Timer, CLK_ABCD), 0, 1),
+    SignalData("CLK_BCDE_Q", offsetof(Timer, CLK_BCDE), 0, 1),
+    SignalData("CLK_CDEF_Q", offsetof(Timer, CLK_CDEF), 0, 1),
+    SignalData("CLK_DEFG_Q", offsetof(Timer, CLK_DEFG), 0, 1),
+    */
+    SignalData("DIV",        offsetof(Timer, DIV),  0, 16),
+    SignalData("TIMA",       offsetof(Timer, TIMA), 0, 8),
+    SignalData("TMA",        offsetof(Timer, TMA),  0, 8),
+    SignalData("TAC",        offsetof(Timer, TAC),  0, 8),
+    SignalData("INT0",       offsetof(Timer, INT_TIMER_DELAY_0), 0, 1),
+    SignalData("INT1",       offsetof(Timer, INT_TIMER_DELAY_1), 0, 1),
+  };
+}
 
 bool Timer::tick_BOGA1MHZ(bool CPU_RESET, bool CLK_GOOD) const {
   wire CLK_ABCD_Q = CLK_ABCD.q();
@@ -26,11 +59,12 @@ bool Timer::tick_RESET2(bool CPU_RESET, bool RESET, bool CLK_GOOD) {
 }
 
 Timer::Output Timer::tock1(const Timer::Input& in) {
-
   wire16 DIV_Q = DIV.q();
-  wire8 TIMA_Q = TIMA.q();
-  wire8 TMA_Q = TMA.q();
-  wire8 TAC_Q = TAC.q();
+  wire8  TMA_Q = TMA.q();
+  wire8  TAC_Q = TAC.q();
+
+  wire8  TIMA_Q = TIMA.val;
+  wire tima_carry = TIMA.carry;
 
   wire TAC_0_Q = wire(TAC_Q & (1 << 0));
   wire TAC_1_Q = wire(TAC_Q & (1 << 1));
@@ -73,43 +107,32 @@ Timer::Output Timer::tock1(const Timer::Input& in) {
   wire TECY = mux2(mux2(DIV_5, DIV_3, TAC_0_Q),
                    mux2(DIV_1, DIV_7, TAC_0_Q),
                    TAC_1_Q);
+  wire TIMA_CLK = and(not(TECY), TAC_2_Q);
+  TIMA.count(TIMA_CLK);
 
-  wire TIMA_WR = and(in.CPU_WR, in.addr == 0xFF05);
-
-  uint8_t TIMA_NEW = TMA_Q;
-  if (TIMA_WR) TIMA_NEW = in.D;
-  if (!RESET2) TIMA_NEW = 0;
-
-  wire MEXU = or(and(!in.FROM_CPU5, TIMA_WR), INT_TIMER_DELAY_1_Q);
-
-  wire TIMA_CLK = and(TECY, TAC_2_Q);
-  TIMA.count(TIMA_CLK, MEXU, TIMA_NEW);
-
-  if (!MEXU) {
-    TIMA.load(TIMA_NEW);
-  }
-
-  // no this isn't right, it should be using the carry from TIMA
-  wire TIMA_7 = wire(TIMA_Q & (1 << 7));
-  INT_TIMER_DELAY_0.tock(BOGA1MHZ, not(MEXU), TIMA_7); 
-  INT_TIMER_DELAY_1.tock(BOGA1MHZ, RESET2,    nor(!INT_TIMER_DELAY_0_Q, TIMA_7));
-
+  // Why do we load the inverted versions of in.data and TMA_Q?
   if (!RESET2) {
-    // load active high, probably async
     TIMA.load(0);
-    INT_TIMER_DELAY_0.reset(); 
-    INT_TIMER_DELAY_1.reset();
   }
+  else if (not(in.FROM_CPU5) && in.CPU_WR && in.addr == 0xFF05) {
+    TIMA.load(~in.data);
+  }
+  else if (INT_TIMER_DELAY_1_Q) {
+    TIMA.load(~TMA_Q);
+  }
+
+  INT_TIMER_DELAY_0.tock(BOGA1MHZ, tima_carry);
+  INT_TIMER_DELAY_1.tock(BOGA1MHZ, and(INT_TIMER_DELAY_0_Q, not(tima_carry)));
 
   //--------------------------------------------------------------------------------
 
   Output out = {};
 
   if (in.CPU_RD) {
-    if (in.addr == 0xFF04) out.D_OE = true; out.D = uint8_t(DIV_Q >> 6);
-    if (in.addr == 0xFF07) out.D_OE = true; out.D = TAC_Q;
-    if (in.addr == 0xFF06) out.D_OE = true; out.D = TMA_Q;
-    if (in.addr == 0xFF05) out.D_OE = true; out.D = TIMA_Q;
+    if (in.addr == 0xFF04) out.data_oe = true; out.data = uint8_t(DIV_Q >> 6);
+    if (in.addr == 0xFF07) out.data_oe = true; out.data = TAC_Q;
+    if (in.addr == 0xFF06) out.data_oe = true; out.data = TMA_Q;
+    if (in.addr == 0xFF05) out.data_oe = true; out.data = TIMA_Q;
   }
 
   out.INT_TIMER = INT_TIMER_DELAY_1_Q;
@@ -125,13 +148,16 @@ Timer::Output Timer::tock1(const Timer::Input& in) {
   //----------
 
   wire DIV_WR = and(in.CPU_WR, in.addr == 0xFF04);
-  DIV.count(BOGA1MHZ, nor(not(in.CLK_GOOD), in.RESET, DIV_WR), 0);
+  DIV.count(BOGA1MHZ);
+  if (or(not(in.CLK_GOOD), in.RESET, DIV_WR)) {
+    DIV.reset();
+  }
 
   wire TMA_WR = and(in.CPU_WR, in.addr == 0xFF06);
-  TMA.tock(!TMA_WR, RESET2, in.D);
+  TMA.tock(!TMA_WR, RESET2, in.data);
 
   wire TAC_WR = and(in.CPU_WR, in.addr == 0xFF07);
-  TAC.tock(!TAC_WR, RESET2, in.D);
+  TAC.tock(!TAC_WR, RESET2, in.data);
 
   //----------
 

@@ -34,6 +34,7 @@ template<typename T, typename... Args> const T nand(const T first, Args... args)
 template<typename T>
 inline const T not(T a) { return !a; }
 
+// m = 1 selects input _ZERO_
 template<typename T>
 inline const T mux2 (T a, T b, bool m)   { return m ? a : b; }
 
@@ -89,6 +90,13 @@ template<typename... Args> void unpack(uint32_t x, bool& first, Args&... args) {
   first = bool(x & 1);
   unpack(x >> 1, args...);
 }
+
+//-----------------------------------------------------------------------------
+
+void tock_neg (const bool r1, bool& r2, bool clk1, bool clk2, bool rst, bool d);
+void tock_pos (const bool r1, bool& r2, bool clk1, bool clk2, bool rst, bool d);
+void tock_duo (const bool r1, bool& r2, bool clk1, bool clk2, bool rst, bool d);
+void count_neg(const bool r1, bool& r2, bool clk1, bool clk2, bool load, bool d);
 
 //-----------------------------------------------------------------------------
 

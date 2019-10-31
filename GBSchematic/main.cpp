@@ -29,56 +29,10 @@ void sprintf(std::string& out, const char* format, Args ... args)
 //-----------------------------------------------------------------------------
 
 #if 0
-struct Pages {
-  int64_t timestamp;
-  P01_ClocksReset page01;
-};
-
-const std::vector<SignalData> P01_ClocksReset::signals =
-{
-  SignalData("timestamp", offsetof(Pages, timestamp), 0, 1),
-  SignalData("page01",    offsetof(Pages, page01),    P01_ClocksReset::signals),
-};
-#endif
-
-//-----------------------------------------------------------------------------
-
-#if 0
-struct Sample {
-  int64_t timestamp;
-  Timer timer;
-};
-
-void step_forwards(void* blob) {
-  Sample* sample = (Sample*)blob;
-
-  Timer::Input in = {};
-
-  in.CPU_RD    = true;
-  in.RESET     = false;
-  in.CLK_GOOD  = true;
-  in.CLKIN_B   = (sample->timestamp & 1);
-  in.CPU_RESET = false;
-  in.FROM_CPU3 = true;
-  in.FROM_CPU4 = false;
-  in.CPU_WR    = false;
-
-  sample->timer.tock1(in);
-  sample->timestamp++;
-}
-
-const std::vector<SignalData> wrapper_signals =
-{
-  SignalData("timer1------------------------------", offsetof(Sample, timer), Timer::signals1()),
-  SignalData("timer2------------------------------", offsetof(Sample, timer), Timer::signals2()),
-};
-#endif
-
-
 struct Sample {
   int64_t timestamp;
   P01_ClocksReset page01;
-  P03_Timer       page03;
+  //P03_Timer       page03;
 };
 
 void step_forwards(void* blobA, void* blobB) {
@@ -109,33 +63,6 @@ void step_forwards(void* blobA, void* blobB) {
   sampleB->page01.in_FF60_D1     = false;
 
   sampleB->page01.tick(sampleA->page01);
-
-  /*
-  struct Input {
-  bool RESET2;
-
-  bool BOGA_1M;
-  bool CLK_256k;
-  bool CLK_64k;
-  bool CLK_16k;
-
-  bool CPU_RD;
-  bool CPU_WR;
-
-  bool FROM_CPU5;
-
-  bool A00_07;
-  bool FFXX;
-  bool TOLA_A1n;
-  bool FF04_D1n;
-
-  bool INT_TIMER;
-
-  bool A0,A1,A2,A3,A4,A5,A6,A7;
-  bool D0,D1,D2,D3,D4,D5,D6,D7;
-
-  };
-  */
 
   sampleB->page03.in.RESET2 = sampleB->page01.out_RESET2;
 
@@ -183,8 +110,9 @@ const std::vector<SignalData> sample_signals =
   SignalData("stamp1", offsetof(Sample, timestamp), 1, 1),
   SignalData("stamp2", offsetof(Sample, timestamp), 2, 1),
   SignalData("page01", offsetof(Sample, page01), P01_ClocksReset::signals()),
-  SignalData("page03", offsetof(Sample, page03), P03_Timer::signals()),
+  //SignalData("page03", offsetof(Sample, page03), P03_Timer::signals()),
 };
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -217,6 +145,82 @@ int render_labels(TextPainter& tp, int x, int y, const std::vector<SignalData>& 
 
 //-----------------------------------------------------------------------------
 
+uint64_t hash(void* blob, int size) {
+  uint8_t* src = (uint8_t*)blob;
+  uint64_t h = 0;
+  for (int i = 0; i < size; i++) {
+    h += src[i];
+    h *= 0x1234567;
+    h ^= h >> 32;
+  }
+  return h;
+}
+
+void dump(void* blob, int size) {
+  uint8_t* src = (uint8_t*)blob;
+  for (int i = 0; i < size; i++) {
+    printf("%c", src[i] ? '+' : '-');
+  }
+  printf("\n");
+}
+
+int main(int /*argc*/, char** /*argv*/) {
+  printf("Hello World Again\n");
+
+  P01_ClocksReset a, b, c;
+  P01_ClocksReset *pa = &a, *pb = &b, *pc = &c;
+
+  a = {};
+  b = {};
+  memset(&c, 0xCD, sizeof(c));
+  //c = {};
+
+  for (int tick = 0; tick < 100; tick++) {
+    P01_ClocksReset old = *pc;
+
+    //printf("tick %d\n", tick);
+    uint64_t h1 = 0;
+    for (int i = 0; i < 40; i++) {
+      pb->RESET = true;
+      pb->APU_RESET5n = false;
+      pb->APU_RESET = true;
+
+      pb->ABOL = false;
+      pb->AJER_2M = false;
+      pb->CLKIN_A = true;
+      pb->CLKIN_B = tick & 1;
+      pb->CPU_RD = false;
+      pb->CPU_WR = false;
+      pb->FERO_Q = false;
+      pb->FF04_FF07 = false;
+      pb->FF40_D7 = true;
+      pb->FF60_D1 = false;
+      pb->FROM_CPU3 = false;
+      pb->FROM_CPU4 = false;
+      pb->T1nT2 = false;
+      pb->T1nT2n = true;
+      pb->T1T2n = false;
+      pb->TOLA_A1n = false;
+      pb->TOVY_A0n = false;
+      pb->CYBO_4M = false;
+
+      P01_ClocksReset::tick(*pa,*pb,*pc);
+      uint64_t h2 = hash(pc, sizeof(P01_ClocksReset));
+      if (h1 == h2) break;
+      h1 = h2;
+
+      //printf("%llx\n", hash(&c, sizeof(c)));
+      P01_ClocksReset* pt = pa; pa = pb; pb = pc; pc = pt;
+    }
+    //printf("%llx %d %d %d %d\n", h1, pc->UKUP, pc->UFOR, pc->UNER, pc->TERO);
+    printf("%016llx %d %d %d %d\n", h1, pc->AFUR, pc->ALEF, pc->APUK, pc->ADYK);
+    //dump(pc, sizeof(P01_ClocksReset));
+  }
+
+  return 0;
+}
+
+#if 0
 int main(int /*argc*/, char** /*argv*/) {
   const int fb_width = 1900;
   const int fb_height = 1000;
@@ -250,9 +254,16 @@ int main(int /*argc*/, char** /*argv*/) {
 
   //bool SABO,SAMY,SOPU;
 
+  /*
   reset_sample.page03.SOPU_0 = true;
-  reset_sample.page03.SAMY_1 = true;
+  reset_sample.page03.SAMY_1 = false;
   reset_sample.page03.SABO_2 = true;
+
+  reset_sample.page03.SABU_0 = 1;
+  reset_sample.page03.MURU_2 = 1;
+  reset_sample.page03.TYRU_4 = 1;
+  reset_sample.page03.PETO_6 = 1;
+  */
 
   uint64_t timeA = SDL_GetPerformanceCounter();
 
@@ -273,10 +284,10 @@ int main(int /*argc*/, char** /*argv*/) {
   uint64_t frame_begin, frame_end, frame_time = 0;
   uint64_t freq = SDL_GetPerformanceFrequency();
 
-  //double center = 2500.0;
-  //int zoom = 0;
-  double center = 130822;
-  int zoom = -40;
+  double center = 512.0;
+  int zoom = -8;
+  //double center = 130822;
+  //int zoom = -40;
 
   bool quit = false;
   while (!quit) {
@@ -421,5 +432,6 @@ int main(int /*argc*/, char** /*argv*/) {
 
   return 0;
 }
+#endif
 
 //-----------------------------------------------------------------------------

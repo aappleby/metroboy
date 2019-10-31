@@ -2,128 +2,61 @@
 #include "../Schematics.h"
 #include "../SignalTree.h"
 
-//#define KEEP_CELLS
-
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
 struct P01_ClocksReset {
-
   //----------
   // Inputs
 
-  // physical pins
-  bool in_CPU_RD;
-  bool in_CPU_WR;
-  bool in_RESET;       // active high!
-  bool in_CLKIN_A;     // this is actually CLOCK_GOOD or similar
-  bool in_CLKIN_B;     // the master 4mhz clock
-
-  bool in_ABOL;        // this is actually CPU_RESET or similar
-  
-  // hacking this in here for testing
-  //bool in_AJER_2MHZ;   // on apu sheet
-  
-  bool in_FROM_CPU3;   // probably CPU_RAW_WR
-  bool in_FROM_CPU4;   // controls ABUZ, sets WR_A/WR_C/RD_A/RD_C to 0 if low
-  bool in_APU_RESET;
-  bool in_APU_RESET5n;
-  bool in_FERO_Q;      // something debug-related
-  bool in_FF04_FF07;
-  bool in_TOLA_A1n;
-  bool in_TOVY_A0n;
-  bool in_T1T2n;       // true for debugging
-  bool in_T1nT2;       // true for debugging
-  bool in_T1nT2n;      // true for normal mode
-  bool in_FF40_D7;     // lcd on
-  bool in_FF60_D1;     // debugging
-
-  //----------
-  // Outputs
-
-  bool out_CLKIN_An;
-  bool out_CLK1;
-  bool out_CLK2;
-  bool out_ATAL_4M;    // phases BDFH
-  bool out_AMUK_4M;    // phases ACEG
-  bool out_ARYF_4M;    // phases BDFH
-  bool out_APUV_4M;    // phases BDFH
-  bool out_CYBO_4M;    // from P17
-  bool out_AJER_2M;
-  bool out_CERY_2M;
-  bool out_BAVU_1M;    // phases CDEF
-  bool out_DYFA_1M;
-  bool out_BOGA_1M;    // high on phases BCDEF
-  bool out_JESO_512K;
-  bool out_HAMA_512Kn;
-  bool out_CLK_256K;
-  bool out_CLK_64K;
-  bool out_CLK_16K;
-  bool out_TAMA_16K;
-  bool out_HORU_512;
-  bool out_BUFY_256;
-  bool out_BYFE_128;
-
-  bool out_FF04_D0n;
-  bool out_FF04_D1n;
-
-  // cartridge clock
-  bool out_PHIn;
-  bool out_PHI_OUT;
-  bool out_PHI_OUTn;
-
-  bool out_RESET2;      // active low!
-  bool out_RESET6;
-  bool out_RESET7;
-  bool out_RESET7n;
-  bool out_RESET8;
-  bool out_RESET9;
-  bool out_RESET_VIDEO;
-  bool out_RESET_DIVn;
-
-  bool out_TO_CPU;
-  bool out_CPU_RD_SYNC; // actually CPU_WR_SYNC, __not__ read
-  bool out_BUKE;
-  bool out_ABUZ;
-  bool out_AFAS;
-  bool out_UMER;
-
-
-  bool out_D0,out_D1,out_D2,out_D3,out_D4,out_D5,out_D6,out_D7;
+  bool ABOL;        // this is actually CPU_RESET or similar
+  bool AJER_2M;
+  bool APU_RESET5n;
+  bool APU_RESET;
+  bool CLKIN_A;     // this is actually CLOCK_GOOD or similar
+  bool CLKIN_B;     // the master 4mhz clock
+  bool CPU_RD;
+  bool CPU_WR;
+  bool FERO_Q;      // something debug-related
+  bool FF04_FF07;
+  bool FF40_D7;     // lcd on
+  bool FF60_D1;     // debugging
+  bool FROM_CPU3;   // probably CPU_RAW_WR
+  bool FROM_CPU4;   // controls ABUZ, sets WR_A/WR_C/RD_A/RD_C to 0 if low
+  bool RESET;       // active high!
+  bool T1nT2;       // true for debugging
+  bool T1nT2n;      // true for normal mode
+  bool T1T2n;       // true for debugging
+  bool TOLA_A1n;
+  bool TOVY_A0n;
+  bool CYBO_4M;     // from P17
 
   //----------
   // Logic cells
 
-#ifdef KEEP_CELLS
+  bool BAPY,BERU,BUFA,BYLY,BOLO,BYDA;
+  bool NULE,BYRY,BUDE,BEVA,BEKO,BAVY,DOVA;
+  bool BEJA,BANE,BELO,BAZE,BUTO,BELE,ATEZ,BYJU,BALY,BOGA,BOMA,AFER,ALYP,AFAR,ASOL,AVOR,ALUR;
+  bool BUTY,BUVU,BYXO,BEDO,BOWA;
 
-  bool ABUZ,ADAR,AFAR,AFAS,AFEP,AGUT,AJAX,ALET;
-  bool ALUR,ALYP,AMUK,APEF,APOV,APUV,AREV,AROV;
-  bool ARYF,ASOL,ATAG,ATAL,ATEZ,ATUS,ATYP,AVOR;
-  bool AWOD,AZOF,BALY,BANE,BAPY,BARU,BASU,BATE;
-  bool BAVY,BAZE,BEDO,BEJA,BEKO,BELE,BELO,BERU;
-  bool BEVA,BEZE,BOLO,BOPO,BOWA,BUDE,BUFA,BUFY;
-  bool BUGO,BUKE,BULE,BUTO,BUTY,BUVU,BYDA,BYFE;
-  bool BYJU,BYLY,BYRY,BYXO,COFU,CULO,CUNU,DOVA;
-  bool DULA,FYNE,GALE,GEXY,HAMA,HORU,NULE,RAVE;
-  bool RYSO,SAPY,SAWA,SEPU,TABA,TAGY,TAKU,TAPE;
-  bool TATU,TAWU,TEMU,TUBO,TUSE,UCOB,UDOR,UFOL;
-  bool UMEK,UMER,UNUT,UPUG,UPYF,UREK,UTOK,UVYN;
-  bool WALU,WESY,XAPO,XEBE,XODO,XORE,ZAXY,ZEME;
-  bool ARYS,BELA,CYBO;
+  bool TAPE,UFOL;
 
-#endif
+  bool DULA,CUNU,XORE,WESY,WALU;
+  bool XEBE,XODO,XAPO;
+  bool UCOB;
 
-  //----------
-  // Clock cells
+  bool ARYS,ANOS,AVET,ATAL,AZOF,ATAG,ZAXY,AMUK,ZEME,APUV,ARYF,ALET;
 
-  bool BAVU,COKE,BURE,BOGA,ULUR,BOMA;
+  bool BELA,CERY;
 
-  // from P09
-  bool BATA,DYFA;
+  bool UVYT;
 
-  // Cells needed for deglitcher
-  bool ANOS,AVET;
+  bool UPYF,TUBO,UNUT,TABA;
+
+  bool ATUS,COKE,BARA,CARU,BYLU,BURE,FYNE,CULO,APEF,GALE,BEZE,BULE,GEXY,COFU,BARU,HORU,BUFY,BYFE;
+
+  bool BOPO,ATYK,AVOK,BAVU,JESO,HAMA;
 
   //----------
   // Registers
@@ -131,33 +64,66 @@ struct P01_ClocksReset {
   // 1mhz phase generator, regs in order of triggering.
   // not 100% sure of the phase of this thing relative to CLKIN_B...
 
-  bool AFUR; // phases ABCD
-  bool ALEF; // phases BCDE
-  bool APUK; // phases CDEF
-  bool ADYK; // phases DEFG
+  //bool AFUR; // phases ABCD
+  //bool ALEF; // phases BCDE
+  //bool APUK; // phases CDEF
+  //bool ADYK; // phases DEFG
+  bool AFUR,ATYP,AJAX,AGUT,AWOD,ABUZ;
+  bool ALEF,AFEP,BUGO,BATE,BASU,BUKE;
+  bool APUK,AROV;
+  bool ADYK,ADAR,AFAS,AREV,APOV;
 
-  // register for the RESET2 signal, roughly
-  bool AFER;
 
   // div
   bool UKUP,UFOR,UNER,TERO,UNYK,TAMA;
+  bool UVYN, ULUR;
   bool UGOT,TULU,TUGO,TOFE,TERU,SOLA,SUBU,TEKA,UKET,UPOF;
+  bool UMEK,UREK,UTOK,SAPY,UMER,RAVE,RYSO,UDOR;
+  bool TAGY;
+  bool TAWU,TAKU,TEMU,TUSE,UPUG,SEPU,SAWA,TATU;
 
-  // clock divider for apu sequencer
-  bool BARA,CARU,BYLU;
+  //----------
+  // Outputs
 
-  // clock divider for something else...
-  bool ATYK,AVOK,JESO;
-
-  // clock regs from P09
-  bool AJER,CALO;
-
-  // moar clock dividers
-  bool CERY;
+  bool AMUK_4M;    // phases ACEG
+  bool APUV_4M;    // phases BDFH
+  bool ARYF_4M;    // phases BDFH
+  bool ATAL_4M;    // phases BDFH
+  bool BAVU_1M;    // phases CDEF
+  bool BOGA_1M;    // high on phases BCDEF
+  bool BUFY_256;
+  bool BYFE_128;
+  bool CERY_2M;
+  bool CLK1;
+  bool CLK2;
+  bool CLK_16K;
+  bool CLK_256K;
+  bool CLK_64K;
+  bool CLKIN_An;
+  bool CPU_RD_SYNC; // actually CPU_WR_SYNC, __not__ read
+  bool D0,D1,D2,D3,D4,D5,D6,D7;
+  bool FF04_D0n;
+  bool FF04_D1n;
+  bool HAMA_512Kn;
+  bool HORU_512;
+  bool JESO_512K;
+  bool PHI_OUT;
+  bool PHI_OUTn;
+  bool PHIn;
+  bool RESET2;      // active low!
+  bool RESET6;
+  bool RESET7;
+  bool RESET7n;
+  bool RESET8;
+  bool RESET9;
+  bool RESET_DIVn;
+  bool RESET_VIDEO;
+  bool TAMA_16K;
+  bool TO_CPU;
 
   //----------
 
   static const std::vector<SignalData> signals();
 
-  void tick(const P01_ClocksReset& prev);
+  static void tick(const P01_ClocksReset& a, const P01_ClocksReset& b, P01_ClocksReset& c);
 };

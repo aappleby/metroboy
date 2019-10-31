@@ -16,6 +16,7 @@ const std::vector<SignalData> P03_Timer::signals() {
     SignalData("RAGE_5", offsetof(P03_Timer, RAGE_5), 0, 1),
     SignalData("PEDA_6", offsetof(P03_Timer, PEDA_6), 0, 1),
     SignalData("NUGA_7", offsetof(P03_Timer, NUGA_7), 0, 1),
+    SignalData("NUGA_C", offsetof(P03_Timer, NUGA_C), 0, 1),
 
     /*
     SignalData("-----TMA-----"),
@@ -54,13 +55,26 @@ void P03_Timer::tick(const P03_Timer& prev) {
   //----------
   // tac
 
-  wire RYFO = and(in.A2, in.A00_07, in.FFXX);
+  RYFO = and(in.A2, in.A00_07, in.FFXX);
   out.FF04_FF07 = RYFO;
   SARA = nand(in.CPU_WR, out.FF04_FF07, in.A0, in.A1);
 
-  tock_neg(prev.SOPU_0, SOPU_0, prev.SARA, SARA, in.RESET2, in.D0);
-  tock_neg(prev.SAMY_1, SAMY_1, prev.SARA, SARA, in.RESET2, in.D1);
-  tock_neg(prev.SABO_2, SABO_2, prev.SARA, SARA, in.RESET2, in.D2);
+  SOPU_0 = prev.SOPU_0;
+  SAMY_1 = prev.SAMY_1;
+  SABO_2 = prev.SABO_2;
+
+  if (prev.SARA && !SARA) {
+    SOPU_0 = in.D0;
+    SAMY_1 = in.D1;
+    SABO_2 = in.D2;
+  }
+
+  if (!in.RESET2) {
+    SOPU_0 = 0;
+    SAMY_1 = 0;
+    SABO_2 = 0;
+  }
+
 
   SORA = and(in.CPU_RD, out.FF04_FF07, in.A1, in.A0);
   RYLA = not(!SOPU_0);
@@ -84,7 +98,7 @@ void P03_Timer::tick(const P03_Timer& prev) {
   //----------
   // tma
 
-  wire TOVY = not(in.A0);
+  TOVY = not(in.A0);
   out.TOVY_A0n = TOVY;
   TYJU = nand(TOVY, in.A1, in.CPU_WR, out.FF04_FF07);
 
@@ -97,16 +111,16 @@ void P03_Timer::tick(const P03_Timer& prev) {
   tock_neg(prev.PETO_6, PETO_6, prev.TYJU, TYJU, in.RESET2, in.D6);
   tock_neg(prev.SETA_7, SETA_7, prev.TYJU, TYJU, in.RESET2, in.D7);
 
-  wire SETE = not(!SABU_0);
-  wire PYRE = not(!NYKE_1);
-  wire NOLA = not(!MURU_2);
-  wire SALU = not(!TYVA_3);
-  wire SUPO = not(!TYRU_4);
-  wire SOTU = not(!SUFY_5);
-  wire REVA = not(!PETO_6);
-  wire SAPU = not(!SETA_7);
+  SETE = not(!SABU_0);
+  PYRE = not(!NYKE_1);
+  NOLA = not(!MURU_2);
+  SALU = not(!TYVA_3);
+  SUPO = not(!TYRU_4);
+  SOTU = not(!SUFY_5);
+  REVA = not(!PETO_6);
+  SAPU = not(!SETA_7);
 
-  wire TUBY = and(out.FF04_FF07, in.CPU_RD, in.A1, TOVY);
+  TUBY = and(out.FF04_FF07, in.CPU_RD, in.A1, TOVY);
   if (TUBY) {
     out.D0 = SETE;
     out.D1 = PYRE;
@@ -121,58 +135,89 @@ void P03_Timer::tick(const P03_Timer& prev) {
   //----------
   // tima reload mux
 
-  wire TOPE = nand(in.CPU_WR, out.FF04_FF07, in.A0, in.TOLA_A1n);
-  wire ROKE = mux2(SABU_0, in.D0, TOPE);
-  wire PETU = mux2(NYKE_1, in.D1, TOPE);
-  wire NYKU = mux2(MURU_2, in.D2, TOPE);
-  wire SOCE = mux2(TYVA_3, in.D3, TOPE);
-  wire SALA = mux2(TYRU_4, in.D4, TOPE);
-  wire SYRU = mux2(SUFY_5, in.D5, TOPE);
-  wire REFU = mux2(PETO_6, in.D6, TOPE);
-  wire RATO = mux2(SETA_7, in.D7, TOPE);
+  TOPE = nand(in.CPU_WR, out.FF04_FF07, in.A0, in.TOLA_A1n);
+  ROKE = mux2(SABU_0, in.D0, TOPE);
+  PETU = mux2(NYKE_1, in.D1, TOPE);
+  NYKU = mux2(MURU_2, in.D2, TOPE);
+  SOCE = mux2(TYVA_3, in.D3, TOPE);
+  SALA = mux2(TYRU_4, in.D4, TOPE);
+  SYRU = mux2(SUFY_5, in.D5, TOPE);
+  REFU = mux2(PETO_6, in.D6, TOPE);
+  RATO = mux2(SETA_7, in.D7, TOPE);
 
   // this nor doesn't make sense, it puts a negated value into TIMA
   /*
-  wire MULO = not(in.RESET2);
-  wire PUXY = nor(MULO, ROKE);
-  wire NERO = nor(MULO, PETU);
-  wire NADA = nor(MULO, NYKU);
-  wire REPA = nor(MULO, SOCE);
-  wire ROLU = nor(MULO, SALA);
-  wire RUGY = nor(MULO, SYRU);
-  wire PYMA = nor(MULO, REFU);
-  wire PAGU = nor(MULO, RATO);
+  MULO = not(in.RESET2);
+  PUXY = nor(MULO, ROKE);
+  NERO = nor(MULO, PETU);
+  NADA = nor(MULO, NYKU);
+  REPA = nor(MULO, SOCE);
+  ROLU = nor(MULO, SALA);
+  RUGY = nor(MULO, SYRU);
+  PYMA = nor(MULO, REFU);
+  PAGU = nor(MULO, RATO);
   */
 
   // this makes more sense but doesn't match the schematic
-  wire MULO = in.RESET2;
-  wire PUXY = and(MULO, ROKE);
-  wire NERO = and(MULO, PETU);
-  wire NADA = and(MULO, NYKU);
-  wire REPA = and(MULO, SOCE);
-  wire ROLU = and(MULO, SALA);
-  wire RUGY = and(MULO, SYRU);
-  wire PYMA = and(MULO, REFU);
-  wire PAGU = and(MULO, RATO);
+  MULO = in.RESET2;
+  PUXY = and(MULO, ROKE);
+  NERO = and(MULO, PETU);
+  NADA = and(MULO, NYKU);
+  REPA = and(MULO, SOCE);
+  ROLU = and(MULO, SALA);
+  RUGY = and(MULO, SYRU);
+  PYMA = and(MULO, REFU);
+  PAGU = and(MULO, RATO);
 
   //----------
   // tima
 
+  // daisy chain
+
+  REGA_0 = prev.REGA_0; REGA_C = prev.REGA_C; 
+  POVY_1 = prev.POVY_1; POVY_C = prev.POVY_C;
+  PERU_2 = prev.PERU_2; PERU_C = prev.PERU_C;
+  RATE_3 = prev.RATE_3; RATE_C = prev.RATE_C;
+  RUBY_4 = prev.RUBY_4; RUBY_C = prev.RUBY_C;
+  RAGE_5 = prev.RAGE_5; RAGE_C = prev.RAGE_C;
+  PEDA_6 = prev.PEDA_6; PEDA_C = prev.PEDA_C;
+  NUGA_7 = prev.NUGA_7; NUGA_C = prev.NUGA_C;
+
+  if (!prev.SOGU   && SOGU)   { REGA_0 = !prev.REGA_0; REGA_C = prev.REGA_0; }
+  if (!prev.REGA_C && REGA_C) { POVY_1 = !prev.POVY_1; POVY_C = prev.POVY_1; }
+  if (!prev.POVY_C && POVY_C) { PERU_2 = !prev.PERU_2; PERU_C = prev.PERU_2; }
+  if (!prev.PERU_C && PERU_C) { RATE_3 = !prev.RATE_3; RATE_C = prev.RATE_3; }
+  if (!prev.RATE_C && RATE_C) { RUBY_4 = !prev.RUBY_4; RUBY_C = prev.RUBY_4; }
+  if (!prev.RUBY_C && RUBY_C) { RAGE_5 = !prev.RAGE_5; RAGE_C = prev.RAGE_5; }
+  if (!prev.RAGE_C && RAGE_C) { PEDA_6 = !prev.PEDA_6; PEDA_C = prev.PEDA_6; }
+  if (!prev.PEDA_C && PEDA_C) { NUGA_7 = !prev.NUGA_7; NUGA_C = prev.NUGA_7; }
+
+  //----------
+  // interrupt delay line
+
   wire MUZU = or(in.FROM_CPU5, TOPE);
-  wire MEKE = not(in.INT_TIMER);
+  wire MEKE = not(out.INT_TIMER);
   wire MEXU = nand(MUZU, in.RESET2, MEKE);
 
-  // daisy chain
-  count_neg(prev.REGA_0, REGA_0, prev.SOGU,   SOGU,   MEXU, PUXY);
-  count_neg(prev.POVY_1, POVY_1, prev.REGA_0, REGA_0, MEXU, NERO);
-  count_neg(prev.PERU_2, PERU_2, prev.POVY_1, POVY_1, MEXU, NADA);
-  count_neg(prev.RATE_3, RATE_3, prev.PERU_2, PERU_2, MEXU, REPA);
-  count_neg(prev.RUBY_4, RUBY_4, prev.RATE_3, RATE_3, MEXU, ROLU);
-  count_neg(prev.RAGE_5, RAGE_5, prev.RUBY_4, RUBY_4, MEXU, RUGY);
-  count_neg(prev.PEDA_6, PEDA_6, prev.RAGE_5, RAGE_5, MEXU, PYMA);
-  count_neg(prev.NUGA_7, NUGA_7, prev.PEDA_6, PEDA_6, MEXU, PAGU);
+  wire MUGY = not(MEXU);
+  tock_neg(prev.NYDU, NYDU, prev.in.BOGA_1M, in.BOGA_1M, MUGY, NUGA_C);
+  wire MERY = nor(!prev.NYDU, NUGA_7);
+  tock_neg(prev.MOBA, MOBA, prev.in.BOGA_1M, in.BOGA_1M, in.RESET2, MERY);
+  out.INT_TIMER = MOBA;
 
-  bool carry = prev.NUGA_7 && !NUGA_7;
+  if(MEXU) {
+    REGA_0 = PUXY; REGA_C = 0;
+    POVY_1 = NERO; POVY_C = 0;
+    PERU_2 = NADA; PERU_C = 0;
+    RATE_3 = REPA; RATE_C = 0;
+    RUBY_4 = ROLU; RUBY_C = 0;
+    RAGE_5 = RUGY; RAGE_C = 0;
+    PEDA_6 = PYMA; PEDA_C = 0;
+    NUGA_7 = PAGU; NUGA_C = 0;
+  }
+
+  //----------
+  // tima read
 
   wire SOKU = not(!REGA_0);
   wire RACY = not(!POVY_1);
@@ -195,13 +240,4 @@ void P03_Timer::tick(const P03_Timer& prev) {
     out.D6 = ROWU; // schematic missing annotation
     out.D7 = PUSO;
   }
-
-  //----------
-  // interrupt delay line
-
-  wire MUGY = not(MEXU);
-  tock_neg(prev.NYDU, NYDU, prev.in.BOGA_1M, in.BOGA_1M, MUGY, carry);
-  wire MERY = nor(!prev.NYDU, NUGA_7);
-  tock_neg(prev.MOBA, MOBA, prev.in.BOGA_1M, in.BOGA_1M, in.RESET2, MERY);
-  out.INT_TIMER = MOBA;
 }

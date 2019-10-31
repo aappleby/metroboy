@@ -1,11 +1,5 @@
 #include "P01_ClocksReset.h"
 
-#ifdef KEEP_CELLS
-#define cell
-#else
-#define cell bool
-#endif
-
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
@@ -13,24 +7,24 @@
 const std::vector<SignalData> P01_ClocksReset::signals() {
   return
   {
-    SignalData("CLKIN_B",     offsetof(P01_ClocksReset, in_CLKIN_B),    0, 1),
+    SignalData("-----Clocks-----"),
     SignalData("PHASE_A",     offsetof(P01_ClocksReset, AFUR),          0, 1),
     SignalData("PHASE_B",     offsetof(P01_ClocksReset, ALEF),          0, 1),
     SignalData("PHASE_C",     offsetof(P01_ClocksReset, APUK),          0, 1),
     SignalData("PHASE_D",     offsetof(P01_ClocksReset, ADYK),          0, 1),
     /*
-    SignalData("AMUK_4M",     offsetof(P01_ClocksReset, out_AMUK_4M),   0, 1),
-    SignalData("ATAL_4M",     offsetof(P01_ClocksReset, out_ATAL_4M),   0, 1),
-    SignalData("ARYF_4M",     offsetof(P01_ClocksReset, out_ARYF_4M),   0, 1),
-    SignalData("APUV_4M",     offsetof(P01_ClocksReset, out_APUV_4M),   0, 1),
-    SignalData("CYBO_4M",     offsetof(P01_ClocksReset, out_CYBO_4M),   0, 1),
-    SignalData("CERY_2M",     offsetof(P01_ClocksReset, out_CERY_2M),   0, 1),
-    SignalData("BAVU_1M",     offsetof(P01_ClocksReset, out_BAVU_1M),   0, 1),
+    SignalData("AMUK_4M",     offsetof(P01_ClocksReset, c.AMUK_4M),   0, 1),
+    SignalData("ATAL_4M",     offsetof(P01_ClocksReset, c.ATAL_4M),   0, 1),
+    SignalData("ARYF_4M",     offsetof(P01_ClocksReset, c.ARYF_4M),   0, 1),
+    SignalData("APUV_4M",     offsetof(P01_ClocksReset, c.APUV_4M),   0, 1),
+    SignalData("CYBO_4M",     offsetof(P01_ClocksReset, c.CYBO_4M),   0, 1),
+    SignalData("CERY_2M",     offsetof(P01_ClocksReset, c.CERY_2M),   0, 1),
+    SignalData("BAVU_1M",     offsetof(P01_ClocksReset, c.BAVU_1M),   0, 1),
+    SignalData("BOGA_1M",     offsetof(P01_ClocksReset, c.BOGA_1M),   0, 1),
+    SignalData("CPU_RD_SYNC", offsetof(P01_ClocksReset, c.CPU_RD_SYNC), 0, 1),
     */
-    SignalData("BOGA_1M",     offsetof(P01_ClocksReset, out_BOGA_1M),   0, 1),
-    //SignalData("CPU_RD_SYNC", offsetof(P01_ClocksReset, out_CPU_RD_SYNC), 0, 1),
-    SignalData("----------"),
 
+    SignalData("-----Resets-----"),
     SignalData("RESET2",      offsetof(P01_ClocksReset, AFER),          0, 1),
 
     SignalData("-----DIV-----"),
@@ -67,296 +61,303 @@ const std::vector<SignalData> P01_ClocksReset::signals() {
 
 //-----------------------------------------------------------------------------
 
-void P01_ClocksReset::tick(const P01_ClocksReset& prev) {
-
+void P01_ClocksReset::tick(const P01_ClocksReset& a, const P01_ClocksReset& b, P01_ClocksReset& c) {
   //----------
   // Reset tree
 
-  cell DULA = not(out_RESET2);
-  cell CUNU = not(DULA);
-  out_RESET6 = CUNU;
-  cell XORE = not(CUNU);
-  out_RESET7 = XORE;
-  cell WESY = not(XORE);
-  out_RESET9 = WESY;
-  cell WALU = not(XORE);
-  out_RESET8 = WALU;
-  cell XEBE = not(out_RESET7);
-  out_RESET7n = XEBE;
-  cell XODO = and(in_FF40_D7, XEBE);
-  cell XAPO = not(XODO);
-  out_RESET_VIDEO = XAPO;
+  c.DULA = not(b.RESET2);
+  c.XEBE = not(b.RESET7);          c.RESET7n = c.XEBE;
+  c.UCOB = not(b.CLKIN_A);         c.CLKIN_An = c.UCOB;
+  c.CUNU = not(b.DULA);            c.RESET6 = c.CUNU;
+  c.XODO = and(b.FF40_D7, b.XEBE);
+  c.XORE = not(b.CUNU);            c.RESET7 = c.XORE;
+  c.WESY = not(b.XORE);            c.RESET9 = c.WESY;
+  c.WALU = not(b.XORE);            c.RESET8 = c.WALU;
+  c.XAPO = not(b.XODO);            c.RESET_VIDEO = c.XAPO;
 
   //----------
   // Clock deglitcher + clock tree
 
-  cell ARYS = not(in_CLKIN_B);
+  c.ARYS = not(b.CLKIN_B);
 
   // clock deglitcher
-  ANOS = nand(in_CLKIN_B, prev.AVET);
-  AVET = nand(ANOS, ARYS);
-  ANOS = nand(in_CLKIN_B, AVET);
-  AVET = nand(ANOS, ARYS);
+  c.ANOS = nand(b.CLKIN_B, b.AVET);
+  c.AVET = nand(b.ANOS, b.ARYS);
 
-  cell ATAL = not(AVET);
-  cell AZOF = not(ATAL);
+  c.ATAL = not(b.AVET); c.ATAL_4M = c.ATAL;
+  c.AZOF = not(b.ATAL);
 
-  cell ATAG = not(AZOF);
-  cell ZAXY = not(AZOF);
+  c.ATAG = not(b.AZOF);
+  c.ZAXY = not(b.AZOF);
 
-  cell AMUK = not(ATAG);
-  cell ZEME = not(ZAXY);
+  c.AMUK = not(b.ATAG); c.AMUK_4M = c.AMUK;
+  c.ZEME = not(b.ZAXY); c.CLK1 = c.ZEME;
 
-  cell APUV = not(AMUK);
-  cell ARYF = not(AMUK);
-  cell ALET = not(ZEME);
+  c.APUV = not(b.AMUK); c.APUV_4M = c.APUV;
+  c.ARYF = not(b.AMUK); c.ARYF_4M = c.ARYF;
+  c.ALET = not(b.ZEME); c.CLK2 = c.ALET;
 
-  out_CLK1 = ZEME;
-  out_CLK2 = ALET;
-  out_ATAL_4M = ATAL;
-  out_AMUK_4M = AMUK;
-  out_ARYF_4M = ARYF;
-  out_APUV_4M = APUV;
+  //----------
+  // random clock
 
-  // from P17
-  cell CYBO = not(out_AMUK_4M);
-  out_CYBO_4M = CYBO;
+  c.BELA = not(b.APU_RESET);
 
-  cell BELA = not(in_APU_RESET);
-  tock_neg(prev.CERY, CERY, prev.out_CYBO_4M, out_CYBO_4M, BELA, !prev.CERY);
-  out_CERY_2M = CERY;
+  if (!b.BELA) {
+    c.CERY = 0;
+  }
+  else if (a.CYBO_4M && !b.CYBO_4M) {
+    c.CERY = !b.CERY;
+  }
+  else {
+    c.CERY = b.CERY;
+  }
 
-  // from P09
-  bool APU_RESET3n = not(in_APU_RESET);
-  tock_neg(prev.AJER, AJER, prev.out_APUV_4M, out_APUV_4M, APU_RESET3n, !prev.AJER);
-  out_AJER_2M = AJER;
-
-  BATA = not(AJER);
-  bool APU_RESETn = not(in_APU_RESET);
-  tock_neg(prev.CALO, CALO, prev.BATA, BATA, APU_RESETn, !prev.CALO);
-
-  DYFA = not(CALO);
-  out_DYFA_1M = DYFA;
+  c.CERY_2M = b.CERY;
 
   //----------
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
 
-  tock_duo(prev.AFUR, AFUR, prev.out_ATAL_4M, out_ATAL_4M, in_T1nT2n, !prev.ADYK);
-  tock_duo(prev.ALEF, ALEF, prev.out_ATAL_4M, out_ATAL_4M, in_T1nT2n, prev.AFUR);
-  tock_duo(prev.APUK, APUK, prev.out_ATAL_4M, out_ATAL_4M, in_T1nT2n, prev.ALEF);
-  tock_duo(prev.ADYK, ADYK, prev.out_ATAL_4M, out_ATAL_4M, in_T1nT2n, prev.APUK);
+  if (!b.T1nT2n) {
+    c.AFUR = 0;
+    c.ALEF = 0;
+    c.APUK = 0;
+    c.ADYK = 0;
+  }
+  else if (a.ATAL_4M != b.ATAL_4M) {
+    c.AFUR = !b.ADYK;
+    c.ALEF = b.AFUR;
+    c.APUK = b.ALEF;
+    c.ADYK = b.APUK;
+  }
+  else {
+    c.AFUR = b.AFUR;
+    c.ALEF = b.ALEF;
+    c.APUK = b.APUK;
+    c.ADYK = b.ADYK;
+  }
 
-  cell ADAR = not(prev.ADYK);
-  cell ATYP = not(prev.AFUR);
-  cell AFEP = not(prev.ALEF);
-  cell AROV = not(prev.APUK);
+  c.ADAR = not(b.ADYK);
+  c.ATYP = not(b.AFUR);
+  c.AFEP = not(b.ALEF);
+  c.AROV = not(b.APUK);
 
-  cell AFAS = nor(ADAR, ATYP);
-  out_AFAS = AFAS;
-  cell AREV = nand(in_FROM_CPU3, AFAS);
-  cell APOV = not(AREV);
-  out_CPU_RD_SYNC = APOV;
+  c.AFAS = nor(b.ADAR, b.ATYP);
+  c.AREV = nand(b.FROM_CPU3, b.AFAS);
+  c.APOV = not(b.AREV);
 
-  cell AJAX = not(ATYP);
-  cell AGUT = unk3(AJAX, AROV, in_FROM_CPU4);
-  cell AWOD = or(in_T1nT2, AGUT);
-  cell ABUZ = not(AWOD);
-  out_ABUZ = ABUZ;
+  c.AJAX = not(b.ATYP);
+  c.AGUT = unk3(b.AJAX, b.AROV, b.FROM_CPU4);
+  c.AWOD = or(b.T1nT2, b.AGUT);
+  c.ABUZ = not(b.AWOD);
 
-  cell BUGO = not(AFEP);
-  cell BATE = nor(BUGO, AROV, in_ABOL);
-  cell BASU = not(BATE);
-  cell BUKE = not(BASU);
-  out_BUKE = BUKE;
+  c.BUGO = not(b.AFEP);
+  c.BATE = nor(b.BUGO, b.AROV, b.ABOL);
+  c.BASU = not(b.BATE);
+  c.BUKE = not(b.BASU);
 
   //----------
   // Weird logic feeding into BOGA_1M
 
-  cell BAPY = nor(in_ABOL, AROV, ATYP);
-  cell BERU = not(BAPY);
-  cell BUFA = not(BERU);
-  cell BYLY = not(BERU);
-  cell BOLO = not(BUFA);
-  cell BYDA = not(BYLY);
+  c.BAPY = nor(b.ABOL, b.AROV, b.ATYP);
+  c.BERU = not(b.BAPY);
+  c.BUFA = not(b.BERU);
+  c.BYLY = not(b.BERU);
+  c.BOLO = not(b.BUFA);
+  c.BYDA = not(b.BYLY);
 
-  cell NULE = nor(ATYP, in_ABOL);
-  cell BYRY = not(NULE);
-  cell BUDE = not(BYRY);
-  cell BEVA = not(BYRY);
-  cell BEKO = not(BUDE);
-  cell BAVY = not(BEVA);
+  c.NULE = nor(b.ATYP, b.ABOL);
+  c.BYRY = not(b.NULE);
+  c.BUDE = not(b.BYRY);
+  c.BEVA = not(b.BYRY);
+  c.BEKO = not(b.BUDE);
+  c.BAVY = not(b.BEVA);
 
-  cell BEJA = nand(BOLO, BYDA, BEKO, BAVY);
-  cell BANE = not(BEJA);
-  cell BELO = not(BANE);
-  cell BAZE = not(BELO);
-  cell BUTO = nand(AFEP, ATYP, BAZE);
-  cell BELE = not(BUTO);
-  cell ATEZ = not(in_CLKIN_A);
-  cell BYJU = nor(BELE, ATEZ);
-  cell BALY = not(BYJU);
-  BOGA = not(BALY);
-  out_BOGA_1M = BOGA;
+  c.BEJA = nand(b.BOLO, b.BYDA, b.BEKO, b.BAVY);
+  c.BANE = not(b.BEJA);
+  c.BELO = not(b.BANE);
+  c.BAZE = not(b.BELO);
+  c.BUTO = nand(b.AFEP, b.ATYP, b.BAZE);
+  c.BELE = not(b.BUTO);
+  c.ATEZ = not(b.CLKIN_A);
+  c.BYJU = nor(b.BELE, b.ATEZ);
+  c.BALY = not(b.BYJU);
+  c.BOGA = not(b.BALY);
 
   //----------
   // TO_CPU
 
-  cell BUTY = not(in_ABOL);
-  cell BUVU = and(BUTY, BALY);
-  cell BYXO = not(BUVU);
-  cell BEDO = not(BYXO);
-  cell BOWA = not(BEDO);
-  out_TO_CPU = BOWA;
+  c.BUTY = not(b.ABOL);
+  c.BUVU = and(b.BUTY, b.BALY);
+  c.BYXO = not(b.BUVU);
+  c.BEDO = not(b.BYXO);
+  c.BOWA = not(b.BEDO);
 
   //----------
   // Cartridge clock
 
-  out_PHI_OUT = BEVA;
-  cell DOVA = not(BEVA);
-  out_PHIn = DOVA;
-  cell UVYT = not(out_PHI_OUT);
-  out_PHI_OUTn = UVYT;
+  c.DOVA = not(b.BEVA);
+  c.UVYT = not(b.PHI_OUT);
 
   //----------
   // RESET2 register
 
-  cell UCOB = not(in_CLKIN_A);
-  out_CLKIN_An = UCOB;
-  cell UPYF = or(in_RESET, out_CLKIN_An);
-  cell TUBO = unk2(in_ABOL, UPYF);
-  cell UNUT = and(TUBO, prev.UPOF);
-  cell TABA = or(in_T1nT2, in_T1T2n, UNUT);
-  cell ALYP = not(TABA);
-  cell AFAR = nor(ALYP, in_RESET);
-  cell ASOL = unk2(AFAR, in_RESET);
+  c.UPYF = or(b.RESET, b.CLKIN_An);
+  c.TUBO = unk2(b.ABOL, b.UPYF);
+  c.UNUT = and(b.TUBO, b.UPOF);
+  c.TABA = or(b.T1nT2, b.T1T2n, b.UNUT);
+  c.ALYP = not(b.TABA);
+  c.AFAR = nor(b.ALYP, b.RESET);
+  c.ASOL = unk2(b.AFAR, b.RESET);
 
-  BOMA = not(BOGA);
-  tock_neg(prev.AFER, AFER, prev.BOMA, BOMA, in_T1nT2n, ASOL);
-  cell AVOR = or(prev.AFER, ASOL);
-  cell ALUR = not(AVOR);
-  out_RESET2 = ALUR;
+  c.BOMA = not(b.BOGA);
+  tock_neg(b.AFER, c.AFER, a.BOMA, b.BOMA, b.T1nT2n, b.ASOL);
+  c.AVOR = or(b.AFER, b.ASOL);
+  c.ALUR = not(b.AVOR);
 
   //----------
   // FF04 DIV
 
-  cell TAPE = and(in_FF04_FF07, in_CPU_WR, in_TOLA_A1n, in_TOVY_A0n);
-  cell UFOL = nor(out_CLKIN_An, in_RESET, TAPE);
-  out_RESET_DIVn = UFOL;
+  c.TAPE = and(b.FF04_FF07, b.CPU_WR, b.TOLA_A1n, b.TOVY_A0n);
+  c.UFOL = nor(b.CLKIN_An, b.RESET, b.TAPE);
 
-  tock_neg(prev.UKUP, UKUP, prev.out_BOGA_1M, out_BOGA_1M, out_RESET_DIVn, !prev.UKUP);
-  tock_pos(prev.UFOR, UFOR, prev.UKUP,         UKUP,         out_RESET_DIVn, !prev.UFOR);
-  tock_pos(prev.UNER, UNER, prev.UFOR,         UFOR,         out_RESET_DIVn, !prev.UNER);
-  tock_pos(prev.TERO, TERO, prev.UNER,         UNER,         out_RESET_DIVn, !prev.TERO);
-  tock_pos(prev.UNYK, UNYK, prev.TERO,         TERO,         out_RESET_DIVn, !prev.UNYK);
-  tock_pos(prev.TAMA, TAMA, prev.UNYK,         UNYK,         out_RESET_DIVn, !prev.TAMA);
+  tock_neg(b.UKUP, c.UKUP, a.BOGA_1M, b.BOGA_1M, b.RESET_DIVn, !b.UKUP);
+  tock_pos(b.UFOR, c.UFOR, a.UKUP,    b.UKUP,    b.RESET_DIVn, !b.UFOR);
+  tock_pos(b.UNER, c.UNER, a.UFOR,    b.UFOR,    b.RESET_DIVn, !b.UNER);
+  tock_pos(b.TERO, c.TERO, a.UNER,    b.UNER,    b.RESET_DIVn, !b.TERO);
+  tock_pos(b.UNYK, c.UNYK, a.TERO,    b.TERO,    b.RESET_DIVn, !b.UNYK);
+  tock_pos(b.TAMA, c.TAMA, a.UNYK,    b.UNYK,    b.RESET_DIVn, !b.TAMA);
 
-  cell UVYN = not(TAMA);
+  c.UVYN = not(b.TAMA);
 
-  out_TAMA_16K  = !TAMA;
-  out_CLK_256K  = UFOR;
-  out_CLK_64K   = TERO;
-  out_CLK_16K   = UVYN;
+  c.ULUR = mux2(b.BOGA_1M, b.TAMA_16K, b.FF60_D1);
 
-  ULUR = mux2(out_BOGA_1M, out_TAMA_16K, in_FF60_D1);
+  tock_neg(b.UGOT, c.UGOT, a.ULUR, b.ULUR, b.RESET_DIVn, !b.UGOT);
+  tock_pos(b.TULU, c.TULU, a.UGOT, b.UGOT, b.RESET_DIVn, !b.TULU);
+  tock_pos(b.TUGO, c.TUGO, a.TULU, b.TULU, b.RESET_DIVn, !b.TUGO);
+  tock_pos(b.TOFE, c.TOFE, a.TUGO, b.TUGO, b.RESET_DIVn, !b.TOFE);
+  tock_pos(b.TERU, c.TERU, a.TOFE, b.TOFE, b.RESET_DIVn, !b.TERU);
+  tock_pos(b.SOLA, c.SOLA, a.TERU, b.TERU, b.RESET_DIVn, !b.SOLA);
+  tock_pos(b.SUBU, c.SUBU, a.SOLA, b.SOLA, b.RESET_DIVn, !b.SUBU);
+  tock_pos(b.TEKA, c.TEKA, a.SUBU, b.SUBU, b.RESET_DIVn, !b.TEKA);
+  tock_pos(b.UKET, c.UKET, a.TEKA, b.TEKA, b.RESET_DIVn, !b.UKET);
+  tock_pos(b.UPOF, c.UPOF, a.UKET, b.UKET, b.RESET_DIVn, !b.UPOF);
 
-  tock_neg(prev.UGOT, UGOT, prev.ULUR, ULUR, out_RESET_DIVn, !prev.UGOT);
-  tock_pos(prev.TULU, TULU, prev.UGOT, UGOT, out_RESET_DIVn, !prev.TULU);
-  tock_pos(prev.TUGO, TUGO, prev.TULU, TULU, out_RESET_DIVn, !prev.TUGO);
-  tock_pos(prev.TOFE, TOFE, prev.TUGO, TUGO, out_RESET_DIVn, !prev.TOFE);
-  tock_pos(prev.TERU, TERU, prev.TOFE, TOFE, out_RESET_DIVn, !prev.TERU);
-  tock_pos(prev.SOLA, SOLA, prev.TERU, TERU, out_RESET_DIVn, !prev.SOLA);
-  tock_pos(prev.SUBU, SUBU, prev.SOLA, SOLA, out_RESET_DIVn, !prev.SUBU);
-  tock_pos(prev.TEKA, TEKA, prev.SUBU, SUBU, out_RESET_DIVn, !prev.TEKA);
-  tock_pos(prev.UKET, UKET, prev.TEKA, TEKA, out_RESET_DIVn, !prev.UKET);
-  tock_pos(prev.UPOF, UPOF, prev.UKET, UKET, out_RESET_DIVn, !prev.UPOF);
+  c.UMEK = not(b.UGOT);
+  c.UREK = not(b.TULU);
+  c.UTOK = not(b.TUGO);
+  c.SAPY = not(b.TOFE);
+  c.UMER = not(b.TERU);
+  c.RAVE = not(b.SOLA);
+  c.RYSO = not(b.SUBU);
+  c.UDOR = not(b.TEKA);
 
-  cell UMEK = not(prev.UGOT);
-  cell UREK = not(prev.TULU);
-  cell UTOK = not(prev.TUGO);
-  cell SAPY = not(prev.TOFE);
-  cell UMER = not(prev.TERU);
-  cell RAVE = not(prev.SOLA);
-  cell RYSO = not(prev.SUBU);
-  cell UDOR = not(prev.TEKA);
+  c.TAGY = and(b.FF04_FF07, b.CPU_RD, b.TOLA_A1n, b.TOVY_A0n);
 
-  out_FF04_D0n = UMEK;
-  out_FF04_D1n = UREK;
-  out_UMER = UMER;
-
-  cell TAGY = and(in_FF04_FF07, in_CPU_RD, in_TOLA_A1n, in_TOVY_A0n);
-
-  cell TAWU = not(UMEK);
-  cell TAKU = not(UREK);
-  cell TEMU = not(UTOK);
-  cell TUSE = not(SAPY);
-  cell UPUG = not(UMER);
-  cell SEPU = not(RAVE);
-  cell SAWA = not(RYSO);
-  cell TATU = not(UDOR);
-
-  if (TAGY) {
-    out_D0 = TAWU;
-    out_D1 = TAKU;
-    out_D2 = TEMU;
-    out_D3 = TUSE;
-    out_D4 = UPUG;
-    out_D5 = SEPU;
-    out_D6 = SAWA;
-    out_D7 = TATU;
-  }
-  else {
-    out_D0 = 0;
-    out_D1 = 0;
-    out_D2 = 0;
-    out_D3 = 0;
-    out_D4 = 0;
-    out_D5 = 0;
-    out_D6 = 0;
-    out_D7 = 0;
-  }
+  c.TAWU = not(b.UMEK);
+  c.TAKU = not(b.UREK);
+  c.TEMU = not(b.UTOK);
+  c.TUSE = not(b.SAPY);
+  c.UPUG = not(b.UMER);
+  c.SEPU = not(b.RAVE);
+  c.SAWA = not(b.RYSO);
+  c.TATU = not(b.UDOR);
 
   //----------
   // Clock dividers for APU
 
-  cell ATUS = not(in_APU_RESET);
-  COKE = not(out_AJER_2M);
-  tock_neg(prev.BARA, BARA, prev.COKE, COKE, ATUS, UMER);
+  c.ATUS = not(b.APU_RESET);
+  c.COKE = not(b.AJER_2M);
+  c.BURE = not(!b.BARA);
+  c.BARA = tock_neg( a.COKE,  b.COKE, b.ATUS, b.BARA,  b.UMER);
+  c.CARU = tock_neg( a.BURE,  b.BURE, b.ATUS, b.CARU, !b.CARU);
+  c.BYLU = tock_neg(!a.CARU, !b.CARU, b.ATUS, b.BYLU, !b.BYLU);
 
-  BURE = not(!BARA);
-  tock_neg(prev.CARU, CARU, prev.BURE, BURE, ATUS, !prev.CARU);
+  c.FYNE = not(b.BURE);
+  c.CULO = not(!b.CARU);
+  c.APEF = not(!b.BYLU);
 
-  tock_neg(prev.BYLU, BYLU, !prev.CARU, !CARU, ATUS, !prev.BYLU);
+  c.GALE = mux2(b.HAMA_512Kn, b.FYNE, b.FERO_Q);
+  c.BEZE = mux2(b.HAMA_512Kn, b.CULO, b.FERO_Q);
+  c.BULE = mux2(b.HAMA_512Kn, b.APEF, b.FERO_Q);
 
-  cell FYNE = not(BURE);
-  cell CULO = not(!prev.CARU);
-  cell APEF = not(!prev.BYLU);
+  c.GEXY = not(b.GALE);
+  c.COFU = not(b.BEZE);
+  c.BARU = not(b.BULE);
 
-  cell GALE = mux2(out_HAMA_512Kn, FYNE, in_FERO_Q);
-  cell BEZE = mux2(out_HAMA_512Kn, CULO, in_FERO_Q);
-  cell BULE = mux2(out_HAMA_512Kn, APEF, in_FERO_Q);
+  c.HORU = not(b.GEXY);
+  c.BUFY = not(b.COFU);
+  c.BYFE = not(b.BARU);
 
-  cell GEXY = not(GALE);
-  cell COFU = not(BEZE);
-  cell BARU = not(BULE);
+  c.BOPO = not(b.APU_RESET);
+  c.ATYK = tock_neg(a.ARYF_4M, b.ARYF_4M, b.BOPO, b.ATYK, !b.ATYK);
+  c.AVOK = tock_neg(a.ATYK,    b.ATYK,    b.BOPO, b.AVOK, !b.AVOK);
 
-  cell HORU = not(GEXY);
-  cell BUFY = not(COFU);
-  cell BYFE = not(BARU);
+  c.BAVU = not(b.AVOK);
 
-  out_HORU_512 = HORU;
-  out_BUFY_256 = BUFY;
-  out_BYFE_128 = BYFE;
+  c.JESO = tock_neg(a.BAVU, b.BAVU, b.APU_RESET5n, b.JESO, !b.JESO);
 
-  cell BOPO = not(in_APU_RESET);
-  tock_neg(prev.ATYK, ATYK, prev.out_ARYF_4M, out_ARYF_4M, BOPO, !prev.ATYK);
-  tock_neg(prev.AVOK, AVOK, prev.ATYK, ATYK, BOPO, !prev.AVOK);
+  c.HAMA = not(!b.JESO);
 
-  BAVU = not(prev.AVOK);
-  out_BAVU_1M = BAVU;
+  //----------
 
-  tock_neg(prev.JESO, JESO, prev.BAVU, BAVU, in_APU_RESET5n, !prev.JESO);
-  out_JESO_512K = JESO;
+  c.BOGA_1M = b.BOGA;
+  c.CLKIN_An = b.UCOB;
+  c.RESET2 = b.ALUR;
+  c.AFAS = b.AFAS;
+  c.CPU_RD_SYNC = b.APOV;
+  c.ABUZ = b.ABUZ;
+  c.BUKE = b.BUKE;
 
-  cell HAMA = not(!JESO);
-  out_HAMA_512Kn = HAMA;
+  c.TAMA_16K  = !b.TAMA;
+  c.CLK_256K  = b.UFOR;
+  c.CLK_64K   = b.TERO;
+  c.CLK_16K   = b.UVYN;
+
+  c.D0 = 0;
+  c.D1 = 0;
+  c.D2 = 0;
+  c.D3 = 0;
+  c.D4 = 0;
+  c.D5 = 0;
+  c.D6 = 0;
+  c.D7 = 0;
+
+  if (b.TAGY) {
+    c.D0 = b.TAWU;
+    c.D1 = b.TAKU;
+    c.D2 = b.TEMU;
+    c.D3 = b.TUSE;
+    c.D4 = b.UPUG;
+    c.D5 = b.SEPU;
+    c.D6 = b.SAWA;
+    c.D7 = b.TATU;
+  }
+
+  c.CERY_2M = b.CERY;
+  c.FF04_D0n = b.UMEK;
+  c.FF04_D1n = b.UREK;
+  c.UMER = b.UMER;
+  c.HORU_512 = b.HORU;
+  c.BUFY_256 = b.BUFY;
+  c.BYFE_128 = b.BYFE;
+  c.BAVU_1M = b.BAVU;
+  c.JESO_512K = b.JESO;
+  c.HAMA_512Kn = b.HAMA;
+  c.RESET6 = b.CUNU;
+  c.RESET7 = b.XORE;
+  c.RESET7n = b.XEBE;
+  c.RESET9 = b.WESY;
+  c.RESET8 = b.WALU;
+  c.RESET_VIDEO = b.XAPO;
+  c.CLK1 = b.ZEME;
+  c.CLK2 = b.ALET;
+  c.ATAL_4M = b.ATAL;
+  c.AMUK_4M = b.AMUK;
+  c.ARYF_4M = b.ARYF;
+  c.APUV_4M = b.APUV;
+  c.RESET_DIVn = b.UFOL;
+  c.TO_CPU = b.BOWA;
+  c.PHI_OUT = b.BEVA;
+  c.PHIn = b.DOVA;
+  c.PHI_OUTn = b.UVYT;
 }

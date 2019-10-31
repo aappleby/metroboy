@@ -98,6 +98,11 @@ void tock_pos (const bool r1, bool& r2, bool clk1, bool clk2, bool rst, bool d);
 void tock_duo (const bool r1, bool& r2, bool clk1, bool clk2, bool rst, bool d);
 void count_neg(const bool r1, bool& r2, bool clk1, bool clk2, bool load, bool d);
 
+bool tock_neg (bool clk1, bool clk2, bool rst,  bool d1, bool d2);
+bool tock_pos (bool clk1, bool clk2, bool rst,  bool d1, bool d2);
+bool tock_duo (bool clk1, bool clk2, bool rst,  bool d1, bool d2);
+bool count_neg(bool clk1, bool clk2, bool load, bool d1, bool d2);
+
 //-----------------------------------------------------------------------------
 
 struct Resets;

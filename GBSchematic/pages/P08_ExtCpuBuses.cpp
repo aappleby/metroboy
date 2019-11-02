@@ -78,6 +78,8 @@ struct P8_ExtCpuBuses {
     // center right, generating the external read/write signals to the cart
 
     wire SORE = not(in.A15);
+
+    // BUG - pretty sure this is an OR and not an AND, the dots are on the opposite side compared to TOZA
     wire TEVY = and(in.A13, in.A14, SORE);
 
     wire TEXO = and(in.FROM_CPU4, TEVY);
@@ -90,7 +92,7 @@ struct P8_ExtCpuBuses {
     wire NEVY = or(MEXO, MOCA);
     wire MOTY = or(MOCA, LYWE);
     wire PUVA = or(NEVY, in.LUMA);
-    wire TYMU = or(in.LUMA, MOTY);
+    wire TYMU = nor(in.LUMA, MOTY);
     wire USUF = nor(in.T1nT2, PUVA);
     wire UVER = nand(PUVA, out.NET01);
     wire UGAC = nand(out.NET01, TYMU);
@@ -299,7 +301,6 @@ struct P8_ExtCpuBuses {
     wire SAFO = SAGO_Q;
     wire TAJU = SAZY_Q;
 
-    // why would you latch and buffer with the same signal?
     if (LAVO) {
       out.D_OE = true;
       out.D0 = RYMA;

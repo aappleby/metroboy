@@ -31,12 +31,24 @@ template<typename T, typename... Args> const T xor (const T first, Args... args)
 template<typename T, typename... Args> const T nor (const T first, Args... args) { return !or(first, args...); }
 template<typename T, typename... Args> const T nand(const T first, Args... args) { return !and(first, args...); }
 
-template<typename T>
-inline const T not(T a) { return !a; }
+inline const bool not(bool a) { return !a; }
 
+template<typename T>
+inline const T not(T a) { return ~a; }
+
+// Six-rung mux cells are _non_inverting_
 // m = 1 selects input _ZERO_
 template<typename T>
-inline const T mux2 (T a, T b, bool m)   { return m ? a : b; }
+inline const T mux2 (T a, T b, bool m) {
+  return m ? a : b;
+}
+
+// Five-rung mux cells are _inverting_
+// m = 1 selects input _ZERO_
+template<typename T>
+inline const T mux2n (T a, T b, bool m) {
+  return m ? not(a) : not(b);
+}
 
 // this is def or
 template<typename T>
@@ -93,15 +105,9 @@ template<typename... Args> void unpack(uint32_t x, bool& first, Args&... args) {
 
 //-----------------------------------------------------------------------------
 
-void tock_neg (const bool r1, bool& r2, bool clk1, bool clk2, bool rst, bool d);
-void tock_pos (const bool r1, bool& r2, bool clk1, bool clk2, bool rst, bool d);
-void tock_duo (const bool r1, bool& r2, bool clk1, bool clk2, bool rst, bool d);
-void count_neg(const bool r1, bool& r2, bool clk1, bool clk2, bool load, bool d);
-
-bool tock_neg (bool clk1, bool clk2, bool rst,  bool d1, bool d2);
 bool tock_pos (bool clk1, bool clk2, bool rst,  bool d1, bool d2);
 bool tock_duo (bool clk1, bool clk2, bool rst,  bool d1, bool d2);
-bool count_neg(bool clk1, bool clk2, bool load, bool d1, bool d2);
+bool count_pos(bool clk1, bool clk2, bool load, bool d1, bool d2);
 
 //-----------------------------------------------------------------------------
 

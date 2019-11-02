@@ -7,237 +7,219 @@
 const std::vector<SignalData> P03_Timer::signals() {
   return
   {
-    SignalData("-----TIMA-----"),
-    SignalData("REGA_0", offsetof(P03_Timer, REGA_0), 0, 1),
-    SignalData("POVY_1", offsetof(P03_Timer, POVY_1), 0, 1),
-    SignalData("PERU_2", offsetof(P03_Timer, PERU_2), 0, 1),
-    SignalData("RATE_3", offsetof(P03_Timer, RATE_3), 0, 1),
-    SignalData("RUBY_4", offsetof(P03_Timer, RUBY_4), 0, 1),
-    SignalData("RAGE_5", offsetof(P03_Timer, RAGE_5), 0, 1),
-    SignalData("PEDA_6", offsetof(P03_Timer, PEDA_6), 0, 1),
-    SignalData("NUGA_7", offsetof(P03_Timer, NUGA_7), 0, 1),
-    SignalData("NUGA_C", offsetof(P03_Timer, NUGA_C), 0, 1),
-
-    /*
-    SignalData("-----TMA-----"),
-    SignalData("SABU_0", offsetof(P03_Timer, SABU_0), 0, 1),
-    SignalData("NYKE_1", offsetof(P03_Timer, NYKE_1), 0, 1),
-    SignalData("MURU_2", offsetof(P03_Timer, MURU_2), 0, 1),
-    SignalData("TYVA_3", offsetof(P03_Timer, TYVA_3), 0, 1),
-    SignalData("TYRU_4", offsetof(P03_Timer, TYRU_4), 0, 1),
-    SignalData("SUFY_5", offsetof(P03_Timer, SUFY_5), 0, 1),
-    SignalData("PETO_6", offsetof(P03_Timer, PETO_6), 0, 1),
-    SignalData("SETA_7", offsetof(P03_Timer, SETA_7), 0, 1),
-    */
-
+    SignalData("BOGA",   offsetof(P03_Timer, in.BOGA_1M)),
     SignalData("-----TAC-----"),
-    SignalData("SOPU_0", offsetof(P03_Timer, SOPU_0), 0, 1),
-    SignalData("SAMY_1", offsetof(P03_Timer, SAMY_1), 0, 1),
-    SignalData("SABO_2", offsetof(P03_Timer, SABO_2), 0, 1),
+    SignalData("SOPU_0", offsetof(P03_Timer, SOPU_0)),
+    SignalData("SAMY_1", offsetof(P03_Timer, SAMY_1)),
+    SignalData("SABO_2", offsetof(P03_Timer, SABO_2)),
+
+    SignalData("-----TMA-----"),
+    SignalData("SABU_0", offsetof(P03_Timer, SABU_0)),
+    SignalData("NYKE_1", offsetof(P03_Timer, NYKE_1)),
+    SignalData("MURU_2", offsetof(P03_Timer, MURU_2)),
+    SignalData("TYVA_3", offsetof(P03_Timer, TYVA_3)),
+    SignalData("TYRU_4", offsetof(P03_Timer, TYRU_4)),
+    SignalData("SUFY_5", offsetof(P03_Timer, SUFY_5)),
+    SignalData("PETO_6", offsetof(P03_Timer, PETO_6)),
+    SignalData("SETA_7", offsetof(P03_Timer, SETA_7)),
+
+    SignalData("-----TIMA-----"),
+    SignalData("REGA_0", offsetof(P03_Timer, REGA_0)),
+    SignalData("POVY_1", offsetof(P03_Timer, POVY_1)),
+    SignalData("PERU_2", offsetof(P03_Timer, PERU_2)),
+    SignalData("RATE_3", offsetof(P03_Timer, RATE_3)),
+    SignalData("RUBY_4", offsetof(P03_Timer, RUBY_4)),
+    SignalData("RAGE_5", offsetof(P03_Timer, RAGE_5)),
+    SignalData("PEDA_6", offsetof(P03_Timer, PEDA_6)),
+    SignalData("NUGA_7", offsetof(P03_Timer, NUGA_7)),
 
     SignalData("-----Int-----"),
-    SignalData("NYDU",   offsetof(P03_Timer, NYDU),   0, 1),
-    SignalData("MOBA",   offsetof(P03_Timer, MOBA),   0, 1),
+    SignalData("NYDU",   offsetof(P03_Timer, NYDU)),
+    SignalData("MOBA",   offsetof(P03_Timer, MOBA)),
 
     SignalData("-----Clock mux-----"),
-    SignalData("UVYR",   offsetof(P03_Timer, UVYR),   0, 1),
-    SignalData("UKAP",   offsetof(P03_Timer, UKAP),   0, 1),
-    SignalData("UBOT",   offsetof(P03_Timer, UBOT),   0, 1),
-    SignalData("TEKO",   offsetof(P03_Timer, TEKO),   0, 1),
-    SignalData("TECY",   offsetof(P03_Timer, TECY),   0, 1),
-    SignalData("SOGU",   offsetof(P03_Timer, SOGU),   0, 1),
+    SignalData("UVYR",   offsetof(P03_Timer, UVYR)),
+    SignalData("UKAP",   offsetof(P03_Timer, UKAP)),
+    SignalData("UBOT",   offsetof(P03_Timer, UBOT)),
+    SignalData("TEKO",   offsetof(P03_Timer, TEKO)),
+    SignalData("TECY",   offsetof(P03_Timer, TECY)),
+    SignalData("SOGU",   offsetof(P03_Timer, SOGU)),
   };
 }
 
 //-----------------------------------------------------------------------------
 
-void P03_Timer::tick(const P03_Timer& prev) {
-  //----------
-  // tac
-
-  RYFO = and(in.A2, in.A00_07, in.FFXX);
-  out.FF04_FF07 = RYFO;
-  SARA = nand(in.CPU_WR, out.FF04_FF07, in.A0, in.A1);
-
-  SOPU_0 = prev.SOPU_0;
-  SAMY_1 = prev.SAMY_1;
-  SABO_2 = prev.SABO_2;
-
-  if (prev.SARA && !SARA) {
-    SOPU_0 = in.D0;
-    SAMY_1 = in.D1;
-    SABO_2 = in.D2;
-  }
-
-  if (!in.RESET2) {
-    SOPU_0 = 0;
-    SAMY_1 = 0;
-    SABO_2 = 0;
-  }
-
-
-  SORA = and(in.CPU_RD, out.FF04_FF07, in.A1, in.A0);
-  RYLA = not(!SOPU_0);
-  ROTE = not(!SAMY_1);
-  SUPE = not(!SABO_2);
-
-  if (SORA) {
-    out.D2 = SUPE;
-    out.D1 = ROTE;
-    out.D0 = RYLA;
-  }
-
-  // clock mux
-  UVYR = not(in.CLK_64K);
-  UKAP = mux2(in.CLK_16K, UVYR, SOPU_0);
-  UBOT = not(in.CLK_256K);
-  TEKO = mux2(UBOT, in.FF04_D1n, SOPU_0);
-  TECY = mux2(UKAP, TEKO, SAMY_1);
-  SOGU = nor(TECY, !SABO_2);
+void P03_Timer::tick(const CpuSignals& cpu,
+                     const ChipSignals& chip,
+                     const P03_Timer& a, const TristateBus& busA,
+                     const P03_Timer& b, const TristateBus& busB,
+                     P03_Timer& c, TristateBus& busC)
+{
+  (void)chip;
+  (void)busA;
 
   //----------
-  // tma
+  // random decoder
 
-  TOVY = not(in.A0);
-  out.TOVY_A0n = TOVY;
-  TYJU = nand(TOVY, in.A1, in.CPU_WR, out.FF04_FF07);
+  c.RYFO = and(busB.A2, b.in.A00_07, b.in.FFXX);
+  c.out.FF04_FF07 = b.RYFO;
 
-  tock_neg(prev.SABU_0, SABU_0, prev.TYJU, TYJU, in.RESET2, in.D0);
-  tock_neg(prev.NYKE_1, NYKE_1, prev.TYJU, TYJU, in.RESET2, in.D1);
-  tock_neg(prev.MURU_2, MURU_2, prev.TYJU, TYJU, in.RESET2, in.D2);
-  tock_neg(prev.TYVA_3, TYVA_3, prev.TYJU, TYJU, in.RESET2, in.D3);
-  tock_neg(prev.TYRU_4, TYRU_4, prev.TYJU, TYJU, in.RESET2, in.D4);
-  tock_neg(prev.SUFY_5, SUFY_5, prev.TYJU, TYJU, in.RESET2, in.D5);
-  tock_neg(prev.PETO_6, PETO_6, prev.TYJU, TYJU, in.RESET2, in.D6);
-  tock_neg(prev.SETA_7, SETA_7, prev.TYJU, TYJU, in.RESET2, in.D7);
+  //----------
+  // TAC
 
-  SETE = not(!SABU_0);
-  PYRE = not(!NYKE_1);
-  NOLA = not(!MURU_2);
-  SALU = not(!TYVA_3);
-  SUPO = not(!TYRU_4);
-  SOTU = not(!SUFY_5);
-  REVA = not(!PETO_6);
-  SAPU = not(!SETA_7);
+  c.SARA = nand(cpu.CPU_WR, b.out.FF04_FF07, busB.A0, busB.A1);
 
-  TUBY = and(out.FF04_FF07, in.CPU_RD, in.A1, TOVY);
-  if (TUBY) {
-    out.D0 = SETE;
-    out.D1 = PYRE;
-    out.D2 = NOLA;
-    out.D3 = SALU;
-    out.D4 = SUPO;
-    out.D5 = SOTU;
-    out.D6 = REVA;
-    out.D7 = SAPU;
+  c.SOPU_0 = tock_pos(a.SARA, b.SARA, b.in.RESET2, b.SOPU_0, busB.D0);
+  c.SAMY_1 = tock_pos(a.SARA, b.SARA, b.in.RESET2, b.SAMY_1, busB.D1);
+  c.SABO_2 = tock_pos(a.SARA, b.SARA, b.in.RESET2, b.SABO_2, busB.D2);
+
+  c.SORA = and(cpu.CPU_RD, b.out.FF04_FF07, busB.A1, busB.A0);
+  c.RYLA = not(!b.SOPU_0);
+  c.ROTE = not(!b.SAMY_1);
+  c.SUPE = not(!b.SABO_2);
+
+  if (b.SORA) {
+    busC.D2 = b.SUPE;
+    busC.D1 = b.ROTE;
+    busC.D0 = b.RYLA;
   }
 
   //----------
-  // tima reload mux
+  // TMA
 
-  TOPE = nand(in.CPU_WR, out.FF04_FF07, in.A0, in.TOLA_A1n);
-  ROKE = mux2(SABU_0, in.D0, TOPE);
-  PETU = mux2(NYKE_1, in.D1, TOPE);
-  NYKU = mux2(MURU_2, in.D2, TOPE);
-  SOCE = mux2(TYVA_3, in.D3, TOPE);
-  SALA = mux2(TYRU_4, in.D4, TOPE);
-  SYRU = mux2(SUFY_5, in.D5, TOPE);
-  REFU = mux2(PETO_6, in.D6, TOPE);
-  RATO = mux2(SETA_7, in.D7, TOPE);
+  c.TOVY = not(busB.A0);
+  c.out.TOVY_A0n = b.TOVY;
+  c.TYJU = nand(b.TOVY, busB.A1, cpu.CPU_WR, b.out.FF04_FF07);
 
-  // this nor doesn't make sense, it puts a negated value into TIMA
-  /*
-  MULO = not(in.RESET2);
-  PUXY = nor(MULO, ROKE);
-  NERO = nor(MULO, PETU);
-  NADA = nor(MULO, NYKU);
-  REPA = nor(MULO, SOCE);
-  ROLU = nor(MULO, SALA);
-  RUGY = nor(MULO, SYRU);
-  PYMA = nor(MULO, REFU);
-  PAGU = nor(MULO, RATO);
-  */
+  c.SABU_0 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.SABU_0, busB.D0);
+  c.NYKE_1 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.NYKE_1, busB.D1);
+  c.MURU_2 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.MURU_2, busB.D2);
+  c.TYVA_3 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.TYVA_3, busB.D3);
+  c.TYRU_4 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.TYRU_4, busB.D4);
+  c.SUFY_5 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.SUFY_5, busB.D5);
+  c.PETO_6 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.PETO_6, busB.D6);
+  c.SETA_7 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.SETA_7, busB.D7);
 
-  // this makes more sense but doesn't match the schematic
-  MULO = in.RESET2;
-  PUXY = and(MULO, ROKE);
-  NERO = and(MULO, PETU);
-  NADA = and(MULO, NYKU);
-  REPA = and(MULO, SOCE);
-  ROLU = and(MULO, SALA);
-  RUGY = and(MULO, SYRU);
-  PYMA = and(MULO, REFU);
-  PAGU = and(MULO, RATO);
+  c.SETE = not(!b.SABU_0);
+  c.PYRE = not(!b.NYKE_1);
+  c.NOLA = not(!b.MURU_2);
+  c.SALU = not(!b.TYVA_3);
+  c.SUPO = not(!b.TYRU_4);
+  c.SOTU = not(!b.SUFY_5);
+  c.REVA = not(!b.PETO_6);
+  c.SAPU = not(!b.SETA_7);
 
-  //----------
-  // tima
-
-  // daisy chain
-
-  REGA_0 = prev.REGA_0; REGA_C = prev.REGA_C; 
-  POVY_1 = prev.POVY_1; POVY_C = prev.POVY_C;
-  PERU_2 = prev.PERU_2; PERU_C = prev.PERU_C;
-  RATE_3 = prev.RATE_3; RATE_C = prev.RATE_C;
-  RUBY_4 = prev.RUBY_4; RUBY_C = prev.RUBY_C;
-  RAGE_5 = prev.RAGE_5; RAGE_C = prev.RAGE_C;
-  PEDA_6 = prev.PEDA_6; PEDA_C = prev.PEDA_C;
-  NUGA_7 = prev.NUGA_7; NUGA_C = prev.NUGA_C;
-
-  if (!prev.SOGU   && SOGU)   { REGA_0 = !prev.REGA_0; REGA_C = prev.REGA_0; }
-  if (!prev.REGA_C && REGA_C) { POVY_1 = !prev.POVY_1; POVY_C = prev.POVY_1; }
-  if (!prev.POVY_C && POVY_C) { PERU_2 = !prev.PERU_2; PERU_C = prev.PERU_2; }
-  if (!prev.PERU_C && PERU_C) { RATE_3 = !prev.RATE_3; RATE_C = prev.RATE_3; }
-  if (!prev.RATE_C && RATE_C) { RUBY_4 = !prev.RUBY_4; RUBY_C = prev.RUBY_4; }
-  if (!prev.RUBY_C && RUBY_C) { RAGE_5 = !prev.RAGE_5; RAGE_C = prev.RAGE_5; }
-  if (!prev.RAGE_C && RAGE_C) { PEDA_6 = !prev.PEDA_6; PEDA_C = prev.PEDA_6; }
-  if (!prev.PEDA_C && PEDA_C) { NUGA_7 = !prev.NUGA_7; NUGA_C = prev.NUGA_7; }
-
-  //----------
-  // interrupt delay line
-
-  wire MUZU = or(in.FROM_CPU5, TOPE);
-  wire MEKE = not(out.INT_TIMER);
-  wire MEXU = nand(MUZU, in.RESET2, MEKE);
-
-  wire MUGY = not(MEXU);
-  tock_neg(prev.NYDU, NYDU, prev.in.BOGA_1M, in.BOGA_1M, MUGY, NUGA_C);
-  wire MERY = nor(!prev.NYDU, NUGA_7);
-  tock_neg(prev.MOBA, MOBA, prev.in.BOGA_1M, in.BOGA_1M, in.RESET2, MERY);
-  out.INT_TIMER = MOBA;
-
-  if(MEXU) {
-    REGA_0 = PUXY; REGA_C = 0;
-    POVY_1 = NERO; POVY_C = 0;
-    PERU_2 = NADA; PERU_C = 0;
-    RATE_3 = REPA; RATE_C = 0;
-    RUBY_4 = ROLU; RUBY_C = 0;
-    RAGE_5 = RUGY; RAGE_C = 0;
-    PEDA_6 = PYMA; PEDA_C = 0;
-    NUGA_7 = PAGU; NUGA_C = 0;
+  c.TUBY = and(b.out.FF04_FF07, cpu.CPU_RD, busB.A1, b.TOVY);
+  if (b.TUBY) {
+    busC.D0 = b.SETE;
+    busC.D1 = b.PYRE;
+    busC.D2 = b.NOLA;
+    busC.D3 = b.SALU;
+    busC.D4 = b.SUPO;
+    busC.D5 = b.SOTU;
+    busC.D6 = b.REVA;
+    busC.D7 = b.SAPU;
   }
 
   //----------
-  // tima read
+  // TIMA clock mux
 
-  wire SOKU = not(!REGA_0);
-  wire RACY = not(!POVY_1);
-  wire RAVY = not(!PERU_2);
-  wire SOSY = not(!RATE_3);
-  wire SOMU = not(!RUBY_4);
-  wire SURO = not(!RAGE_5);
-  wire ROWU = not(!PEDA_6);
-  wire PUSO = not(!NUGA_7);
+  c.UVYR = not(b.in.CLK_64K);
+  c.UKAP = mux2(b.in.CLK_16K, b.UVYR, b.SOPU_0);
+  c.UBOT = not(b.in.CLK_256K);
+  c.TEKO = mux2(b.UBOT, b.in.FF04_D1n, b.SOPU_0);
+  c.TECY = mux2(b.UKAP, b.TEKO, b.SAMY_1);
+  c.SOGU = nor(b.TECY, !b.SABO_2);
 
-  wire TEDA = and(out.FF04_FF07, in.CPU_RD, in.TOLA_A1n, in.A0);
-  if (TEDA) {
-    out.OE = true;
-    out.D0 = SOKU;
-    out.D1 = RACY;
-    out.D2 = RAVY;
-    out.D3 = SOSY;
-    out.D4 = SOMU;
-    out.D5 = SURO;
-    out.D6 = ROWU; // schematic missing annotation
-    out.D7 = PUSO;
+  //----------
+  // TIMA reload signal
+
+  c.MUZU = or(cpu.FROM_CPU5, b.TOPE);
+  c.MEKE = not(b.out.INT_TIMER);
+  c.MEXU = nand(b.MUZU, b.in.RESET2, b.MEKE);
+
+  //----------
+  // TIMA reload mux
+
+  c.TOPE = nand(cpu.CPU_WR, b.out.FF04_FF07, busB.A0, b.in.TOLA_A1n);
+  c.ROKE = mux2n(b.SABU_0, busB.D0, b.TOPE);
+  c.PETU = mux2n(b.NYKE_1, busB.D1, b.TOPE);
+  c.NYKU = mux2n(b.MURU_2, busB.D2, b.TOPE);
+  c.SOCE = mux2n(b.TYVA_3, busB.D3, b.TOPE);
+  c.SALA = mux2n(b.TYRU_4, busB.D4, b.TOPE);
+  c.SYRU = mux2n(b.SUFY_5, busB.D5, b.TOPE);
+  c.REFU = mux2n(b.PETO_6, busB.D6, b.TOPE);
+  c.RATO = mux2n(b.SETA_7, busB.D7, b.TOPE);
+
+  c.MULO = not(b.in.RESET2);
+  c.PUXY = nor(b.MULO, b.ROKE);
+  c.NERO = nor(b.MULO, b.PETU);
+  c.NADA = nor(b.MULO, b.NYKU);
+  c.REPA = nor(b.MULO, b.SOCE);
+  c.ROLU = nor(b.MULO, b.SALA);
+  c.RUGY = nor(b.MULO, b.SYRU);
+  c.PYMA = nor(b.MULO, b.REFU);
+  c.PAGU = nor(b.MULO, b.RATO);
+
+  //----------
+  // TIMA
+
+  c.REGA_0 = b.REGA_0;
+  c.POVY_1 = b.POVY_1;
+  c.PERU_2 = b.PERU_2;
+  c.RATE_3 = b.RATE_3;
+  c.RUBY_4 = b.RUBY_4;
+  c.RAGE_5 = b.RAGE_5;
+  c.PEDA_6 = b.PEDA_6;
+  c.NUGA_7 = b.NUGA_7;
+
+  if (a.SOGU   && !b.SOGU)   { c.REGA_0 = !b.REGA_0; }
+  if (a.REGA_0 && !b.REGA_0) { c.POVY_1 = !b.POVY_1; }
+  if (a.POVY_1 && !b.POVY_1) { c.PERU_2 = !b.PERU_2; }
+  if (a.PERU_2 && !b.PERU_2) { c.RATE_3 = !b.RATE_3; }
+  if (a.RATE_3 && !b.RATE_3) { c.RUBY_4 = !b.RUBY_4; }
+  if (a.RUBY_4 && !b.RUBY_4) { c.RAGE_5 = !b.RAGE_5; }
+  if (a.RAGE_5 && !b.RAGE_5) { c.PEDA_6 = !b.PEDA_6; }
+  if (a.PEDA_6 && !b.PEDA_6) { c.NUGA_7 = !b.NUGA_7; }
+
+  if(b.MEXU) {
+    c.REGA_0 = b.PUXY;
+    c.POVY_1 = b.NERO;
+    c.PERU_2 = b.NADA;
+    c.RATE_3 = b.REPA;
+    c.RUBY_4 = b.ROLU;
+    c.RAGE_5 = b.RUGY;
+    c.PEDA_6 = b.PYMA;
+    c.NUGA_7 = b.PAGU;
   }
+
+  c.SOKU_0 = not(!b.REGA_0);
+  c.RACY_1 = not(!b.POVY_1);
+  c.RAVY_2 = not(!b.PERU_2);
+  c.SOSY_3 = not(!b.RATE_3);
+  c.SOMU_4 = not(!b.RUBY_4);
+  c.SURO_5 = not(!b.RAGE_5);
+  c.ROWU_6 = not(!b.PEDA_6);
+  c.PUSO_7 = not(!b.NUGA_7);
+
+  c.TEDA = and(b.out.FF04_FF07, cpu.CPU_RD, b.in.TOLA_A1n, busB.A0);
+  if (b.TEDA) {
+    busC.D0 = b.SOKU_0;
+    busC.D1 = b.RACY_1;
+    busC.D2 = b.RAVY_2;
+    busC.D3 = b.SOSY_3;
+    busC.D4 = b.SOMU_4;
+    busC.D5 = b.SURO_5;
+    busC.D6 = b.ROWU_6; // schematic missing annotation
+    busC.D7 = b.PUSO_7;
+  }
+
+  //----------
+  // INT_TIMER delay
+
+  c.MUGY = not(b.MEXU);
+  c.NYDU = tock_pos(a.in.BOGA_1M, b.in.BOGA_1M, b.MUGY, b.NYDU, b.NUGA_7);
+  c.MERY = nor(!b.NYDU, b.NUGA_7);
+  c.MOBA = tock_pos(a.in.BOGA_1M, b.in.BOGA_1M, b.in.RESET2, b.MOBA, b.MERY);
+  c.out.INT_TIMER = b.MOBA;
 }

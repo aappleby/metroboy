@@ -68,12 +68,11 @@ P02_Interrupts::Output P02_Interrupts::tick(const P02_Interrupts::Input& in) {
 
   out.TO_CPU2 = AWOB_Q;
   out.INT_JP = ASOK;
-
-  out.CPU_INT_VBLANK = LOPE_Q;
-  out.CPU_INT_SERIAL = UBUL_Q;
-  out.CPU_INT_JP = ULAK_Q;
-  out.CPU_INT_STAT = LALU_Q;
-  out.CPU_INT_TIMER = NYBO_Q;
+  out.TO_CPU3 = LOPE_Q;
+  out.TO_CPU4 = UBUL_Q;
+  out.TO_CPU5 = ULAK_Q;
+  out.TO_CPU6 = LALU_Q;
+  out.TO_CPU7 = NYBO_Q;
 
   out.OE = POLA;
   out.D0 = NELA;

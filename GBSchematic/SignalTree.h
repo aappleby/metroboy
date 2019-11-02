@@ -10,6 +10,13 @@ struct SignalData {
     bit_width = 0;
   }
 
+  SignalData(const char* name_, int byte_offset_) {
+    name = name_;
+    byte_offset = byte_offset_;
+    bit_offset = 0;
+    bit_width = 1;
+  }
+
   SignalData(const char* name_, int byte_offset_, int bit_offset_, int bit_width_) {
     name = name_;
     byte_offset = byte_offset_;

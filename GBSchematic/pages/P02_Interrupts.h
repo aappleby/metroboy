@@ -38,11 +38,11 @@ struct P02_Interrupts {
   struct Output {
     bool TO_CPU2;  // for unhalt?
     bool INT_JP;
-    bool CPU_INT_VBLANK;
-    bool CPU_INT_SERIAL;
-    bool CPU_INT_JP;
-    bool CPU_INT_STAT;
-    bool CPU_INT_TIMER;
+    bool TO_CPU3; // INT_VBL_BUF
+    bool TO_CPU4; // INT_SERIAL
+    bool TO_CPU5; // INT_JP
+    bool TO_CPU6; // INT_STAT
+    bool TO_CPU7; // INT_TIMER
 
     bool OE;
     bool D0,D1,D2,D3,D4,D5,D6,D7;

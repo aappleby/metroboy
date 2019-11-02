@@ -16,6 +16,89 @@
 #include <SDL2/SDL.h>
 #endif
 
+void blah() {
+  //----------
+  // center right, generating the external read/write signals to the cart
+
+  bool A13=0,A14=0,A15=0;
+  bool FROM_CPU3=0,FROM_CPU4=0,FROM_CPU5=0;
+  bool CPU_RAW_RD=0;
+  //bool T1T2n=0,T1nT2=0;
+  bool CPU_WR_SYNC=0;
+  bool LUMA=0; // this is the "dma reading" signal
+
+
+  if (LUMA) {
+    bool WR_A = 0;
+    bool WR_D = 0;
+    bool RD_A = 1;
+    bool RD_D = 1;
+  }
+  else {
+    /*
+    bool NOT_VRAM = 1;
+
+    bool WR_A = and(CPU_WR_SYNC, FROM_CPU4, NOT_VRAM);
+    bool WR_D = and(CPU_WR_SYNC, FROM_CPU4, NOT_VRAM);
+
+    wire LAGU = unk3(CPU_RAW_RD, and(FROM_CPU4, NOT_VRAM), FROM_CPU3);
+    
+    bool RD_A = nand(LAGU, FROM_CPU4, NOT_VRAM);
+    bool RD_D = nand(LAGU, FROM_CPU4, NOT_VRAM);
+    */
+
+    // LAVO drives the external data pins onto the data bus
+    wire LAVO = nand(CPU_RAW_RD, and(FROM_CPU4, or(A13, A14, not(A15))), FROM_CPU5);
+
+
+    // TAGY drives DIV onto the data bus
+    //c.TAGY = and(FF04, not(CPU_RAW_RD));
+
+    /*
+
+    CPU_RD = not(CPU_RAW_RD);
+
+    SORA = and(CPU_RD, FF07)
+    if (SORA) dbus = TAC
+    */
+
+
+    /*
+    // this doesn't seem right... polarity wrong
+    ASOP = not(and(CPU_RD, FF10))
+    if (ASOP) dbus = NR10
+    */
+
+    /*
+    // something in the path to SEBY has to be wrong
+
+    SOTO_Q = SOTO.flip(SYCY, in.RESET6);
+    TUTO = 0;
+
+    TEXO = and(in.FROM_CPU4, or(in.A13, in.A14, not(in.A15)));
+
+    ABUZ = unk3(CLK_ABCD_Q, CLK_ABGH, in.FROM_CPU4);
+
+    TUCA = and(A15, FEXXFFXXn, not(TEXO), ABUZ);
+
+    BYHA = unk3(ANEL_Q, not(CATU), not(in.RESET_VIDEO2n));
+    ANOM = nor(RESET_VIDEO2n, not(BYHA));
+
+    AVAP = nor(DOBA_Q, not(ANOM), !BYBA_Q);
+
+    WEGO = or(not(in.RESET_VIDEO), VOGA_Q);
+    XYMU = or(WEGO, AVAP);
+
+
+    SERE = and(mux2(0, not(in.MCS_IN), TUCA), not(XYMU));
+
+    wire SEBY = and(SERE, not(CPU_RAW_RD), FROM_CPU5);
+    if (SEBY) dbus <= vdbus;
+    */
+  }
+
+}
+
 //-----------------------------------------------------------------------------
 
 template<typename ... Args>
@@ -25,94 +108,6 @@ void sprintf(std::string& out, const char* format, Args ... args)
   snprintf(source_buf, 1024, format, args ...);
   out.append(source_buf);
 }
-
-//-----------------------------------------------------------------------------
-
-#if 0
-struct Sample {
-  int64_t timestamp;
-  P01_ClocksReset page01;
-  //P03_Timer       page03;
-};
-
-void step_forwards(void* blobA, void* blobB) {
-  Sample* sampleA = (Sample*)blobA;
-  Sample* sampleB = (Sample*)blobB;
-
-  sampleB->timestamp             = sampleA->timestamp + 1;
-  sampleB->page01.in_CPU_RD      = false;
-  sampleB->page01.in_CPU_WR      = false;
-  //sampleB->page01.in_RESET       = sampleB->timestamp < 17;
-  sampleB->page01.in_RESET       = false;
-  sampleB->page01.in_CLKIN_A     = true;
-  sampleB->page01.in_CLKIN_B     = (sampleB->timestamp & 1);
-  sampleB->page01.in_ABOL        = false;
-  //sampleB->page01.in_AJER_2M   = false;
-  sampleB->page01.in_FROM_CPU3   = true;
-  sampleB->page01.in_FROM_CPU4   = true;
-  sampleB->page01.in_APU_RESET   = false;
-  sampleB->page01.in_APU_RESET5n = true;
-  sampleB->page01.in_FERO_Q      = false;
-  sampleB->page01.in_FF04_FF07   = false;
-  sampleB->page01.in_TOLA_A1n    = false;
-  sampleB->page01.in_TOVY_A0n    = false;
-  sampleB->page01.in_T1T2n       = false;
-  sampleB->page01.in_T1nT2       = false;
-  sampleB->page01.in_T1nT2n      = true;
-  sampleB->page01.in_FF40_D7     = true;
-  sampleB->page01.in_FF60_D1     = false;
-
-  sampleB->page01.tick(sampleA->page01);
-
-  sampleB->page03.in.RESET2 = sampleB->page01.out_RESET2;
-
-  sampleB->page03.in.BOGA_1M  = sampleB->page01.out_BOGA_1M;
-  sampleB->page03.in.CLK_256K = sampleB->page01.out_CLK_256K;
-  sampleB->page03.in.CLK_64K  = sampleB->page01.out_CLK_64K;
-  sampleB->page03.in.CLK_16K  = sampleB->page01.out_CLK_16K;
-  sampleB->page03.in.FF04_D1n = sampleB->page01.out_FF04_D1n; // this is the 4k clock
-
-  sampleB->page03.in.CPU_RD = false;
-  sampleB->page03.in.CPU_WR = false;
-
-  sampleB->page03.in.FROM_CPU5 = false;
-  sampleB->page03.in.A00_07 = false;
-  sampleB->page03.in.FFXX = false;
-  sampleB->page03.in.TOLA_A1n = false;
-
-  sampleB->page03.in.A0 = 0;
-  sampleB->page03.in.A1 = 0;
-  sampleB->page03.in.A2 = 0;
-  sampleB->page03.in.A3 = 0;
-  sampleB->page03.in.A4 = 0;
-  sampleB->page03.in.A5 = 0;
-  sampleB->page03.in.A6 = 0;
-  sampleB->page03.in.A7 = 0;
-
-  sampleB->page03.in.D0 = 0;
-  sampleB->page03.in.D1 = 0;
-  sampleB->page03.in.D2 = 0;
-  sampleB->page03.in.D3 = 0;
-  sampleB->page03.in.D4 = 0;
-  sampleB->page03.in.D5 = 0;
-  sampleB->page03.in.D6 = 0;
-  sampleB->page03.in.D7 = 0;
-
-  // probably need to fix this
-  sampleB->page03.in.INT_TIMER = sampleA->page03.out.INT_TIMER;
-
-  sampleB->page03.tick(sampleA->page03);
-}
-
-const std::vector<SignalData> sample_signals =
-{
-  SignalData("stamp0", offsetof(Sample, timestamp), 0, 1),
-  SignalData("stamp1", offsetof(Sample, timestamp), 1, 1),
-  SignalData("stamp2", offsetof(Sample, timestamp), 2, 1),
-  SignalData("page01", offsetof(Sample, page01), P01_ClocksReset::signals()),
-  //SignalData("page03", offsetof(Sample, page03), P03_Timer::signals()),
-};
-#endif
 
 //-----------------------------------------------------------------------------
 
@@ -142,19 +137,7 @@ int render_labels(TextPainter& tp, int x, int y, const std::vector<SignalData>& 
   return cy - y;
 }
 
-
 //-----------------------------------------------------------------------------
-
-uint64_t hash(void* blob, int size) {
-  uint8_t* src = (uint8_t*)blob;
-  uint64_t h = 0;
-  for (int i = 0; i < size; i++) {
-    h += src[i];
-    h *= 0x1234567;
-    h ^= h >> 32;
-  }
-  return h;
-}
 
 void dump(void* blob, int size) {
   uint8_t* src = (uint8_t*)blob;
@@ -164,63 +147,146 @@ void dump(void* blob, int size) {
   printf("\n");
 }
 
-int main(int /*argc*/, char** /*argv*/) {
+//-----------------------------------------------------------------------------
+
+struct Sample {
+  int64_t timestamp;
+
+  ChipSignals chip;
+  CpuSignals cpu;
+  TristateBus     bus;
+
+  P01_ClocksReset page01;
+  P03_Timer       page03;
+};
+
+void step_forwards(void* blobA, void* blobB) {
+  // old state
+  Sample a = *(Sample*)blobA;
+
+  // old state + new inputs
+  Sample b = a;
+  b.timestamp = a.timestamp + 1;
+
+  //----------
+  // extern
+
+  b.chip.RESET   = b.timestamp < 20;
+  b.chip.CLKIN_A = true;
+  b.chip.CLKIN_B = b.timestamp & 1;
+  b.chip.T1nT2   = false;
+  b.chip.T1nT2n  = true;
+  b.chip.T1T2n   = false;
+
+  //b.cpu.CPU_RD = false;
+  //b.cpu.CPU_WR = false;
+  b.cpu.FROM_CPU3 = false;
+  b.cpu.FROM_CPU4 = false;
+  b.cpu.FROM_CPU5 = false;
+
+  if (b.timestamp == 30) {
+    b.page03.SOPU_0 = true;
+    b.page03.SAMY_1 = false;
+    b.page03.SABO_2 = true;
+
+    b.page03.SABU_0 = 1;
+    b.page03.NYKE_1 = 1;
+    b.page03.MURU_2 = 1;
+    b.page03.TYVA_3 = 1;
+  }
+
+  //----------
+  // page 01 unsorted
+
+  b.page01.in.APU_RESET5n = true;
+  b.page01.in.APU_RESET = false;
+  b.page01.in.ABOL = false;
+  b.page01.in.AJER_2M = false;
+  b.page01.in.FERO_Q = false;
+  b.page01.in.FF04_FF07 = false;
+  b.page01.in.FF40_D7 = true;
+  b.page01.in.FF60_D1 = false;
+  b.page01.in.TOLA_A1n = false;
+  b.page01.in.TOVY_A0n = false;
+  b.page01.in.CYBO_4M = false;
+
+  //----------
+  // page 01 -> page 03
+
+  b.page03.in.BOGA_1M  = a.page01.out.BOGA_1M;
+  b.page03.in.CLK_256K = a.page01.out.CLK_256K;
+  b.page03.in.CLK_64K  = a.page01.out.CLK_64K;
+  b.page03.in.CLK_16K  = a.page01.out.CLK_16K;
+  b.page03.in.FF04_D1n = a.page01.out.FF04_D1n;
+  b.page03.in.RESET2   = a.page01.out.RESET2;
+
+  //----------
+  // page 03 unsorted
+
+  b.page03.in.A00_07 = false;
+  b.page03.in.FFXX = false;
+  b.page03.in.TOLA_A1n = false;
+
+  //----------
+  // destination state
+  Sample c = b;
+
+  for (int rep = 0; rep < 40; rep++) {
+    P01_ClocksReset::tick(b.cpu, b.chip,
+                          a.page01, a.bus,
+                          b.page01, b.bus,
+                          c.page01, c.bus);
+
+    P03_Timer::tick(b.cpu, b.chip,
+                    a.page03, a.bus,
+                    b.page03, b.bus,
+                    c.page03, c.bus);
+
+    if (memcmp(&b, &c, sizeof(Sample)) == 0) break;
+    a = b;
+    b = c;
+
+    b.page03.in.BOGA_1M  = b.page01.out.BOGA_1M;
+    b.page03.in.CLK_256K = b.page01.out.CLK_256K;
+    b.page03.in.CLK_64K  = b.page01.out.CLK_64K;
+    b.page03.in.CLK_16K  = b.page01.out.CLK_16K;
+    b.page03.in.FF04_D1n = b.page01.out.FF04_D1n;
+    b.page03.in.RESET2   = b.page01.out.RESET2;
+  }
+
+  *(Sample*)blobB = b;
+}
+
+const std::vector<SignalData> sample_signals =
+{
+  SignalData("RESET",   offsetof(Sample, chip.RESET)),
+  SignalData("CLKIN_B", offsetof(Sample, chip.CLKIN_B)),
+
+  SignalData("page01",  offsetof(Sample, page01), P01_ClocksReset::signals()),
+  SignalData("page03",  offsetof(Sample, page03), P03_Timer::signals()),
+};
+
+//-----------------------------------------------------------------------------
+
+#if 0
+int main(int argc, char** argv) {
+  (void)argc;
+  (void)argv;
+
   printf("Hello World Again\n");
 
-  P01_ClocksReset a, b, c;
-  P01_ClocksReset *pa = &a, *pb = &b, *pc = &c;
+  Sample sampleA = {};
+  Sample sampleB = {};
 
-  a = {};
-  b = {};
-  memset(&c, 0xCD, sizeof(c));
-  //c = {};
-
-  for (int tick = 0; tick < 100; tick++) {
-    P01_ClocksReset old = *pc;
-
-    //printf("tick %d\n", tick);
-    uint64_t h1 = 0;
-    for (int i = 0; i < 40; i++) {
-      pb->RESET = true;
-      pb->APU_RESET5n = false;
-      pb->APU_RESET = true;
-
-      pb->ABOL = false;
-      pb->AJER_2M = false;
-      pb->CLKIN_A = true;
-      pb->CLKIN_B = tick & 1;
-      pb->CPU_RD = false;
-      pb->CPU_WR = false;
-      pb->FERO_Q = false;
-      pb->FF04_FF07 = false;
-      pb->FF40_D7 = true;
-      pb->FF60_D1 = false;
-      pb->FROM_CPU3 = false;
-      pb->FROM_CPU4 = false;
-      pb->T1nT2 = false;
-      pb->T1nT2n = true;
-      pb->T1T2n = false;
-      pb->TOLA_A1n = false;
-      pb->TOVY_A0n = false;
-      pb->CYBO_4M = false;
-
-      P01_ClocksReset::tick(*pa,*pb,*pc);
-      uint64_t h2 = hash(pc, sizeof(P01_ClocksReset));
-      if (h1 == h2) break;
-      h1 = h2;
-
-      //printf("%llx\n", hash(&c, sizeof(c)));
-      P01_ClocksReset* pt = pa; pa = pb; pb = pc; pc = pt;
-    }
-    //printf("%llx %d %d %d %d\n", h1, pc->UKUP, pc->UFOR, pc->UNER, pc->TERO);
-    printf("%016llx %d %d %d %d\n", h1, pc->AFUR, pc->ALEF, pc->APUK, pc->ADYK);
-    //dump(pc, sizeof(P01_ClocksReset));
-  }
+  step_forwards(&sampleA, &sampleB);
 
   return 0;
 }
+#endif
 
-#if 0
+//-----------------------------------------------------------------------------
+
+#if 1
 int main(int /*argc*/, char** /*argv*/) {
   const int fb_width = 1900;
   const int fb_height = 1000;
@@ -245,30 +311,18 @@ int main(int /*argc*/, char** /*argv*/) {
   //----------
   // Generate trace
 
-  const int timer_count = 1024 * 1024;
+  const int timer_count = 256 * 1024;
   Sample* samples = new Sample[timer_count];
   memset(samples, 0xCD, timer_count * sizeof(Sample));
 
   Sample reset_sample = {};
   reset_sample.timestamp = -1;
 
-  //bool SABO,SAMY,SOPU;
-
-  /*
-  reset_sample.page03.SOPU_0 = true;
-  reset_sample.page03.SAMY_1 = false;
-  reset_sample.page03.SABO_2 = true;
-
-  reset_sample.page03.SABU_0 = 1;
-  reset_sample.page03.MURU_2 = 1;
-  reset_sample.page03.TYRU_4 = 1;
-  reset_sample.page03.PETO_6 = 1;
-  */
-
   uint64_t timeA = SDL_GetPerformanceCounter();
 
 
   step_forwards(&reset_sample, &samples[0]);
+
   for (int i = 1; i < timer_count; i++) {
     samples[i] = samples[i-1];
     step_forwards(&samples[i-1], &samples[i]);
@@ -284,10 +338,10 @@ int main(int /*argc*/, char** /*argv*/) {
   uint64_t frame_begin, frame_end, frame_time = 0;
   uint64_t freq = SDL_GetPerformanceFrequency();
 
-  double center = 512.0;
+  //double center = 512.0;
+  //int zoom = -8;
+  double center = 8191;
   int zoom = -8;
-  //double center = 130822;
-  //int zoom = -40;
 
   bool quit = false;
   while (!quit) {
@@ -433,5 +487,4 @@ int main(int /*argc*/, char** /*argv*/) {
   return 0;
 }
 #endif
-
 //-----------------------------------------------------------------------------

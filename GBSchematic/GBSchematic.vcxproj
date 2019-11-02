@@ -216,6 +216,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\TextPainter.h" />
+    <ClInclude Include="pages\ChipSignals.h" />
+    <ClInclude Include="pages\CpuSignals.h" />
+    <ClInclude Include="pages\TristateBus.h" />
     <ClInclude Include="pages\P01_ClocksReset.h" />
     <ClInclude Include="pages\P02_Interrupts.h" />
     <ClInclude Include="pages\P03_Timer.h" />

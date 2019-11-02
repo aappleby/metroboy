@@ -1,6 +1,9 @@
 #pragma once
 #include "../Schematics.h"
 #include "../SignalTree.h"
+#include "CpuSignals.h"
+#include "ChipSignals.h"
+#include "TristateBus.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
@@ -9,67 +12,67 @@
 struct P03_Timer {
 
   struct Input {
+    // from P01
+    bool BOGA_1M;
+    bool CLK_256K;
     bool CLK_64K;
     bool CLK_16K;
-    bool CLK_256K;
+    bool FF04_D1n;
     bool RESET2;
 
-    bool CPU_RD;
-    bool CPU_WR;
-
-    bool FROM_CPU5;  // what does this do?
-
+    // unsorted
     bool A00_07;
     bool FFXX;
     bool TOLA_A1n;
-
-    bool A0,A1,A2,A3,A4,A5,A6,A7;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-
-    bool FF04_D1n;
-    bool BOGA_1M;
   };
 
   struct Output {
     bool INT_TIMER;
     bool TOVY_A0n;
     bool FF04_FF07;
-    bool OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
   };
 
   Input in;
   Output out;
 
-  bool SOGU,TYJU;
-
-  // Logic cells
-
-  bool RYFO,TOVY;
-  bool UVYR,UKAP,UBOT,TEKO,TECY;
-  bool SARA,SORA,SUPE,ROTE,RYLA;
-  bool MULO,PUXY,NERO,NADA,REPA,ROLU,RUGY,PYMA,PAGU;
-  bool SETE,PYRE,NOLA,SALU,SUPO,SOTU,REVA,SAPU;
-  bool TUBY;
-  bool TOPE,ROKE,PETU,NYKU,SOCE,SALA,SYRU,REFU,RATO;
-
-  // FF05 TIMA
-  bool REGA_0,POVY_1,PERU_2,RATE_3,RUBY_4,RAGE_5,PEDA_6,NUGA_7;
-  bool REGA_C,POVY_C,PERU_C,RATE_C,RUBY_C,RAGE_C,PEDA_C,NUGA_C;
-
-  // FF06 TMA
-  bool SABU_0,NYKE_1,MURU_2,TYVA_3,TYRU_4,SUFY_5,PETO_6,SETA_7;
+  // random decoder
+  bool RYFO;
 
   // FF07 TAC
   bool SOPU_0,SAMY_1,SABO_2;
+  bool SARA,SORA,SUPE,ROTE,RYLA;
+
+  // FF06 TMA
+  bool SABU_0,NYKE_1,MURU_2,TYVA_3,TYRU_4,SUFY_5,PETO_6,SETA_7;
+  bool TOVY,TYJU,TUBY,REVA,NOLA,PYRE,SAPU,SETE,SUPO,SOTU,SALU;
+
+  // TIMA clock mux
+  bool UVYR,UKAP,TECY,UBOT,TEKO,SOGU;
+
+  // TIMA reload signal
+  bool MUZU,MEKE,MEXU;
+
+  // TIMA reload mux
+  bool TOPE,REFU,NYKU,PETU,RATO,ROKE,SALA,SYRU,SOCE;
+  bool MULO,PYMA,NADA,NERO,PAGU,PUXY,ROLU,RUGY,REPA;
+
+  // FF05 TIMA
+  bool REGA_0,POVY_1,PERU_2,RATE_3,RUBY_4,RAGE_5,PEDA_6,NUGA_7;
+  bool TEDA;
+  bool SOKU_0,RACY_1,RAVY_2,SOSY_3,SOMU_4,SURO_5,ROWU_6,PUSO_7;
 
   // INT_TIMER delay
   bool NYDU,MOBA;
+  bool MUGY,MERY;
 
   static const std::vector<SignalData> signals();
 
   //----------------------------------------
 
-  void tick(const P03_Timer& prev);
+  static void tick(const CpuSignals& cpu,
+                   const ChipSignals& chip,
+                   const P03_Timer& a, const TristateBus& busA,
+                   const P03_Timer& b, const TristateBus& busB,
+                   P03_Timer& c, TristateBus& busC);
 };
 

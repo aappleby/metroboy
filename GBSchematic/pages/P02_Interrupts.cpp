@@ -11,7 +11,7 @@ void P02_Interrupts::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
 
   pc.KERY = or(gb.chip.P13_C, gb.chip.P12_C, gb.chip.P11_C, gb.chip.P10_C);
 
-  pc.AWOB = latch_pos(ga.BOGA_1M, gb.BOGA_1M, pb.AWOB, pb.KERY);
+  pc.AWOB = latch_pos(gb.BOGA_1M, pb.AWOB, pb.KERY);
 
   pc.BATU = tock_pos(ga.BOGA_1M, gb.BOGA_1M, gb.RESET2, pb.BATU, pb.KERY);
   pc.ACEF = tock_pos(ga.BOGA_1M, gb.BOGA_1M, gb.RESET2, pb.ACEF, pb.BATU);
@@ -57,11 +57,11 @@ void P02_Interrupts::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
 
   pc.POLA = not(gb.FF0F_RD);
 
-  pc.MATY = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.MATY, pb.LOPE);
-  pc.NEJY = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.NEJY, pb.UBUL);
-  pc.NUTY = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.NUTY, pb.ULAK);
-  pc.MOPO = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.MOPO, pb.LALU);
-  pc.PAVY = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.PAVY, pb.NYBO);
+  pc.MATY = latch_pos(gb.FF0F_RD, pb.MATY, pb.LOPE);
+  pc.NEJY = latch_pos(gb.FF0F_RD, pb.NEJY, pb.UBUL);
+  pc.NUTY = latch_pos(gb.FF0F_RD, pb.NUTY, pb.ULAK);
+  pc.MOPO = latch_pos(gb.FF0F_RD, pb.MOPO, pb.LALU);
+  pc.PAVY = latch_pos(gb.FF0F_RD, pb.PAVY, pb.NYBO);
 
   pc.NELA = not(pb.MATY);
   pc.PADO = not(pb.NEJY);

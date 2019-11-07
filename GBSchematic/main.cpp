@@ -7,8 +7,6 @@
 #include "Timer.h"
 #include "TraceViewer.h"
 #include "../src/TextPainter.h"
-#include "pages/P01_ClocksReset.h"
-#include "pages/P03_Timer.h"
 #include "pages/Gameboy.h"
 
 #ifdef _MSC_VER
@@ -195,23 +193,6 @@ void step_forwards(void* blobA, void* blobB) {
   //----------
   // unmerged signals
 
-  /*
-  bool INT_SERIAL;  // <- P06.CALY
-  bool FF60_D1;     // <- P07.AMUT, debugging
-  bool FF0F_RD;     // <- P07.ROLO
-  bool FF0F_WR;     // <- P07.REFA
-  bool TOLA_A1n;    // <- P08.TOLA
-  bool APU_RESET;   // <- P09.KEBA
-  bool APU_RESET5n; // <- P09.KAME
-  bool AJER_2M;     // <- P09.AJER
-  bool FERO_Q;      // <- P09.FERO, something debug-related
-  bool CYBO_4M;     // <- P17.CYBO
-  bool INT_STAT;    // <- P21.VOTY
-  bool INT_VBL_BUF; // <- P21.VYPU
-  bool FF40_D7;     // <- P23.XONA, lcd on
-  bool FF0F;        // <- ???
-  */
-
   //----------
   // destination state
   Gameboy c = b;
@@ -220,6 +201,9 @@ void step_forwards(void* blobA, void* blobB) {
     P01_ClocksReset::tick(a, b, c);
     P02_Interrupts::tick(a, b, c);
     P03_Timer::tick(a, b, c);
+    P04_DMA::tick(a, b, c);
+    P05_JoypadIO::tick(a, b, c);
+    P06_SerialLink::tick(a, b, c);
 
     if (memcmp(&b, &c, sizeof(Gameboy)) == 0) break;
     a = b;

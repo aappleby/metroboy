@@ -180,6 +180,7 @@ void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.BEDO = not(pb.BYXO);
   pc.BOWA = not(pb.BEDO);
 
+  gc.BEDO   = pb.BEDO;
   gc.TO_CPU = pb.BOWA;
 
   //----------

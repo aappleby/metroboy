@@ -1,204 +1,151 @@
-#include "../Schematics.h"
+#include "P04_DMA.h"
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P4_DMA {
-  struct Input {
-    bool FROM_CPU5;
-    bool AMAB;
-    bool CPU_WR2;
-    bool PHI_OUTn;
-    bool CLK1;
-    bool CPU_RD2;
-    bool FF46;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-    bool RESET6;
-  };
+void P04_DMA::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
+  const P04_DMA& pa = ga.p04;
+  const P04_DMA& pb = gb.p04;
+  P04_DMA& pc = gc.p04;
 
-  struct Output {
-    bool CATY;
-    bool WYJA;
-    bool MOPA_PHI;
-    bool LUMA;    // This is the "DMA READING NOW" signal, it overrides the cpu on the cart wr/rd pins
-    bool OAM_ADDR_DMA;
-    bool VRAM_TO_OAM;
+  pc.DECY = not(gb.cpu.FROM_CPU5);
+  pc.CATY = not(pb.DECY);
+  pc.MAKA = tock_pos(ga.CLK1, gb.CLK1, gb.RESET6, pb.MAKA, pb.CATY);
+  pc.NAXY = nor(pb.MAKA, pb.LUVY);
+  pc.POWU = and(pb.MATU, pb.NAXY);
+  pc.WYJA = unk3(gb.AMAB, gb.CPU_WR2, pb.POWU);
+  pc.LUVY = tock_pos(ga.PHI_OUTn, gb.PHI_OUTn, gb.RESET6, pb.LUVY, pb.LUPA);
 
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
+  pc.MOPA = not(gb.PHI_OUTn);
+  pc.NAVO = nand(gb.DMA_A00, gb.DMA_A01, gb.DMA_A02, gb.DMA_A03, gb.DMA_A04, gb.DMA_A07);
+  pc.NOLO = not(pb.NAVO);
+  pc.MYTE = tock_pos(pa.MOPA, pb.MOPA, pb.LAPA,   pb.MYTE, pb.NOLO);
+  pc.LENE = tock_pos(pa.MOPA, pb.MOPA, gb.RESET6, pb.LENE, pb.LUVY);
+  pc.LARA = nand(pb.LOKY, !pb.MYTE, gb.RESET6);
+  pc.LOKY = nand(pb.LARA, !pb.LENE);
+  pc.MATU = tock_pos(ga.PHI_OUTn, gb.PHI_OUTn, gb.RESET6, pb.MATU, pb.LOKY);
+  pc.MORY = nand(pb.MATU, pb.LOGO);
+  pc.LUMA = not(pb.MORY);
+  pc.LOGO = not(pb.MUDA);
+  pc.LEBU = not(gb.DMA_A15);
+  pc.MUDA = nor(gb.DMA_A13, gb.DMA_A14, pb.LEBU);
+  pc.MUHO = nand(pb.MATU, pb.MUDA);
+  pc.DUGA = not(pb.MATU);
+  pc.LUFA = not(pb.MUHO);
 
-    bool MA_OE;
-    bool MA0,MA1,MA2,MA3,MA4,MA5,MA6,MA7,MA8,MA9,MA10,MA11,MA12;
+  pc.LYXE = unk2(pb.LORU, pb.LOKO);
+  pc.LUPA = nor(pb.LAVY, pb.LYXE);
+  pc.MOLU = nand(gb.FF46, gb.CPU_RD2);
+  pc.LAVY = nand(gb.FF46, gb.CPU_WR2);
+  pc.NYGO = not(pb.MOLU);
+  pc.LORU = not(pb.LAVY);
+  pc.PUSY = not(pb.NYGO);
 
-    bool DMA_A0,DMA_A1,DMA_A2,DMA_A3,DMA_A4,DMA_A5,DMA_A6,DMA_A7,DMA_A8,DMA_A9,DMA_A10,DMA_A11,DMA_A12,DMA_A13,DMA_A14,DMA_A15;
-  };
+  pc.AHOC = not(gb.VRAM_TO_OAM);
+  pc.LOKO = nand(gb.RESET6, !pb.LENE);
+  pc.LAPA = not(pb.LOKO);
+  pc.META = and(gb.PHI_OUTn, pb.LOKY);
 
+  gc.CATY         = pb.CATY;
+  gc.WYJA         = pb.WYJA;
+  gc.MOPA_PHI     = pb.MOPA;
+  gc.LUMA         = pb.LUMA;
+  gc.OAM_ADDR_DMA = pb.DUGA;
+  gc.VRAM_TO_OAM  = pb.LUFA;
+
+  //----------
   // FF46 DMA
-  reg NAFA,NYGY,PARA,PYNE,PULA,NYDO,POKU,MARU;
 
-  // DMA counter
-  reg NAKY,PYRO,NEFY,MUTY,NYKO,PYLO,NUTO,MUGU;
+  pc.NAFA_00 = tock_pos(pa.LORU, pb.LORU, 0, pb.NAFA_00, gb.cpu.D0);
+  pc.PYNE_01 = tock_pos(pa.LORU, pb.LORU, 0, pb.PYNE_01, gb.cpu.D1);
+  pc.PARA_02 = tock_pos(pa.LORU, pb.LORU, 0, pb.PARA_02, gb.cpu.D2);
+  pc.NYDO_03 = tock_pos(pa.LORU, pb.LORU, 0, pb.NYDO_03, gb.cpu.D3);
+  pc.NYGY_04 = tock_pos(pa.LORU, pb.LORU, 0, pb.NYGY_04, gb.cpu.D4);
+  pc.PULA_05 = tock_pos(pa.LORU, pb.LORU, 0, pb.PULA_05, gb.cpu.D5);
+  pc.POKU_06 = tock_pos(pa.LORU, pb.LORU, 0, pb.POKU_06, gb.cpu.D6);
+  pc.MARU_07 = tock_pos(pa.LORU, pb.LORU, 0, pb.MARU_07, gb.cpu.D7);
 
-  // Misc state
-  reg MAKA;
-  reg LUVY;
-  reg MYTE;
-  reg LENE;
-  reg MATU;
+  gc.DMA_A08 = pb.NAFA_00;
+  gc.DMA_A09 = pb.PYNE_01;
+  gc.DMA_A10 = pb.PARA_02;
+  gc.DMA_A11 = pb.NYDO_03;
+  gc.DMA_A12 = pb.NYGY_04;
+  gc.DMA_A13 = pb.PULA_05;
+  gc.DMA_A14 = pb.POKU_06;
+  gc.DMA_A15 = pb.MARU_07;
 
-  void tick(const Input& in, Output& out) {
-    wire NAKY_Q = NAKY.q();
-    wire PYRO_Q = PYRO.q();
-    wire NEFY_Q = NEFY.q();
-    wire MUTY_Q = MUTY.q();
-    wire NYKO_Q = NYKO.q();
-    wire PYLO_Q = PYLO.q();
-    wire NUTO_Q = NUTO.q();
-    wire MUGU_Q = MUGU.q();
-    wire NAFA_Q = NAFA.q();
-    wire PYNE_Q = PYNE.q();
-    wire PARA_Q = PARA.q();
-    wire NYDO_Q = NYDO.q();
-    wire NYGY_Q = NYGY.q();
-    wire PULA_Q = PULA.q();
-    wire POKU_Q = POKU.q();
-    wire MARU_Q = MARU.q();
+  pc.POLY_00 = not(!pb.NAFA_00);
+  pc.ROFO_01 = not(!pb.PYNE_01);
+  pc.REMA_02 = not(!pb.PARA_02);
+  pc.PANE_03 = not(!pb.NYDO_03);
+  pc.PARE_04 = not(!pb.NYGY_04);
+  pc.RALY_05 = not(!pb.PULA_05);
+  pc.RESU_06 = not(!pb.POKU_06);
+  pc.NUVY_07 = not(!pb.MARU_07);
 
-    out.DMA_A0  = NAKY_Q;
-    out.DMA_A1  = PYRO_Q;
-    out.DMA_A2  = NEFY_Q;
-    out.DMA_A3  = MUTY_Q;
-    out.DMA_A4  = NYKO_Q;
-    out.DMA_A5  = PYLO_Q;
-    out.DMA_A6  = NUTO_Q;
-    out.DMA_A7  = MUGU_Q;
-    out.DMA_A8  = NAFA_Q;
-    out.DMA_A9  = PYNE_Q;
-    out.DMA_A10 = PARA_Q;
-    out.DMA_A11 = NYDO_Q;
-    out.DMA_A12 = NYGY_Q;
-    out.DMA_A13 = PULA_Q;
-    out.DMA_A14 = POKU_Q;
-    out.DMA_A15 = MARU_Q;
+  pc.EVAX_08 = pb.NAFA_00;
+  pc.DUVE_09 = pb.PYNE_01;
+  pc.ERAF_10 = pb.PARA_02;
+  pc.FUSY_11 = pb.NYDO_03;
+  pc.EXYF_12 = pb.NYGY_04;
 
-    wire LENE_Q = LENE.q();
-    wire LOKO = nand(in.RESET6, !LENE_Q);
-    wire MOLU = nand(in.FF46, in.CPU_RD2);
-    wire LAVY = nand(in.FF46, in.CPU_WR2);
-    wire NYGO = not(MOLU);
-    wire LORU = not(LAVY);
-    wire LYXE = unk2(LORU, LOKO);
-    wire LUPA = nor(LAVY, LYXE);
-
-    wire DECY = not(in.FROM_CPU5);
-    wire CATY = not(DECY);
-    wire MAKA_Q = MAKA.tock(in.CLK1, in.RESET6, CATY);
-    wire LUVY_Q = LUVY.tock(in.PHI_OUTn, in.RESET6, LUPA);
-    wire NAXY = nor(MAKA_Q, LUVY_Q);
-    wire MATU_Q = MATU.q();
-    wire POWU = and(MATU_Q, NAXY);
-    wire WYJA = unk3(in.AMAB, in.CPU_WR2, POWU);
-    wire MOPA = not(in.PHI_OUTn);
-    LENE.tock(MOPA, in.RESET6, LUVY_Q);
-
-    wire LAPA = not(LOKO);
-    wire NAVO = nand(nand(out.DMA_A0, out.DMA_A1, out.DMA_A2), nand(out.DMA_A3, out.DMA_A4, out.DMA_A7));
-    wire NOLO = not(NAVO);
-    wire MYTE_Q = MYTE.tock(MOPA, LAPA,   NOLO);
-    // FIXME loopy thing, glitch filter? def broken.
-    wire LARA = nand(/*LOKY,*/ !MYTE_Q, in.RESET6);
-    wire LOKY = nand(LARA, !LENE_Q);
-    MATU.tock(in.PHI_OUTn, in.RESET6, LOKY);
-
-    wire META = and(in.PHI_OUTn, LOKY);
-    wire LEBU = not(out.DMA_A15);
-    wire MUDA = nor(out.DMA_A13, out.DMA_A14, LEBU);
-    wire LOGO = not(MUDA);
-    wire MORY = nand(MATU_Q, LOGO);
-    wire LUMA = not(MORY);
-    wire MUHO = nand(MATU_Q, MUDA);
-    wire DUGA = not(MATU_Q);
-    wire LUFA = not(MUHO);
-
-    out.CATY = CATY;
-    out.WYJA = WYJA;
-    out.MOPA_PHI = MOPA;
-    out.LUMA = LUMA;
-    out.OAM_ADDR_DMA = DUGA;
-    out.VRAM_TO_OAM = LUFA;
-
-    NAFA.tock(LORU, 0, in.D0);
-    NYGY.tock(LORU, 0, in.D4);
-    PARA.tock(LORU, 0, in.D2);
-    PYNE.tock(LORU, 0, in.D1);
-    PULA.tock(LORU, 0, in.D5);
-    NYDO.tock(LORU, 0, in.D3);
-    POKU.tock(LORU, 0, in.D6);
-    MARU.tock(LORU, 0, in.D7);
-
-    bool PUSY = not(NYGO);
-    wire POLY = not(!NAFA_Q);
-    wire PARE = not(!NYGY_Q);
-    wire REMA = not(!PARA_Q);
-    wire ROFO = not(!PYNE_Q);
-    wire RALY = not(!PULA_Q);
-    wire PANE = not(!NYDO_Q);
-    wire RESU = not(!POKU_Q);
-    wire NUVY = not(!MARU_Q);
-
-    if (PUSY) {
-      out.D_OE = true;
-      out.D0 = POLY;
-      out.D4 = PARE;
-      out.D2 = REMA;
-      out.D1 = ROFO;
-      out.D5 = RALY;
-      out.D3 = PANE;
-      out.D6 = RESU;
-      out.D7 = NUVY;
-    }
-
-    NAKY.flip(META,    LAPA);
-    PYRO.flip(!NAKY_Q, LAPA);
-    NEFY.flip(!PYRO_Q, LAPA);
-    MUTY.flip(!NEFY_Q, LAPA);
-    NYKO.flip(!MUTY_Q, LAPA);
-    PYLO.flip(!NYKO_Q, LAPA);
-    NUTO.flip(!PYLO_Q, LAPA);
-    MUGU.flip(!NUTO_Q, LAPA);
-
-    bool AHOC = not(out.VRAM_TO_OAM);
-    // tribuffer, not inverter? FIXME - check this elsewhere, we could be driving inverted signals onto the tribus
-    bool ECAL = NAKY_Q;
-    bool EGEZ = PYRO_Q;
-    bool FUHE = NEFY_Q;
-    bool FYZY = MUTY_Q;
-    bool DAMU = NYKO_Q;
-    bool DAVA = PYLO_Q;
-    bool ETEG = NUTO_Q;
-    bool EREW = MUGU_Q;
-    wire EVAX = NAFA_Q;
-    wire EXYF = NYGY_Q;
-    wire ERAF = PARA_Q;
-    wire DUVE = PYNE_Q;
-    wire FUSY = NYDO_Q;
-
-    if (AHOC) {
-      out.MA_OE = true;
-      out.MA0 = ECAL;
-      out.MA1 = EGEZ;
-      out.MA2 = FUHE;
-      out.MA3 = FYZY;
-      out.MA4 = DAMU;
-      out.MA5 = DAVA;
-      out.MA6 = ETEG;
-      out.MA7 = EREW;
-      out.MA8 = EVAX;
-      out.MA9 = DUVE;
-      out.MA10 = ERAF;
-      out.MA11 = FUSY;
-      out.MA12 = EXYF;
-    }
+  if (pb.PUSY) {
+    gc.cpu.D0 = pb.POLY_00;
+    gc.cpu.D1 = pb.ROFO_01;
+    gc.cpu.D2 = pb.REMA_02;
+    gc.cpu.D3 = pb.PANE_03;
+    gc.cpu.D4 = pb.PARE_04;
+    gc.cpu.D5 = pb.RALY_05;
+    gc.cpu.D6 = pb.RESU_06;
+    gc.cpu.D7 = pb.NUVY_07;
   }
-};
+
+  //----------
+  // DMA counter
+
+  pc.NAKY_00 = tock_pos(pa.META,     pb.META,     pb.LAPA, pb.NAKY_00, !pb.NAKY_00);
+  pc.PYRO_01 = tock_pos(!pa.NAKY_00, !pb.NAKY_00, pb.LAPA, pb.PYRO_01, !pb.PYRO_01);
+  pc.NEFY_02 = tock_pos(!pa.PYRO_01, !pb.PYRO_01, pb.LAPA, pb.NEFY_02, !pb.NEFY_02);
+  pc.MUTY_03 = tock_pos(!pa.NEFY_02, !pb.NEFY_02, pb.LAPA, pb.MUTY_03, !pb.MUTY_03);
+  pc.NYKO_04 = tock_pos(!pa.MUTY_03, !pb.MUTY_03, pb.LAPA, pb.NYKO_04, !pb.NYKO_04);
+  pc.PYLO_05 = tock_pos(!pa.NYKO_04, !pb.NYKO_04, pb.LAPA, pb.PYLO_05, !pb.PYLO_05);
+  pc.NUTO_06 = tock_pos(!pa.PYLO_05, !pb.PYLO_05, pb.LAPA, pb.NUTO_06, !pb.NUTO_06);
+  pc.MUGU_07 = tock_pos(!pa.NUTO_06, !pb.NUTO_06, pb.LAPA, pb.MUGU_07, !pb.MUGU_07);
+
+  gc.DMA_A00 = pb.NAKY_00;
+  gc.DMA_A01 = pb.PYRO_01;
+  gc.DMA_A02 = pb.NEFY_02;
+  gc.DMA_A03 = pb.MUTY_03;
+  gc.DMA_A04 = pb.NYKO_04;
+  gc.DMA_A05 = pb.PYLO_05;
+  gc.DMA_A06 = pb.NUTO_06;
+  gc.DMA_A07 = pb.MUGU_07;
+
+  // this tribuffer is _not_ inverting
+  pc.ECAL_00 = pb.NAKY_00;
+  pc.EGEZ_01 = pb.PYRO_01;
+  pc.FUHE_02 = pb.NEFY_02;
+  pc.FYZY_03 = pb.MUTY_03;
+  pc.DAMU_04 = pb.NYKO_04;
+  pc.DAVA_05 = pb.PYLO_05;
+  pc.ETEG_06 = pb.NUTO_06;
+  pc.EREW_07 = pb.MUGU_07;
+
+  if (pb.AHOC) {
+    gc.chip.MA0  = pb.ECAL_00;
+    gc.chip.MA1  = pb.EGEZ_01;
+    gc.chip.MA2  = pb.FUHE_02;
+    gc.chip.MA3  = pb.FYZY_03;
+    gc.chip.MA4  = pb.DAMU_04;
+    gc.chip.MA5  = pb.DAVA_05;
+    gc.chip.MA6  = pb.ETEG_06;
+    gc.chip.MA7  = pb.EREW_07;
+    gc.chip.MA8  = pb.EVAX_08;
+    gc.chip.MA9  = pb.DUVE_09;
+    gc.chip.MA10 = pb.ERAF_10;
+    gc.chip.MA11 = pb.FUSY_11;
+    gc.chip.MA12 = pb.EXYF_12;
+  }
+}

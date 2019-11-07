@@ -1,151 +1,109 @@
+#include "P05_JoypadIO.h"
 #include "../Schematics.h"
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P5_Joypad_IO {
-  struct Input {
-    bool BEDO;
-    bool BURO_Q;
-    bool RESET2;
-    bool FROM_CPU;
-    bool SER_OUT;
+void P05_JoypadIO::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
+  const P05_JoypadIO& pb = gb.p05;
+  P05_JoypadIO& pc = gc.p05;
 
-    bool FF00RD;
-    bool FF00WR;
-    bool FF60_D0;
+  pc.JUTE_00 = tock_pos(ga.FF00WR, gb.FF00WR, gb.RESET2, pc.JUTE_00, gb.cpu.D0);
+  pc.KECY_01 = tock_pos(ga.FF00WR, gb.FF00WR, gb.RESET2, pc.KECY_01, gb.cpu.D1);
+  pc.JALE_02 = tock_pos(ga.FF00WR, gb.FF00WR, gb.RESET2, pc.JALE_02, gb.cpu.D2);
+  pc.KYME_03 = tock_pos(ga.FF00WR, gb.FF00WR, gb.RESET2, pc.KYME_03, gb.cpu.D3);
+  pc.KELY_04 = tock_pos(ga.FF00WR, gb.FF00WR, gb.RESET2, pc.KELY_04, gb.cpu.D4);
+  pc.COFY_05 = tock_pos(ga.FF00WR, gb.FF00WR, gb.RESET2, pc.COFY_05, gb.cpu.D5);
+  pc.KUKO_06 = tock_pos(ga.FF00WR, gb.FF00WR, gb.RESET2, pc.KUKO_06, gb.cpu.D6);
+  pc.KERU_07 = tock_pos(ga.FF00WR, gb.FF00WR, gb.RESET2, pc.KERU_07, gb.cpu.D7);
 
-    bool P10_C;
-    bool P11_C;
-    bool P12_C;
-    bool P13_C;
+  pc.KOLE = nand(pb.JUTE_00, gb.FF60_D0);
+  pc.KYBU = nor (pb.JUTE_00, pb.KURA);
 
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  pc.KYTO = nand(pb.KECY_01, gb.FF60_D0);
+  pc.KABU = nor (pb.KECY_01, pb.KURA);
 
-  struct Output {
-    bool SOUT;
-    bool P10_B; // this signal is weeeeird
-    bool P10_D;
-    bool P11_B;
-    bool P11_D;
-    bool P12_A;
-    bool P12_D;
-    bool P13_A;
-    bool P13_C;
-    bool P14_A;
-    bool P14_B;
-    bool P15_A;
-    
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  pc.KYHU = nand(pb.JALE_02, gb.FF60_D0);
+  pc.KASY = nor (gb.FF60_D0, pb.KURA); // this one doesn't match?
 
-  // FF00 JOYP
-  reg JUTE,KECY,JALE,KYME,KELY,COFY,KUKO,KERU;
+  pc.KORY = nand(pb.KYME_03, gb.FF60_D0);
+  pc.KALE = nor (pb.KYME_03, pb.KURA);
 
-  reg KOLO,KEJA,KEVU,KAPA;
+  pc.KARU = or(!pb.KELY_04, pb.KURA);
 
-  void tick(const Input& in, Output& out) {
-    wire JUTE_Q = JUTE.tock(in.FF00WR, in.RESET2, in.D0);
-    wire KECY_Q = JUTE.tock(in.FF00WR, in.RESET2, in.D1);
-    wire JALE_Q = JUTE.tock(in.FF00WR, in.RESET2, in.D2);
-    wire KYME_Q = JUTE.tock(in.FF00WR, in.RESET2, in.D3);
-    wire KELY_Q = KELY.tock(in.FF00WR, in.RESET2, in.D4);
-    wire COFY_Q = COFY.tock(in.FF00WR, in.RESET2, in.D5);
-    wire KUKO_Q = JUTE.tock(in.FF00WR, in.RESET2, in.D6);
-    wire KERU_Q = JUTE.tock(in.FF00WR, in.RESET2, in.D7);
+  pc.KURA = not(gb.FF60_D0);
+  pc.CELA = or(!pb.COFY_05, pb.KURA);
 
-    wire KURA = not(in.FF60_D0);
+  pc.KENA = mux2(pb.KUKO_06, gb.SER_OUT, gb.FF60_D0);
 
-    wire KOLE = nand(JUTE_Q, in.FF60_D0);
-    wire KYBU = nor(JUTE_Q, KURA);
-    out.P10_B = KOLE;
-    out.P10_D = KYBU;
+  pc.JEVA = not(gb.FF60_D0);
+  pc.KORE = nand(pb.KERU_07, gb.FF60_D0);
+  pc.KYWE = nor (pb.KERU_07, pb.JEVA);
 
-    wire KYTO = nand(KECY_Q, in.FF60_D0);
-    wire KABU = nor(KECY_Q, KURA);
-    out.P11_B = KYTO;
-    out.P11_D = KABU;
+  // really unsure about these pin assignments
+  gc.chip.SOUT_A = pb.KENA;
+  gc.chip.P10_B  = pb.KOLE;
+  gc.chip.P10_D  = pb.KYBU;
+  gc.chip.P11_B  = pb.KYTO;
+  gc.chip.P11_D  = pb.KABU;
+  gc.chip.P12_A  = pb.KYHU;
+  gc.chip.P12_D  = pb.KASY;
+  gc.chip.P13_A  = pb.KORY;
+  gc.chip.P13_C  = pb.KALE;
+  gc.chip.P14_A  = pb.KARU;
+  gc.chip.P14_B  = !pb.KELY_04;
+  gc.chip.P15_A  = pb.CELA;
 
-    wire KYHU = nand(in.FF60_D0, JALE_Q);
-    wire KASY = nor(in.FF60_D0, KURA);
-    out.P12_A = KYHU;
-    out.P12_D = KASY;
+  //----------
 
-    wire KORY = nand(KYME_Q, in.FF60_D0);
-    wire KALE = nor(KYME_Q, KURA);
-    out.P13_A = KORY;
-    out.P13_C = KALE;
+  pc.BYZO    = not(gb.FF00RD);
+  pc.KEVU_00 = latch_pos(pb.BYZO, pb.KEVU_00, gb.chip.P10_C);
+  pc.KAPA_01 = latch_pos(pb.BYZO, pb.KAPA_01, gb.chip.P11_C);
+  pc.KEJA_02 = latch_pos(pb.BYZO, pb.KEJA_02, gb.chip.P12_C);
+  pc.KOLO_03 = latch_pos(pb.BYZO, pb.KOLO_03, gb.chip.P13_C);
 
-    wire KARU = or(KURA, !KELY_Q);
-    out.P14_A = KARU;
-    out.P14_B = !KELY_Q;
+  pc.KEMA_00 = pb.KEVU_00;
+  pc.KURO_01 = pb.KAPA_01;
+  pc.KUVE_02 = pb.KEJA_02;
+  pc.JEKU_03 = pb.KOLO_03;
+  pc.KOCE_04 = not(!pb.KELY_04);
+  pc.CUDY_05 = not(!pb.COFY_05);
 
-    wire CELA = or(!COFY_Q, KURA);
-    out.P15_A = CELA;
-
-    wire KENA = mux2(KUKO_Q, in.SER_OUT, in.BURO_Q);
-    out.SOUT = KENA;
-
-    wire KORE = nand(KERU_Q, in.BURO_Q);
-    wire JEVA = not(in.BURO_Q);
-    wire KYWE = nor(JEVA, KERU_Q);
-    (void)KORE; // unused in schematic
-    (void)KYWE; // unused in schematic
-
-    //----------
-
-    wire BYZO   = not(in.FF00RD);
-    wire KOLO_Q = KOLO.latch(BYZO, in.P13_C);
-    wire KEJA_Q = KEJA.latch(BYZO, in.P12_C);
-    wire KEVU_Q = KEVU.latch(BYZO, in.P10_C);
-    wire KAPA_Q = KAPA.latch(BYZO, in.P11_C);
-
-    wire JEKU = not(KOLO_Q); // inversion?
-    wire KUVE = not(KEJA_Q);
-    wire KEMA = not(KEVU_Q);
-    wire KURO = not(KAPA_Q);
-    wire KOCE = not(!KELY_Q);
-    wire CUDY = not(!COFY_Q);
-
-    if (BYZO) {
-      out.D_OE = true;
-      out.D0 = KEMA;
-      out.D1 = KURO;
-      out.D2 = KUVE;
-      out.D3 = JEKU;
-      out.D4 = KOCE;
-      out.D5 = CUDY;
-    }
-
-    //----------
-
-    wire AXYN = not(in.BEDO);
-    wire ADYR = not(AXYN);
-    wire APYS = nor(in.FROM_CPU, ADYR);
-    wire AFOP = not(APYS);
-
-    wire ANOC = not(out.P10_B);
-    wire AJEC = not(out.P10_B);
-    wire ARAR = not(out.P10_B);
-    wire BENU = not(out.P10_B);
-    wire AKAJ = not(out.P10_B);
-    wire ASUZ = not(out.P10_B);
-    wire ATAJ = not(out.P10_B);
-    wire BEDA = not(out.P10_B);
-
-    if (AFOP) {
-      out.D_OE = true;
-      out.D0 = ANOC;
-      out.D2 = AJEC;
-      out.D6 = ARAR;
-      out.D4 = BENU;
-      out.D5 = AKAJ;
-      out.D3 = ASUZ;
-      out.D1 = ATAJ;
-      out.D7 = BEDA;
-    }
+  if (pb.BYZO) {
+    gc.cpu.D0 = pb.KEMA_00;
+    gc.cpu.D1 = pb.KURO_01;
+    gc.cpu.D2 = pb.KUVE_02;
+    gc.cpu.D3 = pb.JEKU_03;
+    gc.cpu.D4 = pb.KOCE_04;
+    gc.cpu.D5 = pb.CUDY_05;
   }
-};
+
+  //----------
+
+  pc.AXYN = not(gb.BEDO);
+  pc.ADYR = not(pb.AXYN);
+  pc.APYS = nor(gb.chip.T1nT2, pb.ADYR);
+  pc.AFOP = not(pb.APYS);
+
+  pc.ANOC_00 = not(gb.chip.P10_B);
+  pc.ATAJ_01 = not(gb.chip.P10_B);
+  pc.AJEC_02 = not(gb.chip.P10_B);
+  pc.ASUZ_03 = not(gb.chip.P10_B);
+  pc.BENU_04 = not(gb.chip.P10_B);
+  pc.AKAJ_05 = not(gb.chip.P10_B);
+  pc.ARAR_06 = not(gb.chip.P10_B);
+  pc.BEDA_07 = not(gb.chip.P10_B);
+
+  if (pb.AFOP) {
+    gc.cpu.D0 = pb.ANOC_00;
+    gc.cpu.D1 = pb.ATAJ_01;
+    gc.cpu.D2 = pb.AJEC_02;
+    gc.cpu.D3 = pb.ASUZ_03;
+    gc.cpu.D4 = pb.BENU_04;
+    gc.cpu.D5 = pb.AKAJ_05;
+    gc.cpu.D6 = pb.ARAR_06;
+    gc.cpu.D7 = pb.BEDA_07;
+  }
+}

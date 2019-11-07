@@ -220,6 +220,9 @@
     <ClInclude Include="pages\ChipSignals.h" />
     <ClInclude Include="pages\CpuSignals.h" />
     <ClInclude Include="pages\Gameboy.h" />
+    <ClInclude Include="pages\P04_DMA.h" />
+    <ClInclude Include="pages\P05_JoypadIO.h" />
+    <ClInclude Include="pages\P06_SerialLink.h" />
     <ClInclude Include="pages\TristateBus.h" />
     <ClInclude Include="pages\P01_ClocksReset.h" />
     <ClInclude Include="pages\P02_Interrupts.h" />

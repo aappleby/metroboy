@@ -6,6 +6,11 @@ struct ChipSignals {
   bool RESET;
   bool CLKIN_A;
   bool CLKIN_B;
+
+  bool T1;
+  bool T2;
+
+  // should move these to Gameboy
   bool T1nT2;
   bool T1nT2n;
   bool T1T2n;
@@ -34,27 +39,36 @@ struct ChipSignals {
 
   // signals to/from vram data pins
   bool MD0_A,MD1_A,MD2_A,MD3_A,MD4_A,MD5_A,MD6_A,MD7_A;
-  bool MD0_B,MD1_B,MD2_B,MD3_B,MD4_B,MD5_B,MD6_B,MD7_B; // these are all driven by ROFA
+  bool MD0_B,MD1_B,MD2_B,MD3_B,MD4_B,MD5_B,MD6_B,MD7_B; // <- P25.ROFA
   bool MD0_C,MD1_C,MD2_C,MD3_C,MD4_C,MD5_C,MD6_C,MD7_C;
   bool MD0_D,MD1_D,MD2_D,MD3_D,MD4_D,MD5_D,MD6_D,MD7_D;
 
-  bool MCS_A; // P25 SOKY  -> MCS_A
-  bool MCS_C; // P25 MCS_C -> TEFY
-  bool MCS_D; // P25 SETY  -> MCS_D
+  bool MCS_A; // <- P25.SOKY
+  bool MCS_C; // -> P25.TEFY
+  bool MCS_D; // <- P25.SETY
 
-  bool MOE_A; // P25 REFO  -> MOE_A
-  bool MOE_C; // P25 MOE_C -> TAVY
-  bool MOE_D; // P25 SAHA  -> MOE_D
+  bool MOE_A; // <- P25.REFO
+  bool MOE_C; // -> P25.TAVY
+  bool MOE_D; // <- P25.SAHA
 
   bool RST;
+
   bool SOUT_A;
-  bool SIN_A,SIN_B,SIN_C,SIN_D;
-  bool SCK_A,SCK_B,SCK_C,SCK_D;
+
+  bool SIN_A;
+  bool SIN_B;
+  bool SIN_C;
+  bool SIN_D;
+  
+  bool SCK_A; // <- P06.KEXU, out high
+  bool SCK_B; // <- P06.CULY, out dir
+  bool SCK_C; // -> P06.CAVE, in
+  bool SCK_D; // <- P06.KUJO, out low
 
   bool P10_A,P10_B,P10_C,P10_D;
   bool P11_A,P11_B,P11_C,P11_D;
   bool P12_A,P12_B,P12_C,P12_D;
   bool P13_A,P13_B,P13_C,P13_D;
-  bool P14_A,P14_D;
+  bool P14_A,P14_B,P14_D; // not sure about P14_B, i think it's mislabeled
   bool P15_A,P15_D;
 };

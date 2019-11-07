@@ -172,9 +172,9 @@ void step_forwards(void* blobA, void* blobB) {
   b.chip.RESET   = b.timestamp < 20;
   b.chip.CLKIN_A = true;
   b.chip.CLKIN_B = b.timestamp & 1;
-  b.chip.T1nT2   = false;
-  b.chip.T1nT2n  = true;
-  b.chip.T1T2n   = false;
+  b.T1nT2   = false;
+  b.T1nT2n  = true;
+  b.T1T2n   = false;
 
   //----------
   // haxxxxx
@@ -204,6 +204,7 @@ void step_forwards(void* blobA, void* blobB) {
     P04_DMA::tick(a, b, c);
     P05_JoypadIO::tick(a, b, c);
     P06_SerialLink::tick(a, b, c);
+    P07_SysDecode::tick(a, b, c);
 
     if (memcmp(&b, &c, sizeof(Gameboy)) == 0) break;
     a = b;

@@ -84,7 +84,7 @@ void P05_JoypadIO::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
 
   pc.AXYN = not(gb.BEDO);
   pc.ADYR = not(pb.AXYN);
-  pc.APYS = nor(gb.chip.T1nT2, pb.ADYR);
+  pc.APYS = nor(gb.T1nT2, pb.ADYR);
   pc.AFOP = not(pb.APYS);
 
   pc.ANOC_00 = not(gb.chip.P10_B);

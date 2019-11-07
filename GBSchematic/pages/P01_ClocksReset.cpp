@@ -115,10 +115,10 @@ void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   //----------
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
 
-  pc.AFUR = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.chip.T1nT2n, pb.AFUR, !pb.ADYK);
-  pc.ALEF = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.chip.T1nT2n, pb.ALEF, pb.AFUR);
-  pc.APUK = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.chip.T1nT2n, pb.APUK, pb.ALEF);
-  pc.ADYK = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.chip.T1nT2n, pb.ADYK, pb.APUK);
+  pc.AFUR = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.T1nT2n, pb.AFUR, !pb.ADYK);
+  pc.ALEF = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.T1nT2n, pb.ALEF, pb.AFUR);
+  pc.APUK = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.T1nT2n, pb.APUK, pb.ALEF);
+  pc.ADYK = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.T1nT2n, pb.ADYK, pb.APUK);
 
   pc.ADAR = not(pb.ADYK);
   pc.ATYP = not(pb.AFUR);
@@ -131,7 +131,7 @@ void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
 
   pc.AJAX = not(pb.ATYP);
   pc.AGUT = unk3(pb.AJAX, pb.AROV, gb.cpu.FROM_CPU4);
-  pc.AWOD = or(gb.chip.T1nT2, pb.AGUT);
+  pc.AWOD = or(gb.T1nT2, pb.AGUT);
   pc.ABUZ = not(pb.AWOD);
 
   pc.BUGO = not(pb.AFEP);
@@ -199,13 +199,13 @@ void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.UPYF = or(gb.chip.RESET, gb.CLKIN_An);
   pc.TUBO = unk2(gb.ABOL, pb.UPYF);
   pc.UNUT = and(pb.TUBO, pb.UPOF_15);
-  pc.TABA = or(gb.chip.T1nT2, gb.chip.T1T2n, pb.UNUT);
+  pc.TABA = or(gb.T1nT2, gb.T1T2n, pb.UNUT);
   pc.ALYP = not(pb.TABA);
   pc.AFAR = nor(pb.ALYP, gb.chip.RESET);
   pc.ASOL = unk2(pb.AFAR, gb.chip.RESET);
 
   pc.BOMA = not(pb.BOGA);
-  pc.AFER = tock_pos(pa.BOMA, pb.BOMA, gb.chip.T1nT2n, pb.AFER, pb.ASOL);
+  pc.AFER = tock_pos(pa.BOMA, pb.BOMA, gb.T1nT2n, pb.AFER, pb.ASOL);
   pc.AVOR = or(pb.AFER, pb.ASOL);
   pc.ALUR = not(pb.AVOR);
 
@@ -215,7 +215,7 @@ void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   //----------
   // FF04 DIV
 
-  pc.TAPE = and(gb.FF04_FF07, gb.cpu.CPU_WR, gb.TOLA_A1n, gb.TOVY_A0n);
+  pc.TAPE = and(gb.FF04_FF07, gb.CPU_WR, gb.TOLA_A1n, gb.TOVY_A0n);
   pc.UFOL = nor(gb.CLKIN_An, gb.chip.RESET, pb.TAPE);
   pc.RESET_DIVn = pb.UFOL;
 
@@ -255,7 +255,7 @@ void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.RYSO = not(pb.SUBU_12);
   pc.UDOR = not(pb.TEKA_13);
 
-  pc.TAGY = and(gb.FF04_FF07, gb.cpu.CPU_RD, gb.TOLA_A1n, gb.TOVY_A0n);
+  pc.TAGY = and(gb.FF04_FF07, gb.CPU_RD, gb.TOLA_A1n, gb.TOVY_A0n);
   pc.TAWU = not(pb.UMEK);
   pc.TAKU = not(pb.UREK);
   pc.TEMU = not(pb.UTOK);

@@ -76,7 +76,7 @@ struct CpuSignals {
   // top left, 10? signals... i think i screwed this up, my counting was off
   // these are mostly the clocks
 
-  bool PIN_NC;         // PORTD_00: -> P07.LEXY, FROM_CPU6 -> goes to an unconnected pad between LD0 and CPG
+  bool FROM_CPU6;      // PORTD_00: -> P07.LEXY, doesn't do anything
   bool TO_CPU;         // PORTD_01: <- P01.BOWA, this is a 1 mhz clock
   bool BEDO;           // PORTD_02: <- P01.BEDO, this is a 1 mhz clock
   bool BEKO;           // PORTD_03: <- P01.BEKO, connection not indicated on P01. Clock but not sure what phase
@@ -90,10 +90,4 @@ struct CpuSignals {
   // bottom left, 8 signals, data bus
 
   bool D0,D1,D2,D3,D4,D5,D6,D7;
-
-  //----------
-  // Derived signals, not directly from the CPU
-
-  bool CPU_RD;         // <- P07.TEDO
-  bool CPU_WR;         // <- P07.TAPU
 };

@@ -7,13 +7,8 @@ struct ChipSignals {
   bool CLKIN_A;
   bool CLKIN_B;
 
-  bool T1;
-  bool T2;
-
-  // should move these to Gameboy
-  bool T1nT2;
-  bool T1nT2n;
-  bool T1T2n;
+  bool T1; // -> P07.UBET
+  bool T2; // -> P07.UVAR
 
   bool RD_A; // P08 UGAC -> RD_A
   bool RD_C; // P07 RD_C -> UJYV
@@ -71,4 +66,6 @@ struct ChipSignals {
   bool P13_A,P13_B,P13_C,P13_D;
   bool P14_A,P14_B,P14_D; // not sure about P14_B, i think it's mislabeled
   bool P15_A,P15_D;
+
+  bool PIN_NC; // <- P07.LEXY, Unconnected pad between LDO and CPG
 };

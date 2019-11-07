@@ -1,251 +1,192 @@
+#include "P07_SysDecode.h"
+#include "Gameboy.h"
 #include "../Schematics.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P7_Sys_Decode {
-  struct Input {
-    bool BEDO;
-    bool P10_B;
-    bool FFXX;
-    bool RESET2;
-    bool RESET;
-    bool CPU_WR_RAW;
-    bool ANAP;
-    bool NET02; // FIXME this should be T1nT2
-    bool WR_IN;
-    bool CPU_RD_SYNC;
-    bool CPU_RAW_RD;
-    bool RD_B;
-    bool FROM_CPU6;
+void P07_SysDecode::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
+  const P07_SysDecode& pa = ga.p07;
+  const P07_SysDecode& pb = gb.p07;
+  P07_SysDecode& pc = gc.p07;
 
-    bool T1;
-    bool T2;
+  //----------
+  // debug enable signals
 
-    bool A0,A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  pc.UBET = not(gb.chip.T1);
+  pc.UVAR = not(gb.chip.T2);
+  pc.UPOJ = nand(pb.UBET, pb.UVAR, gb.chip.RESET);
+  pc.UNOR = and(gb.chip.T2, pb.UBET);
+  pc.UMUT = and(gb.chip.T1, pb.UVAR);
+  
+  gc.T1nT2n = pb.UPOJ;
+  gc.T1nT2  = pb.UNOR;
+  gc.T1T2n  = pb.UMUT;
 
-  struct Output {
-    bool CPU_RD;
-    bool CPU_WR;
-    bool CPU_RD2;
-    bool CPU_WR2;
+  //----------
+  // debug override of CPU_RD/CPU_WR
 
-    bool PIN_NC;
+  pc.UBAL = mux2(gb.chip.WR_C, gb.CPU_RD_SYNC,    gb.T1nT2);
+  pc.UJYV = mux2(gb.chip.RD_C, gb.cpu.CPU_RAW_RD, gb.T1nT2);
+  pc.TAPU = not(pb.UBAL);
+  pc.TEDO = not(pb.UJYV);
 
-    bool BOOT_CS;
-    bool HRAM_CS;
-    bool T1nT2n;
-    bool T1nT2;
-    bool T1T2n;
+  pc.DYKY = not(pb.TAPU);
+  pc.AJAS = not(pb.TEDO);
 
-    bool FF60_D0;
-    bool FF60_D1;
+  pc.CUPA = not(pb.DYKY);
+  pc.ASOT = not(pb.AJAS);
 
-    bool FFXX;
-    bool FFXXn;
-    bool SARO;
-    bool FEXXFFXXn;
-    bool FF0F_RD;
-    bool FF0F_WR;
+  gc.CPU_WR  = pb.TAPU;
+  gc.CPU_RD  = pb.TEDO;
+  gc.CPU_WR2 = pb.CUPA;
+  gc.CPU_RD2 = pb.ASOT;
 
-    bool BOOTROM_A1A0;
-    bool BOOTROM_A1A0n;
-    bool BOOTROM_A1nA0;
-    bool BOOTROM_A1nA0n;
-    bool BOOTROM_A2n;
-    bool BOOTROM_A3n;
+  //----------
+  // doesn't do anything
 
-    bool BOOTROM_A5AA4;
-    bool BOOTROM_A5A4n;
-    bool BOOTROM_A5nA4;
-    bool BOOTROM_A5nA4n;
-    bool BOOTROM_A6n;
-    bool BOOTROM_A7n;
+  bool LEXY = not(gb.cpu.FROM_CPU6);
+  gc.chip.PIN_NC = LEXY;
 
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  //----------
+  // BOOT_CS
 
-  // FF50 - the "enable bootrom" register
-  reg TEPU;
+  pc.TYRO = nor(gb.cpu.A7, gb.cpu.A5, gb.cpu.A3, gb.cpu.A2, gb.cpu.A1, gb.cpu.A0);
+  pc.TUFA = and(gb.cpu.A4, gb.cpu.A6);
+  pc.TUGE = nand(pb.TYRO, pb.TUFA, gb.FFXX, gb.CPU_WR);
+  pc.SATO = or(gb.cpu.D0, pb.TEPU);
+  pc.TEXE = and(gb.CPU_RD, gb.FFXX, pb.TUFA, pb.TYRO);
+  pc.TEPU = tock_pos(pa.TUGE, pb.TUGE, gb.RESET2, pb.TEPU, pb.SATO);
+  pc.SYPU = not(!pb.TEPU);
+  pc.TERA = not(pb.TEPU);
+  pc.TULO = nor(gb.cpu.A15, gb.cpu.A14, gb.cpu.A13, gb.cpu.A12, gb.cpu.A11, gb.cpu.A10, gb.cpu.A9, gb.cpu.A8);
+  pc.TUTU = and(pb.TERA, pb.TULO);
+  pc.ZORO = nor(gb.cpu.A15, gb.cpu.A14, gb.cpu.A13, gb.cpu.A12);
+  pc.ZADU = nor(gb.cpu.A11, gb.cpu.A10, gb.cpu.A9, gb.cpu.A8);
+  pc.YAZA = not(gb.T1T2n);
+  pc.YULA = and(pb.YAZA, pb.TUTU, gb.CPU_RD);
+  pc.ZUFA = and(pb.ZORO, pb.ZADU);
+  pc.ZADO = nand(pb.YULA, pb.ZUFA);
+  pc.ZERY = not(pb.ZADO);
 
-  // FF60 - secret debug register
-  reg AMUT,BURO;
+  gc.BOOT_CS = pb.ZERY;
+  gc.TUTU = pb.TUTU;
 
-  void tick(const Input& in, Output& out) {
+  if (pb.TEXE) {
+    gc.cpu.D0 = pb.SYPU;
+  }
 
-    wire UBET = not(in.T1);
-    wire UVAR = not(in.T2);
-    wire UPOJ = nand(UBET, UVAR, in.RESET);
-    wire UNOR = and(in.T2, UBET);
-    wire UMUT = and(in.T1, UVAR);
-    out.T1nT2n= UPOJ;
-    out.T1nT2 = UNOR;
-    out.T1T2n = UMUT;
+  //----------
+  // FF0F_RD/WR
 
-    //----------
+  pc.SEMY = nor(gb.cpu.A7, gb.cpu.A6, gb.cpu.A5, gb.cpu.A4);
+  pc.SAPA = and(gb.cpu.A0, gb.cpu.A1, gb.cpu.A2, gb.cpu.A3);
+  pc.ROLO = and(pb.SEMY, pb.SAPA, gb.FFXX, gb.CPU_RD);
+  pc.REFA = and(pb.SEMY, pb.SAPA, gb.FFXX, gb.CPU_WR);
 
-    bool UBAL = mux2(in.WR_IN, in.CPU_RD_SYNC, out.T1nT2);
-    bool UJYV = mux2(in.RD_B, in.CPU_RAW_RD, out.T1nT2);
-    bool TAPU = not(UBAL);
-    bool TEDO = not(UJYV);
+  gc.FF0F_RD = pb.ROLO;
+  gc.FF0F_WR = pb.REFA;
 
-    out.CPU_WR = TAPU;
-    out.CPU_RD = TEDO;
+  //----------
+  // hram select
 
-    bool DYKY = not(TAPU);
-    bool AJAS = not(TEDO);
+  pc.WALE = nand(gb.cpu.A0, gb.cpu.A1, gb.cpu.A2, gb.cpu.A3, gb.cpu.A4, gb.cpu.A5, gb.cpu.A6);
+  pc.WOLY = nand(pb.WALE, gb.cpu.A7, gb.FFXX);
+  pc.WUTA = not(pb.WOLY);
 
-    bool CUPA = not(DYKY);
-    bool ASOT = not(AJAS);
+  gc.HRAM_CS = pb.WUTA;
 
-    out.CPU_WR2 = CUPA;
-    out.CPU_RD2 = ASOT;
+  //----------
+  // weird debug thing
 
-    bool LEXY = not(in.FROM_CPU6);
-    out.PIN_NC = LEXY;
+  pc.LECO = nor(gb.BEDO, gb.T1nT2);
 
-    //----------
+  pc.ROMY_00 = not(gb.chip.P10_B);
+  pc.RYNE_01 = not(gb.chip.P10_B);
+  pc.REJY_02 = not(gb.chip.P10_B);
+  pc.RASE_03 = not(gb.chip.P10_B);
+  pc.REKA_04 = not(gb.chip.P10_B);
+  pc.ROWE_05 = not(gb.chip.P10_B);
+  pc.RYKE_06 = not(gb.chip.P10_B);
+  pc.RARU_07 = not(gb.chip.P10_B);
 
-    bool TYRO = nor(in.A7, in.A5, in.A3, in.A2, in.A1, in.A0);
-    bool TUFA = and(in.A4, in.A6);
-    bool TUGE = nand(TYRO, TUFA, in.FFXX, out.CPU_WR);
-    bool TEPU_Q = TEPU.q();
-    bool SATO = or(in.D0, TEPU_Q);
-    TEPU.tock(TUGE, in.RESET2, SATO);
-    bool TERA = not(TEPU_Q);
-    bool TULO = nor(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A9, in.A8);
+  if (pb.LECO) {
+    gc.cpu.D0 = pb.ROMY_00;
+    gc.cpu.D1 = pb.RYNE_01;
+    gc.cpu.D2 = pb.REJY_02;
+    gc.cpu.D3 = pb.RASE_03;
+    gc.cpu.D4 = pb.REKA_04;
+    gc.cpu.D5 = pb.ROWE_05;
+    gc.cpu.D6 = pb.RYKE_06;
+    gc.cpu.D7 = pb.RARU_07;
+  }
 
-    // this is the "use bootrom" signal
-    bool TUTU = and(TERA, TULO);
-    
-    // these two cells are weirdly off by themselves next to wave ram
-    bool YAZA = not(out.T1T2n);
-    bool YULA = and(YAZA, TUTU, out.CPU_RD);
+  //----------
+  // random address decoders
 
-    bool ZORO = nor(in.A15, in.A14, in.A13, in.A12);
-    bool ZADU = nor(in.A11, in.A10, in.A9, in.A8);
-    bool ZUFA = and(ZORO, ZADU);
-    bool ZADO = nand(YULA, ZUFA);
-    bool ZERY = not(ZADO);
+  pc.TONA = not(gb.cpu.A8);
+  pc.TUNA = nand(gb.cpu.A15, gb.cpu.A14, gb.cpu.A13, gb.cpu.A12, gb.cpu.A11, gb.cpu.A10, gb.cpu.A9);
+  pc.SYKE = nor(pb.TONA, pb.TUNA);
+  pc.RYCU = not(pb.TUNA);
+  pc.SOHA = not(gb.FFXX);
+  pc.ROPE = nand(pb.RYCU, pb.SOHA);
+  pc.BAKO = not(pb.SYKE);
+  pc.SARO = not(pb.ROPE);
 
-    out.BOOT_CS = ZERY;
+  gc.FEXXFFXXn = pb.TUNA;
+  gc.FFXX      = pb.SYKE;
+  gc.FFXXn     = pb.BAKO;
+  gc.SARO      = pb.SARO; // what address range does this trigger on?
 
-    bool TEXE = and(out.CPU_RD, in.FFXX, TUFA, TYRO);
-    bool SYPU = not(TEPU_Q);
-    if (TEXE) {
-      out.D_OE = true;
-      out.D0 = SYPU;
-    }
-    //----------
+  //----------
+  // bootrom address generation
 
-    bool SEMY = nor(in.A7, in.A6, in.A5, in.A4);
-    bool SAPA = and(in.A0, in.A1, in.A2, in.A3);
-    bool ROLO = and(SEMY, SAPA, in.FFXX, out.CPU_RD);
-    bool REFA = and(SEMY, SAPA, in.FFXX, in.CPU_WR_RAW);
+  pc.ZYRA = not(gb.cpu.A7);
+  pc.ZAGE = not(gb.cpu.A6);
+  pc.ZABU = not(gb.cpu.A3);
+  pc.ZOKE = not(gb.cpu.A2);
 
-    out.FF0F_RD = ROLO;
-    out.FF0F_WR = REFA;
+  pc.ZERA = not(gb.cpu.A5);
+  pc.ZUFY = not(gb.cpu.A4);
+  pc.ZYKY = and(pb.ZERA, pb.ZUFY);
+  pc.ZYGA = and(pb.ZERA, gb.cpu.A4);
+  pc.ZOVY = and(gb.cpu.A5, pb.ZUFY);
+  pc.ZUKO = and(gb.cpu.A5, gb.cpu.A4);
 
-    //----------
+  pc.ZUVY = not(gb.cpu.A1);
+  pc.ZYBA = not(gb.cpu.A0);
+  pc.ZOLE = and(pb.ZUVY, pb.ZYBA);
+  pc.ZAJE = and(pb.ZUVY, gb.cpu.A0);
+  pc.ZUBU = and(pb.ZYBA, gb.cpu.A1);
+  pc.ZAPY = and(gb.cpu.A1, gb.cpu.A0);
 
-    bool WALE = nand(in.A0, in.A1, in.A2, in.A3, in.A4, in.A5, in.A6);
-    bool WOLY = nand(WALE, in.A7, in.FFXX);
-    bool WUTA = not(WOLY);
+  pc.ZETE = not(pb.ZOLE);
+  pc.ZEFU = not(pb.ZAJE);
+  pc.ZYRO = not(pb.ZUBU);
+  pc.ZAPA = not(pb.ZAPY);
 
-    out.HRAM_CS = WUTA;
+  gc.BOOTROM_A1nA0n = pb.ZETE;
+  gc.BOOTROM_A1nA0  = pb.ZEFU;
+  gc.BOOTROM_A1A0n  = pb.ZYRO;
+  gc.BOOTROM_A1A0   = pb.ZAPA;
+  gc.BOOTROM_A2n    = pb.ZOKE;
+  gc.BOOTROM_A3n    = pb.ZABU;
+  gc.BOOTROM_A5nA4n = pb.ZYKY;
+  gc.BOOTROM_A5nA4  = pb.ZYGA;
+  gc.BOOTROM_A5A4n  = pb.ZOVY;
+  gc.BOOTROM_A5AA4  = pb.ZUKO;
+  gc.BOOTROM_A6n    = pb.ZAGE;
+  gc.BOOTROM_A7n    = pb.ZYRA;
 
-    //----------
+  //----------
+  // FF60 debug reg
 
-    bool LECO = nor(in.BEDO, out.T1nT2);
+  pc.APET = or(gb.T1nT2, gb.T1T2n);
+  pc.APER = nand(pb.APET, gb.cpu.A5, gb.cpu.A6, gb.CPU_WR, gb.ANAP);
+  pc.BURO_00 = tock_pos(pa.APER, pb.APER, gb.RESET2, pb.BURO_00, gb.cpu.D0);
+  pc.AMUT_01 = tock_pos(pa.APER, pb.APER, gb.RESET2, pb.AMUT_01, gb.cpu.D1);
 
-    bool RARU = not(in.P10_B);
-    bool ROWE = not(in.P10_B);
-    bool RYKE = not(in.P10_B);
-    bool RYNE = not(in.P10_B);
-    bool RASE = not(in.P10_B);
-    bool REJY = not(in.P10_B);
-    bool REKA = not(in.P10_B);
-    bool ROMY = not(in.P10_B);
-
-    if (LECO) {
-      out.D_OE = true;
-      out.D0 = ROMY;
-      out.D1 = RYNE;
-      out.D2 = REJY;
-      out.D3 = RASE;
-      out.D4 = REKA;
-      out.D5 = ROWE;
-      out.D6 = RYKE;
-      out.D7 = RARU;
-    }
-
-    //----------
-
-    bool TONA = not(in.A8);
-    bool TUNA = nand(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A9);
-    out.FEXXFFXXn = TUNA;
-    bool SYKE = nor(TONA, TUNA);
-    bool RYCU = not(TUNA);
-    bool SOHA = not(in.FFXX);
-    bool ROPE = nand(RYCU, SOHA);
-    out.FFXX = SYKE;
-    bool BAKO = not(SYKE);
-    out.FFXXn = BAKO;
-    out.SARO = not(ROPE);
-
-    //----------
-    // bootrom address generation
-
-    bool ZYRA = not(in.A7);
-    bool ZAGE = not(in.A6);
-    bool ZABU = not(in.A3);
-    bool ZOKE = not(in.A2);
-
-    out.BOOTROM_A7n = ZYRA;
-    out.BOOTROM_A6n = ZAGE;
-    out.BOOTROM_A3n = ZABU;
-    out.BOOTROM_A2n = ZOKE;
-
-    bool ZERA = not(in.A5);
-    bool ZUFY = not(in.A4);
-    bool ZYKY = and(ZERA, ZUFY);
-    bool ZYGA = and(ZERA, in.A4);
-    bool ZOVY = and(in.A5, ZUFY);
-    bool ZUKO = and(in.A5, in.A4);
-
-    out.BOOTROM_A5nA4n = ZYKY;
-    out.BOOTROM_A5nA4 = ZYGA;
-    out.BOOTROM_A5A4n = ZOVY;
-    out.BOOTROM_A5AA4 = ZUKO;
-
-    bool ZUVY = not(in.A1);
-    bool ZYBA = not(in.A0);
-    bool ZOLE = and(ZUVY, ZYBA);
-    bool ZAJE = and(ZUVY, in.A0);
-    bool ZUBU = and(ZYBA, in.A1);
-    bool ZAPY = and(in.A1, in.A0);
-
-    bool ZETE = not(ZOLE);
-    bool ZEFU = not(ZAJE);
-    bool ZYRO = not(ZUBU);
-    bool ZAPA = not(ZAPY);
-
-    out.BOOTROM_A1nA0n = ZETE;
-    out.BOOTROM_A1nA0 = ZEFU;
-    out.BOOTROM_A1A0n = ZYRO;
-    out.BOOTROM_A1A0 = ZAPA;
-
-    //----------
-
-    bool APET = or(in.NET02, out.T1T2n);
-    bool APER = nand(APET, in.A5, in.A6, out.CPU_WR, in.ANAP);
-    bool AMUT_Q = AMUT.tock(APER, in.RESET2, in.D1);
-    bool BURO_Q = BURO.tock(APER, in.RESET2, in.D0);
-
-    out.FF60_D1= AMUT_Q;
-    out.FF60_D0= BURO_Q;
-  }};
+  gc.FF60_D0 = pb.BURO_00;
+  gc.FF60_D1 = pb.AMUT_01;
+}

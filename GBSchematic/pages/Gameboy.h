@@ -9,6 +9,7 @@
 #include "P04_DMA.h"
 #include "P05_JoypadIO.h"
 #include "P06_SerialLink.h"
+#include "P07_SysDecode.h"
 
 struct Gameboy {
   int64_t timestamp;
@@ -22,9 +23,17 @@ struct Gameboy {
   P04_DMA         p04;
   P05_JoypadIO    p05;
   P06_SerialLink  p06;
+  P07_SysDecode   p07;
 
   // this signal is weird
   bool ABOL;
+
+  //----------
+  // debug stuff
+
+  bool T1nT2;
+  bool T1nT2n;
+  bool T1T2n;
 
   //----------
   // dma bus
@@ -66,11 +75,10 @@ struct Gameboy {
   bool RESET_VIDEO;  // to P21, P24, P27, P28, P29
 
   bool CLKIN_An;     // <- P01.UCOB
-  bool CPU_RD_SYNC;  // <- P01.APOV, actually CPU_WR_SYNC, __not__ read
+  bool CPU_RD_SYNC;  // <- P01.APOV, FIXME actually CPU_WR_SYNC, __not__ read
   bool FF04_D0n;     // <- P01.UMEK
   bool FF04_D1n;     // <- P01.UREK
   bool TO_CPU;       // <- P01.BOWA
-
   bool BEDO;         // <- P01.BEDO
 
   //----------
@@ -107,15 +115,40 @@ struct Gameboy {
   bool SER_TICKn;    // <- P06.EDYL
 
   //----------
-  // driven by pages we haven't merged yet
+  // driven by P07
+
+  bool CPU_RD;       // <- P07.TEDO
+  bool CPU_WR;       // <- P07.TAPU
+  bool CPU_RD2;      // <- P07.ASOT
+  bool CPU_WR2;      // <- P07.CUPA
 
   bool FF60_D0;      // <- P07.BURO, debugging
   bool FF60_D1;      // <- P07.AMUT, debugging
   bool FF0F_RD;      // <- P07.ROLO
   bool FF0F_WR;      // <- P07.REFA
   bool FFXX;         // <- P07.SYKE
-  bool CPU_RD2;      // <- P07.ASOT
-  bool CPU_WR2;      // <- P07.CUPA
+  bool TUTU;         // <- P07.TUTU
+  bool BOOT_CS;      // <- P07.ZERY
+  bool HRAM_CS;      // <- P07.WUTA
+  bool FEXXFFXXn;    // <- P07.TUNA
+  bool FFXXn;        // <- P07.BAKO
+  bool SARO;         // <- P07.SARO
+
+  bool BOOTROM_A1nA0n; // <- P07.ZETE
+  bool BOOTROM_A1nA0;  // <- P07.ZEFU
+  bool BOOTROM_A1A0n;  // <- P07.ZYRO
+  bool BOOTROM_A1A0;   // <- P07.ZAPA
+  bool BOOTROM_A2n;    // <- P07.ZOKE
+  bool BOOTROM_A3n;    // <- P07.ZABU
+  bool BOOTROM_A5nA4n; // <- P07.ZYKY
+  bool BOOTROM_A5nA4;  // <- P07.ZYGA
+  bool BOOTROM_A5A4n;  // <- P07.ZOVY
+  bool BOOTROM_A5AA4;  // <- P07.ZUKO
+  bool BOOTROM_A6n;    // <- P07.ZAGE
+  bool BOOTROM_A7n;    // <- P07.ZYRA
+
+  //----------
+  // driven by pages we haven't merged yet
 
   bool TOLA_A1n;     // <- P08.TOLA
 
@@ -124,6 +157,7 @@ struct Gameboy {
   bool AJER_2M;      // <- P09.AJER
   bool FERO_Q;       // <- P09.FERO, something debug-related
 
+  bool ANAP;         // <- P10.ANAP
   bool FF00RD;       // <- P10.ACAT
   bool FF00WR;       // <- P10.ATOZ
 

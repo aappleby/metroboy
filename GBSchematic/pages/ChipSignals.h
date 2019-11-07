@@ -57,7 +57,4 @@ struct ChipSignals {
   bool P13_A,P13_B,P13_C,P13_D;
   bool P14_A,P14_D;
   bool P15_A,P15_D;
-
-
-
 };

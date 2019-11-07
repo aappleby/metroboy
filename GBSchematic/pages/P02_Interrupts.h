@@ -1,5 +1,8 @@
 #pragma once
 #include "../Schematics.h"
+#include "../SignalTree.h"
+
+struct Gameboy;
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
@@ -7,16 +10,10 @@
 
 struct P02_Interrupts {
 
+#if 0
   struct Input {
-    bool P10;
-    bool P10_B;
-    bool P11_C;
-    bool P12;
-    bool P13_C;
-
     bool FF0F_RD;
     bool FF0F_WR;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
     bool FF0F;
     bool CPU; // !?!?!?! this has gotta be FROM_CPU11
     bool BOGA1MHZ;
@@ -27,34 +24,56 @@ struct P02_Interrupts {
     bool INT_JP;
     bool INT_STAT;
     bool INT_TIMER;
-
-    bool FROM_CPU7;
-    bool FROM_CPU8;
-    bool FROM_CPU9;
-    bool FROM_CPU10;
-    bool FROM_CPU11;
   };
 
   struct Output {
-    bool TO_CPU2;  // for unhalt?
     bool INT_JP;
-    bool TO_CPU3; // INT_VBL_BUF
-    bool TO_CPU4; // INT_SERIAL
-    bool TO_CPU5; // INT_JP
-    bool TO_CPU6; // INT_STAT
-    bool TO_CPU7; // INT_TIMER
-
-    bool OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
   };
 
+  Input in;
+  Output out;
+#endif
+  
+  bool KERY;
+  bool ASOK;
+  bool ROTU;
+  bool LETY;
+  bool MUXE;
+  bool LUFE;
+  bool SULO;
+  bool LAMO;
+  bool SEME;
+  bool LEJA;
+  bool NABE;
+  bool LESA;
+  bool RAKE;
+  bool MYZU;
+  bool LYTA;
+  bool TOME;
+  bool TUNY;
+  bool TOGA;
+  bool TYME;
+  bool MODY;
+  bool MOVU;
+  bool PYHU;
+  bool PYGA;
+  bool PESU;
+  bool POLA;
+  bool NELA;
+  bool PADO;
+  bool PEGY;
+  bool NABO;
+  bool ROVA;
+  
   // glitch filter for joypad interrupt
-  reg ACEF,AGEM,APUG,BATU,AWOB;
+  bool ACEF,AGEM,APUG,BATU,AWOB;
 
   // FF0F IF reg
-  reg LOPE,UBUL,ULAK,LALU,NYBO;
-  reg MATY,NEJY,NUTY,MOPO,PAVY;
+  bool LOPE,UBUL,ULAK,LALU,NYBO;
+  bool MATY,NEJY,NUTY,MOPO,PAVY;
 
-  Output tick(const Input& in);
+  static const std::vector<SignalData> signals();
+
+  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 };
 

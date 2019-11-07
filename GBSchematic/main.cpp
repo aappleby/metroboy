@@ -9,6 +9,7 @@
 #include "../src/TextPainter.h"
 #include "pages/P01_ClocksReset.h"
 #include "pages/P03_Timer.h"
+#include "pages/Gameboy.h"
 
 #ifdef _MSC_VER
 #include <include/SDL.h>
@@ -16,6 +17,7 @@
 #include <SDL2/SDL.h>
 #endif
 
+#if 0
 void blah() {
   //----------
   // center right, generating the external read/write signals to the cart
@@ -98,6 +100,7 @@ void blah() {
   }
 
 }
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -149,27 +152,24 @@ void dump(void* blob, int size) {
 
 //-----------------------------------------------------------------------------
 
-struct Sample {
-  int64_t timestamp;
-
-  ChipSignals chip;
-  CpuSignals cpu;
-  TristateBus     bus;
-
-  P01_ClocksReset page01;
-  P03_Timer       page03;
-};
-
 void step_forwards(void* blobA, void* blobB) {
+  //----------
   // old state
-  Sample a = *(Sample*)blobA;
 
-  // old state + new inputs
-  Sample b = a;
-  b.timestamp = a.timestamp + 1;
+  Gameboy a = *(Gameboy*)blobA;
 
   //----------
-  // extern
+  // old state + new inputs
+
+  Gameboy b = a;
+  b.timestamp = a.timestamp + 1;
+
+  //b.cpu.CPU_RD = false;
+  //b.cpu.CPU_WR = false;
+  b.cpu.FROM_CPU3 = false;
+  b.cpu.FROM_CPU4 = false;
+  b.cpu.FROM_CPU5 = false;
+
 
   b.chip.RESET   = b.timestamp < 20;
   b.chip.CLKIN_A = true;
@@ -178,92 +178,64 @@ void step_forwards(void* blobA, void* blobB) {
   b.chip.T1nT2n  = true;
   b.chip.T1T2n   = false;
 
-  //b.cpu.CPU_RD = false;
-  //b.cpu.CPU_WR = false;
-  b.cpu.FROM_CPU3 = false;
-  b.cpu.FROM_CPU4 = false;
-  b.cpu.FROM_CPU5 = false;
+  //----------
+  // haxxxxx
 
   if (b.timestamp == 30) {
-    b.page03.SOPU_0 = true;
-    b.page03.SAMY_1 = false;
-    b.page03.SABO_2 = true;
+    b.p03.SOPU_0 = true;
+    b.p03.SAMY_1 = false;
+    b.p03.SABO_2 = true;
 
-    b.page03.SABU_0 = 1;
-    b.page03.NYKE_1 = 1;
-    b.page03.MURU_2 = 1;
-    b.page03.TYVA_3 = 1;
+    b.p03.SABU_0 = 1;
+    b.p03.NYKE_1 = 1;
+    b.p03.MURU_2 = 1;
+    b.p03.TYVA_3 = 1;
   }
 
   //----------
-  // page 01 unsorted
+  // unmerged signals
 
-  b.page01.in.APU_RESET5n = true;
-  b.page01.in.APU_RESET = false;
-  b.page01.in.ABOL = false;
-  b.page01.in.AJER_2M = false;
-  b.page01.in.FERO_Q = false;
-  b.page01.in.FF04_FF07 = false;
-  b.page01.in.FF40_D7 = true;
-  b.page01.in.FF60_D1 = false;
-  b.page01.in.TOLA_A1n = false;
-  b.page01.in.TOVY_A0n = false;
-  b.page01.in.CYBO_4M = false;
-
-  //----------
-  // page 01 -> page 03
-
-  b.page03.in.BOGA_1M  = a.page01.out.BOGA_1M;
-  b.page03.in.CLK_256K = a.page01.out.CLK_256K;
-  b.page03.in.CLK_64K  = a.page01.out.CLK_64K;
-  b.page03.in.CLK_16K  = a.page01.out.CLK_16K;
-  b.page03.in.FF04_D1n = a.page01.out.FF04_D1n;
-  b.page03.in.RESET2   = a.page01.out.RESET2;
-
-  //----------
-  // page 03 unsorted
-
-  b.page03.in.A00_07 = false;
-  b.page03.in.FFXX = false;
-  b.page03.in.TOLA_A1n = false;
+  /*
+  bool INT_SERIAL;  // <- P06.CALY
+  bool FF60_D1;     // <- P07.AMUT, debugging
+  bool FF0F_RD;     // <- P07.ROLO
+  bool FF0F_WR;     // <- P07.REFA
+  bool TOLA_A1n;    // <- P08.TOLA
+  bool APU_RESET;   // <- P09.KEBA
+  bool APU_RESET5n; // <- P09.KAME
+  bool AJER_2M;     // <- P09.AJER
+  bool FERO_Q;      // <- P09.FERO, something debug-related
+  bool CYBO_4M;     // <- P17.CYBO
+  bool INT_STAT;    // <- P21.VOTY
+  bool INT_VBL_BUF; // <- P21.VYPU
+  bool FF40_D7;     // <- P23.XONA, lcd on
+  bool FF0F;        // <- ???
+  */
 
   //----------
   // destination state
-  Sample c = b;
+  Gameboy c = b;
 
   for (int rep = 0; rep < 40; rep++) {
-    P01_ClocksReset::tick(b.cpu, b.chip,
-                          a.page01, a.bus,
-                          b.page01, b.bus,
-                          c.page01, c.bus);
+    P01_ClocksReset::tick(a, b, c);
+    P02_Interrupts::tick(a, b, c);
+    P03_Timer::tick(a, b, c);
 
-    P03_Timer::tick(b.cpu, b.chip,
-                    a.page03, a.bus,
-                    b.page03, b.bus,
-                    c.page03, c.bus);
-
-    if (memcmp(&b, &c, sizeof(Sample)) == 0) break;
+    if (memcmp(&b, &c, sizeof(Gameboy)) == 0) break;
     a = b;
     b = c;
-
-    b.page03.in.BOGA_1M  = b.page01.out.BOGA_1M;
-    b.page03.in.CLK_256K = b.page01.out.CLK_256K;
-    b.page03.in.CLK_64K  = b.page01.out.CLK_64K;
-    b.page03.in.CLK_16K  = b.page01.out.CLK_16K;
-    b.page03.in.FF04_D1n = b.page01.out.FF04_D1n;
-    b.page03.in.RESET2   = b.page01.out.RESET2;
   }
 
-  *(Sample*)blobB = b;
+  *(Gameboy*)blobB = b;
 }
 
 const std::vector<SignalData> sample_signals =
 {
-  SignalData("RESET",   offsetof(Sample, chip.RESET)),
-  SignalData("CLKIN_B", offsetof(Sample, chip.CLKIN_B)),
+  SignalData("RESET",   offsetof(Gameboy, chip.RESET)),
+  SignalData("CLKIN_B", offsetof(Gameboy, chip.CLKIN_B)),
 
-  SignalData("page01",  offsetof(Sample, page01), P01_ClocksReset::signals()),
-  SignalData("page03",  offsetof(Sample, page03), P03_Timer::signals()),
+  SignalData("p01",  offsetof(Gameboy, p01), P01_ClocksReset::signals()),
+  SignalData("p03",  offsetof(Gameboy, p03), P03_Timer::signals()),
 };
 
 //-----------------------------------------------------------------------------
@@ -293,7 +265,7 @@ int main(int /*argc*/, char** /*argv*/) {
   const int gb_width = 160 * 2;
   const int gb_height = 144 * 2;
 
-  SDL_Window* window = SDL_CreateWindow("MetroBoy Trace Debugger", 100, 100, fb_width, fb_height, SDL_WINDOW_SHOWN);
+  SDL_Window* window = SDL_CreateWindow("MetroBoy Trace Debugger", 4, 35, fb_width, fb_height, SDL_WINDOW_SHOWN);
   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   SDL_Texture* fb_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, fb_width, fb_height);
   const uint8_t* keyboard_state = SDL_GetKeyboardState(nullptr);
@@ -311,11 +283,11 @@ int main(int /*argc*/, char** /*argv*/) {
   //----------
   // Generate trace
 
-  const int timer_count = 256 * 1024;
-  Sample* samples = new Sample[timer_count];
-  memset(samples, 0xCD, timer_count * sizeof(Sample));
+  const int timer_count = 64 * 1024;
+  Gameboy* samples = new Gameboy[timer_count];
+  memset(samples, 0xCD, timer_count * sizeof(Gameboy));
 
-  Sample reset_sample = {};
+  Gameboy reset_sample = {};
   reset_sample.timestamp = -1;
 
   uint64_t timeA = SDL_GetPerformanceCounter();
@@ -424,10 +396,10 @@ int main(int /*argc*/, char** /*argv*/) {
       int cursor = (int)floor(center);
       if (cursor > 0) {
         printf("debugging sample %d\n", cursor);
-        Sample sampleA = samples[cursor-1];
-        Sample sampleB = samples[cursor];
+        Gameboy sampleA = samples[cursor-1];
+        Gameboy sampleB = samples[cursor];
 
-        Sample temp = {};
+        Gameboy temp = {};
         step_forwards(&sampleA, &temp);
       }
 
@@ -451,7 +423,7 @@ int main(int /*argc*/, char** /*argv*/) {
 
     render_labels(tp, 100, 16, sample_signals, 0);
 
-    tv.render(samples, sizeof(Sample), timer_count, sample_signals, center, span);
+    tv.render(samples, sizeof(Gameboy), timer_count, sample_signals, center, span);
 
     std::string temp;
     temp.clear();

@@ -1,39 +1,14 @@
 #pragma once
 #include "../Schematics.h"
 #include "../SignalTree.h"
-#include "CpuSignals.h"
-#include "ChipSignals.h"
-#include "TristateBus.h"
+
+struct Gameboy;
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
 struct P03_Timer {
-
-  struct Input {
-    // from P01
-    bool BOGA_1M;
-    bool CLK_256K;
-    bool CLK_64K;
-    bool CLK_16K;
-    bool FF04_D1n;
-    bool RESET2;
-
-    // unsorted
-    bool A00_07;
-    bool FFXX;
-    bool TOLA_A1n;
-  };
-
-  struct Output {
-    bool INT_TIMER;
-    bool TOVY_A0n;
-    bool FF04_FF07;
-  };
-
-  Input in;
-  Output out;
 
   // random decoder
   bool RYFO;
@@ -69,10 +44,6 @@ struct P03_Timer {
 
   //----------------------------------------
 
-  static void tick(const CpuSignals& cpu,
-                   const ChipSignals& chip,
-                   const P03_Timer& a, const TristateBus& busA,
-                   const P03_Timer& b, const TristateBus& busB,
-                   P03_Timer& c, TristateBus& busC);
+  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 };
 

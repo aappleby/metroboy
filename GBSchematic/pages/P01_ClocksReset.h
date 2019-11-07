@@ -1,81 +1,14 @@
 #pragma once
 #include "../Schematics.h"
 #include "../SignalTree.h"
-#include "CpuSignals.h"
-#include "ChipSignals.h"
-#include "TristateBus.h"
+
+struct Gameboy;
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
 struct P01_ClocksReset {
-  //----------
-  // Inputs
-
-  struct Input {
-    bool ABOL;        // this is actually CPU_RESET or similar
-    bool AJER_2M;
-    bool APU_RESET5n;
-    bool APU_RESET;
-    bool FERO_Q;      // something debug-related
-    bool FF04_FF07;
-    bool FF40_D7;     // lcd on
-    bool FF60_D1;     // debugging
-    bool TOLA_A1n;
-    bool TOVY_A0n;
-    bool CYBO_4M;     // from P17
-  };
-
-  Input in;
-
-  //----------
-  // Outputs
-
-  struct Output {
-    // to cpu
-    bool TO_CPU;
-
-    // to off-chip
-    bool PHI_OUT;
-    bool PHI_OUTn;
-    bool PHIn;
-
-    bool AMUK_4M;    // phases ACEG
-    bool APUV_4M;    // phases BDFH
-    bool ARYF_4M;    // phases BDFH
-    bool ATAL_4M;    // phases BDFH
-    bool BAVU_1M;    // phases CDEF
-    bool BOGA_1M;    // high on phases BCDEF
-    bool BUFY_256;
-    bool BYFE_128;
-    bool CERY_2M;
-    bool CLK1;
-    bool CLK2;
-    bool CLK_16K;
-    bool CLK_256K;
-    bool CLK_64K;
-    bool CLKIN_An;
-    bool HAMA_512Kn;
-    bool HORU_512;
-    bool JESO_512K;
-    bool TAMA_16K;
-
-    bool CPU_RD_SYNC; // actually CPU_WR_SYNC, __not__ read
-    bool FF04_D0n;    // to P24
-    bool FF04_D1n;    // to P03, P24
-
-    bool RESET2;      // active low!
-    bool RESET6;
-    bool RESET7;
-    bool RESET7n;
-    bool RESET8;
-    bool RESET9;
-    bool RESET_VIDEO; // to P21, P24, P27, P28, P29
-
-  };
-
-  Output out;
 
   //----------
   // Internal named signals
@@ -134,9 +67,5 @@ struct P01_ClocksReset {
 
   static const std::vector<SignalData> signals();
 
-  static void tick(const CpuSignals& cpu,
-                   const ChipSignals& chip,
-                   const P01_ClocksReset& a, const TristateBus& busA,
-                   const P01_ClocksReset& b, const TristateBus& busB,
-                   P01_ClocksReset& c,       TristateBus& busC);
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 };

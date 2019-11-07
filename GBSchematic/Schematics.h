@@ -108,6 +108,8 @@ template<typename... Args> void unpack(uint32_t x, bool& first, Args&... args) {
 bool tock_pos (bool clk1, bool clk2, bool rst,  bool d1, bool d2);
 bool tock_duo (bool clk1, bool clk2, bool rst,  bool d1, bool d2);
 bool count_pos(bool clk1, bool clk2, bool load, bool d1, bool d2);
+bool latch_pos(bool clk1, bool clk2, bool d1, bool d2);
+bool srtock_pos(bool clk1, bool clk2, bool set, bool rst, bool d1, bool d2);
 
 //-----------------------------------------------------------------------------
 

@@ -175,6 +175,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\TextPainter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pages\Gameboy.cpp" />
     <ClCompile Include="pages\P01_ClocksReset.cpp" />
     <ClCompile Include="pages\P02_Interrupts.cpp" />
     <ClCompile Include="pages\P03_Timer.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="..\src\TextPainter.h" />
     <ClInclude Include="pages\ChipSignals.h" />
     <ClInclude Include="pages\CpuSignals.h" />
+    <ClInclude Include="pages\Gameboy.h" />
     <ClInclude Include="pages\TristateBus.h" />
     <ClInclude Include="pages\P01_ClocksReset.h" />
     <ClInclude Include="pages\P02_Interrupts.h" />

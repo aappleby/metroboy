@@ -1,86 +1,89 @@
 #include "P02_Interrupts.h"
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-P02_Interrupts::Output P02_Interrupts::tick(const P02_Interrupts::Input& in) {
-  bool KERY = or(in.P13_C, in.P12, in.P11_C, in.P10);
-  bool AWOB_Q = AWOB.latch(in.BOGA1MHZ, KERY);
+void P02_Interrupts::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
+  const P02_Interrupts& pb = gb.p02;
+  P02_Interrupts& pc = gc.p02;
 
-  // Sort of a deglitcher, only passes INT_JP if high for 4 cycles?
-  bool BATU_Q = BATU.tock(in.BOGA1MHZ, in.RESET2, KERY);
-  bool ACEF_Q = ACEF.tock(in.BOGA1MHZ, in.RESET2, BATU_Q);
-  bool AGEM_Q = AGEM.tock(in.BOGA1MHZ, in.RESET2, ACEF_Q);
-  bool APUG_Q = APUG.tock(in.BOGA1MHZ, in.RESET2, AGEM_Q);
-  bool ASOK = and(APUG_Q, BATU_Q);
+  pc.KERY = or(gb.chip.P13_C, gb.chip.P12_C, gb.chip.P11_C, gb.chip.P10_C);
 
+  pc.AWOB = latch_pos(ga.BOGA_1M, gb.BOGA_1M, pb.AWOB, pb.KERY);
 
-  bool ROTU = not(in.FF0F_WR);
-  bool LETY = not(in.FROM_CPU9);
-  bool MUXE = or(in.D0, in.FF0F);
-  bool LUFE = not(in.FROM_CPU7);
-  bool SULO = or(in.D3, in.FF0F_WR);
-  bool LAMO = not(in.CPU); 
-  bool SEME = or(in.D4, in.FF0F);
-  bool LEJA = not(in.FROM_CPU8);
-  bool NABE = or(in.D1, in.FF0F);
-  bool LESA = not(in.FROM_CPU10);
-  bool RAKE = or(in.D2, in.FF0F);
+  pc.BATU = tock_pos(ga.BOGA_1M, gb.BOGA_1M, gb.RESET2, pb.BATU, pb.KERY);
+  pc.ACEF = tock_pos(ga.BOGA_1M, gb.BOGA_1M, gb.RESET2, pb.ACEF, pb.BATU);
+  pc.AGEM = tock_pos(ga.BOGA_1M, gb.BOGA_1M, gb.RESET2, pb.AGEM, pb.ACEF);
+  pc.APUG = tock_pos(ga.BOGA_1M, gb.BOGA_1M, gb.RESET2, pb.APUG, pc.AGEM);
+  
+  pc.ASOK = and(pb.APUG, pb.BATU);
 
-  bool MYZU = nand(ROTU, LETY, in.D0);
-  bool LYTA = and(MUXE, LETY, in.RESET2);
+  pc.ROTU = not(gb.FF0F_WR);
+  pc.LETY = not(gb.cpu.FROM_CPU9);
+  pc.MUXE = or(gb.cpu.D0, gb.FF0F);
+  pc.LUFE = not(gb.cpu.FROM_CPU7);
+  pc.SULO = or(gb.cpu.D3, gb.FF0F_WR);
+  pc.LAMO = not(gb.cpu.FROM_CPU11); 
+  pc.SEME = or(gb.cpu.D4, gb.FF0F);
+  pc.LEJA = not(gb.cpu.FROM_CPU8);
+  pc.NABE = or(gb.cpu.D1, gb.FF0F);
+  pc.LESA = not(gb.cpu.FROM_CPU10);
+  pc.RAKE = or(gb.cpu.D2, gb.FF0F);
 
-  bool TOME = nand(ROTU, LUFE, in.D3);
-  bool TUNY = and(SULO, LUFE, in.RESET2);
+  pc.MYZU = nand(pb.ROTU, pb.LETY, gb.cpu.D0);
+  pc.LYTA = and(pb.MUXE, pb.LETY, gb.RESET2);
 
-  bool TOGA = nand(ROTU, LAMO, in.D4);
-  bool TYME = and(SEME, LAMO, in.RESET2);
+  pc.TOME = nand(pb.ROTU, pb.LUFE, gb.cpu.D3);
+  pc.TUNY = and(pb.SULO, pb.LUFE, gb.RESET2);
 
-  bool MODY = nand(ROTU, LEJA, in.D1);
-  bool MOVU = and(NABE, LEJA, in.RESET2);
+  pc.TOGA = nand(pb.ROTU, pb.LAMO, gb.cpu.D4);
+  pc.TYME = and(pb.SEME, pb.LAMO, gb.RESET2);
 
-  bool PYHU = nand(ROTU, LESA, in.D2);
-  bool PYGA = and(RAKE, LESA, in.RESET2);
+  pc.MODY = nand(pb.ROTU, pb.LEJA, gb.cpu.D1);
+  pc.MOVU = and(pb.NABE, pb.LEJA, gb.RESET2);
 
-  bool PESU = not(in.P10_B);
+  pc.PYHU = nand(pb.ROTU, pb.LESA, gb.cpu.D2);
+  pc.PYGA = and(pb.RAKE, pb.LESA, gb.RESET2);
 
-  bool LOPE_Q = LOPE.srtock(PESU, MYZU, LYTA, in.INT_VBL_BUF);
-  bool UBUL_Q = UBUL.srtock(PESU, TOME, TUNY, in.INT_SERIAL);
-  bool ULAK_Q = ULAK.srtock(PESU, TOGA, TYME, in.INT_JP);
-  bool LALU_Q = LALU.srtock(PESU, MODY, MOVU, in.INT_STAT);
-  bool NYBO_Q = NYBO.srtock(PESU, PYHU, PYGA, in.INT_TIMER);
+  pc.PESU = not(gb.chip.P10_B);
 
-  bool POLA = not(in.FF0F_RD);
-  bool MATY_Q = MATY.latch(in.FF0F_RD, LOPE_Q);
-  bool NEJY_Q = NEJY.latch(in.FF0F_RD, UBUL_Q);
-  bool NUTY_Q = NUTY.latch(in.FF0F_RD, ULAK_Q);
-  bool MOPO_Q = MOPO.latch(in.FF0F_RD, LALU_Q);
-  bool PAVY_Q = PAVY.latch(in.FF0F_RD, NYBO_Q);
+  pc.LOPE = srtock_pos(ga.INT_VBL_BUF, gb.INT_VBL_BUF, pb.MYZU, pb.LYTA, pb.LOPE, pb.PESU);
+  pc.UBUL = srtock_pos(ga.INT_SERIAL,  gb.INT_SERIAL,  pb.TOME, pb.TUNY, pb.UBUL, pb.PESU);
+  pc.ULAK = srtock_pos(ga.INT_JP,      gb.INT_JP,      pb.TOGA, pb.TYME, pb.ULAK, pb.PESU);
+  pc.LALU = srtock_pos(ga.INT_STAT,    gb.INT_STAT,    pb.MODY, pb.MOVU, pb.LALU, pb.PESU);
+  pc.NYBO = srtock_pos(ga.INT_TIMER,   gb.INT_TIMER,   pb.PYHU, pb.PYGA, pb.NYBO, pb.PESU);
 
-  bool NELA = not(MATY_Q);
-  bool PADO = not(NEJY_Q);
-  bool PEGY = not(NUTY_Q);
-  bool NABO = not(MOPO_Q);
-  bool ROVA = not(PAVY_Q);
+  pc.POLA = not(gb.FF0F_RD);
 
-  Output out;
+  pc.MATY = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.MATY, pb.LOPE);
+  pc.NEJY = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.NEJY, pb.UBUL);
+  pc.NUTY = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.NUTY, pb.ULAK);
+  pc.MOPO = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.MOPO, pb.LALU);
+  pc.PAVY = latch_pos(ga.FF0F_RD, gb.FF0F_RD, pb.PAVY, pb.NYBO);
 
-  out.TO_CPU2 = AWOB_Q;
-  out.INT_JP = ASOK;
-  out.TO_CPU3 = LOPE_Q;
-  out.TO_CPU4 = UBUL_Q;
-  out.TO_CPU5 = ULAK_Q;
-  out.TO_CPU6 = LALU_Q;
-  out.TO_CPU7 = NYBO_Q;
+  pc.NELA = not(pb.MATY);
+  pc.PADO = not(pb.NEJY);
+  pc.PEGY = not(pb.NUTY);
+  pc.NABO = not(pb.MOPO);
+  pc.ROVA = not(pb.PAVY);
 
-  out.OE = POLA;
-  out.D0 = NELA;
-  out.D3 = PADO;
-  out.D4 = PEGY;
-  out.D1 = NABO;
-  out.D2 = ROVA;
+  gc.INT_JP  = pb.ASOK;
 
-  return out;
+  gc.cpu.TO_CPU2 = pb.AWOB;
+  gc.cpu.TO_CPU3 = pb.LOPE;
+  gc.cpu.TO_CPU4 = pb.UBUL;
+  gc.cpu.TO_CPU5 = pb.ULAK;
+  gc.cpu.TO_CPU6 = pb.LALU;
+  gc.cpu.TO_CPU7 = pb.NYBO;
+
+  if (pb.POLA) {
+    gc.cpu.D0 = pb.NELA;
+    gc.cpu.D1 = pb.NABO;
+    gc.cpu.D2 = pb.ROVA;
+    gc.cpu.D3 = pb.PADO;
+    gc.cpu.D4 = pb.PEGY;
+  }
 }
 

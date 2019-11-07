@@ -1,5 +1,7 @@
 #include "P03_Timer.h"
 
+#include "Gameboy.h"
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
@@ -7,7 +9,6 @@
 const std::vector<SignalData> P03_Timer::signals() {
   return
   {
-    SignalData("BOGA",   offsetof(P03_Timer, in.BOGA_1M)),
     SignalData("-----TAC-----"),
     SignalData("SOPU_0", offsetof(P03_Timer, SOPU_0)),
     SignalData("SAMY_1", offsetof(P03_Timer, SAMY_1)),
@@ -49,177 +50,173 @@ const std::vector<SignalData> P03_Timer::signals() {
 
 //-----------------------------------------------------------------------------
 
-void P03_Timer::tick(const CpuSignals& cpu,
-                     const ChipSignals& chip,
-                     const P03_Timer& a, const TristateBus& busA,
-                     const P03_Timer& b, const TristateBus& busB,
-                     P03_Timer& c, TristateBus& busC)
-{
-  (void)chip;
-  (void)busA;
+void P03_Timer::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
+  const P03_Timer& pa = ga.p03;
+  const P03_Timer& pb = gb.p03;
+  P03_Timer& pc = gc.p03;
 
   //----------
   // random decoder
 
-  c.RYFO = and(busB.A2, b.in.A00_07, b.in.FFXX);
-  c.out.FF04_FF07 = b.RYFO;
+  pc.RYFO = and(gb.cpu.A2, gb.A00_07, gb.FFXX);
+  gc.FF04_FF07 = pb.RYFO;
 
   //----------
   // TAC
 
-  c.SARA = nand(cpu.CPU_WR, b.out.FF04_FF07, busB.A0, busB.A1);
+  pc.SARA = nand(gb.cpu.CPU_WR, gb.FF04_FF07, gb.cpu.A0, gb.cpu.A1);
 
-  c.SOPU_0 = tock_pos(a.SARA, b.SARA, b.in.RESET2, b.SOPU_0, busB.D0);
-  c.SAMY_1 = tock_pos(a.SARA, b.SARA, b.in.RESET2, b.SAMY_1, busB.D1);
-  c.SABO_2 = tock_pos(a.SARA, b.SARA, b.in.RESET2, b.SABO_2, busB.D2);
+  pc.SOPU_0 = tock_pos(pa.SARA, pb.SARA, gb.RESET2, pb.SOPU_0, gb.cpu.D0);
+  pc.SAMY_1 = tock_pos(pa.SARA, pb.SARA, gb.RESET2, pb.SAMY_1, gb.cpu.D1);
+  pc.SABO_2 = tock_pos(pa.SARA, pb.SARA, gb.RESET2, pb.SABO_2, gb.cpu.D2);
 
-  c.SORA = and(cpu.CPU_RD, b.out.FF04_FF07, busB.A1, busB.A0);
-  c.RYLA = not(!b.SOPU_0);
-  c.ROTE = not(!b.SAMY_1);
-  c.SUPE = not(!b.SABO_2);
+  pc.SORA = and(gb.cpu.CPU_RD, gb.FF04_FF07, gb.cpu.A1, gb.cpu.A0);
+  pc.RYLA = not(!pb.SOPU_0);
+  pc.ROTE = not(!pb.SAMY_1);
+  pc.SUPE = not(!pb.SABO_2);
 
-  if (b.SORA) {
-    busC.D2 = b.SUPE;
-    busC.D1 = b.ROTE;
-    busC.D0 = b.RYLA;
+  if (pb.SORA) {
+    gc.cpu.D2 = pb.SUPE;
+    gc.cpu.D1 = pb.ROTE;
+    gc.cpu.D0 = pb.RYLA;
   }
 
   //----------
   // TMA
 
-  c.TOVY = not(busB.A0);
-  c.out.TOVY_A0n = b.TOVY;
-  c.TYJU = nand(b.TOVY, busB.A1, cpu.CPU_WR, b.out.FF04_FF07);
+  pc.TOVY = not(gb.cpu.A0);
+  gc.TOVY_A0n = pb.TOVY;
+  pc.TYJU = nand(pb.TOVY, gb.cpu.A1, gb.cpu.CPU_WR, gb.FF04_FF07);
 
-  c.SABU_0 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.SABU_0, busB.D0);
-  c.NYKE_1 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.NYKE_1, busB.D1);
-  c.MURU_2 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.MURU_2, busB.D2);
-  c.TYVA_3 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.TYVA_3, busB.D3);
-  c.TYRU_4 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.TYRU_4, busB.D4);
-  c.SUFY_5 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.SUFY_5, busB.D5);
-  c.PETO_6 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.PETO_6, busB.D6);
-  c.SETA_7 = tock_pos(a.TYJU, b.TYJU, b.in.RESET2, b.SETA_7, busB.D7);
+  pc.SABU_0 = tock_pos(pa.TYJU, pb.TYJU, gb.RESET2, pb.SABU_0, gb.cpu.D0);
+  pc.NYKE_1 = tock_pos(pa.TYJU, pb.TYJU, gb.RESET2, pb.NYKE_1, gb.cpu.D1);
+  pc.MURU_2 = tock_pos(pa.TYJU, pb.TYJU, gb.RESET2, pb.MURU_2, gb.cpu.D2);
+  pc.TYVA_3 = tock_pos(pa.TYJU, pb.TYJU, gb.RESET2, pb.TYVA_3, gb.cpu.D3);
+  pc.TYRU_4 = tock_pos(pa.TYJU, pb.TYJU, gb.RESET2, pb.TYRU_4, gb.cpu.D4);
+  pc.SUFY_5 = tock_pos(pa.TYJU, pb.TYJU, gb.RESET2, pb.SUFY_5, gb.cpu.D5);
+  pc.PETO_6 = tock_pos(pa.TYJU, pb.TYJU, gb.RESET2, pb.PETO_6, gb.cpu.D6);
+  pc.SETA_7 = tock_pos(pa.TYJU, pb.TYJU, gb.RESET2, pb.SETA_7, gb.cpu.D7);
 
-  c.SETE = not(!b.SABU_0);
-  c.PYRE = not(!b.NYKE_1);
-  c.NOLA = not(!b.MURU_2);
-  c.SALU = not(!b.TYVA_3);
-  c.SUPO = not(!b.TYRU_4);
-  c.SOTU = not(!b.SUFY_5);
-  c.REVA = not(!b.PETO_6);
-  c.SAPU = not(!b.SETA_7);
+  pc.SETE = not(!pb.SABU_0);
+  pc.PYRE = not(!pb.NYKE_1);
+  pc.NOLA = not(!pb.MURU_2);
+  pc.SALU = not(!pb.TYVA_3);
+  pc.SUPO = not(!pb.TYRU_4);
+  pc.SOTU = not(!pb.SUFY_5);
+  pc.REVA = not(!pb.PETO_6);
+  pc.SAPU = not(!pb.SETA_7);
 
-  c.TUBY = and(b.out.FF04_FF07, cpu.CPU_RD, busB.A1, b.TOVY);
-  if (b.TUBY) {
-    busC.D0 = b.SETE;
-    busC.D1 = b.PYRE;
-    busC.D2 = b.NOLA;
-    busC.D3 = b.SALU;
-    busC.D4 = b.SUPO;
-    busC.D5 = b.SOTU;
-    busC.D6 = b.REVA;
-    busC.D7 = b.SAPU;
+  pc.TUBY = and(gb.FF04_FF07, gb.cpu.CPU_RD, gb.cpu.A1, pb.TOVY);
+  if (pb.TUBY) {
+    gc.cpu.D0 = pb.SETE;
+    gc.cpu.D1 = pb.PYRE;
+    gc.cpu.D2 = pb.NOLA;
+    gc.cpu.D3 = pb.SALU;
+    gc.cpu.D4 = pb.SUPO;
+    gc.cpu.D5 = pb.SOTU;
+    gc.cpu.D6 = pb.REVA;
+    gc.cpu.D7 = pb.SAPU;
   }
 
   //----------
   // TIMA clock mux
 
-  c.UVYR = not(b.in.CLK_64K);
-  c.UKAP = mux2(b.in.CLK_16K, b.UVYR, b.SOPU_0);
-  c.UBOT = not(b.in.CLK_256K);
-  c.TEKO = mux2(b.UBOT, b.in.FF04_D1n, b.SOPU_0);
-  c.TECY = mux2(b.UKAP, b.TEKO, b.SAMY_1);
-  c.SOGU = nor(b.TECY, !b.SABO_2);
+  pc.UVYR = not(gb.CLK_64K);
+  pc.UKAP = mux2(gb.CLK_16K, pb.UVYR, pb.SOPU_0);
+  pc.UBOT = not(gb.CLK_256K);
+  pc.TEKO = mux2(pb.UBOT, gb.FF04_D1n, pb.SOPU_0);
+  pc.TECY = mux2(pb.UKAP, pb.TEKO, pb.SAMY_1);
+  pc.SOGU = nor(pb.TECY, !pb.SABO_2);
 
   //----------
   // TIMA reload signal
 
-  c.MUZU = or(cpu.FROM_CPU5, b.TOPE);
-  c.MEKE = not(b.out.INT_TIMER);
-  c.MEXU = nand(b.MUZU, b.in.RESET2, b.MEKE);
+  pc.MUZU = or(gb.cpu.FROM_CPU5, pb.TOPE);
+  pc.MEKE = not(gb.INT_TIMER);
+  pc.MEXU = nand(pb.MUZU, gb.RESET2, pb.MEKE);
 
   //----------
   // TIMA reload mux
 
-  c.TOPE = nand(cpu.CPU_WR, b.out.FF04_FF07, busB.A0, b.in.TOLA_A1n);
-  c.ROKE = mux2n(b.SABU_0, busB.D0, b.TOPE);
-  c.PETU = mux2n(b.NYKE_1, busB.D1, b.TOPE);
-  c.NYKU = mux2n(b.MURU_2, busB.D2, b.TOPE);
-  c.SOCE = mux2n(b.TYVA_3, busB.D3, b.TOPE);
-  c.SALA = mux2n(b.TYRU_4, busB.D4, b.TOPE);
-  c.SYRU = mux2n(b.SUFY_5, busB.D5, b.TOPE);
-  c.REFU = mux2n(b.PETO_6, busB.D6, b.TOPE);
-  c.RATO = mux2n(b.SETA_7, busB.D7, b.TOPE);
+  pc.TOPE = nand(gb.cpu.CPU_WR, gb.FF04_FF07, gb.cpu.A0, gb.TOLA_A1n);
+  pc.ROKE = mux2n(pb.SABU_0, gb.cpu.D0, pb.TOPE);
+  pc.PETU = mux2n(pb.NYKE_1, gb.cpu.D1, pb.TOPE);
+  pc.NYKU = mux2n(pb.MURU_2, gb.cpu.D2, pb.TOPE);
+  pc.SOCE = mux2n(pb.TYVA_3, gb.cpu.D3, pb.TOPE);
+  pc.SALA = mux2n(pb.TYRU_4, gb.cpu.D4, pb.TOPE);
+  pc.SYRU = mux2n(pb.SUFY_5, gb.cpu.D5, pb.TOPE);
+  pc.REFU = mux2n(pb.PETO_6, gb.cpu.D6, pb.TOPE);
+  pc.RATO = mux2n(pb.SETA_7, gb.cpu.D7, pb.TOPE);
 
-  c.MULO = not(b.in.RESET2);
-  c.PUXY = nor(b.MULO, b.ROKE);
-  c.NERO = nor(b.MULO, b.PETU);
-  c.NADA = nor(b.MULO, b.NYKU);
-  c.REPA = nor(b.MULO, b.SOCE);
-  c.ROLU = nor(b.MULO, b.SALA);
-  c.RUGY = nor(b.MULO, b.SYRU);
-  c.PYMA = nor(b.MULO, b.REFU);
-  c.PAGU = nor(b.MULO, b.RATO);
+  pc.MULO = not(gb.RESET2);
+  pc.PUXY = nor(pb.MULO, pb.ROKE);
+  pc.NERO = nor(pb.MULO, pb.PETU);
+  pc.NADA = nor(pb.MULO, pb.NYKU);
+  pc.REPA = nor(pb.MULO, pb.SOCE);
+  pc.ROLU = nor(pb.MULO, pb.SALA);
+  pc.RUGY = nor(pb.MULO, pb.SYRU);
+  pc.PYMA = nor(pb.MULO, pb.REFU);
+  pc.PAGU = nor(pb.MULO, pb.RATO);
 
   //----------
   // TIMA
 
-  c.REGA_0 = b.REGA_0;
-  c.POVY_1 = b.POVY_1;
-  c.PERU_2 = b.PERU_2;
-  c.RATE_3 = b.RATE_3;
-  c.RUBY_4 = b.RUBY_4;
-  c.RAGE_5 = b.RAGE_5;
-  c.PEDA_6 = b.PEDA_6;
-  c.NUGA_7 = b.NUGA_7;
+  pc.REGA_0 = pb.REGA_0;
+  pc.POVY_1 = pb.POVY_1;
+  pc.PERU_2 = pb.PERU_2;
+  pc.RATE_3 = pb.RATE_3;
+  pc.RUBY_4 = pb.RUBY_4;
+  pc.RAGE_5 = pb.RAGE_5;
+  pc.PEDA_6 = pb.PEDA_6;
+  pc.NUGA_7 = pb.NUGA_7;
 
-  if (a.SOGU   && !b.SOGU)   { c.REGA_0 = !b.REGA_0; }
-  if (a.REGA_0 && !b.REGA_0) { c.POVY_1 = !b.POVY_1; }
-  if (a.POVY_1 && !b.POVY_1) { c.PERU_2 = !b.PERU_2; }
-  if (a.PERU_2 && !b.PERU_2) { c.RATE_3 = !b.RATE_3; }
-  if (a.RATE_3 && !b.RATE_3) { c.RUBY_4 = !b.RUBY_4; }
-  if (a.RUBY_4 && !b.RUBY_4) { c.RAGE_5 = !b.RAGE_5; }
-  if (a.RAGE_5 && !b.RAGE_5) { c.PEDA_6 = !b.PEDA_6; }
-  if (a.PEDA_6 && !b.PEDA_6) { c.NUGA_7 = !b.NUGA_7; }
+  if (pa.SOGU   && !pb.SOGU)   { pc.REGA_0 = !pb.REGA_0; }
+  if (pa.REGA_0 && !pb.REGA_0) { pc.POVY_1 = !pb.POVY_1; }
+  if (pa.POVY_1 && !pb.POVY_1) { pc.PERU_2 = !pb.PERU_2; }
+  if (pa.PERU_2 && !pb.PERU_2) { pc.RATE_3 = !pb.RATE_3; }
+  if (pa.RATE_3 && !pb.RATE_3) { pc.RUBY_4 = !pb.RUBY_4; }
+  if (pa.RUBY_4 && !pb.RUBY_4) { pc.RAGE_5 = !pb.RAGE_5; }
+  if (pa.RAGE_5 && !pb.RAGE_5) { pc.PEDA_6 = !pb.PEDA_6; }
+  if (pa.PEDA_6 && !pb.PEDA_6) { pc.NUGA_7 = !pb.NUGA_7; }
 
-  if(b.MEXU) {
-    c.REGA_0 = b.PUXY;
-    c.POVY_1 = b.NERO;
-    c.PERU_2 = b.NADA;
-    c.RATE_3 = b.REPA;
-    c.RUBY_4 = b.ROLU;
-    c.RAGE_5 = b.RUGY;
-    c.PEDA_6 = b.PYMA;
-    c.NUGA_7 = b.PAGU;
+  if(pb.MEXU) {
+    pc.REGA_0 = pb.PUXY;
+    pc.POVY_1 = pb.NERO;
+    pc.PERU_2 = pb.NADA;
+    pc.RATE_3 = pb.REPA;
+    pc.RUBY_4 = pb.ROLU;
+    pc.RAGE_5 = pb.RUGY;
+    pc.PEDA_6 = pb.PYMA;
+    pc.NUGA_7 = pb.PAGU;
   }
 
-  c.SOKU_0 = not(!b.REGA_0);
-  c.RACY_1 = not(!b.POVY_1);
-  c.RAVY_2 = not(!b.PERU_2);
-  c.SOSY_3 = not(!b.RATE_3);
-  c.SOMU_4 = not(!b.RUBY_4);
-  c.SURO_5 = not(!b.RAGE_5);
-  c.ROWU_6 = not(!b.PEDA_6);
-  c.PUSO_7 = not(!b.NUGA_7);
+  pc.SOKU_0 = not(!pb.REGA_0);
+  pc.RACY_1 = not(!pb.POVY_1);
+  pc.RAVY_2 = not(!pb.PERU_2);
+  pc.SOSY_3 = not(!pb.RATE_3);
+  pc.SOMU_4 = not(!pb.RUBY_4);
+  pc.SURO_5 = not(!pb.RAGE_5);
+  pc.ROWU_6 = not(!pb.PEDA_6);
+  pc.PUSO_7 = not(!pb.NUGA_7);
 
-  c.TEDA = and(b.out.FF04_FF07, cpu.CPU_RD, b.in.TOLA_A1n, busB.A0);
-  if (b.TEDA) {
-    busC.D0 = b.SOKU_0;
-    busC.D1 = b.RACY_1;
-    busC.D2 = b.RAVY_2;
-    busC.D3 = b.SOSY_3;
-    busC.D4 = b.SOMU_4;
-    busC.D5 = b.SURO_5;
-    busC.D6 = b.ROWU_6; // schematic missing annotation
-    busC.D7 = b.PUSO_7;
+  pc.TEDA = and(gb.FF04_FF07, gb.cpu.CPU_RD, gb.TOLA_A1n, gb.cpu.A0);
+  if (pb.TEDA) {
+    gc.cpu.D0 = pb.SOKU_0;
+    gc.cpu.D1 = pb.RACY_1;
+    gc.cpu.D2 = pb.RAVY_2;
+    gc.cpu.D3 = pb.SOSY_3;
+    gc.cpu.D4 = pb.SOMU_4;
+    gc.cpu.D5 = pb.SURO_5;
+    gc.cpu.D6 = pb.ROWU_6; // schematic missing annotation
+    gc.cpu.D7 = pb.PUSO_7;
   }
 
   //----------
   // INT_TIMER delay
 
-  c.MUGY = not(b.MEXU);
-  c.NYDU = tock_pos(a.in.BOGA_1M, b.in.BOGA_1M, b.MUGY, b.NYDU, b.NUGA_7);
-  c.MERY = nor(!b.NYDU, b.NUGA_7);
-  c.MOBA = tock_pos(a.in.BOGA_1M, b.in.BOGA_1M, b.in.RESET2, b.MOBA, b.MERY);
-  c.out.INT_TIMER = b.MOBA;
+  pc.MUGY = not(pb.MEXU);
+  pc.NYDU = tock_pos(ga.BOGA_1M, gb.BOGA_1M, pb.MUGY, pb.NYDU, pb.NUGA_7);
+  pc.MERY = nor(!pb.NYDU, pb.NUGA_7);
+  pc.MOBA = tock_pos(ga.BOGA_1M, gb.BOGA_1M, gb.RESET2, pb.MOBA, pb.MERY);
+  gc.INT_TIMER = pb.MOBA;
 }

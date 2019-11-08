@@ -169,7 +169,7 @@ void step_forwards(void* blobA, void* blobB) {
   b.cpu.FROM_CPU5 = false;
 
 
-  b.chip.RESET   = b.timestamp < 20;
+  b.chip.RST     = b.timestamp < 20;
   b.chip.CLKIN_A = true;
   b.chip.CLKIN_B = b.timestamp & 1;
   b.T1nT2   = false;
@@ -216,7 +216,7 @@ void step_forwards(void* blobA, void* blobB) {
 
 const std::vector<SignalData> sample_signals =
 {
-  SignalData("RESET",   offsetof(Gameboy, chip.RESET)),
+  SignalData("RESET",   offsetof(Gameboy, chip.RST)),
   SignalData("CLKIN_B", offsetof(Gameboy, chip.CLKIN_B)),
 
   SignalData("p01",  offsetof(Gameboy, p01), P01_ClocksReset::signals()),

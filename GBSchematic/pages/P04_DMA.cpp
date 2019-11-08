@@ -134,16 +134,16 @@ void P04_DMA::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.EREW_07 = pb.MUGU_07;
 
   if (pb.AHOC) {
-    gc.chip.MA0  = pb.ECAL_00;
-    gc.chip.MA1  = pb.EGEZ_01;
-    gc.chip.MA2  = pb.FUHE_02;
-    gc.chip.MA3  = pb.FYZY_03;
-    gc.chip.MA4  = pb.DAMU_04;
-    gc.chip.MA5  = pb.DAVA_05;
-    gc.chip.MA6  = pb.ETEG_06;
-    gc.chip.MA7  = pb.EREW_07;
-    gc.chip.MA8  = pb.EVAX_08;
-    gc.chip.MA9  = pb.DUVE_09;
+    gc.chip.MA00 = pb.ECAL_00;
+    gc.chip.MA01 = pb.EGEZ_01;
+    gc.chip.MA02 = pb.FUHE_02;
+    gc.chip.MA03 = pb.FYZY_03;
+    gc.chip.MA04 = pb.DAMU_04;
+    gc.chip.MA05 = pb.DAVA_05;
+    gc.chip.MA06 = pb.ETEG_06;
+    gc.chip.MA07 = pb.EREW_07;
+    gc.chip.MA08 = pb.EVAX_08;
+    gc.chip.MA09 = pb.DUVE_09;
     gc.chip.MA10 = pb.ERAF_10;
     gc.chip.MA11 = pb.FUSY_11;
     gc.chip.MA12 = pb.EXYF_12;

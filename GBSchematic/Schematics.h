@@ -68,6 +68,11 @@ inline T amux2(T a0, bool b0, T a1, bool b1) {
 }
 
 template<typename T>
+inline T amux3(T a0, bool b0, T a1, bool b1, T a2, bool b2) {
+  return (b0 ? a0 : 0) | (b1 ? a1 : 0) | (b2 ? a2 : 0);
+}
+
+template<typename T>
 inline T amux4(T a0, bool b0, T a1, bool b1, T a2, bool b2, T a3, bool b3) {
   return (b0 ? a0 : 0) | (b1 ? a1 : 0) | (b2 ? a2 : 0) | (b3 ? a3 : 0);
 }

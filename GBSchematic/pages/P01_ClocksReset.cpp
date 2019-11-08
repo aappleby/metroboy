@@ -140,6 +140,7 @@ void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.BUKE = not(pb.BASU);
 
   gc.CPU_RD_SYNC = pb.APOV;
+  gc.ABUZ = pb.ABUZ;
 
   //----------
   // Weird logic feeding into BOGA_1M
@@ -196,13 +197,13 @@ void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   //----------
   // RESET2 register
 
-  pc.UPYF = or(gb.chip.RESET, gb.CLKIN_An);
+  pc.UPYF = or(gb.chip.RST, gb.CLKIN_An);
   pc.TUBO = unk2(gb.ABOL, pb.UPYF);
   pc.UNUT = and(pb.TUBO, pb.UPOF_15);
   pc.TABA = or(gb.T1nT2, gb.T1T2n, pb.UNUT);
   pc.ALYP = not(pb.TABA);
-  pc.AFAR = nor(pb.ALYP, gb.chip.RESET);
-  pc.ASOL = unk2(pb.AFAR, gb.chip.RESET);
+  pc.AFAR = nor(pb.ALYP, gb.chip.RST);
+  pc.ASOL = unk2(pb.AFAR, gb.chip.RST);
 
   pc.BOMA = not(pb.BOGA);
   pc.AFER = tock_pos(pa.BOMA, pb.BOMA, gb.T1nT2n, pb.AFER, pb.ASOL);
@@ -216,7 +217,7 @@ void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   // FF04 DIV
 
   pc.TAPE = and(gb.FF04_FF07, gb.CPU_WR, gb.TOLA_A1n, gb.TOVY_A0n);
-  pc.UFOL = nor(gb.CLKIN_An, gb.chip.RESET, pb.TAPE);
+  pc.UFOL = nor(gb.CLKIN_An, gb.chip.RST, pb.TAPE);
   pc.RESET_DIVn = pb.UFOL;
 
   pc.UKUP_00 = tock_pos(ga.BOGA_1M,  gb.BOGA_1M,  pb.RESET_DIVn, pb.UKUP_00, !pb.UKUP_00);

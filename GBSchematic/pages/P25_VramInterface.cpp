@@ -22,7 +22,6 @@ struct P25_VramInterface {
     bool FF40_D4;
     bool FEXXFFXXn;
 
-    bool LULA;
     bool LENA;
     bool TACU;
     bool TUVO;
@@ -48,12 +47,12 @@ struct P25_VramInterface {
     bool LEKO;
     bool MATU_Q;
 
-    bool A0,A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15;
+    bool A00,A01,A02,A03,A04,A05,A06,A07,A08,A09,A10,A11,A12,A13,A14,A15;
     bool D0,D1,D2,D3,D4,D5,D6,D7;
 
-    bool D0_IN,D1_IN,D2_IN,D3_IN,D4_IN,D5_IN,D6_IN,D7_IN;
+    bool D0_C,D1_C,D2_C,D3_C,D4_C,D5_C,D6_C,D7_C;
 
-    bool MA0,MA1,MA2,MA3,MA4,MA5,MA6,MA7,MA8,MA9,MA10,MA11,MA12;
+    bool MA00,MA01,MA02,MA03,MA04,MA05,MA06,MA07,MA08,MA09,MA10,MA11,MA12;
     bool MD0,MD1,MD2,MD3,MD4,MD5,MD6,MD7;
 
     bool MD0_IN,MD1_IN,MD2_IN,MD3_IN,MD4_IN,MD5_IN,MD6_IN,MD7_IN;
@@ -74,8 +73,7 @@ struct P25_VramInterface {
     bool D0_A,D1_A,D2_A,D3_A,D4_A,D5_A,D6_A,D7_A;
 
     // internal vram addr bus
-    bool MA_OE;
-    bool MA0,MA1,MA2,MA3,MA4,MA5,MA6,MA7,MA8,MA9,MA10,MA11,MA12;
+    bool MA00,MA01,MA02,MA03,MA04,MA05,MA06,MA07,MA08,MA09,MA10,MA11,MA12;
 
     // internal vram data bus
     bool MD_OE;
@@ -87,7 +85,7 @@ struct P25_VramInterface {
     bool MOE_A,MOE_D;
 
     // actual pins to vram
-    bool MA0_OUT,MA1_OUT,MA2_OUT,MA3_OUT,MA4_OUT,MA5_OUT,MA6_OUT,MA7_OUT,MA8_OUT,MA9_OUT,MA10_OUT,MA11_OUT,MA12_OUT;
+    bool MA00_OUT,MA01_OUT,MA02_OUT,MA03_OUT,MA04_OUT,MA05_OUT,MA06_OUT,MA07_OUT,MA08_OUT,MA09_OUT,MA10_OUT,MA11_OUT,MA12_OUT;
     bool MD0_OUT,MD1_OUT,MD2_OUT,MD3_OUT,MD4_OUT,MD5_OUT,MD6_OUT,MD7_OUT;
 
     // actual pins from vram
@@ -106,68 +104,47 @@ struct P25_VramInterface {
     //----------
     // top left stack of inverters
 
-    wire REHO = not(in.MA12);
-    wire RUMA = not(in.MA11);
-    wire RUKY = not(in.MA10);
-    wire VODE = not(in.MA9);
-    wire VOVA = not(in.MA8);
-    wire MUME = not(in.MA7);
-    wire MEWY = not(in.MA6);
-    wire MYSA = not(in.MA5);
-    wire MEPA = not(in.MA4);
-    wire MAVU = not(in.MA3);
-    wire MYRE = not(in.MA2);
-    wire MASA = not(in.MA1);
-    wire MYFU = not(in.MA0);
+    wire MYFU_00 = not(in.MA00);
+    wire MASA_01 = not(in.MA01);
+    wire MYRE_02 = not(in.MA02);
+    wire MAVU_03 = not(in.MA03);
+    wire MEPA_04 = not(in.MA04);
+    wire MYSA_05 = not(in.MA05);
+    wire MEWY_06 = not(in.MA06);
+    wire MUME_07 = not(in.MA07);
+    wire VOVA_08 = not(in.MA08);
+    wire VODE_09 = not(in.MA09);
+    wire RUKY_10 = not(in.MA10);
+    wire RUMA_11 = not(in.MA11);
+    wire REHO_12 = not(in.MA12);
 
-    wire PONY = not(REHO);
-    wire PEDU = not(RUMA);
-    wire NUVA = not(RUKY);
-    wire TAGO = not(VODE);
-    wire TUJY = not(VOVA);
-    wire LUBY = not(MUME);
-    wire LEFA = not(MEWY);
-    wire LALO = not(MYSA);
-    wire LOLY = not(MEPA);
-    wire LUVO = not(MAVU);
-    wire LACA = not(MYRE);
-    wire LOZU = not(MASA);
-    wire LEXE = not(MYFU);
+    wire LEXE_00 = not(MYFU_00);
+    wire LOZU_01 = not(MASA_01);
+    wire LACA_02 = not(MYRE_02);
+    wire LUVO_03 = not(MAVU_03);
+    wire LOLY_04 = not(MEPA_04);
+    wire LALO_05 = not(MYSA_05);
+    wire LEFA_06 = not(MEWY_06);
+    wire LUBY_07 = not(MUME_07);
+    wire TUJY_08 = not(VOVA_08);
+    wire TAGO_09 = not(VODE_09);
+    wire NUVA_10 = not(RUKY_10);
+    wire PEDU_11 = not(RUMA_11);
+    wire PONY_12 = not(REHO_12);
 
-    out.MA12_OUT = PONY;
-    out.MA11_OUT = PEDU;
-    out.MA10_OUT = NUVA;
-    out.MA9_OUT = TAGO;
-    out.MA8_OUT = TUJY;
-    out.MA7_OUT = LUBY;
-    out.MA6_OUT = LEFA;
-    out.MA5_OUT = LALO;
-    out.MA4_OUT = LOLY;
-    out.MA3_OUT = LUVO;
-    out.MA2_OUT = LACA;
-    out.MA1_OUT = LOZU;
-    out.MA0_OUT = LEXE;
-
-    //----------
-    // why is this writing to the _A part of the data bus but not the _D?
-
-    wire RYVO = nand(in.D5, in.LULA);
-    wire RERA = nand(in.D3, in.LULA);
-    wire RABY = nand(in.D2, in.LULA);
-    wire RORY = nand(in.D4, in.LULA);
-    wire RUJA = nand(in.D1, in.LULA);
-    wire RAVU = nand(in.D7, in.LULA);
-    wire RAFY = nand(in.D6, in.LULA);
-    wire RUXA = nand(in.D0, in.LULA);
-
-    out.D5_A = RYVO;
-    out.D3_A = RERA;
-    out.D2_A = RABY;
-    out.D4_A = RORY;
-    out.D1_A = RUJA;
-    out.D7_A = RAVU;
-    out.D6_A = RAFY;
-    out.D0_A = RUXA;
+    out.MA00_OUT = LEXE_00;
+    out.MA01_OUT = LOZU_01;
+    out.MA02_OUT = LACA_02;
+    out.MA03_OUT = LUVO_03;
+    out.MA04_OUT = LOLY_04;
+    out.MA05_OUT = LALO_05;
+    out.MA06_OUT = LEFA_06;
+    out.MA07_OUT = LUBY_07;
+    out.MA08_OUT = TUJY_08;
+    out.MA09_OUT = TAGO_09;
+    out.MA10_OUT = NUVA_10;
+    out.MA11_OUT = PEDU_11;
+    out.MA12_OUT = PONY_12;
 
     //----------
 
@@ -185,7 +162,7 @@ struct P25_VramInterface {
     wire SOSE = and(in.A15, TEFA); // odd...
     wire TUCA = and(SOSE, in.ABUZ); // ABUZ is a clocky type signal from P01, but that doesn't make sense
     wire TUJA = and(SOSE, in.CPU_RD_SYNC);
-    wire TEGU = and(SOSE, in.AFAS);
+    wire TEGU = nand(SOSE, in.AFAS);
     wire TAVY = not(in.MOE_IN);
     wire SYCY = not(in.NET02);
     wire SOTO_Q = SOTO.flip(SYCY, in.RESET6);
@@ -243,25 +220,24 @@ struct P25_VramInterface {
 
     //----------
 
-    wire RAKU = in.MD7_IN;
-    wire ROCE = in.MD4_IN;
-    wire REMO = in.MD3_IN;
-    wire ROPU = in.MD5_IN;
-    wire RETA = in.MD6_IN;
-    wire RYDO = in.MD2_IN;
-    wire RODY = in.MD0_IN;
-    wire REBA = in.MD1_IN;
+    wire RODY_00 = in.MD0_IN;
+    wire REBA_01 = in.MD1_IN;
+    wire RYDO_02 = in.MD2_IN;
+    wire REMO_03 = in.MD3_IN;
+    wire ROCE_04 = in.MD4_IN;
+    wire ROPU_05 = in.MD5_IN;
+    wire RETA_06 = in.MD6_IN;
+    wire RAKU_07 = in.MD7_IN;
 
     if (RENA) {
-      out.MD_OE = true;
-      out.MD7 = RAKU;
-      out.MD4 = ROCE;
-      out.MD3 = REMO;
-      out.MD5 = ROPU;
-      out.MD6 = RETA;
-      out.MD2 = RYDO;
-      out.MD0 = RODY;
-      out.MD1 = REBA;
+      out.MD0 = RODY_00;
+      out.MD1 = REBA_01;
+      out.MD2 = RYDO_02;
+      out.MD3 = REMO_03;
+      out.MD4 = ROCE_04;
+      out.MD5 = ROPU_05;
+      out.MD6 = RETA_06;
+      out.MD7 = RAKU_07;
     }
 
     //----------
@@ -270,31 +246,27 @@ struct P25_VramInterface {
     wire SOLE = not(TUSO);
     wire RUNY = not(in.P10_B);
 
-    wire TAHY = not(SOLE);
-    wire TESU = not(SOLE);
-    wire TAXO = not(SOLE);
-    wire TOVU = not(SOLE);
-    wire TAZU = not(SOLE);
-    wire TEWA = not(SOLE);
-    wire SOSA = not(SOLE);
-    wire SEDU = not(SOLE);
+    wire TOVU_00 = not(SOLE);
+    wire SOSA_01 = not(SOLE);
+    wire SEDU_02 = not(SOLE);
+    wire TAXO_03 = not(SOLE);
+    wire TAHY_04 = not(SOLE);
+    wire TESU_05 = not(SOLE);
+    wire TAZU_06 = not(SOLE);
+    wire TEWA_07 = not(SOLE);
 
     if (RUNY) {
-      out.D_OE;
-      out.D4 = TAHY;
-      out.D5 = TESU;
-      out.D3 = TAXO;
-      out.D0 = TOVU;
-      out.D6 = TAZU;
-      out.D7 = TEWA;
-      out.D1 = SOSA;
-      out.D2 = SEDU;
+      out.D0 = TOVU_00;
+      out.D1 = SOSA_01;
+      out.D2 = SEDU_02;
+      out.D3 = TAXO_03;
+      out.D4 = TAHY_04;
+      out.D5 = TESU_05;
+      out.D6 = TAZU_06;
+      out.D7 = TEWA_07;
     }
 
     //----------
-    // FIXME
-    // this section is slightly odd as we both write to and read from the MDX bus
-    // should probably read bus into locals, do logic, write locals to output
 
     wire TEME = not(in.D0);
     wire TEWU = not(in.D1);
@@ -349,149 +321,116 @@ struct P25_VramInterface {
     wire XANE = nor(in.VRAM_TO_OAM, in.XYMU);
     wire XEDU = not(XANE);
 
-    wire XECA = in.A4;
-    wire XYBO = in.A7;
-    wire RYSU = in.A8;
+    wire XAKY = in.A00;
+    wire XUXU = in.A01;
+    wire XYNE = in.A02;
+    wire XODY = in.A03;
+    wire XECA = in.A04;
+    wire XOBA = in.A05;
+    wire XOPO = in.A06;
+    wire XYBO = in.A07;
+    wire RYSU = in.A08;
+    wire RESE = in.A09;
     wire RUSE = in.A10;
-    wire RUMO = in.A12;
-    wire XYNE = in.A2;
-    wire XOBA = in.A5;
-    wire XODY = in.A3;
     wire RYNA = in.A11;
-    wire RESE = in.A9;
-    wire XAKY = in.A0;
-    wire XOPO = in.A6;
-    wire XUXU = in.A1;
+    wire RUMO = in.A12;
 
     if (XEDU) {
-      out.MA_OE = true;
-      out.MA4 = XECA;
-      out.MA7 = XYBO;
-      out.MA8 = RYSU;
+      out.MA00 = XAKY;
+      out.MA01 = XUXU;
+      out.MA02 = XYNE;
+      out.MA03 = XODY;
+      out.MA04 = XECA;
+      out.MA05 = XOBA;
+      out.MA06 = XOPO;
+      out.MA07 = XYBO;
+      out.MA08 = RYSU;
+      out.MA09 = RESE;
       out.MA10 = RUSE;
-      out.MA12 = RUMO;
-      out.MA2 = XYNE;
-      out.MA5 = XOBA;
-      out.MA3 = XODY;
       out.MA11 = RYNA;
-      out.MA9 = RESE;
-      out.MA0 = XAKY;
-      out.MA6 = XOPO;
-      out.MA1 = XUXU;
-    }
-
-    //----------
-
-    wire LYRA = nand(in.T1nT2, in.RORU);
-
-    wire RYBA = not(in.D7_IN);
-    wire RUZY = not(in.D1_IN);
-    wire ROME = not(in.D2_IN);
-    wire TEHE = not(in.D4_IN);
-    wire SOCA = not(in.D6_IN);
-    wire RATU = not(in.D5_IN);
-    wire TOVO = not(in.D0_IN);
-    wire SAZA = not(in.D3_IN);
-
-    wire ROPA = not(RYBA);
-    wire SYWA = not(RUZY);
-    wire SUGU = not(ROME);
-    wire TUTE = not(TEHE);
-    wire TEMY = not(SOCA);
-    wire SAJO = not(RATU);
-    wire TUTY = not(TOVO);
-    wire TAWO = not(SAZA);
-
-    if (LYRA) {
-      out.D_OE = true;
-      out.D7 = ROPA;
-      out.D1 = SYWA;
-      out.D2 = SUGU;
-      out.D4 = TUTE;
-      out.D6 = TEMY;
-      out.D5 = SAJO;
-      out.D0 = TUTY;
-      out.D3 = TAWO;
+      out.MA12 = RUMO;
     }
 
     //----------
 
     wire ROVE = not(RAHU);
 
-    wire SEFA = and(in.MD0, ROVE);
-    wire SUNA = and(in.MD3, ROVE);
-    wire SUMO = and(in.MD4, ROVE);
-    wire SUKE = and(in.MD7, ROVE);
-    wire SAMO = and(in.MD6, ROVE);
-    wire SOGO = and(in.MD1, ROVE);
-    wire SAZU = and(in.MD5, ROVE);
-    wire SEFU = and(in.MD2, ROVE);
+    wire SEFA_00 = and(in.MD0, ROVE);
+    wire SOGO_01 = and(in.MD1, ROVE);
+    wire SEFU_02 = and(in.MD2, ROVE);
+    wire SUNA_03 = and(in.MD3, ROVE);
+    wire SUMO_04 = and(in.MD4, ROVE);
+    wire SAZU_05 = and(in.MD5, ROVE);
+    wire SAMO_06 = and(in.MD6, ROVE);
+    wire SUKE_07 = and(in.MD7, ROVE);
 
-    wire REGE = not(SEFA);
-    wire RADA = not(SUNA);
-    wire RYRO = not(SUMO);
-    wire RYZE = not(SUKE);
-    wire REKU = not(SAMO);
-    wire RYKY = not(SOGO);
-    wire REVU = not(SAZU);
-    wire RAZO = not(SEFU);
-
-    out.MD0_A = REGE;
-    out.MD3_A = RADA;
-    out.MD4_A = RYRO;
-    out.MD7_A = RYZE;
-    out.MD6_A = REKU;
-    out.MD1_A = RYKY;
-    out.MD5_A = REVU;
-    out.MD2_A = RAZO;
+    wire REGE_00 = not(SEFA_00);
+    wire RYKY_01 = not(SOGO_01);
+    wire RAZO_02 = not(SEFU_02);
+    wire RADA_03 = not(SUNA_03);
+    wire RYRO_04 = not(SUMO_04);
+    wire REVU_05 = not(SAZU_05);
+    wire REKU_06 = not(SAMO_06);
+    wire RYZE_07 = not(SUKE_07);
+    
+    out.MD0_A = REGE_00;
+    out.MD1_A = RYKY_01;
+    out.MD2_A = RAZO_02;
+    out.MD3_A = RADA_03;
+    out.MD4_A = RYRO_04;
+    out.MD5_A = REVU_05;
+    out.MD6_A = REKU_06;
+    out.MD7_A = RYZE_07;
 
     //----------
 
     wire CEDE = not(in.LUMA);
-    wire SYZO = not(in.D7_IN);
-    wire TUNE = not(in.D1_IN);
-    wire SERA = not(in.D2_IN);
-    wire SYSA = not(in.D4_IN);
-    wire TUBE = not(in.D6_IN);
-    wire SUGY = not(in.D5_IN);
-    wire RALO = not(in.D0_IN);
-    wire TENU = not(in.D3_IN);
 
-    wire BAPE = not(SYZO);
-    wire BYPY = not(SYZO);
-    wire BOMO = not(TUNE);
-    wire BUBO = not(TUNE);
-    wire BASA = not(SERA);
-    wire BETU = not(SERA);
-    wire BUMA = not(SYSA);
-    wire BAXU = not(SYSA);
-    wire BASY = not(TUBE);
-    wire BYNY = not(TUBE);
-    wire BUPY = not(SUGY);
-    wire BUHU = not(SUGY);
-    wire WASA = not(RALO);
-    wire WEJO = not(RALO);
-    wire CAKO = not(TENU);
-    wire CYME = not(TENU);
+    wire RALO_00 = not(in.D0_C);
+    wire TUNE_01 = not(in.D1_C);
+    wire SERA_02 = not(in.D2_C);
+    wire TENU_03 = not(in.D3_C);
+    wire SYSA_04 = not(in.D4_C);
+    wire SUGY_05 = not(in.D5_C);
+    wire TUBE_06 = not(in.D6_C);
+    wire SYZO_07 = not(in.D7_C);
+
+    wire WEJO_00 = not(RALO_00);
+    wire BUBO_01 = not(TUNE_01);
+    wire BETU_02 = not(SERA_02);
+    wire CYME_03 = not(TENU_03);
+    wire BAXU_04 = not(SYSA_04);
+    wire BUHU_05 = not(SUGY_05);
+    wire BYNY_06 = not(TUBE_06);
+    wire BYPY_07 = not(SYZO_07);
+
+    wire WASA_00 = not(RALO_00);
+    wire BOMO_01 = not(TUNE_01);
+    wire BASA_02 = not(SERA_02);
+    wire CAKO_03 = not(TENU_03);
+    wire BUMA_04 = not(SYSA_04);
+    wire BUPY_05 = not(SUGY_05);
+    wire BASY_06 = not(TUBE_06);
+    wire BAPE_07 = not(SYZO_07);
 
     if (CEDE) {
-      out.OAM_D_OE = true;
-      out.OAM_B_D7 = BAPE;
-      out.OAM_A_D7 = BYPY;
-      out.OAM_B_D1 = BOMO;
-      out.OAM_A_D1 = BUBO;
-      out.OAM_B_D2 = BASA;
-      out.OAM_A_D2 = BETU;
-      out.OAM_B_D4 = BUMA;
-      out.OAM_A_D4 = BAXU;
-      out.OAM_B_D6 = BASY;
-      out.OAM_A_D6 = BYNY;
-      out.OAM_B_D5 = BUPY;
-      out.OAM_A_D5 = BUHU;
-      out.OAM_B_D0 = WASA;
-      out.OAM_A_D0 = WEJO;
-      out.OAM_B_D3 = CAKO;
-      out.OAM_A_D3 = CYME;
+      out.OAM_A_D0 = WEJO_00;
+      out.OAM_A_D1 = BUBO_01;
+      out.OAM_A_D2 = BETU_02;
+      out.OAM_A_D3 = CYME_03;
+      out.OAM_A_D4 = BAXU_04;
+      out.OAM_A_D5 = BUHU_05;
+      out.OAM_A_D6 = BYNY_06;
+      out.OAM_A_D7 = BYPY_07;
+
+      out.OAM_B_D0 = WASA_00;
+      out.OAM_B_D1 = BOMO_01;
+      out.OAM_B_D2 = BASA_02;
+      out.OAM_B_D3 = CAKO_03;
+      out.OAM_B_D4 = BUMA_04;
+      out.OAM_B_D5 = BUPY_05;
+      out.OAM_B_D6 = BASY_06;
+      out.OAM_B_D7 = BAPE_07;
     }
 
     //----------
@@ -499,34 +438,33 @@ struct P25_VramInterface {
     wire TYVY = nand(SERE, in.LEKO);
     wire SEBY = not(TYVY);
 
-    wire RORO = not(in.MD5);
-    wire RERY = not(in.MD0);
-    wire RONA = not(in.MD2);
-    wire RUNA = not(in.MD1);
-    wire RUNO = not(in.MD3);
-    wire SAME = not(in.MD7);
-    wire SANA = not(in.MD4);
-    wire RABO = not(in.MD6);
+    wire RERY_00 = not(in.MD0);
+    wire RUNA_01 = not(in.MD1);
+    wire RONA_02 = not(in.MD2);
+    wire RUNO_03 = not(in.MD3);
+    wire SANA_04 = not(in.MD4);
+    wire RORO_05 = not(in.MD5);
+    wire RABO_06 = not(in.MD6);
+    wire SAME_07 = not(in.MD7);
 
-    wire REXU = not(RORO);
-    wire RUGA = not(RERY);
-    wire RYBU = not(RONA);
-    wire ROTA = not(RUNA);
-    wire RAJU = not(RUNO);
-    wire TOKU = not(SAME);
-    wire TYJA = not(SANA);
-    wire RUPY = not(RABO);
+    wire RUGA_00 = not(RERY_00);
+    wire ROTA_01 = not(RUNA_01);
+    wire RYBU_02 = not(RONA_02);
+    wire RAJU_03 = not(RUNO_03);
+    wire TYJA_04 = not(SANA_04);
+    wire REXU_05 = not(RORO_05);
+    wire RUPY_06 = not(RABO_06);
+    wire TOKU_07 = not(SAME_07);
 
     if (SEBY) {
-      out.D_OE = true;
-      out.D5 = REXU;
-      out.D0 = RUGA;
-      out.D2 = RYBU;
-      out.D1 = ROTA;
-      out.D3 = RAJU;
-      out.D7 = TOKU;
-      out.D4 = TYJA;
-      out.D6 = RUPY;
+      out.D0 = RUGA_00;
+      out.D1 = ROTA_01;
+      out.D2 = RYBU_02;
+      out.D3 = RAJU_03;
+      out.D4 = TYJA_04;
+      out.D5 = REXU_05;
+      out.D6 = RUPY_06;
+      out.D7 = TOKU_07;
     }
 
     //----------
@@ -537,44 +475,42 @@ struct P25_VramInterface {
 
     //----------
 
-    wire XONU = not(in.XUHA);
-    wire WUDO = not(in.VYNO);
-    wire WAWE = not(in.VUJO);
-    wire WOLU = not(in.VYMU);
+    wire XONU_00 = not(in.XUHA);
+    wire WUDO_01 = not(in.VYNO);
+    wire WAWE_02 = not(in.VUJO);
+    wire WOLU_03 = not(in.VYMU);
 
     if (XUCY) {
-      out.MA_OE = true;
-      out.MA0 = XONU;
-      out.MA1 = WUDO;
-      out.MA2 = WAWE;
-      out.MA3 = WOLU;
+      out.MA00 = XONU_00;
+      out.MA01 = WUDO_01;
+      out.MA02 = WAWE_02;
+      out.MA03 = WOLU_03;
     }
 
     //----------
 
-    wire VUZA = nor(in.FF40_D4, in.PYJU);
-    wire VURY = not(VUZA);
+    wire VAPY_04 = not(in.RAWU);
+    wire SEZU_05 = not(in.POZO);
+    wire VEJY_06 = not(in.PYZO);
+    wire RUSA_07 = not(in.POXA);
+    wire ROHA_08 = not(in.PULO);
+    wire RESO_09 = not(in.POJU);
+    wire SUVO_10 = not(in.POWY);
+    wire TOBO_11 = not(in.PYJU);
 
-    wire TOBO = not(in.PYJU);
-    wire SUVO = not(in.POWY);
-    wire RESO = not(in.POJU);
-    wire ROHA = not(in.PULO);
-    wire RUSA = not(in.POXA);
-    wire VEJY = not(in.PYZO);
-    wire SEZU = not(in.POZO);
-    wire VAPY = not(in.RAWU);
+    wire VUZA = nor(in.FF40_D4, in.PYJU);
+    wire VURY_12 = not(VUZA);
 
     if (in.NETA) {
-      out.MA_OE = true;
-      out.MA12 = VURY;
-      out.MA11 = TOBO;
-      out.MA10 = SUVO;
-      out.MA9 = RESO;
-      out.MA8 = ROHA;
-      out.MA7 = RUSA;
-      out.MA6 = VEJY;
-      out.MA5 = SEZU;
-      out.MA4 = VAPY;
+      out.MA04 = VAPY_04;
+      out.MA05 = SEZU_05;
+      out.MA06 = VEJY_06;
+      out.MA07 = RUSA_07;
+      out.MA08 = ROHA_08;
+      out.MA09 = RESO_09;
+      out.MA10 = SUVO_10;
+      out.MA11 = TOBO_11;
+      out.MA12 = VURY_12;
     }
   }
 };

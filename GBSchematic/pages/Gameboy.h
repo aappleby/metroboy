@@ -10,6 +10,7 @@
 #include "P05_JoypadIO.h"
 #include "P06_SerialLink.h"
 #include "P07_SysDecode.h"
+#include "P08_ExtCpuBuses.h"
 
 struct Gameboy {
   int64_t timestamp;
@@ -24,6 +25,7 @@ struct Gameboy {
   P05_JoypadIO    p05;
   P06_SerialLink  p06;
   P07_SysDecode   p07;
+  P08_ExtCpuBuses p08;
 
   // this signal is weird
   bool ABOL;
@@ -50,6 +52,8 @@ struct Gameboy {
   bool ATAL_4M;    // phases BDFH
   bool BAVU_1M;    // phases CDEF
   bool BOGA_1M;    // high on phases BCDEF
+  bool CEMO_1M;    // where this come from?
+  bool BUTU_512K;
   bool BUFY_256;
   bool BYFE_128;
   bool CERY_2M;
@@ -80,6 +84,7 @@ struct Gameboy {
   bool FF04_D1n;     // <- P01.UREK
   bool TO_CPU;       // <- P01.BOWA
   bool BEDO;         // <- P01.BEDO
+  bool ABUZ;         // <- P01.ABUZ
 
   //----------
   // driven by P02
@@ -148,9 +153,12 @@ struct Gameboy {
   bool BOOTROM_A7n;    // <- P07.ZYRA
 
   //----------
-  // driven by pages we haven't merged yet
 
   bool TOLA_A1n;     // <- P08.TOLA
+  bool NET01;        // <- P08.TOVA
+
+  //----------
+  // driven by pages we haven't merged yet
 
   bool APU_RESET;    // <- P09.KEBA
   bool APU_RESET5n;  // <- P09.KAME
@@ -171,4 +179,14 @@ struct Gameboy {
   bool FF0F;         // <- ???
 
   bool AMAB;         // <- P28.AMAB
+
+  bool CH2_FTICK;
+  bool DORY;
+  bool ARES;
+  bool AKYD_NQ;
+  bool BENY_OUT;
+  bool APU_RESET2n;
+  bool NET03;
+  bool APU_WR;
+  bool CPU_RDn;
 };

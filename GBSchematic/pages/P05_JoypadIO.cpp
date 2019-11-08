@@ -42,19 +42,26 @@ void P05_JoypadIO::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.KORE = nand(pb.KERU_07, gb.FF60_D0);
   pc.KYWE = nor (pb.KERU_07, pb.JEVA);
 
-  // really unsure about these pin assignments
-  gc.chip.SOUT_A = pb.KENA;
-  gc.chip.P10_B  = pb.KOLE;
-  gc.chip.P10_D  = pb.KYBU;
-  gc.chip.P11_B  = pb.KYTO;
-  gc.chip.P11_D  = pb.KABU;
-  gc.chip.P12_A  = pb.KYHU;
-  gc.chip.P12_D  = pb.KASY;
-  gc.chip.P13_A  = pb.KORY;
-  gc.chip.P13_C  = pb.KALE;
-  gc.chip.P14_A  = pb.KARU;
-  gc.chip.P14_B  = !pb.KELY_04;
-  gc.chip.P15_A  = pb.CELA;
+  // FIXME really unsure about these pin assignments, seem to have a few missing signals
+  gc.chip.SOUT  = pb.KENA;
+
+  gc.chip.P10_A = pb.KOLE;
+  gc.chip.P10_D = pb.KYBU;
+
+  gc.chip.P11_A = pb.KYTO;
+  gc.chip.P11_D = pb.KABU;
+
+  gc.chip.P12_A = pb.KYHU;
+  gc.chip.P12_D = pb.KASY;
+
+  gc.chip.P13_A = pb.KORY;
+  gc.chip.P13_D = pb.KALE;
+
+  gc.chip.P14_A = pb.KARU;
+  gc.chip.P14_D = !pb.KELY_04; // this seems really weird
+
+  gc.chip.P15_A = pb.CELA;
+  gc.chip.P15_D = pb.COFY_05;
 
   //----------
 

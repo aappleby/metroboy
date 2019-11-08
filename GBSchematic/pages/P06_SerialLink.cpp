@@ -14,8 +14,8 @@ void P06_SerialLink::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   //----------
   // FF02 SC
 
-  pc.UWAM = nand(gb.CPU_WR, pb.SANO, gb.TOVY_A0n, gb.cpu.A1); // ok these are _both_ nand?
-  pc.UCOM = nand(gb.CPU_RD, pb.SANO, gb.TOVY_A0n, gb.cpu.A1); // need to compare w/ other regs...
+  pc.UWAM = nand(gb.CPU_WR, pb.SANO, gb.TOVY_A0n, gb.cpu.A01); // ok these are _both_ nand?
+  pc.UCOM = nand(gb.CPU_RD, pb.SANO, gb.TOVY_A0n, gb.cpu.A01); // need to compare w/ other regs...
 
   pc.COTY = tock_pos(ga.CLK_16K, gb.CLK_16K, pb.UWAM, pb.COTY, !pb.COTY);
 
@@ -58,11 +58,11 @@ void P06_SerialLink::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
 
   //----------
 
-  pc.URYS = nand(gb.CPU_WR, pb.SANO, gb.cpu.A0, gb.TOLA_A1n); // see, these are NAND/AND...
-  pc.UFEG = and (gb.CPU_RD, pb.SANO, gb.cpu.A0, gb.TOLA_A1n);
+  pc.URYS = nand(gb.CPU_WR, pb.SANO, gb.cpu.A00, gb.TOLA_A1n); // see, these are NAND/AND...
+  pc.UFEG = and (gb.CPU_RD, pb.SANO, gb.cpu.A00, gb.TOLA_A1n);
 
-  pc.SARE = nor(gb.cpu.A7, gb.cpu.A6, gb.cpu.A5, gb.cpu.A4, gb.cpu.A3);
-  pc.SEFY = not(gb.cpu.A2);
+  pc.SARE = nor(gb.cpu.A07, gb.cpu.A06, gb.cpu.A05, gb.cpu.A04, gb.cpu.A03);
+  pc.SEFY = not(gb.cpu.A02);
   pc.SANO = and(pb.SARE, pb.SEFY, gb.FFXX);
   pc.DAKU = not(pb.URYS);
 

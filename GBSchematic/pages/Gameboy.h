@@ -189,4 +189,5 @@ struct Gameboy {
   bool NET03;
   bool APU_WR;
   bool CPU_RDn;
+  bool APU_RESET4n;
 };

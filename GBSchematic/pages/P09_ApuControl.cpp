@@ -1,241 +1,222 @@
 #include "../Schematics.h"
 
+#include "Gameboy.h"
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P9_ApuControl {
-  struct Input {
-    bool APUV_4MHZ;
-    bool BYFE_128HZ;
-    bool RESET2;
-
-    bool CPU_RD;
-    bool APU_WR;
-    bool FROM_CPU;
-
-    bool FF24;
-    bool FF26;
-    bool FF25;
-
-    bool CH1_ACTIVEn;
-    bool CH2_ACTIVEn;
-    bool CH3_ACTIVEn;
-    bool CH4_ACTIVEn;
-
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
-
-  struct Output {
-    bool GAXO;
-    bool AJER_2MHZ;
-    bool DYFA_1MHZ;
-
-    bool APU_RESET;
-    bool APU_RESETn;
-    bool APU_RESET2n;
-    bool APU_RESET3n;
-    bool APU_RESET4n;
-    bool APU_RESET5n;
-    bool JYRO;
-    bool CATE;
-    bool FERO_Q;
-    bool NET03;
-
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
-
+struct P09_ApuControl {
   // FF24 NR50
-  reg APEG,BYGA,AGER,APOS,BYRE,BUMO,COZU,BEDU;
+  bool APEG,BYGA,AGER,APOS,BYRE,BUMO,COZU,BEDU;
 
   // FF25 NR51
-  reg ANEV,BOGU,BAFO,ATUF,BUME,BOFA,BEFO,BEPU;
+  bool ANEV,BOGU,BAFO,ATUF,BUME,BOFA,BEFO,BEPU;
 
-  // clock dividers
-  reg AJER,CALO;
+  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 
-  // mystery
-  reg HADA,BOWY,BAZA,FERO;
+  //----------
 
-  void tick(const Input& in, Output& out) {
+  bool AGUR,AFAT,ATYV,DAPA,KAME;
+  bool BATA,CALO,DYFA,AJER;
+  bool HAWU,BOPY,HAPO,GUFO,HADA,JYRO,KEPY,KUBY,KEBA;
+  bool ETUC,EFOP,FOKU,FERO,EDEK,BOWY,BAZA,CELY,CONE,CATE,AGUZ,KYDU,JURE,HOPE;
+  bool BYMA,BEFU,ADAK;
+  bool BOSU,BAXY,BUBU,BOWE,ATAF;
+  bool AKOD,AWED,AVUD,AXEM,AMAD,ARUX,BOCY,ATUM;
+  bool BUPO,BONO,BYFA,GEPA,HEFA,GUMU;
+  bool CAPU,CAGA,BOCA,BUZU,CERE,CADA,CAVU,CUDU;
 
-    //---------
-    // reset tree
+  bool CETO,KAZO,CURU,GAXO;
+  bool DOLE,KAMU,DURU,FEWA;
+  bool COTO,KOGE,EFUS,FATE;
 
-    wire AGUR = not(out.APU_RESET);
-    wire AFAT = not(out.APU_RESET);
-    wire ATYV = not(out.APU_RESET);
-    wire DAPA = not(out.APU_RESET);
-    wire KAME = not(out.APU_RESET);
+  //----------
 
-    out.APU_RESETn  = AGUR;
-    out.APU_RESET2n = AFAT;
-    out.APU_RESET3n = ATYV;
-    out.APU_RESET4n = DAPA;
-    out.APU_RESET5n = KAME;
-
-    //----------
-    // clock dividers
-
-    wire AJER_Q = AJER.flip(in.APUV_4MHZ, out.APU_RESET3n);
-    out.AJER_2MHZ = AJER_Q;
-    wire AJER_2MHZn = not(AJER_Q);
-
-    wire BATA = not(out.AJER_2MHZ);
-    wire CALO_Q = CALO.flip(BATA, out.APU_RESETn);
-    wire DYFA = not(!CALO_Q);
-    out.DYFA_1MHZ = DYFA;
-
-    //----------
-    // main logic chunk
-
-    // BUG - APU_WR
-    wire HAWU = nand(in.FF26, in.APU_WR);
-    wire BOPY = nand(in.APU_WR, in.FF26);
-    wire HAPO = not(in.RESET2);
-
-    wire GUFO = not(HAPO);
-    wire HADA_Q = HADA.tock(HAWU, GUFO, in.D7);
-
-    wire JYRO = or(HAPO, !HADA_Q);
-    wire KEPY = not(JYRO);
-
-    wire KUBY = not(JYRO);
-    wire KEBA = not(KUBY);
-    out.APU_RESET = KEBA;
-
-    // BUG - APU_WR
-    wire ETUC = and(in.APU_WR, in.FF26);
-    wire EFOP = and(in.D4, in.FROM_CPU);
-    wire FOKU = not(ETUC);
-    out.FERO_Q = FERO.tock(FOKU, KEPY, EFOP);
-    wire EDEK = not(!out.FERO_Q);
-    out.NET03 = EDEK;
-
-    wire BOWY_Q = BOWY.tock(BOPY, KEPY, in.D5);
-    wire BAZA_Q = BAZA.tock(AJER_2MHZn, out.APU_RESET3n, BOWY_Q);
-    wire CELY = mux2(BAZA_Q, in.BYFE_128HZ, out.NET03);
-    wire CONE = not(CELY);
-    out.CATE = not(CONE);
-
-    wire AGUZ = not(in.CPU_RD);
-    wire CPU_RDn = AGUZ;
-    wire KYDU = not(CPU_RDn);
-    wire JURE = nand(KYDU, in.FF26);
-    wire HOPE = not(!HADA_Q);
-    if (JURE) {
-      out.D_OE = true;
-      out.D7 = HOPE;
-    }
-
-    //----------
-    // FF24 NR50
-
-    wire BYMA = not(in.FF24);
-    wire BEFU = nor(AGUZ, BYMA);
-    wire ADAK = not(BEFU);
-
-    // BUG - APU_WR
-    wire BOSU = nand(in.FF24, in.APU_WR);
-    wire BAXY = not(BOSU);
-    wire BUBU = not(BAXY);
-    wire BOWE = not(BOSU);
-    wire ATAF = not(BOWE);
-
-    wire APEG_Q = APEG.tock(ATAF, JYRO, in.D0);
-    wire BYGA_Q = BYGA.tock(ATAF, JYRO, in.D1);
-    wire AGER_Q = AGER.tock(ATAF, JYRO, in.D2);
-    wire APOS_Q = APOS.tock(ATAF, JYRO, in.D3);
-    wire BYRE_Q = BYRE.tock(BUBU, JYRO, in.D4);
-    wire BUMO_Q = BUMO.tock(BUBU, JYRO, in.D5);
-    wire COZU_Q = COZU.tock(BUBU, JYRO, in.D6);
-    wire BEDU_Q = BEDU.tock(BUBU, JYRO, in.D7);
-
-    wire AKOD = not(!APEG_Q);
-    wire AWED = not(!BYGA_Q);
-    wire AVUD = not(!AGER_Q);
-    wire AXEM = not(!APOS_Q);
-    wire AMAD = not(!BYRE_Q);
-    wire ARUX = not(!BUMO_Q);
-    wire BOCY = not(!COZU_Q);
-    wire ATUM = not(!BEDU_Q);
-
-    if (ADAK) {
-      out.D_OE = true;
-      out.D0 = AKOD;
-      out.D1 = AWED;
-      out.D2 = AVUD;
-      out.D3 = AXEM;
-      out.D4 = AMAD;
-      out.D5 = ARUX;
-      out.D6 = BOCY;
-      out.D7 = ATUM;
-    }
-
-    //----------
-    // FF25 NR51
-
-    // BUG APU_WR
-    wire BUPO = nand(in.FF25, in.APU_WR);
-    wire BONO = not(BUPO);
-    wire BYFA = not(BUPO);
-
-    wire BOGU_Q = BOGU.tock(BONO, JYRO, in.D1);
-    wire BAFO_Q = BAFO.tock(BONO, JYRO, in.D2);
-    wire ATUF_Q = ATUF.tock(BONO, JYRO, in.D3);
-    wire ANEV_Q = ANEV.tock(BONO, JYRO, in.D0);
-    wire BEPU_Q = BEPU.tock(BYFA, JYRO, in.D7);
-    wire BEFO_Q = BEFO.tock(BYFA, JYRO, in.D6);
-    wire BUME_Q = BUME.tock(BYFA, JYRO, in.D4);
-    wire BOFA_Q = BOFA.tock(BYFA, JYRO, in.D5);
-
-    wire GEPA = not(in.FF25);
-    wire HEFA = nor(GEPA, CPU_RDn);
-    wire GUMU = not(HEFA);
-
-    wire CAPU = not(!BOGU_Q);
-    wire CAGA = not(!BAFO_Q);
-    wire BOCA = not(!ATUF_Q);
-    wire BUZU = not(!ANEV_Q);
-    wire CERE = not(!BEPU_Q);
-    wire CADA = not(!BEFO_Q);
-    wire CAVU = not(!BUME_Q);
-    wire CUDU = not(!BOFA_Q);
-
-    if (GUMU) {
-      out.D_OE = true;
-      out.D1 = CAPU;
-      out.D2 = CAGA;
-      out.D3 = BOCA;
-      out.D0 = BUZU;
-      out.D7 = CERE;
-      out.D6 = CADA;
-      out.D4 = CAVU;
-      out.D5 = CUDU;
-    }
-
-    //----------
-    // FF26 NR52
-
-    wire CETO = not(CPU_RDn);
-    wire KAZO = not(CPU_RDn);
-    wire CURU = not(CPU_RDn);
-    out.GAXO  = not(CPU_RDn);
-
-    wire DOLE = nand(in.FF26, CETO);
-    wire KAMU = nand(in.FF26, KAZO);
-    wire DURU = nand(in.FF26, CURU);
-    wire FEWA = nand(in.FF26, out.GAXO);
-
-    wire COTO = not(in.CH1_ACTIVEn);
-    wire KOGE = not(in.CH4_ACTIVEn);
-    wire EFUS = not(in.CH2_ACTIVEn);
-    wire FATE = not(in.CH3_ACTIVEn);
-
-    if (DOLE) { out.D_OE = true; out.D0 = COTO; }
-    if (DURU) { out.D_OE = true; out.D1 = EFUS; }
-    if (FEWA) { out.D_OE = true; out.D2 = FATE; }
-    if (KAMU) { out.D_OE = true; out.D3 = KOGE; }
-  }
+  bool FF24;
+  bool FF25;
+  bool FF26;
 };
+
+//-----------------------------------------------------------------------------
+
+
+void P09_ApuControl::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
+  const P09_ApuControl pa = {};
+  const P09_ApuControl pb = {};
+  P09_ApuControl pc = {};
+
+  //---------
+  // reset tree
+
+  pc.AGUR = not(gb.APU_RESET);
+  pc.AFAT = not(gb.APU_RESET);
+  pc.ATYV = not(gb.APU_RESET);
+  pc.DAPA = not(gb.APU_RESET);
+  pc.KAME = not(gb.APU_RESET);
+
+  gc.APU_RESETn  = pb.AGUR;
+  gc.APU_RESET2n = pb.AFAT;
+  gc.APU_RESET3n = pb.ATYV;
+  gc.APU_RESET4n = pb.DAPA;
+  gc.APU_RESET5n = pb.KAME;
+
+  //----------
+  // clock dividers
+
+  pc.AJER = tock_pos(ga.APUV_4M, gb.APUV_4M, gb.APU_RESET3n, pb.AJER, !pb.AJER);
+  gc.AJER_2M = pb.AJER;
+  gc.AJER_2Mn = not(pb.AJER);
+
+  pc.BATA = not(gb.AJER_2M);
+  pc.CALO = tock_pos(pa.BATA, pb.BATA, gb.APU_RESETn, pb.CALO, !pb.CALO);
+  pc.DYFA = not(!pb.CALO);
+  gc.DYFA_1M = pb.DYFA;
+
+  //----------
+  // main logic chunk
+
+  pc.HAWU = nand(pb.FF26, gb.APU_WR);
+  pc.BOPY = nand(gb.APU_WR, pb.FF26);
+  pc.HAPO = not(gb.RESET2);
+
+  pc.GUFO = not(pb.HAPO);
+  pc.HADA = tock_pos(pa.HAWU, pb.HAWU, pb.GUFO, pb.HADA, gb.cpu.D7);
+
+  pc.JYRO = or(pb.HAPO, !pb.HADA);
+  pc.KEPY = not(pb.JYRO);
+
+  pc.KUBY = not(pb.JYRO);
+  pc.KEBA = not(pb.KUBY);
+
+  gc.APU_RESET = pb.KEBA;
+
+  pc.ETUC = and(gb.APU_WR, pb.FF26);
+  pc.EFOP = and(gb.cpu.D4, gb.T1nT2); // schematic bug, said FROM_CPU
+  pc.FOKU = not(pb.ETUC);
+  pc.FERO = tock_pos(pa.FOKU, pb.FOKU, pb.KEPY, pb.FERO, pb.EFOP);
+  pc.EDEK = not(!pb.FERO);
+
+  pc.BOWY = tock_pos(pa.BOPY, pb.BOPY, pb.KEPY, pb.BOWY, gb.cpu.D5);
+  pc.BAZA = tock_pos(ga.AJER_2M, gb.AJER_2M, gb.APU_RESET3n, pb.BAZA, pb.BOWY);
+  pc.CELY = mux2(pb.BAZA, gb.BYFE_128, gb.NET03);
+  pc.CONE = not(pb.CELY);
+  pc.CATE = not(pb.CONE);
+
+  pc.AGUZ = not(gb.CPU_RD);
+  pc.KYDU = not(gb.CPU_RDn);
+  pc.JURE = nand(pb.KYDU, pb.FF26);
+  pc.HOPE = not(!pb.HADA);
+
+  gc.CPU_RDn = pb.AGUZ;
+  gc.NET03 = pb.EDEK; // what is this exactly?
+
+  if (pb.JURE) {
+    gc.cpu.D7 = pb.HOPE;
+  }
+
+  //----------
+  // FF24 NR50
+
+  pc.BYMA = not(pb.FF24);
+  pc.BEFU = nor(pb.AGUZ, pb.BYMA);
+  pc.ADAK = not(pb.BEFU);
+  
+  pc.BOSU = nand(pb.FF24, gb.APU_WR); // BUG - APU_WR
+  pc.BAXY = not(pb.BOSU);
+  pc.BUBU = not(pb.BAXY);
+  pc.BOWE = not(pb.BOSU);
+  pc.ATAF = not(pb.BOWE);
+
+  pc.APEG = tock_pos(pa.ATAF, pb.ATAF, pb.JYRO, pc.APEG, gb.cpu.D0);
+  pc.BYGA = tock_pos(pa.ATAF, pb.ATAF, pb.JYRO, pc.BYGA, gb.cpu.D1);
+  pc.AGER = tock_pos(pa.ATAF, pb.ATAF, pb.JYRO, pc.AGER, gb.cpu.D2);
+  pc.APOS = tock_pos(pa.ATAF, pb.ATAF, pb.JYRO, pc.APOS, gb.cpu.D3);
+  pc.BYRE = tock_pos(pa.BUBU, pb.BUBU, pb.JYRO, pc.BYRE, gb.cpu.D4);
+  pc.BUMO = tock_pos(pa.BUBU, pb.BUBU, pb.JYRO, pc.BUMO, gb.cpu.D5);
+  pc.COZU = tock_pos(pa.BUBU, pb.BUBU, pb.JYRO, pc.COZU, gb.cpu.D6);
+  pc.BEDU = tock_pos(pa.BUBU, pb.BUBU, pb.JYRO, pc.BEDU, gb.cpu.D7);
+
+  pc.AKOD = not(!pb.APEG);
+  pc.AWED = not(!pb.BYGA);
+  pc.AVUD = not(!pb.AGER);
+  pc.AXEM = not(!pb.APOS);
+  pc.AMAD = not(!pb.BYRE);
+  pc.ARUX = not(!pb.BUMO);
+  pc.BOCY = not(!pb.COZU);
+  pc.ATUM = not(!pb.BEDU);
+
+  if (pb.ADAK) {
+    gc.cpu.D0 = pb.AKOD;
+    gc.cpu.D1 = pb.AWED;
+    gc.cpu.D2 = pb.AVUD;
+    gc.cpu.D3 = pb.AXEM;
+    gc.cpu.D4 = pb.AMAD;
+    gc.cpu.D5 = pb.ARUX;
+    gc.cpu.D6 = pb.BOCY;
+    gc.cpu.D7 = pb.ATUM;
+  }
+
+  //----------
+  // FF25 NR51
+
+  pc.BUPO = nand(pb.FF25, gb.APU_WR); // BUG APU_WR
+  pc.BONO = not(pb.BUPO);
+  pc.BYFA = not(pb.BUPO);
+
+  pc.BOGU = tock_pos(pa.BONO, pb.BONO, pb.JYRO, pc.BOGU, gb.cpu.D1);
+  pc.BAFO = tock_pos(pa.BONO, pb.BONO, pb.JYRO, pc.BAFO, gb.cpu.D2);
+  pc.ATUF = tock_pos(pa.BONO, pb.BONO, pb.JYRO, pc.ATUF, gb.cpu.D3);
+  pc.ANEV = tock_pos(pa.BONO, pb.BONO, pb.JYRO, pc.ANEV, gb.cpu.D0);
+  pc.BEPU = tock_pos(pa.BYFA, pb.BYFA, pb.JYRO, pc.BEPU, gb.cpu.D7);
+  pc.BEFO = tock_pos(pa.BYFA, pb.BYFA, pb.JYRO, pc.BEFO, gb.cpu.D6);
+  pc.BUME = tock_pos(pa.BYFA, pb.BYFA, pb.JYRO, pc.BUME, gb.cpu.D4);
+  pc.BOFA = tock_pos(pa.BYFA, pb.BYFA, pb.JYRO, pc.BOFA, gb.cpu.D5);
+
+  pc.GEPA = not(pb.FF25);
+  pc.HEFA = nor(pb.GEPA, gb.CPU_RDn);
+  pc.GUMU = not(pb.HEFA);
+
+  pc.CAPU = not(!pb.BOGU);
+  pc.CAGA = not(!pb.BAFO);
+  pc.BOCA = not(!pb.ATUF);
+  pc.BUZU = not(!pb.ANEV);
+  pc.CERE = not(!pb.BEPU);
+  pc.CADA = not(!pb.BEFO);
+  pc.CAVU = not(!pb.BUME);
+  pc.CUDU = not(!pb.BOFA);
+
+  if (pb.GUMU) {
+    gc.cpu.D1 = pb.CAPU;
+    gc.cpu.D2 = pb.CAGA;
+    gc.cpu.D3 = pb.BOCA;
+    gc.cpu.D0 = pb.BUZU;
+    gc.cpu.D7 = pb.CERE;
+    gc.cpu.D6 = pb.CADA;
+    gc.cpu.D4 = pb.CAVU;
+    gc.cpu.D5 = pb.CUDU;
+  }
+
+  //----------
+  // FF26 NR52
+
+  pc.CETO = not(gb.CPU_RDn);
+  pc.KAZO = not(gb.CPU_RDn);
+  pc.CURU = not(gb.CPU_RDn);
+  pc.GAXO = not(gb.CPU_RDn);
+
+  pc.DOLE = nand(pb.FF26, pb.CETO);
+  pc.KAMU = nand(pb.FF26, pb.KAZO);
+  pc.DURU = nand(pb.FF26, pb.CURU);
+  pc.FEWA = nand(pb.FF26, pb.GAXO);
+
+  pc.COTO = not(gb.CH1_ACTIVEn);
+  pc.KOGE = not(gb.CH4_ACTIVEn);
+  pc.EFUS = not(gb.CH2_ACTIVEn);
+  pc.FATE = not(gb.CH3_ACTIVEn);
+
+  if (pb.DOLE) { gc.cpu.D0 = pb.COTO; }
+  if (pb.DURU) { gc.cpu.D1 = pb.EFUS; }
+  if (pb.FEWA) { gc.cpu.D2 = pb.FATE; }
+  if (pb.KAMU) { gc.cpu.D3 = pb.KOGE; }
+}

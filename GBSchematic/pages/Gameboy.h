@@ -158,12 +158,19 @@ struct Gameboy {
   bool NET01;        // <- P08.TOVA
 
   //----------
-  // driven by pages we haven't merged yet
 
   bool APU_RESET;    // <- P09.KEBA
-  bool APU_RESET5n;  // <- P09.KAME
+  bool APU_RESETn;   // <- P09.AGUR;
+  bool APU_RESET2n;  // <- P09.AFAT;
+  bool APU_RESET3n;  // <- P09.ATYV;
+  bool APU_RESET4n;  // <- P09.DAPA;
+  bool APU_RESET5n;  // <- P09.KAME;
   bool AJER_2M;      // <- P09.AJER
+  bool AJER_2Mn;     // <- P09.AJER
+  bool DYFA_1M;      // <- P09.DYFA
   bool FERO_Q;       // <- P09.FERO, something debug-related
+  bool NET03;        // <- P09.EDEK
+  bool CPU_RDn;      // <- P09.AGUZ
 
   bool ANAP;         // <- P10.ANAP
   bool FF00RD;       // <- P10.ACAT
@@ -185,9 +192,10 @@ struct Gameboy {
   bool ARES;
   bool AKYD_NQ;
   bool BENY_OUT;
-  bool APU_RESET2n;
-  bool NET03;
   bool APU_WR;
-  bool CPU_RDn;
-  bool APU_RESET4n;
+
+  bool CH1_ACTIVEn;
+  bool CH4_ACTIVEn;
+  bool CH2_ACTIVEn;
+  bool CH3_ACTIVEn;
 };

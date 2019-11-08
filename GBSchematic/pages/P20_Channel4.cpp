@@ -48,10 +48,14 @@ struct P20_Channel4 {
   bool JEPE,JAVO,HEPA,HORY,HENO,HYRO,HEZU;
   bool JOTO,KOMU,KETU,KUTA,KUZY,KYWY,JAJU,HAPE,JUXE;
 
-  bool FF21_D0;
-  bool FF21_D0n;
-  bool FF21_D1;
-  bool FF21_D1n;
+  //----------
+
+  bool FF23;           // P10.KUGE
+
+  bool FF21_D0;        // P19.EMOK
+  bool FF21_D0n;       // P19.EMOK
+  bool FF21_D1;        // P19.ETYJ
+  bool FF21_D1n;       // P19.ETYJ
   bool FF21_D2;
   bool FF21_D2n;
   bool FF21_D3;
@@ -61,36 +65,34 @@ struct P20_Channel4 {
   bool FF21_D6;
   bool FF21_D7;
 
-  bool FF22_D0n;
-  bool FF22_D1n;
-  bool FF22_D2n;
-  bool FF22_D3;
-  bool FF22_D3n;
-  bool FF22_D4;
-  bool FF22_D4n;
-  bool FF22_D5;
-  bool FF22_D5n;
-  bool FF22_D6;
-  bool FF22_D6n;
-  bool FF22_D7;
+  bool FF22_D0n;       // P19.JARE
+  bool FF22_D1n;       // P19.JERO
+  bool FF22_D2n;       // P19.JAKY
+  bool FF22_D3;        // P19.JAMY
+  bool FF22_D3n;       // P19.JAMY
+  bool FF22_D4;        // P19.FETA
+  bool FF22_D4n;       // P19.FETA
+  bool FF22_D5;        // P19.FYTO
+  bool FF22_D5n;       // P19.FYTO
+  bool FF22_D6;        // P19.GOGO
+  bool FF22_D6n;       // P19.GOGO
+  bool FF22_D7;        // P19.GAFO
+  bool FF23_D6;        // P19.CUNY
+  bool FF23_D7;        // P19.HOGA
+  bool FUGO;           // P19.FUGO
 
-  bool FF23_D6;
-  bool FF23_D6n;
-  bool FF23_D7;
-
-  bool FF23;
-
-  bool CH4_BIT;
-  bool CH4_LFSR_CLK1;
-  bool CH4_LFSR_CLK2;
-  bool CH4_LFSR_CLK3;
-  bool CH4_EG_DISABLE;
-  bool CH4_EG_TICK;
-  bool CH4_RESTART;
-  bool CH4_ACTIVEn;
-
-  bool LFSR_OUT;
-  bool FUGO;
+  bool FF23_D6n;       // P20.CEPY
+  bool CH4_BIT;        // P20.DATO
+  bool CH4_LFSR_CLK1;  // P20.FEME
+  bool CH4_LFSR_CLK2;  // P20.GYVE
+  bool CH4_LFSR_CLK3;  // P20.KOPA
+  bool CH4_EG_DISABLE; // P20.FOWA
+  bool CH4_EG_TICK;    // P20.FOSY
+  bool CH4_RESTART;    // P20.GONE
+  bool CH4_ACTIVEn;    // P20.JUWA
+  bool CH4_AMP_ENn;    // P20.GEVY
+  bool RST_FF23_D7;    // P20.GUZY
+  bool LFSR_OUT;       // P20.GAME
 
   static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 };
@@ -216,6 +218,7 @@ void P20_Channel4::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.FOWA = nor(pb.FF21_D0, pb.FF21_D1, pb.FF21_D2);
 
   pc.CH4_EG_DISABLE = pb.FOWA;
+  pc.CH4_EG_TICK = pb.FOSY;
 
   //----------
 
@@ -253,7 +256,10 @@ void P20_Channel4::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.GUNY = nor(pb.CH4_RESTART, gb.APU_RESET);
   pc.HUCE = not(pb.GOFU);
 
+  pc.RST_FF23_D7 = pb.GUZY;
+  pc.CH4_RESTART = pb.GONE:
   pc.CH4_ACTIVEn = pb.JUWA;
+  pc.CH4_AMP_ENn = pb.GEVY;
 
   //----------
 
@@ -281,5 +287,7 @@ void P20_Channel4::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.HENO = tock_pos(pa.CH4_LFSR_CLK1, pb.CH4_LFSR_CLK1, pb.GOGE, pb.HENO, pb.HORY);
   pc.HYRO = tock_pos(pa.CH4_LFSR_CLK1, pb.CH4_LFSR_CLK1, pb.GOGE, pb.HYRO, pb.HENO);
   pc.HEZU = tock_pos(pa.CH4_LFSR_CLK1, pb.CH4_LFSR_CLK1, pb.GOGE, pb.HEZU, pb.HYRO);
+
+  pc.LFSR_OUT = pb.GAME;
 
 }

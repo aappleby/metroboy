@@ -29,13 +29,16 @@ struct P18_Channel3 {
   bool FAVE_06;
   bool FYRU_07;
 
-  bool GARA,GUGU;
+  //----------
 
-  bool FF1A_D7n;
+  bool GARA;         // P16.GARA
+  bool GUGU;         // P16.GUGU
 
-  bool FF1B_WR1;
-  bool FF1B_WR2;
-  bool FF1B_WR3;
+  bool FF1A_D7n;     // P16.GUXE
+
+  bool FF1B_WR1;     // P16.EMUT
+  bool FF1B_WR2;     // P16.GAJY
+  bool FF1B_WR3;     // P16.GETO
 
   bool FF1C_D5;
   bool FF1C_D6;
@@ -58,25 +61,25 @@ struct P18_Channel3 {
   bool FF1E_D6;
   bool FF1E_D6n;
 
-  bool CH3_ACTIVE;
-  bool CH3_ACTIVEn;
+  bool CH3_ACTIVE;   // P18.COKA
+  bool CH3_ACTIVEn;  // P18.ERED
 
-  bool WAVE_A0;
-  bool WAVE_A1;
-  bool WAVE_A2;
-  bool WAVE_A3;
+  bool WAVE_A0;      // P18.BOLE
+  bool WAVE_A1;      // P18.AGYL
+  bool WAVE_A2;      // P18.AFUM
+  bool WAVE_A3;      // P18.AXOL
 
-  bool WAVE_PLAY_D0;
-  bool WAVE_PLAY_D1;
-  bool WAVE_PLAY_D2;
-  bool WAVE_PLAY_D3;
+  bool WAVE_PLAY_D0; // P17.DATE
+  bool WAVE_PLAY_D1; // P17.DAZY
+  bool WAVE_PLAY_D2; // P17.CUZO
+  bool WAVE_PLAY_D3; // P17.COPO
 
-  bool WAVE_DAC_D0;
-  bool WAVE_DAC_D1;
-  bool WAVE_DAC_D2;
-  bool WAVE_DAC_D3;
+  bool WAVE_DAC_D0;  // P18.BARY
+  bool WAVE_DAC_D1;  // P18.BYKA
+  bool WAVE_DAC_D2;  // P18.BOPA
+  bool WAVE_DAC_D3;  // P18.BELY
 
-  bool WAVE_RAM_RDn;
+  bool WAVE_RAM_RDn; // P17.CAZU
 
   bool FF1C;
 

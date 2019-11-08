@@ -36,7 +36,6 @@ struct P15_Channel2 {
   bool FF17_D6;
   bool FF17_D7;
 
-  bool FF19_D6, FF19_D7;
   bool HAFE,HYPA;
   bool CYWU,DERA,DALA,CELO,ELOX,DOXA,DORY,CEXE;
   bool HYLE,HYLY,JEME,GALU,GYKO,ETUK,DAVU,FUJY,GYRE,DUJU,COGU,EROG,GYPA;
@@ -55,12 +54,16 @@ struct P15_Channel2 {
   bool CYSE,BONU,ANYV,ANAN,AMOV,ASOG;
 
   bool CANO_00,CAGY_01,DYVE_02;
+  bool BUKO_OUT;    // P15.BUKO
 
+  //----------
 
-  bool CH2_ACTIVEn;
-  bool CH2_AMP_ENn;
-  bool BUKO_OUT;
-  bool FF16_WR;
+  bool FF19_D6;     // P14.EMER
+  bool FF19_D7;     // ???
+
+  bool CH2_ACTIVEn; // P15.DEFU
+  bool CH2_AMP_ENn; // P15.FUTE
+  bool FF16_WR;     // ???
 
   static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 };

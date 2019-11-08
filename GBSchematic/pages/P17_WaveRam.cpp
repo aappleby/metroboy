@@ -160,10 +160,10 @@ struct P17_WaveRam {
     wire DAZY = mux2(!CESY_Q, !CEVO_Q, in.EFAR_Q);
     wire DATE = mux2(!CYFO_Q, !CUVO_Q, in.EFAR_Q);
 
-    out.WAVE_PLAY_D3 = COPO;
-    out.WAVE_PLAY_D2 = CUZO;
-    out.WAVE_PLAY_D1 = DAZY;
     out.WAVE_PLAY_D0 = DATE;
+    out.WAVE_PLAY_D1 = DAZY;
+    out.WAVE_PLAY_D2 = CUZO;
+    out.WAVE_PLAY_D3 = COPO;
   }
 
 };

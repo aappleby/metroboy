@@ -37,10 +37,12 @@ struct P19_Ch4Regs {
 
   bool DULU,CABE,BYLO,FOXE,BARE,CUNY,HOGA,CURY;
 
-  bool FF20;
-  bool FF21;
-  bool FF22;
-  bool FF23;
+  //----------
+
+  bool FF20; // P10.DANU
+  bool FF21; // P10.COVO
+  bool FF22; // P10.EKEZ
+  bool FF23; // P10.CUGE
 
   bool FF21_D0;
   bool FF21_D1;
@@ -73,11 +75,9 @@ struct P19_Ch4Regs {
   bool FF23_D6;
   bool FF23_D7;
 
-  bool CH4_RESTART;
-
-  bool RST_FF23_D7;
-
-  bool ANUJ;
+  bool CH4_RESTART; // P20.GONE
+  bool RST_FF23_D7; // P20.GUZY
+  bool ANUJ;        // P16.ANUJ
 
   static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 };

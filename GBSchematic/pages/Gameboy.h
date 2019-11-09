@@ -11,6 +11,8 @@
 #include "P06_SerialLink.h"
 #include "P07_SysDecode.h"
 #include "P08_ExtCpuBuses.h"
+#include "P09_ApuControl.h"
+#include "P10_ApuDecode.h"
 
 struct Gameboy {
   int64_t timestamp;
@@ -26,6 +28,8 @@ struct Gameboy {
   P06_SerialLink  p06;
   P07_SysDecode   p07;
   P08_ExtCpuBuses p08;
+  P09_ApuControl  p09;
+  P10_ApuDecode   p10;
 
   // this signal is weird
   bool ABOL;
@@ -198,4 +202,11 @@ struct Gameboy {
   bool CH4_ACTIVEn;
   bool CH2_ACTIVEn;
   bool CH3_ACTIVEn;
+
+  bool CH1_AMP_ENn;
+  bool CH2_AMP_ENn;
+  bool CH3_AMP_ENn;
+  bool CH4_AMP_ENn;
+
+  bool FF1A_D7n;     // <- P16.GUXE
 };

@@ -257,7 +257,7 @@ void P20_Channel4::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.HUCE = not(pb.GOFU);
 
   pc.RST_FF23_D7 = pb.GUZY;
-  pc.CH4_RESTART = pb.GONE:
+  pc.CH4_RESTART = pb.GONE;
   pc.CH4_ACTIVEn = pb.JUWA;
   pc.CH4_AMP_ENn = pb.GEVY;
 

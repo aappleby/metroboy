@@ -14,6 +14,8 @@
 #include "P09_ApuControl.h"
 #include "P10_ApuDecode.h"
 #include "P11_Ch1Regs.h"
+#include "P12_Ch1Sweep.h"
+#include "P13_Channel1.h"
 
 struct Gameboy {
   int64_t timestamp;
@@ -32,6 +34,8 @@ struct Gameboy {
   P09_ApuControl  p09;
   P10_ApuDecode   p10;
   P11_Ch1Regs     p11;
+  P12_Ch1Sweep    p12;
+  P13_Channel1    p13;
 
   // this signal is weird
   bool ABOL;

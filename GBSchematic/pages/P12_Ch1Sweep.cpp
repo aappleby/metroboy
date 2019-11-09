@@ -1,278 +1,212 @@
+#include "P12_Ch1Sweep.h"
 #include "../Schematics.h"
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P12_Ch1Sweep {
-  struct Input {
-    bool APU_WR;
-    bool FF14;
-    bool FF13;
-    bool APU_RESET;
-    bool BUSO;
-    bool ADAD;
-    bool KYLY;
-    bool BOJE;
-    bool KALA;
-    bool EGOR;
-    bool P10_B;
-    bool FF10_D3n;
+void P12_Ch1Sweep::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
+  const P12_Ch1Sweep pa = ga.p12;
+  const P12_Ch1Sweep pb = gb.p12;
+  P12_Ch1Sweep pc = gc.p12;
 
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  pc.DEPU = nand(gb.APU_WR, pb.FF13); // BUG - APU_WR
+  pc.DEBY = and(gb.APU_WR, pb.FF14);
+  pc.DYLA = not(pb.DEPU);
 
-  struct Output {
-    bool ATYS;
-    bool AXAN3,EVAB3,DYGY3,HOPO3,HYXU3,HOLU3,FELY3,EDUL3,HAVO3,JYKA3,HYKA3;
-  };
+  pc.BYFU = not(gb.cpu.D2);
+  pc.BOFU = not(gb.cpu.D1);
+  pc.BYSU = not(gb.cpu.D0);
+  pc.DULO = not(gb.cpu.D7);
+  pc.DYLU = not(gb.cpu.D6);
+  pc.JULO = not(gb.cpu.D5);
+  pc.KOPU = not(gb.cpu.D4);
+  pc.ETUV = not(gb.cpu.D3);
+  pc.FULE = not(gb.cpu.D2);
+  pc.GULU = not(gb.cpu.D1);
+  pc.DEKE = not(gb.cpu.D0);
 
-  reg AXAN,EVAB,DYGY,HOPO,HYXU,HOLU,FELY,EDUL,HAVO,JYKA,HYKA;
-  
-  reg DOLY,DOFY,DEXE,DELE,EXAP,FAXO,GYME,JYME,KARE,JODE,GALO;
-  
-  // shift register
-  reg BEKU,AGEZ,ELUX,EXAC,FEDO,FUDE,JOTA,JOLU,GOGA,JEFA,FABU;
+  pc.AFEG = nand(gb.cpu.D2, pb.DEBY);
+  pc.BUDO = nand(gb.cpu.D1, pb.DEBY);
+  pc.BUGU = nand(gb.cpu.D0, pb.DEBY);
+  pc.ETOL = nand(gb.cpu.D7, pb.DYLA);
+  pc.ELER = nand(gb.cpu.D6, pb.DYLA);
+  pc.KYPA = nand(gb.cpu.D5, pb.DYLA);
+  pc.KOVU = nand(gb.cpu.D4, pb.DYLA);
+  pc.GOPE = nand(gb.cpu.D3, pb.DYLA);
+  pc.GOLO = nand(gb.cpu.D2, pb.DYLA);
+  pc.GETA = nand(gb.cpu.D1, pb.DYLA);
+  pc.GYLU = nand(gb.cpu.D0, pb.DYLA);
 
-  reg DEVA,ETER,DEFA,EDOK,EPYR,GELE,JETE,JAPE,HELE,HOPA,HORA;
+  pc.AJUX = and(pb.DEBY, pb.BYFU);
+  pc.AMAC = and(pb.DEBY, pb.BOFU);
+  pc.BASO = and(pb.DEBY, pb.BYSU);
+  pc.EMAR = and(pb.DYLA, pb.DULO);
+  pc.ETOK = and(pb.DYLA, pb.DYLU);
+  pc.KYFU = and(pb.DYLA, pb.JULO);
+  pc.KAVO = and(pb.DYLA, pb.KOPU);
+  pc.FEGA = and(pb.DYLA, pb.ETUV);
+  pc.FOKE = and(pb.DYLA, pb.FULE);
+  pc.FOPU = and(pb.DYLA, pb.GULU);
+  pc.EJYF = and(pb.DYLA, pb.DEKE);
 
-  void tick(const Input& in, Output& out) {
+  pc.APAJ = nor(pb.AJUX, gb.APU_RESET);
+  pc.BOVU = nor(pb.AMAC, gb.APU_RESET);
+  pc.BOXU = nor(pb.BASO, gb.APU_RESET);
+  pc.ESEL = nor(pb.EMAR, gb.APU_RESET);
+  pc.ELUF = nor(pb.ETOK, gb.APU_RESET);
+  pc.KAJU = nor(pb.KYFU, gb.APU_RESET);
+  pc.KAPO = nor(pb.KAVO, gb.APU_RESET);
+  pc.GAMO = nor(pb.FEGA, gb.APU_RESET);
+  pc.GYFU = nor(pb.FOKE, gb.APU_RESET);
+  pc.GATO = nor(pb.FOPU, gb.APU_RESET);
+  pc.EFOR = nor(pb.EJYF, gb.APU_RESET);
 
-    // BUG - APU_WR
-    wire DEPU = nand(in.APU_WR, in.FF13);
-    wire DEBY = and(in.APU_WR, in.FF14);
-    wire DYLA = not(DEPU);
+  pc.ARYL = not(pb.FF10_D3n);
 
-    wire BYFU = not(in.D2);
-    wire BOFU = not(in.D1);
-    wire BYSU = not(in.D0);
-    wire DULO = not(in.D7);
-    wire DYLU = not(in.D6);
-    wire JULO = not(in.D5);
-    wire KOPU = not(in.D4);
-    wire ETUV = not(in.D3);
-    wire FULE = not(in.D2);
-    wire GULU = not(in.D1);
-    wire DEKE = not(in.D0);
+  wire GUXA_C = add_c(!pb.GALO, !pb.HORA, pb.ARYL);
+  wire HALU_C = add_c(!pb.JODE, !pb.HOPA, GUXA_C);
+  wire JULE_C = add_c(!pb.KARE, !pb.HELE, HALU_C);
+  wire JORY_C = add_c(!pb.JYME, !pb.JAPE, JULE_C);
+  wire HEXO_C = add_c(!pb.GYME, !pb.JETE, JORY_C);
+  wire GEVA_C = add_c(!pb.FAXO, !pb.GELE, HEXO_C);
+  wire FEGO_C = add_c(!pb.EXAP, !pb.EPYR, GEVA_C);
+  wire ETEK_C = add_c(!pb.DELE, !pb.EDOK, FEGO_C);
+  wire DYXE_C = add_c(!pb.DEXE, !pb.DEFA, ETEK_C);
+  wire DULE_C = add_c(!pb.DOFY, !pb.ETER, DYXE_C);
+  wire CORU_C = add_c(!pb.DOLY, !pb.DEVA, DULE_C);
 
-    wire AFEG = nand(in.D2, DEBY);
-    wire BUDO = nand(in.D1, DEBY);
-    wire BUGU = nand(in.D0, DEBY);
-    wire ETOL = nand(in.D7, DYLA);
-    wire ELER = nand(in.D6, DYLA);
-    wire KYPA = nand(in.D5, DYLA);
-    wire KOVU = nand(in.D4, DYLA);
-    wire GOPE = nand(in.D3, DYLA);
-    wire GOLO = nand(in.D2, DYLA);
-    wire GETA = nand(in.D1, DYLA);
-    wire GYLU = nand(in.D0, DYLA);
+  wire GUXA_S = add_s(!pb.GALO, !pb.HORA, pb.ARYL);
+  wire HALU_S = add_s(!pb.JODE, !pb.HOPA, GUXA_C);
+  wire JULE_S = add_s(!pb.KARE, !pb.HELE, HALU_C);
+  wire JORY_S = add_s(!pb.JYME, !pb.JAPE, JULE_C);
+  wire HEXO_S = add_s(!pb.GYME, !pb.JETE, JORY_C);
+  wire GEVA_S = add_s(!pb.FAXO, !pb.GELE, HEXO_C);
+  wire FEGO_S = add_s(!pb.EXAP, !pb.EPYR, GEVA_C);
+  wire ETEK_S = add_s(!pb.DELE, !pb.EDOK, FEGO_C);
+  wire DYXE_S = add_s(!pb.DEXE, !pb.DEFA, ETEK_C);
+  wire DULE_S = add_s(!pb.DOFY, !pb.ETER, DYXE_C);
+  wire CORU_S = add_s(!pb.DOLY, !pb.DEVA, DULE_C);
 
-    wire AJUX = and(DEBY, BYFU);
-    wire AMAC = and(DEBY, BOFU);
-    wire BASO = and(DEBY, BYSU);
-    wire EMAR = and(DYLA, DULO);
-    wire ETOK = and(DYLA, DYLU);
-    wire KYFU = and(DYLA, JULO);
-    wire KAVO = and(DYLA, KOPU);
-    wire FEGA = and(DYLA, ETUV);
-    wire FOKE = and(DYLA, FULE);
-    wire FOPU = and(DYLA, GULU);
-    wire EJYF = and(DYLA, DEKE);
+  pc.AXAN = srtock_pos(pa.BUSO, pb.BUSO, pb.AFEG, pb.APAJ, pc.AXAN, CORU_S);
+  pc.EVAB = srtock_pos(pa.BUSO, pb.BUSO, pb.BUDO, pb.BOVU, pc.EVAB, DULE_S);
+  pc.DYGY = srtock_pos(pa.BUSO, pb.BUSO, pb.BUGU, pb.BOXU, pc.DYGY, DYXE_S);
+  pc.HOPO = srtock_pos(pa.BOJE, pb.BOJE, pb.ETOL, pb.ESEL, pc.HOPO, ETEK_S);
+  pc.HYXU = srtock_pos(pa.BOJE, pb.BOJE, pb.ELER, pb.ELUF, pc.HYXU, FEGO_S);
+  pc.HOLU = srtock_pos(pa.BOJE, pb.BOJE, pb.KYPA, pb.KAJU, pc.HOLU, GEVA_S);
+  pc.FELY = srtock_pos(pa.BOJE, pb.BOJE, pb.KOVU, pb.KAPO, pc.FELY, HEXO_S);
+  pc.EDUL = srtock_pos(pa.BOJE, pb.BOJE, pb.GOPE, pb.GAMO, pc.EDUL, JORY_S);
+  pc.HAVO = srtock_pos(pa.BOJE, pb.BOJE, pb.GOLO, pb.GYFU, pc.HAVO, JULE_S);
+  pc.JYKA = srtock_pos(pa.BOJE, pb.BOJE, pb.GETA, pb.GATO, pc.JYKA, HALU_S);
+  pc.HYKA = srtock_pos(pa.BOJE, pb.BOJE, pb.GYLU, pb.EFOR, pc.HYKA, GUXA_S);
 
-    wire APAJ = nor(AJUX, in.APU_RESET);
-    wire BOVU = nor(AMAC, in.APU_RESET);
-    wire BOXU = nor(BASO, in.APU_RESET);
-    wire ESEL = nor(EMAR, in.APU_RESET);
-    wire ELUF = nor(ETOK, in.APU_RESET);
-    wire KAJU = nor(KYFU, in.APU_RESET);
-    wire KAPO = nor(KAVO, in.APU_RESET);
-    wire GAMO = nor(FEGA, in.APU_RESET);
-    wire GYFU = nor(FOKE, in.APU_RESET);
-    wire GATO = nor(FOPU, in.APU_RESET);
-    wire EFOR = nor(EJYF, in.APU_RESET);
 
-    wire DOLY_Q = DOLY.q();
-    wire DOFY_Q = DOLY.q();
-    wire DEXE_Q = DOLY.q();
-    wire DELE_Q = DOLY.q();
-    wire EXAP_Q = DOLY.q();
-    wire FAXO_Q = DOLY.q();
-    wire GYME_Q = DOLY.q();
-    wire JYME_Q = DOLY.q();
-    wire KARE_Q = DOLY.q();
-    wire JODE_Q = DOLY.q();
-    wire GALO_Q = DOLY.q();
+  pc.DOLY = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.DOLY, pb.AXAN);
+  pc.DOFY = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.DOFY, pb.EVAB);
+  pc.DEXE = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.DEXE, pb.DYGY);
+  pc.DELE = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.DELE, pb.HOPO);
+  pc.EXAP = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.EXAP, pb.HYXU);
+  pc.FAXO = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.FAXO, pb.HOLU);
+  pc.GYME = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.GYME, pb.FELY);
+  pc.JYME = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.JYME, pb.EDUL);
+  pc.KARE = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.KARE, pb.HAVO);
+  pc.JODE = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.JODE, pb.JYKA);
+  pc.GALO = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pb.GALO, pb.HYKA);
 
-    wire DEVA_Q = DEVA.q();
-    wire ETER_Q = ETER.q();
-    wire DEFA_Q = DEFA.q();
-    wire EDOK_Q = EDOK.q();
-    wire EPYR_Q = EPYR.q();
-    wire GELE_Q = GELE.q();
-    wire JETE_Q = JETE.q();
-    wire JAPE_Q = JAPE.q();
-    wire HELE_Q = HELE.q();
-    wire HOPA_Q = HOPA.q();
-    wire HORA_Q = HORA.q();
+  pc.BOJO = not(pb.AXAN);
+  pc.APAT = not(pb.EVAB);
+  pc.BYRU = not(pb.DYGY);
+  pc.CYKY = not(pb.HOPO);
+  pc.DEBO = not(pb.HYXU);
+  pc.FOHY = not(pb.HOLU);
+  pc.KOVO = not(pb.FELY);
+  pc.KEKE = not(pb.EDUL);
+  pc.HUNY = not(pb.HAVO);
+  pc.HOXE = not(pb.JYKA);
+  pc.JUTA = not(pb.HYKA);
 
-    wire ARYL = not(in.FF10_D3n);
+  pc.KEDO = not(pb.KALA);
+  pc.JUJU = not(pb.KALA);
+  pc.KAPE = not(pb.KALA);
 
-    wire GUXA_C = add_c(!GALO_Q, !HORA_Q, ARYL);
-    wire HALU_C = add_c(!JODE_Q, !HOPA_Q, GUXA_C);
-    wire JULE_C = add_c(!KARE_Q, !HELE_Q, HALU_C);
-    wire JORY_C = add_c(!JYME_Q, !JAPE_Q, JULE_C);
-    wire HEXO_C = add_c(!GYME_Q, !JETE_Q, JORY_C);
-    wire GEVA_C = add_c(!FAXO_Q, !GELE_Q, HEXO_C);
-    wire FEGO_C = add_c(!EXAP_Q, !EPYR_Q, GEVA_C);
-    wire ETEK_C = add_c(!DELE_Q, !EDOK_Q, FEGO_C);
-    wire DYXE_C = add_c(!DEXE_Q, !DEFA_Q, ETEK_C);
-    wire DULE_C = add_c(!DOFY_Q, !ETER_Q, DYXE_C);
-    wire CORU_C = add_c(!DOLY_Q, !DEVA_Q, DULE_C);
+  pc.AFYR = and(pb.KEDO, pb.BOJO);
+  pc.BUVO = and(pb.KEDO, pb.APAT);
+  pc.AFUG = and(pb.KEDO, pb.BYRU);
+  pc.BAPU = and(pb.KEDO, pb.CYKY);
+  pc.EREG = and(pb.JUJU, pb.DEBO);
+  pc.EVOF = and(pb.JUJU, pb.FOHY);
+  pc.KEVY = and(pb.JUJU, pb.KOVO);
+  pc.KAXY = and(pb.JUJU, pb.KEKE);
+  pc.JEHY = and(pb.KAPE, pb.HUNY);
+  pc.JOCY = and(pb.KAPE, pb.HOXE);
+  pc.KOKO = and(pb.KAPE, pb.JUTA);
 
-    wire GUXA_S = add_s(!GALO_Q, !HORA_Q, ARYL);
-    wire HALU_S = add_s(!JODE_Q, !HOPA_Q, GUXA_C);
-    wire JULE_S = add_s(!KARE_Q, !HELE_Q, HALU_C);
-    wire JORY_S = add_s(!JYME_Q, !JAPE_Q, JULE_C);
-    wire HEXO_S = add_s(!GYME_Q, !JETE_Q, JORY_C);
-    wire GEVA_S = add_s(!FAXO_Q, !GELE_Q, HEXO_C);
-    wire FEGO_S = add_s(!EXAP_Q, !EPYR_Q, GEVA_C);
-    wire ETEK_S = add_s(!DELE_Q, !EDOK_Q, FEGO_C);
-    wire DYXE_S = add_s(!DEXE_Q, !DEFA_Q, ETEK_C);
-    wire DULE_S = add_s(!DOFY_Q, !ETER_Q, DYXE_C);
-    wire CORU_S = add_s(!DOLY_Q, !DEVA_Q, DULE_C);
+  pc.BEJU = nand(pb.AXAN, pb.KEDO);
+  pc.BESO = nand(pb.EVAB, pb.KEDO);
+  pc.BEGE = nand(pb.DYGY, pb.KEDO);
+  pc.DACE = nand(pb.HOPO, pb.KEDO);
+  pc.EKEM = nand(pb.HYXU, pb.JUJU);
+  pc.GOVO = nand(pb.HOLU, pb.JUJU);
+  pc.KOLA = nand(pb.FELY, pb.JUJU);
+  pc.KYRY = nand(pb.EDUL, pb.JUJU);
+  pc.HAWY = nand(pb.HAVO, pb.KAPE);
+  pc.HOLA = nand(pb.JYKA, pb.KAPE);
+  pc.HOZU = nand(pb.HYKA, pb.KAPE);
 
-    wire AXAN_Q = AXAN.srtock(in.BUSO, AFEG, APAJ, CORU_S);
-    wire EVAB_Q = EVAB.srtock(in.BUSO, BUDO, BOVU, DULE_S);
-    wire DYGY_Q = DYGY.srtock(in.BUSO, BUGU, BOXU, DYXE_S);
-    wire HOPO_Q = HOPO.srtock(in.BOJE, ETOL, ESEL, ETEK_S);
-    wire HYXU_Q = HYXU.srtock(in.BOJE, ELER, ELUF, FEGO_S);
-    wire HOLU_Q = HOLU.srtock(in.BOJE, KYPA, KAJU, GEVA_S);
-    wire FELY_Q = FELY.srtock(in.BOJE, KOVU, KAPO, HEXO_S);
-    wire EDUL_Q = EDUL.srtock(in.BOJE, GOPE, GAMO, JORY_S);
-    wire HAVO_Q = HAVO.srtock(in.BOJE, GOLO, GYFU, JULE_S);
-    wire JYKA_Q = JYKA.srtock(in.BOJE, GETA, GATO, HALU_S);
-    wire HYKA_Q = HYKA.srtock(in.BOJE, GYLU, EFOR, GUXA_S);
+  pc.AVUF = nor(gb.APU_RESET, pb.AFYR);
+  pc.AFUX = nor(gb.APU_RESET, pb.BUVO);
+  pc.AGOR = nor(gb.APU_RESET, pb.AFUG);
+  pc.BEWO = nor(gb.APU_RESET, pb.BAPU);
+  pc.ENOK = nor(gb.APU_RESET, pb.EREG);
+  pc.EZUK = nor(gb.APU_RESET, pb.EVOF);
+  pc.KYBO = nor(gb.APU_RESET, pb.KEVY);
+  pc.KETO = nor(gb.APU_RESET, pb.KAXY);
+  pc.HYVU = nor(gb.APU_RESET, pb.JEHY);
+  pc.HOBU = nor(gb.APU_RESET, pb.JOCY);
+  pc.JADO = nor(gb.APU_RESET, pb.KOKO);
 
-    out.AXAN3 = AXAN_Q;
-    out.EVAB3 = EVAB_Q;
-    out.DYGY3 = DYGY_Q;
-    out.HOPO3 = HOPO_Q;
-    out.HYXU3 = HYXU_Q;
-    out.HOLU3 = HOLU_Q;
-    out.FELY3 = FELY_Q;
-    out.EDUL3 = EDUL_Q;
-    out.HAVO3 = HAVO_Q;
-    out.JYKA3 = JYKA_Q;
-    out.HYKA3 = HYKA_Q;
+  pc.FAJA = not(pb.EGOR);
+  pc.EJYB = not(pb.FAJA);
+  pc.CYBE = not(pb.EJYB);
+  pc.BECY = not(pb.CYBE);
 
-    DOLY.tock(in.ADAD, in.KYLY, AXAN_Q);
-    DOFY.tock(in.ADAD, in.KYLY, EVAB_Q);
-    DEXE.tock(in.ADAD, in.KYLY, DYGY_Q);
-    DELE.tock(in.ADAD, in.KYLY, HOPO_Q);
-    EXAP.tock(in.ADAD, in.KYLY, HYXU_Q);
-    FAXO.tock(in.ADAD, in.KYLY, HOLU_Q);
-    GYME.tock(in.ADAD, in.KYLY, FELY_Q);
-    JYME.tock(in.ADAD, in.KYLY, EDUL_Q);
-    KARE.tock(in.ADAD, in.KYLY, HAVO_Q);
-    JODE.tock(in.ADAD, in.KYLY, JYKA_Q);
-    GALO.tock(in.ADAD, in.KYLY, HYKA_Q);
+  pc.BEKU = srtock_pos(pa.BECY, pb.BECY, pb.BEJU, pb.AVUF, pb.BEKU, gb.chip.P10_B);
+  pc.AGEZ = srtock_pos(pa.BECY, pb.BECY, pb.BESO, pb.AFUX, pb.AGEZ, pb.BEKU);
+  pc.ELUX = srtock_pos(pa.BECY, pb.BECY, pb.BEGE, pb.AGOR, pb.ELUX, pb.AGEZ);
+  pc.EXAC = srtock_pos(pa.BECY, pb.BECY, pb.DACE, pb.BEWO, pb.EXAC, pb.ELUX);
+  pc.FEDO = srtock_pos(pa.EJYB, pb.EJYB, pb.EKEM, pb.ENOK, pb.FEDO, pb.EXAC);
+  pc.FUDE = srtock_pos(pa.EJYB, pb.EJYB, pb.GOVO, pb.EZUK, pb.FUDE, pb.FEDO);
+  pc.JOTA = srtock_pos(pa.EJYB, pb.EJYB, pb.KOLA, pb.KYBO, pb.JOTA, pb.FUDE);
+  pc.JOLU = srtock_pos(pa.EJYB, pb.EJYB, pb.KYRY, pb.KETO, pb.JOLU, pb.JOTA);
+  pc.GOGA = srtock_pos(pa.EGOR, pb.EGOR, pb.HAWY, pb.HYVU, pb.GOGA, pb.JOLU);
+  pc.JEFA = srtock_pos(pa.EGOR, pb.EGOR, pb.HOLA, pb.HOBU, pb.JEFA, pb.GOGA);
+  pc.FABU = srtock_pos(pa.EGOR, pb.EGOR, pb.HOZU, pb.JADO, pb.FABU, pb.JEFA);
 
-    wire BOJO = not(AXAN_Q);
-    wire APAT = not(EVAB_Q);
-    wire BYRU = not(DYGY_Q);
-    wire CYKY = not(HOPO_Q);
-    wire DEBO = not(HYXU_Q);
-    wire FOHY = not(HOLU_Q);
-    wire KOVO = not(FELY_Q);
-    wire KEKE = not(EDUL_Q);
-    wire HUNY = not(HAVO_Q);
-    wire HOXE = not(JYKA_Q);
-    wire JUTA = not(HYKA_Q);
+  pc.CULU = xor(pb.ARYL, pb.BEKU);
+  pc.DOZY = xor(pb.ARYL, pb.AGEZ);
+  pc.CALE = xor(pb.ARYL, pb.ELUX);
+  pc.DYME = xor(pb.ARYL, pb.EXAC);
+  pc.FURE = xor(pb.ARYL, pb.FEDO);
+  pc.GOLY = xor(pb.ARYL, pb.FUDE);
+  pc.KEFE = xor(pb.ARYL, pb.JOTA);
+  pc.HEFY = xor(pb.ARYL, pb.JOLU);
+  pc.GOPO = xor(pb.ARYL, pb.GOGA);
+  pc.GELA = xor(pb.ARYL, pb.JEFA);
+  pc.GYLO = xor(pb.ARYL, pb.FABU);
 
-    wire KEDO = not(in.KALA);
-    wire JUJU = not(in.KALA);
-    wire KAPE = not(in.KALA);
+  pc.DEVA = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.DEVA, pb.CULU);
+  pc.ETER = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.ETER, pb.DOZY);
+  pc.DEFA = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.DEFA, pb.CALE);
+  pc.EDOK = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.EDOK, pb.DYME);
+  pc.EPYR = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.EPYR, pb.FURE);
+  pc.GELE = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.GELE, pb.GOLY);
+  pc.JETE = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.JETE, pb.KEFE);
+  pc.JAPE = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.JAPE, pb.HEFY);
+  pc.HELE = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.HELE, pb.GOPO);
+  pc.HOPA = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.HOPA, pb.GELA);
+  pc.HORA = tock_pos(pa.ADAD, pb.ADAD, pb.KYLY, pc.HORA, pb.GYLO);
 
-    wire AFYR = and(KEDO, BOJO);
-    wire BUVO = and(KEDO, APAT);
-    wire AFUG = and(KEDO, BYRU);
-    wire BAPU = and(KEDO, CYKY);
-    wire EREG = and(JUJU, DEBO);
-    wire EVOF = and(JUJU, FOHY);
-    wire KEVY = and(JUJU, KOVO);
-    wire KAXY = and(JUJU, KEKE);
-    wire JEHY = and(KAPE, HUNY);
-    wire JOCY = and(KAPE, HOXE);
-    wire KOKO = and(KAPE, JUTA);
-
-    wire BEJU = nand(AXAN_Q, KEDO);
-    wire BESO = nand(EVAB_Q, KEDO);
-    wire BEGE = nand(DYGY_Q, KEDO);
-    wire DACE = nand(HOPO_Q, KEDO);
-    wire EKEM = nand(HYXU_Q, JUJU);
-    wire GOVO = nand(HOLU_Q, JUJU);
-    wire KOLA = nand(FELY_Q, JUJU);
-    wire KYRY = nand(EDUL_Q, JUJU);
-    wire HAWY = nand(HAVO_Q, KAPE);
-    wire HOLA = nand(JYKA_Q, KAPE);
-    wire HOZU = nand(HYKA_Q, KAPE);
-
-    wire AVUF = nor(in.APU_RESET, AFYR);
-    wire AFUX = nor(in.APU_RESET, BUVO);
-    wire AGOR = nor(in.APU_RESET, AFUG);
-    wire BEWO = nor(in.APU_RESET, BAPU);
-    wire ENOK = nor(in.APU_RESET, EREG);
-    wire EZUK = nor(in.APU_RESET, EVOF);
-    wire KYBO = nor(in.APU_RESET, KEVY);
-    wire KETO = nor(in.APU_RESET, KAXY);
-    wire HYVU = nor(in.APU_RESET, JEHY);
-    wire HOBU = nor(in.APU_RESET, JOCY);
-    wire JADO = nor(in.APU_RESET, KOKO);
-
-    wire FAJA = not(in.EGOR);
-    wire EJYB = not(FAJA);
-    wire CYBE = not(EJYB);
-    wire BECY = not(CYBE);
-
-    // shift register
-    wire BEKU_Q = BEKU.srtock(BECY,    BEJU, AVUF, in.P10_B);
-    wire AGEZ_Q = AGEZ.srtock(BECY,    BESO, AFUX, BEKU_Q);
-    wire ELUX_Q = ELUX.srtock(BECY,    BEGE, AGOR, AGEZ_Q);
-    wire EXAC_Q = EXAC.srtock(BECY,    DACE, BEWO, ELUX_Q);
-    wire FEDO_Q = FEDO.srtock(EJYB,    EKEM, ENOK, EXAC_Q);
-    wire FUDE_Q = FUDE.srtock(EJYB,    GOVO, EZUK, FEDO_Q);
-    wire JOTA_Q = JOTA.srtock(EJYB,    KOLA, KYBO, FUDE_Q);
-    wire JOLU_Q = JOLU.srtock(EJYB,    KYRY, KETO, JOTA_Q);
-    wire GOGA_Q = GOGA.srtock(in.EGOR, HAWY, HYVU, JOLU_Q);
-    wire JEFA_Q = JEFA.srtock(in.EGOR, HOLA, HOBU, GOGA_Q);
-    wire FABU_Q = FABU.srtock(in.EGOR, HOZU, JADO, JEFA_Q);
-
-    wire CULU = xor(ARYL, BEKU_Q);
-    wire DOZY = xor(ARYL, AGEZ_Q);
-    wire CALE = xor(ARYL, ELUX_Q);
-    wire DYME = xor(ARYL, EXAC_Q);
-    wire FURE = xor(ARYL, FEDO_Q);
-    wire GOLY = xor(ARYL, FUDE_Q);
-    wire KEFE = xor(ARYL, JOTA_Q);
-    wire HEFY = xor(ARYL, JOLU_Q);
-    wire GOPO = xor(ARYL, GOGA_Q);
-    wire GELA = xor(ARYL, JEFA_Q);
-    wire GYLO = xor(ARYL, FABU_Q);
-
-    DEVA.tock(in.ADAD, in.KYLY, CULU);
-    ETER.tock(in.ADAD, in.KYLY, DOZY);
-    DEFA.tock(in.ADAD, in.KYLY, CALE);
-    EDOK.tock(in.ADAD, in.KYLY, DYME);
-    EPYR.tock(in.ADAD, in.KYLY, FURE);
-    GELE.tock(in.ADAD, in.KYLY, GOLY);
-    JETE.tock(in.ADAD, in.KYLY, KEFE);
-    JAPE.tock(in.ADAD, in.KYLY, HEFY);
-    HELE.tock(in.ADAD, in.KYLY, GOPO);
-    HOPA.tock(in.ADAD, in.KYLY, GELA);
-    HORA.tock(in.ADAD, in.KYLY, GYLO);
-
-    wire BYLE = nor(ARYL, CORU_C);
-    wire ATYS = or(BYLE,ARYL);
-    out.ATYS = ATYS;
-  }
-};
+  pc.BYLE = nor(pb.ARYL, CORU_C);
+  pc.ATYS = or(pb.BYLE, pb.ARYL);
+}

@@ -1,320 +1,208 @@
+#include "P13_Channel1.h"
 #include "../Schematics.h"
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P13_Channel1 {
-  struct Input {
-    bool HORU_512HZ;
-    bool ABOL_1MHZ;
-    bool PHIn;
-    bool CEPO;
-    bool COPE;
-    bool AJER_2MHZ;
-    bool APU_WR;
-    bool FF11;
-    bool APU_RESET;
-    bool BUFY_256HZ;
-    bool ATYS;
-    bool COPU_COUT;
-    bool DYFA_1MHZ;
-    bool BEXA;
-    bool CATE;
-    bool DOPU_OUT;
-    bool BYFE_128HZ;
-    bool NET03;
+void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
+  const P13_Channel1 pa = ga.p13;
+  const P13_Channel1 pb = gb.p13;
+  P13_Channel1 pc = gc.p13;
 
-    bool FF10_D0n;
-    bool FF10_D1n;
-    bool FF10_D2n;
-
-    bool FF10_D4n;
-    bool FF10_D5n;
-    bool FF10_D6n;
-
-    bool FF11_D6;
-    bool FF11_D6n;
-    bool FF11_D7;
-    bool FF11_D7n;
-
-    bool FF12_D0n;
-    bool FF12_D1n;
-    bool FF12_D2n;
-    bool FF12_D3n;
-
-    bool FF12_D0,FF12_D1,FF12_D2,FF12_D3,FF12_D4,FF12_D5,FF12_D6,FF12_D7;
-
-    bool FF14_D6;
-    bool FF14_D6n;
-
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
-
-  struct Output {
-    bool GEXU;
-    bool BERY;
-    bool COPE;
-    bool BEXA;
-    bool ADAD;
-    bool EGOR;
-    bool BOJE;
-    bool BUSO;
-    bool KALA;
-    bool KYLY;
-
-    bool CH1_BIT;
-    bool CH1_ACTIVEn;
-
-    bool CH1_OUT0,CH1_OUT1,CH1_OUT2,CH1_OUT3;
-  };
-
-  // Channel 1 length timer
-  reg BACY,CAVY,BOVY,CUNO;
-  reg CURA,ERAM,CERO; // clock divider or something
-
-  // Sweep timer
-  reg CAXY,CYPU,CUPO,BEXA;
-
+  //----------
   // Waveform counter
-  reg ESUT,EROS,DAPE;
 
-  // Sweep shift counter
-  reg COPA,CAJA,BYRA,BYTE;
+  pc.DAJO = not(pb.COPE);
 
+  pc.ESUT = tock_pos(pa.DAJO,  pb.DAJO,  pb.CEPO, pc.ESUT, !pc.ESUT);
+  pc.EROS = tock_pos(!pa.ESUT, !pb.ESUT, pb.CEPO, pc.EROS, !pc.EROS);
+  pc.DAPE = tock_pos(!pa.EROS, !pb.EROS, pb.CEPO, pc.DAPE, !pc.DAPE);
+
+  pc.DUVO = not(pb.ESUT);
+  pc.EZOZ = and(pb.EROS, pb.DAPE);
+  pc.ENEK = and(pb.DUVO, pb.EZOZ);
+  pc.CODO = not(pb.EZOZ);
+  pc.COSO = nor(pb.FF11_D6,  pb.FF11_D7);
+  pc.CAVA = nor(pb.FF11_D6n, pb.FF11_D7);
+  pc.CEVU = nor(pb.FF11_D6,  pb.FF11_D7n);
+  pc.CAXO = nor(pb.FF11_D6n, pb.FF11_D7n);
+
+  pc.DUNA = amux4(pb.ENEK, pb.COSO, pb.EZOZ, pb.CAVA, pb.DAPE, pb.CEVU, pb.CODO, pb.CAXO);
+
+  pc.CH1_BIT = pb.DUNA;
+
+  //----------
+  // Length timer
+
+  pc.BORO = nand(gb.APU_WR, pb.FF11);
+  pc.BEPE = not(pb.BORO);
+  pc.BOKA = not(pb.BORO);
+  pc.BUGY = not(pb.BORO);
+  pc.CORY = nor(pb.FEKU, gb.APU_RESET, pb.BOKA);
+
+  pc.CUSO = not(!pb.CUNO);
+
+  // FIXME daisy chain
+  pc.CURA = count_pos(pa.CUSO, pb.CUSO, pb.BEPE, pb.CURA, gb.cpu.D4);
+  pc.ERAM = count_pos(pa.CURA, pb.CUSO, pb.BEPE, pb.ERAM, gb.cpu.D5);
+  pc.CERO = tock_pos(!pa.ERAM, !pb.ERAM, pb.CORY, pc.CERO, !pc.CERO);
+
+  pc.CAPY = nor(pb.FF14_D6n, gb.BUFY_256, pb.CERO);
+  pc.CYFA = and(pb.CERO, pb.FF14_D6);
+  pc.CANU = not(pb.CAPY);
+
+  pc.BACY = count_pos(pa.CANU, pb.CANU, pb.BUGY, pb.BACY, gb.cpu.D0);
+  pc.CAVY = count_pos(pa.BACY, pb.BACY, pb.BUGY, pb.CAVY, gb.cpu.D1);
+  pc.BOVY = count_pos(pa.CAVY, pb.CAVY, pb.BUGY, pb.BOVY, gb.cpu.D2);
+  pc.CUNO = count_pos(pa.BOVY, pb.BOVY, pb.BUGY, pb.CUNO, gb.cpu.D3);
+
+  pc.BONE = not(pb.ATYS);
+  pc.HOCA = nor(pb.FF12_D3, pb.FF12_D4, pb.FF12_D5, pb.FF12_D6, pb.FF12_D7);
+  pc.FEMY = nor(pb.HOCA, gb.APU_RESET);
+  pc.BERY = or(pb.BONE, gb.APU_RESET, pb.CYFA, pb.HOCA);
+  pc.GEPU = not(pb.FYTE);
+  pc.GEXU = unk2(pb.FEMY, pb.GEPU);
+
+  //----------
   // EG timer
-  reg KALY,JOVA,KENU,KERA,KOZY,DUWO;
-  reg FARE,FYTE,DUPE,EZEC,FEKU,KYNO;
 
-  // Ch 1 initial volume
-  reg HEVO,HOKO,HEMY,HAFO;
+  pc.KAZA = nor(pb.FEKU, pb.KOZY);
+  pc.KUXU = not(pb.KAZA);
 
+  pc.JONE = not(gb.BYFE_128);
+  pc.KADO = not(gb.APU_RESET);
+  pc.KALY = tock_pos(pa.JONE, pb.JONE, pb.KADO, pb.KALY, !pb.KALY);
+  pc.KERE = not(pb.KALY);
+  pc.JOLA = not(pb.KERE);
 
-  reg COMY;
+  pc.JOVA = count_pos(pa.JOLA, pb.JOLA, pb.KUXU, pb.JOVA, pb.FF12_D0n);
+  pc.KENU = count_pos(pa.JOVA, pb.JOVA, pb.KUXU, pb.KENU, pb.FF12_D1n);
+  pc.KERA = count_pos(pa.KENU, pb.KENU, pb.KUXU, pb.KERA, pb.FF12_D2n);
 
-  void tick(const Input& in, Output& out) {
-    bool FEKU_Q = FEKU.q();
-    bool KOZY_Q = KOZY.q();
-    bool FYTE_Q = FYTE.q();
-
-    //----------
-    // Waveform counter
-
-    bool DAJO = not(in.COPE);
-
-    bool ESUT_Q = ESUT.flip(DAJO,      in.CEPO);
-    bool EROS_Q = EROS.flip(!ESUT.q(), in.CEPO);
-    bool DAPE_Q = DAPE.flip(!EROS.q(), in.CEPO);
-
-    bool DUVO = not(ESUT_Q);
-    bool EZOZ = and(EROS_Q, DAPE_Q);
-    bool ENEK = and(DUVO, EZOZ);
-    bool CODO = not(EZOZ);
-    bool COSO = nor(in.FF11_D6,  in.FF11_D7);
-    bool CAVA = nor(in.FF11_D6n, in.FF11_D7);
-    bool CEVU = nor(in.FF11_D6,  in.FF11_D7n);
-    bool CAXO = nor(in.FF11_D6n, in.FF11_D7n);
-
-    bool DUNA = amux4(ENEK,COSO, EZOZ,CAVA, DAPE_Q,CEVU, CODO, CAXO);
-
-    out.CH1_BIT= DUNA;
-
-    //----------
-    // Length timer
-
-    bool BORO = nand(in.APU_WR, in.FF11);
-    bool BEPE = not(BORO);
-    bool BOKA = not(BORO);
-    bool BUGY = not(BORO);
-    bool CORY = nor(FEKU_Q, in.APU_RESET, BOKA);
-
-    bool CUNO_Q = CUNO.q();
-    bool CUSO = not(!CUNO_Q);
-
-    // FIXME daisy chain
-    CURA.count(CUSO, BEPE, in.D4);
-    ERAM.count(CURA.q(), BEPE, in.D5);
-    bool CERO_Q = CERO.flip(!ERAM.q(), CORY);
-
-    bool CAPY = nor(in.FF14_D6n, in.BUFY_256HZ, CERO_Q);
-    bool CYFA = and(CERO_Q, in.FF14_D6);
-    bool CANU = not(CAPY);
-
-    BACY.count(CANU,     BUGY, in.D0);
-    CAVY.count(BACY.q(), BUGY, in.D1);
-    BOVY.count(CAVY.q(), BUGY, in.D2);
-    CUNO.count(BOVY.q(), BUGY, in.D3);
-
-    bool BONE = not(in.ATYS);
-    bool HOCA = nor(in.FF12_D3, in.FF12_D4, in.FF12_D5, in.FF12_D6, in.FF12_D7);
-    bool FEMY = nor(HOCA, in.APU_RESET);
-    bool BERY = or(BONE, in.APU_RESET, CYFA, HOCA);
-    bool GEPU = not(FYTE_Q);
-    bool GEXU = unk2(FEMY, GEPU);
-
-    out.GEXU = GEXU;
-    out.BERY = BERY;
-
-    //----------
-    // EG timer
-
-    bool KAZA = nor(FEKU_Q, KOZY_Q);
-    bool KUXU = not(KAZA);
-
-    bool JONE = not(in.BYFE_128HZ);
-    bool KADO = not(in.APU_RESET);
-    bool KALY_Q = KALY.flip(JONE, KADO);
-    bool KERE = not(KALY_Q);
-    bool JOLA = not(KERE);
-
-    // FIXME daisy chain
-    bool JOVA_Q = JOVA.count(JOLA,     KUXU, in.FF12_D0n);
-    bool KENU_Q = KENU.count(JOVA.q(), KUXU, in.FF12_D1n);
-    bool KERA_Q = KERA.count(KENU.q(), KUXU, in.FF12_D2n);
-
-    bool KOTE = and(JOVA_Q, KENU_Q, KERA_Q);
-    bool KURY = not(KOZY_Q);
-    bool KUKU = nor(in.ABOL_1MHZ, KURY);
-    bool KOMA = nor(in.FF12_D0, in.FF12_D1, in.FF12_D2);
-    bool KORO = nor(KUKU, KOMA);
-    KOZY.tock(in.HORU_512HZ, KORO, KOTE);
+  pc.KOTE = and(pb.JOVA, pb.KENU, pb.KERA);
+  pc.KURY = not(pb.KOZY);
+  pc.KUKU = nor(gb.ABOL, pb.KURY);
+  pc.KOMA = nor(pb.FF12_D0, pb.FF12_D1, pb.FF12_D2);
+  pc.KORO = nor(pb.KUKU, pb.KOMA);
+  pc.KOZY = tock_pos(ga.HORU_512, gb.HORU_512, pb.KORO, pb.KOZY, pb.KOTE);
 
 
-    bool ERUM = not(in.APU_RESET);
-    bool FARE_Q = FARE.tock(in.DYFA_1MHZ, ERUM, FEKU_Q);
-    FYTE.tock(in.DYFA_1MHZ, ERUM, FARE_Q);
-    bool EGET = nor(in.APU_RESET, FARE_Q);
-    bool GEFE = not(EGET);
+  pc.ERUM = not(gb.APU_RESET);
+  pc.FARE = tock_pos(ga.DYFA_1M, gb.DYFA_1M, pb.ERUM, pb.FARE, pb.FEKU);
+  pc.FYTE = tock_pos(ga.DYFA_1M, gb.DYFA_1M, pb.ERUM, pb.FYTE, pb.FARE);
+  pc.EGET = nor(gb.APU_RESET, pb.FARE);
+  pc.GEFE = not(pb.EGET);
 
+  pc.DOGE = nand(gb.APU_WR, pb.FF14_D6); // BUG - APU_WR
+  pc.DADO = nor(gb.APU_RESET, pb.EZEC);
+  pc.DUPE = tock_pos(pa.DOGE, pb.DOGE, pb.DADO, pb.DUPE, gb.cpu.D7);
+  pc.DUKA = not(gb.APU_RESET);
+  pc.EZEC = tock_pos(ga.PHIn, gb.PHIn, pb.DUKA, pb.EZEC, pb.DUPE);
 
-    bool EZEC_Q = EZEC.q();
-    // BUG - APU_WR
-    bool DOGE = nand(in.APU_WR, in.FF14_D6);
-    bool DADO = nor(in.APU_RESET, EZEC_Q);
-    bool DUPE_Q = DUPE.tock(DOGE, DADO, in.D7);
-    bool DUKA = not(in.APU_RESET);
-    EZEC.tock(in.PHIn, DUKA, DUPE_Q);
+  pc.FYFO = or(pb.GEFE, pb.EZEC); // unk2
+  pc.FEKU = tock_pos(ga.DYFA_1M, gb.DYFA_1M, pb.EGET, pb.FEKU, pb.FYFO);
+  pc.KEKO = or(gb.APU_RESET, pb.FEKU);
+  pc.KABA = or(gb.APU_RESET, pb.FEKU);
+  pc.KYLY = not(pb.KABA);
 
-    bool FYFO = unk2(GEFE, EZEC_Q);
-    FEKU.tock(in.DYFA_1MHZ, EGET, FYFO);
-    bool KEKO = or(in.APU_RESET, FEKU_Q);
-    bool KABA = or(in.APU_RESET, FEKU_Q);
-    bool KYLY = not(KABA);
-    out.KYLY = KYLY;
+  pc.KYNO = pb.KYNO;
+  pc.KEZU = or(pb.KYNO, pb.KEKO); // unk2
+  pc.KAKE = and(pb.KOZY, pb.KOMA, pb.KEZU);
 
-    bool KYNO_Q = KYNO.q();
-    bool KEZU = unk2(KYNO_Q, KEKO);
-    bool KAKE = and(KOZY_Q, KOMA, KEZU);
+  pc.CYTO = or(pb.FEKU, pb.BERY); // unk2
+  pc.DUWO = tock_pos(pa.COPE, pb.COPE, pb.CEPO, pb.DUWO, pb.CH1_BIT);
+  pc.CARA = not(pb.CYTO);
+  pc.COWE = and(pb.CYTO, pb.DUWO);
+  pc.BOTO = or(pb.COWE, gb.NET03);
 
-    bool CYTO = unk2(FEKU_Q, BERY);
-    bool DUWO_Q = DUWO.tock(in.COPE, in.CEPO, out.CH1_BIT);
-    bool CARA = not(CYTO);
-    out.CH1_ACTIVEn = CARA;
-    bool COWE = and(CYTO,DUWO_Q);
-    bool BOTO = or(COWE, in.NET03);
+  pc.CH1_ACTIVEn = pb.CARA;
 
-    bool HAFO_Q = HAFO.q();
-    bool HEMY_Q = HEMY.q();
-    bool HOKO_Q = HOKO.q();
-    bool HEVO_Q = HEVO.q();
+  // weird things are going on with the reg clocks and muxes... probably broken
 
-    // weird things are going on with the reg clocks and muxes... probably broken
+  pc.HESU = amux2(pb.FF12_D3, pb.HOKO, !pb.HOKO, pb.FF12_D3n);
+  pc.HETO = amux2(pb.FF12_D3, pb.HEMY, !pb.HEMY, pb.FF12_D3n);
+  pc.HYTO = amux2(pb.FF12_D3, pb.HAFO, !pb.HAFO, pb.FF12_D3n);
+  pc.JUFY = amux2(pb.FF12_D3, pb.KAKE,  pb.KAKE, pb.FF12_D3n);
 
-    bool HESU = amux2(in.FF12_D3, HOKO_Q, !HOKO_Q, in.FF12_D3n);
-    bool HETO = amux2(in.FF12_D3, HEMY_Q, !HEMY_Q, in.FF12_D3n);
-    bool HYTO = amux2(in.FF12_D3, HAFO_Q, !HAFO_Q, in.FF12_D3n);
-    bool JUFY = amux2(in.FF12_D3, KAKE, KAKE, in.FF12_D3n);
+  pc.HEVO = count_pos(pa.HESU, pb.HESU, pb.FEKU, pb.HEVO, pb.FF12_D7);
+  pc.HOKO = count_pos(pa.HETO, pb.HETO, pb.FEKU, pb.HOKO, pb.FF12_D6);
+  pc.HEMY = count_pos(pa.HYTO, pb.HYTO, pb.FEKU, pb.HEMY, pb.FF12_D5);
+  pc.HAFO = count_pos(pa.JUFY, pb.JUFY, pb.FEKU, pb.HAFO, pb.FF12_D4);
 
-    HEVO.count(HESU, FEKU_Q, in.FF12_D7);
-    HOKO.count(HETO, FEKU_Q, in.FF12_D6);
-    HEMY.count(HYTO, FEKU_Q, in.FF12_D5);
-    HAFO.count(JUFY, FEKU_Q, in.FF12_D4);
+  pc.ACEG = and(pb.HEVO, pb.BOTO);
+  pc.AGOF = and(pb.HOKO, pb.BOTO);
+  pc.ASON = and(pb.HEMY, pb.BOTO);
+  pc.AMOP = and(pb.HAFO, pb.BOTO);
 
-    bool ACEG = and(HEVO_Q, BOTO);
-    bool AGOF = and(HOKO_Q, BOTO);
-    bool ASON = and(HEMY_Q, BOTO);
-    bool AMOP = and(HAFO_Q, BOTO);
+  pc.CH1_OUT3 = pb.ACEG;
+  pc.CH1_OUT2 = pb.AGOF;
+  pc.CH1_OUT1 = pb.ASON;
+  pc.CH1_OUT0 = pb.AMOP;
 
-    out.CH1_OUT3 = ACEG;
-    out.CH1_OUT2 = AGOF;
-    out.CH1_OUT1 = ASON;
-    out.CH1_OUT0 = AMOP;
+  pc.HUFU = nand(pb.FF12_D3, pb.HAFO, pb.HEMY, pb.HOKO, pb.HEVO);
+  pc.HANO = nor(pb.FF12_D3,  pb.HAFO, pb.HEMY, pb.HOKO, pb.HEVO);
+  pc.HAKE = not(pb.HUFU);
+  pc.JADE = or(pb.HAKE, pb.HANO);
+  pc.KORU = nor(pb.FEKU, gb.APU_RESET);
 
-    bool HUFU = nand(in.FF12_D3, HAFO_Q, HEMY_Q, HOKO_Q, HEVO_Q);
-    bool HANO = nor(in.FF12_D3, HAFO_Q, HEMY_Q, HOKO_Q, HEVO_Q);
-    bool HAKE = not(HUFU);
-    bool JADE = or(HAKE, HANO);
-    bool KORU = nor(FEKU_Q, in.APU_RESET);
+  pc.KYNO = tock_pos(pa.KOZY, pb.KOZY, pb.KORU, pb.KYNO, pb.JADE);
 
-    KYNO.tock(KOZY_Q, KORU, JADE);
+  //----------
+  // little thing left side
 
-    //----------
-    // little thing left side
+  pc.CYTE = not(pb.COMY);
+  pc.COPE = not(pb.CYTE);
+  pc.DOKA = and(pb.COMY, gb.DYFA_1M);
+  pc.CALA = not(pb.COPU_COUT);
+  pc.DYRU = nor(gb.APU_RESET, pb.FEKU, pb.DOKA);
+  pc.COMY = tock_pos(pa.CALA, pb.CALA, pb.DYRU, pb.COMY, !pb.COMY);
 
-    bool COMY_Q = COMY.q();
-    bool CYTE = not(COMY_Q);
-    bool COPE = not(CYTE);
-    bool DOKA = and(COMY_Q, in.DYFA_1MHZ);
-    bool CALA = not(in.COPU_COUT);
-    bool DYRU = nor(in.APU_RESET, FEKU_Q, DOKA);
-    COMY.flip(CALA, DYRU);
+  //----------
+  // Sweep timer
 
-    out.COPE = COPE;
+  pc.DAFA = nor(pb.BEXA, pb.FEKU);
+  pc.CYMU = not(pb.DAFA);
+  pc.BAVE = and(pb.FF10_D4n, pb.FF10_D5n, pb.FF10_D6n);
 
-    //----------
-    // Sweep timer
+  pc.CUPO = count_pos(pa.CATE, pb.CATE, pb.CYMU, pb.CUPO, pb.FF10_D4n);
+  pc.CYPU = count_pos(pa.CUPO, pb.CUPO, pb.CYMU, pb.CYPU, pb.FF10_D5n);
+  pc.CAXY = count_pos(pa.CYPU, pb.CYPU, pb.CYMU, pb.CAXY, pb.FF10_D6n);
 
-    bool DAFA = nor(in.BEXA, FEKU_Q);
-    bool CYMU = not(DAFA);
-    bool BAVE = and(in.FF10_D4n, in.FF10_D5n, in.FF10_D6n);
+  pc.BURY = nor(pb.BAVE, gb.APU_RESET);
+  pc.COZE = and(pb.CAXY, pb.CYPU, pb.CUPO);
 
-    // FIXME daisy chain
-    bool CUPO_Q = CUPO.count(in.CATE,  CYMU, in.FF10_D4n);
-    bool CYPU_Q = CYPU.count(CUPO.q(), CYMU, in.FF10_D5n);
-    bool CAXY_Q = CAXY.count(CYPU.q(), CYMU, in.FF10_D6n);
+  pc.BEXA = tock_pos(ga.AJER_2M, gb.AJER_2M, pb.BURY, pb.BEXA, pb.COZE);
 
-    bool BURY = nor(BAVE, in.APU_RESET);
-    bool COZE = and(CAXY_Q, CYPU_Q, CUPO_Q);
+  //----------
+  // Sweep shift counter
 
-    bool BEXA_Q = BEXA.tock(in.AJER_2MHZ, BURY, COZE);
-    out.BEXA = BEXA_Q;
+  pc.DACU = nor(pb.FEKU, pb.BEXA);
+  pc.CYLU = not(pb.DACU);
+  pc.BUGE = nand(pb.FF10_D2n, pb.FF10_D1n, pb.FF10_D0n);
+  pc.CELE = not(pb.BUGE);
 
-    //----------
-    // Sweep shift counter
+  pc.ADAD = not(!pb.BYTE);
+  pc.EPUK = nor(pb.ADAD, gb.APU_RESET);
+  pc.EVOL = nor(pb.BEXA, pb.FYTE);
+  pc.FEMU = unk2(pb.EPUK, pb.EVOL);
+  pc.EGYP = nor(gb.DYFA_1M, pb.FEMU);
+  pc.DODY = nor(pb.EGYP, pb.CELE);
+  pc.EGOR = and(pb.DOPU_OUT, pb.DODY);
+  pc.DAPU = not(pb.EGOR);
 
-    bool DACU = nor(FEKU_Q, in.BEXA);
-    bool CYLU = not(DACU);
-    bool BUGE = nand(in.FF10_D2n, in.FF10_D1n, in.FF10_D0n);
-    bool CELE = not(BUGE);
+  pc.COPA = count_pos(pa.DAPU, pb.DAPU, pb.CYLU, pb.COPA, pb.FF10_D0n);
+  pc.CAJA = count_pos(pa.COPA, pb.COPA, pb.CYLU, pb.CAJA, pb.FF10_D1n);
+  pc.BYRA = count_pos(pa.CAJA, pb.CAJA, pb.CYLU, pb.BYRA, pb.FF10_D2n);
 
-    bool BYTE_Q = BYTE.q();
-    bool ADAD = not(!BYTE_Q);
-    bool EPUK = nor(ADAD, in.APU_RESET);
-    bool EVOL = nor(in.BEXA, FYTE_Q);
-    bool FEMU = unk2(EPUK, EVOL);
-    bool EGYP = nor(in.DYFA_1MHZ, FEMU);
-    bool DODY = nor(EGYP, CELE);
-    bool EGOR = and(in.DOPU_OUT, DODY);
-    bool DAPU = not(EGOR);
+  pc.COPY = and(pb.COPA, pb.CAJA, pb.BYRA);
+  pc.ATAT = nor(gb.APU_RESET, pb.BEXA);
 
-    bool COPA_Q = COPA.count(DAPU,     CYLU, in.FF10_D0n);
-    bool CAJA_Q = CAJA.count(COPA.q(), CYLU, in.FF10_D1n);
-    bool BYRA_Q = BYRA.count(CAJA.q(), CYLU, in.FF10_D2n);
+  pc.BYTE = tock_pos(ga.AJER_2M, gb.AJER_2M, pb.ATAT, pb.BYTE, pb.COPY);
 
-    bool COPY = and(COPA_Q, CAJA_Q, BYRA_Q);
-    bool ATAT = nor(in.APU_RESET, in.BEXA);
-
-    BYTE.tock(in.AJER_2MHZ, ATAT, COPY);
-
-    bool ATUV = and(in.BEXA, in.ATYS);
-    bool BOJE = and(ATUV, BUGE);
-    bool BUSO = or(BUGE, in.ATYS, in.BEXA);
-    bool KALA = nor(in.BEXA, FEKU_Q);
-
-    out.ADAD = ADAD;
-    out.EGOR = EGOR;
-    out.BOJE = BOJE;
-    out.BUSO = BUSO;
-    out.KALA = KALA;
-  }
-};
+  pc.ATUV = and(pb.BEXA, pb.ATYS);
+  pc.BOJE = and(pb.ATUV, pb.BUGE);
+  pc.BUSO = or(pb.BUGE, pb.ATYS, pb.BEXA);
+  pc.KALA = nor(pb.BEXA, pb.FEKU);
+}

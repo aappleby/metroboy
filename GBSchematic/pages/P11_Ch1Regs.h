@@ -24,8 +24,8 @@ struct P11_Ch1Regs {
   bool FEKU; // p13
   bool COPE; // p13
 
-             //----------
-             // outputs
+  //----------
+  // outputs
 
   bool FF10_D0n,FF10_D1n,FF10_D2n,FF10_D3n,FF10_D4n,FF10_D5n,FF10_D6n;
 
@@ -48,8 +48,8 @@ struct P11_Ch1Regs {
   bool GAXE,HYFE,JYTY,KYNA,JEMA,HYKE,FEVA,EKOV,EMUS,EVAK,COPU; // FF13 NR13
   bool BOKO; // FF14 NR14
 
-             //----------
-             // cells
+  //----------
+  // cells
 
   bool CENU,BUZE,ATYN,ASOP;
   bool AMYD,AZYP,AWOS,AFOX,ATAX,AVEK,AKUX;

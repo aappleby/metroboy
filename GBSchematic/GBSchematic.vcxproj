@@ -232,6 +232,7 @@
     <ClInclude Include="pages\P08_ExtCpuBuses.h" />
     <ClInclude Include="pages\P09_ApuControl.h" />
     <ClInclude Include="pages\P10_ApuDecode.h" />
+    <ClInclude Include="pages\P11_Ch1Regs.h" />
     <ClInclude Include="pages\TristateBus.h" />
     <ClInclude Include="pages\P01_ClocksReset.h" />
     <ClInclude Include="pages\P02_Interrupts.h" />

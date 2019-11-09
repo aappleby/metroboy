@@ -1,268 +1,218 @@
+#include "P11_Ch1Regs.h"
 #include "../Schematics.h"
+
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P11_Ch1Regs {
-  struct Input {
-    bool APU_RESET;
-    bool APU_RESETn;
+void P11_Ch1Regs::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
+  const P11_Ch1Regs pa = ga.p11;
+  const P11_Ch1Regs pb = gb.p11;
+  P11_Ch1Regs pc = gc.p11;
 
-    bool CPU_RD;
-    bool CPU_RDn;
-    bool CPU_WR;
-    bool APU_WR;
+  //----------
+  // FF10 NR10
 
-    bool ANUJ;
-    bool NET03;
+  // schematic image cut off, this could be APU_WR or CPU_WR
+  pc.CENU = and(gb.APU_WR, pb.FF10);
+  pc.BUZE = not(pb.FF10);
+  pc.ATYN = nor(gb.CPU_RDn, pb.BUZE);
+  pc.ASOP = not(pb.ATYN);
 
-    bool FF10;
-    bool FF11;
-    bool FF12;
-    bool FF13;
-    bool FF14;
+  pc.BANY = tock_pos(pa.CENU, pb.CENU, gb.APU_RESETn, pb.BANY, gb.cpu.D0);
+  pc.ANAZ = tock_pos(pa.CENU, pb.CENU, gb.APU_RESETn, pb.ANAZ, gb.cpu.D2);
+  pc.BOTU = tock_pos(pa.CENU, pb.CENU, gb.APU_RESETn, pb.BOTU, gb.cpu.D6);
+  pc.AVAF = tock_pos(pa.CENU, pb.CENU, gb.APU_RESETn, pb.AVAF, gb.cpu.D3);
+  pc.ARAX = tock_pos(pa.CENU, pb.CENU, gb.APU_RESETn, pb.ARAX, gb.cpu.D1);
+  pc.ADEK = tock_pos(pa.CENU, pb.CENU, gb.APU_RESETn, pb.ADEK, gb.cpu.D4);
+  pc.BANA = tock_pos(pa.CENU, pb.CENU, gb.APU_RESETn, pb.BANA, gb.cpu.D5);
 
-    bool DYFA_1MHZ;
-    bool GEXU;
-    bool FEKU;
-    bool COPE;
+  pc.AMYD = not(!pb.BANY);
+  pc.AZYP = not(!pb.ANAZ);
+  pc.AWOS = not(!pb.BOTU);
+  pc.AFOX = not(!pb.AVAF);
+  pc.ATAX = not(!pb.ARAX);
+  pc.AVEK = not(!pb.ADEK);
+  pc.AKUX = not(!pb.BANA);
 
-    // ff13 load value
-    bool HYKA3,JYKA3,HAVO3,EDUL3,FELY3,HOLU3,HYXU3,HOPO3,DYGY3,EVAB3,AXAN3;
+  pc.FF10_D0n = pb.BANY;
+  pc.FF10_D1n = pb.ARAX;
+  pc.FF10_D2n = pb.ANAZ;
+  pc.FF10_D3n = pb.AVAF;
+  pc.FF10_D4n = pb.ADEK;
+  pc.FF10_D5n = pb.BANA;
+  pc.FF10_D6n = pb.BOTU;
 
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
-
-  struct Output {
-    bool FF10_D0n,FF10_D1n,FF10_D2n,FF10_D3n,FF10_D4n,FF10_D5n,FF10_D6n;
-    
-    bool FF11_D6, FF11_D6n;
-    bool FF11_D7, FF11_D7n;
-
-    bool FF14_D6, FF14_D6n;
-
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
-
-  reg BANY,ANAZ,BOTU,AVAF,ARAX,ADEK,BANA; // FF10 NR10
-  reg CENA,DYCA; // FF11 NR11
-  reg JOPU,JENA,JAXO,JATY,JAFY,JUSA,JUZY,JOMA; // FF12 NR12
-  reg GAXE,HYFE,JYTY,KYNA,JEMA,HYKE,FEVA,EKOV,EMUS,EVAK,COPU; // FF13 NR13
-  reg BOKO; // FF14 NR14
-
-  void tick(const Input& in, Output& out) {
-    //----------
-    // FF10 NR10
-
-    // schematic image cut off, this could be APU_WR or CPU_WR
-    wire CENU = and(in.APU_WR, in.FF10);
-    wire BUZE = not(in.FF10);
-    wire ATYN = nor(in.CPU_RDn, BUZE);
-    wire ASOP = not(ATYN);
-
-    wire BANY_Q = BANY.tock(CENU, in.APU_RESETn, in.D0);
-    wire ANAZ_Q = ANAZ.tock(CENU, in.APU_RESETn, in.D2);
-    wire BOTU_Q = BOTU.tock(CENU, in.APU_RESETn, in.D6);
-    wire AVAF_Q = AVAF.tock(CENU, in.APU_RESETn, in.D3);
-    wire ARAX_Q = ARAX.tock(CENU, in.APU_RESETn, in.D1);
-    wire ADEK_Q = ADEK.tock(CENU, in.APU_RESETn, in.D4);
-    wire BANA_Q = BANA.tock(CENU, in.APU_RESETn, in.D5);
-
-    wire AMYD = not(!BANY_Q);
-    wire AZYP = not(!ANAZ_Q);
-    wire AWOS = not(!BOTU_Q);
-    wire AFOX = not(!AVAF_Q);
-    wire ATAX = not(!ARAX_Q);
-    wire AVEK = not(!ADEK_Q);
-    wire AKUX = not(!BANA_Q);
-
-    out.FF10_D0n = BANY_Q;
-    out.FF10_D2n = ANAZ_Q;
-    out.FF10_D6n = BOTU_Q;
-    out.FF10_D3n = AVAF_Q;
-    out.FF10_D1n = ARAX_Q;
-    out.FF10_D4n = ADEK_Q;
-    out.FF10_D5n = BANA_Q;
-
-    if (ASOP) {
-      out.D_OE = true;
-      out.D0 = AMYD;
-      out.D2 = AZYP;
-      out.D6 = AWOS;
-      out.D3 = AFOX;
-      out.D1 = ATAX;
-      out.D4 = AVEK;
-      out.D5 = AKUX;
-    }
-
-    //----------
-    // FF11 NR11
-
-    // BUG APU_WR
-    wire COVU = and(in.APU_WR, in.FF11);
-    wire CEPO = not(in.APU_RESET);
-    wire DAFO = not(COVU);
-    wire CENA_Q = CENA.tock(DAFO, CEPO, in.D6);
-    wire DYCA_Q = DYCA.tock(DAFO, CEPO, in.D7);
-
-    wire BUWA = not(in.CPU_RDn);
-    wire BEXU = nor(BUWA, in.FF11);
-
-    wire BOWO = not(!CENA_Q);
-    wire CUDA = not(!DYCA_Q);
-
-    out.FF11_D6  = CENA_Q;
-    out.FF11_D6n = !CENA_Q;
-    out.FF11_D7  = DYCA_Q;
-    out.FF11_D7n = !DYCA_Q;
-
-    if (BEXU) {
-      out.D_OE;
-      out.D6 = BOWO;
-      out.D7 = CUDA;
-    }
-
-    //----------
-    // FF12 NR12
-
-    wire GAXU = nand(in.FF12, in.APU_WR);
-    wire HATO = not(in.APU_RESET);
-    wire GAGO = not(in.FF12);
-    wire KAGY = not(GAXU);
-    wire HOCU = or(GAGO, in.CPU_RDn);
-
-    // Unused on schematic
-    (void)KAGY;
-
-    wire JOPU_Q = JOPU.tock(GAXU, HATO, in.D7);
-    wire JENA_Q = JENA.tock(GAXU, HATO, in.D6);
-    wire JAXO_Q = JAXO.tock(GAXU, HATO, in.D5);
-    wire JATY_Q = JATY.tock(GAXU, HATO, in.D4);
-    wire JAFY_Q = JAFY.tock(GAXU, HATO, in.D3);
-
-    wire JYSE = not(!JOPU_Q);
-    wire HEVE = not(!JENA_Q);
-    wire HEWA = not(!JAXO_Q);
-    wire HOWU = not(!JATY_Q);
-    wire HONO = not(!JAFY_Q);
-
-    if (HOCU) {
-      out.D_OE = true;
-      out.D7 = JYSE;
-      out.D6 = HEVE;
-      out.D5 = HEWA;
-      out.D4 = HOWU;
-      out.D3 = HONO;
-    }
-
-    wire HAXE = not(in.FF12);
-    wire HAFU = and(in.APU_WR, in.FF12);
-    wire HAMY = or(HAXE, in.CPU_RDn);
-    wire KYGY = not(HAFU);
-
-    wire JUSA_Q = JUSA.tock(KYGY, HATO, in.D0);
-    wire JUZY_Q = JUZY.tock(KYGY, HATO, in.D1);
-    wire JOMA_Q = JOMA.tock(KYGY, HATO, in.D2);
-
-    wire JYNE = not(!JUSA_Q);
-    wire JACA = not(!JUZY_Q);
-    wire JOKU = not(!JOMA_Q);
-
-    if (HAMY) {
-      out.D_OE = true;
-      out.D0 = JYNE;
-      out.D1 = JACA;
-      out.D2 = JOKU;
-    }
-
-    //----------
-    // FF13 NR13
-
-    wire FULO = nor(in.DYFA_1MHZ, in.GEXU);
-    wire EPYK = nor(in.FEKU, in.COPE);
-    wire GEKU = not(FULO);
-    wire FUME = not(EPYK);
-
-    // FIXME daisy chain
-    wire GAXE_Q = GAXE.count(GEKU,     FUME, in.HYKA3);
-    wire HYFE_Q = HYFE.count(GAXE.q(), FUME, in.JYKA3);
-    wire JYTY_Q = JYTY.count(HYFE.q(), FUME, in.HAVO3);
-    wire KYNA_Q = KYNA.count(JYTY.q(), FUME, in.EDUL3);
-
-    wire DEGA = not(EPYK);
-    wire KYPE = not(KYNA.q());
-
-    wire JEMA_Q = JEMA.count(KYPE,     DEGA, in.FELY3);
-    wire HYKE_Q = HYKE.count(JEMA.q(), DEGA, in.HOLU3);
-    wire FEVA_Q = FEVA.count(HYKE.q(), DEGA, in.HYXU3);
-    wire EKOV_Q = EKOV.count(FEVA.q(), DEGA, in.HOPO3);
-
-    wire DAKO = not(EPYK);
-    wire DERU = not(EKOV.q());
-
-    wire EMUS_Q = EMUS.count(DERU,     DAKO, in.DYGY3);
-    wire EVAK_Q = EVAK.count(EMUS.q(), DAKO, in.EVAB3);
-    wire COPU_Q = COPU.count(EVAK.q(), DAKO, in.AXAN3);
-
-    wire FORU = not(!GAXE_Q);
-    wire GEFU = not(!HYFE_Q);
-    wire KYVU = not(!JYTY_Q);
-    wire KUMO = not(!KYNA_Q);
-    wire KARY = not(!JEMA_Q);
-    wire GODE = not(!HYKE_Q);
-    wire GOJE = not(!FEVA_Q);
-    wire FOZE = not(!EKOV_Q);
-
-    wire CEGE = not(in.CPU_RDn);
-    wire DAXA = nand(CEGE, in.NET03);
-    wire CACA = not(in.FF13);
-    wire DYPU = nor(DAXA, CACA);
-    wire EVAJ = not(DYPU);
-
-    if (EVAJ) {
-      out.D_OE = true;
-      out.D0 = FORU;
-      out.D1 = GEFU;
-      out.D2 = KYVU;
-      out.D3 = KUMO;
-      out.D4 = KARY;
-      out.D5 = GODE;
-      out.D6 = GOJE;
-      out.D7 = FOZE;
-    }
-
-    wire CURE = not(in.FF14);
-    wire DUPY = or(CURE, DAXA);
-
-    wire DOPA = not(!EMUS_Q);
-    wire DEMU = not(!EVAK_Q);
-    wire DEXO = not(!COPU_Q);
-
-    if (DUPY) {
-      out.D_OE = true;
-      out.D0 = DOPA;
-      out.D1 = DEMU;
-      out.D2 = DEXO;
-    }
-
-    //----------
-    // FF14 NR14
-
-    wire BAGE = nand(in.ANUJ, in.FF14);
-    wire CAMY = not(in.APU_RESET);
-    wire BUDA = not(in.CPU_RD);
-    wire BALE = nand(BUDA, in.FF14);
-    wire BOKO_Q = BOKO.tock(BAGE, CAMY, in.D6);
-
-    out.FF14_D6  = BOKO_Q;
-    out.FF14_D6n = !BOKO_Q;
-
-    wire BYTU = not(!BOKO_Q);
-    if (BALE) {
-      out.D_OE = true;
-      out.D6 = BYTU;
-    }
+  if (pb.ASOP) {
+    gc.cpu.D0 = pb.AMYD;
+    gc.cpu.D2 = pb.AZYP;
+    gc.cpu.D6 = pb.AWOS;
+    gc.cpu.D3 = pb.AFOX;
+    gc.cpu.D1 = pb.ATAX;
+    gc.cpu.D4 = pb.AVEK;
+    gc.cpu.D5 = pb.AKUX;
   }
-};
+
+  //----------
+  // FF11 NR11
+
+  // BUG APU_WR
+  pc.COVU = and(gb.APU_WR, pb.FF11);
+  pc.CEPO = not(gb.APU_RESET);
+  pc.DAFO = not(pb.COVU);
+  pc.CENA = tock_pos(pa.DAFO, pb.DAFO, pb.CEPO, pb.CENA, gb.cpu.D6);
+  pc.DYCA = tock_pos(pa.DAFO, pb.DAFO, pb.CEPO, pb.DYCA, gb.cpu.D7);
+
+  pc.BUWA = not(gb.CPU_RDn);
+  pc.BEXU = nor(pb.BUWA, pb.FF11);
+
+  pc.BOWO = not(!pb.CENA);
+  pc.CUDA = not(!pb.DYCA);
+
+  pc.FF11_D6  = pb.CENA;
+  pc.FF11_D6n = !pb.CENA;
+  pc.FF11_D7  = pb.DYCA;
+  pc.FF11_D7n = !pb.DYCA;
+
+  if (pb.BEXU) {
+    gc.cpu.D6 = pb.BOWO;
+    gc.cpu.D7 = pb.CUDA;
+  }
+
+  //----------
+  // FF12 NR12
+
+  pc.GAXU = nand(pb.FF12, gb.APU_WR);
+  pc.HATO = not(gb.APU_RESET);
+  pc.GAGO = not(pb.FF12);
+  pc.KAGY = not(pb.GAXU);
+  pc.HOCU = or(pb.GAGO, gb.CPU_RDn);
+
+  pc.JOPU = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JOPU, gb.cpu.D7);
+  pc.JENA = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JENA, gb.cpu.D6);
+  pc.JAXO = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JAXO, gb.cpu.D5);
+  pc.JATY = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JATY, gb.cpu.D4);
+  pc.JAFY = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JAFY, gb.cpu.D3);
+
+  pc.JYSE = not(!pb.JOPU);
+  pc.HEVE = not(!pb.JENA);
+  pc.HEWA = not(!pb.JAXO);
+  pc.HOWU = not(!pb.JATY);
+  pc.HONO = not(!pb.JAFY);
+
+  if (pb.HOCU) {
+    gc.cpu.D7 = pb.JYSE;
+    gc.cpu.D6 = pb.HEVE;
+    gc.cpu.D5 = pb.HEWA;
+    gc.cpu.D4 = pb.HOWU;
+    gc.cpu.D3 = pb.HONO;
+  }
+
+  pc.HAXE = not(pb.FF12);
+  pc.HAFU = and(gb.APU_WR, pb.FF12);
+  pc.HAMY = or(pb.HAXE, gb.CPU_RDn);
+  pc.KYGY = not(pb.HAFU);
+
+  pc.JUSA = tock_pos(pa.KYGY, pb.KYGY, pb.HATO, pb.JUSA, gb.cpu.D0);
+  pc.JUZY = tock_pos(pa.KYGY, pb.KYGY, pb.HATO, pb.JUZY, gb.cpu.D1);
+  pc.JOMA = tock_pos(pa.KYGY, pb.KYGY, pb.HATO, pb.JOMA, gb.cpu.D2);
+
+  pc.JYNE = not(!pb.JUSA);
+  pc.JACA = not(!pb.JUZY);
+  pc.JOKU = not(!pb.JOMA);
+
+  if (pb.HAMY) {
+    gc.cpu.D0 = pb.JYNE;
+    gc.cpu.D1 = pb.JACA;
+    gc.cpu.D2 = pb.JOKU;
+  }
+
+  //----------
+  // FF13 NR13
+
+  pc.FULO = nor(gb.DYFA_1M, pb.GEXU);
+  pc.EPYK = nor(pb.FEKU, pb.COPE);
+  pc.GEKU = not(pb.FULO);
+  pc.FUME = not(pb.EPYK);
+
+  // FIXME daisy chain
+  pc.GAXE = count_pos(pa.GEKU, pb.GEKU, pb.FUME, pb.GAXE, pb.HYKA);
+  pc.HYFE = count_pos(pa.GAXE, pb.GAXE, pb.FUME, pb.HYFE, pb.JYKA);
+  pc.JYTY = count_pos(pa.HYFE, pb.HYFE, pb.FUME, pb.JYTY, pb.HAVO);
+  pc.KYNA = count_pos(pa.JYTY, pb.JYTY, pb.FUME, pb.KYNA, pb.EDUL);
+
+  pc.DEGA = not(pb.EPYK);
+  pc.KYPE = not(pb.KYNA);
+
+  pc.JEMA = count_pos(pa.KYPE, pb.KYPE, pb.DEGA, pb.JEMA, pb.FELY);
+  pc.HYKE = count_pos(pa.JEMA, pb.JEMA, pb.DEGA, pb.HYKE, pb.HOLU);
+  pc.FEVA = count_pos(pa.HYKE, pb.HYKE, pb.DEGA, pb.FEVA, pb.HYXU);
+  pc.EKOV = count_pos(pa.FEVA, pb.FEVA, pb.DEGA, pb.EKOV, pb.HOPO);
+
+  pc.DAKO = not(pb.EPYK);
+  pc.DERU = not(pb.EKOV);
+
+  pc.EMUS = count_pos(pa.DERU, pb.DERU, pb.DAKO, pb.EMUS, pb.DYGY);
+  pc.EVAK = count_pos(pa.EMUS, pb.EMUS, pb.DAKO, pb.EVAK, pb.EVAB);
+  pc.COPU = count_pos(pa.EVAK, pb.EVAK, pb.DAKO, pb.COPU, pb.AXAN);
+
+  pc.FORU = not(!pb.GAXE);
+  pc.GEFU = not(!pb.HYFE);
+  pc.KYVU = not(!pb.JYTY);
+  pc.KUMO = not(!pb.KYNA);
+  pc.KARY = not(!pb.JEMA);
+  pc.GODE = not(!pb.HYKE);
+  pc.GOJE = not(!pb.FEVA);
+  pc.FOZE = not(!pb.EKOV);
+
+  pc.CEGE = not(gb.CPU_RDn);
+  pc.DAXA = nand(pb.CEGE, gb.NET03);
+  pc.CACA = not(pb.FF13);
+  pc.DYPU = nor(pb.DAXA, pb.CACA);
+  pc.EVAJ = not(pb.DYPU);
+
+  if (pb.EVAJ) {
+    gc.cpu.D0 = pb.FORU;
+    gc.cpu.D1 = pb.GEFU;
+    gc.cpu.D2 = pb.KYVU;
+    gc.cpu.D3 = pb.KUMO;
+    gc.cpu.D4 = pb.KARY;
+    gc.cpu.D5 = pb.GODE;
+    gc.cpu.D6 = pb.GOJE;
+    gc.cpu.D7 = pb.FOZE;
+  }
+
+  pc.CURE = not(pb.FF14);
+  pc.DUPY = or(pb.CURE, pb.DAXA);
+
+  pc.DOPA = not(!pb.EMUS);
+  pc.DEMU = not(!pb.EVAK);
+  pc.DEXO = not(!pb.COPU);
+
+  if (pb.DUPY) {
+    gc.cpu.D0 = pb.DOPA;
+    gc.cpu.D1 = pb.DEMU;
+    gc.cpu.D2 = pb.DEXO;
+  }
+
+  //----------
+  // FF14 NR14
+
+  // why is ANUJ here?
+
+  pc.BAGE = nand(gb.ANUJ, pb.FF14); 
+  pc.CAMY = not(gb.APU_RESET);
+  pc.BUDA = not(gb.CPU_RD);
+  pc.BALE = nand(pb.BUDA, pb.FF14);
+  pc.BOKO = tock_pos(pa.BAGE, pb.BAGE, pb.CAMY, pc.BOKO, gb.cpu.D6);
+
+  pc.FF14_D6  = pb.BOKO;
+  pc.FF14_D6n = !pb.BOKO;
+
+  pc.BYTU = not(!pb.BOKO);
+  if (pb.BALE) {
+    gc.cpu.D6 = pb.BYTU;
+  }
+}

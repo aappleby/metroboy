@@ -4,7 +4,7 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P11_Ch1Sweep {
+struct P12_Ch1Sweep {
   struct Input {
     bool APU_WR;
     bool FF14;
@@ -142,16 +142,16 @@ struct P11_Ch1Sweep {
     wire CORU_S = add_s(!DOLY_Q, !DEVA_Q, DULE_C);
 
     wire AXAN_Q = AXAN.srtock(in.BUSO, AFEG, APAJ, CORU_S);
-    wire EVAB_Q = AXAN.srtock(in.BUSO, BUDO, BOVU, DULE_S);
-    wire DYGY_Q = AXAN.srtock(in.BUSO, BUGU, BOXU, DYXE_S);
-    wire HOPO_Q = AXAN.srtock(in.BOJE, ETOL, ESEL, ETEK_S);
-    wire HYXU_Q = AXAN.srtock(in.BOJE, ELER, ELUF, FEGO_S);
-    wire HOLU_Q = AXAN.srtock(in.BOJE, KYPA, KAJU, GEVA_S);
-    wire FELY_Q = AXAN.srtock(in.BOJE, KOVU, KAPO, HEXO_S);
-    wire EDUL_Q = AXAN.srtock(in.BOJE, GOPE, GAMO, JORY_S);
-    wire HAVO_Q = AXAN.srtock(in.BOJE, GOLO, GYFU, JULE_S);
-    wire JYKA_Q = AXAN.srtock(in.BOJE, GETA, GATO, HALU_S);
-    wire HYKA_Q = AXAN.srtock(in.BOJE, GYLU, EFOR, GUXA_S);
+    wire EVAB_Q = EVAB.srtock(in.BUSO, BUDO, BOVU, DULE_S);
+    wire DYGY_Q = DYGY.srtock(in.BUSO, BUGU, BOXU, DYXE_S);
+    wire HOPO_Q = HOPO.srtock(in.BOJE, ETOL, ESEL, ETEK_S);
+    wire HYXU_Q = HYXU.srtock(in.BOJE, ELER, ELUF, FEGO_S);
+    wire HOLU_Q = HOLU.srtock(in.BOJE, KYPA, KAJU, GEVA_S);
+    wire FELY_Q = FELY.srtock(in.BOJE, KOVU, KAPO, HEXO_S);
+    wire EDUL_Q = EDUL.srtock(in.BOJE, GOPE, GAMO, JORY_S);
+    wire HAVO_Q = HAVO.srtock(in.BOJE, GOLO, GYFU, JULE_S);
+    wire JYKA_Q = JYKA.srtock(in.BOJE, GETA, GATO, HALU_S);
+    wire HYKA_Q = HYKA.srtock(in.BOJE, GYLU, EFOR, GUXA_S);
 
     out.AXAN3 = AXAN_Q;
     out.EVAB3 = EVAB_Q;

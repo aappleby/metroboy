@@ -13,6 +13,7 @@
 #include "P08_ExtCpuBuses.h"
 #include "P09_ApuControl.h"
 #include "P10_ApuDecode.h"
+#include "P11_Ch1Regs.h"
 
 struct Gameboy {
   int64_t timestamp;
@@ -30,6 +31,7 @@ struct Gameboy {
   P08_ExtCpuBuses p08;
   P09_ApuControl  p09;
   P10_ApuDecode   p10;
+  P11_Ch1Regs     p11;
 
   // this signal is weird
   bool ABOL;
@@ -209,4 +211,6 @@ struct Gameboy {
   bool CH4_AMP_ENn;
 
   bool FF1A_D7n;     // <- P16.GUXE
+
+  bool ANUJ; // P16.ANUJ (but why is this being used in P11?)
 };

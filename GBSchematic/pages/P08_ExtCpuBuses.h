@@ -7,10 +7,14 @@ struct Gameboy;
 // no modifications or simplifications.
 
 struct P08_ExtCpuBuses {
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   union { bool TOLA; bool TOLA_A1n; };
   union { bool TOVA; bool NET01; };
+
+  bool LULA; // -> p25.ryvo...
+
+  bool TEXO;
 
 private:
 
@@ -42,10 +46,10 @@ private:
   bool MUJY_08,NENA_09,SURA_10,MADY_11,LAHE_12,LURA_13,PEVO_14,RAZA_15;
   bool LOFA_08,MAPU_09,RALA_10,LORA_11,LYNA_12,LEFY_13,NEFE_14,SYZU_15;
 
-  bool SORE,TEVY,TEXO,LEVO,LAGU,LYWE,MOCA,MEXO,NEVY,MOTY,PUVA,TYMU,USUF,UVER,UGAC,URUN;
+  bool SORE,TEVY,LEVO,LAGU,LYWE,MOCA,MEXO,NEVY,MOTY,PUVA,TYMU,USUF,UVER,UGAC,URUN;
   bool MULE,LOXO,LASY,MATE;
   bool SOGY,TUMA,TYNU,TOZA;
   bool SOBY_15,SEPY_15,TYHO,TAZY_15,RYCA,RULO_15,SUZE_15;
   bool LAVO;
-  bool REDU,RORU,LULA,LYRA;
+  bool REDU,RORU,LYRA;
 };

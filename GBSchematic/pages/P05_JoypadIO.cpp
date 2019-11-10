@@ -6,111 +6,112 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P05_JoypadIO::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
-  const P05_JoypadIO& pb = gb.p05;
-  P05_JoypadIO& pc = gc.p05;
+void P05_JoypadIO::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  pc.JUTE_00 = tock_pos(ga.p10.FF00WR, gb.p10.FF00WR, gb.p01.RESET2, pc.JUTE_00, gb.D0);
-  pc.KECY_01 = tock_pos(ga.p10.FF00WR, gb.p10.FF00WR, gb.p01.RESET2, pc.KECY_01, gb.D1);
-  pc.JALE_02 = tock_pos(ga.p10.FF00WR, gb.p10.FF00WR, gb.p01.RESET2, pc.JALE_02, gb.D2);
-  pc.KYME_03 = tock_pos(ga.p10.FF00WR, gb.p10.FF00WR, gb.p01.RESET2, pc.KYME_03, gb.D3);
-  pc.KELY_04 = tock_pos(ga.p10.FF00WR, gb.p10.FF00WR, gb.p01.RESET2, pc.KELY_04, gb.D4);
-  pc.COFY_05 = tock_pos(ga.p10.FF00WR, gb.p10.FF00WR, gb.p01.RESET2, pc.COFY_05, gb.D5);
-  pc.KUKO_06 = tock_pos(ga.p10.FF00WR, gb.p10.FF00WR, gb.p01.RESET2, pc.KUKO_06, gb.D6);
-  pc.KERU_07 = tock_pos(ga.p10.FF00WR, gb.p10.FF00WR, gb.p01.RESET2, pc.KERU_07, gb.D7);
+  c.p05.JUTE_00 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.JUTE_00, b.D0);
+  c.p05.KECY_01 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KECY_01, b.D1);
+  c.p05.JALE_02 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.JALE_02, b.D2);
+  c.p05.KYME_03 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KYME_03, b.D3);
+  c.p05.KELY_04 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KELY_04, b.D4);
+  c.p05.COFY_05 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.COFY_05, b.D5);
+  c.p05.KUKO_06 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KUKO_06, b.D6);
+  c.p05.KERU_07 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KERU_07, b.D7);
 
-  pc.KOLE = nand(pb.JUTE_00, gb.p07.FF60_D0);
-  pc.KYBU = nor (pb.JUTE_00, pb.KURA);
+  c.p05.KOLE = nand(b.p05.JUTE_00, b.p07.FF60_D0);
+  c.p05.KYBU = nor (b.p05.JUTE_00, b.p05.KURA);
 
-  pc.KYTO = nand(pb.KECY_01, gb.p07.FF60_D0);
-  pc.KABU = nor (pb.KECY_01, pb.KURA);
+  c.p05.KYTO = nand(b.p05.KECY_01, b.p07.FF60_D0);
+  c.p05.KABU = nor (b.p05.KECY_01, b.p05.KURA);
 
-  pc.KYHU = nand(pb.JALE_02, gb.p07.FF60_D0);
-  pc.KASY = nor (gb.p07.FF60_D0, pb.KURA); // this one doesn't match?
+  c.p05.KYHU = nand(b.p05.JALE_02, b.p07.FF60_D0);
+  c.p05.KASY = nor (b.p07.FF60_D0, b.p05.KURA); // this one doesn't match?
 
-  pc.KORY = nand(pb.KYME_03, gb.p07.FF60_D0);
-  pc.KALE = nor (pb.KYME_03, pb.KURA);
+  c.p05.KORY = nand(b.p05.KYME_03, b.p07.FF60_D0);
+  c.p05.KALE = nor (b.p05.KYME_03, b.p05.KURA);
 
-  pc.KARU = or(!pb.KELY_04, pb.KURA);
+  c.p05.KARU = or(!b.p05.KELY_04, b.p05.KURA);
 
-  pc.KURA = not(gb.p07.FF60_D0);
-  pc.CELA = or(!pb.COFY_05, pb.KURA);
+  c.p05.KURA = not(b.p07.FF60_D0);
+  c.p05.CELA = or(!b.p05.COFY_05, b.p05.KURA);
 
-  pc.KENA = mux2(pb.KUKO_06, gb.p06.SER_OUT, gb.p07.FF60_D0);
+  c.p05.KENA = mux2(b.p05.KUKO_06, b.p06.SER_OUT, b.p07.FF60_D0);
 
-  pc.JEVA = not(gb.p07.FF60_D0);
-  pc.KORE = nand(pb.KERU_07, gb.p07.FF60_D0);
-  pc.KYWE = nor (pb.KERU_07, pb.JEVA);
+  c.p05.JEVA = not(b.p07.FF60_D0);
+  c.p05.KORE = nand(b.p05.KERU_07, b.p07.FF60_D0);
+  c.p05.KYWE = nor (b.p05.KERU_07, b.p05.JEVA);
 
   // FIXME really unsure about these pin assignments, seem to have a few missing signals
-  gc.chip.SOUT  = pb.KENA;
+  c.chip.SOUT  = b.p05.KENA;
 
-  gc.chip.P10_A = pb.KOLE;
-  gc.chip.P10_D = pb.KYBU;
+  c.chip.P10_A = b.p05.KOLE;
+  c.chip.P10_D = b.p05.KYBU;
 
-  gc.chip.P11_A = pb.KYTO;
-  gc.chip.P11_D = pb.KABU;
+  c.chip.P11_A = b.p05.KYTO;
+  c.chip.P11_D = b.p05.KABU;
 
-  gc.chip.P12_A = pb.KYHU;
-  gc.chip.P12_D = pb.KASY;
+  c.chip.P12_A = b.p05.KYHU;
+  c.chip.P12_D = b.p05.KASY;
 
-  gc.chip.P13_A = pb.KORY;
-  gc.chip.P13_D = pb.KALE;
+  c.chip.P13_A = b.p05.KORY;
+  c.chip.P13_D = b.p05.KALE;
 
-  gc.chip.P14_A = pb.KARU;
-  gc.chip.P14_D = !pb.KELY_04; // this seems really weird
+  c.chip.P14_A = b.p05.KARU;
+  c.chip.P14_D = !b.p05.KELY_04; // this seems really weird
 
-  gc.chip.P15_A = pb.CELA;
-  gc.chip.P15_D = pb.COFY_05;
+  c.chip.P15_A = b.p05.CELA;
+  c.chip.P15_D = b.p05.COFY_05;
 
   //----------
 
-  pc.BYZO    = not(gb.p10.FF00RD);
-  pc.KEVU_00 = latch_pos(pb.BYZO, pb.KEVU_00, gb.chip.P10_C);
-  pc.KAPA_01 = latch_pos(pb.BYZO, pb.KAPA_01, gb.chip.P11_C);
-  pc.KEJA_02 = latch_pos(pb.BYZO, pb.KEJA_02, gb.chip.P12_C);
-  pc.KOLO_03 = latch_pos(pb.BYZO, pb.KOLO_03, gb.chip.P13_C);
+  c.p05.BYZO    = not(b.p10.FF00RD);
 
-  pc.KEMA_00 = pb.KEVU_00;
-  pc.KURO_01 = pb.KAPA_01;
-  pc.KUVE_02 = pb.KEJA_02;
-  pc.JEKU_03 = pb.KOLO_03;
-  pc.KOCE_04 = not(!pb.KELY_04);
-  pc.CUDY_05 = not(!pb.COFY_05);
+  c.p05.KEVU_00 = latch_pos(b.p05.BYZO, b.p05.KEVU_00, b.chip.P10_C);
+  c.p05.KAPA_01 = latch_pos(b.p05.BYZO, b.p05.KAPA_01, b.chip.P11_C);
+  c.p05.KEJA_02 = latch_pos(b.p05.BYZO, b.p05.KEJA_02, b.chip.P12_C);
+  c.p05.KOLO_03 = latch_pos(b.p05.BYZO, b.p05.KOLO_03, b.chip.P13_C);
 
-  if (pb.BYZO) {
-    gc.D0 = pb.KEMA_00;
-    gc.D1 = pb.KURO_01;
-    gc.D2 = pb.KUVE_02;
-    gc.D3 = pb.JEKU_03;
-    gc.D4 = pb.KOCE_04;
-    gc.D5 = pb.CUDY_05;
+  // inverting tribuf on schematic, but this can't be inverting
+  c.p05.KEMA_00 = b.p05.KEVU_00;
+  c.p05.KURO_01 = b.p05.KAPA_01;
+  c.p05.KUVE_02 = b.p05.KEJA_02;
+  c.p05.JEKU_03 = b.p05.KOLO_03;
+
+  c.p05.KOCE_04 = not(!b.p05.KELY_04);
+  c.p05.CUDY_05 = not(!b.p05.COFY_05);
+
+  if (b.p05.BYZO) {
+    c.D0 = b.p05.KEMA_00;
+    c.D1 = b.p05.KURO_01;
+    c.D2 = b.p05.KUVE_02;
+    c.D3 = b.p05.JEKU_03;
+    c.D4 = b.p05.KOCE_04;
+    c.D5 = b.p05.CUDY_05;
   }
 
   //----------
 
-  pc.AXYN = not(gb.p01.BEDO);
-  pc.ADYR = not(pb.AXYN);
-  pc.APYS = nor(gb.p07.T1nT2, pb.ADYR);
-  pc.AFOP = not(pb.APYS);
+  c.p05.AXYN = not(b.p01.BEDO);
+  c.p05.ADYR = not(b.p05.AXYN);
+  c.p05.APYS = nor(b.p07.T1nT2, b.p05.ADYR);
+  c.p05.AFOP = not(b.p05.APYS);
 
-  pc.ANOC_00 = not(gb.chip.P10_B);
-  pc.ATAJ_01 = not(gb.chip.P10_B);
-  pc.AJEC_02 = not(gb.chip.P10_B);
-  pc.ASUZ_03 = not(gb.chip.P10_B);
-  pc.BENU_04 = not(gb.chip.P10_B);
-  pc.AKAJ_05 = not(gb.chip.P10_B);
-  pc.ARAR_06 = not(gb.chip.P10_B);
-  pc.BEDA_07 = not(gb.chip.P10_B);
+  c.p05.ANOC_00 = not(b.chip.P10_B);
+  c.p05.ATAJ_01 = not(b.chip.P10_B);
+  c.p05.AJEC_02 = not(b.chip.P10_B);
+  c.p05.ASUZ_03 = not(b.chip.P10_B);
+  c.p05.BENU_04 = not(b.chip.P10_B);
+  c.p05.AKAJ_05 = not(b.chip.P10_B);
+  c.p05.ARAR_06 = not(b.chip.P10_B);
+  c.p05.BEDA_07 = not(b.chip.P10_B);
 
-  if (pb.AFOP) {
-    gc.D0 = pb.ANOC_00;
-    gc.D1 = pb.ATAJ_01;
-    gc.D2 = pb.AJEC_02;
-    gc.D3 = pb.ASUZ_03;
-    gc.D4 = pb.BENU_04;
-    gc.D5 = pb.AKAJ_05;
-    gc.D6 = pb.ARAR_06;
-    gc.D7 = pb.BEDA_07;
+  if (b.p05.AFOP) {
+    c.D0 = b.p05.ANOC_00;
+    c.D1 = b.p05.ATAJ_01;
+    c.D2 = b.p05.AJEC_02;
+    c.D3 = b.p05.ASUZ_03;
+    c.D4 = b.p05.BENU_04;
+    c.D5 = b.p05.AKAJ_05;
+    c.D6 = b.p05.ARAR_06;
+    c.D7 = b.p05.BEDA_07;
   }
 }

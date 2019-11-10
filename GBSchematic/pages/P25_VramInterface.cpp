@@ -1,516 +1,438 @@
+#include "P25_VramInterface.h"
 #include "../Schematics.h"
+
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P25_VramInterface {
-
-  struct Input {
-    bool CPU_RD_SYNC;
-    bool RESET6;
-    bool T1nT2;
-
-    bool MOE_IN;
-    bool MWR_IN;
-    bool MCS_IN;
-
-    bool VRAM_TO_OAM;
-    bool P10_B;
-    bool MOPA_PHI;
-    bool NET02;
-    bool FF40_D4;
-    bool FEXXFFXXn;
-
-    bool LENA;
-    bool TACU;
-    bool TUVO;
-    bool ACYL;
-    bool XYSO;
-    bool SARO;
-    bool XYMU;
-    bool LUMA;
-    bool TEXO;
-    bool TEXY;
-    bool ABUZ;
-    bool AFAS;
-    bool MYMA;
-    bool BEDO;
-    bool RORU;
-    bool NETA;
-    bool POTU;
-    bool PORE;
-    bool XUHA;
-    bool VYNO;
-    bool VUJO;
-    bool VYMU;
-    bool LEKO;
-    bool MATU_Q;
-
-    bool A00,A01,A02,A03,A04,A05,A06,A07,A08,A09,A10,A11,A12,A13,A14,A15;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-
-    bool D0_C,D1_C,D2_C,D3_C,D4_C,D5_C,D6_C,D7_C;
-
-    bool MA00,MA01,MA02,MA03,MA04,MA05,MA06,MA07,MA08,MA09,MA10,MA11,MA12;
-    bool MD0,MD1,MD2,MD3,MD4,MD5,MD6,MD7;
-
-    bool MD0_IN,MD1_IN,MD2_IN,MD3_IN,MD4_IN,MD5_IN,MD6_IN,MD7_IN;
-
-    // not sure, drives high bits of vram addr if NETA is high
-    bool RAWU,POZO,PYZO,POXA,PULO,POJU,POWY,PYJU;
-
-  };
-
-  struct Output {
-    bool MD_B;
-
-    // internal data bus
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-
-    // actual pins from ram?
-    bool D0_A,D1_A,D2_A,D3_A,D4_A,D5_A,D6_A,D7_A;
-
-    // internal vram addr bus
-    bool MA00,MA01,MA02,MA03,MA04,MA05,MA06,MA07,MA08,MA09,MA10,MA11,MA12;
-
-    // internal vram data bus
-    bool MD_OE;
-    bool MD0,MD1,MD2,MD3,MD4,MD5,MD6,MD7;
-
-    // actual pins to vram
-    bool MCS_A,MCS_D;
-    bool MWR_A,MWR_D;
-    bool MOE_A,MOE_D;
-
-    // actual pins to vram
-    bool MA00_OUT,MA01_OUT,MA02_OUT,MA03_OUT,MA04_OUT,MA05_OUT,MA06_OUT,MA07_OUT,MA08_OUT,MA09_OUT,MA10_OUT,MA11_OUT,MA12_OUT;
-    bool MD0_OUT,MD1_OUT,MD2_OUT,MD3_OUT,MD4_OUT,MD5_OUT,MD6_OUT,MD7_OUT;
-
-    // actual pins from vram
-    bool MD0_A,MD1_A,MD2_A,MD3_A,MD4_A,MD5_A,MD6_A,MD7_A;
-
-    // actual pins to oam
-    bool OAM_D_OE;
-    bool OAM_A_D0,OAM_A_D1,OAM_A_D2,OAM_A_D3,OAM_A_D4,OAM_A_D5,OAM_A_D6,OAM_A_D7;
-    bool OAM_B_D0,OAM_B_D1,OAM_B_D2,OAM_B_D3,OAM_B_D4,OAM_B_D5,OAM_B_D6,OAM_B_D7;
-  };
-
-  // dunno, driven by T1nT2? that doesn't make much sense.
-  reg SOTO;
-
-  void tick(const Input& in, Output& out) {
-    //----------
-    // top left stack of inverters
-
-    wire MYFU_00 = not(in.MA00);
-    wire MASA_01 = not(in.MA01);
-    wire MYRE_02 = not(in.MA02);
-    wire MAVU_03 = not(in.MA03);
-    wire MEPA_04 = not(in.MA04);
-    wire MYSA_05 = not(in.MA05);
-    wire MEWY_06 = not(in.MA06);
-    wire MUME_07 = not(in.MA07);
-    wire VOVA_08 = not(in.MA08);
-    wire VODE_09 = not(in.MA09);
-    wire RUKY_10 = not(in.MA10);
-    wire RUMA_11 = not(in.MA11);
-    wire REHO_12 = not(in.MA12);
-
-    wire LEXE_00 = not(MYFU_00);
-    wire LOZU_01 = not(MASA_01);
-    wire LACA_02 = not(MYRE_02);
-    wire LUVO_03 = not(MAVU_03);
-    wire LOLY_04 = not(MEPA_04);
-    wire LALO_05 = not(MYSA_05);
-    wire LEFA_06 = not(MEWY_06);
-    wire LUBY_07 = not(MUME_07);
-    wire TUJY_08 = not(VOVA_08);
-    wire TAGO_09 = not(VODE_09);
-    wire NUVA_10 = not(RUKY_10);
-    wire PEDU_11 = not(RUMA_11);
-    wire PONY_12 = not(REHO_12);
-
-    out.MA00_OUT = LEXE_00;
-    out.MA01_OUT = LOZU_01;
-    out.MA02_OUT = LACA_02;
-    out.MA03_OUT = LUVO_03;
-    out.MA04_OUT = LOLY_04;
-    out.MA05_OUT = LALO_05;
-    out.MA06_OUT = LEFA_06;
-    out.MA07_OUT = LUBY_07;
-    out.MA08_OUT = TUJY_08;
-    out.MA09_OUT = TAGO_09;
-    out.MA10_OUT = NUVA_10;
-    out.MA11_OUT = PEDU_11;
-    out.MA12_OUT = PONY_12;
-
-    //----------
-
-    wire CUFE = unk3(in.SARO, in.MATU_Q, in.MOPA_PHI);
-    wire VAPE = and(in.TACU, in.TUVO);
-    wire AVER = and(in.ACYL, in.XYSO);
-    wire XUJY = not(VAPE);
-    wire BYCU = nor(CUFE, XUJY, AVER);
-    wire COTA = not(BYCU);
-
-    //----------
-
-    wire SYRO = not(in.FEXXFFXXn);
-    wire TEFA = nor(SYRO, in.TEXO);
-    wire SOSE = and(in.A15, TEFA); // odd...
-    wire TUCA = and(SOSE, in.ABUZ); // ABUZ is a clocky type signal from P01, but that doesn't make sense
-    wire TUJA = and(SOSE, in.CPU_RD_SYNC);
-    wire TEGU = nand(SOSE, in.AFAS);
-    wire TAVY = not(in.MOE_IN);
-    wire SYCY = not(in.NET02);
-    wire SOTO_Q = SOTO.flip(SYCY, in.RESET6);
-    wire TUTO = and(in.NET02, !SOTO_Q);
-    wire SUDO = not(in.MWR_IN);
-    wire TEFY = not(in.MCS_IN);
-    wire SALE = mux2(TUTO, TAVY, TEGU);
-    wire TYJY = mux2(TUTO, SUDO, TUJA);
-    wire TOLE = mux2(TUTO, TEFY, TUCA);
-
-    wire ROPY = not(in.XYMU);
-    wire SERE = and(TOLE, ROPY);
-    wire RUVY = not(SALE);
-    wire SOHY = nand(TYJY, SERE);
-    wire SAZO = and(RUVY, SERE);
-    wire RYJE = not(SAZO);
-    wire REVO = not(RYJE);
-    wire RELA = or(REVO, SAZO);
-    wire ROCY = and(SAZO, REVO);
-    wire RENA = not(RELA);
-    wire ROFA = not(RENA);
-    wire RAHU = not(ROCY);
-
-    out.MD_B = ROFA; // something about vram pins...
-
-    //----------
-
-    wire RYLU = nand(SALE, ROPY);
-    wire SOHO = and(in.TACU, in.TEXY);
-    wire RAWA = not(SOHO);
-    wire APAM = not(in.VRAM_TO_OAM);
-    wire SUTU = nor(in.LENA, in.VRAM_TO_OAM, in.TEXY, SERE);
-    wire RACU = and(RYLU, RAWA, in.MYMA, APAM);
-    wire RACO = not(TUTO);
-    wire RUTE = or(TUTO, RACO); // wat? or of a signal with its own inverse...
-    wire SEWO = or(TUTO, SUTU);
-    wire TODE = and(SUTU, RACO);
-    wire SEMA = and(RACU, RACO);
-    wire TAXY = and(SOHY, RACO);
-    wire SOFY = or(TUTO, SOHY);
-
-    wire SAHA = not(RUTE);
-    wire SETY = not(SEWO);
-    wire SOKY = not(TODE);
-    wire REFO = not(SEMA);
-    wire SYSY = not(TAXY);
-    wire RAGU = not(SOFY);
-
-    out.MCS_A = SOKY;
-    out.MCS_D = SETY;
-    out.MWR_A = SYSY;
-    out.MWR_D = RAGU;
-    out.MOE_A = REFO;
-    out.MOE_D = SAHA;
-
-    //----------
-
-    wire RODY_00 = in.MD0_IN;
-    wire REBA_01 = in.MD1_IN;
-    wire RYDO_02 = in.MD2_IN;
-    wire REMO_03 = in.MD3_IN;
-    wire ROCE_04 = in.MD4_IN;
-    wire ROPU_05 = in.MD5_IN;
-    wire RETA_06 = in.MD6_IN;
-    wire RAKU_07 = in.MD7_IN;
-
-    if (RENA) {
-      out.MD0 = RODY_00;
-      out.MD1 = REBA_01;
-      out.MD2 = RYDO_02;
-      out.MD3 = REMO_03;
-      out.MD4 = ROCE_04;
-      out.MD5 = ROPU_05;
-      out.MD6 = RETA_06;
-      out.MD7 = RAKU_07;
-    }
-
-    //----------
-
-    wire TUSO = nor(in.NET02, in.BEDO);
-    wire SOLE = not(TUSO);
-    wire RUNY = not(in.P10_B);
-
-    wire TOVU_00 = not(SOLE);
-    wire SOSA_01 = not(SOLE);
-    wire SEDU_02 = not(SOLE);
-    wire TAXO_03 = not(SOLE);
-    wire TAHY_04 = not(SOLE);
-    wire TESU_05 = not(SOLE);
-    wire TAZU_06 = not(SOLE);
-    wire TEWA_07 = not(SOLE);
-
-    if (RUNY) {
-      out.D0 = TOVU_00;
-      out.D1 = SOSA_01;
-      out.D2 = SEDU_02;
-      out.D3 = TAXO_03;
-      out.D4 = TAHY_04;
-      out.D5 = TESU_05;
-      out.D6 = TAZU_06;
-      out.D7 = TEWA_07;
-    }
-
-    //----------
-
-    wire TEME = not(in.D0);
-    wire TEWU = not(in.D1);
-    wire TYGO = not(in.D2);
-    wire SOTE = not(in.D3);
-    wire SEKE = not(in.D4);
-    wire RUJO = not(in.D5);
-    wire TOFA = not(in.D6);
-    wire SUZA = not(in.D7);
-
-    if (RAHU) {
-      out.MD_OE;
-      out.MD0 = TEME;
-      out.MD1 = TEWU;
-      out.MD2 = TYGO;
-      out.MD3 = SOTE;
-      out.MD4 = SEKE;
-      out.MD5 = RUJO;
-      out.MD6 = TOFA;
-      out.MD7 = SUZA;
-    }
-
-    wire SYNU = or(RAHU, in.MD0);
-    wire SYMA = or(RAHU, in.MD1);
-    wire ROKO = or(RAHU, in.MD2);
-    wire SYBU = or(RAHU, in.MD3);
-    wire SAKO = or(RAHU, in.MD4);
-    wire SEJY = or(RAHU, in.MD5);
-    wire SEDO = or(RAHU, in.MD6);
-    wire SAWU = or(RAHU, in.MD7);
-
-    wire RURA = not(SYNU);
-    wire RULY = not(SYMA);
-    wire RARE = not(ROKO);
-    wire RODU = not(SYBU);
-    wire RUBE = not(SAKO);
-    wire RUMU = not(SEJY);
-    wire RYTY = not(SEDO);
-    wire RADY = not(SAWU);
-
-    out.MD0_OUT = RURA;
-    out.MD1_OUT = RULY;
-    out.MD2_OUT = RARE;
-    out.MD3_OUT = RODU;
-    out.MD4_OUT = RUBE;
-    out.MD5_OUT = RUMU;
-    out.MD6_OUT = RYTY;
-    out.MD7_OUT = RADY;
-
-    //----------
-
-    wire XANE = nor(in.VRAM_TO_OAM, in.XYMU);
-    wire XEDU = not(XANE);
-
-    wire XAKY = in.A00;
-    wire XUXU = in.A01;
-    wire XYNE = in.A02;
-    wire XODY = in.A03;
-    wire XECA = in.A04;
-    wire XOBA = in.A05;
-    wire XOPO = in.A06;
-    wire XYBO = in.A07;
-    wire RYSU = in.A08;
-    wire RESE = in.A09;
-    wire RUSE = in.A10;
-    wire RYNA = in.A11;
-    wire RUMO = in.A12;
-
-    if (XEDU) {
-      out.MA00 = XAKY;
-      out.MA01 = XUXU;
-      out.MA02 = XYNE;
-      out.MA03 = XODY;
-      out.MA04 = XECA;
-      out.MA05 = XOBA;
-      out.MA06 = XOPO;
-      out.MA07 = XYBO;
-      out.MA08 = RYSU;
-      out.MA09 = RESE;
-      out.MA10 = RUSE;
-      out.MA11 = RYNA;
-      out.MA12 = RUMO;
-    }
-
-    //----------
-
-    wire ROVE = not(RAHU);
-
-    wire SEFA_00 = and(in.MD0, ROVE);
-    wire SOGO_01 = and(in.MD1, ROVE);
-    wire SEFU_02 = and(in.MD2, ROVE);
-    wire SUNA_03 = and(in.MD3, ROVE);
-    wire SUMO_04 = and(in.MD4, ROVE);
-    wire SAZU_05 = and(in.MD5, ROVE);
-    wire SAMO_06 = and(in.MD6, ROVE);
-    wire SUKE_07 = and(in.MD7, ROVE);
-
-    wire REGE_00 = not(SEFA_00);
-    wire RYKY_01 = not(SOGO_01);
-    wire RAZO_02 = not(SEFU_02);
-    wire RADA_03 = not(SUNA_03);
-    wire RYRO_04 = not(SUMO_04);
-    wire REVU_05 = not(SAZU_05);
-    wire REKU_06 = not(SAMO_06);
-    wire RYZE_07 = not(SUKE_07);
-    
-    out.MD0_A = REGE_00;
-    out.MD1_A = RYKY_01;
-    out.MD2_A = RAZO_02;
-    out.MD3_A = RADA_03;
-    out.MD4_A = RYRO_04;
-    out.MD5_A = REVU_05;
-    out.MD6_A = REKU_06;
-    out.MD7_A = RYZE_07;
-
-    //----------
-
-    wire CEDE = not(in.LUMA);
-
-    wire RALO_00 = not(in.D0_C);
-    wire TUNE_01 = not(in.D1_C);
-    wire SERA_02 = not(in.D2_C);
-    wire TENU_03 = not(in.D3_C);
-    wire SYSA_04 = not(in.D4_C);
-    wire SUGY_05 = not(in.D5_C);
-    wire TUBE_06 = not(in.D6_C);
-    wire SYZO_07 = not(in.D7_C);
-
-    wire WEJO_00 = not(RALO_00);
-    wire BUBO_01 = not(TUNE_01);
-    wire BETU_02 = not(SERA_02);
-    wire CYME_03 = not(TENU_03);
-    wire BAXU_04 = not(SYSA_04);
-    wire BUHU_05 = not(SUGY_05);
-    wire BYNY_06 = not(TUBE_06);
-    wire BYPY_07 = not(SYZO_07);
-
-    wire WASA_00 = not(RALO_00);
-    wire BOMO_01 = not(TUNE_01);
-    wire BASA_02 = not(SERA_02);
-    wire CAKO_03 = not(TENU_03);
-    wire BUMA_04 = not(SYSA_04);
-    wire BUPY_05 = not(SUGY_05);
-    wire BASY_06 = not(TUBE_06);
-    wire BAPE_07 = not(SYZO_07);
-
-    if (CEDE) {
-      out.OAM_A_D0 = WEJO_00;
-      out.OAM_A_D1 = BUBO_01;
-      out.OAM_A_D2 = BETU_02;
-      out.OAM_A_D3 = CYME_03;
-      out.OAM_A_D4 = BAXU_04;
-      out.OAM_A_D5 = BUHU_05;
-      out.OAM_A_D6 = BYNY_06;
-      out.OAM_A_D7 = BYPY_07;
-
-      out.OAM_B_D0 = WASA_00;
-      out.OAM_B_D1 = BOMO_01;
-      out.OAM_B_D2 = BASA_02;
-      out.OAM_B_D3 = CAKO_03;
-      out.OAM_B_D4 = BUMA_04;
-      out.OAM_B_D5 = BUPY_05;
-      out.OAM_B_D6 = BASY_06;
-      out.OAM_B_D7 = BAPE_07;
-    }
-
-    //----------
-
-    wire TYVY = nand(SERE, in.LEKO);
-    wire SEBY = not(TYVY);
-
-    wire RERY_00 = not(in.MD0);
-    wire RUNA_01 = not(in.MD1);
-    wire RONA_02 = not(in.MD2);
-    wire RUNO_03 = not(in.MD3);
-    wire SANA_04 = not(in.MD4);
-    wire RORO_05 = not(in.MD5);
-    wire RABO_06 = not(in.MD6);
-    wire SAME_07 = not(in.MD7);
-
-    wire RUGA_00 = not(RERY_00);
-    wire ROTA_01 = not(RUNA_01);
-    wire RYBU_02 = not(RONA_02);
-    wire RAJU_03 = not(RUNO_03);
-    wire TYJA_04 = not(SANA_04);
-    wire REXU_05 = not(RORO_05);
-    wire RUPY_06 = not(RABO_06);
-    wire TOKU_07 = not(SAME_07);
-
-    if (SEBY) {
-      out.D0 = RUGA_00;
-      out.D1 = ROTA_01;
-      out.D2 = RYBU_02;
-      out.D3 = RAJU_03;
-      out.D4 = TYJA_04;
-      out.D5 = REXU_05;
-      out.D6 = RUPY_06;
-      out.D7 = TOKU_07;
-    }
-
-    //----------
-
-    wire XUCY = nand(in.NETA, in.PORE);
-    wire XEZE = nand(in.POTU, in.PORE);
-    wire WUKO = not(XEZE);
-
-    //----------
-
-    wire XONU_00 = not(in.XUHA);
-    wire WUDO_01 = not(in.VYNO);
-    wire WAWE_02 = not(in.VUJO);
-    wire WOLU_03 = not(in.VYMU);
-
-    if (XUCY) {
-      out.MA00 = XONU_00;
-      out.MA01 = WUDO_01;
-      out.MA02 = WAWE_02;
-      out.MA03 = WOLU_03;
-    }
-
-    //----------
-
-    wire VAPY_04 = not(in.RAWU);
-    wire SEZU_05 = not(in.POZO);
-    wire VEJY_06 = not(in.PYZO);
-    wire RUSA_07 = not(in.POXA);
-    wire ROHA_08 = not(in.PULO);
-    wire RESO_09 = not(in.POJU);
-    wire SUVO_10 = not(in.POWY);
-    wire TOBO_11 = not(in.PYJU);
-
-    wire VUZA = nor(in.FF40_D4, in.PYJU);
-    wire VURY_12 = not(VUZA);
-
-    if (in.NETA) {
-      out.MA04 = VAPY_04;
-      out.MA05 = SEZU_05;
-      out.MA06 = VEJY_06;
-      out.MA07 = RUSA_07;
-      out.MA08 = ROHA_08;
-      out.MA09 = RESO_09;
-      out.MA10 = SUVO_10;
-      out.MA11 = TOBO_11;
-      out.MA12 = VURY_12;
-    }
+void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+
+  //----------
+  // top left stack of inverters
+
+  c.p25.MYFU_00 = not(b.chip.MA00);
+  c.p25.MASA_01 = not(b.chip.MA01);
+  c.p25.MYRE_02 = not(b.chip.MA02);
+  c.p25.MAVU_03 = not(b.chip.MA03);
+  c.p25.MEPA_04 = not(b.chip.MA04);
+  c.p25.MYSA_05 = not(b.chip.MA05);
+  c.p25.MEWY_06 = not(b.chip.MA06);
+  c.p25.MUME_07 = not(b.chip.MA07);
+  c.p25.VOVA_08 = not(b.chip.MA08);
+  c.p25.VODE_09 = not(b.chip.MA09);
+  c.p25.RUKY_10 = not(b.chip.MA10);
+  c.p25.RUMA_11 = not(b.chip.MA11);
+  c.p25.REHO_12 = not(b.chip.MA12);
+
+  c.p25.LEXE_00 = not(c.p25.MYFU_00);
+  c.p25.LOZU_01 = not(c.p25.MASA_01);
+  c.p25.LACA_02 = not(c.p25.MYRE_02);
+  c.p25.LUVO_03 = not(c.p25.MAVU_03);
+  c.p25.LOLY_04 = not(c.p25.MEPA_04);
+  c.p25.LALO_05 = not(c.p25.MYSA_05);
+  c.p25.LEFA_06 = not(c.p25.MEWY_06);
+  c.p25.LUBY_07 = not(c.p25.MUME_07);
+  c.p25.TUJY_08 = not(c.p25.VOVA_08);
+  c.p25.TAGO_09 = not(c.p25.VODE_09);
+  c.p25.NUVA_10 = not(c.p25.RUKY_10);
+  c.p25.PEDU_11 = not(c.p25.RUMA_11);
+  c.p25.PONY_12 = not(c.p25.REHO_12);
+
+  c.chip.MA00 = c.p25.LEXE_00;
+  c.chip.MA01 = c.p25.LOZU_01;
+  c.chip.MA02 = c.p25.LACA_02;
+  c.chip.MA03 = c.p25.LUVO_03;
+  c.chip.MA04 = c.p25.LOLY_04;
+  c.chip.MA05 = c.p25.LALO_05;
+  c.chip.MA06 = c.p25.LEFA_06;
+  c.chip.MA07 = c.p25.LUBY_07;
+  c.chip.MA08 = c.p25.TUJY_08;
+  c.chip.MA09 = c.p25.TAGO_09;
+  c.chip.MA10 = c.p25.NUVA_10;
+  c.chip.MA11 = c.p25.PEDU_11;
+  c.chip.MA12 = c.p25.PONY_12;
+
+  //----------
+
+  c.p25.RYVO = nand(b.D5, b.p08.LULA);
+  c.p25.RERA = nand(b.D5, b.p08.LULA);
+  c.p25.RABY = nand(b.D5, b.p08.LULA);
+  c.p25.RORY = nand(b.D5, b.p08.LULA);
+  c.p25.RUJA = nand(b.D5, b.p08.LULA);
+  c.p25.RAVU = nand(b.D5, b.p08.LULA);
+  c.p25.RAFY = nand(b.D5, b.p08.LULA);
+  c.p25.RUXA = nand(b.D5, b.p08.LULA);
+
+  //----------
+
+  c.p25.CUFE = unk3(b.p07.SARO, b.p04.MATU, b.p04.MOPA_PHI);
+  c.p25.VAPE = and(b.p29.TACU, b.p28.TUVO);
+  c.p25.AVER = and(b.p21.ACYL, b.p29.XYSO);
+  c.p25.XUJY = not(b.p25.VAPE);
+  c.p25.BYCU = nor(b.p25.CUFE, b.p25.XUJY, b.p25.AVER);
+  c.p25.COTA = not(b.p25.BYCU);
+
+  //----------
+
+  c.p25.SYRO = not(b.p07.FEXXFFXXn);
+  c.p25.TEFA = nor(b.p25.SYRO, b.p08.TEXO);
+  c.p25.SOSE = and(b.A15, b.p25.TEFA); // odd...
+  c.p25.TUCA = and(b.p25.SOSE, b.p01.CPU_RD_SYNC);
+  c.p25.TUJA = and(b.p25.SOSE, b.p01.CPU_WR_SYNC);
+  c.p25.TEGU = nand(b.p25.SOSE, b.p01.AFAS);
+  c.p25.TAVY = not(b.chip.MOE_C);
+  c.p25.SYCY = not(b.p07.T1nT2);
+  c.p25.SOTO = tock_pos(a.p25.SYCY, b.p25.SYCY, b.p01.RESET6, b.p25.SOTO, !b.p25.SOTO);
+  c.p25.TUTO = and(b.p07.T1nT2, !b.p25.SOTO);
+  c.p25.SUDO = not(b.chip.MWR_C);
+  c.p25.TEFY = not(b.chip.MCS_C);
+  c.p25.SALE = mux2(b.p25.TUTO, b.p25.TAVY, b.p25.TEGU);
+  c.p25.TYJY = mux2(b.p25.TUTO, b.p25.SUDO, b.p25.TUJA);
+  c.p25.TOLE = mux2(b.p25.TUTO, b.p25.TEFY, b.p25.TUCA);
+
+  c.p25.ROPY = not(b.p21.XYMU);
+  c.p25.SERE = and(b.p25.TOLE, b.p25.ROPY);
+  c.p25.RUVY = not(b.p25.SALE);
+  c.p25.SOHY = nand(b.p25.TYJY, b.p25.SERE);
+  c.p25.SAZO = and(b.p25.RUVY, b.p25.SERE);
+  c.p25.RYJE = not(b.p25.SAZO);
+  c.p25.REVO = not(b.p25.RYJE);
+  c.p25.RELA = or(b.p25.REVO, b.p25.SAZO);
+  c.p25.ROCY = and(b.p25.SAZO, b.p25.REVO);
+  c.p25.RENA = not(b.p25.RELA);
+  c.p25.ROFA = not(b.p25.RENA);
+  c.p25.RAHU = not(b.p25.ROCY);
+
+  c.chip.MD0_B = b.p25.ROFA;
+  c.chip.MD1_B = b.p25.ROFA;
+  c.chip.MD2_B = b.p25.ROFA;
+  c.chip.MD3_B = b.p25.ROFA;
+  c.chip.MD4_B = b.p25.ROFA;
+  c.chip.MD5_B = b.p25.ROFA;
+  c.chip.MD6_B = b.p25.ROFA;
+  c.chip.MD7_B = b.p25.ROFA;
+
+  c.p25.RYLU = nand(b.p25.SALE, b.p25.ROPY);
+  c.p25.SOHO = and(b.p29.TACU, b.p29.TEXY);
+  c.p25.RAWA = not(b.p25.SOHO);
+  c.p25.APAM = not(b.p04.VRAM_TO_OAM);
+  c.p25.SUTU = nor(b.p27.LENA, b.p04.VRAM_TO_OAM, b.p29.TEXY, b.p25.SERE);
+  c.p25.RACU = and(b.p25.RYLU, b.p25.RAWA, b.p27.MYMA, b.p25.APAM);
+  c.p25.RACO = not(b.p25.TUTO);
+  c.p25.RUTE = or(b.p25.TUTO, b.p25.RACO); // wat? or of a signal with its own inverse...
+  c.p25.SEWO = or(b.p25.TUTO, b.p25.SUTU);
+  c.p25.TODE = and(b.p25.SUTU, b.p25.RACO);
+  c.p25.SEMA = and(b.p25.RACU, b.p25.RACO);
+  c.p25.TAXY = and(b.p25.SOHY, b.p25.RACO);
+  c.p25.SOFY = or(b.p25.TUTO, b.p25.SOHY);
+
+  c.p25.SAHA = not(b.p25.RUTE);
+  c.p25.SETY = not(b.p25.SEWO);
+  c.p25.SOKY = not(b.p25.TODE);
+  c.p25.REFO = not(b.p25.SEMA);
+  c.p25.SYSY = not(b.p25.TAXY);
+  c.p25.RAGU = not(b.p25.SOFY);
+
+  c.chip.MCS_A = b.p25.SOKY;
+  c.chip.MCS_D = b.p25.SETY;
+  c.chip.MWR_A = b.p25.SYSY;
+  c.chip.MWR_D = b.p25.RAGU;
+  c.chip.MOE_A = b.p25.REFO;
+  c.chip.MOE_D = b.p25.SAHA;
+
+  //----------
+
+  c.p25.RODY_00 = b.chip.MD0_C;
+  c.p25.REBA_01 = b.chip.MD1_C;
+  c.p25.RYDO_02 = b.chip.MD2_C;
+  c.p25.REMO_03 = b.chip.MD3_C;
+  c.p25.ROCE_04 = b.chip.MD4_C;
+  c.p25.ROPU_05 = b.chip.MD5_C;
+  c.p25.RETA_06 = b.chip.MD6_C;
+  c.p25.RAKU_07 = b.chip.MD7_C;
+
+  if (b.p25.RENA) {
+    c.MD0 = b.p25.RODY_00;
+    c.MD1 = b.p25.REBA_01;
+    c.MD2 = b.p25.RYDO_02;
+    c.MD3 = b.p25.REMO_03;
+    c.MD4 = b.p25.ROCE_04;
+    c.MD5 = b.p25.ROPU_05;
+    c.MD6 = b.p25.RETA_06;
+    c.MD7 = b.p25.RAKU_07;
   }
-};
+
+  //----------
+
+  c.p25.TUSO = nor(b.p07.T1nT2, b.p01.BEDO);
+  c.p25.SOLE = not(b.p25.TUSO);
+  c.p25.RUNY = not(b.chip.P10_B);
+
+  c.p25.TOVU_00 = not(b.p25.SOLE);
+  c.p25.SOSA_01 = not(b.p25.SOLE);
+  c.p25.SEDU_02 = not(b.p25.SOLE);
+  c.p25.TAXO_03 = not(b.p25.SOLE);
+  c.p25.TAHY_04 = not(b.p25.SOLE);
+  c.p25.TESU_05 = not(b.p25.SOLE);
+  c.p25.TAZU_06 = not(b.p25.SOLE);
+  c.p25.TEWA_07 = not(b.p25.SOLE);
+
+  if (b.p25.RUNY) {
+    c.D0 = b.p25.TOVU_00;
+    c.D1 = b.p25.SOSA_01;
+    c.D2 = b.p25.SEDU_02;
+    c.D3 = b.p25.TAXO_03;
+    c.D4 = b.p25.TAHY_04;
+    c.D5 = b.p25.TESU_05;
+    c.D6 = b.p25.TAZU_06;
+    c.D7 = b.p25.TEWA_07;
+  }
+
+  //----------
+
+  c.p25.TEME = not(b.D0);
+  c.p25.TEWU = not(b.D1);
+  c.p25.TYGO = not(b.D2);
+  c.p25.SOTE = not(b.D3);
+  c.p25.SEKE = not(b.D4);
+  c.p25.RUJO = not(b.D5);
+  c.p25.TOFA = not(b.D6);
+  c.p25.SUZA = not(b.D7);
+
+  if (b.p25.RAHU) {
+    c.MD0 = b.p25.TEME;
+    c.MD1 = b.p25.TEWU;
+    c.MD2 = b.p25.TYGO;
+    c.MD3 = b.p25.SOTE;
+    c.MD4 = b.p25.SEKE;
+    c.MD5 = b.p25.RUJO;
+    c.MD6 = b.p25.TOFA;
+    c.MD7 = b.p25.SUZA;
+  }
+
+  c.p25.SYNU = or(b.p25.RAHU, b.MD0);
+  c.p25.SYMA = or(b.p25.RAHU, b.MD1);
+  c.p25.ROKO = or(b.p25.RAHU, b.MD2);
+  c.p25.SYBU = or(b.p25.RAHU, b.MD3);
+  c.p25.SAKO = or(b.p25.RAHU, b.MD4);
+  c.p25.SEJY = or(b.p25.RAHU, b.MD5);
+  c.p25.SEDO = or(b.p25.RAHU, b.MD6);
+  c.p25.SAWU = or(b.p25.RAHU, b.MD7);
+
+  c.p25.RURA = not(b.p25.SYNU);
+  c.p25.RULY = not(b.p25.SYMA);
+  c.p25.RARE = not(b.p25.ROKO);
+  c.p25.RODU = not(b.p25.SYBU);
+  c.p25.RUBE = not(b.p25.SAKO);
+  c.p25.RUMU = not(b.p25.SEJY);
+  c.p25.RYTY = not(b.p25.SEDO);
+  c.p25.RADY = not(b.p25.SAWU);
+
+  c.chip.MD0_D = b.p25.RURA;
+  c.chip.MD1_D = b.p25.RULY;
+  c.chip.MD2_D = b.p25.RARE;
+  c.chip.MD3_D = b.p25.RODU;
+  c.chip.MD4_D = b.p25.RUBE;
+  c.chip.MD5_D = b.p25.RUMU;
+  c.chip.MD6_D = b.p25.RYTY;
+  c.chip.MD7_D = b.p25.RADY;
+
+  //----------
+
+  c.p25.XANE = nor(b.p04.VRAM_TO_OAM, b.p21.XYMU);
+  c.p25.XEDU = not(b.p25.XANE);
+
+  c.p25.XAKY = b.A00;
+  c.p25.XUXU = b.A01;
+  c.p25.XYNE = b.A02;
+  c.p25.XODY = b.A03;
+  c.p25.XECA = b.A04;
+  c.p25.XOBA = b.A05;
+  c.p25.XOPO = b.A06;
+  c.p25.XYBO = b.A07;
+  c.p25.RYSU = b.A08;
+  c.p25.RESE = b.A09;
+  c.p25.RUSE = b.A10;
+  c.p25.RYNA = b.A11;
+  c.p25.RUMO = b.A12;
+
+  if (b.p25.XEDU) {
+    c.chip.MA00 = b.p25.XAKY;
+    c.chip.MA01 = b.p25.XUXU;
+    c.chip.MA02 = b.p25.XYNE;
+    c.chip.MA03 = b.p25.XODY;
+    c.chip.MA04 = b.p25.XECA;
+    c.chip.MA05 = b.p25.XOBA;
+    c.chip.MA06 = b.p25.XOPO;
+    c.chip.MA07 = b.p25.XYBO;
+    c.chip.MA08 = b.p25.RYSU;
+    c.chip.MA09 = b.p25.RESE;
+    c.chip.MA10 = b.p25.RUSE;
+    c.chip.MA11 = b.p25.RYNA;
+    c.chip.MA12 = b.p25.RUMO;
+  }
+
+  //----------
+
+  c.p25.ROVE = not(b.p25.RAHU);
+
+  c.p25.SEFA_00 = and(b.MD0, b.p25.ROVE);
+  c.p25.SOGO_01 = and(b.MD1, b.p25.ROVE);
+  c.p25.SEFU_02 = and(b.MD2, b.p25.ROVE);
+  c.p25.SUNA_03 = and(b.MD3, b.p25.ROVE);
+  c.p25.SUMO_04 = and(b.MD4, b.p25.ROVE);
+  c.p25.SAZU_05 = and(b.MD5, b.p25.ROVE);
+  c.p25.SAMO_06 = and(b.MD6, b.p25.ROVE);
+  c.p25.SUKE_07 = and(b.MD7, b.p25.ROVE);
+
+  c.p25.REGE_00 = not(b.p25.SEFA_00);
+  c.p25.RYKY_01 = not(b.p25.SOGO_01);
+  c.p25.RAZO_02 = not(b.p25.SEFU_02);
+  c.p25.RADA_03 = not(b.p25.SUNA_03);
+  c.p25.RYRO_04 = not(b.p25.SUMO_04);
+  c.p25.REVU_05 = not(b.p25.SAZU_05);
+  c.p25.REKU_06 = not(b.p25.SAMO_06);
+  c.p25.RYZE_07 = not(b.p25.SUKE_07);
+
+  c.chip.MD0_A = b.p25.REGE_00;
+  c.chip.MD1_A = b.p25.RYKY_01;
+  c.chip.MD2_A = b.p25.RAZO_02;
+  c.chip.MD3_A = b.p25.RADA_03;
+  c.chip.MD4_A = b.p25.RYRO_04;
+  c.chip.MD5_A = b.p25.REVU_05;
+  c.chip.MD6_A = b.p25.REKU_06;
+  c.chip.MD7_A = b.p25.RYZE_07;
+
+  //----------
+
+  c.p25.CEDE = not(b.p04.LUMA);
+
+  c.p25.RALO_00 = not(b.chip.D0_C);
+  c.p25.TUNE_01 = not(b.chip.D1_C);
+  c.p25.SERA_02 = not(b.chip.D2_C);
+  c.p25.TENU_03 = not(b.chip.D3_C);
+  c.p25.SYSA_04 = not(b.chip.D4_C);
+  c.p25.SUGY_05 = not(b.chip.D5_C);
+  c.p25.TUBE_06 = not(b.chip.D6_C);
+  c.p25.SYZO_07 = not(b.chip.D7_C);
+
+  c.p25.WEJO_00 = not(b.p25.RALO_00);
+  c.p25.BUBO_01 = not(b.p25.TUNE_01);
+  c.p25.BETU_02 = not(b.p25.SERA_02);
+  c.p25.CYME_03 = not(b.p25.TENU_03);
+  c.p25.BAXU_04 = not(b.p25.SYSA_04);
+  c.p25.BUHU_05 = not(b.p25.SUGY_05);
+  c.p25.BYNY_06 = not(b.p25.TUBE_06);
+  c.p25.BYPY_07 = not(b.p25.SYZO_07);
+
+  c.p25.WASA_00 = not(b.p25.RALO_00);
+  c.p25.BOMO_01 = not(b.p25.TUNE_01);
+  c.p25.BASA_02 = not(b.p25.SERA_02);
+  c.p25.CAKO_03 = not(b.p25.TENU_03);
+  c.p25.BUMA_04 = not(b.p25.SYSA_04);
+  c.p25.BUPY_05 = not(b.p25.SUGY_05);
+  c.p25.BASY_06 = not(b.p25.TUBE_06);
+  c.p25.BAPE_07 = not(b.p25.SYZO_07);
+
+  if (b.p25.CEDE) {
+    c.OAM_A_D0 = b.p25.WEJO_00;
+    c.OAM_A_D1 = b.p25.BUBO_01;
+    c.OAM_A_D2 = b.p25.BETU_02;
+    c.OAM_A_D3 = b.p25.CYME_03;
+    c.OAM_A_D4 = b.p25.BAXU_04;
+    c.OAM_A_D5 = b.p25.BUHU_05;
+    c.OAM_A_D6 = b.p25.BYNY_06;
+    c.OAM_A_D7 = b.p25.BYPY_07;
+
+    c.OAM_B_D0 = b.p25.WASA_00;
+    c.OAM_B_D1 = b.p25.BOMO_01;
+    c.OAM_B_D2 = b.p25.BASA_02;
+    c.OAM_B_D3 = b.p25.CAKO_03;
+    c.OAM_B_D4 = b.p25.BUMA_04;
+    c.OAM_B_D5 = b.p25.BUPY_05;
+    c.OAM_B_D6 = b.p25.BASY_06;
+    c.OAM_B_D7 = b.p25.BAPE_07;
+  }
+
+  //----------
+
+  c.p25.TYVY = nand(b.p25.SERE, b.p28.LEKO);
+  c.p25.SEBY = not(b.p25.TYVY);
+
+  c.p25.RERY_00 = not(b.MD0);
+  c.p25.RUNA_01 = not(b.MD1);
+  c.p25.RONA_02 = not(b.MD2);
+  c.p25.RUNO_03 = not(b.MD3);
+  c.p25.SANA_04 = not(b.MD4);
+  c.p25.RORO_05 = not(b.MD5);
+  c.p25.RABO_06 = not(b.MD6);
+  c.p25.SAME_07 = not(b.MD7);
+
+  c.p25.RUGA_00 = not(b.p25.RERY_00);
+  c.p25.ROTA_01 = not(b.p25.RUNA_01);
+  c.p25.RYBU_02 = not(b.p25.RONA_02);
+  c.p25.RAJU_03 = not(b.p25.RUNO_03);
+  c.p25.TYJA_04 = not(b.p25.SANA_04);
+  c.p25.REXU_05 = not(b.p25.RORO_05);
+  c.p25.RUPY_06 = not(b.p25.RABO_06);
+  c.p25.TOKU_07 = not(b.p25.SAME_07);
+
+  if (b.p25.SEBY) {
+    c.D0 = b.p25.RUGA_00;
+    c.D1 = b.p25.ROTA_01;
+    c.D2 = b.p25.RYBU_02;
+    c.D3 = b.p25.RAJU_03;
+    c.D4 = b.p25.TYJA_04;
+    c.D5 = b.p25.REXU_05;
+    c.D6 = b.p25.RUPY_06;
+    c.D7 = b.p25.TOKU_07;
+  }
+
+  //----------
+
+  c.p25.XUCY = nand(b.p26.NETA, b.p26.PORE);
+  c.p25.XEZE = nand(b.p26.POTU, b.p26.PORE);
+  c.p25.WUKO = not(b.p25.XEZE);
+
+  //----------
+
+  c.p25.XONU_00 = not(b.p27.XUHA);
+  c.p25.WUDO_01 = not(b.p27.VYNO);
+  c.p25.WAWE_02 = not(b.p27.VUJO);
+  c.p25.WOLU_03 = not(b.p27.VYMU);
+
+  if (b.p25.XUCY) {
+    c.MA00 = b.p25.XONU_00;
+    c.MA01 = b.p25.WUDO_01;
+    c.MA02 = b.p25.WAWE_02;
+    c.MA03 = b.p25.WOLU_03;
+  }
+
+  //----------
+
+  c.p25.VAPY_04 = not(b.p32.RAWU);
+  c.p25.SEZU_05 = not(b.p32.POZO);
+  c.p25.VEJY_06 = not(b.p32.PYZO);
+  c.p25.RUSA_07 = not(b.p32.POXA);
+  c.p25.ROHA_08 = not(b.p32.PULO);
+  c.p25.RESO_09 = not(b.p32.POJU);
+  c.p25.SUVO_10 = not(b.p32.POWY);
+  c.p25.TOBO_11 = not(b.p32.PYJU);
+
+  c.p25.VUZA = nor(b.p23.FF40_D4, b.p32.PYJU);
+  c.p25.VURY_12 = not(b.p25.VUZA);
+
+  if (b.p26.NETA) {
+    c.MA04 = b.p25.VAPY_04;
+    c.MA05 = b.p25.SEZU_05;
+    c.MA06 = b.p25.VEJY_06;
+    c.MA07 = b.p25.RUSA_07;
+    c.MA08 = b.p25.ROHA_08;
+    c.MA09 = b.p25.RESO_09;
+    c.MA10 = b.p25.SUVO_10;
+    c.MA11 = b.p25.TOBO_11;
+    c.MA12 = b.p25.VURY_12;
+  }
+}

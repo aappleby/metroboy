@@ -13,29 +13,52 @@ struct P01_ClocksReset {
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
   static const std::vector<SignalData> signals();
 
+  // 4M clocks
+  union { bool AMUK; bool AMUK_4M; }; // _b_d_f_h
+  union { bool APUV; bool APUV_4M; }; // a_c_e_g_
+  union { bool ARYF; bool ARYF_4M; }; // a_c_e_g_
+  union { bool ATAL; bool ATAL_4M; }; // a_c_e_g_
+  union { bool ZEME; bool CLK1; };    // _b_d_f_h
+  union { bool ALET; bool CLK2; };    // a_c_e_g_
+
+  // 2M clocks
+  union { bool CERY; bool CERY_2M; }; // ab__ef__
+
+  // 1M clocks
+  union { bool BEVA; bool PHI_OUT; };     // abcd____
+  union { bool UVYT; bool PHI_OUTn; };    // ____efgh
+  union { bool DOVA; bool PHIn; };        // ____efgh
+  union { bool BEDO; };                   // _____fgh -> PORTD_02
+  union { bool BOWA; bool TO_CPU; };      // abcde___ -> PORTD_01
+  union { bool BOGA; bool BOGA_1M; };     // abcde___ -> PORTD_08
+  union { bool BAVU; bool BAVU_1M; };
+  union { bool BEKO; };                   // ____efgh -> PORTD_03
+  union { bool BUDE; };                   // abcd____ -> PORTD_04
+  union { bool BUKE; };                   // _____f__ -> PORTD_06
+  union { bool BOMA; };                   // _____fgh -> PORTD_07
+
+  // Other clocks
+
+  union { bool HAMA;    bool HAMA_512Kn; };
+  union { bool JESO;    bool JESO_512K; };
   union { bool UFOR_01; bool CLK_256K; };
   union { bool TERO_03; bool CLK_64K; };
   union { bool TAMA_05; bool TAMA_16Kn; };
-  union { bool ALUR;    bool RESET2; };
-  union { bool BEVA;    bool PHI_OUT; };
-  union { bool UVYT;    bool PHI_OUTn; };    // ____efgh
-  union { bool DOVA;    bool PHIn; };        // ____efgh
-  union { bool BEDO; };                      // _____fgh -> PORTD_02
-  union { bool BOWA;    bool TO_CPU; };      // abcde___ -> PORTD_01
-  union { bool BOGA;    bool BOGA_1M; };     // abcde___ -> PORTD_08
-  union { bool APOV;    bool CPU_WR_SYNC; }; // ___d____ -> CPU_WR_SYNC
-  union { bool ABUZ; };                      // ____ef__ -> CPU_RD_SYNC?
   union { bool UVYN;    bool CLK_16K; };
-  union { bool UMEK;    bool FF04_D0n; };
-  union { bool UREK;    bool FF04_D1n; };
-  union { bool BAVU;    bool BAVU_1M; };
+
+  // Slow clocks for APU sequencer
+  union { bool HORU;    bool HORU_512; };
   union { bool BUFY;    bool BUFY_256; };
   union { bool BYFE;    bool BYFE_128; };
-  union { bool HAMA;    bool HAMA_512Kn; };
-  union { bool HORU;    bool HORU_512; };
-  union { bool JESO;    bool JESO_512K; };
+
+  // Gated rd/wr signals
+  union { bool ABUZ; bool CPU_RD_SYNC; }; // ____ef__ -> CPU_RD_SYNC
+  union { bool APOV; bool CPU_WR_SYNC; }; // ___d____ -> CPU_WR_SYNC
 
   union { bool UCOB; bool CLKIN_An; };
+
+  // Resets
+  union { bool ALUR; bool RESET2; };
   union { bool CUNU; bool RESET6; };
   union { bool XORE; bool RESET7; };
   union { bool XEBE; bool RESET7n; };
@@ -43,19 +66,13 @@ struct P01_ClocksReset {
   union { bool WESY; bool RESET9; };
   union { bool XAPO; bool RESET_VIDEO; };
 
-  union { bool AMUK; bool AMUK_4M; }; // _b_d_f_h
-  union { bool APUV; bool APUV_4M; }; // a_c_e_g_
-  union { bool ARYF; bool ARYF_4M; }; // a_c_e_g_
-  union { bool ATAL; bool ATAL_4M; }; // a_c_e_g_
-  union { bool ZEME; bool CLK1; };    // _b_d_f_h
-  union { bool ALET; bool CLK2; };    // a_c_e_g_
-  union { bool CERY; bool CERY_2M; }; // ab__ef__
+  // Div register refs, these should be named like the clocks
+  union { bool UMEK; bool FF04_D0n; }; // -> p24.umob
+  union { bool UREK; bool FF04_D1n; }; // -> p03.teko, p24.usec
 
-  bool BEKO; // ____efgh -> PORTD_03
-  bool BUDE; // abcd____ -> PORTD_04
+  union { bool AFAS; }; // ___d____
 
-  bool BUKE; // _____f__ -> PORTD_06
-  bool BOMA; // _____fgh -> PORTD_07
+  union { bool ABOL; };
 
 private:
 
@@ -96,7 +113,6 @@ private:
   bool LAPE; // _b_d_f_h
   bool TAVA; // a_c_e_g_
 
-  bool AFAS; // ___d____
   bool AREV; // abc_efgh
 
   bool BERU; // ab__efgh

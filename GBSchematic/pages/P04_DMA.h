@@ -9,7 +9,7 @@ struct Gameboy;
 
 struct P04_DMA {
 
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   union { bool CATY; };
   union { bool WYJA; };
@@ -35,6 +35,8 @@ struct P04_DMA {
   union { bool POKU_06; bool DMA_A14; }; 
   union { bool MARU_07; bool DMA_A15; }; 
 
+  bool MATU;
+
 private:
   
   // DMA counter
@@ -49,7 +51,6 @@ private:
   bool LUVY;
   bool MYTE;
   bool LENE;
-  bool MATU;
 
   bool DECY,NAXY,POWU,LUPA,MOLU,LAVY,NYGO,LORU,PUSY;
   bool AHOC,LOKO,LAPA,META;

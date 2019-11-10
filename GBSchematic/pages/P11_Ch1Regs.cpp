@@ -7,194 +7,176 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P11_Ch1Regs::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
-  const P11_Ch1Regs pa = ga.p11;
-  const P11_Ch1Regs pb = gb.p11;
-  P11_Ch1Regs pc = gc.p11;
+void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // FF10 NR10
 
-  // schematic image cut off, this could be APU_WR or CPU_WR
-  pc.CENU = and(gb.p10.APU_WR, pb.FF10);
-  pc.BUZE = not(pb.FF10);
-  pc.ATYN = nor(gb.p09.CPU_RDn, pb.BUZE);
-  pc.ASOP = not(pb.ATYN);
+  c.p11.CENU = and(b.p10.APU_WR, b.p10.FF10);
+  c.p11.BUZE = not(b.p10.FF10);
+  c.p11.ATYN = nor(b.p09.CPU_RDn, b.p11.BUZE);
+  c.p11.ASOP = not(b.p11.ATYN);
 
-  pc.BANY = tock_pos(pa.CENU, pb.CENU, gb.p09.APU_RESETn, pb.BANY, gb.D0);
-  pc.ANAZ = tock_pos(pa.CENU, pb.CENU, gb.p09.APU_RESETn, pb.ANAZ, gb.D2);
-  pc.BOTU = tock_pos(pa.CENU, pb.CENU, gb.p09.APU_RESETn, pb.BOTU, gb.D6);
-  pc.AVAF = tock_pos(pa.CENU, pb.CENU, gb.p09.APU_RESETn, pb.AVAF, gb.D3);
-  pc.ARAX = tock_pos(pa.CENU, pb.CENU, gb.p09.APU_RESETn, pb.ARAX, gb.D1);
-  pc.ADEK = tock_pos(pa.CENU, pb.CENU, gb.p09.APU_RESETn, pb.ADEK, gb.D4);
-  pc.BANA = tock_pos(pa.CENU, pb.CENU, gb.p09.APU_RESETn, pb.BANA, gb.D5);
+  c.p11.BANY = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.BANY, b.D0);
+  c.p11.ANAZ = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.ANAZ, b.D2);
+  c.p11.BOTU = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.BOTU, b.D6);
+  c.p11.AVAF = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.AVAF, b.D3);
+  c.p11.ARAX = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.ARAX, b.D1);
+  c.p11.ADEK = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.ADEK, b.D4);
+  c.p11.BANA = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.BANA, b.D5);
 
-  pc.AMYD = not(!pb.BANY);
-  pc.AZYP = not(!pb.ANAZ);
-  pc.AWOS = not(!pb.BOTU);
-  pc.AFOX = not(!pb.AVAF);
-  pc.ATAX = not(!pb.ARAX);
-  pc.AVEK = not(!pb.ADEK);
-  pc.AKUX = not(!pb.BANA);
+  c.p11.AMYD = not(!b.p11.BANY);
+  c.p11.AZYP = not(!b.p11.ANAZ);
+  c.p11.AWOS = not(!b.p11.BOTU);
+  c.p11.AFOX = not(!b.p11.AVAF);
+  c.p11.ATAX = not(!b.p11.ARAX);
+  c.p11.AVEK = not(!b.p11.ADEK);
+  c.p11.AKUX = not(!b.p11.BANA);
 
-  pc.FF10_D0n = pb.BANY;
-  pc.FF10_D1n = pb.ARAX;
-  pc.FF10_D2n = pb.ANAZ;
-  pc.FF10_D3n = pb.AVAF;
-  pc.FF10_D4n = pb.ADEK;
-  pc.FF10_D5n = pb.BANA;
-  pc.FF10_D6n = pb.BOTU;
-
-  if (pb.ASOP) {
-    gc.D0 = pb.AMYD;
-    gc.D2 = pb.AZYP;
-    gc.D6 = pb.AWOS;
-    gc.D3 = pb.AFOX;
-    gc.D1 = pb.ATAX;
-    gc.D4 = pb.AVEK;
-    gc.D5 = pb.AKUX;
+  if (b.p11.ASOP) {
+    c.D0 = b.p11.AMYD;
+    c.D2 = b.p11.AZYP;
+    c.D6 = b.p11.AWOS;
+    c.D3 = b.p11.AFOX;
+    c.D1 = b.p11.ATAX;
+    c.D4 = b.p11.AVEK;
+    c.D5 = b.p11.AKUX;
   }
 
   //----------
   // FF11 NR11
 
   // BUG APU_WR
-  pc.COVU = and(gb.p10.APU_WR, pb.FF11);
-  pc.CEPO = not(gb.p09.APU_RESET);
-  pc.DAFO = not(pb.COVU);
-  pc.CENA = tock_pos(pa.DAFO, pb.DAFO, pb.CEPO, pb.CENA, gb.D6);
-  pc.DYCA = tock_pos(pa.DAFO, pb.DAFO, pb.CEPO, pb.DYCA, gb.D7);
+  c.p11.COVU = and(b.p10.APU_WR, b.p10.FF11);
+  c.p11.CEPO = not(b.p09.APU_RESET);
+  c.p11.DAFO = not(b.p11.COVU);
+  c.p11.CENA = tock_pos(a.p11.DAFO, b.p11.DAFO, b.p11.CEPO, b.p11.CENA, b.D6);
+  c.p11.DYCA = tock_pos(a.p11.DAFO, b.p11.DAFO, b.p11.CEPO, b.p11.DYCA, b.D7);
 
-  pc.BUWA = not(gb.p09.CPU_RDn);
-  pc.BEXU = nor(pb.BUWA, pb.FF11);
+  c.p11.BUWA = not(b.p09.CPU_RDn);
+  c.p11.BEXU = nor(b.p11.BUWA, b.p10.FF11);
 
-  pc.BOWO = not(!pb.CENA);
-  pc.CUDA = not(!pb.DYCA);
+  c.p11.BOWO = not(!b.p11.CENA);
+  c.p11.CUDA = not(!b.p11.DYCA);
 
-  pc.FF11_D6  = pb.CENA;
-  pc.FF11_D6n = !pb.CENA;
-  pc.FF11_D7  = pb.DYCA;
-  pc.FF11_D7n = !pb.DYCA;
-
-  if (pb.BEXU) {
-    gc.D6 = pb.BOWO;
-    gc.D7 = pb.CUDA;
+  if (b.p11.BEXU) {
+    c.D6 = b.p11.BOWO;
+    c.D7 = b.p11.CUDA;
   }
 
   //----------
   // FF12 NR12
 
-  pc.GAXU = nand(pb.FF12, gb.p10.APU_WR);
-  pc.HATO = not(gb.p09.APU_RESET);
-  pc.GAGO = not(pb.FF12);
-  pc.KAGY = not(pb.GAXU);
-  pc.HOCU = or(pb.GAGO, gb.p09.CPU_RDn);
+  c.p11.GAXU = nand(b.p10.FF12, b.p10.APU_WR);
+  c.p11.HATO = not(b.p09.APU_RESET);
+  c.p11.GAGO = not(b.p10.FF12);
+  c.p11.KAGY = not(b.p11.GAXU);
+  c.p11.HOCU = or(b.p11.GAGO, b.p09.CPU_RDn);
 
-  pc.JOPU = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JOPU, gb.D7);
-  pc.JENA = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JENA, gb.D6);
-  pc.JAXO = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JAXO, gb.D5);
-  pc.JATY = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JATY, gb.D4);
-  pc.JAFY = tock_pos(pa.GAXU, pb.GAXU, pb.HATO, pb.JAFY, gb.D3);
+  c.p11.JOPU = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JOPU, b.D7);
+  c.p11.JENA = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JENA, b.D6);
+  c.p11.JAXO = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JAXO, b.D5);
+  c.p11.JATY = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JATY, b.D4);
+  c.p11.JAFY = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JAFY, b.D3);
 
-  pc.JYSE = not(!pb.JOPU);
-  pc.HEVE = not(!pb.JENA);
-  pc.HEWA = not(!pb.JAXO);
-  pc.HOWU = not(!pb.JATY);
-  pc.HONO = not(!pb.JAFY);
+  c.p11.JYSE = not(!b.p11.JOPU);
+  c.p11.HEVE = not(!b.p11.JENA);
+  c.p11.HEWA = not(!b.p11.JAXO);
+  c.p11.HOWU = not(!b.p11.JATY);
+  c.p11.HONO = not(!b.p11.JAFY);
 
-  if (pb.HOCU) {
-    gc.D7 = pb.JYSE;
-    gc.D6 = pb.HEVE;
-    gc.D5 = pb.HEWA;
-    gc.D4 = pb.HOWU;
-    gc.D3 = pb.HONO;
+  if (b.p11.HOCU) {
+    c.D7 = b.p11.JYSE;
+    c.D6 = b.p11.HEVE;
+    c.D5 = b.p11.HEWA;
+    c.D4 = b.p11.HOWU;
+    c.D3 = b.p11.HONO;
   }
 
-  pc.HAXE = not(pb.FF12);
-  pc.HAFU = and(gb.p10.APU_WR, pb.FF12);
-  pc.HAMY = or(pb.HAXE, gb.p09.CPU_RDn);
-  pc.KYGY = not(pb.HAFU);
+  c.p11.HAXE = not(b.p10.FF12);
+  c.p11.HAFU = and(b.p10.APU_WR, b.p10.FF12);
+  c.p11.HAMY = or(b.p11.HAXE, b.p09.CPU_RDn);
+  c.p11.KYGY = not(b.p11.HAFU);
 
-  pc.JUSA = tock_pos(pa.KYGY, pb.KYGY, pb.HATO, pb.JUSA, gb.D0);
-  pc.JUZY = tock_pos(pa.KYGY, pb.KYGY, pb.HATO, pb.JUZY, gb.D1);
-  pc.JOMA = tock_pos(pa.KYGY, pb.KYGY, pb.HATO, pb.JOMA, gb.D2);
+  c.p11.JUSA = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.JUSA, b.D0);
+  c.p11.JUZY = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.JUZY, b.D1);
+  c.p11.JOMA = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.JOMA, b.D2);
 
-  pc.JYNE = not(!pb.JUSA);
-  pc.JACA = not(!pb.JUZY);
-  pc.JOKU = not(!pb.JOMA);
+  c.p11.JYNE = not(!b.p11.JUSA);
+  c.p11.JACA = not(!b.p11.JUZY);
+  c.p11.JOKU = not(!b.p11.JOMA);
 
-  if (pb.HAMY) {
-    gc.D0 = pb.JYNE;
-    gc.D1 = pb.JACA;
-    gc.D2 = pb.JOKU;
+  if (b.p11.HAMY) {
+    c.D0 = b.p11.JYNE;
+    c.D1 = b.p11.JACA;
+    c.D2 = b.p11.JOKU;
   }
 
   //----------
   // FF13 NR13
 
-  pc.FULO = nor(gb.p09.DYFA_1M, pb.GEXU);
-  pc.EPYK = nor(pb.FEKU, pb.COPE);
-  pc.GEKU = not(pb.FULO);
-  pc.FUME = not(pb.EPYK);
+  c.p11.FULO = nor(b.p09.DYFA_1M, b.p13.GEXU);
+  c.p11.EPYK = nor(b.p13.FEKU, b.p13.COPE);
+  c.p11.GEKU = not(b.p11.FULO);
+  c.p11.FUME = not(b.p11.EPYK);
 
-  // FIXME daisy chain
-  pc.GAXE = count_pos(pa.GEKU, pb.GEKU, pb.FUME, pb.GAXE, pb.HYKA);
-  pc.HYFE = count_pos(pa.GAXE, pb.GAXE, pb.FUME, pb.HYFE, pb.JYKA);
-  pc.JYTY = count_pos(pa.HYFE, pb.HYFE, pb.FUME, pb.JYTY, pb.HAVO);
-  pc.KYNA = count_pos(pa.JYTY, pb.JYTY, pb.FUME, pb.KYNA, pb.EDUL);
+  c.p11.GAXE = count_pos(a.p11.GEKU, b.p11.GEKU, b.p11.FUME, b.p11.GAXE, b.p12.HYKA);
+  c.p11.HYFE = count_pos(a.p11.GAXE, b.p11.GAXE, b.p11.FUME, b.p11.HYFE, b.p12.JYKA);
+  c.p11.JYTY = count_pos(a.p11.HYFE, b.p11.HYFE, b.p11.FUME, b.p11.JYTY, b.p12.HAVO);
+  c.p11.KYNA = count_pos(a.p11.JYTY, b.p11.JYTY, b.p11.FUME, b.p11.KYNA, b.p12.EDUL);
 
-  pc.DEGA = not(pb.EPYK);
-  pc.KYPE = not(pb.KYNA);
+  c.p11.DEGA = not(b.p11.EPYK);
+  c.p11.KYPE = not(b.p11.KYNA);
 
-  pc.JEMA = count_pos(pa.KYPE, pb.KYPE, pb.DEGA, pb.JEMA, pb.FELY);
-  pc.HYKE = count_pos(pa.JEMA, pb.JEMA, pb.DEGA, pb.HYKE, pb.HOLU);
-  pc.FEVA = count_pos(pa.HYKE, pb.HYKE, pb.DEGA, pb.FEVA, pb.HYXU);
-  pc.EKOV = count_pos(pa.FEVA, pb.FEVA, pb.DEGA, pb.EKOV, pb.HOPO);
+  c.p11.JEMA = count_pos(a.p11.KYPE, b.p11.KYPE, b.p11.DEGA, b.p11.JEMA, b.p12.FELY);
+  c.p11.HYKE = count_pos(a.p11.JEMA, b.p11.JEMA, b.p11.DEGA, b.p11.HYKE, b.p12.HOLU);
+  c.p11.FEVA = count_pos(a.p11.HYKE, b.p11.HYKE, b.p11.DEGA, b.p11.FEVA, b.p12.HYXU);
+  c.p11.EKOV = count_pos(a.p11.FEVA, b.p11.FEVA, b.p11.DEGA, b.p11.EKOV, b.p12.HOPO);
 
-  pc.DAKO = not(pb.EPYK);
-  pc.DERU = not(pb.EKOV);
+  c.p11.DAKO = not(b.p11.EPYK);
+  c.p11.DERU = not(b.p11.EKOV);
 
-  pc.EMUS = count_pos(pa.DERU, pb.DERU, pb.DAKO, pb.EMUS, pb.DYGY);
-  pc.EVAK = count_pos(pa.EMUS, pb.EMUS, pb.DAKO, pb.EVAK, pb.EVAB);
-  pc.COPU = count_pos(pa.EVAK, pb.EVAK, pb.DAKO, pb.COPU, pb.AXAN);
+  c.p11.EMUS = count_pos(a.p11.DERU, b.p11.DERU, b.p11.DAKO, b.p11.EMUS, b.p12.DYGY);
+  c.p11.EVAK = count_pos(a.p11.EMUS, b.p11.EMUS, b.p11.DAKO, b.p11.EVAK, b.p12.EVAB);
+  c.p11.COPU = count_pos(a.p11.EVAK, b.p11.EVAK, b.p11.DAKO, b.p11.COPU, b.p12.AXAN);
 
-  pc.FORU = not(!pb.GAXE);
-  pc.GEFU = not(!pb.HYFE);
-  pc.KYVU = not(!pb.JYTY);
-  pc.KUMO = not(!pb.KYNA);
-  pc.KARY = not(!pb.JEMA);
-  pc.GODE = not(!pb.HYKE);
-  pc.GOJE = not(!pb.FEVA);
-  pc.FOZE = not(!pb.EKOV);
+  c.p11.FORU = not(!b.p11.GAXE);
+  c.p11.GEFU = not(!b.p11.HYFE);
+  c.p11.KYVU = not(!b.p11.JYTY);
+  c.p11.KUMO = not(!b.p11.KYNA);
+  c.p11.KARY = not(!b.p11.JEMA);
+  c.p11.GODE = not(!b.p11.HYKE);
+  c.p11.GOJE = not(!b.p11.FEVA);
+  c.p11.FOZE = not(!b.p11.EKOV);
 
-  pc.CEGE = not(gb.p09.CPU_RDn);
-  pc.DAXA = nand(pb.CEGE, gb.p09.NET03);
-  pc.CACA = not(pb.FF13);
-  pc.DYPU = nor(pb.DAXA, pb.CACA);
-  pc.EVAJ = not(pb.DYPU);
+  c.p11.CEGE = not(b.p09.CPU_RDn);
+  c.p11.DAXA = nand(b.p11.CEGE, b.p09.NET03);
+  c.p11.CACA = not(b.p10.FF13);
+  c.p11.DYPU = nor(b.p11.DAXA, b.p11.CACA);
+  c.p11.EVAJ = not(b.p11.DYPU);
 
-  if (pb.EVAJ) {
-    gc.D0 = pb.FORU;
-    gc.D1 = pb.GEFU;
-    gc.D2 = pb.KYVU;
-    gc.D3 = pb.KUMO;
-    gc.D4 = pb.KARY;
-    gc.D5 = pb.GODE;
-    gc.D6 = pb.GOJE;
-    gc.D7 = pb.FOZE;
+  if (b.p11.EVAJ) {
+    c.D0 = b.p11.FORU;
+    c.D1 = b.p11.GEFU;
+    c.D2 = b.p11.KYVU;
+    c.D3 = b.p11.KUMO;
+    c.D4 = b.p11.KARY;
+    c.D5 = b.p11.GODE;
+    c.D6 = b.p11.GOJE;
+    c.D7 = b.p11.FOZE;
   }
 
-  pc.CURE = not(pb.FF14);
-  pc.DUPY = or(pb.CURE, pb.DAXA);
+  c.p11.CURE = not(b.p10.FF14);
+  c.p11.DUPY = or(b.p11.CURE, b.p11.DAXA);
 
-  pc.DOPA = not(!pb.EMUS);
-  pc.DEMU = not(!pb.EVAK);
-  pc.DEXO = not(!pb.COPU);
+  c.p11.DOPA = not(!b.p11.EMUS);
+  c.p11.DEMU = not(!b.p11.EVAK);
+  c.p11.DEXO = not(!b.p11.COPU);
 
-  if (pb.DUPY) {
-    gc.D0 = pb.DOPA;
-    gc.D1 = pb.DEMU;
-    gc.D2 = pb.DEXO;
+  if (b.p11.DUPY) {
+    c.D0 = b.p11.DOPA;
+    c.D1 = b.p11.DEMU;
+    c.D2 = b.p11.DEXO;
   }
 
   //----------
@@ -202,17 +184,14 @@ void P11_Ch1Regs::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
 
   // why is ANUJ here?
 
-  pc.BAGE = nand(gb.p16.ANUJ, pb.FF14); 
-  pc.CAMY = not(gb.p09.APU_RESET);
-  pc.BUDA = not(gb.p07.CPU_RD);
-  pc.BALE = nand(pb.BUDA, pb.FF14);
-  pc.BOKO = tock_pos(pa.BAGE, pb.BAGE, pb.CAMY, pc.BOKO, gb.D6);
+  c.p11.BAGE = nand(b.p16.ANUJ, b.p10.FF14); 
+  c.p11.CAMY = not(b.p09.APU_RESET);
+  c.p11.BUDA = not(b.p07.CPU_RD);
+  c.p11.BALE = nand(b.p11.BUDA, b.p10.FF14);
+  c.p11.BOKO = tock_pos(a.p11.BAGE, b.p11.BAGE, b.p11.CAMY, c.p11.BOKO, b.D6);
 
-  pc.FF14_D6  = pb.BOKO;
-  pc.FF14_D6n = !pb.BOKO;
-
-  pc.BYTU = not(!pb.BOKO);
-  if (pb.BALE) {
-    gc.D6 = pb.BYTU;
+  c.p11.BYTU = not(!b.p11.BOKO);
+  if (b.p11.BALE) {
+    c.D6 = b.p11.BYTU;
   }
 }

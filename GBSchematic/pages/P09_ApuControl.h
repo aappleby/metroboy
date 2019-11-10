@@ -4,6 +4,8 @@ struct Gameboy;
 
 struct P09_ApuControl {
 
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+
   union { bool AJER; bool AJER_2M; };
   union { bool DYFA; bool DYFA_1M; };
   union { bool AGUR; bool APU_RESETn; };
@@ -24,8 +26,6 @@ private:
   // FF25 NR51
   bool ANEV,BOGU,BAFO,ATUF,BUME,BOFA,BEFO,BEPU;
 
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
-
   //----------
 
   bool BATA,CALO;
@@ -40,11 +40,5 @@ private:
   bool CETO,KAZO,CURU,GAXO;
   bool DOLE,KAMU,DURU,FEWA;
   bool COTO,KOGE,EFUS,FATE;
-
-  //----------
-
-  bool FF24;
-  bool FF25;
-  bool FF26;
 };
 

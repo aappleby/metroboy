@@ -244,7 +244,7 @@ struct ChipSignals {
 
   /* PIN_49 */
   bool MWR_A; // <- P25.SYSY
-  bool MWR_C;
+  bool MWR_C; // -> P25.SUDO
   bool MWR_D; // <- P25.RAGU
 
   //----------

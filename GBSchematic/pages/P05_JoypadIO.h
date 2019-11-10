@@ -7,6 +7,13 @@ struct Gameboy;
 // no modifications or simplifications.
 
 struct P05_JoypadIO {
+
+  // joypad int is in p02, so there's no outputs here
+
+  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+
+private:
+
   // FF00 JOYP
   bool JUTE_00,KECY_01,JALE_02,KYME_03,KELY_04,COFY_05,KUKO_06,KERU_07;
 
@@ -26,6 +33,4 @@ struct P05_JoypadIO {
 
   bool KORE,JEVA,KYWE;
   bool KENA;
-
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 };

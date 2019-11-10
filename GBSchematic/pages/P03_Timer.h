@@ -21,7 +21,7 @@ struct P03_Timer {
   void set_tma(uint8_t x)  { unpack(x, SABU_0,NYKE_1,MURU_2,TYVA_3,TYRU_4,SUFY_5,PETO_6,SETA_7); }
   void set_tac(uint8_t x)  { unpack(x, SOPU_0,SAMY_1,SABO_2); }
 
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
   static const std::vector<SignalData> signals();
 
 private:

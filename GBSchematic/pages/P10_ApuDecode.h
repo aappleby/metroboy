@@ -4,7 +4,7 @@ struct Gameboy;
 
 struct P10_ApuDecode {
 
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   union { bool ATOZ; bool FF00WR; };
   union { bool ACAT; bool FF00RD; };
@@ -39,7 +39,7 @@ struct P10_ApuDecode {
 
   union { bool EKAG; bool XXX6; };
 
-  union { bool ANAP; };
+  union { bool ANAP; }; // -> p07.APER
 
 private:
 

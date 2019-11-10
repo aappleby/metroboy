@@ -11,9 +11,17 @@ struct Gameboy;
 struct P02_Interrupts {
 
   union { bool ASOK; bool INT_JP; };
+  union { bool AWOB; bool TO_CPU2; };
+
+  // FF0F IF reg
+  union { bool LOPE; bool FF0F_0; bool TO_CPU3; };
+  union { bool UBUL; bool FF0F_1; bool TO_CPU4; };
+  union { bool ULAK; bool FF0F_2; bool TO_CPU5; };
+  union { bool LALU; bool FF0F_3; bool TO_CPU6; };
+  union { bool NYBO; bool FF0F_4; bool TO_CPU7; };
 
   static const std::vector<SignalData> signals();
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
 private:
 
@@ -48,10 +56,9 @@ private:
   bool ROVA;
   
   // glitch filter for joypad interrupt
-  bool ACEF,AGEM,APUG,BATU,AWOB;
+  bool ACEF,AGEM,APUG,BATU;
 
   // FF0F IF reg
-  bool LOPE,UBUL,ULAK,LALU,NYBO;
   bool MATY,NEJY,NUTY,MOPO,PAVY;
 };
 

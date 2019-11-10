@@ -3,20 +3,17 @@
 struct Gameboy;
 
 struct P12_Ch1Sweep {
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 
-  //----------
-  // inputs
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
-  bool FF13,FF14,FF10_D3n,BUSO,BOJE,KYLY,ADAD,KALA,EGOR;
+  // presumably this is the freq out
+  bool AXAN,EVAB,DYGY,HOPO,HYXU,HOLU,FELY,EDUL,HAVO,JYKA,HYKA;
 
-  //----------
-  // outputs
+private:
 
   //----------
   // regs
 
-  bool AXAN,EVAB,DYGY,HOPO,HYXU,HOLU,FELY,EDUL,HAVO,JYKA,HYKA;
   bool DOLY,DOFY,DEXE,DELE,EXAP,FAXO,GYME,JYME,KARE,JODE,GALO;
   bool BEKU,AGEZ,ELUX,EXAC,FEDO,FUDE,JOTA,JOLU,GOGA,JEFA,FABU;
   bool DEVA,ETER,DEFA,EDOK,EPYR,GELE,JETE,JAPE,HELE,HOPA,HORA;

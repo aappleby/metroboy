@@ -1,4 +1,5 @@
 #pragma once
+
 struct Gameboy;
 
 struct P07_SysDecode {

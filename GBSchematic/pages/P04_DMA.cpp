@@ -5,122 +5,120 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P04_DMA::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
-  const P04_DMA& pa = ga.p04;
-  const P04_DMA& pb = gb.p04;
-  P04_DMA& pc = gc.p04;
+void P04_DMA::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  pc.DECY = not(gb.cpu.FROM_CPU5);
-  pc.CATY = not(pb.DECY);
-  pc.MAKA = tock_pos(ga.p01.CLK1, gb.p01.CLK1, gb.p01.RESET6, pb.MAKA, pb.CATY);
-  pc.NAXY = nor(pb.MAKA, pb.LUVY);
-  pc.POWU = and(pb.MATU, pb.NAXY);
-  pc.WYJA = unk3(gb.p28.AMAB, gb.p07.CPU_WR2, pb.POWU);
-  pc.LUVY = tock_pos(ga.p01.PHI_OUTn, gb.p01.PHI_OUTn, gb.p01.RESET6, pb.LUVY, pb.LUPA);
+  c.p04.DECY = not(b.cpu.FROM_CPU5);
+  c.p04.CATY = not(b.p04.DECY);
+  c.p04.MAKA = tock_pos(a.p01.CLK1, b.p01.CLK1, b.p01.RESET6, b.p04.MAKA, b.p04.CATY);
+  c.p04.NAXY = nor(b.p04.MAKA, b.p04.LUVY);
+  c.p04.POWU = and(b.p04.MATU, b.p04.NAXY);
+  c.p04.WYJA = unk3(b.p28.AMAB, b.p07.CPU_WR2, b.p04.POWU);
+  c.p04.LUVY = tock_pos(a.p01.PHI_OUTn, b.p01.PHI_OUTn, b.p01.RESET6, b.p04.LUVY, b.p04.LUPA);
 
-  pc.MOPA = not(gb.p01.PHI_OUTn);
-  pc.NAVO = nand(pb.DMA_A00, pb.DMA_A01, pb.DMA_A02, pb.DMA_A03, pb.DMA_A04, pb.DMA_A07);
-  pc.NOLO = not(pb.NAVO);
-  pc.MYTE = tock_pos(pa.MOPA, pb.MOPA, pb.LAPA,   pb.MYTE, pb.NOLO);
-  pc.LENE = tock_pos(pa.MOPA, pb.MOPA, gb.p01.RESET6, pb.LENE, pb.LUVY);
-  pc.LARA = nand(pb.LOKY, !pb.MYTE, gb.p01.RESET6);
-  pc.LOKY = nand(pb.LARA, !pb.LENE);
-  pc.MATU = tock_pos(ga.p01.PHI_OUTn, gb.p01.PHI_OUTn, gb.p01.RESET6, pb.MATU, pb.LOKY);
-  pc.MORY = nand(pb.MATU, pb.LOGO);
-  pc.LUMA = not(pb.MORY);
-  pc.LOGO = not(pb.MUDA);
-  pc.LEBU = not(pb.DMA_A15);
-  pc.MUDA = nor(pb.DMA_A13, pb.DMA_A14, pb.LEBU);
-  pc.MUHO = nand(pb.MATU, pb.MUDA);
-  pc.DUGA = not(pb.MATU);
-  pc.LUFA = not(pb.MUHO);
+  c.p04.MOPA = not(b.p01.PHI_OUTn);
+  c.p04.NAVO = nand(b.p04.DMA_A00, b.p04.DMA_A01, b.p04.DMA_A02, b.p04.DMA_A03, b.p04.DMA_A04, b.p04.DMA_A07);
+  c.p04.NOLO = not(b.p04.NAVO);
+  c.p04.MYTE = tock_pos(a.p04.MOPA, b.p04.MOPA, b.p04.LAPA,   b.p04.MYTE, b.p04.NOLO);
+  c.p04.LENE = tock_pos(a.p04.MOPA, b.p04.MOPA, b.p01.RESET6, b.p04.LENE, b.p04.LUVY);
+  c.p04.LARA = nand(b.p04.LOKY, !b.p04.MYTE, b.p01.RESET6);
+  c.p04.LOKY = nand(b.p04.LARA, !b.p04.LENE);
+  c.p04.MATU = tock_pos(a.p01.PHI_OUTn, b.p01.PHI_OUTn, b.p01.RESET6, b.p04.MATU, b.p04.LOKY);
+  c.p04.MORY = nand(b.p04.MATU, b.p04.LOGO);
+  c.p04.LUMA = not(b.p04.MORY);
+  c.p04.LOGO = not(b.p04.MUDA);
+  c.p04.LEBU = not(b.p04.DMA_A15);
+  c.p04.MUDA = nor(b.p04.DMA_A13, b.p04.DMA_A14, b.p04.LEBU);
+  c.p04.MUHO = nand(b.p04.MATU, b.p04.MUDA);
+  c.p04.DUGA = not(b.p04.MATU);
+  c.p04.LUFA = not(b.p04.MUHO);
 
-  pc.LYXE = unk2(pb.LORU, pb.LOKO);
-  pc.LUPA = nor(pb.LAVY, pb.LYXE);
-  pc.MOLU = nand(gb.p22.FF46, gb.p07.CPU_RD2);
-  pc.LAVY = nand(gb.p22.FF46, gb.p07.CPU_WR2);
-  pc.NYGO = not(pb.MOLU);
-  pc.LORU = not(pb.LAVY);
-  pc.PUSY = not(pb.NYGO);
+  c.p04.LYXE = unk2(b.p04.LORU, b.p04.LOKO);
+  c.p04.LUPA = nor(b.p04.LAVY, b.p04.LYXE);
+  c.p04.MOLU = nand(b.p22.FF46, b.p07.CPU_RD2);
+  c.p04.LAVY = nand(b.p22.FF46, b.p07.CPU_WR2);
+  c.p04.NYGO = not(b.p04.MOLU);
+  c.p04.LORU = not(b.p04.LAVY);
+  c.p04.PUSY = not(b.p04.NYGO);
 
-  pc.AHOC = not(pb.VRAM_TO_OAM);
-  pc.LOKO = nand(gb.p01.RESET6, !pb.LENE);
-  pc.LAPA = not(pb.LOKO);
-  pc.META = and(gb.p01.PHI_OUTn, pb.LOKY);
+  c.p04.AHOC = not(b.p04.VRAM_TO_OAM);
+  c.p04.LOKO = nand(b.p01.RESET6, !b.p04.LENE);
+  c.p04.LAPA = not(b.p04.LOKO);
+  c.p04.META = and(b.p01.PHI_OUTn, b.p04.LOKY);
 
   //----------
   // FF46 DMA
 
-  pc.NAFA_00 = tock_pos(pa.LORU, pb.LORU, 0, pb.NAFA_00, gb.D0);
-  pc.PYNE_01 = tock_pos(pa.LORU, pb.LORU, 0, pb.PYNE_01, gb.D1);
-  pc.PARA_02 = tock_pos(pa.LORU, pb.LORU, 0, pb.PARA_02, gb.D2);
-  pc.NYDO_03 = tock_pos(pa.LORU, pb.LORU, 0, pb.NYDO_03, gb.D3);
-  pc.NYGY_04 = tock_pos(pa.LORU, pb.LORU, 0, pb.NYGY_04, gb.D4);
-  pc.PULA_05 = tock_pos(pa.LORU, pb.LORU, 0, pb.PULA_05, gb.D5);
-  pc.POKU_06 = tock_pos(pa.LORU, pb.LORU, 0, pb.POKU_06, gb.D6);
-  pc.MARU_07 = tock_pos(pa.LORU, pb.LORU, 0, pb.MARU_07, gb.D7);
+  c.p04.NAFA_00 = tock_pos(a.p04.LORU, b.p04.LORU, 0, b.p04.NAFA_00, b.D0);
+  c.p04.PYNE_01 = tock_pos(a.p04.LORU, b.p04.LORU, 0, b.p04.PYNE_01, b.D1);
+  c.p04.PARA_02 = tock_pos(a.p04.LORU, b.p04.LORU, 0, b.p04.PARA_02, b.D2);
+  c.p04.NYDO_03 = tock_pos(a.p04.LORU, b.p04.LORU, 0, b.p04.NYDO_03, b.D3);
+  c.p04.NYGY_04 = tock_pos(a.p04.LORU, b.p04.LORU, 0, b.p04.NYGY_04, b.D4);
+  c.p04.PULA_05 = tock_pos(a.p04.LORU, b.p04.LORU, 0, b.p04.PULA_05, b.D5);
+  c.p04.POKU_06 = tock_pos(a.p04.LORU, b.p04.LORU, 0, b.p04.POKU_06, b.D6);
+  c.p04.MARU_07 = tock_pos(a.p04.LORU, b.p04.LORU, 0, b.p04.MARU_07, b.D7);
 
-  pc.POLY_00 = not(!pb.NAFA_00);
-  pc.ROFO_01 = not(!pb.PYNE_01);
-  pc.REMA_02 = not(!pb.PARA_02);
-  pc.PANE_03 = not(!pb.NYDO_03);
-  pc.PARE_04 = not(!pb.NYGY_04);
-  pc.RALY_05 = not(!pb.PULA_05);
-  pc.RESU_06 = not(!pb.POKU_06);
-  pc.NUVY_07 = not(!pb.MARU_07);
+  c.p04.POLY_00 = not(!b.p04.NAFA_00);
+  c.p04.ROFO_01 = not(!b.p04.PYNE_01);
+  c.p04.REMA_02 = not(!b.p04.PARA_02);
+  c.p04.PANE_03 = not(!b.p04.NYDO_03);
+  c.p04.PARE_04 = not(!b.p04.NYGY_04);
+  c.p04.RALY_05 = not(!b.p04.PULA_05);
+  c.p04.RESU_06 = not(!b.p04.POKU_06);
+  c.p04.NUVY_07 = not(!b.p04.MARU_07);
 
-  pc.EVAX_08 = pb.NAFA_00;
-  pc.DUVE_09 = pb.PYNE_01;
-  pc.ERAF_10 = pb.PARA_02;
-  pc.FUSY_11 = pb.NYDO_03;
-  pc.EXYF_12 = pb.NYGY_04;
+  // there's an inverting tribuf on the schematic, but this can't be inverted...
+  c.p04.EVAX_08 = b.p04.NAFA_00;
+  c.p04.DUVE_09 = b.p04.PYNE_01;
+  c.p04.ERAF_10 = b.p04.PARA_02;
+  c.p04.FUSY_11 = b.p04.NYDO_03;
+  c.p04.EXYF_12 = b.p04.NYGY_04;
 
-  if (pb.PUSY) {
-    gc.D0 = pb.POLY_00;
-    gc.D1 = pb.ROFO_01;
-    gc.D2 = pb.REMA_02;
-    gc.D3 = pb.PANE_03;
-    gc.D4 = pb.PARE_04;
-    gc.D5 = pb.RALY_05;
-    gc.D6 = pb.RESU_06;
-    gc.D7 = pb.NUVY_07;
+  if (b.p04.PUSY) {
+    c.D0 = b.p04.POLY_00;
+    c.D1 = b.p04.ROFO_01;
+    c.D2 = b.p04.REMA_02;
+    c.D3 = b.p04.PANE_03;
+    c.D4 = b.p04.PARE_04;
+    c.D5 = b.p04.RALY_05;
+    c.D6 = b.p04.RESU_06;
+    c.D7 = b.p04.NUVY_07;
   }
 
   //----------
   // DMA counter
 
-  pc.NAKY_00 = tock_pos(pa.META,     pb.META,     pb.LAPA, pb.NAKY_00, !pb.NAKY_00);
-  pc.PYRO_01 = tock_pos(!pa.NAKY_00, !pb.NAKY_00, pb.LAPA, pb.PYRO_01, !pb.PYRO_01);
-  pc.NEFY_02 = tock_pos(!pa.PYRO_01, !pb.PYRO_01, pb.LAPA, pb.NEFY_02, !pb.NEFY_02);
-  pc.MUTY_03 = tock_pos(!pa.NEFY_02, !pb.NEFY_02, pb.LAPA, pb.MUTY_03, !pb.MUTY_03);
-  pc.NYKO_04 = tock_pos(!pa.MUTY_03, !pb.MUTY_03, pb.LAPA, pb.NYKO_04, !pb.NYKO_04);
-  pc.PYLO_05 = tock_pos(!pa.NYKO_04, !pb.NYKO_04, pb.LAPA, pb.PYLO_05, !pb.PYLO_05);
-  pc.NUTO_06 = tock_pos(!pa.PYLO_05, !pb.PYLO_05, pb.LAPA, pb.NUTO_06, !pb.NUTO_06);
-  pc.MUGU_07 = tock_pos(!pa.NUTO_06, !pb.NUTO_06, pb.LAPA, pb.MUGU_07, !pb.MUGU_07);
+  c.p04.NAKY_00 = tock_pos(a.p04.META,     b.p04.META,     b.p04.LAPA, b.p04.NAKY_00, !b.p04.NAKY_00);
+  c.p04.PYRO_01 = tock_pos(!a.p04.NAKY_00, !b.p04.NAKY_00, b.p04.LAPA, b.p04.PYRO_01, !b.p04.PYRO_01);
+  c.p04.NEFY_02 = tock_pos(!a.p04.PYRO_01, !b.p04.PYRO_01, b.p04.LAPA, b.p04.NEFY_02, !b.p04.NEFY_02);
+  c.p04.MUTY_03 = tock_pos(!a.p04.NEFY_02, !b.p04.NEFY_02, b.p04.LAPA, b.p04.MUTY_03, !b.p04.MUTY_03);
+  c.p04.NYKO_04 = tock_pos(!a.p04.MUTY_03, !b.p04.MUTY_03, b.p04.LAPA, b.p04.NYKO_04, !b.p04.NYKO_04);
+  c.p04.PYLO_05 = tock_pos(!a.p04.NYKO_04, !b.p04.NYKO_04, b.p04.LAPA, b.p04.PYLO_05, !b.p04.PYLO_05);
+  c.p04.NUTO_06 = tock_pos(!a.p04.PYLO_05, !b.p04.PYLO_05, b.p04.LAPA, b.p04.NUTO_06, !b.p04.NUTO_06);
+  c.p04.MUGU_07 = tock_pos(!a.p04.NUTO_06, !b.p04.NUTO_06, b.p04.LAPA, b.p04.MUGU_07, !b.p04.MUGU_07);
 
   // this tribuffer is _not_ inverting
-  pc.ECAL_00 = pb.NAKY_00;
-  pc.EGEZ_01 = pb.PYRO_01;
-  pc.FUHE_02 = pb.NEFY_02;
-  pc.FYZY_03 = pb.MUTY_03;
-  pc.DAMU_04 = pb.NYKO_04;
-  pc.DAVA_05 = pb.PYLO_05;
-  pc.ETEG_06 = pb.NUTO_06;
-  pc.EREW_07 = pb.MUGU_07;
+  c.p04.ECAL_00 = b.p04.NAKY_00;
+  c.p04.EGEZ_01 = b.p04.PYRO_01;
+  c.p04.FUHE_02 = b.p04.NEFY_02;
+  c.p04.FYZY_03 = b.p04.MUTY_03;
+  c.p04.DAMU_04 = b.p04.NYKO_04;
+  c.p04.DAVA_05 = b.p04.PYLO_05;
+  c.p04.ETEG_06 = b.p04.NUTO_06;
+  c.p04.EREW_07 = b.p04.MUGU_07;
 
-  if (pb.AHOC) {
-    gc.chip.MA00 = pb.ECAL_00;
-    gc.chip.MA01 = pb.EGEZ_01;
-    gc.chip.MA02 = pb.FUHE_02;
-    gc.chip.MA03 = pb.FYZY_03;
-    gc.chip.MA04 = pb.DAMU_04;
-    gc.chip.MA05 = pb.DAVA_05;
-    gc.chip.MA06 = pb.ETEG_06;
-    gc.chip.MA07 = pb.EREW_07;
-    gc.chip.MA08 = pb.EVAX_08;
-    gc.chip.MA09 = pb.DUVE_09;
-    gc.chip.MA10 = pb.ERAF_10;
-    gc.chip.MA11 = pb.FUSY_11;
-    gc.chip.MA12 = pb.EXYF_12;
+  if (b.p04.AHOC) {
+    c.chip.MA00 = b.p04.ECAL_00;
+    c.chip.MA01 = b.p04.EGEZ_01;
+    c.chip.MA02 = b.p04.FUHE_02;
+    c.chip.MA03 = b.p04.FYZY_03;
+    c.chip.MA04 = b.p04.DAMU_04;
+    c.chip.MA05 = b.p04.DAVA_05;
+    c.chip.MA06 = b.p04.ETEG_06;
+    c.chip.MA07 = b.p04.EREW_07;
+    c.chip.MA08 = b.p04.EVAX_08;
+    c.chip.MA09 = b.p04.DUVE_09;
+    c.chip.MA10 = b.p04.ERAF_10;
+    c.chip.MA11 = b.p04.FUSY_11;
+    c.chip.MA12 = b.p04.EXYF_12;
   }
 }

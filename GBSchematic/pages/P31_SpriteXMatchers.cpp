@@ -4,7 +4,7 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P1_SpriteXMatchers {
+struct P31_SpriteXMatchers {
   struct Input {
     bool CLK3;
     bool WEWU; // P28, drives OAM_A to data bus

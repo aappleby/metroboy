@@ -17,15 +17,14 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.TOVA = not(gb.T1nT2);
   pc.RYCA = not(gb.T1nT2);
   pc.MULE = not(gb.T1T2n);
-  gc.NET01 = pb.TOVA;
 
   //----------
   // center right, generating the external read/write signals to the cart
 
-  pc.SORE = not(gb.cpu.A15);
+  pc.SORE = not(gb.A15);
 
   // TEVY = not_vram
-  pc.TEVY = or(gb.cpu.A13, gb.cpu.A14, pb.SORE); // BUG - pretty sure this is an OR and not an AND, the dots are on the opposite side compared to TOZA
+  pc.TEVY = or(gb.A13, gb.A14, pb.SORE); // BUG - pretty sure this is an OR and not an AND, the dots are on the opposite side compared to TOZA
 
   pc.TEXO = and(gb.cpu.FROM_CPU4, pb.TEVY);
   pc.LEVO = not(pb.TEXO);
@@ -33,7 +32,7 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.LYWE = not(pb.LAGU);
 
   pc.MOCA = nor(pb.TEXO, gb.T1T2n);
-  pc.MEXO = not(gb.CPU_RD_SYNC);
+  pc.MEXO = not(gb.CPU_WR_SYNC);
   pc.NEVY = or(pb.MEXO, pb.MOCA);
   pc.MOTY = or(pb.MOCA, pb.LYWE);
   pc.PUVA = or(pb.NEVY, gb.LUMA);
@@ -44,60 +43,51 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.UGAC = nand(pb.TYMU, gb.NET01);
   pc.URUN = nor (pb.TYMU, gb.T1nT2);
 
-  gc.chip.WR_A = pb.UVER;
-  gc.chip.WR_D = pb.USUF;
-  gc.chip.RD_A = pb.UGAC;
-  gc.chip.RD_D = pb.URUN;
-
   //----------
   // top center
 
-  pc.TOLA = not(gb.cpu.A01);
+  pc.TOLA = not(gb.A01);
   pc.LOXO = unk3(pb.MULE, pb.TEXO, gb.T1T2n);
   pc.LASY = not(pb.LOXO);
   pc.MATE = not(pb.LASY);
 
-  gc.TOLA_A1n = pb.TOLA;
-
   //----------
   // left center, CS and A15 drivers
 
-  pc.SOGY = not(gb.cpu.A14);
-  pc.TUMA = and(gb.cpu.A13, pb.SOGY, gb.cpu.A15); // selects A000-BFFF, cart ram
+  pc.SOGY = not(gb.A14);
+  pc.TUMA = and(gb.A13, pb.SOGY, gb.A15); // selects A000-BFFF, cart ram
   
-  //pc.TYNU = unk3(gb.cpu.A15, gb.cpu.A14, pb.TUMA);
+  //pc.TYNU = unk3(gb.A15, gb.A14, pb.TUMA);
   
   // this is a guess, it selects addr < 0xC00 || cart_ram, which seems reasonable
-  pc.TYNU = nor(nand(gb.cpu.A15, gb.cpu.A14), pb.TUMA);
+  pc.TYNU = nor(nand(gb.A15, gb.A14), pb.TUMA);
   
-  pc.TOZA = and(pb.TYNU, gb.ABUZ, gb.FEXXFFXXn);
+  pc.TOZA = and(pb.TYNU, gb.ABUZ, gb.p07.FEXXFFXXn);
 
   // TUTU is the "use bootrom" signal, so this is saying "if our address is
   // not in the high half and we're not running the bootrom, read from the
   // cart
-  pc.SOBY_15 = nor(gb.cpu.A15, gb.TUTU);
+  pc.SOBY_15 = nor(gb.A15, gb.p07.TUTU);
   pc.TYHO = mux2(gb.DMA_A15, pb.TOZA, gb.LUMA); // polarity?
-
-  gc.chip.CS_A   = pb.TYHO;
 
   //----------
   // Low half of the address pin output driver
 
-  pc.ALOR_00 = latch_pos(pb.MATE, pc.ALOR_00, gb.cpu.A00);
-  pc.APUR_01 = latch_pos(pb.MATE, pc.APUR_01, gb.cpu.A01);
-  pc.ALYR_02 = latch_pos(pb.MATE, pc.ALYR_02, gb.cpu.A02);
-  pc.ARET_03 = latch_pos(pb.MATE, pc.ARET_03, gb.cpu.A03);
-  pc.AVYS_04 = latch_pos(pb.MATE, pc.AVYS_04, gb.cpu.A04);
-  pc.ATEV_05 = latch_pos(pb.MATE, pc.ATEV_05, gb.cpu.A05);
-  pc.AROS_06 = latch_pos(pb.MATE, pc.AROS_06, gb.cpu.A06);
-  pc.ARYM_07 = latch_pos(pb.MATE, pc.ARYM_07, gb.cpu.A07);
-  pc.LUNO_08 = latch_pos(pb.MATE, pc.LUNO_08, gb.cpu.A08);
-  pc.LYSA_09 = latch_pos(pb.MATE, pc.LYSA_09, gb.cpu.A09);
-  pc.PATE_10 = latch_pos(pb.MATE, pc.PATE_10, gb.cpu.A10);
-  pc.LUMY_11 = latch_pos(pb.MATE, pc.LUMY_11, gb.cpu.A11);
-  pc.LOBU_12 = latch_pos(pb.MATE, pc.LOBU_12, gb.cpu.A12);
-  pc.LONU_13 = latch_pos(pb.MATE, pc.LONU_13, gb.cpu.A13);
-  pc.NYRE_14 = latch_pos(pb.MATE, pc.NYRE_14, gb.cpu.A14);
+  pc.ALOR_00 = latch_pos(pb.MATE, pb.ALOR_00, gb.A00);
+  pc.APUR_01 = latch_pos(pb.MATE, pb.APUR_01, gb.A01);
+  pc.ALYR_02 = latch_pos(pb.MATE, pb.ALYR_02, gb.A02);
+  pc.ARET_03 = latch_pos(pb.MATE, pb.ARET_03, gb.A03);
+  pc.AVYS_04 = latch_pos(pb.MATE, pb.AVYS_04, gb.A04);
+  pc.ATEV_05 = latch_pos(pb.MATE, pb.ATEV_05, gb.A05);
+  pc.AROS_06 = latch_pos(pb.MATE, pb.AROS_06, gb.A06);
+  pc.ARYM_07 = latch_pos(pb.MATE, pb.ARYM_07, gb.A07);
+  pc.LUNO_08 = latch_pos(pb.MATE, pb.LUNO_08, gb.A08);
+  pc.LYSA_09 = latch_pos(pb.MATE, pb.LYSA_09, gb.A09);
+  pc.PATE_10 = latch_pos(pb.MATE, pb.PATE_10, gb.A10);
+  pc.LUMY_11 = latch_pos(pb.MATE, pb.LUMY_11, gb.A11);
+  pc.LOBU_12 = latch_pos(pb.MATE, pb.LOBU_12, gb.A12);
+  pc.LONU_13 = latch_pos(pb.MATE, pb.LONU_13, gb.A13);
+  pc.NYRE_14 = latch_pos(pb.MATE, pb.NYRE_14, gb.A14);
   pc.SEPY_15 = nand(gb.ABUZ, pb.SOBY_15);
 
   pc.AMET_00 = mux2(gb.DMA_A00, pb.ALOR_00, gb.LUMA);
@@ -151,6 +141,149 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.PAHY_14 = nor(pb.PEGE_14, gb.T1nT2);
   pc.RULO_15 = nor(pb.TAZY_15, gb.T1nT2);
 
+  //----------
+  // Chip data pin output driver. Some of this was on P25, but it should _not_ be there.
+
+  pc.REDU = not(gb.p07.CPU_RD);
+  pc.RORU = mux2(pb.REDU, pb.MOTY, gb.T1nT2);
+  pc.LULA = not(pb.RORU);
+  pc.LYRA = nand(gb.T1nT2, pb.RORU);
+  pc.LAVO = nand(gb.cpu.CPU_RAW_RD, pb.TEXO, gb.cpu.FROM_CPU5);
+
+  pc.RUNE_00 = nor(pb.RORU, gb.D0);
+  pc.RYPU_01 = nor(pb.RORU, gb.D1);
+  pc.SULY_02 = nor(pb.RORU, gb.D2);
+  pc.SEZE_03 = nor(pb.RORU, gb.D3);
+  pc.RESY_04 = nor(pb.RORU, gb.D4);
+  pc.TAMU_05 = nor(pb.RORU, gb.D5);
+  pc.ROGY_06 = nor(pb.RORU, gb.D6);
+  pc.RYDA_07 = nor(pb.RORU, gb.D7);
+
+  pc.RUXA_00 = nand(gb.D0, pb.LULA);
+  pc.RUJA_01 = nand(gb.D1, pb.LULA);
+  pc.RABY_02 = nand(gb.D2, pb.LULA);
+  pc.RERA_03 = nand(gb.D3, pb.LULA);
+  pc.RORY_04 = nand(gb.D4, pb.LULA);
+  pc.RYVO_05 = nand(gb.D5, pb.LULA);
+  pc.RAFY_06 = nand(gb.D6, pb.LULA);
+  pc.RAVU_07 = nand(gb.D7, pb.LULA);
+
+  //----------
+  // Chip data pin input driver. Some of this was on P25, but it should _not_ be there.
+  // Not sure why there's two of these
+
+  pc.TOVO_00 = not(gb.chip.D0_C);
+  pc.RUZY_01 = not(gb.chip.D1_C);
+  pc.ROME_02 = not(gb.chip.D2_C);
+  pc.SAZA_03 = not(gb.chip.D3_C);
+  pc.TEHE_04 = not(gb.chip.D4_C);
+  pc.RATU_05 = not(gb.chip.D5_C);
+  pc.SOCA_06 = not(gb.chip.D6_C);
+  pc.RYBA_07 = not(gb.chip.D7_C);
+
+  pc.TUTY_00 = not(pb.TOVO_00);
+  pc.SYWA_01 = not(pb.RUZY_01);
+  pc.SUGU_02 = not(pb.ROME_02);
+  pc.TAWO_03 = not(pb.SAZA_03);
+  pc.TUTE_04 = not(pb.TEHE_04);
+  pc.SAJO_05 = not(pb.RATU_05);
+  pc.TEMY_06 = not(pb.SOCA_06);
+  pc.ROPA_07 = not(pb.RYBA_07);
+
+  pc.SOMA_00 = latch_pos(pb.LAVO, pb.SOMA_00, gb.chip.D0_C);
+  pc.RONY_01 = latch_pos(pb.LAVO, pb.RONY_01, gb.chip.D1_C);
+  pc.RAXY_02 = latch_pos(pb.LAVO, pb.RAXY_02, gb.chip.D2_C);
+  pc.SELO_03 = latch_pos(pb.LAVO, pb.SELO_03, gb.chip.D3_C);
+  pc.SODY_04 = latch_pos(pb.LAVO, pb.SODY_04, gb.chip.D4_C);
+  pc.SAGO_05 = latch_pos(pb.LAVO, pb.SAGO_05, gb.chip.D5_C);
+  pc.RUPA_06 = latch_pos(pb.LAVO, pb.RUPA_06, gb.chip.D6_C);
+  pc.SAZY_07 = latch_pos(pb.LAVO, pb.SAZY_07, gb.chip.D7_C);
+
+  pc.RYMA_00 = pb.SOMA_00;
+  pc.RUVO_01 = pb.RONY_01;
+  pc.RYKO_02 = pb.RAXY_02;
+  pc.TAVO_03 = pb.SELO_03;
+  pc.TEPE_04 = pb.SODY_04;
+  pc.SAFO_05 = pb.SAGO_05;
+  pc.SEVU_06 = pb.RUPA_06;
+  pc.TAJU_07 = pb.SAZY_07;
+
+  //----------
+  // if NET01 high, drive external address bus onto internal address
+  // probably not inverting...
+
+  pc.KOVA_00 = not(gb.chip.A00_C);
+  pc.CAMU_01 = not(gb.chip.A01_C);
+  pc.BUXU_02 = not(gb.chip.A02_C);
+  pc.BASE_03 = not(gb.chip.A03_C);
+  pc.AFEC_04 = not(gb.chip.A04_C);
+  pc.ABUP_05 = not(gb.chip.A05_C);
+  pc.CYGU_06 = not(gb.chip.A06_C);
+  pc.COGO_07 = not(gb.chip.A07_C);
+  pc.MUJY_08 = not(gb.chip.A08_C);
+  pc.NENA_09 = not(gb.chip.A09_C);
+  pc.SURA_10 = not(gb.chip.A10_C);
+  pc.MADY_11 = not(gb.chip.A11_C);
+  pc.LAHE_12 = not(gb.chip.A12_C);
+  pc.LURA_13 = not(gb.chip.A13_C);
+  pc.PEVO_14 = not(gb.chip.A14_C);
+  pc.RAZA_15 = not(gb.chip.A15_C);
+
+  pc.KEJO_00 = pb.KOVA_00; 
+  pc.BYXE_01 = pb.CAMU_01; 
+  pc.AKAN_02 = pb.BUXU_02; 
+  pc.ANAR_03 = pb.BASE_03; 
+  pc.AZUV_04 = pb.AFEC_04; 
+  pc.AJOV_05 = pb.ABUP_05; 
+  pc.BYNE_06 = pb.CYGU_06; 
+  pc.BYNA_07 = pb.COGO_07; 
+  pc.LOFA_08 = pb.MUJY_08; 
+  pc.MAPU_09 = pb.NENA_09; 
+  pc.RALA_10 = pb.SURA_10; 
+  pc.LORA_11 = pb.MADY_11; 
+  pc.LYNA_12 = pb.LAHE_12; 
+  pc.LEFY_13 = pb.LURA_13; 
+  pc.NEFE_14 = pb.PEVO_14; 
+  pc.SYZU_15 = pb.RAZA_15;
+
+  // wat
+  //gc.chip.A15_C  = pb.RAZA_15;
+
+
+  // these may be backwards, probably don't want to drive external address onto bus normally...
+
+#if 0
+  if (gb.NET01) {
+    gc.cpu.A00 = pb.KEJO_00;
+    gc.cpu.A01 = pb.BYXE_01;
+    gc.cpu.A02 = pb.AKAN_02;
+    gc.cpu.A03 = pb.ANAR_03;
+    gc.cpu.A04 = pb.AZUV_04;
+    gc.cpu.A05 = pb.AJOV_05;
+    gc.cpu.A06 = pb.BYNE_06;
+    gc.cpu.A07 = pb.BYNA_07;
+    gc.cpu.A08 = pb.LOFA_08;
+    gc.cpu.A09 = pb.MAPU_09;
+    gc.cpu.A10 = pb.RALA_10;
+    gc.cpu.A11 = pb.LORA_11;
+    gc.cpu.A12 = pb.LYNA_12;
+    gc.cpu.A13 = pb.LEFY_13;
+    gc.cpu.A14 = pb.NEFE_14;
+  }                 
+
+  if (pb.RYCA) {
+    gc.cpu.A15 = pb.SYZU_15;
+  }
+#endif
+
+  gc.chip.CS_A   = pb.TYHO;
+  gc.TOLA_A1n = pb.TOLA;
+  gc.NET01 = pb.TOVA;
+  gc.chip.WR_A = pb.UVER;
+  gc.chip.WR_D = pb.USUF;
+  gc.chip.RD_A = pb.UGAC;
+  gc.chip.RD_D = pb.URUN;
+
   gc.chip.A00_A = pb.KUPO_00;
   gc.chip.A01_A = pb.CABA_01;
   gc.chip.A02_A = pb.BOKU_02;
@@ -185,33 +318,6 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   gc.chip.A14_D = pb.PAHY_14;
   gc.chip.A15_D = pb.RULO_15;
 
-  //----------
-  // Chip data pin output driver. Some of this was on P25, but it should _not_ be there.
-
-  pc.REDU = not(gb.CPU_RD);
-  pc.RORU = mux2(pb.REDU, pb.MOTY, gb.T1nT2);
-  pc.LULA = not(pb.RORU);
-  pc.LYRA = nand(gb.T1nT2, pb.RORU);
-  pc.LAVO = nand(gb.cpu.CPU_RAW_RD, pb.TEXO, gb.cpu.FROM_CPU5);
-
-  pc.RUNE_00 = nor(pb.RORU, gb.cpu.D0);
-  pc.RYPU_01 = nor(pb.RORU, gb.cpu.D1);
-  pc.SULY_02 = nor(pb.RORU, gb.cpu.D2);
-  pc.SEZE_03 = nor(pb.RORU, gb.cpu.D3);
-  pc.RESY_04 = nor(pb.RORU, gb.cpu.D4);
-  pc.TAMU_05 = nor(pb.RORU, gb.cpu.D5);
-  pc.ROGY_06 = nor(pb.RORU, gb.cpu.D6);
-  pc.RYDA_07 = nor(pb.RORU, gb.cpu.D7);
-
-  pc.RUXA_00 = nand(gb.cpu.D0, pb.LULA);
-  pc.RUJA_01 = nand(gb.cpu.D1, pb.LULA);
-  pc.RABY_02 = nand(gb.cpu.D2, pb.LULA);
-  pc.RERA_03 = nand(gb.cpu.D3, pb.LULA);
-  pc.RORY_04 = nand(gb.cpu.D4, pb.LULA);
-  pc.RYVO_05 = nand(gb.cpu.D5, pb.LULA);
-  pc.RAFY_06 = nand(gb.cpu.D6, pb.LULA);
-  pc.RAVU_07 = nand(gb.cpu.D7, pb.LULA);
-
   gc.chip.D0_A = pb.RUXA_00;
   gc.chip.D1_A = pb.RUJA_01;
   gc.chip.D2_A = pb.RABY_02;
@@ -239,117 +345,25 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   gc.chip.D6_D = pb.ROGY_06;
   gc.chip.D7_D = pb.RYDA_07;
 
-  //----------
-  // Chip data pin input driver. Some of this was on P25, but it should _not_ be there.
-  // Not sure why there's two of these
-
-  pc.TOVO_00 = not(gb.chip.D0_C);
-  pc.RUZY_01 = not(gb.chip.D1_C);
-  pc.ROME_02 = not(gb.chip.D2_C);
-  pc.SAZA_03 = not(gb.chip.D3_C);
-  pc.TEHE_04 = not(gb.chip.D4_C);
-  pc.RATU_05 = not(gb.chip.D5_C);
-  pc.SOCA_06 = not(gb.chip.D6_C);
-  pc.RYBA_07 = not(gb.chip.D7_C);
-
-  pc.TUTY_00 = not(pb.TOVO_00);
-  pc.SYWA_01 = not(pb.RUZY_01);
-  pc.SUGU_02 = not(pb.ROME_02);
-  pc.TAWO_03 = not(pb.SAZA_03);
-  pc.TUTE_04 = not(pb.TEHE_04);
-  pc.SAJO_05 = not(pb.RATU_05);
-  pc.TEMY_06 = not(pb.SOCA_06);
-  pc.ROPA_07 = not(pb.RYBA_07);
-
   if (pb.LYRA) {
-    gc.cpu.D0 = pb.TUTY_00;
-    gc.cpu.D1 = pb.SYWA_01;
-    gc.cpu.D2 = pb.SUGU_02;
-    gc.cpu.D3 = pb.TAWO_03;
-    gc.cpu.D4 = pb.TUTE_04;
-    gc.cpu.D5 = pb.SAJO_05;
-    gc.cpu.D6 = pb.TEMY_06;
-    gc.cpu.D7 = pb.ROPA_07;
+    gc.D0 = pb.TUTY_00;
+    gc.D1 = pb.SYWA_01;
+    gc.D2 = pb.SUGU_02;
+    gc.D3 = pb.TAWO_03;
+    gc.D4 = pb.TUTE_04;
+    gc.D5 = pb.SAJO_05;
+    gc.D6 = pb.TEMY_06;
+    gc.D7 = pb.ROPA_07;
   }
-
-  pc.SOMA_00 = latch_pos(pb.LAVO, pb.SOMA_00, gb.chip.D0_C);
-  pc.RONY_01 = latch_pos(pb.LAVO, pb.RONY_01, gb.chip.D1_C);
-  pc.RAXY_02 = latch_pos(pb.LAVO, pb.RAXY_02, gb.chip.D2_C);
-  pc.SELO_03 = latch_pos(pb.LAVO, pb.SELO_03, gb.chip.D3_C);
-  pc.SODY_04 = latch_pos(pb.LAVO, pb.SODY_04, gb.chip.D4_C);
-  pc.SAGO_05 = latch_pos(pb.LAVO, pb.SAGO_05, gb.chip.D5_C);
-  pc.RUPA_06 = latch_pos(pb.LAVO, pb.RUPA_06, gb.chip.D6_C);
-  pc.SAZY_07 = latch_pos(pb.LAVO, pb.SAZY_07, gb.chip.D7_C);
-
-  pc.RYMA_00 = pb.SOMA_00;
-  pc.RUVO_01 = pb.RONY_01;
-  pc.RYKO_02 = pb.RAXY_02;
-  pc.TAVO_03 = pb.SELO_03;
-  pc.TEPE_04 = pb.SODY_04;
-  pc.SAFO_05 = pb.SAGO_05;
-  pc.SEVU_06 = pb.RUPA_06;
-  pc.TAJU_07 = pb.SAZY_07;
 
   if (pb.LAVO) {
-    gc.cpu.D0 = pb.RYMA_00;
-    gc.cpu.D1 = pb.RUVO_01;
-    gc.cpu.D2 = pb.RYKO_02;
-    gc.cpu.D3 = pb.TAVO_03;
-    gc.cpu.D4 = pb.TEPE_04;
-    gc.cpu.D5 = pb.SAFO_05;
-    gc.cpu.D6 = pb.SEVU_06;
-    gc.cpu.D7 = pb.TAJU_07;
+    gc.D0 = pb.RYMA_00;
+    gc.D1 = pb.RUVO_01;
+    gc.D2 = pb.RYKO_02;
+    gc.D3 = pb.TAVO_03;
+    gc.D4 = pb.TEPE_04;
+    gc.D5 = pb.SAFO_05;
+    gc.D6 = pb.SEVU_06;
+    gc.D7 = pb.TAJU_07;
   }
-
-  //----------
-  // if NET01 high, drive external address bus onto internal address
-  // probably not inverting...
-
-  pc.KOVA_00 = not(gb.chip.A00_C); pc.KEJO_00 = pb.KOVA_00; 
-  pc.CAMU_01 = not(gb.chip.A01_C); pc.BYXE_01 = pb.CAMU_01; 
-  pc.BUXU_02 = not(gb.chip.A02_C); pc.AKAN_02 = pb.BUXU_02; 
-  pc.BASE_03 = not(gb.chip.A03_C); pc.ANAR_03 = pb.BASE_03; 
-  pc.AFEC_04 = not(gb.chip.A04_C); pc.AZUV_04 = pb.AFEC_04; 
-  pc.ABUP_05 = not(gb.chip.A05_C); pc.AJOV_05 = pb.ABUP_05; 
-  pc.CYGU_06 = not(gb.chip.A06_C); pc.BYNE_06 = pb.CYGU_06; 
-  pc.COGO_07 = not(gb.chip.A07_C); pc.BYNA_07 = pb.COGO_07; 
-  pc.MUJY_08 = not(gb.chip.A08_C); pc.LOFA_08 = pb.MUJY_08; 
-  pc.NENA_09 = not(gb.chip.A09_C); pc.MAPU_09 = pb.NENA_09; 
-  pc.SURA_10 = not(gb.chip.A10_C); pc.RALA_10 = pb.SURA_10; 
-  pc.MADY_11 = not(gb.chip.A11_C); pc.LORA_11 = pb.MADY_11; 
-  pc.LAHE_12 = not(gb.chip.A12_C); pc.LYNA_12 = pb.LAHE_12; 
-  pc.LURA_13 = not(gb.chip.A13_C); pc.LEFY_13 = pb.LURA_13; 
-  pc.PEVO_14 = not(gb.chip.A14_C); pc.NEFE_14 = pb.PEVO_14; 
-  pc.RAZA_15 = not(gb.chip.A15_C); pc.SYZU_15 = pb.RAZA_15;
-
-  // wat
-  //gc.chip.A15_C  = pb.RAZA_15;
-
-
-  // these may be backwards, probably don't want to drive external address onto bus normally...
-
-#if 0
-  if (gb.NET01) {
-    gc.cpu.A00 = pb.KEJO_00;
-    gc.cpu.A01 = pb.BYXE_01;
-    gc.cpu.A02 = pb.AKAN_02;
-    gc.cpu.A03 = pb.ANAR_03;
-    gc.cpu.A04 = pb.AZUV_04;
-    gc.cpu.A05 = pb.AJOV_05;
-    gc.cpu.A06 = pb.BYNE_06;
-    gc.cpu.A07 = pb.BYNA_07;
-    gc.cpu.A08 = pb.LOFA_08;
-    gc.cpu.A09 = pb.MAPU_09;
-    gc.cpu.A10 = pb.RALA_10;
-    gc.cpu.A11 = pb.LORA_11;
-    gc.cpu.A12 = pb.LYNA_12;
-    gc.cpu.A13 = pb.LEFY_13;
-    gc.cpu.A14 = pb.NEFE_14;
-  }                 
-
-  if (pb.RYCA) {
-    gc.cpu.A15 = pb.SYZU_15;
-  }
-#endif
-
 }

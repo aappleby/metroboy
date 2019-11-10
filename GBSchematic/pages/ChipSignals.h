@@ -355,7 +355,7 @@ struct ChipSignals {
 
   /* PIN_74 */
   bool CLKIN_A;
-  bool CLKIN_B;
+  bool CLKIN_B; // _b_d_f_h
 
   /* PIN_75 */
   bool PHI;

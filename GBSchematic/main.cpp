@@ -15,91 +15,6 @@
 #include <SDL2/SDL.h>
 #endif
 
-#if 0
-void blah() {
-  //----------
-  // center right, generating the external read/write signals to the cart
-
-  bool A13=0,A14=0,A15=0;
-  bool FROM_CPU3=0,FROM_CPU4=0,FROM_CPU5=0;
-  bool CPU_RAW_RD=0;
-  //bool T1T2n=0,T1nT2=0;
-  bool CPU_WR_SYNC=0;
-  bool LUMA=0; // this is the "dma reading" signal
-
-
-  if (LUMA) {
-    bool WR_A = 0;
-    bool WR_D = 0;
-    bool RD_A = 1;
-    bool RD_D = 1;
-  }
-  else {
-    /*
-    bool NOT_VRAM = 1;
-
-    bool WR_A = and(CPU_WR_SYNC, FROM_CPU4, NOT_VRAM);
-    bool WR_D = and(CPU_WR_SYNC, FROM_CPU4, NOT_VRAM);
-
-    wire LAGU = unk3(CPU_RAW_RD, and(FROM_CPU4, NOT_VRAM), FROM_CPU3);
-    
-    bool RD_A = nand(LAGU, FROM_CPU4, NOT_VRAM);
-    bool RD_D = nand(LAGU, FROM_CPU4, NOT_VRAM);
-    */
-
-    // LAVO drives the external data pins onto the data bus
-    wire LAVO = nand(CPU_RAW_RD, and(FROM_CPU4, or(A13, A14, not(A15))), FROM_CPU5);
-
-
-    // TAGY drives DIV onto the data bus
-    //c.TAGY = and(FF04, not(CPU_RAW_RD));
-
-    /*
-
-    CPU_RD = not(CPU_RAW_RD);
-
-    SORA = and(CPU_RD, FF07)
-    if (SORA) dbus = TAC
-    */
-
-
-    /*
-    // this doesn't seem right... polarity wrong
-    ASOP = not(and(CPU_RD, FF10))
-    if (ASOP) dbus = NR10
-    */
-
-    /*
-    // something in the path to SEBY has to be wrong
-
-    SOTO_Q = SOTO.flip(SYCY, in.RESET6);
-    TUTO = 0;
-
-    TEXO = and(in.FROM_CPU4, or(in.A13, in.A14, not(in.A15)));
-
-    ABUZ = unk3(CLK_ABCD_Q, CLK_ABGH, in.FROM_CPU4);
-
-    TUCA = and(A15, FEXXFFXXn, not(TEXO), ABUZ);
-
-    BYHA = unk3(ANEL_Q, not(CATU), not(in.RESET_VIDEO2n));
-    ANOM = nor(RESET_VIDEO2n, not(BYHA));
-
-    AVAP = nor(DOBA_Q, not(ANOM), !BYBA_Q);
-
-    WEGO = or(not(in.RESET_VIDEO), VOGA_Q);
-    XYMU = or(WEGO, AVAP);
-
-
-    SERE = and(mux2(0, not(in.MCS_IN), TUCA), not(XYMU));
-
-    wire SEBY = and(SERE, not(CPU_RAW_RD), FROM_CPU5);
-    if (SEBY) dbus <= vdbus;
-    */
-  }
-
-}
-#endif
-
 //-----------------------------------------------------------------------------
 
 template<typename ... Args>
@@ -150,11 +65,11 @@ void dump(void* blob, int size) {
 
 //-----------------------------------------------------------------------------
 
-void step_forwards(void* blobA, void* blobB) {
+void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
   //----------
   // old state
 
-  Gameboy a = *(Gameboy*)blobA;
+  Gameboy a = gbIn;
 
   //----------
   // old state + new inputs
@@ -164,7 +79,7 @@ void step_forwards(void* blobA, void* blobB) {
 
   //b.cpu.CPU_RD = false;
   //b.cpu.CPU_WR = false;
-  b.cpu.FROM_CPU3 = false;
+  b.cpu.FROM_CPU3 = true;
   b.cpu.FROM_CPU4 = false;
   b.cpu.FROM_CPU5 = false;
 
@@ -172,6 +87,8 @@ void step_forwards(void* blobA, void* blobB) {
   b.chip.RST     = b.timestamp < 20;
   b.chip.CLKIN_A = true;
   b.chip.CLKIN_B = b.timestamp & 1;
+  b.chip.T1 = false;
+  b.chip.T2 = false;
   b.T1nT2   = false;
   b.T1nT2n  = true;
   b.T1T2n   = false;
@@ -180,14 +97,8 @@ void step_forwards(void* blobA, void* blobB) {
   // haxxxxx
 
   if (b.timestamp == 30) {
-    b.p03.SOPU_0 = true;
-    b.p03.SAMY_1 = false;
-    b.p03.SABO_2 = true;
-
-    b.p03.SABU_0 = 1;
-    b.p03.NYKE_1 = 1;
-    b.p03.MURU_2 = 1;
-    b.p03.TYVA_3 = 1;
+    b.p03.set_tac(0b00000101);
+    b.p03.set_tma(0b00001111);
   }
 
   //----------
@@ -195,23 +106,47 @@ void step_forwards(void* blobA, void* blobB) {
 
   //----------
   // destination state
-  Gameboy c = b;
 
   for (int rep = 0; rep < 40; rep++) {
+    Gameboy c;
+
+    memset(&c, 0xDD, sizeof(Gameboy));
+
+    c.timestamp = b.timestamp;
+    c.cpu = b.cpu;
+    c.chip = b.chip;
+    c.T1nT2 = b.T1nT2;
+    c.T1nT2n = b.T1nT2n;
+    c.T1T2n = b.T1T2n;
+
+    //Gameboy c;
+
+    //memset(&c, 0xDD, sizeof(Gameboy));
+
     P01_ClocksReset::tick(a, b, c);
-    P02_Interrupts::tick(a, b, c);
     P03_Timer::tick(a, b, c);
-    P04_DMA::tick(a, b, c);
-    P05_JoypadIO::tick(a, b, c);
-    P06_SerialLink::tick(a, b, c);
-    P07_SysDecode::tick(a, b, c);
+    //P07_SysDecode::tick(a, b, c);
 
     if (memcmp(&b, &c, sizeof(Gameboy)) == 0) break;
     a = b;
     b = c;
+
+    /*
+    P01_ClocksReset::tick(a, b, c);
+    //P02_Interrupts::tick(a, b, c);
+    P03_Timer::tick(a, b, c);
+    //P04_DMA::tick(a, b, c);
+    //P05_JoypadIO::tick(a, b, c);
+    //P06_SerialLink::tick(a, b, c);
+    //P07_SysDecode::tick(a, b, c);
+
+    if (memcmp(&b, &c, sizeof(Gameboy)) == 0) break;
+    a = b;
+    b = c;
+    */
   }
 
-  *(Gameboy*)blobB = b;
+  gbOut = b;
 }
 
 const std::vector<SignalData> sample_signals =
@@ -232,11 +167,6 @@ int main(int argc, char** argv) {
 
   printf("Hello World Again\n");
 
-  Sample sampleA = {};
-  Sample sampleB = {};
-
-  step_forwards(&sampleA, &sampleB);
-
   return 0;
 }
 #endif
@@ -245,6 +175,8 @@ int main(int argc, char** argv) {
 
 #if 1
 int main(int /*argc*/, char** /*argv*/) {
+  printf("hello world\n");
+
   const int fb_width = 1900;
   const int fb_height = 1000;
   const int gb_width = 160 * 2;
@@ -278,11 +210,11 @@ int main(int /*argc*/, char** /*argv*/) {
   uint64_t timeA = SDL_GetPerformanceCounter();
 
 
-  step_forwards(&reset_sample, &samples[0]);
+  step_forwards(reset_sample, samples[0]);
 
   for (int i = 1; i < timer_count; i++) {
     samples[i] = samples[i-1];
-    step_forwards(&samples[i-1], &samples[i]);
+    step_forwards(samples[i-1], samples[i]);
   }
 
   uint64_t timeB = SDL_GetPerformanceCounter();
@@ -297,8 +229,11 @@ int main(int /*argc*/, char** /*argv*/) {
 
   //double center = 512.0;
   //int zoom = -8;
-  double center = 8191;
-  int zoom = -8;
+  //double center = 8191;
+  //int zoom = -8;
+
+  double center = 10;
+  int zoom = -36;
 
   bool quit = false;
   while (!quit) {
@@ -385,7 +320,7 @@ int main(int /*argc*/, char** /*argv*/) {
         Gameboy sampleB = samples[cursor];
 
         Gameboy temp = {};
-        step_forwards(&sampleA, &temp);
+        step_forwards(sampleA, temp);
       }
 
       //Sample sampleA = 

@@ -18,7 +18,7 @@ struct Timer {
 
     bool CPU_RESET;   // {ABOL}
 
-    bool FROM_CPU3;   // controls CPU_RD_SYNC?
+    bool FROM_CPU3;   // controls CPU_WR_SYNC?
     bool FROM_CPU4;   // only used by ABUZ
     bool FROM_CPU5;   // affects TIMA reload?
 

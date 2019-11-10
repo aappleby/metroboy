@@ -7,6 +7,9 @@ struct Gameboy;
 // no modifications or simplifications.
 
 struct P08_ExtCpuBuses {
+  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+
+private:
 
   // Address latch
   bool ALOR_00,APUR_01,ALYR_02,ARET_03,AVYS_04,ATEV_05,AROS_06,ARYM_07;
@@ -35,8 +38,6 @@ struct P08_ExtCpuBuses {
 
   bool MUJY_08,NENA_09,SURA_10,MADY_11,LAHE_12,LURA_13,PEVO_14,RAZA_15;
   bool LOFA_08,MAPU_09,RALA_10,LORA_11,LYNA_12,LEFY_13,NEFE_14,SYZU_15;
-
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 
   bool SORE,TEVY,TEXO,LEVO,LAGU,LYWE,MOCA,MEXO,NEVY,MOTY,PUVA,TYMU,USUF,UVER,UGAC,URUN;
   bool TOLA,MULE,LOXO,LASY,MATE;

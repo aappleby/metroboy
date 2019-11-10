@@ -24,21 +24,27 @@ struct Gameboy {
   CpuSignals   cpu;
 
   P01_ClocksReset p01;
-  P02_Interrupts  p02;
+  //P02_Interrupts  p02;
   P03_Timer       p03;
-  P04_DMA         p04;
-  P05_JoypadIO    p05;
-  P06_SerialLink  p06;
+  //P04_DMA         p04;
+  //P05_JoypadIO    p05;
+  //P06_SerialLink  p06;
   P07_SysDecode   p07;
   P08_ExtCpuBuses p08;
-  P09_ApuControl  p09;
-  P10_ApuDecode   p10;
-  P11_Ch1Regs     p11;
-  P12_Ch1Sweep    p12;
-  P13_Channel1    p13;
+  //P09_ApuControl  p09;
+  //P10_ApuDecode   p10;
+  //P11_Ch1Regs     p11;
+  //P12_Ch1Sweep    p12;
+  //P13_Channel1    p13;
 
   // this signal is weird
   bool ABOL;
+
+  //----------
+  // main bus
+
+  bool A00,A01,A02,A03,A04,A05,A06,A07,A08,A09,A10,A11,A12,A13,A14,A15;
+  bool D0,D1,D2,D3,D4,D5,D6,D7;
 
   //----------
   // debug stuff
@@ -56,13 +62,12 @@ struct Gameboy {
   //----------
   // driven by P01
 
-  bool AMUK_4M;    // phases ACEG
-  bool APUV_4M;    // phases BDFH
-  bool ARYF_4M;    // phases BDFH
-  bool ATAL_4M;    // phases BDFH
-  bool BAVU_1M;    // phases CDEF
-  bool BOGA_1M;    // high on phases BCDEF
-  bool CEMO_1M;    // where this come from?
+  union { bool AMUK; bool AMUK_4M;  }; // a_c_e_g_
+  bool APUV_4M;    // _b_d_f_h
+  bool ARYF_4M;    // _b_d_f_h
+  bool ATAL_4M;    // _b_d_f_h
+  bool BAVU_1M;    // __cdef__
+  bool BOGA_1M;    // _bcdef__
   bool BUTU_512K;
   bool BUFY_256;
   bool BYFE_128;
@@ -80,16 +85,16 @@ struct Gameboy {
   bool PHIn;
   bool TAMA_16K;
 
-  bool RESET2;       // active low!
-  bool RESET6;
-  bool RESET7;
-  bool RESET7n;
-  bool RESET8;
-  bool RESET9;
-  bool RESET_VIDEO;  // to P21, P24, P27, P28, P29
+  bool RESET2;       // p01.ALUR active low!
+  bool RESET6;       // p01.CUNU
+  bool RESET7;       // p01.XORE
+  bool RESET7n;      // p01.XEBE
+  bool RESET8;       // p01.WALU
+  bool RESET9;       // p01.WESY
+  bool RESET_VIDEO;  // P01.XAPO to P21, P24, P27, P28, P29
 
   bool CLKIN_An;     // <- P01.UCOB
-  bool CPU_RD_SYNC;  // <- P01.APOV, FIXME actually CPU_WR_SYNC, __not__ read
+  bool CPU_WR_SYNC;  // <- P01.APOV
   bool FF04_D0n;     // <- P01.UMEK
   bool FF04_D1n;     // <- P01.UREK
   bool TO_CPU;       // <- P01.BOWA
@@ -130,39 +135,6 @@ struct Gameboy {
   bool SER_TICKn;    // <- P06.EDYL
 
   //----------
-  // driven by P07
-
-  bool CPU_RD;       // <- P07.TEDO
-  bool CPU_WR;       // <- P07.TAPU
-  bool CPU_RD2;      // <- P07.ASOT
-  bool CPU_WR2;      // <- P07.CUPA
-
-  bool FF60_D0;      // <- P07.BURO, debugging
-  bool FF60_D1;      // <- P07.AMUT, debugging
-  bool FF0F_RD;      // <- P07.ROLO
-  bool FF0F_WR;      // <- P07.REFA
-  bool FFXX;         // <- P07.SYKE
-  bool TUTU;         // <- P07.TUTU
-  bool BOOT_CS;      // <- P07.ZERY
-  bool HRAM_CS;      // <- P07.WUTA
-  bool FEXXFFXXn;    // <- P07.TUNA
-  bool FFXXn;        // <- P07.BAKO
-  bool SARO;         // <- P07.SARO
-
-  bool BOOTROM_A1nA0n; // <- P07.ZETE
-  bool BOOTROM_A1nA0;  // <- P07.ZEFU
-  bool BOOTROM_A1A0n;  // <- P07.ZYRO
-  bool BOOTROM_A1A0;   // <- P07.ZAPA
-  bool BOOTROM_A2n;    // <- P07.ZOKE
-  bool BOOTROM_A3n;    // <- P07.ZABU
-  bool BOOTROM_A5nA4n; // <- P07.ZYKY
-  bool BOOTROM_A5nA4;  // <- P07.ZYGA
-  bool BOOTROM_A5A4n;  // <- P07.ZOVY
-  bool BOOTROM_A5AA4;  // <- P07.ZUKO
-  bool BOOTROM_A6n;    // <- P07.ZAGE
-  bool BOOTROM_A7n;    // <- P07.ZYRA
-
-  //----------
 
   bool TOLA_A1n;     // <- P08.TOLA
   bool NET01;        // <- P08.TOVA
@@ -170,11 +142,11 @@ struct Gameboy {
   //----------
 
   bool APU_RESET;    // <- P09.KEBA
-  bool APU_RESETn;   // <- P09.AGUR;
-  bool APU_RESET2n;  // <- P09.AFAT;
-  bool APU_RESET3n;  // <- P09.ATYV;
-  bool APU_RESET4n;  // <- P09.DAPA;
-  bool APU_RESET5n;  // <- P09.KAME;
+  bool APU_RESETn;   // <- P09.AGUR
+  bool APU_RESET2n;  // <- P09.AFAT
+  bool APU_RESET3n;  // <- P09.ATYV
+  bool APU_RESET4n;  // <- P09.DAPA
+  bool APU_RESET5n;  // <- P09.KAME
   bool AJER_2M;      // <- P09.AJER
   bool AJER_2Mn;     // <- P09.AJER
   bool DYFA_1M;      // <- P09.DYFA
@@ -182,11 +154,14 @@ struct Gameboy {
   bool NET03;        // <- P09.EDEK
   bool CPU_RDn;      // <- P09.AGUZ
 
+  //----------
+
   bool ANAP;         // <- P10.ANAP
   bool FF00RD;       // <- P10.ACAT
   bool FF00WR;       // <- P10.ATOZ
 
-  bool CYBO_4M;      // <- P17.CYBO
+  //----------
+
   bool INT_STAT;     // <- P21.VOTY
   bool INT_VBL_BUF;  // <- P21.VYPU
 

@@ -14,18 +14,18 @@ void P06_SerialLink::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   //----------
   // FF02 SC
 
-  pc.UWAM = nand(gb.CPU_WR, pb.SANO, gb.TOVY_A0n, gb.cpu.A01); // ok these are _both_ nand?
-  pc.UCOM = nand(gb.CPU_RD, pb.SANO, gb.TOVY_A0n, gb.cpu.A01); // need to compare w/ other regs...
+  pc.UWAM = nand(gb.p07.CPU_WR, pb.SANO, gb.p03.TOVY_A0n, gb.A01); // ok these are _both_ nand?
+  pc.UCOM = nand(gb.p07.CPU_RD, pb.SANO, gb.p03.TOVY_A0n, gb.A01); // need to compare w/ other regs...
 
-  pc.COTY = tock_pos(ga.CLK_16K, gb.CLK_16K, pb.UWAM, pb.COTY, !pb.COTY);
+  pc.COTY = tock_pos(ga.p01.CLK_16K, gb.p01.CLK_16K, pb.UWAM, pb.COTY, !pb.COTY);
 
-  pc.ETAF_07 = tock_pos(pa.UWAM, pb.UWAM, pb.CABY,   pb.ETAF_07, gb.cpu.D7);
-  pc.CULY_00 = tock_pos(pa.UWAM, pb.UWAM, gb.RESET2, pb.CULY_00, gb.cpu.D0);
+  pc.ETAF_07 = tock_pos(pa.UWAM, pb.UWAM, pb.CABY,       pb.ETAF_07, gb.D7);
+  pc.CULY_00 = tock_pos(pa.UWAM, pb.UWAM, gb.p01.RESET2, pb.CULY_00, gb.D0);
 
   pc.CORE_00 = not(!pb.CULY_00);
   pc.ELUV_07 = not(!pb.ETAF_07);
 
-  pc.CARO = and(pb.UWAM, gb.RESET2);
+  pc.CARO = and(pb.UWAM, gb.p01.RESET2);
 
   pc.CAVE = mux2(pb.COTY, gb.chip.SCK_C, pb.CULY_00);
   pc.DAWA = or(pb.CAVE, !pb.ETAF_07);
@@ -42,58 +42,53 @@ void P06_SerialLink::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.CALY_03 = tock_pos(!pa.CYDE_02, !pb.CYDE_02, pb.CARO, pb.CALY_03, !pb.CALY_03);
 
   pc.COBA = not(pb.CALY_03);
-  pc.CABY = and(pb.COBA, gb.RESET2);
+  pc.CABY = and(pb.COBA, gb.p01.RESET2);
 
   gc.chip.SCK_A = pb.KEXU;    // not in schematic, but it's there
   gc.chip.SCK_B = pb.CULY_00; // SCK_DIR in schematic
   gc.chip.SCK_D = pb.KUJO;    // not in schematic, but it's there
 
-  gc.INT_SERIAL = pb.CALY_03;
-  gc.SER_TICKn  = pb.EDYL;
-
   if (pb.UCOM) {
-    gc.cpu.D0 = pb.CORE_00;
-    gc.cpu.D7 = pb.ELUV_07;
+    gc.D0 = pb.CORE_00;
+    gc.D7 = pb.ELUV_07;
   }
 
   //----------
 
-  pc.URYS = nand(gb.CPU_WR, pb.SANO, gb.cpu.A00, gb.TOLA_A1n); // see, these are NAND/AND...
-  pc.UFEG = and (gb.CPU_RD, pb.SANO, gb.cpu.A00, gb.TOLA_A1n);
+  pc.URYS = nand(gb.p07.CPU_WR, pb.SANO, gb.A00, gb.p08.TOLA_A1n); // see, these are NAND/AND...
+  pc.UFEG = and (gb.p07.CPU_RD, pb.SANO, gb.A00, gb.p08.TOLA_A1n);
 
-  pc.SARE = nor(gb.cpu.A07, gb.cpu.A06, gb.cpu.A05, gb.cpu.A04, gb.cpu.A03);
-  pc.SEFY = not(gb.cpu.A02);
-  pc.SANO = and(pb.SARE, pb.SEFY, gb.FFXX);
+  pc.SARE = nor(gb.A07, gb.A06, gb.A05, gb.A04, gb.A03);
+  pc.SEFY = not(gb.A02);
+  pc.SANO = and(pb.SARE, pb.SEFY, gb.p07.FFXX);
   pc.DAKU = not(pb.URYS);
 
-  pc.EPYT = not(gb.SER_TICKn);
+  pc.EPYT = not(pb.SER_TICKn);
   pc.DEHO = not(pb.EPYT);
   pc.DAWE = not(pb.DEHO);
   pc.CAGE = not(gb.chip.SIN_C); // check this
 
 
-  gc.A00_07 = pb.SARE;
-
   //----------
   // FF01 SB
 
-  pc.CUFU_00 = nand(gb.cpu.D0, pb.DAKU);
-  pc.DOCU_01 = nand(gb.cpu.D1, pb.DAKU);
-  pc.DELA_02 = nand(gb.cpu.D2, pb.DAKU);
-  pc.DYGE_03 = nand(gb.cpu.D3, pb.DAKU);
-  pc.DOLA_04 = nand(gb.cpu.D4, pb.DAKU);
-  pc.ELOK_05 = nand(gb.cpu.D5, pb.DAKU);
-  pc.EDEL_06 = nand(gb.cpu.D6, pb.DAKU);
-  pc.EFEF_07 = nand(gb.cpu.D7, pb.DAKU);
+  pc.CUFU_00 = nand(gb.D0, pb.DAKU);
+  pc.DOCU_01 = nand(gb.D1, pb.DAKU);
+  pc.DELA_02 = nand(gb.D2, pb.DAKU);
+  pc.DYGE_03 = nand(gb.D3, pb.DAKU);
+  pc.DOLA_04 = nand(gb.D4, pb.DAKU);
+  pc.ELOK_05 = nand(gb.D5, pb.DAKU);
+  pc.EDEL_06 = nand(gb.D6, pb.DAKU);
+  pc.EFEF_07 = nand(gb.D7, pb.DAKU);
 
-  pc.COHY_00 = unk3(pb.URYS, gb.cpu.D0, gb.RESET2);
-  pc.DUMO_01 = unk3(pb.URYS, gb.cpu.D1, gb.RESET2);
-  pc.DYBO_02 = unk3(pb.URYS, gb.cpu.D2, gb.RESET2);
-  pc.DAJU_03 = unk3(pb.URYS, gb.cpu.D3, gb.RESET2);
-  pc.DYLY_04 = unk3(pb.URYS, gb.cpu.D4, gb.RESET2);
-  pc.EHUJ_05 = unk3(pb.URYS, gb.cpu.D5, gb.RESET2);
-  pc.EFAK_06 = unk3(pb.URYS, gb.cpu.D6, gb.RESET2);
-  pc.EGUV_07 = unk3(pb.URYS, gb.cpu.D7, gb.RESET2);
+  pc.COHY_00 = unk3(pb.URYS, gb.D0, gb.p01.RESET2);
+  pc.DUMO_01 = unk3(pb.URYS, gb.D1, gb.p01.RESET2);
+  pc.DYBO_02 = unk3(pb.URYS, gb.D2, gb.p01.RESET2);
+  pc.DAJU_03 = unk3(pb.URYS, gb.D3, gb.p01.RESET2);
+  pc.DYLY_04 = unk3(pb.URYS, gb.D4, gb.p01.RESET2);
+  pc.EHUJ_05 = unk3(pb.URYS, gb.D5, gb.p01.RESET2);
+  pc.EFAK_06 = unk3(pb.URYS, gb.D6, gb.p01.RESET2);
+  pc.EGUV_07 = unk3(pb.URYS, gb.D7, gb.p01.RESET2);
 
   pc.CUBA_00 = srtock_pos(pa.DAWE, pb.DAWE, pb.CUFU_00, pb.COHY_00, pb.CUBA_00, pb.CAGE);
   pc.DEGU_01 = srtock_pos(pa.DAWE, pb.DAWE, pb.DOCU_01, pb.DUMO_01, pb.DEGU_01, pb.CUBA_00);
@@ -114,16 +109,15 @@ void P06_SerialLink::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.ETAK_07 = not(!pb.EDER_07);
 
   if (pb.UFEG) {
-    gc.cpu.D0 = pb.CUGY_00;
-    gc.cpu.D1 = pb.DUDE_01;
-    gc.cpu.D2 = pb.DETU_02;
-    gc.cpu.D3 = pb.DASO_03;
-    gc.cpu.D4 = pb.DAME_04;
-    gc.cpu.D5 = pb.EVOK_05;
-    gc.cpu.D6 = pb.EFAB_06;
-    gc.cpu.D7 = pb.ETAK_07;
+    gc.D0 = pb.CUGY_00;
+    gc.D1 = pb.DUDE_01;
+    gc.D2 = pb.DETU_02;
+    gc.D3 = pb.DASO_03;
+    gc.D4 = pb.DAME_04;
+    gc.D5 = pb.EVOK_05;
+    gc.D6 = pb.EFAB_06;
+    gc.D7 = pb.ETAK_07;
   }
 
-  pc.ELYS = tock_pos(ga.SER_TICKn, gb.SER_TICKn, gb.RESET2, pb.ELYS, pb.EDER_07);
-  gc.SER_OUT = pb.ELYS;
+  pc.ELYS = tock_pos(pa.SER_TICKn, pb.SER_TICKn, gb.p01.RESET2, pb.ELYS, pb.EDER_07);
 }

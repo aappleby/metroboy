@@ -4,7 +4,7 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P21_VideoContro {
+struct P21_VideoControl {
   struct Input {
     bool CLKPIPE;
     bool CLK2;

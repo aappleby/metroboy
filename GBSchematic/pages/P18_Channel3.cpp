@@ -1,91 +1,6 @@
 #include "../Schematics.h"
 #include "Gameboy.h"
 
-struct P18_Channel3 {
-
-  bool JYFO,HUNO,HEMA,GASE,HUPA,GAFU,HEFO,JUTY;
-  bool HERA,KYKO,KASO,KYRU,JERA,KESE;
-  
-  bool KUTU_00,KUPE_01,KUNU_02,KEMU_03,KYGU_04,KEPA_05,KAFO_06,KENO_07,KEJU_08,KEZA_09,JAPU_10;
-
-  bool FETY,FOTO,ETAN,GYRY,DERO;
-  bool EFAR,ERUS,EFUZ,EXEL,EFAL;
-  bool BOLE,AGYL,AFUM,AXOL;
-  bool JECO,HONY,GENO;
-  bool FAPY,FARO,FOTE,FANA,FERA;
-  bool GEDO,FYGO,FOZU,EZAS,CALU,DORU,DAVO,COKA,ERED;
-
-  bool GOKA,GEMY,GEGE,EZAG,EVUG,DOKY,DORE,BARY,BYKA,BOPA,BELY;
-  bool GUDA,FEXU,GEPY,GENU,FALU;
-
-  bool BENO,ATOK;
-
-  bool GEVO_00;
-  bool FORY_01;
-  bool GATU_02;
-  bool GAPO_03;
-  bool GEMO_04;
-  bool FORO_05;
-  bool FAVE_06;
-  bool FYRU_07;
-
-  //----------
-
-  bool GARA;         // P16.GARA
-  bool GUGU;         // P16.GUGU
-
-  bool FF1A_D7n;     // P16.GUXE
-
-  bool FF1B_WR1;     // P16.EMUT
-  bool FF1B_WR2;     // P16.GAJY
-  bool FF1B_WR3;     // P16.GETO
-
-  bool FF1C_D5;
-  bool FF1C_D6;
-  bool FF1C_D5n;
-  bool FF1C_D6n;
-
-  bool FF1D_D0;
-  bool FF1D_D1;
-  bool FF1D_D2;
-  bool FF1D_D3;
-  bool FF1D_D4;
-  bool FF1D_D5;
-  bool FF1D_D6;
-  bool FF1D_D7;
-
-  bool FF1E_D0;
-  bool FF1E_D1;
-  bool FF1E_D2;
-
-  bool FF1E_D6;
-  bool FF1E_D6n;
-
-  bool CH3_ACTIVE;   // P18.COKA
-  bool CH3_ACTIVEn;  // P18.ERED
-
-  bool WAVE_A0;      // P18.BOLE
-  bool WAVE_A1;      // P18.AGYL
-  bool WAVE_A2;      // P18.AFUM
-  bool WAVE_A3;      // P18.AXOL
-
-  bool WAVE_PLAY_D0; // P17.DATE
-  bool WAVE_PLAY_D1; // P17.DAZY
-  bool WAVE_PLAY_D2; // P17.CUZO
-  bool WAVE_PLAY_D3; // P17.COPO
-
-  bool WAVE_DAC_D0;  // P18.BARY
-  bool WAVE_DAC_D1;  // P18.BYKA
-  bool WAVE_DAC_D2;  // P18.BOPA
-  bool WAVE_DAC_D3;  // P18.BELY
-
-  bool WAVE_RAM_RDn; // P17.CAZU
-
-  bool FF1C;
-
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
-};
-
 void P18_Channel3::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   const P18_Channel3 pa = {};
   const P18_Channel3 pb = {};
@@ -95,9 +10,9 @@ void P18_Channel3::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.HUNO = tock_pos(pa.JYFO, pb.JYFO, pb.GAFU, pb.HUNO, !pb.HUNO);
   pc.HEMA = not(pb.HUNO);
   pc.GASE = not(pb.HEMA);
-  pc.HUPA = and(pb.HUNO, gb.CERY_2M);
-  pc.GAFU = nor(gb.APU_RESET, pb.GARA, pb.HUPA);
-  pc.HEFO = nor(gb.CERY_2M, pb.GUGU);
+  pc.HUPA = and(pb.HUNO, gb.p01.CERY_2M);
+  pc.GAFU = nor(gb.p09.APU_RESET, pb.GARA, pb.HUPA);
+  pc.HEFO = nor(gb.p01.CERY_2M, pb.GUGU);
   pc.HERA = nor(pb.GASE, pb.GARA);
 
   pc.JUTY = not(pb.HEFO);
@@ -126,7 +41,7 @@ void P18_Channel3::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.FETY = tock_pos(!pa.EFAL, !pb.EFAL, pb.GYRY, pb.FETY, !pb.FETY);
   pc.FOTO = and(pb.FETY, pb.GASE);
   pc.ETAN = or(pb.GARA, pb.FETY);
-  pc.GYRY = nor(gb.APU_RESET, pb.GARA, pb.FOTO);
+  pc.GYRY = nor(gb.p09.APU_RESET, pb.GARA, pb.FOTO);
   pc.DERO = not(pb.GASE);
 
   pc.EFAR = tock_pos(pa.DERO,  pb.DERO,  pb.ETAN, pb.EFAR, !pb.EFAR);
@@ -135,18 +50,18 @@ void P18_Channel3::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.EXEL = tock_pos(!pa.EFUZ, !pb.EFUZ, pb.ETAN, pb.EXEL, !pb.EXEL);
   pc.EFAL = tock_pos(!pa.EXEL, !pb.EXEL, pb.ETAN, pb.EFAL, !pb.EFAL);
 
-  pc.BOLE = mux2(pb.ERUS, gb.cpu.A00, pb.CH3_ACTIVE);
-  pc.AGYL = mux2(pb.EFUZ, gb.cpu.A01, pb.CH3_ACTIVE);
-  pc.AFUM = mux2(pb.EXEL, gb.cpu.A02, pb.CH3_ACTIVE);
-  pc.AXOL = mux2(pb.EFAL, gb.cpu.A03, pb.CH3_ACTIVE);
+  pc.BOLE = mux2(pb.ERUS, gb.A00, pb.CH3_ACTIVE);
+  pc.AGYL = mux2(pb.EFUZ, gb.A01, pb.CH3_ACTIVE);
+  pc.AFUM = mux2(pb.EXEL, gb.A02, pb.CH3_ACTIVE);
+  pc.AXOL = mux2(pb.EFAL, gb.A03, pb.CH3_ACTIVE);
 
   pc.WAVE_A0 = pb.BOLE;
   pc.WAVE_A1 = pb.AGYL;
   pc.WAVE_A2 = pb.AFUM;
   pc.WAVE_A3 = pb.AXOL;
 
-  pc.JECO = not(gb.CPU_RDn);
-  pc.HONY = and(gb.NET03, pb.JECO, pb.FF1C);
+  pc.JECO = not(gb.p09.CPU_RDn);
+  pc.HONY = and(gb.p09.NET03, pb.JECO, pb.FF1C);
   pc.GENO = not(pb.HONY);
 
   pc.FAPY = not(!pb.EFAR);
@@ -156,51 +71,51 @@ void P18_Channel3::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.FERA = not(!pb.EFAL);
 
   if (pb.GENO) {
-    gc.cpu.D0 = pb.FAPY;
-    gc.cpu.D1 = pb.FARO;
-    gc.cpu.D2 = pb.FOTE;
-    gc.cpu.D3 = pb.FANA;
-    gc.cpu.D4 = pb.FERA;
+    gc.D0 = pb.FAPY;
+    gc.D1 = pb.FARO;
+    gc.D2 = pb.FOTE;
+    gc.D3 = pb.FANA;
+    gc.D4 = pb.FERA;
   }
 
-  pc.GEDO = and(gb.BUFY_256, pb.FF1E_D6);
-  pc.FYGO = or(gb.APU_RESET, pb.GEDO, pb.FF1A_D7n);
+  pc.GEDO = and(gb.p01.BUFY_256, pb.FF1E_D6);
+  pc.FYGO = or(gb.p09.APU_RESET, pb.GEDO, pb.FF1A_D7n);
   pc.FOZU = or(pb.GARA, pb.FYGO);
   pc.EZAS = not(pb.FOZU);
   pc.DORU = not(pb.EZAS);
-  pc.CALU = not(gb.APU_RESET);
-  pc.DAVO = tock_pos(ga.AJER_2M, gb.AJER_2M, pb.CALU, pb.DAVO, pb.DORU);
+  pc.CALU = not(gb.p09.APU_RESET);
+  pc.DAVO = tock_pos(ga.p09.AJER_2M, gb.p09.AJER_2M, pb.CALU, pb.DAVO, pb.DORU);
   pc.COKA = not(!pb.DAVO);
   pc.ERED = not(pb.COKA);
 
   pc.CH3_ACTIVE = pb.COKA;
   pc.CH3_ACTIVEn = pb.ERED;
 
-  pc.GUDA = nor(pb.FF1B_WR3, gb.APU_RESET, pb.GARA);
+  pc.GUDA = nor(pb.FF1B_WR3, gb.p09.APU_RESET, pb.GARA);
   pc.FEXU = tock_pos(!pa.FYRU_07, !pb.FYRU_07, pb.GUDA, pb.FEXU, !pb.FEXU);
-  pc.GEPY = nor(gb.BUFY_256, pb.FF1E_D6n);
+  pc.GEPY = nor(gb.p01.BUFY_256, pb.FF1E_D6n);
   pc.GENU = not(pb.GEPY);
 
-  pc.GEVO_00 = tock_pos(pa.GENU,    pb.GENU,    pb.FF1B_WR2, pb.GEVO_00, gb.cpu.D0);
-  pc.FORY_01 = tock_pos(pa.GEVO_00, pb.GEVO_00, pb.FF1B_WR2, pb.FORY_01, gb.cpu.D1);
-  pc.GATU_02 = tock_pos(pa.FORY_01, pb.FORY_01, pb.FF1B_WR2, pb.GATU_02, gb.cpu.D2);
-  pc.GAPO_03 = tock_pos(pa.GATU_02, pb.GATU_02, pb.FF1B_WR2, pb.GAPO_03, gb.cpu.D3);
+  pc.GEVO_00 = tock_pos(pa.GENU,    pb.GENU,    pb.FF1B_WR2, pb.GEVO_00, gb.D0);
+  pc.FORY_01 = tock_pos(pa.GEVO_00, pb.GEVO_00, pb.FF1B_WR2, pb.FORY_01, gb.D1);
+  pc.GATU_02 = tock_pos(pa.FORY_01, pb.FORY_01, pb.FF1B_WR2, pb.GATU_02, gb.D2);
+  pc.GAPO_03 = tock_pos(pa.GATU_02, pb.GATU_02, pb.FF1B_WR2, pb.GAPO_03, gb.D3);
 
   pc.FALU = not(pb.GAPO_03);
 
-  pc.GEMO_04 = tock_pos(pa.FALU,    pb.FALU,    pb.FF1B_WR1, pb.GEMO_04, gb.cpu.D4);
-  pc.FORO_05 = tock_pos(pa.GEMO_04, pb.GEMO_04, pb.FF1B_WR1, pb.FORO_05, gb.cpu.D5);
-  pc.FAVE_06 = tock_pos(pa.FORO_05, pb.FORO_05, pb.FF1B_WR1, pb.FAVE_06, gb.cpu.D6);
-  pc.FYRU_07 = tock_pos(pa.FAVE_06, pb.FAVE_06, pb.FF1B_WR1, pb.FYRU_07, gb.cpu.D7);
+  pc.GEMO_04 = tock_pos(pa.FALU,    pb.FALU,    pb.FF1B_WR1, pb.GEMO_04, gb.D4);
+  pc.FORO_05 = tock_pos(pa.GEMO_04, pb.GEMO_04, pb.FF1B_WR1, pb.FORO_05, gb.D5);
+  pc.FAVE_06 = tock_pos(pa.FORO_05, pb.FORO_05, pb.FF1B_WR1, pb.FAVE_06, gb.D6);
+  pc.FYRU_07 = tock_pos(pa.FAVE_06, pb.FAVE_06, pb.FF1B_WR1, pb.FYRU_07, gb.D7);
 
   pc.GOKA = nor(pb.FF1C_D6n, pb.FF1C_D5);
   pc.GEMY = nor(pb.FF1C_D6n, pb.FF1C_D5n);
   pc.GEGE = nor(pb.FF1C_D6,  pb.FF1C_D5n);
 
-  pc.EZAG = amux3(pb.WAVE_PLAY_D0, pb.GEGE, pb.WAVE_PLAY_D1, pb.GOKA, pb.WAVE_PLAY_D2, pb.GEMY);
-  pc.EVUG = amux3(pb.WAVE_PLAY_D1, pb.GEGE, pb.WAVE_PLAY_D2, pb.GOKA, pb.WAVE_PLAY_D3, pb.GEMY);
-  pc.DOKY = amux2(pb.GEGE, pb.WAVE_PLAY_D2, pb.WAVE_PLAY_D3, pb.GEMY);
-  pc.DORE = and(pb.WAVE_PLAY_D3, pb.GEGE);
+  pc.EZAG = amux3(gb.p17.WAVE_PLAY_D0, pb.GEGE, gb.p17.WAVE_PLAY_D1, pb.GOKA, gb.p17.WAVE_PLAY_D2, pb.GEMY);
+  pc.EVUG = amux3(gb.p17.WAVE_PLAY_D1, pb.GEGE, gb.p17.WAVE_PLAY_D2, pb.GOKA, gb.p17.WAVE_PLAY_D3, pb.GEMY);
+  pc.DOKY = amux2(pb.GEGE, gb.p17.WAVE_PLAY_D2, gb.p17.WAVE_PLAY_D3, pb.GEMY);
+  pc.DORE = and(gb.p17.WAVE_PLAY_D3, pb.GEGE);
 
   pc.BARY = and(pb.CH3_ACTIVE, pb.EZAG);
   pc.BYKA = and(pb.CH3_ACTIVE, pb.EVUG);
@@ -212,6 +127,6 @@ void P18_Channel3::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.WAVE_DAC_D2 = pb.BOPA;
   pc.WAVE_DAC_D3 = pb.BELY;
 
-  pc.BENO = mux2(gb.BUTU_512K, pb.WAVE_RAM_RDn, pb.CH3_ACTIVE);
+  pc.BENO = mux2(gb.p17.BUTU_512K, gb.p17.WAVE_RAM_RDn, pb.CH3_ACTIVE);
   pc.ATOK = not(pb.BENO);
 }

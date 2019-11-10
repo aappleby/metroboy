@@ -6,6 +6,17 @@ struct P13_Channel1 {
 
   static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 
+  union { bool DUNA; bool CH1_BIT; };
+  union { bool CARA; bool CH1_ACTIVEn; };
+  union { bool ACEG; bool CH1_OUT3; };
+  union { bool AGOF; bool CH1_OUT2; };
+  union { bool ASON; bool CH1_OUT1; };
+  union { bool AMOP; bool CH1_OUT0; };
+
+  union { bool HOCA; bool CH1_AMP_ENn; };
+
+private:
+
   //----------
   // inputs
 
@@ -47,16 +58,6 @@ struct P13_Channel1 {
   bool FF11;
 
   //----------
-  // outputs
-
-  bool CH1_ACTIVEn;
-  bool CH1_BIT;
-  bool CH1_OUT0;
-  bool CH1_OUT1;
-  bool CH1_OUT2;
-  bool CH1_OUT3;
-
-  //----------
   // regs
 
   // Channel 1 length timer
@@ -85,13 +86,13 @@ struct P13_Channel1 {
   //----------
   // cells
 
-  bool DAJO,DUVO,EZOZ,ENEK,CODO,COSO,CAVA,CEVU,CAXO,DUNA;
-  bool BORO,BEPE,BOKA,BUGY,CORY,CUSO,CAPY,CYFA,CANU,BONE,HOCA,FEMY,BERY,GEPU,GEXU;
+  bool DAJO,DUVO,EZOZ,ENEK,CODO,COSO,CAVA,CEVU,CAXO;
+  bool BORO,BEPE,BOKA,BUGY,CORY,CUSO,CAPY,CYFA,CANU,BONE,FEMY,BERY,GEPU,GEXU;
 
   bool KAZA,KUXU,JONE,KADO,KERE,JOLA,KOTE,KURY,KUKU,KOMA,KORO;
-  bool ERUM,EGET,GEFE,DOGE,DADO,DUKA,FYFO,KEKO,KABA,KYLY,KEZU,KAKE,CYTO,CARA,COWE,BOTO;
+  bool ERUM,EGET,GEFE,DOGE,DADO,DUKA,FYFO,KEKO,KABA,KYLY,KEZU,KAKE,CYTO,COWE,BOTO;
 
-  bool HESU,HETO,HYTO,JUFY,ACEG,AGOF,ASON,AMOP,HUFU,HANO,HAKE,JADE,KORU;
+  bool HESU,HETO,HYTO,JUFY,HUFU,HANO,HAKE,JADE,KORU;
 
   bool CYTE,DOKA,CALA,DYRU;
   bool DAFA,CYMU,BAVE,BURY,COZE;

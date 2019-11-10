@@ -31,37 +31,35 @@ void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
 
   pc.DUNA = amux4(pb.ENEK, pb.COSO, pb.EZOZ, pb.CAVA, pb.DAPE, pb.CEVU, pb.CODO, pb.CAXO);
 
-  pc.CH1_BIT = pb.DUNA;
-
   //----------
   // Length timer
 
-  pc.BORO = nand(gb.APU_WR, pb.FF11);
+  pc.BORO = nand(gb.p10.APU_WR, pb.FF11);
   pc.BEPE = not(pb.BORO);
   pc.BOKA = not(pb.BORO);
   pc.BUGY = not(pb.BORO);
-  pc.CORY = nor(pb.FEKU, gb.APU_RESET, pb.BOKA);
+  pc.CORY = nor(pb.FEKU, gb.p09.APU_RESET, pb.BOKA);
 
   pc.CUSO = not(!pb.CUNO);
 
   // FIXME daisy chain
-  pc.CURA = count_pos(pa.CUSO, pb.CUSO, pb.BEPE, pb.CURA, gb.cpu.D4);
-  pc.ERAM = count_pos(pa.CURA, pb.CUSO, pb.BEPE, pb.ERAM, gb.cpu.D5);
+  pc.CURA = count_pos(pa.CUSO, pb.CUSO, pb.BEPE, pb.CURA, gb.D4);
+  pc.ERAM = count_pos(pa.CURA, pb.CUSO, pb.BEPE, pb.ERAM, gb.D5);
   pc.CERO = tock_pos(!pa.ERAM, !pb.ERAM, pb.CORY, pc.CERO, !pc.CERO);
 
-  pc.CAPY = nor(pb.FF14_D6n, gb.BUFY_256, pb.CERO);
+  pc.CAPY = nor(pb.FF14_D6n, gb.p01.BUFY_256, pb.CERO);
   pc.CYFA = and(pb.CERO, pb.FF14_D6);
   pc.CANU = not(pb.CAPY);
 
-  pc.BACY = count_pos(pa.CANU, pb.CANU, pb.BUGY, pb.BACY, gb.cpu.D0);
-  pc.CAVY = count_pos(pa.BACY, pb.BACY, pb.BUGY, pb.CAVY, gb.cpu.D1);
-  pc.BOVY = count_pos(pa.CAVY, pb.CAVY, pb.BUGY, pb.BOVY, gb.cpu.D2);
-  pc.CUNO = count_pos(pa.BOVY, pb.BOVY, pb.BUGY, pb.CUNO, gb.cpu.D3);
+  pc.BACY = count_pos(pa.CANU, pb.CANU, pb.BUGY, pb.BACY, gb.D0);
+  pc.CAVY = count_pos(pa.BACY, pb.BACY, pb.BUGY, pb.CAVY, gb.D1);
+  pc.BOVY = count_pos(pa.CAVY, pb.CAVY, pb.BUGY, pb.BOVY, gb.D2);
+  pc.CUNO = count_pos(pa.BOVY, pb.BOVY, pb.BUGY, pb.CUNO, gb.D3);
 
   pc.BONE = not(pb.ATYS);
   pc.HOCA = nor(pb.FF12_D3, pb.FF12_D4, pb.FF12_D5, pb.FF12_D6, pb.FF12_D7);
-  pc.FEMY = nor(pb.HOCA, gb.APU_RESET);
-  pc.BERY = or(pb.BONE, gb.APU_RESET, pb.CYFA, pb.HOCA);
+  pc.FEMY = nor(pb.HOCA, gb.p09.APU_RESET);
+  pc.BERY = or(pb.BONE, gb.p09.APU_RESET, pb.CYFA, pb.HOCA);
   pc.GEPU = not(pb.FYTE);
   pc.GEXU = unk2(pb.FEMY, pb.GEPU);
 
@@ -71,8 +69,8 @@ void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.KAZA = nor(pb.FEKU, pb.KOZY);
   pc.KUXU = not(pb.KAZA);
 
-  pc.JONE = not(gb.BYFE_128);
-  pc.KADO = not(gb.APU_RESET);
+  pc.JONE = not(gb.p01.BYFE_128);
+  pc.KADO = not(gb.p09.APU_RESET);
   pc.KALY = tock_pos(pa.JONE, pb.JONE, pb.KADO, pb.KALY, !pb.KALY);
   pc.KERE = not(pb.KALY);
   pc.JOLA = not(pb.KERE);
@@ -86,25 +84,24 @@ void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.KUKU = nor(gb.ABOL, pb.KURY);
   pc.KOMA = nor(pb.FF12_D0, pb.FF12_D1, pb.FF12_D2);
   pc.KORO = nor(pb.KUKU, pb.KOMA);
-  pc.KOZY = tock_pos(ga.HORU_512, gb.HORU_512, pb.KORO, pb.KOZY, pb.KOTE);
+  pc.KOZY = tock_pos(ga.p01.HORU_512, gb.p01.HORU_512, pb.KORO, pb.KOZY, pb.KOTE);
 
-
-  pc.ERUM = not(gb.APU_RESET);
-  pc.FARE = tock_pos(ga.DYFA_1M, gb.DYFA_1M, pb.ERUM, pb.FARE, pb.FEKU);
-  pc.FYTE = tock_pos(ga.DYFA_1M, gb.DYFA_1M, pb.ERUM, pb.FYTE, pb.FARE);
-  pc.EGET = nor(gb.APU_RESET, pb.FARE);
+  pc.ERUM = not(gb.p09.APU_RESET);
+  pc.FARE = tock_pos(ga.p09.DYFA_1M, gb.p09.DYFA_1M, pb.ERUM, pb.FARE, pb.FEKU);
+  pc.FYTE = tock_pos(ga.p09.DYFA_1M, gb.p09.DYFA_1M, pb.ERUM, pb.FYTE, pb.FARE);
+  pc.EGET = nor(gb.p09.APU_RESET, pb.FARE);
   pc.GEFE = not(pb.EGET);
 
-  pc.DOGE = nand(gb.APU_WR, pb.FF14_D6); // BUG - APU_WR
-  pc.DADO = nor(gb.APU_RESET, pb.EZEC);
-  pc.DUPE = tock_pos(pa.DOGE, pb.DOGE, pb.DADO, pb.DUPE, gb.cpu.D7);
-  pc.DUKA = not(gb.APU_RESET);
-  pc.EZEC = tock_pos(ga.PHIn, gb.PHIn, pb.DUKA, pb.EZEC, pb.DUPE);
+  pc.DOGE = nand(gb.p10.APU_WR, pb.FF14_D6); // BUG - APU_WR
+  pc.DADO = nor(gb.p09.APU_RESET, pb.EZEC);
+  pc.DUPE = tock_pos(pa.DOGE, pb.DOGE, pb.DADO, pb.DUPE, gb.D7);
+  pc.DUKA = not(gb.p09.APU_RESET);
+  pc.EZEC = tock_pos(ga.p01.PHIn, gb.p01.PHIn, pb.DUKA, pb.EZEC, pb.DUPE);
 
   pc.FYFO = or(pb.GEFE, pb.EZEC); // unk2
-  pc.FEKU = tock_pos(ga.DYFA_1M, gb.DYFA_1M, pb.EGET, pb.FEKU, pb.FYFO);
-  pc.KEKO = or(gb.APU_RESET, pb.FEKU);
-  pc.KABA = or(gb.APU_RESET, pb.FEKU);
+  pc.FEKU = tock_pos(ga.p09.DYFA_1M, gb.p09.DYFA_1M, pb.EGET, pb.FEKU, pb.FYFO);
+  pc.KEKO = or(gb.p09.APU_RESET, pb.FEKU);
+  pc.KABA = or(gb.p09.APU_RESET, pb.FEKU);
   pc.KYLY = not(pb.KABA);
 
   pc.KYNO = pb.KYNO;
@@ -115,9 +112,7 @@ void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.DUWO = tock_pos(pa.COPE, pb.COPE, pb.CEPO, pb.DUWO, pb.CH1_BIT);
   pc.CARA = not(pb.CYTO);
   pc.COWE = and(pb.CYTO, pb.DUWO);
-  pc.BOTO = or(pb.COWE, gb.NET03);
-
-  pc.CH1_ACTIVEn = pb.CARA;
+  pc.BOTO = or(pb.COWE, gb.p09.NET03);
 
   // weird things are going on with the reg clocks and muxes... probably broken
 
@@ -136,16 +131,11 @@ void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.ASON = and(pb.HEMY, pb.BOTO);
   pc.AMOP = and(pb.HAFO, pb.BOTO);
 
-  pc.CH1_OUT3 = pb.ACEG;
-  pc.CH1_OUT2 = pb.AGOF;
-  pc.CH1_OUT1 = pb.ASON;
-  pc.CH1_OUT0 = pb.AMOP;
-
   pc.HUFU = nand(pb.FF12_D3, pb.HAFO, pb.HEMY, pb.HOKO, pb.HEVO);
   pc.HANO = nor(pb.FF12_D3,  pb.HAFO, pb.HEMY, pb.HOKO, pb.HEVO);
   pc.HAKE = not(pb.HUFU);
   pc.JADE = or(pb.HAKE, pb.HANO);
-  pc.KORU = nor(pb.FEKU, gb.APU_RESET);
+  pc.KORU = nor(pb.FEKU, gb.p09.APU_RESET);
 
   pc.KYNO = tock_pos(pa.KOZY, pb.KOZY, pb.KORU, pb.KYNO, pb.JADE);
 
@@ -154,9 +144,9 @@ void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
 
   pc.CYTE = not(pb.COMY);
   pc.COPE = not(pb.CYTE);
-  pc.DOKA = and(pb.COMY, gb.DYFA_1M);
+  pc.DOKA = and(pb.COMY, gb.p09.DYFA_1M);
   pc.CALA = not(pb.COPU_COUT);
-  pc.DYRU = nor(gb.APU_RESET, pb.FEKU, pb.DOKA);
+  pc.DYRU = nor(gb.p09.APU_RESET, pb.FEKU, pb.DOKA);
   pc.COMY = tock_pos(pa.CALA, pb.CALA, pb.DYRU, pb.COMY, !pb.COMY);
 
   //----------
@@ -170,10 +160,10 @@ void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.CYPU = count_pos(pa.CUPO, pb.CUPO, pb.CYMU, pb.CYPU, pb.FF10_D5n);
   pc.CAXY = count_pos(pa.CYPU, pb.CYPU, pb.CYMU, pb.CAXY, pb.FF10_D6n);
 
-  pc.BURY = nor(pb.BAVE, gb.APU_RESET);
+  pc.BURY = nor(pb.BAVE, gb.p09.APU_RESET);
   pc.COZE = and(pb.CAXY, pb.CYPU, pb.CUPO);
 
-  pc.BEXA = tock_pos(ga.AJER_2M, gb.AJER_2M, pb.BURY, pb.BEXA, pb.COZE);
+  pc.BEXA = tock_pos(ga.p09.AJER_2M, gb.p09.AJER_2M, pb.BURY, pb.BEXA, pb.COZE);
 
   //----------
   // Sweep shift counter
@@ -184,10 +174,10 @@ void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.CELE = not(pb.BUGE);
 
   pc.ADAD = not(!pb.BYTE);
-  pc.EPUK = nor(pb.ADAD, gb.APU_RESET);
+  pc.EPUK = nor(pb.ADAD, gb.p09.APU_RESET);
   pc.EVOL = nor(pb.BEXA, pb.FYTE);
   pc.FEMU = unk2(pb.EPUK, pb.EVOL);
-  pc.EGYP = nor(gb.DYFA_1M, pb.FEMU);
+  pc.EGYP = nor(gb.p09.DYFA_1M, pb.FEMU);
   pc.DODY = nor(pb.EGYP, pb.CELE);
   pc.EGOR = and(pb.DOPU_OUT, pb.DODY);
   pc.DAPU = not(pb.EGOR);
@@ -197,9 +187,9 @@ void P13_Channel1::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.BYRA = count_pos(pa.CAJA, pb.CAJA, pb.CYLU, pb.BYRA, pb.FF10_D2n);
 
   pc.COPY = and(pb.COPA, pb.CAJA, pb.BYRA);
-  pc.ATAT = nor(gb.APU_RESET, pb.BEXA);
+  pc.ATAT = nor(gb.p09.APU_RESET, pb.BEXA);
 
-  pc.BYTE = tock_pos(ga.AJER_2M, gb.AJER_2M, pb.ATAT, pb.BYTE, pb.COPY);
+  pc.BYTE = tock_pos(ga.p09.AJER_2M, gb.p09.AJER_2M, pb.ATAT, pb.BYTE, pb.COPY);
 
   pc.ATUV = and(pb.BEXA, pb.ATYS);
   pc.BOJE = and(pb.ATUV, pb.BUGE);

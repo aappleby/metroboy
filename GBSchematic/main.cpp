@@ -77,76 +77,43 @@ void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
   Gameboy b = a;
   b.timestamp = a.timestamp + 1;
 
-  //b.cpu.CPU_RD = false;
-  //b.cpu.CPU_WR = false;
-  b.cpu.FROM_CPU3 = true;
+  b.cpu.FROM_CPU3 = false;
   b.cpu.FROM_CPU4 = false;
   b.cpu.FROM_CPU5 = false;
 
-
-  b.chip.RST     = b.timestamp < 20;
+  b.chip.RST     = false;
   b.chip.CLKIN_A = true;
   b.chip.CLKIN_B = b.timestamp & 1;
   b.chip.T1 = false;
   b.chip.T2 = false;
-  b.T1nT2   = false;
-  b.T1nT2n  = true;
-  b.T1T2n   = false;
-
-  //----------
-  // haxxxxx
-
-  if (b.timestamp == 30) {
-    b.p03.set_tac(0b00000101);
-    b.p03.set_tma(0b00001111);
-  }
 
   //----------
   // unmerged signals
 
   //----------
   // destination state
+  
+  Gameboy c;
+
+  Gameboy* pa = &a;
+  Gameboy* pb = &b;
+  Gameboy* pc = &c;
 
   for (int rep = 0; rep < 40; rep++) {
-    Gameboy c;
+    pc->timestamp = pb->timestamp;
+    pc->cpu = pb->cpu;
+    pc->chip = pb->chip;
 
-    memset(&c, 0xDD, sizeof(Gameboy));
+    P01_ClocksReset::tick(*pa, *pb, *pc);
+    P03_Timer::tick(*pa, *pb, *pc);
+    P07_SysDecode::tick(*pa, *pb, *pc);
 
-    c.timestamp = b.timestamp;
-    c.cpu = b.cpu;
-    c.chip = b.chip;
-    c.T1nT2 = b.T1nT2;
-    c.T1nT2n = b.T1nT2n;
-    c.T1T2n = b.T1T2n;
+    if (memcmp(pb, pc, sizeof(Gameboy)) == 0) break;
 
-    //Gameboy c;
-
-    //memset(&c, 0xDD, sizeof(Gameboy));
-
-    P01_ClocksReset::tick(a, b, c);
-    P03_Timer::tick(a, b, c);
-    //P07_SysDecode::tick(a, b, c);
-
-    if (memcmp(&b, &c, sizeof(Gameboy)) == 0) break;
-    a = b;
-    b = c;
-
-    /*
-    P01_ClocksReset::tick(a, b, c);
-    //P02_Interrupts::tick(a, b, c);
-    P03_Timer::tick(a, b, c);
-    //P04_DMA::tick(a, b, c);
-    //P05_JoypadIO::tick(a, b, c);
-    //P06_SerialLink::tick(a, b, c);
-    //P07_SysDecode::tick(a, b, c);
-
-    if (memcmp(&b, &c, sizeof(Gameboy)) == 0) break;
-    a = b;
-    b = c;
-    */
+    Gameboy* pt = pa; pa = pb; pb = pc; pc = pt;
   }
 
-  gbOut = b;
+  gbOut = *pb;
 }
 
 const std::vector<SignalData> sample_signals =

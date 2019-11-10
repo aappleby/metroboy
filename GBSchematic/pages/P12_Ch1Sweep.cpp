@@ -11,33 +11,33 @@ void P12_Ch1Sweep::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   const P12_Ch1Sweep pb = gb.p12;
   P12_Ch1Sweep pc = gc.p12;
 
-  pc.DEPU = nand(gb.APU_WR, pb.FF13); // BUG - APU_WR
-  pc.DEBY = and(gb.APU_WR, pb.FF14);
+  pc.DEPU = nand(gb.p10.APU_WR, pb.FF13); // BUG - APU_WR
+  pc.DEBY = and(gb.p10.APU_WR, pb.FF14);
   pc.DYLA = not(pb.DEPU);
 
-  pc.BYFU = not(gb.cpu.D2);
-  pc.BOFU = not(gb.cpu.D1);
-  pc.BYSU = not(gb.cpu.D0);
-  pc.DULO = not(gb.cpu.D7);
-  pc.DYLU = not(gb.cpu.D6);
-  pc.JULO = not(gb.cpu.D5);
-  pc.KOPU = not(gb.cpu.D4);
-  pc.ETUV = not(gb.cpu.D3);
-  pc.FULE = not(gb.cpu.D2);
-  pc.GULU = not(gb.cpu.D1);
-  pc.DEKE = not(gb.cpu.D0);
+  pc.BYFU = not(gb.D2);
+  pc.BOFU = not(gb.D1);
+  pc.BYSU = not(gb.D0);
+  pc.DULO = not(gb.D7);
+  pc.DYLU = not(gb.D6);
+  pc.JULO = not(gb.D5);
+  pc.KOPU = not(gb.D4);
+  pc.ETUV = not(gb.D3);
+  pc.FULE = not(gb.D2);
+  pc.GULU = not(gb.D1);
+  pc.DEKE = not(gb.D0);
 
-  pc.AFEG = nand(gb.cpu.D2, pb.DEBY);
-  pc.BUDO = nand(gb.cpu.D1, pb.DEBY);
-  pc.BUGU = nand(gb.cpu.D0, pb.DEBY);
-  pc.ETOL = nand(gb.cpu.D7, pb.DYLA);
-  pc.ELER = nand(gb.cpu.D6, pb.DYLA);
-  pc.KYPA = nand(gb.cpu.D5, pb.DYLA);
-  pc.KOVU = nand(gb.cpu.D4, pb.DYLA);
-  pc.GOPE = nand(gb.cpu.D3, pb.DYLA);
-  pc.GOLO = nand(gb.cpu.D2, pb.DYLA);
-  pc.GETA = nand(gb.cpu.D1, pb.DYLA);
-  pc.GYLU = nand(gb.cpu.D0, pb.DYLA);
+  pc.AFEG = nand(gb.D2, pb.DEBY);
+  pc.BUDO = nand(gb.D1, pb.DEBY);
+  pc.BUGU = nand(gb.D0, pb.DEBY);
+  pc.ETOL = nand(gb.D7, pb.DYLA);
+  pc.ELER = nand(gb.D6, pb.DYLA);
+  pc.KYPA = nand(gb.D5, pb.DYLA);
+  pc.KOVU = nand(gb.D4, pb.DYLA);
+  pc.GOPE = nand(gb.D3, pb.DYLA);
+  pc.GOLO = nand(gb.D2, pb.DYLA);
+  pc.GETA = nand(gb.D1, pb.DYLA);
+  pc.GYLU = nand(gb.D0, pb.DYLA);
 
   pc.AJUX = and(pb.DEBY, pb.BYFU);
   pc.AMAC = and(pb.DEBY, pb.BOFU);
@@ -51,17 +51,17 @@ void P12_Ch1Sweep::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.FOPU = and(pb.DYLA, pb.GULU);
   pc.EJYF = and(pb.DYLA, pb.DEKE);
 
-  pc.APAJ = nor(pb.AJUX, gb.APU_RESET);
-  pc.BOVU = nor(pb.AMAC, gb.APU_RESET);
-  pc.BOXU = nor(pb.BASO, gb.APU_RESET);
-  pc.ESEL = nor(pb.EMAR, gb.APU_RESET);
-  pc.ELUF = nor(pb.ETOK, gb.APU_RESET);
-  pc.KAJU = nor(pb.KYFU, gb.APU_RESET);
-  pc.KAPO = nor(pb.KAVO, gb.APU_RESET);
-  pc.GAMO = nor(pb.FEGA, gb.APU_RESET);
-  pc.GYFU = nor(pb.FOKE, gb.APU_RESET);
-  pc.GATO = nor(pb.FOPU, gb.APU_RESET);
-  pc.EFOR = nor(pb.EJYF, gb.APU_RESET);
+  pc.APAJ = nor(pb.AJUX, gb.p09.APU_RESET);
+  pc.BOVU = nor(pb.AMAC, gb.p09.APU_RESET);
+  pc.BOXU = nor(pb.BASO, gb.p09.APU_RESET);
+  pc.ESEL = nor(pb.EMAR, gb.p09.APU_RESET);
+  pc.ELUF = nor(pb.ETOK, gb.p09.APU_RESET);
+  pc.KAJU = nor(pb.KYFU, gb.p09.APU_RESET);
+  pc.KAPO = nor(pb.KAVO, gb.p09.APU_RESET);
+  pc.GAMO = nor(pb.FEGA, gb.p09.APU_RESET);
+  pc.GYFU = nor(pb.FOKE, gb.p09.APU_RESET);
+  pc.GATO = nor(pb.FOPU, gb.p09.APU_RESET);
+  pc.EFOR = nor(pb.EJYF, gb.p09.APU_RESET);
 
   pc.ARYL = not(pb.FF10_D3n);
 
@@ -154,17 +154,17 @@ void P12_Ch1Sweep::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.HOLA = nand(pb.JYKA, pb.KAPE);
   pc.HOZU = nand(pb.HYKA, pb.KAPE);
 
-  pc.AVUF = nor(gb.APU_RESET, pb.AFYR);
-  pc.AFUX = nor(gb.APU_RESET, pb.BUVO);
-  pc.AGOR = nor(gb.APU_RESET, pb.AFUG);
-  pc.BEWO = nor(gb.APU_RESET, pb.BAPU);
-  pc.ENOK = nor(gb.APU_RESET, pb.EREG);
-  pc.EZUK = nor(gb.APU_RESET, pb.EVOF);
-  pc.KYBO = nor(gb.APU_RESET, pb.KEVY);
-  pc.KETO = nor(gb.APU_RESET, pb.KAXY);
-  pc.HYVU = nor(gb.APU_RESET, pb.JEHY);
-  pc.HOBU = nor(gb.APU_RESET, pb.JOCY);
-  pc.JADO = nor(gb.APU_RESET, pb.KOKO);
+  pc.AVUF = nor(gb.p09.APU_RESET, pb.AFYR);
+  pc.AFUX = nor(gb.p09.APU_RESET, pb.BUVO);
+  pc.AGOR = nor(gb.p09.APU_RESET, pb.AFUG);
+  pc.BEWO = nor(gb.p09.APU_RESET, pb.BAPU);
+  pc.ENOK = nor(gb.p09.APU_RESET, pb.EREG);
+  pc.EZUK = nor(gb.p09.APU_RESET, pb.EVOF);
+  pc.KYBO = nor(gb.p09.APU_RESET, pb.KEVY);
+  pc.KETO = nor(gb.p09.APU_RESET, pb.KAXY);
+  pc.HYVU = nor(gb.p09.APU_RESET, pb.JEHY);
+  pc.HOBU = nor(gb.p09.APU_RESET, pb.JOCY);
+  pc.JADO = nor(gb.p09.APU_RESET, pb.KOKO);
 
   pc.FAJA = not(pb.EGOR);
   pc.EJYB = not(pb.FAJA);

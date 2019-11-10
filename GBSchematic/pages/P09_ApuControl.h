@@ -3,6 +3,21 @@
 struct Gameboy;
 
 struct P09_ApuControl {
+
+  union { bool AJER; bool AJER_2M; };
+  union { bool DYFA; bool DYFA_1M; };
+  union { bool AGUR; bool APU_RESETn; };
+  union { bool AFAT; bool APU_RESET2n; };
+  union { bool ATYV; bool APU_RESET3n; };
+  union { bool DAPA; bool APU_RESET4n; };
+  union { bool KAME; bool APU_RESET5n; };
+  union { bool KEBA; bool APU_RESET; };
+  union { bool AGUZ; bool CPU_RDn; };
+  union { bool EDEK; bool NET03; };
+  union { bool FERO; bool FERO_Q; };
+
+private:
+
   // FF24 NR50
   bool APEG,BYGA,AGER,APOS,BYRE,BUMO,COZU,BEDU;
 
@@ -13,10 +28,9 @@ struct P09_ApuControl {
 
   //----------
 
-  bool AGUR,AFAT,ATYV,DAPA,KAME;
-  bool BATA,CALO,DYFA,AJER;
-  bool HAWU,BOPY,HAPO,GUFO,HADA,JYRO,KEPY,KUBY,KEBA;
-  bool ETUC,EFOP,FOKU,FERO,EDEK,BOWY,BAZA,CELY,CONE,CATE,AGUZ,KYDU,JURE,HOPE;
+  bool BATA,CALO;
+  bool HAWU,BOPY,HAPO,GUFO,HADA,JYRO,KEPY,KUBY;
+  bool ETUC,EFOP,FOKU,BOWY,BAZA,CELY,CONE,CATE,KYDU,JURE,HOPE;
   bool BYMA,BEFU,ADAK;
   bool BOSU,BAXY,BUBU,BOWE,ATAF;
   bool AKOD,AWED,AVUD,AXEM,AMAD,ARUX,BOCY,ATUM;

@@ -14,9 +14,9 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   (void)ga;
   (void)pa;
 
-  pc.TOVA = not(gb.T1nT2);
-  pc.RYCA = not(gb.T1nT2);
-  pc.MULE = not(gb.T1T2n);
+  pc.TOVA = not(gb.p07.T1nT2);
+  pc.RYCA = not(gb.p07.T1nT2);
+  pc.MULE = not(gb.p07.T1T2n);
 
   //----------
   // center right, generating the external read/write signals to the cart
@@ -31,23 +31,23 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.LAGU = unk3(gb.cpu.CPU_RAW_RD, pb.LEVO, gb.cpu.FROM_CPU3);
   pc.LYWE = not(pb.LAGU);
 
-  pc.MOCA = nor(pb.TEXO, gb.T1T2n);
-  pc.MEXO = not(gb.CPU_WR_SYNC);
+  pc.MOCA = nor(pb.TEXO, gb.p07.T1T2n);
+  pc.MEXO = not(gb.p01.CPU_WR_SYNC);
   pc.NEVY = or(pb.MEXO, pb.MOCA);
   pc.MOTY = or(pb.MOCA, pb.LYWE);
-  pc.PUVA = or(pb.NEVY, gb.LUMA);
-  pc.TYMU = nor(gb.LUMA, pb.MOTY);
+  pc.PUVA = or(pb.NEVY, gb.p04.LUMA);
+  pc.TYMU = nor(gb.p04.LUMA, pb.MOTY);
 
-  pc.UVER = nand(pb.PUVA, gb.NET01);
-  pc.USUF = nor (pb.PUVA, gb.T1nT2);
-  pc.UGAC = nand(pb.TYMU, gb.NET01);
-  pc.URUN = nor (pb.TYMU, gb.T1nT2);
+  pc.UVER = nand(pb.PUVA, gb.p08.NET01);
+  pc.USUF = nor (pb.PUVA, gb.p07.T1nT2);
+  pc.UGAC = nand(pb.TYMU, gb.p08.NET01);
+  pc.URUN = nor (pb.TYMU, gb.p07.T1nT2);
 
   //----------
   // top center
 
   pc.TOLA = not(gb.A01);
-  pc.LOXO = unk3(pb.MULE, pb.TEXO, gb.T1T2n);
+  pc.LOXO = unk3(pb.MULE, pb.TEXO, gb.p07.T1T2n);
   pc.LASY = not(pb.LOXO);
   pc.MATE = not(pb.LASY);
 
@@ -62,13 +62,13 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   // this is a guess, it selects addr < 0xC00 || cart_ram, which seems reasonable
   pc.TYNU = nor(nand(gb.A15, gb.A14), pb.TUMA);
   
-  pc.TOZA = and(pb.TYNU, gb.ABUZ, gb.p07.FEXXFFXXn);
+  pc.TOZA = and(pb.TYNU, gb.p01.ABUZ, gb.p07.FEXXFFXXn);
 
   // TUTU is the "use bootrom" signal, so this is saying "if our address is
   // not in the high half and we're not running the bootrom, read from the
   // cart
   pc.SOBY_15 = nor(gb.A15, gb.p07.TUTU);
-  pc.TYHO = mux2(gb.DMA_A15, pb.TOZA, gb.LUMA); // polarity?
+  pc.TYHO = mux2(gb.p04.DMA_A15, pb.TOZA, gb.p04.LUMA); // polarity?
 
   //----------
   // Low half of the address pin output driver
@@ -88,24 +88,24 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.LOBU_12 = latch_pos(pb.MATE, pb.LOBU_12, gb.A12);
   pc.LONU_13 = latch_pos(pb.MATE, pb.LONU_13, gb.A13);
   pc.NYRE_14 = latch_pos(pb.MATE, pb.NYRE_14, gb.A14);
-  pc.SEPY_15 = nand(gb.ABUZ, pb.SOBY_15);
+  pc.SEPY_15 = nand(gb.p01.ABUZ, pb.SOBY_15);
 
-  pc.AMET_00 = mux2(gb.DMA_A00, pb.ALOR_00, gb.LUMA);
-  pc.ATOL_01 = mux2(gb.DMA_A01, pb.APUR_01, gb.LUMA);
-  pc.APOK_02 = mux2(gb.DMA_A02, pb.ALYR_02, gb.LUMA);
-  pc.AMER_03 = mux2(gb.DMA_A03, pb.ARET_03, gb.LUMA);
-  pc.ATEM_04 = mux2(gb.DMA_A04, pb.AVYS_04, gb.LUMA);
-  pc.ATOV_05 = mux2(gb.DMA_A05, pb.ATEV_05, gb.LUMA);
-  pc.ATYR_06 = mux2(gb.DMA_A06, pb.AROS_06, gb.LUMA);
-  pc.ASUR_07 = mux2(gb.DMA_A07, pb.ARYM_07, gb.LUMA);
-  pc.MANO_08 = mux2(gb.DMA_A08, pb.LUNO_08, gb.LUMA);
-  pc.MASU_09 = mux2(gb.DMA_A09, pb.LYSA_09, gb.LUMA);
-  pc.PAMY_10 = mux2(gb.DMA_A10, pb.PATE_10, gb.LUMA);
-  pc.MALE_11 = mux2(gb.DMA_A11, pb.LUMY_11, gb.LUMA);
-  pc.MOJY_12 = mux2(gb.DMA_A12, pb.LOBU_12, gb.LUMA);
-  pc.MUCE_13 = mux2(gb.DMA_A13, pb.LONU_13, gb.LUMA);
-  pc.PEGE_14 = mux2(gb.DMA_A14, pb.NYRE_14, gb.LUMA);
-  pc.TAZY_15 = mux2(gb.DMA_A15, pb.SEPY_15, gb.LUMA);
+  pc.AMET_00 = mux2(gb.p04.DMA_A00, pb.ALOR_00, gb.p04.LUMA);
+  pc.ATOL_01 = mux2(gb.p04.DMA_A01, pb.APUR_01, gb.p04.LUMA);
+  pc.APOK_02 = mux2(gb.p04.DMA_A02, pb.ALYR_02, gb.p04.LUMA);
+  pc.AMER_03 = mux2(gb.p04.DMA_A03, pb.ARET_03, gb.p04.LUMA);
+  pc.ATEM_04 = mux2(gb.p04.DMA_A04, pb.AVYS_04, gb.p04.LUMA);
+  pc.ATOV_05 = mux2(gb.p04.DMA_A05, pb.ATEV_05, gb.p04.LUMA);
+  pc.ATYR_06 = mux2(gb.p04.DMA_A06, pb.AROS_06, gb.p04.LUMA);
+  pc.ASUR_07 = mux2(gb.p04.DMA_A07, pb.ARYM_07, gb.p04.LUMA);
+  pc.MANO_08 = mux2(gb.p04.DMA_A08, pb.LUNO_08, gb.p04.LUMA);
+  pc.MASU_09 = mux2(gb.p04.DMA_A09, pb.LYSA_09, gb.p04.LUMA);
+  pc.PAMY_10 = mux2(gb.p04.DMA_A10, pb.PATE_10, gb.p04.LUMA);
+  pc.MALE_11 = mux2(gb.p04.DMA_A11, pb.LUMY_11, gb.p04.LUMA);
+  pc.MOJY_12 = mux2(gb.p04.DMA_A12, pb.LOBU_12, gb.p04.LUMA);
+  pc.MUCE_13 = mux2(gb.p04.DMA_A13, pb.LONU_13, gb.p04.LUMA);
+  pc.PEGE_14 = mux2(gb.p04.DMA_A14, pb.NYRE_14, gb.p04.LUMA);
+  pc.TAZY_15 = mux2(gb.p04.DMA_A15, pb.SEPY_15, gb.p04.LUMA);
 
   pc.KUPO_00 = nand(pb.AMET_00, pb.TOVA);
   pc.CABA_01 = nand(pb.ATOL_01, pb.TOVA);
@@ -124,30 +124,30 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.PUHE_14 = nand(pb.PEGE_14, pb.TOVA);
   pc.SUZE_15 = nand(pb.TAZY_15, pb.RYCA);
 
-  pc.KOTY_00 = nor(pb.AMET_00, gb.T1nT2);
-  pc.COTU_01 = nor(pb.ATOL_01, gb.T1nT2);
-  pc.BAJO_02 = nor(pb.APOK_02, gb.T1nT2);
-  pc.BOLA_03 = nor(pb.AMER_03, gb.T1nT2);
-  pc.BEVO_04 = nor(pb.ATEM_04, gb.T1nT2);
-  pc.AJAV_05 = nor(pb.ATOV_05, gb.T1nT2);
-  pc.CYKA_06 = nor(pb.ATYR_06, gb.T1nT2);
-  pc.COLO_07 = nor(pb.ASUR_07, gb.T1nT2);
-  pc.MEGO_08 = nor(pb.MANO_08, gb.T1nT2);
-  pc.MENY_09 = nor(pb.MASU_09, gb.T1nT2);
-  pc.RORE_10 = nor(pb.PAMY_10, gb.T1nT2);
-  pc.LYNY_11 = nor(pb.MALE_11, gb.T1nT2);
-  pc.LOSO_12 = nor(pb.MOJY_12, gb.T1nT2);
-  pc.LEVA_13 = nor(pb.MUCE_13, gb.T1nT2);
-  pc.PAHY_14 = nor(pb.PEGE_14, gb.T1nT2);
-  pc.RULO_15 = nor(pb.TAZY_15, gb.T1nT2);
+  pc.KOTY_00 = nor(pb.AMET_00, gb.p07.T1nT2);
+  pc.COTU_01 = nor(pb.ATOL_01, gb.p07.T1nT2);
+  pc.BAJO_02 = nor(pb.APOK_02, gb.p07.T1nT2);
+  pc.BOLA_03 = nor(pb.AMER_03, gb.p07.T1nT2);
+  pc.BEVO_04 = nor(pb.ATEM_04, gb.p07.T1nT2);
+  pc.AJAV_05 = nor(pb.ATOV_05, gb.p07.T1nT2);
+  pc.CYKA_06 = nor(pb.ATYR_06, gb.p07.T1nT2);
+  pc.COLO_07 = nor(pb.ASUR_07, gb.p07.T1nT2);
+  pc.MEGO_08 = nor(pb.MANO_08, gb.p07.T1nT2);
+  pc.MENY_09 = nor(pb.MASU_09, gb.p07.T1nT2);
+  pc.RORE_10 = nor(pb.PAMY_10, gb.p07.T1nT2);
+  pc.LYNY_11 = nor(pb.MALE_11, gb.p07.T1nT2);
+  pc.LOSO_12 = nor(pb.MOJY_12, gb.p07.T1nT2);
+  pc.LEVA_13 = nor(pb.MUCE_13, gb.p07.T1nT2);
+  pc.PAHY_14 = nor(pb.PEGE_14, gb.p07.T1nT2);
+  pc.RULO_15 = nor(pb.TAZY_15, gb.p07.T1nT2);
 
   //----------
   // Chip data pin output driver. Some of this was on P25, but it should _not_ be there.
 
   pc.REDU = not(gb.p07.CPU_RD);
-  pc.RORU = mux2(pb.REDU, pb.MOTY, gb.T1nT2);
+  pc.RORU = mux2(pb.REDU, pb.MOTY, gb.p07.T1nT2);
   pc.LULA = not(pb.RORU);
-  pc.LYRA = nand(gb.T1nT2, pb.RORU);
+  pc.LYRA = nand(gb.p07.T1nT2, pb.RORU);
   pc.LAVO = nand(gb.cpu.CPU_RAW_RD, pb.TEXO, gb.cpu.FROM_CPU5);
 
   pc.RUNE_00 = nor(pb.RORU, gb.D0);
@@ -276,9 +276,7 @@ void P08_ExtCpuBuses::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   }
 #endif
 
-  gc.chip.CS_A   = pb.TYHO;
-  gc.TOLA_A1n = pb.TOLA;
-  gc.NET01 = pb.TOVA;
+  gc.chip.CS_A = pb.TYHO;
   gc.chip.WR_A = pb.UVER;
   gc.chip.WR_D = pb.USUF;
   gc.chip.RD_A = pb.UGAC;

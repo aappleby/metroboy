@@ -14,8 +14,6 @@ const std::vector<SignalData> P01_ClocksReset::signals() {
     SignalData("PHASE_CDEF", offsetof(P01_ClocksReset, APUK)),
     SignalData("PHASE_DEFG", offsetof(P01_ClocksReset, ADYK)),
 
-    SignalData("AREV", offsetof(P01_ClocksReset, AREV)),
-
     /*
     SignalData("-----DIV-----"),
     SignalData("UKUP_00",    offsetof(P01_ClocksReset, UKUP_00)),
@@ -50,295 +48,239 @@ const std::vector<SignalData> P01_ClocksReset::signals() {
   };
 }
 
-/*
-bool TO_CPU;         // PORTD_01: <- P01.BOWA, this is a 1 mhz clock
-bool BEDO;           // PORTD_02: <- P01.BEDO, this is a 1 mhz clock
-bool BEKO;           // PORTD_03: <- P01.BEKO, connection not indicated on P01. Clock but not sure what phase
-bool PHI_OUT;        // PORTD_04: <- P01.BUDE, PHI_A, PHI_OUT. More clocks
-bool FROM_CPU5;      // PORTD_05: -> FROM_CPU5 - controls driving the external data pins onto the internal data bus and other stuff. is this actually a clock, or like OE?
-bool BUKE;           // PORTD_06: <- P01.BUKE, 4 mhz clock
-bool BOMA;           // PORTD_07: <- P01.BOMA, connection not indicated on P01, 1 mhz clock
-bool BOGA1MHZ;       // PORTD_08: <- P01.BOGA1MHZ, clock
-*/
-
 //-----------------------------------------------------------------------------
 
-void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc2) {
+void P01_ClocksReset::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   const P01_ClocksReset& pa = ga.p01;
   const P01_ClocksReset& pb = gb.p01;
-  P01_ClocksReset& pc2 = gc2.p01;
+  P01_ClocksReset& pc = gc.p01;
 
   //----------
   // Reset tree
 
-  pc2.DULA = not(gb.RESET2);
-  pc2.XEBE = not(gb.RESET7);
-  pc2.UCOB = not(gb.chip.CLKIN_A);
-  pc2.CUNU = not(pb.DULA);
-  pc2.XODO = and(gb.FF40_D7, pb.XEBE);
-  pc2.XORE = not(pb.CUNU);
-  pc2.WESY = not(pb.XORE);
-  pc2.WALU = not(pb.XORE);
-  pc2.XAPO = not(pb.XODO);
-
-  gc2.CLKIN_An = pb.UCOB;
-  gc2.RESET6   = pb.CUNU;
-  gc2.RESET7   = pb.XORE;
-  gc2.RESET7n  = pb.XEBE;
-  gc2.RESET8   = pb.WALU;
-  gc2.RESET9   = pb.WESY;
-
-  gc2.RESET_VIDEO = pb.XAPO;
+  pc.DULA = not(pb.RESET2);
+  pc.XEBE = not(pb.RESET7);
+  pc.UCOB = not(gb.chip.CLKIN_A);
+  pc.CUNU = not(pb.DULA);
+  pc.XODO = and(gb.p23.FF40_D7, pb.XEBE);
+  pc.XORE = not(pb.CUNU);
+  pc.WESY = not(pb.XORE);
+  pc.WALU = not(pb.XORE);
+  pc.XAPO = not(pb.XODO);
 
   //----------
   // Clock deglitcher + clock tree
 
-  pc2.ARYS = not(gb.chip.CLKIN_B);
+  pc.ARYS = not(gb.chip.CLKIN_B);
 
   // clock deglitcher
-  pc2.ANOS = nand(gb.chip.CLKIN_B, pb.AVET);
-  pc2.AVET = nand(pb.ANOS, pb.ARYS);
+  pc.ANOS = nand(gb.chip.CLKIN_B, pb.AVET);
+  pc.AVET = nand(pb.ANOS, pb.ARYS);
 
-  pc2.ATAL = not(pb.AVET);
-  pc2.AZOF = not(pb.ATAL);
+  pc.ATAL = not(pb.AVET);
+  pc.AZOF = not(pb.ATAL);
 
-  pc2.ATAG = not(pb.AZOF);
-  pc2.ZAXY = not(pb.AZOF);
+  pc.ATAG = not(pb.AZOF);
+  pc.ZAXY = not(pb.AZOF);
 
-  pc2.AMUK = not(pb.ATAG);
-  pc2.ZEME = not(pb.ZAXY);
+  pc.AMUK = not(pb.ATAG);
+  pc.ZEME = not(pb.ZAXY);
 
-  pc2.APUV = not(pb.AMUK);
-  pc2.ARYF = not(pb.AMUK);
-  pc2.ALET = not(pb.ZEME);
-  pc2.LAPE = not(pb.ALET);
-  pc2.TAVA = not(pb.LAPE);
-
-  gc2.AMUK_4M = pb.AMUK;
-  gc2.APUV_4M = pb.APUV;
-  gc2.ARYF_4M = pb.ARYF;
-  gc2.ATAL_4M = pb.ATAL;
-  gc2.CLK1    = pb.ZEME;
-  gc2.CLK2    = pb.ALET;
+  pc.APUV = not(pb.AMUK);
+  pc.ARYF = not(pb.AMUK);
+  pc.ALET = not(pb.ZEME);
+  pc.LAPE = not(pb.ALET);
+  pc.TAVA = not(pb.LAPE);
 
   //----------
   // random clock
 
-  pc2.BELA = not(gb.APU_RESET);
-  pc2.CYBO = not(pb.AMUK);
-  pc2.CERY = tock_pos(pa.CYBO, pb.CYBO, pb.BELA, pb.CERY, !pb.CERY);
-  gc2.CERY_2M     = pb.CERY;
+  pc.BELA = not(gb.p09.APU_RESET);
+  pc.CYBO = not(pb.AMUK);
+  pc.CERY = tock_pos(pa.CYBO, pb.CYBO, pb.BELA, pb.CERY, !pb.CERY);
 
   //----------
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
 
-  pc2.AFUR = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.T1nT2n, pb.AFUR, !pb.ADYK);
-  pc2.ALEF = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.T1nT2n, pb.ALEF, pb.AFUR);
-  pc2.APUK = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.T1nT2n, pb.APUK, pb.ALEF);
-  pc2.ADYK = tock_duo(ga.ATAL_4M, gb.ATAL_4M, gb.T1nT2n, pb.ADYK, pb.APUK);
+  pc.AFUR = tock_duo(pa.ATAL_4M, pb.ATAL_4M, gb.p07.T1nT2n, pb.AFUR, !pb.ADYK);
+  pc.ALEF = tock_duo(pa.ATAL_4M, pb.ATAL_4M, gb.p07.T1nT2n, pb.ALEF, pb.AFUR);
+  pc.APUK = tock_duo(pa.ATAL_4M, pb.ATAL_4M, gb.p07.T1nT2n, pb.APUK, pb.ALEF);
+  pc.ADYK = tock_duo(pa.ATAL_4M, pb.ATAL_4M, gb.p07.T1nT2n, pb.ADYK, pb.APUK);
 
-  pc2.ADAR = not(pb.ADYK);
-  pc2.ATYP = not(pb.AFUR);
-  pc2.AFEP = not(pb.ALEF);
-  pc2.AROV = not(pb.APUK);
+  pc.ADAR = not(pb.ADYK);
+  pc.ATYP = not(pb.AFUR);
+  pc.AFEP = not(pb.ALEF);
+  pc.AROV = not(pb.APUK);
 
-  pc2.AFAS = nor(pb.ADAR, pb.ATYP);
-  pc2.AREV = nand(gb.cpu.FROM_CPU3, pb.AFAS);
-  pc2.APOV = not(pb.AREV);
+  pc.AFAS = nor(pb.ADAR, pb.ATYP);
+  pc.AREV = nand(gb.cpu.FROM_CPU3, pb.AFAS);
+  pc.APOV = not(pb.AREV);
 
-  pc2.AJAX = not(pb.ATYP);
+  pc.AJAX = not(pb.ATYP);
   
   // AGUT = abcd__gh if FROM_CPU4 is high
-  pc2.AGUT =  and(or(pb.AJAX, pb.AROV), gb.cpu.FROM_CPU4);
+  pc.AGUT =  and(or(pb.AJAX, pb.AROV), gb.cpu.FROM_CPU4);
 
-  pc2.AWOD = or(gb.T1nT2, pb.AGUT);
-  pc2.ABUZ = not(pb.AWOD);
+  pc.AWOD = or(gb.p07.T1nT2, pb.AGUT);
+  pc.ABUZ = not(pb.AWOD);
 
-  pc2.BUGO = not(pb.AFEP);
-  pc2.BATE = nor(pb.BUGO, pb.AROV, gb.ABOL);
-  pc2.BASU = not(pb.BATE);
-  pc2.BUKE = not(pb.BASU);
-
-  gc2.CPU_WR_SYNC = pb.APOV;
-  gc2.ABUZ = pb.ABUZ;
+  pc.BUGO = not(pb.AFEP);
+  pc.BATE = nor(pb.BUGO, pb.AROV, gb.ABOL);
+  pc.BASU = not(pb.BATE);
+  pc.BUKE = not(pb.BASU);
 
   //----------
   // Weird logic feeding into BOGA_1M
 
-  pc2.BAPY = nor(gb.ABOL, pb.AROV, pb.ATYP);
-  pc2.BERU = not(pb.BAPY);
-  pc2.BUFA = not(pb.BERU);
-  pc2.BYLY = not(pb.BERU);
-  pc2.BOLO = not(pb.BUFA);
-  pc2.BYDA = not(pb.BYLY);
+  pc.BAPY = nor(gb.ABOL, pb.AROV, pb.ATYP);
+  pc.BERU = not(pb.BAPY);
+  pc.BUFA = not(pb.BERU);
+  pc.BYLY = not(pb.BERU);
+  pc.BOLO = not(pb.BUFA);
+  pc.BYDA = not(pb.BYLY);
 
-  pc2.NULE = nor(pb.ATYP, gb.ABOL);
-  pc2.BYRY = not(pb.NULE);
-  pc2.BUDE = not(pb.BYRY);
-  pc2.BEVA = not(pb.BYRY);
-  pc2.BEKO = not(pb.BUDE);
-  pc2.BAVY = not(pb.BEVA);
+  pc.NULE = nor(pb.ATYP, gb.ABOL);
+  pc.BYRY = not(pb.NULE);
+  pc.BUDE = not(pb.BYRY);
+  pc.BEVA = not(pb.BYRY);
+  pc.BEKO = not(pb.BUDE);
+  pc.BAVY = not(pb.BEVA);
 
-  pc2.BEJA = nand(pb.BOLO, pb.BYDA, pb.BEKO, pb.BAVY);
-  pc2.BANE = not(pb.BEJA);
-  pc2.BELO = not(pb.BANE);
-  pc2.BAZE = not(pb.BELO);
-  pc2.BUTO = nand(pb.AFEP, pb.ATYP, pb.BAZE);
-  pc2.BELE = not(pb.BUTO);
-  pc2.ATEZ = not(gb.chip.CLKIN_A);
-  pc2.BYJU = nor(pb.BELE, pb.ATEZ);
-  pc2.BALY = not(pb.BYJU);
-  pc2.BOGA = not(pb.BALY);
-
-  gc2.BOGA_1M = pb.BOGA;
+  pc.BEJA = nand(pb.BOLO, pb.BYDA, pb.BEKO, pb.BAVY);
+  pc.BANE = not(pb.BEJA);
+  pc.BELO = not(pb.BANE);
+  pc.BAZE = not(pb.BELO);
+  pc.BUTO = nand(pb.AFEP, pb.ATYP, pb.BAZE);
+  pc.BELE = not(pb.BUTO);
+  pc.ATEZ = not(gb.chip.CLKIN_A);
+  pc.BYJU = nor(pb.BELE, pb.ATEZ);
+  pc.BALY = not(pb.BYJU);
+  pc.BOGA = not(pb.BALY);
 
   //----------
   // TO_CPU
 
-  pc2.BUTY = not(gb.ABOL);
-  pc2.BUVU = and(pb.BUTY, pb.BALY);
-  pc2.BYXO = not(pb.BUVU);
-  pc2.BEDO = not(pb.BYXO);
-  pc2.BOWA = not(pb.BEDO);
-
-  gc2.BEDO   = pb.BEDO;
-  gc2.TO_CPU = pb.BOWA;
+  pc.BUTY = not(gb.ABOL);
+  pc.BUVU = and(pb.BUTY, pb.BALY);
+  pc.BYXO = not(pb.BUVU);
+  pc.BEDO = not(pb.BYXO);
+  pc.BOWA = not(pb.BEDO);
 
   //----------
   // Cartridge clock
 
-  pc2.DOVA = not(pb.BEVA);
-  pc2.UVYT = not(gb.PHI_OUT);
-
-  gc2.PHI_OUT     = pb.BEVA;
-  gc2.PHI_OUTn    = pb.UVYT;
-  gc2.PHIn        = pb.DOVA;
+  pc.DOVA = not(pb.BEVA);
+  pc.UVYT = not(pb.PHI_OUT);
 
   //----------
   // RESET2 register
 
-  pc2.UPYF = or(gb.chip.RST, gb.CLKIN_An);
-  pc2.TUBO = unk2(gb.ABOL, pb.UPYF);
-  pc2.UNUT = and(pb.TUBO, pb.UPOF_15);
-  pc2.TABA = or(gb.T1nT2, gb.T1T2n, pb.UNUT);
-  pc2.ALYP = not(pb.TABA);
-  pc2.AFAR = nor(pb.ALYP, gb.chip.RST);
-  pc2.ASOL = unk2(pb.AFAR, gb.chip.RST);
+  pc.UPYF = or(gb.chip.RST, pb.CLKIN_An);
+  pc.TUBO = unk2(gb.ABOL, pb.UPYF);
+  pc.UNUT = and(pb.TUBO, pb.UPOF_15);
+  pc.TABA = or(gb.p07.T1nT2, gb.p07.T1T2n, pb.UNUT);
+  pc.ALYP = not(pb.TABA);
+  pc.AFAR = nor(pb.ALYP, gb.chip.RST);
+  pc.ASOL = unk2(pb.AFAR, gb.chip.RST);
 
-  pc2.BOMA = not(pb.BOGA);
-  pc2.AFER = tock_pos(pa.BOMA, pb.BOMA, gb.T1nT2n, pb.AFER, pb.ASOL);
-  pc2.AVOR = or(pb.AFER, pb.ASOL);
-  pc2.ALUR = not(pb.AVOR);
+  pc.BOMA = not(pb.BOGA);
+  pc.AFER = tock_pos(pa.BOMA, pb.BOMA, gb.p07.T1nT2n, pb.AFER, pb.ASOL);
+  pc.AVOR = or(pb.AFER, pb.ASOL);
+  pc.ALUR = not(pb.AVOR);
 
-  gc2.RESET2 = pb.ALUR;
-  gc2.cpu.TABA = pb.TABA;
+  gc.cpu.TABA = pb.TABA;
 
   //----------
   // FF04 DIV
 
-  pc2.TAPE = and(gb.FF04_FF07, gb.p07.CPU_WR, gb.TOLA_A1n, gb.TOVY_A0n);
-  pc2.UFOL = nor(gb.CLKIN_An, gb.chip.RST, pb.TAPE);
-  pc2.RESET_DIVn = pb.UFOL;
+  pc.TAPE = and(gb.p03.FF04_FF07, gb.p07.CPU_WR, gb.p08.TOLA_A1n, gb.p03.TOVY_A0n);
+  pc.UFOL = nor(pb.CLKIN_An, gb.chip.RST, pb.TAPE);
+  pc.RESET_DIVn = pb.UFOL;
 
-  pc2.UKUP_00 = tock_pos(ga.BOGA_1M,  gb.BOGA_1M,  pb.RESET_DIVn, pb.UKUP_00, !pb.UKUP_00);
-  pc2.UFOR_01 = tock_pos(!pa.UKUP_00, !pb.UKUP_00, pb.RESET_DIVn, pb.UFOR_01, !pb.UFOR_01);
-  pc2.UNER_02 = tock_pos(!pa.UFOR_01, !pb.UFOR_01, pb.RESET_DIVn, pb.UNER_02, !pb.UNER_02);
-  pc2.TERO_03 = tock_pos(!pa.UNER_02, !pb.UNER_02, pb.RESET_DIVn, pb.TERO_03, !pb.TERO_03);
-  pc2.UNYK_04 = tock_pos(!pa.TERO_03, !pb.TERO_03, pb.RESET_DIVn, pb.UNYK_04, !pb.UNYK_04);
-  pc2.TAMA_05 = tock_pos(!pa.UNYK_04, !pb.UNYK_04, pb.RESET_DIVn, pb.TAMA_05, !pb.TAMA_05);
+  pc.UKUP_00 = tock_pos(pa.BOGA_1M,  pb.BOGA_1M,  pb.RESET_DIVn, pb.UKUP_00, !pb.UKUP_00);
+  pc.UFOR_01 = tock_pos(!pa.UKUP_00, !pb.UKUP_00, pb.RESET_DIVn, pb.UFOR_01, !pb.UFOR_01);
+  pc.UNER_02 = tock_pos(!pa.UFOR_01, !pb.UFOR_01, pb.RESET_DIVn, pb.UNER_02, !pb.UNER_02);
+  pc.TERO_03 = tock_pos(!pa.UNER_02, !pb.UNER_02, pb.RESET_DIVn, pb.TERO_03, !pb.TERO_03);
+  pc.UNYK_04 = tock_pos(!pa.TERO_03, !pb.TERO_03, pb.RESET_DIVn, pb.UNYK_04, !pb.UNYK_04);
+  pc.TAMA_05 = tock_pos(!pa.UNYK_04, !pb.UNYK_04, pb.RESET_DIVn, pb.TAMA_05, !pb.TAMA_05);
 
-  gc2.CLK_256K    = pb.UFOR_01;
-  gc2.CLK_64K     = pb.TERO_03;
-  gc2.TAMA_16K    = !pb.TAMA_05;
 
-  pc2.UVYN = not(pb.TAMA_05);
-  pc2.ULUR = mux2(gb.BOGA_1M, gb.TAMA_16K, gb.p07.FF60_D1);
+  pc.UVYN = not(pb.TAMA_05);
+  pc.ULUR = mux2(pb.BOGA_1M, !pb.TAMA_16Kn, gb.p07.FF60_D1);
 
-  gc2.CLK_16K     = pb.UVYN;
+  pc.UGOT_06 = tock_pos( pa.ULUR,     pb.ULUR,    pb.RESET_DIVn, pb.UGOT_06, !pb.UGOT_06);
+  pc.TULU_07 = tock_pos(!pa.UGOT_06, !pb.UGOT_06, pb.RESET_DIVn, pb.TULU_07, !pb.TULU_07);
+  pc.TUGO_08 = tock_pos(!pa.TULU_07, !pb.TULU_07, pb.RESET_DIVn, pb.TUGO_08, !pb.TUGO_08);
+  pc.TOFE_09 = tock_pos(!pa.TUGO_08, !pb.TUGO_08, pb.RESET_DIVn, pb.TOFE_09, !pb.TOFE_09);
+  pc.TERU_10 = tock_pos(!pa.TOFE_09, !pb.TOFE_09, pb.RESET_DIVn, pb.TERU_10, !pb.TERU_10);
+  pc.SOLA_11 = tock_pos(!pa.TERU_10, !pb.TERU_10, pb.RESET_DIVn, pb.SOLA_11, !pb.SOLA_11);
+  pc.SUBU_12 = tock_pos(!pa.SOLA_11, !pb.SOLA_11, pb.RESET_DIVn, pb.SUBU_12, !pb.SUBU_12);
+  pc.TEKA_13 = tock_pos(!pa.SUBU_12, !pb.SUBU_12, pb.RESET_DIVn, pb.TEKA_13, !pb.TEKA_13);
+  pc.UKET_14 = tock_pos(!pa.TEKA_13, !pb.TEKA_13, pb.RESET_DIVn, pb.UKET_14, !pb.UKET_14);
+  pc.UPOF_15 = tock_pos(!pa.UKET_14, !pb.UKET_14, pb.RESET_DIVn, pb.UPOF_15, !pb.UPOF_15);
 
-  pc2.UGOT_06 = tock_pos( pa.ULUR,     pb.ULUR,    pb.RESET_DIVn, pb.UGOT_06, !pb.UGOT_06);
-  pc2.TULU_07 = tock_pos(!pa.UGOT_06, !pb.UGOT_06, pb.RESET_DIVn, pb.TULU_07, !pb.TULU_07);
-  pc2.TUGO_08 = tock_pos(!pa.TULU_07, !pb.TULU_07, pb.RESET_DIVn, pb.TUGO_08, !pb.TUGO_08);
-  pc2.TOFE_09 = tock_pos(!pa.TUGO_08, !pb.TUGO_08, pb.RESET_DIVn, pb.TOFE_09, !pb.TOFE_09);
-  pc2.TERU_10 = tock_pos(!pa.TOFE_09, !pb.TOFE_09, pb.RESET_DIVn, pb.TERU_10, !pb.TERU_10);
-  pc2.SOLA_11 = tock_pos(!pa.TERU_10, !pb.TERU_10, pb.RESET_DIVn, pb.SOLA_11, !pb.SOLA_11);
-  pc2.SUBU_12 = tock_pos(!pa.SOLA_11, !pb.SOLA_11, pb.RESET_DIVn, pb.SUBU_12, !pb.SUBU_12);
-  pc2.TEKA_13 = tock_pos(!pa.SUBU_12, !pb.SUBU_12, pb.RESET_DIVn, pb.TEKA_13, !pb.TEKA_13);
-  pc2.UKET_14 = tock_pos(!pa.TEKA_13, !pb.TEKA_13, pb.RESET_DIVn, pb.UKET_14, !pb.UKET_14);
-  pc2.UPOF_15 = tock_pos(!pa.UKET_14, !pb.UKET_14, pb.RESET_DIVn, pb.UPOF_15, !pb.UPOF_15);
+  pc.UMEK = not(pb.UGOT_06);
+  pc.UREK = not(pb.TULU_07);
+  pc.UTOK = not(pb.TUGO_08);
+  pc.SAPY = not(pb.TOFE_09);
+  pc.UMER = not(pb.TERU_10);
+  pc.RAVE = not(pb.SOLA_11);
+  pc.RYSO = not(pb.SUBU_12);
+  pc.UDOR = not(pb.TEKA_13);
 
-  pc2.UMEK = not(pb.UGOT_06);
-  pc2.UREK = not(pb.TULU_07);
-  pc2.UTOK = not(pb.TUGO_08);
-  pc2.SAPY = not(pb.TOFE_09);
-  pc2.UMER = not(pb.TERU_10);
-  pc2.RAVE = not(pb.SOLA_11);
-  pc2.RYSO = not(pb.SUBU_12);
-  pc2.UDOR = not(pb.TEKA_13);
-
-  pc2.TAGY = and(gb.FF04_FF07, gb.p07.CPU_RD, gb.TOLA_A1n, gb.TOVY_A0n);
-  pc2.TAWU = not(pb.UMEK);
-  pc2.TAKU = not(pb.UREK);
-  pc2.TEMU = not(pb.UTOK);
-  pc2.TUSE = not(pb.SAPY);
-  pc2.UPUG = not(pb.UMER);
-  pc2.SEPU = not(pb.RAVE);
-  pc2.SAWA = not(pb.RYSO);
-  pc2.TATU = not(pb.UDOR);
+  pc.TAGY = and(gb.p03.FF04_FF07, gb.p07.CPU_RD, gb.p08.TOLA_A1n, gb.p03.TOVY_A0n);
+  pc.TAWU = not(pb.UMEK);
+  pc.TAKU = not(pb.UREK);
+  pc.TEMU = not(pb.UTOK);
+  pc.TUSE = not(pb.SAPY);
+  pc.UPUG = not(pb.UMER);
+  pc.SEPU = not(pb.RAVE);
+  pc.SAWA = not(pb.RYSO);
+  pc.TATU = not(pb.UDOR);
 
   if (pb.TAGY) {
-    gc2.D0 = pb.TAWU;
-    gc2.D1 = pb.TAKU;
-    gc2.D2 = pb.TEMU;
-    gc2.D3 = pb.TUSE;
-    gc2.D4 = pb.UPUG;
-    gc2.D5 = pb.SEPU;
-    gc2.D6 = pb.SAWA;
-    gc2.D7 = pb.TATU;
+    gc.D0 = pb.TAWU;
+    gc.D1 = pb.TAKU;
+    gc.D2 = pb.TEMU;
+    gc.D3 = pb.TUSE;
+    gc.D4 = pb.UPUG;
+    gc.D5 = pb.SEPU;
+    gc.D6 = pb.SAWA;
+    gc.D7 = pb.TATU;
   }
-
-  gc2.FF04_D0n = pb.UMEK;
-  gc2.FF04_D1n = pb.UREK;
 
   //----------
   // Clock dividers for APU
 
-  pc2.ATUS = not(gb.APU_RESET);
-  pc2.COKE = not(gb.AJER_2M);
-  pc2.BURE = not(!pb.BARA);
-  pc2.BARA = tock_pos( pa.COKE,  pb.COKE, pb.ATUS, pb.BARA,  pb.UMER);
-  pc2.CARU = tock_pos( pa.BURE,  pb.BURE, pb.ATUS, pb.CARU, !pb.CARU);
-  pc2.BYLU = tock_pos(!pa.CARU, !pb.CARU, pb.ATUS, pb.BYLU, !pb.BYLU);
+  pc.ATUS = not(gb.p09.APU_RESET);
+  pc.COKE = not(gb.p09.AJER_2M);
+  pc.BURE = not(!pb.BARA);
+  pc.BARA = tock_pos( pa.COKE,  pb.COKE, pb.ATUS, pb.BARA,  pb.UMER);
+  pc.CARU = tock_pos( pa.BURE,  pb.BURE, pb.ATUS, pb.CARU, !pb.CARU);
+  pc.BYLU = tock_pos(!pa.CARU, !pb.CARU, pb.ATUS, pb.BYLU, !pb.BYLU);
 
-  pc2.FYNE = not(pb.BURE);
-  pc2.CULO = not(!pb.CARU);
-  pc2.APEF = not(!pb.BYLU);
+  pc.FYNE = not(pb.BURE);
+  pc.CULO = not(!pb.CARU);
+  pc.APEF = not(!pb.BYLU);
 
-  pc2.GALE = mux2(gb.HAMA_512Kn, pb.FYNE, gb.FERO_Q);
-  pc2.BEZE = mux2(gb.HAMA_512Kn, pb.CULO, gb.FERO_Q);
-  pc2.BULE = mux2(gb.HAMA_512Kn, pb.APEF, gb.FERO_Q);
+  pc.GALE = mux2(pb.HAMA_512Kn, pb.FYNE, gb.p09.FERO);
+  pc.BEZE = mux2(pb.HAMA_512Kn, pb.CULO, gb.p09.FERO);
+  pc.BULE = mux2(pb.HAMA_512Kn, pb.APEF, gb.p09.FERO);
 
-  pc2.GEXY = not(pb.GALE);
-  pc2.COFU = not(pb.BEZE);
-  pc2.BARU = not(pb.BULE);
+  pc.GEXY = not(pb.GALE);
+  pc.COFU = not(pb.BEZE);
+  pc.BARU = not(pb.BULE);
 
-  pc2.HORU = not(pb.GEXY);
-  pc2.BUFY = not(pb.COFU);
-  pc2.BYFE = not(pb.BARU);
+  pc.HORU = not(pb.GEXY);
+  pc.BUFY = not(pb.COFU);
+  pc.BYFE = not(pb.BARU);
 
-  pc2.BOPO = not(gb.APU_RESET);
-  pc2.BAVU = not(pb.AVOK);
+  pc.BOPO = not(gb.p09.APU_RESET);
+  pc.BAVU = not(pb.AVOK);
 
-  pc2.ATYK = tock_pos(ga.ARYF_4M, gb.ARYF_4M, pb.BOPO,        pb.ATYK, !pb.ATYK);
-  pc2.AVOK = tock_pos(pa.ATYK,    pb.ATYK,    pb.BOPO,        pb.AVOK, !pb.AVOK);
-  pc2.JESO = tock_pos(pa.BAVU,    pb.BAVU,    gb.APU_RESET5n, pb.JESO, !pb.JESO);
+  pc.ATYK = tock_pos(pa.ARYF_4M, pb.ARYF_4M, pb.BOPO,            pb.ATYK, !pb.ATYK);
+  pc.AVOK = tock_pos(pa.ATYK,    pb.ATYK,    pb.BOPO,            pb.AVOK, !pb.AVOK);
+  pc.JESO = tock_pos(pa.BAVU,    pb.BAVU,    gb.p09.APU_RESET5n, pb.JESO, !pb.JESO);
 
-  pc2.HAMA = not(!pb.JESO);
-
-  gc2.BAVU_1M     = pb.BAVU;
-  gc2.BUFY_256    = pb.BUFY;
-  gc2.BYFE_128    = pb.BYFE;
-  gc2.HAMA_512Kn  = pb.HAMA;
-  gc2.HORU_512    = pb.HORU;
-  gc2.JESO_512K   = pb.JESO;
+  pc.HAMA = not(!pb.JESO);
 }

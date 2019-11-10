@@ -10,32 +10,14 @@ struct Gameboy;
 
 struct P02_Interrupts {
 
-#if 0
-  struct Input {
-    bool FF0F_RD;
-    bool FF0F_WR;
-    bool FF0F;
-    bool CPU; // !?!?!?! this has gotta be FROM_CPU11
-    bool BOGA1MHZ;
-    bool RESET2;
+  union { bool ASOK; bool INT_JP; };
 
-    bool INT_VBL_BUF;
-    bool INT_SERIAL;
-    bool INT_JP;
-    bool INT_STAT;
-    bool INT_TIMER;
-  };
+  static const std::vector<SignalData> signals();
+  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 
-  struct Output {
-    bool INT_JP;
-  };
+private:
 
-  Input in;
-  Output out;
-#endif
-  
   bool KERY;
-  bool ASOK;
   bool ROTU;
   bool LETY;
   bool MUXE;
@@ -71,9 +53,5 @@ struct P02_Interrupts {
   // FF0F IF reg
   bool LOPE,UBUL,ULAK,LALU,NYBO;
   bool MATY,NEJY,NUTY,MOPO,PAVY;
-
-  static const std::vector<SignalData> signals();
-
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 };
 

@@ -3,35 +3,57 @@
 struct Gameboy;
 
 struct P10_ApuDecode {
-  bool APU_WR;
-  bool AMP_ENn;
-
-  bool FF00RD;
-  bool FF00WR;
-  bool FF1Xn;
-  bool FF2X;
-  bool FF3X;
-  bool FF2Xn;
-  bool XXX6;
-
-  bool FF10,FF11,FF12,FF13,FF14,FF15,FF16,FF17;
-  bool FF18,FF19,FF1A,FF1B,FF1C,FF1D,FF1E,FF1F;
-  bool FF20,FF21,FF22,FF23,FF24,FF25,FF26,FF27;
 
   static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 
-  bool AMUS,ANAP,BYKO,AKUG,ATOZ,ACAT;
-  bool BOXY,AWET,BEZY;
-  bool AVUN,ASAD,ACOM,BARO;
-  bool ATUP,ATEG,BUNO,BANU;
-  bool CONA,DOXY,BAFU,BOGY,TACE;
+  union { bool ATOZ; bool FF00WR; };
+  union { bool ACAT; bool FF00RD; };
+  union { bool BEZY; bool FF2Xn; };
+  union { bool BARO; bool FF3X; };
+  union { bool BANU; bool FF1Xn; };
+  union { bool CONA; bool FF2X; };
+  union { bool DOXY; bool FF26; };
+  union { bool BOGY; bool APU_WR; };
+  union { bool TACE; bool AMP_ENn; };
+
+  union { bool DYVA; bool FF10; };
+  union { bool CAFY; bool FF24; };
+  union { bool COVY; bool FF16; };
+  union { bool CORA; bool FF25; };
+  union { bool DUTU; bool FF17; };
+  union { bool EKEZ; bool FF22; };
+  union { bool EDAF; bool FF12; };
+  union { bool CUGE; bool FF23; };
+  union { bool CAXE; bool FF11; };
+  union { bool COVO; bool FF21; };
+  union { bool DOZA; bool FF19; };
+  union { bool DANU; bool FF20; };
+  union { bool DARA; bool FF18; };
+  union { bool FENY; bool FF1D; };
+  union { bool DUJA; bool FF14; };
+  union { bool DUGO; bool FF1E; };
+  union { bool EMOR; bool FF1A; };
+  union { bool DUSA; bool FF1B; };
+  union { bool DECO; bool FF13; };
+  union { bool GEFO; bool FF1C; };
+
+  union { bool EKAG; bool XXX6; };
+
+  union { bool ANAP; };
+
+private:
+
+  bool AMUS,BYKO,AKUG;
+  bool BOXY,AWET;
+  bool AVUN,ASAD,ACOM;
+  bool ATUP,ATEG,BUNO;
+  bool BAFU;
   bool DYTE,DOSO,AFOB,DUPA,ABUB,DENO,ACOL,DUCE;
 
-  bool CAFY,CAXE,CORA,COVO,COVY,CUGE,DAFY,DAMY;
-  bool DANU,DARA,DATU,DAZA,DECO,DEJY,DEWA,DOFA;
-  bool DONA,DOZA,DUFE,DUGO,DUJA,DUNO,DUPO,DURA;
-  bool DUSA,DUTU,DUVU,DYVA,EDAF,EGEN,EKAG,EKEZ;
-  bool EMAX,EMOR,EMOS,ESOT,ETUF,EXAT,FENY,GANY;
-  bool GEFO;
+  bool DAFY,DAMY;
+  bool DATU,DAZA,DEJY,DEWA,DOFA;
+  bool DONA,DUFE,DUNO,DUPO,DURA;
+  bool DUVU,EGEN;
+  bool EMAX,EMOS,ESOT,ETUF,EXAT,GANY;
 };
 

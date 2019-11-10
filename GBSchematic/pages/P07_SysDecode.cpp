@@ -20,15 +20,11 @@ void P07_SysDecode::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.UNOR = and(gb.chip.T2, pb.UBET);
   pc.UMUT = and(gb.chip.T1, pb.UVAR);
   
-  gc.T1nT2n = pb.UPOJ;
-  gc.T1nT2  = pb.UNOR;
-  gc.T1T2n  = pb.UMUT;
-
   //----------
   // debug override of CPU_RD/CPU_WR
 
-  pc.UBAL = mux2(gb.chip.WR_C, gb.CPU_WR_SYNC,    gb.T1nT2);
-  pc.UJYV = mux2(gb.chip.RD_C, gb.cpu.CPU_RAW_RD, gb.T1nT2);
+  pc.UBAL = mux2(gb.chip.WR_C, gb.p01.CPU_WR_SYNC, gb.p07.T1nT2);
+  pc.UJYV = mux2(gb.chip.RD_C, gb.cpu.CPU_RAW_RD,  gb.p07.T1nT2);
 
   pc.TAPU = not(pb.UBAL);
   pc.DYKY = not(pb.TAPU);
@@ -51,14 +47,14 @@ void P07_SysDecode::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   pc.TUGE = nand(pb.TYRO, pb.TUFA, pb.FFXX, pb.CPU_WR);
   pc.SATO = or(gb.D0, pb.TEPU);
   pc.TEXE = and(pb.CPU_RD, pb.FFXX, pb.TUFA, pb.TYRO);
-  pc.TEPU = tock_pos(pa.TUGE, pb.TUGE, gb.RESET2, pb.TEPU, pb.SATO);
+  pc.TEPU = tock_pos(pa.TUGE, pb.TUGE, gb.p01.RESET2, pb.TEPU, pb.SATO);
   pc.SYPU = not(!pb.TEPU);
   pc.TERA = not(pb.TEPU);
   pc.TULO = nor(gb.A15, gb.A14, gb.A13, gb.A12, gb.A11, gb.A10, gb.A09, gb.A08);
   pc.TUTU = and(pb.TERA, pb.TULO);
   pc.ZORO = nor(gb.A15, gb.A14, gb.A13, gb.A12);
   pc.ZADU = nor(gb.A11, gb.A10, gb.A09, gb.A08);
-  pc.YAZA = not(gb.T1T2n);
+  pc.YAZA = not(gb.p07.T1T2n);
   pc.YULA = and(pb.YAZA, pb.TUTU, pb.CPU_RD);
   pc.ZUFA = and(pb.ZORO, pb.ZADU);
   pc.ZADO = nand(pb.YULA, pb.ZUFA);
@@ -86,7 +82,7 @@ void P07_SysDecode::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   //----------
   // weird debug thing
 
-  pc.LECO = nor(gb.BEDO, gb.T1nT2);
+  pc.LECO = nor(gb.p01.BEDO, pb.T1nT2);
 
   pc.ROMY_00 = not(gb.chip.P10_B);
   pc.RYNE_01 = not(gb.chip.P10_B);
@@ -150,8 +146,8 @@ void P07_SysDecode::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
   //----------
   // FF60 debug reg
 
-  pc.APET = or(gb.T1nT2, gb.T1T2n);
-  pc.APER = nand(pb.APET, gb.A05, gb.A06, pb.CPU_WR, gb.ANAP);
-  pc.BURO_00 = tock_pos(pa.APER, pb.APER, gb.RESET2, pb.BURO_00, gb.D0);
-  pc.AMUT_01 = tock_pos(pa.APER, pb.APER, gb.RESET2, pb.AMUT_01, gb.D1);
+  pc.APET = or(gb.p07.T1nT2, gb.p07.T1T2n);
+  pc.APER = nand(pb.APET, gb.A05, gb.A06, pb.CPU_WR, gb.p10.ANAP);
+  pc.BURO_00 = tock_pos(pa.APER, pb.APER, gb.p01.RESET2, pb.BURO_00, gb.D0);
+  pc.AMUT_01 = tock_pos(pa.APER, pb.APER, gb.p01.RESET2, pb.AMUT_01, gb.D1);
 }

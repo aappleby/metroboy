@@ -7,8 +7,18 @@ struct Gameboy;
 // no modifications or simplifications.
 
 struct P06_SerialLink {
+
+  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+
+  union { bool SARE; bool A00_07; };
+  union { bool CALY_03; bool INT_SERIAL; };
+  union { bool EDYL; bool SER_TICKn; };
+  union { bool ELYS; bool SER_OUT; };
+
+private:
+
   // FF01 SB
-  bool SARE,SEFY,SANO,URYS,DAKU,EPYT,DEHO,DAWE,CAGE,UFEG;
+  bool SEFY,SANO,URYS,DAKU,EPYT,DEHO,DAWE,CAGE,UFEG;
   bool COHY_00,DUMO_01,DYBO_02,DAJU_03,DYLY_04,EHUJ_05,EFAK_06,EGUV_07;
   bool CUFU_00,DOCU_01,DELA_02,DYGE_03,DOLA_04,ELOK_05,EDEL_06,EFEF_07;
   bool CUBA_00,DEGU_01,DYRA_02,DOJO_03,DOVU_04,EJAB_05,EROD_06,EDER_07;
@@ -21,13 +31,9 @@ struct P06_SerialLink {
   // clock divider
   bool COTY;
 
-  // output reg
-  bool ELYS;
-
   // counter that triggers INT_SERIAL
-  bool CAFA_00,CYLO_01,CYDE_02,CALY_03;
+  bool CAFA_00,CYLO_01,CYDE_02;
 
-  bool UWAM,UCOM,CAVE,DAWA,CARO,JAGO,EDYL,KEXU,KUJO,COBA,CABY;
+  bool UWAM,UCOM,CAVE,DAWA,CARO,JAGO,KEXU,KUJO,COBA,CABY;
 
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 };

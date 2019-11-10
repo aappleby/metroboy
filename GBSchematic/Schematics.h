@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include "Register.h"
 
+#pragma warning(disable:4201)
+
+
 inline void r(int i, int y, const char* name, int v) {
   if (i == 0) {
     printf("\033[%d;%dH%s", y, 0, name);

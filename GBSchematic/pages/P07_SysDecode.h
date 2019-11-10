@@ -9,6 +9,10 @@ public:
   //----------
   // outputs
 
+  union { bool UPOJ; bool T1nT2n; };
+  union { bool UNOR; bool T1nT2; };
+  union { bool UMUT; bool T1T2n; };
+
   union { bool ZETE; bool BOOTROM_A1nA0n; };
   union { bool ZEFU; bool BOOTROM_A1nA0;  };
   union { bool ZYRO; bool BOOTROM_A1A0n;  };
@@ -55,7 +59,7 @@ private:
   // cells
 
   bool APET,APER;
-  bool UBET,UVAR,UPOJ,UNOR,UMUT;
+  bool UBET,UVAR;
 
   bool TYRO,TUFA,TUGE,SATO,TEXE,SYPU,TERA,TULO;
   bool ZORO,ZADU,YAZA,YULA,ZUFA,ZADO;

@@ -59,7 +59,9 @@ struct P14_Ch2Regs {
   reg DONE,DYNU,EZOF,CYVO,FUXO,GANO,GOCA,GANE;
 
   // FF19 NR24
-  reg JUPY,JANY,JEFU,ETAP,HERO,HEPU,HEVY,EMER;
+  reg JUPY,JANY,JEFU,ETAP,HEPU,HEVY,EMER;
+
+  reg HERO; // CH2_FTICK
 
   void tick(const Input& in, Output& out) {
     bool FOGE = not(in.CPU_RDn);
@@ -71,7 +73,7 @@ struct P14_Ch2Regs {
     bool BAMY_Q = BAMY.q();
     bool BERA_Q = BERA.q();
 
-    bool AGYN = nand(in.APU_WR, in.FF16);
+    bool AGYN = nand(in.APU_WR, in.FF16); // FF16_WR
     bool ASYP = not(AGYN);
     bool BENY = nor(ASYP, in.APU_RESET, in.ELOX_Q);
 

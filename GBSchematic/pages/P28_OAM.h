@@ -30,14 +30,20 @@ public:
   union { bool ACYL; };
   union { bool WEFE; };
   union { bool WEWU; };
+  bool WUME;
+  bool BESU;
+  bool ANOM;
+  bool FETO;
+  bool BYVA;
+  bool AZYB;
 
 private:
 
   bool YVAL,YRYV;
-  bool AWOH,ABAF,ANEL,BYHA,AMYG,ANOM,AZYB,ABAK,BYVA;
-  bool FETO,GAVA;
+  bool AWOH,ABAF,ANEL,BYHA,AMYG,ABAK;
+  bool GAVA;
   bool YFEL,WEWY,GOSO,ELYN,FAHA,FONY;
-  bool ASEN,BOGE,BESU,AJON,AJUJ,XYNY,XUTO,ADAH,WUJE,XUPA,APAG;
+  bool ASEN,BOGE,AJON,AJUJ,XYNY,XUTO,ADAH,WUJE,XUPA,APAG;
   bool WEFY,BOFE,AJEP,XUJA,BOTA,ASYT;
   bool WARU,XUCA,AZUL,AZAR;
   bool ZAXA,ZAMY,ZAKY,ZOPU,WULE,WYKY,ZOZO,ZAJA;
@@ -50,7 +56,6 @@ private:
   bool FETU,FYDU,EDOL,ELUG,FYKY,FAGO,FESA,FODO;
   bool GEKA;
   bool MYNU,WAFO,GUKO,WUKU,YLYC,YNYC;
-  bool WUME;
   bool XECY,XUVA;
 
 };

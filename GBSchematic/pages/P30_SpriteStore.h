@@ -10,6 +10,9 @@ struct P30_SpriteStore {
   bool ZYSU;
   bool WYSE;
   bool WUZY;
+  bool CUCU;
+  bool WENU;
+  bool CEGA;
 
 private:
 
@@ -18,7 +21,7 @@ private:
 
   bool CYKE,WUDA;
   bool XECU,YDUF,XOBE,ZUZE,XEDY,XADU;
-  bool CUCA,CEGA,CUCU,WENU;
+  bool CUCA;
 
   bool ADYB,APOB,APYV,AFEN,AKYH,APOC,BUJY,BOSO,AHAC,BAZU;
   bool WOCY,ELYC,WABO,EZOC,WYWY,WATO,ZUDO,YBUK,ZYTO,YKOZ;

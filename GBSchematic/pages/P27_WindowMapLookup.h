@@ -26,6 +26,8 @@ struct P27_WindowMapLookup {
   union { bool NYDY; };
   union { bool NYXU; };
 
+  bool SECA;
+
 private:
 
   bool NAZE,PEBO,POMO,NEVU,NOJO,PAGA,PEZO,NUPA;
@@ -48,7 +50,7 @@ private:
   bool XEJA,XAMO,XAHE,XULO,WUJU;
   bool VYTO,VEHA,VACE,VOVO,VULO;
   bool VEVY,VEZA,VOGU;
-  bool RYCE,ROSY,SECA,VEKU,TAKA,TUKU,SOWO,TEKY,TAVA,SOBU,SUDA;
+  bool RYCE,ROSY,VEKU,TAKA,TUKU,SOWO,TEKY,TAVA,SOBU,SUDA;
 };
 
 

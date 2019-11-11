@@ -32,11 +32,14 @@ public:
   union { bool FYMA; bool SP_MATCH_8B; };
   union { bool EKES; bool SP_MATCH_9B; };
 
+  bool BAXO;
+  bool YZOS;
+
 private:
 
   bool WYNO,CYRA,ZUVE,ECED,XYKY,YRUM,YSEX,YVEL;
   bool XEGA;
-  bool BAXO,YZOS,YLOR,ZYTY,ZYVE,ZEZY;
+  bool YLOR,ZYTY,ZYVE,ZEZY;
   bool COSE,AROP,XATU,BADY,ZAGO,ZOCY,YPUR,YVOK;
 
   bool WELO,XUNY,WOTE,XAKO,XEPE,YLAH,ZOLA,ZULU;

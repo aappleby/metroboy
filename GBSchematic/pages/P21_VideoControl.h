@@ -44,6 +44,8 @@ struct P21_VideoControl {
   bool SYBE;
 
   bool TALU;
+  bool SELA;
+  bool XYVO;
 
   // x coordinate? used by sprite matcher
   bool ACAM,AZUB,AMEL,AHAL,APUX,ABEF,ADAZ,ASAH;
@@ -66,10 +68,9 @@ private:
   bool VOKU,TOZU,TECE,TEBO,TEGY;
   bool SANU,SONO,SYGU,RYNO;
 
-  bool XYVO;
   bool POPU;
   bool XUGU,XENA,XANO;
-  bool SELA,TOLU;
+  bool TOLU;
 
   bool SEPA;
   bool VOGA,WEGO,XAJO,WUSA,TOBA,SADU,XATY,SEMU,RYJU,PAGO;

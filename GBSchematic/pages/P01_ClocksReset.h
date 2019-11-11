@@ -75,6 +75,7 @@ struct P01_ClocksReset {
   union { bool ABOL; };
 
   bool LAPE; // _b_d_f_h
+  bool TAVA; // a_c_e_g_
 
 private:
 
@@ -112,7 +113,6 @@ private:
   bool CYBO; // a_c_e_g_
   bool ATAG; // a_c_e_g_
   bool ZAXY; // a_c_e_g_
-  bool TAVA; // a_c_e_g_
 
   bool AREV; // abc_efgh
 

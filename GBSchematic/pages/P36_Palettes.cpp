@@ -1,172 +1,116 @@
+#include "P36_Palettes.h"
 #include "../Schematics.h"
+
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P36_Palettes {
-  struct Input {
-    bool CPU_RD2;
-    bool CPU_WR2;
-    bool FF47;
-    bool FF48;
-    bool FF49;
+void P36_Palettes::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  // BGP
+  c.p36.VUSO = and(b.p07.CPU_RD2, b.p22.FF47);
+  c.p36.VELY = and(b.p07.CPU_WR2, b.p22.FF47);
+  c.p36.TEPY = not(b.p36.VUSO);
+  c.p36.TEPO = not(b.p36.VELY);
 
-  struct Output {
-    bool BGP_D0,BGP_D1,BGP_D2,BGP_D3,BGP_D4,BGP_D5,BGP_D6,BGP_D7;
-    bool OBP0_D0,OBP0_D1,OBP0_D2,OBP0_D3,OBP0_D4,OBP0_D5,OBP0_D6,OBP0_D7;
-    bool OBP1_D0,OBP1_D1,OBP1_D2,OBP1_D3,OBP1_D4,OBP1_D5,OBP1_D6,OBP1_D7;
+  c.p36.MENA = tock_pos(a.p36.TEPO, b.p36.TEPO, 0, b.p36.MENA, b.D7);
+  c.p36.MORU = tock_pos(a.p36.TEPO, b.p36.TEPO, 0, b.p36.MORU, b.D5);
+  c.p36.MAXY = tock_pos(a.p36.TEPO, b.p36.TEPO, 0, b.p36.MAXY, b.D3);
+  c.p36.NUSY = tock_pos(a.p36.TEPO, b.p36.TEPO, 0, b.p36.NUSY, b.D1);
+  c.p36.MOGY = tock_pos(a.p36.TEPO, b.p36.TEPO, 0, b.p36.MOGY, b.D6);
+  c.p36.MUKE = tock_pos(a.p36.TEPO, b.p36.TEPO, 0, b.p36.MUKE, b.D4);
+  c.p36.PYLU = tock_pos(a.p36.TEPO, b.p36.TEPO, 0, b.p36.PYLU, b.D2);
+  c.p36.PAVO = tock_pos(a.p36.TEPO, b.p36.TEPO, 0, b.p36.PAVO, b.D0);
 
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  c.p36.LARY = not(!b.p36.MENA);
+  c.p36.LYKA = not(!b.p36.MORU);
+  c.p36.LOBE = not(!b.p36.MAXY);
+  c.p36.PABA = not(!b.p36.NUSY);
+  c.p36.LODY = not(!b.p36.MOGY);
+  c.p36.LACE = not(!b.p36.MUKE);
+  c.p36.REDO = not(!b.p36.PYLU);
+  c.p36.RARO = not(!b.p36.PAVO);
 
-  // FF47 BGP
-  reg MENA,MORU,MAXY,NUSY,MOGY,MUKE,PYLU,PAVO;
+  if (b.p36.TEPY) {
+    c.D7 = b.p36.LARY;
+    c.D5 = b.p36.LYKA;
+    c.D3 = b.p36.LOBE;
+    c.D1 = b.p36.PABA;
+    c.D6 = b.p36.LODY;
+    c.D4 = b.p36.LACE;
+    c.D2 = b.p36.REDO;
+    c.D0 = b.p36.RARO;
+  }
 
-  // FF48 OBP0
-  reg XANA,XYZE,XALO,XUKY,XUPO,XERU,XOVA,XUFU;
+  // OBP0
+  c.p36.XUFY = and(b.p07.CPU_RD2, b.p22.FF48);
+  c.p36.XOMA = and(b.p07.CPU_WR2, b.p22.FF48);
+  c.p36.XOZY = not(b.p36.XUFY);
+  c.p36.XELO = not(b.p36.XOMA);
 
-  // FF49 OBP1
-  reg LUXO,LUGU,LOSE,LAWO,LEPU,LUNE,MOSA,MOXY;
+  c.p36.XANA = tock_pos(a.p36.XELO, b.p36.XELO, 0, b.p36.XANA, b.D7);
+  c.p36.XYZE = tock_pos(a.p36.XELO, b.p36.XELO, 0, b.p36.XYZE, b.D5);
+  c.p36.XALO = tock_pos(a.p36.XELO, b.p36.XELO, 0, b.p36.XALO, b.D3);
+  c.p36.XUKY = tock_pos(a.p36.XELO, b.p36.XELO, 0, b.p36.XUKY, b.D1);
+  c.p36.XUPO = tock_pos(a.p36.XELO, b.p36.XELO, 0, b.p36.XUPO, b.D6);
+  c.p36.XERU = tock_pos(a.p36.XELO, b.p36.XELO, 0, b.p36.XERU, b.D4);
+  c.p36.XOVA = tock_pos(a.p36.XELO, b.p36.XELO, 0, b.p36.XOVA, b.D2);
+  c.p36.XUFU = tock_pos(a.p36.XELO, b.p36.XELO, 0, b.p36.XUFU, b.D0);
 
+  c.p36.XAWO = not(!b.p36.XANA);
+  c.p36.XOBO = not(!b.p36.XYZE);
+  c.p36.XUBY = not(!b.p36.XALO);
+  c.p36.XOKE = not(!b.p36.XUKY);
+  c.p36.XAXA = not(!b.p36.XUPO);
+  c.p36.XAJU = not(!b.p36.XERU);
+  c.p36.XUNO = not(!b.p36.XOVA);
+  c.p36.XARY = not(!b.p36.XUFU);
 
-  void tick(const Input& in, Output& out) {
-    // BGP
-    bool VUSO = and(in.CPU_RD2, in.FF47);
-    bool VELY = and(in.CPU_WR2, in.FF47);
-    bool TEPY = not(VUSO);
-    bool TEPO = not(VELY);
+  if (b.p36.XOZY) {
+    c.D7 = b.p36.XAWO;
+    c.D5 = b.p36.XOBO;
+    c.D3 = b.p36.XUBY;
+    c.D1 = b.p36.XOKE;
+    c.D6 = b.p36.XAXA;
+    c.D4 = b.p36.XAJU;
+    c.D2 = b.p36.XUNO;
+    c.D0 = b.p36.XARY;
+  }
 
-    bool MENA_Q = MENA.tock(TEPO, 0, in.D7);
-    bool MORU_Q = MORU.tock(TEPO, 0, in.D5);
-    bool MAXY_Q = MAXY.tock(TEPO, 0, in.D3);
-    bool NUSY_Q = NUSY.tock(TEPO, 0, in.D1);
-    bool MOGY_Q = MOGY.tock(TEPO, 0, in.D6);
-    bool MUKE_Q = MUKE.tock(TEPO, 0, in.D4);
-    bool PYLU_Q = PYLU.tock(TEPO, 0, in.D2);
-    bool PAVO_Q = PAVO.tock(TEPO, 0, in.D0);
+  // OBP1
+  c.p36.MUMY = and(b.p07.CPU_RD2, b.p22.FF49);
+  c.p36.MYXE = and(b.p07.CPU_WR2, b.p22.FF49);
+  c.p36.LOTE = not(b.p36.MUMY);
+  c.p36.LEHO = not(b.p36.MYXE);
 
-    out.BGP_D7 = MENA_Q;
-    out.BGP_D5 = MORU_Q;
-    out.BGP_D3 = MAXY_Q;
-    out.BGP_D1 = NUSY_Q;
-    out.BGP_D6 = MOGY_Q;
-    out.BGP_D4 = MUKE_Q;
-    out.BGP_D2 = PYLU_Q;
-    out.BGP_D0 = PAVO_Q;
+  c.p36.LUXO = tock_pos(a.p36.LEHO, b.p36.LEHO, 0, b.p36.LUXO, b.D7);
+  c.p36.LUGU = tock_pos(a.p36.LEHO, b.p36.LEHO, 0, b.p36.LUGU, b.D5);
+  c.p36.LOSE = tock_pos(a.p36.LEHO, b.p36.LEHO, 0, b.p36.LOSE, b.D3);
+  c.p36.LAWO = tock_pos(a.p36.LEHO, b.p36.LEHO, 0, b.p36.LAWO, b.D1);
+  c.p36.LEPU = tock_pos(a.p36.LEHO, b.p36.LEHO, 0, b.p36.LEPU, b.D6);
+  c.p36.LUNE = tock_pos(a.p36.LEHO, b.p36.LEHO, 0, b.p36.LUNE, b.D4);
+  c.p36.MOSA = tock_pos(a.p36.LEHO, b.p36.LEHO, 0, b.p36.MOSA, b.D2);
+  c.p36.MOXY = tock_pos(a.p36.LEHO, b.p36.LEHO, 0, b.p36.MOXY, b.D0);
 
-    bool LARY = not(!MENA_Q);
-    bool LYKA = not(!MORU_Q);
-    bool LOBE = not(!MAXY_Q);
-    bool PABA = not(!NUSY_Q);
-    bool LODY = not(!MOGY_Q);
-    bool LACE = not(!MUKE_Q);
-    bool REDO = not(!PYLU_Q);
-    bool RARO = not(!PAVO_Q);
+  c.p36.LELU = not(!b.p36.LUXO);
+  c.p36.LUGA = not(!b.p36.LUGU);
+  c.p36.LYZA = not(!b.p36.LOSE);
+  c.p36.LEPA = not(!b.p36.LAWO);
+  c.p36.LEBA = not(!b.p36.LEPU);
+  c.p36.LUKY = not(!b.p36.LUNE);
+  c.p36.LODE = not(!b.p36.MOSA);
+  c.p36.LAJU = not(!b.p36.MOXY);
 
-    if (TEPY) {
-      out.D_OE = true;
-      out.D7 = LARY;
-      out.D5 = LYKA;
-      out.D3 = LOBE;
-      out.D1 = PABA;
-      out.D6 = LODY;
-      out.D4 = LACE;
-      out.D2 = REDO;
-      out.D0 = RARO;
-    }
-
-    // OBP0
-    bool XUFY = and(in.CPU_RD2, in.FF48);
-    bool XOMA = and(in.CPU_WR2, in.FF48);
-    bool XOZY = not(XUFY);
-    bool XELO = not(XOMA);
-
-    bool XANA_Q = XANA.tock(XELO, 0, in.D7);
-    bool XYZE_Q = XYZE.tock(XELO, 0, in.D5);
-    bool XALO_Q = XALO.tock(XELO, 0, in.D3);
-    bool XUKY_Q = XUKY.tock(XELO, 0, in.D1);
-    bool XUPO_Q = XUPO.tock(XELO, 0, in.D6);
-    bool XERU_Q = XERU.tock(XELO, 0, in.D4);
-    bool XOVA_Q = XOVA.tock(XELO, 0, in.D2);
-    bool XUFU_Q = XUFU.tock(XELO, 0, in.D0);
-
-    out.OBP0_D7 = XANA_Q;
-    out.OBP0_D5 = XYZE_Q;
-    out.OBP0_D3 = XALO_Q;
-    out.OBP0_D1 = XUKY_Q;
-    out.OBP0_D6 = XUPO_Q;
-    out.OBP0_D4 = XERU_Q;
-    out.OBP0_D2 = XOVA_Q;
-    out.OBP0_D0 = XUFU_Q;
-
-    bool XAWO = not(!XANA_Q);
-    bool XOBO = not(!XYZE_Q);
-    bool XUBY = not(!XALO_Q);
-    bool XOKE = not(!XUKY_Q);
-    bool XAXA = not(!XUPO_Q);
-    bool XAJU = not(!XERU_Q);
-    bool XUNO = not(!XOVA_Q);
-    bool XARY = not(!XUFU_Q);
-
-    if (XOZY) {
-      out.D_OE = true;
-      out.D7 = XAWO;
-      out.D5 = XOBO;
-      out.D3 = XUBY;
-      out.D1 = XOKE;
-      out.D6 = XAXA;
-      out.D4 = XAJU;
-      out.D2 = XUNO;
-      out.D0 = XARY;
-    }
-
-    // OBP1
-    bool MUMY = and(in.CPU_RD2, in.FF49);
-    bool MYXE = and(in.CPU_WR2, in.FF49);
-    bool LOTE = not(MUMY);
-    bool LEHO = not(MYXE);
-
-    bool LUXO_Q = LUXO.tock(LEHO, 0, in.D7);
-    bool LUGU_Q = LUGU.tock(LEHO, 0, in.D5);
-    bool LOSE_Q = LOSE.tock(LEHO, 0, in.D3);
-    bool LAWO_Q = LAWO.tock(LEHO, 0, in.D1);
-    bool LEPU_Q = LEPU.tock(LEHO, 0, in.D6);
-    bool LUNE_Q = LUNE.tock(LEHO, 0, in.D4);
-    bool MOSA_Q = MOSA.tock(LEHO, 0, in.D2);
-    bool MOXY_Q = MOXY.tock(LEHO, 0, in.D0);
-
-    out.OBP1_D7 = LUXO_Q;
-    out.OBP1_D5 = LUGU_Q;
-    out.OBP1_D3 = LOSE_Q;
-    out.OBP1_D1 = LAWO_Q;
-    out.OBP1_D6 = LEPU_Q;
-    out.OBP1_D4 = LUNE_Q;
-    out.OBP1_D2 = MOSA_Q;
-    out.OBP1_D0 = MOXY_Q;
-
-    bool LELU = not(!LUXO_Q);
-    bool LUGA = not(!LUGU_Q);
-    bool LYZA = not(!LOSE_Q);
-    bool LEPA = not(!LAWO_Q);
-    bool LEBA = not(!LEPU_Q);
-    bool LUKY = not(!LUNE_Q);
-    bool LODE = not(!MOSA_Q);
-    bool LAJU = not(!MOXY_Q);
-
-    if (LOTE) {
-      out.D_OE = true;
-      out.D7 = LELU;
-      out.D5 = LUGA;
-      out.D3 = LYZA;
-      out.D1 = LEPA;
-      out.D6 = LEBA;
-      out.D4 = LUKY;
-      out.D2 = LODE;
-      out.D0 = LAJU;
-    }
-  }};
+  if (b.p36.LOTE) {
+    c.D7 = b.p36.LELU;
+    c.D5 = b.p36.LUGA;
+    c.D3 = b.p36.LYZA;
+    c.D1 = b.p36.LEPA;
+    c.D6 = b.p36.LEBA;
+    c.D4 = b.p36.LUKY;
+    c.D2 = b.p36.LODE;
+    c.D0 = b.p36.LAJU;
+  }
+}

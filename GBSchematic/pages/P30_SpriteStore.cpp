@@ -1,244 +1,178 @@
-#include "../Schematics.h"
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P30_SpriteStore {
-  struct Input {
-    bool XUPY;
-    bool WEFE;
-    bool FEPO;
-    bool BUZA;
+void P30_SpriteStore::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-    // which sprite line to render
-    bool DABY,DABU,DEGE,GYSA;
+  c.p30.CYKE = not(b.p29.XUPY);
+  c.p30.WUDA = not(b.p30.CYKE);
 
-    // sprite store read selection lines
-    bool DENY,XYME,GOWO,GUGY,DYDO,GYGY,GYMA,FAME,FADO,FURO;
+  c.p30.XECU = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XECU, b.p28.OAM_A7); // check this oam address line
+  c.p30.YDUF = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.YDUF, b.p28.OAM_A6);
+  c.p30.XOBE = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XOBE, b.p28.OAM_A5);
+  c.p30.ZUZE = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.ZUZE, b.p28.OAM_A4);
+  c.p30.XEDY = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XEDY, b.p28.OAM_A3);
+  c.p30.XADU = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XADU, b.p28.OAM_A2);
 
-    // sprite write clock lines
-    bool AKOL,WUSE,WYLU,FEFO,BYVY,DYMO,FEKA,BUZY,WUFA,GENY;
-    bool BYMY,ZURU,EWOT,WABE,AHOF,BUCY,XYHA,FUKE,FAKA,ENOB;
-      
-    bool OAM_A_A0,OAM_A_A1,OAM_A_A2,OAM_A_A3,OAM_A_A4,OAM_A_A5,OAM_A_A6,OAM_A_A7;
-  };
+  // ok, the schematic has the net the same name as the cell, which is annoying.
+  c.p30.WEZA = not(!b.p30.XECU);
+  c.p30.WUCO = not(!b.p30.YDUF);
+  c.p30.WYDA = not(!b.p30.XOBE);
+  c.p30.ZYSU = not(!b.p30.ZUZE);
+  c.p30.WYSE = not(!b.p30.XEDY);
+  c.p30.WUZY = not(!b.p30.XADU);
 
-  struct Output {
-    // Sprite index
-    bool WEZA,WUCO,WYDA,ZYSU,WYSE,WUZY;
+  c.p30.CUCA = not(b.p29.DABY);
+  c.p30.CEGA = not(b.p29.DABU);
+  c.p30.CUCU = not(b.p29.DEGE);
+  c.p30.WENU = not(b.p29.GYSA);
 
-    // Sprite Y line
-    bool CUCA,CEGA,CUCU,WENU;
-  };
-
-  // Sprite index register
-  reg XADU,XEDY,ZUZE,XOBE,YDUF,XECU;
-
-  // Sprite store
-  reg AXUV, BADA, APEV, BADO, BEXY, BYHE, AFYM, AZAP, AFUT, AFYX;
-  reg GECU, FOXY, GOHU, FOGO, GACY, GABO, ZUBE, ZUMY, ZEXO, ZAFU;
-  reg XYNU, XEGE, XABO, WANU, XEFE, XAVE, CUMU, CAPO, CONO, CAJU;
-  reg FUZO, GESY, FYSU, FEFA, GYNO, GULE, XYGO, XYNA, XAKU, YGUM;
-  reg CAJY, CUZA, COMA, CUFA, CEBO, CADU, ABUG, AMES, ABOP, AROF;
-  reg EKAP, ETAV, EBEX, GORU, ETYM, EKOP, ANED, ACEP, ABUX, ABEG;
-  reg DAFU, DEBA, DUHA, DUNY, DESE, DEVY, ZURY, ZURO, ZENE, ZYLU;
-  reg BOXA, BUNA, BULU, BECA, BYHU, BUHE, YKUK, YLOV, XAZY, XOSY;
-  reg XUFO, XUTE, XOTU, XYFE, YZOR, YBER, DEWU, CANA, DYSY, FOFO;
-  reg YGUS, YSOK, YZEP, WYTE, ZONY, YWAK, FYHY, GYHO, BOZU, CUFO;
-
-  void tick(const Input& in, Output& out) {
-    bool CYKE = not(in.XUPY);
-    bool WUDA = not(CYKE);
-
-    bool XECU_Q = XECU.tock(WUDA, in.WEFE, in.OAM_A_A7);
-    bool YDUF_Q = YDUF.tock(WUDA, in.WEFE, in.OAM_A_A6);
-    bool XOBE_Q = XOBE.tock(WUDA, in.WEFE, in.OAM_A_A5);
-    bool ZUZE_Q = ZUZE.tock(WUDA, in.WEFE, in.OAM_A_A4);
-    bool XEDY_Q = XEDY.tock(WUDA, in.WEFE, in.OAM_A_A3);
-    bool XADU_Q = XADU.tock(WUDA, in.WEFE, in.OAM_A_A2);
-
-    // ok, the schematic has the net the same name as the cell, which is annoying.
-    bool WEZA = not(!XECU_Q);
-    bool WUCO = not(!YDUF_Q);
-    bool WYDA = not(!XOBE_Q);
-    bool ZYSU = not(!ZUZE_Q);
-    bool WYSE = not(!XEDY_Q);
-    bool WUZY = not(!XADU_Q);
-
-    bool CUCA = not(in.DABY);
-    bool CEGA = not(in.DABU);
-    bool CUCU = not(in.DEGE);
-    bool WENU = not(in.GYSA);
-
-    // so this is a bit weird as we have a tri-state bus inside one schematic...
-    bool WEZA2,WUCO2,WYDA2,ZYSU2,WYSE2,WUZY2,CUCA2,CEGA2,CUCU2,WENU2;
-
-    if (in.BUZA) {
-      WEZA2 = WEZA;
-      WUCO2 = WUCO;
-      WYDA2 = WYDA;
-      ZYSU2 = ZYSU;
-      WYSE2 = WYSE;
-      WUZY2 = WUZY;
-    }
-
-    if (in.FEPO) {
-      CUCA2 = CUCA;
-      CEGA2 = CEGA;
-      CUCU2 = CUCU;
-      WENU2 = WENU;
-    }
-
-    // Sprite store 1 of 10
-    {
-      bool AXUV_Q = AXUV.q(); bool ADYB = not(!AXUV_Q); if (in.DENY) WEZA2 = ADYB; AXUV.tock(in.AKOL, 0, WEZA2);
-      bool BADA_Q = BADA.q(); bool APOB = not(!BADA_Q); if (in.DENY) WUCO2 = APOB; BADA.tock(in.AKOL, 0, WUCO2);
-      bool APEV_Q = APEV.q(); bool APYV = not(!APEV_Q); if (in.DENY) WYDA2 = APYV; APEV.tock(in.AKOL, 0, WYDA2);
-      bool BADO_Q = BADO.q(); bool AFEN = not(!BADO_Q); if (in.DENY) ZYSU2 = AFEN; BADO.tock(in.AKOL, 0, ZYSU2);
-      bool BEXY_Q = BEXY.q(); bool AKYH = not(!BEXY_Q); if (in.DENY) WYSE2 = AKYH; BEXY.tock(in.AKOL, 0, WYSE2);
-      bool BYHE_Q = BYHE.q(); bool APOC = not(!BYHE_Q); if (in.DENY) WUZY2 = APOC; BYHE.tock(in.AKOL, 0, WUZY2);
-      bool AFYM_Q = AFYM.q(); bool BUJY = not(!AFYM_Q); if (in.DENY) CUCA2 = BUJY; AFYM.tock(in.BYMY, 0, CUCA2);
-      bool AZAP_Q = AZAP.q(); bool BOSO = not(!AZAP_Q); if (in.DENY) CEGA2 = BOSO; AZAP.tock(in.BYMY, 0, CEGA2);
-      bool AFUT_Q = AFUT.q(); bool AHAC = not(!AFUT_Q); if (in.DENY) CUCU2 = AHAC; AFUT.tock(in.BYMY, 0, CUCU2);
-      bool AFYX_Q = AFYX.q(); bool BAZU = not(!AFYX_Q); if (in.DENY) WENU2 = BAZU; AFYX.tock(in.BYMY, 0, WENU2);
-    }
-
-    // Sprite store 2 of 10
-    {
-      bool GECU_Q = GECU.q(); bool WOCY = not(!GECU_Q); if (in.XYME) WEZA2 = WOCY; GECU.tock(in.WUSE, 0, WEZA2);
-      bool FOXY_Q = FOXY.q(); bool ELYC = not(!FOXY_Q); if (in.XYME) WUCO2 = ELYC; FOXY.tock(in.WUSE, 0, WUCO2);
-      bool GOHU_Q = GOHU.q(); bool WABO = not(!GOHU_Q); if (in.XYME) WYDA2 = WABO; GOHU.tock(in.WUSE, 0, WYDA2);
-      bool FOGO_Q = FOGO.q(); bool EZOC = not(!FOGO_Q); if (in.XYME) ZYSU2 = EZOC; FOGO.tock(in.WUSE, 0, ZYSU2);
-      bool GACY_Q = GACY.q(); bool WYWY = not(!GACY_Q); if (in.XYME) WYSE2 = WYWY; GACY.tock(in.WUSE, 0, WYSE2);
-      bool GABO_Q = GABO.q(); bool WATO = not(!GABO_Q); if (in.XYME) WUZY2 = WATO; GABO.tock(in.WUSE, 0, WUZY2);
-      bool ZUBE_Q = ZUBE.q(); bool ZUDO = not(!ZUBE_Q); if (in.XYME) CUCA2 = ZUDO; ZUBE.tock(in.ZURU, 0, CUCA2);
-      bool ZUMY_Q = ZUMY.q(); bool YBUK = not(!ZUMY_Q); if (in.XYME) CEGA2 = YBUK; ZUMY.tock(in.ZURU, 0, CEGA2);
-      bool ZEXO_Q = ZEXO.q(); bool ZYTO = not(!ZEXO_Q); if (in.XYME) CUCU2 = ZYTO; ZEXO.tock(in.ZURU, 0, CUCU2);
-      bool ZAFU_Q = ZAFU.q(); bool YKOZ = not(!ZAFU_Q); if (in.XYME) WENU2 = YKOZ; ZAFU.tock(in.ZURU, 0, WENU2);
-    }
-
-    // Sprite store 3 of 10
-    {
-      bool XYNU_Q = XYNU.q(); bool WAJA = not(!XYNU_Q); if (in.GOWO) WEZA2 = WAJA; XYNU.tock(in.WYLU, 0, WEZA2);
-      bool XEGE_Q = XEGE.q(); bool WOXY = not(!XEGE_Q); if (in.GOWO) WUCO2 = WOXY; XEGE.tock(in.WYLU, 0, WUCO2);
-      bool XABO_Q = XABO.q(); bool XYRE = not(!XABO_Q); if (in.GOWO) WYDA2 = XYRE; XABO.tock(in.WYLU, 0, WYDA2);
-      bool WANU_Q = WANU.q(); bool WERU = not(!WANU_Q); if (in.GOWO) ZYSU2 = WERU; WANU.tock(in.WYLU, 0, ZYSU2);
-      bool XEFE_Q = XEFE.q(); bool WEPY = not(!XEFE_Q); if (in.GOWO) WYSE2 = WEPY; XEFE.tock(in.WYLU, 0, WYSE2);
-      bool XAVE_Q = XAVE.q(); bool WUXU = not(!XAVE_Q); if (in.GOWO) WUZY2 = WUXU; XAVE.tock(in.WYLU, 0, WUZY2);
-      bool CUMU_Q = CUMU.q(); bool BYDO = not(!CUMU_Q); if (in.GOWO) CUCA2 = BYDO; CUMU.tock(in.EWOT, 0, CUCA2);
-      bool CAPO_Q = CAPO.q(); bool BUCE = not(!CAPO_Q); if (in.GOWO) CEGA2 = BUCE; CAPO.tock(in.EWOT, 0, CEGA2);
-      bool CONO_Q = CONO.q(); bool BOVE = not(!CONO_Q); if (in.GOWO) CUCU2 = BOVE; CONO.tock(in.EWOT, 0, CUCU2);
-      bool CAJU_Q = CAJU.q(); bool BEVY = not(!CAJU_Q); if (in.GOWO) WENU2 = BEVY; CAJU.tock(in.EWOT, 0, WENU2);
-    }
-
-    // Sprite store 4 of 10
-    {
-      bool FUZO_Q = FUZO.q(); bool EVYT = not(!FUZO_Q); if (in.GUGY) WEZA2 = EVYT; FUZO.tock(in.FEFO, 0, WEZA2);
-      bool GESY_Q = GESY.q(); bool WABA = not(!GESY_Q); if (in.GUGY) WUCO2 = WABA; GESY.tock(in.FEFO, 0, WUCO2);
-      bool FYSU_Q = FYSU.q(); bool ETAD = not(!FYSU_Q); if (in.GUGY) WYDA2 = ETAD; FYSU.tock(in.FEFO, 0, WYDA2);
-      bool FEFA_Q = FEFA.q(); bool ELEP = not(!FEFA_Q); if (in.GUGY) ZYSU2 = ELEP; FEFA.tock(in.FEFO, 0, ZYSU2);
-      bool GYNO_Q = GYNO.q(); bool WYGO = not(!GYNO_Q); if (in.GUGY) WYSE2 = WYGO; GYNO.tock(in.FEFO, 0, WYSE2);
-      bool GULE_Q = GULE.q(); bool WAKO = not(!GULE_Q); if (in.GUGY) WUZY2 = WAKO; GULE.tock(in.FEFO, 0, WUZY2);
-      bool XYGO_Q = XYGO.q(); bool WANA = not(!XYGO_Q); if (in.GUGY) CUCA2 = WANA; XYGO.tock(in.WABE, 0, CUCA2);
-      bool XYNA_Q = XYNA.q(); bool WAXE = not(!XYNA_Q); if (in.GUGY) CEGA2 = WAXE; XYNA.tock(in.WABE, 0, CEGA2);
-      bool XAKU_Q = XAKU.q(); bool WABU = not(!XAKU_Q); if (in.GUGY) CUCU2 = WABU; XAKU.tock(in.WABE, 0, CUCU2);
-      bool YGUM_Q = YGUM.q(); bool YPOZ = not(!YGUM_Q); if (in.GUGY) WENU2 = YPOZ; YGUM.tock(in.WABE, 0, WENU2);
-    }
-
-    // Sprite store 5 of 10
-    {
-      bool CAJY_Q = CAJY.q(); bool BEMO = not(!CAJY_Q); if (in.DYDO) WEZA2 = BEMO; CAJY.tock(in.BYVY, 0, WEZA2);
-      bool CUZA_Q = CUZA.q(); bool CYBY = not(!CUZA_Q); if (in.DYDO) WUCO2 = CYBY; CUZA.tock(in.BYVY, 0, WUCO2);
-      bool COMA_Q = COMA.q(); bool BETY = not(!COMA_Q); if (in.DYDO) WYDA2 = BETY; COMA.tock(in.BYVY, 0, WYDA2);
-      bool CUFA_Q = CUFA.q(); bool CEGY = not(!CUFA_Q); if (in.DYDO) ZYSU2 = CEGY; CUFA.tock(in.BYVY, 0, ZYSU2);
-      bool CEBO_Q = CEBO.q(); bool CELU = not(!CEBO_Q); if (in.DYDO) WYSE2 = CELU; CEBO.tock(in.BYVY, 0, WYSE2);
-      bool CADU_Q = CADU.q(); bool CUBO = not(!CADU_Q); if (in.DYDO) WUZY2 = CUBO; CADU.tock(in.BYVY, 0, WUZY2);
-      bool ABUG_Q = ABUG.q(); bool BEFE = not(!ABUG_Q); if (in.DYDO) CUCA2 = BEFE; ABUG.tock(in.AHOF, 0, CUCA2);
-      bool AMES_Q = AMES.q(); bool BYRO = not(!AMES_Q); if (in.DYDO) CEGA2 = BYRO; AMES.tock(in.AHOF, 0, CEGA2);
-      bool ABOP_Q = ABOP.q(); bool BACO = not(!ABOP_Q); if (in.DYDO) CUCU2 = BACO; ABOP.tock(in.AHOF, 0, CUCU2);
-      bool AROF_Q = AROF.q(); bool AHUM = not(!AROF_Q); if (in.DYDO) WENU2 = AHUM; AROF.tock(in.AHOF, 0, WENU2);
-    }
-
-    // Sprite store 6 of 10
-    {
-      bool EKAP_Q = EKAP.q(); bool DALO = not(!EKAP_Q); if (in.GYGY) WEZA2 = DALO; EKAP.tock(in.DYMO, 0, WEZA2);
-      bool ETAV_Q = ETAV.q(); bool DALY = not(!ETAV_Q); if (in.GYGY) WUCO2 = DALY; ETAV.tock(in.DYMO, 0, WUCO2);
-      bool EBEX_Q = EBEX.q(); bool DUZA = not(!EBEX_Q); if (in.GYGY) WYDA2 = DUZA; EBEX.tock(in.DYMO, 0, WYDA2);
-      bool GORU_Q = GORU.q(); bool WAGA = not(!GORU_Q); if (in.GYGY) ZYSU2 = WAGA; GORU.tock(in.DYMO, 0, ZYSU2);
-      bool ETYM_Q = ETYM.q(); bool DYNY = not(!ETYM_Q); if (in.GYGY) WYSE2 = DYNY; ETYM.tock(in.DYMO, 0, WYSE2);
-      bool EKOP_Q = EKOP.q(); bool DOBO = not(!EKOP_Q); if (in.GYGY) WUZY2 = DOBO; EKOP.tock(in.DYMO, 0, WUZY2);
-      bool ANED_Q = ANED.q(); bool AWAT = not(!ANED_Q); if (in.GYGY) CUCA2 = AWAT; ANED.tock(in.BUCY, 0, CUCA2);
-      bool ACEP_Q = ACEP.q(); bool BACE = not(!ACEP_Q); if (in.GYGY) CEGA2 = BACE; ACEP.tock(in.BUCY, 0, CEGA2);
-      bool ABUX_Q = ABUX.q(); bool BODU = not(!ABUX_Q); if (in.GYGY) CUCU2 = BODU; ABUX.tock(in.BUCY, 0, CUCU2);
-      bool ABEG_Q = ABEG.q(); bool BUJA = not(!ABEG_Q); if (in.GYGY) WENU2 = BUJA; ABEG.tock(in.BUCY, 0, WENU2);
-    }
-
-    // Sprite store 7 of 10
-    {
-      bool DAFU_Q = DAFU.q(); bool DEZU = not(!DAFU_Q); if (in.GYMA) WEZA2 = DEZU; DAFU.tock(in.FEKA, 0, WEZA2);
-      bool DEBA_Q = DEBA.q(); bool EFUD = not(!DEBA_Q); if (in.GYMA) WUCO2 = EFUD; DEBA.tock(in.FEKA, 0, WUCO2);
-      bool DUHA_Q = DUHA.q(); bool DONY = not(!DUHA_Q); if (in.GYMA) WYDA2 = DONY; DUHA.tock(in.FEKA, 0, WYDA2);
-      bool DUNY_Q = DUNY.q(); bool DOWA = not(!DUNY_Q); if (in.GYMA) ZYSU2 = DOWA; DUNY.tock(in.FEKA, 0, ZYSU2);
-      bool DESE_Q = DESE.q(); bool DYGO = not(!DESE_Q); if (in.GYMA) WYSE2 = DYGO; DESE.tock(in.FEKA, 0, WYSE2);
-      bool DEVY_Q = DEVY.q(); bool ENAP = not(!DEVY_Q); if (in.GYMA) WUZY2 = ENAP; DEVY.tock(in.FEKA, 0, WUZY2);
-      bool ZURY_Q = ZURY.q(); bool ZYPO = not(!ZURY_Q); if (in.GYMA) CUCA2 = ZYPO; ZURY.tock(in.XYHA, 0, CUCA2);
-      bool ZURO_Q = ZURO.q(); bool ZEXE = not(!ZURO_Q); if (in.GYMA) CEGA2 = ZEXE; ZURO.tock(in.XYHA, 0, CEGA2);
-      bool ZENE_Q = ZENE.q(); bool YJEM = not(!ZENE_Q); if (in.GYMA) CUCU2 = YJEM; ZENE.tock(in.XYHA, 0, CUCU2);
-      bool ZYLU_Q = ZYLU.q(); bool YWAV = not(!ZYLU_Q); if (in.GYMA) WENU2 = YWAV; ZYLU.tock(in.XYHA, 0, WENU2);
-    }
-
-    // Sprite store 8 of 10
-    {
-      bool BOXA_Q = BOXA.q(); bool AXEC = not(!BOXA_Q); if (in.FAME) WEZA2 = AXEC; BOXA.tock(in.BUZY, 0, WEZA2);
-      bool BUNA_Q = BUNA.q(); bool CYRO = not(!BUNA_Q); if (in.FAME) WUCO2 = CYRO; BUNA.tock(in.BUZY, 0, WUCO2);
-      bool BULU_Q = BULU.q(); bool CUVU = not(!BULU_Q); if (in.FAME) WYDA2 = CUVU; BULU.tock(in.BUZY, 0, WYDA2);
-      bool BECA_Q = BECA.q(); bool APON = not(!BECA_Q); if (in.FAME) ZYSU2 = APON; BECA.tock(in.BUZY, 0, ZYSU2);
-      bool BYHU_Q = BYHU.q(); bool AFOZ = not(!BYHU_Q); if (in.FAME) WYSE2 = AFOZ; BYHU.tock(in.BUZY, 0, WYSE2);
-      bool BUHE_Q = BUHE.q(); bool CUBE = not(!BUHE_Q); if (in.FAME) WUZY2 = CUBE; BUHE.tock(in.BUZY, 0, WUZY2);
-      bool YKUK_Q = YKUK.q(); bool ZABY = not(!YKUK_Q); if (in.FAME) CUCA2 = ZABY; YKUK.tock(in.FUKE, 0, CUCA2);
-      bool YLOV_Q = YLOV.q(); bool ZUKE = not(!YLOV_Q); if (in.FAME) CEGA2 = ZUKE; YLOV.tock(in.FUKE, 0, CEGA2);
-      bool XAZY_Q = XAZY.q(); bool WUXE = not(!XAZY_Q); if (in.FAME) CUCU2 = WUXE; XAZY.tock(in.FUKE, 0, CUCU2);
-      bool XOSY_Q = XOSY.q(); bool WERE = not(!XOSY_Q); if (in.FAME) WENU2 = WERE; XOSY.tock(in.FUKE, 0, WENU2);
-    }
-
-    // Sprite store 9 of 10
-    {
-      bool XUFO_Q = XUFO.q(); bool YHAL = not(!XUFO_Q); if (in.FADO) WEZA2 = YHAL; XUFO.tock(in.WUFA, 0, WEZA2);
-      bool XUTE_Q = XUTE.q(); bool YRAD = not(!XUTE_Q); if (in.FADO) WUCO2 = YRAD; XUTE.tock(in.WUFA, 0, WUCO2);
-      bool XOTU_Q = XOTU.q(); bool XYRA = not(!XOTU_Q); if (in.FADO) WYDA2 = XYRA; XOTU.tock(in.WUFA, 0, WYDA2);
-      bool XYFE_Q = XYFE.q(); bool YNEV = not(!XYFE_Q); if (in.FADO) ZYSU2 = YNEV; XYFE.tock(in.WUFA, 0, ZYSU2);
-      bool YZOR_Q = YZOR.q(); bool ZOJY = not(!YZOR_Q); if (in.FADO) WYSE2 = ZOJY; YZOR.tock(in.WUFA, 0, WYSE2);
-      bool YBER_Q = YBER.q(); bool ZARO = not(!YBER_Q); if (in.FADO) WUZY2 = ZARO; YBER.tock(in.WUFA, 0, WUZY2);
-      bool DEWU_Q = DEWU.q(); bool CAWO = not(!DEWU_Q); if (in.FADO) CUCA2 = CAWO; DEWU.tock(in.FAKA, 0, CUCA2);
-      bool CANA_Q = CANA.q(); bool BYME = not(!CANA_Q); if (in.FADO) CEGA2 = BYME; CANA.tock(in.FAKA, 0, CEGA2);
-      bool DYSY_Q = DYSY.q(); bool COHO = not(!DYSY_Q); if (in.FADO) CUCU2 = COHO; DYSY.tock(in.FAKA, 0, CUCU2);
-      bool FOFO_Q = FOFO.q(); bool GATE = not(!FOFO_Q); if (in.FADO) WENU2 = GATE; FOFO.tock(in.FAKA, 0, WENU2);
-    }
-
-    // Sprite store 10 of 10
-    {
-      bool YGUS_Q = YGUS.q(); bool ZETU = not(!YGUS_Q); if (in.FURO) WEZA2 = ZETU; YGUS.tock(in.GENY, 0, WEZA2);
-      bool YSOK_Q = YSOK.q(); bool ZECE = not(!YSOK_Q); if (in.FURO) WUCO2 = ZECE; YSOK.tock(in.GENY, 0, WUCO2);
-      bool YZEP_Q = YZEP.q(); bool ZAVE = not(!YZEP_Q); if (in.FURO) WYDA2 = ZAVE; YZEP.tock(in.GENY, 0, WYDA2);
-      bool WYTE_Q = WYTE.q(); bool WOKO = not(!WYTE_Q); if (in.FURO) ZYSU2 = WOKO; WYTE.tock(in.GENY, 0, ZYSU2);
-      bool ZONY_Q = ZONY.q(); bool ZUMU = not(!ZONY_Q); if (in.FURO) WYSE2 = ZUMU; ZONY.tock(in.GENY, 0, WYSE2);
-      bool YWAK_Q = YWAK.q(); bool ZEDY = not(!YWAK_Q); if (in.FURO) WUZY2 = ZEDY; YWAK.tock(in.GENY, 0, WUZY2);
-      bool FYHY_Q = FYHY.q(); bool GOFO = not(!FYHY_Q); if (in.FURO) CUCA2 = GOFO; FYHY.tock(in.ENOB, 0, CUCA2);
-      bool GYHO_Q = GYHO.q(); bool WEHE = not(!GYHO_Q); if (in.FURO) CEGA2 = WEHE; GYHO.tock(in.ENOB, 0, CEGA2);
-      bool BOZU_Q = BOZU.q(); bool AJAL = not(!BOZU_Q); if (in.FURO) CUCU2 = AJAL; BOZU.tock(in.ENOB, 0, CUCU2);
-      bool CUFO_Q = CUFO.q(); bool BUKY = not(!CUFO_Q); if (in.FURO) WENU2 = BUKY; CUFO.tock(in.ENOB, 0, WENU2);
-    }
-
-    out.WEZA = WEZA2;
-    out.WUCO = WUCO2;
-    out.WYDA = WYDA2;
-    out.ZYSU = ZYSU2;
-    out.WYSE = WYSE2;
-    out.WUZY = WUZY2;
-    out.CUCA = CUCA2;
-    out.CEGA = CEGA2;
-    out.CUCU = CUCU2;
-    out.WENU = WENU2;
+  // so this is a bit weird as we have a tri-state bus inside one schematic...
+  if (b.p29.BUZA) {
+    c.p30.IDX_0 = b.p30.WEZA;
+    c.p30.IDX_1 = b.p30.WUCO;
+    c.p30.IDX_2 = b.p30.WYDA;
+    c.p30.IDX_3 = b.p30.ZYSU;
+    c.p30.IDX_4 = b.p30.WYSE;
+    c.p30.IDX_5 = b.p30.WUZY;
   }
-};
+
+  if (b.p29.FEPO) {
+    c.p30.LINE_0 = b.p30.CUCA;
+    c.p30.LINE_1 = b.p30.CEGA;
+    c.p30.LINE_2 = b.p30.CUCU;
+    c.p30.LINE_3 = b.p30.WENU;
+  }
+
+  {
+    c.p30.ADYB = not(!b.p30.AXUV); if (b.p29.DENY) c.p30.IDX_0  = b.p30.ADYB; c.p30.AXUV = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.AXUV, b.p30.IDX_0 );
+    c.p30.APOB = not(!b.p30.BADA); if (b.p29.DENY) c.p30.IDX_1  = b.p30.APOB; c.p30.BADA = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BADA, b.p30.IDX_1 );
+    c.p30.APYV = not(!b.p30.APEV); if (b.p29.DENY) c.p30.IDX_2  = b.p30.APYV; c.p30.APEV = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.APEV, b.p30.IDX_2 );
+    c.p30.AFEN = not(!b.p30.BADO); if (b.p29.DENY) c.p30.IDX_3  = b.p30.AFEN; c.p30.BADO = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BADO, b.p30.IDX_3 );
+    c.p30.AKYH = not(!b.p30.BEXY); if (b.p29.DENY) c.p30.IDX_4  = b.p30.AKYH; c.p30.BEXY = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BEXY, b.p30.IDX_4 );
+    c.p30.APOC = not(!b.p30.BYHE); if (b.p29.DENY) c.p30.IDX_5  = b.p30.APOC; c.p30.BYHE = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BYHE, b.p30.IDX_5 );
+    c.p30.BUJY = not(!b.p30.AFYM); if (b.p29.DENY) c.p30.LINE_0 = b.p30.BUJY; c.p30.AFYM = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFYM, b.p30.LINE_0);
+    c.p30.BOSO = not(!b.p30.AZAP); if (b.p29.DENY) c.p30.LINE_1 = b.p30.BOSO; c.p30.AZAP = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AZAP, b.p30.LINE_1);
+    c.p30.AHAC = not(!b.p30.AFUT); if (b.p29.DENY) c.p30.LINE_2 = b.p30.AHAC; c.p30.AFUT = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFUT, b.p30.LINE_2);
+    c.p30.BAZU = not(!b.p30.AFYX); if (b.p29.DENY) c.p30.LINE_3 = b.p30.BAZU; c.p30.AFYX = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFYX, b.p30.LINE_3);
+  }
+   
+  {
+    c.p30.WOCY = not(!b.p30.GECU); if (b.p29.XYME) c.p30.IDX_0  = b.p30.WOCY; c.p30.GECU = tock_pos(a.p29.WUSE, b.p29.WUSE, 0, b.p30.GECU, b.p30.IDX_0 );
+    c.p30.ELYC = not(!b.p30.FOXY); if (b.p29.XYME) c.p30.IDX_1  = b.p30.ELYC; c.p30.FOXY = tock_pos(a.p29.WUSE, b.p29.WUSE, 0, b.p30.FOXY, b.p30.IDX_1 );
+    c.p30.WABO = not(!b.p30.GOHU); if (b.p29.XYME) c.p30.IDX_2  = b.p30.WABO; c.p30.GOHU = tock_pos(a.p29.WUSE, b.p29.WUSE, 0, b.p30.GOHU, b.p30.IDX_2 );
+    c.p30.EZOC = not(!b.p30.FOGO); if (b.p29.XYME) c.p30.IDX_3  = b.p30.EZOC; c.p30.FOGO = tock_pos(a.p29.WUSE, b.p29.WUSE, 0, b.p30.FOGO, b.p30.IDX_3 );
+    c.p30.WYWY = not(!b.p30.GACY); if (b.p29.XYME) c.p30.IDX_4  = b.p30.WYWY; c.p30.GACY = tock_pos(a.p29.WUSE, b.p29.WUSE, 0, b.p30.GACY, b.p30.IDX_4 );
+    c.p30.WATO = not(!b.p30.GABO); if (b.p29.XYME) c.p30.IDX_5  = b.p30.WATO; c.p30.GABO = tock_pos(a.p29.WUSE, b.p29.WUSE, 0, b.p30.GABO, b.p30.IDX_5 );
+    c.p30.ZUDO = not(!b.p30.ZUBE); if (b.p29.XYME) c.p30.LINE_0 = b.p30.ZUDO; c.p30.ZUBE = tock_pos(a.p29.ZURU, b.p29.ZURU, 0, b.p30.ZUBE, b.p30.LINE_0);
+    c.p30.YBUK = not(!b.p30.ZUMY); if (b.p29.XYME) c.p30.LINE_1 = b.p30.YBUK; c.p30.ZUMY = tock_pos(a.p29.ZURU, b.p29.ZURU, 0, b.p30.ZUMY, b.p30.LINE_1);
+    c.p30.ZYTO = not(!b.p30.ZEXO); if (b.p29.XYME) c.p30.LINE_2 = b.p30.ZYTO; c.p30.ZEXO = tock_pos(a.p29.ZURU, b.p29.ZURU, 0, b.p30.ZEXO, b.p30.LINE_2);
+    c.p30.YKOZ = not(!b.p30.ZAFU); if (b.p29.XYME) c.p30.LINE_3 = b.p30.YKOZ; c.p30.ZAFU = tock_pos(a.p29.ZURU, b.p29.ZURU, 0, b.p30.ZAFU, b.p30.LINE_3);
+  }
+   
+  {
+    c.p30.WAJA = not(!b.p30.XYNU); if (b.p29.GOWO) c.p30.IDX_0  = b.p30.WAJA; c.p30.XYNU = tock_pos(a.p29.WYLU, b.p29.WYLU, 0, b.p30.XYNU, b.p30.IDX_0 );
+    c.p30.WOXY = not(!b.p30.XEGE); if (b.p29.GOWO) c.p30.IDX_1  = b.p30.WOXY; c.p30.XEGE = tock_pos(a.p29.WYLU, b.p29.WYLU, 0, b.p30.XEGE, b.p30.IDX_1 );
+    c.p30.XYRE = not(!b.p30.XABO); if (b.p29.GOWO) c.p30.IDX_2  = b.p30.XYRE; c.p30.XABO = tock_pos(a.p29.WYLU, b.p29.WYLU, 0, b.p30.XABO, b.p30.IDX_2 );
+    c.p30.WERU = not(!b.p30.WANU); if (b.p29.GOWO) c.p30.IDX_3  = b.p30.WERU; c.p30.WANU = tock_pos(a.p29.WYLU, b.p29.WYLU, 0, b.p30.WANU, b.p30.IDX_3 );
+    c.p30.WEPY = not(!b.p30.XEFE); if (b.p29.GOWO) c.p30.IDX_4  = b.p30.WEPY; c.p30.XEFE = tock_pos(a.p29.WYLU, b.p29.WYLU, 0, b.p30.XEFE, b.p30.IDX_4 );
+    c.p30.WUXU = not(!b.p30.XAVE); if (b.p29.GOWO) c.p30.IDX_5  = b.p30.WUXU; c.p30.XAVE = tock_pos(a.p29.WYLU, b.p29.WYLU, 0, b.p30.XAVE, b.p30.IDX_5 );
+    c.p30.BYDO = not(!b.p30.CUMU); if (b.p29.GOWO) c.p30.LINE_0 = b.p30.BYDO; c.p30.CUMU = tock_pos(a.p29.EWOT, b.p29.EWOT, 0, b.p30.CUMU, b.p30.LINE_0);
+    c.p30.BUCE = not(!b.p30.CAPO); if (b.p29.GOWO) c.p30.LINE_1 = b.p30.BUCE; c.p30.CAPO = tock_pos(a.p29.EWOT, b.p29.EWOT, 0, b.p30.CAPO, b.p30.LINE_1);
+    c.p30.BOVE = not(!b.p30.CONO); if (b.p29.GOWO) c.p30.LINE_2 = b.p30.BOVE; c.p30.CONO = tock_pos(a.p29.EWOT, b.p29.EWOT, 0, b.p30.CONO, b.p30.LINE_2);
+    c.p30.BEVY = not(!b.p30.CAJU); if (b.p29.GOWO) c.p30.LINE_3 = b.p30.BEVY; c.p30.CAJU = tock_pos(a.p29.EWOT, b.p29.EWOT, 0, b.p30.CAJU, b.p30.LINE_3);
+  }
+   
+  {
+    c.p30.EVYT = not(!b.p30.FUZO); if (b.p29.GUGY) c.p30.IDX_0  = b.p30.EVYT; c.p30.FUZO = tock_pos(a.p29.FEFO, b.p29.FEFO, 0, b.p30.FUZO, b.p30.IDX_0 );
+    c.p30.WABA = not(!b.p30.GESY); if (b.p29.GUGY) c.p30.IDX_1  = b.p30.WABA; c.p30.GESY = tock_pos(a.p29.FEFO, b.p29.FEFO, 0, b.p30.GESY, b.p30.IDX_1 );
+    c.p30.ETAD = not(!b.p30.FYSU); if (b.p29.GUGY) c.p30.IDX_2  = b.p30.ETAD; c.p30.FYSU = tock_pos(a.p29.FEFO, b.p29.FEFO, 0, b.p30.FYSU, b.p30.IDX_2 );
+    c.p30.ELEP = not(!b.p30.FEFA); if (b.p29.GUGY) c.p30.IDX_3  = b.p30.ELEP; c.p30.FEFA = tock_pos(a.p29.FEFO, b.p29.FEFO, 0, b.p30.FEFA, b.p30.IDX_3 );
+    c.p30.WYGO = not(!b.p30.GYNO); if (b.p29.GUGY) c.p30.IDX_4  = b.p30.WYGO; c.p30.GYNO = tock_pos(a.p29.FEFO, b.p29.FEFO, 0, b.p30.GYNO, b.p30.IDX_4 );
+    c.p30.WAKO = not(!b.p30.GULE); if (b.p29.GUGY) c.p30.IDX_5  = b.p30.WAKO; c.p30.GULE = tock_pos(a.p29.FEFO, b.p29.FEFO, 0, b.p30.GULE, b.p30.IDX_5 );
+    c.p30.WANA = not(!b.p30.XYGO); if (b.p29.GUGY) c.p30.LINE_0 = b.p30.WANA; c.p30.XYGO = tock_pos(a.p29.WABE, b.p29.WABE, 0, b.p30.XYGO, b.p30.LINE_0);
+    c.p30.WAXE = not(!b.p30.XYNA); if (b.p29.GUGY) c.p30.LINE_1 = b.p30.WAXE; c.p30.XYNA = tock_pos(a.p29.WABE, b.p29.WABE, 0, b.p30.XYNA, b.p30.LINE_1);
+    c.p30.WABU = not(!b.p30.XAKU); if (b.p29.GUGY) c.p30.LINE_2 = b.p30.WABU; c.p30.XAKU = tock_pos(a.p29.WABE, b.p29.WABE, 0, b.p30.XAKU, b.p30.LINE_2);
+    c.p30.YPOZ = not(!b.p30.YGUM); if (b.p29.GUGY) c.p30.LINE_3 = b.p30.YPOZ; c.p30.YGUM = tock_pos(a.p29.WABE, b.p29.WABE, 0, b.p30.YGUM, b.p30.LINE_3);
+  }
+   
+  {
+    c.p30.BEMO = not(!b.p30.CAJY); if (b.p29.DYDO) c.p30.IDX_0  = b.p30.BEMO; c.p30.CAJY = tock_pos(a.p29.BYVY, b.p29.BYVY, 0, b.p30.CAJY, b.p30.IDX_0 );
+    c.p30.CYBY = not(!b.p30.CUZA); if (b.p29.DYDO) c.p30.IDX_1  = b.p30.CYBY; c.p30.CUZA = tock_pos(a.p29.BYVY, b.p29.BYVY, 0, b.p30.CUZA, b.p30.IDX_1 );
+    c.p30.BETY = not(!b.p30.COMA); if (b.p29.DYDO) c.p30.IDX_2  = b.p30.BETY; c.p30.COMA = tock_pos(a.p29.BYVY, b.p29.BYVY, 0, b.p30.COMA, b.p30.IDX_2 );
+    c.p30.CEGY = not(!b.p30.CUFA); if (b.p29.DYDO) c.p30.IDX_3  = b.p30.CEGY; c.p30.CUFA = tock_pos(a.p29.BYVY, b.p29.BYVY, 0, b.p30.CUFA, b.p30.IDX_3 );
+    c.p30.CELU = not(!b.p30.CEBO); if (b.p29.DYDO) c.p30.IDX_4  = b.p30.CELU; c.p30.CEBO = tock_pos(a.p29.BYVY, b.p29.BYVY, 0, b.p30.CEBO, b.p30.IDX_4 );
+    c.p30.CUBO = not(!b.p30.CADU); if (b.p29.DYDO) c.p30.IDX_5  = b.p30.CUBO; c.p30.CADU = tock_pos(a.p29.BYVY, b.p29.BYVY, 0, b.p30.CADU, b.p30.IDX_5 );
+    c.p30.BEFE = not(!b.p30.ABUG); if (b.p29.DYDO) c.p30.LINE_0 = b.p30.BEFE; c.p30.ABUG = tock_pos(a.p29.AHOF, b.p29.AHOF, 0, b.p30.ABUG, b.p30.LINE_0);
+    c.p30.BYRO = not(!b.p30.AMES); if (b.p29.DYDO) c.p30.LINE_1 = b.p30.BYRO; c.p30.AMES = tock_pos(a.p29.AHOF, b.p29.AHOF, 0, b.p30.AMES, b.p30.LINE_1);
+    c.p30.BACO = not(!b.p30.ABOP); if (b.p29.DYDO) c.p30.LINE_2 = b.p30.BACO; c.p30.ABOP = tock_pos(a.p29.AHOF, b.p29.AHOF, 0, b.p30.ABOP, b.p30.LINE_2);
+    c.p30.AHUM = not(!b.p30.AROF); if (b.p29.DYDO) c.p30.LINE_3 = b.p30.AHUM; c.p30.AROF = tock_pos(a.p29.AHOF, b.p29.AHOF, 0, b.p30.AROF, b.p30.LINE_3);
+  }
+   
+  {
+    c.p30.DALO = not(!b.p30.EKAP); if (b.p29.GYGY) c.p30.IDX_0  = b.p30.DALO; c.p30.EKAP = tock_pos(a.p29.DYMO, b.p29.DYMO, 0, b.p30.EKAP, b.p30.IDX_0 );
+    c.p30.DALY = not(!b.p30.ETAV); if (b.p29.GYGY) c.p30.IDX_1  = b.p30.DALY; c.p30.ETAV = tock_pos(a.p29.DYMO, b.p29.DYMO, 0, b.p30.ETAV, b.p30.IDX_1 );
+    c.p30.DUZA = not(!b.p30.EBEX); if (b.p29.GYGY) c.p30.IDX_2  = b.p30.DUZA; c.p30.EBEX = tock_pos(a.p29.DYMO, b.p29.DYMO, 0, b.p30.EBEX, b.p30.IDX_2 );
+    c.p30.WAGA = not(!b.p30.GORU); if (b.p29.GYGY) c.p30.IDX_3  = b.p30.WAGA; c.p30.GORU = tock_pos(a.p29.DYMO, b.p29.DYMO, 0, b.p30.GORU, b.p30.IDX_3 );
+    c.p30.DYNY = not(!b.p30.ETYM); if (b.p29.GYGY) c.p30.IDX_4  = b.p30.DYNY; c.p30.ETYM = tock_pos(a.p29.DYMO, b.p29.DYMO, 0, b.p30.ETYM, b.p30.IDX_4 );
+    c.p30.DOBO = not(!b.p30.EKOP); if (b.p29.GYGY) c.p30.IDX_5  = b.p30.DOBO; c.p30.EKOP = tock_pos(a.p29.DYMO, b.p29.DYMO, 0, b.p30.EKOP, b.p30.IDX_5 );
+    c.p30.AWAT = not(!b.p30.ANED); if (b.p29.GYGY) c.p30.LINE_0 = b.p30.AWAT; c.p30.ANED = tock_pos(a.p29.BUCY, b.p29.BUCY, 0, b.p30.ANED, b.p30.LINE_0);
+    c.p30.BACE = not(!b.p30.ACEP); if (b.p29.GYGY) c.p30.LINE_1 = b.p30.BACE; c.p30.ACEP = tock_pos(a.p29.BUCY, b.p29.BUCY, 0, b.p30.ACEP, b.p30.LINE_1);
+    c.p30.BODU = not(!b.p30.ABUX); if (b.p29.GYGY) c.p30.LINE_2 = b.p30.BODU; c.p30.ABUX = tock_pos(a.p29.BUCY, b.p29.BUCY, 0, b.p30.ABUX, b.p30.LINE_2);
+    c.p30.BUJA = not(!b.p30.ABEG); if (b.p29.GYGY) c.p30.LINE_3 = b.p30.BUJA; c.p30.ABEG = tock_pos(a.p29.BUCY, b.p29.BUCY, 0, b.p30.ABEG, b.p30.LINE_3);
+  }
+   
+  {
+    c.p30.DEZU = not(!b.p30.DAFU); if (b.p29.GYMA) c.p30.IDX_0  = b.p30.DEZU; c.p30.DAFU = tock_pos(a.p29.FEKA, b.p29.FEKA, 0, b.p30.DAFU, b.p30.IDX_0 );
+    c.p30.EFUD = not(!b.p30.DEBA); if (b.p29.GYMA) c.p30.IDX_1  = b.p30.EFUD; c.p30.DEBA = tock_pos(a.p29.FEKA, b.p29.FEKA, 0, b.p30.DEBA, b.p30.IDX_1 );
+    c.p30.DONY = not(!b.p30.DUHA); if (b.p29.GYMA) c.p30.IDX_2  = b.p30.DONY; c.p30.DUHA = tock_pos(a.p29.FEKA, b.p29.FEKA, 0, b.p30.DUHA, b.p30.IDX_2 );
+    c.p30.DOWA = not(!b.p30.DUNY); if (b.p29.GYMA) c.p30.IDX_3  = b.p30.DOWA; c.p30.DUNY = tock_pos(a.p29.FEKA, b.p29.FEKA, 0, b.p30.DUNY, b.p30.IDX_3 );
+    c.p30.DYGO = not(!b.p30.DESE); if (b.p29.GYMA) c.p30.IDX_4  = b.p30.DYGO; c.p30.DESE = tock_pos(a.p29.FEKA, b.p29.FEKA, 0, b.p30.DESE, b.p30.IDX_4 );
+    c.p30.ENAP = not(!b.p30.DEVY); if (b.p29.GYMA) c.p30.IDX_5  = b.p30.ENAP; c.p30.DEVY = tock_pos(a.p29.FEKA, b.p29.FEKA, 0, b.p30.DEVY, b.p30.IDX_5 );
+    c.p30.ZYPO = not(!b.p30.ZURY); if (b.p29.GYMA) c.p30.LINE_0 = b.p30.ZYPO; c.p30.ZURY = tock_pos(a.p29.XYHA, b.p29.XYHA, 0, b.p30.ZURY, b.p30.LINE_0);
+    c.p30.ZEXE = not(!b.p30.ZURO); if (b.p29.GYMA) c.p30.LINE_1 = b.p30.ZEXE; c.p30.ZURO = tock_pos(a.p29.XYHA, b.p29.XYHA, 0, b.p30.ZURO, b.p30.LINE_1);
+    c.p30.YJEM = not(!b.p30.ZENE); if (b.p29.GYMA) c.p30.LINE_2 = b.p30.YJEM; c.p30.ZENE = tock_pos(a.p29.XYHA, b.p29.XYHA, 0, b.p30.ZENE, b.p30.LINE_2);
+    c.p30.YWAV = not(!b.p30.ZYLU); if (b.p29.GYMA) c.p30.LINE_3 = b.p30.YWAV; c.p30.ZYLU = tock_pos(a.p29.XYHA, b.p29.XYHA, 0, b.p30.ZYLU, b.p30.LINE_3);
+  }
+   
+  {
+    c.p30.AXEC = not(!b.p30.BOXA); if (b.p29.FAME) c.p30.IDX_0  = b.p30.AXEC; c.p30.BOXA = tock_pos(a.p29.BUZY, b.p29.BUZY, 0, b.p30.BOXA, b.p30.IDX_0 );
+    c.p30.CYRO = not(!b.p30.BUNA); if (b.p29.FAME) c.p30.IDX_1  = b.p30.CYRO; c.p30.BUNA = tock_pos(a.p29.BUZY, b.p29.BUZY, 0, b.p30.BUNA, b.p30.IDX_1 );
+    c.p30.CUVU = not(!b.p30.BULU); if (b.p29.FAME) c.p30.IDX_2  = b.p30.CUVU; c.p30.BULU = tock_pos(a.p29.BUZY, b.p29.BUZY, 0, b.p30.BULU, b.p30.IDX_2 );
+    c.p30.APON = not(!b.p30.BECA); if (b.p29.FAME) c.p30.IDX_3  = b.p30.APON; c.p30.BECA = tock_pos(a.p29.BUZY, b.p29.BUZY, 0, b.p30.BECA, b.p30.IDX_3 );
+    c.p30.AFOZ = not(!b.p30.BYHU); if (b.p29.FAME) c.p30.IDX_4  = b.p30.AFOZ; c.p30.BYHU = tock_pos(a.p29.BUZY, b.p29.BUZY, 0, b.p30.BYHU, b.p30.IDX_4 );
+    c.p30.CUBE = not(!b.p30.BUHE); if (b.p29.FAME) c.p30.IDX_5  = b.p30.CUBE; c.p30.BUHE = tock_pos(a.p29.BUZY, b.p29.BUZY, 0, b.p30.BUHE, b.p30.IDX_5 );
+    c.p30.ZABY = not(!b.p30.YKUK); if (b.p29.FAME) c.p30.LINE_0 = b.p30.ZABY; c.p30.YKUK = tock_pos(a.p29.FUKE, b.p29.FUKE, 0, b.p30.YKUK, b.p30.LINE_0);
+    c.p30.ZUKE = not(!b.p30.YLOV); if (b.p29.FAME) c.p30.LINE_1 = b.p30.ZUKE; c.p30.YLOV = tock_pos(a.p29.FUKE, b.p29.FUKE, 0, b.p30.YLOV, b.p30.LINE_1);
+    c.p30.WUXE = not(!b.p30.XAZY); if (b.p29.FAME) c.p30.LINE_2 = b.p30.WUXE; c.p30.XAZY = tock_pos(a.p29.FUKE, b.p29.FUKE, 0, b.p30.XAZY, b.p30.LINE_2);
+    c.p30.WERE = not(!b.p30.XOSY); if (b.p29.FAME) c.p30.LINE_3 = b.p30.WERE; c.p30.XOSY = tock_pos(a.p29.FUKE, b.p29.FUKE, 0, b.p30.XOSY, b.p30.LINE_3);
+  }
+   
+  {
+    c.p30.YHAL = not(!b.p30.XUFO); if (b.p29.FADO) c.p30.IDX_0  = b.p30.YHAL; c.p30.XUFO = tock_pos(a.p29.WUFA, b.p29.WUFA, 0, b.p30.XUFO, b.p30.IDX_0 );
+    c.p30.YRAD = not(!b.p30.XUTE); if (b.p29.FADO) c.p30.IDX_1  = b.p30.YRAD; c.p30.XUTE = tock_pos(a.p29.WUFA, b.p29.WUFA, 0, b.p30.XUTE, b.p30.IDX_1 );
+    c.p30.XYRA = not(!b.p30.XOTU); if (b.p29.FADO) c.p30.IDX_2  = b.p30.XYRA; c.p30.XOTU = tock_pos(a.p29.WUFA, b.p29.WUFA, 0, b.p30.XOTU, b.p30.IDX_2 );
+    c.p30.YNEV = not(!b.p30.XYFE); if (b.p29.FADO) c.p30.IDX_3  = b.p30.YNEV; c.p30.XYFE = tock_pos(a.p29.WUFA, b.p29.WUFA, 0, b.p30.XYFE, b.p30.IDX_3 );
+    c.p30.ZOJY = not(!b.p30.YZOR); if (b.p29.FADO) c.p30.IDX_4  = b.p30.ZOJY; c.p30.YZOR = tock_pos(a.p29.WUFA, b.p29.WUFA, 0, b.p30.YZOR, b.p30.IDX_4 );
+    c.p30.ZARO = not(!b.p30.YBER); if (b.p29.FADO) c.p30.IDX_5  = b.p30.ZARO; c.p30.YBER = tock_pos(a.p29.WUFA, b.p29.WUFA, 0, b.p30.YBER, b.p30.IDX_5 );
+    c.p30.CAWO = not(!b.p30.DEWU); if (b.p29.FADO) c.p30.LINE_0 = b.p30.CAWO; c.p30.DEWU = tock_pos(a.p29.FAKA, b.p29.FAKA, 0, b.p30.DEWU, b.p30.LINE_0);
+    c.p30.BYME = not(!b.p30.CANA); if (b.p29.FADO) c.p30.LINE_1 = b.p30.BYME; c.p30.CANA = tock_pos(a.p29.FAKA, b.p29.FAKA, 0, b.p30.CANA, b.p30.LINE_1);
+    c.p30.COHO = not(!b.p30.DYSY); if (b.p29.FADO) c.p30.LINE_2 = b.p30.COHO; c.p30.DYSY = tock_pos(a.p29.FAKA, b.p29.FAKA, 0, b.p30.DYSY, b.p30.LINE_2);
+    c.p30.GATE = not(!b.p30.FOFO); if (b.p29.FADO) c.p30.LINE_3 = b.p30.GATE; c.p30.FOFO = tock_pos(a.p29.FAKA, b.p29.FAKA, 0, b.p30.FOFO, b.p30.LINE_3);
+  }
+   
+  {
+    c.p30.ZETU = not(!b.p30.YGUS); if (b.p29.FURO) c.p30.IDX_0  = b.p30.ZETU; c.p30.YGUS = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YGUS, b.p30.IDX_0 );
+    c.p30.ZECE = not(!b.p30.YSOK); if (b.p29.FURO) c.p30.IDX_1  = b.p30.ZECE; c.p30.YSOK = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YSOK, b.p30.IDX_1 );
+    c.p30.ZAVE = not(!b.p30.YZEP); if (b.p29.FURO) c.p30.IDX_2  = b.p30.ZAVE; c.p30.YZEP = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YZEP, b.p30.IDX_2 );
+    c.p30.WOKO = not(!b.p30.WYTE); if (b.p29.FURO) c.p30.IDX_3  = b.p30.WOKO; c.p30.WYTE = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.WYTE, b.p30.IDX_3 );
+    c.p30.ZUMU = not(!b.p30.ZONY); if (b.p29.FURO) c.p30.IDX_4  = b.p30.ZUMU; c.p30.ZONY = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.ZONY, b.p30.IDX_4 );
+    c.p30.ZEDY = not(!b.p30.YWAK); if (b.p29.FURO) c.p30.IDX_5  = b.p30.ZEDY; c.p30.YWAK = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YWAK, b.p30.IDX_5 );
+    c.p30.GOFO = not(!b.p30.FYHY); if (b.p29.FURO) c.p30.LINE_0 = b.p30.GOFO; c.p30.FYHY = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.FYHY, b.p30.LINE_0);
+    c.p30.WEHE = not(!b.p30.GYHO); if (b.p29.FURO) c.p30.LINE_1 = b.p30.WEHE; c.p30.GYHO = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.GYHO, b.p30.LINE_1);
+    c.p30.AJAL = not(!b.p30.BOZU); if (b.p29.FURO) c.p30.LINE_2 = b.p30.AJAL; c.p30.BOZU = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.BOZU, b.p30.LINE_2);
+    c.p30.BUKY = not(!b.p30.CUFO); if (b.p29.FURO) c.p30.LINE_3 = b.p30.BUKY; c.p30.CUFO = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.CUFO, b.p30.LINE_3);
+  }
+}

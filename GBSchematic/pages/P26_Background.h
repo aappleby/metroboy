@@ -7,6 +7,8 @@ public:
 
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
+  bool VAVA;
+
 public:
 
   bool AXAD,ASUL,ACEN,BEJE,BAFY;
@@ -21,7 +23,7 @@ public:
   bool XOGA,XURA,TAJO,XENU,XYKE,XABA,TAFU,XUHO;
   bool TEDE,XALA,TYRA,XYRU,XUKU,XELY,TYKO,TUWU;
   bool WOKA,WEDE,TUFO,WEVO,WEDY,WUJA,TENA,WUBU;
-  bool VEZO,WURU,VOSA,WYFU,XETE,WODA,VUMO,VAVA;
+  bool VEZO,WURU,VOSA,WYFU,XETE,WODA,VUMO;
 };
 
 

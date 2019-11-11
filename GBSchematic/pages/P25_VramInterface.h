@@ -7,6 +7,7 @@ struct P25_VramInterface {
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   bool WUKO;
+  bool COTA;
 
 private:
 
@@ -15,7 +16,7 @@ private:
 
   bool RYVO,RERA,RABY,RORY,RUJA,RAVU,RAFY,RUXA;
 
-  bool CUFE,VAPE,AVER,XUJY,BYCU,COTA;
+  bool CUFE,VAPE,AVER,XUJY,BYCU;
   bool SYRO,TEFA,SOSE,TUCA,TUJA,TEGU,TAVY,SYCY,SOTO,TUTO,SUDO,TEFY,SALE,TYJY,TOLE;
   bool ROPY,SERE,RUVY,SOHY,SAZO,RYJE,REVO,RELA,ROCY,RENA,ROFA,RAHU;
 

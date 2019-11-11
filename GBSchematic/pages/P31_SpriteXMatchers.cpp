@@ -1,330 +1,259 @@
-#include "../Schematics.h"
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P31_SpriteXMatchers {
-  struct Input {
-    bool CLK3;
-    bool WEWU; // P28, drives OAM_A to data bus
-    bool COTA;
+void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-    // P21 X counter
-    bool ACAM,AZUB,AMEL,AHAL,APUX,ABEF,ADAZ,ASAH;
+  c.p31.WYNO = latch_pos(b.p28.CLK3, b.p31.WYNO, b.OAM_A_D4);
+  c.p31.CYRA = latch_pos(b.p28.CLK3, b.p31.CYRA, b.OAM_A_D5);
+  c.p31.ZUVE = latch_pos(b.p28.CLK3, b.p31.ZUVE, b.OAM_A_D6);
+  c.p31.ECED = latch_pos(b.p28.CLK3, b.p31.ECED, b.OAM_A_D7);
+  c.p31.XYKY = latch_pos(b.p28.CLK3, b.p31.XYKY, b.OAM_A_D0);
+  c.p31.YRUM = latch_pos(b.p28.CLK3, b.p31.YRUM, b.OAM_A_D1);
+  c.p31.YSEX = latch_pos(b.p28.CLK3, b.p31.YSEX, b.OAM_A_D2);
+  c.p31.YVEL = latch_pos(b.p28.CLK3, b.p31.YVEL, b.OAM_A_D3);
 
-    // P29 sprite matcher clock lines
-    bool FUXU,YFAG,GECY,DOKU,XAHO,WOFO,CEXU,WEME,CYLA,GAMY;
-
-    // P29 sprite matcher reset lines
-    bool DYNA,WUPA,GAFY,ASYS,ZAPE,WUNU,WUZO,DOSY,EJAD,CACU;
-
-    bool OAM_A_D0,OAM_A_D1,OAM_A_D2,OAM_A_D3,OAM_A_D4,OAM_A_D5,OAM_A_D6,OAM_A_D7;
-  };
-
-  struct Output {
-    // sprite match A
-    bool XEBA,YWOS,DAJE,CYVY,YWAP,YKOK,DAMA,YTUB,COGY,CEHU;
-
-    // sprite match B
-    bool ZAKO,ZURE,CYCO,EWAM,YDOT,YNAZ,FEHA,YLEV,FYMA,EKES;
-
-    // internal data bus
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
-
-  // oam_a_d latch
-  reg WYNO, CYRA, ZUVE, ECED, XYKY, YRUM, YSEX, YVEL;
-
-  // oam_a_d register
-  reg GOMO,BAXO,YZOS,DEPO,YLOR,ZYTY,ZYVE,ZEZY;
-
-  // match registers
-  reg WELO, XUNY, WOTE, XAKO, XEPE, YLAH, ZOLA, ZULU;
-  reg XOMY, WUHA, WYNA, WECO, XOLY, XYBA, XABE, XEKA;
-  reg FAZU, FAXE, EXUK, FEDE, ERAZ, EPUM, EROL, EHYN;
-  reg DAKE, CESO, DYFU, CUSY, DANY, DUKO, DESU, DAZO;
-  reg ZOLY, ZOGO, ZECU, ZESA, YCOL, YRAC, YMEM, YVAG;
-  reg YBED, ZALA, WYDE, XEPA, WEDU, YGAJ, ZYJO, XURY;
-  reg EZUF, ENAD, EBOW, FYCA, GAVY, GYPU, GADY, GAZA;
-  reg YPOD, YROP, YNEP, YZOF, XUVY, XERE, XUZO, XEXA;
-  reg CYWE, DYBY, DURY, CUVY, FUSA, FAXA, FOZY, FESY;
-  reg DUHY, EJUF, ENOR, DEPY, FOKA, FYTY, FUBY, GOXU;
-
-  void tick(const Input& in, Output& out) {
-    wire WYNO_Q = WYNO.latch(in.CLK3, in.OAM_A_D4);
-    wire CYRA_Q = CYRA.latch(in.CLK3, in.OAM_A_D5);
-    wire ZUVE_Q = ZUVE.latch(in.CLK3, in.OAM_A_D6);
-    wire ECED_Q = ECED.latch(in.CLK3, in.OAM_A_D7);
-    wire XYKY_Q = XYKY.latch(in.CLK3, in.OAM_A_D0);
-    wire YRUM_Q = YRUM.latch(in.CLK3, in.OAM_A_D1);
-    wire YSEX_Q = YSEX.latch(in.CLK3, in.OAM_A_D2);
-    wire YVEL_Q = YVEL.latch(in.CLK3, in.OAM_A_D3);
-
-    if (in.WEWU) {
-      out.D_OE = true;
-      out.D0 = XYKY_Q;
-      out.D1 = YRUM_Q;
-      out.D2 = YSEX_Q;
-      out.D3 = YVEL_Q;
-      out.D4 = WYNO_Q;
-      out.D5 = CYRA_Q;
-      out.D6 = ZUVE_Q;
-      out.D7 = ECED_Q;
-    }
-
-    wire XEGA = not(in.COTA);
-    wire GOMO_Q = GOMO.tock(XEGA, 0, WYNO_Q);
-    wire BAXO_Q = BAXO.tock(XEGA, 0, CYRA_Q);
-    wire YZOS_Q = YZOS.tock(XEGA, 0, ZUVE_Q);
-    wire DEPO_Q = DEPO.tock(XEGA, 0, ECED_Q);
-    wire YLOR_Q = YLOR.tock(XEGA, 0, XYKY_Q);
-    wire ZYTY_Q = ZYTY.tock(XEGA, 0, YRUM_Q);
-    wire ZYVE_Q = ZYVE.tock(XEGA, 0, YSEX_Q);
-    wire ZEZY_Q = ZEZY.tock(XEGA, 0, YVEL_Q);
-
-    wire COSE = not(!GOMO_Q);
-    wire AROP = not(!BAXO_Q);
-    wire XATU = not(!YZOS_Q);
-    wire BADY = not(!DEPO_Q);
-    wire ZAGO = not(!YLOR_Q);
-    wire ZOCY = not(!ZYTY_Q);
-    wire YPUR = not(!ZYVE_Q);
-    wire YVOK = not(!ZEZY_Q);
-
-    // CHECK CLK/RESET WIRES
-
-    // matcher 1
-    wire WELO_Q = WELO.tock(in.FUXU, in.DYNA, COSE);
-    wire XUNY_Q = XUNY.tock(in.FUXU, in.DYNA, AROP);
-    wire WOTE_Q = WOTE.tock(in.FUXU, in.DYNA, XATU);
-    wire XAKO_Q = XAKO.tock(in.FUXU, in.DYNA, BADY);
-    wire XEPE_Q = XEPE.tock(in.FUXU, in.DYNA, ZAGO);
-    wire YLAH_Q = YLAH.tock(in.FUXU, in.DYNA, ZOCY);
-    wire ZOLA_Q = ZOLA.tock(in.FUXU, in.DYNA, YPUR);
-    wire ZULU_Q = ZULU.tock(in.FUXU, in.DYNA, YVOK);
-
-    wire WOJU = xor(WELO_Q, in.APUX);
-    wire YFUN = xor(XUNY_Q, in.ABEF);
-    wire WYZA = xor(WOTE_Q, in.ADAZ);
-    wire YPUK = xor(XAKO_Q, in.ASAH);
-    wire ZOGY = xor(XEPE_Q, in.ACAM);
-    wire ZEBA = xor(YLAH_Q, in.AZUB);
-    wire ZAHA = xor(ZOLA_Q, in.AMEL);
-    wire ZOKY = xor(ZULU_Q, in.AHAL);
-    wire XEBA = nor(WOJU, YFUN, WYZA, YPUK);
-    wire ZAKO = nor(ZOGY, ZEBA, ZAHA, ZOKY);
-
-    // matcher 2
-    wire XOMY_Q = XOMY.tock(in.YFAG, in.WUPA, COSE);
-    wire WUHA_Q = WUHA.tock(in.YFAG, in.WUPA, AROP);
-    wire WYNA_Q = WYNA.tock(in.YFAG, in.WUPA, XATU);
-    wire WECO_Q = WECO.tock(in.YFAG, in.WUPA, BADY);
-    wire XOLY_Q = XOLY.tock(in.YFAG, in.WUPA, ZAGO);
-    wire XYBA_Q = XYBA.tock(in.YFAG, in.WUPA, ZOCY);
-    wire XABE_Q = XABE.tock(in.YFAG, in.WUPA, YPUR);
-    wire XEKA_Q = XEKA.tock(in.YFAG, in.WUPA, YVOK);
-
-    wire YVAP = xor(XOMY_Q, in.APUX);
-    wire XENY = xor(WUHA_Q, in.ABEF);
-    wire XAVU = xor(WYNA_Q, in.ADAZ);
-    wire XEVA = xor(WECO_Q, in.ASAH);
-    wire YHOK = xor(XOLY_Q, in.ACAM);
-    wire YCAH = xor(XYBA_Q, in.AZUB);
-    wire YDAJ = xor(XABE_Q, in.AMEL);
-    wire YVUZ = xor(XEKA_Q, in.AHAL);
-    wire YWOS = nor(YVAP, XENY, XAVU, XEVA);
-    wire ZURE = nor(YHOK, YCAH, YDAJ, YVUZ);
-
-    // matcher 3
-    wire FAZU_Q = FAZU.tock(in.GECY, in.GAFY, COSE);
-    wire FAXE_Q = FAXE.tock(in.GECY, in.GAFY, AROP);
-    wire EXUK_Q = EXUK.tock(in.GECY, in.GAFY, XATU);
-    wire FEDE_Q = FEDE.tock(in.GECY, in.GAFY, BADY);
-    wire ERAZ_Q = ERAZ.tock(in.GECY, in.GAFY, ZAGO);
-    wire EPUM_Q = EPUM.tock(in.GECY, in.GAFY, ZOCY);
-    wire EROL_Q = EROL.tock(in.GECY, in.GAFY, YPUR);
-    wire EHYN_Q = EHYN.tock(in.GECY, in.GAFY, YVOK);
-
-    wire EJOT = xor(FAZU_Q, in.APUX);
-    wire ESAJ = xor(FAXE_Q, in.ABEF);
-    wire DUCU = xor(EXUK_Q, in.ADAZ);
-    wire EWUD = xor(FEDE_Q, in.ASAH);
-    wire DUSE = xor(ERAZ_Q, in.ACAM);
-    wire DAGU = xor(EPUM_Q, in.AZUB);
-    wire DYZE = xor(EROL_Q, in.AMEL);
-    wire DESO = xor(EHYN_Q, in.AHAL);
-    wire DAJE = nor(EJOT, ESAJ, DUCU, EWUD);
-    wire CYCO = nor(DUSE, DAGU, DYZE, DESO);
-
-    // matcher 4
-    wire DAKE_Q = DAKE.tock(in.ASYS, in.DOKU, COSE);
-    wire CESO_Q = CESO.tock(in.ASYS, in.DOKU, AROP);
-    wire DYFU_Q = DYFU.tock(in.ASYS, in.DOKU, XATU);
-    wire CUSY_Q = CUSY.tock(in.ASYS, in.DOKU, BADY);
-    wire DANY_Q = DANY.tock(in.ASYS, in.DOKU, ZAGO);
-    wire DUKO_Q = DUKO.tock(in.ASYS, in.DOKU, ZOCY);
-    wire DESU_Q = DESU.tock(in.ASYS, in.DOKU, YPUR);
-    wire DAZO_Q = DAZO.tock(in.ASYS, in.DOKU, YVOK);
-
-    wire COLA = xor(DAKE_Q, in.APUX);
-    wire BOBA = xor(CESO_Q, in.ABEF);
-    wire COLU = xor(DYFU_Q, in.ADAZ);
-    wire BAHU = xor(CUSY_Q, in.ASAH);
-    wire EDYM = xor(DANY_Q, in.ACAM);
-    wire EMYB = xor(DUKO_Q, in.AZUB);
-    wire EBEF = xor(DESU_Q, in.AMEL);
-    wire EWOK = xor(DAZO_Q, in.AHAL);
-    wire CYVY = nor(COLA, BOBA, COLU, BAHU);
-    wire EWAM = nor(EDYM, EMYB, EBEF, EWOK);
-
-    // matcher 5
-    wire ZOLY_Q = ZOLY.tock(in.ZAPE, in.XAHO, COSE);
-    wire ZOGO_Q = ZOGO.tock(in.ZAPE, in.XAHO, AROP);
-    wire ZECU_Q = ZECU.tock(in.ZAPE, in.XAHO, XATU);
-    wire ZESA_Q = ZESA.tock(in.ZAPE, in.XAHO, BADY);
-    wire YCOL_Q = YCOL.tock(in.ZAPE, in.XAHO, ZAGO);
-    wire YRAC_Q = YRAC.tock(in.ZAPE, in.XAHO, ZOCY);
-    wire YMEM_Q = YMEM.tock(in.ZAPE, in.XAHO, YPUR);
-    wire YVAG_Q = YVAG.tock(in.ZAPE, in.XAHO, YVOK);
-
-    wire ZARE = xor(ZOLY_Q, in.APUX);
-    wire ZEMU = xor(ZOGO_Q, in.ABEF);
-    wire ZYGO = xor(ZECU_Q, in.ADAZ);
-    wire ZUZY = xor(ZESA_Q, in.ASAH);
-    wire XOSU = xor(YCOL_Q, in.ACAM);
-    wire ZUVU = xor(YRAC_Q, in.AZUB);
-    wire XUCO = xor(YMEM_Q, in.AMEL);
-    wire ZULO = xor(YVAG_Q, in.AHAL);
-    wire YWAP = nor(ZARE, ZEMU, ZYGO, ZUZY);
-    wire YDOT = nor(XOSU, ZUVU, XUCO, ZULO);
-
-    // matcher 6
-    wire YBED_Q = YBED.tock(in.WUNU, in.WOFO, COSE);
-    wire ZALA_Q = ZALA.tock(in.WUNU, in.WOFO, AROP);
-    wire WYDE_Q = WYDE.tock(in.WUNU, in.WOFO, XATU);
-    wire XEPA_Q = XEPA.tock(in.WUNU, in.WOFO, BADY);
-    wire WEDU_Q = WEDU.tock(in.WUNU, in.WOFO, ZAGO);
-    wire YGAJ_Q = YGAJ.tock(in.WUNU, in.WOFO, ZOCY);
-    wire ZYJO_Q = ZYJO.tock(in.WUNU, in.WOFO, YPUR);
-    wire XURY_Q = XURY.tock(in.WUNU, in.WOFO, YVOK);
-
-    wire ZYKU = xor(YBED_Q, in.APUX);
-    wire ZYPU = xor(ZALA_Q, in.ABEF);
-    wire XAHA = xor(WYDE_Q, in.ADAZ);
-    wire ZEFE = xor(XEPA_Q, in.ASAH);
-    wire XEJU = xor(WEDU_Q, in.ACAM);
-    wire ZATE = xor(YGAJ_Q, in.AZUB);
-    wire ZAKU = xor(ZYJO_Q, in.AMEL);
-    wire YBOX = xor(XURY_Q, in.AHAL);
-    wire YKOK = nor(ZYKU, ZYPU, XAHA, ZEFE);
-    wire YNAZ = nor(XEJU, ZATE, ZAKU, YBOX);
-
-    // matcher 7
-    wire EZUF_Q = EZUF.tock(in.CEXU, in.WUZO, COSE);
-    wire ENAD_Q = ENAD.tock(in.CEXU, in.WUZO, AROP);
-    wire EBOW_Q = EBOW.tock(in.CEXU, in.WUZO, XATU);
-    wire FYCA_Q = FYCA.tock(in.CEXU, in.WUZO, BADY);
-    wire GAVY_Q = GAVY.tock(in.CEXU, in.WUZO, ZAGO);
-    wire GYPU_Q = GYPU.tock(in.CEXU, in.WUZO, ZOCY);
-    wire GADY_Q = GADY.tock(in.CEXU, in.WUZO, YPUR);
-    wire GAZA_Q = GAZA.tock(in.CEXU, in.WUZO, YVOK);
-
-    wire DUZE = xor(EZUF_Q, in.APUX);
-    wire DAGA = xor(ENAD_Q, in.ABEF);
-    wire DAWU = xor(EBOW_Q, in.ADAZ);
-    wire EJAW = xor(FYCA_Q, in.ASAH);
-    wire GOHO = xor(GAVY_Q, in.ACAM);
-    wire GASU = xor(GYPU_Q, in.AZUB);
-    wire GABU = xor(GADY_Q, in.AMEL);
-    wire GAFE = xor(GAZA_Q, in.AHAL);
-    wire DAMA = nor(DUZE, DAGA, DAWU, EJAW);
-    wire FEHA = nor(GOHO, GASU, GABU, GAFE);
-
-    // matcher 8
-    wire YPOD_Q = YPOD.tock(in.WEME, in.DOSY, COSE);
-    wire YROP_Q = YROP.tock(in.WEME, in.DOSY, AROP);
-    wire YNEP_Q = YNEP.tock(in.WEME, in.DOSY, XATU);
-    wire YZOF_Q = YZOF.tock(in.WEME, in.DOSY, BADY);
-    wire XUVY_Q = XUVY.tock(in.WEME, in.DOSY, ZAGO);
-    wire XERE_Q = XERE.tock(in.WEME, in.DOSY, ZOCY);
-    wire XUZO_Q = XUZO.tock(in.WEME, in.DOSY, YPUR);
-    wire XEXA_Q = XEXA.tock(in.WEME, in.DOSY, YVOK);
-
-    wire ZYWU = xor(YPOD_Q, in.APUX);
-    wire ZUZA = xor(YROP_Q, in.ABEF);
-    wire ZEJO = xor(YNEP_Q, in.ADAZ);
-    wire ZEDA = xor(YZOF_Q, in.ASAH);
-    wire YMAM = xor(XUVY_Q, in.ACAM);
-    wire YTYP = xor(XERE_Q, in.AZUB);
-    wire YFOP = xor(XUZO_Q, in.AMEL);
-    wire YVAC = xor(XEXA_Q, in.AHAL);
-    wire YTUB = nor(ZYWU, ZUZA, ZEJO, ZEDA);
-    wire YLEV = nor(YMAM, YTYP, YFOP, YVAC);
-
-    // matcher 9
-    wire CYWE_Q = CYWE.tock(in.CYLA, in.EJAD, COSE);
-    wire DYBY_Q = DYBY.tock(in.CYLA, in.EJAD, AROP);
-    wire DURY_Q = DURY.tock(in.CYLA, in.EJAD, XATU);
-    wire CUVY_Q = CUVY.tock(in.CYLA, in.EJAD, BADY);
-    wire FUSA_Q = FUSA.tock(in.CYLA, in.EJAD, ZAGO);
-    wire FAXA_Q = FAXA.tock(in.CYLA, in.EJAD, ZOCY);
-    wire FOZY_Q = FOZY.tock(in.CYLA, in.EJAD, YPUR);
-    wire FESY_Q = FESY.tock(in.CYLA, in.EJAD, YVOK);
-
-    wire BAZY = xor(CYWE_Q, in.APUX);
-    wire CYLE = xor(DYBY_Q, in.ABEF);
-    wire CEVA = xor(DURY_Q, in.ADAZ);
-    wire BUMY = xor(CUVY_Q, in.ASAH);
-    wire GUZO = xor(FUSA_Q, in.ACAM);
-    wire GOLA = xor(FAXA_Q, in.AZUB);
-    wire GEVE = xor(FOZY_Q, in.AMEL);
-    wire GUDE = xor(FESY_Q, in.AHAL);
-    wire COGY = nor(BAZY, CYLE, CEVA, BUMY);
-    wire FYMA = nor(GUZO, GOLA, GEVE, GUDE);
-
-    // matcher 10
-    wire DUHY_Q = DUHY.tock(in.CACU, in.GAMY, COSE);
-    wire EJUF_Q = EJUF.tock(in.CACU, in.GAMY, AROP);
-    wire ENOR_Q = ENOR.tock(in.CACU, in.GAMY, XATU);
-    wire DEPY_Q = DEPY.tock(in.CACU, in.GAMY, BADY);
-    wire FOKA_Q = FOKA.tock(in.CACU, in.GAMY, ZAGO);
-    wire FYTY_Q = FYTY.tock(in.CACU, in.GAMY, ZOCY);
-    wire FUBY_Q = FUBY.tock(in.CACU, in.GAMY, YPUR);
-    wire GOXU_Q = GOXU.tock(in.CACU, in.GAMY, YVOK);
-
-    wire CEKO = xor(DUHY_Q, in.APUX);
-    wire DETY = xor(EJUF_Q, in.ABEF);
-    wire DOZO = xor(ENOR_Q, in.ADAZ);
-    wire CONY = xor(DEPY_Q, in.ASAH);
-    wire FUZU = xor(FOKA_Q, in.ACAM);
-    wire FESO = xor(FYTY_Q, in.AZUB);
-    wire FOKY = xor(FUBY_Q, in.AMEL);
-    wire FYVA = xor(GOXU_Q, in.AHAL);
-    wire CEHU = nor(CEKO, DETY, DOZO, CONY);
-    wire EKES = nor(FUZU, FESO, FOKY, FYVA);
-
-    out.XEBA = XEBA;
-    out.YWOS = YWOS;
-    out.DAJE = DAJE;
-    out.CYVY = CYVY;
-    out.YWAP = YWAP;
-    out.YKOK = YKOK;
-    out.DAMA = DAMA;
-    out.YTUB = YTUB;
-    out.COGY = COGY;
-    out.CEHU = CEHU;
-
-    out.ZAKO = ZAKO;
-    out.ZURE = ZURE;
-    out.CYCO = CYCO;
-    out.EWAM = EWAM;
-    out.YDOT = YDOT;
-    out.YNAZ = YNAZ;
-    out.FEHA = FEHA;
-    out.YLEV = YLEV;
-    out.FYMA = FYMA;
-    out.EKES = EKES;
+  if (b.p28.WEWU) {
+    c.D0 = b.p31.XYKY;
+    c.D1 = b.p31.YRUM;
+    c.D2 = b.p31.YSEX;
+    c.D3 = b.p31.YVEL;
+    c.D4 = b.p31.WYNO;
+    c.D5 = b.p31.CYRA;
+    c.D6 = b.p31.ZUVE;
+    c.D7 = b.p31.ECED;
   }
-};
+
+  c.p31.XEGA = not(b.p25.COTA);
+  c.p31.GOMO = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.GOMO, b.p31.WYNO);
+  c.p31.BAXO = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.BAXO, b.p31.CYRA);
+  c.p31.YZOS = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.YZOS, b.p31.ZUVE);
+  c.p31.DEPO = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.DEPO, b.p31.ECED);
+  c.p31.YLOR = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.YLOR, b.p31.XYKY);
+  c.p31.ZYTY = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.ZYTY, b.p31.YRUM);
+  c.p31.ZYVE = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.ZYVE, b.p31.YSEX);
+  c.p31.ZEZY = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.ZEZY, b.p31.YVEL);
+
+  c.p31.COSE = not(!b.p31.GOMO);
+  c.p31.AROP = not(!b.p31.BAXO);
+  c.p31.XATU = not(!b.p31.YZOS);
+  c.p31.BADY = not(!b.p31.DEPO);
+  c.p31.ZAGO = not(!b.p31.YLOR);
+  c.p31.ZOCY = not(!b.p31.ZYTY);
+  c.p31.YPUR = not(!b.p31.ZYVE);
+  c.p31.YVOK = not(!b.p31.ZEZY);
+
+  // CHECK CLK/RESET WIRES
+
+  // matcher 1
+  c.p31.WELO = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.WELO, b.p31.COSE);
+  c.p31.XUNY = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.XUNY, b.p31.AROP);
+  c.p31.WOTE = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.WOTE, b.p31.XATU);
+  c.p31.XAKO = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.XAKO, b.p31.BADY);
+  c.p31.XEPE = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.XEPE, b.p31.ZAGO);
+  c.p31.YLAH = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.YLAH, b.p31.ZOCY);
+  c.p31.ZOLA = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.ZOLA, b.p31.YPUR);
+  c.p31.ZULU = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.ZULU, b.p31.YVOK);
+
+  c.p31.WOJU = xor(b.p31.WELO, b.p21.APUX);
+  c.p31.YFUN = xor(b.p31.XUNY, b.p21.ABEF);
+  c.p31.WYZA = xor(b.p31.WOTE, b.p21.ADAZ);
+  c.p31.YPUK = xor(b.p31.XAKO, b.p21.ASAH);
+  c.p31.ZOGY = xor(b.p31.XEPE, b.p21.ACAM);
+  c.p31.ZEBA = xor(b.p31.YLAH, b.p21.AZUB);
+  c.p31.ZAHA = xor(b.p31.ZOLA, b.p21.AMEL);
+  c.p31.ZOKY = xor(b.p31.ZULU, b.p21.AHAL);
+  c.p31.XEBA = nor(b.p31.WOJU, b.p31.YFUN, b.p31.WYZA, b.p31.YPUK);
+  c.p31.ZAKO = nor(b.p31.ZOGY, b.p31.ZEBA, b.p31.ZAHA, b.p31.ZOKY);
+
+  // matcher 2
+  c.p31.XOMY = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.XOMY, b.p31.COSE);
+  c.p31.WUHA = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.WUHA, b.p31.AROP);
+  c.p31.WYNA = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.WYNA, b.p31.XATU);
+  c.p31.WECO = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.WECO, b.p31.BADY);
+  c.p31.XOLY = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.XOLY, b.p31.ZAGO);
+  c.p31.XYBA = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.XYBA, b.p31.ZOCY);
+  c.p31.XABE = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.XABE, b.p31.YPUR);
+  c.p31.XEKA = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.XEKA, b.p31.YVOK);
+
+  c.p31.YVAP = xor(b.p31.XOMY, b.p21.APUX);
+  c.p31.XENY = xor(b.p31.WUHA, b.p21.ABEF);
+  c.p31.XAVU = xor(b.p31.WYNA, b.p21.ADAZ);
+  c.p31.XEVA = xor(b.p31.WECO, b.p21.ASAH);
+  c.p31.YHOK = xor(b.p31.XOLY, b.p21.ACAM);
+  c.p31.YCAH = xor(b.p31.XYBA, b.p21.AZUB);
+  c.p31.YDAJ = xor(b.p31.XABE, b.p21.AMEL);
+  c.p31.YVUZ = xor(b.p31.XEKA, b.p21.AHAL);
+  c.p31.YWOS = nor(b.p31.YVAP, b.p31.XENY, b.p31.XAVU, b.p31.XEVA);
+  c.p31.ZURE = nor(b.p31.YHOK, b.p31.YCAH, b.p31.YDAJ, b.p31.YVUZ);
+
+  // matcher 3
+  c.p31.FAZU = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.FAZU, b.p31.COSE);
+  c.p31.FAXE = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.FAXE, b.p31.AROP);
+  c.p31.EXUK = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.EXUK, b.p31.XATU);
+  c.p31.FEDE = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.FEDE, b.p31.BADY);
+  c.p31.ERAZ = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.ERAZ, b.p31.ZAGO);
+  c.p31.EPUM = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.EPUM, b.p31.ZOCY);
+  c.p31.EROL = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.EROL, b.p31.YPUR);
+  c.p31.EHYN = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.EHYN, b.p31.YVOK);
+
+  c.p31.EJOT = xor(b.p31.FAZU, b.p21.APUX);
+  c.p31.ESAJ = xor(b.p31.FAXE, b.p21.ABEF);
+  c.p31.DUCU = xor(b.p31.EXUK, b.p21.ADAZ);
+  c.p31.EWUD = xor(b.p31.FEDE, b.p21.ASAH);
+  c.p31.DUSE = xor(b.p31.ERAZ, b.p21.ACAM);
+  c.p31.DAGU = xor(b.p31.EPUM, b.p21.AZUB);
+  c.p31.DYZE = xor(b.p31.EROL, b.p21.AMEL);
+  c.p31.DESO = xor(b.p31.EHYN, b.p21.AHAL);
+  c.p31.DAJE = nor(b.p31.EJOT, b.p31.ESAJ, b.p31.DUCU, b.p31.EWUD);
+  c.p31.CYCO = nor(b.p31.DUSE, b.p31.DAGU, b.p31.DYZE, b.p31.DESO);
+
+  // matcher 4
+  c.p31.DAKE = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.DAKE, b.p31.COSE);
+  c.p31.CESO = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.CESO, b.p31.AROP);
+  c.p31.DYFU = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.DYFU, b.p31.XATU);
+  c.p31.CUSY = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.CUSY, b.p31.BADY);
+  c.p31.DANY = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.DANY, b.p31.ZAGO);
+  c.p31.DUKO = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.DUKO, b.p31.ZOCY);
+  c.p31.DESU = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.DESU, b.p31.YPUR);
+  c.p31.DAZO = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.DAZO, b.p31.YVOK);
+
+  c.p31.COLA = xor(b.p31.DAKE, b.p21.APUX);
+  c.p31.BOBA = xor(b.p31.CESO, b.p21.ABEF);
+  c.p31.COLU = xor(b.p31.DYFU, b.p21.ADAZ);
+  c.p31.BAHU = xor(b.p31.CUSY, b.p21.ASAH);
+  c.p31.EDYM = xor(b.p31.DANY, b.p21.ACAM);
+  c.p31.EMYB = xor(b.p31.DUKO, b.p21.AZUB);
+  c.p31.EBEF = xor(b.p31.DESU, b.p21.AMEL);
+  c.p31.EWOK = xor(b.p31.DAZO, b.p21.AHAL);
+  c.p31.CYVY = nor(b.p31.COLA, b.p31.BOBA, b.p31.COLU, b.p31.BAHU);
+  c.p31.EWAM = nor(b.p31.EDYM, b.p31.EMYB, b.p31.EBEF, b.p31.EWOK);
+
+  // matcher 5
+  c.p31.ZOLY = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.ZOLY, b.p31.COSE);
+  c.p31.ZOGO = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.ZOGO, b.p31.AROP);
+  c.p31.ZECU = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.ZECU, b.p31.XATU);
+  c.p31.ZESA = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.ZESA, b.p31.BADY);
+  c.p31.YCOL = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.YCOL, b.p31.ZAGO);
+  c.p31.YRAC = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.YRAC, b.p31.ZOCY);
+  c.p31.YMEM = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.YMEM, b.p31.YPUR);
+  c.p31.YVAG = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.YVAG, b.p31.YVOK);
+
+  c.p31.ZARE = xor(b.p31.ZOLY, b.p21.APUX);
+  c.p31.ZEMU = xor(b.p31.ZOGO, b.p21.ABEF);
+  c.p31.ZYGO = xor(b.p31.ZECU, b.p21.ADAZ);
+  c.p31.ZUZY = xor(b.p31.ZESA, b.p21.ASAH);
+  c.p31.XOSU = xor(b.p31.YCOL, b.p21.ACAM);
+  c.p31.ZUVU = xor(b.p31.YRAC, b.p21.AZUB);
+  c.p31.XUCO = xor(b.p31.YMEM, b.p21.AMEL);
+  c.p31.ZULO = xor(b.p31.YVAG, b.p21.AHAL);
+  c.p31.YWAP = nor(b.p31.ZARE, b.p31.ZEMU, b.p31.ZYGO, b.p31.ZUZY);
+  c.p31.YDOT = nor(b.p31.XOSU, b.p31.ZUVU, b.p31.XUCO, b.p31.ZULO);
+
+  // matcher 6
+  c.p31.YBED = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.YBED, b.p31.COSE);
+  c.p31.ZALA = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.ZALA, b.p31.AROP);
+  c.p31.WYDE = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.WYDE, b.p31.XATU);
+  c.p31.XEPA = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.XEPA, b.p31.BADY);
+  c.p31.WEDU = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.WEDU, b.p31.ZAGO);
+  c.p31.YGAJ = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.YGAJ, b.p31.ZOCY);
+  c.p31.ZYJO = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.ZYJO, b.p31.YPUR);
+  c.p31.XURY = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.XURY, b.p31.YVOK);
+
+  c.p31.ZYKU = xor(b.p31.YBED, b.p21.APUX);
+  c.p31.ZYPU = xor(b.p31.ZALA, b.p21.ABEF);
+  c.p31.XAHA = xor(b.p31.WYDE, b.p21.ADAZ);
+  c.p31.ZEFE = xor(b.p31.XEPA, b.p21.ASAH);
+  c.p31.XEJU = xor(b.p31.WEDU, b.p21.ACAM);
+  c.p31.ZATE = xor(b.p31.YGAJ, b.p21.AZUB);
+  c.p31.ZAKU = xor(b.p31.ZYJO, b.p21.AMEL);
+  c.p31.YBOX = xor(b.p31.XURY, b.p21.AHAL);
+  c.p31.YKOK = nor(b.p31.ZYKU, b.p31.ZYPU, b.p31.XAHA, b.p31.ZEFE);
+  c.p31.YNAZ = nor(b.p31.XEJU, b.p31.ZATE, b.p31.ZAKU, b.p31.YBOX);
+
+  // matcher 7
+  c.p31.EZUF = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.EZUF, b.p31.COSE);
+  c.p31.ENAD = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.ENAD, b.p31.AROP);
+  c.p31.EBOW = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.EBOW, b.p31.XATU);
+  c.p31.FYCA = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.FYCA, b.p31.BADY);
+  c.p31.GAVY = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.GAVY, b.p31.ZAGO);
+  c.p31.GYPU = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.GYPU, b.p31.ZOCY);
+  c.p31.GADY = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.GADY, b.p31.YPUR);
+  c.p31.GAZA = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.GAZA, b.p31.YVOK);
+
+  c.p31.DUZE = xor(b.p31.EZUF, b.p21.APUX);
+  c.p31.DAGA = xor(b.p31.ENAD, b.p21.ABEF);
+  c.p31.DAWU = xor(b.p31.EBOW, b.p21.ADAZ);
+  c.p31.EJAW = xor(b.p31.FYCA, b.p21.ASAH);
+  c.p31.GOHO = xor(b.p31.GAVY, b.p21.ACAM);
+  c.p31.GASU = xor(b.p31.GYPU, b.p21.AZUB);
+  c.p31.GABU = xor(b.p31.GADY, b.p21.AMEL);
+  c.p31.GAFE = xor(b.p31.GAZA, b.p21.AHAL);
+  c.p31.DAMA = nor(b.p31.DUZE, b.p31.DAGA, b.p31.DAWU, b.p31.EJAW);
+  c.p31.FEHA = nor(b.p31.GOHO, b.p31.GASU, b.p31.GABU, b.p31.GAFE);
+
+  // matcher 8
+  c.p31.YPOD = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.YPOD, b.p31.COSE);
+  c.p31.YROP = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.YROP, b.p31.AROP);
+  c.p31.YNEP = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.YNEP, b.p31.XATU);
+  c.p31.YZOF = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.YZOF, b.p31.BADY);
+  c.p31.XUVY = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.XUVY, b.p31.ZAGO);
+  c.p31.XERE = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.XERE, b.p31.ZOCY);
+  c.p31.XUZO = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.XUZO, b.p31.YPUR);
+  c.p31.XEXA = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.XEXA, b.p31.YVOK);
+
+  c.p31.ZYWU = xor(b.p31.YPOD, b.p21.APUX);
+  c.p31.ZUZA = xor(b.p31.YROP, b.p21.ABEF);
+  c.p31.ZEJO = xor(b.p31.YNEP, b.p21.ADAZ);
+  c.p31.ZEDA = xor(b.p31.YZOF, b.p21.ASAH);
+  c.p31.YMAM = xor(b.p31.XUVY, b.p21.ACAM);
+  c.p31.YTYP = xor(b.p31.XERE, b.p21.AZUB);
+  c.p31.YFOP = xor(b.p31.XUZO, b.p21.AMEL);
+  c.p31.YVAC = xor(b.p31.XEXA, b.p21.AHAL);
+  c.p31.YTUB = nor(b.p31.ZYWU, b.p31.ZUZA, b.p31.ZEJO, b.p31.ZEDA);
+  c.p31.YLEV = nor(b.p31.YMAM, b.p31.YTYP, b.p31.YFOP, b.p31.YVAC);
+
+  // matcher 9
+  c.p31.CYWE = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.CYWE, b.p31.COSE);
+  c.p31.DYBY = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.DYBY, b.p31.AROP);
+  c.p31.DURY = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.DURY, b.p31.XATU);
+  c.p31.CUVY = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.CUVY, b.p31.BADY);
+  c.p31.FUSA = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.FUSA, b.p31.ZAGO);
+  c.p31.FAXA = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.FAXA, b.p31.ZOCY);
+  c.p31.FOZY = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.FOZY, b.p31.YPUR);
+  c.p31.FESY = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.FESY, b.p31.YVOK);
+
+  c.p31.BAZY = xor(b.p31.CYWE, b.p21.APUX);
+  c.p31.CYLE = xor(b.p31.DYBY, b.p21.ABEF);
+  c.p31.CEVA = xor(b.p31.DURY, b.p21.ADAZ);
+  c.p31.BUMY = xor(b.p31.CUVY, b.p21.ASAH);
+  c.p31.GUZO = xor(b.p31.FUSA, b.p21.ACAM);
+  c.p31.GOLA = xor(b.p31.FAXA, b.p21.AZUB);
+  c.p31.GEVE = xor(b.p31.FOZY, b.p21.AMEL);
+  c.p31.GUDE = xor(b.p31.FESY, b.p21.AHAL);
+  c.p31.COGY = nor(b.p31.BAZY, b.p31.CYLE, b.p31.CEVA, b.p31.BUMY);
+  c.p31.FYMA = nor(b.p31.GUZO, b.p31.GOLA, b.p31.GEVE, b.p31.GUDE);
+
+  // matcher 10
+  c.p31.DUHY = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.DUHY, b.p31.COSE);
+  c.p31.EJUF = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.EJUF, b.p31.AROP);
+  c.p31.ENOR = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.ENOR, b.p31.XATU);
+  c.p31.DEPY = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.DEPY, b.p31.BADY);
+  c.p31.FOKA = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.FOKA, b.p31.ZAGO);
+  c.p31.FYTY = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.FYTY, b.p31.ZOCY);
+  c.p31.FUBY = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.FUBY, b.p31.YPUR);
+  c.p31.GOXU = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.GOXU, b.p31.YVOK);
+
+  c.p31.CEKO = xor(b.p31.DUHY, b.p21.APUX);
+  c.p31.DETY = xor(b.p31.EJUF, b.p21.ABEF);
+  c.p31.DOZO = xor(b.p31.ENOR, b.p21.ADAZ);
+  c.p31.CONY = xor(b.p31.DEPY, b.p21.ASAH);
+  c.p31.FUZU = xor(b.p31.FOKA, b.p21.ACAM);
+  c.p31.FESO = xor(b.p31.FYTY, b.p21.AZUB);
+  c.p31.FOKY = xor(b.p31.FUBY, b.p21.AMEL);
+  c.p31.FYVA = xor(b.p31.GOXU, b.p21.AHAL);
+  c.p31.CEHU = nor(b.p31.CEKO, b.p31.DETY, b.p31.DOZO, b.p31.CONY);
+  c.p31.EKES = nor(b.p31.FUZU, b.p31.FESO, b.p31.FOKY, b.p31.FYVA);
+}

@@ -1,297 +1,212 @@
 #include "../Schematics.h"
 
+#include "Gameboy.h"
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P27_WindowMapLookup {
-  struct Input {
-    bool CLK2;
-    bool RESET_VIDEO;
-    bool INT_VBL;
+void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-    bool ATEJ;
-    bool ROXO;
-    bool PECU;
-    bool POKY;
-    bool WUKO;
-    bool XYMU;
-    bool NYKA;
-    bool TALU;
-    bool PORY;
-    bool TOMU;
-    bool SEGU;
-    bool AVAP;
-    bool LOBY;
-    bool WUTY;
-    bool FEPO;
-    bool LAPE;
+  c.p27.PYRY = not(b.p01.RESET_VIDEO);
 
-    bool CUBA1;
+  //----------
+  // Window Y match
 
-    bool NEZO,NORY,NONO,PASE,MYLO,PUWU,PUHO,NYTU;
+  c.p27.NAZE = xor(b.p23.FF4A_D0, b.p21.V0);
+  c.p27.PEBO = xor(b.p23.FF4A_D1, b.p21.V1);
+  c.p27.POMO = xor(b.p23.FF4A_D2, b.p21.V2);
+  c.p27.NEVU = xor(b.p23.FF4A_D3, b.p21.V3);
+  c.p27.NOJO = xor(b.p23.FF4A_D4, b.p21.V4);
+  c.p27.PAGA = xor(b.p23.FF4A_D5, b.p21.V5);
+  c.p27.PEZO = xor(b.p23.FF4A_D6, b.p21.V6);
+  c.p27.NUPA = xor(b.p23.FF4A_D7, b.p21.V7);
 
-    bool V0,V1,V2,V3,V4,V5,V6,V7;
+  c.p27.PALO = nand(b.p23.FF40_D5, b.p27.NOJO, b.p27.PAGA, b.p27.PEZO, b.p27.NUPA);
+  c.p27.NELE = not(b.p27.PALO);
+  c.p27.PAFU = nand(b.p27.NELE, b.p27.NAZE, b.p27.PEBO, b.p27.POMO, b.p27.NEVU);
+  c.p27.ROGE = not(b.p27.PAFU);
 
-    bool FF40_D0,FF40_D1,FF40_D2,FF40_D3,FF40_D4,FF40_D5,FF40_D6,FF40_D7; // FF40 LCDC
-    bool FF43_D0,FF43_D1,FF43_D2,FF43_D3,FF43_D4,FF43_D5,FF43_D6,FF43_D7; // FF43 SCX
-    bool FF4A_D0,FF4A_D1,FF4A_D2,FF4A_D3,FF4A_D4,FF4A_D5,FF4A_D6,FF4A_D7; // FF4A WY
-    bool FF4B_D0,FF4B_D1,FF4B_D2,FF4B_D3,FF4B_D4,FF4B_D5,FF4B_D6,FF4B_D7; // FF4B WX
+  // this is not right. where is VYPO/CUBA in the schematic?
+  //c.p27.VYPO = not(in.CUBA1);
 
-    bool XEHO,SAVY,XODU,XYDO,TUHU,TUKY,TAKO,SYBE; // X counter regs on P21
-  };
+  // this is what the die looks like
+  c.p27.VYPO = not(b.chip.P10_B);
 
-  struct Output {
-    bool RESET_VIDEOn;
+  c.p27.SARY = tock_pos(a.p21.TALU, b.p21.TALU, b.p01.RESET_VIDEO, b.p27.SARY, b.p27.ROGE);
 
-    bool MA_OE;
-    bool MA0,MA1,MA2,MA3,MA4,MA5,MA6,MA7,MA8,MA9,MA10,MA11,MA12;
-  };
+  //----------
+  // Window X match
 
-  // 3-bit counter
-  reg RYKU,ROGA,RUBU;
+  c.p27.REPU = or(b.p21.INT_VBL, b.p27.PYRY);
+  c.p27.REJO = or(b.p27.SARY, b.p27.REPU);
 
-  // misc
-  reg NYZE,PUXA,RYFA,SOVY,RENE,NOPA;
-  reg SOBU,SUDA;
-  reg LYZU,LAXU,MESU,NYVA,LOVY;
-  reg VYNO,VUJO,VYMU,TUFU,TAXA,TOZO,TATE,TEKE;
-  reg WYKA,WODY,WOBO,WYKO,XOLO;
-  reg PYCO,NUNU;
-  reg SARY;
+  c.p27.NEZO = xor(b.p21.TUHU, b.p23.FF4B_D4);
+  c.p27.NORY = xor(b.p21.TUKY, b.p23.FF4B_D5);
+  c.p27.NONO = xor(b.p21.TAKO, b.p23.FF4B_D6);
+  c.p27.PASE = xor(b.p21.SYBE, b.p23.FF4B_D7);
+  c.p27.MYLO = xor(b.p21.XEHO, b.p23.FF4B_D0);
+  c.p27.PUWU = xor(b.p21.SAVY, b.p23.FF4B_D1);
+  c.p27.PUHO = xor(b.p21.XODU, b.p23.FF4B_D2);
+  c.p27.NYTU = xor(b.p21.XYDO, b.p23.FF4B_D3);
 
-  void tick(const Input& in, Output& out) {
-    wire PYRY = not(in.RESET_VIDEO);
-    out.RESET_VIDEOn = PYRY;
+  c.p27.PUKY = nand(b.p27.REJO, b.p27.NEZO, b.p27.NORY, b.p27.NONO, b.p27.PASE);
+  c.p27.NUFA = not(b.p27.PUKY);
+  c.p27.NOGY = nand(b.p27.NUFA, b.p27.MYLO, b.p27.PUWU, b.p27.PUHO, b.p27.NYTU);
+  c.p27.NUKO = not(b.p27.NOGY);
 
-    //----------
-    // Window Y match
+  //----------
 
-    wire NOJO = xor(in.FF4A_D4, in.V4);
-    wire PAGA = xor(in.FF4A_D5, in.V5);
-    wire PEZO = xor(in.FF4A_D6, in.V6);
-    wire NUPA = xor(in.FF4A_D7, in.V7);
-    wire NAZE = xor(in.FF4A_D0, in.V0);
-    wire PEBO = xor(in.FF4A_D1, in.V1);
-    wire POMO = xor(in.FF4A_D2, in.V2);
-    wire NEVU = xor(in.FF4A_D3, in.V3);
+  c.p27.ROZE = nand(b.p27.RYKU, b.p27.ROGA, b.p27.RUBU);
+  c.p27.POVA = and(!b.p27.NYZE, b.p27.PUXA);
+  c.p27.PAHA = not(b.p21.XYMU);
+  c.p27.ROXY = unk2(b.p27.PAHA, b.p27.POVA);
+  c.p27.SUHA = xor(b.p23.FF43_D0, b.p27.RYKU);
+  c.p27.SYBY = xor(b.p23.FF43_D1, b.p27.ROGA);
+  c.p27.SOZU = xor(b.p23.FF43_D2, b.p27.RUBU);
+  c.p27.PECU = nand(b.p24.ROXO, b.p27.ROZE);
+  c.p27.RONE = nand(b.p27.ROXY, b.p27.SUHA, b.p27.SYBY, b.p27.SOZU);
+  c.p27.POHU = not(b.p27.RONE);
+  c.p27.MOXE = not(b.p01.CLK2);
+  c.p27.PANY = nor(b.p27.NUKO, b.p27.ROZE);
+  c.p27.SEKO = nor(b.p27.RENE, !b.p27.RYFA);
+  c.p27.ROMO = not(b.p24.POKY);
+  c.p27.SUVU = nand(b.p21.XYMU, b.p27.ROMO, b.p24.NYKA, b.p24.PORY);
+  c.p27.TAVE = not(b.p27.SUVU);
+  c.p27.XAHY = not(b.p28.ATEJ);
+  c.p27.XOFO = nand(b.p23.FF40_D5, b.p27.XAHY, b.p01.RESET_VIDEO);
+  c.p27.XACO = not(b.p27.XOFO);
+  c.p27.PYNU = or(b.p27.NUNU, b.p27.XOFO);
+  c.p27.NUNY = and(!b.p27.NOPA, b.p27.PYNU);
+  c.p27.NOCU = not(b.p27.PYNU);
+  c.p27.PORE = not(b.p27.NOCU);
 
-    wire PALO = nand(in.FF40_D5, NOJO, PAGA, PEZO, NUPA);
-    wire NELE = not(PALO);
-    wire PAFU = nand(NELE, NAZE, PEBO, POMO, NEVU);
-    wire ROGE = not(PAFU);
+  c.p27.PUKU = nor(b.p27.NUNY, b.p27.RYDY);
+  c.p27.RYDY = nor(b.p27.PUKU, b.p27.RESET_VIDEOn, b.p24.PORY);
 
-    wire VYPO = not(in.CUBA1);
+  c.p27.SYLO = not(b.p27.RYDY);
+  c.p27.TUXY = nand(b.p27.SOVY, b.p27.SYLO);
+  c.p27.SUZU = not(b.p27.TUXY);
+  c.p27.TEVO = nor(b.p27.SEKO, b.p27.SUZU, b.p27.TAVE);
+  c.p27.PASO = nor(b.p27.TEVO, b.p27.PAHA);
+  c.p27.VETU = and(b.p27.TEVO, b.p27.PORE);
+  c.p27.ROCO = not(b.p24.SEGU);
+  c.p27.MEHE = not(b.p01.CLK2);
+  c.p27.NYFO = not(b.p27.NUNY);
+  c.p27.MOSU = not(b.p27.NYFO);
+  c.p27.NYXU = nor(b.p29.AVAP, b.p27.MOSU, b.p27.TEVO);
+  c.p27.WAZY = not(b.p27.PORE);
+  c.p27.SYNY = not(b.p27.REPU);
 
-    wire SARY_Q = SARY.tock(in.TALU, in.RESET_VIDEO, ROGE);
+  c.p27.NOPA = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p01.RESET_VIDEO, b.p27.NOPA, b.p27.PYNU);
+  c.p27.PYCO = tock_pos(a.p27.ROCO, b.p27.ROCO, b.p01.RESET_VIDEO, b.p27.PYCO, b.p27.NUKO);
+  c.p27.NUNU = tock_pos(a.p27.MEHE, b.p27.MEHE, b.p01.RESET_VIDEO, b.p27.NUNU, b.p27.PYCO);
 
-    //----------
-    // Window X match
+  c.p27.RYKU = tock_pos(a.p27.PECU,  b.p27.PECU,  b.p27.PASO, b.p27.RYKU, !b.p27.RYKU);
+  c.p27.ROGA = tock_pos(!a.p27.RYKU, !b.p27.RYKU, b.p27.PASO, b.p27.ROGA, !b.p27.ROGA);
+  c.p27.RUBU = tock_pos(!a.p27.ROGA, !b.p27.ROGA, b.p27.PASO, b.p27.RUBU, !b.p27.RUBU);
 
-    wire REPU = or(in.INT_VBL, PYRY);
-    wire REJO = unk2(SARY_Q, REPU);
+  c.p27.NYZE = tock_pos(a.p27.MOXE, b.p27.MOXE, b.p21.XYMU, b.p27.NYZE, b.p27.PUXA);
+  c.p27.PUXA = tock_pos(a.p24.ROXO, b.p24.ROXO, b.p21.XYMU, b.p27.PUXA, b.p27.POHU);
 
-    wire XEHO_Q = in.XEHO;
-    wire SAVY_Q = in.SAVY;
-    wire XODU_Q = in.XODU;
-    wire XYDO_Q = in.XYDO;
-    wire TUHU_Q = in.TUHU;
-    wire TUKY_Q = in.TUKY;
-    wire TAKO_Q = in.TAKO;
-    wire SYBE_Q = in.SYBE;
+  c.p27.RYFA = tock_pos(a.p24.SEGU, b.p24.SEGU, b.p21.XYMU,        b.p27.RYFA, b.p27.PANY);
+  c.p27.RENE = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p21.XYMU,        b.p27.RENE, b.p27.RYFA);
+  c.p27.SOVY = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p01.RESET_VIDEO, b.p27.SOVY, b.p27.RYDY);
 
-    wire NEZO = xor(TUHU_Q, in.FF4B_D4);
-    wire NORY = xor(TUKY_Q, in.FF4B_D5);
-    wire NONO = xor(TAKO_Q, in.FF4B_D6);
-    wire PASE = xor(SYBE_Q, in.FF4B_D7);
-    wire MYLO = xor(XEHO_Q, in.FF4B_D0);
-    wire PUWU = xor(SAVY_Q, in.FF4B_D1);
-    wire PUHO = xor(XODU_Q, in.FF4B_D2);
-    wire NYTU = xor(XYDO_Q, in.FF4B_D3);
+  //----------
+  // dunno, top right
 
-    wire PUKY = nand(REJO, NEZO, NORY, NONO, PASE);
-    wire NUFA = not(PUKY);
-    wire NOGY = nand(NUFA, MYLO, PUWU, PUHO, NYTU);
-    wire NUKO = not(NOGY);
+  c.p27.MOCE = nand(b.p27.LAXU, b.p27.NYVA, b.p27.NYXU);
+  c.p27.LEBO = nand(b.p01.CLK2, b.p27.MOCE);
+  c.p27.MYVO = not(b.p01.CLK2);
+  c.p27.LYRY = not(b.p27.MOCE);
+  c.p27.LAXE = not(b.p27.LAXU);
+  c.p27.MYSO = nor(b.p24.LOBY, b.p27.LAXE, b.p27.LYZU);
+  c.p27.NAKO = not(b.p27.MESU);
+  c.p27.NOFU = not(b.p27.NYVA);
+  c.p27.MOFU = and(b.p27.MYSO, b.p27.NAKO);
+  c.p27.NOGU = nand(b.p27.NAKO, b.p27.NOFU);
+  c.p27.NYDY = nand(b.p27.MYSO, b.p27.MESU, b.p27.NOFU);
+  c.p27.XUHA = not(b.p27.NOFU);
+  c.p27.NENY = not(b.p27.NOGU);
+  c.p27.LURY = and(!b.p27.LOVY, b.p21.XYMU);
+  c.p27.LONY = unk2(b.p27.LURY, !b.p27.LOVY);
+  c.p27.MYMA = not(b.p27.LONY);
+  c.p27.LUSU = not(b.p27.LONY);
+  c.p27.LENA = not(b.p27.LUSU);
+  c.p27.POTU = and(b.p27.LENA, b.p27.NENY);
+  c.p27.NETA = and(b.p27.LENA, b.p27.NOGU);
 
-    //----------
-    // something to do with fine x scroll?
+  c.p27.LYZU = tock_pos( a.p01.CLK2,  b.p01.CLK2, b.p21.XYMU, b.p27.LYZU,  b.p27.LAXU);
+  c.p27.LAXU = tock_pos( a.p27.LEBO,  b.p27.LEBO, b.p27.NYXU, b.p27.LAXU, !b.p27.LAXU);
+  c.p27.MESU = tock_pos(!a.p27.LAXU, !b.p27.LAXU, b.p27.NYXU, b.p27.MESU, !b.p27.MESU);
+  c.p27.NYVA = tock_pos(!a.p27.MESU, !b.p27.MESU, b.p27.NYXU, b.p27.NYVA, !b.p27.NYVA);
+  c.p27.LOVY = tock_pos( a.p27.MYVO,  b.p27.MYVO, b.p27.NYXU, b.p27.LOVY,  b.p27.LYRY);
 
-    wire NOPA_Q = NOPA.q();
-    wire PYCO_Q = PYCO.q();
-    wire NUNU_Q = NUNU.q();
-    wire RYFA_Q = RYFA.q();
-    wire SOVY_Q = SOVY.q();
-    wire RENE_Q = RENE.q();
+  //----------
+  // address output bus
 
-    wire RYKU_Q = RYKU.q();
-    wire ROGA_Q = ROGA.q();
-    wire RUBU_Q = RUBU.q();
-    wire NYZE_Q = NYZE.q();
-    wire PUXA_Q = PUXA.q();
+  c.p27.WYKA = tock_pos( a.p27.VETU,  b.p27.VETU, b.p27.XACO, b.p27.WYKA, !b.p27.WYKA);
+  c.p27.WODY = tock_pos(!a.p27.WYKA, !b.p27.WYKA, b.p27.XACO, b.p27.WODY, !b.p27.WODY);
+  c.p27.WOBO = tock_pos(!a.p27.WODY, !b.p27.WODY, b.p27.XACO, b.p27.WOBO, !b.p27.WOBO);
+  c.p27.WYKO = tock_pos(!a.p27.WOBO, !b.p27.WOBO, b.p27.XACO, b.p27.WYKO, !b.p27.WYKO);
+  c.p27.XOLO = tock_pos(!a.p27.WYKO, !b.p27.WYKO, b.p27.XACO, b.p27.XOLO, !b.p27.XOLO);
 
-    wire ROZE = nand(RYKU_Q, ROGA_Q, RUBU_Q);
-    wire POVA = and(!NYZE_Q, PUXA_Q);
-    wire PAHA = not(in.XYMU);
-    wire ROXY = unk2(PAHA, POVA);
-    wire SUHA = xor(in.FF43_D0, RYKU_Q);
-    wire SYBY = xor(in.FF43_D1, ROGA_Q);
-    wire SOZU = xor(in.FF43_D2, RUBU_Q);
-    wire PECU = nand(in.ROXO, ROZE);
-    wire RONE = nand(ROXY, SUHA, SYBY, SOZU);
-    wire POHU = not(RONE);
-    wire MOXE = not(in.CLK2);
-    wire PANY = nor(NUKO, ROZE);
-    wire SEKO = nor(RENE_Q, !RYFA_Q);
-    wire ROMO = not(in.POKY);
-    wire SUVU = nand(in.XYMU, ROMO, in.NYKA, in.PORY);
-    wire TAVE = not(SUVU);
-    wire XAHY = not(in.ATEJ);
-    wire XOFO = nand(in.FF40_D5, XAHY, in.RESET_VIDEO);
-    wire XACO = not(XOFO);
-    wire PYNU = unk2(NUNU_Q, XOFO);
-    wire NUNY = and(!NOPA_Q, PYNU);
-    wire NOCU = not(PYNU);
-    wire PORE = not(NOCU);
+  c.p27.VYNO = tock_pos( a.p27.WAZY,  b.p27.WAZY, b.p27.SYNY, b.p27.VYNO, !b.p27.VYNO);
+  c.p27.VUJO = tock_pos(!a.p27.VYNO, !b.p27.VYNO, b.p27.SYNY, b.p27.VUJO, !b.p27.VUJO);
+  c.p27.VYMU = tock_pos(!a.p27.VUJO, !b.p27.VUJO, b.p27.SYNY, b.p27.VYMU, !b.p27.VYMU);
 
-    // glitch filter loop, FIXME double check if this logic is correct
-    // wire PUKU = nor(NUNY, RYDY);
-    // wire RYDY = nor(PUKU, RESET_VIDEOn, PORY);
-    wire RYDY = NUNY && !(out.RESET_VIDEOn || in.PORY);
+  c.p27.TUFU = tock_pos(!a.p27.VYMU, !b.p27.VYMU, b.p27.SYNY, b.p27.TUFU, !b.p27.TUFU);
+  c.p27.TAXA = tock_pos(!a.p27.TUFU, !b.p27.TUFU, b.p27.SYNY, b.p27.TAXA, !b.p27.TAXA);
+  c.p27.TOZO = tock_pos(!a.p27.TAXA, !b.p27.TAXA, b.p27.SYNY, b.p27.TOZO, !b.p27.TOZO);
+  c.p27.TATE = tock_pos(!a.p27.TOZO, !b.p27.TOZO, b.p27.SYNY, b.p27.TATE, !b.p27.TATE);
+  c.p27.TEKE = tock_pos(!a.p27.TATE, !b.p27.TATE, b.p27.SYNY, b.p27.TEKE, !b.p27.TEKE);
 
-    wire SYLO = not(RYDY);
-    wire TUXY = nand(SOVY_Q, SYLO);
-    wire SUZU = not(TUXY);
-    wire TEVO = nor(SEKO, SUZU, TAVE);
-    wire PASO = nor(TEVO, PAHA);
-    wire VETU = and(TEVO, PORE);
-    wire ROCO = not(in.SEGU);
-    wire MEHE = not(in.CLK2);
-    wire NYFO = not(NUNY);
-    wire MOSU = not(NYFO);
-    wire NYXU = nor(in.AVAP, MOSU, TEVO);
-    wire WAZY = not(PORE);
-    wire SYNY = not(REPU);
+  c.p27.XEJA = not(b.p27.WYKA);
+  c.p27.XAMO = not(b.p27.WODY);
+  c.p27.XAHE = not(b.p27.WOBO);
+  c.p27.XULO = not(b.p27.WYKO);
+  c.p27.WUJU = not(b.p27.XOLO);
 
-    NOPA.tock(in.CLK2, in.RESET_VIDEO, PYNU);
-    PYCO.tock(ROCO, in.RESET_VIDEO, NUKO);
-    NUNU.tock(MEHE, in.RESET_VIDEO, PYCO_Q);
+  c.p27.VYTO = not(b.p27.TUFU);
+  c.p27.VEHA = not(b.p27.TAXA);
+  c.p27.VACE = not(b.p27.TOZO);
+  c.p27.VOVO = not(b.p27.TATE);
+  c.p27.VULO = not(b.p27.TEKE);
 
-    RYKU.flip(PECU, PASO);
-    ROGA.flip(!RYKU_Q, PASO);
-    RUBU.flip(!ROGA_Q, PASO);
+  c.p27.VEVY = not(b.p23.FF40_D6);
+  c.p27.VEZA = not(b.p27.VYPO);
+  c.p27.VOGU = not(b.p27.VYPO);
 
-    NYZE.tock(MOXE, in.XYMU, PUXA_Q);
-    PUXA.tock(in.ROXO, in.XYMU, POHU);
-
-    RYFA.tock(in.SEGU, in.XYMU, PANY);
-    RENE.tock(in.CLK2, in.XYMU, RYFA_Q);
-    SOVY.tock(in.CLK2, in.RESET_VIDEO, RYDY);
-
-    //----------
-    // dunno, top right
-
-    wire LYZU_Q = LYZU.q();
-    wire LAXU_Q = LAXU.q();
-    wire MESU_Q = MESU.q();
-    wire NYVA_Q = NYVA.q();
-    wire LOVY_Q = LOVY.q();
-
-    wire MOCE = nand(LAXU_Q, NYVA_Q, NYXU);
-    wire LEBO = nand(in.CLK2, MOCE);
-    wire MYVO = not(in.CLK2);
-    wire LYRY = not(MOCE);
-    wire LAXE = not(LAXU_Q);
-    wire MYSO = nor(in.LOBY, LAXE, LYZU_Q);
-    wire NAKO = not(MESU_Q);
-    wire NOFU = not(NYVA_Q);
-    wire MOFU = and(MYSO, NAKO);
-    wire NOGU = nand(NAKO, NOFU);
-    wire NYDY = nand(MYSO, MESU_Q, NOFU);
-    wire XUHA = not(NOFU);
-    wire NENY = not(NOGU);
-    wire LURY = and(!LOVY_Q, in.XYMU);
-    wire LONY = unk2(LURY, !LOVY_Q);
-    wire MYMA = not(LONY);
-    wire LUSU = not(LONY);
-    wire LENA = not(LUSU);
-    wire POTU = and(LENA, NENY);
-    wire NETA = and(LENA, NOGU);
-
-    LYZU.tock(in.CLK2,    in.XYMU, LAXU_Q);
-    LAXU.flip(LEBO,    NYXU);
-    MESU.flip(!LAXU_Q, NYXU);
-    NYVA.flip(!MESU_Q, NYXU);
-    LOVY.tock(MYVO,    NYXU, LYRY);
-
-    //----------
-    // address output bus
-
-    wire WYKA_Q = WYKA.flip(   VETU, XACO);
-    wire WODY_Q = WODY.flip(!WYKA_Q, XACO);
-    wire WOBO_Q = WOBO.flip(!WODY_Q, XACO);
-    wire WYKO_Q = WYKO.flip(!WOBO_Q, XACO);
-    wire XOLO_Q = XOLO.flip(!WYKO_Q, XACO);
-
-    wire VYNO_Q = VYNO.flip(   WAZY, SYNY);
-    wire VUJO_Q = VUJO.flip(!VYNO_Q, SYNY);
-    wire VYMU_Q = VYMU.flip(!VUJO_Q, SYNY);
-
-    wire TUFU_Q = TUFU.flip(!VYMU_Q, SYNY);
-    wire TAXA_Q = TAXA.flip(!TUFU_Q, SYNY);
-    wire TOZO_Q = TOZO.flip(!TAXA_Q, SYNY);
-    wire TATE_Q = TATE.flip(!TOZO_Q, SYNY);
-    wire TEKE_Q = TEKE.flip(!TATE_Q, SYNY);
-
-    wire XEJA = not(WYKA_Q);
-    wire XAMO = not(WODY_Q);
-    wire XAHE = not(WOBO_Q);
-    wire XULO = not(WYKO_Q);
-    wire WUJU = not(XOLO_Q);
-
-    wire VYTO = not(TUFU_Q);
-    wire VEHA = not(TAXA_Q);
-    wire VACE = not(TOZO_Q);
-    wire VOVO = not(TATE_Q);
-    wire VULO = not(TEKE_Q);
-
-    wire VEVY = not(in.FF40_D6);
-    wire VEZA = not(VYPO);
-    wire VOGU = not(VYPO);
-
-    if (in.WUKO) {
-      out.MA_OE;
-      out.MA0 = XEJA;
-      out.MA1 = XAMO;
-      out.MA2 = XAHE;
-      out.MA3 = XULO;
-      out.MA4 = WUJU;
-      out.MA5 = VYTO;
-      out.MA6 = VEHA;
-      out.MA7 = VACE;
-      out.MA8 = VOVO;
-      out.MA9 = VULO;
-      out.MA10 = VEVY;
-      out.MA11 = VEZA;
-      out.MA12 = VOGU;
-    }
-
-    //----------
-    // computes SECA and TAVA
-
-    wire SOBU_Q = SOBU.q();
-    wire SUDA_Q = SUDA.q();
-
-    wire RYCE = and(SOBU_Q, !SUDA_Q);
-    wire ROSY = not(in.RESET_VIDEO);
-    wire SECA = nor(RYCE, ROSY, in.ATEJ);
-    wire VEKU = nor(in.WUTY, TAVE);
-    wire TAKA = unk2(VEKU, SECA);
-    wire TUKU = not(in.TOMU);
-    wire SOWO = not(TAKA);
-    wire TEKY = and(in.FEPO, TUKU, LYRY, SOWO);
-    wire TAVA = not(in.LAPE);
-    SOBU.tock(TAVA, VYPO, TEKY);
-    SUDA.tock(in.LAPE, VYPO, SOBU_Q);
+  if (b.p25.WUKO) {
+    c.MA00 = b.p27.XEJA;
+    c.MA01 = b.p27.XAMO;
+    c.MA02 = b.p27.XAHE;
+    c.MA03 = b.p27.XULO;
+    c.MA04 = b.p27.WUJU;
+    c.MA05 = b.p27.VYTO;
+    c.MA06 = b.p27.VEHA;
+    c.MA07 = b.p27.VACE;
+    c.MA08 = b.p27.VOVO;
+    c.MA09 = b.p27.VULO;
+    c.MA10 = b.p27.VEVY;
+    c.MA11 = b.p27.VEZA;
+    c.MA12 = b.p27.VOGU;
   }
-};
+
+  //----------
+  // computes SECA and TAVA
+
+  c.p27.RYCE = and(b.p27.SOBU, !b.p27.SUDA);
+  c.p27.ROSY = not(b.p01.RESET_VIDEO);
+  c.p27.SECA = nor(b.p27.RYCE, b.p27.ROSY, b.p28.ATEJ);
+  c.p27.VEKU = nor(b.p29.WUTY, b.p27.TAVE);
+  c.p27.TAKA = unk2(b.p27.VEKU, b.p27.SECA);
+  c.p27.TUKU = not(b.p24.TOMU);
+  c.p27.SOWO = not(b.p27.TAKA);
+  c.p27.TEKY = and(b.p29.FEPO, b.p27.TUKU, b.p27.LYRY, b.p27.SOWO);
+  c.p27.TAVA = not(b.p01.LAPE);
+
+  c.p27.SOBU = tock_pos(a.p27.TAVA, b.p27.TAVA, b.p27.VYPO, b.p27.SOBU, b.p27.TEKY);
+  c.p27.SUDA = tock_pos(a.p01.LAPE, b.p01.LAPE, b.p27.VYPO, b.p27.SUDA, b.p27.SOBU);
+}

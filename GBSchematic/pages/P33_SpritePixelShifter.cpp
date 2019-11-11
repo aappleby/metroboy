@@ -1,171 +1,115 @@
+#include "P33_SpritePixelShifter.h"
 #include "../Schematics.h"
+
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P33_SpritePixelShifter {
-  struct Input {
-    bool CLKPIPE;
-    bool P10_B;
-    bool XONO;
-    bool XADO;
-    bool PUCO;
+void P33_SpritePixelShifter::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-    // P26
-    bool LESY,LOTA,LYKU,ROBY,TYTA,TYCO,SOKA,XOVU;
+  // sprite x flip
+  c.p33.POBE = mux2(b.MD4, b.MD3, b.p29.FLIP_X);
+  c.p33.PACY = mux2(b.MD3, b.MD4, b.p29.FLIP_X);
+  c.p33.PONO = mux2(b.MD5, b.MD2, b.p29.FLIP_X);
+  c.p33.PUGU = mux2(b.MD2, b.MD5, b.p29.FLIP_X);
+  c.p33.PUTE = mux2(b.MD7, b.MD0, b.p29.FLIP_X);
+  c.p33.PULY = mux2(b.MD0, b.MD7, b.p29.FLIP_X);
+  c.p33.PELO = mux2(b.MD6, b.MD1, b.p29.FLIP_X);
+  c.p33.PAWE = mux2(b.MD1, b.MD6, b.p29.FLIP_X);
 
-    bool MD0,MD1,MD2,MD3,MD4,MD5,MD6,MD7;
-  };
+  // the schematic layout is slightly inconsistent, might have some of these swapped
 
-  struct Output {
-    bool SPR_PIX_A_0;
-    bool SPR_PIX_A_1;
-    bool SPR_PIX_A_2;
-    bool SPR_PIX_A_3;
-    bool SPR_PIX_A_4;
-    bool SPR_PIX_A_5;
-    bool SPR_PIX_A_6;
-    bool SPR_PIX_A_7;
+  c.p33.PUDU = latch_pos(b.p29.XADO, b.p33.PUDU, b.p33.POBE);
+  c.p33.RAMU = latch_pos(b.p29.PUCO, b.p33.RAMU, b.p33.POBE);
+  c.p33.SELE = latch_pos(b.p29.PUCO, b.p33.SELE, b.p33.PACY);
+  c.p33.SAJA = latch_pos(b.p29.XADO, b.p33.SAJA, b.p33.PACY);
+  c.p33.MYTU = latch_pos(b.p29.XADO, b.p33.MYTU, b.p33.PONO);
+  c.p33.MOFO = latch_pos(b.p29.PUCO, b.p33.MOFO, b.p33.PONO);
+  c.p33.SUNY = latch_pos(b.p29.XADO, b.p33.SUNY, b.p33.PUGU);
+  c.p33.SUTO = latch_pos(b.p29.PUCO, b.p33.SUTO, b.p33.PUGU);
+  c.p33.PEFO = latch_pos(b.p29.XADO, b.p33.PEFO, b.p33.PUTE);
+  c.p33.REWO = latch_pos(b.p29.PUCO, b.p33.REWO, b.p33.PUTE);
+  c.p33.RYDU = latch_pos(b.p29.PUCO, b.p33.RYDU, b.p33.PULY);
+  c.p33.SEGA = latch_pos(b.p29.XADO, b.p33.SEGA, b.p33.PULY);
+  c.p33.PEBA = latch_pos(b.p29.XADO, b.p33.PEBA, b.p33.PELO);
+  c.p33.ROKA = latch_pos(b.p29.PUCO, b.p33.ROKA, b.p33.PELO);
+  c.p33.RAMA = latch_pos(b.p29.PUCO, b.p33.RAMA, b.p33.PAWE);
+  c.p33.SEMO = latch_pos(b.p29.XADO, b.p33.SEMO, b.p33.PAWE);
 
-    bool SPR_PIX_B_0;
-    bool SPR_PIX_B_1;
-    bool SPR_PIX_B_2;
-    bool SPR_PIX_B_3;
-    bool SPR_PIX_B_4;
-    bool SPR_PIX_B_5;
-    bool SPR_PIX_B_6;
-    bool SPR_PIX_B_7;
-  };
+  c.p33.LUBO = not(b.p33.PUDU);
+  c.p33.SOLO = not(b.p33.RAMU);
+  c.p33.VOBY = not(b.p33.SELE);
+  c.p33.WERY = not(b.p33.SAJA);
+  c.p33.LUMO = not(b.p33.MYTU);
+  c.p33.LASE = not(b.p33.MOFO);
+  c.p33.WURA = not(b.p33.SUNY);
+  c.p33.WYCO = not(b.p33.SUTO);
+  c.p33.LOZA = not(b.p33.PEFO);
+  c.p33.RATA = not(b.p33.REWO);
+  c.p33.SELU = not(b.p33.RYDU);
+  c.p33.WAMY = not(b.p33.SEGA);
+  c.p33.NUCA = not(b.p33.PEBA);
+  c.p33.SYBO = not(b.p33.ROKA);
+  c.p33.SERY = not(b.p33.RAMA);
+  c.p33.SULU = not(b.p33.SEMO);
 
-  // vram data latches
-  reg PUDU,RAMU,SELE,SAJA,MYTU,MOFO,SUNY,SUTO,PEFO,REWO,RYDU,SEGA,PEBA,ROKA,RAMA,SEMO;
+  c.p33.LUFY = nand(b.p33.LUBO, b.p34.ROBY);
+  c.p33.MAME = nand(b.p33.PUDU, b.p34.ROBY);
+  c.p33.REHU = nand(b.p33.SOLO, b.p34.ROBY);
+  c.p33.RANO = nand(b.p33.RAMU, b.p34.ROBY);
 
-  // Sprite pixel color index shift regs
-  reg NURO,MASO,LEFE,LESU,WYHO,WORA,VAFO,WUFY;
-  reg NYLU,PEFU,NATY,PYJO,VARE,WEBA,VANU,VUPY;
+  c.p33.WAXO = nand(b.p33.VOBY, b.p34.TYTA);
+  c.p33.TYGA = nand(b.p33.SELE, b.p34.TYTA);
+  c.p33.XATO = nand(b.p33.WERY, b.p34.TYTA);
+  c.p33.VEXU = nand(b.p33.SAJA, b.p34.TYTA);
 
-  void tick(const Input& in, Output& out) {
-    // sprite x flip
-    wire POBE = mux2(in.MD4, in.MD3, in.XONO);
-    wire PACY = mux2(in.MD3, in.MD4, in.XONO);
-    wire PONO = mux2(in.MD5, in.MD2, in.XONO);
-    wire PUGU = mux2(in.MD2, in.MD5, in.XONO);
-    wire PUTE = mux2(in.MD7, in.MD0, in.XONO);
-    wire PULY = mux2(in.MD0, in.MD7, in.XONO);
-    wire PELO = mux2(in.MD6, in.MD1, in.XONO);
-    wire PAWE = mux2(in.MD1, in.MD6, in.XONO);
+  c.p33.MAJO = nand(b.p33.LUMO, b.p34.LYKU);
+  c.p33.MYXA = nand(b.p33.MYTU, b.p34.LYKU);
+  c.p33.LYDE = nand(b.p33.LASE, b.p34.LYKU);
+  c.p33.LELA = nand(b.p33.MOFO, b.p34.LYKU);
 
-    // the schematic layout is slightly inconsistent, might have some of these swapped
+  c.p33.XEXU = nand(b.p33.WURA, b.p34.TYCO);
+  c.p33.VABY = nand(b.p33.SUNY, b.p34.TYCO);
+  c.p33.XOLE = nand(b.p33.WYCO, b.p34.TYCO);
+  c.p33.VUME = nand(b.p33.SUTO, b.p34.TYCO);
 
-    wire PUDU_Q = PUDU.latch(in.XADO, POBE);
-    wire RAMU_Q = RAMU.latch(in.PUCO, POBE);
-    wire SELE_Q = SELE.latch(in.PUCO, PACY);
-    wire SAJA_Q = SAJA.latch(in.XADO, PACY);
-    wire MYTU_Q = MYTU.latch(in.XADO, PONO);
-    wire MOFO_Q = MOFO.latch(in.PUCO, PONO);
-    wire SUNY_Q = SUNY.latch(in.XADO, PUGU);
-    wire SUTO_Q = SUTO.latch(in.PUCO, PUGU);
-    wire PEFO_Q = PEFO.latch(in.XADO, PUTE);
-    wire REWO_Q = REWO.latch(in.PUCO, PUTE);
-    wire RYDU_Q = RYDU.latch(in.PUCO, PULY);
-    wire SEGA_Q = RYDU.latch(in.XADO, PULY);
-    wire PEBA_Q = PEBA.latch(in.XADO, PELO);
-    wire ROKA_Q = ROKA.latch(in.PUCO, PELO);
-    wire RAMA_Q = RAMA.latch(in.PUCO, PAWE);
-    wire SEMO_Q = SEMO.latch(in.XADO, PAWE);
+  c.p33.MOFY = nand(b.p33.LOZA, b.p34.LESY);
+  c.p33.MEZU = nand(b.p33.PEFO, b.p34.LESY);
+  c.p33.PYZU = nand(b.p33.RATA, b.p34.LESY);
+  c.p33.PABE = nand(b.p33.REWO, b.p34.LESY);
 
-    wire LUBO = not(PUDU_Q);
-    wire SOLO = not(RAMU_Q);
-    wire VOBY = not(RAMU_Q);
-    wire WERY = not(RAMU_Q);
-    wire LUMO = not(RAMU_Q);
-    wire LASE = not(RAMU_Q);
-    wire WURA = not(RAMU_Q);
-    wire WYCO = not(RAMU_Q);
-    wire LOZA = not(RAMU_Q);
-    wire RATA = not(RAMU_Q);
-    wire SELU = not(RAMU_Q);
-    wire WAMY = not(RAMU_Q);
-    wire NUCA = not(RAMU_Q);
-    wire SYBO = not(RAMU_Q);
-    wire SERY = not(RAMU_Q);
-    wire SULU = not(RAMU_Q);
+  c.p33.TULA = nand(b.p33.SELU, b.p34.XOVU);
+  c.p33.TESO = nand(b.p33.RYDU, b.p34.XOVU);
+  c.p33.XYVE = nand(b.p33.WAMY, b.p34.XOVU);
+  c.p33.VUNE = nand(b.p33.SEGA, b.p34.XOVU);
 
-    wire LUFY = nand(LUBO,   in.ROBY);
-    wire MAME = nand(PUDU_Q, in.ROBY);
-    wire REHU = nand(SOLO,   in.ROBY);
-    wire RANO = nand(RAMU_Q, in.ROBY);
+  c.p33.MADA = nand(b.p33.NUCA, b.p34.LOTA);
+  c.p33.MYTO = nand(b.p33.PEBA, b.p34.LOTA);
+  c.p33.RUCA = nand(b.p33.SYBO, b.p34.LOTA);
+  c.p33.RUSY = nand(b.p33.ROKA, b.p34.LOTA);
 
-    wire WAXO = nand(VOBY,   in.TYTA);
-    wire TYGA = nand(SELE_Q, in.TYTA);
-    wire XATO = nand(WERY,   in.TYTA);
-    wire VEXU = nand(SAJA_Q, in.TYTA);
+  c.p33.TABY = nand(b.p33.SERY, b.p34.SOKA);
+  c.p33.TAPO = nand(b.p33.RAMA, b.p34.SOKA);
+  c.p33.TUPE = nand(b.p33.SULU, b.p34.SOKA);
+  c.p33.TUXA = nand(b.p33.SEMO, b.p34.SOKA);
 
-    wire MAJO = nand(LUMO,   in.LYKU);
-    wire MYXA = nand(MYTU_Q, in.LYKU);
-    wire LYDE = nand(LASE,   in.LYKU);
-    wire LELA = nand(MOFO_Q, in.LYKU);
+  c.p33.NURO = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.PABE, b.p33.PYZU, b.p33.NURO, b.chip.P10_B);
+  c.p33.MASO = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.MYTO, b.p33.MADA, b.p33.MASO, b.p33.NURO);
+  c.p33.LEFE = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.LELA, b.p33.LYDE, b.p33.LEFE, b.p33.MASO);
+  c.p33.LESU = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.MAME, b.p33.LUFY, b.p33.LESU, b.p33.LEFE);
+  c.p33.WYHO = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.VEXU, b.p33.XATO, b.p33.WYHO, b.p33.LESU);
+  c.p33.WORA = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.VABY, b.p33.XEXU, b.p33.WORA, b.p33.WYHO);
+  c.p33.VAFO = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.TUXA, b.p33.TUPE, b.p33.VAFO, b.p33.WORA);
+  c.p33.WUFY = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.VUNE, b.p33.XYVE, b.p33.WUFY, b.p33.VAFO);
 
-    wire XEXU = nand(WURA,   in.TYCO);
-    wire VABY = nand(SUNY_Q, in.TYCO);
-    wire XOLE = nand(WYCO,   in.TYCO);
-    wire VUME = nand(SUTO_Q, in.TYCO);
-
-    wire MOFY = nand(LOZA,   in.LESY);
-    wire MEZU = nand(PEFO_Q, in.LESY);
-    wire PYZU = nand(RATA,   in.LESY);
-    wire PABE = nand(REWO_Q, in.LESY);
-
-    wire TULA = nand(SELU,   in.XOVU);
-    wire TESO = nand(RYDU_Q, in.XOVU);
-    wire XYVE = nand(WAMY,   in.XOVU);
-    wire VUNE = nand(SEGA_Q, in.XOVU);
-
-    wire MADA = nand(NUCA,   in.LOTA);
-    wire MYTO = nand(PEBA_Q, in.LOTA);
-    wire RUCA = nand(SYBO,   in.LOTA);
-    wire RUSY = nand(ROKA_Q, in.LOTA);
-
-    wire TABY = nand(SERY,   in.SOKA);
-    wire TAPO = nand(RAMA_Q, in.SOKA);
-    wire TUPE = nand(SULU,   in.SOKA);
-    wire TUXA = nand(SEMO_Q, in.SOKA);
-
-    wire NURO_Q = NURO.srtock(b.p24.CLKPIPE, PABE, PYZU, in.P10_B);
-    wire MASO_Q = MASO.srtock(b.p24.CLKPIPE, MYTO, MADA, NURO_Q);
-    wire LEFE_Q = LEFE.srtock(b.p24.CLKPIPE, LELA, LYDE, MASO_Q);
-    wire LESU_Q = LESU.srtock(b.p24.CLKPIPE, MAME, LUFY, LEFE_Q);
-    wire WYHO_Q = WYHO.srtock(b.p24.CLKPIPE, VEXU, XATO, LESU_Q);
-    wire WORA_Q = WORA.srtock(b.p24.CLKPIPE, VABY, XEXU, WYHO_Q);
-    wire VAFO_Q = VAFO.srtock(b.p24.CLKPIPE, TUXA, TUPE, WORA_Q);
-    wire WUFY_Q = WUFY.srtock(b.p24.CLKPIPE, VUNE, XYVE, VAFO_Q);
-
-    wire NYLU_Q = NYLU.srtock(b.p24.CLKPIPE, MEZU, MOFY, in.P10_B);
-    wire PEFU_Q = PEFU.srtock(b.p24.CLKPIPE, RUSY, RUCA, NYLU_Q);
-    wire NATY_Q = NATY.srtock(b.p24.CLKPIPE, MYXA, MAJO, PEFU_Q);
-    wire PYJO_Q = PYJO.srtock(b.p24.CLKPIPE, RANO, REHU, NATY_Q);
-    wire VARE_Q = VARE.srtock(b.p24.CLKPIPE, TYGA, WAXO, PYJO_Q);
-    wire WEBA_Q = WEBA.srtock(b.p24.CLKPIPE, VUME, XOLE, VARE_Q);
-    wire VANU_Q = VANU.srtock(b.p24.CLKPIPE, TAPO, TABY, WEBA_Q);
-    wire VUPY_Q = VUPY.srtock(b.p24.CLKPIPE, TESO, TULA, VANU_Q);
-
-    out.SPR_PIX_B_0 = NURO_Q;
-    out.SPR_PIX_B_1 = MASO_Q;
-    out.SPR_PIX_B_2 = LEFE_Q;
-    out.SPR_PIX_B_3 = LESU_Q;
-    out.SPR_PIX_B_4 = WYHO_Q;
-    out.SPR_PIX_B_5 = WORA_Q;
-    out.SPR_PIX_B_6 = VAFO_Q;
-    out.SPR_PIX_B_7 = WUFY_Q;
-
-    out.SPR_PIX_A_0 = NYLU_Q;
-    out.SPR_PIX_A_1 = PEFU_Q;
-    out.SPR_PIX_A_2 = NATY_Q;
-    out.SPR_PIX_A_3 = PYJO_Q;
-    out.SPR_PIX_A_4 = VARE_Q;
-    out.SPR_PIX_A_5 = WEBA_Q;
-    out.SPR_PIX_A_6 = VANU_Q;
-    out.SPR_PIX_A_7 = VUPY_Q;
-  }
-};
+  c.p33.NYLU = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.MEZU, b.p33.MOFY, b.p33.NYLU, b.chip.P10_B);
+  c.p33.PEFU = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.RUSY, b.p33.RUCA, b.p33.PEFU, b.p33.NYLU);
+  c.p33.NATY = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.MYXA, b.p33.MAJO, b.p33.NATY, b.p33.PEFU);
+  c.p33.PYJO = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.RANO, b.p33.REHU, b.p33.PYJO, b.p33.NATY);
+  c.p33.VARE = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.TYGA, b.p33.WAXO, b.p33.VARE, b.p33.PYJO);
+  c.p33.WEBA = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.VUME, b.p33.XOLE, b.p33.WEBA, b.p33.VARE);
+  c.p33.VANU = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.TAPO, b.p33.TABY, b.p33.VANU, b.p33.WEBA);
+  c.p33.VUPY = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p33.TESO, b.p33.TULA, b.p33.VUPY, b.p33.VANU);
+}

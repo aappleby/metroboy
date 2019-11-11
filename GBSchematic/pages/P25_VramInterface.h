@@ -6,6 +6,8 @@ struct P25_VramInterface {
 
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
+  bool WUKO;
+
 private:
 
   bool MYFU_00,MASA_01,MYRE_02,MAVU_03,MEPA_04,MYSA_05,MEWY_06,MUME_07,VOVA_08,VODE_09,RUKY_10,RUMA_11,REHO_12;
@@ -45,7 +47,7 @@ private:
   bool RERY_00,RUNA_01,RONA_02,RUNO_03,SANA_04,RORO_05,RABO_06,SAME_07;
   bool RUGA_00,ROTA_01,RYBU_02,RAJU_03,TYJA_04,REXU_05,RUPY_06,TOKU_07;
 
-  bool XUCY,XEZE,WUKO;
+  bool XUCY,XEZE;
   bool XONU_00,WUDO_01,WAWE_02,WOLU_03;
 
   bool VUZA;

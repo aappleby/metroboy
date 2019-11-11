@@ -43,6 +43,8 @@ struct P21_VideoControl {
   bool TAKO;
   bool SYBE;
 
+  bool TALU;
+
 private:
 
   bool LYHA;
@@ -56,7 +58,7 @@ private:
   bool SYFU,TERY,TUCY,TYKU,RASY,REDA,TYDE,RYME;
   bool SOVU,SUBO,RAPE,PALY;
 
-  bool VENA,MUDE,TALU;
+  bool VENA,MUDE;
   bool SAXO,TYPO,VYZO,TELU,SUDE,TAHA,TYRY;
   bool TOCU,VEPE,VUTY,TUJU,TAFY,TUDA,VATE;
   bool VOKU,TOZU,TECE,TEBO,TEGY;

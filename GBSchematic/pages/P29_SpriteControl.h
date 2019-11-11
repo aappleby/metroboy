@@ -7,4 +7,9 @@ struct P29_SpriteControl {
   bool AVAP;
   bool WUVU;
   bool FEPO;
+  bool WUTY;
+  bool XEFY;
+  bool PUCO;
+  bool XADO;
+  union { bool XONO; bool FLIP_X; };
 };

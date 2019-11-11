@@ -392,8 +392,8 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p25.XUCY = nand(b.p26.NETA, b.p26.PORE);
-  c.p25.XEZE = nand(b.p26.POTU, b.p26.PORE);
+  c.p25.XUCY = nand(b.p27.NETA, b.p27.PORE);
+  c.p25.XEZE = nand(b.p27.POTU, b.p27.PORE);
   c.p25.WUKO = not(b.p25.XEZE);
 
   //----------
@@ -424,7 +424,7 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p25.VUZA = nor(b.p23.FF40_D4, b.p32.PYJU);
   c.p25.VURY_12 = not(b.p25.VUZA);
 
-  if (b.p26.NETA) {
+  if (b.p27.NETA) {
     c.MA04 = b.p25.VAPY_04;
     c.MA05 = b.p25.SEZU_05;
     c.MA06 = b.p25.VEJY_06;

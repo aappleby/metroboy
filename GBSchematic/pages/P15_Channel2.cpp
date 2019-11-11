@@ -67,7 +67,7 @@ void P15_Channel2::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& /*gc*/) {
   pc.CAMA = nor(pb.CEMO, pb.BUTA);
   pc.DOCA = not(pb.CAMA);
 
-  pc.CYRE = tock_pos(!pa.AKYD_05, !pb.AKYD_05, gb.p14.BENY_OUT, pb.CYRE, !pb.CYRE);
+  pc.CYRE = tock_pos(!pa.AKYD_05, !pb.AKYD_05, gb.p14.BENY, pb.CYRE, !pb.CYRE);
   pc.DEME = or(pb.CYRE, gb.p01.BUFY_256, gb.p14.FF19_D6);
   pc.DORA = and(pb.CYRE, gb.p14.FF19_D6);
   pc.FUTE = nor(pb.FF17_D3,pb.FF17_D4,pb.FF17_D5,pb.FF17_D6,pb.FF17_D7);

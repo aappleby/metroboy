@@ -1,6 +1,8 @@
 #pragma once
 
 struct P22_PpuDecode {
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+
   union { bool VOCA; bool FF40; };
   union { bool VARY; bool FF41; };
   union { bool XARO; bool FF42; };
@@ -13,4 +15,10 @@ struct P22_PpuDecode {
   union { bool TEGO; bool FF49; };
   union { bool VYGA; bool FF4A; };
   union { bool VUMY; bool FF4B; };
+
+private:
+
+  bool XALY,WUTU,WERO;
+  bool XOLA,XENO,XUSY,XERA,WADO,WESA,WALO,WEPO;
+  bool WORU,WOFA,WEBU,WAVU,WYLE,WETY,WATE,WYBO,WETA,VAMA,WYVO,WAGE;
 };

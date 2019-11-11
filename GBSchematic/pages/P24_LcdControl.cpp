@@ -1,109 +1,63 @@
+#include "P24_LcdControl.h"
 #include "../Schematics.h"
+
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P24_LcdControl {
-  struct Input {
-    bool CLK2;
-    bool RESET_VIDEO;
+void P24_LcdControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-    bool XYMU;
-    bool SYLO;
-    bool MOSU;
-    bool WODU;
-    bool MYVO;
-    bool FEPO;
-    bool LYRY;
-    bool LYFE;
-    bool NYPE;
-    bool PURE;
-    bool XYDO;
-    bool ROXY; // CLPIPE doesn't tick if this is high
-    bool AVAP;
+  c.p24.LOBY = not(b.p21.XYMU);
+  c.p24.NAFY = nor(b.p27.MOSU, b.p24.LOBY);
+  c.p24.NYKA = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p24.NAFY, b.p24.NYKA, b.p27.LYRY);
+  c.p24.PORY = tock_pos(a.p27.MYVO, b.p27.MYVO, b.p24.NAFY, b.p24.PORY, b.p24.NYKA);
+  c.p24.PYGO = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p21.XYMU, b.p24.PYGO, b.p24.PORY);
+  c.p24.TOMU = not(b.p27.SYLO);
+  c.p24.POKY = unk2(b.p24.PYGO, b.p24.LOBY);
+  c.p24.SOCY = not(b.p24.TOMU);
+  c.p24.VYBO = nor(b.p29.FEPO, b.p21.WODU, b.p27.MYVO);
+  c.p24.TYFA = and(b.p24.SOCY, b.p24.POKY, b.p24.VYBO);
+  c.p24.SEGU = not(b.p24.TYFA);
+  c.p24.SACU = nor(b.p24.SEGU, b.p27.ROXY);
+  c.p24.ROXO = not(b.p24.SEGU);
+  c.p24.PAHO = tock_pos(a.p24.ROXO, b.p24.ROXO, b.p21.XYMU, b.p24.PAHO, b.p21.XYDO);
+  c.p24.TOFU = not(b.p01.RESET_VIDEO);
 
-    bool FF04_D0n;
-    bool FF04_D1n;
-    bool FF40_D7;
+  c.p24.POME = nor(b.p29.AVAP, b.p24.POFY);
+  c.p24.RUJU = or(b.p24.PAHO, b.p24.TOFU, b.p24.POME);
+  c.p24.POFY = not(b.p24.RUJU);
+  c.p24.RUZE = not(b.p24.POFY);
 
-    bool NAPO_OUT;
-    bool RUTU_OUT;
+  c.chip.ST = b.p24.RUZE;
 
-    bool V0,V1,V2,V3,V4,V5,V6,V7;
-  };
+  //----------
+  // Vertical sync
 
-  struct Output {
-    bool CLKPIPE;
+  c.p24.NERU = nor(b.p21.V0, b.p21.V1, b.p21.V2, b.p21.V3, b.p21.V4, b.p21.V5, b.p21.V6, b.p21.V7);
+  c.p24.MEDA = tock_pos(a.p21.NYPE, b.p21.NYPE, b.p21.LYFE, b.p24.MEDA, b.p24.NERU);
+  c.p24.MURE = not(b.p24.MEDA);
 
-    bool PIN_S;
-    bool PIN_CPL;
-    bool PIN_FR;
-    bool PIN_ST;
-  };
+  c.chip.S = b.p24.MURE;
 
-  // 3-bit shift register
-  reg NYKA,PORY,PYGO;
+  //----------
 
-  // dunno
-  reg PAHO,LUCA,LEBE,MEDA;
+  c.p24.LOFU = not(b.p21.RUTU);
+  c.p24.LUCA = tock_pos(a.p24.LOFU, b.p24.LOFU, b.p21.LYFE, b.p24.LUCA, !b.p24.LUCA);
+  c.p24.MAGU = xor(b.p21.NAPO, b.p24.LUCA);
+  c.p24.LEBE = tock_pos(!a.p24.LUCA, !b.p24.LUCA, b.p21.LYFE, b.p24.LEBE, !b.p24.LEBE);
+  c.p24.MECO = not(b.p24.MAGU);
+  c.p24.KEBO = not(b.p24.MECO);
+  c.p24.KASA = not(b.p21.PURE);
+  c.p24.UMOB = not(b.p01.FF04_D0n);
+  c.p24.USEC = not(b.p01.FF04_D1n);
+  c.p24.KEDY = not(b.p23.FF40_D7);
+  c.p24.KAHE = amux2(b.p23.FF40_D7, b.p24.KASA, b.p24.KEDY, b.p24.UMOB);
+  c.p24.KUPA = amux2(b.p23.FF40_D7, b.p24.KEBO, b.p24.KEDY, b.p24.USEC);
+  c.p24.KYMO = not(b.p24.KAHE);
+  c.p24.KOFO = not(b.p24.KUPA);
 
-  void tick(const Input& in, Output& out) {
-    wire LOBY = not(in.XYMU);
-    wire NAFY = nor(in.MOSU, LOBY);
-    wire NYKA_Q = NYKA.tock(in.CLK2, NAFY, in.LYRY);
-    wire PORY_Q = PORY.tock(in.MYVO, NAFY, NYKA_Q);
-    wire PYGO_Q = PYGO.tock(in.CLK2, in.XYMU, PORY_Q);
-    wire TOMU = not(in.SYLO);
-    wire POKY = unk2(PYGO_Q, LOBY);
-    wire SOCY = not(TOMU);
-    wire VYBO = nor(in.FEPO, in.WODU, in.MYVO);
-    wire TYFA = and(SOCY, POKY, VYBO);
-    wire SEGU = not(TYFA);
-    wire SACU = nor(SEGU, in.ROXY);
-    wire ROXO = not(SEGU);
-    wire PAHO_Q = PAHO.tock(ROXO,in.XYMU,in.XYDO);
-    wire TOFU = not(in.RESET_VIDEO);
-
-    // FIXME another logic loop...
-    wire POME = nor(in.AVAP, /*POFY*/false);
-    wire RUJU = or(PAHO_Q, TOFU, POME);
-    wire POFY = not(RUJU);
-    wire RUZE = not(POFY);
-
-    out.PIN_ST = RUZE;
-    out.CLKPIPE = SACU;
-
-    //----------
-    // Vertical sync
-
-    wire NERU = nor(in.V0, in.V1, in.V2, in.V3, in.V4, in.V5, in.V6, in.V7);
-    wire MEDA_Q = MEDA.tock(in.NYPE, in.LYFE, NERU);
-    wire MURE = not(MEDA_Q);
-
-    out.PIN_S = MURE;
-
-    //----------
-
-    wire LOFU = not(in.RUTU_OUT);
-    wire LUCA_Q = LUCA.flip(LOFU, in.LYFE);
-    wire MAGU = xor(in.NAPO_OUT, LUCA_Q);
-    wire LEBE_Q = LEBE.flip(!LUCA.q(), in.LYFE);
-    wire MECO = not(MAGU);
-    wire KEBO = not(MECO);
-    wire KASA = not(in.PURE);
-    wire UMOB = not(in.FF04_D0n);
-    wire USEC = not(in.FF04_D1n);
-    wire KEDY = not(in.FF40_D7);
-    wire KAHE = amux2(in.FF40_D7, KASA, KEDY, UMOB);
-    wire KUPA = amux2(in.FF40_D7, KEBO, KEDY, USEC);
-    wire KYMO = not(KAHE);
-    wire KOFO = not(KUPA);
-
-    // Unused on schematic
-    (void)LEBE_Q;
-
-    out.PIN_CPL = KYMO;
-    out.PIN_FR = KOFO;
-  }
-};
+  c.chip.CPL = b.p24.KYMO;
+  c.chip.FR = b.p24.KOFO;
+}

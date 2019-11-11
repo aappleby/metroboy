@@ -1,301 +1,198 @@
 #include "../Schematics.h"
 
+#include "Gameboy.h"
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P21_VideoControl {
-  struct Input {
-    bool CLKPIPE;
-    bool CLK2;
+void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-    bool FF41;
-    bool CPU_RD2;
-    bool CPU_WR2;
+  c.p21.LYHA = not(b.p01.RESET_VIDEO);
+  c.p21.LYFE = not(b.p21.LYHA);
 
-    bool POVA;
-    bool WESY;
-    bool ACYL;
-    bool AVAP;
-    bool ATEJ; // used for x counter reset
-    bool TOFU; // used for x counter reset
-    bool XYDO;
-    bool RESET_VIDEO;
-    bool FEPO;
+  //----------
+  // x counter. this is a little weird, presumably because it can tick at 4 mhz but not always?
 
-    bool WUVU_Qn; // 2 mhz clock from sprites, I think?
+  c.p21.TADY = nor(b.p28.ATEJ, b.p24.TOFU);
 
-    bool V0,V1,V2,V3,V4,V5,V6,V7;
-    bool FF45_D0,FF45_D1,FF45_D2,FF45_D3,FF45_D4,FF45_D5,FF45_D6,FF45_D7;
+  c.p21.XUKE = and(b.p21.XEHO, b.p21.SAVY);
+  c.p21.XYLE = and(b.p21.XODU, b.p21.XUKE);
+  c.p21.RYBO = xor(b.p21.SAVY, b.p21.XEHO);
+  c.p21.XEGY = xor(b.p21.XODU, b.p21.XUKE);
+  c.p21.XORA = xor(b.p21.XYDO, b.p21.XYLE);
 
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  c.p21.XEHO = tock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p21.TADY, b.p21.XEHO, !b.p21.XEHO);
+  c.p21.SAVY = tock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p21.TADY, b.p21.SAVY, b.p21.RYBO);
+  c.p21.XODU = tock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p21.TADY, b.p21.XODU, b.p21.XEGY);
+  c.p21.XYDO = tock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p21.TADY, b.p21.XYDO, b.p21.XORA);
 
-  struct Output {
-    bool PIN_CPG;
-    bool PALY;
-    bool CP;
+  c.p21.TOCA = not(b.p21.XYDO);
 
-    bool INT_VBL;
-    bool INT_OAM;
-    bool INT_HBL;
-    bool INT_VBL_BUF;
-    bool INT_STAT;
+  c.p21.TYBA = and(b.p21.TUKY, b.p21.TUHU);
+  c.p21.SURY = and(b.p21.TAKO, b.p21.TYBA);
+  c.p21.SAKE = xor(b.p21.TUKY, b.p21.TUHU);
+  c.p21.TYGE = xor(b.p21.TAKO, b.p21.TYBA);
+  c.p21.ROKU = xor(b.p21.SYBE, b.p21.SURY);
 
-    // Y counter
-    bool V0,V1,V2,V3,V4,V5,V6,V7;
+  c.p21.TUHU = tock_pos(a.p21.TOCA, b.p21.TOCA, b.p21.TADY, b.p21.TUHU, !b.p21.TUHU);
+  c.p21.TUKY = tock_pos(a.p21.TOCA, b.p21.TOCA, b.p21.TADY, b.p21.TUKY, b.p21.SAKE);
+  c.p21.TAKO = tock_pos(a.p21.TOCA, b.p21.TOCA, b.p21.TADY, b.p21.TAKO, b.p21.TYGE);
+  c.p21.SYBE = tock_pos(a.p21.TOCA, b.p21.TOCA, b.p21.TADY, b.p21.SYBE, b.p21.ROKU);
 
-    // X counter
-    bool ACAM,AZUB,AMEL,AHAL,APUX,ABEF,ADAZ,ASAH;
+  // polarity?
+  c.p21.ACAM = not(b.p21.XEHO);
+  c.p21.AZUB = not(b.p21.SAVY);
+  c.p21.AMEL = not(b.p21.XODU);
+  c.p21.AHAL = not(b.p21.XYDO);
+  c.p21.APUX = not(b.p21.TUHU);
+  c.p21.ABEF = not(b.p21.TUKY);
+  c.p21.ADAZ = not(b.p21.TAKO);
+  c.p21.ASAH = not(b.p21.SYBE);
 
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  //----------
+  // LY compare
 
+  c.p21.SYFU = xor(b.p21.V7, b.p23.FF45_D7);
+  c.p21.TERY = xor(b.p21.V6, b.p23.FF45_D6);
+  c.p21.TUCY = xor(b.p21.V5, b.p23.FF45_D5);
+  c.p21.TYKU = xor(b.p21.V4, b.p23.FF45_D4);
+  c.p21.RASY = xor(b.p21.V3, b.p23.FF45_D3);
+  c.p21.REDA = xor(b.p21.V2, b.p23.FF45_D2);
+  c.p21.TYDE = xor(b.p21.V1, b.p23.FF45_D1);
+  c.p21.RYME = xor(b.p21.V0, b.p23.FF45_D0);
+
+  c.p21.SOVU = nor(b.p21.SYFU, b.p21.TERY, b.p21.TUCY, b.p21.TYKU);
+  c.p21.SUBO = nor(b.p21.RASY, b.p21.REDA, b.p21.TYDE, b.p21.RYME);
+  c.p21.RAPE = nand(b.p21.SOVU, b.p21.SUBO);
+  c.p21.PALY = not(b.p21.RAPE);
+
+  //----------
+  // top center
+
+  c.p21.VENA = tock_pos(!a.p29.WUVU, !b.p29.WUVU, b.p01.RESET_VIDEO, b.p21.VENA, !b.p21.VENA);
+  c.p21.MUDE = nor(b.p21.RUTU, b.p21.LYHA); // schematic says RUTU_OUT, but I think this is just RUTU?
+  c.p21.TALU = not(!b.p21.VENA);
+
+  c.p21.SAXO = tock_pos(a.p21.TALU,  b.p21.TALU,  b.p21.MUDE, c.p21.SAXO, !c.p21.SAXO);
+  c.p21.TYPO = tock_pos(!a.p21.SAXO, !b.p21.SAXO, b.p21.MUDE, c.p21.TYPO, !c.p21.TYPO);
+  c.p21.VYZO = tock_pos(!a.p21.TYPO, !b.p21.TYPO, b.p21.MUDE, c.p21.VYZO, !c.p21.VYZO);
+  c.p21.TELU = tock_pos(!a.p21.VYZO, !b.p21.VYZO, b.p21.MUDE, c.p21.TELU, !c.p21.TELU);
+  c.p21.SUDE = tock_pos(!a.p21.TELU, !b.p21.TELU, b.p21.MUDE, c.p21.SUDE, !c.p21.SUDE);
+  c.p21.TAHA = tock_pos(!a.p21.SUDE, !b.p21.SUDE, b.p21.MUDE, c.p21.TAHA, !c.p21.TAHA);
+  c.p21.TYRY = tock_pos(!a.p21.TAHA, !b.p21.TAHA, b.p21.MUDE, c.p21.TYRY, !c.p21.TYRY);
+
+  c.p21.TOCU = not(b.p21.SAXO);
+  c.p21.VEPE = not(b.p21.TYPO);
+  c.p21.VUTY = not(b.p21.VYZO);
+  c.p21.TUJU = not(b.p21.TELU);
+  c.p21.TAFY = not(b.p21.SUDE);
+  c.p21.TUDA = not(b.p21.TAHA);
+  c.p21.VATE = not(b.p21.TYRY);
+
+  c.p21.VOKU = nand(b.p21.TUJU, b.p21.TAFY, b.p21.TUDA, b.p21.VATE, b.p21.VUTY, b.p21.VEPE, b.p21.TOCU);
+  c.p21.TOZU = nand(b.p21.TUJU, b.p21.TAFY, b.p21.TUDA, b.p21.VATE, b.p21.VYZO, b.p21.TYPO, b.p21.SAXO);
+  c.p21.TECE = nand(b.p21.TUJU, b.p21.TAHA, b.p21.TUDA, b.p21.TELU, b.p21.VYZO, b.p21.VEPE, b.p21.SAXO);
+  c.p21.TEBO = nand(b.p21.TYRY, b.p21.TAFY, b.p21.SUDE, b.p21.VATE, b.p21.VUTY, b.p21.TYPO, b.p21.SAXO);
+  c.p21.TEGY = nand(b.p21.VOKU, b.p21.TOZU, b.p21.TECE, b.p21.TEBO);
+
+  c.p21.SANU = nand(b.p21.TYRY, b.p21.TAHA, b.p21.SUDE, b.p21.SAXO);
+  c.p21.SONO = not(b.p21.TALU);
+  c.p21.RUTU = tock_pos(a.p21.SONO, b.p21.SONO, b.p21.LYFE, b.p21.RUTU, b.p21.SANU);
+  c.p21.SYGU = tock_pos(a.p21.SONO, b.p21.SONO, b.p21.LYFE, b.p21.SYGU, b.p21.TEGY);
+  c.p21.RYNO = or(b.p21.SYGU, b.p21.RUTU);
+  c.p21.POGU = not(b.p21.RYNO);
+
+  //----------
   // FF41 STAT
-  reg RUGU,REFE,ROPO,RUFO,ROXE;
 
-  // X counter
-  reg XEHO,SAVY,XODU,XYDO,TUHU,TUKY,TAKO,SYBE;
+  c.p21.XYVO = and(b.p21.V4, b.p21.V7);
 
-  // Y counter
-  reg MUWY,MYRO,LEXA,LYDO,LOVU,LEMA,MATO,LAFO;
+  c.p21.NYPE = tock_pos(a.p21.TALU, b.p21.TALU, b.p21.LYFE, b.p21.NYPE, b.p21.RUTU);
+  c.p21.POPU = tock_pos(a.p21.NYPE, b.p21.NYPE, b.p21.LYFE, b.p21.POPU, b.p21.XYVO);
+  c.p21.NAPO = tock_pos(a.p21.POPU, b.p21.POPU, b.p21.LYFE, b.p21.NAPO, !b.p21.NAPO);
 
-  // something counter
-  reg VENA,SAXO,TYPO,VYZO,TELU,SUDE,TAHA,TYRY;
+  c.p21.XUGU = nand(b.p21.XEHO, b.p21.SAVY, b.p21.XODU, b.p21.TUKY, b.p21.SYBE);
+  c.p21.XENA = not(b.p29.FEPO);
+  c.p21.XANO = not(b.p21.XUGU);
+  c.p21.PARU = not(!b.p21.POPU);
+  c.p21.WODU = and(b.p21.XENA, b.p21.XANO);
 
-  // something else counter
-  reg NYPE,POPU,NAPO;
+  c.p21.PURE = not(b.p21.RUTU);
+  c.p21.SELA = not(b.p21.PURE);
+  c.p21.TOLU = not(b.p21.PARU);
+  c.p21.TAPA = and(b.p21.SELA, b.p21.TOLU);
+  c.p21.TARU = and(b.p21.TOLU, b.p21.WODU);
+  c.p21.VYPU = not(b.p21.TOLU);
 
-  // control regs for something...
-  reg RUTU,SYGU,VOGA,MYTA;
+  //---
 
-  void tick(const Input& in, Output& out) {
-    wire LYHA = not(in.RESET_VIDEO);
-    wire LYFE = not(LYHA);
+  c.p21.SEPA = and(b.p07.CPU_WR2, b.p22.FF41);
 
-    //----------
-    // x counter
+  c.p21.VOGA = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p21.TADY, b.p21.VOGA, b.p21.WODU);
+  c.p21.WEGO = or(b.p24.TOFU, b.p21.VOGA);
+  c.p21.XAJO = and(b.p21.XEHO, b.p21.XYDO);
+  c.p21.XYMU = or(b.p21.WEGO, b.p29.AVAP);
+  c.p21.WUSA = or(b.p21.XAJO, b.p21.WEGO);
+  c.p21.TOBA = and(b.p24.CLKPIPE, b.p21.WUSA);
+  c.p21.SADU = nor(b.p21.XYMU, b.p21.PARU);
+  c.p21.XATY = nor(b.p28.ACYL, b.p21.XYMU);
+  c.p21.SEMU = or(b.p21.TOBA, b.p27.POVA);
+  c.p21.RYJU = not(b.p21.SEPA);
+  c.p21.RYPO = not(b.p21.SEMU);
+  c.p21.PAGO = or(b.p01.WESY, b.p21.RYJU);
 
-    wire TADY = nor(in.ATEJ, in.TOFU);
+  //---
 
-    wire XEHO_Q = XEHO.q();
-    wire SAVY_Q = SAVY.q();
-    wire XODU_Q = XODU.q();
-    wire XYDO_Q = XYDO.q();
+  c.p21.RYVE = not(b.p21.SEPA);
+  c.p21.RUGU = tock_pos(a.p21.RYVE, b.p21.RYVE, b.p01.WESY, b.p21.RUGU, b.D6);
+  c.p21.REFE = tock_pos(a.p21.RYVE, b.p21.RYVE, b.p01.WESY, b.p21.REFE, b.D5);
+  c.p21.RUFO = tock_pos(a.p21.RYVE, b.p21.RYVE, b.p01.WESY, b.p21.RUFO, b.D4);
+  c.p21.ROXE = tock_pos(a.p21.RYVE, b.p21.RYVE, b.p01.WESY, b.p21.ROXE, b.D3);
 
-    wire XUKE = and(XEHO_Q, SAVY_Q);
-    wire XYLE = and(XODU_Q, XUKE);
-    wire RYBO = xor(SAVY_Q, XEHO_Q);
-    wire XEGY = xor(XODU_Q, XUKE);
-    wire XORA = xor(XYDO_Q, XYLE);
+  c.p21.ROPO = tock_pos(a.p21.TALU, b.p21.TALU, b.p01.WESY, b.p21.ROPO, b.p21.PALY); // this seems odd
 
-    XEHO.tock(in.CLKPIPE, TADY, !XEHO_Q);
-    SAVY.tock(in.CLKPIPE, TADY, RYBO);
-    XODU.tock(in.CLKPIPE, TADY, XEGY);
-    XYDO.tock(in.CLKPIPE, TADY, XORA);
+  c.p21.PUZO = not(!b.p21.ROXE);
+  c.p21.SASY = not(!b.p21.REFE);
+  c.p21.POFO = not(!b.p21.RUFO);
+  c.p21.POTE = not(!b.p21.RUGU);
+  c.p21.TEBY = not(b.p21.SADU); // these two are the STAT mode signal
+  c.p21.WUGA = not(b.p21.XATY);
 
-    wire TOCA = not(XYDO_Q);
+  c.p21.SUKO = amux4(b.p21.RUGU, b.p21.ROPO, b.p21.REFE, b.p21.INT_OAM, b.p21.RUFO, b.p21.INT_VBL, b.p21.ROXE, b.p21.INT_HBL);
+  c.p21.TUVA = not(b.p21.SUKO);
+  c.p21.VOTY = not(b.p21.TUVA);
+  c.p21.RUPO = unk2(b.p21.ROPO, b.p21.PAGO);
+  c.p21.SEGO = not(b.p21.RUPO);
 
-    wire TUHU_Q = TUHU.q();
-    wire TUKY_Q = TUKY.q();
-    wire TAKO_Q = TAKO.q();
-    wire SYBE_Q = SYBE.q();
+  c.p21.TOBE = and(b.p07.CPU_RD2, b.p22.FF41);
+  c.p21.VAVE = b.p21.TOBE; // buffer, not inverter
 
-    wire TYBA = and(TUKY_Q, TUHU_Q);
-    wire SURY = and(TAKO_Q, TYBA);
-    wire SAKE = xor(TUKY_Q, TUHU_Q);
-    wire TYGE = xor(TAKO_Q, TYBA);
-    wire ROKU = xor(SYBE_Q, SURY);
-
-    TUHU.tock(TOCA, TADY, !TUHU_Q);
-    TUKY.tock(TOCA, TADY, SAKE);
-    TAKO.tock(TOCA, TADY, TYGE);
-    SYBE.tock(TOCA, TADY, ROKU);
-
-    // polarity?
-    out.ACAM = not(XEHO_Q);
-    out.AZUB = not(SAVY_Q);
-    out.AMEL = not(XODU_Q);
-    out.AHAL = not(XYDO_Q);
-    out.APUX = not(TUHU_Q);
-    out.ABEF = not(TUKY_Q);
-    out.ADAZ = not(TAKO_Q);
-    out.ASAH = not(SYBE_Q);
-
-    //----------
-    // LY compare
-
-    wire SYFU = xor(in.V7, in.FF45_D7);
-    wire TERY = xor(in.V6, in.FF45_D6);
-    wire TUCY = xor(in.V5, in.FF45_D5);
-    wire TYKU = xor(in.V4, in.FF45_D4);
-    wire RASY = xor(in.V3, in.FF45_D3);
-    wire REDA = xor(in.V2, in.FF45_D2);
-    wire TYDE = xor(in.V1, in.FF45_D1);
-    wire RYME = xor(in.V0, in.FF45_D0);
-
-    wire SOVU = nor(SYFU, TERY, TUCY, TYKU);
-    wire SUBO = nor(RASY, REDA, TYDE, RYME);
-    wire RAPE = nand(SOVU, SUBO);
-    wire PALY = not(RAPE);
-
-    out.PALY = PALY;
-
-    //----------
-    // top center
-
-    wire RUTU_Q = RUTU.q();
-    wire SYGU_Q = SYGU.q();
-    wire RUTU_OUT = RUTU_Q; // not sure where this comes from
-
-    wire VENA_Q = VENA.flip(!in.WUVU_Qn, in.RESET_VIDEO);
-    wire MUDE = nor(RUTU_Q, LYHA); // schematic says RUTU_OUT, but I think this is just RUTU_Q?
-    wire TALU = not(!VENA_Q);
-
-    // FIXME daisy chain
-    wire SAXO_Q = SAXO.flip(TALU,      MUDE);
-    wire TYPO_Q = TYPO.flip(!SAXO.q(), MUDE);
-    wire VYZO_Q = TYPO.flip(!TYPO.q(), MUDE);
-    wire TELU_Q = TYPO.flip(!VYZO.q(), MUDE);
-    wire SUDE_Q = TYPO.flip(!TELU.q(), MUDE);
-    wire TAHA_Q = TYPO.flip(!SUDE.q(), MUDE);
-    wire TYRY_Q = TYPO.flip(!TAHA.q(), MUDE);
-
-    wire TOCU = not(SAXO_Q);
-    wire VEPE = not(TYPO_Q);
-    wire VUTY = not(VYZO_Q);
-    wire TUJU = not(TELU_Q);
-    wire TAFY = not(SUDE_Q);
-    wire TUDA = not(TAHA_Q);
-    wire VATE = not(TYRY_Q);
-
-    wire VOKU = nand(TUJU,   TAFY,   TUDA,   VATE,   VUTY,   VEPE,   TOCU);
-    wire TOZU = nand(TUJU,   TAFY,   TUDA,   VATE,   VYZO_Q, TYPO_Q, SAXO_Q);
-    wire TECE = nand(TUJU,   TAHA_Q, TUDA,   TELU_Q, VYZO_Q, VEPE,   SAXO_Q);
-    wire TEBO = nand(TYRY_Q, TAFY,   SUDE_Q, VATE,   VUTY,   TYPO_Q, SAXO_Q);
-    wire TEGY = nand(VOKU, TOZU, TECE, TEBO);
-
-    wire SANU = nand(TYRY_Q, TAHA_Q, SUDE_Q, SAXO_Q);
-    wire SONO = not(TALU);
-    RUTU.tock(SONO, LYFE, SANU);
-    SYGU.tock(SONO, LYFE, TEGY);
-    wire RYNO = or(SYGU_Q, RUTU_Q);
-    wire POGU = not(RYNO);
-
-    out.PIN_CPG = POGU;
-
-    //----------
-    // FF41 STAT
-
-    wire XYVO = and(in.V4, in.V7);
-
-    // FIXME daisy chain
-    wire NYPE_Q = NYPE.tock(TALU,     LYFE, RUTU_Q); // RUTU_OUT on the schematic?
-    wire POPU_Q = POPU.tock(NYPE.q(), LYFE, XYVO);
-    wire NAPO_Q = NAPO.flip(POPU.q(), LYFE);
-
-    wire XUGU = nand(XEHO_Q, SAVY_Q, XODU_Q, TUKY_Q, SYBE_Q);
-    wire XENA = not(in.FEPO);
-    wire XANO = not(XUGU);
-    wire PARU = not(!POPU_Q);
-    wire WODU = and(XENA, XANO);
-
-    wire PURE = not(RUTU_Q);
-    wire SELA = not(PURE);
-    wire TOLU = not(PARU);
-    wire TAPA = and(SELA, TOLU);
-    wire TARU = and(TOLU, WODU);
-    wire VYPU = not(TOLU);
-
-    out.INT_VBL = PARU;
-    out.INT_OAM = TAPA;
-    out.INT_HBL = TARU;
-    out.INT_VBL_BUF = VYPU;
-
-    //---
-
-    wire SEPA = and(in.CPU_WR2, in.FF41);
-
-    wire VOGA_Q = VOGA.tock(in.CLK2, TADY, WODU);
-    wire WEGO = or(in.TOFU, VOGA_Q);
-    wire XAJO = and(XEHO_Q, XYDO_Q);
-    wire XYMU = unk2(WEGO, in.AVAP);
-    wire WUSA = unk2(XAJO, WEGO);
-    wire TOBA = and(in.CLKPIPE, WUSA);
-    wire SADU = nor(XYMU, PARU);
-    wire XATY = nor(in.ACYL, XYMU);
-    wire SEMU = or(TOBA, in.POVA);
-    wire RYJU = not(SEPA);
-    wire RYPO = not(SEMU);
-    wire PAGO = or(in.WESY, RYJU);
-
-    out.CP = RYPO;
-
-    //---
-
-    wire RYVE = not(SEPA);
-    wire RUGU_Q = RUGU.tock(RYVE, in.WESY, in.D6);
-    wire REFE_Q = REFE.tock(RYVE, in.WESY, in.D5);
-    wire ROPO_Q = ROPO.tock(TALU, in.WESY, PALY); // this seems odd
-    wire RUFO_Q = RUFO.tock(RYVE, in.WESY, in.D4);
-    wire ROXE_Q = ROXE.tock(RYVE, in.WESY, in.D3);
-
-    wire PUZO = not(!ROXE_Q);
-    wire SASY = not(!REFE_Q);
-    wire POFO = not(!RUFO_Q);
-    wire POTE = not(!RUGU_Q);
-    wire TEBY = not(SADU); // these two are the STAT mode signal
-    wire WUGA = not(XATY);
-
-    wire SUKO = amux4(RUGU_Q, ROPO_Q, REFE_Q, out.INT_OAM, RUFO_Q, out.INT_VBL, ROXE_Q, out.INT_HBL);
-    wire TUVA = not(SUKO);
-    wire VOTY = not(TUVA);
-    wire RUPO = unk2(ROPO_Q, PAGO);
-    wire SEGO = not(RUPO);
-
-    out.INT_STAT = VOTY;
-
-    wire TOBE = and(in.CPU_RD2, in.FF41);
-    wire VAVE = TOBE; // buffer, not inverter
-
-    if (TOBE) {
-      out.D_OE = true;
-      out.D0 = TEBY;
-      out.D1 = WUGA;
-      out.D2 = SEGO;
-    }
-    if (VAVE) {
-      out.D_OE = true;
-      out.D3 = PUZO;
-      out.D4 = POFO;
-      out.D5 = SASY;
-      out.D6 = POTE;
-    }
-
-    //----------
-    // y counter
-
-    wire NOKO = and(in.V7, in.V4, in.V0, in.V1);
-    wire MYTA_Q = MYTA.tock(NYPE_Q, LYFE, NOKO);
-    wire LAMA = nor(MYTA_Q, LYHA);
-
-    wire MUWY_Q = MUWY.flip(RUTU_Q,  LAMA);
-    wire MYRO_Q = MYRO.flip(!MUWY_Q, LAMA);
-    wire LEXA_Q = LEXA.flip(!MYRO_Q, LAMA);
-    wire LYDO_Q = LYDO.flip(!LEXA_Q, LAMA);
-    wire LOVU_Q = LOVU.flip(!LYDO_Q, LAMA);
-    wire LEMA_Q = LEMA.flip(!LOVU_Q, LAMA);
-    wire MATO_Q = MATO.flip(!LEMA_Q, LAMA);
-    wire LAFO_Q = LAFO.flip(!MATO_Q, LAMA);
-
-    out.V0 = MUWY_Q;
-    out.V1 = MYRO_Q;
-    out.V2 = LEXA_Q;
-    out.V3 = LYDO_Q;
-    out.V4 = LOVU_Q;
-    out.V5 = LEMA_Q;
-    out.V6 = MATO_Q;
-    out.V7 = LAFO_Q;
+  if (b.p21.TOBE) {
+    c.D0 = b.p21.TEBY;
+    c.D1 = b.p21.WUGA;
+    c.D2 = b.p21.SEGO;
   }
-};
+  if (b.p21.VAVE) {
+    c.D3 = b.p21.PUZO;
+    c.D4 = b.p21.POFO;
+    c.D5 = b.p21.SASY;
+    c.D6 = b.p21.POTE;
+  }
+
+  //----------
+  // y counter
+
+  c.p21.NOKO = and(b.p21.V7, b.p21.V4, b.p21.V0, b.p21.V1);
+  c.p21.MYTA = tock_pos(a.p21.NYPE, b.p21.NYPE, b.p21.LYFE, b.p21.MYTA, b.p21.NOKO);
+  c.p21.LAMA = nor(b.p21.MYTA, b.p21.LYHA);
+
+  c.p21.MUWY = tock_pos(a.p21.RUTU,  b.p21.RUTU,  b.p21.LAMA, c.p21.MUWY, !c.p21.MUWY);
+  c.p21.MYRO = tock_pos(!a.p21.MUWY, !b.p21.MUWY, b.p21.LAMA, c.p21.MYRO, !c.p21.MYRO);
+  c.p21.LEXA = tock_pos(!a.p21.MYRO, !b.p21.MYRO, b.p21.LAMA, c.p21.LEXA, !c.p21.LEXA);
+  c.p21.LYDO = tock_pos(!a.p21.LEXA, !b.p21.LEXA, b.p21.LAMA, c.p21.LYDO, !c.p21.LYDO);
+  c.p21.LOVU = tock_pos(!a.p21.LYDO, !b.p21.LYDO, b.p21.LAMA, c.p21.LOVU, !c.p21.LOVU);
+  c.p21.LEMA = tock_pos(!a.p21.LOVU, !b.p21.LOVU, b.p21.LAMA, c.p21.LEMA, !c.p21.LEMA);
+  c.p21.MATO = tock_pos(!a.p21.LEMA, !b.p21.LEMA, b.p21.LAMA, c.p21.MATO, !c.p21.MATO);
+  c.p21.LAFO = tock_pos(!a.p21.MATO, !b.p21.MATO, b.p21.LAMA, c.p21.LAFO, !c.p21.LAFO);
+}

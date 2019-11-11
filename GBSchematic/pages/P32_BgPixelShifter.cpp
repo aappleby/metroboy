@@ -116,25 +116,25 @@ struct P32_BgPixelShifter {
     bool NUTE = nand(LOZE, NASA_Q);
     bool NAJA = nand(LOZE, NEFO_Q);
 
-    bool TOMY_Q = TOMY.srtock(in.CLKPIPE, TUXE, SEJA, in.P10_B);
-    bool TACA_Q = TACA.srtock(in.CLKPIPE, SOLY, SENO, TOMY_Q);
-    bool SADY_Q = SADY.srtock(in.CLKPIPE, RUCE, SURE, TACA_Q);
-    bool RYSA_Q = RYSA.srtock(in.CLKPIPE, RYJA, SEBO, SADY_Q);
-    bool SOBO_Q = SOBO.srtock(in.CLKPIPE, RUTO, SUCA, RYSA_Q);
-    bool SETU_Q = SETU.srtock(in.CLKPIPE, RAJA, SYWE, SOBO_Q);
-    bool RALU_Q = RALU.srtock(in.CLKPIPE, RAJO, SUPU, SETU_Q);
-    bool SOHU_Q = SOHU.srtock(in.CLKPIPE, RAGA, RYJY, RALU_Q);
+    bool TOMY_Q = TOMY.srtock(b.p24.CLKPIPE, TUXE, SEJA, in.P10_B);
+    bool TACA_Q = TACA.srtock(b.p24.CLKPIPE, SOLY, SENO, TOMY_Q);
+    bool SADY_Q = SADY.srtock(b.p24.CLKPIPE, RUCE, SURE, TACA_Q);
+    bool RYSA_Q = RYSA.srtock(b.p24.CLKPIPE, RYJA, SEBO, SADY_Q);
+    bool SOBO_Q = SOBO.srtock(b.p24.CLKPIPE, RUTO, SUCA, RYSA_Q);
+    bool SETU_Q = SETU.srtock(b.p24.CLKPIPE, RAJA, SYWE, SOBO_Q);
+    bool RALU_Q = RALU.srtock(b.p24.CLKPIPE, RAJO, SUPU, SETU_Q);
+    bool SOHU_Q = SOHU.srtock(b.p24.CLKPIPE, RAGA, RYJY, RALU_Q);
 
     out.BG_PIX_B_7 = SOHU_Q;
 
-    bool MYDE_Q = MYDE.srtock(in.CLKPIPE, LAKY, LOTY, in.P10_B);
-    bool NOZO_Q = NOZO.srtock(in.CLKPIPE, NYXO, NEXA, MYDE_Q);
-    bool MOJU_Q = MOJU.srtock(in.CLKPIPE, LOTO, LUTU, NOZO_Q);
-    bool MACU_Q = MACU.srtock(in.CLKPIPE, LYDU, LUJA, MOJU_Q);
-    bool NEPO_Q = NEPO.srtock(in.CLKPIPE, MYVY, MOSY, MACU_Q);
-    bool MODU_Q = MODU.srtock(in.CLKPIPE, LODO, LERU, NEPO_Q);
-    bool NEDA_Q = NEDA.srtock(in.CLKPIPE, NUTE, NYHA, MODU_Q);
-    bool PYBO_Q = PYBO.srtock(in.CLKPIPE, NAJA, NADY, NEDA_Q);
+    bool MYDE_Q = MYDE.srtock(b.p24.CLKPIPE, LAKY, LOTY, in.P10_B);
+    bool NOZO_Q = NOZO.srtock(b.p24.CLKPIPE, NYXO, NEXA, MYDE_Q);
+    bool MOJU_Q = MOJU.srtock(b.p24.CLKPIPE, LOTO, LUTU, NOZO_Q);
+    bool MACU_Q = MACU.srtock(b.p24.CLKPIPE, LYDU, LUJA, MOJU_Q);
+    bool NEPO_Q = NEPO.srtock(b.p24.CLKPIPE, MYVY, MOSY, MACU_Q);
+    bool MODU_Q = MODU.srtock(b.p24.CLKPIPE, LODO, LERU, NEPO_Q);
+    bool NEDA_Q = NEDA.srtock(b.p24.CLKPIPE, NUTE, NYHA, MODU_Q);
+    bool PYBO_Q = PYBO.srtock(b.p24.CLKPIPE, NAJA, NADY, NEDA_Q);
 
     out.BG_PIX_A_7 = PYBO_Q;
   }

@@ -132,23 +132,23 @@ struct P33_SpritePixelShifter {
     wire TUPE = nand(SULU,   in.SOKA);
     wire TUXA = nand(SEMO_Q, in.SOKA);
 
-    wire NURO_Q = NURO.srtock(in.CLKPIPE, PABE, PYZU, in.P10_B);
-    wire MASO_Q = MASO.srtock(in.CLKPIPE, MYTO, MADA, NURO_Q);
-    wire LEFE_Q = LEFE.srtock(in.CLKPIPE, LELA, LYDE, MASO_Q);
-    wire LESU_Q = LESU.srtock(in.CLKPIPE, MAME, LUFY, LEFE_Q);
-    wire WYHO_Q = WYHO.srtock(in.CLKPIPE, VEXU, XATO, LESU_Q);
-    wire WORA_Q = WORA.srtock(in.CLKPIPE, VABY, XEXU, WYHO_Q);
-    wire VAFO_Q = VAFO.srtock(in.CLKPIPE, TUXA, TUPE, WORA_Q);
-    wire WUFY_Q = WUFY.srtock(in.CLKPIPE, VUNE, XYVE, VAFO_Q);
+    wire NURO_Q = NURO.srtock(b.p24.CLKPIPE, PABE, PYZU, in.P10_B);
+    wire MASO_Q = MASO.srtock(b.p24.CLKPIPE, MYTO, MADA, NURO_Q);
+    wire LEFE_Q = LEFE.srtock(b.p24.CLKPIPE, LELA, LYDE, MASO_Q);
+    wire LESU_Q = LESU.srtock(b.p24.CLKPIPE, MAME, LUFY, LEFE_Q);
+    wire WYHO_Q = WYHO.srtock(b.p24.CLKPIPE, VEXU, XATO, LESU_Q);
+    wire WORA_Q = WORA.srtock(b.p24.CLKPIPE, VABY, XEXU, WYHO_Q);
+    wire VAFO_Q = VAFO.srtock(b.p24.CLKPIPE, TUXA, TUPE, WORA_Q);
+    wire WUFY_Q = WUFY.srtock(b.p24.CLKPIPE, VUNE, XYVE, VAFO_Q);
 
-    wire NYLU_Q = NYLU.srtock(in.CLKPIPE, MEZU, MOFY, in.P10_B);
-    wire PEFU_Q = PEFU.srtock(in.CLKPIPE, RUSY, RUCA, NYLU_Q);
-    wire NATY_Q = NATY.srtock(in.CLKPIPE, MYXA, MAJO, PEFU_Q);
-    wire PYJO_Q = PYJO.srtock(in.CLKPIPE, RANO, REHU, NATY_Q);
-    wire VARE_Q = VARE.srtock(in.CLKPIPE, TYGA, WAXO, PYJO_Q);
-    wire WEBA_Q = WEBA.srtock(in.CLKPIPE, VUME, XOLE, VARE_Q);
-    wire VANU_Q = VANU.srtock(in.CLKPIPE, TAPO, TABY, WEBA_Q);
-    wire VUPY_Q = VUPY.srtock(in.CLKPIPE, TESO, TULA, VANU_Q);
+    wire NYLU_Q = NYLU.srtock(b.p24.CLKPIPE, MEZU, MOFY, in.P10_B);
+    wire PEFU_Q = PEFU.srtock(b.p24.CLKPIPE, RUSY, RUCA, NYLU_Q);
+    wire NATY_Q = NATY.srtock(b.p24.CLKPIPE, MYXA, MAJO, PEFU_Q);
+    wire PYJO_Q = PYJO.srtock(b.p24.CLKPIPE, RANO, REHU, NATY_Q);
+    wire VARE_Q = VARE.srtock(b.p24.CLKPIPE, TYGA, WAXO, PYJO_Q);
+    wire WEBA_Q = WEBA.srtock(b.p24.CLKPIPE, VUME, XOLE, VARE_Q);
+    wire VANU_Q = VANU.srtock(b.p24.CLKPIPE, TAPO, TABY, WEBA_Q);
+    wire VUPY_Q = VUPY.srtock(b.p24.CLKPIPE, TESO, TULA, VANU_Q);
 
     out.SPR_PIX_B_0 = NURO_Q;
     out.SPR_PIX_B_1 = MASO_Q;

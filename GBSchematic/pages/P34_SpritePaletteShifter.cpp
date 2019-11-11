@@ -93,14 +93,14 @@ struct P34_SpritePaletteShifter {
     bool LAMY = nand(XOVU, in.GOMO);
     bool LUNU = nand(XOVU, LAFY);
 
-    bool RUGO_Q = RUGO.srtock(in.CLKPIPE, PUME, SUCO, in.P10_B);
-    bool SATA_Q = SATA.srtock(in.CLKPIPE, SORO, TAFA, RUGO_Q);
-    bool ROSA_Q = ROSA.srtock(in.CLKPIPE, PAMO, PYZY, SATA_Q);
-    bool SOMY_Q = SOMY.srtock(in.CLKPIPE, SUKY, TOWA, ROSA_Q);
-    bool PALU_Q = PALU.srtock(in.CLKPIPE, RORA, RUDU, SOMY_Q);
-    bool NUKE_Q = NUKE.srtock(in.CLKPIPE, MENE, PAZO, PALU_Q);
-    bool MODA_Q = MODA.srtock(in.CLKPIPE, LUKE, LOWA, NUKE_Q);
-    bool LYME_Q = LYME.srtock(in.CLKPIPE, LAMY, LUNU, MODA_Q);
+    bool RUGO_Q = RUGO.srtock(b.p24.CLKPIPE, PUME, SUCO, in.P10_B);
+    bool SATA_Q = SATA.srtock(b.p24.CLKPIPE, SORO, TAFA, RUGO_Q);
+    bool ROSA_Q = ROSA.srtock(b.p24.CLKPIPE, PAMO, PYZY, SATA_Q);
+    bool SOMY_Q = SOMY.srtock(b.p24.CLKPIPE, SUKY, TOWA, ROSA_Q);
+    bool PALU_Q = PALU.srtock(b.p24.CLKPIPE, RORA, RUDU, SOMY_Q);
+    bool NUKE_Q = NUKE.srtock(b.p24.CLKPIPE, MENE, PAZO, PALU_Q);
+    bool MODA_Q = MODA.srtock(b.p24.CLKPIPE, LUKE, LOWA, NUKE_Q);
+    bool LYME_Q = LYME.srtock(b.p24.CLKPIPE, LAMY, LUNU, MODA_Q);
 
     bool LOME = not(LYME_Q);
     bool LAFU = nand(LOME, in.BGPIXELn);

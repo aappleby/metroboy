@@ -1,12 +1,179 @@
-#include "Platform.h"
-
-#include "Common.h"
 #include "Gameboy.h"
 
 #include <string>
 
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
+
+#pragma warning(disable : 4996)
+extern uint8_t rom_buf[];
+
 static const std::string micro_tests[] = {
-  "ppu_sprite0_scx0_a",
+  "poweron_000_div",
+  "poweron_004_div",
+  "poweron_005_div",
+
+  "timer_div_phase_c",
+  "timer_div_phase_d",
+
+  "break",
+
+  "timer_tima_write_a",
+  "timer_tima_write_b",
+  "timer_tima_write_c",
+  "timer_tima_write_d",
+  "timer_tima_write_e",
+  "timer_tima_write_f",
+
+  "timer_tma_load_a",
+  "timer_tma_load_b",
+  "timer_tma_load_c",
+
+  "timer_tma_write_a",
+  "timer_tma_write_b",
+
+  "timer_tima_phase_a",
+  "timer_tima_phase_b",
+  "timer_tima_phase_c",
+  "timer_tima_phase_d",
+  "timer_tima_phase_e",
+  "timer_tima_phase_f",
+  "timer_tima_phase_g",
+  "timer_tima_phase_h",
+  "timer_tima_phase_i",
+  "timer_tima_phase_j",
+
+  //"break",
+
+  "timer_int_inc_sled",
+  "timer_int_inc_sled_a",
+  "timer_int_inc_sled_b",
+
+  "break",
+
+  "poweron_000_ly",
+  "poweron_119_ly",
+  "poweron_120_ly",
+  "poweron_233_ly",
+  "poweron_234_ly",
+
+  "poweron_000_stat",
+  "poweron_005_stat",
+  "poweron_006_stat",
+  "poweron_007_stat",
+  "poweron_026_stat",
+  "poweron_027_stat",
+  "poweron_069_stat",
+  "poweron_070_stat",
+  "poweron_119_stat",
+  "poweron_120_stat",
+  "poweron_121_stat",
+  "poweron_140_stat",
+  "poweron_141_stat",
+  "poweron_183_stat",
+  "poweron_184_stat",
+  "poweron_234_stat",
+  "poweron_235_stat",
+
+  "poweron_000_oam",
+  "poweron_005_oam",
+  "poweron_006_oam",
+  "poweron_069_oam",
+  "poweron_070_oam",
+  "poweron_119_oam",
+  "poweron_120_oam",
+  "poweron_121_oam",
+  "poweron_183_oam",
+  "poweron_184_oam",
+  "poweron_233_oam",
+  "poweron_234_oam",
+  "poweron_235_oam",
+
+  "poweron_000_vram",
+  "poweron_025_vram",
+  "poweron_026_vram",
+  "poweron_069_vram",
+  "poweron_070_vram",
+  "poweron_139_vram",
+  "poweron_140_vram",
+  "poweron_183_vram",
+  "poweron_184_vram",
+
+  //"break",
+
+  "poweron_oam_read_a",
+  "poweron_oam_read_b",
+  "poweron_oam_read_c",
+  "poweron_oam_read_d",
+
+  "break",
+
+  "lcdon_to_stat0_a",
+  "lcdon_to_stat0_b",
+  "lcdon_to_stat0_c",
+  "lcdon_to_stat0_d",
+
+  "lcdon_to_stat1_a",
+  "lcdon_to_stat1_b",
+  "lcdon_to_stat1_c",
+  "lcdon_to_stat1_d",
+  "lcdon_to_stat1_e",
+
+  "lcdon_to_stat2_a",
+  "lcdon_to_stat2_b",
+  "lcdon_to_stat2_c",
+  "lcdon_to_stat2_d",
+
+  "lcdon_to_stat3_a",
+  "lcdon_to_stat3_b",
+  "lcdon_to_stat3_c",
+  "lcdon_to_stat3_d",
+
+  "break",
+
+  "lcdon_to_ly1_a",
+  "lcdon_to_ly1_b",
+  "lcdon_to_ly2_a",
+  "lcdon_to_ly2_b",
+  "lcdon_to_ly3_a",
+  "lcdon_to_ly3_b",
+
+  "break",
+
+  "lcdon_to_lyc1_int",
+  "lcdon_to_lyc2_int",
+  "lcdon_to_lyc3_int",
+
+  "break",
+
+  "lcdon_to_oam_int_l0",
+  "lcdon_to_oam_int_l1",
+  "lcdon_to_oam_int_l2",
+
+  "break",
+
+  "-----",
+  "lcdon_to_hblank_int_l0",
+  "lcdon_to_hblank_int_l1",
+  "lcdon_to_hblank_int_l2",
+  "lcdon_to_hblank_int_scx0",
+  "lcdon_to_hblank_int_scx1",
+  "lcdon_to_hblank_int_scx2",
+  "lcdon_to_hblank_int_scx3",
+  "lcdon_to_hblank_int_scx4",
+  "lcdon_to_hblank_int_scx5",
+  "lcdon_to_hblank_int_scx6",
+  "lcdon_to_hblank_int_scx7",
+
+  "lcdon_to_hblank_di_timing_a",
+  "lcdon_to_hblank_di_timing_b",
+
+  "004-tima_boot_phase",
+
+  //"ppu_sprite0_scx0_a", // where did this one go?
   "ppu_sprite0_scx0_b",
   "ppu_sprite0_scx1_a",
   "ppu_sprite0_scx1_b",
@@ -119,7 +286,6 @@ static const std::string micro_tests[] = {
   "vram_write_l1_b",
   "vram_write_l1_c",
   "vram_write_l1_d",
-
   "-----",
   "hblank_int_scx0_halt_a",
   "hblank_int_scx1_halt_a",
@@ -251,60 +417,6 @@ static const std::string micro_tests[] = {
   "vblank2_int_if_d",
 
   "-----",
-  "lcdon_to_hblank_int_l0",
-  "lcdon_to_hblank_int_l1",
-  "lcdon_to_hblank_int_l2",
-  "lcdon_to_hblank_int_scx0",
-  "lcdon_to_hblank_int_scx1",
-  "lcdon_to_hblank_int_scx2",
-  "lcdon_to_hblank_int_scx3",
-  "lcdon_to_hblank_int_scx4",
-  "lcdon_to_hblank_int_scx5",
-  "lcdon_to_hblank_int_scx6",
-  "lcdon_to_hblank_int_scx7",
-
-  "lcdon_to_hblank_di_timing_a",
-  "lcdon_to_hblank_di_timing_b",
-
-  "-----",
-  "lcdon_to_ly1_a",
-  "lcdon_to_ly1_b",
-  "lcdon_to_ly2_a",
-  "lcdon_to_ly2_b",
-  "lcdon_to_ly3_a",
-  "lcdon_to_ly3_b",
-  "lcdon_to_lyc1_int",
-  "lcdon_to_lyc2_int",
-  "lcdon_to_lyc3_int",
-
-  "-----",
-  "lcdon_to_oam_int_l0",
-  "lcdon_to_oam_int_l1",
-  "lcdon_to_oam_int_l2",
-
-  "-----",
-  "lcdon_to_stat0_a",
-  "lcdon_to_stat0_b",
-  "lcdon_to_stat0_c",
-  "lcdon_to_stat0_d",
-
-  "lcdon_to_stat1_a",
-  "lcdon_to_stat1_b",
-  "lcdon_to_stat1_c",
-  "lcdon_to_stat1_d",
-  "lcdon_to_stat1_e",
-
-  "lcdon_to_stat2_a",
-  "lcdon_to_stat2_b",
-  "lcdon_to_stat2_c",
-  "lcdon_to_stat2_d",
-
-  "lcdon_to_stat3_a",
-  "lcdon_to_stat3_b",
-  "lcdon_to_stat3_c",
-  "lcdon_to_stat3_d",
-
-  "-----",
   "line_153_ly_a",
   "line_153_ly_b",
   "line_153_ly_c",
@@ -373,15 +485,21 @@ static const std::string micro_tests[] = {
   "stat_write_glitch_l1_d",
 };
 
-void run_microtest(int model, const std::string& prefix, const std::string& name) {
+bool run_microtest(const std::string& prefix, const std::string& name) {
   if (name[0] == '-') {
-    return;
+    return true;
   }
 
   std::string filename = prefix + name + ".gb";
 
   FILE* rom_file = NULL;
   rom_file = fopen(filename.c_str(), "rb");
+
+  if (rom_file == NULL) {
+    printf("?");
+    return false;
+  }
+
   fseek(rom_file, 0, SEEK_END);
   size_t rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
@@ -389,7 +507,7 @@ void run_microtest(int model, const std::string& prefix, const std::string& name
   fclose(rom_file);
 
   Gameboy gameboy;
-  gameboy.reset(model, rom_size, 0x100);
+  gameboy.reset(rom_size, 0x100);
 
   uint8_t result = 0xFF;
   int i = 0;
@@ -402,22 +520,25 @@ void run_microtest(int model, const std::string& prefix, const std::string& name
     //assert(!gameboy.ppu.vram_delay == !gameboy.ppu.fetch_delay);
 
 
-    result = gameboy.vram.ram[0];
+    result = gameboy.get_vram()[0];
     if (result) break;
   }
 
   if (i == ticks) {
     printf("%-50s ", name.c_str());
     printf("? TIMEOUT @ %d\n", i);
+    return false;
   }
   else if (result == 0x55) {
     printf(".");
+    return true;
     //printf("  0x%02x PASS @ %d\n", result, i);
   }
   else {
     printf("\n");
     printf("%-50s ", name.c_str());
     printf("X 0x%02x FAIL @ %d\n", result, i);
+    return false;
   }
 }
 
@@ -425,17 +546,18 @@ void run_microtests() {
   double freq = (double)SDL_GetPerformanceFrequency();
   double begin = (double)SDL_GetPerformanceCounter();
 
-  int model = MODEL_DMG;
-  std::string model_string = (model == MODEL_DMG ? "dmg" : "ags");
-  std::string prefix = "microtests/build/" + model_string + "/";
+  std::string prefix = "microtests/build/dmg/";
 
   printf("---------- Microtests in %s: ----------\n", prefix.c_str());
 
+  int fails = 0;
   for (auto name : micro_tests) {
-    run_microtest(model, prefix, name);
+    if (name == "break") break;
+    bool pass = run_microtest(prefix, name);
+    if (!pass) fails++;
   }
   printf("\n");
 
   double end = (double)SDL_GetPerformanceCounter();
-  printf("---------- Microtests took %f seconds ----------\n", (end - begin) / freq);
+  printf("---------- Microtests took %f seconds, %d failures ----------\n", (end - begin) / freq, fails);
 }

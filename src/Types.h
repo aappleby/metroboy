@@ -1,6 +1,88 @@
 #pragma once
+#include <stdint.h>
+#include <string>
 
 typedef int16_t sample_t;
+
+#define dumpit(a, b) sprintf(d, "%-14s " b "\n", #a, a);
+
+//-----------------------------------------------------------------------------
+
+struct Bus {
+  uint16_t addr;
+  uint16_t data;
+  uint8_t  read;
+  uint8_t  write;
+  uint8_t  lock;
+  uint8_t  dma;
+  uint8_t  ack;
+};
+
+struct Framebuffer {
+  uint8_t buf[160*144];
+};
+
+const uint8_t F_CARRY = 0x10;
+const uint8_t F_HALF_CARRY = 0x20;
+const uint8_t F_NEGATIVE = 0x40;
+const uint8_t F_ZERO = 0x80;
+
+struct AluOut {
+  uint8_t x;
+  uint8_t f;
+};
+
+//-----------------------------------------------------------------------------
+
+template<typename ... Args>
+void sprintf(std::string& out, const char* format, Args ... args)
+{
+  char source_buf[1024];
+  snprintf(source_buf, 1024, format, args ...);
+  out.append(source_buf);
+}
+
+inline void print_bus(std::string& d, const char* name, const Bus& bus) {
+  /*
+  struct Bus {
+    uint16_t addr;
+    uint16_t data;
+    uint8_t  read;
+    uint8_t  write;
+    uint8_t  lock;
+    uint8_t  dma;
+    uint8_t  ack;
+  };
+  */
+
+  sprintf(d, "%-11s %04x:%04x %s%s%s%s%s\n", name, bus.addr, bus.data,
+    bus.read  ? "\003R \001" : "- ",
+    bus.write ? "\002W \001" : "- ",
+    bus.lock  ? "\004L \001" : "- ",
+    bus.dma   ? "\005D \001" : "- ",
+    bus.ack   ? "\006A \001" : "- ");
+
+  /*
+  if (bus.lock) {
+    if (bus.write) {
+      sprintf(d, "\007%-10s \002W*0x%04x\001 = 0x%04x\n", name, bus.addr, bus.data);
+    } else if (bus.read) {
+      sprintf(d, "\007%-10s \003R*0x%04x\001 = 0x%04x\n", name, bus.addr, bus.data);
+    } else {
+      sprintf(d, "\007%-10s \001-*------\001\n", name);
+    }
+  }
+  else {
+    if (bus.write) {
+      sprintf(d, "\007%-10s \002W:0x%04x\001 = 0x%04x\n", name, bus.addr, bus.data);
+    } else if (bus.read) {
+      sprintf(d, "\007%-10s \003R:0x%04x\001 = 0x%04x\n", name, bus.addr, bus.data);
+    } else {
+      sprintf(d, "\007%-10s \001-:------\001\n", name);
+    }
+  }
+  */
+}
 
 //-----------------------------------------------------------------------------
 
@@ -24,98 +106,4 @@ struct Sprite {
 };
 
 //-----------------------------------------------------------------------------
-// Bit-width-checking logic type, for sanity tests
 
-template<typename T, int B>
-struct ulogic {
-
-  ulogic() {}
-
-  template<typename U>
-  ulogic(U x) {
-    SDL_assert_release(x >= 0);
-    SDL_assert_release(x <= (1 << B) - 1);
-    v = T(x);
-  }
-
-  template<typename U>
-  ulogic& operator = (U x) {
-    SDL_assert_release(x >= 0);
-    SDL_assert_release(x <= (1 << B) - 1);
-    v = T(x);
-    return *this;
-  }
-
-  operator const T&() const { return v; }
-
-  ulogic& operator--() { return *this = (v - 1); }
-  ulogic operator--(int) { ulogic temp = *this; *this = (v - 1); return temp; }
-  ulogic& operator++() { return *this = (v + 1); }
-  ulogic operator++(int) { ulogic temp = *this; *this = (v + 1); return temp; }
-
-  template<typename U> ulogic& operator +=  (U x) { return *this = (v + x); }
-  template<typename U> ulogic& operator -=  (U x) { return *this = (v - x); }
-  template<typename U> ulogic& operator *=  (U x) { return *this = (v * x); }
-  template<typename U> ulogic& operator /=  (U x) { return *this = (v / x); }
-  template<typename U> ulogic& operator &=  (U x) { return *this = (v & x); }
-  template<typename U> ulogic& operator |=  (U x) { return *this = (v | x); }
-  template<typename U> ulogic& operator ^=  (U x) { return *this = (v ^ x); }
-  template<typename U> ulogic& operator >>= (U x) { return *this = (v >> x); }
-  template<typename U> ulogic& operator <<= (U x) { return *this = (v << x); }
-
-private:
-  T v;
-};
-
-#if 0
-
-typedef ulogic<uint8_t, 1>  ubit1_t;
-typedef ulogic<uint8_t, 2>  ubit2_t;
-typedef ulogic<uint8_t, 3>  ubit3_t;
-typedef ulogic<uint8_t, 4>  ubit4_t;
-typedef ulogic<uint8_t, 5>  ubit5_t;
-typedef ulogic<uint8_t, 6>  ubit6_t;
-typedef ulogic<uint8_t, 7>  ubit7_t;
-typedef ulogic<uint8_t, 8>  ubit8_t;
-typedef ulogic<uint16_t, 9>  ubit9_t;
-typedef ulogic<uint16_t, 10> ubit10_t;
-typedef ulogic<uint16_t, 11> ubit11_t;
-typedef ulogic<uint16_t, 12> ubit12_t;
-typedef ulogic<uint16_t, 13> ubit13_t;
-typedef ulogic<uint16_t, 14> ubit14_t;
-typedef ulogic<uint16_t, 15> ubit15_t;
-typedef ulogic<uint16_t, 16> ubit16_t;
-typedef ulogic<uint32_t, 32> ubit32_t;
-
-typedef int8_t sbit5_t;
-typedef int8_t sbit8_t;
-typedef int16_t sbit9_t;
-
-#else
-
-typedef uint8_t  ubit1_t;
-typedef uint8_t  ubit2_t;
-typedef uint8_t  ubit3_t;
-typedef uint8_t  ubit4_t;
-typedef uint8_t  ubit5_t;
-typedef uint8_t  ubit6_t;
-typedef uint8_t  ubit7_t;
-typedef uint8_t  ubit8_t;
-typedef uint16_t ubit9_t;
-typedef uint16_t ubit10_t;
-typedef uint16_t ubit11_t;
-typedef uint16_t ubit12_t;
-typedef uint16_t ubit13_t;
-typedef uint16_t ubit14_t;
-typedef uint16_t ubit15_t;
-typedef uint16_t ubit16_t;
-
-typedef uint32_t ubit32_t;
-
-typedef int8_t sbit5_t;
-typedef int8_t sbit8_t;
-typedef int16_t sbit9_t;
-
-#endif
-
-//-----------------------------------------------------------------------------

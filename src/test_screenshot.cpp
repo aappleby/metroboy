@@ -1,9 +1,16 @@
-#include "Platform.h"
-
-#include "Common.h"
 #include "Gameboy.h"
 
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
+
 #include <string>
+
+#pragma warning(disable : 4996)
+
+extern uint8_t rom_buf[];
 
 static const char* mealybug_tests[] = {
   "m3_window_timing",
@@ -79,7 +86,7 @@ bool load_bmp(const std::string& prefix, const std::string& name, uint8_t* out_g
   return false;
 }
 
-int run_screenshot_test(int model, const std::string& prefix, const std::string& name) {
+int run_screenshot_test(const std::string& prefix, const std::string& name) {
   std::string filename = prefix + name + ".gb";
 
   uint8_t golden[160 * 144];
@@ -97,31 +104,31 @@ int run_screenshot_test(int model, const std::string& prefix, const std::string&
   fclose(rom_file);
 
   Gameboy gameboy;
-  gameboy.reset(model, rom_size, 0x100);
+  Framebuffer fb;
+  gameboy.reset(rom_size, 0x100);
 
   int i = 0;
   const int ticks = 400000;
   for (; i < ticks; i++) {
     gameboy.tick();
     gameboy.tock();
+    Gameboy::HostOut gb_out = gameboy.get_host_data();
 
-    if (gameboy.get_pix_oe()) {
-      int x = gameboy.ppu.pix_count2 - 1;
-      int y = gameboy.ppu.line;
+    if (gb_out.pix_oe) {
+      int x = gb_out.x;
+      int y = gb_out.y;
 
       if (x >= 0 && x < 160 && y >= 0 && y < 144) {
-        gameboy.framebuffer[x + y * 160] = gameboy.get_pix_out();
+        fb.buf[x + y * 160] = gb_out.pix;
       }
     }
-
-    //if (gameboy.is_frame_done()) break;
   }
 
   int diff = 0;
 
   for (int y = 0; y < 144; y++) {
     for (int x = 0; x < 160; x++) {
-      if (gameboy.framebuffer[x + y * 160] != golden[x + y * 160]) {
+      if (fb.buf[x + y * 160] != golden[x + y * 160]) {
         diff++;
       }
     }
@@ -139,7 +146,7 @@ void run_mealybug_tests() {
   bool dots = true;
   for (auto name : mealybug_tests) {
     if (name[0] == '-') continue;
-    int diff = run_screenshot_test(MODEL_DMG, "mealybug/", name);
+    int diff = run_screenshot_test("mealybug/", name);
     if (diff == 0) {
       printf(".");
       dots = true;
@@ -165,9 +172,7 @@ void run_screenshot_tests() {
   double freq = (double)SDL_GetPerformanceFrequency();
   double begin = (double)SDL_GetPerformanceCounter();
 
-  int model = MODEL_DMG;
-  std::string model_string = (model == MODEL_DMG ? "dmg" : "ags");
-  std::string prefix = "microtests/build/" + model_string + "/";
+  std::string prefix = "microtests/build/dmg/";
 
   printf("---------- Screenshot tests in %s: ----------\n", prefix.c_str());
 

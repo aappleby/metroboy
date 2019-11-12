@@ -19,3 +19,8 @@ microtests/build
 SameSuite
 GBVisualizer
 gb-test-roms
+krocki-gb
+verilator
+wla-dx
+naughtyemu
+DMG-CPU-Inside

@@ -7,7 +7,7 @@
 .endif
 
 .ifdef DMG
-	.define PASS 66 ; FIXME
+	.define PASS 10
 .endif
 
 main:

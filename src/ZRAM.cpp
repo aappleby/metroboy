@@ -1,4 +1,3 @@
-#include "Platform.h"
 #include "ZRAM.h"
 
 #include "Constants.h"
@@ -6,30 +5,48 @@
 //-----------------------------------------------------------------------------
 
 void ZRAM::reset() {
-  bus_out = 0x00;
-  bus_oe = false;
-
-  memset(ram, 0, sizeof(ram));
+  *this = {};
 }
 
 //-----------------------------------------------------------------------------
 
-void ZRAM::tock(uint16_t addr, uint8_t data, bool read, bool write) {
-  bus_out = 0x00;
-  bus_oe = false;
+Bus ZRAM::tick() const {
+  return zram_to_bus;
+}
 
-  if (addr < ADDR_ZEROPAGE_BEGIN || ADDR_ZEROPAGE_END < addr) {
-    return;
+void ZRAM::tock(const int tcycle_, const Bus bus_to_zram_) {
+  const int tphase = tcycle_ & 3;
+  if (tphase != 0) return;
+
+  tcycle = tcycle_;
+  bus_to_zram = bus_to_zram_;
+  zram_to_bus = {};
+
+  bool hit = (ADDR_ZEROPAGE_BEGIN <= bus_to_zram.addr && bus_to_zram.addr <= ADDR_ZEROPAGE_END);
+
+  if (hit) {
+    zram_to_bus = bus_to_zram;
+    zram_to_bus.ack = true;
   }
 
-  if (write) {
-    ram[addr - ADDR_ZEROPAGE_BEGIN] = data;
+  if (bus_to_zram.write) {
+    if (ADDR_ZEROPAGE_BEGIN <= bus_to_zram.addr && bus_to_zram.addr <= ADDR_ZEROPAGE_END) {
+      ram[bus_to_zram.addr - ADDR_ZEROPAGE_BEGIN] = (uint8_t)bus_to_zram.data;
+    }
   }
+  else if (bus_to_zram.read) {
+    if (ADDR_ZEROPAGE_BEGIN <= bus_to_zram.addr && bus_to_zram.addr <= ADDR_ZEROPAGE_END) {
+      zram_to_bus.data = ram[bus_to_zram.addr - ADDR_ZEROPAGE_BEGIN];
+    }
+  }
+}
 
-  if (read) {
-    bus_out = ram[addr - ADDR_ZEROPAGE_BEGIN];
-    bus_oe = true;
-  }
+//-----------------------------------------------------------------------------
+
+void ZRAM::dump(std::string& d) {
+  sprintf(d, "tcycle %d\n", tcycle);
+  print_bus(d, "bus_to_zram", bus_to_zram);
+  print_bus(d, "zram_to_bus", zram_to_bus);
 }
 
 //-----------------------------------------------------------------------------

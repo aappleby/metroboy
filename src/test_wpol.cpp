@@ -1,7 +1,8 @@
-#include "Platform.h"
 #include "test_wpol.h"
 
 #include "Gameboy.h"
+
+#pragma warning(disable : 4996)
 
 //---------
 // wpol generic
@@ -48,9 +49,11 @@ static const std::string generic_tests[] = {
 
 static const std::string ppu_tests[] = {
   // dmg pass
+
   "hblank_ly_scx_timing-GS.gb",
   "hblank_ly_scx_timing_nops.gb",
   "hblank_ly_scx_timing_variant_nops.gb",
+
   "intr_0_timing.gb",
   "intr_1_2_timing-GS.gb",
   "intr_1_timing.gb",
@@ -64,12 +67,14 @@ static const std::string ppu_tests[] = {
   "intr_2_mode0_scx7_timing_nops.gb",
   "intr_2_mode0_scx8_timing_nops.gb",
   "intr_2_mode0_timing.gb",
+
   "intr_2_mode0_timing_sprites.gb",
   "intr_2_mode0_timing_sprites_nops.gb",
   "intr_2_mode0_timing_sprites_scx1_nops.gb",
   "intr_2_mode0_timing_sprites_scx2_nops.gb",
   "intr_2_mode0_timing_sprites_scx3_nops.gb",
   "intr_2_mode0_timing_sprites_scx4_nops.gb",
+
   "intr_2_mode3_timing.gb",
   "intr_2_oam_ok_timing.gb",
   "intr_2_timing.gb",
@@ -92,7 +97,10 @@ static const std::string ppu_tests[] = {
   "ly_lyc_write-GS.gb",
   "ly_new_frame-GS.gb",
   "stat_irq_blocking.gb",
+
+  // slow
   "stat_write_if-GS.gb",
+
   "vblank_if_timing.gb",
   "vblank_stat_intr-GS.gb",
 
@@ -129,16 +137,16 @@ void run_test(const std::string& prefix, const std::string& name) {
 
 
   Gameboy gameboy;
-  gameboy.reset(MODEL_DMG, rom_size, 0x100);
+  gameboy.reset(rom_size, 0x100);
 
   uint8_t result = 0xFF;
   int i = 0;
-  const int ticks = 25000000;  // bits_ram_en needs lots of tcycles
+  const int ticks = 25000000;
   for (; i < ticks; i++) {
     gameboy.tick();
     gameboy.tock();
-    if (gameboy.get_op() == 0x40) {
-      result = gameboy.get_reg_a();
+    if (gameboy.get_cpu().get_op() == 0x40) {
+      result = gameboy.get_cpu().get_a();
       break;
     }
   }

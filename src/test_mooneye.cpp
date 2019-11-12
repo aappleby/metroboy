@@ -1,7 +1,8 @@
-#include "Platform.h"
 #include "test_mooneye.h"
 
 #include "Gameboy.h"
+
+#pragma warning(disable : 4996)
 
 //---------
 // mooneye generic
@@ -148,7 +149,7 @@ void run_mooneye(const std::string& prefix, const std::string& name) {
   fclose(rom_file);
 
   Gameboy gameboy;
-  gameboy.reset(MODEL_DMG, rom_size, 0x100);
+  gameboy.reset(rom_size, 0x100);
 
   uint8_t result = 0xFF;
   int i = 0;
@@ -156,8 +157,8 @@ void run_mooneye(const std::string& prefix, const std::string& name) {
   for (; i < ticks; i++) {
     gameboy.tick();
     gameboy.tock();
-    if (gameboy.get_op() == 0x40) {
-      result = gameboy.get_reg_a();
+    if (gameboy.get_cpu().get_op() == 0x40) {
+      result = gameboy.get_cpu().get_a();
       break;
     }
   }
@@ -177,12 +178,14 @@ void run_mooneye(const std::string& prefix, const std::string& name) {
 }
 
 void run_mooneye_acceptance() {
+  /*
   printf("-----Generic tests-----\n");
   for (auto name : generic_tests) {
     std::string prefix = "mooneye-gb/tests/build/acceptance/";
     run_mooneye(prefix, name);
   }
   printf("\n");
+  */
 
   printf("-----Timer tests-----\n");
   for (auto name : timer_tests) {
@@ -200,10 +203,12 @@ void run_mooneye_acceptance() {
   printf("\n");
   */
 
+  /*
   printf("-----PPU tests-----\n");
   for (auto name : ppu_tests) {
     std::string prefix = "mooneye-gb/tests/build/acceptance/ppu/";
     run_mooneye(prefix, name);
   }
   printf("\n");
+  */
 }

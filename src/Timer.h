@@ -1,25 +1,26 @@
 #pragma once
+#include "Types.h"
 
 //-----------------------------------------------------------------------------
 
 struct Timer {
   void reset();
-  void tock(int tphase, uint16_t addr, uint8_t data, bool read, bool write);
+  Bus  to_bus() const { return timer_to_bus; }
+  bool get_interrupt() const;
+  void tock(int tcycle_, Bus bus_to_timer_);
+
   void dump(std::string& out);
 
-  bool overflow;
-  uint8_t bus_out;
-  bool bus_oe;
+private:
+  int tcycle;
+  Bus bus_to_timer;
+  Bus timer_to_bus;
 
-//private:
-
-  void do_tima();
-
-  uint16_t counter;  // FF04
-  uint8_t  old_tima; // FF05
-  uint8_t  new_tima;
-  uint8_t  tma;      // FF06
-  uint8_t  tac;      // FF07
+  uint16_t counter;
+  uint16_t tima;
+  uint8_t  tma;
+  uint8_t  tac;
+  bool     do_int;
   bool     tick;
 };
 

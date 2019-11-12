@@ -1,8 +1,6 @@
-#include "Platform.h"
 #include "main.h"
 
 #include "Audio.h"
-#include "Common.h"
 #include "MetroBoy.h"
 #include "Assembler.h"
 
@@ -12,85 +10,65 @@
 #include "test_wpol.h"
 #include "test_screenshot.h"
 
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
+
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4702)
+#pragma warning(disable : 4100)
+
+extern const uint32_t gb_colors[];
+extern uint8_t rom_buf[];
+
 void run_test(const std::string& prefix, const std::string& name);
 
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-  MetroBoyApp app;
-  return app.main_(argc, argv);
+  printf("Hello Metroboy\n");
+
+  MetroBoyApp* app = new MetroBoyApp();
+  int ret = app->main_(argc, argv);
+  delete app;
+
+  return ret;
 }
 
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
-  //test_codegen();
-  //return 0;
-
-  //metroboy.reset(0x100);
-
   //run_microtests();
   //run_screenshot_tests();
-
-  //run_test("mooneye-gb/tests/build/acceptance/ppu/", "vblank_stat_intr-GS");
-  //run_test("mooneye-gb/tests/build/acceptance/ppu/", "lcdon_write_timing-GS");
-  //run_test("wpol-gb/tests/build/acceptance/gpu/",    "intr_2_timing");
-  //run_test("wpol-gb/tests/build/acceptance/gpu/",    "vblank_stat_intr-GS");
-  //run_test("microtests/build/dmg/", "dma_timing_a");
-
-  run_mooneye_acceptance();
-  run_wpol_acceptance();
+  //run_mooneye_acceptance();
+  //run_wpol_acceptance();
   //run_mealybug_tests();
   return 0;
 
   //---------
 
-  //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites");
-  //load("wpol-gb/tests/build/acceptance/gpu", "lcdon_write_timing-GS");
-  //load("wpol-gb/tests/build/acceptance/gpu", "intr_2_mode0_timing_sprites_nops");
-
   //load("oh"); // broken eye
   //load("pocket");
   //load("gejmboj");
   //load("LinksAwakening");
-  load("Prehistorik Man (U)");
+  //load("Prehistorik Man (U)");
   //load("SML");
+  //load("tetris");
 
-  //load("microtests/build/dmg", "spu_env_change");
+  //load("cpu_instrs");
+  //load("instr_timing");
 
-  //load("microtests/build/dmg", "oam_sprite_trashing");
-  //load("microtests/build/dmg", "oam_write_l0_e");
-  //load("microtests/build/dmg", "stat_write_glitch_l1_a");
+  load("microtests/build/dmg", "poweron_000_div");
 
-  //load("microtests/build/dmg", "ppu_spritex_vs_scx");
-
-  //load("microtests/build/dmg", "win13_a");
-
-  //load("microtests/build/dmg", "ppu_scx_vs_bgp");
-  //load("microtests/build/dmg", "ppu_win_vs_wx");
-  //load("microtests/build/dmg", "ppu_sprite_testbench");
-  //load("microtests/build/dmg", "ppu_wx_early");
-  
-  //load("microtests/build/dmg", "ppu_sprite0_scx1_a");
-
-  //load("microtests/build/dmg", "temp");
-
-  //load("mooneye-gb/tests/build/acceptance/", "boot_hwio-dmgABCmgb");
-
-  //load("mealybug", "m3_lcdc_bg_en_change");              // tiny error top left
-
-  //load("mealybug", "m3_lcdc_obj_en_change_variant");     // tiny fail top left, black bar bottom right, something about bgp
-  //load("mealybug", "m3_lcdc_obj_size_change");           // nope
-  //load("mealybug", "m3_lcdc_obj_size_change_scx");       // nope
-  
-  //load("mealybug", "m3_lcdc_win_en_change_multiple_wx"); // off by one-ish, missing dots
-  //load("mealybug", "m3_wx_4_change");                    // a few wrong pixels, window retriggering?
-  //load("mealybug", "m3_wx_4_change_sprites");            // no dots
-  //load("mealybug", "m3_wx_5_change");                    // a few wrong pixels now
+  runmode = STEP_CYCLE;
+  //runmode = RUN_FAST;
+  //runmode = RUN_VSYNC;
 
   //----------
 
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
-  window = SDL_CreateWindow("MetroBoy Gameboy Simulator", 4, 34, fb_width, fb_height, SDL_WINDOW_SHOWN);
+  window = SDL_CreateWindow("MetroBoy Gameboy Simulator", 100, 100, fb_width, fb_height, SDL_WINDOW_SHOWN);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   fb_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, fb_width, fb_height);
   terminus_surface = SDL_LoadBMP("terminus2.bmp");
@@ -99,6 +77,15 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   freq = SDL_GetPerformanceFrequency();
 
   audio_init();
+
+  background = new uint32_t[fb_width * fb_height];
+
+  for (int y = 0; y < fb_height; y++) {
+    for (int x = 0; x < fb_width; x++) {
+      int c = ((x ^ y) & 0x20) ? 0x10101010 : 0x15151515;
+      background[x + y * fb_width] = c;
+    }
+  }
 
   while (!quit) loop();
 
@@ -123,8 +110,22 @@ void MetroBoyApp::loop() {
     case SDLK_v:      runmode = RUN_VSYNC; break;
     case SDLK_s:      runmode = STEP_FRAME; break;
     case SDLK_o:      overlay_mode = (overlay_mode + 1) % 3; break;
-    case SDLK_RIGHT:  step_forward++; break;
-    case SDLK_LEFT:   step_backward++; break;
+    case SDLK_RIGHT:  {
+      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+        step_forward += 10;
+      } else {
+        step_forward++;
+      }
+      break;
+    }
+    case SDLK_LEFT:   {
+      if (keyboard_state[SDL_SCANCODE_LCTRL]) {
+        step_backward += 10; 
+      } else {
+        step_backward++; 
+      }
+      break;
+    }
     case SDLK_UP:     step_up = true; break;
     case SDLK_DOWN:   step_down = true; break;
 
@@ -137,7 +138,7 @@ void MetroBoyApp::loop() {
     if (event.type == SDL_QUIT) quit = true;
 
     if (event.type == SDL_DROPFILE) {
-      metroboy.load_rom(MODEL_DMG, event.drop.file, false);
+      metroboy.load_rom(event.drop.file, false);
       rom_loaded = true;
       runmode = RUN_VSYNC;
       SDL_free(event.drop.file);
@@ -146,6 +147,7 @@ void MetroBoyApp::loop() {
 
   //----------------------------------------
   // Button input
+  int64_t cycles_begin = metroboy.total_tcycles();
 
   buttons = 0;
   if (keyboard_state[SDL_SCANCODE_RIGHT])  buttons |= 0x01;
@@ -193,11 +195,11 @@ void MetroBoyApp::loop() {
   //----------------------------------------
   // Run simulation
 
-  int64_t cycles_begin = metroboy.total_tcycles();
 
   if (runmode == RUN_FAST) {
     fast_cycles += (16.0 - 1000 * (double(frame_time) / double(freq))) * 100;
     metroboy.run_fast(buttons, (int)fast_cycles);
+    //metroboy.run_fast(buttons, 100000);
   }
   else if (runmode == RUN_VSYNC) {
     //printf("%d --------\n", frame_count);
@@ -217,11 +219,11 @@ void MetroBoyApp::loop() {
     }
   }
   else if (runmode == STEP_FRAME) {
-    while (step_forward--) metroboy.step_frame();
+    while (step_forward--)  metroboy.step_frame();
     while (step_backward--) metroboy.unstep_frame();
   }
   else if (runmode == STEP_LINE) {
-    while (step_forward--) metroboy.step_line();
+    while (step_forward--)  metroboy.step_line();
     while (step_backward--) metroboy.unstep_line();
   }
 
@@ -231,69 +233,85 @@ void MetroBoyApp::loop() {
   step_down = false;
 
   int64_t cycles_end = metroboy.total_tcycles();
-
   //----------------------------------------
   // Clear screen
 
   SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
-
-  for (int y = 0; y < 1024; y++) {
-    for (int x = 0; x < 1024; x++) {
-      int c = ((x ^ y) & 0x20) ? 0x10101010 : 0x15151515;
-      framebuffer[x + y * 1024] = c;
-    }
-  }
+  memcpy(framebuffer, background, fb_width * fb_height * 4);
+  tp.begin_frame(framebuffer, fb_width, fb_height);
 
   //----------------------------------------
   // Left column text
 
   Gameboy& gameboy = metroboy.gb();
+  Framebuffer& fb = metroboy.fb();
 
-  gameboy.dump(text_buf);
-  gameboy.oam.dump(text_buf);
-  render_text(4, 4, text_buf.c_str());
+  int spacing = 192 + 32;
+
+  gameboy.dump1(text_buf);
+  //gameboy.get_oam().dump(text_buf);
+  tp.render_text(spacing * 0 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
-  gameboy.dump_disasm(text_buf);
-  render_text(140, 4, text_buf.c_str());
+  sprintf(text_buf, "\003--------------PPU--------------\001\n");
+  
+  gameboy.get_ppu().dump(text_buf);
+
+  tp.render_text(spacing * 1 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
-  gameboy.spu.dump(text_buf);
-  render_text(280, 4, text_buf.c_str());
+  gameboy.dump3(text_buf);
+  tp.render_text(spacing * 2 + 4, 4, text_buf.c_str());
   text_buf.clear();
+
+  sprintf(text_buf, "\003--------------SPU--------------\001\n");
+  gameboy.get_spu().dump(text_buf);
+  tp.render_text(spacing * 2 + 4, 640 + 4, text_buf.c_str());
+  text_buf.clear();
+
+  gameboy.dump4(text_buf);
+  tp.render_text(spacing * 3 + 4, 4, text_buf.c_str());
+  text_buf.clear();
+
+  //gameboy.get_spu().dump(text_buf);
+  //render_text(280, 4, text_buf.c_str());
+  //text_buf.clear();
 
   //----------------------------------------
   // Wave thingy
 
+  /*
   for (int i = 0; i < 16; i++) {
-    uint8_t a = (gameboy.spu.s3_wave[i] & 0x0F) >> 0;
-    uint8_t b = (gameboy.spu.s3_wave[i] & 0xF0) >> 4;
+    uint8_t a = (gameboy.get_spu().get_wave()[i] & 0x0F) >> 0;
+    uint8_t b = (gameboy.get_spu().get_wave()[i] & 0xF0) >> 4;
     uint32_t color = 0xFFFFFFFF;
   
     framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;
     framebuffer[(512 + 2 * i + 1) + (100 + a) * fb_width] = color;
   }
+  */
 
   //----------------------------------------
   // Gameboy screen
 
-  const int gb_screenx = (fb_width / 2) - 160;
-  const int gb_screeny = (fb_height / 2) - 128;
+  //const int gb_screenx = 32 * 27 - 16;
+  const int gb_screenx = fb_width - 288 - 288 - 288;
+  const int gb_screeny = 32 * 10;
 
   if (overlay_mode == 0 || overlay_mode == 1) {
     for (int y = 0; y < 144; y++) {
       uint32_t* line1 = &framebuffer[(y * 2 + gb_screeny + 0) * fb_width + gb_screenx];
       uint32_t* lineM2 = &framebuffer[(y * 2 + gb_screeny + 1) * fb_width + gb_screenx];
       for (int x = 0; x < 160; x++) {
-        uint32_t c = gb_colors[gameboy.framebuffer[x + (y * 160)] & 7];
+        uint32_t c = gb_colors[fb.buf[x + (y * 160)] & 7];
         *line1++ = c; *line1++ = c;
         *lineM2++ = c; *lineM2++ = c;
       }
     }
   }
 
-  draw_bbox(gb_screenx - 2, gb_screeny - 2, 320 + 3, 288 + 3, 0x505050);
-  draw_bbox(gb_screenx - 1, gb_screeny - 1, 320+1, 288+1, 0x101010);
+  tp.draw_bbox(gb_screenx - 2, gb_screeny - 2, 320 + 3, 288 + 3, 0x505050);
+  tp.draw_bbox(gb_screenx - 1, gb_screeny - 1, 320+1, 288+1, 0x101010);
 
   //----------------------------------------
   // Reference image
@@ -319,7 +337,7 @@ void MetroBoyApp::loop() {
       uint32_t* line1 = &framebuffer[(y * 2 + gb_screeny + 0) * fb_width + gb_screenx];
       uint32_t* lineM2 = &framebuffer[(y * 2 + gb_screeny + 1) * fb_width + gb_screenx];
       for (int x = 0; x < 160; x++) {
-        int c = gameboy.framebuffer[x + (y * 160)];
+        int c = fb.buf[x + (y * 160)];
         if (c != golden[x + y * 160]) {
           *line1++ += 0x808000;
           *line1++ += 0x808000;
@@ -341,8 +359,8 @@ void MetroBoyApp::loop() {
 
   if (runmode == STEP_LINE || runmode == STEP_CYCLE) {
 
-    int px = gameboy.get_pix_count();
-    int py = gameboy.get_line();
+    int px = metroboy.gb_out.x;
+    int py = metroboy.gb_out.y;
 
     for (int x = 0; x < 320; x++) {
       int color = (px == (x / 2)) ? 0x00606000 : 0x00600000;
@@ -362,26 +380,26 @@ void MetroBoyApp::loop() {
     "STEP_CYCLE",
   };
 
-  sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.current_gameboy->get_tcycle() & 3));
-  render_text(32 * 11, 32 * 11 + 18, text_buf.c_str());
+  sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
+  tp.render_text(gb_screenx, 32 * 20, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------
   // VRAM dump
 
-  gameboy.get_ppu().dump_tiles(framebuffer, fb_width, 736, 32, 2, gameboy.get_vram());
-  gameboy.get_ppu().draw_bg_map(framebuffer, fb_width, 736, 448, 1, gameboy.get_vram());
-  gameboy.get_ppu().draw_wm_map(framebuffer, fb_width, 736, 736, 1, gameboy.get_vram());
+  gameboy.get_ppu().dump_tiles(framebuffer,  fb_width, fb_width - 288,             32,  2, gameboy.get_vram());
+  gameboy.get_ppu().draw_bg_map(framebuffer, fb_width, fb_width - 288 - 288 - 288, 32,  1, gameboy.get_vram());
+  gameboy.get_ppu().draw_wm_map(framebuffer, fb_width, fb_width - 288 - 288,       32, 1, gameboy.get_vram());
 
   //----------------------------------------
   // Trace buffer
 
-  int trace_sx = 32 * 8;
+  int trace_sx = gb_screenx;
   int trace_sy = 32 * 22;
 
   for (int y = 0; y < 154; y++) {
     for (int x = 0; x < 456; x++) {
-      framebuffer[(trace_sx + x) + (trace_sy + y) * fb_width] = metroboy.tracebuffer[x + y * 456];
+      framebuffer[(trace_sx + x) + (trace_sy + y) * fb_width] = metroboy.get_trace()[x + y * 456];
     }
   }
 
@@ -392,14 +410,19 @@ void MetroBoyApp::loop() {
   smoothed_frame_time *= 0.98;
   smoothed_frame_time += (1000.0 * double(frame_time) / double(freq)) * 0.02;
 
-  sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, (int)(cycles_end - cycles_begin) / 4);
-  render_text(736, 1024 - 12 - 4, text_buf.c_str());
+  {
+    char source_buf[1024];
+    snprintf(source_buf, 1024, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, (int)(cycles_end - cycles_begin) / 4);
+    text_buf.append(source_buf);
+  }
+  
+  tp.render_text(fb_width - 256, fb_height - 12, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------
   // Console
 
-  //render_console(256 - 32, 1024 - glyph_height * console_height - 4, terminus_font);
+  //render_console(256 - 32, fb_height - glyph_height * console_height - 4, terminus_font);
 
   //----------------------------------------
   // Swap
@@ -428,6 +451,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   }
 
   if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_INDEX8) {
+    printf("Loaded i8 golden\n");
     uint8_t* src = (uint8_t*)golden_surface->pixels;
     uint32_t* pal = (uint32_t*)golden_surface->format->palette->colors;
     for (int y = 0; y < 144; y++) {
@@ -446,6 +470,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   }
 
   else if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_BGR24) {
+    printf("Loaded argb golden\n");
     uint8_t* src = (uint8_t*)golden_surface->pixels;
     for (int y = 0; y < 144; y++) {
       for (int x = 0; x < 160; x++) {
@@ -462,25 +487,37 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
     overlay_mode = 1;
   }
 
+  printf("Loading rom %s\n", gb_filename.c_str());
   memset(rom_buf, 0, 1024 * 1024);
-  metroboy.load_rom(MODEL_DMG, gb_filename.c_str(), false);
+  metroboy.load_rom(gb_filename.c_str(), false);
   rom_loaded = true;
   runmode = RUN_VSYNC;
 }
 
 //-----------------------------------------------------------------------------
 
+#if 0
 void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
   int xcursor = 0;
   int ycursor = 0;
-  const char* c = text;
 
-  while (*c) {
-    if (*c == '\n') {
+  uint32_t color = 0xFFCCCCCC;
+
+  for (const char* c = text; *c; c++) {
+    switch(*c) {
+    case 1: color = 0xFFCCCCCC; continue;
+    case 2: color = 0xFFFF8888; continue;
+    case 3: color = 0xFF88FF88; continue;
+    case 4: color = 0xFF8888FF; continue;
+    case 5: color = 0xFF88FFFF; continue;
+    case 6: color = 0xFFFF88FF; continue;
+    case 7: color = 0xFFFFFF88; continue;
+    case '\n':
       xcursor = 0;
       ycursor += glyph_height;
-      c++;
       continue;
+    default:
+      break;
     }
 
     int row = ((*c) >> 5) * 16 + 3;
@@ -490,7 +527,7 @@ void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
 
     for (int y = 0; y < glyph_height; y++) {
       for (int x = 0; x < glyph_width; x++) {
-        if (terminus_font[src_cursor]) framebuffer[dst_cursor] = 0xFF00FF00;
+        if (terminus_font[src_cursor]) framebuffer[dst_cursor] = color;
         src_cursor++;
         dst_cursor++;
       }
@@ -503,69 +540,9 @@ void MetroBoyApp::render_text(int dst_x, int dst_y, const char* text) {
       xcursor = 0;
       ycursor += glyph_height;
     }
-    c++;
   }
 }
-
-//-----------------------------------------------------------------------------
-
-void MetroBoyApp::draw_bbox(int sx, int sy, int w, int h, uint32_t color) {
-  int ax = sx;
-  int bx = sx + w;
-  int ay = sy;
-  int by = sy + h;
-  int x, y;
-
-  for (x = ax, y = ay; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
-
-  for (x = ax, y = by; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
-
-  for (x = ax, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
-
-  for (x = bx, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
-}
-
-
-//-----------------------------------------------------------------------------
-// Console
-
-void MetroBoyApp::render_console(int sx, int sy, uint8_t* font) {
-
-  for (int cy = 0; cy < console_height; cy++) {
-    char* line = &console_buf[(((cy + cursor_y)) % console_height) * console_width];
-
-    for (int cx = 0; cx < console_width; cx++) {
-      char c = *line;
-      int row = (c >> 5) * 16 + 3;
-      int col = (c & 31) * 8;
-
-      int src_cursor = col + (row * glyph_stride);
-      int dst_cursor = (sx + (cx * glyph_width)) + (sy + (cy * glyph_height)) * fb_width;
-
-      for (int y = 0; y < glyph_height; y++) {
-        for (int x = 0; x < glyph_width; x++) {
-          if (font[src_cursor]) framebuffer[dst_cursor] = 0xFF00FF00;
-          src_cursor++;
-          dst_cursor++;
-        }
-        src_cursor += (glyph_stride - glyph_width);
-        dst_cursor += (fb_width - glyph_width);
-      }
-
-      line++;
-    }
-  }
-
-  draw_bbox(sx - 2, sy - 2, console_width * glyph_width + 4, console_height * glyph_height + 4, 0xFF00FF00);
-}
+#endif
 
 //-----------------------------------------------------------------------------
 

@@ -1,6 +1,8 @@
 #pragma once
 #include "Gameboy.h"
 
+#include <vector>
+
 //-----------------------------------------------------------------------------
 
 class MetroBoy {
@@ -11,14 +13,20 @@ public:
   MetroBoy& operator=(const MetroBoy&) = delete;
 
   Gameboy& gb() {
-    return *current_gameboy;
+    return *current_gb;
+  }
+
+  Framebuffer& fb() {
+    return *current_fb;
   }
 
   int64_t total_tcycles() {
     return cycles;
   }
 
-  void load_rom(int model, const char* filename, bool run_bootrom);
+  const uint32_t* get_trace() const { return tracebuffer; }
+
+  void load_rom(const char* filename, bool run_bootrom);
   void load_dump();
   void save_dump();
 
@@ -44,10 +52,20 @@ public:
   void clear_line_history();
   void clear_cycle_history();
 
-  Gameboy* current_gameboy;
-  std::vector<Gameboy*> history_frame;
-  std::vector<Gameboy*> history_line;
-  std::vector<Gameboy*> history_cycle;
+  Gameboy::HostOut gb_out;
+
+private:
+
+  Gameboy*     current_gb;
+  Framebuffer* current_fb;
+
+  std::vector<Framebuffer*> fb_frame;
+  std::vector<Framebuffer*> fb_line;
+  std::vector<Framebuffer*> fb_cycle;
+
+  std::vector<Gameboy*> gb_frame;
+  std::vector<Gameboy*> gb_line;
+  std::vector<Gameboy*> gb_cycle;
 
   int64_t cycles;
   bool trace;

@@ -1,0 +1,102 @@
+overlay trace CPU_WR?
+  cpu connection
+  SOBY
+  TUTU
+  YULA
+
+
+// from die
+TUTU = and(TERA, TULO);
+SOBY = nor(in.A15, TUTU);
+CPU_INsomething = TUTU
+YULA = and(YAZA, TUTU, CPU_RD)
+
+
+cells connected to APU_WR (driven by BOGY)
+  ?CAZE
+  ?HUDA
+  ?HAGA
+  ?HOSO
+  +CENU
+  +BORO
+  +BYZA
+  +AGYN
+  +GAXU - FF12, apu_wr (stroke error), 
+  +HAFU - APU_WR (stroke), FF12(stroke), 
+  +BACU - APU_WR(over), FF16 (in pieces)
+  xBOSU
+  xDEBY
+  xDOSA
+  xDEPU - APU_WR(stroke), FF13
+   EXUC (missing stroke))
+   ETUC (overlap)
+   ENUF (overlap)
+   GERE (overlap)
+   HAWY (overlap)
+   JAFA (overlap)
+   JONA (overlap)
+   EPYX (overlap)
+   BUPO (overlap)
+   BOGY (overlap output)
+   BOPY (overlap)
+   BACU (overlap)
+   CAZU (overlap)
+   COVU (overlap)
+   CUZU (overlap)
+   DACO (overlap)
+   DERY (overlap)
+   DETA (overlap)
+   EPYX (overlap)
+   ENUF (overlap)
+   FOXE (overlap)
+   FAVY (overlap)
+   FOMY (overlap)
+   GERE (overlap)
+   GOKO (overlap)
+   GETU (overlap)
+   HUMO (overlap)
+   HAWU (overlap)
+   JONA (overlap)
+   JAVA (overlap)
+   DOGE (missing stroke)
+   JENU (missing stroke)
+   (some wires aren't traced on overlay)
+
+yeah these totally don't match
+
+EXUC should also be APU_WR? but didn't see on schematic?
+
+//-----------------------------------------------------------------
+// schematic
+
+wire SOBY = nor(in.A15, in.CPU_WRQ); // schematic has a question mark?
+wire SEPY = nand(in.ABUZ, SOBY);
+
+
+bool TERA = not(TEPU_Q);
+bool TULO = nor(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A9, in.A8);
+bool TUTU = and(TERA, TULO);
+
+bool YAZA = not(out.T1T2n);
+bool YULA = and(YAZA, TUTU, out.CPU_RD);
+
+
+
+
+
+references to APU_WR
+    out.APU_WR = BOGY;
+    +wire CENU = and(in.APU_WR, in.FF10);
+    +wire GAXU = nand(in.FF12, in.APU_WR);
+    +wire HAFU = and(in.APU_WR, in.FF12);
+    +bool BORO = nand(in.APU_WR, in.FF11);
+    +bool AGYN = nand(in.APU_WR, in.FF16);
+    +bool BACU = and(in.FF16, in.APU_WR);
+    +wire BYZA = and(in.APU_WR, in.FF3X);
+
+
+missing references to APU_WR
+    wire BOSU = nand(in.FF24, in.CPU_WRQ);
+    wire DEBY = and(in.CPU_WRQ, in.FF14);
+    wire DOSA = and(in.FF18, in.CPU_WRQ);
+    wire DEPU = nand(in.CPU_WRQ, in.FF13);

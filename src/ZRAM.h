@@ -1,20 +1,22 @@
 #pragma once
+#include "Types.h"
 
 //-----------------------------------------------------------------------------
 
 struct ZRAM {
   void reset();
-  void tock(uint16_t addr, uint8_t data, bool read, bool write);
+  Bus  tick() const;
+  void tock(const int tcycle_, const Bus bus_to_zram_);
+  void dump(std::string& d);
 
-  const uint8_t* get() {
-    return ram;
-  }
-
-  uint8_t bus_out;
-  bool bus_oe;
+  const uint8_t* get() const { return ram; }
 
 private:
-  uint8_t ram[127];
+  int tcycle;
+  Bus bus_to_zram;
+  Bus zram_to_bus;
+
+  uint8_t  ram[127];
 };
 
 //-----------------------------------------------------------------------------

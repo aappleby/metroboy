@@ -1,49 +1,35 @@
 #pragma once
+#include <stdint.h>
 #include "OAM.h"
+#include "VRAM.h"
 #include "Constants.h"
 
 //-----------------------------------------------------------------------------
 
 struct PPU {
-  void reset(bool run_bootrom, int new_model);
-  int model = MODEL_DMG;
+  struct Out {
+    Bus ppu_to_bus;
+    Bus ppu_to_vram;
+    Bus ppu_to_oam;
 
-  void tick(int tphase, ubit16_t cpu_addr, ubit8_t cpu_data, bool cpu_read, bool cpu_write);
-  void tock_lcdoff(int tphase, ubit16_t cpu_addr_, ubit8_t cpu_data_, bool cpu_read_, bool cpu_write_, uint8_t vram_in, uint8_t oam_in);
-  void tock(int tphase, ubit16_t cpu_addr_, ubit8_t cpu_data_, bool cpu_read_, bool cpu_write_, uint8_t vram_in, uint8_t oam_in);
-  void dump(std::string& out);
+    int x;
+    int y;
+    int counter;
+    uint8_t pix_out;
+    bool pix_oe;
 
-  bool is_frame_start() { return frame_start; }
-  bool is_frame_done()  { return frame_done; }
-  uint8_t get_line()    { return line; }
-  uint8_t get_lcdc()    { return lcdc; }
-  int get_pix_count()   { return pix_count2; }
+    bool stat1;
+    bool stat2;
+    bool vblank1;
+    bool vblank2;
+  };
 
-  //bool stat_int_oam;
-  //bool stat_int_vblank;
-  //bool stat_int_glitch;
+  void reset(bool run_bootrom);
+  Out  tick(const int tcycle_) const;
+  void tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_);
+  void dump(std::string& out) const;
 
-  ubit8_t bus_out;
-  bool bus_oe;
-
-  ubit8_t pix_out;
-  bool pix_oe;
-
-  // HAAACK
-  ubit16_t vram_addr;
-
-  bool oam_lock;
-  bool vram_lock;
-
-//private:
-
-  void emit_pixel(int tphase);
-  void merge_tile(int tphase);
-
-  void bus_read_early(uint16_t cpu_addr);
-  void bus_read_late(uint16_t cpu_addr);
-  void bus_write_early(uint16_t cpu_addr, uint8_t cpu_data);
-  void bus_write_late (uint16_t cpu_addr, uint8_t cpu_data);
+  uint8_t get_stat()       const { return stat; }
 
   void dump_tiles(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
   void draw_sprite(OAM& oam, uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram, int sprite_index) const;
@@ -51,136 +37,166 @@ struct PPU {
   void draw_bg_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
   void draw_wm_map(uint32_t* framebuffer, int stride, int sx, int sy, int scale, const uint8_t* vram) const;
 
+  bool get_old_stat_int1() const { return old_stat_int2; }
+  bool get_old_stat_int2() const { return old_stat_int2; }
+
+private:
+
+  void tock_lcdoff(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_);
+  void emit_pixel(int tphase);
+  void merge_tile(int tphase);
+
   //----------
-  // Registers
+  // Buses
 
-  ubit8_t lcdc; // FF40
-  ubit8_t stat; // FF41
-  ubit8_t scy;  // FF42
-  ubit8_t scx;  // FF43
-  ubit8_t ly;   // FF44
-  ubit8_t lyc;  // FF45
-  ubit8_t dma;  // FF46
-  ubit8_t bgp;  // FF47
-  ubit8_t obp0; // FF48
-  ubit8_t obp1; // FF49
-  ubit8_t wy;   // FF4A
-  ubit8_t wx;   // FF4B
+  int tcycle;
+  Bus bus_to_ppu;
+  Bus vram_to_ppu;
+  Bus oam_to_ppu;
 
-  uint8_t bgp_early;
-
-  uint8_t palettes[4];
-
-
-  uint8_t scx_latch;
-  uint8_t win_y_latch = 0;
-  uint8_t win_y_counter = 0;
+  Bus ppu_to_bus;
+  Bus ppu_to_vram;
+  Bus ppu_to_oam;
 
   //----------
   // Timers and states
 
+  int  frame_count;
+  bool frame_start;
+  bool frame_done;
+
+  uint8_t line;
+  uint8_t line_delay1;
+  uint8_t line_delay2;
+  uint8_t line_delay3;
+
   int state;
 
   uint16_t counter;
-  uint8_t line;
-
   uint16_t counter_delay1;
-  uint8_t line_delay1;
-
   uint16_t counter_delay2;
-  uint8_t line_delay2;
-
   uint16_t counter_delay3;
-  uint8_t line_delay3;
-
-  bool frame_start;
-  bool frame_done;
-  int frame_count;
 
   uint8_t hblank_delay2;
 
-  int old_stat_int = 0;
-  int stat_int;
+  //----------
+  // Registers
+
+  uint8_t lcdc; // FF40
+  uint8_t stat; // FF41
+  uint8_t scy;  // FF42
+  uint8_t scx;  // FF43
+  uint8_t ly;   // FF44
+  uint8_t lyc;  // FF45
+  uint8_t dma;  // FF46
+  uint8_t bgp;  // FF47
+  uint8_t obp0; // FF48
+  uint8_t obp1; // FF49
+  uint8_t wy;   // FF4A
+  uint8_t wx;   // FF4B
+
+  uint8_t palettes[4];
+
+  //----------
+  // interrupt stuff
+
   int compare_line;
 
-  int new_stat_int = 0;
+  uint8_t stat_int1;
+  uint8_t stat_int2;
+
+  bool old_stat_int1;
+  bool old_stat_int2;
+
+  uint8_t scx_latch;
+  uint8_t win_y_latch;
+  uint8_t win_y_counter;
 
   //----------
   // Sprites
 
-  uint16_t oam_addr;
-  uint8_t oam_data;
-  bool oam_read;
+  uint8_t sprite_count;
+  int8_t sprite_index;
+  int sprite_hit;
 
-  ubit4_t sprite_count;
-  sbit8_t sprite_index;
+  uint8_t spriteY;
+  uint8_t spriteX;
+  uint8_t spriteP;
+  uint8_t spriteF;
+
+  uint8_t sprite_lo;
+  uint8_t sprite_hi;
+
   uint8_t sprite_x[10]; // 80 bits
   uint8_t sprite_y[10]; // 80 bits
   uint8_t sprite_i[10]; // 60 bits?
-
-  ubit8_t spriteY;
-  ubit8_t spriteX;
-  ubit8_t spriteP;
-  ubit8_t spriteF;
-
-  ubit8_t sprite_lo;
-  ubit8_t sprite_hi;
 
   //----------
   // Vram Fetcher
 
   enum FetchType {
+    FETCH_NONE,
     FETCH_BACKGROUND,
     FETCH_WINDOW,
     FETCH_SPRITE,
-    FETCH_NONE
   };
 
   enum FetchState {
-    FETCH_MAP,
-    FETCH_LO,
-    FETCH_HI,
     FETCH_IDLE,
+    
+    FETCH_TILE_MAP,
+    FETCH_TILE_LO,
+    FETCH_TILE_HI,
+
+    FETCH_SPRITE_MAP,
+    FETCH_SPRITE_LO,
+    FETCH_SPRITE_HI,
   };
 
-  FetchType fetch_type = FETCH_NONE;
-  bool fetch_delay = false;
+  FetchType fetch_type;
   FetchState fetch_state;
-  int sprite_hit;
+  bool fetch_delay;
 
   bool in_window_old;
   bool in_window_new;
-  bool in_window_new_early;
+  bool in_window_early;
   bool in_window_late;
 
-  bool window_retrigger_old;
-  bool window_retrigger_new;
+  bool win_retrig_old;
+  bool win_retrig_new;
 
   //----------
   // Pixel pipe
 
-  ubit8_t map_x;
-  ubit8_t map_y;
+  uint8_t map_x;
 
-  ubit8_t tile_map;
-  ubit8_t tile_lo;
-  ubit8_t tile_hi;
+  uint8_t tile_map;
+  uint8_t tile_lo;
+  uint8_t tile_hi;
   bool    tile_latched;
 
-  int pix_count2;
-  int pix_discard_scx;
-  int pix_discard_pad;
-  ubit4_t pipe_count;
+  uint8_t pix_count;
+  uint8_t pix_discard_scx;
+  uint8_t pix_discard_pad;
+  uint8_t pipe_count;
 
-  ubit8_t bg_pix_lo;
-  ubit8_t bg_pix_hi;
-  ubit8_t bg_pal_lo;
-  ubit8_t bg_pal_hi;
+  uint8_t bg_pix_lo;
+  uint8_t bg_pix_hi;
+  uint8_t bg_pal_lo;
+  uint8_t bg_pal_hi;
 
-  ubit8_t ob_pix_lo;
-  ubit8_t ob_pix_hi;
-  ubit8_t ob_pal_lo;
-  ubit8_t ob_pal_hi;
+  uint8_t ob_pix_lo;
+  uint8_t ob_pix_hi;
+  uint8_t ob_pal_lo;
+  uint8_t ob_pal_hi;
+
+  uint8_t pix_out;
+  bool pix_oe;
+
+  bool stat1;
+  bool stat2;
+  bool vblank1;
+  bool vblank2;
 };
 
 //-----------------------------------------------------------------------------

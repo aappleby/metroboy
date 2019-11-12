@@ -4,25 +4,29 @@
 //-----------------------------------------------------------------------------
 
 struct OAM {
+
+  struct Out {
+    Bus oam_to_bus;
+    Bus oam_to_ppu;
+  };
+
   void reset();
+  Out  tick() const;
+  void tock(int tcycle_, const Bus bus_to_oam_, Bus dma_to_oam_, Bus ppu_to_oam_);
+  void dump(std::string& out) const;
 
-  void tock(uint16_t addr, uint8_t data, bool read, bool write);
+  const uint8_t* get() const { return (uint8_t*)ram; }
 
-  const Sprite& get_sprite(int index) const {
-    return ((Sprite*)ram)[index];
-  }
-  uint8_t* get_ram() {
-    return ram;
-  }
+private:
+  int tcycle;
+  Bus bus_to_oam;
+  Bus dma_to_oam;
+  Bus ppu_to_oam;
 
-  void dump(std::string& out);
+  Bus oam_to_bus;
+  Bus oam_to_ppu;
 
-  uint8_t bus_out;
-  bool bus_oe;
-
-//private:
-
-  uint8_t ram[256];
+  uint16_t ram[128];
 };
 
 //-----------------------------------------------------------------------------

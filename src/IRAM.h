@@ -1,14 +1,23 @@
 #pragma once
+#include "Types.h"
 
 struct IRAM {
+  struct Out {
+    Bus iram_to_bus;
+    Bus iram_to_dma;
+  };
+
   void reset();
-  void tock_t2(uint16_t addr, uint8_t data, bool read, bool write);
+  Out  tick() const;
+  void tock(int tcycle_, Bus bus_to_iram_, Bus dma_to_iram_);
+  void dump(std::string& d);
 
-  const uint8_t* get() {
-    return ram;
-  }
-
-  uint8_t bus_out;
-  bool bus_oe;
+  const uint8_t* get() { return ram; }
+private:
+  int tcycle;
+  Bus bus_to_iram;
+  Bus dma_to_iram;
+  Bus iram_to_bus;
+  Bus iram_to_dma;
   uint8_t ram[8192];
 };

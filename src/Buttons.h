@@ -1,20 +1,21 @@
 #pragma once
+#include "Types.h"
 
 struct Buttons {
-  Buttons();
+
   void reset();
+  Bus  tick() const;
+  void tock(int tcycle_, Bus bus_to_buttons_);
+  void dump(std::string& d) const;
 
-  void tock(uint16_t addr, uint8_t data, bool read, bool write);
-
-  uint8_t get() { return val; }
-  void set(uint8_t new_val) { val = new_val; }
-  void dump(std::string& out);
-
-  uint8_t bus_out = 0;
-  bool bus_oe = false;
-  uint8_t val = 0;
+  uint8_t get() const { return val; }
+  void set(uint8_t new_val);
 
 private:
+  int tcycle;
+  Bus bus_to_buttons;
+  Bus buttons_to_bus;
 
+  uint8_t val;
   uint8_t p1 = 0; // FF00
 };

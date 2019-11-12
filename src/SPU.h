@@ -5,49 +5,48 @@
 
 struct SPU {
   void reset();
+  Bus  tick() const;
+  sample_t get_l() const { return out_l; }
+  sample_t get_r() const { return out_r; }
+  void tock(const int tcycle_, const Bus cpu_in_);
 
-  void tock(int tphase, ubit16_t addr, ubit8_t data, bool read, bool write);
+  void  dump(std::string& out) const;
+  const uint8_t* get_wave() const { return s3_wave; }
+  
+private:
 
-  void  dump(std::string& out);
+  int tcycle;
+  Bus cpu_in;
+  Bus cpu_out;
+
+  void bus_read (const int tphase, const Bus cpu_in_);
+  void bus_write(const int tphase, const Bus cpu_in_);
 
   //----------
-  // output registers
 
-  ubit8_t bus_out;
-  bool    bus_oe;
-  ubit9_t out_r;
-  ubit9_t out_l;
-
-//private:
-
-  void bus_read(ubit16_t addr);
-  void bus_write(ubit16_t addr, ubit8_t data);
-
-  //----------
-
-  ubit8_t nr10;
-  ubit8_t nr11;
-  ubit8_t nr12;
-  ubit8_t nr13;
-  ubit8_t nr14;
-  ubit8_t nr20;
-  ubit8_t nr21;
-  ubit8_t nr22;
-  ubit8_t nr23;
-  ubit8_t nr24;
-  ubit8_t nr30;
-  ubit8_t nr31;
-  ubit8_t nr32;
-  ubit8_t nr33;
-  ubit8_t nr34;
-  ubit8_t nr40;
-  ubit8_t nr41;
-  ubit8_t nr42;
-  ubit8_t nr43;
-  ubit8_t nr44;
-  ubit8_t nr50;
-  ubit8_t nr51;
-  ubit8_t nr52; // FF26
+  uint8_t nr10;
+  uint8_t nr11;
+  uint8_t nr12;
+  uint8_t nr13;
+  uint8_t nr14;
+  uint8_t nr20;
+  uint8_t nr21;
+  uint8_t nr22;
+  uint8_t nr23;
+  uint8_t nr24;
+  uint8_t nr30;
+  uint8_t nr31;
+  uint8_t nr32;
+  uint8_t nr33;
+  uint8_t nr34;
+  uint8_t nr40;
+  uint8_t nr41;
+  uint8_t nr42;
+  uint8_t nr43;
+  uint8_t nr44;
+  uint8_t nr50;
+  uint8_t nr51;
+  uint8_t nr52; // FF26
   // FF27
   // FF28
   // FF29
@@ -59,42 +58,45 @@ struct SPU {
   // FF2F
 
   uint8_t  s3_wave[16]; // FF30
-  ubit15_t s4_lfsr;
+  uint16_t s4_lfsr;
 
-  ubit14_t spu_clock;
+  uint16_t spu_clock;
 
   bool s1_enable;
   bool s2_enable;
   bool s3_enable;
   bool s4_enable;
 
-  ubit3_t s1_sweep_clock;
-  ubit11_t s1_sweep_freq;
+  uint8_t s1_sweep_clock;
+  uint16_t s1_sweep_freq;
 
-  ubit7_t s1_duration;
-  ubit7_t s2_duration;
-  ubit9_t s3_duration;
-  ubit7_t s4_duration;
+  uint8_t s1_duration;
+  uint8_t s2_duration;
+  uint16_t s3_duration;
+  uint8_t s4_duration;
 
-  ubit3_t s1_env_clock;
-  ubit3_t s2_env_clock;
-  ubit3_t s4_env_clock;
-  ubit4_t s1_env_volume;
-  ubit4_t s2_env_volume;
-  ubit4_t s4_env_volume;
+  uint8_t s1_env_clock;
+  uint8_t s2_env_clock;
+  uint8_t s4_env_clock;
+  uint8_t s1_env_volume;
+  uint8_t s2_env_volume;
+  uint8_t s4_env_volume;
 
-  ubit11_t s1_phase_clock;
-  ubit11_t s2_phase_clock;
-  ubit11_t s3_phase_clock;
-  ubit11_t s4_phase_clock;
-  ubit3_t s1_phase;
-  ubit3_t s2_phase;
-  ubit5_t s3_phase;
+  uint16_t s1_phase_clock;
+  uint16_t s2_phase_clock;
+  uint16_t s3_phase_clock;
+  uint16_t s4_phase_clock;
+  uint8_t s1_phase;
+  uint8_t s2_phase;
+  uint8_t s3_phase;
 
-  ubit4_t s1_out;
-  ubit4_t s2_out;
-  ubit4_t s3_out;
-  ubit4_t s4_out;
+  uint8_t s1_out;
+  uint8_t s2_out;
+  uint8_t s3_out;
+  uint8_t s4_out;
+
+  sample_t out_r;
+  sample_t out_l;
 };
 
 //-----------------------------------------------------------------------------

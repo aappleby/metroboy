@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -49,7 +49,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -66,19 +66,21 @@
       <MinimalRebuild>
       </MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Platform.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDL2.lib;SDL2Main.lib;dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <AdditionalLibraryDirectories>SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -89,7 +91,9 @@
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Platform.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,7 +107,6 @@
     <ClInclude Include="src\Assembler.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\Buttons.h" />
-    <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Gameboy.h" />
     <ClInclude Include="src\IRAM.h" />
@@ -111,7 +114,6 @@
     <ClInclude Include="src\MMU.h" />
     <ClInclude Include="src\OAM.h" />
     <ClInclude Include="src\Opcodes.h" />
-    <ClInclude Include="src\Platform.h" />
     <ClInclude Include="src\PPU.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\SPU.h" />
@@ -120,6 +122,7 @@
     <ClInclude Include="src\test_mooneye.h" />
     <ClInclude Include="src\test_screenshot.h" />
     <ClInclude Include="src\test_wpol.h" />
+    <ClInclude Include="src\TextPainter.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\Types.h" />
     <ClInclude Include="src\VRAM.h" />
@@ -131,16 +134,12 @@
     <ClCompile Include="src\Assembler.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Buttons.cpp" />
-    <ClCompile Include="src\Common.cpp" />
+    <ClCompile Include="src\Constants.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\MMU.cpp" />
     <ClCompile Include="src\OAM.cpp" />
-    <ClCompile Include="src\Platform.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="src\PPU.cpp" />
     <ClCompile Include="src\Serial.cpp" />
     <ClCompile Include="src\SPU.cpp" />
@@ -149,8 +148,11 @@
     <ClCompile Include="src\test_mooneye.cpp" />
     <ClCompile Include="src\test_screenshot.cpp" />
     <ClCompile Include="src\test_wpol.cpp" />
+    <ClCompile Include="src\TextPainter.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\Types.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
+    <ClCompile Include="src\Wishbone.cpp" />
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -265,22 +267,17 @@
     <None Include="microtests\vblank_int_inc_sled.s" />
     <None Include="microtests\vblank_int_nops_a.s" />
     <None Include="microtests\vblank_int_nops_b.s" />
-    <None Include="verilog\CPU.v">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="verilog\PPU.v">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
-    <CustomBuild Include="verilog\SPU.v">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"wsl" --exec /usr/local/bin/verilator</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj_dir/VSPU.cpp, obj_dir/VSPU.h</Outputs>
-    </CustomBuild>
-    <None Include="verilog\types.v" />
-    <None Include="verilog\VRAM.v">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
+    <None Include="verilog\classtest.sv" />
+    <None Include="verilog\Constants.sv" />
+    <None Include="verilog\CPU.sv" />
+    <None Include="verilog\IRAM.sv" />
+    <None Include="verilog\PPU.sv" />
+    <None Include="verilog\SPU.sv" />
+    <None Include="verilog\types.sv" />
+    <None Include="verilog\VRAM.sv" />
+    <None Include="verilog\VRAM_test.sh" />
+    <None Include="verilog\wishbone_device.sv" />
+    <None Include="verilog\wishbone_host.sv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

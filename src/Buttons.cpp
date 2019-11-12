@@ -1,43 +1,53 @@
-#include "Platform.h"
 #include "Buttons.h"
 
 #include "Constants.h"
 
-Buttons::Buttons() {
-  reset();
-}
-
 void Buttons::reset() {
+  *this = {};
   val = 0xFF;
   p1 = 0xCF;
-  bus_out = 0;
-  bus_oe = false;
 }
 
-void Buttons::tock(uint16_t addr, uint8_t data, bool read, bool write) {
-  bus_out = 0x00;
-  bus_oe = false;
+Bus Buttons::tick() const {
+  return buttons_to_bus;
+}
 
-  if (write && addr == ADDR_P1) {
-    p1 = (p1 & 0xCF) | (data & 0x30);
+void Buttons::tock(int tcycle_, Bus bus_to_buttons_) {
+  const int tphase = tcycle_ & 3;
+  if (tphase != 0) return;
+
+  tcycle = tcycle_;
+  bus_to_buttons = bus_to_buttons_;
+  buttons_to_bus = {};
+
+  if (bus_to_buttons.addr == ADDR_P1) {
+    buttons_to_bus = bus_to_buttons;
+    buttons_to_bus.ack = true;
   }
 
-  if (read && addr == ADDR_P1) {
-    bus_out = p1;
-    bus_oe = true;
+  if (bus_to_buttons.read) {
+    if (bus_to_buttons.addr == ADDR_P1) {
+      buttons_to_bus.data = p1;
+    }
   }
-
-  //-----------------------------------
 
   switch (p1 & 0x30) {
   case 0x00: p1 = (p1 & 0xF0) | 0x0F; break;
   case 0x10: p1 = (p1 & 0xF0) | ((val >> 4) & 0xF); break;
   case 0x20: p1 = (p1 & 0xF0) | ((val >> 0) & 0xF); break;
   }
+
+  if (bus_to_buttons.write) {
+    if (bus_to_buttons.addr == ADDR_P1) p1 = (p1 & 0xCF) | (bus_to_buttons.data & 0x30);
+  }
 }
 
-void Buttons::dump(std::string& out) {
-  sprintf(out, "%c %c %c %c %c %c %c %c\n",
+void Buttons::set(uint8_t new_val) {
+  val = new_val;
+}
+
+void Buttons::dump(std::string& d) const {
+  sprintf(d, "%c %c %c %c %c %c %c %c\n",
           val & 0x01 ? '-' : 'R',
           val & 0x02 ? '-' : 'L',
           val & 0x04 ? '-' : 'U',
@@ -46,4 +56,7 @@ void Buttons::dump(std::string& out) {
           val & 0x20 ? '-' : 'B',
           val & 0x40 ? '-' : 'E',
           val & 0x80 ? '-' : 'S');
+
+  print_bus(d, "bus_to_buttons", bus_to_buttons);
+  print_bus(d, "buttons_to_bus", buttons_to_bus);
 }

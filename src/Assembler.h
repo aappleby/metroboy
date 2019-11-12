@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+#include <map>
+#include <string>
+
 extern const char* source_header;
 
 typedef std::vector<uint8_t> blob;
@@ -42,36 +46,16 @@ struct Assembler {
 
   std::string name;
   std::vector<size_t> bookmarks;
-  std::map<string, uint16_t> label_map;
+  std::map<std::string, uint16_t> label_map;
   std::map<uint16_t, blob> block_map;
   uint16_t block_addr;
   blob* block_code;
 
-  void begin_label(std::string label) {
-    label_map[label] = block_addr + (uint16_t)block_code->size();
-  }
-
-  void begin_block(uint16_t addr) {
-    blob& code = block_map[addr];
-    assert(code.empty());
-    block_addr = addr;
-    block_code = &code;
-  }
-
-  void emit(uint8_t x) {
-    block_code->push_back(x);
-  }
-
-  void emit(uint8_t a, uint8_t b) {
-    block_code->push_back(a);
-    block_code->push_back(b);
-  }
-
-  void emit(uint8_t a, uint8_t b, uint8_t c) {
-    block_code->push_back(a);
-    block_code->push_back(b);
-    block_code->push_back(c);
-  }
+  void begin_label(std::string label);
+  void begin_block(uint16_t addr);
+  void emit(uint8_t x);
+  void emit(uint8_t a, uint8_t b);
+  void emit(uint8_t a, uint8_t b, uint8_t c);
 
   FILE* out_file;
 };

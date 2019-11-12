@@ -61,6 +61,11 @@
   ldh (IE), a
 .endm
 
+.macro set_ie_timer
+  ld a, %00000100
+  ldh (IE), a
+.endm
+
 ;-------------------------------------------------------------------------------
 
 .macro clear_stat
@@ -281,6 +286,15 @@
   test_end
 .endm
 
+.macro test_finish_not_a ARGS expected
+  cp expected
+  jr nz, +
+  ld a, $FF
+  test_end
++ ld a, $55
+  test_end
+.endm
+
 .macro test_finish_b ARGS expected
   ld a, b
   sub <expected
@@ -322,6 +336,9 @@
 
 .define VBLANK_INT_VECTOR $40
 .define STAT_INT_VECTOR   $48
+.define TIMER_INT_VECTOR  $50
+.define SERIAL_INT_VECTOR $58
+.define JOYPAD_INT_VECTOR $60
 
 ;-------------------------------------------------------------------------------
 

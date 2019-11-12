@@ -52,9 +52,10 @@ void P24_LcdControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p24.KASA = not(b.p21.PURE);
   c.p24.UMOB = not(b.p01.FF04_D0n);
   c.p24.USEC = not(b.p01.FF04_D1n);
-  c.p24.KEDY = not(b.p23.FF40_D7);
-  c.p24.KAHE = amux2(b.p23.FF40_D7, b.p24.KASA, b.p24.KEDY, b.p24.UMOB);
-  c.p24.KUPA = amux2(b.p23.FF40_D7, b.p24.KEBO, b.p24.KEDY, b.p24.USEC);
+  c.p24.LCD_OFF = not(b.p23.LCD_ON);
+
+  c.p24.KAHE = amux2(b.p23.LCD_ON, b.p24.KASA, b.p24.LCD_OFF, b.p24.UMOB);
+  c.p24.KUPA = amux2(b.p23.LCD_ON, b.p24.KEBO, b.p24.LCD_OFF, b.p24.USEC);
   c.p24.KYMO = not(b.p24.KAHE);
   c.p24.KOFO = not(b.p24.KUPA);
 

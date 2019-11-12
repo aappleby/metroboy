@@ -22,7 +22,7 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.PEZO = xor(b.p23.FF4A_D6, b.p21.V6);
   c.p27.NUPA = xor(b.p23.FF4A_D7, b.p21.V7);
 
-  c.p27.PALO = nand(b.p23.FF40_D5, b.p27.NOJO, b.p27.PAGA, b.p27.PEZO, b.p27.NUPA);
+  c.p27.PALO = nand(b.p23.WIN_EN, b.p27.NOJO, b.p27.PAGA, b.p27.PEZO, b.p27.NUPA);
   c.p27.NELE = not(b.p27.PALO);
   c.p27.PAFU = nand(b.p27.NELE, b.p27.NAZE, b.p27.PEBO, b.p27.POMO, b.p27.NEVU);
   c.p27.ROGE = not(b.p27.PAFU);
@@ -74,7 +74,7 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.SUVU = nand(b.p21.XYMU, b.p27.ROMO, b.p24.NYKA, b.p24.PORY);
   c.p27.TAVE = not(b.p27.SUVU);
   c.p27.XAHY = not(b.p28.ATEJ);
-  c.p27.XOFO = nand(b.p23.FF40_D5, b.p27.XAHY, b.p01.RESET_VIDEO);
+  c.p27.XOFO = nand(b.p23.WIN_EN, b.p27.XAHY, b.p01.RESET_VIDEO);
   c.p27.XACO = not(b.p27.XOFO);
   c.p27.PYNU = or(b.p27.NUNU, b.p27.XOFO);
   c.p27.NUNY = and(!b.p27.NOPA, b.p27.PYNU);
@@ -174,7 +174,7 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.VOVO = not(b.p27.TATE);
   c.p27.VULO = not(b.p27.TEKE);
 
-  c.p27.VEVY = not(b.p23.FF40_D6);
+  c.p27.VEVY = not(b.p23.WIN_MAP_SEL);
   c.p27.VEZA = not(b.p27.VYPO);
   c.p27.VOGU = not(b.p27.VYPO);
 

@@ -71,10 +71,11 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // top center
 
   c.p21.VENA = tock_pos(!a.p29.WUVU, !b.p29.WUVU, b.p01.RESET_VIDEO, b.p21.VENA, !b.p21.VENA);
+
   c.p21.MUDE = nor(b.p21.RUTU, b.p21.LYHA); // schematic says RUTU_OUT, but I think this is just RUTU?
   c.p21.TALU = not(!b.p21.VENA);
 
-  c.p21.SAXO = tock_pos(a.p21.TALU,  b.p21.TALU,  b.p21.MUDE, c.p21.SAXO, !c.p21.SAXO);
+  c.p21.SAXO = tock_pos( a.p21.TALU,  b.p21.TALU, b.p21.MUDE, c.p21.SAXO, !c.p21.SAXO);
   c.p21.TYPO = tock_pos(!a.p21.SAXO, !b.p21.SAXO, b.p21.MUDE, c.p21.TYPO, !c.p21.TYPO);
   c.p21.VYZO = tock_pos(!a.p21.TYPO, !b.p21.TYPO, b.p21.MUDE, c.p21.VYZO, !c.p21.VYZO);
   c.p21.TELU = tock_pos(!a.p21.VYZO, !b.p21.VYZO, b.p21.MUDE, c.p21.TELU, !c.p21.TELU);

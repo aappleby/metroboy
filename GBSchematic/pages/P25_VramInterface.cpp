@@ -421,7 +421,7 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p25.SUVO_10 = not(b.p32.POWY);
   c.p25.TOBO_11 = not(b.p32.PYJU);
 
-  c.p25.VUZA = nor(b.p23.FF40_D4, b.p32.PYJU);
+  c.p25.VUZA = nor(b.p23.BG_TILE_SEL, b.p32.PYJU);
   c.p25.VURY_12 = not(b.p25.VUZA);
 
   if (b.p27.NETA) {

@@ -80,7 +80,7 @@ void P26_Background::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p26.ACUL_C = add_c(b.p21.SYBE, b.p23.FF43_D7, b.p26.BYCA_C);
 
   // polarity?
-  c.p26.AMUV = b.p23.FF40_D3;
+  c.p26.AMUV = b.p23.BG_MAP_SEL;
   c.p26.COXO = b.p28.WEFE;
   c.p26.COVE = b.p28.WEFE;
   c.p26.AXEP = b.p26.BABE_S;

@@ -6,14 +6,14 @@ struct P23_VideoRegs {
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   // LCDC
-  union { bool VYXE; bool FF40_D0; };
-  union { bool XYLO; bool FF40_D1; };
-  union { bool XYMO; bool FF40_D2; };
-  union { bool XAFO; bool FF40_D3; };
-  union { bool WEXU; bool FF40_D4; };
-  union { bool WYMO; bool FF40_D5; };
-  union { bool WOKY; bool FF40_D6; };
-  union { bool XONA; bool FF40_D7; };
+  union { bool VYXE; bool FF40_D0; bool BG_EN; };
+  union { bool XYLO; bool FF40_D1; bool SPRITE_EN; };
+  union { bool XYMO; bool FF40_D2; bool SPRITE_SIZE; };
+  union { bool XAFO; bool FF40_D3; bool BG_MAP_SEL; };
+  union { bool WEXU; bool FF40_D4; bool BG_TILE_SEL; };
+  union { bool WYMO; bool FF40_D5; bool WIN_EN; };
+  union { bool WOKY; bool FF40_D6; bool WIN_MAP_SEL; };
+  union { bool XONA; bool FF40_D7; bool LCD_ON; };
 
   // SCY
   union { bool GAVE; bool FF42_D0; };

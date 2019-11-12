@@ -9,10 +9,10 @@
 
 void P35_PixelMux::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
 
-  c.p35.WOXA = and(b.p23.FF40_D1, b.p33.SPR_PIX_A_7);
-  c.p35.XULA = and(b.p23.FF40_D1, b.p33.SPR_PIX_B_7);
-  c.p35.TADE = and(b.p23.FF40_D0, b.p32.BG_PIX_B_7);
-  c.p35.RAJY = and(b.p23.FF40_D0, b.p32.BG_PIX_A_7);
+  c.p35.WOXA = and(b.p23.SPRITE_EN, b.p33.SPR_PIX_A_7);
+  c.p35.XULA = and(b.p23.SPRITE_EN, b.p33.SPR_PIX_B_7);
+  c.p35.TADE = and(b.p23.BG_EN,     b.p32.BG_PIX_B_7);
+  c.p35.RAJY = and(b.p23.BG_EN,     b.p32.BG_PIX_A_7);
 
   c.p35.WELE = not(b.p35.XULA);
   c.p35.VUMU = not(b.p35.WOXA);

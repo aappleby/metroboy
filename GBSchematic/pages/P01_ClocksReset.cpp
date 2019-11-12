@@ -75,11 +75,12 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // Reset tree
 
+  c.p01.UCOB = not(b.chip.CLKIN_A);
+
   c.p01.DULA = not(b.p01.RESET2);
   c.p01.XEBE = not(b.p01.RESET7);
-  c.p01.UCOB = not(b.chip.CLKIN_A);
   c.p01.CUNU = not(b.p01.DULA);
-  c.p01.XODO = and(b.p23.FF40_D7, b.p01.XEBE);
+  c.p01.XODO = and(b.p23.LCD_ON, b.p01.XEBE);
   c.p01.XORE = not(b.p01.CUNU);
   c.p01.WESY = not(b.p01.XORE);
   c.p01.WALU = not(b.p01.XORE);

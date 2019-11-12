@@ -83,7 +83,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.GYDA = not(b.p29.GOJU_S);
   c.p29.GEWY = not(b.p29.WUHU_S);
 
-  c.p29.GOVU = or(b.p29.GYKY_S, b.p23.FF40_D2);
+  c.p29.GOVU = or(b.p29.GYKY_S, b.p23.SPRITE_SIZE);
   c.p29.WOTA = nand(b.p29.GACE, b.p29.GUVU, b.p29.GYDA, b.p29.GEWY, b.p29.WUHU_C, b.p29.GOVU);
   c.p29.GESE = not(b.p29.WOTA);
 
@@ -113,6 +113,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     
   c.p29.XYVA = not(b.p01.CLK_xBxDxFxH2);
   c.p29.XOTA = not(b.p29.XYVA);
+
   c.p29.XYFY = not(b.p29.XOTA);
   c.p29.WUVU = tock_pos(a.p29.XOTA, b.p29.XOTA, b.p01.RESET_VIDEO, b.p29.WUVU, !b.p29.WUVU);
   c.p29.ALES = not(b.p21.XYVO);
@@ -185,7 +186,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p29.BYJO = not(b.p29.CEHA);
   c.p29.AZEM = and(b.p29.BYJO, b.p21.XYMU);
-  c.p29.AROR = and(b.p29.AZEM, b.p23.FF40_D1);
+  c.p29.AROR = and(b.p29.AZEM, b.p23.SPRITE_EN);
 
   c.p29.XAGE = nand(b.p29.AROR, b.p31.YNAZ, b.p31.YKOK);
   c.p29.YLOZ = nand(b.p29.AROR, b.p31.ZURE, b.p31.YWOS);
@@ -302,8 +303,8 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.ABEM = not(b.p29.XUQU);
   c.p29.DYSO = not(b.chip.P10_B);
 
-  c.p29.FUFO = not(b.p23.FF40_D2);
-  c.p29.GEJY = amux2(!b.p29.XUSO, b.p29.FUFO, b.p23.FF40_D2, b.p29.WAGO);
+  c.p29.FUFO = not(b.p23.SPRITE_SIZE);
+  c.p29.GEJY = amux2(!b.p29.XUSO, b.p29.FUFO, b.p23.SPRITE_SIZE, b.p29.WAGO);
   c.p29.FAMU = not(b.p29.GEJY);
 
   if (b.p29.ABON) {

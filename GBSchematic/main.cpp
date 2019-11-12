@@ -128,7 +128,7 @@ const std::vector<SignalData> sample_signals =
 
   //c.p09.AJER = tock_pos(a.p01.CLK_AxCxExGx1, b.p01.CLK_AxCxExGx1, b.p09.APU_RESET3n, b.p09.AJER, !b.p09.AJER);
 
-  //SignalData("p01",  offsetof(Gameboy, p01), P01_ClocksReset::signals()),
+  SignalData("p01",  offsetof(Gameboy, p01), P01_ClocksReset::signals()),
   //SignalData("p03",  offsetof(Gameboy, p03), P03_Timer::signals()),
 };
 

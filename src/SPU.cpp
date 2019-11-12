@@ -43,10 +43,6 @@ Bus SPU::tick() const {
   return cpu_out;
 }
 
-Bus SPU::tick() const {
-  return cpu_out;
-}
-
 void SPU::tock(const int tcycle_, const Bus cpu_in_) {
   const int tphase = tcycle_ & 3;
   if (tphase != 0) return;
@@ -309,21 +305,10 @@ void SPU::tock(const int tcycle_, const Bus cpu_in_) {
   if (nr51 & 0b10000000) out_l += s4_out;
   /* verilator lint_on WIDTH */    
 
-  {
-    uint8_t volume_r = ((nr50 & 0b00000111) >> 0) + 1;
-    uint8_t volume_l = ((nr50 & 0b01110000) >> 4) + 1;
-
   const uint8_t volume_r = ((nr50 & 0b00000111) >> 0) + 1;
   const uint8_t volume_l = ((nr50 & 0b01110000) >> 4) + 1;
 
-  s1_out <= s1_out_;
-  s2_out <= s2_out_;
-  s3_out <= s3_out_;
-  s4_out <= s4_out_;
-
-  out_r <= out_r_;
-  out_l <= out_l_;
-  spu_clock <= spu_clock_;
+  spu_clock = spu_clock_;
 }
 
 //-----------------------------------------------------------------------------

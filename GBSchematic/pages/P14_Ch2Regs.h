@@ -49,6 +49,13 @@ struct P14_Ch2Regs {
 
 private:
 
+  union { bool DOSA; bool NR23_WR1; };
+  union { bool EXUC; bool NR32_WR2; };
+  union { bool ESUR; bool NR23_WRn1; };
+  union { bool FYXO; bool NR32_WRn2; };
+
+  union { bool HUDE; bool APU_RESETn1; };
+
   bool FOGE,FAPE;
   bool ASYP;
   bool BACU,BUDU;
@@ -58,7 +65,7 @@ private:
   bool GURE,GEXA,GERE,JEDE;
   bool HUPE,GENE,HYRY,HORO,HERE,HAVU,HYRE,HUVU;
 
-  bool DOSA,HUDE,ESUR,EXUC,FYXO,FERY,GUZA,FUTY;
+  bool FERY,GUZA,FUTY;
   bool EDEP;
 
   bool FAVA,FAJY,FEGU,FOSE,GERO,GAKY,GADU,GAZO;

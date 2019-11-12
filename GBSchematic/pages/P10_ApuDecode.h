@@ -40,16 +40,24 @@ struct P10_ApuDecode {
   union { bool EKAG; bool XXX6; };
 
   union { bool ANAP; }; // -> p07.APER
-  union { bool DUCE; }; // -> p14.FERY
+
+  union { bool DYTE; bool A00_n1; };
+  union { bool DOSO; bool A00_1;  };
+  union { bool AFOB; bool A01_n1; };
+  union { bool DUPA; bool A01_1;  };
+  union { bool ABUB; bool A02_n1; };
+  union { bool DENO; bool A02_1;  };
+  union { bool ACOL; bool A03_n1; };
+  union { bool DUCE; bool A03_1;  };
 
 private:
+
 
   bool AMUS,BYKO,AKUG;
   bool BOXY,AWET;
   bool AVUN,ASAD,ACOM;
   bool ATUP,ATEG,BUNO;
   bool BAFU;
-  bool DYTE,DOSO,AFOB,DUPA,ABUB,DENO,ACOL;
 
   bool DAFY,DAMY;
   bool DATU,DAZA,DEJY,DEWA,DOFA;

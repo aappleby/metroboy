@@ -102,4 +102,8 @@ struct Gameboy {
   bool OAM_A_D0,OAM_A_D1,OAM_A_D2,OAM_A_D3,OAM_A_D4,OAM_A_D5,OAM_A_D6,OAM_A_D7;
   bool OAM_B_D0,OAM_B_D1,OAM_B_D2,OAM_B_D3,OAM_B_D4,OAM_B_D5,OAM_B_D6,OAM_B_D7;
 
+  //----------
+  // wave ram bus
+
+  bool WAVE_RD_D0,WAVE_RD_D1,WAVE_RD_D2,WAVE_RD_D3,WAVE_RD_D4,WAVE_RD_D5,WAVE_RD_D6,WAVE_RD_D7;
 };

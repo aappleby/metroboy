@@ -1,180 +1,175 @@
 #include "../Schematics.h"
 #include "Gameboy.h"
 
-void P20_Channel4::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
-  const P20_Channel4 pa = {};
-  const P20_Channel4 pb = {};
-  P20_Channel4 pc;
+void P20_Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  (void)gc;
+  c.p20.EMOF = nor(b.p20.FF22_D4n, b.p20.FF22_D5n, b.p20.FF22_D6n);
+  c.p20.ELAR = nor(b.p20.FF22_D4n, b.p20.FF22_D5n, b.p20.FF22_D6 );
+  c.p20.DUDU = nor(b.p20.FF22_D4n, b.p20.FF22_D5 , b.p20.FF22_D6n);
+  c.p20.ETAT = nor(b.p20.FF22_D4n, b.p20.FF22_D5 , b.p20.FF22_D6 );
+  c.p20.FURA = nor(b.p20.FF22_D4 , b.p20.FF22_D5n, b.p20.FF22_D6n);
+  c.p20.ETAR = nor(b.p20.FF22_D4 , b.p20.FF22_D5n, b.p20.FF22_D6 );
+  c.p20.EVER = nor(b.p20.FF22_D4 , b.p20.FF22_D5 , b.p20.FF22_D6n);
+  c.p20.ETOV = nor(b.p20.FF22_D4 , b.p20.FF22_D5 , b.p20.FF22_D6 );
 
-  pc.EMOF = nor(pb.FF22_D4n, pb.FF22_D5n, pb.FF22_D6n);
-  pc.ELAR = nor(pb.FF22_D4n, pb.FF22_D5n, pb.FF22_D6 );
-  pc.DUDU = nor(pb.FF22_D4n, pb.FF22_D5 , pb.FF22_D6n);
-  pc.ETAT = nor(pb.FF22_D4n, pb.FF22_D5 , pb.FF22_D6 );
-  pc.FURA = nor(pb.FF22_D4 , pb.FF22_D5n, pb.FF22_D6n);
-  pc.ETAR = nor(pb.FF22_D4 , pb.FF22_D5n, pb.FF22_D6 );
-  pc.EVER = nor(pb.FF22_D4 , pb.FF22_D5 , pb.FF22_D6n);
-  pc.ETOV = nor(pb.FF22_D4 , pb.FF22_D5 , pb.FF22_D6 );
+  c.p20.CEXO_00 = tock_pos(a.p20.CARY,     b.p20.CARY,     b.p09.APU_RESET4n, b.p20.CEXO_00, !b.p20.CEXO_00);
+  c.p20.DEKO_01 = tock_pos(!a.p20.CEXO_00, !b.p20.CEXO_00, b.p09.APU_RESET4n, b.p20.DEKO_01, !b.p20.DEKO_01);
+  c.p20.EZEF_02 = tock_pos(!a.p20.DEKO_01, !b.p20.DEKO_01, b.p09.APU_RESET4n, b.p20.EZEF_02, !b.p20.EZEF_02);
+  c.p20.EPOR_03 = tock_pos(!a.p20.EZEF_02, !b.p20.EZEF_02, b.p09.APU_RESET4n, b.p20.EPOR_03, !b.p20.EPOR_03);
+  c.p20.DURE_04 = tock_pos(!a.p20.EPOR_03, !b.p20.EPOR_03, b.p09.APU_RESET4n, b.p20.DURE_04, !b.p20.DURE_04);
+  c.p20.DALE_05 = tock_pos(!a.p20.DURE_04, !b.p20.DURE_04, b.p09.APU_RESET4n, b.p20.DALE_05, !b.p20.DALE_05);
+  c.p20.DOKE_06 = tock_pos(!a.p20.DALE_05, !b.p20.DALE_05, b.p09.APU_RESET4n, b.p20.DOKE_06, !b.p20.DOKE_06);
+  c.p20.DEMO_07 = tock_pos(!a.p20.DOKE_06, !b.p20.DOKE_06, b.p09.APU_RESET4n, b.p20.DEMO_07, !b.p20.DEMO_07);
+  c.p20.DOSE_08 = tock_pos(!a.p20.DEMO_07, !b.p20.DEMO_07, b.p09.APU_RESET4n, b.p20.DOSE_08, !b.p20.DOSE_08);
+  c.p20.DETE_09 = tock_pos(!a.p20.DOSE_08, !b.p20.DOSE_08, b.p09.APU_RESET4n, b.p20.DETE_09, !b.p20.DETE_09);
+  c.p20.ERUT_10 = tock_pos(!a.p20.DETE_09, !b.p20.DETE_09, b.p09.APU_RESET4n, b.p20.ERUT_10, !b.p20.ERUT_10);
+  c.p20.DOTA_11 = tock_pos(!a.p20.ERUT_10, !b.p20.ERUT_10, b.p09.APU_RESET4n, b.p20.DOTA_11, !b.p20.DOTA_11);
+  c.p20.DERE_12 = tock_pos(!a.p20.DOTA_11, !b.p20.DOTA_11, b.p09.APU_RESET4n, b.p20.DERE_12, !b.p20.DERE_12);
+  c.p20.ESEP_13 = tock_pos(!a.p20.DERE_12, !b.p20.DERE_12, b.p09.APU_RESET4n, b.p20.ESEP_13, !b.p20.ESEP_13);
 
-  pc.CEXO_00 = tock_pos(pa.CARY,     pb.CARY,     gb.p09.APU_RESET4n, pb.CEXO_00, !pb.CEXO_00);
-  pc.DEKO_01 = tock_pos(!pa.CEXO_00, !pb.CEXO_00, gb.p09.APU_RESET4n, pb.DEKO_01, !pb.DEKO_01);
-  pc.EZEF_02 = tock_pos(!pa.DEKO_01, !pb.DEKO_01, gb.p09.APU_RESET4n, pb.EZEF_02, !pb.EZEF_02);
-  pc.EPOR_03 = tock_pos(!pa.EZEF_02, !pb.EZEF_02, gb.p09.APU_RESET4n, pb.EPOR_03, !pb.EPOR_03);
-  pc.DURE_04 = tock_pos(!pa.EPOR_03, !pb.EPOR_03, gb.p09.APU_RESET4n, pb.DURE_04, !pb.DURE_04);
-  pc.DALE_05 = tock_pos(!pa.DURE_04, !pb.DURE_04, gb.p09.APU_RESET4n, pb.DALE_05, !pb.DALE_05);
-  pc.DOKE_06 = tock_pos(!pa.DALE_05, !pb.DALE_05, gb.p09.APU_RESET4n, pb.DOKE_06, !pb.DOKE_06);
-  pc.DEMO_07 = tock_pos(!pa.DOKE_06, !pb.DOKE_06, gb.p09.APU_RESET4n, pb.DEMO_07, !pb.DEMO_07);
-  pc.DOSE_08 = tock_pos(!pa.DEMO_07, !pb.DEMO_07, gb.p09.APU_RESET4n, pb.DOSE_08, !pb.DOSE_08);
-  pc.DETE_09 = tock_pos(!pa.DOSE_08, !pb.DOSE_08, gb.p09.APU_RESET4n, pb.DETE_09, !pb.DETE_09);
-  pc.ERUT_10 = tock_pos(!pa.DETE_09, !pb.DETE_09, gb.p09.APU_RESET4n, pb.ERUT_10, !pb.ERUT_10);
-  pc.DOTA_11 = tock_pos(!pa.ERUT_10, !pb.ERUT_10, gb.p09.APU_RESET4n, pb.DOTA_11, !pb.DOTA_11);
-  pc.DERE_12 = tock_pos(!pa.DOTA_11, !pb.DOTA_11, gb.p09.APU_RESET4n, pb.DERE_12, !pb.DERE_12);
-  pc.ESEP_13 = tock_pos(!pa.DERE_12, !pb.DERE_12, gb.p09.APU_RESET4n, pb.ESEP_13, !pb.ESEP_13);
+  c.p20.ETYR = amux6(b.p20.ESEP_13, b.p20.DUDU,
+                  b.p20.DERE_12, b.p20.ETAT,
+                  b.p20.DOTA_11, b.p20.FURA,
+                  b.p20.ERUT_10, b.p20.ETAR,
+                  b.p20.DETE_09, b.p20.EVER,
+                  b.p20.DOSE_08, b.p20.ETOV);
 
-  pc.ETYR = amux6(pb.ESEP_13, pb.DUDU,
-                  pb.DERE_12, pb.ETAT,
-                  pb.DOTA_11, pb.FURA,
-                  pb.ERUT_10, pb.ETAR,
-                  pb.DETE_09, pb.EVER,
-                  pb.DOSE_08, pb.ETOV);
+  c.p20.ELYX = amux4(b.p20.DEMO_07, b.p20.EMOF,
+                  b.p20.DOKE_06, b.p20.ELAR,
+                  b.p20.DALE_05, b.p20.DUDU,
+                  b.p20.DURE_04, b.p20.ETAT);
 
-  pc.ELYX = amux4(pb.DEMO_07, pb.EMOF,
-                  pb.DOKE_06, pb.ELAR,
-                  pb.DALE_05, pb.DUDU,
-                  pb.DURE_04, pb.ETAT);
+  c.p20.DARY = amux4(b.p20.EPOR_03, b.p20.FURA,
+                  b.p20.EZEF_02, b.p20.ETAR,
+                  b.p20.DEKO_01, b.p20.EVER,
+                  b.p20.CEXO_00, b.p20.ETOV);
 
-  pc.DARY = amux4(pb.EPOR_03, pb.FURA,
-                  pb.EZEF_02, pb.ETAR,
-                  pb.DEKO_01, pb.EVER,
-                  pb.CEXO_00, pb.ETOV);
-
-  pc.ERYF = or(pb.ELYX, pb.DARY);
+  c.p20.ERYF = or(b.p20.ELYX, b.p20.DARY);
   
-  pc.COSA = not(gb.p09.CPU_RDn);
-  pc.DYRY = and(pb.FF23_D6n, gb.p09.NET03);
-  pc.CEPY = not(pb.FF23_D6);
-  pc.COMO = and(pb.COSA, pb.DYRY);
-  pc.COTE = and(pb.CEPY, gb.p09.NET03);
-  pc.BAGU = nand(pb.FF23, pb.COMO);
-  pc.BEFA = not(pb.CARY);
-  pc.ATEL = not(pb.BEFA);
-  pc.DATO = or(pb.COTE, pb.EZUL);
+  c.p20.COSA = not(b.p09.CPU_RDn);
+  c.p20.DYRY = and(b.p20.FF23_D6n, b.p09.NET03);
+  c.p20.CEPY = not(b.p20.FF23_D6);
+  c.p20.COMO = and(b.p20.COSA, b.p20.DYRY);
+  c.p20.COTE = and(b.p20.CEPY, b.p09.NET03);
+  c.p20.BAGU = nand(b.p20.FF23, b.p20.COMO);
+  c.p20.BEFA = not(b.p20.CARY);
+  c.p20.ATEL = not(b.p20.BEFA);
+  c.p20.DATO = or(b.p20.COTE, b.p20.EZUL);
 
-  pc.FEME = mux2(pb.ETYR, pb.ERYF, pb.FF22_D7);
-  pc.EZUL = mux2(pb.FEME, pb.LFSR_OUT, pb.DYRY);
-  pc.GUFA = not(pb.FEME);
-  pc.GYVE = not(pb.GUFA);
-  pc.KARA = not(pb.GYVE);
-  pc.KOPA = not(pb.KARA);
-
-  //----------
-
-  pc.FELO = or(pb.EROX, pb.CH4_EG_DISABLE, pb.CH4_EG_TICK);
-
-  pc.FOLE = amux2(pb.FELO, pb.FF21_D3,  pb.FELO, pb.FF21_D3n);
-  pc.ETEF = amux2(pb.FEKO, pb.FF21_D3, !pb.FEKO, pb.FF21_D3n);
-  pc.EDYF = amux2(pb.FATY, pb.FF21_D3, !pb.FATY, pb.FF21_D3n);
-  pc.ELAF = amux2(pb.FERU, pb.FF21_D3, !pb.FERU, pb.FF21_D3n);
-
-  pc.FEKO = count_pos(pa.FOLE, pb.FOLE, pb.CH4_RESTART, pb.FEKO, pb.FF21_D4);
-  pc.FATY = count_pos(pa.ETEF, pb.ETEF, pb.CH4_RESTART, pb.FEKO, pb.FF21_D5);
-  pc.FERU = count_pos(pa.EDYF, pb.EDYF, pb.CH4_RESTART, pb.FEKO, pb.FF21_D6);
-  pc.FYRO = count_pos(pa.ELAF, pb.ELAF, pb.CH4_RESTART, pb.FEKO, pb.FF21_D7);
-
-  pc.AKOF = and(pb.FEKO, pb.CH4_BIT);
-  pc.BYZY = and(pb.FATY, pb.CH4_BIT);
-  pc.APYR = and(pb.FERU, pb.CH4_BIT);
-  pc.BOZA = and(pb.FYRO, pb.CH4_BIT);
-
-  pc.DARO = nor(pb.FF21_D3, pb.FEKO, pb.FATY, pb.FERU, pb.FYRO);
-  pc.CUTY = nand(pb.FF21_D3, pb.FEKO, pb.FATY, pb.FERU, pb.FYRO);
-  pc.DUBO = not(pb.CUTY);
-  pc.EVUR = or(pb.DARO, pb.DUBO);
-  pc.EMET = nor(pb.CH4_RESTART, gb.p09.APU_RESET);
-  pc.FYNO = tock_pos(pa.CH4_EG_TICK, pb.CH4_EG_TICK, pb.EMET, pb.FYNO, pb.EVUR);
-  pc.ENUR = or(gb.p09.APU_RESET, pb.CH4_RESTART);
-  pc.EROX = or(!pb.FYNO, pb.ENUR);
+  c.p20.FEME = mux2(b.p20.ETYR, b.p20.ERYF, b.p20.FF22_D7);
+  c.p20.EZUL = mux2(b.p20.FEME, b.p20.LFSR_OUT, b.p20.DYRY);
+  c.p20.GUFA = not(b.p20.FEME);
+  c.p20.GYVE = not(b.p20.GUFA);
+  c.p20.KARA = not(b.p20.GYVE);
+  c.p20.KOPA = not(b.p20.KARA);
 
   //----------
 
-  pc.ALOP = not(gb.p01.BYFE_128);
-  pc.BOKY = not(gb.p09.APU_RESET);
-  pc.ABEL = tock_pos(pa.ALOP, pb.ALOP, pb.BOKY, pb.ABEL, !pb.ABEL);
-  pc.BAWA = not(pb.ABEL);
-  pc.BUXO = not(pb.BAWA);
-  pc.CUNA = count_pos(pa.BUXO, pb.BUXO, pb.DAPY, pb.CUNA, pb.FF21_D0n);
-  pc.COFE = count_pos(pa.CUNA, pb.CUNA, pb.DAPY, pb.COFE, pb.FF21_D1n);
-  pc.DOGO = count_pos(pa.COFE, pb.COFE, pb.DAPY, pb.DOGO, pb.FF21_D2n);
-  pc.EJEX = or(pb.DOGO, pb.COFE, pb.CUNA);
-  pc.FOSY = tock_pos(ga.p01.HORU_512, gb.p01.HORU_512, pb.GOPA, pb.FOSY, pb.EJEX);
-  pc.ENEC = nor(pb.CH4_RESTART, pb.FOSY);
-  pc.DAPY = not(pb.ENEC);
-  pc.GEXE = not(pb.FOSY);
-  pc.HURY = nor(gb.p01.HORU_512, pb.GEXE);
-  pc.GOPA = nor(pb.HURY, pb.FOWA, pb.CH4_RESTART, gb.p09.APU_RESET);
-  pc.FOWA = nor(pb.FF21_D0, pb.FF21_D1, pb.FF21_D2);
+  c.p20.FELO = or(b.p20.EROX, b.p20.CH4_EG_DISABLE, b.p20.CH4_EG_TICK);
+
+  c.p20.FOLE = amux2(b.p20.FELO, b.p20.FF21_D3,  b.p20.FELO, b.p20.FF21_D3n);
+  c.p20.ETEF = amux2(b.p20.FEKO, b.p20.FF21_D3, !b.p20.FEKO, b.p20.FF21_D3n);
+  c.p20.EDYF = amux2(b.p20.FATY, b.p20.FF21_D3, !b.p20.FATY, b.p20.FF21_D3n);
+  c.p20.ELAF = amux2(b.p20.FERU, b.p20.FF21_D3, !b.p20.FERU, b.p20.FF21_D3n);
+
+  c.p20.FEKO = count_pos(a.p20.FOLE, b.p20.FOLE, b.p20.CH4_RESTART, b.p20.FEKO, b.p20.FF21_D4);
+  c.p20.FATY = count_pos(a.p20.ETEF, b.p20.ETEF, b.p20.CH4_RESTART, b.p20.FEKO, b.p20.FF21_D5);
+  c.p20.FERU = count_pos(a.p20.EDYF, b.p20.EDYF, b.p20.CH4_RESTART, b.p20.FEKO, b.p20.FF21_D6);
+  c.p20.FYRO = count_pos(a.p20.ELAF, b.p20.ELAF, b.p20.CH4_RESTART, b.p20.FEKO, b.p20.FF21_D7);
+
+  c.p20.AKOF = and(b.p20.FEKO, b.p20.CH4_BIT);
+  c.p20.BYZY = and(b.p20.FATY, b.p20.CH4_BIT);
+  c.p20.APYR = and(b.p20.FERU, b.p20.CH4_BIT);
+  c.p20.BOZA = and(b.p20.FYRO, b.p20.CH4_BIT);
+
+  c.p20.DARO = nor(b.p20.FF21_D3, b.p20.FEKO, b.p20.FATY, b.p20.FERU, b.p20.FYRO);
+  c.p20.CUTY = nand(b.p20.FF21_D3, b.p20.FEKO, b.p20.FATY, b.p20.FERU, b.p20.FYRO);
+  c.p20.DUBO = not(b.p20.CUTY);
+  c.p20.EVUR = or(b.p20.DARO, b.p20.DUBO);
+  c.p20.EMET = nor(b.p20.CH4_RESTART, b.p09.APU_RESET);
+  c.p20.FYNO = tock_pos(a.p20.CH4_EG_TICK, b.p20.CH4_EG_TICK, b.p20.EMET, b.p20.FYNO, b.p20.EVUR);
+  c.p20.ENUR = or(b.p09.APU_RESET, b.p20.CH4_RESTART);
+  c.p20.EROX = or(!b.p20.FYNO, b.p20.ENUR);
 
   //----------
 
-  pc.GASO = not(gb.p09.APU_RESET);
-  pc.GYSU = tock_pos(ga.p01.PHIn, gb.p01.PHIn, pb.GASO, pb.GYSU, pb.FF23_D7);
-  pc.FALE = nor(pb.GORA, gb.p09.APU_RESET);
-  pc.HELU = not(pb.FALE);
-  pc.HAZO = or(pb.HELU, pb.GYSU);
-  pc.GUZY = nor(pb.GYSU, gb.p09.APU_RESET);
-  pc.GONE = tock_pos(ga.p01.HAMA_512Kn, gb.p01.HAMA_512Kn, pb.FALE, pb.GONE, pb.HAZO);
-  pc.FEBY = not(gb.p09.APU_RESET);
-  pc.GORA = tock_pos(ga.p01.HAMA_512Kn, gb.p01.HAMA_512Kn, pb.FEBY, pb.GORA, pb.GONE);
-  pc.GATY = tock_pos(ga.p01.HAMA_512Kn, gb.p01.HAMA_512Kn, pb.FEBY, pb.GATY, pb.GORA);
-  pc.HAPU = not(pb.GATY);
-  pc.GEVY = nor(pb.FF21_D3, pb.FF21_D4, pb.FF21_D5, pb.FF21_D6, pb.FF21_D7);
-  pc.EFOT = and(pb.FF23_D6, pb.FUGO);
-  pc.HERY = nor(gb.p09.APU_RESET, pb.GEVY);
-  pc.FEGY = or(pb.GEVY, pb.EFOT, gb.p09.APU_RESET);
-  pc.JERY = or(pb.HERY, pb.HAPU);
-  pc.GENA = or(pb.CH4_RESTART, pb.FEGY);
-  pc.KYKU = or(pb.JERY, gb.p01.JESO_512K);
-  pc.JUWA = not(pb.GENA);
-  pc.KONY = not(pb.KYKU);
-  pc.KANU = not(pb.KONY);
-
-  pc.JYCO = count_pos(pa.KANU, pb.KANU, pb.HUCE, pb.JYCO, pb.FF22_D0n);
-  pc.JYRE = count_pos(pa.JYCO, pb.JYCO, pb.HUCE, pb.JYRE, pb.FF22_D1n);
-  pc.JYFU = count_pos(pa.JYRE, pb.JYRE, pb.HUCE, pb.JYFU, pb.FF22_D2n);
-
-  pc.HYNO = or(pb.JYCO, pb.JYRE, pb.JYFU);
-  pc.GYBA = not(gb.p01.BAVU_1M);
-  pc.GARY = tock_pos(pa.GYBA, pb.GYBA, pb.GUNY, pb.GARY, pb.HYNO);
-  pc.CARY = and(gb.p01.BAVU_1M, pb.GARY);
-  pc.GOFU = nor(pb.CH4_RESTART, pb.GARY);
-  pc.GUNY = nor(pb.CH4_RESTART, gb.p09.APU_RESET);
-  pc.HUCE = not(pb.GOFU);
+  c.p20.ALOP = not(b.p01.BYFE_128);
+  c.p20.BOKY = not(b.p09.APU_RESET);
+  c.p20.ABEL = tock_pos(a.p20.ALOP, b.p20.ALOP, b.p20.BOKY, b.p20.ABEL, !b.p20.ABEL);
+  c.p20.BAWA = not(b.p20.ABEL);
+  c.p20.BUXO = not(b.p20.BAWA);
+  c.p20.CUNA = count_pos(a.p20.BUXO, b.p20.BUXO, b.p20.DAPY, b.p20.CUNA, b.p20.FF21_D0n);
+  c.p20.COFE = count_pos(a.p20.CUNA, b.p20.CUNA, b.p20.DAPY, b.p20.COFE, b.p20.FF21_D1n);
+  c.p20.DOGO = count_pos(a.p20.COFE, b.p20.COFE, b.p20.DAPY, b.p20.DOGO, b.p20.FF21_D2n);
+  c.p20.EJEX = or(b.p20.DOGO, b.p20.COFE, b.p20.CUNA);
+  c.p20.FOSY = tock_pos(a.p01.HORU_512, b.p01.HORU_512, b.p20.GOPA, b.p20.FOSY, b.p20.EJEX);
+  c.p20.ENEC = nor(b.p20.CH4_RESTART, b.p20.FOSY);
+  c.p20.DAPY = not(b.p20.ENEC);
+  c.p20.GEXE = not(b.p20.FOSY);
+  c.p20.HURY = nor(b.p01.HORU_512, b.p20.GEXE);
+  c.p20.GOPA = nor(b.p20.HURY, b.p20.FOWA, b.p20.CH4_RESTART, b.p09.APU_RESET);
+  c.p20.FOWA = nor(b.p20.FF21_D0, b.p20.FF21_D1, b.p20.FF21_D2);
 
   //----------
 
-  pc.GEPO = or(pb.CH4_RESTART, gb.p09.APU_RESET);
-  pc.GOGE = not(pb.GEPO);
-  pc.JYJA = not(pb.CH4_LFSR_CLK1);
-  pc.GAME = nand(pb.GENA, pb.HEZU);
-  pc.JYJA = not(pb.CH4_LFSR_CLK1);
+  c.p20.GASO = not(b.p09.APU_RESET);
+  c.p20.GYSU = tock_pos(a.p01.PHIn, b.p01.PHIn, b.p20.GASO, b.p20.GYSU, b.p20.FF23_D7);
+  c.p20.FALE = nor(b.p20.GORA, b.p09.APU_RESET);
+  c.p20.HELU = not(b.p20.FALE);
+  c.p20.HAZO = or(b.p20.HELU, b.p20.GYSU);
+  c.p20.GUZY = nor(b.p20.GYSU, b.p09.APU_RESET);
+  c.p20.GONE = tock_pos(a.p01.HAMA_512Kn, b.p01.HAMA_512Kn, b.p20.FALE, b.p20.GONE, b.p20.HAZO);
+  c.p20.FEBY = not(b.p09.APU_RESET);
+  c.p20.GORA = tock_pos(a.p01.HAMA_512Kn, b.p01.HAMA_512Kn, b.p20.FEBY, b.p20.GORA, b.p20.GONE);
+  c.p20.GATY = tock_pos(a.p01.HAMA_512Kn, b.p01.HAMA_512Kn, b.p20.FEBY, b.p20.GATY, b.p20.GORA);
+  c.p20.HAPU = not(b.p20.GATY);
+  c.p20.GEVY = nor(b.p20.FF21_D3, b.p20.FF21_D4, b.p20.FF21_D5, b.p20.FF21_D6, b.p20.FF21_D7);
+  c.p20.EFOT = and(b.p20.FF23_D6, b.p20.FUGO);
+  c.p20.HERY = nor(b.p09.APU_RESET, b.p20.GEVY);
+  c.p20.FEGY = or(b.p20.GEVY, b.p20.EFOT, b.p09.APU_RESET);
+  c.p20.JERY = or(b.p20.HERY, b.p20.HAPU);
+  c.p20.GENA = or(b.p20.CH4_RESTART, b.p20.FEGY);
+  c.p20.KYKU = or(b.p20.JERY, b.p01.JESO_512K);
+  c.p20.JUWA = not(b.p20.GENA);
+  c.p20.KONY = not(b.p20.KYKU);
+  c.p20.KANU = not(b.p20.KONY);
 
-  pc.HURA = xor(pb.HEZU, pb.HYRO);
-  pc.JOTO = tock_pos(pa.JYJA,          pb.JYJA,          pb.GOGE, pb.JOTO, pb.HURA);
-  pc.KOMU = tock_pos(pa.CH4_LFSR_CLK3, pb.CH4_LFSR_CLK3, pb.GOGE, pb.KOMU, pb.JOTO);
-  pc.KETU = tock_pos(pa.CH4_LFSR_CLK3, pb.CH4_LFSR_CLK3, pb.GOGE, pb.KETU, pb.KOMU);
-  pc.KUTA = tock_pos(pa.CH4_LFSR_CLK3, pb.CH4_LFSR_CLK3, pb.GOGE, pb.KUTA, pb.KETU);
-  pc.KUZY = tock_pos(pa.CH4_LFSR_CLK3, pb.CH4_LFSR_CLK3, pb.GOGE, pb.KUZY, pb.KUTA);
-  pc.KYWY = tock_pos(pa.CH4_LFSR_CLK3, pb.CH4_LFSR_CLK3, pb.GOGE, pb.KYWY, pb.KUZY);
-  pc.JAJU = tock_pos(pa.CH4_LFSR_CLK2, pb.CH4_LFSR_CLK2, pb.GOGE, pb.JAJU, pb.KYWY);
-  pc.HAPE = tock_pos(pa.CH4_LFSR_CLK2, pb.CH4_LFSR_CLK2, pb.GOGE, pb.HAPE, pb.JAJU);
-  pc.JUXE = tock_pos(pa.CH4_LFSR_CLK2, pb.CH4_LFSR_CLK2, pb.GOGE, pb.JUXE, pb.HAPE);
-  pc.KAVU = amux2(pb.JOTO, pb.FF22_D3, pb.FF22_D3n, pb.JUXE);
-  pc.JEPE = tock_pos(pa.CH4_LFSR_CLK2, pb.CH4_LFSR_CLK2, pb.GOGE, pb.JEPE, pb.KAVU);
-  pc.JAVO = tock_pos(pa.CH4_LFSR_CLK2, pb.CH4_LFSR_CLK2, pb.GOGE, pb.JAVO, pb.JEPE);
-  pc.HEPA = tock_pos(pa.CH4_LFSR_CLK1, pb.CH4_LFSR_CLK1, pb.GOGE, pb.HEPA, pb.JAVO);
-  pc.HORY = tock_pos(pa.CH4_LFSR_CLK1, pb.CH4_LFSR_CLK1, pb.GOGE, pb.HORY, pb.HEPA);
-  pc.HENO = tock_pos(pa.CH4_LFSR_CLK1, pb.CH4_LFSR_CLK1, pb.GOGE, pb.HENO, pb.HORY);
-  pc.HYRO = tock_pos(pa.CH4_LFSR_CLK1, pb.CH4_LFSR_CLK1, pb.GOGE, pb.HYRO, pb.HENO);
-  pc.HEZU = tock_pos(pa.CH4_LFSR_CLK1, pb.CH4_LFSR_CLK1, pb.GOGE, pb.HEZU, pb.HYRO);
+  c.p20.JYCO = count_pos(a.p20.KANU, b.p20.KANU, b.p20.HUCE, b.p20.JYCO, b.p20.FF22_D0n);
+  c.p20.JYRE = count_pos(a.p20.JYCO, b.p20.JYCO, b.p20.HUCE, b.p20.JYRE, b.p20.FF22_D1n);
+  c.p20.JYFU = count_pos(a.p20.JYRE, b.p20.JYRE, b.p20.HUCE, b.p20.JYFU, b.p20.FF22_D2n);
+
+  c.p20.HYNO = or(b.p20.JYCO, b.p20.JYRE, b.p20.JYFU);
+  c.p20.GYBA = not(b.p01.BAVU_1M);
+  c.p20.GARY = tock_pos(a.p20.GYBA, b.p20.GYBA, b.p20.GUNY, b.p20.GARY, b.p20.HYNO);
+  c.p20.CARY = and(b.p01.BAVU_1M, b.p20.GARY);
+  c.p20.GOFU = nor(b.p20.CH4_RESTART, b.p20.GARY);
+  c.p20.GUNY = nor(b.p20.CH4_RESTART, b.p09.APU_RESET);
+  c.p20.HUCE = not(b.p20.GOFU);
+
+  //----------
+
+  c.p20.GEPO = or(b.p20.CH4_RESTART, b.p09.APU_RESET);
+  c.p20.GOGE = not(b.p20.GEPO);
+  c.p20.JYJA = not(b.p20.CH4_LFSR_CLK1);
+  c.p20.GAME = nand(b.p20.GENA, b.p20.HEZU);
+  c.p20.JYJA = not(b.p20.CH4_LFSR_CLK1);
+
+  c.p20.HURA = xor(b.p20.HEZU, b.p20.HYRO);
+  c.p20.JOTO = tock_pos(a.p20.JYJA,          b.p20.JYJA,          b.p20.GOGE, b.p20.JOTO, b.p20.HURA);
+  c.p20.KOMU = tock_pos(a.p20.CH4_LFSR_CLK3, b.p20.CH4_LFSR_CLK3, b.p20.GOGE, b.p20.KOMU, b.p20.JOTO);
+  c.p20.KETU = tock_pos(a.p20.CH4_LFSR_CLK3, b.p20.CH4_LFSR_CLK3, b.p20.GOGE, b.p20.KETU, b.p20.KOMU);
+  c.p20.KUTA = tock_pos(a.p20.CH4_LFSR_CLK3, b.p20.CH4_LFSR_CLK3, b.p20.GOGE, b.p20.KUTA, b.p20.KETU);
+  c.p20.KUZY = tock_pos(a.p20.CH4_LFSR_CLK3, b.p20.CH4_LFSR_CLK3, b.p20.GOGE, b.p20.KUZY, b.p20.KUTA);
+  c.p20.KYWY = tock_pos(a.p20.CH4_LFSR_CLK3, b.p20.CH4_LFSR_CLK3, b.p20.GOGE, b.p20.KYWY, b.p20.KUZY);
+  c.p20.JAJU = tock_pos(a.p20.CH4_LFSR_CLK2, b.p20.CH4_LFSR_CLK2, b.p20.GOGE, b.p20.JAJU, b.p20.KYWY);
+  c.p20.HAPE = tock_pos(a.p20.CH4_LFSR_CLK2, b.p20.CH4_LFSR_CLK2, b.p20.GOGE, b.p20.HAPE, b.p20.JAJU);
+  c.p20.JUXE = tock_pos(a.p20.CH4_LFSR_CLK2, b.p20.CH4_LFSR_CLK2, b.p20.GOGE, b.p20.JUXE, b.p20.HAPE);
+  c.p20.KAVU = amux2(b.p20.JOTO, b.p20.FF22_D3, b.p20.FF22_D3n, b.p20.JUXE);
+  c.p20.JEPE = tock_pos(a.p20.CH4_LFSR_CLK2, b.p20.CH4_LFSR_CLK2, b.p20.GOGE, b.p20.JEPE, b.p20.KAVU);
+  c.p20.JAVO = tock_pos(a.p20.CH4_LFSR_CLK2, b.p20.CH4_LFSR_CLK2, b.p20.GOGE, b.p20.JAVO, b.p20.JEPE);
+  c.p20.HEPA = tock_pos(a.p20.CH4_LFSR_CLK1, b.p20.CH4_LFSR_CLK1, b.p20.GOGE, b.p20.HEPA, b.p20.JAVO);
+  c.p20.HORY = tock_pos(a.p20.CH4_LFSR_CLK1, b.p20.CH4_LFSR_CLK1, b.p20.GOGE, b.p20.HORY, b.p20.HEPA);
+  c.p20.HENO = tock_pos(a.p20.CH4_LFSR_CLK1, b.p20.CH4_LFSR_CLK1, b.p20.GOGE, b.p20.HENO, b.p20.HORY);
+  c.p20.HYRO = tock_pos(a.p20.CH4_LFSR_CLK1, b.p20.CH4_LFSR_CLK1, b.p20.GOGE, b.p20.HYRO, b.p20.HENO);
+  c.p20.HEZU = tock_pos(a.p20.CH4_LFSR_CLK1, b.p20.CH4_LFSR_CLK1, b.p20.GOGE, b.p20.HEZU, b.p20.HYRO);
 }

@@ -1,132 +1,129 @@
 #include "../Schematics.h"
 #include "Gameboy.h"
 
-void P18_Channel3::tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc) {
-  const P18_Channel3 pa = {};
-  const P18_Channel3 pb = {};
-  P18_Channel3 pc;
+void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  pc.JYFO = not(pb.JAPU_10);
-  pc.HUNO = tock_pos(pa.JYFO, pb.JYFO, pb.GAFU, pb.HUNO, !pb.HUNO);
-  pc.HEMA = not(pb.HUNO);
-  pc.GASE = not(pb.HEMA);
-  pc.HUPA = and(pb.HUNO, gb.p01.CERY_2M);
-  pc.GAFU = nor(gb.p09.APU_RESET, pb.GARA, pb.HUPA);
-  pc.HEFO = nor(gb.p01.CERY_2M, pb.GUGU);
-  pc.HERA = nor(pb.GASE, pb.GARA);
+  c.p18.JYFO = not(b.p18.JAPU_10);
+  c.p18.HUNO = tock_pos(a.p18.JYFO, b.p18.JYFO, b.p18.GAFU, b.p18.HUNO, !b.p18.HUNO);
+  c.p18.HEMA = not(b.p18.HUNO);
+  c.p18.GASE = not(b.p18.HEMA);
+  c.p18.HUPA = and(b.p18.HUNO, b.p01.CERY_2M);
+  c.p18.GAFU = nor(b.p09.APU_RESET, b.p18.GARA, b.p18.HUPA);
+  c.p18.HEFO = nor(b.p01.CERY_2M, b.p18.GUGU);
+  c.p18.HERA = nor(b.p18.GASE, b.p18.GARA);
 
-  pc.JUTY = not(pb.HEFO);
-  pc.KYKO = not(pb.HERA);
+  c.p18.JUTY = not(b.p18.HEFO);
+  c.p18.KYKO = not(b.p18.HERA);
 
-  pc.KUTU_00 = count_pos(pa.JUTY,    pb.JUTY,    pb.KYKO, pb.KUTU_00, pb.FF1D_D0);
-  pc.KUPE_01 = count_pos(pa.KUTU_00, pb.KUTU_00, pb.KYKO, pb.KUPE_01, pb.FF1D_D1);
-  pc.KUNU_02 = count_pos(pa.KUPE_01, pb.KUPE_01, pb.KYKO, pb.KUNU_02, pb.FF1D_D2);
-  pc.KEMU_03 = count_pos(pa.KUNU_02, pb.KUNU_02, pb.KYKO, pb.KEMU_03, pb.FF1D_D3);
+  c.p18.KUTU_00 = count_pos(a.p18.JUTY,    b.p18.JUTY,    b.p18.KYKO, b.p18.KUTU_00, b.p18.FF1D_D0);
+  c.p18.KUPE_01 = count_pos(a.p18.KUTU_00, b.p18.KUTU_00, b.p18.KYKO, b.p18.KUPE_01, b.p18.FF1D_D1);
+  c.p18.KUNU_02 = count_pos(a.p18.KUPE_01, b.p18.KUPE_01, b.p18.KYKO, b.p18.KUNU_02, b.p18.FF1D_D2);
+  c.p18.KEMU_03 = count_pos(a.p18.KUNU_02, b.p18.KUNU_02, b.p18.KYKO, b.p18.KEMU_03, b.p18.FF1D_D3);
 
-  pc.KYRU = not(!pb.KEMU_03);
-  pc.KASO = not(pb.HERA);
+  c.p18.KYRU = not(!b.p18.KEMU_03);
+  c.p18.KASO = not(b.p18.HERA);
 
-  pc.KYGU_04 = count_pos(pa.KYRU,    pb.KYRU,    pb.KASO, pb.KYGU_04, pb.FF1D_D4);
-  pc.KEPA_05 = count_pos(pa.KYGU_04, pb.KYGU_04, pb.KASO, pb.KEPA_05, pb.FF1D_D5);
-  pc.KAFO_06 = count_pos(pa.KEPA_05, pb.KEPA_05, pb.KASO, pb.KAFO_06, pb.FF1D_D6);
-  pc.KENO_07 = count_pos(pa.KAFO_06, pb.KAFO_06, pb.KASO, pb.KENO_07, pb.FF1D_D7);
+  c.p18.KYGU_04 = count_pos(a.p18.KYRU,    b.p18.KYRU,    b.p18.KASO, b.p18.KYGU_04, b.p18.FF1D_D4);
+  c.p18.KEPA_05 = count_pos(a.p18.KYGU_04, b.p18.KYGU_04, b.p18.KASO, b.p18.KEPA_05, b.p18.FF1D_D5);
+  c.p18.KAFO_06 = count_pos(a.p18.KEPA_05, b.p18.KEPA_05, b.p18.KASO, b.p18.KAFO_06, b.p18.FF1D_D6);
+  c.p18.KENO_07 = count_pos(a.p18.KAFO_06, b.p18.KAFO_06, b.p18.KASO, b.p18.KENO_07, b.p18.FF1D_D7);
 
-  pc.KESE = not(!pb.KENO_07);
-  pc.JERA = not(pb.HERA);
+  c.p18.KESE = not(!b.p18.KENO_07);
+  c.p18.JERA = not(b.p18.HERA);
 
-  pc.KEJU_08 = count_pos(pa.KESE,    pb.KESE,    pb.JERA, pb.KEJU_08, pb.FF1E_D0);
-  pc.KEZA_09 = count_pos(pa.KEJU_08, pb.KEJU_08, pb.JERA, pb.KEZA_09, pb.FF1E_D1);
-  pc.JAPU_10 = count_pos(pa.KEZA_09, pb.KEZA_09, pb.JERA, pb.JAPU_10, pb.FF1E_D2);
+  c.p18.KEJU_08 = count_pos(a.p18.KESE,    b.p18.KESE,    b.p18.JERA, b.p18.KEJU_08, b.p18.FF1E_D0);
+  c.p18.KEZA_09 = count_pos(a.p18.KEJU_08, b.p18.KEJU_08, b.p18.JERA, b.p18.KEZA_09, b.p18.FF1E_D1);
+  c.p18.JAPU_10 = count_pos(a.p18.KEZA_09, b.p18.KEZA_09, b.p18.JERA, b.p18.JAPU_10, b.p18.FF1E_D2);
 
-  pc.FETY = tock_pos(!pa.EFAL, !pb.EFAL, pb.GYRY, pb.FETY, !pb.FETY);
-  pc.FOTO = and(pb.FETY, pb.GASE);
-  pc.ETAN = or(pb.GARA, pb.FETY);
-  pc.GYRY = nor(gb.p09.APU_RESET, pb.GARA, pb.FOTO);
-  pc.DERO = not(pb.GASE);
+  c.p18.FETY = tock_pos(!a.p18.EFAL, !b.p18.EFAL, b.p18.GYRY, b.p18.FETY, !b.p18.FETY);
+  c.p18.FOTO = and(b.p18.FETY, b.p18.GASE);
+  c.p18.ETAN = or(b.p18.GARA, b.p18.FETY);
+  c.p18.GYRY = nor(b.p09.APU_RESET, b.p18.GARA, b.p18.FOTO);
+  c.p18.DERO = not(b.p18.GASE);
 
-  pc.EFAR = tock_pos(pa.DERO,  pb.DERO,  pb.ETAN, pb.EFAR, !pb.EFAR);
-  pc.ERUS = tock_pos(!pa.EFAR, !pb.EFAR, pb.ETAN, pb.ERUS, !pb.ERUS);
-  pc.EFUZ = tock_pos(!pa.ERUS, !pb.ERUS, pb.ETAN, pb.EFUZ, !pb.EFUZ);
-  pc.EXEL = tock_pos(!pa.EFUZ, !pb.EFUZ, pb.ETAN, pb.EXEL, !pb.EXEL);
-  pc.EFAL = tock_pos(!pa.EXEL, !pb.EXEL, pb.ETAN, pb.EFAL, !pb.EFAL);
+  c.p18.EFAR = tock_pos(a.p18.DERO,  b.p18.DERO,  b.p18.ETAN, b.p18.EFAR, !b.p18.EFAR);
+  c.p18.ERUS = tock_pos(!a.p18.EFAR, !b.p18.EFAR, b.p18.ETAN, b.p18.ERUS, !b.p18.ERUS);
+  c.p18.EFUZ = tock_pos(!a.p18.ERUS, !b.p18.ERUS, b.p18.ETAN, b.p18.EFUZ, !b.p18.EFUZ);
+  c.p18.EXEL = tock_pos(!a.p18.EFUZ, !b.p18.EFUZ, b.p18.ETAN, b.p18.EXEL, !b.p18.EXEL);
+  c.p18.EFAL = tock_pos(!a.p18.EXEL, !b.p18.EXEL, b.p18.ETAN, b.p18.EFAL, !b.p18.EFAL);
 
-  pc.BOLE = mux2(pb.ERUS, gb.A00, pb.CH3_ACTIVE);
-  pc.AGYL = mux2(pb.EFUZ, gb.A01, pb.CH3_ACTIVE);
-  pc.AFUM = mux2(pb.EXEL, gb.A02, pb.CH3_ACTIVE);
-  pc.AXOL = mux2(pb.EFAL, gb.A03, pb.CH3_ACTIVE);
+  c.p18.BOLE = mux2(b.p18.ERUS, b.A00, b.p18.CH3_ACTIVE);
+  c.p18.AGYL = mux2(b.p18.EFUZ, b.A01, b.p18.CH3_ACTIVE);
+  c.p18.AFUM = mux2(b.p18.EXEL, b.A02, b.p18.CH3_ACTIVE);
+  c.p18.AXOL = mux2(b.p18.EFAL, b.A03, b.p18.CH3_ACTIVE);
 
-  pc.WAVE_A0 = pb.BOLE;
-  pc.WAVE_A1 = pb.AGYL;
-  pc.WAVE_A2 = pb.AFUM;
-  pc.WAVE_A3 = pb.AXOL;
+  c.p18.WAVE_A0 = b.p18.BOLE;
+  c.p18.WAVE_A1 = b.p18.AGYL;
+  c.p18.WAVE_A2 = b.p18.AFUM;
+  c.p18.WAVE_A3 = b.p18.AXOL;
 
-  pc.JECO = not(gb.p09.CPU_RDn);
-  pc.HONY = and(gb.p09.NET03, pb.JECO, pb.FF1C);
-  pc.GENO = not(pb.HONY);
+  c.p18.JECO = not(b.p09.CPU_RDn);
+  c.p18.HONY = and(b.p09.NET03, b.p18.JECO, b.p18.FF1C);
+  c.p18.GENO = not(b.p18.HONY);
 
-  pc.FAPY = not(!pb.EFAR);
-  pc.FARO = not(!pb.ERUS);
-  pc.FOTE = not(!pb.EFUZ);
-  pc.FANA = not(!pb.EXEL);
-  pc.FERA = not(!pb.EFAL);
+  c.p18.FAPY = not(!b.p18.EFAR);
+  c.p18.FARO = not(!b.p18.ERUS);
+  c.p18.FOTE = not(!b.p18.EFUZ);
+  c.p18.FANA = not(!b.p18.EXEL);
+  c.p18.FERA = not(!b.p18.EFAL);
 
-  if (pb.GENO) {
-    gc.D0 = pb.FAPY;
-    gc.D1 = pb.FARO;
-    gc.D2 = pb.FOTE;
-    gc.D3 = pb.FANA;
-    gc.D4 = pb.FERA;
+  if (b.p18.GENO) {
+    c.D0 = b.p18.FAPY;
+    c.D1 = b.p18.FARO;
+    c.D2 = b.p18.FOTE;
+    c.D3 = b.p18.FANA;
+    c.D4 = b.p18.FERA;
   }
 
-  pc.GEDO = and(gb.p01.BUFY_256, pb.FF1E_D6);
-  pc.FYGO = or(gb.p09.APU_RESET, pb.GEDO, pb.FF1A_D7n);
-  pc.FOZU = or(pb.GARA, pb.FYGO);
-  pc.EZAS = not(pb.FOZU);
-  pc.DORU = not(pb.EZAS);
-  pc.CALU = not(gb.p09.APU_RESET);
-  pc.DAVO = tock_pos(ga.p09.AJER_2M, gb.p09.AJER_2M, pb.CALU, pb.DAVO, pb.DORU);
-  pc.COKA = not(!pb.DAVO);
-  pc.ERED = not(pb.COKA);
+  c.p18.GEDO = and(b.p01.BUFY_256, b.p18.FF1E_D6);
+  c.p18.FYGO = or(b.p09.APU_RESET, b.p18.GEDO, b.p18.FF1A_D7n);
+  c.p18.FOZU = or(b.p18.GARA, b.p18.FYGO);
+  c.p18.EZAS = not(b.p18.FOZU);
+  c.p18.DORU = not(b.p18.EZAS);
+  c.p18.CALU = not(b.p09.APU_RESET);
+  c.p18.DAVO = tock_pos(a.p09.AJER_2M, b.p09.AJER_2M, b.p18.CALU, b.p18.DAVO, b.p18.DORU);
+  c.p18.COKA = not(!b.p18.DAVO);
+  c.p18.ERED = not(b.p18.COKA);
 
-  pc.CH3_ACTIVE = pb.COKA;
-  pc.CH3_ACTIVEn = pb.ERED;
+  c.p18.CH3_ACTIVE = b.p18.COKA;
+  c.p18.CH3_ACTIVEn = b.p18.ERED;
 
-  pc.GUDA = nor(pb.FF1B_WR3, gb.p09.APU_RESET, pb.GARA);
-  pc.FEXU = tock_pos(!pa.FYRU_07, !pb.FYRU_07, pb.GUDA, pb.FEXU, !pb.FEXU);
-  pc.GEPY = nor(gb.p01.BUFY_256, pb.FF1E_D6n);
-  pc.GENU = not(pb.GEPY);
+  c.p18.GUDA = nor(b.p18.FF1B_WR3, b.p09.APU_RESET, b.p18.GARA);
+  c.p18.FEXU = tock_pos(!a.p18.FYRU_07, !b.p18.FYRU_07, b.p18.GUDA, b.p18.FEXU, !b.p18.FEXU);
+  c.p18.GEPY = nor(b.p01.BUFY_256, b.p18.FF1E_D6n);
+  c.p18.GENU = not(b.p18.GEPY);
 
-  pc.GEVO_00 = tock_pos(pa.GENU,    pb.GENU,    pb.FF1B_WR2, pb.GEVO_00, gb.D0);
-  pc.FORY_01 = tock_pos(pa.GEVO_00, pb.GEVO_00, pb.FF1B_WR2, pb.FORY_01, gb.D1);
-  pc.GATU_02 = tock_pos(pa.FORY_01, pb.FORY_01, pb.FF1B_WR2, pb.GATU_02, gb.D2);
-  pc.GAPO_03 = tock_pos(pa.GATU_02, pb.GATU_02, pb.FF1B_WR2, pb.GAPO_03, gb.D3);
+  c.p18.GEVO_00 = tock_pos(a.p18.GENU,    b.p18.GENU,    b.p18.FF1B_WR2, b.p18.GEVO_00, b.D0);
+  c.p18.FORY_01 = tock_pos(a.p18.GEVO_00, b.p18.GEVO_00, b.p18.FF1B_WR2, b.p18.FORY_01, b.D1);
+  c.p18.GATU_02 = tock_pos(a.p18.FORY_01, b.p18.FORY_01, b.p18.FF1B_WR2, b.p18.GATU_02, b.D2);
+  c.p18.GAPO_03 = tock_pos(a.p18.GATU_02, b.p18.GATU_02, b.p18.FF1B_WR2, b.p18.GAPO_03, b.D3);
 
-  pc.FALU = not(pb.GAPO_03);
+  c.p18.FALU = not(b.p18.GAPO_03);
 
-  pc.GEMO_04 = tock_pos(pa.FALU,    pb.FALU,    pb.FF1B_WR1, pb.GEMO_04, gb.D4);
-  pc.FORO_05 = tock_pos(pa.GEMO_04, pb.GEMO_04, pb.FF1B_WR1, pb.FORO_05, gb.D5);
-  pc.FAVE_06 = tock_pos(pa.FORO_05, pb.FORO_05, pb.FF1B_WR1, pb.FAVE_06, gb.D6);
-  pc.FYRU_07 = tock_pos(pa.FAVE_06, pb.FAVE_06, pb.FF1B_WR1, pb.FYRU_07, gb.D7);
+  c.p18.GEMO_04 = tock_pos(a.p18.FALU,    b.p18.FALU,    b.p18.FF1B_WR1, b.p18.GEMO_04, b.D4);
+  c.p18.FORO_05 = tock_pos(a.p18.GEMO_04, b.p18.GEMO_04, b.p18.FF1B_WR1, b.p18.FORO_05, b.D5);
+  c.p18.FAVE_06 = tock_pos(a.p18.FORO_05, b.p18.FORO_05, b.p18.FF1B_WR1, b.p18.FAVE_06, b.D6);
+  c.p18.FYRU_07 = tock_pos(a.p18.FAVE_06, b.p18.FAVE_06, b.p18.FF1B_WR1, b.p18.FYRU_07, b.D7);
 
-  pc.GOKA = nor(pb.FF1C_D6n, pb.FF1C_D5);
-  pc.GEMY = nor(pb.FF1C_D6n, pb.FF1C_D5n);
-  pc.GEGE = nor(pb.FF1C_D6,  pb.FF1C_D5n);
+  c.p18.GOKA = nor(b.p18.FF1C_D6n, b.p18.FF1C_D5);
+  c.p18.GEMY = nor(b.p18.FF1C_D6n, b.p18.FF1C_D5n);
+  c.p18.GEGE = nor(b.p18.FF1C_D6,  b.p18.FF1C_D5n);
 
-  pc.EZAG = amux3(gb.p17.WAVE_PLAY_D0, pb.GEGE, gb.p17.WAVE_PLAY_D1, pb.GOKA, gb.p17.WAVE_PLAY_D2, pb.GEMY);
-  pc.EVUG = amux3(gb.p17.WAVE_PLAY_D1, pb.GEGE, gb.p17.WAVE_PLAY_D2, pb.GOKA, gb.p17.WAVE_PLAY_D3, pb.GEMY);
-  pc.DOKY = amux2(pb.GEGE, gb.p17.WAVE_PLAY_D2, gb.p17.WAVE_PLAY_D3, pb.GEMY);
-  pc.DORE = and(gb.p17.WAVE_PLAY_D3, pb.GEGE);
+  c.p18.EZAG = amux3(b.p17.WAVE_PLAY_D0, b.p18.GEGE, b.p17.WAVE_PLAY_D1, b.p18.GOKA, b.p17.WAVE_PLAY_D2, b.p18.GEMY);
+  c.p18.EVUG = amux3(b.p17.WAVE_PLAY_D1, b.p18.GEGE, b.p17.WAVE_PLAY_D2, b.p18.GOKA, b.p17.WAVE_PLAY_D3, b.p18.GEMY);
+  c.p18.DOKY = amux2(b.p18.GEGE, b.p17.WAVE_PLAY_D2, b.p17.WAVE_PLAY_D3, b.p18.GEMY);
+  c.p18.DORE = and(b.p17.WAVE_PLAY_D3, b.p18.GEGE);
 
-  pc.BARY = and(pb.CH3_ACTIVE, pb.EZAG);
-  pc.BYKA = and(pb.CH3_ACTIVE, pb.EVUG);
-  pc.BOPA = and(pb.CH3_ACTIVE, pb.DOKY);
-  pc.BELY = and(pb.CH3_ACTIVE, pb.DORE);
+  c.p18.BARY = and(b.p18.CH3_ACTIVE, b.p18.EZAG);
+  c.p18.BYKA = and(b.p18.CH3_ACTIVE, b.p18.EVUG);
+  c.p18.BOPA = and(b.p18.CH3_ACTIVE, b.p18.DOKY);
+  c.p18.BELY = and(b.p18.CH3_ACTIVE, b.p18.DORE);
 
-  pc.WAVE_DAC_D0 = pb.BARY;
-  pc.WAVE_DAC_D1 = pb.BYKA;
-  pc.WAVE_DAC_D2 = pb.BOPA;
-  pc.WAVE_DAC_D3 = pb.BELY;
+  c.p18.WAVE_DAC_D0 = b.p18.BARY;
+  c.p18.WAVE_DAC_D1 = b.p18.BYKA;
+  c.p18.WAVE_DAC_D2 = b.p18.BOPA;
+  c.p18.WAVE_DAC_D3 = b.p18.BELY;
 
-  pc.BENO = mux2(gb.p17.BUTU_512K, gb.p17.WAVE_RAM_RDn, pb.CH3_ACTIVE);
-  pc.ATOK = not(pb.BENO);
+  c.p18.BENO = mux2(b.p17.BUTU_512K, b.p17.WAVE_RAM_RDn, b.p18.CH3_ACTIVE);
+  c.p18.ATOK = not(b.p18.BENO);
 }

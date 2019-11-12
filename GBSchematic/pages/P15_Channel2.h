@@ -1,8 +1,10 @@
 #pragma once
 
+struct Gameboy;
+
 struct P15_Channel2 {
 
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   union { bool DEFU; bool CH2_ACTIVEn; };
   union { bool FUTE; bool CH2_AMP_ENn; };

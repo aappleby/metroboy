@@ -13,15 +13,18 @@ struct P18_Channel3 {
   union { bool BOPA; bool WAVE_DAC_D2; };
   union { bool BELY; bool WAVE_DAC_D3; };
 
+  union { bool GASE; };
+  union { bool EFAR; };
+
 private:
 
-  bool JYFO,HUNO,HEMA,GASE,HUPA,GAFU,HEFO,JUTY;
+  bool JYFO,HUNO,HEMA,HUPA,GAFU,HEFO,JUTY;
   bool HERA,KYKO,KASO,KYRU,JERA,KESE;
 
   bool KUTU_00,KUPE_01,KUNU_02,KEMU_03,KYGU_04,KEPA_05,KAFO_06,KENO_07,KEJU_08,KEZA_09,JAPU_10;
 
   bool FETY,FOTO,ETAN,GYRY,DERO;
-  bool EFAR,ERUS,EFUZ,EXEL,EFAL;
+  bool ERUS,EFUZ,EXEL,EFAL;
   bool JECO,HONY,GENO;
   bool FAPY,FARO,FOTE,FANA,FERA;
   bool GEDO,FYGO,FOZU,EZAS,CALU,DORU,DAVO;

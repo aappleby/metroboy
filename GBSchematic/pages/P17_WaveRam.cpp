@@ -1,169 +1,97 @@
-#include "../Schematics.h"
+#include "P17_WaveRam.h"
+
+#include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct P17_WaveRam {
-  struct Input {
-    bool AMUK_4MHZ;
-    bool APU_RESET;
+void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
 
-    bool CPU_RD;
-    bool CPU_RDn;
-    bool APU_WR;
+  c.p17.BOKE = not(b.p09.CPU_RDn);
+  c.p17.BENA = nand(b.p17.BOKE, b.p10.FF3X);
+  c.p17.BYZA = and(b.p10.APU_WR, b.p10.FF3X);
+  c.p17.CAZU = not(b.p17.BENA);
+  c.p17.AMYT = not(b.p17.BYZA);
 
-    bool FF3X;
-    bool BUKE;
-    bool GASE;
-    bool CH3_ACTIVE;
-    bool EFAR_Q;
+  //----------
 
-    bool WAVE_RD_D0;
-    bool WAVE_RD_D1;
-    bool WAVE_RD_D2;
-    bool WAVE_RD_D3;
-    bool WAVE_RD_D4;
-    bool WAVE_RD_D5;
-    bool WAVE_RD_D6;
-    bool WAVE_RD_D7;
-  };
+  c.p17.BAMA = not(b.p09.APU_RESET);
+  c.p17.ARUC = not(b.p01.AMUK_4M);
+  c.p17.CYBO = not(b.p01.AMUK_4M);
+  c.p17.COZY = not(b.p01.AMUK_4M);
 
-  struct Output {
-    bool CYBO_4MHZ;
+  c.p17.ABUR = not(b.p01.BUKE);
+  c.p17.BORY = not(b.p17.ABUR);
+  c.p17.BETA = or(b.p17.WAVE_RAM_WR, b.p17.WAVE_RAM_RDn, b.p17.BORY);
+  c.p17.AZOR = not(b.p17.BETA);
+  c.p17.BUKU = not(b.p17.AZOR);
 
-    bool WAVE_RAM_CTRL1;
-    bool WAVE_RAM_RDn;
-    bool WAVE_RAM_WR;
-    bool WAVE_RAM_WRn;
+  // Schematic makes this look like a clock divider, but it's a 4 bit shift register.
+  c.p17.BUSA = tock_pos(a.p01.AMUK_4M, b.p01.AMUK_4M, b.p17.BAMA, b.p17.BUSA, b.p18.GASE);
+  c.p17.BANO = tock_pos(a.p17.COZY,       b.p17.COZY,       b.p17.BAMA, b.p17.BANO, b.p17.BUSA);
+  c.p17.AZUS = tock_pos(a.p01.AMUK_4M, b.p01.AMUK_4M, b.p17.BAMA, b.p17.AZUS, b.p17.BANO);
+  c.p17.AZET = tock_pos(a.p17.ARUC,       b.p17.ARUC,       b.p17.BAMA, b.p17.AZET, b.p17.AZUS);
 
-    bool WAVE_PLAY_D0;
-    bool WAVE_PLAY_D1;
-    bool WAVE_PLAY_D2;
-    bool WAVE_PLAY_D3;
-  
-    bool D_OE;
-    bool D0,D1,D2,D3,D4,D5,D6,D7;
-  };
+  c.p17.BUTU = not(b.p17.AZUS);
 
-  // Wave ram sample temp storage
-  reg CYFO,CESY,BUDY,BEGU,CUVO,CEVO,BORA,BEPA;
+  c.p17.BOXO = nor(b.p17.AZUS, b.p17.AZET);
+  c.p17.BORU = not(b.p17.BOXO);
 
-  // 4 bit shift register
-  reg BUSA,BANO,AZUS,AZET;
+  c.p17.ATUR = mux2(b.p17.BORU, b.p17.BUKU, b.p18.CH3_ACTIVE);
+  c.p17.ALER = not(b.p17.ATUR);
 
-  void tick(const Input& in, Output& out) {
+  c.p17.BEKA = not(b.p17.BUTU_512K);
+  c.p17.COJU = not(b.p17.BUTU_512K);
+  c.p17.BAJA = not(b.p17.BUTU_512K);
+  c.p17.BUFE = not(b.p17.BUTU_512K);
 
-    //----------
+  //----------
 
-    wire BOKE = not(in.CPU_RDn);
-    wire BENA = nand(BOKE, in.FF3X);
-    wire BYZA = and(in.APU_WR, in.FF3X);
-    wire CAZU = not(BENA);
-    wire AMYT = not(BYZA);
+  c.p17.AKAF = not(b.WAVE_RD_D7);
+  c.p17.CUTO = not(b.WAVE_RD_D6);
+  c.p17.BERO = not(b.WAVE_RD_D5);
+  c.p17.BACA = not(b.WAVE_RD_D4);
+  c.p17.ADOK = not(b.WAVE_RD_D3);
+  c.p17.ATEC = not(b.WAVE_RD_D2);
+  c.p17.CEGU = not(b.WAVE_RD_D1);
+  c.p17.CUGO = not(b.WAVE_RD_D0);
 
-    out.WAVE_RAM_WR = BYZA;
-    out.WAVE_RAM_RDn = CAZU;
-    out.WAVE_RAM_WRn = AMYT;
+  c.p17.BEZU = not(b.p17.AKAF);
+  c.p17.DESA = not(b.p17.CUTO);
+  c.p17.BAVA = not(b.p17.BERO);
+  c.p17.BUNE = not(b.p17.BACA);
+  c.p17.BADE = not(b.p17.ADOK);
+  c.p17.BATY = not(b.p17.ATEC);
+  c.p17.DESY = not(b.p17.CEGU);
+  c.p17.DUGU = not(b.p17.CUGO);
 
-    //----------
-
-    wire BAMA = not(in.APU_RESET);
-    wire ARUC = not(in.AMUK_4MHZ);
-    wire CYBO = not(in.AMUK_4MHZ);
-    wire COZY = not(in.AMUK_4MHZ);
-
-    out.CYBO_4MHZ = CYBO;
-
-    wire ABUR = not(in.BUKE);
-    wire BORY = not(ABUR);
-    wire BETA = or(out.WAVE_RAM_WR, out.WAVE_RAM_RDn, BORY);
-    wire AZOR = not(BETA);
-    wire BUKU = not(AZOR);
-
-    // Schematic makes this look like a clock divider, but it's a 4 bit shift register.
-    wire BUSA_Q = BUSA.tock(in.AMUK_4MHZ, BAMA, in.GASE);
-    wire BANO_Q = BANO.tock(COZY,         BAMA, BUSA_Q);
-    wire AZUS_Q = AZUS.tock(in.AMUK_4MHZ, BAMA, BANO_Q);
-    wire AZET_Q = AZET.tock(ARUC,         BAMA, AZUS_Q);
-
-    wire BUTU = not(AZUS_Q);
-    // this net name is wrong, this is not a divided clock
-    wire BUTU_512KHZ = BUTU;
-
-    wire BOXO = nor(AZUS_Q, AZET_Q);
-    wire BORU = not(BOXO);
-
-    wire ATUR = mux2(BORU,BUKU,in.CH3_ACTIVE);
-    wire ALER = not(ATUR);
-    out.WAVE_RAM_CTRL1 = ALER;
-
-
-    wire BEKA = not(BUTU_512KHZ);
-    wire COJU = not(BUTU_512KHZ);
-    wire BAJA = not(BUTU_512KHZ);
-    wire BUFE = not(BUTU_512KHZ);
-
-    // unused on schematic
-    (void)BEKA;
-    (void)COJU;
-    (void)BAJA;
-    (void)BUFE;
-
-    //----------
-
-    wire AKAF = not(in.WAVE_RD_D7);
-    wire CUTO = not(in.WAVE_RD_D6);
-    wire BERO = not(in.WAVE_RD_D5);
-    wire BACA = not(in.WAVE_RD_D4);
-    wire ADOK = not(in.WAVE_RD_D3);
-    wire ATEC = not(in.WAVE_RD_D2);
-    wire CEGU = not(in.WAVE_RD_D1);
-    wire CUGO = not(in.WAVE_RD_D0);
-
-    wire BEZU = not(AKAF);
-    wire DESA = not(CUTO);
-    wire BAVA = not(BERO);
-    wire BUNE = not(BACA);
-    wire BADE = not(ADOK);
-    wire BATY = not(ATEC);
-    wire DESY = not(CEGU);
-    wire DUGU = not(CUGO);
-
-    // uhhhh polarity? this is probably wrong...
-    if (out.WAVE_RAM_RDn) {
-      out.D_OE= true;
-      out.D7 = BEZU;
-      out.D6 = DESA;
-      out.D5 = BAVA;
-      out.D4 = BUNE;
-      out.D3 = BADE;
-      out.D2 = BATY;
-      out.D1 = DESY;
-      out.D0 = DUGU;
-    }
-
-    wire ACOR = not(in.APU_RESET);
-
-    wire BEPA_Q = BEPA.tock(BUTU_512KHZ, ACOR, in.WAVE_RD_D7);
-    wire BORA_Q = BORA.tock(BUTU_512KHZ, ACOR, in.WAVE_RD_D6);
-    wire CEVO_Q = CEVO.tock(BUTU_512KHZ, ACOR, in.WAVE_RD_D5);
-    wire CUVO_Q = CUVO.tock(BUTU_512KHZ, ACOR, in.WAVE_RD_D4);
-    wire BEGU_Q = BEGU.tock(BUTU_512KHZ, ACOR, in.WAVE_RD_D3);
-    wire BUDY_Q = BUDY.tock(BUTU_512KHZ, ACOR, in.WAVE_RD_D2);
-    wire CESY_Q = CESY.tock(BUTU_512KHZ, ACOR, in.WAVE_RD_D1);
-    wire CYFO_Q = CYFO.tock(BUTU_512KHZ, ACOR, in.WAVE_RD_D0);
-
-    // why are these using the inverted output of the ff?
-    wire COPO = mux2(!BEGU_Q, !BEPA_Q, in.EFAR_Q);
-    wire CUZO = mux2(!BUDY_Q, !BORA_Q, in.EFAR_Q);
-    wire DAZY = mux2(!CESY_Q, !CEVO_Q, in.EFAR_Q);
-    wire DATE = mux2(!CYFO_Q, !CUVO_Q, in.EFAR_Q);
-
-    out.WAVE_PLAY_D0 = DATE;
-    out.WAVE_PLAY_D1 = DAZY;
-    out.WAVE_PLAY_D2 = CUZO;
-    out.WAVE_PLAY_D3 = COPO;
+  // uhhhh polarity? this is probably wrong...
+  if (b.p17.WAVE_RAM_RDn) {
+    c.D7 = b.p17.BEZU;
+    c.D6 = b.p17.DESA;
+    c.D5 = b.p17.BAVA;
+    c.D4 = b.p17.BUNE;
+    c.D3 = b.p17.BADE;
+    c.D2 = b.p17.BATY;
+    c.D1 = b.p17.DESY;
+    c.D0 = b.p17.DUGU;
   }
 
-};
+  c.p17.ACOR = not(b.p09.APU_RESET);
+
+  c.p17.BEPA = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BEPA, b.WAVE_RD_D7);
+  c.p17.BORA = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BORA, b.WAVE_RD_D6);
+  c.p17.CEVO = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.CEVO, b.WAVE_RD_D5);
+  c.p17.CUVO = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.CUVO, b.WAVE_RD_D4);
+  c.p17.BEGU = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BEGU, b.WAVE_RD_D3);
+  c.p17.BUDY = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BUDY, b.WAVE_RD_D2);
+  c.p17.CESY = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.CESY, b.WAVE_RD_D1);
+  c.p17.CYFO = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.CYFO, b.WAVE_RD_D0);
+
+  // why are these using the inverted output of the ff?
+  c.p17.COPO = mux2(!b.p17.BEGU, !b.p17.BEPA, b.p18.EFAR);
+  c.p17.CUZO = mux2(!b.p17.BUDY, !b.p17.BORA, b.p18.EFAR);
+  c.p17.DAZY = mux2(!b.p17.CESY, !b.p17.CEVO, b.p18.EFAR);
+  c.p17.DATE = mux2(!b.p17.CYFO, !b.p17.CUVO, b.p18.EFAR);
+}

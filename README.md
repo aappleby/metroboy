@@ -1,5 +1,9 @@
 # MetroBoy is a Game Boy simulation designed to be mechanically translated into Verilog
 
+October 11 2019 - This guy has traced out all the signals (aside from CPU) on the DMG die - https://github.com/furrtek/DMG-CPU-Inside
+
+I'm going to be incrementally converting MetroBoy to use his schematics. Should be interesting ;)
+
 As of build 1.02 all Blargg, Mooneye, and Wpol test suites should be passing.
 
 ![MetroBoy screenshot](MetroBoy.png "MetroBoy screenshot")

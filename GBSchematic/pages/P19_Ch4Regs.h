@@ -5,6 +5,8 @@ public:
 
   static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 
+  bool DOPU;
+
 private:
 
   bool DANO_00;
@@ -14,7 +16,7 @@ private:
   bool FYLO_04;
   bool EDOP_05;
 
-  bool FUGO,DOPU,CAZE,DODA,FURU,EPEK,DOTU,CUWA,GAPY;
+  bool FUGO,CAZE,DODA,FURU,EPEK,DOTU,CUWA,GAPY;
 
 
   bool EMOK_00; bool DEMY_00;

@@ -14,28 +14,59 @@ struct P01_ClocksReset {
   static const std::vector<SignalData> signals();
 
   // 4M clocks
-  union { bool AMUK; bool AMUK_4M; }; // _b_d_f_h
-  union { bool APUV; bool APUV_4M; }; // a_c_e_g_
-  union { bool ARYF; bool ARYF_4M; }; // a_c_e_g_
-  union { bool ATAL; bool ATAL_4M; }; // a_c_e_g_
-  union { bool ZEME; bool CLK1; };    // _b_d_f_h
-  union { bool ALET; bool CLK2; };    // a_c_e_g_
+  union { bool APUV; bool CLK_AxCxExGx1; }; // a_c_e_g_
+  union { bool ARYF; bool CLK_AxCxExGx2; }; // a_c_e_g_
+  union { bool ATAL; bool CLK_AxCxExGx3; }; // a_c_e_g_
+  union { bool ALET; bool CLK_AxCxExGx4; }; // a_c_e_g_
+  union { bool ARYS; bool CLK_AxCxExGx5; }; // a_c_e_g_
+  union { bool ANOS; bool CLK_AxCxExGx6; }; // a_c_e_g_
+  union { bool CYBO; bool CLK_AxCxExGx7; }; // a_c_e_g_
+  union { bool ATAG; bool CLK_AxCxExGx8; }; // a_c_e_g_
+  union { bool ZAXY; bool CLK_AxCxExGx9; }; // a_c_e_g_
+
+  union { bool AMUK; bool CLK_xBxDxFxH1; }; // _b_d_f_h
+  union { bool ZEME; bool CLK_xBxDxFxH2; }; // _b_d_f_h
+  union { bool AVET; bool CLK_xBxDxFxH3; }; // _b_d_f_h
+  union { bool AZOF; bool CLK_xBxDxFxH4; }; // _b_d_f_h
 
   // 2M clocks
-  union { bool CERY; bool CERY_2M; }; // ab__ef__
+  union { bool CERY; bool CLK_ABxxEFxx1; }; // ab__ef__
 
   // 1M clocks
-  union { bool BEVA; bool PHI_OUT; };     // abcd____
-  union { bool UVYT; bool PHI_OUTn; };    // ____efgh
-  union { bool DOVA; bool PHIn; };        // ____efgh
-  union { bool BEDO; };                   // _____fgh -> PORTD_02
-  union { bool BOWA; bool TO_CPU; };      // abcde___ -> PORTD_01
-  union { bool BOGA; bool BOGA_1M; };     // abcde___ -> PORTD_08
+
+  // 1mhz phase generator, regs in order of triggering.
+  union { bool AFUR; bool CLK_ABCDxxxx1; }; // abcd____
+  union { bool ALEF; bool CLK_xBCDExxx1; }; // _bcde___
+  union { bool APUK; bool CLK_xxCDEFxx1; }; // __cdef__
+  union { bool ADYK; bool CLK_xxxDEFGx1; }; // ___defg_
+  union { bool ATYP; bool CLK_xxxxEFGH1; }; // ____efgh
+  union { bool AFEP; bool CLK_AxxxxFGH1; }; // a____fgh
+  union { bool AROV; bool CLK_ABxxxxGH1; }; // ab____gh
+  union { bool ADAR; bool CLK_ABCxxxxH1; }; // abc____h
+
+  union { bool BEVA; bool PHI_OUT; };       // abcd____
+  union { bool UVYT; bool PHI_OUTn; };      // ____efgh
+  union { bool DOVA; bool PHIn; };          // ____efgh
+  union { bool BEDO; bool CLK_xxxxxFGH2; }; // _____fgh -> PORTD_02
+  union { bool BOWA; bool CLK_ABCDExxx2; }; // abcde___ -> PORTD_01
+  union { bool BOGA; bool CLK_ABCDExxx1; }; // abcde___ -> PORTD_08
   union { bool BAVU; bool BAVU_1M; };
-  union { bool BEKO; };                   // ____efgh -> PORTD_03
-  union { bool BUDE; };                   // abcd____ -> PORTD_04
-  union { bool BUKE; };                   // _____f__ -> PORTD_06
-  union { bool BOMA; };                   // _____fgh -> PORTD_07
+  union { bool BEKO; bool CLK_xxxxEFGH; };  // ____efgh -> PORTD_03
+  union { bool BUDE; bool CLK_ABCDxxxx2; };  // abcd____ -> PORTD_04
+  union { bool BUKE; bool CLK_xxxxxFxx; };  // _____f__ -> PORTD_06
+  union { bool BOMA; bool CLK_xxxxxFGH1; }; // _____fgh -> PORTD_07
+
+  bool AREV; // abc_efgh
+  bool BERU; // ab__efgh
+  bool BYRY; // ____efgh
+  bool BEJA; // abcd____
+  bool BUTO; // abcdef__
+  bool BYJU; // abcde___
+  bool BUVU; // _____fgh
+  bool AGUT; // abcd__gh
+  bool AWOD; // abcd__gh
+
+  bool AVOK;
 
   // Other clocks
 
@@ -72,25 +103,16 @@ struct P01_ClocksReset {
 
   union { bool AFAS; }; // ___d____
 
-  union { bool ABOL; };
+  union { bool LAPE; }; // _b_d_f_h
+  union { bool TAVA; }; // a_c_e_g_
+  union { bool COKE; }; // ? clock
 
-  bool LAPE; // _b_d_f_h
-  bool TAVA; // a_c_e_g_
+  union { bool ABOL; };
 
 private:
 
   //----------
   // registers
-
-  // 1mhz phase generator, regs in order of triggering.
-  bool AFUR; // abcd____
-  bool ALEF; // _bcde___
-  bool APUK; // __cdef__
-  bool ADYK; // ___defg_
-  bool ATYP; // ____efgh
-  bool AFEP; // a____fgh
-  bool AROV; // ab____gh
-  bool ADAR; // abc____h
 
   // div
   bool UKUP_00,UNER_02,UNYK_04;
@@ -98,34 +120,13 @@ private:
 
   // dividers for apu
   bool BARA,CARU,BYLU;
-  bool ATYK,AVOK;
+  bool ATYK;
 
   // reset reg
   bool AFER; 
 
   //----------
   // cells
-
-  bool ARYS; // a_c_e_g_
-  bool AVET; // _b_d_f_h
-  bool ANOS; // a_c_e_g_
-  bool AZOF; // _b_d_f_h
-  bool CYBO; // a_c_e_g_
-  bool ATAG; // a_c_e_g_
-  bool ZAXY; // a_c_e_g_
-
-  bool AREV; // abc_efgh
-
-  bool BERU; // ab__efgh
-  bool BYRY; // ____efgh
-  bool BEJA; // abcd____
-  bool BUTO; // abcdef__
-  
-  bool BYJU; // abcde___
-  bool BUVU; // _____fgh
-
-  bool AGUT; // abcd__gh
-  bool AWOD; // abcd__gh
 
   bool ALYP; // x
   bool AFAR; // x
@@ -146,7 +147,10 @@ private:
   bool XODO;
   bool BELA;
   bool UPYF,TUBO,UNUT,TABA;
-  bool ATUS,COKE,BURE,FYNE,CULO,APEF,GALE,BEZE,BULE,GEXY,COFU,BARU;
-  bool BOPO;
+  bool BURE,FYNE,CULO,APEF,GALE,BEZE,BULE,GEXY,COFU,BARU;
+  
+  union { bool BOPO; bool APU_RESETn1; };
+  union { bool ATUS; bool APU_RESETn2; };
+
   bool RESET_DIVn;
 };

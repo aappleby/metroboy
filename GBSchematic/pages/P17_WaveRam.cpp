@@ -16,10 +16,10 @@ void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
 
   //----------
 
-  c.p17.BAMA = not(b.p09.APU_RESET);
-  c.p17.ARUC = not(b.p01.AMUK_4M);
-  c.p17.CYBO = not(b.p01.AMUK_4M);
-  c.p17.COZY = not(b.p01.AMUK_4M);
+  c.p17.BAMA = not(b.p09.APU_RESET1);
+  c.p17.ARUC = not(b.p01.CLK_xBxDxFxH1);
+  c.p17.CYBO = not(b.p01.CLK_xBxDxFxH1);
+  c.p17.COZY = not(b.p01.CLK_xBxDxFxH1);
 
   c.p17.ABUR = not(b.p01.BUKE);
   c.p17.BORY = not(b.p17.ABUR);
@@ -28,10 +28,10 @@ void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
   c.p17.BUKU = not(b.p17.AZOR);
 
   // Schematic makes this look like a clock divider, but it's a 4 bit shift register.
-  c.p17.BUSA = tock_pos(a.p01.AMUK_4M, b.p01.AMUK_4M, b.p17.BAMA, b.p17.BUSA, b.p18.GASE);
-  c.p17.BANO = tock_pos(a.p17.COZY,       b.p17.COZY,       b.p17.BAMA, b.p17.BANO, b.p17.BUSA);
-  c.p17.AZUS = tock_pos(a.p01.AMUK_4M, b.p01.AMUK_4M, b.p17.BAMA, b.p17.AZUS, b.p17.BANO);
-  c.p17.AZET = tock_pos(a.p17.ARUC,       b.p17.ARUC,       b.p17.BAMA, b.p17.AZET, b.p17.AZUS);
+  c.p17.BUSA = tock_pos(a.p01.CLK_xBxDxFxH1, b.p01.CLK_xBxDxFxH1, b.p17.BAMA, b.p17.BUSA, b.p18.GASE);
+  c.p17.BANO = tock_pos(a.p17.COZY,          b.p17.COZY,          b.p17.BAMA, b.p17.BANO, b.p17.BUSA);
+  c.p17.AZUS = tock_pos(a.p01.CLK_xBxDxFxH1, b.p01.CLK_xBxDxFxH1, b.p17.BAMA, b.p17.AZUS, b.p17.BANO);
+  c.p17.AZET = tock_pos(a.p17.ARUC,          b.p17.ARUC,          b.p17.BAMA, b.p17.AZET, b.p17.AZUS);
 
   c.p17.BUTU = not(b.p17.AZUS);
 
@@ -78,7 +78,7 @@ void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
     c.D0 = b.p17.DUGU;
   }
 
-  c.p17.ACOR = not(b.p09.APU_RESET);
+  c.p17.ACOR = not(b.p09.APU_RESET1);
 
   c.p17.BEPA = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BEPA, b.WAVE_RD_D7);
   c.p17.BORA = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BORA, b.WAVE_RD_D6);

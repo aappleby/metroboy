@@ -67,7 +67,7 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.PECU = nand(b.p24.ROXO, b.p27.ROZE);
   c.p27.RONE = nand(b.p27.ROXY, b.p27.SUHA, b.p27.SYBY, b.p27.SOZU);
   c.p27.POHU = not(b.p27.RONE);
-  c.p27.MOXE = not(b.p01.CLK2);
+  c.p27.MOXE = not(b.p01.CLK_AxCxExGx4);
   c.p27.PANY = nor(b.p27.NUKO, b.p27.ROZE);
   c.p27.SEKO = nor(b.p27.RENE, !b.p27.RYFA);
   c.p27.ROMO = not(b.p24.POKY);
@@ -91,14 +91,14 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.PASO = nor(b.p27.TEVO, b.p27.PAHA);
   c.p27.VETU = and(b.p27.TEVO, b.p27.PORE);
   c.p27.ROCO = not(b.p24.SEGU);
-  c.p27.MEHE = not(b.p01.CLK2);
+  c.p27.MEHE = not(b.p01.CLK_AxCxExGx4);
   c.p27.NYFO = not(b.p27.NUNY);
   c.p27.MOSU = not(b.p27.NYFO);
   c.p27.NYXU = nor(b.p29.AVAP, b.p27.MOSU, b.p27.TEVO);
   c.p27.WAZY = not(b.p27.PORE);
   c.p27.SYNY = not(b.p27.REPU);
 
-  c.p27.NOPA = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p01.RESET_VIDEO, b.p27.NOPA, b.p27.PYNU);
+  c.p27.NOPA = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p01.RESET_VIDEO, b.p27.NOPA, b.p27.PYNU);
   c.p27.PYCO = tock_pos(a.p27.ROCO, b.p27.ROCO, b.p01.RESET_VIDEO, b.p27.PYCO, b.p27.NUKO);
   c.p27.NUNU = tock_pos(a.p27.MEHE, b.p27.MEHE, b.p01.RESET_VIDEO, b.p27.NUNU, b.p27.PYCO);
 
@@ -110,15 +110,15 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.PUXA = tock_pos(a.p24.ROXO, b.p24.ROXO, b.p21.XYMU, b.p27.PUXA, b.p27.POHU);
 
   c.p27.RYFA = tock_pos(a.p24.SEGU, b.p24.SEGU, b.p21.XYMU,        b.p27.RYFA, b.p27.PANY);
-  c.p27.RENE = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p21.XYMU,        b.p27.RENE, b.p27.RYFA);
-  c.p27.SOVY = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p01.RESET_VIDEO, b.p27.SOVY, b.p27.RYDY);
+  c.p27.RENE = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p21.XYMU,        b.p27.RENE, b.p27.RYFA);
+  c.p27.SOVY = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p01.RESET_VIDEO, b.p27.SOVY, b.p27.RYDY);
 
   //----------
   // dunno, top right
 
   c.p27.MOCE = nand(b.p27.LAXU, b.p27.NYVA, b.p27.NYXU);
-  c.p27.LEBO = nand(b.p01.CLK2, b.p27.MOCE);
-  c.p27.MYVO = not(b.p01.CLK2);
+  c.p27.LEBO = nand(b.p01.CLK_AxCxExGx4, b.p27.MOCE);
+  c.p27.MYVO = not(b.p01.CLK_AxCxExGx4);
   c.p27.LYRY = not(b.p27.MOCE);
   c.p27.LAXE = not(b.p27.LAXU);
   c.p27.MYSO = nor(b.p24.LOBY, b.p27.LAXE, b.p27.LYZU);
@@ -137,7 +137,7 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.POTU = and(b.p27.LENA, b.p27.NENY);
   c.p27.NETA = and(b.p27.LENA, b.p27.NOGU);
 
-  c.p27.LYZU = tock_pos( a.p01.CLK2,  b.p01.CLK2, b.p21.XYMU, b.p27.LYZU,  b.p27.LAXU);
+  c.p27.LYZU = tock_pos( a.p01.CLK_AxCxExGx4,  b.p01.CLK_AxCxExGx4, b.p21.XYMU, b.p27.LYZU,  b.p27.LAXU);
   c.p27.LAXU = tock_pos( a.p27.LEBO,  b.p27.LEBO, b.p27.NYXU, b.p27.LAXU, !b.p27.LAXU);
   c.p27.MESU = tock_pos(!a.p27.LAXU, !b.p27.LAXU, b.p27.NYXU, b.p27.MESU, !b.p27.MESU);
   c.p27.NYVA = tock_pos(!a.p27.MESU, !b.p27.MESU, b.p27.NYXU, b.p27.NYVA, !b.p27.NYVA);

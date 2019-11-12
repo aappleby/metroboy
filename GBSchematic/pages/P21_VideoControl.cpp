@@ -129,7 +129,7 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p21.SEPA = and(b.p07.CPU_WR2, b.p22.FF41);
 
-  c.p21.VOGA = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p21.TADY, b.p21.VOGA, b.p21.WODU);
+  c.p21.VOGA = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p21.TADY, b.p21.VOGA, b.p21.WODU);
   c.p21.WEGO = or(b.p24.TOFU, b.p21.VOGA);
   c.p21.XAJO = and(b.p21.XEHO, b.p21.XYDO);
   c.p21.XYMU = or(b.p21.WEGO, b.p29.AVAP);

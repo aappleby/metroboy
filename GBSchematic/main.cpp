@@ -107,6 +107,7 @@ void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
     P01_ClocksReset::tick(*pa, *pb, *pc);
     P03_Timer::tick(*pa, *pb, *pc);
     P07_SysDecode::tick(*pa, *pb, *pc);
+    P09_ApuControl::tick(*pa, *pb, *pc);
 
     if (memcmp(pb, pc, sizeof(Gameboy)) == 0) break;
 
@@ -121,8 +122,14 @@ const std::vector<SignalData> sample_signals =
   SignalData("RESET",   offsetof(Gameboy, chip.RST)),
   SignalData("CLKIN_B", offsetof(Gameboy, chip.CLKIN_B)),
 
-  SignalData("p01",  offsetof(Gameboy, p01), P01_ClocksReset::signals()),
-  SignalData("p03",  offsetof(Gameboy, p03), P03_Timer::signals()),
+  SignalData("p01.CLK_AxCxExGx1", offsetof(Gameboy, p01.CLK_AxCxExGx1)),
+  SignalData("p09.APU_RESET",     offsetof(Gameboy, p09.APU_RESET1)),
+  SignalData("p09.APU_RESET3n",   offsetof(Gameboy, p09.APU_RESETn3)),
+
+  //c.p09.AJER = tock_pos(a.p01.CLK_AxCxExGx1, b.p01.CLK_AxCxExGx1, b.p09.APU_RESET3n, b.p09.AJER, !b.p09.AJER);
+
+  //SignalData("p01",  offsetof(Gameboy, p01), P01_ClocksReset::signals()),
+  //SignalData("p03",  offsetof(Gameboy, p03), P03_Timer::signals()),
 };
 
 //-----------------------------------------------------------------------------

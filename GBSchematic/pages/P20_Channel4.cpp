@@ -12,20 +12,20 @@ void P20_Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p20.EVER = nor(b.p20.FF22_D4 , b.p20.FF22_D5 , b.p20.FF22_D6n);
   c.p20.ETOV = nor(b.p20.FF22_D4 , b.p20.FF22_D5 , b.p20.FF22_D6 );
 
-  c.p20.CEXO_00 = tock_pos(a.p20.CARY,     b.p20.CARY,     b.p09.APU_RESET4n, b.p20.CEXO_00, !b.p20.CEXO_00);
-  c.p20.DEKO_01 = tock_pos(!a.p20.CEXO_00, !b.p20.CEXO_00, b.p09.APU_RESET4n, b.p20.DEKO_01, !b.p20.DEKO_01);
-  c.p20.EZEF_02 = tock_pos(!a.p20.DEKO_01, !b.p20.DEKO_01, b.p09.APU_RESET4n, b.p20.EZEF_02, !b.p20.EZEF_02);
-  c.p20.EPOR_03 = tock_pos(!a.p20.EZEF_02, !b.p20.EZEF_02, b.p09.APU_RESET4n, b.p20.EPOR_03, !b.p20.EPOR_03);
-  c.p20.DURE_04 = tock_pos(!a.p20.EPOR_03, !b.p20.EPOR_03, b.p09.APU_RESET4n, b.p20.DURE_04, !b.p20.DURE_04);
-  c.p20.DALE_05 = tock_pos(!a.p20.DURE_04, !b.p20.DURE_04, b.p09.APU_RESET4n, b.p20.DALE_05, !b.p20.DALE_05);
-  c.p20.DOKE_06 = tock_pos(!a.p20.DALE_05, !b.p20.DALE_05, b.p09.APU_RESET4n, b.p20.DOKE_06, !b.p20.DOKE_06);
-  c.p20.DEMO_07 = tock_pos(!a.p20.DOKE_06, !b.p20.DOKE_06, b.p09.APU_RESET4n, b.p20.DEMO_07, !b.p20.DEMO_07);
-  c.p20.DOSE_08 = tock_pos(!a.p20.DEMO_07, !b.p20.DEMO_07, b.p09.APU_RESET4n, b.p20.DOSE_08, !b.p20.DOSE_08);
-  c.p20.DETE_09 = tock_pos(!a.p20.DOSE_08, !b.p20.DOSE_08, b.p09.APU_RESET4n, b.p20.DETE_09, !b.p20.DETE_09);
-  c.p20.ERUT_10 = tock_pos(!a.p20.DETE_09, !b.p20.DETE_09, b.p09.APU_RESET4n, b.p20.ERUT_10, !b.p20.ERUT_10);
-  c.p20.DOTA_11 = tock_pos(!a.p20.ERUT_10, !b.p20.ERUT_10, b.p09.APU_RESET4n, b.p20.DOTA_11, !b.p20.DOTA_11);
-  c.p20.DERE_12 = tock_pos(!a.p20.DOTA_11, !b.p20.DOTA_11, b.p09.APU_RESET4n, b.p20.DERE_12, !b.p20.DERE_12);
-  c.p20.ESEP_13 = tock_pos(!a.p20.DERE_12, !b.p20.DERE_12, b.p09.APU_RESET4n, b.p20.ESEP_13, !b.p20.ESEP_13);
+  c.p20.CEXO_00 = tock_pos(a.p20.CARY,     b.p20.CARY,     b.p09.APU_RESETn4, b.p20.CEXO_00, !b.p20.CEXO_00);
+  c.p20.DEKO_01 = tock_pos(!a.p20.CEXO_00, !b.p20.CEXO_00, b.p09.APU_RESETn4, b.p20.DEKO_01, !b.p20.DEKO_01);
+  c.p20.EZEF_02 = tock_pos(!a.p20.DEKO_01, !b.p20.DEKO_01, b.p09.APU_RESETn4, b.p20.EZEF_02, !b.p20.EZEF_02);
+  c.p20.EPOR_03 = tock_pos(!a.p20.EZEF_02, !b.p20.EZEF_02, b.p09.APU_RESETn4, b.p20.EPOR_03, !b.p20.EPOR_03);
+  c.p20.DURE_04 = tock_pos(!a.p20.EPOR_03, !b.p20.EPOR_03, b.p09.APU_RESETn4, b.p20.DURE_04, !b.p20.DURE_04);
+  c.p20.DALE_05 = tock_pos(!a.p20.DURE_04, !b.p20.DURE_04, b.p09.APU_RESETn4, b.p20.DALE_05, !b.p20.DALE_05);
+  c.p20.DOKE_06 = tock_pos(!a.p20.DALE_05, !b.p20.DALE_05, b.p09.APU_RESETn4, b.p20.DOKE_06, !b.p20.DOKE_06);
+  c.p20.DEMO_07 = tock_pos(!a.p20.DOKE_06, !b.p20.DOKE_06, b.p09.APU_RESETn4, b.p20.DEMO_07, !b.p20.DEMO_07);
+  c.p20.DOSE_08 = tock_pos(!a.p20.DEMO_07, !b.p20.DEMO_07, b.p09.APU_RESETn4, b.p20.DOSE_08, !b.p20.DOSE_08);
+  c.p20.DETE_09 = tock_pos(!a.p20.DOSE_08, !b.p20.DOSE_08, b.p09.APU_RESETn4, b.p20.DETE_09, !b.p20.DETE_09);
+  c.p20.ERUT_10 = tock_pos(!a.p20.DETE_09, !b.p20.DETE_09, b.p09.APU_RESETn4, b.p20.ERUT_10, !b.p20.ERUT_10);
+  c.p20.DOTA_11 = tock_pos(!a.p20.ERUT_10, !b.p20.ERUT_10, b.p09.APU_RESETn4, b.p20.DOTA_11, !b.p20.DOTA_11);
+  c.p20.DERE_12 = tock_pos(!a.p20.DOTA_11, !b.p20.DOTA_11, b.p09.APU_RESETn4, b.p20.DERE_12, !b.p20.DERE_12);
+  c.p20.ESEP_13 = tock_pos(!a.p20.DERE_12, !b.p20.DERE_12, b.p09.APU_RESETn4, b.p20.ESEP_13, !b.p20.ESEP_13);
 
   c.p20.ETYR = amux6(b.p20.ESEP_13, b.p20.DUDU,
                   b.p20.DERE_12, b.p20.ETAT,
@@ -86,15 +86,15 @@ void P20_Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p20.CUTY = nand(b.p20.FF21_D3, b.p20.FEKO, b.p20.FATY, b.p20.FERU, b.p20.FYRO);
   c.p20.DUBO = not(b.p20.CUTY);
   c.p20.EVUR = or(b.p20.DARO, b.p20.DUBO);
-  c.p20.EMET = nor(b.p20.CH4_RESTART, b.p09.APU_RESET);
+  c.p20.EMET = nor(b.p20.CH4_RESTART, b.p09.APU_RESET1);
   c.p20.FYNO = tock_pos(a.p20.CH4_EG_TICK, b.p20.CH4_EG_TICK, b.p20.EMET, b.p20.FYNO, b.p20.EVUR);
-  c.p20.ENUR = or(b.p09.APU_RESET, b.p20.CH4_RESTART);
+  c.p20.ENUR = or(b.p09.APU_RESET1, b.p20.CH4_RESTART);
   c.p20.EROX = or(!b.p20.FYNO, b.p20.ENUR);
 
   //----------
 
   c.p20.ALOP = not(b.p01.BYFE_128);
-  c.p20.BOKY = not(b.p09.APU_RESET);
+  c.p20.BOKY = not(b.p09.APU_RESET1);
   c.p20.ABEL = tock_pos(a.p20.ALOP, b.p20.ALOP, b.p20.BOKY, b.p20.ABEL, !b.p20.ABEL);
   c.p20.BAWA = not(b.p20.ABEL);
   c.p20.BUXO = not(b.p20.BAWA);
@@ -107,26 +107,26 @@ void P20_Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p20.DAPY = not(b.p20.ENEC);
   c.p20.GEXE = not(b.p20.FOSY);
   c.p20.HURY = nor(b.p01.HORU_512, b.p20.GEXE);
-  c.p20.GOPA = nor(b.p20.HURY, b.p20.FOWA, b.p20.CH4_RESTART, b.p09.APU_RESET);
+  c.p20.GOPA = nor(b.p20.HURY, b.p20.FOWA, b.p20.CH4_RESTART, b.p09.APU_RESET1);
   c.p20.FOWA = nor(b.p20.FF21_D0, b.p20.FF21_D1, b.p20.FF21_D2);
 
   //----------
 
-  c.p20.GASO = not(b.p09.APU_RESET);
+  c.p20.GASO = not(b.p09.APU_RESET1);
   c.p20.GYSU = tock_pos(a.p01.PHIn, b.p01.PHIn, b.p20.GASO, b.p20.GYSU, b.p20.FF23_D7);
-  c.p20.FALE = nor(b.p20.GORA, b.p09.APU_RESET);
+  c.p20.FALE = nor(b.p20.GORA, b.p09.APU_RESET1);
   c.p20.HELU = not(b.p20.FALE);
   c.p20.HAZO = or(b.p20.HELU, b.p20.GYSU);
-  c.p20.GUZY = nor(b.p20.GYSU, b.p09.APU_RESET);
+  c.p20.GUZY = nor(b.p20.GYSU, b.p09.APU_RESET1);
   c.p20.GONE = tock_pos(a.p01.HAMA_512Kn, b.p01.HAMA_512Kn, b.p20.FALE, b.p20.GONE, b.p20.HAZO);
-  c.p20.FEBY = not(b.p09.APU_RESET);
+  c.p20.FEBY = not(b.p09.APU_RESET1);
   c.p20.GORA = tock_pos(a.p01.HAMA_512Kn, b.p01.HAMA_512Kn, b.p20.FEBY, b.p20.GORA, b.p20.GONE);
   c.p20.GATY = tock_pos(a.p01.HAMA_512Kn, b.p01.HAMA_512Kn, b.p20.FEBY, b.p20.GATY, b.p20.GORA);
   c.p20.HAPU = not(b.p20.GATY);
   c.p20.GEVY = nor(b.p20.FF21_D3, b.p20.FF21_D4, b.p20.FF21_D5, b.p20.FF21_D6, b.p20.FF21_D7);
   c.p20.EFOT = and(b.p20.FF23_D6, b.p20.FUGO);
-  c.p20.HERY = nor(b.p09.APU_RESET, b.p20.GEVY);
-  c.p20.FEGY = or(b.p20.GEVY, b.p20.EFOT, b.p09.APU_RESET);
+  c.p20.HERY = nor(b.p09.APU_RESET1, b.p20.GEVY);
+  c.p20.FEGY = or(b.p20.GEVY, b.p20.EFOT, b.p09.APU_RESET1);
   c.p20.JERY = or(b.p20.HERY, b.p20.HAPU);
   c.p20.GENA = or(b.p20.CH4_RESTART, b.p20.FEGY);
   c.p20.KYKU = or(b.p20.JERY, b.p01.JESO_512K);
@@ -143,12 +143,12 @@ void P20_Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p20.GARY = tock_pos(a.p20.GYBA, b.p20.GYBA, b.p20.GUNY, b.p20.GARY, b.p20.HYNO);
   c.p20.CARY = and(b.p01.BAVU_1M, b.p20.GARY);
   c.p20.GOFU = nor(b.p20.CH4_RESTART, b.p20.GARY);
-  c.p20.GUNY = nor(b.p20.CH4_RESTART, b.p09.APU_RESET);
+  c.p20.GUNY = nor(b.p20.CH4_RESTART, b.p09.APU_RESET1);
   c.p20.HUCE = not(b.p20.GOFU);
 
   //----------
 
-  c.p20.GEPO = or(b.p20.CH4_RESTART, b.p09.APU_RESET);
+  c.p20.GEPO = or(b.p20.CH4_RESTART, b.p09.APU_RESET1);
   c.p20.GOGE = not(b.p20.GEPO);
   c.p20.JYJA = not(b.p20.CH4_LFSR_CLK1);
   c.p20.GAME = nand(b.p20.GENA, b.p20.HEZU);

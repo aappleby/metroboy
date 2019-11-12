@@ -13,6 +13,7 @@ const std::vector<SignalData> P01_ClocksReset::signals() {
     SignalData("PHASE_BCDE", offsetof(P01_ClocksReset, ALEF)),
     SignalData("PHASE_CDEF", offsetof(P01_ClocksReset, APUK)),
     SignalData("PHASE_DEFG", offsetof(P01_ClocksReset, ADYK)),
+    SignalData("COKE", offsetof(P01_ClocksReset, COKE)),
 
     /*
     SignalData("-----DIV-----"),
@@ -74,17 +75,17 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.ANOS = nand(b.chip.CLKIN_B, b.p01.AVET);
   c.p01.AVET = nand(b.p01.ANOS, b.p01.ARYS);
 
-  c.p01.ATAL = not(b.p01.AVET);
-  c.p01.AZOF = not(b.p01.ATAL);
+  c.p01.CLK_AxCxExGx3 = not(b.p01.AVET);
+  c.p01.AZOF = not(b.p01.CLK_AxCxExGx3);
 
   c.p01.ATAG = not(b.p01.AZOF);
   c.p01.ZAXY = not(b.p01.AZOF);
 
-  c.p01.AMUK = not(b.p01.ATAG);
+  c.p01.CLK_xBxDxFxH1 = not(b.p01.ATAG);
   c.p01.ZEME = not(b.p01.ZAXY);
 
-  c.p01.APUV = not(b.p01.AMUK);
-  c.p01.ARYF = not(b.p01.AMUK);
+  c.p01.CLK_AxCxExGx1 = not(b.p01.CLK_xBxDxFxH1);
+  c.p01.CLK_AxCxExGx2 = not(b.p01.CLK_xBxDxFxH1);
   c.p01.ALET = not(b.p01.ZEME);
   c.p01.LAPE = not(b.p01.ALET);
   c.p01.TAVA = not(b.p01.LAPE);
@@ -92,17 +93,17 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // random clock
 
-  c.p01.BELA = not(b.p09.APU_RESET);
-  c.p01.CYBO = not(b.p01.AMUK);
+  c.p01.BELA = not(b.p09.APU_RESET1);
+  c.p01.CYBO = not(b.p01.CLK_xBxDxFxH1);
   c.p01.CERY = tock_pos(a.p01.CYBO, b.p01.CYBO, b.p01.BELA, b.p01.CERY, !b.p01.CERY);
 
   //----------
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
 
-  c.p01.AFUR = tock_duo(a.p01.ATAL_4M, b.p01.ATAL_4M, b.p07.T1nT2n, b.p01.AFUR, !b.p01.ADYK);
-  c.p01.ALEF = tock_duo(a.p01.ATAL_4M, b.p01.ATAL_4M, b.p07.T1nT2n, b.p01.ALEF, b.p01.AFUR);
-  c.p01.APUK = tock_duo(a.p01.ATAL_4M, b.p01.ATAL_4M, b.p07.T1nT2n, b.p01.APUK, b.p01.ALEF);
-  c.p01.ADYK = tock_duo(a.p01.ATAL_4M, b.p01.ATAL_4M, b.p07.T1nT2n, b.p01.ADYK, b.p01.APUK);
+  c.p01.AFUR = tock_duo(a.p01.CLK_AxCxExGx3, b.p01.CLK_AxCxExGx3, b.p07.T1nT2n, b.p01.AFUR, !b.p01.ADYK);
+  c.p01.ALEF = tock_duo(a.p01.CLK_AxCxExGx3, b.p01.CLK_AxCxExGx3, b.p07.T1nT2n, b.p01.ALEF, b.p01.AFUR);
+  c.p01.APUK = tock_duo(a.p01.CLK_AxCxExGx3, b.p01.CLK_AxCxExGx3, b.p07.T1nT2n, b.p01.APUK, b.p01.ALEF);
+  c.p01.ADYK = tock_duo(a.p01.CLK_AxCxExGx3, b.p01.CLK_AxCxExGx3, b.p07.T1nT2n, b.p01.ADYK, b.p01.APUK);
 
   c.p01.ADAR = not(b.p01.ADYK);
   c.p01.ATYP = not(b.p01.AFUR);
@@ -130,7 +131,7 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.BUKE = not(b.p01.BASU);
 
   //----------
-  // Weird logic feeding into BOGA_1M
+  // Weird logic feeding into CLK_ABCDExxx1
 
   c.p01.BAPY = nor(b.p01.ABOL, b.p01.AROV, b.p01.ATYP);
   c.p01.BERU = not(b.p01.BAPY);
@@ -197,7 +198,7 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.UFOL = nor(b.p01.CLKIN_An, b.chip.RST, b.p01.TAPE);
   c.p01.RESET_DIVn = b.p01.UFOL;
 
-  c.p01.UKUP_00 = tock_pos(a.p01.BOGA_1M,  b.p01.BOGA_1M,  b.p01.RESET_DIVn, b.p01.UKUP_00, !b.p01.UKUP_00);
+  c.p01.UKUP_00 = tock_pos(a.p01.CLK_ABCDExxx1,  b.p01.CLK_ABCDExxx1,  b.p01.RESET_DIVn, b.p01.UKUP_00, !b.p01.UKUP_00);
   c.p01.UFOR_01 = tock_pos(!a.p01.UKUP_00, !b.p01.UKUP_00, b.p01.RESET_DIVn, b.p01.UFOR_01, !b.p01.UFOR_01);
   c.p01.UNER_02 = tock_pos(!a.p01.UFOR_01, !b.p01.UFOR_01, b.p01.RESET_DIVn, b.p01.UNER_02, !b.p01.UNER_02);
   c.p01.TERO_03 = tock_pos(!a.p01.UNER_02, !b.p01.UNER_02, b.p01.RESET_DIVn, b.p01.TERO_03, !b.p01.TERO_03);
@@ -206,7 +207,7 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
 
   c.p01.UVYN = not(b.p01.TAMA_05);
-  c.p01.ULUR = mux2(b.p01.BOGA_1M, !b.p01.TAMA_16Kn, b.p07.FF60_D1);
+  c.p01.ULUR = mux2(b.p01.CLK_ABCDExxx1, !b.p01.TAMA_16Kn, b.p07.FF60_D1);
 
   c.p01.UGOT_06 = tock_pos( a.p01.ULUR,     b.p01.ULUR,    b.p01.RESET_DIVn, b.p01.UGOT_06, !b.p01.UGOT_06);
   c.p01.TULU_07 = tock_pos(!a.p01.UGOT_06, !b.p01.UGOT_06, b.p01.RESET_DIVn, b.p01.TULU_07, !b.p01.TULU_07);
@@ -252,7 +253,7 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // Clock dividers for APU
 
-  c.p01.ATUS = not(b.p09.APU_RESET);
+  c.p01.APU_RESETn2 = not(b.p09.APU_RESET1);
   c.p01.COKE = not(b.p09.AJER_2M);
   c.p01.BURE = not(!b.p01.BARA);
   c.p01.BARA = tock_pos( a.p01.COKE,  b.p01.COKE, b.p01.ATUS, b.p01.BARA,  b.p01.UMER);
@@ -275,12 +276,12 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.BUFY = not(b.p01.COFU);
   c.p01.BYFE = not(b.p01.BARU);
 
-  c.p01.BOPO = not(b.p09.APU_RESET);
+  c.p01.APU_RESETn1 = not(b.p09.APU_RESET1);
+
+  c.p01.ATYK = tock_pos(a.p01.CLK_AxCxExGx2, b.p01.CLK_AxCxExGx2, b.p01.APU_RESETn1,  b.p01.ATYK, !b.p01.ATYK);
+  c.p01.AVOK = tock_pos(a.p01.ATYK,          b.p01.ATYK,          b.p01.APU_RESETn1,  b.p01.AVOK, !b.p01.AVOK);
+  c.p01.JESO = tock_pos(a.p01.BAVU,          b.p01.BAVU,          b.p09.APU_RESETn5, b.p01.JESO, !b.p01.JESO);
+
   c.p01.BAVU = not(b.p01.AVOK);
-
-  c.p01.ATYK = tock_pos(a.p01.ARYF_4M, b.p01.ARYF_4M, b.p01.BOPO,        b.p01.ATYK, !b.p01.ATYK);
-  c.p01.AVOK = tock_pos(a.p01.ATYK,    b.p01.ATYK,    b.p01.BOPO,        b.p01.AVOK, !b.p01.AVOK);
-  c.p01.JESO = tock_pos(a.p01.BAVU,    b.p01.BAVU,    b.p09.APU_RESET5n, b.p01.JESO, !b.p01.JESO);
-
   c.p01.HAMA = not(!b.p01.JESO);
 }

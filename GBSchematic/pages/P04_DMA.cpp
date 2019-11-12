@@ -9,7 +9,7 @@ void P04_DMA::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p04.DECY = not(b.cpu.FROM_CPU5);
   c.p04.CATY = not(b.p04.DECY);
-  c.p04.MAKA = tock_pos(a.p01.CLK1, b.p01.CLK1, b.p01.RESET6, b.p04.MAKA, b.p04.CATY);
+  c.p04.MAKA = tock_pos(a.p01.CLK_xBxDxFxH2, b.p01.CLK_xBxDxFxH2, b.p01.RESET6, b.p04.MAKA, b.p04.CATY);
   c.p04.NAXY = nor(b.p04.MAKA, b.p04.LUVY);
   c.p04.POWU = and(b.p04.MATU, b.p04.NAXY);
   c.p04.WYJA = unk3(b.p28.AMAB, b.p07.CPU_WR2, b.p04.POWU);

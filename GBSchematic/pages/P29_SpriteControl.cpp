@@ -111,7 +111,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // bottom
     
-  c.p29.XYVA = not(b.p01.CLK1);
+  c.p29.XYVA = not(b.p01.CLK_xBxDxFxH2);
   c.p29.XOTA = not(b.p29.XYVA);
   c.p29.XYFY = not(b.p29.XOTA);
   c.p29.WUVU = tock_pos(a.p29.XOTA, b.p29.XOTA, b.p01.RESET_VIDEO, b.p29.WUVU, !b.p29.WUVU);
@@ -135,7 +135,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.BALU = not(b.p28.ANOM);
   c.p29.BAGY = not(b.p29.BALU);
   c.p29.BYBA = tock_pos(a.p29.XUPY,    b.p29.XUPY,    b.p29.BAGY, b.p29.BYBA, b.p28.FETO);
-  c.p29.DOBA = tock_pos(a.p01.CLK2, b.p01.CLK2, b.p29.BAGY, b.p29.DOBA, b.p29.BYBA);
+  c.p29.DOBA = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p29.BAGY, b.p29.DOBA, b.p29.BYBA);
   c.p29.BEBU = or(b.p29.DOBA, b.p29.BALU, !b.p29.BYBA);
   c.p29.AVAP = not(b.p29.BEBU);
 
@@ -145,7 +145,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.TOBU = tock_pos(a.p01.TAVA, b.p01.TAVA, b.p21.XYMU, b.p29.TOBU, b.p29.TULY);
   c.p29.VONU = tock_pos(a.p01.TAVA, b.p01.TAVA, b.p21.XYMU, b.p29.VONU, !b.p29.TOBU);
 
-  c.p29.LAPE = not(b.p01.CLK2);
+  c.p29.LAPE = not(b.p01.CLK_AxCxExGx4);
   c.p29.TEPA = not(b.p21.XYMU);
 
   c.p29.TYNO = nand(b.p29.TOXE, b.p29.SEBA, b.p29.VONU);
@@ -397,7 +397,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.EWOT = not(b.p29.DUKE);
   c.p29.BYVY = not(b.p29.BUCO);
 
-  c.p29.DEZY = tock_pos(a.p01.CLK1, b.p01.CLK1, b.p01.RESET_VIDEO, b.p29.DEZY, b.p29.DYTY);
+  c.p29.DEZY = tock_pos(a.p01.CLK_xBxDxFxH2, b.p01.CLK_xBxDxFxH2, b.p01.RESET_VIDEO, b.p29.DEZY, b.p29.DYTY);
   c.p29.BESE = tock_pos(a.p29.CAKE,    b.p29.CAKE,    b.p28.AZYB,        b.p29.BESE, !b.p29.BESE);
   c.p29.CUXY = tock_pos(!a.p29.BESE,   !b.p29.BESE,   b.p28.AZYB,        b.p29.CUXY, !b.p29.CUXY);
   c.p29.BEGO = tock_pos(!a.p29.CUXY,   !b.p29.CUXY,   b.p28.AZYB,        b.p29.BEGO, !b.p29.BEGO);

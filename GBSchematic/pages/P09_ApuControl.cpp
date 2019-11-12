@@ -9,19 +9,30 @@
 
 void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
+  c.p09.CPU_RDn = not(b.p07.CPU_RD);
+  c.p09.CPU_RD1 = not(b.p09.CPU_RDn);
+
   //---------
   // reset tree
 
-  c.p09.AGUR = not(b.p09.APU_RESET);
-  c.p09.AFAT = not(b.p09.APU_RESET);
-  c.p09.ATYV = not(b.p09.APU_RESET);
-  c.p09.DAPA = not(b.p09.APU_RESET);
-  c.p09.KAME = not(b.p09.APU_RESET);
+  c.p09.RESETn1     = not(b.p01.RESET2);
+  c.p09.RESET1      = not(b.p09.RESETn1);
+  
+  c.p09.APU_RESET2  = or(b.p09.RESETn1, !b.p09.ALL_SOUND_ON); // I don't think this is right...
+  c.p09.APU_RESETn6 = not(b.p09.APU_RESET2);
+  c.p09.APU_RESETn7 = not(b.p09.APU_RESET2);
+  c.p09.APU_RESET1  = not(b.p09.APU_RESETn7);
+
+  c.p09.APU_RESETn  = not(b.p09.APU_RESET1);
+  c.p09.APU_RESETn2 = not(b.p09.APU_RESET1);
+  c.p09.APU_RESETn3 = not(b.p09.APU_RESET1);
+  c.p09.APU_RESETn4 = not(b.p09.APU_RESET1);
+  c.p09.APU_RESETn5 = not(b.p09.APU_RESET1);
 
   //----------
   // clock dividers
 
-  c.p09.AJER = tock_pos(a.p01.APUV_4M, b.p01.APUV_4M, b.p09.APU_RESET3n, b.p09.AJER, !b.p09.AJER);
+  c.p09.AJER = tock_pos(a.p01.CLK_AxCxExGx1, b.p01.CLK_AxCxExGx1, b.p09.APU_RESETn3, b.p09.AJER, !b.p09.AJER);
 
   c.p09.BATA = not(b.p09.AJER_2M);
   c.p09.CALO = tock_pos(a.p09.BATA, b.p09.BATA, b.p09.APU_RESETn, b.p09.CALO, !b.p09.CALO);
@@ -30,97 +41,95 @@ void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // main logic chunk
 
-  c.p09.HAWU = nand(b.p10.FF26, b.p10.APU_WR);
-  c.p09.BOPY = nand(b.p10.APU_WR, b.p10.FF26);
-  c.p09.HAPO = not(b.p01.RESET2);
+  c.p09.NR52_WR1  = and(b.p10.FF26, b.p10.APU_WR);
 
-  c.p09.GUFO = not(b.p09.HAPO);
-  c.p09.HADA = tock_pos(a.p09.HAWU, b.p09.HAWU, b.p09.GUFO, b.p09.HADA, b.D7);
+  c.p09.NR52_RDn1 = nand(b.p10.FF26, b.p09.CPU_RD1);
 
-  c.p09.JYRO = or(b.p09.HAPO, !b.p09.HADA);
-  c.p09.KEPY = not(b.p09.JYRO);
+  c.p09.NR52_WRn1 = nand(b.p10.FF26, b.p10.APU_WR);
+  c.p09.NR52_WRn2 = nand(b.p10.FF26, b.p10.APU_WR);
+  c.p09.NR52_WRn3 = not(b.p09.NR52_WR1);
 
-  c.p09.KUBY = not(b.p09.JYRO);
-  c.p09.KEBA = not(b.p09.KUBY);
 
-  c.p09.ETUC = and(b.p10.APU_WR, b.p10.FF26);
-  c.p09.EFOP = and(b.D4, b.p07.T1nT2); // schematic bug, said FROM_CPU
-  c.p09.FOKU = not(b.p09.ETUC);
-  c.p09.FERO = tock_pos(a.p09.FOKU, b.p09.FOKU, b.p09.KEPY, b.p09.FERO, b.p09.EFOP);
   c.p09.EDEK = not(!b.p09.FERO);
 
-  c.p09.BOWY = tock_pos(a.p09.BOPY, b.p09.BOPY, b.p09.KEPY, b.p09.BOWY, b.D5);
-  c.p09.BAZA = tock_pos(a.p09.AJER_2M, b.p09.AJER_2M, b.p09.APU_RESET3n, b.p09.BAZA, b.p09.BOWY);
+  c.p09.NR52_7 = tock_pos(a.p09.NR52_WRn1, b.p09.NR52_WRn1, b.p09.RESET1,      b.p09.NR52_7, b.D7);
+
+  // these must be debug-related and are only readable during apu reset...
+  c.p09.EFOP = and(b.D4, b.p07.T1nT2);
+  c.p09.NR52_5 = tock_pos(a.p09.NR52_WRn2, b.p09.NR52_WRn2, b.p09.APU_RESETn6, b.p09.NR52_5, b.D5);
+  c.p09.FERO   = tock_pos(a.p09.NR52_WRn3, b.p09.NR52_WRn3, b.p09.APU_RESETn6, b.p09.FERO,   b.p09.EFOP);
+  c.p09.BAZA   = tock_pos(a.p09.AJER_2M,   b.p09.AJER_2M,   b.p09.APU_RESETn3, b.p09.BAZA,   b.p09.NR52_5);
+
   c.p09.CELY = mux2(b.p09.BAZA, b.p01.BYFE_128, b.p09.NET03);
   c.p09.CONE = not(b.p09.CELY);
   c.p09.CATE = not(b.p09.CONE);
 
-  c.p09.AGUZ = not(b.p07.CPU_RD);
-  c.p09.KYDU = not(b.p09.CPU_RDn);
-  c.p09.JURE = nand(b.p09.KYDU, b.p10.FF26);
-  c.p09.HOPE = not(!b.p09.HADA);
+  c.p09.NR52_7b = not(!b.p09.NR52_7);
 
-  if (b.p09.JURE) {
-    c.D7 = b.p09.HOPE;
+  if (b.p09.NR52_RDn1) {
+    c.D7 = b.p09.NR52_7b;
   }
+
+  // where's the read for the other bits?
 
   //----------
   // FF24 NR50
 
-  c.p09.BYMA = not(b.p10.FF24);
-  c.p09.BEFU = nor(b.p09.AGUZ, b.p09.BYMA);
-  c.p09.ADAK = not(b.p09.BEFU);
+  c.p09.FF24n     = not(b.p10.FF24);
+  c.p09.NR50_RDn1 = nor(b.p09.CPU_RDn, b.p09.FF24n);
+  c.p09.NR50_RD1  = not(b.p09.BEFU);
   
-  c.p09.BOSU = nand(b.p10.FF24, b.p10.APU_WR);
-  c.p09.BAXY = not(b.p09.BOSU);
-  c.p09.BUBU = not(b.p09.BAXY);
-  c.p09.BOWE = not(b.p09.BOSU);
-  c.p09.ATAF = not(b.p09.BOWE);
+  c.p09.NR50_WRn1 = nand(b.p10.FF24, b.p10.APU_WR);
+  c.p09.NR50_WR1  = not(b.p09.NR50_WRn1);
+  c.p09.NR50_WR2  = not(b.p09.NR50_WRn1);
 
-  c.p09.APEG = tock_pos(a.p09.ATAF, b.p09.ATAF, b.p09.JYRO, c.p09.APEG, b.D0);
-  c.p09.BYGA = tock_pos(a.p09.ATAF, b.p09.ATAF, b.p09.JYRO, c.p09.BYGA, b.D1);
-  c.p09.AGER = tock_pos(a.p09.ATAF, b.p09.ATAF, b.p09.JYRO, c.p09.AGER, b.D2);
-  c.p09.APOS = tock_pos(a.p09.ATAF, b.p09.ATAF, b.p09.JYRO, c.p09.APOS, b.D3);
-  c.p09.BYRE = tock_pos(a.p09.BUBU, b.p09.BUBU, b.p09.JYRO, c.p09.BYRE, b.D4);
-  c.p09.BUMO = tock_pos(a.p09.BUBU, b.p09.BUBU, b.p09.JYRO, c.p09.BUMO, b.D5);
-  c.p09.COZU = tock_pos(a.p09.BUBU, b.p09.BUBU, b.p09.JYRO, c.p09.COZU, b.D6);
-  c.p09.BEDU = tock_pos(a.p09.BUBU, b.p09.BUBU, b.p09.JYRO, c.p09.BEDU, b.D7);
+  c.p09.NR50_WRn2 = not(b.p09.NR50_WR1);
+  c.p09.NR50_WRn3 = not(b.p09.NR50_WR2);
 
-  c.p09.AKOD = not(!b.p09.APEG);
-  c.p09.AWED = not(!b.p09.BYGA);
-  c.p09.AVUD = not(!b.p09.AGER);
-  c.p09.AXEM = not(!b.p09.APOS);
-  c.p09.AMAD = not(!b.p09.BYRE);
-  c.p09.ARUX = not(!b.p09.BUMO);
-  c.p09.BOCY = not(!b.p09.COZU);
-  c.p09.ATUM = not(!b.p09.BEDU);
+  c.p09.NR50_0 = tock_pos(a.p09.NR50_WRn3, b.p09.NR50_WRn3, b.p09.APU_RESET2, c.p09.NR50_0, b.D0);
+  c.p09.NR50_1 = tock_pos(a.p09.NR50_WRn3, b.p09.NR50_WRn3, b.p09.APU_RESET2, c.p09.NR50_1, b.D1);
+  c.p09.NR50_2 = tock_pos(a.p09.NR50_WRn3, b.p09.NR50_WRn3, b.p09.APU_RESET2, c.p09.NR50_2, b.D2);
+  c.p09.NR50_3 = tock_pos(a.p09.NR50_WRn3, b.p09.NR50_WRn3, b.p09.APU_RESET2, c.p09.NR50_3, b.D3);
+  c.p09.NR50_4 = tock_pos(a.p09.NR50_WRn2, b.p09.NR50_WRn2, b.p09.APU_RESET2, c.p09.NR50_4, b.D4);
+  c.p09.NR50_5 = tock_pos(a.p09.NR50_WRn2, b.p09.NR50_WRn2, b.p09.APU_RESET2, c.p09.NR50_5, b.D5);
+  c.p09.NR50_6 = tock_pos(a.p09.NR50_WRn2, b.p09.NR50_WRn2, b.p09.APU_RESET2, c.p09.NR50_6, b.D6);
+  c.p09.NR50_7 = tock_pos(a.p09.NR50_WRn2, b.p09.NR50_WRn2, b.p09.APU_RESET2, c.p09.NR50_7, b.D7);
 
-  if (b.p09.ADAK) {
-    c.D0 = b.p09.AKOD;
-    c.D1 = b.p09.AWED;
-    c.D2 = b.p09.AVUD;
-    c.D3 = b.p09.AXEM;
-    c.D4 = b.p09.AMAD;
-    c.D5 = b.p09.ARUX;
-    c.D6 = b.p09.BOCY;
-    c.D7 = b.p09.ATUM;
+  c.p09.NR50_0b = not(!b.p09.NR50_0);
+  c.p09.NR50_1b = not(!b.p09.NR50_1);
+  c.p09.NR50_2b = not(!b.p09.NR50_2);
+  c.p09.NR50_3b = not(!b.p09.NR50_3);
+  c.p09.NR50_4b = not(!b.p09.NR50_4);
+  c.p09.NR50_5b = not(!b.p09.NR50_5);
+  c.p09.NR50_6b = not(!b.p09.NR50_6);
+  c.p09.NR50_7b = not(!b.p09.NR50_7);
+
+  if (b.p09.NR50_RD1) {
+    c.D0 = b.p09.NR50_0b;
+    c.D1 = b.p09.NR50_1b;
+    c.D2 = b.p09.NR50_2b;
+    c.D3 = b.p09.NR50_3b;
+    c.D4 = b.p09.NR50_4b;
+    c.D5 = b.p09.NR50_5b;
+    c.D6 = b.p09.NR50_6b;
+    c.D7 = b.p09.NR50_7b;
   }
 
   //----------
   // FF25 NR51
 
-  c.p09.BUPO = nand(b.p10.FF25, b.p10.APU_WR); // BUG APU_WR
+  c.p09.BUPO = nand(b.p10.FF25, b.p10.APU_WR);
   c.p09.BONO = not(b.p09.BUPO);
   c.p09.BYFA = not(b.p09.BUPO);
 
-  c.p09.BOGU = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.JYRO, c.p09.BOGU, b.D1);
-  c.p09.BAFO = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.JYRO, c.p09.BAFO, b.D2);
-  c.p09.ATUF = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.JYRO, c.p09.ATUF, b.D3);
-  c.p09.ANEV = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.JYRO, c.p09.ANEV, b.D0);
-  c.p09.BEPU = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.JYRO, c.p09.BEPU, b.D7);
-  c.p09.BEFO = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.JYRO, c.p09.BEFO, b.D6);
-  c.p09.BUME = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.JYRO, c.p09.BUME, b.D4);
-  c.p09.BOFA = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.JYRO, c.p09.BOFA, b.D5);
+  c.p09.NR51_0 = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.APU_RESET2, c.p09.NR51_0, b.D0);
+  c.p09.NR51_1 = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.APU_RESET2, c.p09.NR51_1, b.D1);
+  c.p09.NR51_2 = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.APU_RESET2, c.p09.NR51_2, b.D2);
+  c.p09.NR51_3 = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.APU_RESET2, c.p09.NR51_3, b.D3);
+  c.p09.NR51_4 = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.APU_RESET2, c.p09.NR51_4, b.D4);
+  c.p09.NR51_5 = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.APU_RESET2, c.p09.NR51_5, b.D5);
+  c.p09.NR51_6 = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.APU_RESET2, c.p09.NR51_6, b.D6);
+  c.p09.NR51_7 = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.APU_RESET2, c.p09.NR51_7, b.D7);
 
   c.p09.GEPA = not(b.p10.FF25);
   c.p09.HEFA = nor(b.p09.GEPA, b.p09.CPU_RDn);

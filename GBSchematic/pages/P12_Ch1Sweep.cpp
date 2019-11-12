@@ -48,17 +48,17 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p12.FOPU = and(b.p12.DYLA, b.p12.GULU);
   c.p12.EJYF = and(b.p12.DYLA, b.p12.DEKE);
 
-  c.p12.APAJ = nor(b.p12.AJUX, b.p09.APU_RESET);
-  c.p12.BOVU = nor(b.p12.AMAC, b.p09.APU_RESET);
-  c.p12.BOXU = nor(b.p12.BASO, b.p09.APU_RESET);
-  c.p12.ESEL = nor(b.p12.EMAR, b.p09.APU_RESET);
-  c.p12.ELUF = nor(b.p12.ETOK, b.p09.APU_RESET);
-  c.p12.KAJU = nor(b.p12.KYFU, b.p09.APU_RESET);
-  c.p12.KAPO = nor(b.p12.KAVO, b.p09.APU_RESET);
-  c.p12.GAMO = nor(b.p12.FEGA, b.p09.APU_RESET);
-  c.p12.GYFU = nor(b.p12.FOKE, b.p09.APU_RESET);
-  c.p12.GATO = nor(b.p12.FOPU, b.p09.APU_RESET);
-  c.p12.EFOR = nor(b.p12.EJYF, b.p09.APU_RESET);
+  c.p12.APAJ = nor(b.p12.AJUX, b.p09.APU_RESET1);
+  c.p12.BOVU = nor(b.p12.AMAC, b.p09.APU_RESET1);
+  c.p12.BOXU = nor(b.p12.BASO, b.p09.APU_RESET1);
+  c.p12.ESEL = nor(b.p12.EMAR, b.p09.APU_RESET1);
+  c.p12.ELUF = nor(b.p12.ETOK, b.p09.APU_RESET1);
+  c.p12.KAJU = nor(b.p12.KYFU, b.p09.APU_RESET1);
+  c.p12.KAPO = nor(b.p12.KAVO, b.p09.APU_RESET1);
+  c.p12.GAMO = nor(b.p12.FEGA, b.p09.APU_RESET1);
+  c.p12.GYFU = nor(b.p12.FOKE, b.p09.APU_RESET1);
+  c.p12.GATO = nor(b.p12.FOPU, b.p09.APU_RESET1);
+  c.p12.EFOR = nor(b.p12.EJYF, b.p09.APU_RESET1);
 
   c.p12.ARYL = not(b.p11.FF10_D3n);
 
@@ -151,17 +151,17 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p12.HOLA = nand(b.p12.JYKA, b.p12.KAPE);
   c.p12.HOZU = nand(b.p12.HYKA, b.p12.KAPE);
 
-  c.p12.AVUF = nor(b.p09.APU_RESET, b.p12.AFYR);
-  c.p12.AFUX = nor(b.p09.APU_RESET, b.p12.BUVO);
-  c.p12.AGOR = nor(b.p09.APU_RESET, b.p12.AFUG);
-  c.p12.BEWO = nor(b.p09.APU_RESET, b.p12.BAPU);
-  c.p12.ENOK = nor(b.p09.APU_RESET, b.p12.EREG);
-  c.p12.EZUK = nor(b.p09.APU_RESET, b.p12.EVOF);
-  c.p12.KYBO = nor(b.p09.APU_RESET, b.p12.KEVY);
-  c.p12.KETO = nor(b.p09.APU_RESET, b.p12.KAXY);
-  c.p12.HYVU = nor(b.p09.APU_RESET, b.p12.JEHY);
-  c.p12.HOBU = nor(b.p09.APU_RESET, b.p12.JOCY);
-  c.p12.JADO = nor(b.p09.APU_RESET, b.p12.KOKO);
+  c.p12.AVUF = nor(b.p09.APU_RESET1, b.p12.AFYR);
+  c.p12.AFUX = nor(b.p09.APU_RESET1, b.p12.BUVO);
+  c.p12.AGOR = nor(b.p09.APU_RESET1, b.p12.AFUG);
+  c.p12.BEWO = nor(b.p09.APU_RESET1, b.p12.BAPU);
+  c.p12.ENOK = nor(b.p09.APU_RESET1, b.p12.EREG);
+  c.p12.EZUK = nor(b.p09.APU_RESET1, b.p12.EVOF);
+  c.p12.KYBO = nor(b.p09.APU_RESET1, b.p12.KEVY);
+  c.p12.KETO = nor(b.p09.APU_RESET1, b.p12.KAXY);
+  c.p12.HYVU = nor(b.p09.APU_RESET1, b.p12.JEHY);
+  c.p12.HOBU = nor(b.p09.APU_RESET1, b.p12.JOCY);
+  c.p12.JADO = nor(b.p09.APU_RESET1, b.p12.KOKO);
 
   c.p12.FAJA = not(b.p13.EGOR);
   c.p12.EJYB = not(b.p12.FAJA);

@@ -7,9 +7,9 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p18.HUNO = tock_pos(a.p18.JYFO, b.p18.JYFO, b.p18.GAFU, b.p18.HUNO, !b.p18.HUNO);
   c.p18.HEMA = not(b.p18.HUNO);
   c.p18.GASE = not(b.p18.HEMA);
-  c.p18.HUPA = and(b.p18.HUNO, b.p01.CERY_2M);
-  c.p18.GAFU = nor(b.p09.APU_RESET, b.p18.GARA, b.p18.HUPA);
-  c.p18.HEFO = nor(b.p01.CERY_2M, b.p18.GUGU);
+  c.p18.HUPA = and(b.p18.HUNO, b.p01.CLK_ABxxEFxx1);
+  c.p18.GAFU = nor(b.p09.APU_RESET1, b.p18.GARA, b.p18.HUPA);
+  c.p18.HEFO = nor(b.p01.CLK_ABxxEFxx1, b.p18.GUGU);
   c.p18.HERA = nor(b.p18.GASE, b.p18.GARA);
 
   c.p18.JUTY = not(b.p18.HEFO);
@@ -38,7 +38,7 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p18.FETY = tock_pos(!a.p18.EFAL, !b.p18.EFAL, b.p18.GYRY, b.p18.FETY, !b.p18.FETY);
   c.p18.FOTO = and(b.p18.FETY, b.p18.GASE);
   c.p18.ETAN = or(b.p18.GARA, b.p18.FETY);
-  c.p18.GYRY = nor(b.p09.APU_RESET, b.p18.GARA, b.p18.FOTO);
+  c.p18.GYRY = nor(b.p09.APU_RESET1, b.p18.GARA, b.p18.FOTO);
   c.p18.DERO = not(b.p18.GASE);
 
   c.p18.EFAR = tock_pos(a.p18.DERO,  b.p18.DERO,  b.p18.ETAN, b.p18.EFAR, !b.p18.EFAR);
@@ -76,11 +76,11 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   c.p18.GEDO = and(b.p01.BUFY_256, b.p18.FF1E_D6);
-  c.p18.FYGO = or(b.p09.APU_RESET, b.p18.GEDO, b.p18.FF1A_D7n);
+  c.p18.FYGO = or(b.p09.APU_RESET1, b.p18.GEDO, b.p18.FF1A_D7n);
   c.p18.FOZU = or(b.p18.GARA, b.p18.FYGO);
   c.p18.EZAS = not(b.p18.FOZU);
   c.p18.DORU = not(b.p18.EZAS);
-  c.p18.CALU = not(b.p09.APU_RESET);
+  c.p18.CALU = not(b.p09.APU_RESET1);
   c.p18.DAVO = tock_pos(a.p09.AJER_2M, b.p09.AJER_2M, b.p18.CALU, b.p18.DAVO, b.p18.DORU);
   c.p18.COKA = not(!b.p18.DAVO);
   c.p18.ERED = not(b.p18.COKA);
@@ -88,7 +88,7 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p18.CH3_ACTIVE = b.p18.COKA;
   c.p18.CH3_ACTIVEn = b.p18.ERED;
 
-  c.p18.GUDA = nor(b.p18.FF1B_WR3, b.p09.APU_RESET, b.p18.GARA);
+  c.p18.GUDA = nor(b.p18.FF1B_WR3, b.p09.APU_RESET1, b.p18.GARA);
   c.p18.FEXU = tock_pos(!a.p18.FYRU_07, !b.p18.FYRU_07, b.p18.GUDA, b.p18.FEXU, !b.p18.FEXU);
   c.p18.GEPY = nor(b.p01.BUFY_256, b.p18.FF1E_D6n);
   c.p18.GENU = not(b.p18.GEPY);

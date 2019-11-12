@@ -25,6 +25,7 @@ struct P13_Channel1 {
 
 private:
 
+#if 0
   //----------
   // inputs
 
@@ -63,6 +64,7 @@ private:
   bool FF14_D6n;
 
   bool FF11;
+#endif
 
   //----------
   // regs

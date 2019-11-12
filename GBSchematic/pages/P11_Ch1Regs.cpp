@@ -48,7 +48,7 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // BUG APU_WR
   c.p11.COVU = and(b.p10.APU_WR, b.p10.FF11);
-  c.p11.CEPO = not(b.p09.APU_RESET);
+  c.p11.CEPO = not(b.p09.APU_RESET1);
   c.p11.DAFO = not(b.p11.COVU);
   c.p11.CENA = tock_pos(a.p11.DAFO, b.p11.DAFO, b.p11.CEPO, b.p11.CENA, b.D6);
   c.p11.DYCA = tock_pos(a.p11.DAFO, b.p11.DAFO, b.p11.CEPO, b.p11.DYCA, b.D7);
@@ -68,48 +68,47 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // FF12 NR12
 
   c.p11.GAXU = nand(b.p10.FF12, b.p10.APU_WR);
-  c.p11.HATO = not(b.p09.APU_RESET);
+  c.p11.HATO = not(b.p09.APU_RESET1);
   c.p11.GAGO = not(b.p10.FF12);
   c.p11.KAGY = not(b.p11.GAXU);
-  c.p11.HOCU = or(b.p11.GAGO, b.p09.CPU_RDn);
-
-  c.p11.JOPU = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JOPU, b.D7);
-  c.p11.JENA = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JENA, b.D6);
-  c.p11.JAXO = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JAXO, b.D5);
-  c.p11.JATY = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JATY, b.D4);
-  c.p11.JAFY = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.JAFY, b.D3);
-
-  c.p11.JYSE = not(!b.p11.JOPU);
-  c.p11.HEVE = not(!b.p11.JENA);
-  c.p11.HEWA = not(!b.p11.JAXO);
-  c.p11.HOWU = not(!b.p11.JATY);
-  c.p11.HONO = not(!b.p11.JAFY);
-
-  if (b.p11.HOCU) {
-    c.D7 = b.p11.JYSE;
-    c.D6 = b.p11.HEVE;
-    c.D5 = b.p11.HEWA;
-    c.D4 = b.p11.HOWU;
-    c.D3 = b.p11.HONO;
-  }
 
   c.p11.HAXE = not(b.p10.FF12);
   c.p11.HAFU = and(b.p10.APU_WR, b.p10.FF12);
-  c.p11.HAMY = or(b.p11.HAXE, b.p09.CPU_RDn);
   c.p11.KYGY = not(b.p11.HAFU);
 
-  c.p11.JUSA = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.JUSA, b.D0);
-  c.p11.JUZY = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.JUZY, b.D1);
-  c.p11.JOMA = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.JOMA, b.D2);
+  c.p11.HAMY = or(b.p11.HAXE, b.p09.CPU_RDn);
+  c.p11.HOCU = or(b.p11.GAGO, b.p09.CPU_RDn);
 
-  c.p11.JYNE = not(!b.p11.JUSA);
-  c.p11.JACA = not(!b.p11.JUZY);
-  c.p11.JOKU = not(!b.p11.JOMA);
+  c.p11.FF12_D0 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.FF12_D0, b.D0);
+  c.p11.FF12_D1 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.FF12_D1, b.D1);
+  c.p11.FF12_D2 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.FF12_D2, b.D2);
+  c.p11.FF12_D3 = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.FF12_D3, b.D3);
+  c.p11.FF12_D4 = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.FF12_D4, b.D4);
+  c.p11.FF12_D5 = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.FF12_D5, b.D5);
+  c.p11.FF12_D6 = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.FF12_D6, b.D6);
+  c.p11.FF12_D7 = tock_pos(a.p11.GAXU, b.p11.GAXU, b.p11.HATO, b.p11.FF12_D7, b.D7);
+
+  c.p11.JYNE = not(!b.p11.FF12_D0);
+  c.p11.JACA = not(!b.p11.FF12_D1);
+  c.p11.JOKU = not(!b.p11.FF12_D2);
+  c.p11.HONO = not(!b.p11.FF12_D3);
+  c.p11.HOWU = not(!b.p11.FF12_D4);
+  c.p11.HEWA = not(!b.p11.FF12_D5);
+  c.p11.HEVE = not(!b.p11.FF12_D6);
+  c.p11.JYSE = not(!b.p11.FF12_D7);
 
   if (b.p11.HAMY) {
     c.D0 = b.p11.JYNE;
     c.D1 = b.p11.JACA;
     c.D2 = b.p11.JOKU;
+  }
+
+  if (b.p11.HOCU) {
+    c.D3 = b.p11.HONO;
+    c.D4 = b.p11.HOWU;
+    c.D5 = b.p11.HEWA;
+    c.D6 = b.p11.HEVE;
+    c.D7 = b.p11.JYSE;
   }
 
   //----------
@@ -120,10 +119,10 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p11.GEKU = not(b.p11.FULO);
   c.p11.FUME = not(b.p11.EPYK);
 
-  c.p11.GAXE = count_pos(a.p11.GEKU, b.p11.GEKU, b.p11.FUME, b.p11.GAXE, b.p12.HYKA);
-  c.p11.HYFE = count_pos(a.p11.GAXE, b.p11.GAXE, b.p11.FUME, b.p11.HYFE, b.p12.JYKA);
-  c.p11.JYTY = count_pos(a.p11.HYFE, b.p11.HYFE, b.p11.FUME, b.p11.JYTY, b.p12.HAVO);
-  c.p11.KYNA = count_pos(a.p11.JYTY, b.p11.JYTY, b.p11.FUME, b.p11.KYNA, b.p12.EDUL);
+  c.p11.CH1_FREQ_00 = count_pos(a.p11.GEKU, b.p11.GEKU, b.p11.FUME, b.p11.CH1_FREQ_00, b.p12.HYKA);
+  c.p11.CH1_FREQ_01 = count_pos(a.p11.GAXE, b.p11.GAXE, b.p11.FUME, b.p11.CH1_FREQ_01, b.p12.JYKA);
+  c.p11.CH1_FREQ_02 = count_pos(a.p11.HYFE, b.p11.HYFE, b.p11.FUME, b.p11.CH1_FREQ_02, b.p12.HAVO);
+  c.p11.CH1_FREQ_03 = count_pos(a.p11.JYTY, b.p11.JYTY, b.p11.FUME, b.p11.CH1_FREQ_03, b.p12.EDUL);
 
   c.p11.DEGA = not(b.p11.EPYK);
   c.p11.KYPE = not(b.p11.KYNA);
@@ -185,7 +184,7 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // why is ANUJ here?
 
   c.p11.BAGE = nand(b.p16.ANUJ, b.p10.FF14); 
-  c.p11.CAMY = not(b.p09.APU_RESET);
+  c.p11.CAMY = not(b.p09.APU_RESET1);
   c.p11.BUDA = not(b.p07.CPU_RD);
   c.p11.BALE = nand(b.p11.BUDA, b.p10.FF14);
   c.p11.BOKO = tock_pos(a.p11.BAGE, b.p11.BAGE, b.p11.CAMY, c.p11.BOKO, b.D6);

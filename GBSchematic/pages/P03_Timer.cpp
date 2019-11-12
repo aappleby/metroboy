@@ -190,7 +190,7 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // INT_TIMER delay
 
   c.p03.MUGY = not(b.p03.MEXU);
-  c.p03.NYDU = tock_pos(a.p01.BOGA_1M, b.p01.BOGA_1M, b.p03.MUGY, b.p03.NYDU, b.p03.NUGA_7);
+  c.p03.NYDU = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p03.MUGY, b.p03.NYDU, b.p03.NUGA_7);
   c.p03.MERY = nor(!b.p03.NYDU, b.p03.NUGA_7);
-  c.p03.MOBA = tock_pos(a.p01.BOGA_1M, b.p01.BOGA_1M, b.p01.RESET2, b.p03.MOBA, b.p03.MERY);
+  c.p03.MOBA = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.RESET2, b.p03.MOBA, b.p03.MERY);
 }

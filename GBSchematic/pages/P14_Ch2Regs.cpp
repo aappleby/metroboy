@@ -17,12 +17,12 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p14.AGYN = nand(b.p10.APU_WR, b.p10.FF16); // FF16_WR
   c.p14.ASYP = not(b.p14.AGYN);
-  c.p14.BENY = nor(b.p14.ASYP, b.p09.APU_RESET, b.p15.ELOX);
+  c.p14.BENY = nor(b.p14.ASYP, b.p09.APU_RESET1, b.p15.ELOX);
 
   c.p14.BACU = and(b.p10.FF16, b.p10.APU_WR);
   c.p14.BUDU = not(b.p14.BACU);
-  c.p14.BAMY = tock_pos(a.p14.BUDU, b.p14.BUDU, b.p09.APU_RESET2n, b.p14.BAMY, b.D7);
-  c.p14.BERA = tock_pos(a.p14.BUDU, b.p14.BUDU, b.p09.APU_RESET2n, b.p14.BERA, b.D6);
+  c.p14.BAMY = tock_pos(a.p14.BUDU, b.p14.BUDU, b.p09.APU_RESETn2, b.p14.BAMY, b.D7);
+  c.p14.BERA = tock_pos(a.p14.BUDU, b.p14.BUDU, b.p09.APU_RESETn2, b.p14.BERA, b.D6);
 
   c.p14.BYGO = not(b.p09.CPU_RDn);
   c.p14.CORO = nand(b.p10.FF16, b.p14.BYGO);
@@ -38,7 +38,7 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // FF17 NR22
 
   c.p14.ENUF = and(b.p10.FF17, b.p10.APU_WR);
-  c.p14.JYBU = not(b.p09.APU_RESET);
+  c.p14.JYBU = not(b.p09.APU_RESET1);
   c.p14.FYRY = not(b.p10.FF17);
   c.p14.GURU = or(b.p14.FYRY, b.p09.CPU_RDn);
 
@@ -83,7 +83,7 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // FF18 NR23
 
   c.p14.DOSA = and(b.p10.FF18, b.p10.APU_WR);
-  c.p14.HUDE = not(b.p09.APU_RESET);
+  c.p14.HUDE = not(b.p09.APU_RESET1);
   c.p14.ESUR = not(b.p14.DOSA);
   c.p14.EXUC = and(b.p10.FF18, b.p10.APU_WR);
   c.p14.FYXO = not(b.p14.EXUC);
@@ -135,7 +135,7 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF19 NR24
 
-  c.p14.KYPU = not(b.p09.APU_RESET);
+  c.p14.KYPU = not(b.p09.APU_RESET1);
   c.p14.JENU = and(b.p10.FF19, b.p10.APU_WR);
   c.p14.KYSA = not(b.p14.JENU);
   c.p14.JUPY = tock_pos(a.p14.KYSA, b.p14.KYSA, b.p14.KYPU, c.p14.JUPY, b.D2);
@@ -164,7 +164,7 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p14.GADO = not(b.p09.CPU_RDn);
   c.p14.EVYF = nor(b.p16.ANUJ, b.p10.FF19);
-  c.p14.FAZO = not(b.p09.APU_RESET);
+  c.p14.FAZO = not(b.p09.APU_RESET1);
   c.p14.HUMA = nor(b.p10.FF19, b.p14.GADO);
   c.p14.EMER = tock_pos(a.p14.EVYF, b.p14.EVYF, b.p14.FAZO, b.p14.EMER, b.D6);
   c.p14.GOJY = b.p14.EMER;

@@ -29,26 +29,6 @@ private:
   bool HEPO,DOPE;
   bool JAKE;
 
-  bool FF16_D6;
-  bool FF16_D7;
-
-  bool FF16_D6n;
-  bool FF16_D7n;
-
-  bool FF17_D0n;
-  bool FF17_D1n;
-  bool FF17_D2n;
-  bool FF17_D3n;
-
-  bool FF17_D0;
-  bool FF17_D1;
-  bool FF17_D2;
-  bool FF17_D3;
-  bool FF17_D4;
-  bool FF17_D5;
-  bool FF17_D6;
-  bool FF17_D7;
-
   bool HAFE,HYPA;
   bool CYWU,DALA,CELO,DOXA,DORY,CEXE;
   bool HYLE,HYLY,JEME,GALU,GYKO,ETUK,DAVU,FUJY,GYRE,DUJU;

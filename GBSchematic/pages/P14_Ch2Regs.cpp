@@ -47,36 +47,36 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p14.GERE = and(b.p10.APU_WR, b.p10.FF17);
   c.p14.JEDE = not(b.p14.GERE);
 
-  c.p14.GATA = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.GATA, b.D4);
-  c.p14.FORE = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.FORE, b.D3);
-  c.p14.GAGE = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.GAGE, b.D7);
-  c.p14.GURA = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.GURA, b.D6);
-  c.p14.GUFE = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.GUFE, b.D5);
-  c.p14.HAVA = tock_pos(a.p14.JEDE, b.p14.JEDE, b.p14.JYBU, b.p14.HAVA, b.D2);
-  c.p14.HORE = tock_pos(a.p14.JEDE, b.p14.JEDE, b.p14.JYBU, b.p14.HORE, b.D1);
-  c.p14.HYFU = tock_pos(a.p14.JEDE, b.p14.JEDE, b.p14.JYBU, b.p14.HYFU, b.D0);
+  c.p14.FF17_D0 = tock_pos(a.p14.JEDE, b.p14.JEDE, b.p14.JYBU, b.p14.FF17_D0, b.D0);
+  c.p14.FF17_D1 = tock_pos(a.p14.JEDE, b.p14.JEDE, b.p14.JYBU, b.p14.FF17_D1, b.D1);
+  c.p14.FF17_D2 = tock_pos(a.p14.JEDE, b.p14.JEDE, b.p14.JYBU, b.p14.FF17_D2, b.D2);
+  c.p14.FF17_D3 = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.FF17_D3, b.D3);
+  c.p14.FF17_D4 = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.FF17_D4, b.D4);
+  c.p14.FF17_D5 = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.FF17_D5, b.D5);
+  c.p14.FF17_D6 = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.FF17_D6, b.D6);
+  c.p14.FF17_D7 = tock_pos(a.p14.ENUF, b.p14.ENUF, b.p14.JYBU, b.p14.FF17_D7, b.D7);
 
-  c.p14.HUPE = not(!b.p14.GATA);
-  c.p14.GENE = not(!b.p14.FORE);
-  c.p14.HYRY = not(!b.p14.GAGE);
-  c.p14.HORO = not(!b.p14.GURA);
-  c.p14.HERE = not(!b.p14.GUFE);
-  c.p14.HAVU = not(!b.p14.HAVA);
-  c.p14.HYRE = not(!b.p14.HORE);
-  c.p14.HUVU = not(!b.p14.HYFU);
-
-  if (b.p14.GURU) {
-    c.D4 = b.p14.HUPE;
-    c.D3 = b.p14.GENE;
-    c.D7 = b.p14.HYRY;
-    c.D6 = b.p14.HORO;
-    c.D5 = b.p14.HERE;
-  }
+  c.p14.HUVU = not(!b.p14.FF17_D0);
+  c.p14.HYRE = not(!b.p14.FF17_D1);
+  c.p14.HAVU = not(!b.p14.FF17_D2);
+  c.p14.GENE = not(!b.p14.FF17_D3);
+  c.p14.HUPE = not(!b.p14.FF17_D4);
+  c.p14.HERE = not(!b.p14.FF17_D5);
+  c.p14.HORO = not(!b.p14.FF17_D6);
+  c.p14.HYRY = not(!b.p14.FF17_D7);
 
   if (b.p14.GEXA) {
-    c.D2 = b.p14.HAVU;
-    c.D1 = b.p14.HYRE;
     c.D0 = b.p14.HUVU;
+    c.D1 = b.p14.HYRE;
+    c.D2 = b.p14.HAVU;
+  }
+
+  if (b.p14.GURU) {
+    c.D3 = b.p14.GENE;
+    c.D4 = b.p14.HUPE;
+    c.D5 = b.p14.HERE;
+    c.D6 = b.p14.HORO;
+    c.D7 = b.p14.HYRY;
   }
 
   //----------
@@ -91,26 +91,26 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p14.GUZA = nor(b.p14.FERY, b.p14.FAPE);
   c.p14.FUTY = not(b.p14.GUZA);
 
-  c.p14.FOFE = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FOFE, b.D0);
-  c.p14.FOVA = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FOVA, b.D1);
-  c.p14.FEDY = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FEDY, b.D2);
-  c.p14.FOME = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FOME, b.D3);
-  c.p14.FORA = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FORA, b.D4);
-  c.p14.GODA = tock_pos(a.p14.FYXO, b.p14.FYXO, b.p14.HUDE, b.p14.GODA, b.D5);
-  c.p14.GUMY = tock_pos(a.p14.FYXO, b.p14.FYXO, b.p14.HUDE, b.p14.GUMY, b.D6);
-  c.p14.GUPU = tock_pos(a.p14.FYXO, b.p14.FYXO, b.p14.HUDE, b.p14.GUPU, b.D7);
+  c.p14.FF18_D0 = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FF18_D0, b.D0);
+  c.p14.FF18_D1 = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FF18_D1, b.D1);
+  c.p14.FF18_D2 = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FF18_D2, b.D2);
+  c.p14.FF18_D3 = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FF18_D3, b.D3);
+  c.p14.FF18_D4 = tock_pos(a.p14.ESUR, b.p14.ESUR, b.p14.HUDE, b.p14.FF18_D4, b.D4);
+  c.p14.FF18_D5 = tock_pos(a.p14.FYXO, b.p14.FYXO, b.p14.HUDE, b.p14.FF18_D5, b.D5);
+  c.p14.FF18_D6 = tock_pos(a.p14.FYXO, b.p14.FYXO, b.p14.HUDE, b.p14.FF18_D6, b.D6);
+  c.p14.FF18_D7 = tock_pos(a.p14.FYXO, b.p14.FYXO, b.p14.HUDE, b.p14.FF18_D7, b.D7);
 
-  c.p14.DONE = count_pos(a.p15.DOCA, b.p15.DOCA, b.p15.COGU, b.p14.DONE, b.p14.FOFE);
-  c.p14.DYNU = count_pos(a.p14.DONE,    b.p14.DONE,    b.p15.COGU, b.p14.DYNU, b.p14.FOVA);
-  c.p14.EZOF = count_pos(a.p14.DYNU,    b.p14.DYNU,    b.p15.COGU, b.p14.EZOF, b.p14.FEDY);
-  c.p14.CYVO = count_pos(a.p14.EZOF,    b.p14.EZOF,    b.p15.COGU, b.p14.CYVO, b.p14.FOME);
+  c.p14.CH2_FREQ_00 = count_pos(a.p15.DOCA, b.p15.DOCA, b.p15.COGU, b.p14.DONE, b.p14.FF18_D0);
+  c.p14.CH2_FREQ_01 = count_pos(a.p14.DONE, b.p14.DONE, b.p15.COGU, b.p14.DYNU, b.p14.FF18_D1);
+  c.p14.CH2_FREQ_02 = count_pos(a.p14.DYNU, b.p14.DYNU, b.p15.COGU, b.p14.EZOF, b.p14.FF18_D2);
+  c.p14.CH2_FREQ_03 = count_pos(a.p14.EZOF, b.p14.EZOF, b.p15.COGU, b.p14.CYVO, b.p14.FF18_D3);
 
   c.p14.EDEP = not(!b.p14.CYVO);
 
-  c.p14.FUXO = count_pos(a.p14.EDEP, b.p14.EDEP, b.p15.EROG, b.p14.FUXO, b.p14.FORA);
-  c.p14.GANO = count_pos(a.p14.FUXO, b.p14.FUXO, b.p15.EROG, b.p14.GANO, b.p14.GODA);
-  c.p14.GOCA = count_pos(a.p14.GANO, b.p14.GANO, b.p15.EROG, b.p14.GOCA, b.p14.GUMY);
-  c.p14.GANE = count_pos(a.p14.GOCA, b.p14.GOCA, b.p15.EROG, b.p14.GANE, b.p14.GUPU);
+  c.p14.CH2_FREQ_04 = count_pos(a.p14.EDEP, b.p14.EDEP, b.p15.EROG, b.p14.FUXO, b.p14.FF18_D4);
+  c.p14.CH2_FREQ_05 = count_pos(a.p14.FUXO, b.p14.FUXO, b.p15.EROG, b.p14.GANO, b.p14.FF18_D5);
+  c.p14.CH2_FREQ_06 = count_pos(a.p14.GANO, b.p14.GANO, b.p15.EROG, b.p14.GOCA, b.p14.FF18_D6);
+  c.p14.CH2_FREQ_07 = count_pos(a.p14.GOCA, b.p14.GOCA, b.p15.EROG, b.p14.GANE, b.p14.FF18_D7);
 
   c.p14.FAVA = not(!b.p14.DONE);
   c.p14.FAJY = not(!b.p14.DYNU);

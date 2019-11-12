@@ -42,13 +42,6 @@ struct P11_Ch1Regs {
 
 private:
 
-  //----------
-  // regs
-
-
-  //----------
-  // cells
-
   bool CENU,BUZE,ATYN,ASOP;
   bool AMYD,AZYP,AWOS,AFOX,ATAX,AVEK,AKUX;
   bool COVU,DAFO,BUWA,BEXU,BOWO,CUDA;

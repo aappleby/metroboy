@@ -25,50 +25,6 @@ struct P13_Channel1 {
 
 private:
 
-#if 0
-  //----------
-  // inputs
-
-  bool CATE;
-  bool CEPO;
-  bool ATYS;
-  bool COPU_COUT;
-  bool DOPU_OUT;
-
-  bool FF10_D0n;
-  bool FF10_D1n;
-  bool FF10_D2n;
-  bool FF10_D4n;
-  bool FF10_D5n;
-  bool FF10_D6n;
-
-  bool FF11_D6;
-  bool FF11_D6n;
-  bool FF11_D7;
-  bool FF11_D7n;
-
-  bool FF12_D0;
-  bool FF12_D0n;
-  bool FF12_D1;
-  bool FF12_D1n;
-  bool FF12_D2;
-  bool FF12_D2n;
-  bool FF12_D3;
-  bool FF12_D3n;
-  bool FF12_D4;
-  bool FF12_D5;
-  bool FF12_D6;
-  bool FF12_D7;
-
-  bool FF14_D6;
-  bool FF14_D6n;
-
-  bool FF11;
-#endif
-
-  //----------
-  // regs
-
   // Channel 1 length timer
   bool BACY,CAVY,BOVY,CUNO;
   bool CURA,ERAM,CERO; // clock divider or something
@@ -91,9 +47,6 @@ private:
 
   // ???
   bool COMY;
-
-  //----------
-  // cells
 
   bool DAJO,DUVO,EZOZ,ENEK,CODO,COSO,CAVA,CEVU,CAXO;
   bool BORO,BEPE,BOKA,BUGY,CORY,CUSO,CAPY,CYFA,CANU,BONE,FEMY,BERY,GEPU;

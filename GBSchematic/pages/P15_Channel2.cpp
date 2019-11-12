@@ -9,9 +9,9 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p15.KYLO = not(b.p15.JYNA);
   c.p15.KENE = not(b.p15.KYLO);
 
-  c.p15.JORE = count_pos(a.p15.KENE, b.p15.KENE, b.p15.JAKE, b.p15.JORE, b.p15.FF17_D0n);
-  c.p15.JONA = count_pos(a.p15.JORE, b.p15.JORE, b.p15.JAKE, b.p15.JONA, b.p15.FF17_D1n);
-  c.p15.JEVY = count_pos(a.p15.JONA, b.p15.JONA, b.p15.JAKE, b.p15.JEVY, b.p15.FF17_D2n);
+  c.p15.JORE = count_pos(a.p15.KENE, b.p15.KENE, b.p15.JAKE, b.p15.JORE, !b.p14.FF17_D0);
+  c.p15.JONA = count_pos(a.p15.JORE, b.p15.JORE, b.p15.JAKE, b.p15.JONA, !b.p14.FF17_D1);
+  c.p15.JEVY = count_pos(a.p15.JONA, b.p15.JONA, b.p15.JAKE, b.p15.JEVY, !b.p14.FF17_D2);
 
   c.p15.KYVO = and(!b.p15.JORE, b.p15.JONA, b.p15.JEVY);
   c.p15.JOPA = tock_pos(a.p01.HORU_512, b.p01.HORU_512, b.p15.HAFE, b.p15.JOPA, b.p15.KYVO);
@@ -66,7 +66,7 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p15.CYRE = tock_pos(!a.p15.AKYD_05, !b.p15.AKYD_05, b.p14.BENY, b.p15.CYRE, !b.p15.CYRE);
   c.p15.DEME = or(b.p15.CYRE, b.p01.BUFY_256, b.p14.FF19_D6);
   c.p15.DORA = and(b.p15.CYRE, b.p14.FF19_D6);
-  c.p15.FUTE = nor(b.p15.FF17_D3,b.p15.FF17_D4,b.p15.FF17_D5,b.p15.FF17_D6,b.p15.FF17_D7);
+  c.p15.FUTE = nor(b.p14.FF17_D3,b.p14.FF17_D4,b.p14.FF17_D5,b.p14.FF17_D6,b.p14.FF17_D7);
   c.p15.DYRO = not(b.p15.DEME);
   c.p15.ESYK = or(b.p09.APU_RESET1, b.p15.DORA, b.p15.FUTE);
   c.p15.ARES = nand(b.p09.APU_RESET1, b.p15.FUTE);
@@ -90,7 +90,7 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p15.GADE = not(b.p15.JOPA);
   c.p15.HOLY = nor(b.p01.HORU_512, b.p15.GADE);
-  c.p15.JUPU = nor(b.p15.FF17_D0, b.p15.FF17_D1, b.p15.FF17_D2);
+  c.p15.JUPU = nor(b.p14.FF17_D0, b.p14.FF17_D1, b.p14.FF17_D2);
   c.p15.HOFO = or(b.p15.JOPA, b.p15.JUPU, b.p15.JEME);
   c.p15.HAFE = or(b.p15.HOLY, b.p15.ELOX, b.p09.APU_RESET1);
 
@@ -105,10 +105,10 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p15.DARE = not(b.p15.DYMU);
   c.p15.EGOG = and(b.p15.DYMU, b.p15.DUGE);
 
-  c.p15.DOMO = nor(b.p15.FF16_D6,  b.p15.FF16_D7);
-  c.p15.DYTA = nor(b.p15.FF16_D6n, b.p15.FF16_D7);
-  c.p15.DOJU = nor(b.p15.FF16_D6,  b.p15.FF16_D7n);
-  c.p15.DOVE = nor(b.p15.FF16_D6n, b.p15.FF16_D7n);
+  c.p15.DOMO = nor( b.p14.FF16_D6,  b.p14.FF16_D7);
+  c.p15.DYTA = nor(!b.p14.FF16_D6,  b.p14.FF16_D7);
+  c.p15.DOJU = nor( b.p14.FF16_D6, !b.p14.FF16_D7);
+  c.p15.DOVE = nor(!b.p14.FF16_D6, !b.p14.FF16_D7);
 
   c.p15.EXES = amux4(b.p15.EGOG, b.p15.DOMO, b.p15.DYMU, b.p15.DYTA, b.p15.DYVE_02, b.p15.DOJU, b.p15.DARE, b.p15.DOVE);
 
@@ -116,18 +116,18 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p15.CYSE = and(b.p15.DANE, b.p15.DOME);
   c.p15.BONU = or(b.p15.CYSE, b.p09.NET03);
 
-  c.p15.FOPY = amux2(b.p15.FOMY, b.p15.FF17_D3, !b.p15.FOMY, b.p15.FF17_D3n);
-  c.p15.ETUP = amux2(b.p15.FETE, b.p15.FF17_D3, !b.p15.FETE, b.p15.FF17_D3n);
-  c.p15.FARU = amux2(b.p15.FENO, b.p15.FF17_D3, !b.p15.FENO, b.p15.FF17_D3n);
-  c.p15.GAFA = amux2(b.p15.HOFO, b.p15.FF17_D3, b.p15.HOFO,  b.p15.FF17_D3n);
+  c.p15.FOPY = amux2(b.p15.FOMY, b.p14.FF17_D3, !b.p15.FOMY, !b.p14.FF17_D3);
+  c.p15.ETUP = amux2(b.p15.FETE, b.p14.FF17_D3, !b.p15.FETE, !b.p14.FF17_D3);
+  c.p15.FARU = amux2(b.p15.FENO, b.p14.FF17_D3, !b.p15.FENO, !b.p14.FF17_D3);
+  c.p15.GAFA = amux2(b.p15.HOFO, b.p14.FF17_D3, b.p15.HOFO,  !b.p14.FF17_D3);
 
-  c.p15.FENA = count_pos(a.p15.FOPY, b.p15.FOPY, b.p15.ELOX, b.p15.FENA, b.p15.FF17_D7);
-  c.p15.FOMY = count_pos(a.p15.ETUP, b.p15.ETUP, b.p15.ELOX, b.p15.FOMY, b.p15.FF17_D6);
-  c.p15.FETE = count_pos(a.p15.FARU, b.p15.FARU, b.p15.ELOX, b.p15.FETE, b.p15.FF17_D5);
-  c.p15.FENO = count_pos(a.p15.GAFA, b.p15.GAFA, b.p15.ELOX, b.p15.FENO, b.p15.FF17_D4);
+  c.p15.FENA = count_pos(a.p15.FOPY, b.p15.FOPY, b.p15.ELOX, b.p15.FENA, b.p14.FF17_D7);
+  c.p15.FOMY = count_pos(a.p15.ETUP, b.p15.ETUP, b.p15.ELOX, b.p15.FOMY, b.p14.FF17_D6);
+  c.p15.FETE = count_pos(a.p15.FARU, b.p15.FARU, b.p15.ELOX, b.p15.FETE, b.p14.FF17_D5);
+  c.p15.FENO = count_pos(a.p15.GAFA, b.p15.GAFA, b.p15.ELOX, b.p15.FENO, b.p14.FF17_D4);
 
-  c.p15.EMYR = nor (b.p15.FF17_D3, b.p15.FENO, b.p15.FETE, b.p15.FOMY, b.p15.FENA);
-  c.p15.ERAT = nand(b.p15.FF17_D3, b.p15.FENO, b.p15.FETE, b.p15.FOMY, b.p15.FENA);
+  c.p15.EMYR = nor (b.p14.FF17_D3, b.p15.FENO, b.p15.FETE, b.p15.FOMY, b.p15.FENA);
+  c.p15.ERAT = nand(b.p14.FF17_D3, b.p15.FENO, b.p15.FETE, b.p15.FOMY, b.p15.FENA);
   c.p15.FYRE = not(b.p15.ERAT);
   c.p15.GUFY = or(b.p15.EMYR, b.p15.FYRE);
 

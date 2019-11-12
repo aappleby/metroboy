@@ -63,7 +63,7 @@ struct CpuSignals {
   //----------
   // top center, 5 signals, numbered left to right
 
-  bool TO_ABOL;        // PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  bool CPUCLK_REQ;     // PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
   bool AFER;           // PORTC_01: <- P01.AFER , reset related reg
   bool PIN_RESET;      // PORTC_02: <- PIN_RESET directly connected to the pad
   bool CLKIN_A;        // PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,

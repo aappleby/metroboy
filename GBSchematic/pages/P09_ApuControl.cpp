@@ -42,9 +42,7 @@ void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // main logic chunk
 
   c.p09.NR52_WR1  = and(b.p10.FF26, b.p10.APU_WR);
-
   c.p09.NR52_RDn1 = nand(b.p10.FF26, b.p09.CPU_RD1);
-
   c.p09.NR52_WRn1 = nand(b.p10.FF26, b.p10.APU_WR);
   c.p09.NR52_WRn2 = nand(b.p10.FF26, b.p10.APU_WR);
   c.p09.NR52_WRn3 = not(b.p09.NR52_WR1);
@@ -95,24 +93,24 @@ void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.NR50_6 = tock_pos(a.p09.NR50_WRn2, b.p09.NR50_WRn2, b.p09.APU_RESET2, c.p09.NR50_6, b.D6);
   c.p09.NR50_7 = tock_pos(a.p09.NR50_WRn2, b.p09.NR50_WRn2, b.p09.APU_RESET2, c.p09.NR50_7, b.D7);
 
-  c.p09.NR50_0b = not(!b.p09.NR50_0);
-  c.p09.NR50_1b = not(!b.p09.NR50_1);
-  c.p09.NR50_2b = not(!b.p09.NR50_2);
-  c.p09.NR50_3b = not(!b.p09.NR50_3);
-  c.p09.NR50_4b = not(!b.p09.NR50_4);
-  c.p09.NR50_5b = not(!b.p09.NR50_5);
-  c.p09.NR50_6b = not(!b.p09.NR50_6);
-  c.p09.NR50_7b = not(!b.p09.NR50_7);
+  c.p09.NR50_D0 = not(!b.p09.NR50_0);
+  c.p09.NR50_D1 = not(!b.p09.NR50_1);
+  c.p09.NR50_D2 = not(!b.p09.NR50_2);
+  c.p09.NR50_D3 = not(!b.p09.NR50_3);
+  c.p09.NR50_D4 = not(!b.p09.NR50_4);
+  c.p09.NR50_D5 = not(!b.p09.NR50_5);
+  c.p09.NR50_D6 = not(!b.p09.NR50_6);
+  c.p09.NR50_D7 = not(!b.p09.NR50_7);
 
   if (b.p09.NR50_RD1) {
-    c.D0 = b.p09.NR50_0b;
-    c.D1 = b.p09.NR50_1b;
-    c.D2 = b.p09.NR50_2b;
-    c.D3 = b.p09.NR50_3b;
-    c.D4 = b.p09.NR50_4b;
-    c.D5 = b.p09.NR50_5b;
-    c.D6 = b.p09.NR50_6b;
-    c.D7 = b.p09.NR50_7b;
+    c.D0 = b.p09.NR50_D0;
+    c.D1 = b.p09.NR50_D1;
+    c.D2 = b.p09.NR50_D2;
+    c.D3 = b.p09.NR50_D3;
+    c.D4 = b.p09.NR50_D4;
+    c.D5 = b.p09.NR50_D5;
+    c.D6 = b.p09.NR50_D6;
+    c.D7 = b.p09.NR50_D7;
   }
 
   //----------
@@ -121,6 +119,9 @@ void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.BUPO = nand(b.p10.FF25, b.p10.APU_WR);
   c.p09.BONO = not(b.p09.BUPO);
   c.p09.BYFA = not(b.p09.BUPO);
+  c.p09.GEPA = not(b.p10.FF25);
+  c.p09.HEFA = nor(b.p09.GEPA, b.p09.CPU_RDn);
+  c.p09.GUMU = not(b.p09.HEFA);
 
   c.p09.NR51_0 = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.APU_RESET2, c.p09.NR51_0, b.D0);
   c.p09.NR51_1 = tock_pos(a.p09.BONO, b.p09.BONO, b.p09.APU_RESET2, c.p09.NR51_1, b.D1);
@@ -131,28 +132,24 @@ void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.NR51_6 = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.APU_RESET2, c.p09.NR51_6, b.D6);
   c.p09.NR51_7 = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.APU_RESET2, c.p09.NR51_7, b.D7);
 
-  c.p09.GEPA = not(b.p10.FF25);
-  c.p09.HEFA = nor(b.p09.GEPA, b.p09.CPU_RDn);
-  c.p09.GUMU = not(b.p09.HEFA);
-
-  c.p09.CAPU = not(!b.p09.BOGU);
-  c.p09.CAGA = not(!b.p09.BAFO);
-  c.p09.BOCA = not(!b.p09.ATUF);
-  c.p09.BUZU = not(!b.p09.ANEV);
-  c.p09.CERE = not(!b.p09.BEPU);
-  c.p09.CADA = not(!b.p09.BEFO);
-  c.p09.CAVU = not(!b.p09.BUME);
-  c.p09.CUDU = not(!b.p09.BOFA);
+  c.p09.NR51_D0 = not(!b.p09.BOGU);
+  c.p09.NR51_D1 = not(!b.p09.BAFO);
+  c.p09.NR51_D2 = not(!b.p09.ATUF);
+  c.p09.NR51_D3 = not(!b.p09.ANEV);
+  c.p09.NR51_D4 = not(!b.p09.BEPU);
+  c.p09.NR51_D5 = not(!b.p09.BEFO);
+  c.p09.NR51_D6 = not(!b.p09.BUME);
+  c.p09.NR51_D7 = not(!b.p09.BOFA);
 
   if (b.p09.GUMU) {
-    c.D1 = b.p09.CAPU;
-    c.D2 = b.p09.CAGA;
-    c.D3 = b.p09.BOCA;
-    c.D0 = b.p09.BUZU;
-    c.D7 = b.p09.CERE;
-    c.D6 = b.p09.CADA;
-    c.D4 = b.p09.CAVU;
-    c.D5 = b.p09.CUDU;
+    c.D1 = b.p09.NR51_D0;
+    c.D2 = b.p09.NR51_D1;
+    c.D3 = b.p09.NR51_D2;
+    c.D0 = b.p09.NR51_D3;
+    c.D7 = b.p09.NR51_D4;
+    c.D6 = b.p09.NR51_D5;
+    c.D4 = b.p09.NR51_D6;
+    c.D5 = b.p09.NR51_D7;
   }
 
   //----------

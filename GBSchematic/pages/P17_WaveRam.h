@@ -10,7 +10,6 @@ public:
   union { bool BYZA; bool WAVE_RAM_WR; };
   union { bool CAZU; bool WAVE_RAM_RDn; };
   union { bool AMYT; bool WAVE_RAM_WRn; };
-  union { bool CYBO; bool CYBO_4M; };
 
   union { bool BUTU; bool BUTU_512K; };       // this net name is wrong, this is not a divided clock
   union { bool ALER; bool WAVE_RAM_CTRL1; };

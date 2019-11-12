@@ -58,14 +58,14 @@ private:
 
   union {
     struct {
-      bool NR50_0b : 1;
-      bool NR50_1b : 1;
-      bool NR50_2b : 1;
-      bool NR50_3b : 1;
-      bool NR50_4b : 1;
-      bool NR50_5b : 1;
-      bool NR50_6b : 1;
-      bool NR50_7b : 1;
+      bool NR50_D0 : 1;
+      bool NR50_D1 : 1;
+      bool NR50_D2 : 1;
+      bool NR50_D3 : 1;
+      bool NR50_D4 : 1;
+      bool NR50_D5 : 1;
+      bool NR50_D6 : 1;
+      bool NR50_D7 : 1;
     };
     struct {
       bool AKOD : 1;
@@ -101,6 +101,29 @@ private:
       bool BOFA : 1;
       bool BEFO : 1;
       bool BEPU : 1;
+    };
+  };
+
+  union { 
+    struct {
+      bool NR51_D0 : 1;
+      bool NR51_D1 : 1;
+      bool NR51_D2 : 1;
+      bool NR51_D3 : 1;
+      bool NR51_D4 : 1;
+      bool NR51_D5 : 1;
+      bool NR51_D6 : 1;
+      bool NR51_D7 : 1;
+    };
+    struct {
+      bool CAPU : 1;
+      bool CAGA : 1;
+      bool BOCA : 1;
+      bool BUZU : 1;
+      bool CERE : 1;
+      bool CADA : 1;
+      bool CAVU : 1;
+      bool CUDU : 1;
     };
   };
 
@@ -140,7 +163,6 @@ private:
 
   bool EFOP,BAZA,CELY,CONE;
   bool BUPO,BONO,BYFA,GEPA,HEFA,GUMU;
-  bool CAPU,CAGA,BOCA,BUZU,CERE,CADA,CAVU,CUDU;
 
   bool CETO,KAZO,CURU,GAXO;
   bool DOLE,KAMU,DURU,FEWA;

@@ -18,7 +18,6 @@ void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
 
   c.p17.BAMA = not(b.p09.APU_RESET1);
   c.p17.ARUC = not(b.p01.CLK_xBxDxFxH1);
-  c.p17.CYBO = not(b.p01.CLK_xBxDxFxH1);
   c.p17.COZY = not(b.p01.CLK_xBxDxFxH1);
 
   c.p17.ABUR = not(b.p01.BUKE);

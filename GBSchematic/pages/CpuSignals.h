@@ -20,7 +20,7 @@ struct CpuSignals {
   bool FROM_CPU3;      // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
   bool T1nT2;          // PORTA_02: <- P07.T1nT2
   bool SYRO;           // PORTA_03: <- P25.SYRO
-  bool TUTU;           // PORTA_04: <- P07.TUTU
+  bool READ_BOOTROM;   // PORTA_04: <- P07.READ_BOOTROM
   bool T1T2n;          // PORTA_05: <- P07.T1T2n
   bool FROM_CPU4;      // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
 

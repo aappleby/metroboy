@@ -23,7 +23,7 @@ public:
   union { bool ZYKY; bool BOOTROM_A5nA4n; };
   union { bool ZYGA; bool BOOTROM_A5nA4;  };
   union { bool ZOVY; bool BOOTROM_A5A4n;  };
-  union { bool ZUKO; bool BOOTROM_A5AA4;  };
+  union { bool ZUKO; bool BOOTROM_A5A4;   };
   union { bool ZAGE; bool BOOTROM_A6n;    };
   union { bool ZYRA; bool BOOTROM_A7n;    };
 
@@ -34,11 +34,14 @@ public:
   union { bool CUPA; bool CPU_WR2; };
 
   union { bool SYKE; bool FFXX;      };
-  union { bool TUTU; };
+  union { bool TUTU; bool READ_BOOTROM; };
   union { bool ZERY; bool BOOT_CS;   };
   union { bool WUTA; bool HRAM_CS;   };
-  union { bool TUNA; bool FEXXFFXXn; };
-  union { bool BAKO; bool FFXXn;     };
+  union { bool TUNA; bool ADDR_0000_FE00; };
+
+  union { bool BAKO; bool FFXXn1; };
+  union { bool SOHA; bool FFXXn2; };
+
   union { bool SARO; };
 
   union { bool ROLO; bool FF0F_RD; };
@@ -48,33 +51,47 @@ public:
   // registers
 
   // FF60 - secret debug register
-  union { bool BURO_00; bool FF60_D0; };
-  union { bool AMUT_01; bool FF60_D1; };
+  union { bool BURO; bool FF60_D0; };
+  union { bool AMUT; bool FF60_D1; };
 
 private:
 
-  // FF50 - the "enable bootrom" register
-  bool TEPU;
+  union { bool TEPU; bool DISABLE_BOOTROM1; };
+  union { bool SYPU; bool DISABLE_BOOTROM2; };
+  union { bool TERA; bool ENABLE_BOOTROM1; };
 
-  //----------
-  // cells
 
-  bool APET,APER;
-  bool UBET,UVAR;
+  union { bool APET; bool MODE_DEBUG; };
+  union { bool APER; bool FF60_WRn; };
+  
+  union { bool UBET; bool T1n; };
+  union { bool UVAR; bool T2n; };
 
-  bool TYRO,TUFA,TUGE,SATO,TEXE,SYPU,TERA,TULO;
+  union { bool TULO; bool ADDR_00XX; };
+
+  bool TYRO,TUFA,TUGE,SATO,TEXE;
   bool ZORO,ZADU,YAZA,YULA,ZUFA,ZADO;
 
-  bool SEMY,SAPA;
+  union { bool SEMY; bool ADDR_XX0X; };
+  union { bool SAPA; bool ADDR_XXXF; };
 
   bool WALE,WOLY;
 
-  bool TONA,RYCU,SOHA,ROPE;
+  union { bool RYCU; bool FEXXFFXX; };
+
+  bool TONA,ROPE;
+
+  union { bool AJAS; bool CPU_RDn; };
 
   bool LECO;
   bool ROMY_00,RYNE_01,REJY_02,RASE_03,REKA_04,ROWE_05,RYKE_06,RARU_07;
 
-  bool UBAL,DYKY,UJYV,AJAS,LEXY;
+  union { bool UBAL; bool CPU_WR_MUX; };
+  union { bool UJYV; bool CPU_RD_MUX; };
+
+  union { bool DYKY; bool CPU_WRn; };
+
+  bool LEXY;
 
   bool ZERA,ZUFY;
   bool ZUVY,ZYBA,ZOLE,ZAJE,ZUBU,ZAPY;

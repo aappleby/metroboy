@@ -9,36 +9,42 @@
 
 void P10_ApuDecode::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
 
+  // 0x00
+  // 0x20
+  // 0x40
+  // 0x60
+
   c.p10.AMUS = nor(b.A00, b.A01, b.A02, b.A03, b.A04, b.A07);
-  c.p10.ANAP = and(b.p10.AMUS, b.p07.FFXX);
+  c.p10.FF_00_20_40_60 = and(b.p10.AMUS, b.p07.FFXX);
+
   c.p10.BYKO = not(b.A05);
   c.p10.AKUG = not(b.A06);
-  c.p10.FF00WR = nand(b.p10.BYKO, b.p10.AKUG, b.p07.CPU_WR, b.p10.ANAP);
-  c.p10.FF00RD = and(b.p10.ANAP, b.p07.CPU_RD, b.p10.AKUG, b.p10.BYKO);
+  c.p10.FF00WR = nand(b.p10.BYKO, b.p10.AKUG, b.p07.CPU_WR, b.p10.FF_00_20_40_60);
+  c.p10.FF00RD = and(b.p10.FF_00_20_40_60, b.p07.CPU_RD, b.p10.AKUG, b.p10.BYKO);
 
   c.p10.BOXY = not(b.A05);
   c.p10.AWET = or(b.A04, b.p10.BOXY, b.A06, b.A07);
-  c.p10.FF2Xn = or(b.p10.AWET, b.p07.FFXXn);
+  c.p10.FF2Xn = or(b.p10.AWET, b.p07.FFXXn1);
 
   c.p10.AVUN = not(b.A07);
   c.p10.ASAD = not(b.A06);
   c.p10.ACOM = nand(b.p10.AVUN, b.p10.ASAD, b.A05, b.A04);
-  c.p10.FF3X = nor(b.p10.ACOM, b.p07.FFXXn);
+  c.p10.FF3X = nor(b.p10.ACOM, b.p07.FFXXn1);
 
   c.p10.ATUP = not(b.A04);
   c.p10.ATEG = or(b.p10.ATUP, b.A05, b.A06, b.A07);
-  c.p10.BUNO = nor(b.p07.FFXXn, b.p10.ATEG);
+  c.p10.BUNO = nor(b.p07.FFXXn1, b.p10.ATEG);
   c.p10.FF1Xn = not(b.p10.BUNO);
 
   c.p10.FF2X = not(b.p10.FF2Xn);
   c.p10.FF26 = and(b.p10.FF2X, b.p10.XXX6);
 
-  c.p10.BAFU = not(b.p07.CPU_WR);
+  c.p10.BAFU   = not(b.p07.CPU_WR);
   c.p10.APU_WR = not(b.p10.BAFU);
 
-  c.p10.AMP_ENn = and(b.p13.CH1_AMP_ENn, b.p15.CH2_AMP_ENn, b.p16.FF1A_D7n, b.p20.CH4_AMP_ENn);
+  c.p10.AMP_ENn = and(b.p13.CH1_AMP_ENn, b.p15.CH2_AMP_ENn, b.p16.CH3_AMP_ENn, b.p20.CH4_AMP_ENn);
 
-  // Biiiig FF13der
+  // Biiiig decoder
 
   c.p10.A00_n1 = not(b.A00);
   c.p10.A00_1  = not(b.p10.A00_n1);

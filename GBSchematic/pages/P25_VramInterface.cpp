@@ -76,8 +76,8 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p25.SYRO = not(b.p07.FEXXFFXXn);
-  c.p25.TEFA = nor(b.p25.SYRO, b.p08.TEXO);
+  c.p25.ADDR_FE00_FFFF = not(b.p07.ADDR_0000_FE00);
+  c.p25.TEFA = nor(b.p25.ADDR_FE00_FFFF, b.p08.TEXO);
   c.p25.SOSE = and(b.A15, b.p25.TEFA); // odd...
   c.p25.TUCA = and(b.p25.SOSE, b.p01.CPU_RD_SYNC);
   c.p25.TUJA = and(b.p25.SOSE, b.p01.CPU_WR_SYNC);

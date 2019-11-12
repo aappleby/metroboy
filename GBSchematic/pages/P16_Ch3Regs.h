@@ -1,7 +1,7 @@
 #pragma once
 
 struct P16_Ch3Regs {
-  union { bool GUXE; bool FF1A_D7n; };
+  union { bool GUXE; bool FF1A_D7n; bool CH3_AMP_ENn; };
   union { bool ANUJ; };
 
 private:

@@ -96,6 +96,8 @@ struct P01_ClocksReset {
   union { bool WALU; bool RESET8; };
   union { bool WESY; bool RESET9; };
   union { bool XAPO; bool RESET_VIDEO; };
+  union { bool DULA; bool RESETn; };
+
 
   // Div register refs, these should be named like the clocks
   union { bool UMEK; bool FF04_D0n; }; // -> p24.umob
@@ -143,7 +145,6 @@ private:
   bool BANE,BELO,BAZE,BELE,ATEZ,BALY,AVOR;
   bool BUTY,BYXO;
   bool TAPE,UFOL;
-  bool DULA;
   bool XODO;
   bool BELA;
   bool UPYF,TUBO,UNUT,TABA;

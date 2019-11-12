@@ -15,12 +15,10 @@ void P08_ExtCpuBuses::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
   //----------
   // center right, generating the external read/write signals to the cart
 
-  c.p08.SORE = not(b.A15);
+  c.p08.ADDR_0000_7FFF = not(b.A15);
+  c.p08.ADDR_NOT_VRAM = or(b.A13, b.A14, b.p08.ADDR_0000_7FFF);
 
-  // TEVY = not_vram
-  c.p08.TEVY = or(b.A13, b.A14, b.p08.SORE); // BUG - pretty sure this is an OR and not an AND, the dots are on the opposite side compared to TOZA
-
-  c.p08.TEXO = and(b.cpu.FROM_CPU4, b.p08.TEVY);
+  c.p08.TEXO = and(b.cpu.FROM_CPU4, b.p08.ADDR_NOT_VRAM);
   c.p08.LEVO = not(b.p08.TEXO);
   c.p08.LAGU = unk3(b.cpu.CPU_RAW_RD, b.p08.LEVO, b.cpu.FROM_CPU3);
   c.p08.LYWE = not(b.p08.LAGU);
@@ -56,12 +54,11 @@ void P08_ExtCpuBuses::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
   // this is a guess, it selects addr < 0xC00 || cart_ram, which seems reasonable
   c.p08.TYNU = nor(nand(b.A15, b.A14), b.p08.TUMA);
   
-  c.p08.TOZA = and(b.p08.TYNU, b.p01.CPU_RD_SYNC, b.p07.FEXXFFXXn);
+  c.p08.TOZA = and(b.p08.TYNU, b.p01.CPU_RD_SYNC, b.p07.ADDR_0000_FE00);
 
-  // TUTU is the "use bootrom" signal, so this is saying "if our address is
-  // not in the high half and we're not running the bootrom, read from the
-  // cart
-  c.p08.SOBY_15 = nor(b.A15, b.p07.TUTU);
+  // this is saying "if our address is not in the high half
+  // and we're not running the bootrom, read from the cart
+  c.p08.SOBY_15 = nor(b.A15, b.p07.READ_BOOTROM);
   c.p08.TYHO = mux2(b.p04.DMA_A15, b.p08.TOZA, b.p04.LUMA); // polarity?
 
   //----------

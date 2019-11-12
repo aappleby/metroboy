@@ -39,7 +39,7 @@ struct P10_ApuDecode {
 
   union { bool EKAG; bool XXX6; };
 
-  union { bool ANAP; }; // -> p07.APER
+  union { bool ANAP; bool FF_00_20_40_60; }; // -> p07.APER
 
   union { bool DYTE; bool A00_n1; };
   union { bool DOSO; bool A00_1;  };

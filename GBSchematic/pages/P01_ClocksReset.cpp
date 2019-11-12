@@ -54,6 +54,25 @@ const std::vector<SignalData> P01_ClocksReset::signals() {
 void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
+  // RESET2 register
+
+  c.p01.UPYF = or(b.chip.RST, b.p01.CLKIN_An);
+  c.p01.TUBO = unk2(b.p01.ABOL, b.p01.UPYF);
+  c.p01.UNUT = and(b.p01.TUBO, b.p01.UPOF_15);
+  c.p01.TABA = or(b.p07.T1nT2, b.p07.T1T2n, b.p01.UNUT);
+  c.p01.ALYP = not(b.p01.TABA);
+  c.p01.AFAR = nor(b.p01.ALYP, b.chip.RST);
+  c.p01.ASOL = unk2(b.p01.AFAR, b.chip.RST);
+
+  c.p01.BOMA = not(b.p01.BOGA);
+  c.p01.AFER = tock_pos(a.p01.BOMA, b.p01.BOMA, b.p07.T1nT2n, b.p01.AFER, b.p01.ASOL);
+  c.p01.AVOR = or(b.p01.AFER, b.p01.ASOL);
+  
+  c.p01.RESET2 = not(b.p01.AVOR);
+
+  c.cpu.TABA = b.p01.TABA;
+
+  //----------
   // Reset tree
 
   c.p01.DULA = not(b.p01.RESET2);
@@ -172,24 +191,6 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p01.DOVA = not(b.p01.BEVA);
   c.p01.UVYT = not(b.p01.PHI_OUT);
-
-  //----------
-  // RESET2 register
-
-  c.p01.UPYF = or(b.chip.RST, b.p01.CLKIN_An);
-  c.p01.TUBO = unk2(b.p01.ABOL, b.p01.UPYF);
-  c.p01.UNUT = and(b.p01.TUBO, b.p01.UPOF_15);
-  c.p01.TABA = or(b.p07.T1nT2, b.p07.T1T2n, b.p01.UNUT);
-  c.p01.ALYP = not(b.p01.TABA);
-  c.p01.AFAR = nor(b.p01.ALYP, b.chip.RST);
-  c.p01.ASOL = unk2(b.p01.AFAR, b.chip.RST);
-
-  c.p01.BOMA = not(b.p01.BOGA);
-  c.p01.AFER = tock_pos(a.p01.BOMA, b.p01.BOMA, b.p07.T1nT2n, b.p01.AFER, b.p01.ASOL);
-  c.p01.AVOR = or(b.p01.AFER, b.p01.ASOL);
-  c.p01.ALUR = not(b.p01.AVOR);
-
-  c.cpu.TABA = b.p01.TABA;
 
   //----------
   // FF04 DIV

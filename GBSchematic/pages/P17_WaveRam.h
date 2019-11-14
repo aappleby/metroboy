@@ -18,7 +18,7 @@ public:
   union { bool CUZO; bool WAVE_PLAY_D2; };
   union { bool COPO; bool WAVE_PLAY_D3; };
 
-private:
+//private:
 
   bool BOKE,BENA;
   bool BAMA,ARUC,COZY;

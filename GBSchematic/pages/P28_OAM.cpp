@@ -15,12 +15,12 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p28.AWOH = not(b.p29.XUPY);
   c.p28.ABAF = not(b.p29.CATU);
-  c.p28.ANEL = tock_pos(a.p28.AWOH, b.p28.AWOH, b.p29.ABEZ, b.p28.ANEL, b.p29.CATU);
-  c.p28.BYHA = or(b.p28.ANEL, b.p28.ABAF, b.p29.ABEZ);
+  c.p28.ANEL = tock_pos(a.p28.AWOH, b.p28.AWOH, b.p01.VID_RESETn3, b.p28.ANEL, b.p29.CATU);
+  c.p28.BYHA = or(b.p28.ANEL, b.p28.ABAF, b.p01.VID_RESETn3);
   c.p28.ATEJ = not(b.p28.BYHA);
-  c.p28.ANOM = nor(b.p01.RESET_VIDEO2n, b.p28.ATEJ);
+  c.p28.ANOM = nor(b.p01.VID_RESET6, b.p28.ATEJ);
   c.p28.AZYB = not(b.p28.ATEJ);
-  c.p28.ABAK = or(b.p28.ATEJ, b.p01.AMYG);
+  c.p28.ABAK = or(b.p28.ATEJ, b.p01.VID_RESET7);
   c.p28.BYVA = not(b.p28.ABAK);
 
   //----------
@@ -38,7 +38,7 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p28.ASEN = or(b.p01.RESET_VIDEO2n, b.p29.AVAP);
+  c.p28.ASEN = or(b.p01.VID_RESET6, b.p29.AVAP);
   c.p28.BOGE = not(b.p04.MATU);
   c.p28.BESU = unk2(b.p29.CATU, b.p28.ASEN);
   c.p28.AJON = and(b.p21.XYMU, b.p28.BOGE);

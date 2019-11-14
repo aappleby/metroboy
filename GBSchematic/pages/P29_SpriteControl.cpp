@@ -111,27 +111,24 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // bottom
     
-  c.p29.XYVA = not(b.p01.CLK_xBxDxFxH2);
-  c.p29.XOTA = not(b.p29.XYVA);
-
-  c.p29.XYFY = not(b.p29.XOTA);
   c.p29.WUVU = tock_pos(a.p29.XOTA, b.p29.XOTA, b.p01.VID_RESETn1, b.p29.WUVU, !b.p29.WUVU);
   c.p29.ALES = not(b.p21.XYVO);
   c.p29.ABOV = and(b.p21.SELA, b.p29.ALES);
+
+  c.p29.XYFY = not(b.p29.XOTA);
   c.p29.WOSU = tock_pos(a.p29.XYFY, b.p29.XYFY, b.p01.VID_RESETn1, b.p29.WOSU, !b.p29.WUVU);
   c.p29.XUPY = not(!b.p29.WUVU);
-  c.p29.ABEZ = not(b.p01.RESET_VIDEO2n);
   c.p29.WOJO = nor(!b.p29.WUVU, !b.p29.WOSU);
   c.p29.XYSO = not(b.p29.WOJO);
 
   c.p29.XOCE = not(b.p29.WOSU);
-  c.p29.CENO = tock_pos(a.p29.XUPY, b.p29.XUPY, b.p29.ABEZ, b.p29.CENO, b.p28.BESU);
+  c.p29.CENO = tock_pos(a.p29.XUPY, b.p29.XUPY, b.p01.VID_RESETn3, b.p29.CENO, b.p28.BESU);
   c.p29.CEHA = not(!b.p29.CENO);
   c.p29.BUZA = and(!b.p29.CENO, b.p21.XYMU);
   c.p29.CARE = or(b.p29.XOCE, b.p29.CEHA, b.p29.SPR_MATCH);
   c.p29.DYTY = not(b.p29.CARE);
 
-  c.p29.CATU = tock_pos(a.p29.XUPY, b.p29.XUPY, b.p29.ABEZ, b.p29.CATU, b.p29.ABOV);
+  c.p29.CATU = tock_pos(a.p29.XUPY, b.p29.XUPY, b.p01.VID_RESETn3, b.p29.CATU, b.p29.ABOV);
 
   c.p29.BALU = not(b.p28.ANOM);
   c.p29.BAGY = not(b.p29.BALU);

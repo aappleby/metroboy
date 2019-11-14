@@ -162,45 +162,52 @@ struct P01_ClocksReset {
   union { /*bool APOV;*/ bool CPU_WR_SYNC; }; // ___d____ -> CPU_WR_SYNC
 
   //----------
-  // Resets
+  // CPU reset tree
+
+  bool UPYF;
+  bool TUBO;
+  bool UNUT;
+  union { bool TABA; bool CPU_RESET; };
+  union { bool ALYP; bool CPU_RESETn; };
+
+  //----------
+  // SYS reset tree
+
+  bool AFAR; // x
+  bool ASOL; // x
+  union { /*bool AFER;*/ bool RESET_REG; };
+  bool AVOR;
 
   union { /*bool ALUR;*/ bool SYS_RESETn1; };
-
   union { /*bool DULA;*/ bool SYS_RESET1; };
   union { /*bool HAPO;*/ bool SYS_RESET2; };
-
   union { /*bool CUNU;*/ bool SYS_RESETn2; };
   union { /*bool GUFO;*/ bool SYS_RESETn3; };
-
   union { /*bool XORE;*/ bool SYS_RESET3; };
-
   union { /*bool XEBE;*/ bool SYS_RESETn4; };
   union { /*bool WALU;*/ bool SYS_RESETn5; };
   union { /*bool WESY;*/ bool SYS_RESETn6; };
   union { /*bool XARE;*/ bool SYS_RESETn7; };
 
+  //----------
+  // VID reset tree
+
   union { /*bool XODO;*/ bool VID_RESET1; };
   union { /*bool XAPO;*/ bool VID_RESETn1; };
 
-  bool LYHA;
-  union { bool TOFU; };
-  union { bool PYRY; };
-  bool ROSY;
-  union { bool ATAR; bool RESET_VIDEO2n; };
-  bool AMYG;
-  bool LYFE;
+  union { /*bool LYHA;*/ bool VID_RESET2; };
+  union { /*bool TOFU;*/ bool VID_RESET3; };
+  union { /*bool PYRY;*/ bool VID_RESET4; };
+  union { /*bool ROSY;*/ bool VID_RESET5; };
+  union { /*bool ATAR;*/ bool VID_RESET6; };
+  union { /*bool AMYG;*/ bool VID_RESET7; };
+
+  union { /*bool LYFE;*/ bool VID_RESETn2; };
+  union { /*bool ABEZ;*/ bool VID_RESETn3; };
 
   //----------
 
   union { bool AFAS; bool CLK_xxxDxxxx1; }; // ___d____
-
-  union { bool TABA; bool CPU_RESET; };
-  union { bool ALYP; bool CPU_RESETn; };
-
-  bool AFAR; // x
-  bool ASOL; // x
-
-  union { bool AFER; bool RESET_REG; };
 
   union { bool BOPO; bool APU_RESETn1; };
   union { bool ATUS; bool APU_RESETn2; };
@@ -214,9 +221,7 @@ struct P01_ClocksReset {
   union { /*bool BASU;*/ bool CPUCLK_xxxxxFxxn; };
 
   bool BALY;
-  bool AVOR;
   bool BYXO;
-  bool UPYF,TUBO,UNUT;
 
   
 };

@@ -11,7 +11,7 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // x counter. this is a little weird, presumably because it can tick at 4 mhz but not always?
 
-  c.p21.TADY = nor(b.p28.ATEJ, b.p01.TOFU);
+  c.p21.TADY = nor(b.p28.ATEJ, b.p01.VID_RESET3);
 
   c.p21.XUKE = and(b.p21.XEHO, b.p21.SAVY);
   c.p21.XYLE = and(b.p21.XODU, b.p21.XUKE);
@@ -69,7 +69,7 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p21.VENA = tock_pos(!a.p29.WUVU, !b.p29.WUVU, b.p01.VID_RESETn1, b.p21.VENA, !b.p21.VENA);
 
-  c.p21.MUDE = nor(b.p21.RUTU, b.p01.LYHA); // schematic says RUTU_OUT, but I think this is just RUTU?
+  c.p21.MUDE = nor(b.p21.RUTU, b.p01.VID_RESET2); // schematic says RUTU_OUT, but I think this is just RUTU?
   c.p21.TALU = not(!b.p21.VENA);
 
   c.p21.SAXO = tock_pos( a.p21.TALU,  b.p21.TALU, b.p21.MUDE, c.p21.SAXO, !c.p21.SAXO);
@@ -96,8 +96,8 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p21.SANU = nand(b.p21.TYRY, b.p21.TAHA, b.p21.SUDE, b.p21.SAXO);
   c.p21.SONO = not(b.p21.TALU);
-  c.p21.RUTU = tock_pos(a.p21.SONO, b.p21.SONO, b.p01.LYFE, b.p21.RUTU, b.p21.SANU);
-  c.p21.SYGU = tock_pos(a.p21.SONO, b.p21.SONO, b.p01.LYFE, b.p21.SYGU, b.p21.TEGY);
+  c.p21.RUTU = tock_pos(a.p21.SONO, b.p21.SONO, b.p01.VID_RESETn2, b.p21.RUTU, b.p21.SANU);
+  c.p21.SYGU = tock_pos(a.p21.SONO, b.p21.SONO, b.p01.VID_RESETn2, b.p21.SYGU, b.p21.TEGY);
   c.p21.RYNO = or(b.p21.SYGU, b.p21.RUTU);
   c.p21.POGU = not(b.p21.RYNO);
 
@@ -106,9 +106,9 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p21.XYVO = and(b.p21.V4, b.p21.V7);
 
-  c.p21.NYPE = tock_pos(a.p21.TALU, b.p21.TALU, b.p01.LYFE, b.p21.NYPE, b.p21.RUTU);
-  c.p21.POPU = tock_pos(a.p21.NYPE, b.p21.NYPE, b.p01.LYFE, b.p21.POPU, b.p21.XYVO);
-  c.p21.NAPO = tock_pos(a.p21.POPU, b.p21.POPU, b.p01.LYFE, b.p21.NAPO, !b.p21.NAPO);
+  c.p21.NYPE = tock_pos(a.p21.TALU, b.p21.TALU, b.p01.VID_RESETn2, b.p21.NYPE, b.p21.RUTU);
+  c.p21.POPU = tock_pos(a.p21.NYPE, b.p21.NYPE, b.p01.VID_RESETn2, b.p21.POPU, b.p21.XYVO);
+  c.p21.NAPO = tock_pos(a.p21.POPU, b.p21.POPU, b.p01.VID_RESETn2, b.p21.NAPO, !b.p21.NAPO);
 
   c.p21.XUGU = nand(b.p21.XEHO, b.p21.SAVY, b.p21.XODU, b.p21.TUKY, b.p21.SYBE);
   c.p21.XENA = not(b.p29.FEPO);
@@ -128,7 +128,7 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p21.SEPA = and(b.p07.CPU_WR2, b.p22.FF41);
 
   c.p21.VOGA = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p21.TADY, b.p21.VOGA, b.p21.WODU);
-  c.p21.WEGO = or(b.p01.TOFU, b.p21.VOGA);
+  c.p21.WEGO = or(b.p01.VID_RESET3, b.p21.VOGA);
   c.p21.XAJO = and(b.p21.XEHO, b.p21.XYDO);
   c.p21.XYMU = or(b.p21.WEGO, b.p29.AVAP);
   c.p21.WUSA = or(b.p21.XAJO, b.p21.WEGO);
@@ -182,8 +182,8 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // y counter
 
   c.p21.NOKO = and(b.p21.V7, b.p21.V4, b.p21.V0, b.p21.V1);
-  c.p21.MYTA = tock_pos(a.p21.NYPE, b.p21.NYPE, b.p01.LYFE, b.p21.MYTA, b.p21.NOKO);
-  c.p21.LAMA = nor(b.p21.MYTA, b.p01.LYHA);
+  c.p21.MYTA = tock_pos(a.p21.NYPE, b.p21.NYPE, b.p01.VID_RESETn2, b.p21.MYTA, b.p21.NOKO);
+  c.p21.LAMA = nor(b.p21.MYTA, b.p01.VID_RESET2);
 
   c.p21.MUWY = tock_pos(a.p21.RUTU,  b.p21.RUTU,  b.p21.LAMA, c.p21.MUWY, !c.p21.MUWY);
   c.p21.MYRO = tock_pos(!a.p21.MUWY, !b.p21.MUWY, b.p21.LAMA, c.p21.MYRO, !c.p21.MYRO);

@@ -16,7 +16,7 @@ struct P15_Channel2 {
   bool GYPA;
   bool EROG;
 
-private:
+//private:
 
   bool HOTA,KATY,JYNA,KYLO,KENE;
 

@@ -7,7 +7,7 @@ public:
 
   bool DOPU;
 
-private:
+///private:
 
   bool DANO_00;
   bool FAVY_01;

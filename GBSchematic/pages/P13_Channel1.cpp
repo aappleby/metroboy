@@ -66,7 +66,6 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.KUXU = not(b.p13.KAZA);
 
   c.p13.JONE = not(b.p01.BYFE_128);
-  c.p13.KADO = not(b.p09.APU_RESET1);
   c.p13.KALY = tock_pos(a.p13.JONE, b.p13.JONE, b.p13.KADO, b.p13.KALY, !b.p13.KALY);
   c.p13.KERE = not(b.p13.KALY);
   c.p13.JOLA = not(b.p13.KERE);
@@ -82,7 +81,6 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.KORO = nor(b.p13.KUKU, b.p13.KOMA);
   c.p13.KOZY = tock_pos(a.p01.HORU_512, b.p01.HORU_512, b.p13.KORO, b.p13.KOZY, b.p13.KOTE);
 
-  c.p13.ERUM = not(b.p09.APU_RESET1);
   c.p13.FARE = tock_pos(a.p09.DYFA_1M, b.p09.DYFA_1M, b.p13.ERUM, b.p13.FARE, b.p13.FEKU);
   c.p13.FYTE = tock_pos(a.p09.DYFA_1M, b.p09.DYFA_1M, b.p13.ERUM, b.p13.FYTE, b.p13.FARE);
   c.p13.EGET = nor(b.p09.APU_RESET1, b.p13.FARE);
@@ -91,7 +89,6 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.DOGE = nand(b.p10.APU_WR, b.p11.FF14_D6); // BUG - APU_WR
   c.p13.DADO = nor(b.p09.APU_RESET1, b.p13.EZEC);
   c.p13.DUPE = tock_pos(a.p13.DOGE, b.p13.DOGE, b.p13.DADO, b.p13.DUPE, b.D7);
-  c.p13.DUKA = not(b.p09.APU_RESET1);
   c.p13.EZEC = tock_pos(a.p01.PHIn, b.p01.PHIn, b.p13.DUKA, b.p13.EZEC, b.p13.DUPE);
 
   c.p13.FYFO = or(b.p13.GEFE, b.p13.EZEC); // unk2

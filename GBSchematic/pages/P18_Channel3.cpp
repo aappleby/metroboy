@@ -80,7 +80,6 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p18.FOZU = or(b.p18.GARA, b.p18.FYGO);
   c.p18.EZAS = not(b.p18.FOZU);
   c.p18.DORU = not(b.p18.EZAS);
-  c.p18.CALU = not(b.p09.APU_RESET1);
   c.p18.DAVO = tock_pos(a.p09.AJER_2M, b.p09.AJER_2M, b.p18.CALU, b.p18.DAVO, b.p18.DORU);
   c.p18.COKA = not(!b.p18.DAVO);
   c.p18.ERED = not(b.p18.COKA);

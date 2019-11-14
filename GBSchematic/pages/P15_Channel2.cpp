@@ -4,7 +4,6 @@
 void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p15.HOTA = not(b.p01.BYFE_128);
-  c.p15.KATY = not(b.p09.APU_RESET1);
   c.p15.JYNA = tock_pos(a.p15.HOTA, b.p15.HOTA, b.p15.KATY, b.p15.JYNA, !b.p15.JYNA);
   c.p15.KYLO = not(b.p15.JYNA);
   c.p15.KENE = not(b.p15.KYLO);
@@ -16,8 +15,6 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p15.KYVO = and(!b.p15.JORE, b.p15.JONA, b.p15.JEVY);
   c.p15.JOPA = tock_pos(a.p01.HORU_512, b.p01.HORU_512, b.p15.HAFE, b.p15.JOPA, b.p15.KYVO);
   c.p15.HEPO = tock_pos(a.p15.JOPA,     b.p15.JOPA,     b.p15.HYPA, b.p15.HEPO, b.p15.GUFY);
-
-  c.p15.CYWU = not(b.p09.APU_RESET1);
 
   c.p15.DOPE = tock_pos(a.p01.PHIn, b.p01.PHIn, b.p15.CYWU, b.p15.DOPE, b.p14.FF19_D7);
 
@@ -48,9 +45,7 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p15.COGU = not(b.p15.DUJU);
   c.p15.EROG = not(b.p15.DUJU);
   c.p15.GYPA = not(b.p15.DUJU);
-  c.p15.CEXE = not(b.p09.APU_RESET1);
 
-  c.p15.BUWE = not(b.p09.APU_RESET1);
   c.p15.AZEG = not(b.p01.CLK_xBxDxFxH1);
   c.p15.ATEP = tock_pos(a.p15.AZEG, b.p15.AZEG, b.p15.BUWE, b.p15.ATEP, !b.p15.ATEP);
   c.p15.CAZA = tock_pos(a.p15.CEMO, b.p15.CEMO, b.p15.CEXE, b.p15.CAZA, b.p15.DORY);

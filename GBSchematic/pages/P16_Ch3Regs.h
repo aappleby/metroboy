@@ -4,7 +4,7 @@ struct P16_Ch3Regs {
   union { bool GUXE; bool FF1A_D7n; bool CH3_AMP_ENn; };
   union { bool ANUJ; };
 
-private:
+//private:
 
   bool GEJO,GUCY,GOVE,FUVO,GUGU,FEVO,GEKO,FASY;
   bool FABO,GARA,GYTA,GYRA,FAJU,GAZE,FURY,GOMA,FOBA;

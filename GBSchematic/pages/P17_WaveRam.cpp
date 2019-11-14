@@ -16,7 +16,6 @@ void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
 
   //----------
 
-  c.p17.BAMA = not(b.p09.APU_RESET1);
   c.p17.ARUC = not(b.p01.CLK_xBxDxFxH1);
   c.p17.COZY = not(b.p01.CLK_xBxDxFxH1);
 
@@ -76,8 +75,6 @@ void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
     c.D1 = b.p17.DESY;
     c.D0 = b.p17.DUGU;
   }
-
-  c.p17.ACOR = not(b.p09.APU_RESET1);
 
   c.p17.BEPA = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BEPA, b.WAVE_RD_D7);
   c.p17.BORA = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BORA, b.WAVE_RD_D6);

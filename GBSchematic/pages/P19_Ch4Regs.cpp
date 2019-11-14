@@ -21,7 +21,6 @@ void P19_Ch4Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p19.EDOP_05 = count_pos(a.p19.FYLO_04, b.p19.FYLO_04, b.p19.EPEK, b.p19.EDOP_05, b.D5);
 
   c.p19.GOKO = and(b.p19.FF21, b.p10.APU_WR);
-  c.p19.FEXO = not(b.p09.APU_RESET1);
   c.p19.FUPA = not(b.p19.GOKO);
   c.p19.GONY = not(b.p19.FF21);
   c.p19.HASU = or(b.p09.CPU_RDn, b.p19.GONY);
@@ -84,7 +83,6 @@ void P19_Ch4Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p19.GETU = nand(b.p10.APU_WR, b.p19.FF22);
   c.p19.EFUG = not(b.p19.GETU);
   c.p19.GUGO = not(b.p19.FF22);
-  c.p19.HYNE = not(b.p09.APU_RESET1);
   c.p19.HEZE = or(b.p19.GUGO, b.p09.CPU_RDn);
   c.p19.HUMO = and(b.p10.APU_WR, b.p19.FF22);
   c.p19.HOVA = not(b.p19.HUMO);
@@ -143,7 +141,6 @@ void P19_Ch4Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
 
   c.p19.DULU = nand(b.p19.ANUJ, b.p19.FF23);
-  c.p19.CABE = not(b.p09.APU_RESET1);
   c.p19.BYLO = not(b.p09.CPU_RDn);
   c.p19.FOXE = nand(b.p10.APU_WR, b.p19.FF23);
   c.p19.BARE = nand(b.p19.FF23, b.p19.BYLO);

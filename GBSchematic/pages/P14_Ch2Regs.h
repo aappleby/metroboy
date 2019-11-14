@@ -47,7 +47,7 @@ struct P14_Ch2Regs {
   union { bool GUMY; bool FF18_D6; };
   union { bool GUPU; bool FF18_D7; };
 
-private:
+//private:
 
   union { bool DOSA; bool NR23_WR1; };
   union { bool EXUC; bool NR32_WR2; };

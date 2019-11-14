@@ -21,7 +21,6 @@ public:
   union { bool XOCE; };
   union { bool XUPY; };
   union { bool CATU; };
-  union { bool ABEZ; };
 
   union { bool DENY; };
   union { bool XYME; };
@@ -50,7 +49,7 @@ public:
   bool AKOL,BYMY,WUSE,ZURU,WYLU,EWOT,FEFO,WABE,BYVY,AHOF;
   bool DYMO,BUCY,FEKA,XYHA,BUZY,FUKE,WUFA,FAKA,GENY,ENOB;
 
-private:
+//private:
 
   bool YCEB,ZUCA,WONE,ZAXE,XAFU,YSES,ZECA,YDYV;
   bool XELE,YPON,XUVO,ZYSA,YWEG,XABU,YTUX,YFAP;

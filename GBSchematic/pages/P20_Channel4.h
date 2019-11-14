@@ -50,7 +50,7 @@ struct P20_Channel4 {
   bool FF23_D7;        // P19.HOGA
   bool FUGO;           // P19.FUGO
 
-private:
+//private:
 
   bool EMOF,ELAR,DUDU,ETAT,FURA,ETAR,EVER,ETOV;
 

@@ -16,7 +16,7 @@ struct P18_Channel3 {
   union { bool GASE; };
   union { bool EFAR; };
 
-private:
+//private:
 
   bool JYFO,HUNO,HEMA,HUPA,GAFU,HEFO,JUTY;
   bool HERA,KYKO,KASO,KYRU,JERA,KESE;

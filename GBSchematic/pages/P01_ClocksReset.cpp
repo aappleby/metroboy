@@ -100,11 +100,11 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.UNUT        = and(b.p01.TUBO, b.p01.DIV_15);
   c.p01.CPU_RESET   = or(b.p07.MODE_DBG2, b.p07.MODE_DBG1, b.p01.UNUT);
   c.cpu.CPU_RESET   = b.p01.CPU_RESET;
+  c.p01.CPU_RESETn  = not(b.p01.CPU_RESET);
 
   //----------
   // SYS reset tree
 
-  c.p01.CPU_RESETn  = not(b.p01.CPU_RESET);
   c.p01.AFAR        = nor(b.p01.CPU_RESETn, b.chip.RST);
   c.p01.ASOL        = or (b.p01.AFAR, b.chip.RST);
   c.p01.RESET_REG   = tock_pos(a.p01.RESET_CLK, b.p01.RESET_CLK, b.p07.MODE_PROD, b.p01.RESET_REG, b.p01.ASOL);
@@ -128,20 +128,68 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // VID reset tree
 
-  c.p01.VID_RESET1 = and(b.p23.LCD_ON, b.p01.SYS_RESETn4);
+  c.p01.VID_RESET1  = and(b.p01.SYS_RESETn4, b.p23.LCD_ON); // polarity?
   c.p01.VID_RESETn1 = not(b.p01.VID_RESET1);
 
-  c.p01.LYHA = not(b.p01.VID_RESETn1);
-  c.p01.TOFU = not(b.p01.VID_RESETn1);
-  c.p01.PYRY = not(b.p01.VID_RESETn1);
-  c.p01.ROSY = not(b.p01.VID_RESETn1);
-  c.p01.ATAR = not(b.p01.VID_RESETn1);
-  c.p01.AMYG = not(b.p01.VID_RESETn1);
+  c.p01.VID_RESET2  = not(b.p01.VID_RESETn1);
+  c.p01.VID_RESET3  = not(b.p01.VID_RESETn1);
+  c.p01.VID_RESET4  = not(b.p01.VID_RESETn1);
+  c.p01.VID_RESET5  = not(b.p01.VID_RESETn1);
+  c.p01.VID_RESET6  = not(b.p01.VID_RESETn1);
+  c.p01.VID_RESET7  = not(b.p01.VID_RESETn1);
 
-  c.p01.LYFE = not(b.p01.LYHA);
+  c.p01.VID_RESETn2 = not(b.p01.VID_RESET2);
+  c.p01.VID_RESETn3 = not(b.p01.VID_RESET6);
 
   //----------
   // APU reset tree
+
+  c.p09.APU_RESET2  = or(b.p01.SYS_RESET2, !b.p09.ALL_SOUND_ON);
+  c.p09.APU_RESETn6 = not(b.p09.APU_RESET2);
+  c.p09.APU_RESETn7 = not(b.p09.APU_RESET2);
+  c.p09.APU_RESET1  = not(b.p09.APU_RESETn7);
+
+  // holy crap fanout
+  c.p09.APU_RESETn  = not(b.p09.APU_RESET1);
+  c.p09.APU_RESETn2 = not(b.p09.APU_RESET1);
+  c.p09.APU_RESETn3 = not(b.p09.APU_RESET1);
+  c.p09.APU_RESETn4 = not(b.p09.APU_RESET1);
+  c.p09.APU_RESETn5 = not(b.p09.APU_RESET1);
+
+  c.p01.APU_RESETn1 = not(b.p09.APU_RESET1);
+  c.p01.APU_RESETn2 = not(b.p09.APU_RESET1);
+  c.p01.APU_RESETn3 = not(b.p09.APU_RESET1);
+  c.p14.APU_RESETn1 = not(b.p09.APU_RESET1);
+
+  c.p11.CEPO = not(b.p09.APU_RESET1);
+  c.p11.HATO = not(b.p09.APU_RESET1);
+  c.p11.CAMY = not(b.p09.APU_RESET1);
+  c.p13.KADO = not(b.p09.APU_RESET1);
+  c.p13.ERUM = not(b.p09.APU_RESET1);
+  c.p13.DUKA = not(b.p09.APU_RESET1);
+  c.p14.JYBU = not(b.p09.APU_RESET1);
+  c.p14.KYPU = not(b.p09.APU_RESET1);
+  c.p14.FAZO = not(b.p09.APU_RESET1);
+  c.p15.KATY = not(b.p09.APU_RESET1);
+  c.p15.CYWU = not(b.p09.APU_RESET1);
+  c.p15.CEXE = not(b.p09.APU_RESET1);
+  c.p15.BUWE = not(b.p09.APU_RESET1);
+  c.p16.GOVE = not(b.p09.APU_RESET1);
+  c.p16.GAZE = not(b.p09.APU_RESET1);
+  c.p16.GOMA = not(b.p09.APU_RESET1);
+  c.p16.KUHA = not(b.p09.APU_RESET1);
+  c.p16.HEKY = not(b.p09.APU_RESET1);
+  c.p16.KOPY = not(b.p09.APU_RESET1);
+  c.p16.GURO = not(b.p09.APU_RESET1);
+  c.p17.BAMA = not(b.p09.APU_RESET1);
+  c.p17.ACOR = not(b.p09.APU_RESET1);
+  c.p18.CALU = not(b.p09.APU_RESET1);
+  c.p19.FEXO = not(b.p09.APU_RESET1);
+  c.p19.HYNE = not(b.p09.APU_RESET1);
+  c.p19.CABE = not(b.p09.APU_RESET1);
+  c.p20.BOKY = not(b.p09.APU_RESET1);
+  c.p20.GASO = not(b.p09.APU_RESET1);
+  c.p20.FEBY = not(b.p09.APU_RESET1);
 
   //----------
   // Clock control
@@ -216,6 +264,9 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.CPU_RD1    = not(b.p09.CPU_RDn);
   c.p08.CPU_RDn    = not(b.p07.CPU_RD);
   c.p11.CPU_RDn    = not(b.p07.CPU_RD);
+
+  c.p29.XYVA = not(b.p01.CLK_xBxDxFxH2);
+  c.p29.XOTA = not(b.p29.XYVA);
 
   //----------
   // Weird logic feeding into CLK_ABCDExxx1
@@ -341,10 +392,6 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // Clock dividers for APU
-
-  c.p01.APU_RESETn1 = not(b.p09.APU_RESET1);
-  c.p01.APU_RESETn2 = not(b.p09.APU_RESET1);
-  c.p01.APU_RESETn3 = not(b.p09.APU_RESET1);
 
   c.p01.CLK_AxCxExGx7 = not(b.p01.CLK_xBxDxFxH1);
   c.p01.CLK_ABxxEFxx1 = tock_pos(a.p01.CLK_AxCxExGx7,

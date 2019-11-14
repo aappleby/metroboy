@@ -23,7 +23,7 @@ struct P13_Channel1 {
   union { bool KALA; };
   union { bool EGOR; };
 
-private:
+//private:
 
   // Channel 1 length timer
   bool BACY,CAVY,BOVY,CUNO;

@@ -9,20 +9,6 @@
 
 void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  //---------
-  // reset tree
-
-  c.p09.APU_RESET2  = or(b.p01.SYS_RESET2, !b.p09.ALL_SOUND_ON);
-  c.p09.APU_RESETn6 = not(b.p09.APU_RESET2);
-  c.p09.APU_RESETn7 = not(b.p09.APU_RESET2);
-  c.p09.APU_RESET1  = not(b.p09.APU_RESETn7);
-
-  c.p09.APU_RESETn  = not(b.p09.APU_RESET1);
-  c.p09.APU_RESETn2 = not(b.p09.APU_RESET1);
-  c.p09.APU_RESETn3 = not(b.p09.APU_RESET1);
-  c.p09.APU_RESETn4 = not(b.p09.APU_RESET1);
-  c.p09.APU_RESETn5 = not(b.p09.APU_RESET1);
-
   //----------
   // clock dividers
 

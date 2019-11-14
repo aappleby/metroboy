@@ -8,7 +8,7 @@
 
 void P22_PpuDecode::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
   c.p22.XALY = nor(b.A07, b.A05, b.A04);
-  c.p22.WUTU = nand(b.p07.FFXX, b.A06, b.p22.XALY);
+  c.p22.WUTU = nand(b.p07.ADDR_FFXX, b.A06, b.p22.XALY);
   c.p22.WERO = not(b.p22.WUTU);
 
   c.p22.XOLA = not(b.A00);

@@ -56,18 +56,18 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p25.RYVO = nand(b.D5, b.p08.LULA);
-  c.p25.RERA = nand(b.D5, b.p08.LULA);
-  c.p25.RABY = nand(b.D5, b.p08.LULA);
-  c.p25.RORY = nand(b.D5, b.p08.LULA);
-  c.p25.RUJA = nand(b.D5, b.p08.LULA);
-  c.p25.RAVU = nand(b.D5, b.p08.LULA);
-  c.p25.RAFY = nand(b.D5, b.p08.LULA);
-  c.p25.RUXA = nand(b.D5, b.p08.LULA);
+  c.p25.RYVO = nand(b.D5, b.p08.DBUS_OUT);
+  c.p25.RERA = nand(b.D5, b.p08.DBUS_OUT);
+  c.p25.RABY = nand(b.D5, b.p08.DBUS_OUT);
+  c.p25.RORY = nand(b.D5, b.p08.DBUS_OUT);
+  c.p25.RUJA = nand(b.D5, b.p08.DBUS_OUT);
+  c.p25.RAVU = nand(b.D5, b.p08.DBUS_OUT);
+  c.p25.RAFY = nand(b.D5, b.p08.DBUS_OUT);
+  c.p25.RUXA = nand(b.D5, b.p08.DBUS_OUT);
 
   //----------
 
-  c.p25.CUFE = unk3(b.p07.SARO, b.p04.MATU, b.p04.MOPA_PHI);
+  c.p25.CUFE = unk3(b.p07.ADDR_OAM, b.p04.MATU, b.p04.PHI_OUT);
   c.p25.VAPE = and(b.p29.TACU, b.p29.TUVO);
   c.p25.AVER = and(b.p28.ACYL, b.p29.XYSO);
   c.p25.XUJY = not(b.p25.VAPE);
@@ -83,9 +83,9 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p25.TUJA = and(b.p25.SOSE, b.p01.CPU_WR_SYNC);
   c.p25.TEGU = nand(b.p25.SOSE, b.p01.AFAS);
   c.p25.TAVY = not(b.chip.MOE_C);
-  c.p25.SYCY = not(b.p07.T1nT2);
-  c.p25.SOTO = tock_pos(a.p25.SYCY, b.p25.SYCY, b.p01.RESET6, b.p25.SOTO, !b.p25.SOTO);
-  c.p25.TUTO = and(b.p07.T1nT2, !b.p25.SOTO);
+  c.p25.SYCY = not(b.p07.MODE_DBG2);
+  c.p25.SOTO = tock_pos(a.p25.SYCY, b.p25.SYCY, b.p01.SYS_RESETn2, b.p25.SOTO, !b.p25.SOTO);
+  c.p25.TUTO = and(b.p07.MODE_DBG2, !b.p25.SOTO);
   c.p25.SUDO = not(b.chip.MWR_C);
   c.p25.TEFY = not(b.chip.MCS_C);
   c.p25.SALE = mux2(b.p25.TUTO, b.p25.TAVY, b.p25.TEGU);
@@ -166,7 +166,7 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p25.TUSO = nor(b.p07.T1nT2, b.p01.BEDO);
+  c.p25.TUSO = nor(b.p07.MODE_DBG2, b.p01.CPUCLK_xxxxxFGH2);
   c.p25.SOLE = not(b.p25.TUSO);
   c.p25.RUNY = not(b.chip.P10_B);
 
@@ -307,7 +307,6 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p25.CEDE = not(b.p04.LUMA);
 
   c.p25.RALO_00 = not(b.chip.D0_C);
   c.p25.TUNE_01 = not(b.chip.D1_C);
@@ -336,6 +335,7 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p25.BASY_06 = not(b.p25.TUBE_06);
   c.p25.BAPE_07 = not(b.p25.SYZO_07);
 
+  c.p25.CEDE = not(b.p04.DO_DMA);
   if (b.p25.CEDE) {
     c.OAM_A_D0 = b.p25.WEJO_00;
     c.OAM_A_D1 = b.p25.BUBO_01;

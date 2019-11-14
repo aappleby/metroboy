@@ -40,7 +40,7 @@ struct P11_Ch1Regs {
   union { bool EVAK; bool CH1_FREQ_09; };
   union { bool COPU; bool CH1_FREQ_10; };
 
-private:
+//private:
 
   bool CENU,BUZE,ATYN,ASOP;
   bool AMYD,AZYP,AWOS,AFOX,ATAX,AVEK,AKUX;
@@ -57,7 +57,9 @@ private:
   bool CEGE,DAXA,CACA,DYPU,EVAJ;
   bool CURE,DUPY,DOPA,DEMU,DEXO;
 
-  bool BAGE,CAMY,BUDA,BALE,BYTU;
+  bool BAGE,CAMY,BALE,BYTU;
+
+  union { /*bool BUDA;*/ bool CPU_RDn; };
 };
 
 

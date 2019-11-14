@@ -9,16 +9,10 @@
 
 void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  c.p09.CPU_RDn = not(b.p07.CPU_RD);
-  c.p09.CPU_RD1 = not(b.p09.CPU_RDn);
-
   //---------
   // reset tree
 
-  c.p09.RESETn1     = not(b.p01.RESET2);
-  c.p09.RESET1      = not(b.p09.RESETn1);
-  
-  c.p09.APU_RESET2  = or(b.p09.RESETn1, !b.p09.ALL_SOUND_ON); // I don't think this is right...
+  c.p09.APU_RESET2  = or(b.p01.SYS_RESET2, !b.p09.ALL_SOUND_ON);
   c.p09.APU_RESETn6 = not(b.p09.APU_RESET2);
   c.p09.APU_RESETn7 = not(b.p09.APU_RESET2);
   c.p09.APU_RESET1  = not(b.p09.APU_RESETn7);
@@ -47,13 +41,13 @@ void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.NR52_WRn2 = nand(b.p10.FF26, b.p10.APU_WR);
   c.p09.NR52_WRn3 = not(b.p09.NR52_WR1);
 
-
   c.p09.EDEK = not(!b.p09.FERO);
 
-  c.p09.NR52_7 = tock_pos(a.p09.NR52_WRn1, b.p09.NR52_WRn1, b.p09.RESET1,      b.p09.NR52_7, b.D7);
+  // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
+  c.p09.NR52_7 = tock_pos(a.p09.NR52_WRn1, b.p09.NR52_WRn1, b.p01.SYS_RESETn3,      b.p09.NR52_7, b.D7);
 
   // these must be debug-related and are only readable during apu reset...
-  c.p09.EFOP = and(b.D4, b.p07.T1nT2);
+  c.p09.EFOP = and(b.D4, b.p07.MODE_DBG2);
   c.p09.NR52_5 = tock_pos(a.p09.NR52_WRn2, b.p09.NR52_WRn2, b.p09.APU_RESETn6, b.p09.NR52_5, b.D5);
   c.p09.FERO   = tock_pos(a.p09.NR52_WRn3, b.p09.NR52_WRn3, b.p09.APU_RESETn6, b.p09.FERO,   b.p09.EFOP);
   c.p09.BAZA   = tock_pos(a.p09.AJER_2M,   b.p09.AJER_2M,   b.p09.APU_RESETn3, b.p09.BAZA,   b.p09.NR52_5);
@@ -62,10 +56,10 @@ void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.CONE = not(b.p09.CELY);
   c.p09.CATE = not(b.p09.CONE);
 
-  c.p09.NR52_7b = not(!b.p09.NR52_7);
+  c.p09.FF26_D7 = not(!b.p09.NR52_7);
 
   if (b.p09.NR52_RDn1) {
-    c.D7 = b.p09.NR52_7b;
+    c.D7 = b.p09.FF26_D7;
   }
 
   // where's the read for the other bits?
@@ -132,14 +126,14 @@ void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.NR51_6 = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.APU_RESET2, c.p09.NR51_6, b.D6);
   c.p09.NR51_7 = tock_pos(a.p09.BYFA, b.p09.BYFA, b.p09.APU_RESET2, c.p09.NR51_7, b.D7);
 
-  c.p09.NR51_D0 = not(!b.p09.BOGU);
-  c.p09.NR51_D1 = not(!b.p09.BAFO);
-  c.p09.NR51_D2 = not(!b.p09.ATUF);
-  c.p09.NR51_D3 = not(!b.p09.ANEV);
-  c.p09.NR51_D4 = not(!b.p09.BEPU);
-  c.p09.NR51_D5 = not(!b.p09.BEFO);
-  c.p09.NR51_D6 = not(!b.p09.BUME);
-  c.p09.NR51_D7 = not(!b.p09.BOFA);
+  c.p09.NR51_D0 = not(!b.p09.NR51_0);
+  c.p09.NR51_D1 = not(!b.p09.NR51_1);
+  c.p09.NR51_D2 = not(!b.p09.NR51_2);
+  c.p09.NR51_D3 = not(!b.p09.NR51_3);
+  c.p09.NR51_D4 = not(!b.p09.NR51_4);
+  c.p09.NR51_D5 = not(!b.p09.NR51_5);
+  c.p09.NR51_D6 = not(!b.p09.NR51_6);
+  c.p09.NR51_D7 = not(!b.p09.NR51_7);
 
   if (b.p09.GUMU) {
     c.D1 = b.p09.NR51_D0;

@@ -55,7 +55,7 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // random decoder
 
-  c.p03.RYFO = and(b.A02, b.p06.A00_07, b.p07.FFXX);
+  c.p03.RYFO = and(b.A02, b.p06.ADDR_XX00_XX07, b.p07.ADDR_FFXX);
 
   //----------
   // TAC
@@ -63,9 +63,9 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p03.SARA = nand(b.p07.CPU_WR, b.p03.FF04_FF07, b.A00, b.A01); // nand? guess it happens on the neg edge of CPU_WR?
   c.p03.SORA = and (b.p07.CPU_RD, b.p03.FF04_FF07, b.A00, b.A01);
 
-  c.p03.SOPU_0 = tock_pos(a.p03.SARA, b.p03.SARA, b.p01.RESET2, b.p03.SOPU_0, b.D0);
-  c.p03.SAMY_1 = tock_pos(a.p03.SARA, b.p03.SARA, b.p01.RESET2, b.p03.SAMY_1, b.D1);
-  c.p03.SABO_2 = tock_pos(a.p03.SARA, b.p03.SARA, b.p01.RESET2, b.p03.SABO_2, b.D2);
+  c.p03.SOPU_0 = tock_pos(a.p03.SARA, b.p03.SARA, b.p01.SYS_RESETn1, b.p03.SOPU_0, b.D0);
+  c.p03.SAMY_1 = tock_pos(a.p03.SARA, b.p03.SARA, b.p01.SYS_RESETn1, b.p03.SAMY_1, b.D1);
+  c.p03.SABO_2 = tock_pos(a.p03.SARA, b.p03.SARA, b.p01.SYS_RESETn1, b.p03.SABO_2, b.D2);
 
   c.p03.RYLA = not(!b.p03.SOPU_0);
   c.p03.ROTE = not(!b.p03.SAMY_1);
@@ -83,14 +83,14 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p03.TOVY = not(b.A00);
   c.p03.TYJU = nand(b.p03.TOVY, b.A01, b.p07.CPU_WR, b.p03.FF04_FF07);
 
-  c.p03.SABU_0 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.RESET2, b.p03.SABU_0, b.D0);
-  c.p03.NYKE_1 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.RESET2, b.p03.NYKE_1, b.D1);
-  c.p03.MURU_2 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.RESET2, b.p03.MURU_2, b.D2);
-  c.p03.TYVA_3 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.RESET2, b.p03.TYVA_3, b.D3);
-  c.p03.TYRU_4 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.RESET2, b.p03.TYRU_4, b.D4);
-  c.p03.SUFY_5 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.RESET2, b.p03.SUFY_5, b.D5);
-  c.p03.PETO_6 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.RESET2, b.p03.PETO_6, b.D6);
-  c.p03.SETA_7 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.RESET2, b.p03.SETA_7, b.D7);
+  c.p03.SABU_0 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.SYS_RESETn1, b.p03.SABU_0, b.D0);
+  c.p03.NYKE_1 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.SYS_RESETn1, b.p03.NYKE_1, b.D1);
+  c.p03.MURU_2 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.SYS_RESETn1, b.p03.MURU_2, b.D2);
+  c.p03.TYVA_3 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.SYS_RESETn1, b.p03.TYVA_3, b.D3);
+  c.p03.TYRU_4 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.SYS_RESETn1, b.p03.TYRU_4, b.D4);
+  c.p03.SUFY_5 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.SYS_RESETn1, b.p03.SUFY_5, b.D5);
+  c.p03.PETO_6 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.SYS_RESETn1, b.p03.PETO_6, b.D6);
+  c.p03.SETA_7 = tock_pos(a.p03.TYJU, b.p03.TYJU, b.p01.SYS_RESETn1, b.p03.SETA_7, b.D7);
 
   c.p03.SETE = not(!b.p03.SABU_0);
   c.p03.PYRE = not(!b.p03.NYKE_1);
@@ -128,12 +128,12 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p03.MUZU = or(b.cpu.FROM_CPU5, b.p03.TOPE);
   c.p03.MEKE = not(b.p03.INT_TIMER);
-  c.p03.MEXU = nand(b.p03.MUZU, b.p01.RESET2, b.p03.MEKE);
+  c.p03.MEXU = nand(b.p03.MUZU, b.p01.SYS_RESETn1, b.p03.MEKE);
 
   //----------
   // TIMA reload mux
 
-  c.p03.TOPE = nand(b.p07.CPU_WR, b.p03.FF04_FF07, b.A00, b.p08.TOLA_A1n);
+  c.p03.TOPE = nand(b.p07.CPU_WR, b.p03.FF04_FF07, b.A00, b.p08.A1n);
   c.p03.ROKE = mux2n(b.p03.SABU_0, b.D0, b.p03.TOPE);
   c.p03.PETU = mux2n(b.p03.NYKE_1, b.D1, b.p03.TOPE);
   c.p03.NYKU = mux2n(b.p03.MURU_2, b.D2, b.p03.TOPE);
@@ -143,7 +143,7 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p03.REFU = mux2n(b.p03.PETO_6, b.D6, b.p03.TOPE);
   c.p03.RATO = mux2n(b.p03.SETA_7, b.D7, b.p03.TOPE);
 
-  c.p03.MULO = not(b.p01.RESET2);
+  c.p03.MULO = not(b.p01.SYS_RESETn1);
   c.p03.PUXY = nor(b.p03.MULO, b.p03.ROKE);
   c.p03.NERO = nor(b.p03.MULO, b.p03.PETU);
   c.p03.NADA = nor(b.p03.MULO, b.p03.NYKU);
@@ -174,7 +174,7 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p03.ROWU_6 = not(!b.p03.PEDA_6);
   c.p03.PUSO_7 = not(!b.p03.NUGA_7);
 
-  c.p03.TEDA = and(b.p03.FF04_FF07, b.p07.CPU_RD, b.p08.TOLA_A1n, b.A00);
+  c.p03.TEDA = and(b.p03.FF04_FF07, b.p07.CPU_RD, b.p08.A1n, b.A00);
   if (b.p03.TEDA) {
     c.D0 = b.p03.SOKU_0;
     c.D1 = b.p03.RACY_1;
@@ -192,5 +192,5 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p03.MUGY = not(b.p03.MEXU);
   c.p03.NYDU = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p03.MUGY, b.p03.NYDU, b.p03.NUGA_7);
   c.p03.MERY = nor(!b.p03.NYDU, b.p03.NUGA_7);
-  c.p03.MOBA = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.RESET2, b.p03.MOBA, b.p03.MERY);
+  c.p03.MOBA = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p03.MOBA, b.p03.MERY);
 }

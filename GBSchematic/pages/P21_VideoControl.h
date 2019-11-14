@@ -8,7 +8,6 @@ struct P21_VideoControl {
 
   bool XYMU;
   bool NYPE;
-  bool LYFE;
   bool WODU;
   bool RUTU;
   bool NAPO;
@@ -50,9 +49,7 @@ struct P21_VideoControl {
   // x coordinate? used by sprite matcher
   bool ACAM,AZUB,AMEL,AHAL,APUX,ABEF,ADAZ,ASAH;
 
-private:
-
-  bool LYHA;
+//private:
 
   bool TADY;
   bool XUKE,XYLE,RYBO,XEGY,XORA;

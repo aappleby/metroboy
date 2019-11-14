@@ -7,7 +7,6 @@ public:
 
   union { bool BODE; bool CLK3; };
   union { bool ZODO; bool OAM_CLK; };
-  union { bool ATAR; bool RESET_VIDEO2n; };
 
   union { bool ZODO; bool OAM_CLK; };
   union { bool BETE; bool OAM_ADDR_RENDER; };
@@ -37,15 +36,15 @@ public:
   bool BYVA;
   bool AZYB;
 
-private:
+//private:
 
   bool YVAL,YRYV;
-  bool AWOH,ABAF,ANEL,BYHA,AMYG,ABAK;
+  bool AWOH,ABAF,ANEL,BYHA,ABAK;
   bool GAVA;
   bool YFEL,WEWY,GOSO,ELYN,FAHA,FONY;
   bool ASEN,BOGE,AJON,AJUJ,XYNY,XUTO,ADAH,WUJE,XUPA,APAG;
   bool WEFY,BOFE,AJEP,XUJA,BOTA,ASYT;
-  bool WARU,XUCA,AZUL,AZAR;
+  bool WARU,AZUL,AZAR;
   bool ZAXA,ZAMY,ZAKY,ZOPU,WULE,WYKY,ZOZO,ZAJA;
   bool ZUFO,ZUGA,ZATO,ZUMO,YVUC,XYTO,ZUFE,ZYFA;
   bool WUZU,WOWA,AXER,AVEB,ASOX,AMUH,CETU,COFO;
@@ -56,6 +55,7 @@ private:
   bool FETU,FYDU,EDOL,ELUG,FYKY,FAGO,FESA,FODO;
   bool GEKA;
   bool MYNU,WAFO,GUKO,WUKU,YLYC,YNYC;
-  bool XECY,XUVA;
 
+  // unused
+  //bool XUCA,XECY,XUVA;
 };

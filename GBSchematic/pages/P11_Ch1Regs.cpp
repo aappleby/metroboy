@@ -185,8 +185,7 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p11.BAGE = nand(b.p16.ANUJ, b.p10.FF14); 
   c.p11.CAMY = not(b.p09.APU_RESET1);
-  c.p11.BUDA = not(b.p07.CPU_RD);
-  c.p11.BALE = nand(b.p11.BUDA, b.p10.FF14);
+  c.p11.BALE = nand(b.p11.CPU_RDn, b.p10.FF14);
   c.p11.BOKO = tock_pos(a.p11.BAGE, b.p11.BAGE, b.p11.CAMY, c.p11.BOKO, b.D6);
 
   c.p11.BYTU = not(!b.p11.BOKO);

@@ -11,7 +11,7 @@ struct Gameboy;
 struct P03_Timer {
 
   union { bool RYFO; bool FF04_FF07; };
-  union { bool TOVY; bool TOVY_A0n; };
+  union { bool TOVY; bool A0n; };
   union { bool MOBA; bool INT_TIMER; };
 
   uint8_t get_tima() const { return (uint8_t)pack(REGA_0,POVY_1,PERU_2,RATE_3,RUBY_4,RAGE_5,PEDA_6,NUGA_7); }

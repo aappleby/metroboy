@@ -11,10 +11,10 @@ void P02_Interrupts::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p02.AWOB = latch_pos(b.p01.CLK_ABCDExxx1, b.p02.AWOB, b.p02.KERY);
 
-  c.p02.BATU = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.RESET2, b.p02.BATU, b.p02.KERY);
-  c.p02.ACEF = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.RESET2, b.p02.ACEF, b.p02.BATU);
-  c.p02.AGEM = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.RESET2, b.p02.AGEM, b.p02.ACEF);
-  c.p02.APUG = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.RESET2, b.p02.APUG, c.p02.AGEM);
+  c.p02.BATU = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p02.BATU, b.p02.KERY);
+  c.p02.ACEF = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p02.ACEF, b.p02.BATU);
+  c.p02.AGEM = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p02.AGEM, b.p02.ACEF);
+  c.p02.APUG = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p02.APUG, c.p02.AGEM);
   
   c.p02.ASOK = and(b.p02.APUG, b.p02.BATU);
 
@@ -31,19 +31,19 @@ void P02_Interrupts::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p02.RAKE = or(b.D2, b.p07.FF0F_WR);
 
   c.p02.MYZU = nand(b.p02.ROTU, b.p02.LETY, b.D0);
-  c.p02.LYTA = and(b.p02.MUXE, b.p02.LETY, b.p01.RESET2);
+  c.p02.LYTA = and(b.p02.MUXE, b.p02.LETY, b.p01.SYS_RESETn1);
 
   c.p02.TOME = nand(b.p02.ROTU, b.p02.LUFE, b.D3);
-  c.p02.TUNY = and(b.p02.SULO, b.p02.LUFE, b.p01.RESET2);
+  c.p02.TUNY = and(b.p02.SULO, b.p02.LUFE, b.p01.SYS_RESETn1);
 
   c.p02.TOGA = nand(b.p02.ROTU, b.p02.LAMO, b.D4);
-  c.p02.TYME = and(b.p02.SEME, b.p02.LAMO, b.p01.RESET2);
+  c.p02.TYME = and(b.p02.SEME, b.p02.LAMO, b.p01.SYS_RESETn1);
 
   c.p02.MODY = nand(b.p02.ROTU, b.p02.LEJA, b.D1);
-  c.p02.MOVU = and(b.p02.NABE, b.p02.LEJA, b.p01.RESET2);
+  c.p02.MOVU = and(b.p02.NABE, b.p02.LEJA, b.p01.SYS_RESETn1);
 
   c.p02.PYHU = nand(b.p02.ROTU, b.p02.LESA, b.D2);
-  c.p02.PYGA = and(b.p02.RAKE, b.p02.LESA, b.p01.RESET2);
+  c.p02.PYGA = and(b.p02.RAKE, b.p02.LESA, b.p01.SYS_RESETn1);
 
   c.p02.PESU = not(b.chip.P10_B);
 

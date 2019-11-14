@@ -8,7 +8,6 @@ public:
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   union { bool SACU; bool CLKPIPE; };
-  union { bool TOFU; };
   union { bool ROXO; };
   union { bool POKY; };
   union { bool PORY; };

@@ -29,11 +29,13 @@ struct P09_ApuControl {
 
   bool CATE;
 
-private:
+//private:
 
   // FF24 NR50
   union {
     uint8_t NR50;
+
+    // APEG,BYGA,AGER,APOS,BYRE,BUMO,COZU,BEDU;
     struct {
       bool NR50_0 : 1;
       bool NR50_1 : 1;
@@ -44,19 +46,12 @@ private:
       bool NR50_6 : 1;
       bool NR50_7 : 1;
     };
-    struct {
-      bool APEG : 1;
-      bool BYGA : 1;
-      bool AGER : 1;
-      bool APOS : 1;
-      bool BYRE : 1;
-      bool BUMO : 1;
-      bool COZU : 1;
-      bool BEDU : 1;
-    };
   };
 
   union {
+    uint8_t NR50_D;
+
+    // AKOD,AWED,AVUD,AXEM,AMAD,ARUX,BOCY,ATUM
     struct {
       bool NR50_D0 : 1;
       bool NR50_D1 : 1;
@@ -67,20 +62,13 @@ private:
       bool NR50_D6 : 1;
       bool NR50_D7 : 1;
     };
-    struct {
-      bool AKOD : 1;
-      bool AWED : 1;
-      bool AVUD : 1;
-      bool AXEM : 1;
-      bool AMAD : 1;
-      bool ARUX : 1;
-      bool BOCY : 1;
-      bool ATUM : 1;
-    };
   };
 
   // FF25 NR51
   union {
+    uint8_t NR51;
+
+    // ANEV,BOGU,BAFO,ATUF,BUME,BOFA,BEFO,BEPU
     struct {
       bool NR51_0 : 1;
       bool NR51_1 : 1;
@@ -91,20 +79,12 @@ private:
       bool NR51_6 : 1;
       bool NR51_7 : 1;
     };
-
-    struct {
-      bool ANEV : 1;
-      bool BOGU : 1;
-      bool BAFO : 1;
-      bool ATUF : 1;
-      bool BUME : 1;
-      bool BOFA : 1;
-      bool BEFO : 1;
-      bool BEPU : 1;
-    };
   };
 
   union { 
+    uint8_t NR51_D;
+
+    // CAPU,CAGA,BOCA,BUZU,CERE,CADA,CAVU,CUDU
     struct {
       bool NR51_D0 : 1;
       bool NR51_D1 : 1;
@@ -114,16 +94,6 @@ private:
       bool NR51_D5 : 1;
       bool NR51_D6 : 1;
       bool NR51_D7 : 1;
-    };
-    struct {
-      bool CAPU : 1;
-      bool CAGA : 1;
-      bool BOCA : 1;
-      bool BUZU : 1;
-      bool CERE : 1;
-      bool CADA : 1;
-      bool CAVU : 1;
-      bool CUDU : 1;
     };
   };
 
@@ -135,9 +105,6 @@ private:
 
   union { bool BAXY; bool NR50_WR1; };
   union { bool BOWE; bool NR50_WR2; };
-
-  union { bool HAPO; bool RESETn1; };
-  union { bool GUFO; bool RESET1; };
 
   union { bool JURE; bool NR52_RDn1; };
 
@@ -151,7 +118,7 @@ private:
   union { bool KYDU; bool CPU_RD1; };
   union { bool BOWY; bool NR52_5; };  // secret bit?
 
-  union { bool HOPE; bool NR52_7b; };
+  union { bool HOPE; bool FF26_D7; };
 
   union { bool BYMA; bool FF24n; };
   union { bool BEFU; bool NR50_RDn1; };

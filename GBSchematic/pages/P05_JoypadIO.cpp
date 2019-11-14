@@ -8,14 +8,14 @@
 
 void P05_JoypadIO::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  c.p05.JUTE_00 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.JUTE_00, b.D0);
-  c.p05.KECY_01 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KECY_01, b.D1);
-  c.p05.JALE_02 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.JALE_02, b.D2);
-  c.p05.KYME_03 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KYME_03, b.D3);
-  c.p05.KELY_04 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KELY_04, b.D4);
-  c.p05.COFY_05 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.COFY_05, b.D5);
-  c.p05.KUKO_06 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KUKO_06, b.D6);
-  c.p05.KERU_07 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.RESET2, c.p05.KERU_07, b.D7);
+  c.p05.JUTE_00 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.JUTE_00, b.D0);
+  c.p05.KECY_01 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.KECY_01, b.D1);
+  c.p05.JALE_02 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.JALE_02, b.D2);
+  c.p05.KYME_03 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.KYME_03, b.D3);
+  c.p05.KELY_04 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.KELY_04, b.D4);
+  c.p05.COFY_05 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.COFY_05, b.D5);
+  c.p05.KUKO_06 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.KUKO_06, b.D6);
+  c.p05.KERU_07 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.KERU_07, b.D7);
 
   c.p05.KOLE = nand(b.p05.JUTE_00, b.p07.FF60_D0);
   c.p05.KYBU = nor (b.p05.JUTE_00, b.p05.KURA);
@@ -90,9 +90,9 @@ void P05_JoypadIO::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p05.AXYN = not(b.p01.BEDO);
+  c.p05.AXYN = not(b.p01.CPUCLK_xxxxxFGH2);
   c.p05.ADYR = not(b.p05.AXYN);
-  c.p05.APYS = nor(b.p07.T1nT2, b.p05.ADYR);
+  c.p05.APYS = nor(b.p07.MODE_DBG2, b.p05.ADYR);
   c.p05.AFOP = not(b.p05.APYS);
 
   c.p05.ANOC_00 = not(b.chip.P10_B);

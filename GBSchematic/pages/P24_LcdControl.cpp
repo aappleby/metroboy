@@ -23,10 +23,9 @@ void P24_LcdControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p24.SACU = nor(b.p24.SEGU, b.p27.ROXY);
   c.p24.ROXO = not(b.p24.SEGU);
   c.p24.PAHO = tock_pos(a.p24.ROXO, b.p24.ROXO, b.p21.XYMU, b.p24.PAHO, b.p21.XYDO);
-  c.p24.TOFU = not(b.p01.RESET_VIDEO);
 
   c.p24.POME = nor(b.p29.AVAP, b.p24.POFY);
-  c.p24.RUJU = or(b.p24.PAHO, b.p24.TOFU, b.p24.POME);
+  c.p24.RUJU = or(b.p24.PAHO, b.p01.TOFU, b.p24.POME);
   c.p24.POFY = not(b.p24.RUJU);
   c.p24.RUZE = not(b.p24.POFY);
 
@@ -36,7 +35,7 @@ void P24_LcdControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // Vertical sync
 
   c.p24.NERU = nor(b.p21.V0, b.p21.V1, b.p21.V2, b.p21.V3, b.p21.V4, b.p21.V5, b.p21.V6, b.p21.V7);
-  c.p24.MEDA = tock_pos(a.p21.NYPE, b.p21.NYPE, b.p21.LYFE, b.p24.MEDA, b.p24.NERU);
+  c.p24.MEDA = tock_pos(a.p21.NYPE, b.p21.NYPE, b.p01.LYFE, b.p24.MEDA, b.p24.NERU);
   c.p24.MURE = not(b.p24.MEDA);
 
   c.chip.S = b.p24.MURE;
@@ -44,9 +43,9 @@ void P24_LcdControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
 
   c.p24.LOFU = not(b.p21.RUTU);
-  c.p24.LUCA = tock_pos(a.p24.LOFU, b.p24.LOFU, b.p21.LYFE, b.p24.LUCA, !b.p24.LUCA);
+  c.p24.LUCA = tock_pos(a.p24.LOFU, b.p24.LOFU, b.p01.LYFE, b.p24.LUCA, !b.p24.LUCA);
   c.p24.MAGU = xor(b.p21.NAPO, b.p24.LUCA);
-  c.p24.LEBE = tock_pos(!a.p24.LUCA, !b.p24.LUCA, b.p21.LYFE, b.p24.LEBE, !b.p24.LEBE);
+  c.p24.LEBE = tock_pos(!a.p24.LUCA, !b.p24.LUCA, b.p01.LYFE, b.p24.LEBE, !b.p24.LEBE);
   c.p24.MECO = not(b.p24.MAGU);
   c.p24.KEBO = not(b.p24.MECO);
   c.p24.KASA = not(b.p21.PURE);

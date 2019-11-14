@@ -115,12 +115,12 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.XOTA = not(b.p29.XYVA);
 
   c.p29.XYFY = not(b.p29.XOTA);
-  c.p29.WUVU = tock_pos(a.p29.XOTA, b.p29.XOTA, b.p01.RESET_VIDEO, b.p29.WUVU, !b.p29.WUVU);
+  c.p29.WUVU = tock_pos(a.p29.XOTA, b.p29.XOTA, b.p01.VID_RESETn1, b.p29.WUVU, !b.p29.WUVU);
   c.p29.ALES = not(b.p21.XYVO);
   c.p29.ABOV = and(b.p21.SELA, b.p29.ALES);
-  c.p29.WOSU = tock_pos(a.p29.XYFY, b.p29.XYFY, b.p01.RESET_VIDEO, b.p29.WOSU, !b.p29.WUVU);
+  c.p29.WOSU = tock_pos(a.p29.XYFY, b.p29.XYFY, b.p01.VID_RESETn1, b.p29.WOSU, !b.p29.WUVU);
   c.p29.XUPY = not(!b.p29.WUVU);
-  c.p29.ABEZ = not(b.p28.RESET_VIDEO2n);
+  c.p29.ABEZ = not(b.p01.RESET_VIDEO2n);
   c.p29.WOJO = nor(!b.p29.WUVU, !b.p29.WOSU);
   c.p29.XYSO = not(b.p29.WOJO);
 
@@ -143,8 +143,8 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // center thing
 
-  c.p29.TOBU = tock_pos(a.p01.TAVA, b.p01.TAVA, b.p21.XYMU, b.p29.TOBU, b.p29.TULY);
-  c.p29.VONU = tock_pos(a.p01.TAVA, b.p01.TAVA, b.p21.XYMU, b.p29.VONU, !b.p29.TOBU);
+  c.p29.TOBU = tock_pos(a.p01.CLK_AxCxExGx10, b.p01.CLK_AxCxExGx10, b.p21.XYMU, b.p29.TOBU, b.p29.TULY);
+  c.p29.VONU = tock_pos(a.p01.CLK_AxCxExGx10, b.p01.CLK_AxCxExGx10, b.p21.XYMU, b.p29.VONU, !b.p29.TOBU);
 
   c.p29.LAPE = not(b.p01.CLK_AxCxExGx4);
   c.p29.TEPA = not(b.p21.XYMU);
@@ -398,7 +398,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.EWOT = not(b.p29.DUKE);
   c.p29.BYVY = not(b.p29.BUCO);
 
-  c.p29.DEZY = tock_pos(a.p01.CLK_xBxDxFxH2, b.p01.CLK_xBxDxFxH2, b.p01.RESET_VIDEO, b.p29.DEZY, b.p29.DYTY);
+  c.p29.DEZY = tock_pos(a.p01.CLK_xBxDxFxH2, b.p01.CLK_xBxDxFxH2, b.p01.VID_RESETn1, b.p29.DEZY, b.p29.DYTY);
   c.p29.BESE = tock_pos(a.p29.CAKE,    b.p29.CAKE,    b.p28.AZYB,        b.p29.BESE, !b.p29.BESE);
   c.p29.CUXY = tock_pos(!a.p29.BESE,   !b.p29.BESE,   b.p28.AZYB,        b.p29.CUXY, !b.p29.CUXY);
   c.p29.BEGO = tock_pos(!a.p29.CUXY,   !b.p29.CUXY,   b.p28.AZYB,        b.p29.BEGO, !b.p29.BEGO);

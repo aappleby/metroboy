@@ -4,7 +4,6 @@ struct P27_WindowMapLookup {
 
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
-  union { bool PYRY; bool RESET_VIDEOn; };
   union { bool LENA; };
   union { bool MYMA; };
   union { bool XUHA; };
@@ -28,7 +27,7 @@ struct P27_WindowMapLookup {
 
   bool SECA;
 
-private:
+//private:
 
   bool NAZE,PEBO,POMO,NEVU,NOJO,PAGA,PEZO,NUPA;
   bool PALO,NELE,PAFU,ROGE;
@@ -50,7 +49,7 @@ private:
   bool XEJA,XAMO,XAHE,XULO,WUJU;
   bool VYTO,VEHA,VACE,VOVO,VULO;
   bool VEVY,VEZA,VOGU;
-  bool RYCE,ROSY,VEKU,TAKA,TUKU,SOWO,TEKY,TAVA,SOBU,SUDA;
+  bool RYCE,VEKU,TAKA,TUKU,SOWO,TEKY,TAVA,SOBU,SUDA;
 };
 
 

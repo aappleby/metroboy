@@ -10,7 +10,6 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p28.YVAL = not(b.p28.CLK3);
   c.p28.YRYV = not(b.p28.YVAL);
   c.p28.ZODO = not(b.p28.YRYV);
-  c.p28.ATAR = not(b.p01.RESET_VIDEO);
 
   //----------
 
@@ -19,10 +18,9 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p28.ANEL = tock_pos(a.p28.AWOH, b.p28.AWOH, b.p29.ABEZ, b.p28.ANEL, b.p29.CATU);
   c.p28.BYHA = or(b.p28.ANEL, b.p28.ABAF, b.p29.ABEZ);
   c.p28.ATEJ = not(b.p28.BYHA);
-  c.p28.AMYG = not(b.p01.RESET_VIDEO);
-  c.p28.ANOM = nor(b.p28.RESET_VIDEO2n, b.p28.ATEJ);
+  c.p28.ANOM = nor(b.p01.RESET_VIDEO2n, b.p28.ATEJ);
   c.p28.AZYB = not(b.p28.ATEJ);
-  c.p28.ABAK = or(b.p28.ATEJ, b.p28.AMYG);
+  c.p28.ABAK = or(b.p28.ATEJ, b.p01.AMYG);
   c.p28.BYVA = not(b.p28.ABAK);
 
   //----------
@@ -40,7 +38,7 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p28.ASEN = or(b.p28.RESET_VIDEO2n, b.p29.AVAP);
+  c.p28.ASEN = or(b.p01.RESET_VIDEO2n, b.p29.AVAP);
   c.p28.BOGE = not(b.p04.MATU);
   c.p28.BESU = unk2(b.p29.CATU, b.p28.ASEN);
   c.p28.AJON = and(b.p21.XYMU, b.p28.BOGE);
@@ -49,19 +47,19 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p28.APAR = not(b.p28.ACYL);
   c.p28.AJUJ = nor(b.p04.MATU, b.p28.ACYL, b.p28.AJON);
   c.p28.ASAM = or(b.p28.ACYL, b.p21.XYMU, b.p04.MATU);
-  c.p28.XYNY = not(b.p04.MOPA_PHI);
-  c.p28.XUTO = and(b.p07.SARO, b.p07.CPU_WR2);
-  c.p28.AMAB = and(b.p07.SARO, b.p28.AJUJ);
-  c.p28.ADAH = not(b.p07.SARO);
+  c.p28.XYNY = not(b.p04.PHI_OUT);
+  c.p28.XUTO = and(b.p07.ADDR_OAM, b.p07.CPU_WR2);
+  c.p28.AMAB = and(b.p07.ADDR_OAM, b.p28.AJUJ);
+  c.p28.ADAH = not(b.p07.ADDR_OAM);
   c.p28.WUJE = unk2(b.p28.XYNY, b.p28.XUTO);
   c.p28.XUPA = not(b.p28.WUJE);
   c.p28.APAG = amux2(b.p28.XUPA, b.p28.AMAB, b.p28.AJUJ, b.p28.ADAH);
 
   c.p28.WEFY = and(b.p29.TUVO, b.p29.TYFO);
-  c.p28.BOFE = not(b.p04.CATY);
+  c.p28.BOFE = not(b.p04.FROM_CPU5);
   c.p28.AJEP = and(b.p28.ACYL, b.p29.XOCE);
   c.p28.XUJA = not(b.p28.WEFY);
-  c.p28.BOTA = nor(b.p28.BOFE, b.p07.SARO, b.p07.CPU_RD2);
+  c.p28.BOTA = nor(b.p28.BOFE, b.p07.ADDR_OAM, b.p07.CPU_RD2);
   c.p28.ASYT = and(b.p28.AJEP, b.p28.XUJA, b.p28.BOTA);
   c.p28.BODE = not(b.p28.ASYT);
 
@@ -195,7 +193,7 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p28.ZYFO = not((b.p28.WACU & b.p28.OAM_ADDR_CPU) | (b.p28.WYDU & b.p28.OAM_ADDR_RENDER) | (b.p28.WUWE & b.p28.OAM_ADDR_PARSE) | (b.p28.FESA & b.p04.OAM_ADDR_DMA));
   c.p28.GEKA = not((b.p28.GARO & b.p28.OAM_ADDR_CPU) | (b.p28.GECA & b.p28.OAM_ADDR_RENDER) | (b.p28.GEFY & b.p28.OAM_ADDR_PARSE) | (b.p28.FODO & b.p04.OAM_ADDR_DMA));
 
-  c.p28.MYNU = nand(b.p07.CPU_RD2, b.p04.CATY);
+  c.p28.MYNU = nand(b.p07.CPU_RD2, b.p04.FROM_CPU5);
   c.p28.LEKO = not(b.p28.MYNU);
   c.p28.WAFO = not(b.p28.GEKA);
   c.p28.GUKO = and(b.p28.WAFO, b.p28.AMAB, b.p28.LEKO);
@@ -208,8 +206,10 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p28.ZONE = not(b.p28.YLYC);
   c.p28.ZOFE = not(b.p28.YNYC);
 
+  // these are unused
+  /*
   c.p28.XUCA = not(b.p28.WARU);
-  c.p28.XECY = tock_pos(a.p28.XUCA, b.p28.XUCA, 0,          b.p28.XECY, b.p01.RESET7n); // ? weird
-  c.p28.XUVA = tock_pos(a.p28.XYNY, b.p28.XYNY, b.p23.XARE, b.p28.XUVA, b.p28.XECY);
-
+  c.p28.XECY = tock_pos(a.p28.XUCA, b.p28.XUCA, 0,          b.p28.XECY, b.p01.SYS_RESETn4); // ? weird
+  c.p28.XUVA = tock_pos(a.p28.XYNY, b.p28.XYNY, b.p01.XARE, b.p28.XUVA, b.p28.XECY);
+  */
 }

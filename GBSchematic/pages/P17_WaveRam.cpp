@@ -20,7 +20,7 @@ void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
   c.p17.ARUC = not(b.p01.CLK_xBxDxFxH1);
   c.p17.COZY = not(b.p01.CLK_xBxDxFxH1);
 
-  c.p17.ABUR = not(b.p01.BUKE);
+  c.p17.ABUR = not(b.p01.CPUCLK_xxxxxFxx);
   c.p17.BORY = not(b.p17.ABUR);
   c.p17.BETA = or(b.p17.WAVE_RAM_WR, b.p17.WAVE_RAM_RDn, b.p17.BORY);
   c.p17.AZOR = not(b.p17.BETA);

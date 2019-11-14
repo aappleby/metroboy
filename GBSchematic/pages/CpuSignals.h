@@ -16,13 +16,15 @@ struct CpuSignals {
   //----------
   // top right port
 
+  // ADDR_VALID and one of the other signals might be switched
+
   bool CPU_RAW_RD;     // PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
-  bool FROM_CPU3;      // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
+  bool CPU_RAW_WR;     // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
   bool T1nT2;          // PORTA_02: <- P07.T1nT2
   bool SYRO;           // PORTA_03: <- P25.SYRO
   bool READ_BOOTROM;   // PORTA_04: <- P07.READ_BOOTROM
   bool T1T2n;          // PORTA_05: <- P07.T1T2n
-  bool FROM_CPU4;      // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
+  bool ADDR_VALID;     // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
 
   //----------
   // 32 signals coming off the bottom right, some are ground
@@ -67,7 +69,7 @@ struct CpuSignals {
   bool AFER;           // PORTC_01: <- P01.AFER , reset related reg
   bool PIN_RESET;      // PORTC_02: <- PIN_RESET directly connected to the pad
   bool CLKIN_A;        // PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  bool TABA;           // PORTC_04: <- P01.TABA, more reset stuff
+  bool CPU_RESET;      // PORTC_04: <- P01.CPU_RESET
 
   // I think all the clocks that go to the CPU are downstream of ABOL, so yeah ABOL could be
   // clock request
@@ -87,7 +89,7 @@ struct CpuSignals {
   bool FROM_CPU5;  // PORTD_05: -> FROM_CPU5 - controls driving the external data pins onto the internal data bus and other stuff. is this actually a clock, or like OE?
 
   bool BUKE;       // PORTD_06: <- P01.BUKE _____f__
-  bool BOMA;       // PORTD_07: <- P01.BOMA _____fgh connection not indicated on P01
+  bool RESET_CLK;  // PORTD_07: <- P01.RESET_CLK _____fgh
   bool BOGA;       // PORTD_08: <- P01.BOGA abcde___
 
   //----------

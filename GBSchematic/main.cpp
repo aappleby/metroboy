@@ -77,8 +77,10 @@ void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
   Gameboy b = a;
   b.timestamp = a.timestamp + 1;
 
-  b.cpu.FROM_CPU3 = false;
-  b.cpu.FROM_CPU4 = false;
+  b.cpu.CPU_RAW_RD = false;
+  b.cpu.CPU_RAW_WR = false;
+  b.cpu.ADDR_VALID = true;
+
   b.cpu.FROM_CPU5 = false;
   b.cpu.CPUCLK_REQ = true;
 
@@ -120,19 +122,9 @@ void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
 
 const std::vector<SignalData> sample_signals =
 {
-  SignalData("RESET",   offsetof(Gameboy, chip.RST)),
-  SignalData("CLKIN_B", offsetof(Gameboy, chip.CLKIN_B)),
-
-  SignalData("p01.CLK_AxCxExGx1", offsetof(Gameboy, p01.CLK_AxCxExGx1)),
-
-  SignalData("BAVU",          offsetof(Gameboy, p01.BAVU)),
-  //SignalData("p09.APU_RESET",     offsetof(Gameboy, p09.APU_RESET1)),
-  //SignalData("p09.APU_RESET3n",   offsetof(Gameboy, p09.APU_RESETn3)),
-
-  //c.p09.AJER = tock_pos(a.p01.CLK_AxCxExGx1, b.p01.CLK_AxCxExGx1, b.p09.APU_RESET3n, b.p09.AJER, !b.p09.AJER);
-
-  //SignalData("p01",  offsetof(Gameboy, p01), P01_ClocksReset::signals()),
-  //SignalData("p03",  offsetof(Gameboy, p03), P03_Timer::signals()),
+  SignalData("RESET",       offsetof(Gameboy, chip.RST)),
+  SignalData("CLKIN_B",     offsetof(Gameboy, chip.CLKIN_B)),
+  SignalData("BUTO",        offsetof(Gameboy, p01.BUTO)),
 };
 
 //-----------------------------------------------------------------------------

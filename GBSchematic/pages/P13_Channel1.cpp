@@ -77,7 +77,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p13.KOTE = and(b.p13.JOVA, b.p13.KENU, b.p13.KERA);
   c.p13.KURY = not(b.p13.KOZY);
-  c.p13.KUKU = nor(b.p01.ABOL, b.p13.KURY);
+  c.p13.KUKU = nor(b.p01.CPUCLK_REQn, b.p13.KURY);
   c.p13.KOMA = nor(b.p11.FF12_D0, b.p11.FF12_D1, b.p11.FF12_D2);
   c.p13.KORO = nor(b.p13.KUKU, b.p13.KOMA);
   c.p13.KOZY = tock_pos(a.p01.HORU_512, b.p01.HORU_512, b.p13.KORO, b.p13.KOZY, b.p13.KOTE);

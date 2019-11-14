@@ -81,7 +81,10 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p25.SOSE = and(b.A15, b.p25.TEFA); // odd...
   c.p25.TUCA = and(b.p25.SOSE, b.p01.CPU_RD_SYNC);
   c.p25.TUJA = and(b.p25.SOSE, b.p01.CPU_WR_SYNC);
-  c.p25.TEGU = nand(b.p25.SOSE, b.p01.AFAS);
+
+  // what is this doing to the clock?
+  c.p25.TEGU = nand(b.p25.SOSE, b.p01.CLK_xxxDxxxx1);
+
   c.p25.TAVY = not(b.chip.MOE_C);
   c.p25.SYCY = not(b.p07.MODE_DBG2);
   c.p25.SOTO = tock_pos(a.p25.SYCY, b.p25.SYCY, b.p01.SYS_RESETn2, b.p25.SOTO, !b.p25.SOTO);
@@ -165,6 +168,7 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   //----------
+  // more debug stuff
 
   c.p25.TUSO = nor(b.p07.MODE_DBG2, b.p01.CPUCLK_xxxxxFGH2);
   c.p25.SOLE = not(b.p25.TUSO);

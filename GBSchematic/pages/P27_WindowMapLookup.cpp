@@ -65,7 +65,6 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.PECU = nand(b.p24.ROXO, b.p27.ROZE);
   c.p27.RONE = nand(b.p27.ROXY, b.p27.SUHA, b.p27.SYBY, b.p27.SOZU);
   c.p27.POHU = not(b.p27.RONE);
-  c.p27.MOXE = not(b.p01.CLK_AxCxExGx4);
   c.p27.PANY = nor(b.p27.NUKO, b.p27.ROZE);
   c.p27.SEKO = nor(b.p27.RENE, !b.p27.RYFA);
   c.p27.ROMO = not(b.p24.POKY);
@@ -89,7 +88,6 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.PASO = nor(b.p27.TEVO, b.p27.PAHA);
   c.p27.VETU = and(b.p27.TEVO, b.p27.PORE);
   c.p27.ROCO = not(b.p24.SEGU);
-  c.p27.MEHE = not(b.p01.CLK_AxCxExGx4);
   c.p27.NYFO = not(b.p27.NUNY);
   c.p27.MOSU = not(b.p27.NYFO);
   c.p27.NYXU = nor(b.p29.AVAP, b.p27.MOSU, b.p27.TEVO);
@@ -115,8 +113,6 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // dunno, top right
 
   c.p27.MOCE = nand(b.p27.LAXU, b.p27.NYVA, b.p27.NYXU);
-  c.p27.LEBO = nand(b.p01.CLK_AxCxExGx4, b.p27.MOCE);
-  c.p27.MYVO = not(b.p01.CLK_AxCxExGx4);
   c.p27.LYRY = not(b.p27.MOCE);
   c.p27.LAXE = not(b.p27.LAXU);
   c.p27.MYSO = nor(b.p24.LOBY, b.p27.LAXE, b.p27.LYZU);
@@ -136,6 +132,9 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.NETA = and(b.p27.LENA, b.p27.NOGU);
 
   c.p27.LYZU = tock_pos( a.p01.CLK_AxCxExGx4,  b.p01.CLK_AxCxExGx4, b.p21.XYMU, b.p27.LYZU,  b.p27.LAXU);
+
+  // weird clock is weird
+  c.p27.LEBO = nand(b.p01.CLK_AxCxExGx4, b.p27.MOCE);
   c.p27.LAXU = tock_pos( a.p27.LEBO,  b.p27.LEBO, b.p27.NYXU, b.p27.LAXU, !b.p27.LAXU);
   c.p27.MESU = tock_pos(!a.p27.LAXU, !b.p27.LAXU, b.p27.NYXU, b.p27.MESU, !b.p27.MESU);
   c.p27.NYVA = tock_pos(!a.p27.MESU, !b.p27.MESU, b.p27.NYXU, b.p27.NYVA, !b.p27.NYVA);
@@ -202,7 +201,6 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.TUKU = not(b.p24.TOMU);
   c.p27.SOWO = not(b.p27.TAKA);
   c.p27.TEKY = and(b.p29.FEPO, b.p27.TUKU, b.p27.LYRY, b.p27.SOWO);
-  c.p27.TAVA = not(b.p01.CLK_xBxDxFxH5);
 
   c.p27.SOBU = tock_pos(a.p27.TAVA, b.p27.TAVA, b.p27.VYPO, b.p27.SOBU, b.p27.TEKY);
   c.p27.SUDA = tock_pos(a.p01.CLK_xBxDxFxH5, b.p01.CLK_xBxDxFxH5, b.p27.VYPO, b.p27.SUDA, b.p27.SOBU);

@@ -112,7 +112,7 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF13 NR13
 
-  c.p11.FULO = nor(b.p09.DYFA_1M, b.p13.GEXU);
+  c.p11.FULO = nor(b.p01.DYFA_1M, b.p13.GEXU);
   c.p11.EPYK = nor(b.p13.FEKU, b.p13.COPE);
   c.p11.GEKU = not(b.p11.FULO);
   c.p11.FUME = not(b.p11.EPYK);

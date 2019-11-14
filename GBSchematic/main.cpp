@@ -124,7 +124,7 @@ const std::vector<SignalData> sample_signals =
 {
   SignalData("RESET",       offsetof(Gameboy, chip.RST)),
   SignalData("CLKIN_B",     offsetof(Gameboy, chip.CLKIN_B)),
-  SignalData("BUTO",        offsetof(Gameboy, p01.BUTO)),
+  SignalData("CLK_ABCDExxx3",        offsetof(Gameboy, p01.CLK_ABCDExxx3)),
 };
 
 //-----------------------------------------------------------------------------

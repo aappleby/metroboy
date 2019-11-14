@@ -75,14 +75,14 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.KERA = count_pos(a.p13.KENU, b.p13.KENU, b.p13.KUXU, b.p13.KERA, !b.p11.FF12_D2);
 
   c.p13.KOTE = and(b.p13.JOVA, b.p13.KENU, b.p13.KERA);
+  c.p13.KOMA = nor(b.p11.FF12_D0, b.p11.FF12_D1, b.p11.FF12_D2);
+  c.p13.KOZY = tock_pos(a.p01.HORU_512, b.p01.HORU_512, b.p13.KORO, b.p13.KOZY, b.p13.KOTE);
   c.p13.KURY = not(b.p13.KOZY);
   c.p13.KUKU = nor(b.p01.CPUCLK_REQn, b.p13.KURY);
-  c.p13.KOMA = nor(b.p11.FF12_D0, b.p11.FF12_D1, b.p11.FF12_D2);
   c.p13.KORO = nor(b.p13.KUKU, b.p13.KOMA);
-  c.p13.KOZY = tock_pos(a.p01.HORU_512, b.p01.HORU_512, b.p13.KORO, b.p13.KOZY, b.p13.KOTE);
 
-  c.p13.FARE = tock_pos(a.p09.DYFA_1M, b.p09.DYFA_1M, b.p13.ERUM, b.p13.FARE, b.p13.FEKU);
-  c.p13.FYTE = tock_pos(a.p09.DYFA_1M, b.p09.DYFA_1M, b.p13.ERUM, b.p13.FYTE, b.p13.FARE);
+  c.p13.FARE = tock_pos(a.p01.DYFA_1M, b.p01.DYFA_1M, b.p13.ERUM, b.p13.FARE, b.p13.FEKU);
+  c.p13.FYTE = tock_pos(a.p01.DYFA_1M, b.p01.DYFA_1M, b.p13.ERUM, b.p13.FYTE, b.p13.FARE);
   c.p13.EGET = nor(b.p09.APU_RESET1, b.p13.FARE);
   c.p13.GEFE = not(b.p13.EGET);
 
@@ -92,7 +92,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.EZEC = tock_pos(a.p01.PHIn, b.p01.PHIn, b.p13.DUKA, b.p13.EZEC, b.p13.DUPE);
 
   c.p13.FYFO = or(b.p13.GEFE, b.p13.EZEC); // unk2
-  c.p13.FEKU = tock_pos(a.p09.DYFA_1M, b.p09.DYFA_1M, b.p13.EGET, b.p13.FEKU, b.p13.FYFO);
+  c.p13.FEKU = tock_pos(a.p01.DYFA_1M, b.p01.DYFA_1M, b.p13.EGET, b.p13.FEKU, b.p13.FYFO);
   c.p13.KEKO = or(b.p09.APU_RESET1, b.p13.FEKU);
   c.p13.KABA = or(b.p09.APU_RESET1, b.p13.FEKU);
   c.p13.KYLY = not(b.p13.KABA);
@@ -137,7 +137,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p13.CYTE = not(b.p13.COMY);
   c.p13.COPE = not(b.p13.CYTE);
-  c.p13.DOKA = and(b.p13.COMY, b.p09.DYFA_1M);
+  c.p13.DOKA = and(b.p13.COMY, b.p01.DYFA_1M);
   c.p13.CALA = not(b.p11.COPU); // not sure about this, says COPU_COUT (carry out) on schematic...
   c.p13.DYRU = nor(b.p09.APU_RESET1, b.p13.FEKU, b.p13.DOKA);
   c.p13.COMY = tock_pos(a.p13.CALA, b.p13.CALA, b.p13.DYRU, b.p13.COMY, !b.p13.COMY);
@@ -156,7 +156,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.BURY = nor(b.p13.BAVE, b.p09.APU_RESET1);
   c.p13.COZE = and(b.p13.CAXY, b.p13.CYPU, b.p13.CUPO);
 
-  c.p13.BEXA = tock_pos(a.p09.AJER_2M, b.p09.AJER_2M, b.p13.BURY, b.p13.BEXA, b.p13.COZE);
+  c.p13.BEXA = tock_pos(a.p01.AJER_2M, b.p01.AJER_2M, b.p13.BURY, b.p13.BEXA, b.p13.COZE);
 
   //----------
   // Sweep shift counter
@@ -170,7 +170,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.EPUK = nor(b.p13.ADAD, b.p09.APU_RESET1);
   c.p13.EVOL = nor(b.p13.BEXA, b.p13.FYTE);
   c.p13.FEMU = unk2(b.p13.EPUK, b.p13.EVOL);
-  c.p13.EGYP = nor(b.p09.DYFA_1M, b.p13.FEMU);
+  c.p13.EGYP = nor(b.p01.DYFA_1M, b.p13.FEMU);
   c.p13.DODY = nor(b.p13.EGYP, b.p13.CELE);
   c.p13.EGOR = and(b.p19.DOPU, b.p13.DODY);
   c.p13.DAPU = not(b.p13.EGOR);
@@ -182,7 +182,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.COPY = and(b.p13.COPA, b.p13.CAJA, b.p13.BYRA);
   c.p13.ATAT = nor(b.p09.APU_RESET1, b.p13.BEXA);
 
-  c.p13.BYTE = tock_pos(a.p09.AJER_2M, b.p09.AJER_2M, b.p13.ATAT, b.p13.BYTE, b.p13.COPY);
+  c.p13.BYTE = tock_pos(a.p01.AJER_2M, b.p01.AJER_2M, b.p13.ATAT, b.p13.BYTE, b.p13.COPY);
 
   c.p13.ATUV = and(b.p13.BEXA, b.p12.ATYS);
   c.p13.BOJE = and(b.p13.ATUV, b.p13.BUGE);

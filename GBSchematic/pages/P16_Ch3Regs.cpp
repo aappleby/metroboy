@@ -17,7 +17,6 @@ void P16_Ch3Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     c.D7 = b.p16.GEKO;
   }
 
-  c.p16.FABO = not(b.p01.CLK_ABxxEFxx1);
   c.p16.GARA = tock_pos(a.p16.FABO, b.p16.FABO, b.p16.FURY, b.p16.GARA, b.p16.GOFY);
   c.p16.GYTA = tock_pos(a.p16.FABO, b.p16.FABO, b.p16.GAZE, b.p16.GYTA, b.p16.GARA);
   c.p16.GYRA = tock_pos(a.p01.CLK_ABxxEFxx1, b.p01.CLK_ABxxEFxx1, b.p16.GAZE, b.p16.GYRA, b.p16.GYTA);

@@ -12,7 +12,7 @@ struct P05_JoypadIO {
 
   static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
 
-private:
+//private:
 
   // FF00 JOYP
   bool JUTE_00,KECY_01,JALE_02,KYME_03,KELY_04,COFY_05,KUKO_06,KERU_07;

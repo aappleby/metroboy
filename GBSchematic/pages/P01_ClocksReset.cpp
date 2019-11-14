@@ -107,46 +107,47 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p01.AFAR        = nor(b.p01.CPU_RESETn, b.chip.RST);
   c.p01.ASOL        = or (b.p01.AFAR, b.chip.RST);
-  c.p01.RESET_REG   = tock_pos(a.p01.RESET_CLK, b.p01.RESET_CLK, b.p07.MODE_PROD, b.p01.RESET_REG, b.p01.ASOL);
+  /*AFER*/ c.p01.RESET_REG   = tock_pos(a.p01.RESET_CLK, b.p01.RESET_CLK, b.p07.MODE_PROD, b.p01.RESET_REG, b.p01.ASOL);
   c.p01.AVOR        = or(b.p01.RESET_REG, b.p01.ASOL);
   
-  c.p01.SYS_RESETn1 = not(b.p01.AVOR);
+  /*ALUR*/ c.p01.SYS_RESETn1 = not(b.p01.AVOR);
 
-  c.p01.SYS_RESET1  = not(b.p01.SYS_RESETn1);
-  c.p01.SYS_RESET2  = not(b.p01.SYS_RESETn1);
+  /*DULA*/ c.p01.SYS_RESET1  = not(b.p01.SYS_RESETn1);
+  /*P09.HAPO*/ c.p01.SYS_RESET2  = not(b.p01.SYS_RESETn1);
 
-  c.p01.SYS_RESETn2 = not(b.p01.SYS_RESET1);
-  c.p01.SYS_RESETn3 = not(b.p01.SYS_RESET2);
+  /*CUNU*/ c.p01.SYS_RESETn2 = not(b.p01.SYS_RESET1);
+  /*P09.GUFO*/ c.p01.SYS_RESETn3 = not(b.p01.SYS_RESET2);
 
-  c.p01.SYS_RESET3  = not(b.p01.SYS_RESETn2);
+  /*XORE*/ c.p01.SYS_RESET3  = not(b.p01.SYS_RESETn2);
 
-  c.p01.SYS_RESETn4 = not(b.p01.SYS_RESET3);
-  c.p01.SYS_RESETn5 = not(b.p01.SYS_RESET3);
-  c.p01.SYS_RESETn6 = not(b.p01.SYS_RESET3);
-  c.p01.SYS_RESETn7 = not(b.p01.SYS_RESET3);
+  /*XEBE*/ c.p01.SYS_RESETn4 = not(b.p01.SYS_RESET3);
+  /*WALU*/ c.p01.SYS_RESETn5 = not(b.p01.SYS_RESET3);
+  /*WESY*/ c.p01.SYS_RESETn6 = not(b.p01.SYS_RESET3);
+  /*XARE*/ c.p01.SYS_RESETn7 = not(b.p01.SYS_RESET3);
 
   //----------
   // VID reset tree
 
-  c.p01.VID_RESET1  = and(b.p01.SYS_RESETn4, b.p23.LCD_ON); // polarity?
-  c.p01.VID_RESETn1 = not(b.p01.VID_RESET1);
+  /*XODO*/ c.p01.VID_RESET1  = and(b.p01.SYS_RESETn4, b.p23.LCD_ON); // polarity?
+  /*XAPO*/ c.p01.VID_RESETn1 = not(b.p01.VID_RESET1);
 
-  c.p01.VID_RESET2  = not(b.p01.VID_RESETn1);
-  c.p01.VID_RESET3  = not(b.p01.VID_RESETn1);
-  c.p01.VID_RESET4  = not(b.p01.VID_RESETn1);
-  c.p01.VID_RESET5  = not(b.p01.VID_RESETn1);
-  c.p01.VID_RESET6  = not(b.p01.VID_RESETn1);
-  c.p01.VID_RESET7  = not(b.p01.VID_RESETn1);
+  /*LYHA*/ c.p01.VID_RESET2  = not(b.p01.VID_RESETn1);
+  /*TOFU*/ c.p01.VID_RESET3  = not(b.p01.VID_RESETn1);
+  /*PYRY*/ c.p01.VID_RESET4  = not(b.p01.VID_RESETn1);
+  /*ROSY*/ c.p01.VID_RESET5  = not(b.p01.VID_RESETn1);
+  /*ATAR*/ c.p01.VID_RESET6  = not(b.p01.VID_RESETn1);
+  /*AMYG*/ c.p01.VID_RESET7  = not(b.p01.VID_RESETn1);
 
-  c.p01.VID_RESETn2 = not(b.p01.VID_RESET2);
-  c.p01.VID_RESETn3 = not(b.p01.VID_RESET6);
+  /*LYFE*/ c.p01.VID_RESETn2 = not(b.p01.VID_RESET2);
+  /*ABEZ*/ c.p01.VID_RESETn3 = not(b.p01.VID_RESET6);
 
   //----------
   // APU reset tree
 
-  c.p09.APU_RESET2  = or(b.p01.SYS_RESET2, !b.p09.ALL_SOUND_ON);
-  c.p09.APU_RESETn6 = not(b.p09.APU_RESET2);
-  c.p09.APU_RESETn7 = not(b.p09.APU_RESET2);
+  /*P09.JYRO*/ c.p01.APU_RST_00  = or(b.p01.SYS_RESET2, !b.p09.ALL_SOUND_ON);
+
+  c.p09.APU_RESETn6 = not(b.p01.APU_RST_00);
+  c.p09.APU_RESETn7 = not(b.p01.APU_RST_00);
   c.p09.APU_RESET1  = not(b.p09.APU_RESETn7);
 
   // holy crap fanout
@@ -219,6 +220,10 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.CLK_xBxDxFxH4 = not(b.p01.CLK_AxCxExGx3);
   c.p01.CLK_xBxDxFxH5 = not(b.p01.CLK_AxCxExGx4);
 
+  c.p17.ARUC = not(b.p01.CLK_xBxDxFxH1);
+  c.p17.COZY = not(b.p01.CLK_xBxDxFxH1);
+
+
   //----------
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
 
@@ -240,11 +245,11 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // AGUT = abcd__gh if ADDR_VALID
   // FIXME make a cell func for and(or())
-  c.p01.AGUT =  and(or(b.p01.CLK_ABCDxxxx3, b.p01.CLK_ABxxxxGH1), b.cpu.ADDR_VALID);
   
-  c.p01.CPU_WR_SYNCn  = nand(b.cpu.CPU_RAW_WR, b.p01.CLK_xxxDxxxx1);
-  c.p01.CPU_WR_SYNC   = not(b.p01.CPU_WR_SYNCn);
+  c.p01.CPU_WR_SYNCn = nand(b.cpu.CPU_RAW_WR, b.p01.CLK_xxxDxxxx1);
+  c.p01.CPU_WR_SYNC  = not(b.p01.CPU_WR_SYNCn);
 
+  c.p01.AGUT         = and(or(b.p01.CLK_ABCDxxxx3, b.p01.CLK_ABxxxxGH1), b.cpu.ADDR_VALID);
   c.p01.CPU_RD_SYNCn = or(b.p07.MODE_DBG2, b.p01.AGUT);
   c.p01.CPU_RD_SYNC  = not(b.p01.CPU_RD_SYNCn);
 
@@ -269,38 +274,32 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.XOTA = not(b.p29.XYVA);
 
   //----------
-  // Weird logic feeding into CLK_ABCDExxx1
+  // Weird logic feeding into DIV_CLK
 
-  c.p01.CPUCLK_xxxxxFxx2 = nor(b.p01.CPUCLK_REQn,
-                               b.p01.CLK_xBCDExxx2,
-                               b.p01.CLK_ABxxxxGH1);
+  /*BATE*/ c.p01.CPUCLK_xxxxxFxx2 = nor(b.p01.CPUCLK_REQn, b.p01.CLK_xBCDExxx2, b.p01.CLK_ABxxxxGH1);
+  /*BAPY*/ c.p01.CPUCLK_xxDExxxx1 = nor(b.p01.CPUCLK_REQn, b.p01.CLK_ABxxxxGH1, b.p01.CLK_xxxxEFGH1);
+  /*NULE*/ c.p01.CPUCLK_ABCDxxxx1 = nor(b.p01.CPUCLK_REQn, b.p01.CLK_xxxxEFGH1);
 
-  c.p01.CPUCLK_xxDExxxx1 = nor(b.p01.CPUCLK_REQn,
-                               b.p01.CLK_ABxxxxGH1,
-                               b.p01.CLK_xxxxEFGH1);
+  /*BASU*/ c.p01.CPUCLK_xxxxxFxxn = not(b.p01.CPUCLK_xxxxxFxx2);
+  /*BUKE*/ c.p01.CPUCLK_xxxxxFxx1 = not(b.p01.CPUCLK_xxxxxFxxn);
 
-  c.p01.CPUCLK_ABCDxxxx1 = nor(b.p01.CPUCLK_REQn,
-                               b.p01.CLK_xxxxEFGH1);
+  /*BERU*/ c.p01.CPUCLK_ABxxEFGH1 = not(b.p01.CPUCLK_xxDExxxx1);
+  /*BUFA*/ c.p01.CPUCLK_xxDExxxx2 = not(b.p01.CPUCLK_ABxxEFGH1);
+  /*BYLY*/ c.p01.CPUCLK_xxDExxxx3 = not(b.p01.CPUCLK_ABxxEFGH1);
+  /*BOLO*/ c.p01.CPUCLK_ABxxEFGH2 = not(b.p01.CPUCLK_xxDExxxx2);
+  /*BYDA*/ c.p01.CPUCLK_ABxxEFGH3 = not(b.p01.CPUCLK_xxDExxxx3);
 
-  c.p01.CPUCLK_xxxxxFxxn = not(b.p01.CPUCLK_xxxxxFxx2);
-  c.p01.CPUCLK_xxxxxFxx  = not(b.p01.CPUCLK_xxxxxFxxn);
+  /*BYRY*/ c.p01.CPUCLK_xxxxEFGH1 = not(b.p01.CPUCLK_ABCDxxxx1);
+  /*BUDE*/ c.p01.CPUCLK_ABCDxxxx2 = not(b.p01.CPUCLK_xxxxEFGH1);
+  /*BEKO*/ c.p01.CPUCLK_xxxxEFGH2 = not(b.p01.CPUCLK_ABCDxxxx2);
 
-  c.p01.CPUCLK_ABxxEFGH1 = not(b.p01.CPUCLK_xxDExxxx1);
-  c.p01.CPUCLK_xxDExxxx2 = not(b.p01.CPUCLK_ABxxEFGH1);
-  c.p01.CPUCLK_xxDExxxx3 = not(b.p01.CPUCLK_ABxxEFGH1);
-  c.p01.CPUCLK_ABxxEFGH2 = not(b.p01.CPUCLK_xxDExxxx2);
-  c.p01.CPUCLK_ABxxEFGH3 = not(b.p01.CPUCLK_xxDExxxx3);
+  /*BEVA*/ c.p01.CPUCLK_ABCDxxxx3 = not(b.p01.CPUCLK_xxxxEFGH1);
+  /*BAVY*/ c.p01.CPUCLK_xxxxEFGH3 = not(b.p01.CPUCLK_ABCDxxxx3);
 
-  c.p01.CPUCLK_xxxxEFGH1 = not(b.p01.CPUCLK_ABCDxxxx1);
-  c.p01.CPUCLK_ABCDxxxx2 = not(b.p01.CPUCLK_xxxxEFGH1);
-  c.p01.CPUCLK_ABCDxxxx3 = not(b.p01.CPUCLK_xxxxEFGH1);
-  c.p01.CPUCLK_xxxxEFGH2 = not(b.p01.CPUCLK_ABCDxxxx2);
-  c.p01.CPUCLK_xxxxEFGH3 = not(b.p01.CPUCLK_ABCDxxxx3);
-
-  c.p01.CPUCLK_ABCDxxxx4 = nand(b.p01.CPUCLK_ABxxEFGH2,
-                                b.p01.CPUCLK_ABxxEFGH3,
-                                b.p01.CPUCLK_xxxxEFGH2,
-                                b.p01.CPUCLK_xxxxEFGH3);
+  /*BEJA*/ c.p01.CPUCLK_ABCDxxxx4 = nand(b.p01.CPUCLK_ABxxEFGH2,
+                                         b.p01.CPUCLK_ABxxEFGH3,
+                                         b.p01.CPUCLK_xxxxEFGH2,
+                                         b.p01.CPUCLK_xxxxEFGH3);
 
   c.p01.CPUCLK_xxxxEFGH4 = not(b.p01.CPUCLK_ABCDxxxx4);
   c.p01.CPUCLK_ABCDxxxx5 = not(b.p01.CPUCLK_xxxxEFGH4);
@@ -308,12 +307,25 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // The CPUCLK_REQ cancels out here, CLK_ABCDExxx3 is not affected by it.
   c.p01.CLK_ABCDExxx3 = nand(b.p01.CLK_AxxxxFGH1, b.p01.CLK_xxxxEFGH1, b.p01.CPUCLK_xxxxEFGH5);
-  c.p01.CLK_xxxxxFGH1 = not(b.p01.CLK_ABCDExxx3);
 
+  c.p01.CLK_xxxxxFGH1 = not(b.p01.CLK_ABCDExxx3);
   c.p01.BYJU = nor(b.p01.CLK_xxxxxFGH1, b.p01.CLK_BAD2);
   c.p01.BALY = not(b.p01.BYJU);
-  c.p01.CLK_ABCDExxx1 = not(b.p01.BALY);
-  c.p01.RESET_CLK = not(b.p01.CLK_ABCDExxx1);
+
+  c.p01.DIV_CLK   = not(b.p01.BALY);
+  c.p01.RESET_CLK = not(b.p01.DIV_CLK);
+
+  //----------
+  // Scavenged clocks from elsewhere
+
+  c.p15.AZEG = not(b.p01.CLK_xBxDxFxH1);
+  c.p16.FABO = not(b.p01.CLK_ABxxEFxx1);
+  c.p17.ABUR = not(b.p01.CPUCLK_xxxxxFxx1);
+  c.p27.MOXE = not(b.p01.CLK_AxCxExGx4);
+  c.p27.MEHE = not(b.p01.CLK_AxCxExGx4);
+  c.p27.MYVO = not(b.p01.CLK_AxCxExGx4);
+  c.p27.TAVA = not(b.p01.CLK_xBxDxFxH5);
+  c.p29.LAPE = not(b.p01.CLK_AxCxExGx4);
 
   //----------
   // TO_CPU
@@ -336,14 +348,14 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.DIV_WR   = and(b.p07.CPU_WR, b.p03.FF04_FF07, b.p08.A1n, b.p03.A0n);
   c.p01.DIV_RD   = and(b.p07.CPU_RD, b.p03.FF04_FF07, b.p08.A1n, b.p03.A0n);
 
-  c.p01.DIV_00 = tock_pos(a.p01.CLK_ABCDExxx1,  b.p01.CLK_ABCDExxx1,  b.p01.DIV_RSTn, b.p01.DIV_00, !b.p01.DIV_00);
+  c.p01.DIV_00 = tock_pos(a.p01.DIV_CLK,  b.p01.DIV_CLK,  b.p01.DIV_RSTn, b.p01.DIV_00, !b.p01.DIV_00);
   c.p01.DIV_01 = tock_pos(!a.p01.DIV_00, !b.p01.DIV_00, b.p01.DIV_RSTn, b.p01.DIV_01, !b.p01.DIV_01);
   c.p01.DIV_02 = tock_pos(!a.p01.DIV_01, !b.p01.DIV_01, b.p01.DIV_RSTn, b.p01.DIV_02, !b.p01.DIV_02);
   c.p01.DIV_03 = tock_pos(!a.p01.DIV_02, !b.p01.DIV_02, b.p01.DIV_RSTn, b.p01.DIV_03, !b.p01.DIV_03);
   c.p01.DIV_04 = tock_pos(!a.p01.DIV_03, !b.p01.DIV_03, b.p01.DIV_RSTn, b.p01.DIV_04, !b.p01.DIV_04);
   c.p01.DIV_05 = tock_pos(!a.p01.DIV_04, !b.p01.DIV_04, b.p01.DIV_RSTn, b.p01.DIV_05, !b.p01.DIV_05);
 
-  c.p01.ULUR = mux2(b.p01.CLK_ABCDExxx1, !b.p01.DIV_05, b.p07.FF60_D1);
+  c.p01.ULUR = mux2(b.p01.DIV_CLK, !b.p01.DIV_05, b.p07.FF60_D1);
 
   c.p01.DIV_06 = tock_pos( a.p01.ULUR,     b.p01.ULUR,  b.p01.DIV_RSTn, b.p01.DIV_06, !b.p01.DIV_06);
   c.p01.DIV_07 = tock_pos(!a.p01.DIV_06, !b.p01.DIV_06, b.p01.DIV_RSTn, b.p01.DIV_07, !b.p01.DIV_07);
@@ -393,6 +405,16 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // Clock dividers for APU
 
+  c.p01.AJER_2M = tock_pos(a.p01.CLK_AxCxExGx1,
+                           b.p01.CLK_AxCxExGx1,
+                           b.p09.APU_RESETn3,
+                           b.p01.AJER_2M,
+                           !b.p01.AJER_2M);
+
+  c.p09.BATA = not(b.p01.AJER_2M);
+  c.p09.CALO = tock_pos(a.p09.BATA, b.p09.BATA, b.p09.APU_RESETn, b.p09.CALO, !b.p09.CALO);
+  c.p01.DYFA_1M = not(!b.p09.CALO);
+
   c.p01.CLK_AxCxExGx7 = not(b.p01.CLK_xBxDxFxH1);
   c.p01.CLK_ABxxEFxx1 = tock_pos(a.p01.CLK_AxCxExGx7,
                                  b.p01.CLK_AxCxExGx7,
@@ -400,7 +422,7 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
                                   b.p01.CLK_ABxxEFxx1,
                                  !b.p01.CLK_ABxxEFxx1);
 
-  c.p01.COKE = not(b.p09.AJER_2M);
+  c.p01.COKE = not(b.p01.AJER_2M);
   c.p01.BARA = tock_pos( a.p01.COKE,  b.p01.COKE, b.p01.APU_RESETn2, b.p01.BARA,  b.p01.DIV_10n);
   c.p01.CARU = tock_pos( a.p01.BURE,  b.p01.BURE, b.p01.APU_RESETn2, b.p01.CARU, !b.p01.CARU);
   c.p01.BYLU = tock_pos(!a.p01.CARU, !b.p01.CARU, b.p01.APU_RESETn2, b.p01.BYLU, !b.p01.BYLU);
@@ -411,9 +433,9 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.CULO = not(!b.p01.CARU);
   c.p01.APEF = not(!b.p01.BYLU);
 
-  c.p01.GALE = mux2(b.p01.HAMA_512Kn, b.p01.FYNE, b.p09.FERO);
-  c.p01.BEZE = mux2(b.p01.HAMA_512Kn, b.p01.CULO, b.p09.FERO);
-  c.p01.BULE = mux2(b.p01.HAMA_512Kn, b.p01.APEF, b.p09.FERO);
+  c.p01.GALE = mux2(b.p01.APUCLK_512Kn, b.p01.FYNE, b.p09.FERO);
+  c.p01.BEZE = mux2(b.p01.APUCLK_512Kn, b.p01.CULO, b.p09.FERO);
+  c.p01.BULE = mux2(b.p01.APUCLK_512Kn, b.p01.APEF, b.p09.FERO);
 
   c.p01.GEXY = not(b.p01.GALE);
   c.p01.COFU = not(b.p01.BEZE);
@@ -425,7 +447,7 @@ void P01_ClocksReset::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p01.ATYK = tock_pos(a.p01.CLK_AxCxExGx2, b.p01.CLK_AxCxExGx2, b.p01.APU_RESETn1,  b.p01.ATYK, !b.p01.ATYK);
   c.p01.AVOK = tock_pos(a.p01.ATYK,          b.p01.ATYK,          b.p01.APU_RESETn1,  b.p01.AVOK, !b.p01.AVOK);
-  c.p01.JESO = tock_pos(a.p01.BAVU,          b.p01.BAVU,          b.p09.APU_RESETn5, b.p01.JESO, !b.p01.JESO);
-  c.p01.BAVU = not(b.p01.AVOK);
-  c.p01.HAMA = not(!b.p01.JESO);
+  c.p01.JESO_512K = tock_pos(a.p01.BAVU_1M,          b.p01.BAVU_1M,          b.p09.APU_RESETn5, b.p01.JESO_512K, !b.p01.JESO_512K);
+  c.p01.BAVU_1M = not(b.p01.AVOK);
+  c.p01.APUCLK_512Kn = not(!b.p01.JESO_512K);
 }

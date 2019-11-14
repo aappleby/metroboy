@@ -46,7 +46,6 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p15.EROG = not(b.p15.DUJU);
   c.p15.GYPA = not(b.p15.DUJU);
 
-  c.p15.AZEG = not(b.p01.CLK_xBxDxFxH1);
   c.p15.ATEP = tock_pos(a.p15.AZEG, b.p15.AZEG, b.p15.BUWE, b.p15.ATEP, !b.p15.ATEP);
   c.p15.CAZA = tock_pos(a.p15.CEMO, b.p15.CEMO, b.p15.CEXE, b.p15.CAZA, b.p15.DORY);
 

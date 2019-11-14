@@ -5,37 +5,30 @@ struct P09_ApuControl {
 
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
-  union { bool AJER; bool AJER_2M; };
-  union { bool DYFA; bool DYFA_1M; };
+  /*P09.KEBA*/ bool APU_RESET1;
+  /*P09.AGUR*/ bool APU_RESETn;
+  /*P09.AFAT*/ bool APU_RESETn2;
+  /*P09.ATYV*/ bool APU_RESETn3;
+  /*P09.DAPA*/ bool APU_RESETn4;
+  /*P09.KAME*/ bool APU_RESETn5;
+  /*P09.KEPY*/ bool APU_RESETn6;
+  /*P09.KUBY*/ bool APU_RESETn7;
+  
+  /*P09.AGUZ*/ bool CPU_RDn;
+  /*P09.EDEK*/ bool NET03;
+  /*P09.FERO*/ bool FERO;
 
-  union { bool JYRO; bool APU_RESET2; };
-  union { bool KEBA; bool APU_RESET1; };
+  /*P09.BATA*/ bool BATA; // some 2m clock
+  /*P09.CALO*/ bool CALO; // some 2m clock
 
-  union { bool AGUR; bool APU_RESETn; };
-  union { bool AFAT; bool APU_RESETn2; };
-  union { bool ATYV; bool APU_RESETn3; };
-  union { bool DAPA; bool APU_RESETn4; };
-  union { bool KAME; bool APU_RESETn5; };
-  union { bool KEPY; bool APU_RESETn6; };
-  union { bool KUBY; bool APU_RESETn7; };
-
-
-  union { bool AGUZ; bool CPU_RDn; };
-  union { bool EDEK; bool NET03; };
-  union { bool FERO; bool FERO_Q; };
-
-  union { bool BATA; }; // some 2m clock
-  union { bool CALO; }; // some 2m clock
-
-  bool CATE;
+  /*P09.CATE*/ bool CATE;
 
 //private:
 
   // FF24 NR50
+  /*APEG,BYGA,AGER,APOS,BYRE,BUMO,COZU,BEDU*/
   union {
     uint8_t NR50;
-
-    // APEG,BYGA,AGER,APOS,BYRE,BUMO,COZU,BEDU;
     struct {
       bool NR50_0 : 1;
       bool NR50_1 : 1;
@@ -48,10 +41,9 @@ struct P09_ApuControl {
     };
   };
 
+  /*AKOD,AWED,AVUD,AXEM,AMAD,ARUX,BOCY,ATUM*/
   union {
     uint8_t NR50_D;
-
-    // AKOD,AWED,AVUD,AXEM,AMAD,ARUX,BOCY,ATUM
     struct {
       bool NR50_D0 : 1;
       bool NR50_D1 : 1;
@@ -65,10 +57,9 @@ struct P09_ApuControl {
   };
 
   // FF25 NR51
+  /*ANEV,BOGU,BAFO,ATUF,BUME,BOFA,BEFO,BEPU*/
   union {
     uint8_t NR51;
-
-    // ANEV,BOGU,BAFO,ATUF,BUME,BOFA,BEFO,BEPU
     struct {
       bool NR51_0 : 1;
       bool NR51_1 : 1;
@@ -81,10 +72,9 @@ struct P09_ApuControl {
     };
   };
 
+  /*CAPU,CAGA,BOCA,BUZU,CERE,CADA,CAVU,CUDU*/
   union { 
     uint8_t NR51_D;
-
-    // CAPU,CAGA,BOCA,BUZU,CERE,CADA,CAVU,CUDU
     struct {
       bool NR51_D0 : 1;
       bool NR51_D1 : 1;
@@ -99,32 +89,25 @@ struct P09_ApuControl {
 
   // FF26 NR52
 
-  union { bool BOSU; bool NR50_WRn1; };
-  union { bool BUBU; bool NR50_WRn2; };
-  union { bool ATAF; bool NR50_WRn3; };
+  /*P09.HADA*/ union { bool NR52_7; bool ALL_SOUND_ON; };
+  /*P09.KYDU*/ bool CPU_RD1;
 
-  union { bool BAXY; bool NR50_WR1; };
-  union { bool BOWE; bool NR50_WR2; };
+  /*P09.BEFU*/ bool NR50_RDn1;
+  /*P09.ADAK*/ bool NR50_RD1;
 
-  union { bool JURE; bool NR52_RDn1; };
-
-  union { bool HAWU; bool NR52_WRn1; };
-  union { bool BOPY; bool NR52_WRn2; };
-  union { bool FOKU; bool NR52_WRn3; };
-  union { bool ETUC; bool NR52_WR1; };
-
-  union { bool HADA; bool NR52_7; bool ALL_SOUND_ON; };
-
-  union { bool KYDU; bool CPU_RD1; };
-  union { bool BOWY; bool NR52_5; };  // secret bit?
-
-  union { bool HOPE; bool FF26_D7; };
-
-  union { bool BYMA; bool FF24n; };
-  union { bool BEFU; bool NR50_RDn1; };
-  union { bool ADAK; bool NR50_RD1; };
-
-
+  /*P09.BOSU*/ bool NR50_WRn1;
+  /*P09.BUBU*/ bool NR50_WRn2;
+  /*P09.ATAF*/ bool NR50_WRn3;
+  /*P09.BAXY*/ bool NR50_WR1;
+  /*P09.BOWE*/ bool NR50_WR2;
+  /*P09.JURE*/ bool NR52_RDn1;
+  /*P09.HAWU*/ bool NR52_WRn1;
+  /*P09.BOPY*/ bool NR52_WRn2;
+  /*P09.FOKU*/ bool NR52_WRn3;
+  /*P09.ETUC*/ bool NR52_WR1;
+  /*P09.BOWY*/ bool NR52_5; // secret bit?
+  /*P09.HOPE*/ bool FF26_D7;
+  /*P09.BYMA*/ bool FF24n;
 
   //----------
 

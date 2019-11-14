@@ -116,9 +116,9 @@ void P20_Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p20.HELU = not(b.p20.FALE);
   c.p20.HAZO = or(b.p20.HELU, b.p20.GYSU);
   c.p20.GUZY = nor(b.p20.GYSU, b.p09.APU_RESET1);
-  c.p20.GONE = tock_pos(a.p01.HAMA_512Kn, b.p01.HAMA_512Kn, b.p20.FALE, b.p20.GONE, b.p20.HAZO);
-  c.p20.GORA = tock_pos(a.p01.HAMA_512Kn, b.p01.HAMA_512Kn, b.p20.FEBY, b.p20.GORA, b.p20.GONE);
-  c.p20.GATY = tock_pos(a.p01.HAMA_512Kn, b.p01.HAMA_512Kn, b.p20.FEBY, b.p20.GATY, b.p20.GORA);
+  c.p20.GONE = tock_pos(a.p01.APUCLK_512Kn, b.p01.APUCLK_512Kn, b.p20.FALE, b.p20.GONE, b.p20.HAZO);
+  c.p20.GORA = tock_pos(a.p01.APUCLK_512Kn, b.p01.APUCLK_512Kn, b.p20.FEBY, b.p20.GORA, b.p20.GONE);
+  c.p20.GATY = tock_pos(a.p01.APUCLK_512Kn, b.p01.APUCLK_512Kn, b.p20.FEBY, b.p20.GATY, b.p20.GORA);
   c.p20.HAPU = not(b.p20.GATY);
   c.p20.GEVY = nor(b.p20.FF21_D3, b.p20.FF21_D4, b.p20.FF21_D5, b.p20.FF21_D6, b.p20.FF21_D7);
   c.p20.EFOT = and(b.p20.FF23_D6, b.p20.FUGO);

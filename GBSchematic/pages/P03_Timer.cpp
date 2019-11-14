@@ -116,9 +116,9 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // TIMA clock mux
 
-  c.p03.UVYR = not(b.p01.CLK_64K);
+  c.p03.UVYR = not(b.p01.DIV_03);
   c.p03.UKAP = mux2(b.p01.CLK_16K, b.p03.UVYR, b.p03.SOPU_0);
-  c.p03.UBOT = not(b.p01.CLK_256K);
+  c.p03.UBOT = not(b.p01.DIV_01);
   c.p03.TEKO = mux2(b.p03.UBOT, b.p01.DIV_07n, b.p03.SOPU_0);
   c.p03.TECY = mux2(b.p03.UKAP, b.p03.TEKO, b.p03.SAMY_1);
   c.p03.SOGU = nor(b.p03.TECY, !b.p03.SABO_2);
@@ -190,7 +190,7 @@ void P03_Timer::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // INT_TIMER delay
 
   c.p03.MUGY = not(b.p03.MEXU);
-  c.p03.NYDU = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p03.MUGY, b.p03.NYDU, b.p03.NUGA_7);
+  c.p03.NYDU = tock_pos(a.p01.DIV_CLK, b.p01.DIV_CLK, b.p03.MUGY, b.p03.NYDU, b.p03.NUGA_7);
   c.p03.MERY = nor(!b.p03.NYDU, b.p03.NUGA_7);
-  c.p03.MOBA = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p03.MOBA, b.p03.MERY);
+  c.p03.MOBA = tock_pos(a.p01.DIV_CLK, b.p01.DIV_CLK, b.p01.SYS_RESETn1, b.p03.MOBA, b.p03.MERY);
 }

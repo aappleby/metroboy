@@ -143,7 +143,6 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.TOBU = tock_pos(a.p01.CLK_AxCxExGx10, b.p01.CLK_AxCxExGx10, b.p21.XYMU, b.p29.TOBU, b.p29.TULY);
   c.p29.VONU = tock_pos(a.p01.CLK_AxCxExGx10, b.p01.CLK_AxCxExGx10, b.p21.XYMU, b.p29.VONU, !b.p29.TOBU);
 
-  c.p29.LAPE = not(b.p01.CLK_AxCxExGx4);
   c.p29.TEPA = not(b.p21.XYMU);
 
   c.p29.TYNO = nand(b.p29.TOXE, b.p29.SEBA, b.p29.VONU);

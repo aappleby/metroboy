@@ -89,6 +89,7 @@ void P05_JoypadIO::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   //----------
+  // weird debug thing, probably not right
 
   c.p05.AXYN = not(b.p01.CPUCLK_xxxxxFGH2);
   c.p05.ADYR = not(b.p05.AXYN);

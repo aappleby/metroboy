@@ -9,12 +9,12 @@ void P02_Interrupts::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p02.KERY = or(b.chip.P13_C, b.chip.P12_C, b.chip.P11_C, b.chip.P10_C);
 
-  c.p02.AWOB = latch_pos(b.p01.CLK_ABCDExxx1, b.p02.AWOB, b.p02.KERY);
+  c.p02.AWOB = latch_pos(b.p01.DIV_CLK, b.p02.AWOB, b.p02.KERY);
 
-  c.p02.BATU = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p02.BATU, b.p02.KERY);
-  c.p02.ACEF = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p02.ACEF, b.p02.BATU);
-  c.p02.AGEM = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p02.AGEM, b.p02.ACEF);
-  c.p02.APUG = tock_pos(a.p01.CLK_ABCDExxx1, b.p01.CLK_ABCDExxx1, b.p01.SYS_RESETn1, b.p02.APUG, c.p02.AGEM);
+  c.p02.BATU = tock_pos(a.p01.DIV_CLK, b.p01.DIV_CLK, b.p01.SYS_RESETn1, b.p02.BATU, b.p02.KERY);
+  c.p02.ACEF = tock_pos(a.p01.DIV_CLK, b.p01.DIV_CLK, b.p01.SYS_RESETn1, b.p02.ACEF, b.p02.BATU);
+  c.p02.AGEM = tock_pos(a.p01.DIV_CLK, b.p01.DIV_CLK, b.p01.SYS_RESETn1, b.p02.AGEM, b.p02.ACEF);
+  c.p02.APUG = tock_pos(a.p01.DIV_CLK, b.p01.DIV_CLK, b.p01.SYS_RESETn1, b.p02.APUG, c.p02.AGEM);
   
   c.p02.ASOK = and(b.p02.APUG, b.p02.BATU);
 

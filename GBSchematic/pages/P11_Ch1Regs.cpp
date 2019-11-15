@@ -7,59 +7,60 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // FF10 NR10
 
-  c.p11.BUZE = not(b.p10.FF10);
+  c.p11.BUZE = not(b.p10.ADDR_FF10);
   c.p11.ATYN = nor(b.p09.CPU_RDn, b.p11.BUZE);
   c.p11.ASOP = not(b.p11.ATYN);
 
-  c.p11.CENU = and(b.p10.APU_WR, b.p10.FF10);
-  c.p11.BANY = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.BANY, b.D0);
-  c.p11.ANAZ = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.ANAZ, b.D2);
-  c.p11.BOTU = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.BOTU, b.D6);
-  c.p11.AVAF = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.AVAF, b.D3);
-  c.p11.ARAX = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.ARAX, b.D1);
-  c.p11.ADEK = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.ADEK, b.D4);
-  c.p11.BANA = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.BANA, b.D5);
-
-  c.p11.AMYD = not(!b.p11.BANY);
-  c.p11.AZYP = not(!b.p11.ANAZ);
-  c.p11.AWOS = not(!b.p11.BOTU);
-  c.p11.AFOX = not(!b.p11.AVAF);
-  c.p11.ATAX = not(!b.p11.ARAX);
-  c.p11.AVEK = not(!b.p11.ADEK);
-  c.p11.AKUX = not(!b.p11.BANA);
+  c.p11.CENU = and(b.p10.APU_WR, b.p10.ADDR_FF10);
+  c.p11.CH1_SWEEP_SHIFT_0 = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.CH1_SWEEP_SHIFT_0, b.D0);
+  c.p11.CH1_SWEEP_SHIFT_1 = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.CH1_SWEEP_SHIFT_1, b.D1);
+  c.p11.CH1_SWEEP_SHIFT_2 = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.CH1_SWEEP_SHIFT_2, b.D2);
+  c.p11.CH1_SWEEP_DIR     = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.CH1_SWEEP_DIR,     b.D3);
+  c.p11.CH1_SWEEP_TIME_0  = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.CH1_SWEEP_TIME_0,  b.D4);
+  c.p11.CH1_SWEEP_TIME_1  = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.CH1_SWEEP_TIME_1,  b.D5);
+  c.p11.CH1_SWEEP_TIME_2  = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.CH1_SWEEP_TIME_2,  b.D6);
+  
+  c.p11.FF10_D0 = not(!b.p11.CH1_SWEEP_SHIFT_0);
+  c.p11.FF10_D1 = not(!b.p11.CH1_SWEEP_SHIFT_1);
+  c.p11.FF10_D2 = not(!b.p11.CH1_SWEEP_SHIFT_2);
+  c.p11.FF10_D3 = not(!b.p11.CH1_SWEEP_DIR);
+  c.p11.FF10_D4 = not(!b.p11.CH1_SWEEP_TIME_0);
+  c.p11.FF10_D5 = not(!b.p11.CH1_SWEEP_TIME_1);
+  c.p11.FF10_D6 = not(!b.p11.CH1_SWEEP_TIME_2);
 
   if (b.p11.ASOP) {
-    c.D0 = b.p11.AMYD;
-    c.D2 = b.p11.AZYP;
-    c.D6 = b.p11.AWOS;
-    c.D3 = b.p11.AFOX;
-    c.D1 = b.p11.ATAX;
-    c.D4 = b.p11.AVEK;
-    c.D5 = b.p11.AKUX;
+    c.D0 = b.p11.FF10_D0;
+    c.D1 = b.p11.FF10_D1;
+    c.D2 = b.p11.FF10_D2;
+    c.D3 = b.p11.FF10_D3;
+    c.D4 = b.p11.FF10_D4;
+    c.D5 = b.p11.FF10_D5;
+    c.D6 = b.p11.FF10_D6;
   }
 
   //----------
   // FF11 NR11
 
-  c.p11.COVU = and(b.p10.APU_WR, b.p10.FF11);
-  c.p11.DAFO = not(b.p11.COVU);
-  c.p11.CENA = tock_pos(a.p11.DAFO, b.p11.DAFO, b.p11.CEPO, b.p11.CENA, b.D6);
-  c.p11.DYCA = tock_pos(a.p11.DAFO, b.p11.DAFO, b.p11.CEPO, b.p11.DYCA, b.D7);
+  /*p11.COVU*/ c.p11.FF11_WR = and(b.p10.APU_WR, b.p10.ADDR_FF11);
+  /*p11.DAFO*/ c.p11.FF11_WRn = not(b.p11.FF11_WR);
 
-  c.p11.BUWA = not(b.p09.CPU_RDn);
-  c.p11.BEXU = nor(b.p11.BUWA, b.p10.FF11);
+  /*p11.CENA*/ c.p11.CH1_DUTY_0 = tock_pos(a.p11.FF11_WRn, b.p11.FF11_WRn, b.p11.CEPO, b.p11.CH1_DUTY_0, b.D6);
+  /*p11.DYCA*/ c.p11.CH1_DUTY_1 = tock_pos(a.p11.FF11_WRn, b.p11.FF11_WRn, b.p11.CEPO, b.p11.CH1_DUTY_1, b.D7);
 
-  c.p11.BOWO = not(!b.p11.CENA);
-  c.p11.CUDA = not(!b.p11.DYCA);
+  /*p11.BUWA*/ c.p11.CPU_RD2 = not(b.p09.CPU_RDn);
+  /*p11.BEXU*/ c.p11.FF11_RD = nor(b.p11.CPU_RD2, b.p10.ADDR_FF11); // polarity?
 
-  if (b.p11.BEXU) {
-    c.D6 = b.p11.BOWO;
-    c.D7 = b.p11.CUDA;
+  /*p11.BOWO*/ c.p11.FF11_D6 = not(!b.p11.CH1_DUTY_0);
+  /*p11.CUDA*/ c.p11.FF11_D7 = not(!b.p11.CH1_DUTY_1);
+
+  if (b.p11.FF11_RD) {
+    c.D6 = b.p11.FF11_D6;
+    c.D7 = b.p11.FF11_D7;
   }
 
   //----------
@@ -67,9 +68,9 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p11.KAGY = not(b.p11.GAXU); // unused?
 
-  c.p11.HAFU = and(b.p10.APU_WR, b.p10.FF12);
+  c.p11.HAFU = and(b.p10.APU_WR, b.p10.ADDR_FF12);
   c.p11.KYGY = not(b.p11.HAFU);
-  c.p11.GAXU = nand(b.p10.APU_WR, b.p10.FF12);
+  c.p11.GAXU = nand(b.p10.APU_WR, b.p10.ADDR_FF12);
   c.p11.FF12_D0 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.FF12_D0, b.D0);
   c.p11.FF12_D1 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.FF12_D1, b.D1);
   c.p11.FF12_D2 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.FF12_D2, b.D2);
@@ -88,7 +89,7 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p11.HEVE = not(!b.p11.FF12_D6);
   c.p11.JYSE = not(!b.p11.FF12_D7);
 
-  c.p11.HAXE = not(b.p10.FF12);
+  c.p11.HAXE = not(b.p10.ADDR_FF12);
   c.p11.HAMY = or(b.p11.HAXE, b.p09.CPU_RDn);
   if (b.p11.HAMY) {
     c.D0 = b.p11.JYNE;
@@ -96,7 +97,7 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     c.D2 = b.p11.JOKU;
   }
 
-  c.p11.GAGO = not(b.p10.FF12);
+  c.p11.GAGO = not(b.p10.ADDR_FF12);
   c.p11.HOCU = or(b.p11.GAGO, b.p09.CPU_RDn);
   if (b.p11.HOCU) {
     c.D3 = b.p11.HONO;
@@ -146,7 +147,7 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p11.CEGE = not(b.p09.CPU_RDn);
   c.p11.DAXA = nand(b.p11.CEGE, b.p09.NET03);
 
-  c.p11.CACA = not(b.p10.FF13);
+  c.p11.CACA = not(b.p10.ADDR_FF13);
   c.p11.DYPU = nor(b.p11.DAXA, b.p11.CACA);
   c.p11.EVAJ = not(b.p11.DYPU);
   if (b.p11.EVAJ) {
@@ -164,7 +165,7 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p11.DEMU = not(!b.p11.EVAK);
   c.p11.DEXO = not(!b.p11.COPU);
 
-  c.p11.CURE = not(b.p10.FF14);
+  c.p11.CURE = not(b.p10.ADDR_FF14);
   c.p11.DUPY = or(b.p11.CURE, b.p11.DAXA);
   if (b.p11.DUPY) {
     c.D0 = b.p11.DOPA;
@@ -175,14 +176,13 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF14 NR14
 
-  // why is ANUJ here?
+  c.p11.BAGE = nand(b.p16.CPU_WR_WEIRD, b.p10.ADDR_FF14); 
+  c.p11.CH1_USE_LENGTH = tock_pos(a.p11.BAGE, b.p11.BAGE, b.p11.CAMY, c.p11.CH1_USE_LENGTH, b.D6);
 
-  c.p11.BAGE = nand(b.p16.ANUJ, b.p10.FF14); 
-  c.p11.BALE = nand(b.p11.CPU_RDn, b.p10.FF14);
-  c.p11.BOKO = tock_pos(a.p11.BAGE, b.p11.BAGE, b.p11.CAMY, c.p11.BOKO, b.D6);
+  c.p11.FF14_D6 = not(!b.p11.CH1_USE_LENGTH);
 
-  c.p11.BYTU = not(!b.p11.BOKO);
-  if (b.p11.BALE) {
-    c.D6 = b.p11.BYTU;
+  c.p11.FF14_RD = nand(b.p11.CPU_RDn, b.p10.ADDR_FF14);
+  if (b.p11.FF14_RD) {
+    c.D6 = b.p11.FF14_D6;
   }
 }

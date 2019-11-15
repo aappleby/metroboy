@@ -1,14 +1,32 @@
 #pragma once
 
 struct P16_Ch3Regs {
-  union { bool GUXE; bool FF1A_D7n; bool CH3_AMP_ENn; };
-  union { bool ANUJ; };
+  /*p16.GEJO*/ bool FF1A_WR;
+  /*p16.GUCY*/ bool FF1A_WRn;
+  /*p16.GUXE*/ bool CH3_AMP_ENna;
 
-//private:
+  /*p16.FASY*/ bool FASY;
+  /*p16.FEVO*/ bool CH3_AMP_ENa;
+  /*p16.GEKO*/ bool GEKO;
+  /*p16.FUVO*/ bool FUVO;
+  /*p16.FAJU*/ bool FAJU;
+  /*p16.GUGU*/ bool GUGU;
 
-  bool GEJO,GUCY,GOVE,FUVO,GUGU,FEVO,GEKO,FASY;
-  bool FABO,GARA,GYTA,GYRA,FAJU,GAZE,FURY,GOMA,FOBA;
-  bool GULO,GOFY,EPYX,FAKO,GAVU;
+
+
+
+  /*p16.GOVE*/ bool GOVE;
+  /*p16.FABO*/ bool CLK_xxCDxxGH;
+
+  /*p16.ANUJ*/ bool CPU_WR_WEIRD;
+
+
+
+  bool GARA,GYTA,GYRA,GAZE,FURY,GOMA,FOBA;
+  bool GULO,GOFY,FAKO;
+
+  /*p16.GAVU*/ bool CH3_RESTART;
+  /*p16.EPYX*/ bool FF1E_WRn;
 
   bool KOTA,KUHA,KYHO,JAFA,KULY;
   bool KOGA_00,JOVY_01,JAXA_02,JEFE_03,JYPO_04,JOVE_05,KANA_06,KOGU_07;

@@ -29,8 +29,6 @@ struct P06_SerialLink {
 
   union { /*bool ELYS;*/ bool SER_OUT; };
 
-private:
-
   // FF01 SB
   union { /*bool URYS;*/ bool FF01_WRn; };
   union { /*bool DAKU;*/ bool FF01_WR; };

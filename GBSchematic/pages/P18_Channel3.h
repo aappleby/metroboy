@@ -4,17 +4,33 @@ struct P18_Channel3 {
 
   union { bool COKA; bool CH3_ACTIVE; };
   union { bool ERED; bool CH3_ACTIVEn; };
+
   union { bool BOLE; bool WAVE_A0; };
   union { bool AGYL; bool WAVE_A1; };
   union { bool AFUM; bool WAVE_A2; };
   union { bool AXOL; bool WAVE_A3; };
+
   union { bool BARY; bool WAVE_DAC_D0; };
   union { bool BYKA; bool WAVE_DAC_D1; };
   union { bool BOPA; bool WAVE_DAC_D2; };
   union { bool BELY; bool WAVE_DAC_D3; };
 
   union { bool GASE; };
-  union { bool EFAR; };
+
+  /*p18.DERO*/ bool WAVE_CLK;
+  /*p18.EFAR*/ bool WAVE_IDX0;
+  /*p18.ERUS*/ bool WAVE_IDX1;
+  /*p18.EFUZ*/ bool WAVE_IDX2;
+  /*p18.EXEL*/ bool WAVE_IDX3;
+  /*p18.EFAL*/ bool WAVE_IDX4;
+  /*p18.FETY*/ bool WAVE_LOOP;
+  /*p18.ETAN*/ bool WAVE_RST;
+
+  /*p18.FAPY*/ bool WAVE_IDX_D0;
+  /*p18.FARO*/ bool WAVE_IDX_D1;
+  /*p18.FOTE*/ bool WAVE_IDX_D2;
+  /*p18.FANA*/ bool WAVE_IDX_D3;
+  /*p18.FERA*/ bool WAVE_IDX_D4;
 
 //private:
 
@@ -23,16 +39,16 @@ struct P18_Channel3 {
 
   bool KUTU_00,KUPE_01,KUNU_02,KEMU_03,KYGU_04,KEPA_05,KAFO_06,KENO_07,KEJU_08,KEZA_09,JAPU_10;
 
-  bool FETY,FOTO,ETAN,GYRY,DERO;
-  bool ERUS,EFUZ,EXEL,EFAL;
+  bool FOTO,GYRY;
   bool JECO,HONY,GENO;
-  bool FAPY,FARO,FOTE,FANA,FERA;
   bool GEDO,FYGO,FOZU,EZAS,CALU,DORU,DAVO;
 
   bool GOKA,GEMY,GEGE,EZAG,EVUG,DOKY,DORE;
   bool GUDA,FEXU,GEPY,GENU,FALU;
 
-  bool BENO,ATOK;
+  bool BENO;
+
+  /*p18.ATOK*/ bool WAVE_RAM_CTRL3;
 
   bool GEVO_00;
   bool FORY_01;
@@ -44,9 +60,6 @@ struct P18_Channel3 {
   bool FYRU_07;
 
   //----------
-
-  bool GARA;         // P16.GARA
-  bool GUGU;         // P16.GUGU
 
   bool FF1A_D7n;     // P16.GUXE
 

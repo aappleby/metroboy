@@ -9,10 +9,11 @@
 void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
 
   c.p17.BOKE = not(b.p09.CPU_RDn);
-  c.p17.BENA = nand(b.p17.BOKE, b.p10.FF3X);
-  c.p17.BYZA = and(b.p10.APU_WR, b.p10.FF3X);
-  c.p17.CAZU = not(b.p17.BENA);
-  c.p17.AMYT = not(b.p17.BYZA);
+  c.p17.BENA = nand(b.p17.BOKE, b.p10.ADDR_FF3X);
+
+  c.p17.WAVE_RAM_WR  = and(b.p10.APU_WR, b.p10.ADDR_FF3X);
+  c.p17.WAVE_RAM_RDn = not(b.p17.BENA);
+  c.p17.WAVE_RAM_WRn = not(b.p17.WAVE_RAM_WR);
 
   //----------
 
@@ -33,57 +34,58 @@ void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
   c.p17.BORU = not(b.p17.BOXO);
 
   c.p17.ATUR = mux2(b.p17.BORU, b.p17.BUKU, b.p18.CH3_ACTIVE);
-  c.p17.ALER = not(b.p17.ATUR);
+  c.p17.WAVE_RAM_CTRL1 = not(b.p17.ATUR);
 
-  c.p17.BEKA = not(b.p17.BUTU_512K);
-  c.p17.COJU = not(b.p17.BUTU_512K);
-  c.p17.BAJA = not(b.p17.BUTU_512K);
-  c.p17.BUFE = not(b.p17.BUTU_512K);
+  c.p17.BEKA = not(b.p17.BUTU); // where does this go?
+  c.p17.COJU = not(b.p17.BUTU);
+  c.p17.BAJA = not(b.p17.BUTU);
+  c.p17.BUFE = not(b.p17.BUTU);
 
   //----------
 
-  c.p17.AKAF = not(b.WAVE_RD_D7);
-  c.p17.CUTO = not(b.WAVE_RD_D6);
-  c.p17.BERO = not(b.WAVE_RD_D5);
-  c.p17.BACA = not(b.WAVE_RD_D4);
-  c.p17.ADOK = not(b.WAVE_RD_D3);
-  c.p17.ATEC = not(b.WAVE_RD_D2);
-  c.p17.CEGU = not(b.WAVE_RD_D1);
-  c.p17.CUGO = not(b.WAVE_RD_D0);
+  /*p17.CUGO*/ c.p17.WAVE_D0n = not(b.WAVE_D0);
+  /*p17.CEGU*/ c.p17.WAVE_D1n = not(b.WAVE_D1);
+  /*p17.ATEC*/ c.p17.WAVE_D2n = not(b.WAVE_D2);
+  /*p17.ADOK*/ c.p17.WAVE_D3n = not(b.WAVE_D3);
+  /*p17.BACA*/ c.p17.WAVE_D4n = not(b.WAVE_D4);
+  /*p17.BERO*/ c.p17.WAVE_D5n = not(b.WAVE_D5);
+  /*p17.CUTO*/ c.p17.WAVE_D6n = not(b.WAVE_D6);
+  /*p17.AKAF*/ c.p17.WAVE_D7n = not(b.WAVE_D7);
 
-  c.p17.BEZU = not(b.p17.AKAF);
-  c.p17.DESA = not(b.p17.CUTO);
-  c.p17.BAVA = not(b.p17.BERO);
-  c.p17.BUNE = not(b.p17.BACA);
-  c.p17.BADE = not(b.p17.ADOK);
-  c.p17.BATY = not(b.p17.ATEC);
-  c.p17.DESY = not(b.p17.CEGU);
-  c.p17.DUGU = not(b.p17.CUGO);
+  /*p17.DUGU*/ c.p17.WAVE_D0 = not(b.p17.WAVE_D0n);
+  /*p17.DESY*/ c.p17.WAVE_D1 = not(b.p17.WAVE_D1n);
+  /*p17.BATY*/ c.p17.WAVE_D2 = not(b.p17.WAVE_D2n);
+  /*p17.BADE*/ c.p17.WAVE_D3 = not(b.p17.WAVE_D3n);
+  /*p17.BUNE*/ c.p17.WAVE_D4 = not(b.p17.WAVE_D4n);
+  /*p17.BAVA*/ c.p17.WAVE_D5 = not(b.p17.WAVE_D5n);
+  /*p17.DESA*/ c.p17.WAVE_D6 = not(b.p17.WAVE_D6n);
+  /*p17.BEZU*/ c.p17.WAVE_D7 = not(b.p17.WAVE_D7n);
 
   // uhhhh polarity? this is probably wrong...
   if (b.p17.WAVE_RAM_RDn) {
-    c.D7 = b.p17.BEZU;
-    c.D6 = b.p17.DESA;
-    c.D5 = b.p17.BAVA;
-    c.D4 = b.p17.BUNE;
-    c.D3 = b.p17.BADE;
-    c.D2 = b.p17.BATY;
-    c.D1 = b.p17.DESY;
-    c.D0 = b.p17.DUGU;
+    c.D7 = b.p17.WAVE_D0;
+    c.D6 = b.p17.WAVE_D1;
+    c.D5 = b.p17.WAVE_D2;
+    c.D4 = b.p17.WAVE_D3;
+    c.D3 = b.p17.WAVE_D4;
+    c.D2 = b.p17.WAVE_D5;
+    c.D1 = b.p17.WAVE_D6;
+    c.D0 = b.p17.WAVE_D7;
   }
 
-  c.p17.BEPA = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BEPA, b.WAVE_RD_D7);
-  c.p17.BORA = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BORA, b.WAVE_RD_D6);
-  c.p17.CEVO = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.CEVO, b.WAVE_RD_D5);
-  c.p17.CUVO = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.CUVO, b.WAVE_RD_D4);
-  c.p17.BEGU = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BEGU, b.WAVE_RD_D3);
-  c.p17.BUDY = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.BUDY, b.WAVE_RD_D2);
-  c.p17.CESY = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.CESY, b.WAVE_RD_D1);
-  c.p17.CYFO = tock_pos(a.p17.BUTU_512K, b.p17.BUTU_512K, b.p17.ACOR, b.p17.CYFO, b.WAVE_RD_D0);
+  /*p17.CYFO*/ c.p17.SAMPLE_0 = tock_pos(a.p17.BEKA, b.p17.BEKA, b.p17.ACOR, b.p17.SAMPLE_0, b.WAVE_D0);
+  /*p17.CESY*/ c.p17.SAMPLE_1 = tock_pos(a.p17.BUFE, b.p17.BUFE, b.p17.ACOR, b.p17.SAMPLE_1, b.WAVE_D1);
+  /*p17.BUDY*/ c.p17.SAMPLE_2 = tock_pos(a.p17.BAJA, b.p17.BAJA, b.p17.ACOR, b.p17.SAMPLE_2, b.WAVE_D2);
+  /*p17.BEGU*/ c.p17.SAMPLE_3 = tock_pos(a.p17.COJU, b.p17.COJU, b.p17.ACOR, b.p17.SAMPLE_3, b.WAVE_D3);
+  /*p17.CUVO*/ c.p17.SAMPLE_4 = tock_pos(a.p17.BEKA, b.p17.BEKA, b.p17.ACOR, b.p17.SAMPLE_4, b.WAVE_D4);
+  /*p17.CEVO*/ c.p17.SAMPLE_5 = tock_pos(a.p17.BUFE, b.p17.BUFE, b.p17.ACOR, b.p17.SAMPLE_5, b.WAVE_D5);
+  /*p17.BORA*/ c.p17.SAMPLE_6 = tock_pos(a.p17.BAJA, b.p17.BAJA, b.p17.ACOR, b.p17.SAMPLE_6, b.WAVE_D6);
+  /*p17.BEPA*/ c.p17.SAMPLE_7 = tock_pos(a.p17.COJU, b.p17.COJU, b.p17.ACOR, b.p17.SAMPLE_7, b.WAVE_D7);
 
-  // why are these using the inverted output of the ff?
-  c.p17.COPO = mux2(!b.p17.BEGU, !b.p17.BEPA, b.p18.EFAR);
-  c.p17.CUZO = mux2(!b.p17.BUDY, !b.p17.BORA, b.p18.EFAR);
-  c.p17.DAZY = mux2(!b.p17.CESY, !b.p17.CEVO, b.p18.EFAR);
-  c.p17.DATE = mux2(!b.p17.CYFO, !b.p17.CUVO, b.p18.EFAR);
+  c.p17.WAVE_PLAY_D0 = mux2n(!b.p17.SAMPLE_0, !b.p17.SAMPLE_4, b.p18.WAVE_IDX0);
+  c.p17.WAVE_PLAY_D1 = mux2n(!b.p17.SAMPLE_1, !b.p17.SAMPLE_5, b.p18.WAVE_IDX0);
+  c.p17.WAVE_PLAY_D3 = mux2n(!b.p17.SAMPLE_2, !b.p17.SAMPLE_6, b.p18.WAVE_IDX0);
+  c.p17.WAVE_PLAY_D2 = mux2n(!b.p17.SAMPLE_3, !b.p17.SAMPLE_7, b.p18.WAVE_IDX0);
+
 }
+  

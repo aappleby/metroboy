@@ -4,65 +4,86 @@ struct Gameboy;
 
 struct P10_ApuDecode {
 
-  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+  /*p10.TACE*/ bool AMP_ENn;
+  /*p10.BAFU*/ bool CPU_WRn;
+  /*p10.BOGY*/ bool APU_WR;
 
-  union { bool ATOZ; bool FF00WR; };
-  union { bool ACAT; bool FF00RD; };
-  union { bool BEZY; bool FF2Xn; };
-  union { bool BARO; bool FF3X; };
-  union { bool BANU; bool FF1Xn; };
-  union { bool CONA; bool FF2X; };
-  union { bool DOXY; bool FF26; };
-  union { bool BOGY; bool APU_WR; };
-  union { bool TACE; bool AMP_ENn; };
+  /*p10.AMUS*/ bool ADDR_xxxxxxxx0xx00000;
+  /*p10.ANAP*/ bool ADDR_111111110xx00000; // -> p07.APER
+  /*p10.BYKO*/ bool ADDR_xxxxxxxxxx0xxxxx;
+  /*p10.AKUG*/ bool ADDR_xxxxxxxxx0xxxxxx;
 
-  union { bool DYVA; bool FF10; };
-  union { bool CAFY; bool FF24; };
-  union { bool COVY; bool FF16; };
-  union { bool CORA; bool FF25; };
-  union { bool DUTU; bool FF17; };
-  union { bool EKEZ; bool FF22; };
-  union { bool EDAF; bool FF12; };
-  union { bool CUGE; bool FF23; };
-  union { bool CAXE; bool FF11; };
-  union { bool COVO; bool FF21; };
-  union { bool DOZA; bool FF19; };
-  union { bool DANU; bool FF20; };
-  union { bool DARA; bool FF18; };
-  union { bool FENY; bool FF1D; };
-  union { bool DUJA; bool FF14; };
-  union { bool DUGO; bool FF1E; };
-  union { bool EMOR; bool FF1A; };
-  union { bool DUSA; bool FF1B; };
-  union { bool DECO; bool FF13; };
-  union { bool GEFO; bool FF1C; };
+  /*p10.ATOZ*/ bool FF00_WRn;
+  /*p10.ACAT*/ bool FF00_RD;
 
-  union { bool EKAG; bool XXX6; };
+  /*p10.ATUP*/ bool ADDR_xxx0xxxx;
+  /*p10.BOXY*/ bool ADDR_xx0xxxxx;
+  /*p10.ASAD*/ bool ADDR_x0xxxxxx;
+  /*p10.AVUN*/ bool ADDR_0xxxxxxx;
 
-  union { bool ANAP; bool FF_00_20_40_60; }; // -> p07.APER
+  /*p10.ATEG*/ bool ADDR_XX1Xn;
+  /*p10.AWET*/ bool ADDR_XX2Xn;
+  /*p10.ACOM*/ bool ADDR_XX3Xn;
 
-  union { bool DYTE; bool A00_n1; };
-  union { bool DOSO; bool A00_1;  };
-  union { bool AFOB; bool A01_n1; };
-  union { bool DUPA; bool A01_1;  };
-  union { bool ABUB; bool A02_n1; };
-  union { bool DENO; bool A02_1;  };
-  union { bool ACOL; bool A03_n1; };
-  union { bool DUCE; bool A03_1;  };
+  /*p10.BUNO*/ bool ADDR_FF1X;
+  /*p10.CONA*/ bool ADDR_FF2X;
+  /*p10.BARO*/ bool ADDR_FF3X;
 
-private:
+  /*p10.BANU*/ bool ADDR_FF1Xn;
+  /*p10.BEZY*/ bool ADDR_FF2Xn;
 
+  /*p10.DYTE*/ bool ADDR_xxx0;
+  /*p10.AFOB*/ bool ADDR_xx0x;
+  /*p10.ABUB*/ bool ADDR_x0xx;
+  /*p10.ACOL*/ bool ADDR_0xxx;
+  /*p10.DOSO*/ bool ADDR_xxx1;
+  /*p10.DUPA*/ bool ADDR_xx1x;
+  /*p10.DENO*/ bool ADDR_x1xx;
+  /*p10.DUCE*/ bool ADDR_1xxx;
 
-  bool AMUS,BYKO,AKUG;
-  bool BOXY,AWET;
-  bool AVUN,ASAD,ACOM;
-  bool ATUP,ATEG,BUNO;
-  bool BAFU;
+  /*p10.DUPO*/ bool ADDR_0000an;
+  /*p10.DUNO*/ bool ADDR_0001an;
+  /*p10.DAMY*/ bool ADDR_0010an;
+  /*p10.ETUF*/ bool ADDR_0011an;
+  /*p10.ESOT*/ bool ADDR_0100an;
+  /*p10.DAZA*/ bool ADDR_0110an;
+  /*p10.DUVU*/ bool ADDR_0111an;
+  /*p10.DAFY*/ bool ADDR_1000an;
+  /*p10.DEJY*/ bool ADDR_1001an;
+  /*p10.EXAT*/ bool ADDR_1010an;
+  /*p10.EMAX*/ bool ADDR_1011an;
+  /*p10.GANY*/ bool ADDR_1100an;
+  /*p10.EMOS*/ bool ADDR_1101an;
+  /*p10.EGEN*/ bool ADDR_1110an;
 
-  bool DAFY,DAMY;
-  bool DATU,DAZA,DEJY,DEWA,DOFA;
-  bool DONA,DUFE,DUNO,DUPO,DURA;
-  bool DUVU,EGEN;
-  bool EMAX,EMOS,ESOT,ETUF,EXAT,GANY;
+  /*p10.DONA*/ bool ADDR_0000bn;
+  /*p10.DEWA*/ bool ADDR_0001bn;
+  /*p10.DOFA*/ bool ADDR_0010bn;
+  /*p10.DUFE*/ bool ADDR_0011bn;
+  /*p10.DATU*/ bool ADDR_0100bn;
+  /*p10.DURA*/ bool ADDR_0101bn;
+  /*p10.EKAG*/ bool ADDR_0110bn;
+
+  /*p10.DYVA*/ bool ADDR_FF10;
+  /*p10.CAXE*/ bool ADDR_FF11;
+  /*p10.EDAF*/ bool ADDR_FF12;
+  /*p10.DECO*/ bool ADDR_FF13;
+  /*p10.DUJA*/ bool ADDR_FF14;
+  /*p10.COVY*/ bool ADDR_FF16;
+  /*p10.DUTU*/ bool ADDR_FF17;
+  /*p10.DARA*/ bool ADDR_FF18;
+  /*p10.DOZA*/ bool ADDR_FF19;
+  /*p10.EMOR*/ bool ADDR_FF1A;
+  /*p10.DUSA*/ bool ADDR_FF1B;
+  /*p10.GEFO*/ bool ADDR_FF1C;
+  /*p10.FENY*/ bool ADDR_FF1D;
+  /*p10.DUGO*/ bool ADDR_FF1E;
+
+  /*p10.DANU*/ bool ADDR_FF20;
+  /*p10.COVO*/ bool ADDR_FF21;
+  /*p10.EKEZ*/ bool ADDR_FF22;
+  /*p10.CUGE*/ bool ADDR_FF23;
+  /*p10.CAFY*/ bool ADDR_FF24;
+  /*p10.CORA*/ bool ADDR_FF25;
+  /*p10.DOXY*/ bool ADDR_FF26;
 };
-

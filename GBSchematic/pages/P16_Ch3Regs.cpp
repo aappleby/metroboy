@@ -2,32 +2,34 @@
 #include "Gameboy.h"
 
 void P16_Ch3Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
-  c.p16.GEJO = and(b.p16.FF1A, b.p10.APU_WR);
-  c.p16.GUCY = not(b.p16.GEJO);
-  c.p16.GUXE = tock_pos(a.p16.GUCY, b.p16.GUCY, b.p16.GOVE, b.p16.GUXE, b.D7);
-  c.p16.FUVO = nor(b.p16.GUXE, b.p09.APU_RESET1);
-  c.p16.FASY = nand(b.p16.FF1A, b.p16.GAXO);
-  c.p16.FEVO = not(!b.p16.GUXE);
-  c.p16.GUGU = or(b.p16.FUVO, b.p16.FAJU);
-  c.p16.GEKO = not(b.p16.FEVO);
+  /*p16.GEJO*/ c.p16.FF1A_WR = and(b.p10.APU_WR, b.p16.FF1A);
+  /*p16.GUCY*/ c.p16.FF1A_WRn = not(b.p16.FF1A_WR);
+  /*p16.GUXE*/ c.p16.CH3_AMP_ENna = tock_pos(a.p16.FF1A_WRn, b.p16.FF1A_WRn, b.p16.GOVE, b.p16.CH3_AMP_ENna, b.D7);
 
-  c.p16.FF1A_D7n = !b.p16.GUXE;
+  /*p16.FASY*/ c.p16.FASY = nand(b.p16.FF1A, b.p16.GAXO);
+  /*p16.FEVO*/ c.p16.CH3_AMP_ENa = not(!b.p16.CH3_AMP_ENna);
+  /*p16.GEKO*/ c.p16.GEKO = not(b.p16.CH3_AMP_ENa);
+  /*p16.FUVO*/ c.p16.FUVO = nor(b.p16.CH3_AMP_ENna, b.p09.APU_RESET1);
+  /*p16.FAJU*/ c.p16.FAJU = not(b.p16.GYRA);
+  /*p16.GUGU*/ c.p16.GUGU = or(b.p16.FUVO, b.p16.FAJU);
 
   if (b.p16.FASY) {
     c.D7 = b.p16.GEKO;
   }
 
-  c.p16.GARA = tock_pos(a.p16.FABO, b.p16.FABO, b.p16.FURY, b.p16.GARA, b.p16.GOFY);
-  c.p16.GYTA = tock_pos(a.p16.FABO, b.p16.FABO, b.p16.GAZE, b.p16.GYTA, b.p16.GARA);
+  c.p16.GARA = tock_pos(a.p16.CLK_xxCDxxGH,  b.p16.CLK_xxCDxxGH,  b.p16.FURY, b.p16.GARA, b.p16.GOFY);
+  c.p16.GYTA = tock_pos(a.p16.CLK_xxCDxxGH,  b.p16.CLK_xxCDxxGH,  b.p16.GAZE, b.p16.GYTA, b.p16.GARA);
   c.p16.GYRA = tock_pos(a.p01.CLK_ABxxEFxx1, b.p01.CLK_ABxxEFxx1, b.p16.GAZE, b.p16.GYRA, b.p16.GYTA);
-  c.p16.FAJU = not(b.p16.GYRA);
-  c.p16.FOBA = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.p16.GOMA, b.p16.FOBA, b.p16.GAVU);
+
+  /*p16.EPYX*/ c.p16.FF1E_WRn = nor(b.p10.APU_WR, b.p16.FF1E); // polarity?
+  /*p16.GAVU*/ c.p16.CH3_RESTART = tock_pos(a.p16.FF1E_WRn, b.p16.FF1E_WRn, b.p16.FAKO, b.p16.CH3_RESTART, b.D7);
+
+  /*p16.FOBA*/ c.p16.FOBA = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.p16.GOMA, b.p16.FOBA, b.p16.CH3_RESTART);
+
   c.p16.GULO = not(b.p16.FURY);
   c.p16.GOFY = or(b.p16.GULO, b.p16.FOBA);
   c.p16.FURY = nor(b.p16.GYTA, b.p09.APU_RESET1);
   c.p16.FAKO = nor(b.p09.APU_RESET1, b.p16.FOBA);
-  c.p16.EPYX = nor(b.p10.APU_WR, b.p16.FF1E);
-  c.p16.GAVU = tock_pos(a.p16.EPYX, b.p16.EPYX, b.p16.FAKO, b.p16.GAVU, b.D7);
 
   //----------
 
@@ -85,8 +87,8 @@ void P16_Ch3Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p16.ANUJ = and(b.cpu.FROM_CPU5, b.p10.APU_WR);
-  c.p16.FOVO = nand(b.p16.ANUJ, b.p16.FF1E);
+  /*p16.ANUJ*/ c.p16.CPU_WR_WEIRD = and(b.cpu.FROM_CPU5, b.p10.APU_WR);
+  c.p16.FOVO = nand(b.p16.CPU_WR_WEIRD, b.p16.FF1E);
   c.p16.HOTO = tock_pos(a.p16.FOVO, b.p16.FOVO, b.p16.HEKY, b.p16.HOTO, b.D6);
   c.p16.GORY = not(b.p09.CPU_RDn);
   c.p16.GAWA = nand(b.p16.FF1E, b.p16.GORY);

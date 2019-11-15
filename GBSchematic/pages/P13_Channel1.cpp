@@ -31,7 +31,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // Length timer
 
-  c.p13.BORO = nand(b.p10.APU_WR, b.p10.FF11);
+  c.p13.BORO = nand(b.p10.APU_WR, b.p10.ADDR_FF11);
   c.p13.BEPE = not(b.p13.BORO);
   c.p13.BOKA = not(b.p13.BORO);
   c.p13.BUGY = not(b.p13.BORO);
@@ -43,8 +43,8 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.ERAM = count_pos(a.p13.CURA, b.p13.CUSO, b.p13.BEPE, b.p13.ERAM, b.D5);
   c.p13.CERO = tock_pos(!a.p13.ERAM, !b.p13.ERAM, b.p13.CORY, c.p13.CERO, !c.p13.CERO);
 
-  c.p13.CAPY = nor(!b.p11.FF14_D6, b.p01.BUFY_256, b.p13.CERO);
-  c.p13.CYFA = and(b.p13.CERO, b.p11.FF14_D6);
+  c.p13.CAPY = nor(!b.p11.CH1_USE_LENGTH, b.p01.BUFY_256, b.p13.CERO);
+  c.p13.CYFA = and(b.p13.CERO, b.p11.CH1_USE_LENGTH);
   c.p13.CANU = not(b.p13.CAPY);
 
   c.p13.BACY = count_pos(a.p13.CANU, b.p13.CANU, b.p13.BUGY, b.p13.BACY, b.D0);
@@ -86,7 +86,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.EGET = nor(b.p09.APU_RESET1, b.p13.FARE);
   c.p13.GEFE = not(b.p13.EGET);
 
-  c.p13.DOGE = nand(b.p10.APU_WR, b.p11.FF14_D6); // BUG - APU_WR
+  c.p13.DOGE = nand(b.p10.APU_WR, b.p11.CH1_USE_LENGTH); // BUG - APU_WR
   c.p13.DADO = nor(b.p09.APU_RESET1, b.p13.EZEC);
   c.p13.DUPE = tock_pos(a.p13.DOGE, b.p13.DOGE, b.p13.DADO, b.p13.DUPE, b.D7);
   c.p13.EZEC = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.p13.DUKA, b.p13.EZEC, b.p13.DUPE);
@@ -147,11 +147,11 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p13.DAFA = nor(b.p13.BEXA, b.p13.FEKU);
   c.p13.CYMU = not(b.p13.DAFA);
-  c.p13.BAVE = and(b.p11.FF10_D4n, b.p11.FF10_D5n, b.p11.FF10_D6n);
+  c.p13.BAVE = and(b.p11.CH1_SWEEP_TIME_0, b.p11.CH1_SWEEP_TIME_1, b.p11.CH1_SWEEP_TIME_2);
 
-  c.p13.CUPO = count_pos(a.p09.CATE, b.p09.CATE, b.p13.CYMU, b.p13.CUPO, b.p11.FF10_D4n);
-  c.p13.CYPU = count_pos(a.p13.CUPO, b.p13.CUPO, b.p13.CYMU, b.p13.CYPU, b.p11.FF10_D5n);
-  c.p13.CAXY = count_pos(a.p13.CYPU, b.p13.CYPU, b.p13.CYMU, b.p13.CAXY, b.p11.FF10_D6n);
+  c.p13.CUPO = count_pos(a.p09.CATE, b.p09.CATE, b.p13.CYMU, b.p13.CUPO, b.p11.CH1_SWEEP_TIME_0);
+  c.p13.CYPU = count_pos(a.p13.CUPO, b.p13.CUPO, b.p13.CYMU, b.p13.CYPU, b.p11.CH1_SWEEP_TIME_1);
+  c.p13.CAXY = count_pos(a.p13.CYPU, b.p13.CYPU, b.p13.CYMU, b.p13.CAXY, b.p11.CH1_SWEEP_TIME_2);
 
   c.p13.BURY = nor(b.p13.BAVE, b.p09.APU_RESET1);
   c.p13.COZE = and(b.p13.CAXY, b.p13.CYPU, b.p13.CUPO);
@@ -163,7 +163,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p13.DACU = nor(b.p13.FEKU, b.p13.BEXA);
   c.p13.CYLU = not(b.p13.DACU);
-  c.p13.BUGE = nand(b.p11.FF10_D2n, b.p11.FF10_D1n, b.p11.FF10_D0n);
+  c.p13.BUGE = nand(b.p11.CH1_SWEEP_SHIFT_0, b.p11.CH1_SWEEP_SHIFT_1, b.p11.CH1_SWEEP_SHIFT_2);
   c.p13.CELE = not(b.p13.BUGE);
 
   c.p13.ADAD = not(!b.p13.BYTE);
@@ -172,12 +172,12 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.FEMU = unk2(b.p13.EPUK, b.p13.EVOL);
   c.p13.EGYP = nor(b.p01.DYFA_1M, b.p13.FEMU);
   c.p13.DODY = nor(b.p13.EGYP, b.p13.CELE);
-  c.p13.EGOR = and(b.p19.DOPU, b.p13.DODY);
+  c.p13.EGOR = and(b.p19.CH4_LEN_3b, b.p13.DODY);
   c.p13.DAPU = not(b.p13.EGOR);
 
-  c.p13.COPA = count_pos(a.p13.DAPU, b.p13.DAPU, b.p13.CYLU, b.p13.COPA, b.p11.FF10_D0n);
-  c.p13.CAJA = count_pos(a.p13.COPA, b.p13.COPA, b.p13.CYLU, b.p13.CAJA, b.p11.FF10_D1n);
-  c.p13.BYRA = count_pos(a.p13.CAJA, b.p13.CAJA, b.p13.CYLU, b.p13.BYRA, b.p11.FF10_D2n);
+  c.p13.COPA = count_pos(a.p13.DAPU, b.p13.DAPU, b.p13.CYLU, b.p13.COPA, b.p11.CH1_SWEEP_SHIFT_0);
+  c.p13.CAJA = count_pos(a.p13.COPA, b.p13.COPA, b.p13.CYLU, b.p13.CAJA, b.p11.CH1_SWEEP_SHIFT_1);
+  c.p13.BYRA = count_pos(a.p13.CAJA, b.p13.CAJA, b.p13.CYLU, b.p13.BYRA, b.p11.CH1_SWEEP_SHIFT_2);
 
   c.p13.COPY = and(b.p13.COPA, b.p13.CAJA, b.p13.BYRA);
   c.p13.ATAT = nor(b.p09.APU_RESET1, b.p13.BEXA);

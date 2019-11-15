@@ -3,18 +3,36 @@
 struct Gameboy;
 
 struct P11_Ch1Regs {
-  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
-  union { bool BANY; bool FF10_D0n; };
-  union { bool ARAX; bool FF10_D1n; };
-  union { bool ANAZ; bool FF10_D2n; };
-  union { bool AVAF; bool FF10_D3n; };
-  union { bool ADEK; bool FF10_D4n; };
-  union { bool BANA; bool FF10_D5n; };
-  union { bool BOTU; bool FF10_D6n; };
-  union { bool CENA; bool FF11_D6; };
-  union { bool DYCA; bool FF11_D7; };
-  union { bool BOKO; bool FF14_D6; };
+  /*p11.BANY*/ bool CH1_SWEEP_SHIFT_0;
+  /*p11.ARAX*/ bool CH1_SWEEP_SHIFT_1;
+  /*p11.ANAZ*/ bool CH1_SWEEP_SHIFT_2;
+  /*p11.AVAF*/ bool CH1_SWEEP_DIR;
+  /*p11.ADEK*/ bool CH1_SWEEP_TIME_0;
+  /*p11.BANA*/ bool CH1_SWEEP_TIME_1;
+  /*p11.BOTU*/ bool CH1_SWEEP_TIME_2;
+  /*p11.AMYD*/ bool FF10_D0;
+  /*p11.ATAX*/ bool FF10_D1;
+  /*p11.AZYP*/ bool FF10_D2;
+  /*p11.AFOX*/ bool FF10_D3;
+  /*p11.AVEK*/ bool FF10_D4;
+  /*p11.AKUX*/ bool FF10_D5;
+  /*p11.AWOS*/ bool FF10_D6;
+
+  /*p11.COVU*/ bool FF11_WR;
+  /*p11.DAFO*/ bool FF11_WRn;
+  /*p11.BUWA*/ bool CPU_RD2;
+  /*p11.BEXU*/ bool FF11_RD;
+
+  /*p11.CENA*/ bool CH1_DUTY_0;
+  /*p11.DYCA*/ bool CH1_DUTY_1;
+  /*p11.BOWO*/ bool FF11_D6;
+  /*p11.CUDA*/ bool FF11_D7;
+
+  /*p11.BAGE*/ bool BAGE;
+  /*p11.BALE*/ bool FF14_RD;
+  /*p11.BOKO*/ bool CH1_USE_LENGTH;
+  /*p11.BYTU*/ bool FF14_D6;
 
   bool CEPO;
 
@@ -40,11 +58,7 @@ struct P11_Ch1Regs {
   union { bool EVAK; bool CH1_FREQ_09; };
   union { bool COPU; bool CH1_FREQ_10; };
 
-//private:
-
   bool CENU,BUZE,ATYN,ASOP;
-  bool AMYD,AZYP,AWOS,AFOX,ATAX,AVEK,AKUX;
-  bool COVU,DAFO,BUWA,BEXU,BOWO,CUDA;
 
   bool GAXU,HATO,GAGO,KAGY,HOCU;
   bool JYSE,HEVE,HEWA,HOWU,HONO;
@@ -57,7 +71,7 @@ struct P11_Ch1Regs {
   bool CEGE,DAXA,CACA,DYPU,EVAJ;
   bool CURE,DUPY,DOPA,DEMU,DEXO;
 
-  bool BAGE,CAMY,BALE,BYTU;
+  bool CAMY;
 
   union { /*bool BUDA;*/ bool CPU_RDn; };
 };

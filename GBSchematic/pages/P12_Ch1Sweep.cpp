@@ -8,8 +8,8 @@
 
 void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  c.p12.DEPU = nand(b.p10.APU_WR, b.p10.FF13); // BUG - APU_WR
-  c.p12.DEBY = and(b.p10.APU_WR, b.p10.FF14);
+  c.p12.DEPU = nand(b.p10.APU_WR, b.p10.ADDR_FF13); // BUG - APU_WR
+  c.p12.DEBY = and(b.p10.APU_WR, b.p10.ADDR_FF14);
   c.p12.DYLA = not(b.p12.DEPU);
 
   c.p12.BYFU = not(b.D2);
@@ -60,7 +60,7 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p12.GATO = nor(b.p12.FOPU, b.p09.APU_RESET1);
   c.p12.EFOR = nor(b.p12.EJYF, b.p09.APU_RESET1);
 
-  c.p12.ARYL = not(b.p11.FF10_D3n);
+  c.p12.ARYL = not(b.p11.CH1_SWEEP_DIR);
 
   // FIXME - this is kinda weird
   wire GUXA_C = add_c(!b.p12.GALO, !b.p12.HORA, b.p12.ARYL);

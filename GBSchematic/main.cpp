@@ -65,6 +65,17 @@ void dump(void* blob, int size) {
 
 //-----------------------------------------------------------------------------
 
+void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+void P02_Interrupts_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+void P03_Timer_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+void P04_DMA_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+void P05_JoypadIO_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+void P06_SerialLink_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+void P07_SysDecode_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+void P08_ExtCpuBuses_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+
+
 void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
   //----------
   // old state
@@ -107,10 +118,10 @@ void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
     pc->cpu = pb->cpu;
     pc->chip = pb->chip;
 
-    P01_ClocksReset::tick(*pa, *pb, *pc);
-    P03_Timer::tick(*pa, *pb, *pc);
-    P07_SysDecode::tick(*pa, *pb, *pc);
-    P09_ApuControl::tick(*pa, *pb, *pc);
+    P01_ClocksReset_tick(*pa, *pb, *pc);
+    P03_Timer_tick(*pa, *pb, *pc);
+    P07_SysDecode_tick(*pa, *pb, *pc);
+    P09_ApuControl_tick(*pa, *pb, *pc);
 
     if (memcmp(pb, pc, sizeof(Gameboy)) == 0) break;
 

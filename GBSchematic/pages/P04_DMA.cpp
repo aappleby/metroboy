@@ -23,14 +23,12 @@ void P04_DMA::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p04.WYJA = unk3(b.p28.AMAB, b.p07.CPU_WR2, b.p04.POWU);
 
   c.p04.LUPA = nor(b.p04.FF46_WRn, b.p04.LYXE);
-  c.p04.LUVY = tock_pos(a.p01.PHI_OUTn,
-                        b.p01.PHI_OUTn,
+  c.p04.LUVY = tock_pos(a.p01.CPUCLK_xxxxEFGH8,
+                        b.p01.CPUCLK_xxxxEFGH8,
                         b.p01.SYS_RESETn2,
                         b.p04.LUVY,
                         b.p04.LUPA);
 
-  c.p04.PHI_OUT = not(b.p01.PHI_OUTn);
-  
   // 128+16+8+4+2+1 = 159, this must be "dma done"
   c.p04.DMA_DONE = nand(b.p04.DMA_A00,
                         b.p04.DMA_A01,
@@ -42,11 +40,11 @@ void P04_DMA::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p04.MUDA = nor(b.p04.DMA_A13, b.p04.DMA_A14, b.p04.DMA_A15n);
   c.p04.DMA_DONEn = not(b.p04.DMA_DONE);
   
-  c.p04.MYTE = tock_pos(a.p04.PHI_OUT, b.p04.PHI_OUT, b.p04.LAPA,   b.p04.MYTE, b.p04.DMA_DONEn);
-  c.p04.LENE = tock_pos(a.p04.PHI_OUT, b.p04.PHI_OUT, b.p01.SYS_RESETn2, b.p04.LENE, b.p04.LUVY);
+  c.p04.MYTE = tock_pos(a.p04.CPUCLK_ABCDxxxx9, b.p04.CPUCLK_ABCDxxxx9, b.p04.LAPA,   b.p04.MYTE, b.p04.DMA_DONEn);
+  c.p04.LENE = tock_pos(a.p04.CPUCLK_ABCDxxxx9, b.p04.CPUCLK_ABCDxxxx9, b.p01.SYS_RESETn2, b.p04.LENE, b.p04.LUVY);
 
   c.p04.LARA = nand(b.p04.DMA_RUNNING, !b.p04.MYTE, b.p01.SYS_RESETn2);
-  c.p04.MATU = tock_pos(a.p01.PHI_OUTn, b.p01.PHI_OUTn, b.p01.SYS_RESETn2, b.p04.MATU, b.p04.DMA_RUNNING);
+  c.p04.MATU = tock_pos(a.p01.CPUCLK_xxxxEFGH8, b.p01.CPUCLK_xxxxEFGH8, b.p01.SYS_RESETn2, b.p04.MATU, b.p04.DMA_RUNNING);
   c.p04.MORY = nand(b.p04.MATU, b.p04.LOGO);
 
   c.p04.DO_DMA = not(b.p04.MORY);
@@ -67,7 +65,7 @@ void P04_DMA::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p04.LAPA = not(b.p04.LOKO);
 
   c.p04.DMA_RUNNING = nand(b.p04.LARA, !b.p04.LENE);
-  c.p04.DMA_CLK = and(b.p01.PHI_OUTn, b.p04.DMA_RUNNING);
+  c.p04.DMA_CLK = and(b.p01.CPUCLK_xxxxEFGH8, b.p04.DMA_RUNNING);
 
   //----------
   // FF46 DMA

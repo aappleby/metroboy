@@ -10,87 +10,98 @@ public:
   //----------
   // outputs
 
-  union { /*bool UBET;*/ bool T1n; };
-  union { /*bool UVAR;*/ bool T2n; };
-  union { /*bool UPOJ; bool T1nT2n; */ bool MODE_PROD; };
-  union { /*bool UMUT; bool T1T2n;  */ bool MODE_DBG1; };
-  union { /*bool UNOR; bool T1nT2;  */ bool MODE_DBG2; };
-  union { /*bool APET;*/ bool MODE_DEBUG; };
+  /*p07.UBET*/ bool T1n;
+  /*p07.UVAR*/ bool T2n;
+  /*p07.UPOJ*/ bool MODE_PROD;
+  /*p07.UMUT*/ bool MODE_DBG1;
+  /*p07.YAZA*/ bool MODE_DBG1n;
+  /*p07.UNOR*/ bool MODE_DBG2;
+  /*p07.APET*/ bool MODE_DEBUG;
 
-  union { /*bool ZETE;*/ bool BOOTROM_A1nA0n; };
-  union { /*bool ZEFU;*/ bool BOOTROM_A1nA0;  };
-  union { /*bool ZYRO;*/ bool BOOTROM_A1A0n;  };
-  union { /*bool ZAPA;*/ bool BOOTROM_A1A0;   };
-  union { /*bool ZOKE;*/ bool BOOTROM_A2n;    };
-  union { /*bool ZABU;*/ bool BOOTROM_A3n;    };
-  union { /*bool ZYKY;*/ bool BOOTROM_A5nA4n; };
-  union { /*bool ZYGA;*/ bool BOOTROM_A5nA4;  };
-  union { /*bool ZOVY;*/ bool BOOTROM_A5A4n;  };
-  union { /*bool ZUKO;*/ bool BOOTROM_A5A4;   };
-  union { /*bool ZAGE;*/ bool BOOTROM_A6n;    };
-  union { /*bool ZYRA;*/ bool BOOTROM_A7n;    };
+  /*p07.LEXY*/ bool PIN_NC;
 
-  
-  union { /*bool TEDO;*/ bool CPU_RD;  };
-  union { /*bool TAPU;*/ bool CPU_WR;  };
-  union { /*bool ASOT;*/ bool CPU_RD2; };
-  union { /*bool CUPA;*/ bool CPU_WR2; };
-  
-  union { /*bool SYKE;*/ bool ADDR_FFXX;      };
-  union { /*bool TUTU;*/ bool READ_BOOTROM; };
-  union { /*bool ZERY;*/ bool BOOT_CS;   };
-  union { /*bool WUTA;*/ bool HRAM_CS;   };
-  union { /*bool TUNA;*/ bool ADDR_0000_FE00; };
 
-  union { /*bool BAKO;*/ bool FFXXn1; };
-  union { /*bool SOHA;*/ bool FFXXn2; };
+  /*p07.ZYRA*/ bool BOOTROM_A7n;
+  /*p07.ZAGE*/ bool BOOTROM_A6n;
+  /*p07.ZYKY*/ bool BOOTROM_A5nA4n;
+  /*p07.ZYGA*/ bool BOOTROM_A5nA4;
+  /*p07.ZOVY*/ bool BOOTROM_A5A4n;
+  /*p07.ZUKO*/ bool BOOTROM_A5A4;
+  /*p07.ZABU*/ bool BOOTROM_A3n;
+  /*p07.ZOKE*/ bool BOOTROM_A2n;
+  /*p07.ZETE*/ bool BOOTROM_A1nA0n;
+  /*p07.ZEFU*/ bool BOOTROM_A1nA0;
+  /*p07.ZYRO*/ bool BOOTROM_A1A0n;
+  /*p07.ZAPA*/ bool BOOTROM_A1A0;
 
-  union { /*bool SARO;*/ bool ADDR_OAM; };
+  /*p07.TEDO*/ bool CPU_RD;
+  /*p07.TAPU*/ bool CPU_WR;
+  /*p07.ASOT*/ bool CPU_RD2;
+  /*p07.CUPA*/ bool CPU_WR2;
+  /*p07.AJAS*/ bool CPU_RDn;
+  /*p07.UBAL*/ bool CPU_WR_MUX;
+  /*p07.UJYV*/ bool CPU_RD_MUX;
+  /*p07.DYKY*/ bool CPU_WRn;
 
-  union { /*bool ROLO;*/ bool FF0F_RD; };
-  union { /*bool REFA;*/ bool FF0F_WR; };
+  /*p07.TUTU*/ bool ADDR_BOOT;
+  /*p07.TEXE*/ bool BOOT_BIT_RD;
+  /*p07.TUGE*/ bool BOOT_BIT_WRn;
+  /*p07.TEPU*/ bool BOOT_BIT;
+  /*p07.SATO*/ bool BOOT_BIT2;
+  /*p07.SYPU*/ bool BOOT_BIT_D0;
+  /*p07.TERA*/ bool BOOT_EN;
+  /*p07.YULA*/ bool BOOT_RD;
+  /*p07.ZERY*/ bool BOOT_CS;
+  /*p07.ZADO*/ bool BOOT_CSn;
 
-  //----------
-  // registers
+  /*p07.WALE*/ bool ADDR_xxxxxxxxx1111111n;
+  /*p07.WOLY*/ bool HRAM_CSn;
+  /*p07.WUTA*/ bool HRAM_CS;
+
+  /*p07.ROLO*/ bool FF0F_RD;
+  /*p07.REFA*/ bool FF0F_WR;
 
   // FF60 - secret debug register
-  union { /*bool BURO;*/ bool FF60_D0; };
-  union { /*bool AMUT;*/ bool FF60_D1; };
+  /*p07.APER*/ bool FF60_WRn;
+  /*p07.BURO*/ bool FF60_0;
+  /*p07.AMUT*/ bool FF60_1;
 
-  union { /*bool AJAS;*/ bool CPU_RDn; };
-  union { /*bool UBAL;*/ bool CPU_WR_MUX; };
-  union { /*bool UJYV;*/ bool CPU_RD_MUX; };
-  union { /*bool DYKY;*/ bool CPU_WRn; };
+  /*p07.BAKO*/ bool ADDR_FFXXn1;
+  /*p07.SOHA*/ bool ADDR_FFXXn2;
+  /*p07.SARO*/ bool ADDR_OAM;
+  /*p07.ZYBA*/ bool ADDR_00n;
+  /*p07.ZUVY*/ bool ADDR_01n;
+  /*p07.ZUFY*/ bool ADDR_04n;
+  /*p07.ZERA*/ bool ADDR_05n;
+  /*p07.TONA*/ bool ADDR_08n;
+  /*p07.TULO*/ bool ADDR_00XX;
+  /*p07.ZUFA*/ bool ADDR_00XX2;
+  /*p07.ZORO*/ bool ADDR_0XXX;
+  /*p07.ZADU*/ bool ADDR_X0XX;
+  /*p07.SEMY*/ bool ADDR_XX0X;
+  /*p07.SAPA*/ bool ADDR_XXXF;
+  /*p07.RYCU*/ bool ADDR_FE00_FFFF;
+  /*p07.ROPE*/ bool ADDR_FEXXn;
+  /*p07.SYKE*/ bool ADDR_FFXX;
+  /*p07.TUNA*/ bool ADDR_0000_FE00;
 
-private:
+  /*p07.LECO*/ bool LECO;
+  /*p07.ROMY*/ bool DBG_0;
+  /*p07.RYNE*/ bool DBG_1;
+  /*p07.REJY*/ bool DBG_2;
+  /*p07.RASE*/ bool DBG_3;
+  /*p07.REKA*/ bool DBG_4;
+  /*p07.ROWE*/ bool DBG_5;
+  /*p07.RYKE*/ bool DBG_6;
+  /*p07.RARU*/ bool DBG_7;
 
-  union { /*bool TEPU;*/ bool DISABLE_BOOTROM1; };
-  union { /*bool SYPU;*/ bool DISABLE_BOOTROM2; };
-  union { /*bool TERA;*/ bool ENABLE_BOOTROM1; };
 
-  union { /*bool APER;*/ bool FF60_WRn; };
+  /*p07.TYRO*/ bool ADDR_xxxxxxxx0x0x0000;
+  /*p07.TUFA*/ bool ADDR_xxxxxxxxx1x1xxxx;
 
-  union { /*bool ZYBA;*/ bool ADDR_00n; };
-  union { /*bool ZUVY;*/ bool ADDR_01n; };
-  union { /*bool ZUFY;*/ bool ADDR_04n; };
-  union { /*bool ZERA;*/ bool ADDR_05n; };
-  union { /*bool TONA;*/ bool ADDR_08n; };
-
-  union { /*bool TULO;*/ bool ADDR_00XX; };
-  union { /*bool ZUFA;*/ bool ADDR_00XX2; };
-  union { /*bool ZORO;*/ bool ADDR_0XXX; };
-  union { /*bool ZADU;*/ bool ADDR_X0XX; };
-  union { /*bool SEMY;*/ bool ADDR_XX0X; };
-  union { /*bool SAPA;*/ bool ADDR_XXXF; };
-  union { /*bool RYCU;*/ bool ADDR_FE00_FFFF; };
-  union { /*bool ROPE;*/ bool ADDR_FEXXn; };
-
-  bool TYRO,TUFA,TUGE,SATO,TEXE;
-  bool YAZA,YULA,ZADO;
-  bool WALE,WOLY;
-  bool LECO;
-  bool ROMY_00,RYNE_01,REJY_02,RASE_03,REKA_04,ROWE_05,RYKE_06,RARU_07;
-  bool LEXY;
-  bool ZOLE,ZAJE,ZUBU,ZAPY;
+  /*p07.ZOLE*/ bool ADDR_xxxxxxxxxxxxxx00;
+  /*p07.ZAJE*/ bool ADDR_xxxxxxxxxxxxxx01;
+  /*p07.ZUBU*/ bool ADDR_xxxxxxxxxxxxxx10;
+  /*p07.ZAPY*/ bool ADDR_xxxxxxxxxxxxxx11;
 
 };

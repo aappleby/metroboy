@@ -12,11 +12,11 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF10 NR10
 
-  c.p11.CENU = and(b.p10.APU_WR, b.p10.FF10);
   c.p11.BUZE = not(b.p10.FF10);
   c.p11.ATYN = nor(b.p09.CPU_RDn, b.p11.BUZE);
   c.p11.ASOP = not(b.p11.ATYN);
 
+  c.p11.CENU = and(b.p10.APU_WR, b.p10.FF10);
   c.p11.BANY = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.BANY, b.D0);
   c.p11.ANAZ = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.ANAZ, b.D2);
   c.p11.BOTU = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.BOTU, b.D6);
@@ -46,7 +46,6 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF11 NR11
 
-  // BUG APU_WR
   c.p11.COVU = and(b.p10.APU_WR, b.p10.FF11);
   c.p11.DAFO = not(b.p11.COVU);
   c.p11.CENA = tock_pos(a.p11.DAFO, b.p11.DAFO, b.p11.CEPO, b.p11.CENA, b.D6);
@@ -66,17 +65,11 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF12 NR12
 
-  c.p11.GAXU = nand(b.p10.FF12, b.p10.APU_WR);
-  c.p11.GAGO = not(b.p10.FF12);
-  c.p11.KAGY = not(b.p11.GAXU);
+  c.p11.KAGY = not(b.p11.GAXU); // unused?
 
-  c.p11.HAXE = not(b.p10.FF12);
   c.p11.HAFU = and(b.p10.APU_WR, b.p10.FF12);
   c.p11.KYGY = not(b.p11.HAFU);
-
-  c.p11.HAMY = or(b.p11.HAXE, b.p09.CPU_RDn);
-  c.p11.HOCU = or(b.p11.GAGO, b.p09.CPU_RDn);
-
+  c.p11.GAXU = nand(b.p10.APU_WR, b.p10.FF12);
   c.p11.FF12_D0 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.FF12_D0, b.D0);
   c.p11.FF12_D1 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.FF12_D1, b.D1);
   c.p11.FF12_D2 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.FF12_D2, b.D2);
@@ -95,12 +88,16 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p11.HEVE = not(!b.p11.FF12_D6);
   c.p11.JYSE = not(!b.p11.FF12_D7);
 
+  c.p11.HAXE = not(b.p10.FF12);
+  c.p11.HAMY = or(b.p11.HAXE, b.p09.CPU_RDn);
   if (b.p11.HAMY) {
     c.D0 = b.p11.JYNE;
     c.D1 = b.p11.JACA;
     c.D2 = b.p11.JOKU;
   }
 
+  c.p11.GAGO = not(b.p10.FF12);
+  c.p11.HOCU = or(b.p11.GAGO, b.p09.CPU_RDn);
   if (b.p11.HOCU) {
     c.D3 = b.p11.HONO;
     c.D4 = b.p11.HOWU;
@@ -148,10 +145,10 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p11.CEGE = not(b.p09.CPU_RDn);
   c.p11.DAXA = nand(b.p11.CEGE, b.p09.NET03);
+
   c.p11.CACA = not(b.p10.FF13);
   c.p11.DYPU = nor(b.p11.DAXA, b.p11.CACA);
   c.p11.EVAJ = not(b.p11.DYPU);
-
   if (b.p11.EVAJ) {
     c.D0 = b.p11.FORU;
     c.D1 = b.p11.GEFU;
@@ -163,13 +160,12 @@ void P11_Ch1Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     c.D7 = b.p11.FOZE;
   }
 
-  c.p11.CURE = not(b.p10.FF14);
-  c.p11.DUPY = or(b.p11.CURE, b.p11.DAXA);
-
   c.p11.DOPA = not(!b.p11.EMUS);
   c.p11.DEMU = not(!b.p11.EVAK);
   c.p11.DEXO = not(!b.p11.COPU);
 
+  c.p11.CURE = not(b.p10.FF14);
+  c.p11.DUPY = or(b.p11.CURE, b.p11.DAXA);
   if (b.p11.DUPY) {
     c.D0 = b.p11.DOPA;
     c.D1 = b.p11.DEMU;

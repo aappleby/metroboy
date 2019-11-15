@@ -42,7 +42,7 @@ struct P21_VideoControl {
   bool TAKO;
   bool SYBE;
 
-  bool TALU;
+  bool TALU; // this is a clock
   bool SELA;
   bool XYVO;
 

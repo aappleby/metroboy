@@ -16,7 +16,7 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p15.JOPA = tock_pos(a.p01.HORU_512, b.p01.HORU_512, b.p15.HAFE, b.p15.JOPA, b.p15.KYVO);
   c.p15.HEPO = tock_pos(a.p15.JOPA,     b.p15.JOPA,     b.p15.HYPA, b.p15.HEPO, b.p15.GUFY);
 
-  c.p15.DOPE = tock_pos(a.p01.PHIn, b.p01.PHIn, b.p15.CYWU, b.p15.DOPE, b.p14.FF19_D7);
+  c.p15.DOPE = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.p15.CYWU, b.p15.DOPE, b.p14.FF19_D7);
 
   c.p15.DERA = nor(b.p09.APU_RESET1, b.p15.DOPE);
 

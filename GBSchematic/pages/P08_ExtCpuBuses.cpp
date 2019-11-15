@@ -33,10 +33,7 @@ void blah(const Gameboy& b, Gameboy& c) {
 
   c.p08.TYNU = unk3(b.A15, b.A14, b.p08.CART_RAM);
 
-  c.p08.TOZA = and(b.p01.CPU_RD_SYNC, 
-  b.p08.TYNU,
-  b.p07.ADDR_0000_FE00);
-
+  c.p08.TOZA = and(b.p01.CPU_RD_SYNC, b.p08.TYNU, b.p07.ADDR_0000_FE00);
 
   c.p08.CS_A = mux2(b.p04.DMA_A15, b.p08.TOZA, b.p04.DO_DMA); // polarity?
   c.p08.WR_A = nand(b.p08.PUVA, b.p08.MODE_DBG2n1);
@@ -125,7 +122,8 @@ void P08_ExtCpuBuses::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
   //----------
   // AXX_A/D
 
-  c.p08.SOBY_15 = nor(b.A15, b.p07.READ_BOOTROM);
+  // wat?
+  c.p08.SOBY_15 = nor(b.A15, b.p07.ADDR_BOOT);
 
   c.p08.ADDR_LATCH_00 = latch_pos(b.p08.MATE, b.p08.ADDR_LATCH_00, b.A00);
   c.p08.ADDR_LATCH_01 = latch_pos(b.p08.MATE, b.p08.ADDR_LATCH_01, b.A01);

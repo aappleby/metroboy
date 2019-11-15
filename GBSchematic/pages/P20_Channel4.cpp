@@ -93,7 +93,6 @@ void P20_Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p20.ALOP = not(b.p01.BYFE_128);
   c.p20.ABEL = tock_pos(a.p20.ALOP, b.p20.ALOP, b.p20.BOKY, b.p20.ABEL, !b.p20.ABEL);
   c.p20.BAWA = not(b.p20.ABEL);
   c.p20.BUXO = not(b.p20.BAWA);
@@ -111,7 +110,7 @@ void P20_Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p20.GYSU = tock_pos(a.p01.PHIn, b.p01.PHIn, b.p20.GASO, b.p20.GYSU, b.p20.FF23_D7);
+  c.p20.GYSU = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.p20.GASO, b.p20.GYSU, b.p20.FF23_D7);
   c.p20.FALE = nor(b.p20.GORA, b.p09.APU_RESET1);
   c.p20.HELU = not(b.p20.FALE);
   c.p20.HAZO = or(b.p20.HELU, b.p20.GYSU);

@@ -47,7 +47,7 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p28.APAR = not(b.p28.ACYL);
   c.p28.AJUJ = nor(b.p04.MATU, b.p28.ACYL, b.p28.AJON);
   c.p28.ASAM = or(b.p28.ACYL, b.p21.XYMU, b.p04.MATU);
-  c.p28.XYNY = not(b.p04.PHI_OUT);
+  c.p28.XYNY = not(b.p04.CPUCLK_ABCDxxxx9);
   c.p28.XUTO = and(b.p07.ADDR_OAM, b.p07.CPU_WR2);
   c.p28.AMAB = and(b.p07.ADDR_OAM, b.p28.AJUJ);
   c.p28.ADAH = not(b.p07.ADDR_OAM);

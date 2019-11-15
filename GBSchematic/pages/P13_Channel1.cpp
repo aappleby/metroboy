@@ -89,7 +89,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.DOGE = nand(b.p10.APU_WR, b.p11.FF14_D6); // BUG - APU_WR
   c.p13.DADO = nor(b.p09.APU_RESET1, b.p13.EZEC);
   c.p13.DUPE = tock_pos(a.p13.DOGE, b.p13.DOGE, b.p13.DADO, b.p13.DUPE, b.D7);
-  c.p13.EZEC = tock_pos(a.p01.PHIn, b.p01.PHIn, b.p13.DUKA, b.p13.EZEC, b.p13.DUPE);
+  c.p13.EZEC = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.p13.DUKA, b.p13.EZEC, b.p13.DUPE);
 
   c.p13.FYFO = or(b.p13.GEFE, b.p13.EZEC); // unk2
   c.p13.FEKU = tock_pos(a.p01.DYFA_1M, b.p01.DYFA_1M, b.p13.EGET, b.p13.FEKU, b.p13.FYFO);

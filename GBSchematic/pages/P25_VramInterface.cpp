@@ -67,7 +67,7 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  c.p25.CUFE = unk3(b.p07.ADDR_OAM, b.p04.MATU, b.p04.PHI_OUT);
+  c.p25.CUFE = unk3(b.p07.ADDR_OAM, b.p04.MATU, b.p04.CPUCLK_ABCDxxxx9);
   c.p25.VAPE = and(b.p29.TACU, b.p29.TUVO);
   c.p25.AVER = and(b.p28.ACYL, b.p29.XYSO);
   c.p25.XUJY = not(b.p25.VAPE);

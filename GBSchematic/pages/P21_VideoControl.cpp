@@ -67,10 +67,7 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // top center
 
-  c.p21.VENA = tock_pos(!a.p29.WUVU, !b.p29.WUVU, b.p01.VID_RESETn1, b.p21.VENA, !b.p21.VENA);
-
   c.p21.MUDE = nor(b.p21.RUTU, b.p01.VID_RESET2); // schematic says RUTU_OUT, but I think this is just RUTU?
-  c.p21.TALU = not(!b.p21.VENA);
 
   c.p21.SAXO = tock_pos( a.p21.TALU,  b.p21.TALU, b.p21.MUDE, c.p21.SAXO, !c.p21.SAXO);
   c.p21.TYPO = tock_pos(!a.p21.SAXO, !b.p21.SAXO, b.p21.MUDE, c.p21.TYPO, !c.p21.TYPO);
@@ -95,7 +92,6 @@ void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p21.TEGY = nand(b.p21.VOKU, b.p21.TOZU, b.p21.TECE, b.p21.TEBO);
 
   c.p21.SANU = nand(b.p21.TYRY, b.p21.TAHA, b.p21.SUDE, b.p21.SAXO);
-  c.p21.SONO = not(b.p21.TALU);
   c.p21.RUTU = tock_pos(a.p21.SONO, b.p21.SONO, b.p01.VID_RESETn2, b.p21.RUTU, b.p21.SANU);
   c.p21.SYGU = tock_pos(a.p21.SONO, b.p21.SONO, b.p01.VID_RESETn2, b.p21.SYGU, b.p21.TEGY);
   c.p21.RYNO = or(b.p21.SYGU, b.p21.RUTU);

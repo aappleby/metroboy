@@ -24,16 +24,16 @@ void P10_ApuDecode::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
 
   c.p10.BOXY = not(b.A05);
   c.p10.AWET = or(b.A04, b.p10.BOXY, b.A06, b.A07);
-  c.p10.FF2Xn = or(b.p10.AWET, b.p07.FFXXn1);
+  c.p10.FF2Xn = or(b.p10.AWET, b.p07.ADDR_FFXXn1);
 
   c.p10.AVUN = not(b.A07);
   c.p10.ASAD = not(b.A06);
   c.p10.ACOM = nand(b.p10.AVUN, b.p10.ASAD, b.A05, b.A04);
-  c.p10.FF3X = nor(b.p10.ACOM, b.p07.FFXXn1);
+  c.p10.FF3X = nor(b.p10.ACOM, b.p07.ADDR_FFXXn1);
 
   c.p10.ATUP = not(b.A04);
   c.p10.ATEG = or(b.p10.ATUP, b.A05, b.A06, b.A07);
-  c.p10.BUNO = nor(b.p07.FFXXn1, b.p10.ATEG);
+  c.p10.BUNO = nor(b.p07.ADDR_FFXXn1, b.p10.ATEG);
   c.p10.FF1Xn = not(b.p10.BUNO);
 
   c.p10.FF2X = not(b.p10.FF2Xn);

@@ -8,7 +8,7 @@ public:
   union { bool XYSO; };
   union { bool TEXY; };
   union { bool AVAP; };
-  union { bool WUVU; };
+  union { bool WUVU; }; // this is a clock
   union { bool FEPO; };
   union { bool WUTY; };
   union { bool XEFY; };
@@ -65,7 +65,9 @@ public:
   bool GACE,GUVU,GYDA,GEWY;
   bool GOVU,WOTA;
 
-  bool XYVA,XOTA,XYFY,ALES,ABOV,WOSU,WOJO;
+  bool XOTA; // this is a clock
+
+  bool XYVA,XYFY,ALES,ABOV,WOSU,WOJO;
   bool CENO,CEHA,CARE,DYTY;
   bool BALU,BAGY,BYBA,DOBA,BEBU;
 

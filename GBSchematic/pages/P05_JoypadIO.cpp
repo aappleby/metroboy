@@ -17,27 +17,27 @@ void P05_JoypadIO::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p05.KUKO_06 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.KUKO_06, b.D6);
   c.p05.KERU_07 = tock_pos(a.p10.FF00WR, b.p10.FF00WR, b.p01.SYS_RESETn1, c.p05.KERU_07, b.D7);
 
-  c.p05.KOLE = nand(b.p05.JUTE_00, b.p07.FF60_D0);
+  c.p05.KOLE = nand(b.p05.JUTE_00, b.p07.FF60_0);
   c.p05.KYBU = nor (b.p05.JUTE_00, b.p05.KURA);
 
-  c.p05.KYTO = nand(b.p05.KECY_01, b.p07.FF60_D0);
+  c.p05.KYTO = nand(b.p05.KECY_01, b.p07.FF60_0);
   c.p05.KABU = nor (b.p05.KECY_01, b.p05.KURA);
 
-  c.p05.KYHU = nand(b.p05.JALE_02, b.p07.FF60_D0);
-  c.p05.KASY = nor (b.p07.FF60_D0, b.p05.KURA); // this one doesn't match?
+  c.p05.KYHU = nand(b.p05.JALE_02, b.p07.FF60_0);
+  c.p05.KASY = nor (b.p07.FF60_0, b.p05.KURA); // this one doesn't match?
 
-  c.p05.KORY = nand(b.p05.KYME_03, b.p07.FF60_D0);
+  c.p05.KORY = nand(b.p05.KYME_03, b.p07.FF60_0);
   c.p05.KALE = nor (b.p05.KYME_03, b.p05.KURA);
 
   c.p05.KARU = or(!b.p05.KELY_04, b.p05.KURA);
 
-  c.p05.KURA = not(b.p07.FF60_D0);
+  c.p05.KURA = not(b.p07.FF60_0);
   c.p05.CELA = or(!b.p05.COFY_05, b.p05.KURA);
 
-  c.p05.KENA = mux2(b.p05.KUKO_06, b.p06.SER_OUT, b.p07.FF60_D0);
+  c.p05.KENA = mux2(b.p05.KUKO_06, b.p06.SER_OUT, b.p07.FF60_0);
 
-  c.p05.JEVA = not(b.p07.FF60_D0);
-  c.p05.KORE = nand(b.p05.KERU_07, b.p07.FF60_D0);
+  c.p05.JEVA = not(b.p07.FF60_0);
+  c.p05.KORE = nand(b.p05.KERU_07, b.p07.FF60_0);
   c.p05.KYWE = nor (b.p05.KERU_07, b.p05.JEVA);
 
   // FIXME really unsure about these pin assignments, seem to have a few missing signals

@@ -111,13 +111,10 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // bottom
     
-  c.p29.WUVU = tock_pos(a.p29.XOTA, b.p29.XOTA, b.p01.VID_RESETn1, b.p29.WUVU, !b.p29.WUVU);
   c.p29.ALES = not(b.p21.XYVO);
   c.p29.ABOV = and(b.p21.SELA, b.p29.ALES);
 
-  c.p29.XYFY = not(b.p29.XOTA);
   c.p29.WOSU = tock_pos(a.p29.XYFY, b.p29.XYFY, b.p01.VID_RESETn1, b.p29.WOSU, !b.p29.WUVU);
-  c.p29.XUPY = not(!b.p29.WUVU);
   c.p29.WOJO = nor(!b.p29.WUVU, !b.p29.WOSU);
   c.p29.XYSO = not(b.p29.WOJO);
 

@@ -25,6 +25,8 @@ void P09_ApuControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.EFOP = and(b.D4, b.p07.MODE_DBG2);
   c.p09.NR52_5 = tock_pos(a.p09.NR52_WRn2, b.p09.NR52_WRn2, b.p09.APU_RESETn6, b.p09.NR52_5, b.D5);
   c.p09.FERO   = tock_pos(a.p09.NR52_WRn3, b.p09.NR52_WRn3, b.p09.APU_RESETn6, b.p09.FERO,   b.p09.EFOP);
+
+  // this is some debug thing
   c.p09.BAZA   = tock_pos(a.p01.AJER_2M,   b.p01.AJER_2M,   b.p09.APU_RESETn3, b.p09.BAZA,   b.p09.NR52_5);
 
   c.p09.NET03 = not(!b.p09.FERO);

@@ -21,10 +21,10 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.EZOZ = and(b.p13.EROS, b.p13.DAPE);
   c.p13.ENEK = and(b.p13.DUVO, b.p13.EZOZ);
   c.p13.CODO = not(b.p13.EZOZ);
-  c.p13.COSO = nor( b.p11.FF11_D6,  b.p11.FF11_D7);
-  c.p13.CAVA = nor(!b.p11.FF11_D6,  b.p11.FF11_D7);
-  c.p13.CEVU = nor( b.p11.FF11_D6, !b.p11.FF11_D7);
-  c.p13.CAXO = nor(!b.p11.FF11_D6, !b.p11.FF11_D7);
+  c.p13.COSO = nor( b.p11.CH1_DUTY_0,  b.p11.CH1_DUTY_1);
+  c.p13.CAVA = nor(!b.p11.CH1_DUTY_0,  b.p11.CH1_DUTY_1);
+  c.p13.CEVU = nor( b.p11.CH1_DUTY_0, !b.p11.CH1_DUTY_1);
+  c.p13.CAXO = nor(!b.p11.CH1_DUTY_0, !b.p11.CH1_DUTY_1);
 
   c.p13.DUNA = amux4(b.p13.ENEK, b.p13.COSO, b.p13.EZOZ, b.p13.CAVA, b.p13.DAPE, b.p13.CEVU, b.p13.CODO, b.p13.CAXO);
 
@@ -53,7 +53,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.CUNO = count_pos(a.p13.BOVY, b.p13.BOVY, b.p13.BUGY, b.p13.CUNO, b.D3);
 
   c.p13.BONE = not(b.p12.ATYS);
-  c.p13.HOCA = nor(b.p11.CH1_ENV_DIR, b.p11.FF12_D4, b.p11.FF12_D5, b.p11.FF12_D6, b.p11.FF12_D7);
+  c.p13.HOCA = nor(b.p11.CH1_ENV_DIR, b.p11.CH1_VOL_0, b.p11.CH1_VOL_1, b.p11.CH1_VOL_2, b.p11.CH1_VOL_3);
   c.p13.FEMY = nor(b.p13.HOCA, b.p09.APU_RESET1);
   c.p13.BERY = or(b.p13.BONE, b.p09.APU_RESET1, b.p13.CYFA, b.p13.HOCA);
   c.p13.GEPU = not(b.p13.FYTE);
@@ -70,12 +70,12 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.KERE = not(b.p13.KALY);
   c.p13.JOLA = not(b.p13.KERE);
 
-  c.p13.JOVA = count_pos(a.p13.JOLA, b.p13.JOLA, b.p13.KUXU, b.p13.JOVA, !b.p11.FF12_D0);
-  c.p13.KENU = count_pos(a.p13.JOVA, b.p13.JOVA, b.p13.KUXU, b.p13.KENU, !b.p11.FF12_D1);
-  c.p13.KERA = count_pos(a.p13.KENU, b.p13.KENU, b.p13.KUXU, b.p13.KERA, !b.p11.FF12_D2);
+  c.p13.JOVA = count_pos(a.p13.JOLA, b.p13.JOLA, b.p13.KUXU, b.p13.JOVA, !b.p11.CH1_SWEEP_0);
+  c.p13.KENU = count_pos(a.p13.JOVA, b.p13.JOVA, b.p13.KUXU, b.p13.KENU, !b.p11.CH1_SWEEP_1);
+  c.p13.KERA = count_pos(a.p13.KENU, b.p13.KENU, b.p13.KUXU, b.p13.KERA, !b.p11.CH1_SWEEP_2);
 
   c.p13.KOTE = and(b.p13.JOVA, b.p13.KENU, b.p13.KERA);
-  c.p13.KOMA = nor(b.p11.FF12_D0, b.p11.FF12_D1, b.p11.FF12_D2);
+  c.p13.KOMA = nor(b.p11.CH1_SWEEP_0, b.p11.CH1_SWEEP_1, b.p11.CH1_SWEEP_2);
   c.p13.KOZY = tock_pos(a.p01.HORU_512, b.p01.HORU_512, b.p13.KORO, b.p13.KOZY, b.p13.KOTE);
   c.p13.KURY = not(b.p13.KOZY);
   c.p13.KUKU = nor(b.p01.CPUCLK_REQn, b.p13.KURY);
@@ -114,10 +114,10 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.HYTO = amux2(b.p11.CH1_ENV_DIR, b.p13.HAFO, !b.p13.HAFO, !b.p11.CH1_ENV_DIR);
   c.p13.JUFY = amux2(b.p11.CH1_ENV_DIR, b.p13.KAKE,  b.p13.KAKE, !b.p11.CH1_ENV_DIR);
 
-  c.p13.HEVO = count_pos(a.p13.HESU, b.p13.HESU, b.p13.FEKU, b.p13.HEVO, b.p11.FF12_D7);
-  c.p13.HOKO = count_pos(a.p13.HETO, b.p13.HETO, b.p13.FEKU, b.p13.HOKO, b.p11.FF12_D6);
-  c.p13.HEMY = count_pos(a.p13.HYTO, b.p13.HYTO, b.p13.FEKU, b.p13.HEMY, b.p11.FF12_D5);
-  c.p13.HAFO = count_pos(a.p13.JUFY, b.p13.JUFY, b.p13.FEKU, b.p13.HAFO, b.p11.FF12_D4);
+  c.p13.HEVO = count_pos(a.p13.HESU, b.p13.HESU, b.p13.FEKU, b.p13.HEVO, b.p11.CH1_VOL_0);
+  c.p13.HOKO = count_pos(a.p13.HETO, b.p13.HETO, b.p13.FEKU, b.p13.HOKO, b.p11.CH1_VOL_1);
+  c.p13.HEMY = count_pos(a.p13.HYTO, b.p13.HYTO, b.p13.FEKU, b.p13.HEMY, b.p11.CH1_VOL_2);
+  c.p13.HAFO = count_pos(a.p13.JUFY, b.p13.JUFY, b.p13.FEKU, b.p13.HAFO, b.p11.CH1_VOL_3);
 
   c.p13.ACEG = and(b.p13.HEVO, b.p13.BOTO);
   c.p13.AGOF = and(b.p13.HOKO, b.p13.BOTO);
@@ -138,7 +138,7 @@ void P13_Channel1::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p13.CYTE = not(b.p13.COMY);
   c.p13.COPE = not(b.p13.CYTE);
   c.p13.DOKA = and(b.p13.COMY, b.p01.DYFA_1M);
-  c.p13.CALA = not(b.p11.COPU); // not sure about this, says COPU_COUT (carry out) on schematic...
+  c.p13.CALA = not(b.p11.CH1_FREQ_10); // not sure about this, says COPU_COUT (carry out) on schematic...
   c.p13.DYRU = nor(b.p09.APU_RESET1, b.p13.FEKU, b.p13.DOKA);
   c.p13.COMY = tock_pos(a.p13.CALA, b.p13.CALA, b.p13.DYRU, b.p13.COMY, !b.p13.COMY);
 

@@ -174,7 +174,6 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.CPU_RDn    = not(b.p07.CPU_RD);
   c.p09.CPU_RD1    = not(b.p09.CPU_RDn);
   c.p08.CPU_RDn    = not(b.p07.CPU_RD);
-  c.p11.CPU_RDn    = not(b.p07.CPU_RD);
 
   /*p10.BAFU*/ c.p10.CPU_WRn = not(b.p07.CPU_WR);
   /*P10.BOGY*/ c.p10.APU_WR = not(b.p10.CPU_WRn);

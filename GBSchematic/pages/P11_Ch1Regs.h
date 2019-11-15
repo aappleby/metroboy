@@ -4,6 +4,18 @@ struct Gameboy;
 
 struct P11_Ch1Regs {
 
+  /*p11.CEPO*/ bool CEPO; // reset
+  /*p11.HATO*/ bool HATO; // reset
+  /*p11.CAMY*/ bool CAMY; // reset
+
+  //----------
+  // FF10
+  
+  /*p11.CENU*/ bool CENU;
+  /*p11.BUZE*/ bool BUZE;
+  /*p11.ATYN*/ bool ATYN;
+  /*p11.ASOP*/ bool ASOP;
+
   /*p11.BANY*/ bool CH1_SWEEP_SHIFT_0;
   /*p11.ARAX*/ bool CH1_SWEEP_SHIFT_1;
   /*p11.ANAZ*/ bool CH1_SWEEP_SHIFT_2;
@@ -11,69 +23,80 @@ struct P11_Ch1Regs {
   /*p11.ADEK*/ bool CH1_SWEEP_TIME_0;
   /*p11.BANA*/ bool CH1_SWEEP_TIME_1;
   /*p11.BOTU*/ bool CH1_SWEEP_TIME_2;
-  /*p11.AMYD*/ bool FF10_D0;
-  /*p11.ATAX*/ bool FF10_D1;
-  /*p11.AZYP*/ bool FF10_D2;
-  /*p11.AFOX*/ bool FF10_D3;
-  /*p11.AVEK*/ bool FF10_D4;
-  /*p11.AKUX*/ bool FF10_D5;
-  /*p11.AWOS*/ bool FF10_D6;
+
+  //----------
+  // FF11
 
   /*p11.COVU*/ bool FF11_WR;
   /*p11.DAFO*/ bool FF11_WRn;
-  /*p11.BUWA*/ bool CPU_RD2;
+  /*p11.BUWA*/ bool CPU_RDa;
   /*p11.BEXU*/ bool FF11_RD;
 
   /*p11.CENA*/ bool CH1_DUTY_0;
   /*p11.DYCA*/ bool CH1_DUTY_1;
-  /*p11.BOWO*/ bool FF11_D6;
-  /*p11.CUDA*/ bool FF11_D7;
 
-  /*p11.BAGE*/ bool BAGE;
-  /*p11.BALE*/ bool FF14_RD;
-  /*p11.BOKO*/ bool CH1_USE_LENGTH;
-  /*p11.BYTU*/ bool FF14_D6;
+  //----------
+  // FF12
 
-  bool CEPO;
+  /*p11.KAGY*/ bool KAGY;
+  /*p11.HAFU*/ bool HAFU;
+  /*p11.KYGY*/ bool KYGY;
+  /*p11.GAXU*/ bool GAXU;
+  /*p11.HAXE*/ bool HAXE;
+  /*p11.HAMY*/ bool HAMY;
+  /*p11.GAGO*/ bool GAGO;
+  /*p11.HOCU*/ bool HOCU;
 
-  union { bool JUSA; bool FF12_D0; };
-  union { bool JUZY; bool FF12_D1; };
-  union { bool JOMA; bool FF12_D2; };
-  union { bool JAFY; bool FF12_D3; bool CH1_ENV_DIR; };
-  union { bool JATY; bool FF12_D4; };
-  union { bool JAXO; bool FF12_D5; };
-  union { bool JENA; bool FF12_D6; };
-  union { bool JOPU; bool FF12_D7; };
+  /*p11.JUSA*/ bool CH1_SWEEP_0;
+  /*p11.JUZY*/ bool CH1_SWEEP_1;
+  /*p11.JOMA*/ bool CH1_SWEEP_2;
+  /*p11.JAFY*/ bool CH1_ENV_DIR;
+  /*p11.JATY*/ bool CH1_VOL_0;
+  /*p11.JAXO*/ bool CH1_VOL_1;
+  /*p11.JENA*/ bool CH1_VOL_2;
+  /*p11.JOPU*/ bool CH1_VOL_3;
 
+  //----------
   // FF13 NR13 - ch1 freq
-  union { bool GAXE; bool CH1_FREQ_00; };
-  union { bool HYFE; bool CH1_FREQ_01; };
-  union { bool JYTY; bool CH1_FREQ_02; };
-  union { bool KYNA; bool CH1_FREQ_03; };
-  union { bool JEMA; bool CH1_FREQ_04; };
-  union { bool HYKE; bool CH1_FREQ_05; };
-  union { bool FEVA; bool CH1_FREQ_06; };
-  union { bool EKOV; bool CH1_FREQ_07; };
-  union { bool EMUS; bool CH1_FREQ_08; };
-  union { bool EVAK; bool CH1_FREQ_09; };
-  union { bool COPU; bool CH1_FREQ_10; };
 
-  bool CENU,BUZE,ATYN,ASOP;
+  /*p11.CEGE*/ bool CPU_RDb;
+  /*p11.DAXA*/ bool CPU_RDnb;
+  /*p11.CACA*/ bool ADDR_FF13n;
+  /*p11.DYPU*/ bool FF13_RDn;
+  /*p11.EVAJ*/ bool FF13_RDa;
 
-  bool GAXU,HATO,GAGO,KAGY,HOCU;
-  bool JYSE,HEVE,HEWA,HOWU,HONO;
-  bool HAXE,HAFU,HAMY,KYGY;
-  bool JYNE,JACA,JOKU;
+  /*p11.FULO*/ bool CH1_FREQ_CLKn;
+  /*p11.GEKU*/ bool CH1_FREQ_CLKa;
+  /*p11.KYPE*/ bool CH1_FREQ_CLKb;
+  /*p11.DERU*/ bool CH1_FREQ_CLKc;
 
-  bool FULO,EPYK,GEKU,FUME;
-  bool DEGA,KYPE,DAKO,DERU;
-  bool FORU,GEFU,KYVU,KUMO,KARY,GODE,GOJE,FOZE;
-  bool CEGE,DAXA,CACA,DYPU,EVAJ;
-  bool CURE,DUPY,DOPA,DEMU,DEXO;
+  /*p11.EPYK*/ bool CH1_FREQ_RSTn;
+  /*p11.FUME*/ bool CH1_FREQ_RSTa;
+  /*p11.DEGA*/ bool CH1_FREQ_RSTb;
+  /*p11.DAKO*/ bool CH1_FREQ_RSTc;
 
-  bool CAMY;
+  /*p11.GAXE*/ bool CH1_FREQ_00;
+  /*p11.HYFE*/ bool CH1_FREQ_01;
+  /*p11.JYTY*/ bool CH1_FREQ_02;
+  /*p11.KYNA*/ bool CH1_FREQ_03;
+  /*p11.JEMA*/ bool CH1_FREQ_04;
+  /*p11.HYKE*/ bool CH1_FREQ_05;
+  /*p11.FEVA*/ bool CH1_FREQ_06;
+  /*p11.EKOV*/ bool CH1_FREQ_07;
+  /*p11.EMUS*/ bool CH1_FREQ_08;
+  /*p11.EVAK*/ bool CH1_FREQ_09;
+  /*p11.COPU*/ bool CH1_FREQ_10;
 
-  union { /*bool BUDA;*/ bool CPU_RDn; };
+  //----------
+  // FF14
+
+  /*p11.BAGE*/ bool FF14_WRn;
+  /*p11.BOKO*/ bool CH1_USE_LENGTH;
+  /*p11.CURE*/ bool ADDR_FF14n;
+  /*p11.DUPY*/ bool FF14_RDa;
+  /*p11.BUDA*/ bool CPU_RDna;
+  /*p11.BALE*/ bool FF14_RDb;
+
 };
 
 

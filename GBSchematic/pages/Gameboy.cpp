@@ -357,11 +357,11 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.COFU = not(b.p01.BEZE);
   c.p01.BARU = not(b.p01.BULE);
 
-  c.p01.HORU_512 = not(b.p01.GEXY);
-  c.p01.BUFY_256 = not(b.p01.COFU);
-  c.p01.BYFE_128 = not(b.p01.BARU);
+  /*p01.HORU*/ c.p01.HORU_512 = not(b.p01.GEXY);
+  /*p01.BUFY*/ c.p01.BUFY_256 = not(b.p01.COFU);
+  /*p01.BYFE*/ c.p01.CLK_128 = not(b.p01.BARU);
 
-  c.p20.ALOP = not(b.p01.BYFE_128);
+  c.p20.ALOP = not(b.p01.CLK_128);
 
   c.p01.ATYK = tock_pos(a.p01.CLK_AxCxExGx2, b.p01.CLK_AxCxExGx2, b.p01.APU_RESETn1,  b.p01.ATYK, !b.p01.ATYK);
   c.p01.AVOK = tock_pos(a.p01.ATYK,          b.p01.ATYK,          b.p01.APU_RESETn1,  b.p01.AVOK, !b.p01.AVOK);
@@ -1528,7 +1528,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.BAZA   = tock_pos(a.p01.AJER_2M,   b.p01.AJER_2M,   b.p09.APU_RESETn3, b.p09.BAZA,   b.p09.NR52_5);
 
   c.p09.NET03 = not(!b.p09.FERO);
-  c.p09.CELY = mux2(b.p09.BAZA, b.p01.BYFE_128, b.p09.NET03);
+  c.p09.CELY = mux2(b.p09.BAZA, b.p01.CLK_128, b.p09.NET03);
   c.p09.CONE = not(b.p09.CELY);
   c.p09.CATE = not(b.p09.CONE);
 
@@ -1641,3 +1641,4 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   if (b.p09.FF26_RDnd) { c.D2 = b.p09.FF26_D2; }
   if (b.p09.FF26_RDnc) { c.D3 = b.p09.FF26_D3; }
 }
+

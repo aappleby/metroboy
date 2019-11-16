@@ -91,7 +91,7 @@ struct P11_Ch1Regs {
   // FF14
 
   /*p11.BAGE*/ bool FF14_WRn;
-  /*p11.BOKO*/ bool CH1_USE_LENGTH;
+  /*p11.BOKO*/ bool NR14_STOP;
   /*p11.CURE*/ bool ADDR_FF14n;
   /*p11.DUPY*/ bool FF14_RDa;
   /*p11.BUDA*/ bool CPU_RDna;

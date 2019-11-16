@@ -23,17 +23,17 @@ struct P12_Ch1Sweep {
   /*p12.JYKA*/ bool FREQ_SUM_OUT_01;
   /*p12.HYKA*/ bool FREQ_SUM_OUT_00;
 
-  /*p12.BOJO*/ bool FREQ_SUM_10n;
-  /*p12.APAT*/ bool FREQ_SUM_09n;
-  /*p12.BYRU*/ bool FREQ_SUM_08n;
-  /*p12.CYKY*/ bool FREQ_SUM_07n;
-  /*p12.DEBO*/ bool FREQ_SUM_06n;
-  /*p12.FOHY*/ bool FREQ_SUM_05n;
-  /*p12.KOVO*/ bool FREQ_SUM_04n;
-  /*p12.KEKE*/ bool FREQ_SUM_03n;
-  /*p12.HUNY*/ bool FREQ_SUM_02n;
-  /*p12.HOXE*/ bool FREQ_SUM_01n;
-  /*p12.JUTA*/ bool FREQ_SUM_00n;
+  /*p12.BOJO*/ bool FREQ_SUM_OUT_10n;
+  /*p12.APAT*/ bool FREQ_SUM_OUT_09n;
+  /*p12.BYRU*/ bool FREQ_SUM_OUT_08n;
+  /*p12.CYKY*/ bool FREQ_SUM_OUT_07n;
+  /*p12.DEBO*/ bool FREQ_SUM_OUT_06n;
+  /*p12.FOHY*/ bool FREQ_SUM_OUT_05n;
+  /*p12.KOVO*/ bool FREQ_SUM_OUT_04n;
+  /*p12.KEKE*/ bool FREQ_SUM_OUT_03n;
+  /*p12.HUNY*/ bool FREQ_SUM_OUT_02n;
+  /*p12.HOXE*/ bool FREQ_SUM_OUT_01n;
+  /*p12.JUTA*/ bool FREQ_SUM_OUT_00n;
 
   /*p12.BYFU*/ bool FREQ_D10n;
   /*p12.BOFU*/ bool FREQ_D09n;
@@ -71,8 +71,29 @@ struct P12_Ch1Sweep {
   /*p12.GATO*/ bool FREQ_SUM_RST_01;
   /*p12.EFOR*/ bool FREQ_SUM_RST_00;
 
-  bool DOLY,DOFY,DEXE,DELE,EXAP,FAXO,GYME,JYME,KARE,JODE,GALO;
-  bool DEVA,ETER,DEFA,EDOK,EPYR,GELE,JETE,JAPE,HELE,HOPA,HORA;
+  /*p12.DOLY*/ bool FREQ_SUM_L_10;
+  /*p12.DOFY*/ bool FREQ_SUM_L_09;
+  /*p12.DEXE*/ bool FREQ_SUM_L_08;
+  /*p12.DELE*/ bool FREQ_SUM_L_07;
+  /*p12.EXAP*/ bool FREQ_SUM_L_06;
+  /*p12.FAXO*/ bool FREQ_SUM_L_05;
+  /*p12.GYME*/ bool FREQ_SUM_L_04;
+  /*p12.JYME*/ bool FREQ_SUM_L_03;
+  /*p12.KARE*/ bool FREQ_SUM_L_02;
+  /*p12.JODE*/ bool FREQ_SUM_L_01;
+  /*p12.GALO*/ bool FREQ_SUM_L_00;
+
+  /*p12.DEVA*/ bool FREQ_SUM_R_10;
+  /*p12.ETER*/ bool FREQ_SUM_R_09;
+  /*p12.DEFA*/ bool FREQ_SUM_R_08;
+  /*p12.EDOK*/ bool FREQ_SUM_R_07;
+  /*p12.EPYR*/ bool FREQ_SUM_R_06;
+  /*p12.GELE*/ bool FREQ_SUM_R_05;
+  /*p12.JETE*/ bool FREQ_SUM_R_04;
+  /*p12.JAPE*/ bool FREQ_SUM_R_03;
+  /*p12.HELE*/ bool FREQ_SUM_R_02;
+  /*p12.HOPA*/ bool FREQ_SUM_R_01;
+  /*p12.HORA*/ bool FREQ_SUM_R_00;
 
   bool ATYS;
 

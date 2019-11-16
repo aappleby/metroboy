@@ -195,7 +195,7 @@ struct P01_ClocksReset {
   /*p01.JESO*/ bool JESO_512K;
   /*p01.HORU*/ bool HORU_512;
   /*p01.BUFY*/ bool BUFY_256;
-  /*p01.BYFE*/ bool BYFE_128;
+  /*p01.BYFE*/ bool CLK_128;
 
   /*p01.COKE*/ bool COKE; // ? clock
   /*p01.BURE*/ bool BURE;

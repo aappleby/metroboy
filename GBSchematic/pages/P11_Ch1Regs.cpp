@@ -130,7 +130,15 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p11.DUPY*/ c.p11.FF14_RDa   = or(b.p11.CPU_RDnb, b.p11.ADDR_FF14n); // polarity?
   /*p11.BALE*/ c.p11.FF14_RDb   = nand(b.p11.CPU_RDna, b.p10.ADDR_FF14);
 
-  /*p11.BOKO*/ c.p11.CH1_USE_LENGTH = tock_pos(a.p11.FF14_WRn, b.p11.FF14_WRn, b.p11.CAMY, c.p11.CH1_USE_LENGTH, b.D6);
 
-  /*p11.BYTU*/ if (b.p11.FF14_RDb) c.D6 = b.p11.CH1_USE_LENGTH;
+  /*p11.BOKO*/ c.p11.NR14_STOP = tock_pos(a.p11.FF14_WRn, b.p11.FF14_WRn, b.p11.CAMY, c.p11.NR14_STOP, b.D6);
+
+  /*p13.DOGE*/ c.p13.FF14_WRnb = nand(b.p10.APU_WR, b.p10.ADDR_FF14);
+
+  /*p13.DUPE*/ c.p13.NR14_START = tock_pos(a.p13.FF14_WRnb, b.p13.FF14_WRnb, b.p13.NR14_START_RST, b.p13.NR14_START, b.D7);
+  /*p13.EZEC*/ c.p13.CH1_RUNNING = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.p13.DUKA, b.p13.CH1_RUNNING, b.p13.NR14_START);
+  /*p13.DADO*/ c.p13.NR14_START_RST = nor(b.p09.APU_RESET1, b.p13.CH1_RUNNING);
+
+
+  /*p11.BYTU*/ if (b.p11.FF14_RDb) c.D6 = b.p11.NR14_STOP;
 }

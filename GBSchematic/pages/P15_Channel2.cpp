@@ -3,7 +3,7 @@
 
 void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  c.p15.HOTA = not(b.p01.BYFE_128);
+  c.p15.HOTA = not(b.p01.CLK_128);
   c.p15.JYNA = tock_pos(a.p15.HOTA, b.p15.HOTA, b.p15.KATY, b.p15.JYNA, !b.p15.JYNA);
   c.p15.KYLO = not(b.p15.JYNA);
   c.p15.KENE = not(b.p15.KYLO);

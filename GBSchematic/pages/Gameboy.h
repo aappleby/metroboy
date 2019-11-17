@@ -13,7 +13,6 @@
 #include "P07_SysDecode.h"
 #include "P08_ExtCpuBuses.h"
 #include "P09_ApuControl.h"
-#include "P10_ApuDecode.h"
 #include "P11_Ch1Regs.h"
 #include "P12_Ch1Sweep.h"
 #include "P13_Channel1.h"
@@ -91,11 +90,12 @@ struct P01_ClocksReset {
   //----------
   // APU reset tree
 
-  /*P09.JYRO*/ bool APU_RST_00;
+  /*P09.JYRO*/ bool APU_RST; // This is the root of the APU reset tree
 
   /*p01.BOPO*/ bool APU_RESETn1;
   /*ATUS*/ bool APU_RESETn2;
   /*p01.BELA*/ bool APU_RESETn3;
+  /*p09.KAME*/ bool APU_RESETn5;
 
   //----------
   // Clock control
@@ -189,13 +189,15 @@ struct P01_ClocksReset {
 
   /*P09.AJER*/ bool AJER_2M;
   /*P09.DYFA*/ bool DYFA_1M;
-
   /*p01.BAVU*/ bool BAVU_1M;
-  /*p01.HAMA*/ bool APUCLK_512Kn;
-  /*p01.JESO*/ bool JESO_512K;
-  /*p01.HORU*/ bool HORU_512;
-  /*p01.BUFY*/ bool BUFY_256;
-  /*p01.BYFE*/ bool CLK_128;
+
+  /*p01.JESO*/ bool CLK_512Ka;
+  /*p01.HAMA*/ bool CLK_512Kn;
+
+  // these are used by all the channels
+  /*p01.HORU*/ bool CLK_512a;
+  /*p01.BUFY*/ bool CLK_256a;
+  /*p01.BYFE*/ bool CLK_128a;
 
   /*p01.COKE*/ bool COKE; // ? clock
   /*p01.BURE*/ bool BURE;
@@ -350,8 +352,6 @@ struct Gameboy {
   P06_SerialLink           p06;
   P07_SysDecode            p07;
   P08_ExtCpuBuses          p08;
-  P09_ApuControl           p09;
-  P10_ApuDecode            p10;
   P11_Ch1Regs              p11;
   P12_Ch1Sweep             p12;
   P13_Channel1             p13;
@@ -361,7 +361,8 @@ struct Gameboy {
   P17_WaveRam              p17;
   P18_Channel3             p18;
 
-  Channel4 ch4;
+  ApuControl apu;
+  Channel4   ch4;
 
   P21_VideoControl         p21;
   P22_PpuDecode            p22;

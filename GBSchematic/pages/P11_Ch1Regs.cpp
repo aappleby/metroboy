@@ -12,18 +12,18 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF10 NR10
 
-  /*p11.CENU*/ c.p11.CENU = and(b.p10.APU_WR, b.p10.ADDR_FF10);
-  /*p11.BUZE*/ c.p11.BUZE = not(b.p10.ADDR_FF10);
-  /*p11.ATYN*/ c.p11.ATYN = nor(b.p09.CPU_RDn, b.p11.BUZE);
+  /*p11.CENU*/ c.p11.CENU = and(b.apu.APU_WR, b.apu.ADDR_FF10);
+  /*p11.BUZE*/ c.p11.BUZE = not(b.apu.ADDR_FF10);
+  /*p11.ATYN*/ c.p11.ATYN = nor(b.apu.CPU_RDn, b.p11.BUZE);
   /*p11.ASOP*/ c.p11.ASOP = not(b.p11.ATYN);
 
-  /*p11.BANY*/ c.p11.NR10_SWEEP_SHIFT_0 = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.NR10_SWEEP_SHIFT_0, b.D0);
-  /*p11.ARAX*/ c.p11.NR10_SWEEP_SHIFT_1 = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.NR10_SWEEP_SHIFT_1, b.D1);
-  /*p11.ANAZ*/ c.p11.NR10_SWEEP_SHIFT_2 = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.NR10_SWEEP_SHIFT_2, b.D2);
-  /*p11.AVAF*/ c.p11.NR10_SWEEP_DIR     = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.NR10_SWEEP_DIR,     b.D3);
-  /*p11.ADEK*/ c.p11.NR10_SWEEP_TIME_0  = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.NR10_SWEEP_TIME_0,  b.D4);
-  /*p11.BANA*/ c.p11.NR10_SWEEP_TIME_1  = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.NR10_SWEEP_TIME_1,  b.D5);
-  /*p11.BOTU*/ c.p11.NR10_SWEEP_TIME_2  = tock_pos(a.p11.CENU, b.p11.CENU, b.p09.APU_RESETn, b.p11.NR10_SWEEP_TIME_2,  b.D6);
+  /*p11.BANY*/ c.p11.NR10_SWEEP_SHIFT_0 = tock_pos(a.p11.CENU, b.p11.CENU, b.apu.APU_RESETn, b.p11.NR10_SWEEP_SHIFT_0, b.D0);
+  /*p11.ARAX*/ c.p11.NR10_SWEEP_SHIFT_1 = tock_pos(a.p11.CENU, b.p11.CENU, b.apu.APU_RESETn, b.p11.NR10_SWEEP_SHIFT_1, b.D1);
+  /*p11.ANAZ*/ c.p11.NR10_SWEEP_SHIFT_2 = tock_pos(a.p11.CENU, b.p11.CENU, b.apu.APU_RESETn, b.p11.NR10_SWEEP_SHIFT_2, b.D2);
+  /*p11.AVAF*/ c.p11.NR10_SWEEP_DIR     = tock_pos(a.p11.CENU, b.p11.CENU, b.apu.APU_RESETn, b.p11.NR10_SWEEP_DIR,     b.D3);
+  /*p11.ADEK*/ c.p11.NR10_SWEEP_TIME_0  = tock_pos(a.p11.CENU, b.p11.CENU, b.apu.APU_RESETn, b.p11.NR10_SWEEP_TIME_0,  b.D4);
+  /*p11.BANA*/ c.p11.NR10_SWEEP_TIME_1  = tock_pos(a.p11.CENU, b.p11.CENU, b.apu.APU_RESETn, b.p11.NR10_SWEEP_TIME_1,  b.D5);
+  /*p11.BOTU*/ c.p11.NR10_SWEEP_TIME_2  = tock_pos(a.p11.CENU, b.p11.CENU, b.apu.APU_RESETn, b.p11.NR10_SWEEP_TIME_2,  b.D6);
   
   /*p11.AMYD*/ if (b.p11.ASOP) c.D0 = b.p11.NR10_SWEEP_SHIFT_0;
   /*p11.ATAX*/ if (b.p11.ASOP) c.D1 = b.p11.NR10_SWEEP_SHIFT_1;
@@ -36,10 +36,10 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF11 NR11
 
-  /*p11.COVU*/ c.p11.FF11_WR = and(b.p10.APU_WR, b.p10.ADDR_FF11);
+  /*p11.COVU*/ c.p11.FF11_WR = and(b.apu.APU_WR, b.apu.ADDR_FF11);
   /*p11.DAFO*/ c.p11.FF11_WRn = not(b.p11.FF11_WR);
-  /*p11.BUWA*/ c.p11.CPU_RDa = not(b.p09.CPU_RDn);
-  /*p11.BEXU*/ c.p11.FF11_RD = nor(b.p11.CPU_RDa, b.p10.ADDR_FF11); // polarity?
+  /*p11.BUWA*/ c.p11.CPU_RDa = not(b.apu.CPU_RDn);
+  /*p11.BEXU*/ c.p11.FF11_RD = nor(b.p11.CPU_RDa, b.apu.ADDR_FF11); // polarity?
 
   /*p11.CENA*/ c.p11.CH1_DUTY_0 = tock_pos(a.p11.FF11_WRn, b.p11.FF11_WRn, b.p11.CEPO, b.p11.CH1_DUTY_0, b.D6);
   /*p11.DYCA*/ c.p11.CH1_DUTY_1 = tock_pos(a.p11.FF11_WRn, b.p11.FF11_WRn, b.p11.CEPO, b.p11.CH1_DUTY_1, b.D7);
@@ -51,13 +51,13 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // FF12 NR12
 
   /*p11.KAGY*/ c.p11.KAGY = not(b.p11.GAXU); // unused?
-  /*p11.HAFU*/ c.p11.HAFU = and(b.p10.APU_WR, b.p10.ADDR_FF12);
+  /*p11.HAFU*/ c.p11.HAFU = and(b.apu.APU_WR, b.apu.ADDR_FF12);
   /*p11.KYGY*/ c.p11.KYGY = not(b.p11.HAFU);
-  /*p11.GAXU*/ c.p11.GAXU = nand(b.p10.APU_WR, b.p10.ADDR_FF12);
-  /*p11.HAXE*/ c.p11.HAXE = not(b.p10.ADDR_FF12);
-  /*p11.HAMY*/ c.p11.HAMY = or(b.p11.HAXE, b.p09.CPU_RDn);
-  /*p11.GAGO*/ c.p11.GAGO = not(b.p10.ADDR_FF12);
-  /*p11.HOCU*/ c.p11.HOCU = or(b.p11.GAGO, b.p09.CPU_RDn);
+  /*p11.GAXU*/ c.p11.GAXU = nand(b.apu.APU_WR, b.apu.ADDR_FF12);
+  /*p11.HAXE*/ c.p11.HAXE = not(b.apu.ADDR_FF12);
+  /*p11.HAMY*/ c.p11.HAMY = or(b.p11.HAXE, b.apu.CPU_RDn);
+  /*p11.GAGO*/ c.p11.GAGO = not(b.apu.ADDR_FF12);
+  /*p11.HOCU*/ c.p11.HOCU = or(b.p11.GAGO, b.apu.CPU_RDn);
 
   /*p11.JUSA*/ c.p11.CH1_SWEEP_0 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.CH1_SWEEP_0, b.D0);
   /*p11.JUZY*/ c.p11.CH1_SWEEP_1 = tock_pos(a.p11.KYGY, b.p11.KYGY, b.p11.HATO, b.p11.CH1_SWEEP_1, b.D1);
@@ -80,10 +80,10 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF13/14 ch1 freq
 
-  /*p11.CACA*/ c.p11.ADDR_FF13n = not(b.p10.ADDR_FF13);
+  /*p11.CACA*/ c.p11.ADDR_FF13n = not(b.apu.ADDR_FF13);
 
-  /*p11.CEGE*/ c.p11.CPU_RDb  = not(b.p09.CPU_RDn);
-  /*p11.DAXA*/ c.p11.CPU_RDnb = nand(b.p11.CPU_RDb, b.p09.DBG_APU);
+  /*p11.CEGE*/ c.p11.CPU_RDb  = not(b.apu.CPU_RDn);
+  /*p11.DAXA*/ c.p11.CPU_RDnb = nand(b.p11.CPU_RDb, b.apu.DBG_APU);
   /*p11.DYPU*/ c.p11.FF13_RDn = nor(b.p11.CPU_RDnb, b.p11.ADDR_FF13n);
   /*p11.EVAJ*/ c.p11.FF13_RDa = not(b.p11.FF13_RDn);
 
@@ -124,18 +124,18 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF14 NR14
 
-  /*p11.CURE*/ c.p11.ADDR_FF14n = not(b.p10.ADDR_FF14);
-  /*p11.BAGE*/ c.p11.FF14_WRn   = nand(b.p16.CPU_WR_WEIRD, b.p10.ADDR_FF14); 
+  /*p11.CURE*/ c.p11.ADDR_FF14n = not(b.apu.ADDR_FF14);
+  /*p11.BAGE*/ c.p11.FF14_WRn   = nand(b.p16.CPU_WR_WEIRD, b.apu.ADDR_FF14); 
   /*p11.BUDA*/ c.p11.CPU_RDna   = not(b.p07.CPU_RD); // not sure which CPU_RD signal this is
   /*p11.DUPY*/ c.p11.FF14_RDa   = or(b.p11.CPU_RDnb, b.p11.ADDR_FF14n); // polarity?
-  /*p11.BALE*/ c.p11.FF14_RDb   = nand(b.p11.CPU_RDna, b.p10.ADDR_FF14);
+  /*p11.BALE*/ c.p11.FF14_RDb   = nand(b.p11.CPU_RDna, b.apu.ADDR_FF14);
 
 
   /*p11.BOKO*/ c.p11.NR14_STOP = tock_pos(a.p11.FF14_WRn, b.p11.FF14_WRn, b.p11.CAMY, c.p11.NR14_STOP, b.D6);
 
-  /*p13.DOGE*/ c.p13.FF14_WRnb = nand(b.p10.APU_WR, b.p10.ADDR_FF14);
+  /*p13.DOGE*/ c.p13.FF14_WRnb = nand(b.apu.APU_WR, b.apu.ADDR_FF14);
 
-  /*p13.DADO*/ c.p13.NR14_START_RST = nor(b.p09.APU_RESET1, b.p13.CH1_RUNNING);
+  /*p13.DADO*/ c.p13.NR14_START_RST = nor(b.apu.APU_RESET1, b.p13.CH1_RUNNING);
   /*p13.DUPE*/ c.p13.NR14_START = tock_pos(a.p13.FF14_WRnb, b.p13.FF14_WRnb, b.p13.NR14_START_RST, b.p13.NR14_START, b.D7);
   /*p13.EZEC*/ c.p13.CH1_RUNNING = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.p13.DUKA, b.p13.CH1_RUNNING, b.p13.NR14_START);
 

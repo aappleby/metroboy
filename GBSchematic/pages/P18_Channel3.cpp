@@ -10,7 +10,7 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p18.GASE = not(b.p18.HEMA);
 
   c.p18.HUPA = and(b.p18.HUNO, b.p01.CLK_ABxxEFxx1);
-  c.p18.GAFU = nor(b.p09.APU_RESET1, b.p16.GARA, b.p18.HUPA);
+  c.p18.GAFU = nor(b.apu.APU_RESET1, b.p16.GARA, b.p18.HUPA);
   c.p18.HEFO = nor(b.p01.CLK_ABxxEFxx1, b.p16.GUGU);
   c.p18.HERA = nor(b.p18.GASE, b.p16.GARA);
 
@@ -39,7 +39,7 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p18.FOTO*/ c.p18.FOTO = and(b.p18.WAVE_LOOP, b.p18.GASE);
   /*p18.ETAN*/ c.p18.WAVE_RST = or(b.p16.GARA, b.p18.WAVE_LOOP);
-  /*p18.GYRY*/ c.p18.GYRY = nor(b.p09.APU_RESET1, b.p16.GARA, b.p18.FOTO);
+  /*p18.GYRY*/ c.p18.GYRY = nor(b.apu.APU_RESET1, b.p16.GARA, b.p18.FOTO);
 
   /*p18.DERO*/ c.p18.WAVE_CLK = not(b.p18.GASE);
   /*p18.EFAR*/ c.p18.WAVE_IDX0 = tock_pos( a.p18.WAVE_CLK,   b.p18.WAVE_CLK,  b.p18.WAVE_RST, b.p18.WAVE_IDX0, !b.p18.WAVE_IDX0);
@@ -54,8 +54,8 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p18.WAVE_A2 = mux2(b.p18.WAVE_IDX3, b.A02, b.p18.CH3_ACTIVE);
   c.p18.WAVE_A3 = mux2(b.p18.WAVE_IDX4, b.A03, b.p18.CH3_ACTIVE);
 
-  c.p18.JECO = not(b.p09.CPU_RDn);
-  c.p18.HONY = and(b.p09.DBG_APU, b.p18.JECO, b.p18.FF1C);
+  c.p18.JECO = not(b.apu.CPU_RDn);
+  c.p18.HONY = and(b.apu.DBG_APU, b.p18.JECO, b.p18.FF1C);
   c.p18.GENO = not(b.p18.HONY);
 
   /*p18.FAPY*/ c.p18.WAVE_IDX_D0 = not(!b.p18.WAVE_IDX0);
@@ -72,8 +72,8 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     c.D4 = b.p18.WAVE_IDX_D4;
   }
 
-  c.p18.GEDO = and(b.p01.BUFY_256, b.p18.FF1E_D6);
-  c.p18.FYGO = or(b.p09.APU_RESET1, b.p18.GEDO, b.p18.FF1A_D7n);
+  c.p18.GEDO = and(b.p01.CLK_256a, b.p18.FF1E_D6);
+  c.p18.FYGO = or(b.apu.APU_RESET1, b.p18.GEDO, b.p18.FF1A_D7n);
   c.p18.FOZU = or(b.p16.GARA, b.p18.FYGO);
   c.p18.EZAS = not(b.p18.FOZU);
   c.p18.DORU = not(b.p18.EZAS);
@@ -84,9 +84,9 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p18.CH3_ACTIVE = b.p18.COKA;
   c.p18.CH3_ACTIVEn = b.p18.ERED;
 
-  c.p18.GUDA = nor(b.p18.FF1B_WR3, b.p09.APU_RESET1, b.p16.GARA);
+  c.p18.GUDA = nor(b.p18.FF1B_WR3, b.apu.APU_RESET1, b.p16.GARA);
   c.p18.FEXU = tock_pos(!a.p18.FYRU_07, !b.p18.FYRU_07, b.p18.GUDA, b.p18.FEXU, !b.p18.FEXU);
-  c.p18.GEPY = nor(b.p01.BUFY_256, b.p18.FF1E_D6n);
+  c.p18.GEPY = nor(b.p01.CLK_256a, b.p18.FF1E_D6n);
   c.p18.GENU = not(b.p18.GEPY);
 
   c.p18.GEVO_00 = tock_pos(a.p18.GENU,    b.p18.GENU,    b.p18.FF1B_WR2, b.p18.GEVO_00, b.D0);

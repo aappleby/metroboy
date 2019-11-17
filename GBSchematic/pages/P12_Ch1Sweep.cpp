@@ -15,8 +15,8 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p12.BECY*/ c.p12.BECY = not(b.p12.CYBE);
   /*p12.EJYB*/ c.p12.EJYB = not(b.p12.FAJA);
 
-  /*p12.DEPU*/ c.p12.FREQ_WRa = nand(b.p10.APU_WR, b.p10.ADDR_FF13); // polarity?
-  /*p12.DEBY*/ c.p12.FREQ_WRb = and(b.p10.APU_WR, b.p10.ADDR_FF14); // polarity?
+  /*p12.DEPU*/ c.p12.FREQ_WRa = nand(b.apu.APU_WR, b.apu.ADDR_FF13); // polarity?
+  /*p12.DEBY*/ c.p12.FREQ_WRb = and(b.apu.APU_WR, b.apu.ADDR_FF14); // polarity?
   /*p12.DYLA*/ c.p12.FREQ_WRc = not(b.p12.FREQ_WRa);
 
   // axan.set
@@ -56,17 +56,17 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p12.FOPU*/ c.p12.FOPU = and(b.p12.FREQ_WRc, b.p12.FREQ_D01n);
   /*p12.EJYF*/ c.p12.EJYF = and(b.p12.FREQ_WRc, b.p12.FREQ_D00n);
 
-  /*p12.APAJ*/ c.p12.FREQ_SUM_RST_10 = nor(b.p12.AJUX, b.p09.APU_RESET1);
-  /*p12.BOVU*/ c.p12.FREQ_SUM_RST_09 = nor(b.p12.AMAC, b.p09.APU_RESET1);
-  /*p12.BOXU*/ c.p12.FREQ_SUM_RST_08 = nor(b.p12.BASO, b.p09.APU_RESET1);
-  /*p12.ESEL*/ c.p12.FREQ_SUM_RST_07 = nor(b.p12.EMAR, b.p09.APU_RESET1);
-  /*p12.ELUF*/ c.p12.FREQ_SUM_RST_06 = nor(b.p12.ETOK, b.p09.APU_RESET1);
-  /*p12.KAJU*/ c.p12.FREQ_SUM_RST_05 = nor(b.p12.KYFU, b.p09.APU_RESET1);
-  /*p12.KAPO*/ c.p12.FREQ_SUM_RST_04 = nor(b.p12.KAVO, b.p09.APU_RESET1);
-  /*p12.GAMO*/ c.p12.FREQ_SUM_RST_03 = nor(b.p12.FEGA, b.p09.APU_RESET1);
-  /*p12.GYFU*/ c.p12.FREQ_SUM_RST_02 = nor(b.p12.FOKE, b.p09.APU_RESET1);
-  /*p12.GATO*/ c.p12.FREQ_SUM_RST_01 = nor(b.p12.FOPU, b.p09.APU_RESET1);
-  /*p12.EFOR*/ c.p12.FREQ_SUM_RST_00 = nor(b.p12.EJYF, b.p09.APU_RESET1);
+  /*p12.APAJ*/ c.p12.FREQ_SUM_RST_10 = nor(b.p12.AJUX, b.apu.APU_RESET1);
+  /*p12.BOVU*/ c.p12.FREQ_SUM_RST_09 = nor(b.p12.AMAC, b.apu.APU_RESET1);
+  /*p12.BOXU*/ c.p12.FREQ_SUM_RST_08 = nor(b.p12.BASO, b.apu.APU_RESET1);
+  /*p12.ESEL*/ c.p12.FREQ_SUM_RST_07 = nor(b.p12.EMAR, b.apu.APU_RESET1);
+  /*p12.ELUF*/ c.p12.FREQ_SUM_RST_06 = nor(b.p12.ETOK, b.apu.APU_RESET1);
+  /*p12.KAJU*/ c.p12.FREQ_SUM_RST_05 = nor(b.p12.KYFU, b.apu.APU_RESET1);
+  /*p12.KAPO*/ c.p12.FREQ_SUM_RST_04 = nor(b.p12.KAVO, b.apu.APU_RESET1);
+  /*p12.GAMO*/ c.p12.FREQ_SUM_RST_03 = nor(b.p12.FEGA, b.apu.APU_RESET1);
+  /*p12.GYFU*/ c.p12.FREQ_SUM_RST_02 = nor(b.p12.FOKE, b.apu.APU_RESET1);
+  /*p12.GATO*/ c.p12.FREQ_SUM_RST_01 = nor(b.p12.FOPU, b.apu.APU_RESET1);
+  /*p12.EFOR*/ c.p12.FREQ_SUM_RST_00 = nor(b.p12.EJYF, b.apu.APU_RESET1);
 
   /*p12.DOLY*/ c.p12.FREQ_SUM_L_10 = tock_pos(a.p13.ADAD, a.p13.ADAD, a.p13.KYLY, b.p12.FREQ_SUM_L_10, b.p12.FREQ_SUM_OUT_10);
   /*p12.DOFY*/ c.p12.FREQ_SUM_L_09 = tock_pos(a.p13.ADAD, a.p13.ADAD, a.p13.KYLY, b.p12.FREQ_SUM_L_09, b.p12.FREQ_SUM_OUT_09);
@@ -170,17 +170,17 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p12.JOCY*/ c.p12.JOCY = and(b.p12.FREQ_SUM_OUT_01n, b.p12.KAPE);
   /*p12.KOKO*/ c.p12.KOKO = and(b.p12.FREQ_SUM_OUT_00n, b.p12.KAPE);
 
-  /*p12.AVUF*/ c.p12.FREQ_SHIFT_RST_10 = nor(b.p09.APU_RESET1, b.p12.AFYR);
-  /*p12.AFUX*/ c.p12.FREQ_SHIFT_RST_09 = nor(b.p09.APU_RESET1, b.p12.BUVO);
-  /*p12.AGOR*/ c.p12.FREQ_SHIFT_RST_08 = nor(b.p09.APU_RESET1, b.p12.AFUG);
-  /*p12.BEWO*/ c.p12.FREQ_SHIFT_RST_07 = nor(b.p09.APU_RESET1, b.p12.BAPU);
-  /*p12.ENOK*/ c.p12.FREQ_SHIFT_RST_06 = nor(b.p09.APU_RESET1, b.p12.EREG);
-  /*p12.EZUK*/ c.p12.FREQ_SHIFT_RST_05 = nor(b.p09.APU_RESET1, b.p12.EVOF);
-  /*p12.KYBO*/ c.p12.FREQ_SHIFT_RST_04 = nor(b.p09.APU_RESET1, b.p12.KEVY);
-  /*p12.KETO*/ c.p12.FREQ_SHIFT_RST_03 = nor(b.p09.APU_RESET1, b.p12.KAXY);
-  /*p12.HYVU*/ c.p12.FREQ_SHIFT_RST_02 = nor(b.p09.APU_RESET1, b.p12.JEHY);
-  /*p12.HOBU*/ c.p12.FREQ_SHIFT_RST_01 = nor(b.p09.APU_RESET1, b.p12.JOCY);
-  /*p12.JADO*/ c.p12.FREQ_SHIFT_RST_00 = nor(b.p09.APU_RESET1, b.p12.KOKO);
+  /*p12.AVUF*/ c.p12.FREQ_SHIFT_RST_10 = nor(b.apu.APU_RESET1, b.p12.AFYR);
+  /*p12.AFUX*/ c.p12.FREQ_SHIFT_RST_09 = nor(b.apu.APU_RESET1, b.p12.BUVO);
+  /*p12.AGOR*/ c.p12.FREQ_SHIFT_RST_08 = nor(b.apu.APU_RESET1, b.p12.AFUG);
+  /*p12.BEWO*/ c.p12.FREQ_SHIFT_RST_07 = nor(b.apu.APU_RESET1, b.p12.BAPU);
+  /*p12.ENOK*/ c.p12.FREQ_SHIFT_RST_06 = nor(b.apu.APU_RESET1, b.p12.EREG);
+  /*p12.EZUK*/ c.p12.FREQ_SHIFT_RST_05 = nor(b.apu.APU_RESET1, b.p12.EVOF);
+  /*p12.KYBO*/ c.p12.FREQ_SHIFT_RST_04 = nor(b.apu.APU_RESET1, b.p12.KEVY);
+  /*p12.KETO*/ c.p12.FREQ_SHIFT_RST_03 = nor(b.apu.APU_RESET1, b.p12.KAXY);
+  /*p12.HYVU*/ c.p12.FREQ_SHIFT_RST_02 = nor(b.apu.APU_RESET1, b.p12.JEHY);
+  /*p12.HOBU*/ c.p12.FREQ_SHIFT_RST_01 = nor(b.apu.APU_RESET1, b.p12.JOCY);
+  /*p12.JADO*/ c.p12.FREQ_SHIFT_RST_00 = nor(b.apu.APU_RESET1, b.p12.KOKO);
 
   /*p12.BEKU*/ c.p12.FREQ_SHIFT_10 = srtock_pos(a.p12.BECY, b.p12.BECY, b.p12.FREQ_SHIFT_SET_10, b.p12.FREQ_SHIFT_RST_10, b.p12.FREQ_SHIFT_10, b.chip.P10_B);
   /*p12.AGEZ*/ c.p12.FREQ_SHIFT_09 = srtock_pos(a.p12.BECY, b.p12.BECY, b.p12.FREQ_SHIFT_SET_09, b.p12.FREQ_SHIFT_RST_09, b.p12.FREQ_SHIFT_09, b.p12.FREQ_SHIFT_10);

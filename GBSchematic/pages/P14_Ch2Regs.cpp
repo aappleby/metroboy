@@ -9,23 +9,23 @@
 
 void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  c.p14.FOGE = not(b.p09.CPU_RDn);
-  c.p14.FAPE = and(b.p14.FOGE, b.p09.DBG_APU);
+  c.p14.FOGE = not(b.apu.CPU_RDn);
+  c.p14.FAPE = and(b.p14.FOGE, b.apu.DBG_APU);
 
   //----------
   // FF16 NR21
 
-  c.p14.AGYN = nand(b.p10.APU_WR, b.p10.ADDR_FF16); // FF16_WR
+  c.p14.AGYN = nand(b.apu.APU_WR, b.apu.ADDR_FF16); // FF16_WR
   c.p14.ASYP = not(b.p14.AGYN);
-  c.p14.BENY = nor(b.p14.ASYP, b.p09.APU_RESET1, b.p15.ELOX);
+  c.p14.BENY = nor(b.p14.ASYP, b.apu.APU_RESET1, b.p15.ELOX);
 
-  c.p14.BACU = and(b.p10.ADDR_FF16, b.p10.APU_WR);
+  c.p14.BACU = and(b.apu.ADDR_FF16, b.apu.APU_WR);
   c.p14.BUDU = not(b.p14.BACU);
-  c.p14.BAMY = tock_pos(a.p14.BUDU, b.p14.BUDU, b.p09.APU_RESETn2, b.p14.BAMY, b.D7);
-  c.p14.BERA = tock_pos(a.p14.BUDU, b.p14.BUDU, b.p09.APU_RESETn2, b.p14.BERA, b.D6);
+  c.p14.BAMY = tock_pos(a.p14.BUDU, b.p14.BUDU, b.apu.APU_RESETn2, b.p14.BAMY, b.D7);
+  c.p14.BERA = tock_pos(a.p14.BUDU, b.p14.BUDU, b.apu.APU_RESETn2, b.p14.BERA, b.D6);
 
-  c.p14.BYGO = not(b.p09.CPU_RDn);
-  c.p14.CORO = nand(b.p10.ADDR_FF16, b.p14.BYGO);
+  c.p14.BYGO = not(b.apu.CPU_RDn);
+  c.p14.CORO = nand(b.apu.ADDR_FF16, b.p14.BYGO);
   c.p14.CEKA = not(!b.p14.BAMY);
   c.p14.CECY = not(!b.p14.BERA);
 
@@ -37,13 +37,13 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF17 NR22
 
-  c.p14.ENUF = and(b.p10.ADDR_FF17, b.p10.APU_WR);
-  c.p14.FYRY = not(b.p10.ADDR_FF17);
-  c.p14.GURU = or(b.p14.FYRY, b.p09.CPU_RDn);
+  c.p14.ENUF = and(b.apu.ADDR_FF17, b.apu.APU_WR);
+  c.p14.FYRY = not(b.apu.ADDR_FF17);
+  c.p14.GURU = or(b.p14.FYRY, b.apu.CPU_RDn);
 
-  c.p14.GURE = not(b.p10.ADDR_FF17);
-  c.p14.GEXA = or(b.p14.GURE, b.p09.CPU_RDn);
-  c.p14.GERE = and(b.p10.APU_WR, b.p10.ADDR_FF17);
+  c.p14.GURE = not(b.apu.ADDR_FF17);
+  c.p14.GEXA = or(b.p14.GURE, b.apu.CPU_RDn);
+  c.p14.GERE = and(b.apu.APU_WR, b.apu.ADDR_FF17);
   c.p14.JEDE = not(b.p14.GERE);
 
   c.p14.FF17_D0 = tock_pos(a.p14.JEDE, b.p14.JEDE, b.p14.JYBU, b.p14.FF17_D0, b.D0);
@@ -81,8 +81,8 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF18 NR23
 
-  c.p14.NR23_WR1 = and(b.p10.ADDR_FF18, b.p10.APU_WR);
-  c.p14.NR32_WR2 = and(b.p10.ADDR_FF18, b.p10.APU_WR);
+  c.p14.NR23_WR1 = and(b.apu.ADDR_FF18, b.apu.APU_WR);
+  c.p14.NR32_WR2 = and(b.apu.ADDR_FF18, b.apu.APU_WR);
 
   c.p14.NR23_WRn1 = not(b.p14.NR23_WR1);
   c.p14.NR32_WRn2 = not(b.p14.NR32_WR2);
@@ -117,7 +117,7 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p14.GADU = not(!b.p14.CH2_FREQ_06);
   c.p14.GAZO = not(!b.p14.CH2_FREQ_07);
 
-  c.p14.FERY = not(b.p10.ADDR_1xxx);
+  c.p14.FERY = not(b.apu.ADDR_1xxx);
   c.p14.GUZA = nor(b.p14.FERY, b.p14.FAPE);
   c.p14.FUTY = not(b.p14.GUZA);
 
@@ -135,14 +135,14 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF19 NR24
 
-  c.p14.JENU = and(b.p10.ADDR_FF19, b.p10.APU_WR);
+  c.p14.JENU = and(b.apu.ADDR_FF19, b.apu.APU_WR);
   c.p14.KYSA = not(b.p14.JENU);
   c.p14.JUPY = tock_pos(a.p14.KYSA, b.p14.KYSA, b.p14.KYPU, c.p14.JUPY, b.D2);
   c.p14.JANY = tock_pos(a.p14.KYSA, b.p14.KYSA, b.p14.KYPU, c.p14.JANY, b.D1);
   c.p14.JEFU = tock_pos(a.p14.KYSA, b.p14.KYSA, b.p14.KYPU, c.p14.JEFU, b.D0);
 
-  c.p14.DETA = nand(b.p10.APU_WR, b.p10.ADDR_FF19);
-  c.p14.GOTE = not(b.p10.ADDR_FF19);
+  c.p14.DETA = nand(b.apu.APU_WR, b.apu.ADDR_FF19);
+  c.p14.GOTE = not(b.apu.ADDR_FF19);
   c.p14.ETAP = tock_pos(a.p14.DETA, b.p14.DETA, b.p15.DERA, b.p14.ETAP, b.D7);
   c.p14.HYPO = or(b.p14.GOTE, b.p14.FAPE);
 
@@ -161,9 +161,9 @@ void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     c.D0 = b.p14.HUNA;
   }
 
-  c.p14.GADO = not(b.p09.CPU_RDn);
-  c.p14.EVYF = nor(b.p16.CPU_WR_WEIRD, b.p10.ADDR_FF19);
-  c.p14.HUMA = nor(b.p10.ADDR_FF19, b.p14.GADO);
+  c.p14.GADO = not(b.apu.CPU_RDn);
+  c.p14.EVYF = nor(b.p16.CPU_WR_WEIRD, b.apu.ADDR_FF19);
+  c.p14.HUMA = nor(b.apu.ADDR_FF19, b.p14.GADO);
   c.p14.EMER = tock_pos(a.p14.EVYF, b.p14.EVYF, b.p14.FAZO, b.p14.EMER, b.D6);
   c.p14.GOJY = b.p14.EMER;
 

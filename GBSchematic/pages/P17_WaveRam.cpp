@@ -8,10 +8,10 @@
 
 void P17_WaveRam::tick(const Gameboy& a, const Gameboy& b, Gameboy& c ) {
 
-  c.p17.BOKE = not(b.p09.CPU_RDn);
-  c.p17.BENA = nand(b.p17.BOKE, b.p10.ADDR_FF3X);
+  c.p17.BOKE = not(b.apu.CPU_RDn);
+  c.p17.BENA = nand(b.p17.BOKE, b.apu.ADDR_FF3X);
 
-  c.p17.WAVE_RAM_WR  = and(b.p10.APU_WR, b.p10.ADDR_FF3X);
+  c.p17.WAVE_RAM_WR  = and(b.apu.APU_WR, b.apu.ADDR_FF3X);
   c.p17.WAVE_RAM_RDn = not(b.p17.BENA);
   c.p17.WAVE_RAM_WRn = not(b.p17.WAVE_RAM_WR);
 

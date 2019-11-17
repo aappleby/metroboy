@@ -1,21 +1,186 @@
 #pragma once
 
-struct P18_Channel3 {
+struct Channel3 {
 
-  union { bool COKA; bool CH3_ACTIVE; };
-  union { bool ERED; bool CH3_ACTIVEn; };
+  //----------
+  // FF1A NR30
 
-  union { bool BOLE; bool WAVE_A0; };
-  union { bool AGYL; bool WAVE_A1; };
-  union { bool AFUM; bool WAVE_A2; };
-  union { bool AXOL; bool WAVE_A3; };
+  /*p16.GUXE*/ bool CH3_AMP_ENna;
 
-  union { bool BARY; bool WAVE_DAC_D0; };
-  union { bool BYKA; bool WAVE_DAC_D1; };
-  union { bool BOPA; bool WAVE_DAC_D2; };
-  union { bool BELY; bool WAVE_DAC_D3; };
+  //----------
+  // FF1B NR31
 
-  union { bool GASE; };
+  //----------
+  // FF1C NR32
+
+  /*p16.HODY*/ bool NR32_VOL0;
+  /*p16.HUKY*/ bool NR32_VOL1;
+
+  //----------
+  // FF1D NR33
+
+  /*p16.KOTA*/ bool KOTA;
+  /*p16.JAFA*/ bool JAFA;
+  /*p16.KYHO*/ bool KYHO;
+  /*p16.KULY*/ bool KULY;
+
+  /*p16.KOGA*/ bool NR33_FREQ0;
+  /*p16.JOVY*/ bool NR33_FREQ1;
+  /*p16.JAXA*/ bool NR33_FREQ2;
+  /*p16.JEFE*/ bool NR33_FREQ3;
+  /*p16.JYPO*/ bool NR33_FREQ4;
+  /*p16.JOVE*/ bool NR33_FREQ5;
+  /*p16.KANA*/ bool NR33_FREQ6;
+  /*p16.KOGU*/ bool NR33_FREQ7;
+
+  /*p16.DOVO*/ bool DOVO;
+  /*p16.EGAD*/ bool EGAD;
+  /*p16.HOXA*/ bool HOXA;
+  /*p16.GUTE*/ bool GUTE;
+  /*p16.HOVO*/ bool HOVO;
+
+  //----------
+  // FF1E NR34
+
+  /*p16.JEMO*/ bool NR34_FREQ8;
+  /*p16.JETY*/ bool NR34_FREQ9;
+  /*p16.JACY*/ bool NR34_FREQ10;
+  /*p16.HOTO*/ bool NR34_STOP;
+
+  //----------
+
+  /*p16.GEJO*/ bool FF1A_WR;
+  /*p16.GUCY*/ bool FF1A_WRn;
+  
+  /*p16.FASY*/ bool FASY;
+  /*p16.FEVO*/ bool CH3_AMP_ENa;
+  /*p16.FUVO*/ bool FUVO;
+  /*p16.FAJU*/ bool FAJU;
+  /*p16.GUGU*/ bool GUGU;
+
+  /*p16.GOVE*/ bool GOVE;
+  /*p16.FABO*/ bool CLK_xxCDxxGH;
+  /*p16.ANUJ*/ bool CPU_WR_WEIRD;
+  /*p16.GAVU*/ bool CH3_RESTART;
+  /*p16.EPYX*/ bool FF1E_WRn;
+
+  /*p16.GARA*/ bool GARA;
+  /*p16.GYTA*/ bool GYTA;
+  /*p16.GYRA*/ bool GYRA;
+  /*p16.GAZE*/ bool GAZE;
+  /*p16.FURY*/ bool FURY;
+  /*p16.GOMA*/ bool GOMA;
+  /*p16.FOBA*/ bool FOBA;
+  /*p16.GULO*/ bool GULO;
+  /*p16.GOFY*/ bool GOFY;
+  /*p16.FAKO*/ bool FAKO;
+
+
+  /*p16.KUHA*/ bool KUHA;
+
+  /*p16.DERY*/ bool DERY;
+  /*p16.GETO*/ bool GETO;
+  /*p16.EMUT*/ bool EMUT;
+  /*p16.GAJY*/ bool GAJY;
+
+  /*p16.FOVO*/ bool FOVO;
+  /*p16.HEKY*/ bool HEKY;
+  /*p16.GORY*/ bool GORY;
+  /*p16.GAWA*/ bool GAWA;
+  /*p16.HACA*/ bool HACA;
+  /*p16.HUDA*/ bool HUDA;
+  /*p16.JUZO*/ bool JUZO;
+  /*p16.KOPY*/ bool KOPY;
+  /*p16.GUNU*/ bool GUNU;
+  /*p16.FUVA*/ bool FUVA;
+
+  /*p16.JOTU*/ bool JOTU;
+  /*p16.HENU*/ bool HENU;
+  /*p16.GURO*/ bool GURO;
+  /*p16.GUZU*/ bool GUZU;
+  /*p16.HAGA*/ bool HAGA;
+  /*p16.HUCO*/ bool HUCO;
+  /*p16.HAMU*/ bool HAMU;
+
+  /*p16.GAXO*/ bool GAXO;
+
+  /*p17.BYZA*/ bool WAVE_RAM_WR;
+  /*p17.CAZU*/ bool WAVE_RAM_RDn;
+  /*p17.BUTU*/ bool BUTU;
+  /*p17.ALER*/ bool WAVE_RAM_CTRL1;
+  /*p17.AMYT*/ bool WAVE_RAM_WRn;
+  /*p17.DATE*/ bool WAVE_PLAY_D0;
+  /*p17.DAZY*/ bool WAVE_PLAY_D1;
+  /*p17.COPO*/ bool WAVE_PLAY_D3;
+  /*p17.CUZO*/ bool WAVE_PLAY_D2;
+
+  /*p17.BOKE*/ bool BOKE;
+  /*p17.BENA*/ bool BENA;
+  /*p17.BAMA*/ bool BAMA;
+  /*p17.ARUC*/ bool ARUC;
+  /*p17.COZY*/ bool COZY;
+  /*p17.ABUR*/ bool ABUR;
+  /*p17.BORY*/ bool BORY;
+  /*p17.BETA*/ bool BETA;
+  /*p17.AZOR*/ bool AZOR;
+  /*p17.BUKU*/ bool BUKU;
+  /*p17.BUSA*/ bool BUSA;
+  /*p17.BANO*/ bool BANO;
+  /*p17.AZUS*/ bool AZUS;
+  /*p17.AZET*/ bool AZET;
+  /*p17.BOXO*/ bool BOXO;
+  /*p17.BORU*/ bool BORU;
+  /*p17.ATUR*/ bool ATUR;
+  /*p17.BEKA*/ bool BEKA;
+  /*p17.COJU*/ bool COJU;
+  /*p17.BAJA*/ bool BAJA;
+  /*p17.BUFE*/ bool BUFE;
+
+  /*p17.CUGO*/ bool WAVE_D0n;
+  /*p17.CEGU*/ bool WAVE_D1n;
+  /*p17.ATEC*/ bool WAVE_D2n;
+  /*p17.ADOK*/ bool WAVE_D3n;
+  /*p17.BACA*/ bool WAVE_D4n;
+  /*p17.BERO*/ bool WAVE_D5n;
+  /*p17.CUTO*/ bool WAVE_D6n;
+  /*p17.AKAF*/ bool WAVE_D7n;
+
+  /*p17.DUGU*/ bool WAVE_D0;
+  /*p17.DESY*/ bool WAVE_D1;
+  /*p17.BATY*/ bool WAVE_D2;
+  /*p17.BADE*/ bool WAVE_D3;
+  /*p17.BUNE*/ bool WAVE_D4;
+  /*p17.BAVA*/ bool WAVE_D5;
+  /*p17.DESA*/ bool WAVE_D6;
+  /*p17.BEZU*/ bool WAVE_D7;
+
+  /*p17.ACOR*/ bool ACOR;
+
+  /*p17.CYFO*/ bool SAMPLE_0;
+  /*p17.CESY*/ bool SAMPLE_1;
+  /*p17.BUDY*/ bool SAMPLE_2;
+  /*p17.BEGU*/ bool SAMPLE_3;
+  /*p17.CUVO*/ bool SAMPLE_4;
+  /*p17.CEVO*/ bool SAMPLE_5;
+  /*p17.BORA*/ bool SAMPLE_6;
+  /*p17.BEPA*/ bool SAMPLE_7;
+
+  /*p18.COKA*/ union { bool CH3_ACTIVE; };
+  /*p18.ERED*/ union { bool CH3_ACTIVEn; };
+  /*p18.BOLE*/ union { bool WAVE_A0; };
+  /*p18.AGYL*/ union { bool WAVE_A1; };
+  /*p18.AFUM*/ union { bool WAVE_A2; };
+  /*p18.AXOL*/ union { bool WAVE_A3; };
+
+  /*p18.JECO*/ bool JECO;
+  /*p18.HONY*/ bool HONY;
+  /*p18.GENO*/ bool GENO;
+
+  /*p18.BARY*/ union { bool WAVE_DAC0; };
+  /*p18.BYKA*/ union { bool WAVE_DAC1; };
+  /*p18.BOPA*/ union { bool WAVE_DAC2; };
+  /*p18.BELY*/ union { bool WAVE_DAC3; };
+  /*p18.GASE*/ union { bool GASE; };
 
   /*p18.DERO*/ bool WAVE_CLK;
   /*p18.EFAR*/ bool WAVE_IDX0;
@@ -26,70 +191,66 @@ struct P18_Channel3 {
   /*p18.FETY*/ bool WAVE_LOOP;
   /*p18.ETAN*/ bool WAVE_RST;
 
-  /*p18.FAPY*/ bool WAVE_IDX_D0;
-  /*p18.FARO*/ bool WAVE_IDX_D1;
-  /*p18.FOTE*/ bool WAVE_IDX_D2;
-  /*p18.FANA*/ bool WAVE_IDX_D3;
-  /*p18.FERA*/ bool WAVE_IDX_D4;
+  /*p18.JYFO*/ bool JYFO;
+  /*p18.HUNO*/ bool HUNO;
+  /*p18.HEMA*/ bool HEMA;
+  /*p18.HUPA*/ bool HUPA;
+  /*p18.GAFU*/ bool GAFU;
+  /*p18.HEFO*/ bool HEFO;
+  /*p18.JUTY*/ bool JUTY;
+  /*p18.HERA*/ bool HERA;
+  /*p18.KYKO*/ bool KYKO;
+  /*p18.KASO*/ bool KASO;
+  /*p18.KYRU*/ bool KYRU;
+  /*p18.JERA*/ bool JERA;
+  /*p18.KESE*/ bool KESE;
 
-//private:
+  /*p18.KUTU*/ bool KUTU_00;
+  /*p18.KUPE*/ bool KUPE_01;
+  /*p18.KUNU*/ bool KUNU_02;
+  /*p18.KEMU*/ bool KEMU_03;
+  /*p18.KYGU*/ bool KYGU_04;
+  /*p18.KEPA*/ bool KEPA_05;
+  /*p18.KAFO*/ bool KAFO_06;
+  /*p18.KENO*/ bool KENO_07;
+  /*p18.KEJU*/ bool KEJU_08;
+  /*p18.KEZA*/ bool KEZA_09;
+  /*p18.JAPU*/ bool JAPU_10;
 
-  bool JYFO,HUNO,HEMA,HUPA,GAFU,HEFO,JUTY;
-  bool HERA,KYKO,KASO,KYRU,JERA,KESE;
+  /*p18.FOTO*/ bool FOTO;
+  /*p18.GYRY*/ bool GYRY;
+  /*p18.GEDO*/ bool GEDO;
+  /*p18.FYGO*/ bool FYGO;
+  /*p18.FOZU*/ bool FOZU;
+  /*p18.EZAS*/ bool EZAS;
+  /*p18.CALU*/ bool CALU;
+  /*p18.DORU*/ bool DORU;
+  /*p18.DAVO*/ bool DAVO;
 
-  bool KUTU_00,KUPE_01,KUNU_02,KEMU_03,KYGU_04,KEPA_05,KAFO_06,KENO_07,KEJU_08,KEZA_09,JAPU_10;
+  /*p18.GOKA*/ bool GOKA;
+  /*p18.GEMY*/ bool GEMY;
+  /*p18.GEGE*/ bool GEGE;
+  /*p18.EZAG*/ bool EZAG;
+  /*p18.EVUG*/ bool EVUG;
+  /*p18.DOKY*/ bool DOKY;
+  /*p18.DORE*/ bool DORE;
+  /*p18.GUDA*/ bool GUDA;
+  /*p18.FEXU*/ bool FEXU;
+  /*p18.GEPY*/ bool GEPY;
+  /*p18.GENU*/ bool GENU;
+  /*p18.FALU*/ bool FALU;
 
-  bool FOTO,GYRY;
-  bool JECO,HONY,GENO;
-  bool GEDO,FYGO,FOZU,EZAS,CALU,DORU,DAVO;
-
-  bool GOKA,GEMY,GEGE,EZAG,EVUG,DOKY,DORE;
-  bool GUDA,FEXU,GEPY,GENU,FALU;
-
-  bool BENO;
+  /*p18.BENO*/ bool BENO;
 
   /*p18.ATOK*/ bool WAVE_RAM_CTRL3;
 
-  bool GEVO_00;
-  bool FORY_01;
-  bool GATU_02;
-  bool GAPO_03;
-  bool GEMO_04;
-  bool FORO_05;
-  bool FAVE_06;
-  bool FYRU_07;
-
-  //----------
-
-  bool FF1A_D7n;     // P16.GUXE
-
-  bool FF1B_WR1;     // P16.EMUT
-  bool FF1B_WR2;     // P16.GAJY
-  bool FF1B_WR3;     // P16.GETO
-
-  bool FF1C_D5;
-  bool FF1C_D6;
-  bool FF1C_D5n;
-  bool FF1C_D6n;
-
-  bool FF1D_D0;
-  bool FF1D_D1;
-  bool FF1D_D2;
-  bool FF1D_D3;
-  bool FF1D_D4;
-  bool FF1D_D5;
-  bool FF1D_D6;
-  bool FF1D_D7;
-
-  bool FF1E_D0;
-  bool FF1E_D1;
-  bool FF1E_D2;
-
-  bool FF1E_D6;
-  bool FF1E_D6n;
-
-  bool FF1C;
-
-  static void tick(const Gameboy& ga, const Gameboy& gb, Gameboy& gc);
+  /*p18.GEVO*/ bool GEVO_00;
+  /*p18.FORY*/ bool FORY_01;
+  /*p18.GATU*/ bool GATU_02;
+  /*p18.GAPO*/ bool GAPO_03;
+  /*p18.GEMO*/ bool GEMO_04;
+  /*p18.FORO*/ bool FORO_05;
+  /*p18.FAVE*/ bool FAVE_06;
+  /*p18.FYRU*/ bool FYRU_07;
 };
 

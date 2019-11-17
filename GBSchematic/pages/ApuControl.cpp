@@ -115,7 +115,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p09.COTO*/ if (pb.FF26_RDna) c.D0 = not(b.p13.CH1_ACTIVEn);
   /*p09.EFUS*/ if (pb.FF26_RDnb) c.D1 = not(b.ch2.CH2_ACTIVEn);
-  /*p09.FATE*/ if (pb.FF26_RDnd) c.D2 = not(b.p18.CH3_ACTIVEn);
+  /*p09.FATE*/ if (pb.FF26_RDnd) c.D2 = not(b.ch3.CH3_ACTIVEn);
   /*p09.KOGE*/ if (pb.FF26_RDnc) c.D3 = not(b.ch4.CH4_ACTIVEn);
   /*p09.HOPE*/ if (pb.NR52_RDn1) c.D7 = pb.ALL_SOUND_ON;
 
@@ -128,8 +128,8 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p10.BYKO*/ pc.ADDR_xxxxxxxxxx0xxxxx = not(b.A05);
   /*p10.AKUG*/ pc.ADDR_xxxxxxxxx0xxxxxx = not(b.A06);
 
-  /*P10.ATOZ*/ pc.FF00_WRn = nand(b.p07.CPU_WR, pb.ADDR_111111110xx00000, pb.ADDR_xxxxxxxxx0xxxxxx, pb.ADDR_xxxxxxxxxx0xxxxx);
-  /*P10.ACAT*/ pc.FF00_RD  =  and(b.p07.CPU_RD, pb.ADDR_111111110xx00000, pb.ADDR_xxxxxxxxx0xxxxxx, pb.ADDR_xxxxxxxxxx0xxxxx);
+  /*p10.ATOZ*/ pc.FF00_WRn = nand(b.p07.CPU_WR, pb.ADDR_111111110xx00000, pb.ADDR_xxxxxxxxx0xxxxxx, pb.ADDR_xxxxxxxxxx0xxxxx);
+  /*p10.ACAT*/ pc.FF00_RD  =  and(b.p07.CPU_RD, pb.ADDR_111111110xx00000, pb.ADDR_xxxxxxxxx0xxxxxx, pb.ADDR_xxxxxxxxxx0xxxxx);
 
   /*p10.ATUP*/ pc.ADDR_xxx0xxxx = not(b.A04);
   /*p10.BOXY*/ pc.ADDR_xx0xxxxx = not(b.A05);
@@ -141,21 +141,21 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p10.ACOM*/ pc.ADDR_XX3Xn = nand(pb.ADDR_0xxxxxxx, pb.ADDR_x0xxxxxx, b.A05, b.A04);
 
   /*p10.BUNO*/ pc.ADDR_FF1X  = nor(b.p07.ADDR_FFXXn1, pb.ADDR_XX1Xn);
-  /*P10.CONA*/ pc.ADDR_FF2X  = not(pb.ADDR_FF2Xn);
-  /*P10.BARO*/ pc.ADDR_FF3X  = nor(pb.ADDR_XX3Xn, b.p07.ADDR_FFXXn1);
+  /*p10.CONA*/ pc.ADDR_FF2X  = not(pb.ADDR_FF2Xn);
+  /*p10.BARO*/ pc.ADDR_FF3X  = nor(pb.ADDR_XX3Xn, b.p07.ADDR_FFXXn1);
 
-  /*P10.BANU*/ pc.ADDR_FF1Xn = not(pb.ADDR_FF1X);
-  /*P10.BEZY*/ pc.ADDR_FF2Xn = or(pb.ADDR_XX2Xn, b.p07.ADDR_FFXXn1);
+  /*p10.BANU*/ pc.ADDR_FF1Xn = not(pb.ADDR_FF1X);
+  /*p10.BEZY*/ pc.ADDR_FF2Xn = or(pb.ADDR_XX2Xn, b.p07.ADDR_FFXXn1);
 
-  /*P10.DYTE*/ pc.ADDR_xxx0  = not(b.A00);
-  /*P10.AFOB*/ pc.ADDR_xx0x  = not(b.A01);
-  /*P10.ABUB*/ pc.ADDR_x0xx  = not(b.A02);
-  /*P10.ACOL*/ pc.ADDR_0xxx  = not(b.A03);
+  /*p10.DYTE*/ pc.ADDR_xxx0  = not(b.A00);
+  /*p10.AFOB*/ pc.ADDR_xx0x  = not(b.A01);
+  /*p10.ABUB*/ pc.ADDR_x0xx  = not(b.A02);
+  /*p10.ACOL*/ pc.ADDR_0xxx  = not(b.A03);
 
-  /*P10.DOSO*/ pc.ADDR_xxx1  = not(pb.ADDR_xxx0);
-  /*P10.DUPA*/ pc.ADDR_xx1x  = not(pb.ADDR_xx0x);
-  /*P10.DENO*/ pc.ADDR_x1xx  = not(pb.ADDR_x0xx);
-  /*P10.DUCE*/ pc.ADDR_1xxx  = not(pb.ADDR_0xxx);
+  /*p10.DOSO*/ pc.ADDR_xxx1  = not(pb.ADDR_xxx0);
+  /*p10.DUPA*/ pc.ADDR_xx1x  = not(pb.ADDR_xx0x);
+  /*p10.DENO*/ pc.ADDR_x1xx  = not(pb.ADDR_x0xx);
+  /*p10.DUCE*/ pc.ADDR_1xxx  = not(pb.ADDR_0xxx);
 
   /*p10.DUPO*/ pc.ADDR_0000an = nand(pb.ADDR_0xxx, pb.ADDR_x0xx, pb.ADDR_xx0x, pb.ADDR_xxx0);
   /*p10.DUNO*/ pc.ADDR_0001an = nand(pb.ADDR_0xxx, pb.ADDR_x0xx, pb.ADDR_xx0x, pb.ADDR_xxx1); 

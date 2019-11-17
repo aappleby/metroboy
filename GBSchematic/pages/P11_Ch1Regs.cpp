@@ -125,7 +125,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // FF14 NR14
 
   /*p11.CURE*/ c.p11.ADDR_FF14n = not(b.apu.ADDR_FF14);
-  /*p11.BAGE*/ c.p11.FF14_WRn   = nand(b.p16.CPU_WR_WEIRD, b.apu.ADDR_FF14); 
+  /*p11.BAGE*/ c.p11.FF14_WRn   = nand(b.ch3.CPU_WR_WEIRD, b.apu.ADDR_FF14); 
   /*p11.BUDA*/ c.p11.CPU_RDna   = not(b.p07.CPU_RD); // not sure which CPU_RD signal this is
   /*p11.DUPY*/ c.p11.FF14_RDa   = or(b.p11.CPU_RDnb, b.p11.ADDR_FF14n); // polarity?
   /*p11.BALE*/ c.p11.FF14_RDb   = nand(b.p11.CPU_RDna, b.apu.ADDR_FF14);

@@ -194,8 +194,6 @@
     <ClCompile Include="pages\P11_Ch1Regs.cpp" />
     <ClCompile Include="pages\P12_Ch1Sweep.cpp" />
     <ClCompile Include="pages\P13_Channel1.cpp" />
-    <ClCompile Include="pages\P16_Ch3Regs.cpp" />
-    <ClCompile Include="pages\P17_WaveRam.cpp" />
     <ClCompile Include="pages\P18_Channel3.cpp" />
     <ClCompile Include="pages\P21_VideoControl.cpp" />
     <ClCompile Include="pages\P22_PpuDecode.cpp" />
@@ -239,8 +237,6 @@
     <ClInclude Include="pages\P11_Ch1Regs.h" />
     <ClInclude Include="pages\P12_Ch1Sweep.h" />
     <ClInclude Include="pages\P13_Channel1.h" />
-    <ClInclude Include="pages\P16_Ch3Regs.h" />
-    <ClInclude Include="pages\P17_WaveRam.h" />
     <ClInclude Include="pages\P18_Channel3.h" />
     <ClInclude Include="pages\P21_VideoControl.h" />
     <ClInclude Include="pages\P22_PpuDecode.h" />

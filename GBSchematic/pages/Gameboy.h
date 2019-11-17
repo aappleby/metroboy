@@ -15,8 +15,6 @@
 #include "P11_Ch1Regs.h"
 #include "P12_Ch1Sweep.h"
 #include "P13_Channel1.h"
-#include "P16_Ch3Regs.h"
-#include "P17_WaveRam.h"
 #include "P18_Channel3.h"
 #include "P21_VideoControl.h"
 #include "P22_PpuDecode.h"
@@ -354,12 +352,10 @@ struct Gameboy {
   P11_Ch1Regs              p11;
   P12_Ch1Sweep             p12;
   P13_Channel1             p13;
-  P16_Ch3Regs              p16;
-  P17_WaveRam              p17;
-  P18_Channel3             p18;
 
   ApuControl apu;
   Channel2   ch2;
+  Channel3   ch3;
   Channel4   ch4;
 
   P21_VideoControl         p21;

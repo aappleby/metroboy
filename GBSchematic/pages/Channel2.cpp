@@ -14,16 +14,17 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p14.BYGO*/ c.ch2.BYGO = not(b.apu.CPU_RDn);
   /*p14.CORO*/ c.ch2.CORO = nand(b.apu.ADDR_FF16, b.ch2.BYGO);
-  /*p14.AGYN*/ c.ch2.AGYN = nand(b.apu.APU_WR, b.apu.ADDR_FF16); // FF16_WR
-  /*p14.ASYP*/ c.ch2.ASYP = not(b.ch2.AGYN);
+  /*p14.AGYN*/ c.ch2.FF16_WR = nand(b.apu.APU_WR, b.apu.ADDR_FF16); // FF16_WR
+  /*p14.ASYP*/ c.ch2.ASYP = not(b.ch2.FF16_WR);
   /*p14.BENY*/ c.ch2.BENY = nor(b.ch2.ASYP, b.apu.APU_RESET1, b.ch2.ELOX);
   /*p14.BACU*/ c.ch2.BACU = and(b.apu.ADDR_FF16, b.apu.APU_WR);
   /*p14.BUDU*/ c.ch2.BUDU = not(b.ch2.BACU);
-  /*p14.BAMY*/ c.ch2.BAMY = tock_pos(a.ch2.BUDU, b.ch2.BUDU, b.apu.APU_RESETn2, b.ch2.BAMY, b.D7);
-  /*p14.BERA*/ c.ch2.BERA = tock_pos(a.ch2.BUDU, b.ch2.BUDU, b.apu.APU_RESETn2, b.ch2.BERA, b.D6);
 
-  /*p14.CEKA*/ if (b.ch2.CORO) c.D7 = b.ch2.BAMY;
-  /*p14.CECY*/ if (b.ch2.CORO) c.D6 = b.ch2.BERA;
+  /*p14.BERA*/ c.ch2.NR21_DUTY0 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, b.apu.APU_RESETn2, b.ch2.NR21_DUTY0, b.D6);
+  /*p14.BAMY*/ c.ch2.NR21_DUTY1 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, b.apu.APU_RESETn2, b.ch2.NR21_DUTY1, b.D7);
+
+  /*p14.CEKA*/ if (b.ch2.CORO) c.D7 = b.ch2.NR21_DUTY0;
+  /*p14.CECY*/ if (b.ch2.CORO) c.D6 = b.ch2.NR21_DUTY1;
 
   //----------
   // FF17 NR22
@@ -36,18 +37,18 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p14.GERE*/ c.ch2.GERE = and(b.apu.APU_WR, b.apu.ADDR_FF17);
   /*p14.JEDE*/ c.ch2.JEDE = not(b.ch2.GERE);
 
-  /*p14.HYFU*/ c.ch2.FF17_D0 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.FF17_D0, b.D0);
-  /*p14.HAVA*/ c.ch2.FF17_D1 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.FF17_D1, b.D1);
-  /*p14.HORE*/ c.ch2.FF17_D2 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.FF17_D2, b.D2);
+  /*p14.HYFU*/ c.ch2.NR22_ENV_TIMER0 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER0, b.D0);
+  /*p14.HAVA*/ c.ch2.NR22_ENV_TIMER1 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER1, b.D1);
+  /*p14.HORE*/ c.ch2.NR22_ENV_TIMER2 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER2, b.D2);
   /*p14.FORE*/ c.ch2.FF17_D3 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D3, b.D3);
   /*p14.GATA*/ c.ch2.FF17_D4 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D4, b.D4);
   /*p14.GUFE*/ c.ch2.FF17_D5 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D5, b.D5);
   /*p14.GURA*/ c.ch2.FF17_D6 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D6, b.D6);
   /*p14.GAGE*/ c.ch2.FF17_D7 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D7, b.D7);
 
-  /*p14.HUVU*/ if (b.ch2.GEXA) c.D0 = b.ch2.FF17_D0;
-  /*p14.HYRE*/ if (b.ch2.GEXA) c.D1 = b.ch2.FF17_D1;
-  /*p14.HAVU*/ if (b.ch2.GEXA) c.D2 = b.ch2.FF17_D2;
+  /*p14.HUVU*/ if (b.ch2.GEXA) c.D0 = b.ch2.NR22_ENV_TIMER0;
+  /*p14.HYRE*/ if (b.ch2.GEXA) c.D1 = b.ch2.NR22_ENV_TIMER1;
+  /*p14.HAVU*/ if (b.ch2.GEXA) c.D2 = b.ch2.NR22_ENV_TIMER2;
   /*p14.GENE*/ if (b.ch2.GURU) c.D3 = b.ch2.FF17_D3;
   /*p14.HUPE*/ if (b.ch2.GURU) c.D4 = b.ch2.FF17_D4;
   /*p14.HERE*/ if (b.ch2.GURU) c.D5 = b.ch2.FF17_D5;
@@ -73,14 +74,14 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p14.GUZA*/ c.ch2.GUZA = nor(b.ch2.FERY, b.ch2.FAPE);
   /*p14.FUTY*/ c.ch2.FUTY = not(b.ch2.GUZA);
 
-  /*p14.FOFE*/ c.ch2.FF18_D0 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.FF18_D0, b.D0);
-  /*p14.FOVA*/ c.ch2.FF18_D1 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.FF18_D1, b.D1);
-  /*p14.FEDY*/ c.ch2.FF18_D2 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.FF18_D2, b.D2);
-  /*p14.FOME*/ c.ch2.FF18_D3 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.FF18_D3, b.D3);
-  /*p14.FORA*/ c.ch2.FF18_D4 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.FF18_D4, b.D4);
-  /*p14.GODA*/ c.ch2.FF18_D5 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.FF18_D5, b.D5);
-  /*p14.GUMY*/ c.ch2.FF18_D6 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.FF18_D6, b.D6);
-  /*p14.GUPU*/ c.ch2.FF18_D7 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.FF18_D7, b.D7);
+  /*p14.FOFE*/ c.ch2.NR23_FREQ0 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ0, b.D0);
+  /*p14.FOVA*/ c.ch2.NR23_FREQ1 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ1, b.D1);
+  /*p14.FEDY*/ c.ch2.NR23_FREQ2 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ2, b.D2);
+  /*p14.FOME*/ c.ch2.NR23_FREQ3 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ3, b.D3);
+  /*p14.FORA*/ c.ch2.NR23_FREQ4 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ4, b.D4);
+  /*p14.GODA*/ c.ch2.NR23_FREQ5 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ5, b.D5);
+  /*p14.GUMY*/ c.ch2.NR23_FREQ6 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ6, b.D6);
+  /*p14.GUPU*/ c.ch2.NR23_FREQ7 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ7, b.D7);
 
   /*p14.FAVA*/ if (b.ch2.FUTY) c.D0 = b.ch2.CH2_FREQ_00;
   /*p14.FAJY*/ if (b.ch2.FUTY) c.D1 = b.ch2.CH2_FREQ_01;
@@ -96,48 +97,68 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.ch2.JENU = and(b.apu.ADDR_FF19, b.apu.APU_WR);
   c.ch2.KYSA = not(b.ch2.JENU);
-  c.ch2.JUPY = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, c.ch2.JUPY, b.D2);
-  c.ch2.JANY = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, c.ch2.JANY, b.D1);
-  c.ch2.JEFU = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, c.ch2.JEFU, b.D0);
+  c.ch2.NR24_FREQ8  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ8,  b.D0);
+  c.ch2.NR24_FREQ9  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ9,  b.D1);
+  c.ch2.NR24_FREQ10 = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ10, b.D2);
+  c.ch2.NR24_STOP   = tock_pos(a.ch2.EVYF, b.ch2.EVYF, b.ch2.FAZO, b.ch2.NR24_STOP, b.D6);
+  c.ch2.NR24_START  = tock_pos(a.ch2.DETA, b.ch2.DETA, b.ch2.DERA, b.ch2.NR24_START, b.D7);
 
   c.ch2.DETA = nand(b.apu.APU_WR, b.apu.ADDR_FF19);
-  c.ch2.ETAP = tock_pos(a.ch2.DETA, b.ch2.DETA, b.ch2.DERA, b.ch2.ETAP, b.D7);
 
-  c.ch2.JEKE = not(!b.ch2.CH2_FREQ_10);
-  c.ch2.JARO = not(!b.ch2.CH2_FREQ_09);
-  c.ch2.HUNA = not(!b.ch2.CH2_FREQ_08);
+  /*p14.HUNA*/ if (b.ch2.HYPO) c.D0 = b.ch2.CH2_FREQ_08;
+  /*p14.JARO*/ if (b.ch2.HYPO) c.D1 = b.ch2.CH2_FREQ_09;
+  /*p14.JEKE*/ if (b.ch2.HYPO) c.D2 = b.ch2.CH2_FREQ_10;
 
-  if (b.ch2.HYPO) {
-    c.D2 = b.ch2.JEKE;
-    c.D1 = b.ch2.JARO;
-    c.D0 = b.ch2.HUNA;
-  }
+  if (b.ch2.HUMA) c.D6 = b.ch2.GOJY;
 
   c.ch2.GADO = not(b.apu.CPU_RDn);
-  c.ch2.EVYF = nor(b.p16.CPU_WR_WEIRD, b.apu.ADDR_FF19);
+  c.ch2.EVYF = nor(b.ch3.CPU_WR_WEIRD, b.apu.ADDR_FF19);
   c.ch2.HUMA = nor(b.apu.ADDR_FF19, b.ch2.GADO);
-  c.ch2.EMER = tock_pos(a.ch2.EVYF, b.ch2.EVYF, b.ch2.FAZO, b.ch2.EMER, b.D6);
-  c.ch2.GOJY = b.ch2.EMER;
+  
 
-  if (b.ch2.HUMA) {
-    c.D6 = b.ch2.GOJY;
-  }
+
+  //----------
+  // reset thing
+
+  /*p15.ELOX*/ c.ch2.ELOX = tock_pos(a.ch2.CEMO, b.ch2.CEMO, b.ch2.DOXA, b.ch2.ELOX, b.ch2.DALA);
+  /*p15.DORY*/ c.ch2.DORY = tock_pos(a.ch2.CEMO, b.ch2.CEMO, b.ch2.CEXE, b.ch2.DORY, b.ch2.ELOX);
+  /*p15.DOXA*/ c.ch2.DOXA = or(b.apu.APU_RESET1, b.ch2.DORY);
 
   //----------
 
-  /*p14.DONE*/ c.ch2.CH2_FREQ_00 = count_pos(a.ch2.DOCA,         b.ch2.DOCA,         b.ch2.COGU, b.ch2.CH2_FREQ_00, b.ch2.FF18_D0);
-  /*p14.DYNU*/ c.ch2.CH2_FREQ_01 = count_pos(a.ch2.CH2_FREQ_00,  b.ch2.CH2_FREQ_00,  b.ch2.COGU, b.ch2.CH2_FREQ_01, b.ch2.FF18_D1);
-  /*p14.EZOF*/ c.ch2.CH2_FREQ_02 = count_pos(a.ch2.CH2_FREQ_01,  b.ch2.CH2_FREQ_01,  b.ch2.COGU, b.ch2.CH2_FREQ_02, b.ch2.FF18_D2);
-  /*p14.CYVO*/ c.ch2.CH2_FREQ_03 = count_pos(a.ch2.CH2_FREQ_02,  b.ch2.CH2_FREQ_02,  b.ch2.COGU, b.ch2.CH2_FREQ_03, b.ch2.FF18_D3);
+  /*p15.BUFO*/ c.ch2.BUFO = not(b.ch2.ATEP);
+  /*p15.BODO*/ c.ch2.BODO = not(b.ch2.CAZA);
+  /*p15.CEMO*/ c.ch2.CEMO = tock_pos(a.ch2.BUFO, b.ch2.BUFO, b.ch2.BYHO, b.ch2.CEMO, !b.ch2.CEMO);
+  /*p15.BUTA*/ c.ch2.BUTA = or(b.ch2.BODO, b.ch2.ARES);
+  /*p15.CAMA*/ c.ch2.CAMA = nor(b.ch2.CEMO, b.ch2.BUTA);
+  /*p15.DOCA*/ c.ch2.DOCA = not(b.ch2.CAMA);
+
+  /*p15.ETUK*/ c.ch2.ETUK = not(b.ch2.GYKO);
+  /*p15.DAVU*/ c.ch2.DAVU = not(b.ch2.ETUK);
+
+  /*p15.DUJU*/ c.ch2.DUJU = nor(b.ch2.DAVU, b.ch2.ELOX);
+  /*p15.COGU*/ c.ch2.COGU = not(b.ch2.DUJU);
+  /*p15.EROG*/ c.ch2.EROG = not(b.ch2.DUJU);
+  /*p15.GYPA*/ c.ch2.GYPA = not(b.ch2.DUJU);
+
+  /*p14.DONE*/ c.ch2.CH2_FREQ_00 = count_pos(a.ch2.DOCA,         b.ch2.DOCA,         b.ch2.COGU, b.ch2.CH2_FREQ_00, b.ch2.NR23_FREQ0);
+  /*p14.DYNU*/ c.ch2.CH2_FREQ_01 = count_pos(a.ch2.CH2_FREQ_00,  b.ch2.CH2_FREQ_00,  b.ch2.COGU, b.ch2.CH2_FREQ_01, b.ch2.NR23_FREQ1);
+  /*p14.EZOF*/ c.ch2.CH2_FREQ_02 = count_pos(a.ch2.CH2_FREQ_01,  b.ch2.CH2_FREQ_01,  b.ch2.COGU, b.ch2.CH2_FREQ_02, b.ch2.NR23_FREQ2);
+  /*p14.CYVO*/ c.ch2.CH2_FREQ_03 = count_pos(a.ch2.CH2_FREQ_02,  b.ch2.CH2_FREQ_02,  b.ch2.COGU, b.ch2.CH2_FREQ_03, b.ch2.NR23_FREQ3);
   /*p14.EDEP*/ c.ch2.CH2_FREQ_03b = not(!b.ch2.CH2_FREQ_03);
-  /*p14.FUXO*/ c.ch2.CH2_FREQ_04 = count_pos(a.ch2.CH2_FREQ_03b, b.ch2.CH2_FREQ_03b, b.ch2.EROG, b.ch2.CH2_FREQ_04, b.ch2.FF18_D4);
-  /*p14.GANO*/ c.ch2.CH2_FREQ_05 = count_pos(a.ch2.CH2_FREQ_04,  b.ch2.CH2_FREQ_04,  b.ch2.EROG, b.ch2.CH2_FREQ_05, b.ch2.FF18_D5);
-  /*p14.GOCA*/ c.ch2.CH2_FREQ_06 = count_pos(a.ch2.CH2_FREQ_05,  b.ch2.CH2_FREQ_05,  b.ch2.EROG, b.ch2.CH2_FREQ_06, b.ch2.FF18_D6);
-  /*p14.GANE*/ c.ch2.CH2_FREQ_07 = count_pos(a.ch2.CH2_FREQ_06,  b.ch2.CH2_FREQ_06,  b.ch2.EROG, b.ch2.CH2_FREQ_07, b.ch2.FF18_D7);
+  /*p14.FUXO*/ c.ch2.CH2_FREQ_04 = count_pos(a.ch2.CH2_FREQ_03b, b.ch2.CH2_FREQ_03b, b.ch2.EROG, b.ch2.CH2_FREQ_04, b.ch2.NR23_FREQ4);
+  /*p14.GANO*/ c.ch2.CH2_FREQ_05 = count_pos(a.ch2.CH2_FREQ_04,  b.ch2.CH2_FREQ_04,  b.ch2.EROG, b.ch2.CH2_FREQ_05, b.ch2.NR23_FREQ5);
+  /*p14.GOCA*/ c.ch2.CH2_FREQ_06 = count_pos(a.ch2.CH2_FREQ_05,  b.ch2.CH2_FREQ_05,  b.ch2.EROG, b.ch2.CH2_FREQ_06, b.ch2.NR23_FREQ6);
+  /*p14.GANE*/ c.ch2.CH2_FREQ_07 = count_pos(a.ch2.CH2_FREQ_06,  b.ch2.CH2_FREQ_06,  b.ch2.EROG, b.ch2.CH2_FREQ_07, b.ch2.NR23_FREQ7);
   /*p14.GALA*/ c.ch2.CH2_FREQ_07b = not(!b.ch2.CH2_FREQ_07);
-  /*p14.HEVY*/ c.ch2.CH2_FREQ_08 = count_pos(a.ch2.CH2_FREQ_07b, b.ch2.CH2_FREQ_07b, b.ch2.GYPA, c.ch2.CH2_FREQ_08, b.ch2.FF19_D0);
-  /*p14.HEPU*/ c.ch2.CH2_FREQ_09 = count_pos(a.ch2.CH2_FREQ_08,  b.ch2.CH2_FREQ_08,  b.ch2.GYPA, c.ch2.CH2_FREQ_09, b.ch2.FF19_D1);
-  /*p14.HERO*/ c.ch2.CH2_FREQ_10 = count_pos(a.ch2.CH2_FREQ_09,  b.ch2.CH2_FREQ_09,  b.ch2.GYPA, c.ch2.CH2_FREQ_10, b.ch2.FF19_D2);
+  /*p14.HEVY*/ c.ch2.CH2_FREQ_08 = count_pos(a.ch2.CH2_FREQ_07b, b.ch2.CH2_FREQ_07b, b.ch2.GYPA, c.ch2.CH2_FREQ_08, b.ch2.NR24_FREQ8);
+  /*p14.HEPU*/ c.ch2.CH2_FREQ_09 = count_pos(a.ch2.CH2_FREQ_08,  b.ch2.CH2_FREQ_08,  b.ch2.GYPA, c.ch2.CH2_FREQ_09, b.ch2.NR24_FREQ9);
+  /*p14.HERO*/ c.ch2.CH2_FREQ_10 = count_pos(a.ch2.CH2_FREQ_09,  b.ch2.CH2_FREQ_09,  b.ch2.GYPA, c.ch2.CH2_FREQ_10, b.ch2.NR24_FREQ10);
+
+  /*p15.FUJY*/ c.ch2.FUJY = and(b.ch2.GYKO, b.ch2.CEMO);
+  /*p15.GALU*/ c.ch2.GALU = not(b.ch2.CH2_FREQ_10);
+  /*p15.GYRE*/ c.ch2.GYRE = nor(b.apu.APU_RESET1, b.ch2.ELOX, b.ch2.FUJY);
+  /*p15.GYKO*/ c.ch2.GYKO = tock_pos(a.ch2.GALU, b.ch2.GALU, b.ch2.GYRE, b.ch2.GYKO, !b.ch2.GYKO);
 
   //----------
 
@@ -145,46 +166,27 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p15.JYNA*/ c.ch2.JYNA = tock_pos(a.ch2.HOTA, b.ch2.HOTA, b.ch2.KATY, b.ch2.JYNA, !b.ch2.JYNA);
   /*p15.KYLO*/ c.ch2.KYLO = not(b.ch2.JYNA);
   /*p15.KENE*/ c.ch2.KENE = not(b.ch2.KYLO);
-  /*p15.JORE*/ c.ch2.JORE = count_pos(a.ch2.KENE, b.ch2.KENE, b.ch2.JAKE, b.ch2.JORE, !b.ch2.FF17_D0);
-  /*p15.JONA*/ c.ch2.JONA = count_pos(a.ch2.JORE, b.ch2.JORE, b.ch2.JAKE, b.ch2.JONA, !b.ch2.FF17_D1);
-  /*p15.JEVY*/ c.ch2.JEVY = count_pos(a.ch2.JONA, b.ch2.JONA, b.ch2.JAKE, b.ch2.JEVY, !b.ch2.FF17_D2);
+  /*p15.JORE*/ c.ch2.JORE = count_pos(a.ch2.KENE, b.ch2.KENE, b.ch2.JAKE, b.ch2.JORE, !b.ch2.NR22_ENV_TIMER0);
+  /*p15.JONA*/ c.ch2.JONA = count_pos(a.ch2.JORE, b.ch2.JORE, b.ch2.JAKE, b.ch2.JONA, !b.ch2.NR22_ENV_TIMER1);
+  /*p15.JEVY*/ c.ch2.JEVY = count_pos(a.ch2.JONA, b.ch2.JONA, b.ch2.JAKE, b.ch2.JEVY, !b.ch2.NR22_ENV_TIMER2);
   /*p15.KYVO*/ c.ch2.KYVO = and(!b.ch2.JORE, b.ch2.JONA, b.ch2.JEVY);
   /*p15.JOPA*/ c.ch2.JOPA = tock_pos(a.p01.CLK_512a, b.p01.CLK_512a, b.ch2.HAFE, b.ch2.JOPA, b.ch2.KYVO);
   /*p15.HEPO*/ c.ch2.HEPO = tock_pos(a.ch2.JOPA,     b.ch2.JOPA,     b.ch2.HYPA, b.ch2.HEPO, b.ch2.GUFY);
-  /*p15.DOPE*/ c.ch2.DOPE = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.ch2.CYWU, b.ch2.DOPE, b.ch2.FF19_D7);
+  /*p15.DOPE*/ c.ch2.DOPE = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.ch2.CYWU, b.ch2.DOPE, b.ch2.NR24_START);
   /*p15.DERA*/ c.ch2.DERA = nor(b.apu.APU_RESET1, b.ch2.DOPE);
   /*p15.DALA*/ c.ch2.DALA = or(b.ch2.CELO, b.ch2.DOPE);
-  /*p15.ELOX*/ c.ch2.ELOX = tock_pos(a.ch2.CEMO, b.ch2.CEMO, b.ch2.DOXA, b.ch2.ELOX, b.ch2.DALA);
-  /*p15.DORY*/ c.ch2.DORY = tock_pos(a.ch2.CEMO, b.ch2.CEMO, b.ch2.CEXE, b.ch2.DORY, b.ch2.ELOX);
-  /*p15.DOXA*/ c.ch2.DOXA = or(b.apu.APU_RESET1, b.ch2.DORY);
   /*p15.CELO*/ c.ch2.CELO = not(b.ch2.DOXA);
   /*p15.HYLE*/ c.ch2.HYLE = or(b.apu.APU_RESET1, b.ch2.ELOX);
   /*p15.HYPA*/ c.ch2.HYPA = nor(b.ch2.ELOX, b.apu.APU_RESET1);
   /*p15.HYLY*/ c.ch2.HYLY = nor(b.ch2.ELOX, b.ch2.JOPA);
   /*p15.JAKE*/ c.ch2.JAKE = not(b.ch2.HYLY);
   /*p15.JEME*/ c.ch2.JEME = or(b.ch2.HEPO, b.ch2.HYLE);
-  /*p15.GALU*/ c.ch2.GALU = not(b.ch2.CH2_FTICK);
-  /*p15.GYKO*/ c.ch2.GYKO = tock_pos(a.ch2.GALU, b.ch2.GALU, b.ch2.GYRE, b.ch2.GYKO, !b.ch2.GYKO);
-  /*p15.ETUK*/ c.ch2.ETUK = not(b.ch2.GYKO);
-  /*p15.DAVU*/ c.ch2.DAVU = not(b.ch2.ETUK);
-  /*p15.FUJY*/ c.ch2.FUJY = and(b.ch2.GYKO, b.ch2.CEMO);
-  /*p15.GYRE*/ c.ch2.GYRE = nor(b.apu.APU_RESET1, b.ch2.ELOX, b.ch2.FUJY);
-  /*p15.DUJU*/ c.ch2.DUJU = nor(b.ch2.DAVU, b.ch2.ELOX);
-  /*p15.COGU*/ c.ch2.COGU = not(b.ch2.DUJU);
-  /*p15.EROG*/ c.ch2.EROG = not(b.ch2.DUJU);
-  /*p15.GYPA*/ c.ch2.GYPA = not(b.ch2.DUJU);
   /*p15.ATEP*/ c.ch2.ATEP = tock_pos(a.ch2.AZEG, b.ch2.AZEG, b.ch2.BUWE, b.ch2.ATEP, !b.ch2.ATEP);
   /*p15.CAZA*/ c.ch2.CAZA = tock_pos(a.ch2.CEMO, b.ch2.CEMO, b.ch2.CEXE, b.ch2.CAZA, b.ch2.DORY);
   /*p15.BYHO*/ c.ch2.BYHO = not(b.ch2.BUWE);
-  /*p15.BUFO*/ c.ch2.BUFO = not(b.ch2.ATEP);
-  /*p15.BODO*/ c.ch2.BODO = not(b.ch2.CAZA);
-  /*p15.CEMO*/ c.ch2.CEMO = tock_pos(a.ch2.BUFO, b.ch2.BUFO, b.ch2.BYHO, b.ch2.CEMO, !b.ch2.CEMO);
-  /*p15.BUTA*/ c.ch2.BUTA = or(b.ch2.BODO, b.ch2.ARES);
-  /*p15.CAMA*/ c.ch2.CAMA = nor(b.ch2.CEMO, b.ch2.BUTA);
-  /*p15.DOCA*/ c.ch2.DOCA = not(b.ch2.CAMA);
-  /*p15.CYRE*/ c.ch2.CYRE = tock_pos(!a.ch2.AKYD_05, !b.ch2.AKYD_05, b.ch2.BENY, b.ch2.CYRE, !b.ch2.CYRE);
-  /*p15.DEME*/ c.ch2.DEME = or(b.ch2.CYRE, b.p01.CLK_256a, b.ch2.FF19_D6);
-  /*p15.DORA*/ c.ch2.DORA = and(b.ch2.CYRE, b.ch2.FF19_D6);
+
+  /*p15.DEME*/ c.ch2.DEME = or(b.ch2.CYRE, b.p01.CLK_256a, b.ch2.NR24_STOP);
+  /*p15.DORA*/ c.ch2.DORA = and(b.ch2.CYRE, b.ch2.NR24_STOP);
   /*p15.FUTE*/ c.ch2.CH2_AMP_ENn = nor(b.ch2.FF17_D3,b.ch2.FF17_D4,b.ch2.FF17_D5,b.ch2.FF17_D6,b.ch2.FF17_D7);
   /*p15.DYRO*/ c.ch2.DYRO = not(b.ch2.DEME);
   /*p15.ESYK*/ c.ch2.ESYK = or(b.apu.APU_RESET1, b.ch2.DORA, b.ch2.CH2_AMP_ENn);
@@ -193,31 +195,44 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p15.DEFU*/ c.ch2.CH2_ACTIVEn = not(b.ch2.DANE);
   /*p15.BYMO*/ c.ch2.BYMO = not(b.ch2.FF16_WR);
   /*p15.AGET*/ c.ch2.AGET = not(b.ch2.FF16_WR);
+  
+  
   /*p15.ERYC*/ c.ch2.ERYC_00 = count_pos(a.ch2.DYRO,     b.ch2.DYRO,     b.ch2.BYMO, b.ch2.ERYC_00, b.D0);
   /*p15.CERA*/ c.ch2.CERA_01 = count_pos(a.ch2.ERYC_00,  b.ch2.ERYC_00,  b.ch2.BYMO, b.ch2.CERA_01, b.D1);
   /*p15.CONU*/ c.ch2.CONU_02 = count_pos(a.ch2.CERA_01,  b.ch2.CERA_01,  b.ch2.BYMO, b.ch2.CONU_02, b.D2);
   /*p15.CAME*/ c.ch2.CAME_03 = count_pos(a.ch2.CONU_02,  b.ch2.CONU_02,  b.ch2.BYMO, b.ch2.CAME_03, b.D3);
+  /*p15.BUKO*/ c.ch2.BUKO    = not(!b.ch2.CAME_03);
   /*p15.BUVA*/ c.ch2.BUVA_04 = count_pos(a.ch2.BUKO,     b.ch2.BUKO,     b.ch2.AGET, b.ch2.BUVA_04, b.D4);
   /*p15.AKYD*/ c.ch2.AKYD_05 = count_pos(a.ch2.BUVA_04,  b.ch2.BUVA_04,  b.ch2.AGET, b.ch2.AKYD_05, b.D5);
-  /*p15.BUKO*/ c.ch2.BUKO = not(!b.ch2.CAME_03);
+  /*p15.CYRE*/ c.ch2.CYRE    = tock_pos(!a.ch2.AKYD_05,  !b.ch2.AKYD_05, b.ch2.BENY, b.ch2.CYRE,    !b.ch2.CYRE);
+
   /*p15.GADE*/ c.ch2.GADE = not(b.ch2.JOPA);
   /*p15.HOLY*/ c.ch2.HOLY = nor(b.p01.CLK_512a, b.ch2.GADE);
-  /*p15.JUPU*/ c.ch2.JUPU = nor(b.ch2.FF17_D0, b.ch2.FF17_D1, b.ch2.FF17_D2);
+  /*p15.JUPU*/ c.ch2.JUPU = nor(b.ch2.NR22_ENV_TIMER0, b.ch2.NR22_ENV_TIMER1, b.ch2.NR22_ENV_TIMER2);
   /*p15.HOFO*/ c.ch2.HOFO = or(b.ch2.JOPA, b.ch2.JUPU, b.ch2.JEME);
   /*p15.HAFE*/ c.ch2.HAFE = or(b.ch2.HOLY, b.ch2.ELOX, b.apu.APU_RESET1);
+
   /*p15.CULE*/ c.ch2.CULE = not(b.ch2.DAVU);
   /*p15.CANO*/ c.ch2.CANO_00 = tock_pos(a.ch2.CULE,     b.ch2.CULE,     b.apu.APU_RESETn2, b.ch2.CANO_00, !b.ch2.CANO_00);
   /*p15.CAGY*/ c.ch2.CAGY_01 = tock_pos(!a.ch2.CANO_00, !b.ch2.CANO_00, b.apu.APU_RESETn2, b.ch2.CAGY_01, !b.ch2.CAGY_01);
   /*p15.DYVE*/ c.ch2.DYVE_02 = tock_pos(!a.ch2.CAGY_01, !b.ch2.CAGY_01, b.apu.APU_RESETn2, b.ch2.DYVE_02, !b.ch2.DYVE_02);
+
   /*p15.DYMU*/ c.ch2.DYMU = and(b.ch2.DYVE_02, b.ch2.CAGY_01);
   /*p15.DUGE*/ c.ch2.DUGE = not(b.ch2.CANO_00);
   /*p15.DARE*/ c.ch2.DARE = not(b.ch2.DYMU);
   /*p15.EGOG*/ c.ch2.EGOG = and(b.ch2.DYMU, b.ch2.DUGE);
-  /*p15.DOMO*/ c.ch2.DOMO = nor( b.ch2.FF16_D6,  b.ch2.FF16_D7);
-  /*p15.DYTA*/ c.ch2.DYTA = nor(!b.ch2.FF16_D6,  b.ch2.FF16_D7);
-  /*p15.DOJU*/ c.ch2.DOJU = nor( b.ch2.FF16_D6, !b.ch2.FF16_D7);
-  /*p15.DOVE*/ c.ch2.DOVE = nor(!b.ch2.FF16_D6, !b.ch2.FF16_D7);
-  /*p15.EXES*/ c.ch2.EXES = amux4(b.ch2.EGOG, b.ch2.DOMO, b.ch2.DYMU, b.ch2.DYTA, b.ch2.DYVE_02, b.ch2.DOJU, b.ch2.DARE, b.ch2.DOVE);
+
+  /*p15.DOMO*/ c.ch2.DOMO = nor( b.ch2.NR21_DUTY0,  b.ch2.NR21_DUTY1);
+  /*p15.DYTA*/ c.ch2.DYTA = nor(!b.ch2.NR21_DUTY0,  b.ch2.NR21_DUTY1);
+  /*p15.DOJU*/ c.ch2.DOJU = nor( b.ch2.NR21_DUTY0, !b.ch2.NR21_DUTY1);
+  /*p15.DOVE*/ c.ch2.DOVE = nor(!b.ch2.NR21_DUTY0, !b.ch2.NR21_DUTY1);
+  /*p15.EXES*/ c.ch2.EXES = amux4(b.ch2.EGOG,    b.ch2.DOMO,
+                                  b.ch2.DYMU,    b.ch2.DYTA,
+                                  b.ch2.DYVE_02, b.ch2.DOJU,
+                                  b.ch2.DARE,    b.ch2.DOVE);
+
+
+
   /*p15.DOME*/ c.ch2.DOME = tock_pos(a.ch2.DAVU, b.ch2.DAVU, b.apu.APU_RESETn2, b.ch2.DOME, b.ch2.EXES);
   /*p15.CYSE*/ c.ch2.CYSE = and(b.ch2.DANE, b.ch2.DOME);
   /*p15.BONU*/ c.ch2.BONU = or(b.ch2.CYSE, b.apu.DBG_APU);

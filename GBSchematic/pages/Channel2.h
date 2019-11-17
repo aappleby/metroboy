@@ -9,14 +9,14 @@ struct Channel2 {
   //----------
   // FF16 NR21
 
-  /*p14.AGYN*/ union { bool AGYN; bool FF16_WR; };
+  /*p14.AGYN*/ bool FF16_WR;
   /*p14.ASYP*/ bool ASYP;
-  /*p14.BENY*/ union { bool BENY; };
+  /*p14.BENY*/ bool BENY;
 
   /*p14.BACU*/ bool BACU;
   /*p14.BUDU*/ bool BUDU;
-  /*p14.BERA*/ union { bool BERA; bool FF16_D6; };
-  /*p14.BAMY*/ union { bool BAMY; bool FF16_D7; };
+  /*p14.BERA*/ bool NR21_DUTY0;
+  /*p14.BAMY*/ bool NR21_DUTY1;
 
   /*p14.BYGO*/ bool BYGO;
   /*p14.CORO*/ bool CORO;
@@ -24,60 +24,56 @@ struct Channel2 {
   //----------
   // FF17 NR22
 
-  /*p14.HYFU*/ union { bool HYFU; bool FF17_D0; };
-  /*p14.HAVA*/ union { bool HAVA; bool FF17_D1; };
-  /*p14.HORE*/ union { bool HORE; bool FF17_D2; };
-  /*p14.FORE*/ union { bool FORE; bool FF17_D3; };
-  /*p14.GATA*/ union { bool GATA; bool FF17_D4; };
-  /*p14.GUFE*/ union { bool GUFE; bool FF17_D5; };
-  /*p14.GURA*/ union { bool GURA; bool FF17_D6; };
-  /*p14.GAGE*/ union { bool GAGE; bool FF17_D7; };
+  /*p14.HYFU*/ bool NR22_ENV_TIMER0;
+  /*p14.HAVA*/ bool NR22_ENV_TIMER1;
+  /*p14.HORE*/ bool NR22_ENV_TIMER2;
+  /*p14.FORE*/ bool FF17_D3;
+  /*p14.GATA*/ bool FF17_D4;
+  /*p14.GUFE*/ bool FF17_D5;
+  /*p14.GURA*/ bool FF17_D6;
+  /*p14.GAGE*/ bool FF17_D7;
 
   //----------
   // FF18 NR23
 
-  /*p14.DOSA*/ union { bool DOSA; bool NR23_WR1; };
-  /*p14.EXUC*/ union { bool EXUC; bool NR23_WR2; };
-  /*p14.ESUR*/ union { bool ESUR; bool NR23_WRn1; };
-  /*p14.FYXO*/ union { bool FYXO; bool NR23_WRn2; };
+  /*p14.DOSA*/ bool NR23_WR1;
+  /*p14.EXUC*/ bool NR23_WR2;
+  /*p14.ESUR*/ bool NR23_WRn1;
+  /*p14.FYXO*/ bool NR23_WRn2;
 
-  /*p14.FOFE*/ union { bool FOFE; bool FF18_D0; };
-  /*p14.FOVA*/ union { bool FOVA; bool FF18_D1; };
-  /*p14.FEDY*/ union { bool FEDY; bool FF18_D2; };
-  /*p14.FOME*/ union { bool FOME; bool FF18_D3; };
-  /*p14.FORA*/ union { bool FORA; bool FF18_D4; };
-  /*p14.GODA*/ union { bool GODA; bool FF18_D5; };
-  /*p14.GUMY*/ union { bool GUMY; bool FF18_D6; };
-  /*p14.GUPU*/ union { bool GUPU; bool FF18_D7; };
+  /*p14.FOFE*/ bool NR23_FREQ0;
+  /*p14.FOVA*/ bool NR23_FREQ1;
+  /*p14.FEDY*/ bool NR23_FREQ2;
+  /*p14.FOME*/ bool NR23_FREQ3;
+  /*p14.FORA*/ bool NR23_FREQ4;
+  /*p14.GODA*/ bool NR23_FREQ5;
+  /*p14.GUMY*/ bool NR23_FREQ6;
+  /*p14.GUPU*/ bool NR23_FREQ7;
 
-  /*p14.DONE*/ union { bool DONE; bool CH2_FREQ_00; };
-  /*p14.DYNU*/ union { bool DYNU; bool CH2_FREQ_01; };
-  /*p14.EZOF*/ union { bool EZOF; bool CH2_FREQ_02; };
-  /*p14.CYVO*/ union { bool CYVO; bool CH2_FREQ_03; };
+  /*p14.DONE*/ bool CH2_FREQ_00;
+  /*p14.DYNU*/ bool CH2_FREQ_01;
+  /*p14.EZOF*/ bool CH2_FREQ_02;
+  /*p14.CYVO*/ bool CH2_FREQ_03;
   /*p14.EDEP*/ bool CH2_FREQ_03b;
-  /*p14.FUXO*/ union { bool FUXO; bool CH2_FREQ_04; };
-  /*p14.GANO*/ union { bool GANO; bool CH2_FREQ_05; };
-  /*p14.GOCA*/ union { bool GOCA; bool CH2_FREQ_06; };
-  /*p14.GANE*/ union { bool GANE; bool CH2_FREQ_07; };
+  /*p14.FUXO*/ bool CH2_FREQ_04;
+  /*p14.GANO*/ bool CH2_FREQ_05;
+  /*p14.GOCA*/ bool CH2_FREQ_06;
+  /*p14.GANE*/ bool CH2_FREQ_07;
   /*p14.GALA*/ bool CH2_FREQ_07b;
-  /*p14.HEVY*/ union { bool HEVY; bool CH2_FREQ_08; };
-  /*p14.HEPU*/ union { bool HEPU; bool CH2_FREQ_09; };
-  /*p14.HERO*/ union { bool HERO; bool CH2_FREQ_10; bool CH2_FTICK; };
+  /*p14.HEVY*/ bool CH2_FREQ_08;
+  /*p14.HEPU*/ bool CH2_FREQ_09;
+  /*p14.HERO*/ bool CH2_FREQ_10;
 
   //----------
   // FF19 NR24
 
-  /*p14.JEFU*/ union { bool JEFU; bool FF19_D0; };
-  /*p14.JANY*/ union { bool JANY; bool FF19_D1; };
-  /*p14.JUPY*/ union { bool JUPY; bool FF19_D2; };
-  /*p14.EMER*/ union { bool EMER; bool FF19_D6; };
-  /*p14.ETAP*/ union { bool ETAP; bool FF19_D7; };
+  /*p14.JEFU*/ bool NR24_FREQ8;
+  /*p14.JANY*/ bool NR24_FREQ9;
+  /*p14.JUPY*/ bool NR24_FREQ10;
+  /*p14.EMER*/ bool NR24_STOP;
+  /*p14.ETAP*/ bool NR24_START;
 
   //----------
-
-
-
-
 
 
 
@@ -101,11 +97,8 @@ struct Channel2 {
   /*p14.GURU*/ bool GURU;
   /*p14.GUZA*/ bool GUZA;
   /*p14.HUMA*/ bool HUMA;
-  /*p14.HUNA*/ bool HUNA;
   /*p14.HYPO*/ bool HYPO;
-  /*p14.JARO*/ bool JARO;
   /*p14.JEDE*/ bool JEDE;
-  /*p14.JEKE*/ bool JEKE;
   /*p14.JENU*/ bool JENU;
   /*p14.JYBU*/ bool JYBU;
   /*p14.KYPU*/ bool KYPU;

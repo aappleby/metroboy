@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------
 
 void Gameboy_tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
-  /*P10.TACE*/ c.apu.AMP_ENn = and(b.p13.CH1_AMP_ENn, b.ch2.CH2_AMP_ENn, b.p16.CH3_AMP_ENna, b.ch4.CH4_AMP_ENn);
+  /*P10.TACE*/ c.apu.AMP_ENn = and(b.p13.CH1_AMP_ENn, b.ch2.CH2_AMP_ENn, b.ch3.CH3_AMP_ENna, b.ch4.CH4_AMP_ENn);
 }
 
 //-----------------------------------------------------------------------------
@@ -80,16 +80,16 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p15.CYWU*/ c.ch2.CYWU = not(b.apu.APU_RESET1);
   /*p15.CEXE*/ c.ch2.CEXE = not(b.apu.APU_RESET1);
   /*p15.BUWE*/ c.ch2.BUWE = not(b.apu.APU_RESET1);
-  /*p16.GOVE*/ c.p16.GOVE = not(b.apu.APU_RESET1);
-  /*p16.GAZE*/ c.p16.GAZE = not(b.apu.APU_RESET1);
-  /*p16.GOMA*/ c.p16.GOMA = not(b.apu.APU_RESET1);
-  /*p16.KUHA*/ c.p16.KUHA = not(b.apu.APU_RESET1);
-  /*p16.HEKY*/ c.p16.HEKY = not(b.apu.APU_RESET1);
-  /*p16.KOPY*/ c.p16.KOPY = not(b.apu.APU_RESET1);
-  /*p16.GURO*/ c.p16.GURO = not(b.apu.APU_RESET1);
-  /*p17.BAMA*/ c.p17.BAMA = not(b.apu.APU_RESET1);
-  /*p17.ACOR*/ c.p17.ACOR = not(b.apu.APU_RESET1);
-  /*p18.CALU*/ c.p18.CALU = not(b.apu.APU_RESET1);
+  /*p16.GOVE*/ c.ch3.GOVE = not(b.apu.APU_RESET1);
+  /*p16.GAZE*/ c.ch3.GAZE = not(b.apu.APU_RESET1);
+  /*p16.GOMA*/ c.ch3.GOMA = not(b.apu.APU_RESET1);
+  /*p16.KUHA*/ c.ch3.KUHA = not(b.apu.APU_RESET1);
+  /*p16.HEKY*/ c.ch3.HEKY = not(b.apu.APU_RESET1);
+  /*p16.KOPY*/ c.ch3.KOPY = not(b.apu.APU_RESET1);
+  /*p16.GURO*/ c.ch3.GURO = not(b.apu.APU_RESET1);
+  /*p17.BAMA*/ c.ch3.BAMA = not(b.apu.APU_RESET1);
+  /*p17.ACOR*/ c.ch3.ACOR = not(b.apu.APU_RESET1);
+  /*p18.CALU*/ c.ch3.CALU = not(b.apu.APU_RESET1);
 
   //----------
   // Clock control
@@ -119,8 +119,8 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p01.AZOF*/ c.p01.CLK_xBxDxFxH4 = not(b.p01.CLK_AxCxExGx3);
   /*p01.LAPE*/ c.p01.CLK_xBxDxFxH5 = not(b.p01.CLK_AxCxExGx4);
 
-  /*p17.ARUC*/ c.p17.ARUC = not(b.p01.CLK_xBxDxFxH1);
-  /*p17.COZY*/ c.p17.COZY = not(b.p01.CLK_xBxDxFxH1);
+  /*p17.ARUC*/ c.ch3.ARUC = not(b.p01.CLK_xBxDxFxH1);
+  /*p17.COZY*/ c.ch3.COZY = not(b.p01.CLK_xBxDxFxH1);
 
 
   //----------
@@ -194,7 +194,7 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.CPUCLK_ABCDxxxx5 = not(b.p01.CPUCLK_xxxxEFGH4);
   c.p01.CPUCLK_xxxxEFGH5 = not(b.p01.CPUCLK_ABCDxxxx5);
 
-  c.p17.ABUR = not(b.p01.CPUCLK_xxxxxFxx1);
+  c.ch3.ABUR = not(b.p01.CPUCLK_xxxxxFxx1);
 
   // The CPUCLK_REQ cancels out here, CLK_ABCDExxx3 is not affected by it.
   c.p01.CLK_ABCDExxx3 = nand(b.p01.CLK_AxxxxFGH1, b.p01.CLK_xxxxEFGH1, b.p01.CPUCLK_xxxxEFGH5);
@@ -210,7 +210,7 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // Scavenged clocks from elsewhere
 
   /*p15.AZEG*/ c.ch2.AZEG = not(b.p01.CLK_xBxDxFxH1);
-  /*p16.FABO*/ c.p16.CLK_xxCDxxGH = not(b.p01.CLK_ABxxEFxx1);
+  /*p16.FABO*/ c.ch3.CLK_xxCDxxGH = not(b.p01.CLK_ABxxEFxx1);
   /*p27.MOXE*/ c.p27.MOXE = not(b.p01.CLK_AxCxExGx4);
   /*p27.MEHE*/ c.p27.MEHE = not(b.p01.CLK_AxCxExGx4);
   /*p27.MYVO*/ c.p27.MYVO = not(b.p01.CLK_AxCxExGx4);

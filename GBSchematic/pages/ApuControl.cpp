@@ -1,4 +1,4 @@
-#include "P09_ApuControl.h"
+#include "ApuControl.h"
 #include "../Schematics.h"
 
 #include "Gameboy.h"
@@ -114,7 +114,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p09.EDEK*/ pc.DBG_APU       = not(!pb.DBG_APUn);
 
   /*p09.COTO*/ if (pb.FF26_RDna) c.D0 = not(b.p13.CH1_ACTIVEn);
-  /*p09.EFUS*/ if (pb.FF26_RDnb) c.D1 = not(b.p15.CH2_ACTIVEn);
+  /*p09.EFUS*/ if (pb.FF26_RDnb) c.D1 = not(b.ch2.CH2_ACTIVEn);
   /*p09.FATE*/ if (pb.FF26_RDnd) c.D2 = not(b.p18.CH3_ACTIVEn);
   /*p09.KOGE*/ if (pb.FF26_RDnc) c.D3 = not(b.ch4.CH4_ACTIVEn);
   /*p09.HOPE*/ if (pb.NR52_RDn1) c.D7 = pb.ALL_SOUND_ON;

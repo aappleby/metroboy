@@ -179,6 +179,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\TextPainter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pages\ApuControl.cpp" />
     <ClCompile Include="pages\Channel4.cpp" />
     <ClCompile Include="pages\Gameboy.cpp" />
     <ClCompile Include="pages\P01_ClocksReset.cpp" />
@@ -189,7 +190,6 @@
     <ClCompile Include="pages\P06_SerialLink.cpp" />
     <ClCompile Include="pages\P07_SysDecode.cpp" />
     <ClCompile Include="pages\P08_ExtCpuBuses.cpp" />
-    <ClCompile Include="pages\P09_ApuControl.cpp" />
     <ClCompile Include="pages\P11_Ch1Regs.cpp" />
     <ClCompile Include="pages\P12_Ch1Sweep.cpp" />
     <ClCompile Include="pages\P13_Channel1.cpp" />
@@ -224,6 +224,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\TextPainter.h" />
+    <ClInclude Include="pages\ApuControl.h" />
     <ClInclude Include="pages\Channel4.h" />
     <ClInclude Include="pages\ChipSignals.h" />
     <ClInclude Include="pages\Common.h" />
@@ -235,7 +236,6 @@
     <ClInclude Include="pages\P06_SerialLink.h" />
     <ClInclude Include="pages\P07_SysDecode.h" />
     <ClInclude Include="pages\P08_ExtCpuBuses.h" />
-    <ClInclude Include="pages\P09_ApuControl.h" />
     <ClInclude Include="pages\P11_Ch1Regs.h" />
     <ClInclude Include="pages\P12_Ch1Sweep.h" />
     <ClInclude Include="pages\P13_Channel1.h" />

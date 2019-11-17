@@ -22,7 +22,6 @@
 #include "P16_Ch3Regs.h"
 #include "P17_WaveRam.h"
 #include "P18_Channel3.h"
-#include "P20_Channel4.h"
 #include "P21_VideoControl.h"
 #include "P22_PpuDecode.h"
 #include "P23_VideoRegs.h"
@@ -39,6 +38,8 @@
 #include "P34_SpritePaletteShifter.h"
 #include "P35_PixelMux.h"
 #include "P36_Palettes.h"
+
+#include "Channel4.h"
 
 //-----------------------------------------------------------------------------
 

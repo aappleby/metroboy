@@ -6,12 +6,23 @@ struct P13_Channel1 {
 
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
-  /*p13.DUNA*/ bool CH1_BIT;
+  /*p13.DUNA*/ bool CH1_RAW_BIT;
   /*p13.CARA*/ bool CH1_ACTIVEn;
-  /*p13.ACEG*/ bool CH1_OUT3;
-  /*p13.AGOF*/ bool CH1_OUT2;
-  /*p13.ASON*/ bool CH1_OUT1;
+
+  /*p13.HESU*/ bool CH1_ENV_DELTA0;
+  /*p13.HETO*/ bool CH1_ENV_DELTA1;
+  /*p13.HYTO*/ bool CH1_ENV_DELTA2;
+  /*p13.JUFY*/ bool CH1_ENV_DELTA3;
+
+  /*p13.HEVO*/ bool CH1_ENV0;
+  /*p13.HOKO*/ bool CH1_ENV1;
+  /*p13.HEMY*/ bool CH1_ENV2;
+  /*p13.HAFO*/ bool CH1_ENV3;
+
   /*p13.AMOP*/ bool CH1_OUT0;
+  /*p13.ASON*/ bool CH1_OUT1;
+  /*p13.AGOF*/ bool CH1_OUT2;
+  /*p13.ACEG*/ bool CH1_OUT3;
   /*p13.HOCA*/ bool CH1_AMP_ENn;
 
   union { bool GEXU; };
@@ -38,9 +49,9 @@ struct P13_Channel1 {
   /*p13.CALA*/ bool CALA;
   /*p13.DOKA*/ bool DOKA;
   /*p13.DYRU*/ bool DYRU;
-  /*p13.COMY*/ bool COMY;
-  /*p13.CYTE*/ bool CYTE;
-  /*p13.COPE*/ bool COPE;
+  /*p13.COMY*/ bool CH1_PHASE_CLKnb;
+  /*p13.CYTE*/ bool CH1_PHASE_CLKb;
+  /*p13.COPE*/ bool CH1_PHASE_CLKna;
   /*p13.DAJO*/ bool CH1_PHASE_CLKa;
 
   /*p13.ESUT*/ bool CH1_PHASE_0;
@@ -73,11 +84,6 @@ struct P13_Channel1 {
   /*p13.KENU*/ bool SWEEP_CNT1;
   /*p13.KERA*/ bool SWEEP_CNT2;
 
-  // Ch 1 initial volume
-  /*p13.HEVO*/ bool HEVO;
-  /*p13.HOKO*/ bool HOKO;
-  /*p13.HEMY*/ bool HEMY;
-  /*p13.HAFO*/ bool HAFO;
 
 
   /*p13.KOMA*/ bool CH1_NO_SWEEP;
@@ -98,9 +104,9 @@ struct P13_Channel1 {
   /*p13.ATAT*/ bool ATAT;
   /*p13.ATUV*/ bool ATUV;
   /*p13.BAVE*/ bool BAVE;
-  /*p13.BERY*/ bool BERY;
-  /*p13.BONE*/ bool BONE;
-  /*p13.BOTO*/ bool BOTO;
+  /*p13.BERY*/ bool CH1_STOP;
+  /*p13.BONE*/ bool CH1_SWEEP_STOP;
+  /*p13.BOTO*/ bool CH1_BIT;
   /*p13.BUGE*/ bool BUGE;
   /*p13.BURY*/ bool BURY;
   /*p13.CELE*/ bool CELE;
@@ -109,7 +115,7 @@ struct P13_Channel1 {
   /*p13.CORY*/ bool CORY;
   /*p13.COWE*/ bool COWE;
   /*p13.COZE*/ bool COZE;
-  /*p13.CYFA*/ bool CYFA;
+  /*p13.CYFA*/ bool CH1_LEN_STOP;
   /*p13.CYLU*/ bool CYLU;
   /*p13.CYMU*/ bool CYMU;
   /*p13.DACU*/ bool DACU;
@@ -130,14 +136,10 @@ struct P13_Channel1 {
   /*p13.FYFO*/ bool FYFO;
   /*p13.GEFE*/ bool GEFE;
   /*p13.GEPU*/ bool GEPU;
-  /*p13.HAKE*/ bool HAKE;
-  /*p13.HANO*/ bool HANO;
-  /*p13.HESU*/ bool HESU;
-  /*p13.HETO*/ bool HETO;
-  /*p13.HUFU*/ bool HUFU;
-  /*p13.HYTO*/ bool HYTO;
-  /*p13.JADE*/ bool JADE;
-  /*p13.JUFY*/ bool JUFY;
+  /*p13.HAKE*/ bool CH1_ENV_TOP;
+  /*p13.HANO*/ bool CH1_ENV_BOT;
+  /*p13.HUFU*/ bool CH1_ENV_TOPn;
+  /*p13.JADE*/ bool CH1_ENV_MAX;
   /*p13.KABA*/ bool KABA;
   /*p13.KADO*/ bool KADO;
   /*p13.KAKE*/ bool KAKE;

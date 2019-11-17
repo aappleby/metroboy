@@ -10,7 +10,7 @@
 void P14_Ch2Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p14.FOGE = not(b.p09.CPU_RDn);
-  c.p14.FAPE = and(b.p14.FOGE, b.p09.NET03);
+  c.p14.FAPE = and(b.p14.FOGE, b.p09.DBG_APU);
 
   //----------
   // FF16 NR21

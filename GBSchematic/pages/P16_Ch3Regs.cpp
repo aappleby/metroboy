@@ -60,7 +60,7 @@ void P16_Ch3Regs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p16.FF1D_D0 = b.p16.KOGA_00;
 
   c.p16.DOVO = not(b.p09.CPU_RDn);
-  c.p16.EGAD = nand(b.p09.NET03, b.p16.DOVO);
+  c.p16.EGAD = nand(b.p09.DBG_APU, b.p16.DOVO);
   c.p16.HOXA = not(b.p16.FF1D);
   c.p16.GUTE = nor(b.p16.HOXA, b.p16.EGAD);
   c.p16.HOVO = not(b.p16.GUTE);

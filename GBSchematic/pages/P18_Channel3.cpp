@@ -55,7 +55,7 @@ void P18_Channel3::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p18.WAVE_A3 = mux2(b.p18.WAVE_IDX4, b.A03, b.p18.CH3_ACTIVE);
 
   c.p18.JECO = not(b.p09.CPU_RDn);
-  c.p18.HONY = and(b.p09.NET03, b.p18.JECO, b.p18.FF1C);
+  c.p18.HONY = and(b.p09.DBG_APU, b.p18.JECO, b.p18.FF1C);
   c.p18.GENO = not(b.p18.HONY);
 
   /*p18.FAPY*/ c.p18.WAVE_IDX_D0 = not(!b.p18.WAVE_IDX0);

@@ -95,7 +95,7 @@ struct P12_Ch1Sweep {
   /*p12.HOPA*/ bool FREQ_SUM_R_01;
   /*p12.HORA*/ bool FREQ_SUM_R_00;
 
-  bool ATYS;
+  /*p12.ATYS*/ bool CH1_SWEEP_STOPn;
 
   /*p12.BEKU*/ bool FREQ_SHIFT_10;
   /*p12.AGEZ*/ bool FREQ_SHIFT_09;
@@ -151,7 +151,8 @@ private:
 
 
   bool AJUX,AMAC,BASO,EMAR,ETOK,KYFU,KAVO,FEGA,FOKE,FOPU,EJYF;
-  bool ARYL,BYLE;
+  /*p12.ARYL*/ bool NR10_SWEEP_DIRn;
+  /*p12.BYLE*/ bool CH1_SWEEP_MAX;
 
 
   bool KEDO,JUJU,KAPE;

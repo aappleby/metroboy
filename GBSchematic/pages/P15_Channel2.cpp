@@ -108,7 +108,7 @@ void P15_Channel2::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p15.DOME = tock_pos(a.p15.DAVU, b.p15.DAVU, b.p09.APU_RESETn2, b.p15.DOME, b.p15.EXES);
   c.p15.CYSE = and(b.p15.DANE, b.p15.DOME);
-  c.p15.BONU = or(b.p15.CYSE, b.p09.NET03);
+  c.p15.BONU = or(b.p15.CYSE, b.p09.DBG_APU);
 
   c.p15.FOPY = amux2(b.p15.FOMY, b.p14.FF17_D3, !b.p15.FOMY, !b.p14.FF17_D3);
   c.p15.ETUP = amux2(b.p15.FETE, b.p14.FF17_D3, !b.p15.FETE, !b.p14.FF17_D3);

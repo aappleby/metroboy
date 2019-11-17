@@ -9,7 +9,7 @@
 
 void P10_ApuDecode_tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
 
-  /*P10.TACE*/ c.p10.AMP_ENn = and(b.p13.CH1_AMP_ENn, b.p15.CH2_AMP_ENn, b.p16.CH3_AMP_ENna, b.p20.CH4_AMP_ENn);
+  /*P10.TACE*/ c.p10.AMP_ENn = and(b.p13.CH1_AMP_ENn, b.p15.CH2_AMP_ENn, b.p16.CH3_AMP_ENna, b.ch4.CH4_AMP_ENn);
 
   /*p10.AMUS*/ c.p10.ADDR_xxxxxxxx0xx00000 = nor(b.A00, b.A01, b.A02, b.A03, b.A04, b.A07);
   /*p10.ANAP*/ c.p10.ADDR_111111110xx00000 = and(b.p10.ADDR_xxxxxxxx0xx00000, b.p07.ADDR_FFXX);
@@ -86,7 +86,6 @@ void P10_ApuDecode_tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
 
   /*p10.DANU*/ c.p10.ADDR_FF20 = nor(b.p10.ADDR_FF2Xn, b.p10.ADDR_0000bn);
   /*p10.COVO*/ c.p10.ADDR_FF21 = nor(b.p10.ADDR_FF2Xn, b.p10.ADDR_0001bn);
-  /*p10.EKEZ*/ c.p10.ADDR_FF22 = nor(b.p10.ADDR_FF2Xn, b.p10.ADDR_0010bn);
   /*p10.CUGE*/ c.p10.ADDR_FF23 = nor(b.p10.ADDR_FF2Xn, b.p10.ADDR_0011bn);
   /*p10.CAFY*/ c.p10.ADDR_FF24 = nor(b.p10.ADDR_FF2Xn, b.p10.ADDR_0100bn);
   /*p10.CORA*/ c.p10.ADDR_FF25 = nor(b.p10.ADDR_FF2Xn, b.p10.ADDR_0101bn);

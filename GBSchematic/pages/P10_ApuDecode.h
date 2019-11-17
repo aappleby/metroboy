@@ -81,7 +81,6 @@ struct P10_ApuDecode {
 
   /*p10.DANU*/ bool ADDR_FF20;
   /*p10.COVO*/ bool ADDR_FF21;
-  /*p10.EKEZ*/ bool ADDR_FF22;
   /*p10.CUGE*/ bool ADDR_FF23;
   /*p10.CAFY*/ bool ADDR_FF24;
   /*p10.CORA*/ bool ADDR_FF25;

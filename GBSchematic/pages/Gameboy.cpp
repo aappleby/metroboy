@@ -63,7 +63,6 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*P09.AFAT*/ c.p09.APU_RESETn2 = not(b.p09.APU_RESET1);
   /*P09.ATYV*/ c.p09.APU_RESETn3 = not(b.p09.APU_RESET1);
   /*P09.DAPA*/ c.p09.APU_RESETn4 = not(b.p09.APU_RESET1);
-  /*P09.KAME*/ c.p09.APU_RESETn5 = not(b.p09.APU_RESET1);
   /*P09.KEPY*/ c.p09.APU_RESETn6 = not(b.p01.APU_RST_00);
   /*P09.KUBY*/ c.p09.APU_RESETn7 = not(b.p01.APU_RST_00);
 
@@ -95,12 +94,6 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p17.BAMA*/ c.p17.BAMA = not(b.p09.APU_RESET1);
   /*p17.ACOR*/ c.p17.ACOR = not(b.p09.APU_RESET1);
   /*p18.CALU*/ c.p18.CALU = not(b.p09.APU_RESET1);
-  /*p19.FEXO*/ c.p19.FEXO = not(b.p09.APU_RESET1);
-  /*p19.HYNE*/ c.p19.HYNE = not(b.p09.APU_RESET1);
-  /*p19.CABE*/ c.p19.CABE = not(b.p09.APU_RESET1);
-  /*p20.BOKY*/ c.p20.BOKY = not(b.p09.APU_RESET1);
-  /*p20.GASO*/ c.p20.GASO = not(b.p09.APU_RESET1);
-  /*p20.FEBY*/ c.p20.FEBY = not(b.p09.APU_RESET1);
 
   //----------
   // Clock control
@@ -349,9 +342,9 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p01.CULO = not(!b.p01.CARU);
   c.p01.APEF = not(!b.p01.BYLU);
 
-  c.p01.GALE = mux2(b.p01.APUCLK_512Kn, b.p01.FYNE, b.p09.FERO);
-  c.p01.BEZE = mux2(b.p01.APUCLK_512Kn, b.p01.CULO, b.p09.FERO);
-  c.p01.BULE = mux2(b.p01.APUCLK_512Kn, b.p01.APEF, b.p09.FERO);
+  c.p01.GALE = mux2(b.p01.APUCLK_512Kn, b.p01.FYNE, b.p09.NR52_4_SECRET);
+  c.p01.BEZE = mux2(b.p01.APUCLK_512Kn, b.p01.CULO, b.p09.NR52_4_SECRET);
+  c.p01.BULE = mux2(b.p01.APUCLK_512Kn, b.p01.APEF, b.p09.NR52_4_SECRET);
 
   c.p01.GEXY = not(b.p01.GALE);
   c.p01.COFU = not(b.p01.BEZE);
@@ -361,13 +354,10 @@ void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p01.BUFY*/ c.p01.BUFY_256 = not(b.p01.COFU);
   /*p01.BYFE*/ c.p01.CLK_128 = not(b.p01.BARU);
 
-  c.p20.ALOP = not(b.p01.CLK_128);
-
   c.p01.ATYK = tock_pos(a.p01.CLK_AxCxExGx2, b.p01.CLK_AxCxExGx2, b.p01.APU_RESETn1,  b.p01.ATYK, !b.p01.ATYK);
   c.p01.AVOK = tock_pos(a.p01.ATYK,          b.p01.ATYK,          b.p01.APU_RESETn1,  b.p01.AVOK, !b.p01.AVOK);
   c.p01.JESO_512K = tock_pos(a.p01.BAVU_1M,          b.p01.BAVU_1M,          b.p09.APU_RESETn5, b.p01.JESO_512K, !b.p01.JESO_512K);
   c.p01.BAVU_1M = not(b.p01.AVOK);
-  c.p01.APUCLK_512Kn = not(!b.p01.JESO_512K);
 }
 
 //-----------------------------------------------------------------------------
@@ -1521,14 +1511,14 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // these must be debug-related and are only readable during apu reset...
   c.p09.EFOP = and(b.D4, b.p07.MODE_DBG2);
-  c.p09.NR52_5 = tock_pos(a.p09.NR52_WRn2, b.p09.NR52_WRn2, b.p09.APU_RESETn6, b.p09.NR52_5, b.D5);
-  c.p09.FERO   = tock_pos(a.p09.NR52_WRn3, b.p09.NR52_WRn3, b.p09.APU_RESETn6, b.p09.FERO,   b.p09.EFOP);
+  c.p09.NR52_4_SECRET = tock_pos(a.p09.NR52_WRn3, b.p09.NR52_WRn3, b.p09.APU_RESETn6, b.p09.NR52_4_SECRET, b.p09.EFOP);
+  c.p09.NR52_5_SECRET = tock_pos(a.p09.NR52_WRn2, b.p09.NR52_WRn2, b.p09.APU_RESETn6, b.p09.NR52_5_SECRET, b.D5);
 
   // this is some debug thing
-  c.p09.BAZA   = tock_pos(a.p01.AJER_2M,   b.p01.AJER_2M,   b.p09.APU_RESETn3, b.p09.BAZA,   b.p09.NR52_5);
+  c.p09.BAZA   = tock_pos(a.p01.AJER_2M,   b.p01.AJER_2M,   b.p09.APU_RESETn3, b.p09.BAZA,   b.p09.NR52_5_SECRET);
 
-  c.p09.NET03 = not(!b.p09.FERO);
-  c.p09.CELY = mux2(b.p09.BAZA, b.p01.CLK_128, b.p09.NET03);
+  c.p09.DBG_APU = not(!b.p09.NR52_4_SECRET);
+  c.p09.CELY = mux2(b.p09.BAZA, b.p01.CLK_128, b.p09.DBG_APU);
   c.p09.CONE = not(b.p09.CELY);
   c.p09.CATE = not(b.p09.CONE);
 
@@ -1634,7 +1624,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p09.FF26_D0 = not(b.p13.CH1_ACTIVEn);
   c.p09.FF26_D1 = not(b.p15.CH2_ACTIVEn);
   c.p09.FF26_D2 = not(b.p18.CH3_ACTIVEn);
-  c.p09.FF26_D3 = not(b.p20.CH4_ACTIVEn);
+  c.p09.FF26_D3 = not(b.ch4.CH4_ACTIVEn);
 
   if (b.p09.FF26_RDna) { c.D0 = b.p09.FF26_D0; }
   if (b.p09.FF26_RDnb) { c.D1 = b.p09.FF26_D1; }

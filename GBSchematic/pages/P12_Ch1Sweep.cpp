@@ -6,7 +6,7 @@
 
 void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  /*p12.ARYL*/ c.p12.ARYL = not(b.p11.CH1_SWEEP_DIR);
+  /*p12.ARYL*/ c.p12.NR10_SWEEP_DIRn = not(b.p11.NR10_SWEEP_DIR);
   /*p12.KEDO*/ c.p12.KEDO = not(b.p13.KALA);
   /*p12.JUJU*/ c.p12.JUJU = not(b.p13.KALA);
   /*p12.KAPE*/ c.p12.KAPE = not(b.p13.KALA);
@@ -92,7 +92,7 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p12.HOPA*/ c.p12.FREQ_SUM_R_01 = tock_pos(b.p13.ADAD, b.p13.ADAD, b.p13.KYLY, c.p12.FREQ_SUM_R_01, b.p12.FREQ_SHIFT_FLIP_01);
   /*p12.HORA*/ c.p12.FREQ_SUM_R_00 = tock_pos(b.p13.ADAD, b.p13.ADAD, b.p13.KYLY, c.p12.FREQ_SUM_R_00, b.p12.FREQ_SHIFT_FLIP_00);
 
-  /*p12.GUXA*/ wire FREQ_SUM_C_00 = add_c(!b.p12.FREQ_SUM_L_00, !b.p12.FREQ_SUM_R_00, b.p12.ARYL);
+  /*p12.GUXA*/ wire FREQ_SUM_C_00 = add_c(!b.p12.FREQ_SUM_L_00, !b.p12.FREQ_SUM_R_00, b.p12.NR10_SWEEP_DIRn);
   /*p12.HALU*/ wire FREQ_SUM_C_01 = add_c(!b.p12.FREQ_SUM_L_01, !b.p12.FREQ_SUM_R_01, FREQ_SUM_C_00);
   /*p12.JULE*/ wire FREQ_SUM_C_02 = add_c(!b.p12.FREQ_SUM_L_02, !b.p12.FREQ_SUM_R_02, FREQ_SUM_C_01);
   /*p12.JORY*/ wire FREQ_SUM_C_03 = add_c(!b.p12.FREQ_SUM_L_03, !b.p12.FREQ_SUM_R_03, FREQ_SUM_C_02);
@@ -104,7 +104,7 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p12.DULE*/ wire FREQ_SUM_C_09 = add_c(!b.p12.FREQ_SUM_L_09, !b.p12.FREQ_SUM_R_09, FREQ_SUM_C_08);
   /*p12.CORU*/ wire FREQ_SUM_C_10 = add_c(!b.p12.FREQ_SUM_L_10, !b.p12.FREQ_SUM_R_10, FREQ_SUM_C_09);
 
-  /*p12.GUXA*/ wire FREQ_SUM_S_00 = add_s(!b.p12.FREQ_SUM_L_00, !b.p12.FREQ_SUM_R_00, b.p12.ARYL);
+  /*p12.GUXA*/ wire FREQ_SUM_S_00 = add_s(!b.p12.FREQ_SUM_L_00, !b.p12.FREQ_SUM_R_00, b.p12.NR10_SWEEP_DIRn);
   /*p12.HALU*/ wire FREQ_SUM_S_01 = add_s(!b.p12.FREQ_SUM_L_01, !b.p12.FREQ_SUM_R_01, FREQ_SUM_C_00);
   /*p12.JULE*/ wire FREQ_SUM_S_02 = add_s(!b.p12.FREQ_SUM_L_02, !b.p12.FREQ_SUM_R_02, FREQ_SUM_C_01);
   /*p12.JORY*/ wire FREQ_SUM_S_03 = add_s(!b.p12.FREQ_SUM_L_03, !b.p12.FREQ_SUM_R_03, FREQ_SUM_C_02);
@@ -116,9 +116,10 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p12.DULE*/ wire FREQ_SUM_S_09 = add_s(!b.p12.FREQ_SUM_L_09, !b.p12.FREQ_SUM_R_09, FREQ_SUM_C_08);
   /*p12.CORU*/ wire FREQ_SUM_S_10 = add_s(!b.p12.FREQ_SUM_L_10, !b.p12.FREQ_SUM_R_10, FREQ_SUM_C_09);
 
-  // this is overflow/underflow check
-  /*p12.BYLE*/ c.p12.BYLE = nor(b.p12.ARYL, FREQ_SUM_C_10);
-  /*p12.ATYS*/ c.p12.ATYS = or(b.p12.BYLE, b.p12.ARYL);
+  // this is overflow check
+  // the logic here seems wrong, like carry should be negated or something
+  /*p12.BYLE*/ c.p12.CH1_SWEEP_MAX = nor(b.p12.NR10_SWEEP_DIRn, FREQ_SUM_C_10);
+  /*p12.ATYS*/ c.p12.CH1_SWEEP_STOPn = or(b.p12.CH1_SWEEP_MAX, b.p12.NR10_SWEEP_DIRn);
 
   // ->P11
   /*p12.AXAN*/ c.p12.FREQ_SUM_OUT_10 = srtock_pos(a.p13.BUSO, a.p13.BUSO, b.p12.FREQ_SUM_SET_10, b.p12.FREQ_SUM_RST_10, c.p12.FREQ_SUM_OUT_10, FREQ_SUM_S_10);
@@ -193,15 +194,15 @@ void P12_Ch1Sweep::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p12.JEFA*/ c.p12.FREQ_SHIFT_01 = srtock_pos(b.p13.EGOR, b.p13.EGOR, b.p12.FREQ_SHIFT_SET_01, b.p12.FREQ_SHIFT_RST_01, b.p12.FREQ_SHIFT_01, b.p12.FREQ_SHIFT_02);
   /*p12.FABU*/ c.p12.FREQ_SHIFT_00 = srtock_pos(b.p13.EGOR, b.p13.EGOR, b.p12.FREQ_SHIFT_SET_00, b.p12.FREQ_SHIFT_RST_00, b.p12.FREQ_SHIFT_00, b.p12.FREQ_SHIFT_01);
 
-  /*p12.CULU*/ c.p12.FREQ_SHIFT_FLIP_10 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_10);
-  /*p12.DOZY*/ c.p12.FREQ_SHIFT_FLIP_09 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_09);
-  /*p12.CALE*/ c.p12.FREQ_SHIFT_FLIP_08 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_08);
-  /*p12.DYME*/ c.p12.FREQ_SHIFT_FLIP_07 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_07);
-  /*p12.FURE*/ c.p12.FREQ_SHIFT_FLIP_06 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_06);
-  /*p12.GOLY*/ c.p12.FREQ_SHIFT_FLIP_05 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_05);
-  /*p12.KEFE*/ c.p12.FREQ_SHIFT_FLIP_04 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_04);
-  /*p12.HEFY*/ c.p12.FREQ_SHIFT_FLIP_03 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_03);
-  /*p12.GOPO*/ c.p12.FREQ_SHIFT_FLIP_02 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_02);
-  /*p12.GELA*/ c.p12.FREQ_SHIFT_FLIP_01 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_01);
-  /*p12.GYLO*/ c.p12.FREQ_SHIFT_FLIP_00 = xor(b.p12.ARYL, b.p12.FREQ_SHIFT_00);
+  /*p12.CULU*/ c.p12.FREQ_SHIFT_FLIP_10 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_10);
+  /*p12.DOZY*/ c.p12.FREQ_SHIFT_FLIP_09 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_09);
+  /*p12.CALE*/ c.p12.FREQ_SHIFT_FLIP_08 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_08);
+  /*p12.DYME*/ c.p12.FREQ_SHIFT_FLIP_07 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_07);
+  /*p12.FURE*/ c.p12.FREQ_SHIFT_FLIP_06 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_06);
+  /*p12.GOLY*/ c.p12.FREQ_SHIFT_FLIP_05 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_05);
+  /*p12.KEFE*/ c.p12.FREQ_SHIFT_FLIP_04 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_04);
+  /*p12.HEFY*/ c.p12.FREQ_SHIFT_FLIP_03 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_03);
+  /*p12.GOPO*/ c.p12.FREQ_SHIFT_FLIP_02 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_02);
+  /*p12.GELA*/ c.p12.FREQ_SHIFT_FLIP_01 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_01);
+  /*p12.GYLO*/ c.p12.FREQ_SHIFT_FLIP_00 = xor(b.p12.NR10_SWEEP_DIRn, b.p12.FREQ_SHIFT_00);
 }

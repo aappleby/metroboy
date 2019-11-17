@@ -31,8 +31,7 @@ struct P09_ApuControl {
   /*p09.KEPY*/ bool APU_RESETn6;
   /*p09.KUBY*/ bool APU_RESETn7;
   
-  /*p09.EDEK*/ bool NET03;
-  /*p09.FERO*/ bool FERO;
+  /*p09.EDEK*/ bool DBG_APU;
 
   /*p09.BATA*/ bool BATA; // some 2m clock
   /*p09.CALO*/ bool CALO; // some 2m clock
@@ -115,7 +114,10 @@ struct P09_ApuControl {
   /*p09.BOPY*/ bool NR52_WRn2;
   /*p09.FOKU*/ bool NR52_WRn3;
   /*p09.ETUC*/ bool NR52_WR1;
-  /*p09.BOWY*/ bool NR52_5; // secret bit?
+
+  /*p09.FERO*/ bool NR52_4_SECRET; // secret debug bit
+  /*p09.BOWY*/ bool NR52_5_SECRET; // secret debug bit
+
   /*p09.HOPE*/ bool FF26_D7;
   /*p09.BYMA*/ bool FF24n;
 

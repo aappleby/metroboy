@@ -16,13 +16,13 @@ struct P11_Ch1Regs {
   /*p11.ATYN*/ bool ATYN;
   /*p11.ASOP*/ bool ASOP;
 
-  /*p11.BANY*/ bool CH1_SWEEP_SHIFT_0;
-  /*p11.ARAX*/ bool CH1_SWEEP_SHIFT_1;
-  /*p11.ANAZ*/ bool CH1_SWEEP_SHIFT_2;
-  /*p11.AVAF*/ bool CH1_SWEEP_DIR;
-  /*p11.ADEK*/ bool CH1_SWEEP_TIME_0;
-  /*p11.BANA*/ bool CH1_SWEEP_TIME_1;
-  /*p11.BOTU*/ bool CH1_SWEEP_TIME_2;
+  /*p11.BANY*/ bool NR10_SWEEP_SHIFT_0;
+  /*p11.ARAX*/ bool NR10_SWEEP_SHIFT_1;
+  /*p11.ANAZ*/ bool NR10_SWEEP_SHIFT_2;
+  /*p11.AVAF*/ bool NR10_SWEEP_DIR;
+  /*p11.ADEK*/ bool NR10_SWEEP_TIME_0;
+  /*p11.BANA*/ bool NR10_SWEEP_TIME_1;
+  /*p11.BOTU*/ bool NR10_SWEEP_TIME_2;
 
   //----------
   // FF11

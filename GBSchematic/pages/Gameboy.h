@@ -22,7 +22,6 @@
 #include "P16_Ch3Regs.h"
 #include "P17_WaveRam.h"
 #include "P18_Channel3.h"
-#include "P19_Ch4Regs.h"
 #include "P20_Channel4.h"
 #include "P21_VideoControl.h"
 #include "P22_PpuDecode.h"
@@ -360,8 +359,9 @@ struct Gameboy {
   P16_Ch3Regs              p16;
   P17_WaveRam              p17;
   P18_Channel3             p18;
-  P19_Ch4Regs              p19;
-  P20_Channel4             p20;
+
+  Channel4 ch4;
+
   P21_VideoControl         p21;
   P22_PpuDecode            p22;
   P23_VideoRegs            p23;

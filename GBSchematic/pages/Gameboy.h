@@ -15,7 +15,6 @@
 #include "P11_Ch1Regs.h"
 #include "P12_Ch1Sweep.h"
 #include "P13_Channel1.h"
-#include "P18_Channel3.h"
 #include "P21_VideoControl.h"
 #include "P22_PpuDecode.h"
 #include "P23_VideoRegs.h"
@@ -34,7 +33,9 @@
 #include "P36_Palettes.h"
 
 #include "ApuControl.h"
+
 #include "Channel2.h"
+#include "Channel3.h"
 #include "Channel4.h"
 
 //-----------------------------------------------------------------------------

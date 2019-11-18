@@ -7,8 +7,6 @@ struct P35_PixelMux {
 
   union { bool POKA; bool BGPIXELn; };
 
-private:
-
   bool WOXA,XULA,TADE,RAJY;
   bool WELE,VUMU,NULY,RUTA,RYFU;
   bool LAVA,WOLO,WYRU;

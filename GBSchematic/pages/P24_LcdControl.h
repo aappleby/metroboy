@@ -16,8 +16,6 @@ public:
   union { bool SEGU; };
   union { bool LOBY; };
 
-private:
-
   bool NAFY,PYGO,SOCY,VYBO,TYFA,PAHO;
   bool POME,RUJU,POFY,RUZE;
   bool NERU,MEDA,MURE;

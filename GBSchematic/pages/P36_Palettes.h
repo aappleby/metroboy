@@ -34,8 +34,6 @@ public:
   union { bool MOSA; bool OBP1_D2; };
   union { bool MOXY; bool OBP1_D0; };
 
-private:
-
   bool VUSO,VELY,TEPY,TEPO;
   bool LARY,LYKA,LOBE,PABA,LODY,LACE,REDO,RARO;
   bool XUFY,XOMA,XOZY,XELO;

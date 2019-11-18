@@ -65,8 +65,6 @@ struct P23_VideoRegs {
   union { bool MEBY; bool FF4B_D6; };
   union { bool NOKE; bool FF4B_D7; };
 
-private:
-
   bool VYRE,WARU,WYCE,XUBO;
 
   bool WYZE,WUZA,VYCU,VOXU;

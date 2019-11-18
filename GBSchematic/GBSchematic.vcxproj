@@ -185,14 +185,6 @@
     <ClCompile Include="pages\Channel3.cpp" />
     <ClCompile Include="pages\Channel4.cpp" />
     <ClCompile Include="pages\Gameboy.cpp" />
-    <ClCompile Include="pages\P01_ClocksReset.cpp" />
-    <ClCompile Include="pages\P02_Interrupts.cpp" />
-    <ClCompile Include="pages\P03_Timer.cpp" />
-    <ClCompile Include="pages\P04_DMA.cpp" />
-    <ClCompile Include="pages\P05_JoypadIO.cpp" />
-    <ClCompile Include="pages\P06_SerialLink.cpp" />
-    <ClCompile Include="pages\P07_SysDecode.cpp" />
-    <ClCompile Include="pages\P08_ExtCpuBuses.cpp" />
     <ClCompile Include="pages\P21_VideoControl.cpp" />
     <ClCompile Include="pages\P22_PpuDecode.cpp" />
     <ClCompile Include="pages\P23_VideoRegs.cpp" />
@@ -209,6 +201,7 @@
     <ClCompile Include="pages\P34_SpritePaletteShifter.cpp" />
     <ClCompile Include="pages\P35_PixelMux.cpp" />
     <ClCompile Include="pages\P36_Palettes.cpp" />
+    <ClCompile Include="pages\System.cpp" />
     <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
     <ClCompile Include="SignalTree.cpp" />
@@ -228,12 +221,6 @@
     <ClInclude Include="pages\Common.h" />
     <ClInclude Include="pages\CpuSignals.h" />
     <ClInclude Include="pages\Gameboy.h" />
-    <ClInclude Include="pages\P02_Interrupts.h" />
-    <ClInclude Include="pages\P04_DMA.h" />
-    <ClInclude Include="pages\P05_JoypadIO.h" />
-    <ClInclude Include="pages\P06_SerialLink.h" />
-    <ClInclude Include="pages\P07_SysDecode.h" />
-    <ClInclude Include="pages\P08_ExtCpuBuses.h" />
     <ClInclude Include="pages\P21_VideoControl.h" />
     <ClInclude Include="pages\P22_PpuDecode.h" />
     <ClInclude Include="pages\P23_VideoRegs.h" />
@@ -250,9 +237,8 @@
     <ClInclude Include="pages\P34_SpritePaletteShifter.h" />
     <ClInclude Include="pages\P35_PixelMux.h" />
     <ClInclude Include="pages\P36_Palettes.h" />
+    <ClInclude Include="pages\System.h" />
     <ClInclude Include="pages\TristateBus.h" />
-    <ClInclude Include="pages\P01_ClocksReset.h" />
-    <ClInclude Include="pages\P03_Timer.h" />
     <ClInclude Include="Register.h" />
     <ClInclude Include="Schematics.h" />
     <ClInclude Include="SignalTree.h" />

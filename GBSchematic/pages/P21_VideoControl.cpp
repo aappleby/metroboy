@@ -1,12 +1,10 @@
-#include "../Schematics.h"
-
 #include "Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P21_VideoControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // x counter. this is a little weird, presumably because it can tick at 4 mhz but not always?

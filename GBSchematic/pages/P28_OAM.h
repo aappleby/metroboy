@@ -36,8 +36,6 @@ public:
   bool BYVA;
   bool AZYB;
 
-//private:
-
   bool YVAL,YRYV;
   bool AWOH,ABAF,ANEL,BYHA,ABAK;
   bool GAVA;

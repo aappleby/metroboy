@@ -1,7 +1,6 @@
 #pragma once
 
 struct P21_VideoControl {
-  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   bool INT_VBL_BUF;
   bool INT_STAT;
@@ -48,8 +47,6 @@ struct P21_VideoControl {
 
   // x coordinate? used by sprite matcher
   bool ACAM,AZUB,AMEL,AHAL,APUX,ABEF,ADAZ,ASAH;
-
-//private:
 
   bool TADY;
   bool XUKE,XYLE,RYBO,XEGY,XORA;

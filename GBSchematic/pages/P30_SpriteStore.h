@@ -14,8 +14,6 @@ struct P30_SpriteStore {
   bool WENU;
   bool CEGA;
 
-private:
-
   bool IDX_0,IDX_1,IDX_2,IDX_3,IDX_4,IDX_5;
   bool LINE_0,LINE_1,LINE_2,LINE_3;
 

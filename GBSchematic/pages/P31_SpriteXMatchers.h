@@ -35,8 +35,6 @@ public:
   bool BAXO;
   bool YZOS;
 
-private:
-
   bool WYNO,CYRA,ZUVE,ECED,XYKY,YRUM,YSEX,YVEL;
   bool XEGA;
   bool YLOR,ZYTY,ZYVE,ZEZY;

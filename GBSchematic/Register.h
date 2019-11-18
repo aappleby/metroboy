@@ -96,7 +96,6 @@ struct reg {
   void reset()      { val = 0; }
   void load(bool v) { val = v; }
 
-//private:
 
   bool val;
   bool clk;

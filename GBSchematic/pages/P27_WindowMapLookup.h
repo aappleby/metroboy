@@ -27,8 +27,6 @@ struct P27_WindowMapLookup {
 
   bool SECA;
 
-//private:
-
   bool NAZE,PEBO,POMO,NEVU,NOJO,PAGA,PEZO,NUPA;
   bool PALO,NELE,PAFU,ROGE;
   bool SARY;

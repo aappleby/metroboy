@@ -2,9 +2,26 @@
 #include "Gameboy.h"
 
 void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+  /*p16.FABO*/ c.ch3.CLK_xxCDxxGH = not(b.p01.CLK_ABxxEFxx1);
+  /*p17.ABUR*/ c.ch3.ABUR = not(b.p01.CPUCLK_xxxxxFxx1);
+  /*p17.ARUC*/ c.ch3.ARUC = not(b.p01.CLK_xBxDxFxH1);
+  /*p17.COZY*/ c.ch3.COZY = not(b.p01.CLK_xBxDxFxH1);
+
+
+  /*p16.GOVE*/ c.ch3.APU_RESETn = not(b.apu.APU_RESET1);
+  /*p16.GAZE*/ c.ch3.APU_RESETo = not(b.apu.APU_RESET1);
+  /*p16.GOMA*/ c.ch3.APU_RESETp = not(b.apu.APU_RESET1);
+  /*p16.KUHA*/ c.ch3.APU_RESETq = not(b.apu.APU_RESET1);
+  /*p16.HEKY*/ c.ch3.APU_RESETr = not(b.apu.APU_RESET1);
+  /*p16.KOPY*/ c.ch3.APU_RESETs = not(b.apu.APU_RESET1);
+  /*p16.GURO*/ c.ch3.APU_RESETt = not(b.apu.APU_RESET1);
+  /*p17.BAMA*/ c.ch3.APU_RESETu = not(b.apu.APU_RESET1);
+  /*p17.ACOR*/ c.ch3.APU_RESETv = not(b.apu.APU_RESET1);
+  /*p18.CALU*/ c.ch3.APU_RESETw = not(b.apu.APU_RESET1);
+
   /*p16.GEJO*/ c.ch3.FF1A_WR = and(b.apu.APU_WR, b.apu.ADDR_FF1A);
   /*p16.GUCY*/ c.ch3.FF1A_WRn = not(b.ch3.FF1A_WR);
-  /*p16.GUXE*/ c.ch3.CH3_AMP_ENna = tock_pos(a.ch3.FF1A_WRn, b.ch3.FF1A_WRn, b.ch3.GOVE, b.ch3.CH3_AMP_ENna, b.D7);
+  /*p16.GUXE*/ c.ch3.CH3_AMP_ENna = tock_pos(a.ch3.FF1A_WRn, b.ch3.FF1A_WRn, b.ch3.APU_RESETn, b.ch3.CH3_AMP_ENna, b.D7);
 
   /*p16.FASY*/ c.ch3.FASY = nand(b.apu.ADDR_FF1A, b.ch3.GAXO);
   /*p16.FEVO*/ c.ch3.CH3_AMP_ENa = not(!b.ch3.CH3_AMP_ENna);
@@ -15,13 +32,13 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p16.GEKO*/ if (b.ch3.FASY) c.D7 = c.ch3.CH3_AMP_ENa;
 
   /*p16.GARA*/ c.ch3.GARA = tock_pos(a.ch3.CLK_xxCDxxGH,  b.ch3.CLK_xxCDxxGH,  b.ch3.FURY, b.ch3.GARA, b.ch3.GOFY);
-  /*p16.GYTA*/ c.ch3.GYTA = tock_pos(a.ch3.CLK_xxCDxxGH,  b.ch3.CLK_xxCDxxGH,  b.ch3.GAZE, b.ch3.GYTA, b.ch3.GARA);
-  /*p16.GYRA*/ c.ch3.GYRA = tock_pos(a.p01.CLK_ABxxEFxx1, b.p01.CLK_ABxxEFxx1, b.ch3.GAZE, b.ch3.GYRA, b.ch3.GYTA);
+  /*p16.GYTA*/ c.ch3.GYTA = tock_pos(a.ch3.CLK_xxCDxxGH,  b.ch3.CLK_xxCDxxGH,  b.ch3.APU_RESETo, b.ch3.GYTA, b.ch3.GARA);
+  /*p16.GYRA*/ c.ch3.GYRA = tock_pos(a.p01.CLK_ABxxEFxx1, b.p01.CLK_ABxxEFxx1, b.ch3.APU_RESETo, b.ch3.GYRA, b.ch3.GYTA);
 
   /*p16.EPYX*/ c.ch3.FF1E_WRn = nor(b.apu.APU_WR, b.apu.ADDR_FF1E); // polarity?
   /*p16.GAVU*/ c.ch3.CH3_RESTART = tock_pos(a.ch3.FF1E_WRn, b.ch3.FF1E_WRn, b.ch3.FAKO, b.ch3.CH3_RESTART, b.D7);
 
-  /*p16.FOBA*/ c.ch3.FOBA = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.ch3.GOMA, b.ch3.FOBA, b.ch3.CH3_RESTART);
+  /*p16.FOBA*/ c.ch3.FOBA = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.ch3.APU_RESETp, b.ch3.FOBA, b.ch3.CH3_RESTART);
 
   /*p16.GULO*/ c.ch3.GULO = not(b.ch3.FURY);
   /*p16.GOFY*/ c.ch3.GOFY = or(b.ch3.GULO, b.ch3.FOBA);
@@ -45,19 +62,20 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF1D NR33
 
-  /*p16.KOTA*/ c.ch3.KOTA = nand(b.apu.ADDR_FF1D, b.apu.APU_WR);
-  /*p16.JAFA*/ c.ch3.JAFA = nand(b.apu.ADDR_FF1D, b.apu.APU_WR);
-  /*p16.KYHO*/ c.ch3.KYHO = not(b.ch3.KOTA);
-  /*p16.KULY*/ c.ch3.KULY = not(b.ch3.JAFA);
+  /*p16.KOTA*/ c.ch3.FF1D_WRn = nand(b.apu.ADDR_FF1D, b.apu.APU_WR);
+  /*p16.KYHO*/ c.ch3.FF1D_WRa = not(b.ch3.FF1D_WRn);
 
-  /*p16.KOGA*/ c.ch3.NR33_FREQ0 = tock_pos(a.ch3.KULY, b.ch3.KULY, b.ch3.KUHA, b.ch3.NR33_FREQ0, b.D0);
-  /*p16.JOVY*/ c.ch3.NR33_FREQ1 = tock_pos(a.ch3.KULY, b.ch3.KULY, b.ch3.KUHA, b.ch3.NR33_FREQ1, b.D1);
-  /*p16.JAXA*/ c.ch3.NR33_FREQ2 = tock_pos(a.ch3.KULY, b.ch3.KULY, b.ch3.KUHA, b.ch3.NR33_FREQ2, b.D2);
-  /*p16.JEFE*/ c.ch3.NR33_FREQ3 = tock_pos(a.ch3.KULY, b.ch3.KULY, b.ch3.KUHA, b.ch3.NR33_FREQ3, b.D3);
-  /*p16.JYPO*/ c.ch3.NR33_FREQ4 = tock_pos(a.ch3.KULY, b.ch3.KULY, b.ch3.KUHA, b.ch3.NR33_FREQ4, b.D4);
-  /*p16.JOVE*/ c.ch3.NR33_FREQ5 = tock_pos(a.ch3.KYHO, b.ch3.KYHO, b.ch3.KUHA, b.ch3.NR33_FREQ5, b.D5);
-  /*p16.KANA*/ c.ch3.NR33_FREQ6 = tock_pos(a.ch3.KYHO, b.ch3.KYHO, b.ch3.KUHA, b.ch3.NR33_FREQ6, b.D6);
-  /*p16.KOGU*/ c.ch3.NR33_FREQ7 = tock_pos(a.ch3.KYHO, b.ch3.KYHO, b.ch3.KUHA, b.ch3.NR33_FREQ7, b.D7);
+  /*p16.JAFA*/ c.ch3.FF1D_WRo = nand(b.apu.ADDR_FF1D, b.apu.APU_WR);
+  /*p16.KULY*/ c.ch3.FF1D_WRb = not(b.ch3.FF1D_WRo);
+
+  /*p16.KOGA*/ c.ch3.NR33_FREQ0 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ0, b.D0);
+  /*p16.JOVY*/ c.ch3.NR33_FREQ1 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ1, b.D1);
+  /*p16.JAXA*/ c.ch3.NR33_FREQ2 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ2, b.D2);
+  /*p16.JEFE*/ c.ch3.NR33_FREQ3 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ3, b.D3);
+  /*p16.JYPO*/ c.ch3.NR33_FREQ4 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ4, b.D4);
+  /*p16.JOVE*/ c.ch3.NR33_FREQ5 = tock_pos(a.ch3.FF1D_WRa, b.ch3.FF1D_WRa, b.ch3.APU_RESETq, b.ch3.NR33_FREQ5, b.D5);
+  /*p16.KANA*/ c.ch3.NR33_FREQ6 = tock_pos(a.ch3.FF1D_WRa, b.ch3.FF1D_WRa, b.ch3.APU_RESETq, b.ch3.NR33_FREQ6, b.D6);
+  /*p16.KOGU*/ c.ch3.NR33_FREQ7 = tock_pos(a.ch3.FF1D_WRa, b.ch3.FF1D_WRa, b.ch3.APU_RESETq, b.ch3.NR33_FREQ7, b.D7);
 
   /*p16.DOVO*/ c.ch3.DOVO = not(b.apu.CPU_RDn);
   /*p16.EGAD*/ c.ch3.EGAD = nand(b.apu.DBG_APU, b.ch3.DOVO);
@@ -77,18 +95,17 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // FF1E NR34
 
-  /*p16.ANUJ*/ c.ch3.CPU_WR_WEIRD = and(b.cpu.FROM_CPU5, b.apu.APU_WR);
-  /*p16.FOVO*/ c.ch3.FOVO = nand(b.ch3.CPU_WR_WEIRD, b.apu.ADDR_FF1E);
-  /*p16.HOTO*/ c.ch3.NR34_STOP = tock_pos(a.ch3.FOVO, b.ch3.FOVO, b.ch3.HEKY, b.ch3.NR34_STOP, b.D6);
+  /*p16.FOVO*/ c.ch3.FOVO = nand(b.apu.CPU_WR_WEIRD, b.apu.ADDR_FF1E);
+  /*p16.HOTO*/ c.ch3.NR34_STOP = tock_pos(a.ch3.FOVO, b.ch3.FOVO, b.ch3.APU_RESETr, b.ch3.NR34_STOP, b.D6);
   /*p16.GORY*/ c.ch3.GORY = not(b.apu.CPU_RDn);
   /*p16.GAWA*/ c.ch3.GAWA = nand(b.apu.ADDR_FF1E, b.ch3.GORY);
 
   /*p16.HUDA*/ c.ch3.HUDA = nand(b.apu.ADDR_FF1E, b.apu.APU_WR);
   /*p16.JUZO*/ c.ch3.JUZO = not(b.ch3.HUDA);
 
-  /*p16.JEMO*/ c.ch3.NR34_FREQ8  = tock_pos(a.ch3.JUZO, b.ch3.JUZO, b.ch3.KOPY, b.ch3.NR34_FREQ8,  b.D0);
-  /*p16.JETY*/ c.ch3.NR34_FREQ9  = tock_pos(a.ch3.JUZO, b.ch3.JUZO, b.ch3.KOPY, b.ch3.NR34_FREQ9,  b.D1);
-  /*p16.JACY*/ c.ch3.NR34_FREQ10 = tock_pos(a.ch3.JUZO, b.ch3.JUZO, b.ch3.KOPY, b.ch3.NR34_FREQ10, b.D2);
+  /*p16.JEMO*/ c.ch3.NR34_FREQ8  = tock_pos(a.ch3.JUZO, b.ch3.JUZO, b.ch3.APU_RESETs, b.ch3.NR34_FREQ8,  b.D0);
+  /*p16.JETY*/ c.ch3.NR34_FREQ9  = tock_pos(a.ch3.JUZO, b.ch3.JUZO, b.ch3.APU_RESETs, b.ch3.NR34_FREQ9,  b.D1);
+  /*p16.JACY*/ c.ch3.NR34_FREQ10 = tock_pos(a.ch3.JUZO, b.ch3.JUZO, b.ch3.APU_RESETs, b.ch3.NR34_FREQ10, b.D2);
 
   /*p16.GUNU*/ c.ch3.GUNU = not(b.apu.ADDR_FF1E);
   /*p16.FUVA*/ c.ch3.FUVA = or(b.ch3.GUNU, b.ch3.EGAD);
@@ -105,8 +122,8 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p16.JOTU*/ c.ch3.JOTU = not(b.apu.CPU_RDn);
   /*p16.HENU*/ c.ch3.HENU = nand(b.apu.ADDR_FF1C, b.ch3.JOTU);
 
-  /*p16.HODY*/ c.ch3.NR32_VOL1 = tock_pos(a.ch3.GUZU, b.ch3.GUZU, b.ch3.GURO, b.ch3.NR32_VOL1, b.D6);
-  /*p16.HUKY*/ c.ch3.NR32_VOL0 = tock_pos(a.ch3.GUZU, b.ch3.GUZU, b.ch3.GURO, b.ch3.NR32_VOL0, b.D5);
+  /*p16.HODY*/ c.ch3.NR32_VOL1 = tock_pos(a.ch3.GUZU, b.ch3.GUZU, b.ch3.APU_RESETt, b.ch3.NR32_VOL1, b.D6);
+  /*p16.HUKY*/ c.ch3.NR32_VOL0 = tock_pos(a.ch3.GUZU, b.ch3.GUZU, b.ch3.APU_RESETt, b.ch3.NR32_VOL0, b.D5);
 
   /*p16.HAMU*/ if (b.ch3.HENU) c.D5 = b.ch3.NR32_VOL0;
   /*p16.HUCO*/ if (b.ch3.HENU) c.D6 = b.ch3.NR32_VOL1;
@@ -176,7 +193,7 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p18.FOZU*/ c.ch3.FOZU = or(b.ch3.GARA, b.ch3.FYGO);
   /*p18.EZAS*/ c.ch3.EZAS = not(b.ch3.FOZU);
   /*p18.DORU*/ c.ch3.DORU = not(b.ch3.EZAS);
-  /*p18.DAVO*/ c.ch3.DAVO = tock_pos(a.p01.AJER_2M, b.p01.AJER_2M, b.ch3.CALU, b.ch3.DAVO, b.ch3.DORU);
+  /*p18.DAVO*/ c.ch3.DAVO = tock_pos(a.p01.AJER_2M, b.p01.AJER_2M, b.ch3.APU_RESETw, b.ch3.DAVO, b.ch3.DORU);
   /*p18.GUDA*/ c.ch3.GUDA = nor(b.ch3.GETO, b.apu.APU_RESET1, b.ch3.GARA);
   /*p18.FEXU*/ c.ch3.FEXU = tock_pos(!a.ch3.FYRU_07, !b.ch3.FYRU_07, b.ch3.GUDA, b.ch3.FEXU, !b.ch3.FEXU);
   /*p18.GEPY*/ c.ch3.GEPY = nor(b.p01.CLK_256a, !b.ch3.NR34_STOP);
@@ -221,10 +238,10 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p17.BETA*/ c.ch3.BETA = or(b.ch3.WAVE_RAM_WR, b.ch3.WAVE_RAM_RDn, b.ch3.BORY);
   /*p17.AZOR*/ c.ch3.AZOR = not(b.ch3.BETA);
   /*p17.BUKU*/ c.ch3.BUKU = not(b.ch3.AZOR);
-  /*p17.BUSA*/ c.ch3.BUSA = tock_pos(a.p01.CLK_xBxDxFxH1, b.p01.CLK_xBxDxFxH1, b.ch3.BAMA, b.ch3.BUSA, b.ch3.GASE);
-  /*p17.BANO*/ c.ch3.BANO = tock_pos(a.ch3.COZY,          b.ch3.COZY,          b.ch3.BAMA, b.ch3.BANO, b.ch3.BUSA);
-  /*p17.AZUS*/ c.ch3.AZUS = tock_pos(a.p01.CLK_xBxDxFxH1, b.p01.CLK_xBxDxFxH1, b.ch3.BAMA, b.ch3.AZUS, b.ch3.BANO);
-  /*p17.AZET*/ c.ch3.AZET = tock_pos(a.ch3.ARUC,          b.ch3.ARUC,          b.ch3.BAMA, b.ch3.AZET, b.ch3.AZUS);
+  /*p17.BUSA*/ c.ch3.BUSA = tock_pos(a.p01.CLK_xBxDxFxH1, b.p01.CLK_xBxDxFxH1, b.ch3.APU_RESETu, b.ch3.BUSA, b.ch3.GASE);
+  /*p17.BANO*/ c.ch3.BANO = tock_pos(a.ch3.COZY,          b.ch3.COZY,          b.ch3.APU_RESETu, b.ch3.BANO, b.ch3.BUSA);
+  /*p17.AZUS*/ c.ch3.AZUS = tock_pos(a.p01.CLK_xBxDxFxH1, b.p01.CLK_xBxDxFxH1, b.ch3.APU_RESETu, b.ch3.AZUS, b.ch3.BANO);
+  /*p17.AZET*/ c.ch3.AZET = tock_pos(a.ch3.ARUC,          b.ch3.ARUC,          b.ch3.APU_RESETu, b.ch3.AZET, b.ch3.AZUS);
   /*p17.BUTU*/ c.ch3.BUTU = not(b.ch3.AZUS);
   /*p17.BOXO*/ c.ch3.BOXO = nor(b.ch3.AZUS, b.ch3.AZET);
   /*p17.BORU*/ c.ch3.BORU = not(b.ch3.BOXO);
@@ -257,14 +274,14 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p17.DESA*/ if (b.ch3.WAVE_RAM_RDn) c.D1 = b.ch3.WAVE_D6n;
   /*p17.BEZU*/ if (b.ch3.WAVE_RAM_RDn) c.D0 = b.ch3.WAVE_D7n;
 
-  /*p17.CYFO*/ c.ch3.SAMPLE_0 = tock_pos(a.ch3.BEKA, b.ch3.BEKA, b.ch3.ACOR, b.ch3.SAMPLE_0, b.WAVE_D0);
-  /*p17.CESY*/ c.ch3.SAMPLE_1 = tock_pos(a.ch3.BUFE, b.ch3.BUFE, b.ch3.ACOR, b.ch3.SAMPLE_1, b.WAVE_D1);
-  /*p17.BUDY*/ c.ch3.SAMPLE_2 = tock_pos(a.ch3.BAJA, b.ch3.BAJA, b.ch3.ACOR, b.ch3.SAMPLE_2, b.WAVE_D2);
-  /*p17.BEGU*/ c.ch3.SAMPLE_3 = tock_pos(a.ch3.COJU, b.ch3.COJU, b.ch3.ACOR, b.ch3.SAMPLE_3, b.WAVE_D3);
-  /*p17.CUVO*/ c.ch3.SAMPLE_4 = tock_pos(a.ch3.BEKA, b.ch3.BEKA, b.ch3.ACOR, b.ch3.SAMPLE_4, b.WAVE_D4);
-  /*p17.CEVO*/ c.ch3.SAMPLE_5 = tock_pos(a.ch3.BUFE, b.ch3.BUFE, b.ch3.ACOR, b.ch3.SAMPLE_5, b.WAVE_D5);
-  /*p17.BORA*/ c.ch3.SAMPLE_6 = tock_pos(a.ch3.BAJA, b.ch3.BAJA, b.ch3.ACOR, b.ch3.SAMPLE_6, b.WAVE_D6);
-  /*p17.BEPA*/ c.ch3.SAMPLE_7 = tock_pos(a.ch3.COJU, b.ch3.COJU, b.ch3.ACOR, b.ch3.SAMPLE_7, b.WAVE_D7);
+  /*p17.CYFO*/ c.ch3.SAMPLE_0 = tock_pos(a.ch3.BEKA, b.ch3.BEKA, b.ch3.APU_RESETv, b.ch3.SAMPLE_0, b.WAVE_D0);
+  /*p17.CESY*/ c.ch3.SAMPLE_1 = tock_pos(a.ch3.BUFE, b.ch3.BUFE, b.ch3.APU_RESETv, b.ch3.SAMPLE_1, b.WAVE_D1);
+  /*p17.BUDY*/ c.ch3.SAMPLE_2 = tock_pos(a.ch3.BAJA, b.ch3.BAJA, b.ch3.APU_RESETv, b.ch3.SAMPLE_2, b.WAVE_D2);
+  /*p17.BEGU*/ c.ch3.SAMPLE_3 = tock_pos(a.ch3.COJU, b.ch3.COJU, b.ch3.APU_RESETv, b.ch3.SAMPLE_3, b.WAVE_D3);
+  /*p17.CUVO*/ c.ch3.SAMPLE_4 = tock_pos(a.ch3.BEKA, b.ch3.BEKA, b.ch3.APU_RESETv, b.ch3.SAMPLE_4, b.WAVE_D4);
+  /*p17.CEVO*/ c.ch3.SAMPLE_5 = tock_pos(a.ch3.BUFE, b.ch3.BUFE, b.ch3.APU_RESETv, b.ch3.SAMPLE_5, b.WAVE_D5);
+  /*p17.BORA*/ c.ch3.SAMPLE_6 = tock_pos(a.ch3.BAJA, b.ch3.BAJA, b.ch3.APU_RESETv, b.ch3.SAMPLE_6, b.WAVE_D6);
+  /*p17.BEPA*/ c.ch3.SAMPLE_7 = tock_pos(a.ch3.COJU, b.ch3.COJU, b.ch3.APU_RESETv, b.ch3.SAMPLE_7, b.WAVE_D7);
 
   /*p17.DATE*/ c.ch3.WAVE_PLAY_D0 = mux2n(!b.ch3.SAMPLE_0, !b.ch3.SAMPLE_4, b.ch3.WAVE_IDX0);
   /*p17.DAZY*/ c.ch3.WAVE_PLAY_D1 = mux2n(!b.ch3.SAMPLE_1, !b.ch3.SAMPLE_5, b.ch3.WAVE_IDX0);

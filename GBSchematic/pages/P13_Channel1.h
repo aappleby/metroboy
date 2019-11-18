@@ -1,10 +1,272 @@
 #pragma once
 
-struct Gameboy;
+struct Channel1 {
 
-struct P13_Channel1 {
+  // resets
+  /*p11.CEPO*/ bool CEPO;
+  /*p11.HATO*/ bool HATO;
+  /*p11.CAMY*/ bool CAMY;
 
-  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
+  //----------
+  // FF10
+
+  /*p11.CENU*/ bool CENU;
+  /*p11.BUZE*/ bool BUZE;
+  /*p11.ATYN*/ bool ATYN;
+  /*p11.ASOP*/ bool ASOP;
+
+  /*p11.BANY*/ bool NR10_SWEEP_SHIFT_0;
+  /*p11.ARAX*/ bool NR10_SWEEP_SHIFT_1;
+  /*p11.ANAZ*/ bool NR10_SWEEP_SHIFT_2;
+  /*p11.AVAF*/ bool NR10_SWEEP_DIR;
+  /*p11.ADEK*/ bool NR10_SWEEP_TIME_0;
+  /*p11.BANA*/ bool NR10_SWEEP_TIME_1;
+  /*p11.BOTU*/ bool NR10_SWEEP_TIME_2;
+
+  //----------
+  // FF11
+
+  /*p11.COVU*/ bool FF11_WR;
+  /*p11.DAFO*/ bool FF11_WRn;
+  /*p11.BUWA*/ bool CPU_RDa;
+  /*p11.BEXU*/ bool FF11_RD;
+
+  /*p11.CENA*/ bool CH1_DUTY_0;
+  /*p11.DYCA*/ bool CH1_DUTY_1;
+
+  //----------
+  // FF12
+
+  /*p11.KAGY*/ bool KAGY;
+  /*p11.HAFU*/ bool HAFU;
+  /*p11.KYGY*/ bool KYGY;
+  /*p11.GAXU*/ bool GAXU;
+  /*p11.HAXE*/ bool HAXE;
+  /*p11.HAMY*/ bool HAMY;
+  /*p11.GAGO*/ bool GAGO;
+  /*p11.HOCU*/ bool HOCU;
+
+  /*p11.JUSA*/ bool CH1_SWEEP_0;
+  /*p11.JUZY*/ bool CH1_SWEEP_1;
+  /*p11.JOMA*/ bool CH1_SWEEP_2;
+  /*p11.JAFY*/ bool CH1_ENV_DIR;
+  /*p11.JATY*/ bool CH1_VOL_0;
+  /*p11.JAXO*/ bool CH1_VOL_1;
+  /*p11.JENA*/ bool CH1_VOL_2;
+  /*p11.JOPU*/ bool CH1_VOL_3;
+
+  //----------
+  // FF13 NR13 - ch1 freq
+
+  /*p11.CEGE*/ bool CPU_RDb;
+  /*p11.DAXA*/ bool CPU_RDnb;
+  /*p11.CACA*/ bool ADDR_FF13n;
+  /*p11.DYPU*/ bool FF13_RDn;
+  /*p11.EVAJ*/ bool FF13_RDa;
+
+  /*p11.FULO*/ bool CH1_FREQ_CLKn;
+  /*p11.GEKU*/ bool CH1_FREQ_CLKa;
+  /*p11.KYPE*/ bool CH1_FREQ_CLKb;
+  /*p11.DERU*/ bool CH1_FREQ_CLKc;
+
+  /*p11.EPYK*/ bool CH1_FREQ_RSTn;
+  /*p11.FUME*/ bool CH1_FREQ_RSTa;
+  /*p11.DEGA*/ bool CH1_FREQ_RSTb;
+  /*p11.DAKO*/ bool CH1_FREQ_RSTc;
+
+  /*p11.GAXE*/ bool CH1_FREQ_00;
+  /*p11.HYFE*/ bool CH1_FREQ_01;
+  /*p11.JYTY*/ bool CH1_FREQ_02;
+  /*p11.KYNA*/ bool CH1_FREQ_03;
+  /*p11.JEMA*/ bool CH1_FREQ_04;
+  /*p11.HYKE*/ bool CH1_FREQ_05;
+  /*p11.FEVA*/ bool CH1_FREQ_06;
+  /*p11.EKOV*/ bool CH1_FREQ_07;
+  /*p11.EMUS*/ bool CH1_FREQ_08;
+  /*p11.EVAK*/ bool CH1_FREQ_09;
+  /*p11.COPU*/ bool CH1_FREQ_10;
+
+  //----------
+  // FF14
+
+  /*p11.BAGE*/ bool FF14_WRn;
+  /*p11.BOKO*/ bool NR14_STOP;
+  /*p11.CURE*/ bool ADDR_FF14n;
+  /*p11.DUPY*/ bool FF14_RDa;
+  /*p11.BUDA*/ bool CPU_RDna;
+  /*p11.BALE*/ bool FF14_RDb;
+
+  /*p12.DEPU*/ bool FREQ_WRa;
+  /*p12.DEBY*/ bool FREQ_WRb;
+  /*p12.DYLA*/ bool FREQ_WRc;
+
+  /*p12.AXAN*/ bool FREQ_SUM_OUT_10;
+  /*p12.EVAB*/ bool FREQ_SUM_OUT_09;
+  /*p12.DYGY*/ bool FREQ_SUM_OUT_08;
+  /*p12.HOPO*/ bool FREQ_SUM_OUT_07;
+  /*p12.HYXU*/ bool FREQ_SUM_OUT_06;
+  /*p12.HOLU*/ bool FREQ_SUM_OUT_05;
+  /*p12.FELY*/ bool FREQ_SUM_OUT_04;
+  /*p12.EDUL*/ bool FREQ_SUM_OUT_03;
+  /*p12.HAVO*/ bool FREQ_SUM_OUT_02;
+  /*p12.JYKA*/ bool FREQ_SUM_OUT_01;
+  /*p12.HYKA*/ bool FREQ_SUM_OUT_00;
+
+  /*p12.BOJO*/ bool FREQ_SUM_OUT_10n;
+  /*p12.APAT*/ bool FREQ_SUM_OUT_09n;
+  /*p12.BYRU*/ bool FREQ_SUM_OUT_08n;
+  /*p12.CYKY*/ bool FREQ_SUM_OUT_07n;
+  /*p12.DEBO*/ bool FREQ_SUM_OUT_06n;
+  /*p12.FOHY*/ bool FREQ_SUM_OUT_05n;
+  /*p12.KOVO*/ bool FREQ_SUM_OUT_04n;
+  /*p12.KEKE*/ bool FREQ_SUM_OUT_03n;
+  /*p12.HUNY*/ bool FREQ_SUM_OUT_02n;
+  /*p12.HOXE*/ bool FREQ_SUM_OUT_01n;
+  /*p12.JUTA*/ bool FREQ_SUM_OUT_00n;
+
+  /*p12.BYFU*/ bool FREQ_D10n;
+  /*p12.BOFU*/ bool FREQ_D09n;
+  /*p12.BYSU*/ bool FREQ_D08n;
+  /*p12.DULO*/ bool FREQ_D07n;
+  /*p12.DYLU*/ bool FREQ_D06n;
+  /*p12.JULO*/ bool FREQ_D05n;
+  /*p12.KOPU*/ bool FREQ_D04n;
+  /*p12.ETUV*/ bool FREQ_D03n;
+  /*p12.FULE*/ bool FREQ_D02n;
+  /*p12.GULU*/ bool FREQ_D01n;
+  /*p12.DEKE*/ bool FREQ_D00n;
+
+  /*p12.AFEG*/ bool FREQ_SUM_SET_10;
+  /*p12.BUDO*/ bool FREQ_SUM_SET_09;
+  /*p12.BUGU*/ bool FREQ_SUM_SET_08;
+  /*p12.ETOL*/ bool FREQ_SUM_SET_07;
+  /*p12.ELER*/ bool FREQ_SUM_SET_06;
+  /*p12.KYPA*/ bool FREQ_SUM_SET_05;
+  /*p12.KOVU*/ bool FREQ_SUM_SET_04;
+  /*p12.GOPE*/ bool FREQ_SUM_SET_03;
+  /*p12.GOLO*/ bool FREQ_SUM_SET_02;
+  /*p12.GETA*/ bool FREQ_SUM_SET_01;
+  /*p12.GYLU*/ bool FREQ_SUM_SET_00;
+
+  /*p12.APAJ*/ bool FREQ_SUM_RST_10;
+  /*p12.BOVU*/ bool FREQ_SUM_RST_09;
+  /*p12.BOXU*/ bool FREQ_SUM_RST_08;
+  /*p12.ESEL*/ bool FREQ_SUM_RST_07;
+  /*p12.ELUF*/ bool FREQ_SUM_RST_06;
+  /*p12.KAJU*/ bool FREQ_SUM_RST_05;
+  /*p12.KAPO*/ bool FREQ_SUM_RST_04;
+  /*p12.GAMO*/ bool FREQ_SUM_RST_03;
+  /*p12.GYFU*/ bool FREQ_SUM_RST_02;
+  /*p12.GATO*/ bool FREQ_SUM_RST_01;
+  /*p12.EFOR*/ bool FREQ_SUM_RST_00;
+
+  /*p12.DOLY*/ bool FREQ_SUM_L_10;
+  /*p12.DOFY*/ bool FREQ_SUM_L_09;
+  /*p12.DEXE*/ bool FREQ_SUM_L_08;
+  /*p12.DELE*/ bool FREQ_SUM_L_07;
+  /*p12.EXAP*/ bool FREQ_SUM_L_06;
+  /*p12.FAXO*/ bool FREQ_SUM_L_05;
+  /*p12.GYME*/ bool FREQ_SUM_L_04;
+  /*p12.JYME*/ bool FREQ_SUM_L_03;
+  /*p12.KARE*/ bool FREQ_SUM_L_02;
+  /*p12.JODE*/ bool FREQ_SUM_L_01;
+  /*p12.GALO*/ bool FREQ_SUM_L_00;
+
+  /*p12.DEVA*/ bool FREQ_SUM_R_10;
+  /*p12.ETER*/ bool FREQ_SUM_R_09;
+  /*p12.DEFA*/ bool FREQ_SUM_R_08;
+  /*p12.EDOK*/ bool FREQ_SUM_R_07;
+  /*p12.EPYR*/ bool FREQ_SUM_R_06;
+  /*p12.GELE*/ bool FREQ_SUM_R_05;
+  /*p12.JETE*/ bool FREQ_SUM_R_04;
+  /*p12.JAPE*/ bool FREQ_SUM_R_03;
+  /*p12.HELE*/ bool FREQ_SUM_R_02;
+  /*p12.HOPA*/ bool FREQ_SUM_R_01;
+  /*p12.HORA*/ bool FREQ_SUM_R_00;
+
+  /*p12.ATYS*/ bool CH1_SWEEP_STOPn;
+
+  /*p12.BEKU*/ bool FREQ_SHIFT_10;
+  /*p12.AGEZ*/ bool FREQ_SHIFT_09;
+  /*p12.ELUX*/ bool FREQ_SHIFT_08;
+  /*p12.EXAC*/ bool FREQ_SHIFT_07;
+  /*p12.FEDO*/ bool FREQ_SHIFT_06;
+  /*p12.FUDE*/ bool FREQ_SHIFT_05;
+  /*p12.JOTA*/ bool FREQ_SHIFT_04;
+  /*p12.JOLU*/ bool FREQ_SHIFT_03;
+  /*p12.GOGA*/ bool FREQ_SHIFT_02;
+  /*p12.JEFA*/ bool FREQ_SHIFT_01;
+  /*p12.FABU*/ bool FREQ_SHIFT_00;
+
+  /*p12.CULU*/ bool FREQ_SHIFT_FLIP_10;
+  /*p12.DOZY*/ bool FREQ_SHIFT_FLIP_09;
+  /*p12.CALE*/ bool FREQ_SHIFT_FLIP_08;
+  /*p12.DYME*/ bool FREQ_SHIFT_FLIP_07;
+  /*p12.FURE*/ bool FREQ_SHIFT_FLIP_06;
+  /*p12.GOLY*/ bool FREQ_SHIFT_FLIP_05;
+  /*p12.KEFE*/ bool FREQ_SHIFT_FLIP_04;
+  /*p12.HEFY*/ bool FREQ_SHIFT_FLIP_03;
+  /*p12.GOPO*/ bool FREQ_SHIFT_FLIP_02;
+  /*p12.GELA*/ bool FREQ_SHIFT_FLIP_01;
+  /*p12.GYLO*/ bool FREQ_SHIFT_FLIP_00;
+
+  /*p12.BEJU*/ bool FREQ_SHIFT_SET_10;
+  /*p12.BESO*/ bool FREQ_SHIFT_SET_09;
+  /*p12.BEGE*/ bool FREQ_SHIFT_SET_08;
+  /*p12.DACE*/ bool FREQ_SHIFT_SET_07;
+  /*p12.EKEM*/ bool FREQ_SHIFT_SET_06;
+  /*p12.GOVO*/ bool FREQ_SHIFT_SET_05;
+  /*p12.KOLA*/ bool FREQ_SHIFT_SET_04;
+  /*p12.KYRY*/ bool FREQ_SHIFT_SET_03;
+  /*p12.HAWY*/ bool FREQ_SHIFT_SET_02;
+  /*p12.HOLA*/ bool FREQ_SHIFT_SET_01;
+  /*p12.HOZU*/ bool FREQ_SHIFT_SET_00;
+
+  /*p12.AVUF*/ bool FREQ_SHIFT_RST_10;
+  /*p12.AFUX*/ bool FREQ_SHIFT_RST_09;
+  /*p12.AGOR*/ bool FREQ_SHIFT_RST_08;
+  /*p12.BEWO*/ bool FREQ_SHIFT_RST_07;
+  /*p12.ENOK*/ bool FREQ_SHIFT_RST_06;
+  /*p12.EZUK*/ bool FREQ_SHIFT_RST_05;
+  /*p12.KYBO*/ bool FREQ_SHIFT_RST_04;
+  /*p12.KETO*/ bool FREQ_SHIFT_RST_03;
+  /*p12.HYVU*/ bool FREQ_SHIFT_RST_02;
+  /*p12.HOBU*/ bool FREQ_SHIFT_RST_01;
+  /*p12.JADO*/ bool FREQ_SHIFT_RST_00;
+
+  /*p12.ARYL*/ bool NR10_SWEEP_DIRn;
+  /*p12.BYLE*/ bool CH1_SWEEP_MAX;
+
+  /*p12.AJUX*/ bool AJUX;
+  /*p12.AMAC*/ bool AMAC;
+  /*p12.BASO*/ bool BASO;
+  /*p12.EMAR*/ bool EMAR;
+  /*p12.ETOK*/ bool ETOK;
+  /*p12.KYFU*/ bool KYFU;
+  /*p12.KAVO*/ bool KAVO;
+  /*p12.FEGA*/ bool FEGA;
+  /*p12.FOKE*/ bool FOKE;
+  /*p12.FOPU*/ bool FOPU;
+  /*p12.EJYF*/ bool EJYF;
+
+  /*p12.KEDO*/ bool KEDO;
+  /*p12.JUJU*/ bool JUJU;
+  /*p12.KAPE*/ bool KAPE;
+  /*p12.AFYR*/ bool AFYR;
+  /*p12.BUVO*/ bool BUVO;
+  /*p12.AFUG*/ bool AFUG;
+  /*p12.BAPU*/ bool BAPU;
+  /*p12.EREG*/ bool EREG;
+  /*p12.EVOF*/ bool EVOF;
+  /*p12.KEVY*/ bool KEVY;
+  /*p12.KAXY*/ bool KAXY;
+  /*p12.JEHY*/ bool JEHY;
+  /*p12.JOCY*/ bool JOCY;
+  /*p12.KOKO*/ bool KOKO;
+  /*p12.FAJA*/ bool FAJA;
+  /*p12.EJYB*/ bool EJYB;
+  /*p12.CYBE*/ bool CYBE;
+  /*p12.BECY*/ bool BECY;
 
   /*p13.DUNA*/ bool CH1_RAW_BIT;
   /*p13.CARA*/ bool CH1_ACTIVEn;
@@ -25,14 +287,14 @@ struct P13_Channel1 {
   /*p13.ACEG*/ bool CH1_OUT3;
   /*p13.HOCA*/ bool CH1_AMP_ENn;
 
-  union { bool GEXU; };
-  union { bool FEKU; };
-  union { bool BUSO; };
-  union { bool BOJE; };
-  union { bool ADAD; };
-  union { bool KYLY; };
-  union { bool KALA; };
-  union { bool EGOR; };
+  /*p13.GEXU*/ bool GEXU;
+  /*p13.FEKU*/ bool FEKU;
+  /*p13.BUSO*/ bool BUSO;
+  /*p13.BOJE*/ bool BOJE;
+  /*p13.ADAD*/ bool ADAD;
+  /*p13.KYLY*/ bool KYLY;
+  /*p13.KALA*/ bool KALA;
+  /*p13.EGOR*/ bool EGOR;
 
   /*p13.BACY*/ bool NR11_LEN0;
   /*p13.CAVY*/ bool NR11_LEN1;
@@ -44,7 +306,10 @@ struct P13_Channel1 {
     
   /*p13.CERO*/ bool CH1_LEN_DONE;
 
-  bool CAXY,CYPU,CUPO,BEXA;
+  /*p13.CAXY*/ bool CAXY;
+  /*p13.CYPU*/ bool CYPU;
+  /*p13.CUPO*/ bool CUPO;
+  /*p13.BEXA*/ bool BEXA;
 
   /*p13.CALA*/ bool CALA;
   /*p13.DOKA*/ bool DOKA;
@@ -63,7 +328,10 @@ struct P13_Channel1 {
   /*p13.CAXO*/ bool DUTY_3;
 
   // Sweep shift counter
-  bool COPA,CAJA,BYRA,BYTE;
+  /*p13.COPA*/ bool COPA;
+  /*p13.CAJA*/ bool CAJA;
+  /*p13.BYRA*/ bool BYRA;
+  /*p13.BYTE*/ bool BYTE;
 
   // EG timer
   /*p13.KOZY*/ bool KOZY;

@@ -3,6 +3,8 @@
 
 struct ApuControl {
 
+  /*p16.ANUJ*/ bool CPU_WR_WEIRD;
+
   /*p09.CETO*/ bool CPU_RDa;
   /*p09.KAZO*/ bool CPU_RDb;
   /*p09.CURU*/ bool CPU_RDc;
@@ -101,6 +103,7 @@ struct ApuControl {
   /*p10.TACE*/ bool AMP_ENn;
   /*p10.BAFU*/ bool CPU_WRn;
   /*p10.BOGY*/ bool APU_WR;
+
 
   /*p10.AMUS*/ bool ADDR_xxxxxxxx0xx00000;
   /*p10.ANAP*/ bool ADDR_111111110xx00000; // -> p07.APER

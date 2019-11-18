@@ -9,6 +9,18 @@
 
 void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
+  /*p15.AZEG*/ c.ch2.AZEG = not(b.p01.CLK_xBxDxFxH1);
+
+  /*p14.HUDE*/ c.ch2.APU_RESETn1 = not(b.apu.APU_RESET1);
+
+  /*p14.JYBU*/ c.ch2.JYBU = not(b.apu.APU_RESET1);
+  /*p14.KYPU*/ c.ch2.KYPU = not(b.apu.APU_RESET1);
+  /*p14.FAZO*/ c.ch2.FAZO = not(b.apu.APU_RESET1);
+  /*p15.KATY*/ c.ch2.KATY = not(b.apu.APU_RESET1);
+  /*p15.CYWU*/ c.ch2.CYWU = not(b.apu.APU_RESET1);
+  /*p15.CEXE*/ c.ch2.CEXE = not(b.apu.APU_RESET1);
+  /*p15.BUWE*/ c.ch2.BUWE = not(b.apu.APU_RESET1);
+
   //----------
   // FF16 NR21
 
@@ -112,7 +124,7 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   if (b.ch2.HUMA) c.D6 = b.ch2.GOJY;
 
   c.ch2.GADO = not(b.apu.CPU_RDn);
-  c.ch2.EVYF = nor(b.ch3.CPU_WR_WEIRD, b.apu.ADDR_FF19);
+  c.ch2.EVYF = nor(b.apu.CPU_WR_WEIRD, b.apu.ADDR_FF19);
   c.ch2.HUMA = nor(b.apu.ADDR_FF19, b.ch2.GADO);
   
 

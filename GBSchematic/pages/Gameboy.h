@@ -12,9 +12,6 @@
 #include "P06_SerialLink.h"
 #include "P07_SysDecode.h"
 #include "P08_ExtCpuBuses.h"
-#include "P11_Ch1Regs.h"
-#include "P12_Ch1Sweep.h"
-#include "P13_Channel1.h"
 #include "P21_VideoControl.h"
 #include "P22_PpuDecode.h"
 #include "P23_VideoRegs.h"
@@ -34,6 +31,7 @@
 
 #include "ApuControl.h"
 
+#include "P13_Channel1.h"
 #include "Channel2.h"
 #include "Channel3.h"
 #include "Channel4.h"
@@ -350,11 +348,9 @@ struct Gameboy {
   P06_SerialLink           p06;
   P07_SysDecode            p07;
   P08_ExtCpuBuses          p08;
-  P11_Ch1Regs              p11;
-  P12_Ch1Sweep             p12;
-  P13_Channel1             p13;
 
   ApuControl apu;
+  Channel1   ch1;
   Channel2   ch2;
   Channel3   ch3;
   Channel4   ch4;

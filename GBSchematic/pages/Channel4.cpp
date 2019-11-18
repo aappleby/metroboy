@@ -146,7 +146,7 @@ void Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p10.CUGE*/ pc.FF23a    = nor(b.apu.ADDR_FF2Xn, b.apu.ADDR_0011bn);
   /*p19.BARE*/ pc.FF23_RDa = nand(pb.FF23a, pb.CPU_RDb); // polarity?
-  /*p19.DULU*/ pc.FF23_WRn = nand(b.ch3.CPU_WR_WEIRD, pb.FF23a);
+  /*p19.DULU*/ pc.FF23_WRn = nand(b.apu.CPU_WR_WEIRD, pb.FF23a);
   /*p19.FOXE*/ pc.FF23_WRo = nand(b.apu.APU_WR, pb.FF23a);
 
   /*p19.CUNY*/ pc.NR44_STOP  = tock_pos(pa.FF23_WRn, pb.FF23_WRn, pb.RSTs, pb.NR44_STOP,  b.D6);

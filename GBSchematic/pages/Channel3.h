@@ -2,6 +2,18 @@
 
 struct Channel3 {
 
+  // resets
+  /*p16.GOVE*/ bool APU_RESETn;
+  /*p16.GAZE*/ bool APU_RESETo;
+  /*p16.GOMA*/ bool APU_RESETp;
+  /*p16.KUHA*/ bool APU_RESETq;
+  /*p16.HEKY*/ bool APU_RESETr;
+  /*p16.KOPY*/ bool APU_RESETs;
+  /*p16.GURO*/ bool APU_RESETt;
+  /*p17.BAMA*/ bool APU_RESETu;
+  /*p17.ACOR*/ bool APU_RESETv;
+  /*p18.CALU*/ bool APU_RESETw;
+
   //----------
   // FF1A NR30
 
@@ -19,10 +31,10 @@ struct Channel3 {
   //----------
   // FF1D NR33
 
-  /*p16.KOTA*/ bool KOTA;
-  /*p16.JAFA*/ bool JAFA;
-  /*p16.KYHO*/ bool KYHO;
-  /*p16.KULY*/ bool KULY;
+  /*p16.KOTA*/ bool FF1D_WRn;
+  /*p16.KYHO*/ bool FF1D_WRa;
+  /*p16.JAFA*/ bool FF1D_WRo;
+  /*p16.KULY*/ bool FF1D_WRb;
 
   /*p16.KOGA*/ bool NR33_FREQ0;
   /*p16.JOVY*/ bool NR33_FREQ1;
@@ -58,25 +70,20 @@ struct Channel3 {
   /*p16.FAJU*/ bool FAJU;
   /*p16.GUGU*/ bool GUGU;
 
-  /*p16.GOVE*/ bool GOVE;
   /*p16.FABO*/ bool CLK_xxCDxxGH;
-  /*p16.ANUJ*/ bool CPU_WR_WEIRD;
   /*p16.GAVU*/ bool CH3_RESTART;
   /*p16.EPYX*/ bool FF1E_WRn;
 
   /*p16.GARA*/ bool GARA;
   /*p16.GYTA*/ bool GYTA;
   /*p16.GYRA*/ bool GYRA;
-  /*p16.GAZE*/ bool GAZE;
   /*p16.FURY*/ bool FURY;
-  /*p16.GOMA*/ bool GOMA;
   /*p16.FOBA*/ bool FOBA;
   /*p16.GULO*/ bool GULO;
   /*p16.GOFY*/ bool GOFY;
   /*p16.FAKO*/ bool FAKO;
 
 
-  /*p16.KUHA*/ bool KUHA;
 
   /*p16.DERY*/ bool DERY;
   /*p16.GETO*/ bool GETO;
@@ -84,19 +91,16 @@ struct Channel3 {
   /*p16.GAJY*/ bool GAJY;
 
   /*p16.FOVO*/ bool FOVO;
-  /*p16.HEKY*/ bool HEKY;
   /*p16.GORY*/ bool GORY;
   /*p16.GAWA*/ bool GAWA;
   /*p16.HACA*/ bool HACA;
   /*p16.HUDA*/ bool HUDA;
   /*p16.JUZO*/ bool JUZO;
-  /*p16.KOPY*/ bool KOPY;
   /*p16.GUNU*/ bool GUNU;
   /*p16.FUVA*/ bool FUVA;
 
   /*p16.JOTU*/ bool JOTU;
   /*p16.HENU*/ bool HENU;
-  /*p16.GURO*/ bool GURO;
   /*p16.GUZU*/ bool GUZU;
   /*p16.HAGA*/ bool HAGA;
   /*p16.HUCO*/ bool HUCO;
@@ -116,7 +120,6 @@ struct Channel3 {
 
   /*p17.BOKE*/ bool BOKE;
   /*p17.BENA*/ bool BENA;
-  /*p17.BAMA*/ bool BAMA;
   /*p17.ARUC*/ bool ARUC;
   /*p17.COZY*/ bool COZY;
   /*p17.ABUR*/ bool ABUR;
@@ -154,7 +157,6 @@ struct Channel3 {
   /*p17.DESA*/ bool WAVE_D6;
   /*p17.BEZU*/ bool WAVE_D7;
 
-  /*p17.ACOR*/ bool ACOR;
 
   /*p17.CYFO*/ bool SAMPLE_0;
   /*p17.CESY*/ bool SAMPLE_1;
@@ -223,7 +225,6 @@ struct Channel3 {
   /*p18.FYGO*/ bool FYGO;
   /*p18.FOZU*/ bool FOZU;
   /*p18.EZAS*/ bool EZAS;
-  /*p18.CALU*/ bool CALU;
   /*p18.DORU*/ bool DORU;
   /*p18.DAVO*/ bool DAVO;
 

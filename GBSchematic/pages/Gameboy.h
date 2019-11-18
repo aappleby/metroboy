@@ -31,7 +31,7 @@
 
 #include "ApuControl.h"
 
-#include "P13_Channel1.h"
+#include "Channel1.h"
 #include "Channel2.h"
 #include "Channel3.h"
 #include "Channel4.h"

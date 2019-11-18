@@ -16,14 +16,14 @@ void P32_BgPixelShifter::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p32.LOZE = not(b.p27.NYXU);
   c.p32.LUXA = not(b.p27.NYXU);
 
-  c.p32.RAWU = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.VYPO, b.p32.RAWU, b.MD0);
-  c.p32.POZO = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.VYPO, b.p32.POZO, b.MD1);
-  c.p32.PYZO = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.VYPO, b.p32.PYZO, b.MD2);
-  c.p32.POXA = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.VYPO, b.p32.POXA, b.MD3);
-  c.p32.PULO = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.VYPO, b.p32.PULO, b.MD4);
-  c.p32.POJU = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.VYPO, b.p32.POJU, b.MD5);
-  c.p32.POWY = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.VYPO, b.p32.POWY, b.MD6);
-  c.p32.PYJU = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.VYPO, b.p32.PYJU, b.MD7);
+  c.p32.RAWU = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.RAWU, b.MD0);
+  c.p32.POZO = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.POZO, b.MD1);
+  c.p32.PYZO = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.PYZO, b.MD2);
+  c.p32.POXA = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.POXA, b.MD3);
+  c.p32.PULO = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.PULO, b.MD4);
+  c.p32.POJU = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.POJU, b.MD5);
+  c.p32.POWY = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.POWY, b.MD6);
+  c.p32.PYJU = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.PYJU, b.MD7);
 
   c.p32.LEGU = latch_pos(b.p32.LOMA, b.p32.LEGU, b.MD0);
   c.p32.NUDU = latch_pos(b.p32.LOMA, b.p32.NUDU, b.MD1);

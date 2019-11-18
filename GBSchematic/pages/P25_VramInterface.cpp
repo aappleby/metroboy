@@ -7,7 +7,7 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // top left stack of inverters
@@ -172,49 +172,27 @@ void P25_VramInterface::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p25.TUSO = nor(b.sys.MODE_DBG2, b.sys.CPUCLK_xxxxxFGH2);
   c.p25.SOLE = not(b.p25.TUSO);
-  c.p25.RUNY = not(b.chip.P10_B);
+  c.p25.P10_Bn = not(b.chip.P10_B);
 
-  c.p25.TOVU_00 = not(b.p25.SOLE);
-  c.p25.SOSA_01 = not(b.p25.SOLE);
-  c.p25.SEDU_02 = not(b.p25.SOLE);
-  c.p25.TAXO_03 = not(b.p25.SOLE);
-  c.p25.TAHY_04 = not(b.p25.SOLE);
-  c.p25.TESU_05 = not(b.p25.SOLE);
-  c.p25.TAZU_06 = not(b.p25.SOLE);
-  c.p25.TEWA_07 = not(b.p25.SOLE);
-
-  if (b.p25.RUNY) {
-    c.D0 = b.p25.TOVU_00;
-    c.D1 = b.p25.SOSA_01;
-    c.D2 = b.p25.SEDU_02;
-    c.D3 = b.p25.TAXO_03;
-    c.D4 = b.p25.TAHY_04;
-    c.D5 = b.p25.TESU_05;
-    c.D6 = b.p25.TAZU_06;
-    c.D7 = b.p25.TEWA_07;
-  }
+  /*p25.TOVU*/ if (b.p25.P10_Bn) c.D0 = b.p25.SOLE;
+  /*p25.SOSA*/ if (b.p25.P10_Bn) c.D1 = b.p25.SOLE;
+  /*p25.SEDU*/ if (b.p25.P10_Bn) c.D2 = b.p25.SOLE;
+  /*p25.TAXO*/ if (b.p25.P10_Bn) c.D3 = b.p25.SOLE;
+  /*p25.TAHY*/ if (b.p25.P10_Bn) c.D4 = b.p25.SOLE;
+  /*p25.TESU*/ if (b.p25.P10_Bn) c.D5 = b.p25.SOLE;
+  /*p25.TAZU*/ if (b.p25.P10_Bn) c.D6 = b.p25.SOLE;
+  /*p25.TEWA*/ if (b.p25.P10_Bn) c.D7 = b.p25.SOLE;
 
   //----------
 
-  c.p25.TEME = not(b.D0);
-  c.p25.TEWU = not(b.D1);
-  c.p25.TYGO = not(b.D2);
-  c.p25.SOTE = not(b.D3);
-  c.p25.SEKE = not(b.D4);
-  c.p25.RUJO = not(b.D5);
-  c.p25.TOFA = not(b.D6);
-  c.p25.SUZA = not(b.D7);
-
-  if (b.p25.RAHU) {
-    c.MD0 = b.p25.TEME;
-    c.MD1 = b.p25.TEWU;
-    c.MD2 = b.p25.TYGO;
-    c.MD3 = b.p25.SOTE;
-    c.MD4 = b.p25.SEKE;
-    c.MD5 = b.p25.RUJO;
-    c.MD6 = b.p25.TOFA;
-    c.MD7 = b.p25.SUZA;
-  }
+  /*p25.TEME*/ if (b.p25.RAHU) c.MD0 = b.D0;
+  /*p25.TEWU*/ if (b.p25.RAHU) c.MD1 = b.D1;
+  /*p25.TYGO*/ if (b.p25.RAHU) c.MD2 = b.D2;
+  /*p25.SOTE*/ if (b.p25.RAHU) c.MD3 = b.D3;
+  /*p25.SEKE*/ if (b.p25.RAHU) c.MD4 = b.D4;
+  /*p25.RUJO*/ if (b.p25.RAHU) c.MD5 = b.D5;
+  /*p25.TOFA*/ if (b.p25.RAHU) c.MD6 = b.D6;
+  /*p25.SUZA*/ if (b.p25.RAHU) c.MD7 = b.D7;
 
   c.p25.SYNU = or(b.p25.RAHU, b.MD0);
   c.p25.SYMA = or(b.p25.RAHU, b.MD1);

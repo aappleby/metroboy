@@ -16,7 +16,7 @@ struct P27_WindowMapLookup {
   /*p27.NETA*/ bool NETA;
   /*p27.POTU*/ bool POTU;
   /*p27.PORE*/ bool PORE;
-  /*p27.VYPO*/ bool VYPO;
+  /*p27.VYPO*/ bool P10_Bn;
 
   /*p27.MOFU*/ bool MOFU;
   /*p27.NYDY*/ bool NYDY;
@@ -24,33 +24,37 @@ struct P27_WindowMapLookup {
 
   /*p27.SECA*/ bool SECA;
 
-  /*p27.NAZE*/ bool NAZE;
-  /*p27.PEBO*/ bool PEBO;
-  /*p27.POMO*/ bool POMO;
-  /*p27.NEVU*/ bool NEVU;
-  /*p27.NOJO*/ bool NOJO;
-  /*p27.PAGA*/ bool PAGA;
-  /*p27.PEZO*/ bool PEZO;
-  /*p27.NUPA*/ bool NUPA;
-  /*p27.PALO*/ bool PALO;
-  /*p27.NELE*/ bool NELE;
-  /*p27.PAFU*/ bool PAFU;
-  /*p27.ROGE*/ bool ROGE;
-  /*p27.SARY*/ bool SARY;
-  /*p27.REPU*/ bool REPU;
-  /*p27.REJO*/ bool REJO;
-  /*p27.NEZO*/ bool NEZO;
-  /*p27.NORY*/ bool NORY;
-  /*p27.NONO*/ bool NONO;
-  /*p27.PASE*/ bool PASE;
-  /*p27.MYLO*/ bool MYLO;
-  /*p27.PUWU*/ bool PUWU;
-  /*p27.PUHO*/ bool PUHO;
-  /*p27.NYTU*/ bool NYTU;
-  /*p27.PUKY*/ bool PUKY;
-  /*p27.NUFA*/ bool NUFA;
-  /*p27.NOGY*/ bool NOGY;
-  /*p27.NUKO*/ bool NUKO;
+  /*p27.NAZE*/ bool WY_MATCH0n;
+  /*p27.PEBO*/ bool WY_MATCH1n;
+  /*p27.POMO*/ bool WY_MATCH2n;
+  /*p27.NEVU*/ bool WY_MATCH3n;
+  /*p27.NOJO*/ bool WY_MATCH4n;
+  /*p27.PAGA*/ bool WY_MATCH5n;
+  /*p27.PEZO*/ bool WY_MATCH6n;
+  /*p27.NUPA*/ bool WY_MATCH7n;
+
+  /*p27.PALO*/ bool WY_MATCH_HI;
+  /*p27.NELE*/ bool WY_MATCH_HIn;
+  /*p27.PAFU*/ bool WY_MATCHn;
+  /*p27.ROGE*/ bool WY_MATCH;
+  /*p27.SARY*/ bool WY_MATCH_SYNC;
+  /*p27.REPU*/ bool IN_FRAME_Y;
+  /*p27.REJO*/ bool WIN_CHECK_X;
+
+  /*p27.MYLO*/ bool WX_MATCH0n;
+  /*p27.PUWU*/ bool WX_MATCH1n;
+  /*p27.PUHO*/ bool WX_MATCH2n;
+  /*p27.NYTU*/ bool WX_MATCH3n;
+  /*p27.NEZO*/ bool WX_MATCH4n;
+  /*p27.NORY*/ bool WX_MATCH5n;
+  /*p27.NONO*/ bool WX_MATCH6n;
+  /*p27.PASE*/ bool WX_MATCH7n;
+
+  /*p27.PUKY*/ bool WX_MATCH_HI;
+  /*p27.NUFA*/ bool WX_MATCH_HIn;
+  /*p27.NOGY*/ bool WIN_MATCHn;
+  /*p27.NUKO*/ bool WIN_MATCH;
+
   /*p27.ROZE*/ bool ROZE;
   /*p27.PAHA*/ bool PAHA;
   /*p27.SUHA*/ bool SUHA;
@@ -84,7 +88,7 @@ struct P27_WindowMapLookup {
   /*p27.ROCO*/ bool ROCO;
   /*p27.NYFO*/ bool NYFO;
   /*p27.WAZY*/ bool WAZY;
-  /*p27.SYNY*/ bool SYNY;
+  /*p27.SYNY*/ bool IN_FRAME_Yn;
   /*p27.NOPA*/ bool NOPA;
   /*p27.PYCO*/ bool PYCO;
   /*p27.NUNU*/ bool NUNU;

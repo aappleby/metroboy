@@ -5,11 +5,12 @@ struct P29_SpriteControl {
   /*p29.XONO*/ bool FLIP_X;
   /*p29.GESE*/ bool SPR_MATCH;
 
+
+
   /*p29.TACU*/ bool TACU;
   /*p29.XYSO*/ bool XYSO;
   /*p29.TEXY*/ bool TEXY;
   /*p29.AVAP*/ bool AVAP;
-  /*p29.WUVU*/ bool WUVU; // this is a clock
   /*p29.FEPO*/ bool FEPO;
   /*p29.WUTY*/ bool WUTY;
   /*p29.XEFY*/ bool XEFY;
@@ -18,7 +19,6 @@ struct P29_SpriteControl {
   /*p29.TUVO*/ bool TUVO;
   /*p29.TYFO*/ bool TYFO;
   /*p29.XOCE*/ bool XOCE;
-  /*p29.XUPY*/ bool XUPY;
   /*p29.CATU*/ bool CATU;
   /*p29.DENY*/ bool DENY;
   /*p29.XYME*/ bool XYME;
@@ -82,41 +82,40 @@ struct P29_SpriteControl {
   /*p29.GENY*/ bool GENY;
   /*p29.ENOB*/ bool ENOB;
 
-  /*p29.YCEB*/ bool YCEB;
-  /*p29.ZUCA*/ bool ZUCA;
-  /*p29.WONE*/ bool WONE;
-  /*p29.ZAXE*/ bool ZAXE;
-  /*p29.XAFU*/ bool XAFU;
-  /*p29.YSES*/ bool YSES;
-  /*p29.ZECA*/ bool ZECA;
-  /*p29.YDYV*/ bool YDYV;
+  /*p29.YDYV*/ bool SPRITE_Y_LATCH0;
+  /*p29.YCEB*/ bool SPRITE_Y_LATCH1;
+  /*p29.ZUCA*/ bool SPRITE_Y_LATCH2;
+  /*p29.WONE*/ bool SPRITE_Y_LATCH3;
+  /*p29.ZAXE*/ bool SPRITE_Y_LATCH4;
+  /*p29.XAFU*/ bool SPRITE_Y_LATCH5;
+  /*p29.YSES*/ bool SPRITE_Y_LATCH6;
+  /*p29.ZECA*/ bool SPRITE_Y_LATCH7;
+
+
+  /*p29.XUSO*/ bool SPRITE_Y0;
+  /*p29.XEGU*/ bool SPRITE_Y1;
+  /*p29.YJEX*/ bool SPRITE_Y2;
+  /*p29.XYJU*/ bool SPRITE_Y3;
+  /*p29.YBOG*/ bool SPRITE_Y4;
+  /*p29.WYSO*/ bool SPRITE_Y5;
+  /*p29.XOTE*/ bool SPRITE_Y6;
+  /*p29.YZAB*/ bool SPRITE_Y7;
+
 
   /*p29.YWOK*/ bool YWOK;
-  /*p29.XEGU*/ bool XEGU;
-  /*p29.YJEX*/ bool YJEX;
-  /*p29.XYJU*/ bool XYJU;
-  /*p29.YBOG*/ bool YBOG;
-  /*p29.WYSO*/ bool WYSO;
-  /*p29.XOTE*/ bool XOTE;
 
-  /*p29.YZAB*/ bool YZAB;
-  /*p29.XUSO*/ bool XUSO;
+
+
   /*p29.ABON*/ bool ABON;
-  /*p29.FUGY*/ bool FUGY;
-  /*p29.GAVO*/ bool GAVO;
-  /*p29.WYGA*/ bool WYGA;
-  /*p29.WUNE*/ bool WUNE;
-  /*p29.GOTU*/ bool GOTU;
-  /*p29.GEGU*/ bool GEGU;
-  /*p29.XEHE*/ bool XEHE;
-  /*p29.EBOS*/ bool EBOS;
-  /*p29.DASA*/ bool DASA;
-  /*p29.FUKY*/ bool FUKY;
-  /*p29.FUVE*/ bool FUVE;
-  /*p29.FEPU*/ bool FEPU;
-  /*p29.FOFA*/ bool FOFA;
-  /*p29.FEMO*/ bool FEMO;
-  /*p29.GUSU*/ bool GUSU;
+
+  /*p29.EBOS*/ bool V0n;
+  /*p29.DASA*/ bool V1n;
+  /*p29.FUKY*/ bool V2n;
+  /*p29.FUVE*/ bool V3n;
+  /*p29.FEPU*/ bool V4n;
+  /*p29.FOFA*/ bool V5n;
+  /*p29.FEMO*/ bool V6n;
+  /*p29.GUSU*/ bool V7n;
 
   /*p29.ERUC*/ bool ERUC_S;
   /*p29.ENEF*/ bool ENEF_S;
@@ -142,11 +141,7 @@ struct P29_SpriteControl {
   /*p29.GOVU*/ bool GOVU;
   /*p29.WOTA*/ bool WOTA;
 
-  /*p29.XOTA*/ bool XOTA; // this is a clock
-
-  /*p29.XYVA*/ bool XYVA;
-  /*p29.XYFY*/ bool XYFY;
-  /*p29.ALES*/ bool ALES;
+  /*p29.ALES*/ bool LINE_144n;
   /*p29.ABOV*/ bool ABOV;
   /*p29.WOSU*/ bool WOSU;
   /*p29.WOJO*/ bool WOJO;
@@ -162,7 +157,7 @@ struct P29_SpriteControl {
 
   /*p29.TOBU*/ bool TOBU;
   /*p29.VONU*/ bool VONU;
-  /*p29.LAPE*/ bool LAPE;
+
   /*p29.TEPA*/ bool TEPA;
   /*p29.TYNO*/ bool TYNO;
   /*p29.VUSA*/ bool VUSA;
@@ -255,7 +250,7 @@ struct P29_SpriteControl {
   /*p29.BUVY*/ bool BUVY;
   /*p29.XUQU*/ bool XUQU;
 
-  /*p29.FUFO*/ bool FUFO;
+  /*p29.FUFO*/ bool SPRITE_SIZEn;
   /*p29.GEJY*/ bool GEJY;
   /*p29.FAMU*/ bool FAMU;
 

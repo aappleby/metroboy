@@ -17,22 +17,22 @@ void P26_Background::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p26.BEJE = not(b.p26.ASUL);
   c.p26.BAFY = not(b.p26.ACEN);
 
-  c.p26.FAFO_S = add_s(b.p21.V0, b.p23.FF42_D0, 0);
-  c.p26.FAFO_C = add_c(b.p21.V0, b.p23.FF42_D0, 0);
-  c.p26.EMUX_S = add_s(b.p21.V1, b.p23.FF42_D1, b.p26.FAFO_C);
-  c.p26.EMUX_C = add_c(b.p21.V1, b.p23.FF42_D1, b.p26.FAFO_C);
-  c.p26.ECAB_S = add_s(b.p21.V2, b.p23.FF42_D2, b.p26.EMUX_C);
-  c.p26.ECAB_C = add_c(b.p21.V2, b.p23.FF42_D2, b.p26.EMUX_C);
-  c.p26.ETAM_S = add_s(b.p21.V3, b.p23.FF42_D3, b.p26.ECAB_C);
-  c.p26.ETAM_C = add_c(b.p21.V3, b.p23.FF42_D3, b.p26.ECAB_C);
-  c.p26.DOTO_S = add_s(b.p21.V4, b.p23.FF42_D4, b.p26.ETAM_C);
-  c.p26.DOTO_C = add_c(b.p21.V4, b.p23.FF42_D4, b.p26.ETAM_C);
-  c.p26.DABA_S = add_s(b.p21.V5, b.p23.FF42_D5, b.p26.DOTO_C);
-  c.p26.DABA_C = add_c(b.p21.V5, b.p23.FF42_D5, b.p26.DOTO_C);
-  c.p26.EFYK_S = add_s(b.p21.V6, b.p23.FF42_D6, b.p26.DABA_C);
-  c.p26.EFYK_C = add_c(b.p21.V6, b.p23.FF42_D6, b.p26.DABA_C);
-  c.p26.EJOK_S = add_s(b.p21.V7, b.p23.FF42_D7, b.p26.EFYK_C);
-  c.p26.EJOK_C = add_c(b.p21.V7, b.p23.FF42_D7, b.p26.EFYK_C);
+  c.p26.FAFO_S = add_s(b.p21.V0, b.p23.SCY0, 0);
+  c.p26.FAFO_C = add_c(b.p21.V0, b.p23.SCY0, 0);
+  c.p26.EMUX_S = add_s(b.p21.V1, b.p23.SCY1, b.p26.FAFO_C);
+  c.p26.EMUX_C = add_c(b.p21.V1, b.p23.SCY1, b.p26.FAFO_C);
+  c.p26.ECAB_S = add_s(b.p21.V2, b.p23.SCY2, b.p26.EMUX_C);
+  c.p26.ECAB_C = add_c(b.p21.V2, b.p23.SCY2, b.p26.EMUX_C);
+  c.p26.ETAM_S = add_s(b.p21.V3, b.p23.SCY3, b.p26.ECAB_C);
+  c.p26.ETAM_C = add_c(b.p21.V3, b.p23.SCY3, b.p26.ECAB_C);
+  c.p26.DOTO_S = add_s(b.p21.V4, b.p23.SCY4, b.p26.ETAM_C);
+  c.p26.DOTO_C = add_c(b.p21.V4, b.p23.SCY4, b.p26.ETAM_C);
+  c.p26.DABA_S = add_s(b.p21.V5, b.p23.SCY5, b.p26.DOTO_C);
+  c.p26.DABA_C = add_c(b.p21.V5, b.p23.SCY5, b.p26.DOTO_C);
+  c.p26.EFYK_S = add_s(b.p21.V6, b.p23.SCY6, b.p26.DABA_C);
+  c.p26.EFYK_C = add_c(b.p21.V6, b.p23.SCY6, b.p26.DABA_C);
+  c.p26.EJOK_S = add_s(b.p21.V7, b.p23.SCY7, b.p26.EFYK_C);
+  c.p26.EJOK_C = add_c(b.p21.V7, b.p23.SCY7, b.p26.EFYK_C);
 
   c.p26.ASUM = not(b.p27.XUHA);
   c.p26.EVAD = not(b.p26.FAFO_S);
@@ -62,22 +62,22 @@ void P26_Background::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // x + scx
 
-  c.p26.ATAD_S = add_s(b.p21.XEHO, b.p23.FF43_D0, 0);
-  c.p26.ATAD_C = add_c(b.p21.XEHO, b.p23.FF43_D0, 0);
-  c.p26.BEHU_S = add_s(b.p21.SAVY, b.p23.FF43_D1, b.p26.ATAD_C);
-  c.p26.BEHU_C = add_c(b.p21.SAVY, b.p23.FF43_D1, b.p26.ATAD_C);
-  c.p26.APYH_S = add_s(b.p21.XODU, b.p23.FF43_D2, b.p26.BEHU_C);
-  c.p26.APYH_C = add_c(b.p21.XODU, b.p23.FF43_D2, b.p26.BEHU_C);
-  c.p26.BABE_S = add_s(b.p21.XYDO, b.p23.FF43_D3, b.p26.APYH_C);
-  c.p26.BABE_C = add_c(b.p21.XYDO, b.p23.FF43_D3, b.p26.APYH_C);
-  c.p26.ABOD_S = add_s(b.p21.TUHU, b.p23.FF43_D4, b.p26.BABE_C);
-  c.p26.ABOD_C = add_c(b.p21.TUHU, b.p23.FF43_D4, b.p26.BABE_C);
-  c.p26.BEWY_S = add_s(b.p21.TUKY, b.p23.FF43_D5, b.p26.ABOD_C);
-  c.p26.BEWY_C = add_c(b.p21.TUKY, b.p23.FF43_D5, b.p26.ABOD_C);
-  c.p26.BYCA_S = add_s(b.p21.TAKO, b.p23.FF43_D6, b.p26.BEWY_C);
-  c.p26.BYCA_C = add_c(b.p21.TAKO, b.p23.FF43_D6, b.p26.BEWY_C);
-  c.p26.ACUL_S = add_s(b.p21.SYBE, b.p23.FF43_D7, b.p26.BYCA_C);
-  c.p26.ACUL_C = add_c(b.p21.SYBE, b.p23.FF43_D7, b.p26.BYCA_C);
+  c.p26.ATAD_S = add_s(b.p21.X0, b.p23.FF43_D0, 0);
+  c.p26.ATAD_C = add_c(b.p21.X0, b.p23.FF43_D0, 0);
+  c.p26.BEHU_S = add_s(b.p21.X1, b.p23.FF43_D1, b.p26.ATAD_C);
+  c.p26.BEHU_C = add_c(b.p21.X1, b.p23.FF43_D1, b.p26.ATAD_C);
+  c.p26.APYH_S = add_s(b.p21.X2, b.p23.FF43_D2, b.p26.BEHU_C);
+  c.p26.APYH_C = add_c(b.p21.X2, b.p23.FF43_D2, b.p26.BEHU_C);
+  c.p26.BABE_S = add_s(b.p21.X3, b.p23.FF43_D3, b.p26.APYH_C);
+  c.p26.BABE_C = add_c(b.p21.X3, b.p23.FF43_D3, b.p26.APYH_C);
+  c.p26.ABOD_S = add_s(b.p21.X4, b.p23.FF43_D4, b.p26.BABE_C);
+  c.p26.ABOD_C = add_c(b.p21.X4, b.p23.FF43_D4, b.p26.BABE_C);
+  c.p26.BEWY_S = add_s(b.p21.X5, b.p23.FF43_D5, b.p26.ABOD_C);
+  c.p26.BEWY_C = add_c(b.p21.X5, b.p23.FF43_D5, b.p26.ABOD_C);
+  c.p26.BYCA_S = add_s(b.p21.X6, b.p23.FF43_D6, b.p26.BEWY_C);
+  c.p26.BYCA_C = add_c(b.p21.X6, b.p23.FF43_D6, b.p26.BEWY_C);
+  c.p26.ACUL_S = add_s(b.p21.X7, b.p23.FF43_D7, b.p26.BYCA_C);
+  c.p26.ACUL_C = add_c(b.p21.X7, b.p23.FF43_D7, b.p26.BYCA_C);
 
   // polarity?
   c.p26.AMUV = b.p23.BG_MAP_SEL;

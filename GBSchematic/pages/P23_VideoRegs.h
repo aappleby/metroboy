@@ -16,71 +16,66 @@ struct P23_VideoRegs {
   union { bool XONA; bool FF40_D7; bool LCD_ON; };
 
   // SCY
-  union { bool GAVE; bool FF42_D0; };
-  union { bool FYMO; bool FF42_D1; };
-  union { bool FEZU; bool FF42_D2; };
-  union { bool FUJO; bool FF42_D3; };
-  union { bool DEDE; bool FF42_D4; };
-  union { bool FOTY; bool FF42_D5; };
-  union { bool FOHA; bool FF42_D6; };
-  union { bool FUNY; bool FF42_D7; };
+  /*p23.GAVE*/ bool SCY0;
+  /*p23.FYMO*/ bool SCY1;
+  /*p23.FEZU*/ bool SCY2;
+  /*p23.FUJO*/ bool SCY3;
+  /*p23.DEDE*/ bool SCY4;
+  /*p23.FOTY*/ bool SCY5;
+  /*p23.FOHA*/ bool SCY6;
+  /*p23.FUNY*/ bool SCY7;
 
   // SCX
-  union { bool DATY; bool FF43_D0; };
-  union { bool DUZU; bool FF43_D1; };
-  union { bool CYXU; bool FF43_D2; };
-  union { bool GUBO; bool FF43_D3; };
-  union { bool BEMY; bool FF43_D4; };
-  union { bool CUZY; bool FF43_D5; };
-  union { bool CABU; bool FF43_D6; };
-  union { bool BAKE; bool FF43_D7; };
+  /*p23.DATY*/ bool FF43_D0;
+  /*p23.DUZU*/ bool FF43_D1;
+  /*p23.CYXU*/ bool FF43_D2;
+  /*p23.GUBO*/ bool FF43_D3;
+  /*p23.BEMY*/ bool FF43_D4;
+  /*p23.CUZY*/ bool FF43_D5;
+  /*p23.CABU*/ bool FF43_D6;
+  /*p23.BAKE*/ bool FF43_D7;
 
   // LYC
-  union { bool SYRY; bool FF45_D0; };
-  union { bool VUCE; bool FF45_D1; };
-  union { bool SEDY; bool FF45_D2; };
-  union { bool SALO; bool FF45_D3; };
-  union { bool SOTA; bool FF45_D4; };
-  union { bool VAFA; bool FF45_D5; };
-  union { bool VEVO; bool FF45_D6; };
-  union { bool RAHA; bool FF45_D7; };
+  /*p23.SYRY*/ bool LYC0;
+  /*p23.VUCE*/ bool LYC1;
+  /*p23.SEDY*/ bool LYC2;
+  /*p23.SALO*/ bool LYC3;
+  /*p23.SOTA*/ bool LYC4;
+  /*p23.VAFA*/ bool LYC5;
+  /*p23.VEVO*/ bool LYC6;
+  /*p23.RAHA*/ bool LYC7;
 
   // WY
-  union { bool NESO; bool FF4A_D0; };
-  union { bool NYRO; bool FF4A_D1; };
-  union { bool NAGA; bool FF4A_D2; };
-  union { bool MELA; bool FF4A_D3; };
-  union { bool NULO; bool FF4A_D4; };
-  union { bool NENE; bool FF4A_D5; };
-  union { bool NUKA; bool FF4A_D6; };
-  union { bool NAFU; bool FF4A_D7; };
+  /*p23.NESO*/ bool WY0;
+  /*p23.NYRO*/ bool WY1;
+  /*p23.NAGA*/ bool WY2;
+  /*p23.MELA*/ bool WY3;
+  /*p23.NULO*/ bool WY4;
+  /*p23.NENE*/ bool WY5;
+  /*p23.NUKA*/ bool WY6;
+  /*p23.NAFU*/ bool WY7;
 
   // WX
-  union { bool MYCE; bool FF4B_D0; };
-  union { bool MYPA; bool FF4B_D1; };
-  union { bool NOFE; bool FF4B_D2; };
-  union { bool NUKU; bool FF4B_D3; };
-  union { bool MYPU; bool FF4B_D4; };
-  union { bool MUVO; bool FF4B_D5; };
-  union { bool MEBY; bool FF4B_D6; };
-  union { bool NOKE; bool FF4B_D7; };
+  /*p23.MYPA*/ bool WX0;
+  /*p23.NOFE*/ bool WX1;
+  /*p23.NOKE*/ bool WX2;
+  /*p23.MEBY*/ bool WX3;
+  /*p23.MYPU*/ bool WX4;
+  /*p23.MYCE*/ bool WX5;
+  /*p23.MUVO*/ bool WX6;
+  /*p23.NUKU*/ bool WX7;
 
   bool VYRE,WARU,WYCE,XUBO;
 
   bool WYZE,WUZA,VYCU,VOXU;
-  bool LOVA,MUKA,MOKO,LOLE,MELE,MUFE,MULY,MARA;
 
   bool WAXU,WEKO,VEFU,VOMY;
-  bool PUNU,PODA,PYGU,LOKA,MEGA,PELA,POLO,MERA;
 
   bool AVOG,ARUR,AMUN,BEBA;
-  bool EDOS,EKOB,CUGA,WONY,CEDU,CATA,DOXE,CASY;
 
   bool ANYP,BEDY,CAVO,BUWY;
-  bool WARE,GOBA,GONU,GODO,CUSA,GYZO,GUNE,GYZA;
 
   bool XYLY,XUFA,WANE,WEKU;
-  bool RETU,VOJO,RAZU,REDY,RACE,VAZU,VAFE,PUFY;
   bool WAFU,VARO;
   bool WURY,XEPO,MYFA,XUHY,WATA,XAGA,XUCE,XOWO;
   bool VEGA,WUVA,LYCO,WOJY,VYNE,WAMA,WAVO,WEZE;

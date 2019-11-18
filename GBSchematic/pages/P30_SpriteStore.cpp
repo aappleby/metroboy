@@ -6,7 +6,7 @@
 
 void P30_SpriteStore::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  /*p30.CYKE*/ c.p30.CYKE = not(b.p29.XUPY);
+  /*p30.CYKE*/ c.p30.CYKE = not(b.p21.CLK_2Mb);
   /*p30.WUDA*/ c.p30.WUDA = not(b.p30.CYKE);
   /*p30.XECU*/ c.p30.XECU = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XECU, b.p28.OAM_A7); // check this oam address line
   /*p30.YDUF*/ c.p30.YDUF = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.YDUF, b.p28.OAM_A6);

@@ -8,50 +8,49 @@
 
 void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
+  /*p27.REPU*/ c.p27.IN_FRAME_Y  = nor(b.p21.INT_VBL, b.sys.VID_RESET4);   // schematic wrong, this is NOR
+  /*p27.SYNY*/ c.p27.IN_FRAME_Yn = not(b.p27.IN_FRAME_Y);
+
   //----------
   // Window Y match
 
-  c.p27.NAZE = xor(b.p23.FF4A_D0, b.p21.V0);
-  c.p27.PEBO = xor(b.p23.FF4A_D1, b.p21.V1);
-  c.p27.POMO = xor(b.p23.FF4A_D2, b.p21.V2);
-  c.p27.NEVU = xor(b.p23.FF4A_D3, b.p21.V3);
-  c.p27.NOJO = xor(b.p23.FF4A_D4, b.p21.V4);
-  c.p27.PAGA = xor(b.p23.FF4A_D5, b.p21.V5);
-  c.p27.PEZO = xor(b.p23.FF4A_D6, b.p21.V6);
-  c.p27.NUPA = xor(b.p23.FF4A_D7, b.p21.V7);
+  /*p27.NAZE*/ c.p27.WY_MATCH0n = xor(b.p23.WY0, b.p21.V0);
+  /*p27.PEBO*/ c.p27.WY_MATCH1n = xor(b.p23.WY1, b.p21.V1);
+  /*p27.POMO*/ c.p27.WY_MATCH2n = xor(b.p23.WY2, b.p21.V2);
+  /*p27.NEVU*/ c.p27.WY_MATCH3n = xor(b.p23.WY3, b.p21.V3);
+  /*p27.NOJO*/ c.p27.WY_MATCH4n = xor(b.p23.WY4, b.p21.V4);
+  /*p27.PAGA*/ c.p27.WY_MATCH5n = xor(b.p23.WY5, b.p21.V5);
+  /*p27.PEZO*/ c.p27.WY_MATCH6n = xor(b.p23.WY6, b.p21.V6);
+  /*p27.NUPA*/ c.p27.WY_MATCH7n = xor(b.p23.WY7, b.p21.V7);
 
-  c.p27.PALO = nand(b.p23.WIN_EN, b.p27.NOJO, b.p27.PAGA, b.p27.PEZO, b.p27.NUPA);
-  c.p27.NELE = not(b.p27.PALO);
-  c.p27.PAFU = nand(b.p27.NELE, b.p27.NAZE, b.p27.PEBO, b.p27.POMO, b.p27.NEVU);
-  c.p27.ROGE = not(b.p27.PAFU);
+  // WIN_EN polarity?
+  /*p27.PALO*/ c.p27.WY_MATCH_HI  = nand(b.p23.WIN_EN, b.p27.WY_MATCH4n, b.p27.WY_MATCH5n, b.p27.WY_MATCH6n, b.p27.WY_MATCH7n);
+  /*p27.NELE*/ c.p27.WY_MATCH_HIn = not(b.p27.WY_MATCH_HI);
+  /*p27.PAFU*/ c.p27.WY_MATCHn    = nand(b.p27.WY_MATCH_HIn, b.p27.WY_MATCH0n, b.p27.WY_MATCH1n, b.p27.WY_MATCH2n, b.p27.WY_MATCH3n);
+  /*p27.ROGE*/ c.p27.WY_MATCH     = not(b.p27.WY_MATCHn);
 
-  // this is not right. where is VYPO/CUBA in the schematic?
-  //c.p27.VYPO = not(in.CUBA1);
-
-  // this is what the die looks like
-  c.p27.VYPO = not(b.chip.P10_B);
-
-  c.p27.SARY = tock_pos(a.p21.TALU, b.p21.TALU, b.sys.VID_RESETn1, b.p27.SARY, b.p27.ROGE);
+  /*p27.SARY*/ c.p27.WY_MATCH_SYNC = tock_pos(a.p21.CLK_1Mb, b.p21.CLK_1Mb, b.sys.VID_RESETn1, b.p27.WY_MATCH_SYNC, b.p27.WY_MATCH);
 
   //----------
   // Window X match
 
-  c.p27.REPU = or(b.p21.INT_VBL, b.sys.VID_RESET4);
-  c.p27.REJO = or(b.p27.SARY, b.p27.REPU);
+  // polarity or gates wrong
+  /*p27.REJO*/ c.p27.WIN_CHECK_X = or(b.p27.WY_MATCH_SYNC, b.p27.IN_FRAME_Y); // another weird or gate. should be AND?
 
-  c.p27.NEZO = xor(b.p21.TUHU, b.p23.FF4B_D4);
-  c.p27.NORY = xor(b.p21.TUKY, b.p23.FF4B_D5);
-  c.p27.NONO = xor(b.p21.TAKO, b.p23.FF4B_D6);
-  c.p27.PASE = xor(b.p21.SYBE, b.p23.FF4B_D7);
-  c.p27.MYLO = xor(b.p21.XEHO, b.p23.FF4B_D0);
-  c.p27.PUWU = xor(b.p21.SAVY, b.p23.FF4B_D1);
-  c.p27.PUHO = xor(b.p21.XODU, b.p23.FF4B_D2);
-  c.p27.NYTU = xor(b.p21.XYDO, b.p23.FF4B_D3);
+  /*p27.MYLO*/ c.p27.WX_MATCH0n = xor(b.p21.X0, b.p23.WX0);
+  /*p27.PUWU*/ c.p27.WX_MATCH1n = xor(b.p21.X1, b.p23.WX1);
+  /*p27.PUHO*/ c.p27.WX_MATCH2n = xor(b.p21.X2, b.p23.WX2);
+  /*p27.NYTU*/ c.p27.WX_MATCH3n = xor(b.p21.X3, b.p23.WX3);
+  /*p27.NEZO*/ c.p27.WX_MATCH4n = xor(b.p21.X4, b.p23.WX4);
+  /*p27.NORY*/ c.p27.WX_MATCH5n = xor(b.p21.X5, b.p23.WX5);
+  /*p27.NONO*/ c.p27.WX_MATCH6n = xor(b.p21.X6, b.p23.WX6);
+  /*p27.PASE*/ c.p27.WX_MATCH7n = xor(b.p21.X7, b.p23.WX7);
 
-  c.p27.PUKY = nand(b.p27.REJO, b.p27.NEZO, b.p27.NORY, b.p27.NONO, b.p27.PASE);
-  c.p27.NUFA = not(b.p27.PUKY);
-  c.p27.NOGY = nand(b.p27.NUFA, b.p27.MYLO, b.p27.PUWU, b.p27.PUHO, b.p27.NYTU);
-  c.p27.NUKO = not(b.p27.NOGY);
+  // not sure about this
+  /*p27.PUKY*/ c.p27.WX_MATCH_HI  = nand(b.p27.WIN_CHECK_X, b.p27.WX_MATCH4n, b.p27.WX_MATCH5n, b.p27.WX_MATCH6n, b.p27.WX_MATCH7n);
+  /*p27.NUFA*/ c.p27.WX_MATCH_HIn = not (b.p27.WX_MATCH_HI);
+  /*p27.NOGY*/ c.p27.WIN_MATCHn    = nand(b.p27.WX_MATCH_HIn, b.p27.WX_MATCH0n, b.p27.WX_MATCH1n, b.p27.WX_MATCH2n, b.p27.WX_MATCH3n);
+  /*p27.NUKO*/ c.p27.WIN_MATCH     = not (b.p27.WIN_MATCHn);
 
   //----------
 
@@ -65,7 +64,7 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.PECU = nand(b.p24.ROXO, b.p27.ROZE);
   c.p27.RONE = nand(b.p27.ROXY, b.p27.SUHA, b.p27.SYBY, b.p27.SOZU);
   c.p27.POHU = not(b.p27.RONE);
-  c.p27.PANY = nor(b.p27.NUKO, b.p27.ROZE);
+  c.p27.PANY = nor(b.p27.WIN_MATCH, b.p27.ROZE);
   c.p27.SEKO = nor(b.p27.RENE, !b.p27.RYFA);
   c.p27.ROMO = not(b.p24.POKY);
   c.p27.SUVU = nand(b.p21.XYMU, b.p27.ROMO, b.p24.NYKA, b.p24.PORY);
@@ -92,17 +91,16 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.MOSU = not(b.p27.NYFO);
   c.p27.NYXU = nor(b.p29.AVAP, b.p27.MOSU, b.p27.TEVO);
   c.p27.WAZY = not(b.p27.PORE);
-  c.p27.SYNY = not(b.p27.REPU);
 
   c.p27.NOPA = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.sys.VID_RESETn1, b.p27.NOPA, b.p27.PYNU);
-  c.p27.PYCO = tock_pos(a.p27.ROCO, b.p27.ROCO, b.sys.VID_RESETn1, b.p27.PYCO, b.p27.NUKO);
-  c.p27.NUNU = tock_pos(a.p21.MEHE, b.p21.MEHE, b.sys.VID_RESETn1, b.p27.NUNU, b.p27.PYCO);
+  c.p27.PYCO = tock_pos(a.p27.ROCO, b.p27.ROCO, b.sys.VID_RESETn1, b.p27.PYCO, b.p27.WIN_MATCH);
+  c.p27.NUNU = tock_pos(a.p21.CLK_xBxDxFxHb, b.p21.CLK_xBxDxFxHb, b.sys.VID_RESETn1, b.p27.NUNU, b.p27.PYCO);
 
   c.p27.RYKU = tock_pos(a.p27.PECU,  b.p27.PECU,  b.p27.PASO, b.p27.RYKU, !b.p27.RYKU);
   c.p27.ROGA = tock_pos(!a.p27.RYKU, !b.p27.RYKU, b.p27.PASO, b.p27.ROGA, !b.p27.ROGA);
   c.p27.RUBU = tock_pos(!a.p27.ROGA, !b.p27.ROGA, b.p27.PASO, b.p27.RUBU, !b.p27.RUBU);
 
-  c.p27.NYZE = tock_pos(a.p21.MOXE, b.p21.MOXE, b.p21.XYMU, b.p27.NYZE, b.p27.PUXA);
+  c.p27.NYZE = tock_pos(a.p21.CLK_xBxDxFxHa, b.p21.CLK_xBxDxFxHa, b.p21.XYMU, b.p27.NYZE, b.p27.PUXA);
   c.p27.PUXA = tock_pos(a.p24.ROXO, b.p24.ROXO, b.p21.XYMU, b.p27.PUXA, b.p27.POHU);
 
   c.p27.RYFA = tock_pos(a.p24.SEGU, b.p24.SEGU, b.p21.XYMU,        b.p27.RYFA, b.p27.PANY);
@@ -138,7 +136,7 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.LAXU = tock_pos( a.p27.LEBO,  b.p27.LEBO, b.p27.NYXU, b.p27.LAXU, !b.p27.LAXU);
   c.p27.MESU = tock_pos(!a.p27.LAXU, !b.p27.LAXU, b.p27.NYXU, b.p27.MESU, !b.p27.MESU);
   c.p27.NYVA = tock_pos(!a.p27.MESU, !b.p27.MESU, b.p27.NYXU, b.p27.NYVA, !b.p27.NYVA);
-  c.p27.LOVY = tock_pos( a.p21.MYVO,  b.p21.MYVO, b.p27.NYXU, b.p27.LOVY,  b.p27.LYRY);
+  c.p27.LOVY = tock_pos( a.p21.CLK_xBxDxFxHc,  b.p21.CLK_xBxDxFxHc, b.p27.NYXU, b.p27.LOVY,  b.p27.LYRY);
 
   //----------
   // address output bus
@@ -149,15 +147,15 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.WYKO = tock_pos(!a.p27.WOBO, !b.p27.WOBO, b.p27.XACO, b.p27.WYKO, !b.p27.WYKO);
   c.p27.XOLO = tock_pos(!a.p27.WYKO, !b.p27.WYKO, b.p27.XACO, b.p27.XOLO, !b.p27.XOLO);
 
-  c.p27.VYNO = tock_pos( a.p27.WAZY,  b.p27.WAZY, b.p27.SYNY, b.p27.VYNO, !b.p27.VYNO);
-  c.p27.VUJO = tock_pos(!a.p27.VYNO, !b.p27.VYNO, b.p27.SYNY, b.p27.VUJO, !b.p27.VUJO);
-  c.p27.VYMU = tock_pos(!a.p27.VUJO, !b.p27.VUJO, b.p27.SYNY, b.p27.VYMU, !b.p27.VYMU);
+  c.p27.VYNO = tock_pos( a.p27.WAZY,  b.p27.WAZY, b.p27.IN_FRAME_Yn, b.p27.VYNO, !b.p27.VYNO);
+  c.p27.VUJO = tock_pos(!a.p27.VYNO, !b.p27.VYNO, b.p27.IN_FRAME_Yn, b.p27.VUJO, !b.p27.VUJO);
+  c.p27.VYMU = tock_pos(!a.p27.VUJO, !b.p27.VUJO, b.p27.IN_FRAME_Yn, b.p27.VYMU, !b.p27.VYMU);
 
-  c.p27.TUFU = tock_pos(!a.p27.VYMU, !b.p27.VYMU, b.p27.SYNY, b.p27.TUFU, !b.p27.TUFU);
-  c.p27.TAXA = tock_pos(!a.p27.TUFU, !b.p27.TUFU, b.p27.SYNY, b.p27.TAXA, !b.p27.TAXA);
-  c.p27.TOZO = tock_pos(!a.p27.TAXA, !b.p27.TAXA, b.p27.SYNY, b.p27.TOZO, !b.p27.TOZO);
-  c.p27.TATE = tock_pos(!a.p27.TOZO, !b.p27.TOZO, b.p27.SYNY, b.p27.TATE, !b.p27.TATE);
-  c.p27.TEKE = tock_pos(!a.p27.TATE, !b.p27.TATE, b.p27.SYNY, b.p27.TEKE, !b.p27.TEKE);
+  c.p27.TUFU = tock_pos(!a.p27.VYMU, !b.p27.VYMU, b.p27.IN_FRAME_Yn, b.p27.TUFU, !b.p27.TUFU);
+  c.p27.TAXA = tock_pos(!a.p27.TUFU, !b.p27.TUFU, b.p27.IN_FRAME_Yn, b.p27.TAXA, !b.p27.TAXA);
+  c.p27.TOZO = tock_pos(!a.p27.TAXA, !b.p27.TAXA, b.p27.IN_FRAME_Yn, b.p27.TOZO, !b.p27.TOZO);
+  c.p27.TATE = tock_pos(!a.p27.TOZO, !b.p27.TOZO, b.p27.IN_FRAME_Yn, b.p27.TATE, !b.p27.TATE);
+  c.p27.TEKE = tock_pos(!a.p27.TATE, !b.p27.TATE, b.p27.IN_FRAME_Yn, b.p27.TEKE, !b.p27.TEKE);
 
   c.p27.XEJA = not(b.p27.WYKA);
   c.p27.XAMO = not(b.p27.WODY);
@@ -171,9 +169,15 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.VOVO = not(b.p27.TATE);
   c.p27.VULO = not(b.p27.TEKE);
 
+  // this is not right. where is VYPO/CUBA in the schematic?
+  //c.p27.VYPO = not(in.CUBA1);
+
+  // this is what the die looks like
+  c.p27.P10_Bn = not(b.chip.P10_B);
+
   c.p27.VEVY = not(b.p23.WIN_MAP_SEL);
-  c.p27.VEZA = not(b.p27.VYPO);
-  c.p27.VOGU = not(b.p27.VYPO);
+  c.p27.VEZA = not(b.p27.P10_Bn);
+  c.p27.VOGU = not(b.p27.P10_Bn);
 
   if (b.p25.WUKO) {
     c.MA00 = b.p27.XEJA;
@@ -202,6 +206,6 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.SOWO = not(b.p27.TAKA);
   c.p27.TEKY = and(b.p29.FEPO, b.p27.TUKU, b.p27.LYRY, b.p27.SOWO);
 
-  c.p27.SOBU = tock_pos(a.p21.TAVA, b.p21.TAVA, b.p27.VYPO, b.p27.SOBU, b.p27.TEKY);
-  c.p27.SUDA = tock_pos(a.sys.CLK_xBxDxFxH5, b.sys.CLK_xBxDxFxH5, b.p27.VYPO, b.p27.SUDA, b.p27.SOBU);
+  c.p27.SOBU = tock_pos(a.p21.CLK_AxCxExGxa, b.p21.CLK_AxCxExGxa, b.p27.P10_Bn, b.p27.SOBU, b.p27.TEKY);
+  c.p27.SUDA = tock_pos(a.sys.CLK_xBxDxFxH5, b.sys.CLK_xBxDxFxH5, b.p27.P10_Bn, b.p27.SUDA, b.p27.SOBU);
 }

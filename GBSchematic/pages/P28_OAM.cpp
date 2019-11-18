@@ -13,7 +13,7 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  /*p28.AWOH*/ c.p28.AWOH = not(b.p29.XUPY);
+  /*p28.AWOH*/ c.p28.AWOH = not(b.p21.CLK_2Mb);
   /*p28.ABAF*/ c.p28.ABAF = not(b.p29.CATU);
   /*p28.ANEL*/ c.p28.ANEL = tock_pos(a.p28.AWOH, b.p28.AWOH, b.sys.VID_RESETn3, b.p28.ANEL, b.p29.CATU);
   /*p28.BYHA*/ c.p28.BYHA = or(b.p28.ANEL, b.p28.ABAF, b.sys.VID_RESETn3);
@@ -24,7 +24,7 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // sprite scan counter
 
   /*p28.FETO*/ c.p28.SCAN_DONE = and(b.p28.SCAN0, b.p28.SCAN1, b.p28.SCAN2, b.p28.SCAN5);
-  /*p28.GAVA*/ c.p28.SCAN_CLK  = or(b.p28.SCAN_DONE, b.p29.XUPY);
+  /*p28.GAVA*/ c.p28.SCAN_CLK  = or(b.p28.SCAN_DONE, b.p21.CLK_2Mb);
   /*p28.ANOM*/ c.p28.SCAN_RSTn = nor(b.sys.VID_RESET6, b.p28.ATEJ);
 
   /*p28.YFEL*/ c.p28.SCAN0 = tock_pos( a.p28.SCAN_CLK, b.p28.SCAN_CLK, b.p28.SCAN_RSTn, b.p28.SCAN0, !b.p28.SCAN0);

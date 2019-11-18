@@ -1,8 +1,17 @@
 #pragma once
 
 #include "../Schematics.h"
+
 #include "ChipSignals.h"
 #include "CpuSignals.h"
+
+#include "System.h"
+
+#include "ApuControl.h"
+#include "Channel1.h"
+#include "Channel2.h"
+#include "Channel3.h"
+#include "Channel4.h"
 
 #include "P21_VideoControl.h"
 #include "P22_PpuDecode.h"
@@ -21,13 +30,6 @@
 #include "P35_PixelMux.h"
 #include "P36_Palettes.h"
 
-#include "System.h"
-
-#include "ApuControl.h"
-#include "Channel1.h"
-#include "Channel2.h"
-#include "Channel3.h"
-#include "Channel4.h"
 
 //-----------------------------------------------------------------------------
 
@@ -37,15 +39,7 @@ struct Gameboy {
   ChipSignals  chip;
   CpuSignals   cpu;
 
-  P01_ClocksReset          p01;
-  P02_Interrupts           p02;
-  P03_Timer                p03;
-  P04_DMA                  p04;
-  P05_JoypadIO             p05;
-  P06_SerialLink           p06;
-  P07_SysDecode            p07;
-  P08_ExtCpuBuses          p08;
-
+  System     sys;
   ApuControl apu;
   Channel1   ch1;
   Channel2   ch2;

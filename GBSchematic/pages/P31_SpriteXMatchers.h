@@ -33,7 +33,7 @@ public:
   union { bool EKES; bool SP_MATCH_9B; };
 
   bool BAXO;
-  bool YZOS;
+  bool FLIP_Yn;
 
   bool WYNO,CYRA,ZUVE,ECED,XYKY,YRUM,YSEX,YVEL;
   bool XEGA;

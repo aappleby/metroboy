@@ -4,24 +4,21 @@ struct P30_SpriteStore {
 
   void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
-  bool WEZA;
-  bool WUCO;
-  bool WYDA;
-  bool ZYSU;
-  bool WYSE;
-  bool WUZY;
-  bool CUCU;
-  bool WENU;
-  bool CEGA;
-
-  bool IDX_0,IDX_1,IDX_2,IDX_3,IDX_4,IDX_5;
-  bool LINE_0,LINE_1,LINE_2,LINE_3;
+  /*p30.WEZA*/ bool IDX_0;
+  /*p30.WUCO*/ bool IDX_1;
+  /*p30.WYDA*/ bool IDX_2;
+  /*p30.ZYSU*/ bool IDX_3;
+  /*p30.WYSE*/ bool IDX_4;
+  /*p30.WUZY*/ bool IDX_5;
+  
+  /*p30.WENU*/ bool LINE_0;
+  /*p30.CUCU*/ bool LINE_1;
+  /*p30.CUCA*/ bool LINE_2;
+  /*p30.CEGA*/ bool LINE_3;
 
   bool CYKE,WUDA;
   bool XECU,YDUF,XOBE,ZUZE,XEDY,XADU;
-  bool CUCA;
 
-  bool ADYB,APOB,APYV,AFEN,AKYH,APOC,BUJY,BOSO,AHAC,BAZU;
   bool WOCY,ELYC,WABO,EZOC,WYWY,WATO,ZUDO,YBUK,ZYTO,YKOZ;
   bool WAJA,WOXY,XYRE,WERU,WEPY,WUXU,BYDO,BUCE,BOVE,BEVY;
   bool EVYT,WABA,ETAD,ELEP,WYGO,WAKO,WANA,WAXE,WABU,YPOZ;

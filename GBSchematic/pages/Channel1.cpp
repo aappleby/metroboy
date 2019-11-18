@@ -91,7 +91,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p11.DYPU*/ c.ch1.FF13_RDn = nor(b.ch1.CPU_RDnb, b.ch1.ADDR_FF13n);
   /*p11.EVAJ*/ c.ch1.FF13_RDa = not(b.ch1.FF13_RDn);
 
-  /*p11.FULO*/ c.ch1.CH1_FREQ_CLKn = nor(b.p01.DYFA_1M, b.ch1.GEXU);
+  /*p11.FULO*/ c.ch1.CH1_FREQ_CLKn = nor(b.sys.DYFA_1M, b.ch1.GEXU);
   /*p11.GEKU*/ c.ch1.CH1_FREQ_CLKa = not(b.ch1.CH1_FREQ_CLKn);
   /*p11.KYPE*/ c.ch1.CH1_FREQ_CLKb = not(b.ch1.CH1_FREQ_03);
   /*p11.DERU*/ c.ch1.CH1_FREQ_CLKc = not(b.ch1.CH1_FREQ_07);
@@ -130,7 +130,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p11.CURE*/ c.ch1.ADDR_FF14n = not(b.apu.ADDR_FF14);
   /*p11.BAGE*/ c.ch1.FF14_WRn   = nand(b.apu.CPU_WR_WEIRD, b.apu.ADDR_FF14); 
-  /*p11.BUDA*/ c.ch1.CPU_RDna   = not(b.p07.CPU_RD); // not sure which CPU_RD signal this is
+  /*p11.BUDA*/ c.ch1.CPU_RDna   = not(b.sys.CPU_RD); // not sure which CPU_RD signal this is
   /*p11.DUPY*/ c.ch1.FF14_RDa   = or(b.ch1.CPU_RDnb, b.ch1.ADDR_FF14n); // polarity?
   /*p11.BALE*/ c.ch1.FF14_RDb   = nand(b.ch1.CPU_RDna, b.apu.ADDR_FF14);
 
@@ -141,7 +141,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p13.DADO*/ c.ch1.NR14_START_RST = nor(b.apu.APU_RESET1, b.ch1.CH1_RUNNING);
   /*p13.DUPE*/ c.ch1.NR14_START = tock_pos(a.ch1.FF14_WRnb, b.ch1.FF14_WRnb, b.ch1.NR14_START_RST, b.ch1.NR14_START, b.D7);
-  /*p13.EZEC*/ c.ch1.CH1_RUNNING = tock_pos(a.p01.CPUCLK_xxxxEFGH9, b.p01.CPUCLK_xxxxEFGH9, b.ch1.DUKA, b.ch1.CH1_RUNNING, b.ch1.NR14_START);
+  /*p13.EZEC*/ c.ch1.CH1_RUNNING = tock_pos(a.sys.CPUCLK_xxxxEFGH9, b.sys.CPUCLK_xxxxEFGH9, b.ch1.DUKA, b.ch1.CH1_RUNNING, b.ch1.NR14_START);
 
 
   /*p11.BYTU*/ if (b.ch1.FF14_RDb) c.D6 = b.ch1.NR14_STOP;
@@ -354,7 +354,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.ch1.CALA = not(b.ch1.CH1_FREQ_10);
   c.ch1.CH1_PHASE_CLKnb = tock_pos(a.ch1.CALA, b.ch1.CALA, b.ch1.DYRU, b.ch1.CH1_PHASE_CLKnb, !b.ch1.CH1_PHASE_CLKnb);
   
-  c.ch1.DOKA = and(b.ch1.CH1_PHASE_CLKnb, b.p01.DYFA_1M);
+  c.ch1.DOKA = and(b.ch1.CH1_PHASE_CLKnb, b.sys.DYFA_1M);
   c.ch1.DYRU = nor(b.apu.APU_RESET1, b.ch1.FEKU, b.ch1.DOKA);
   
   c.ch1.CH1_PHASE_CLKb = not(b.ch1.CH1_PHASE_CLKnb);
@@ -396,7 +396,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
 
 
-  c.ch1.CH1_LEN_CLKn = nor(b.p01.CLK_256a, !b.ch1.NR14_STOP, b.ch1.CH1_LEN_DONE); // use_len polarity?
+  c.ch1.CH1_LEN_CLKn = nor(b.sys.CLK_256a, !b.ch1.NR14_STOP, b.ch1.CH1_LEN_DONE); // use_len polarity?
   c.ch1.CH1_LEN_CLK = not(b.ch1.CH1_LEN_CLKn);
 
   c.ch1.NR11_LEN0 = count_pos(a.ch1.CH1_LEN_CLK, b.ch1.CH1_LEN_CLK, b.ch1.FF11_WRc, b.ch1.NR11_LEN0, b.D0);
@@ -421,7 +421,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.ch1.KAZA = nor(b.ch1.FEKU, b.ch1.KOZY);
   c.ch1.SWEEP_RST = not(b.ch1.KAZA);
 
-  c.ch1.CLK_128n = not(b.p01.CLK_128a);
+  c.ch1.CLK_128n = not(b.sys.CLK_128a);
   
   c.ch1.CLK_64a  = tock_pos(a.ch1.CLK_128n, b.ch1.CLK_128n, b.ch1.KADO, b.ch1.CLK_64a, !b.ch1.CLK_64a);
   c.ch1.CLK_64nb = not(b.ch1.CLK_64a);
@@ -438,16 +438,16 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.ch1.KORO = nor(b.ch1.KUKU, b.ch1.CH1_NO_SWEEP);
 
-  c.ch1.KOZY = tock_pos(a.p01.CLK_512a, b.p01.CLK_512a, b.ch1.KORO, b.ch1.KOZY, b.ch1.KOTE);
+  c.ch1.KOZY = tock_pos(a.sys.CLK_512a, b.sys.CLK_512a, b.ch1.KORO, b.ch1.KOZY, b.ch1.KOTE);
   c.ch1.KYNO = tock_pos(a.ch1.KOZY,     b.ch1.KOZY,     b.ch1.KORU, b.ch1.KYNO, b.ch1.CH1_ENV_MAX);
 
 
   c.ch1.KURY = not(b.ch1.KOZY);
-  c.ch1.KUKU = nor(b.p01.CPUCLK_REQn, b.ch1.KURY);
+  c.ch1.KUKU = nor(b.sys.CPUCLK_REQn, b.ch1.KURY);
 
-  c.ch1.FEKU = tock_pos(a.p01.DYFA_1M, b.p01.DYFA_1M, b.ch1.EGET, b.ch1.FEKU, b.ch1.FYFO);
-  c.ch1.FARE = tock_pos(a.p01.DYFA_1M, b.p01.DYFA_1M, b.ch1.ERUM, b.ch1.FARE, b.ch1.FEKU);
-  c.ch1.FYTE = tock_pos(a.p01.DYFA_1M, b.p01.DYFA_1M, b.ch1.ERUM, b.ch1.FYTE, b.ch1.FARE);
+  c.ch1.FEKU = tock_pos(a.sys.DYFA_1M, b.sys.DYFA_1M, b.ch1.EGET, b.ch1.FEKU, b.ch1.FYFO);
+  c.ch1.FARE = tock_pos(a.sys.DYFA_1M, b.sys.DYFA_1M, b.ch1.ERUM, b.ch1.FARE, b.ch1.FEKU);
+  c.ch1.FYTE = tock_pos(a.sys.DYFA_1M, b.sys.DYFA_1M, b.ch1.ERUM, b.ch1.FYTE, b.ch1.FARE);
 
   c.ch1.KORU = nor(b.ch1.FEKU, b.apu.APU_RESET1);
 
@@ -507,8 +507,8 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p13.BAVE*/ c.ch1.BAVE = and(b.ch1.NR10_SWEEP_TIME_0, b.ch1.NR10_SWEEP_TIME_1, b.ch1.NR10_SWEEP_TIME_2);
 
   // this is some debug thing
-  /*p09.BAZA*/ c.apu.DBG_SWEEP_CLK = tock_pos(a.p01.AJER_2M, b.p01.AJER_2M, b.apu.APU_RESETn3, b.apu.DBG_SWEEP_CLK, b.apu.DBG_SWEEP);
-  /*p09.CELY*/ c.apu.CELY = mux2(b.apu.DBG_SWEEP_CLK, b.p01.CLK_128a, b.apu.DBG_APU);
+  /*p09.BAZA*/ c.apu.DBG_SWEEP_CLK = tock_pos(a.sys.AJER_2M, b.sys.AJER_2M, b.apu.APU_RESETn3, b.apu.DBG_SWEEP_CLK, b.apu.DBG_SWEEP);
+  /*p09.CELY*/ c.apu.CELY = mux2(b.apu.DBG_SWEEP_CLK, b.sys.CLK_128a, b.apu.DBG_APU);
   /*p09.CONE*/ c.apu.CONE = not(b.apu.CELY);
   /*p09.CATE*/ c.apu.CATE = not(b.apu.CONE);
   /*p13.CUPO*/ c.ch1.CUPO = count_pos(a.apu.CATE, b.apu.CATE, b.ch1.CYMU, b.ch1.CUPO, b.ch1.NR10_SWEEP_TIME_0);
@@ -516,7 +516,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p13.CAXY*/ c.ch1.CAXY = count_pos(a.ch1.CYPU, b.ch1.CYPU, b.ch1.CYMU, b.ch1.CAXY, b.ch1.NR10_SWEEP_TIME_2);
   /*p13.BURY*/ c.ch1.BURY = nor(b.ch1.BAVE, b.apu.APU_RESET1);
   /*p13.COZE*/ c.ch1.COZE = and(b.ch1.CAXY, b.ch1.CYPU, b.ch1.CUPO);
-  /*p13.BEXA*/ c.ch1.BEXA = tock_pos(a.p01.AJER_2M, b.p01.AJER_2M, b.ch1.BURY, b.ch1.BEXA, b.ch1.COZE);
+  /*p13.BEXA*/ c.ch1.BEXA = tock_pos(a.sys.AJER_2M, b.sys.AJER_2M, b.ch1.BURY, b.ch1.BEXA, b.ch1.COZE);
 
   //----------
   // Sweep shift counter
@@ -529,7 +529,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p13.EPUK*/ c.ch1.EPUK = nor(b.ch1.ADAD, b.apu.APU_RESET1);
   /*p13.EVOL*/ c.ch1.EVOL = nor(b.ch1.BEXA, b.ch1.FYTE);
   /*p13.FEMU*/ c.ch1.FEMU = unk2(b.ch1.EPUK, b.ch1.EVOL);
-  /*p13.EGYP*/ c.ch1.EGYP = nor(b.p01.DYFA_1M, b.ch1.FEMU);
+  /*p13.EGYP*/ c.ch1.EGYP = nor(b.sys.DYFA_1M, b.ch1.FEMU);
   /*p13.DODY*/ c.ch1.DODY = nor(b.ch1.EGYP, b.ch1.CELE);
   /*p13.EGOR*/ c.ch1.EGOR = and(b.ch4.NR41_LEN3b, b.ch1.DODY); // wtf? probably debug something
   /*p13.DAPU*/ c.ch1.DAPU = not(b.ch1.EGOR);
@@ -538,7 +538,7 @@ void P11_Ch1Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p13.BYRA*/ c.ch1.BYRA = count_pos(a.ch1.CAJA, b.ch1.CAJA, b.ch1.CYLU, b.ch1.BYRA, b.ch1.NR10_SWEEP_SHIFT_2);
   /*p13.COPY*/ c.ch1.COPY = and(b.ch1.COPA, b.ch1.CAJA, b.ch1.BYRA);
   /*p13.ATAT*/ c.ch1.ATAT = nor(b.apu.APU_RESET1, b.ch1.BEXA);
-  /*p13.BYTE*/ c.ch1.BYTE = tock_pos(a.p01.AJER_2M, b.p01.AJER_2M, b.ch1.ATAT, b.ch1.BYTE, b.ch1.COPY);
+  /*p13.BYTE*/ c.ch1.BYTE = tock_pos(a.sys.AJER_2M, b.sys.AJER_2M, b.ch1.ATAT, b.ch1.BYTE, b.ch1.COPY);
   /*p13.ATUV*/ c.ch1.ATUV = and(b.ch1.BEXA, b.ch1.CH1_SWEEP_STOPn);
   /*p13.BOJE*/ c.ch1.BOJE = and(b.ch1.ATUV, b.ch1.BUGE);
   /*p13.BUSO*/ c.ch1.BUSO = or(b.ch1.BUGE, b.ch1.CH1_SWEEP_STOPn, b.ch1.BEXA);

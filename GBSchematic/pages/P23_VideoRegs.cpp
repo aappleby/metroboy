@@ -10,19 +10,19 @@
 void P23_VideoRegs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // FF40 LCDC
-  c.p23.VYRE = and(b.p22.FF40, b.p07.CPU_RD2);
-  c.p23.WARU = and(b.p22.FF40, b.p07.CPU_WR2);
+  c.p23.VYRE = and(b.p22.FF40, b.sys.CPU_RD2);
+  c.p23.WARU = and(b.p22.FF40, b.sys.CPU_WR2);
   c.p23.WYCE = not(b.p23.VYRE);
   c.p23.XUBO = not(b.p23.WARU);
 
-  c.p23.VYXE = tock_pos(a.p23.XUBO, b.p23.XUBO, b.p01.SYS_RESETn7, b.p23.VYXE, b.D0);
-  c.p23.XYLO = tock_pos(a.p23.XUBO, b.p23.XUBO, b.p01.SYS_RESETn7, b.p23.XYLO, b.D1);
-  c.p23.XYMO = tock_pos(a.p23.XUBO, b.p23.XUBO, b.p01.SYS_RESETn7, b.p23.XYMO, b.D2);
-  c.p23.XAFO = tock_pos(a.p23.XUBO, b.p23.XUBO, b.p01.SYS_RESETn7, b.p23.XAFO, b.D3);
-  c.p23.WEXU = tock_pos(a.p23.XUBO, b.p23.XUBO, b.p01.SYS_RESETn7, b.p23.WEXU, b.D4);
-  c.p23.WYMO = tock_pos(a.p23.XUBO, b.p23.XUBO, b.p01.SYS_RESETn7, b.p23.WYMO, b.D5);
-  c.p23.WOKY = tock_pos(a.p23.XUBO, b.p23.XUBO, b.p01.SYS_RESETn7, b.p23.WOKY, b.D6);
-  c.p23.XONA = tock_pos(a.p23.XUBO, b.p23.XUBO, b.p01.SYS_RESETn7, b.p23.XONA, b.D7);
+  c.p23.VYXE = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.VYXE, b.D0);
+  c.p23.XYLO = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.XYLO, b.D1);
+  c.p23.XYMO = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.XYMO, b.D2);
+  c.p23.XAFO = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.XAFO, b.D3);
+  c.p23.WEXU = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.WEXU, b.D4);
+  c.p23.WYMO = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.WYMO, b.D5);
+  c.p23.WOKY = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.WOKY, b.D6);
+  c.p23.XONA = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.XONA, b.D7);
 
   if (b.p23.WYCE) {
     c.D0 = b.p23.VYXE;
@@ -36,20 +36,20 @@ void P23_VideoRegs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   // FF4B WX
-  c.p23.WYZE = and(b.p07.CPU_RD2, b.p22.FF4B);
-  c.p23.WUZA = and(b.p07.CPU_WR2, b.p22.FF4B);
+  c.p23.WYZE = and(b.sys.CPU_RD2, b.p22.FF4B);
+  c.p23.WUZA = and(b.sys.CPU_WR2, b.p22.FF4B);
   c.p23.VYCU = not(b.p23.WYZE);
   c.p23.VOXU = not(b.p23.WUZA);
   
   // reset polarity?
-  c.p23.MYPA = tock_pos(a.p23.VOXU, b.p23.VOXU, b.p01.SYS_RESETn5, a.p23.MYPA, b.D0);
-  c.p23.NOFE = tock_pos(a.p23.VOXU, b.p23.VOXU, b.p01.SYS_RESETn5, a.p23.NOFE, b.D1);
-  c.p23.NOKE = tock_pos(a.p23.VOXU, b.p23.VOXU, b.p01.SYS_RESETn5, a.p23.NOKE, b.D2);
-  c.p23.MEBY = tock_pos(a.p23.VOXU, b.p23.VOXU, b.p01.SYS_RESETn5, a.p23.MEBY, b.D3);
-  c.p23.MYPU = tock_pos(a.p23.VOXU, b.p23.VOXU, b.p01.SYS_RESETn5, a.p23.MYPU, b.D4);
-  c.p23.MYCE = tock_pos(a.p23.VOXU, b.p23.VOXU, b.p01.SYS_RESETn5, a.p23.MYCE, b.D5); 
-  c.p23.MUVO = tock_pos(a.p23.VOXU, b.p23.VOXU, b.p01.SYS_RESETn5, a.p23.MUVO, b.D6);
-  c.p23.NUKU = tock_pos(a.p23.VOXU, b.p23.VOXU, b.p01.SYS_RESETn5, a.p23.NUKU, b.D7);
+  c.p23.MYPA = tock_pos(a.p23.VOXU, b.p23.VOXU, b.sys.SYS_RESETn5, a.p23.MYPA, b.D0);
+  c.p23.NOFE = tock_pos(a.p23.VOXU, b.p23.VOXU, b.sys.SYS_RESETn5, a.p23.NOFE, b.D1);
+  c.p23.NOKE = tock_pos(a.p23.VOXU, b.p23.VOXU, b.sys.SYS_RESETn5, a.p23.NOKE, b.D2);
+  c.p23.MEBY = tock_pos(a.p23.VOXU, b.p23.VOXU, b.sys.SYS_RESETn5, a.p23.MEBY, b.D3);
+  c.p23.MYPU = tock_pos(a.p23.VOXU, b.p23.VOXU, b.sys.SYS_RESETn5, a.p23.MYPU, b.D4);
+  c.p23.MYCE = tock_pos(a.p23.VOXU, b.p23.VOXU, b.sys.SYS_RESETn5, a.p23.MYCE, b.D5); 
+  c.p23.MUVO = tock_pos(a.p23.VOXU, b.p23.VOXU, b.sys.SYS_RESETn5, a.p23.MUVO, b.D6);
+  c.p23.NUKU = tock_pos(a.p23.VOXU, b.p23.VOXU, b.sys.SYS_RESETn5, a.p23.NUKU, b.D7);
 
   c.p23.LOVA = not(!b.p23.MYPA);
   c.p23.MUKA = not(!b.p23.NOFE);
@@ -72,19 +72,19 @@ void P23_VideoRegs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   // FF4A WY
-  c.p23.WAXU = and(b.p07.CPU_RD2, b.p22.FF4A);
-  c.p23.WEKO = and(b.p07.CPU_WR2, b.p22.FF4A);
+  c.p23.WAXU = and(b.sys.CPU_RD2, b.p22.FF4A);
+  c.p23.WEKO = and(b.sys.CPU_WR2, b.p22.FF4A);
   c.p23.VEFU = not(b.p23.WEKO);
   c.p23.VOMY = not(b.p23.WAXU);
 
-  c.p23.NESO = tock_pos(a.p23.VEFU, b.p23.VEFU, b.p01.SYS_RESETn5, b.p23.NESO, b.D0);
-  c.p23.NYRO = tock_pos(a.p23.VEFU, b.p23.VEFU, b.p01.SYS_RESETn5, b.p23.NYRO, b.D1);
-  c.p23.NAGA = tock_pos(a.p23.VEFU, b.p23.VEFU, b.p01.SYS_RESETn5, b.p23.NAGA, b.D2);
-  c.p23.MELA = tock_pos(a.p23.VEFU, b.p23.VEFU, b.p01.SYS_RESETn5, b.p23.MELA, b.D3);
-  c.p23.NULO = tock_pos(a.p23.VEFU, b.p23.VEFU, b.p01.SYS_RESETn5, b.p23.NULO, b.D4);
-  c.p23.NENE = tock_pos(a.p23.VEFU, b.p23.VEFU, b.p01.SYS_RESETn5, b.p23.NENE, b.D5);
-  c.p23.NUKA = tock_pos(a.p23.VEFU, b.p23.VEFU, b.p01.SYS_RESETn5, b.p23.NUKA, b.D6);
-  c.p23.NAFU = tock_pos(a.p23.VEFU, b.p23.VEFU, b.p01.SYS_RESETn5, b.p23.NAFU, b.D7);
+  c.p23.NESO = tock_pos(a.p23.VEFU, b.p23.VEFU, b.sys.SYS_RESETn5, b.p23.NESO, b.D0);
+  c.p23.NYRO = tock_pos(a.p23.VEFU, b.p23.VEFU, b.sys.SYS_RESETn5, b.p23.NYRO, b.D1);
+  c.p23.NAGA = tock_pos(a.p23.VEFU, b.p23.VEFU, b.sys.SYS_RESETn5, b.p23.NAGA, b.D2);
+  c.p23.MELA = tock_pos(a.p23.VEFU, b.p23.VEFU, b.sys.SYS_RESETn5, b.p23.MELA, b.D3);
+  c.p23.NULO = tock_pos(a.p23.VEFU, b.p23.VEFU, b.sys.SYS_RESETn5, b.p23.NULO, b.D4);
+  c.p23.NENE = tock_pos(a.p23.VEFU, b.p23.VEFU, b.sys.SYS_RESETn5, b.p23.NENE, b.D5);
+  c.p23.NUKA = tock_pos(a.p23.VEFU, b.p23.VEFU, b.sys.SYS_RESETn5, b.p23.NUKA, b.D6);
+  c.p23.NAFU = tock_pos(a.p23.VEFU, b.p23.VEFU, b.sys.SYS_RESETn5, b.p23.NAFU, b.D7);
 
   c.p23.PUNU = not(!b.p23.NESO);
   c.p23.PODA = not(!b.p23.NYRO);
@@ -107,19 +107,19 @@ void P23_VideoRegs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   // FF43 SCX
-  c.p23.AVOG = and(b.p22.FF43, b.p07.CPU_RD2);
-  c.p23.ARUR = and(b.p22.FF43, b.p07.CPU_WR2);
+  c.p23.AVOG = and(b.p22.FF43, b.sys.CPU_RD2);
+  c.p23.ARUR = and(b.p22.FF43, b.sys.CPU_WR2);
   c.p23.AMUN = not(b.p23.ARUR);
   c.p23.BEBA = not(b.p23.AVOG);
 
-  c.p23.DATY = tock_pos(a.p23.AMUN, b.p23.AMUN, b.p01.SYS_RESETn2, a.p23.DATY, b.D0);
-  c.p23.DUZU = tock_pos(a.p23.AMUN, b.p23.AMUN, b.p01.SYS_RESETn2, a.p23.DUZU, b.D1);
-  c.p23.CYXU = tock_pos(a.p23.AMUN, b.p23.AMUN, b.p01.SYS_RESETn2, a.p23.CYXU, b.D2);
-  c.p23.GUBO = tock_pos(a.p23.AMUN, b.p23.AMUN, b.p01.SYS_RESETn2, a.p23.GUBO, b.D3);
-  c.p23.BEMY = tock_pos(a.p23.AMUN, b.p23.AMUN, b.p01.SYS_RESETn2, a.p23.BEMY, b.D4);
-  c.p23.CUZY = tock_pos(a.p23.AMUN, b.p23.AMUN, b.p01.SYS_RESETn2, a.p23.CUZY, b.D5);
-  c.p23.CABU = tock_pos(a.p23.AMUN, b.p23.AMUN, b.p01.SYS_RESETn2, a.p23.CABU, b.D6);
-  c.p23.BAKE = tock_pos(a.p23.AMUN, b.p23.AMUN, b.p01.SYS_RESETn2, a.p23.BAKE, b.D7);
+  c.p23.DATY = tock_pos(a.p23.AMUN, b.p23.AMUN, b.sys.SYS_RESETn2, a.p23.DATY, b.D0);
+  c.p23.DUZU = tock_pos(a.p23.AMUN, b.p23.AMUN, b.sys.SYS_RESETn2, a.p23.DUZU, b.D1);
+  c.p23.CYXU = tock_pos(a.p23.AMUN, b.p23.AMUN, b.sys.SYS_RESETn2, a.p23.CYXU, b.D2);
+  c.p23.GUBO = tock_pos(a.p23.AMUN, b.p23.AMUN, b.sys.SYS_RESETn2, a.p23.GUBO, b.D3);
+  c.p23.BEMY = tock_pos(a.p23.AMUN, b.p23.AMUN, b.sys.SYS_RESETn2, a.p23.BEMY, b.D4);
+  c.p23.CUZY = tock_pos(a.p23.AMUN, b.p23.AMUN, b.sys.SYS_RESETn2, a.p23.CUZY, b.D5);
+  c.p23.CABU = tock_pos(a.p23.AMUN, b.p23.AMUN, b.sys.SYS_RESETn2, a.p23.CABU, b.D6);
+  c.p23.BAKE = tock_pos(a.p23.AMUN, b.p23.AMUN, b.sys.SYS_RESETn2, a.p23.BAKE, b.D7);
 
   c.p23.EDOS = not(!b.p23.DATY);
   c.p23.EKOB = not(!b.p23.DUZU);
@@ -142,19 +142,19 @@ void P23_VideoRegs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   // FF42 SCY
-  c.p23.ANYP = and(b.p07.CPU_RD2, b.p22.FF42);
-  c.p23.BEDY = and(b.p07.CPU_WR2, b.p22.FF42);
+  c.p23.ANYP = and(b.sys.CPU_RD2, b.p22.FF42);
+  c.p23.BEDY = and(b.sys.CPU_WR2, b.p22.FF42);
   c.p23.CAVO = not(b.p23.BEDY);
   c.p23.BUWY = not(b.p23.ANYP);
 
-  c.p23.GAVE = tock_pos(a.p23.CAVO, b.p23.CAVO, b.p01.SYS_RESETn2, b.p23.GAVE, b.D0);
-  c.p23.FYMO = tock_pos(a.p23.CAVO, b.p23.CAVO, b.p01.SYS_RESETn2, b.p23.FYMO, b.D1);
-  c.p23.FEZU = tock_pos(a.p23.CAVO, b.p23.CAVO, b.p01.SYS_RESETn2, b.p23.FEZU, b.D2);
-  c.p23.FUJO = tock_pos(a.p23.CAVO, b.p23.CAVO, b.p01.SYS_RESETn2, b.p23.FUJO, b.D3);
-  c.p23.DEDE = tock_pos(a.p23.CAVO, b.p23.CAVO, b.p01.SYS_RESETn2, b.p23.DEDE, b.D4);
-  c.p23.FOTY = tock_pos(a.p23.CAVO, b.p23.CAVO, b.p01.SYS_RESETn2, b.p23.FOTY, b.D5);
-  c.p23.FOHA = tock_pos(a.p23.CAVO, b.p23.CAVO, b.p01.SYS_RESETn2, b.p23.FOHA, b.D6);
-  c.p23.FUNY = tock_pos(a.p23.CAVO, b.p23.CAVO, b.p01.SYS_RESETn2, b.p23.FUNY, b.D7);
+  c.p23.GAVE = tock_pos(a.p23.CAVO, b.p23.CAVO, b.sys.SYS_RESETn2, b.p23.GAVE, b.D0);
+  c.p23.FYMO = tock_pos(a.p23.CAVO, b.p23.CAVO, b.sys.SYS_RESETn2, b.p23.FYMO, b.D1);
+  c.p23.FEZU = tock_pos(a.p23.CAVO, b.p23.CAVO, b.sys.SYS_RESETn2, b.p23.FEZU, b.D2);
+  c.p23.FUJO = tock_pos(a.p23.CAVO, b.p23.CAVO, b.sys.SYS_RESETn2, b.p23.FUJO, b.D3);
+  c.p23.DEDE = tock_pos(a.p23.CAVO, b.p23.CAVO, b.sys.SYS_RESETn2, b.p23.DEDE, b.D4);
+  c.p23.FOTY = tock_pos(a.p23.CAVO, b.p23.CAVO, b.sys.SYS_RESETn2, b.p23.FOTY, b.D5);
+  c.p23.FOHA = tock_pos(a.p23.CAVO, b.p23.CAVO, b.sys.SYS_RESETn2, b.p23.FOHA, b.D6);
+  c.p23.FUNY = tock_pos(a.p23.CAVO, b.p23.CAVO, b.sys.SYS_RESETn2, b.p23.FUNY, b.D7);
 
   c.p23.WARE = not(!b.p23.GAVE);
   c.p23.GOBA = not(!b.p23.FYMO);
@@ -177,19 +177,19 @@ void P23_VideoRegs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   // FF45 LYC
-  c.p23.XYLY = and(b.p07.CPU_RD2, b.p22.FF45);
-  c.p23.XUFA = and(b.p07.CPU_WR2, b.p22.FF45);
+  c.p23.XYLY = and(b.sys.CPU_RD2, b.p22.FF45);
+  c.p23.XUFA = and(b.sys.CPU_WR2, b.p22.FF45);
   c.p23.WANE = not(b.p23.XUFA);
   c.p23.WEKU = not(b.p23.XYLY);
 
-  c.p23.SYRY = tock_pos(a.p23.WANE, b.p23.WANE, b.p01.SYS_RESETn6, a.p23.SYRY, b.D0);
-  c.p23.VUCE = tock_pos(a.p23.WANE, b.p23.WANE, b.p01.SYS_RESETn6, a.p23.VUCE, b.D1);
-  c.p23.SEDY = tock_pos(a.p23.WANE, b.p23.WANE, b.p01.SYS_RESETn6, a.p23.SEDY, b.D2);
-  c.p23.SALO = tock_pos(a.p23.WANE, b.p23.WANE, b.p01.SYS_RESETn6, a.p23.SALO, b.D3);
-  c.p23.SOTA = tock_pos(a.p23.WANE, b.p23.WANE, b.p01.SYS_RESETn6, a.p23.SOTA, b.D4);
-  c.p23.VAFA = tock_pos(a.p23.WANE, b.p23.WANE, b.p01.SYS_RESETn6, a.p23.VAFA, b.D5);
-  c.p23.VEVO = tock_pos(a.p23.WANE, b.p23.WANE, b.p01.SYS_RESETn6, a.p23.VEVO, b.D6);
-  c.p23.RAHA = tock_pos(a.p23.WANE, b.p23.WANE, b.p01.SYS_RESETn6, a.p23.RAHA, b.D7);
+  c.p23.SYRY = tock_pos(a.p23.WANE, b.p23.WANE, b.sys.SYS_RESETn6, a.p23.SYRY, b.D0);
+  c.p23.VUCE = tock_pos(a.p23.WANE, b.p23.WANE, b.sys.SYS_RESETn6, a.p23.VUCE, b.D1);
+  c.p23.SEDY = tock_pos(a.p23.WANE, b.p23.WANE, b.sys.SYS_RESETn6, a.p23.SEDY, b.D2);
+  c.p23.SALO = tock_pos(a.p23.WANE, b.p23.WANE, b.sys.SYS_RESETn6, a.p23.SALO, b.D3);
+  c.p23.SOTA = tock_pos(a.p23.WANE, b.p23.WANE, b.sys.SYS_RESETn6, a.p23.SOTA, b.D4);
+  c.p23.VAFA = tock_pos(a.p23.WANE, b.p23.WANE, b.sys.SYS_RESETn6, a.p23.VAFA, b.D5);
+  c.p23.VEVO = tock_pos(a.p23.WANE, b.p23.WANE, b.sys.SYS_RESETn6, a.p23.VEVO, b.D6);
+  c.p23.RAHA = tock_pos(a.p23.WANE, b.p23.WANE, b.sys.SYS_RESETn6, a.p23.RAHA, b.D7);
 
   c.p23.RETU = not(!b.p23.SYRY);
   c.p23.VOJO = not(!b.p23.VUCE);
@@ -212,7 +212,7 @@ void P23_VideoRegs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   // FF44 LY
-  c.p23.WAFU = and(b.p07.CPU_RD2, b.p22.FF44);
+  c.p23.WAFU = and(b.sys.CPU_RD2, b.p22.FF44);
   c.p23.VARO = not(b.p23.WAFU);
 
   c.p23.WURY = not(b.p21.V0);

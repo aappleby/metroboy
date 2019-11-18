@@ -104,15 +104,6 @@ struct ApuControl {
   /*p10.BAFU*/ bool CPU_WRn;
   /*p10.BOGY*/ bool APU_WR;
 
-
-  /*p10.AMUS*/ bool ADDR_xxxxxxxx0xx00000;
-  /*p10.ANAP*/ bool ADDR_111111110xx00000; // -> p07.APER
-  /*p10.BYKO*/ bool ADDR_xxxxxxxxxx0xxxxx;
-  /*p10.AKUG*/ bool ADDR_xxxxxxxxx0xxxxxx;
-
-  /*p10.ATOZ*/ bool FF00_WRn;
-  /*p10.ACAT*/ bool FF00_RD;
-
   /*p10.ATUP*/ bool ADDR_xxx0xxxx;
   /*p10.BOXY*/ bool ADDR_xx0xxxxx;
   /*p10.ASAD*/ bool ADDR_x0xxxxxx;

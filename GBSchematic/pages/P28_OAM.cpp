@@ -6,210 +6,176 @@
 
 void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  c.p28.WEFE = not(b.chip.P10_B);
-  c.p28.YVAL = not(b.p28.CLK3);
-  c.p28.YRYV = not(b.p28.YVAL);
-  c.p28.ZODO = not(b.p28.YRYV);
+  /*p28.WEFE*/ c.p28.WEFE = not(b.chip.P10_B);
+  /*p28.YVAL*/ c.p28.YVAL = not(b.p28.CLK3);
+  /*p28.YRYV*/ c.p28.YRYV = not(b.p28.YVAL);
+  /*p28.ZODO*/ c.p28.OAM_CLK = not(b.p28.YRYV);
 
   //----------
 
-  c.p28.AWOH = not(b.p29.XUPY);
-  c.p28.ABAF = not(b.p29.CATU);
-  c.p28.ANEL = tock_pos(a.p28.AWOH, b.p28.AWOH, b.p01.VID_RESETn3, b.p28.ANEL, b.p29.CATU);
-  c.p28.BYHA = or(b.p28.ANEL, b.p28.ABAF, b.p01.VID_RESETn3);
-  c.p28.ATEJ = not(b.p28.BYHA);
-  c.p28.ANOM = nor(b.p01.VID_RESET6, b.p28.ATEJ);
-  c.p28.AZYB = not(b.p28.ATEJ);
-  c.p28.ABAK = or(b.p28.ATEJ, b.p01.VID_RESET7);
-  c.p28.BYVA = not(b.p28.ABAK);
+  /*p28.AWOH*/ c.p28.AWOH = not(b.p29.XUPY);
+  /*p28.ABAF*/ c.p28.ABAF = not(b.p29.CATU);
+  /*p28.ANEL*/ c.p28.ANEL = tock_pos(a.p28.AWOH, b.p28.AWOH, b.sys.VID_RESETn3, b.p28.ANEL, b.p29.CATU);
+  /*p28.BYHA*/ c.p28.BYHA = or(b.p28.ANEL, b.p28.ABAF, b.sys.VID_RESETn3);
+  /*p28.ATEJ*/ c.p28.ATEJ = not(b.p28.BYHA);
+  /*p28.AZYB*/ c.p28.AZYB = not(b.p28.ATEJ);
 
   //----------
   // sprite scan counter
 
-  c.p28.FETO = and(b.p28.YFEL, b.p28.WEWY, b.p28.FONY, b.p28.GOSO);
-  c.p28.GAVA = or(b.p28.FETO, b.p29.XUPY);
+  /*p28.FETO*/ c.p28.SCAN_DONE = and(b.p28.SCAN0, b.p28.SCAN1, b.p28.SCAN2, b.p28.SCAN5);
+  /*p28.GAVA*/ c.p28.SCAN_CLK  = or(b.p28.SCAN_DONE, b.p29.XUPY);
+  /*p28.ANOM*/ c.p28.SCAN_RSTn = nor(b.sys.VID_RESET6, b.p28.ATEJ);
 
-  c.p28.YFEL = tock_pos( a.p28.GAVA,  b.p28.GAVA, b.p28.ANOM, b.p28.YFEL, !b.p28.YFEL);
-  c.p28.WEWY = tock_pos(!a.p28.YFEL, !b.p28.YFEL, b.p28.ANOM, b.p28.WEWY, !b.p28.WEWY);
-  c.p28.GOSO = tock_pos(!a.p28.WEWY, !b.p28.WEWY, b.p28.ANOM, b.p28.GOSO, !b.p28.GOSO);
-  c.p28.ELYN = tock_pos(!a.p28.GOSO, !b.p28.GOSO, b.p28.ANOM, b.p28.ELYN, !b.p28.ELYN);
-  c.p28.FAHA = tock_pos(!a.p28.ELYN, !b.p28.ELYN, b.p28.ANOM, b.p28.FAHA, !b.p28.FAHA);
-  c.p28.FONY = tock_pos(!a.p28.FAHA, !b.p28.FAHA, b.p28.ANOM, b.p28.FONY, !b.p28.FONY);
-
-  //----------
-
-  c.p28.ASEN = or(b.p01.VID_RESET6, b.p29.AVAP);
-  c.p28.BOGE = not(b.p04.MATU);
-  c.p28.BESU = unk2(b.p29.CATU, b.p28.ASEN);
-  c.p28.AJON = and(b.p21.XYMU, b.p28.BOGE);
-  c.p28.ACYL = and(b.p28.BOGE, b.p28.BESU);
-  c.p28.BETE = not(b.p28.AJON);
-  c.p28.APAR = not(b.p28.ACYL);
-  c.p28.AJUJ = nor(b.p04.MATU, b.p28.ACYL, b.p28.AJON);
-  c.p28.ASAM = or(b.p28.ACYL, b.p21.XYMU, b.p04.MATU);
-  c.p28.XYNY = not(b.p04.CPUCLK_ABCDxxxx9);
-  c.p28.XUTO = and(b.p07.ADDR_OAM, b.p07.CPU_WR2);
-  c.p28.AMAB = and(b.p07.ADDR_OAM, b.p28.AJUJ);
-  c.p28.ADAH = not(b.p07.ADDR_OAM);
-  c.p28.WUJE = unk2(b.p28.XYNY, b.p28.XUTO);
-  c.p28.XUPA = not(b.p28.WUJE);
-  c.p28.APAG = amux2(b.p28.XUPA, b.p28.AMAB, b.p28.AJUJ, b.p28.ADAH);
-
-  c.p28.WEFY = and(b.p29.TUVO, b.p29.TYFO);
-  c.p28.BOFE = not(b.p04.FROM_CPU5);
-  c.p28.AJEP = and(b.p28.ACYL, b.p29.XOCE);
-  c.p28.XUJA = not(b.p28.WEFY);
-  c.p28.BOTA = nor(b.p28.BOFE, b.p07.ADDR_OAM, b.p07.CPU_RD2);
-  c.p28.ASYT = and(b.p28.AJEP, b.p28.XUJA, b.p28.BOTA);
-  c.p28.BODE = not(b.p28.ASYT);
+  /*p28.YFEL*/ c.p28.SCAN0 = tock_pos( a.p28.SCAN_CLK, b.p28.SCAN_CLK, b.p28.SCAN_RSTn, b.p28.SCAN0, !b.p28.SCAN0);
+  /*p28.WEWY*/ c.p28.SCAN1 = tock_pos(!a.p28.SCAN0,    !b.p28.SCAN0,   b.p28.SCAN_RSTn, b.p28.SCAN1, !b.p28.SCAN1);
+  /*p28.GOSO*/ c.p28.SCAN2 = tock_pos(!a.p28.SCAN1,    !b.p28.SCAN1,   b.p28.SCAN_RSTn, b.p28.SCAN2, !b.p28.SCAN2);
+  /*p28.ELYN*/ c.p28.SCAN3 = tock_pos(!a.p28.SCAN2,    !b.p28.SCAN2,   b.p28.SCAN_RSTn, b.p28.SCAN3, !b.p28.SCAN3);
+  /*p28.FAHA*/ c.p28.SCAN4 = tock_pos(!a.p28.SCAN3,    !b.p28.SCAN3,   b.p28.SCAN_RSTn, b.p28.SCAN4, !b.p28.SCAN4);
+  /*p28.FONY*/ c.p28.SCAN5 = tock_pos(!a.p28.SCAN4,    !b.p28.SCAN4,   b.p28.SCAN_RSTn, b.p28.SCAN5, !b.p28.SCAN5);
 
   //----------
 
-  c.p28.WARU = and(b.p22.FF40, b.p07.CPU_WR2);
-  c.p28.AZUL = not(b.p28.APAG);
-  c.p28.AZAR = not(b.p04.VRAM_TO_OAM);
+  /*p28.ASEN*/ c.p28.ASEN = or(b.sys.VID_RESET6, b.p29.AVAP);
+  /*p28.BOGE*/ c.p28.DMA_RUNNING_SYNCn = not(b.sys.DMA_RUNNING_SYNC);
+  /*p28.BESU*/ c.p28.BESU = or(b.p29.CATU, b.p28.ASEN);
+  /*p28.BETE*/ c.p28.OAM_ADDR_RENDER = not(b.p28.AJON);
+  /*p28.APAR*/ c.p28.OAM_ADDR_PARSE = not(b.p28.ACYL);
+  /*p28.ASAM*/ c.p28.OAM_ADDR_CPU = or(b.p28.ACYL, b.p21.XYMU, b.sys.DMA_RUNNING_SYNC);
+  /*p28.XYNY*/ c.p28.XYNY = not(b.sys.CPUCLK_ABCDxxxx9);
+  
+  /*p28.XUTO*/ c.p28.OAM_WR = and(b.sys.ADDR_OAM, b.sys.CPU_WR2);
 
-  c.p28.ZAXA = not(b.D0);
-  c.p28.ZAMY = not(b.D0);
-  c.p28.ZAKY = not(b.D1);
-  c.p28.ZOPU = not(b.D1);
-  c.p28.WULE = not(b.D2);
-  c.p28.WYKY = not(b.D2);
-  c.p28.ZOZO = not(b.D3);
-  c.p28.ZAJA = not(b.D3);
+  /*p28.WUJE*/ c.p28.WUJE = or(b.p28.XYNY, b.p28.OAM_WR);
+  /*p28.WEFY*/ c.p28.WEFY = and(b.p29.TUVO, b.p29.TYFO);
+  /*p28.BOFE*/ c.p28.BOFE = not(b.sys.FROM_CPU5);
+  /*p28.AJEP*/ c.p28.AJEP = and(b.p28.ACYL, b.p29.XOCE);
+  /*p28.XUJA*/ c.p28.XUJA = not(b.p28.WEFY);
+  /*p28.BOTA*/ c.p28.BOTA = nor(b.p28.BOFE, b.sys.ADDR_OAM, b.sys.CPU_RD2);
+  /*p28.ASYT*/ c.p28.ASYT = and(b.p28.AJEP, b.p28.XUJA, b.p28.BOTA);
+  /*p28.BODE*/ c.p28.CLK3 = not(b.p28.ASYT);
 
-  c.p28.ZUFO = not(b.D4);
-  c.p28.ZUGA = not(b.D4);
-  c.p28.ZATO = not(b.D5);
-  c.p28.ZUMO = not(b.D5);
-  c.p28.YVUC = not(b.D6);
-  c.p28.XYTO = not(b.D6);
-  c.p28.ZUFE = not(b.D7);
-  c.p28.ZYFA = not(b.D7);
+  //----------
 
-  c.p28.WUZU = not(b.MD0);
-  c.p28.WOWA = not(b.MD0);
-  c.p28.AXER = not(b.MD1);
-  c.p28.AVEB = not(b.MD1);
-  c.p28.ASOX = not(b.MD2);
-  c.p28.AMUH = not(b.MD2);
-  c.p28.CETU = not(b.MD3);
-  c.p28.COFO = not(b.MD3);
+  /*p28.WARU*/ c.p28.WARU = and(b.p22.FF40, b.sys.CPU_WR2);
 
-  c.p28.ARYN = not(b.MD4);
-  c.p28.AZOZ = not(b.MD4);
-  c.p28.ACOT = not(b.MD5);
-  c.p28.AGYK = not(b.MD5);
-  c.p28.CUJE = not(b.MD6);
-  c.p28.BUSE = not(b.MD6);
-  c.p28.ATER = not(b.MD7);
-  c.p28.ANUM = not(b.MD7);
 
-  if (b.p28.AZUL) {
-    c.OAM_A_D0 = b.p28.ZAXA;
-    c.OAM_B_D0 = b.p28.ZAMY;
-    c.OAM_A_D1 = b.p28.ZAKY;
-    c.OAM_B_D1 = b.p28.ZOPU;
-    c.OAM_A_D2 = b.p28.WULE;
-    c.OAM_B_D2 = b.p28.WYKY;
-    c.OAM_A_D3 = b.p28.ZOZO;
-    c.OAM_B_D3 = b.p28.ZAJA;
+  /*p28.XUPA*/ c.p28.XUPA      = not(b.p28.WUJE);
+  /*p28.AMAB*/ c.p28.AMAB      = and(b.sys.ADDR_OAM, b.p28.AJUJ);
 
-    c.OAM_A_D4 = b.p28.ZUFO;
-    c.OAM_B_D4 = b.p28.ZUGA;
-    c.OAM_A_D5 = b.p28.ZATO;
-    c.OAM_B_D5 = b.p28.ZUMO;
-    c.OAM_A_D6 = b.p28.YVUC;
-    c.OAM_B_D6 = b.p28.XYTO;
-    c.OAM_A_D7 = b.p28.ZUFE;
-    c.OAM_B_D7 = b.p28.ZYFA;
-  }
+  /*p28.AJON*/ c.p28.AJON      = and(b.p28.DMA_RUNNING_SYNCn, b.p21.XYMU);
+  /*p28.ACYL*/ c.p28.ACYL      = and(b.p28.DMA_RUNNING_SYNCn, b.p28.BESU);
+  /*p28.AJUJ*/ c.p28.AJUJ      = nor(b.sys.DMA_RUNNING_SYNC, b.p28.ACYL, b.p28.AJON);
+  /*p28.ADAH*/ c.p28.ADDR_OAMn = not(b.sys.ADDR_OAM);
 
-  if (b.p28.AZAR) {
-    c.OAM_A_D0 = b.p28.WUZU;
-    c.OAM_B_D0 = b.p28.WOWA;
-    c.OAM_A_D1 = b.p28.AXER;
-    c.OAM_B_D1 = b.p28.AVEB;
-    c.OAM_A_D2 = b.p28.ASOX;
-    c.OAM_B_D2 = b.p28.AMUH;
-    c.OAM_A_D3 = b.p28.CETU;
-    c.OAM_B_D3 = b.p28.COFO;
+  /*p28.APAG*/ c.p28.APAG = amux2(b.p28.XUPA, b.p28.AMAB, b.p28.AJUJ, b.p28.ADDR_OAMn);
+  /*p28.AZUL*/ c.p28.AZUL = not(b.p28.APAG);
 
-    c.OAM_A_D4 = b.p28.ARYN;
-    c.OAM_B_D4 = b.p28.AZOZ;
-    c.OAM_A_D5 = b.p28.ACOT;
-    c.OAM_B_D5 = b.p28.AGYK;
-    c.OAM_A_D6 = b.p28.CUJE;
-    c.OAM_B_D6 = b.p28.BUSE;
-    c.OAM_A_D7 = b.p28.ATER;
-    c.OAM_B_D7 = b.p28.ANUM;
-  }
+  /*p28.ZAXA*/ if (b.p28.AZUL) c.OAM_A_D0 = b.D0;
+  /*p28.ZAMY*/ if (b.p28.AZUL) c.OAM_B_D0 = b.D0;
+  /*p28.ZAKY*/ if (b.p28.AZUL) c.OAM_A_D1 = b.D1;
+  /*p28.ZOPU*/ if (b.p28.AZUL) c.OAM_B_D1 = b.D1;
+  /*p28.WULE*/ if (b.p28.AZUL) c.OAM_A_D2 = b.D2;
+  /*p28.WYKY*/ if (b.p28.AZUL) c.OAM_B_D2 = b.D2;
+  /*p28.ZOZO*/ if (b.p28.AZUL) c.OAM_A_D3 = b.D3;
+  /*p28.ZAJA*/ if (b.p28.AZUL) c.OAM_B_D3 = b.D3;
+  /*p28.ZUFO*/ if (b.p28.AZUL) c.OAM_A_D4 = b.D4;
+  /*p28.ZUGA*/ if (b.p28.AZUL) c.OAM_B_D4 = b.D4;
+  /*p28.ZATO*/ if (b.p28.AZUL) c.OAM_A_D5 = b.D5;
+  /*p28.ZUMO*/ if (b.p28.AZUL) c.OAM_B_D5 = b.D5;
+  /*p28.YVUC*/ if (b.p28.AZUL) c.OAM_A_D6 = b.D6;
+  /*p28.XYTO*/ if (b.p28.AZUL) c.OAM_B_D6 = b.D6;
+  /*p28.ZUFE*/ if (b.p28.AZUL) c.OAM_A_D7 = b.D7;
+  /*p28.ZYFA*/ if (b.p28.AZUL) c.OAM_B_D7 = b.D7;
+
+  /*p28.AZAR*/ c.p28.VRAM_TO_OAMc = not(b.sys.VRAM_TO_OAMn);
+
+  /*p28.WUZU*/ if (b.p28.VRAM_TO_OAMc) c.OAM_A_D0 = b.MD0;
+  /*p28.WOWA*/ if (b.p28.VRAM_TO_OAMc) c.OAM_B_D0 = b.MD0;
+  /*p28.AXER*/ if (b.p28.VRAM_TO_OAMc) c.OAM_A_D1 = b.MD1;
+  /*p28.AVEB*/ if (b.p28.VRAM_TO_OAMc) c.OAM_B_D1 = b.MD1;
+  /*p28.ASOX*/ if (b.p28.VRAM_TO_OAMc) c.OAM_A_D2 = b.MD2;
+  /*p28.AMUH*/ if (b.p28.VRAM_TO_OAMc) c.OAM_B_D2 = b.MD2;
+  /*p28.CETU*/ if (b.p28.VRAM_TO_OAMc) c.OAM_A_D3 = b.MD3;
+  /*p28.COFO*/ if (b.p28.VRAM_TO_OAMc) c.OAM_B_D3 = b.MD3;
+  /*p28.ARYN*/ if (b.p28.VRAM_TO_OAMc) c.OAM_A_D4 = b.MD4;
+  /*p28.AZOZ*/ if (b.p28.VRAM_TO_OAMc) c.OAM_B_D4 = b.MD4;
+  /*p28.ACOT*/ if (b.p28.VRAM_TO_OAMc) c.OAM_A_D5 = b.MD5;
+  /*p28.AGYK*/ if (b.p28.VRAM_TO_OAMc) c.OAM_B_D5 = b.MD5;
+  /*p28.CUJE*/ if (b.p28.VRAM_TO_OAMc) c.OAM_A_D6 = b.MD6;
+  /*p28.BUSE*/ if (b.p28.VRAM_TO_OAMc) c.OAM_B_D6 = b.MD6;
+  /*p28.ATER*/ if (b.p28.VRAM_TO_OAMc) c.OAM_A_D7 = b.MD7;
+  /*p28.ANUM*/ if (b.p28.VRAM_TO_OAMc) c.OAM_B_D7 = b.MD7;
 
   //----------
   // OAM address generator
 
-  c.p28.FOBY = not(b.A07);
-  c.p28.WAXA = not(b.A06);
-  c.p28.GERA = not(b.A05);
-  c.p28.FEVU = not(b.A04);
-  c.p28.WAPE = not(b.A03);
-  c.p28.GOSE = not(b.A02);
-  c.p28.WACU = not(b.A01);
-  c.p28.GARO = not(b.A00);
+  /*p28.GARO*/ c.p28.A0n = not(b.A00);
+  /*p28.WACU*/ c.p28.A1n = not(b.A01);
+  /*p28.GOSE*/ c.p28.A2n = not(b.A02);
+  /*p28.WAPE*/ c.p28.A3n = not(b.A03);
+  /*p28.FEVU*/ c.p28.A4n = not(b.A04);
+  /*p28.GERA*/ c.p28.A5n = not(b.A05);
+  /*p28.WAXA*/ c.p28.A6n = not(b.A06);
+  /*p28.FOBY*/ c.p28.A7n = not(b.A07);
 
-  c.p28.FYKE = not(b.p30.WEZA);
-  c.p28.FUGU = not(b.p30.WUCO);
-  c.p28.FACO = not(b.p30.WYDA);
-  c.p28.FABY = not(b.p30.ZYSU);
-  c.p28.GYKA = not(b.p30.WYSE);
-  c.p28.GYBU = not(b.p30.WUZY);
-  c.p28.WYDU = not(b.p28.WEFE);
-  c.p28.GECA = not(b.p28.WEFE);
+  // I've got the order of these backwards somewhere
+  /*p28.FYKE*/ c.p28.IDX_0n = not(b.p30.IDX_0);
+  /*p28.FUGU*/ c.p28.IDX_1n = not(b.p30.IDX_1);
+  /*p28.FACO*/ c.p28.IDX_2n = not(b.p30.IDX_2);
+  /*p28.FABY*/ c.p28.IDX_3n = not(b.p30.IDX_3);
+  /*p28.GYKA*/ c.p28.IDX_4n = not(b.p30.IDX_4);
+  /*p28.GYBU*/ c.p28.IDX_5n = not(b.p30.IDX_5);
 
-  c.p28.GOBY = not(b.p28.FONY);
-  c.p28.GAMA = not(b.p28.FAHA);
-  c.p28.FAKU = not(b.p28.ELYN);
-  c.p28.FUTO = not(b.p28.GOSO);
-  c.p28.GEMA = not(b.p28.WEWY);
-  c.p28.GUSE = not(b.p28.YFEL);
-  c.p28.WUWE = not(b.chip.P10_B);
-  c.p28.GEFY = not(b.chip.P10_B);
+  /*p28.WYDU*/ c.p28.WYDU = not(b.p28.WEFE);
+  /*p28.GECA*/ c.p28.GECA = not(b.p28.WEFE);
 
-  c.p28.FETU = not(b.p04.DMA_A07);
-  c.p28.FYDU = not(b.p04.DMA_A06);
-  c.p28.EDOL = not(b.p04.DMA_A05);
-  c.p28.ELUG = not(b.p04.DMA_A04);
-  c.p28.FYKY = not(b.p04.DMA_A03);
-  c.p28.FAGO = not(b.p04.DMA_A02);
-  c.p28.FESA = not(b.p04.DMA_A01);
-  c.p28.FODO = not(b.p04.DMA_A00);
+  /*p28.WUWE*/ c.p28.SCANZn = not(b.chip.P10_B);
+  /*p28.GUSE*/ c.p28.SCAN0n = not(b.p28.SCAN0);
+  /*p28.GEMA*/ c.p28.SCAN1n = not(b.p28.SCAN1);
+  /*p28.FUTO*/ c.p28.SCAN2n = not(b.p28.SCAN2);
+  /*p28.FAKU*/ c.p28.SCAN3n = not(b.p28.SCAN3);
+  /*p28.GAMA*/ c.p28.SCAN4n = not(b.p28.SCAN4);
+  /*p28.GOBY*/ c.p28.SCAN5n = not(b.p28.SCAN5);
+  
+  /*p28.GEFY*/ c.p28.GEFY = not(b.chip.P10_B);
 
-  c.p28.YZET = not((b.p28.FOBY & b.p28.OAM_ADDR_CPU) | (b.p28.FYKE & b.p28.OAM_ADDR_RENDER) | (b.p28.GOBY & b.p28.OAM_ADDR_PARSE) | (b.p28.FETU & b.p04.OAM_ADDR_DMA));
-  c.p28.XEMU = not((b.p28.WAXA & b.p28.OAM_ADDR_CPU) | (b.p28.FUGU & b.p28.OAM_ADDR_RENDER) | (b.p28.GAMA & b.p28.OAM_ADDR_PARSE) | (b.p28.FYDU & b.p04.OAM_ADDR_DMA));
-  c.p28.YMEV = not((b.p28.GERA & b.p28.OAM_ADDR_CPU) | (b.p28.FACO & b.p28.OAM_ADDR_RENDER) | (b.p28.FAKU & b.p28.OAM_ADDR_PARSE) | (b.p28.EDOL & b.p04.OAM_ADDR_DMA));
-  c.p28.YVOM = not((b.p28.FEVU & b.p28.OAM_ADDR_CPU) | (b.p28.FABY & b.p28.OAM_ADDR_RENDER) | (b.p28.FUTO & b.p28.OAM_ADDR_PARSE) | (b.p28.ELUG & b.p04.OAM_ADDR_DMA));
-  c.p28.YFOC = not((b.p28.WAPE & b.p28.OAM_ADDR_CPU) | (b.p28.GYKA & b.p28.OAM_ADDR_RENDER) | (b.p28.GEMA & b.p28.OAM_ADDR_PARSE) | (b.p28.FYKY & b.p04.OAM_ADDR_DMA));
-  c.p28.YFOT = not((b.p28.GOSE & b.p28.OAM_ADDR_CPU) | (b.p28.GYBU & b.p28.OAM_ADDR_RENDER) | (b.p28.GUSE & b.p28.OAM_ADDR_PARSE) | (b.p28.FAGO & b.p04.OAM_ADDR_DMA));
-  c.p28.ZYFO = not((b.p28.WACU & b.p28.OAM_ADDR_CPU) | (b.p28.WYDU & b.p28.OAM_ADDR_RENDER) | (b.p28.WUWE & b.p28.OAM_ADDR_PARSE) | (b.p28.FESA & b.p04.OAM_ADDR_DMA));
-  c.p28.GEKA = not((b.p28.GARO & b.p28.OAM_ADDR_CPU) | (b.p28.GECA & b.p28.OAM_ADDR_RENDER) | (b.p28.GEFY & b.p28.OAM_ADDR_PARSE) | (b.p28.FODO & b.p04.OAM_ADDR_DMA));
+  /*p28.FETU*/ c.p28.DMA_A07n = not(b.sys.DMA_A07);
+  /*p28.FYDU*/ c.p28.DMA_A06n = not(b.sys.DMA_A06);
+  /*p28.EDOL*/ c.p28.DMA_A05n = not(b.sys.DMA_A05);
+  /*p28.ELUG*/ c.p28.DMA_A04n = not(b.sys.DMA_A04);
+  /*p28.FYKY*/ c.p28.DMA_A03n = not(b.sys.DMA_A03);
+  /*p28.FAGO*/ c.p28.DMA_A02n = not(b.sys.DMA_A02);
+  /*p28.FESA*/ c.p28.DMA_A01n = not(b.sys.DMA_A01);
+  /*p28.FODO*/ c.p28.DMA_A00n = not(b.sys.DMA_A00);
 
-  c.p28.MYNU = nand(b.p07.CPU_RD2, b.p04.FROM_CPU5);
-  c.p28.LEKO = not(b.p28.MYNU);
-  c.p28.WAFO = not(b.p28.GEKA);
-  c.p28.GUKO = and(b.p28.WAFO, b.p28.AMAB, b.p28.LEKO);
-  c.p28.WUKU = and(b.p28.LEKO, b.p28.AMAB, b.p28.GEKA);
-  c.p28.YLYC = and(b.p04.WYJA, b.p28.GEKA);
-  c.p28.YNYC = and(b.p04.WYJA, b.p28.WAFO);
+  /*p28.YZET*/ c.p28.OAM_A7 = not((b.p28.A7n & b.p28.OAM_ADDR_CPU) | (b.p28.IDX_0n & b.p28.OAM_ADDR_RENDER) | (b.p28.SCAN5n & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A07n & b.sys.OAM_ADDR_DMA));
+  /*p28.XEMU*/ c.p28.OAM_A6 = not((b.p28.A6n & b.p28.OAM_ADDR_CPU) | (b.p28.IDX_1n & b.p28.OAM_ADDR_RENDER) | (b.p28.SCAN4n & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A06n & b.sys.OAM_ADDR_DMA));
+  /*p28.YMEV*/ c.p28.OAM_A5 = not((b.p28.A5n & b.p28.OAM_ADDR_CPU) | (b.p28.IDX_2n & b.p28.OAM_ADDR_RENDER) | (b.p28.SCAN3n & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A05n & b.sys.OAM_ADDR_DMA));
+  /*p28.YVOM*/ c.p28.OAM_A4 = not((b.p28.A4n & b.p28.OAM_ADDR_CPU) | (b.p28.IDX_3n & b.p28.OAM_ADDR_RENDER) | (b.p28.SCAN2n & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A04n & b.sys.OAM_ADDR_DMA));
+  /*p28.YFOC*/ c.p28.OAM_A3 = not((b.p28.A3n & b.p28.OAM_ADDR_CPU) | (b.p28.IDX_4n & b.p28.OAM_ADDR_RENDER) | (b.p28.SCAN1n & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A03n & b.sys.OAM_ADDR_DMA));
+  /*p28.YFOT*/ c.p28.OAM_A2 = not((b.p28.A2n & b.p28.OAM_ADDR_CPU) | (b.p28.IDX_5n & b.p28.OAM_ADDR_RENDER) | (b.p28.SCAN0n & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A02n & b.sys.OAM_ADDR_DMA));
+  /*p28.ZYFO*/ c.p28.OAM_A1 = not((b.p28.A1n & b.p28.OAM_ADDR_CPU) | (b.p28.WYDU   & b.p28.OAM_ADDR_RENDER) | (b.p28.SCANZn & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A01n & b.sys.OAM_ADDR_DMA));
 
-  c.p28.WUME = not(b.p28.GUKO);
-  c.p28.WEWU = not(b.p28.WUKU);
-  c.p28.ZONE = not(b.p28.YLYC);
-  c.p28.ZOFE = not(b.p28.YNYC);
+  /*p28.GEKA*/ c.p28.OAM_A0 = not((b.p28.A0n & b.p28.OAM_ADDR_CPU) | (b.p28.GECA & b.p28.OAM_ADDR_RENDER) | (b.p28.GEFY & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A00n & b.sys.OAM_ADDR_DMA));
+
+  /*p28.MYNU*/ c.p28.MYNU = nand(b.sys.CPU_RD2, b.sys.FROM_CPU5);
+  /*p28.LEKO*/ c.p28.LEKO = not(b.p28.MYNU);
+  /*p28.WAFO*/ c.p28.WAFO = not(b.p28.OAM_A0);
+  /*p28.GUKO*/ c.p28.GUKO = and(b.p28.WAFO, b.p28.AMAB, b.p28.LEKO);
+  /*p28.WUKU*/ c.p28.WUKU = and(b.p28.LEKO, b.p28.AMAB, b.p28.OAM_A0);
+  /*p28.WUME*/ c.p28.WUME = not(b.p28.GUKO);
+  /*p28.WEWU*/ c.p28.OAM_A_CPU_RD = not(b.p28.WUKU);
+  /*p28.YLYC*/ c.p28.OAM_A_CSn = and(b.sys.WYJA, b.p28.OAM_A0);
+  /*p28.YNYC*/ c.p28.OAM_B_CSn = and(b.sys.WYJA, b.p28.WAFO);
+
+  /*p28.ZONE*/ c.p28.OAM_A_CS = not(b.p28.OAM_A_CSn);
+  /*p28.ZOFE*/ c.p28.OAM_B_CS = not(b.p28.OAM_B_CSn);
 
   // these are unused
   /*
   c.p28.XUCA = not(b.p28.WARU);
-  c.p28.XECY = tock_pos(a.p28.XUCA, b.p28.XUCA, 0,          b.p28.XECY, b.p01.SYS_RESETn4); // ? weird
-  c.p28.XUVA = tock_pos(a.p28.XYNY, b.p28.XYNY, b.p01.XARE, b.p28.XUVA, b.p28.XECY);
+  c.p28.XECY = tock_pos(a.p28.XUCA, b.p28.XUCA, 0,          b.p28.XECY, b.sys.SYS_RESETn4); // ? weird
+  c.p28.XUVA = tock_pos(a.p28.XYNY, b.p28.XYNY, b.sys.XARE, b.p28.XUVA, b.p28.XECY);
   */
 }

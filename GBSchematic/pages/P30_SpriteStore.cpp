@@ -6,57 +6,50 @@
 
 void P30_SpriteStore::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  c.p30.CYKE = not(b.p29.XUPY);
-  c.p30.WUDA = not(b.p30.CYKE);
-
-  c.p30.XECU = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XECU, b.p28.OAM_A7); // check this oam address line
-  c.p30.YDUF = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.YDUF, b.p28.OAM_A6);
-  c.p30.XOBE = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XOBE, b.p28.OAM_A5);
-  c.p30.ZUZE = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.ZUZE, b.p28.OAM_A4);
-  c.p30.XEDY = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XEDY, b.p28.OAM_A3);
-  c.p30.XADU = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XADU, b.p28.OAM_A2);
-
-  // ok, the schematic has the net the same name as the cell, which is annoying.
-  c.p30.WEZA = not(!b.p30.XECU);
-  c.p30.WUCO = not(!b.p30.YDUF);
-  c.p30.WYDA = not(!b.p30.XOBE);
-  c.p30.ZYSU = not(!b.p30.ZUZE);
-  c.p30.WYSE = not(!b.p30.XEDY);
-  c.p30.WUZY = not(!b.p30.XADU);
-
-  c.p30.CUCA = not(b.p29.DABY);
-  c.p30.CEGA = not(b.p29.DABU);
-  c.p30.CUCU = not(b.p29.DEGE);
-  c.p30.WENU = not(b.p29.GYSA);
+  /*p30.CYKE*/ c.p30.CYKE = not(b.p29.XUPY);
+  /*p30.WUDA*/ c.p30.WUDA = not(b.p30.CYKE);
+  /*p30.XECU*/ c.p30.XECU = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XECU, b.p28.OAM_A7); // check this oam address line
+  /*p30.YDUF*/ c.p30.YDUF = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.YDUF, b.p28.OAM_A6);
+  /*p30.XOBE*/ c.p30.XOBE = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XOBE, b.p28.OAM_A5);
+  /*p30.ZUZE*/ c.p30.ZUZE = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.ZUZE, b.p28.OAM_A4);
+  /*p30.XEDY*/ c.p30.XEDY = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XEDY, b.p28.OAM_A3);
+  /*p30.XADU*/ c.p30.XADU = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.WEFE, b.p30.XADU, b.p28.OAM_A2);
 
   // so this is a bit weird as we have a tri-state bus inside one schematic...
-  if (b.p29.BUZA) {
-    c.p30.IDX_0 = b.p30.WEZA;
-    c.p30.IDX_1 = b.p30.WUCO;
-    c.p30.IDX_2 = b.p30.WYDA;
-    c.p30.IDX_3 = b.p30.ZYSU;
-    c.p30.IDX_4 = b.p30.WYSE;
-    c.p30.IDX_5 = b.p30.WUZY;
-  }
+  /*p30.WEZA*/ if (b.p29.BUZA) c.p30.IDX_0  = b.p30.XECU;
+  /*p30.WUCO*/ if (b.p29.BUZA) c.p30.IDX_1  = b.p30.YDUF;
+  /*p30.WYDA*/ if (b.p29.BUZA) c.p30.IDX_2  = b.p30.XOBE;
+  /*p30.ZYSU*/ if (b.p29.BUZA) c.p30.IDX_3  = b.p30.ZUZE;
+  /*p30.WYSE*/ if (b.p29.BUZA) c.p30.IDX_4  = b.p30.XEDY;
+  /*p30.WUZY*/ if (b.p29.BUZA) c.p30.IDX_5  = b.p30.XADU;
 
-  if (b.p29.FEPO) {
-    c.p30.LINE_0 = b.p30.CUCA;
-    c.p30.LINE_1 = b.p30.CEGA;
-    c.p30.LINE_2 = b.p30.CUCU;
-    c.p30.LINE_3 = b.p30.WENU;
-  }
+  /*p30.WENU*/ if (b.p29.FEPO) c.p30.LINE_0 = b.p29.DABY;
+  /*p30.CUCU*/ if (b.p29.FEPO) c.p30.LINE_1 = b.p29.DABU;
+  /*p30.CUCA*/ if (b.p29.FEPO) c.p30.LINE_2 = b.p29.DEGE;
+  /*p30.CEGA*/ if (b.p29.FEPO) c.p30.LINE_3 = b.p29.GYSA;
 
   {
-    c.p30.ADYB = not(!b.p30.AXUV); if (b.p29.DENY) c.p30.IDX_0  = b.p30.ADYB; c.p30.AXUV = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.AXUV, b.p30.IDX_0 );
-    c.p30.APOB = not(!b.p30.BADA); if (b.p29.DENY) c.p30.IDX_1  = b.p30.APOB; c.p30.BADA = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BADA, b.p30.IDX_1 );
-    c.p30.APYV = not(!b.p30.APEV); if (b.p29.DENY) c.p30.IDX_2  = b.p30.APYV; c.p30.APEV = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.APEV, b.p30.IDX_2 );
-    c.p30.AFEN = not(!b.p30.BADO); if (b.p29.DENY) c.p30.IDX_3  = b.p30.AFEN; c.p30.BADO = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BADO, b.p30.IDX_3 );
-    c.p30.AKYH = not(!b.p30.BEXY); if (b.p29.DENY) c.p30.IDX_4  = b.p30.AKYH; c.p30.BEXY = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BEXY, b.p30.IDX_4 );
-    c.p30.APOC = not(!b.p30.BYHE); if (b.p29.DENY) c.p30.IDX_5  = b.p30.APOC; c.p30.BYHE = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BYHE, b.p30.IDX_5 );
-    c.p30.BUJY = not(!b.p30.AFYM); if (b.p29.DENY) c.p30.LINE_0 = b.p30.BUJY; c.p30.AFYM = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFYM, b.p30.LINE_0);
-    c.p30.BOSO = not(!b.p30.AZAP); if (b.p29.DENY) c.p30.LINE_1 = b.p30.BOSO; c.p30.AZAP = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AZAP, b.p30.LINE_1);
-    c.p30.AHAC = not(!b.p30.AFUT); if (b.p29.DENY) c.p30.LINE_2 = b.p30.AHAC; c.p30.AFUT = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFUT, b.p30.LINE_2);
-    c.p30.BAZU = not(!b.p30.AFYX); if (b.p29.DENY) c.p30.LINE_3 = b.p30.BAZU; c.p30.AFYX = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFYX, b.p30.LINE_3);
+    /*p30.AXUV*/ c.p30.AXUV = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.AXUV, b.p30.IDX_0 );
+    /*p30.BADA*/ c.p30.BADA = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BADA, b.p30.IDX_1 );
+    /*p30.APEV*/ c.p30.APEV = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.APEV, b.p30.IDX_2 );
+    /*p30.BADO*/ c.p30.BADO = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BADO, b.p30.IDX_3 );
+    /*p30.BEXY*/ c.p30.BEXY = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BEXY, b.p30.IDX_4 );
+    /*p30.BYHE*/ c.p30.BYHE = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BYHE, b.p30.IDX_5 );
+    /*p30.AFYM*/ c.p30.AFYM = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFYM, b.p30.LINE_0);
+    /*p30.AZAP*/ c.p30.AZAP = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AZAP, b.p30.LINE_1);
+    /*p30.AFUT*/ c.p30.AFUT = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFUT, b.p30.LINE_2);
+    /*p30.AFYX*/ c.p30.AFYX = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFYX, b.p30.LINE_3);
+
+    /*p30.ADYB*/ if (b.p29.DENY) c.p30.IDX_0  = b.p30.AXUV;
+    /*p30.APOB*/ if (b.p29.DENY) c.p30.IDX_1  = b.p30.BADA;
+    /*p30.APYV*/ if (b.p29.DENY) c.p30.IDX_2  = b.p30.APEV;
+    /*p30.AFEN*/ if (b.p29.DENY) c.p30.IDX_3  = b.p30.BADO;
+    /*p30.AKYH*/ if (b.p29.DENY) c.p30.IDX_4  = b.p30.BEXY;
+    /*p30.APOC*/ if (b.p29.DENY) c.p30.IDX_5  = b.p30.BYHE;
+    /*p30.BUJY*/ if (b.p29.DENY) c.p30.LINE_0 = b.p30.AFYM;
+    /*p30.BOSO*/ if (b.p29.DENY) c.p30.LINE_1 = b.p30.AZAP;
+    /*p30.AHAC*/ if (b.p29.DENY) c.p30.LINE_2 = b.p30.AFUT;
+    /*p30.BAZU*/ if (b.p29.DENY) c.p30.LINE_3 = b.p30.AFYX;
   }
    
   {

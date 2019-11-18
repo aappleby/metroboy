@@ -10,8 +10,8 @@
 void P36_Palettes::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // BGP
-  c.p36.VUSO = and(b.p07.CPU_RD2, b.p22.FF47);
-  c.p36.VELY = and(b.p07.CPU_WR2, b.p22.FF47);
+  c.p36.VUSO = and(b.sys.CPU_RD2, b.p22.FF47);
+  c.p36.VELY = and(b.sys.CPU_WR2, b.p22.FF47);
   c.p36.TEPY = not(b.p36.VUSO);
   c.p36.TEPO = not(b.p36.VELY);
 
@@ -45,8 +45,8 @@ void P36_Palettes::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   // OBP0
-  c.p36.XUFY = and(b.p07.CPU_RD2, b.p22.FF48);
-  c.p36.XOMA = and(b.p07.CPU_WR2, b.p22.FF48);
+  c.p36.XUFY = and(b.sys.CPU_RD2, b.p22.FF48);
+  c.p36.XOMA = and(b.sys.CPU_WR2, b.p22.FF48);
   c.p36.XOZY = not(b.p36.XUFY);
   c.p36.XELO = not(b.p36.XOMA);
 
@@ -80,8 +80,8 @@ void P36_Palettes::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   }
 
   // OBP1
-  c.p36.MUMY = and(b.p07.CPU_RD2, b.p22.FF49);
-  c.p36.MYXE = and(b.p07.CPU_WR2, b.p22.FF49);
+  c.p36.MUMY = and(b.sys.CPU_RD2, b.p22.FF49);
+  c.p36.MYXE = and(b.sys.CPU_WR2, b.p22.FF49);
   c.p36.LOTE = not(b.p36.MUMY);
   c.p36.LEHO = not(b.p36.MYXE);
 

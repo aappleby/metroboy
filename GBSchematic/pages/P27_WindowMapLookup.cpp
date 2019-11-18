@@ -6,7 +6,7 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // Window Y match
@@ -31,12 +31,12 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // this is what the die looks like
   c.p27.VYPO = not(b.chip.P10_B);
 
-  c.p27.SARY = tock_pos(a.p21.TALU, b.p21.TALU, b.p01.VID_RESETn1, b.p27.SARY, b.p27.ROGE);
+  c.p27.SARY = tock_pos(a.p21.TALU, b.p21.TALU, b.sys.VID_RESETn1, b.p27.SARY, b.p27.ROGE);
 
   //----------
   // Window X match
 
-  c.p27.REPU = or(b.p21.INT_VBL, b.p01.VID_RESET4);
+  c.p27.REPU = or(b.p21.INT_VBL, b.sys.VID_RESET4);
   c.p27.REJO = or(b.p27.SARY, b.p27.REPU);
 
   c.p27.NEZO = xor(b.p21.TUHU, b.p23.FF4B_D4);
@@ -71,7 +71,7 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.SUVU = nand(b.p21.XYMU, b.p27.ROMO, b.p24.NYKA, b.p24.PORY);
   c.p27.TAVE = not(b.p27.SUVU);
   c.p27.XAHY = not(b.p28.ATEJ);
-  c.p27.XOFO = nand(b.p23.WIN_EN, b.p27.XAHY, b.p01.VID_RESETn1);
+  c.p27.XOFO = nand(b.p23.WIN_EN, b.p27.XAHY, b.sys.VID_RESETn1);
   c.p27.XACO = not(b.p27.XOFO);
   c.p27.PYNU = or(b.p27.NUNU, b.p27.XOFO);
   c.p27.NUNY = and(!b.p27.NOPA, b.p27.PYNU);
@@ -79,7 +79,7 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.PORE = not(b.p27.NOCU);
 
   c.p27.PUKU = nor(b.p27.NUNY, b.p27.RYDY);
-  c.p27.RYDY = nor(b.p27.PUKU, b.p01.VID_RESET4, b.p24.PORY);
+  c.p27.RYDY = nor(b.p27.PUKU, b.sys.VID_RESET4, b.p24.PORY);
 
   c.p27.SYLO = not(b.p27.RYDY);
   c.p27.TUXY = nand(b.p27.SOVY, b.p27.SYLO);
@@ -94,20 +94,20 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.WAZY = not(b.p27.PORE);
   c.p27.SYNY = not(b.p27.REPU);
 
-  c.p27.NOPA = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p01.VID_RESETn1, b.p27.NOPA, b.p27.PYNU);
-  c.p27.PYCO = tock_pos(a.p27.ROCO, b.p27.ROCO, b.p01.VID_RESETn1, b.p27.PYCO, b.p27.NUKO);
-  c.p27.NUNU = tock_pos(a.p27.MEHE, b.p27.MEHE, b.p01.VID_RESETn1, b.p27.NUNU, b.p27.PYCO);
+  c.p27.NOPA = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.sys.VID_RESETn1, b.p27.NOPA, b.p27.PYNU);
+  c.p27.PYCO = tock_pos(a.p27.ROCO, b.p27.ROCO, b.sys.VID_RESETn1, b.p27.PYCO, b.p27.NUKO);
+  c.p27.NUNU = tock_pos(a.p21.MEHE, b.p21.MEHE, b.sys.VID_RESETn1, b.p27.NUNU, b.p27.PYCO);
 
   c.p27.RYKU = tock_pos(a.p27.PECU,  b.p27.PECU,  b.p27.PASO, b.p27.RYKU, !b.p27.RYKU);
   c.p27.ROGA = tock_pos(!a.p27.RYKU, !b.p27.RYKU, b.p27.PASO, b.p27.ROGA, !b.p27.ROGA);
   c.p27.RUBU = tock_pos(!a.p27.ROGA, !b.p27.ROGA, b.p27.PASO, b.p27.RUBU, !b.p27.RUBU);
 
-  c.p27.NYZE = tock_pos(a.p27.MOXE, b.p27.MOXE, b.p21.XYMU, b.p27.NYZE, b.p27.PUXA);
+  c.p27.NYZE = tock_pos(a.p21.MOXE, b.p21.MOXE, b.p21.XYMU, b.p27.NYZE, b.p27.PUXA);
   c.p27.PUXA = tock_pos(a.p24.ROXO, b.p24.ROXO, b.p21.XYMU, b.p27.PUXA, b.p27.POHU);
 
   c.p27.RYFA = tock_pos(a.p24.SEGU, b.p24.SEGU, b.p21.XYMU,        b.p27.RYFA, b.p27.PANY);
-  c.p27.RENE = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p21.XYMU,        b.p27.RENE, b.p27.RYFA);
-  c.p27.SOVY = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p01.VID_RESETn1, b.p27.SOVY, b.p27.RYDY);
+  c.p27.RENE = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.p21.XYMU,        b.p27.RENE, b.p27.RYFA);
+  c.p27.SOVY = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.sys.VID_RESETn1, b.p27.SOVY, b.p27.RYDY);
 
   //----------
   // dunno, top right
@@ -131,14 +131,14 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.POTU = and(b.p27.LENA, b.p27.NENY);
   c.p27.NETA = and(b.p27.LENA, b.p27.NOGU);
 
-  c.p27.LYZU = tock_pos( a.p01.CLK_AxCxExGx4,  b.p01.CLK_AxCxExGx4, b.p21.XYMU, b.p27.LYZU,  b.p27.LAXU);
+  c.p27.LYZU = tock_pos( a.sys.CLK_AxCxExGx4,  b.sys.CLK_AxCxExGx4, b.p21.XYMU, b.p27.LYZU,  b.p27.LAXU);
 
   // weird clock is weird
-  c.p27.LEBO = nand(b.p01.CLK_AxCxExGx4, b.p27.MOCE);
+  c.p27.LEBO = nand(b.sys.CLK_AxCxExGx4, b.p27.MOCE);
   c.p27.LAXU = tock_pos( a.p27.LEBO,  b.p27.LEBO, b.p27.NYXU, b.p27.LAXU, !b.p27.LAXU);
   c.p27.MESU = tock_pos(!a.p27.LAXU, !b.p27.LAXU, b.p27.NYXU, b.p27.MESU, !b.p27.MESU);
   c.p27.NYVA = tock_pos(!a.p27.MESU, !b.p27.MESU, b.p27.NYXU, b.p27.NYVA, !b.p27.NYVA);
-  c.p27.LOVY = tock_pos( a.p27.MYVO,  b.p27.MYVO, b.p27.NYXU, b.p27.LOVY,  b.p27.LYRY);
+  c.p27.LOVY = tock_pos( a.p21.MYVO,  b.p21.MYVO, b.p27.NYXU, b.p27.LOVY,  b.p27.LYRY);
 
   //----------
   // address output bus
@@ -195,13 +195,13 @@ void P27_WindowMapLookup::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // computes SECA and TAVA
 
   c.p27.RYCE = and(b.p27.SOBU, !b.p27.SUDA);
-  c.p27.SECA = nor(b.p27.RYCE, b.p01.VID_RESET5, b.p28.ATEJ);
+  c.p27.SECA = nor(b.p27.RYCE, b.sys.VID_RESET5, b.p28.ATEJ);
   c.p27.VEKU = nor(b.p29.WUTY, b.p27.TAVE);
   c.p27.TAKA = unk2(b.p27.VEKU, b.p27.SECA);
   c.p27.TUKU = not(b.p24.TOMU);
   c.p27.SOWO = not(b.p27.TAKA);
   c.p27.TEKY = and(b.p29.FEPO, b.p27.TUKU, b.p27.LYRY, b.p27.SOWO);
 
-  c.p27.SOBU = tock_pos(a.p27.TAVA, b.p27.TAVA, b.p27.VYPO, b.p27.SOBU, b.p27.TEKY);
-  c.p27.SUDA = tock_pos(a.p01.CLK_xBxDxFxH5, b.p01.CLK_xBxDxFxH5, b.p27.VYPO, b.p27.SUDA, b.p27.SOBU);
+  c.p27.SOBU = tock_pos(a.p21.TAVA, b.p21.TAVA, b.p27.VYPO, b.p27.SOBU, b.p27.TEKY);
+  c.p27.SUDA = tock_pos(a.sys.CLK_xBxDxFxH5, b.sys.CLK_xBxDxFxH5, b.p27.VYPO, b.p27.SUDA, b.p27.SOBU);
 }

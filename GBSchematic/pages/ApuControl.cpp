@@ -10,23 +10,23 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   const ApuControl& pb = b.apu;
   ApuControl& pc = c.apu;
 
-  /*p09.JYRO*/ c.p01.APU_RST = or(b.p01.SYS_RESET2, !pb.ALL_SOUND_ON);
-  /*p09.KUBY*/ pc.APU_RESETn7 = not(b.p01.APU_RST);
+  /*p09.JYRO*/ c.sys.APU_RST = or(b.sys.SYS_RESET2, !pb.ALL_SOUND_ON);
+  /*p09.KUBY*/ pc.APU_RESETn7 = not(b.sys.APU_RST);
   /*p09.KEBA*/ pc.APU_RESET1  = not(pb.APU_RESETn7);
-  /*p09.KEPY*/ pc.APU_RESETn6 = not(b.p01.APU_RST);
+  /*p09.KEPY*/ pc.APU_RESETn6 = not(b.sys.APU_RST);
   /*p09.AGUR*/ pc.APU_RESETn  = not(pb.APU_RESET1);
   /*p09.AFAT*/ pc.APU_RESETn2 = not(pb.APU_RESET1);
   /*p09.ATYV*/ pc.APU_RESETn3 = not(pb.APU_RESET1);
-  /*p09.KAME*/ c.p01.APU_RESETn5 = not(pb.APU_RESET1);
+  /*p09.KAME*/ c.sys.APU_RESETn5 = not(pb.APU_RESET1);
 
-  /*p09.AGUZ*/ pc.CPU_RDn = not(b.p07.CPU_RD);
+  /*p09.AGUZ*/ pc.CPU_RDn = not(b.sys.CPU_RD);
   /*p09.CETO*/ pc.CPU_RDa = not(pb.CPU_RDn);
   /*p09.KAZO*/ pc.CPU_RDb = not(pb.CPU_RDn);
   /*p09.CURU*/ pc.CPU_RDc = not(pb.CPU_RDn);
   /*p09.GAXO*/ pc.CPU_RDd = not(pb.CPU_RDn);
 
   /*p09.KYDU*/ pc.CPU_RD1 = not(pb.CPU_RDn);
-  /*p10.BAFU*/ pc.CPU_WRn = not(b.p07.CPU_WR);
+  /*p10.BAFU*/ pc.CPU_WRn = not(b.sys.CPU_WR);
   /*p10.BOGY*/ pc.APU_WR  = not(pb.CPU_WRn);
 
   /*p16.ANUJ*/ pc.CPU_WR_WEIRD = and(b.cpu.FROM_CPU5, pb.APU_WR);
@@ -46,14 +46,14 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p09.BUBU*/ pc.NR50_WRn2 = not(pb.NR50_WR1);
   /*p09.ATAF*/ pc.NR50_WRn3 = not(pb.NR50_WR2);
 
-  /*p09.APEG*/ pc.VOL_L0   = tock_pos(pa.NR50_WRn3, pb.NR50_WRn3, b.p01.APU_RST, pc.VOL_L0,   b.D0);
-  /*p09.BYGA*/ pc.VOL_L1   = tock_pos(pa.NR50_WRn3, pb.NR50_WRn3, b.p01.APU_RST, pc.VOL_L1,   b.D1);
-  /*p09.AGER*/ pc.VOL_L2   = tock_pos(pa.NR50_WRn3, pb.NR50_WRn3, b.p01.APU_RST, pc.VOL_L2,   b.D2);
-  /*p09.APOS*/ pc.VIN_TO_L = tock_pos(pa.NR50_WRn3, pb.NR50_WRn3, b.p01.APU_RST, pc.VIN_TO_L, b.D3);
-  /*p09.BYRE*/ pc.VOL_R0   = tock_pos(pa.NR50_WRn2, pb.NR50_WRn2, b.p01.APU_RST, pc.VOL_R0,   b.D4);
-  /*p09.BUMO*/ pc.VOL_R1   = tock_pos(pa.NR50_WRn2, pb.NR50_WRn2, b.p01.APU_RST, pc.VOL_R1,   b.D5);
-  /*p09.COZU*/ pc.VOL_R2   = tock_pos(pa.NR50_WRn2, pb.NR50_WRn2, b.p01.APU_RST, pc.VOL_R2,   b.D6);
-  /*p09.BEDU*/ pc.VIN_TO_R = tock_pos(pa.NR50_WRn2, pb.NR50_WRn2, b.p01.APU_RST, pc.VIN_TO_R, b.D7);
+  /*p09.APEG*/ pc.VOL_L0   = tock_pos(pa.NR50_WRn3, pb.NR50_WRn3, b.sys.APU_RST, pc.VOL_L0,   b.D0);
+  /*p09.BYGA*/ pc.VOL_L1   = tock_pos(pa.NR50_WRn3, pb.NR50_WRn3, b.sys.APU_RST, pc.VOL_L1,   b.D1);
+  /*p09.AGER*/ pc.VOL_L2   = tock_pos(pa.NR50_WRn3, pb.NR50_WRn3, b.sys.APU_RST, pc.VOL_L2,   b.D2);
+  /*p09.APOS*/ pc.VIN_TO_L = tock_pos(pa.NR50_WRn3, pb.NR50_WRn3, b.sys.APU_RST, pc.VIN_TO_L, b.D3);
+  /*p09.BYRE*/ pc.VOL_R0   = tock_pos(pa.NR50_WRn2, pb.NR50_WRn2, b.sys.APU_RST, pc.VOL_R0,   b.D4);
+  /*p09.BUMO*/ pc.VOL_R1   = tock_pos(pa.NR50_WRn2, pb.NR50_WRn2, b.sys.APU_RST, pc.VOL_R1,   b.D5);
+  /*p09.COZU*/ pc.VOL_R2   = tock_pos(pa.NR50_WRn2, pb.NR50_WRn2, b.sys.APU_RST, pc.VOL_R2,   b.D6);
+  /*p09.BEDU*/ pc.VIN_TO_R = tock_pos(pa.NR50_WRn2, pb.NR50_WRn2, b.sys.APU_RST, pc.VIN_TO_R, b.D7);
 
   /*p09.AKOD*/ if (pb.NR50_RD1) c.D0 = pb.VOL_L0;
   /*p09.AWED*/ if (pb.NR50_RD1) c.D1 = pb.VOL_L1;
@@ -75,14 +75,14 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p09.BONO*/ pc.FF25_WRa = not(pb.FF25_WRn);
   /*p09.BYFA*/ pc.FF25_WRb = not(pb.FF25_WRn);
 
-  /*p09.ANEV*/ pc.NR51_0 = tock_pos(pa.FF25_WRa, pb.FF25_WRa, b.p01.APU_RST, pc.NR51_0, b.D0);
-  /*p09.BOGU*/ pc.NR51_1 = tock_pos(pa.FF25_WRa, pb.FF25_WRa, b.p01.APU_RST, pc.NR51_1, b.D1);
-  /*p09.BAFO*/ pc.NR51_2 = tock_pos(pa.FF25_WRa, pb.FF25_WRa, b.p01.APU_RST, pc.NR51_2, b.D2);
-  /*p09.ATUF*/ pc.NR51_3 = tock_pos(pa.FF25_WRa, pb.FF25_WRa, b.p01.APU_RST, pc.NR51_3, b.D3);
-  /*p09.BUME*/ pc.NR51_4 = tock_pos(pa.FF25_WRb, pb.FF25_WRb, b.p01.APU_RST, pc.NR51_4, b.D4);
-  /*p09.BOFA*/ pc.NR51_5 = tock_pos(pa.FF25_WRb, pb.FF25_WRb, b.p01.APU_RST, pc.NR51_5, b.D5);
-  /*p09.BEFO*/ pc.NR51_6 = tock_pos(pa.FF25_WRb, pb.FF25_WRb, b.p01.APU_RST, pc.NR51_6, b.D6);
-  /*p09.BEPU*/ pc.NR51_7 = tock_pos(pa.FF25_WRb, pb.FF25_WRb, b.p01.APU_RST, pc.NR51_7, b.D7);
+  /*p09.ANEV*/ pc.NR51_0 = tock_pos(pa.FF25_WRa, pb.FF25_WRa, b.sys.APU_RST, pc.NR51_0, b.D0);
+  /*p09.BOGU*/ pc.NR51_1 = tock_pos(pa.FF25_WRa, pb.FF25_WRa, b.sys.APU_RST, pc.NR51_1, b.D1);
+  /*p09.BAFO*/ pc.NR51_2 = tock_pos(pa.FF25_WRa, pb.FF25_WRa, b.sys.APU_RST, pc.NR51_2, b.D2);
+  /*p09.ATUF*/ pc.NR51_3 = tock_pos(pa.FF25_WRa, pb.FF25_WRa, b.sys.APU_RST, pc.NR51_3, b.D3);
+  /*p09.BUME*/ pc.NR51_4 = tock_pos(pa.FF25_WRb, pb.FF25_WRb, b.sys.APU_RST, pc.NR51_4, b.D4);
+  /*p09.BOFA*/ pc.NR51_5 = tock_pos(pa.FF25_WRb, pb.FF25_WRb, b.sys.APU_RST, pc.NR51_5, b.D5);
+  /*p09.BEFO*/ pc.NR51_6 = tock_pos(pa.FF25_WRb, pb.FF25_WRb, b.sys.APU_RST, pc.NR51_6, b.D6);
+  /*p09.BEPU*/ pc.NR51_7 = tock_pos(pa.FF25_WRb, pb.FF25_WRb, b.sys.APU_RST, pc.NR51_7, b.D7);
 
   /*p09.CAPU*/ if (pb.FF25_RD) c.D1 = pb.NR51_0;
   /*p09.CAGA*/ if (pb.FF25_RD) c.D2 = pb.NR51_1;
@@ -109,10 +109,10 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p09.BOPY*/ pc.NR52_WRn2 = nand(pb.ADDR_FF26, pb.APU_WR);
   /*p09.FOKU*/ pc.NR52_WRn3 = not(pb.NR52_WR1);
 
-  /*p09.EFOP*/ pc.DBG_APU_IN    = and(b.D4, b.p07.MODE_DBG2);
+  /*p09.EFOP*/ pc.DBG_APU_IN    = and(b.D4, b.sys.MODE_DBG2);
   /*p09.FERO*/ pc.DBG_APUn      = tock_pos(pa.NR52_WRn3, pb.NR52_WRn3, pb.APU_RESETn6, pb.DBG_APUn,     pb.DBG_APU_IN);
   /*p09.BOWY*/ pc.DBG_SWEEP     = tock_pos(pa.NR52_WRn2, pb.NR52_WRn2, pb.APU_RESETn6, pb.DBG_SWEEP,    b.D5);
-  /*p09.HADA*/ pc.ALL_SOUND_ON  = tock_pos(pa.NR52_WRn1, pb.NR52_WRn1, b.p01.SYS_RESETn3, pb.ALL_SOUND_ON, b.D7); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
+  /*p09.HADA*/ pc.ALL_SOUND_ON  = tock_pos(pa.NR52_WRn1, pb.NR52_WRn1, b.sys.SYS_RESETn3, pb.ALL_SOUND_ON, b.D7); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
   /*p09.EDEK*/ pc.DBG_APU       = not(!pb.DBG_APUn);
 
   /*p09.COTO*/ if (pb.FF26_RDna) c.D0 = not(b.ch1.CH1_ACTIVEn);
@@ -124,15 +124,6 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //---------
   // decodin'
 
-  /*p10.AMUS*/ pc.ADDR_xxxxxxxx0xx00000 = nor(b.A00, b.A01, b.A02, b.A03, b.A04, b.A07);
-  /*p10.ANAP*/ pc.ADDR_111111110xx00000 = and(pb.ADDR_xxxxxxxx0xx00000, b.p07.ADDR_FFXX);
-
-  /*p10.BYKO*/ pc.ADDR_xxxxxxxxxx0xxxxx = not(b.A05);
-  /*p10.AKUG*/ pc.ADDR_xxxxxxxxx0xxxxxx = not(b.A06);
-
-  /*p10.ATOZ*/ pc.FF00_WRn = nand(b.p07.CPU_WR, pb.ADDR_111111110xx00000, pb.ADDR_xxxxxxxxx0xxxxxx, pb.ADDR_xxxxxxxxxx0xxxxx);
-  /*p10.ACAT*/ pc.FF00_RD  =  and(b.p07.CPU_RD, pb.ADDR_111111110xx00000, pb.ADDR_xxxxxxxxx0xxxxxx, pb.ADDR_xxxxxxxxxx0xxxxx);
-
   /*p10.ATUP*/ pc.ADDR_xxx0xxxx = not(b.A04);
   /*p10.BOXY*/ pc.ADDR_xx0xxxxx = not(b.A05);
   /*p10.ASAD*/ pc.ADDR_x0xxxxxx = not(b.A06);
@@ -142,12 +133,12 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p10.AWET*/ pc.ADDR_XX2Xn = or(b.A04, pb.ADDR_xx0xxxxx, b.A06, b.A07);
   /*p10.ACOM*/ pc.ADDR_XX3Xn = nand(pb.ADDR_0xxxxxxx, pb.ADDR_x0xxxxxx, b.A05, b.A04);
 
-  /*p10.BUNO*/ pc.ADDR_FF1X  = nor(b.p07.ADDR_FFXXn1, pb.ADDR_XX1Xn);
+  /*p10.BUNO*/ pc.ADDR_FF1X  = nor(b.sys.ADDR_FFXXn1, pb.ADDR_XX1Xn);
   /*p10.CONA*/ pc.ADDR_FF2X  = not(pb.ADDR_FF2Xn);
-  /*p10.BARO*/ pc.ADDR_FF3X  = nor(pb.ADDR_XX3Xn, b.p07.ADDR_FFXXn1);
+  /*p10.BARO*/ pc.ADDR_FF3X  = nor(pb.ADDR_XX3Xn, b.sys.ADDR_FFXXn1);
 
   /*p10.BANU*/ pc.ADDR_FF1Xn = not(pb.ADDR_FF1X);
-  /*p10.BEZY*/ pc.ADDR_FF2Xn = or(pb.ADDR_XX2Xn, b.p07.ADDR_FFXXn1);
+  /*p10.BEZY*/ pc.ADDR_FF2Xn = or(pb.ADDR_XX2Xn, b.sys.ADDR_FFXXn1);
 
   /*p10.DYTE*/ pc.ADDR_xxx0  = not(b.A00);
   /*p10.AFOB*/ pc.ADDR_xx0x  = not(b.A01);

@@ -15,30 +15,28 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p31.YSEX = latch_pos(b.p28.CLK3, b.p31.YSEX, b.OAM_A_D2);
   c.p31.YVEL = latch_pos(b.p28.CLK3, b.p31.YVEL, b.OAM_A_D3);
 
-  if (b.p28.WEWU) {
-    c.D0 = b.p31.XYKY;
-    c.D1 = b.p31.YRUM;
-    c.D2 = b.p31.YSEX;
-    c.D3 = b.p31.YVEL;
-    c.D4 = b.p31.WYNO;
-    c.D5 = b.p31.CYRA;
-    c.D6 = b.p31.ZUVE;
-    c.D7 = b.p31.ECED;
-  }
+  /*p31.XACA*/ if (b.p28.OAM_A_CPU_RD) c.D0 = b.p31.XYKY;
+  /*p31.XAGU*/ if (b.p28.OAM_A_CPU_RD) c.D1 = b.p31.YRUM;
+  /*p31.XEPU*/ if (b.p28.OAM_A_CPU_RD) c.D2 = b.p31.YSEX;
+  /*p31.XYGU*/ if (b.p28.OAM_A_CPU_RD) c.D3 = b.p31.YVEL;
+  /*p31.XUNA*/ if (b.p28.OAM_A_CPU_RD) c.D4 = b.p31.WYNO;
+  /*p31.DEVE*/ if (b.p28.OAM_A_CPU_RD) c.D5 = b.p31.CYRA;
+  /*p31.ZEHA*/ if (b.p28.OAM_A_CPU_RD) c.D6 = b.p31.ZUVE;
+  /*p31.FYRA*/ if (b.p28.OAM_A_CPU_RD) c.D7 = b.p31.ECED;
 
-  c.p31.XEGA = not(b.p25.COTA);
-  c.p31.GOMO = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.GOMO, b.p31.WYNO);
-  c.p31.BAXO = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.BAXO, b.p31.CYRA);
-  c.p31.YZOS = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.YZOS, b.p31.ZUVE);
-  c.p31.DEPO = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.DEPO, b.p31.ECED);
-  c.p31.YLOR = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.YLOR, b.p31.XYKY);
-  c.p31.ZYTY = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.ZYTY, b.p31.YRUM);
-  c.p31.ZYVE = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.ZYVE, b.p31.YSEX);
-  c.p31.ZEZY = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.ZEZY, b.p31.YVEL);
+  c.p31.XEGA    = not(b.p25.COTA);
+  c.p31.GOMO    = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.GOMO, b.p31.WYNO);
+  c.p31.BAXO    = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.BAXO, b.p31.CYRA);
+  c.p31.FLIP_Yn = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.FLIP_Yn, b.p31.ZUVE);
+  c.p31.DEPO    = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.DEPO, b.p31.ECED);
+  c.p31.YLOR    = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.YLOR, b.p31.XYKY);
+  c.p31.ZYTY    = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.ZYTY, b.p31.YRUM);
+  c.p31.ZYVE    = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.ZYVE, b.p31.YSEX);
+  c.p31.ZEZY    = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.ZEZY, b.p31.YVEL);
 
   c.p31.COSE = not(!b.p31.GOMO);
   c.p31.AROP = not(!b.p31.BAXO);
-  c.p31.XATU = not(!b.p31.YZOS);
+  c.p31.XATU = not(!b.p31.FLIP_Yn);
   c.p31.BADY = not(!b.p31.DEPO);
   c.p31.ZAGO = not(!b.p31.YLOR);
   c.p31.ZOCY = not(!b.p31.ZYTY);

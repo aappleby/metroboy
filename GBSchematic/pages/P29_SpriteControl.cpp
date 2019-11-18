@@ -4,7 +4,7 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void P29_SpriteControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // Sprite y comparator
@@ -18,14 +18,6 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.ZECA = latch_pos(b.p28.CLK3, b.p29.ZECA, b.OAM_B_D7);
   c.p29.YDYV = latch_pos(b.p28.CLK3, b.p29.YDYV, b.OAM_B_D0);
 
-  c.p29.XELE = not(b.p29.YCEB);
-  c.p29.YPON = not(b.p29.ZUCA);
-  c.p29.XUVO = not(b.p29.WONE);
-  c.p29.ZYSA = not(b.p29.ZAXE);
-  c.p29.YWEG = not(b.p29.XAFU);
-  c.p29.XABU = not(b.p29.YSES);
-  c.p29.YTUX = not(b.p29.ZECA);
-  c.p29.YFAP = not(b.p29.YDYV);
 
   c.p29.YWOK = not(b.p25.COTA);
 
@@ -85,18 +77,16 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   c.p29.GOVU = or(b.p29.GYKY_S, b.p23.SPRITE_SIZE);
   c.p29.WOTA = nand(b.p29.GACE, b.p29.GUVU, b.p29.GYDA, b.p29.GEWY, b.p29.WUHU_C, b.p29.GOVU);
-  c.p29.GESE = not(b.p29.WOTA);
+  c.p29.SPR_MATCH = not(b.p29.WOTA);
 
-  if (b.p28.WUME) {
-    c.D0 = b.p29.YFAP;
-    c.D1 = b.p29.XELE;
-    c.D2 = b.p29.YPON;
-    c.D3 = b.p29.XUVO;
-    c.D4 = b.p29.ZYSA;
-    c.D5 = b.p29.YWEG;
-    c.D6 = b.p29.XABU;
-    c.D7 = b.p29.YTUX;
-  }
+  /*p29.YFAP*/ if (b.p28.WUME) c.D0 = b.p29.YDYV;
+  /*p29.XELE*/ if (b.p28.WUME) c.D1 = b.p29.YCEB;
+  /*p29.YPON*/ if (b.p28.WUME) c.D2 = b.p29.ZUCA;
+  /*p29.XUVO*/ if (b.p28.WUME) c.D3 = b.p29.WONE;
+  /*p29.ZYSA*/ if (b.p28.WUME) c.D4 = b.p29.ZAXE;
+  /*p29.YWEG*/ if (b.p28.WUME) c.D5 = b.p29.XAFU;
+  /*p29.XABU*/ if (b.p28.WUME) c.D6 = b.p29.YSES;
+  /*p29.YTUX*/ if (b.p28.WUME) c.D7 = b.p29.ZECA;
 
   if (b.p29.ABON) {
     c.MA05 = b.p29.FUGY;
@@ -111,34 +101,34 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // bottom
     
-  c.p29.ALES = not(b.p21.XYVO);
+  c.p29.ALES = not(b.p21.LINE_144);
   c.p29.ABOV = and(b.p21.SELA, b.p29.ALES);
 
-  c.p29.WOSU = tock_pos(a.p29.XYFY, b.p29.XYFY, b.p01.VID_RESETn1, b.p29.WOSU, !b.p29.WUVU);
+  c.p29.WOSU = tock_pos(a.p29.XYFY, b.p29.XYFY, b.sys.VID_RESETn1, b.p29.WOSU, !b.p29.WUVU);
   c.p29.WOJO = nor(!b.p29.WUVU, !b.p29.WOSU);
   c.p29.XYSO = not(b.p29.WOJO);
 
   c.p29.XOCE = not(b.p29.WOSU);
-  c.p29.CENO = tock_pos(a.p29.XUPY, b.p29.XUPY, b.p01.VID_RESETn3, b.p29.CENO, b.p28.BESU);
+  c.p29.CENO = tock_pos(a.p29.XUPY, b.p29.XUPY, b.sys.VID_RESETn3, b.p29.CENO, b.p28.BESU);
   c.p29.CEHA = not(!b.p29.CENO);
   c.p29.BUZA = and(!b.p29.CENO, b.p21.XYMU);
   c.p29.CARE = or(b.p29.XOCE, b.p29.CEHA, b.p29.SPR_MATCH);
   c.p29.DYTY = not(b.p29.CARE);
 
-  c.p29.CATU = tock_pos(a.p29.XUPY, b.p29.XUPY, b.p01.VID_RESETn3, b.p29.CATU, b.p29.ABOV);
+  c.p29.CATU = tock_pos(a.p29.XUPY, b.p29.XUPY, b.sys.VID_RESETn3, b.p29.CATU, b.p29.ABOV);
 
-  c.p29.BALU = not(b.p28.ANOM);
+  c.p29.BALU = not(b.p28.SCAN_RSTn);
   c.p29.BAGY = not(b.p29.BALU);
-  c.p29.BYBA = tock_pos(a.p29.XUPY,    b.p29.XUPY,    b.p29.BAGY, b.p29.BYBA, b.p28.FETO);
-  c.p29.DOBA = tock_pos(a.p01.CLK_AxCxExGx4, b.p01.CLK_AxCxExGx4, b.p29.BAGY, b.p29.DOBA, b.p29.BYBA);
+  c.p29.BYBA = tock_pos(a.p29.XUPY,    b.p29.XUPY,    b.p29.BAGY, b.p29.BYBA, b.p28.SCAN_DONE);
+  c.p29.DOBA = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.p29.BAGY, b.p29.DOBA, b.p29.BYBA);
   c.p29.BEBU = or(b.p29.DOBA, b.p29.BALU, !b.p29.BYBA);
   c.p29.AVAP = not(b.p29.BEBU);
 
   //----------
   // center thing
 
-  c.p29.TOBU = tock_pos(a.p01.CLK_AxCxExGx10, b.p01.CLK_AxCxExGx10, b.p21.XYMU, b.p29.TOBU, b.p29.TULY);
-  c.p29.VONU = tock_pos(a.p01.CLK_AxCxExGx10, b.p01.CLK_AxCxExGx10, b.p21.XYMU, b.p29.VONU, !b.p29.TOBU);
+  c.p29.TOBU = tock_pos(a.sys.CLK_AxCxExGx10, b.sys.CLK_AxCxExGx10, b.p21.XYMU, b.p29.TOBU, b.p29.TULY);
+  c.p29.VONU = tock_pos(a.sys.CLK_AxCxExGx10, b.sys.CLK_AxCxExGx10, b.p21.XYMU, b.p29.VONU, !b.p29.TOBU);
 
   c.p29.TEPA = not(b.p21.XYMU);
 
@@ -150,7 +140,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.SAKY = nor(b.p29.TULY, b.p29.VONU);
   c.p29.TYSO = or(b.p29.SAKY, b.p29.TEPA);
   c.p29.TEXY = not(b.p29.TYSO);
-  c.p29.XONO = and(!b.p31.BAXO, b.p29.TEXY);
+  c.p29.FLIP_X = and(!b.p31.BAXO, b.p29.TEXY);
 
   c.p29.TUVO = or(b.p29.TEPA, b.p29.TULY, b.p29.TESE);
   c.p29.TAME = nand(b.p29.TESE, b.p29.TOXE);
@@ -245,6 +235,9 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.DYDO = not(b.p29.ENUT);
   c.p29.FURO = not(b.p29.GUVA);
 
+  /*p28.ABAK*/ c.p28.ABAK = or(b.p28.ATEJ, b.sys.VID_RESET7);
+  /*p28.BYVA*/ c.p28.BYVA = not(b.p28.ABAK);
+
   c.p29.FONO = tock_pos(a.p29.WUTY, b.p29.WUTY, b.p28.BYVA, b.p29.FONO, b.p29.GUZE);
   c.p29.EXUQ = tock_pos(a.p29.WUTY, b.p29.WUTY, b.p28.BYVA, b.p29.EXUQ, b.p29.FOXA);
   c.p29.WAPO = tock_pos(a.p29.WUTY, b.p29.WUTY, b.p28.BYVA, b.p29.WAPO, b.p29.GUTU);
@@ -283,30 +276,23 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // Y flip flag
 
-  c.p29.WUKY = not(b.p31.YZOS);
-  c.p29.WAGO = xor(b.p29.WUKY, b.p30.WENU);
-  c.p29.CYVU = xor(b.p29.WUKY, b.p30.CUCU);
-  c.p29.BORE = xor(b.p29.WUKY, b.p30.WENU); // check this signal...
-  c.p29.BUVY = xor(b.p29.WUKY, b.p30.CEGA);
+  c.p29.FLIP_Y = not(b.p31.FLIP_Yn);
+  c.p29.WAGO = xor(b.p29.FLIP_Y, b.p30.LINE_0);
+  c.p29.CYVU = xor(b.p29.FLIP_Y, b.p30.LINE_1);
+  c.p29.BORE = xor(b.p29.FLIP_Y, b.p30.LINE_2);
+  c.p29.BUVY = xor(b.p29.FLIP_Y, b.p30.LINE_3);
   c.p29.XUQU = not(!b.p29.VONU);
 
-  c.p29.BAXE = not(b.p29.CYVU);
-  c.p29.ARAS = not(b.p29.BORE);
-  c.p29.AGAG = not(b.p29.BUVY);
-  c.p29.ABEM = not(b.p29.XUQU);
-  c.p29.DYSO = not(b.chip.P10_B);
 
   c.p29.FUFO = not(b.p23.SPRITE_SIZE);
   c.p29.GEJY = amux2(!b.p29.XUSO, b.p29.FUFO, b.p23.SPRITE_SIZE, b.p29.WAGO);
   c.p29.FAMU = not(b.p29.GEJY);
 
-  if (b.p29.ABON) {
-    c.MA01 = b.p29.BAXE;
-    c.MA02 = b.p29.ARAS;
-    c.MA03 = b.p29.AGAG;
-    c.MA00 = b.p29.ABEM;
-    c.MA12 = b.p29.DYSO;
-  }
+  if (b.p29.ABON) c.MA01 = b.p29.CYVU;
+  if (b.p29.ABON) c.MA02 = b.p29.BORE;
+  if (b.p29.ABON) c.MA03 = b.p29.BUVY;
+  if (b.p29.ABON) c.MA00 = b.p29.XUQU;
+  if (b.p29.ABON) c.MA12 = b.chip.P10_B;
 
   //----------
   // Decoder, right side
@@ -391,7 +377,7 @@ void P29_SpriteControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p29.EWOT = not(b.p29.DUKE);
   c.p29.BYVY = not(b.p29.BUCO);
 
-  c.p29.DEZY = tock_pos(a.p01.CLK_xBxDxFxH2, b.p01.CLK_xBxDxFxH2, b.p01.VID_RESETn1, b.p29.DEZY, b.p29.DYTY);
+  c.p29.DEZY = tock_pos(a.sys.CLK_xBxDxFxH2, b.sys.CLK_xBxDxFxH2, b.sys.VID_RESETn1, b.p29.DEZY, b.p29.DYTY);
   c.p29.BESE = tock_pos(a.p29.CAKE,    b.p29.CAKE,    b.p28.AZYB,        b.p29.BESE, !b.p29.BESE);
   c.p29.CUXY = tock_pos(!a.p29.BESE,   !b.p29.BESE,   b.p28.AZYB,        b.p29.CUXY, !b.p29.CUXY);
   c.p29.BEGO = tock_pos(!a.p29.CUXY,   !b.p29.CUXY,   b.p28.AZYB,        b.p29.BEGO, !b.p29.BEGO);

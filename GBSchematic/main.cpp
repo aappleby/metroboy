@@ -65,16 +65,7 @@ void dump(void* blob, int size) {
 
 //-----------------------------------------------------------------------------
 
-void P01_ClocksReset_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-void P02_Interrupts_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-void P03_Timer_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-void P04_DMA_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-void P05_JoypadIO_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-void P06_SerialLink_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-void P07_SysDecode_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-void P08_ExtCpuBuses_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-
+void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
 void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
   //----------
@@ -118,12 +109,13 @@ void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
     pc->cpu = pb->cpu;
     pc->chip = pb->chip;
 
-    P01_ClocksReset_tick(*pa, *pb, *pc);
-    P03_Timer_tick(*pa, *pb, *pc);
-    P07_SysDecode_tick(*pa, *pb, *pc);
-    P09_ApuControl_tick(*pa, *pb, *pc);
+    System_tick(*pa, *pb, *pc);
+    //P09_ApuControl_tick(*pa, *pb, *pc);
 
-    if (memcmp(pb, pc, sizeof(Gameboy)) == 0) break;
+    if (memcmp(pb, pc, sizeof(Gameboy)) == 0) {
+      printf("%d\n", rep);
+      break;
+    }
 
     Gameboy* pt = pa; pa = pb; pb = pc; pc = pt;
   }
@@ -223,9 +215,9 @@ const std::vector<SignalData> P03_Timer::signals() {
 
 const std::vector<SignalData> sample_signals =
 {
-  SignalData("RESET",       offsetof(Gameboy, chip.RST)),
-  SignalData("CLKIN_B",     offsetof(Gameboy, chip.CLKIN_B)),
-  SignalData("CLK_ABCDExxx3",        offsetof(Gameboy, p01.CLK_ABCDExxx3)),
+  SignalData("RESET",    offsetof(Gameboy, chip.RST)),
+  SignalData("CLKIN_B",  offsetof(Gameboy, chip.CLKIN_B)),
+  SignalData("AJER_2M",  offsetof(Gameboy, sys.AJER_2M)),
 };
 
 //-----------------------------------------------------------------------------
@@ -270,7 +262,7 @@ int main(int /*argc*/, char** /*argv*/) {
   //----------
   // Generate trace
 
-  const int timer_count = 64 * 1024;
+  const int timer_count = 1024;
   Gameboy* samples = new Gameboy[timer_count];
   memset(samples, 0xCD, timer_count * sizeof(Gameboy));
 

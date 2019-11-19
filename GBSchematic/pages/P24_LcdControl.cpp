@@ -17,7 +17,7 @@ void P24_LcdControl::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p24.TOMU = not(b.p27.SYLO);
   c.p24.POKY = unk2(b.p24.PYGO, b.p24.LOBY);
   c.p24.SOCY = not(b.p24.TOMU);
-  c.p24.VYBO = nor(b.p29.FEPO, b.p21.WODU, b.p21.CLK_xBxDxFxHc);
+  c.p24.VYBO = nor(b.p29.SPRITE_MATCH_X, b.p21.RENDER_DONEn, b.p21.CLK_xBxDxFxHc);
   c.p24.TYFA = and(b.p24.SOCY, b.p24.POKY, b.p24.VYBO);
   c.p24.SEGU = not(b.p24.TYFA);
   c.p24.CLKPIPE = nor(b.p24.SEGU, b.p27.ROXY);

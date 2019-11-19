@@ -65,19 +65,60 @@ struct P23_VideoRegs {
   /*p23.MUVO*/ bool WX6;
   /*p23.NUKU*/ bool WX7;
 
-  bool VYRE,WARU,WYCE,XUBO;
+  /*p23.VYRE*/ bool VYRE;
+  /*p23.WARU*/ bool WARU;
+  /*p23.WYCE*/ bool WYCE;
+  /*p23.XUBO*/ bool XUBO;
 
-  bool WYZE,WUZA,VYCU,VOXU;
 
-  bool WAXU,WEKO,VEFU,VOMY;
+  /*p23.WYZE*/ bool WYZE;
+  /*p23.WUZA*/ bool WUZA;
+  /*p23.VYCU*/ bool VYCU;
+  /*p23.VOXU*/ bool VOXU;
 
-  bool AVOG,ARUR,AMUN,BEBA;
 
-  bool ANYP,BEDY,CAVO,BUWY;
+  /*p23.WAXU*/ bool WAXU;
+  /*p23.WEKO*/ bool WEKO;
+  /*p23.VEFU*/ bool VEFU;
+  /*p23.VOMY*/ bool VOMY;
 
-  bool XYLY,XUFA,WANE,WEKU;
-  bool WAFU,VARO;
-  bool WURY,XEPO,MYFA,XUHY,WATA,XAGA,XUCE,XOWO;
-  bool VEGA,WUVA,LYCO,WOJY,VYNE,WAMA,WAVO,WEZE;
+
+  /*p23.AVOG*/ bool AVOG;
+  /*p23.ARUR*/ bool ARUR;
+  /*p23.AMUN*/ bool AMUN;
+  /*p23.BEBA*/ bool BEBA;
+
+
+  /*p23.ANYP*/ bool ANYP;
+  /*p23.BEDY*/ bool BEDY;
+  /*p23.CAVO*/ bool CAVO;
+  /*p23.BUWY*/ bool BUWY;
+
+
+  /*p23.XYLY*/ bool XYLY;
+  /*p23.XUFA*/ bool XUFA;
+  /*p23.WANE*/ bool WANE;
+  /*p23.WEKU*/ bool WEKU;
+
+  /*p23.WAFU*/ bool WAFU;
+  /*p23.VARO*/ bool VARO;
+
+  /*p23.WURY*/ bool WURY;
+  /*p23.XEPO*/ bool XEPO;
+  /*p23.MYFA*/ bool MYFA;
+  /*p23.XUHY*/ bool XUHY;
+  /*p23.WATA*/ bool WATA;
+  /*p23.XAGA*/ bool XAGA;
+  /*p23.XUCE*/ bool XUCE;
+  /*p23.XOWO*/ bool XOWO;
+
+  /*p23.VEGA*/ bool VEGA;
+  /*p23.WUVA*/ bool WUVA;
+  /*p23.LYCO*/ bool LYCO;
+  /*p23.WOJY*/ bool WOJY;
+  /*p23.VYNE*/ bool VYNE;
+  /*p23.WAMA*/ bool WAMA;
+  /*p23.WAVO*/ bool WAVO;
+  /*p23.WEZE*/ bool WEZE;
 };
 

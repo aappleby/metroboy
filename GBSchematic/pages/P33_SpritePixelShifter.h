@@ -25,15 +25,87 @@ public:
   union { bool VANU; bool SPR_PIX_A_6; };
   union { bool VUPY; bool SPR_PIX_A_7; };
 
-  bool POBE,PACY,PONO,PUGU,PUTE,PULY,PELO,PAWE;
-  bool PUDU,RAMU,SELE,SAJA,MYTU,MOFO,SUNY,SUTO,PEFO,REWO,RYDU,SEGA,PEBA,ROKA,RAMA,SEMO;
-  bool LUBO,SOLO,VOBY,WERY,LUMO,LASE,WURA,WYCO,LOZA,RATA,SELU,WAMY,NUCA,SYBO,SERY,SULU;
-  bool LUFY,MAME,REHU,RANO;
-  bool WAXO,TYGA,XATO,VEXU;
-  bool MAJO,MYXA,LYDE,LELA;
-  bool XEXU,VABY,XOLE,VUME;
-  bool MOFY,MEZU,PYZU,PABE;
-  bool TULA,TESO,XYVE,VUNE;
-  bool MADA,MYTO,RUCA,RUSY;
-  bool TABY,TAPO,TUPE,TUXA;
+  /*p33.POBE*/ bool POBE;
+  /*p33.PACY*/ bool PACY;
+  /*p33.PONO*/ bool PONO;
+  /*p33.PUGU*/ bool PUGU;
+  /*p33.PUTE*/ bool PUTE;
+  /*p33.PULY*/ bool PULY;
+  /*p33.PELO*/ bool PELO;
+  /*p33.PAWE*/ bool PAWE;
+
+  /*p33.PUDU*/ bool PUDU;
+  /*p33.RAMU*/ bool RAMU;
+  /*p33.SELE*/ bool SELE;
+  /*p33.SAJA*/ bool SAJA;
+  /*p33.MYTU*/ bool MYTU;
+  /*p33.MOFO*/ bool MOFO;
+  /*p33.SUNY*/ bool SUNY;
+  /*p33.SUTO*/ bool SUTO;
+  /*p33.PEFO*/ bool PEFO;
+  /*p33.REWO*/ bool REWO;
+  /*p33.RYDU*/ bool RYDU;
+  /*p33.SEGA*/ bool SEGA;
+  /*p33.PEBA*/ bool PEBA;
+  /*p33.ROKA*/ bool ROKA;
+  /*p33.RAMA*/ bool RAMA;
+  /*p33.SEMO*/ bool SEMO;
+
+  /*p33.LUBO*/ bool LUBO;
+  /*p33.SOLO*/ bool SOLO;
+  /*p33.VOBY*/ bool VOBY;
+  /*p33.WERY*/ bool WERY;
+  /*p33.LUMO*/ bool LUMO;
+  /*p33.LASE*/ bool LASE;
+  /*p33.WURA*/ bool WURA;
+  /*p33.WYCO*/ bool WYCO;
+  /*p33.LOZA*/ bool LOZA;
+  /*p33.RATA*/ bool RATA;
+  /*p33.SELU*/ bool SELU;
+  /*p33.WAMY*/ bool WAMY;
+  /*p33.NUCA*/ bool NUCA;
+  /*p33.SYBO*/ bool SYBO;
+  /*p33.SERY*/ bool SERY;
+  /*p33.SULU*/ bool SULU;
+
+  /*p33.LUFY*/ bool LUFY;
+  /*p33.MAME*/ bool MAME;
+  /*p33.REHU*/ bool REHU;
+  /*p33.RANO*/ bool RANO;
+
+  /*p33.WAXO*/ bool WAXO;
+  /*p33.TYGA*/ bool TYGA;
+  /*p33.XATO*/ bool XATO;
+  /*p33.VEXU*/ bool VEXU;
+
+  /*p33.MAJO*/ bool MAJO;
+  /*p33.MYXA*/ bool MYXA;
+  /*p33.LYDE*/ bool LYDE;
+  /*p33.LELA*/ bool LELA;
+
+  /*p33.XEXU*/ bool XEXU;
+  /*p33.VABY*/ bool VABY;
+  /*p33.XOLE*/ bool XOLE;
+  /*p33.VUME*/ bool VUME;
+
+  /*p33.MOFY*/ bool MOFY;
+  /*p33.MEZU*/ bool MEZU;
+  /*p33.PYZU*/ bool PYZU;
+  /*p33.PABE*/ bool PABE;
+
+  /*p33.TULA*/ bool TULA;
+  /*p33.TESO*/ bool TESO;
+  /*p33.XYVE*/ bool XYVE;
+  /*p33.VUNE*/ bool VUNE;
+
+  /*p33.MADA*/ bool MADA;
+  /*p33.MYTO*/ bool MYTO;
+  /*p33.RUCA*/ bool RUCA;
+  /*p33.RUSY*/ bool RUSY;
+
+  /*p33.TABY*/ bool TABY;
+  /*p33.TAPO*/ bool TAPO;
+  /*p33.TUPE*/ bool TUPE;
+  /*p33.TUXA*/ bool TUXA;
+
 };

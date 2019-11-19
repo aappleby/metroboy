@@ -104,23 +104,23 @@ void P26_Background::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // background shift register connected to VAVA3
 
-  c.p26.XOGA = not(b.p31.DEPO);
-  c.p26.XURA = not(b.p31.DEPO);
-  c.p26.TAJO = not(b.p31.DEPO);
-  c.p26.XENU = not(b.p31.DEPO);
-  c.p26.XYKE = not(b.p31.DEPO);
-  c.p26.XABA = not(b.p31.DEPO);
-  c.p26.TAFU = not(b.p31.DEPO);
-  c.p26.XUHO = not(b.p31.DEPO);
+  c.p26.XOGA = not(b.p31.OAM_A_D7);
+  c.p26.XURA = not(b.p31.OAM_A_D7);
+  c.p26.TAJO = not(b.p31.OAM_A_D7);
+  c.p26.XENU = not(b.p31.OAM_A_D7);
+  c.p26.XYKE = not(b.p31.OAM_A_D7);
+  c.p26.XABA = not(b.p31.OAM_A_D7);
+  c.p26.TAFU = not(b.p31.OAM_A_D7);
+  c.p26.XUHO = not(b.p31.OAM_A_D7);
 
-  c.p26.TEDE = nand(b.p31.DEPO, b.p34.LESY);
-  c.p26.XALA = nand(b.p31.DEPO, b.p34.LOTA);
-  c.p26.TYRA = nand(b.p31.DEPO, b.p34.LYKU);
-  c.p26.XYRU = nand(b.p31.DEPO, b.p34.ROBY);
-  c.p26.XUKU = nand(b.p31.DEPO, b.p34.TYTA);
-  c.p26.XELY = nand(b.p31.DEPO, b.p34.TYCO);
-  c.p26.TYKO = nand(b.p31.DEPO, b.p34.SOKA);
-  c.p26.TUWU = nand(b.p31.DEPO, b.p34.XOVU);
+  c.p26.TEDE = nand(b.p31.OAM_A_D7, b.p34.LESY);
+  c.p26.XALA = nand(b.p31.OAM_A_D7, b.p34.LOTA);
+  c.p26.TYRA = nand(b.p31.OAM_A_D7, b.p34.LYKU);
+  c.p26.XYRU = nand(b.p31.OAM_A_D7, b.p34.ROBY);
+  c.p26.XUKU = nand(b.p31.OAM_A_D7, b.p34.TYTA);
+  c.p26.XELY = nand(b.p31.OAM_A_D7, b.p34.TYCO);
+  c.p26.TYKO = nand(b.p31.OAM_A_D7, b.p34.SOKA);
+  c.p26.TUWU = nand(b.p31.OAM_A_D7, b.p34.XOVU);
 
   c.p26.WOKA = nand(b.p26.XOGA, b.p34.LESY);
   c.p26.WEDE = nand(b.p26.XURA, b.p34.LOTA);

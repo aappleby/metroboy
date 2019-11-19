@@ -25,37 +25,37 @@ void P34_SpritePaletteShifter::tick(const Gameboy& a, const Gameboy& b, Gameboy&
   c.p34.SOKA = not(b.p34.TORY);
   c.p34.XOVU = not(b.p34.WOPE);
 
-  c.p34.SYPY = not(b.p31.GOMO);
-  c.p34.TOTU = not(b.p31.GOMO);
-  c.p34.NARO = not(b.p31.GOMO);
-  c.p34.WEXY = not(b.p31.GOMO);
-  c.p34.RYZY = not(b.p31.GOMO);
-  c.p34.RYFE = not(b.p31.GOMO);
-  c.p34.LADY = not(b.p31.GOMO);
-  c.p34.LAFY = not(b.p31.GOMO);
+  c.p34.SYPY = not(b.p31.OAM_A_D4);
+  c.p34.TOTU = not(b.p31.OAM_A_D4);
+  c.p34.NARO = not(b.p31.OAM_A_D4);
+  c.p34.WEXY = not(b.p31.OAM_A_D4);
+  c.p34.RYZY = not(b.p31.OAM_A_D4);
+  c.p34.RYFE = not(b.p31.OAM_A_D4);
+  c.p34.LADY = not(b.p31.OAM_A_D4);
+  c.p34.LAFY = not(b.p31.OAM_A_D4);
 
-  c.p34.PUME = nand(b.p34.LESY, b.p31.GOMO);
+  c.p34.PUME = nand(b.p34.LESY, b.p31.OAM_A_D4);
   c.p34.SUCO = nand(b.p34.LESY, b.p34.SYPY);
 
-  c.p34.SORO = nand(b.p34.LOTA, b.p31.GOMO);
+  c.p34.SORO = nand(b.p34.LOTA, b.p31.OAM_A_D4);
   c.p34.TAFA = nand(b.p34.LOTA, b.p34.TOTU);
 
-  c.p34.PAMO = nand(b.p34.LYKU, b.p31.GOMO);
+  c.p34.PAMO = nand(b.p34.LYKU, b.p31.OAM_A_D4);
   c.p34.PYZY = nand(b.p34.LYKU, b.p34.NARO);
 
-  c.p34.SUKY = nand(b.p34.ROBY, b.p31.GOMO);
+  c.p34.SUKY = nand(b.p34.ROBY, b.p31.OAM_A_D4);
   c.p34.TOWA = nand(b.p34.ROBY, b.p34.WEXY);
 
-  c.p34.RORA = nand(b.p34.TYTA, b.p31.GOMO);
+  c.p34.RORA = nand(b.p34.TYTA, b.p31.OAM_A_D4);
   c.p34.RUDU = nand(b.p34.TYTA, b.p34.RYZY);
 
-  c.p34.MENE = nand(b.p34.TYCO, b.p31.GOMO);
+  c.p34.MENE = nand(b.p34.TYCO, b.p31.OAM_A_D4);
   c.p34.PAZO = nand(b.p34.TYCO, b.p34.RYFE);
 
-  c.p34.LUKE = nand(b.p34.SOKA, b.p31.GOMO);
+  c.p34.LUKE = nand(b.p34.SOKA, b.p31.OAM_A_D4);
   c.p34.LOWA = nand(b.p34.SOKA, b.p34.LADY);
 
-  c.p34.LAMY = nand(b.p34.XOVU, b.p31.GOMO);
+  c.p34.LAMY = nand(b.p34.XOVU, b.p31.OAM_A_D4);
   c.p34.LUNU = nand(b.p34.XOVU, b.p34.LAFY);
 
   c.p34.RUGO = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p34.PUME, b.p34.SUCO, b.p34.RUGO, b.chip.P10_B);

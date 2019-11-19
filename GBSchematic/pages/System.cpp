@@ -994,6 +994,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // Data pin driver.
+  // are we driving the inverted byte onto the bus? looks like it...
 
   /*
   if (DBUS_OUT) {
@@ -1011,25 +1012,41 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p08.RORU*/ pc.DBUS_OUTn = mux2(pb.CPU_RDo, pb.MOTY, pb.MODE_DBG2);
   /*p08.LULA*/ pc.DBUS_OUT  = not(pb.DBUS_OUTn);
 
-  // are we driving the inverted byte onto the bus? looks like it...
+  /*p25.RUXA*/ c.sys.D0_A = nand(b.D0, b.sys.DBUS_OUT);
+  /*p25.RUJA*/ c.sys.D1_A = nand(b.D1, b.sys.DBUS_OUT);
+  /*p25.RABY*/ c.sys.D2_A = nand(b.D2, b.sys.DBUS_OUT);
+  /*p25.RERA*/ c.sys.D3_A = nand(b.D3, b.sys.DBUS_OUT);
+  /*p25.RORY*/ c.sys.D4_A = nand(b.D4, b.sys.DBUS_OUT);
+  /*p25.RYVO*/ c.sys.D5_A = nand(b.D5, b.sys.DBUS_OUT);
+  /*p25.RAFY*/ c.sys.D6_A = nand(b.D6, b.sys.DBUS_OUT);
+  /*p25.RAVU*/ c.sys.D7_A = nand(b.D7, b.sys.DBUS_OUT);
 
-  /*p08.RUXA*/ pc.D0_A  = nand(pb.DBUS_OUT,  b.D0);
-  /*p08.RUJA*/ pc.D1_A  = nand(pb.DBUS_OUT,  b.D1);
-  /*p08.RABY*/ pc.D2_A  = nand(pb.DBUS_OUT,  b.D2);
-  /*p08.RERA*/ pc.D3_A  = nand(pb.DBUS_OUT,  b.D3);
-  /*p08.RORY*/ pc.D4_A  = nand(pb.DBUS_OUT,  b.D4);
-  /*p08.RYVO*/ pc.D5_A  = nand(pb.DBUS_OUT,  b.D5);
-  /*p08.RAFY*/ pc.D6_A  = nand(pb.DBUS_OUT,  b.D6);
-  /*p08.RAVU*/ pc.D7_A  = nand(pb.DBUS_OUT,  b.D7);
+  c.chip.D0_A = b.sys.D0_A;
+  c.chip.D1_A = b.sys.D1_A;
+  c.chip.D2_A = b.sys.D2_A;
+  c.chip.D3_A = b.sys.D3_A;
+  c.chip.D4_A = b.sys.D4_A;
+  c.chip.D5_A = b.sys.D5_A;
+  c.chip.D7_A = b.sys.D6_A;
+  c.chip.D6_A = b.sys.D7_A;
 
-  /*p08.RUNE*/ pc.D0_D  = nor (pb.DBUS_OUTn, b.D0);
-  /*p08.RYPU*/ pc.D1_D  = nor (pb.DBUS_OUTn, b.D1);
-  /*p08.SULY*/ pc.D2_D  = nor (pb.DBUS_OUTn, b.D2);
-  /*p08.SEZE*/ pc.D3_D  = nor (pb.DBUS_OUTn, b.D3);
-  /*p08.RESY*/ pc.D4_D  = nor (pb.DBUS_OUTn, b.D4);
-  /*p08.TAMU*/ pc.D5_D  = nor (pb.DBUS_OUTn, b.D5);
-  /*p08.ROGY*/ pc.D6_D  = nor (pb.DBUS_OUTn, b.D6);
-  /*p08.RYDA*/ pc.D7_D  = nor (pb.DBUS_OUTn, b.D7);
+  /*p08.RUNE*/ c.sys.D0_D = nor (b.D0, pb.DBUS_OUTn);
+  /*p08.RYPU*/ c.sys.D1_D = nor (b.D1, pb.DBUS_OUTn);
+  /*p08.SULY*/ c.sys.D2_D = nor (b.D2, pb.DBUS_OUTn);
+  /*p08.SEZE*/ c.sys.D3_D = nor (b.D3, pb.DBUS_OUTn);
+  /*p08.RESY*/ c.sys.D4_D = nor (b.D4, pb.DBUS_OUTn);
+  /*p08.TAMU*/ c.sys.D5_D = nor (b.D5, pb.DBUS_OUTn);
+  /*p08.ROGY*/ c.sys.D6_D = nor (b.D6, pb.DBUS_OUTn);
+  /*p08.RYDA*/ c.sys.D7_D = nor (b.D7, pb.DBUS_OUTn);
+
+  c.chip.D0_D = b.sys.D0_D;
+  c.chip.D1_D = b.sys.D1_D;
+  c.chip.D2_D = b.sys.D2_D;
+  c.chip.D3_D = b.sys.D3_D;
+  c.chip.D4_D = b.sys.D4_D;
+  c.chip.D5_D = b.sys.D5_D;
+  c.chip.D6_D = b.sys.D6_D;
+  c.chip.D7_D = b.sys.D7_D;
 
   /*p08.LAVO*/ pc.LATCH_DX_C = nand(b.cpu.CPU_RAW_RD, pb.ADDR_VALID_AND_NOT_VRAM, b.cpu.FROM_CPU5); // polarity?
 
@@ -1071,15 +1088,6 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p08.TEMY*/ if (pb.DBG_D_RD) c.D6 = not(pb.DBG_D6_Cn);
   /*p08.ROPA*/ if (pb.DBG_D_RD) c.D7 = not(pb.DBG_D7_Cn);
 
-  c.chip.D0_A = pb.D0_A;
-  c.chip.D1_A = pb.D1_A;
-  c.chip.D2_A = pb.D2_A;
-  c.chip.D3_A = pb.D3_A;
-  c.chip.D4_A = pb.D4_A;
-  c.chip.D5_A = pb.D5_A;
-  c.chip.D6_A = pb.D6_A;
-  c.chip.D7_A = pb.D7_A;
-
   c.chip.D0_B = pb.DBUS_OUT;
   c.chip.D1_B = pb.DBUS_OUT;
   c.chip.D2_B = pb.DBUS_OUT;
@@ -1088,15 +1096,6 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.chip.D5_B = pb.DBUS_OUT;
   c.chip.D6_B = pb.DBUS_OUT;
   c.chip.D7_B = pb.DBUS_OUT;
-
-  c.chip.D0_D = pb.D0_D;
-  c.chip.D1_D = pb.D1_D;
-  c.chip.D2_D = pb.D2_D;
-  c.chip.D3_D = pb.D3_D;
-  c.chip.D4_D = pb.D4_D;
-  c.chip.D5_D = pb.D5_D;
-  c.chip.D6_D = pb.D6_D;
-  c.chip.D7_D = pb.D7_D;
 
   //----------
 

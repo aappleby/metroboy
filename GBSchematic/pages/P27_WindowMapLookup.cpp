@@ -204,7 +204,7 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.p27.TAKA = unk2(b.p27.VEKU, b.p27.SECA);
   c.p27.TUKU = not(b.p24.TOMU);
   c.p27.SOWO = not(b.p27.TAKA);
-  c.p27.TEKY = and(b.p29.FEPO, b.p27.TUKU, b.p27.LYRY, b.p27.SOWO);
+  c.p27.TEKY = and(b.p29.SPRITE_MATCH_X, b.p27.TUKU, b.p27.LYRY, b.p27.SOWO);
 
   c.p27.SOBU = tock_pos(a.p21.CLK_AxCxExGxa, b.p21.CLK_AxCxExGxa, b.p27.P10_Bn, b.p27.SOBU, b.p27.TEKY);
   c.p27.SUDA = tock_pos(a.sys.CLK_xBxDxFxH5, b.sys.CLK_xBxDxFxH5, b.p27.P10_Bn, b.p27.SUDA, b.p27.SOBU);

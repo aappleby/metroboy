@@ -38,8 +38,8 @@ public:
   /*p28.YVAL*/ bool YVAL;
   /*p28.YRYV*/ bool YRYV;
 
-  /*p28.AWOH*/ bool AWOH;
-  /*p28.ABAF*/ bool ABAF;
+  /*p28.AWOH*/ bool CLK_2Mn;
+  /*p28.ABAF*/ bool IN_FRAMEn;
   /*p28.ANEL*/ bool ANEL;
   /*p28.BYHA*/ bool BYHA;
   /*p28.ABAK*/ bool ABAK;

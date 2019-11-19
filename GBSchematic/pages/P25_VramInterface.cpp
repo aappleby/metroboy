@@ -10,64 +10,54 @@
 void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
-  // top left stack of inverters
+  // MAXX pin driver
 
-  c.p25.MYFU_00 = not(b.chip.MA00);
-  c.p25.MASA_01 = not(b.chip.MA01);
-  c.p25.MYRE_02 = not(b.chip.MA02);
-  c.p25.MAVU_03 = not(b.chip.MA03);
-  c.p25.MEPA_04 = not(b.chip.MA04);
-  c.p25.MYSA_05 = not(b.chip.MA05);
-  c.p25.MEWY_06 = not(b.chip.MA06);
-  c.p25.MUME_07 = not(b.chip.MA07);
-  c.p25.VOVA_08 = not(b.chip.MA08);
-  c.p25.VODE_09 = not(b.chip.MA09);
-  c.p25.RUKY_10 = not(b.chip.MA10);
-  c.p25.RUMA_11 = not(b.chip.MA11);
-  c.p25.REHO_12 = not(b.chip.MA12);
+  c.p25.MA00n = not(b.MA00);
+  c.p25.MA01n = not(b.MA01);
+  c.p25.MA02n = not(b.MA02);
+  c.p25.MA03n = not(b.MA03);
+  c.p25.MA04n = not(b.MA04);
+  c.p25.MA05n = not(b.MA05);
+  c.p25.MA06n = not(b.MA06);
+  c.p25.MA07n = not(b.MA07);
+  c.p25.MA08n = not(b.MA08);
+  c.p25.MA09n = not(b.MA09);
+  c.p25.MA10n = not(b.MA10);
+  c.p25.MA11n = not(b.MA11);
+  c.p25.MA12n = not(b.MA12);
 
-  c.p25.LEXE_00 = not(c.p25.MYFU_00);
-  c.p25.LOZU_01 = not(c.p25.MASA_01);
-  c.p25.LACA_02 = not(c.p25.MYRE_02);
-  c.p25.LUVO_03 = not(c.p25.MAVU_03);
-  c.p25.LOLY_04 = not(c.p25.MEPA_04);
-  c.p25.LALO_05 = not(c.p25.MYSA_05);
-  c.p25.LEFA_06 = not(c.p25.MEWY_06);
-  c.p25.LUBY_07 = not(c.p25.MUME_07);
-  c.p25.TUJY_08 = not(c.p25.VOVA_08);
-  c.p25.TAGO_09 = not(c.p25.VODE_09);
-  c.p25.NUVA_10 = not(c.p25.RUKY_10);
-  c.p25.PEDU_11 = not(c.p25.RUMA_11);
-  c.p25.PONY_12 = not(c.p25.REHO_12);
+  c.p25.MA00b = not(c.p25.MA00n);
+  c.p25.MA01b = not(c.p25.MA01n);
+  c.p25.MA02b = not(c.p25.MA02n);
+  c.p25.MA03b = not(c.p25.MA03n);
+  c.p25.MA04b = not(c.p25.MA04n);
+  c.p25.MA05b = not(c.p25.MA05n);
+  c.p25.MA06b = not(c.p25.MA06n);
+  c.p25.MA07b = not(c.p25.MA07n);
+  c.p25.MA08b = not(c.p25.MA08n);
+  c.p25.MA09b = not(c.p25.MA09n);
+  c.p25.MA10b = not(c.p25.MA10n);
+  c.p25.MA11b = not(c.p25.MA11n);
+  c.p25.MA12b = not(c.p25.MA12n);
 
-  c.chip.MA00 = c.p25.LEXE_00;
-  c.chip.MA01 = c.p25.LOZU_01;
-  c.chip.MA02 = c.p25.LACA_02;
-  c.chip.MA03 = c.p25.LUVO_03;
-  c.chip.MA04 = c.p25.LOLY_04;
-  c.chip.MA05 = c.p25.LALO_05;
-  c.chip.MA06 = c.p25.LEFA_06;
-  c.chip.MA07 = c.p25.LUBY_07;
-  c.chip.MA08 = c.p25.TUJY_08;
-  c.chip.MA09 = c.p25.TAGO_09;
-  c.chip.MA10 = c.p25.NUVA_10;
-  c.chip.MA11 = c.p25.PEDU_11;
-  c.chip.MA12 = c.p25.PONY_12;
-
-  //----------
-
-  c.p25.RYVO = nand(b.D5, b.sys.DBUS_OUT);
-  c.p25.RERA = nand(b.D5, b.sys.DBUS_OUT);
-  c.p25.RABY = nand(b.D5, b.sys.DBUS_OUT);
-  c.p25.RORY = nand(b.D5, b.sys.DBUS_OUT);
-  c.p25.RUJA = nand(b.D5, b.sys.DBUS_OUT);
-  c.p25.RAVU = nand(b.D5, b.sys.DBUS_OUT);
-  c.p25.RAFY = nand(b.D5, b.sys.DBUS_OUT);
-  c.p25.RUXA = nand(b.D5, b.sys.DBUS_OUT);
+  c.chip.MA00 = c.p25.MA00b;
+  c.chip.MA01 = c.p25.MA01b;
+  c.chip.MA02 = c.p25.MA02b;
+  c.chip.MA03 = c.p25.MA03b;
+  c.chip.MA04 = c.p25.MA04b;
+  c.chip.MA05 = c.p25.MA05b;
+  c.chip.MA06 = c.p25.MA06b;
+  c.chip.MA07 = c.p25.MA07b;
+  c.chip.MA08 = c.p25.MA08b;
+  c.chip.MA09 = c.p25.MA09b;
+  c.chip.MA10 = c.p25.MA10b;
+  c.chip.MA11 = c.p25.MA11b;
+  c.chip.MA12 = c.p25.MA12b;
 
   //----------
 
-  c.p25.CUFE = unk3(b.sys.ADDR_OAM, b.sys.DMA_RUNNING_SYNC, b.sys.CPUCLK_ABCDxxxx9);
+  // not sure this makes sense as or(and(a,b),c)...
+  c.p25.CUFE = or(and(b.sys.ADDR_OAM, b.sys.DMA_RUNNING_SYNC), b.sys.CPUCLK_ABCDxxxx9);
   c.p25.VAPE = and(b.p29.TACU, b.p29.TUVO);
   c.p25.AVER = and(b.p28.ACYL, b.p29.XYSO);
   c.p25.XUJY = not(b.p25.VAPE);
@@ -76,96 +66,96 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
+
+
+  /*p25.SYCY*/ c.p25.MODE_DBG2n = not(b.sys.MODE_DBG2);
+  /*p25.SOTO*/ c.p25.DBG_SOTO   = tock_pos(a.p25.MODE_DBG2n, b.p25.MODE_DBG2n, b.sys.SYS_RESETn2, b.p25.DBG_SOTO, !b.p25.DBG_SOTO);
+  /*p25.TUTO*/ c.p25.DBG_TUTO   = and(b.sys.MODE_DBG2, !b.p25.DBG_SOTO);
+  /*p25.RACO*/ c.p25.DBG_TUTOn  = not(b.p25.DBG_TUTO);
+
   c.p25.ADDR_FE00_FFFF = not(b.sys.ADDR_0000_FE00);
   c.p25.TEFA = nor(b.p25.ADDR_FE00_FFFF, b.sys.ADDR_VALID_AND_NOT_VRAM);
-  c.p25.SOSE = and(b.A15, b.p25.TEFA); // odd...
-  c.p25.TUCA = and(b.p25.SOSE, b.sys.CPU_RD_SYNC);
-  c.p25.TUJA = and(b.p25.SOSE, b.sys.CPU_WR_SYNC);
+  c.p25.SOSE = and(b.A15, b.p25.TEFA);
 
-  // what is this doing to the clock?
-  c.p25.TEGU = nand(b.p25.SOSE, b.sys.CLK_xxxDxxxx1);
+  // guess
+  /*p25.TUCA*/ c.p25.CPU_VRAM_RD  = and (b.p25.SOSE, b.sys.CPU_RD_SYNC);
+  /*p25.TUJA*/ c.p25.CPU_VRAM_WR  = and (b.p25.SOSE, b.sys.CPU_WR_SYNC);
+  /*p25.TEGU*/ c.p25.CPU_VRAM_CLK = nand(b.p25.SOSE, b.sys.CLK_xxxDxxxx1);
 
-  c.p25.TAVY = not(b.chip.MOE_C);
-  c.p25.SYCY = not(b.sys.MODE_DBG2);
-  c.p25.SOTO = tock_pos(a.p25.SYCY, b.p25.SYCY, b.sys.SYS_RESETn2, b.p25.SOTO, !b.p25.SOTO);
-  c.p25.TUTO = and(b.sys.MODE_DBG2, !b.p25.SOTO);
-  c.p25.SUDO = not(b.chip.MWR_C);
-  c.p25.TEFY = not(b.chip.MCS_C);
-  c.p25.SALE = mux2(b.p25.TUTO, b.p25.TAVY, b.p25.TEGU);
-  c.p25.TYJY = mux2(b.p25.TUTO, b.p25.SUDO, b.p25.TUJA);
-  c.p25.TOLE = mux2(b.p25.TUTO, b.p25.TEFY, b.p25.TUCA);
+  c.p25.MCS_Cn = not(b.chip.MCS_C);
+  c.p25.MWR_Cn = not(b.chip.MWR_C);
+  c.p25.MOE_Cn = not(b.chip.MOE_C);
+
+  c.p25.CPU_VRAM_RD2  = mux2(b.p25.MCS_Cn, b.p25.CPU_VRAM_RD , b.p25.DBG_TUTO);
+  c.p25.CPU_VRAM_WR2  = mux2(b.p25.MWR_Cn, b.p25.CPU_VRAM_WR , b.p25.DBG_TUTO);
+  c.p25.CPU_VRAM_CLK2 = mux2(b.p25.MOE_Cn, b.p25.CPU_VRAM_CLK, b.p25.DBG_TUTO);
+
+  c.p25.CPU_VRAM_CLK2n = not(b.p25.CPU_VRAM_CLK2);
 
   c.p25.ROPY = not(b.p21.XYMU);
-  c.p25.SERE = and(b.p25.TOLE, b.p25.ROPY);
-  c.p25.RUVY = not(b.p25.SALE);
-  c.p25.SOHY = nand(b.p25.TYJY, b.p25.SERE);
-  c.p25.SAZO = and(b.p25.RUVY, b.p25.SERE);
+  c.p25.SERE = and(b.p25.CPU_VRAM_RD2,   b.p25.ROPY);
+  c.p25.SAZO = and(b.p25.CPU_VRAM_CLK2n, b.p25.SERE);
   c.p25.RYJE = not(b.p25.SAZO);
   c.p25.REVO = not(b.p25.RYJE);
-  c.p25.RELA = or(b.p25.REVO, b.p25.SAZO);
   c.p25.ROCY = and(b.p25.SAZO, b.p25.REVO);
-  c.p25.RENA = not(b.p25.RELA);
-  c.p25.ROFA = not(b.p25.RENA);
   c.p25.RAHU = not(b.p25.ROCY);
 
-  c.chip.MD0_B = b.p25.ROFA;
-  c.chip.MD1_B = b.p25.ROFA;
-  c.chip.MD2_B = b.p25.ROFA;
-  c.chip.MD3_B = b.p25.ROFA;
-  c.chip.MD4_B = b.p25.ROFA;
-  c.chip.MD5_B = b.p25.ROFA;
-  c.chip.MD6_B = b.p25.ROFA;
-  c.chip.MD7_B = b.p25.ROFA;
+  /*p25.RELA*/ c.p25.MD_OUTb = or(b.p25.REVO, b.p25.SAZO);
+  /*p25.RENA*/ c.p25.MD_IN   = not(b.p25.MD_OUTb);
+  /*p25.ROFA*/ c.p25.MD_OUT  = not(b.p25.MD_IN);
 
-  c.p25.RYLU = nand(b.p25.SALE, b.p25.ROPY);
-  c.p25.SOHO = and(b.p29.TACU, b.p29.TEXY);
-  c.p25.RAWA = not(b.p25.SOHO);
-  c.p25.APAM = not(b.sys.VRAM_TO_OAMn);
-  c.p25.SUTU = nor(b.p27.LENA, b.sys.VRAM_TO_OAMn, b.p29.TEXY, b.p25.SERE);
-  c.p25.RACU = and(b.p25.RYLU, b.p25.RAWA, b.p27.MYMA, b.p25.APAM);
-  c.p25.RACO = not(b.p25.TUTO);
-  c.p25.RUTE = or(b.p25.TUTO, b.p25.RACO); // wat? or of a signal with its own inverse...
-  c.p25.SEWO = or(b.p25.TUTO, b.p25.SUTU);
-  c.p25.TODE = and(b.p25.SUTU, b.p25.RACO);
-  c.p25.SEMA = and(b.p25.RACU, b.p25.RACO);
-  c.p25.TAXY = and(b.p25.SOHY, b.p25.RACO);
-  c.p25.SOFY = or(b.p25.TUTO, b.p25.SOHY);
+  c.chip.MD0_B = b.p25.MD_OUT;
+  c.chip.MD1_B = b.p25.MD_OUT;
+  c.chip.MD2_B = b.p25.MD_OUT;
+  c.chip.MD3_B = b.p25.MD_OUT;
+  c.chip.MD4_B = b.p25.MD_OUT;
+  c.chip.MD5_B = b.p25.MD_OUT;
+  c.chip.MD6_B = b.p25.MD_OUT;
+  c.chip.MD7_B = b.p25.MD_OUT;
 
-  c.p25.SAHA = not(b.p25.RUTE);
-  c.p25.SETY = not(b.p25.SEWO);
-  c.p25.SOKY = not(b.p25.TODE);
-  c.p25.REFO = not(b.p25.SEMA);
-  c.p25.SYSY = not(b.p25.TAXY);
-  c.p25.RAGU = not(b.p25.SOFY);
+  /*p25.RYLU*/ c.p25.RYLU      = nand(b.p25.CPU_VRAM_CLK2, b.p25.ROPY);
+  /*p25.SOHO*/ c.p25.SOHO      = and(b.p29.TACU, b.p29.TEXY);
+  /*p25.RAWA*/ c.p25.RAWA      = not(b.p25.SOHO);
+  /*p25.APAM*/ c.p25.APAM      = not(b.sys.VRAM_TO_OAMn);
 
-  c.chip.MCS_A = b.p25.SOKY;
-  c.chip.MCS_D = b.p25.SETY;
-  c.chip.MWR_A = b.p25.SYSY;
-  c.chip.MWR_D = b.p25.RAGU;
-  c.chip.MOE_A = b.p25.REFO;
-  c.chip.MOE_D = b.p25.SAHA;
+  /*p25.SUTU*/ c.p25.MCS       = nor(b.p27.LENA, b.sys.VRAM_TO_OAMn, b.p29.TEXY, b.p25.SERE);
+  /*p25.SOHY*/ c.p25.MWR       = nand(b.p25.CPU_VRAM_WR2, b.p25.SERE);
+  /*p25.RACU*/ c.p25.MOE       = and(b.p25.RYLU, b.p25.RAWA, b.p27.MYMA, b.p25.APAM);
+
+
+  /*p25.TODE*/ c.p25.MCS_An    = and(b.p25.MCS, b.p25.DBG_TUTOn);
+  /*p25.SEWO*/ c.p25.MCS_Dn    = or(b.p25.DBG_TUTO, b.p25.MCS);
+
+  /*p25.TAXY*/ c.p25.MWR_An    = and(b.p25.MWR, b.p25.DBG_TUTOn);
+  /*p25.SOFY*/ c.p25.MWR_Dn    = or(b.p25.DBG_TUTO, b.p25.MWR);
+
+  /*p25.SEMA*/ c.p25.MOE_An    = and(b.p25.MOE, b.p25.DBG_TUTOn);
+  /*p25.RUTE*/ c.p25.MOE_Dn    = or(b.p25.DBG_TUTO, b.p25.MOE); // schematic wrong, second input is RACU
+
+  /*p25.SOKY*/ c.p25.MCS_A     = not(b.p25.MCS_An);
+  /*p25.SETY*/ c.p25.MCS_D     = not(b.p25.MCS_Dn);
+  /*p25.SYSY*/ c.p25.MWR_A     = not(b.p25.MWR_An);
+  /*p25.RAGU*/ c.p25.MWR_D     = not(b.p25.MWR_Dn);
+  /*p25.REFO*/ c.p25.MOE_A     = not(b.p25.MOE_An);
+  /*p25.SAHA*/ c.p25.MOE_D     = not(b.p25.MOE_Dn);
+
+  c.chip.MCS_A = b.p25.MCS_A;
+  c.chip.MCS_D = b.p25.MCS_D;
+  c.chip.MWR_A = b.p25.MWR_A;
+  c.chip.MWR_D = b.p25.MWR_D;
+  c.chip.MOE_A = b.p25.MOE_A;
+  c.chip.MOE_D = b.p25.MOE_D;
 
   //----------
 
-  c.p25.RODY_00 = b.chip.MD0_C;
-  c.p25.REBA_01 = b.chip.MD1_C;
-  c.p25.RYDO_02 = b.chip.MD2_C;
-  c.p25.REMO_03 = b.chip.MD3_C;
-  c.p25.ROCE_04 = b.chip.MD4_C;
-  c.p25.ROPU_05 = b.chip.MD5_C;
-  c.p25.RETA_06 = b.chip.MD6_C;
-  c.p25.RAKU_07 = b.chip.MD7_C;
-
-  if (b.p25.RENA) {
-    c.MD0 = b.p25.RODY_00;
-    c.MD1 = b.p25.REBA_01;
-    c.MD2 = b.p25.RYDO_02;
-    c.MD3 = b.p25.REMO_03;
-    c.MD4 = b.p25.ROCE_04;
-    c.MD5 = b.p25.ROPU_05;
-    c.MD6 = b.p25.RETA_06;
-    c.MD7 = b.p25.RAKU_07;
-  }
+  /*p25.RODY*/ if (b.p25.MD_IN) c.MD0 = b.chip.MD0_C;
+  /*p25.REBA*/ if (b.p25.MD_IN) c.MD1 = b.chip.MD1_C;
+  /*p25.RYDO*/ if (b.p25.MD_IN) c.MD2 = b.chip.MD2_C;
+  /*p25.REMO*/ if (b.p25.MD_IN) c.MD3 = b.chip.MD3_C;
+  /*p25.ROCE*/ if (b.p25.MD_IN) c.MD4 = b.chip.MD4_C;
+  /*p25.ROPU*/ if (b.p25.MD_IN) c.MD5 = b.chip.MD5_C;
+  /*p25.RETA*/ if (b.p25.MD_IN) c.MD6 = b.chip.MD6_C;
+  /*p25.RAKU*/ if (b.p25.MD_IN) c.MD7 = b.chip.MD7_C;
 
   //----------
   // more debug stuff

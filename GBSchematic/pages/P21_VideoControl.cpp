@@ -145,10 +145,9 @@ void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // why do we have a ff listening to line144?
   /*p21.NAPO*/ c.p21.NAPO          = tock_pos(a.p21.LINE_144_SYNC, b.p21.LINE_144_SYNC, b.sys.VID_RESETn2, b.p21.NAPO,          !b.p21.NAPO);
 
-  /*p21.XENA*/ c.p21.XENA = not(b.p29.FEPO);
+  /*p21.XENA*/ c.p21.XENA = not(b.p29.SPRITE_MATCH_X);
   /*p21.XANO*/ c.p21.X_167 = not(b.p21.X_167n);
-
-  /*p21.WODU*/ c.p21.WODU = and(b.p21.XENA, b.p21.X_167);
+  /*p21.WODU*/ c.p21.RENDER_DONEn = and(b.p21.XENA, b.p21.X_167);
 
 
   /*p21.PARU*/ c.p21.INT_VBL     = not(!b.p21.LINE_144_SYNC);
@@ -159,15 +158,17 @@ void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p21.SELA*/ c.p21.LINE_DONEo    = not(b.p21.LINE_DONEa);
 
   /*p21.TAPA*/ c.p21.INT_OAM = and(b.p21.INT_VBLn, b.p21.LINE_DONEo);
-  /*p21.TARU*/ c.p21.INT_HBL = and(b.p21.INT_VBLn, b.p21.WODU);
+  /*p21.TARU*/ c.p21.INT_HBL = and(b.p21.INT_VBLn, b.p21.RENDER_DONEn);
 
   //---
 
-  /*p21.VOGA*/ c.p21.VOGA = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.p21.TADY, b.p21.VOGA, b.p21.WODU);
+  /*p21.VOGA*/ c.p21.VOGA = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.p21.TADY, b.p21.VOGA, b.p21.RENDER_DONEn);
   /*p21.WEGO*/ c.p21.WEGO = or(b.sys.VID_RESET3, b.p21.VOGA);
-  /*p21.XAJO*/ c.p21.XAJO = and(b.p21.X0, b.p21.X3);
+  
+  /*p21.XAJO*/ c.p21.X_009 = and(b.p21.X0, b.p21.X3);
+
   /*p21.XYMU*/ c.p21.XYMU = or(b.p21.WEGO, b.p29.AVAP);
-  /*p21.WUSA*/ c.p21.WUSA = or(b.p21.XAJO, b.p21.WEGO);
+  /*p21.WUSA*/ c.p21.WUSA = or(b.p21.X_009, b.p21.WEGO);
   /*p21.TOBA*/ c.p21.TOBA = and(b.p24.CLKPIPE, b.p21.WUSA);
   /*p21.SEMU*/ c.p21.SEMU = or(b.p21.TOBA, b.p27.POVA);
   /*p21.RYPO*/ c.p21.CP = not(b.p21.SEMU);

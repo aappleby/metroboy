@@ -20,7 +20,7 @@ struct P21_VideoControl {
 
   /*p21.XYMU*/ bool XYMU;
   /*p21.NYPE*/ bool LINE_DONE_DELAYn;
-  /*p21.WODU*/ bool WODU;
+  /*p21.WODU*/ bool RENDER_DONEn;
   /*p21.RUTU*/ bool LINE_DONEn;
   /*p21.NAPO*/ bool NAPO;
   /*p21.PURE*/ bool LINE_DONEa;
@@ -127,7 +127,7 @@ struct P21_VideoControl {
   /*p21.SEPA*/ bool FF41_WR;
   /*p21.VOGA*/ bool VOGA;
   /*p21.WEGO*/ bool WEGO;
-  /*p21.XAJO*/ bool XAJO;
+  /*p21.XAJO*/ bool X_009;
   /*p21.WUSA*/ bool WUSA;
   /*p21.TOBA*/ bool TOBA;
   /*p21.SADU*/ bool STAT_MODE0;

@@ -785,14 +785,14 @@ struct System {
   /*p08.RORU*/ bool DBUS_OUTn;
   /*p08.LULA*/ bool DBUS_OUT;  // True if the internal data bus is driving the external data bus
 
-  /*p08.RUXA*/ bool D0_A;
-  /*p08.RUJA*/ bool D1_A;
-  /*p08.RABY*/ bool D2_A;
-  /*p08.RERA*/ bool D3_A;
-  /*p08.RORY*/ bool D4_A;
-  /*p08.RYVO*/ bool D5_A;
-  /*p08.RAFY*/ bool D6_A;
-  /*p08.RAVU*/ bool D7_A;
+  /*p25.RUXA*/ bool D0_A;
+  /*p25.RUJA*/ bool D1_A;
+  /*p25.RABY*/ bool D2_A;
+  /*p25.RERA*/ bool D3_A;
+  /*p25.RORY*/ bool D4_A;
+  /*p25.RYVO*/ bool D5_A;
+  /*p25.RAVU*/ bool D6_A;
+  /*p25.RAFY*/ bool D7_A;
 
   /*p08.RUNE*/ bool D0_D;
   /*p08.RYPU*/ bool D1_D;

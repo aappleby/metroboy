@@ -26,7 +26,7 @@ public:
   /*p28.WEFE*/ bool WEFE;
   /*p28.WEWU*/ bool OAM_A_CPU_RD;
 
-  /*p28.WUME*/ bool WUME;
+  /*p28.WUME*/ bool OAM_B_LATCH_TO_D;
   /*p28.BESU*/ bool BESU;
   /*p28.ANOM*/ bool SCAN_RSTn;
   /*p28.FETO*/ bool SCAN_DONE;
@@ -60,7 +60,8 @@ public:
   /*p28.ADAH*/ bool ADDR_OAMn;
   /*p28.WUJE*/ bool WUJE;
   /*p28.XUPA*/ bool XUPA;
-  /*p28.APAG*/ bool APAG;
+  
+  /*p28.APAG*/ bool D_TO_OAMDn;
   /*p28.WEFY*/ bool WEFY;
   /*p28.BOFE*/ bool BOFE;
   /*p28.AJEP*/ bool AJEP;
@@ -68,7 +69,7 @@ public:
   /*p28.BOTA*/ bool BOTA;
   /*p28.ASYT*/ bool ASYT;
   /*p28.WARU*/ bool WARU;
-  /*p28.AZUL*/ bool AZUL;
+  /*p28.AZUL*/ bool D_TO_OAMD;
 
   /*p28.AZAR*/ bool VRAM_TO_OAMc;
 
@@ -114,9 +115,9 @@ public:
 
   /*p28.GEKA*/ bool OAM_A0;
   /*p28.MYNU*/ bool MYNU;
-  /*p28.WAFO*/ bool WAFO;
-  /*p28.GUKO*/ bool GUKO;
-  /*p28.WUKU*/ bool WUKU;
+  /*p28.WAFO*/ bool OAM_A0n;
+  /*p28.GUKO*/ bool OAM_B_LATCH_TO_Dn;
+  /*p28.WUKU*/ bool OAM_A_CPU_RDn;
   /*p28.YLYC*/ bool OAM_A_CSn;
   /*p28.YNYC*/ bool OAM_B_CSn;
 

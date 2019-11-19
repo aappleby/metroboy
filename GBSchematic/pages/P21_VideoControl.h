@@ -120,7 +120,7 @@ struct P21_VideoControl {
 
   /*p21.POPU*/ bool LINE_144_SYNC;
   /*p21.XUGU*/ bool X_167n;
-  /*p21.XENA*/ bool XENA;
+  /*p21.XENA*/ bool STORE_SPRITE_LINEn;
   /*p21.XANO*/ bool X_167;
   /*p21.TOLU*/ bool INT_VBLn;
 

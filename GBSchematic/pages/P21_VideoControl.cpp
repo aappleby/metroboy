@@ -145,9 +145,10 @@ void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // why do we have a ff listening to line144?
   /*p21.NAPO*/ c.p21.NAPO          = tock_pos(a.p21.LINE_144_SYNC, b.p21.LINE_144_SYNC, b.sys.VID_RESETn2, b.p21.NAPO,          !b.p21.NAPO);
 
-  /*p21.XENA*/ c.p21.XENA = not(b.p29.SPRITE_MATCH_X);
+  /*p21.XENA*/ c.p21.STORE_SPRITE_LINEn = not(b.p29.OAM_SCAN);
   /*p21.XANO*/ c.p21.X_167 = not(b.p21.X_167n);
-  /*p21.WODU*/ c.p21.RENDER_DONEn = and(b.p21.XENA, b.p21.X_167);
+
+  /*p21.WODU*/ c.p21.RENDER_DONEn = and(b.p21.STORE_SPRITE_LINEn, b.p21.X_167);
 
 
   /*p21.PARU*/ c.p21.INT_VBL     = not(!b.p21.LINE_144_SYNC);

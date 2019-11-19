@@ -18,40 +18,40 @@ void P30_SpriteStore::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // so this is a bit weird as we have a tri-state bus inside one schematic...
 
-  /*p30.WEZA*/ if (b.p29.BUZA) c.p30.TS_IDX_0 = b.p30.IDX_5; // order wrong
-  /*p30.WUCO*/ if (b.p29.BUZA) c.p30.TS_IDX_1 = b.p30.IDX_4;
-  /*p30.WYDA*/ if (b.p29.BUZA) c.p30.TS_IDX_2 = b.p30.IDX_3;
-  /*p30.ZYSU*/ if (b.p29.BUZA) c.p30.TS_IDX_3 = b.p30.IDX_2;
-  /*p30.WYSE*/ if (b.p29.BUZA) c.p30.TS_IDX_4 = b.p30.IDX_1;
-  /*p30.WUZY*/ if (b.p29.BUZA) c.p30.TS_IDX_5 = b.p30.IDX_0;
+  /*p30.WEZA*/ if (b.p29.STORE_SPRITE_IDX) c.p30.TS_IDX_0 = b.p30.IDX_5; // order wrong
+  /*p30.WUCO*/ if (b.p29.STORE_SPRITE_IDX) c.p30.TS_IDX_1 = b.p30.IDX_4;
+  /*p30.WYDA*/ if (b.p29.STORE_SPRITE_IDX) c.p30.TS_IDX_2 = b.p30.IDX_3;
+  /*p30.ZYSU*/ if (b.p29.STORE_SPRITE_IDX) c.p30.TS_IDX_3 = b.p30.IDX_2;
+  /*p30.WYSE*/ if (b.p29.STORE_SPRITE_IDX) c.p30.TS_IDX_4 = b.p30.IDX_1;
+  /*p30.WUZY*/ if (b.p29.STORE_SPRITE_IDX) c.p30.TS_IDX_5 = b.p30.IDX_0;
 
-  /*p30.WENU*/ if (b.p29.SPRITE_MATCH_X) c.p30.TS_LINE_0 = b.p29.SPRITE_DELTAY1; // order wrong
-  /*p30.CUCU*/ if (b.p29.SPRITE_MATCH_X) c.p30.TS_LINE_1 = b.p29.SPRITE_DELTAY2;
-  /*p30.CUCA*/ if (b.p29.SPRITE_MATCH_X) c.p30.TS_LINE_2 = b.p29.SPRITE_DELTAY0;
-  /*p30.CEGA*/ if (b.p29.SPRITE_MATCH_X) c.p30.TS_LINE_3 = b.p29.SPRITE_DELTAY3;
+  /*p30.WENU*/ if (b.p29.OAM_SCAN) c.p30.TS_LINE_0 = b.p29.SPRITE_DELTA1; // order wrong
+  /*p30.CUCU*/ if (b.p29.OAM_SCAN) c.p30.TS_LINE_1 = b.p29.SPRITE_DELTA2;
+  /*p30.CUCA*/ if (b.p29.OAM_SCAN) c.p30.TS_LINE_2 = b.p29.SPRITE_DELTA0;
+  /*p30.CEGA*/ if (b.p29.OAM_SCAN) c.p30.TS_LINE_3 = b.p29.SPRITE_DELTA3;
 
   {
-    /*p30.AXUV*/ c.p30.AXUV = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.AXUV, b.p30.TS_IDX_0 );
-    /*p30.BADA*/ c.p30.BADA = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BADA, b.p30.TS_IDX_1 );
-    /*p30.APEV*/ c.p30.APEV = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.APEV, b.p30.TS_IDX_2 );
-    /*p30.BADO*/ c.p30.BADO = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BADO, b.p30.TS_IDX_3 );
-    /*p30.BEXY*/ c.p30.BEXY = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BEXY, b.p30.TS_IDX_4 );
-    /*p30.BYHE*/ c.p30.BYHE = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BYHE, b.p30.TS_IDX_5 );
-    /*p30.AFYM*/ c.p30.AFYM = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFYM, b.p30.TS_LINE_0);
-    /*p30.AZAP*/ c.p30.AZAP = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AZAP, b.p30.TS_LINE_1);
-    /*p30.AFUT*/ c.p30.AFUT = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFUT, b.p30.TS_LINE_2);
-    /*p30.AFYX*/ c.p30.AFYX = tock_pos(a.p29.BYMY, b.p29.BYMY, 0, b.p30.AFYX, b.p30.TS_LINE_3);
+    /*p30.AXUV*/ c.p30.SPRITE0_IDX0  = tock_pos(a.p29.SPRITE0_CLKa, b.p29.SPRITE0_CLKa, 0, b.p30.SPRITE0_IDX0, b.p30.TS_IDX_0 );
+    /*p30.BADA*/ c.p30.SPRITE0_IDX1  = tock_pos(a.p29.SPRITE0_CLKa, b.p29.SPRITE0_CLKa, 0, b.p30.SPRITE0_IDX1, b.p30.TS_IDX_1 );
+    /*p30.APEV*/ c.p30.SPRITE0_IDX2  = tock_pos(a.p29.SPRITE0_CLKa, b.p29.SPRITE0_CLKa, 0, b.p30.SPRITE0_IDX2, b.p30.TS_IDX_2 );
+    /*p30.BADO*/ c.p30.SPRITE0_IDX3  = tock_pos(a.p29.SPRITE0_CLKa, b.p29.SPRITE0_CLKa, 0, b.p30.SPRITE0_IDX3, b.p30.TS_IDX_3 );
+    /*p30.BEXY*/ c.p30.SPRITE0_IDX4  = tock_pos(a.p29.SPRITE0_CLKa, b.p29.SPRITE0_CLKa, 0, b.p30.SPRITE0_IDX4, b.p30.TS_IDX_4 );
+    /*p30.BYHE*/ c.p30.SPRITE0_IDX5  = tock_pos(a.p29.SPRITE0_CLKa, b.p29.SPRITE0_CLKa, 0, b.p30.SPRITE0_IDX5, b.p30.TS_IDX_5 );
+    /*p30.AFYM*/ c.p30.SPRITE0_LINE0 = tock_pos(a.p29.SPRITE0_CLKb, b.p29.SPRITE0_CLKb, 0, b.p30.SPRITE0_LINE0, b.p30.TS_LINE_0);
+    /*p30.AZAP*/ c.p30.SPRITE0_LINE1 = tock_pos(a.p29.SPRITE0_CLKb, b.p29.SPRITE0_CLKb, 0, b.p30.SPRITE0_LINE1, b.p30.TS_LINE_1);
+    /*p30.AFUT*/ c.p30.SPRITE0_LINE2 = tock_pos(a.p29.SPRITE0_CLKb, b.p29.SPRITE0_CLKb, 0, b.p30.SPRITE0_LINE2, b.p30.TS_LINE_2);
+    /*p30.AFYX*/ c.p30.SPRITE0_LINE3 = tock_pos(a.p29.SPRITE0_CLKb, b.p29.SPRITE0_CLKb, 0, b.p30.SPRITE0_LINE3, b.p30.TS_LINE_3);
 
-    /*p30.ADYB*/ if (b.p29.DENY) c.p30.TS_IDX_0  = b.p30.AXUV;
-    /*p30.APOB*/ if (b.p29.DENY) c.p30.TS_IDX_1  = b.p30.BADA;
-    /*p30.APYV*/ if (b.p29.DENY) c.p30.TS_IDX_2  = b.p30.APEV;
-    /*p30.AFEN*/ if (b.p29.DENY) c.p30.TS_IDX_3  = b.p30.BADO;
-    /*p30.AKYH*/ if (b.p29.DENY) c.p30.TS_IDX_4  = b.p30.BEXY;
-    /*p30.APOC*/ if (b.p29.DENY) c.p30.TS_IDX_5  = b.p30.BYHE;
-    /*p30.BUJY*/ if (b.p29.DENY) c.p30.TS_LINE_0 = b.p30.AFYM;
-    /*p30.BOSO*/ if (b.p29.DENY) c.p30.TS_LINE_1 = b.p30.AZAP;
-    /*p30.AHAC*/ if (b.p29.DENY) c.p30.TS_LINE_2 = b.p30.AFUT;
-    /*p30.BAZU*/ if (b.p29.DENY) c.p30.TS_LINE_3 = b.p30.AFYX;
+    /*p30.ADYB*/ if (b.p29.READ_SPRITE0) c.p30.TS_IDX_0  = b.p30.SPRITE0_IDX0;
+    /*p30.APOB*/ if (b.p29.READ_SPRITE0) c.p30.TS_IDX_1  = b.p30.SPRITE0_IDX1;
+    /*p30.APYV*/ if (b.p29.READ_SPRITE0) c.p30.TS_IDX_2  = b.p30.SPRITE0_IDX2;
+    /*p30.AFEN*/ if (b.p29.READ_SPRITE0) c.p30.TS_IDX_3  = b.p30.SPRITE0_IDX3;
+    /*p30.AKYH*/ if (b.p29.READ_SPRITE0) c.p30.TS_IDX_4  = b.p30.SPRITE0_IDX4;
+    /*p30.APOC*/ if (b.p29.READ_SPRITE0) c.p30.TS_IDX_5  = b.p30.SPRITE0_IDX5;
+    /*p30.BUJY*/ if (b.p29.READ_SPRITE0) c.p30.TS_LINE_0 = b.p30.SPRITE0_LINE0;
+    /*p30.BOSO*/ if (b.p29.READ_SPRITE0) c.p30.TS_LINE_1 = b.p30.SPRITE0_LINE1;
+    /*p30.AHAC*/ if (b.p29.READ_SPRITE0) c.p30.TS_LINE_2 = b.p30.SPRITE0_LINE2;
+    /*p30.BAZU*/ if (b.p29.READ_SPRITE0) c.p30.TS_LINE_3 = b.p30.SPRITE0_LINE3;
   }
    
   {
@@ -170,15 +170,15 @@ void P30_SpriteStore::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p30.AJAL*/ if (b.p29.SPRITE0_SELo) c.p30.TS_LINE_2 = b.p30.BOZU;
     /*p30.BUKY*/ if (b.p29.SPRITE0_SELo) c.p30.TS_LINE_3 = b.p30.CUFO;
 
-    c.p30.YGUS = tock_pos(a.p29.MATCHER0_CLKA, b.p29.MATCHER0_CLKA, 0, b.p30.YGUS, b.p30.TS_IDX_0 );
-    c.p30.YSOK = tock_pos(a.p29.MATCHER0_CLKA, b.p29.MATCHER0_CLKA, 0, b.p30.YSOK, b.p30.TS_IDX_1 );
-    c.p30.YZEP = tock_pos(a.p29.MATCHER0_CLKA, b.p29.MATCHER0_CLKA, 0, b.p30.YZEP, b.p30.TS_IDX_2 );
-    c.p30.WYTE = tock_pos(a.p29.MATCHER0_CLKA, b.p29.MATCHER0_CLKA, 0, b.p30.WYTE, b.p30.TS_IDX_3 );
-    c.p30.ZONY = tock_pos(a.p29.MATCHER0_CLKA, b.p29.MATCHER0_CLKA, 0, b.p30.ZONY, b.p30.TS_IDX_4 );
-    c.p30.YWAK = tock_pos(a.p29.MATCHER0_CLKA, b.p29.MATCHER0_CLKA, 0, b.p30.YWAK, b.p30.TS_IDX_5 );
-    c.p30.FYHY = tock_pos(a.p29.MATCHER0_CLKB, b.p29.MATCHER0_CLKB, 0, b.p30.FYHY, b.p30.TS_LINE_0);
-    c.p30.GYHO = tock_pos(a.p29.MATCHER0_CLKB, b.p29.MATCHER0_CLKB, 0, b.p30.GYHO, b.p30.TS_LINE_1);
-    c.p30.BOZU = tock_pos(a.p29.MATCHER0_CLKB, b.p29.MATCHER0_CLKB, 0, b.p30.BOZU, b.p30.TS_LINE_2);
-    c.p30.CUFO = tock_pos(a.p29.MATCHER0_CLKB, b.p29.MATCHER0_CLKB, 0, b.p30.CUFO, b.p30.TS_LINE_3);
+    c.p30.YGUS = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YGUS, b.p30.TS_IDX_0 );
+    c.p30.YSOK = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YSOK, b.p30.TS_IDX_1 );
+    c.p30.YZEP = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YZEP, b.p30.TS_IDX_2 );
+    c.p30.WYTE = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.WYTE, b.p30.TS_IDX_3 );
+    c.p30.ZONY = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.ZONY, b.p30.TS_IDX_4 );
+    c.p30.YWAK = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YWAK, b.p30.TS_IDX_5 );
+    c.p30.FYHY = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.FYHY, b.p30.TS_LINE_0);
+    c.p30.GYHO = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.GYHO, b.p30.TS_LINE_1);
+    c.p30.BOZU = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.BOZU, b.p30.TS_LINE_2);
+    c.p30.CUFO = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.CUFO, b.p30.TS_LINE_3);
   }
 }

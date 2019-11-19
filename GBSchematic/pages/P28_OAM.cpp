@@ -67,25 +67,44 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p28.AJUJ*/ c.p28.AJUJ      = nor(b.sys.DMA_RUNNING_SYNC, b.p28.ACYL, b.p28.AJON);
   /*p28.ADAH*/ c.p28.ADDR_OAMn = not(b.sys.ADDR_OAM);
 
-  /*p28.APAG*/ c.p28.APAG = amux2(b.p28.XUPA, b.p28.AMAB, b.p28.AJUJ, b.p28.ADDR_OAMn);
-  /*p28.AZUL*/ c.p28.AZUL = not(b.p28.APAG);
+  /*p28.MYNU*/ c.p28.MYNU = nand(b.sys.CPU_RD2, b.sys.FROM_CPU5);
+  /*p28.LEKO*/ c.p28.LEKO = not(b.p28.MYNU);
 
-  /*p28.ZAXA*/ if (b.p28.AZUL) c.OAM_A_D0 = b.D0;
-  /*p28.ZAMY*/ if (b.p28.AZUL) c.OAM_B_D0 = b.D0;
-  /*p28.ZAKY*/ if (b.p28.AZUL) c.OAM_A_D1 = b.D1;
-  /*p28.ZOPU*/ if (b.p28.AZUL) c.OAM_B_D1 = b.D1;
-  /*p28.WULE*/ if (b.p28.AZUL) c.OAM_A_D2 = b.D2;
-  /*p28.WYKY*/ if (b.p28.AZUL) c.OAM_B_D2 = b.D2;
-  /*p28.ZOZO*/ if (b.p28.AZUL) c.OAM_A_D3 = b.D3;
-  /*p28.ZAJA*/ if (b.p28.AZUL) c.OAM_B_D3 = b.D3;
-  /*p28.ZUFO*/ if (b.p28.AZUL) c.OAM_A_D4 = b.D4;
-  /*p28.ZUGA*/ if (b.p28.AZUL) c.OAM_B_D4 = b.D4;
-  /*p28.ZATO*/ if (b.p28.AZUL) c.OAM_A_D5 = b.D5;
-  /*p28.ZUMO*/ if (b.p28.AZUL) c.OAM_B_D5 = b.D5;
-  /*p28.YVUC*/ if (b.p28.AZUL) c.OAM_A_D6 = b.D6;
-  /*p28.XYTO*/ if (b.p28.AZUL) c.OAM_B_D6 = b.D6;
-  /*p28.ZUFE*/ if (b.p28.AZUL) c.OAM_A_D7 = b.D7;
-  /*p28.ZYFA*/ if (b.p28.AZUL) c.OAM_B_D7 = b.D7;
+  /*p28.WAFO*/ c.p28.OAM_A0n           = not(b.p28.OAM_A0);
+  /*p28.GUKO*/ c.p28.OAM_B_LATCH_TO_Dn = and(b.p28.OAM_A0n, b.p28.AMAB, b.p28.LEKO);
+  /*p28.WUME*/ c.p28.OAM_B_LATCH_TO_D  = not(b.p28.OAM_B_LATCH_TO_Dn);
+
+  /*p28.WUKU*/ c.p28.OAM_A_CPU_RDn     = and(b.p28.LEKO, b.p28.AMAB, b.p28.OAM_A0);
+  /*p28.WEWU*/ c.p28.OAM_A_CPU_RD      = not(b.p28.OAM_A_CPU_RDn);
+
+  /*p28.YLYC*/ c.p28.OAM_A_CSn         = and(b.sys.WYJA, b.p28.OAM_A0);
+  /*p28.YNYC*/ c.p28.OAM_B_CSn         = and(b.sys.WYJA, b.p28.OAM_A0n);
+
+  /*p28.ZONE*/ c.p28.OAM_A_CS          = not(b.p28.OAM_A_CSn);
+  /*p28.ZOFE*/ c.p28.OAM_B_CS          = not(b.p28.OAM_B_CSn);
+
+  /*p28.APAG*/ c.p28.D_TO_OAMDn = amux2(b.p28.XUPA, b.p28.AMAB, b.p28.AJUJ, b.p28.ADDR_OAMn);
+  /*p28.AZUL*/ c.p28.D_TO_OAMD = not(b.p28.D_TO_OAMDn);
+
+  //----------
+
+  /*p28.ZAXA*/ if (b.p28.D_TO_OAMD) c.OAM_A_D0 = b.D0;
+  /*p28.ZAKY*/ if (b.p28.D_TO_OAMD) c.OAM_A_D1 = b.D1;
+  /*p28.WULE*/ if (b.p28.D_TO_OAMD) c.OAM_A_D2 = b.D2;
+  /*p28.ZOZO*/ if (b.p28.D_TO_OAMD) c.OAM_A_D3 = b.D3;
+  /*p28.ZUFO*/ if (b.p28.D_TO_OAMD) c.OAM_A_D4 = b.D4;
+  /*p28.ZATO*/ if (b.p28.D_TO_OAMD) c.OAM_A_D5 = b.D5;
+  /*p28.YVUC*/ if (b.p28.D_TO_OAMD) c.OAM_A_D6 = b.D6;
+  /*p28.ZUFE*/ if (b.p28.D_TO_OAMD) c.OAM_A_D7 = b.D7;
+
+  /*p28.ZAMY*/ if (b.p28.D_TO_OAMD) c.OAM_B_D0 = b.D0;
+  /*p28.ZOPU*/ if (b.p28.D_TO_OAMD) c.OAM_B_D1 = b.D1;
+  /*p28.WYKY*/ if (b.p28.D_TO_OAMD) c.OAM_B_D2 = b.D2;
+  /*p28.ZAJA*/ if (b.p28.D_TO_OAMD) c.OAM_B_D3 = b.D3;
+  /*p28.ZUGA*/ if (b.p28.D_TO_OAMD) c.OAM_B_D4 = b.D4;
+  /*p28.ZUMO*/ if (b.p28.D_TO_OAMD) c.OAM_B_D5 = b.D5;
+  /*p28.XYTO*/ if (b.p28.D_TO_OAMD) c.OAM_B_D6 = b.D6;
+  /*p28.ZYFA*/ if (b.p28.D_TO_OAMD) c.OAM_B_D7 = b.D7;
 
   /*p28.AZAR*/ c.p28.VRAM_TO_OAMc = not(b.sys.VRAM_TO_OAMn);
 
@@ -126,16 +145,16 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.ZEHA*/ if (b.p28.OAM_A_CPU_RD) c.D6 = b.p31.OAM_A_LATCH6;
   /*p31.FYRA*/ if (b.p28.OAM_A_CPU_RD) c.D7 = b.p31.OAM_A_LATCH7;
 
-  /*p31.XEGA*/ c.p31.XEGA = not(b.p25.COTA);
+  /*p31.XEGA*/ c.p31.OAM_A_IN_CLK = not(b.p25.OAM_IN_CLKn);
 
-  /*p31.YLOR*/ c.p31.OAM_A_D0  = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.OAM_A_D0, b.p31.OAM_A_LATCH0);
-  /*p31.ZYTY*/ c.p31.OAM_A_D1  = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.OAM_A_D1, b.p31.OAM_A_LATCH1);
-  /*p31.ZYVE*/ c.p31.OAM_A_D2  = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.OAM_A_D2, b.p31.OAM_A_LATCH2);
-  /*p31.ZEZY*/ c.p31.OAM_A_D3  = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.OAM_A_D3, b.p31.OAM_A_LATCH3);
-  /*p31.GOMO*/ c.p31.OAM_A_D4  = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.OAM_A_D4, b.p31.OAM_A_LATCH4);
-  /*p31.BAXO*/ c.p31.OAM_A_D5  = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.OAM_A_D5, b.p31.OAM_A_LATCH5);
-  /*p31.YZOS*/ c.p31.OAM_A_D6  = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.OAM_A_D6, b.p31.OAM_A_LATCH6);
-  /*p31.DEPO*/ c.p31.OAM_A_D7  = tock_pos(a.p31.XEGA, b.p31.XEGA, 0, b.p31.OAM_A_D7, b.p31.OAM_A_LATCH7);
+  /*p31.YLOR*/ c.p31.OAM_A_D0  = tock_pos(a.p31.OAM_A_IN_CLK, b.p31.OAM_A_IN_CLK, 0, b.p31.OAM_A_D0, b.p31.OAM_A_LATCH0);
+  /*p31.ZYTY*/ c.p31.OAM_A_D1  = tock_pos(a.p31.OAM_A_IN_CLK, b.p31.OAM_A_IN_CLK, 0, b.p31.OAM_A_D1, b.p31.OAM_A_LATCH1);
+  /*p31.ZYVE*/ c.p31.OAM_A_D2  = tock_pos(a.p31.OAM_A_IN_CLK, b.p31.OAM_A_IN_CLK, 0, b.p31.OAM_A_D2, b.p31.OAM_A_LATCH2);
+  /*p31.ZEZY*/ c.p31.OAM_A_D3  = tock_pos(a.p31.OAM_A_IN_CLK, b.p31.OAM_A_IN_CLK, 0, b.p31.OAM_A_D3, b.p31.OAM_A_LATCH3);
+  /*p31.GOMO*/ c.p31.OAM_A_D4  = tock_pos(a.p31.OAM_A_IN_CLK, b.p31.OAM_A_IN_CLK, 0, b.p31.OAM_A_D4, b.p31.OAM_A_LATCH4);
+  /*p31.BAXO*/ c.p31.OAM_A_D5  = tock_pos(a.p31.OAM_A_IN_CLK, b.p31.OAM_A_IN_CLK, 0, b.p31.OAM_A_D5, b.p31.OAM_A_LATCH5);
+  /*p31.YZOS*/ c.p31.OAM_A_D6  = tock_pos(a.p31.OAM_A_IN_CLK, b.p31.OAM_A_IN_CLK, 0, b.p31.OAM_A_D6, b.p31.OAM_A_LATCH6);
+  /*p31.DEPO*/ c.p31.OAM_A_D7  = tock_pos(a.p31.OAM_A_IN_CLK, b.p31.OAM_A_IN_CLK, 0, b.p31.OAM_A_D7, b.p31.OAM_A_LATCH7);
 
 
   /*p29.YDYV*/ c.p29.OAM_B_LATCH0 = latch_pos(b.p28.CLK3, b.p29.OAM_B_LATCH0, b.OAM_B_D0);
@@ -147,25 +166,25 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p29.YSES*/ c.p29.OAM_B_LATCH6 = latch_pos(b.p28.CLK3, b.p29.OAM_B_LATCH6, b.OAM_B_D6);
   /*p29.ZECA*/ c.p29.OAM_B_LATCH7 = latch_pos(b.p28.CLK3, b.p29.OAM_B_LATCH7, b.OAM_B_D7);
 
-  /*p29.YWOK*/ c.p29.YWOK = not(b.p25.COTA);
+  /*p29.YWOK*/ c.p29.OAM_B_IN_CLK = not(b.p25.OAM_IN_CLKn);
 
-  /*p29.XUSO*/ c.p29.OAM_B_D0 = tock_pos(a.p29.YWOK, b.p29.YWOK, 0, b.p29.OAM_B_D0, b.p29.OAM_B_LATCH0);
-  /*p29.XEGU*/ c.p29.OAM_B_D1 = tock_pos(a.p29.YWOK, b.p29.YWOK, 0, b.p29.OAM_B_D1, b.p29.OAM_B_LATCH1);
-  /*p29.YJEX*/ c.p29.OAM_B_D2 = tock_pos(a.p29.YWOK, b.p29.YWOK, 0, b.p29.OAM_B_D2, b.p29.OAM_B_LATCH2);
-  /*p29.XYJU*/ c.p29.OAM_B_D3 = tock_pos(a.p29.YWOK, b.p29.YWOK, 0, b.p29.OAM_B_D3, b.p29.OAM_B_LATCH3);
-  /*p29.YBOG*/ c.p29.OAM_B_D4 = tock_pos(a.p29.YWOK, b.p29.YWOK, 0, b.p29.OAM_B_D4, b.p29.OAM_B_LATCH4);
-  /*p29.WYSO*/ c.p29.OAM_B_D5 = tock_pos(a.p29.YWOK, b.p29.YWOK, 0, b.p29.OAM_B_D5, b.p29.OAM_B_LATCH5);
-  /*p29.XOTE*/ c.p29.OAM_B_D6 = tock_pos(a.p29.YWOK, b.p29.YWOK, 0, b.p29.OAM_B_D6, b.p29.OAM_B_LATCH6);
-  /*p29.YZAB*/ c.p29.OAM_B_D7 = tock_pos(a.p29.YWOK, b.p29.YWOK, 0, b.p29.OAM_B_D7, b.p29.OAM_B_LATCH7);
+  /*p29.XUSO*/ c.p29.OAM_B_D0 = tock_pos(a.p29.OAM_B_IN_CLK, b.p29.OAM_B_IN_CLK, 0, b.p29.OAM_B_D0, b.p29.OAM_B_LATCH0);
+  /*p29.XEGU*/ c.p29.OAM_B_D1 = tock_pos(a.p29.OAM_B_IN_CLK, b.p29.OAM_B_IN_CLK, 0, b.p29.OAM_B_D1, b.p29.OAM_B_LATCH1);
+  /*p29.YJEX*/ c.p29.OAM_B_D2 = tock_pos(a.p29.OAM_B_IN_CLK, b.p29.OAM_B_IN_CLK, 0, b.p29.OAM_B_D2, b.p29.OAM_B_LATCH2);
+  /*p29.XYJU*/ c.p29.OAM_B_D3 = tock_pos(a.p29.OAM_B_IN_CLK, b.p29.OAM_B_IN_CLK, 0, b.p29.OAM_B_D3, b.p29.OAM_B_LATCH3);
+  /*p29.YBOG*/ c.p29.OAM_B_D4 = tock_pos(a.p29.OAM_B_IN_CLK, b.p29.OAM_B_IN_CLK, 0, b.p29.OAM_B_D4, b.p29.OAM_B_LATCH4);
+  /*p29.WYSO*/ c.p29.OAM_B_D5 = tock_pos(a.p29.OAM_B_IN_CLK, b.p29.OAM_B_IN_CLK, 0, b.p29.OAM_B_D5, b.p29.OAM_B_LATCH5);
+  /*p29.XOTE*/ c.p29.OAM_B_D6 = tock_pos(a.p29.OAM_B_IN_CLK, b.p29.OAM_B_IN_CLK, 0, b.p29.OAM_B_D6, b.p29.OAM_B_LATCH6);
+  /*p29.YZAB*/ c.p29.OAM_B_D7 = tock_pos(a.p29.OAM_B_IN_CLK, b.p29.OAM_B_IN_CLK, 0, b.p29.OAM_B_D7, b.p29.OAM_B_LATCH7);
 
-  /*p29.YFAP*/ if (b.p28.WUME) c.D0 = b.p29.OAM_B_LATCH0;
-  /*p29.XELE*/ if (b.p28.WUME) c.D1 = b.p29.OAM_B_LATCH1;
-  /*p29.YPON*/ if (b.p28.WUME) c.D2 = b.p29.OAM_B_LATCH2;
-  /*p29.XUVO*/ if (b.p28.WUME) c.D3 = b.p29.OAM_B_LATCH3;
-  /*p29.ZYSA*/ if (b.p28.WUME) c.D4 = b.p29.OAM_B_LATCH4;
-  /*p29.YWEG*/ if (b.p28.WUME) c.D5 = b.p29.OAM_B_LATCH5;
-  /*p29.XABU*/ if (b.p28.WUME) c.D6 = b.p29.OAM_B_LATCH6;
-  /*p29.YTUX*/ if (b.p28.WUME) c.D7 = b.p29.OAM_B_LATCH7;
+  /*p29.YFAP*/ if (b.p28.OAM_B_LATCH_TO_D) c.D0 = b.p29.OAM_B_LATCH0;
+  /*p29.XELE*/ if (b.p28.OAM_B_LATCH_TO_D) c.D1 = b.p29.OAM_B_LATCH1;
+  /*p29.YPON*/ if (b.p28.OAM_B_LATCH_TO_D) c.D2 = b.p29.OAM_B_LATCH2;
+  /*p29.XUVO*/ if (b.p28.OAM_B_LATCH_TO_D) c.D3 = b.p29.OAM_B_LATCH3;
+  /*p29.ZYSA*/ if (b.p28.OAM_B_LATCH_TO_D) c.D4 = b.p29.OAM_B_LATCH4;
+  /*p29.YWEG*/ if (b.p28.OAM_B_LATCH_TO_D) c.D5 = b.p29.OAM_B_LATCH5;
+  /*p29.XABU*/ if (b.p28.OAM_B_LATCH_TO_D) c.D6 = b.p29.OAM_B_LATCH6;
+  /*p29.YTUX*/ if (b.p28.OAM_B_LATCH_TO_D) c.D7 = b.p29.OAM_B_LATCH7;
 
   /*p29.ABON*/ c.p29.ABON = not(b.p29.TEXY);
   /*p29.FUGY*/ if (b.p29.ABON) c.MA05 = b.p29.OAM_B_D1;
@@ -224,21 +243,7 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p28.YFOC*/ c.p28.OAM_A3 = not((b.p28.A3n & b.p28.OAM_ADDR_CPU) | (b.p28.IDX_4n & b.p28.OAM_ADDR_RENDER) | (b.p28.SCAN1n & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A03n & b.sys.OAM_ADDR_DMA));
   /*p28.YFOT*/ c.p28.OAM_A2 = not((b.p28.A2n & b.p28.OAM_ADDR_CPU) | (b.p28.IDX_5n & b.p28.OAM_ADDR_RENDER) | (b.p28.SCAN0n & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A02n & b.sys.OAM_ADDR_DMA));
   /*p28.ZYFO*/ c.p28.OAM_A1 = not((b.p28.A1n & b.p28.OAM_ADDR_CPU) | (b.p28.WYDU   & b.p28.OAM_ADDR_RENDER) | (b.p28.SCANZn & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A01n & b.sys.OAM_ADDR_DMA));
-
-  /*p28.GEKA*/ c.p28.OAM_A0 = not((b.p28.A0n & b.p28.OAM_ADDR_CPU) | (b.p28.GECA & b.p28.OAM_ADDR_RENDER) | (b.p28.GEFY & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A00n & b.sys.OAM_ADDR_DMA));
-
-  /*p28.MYNU*/ c.p28.MYNU = nand(b.sys.CPU_RD2, b.sys.FROM_CPU5);
-  /*p28.LEKO*/ c.p28.LEKO = not(b.p28.MYNU);
-  /*p28.WAFO*/ c.p28.WAFO = not(b.p28.OAM_A0);
-  /*p28.GUKO*/ c.p28.GUKO = and(b.p28.WAFO, b.p28.AMAB, b.p28.LEKO);
-  /*p28.WUKU*/ c.p28.WUKU = and(b.p28.LEKO, b.p28.AMAB, b.p28.OAM_A0);
-  /*p28.WUME*/ c.p28.WUME = not(b.p28.GUKO);
-  /*p28.WEWU*/ c.p28.OAM_A_CPU_RD = not(b.p28.WUKU);
-  /*p28.YLYC*/ c.p28.OAM_A_CSn = and(b.sys.WYJA, b.p28.OAM_A0);
-  /*p28.YNYC*/ c.p28.OAM_B_CSn = and(b.sys.WYJA, b.p28.WAFO);
-
-  /*p28.ZONE*/ c.p28.OAM_A_CS = not(b.p28.OAM_A_CSn);
-  /*p28.ZOFE*/ c.p28.OAM_B_CS = not(b.p28.OAM_B_CSn);
+  /*p28.GEKA*/ c.p28.OAM_A0 = not((b.p28.A0n & b.p28.OAM_ADDR_CPU) | (b.p28.GECA   & b.p28.OAM_ADDR_RENDER) | (b.p28.GEFY   & b.p28.OAM_ADDR_PARSE) | (b.p28.DMA_A00n & b.sys.OAM_ADDR_DMA));
 
   // these are unused
   /*

@@ -2,11 +2,11 @@
 
 struct P25_VramInterface {
 
-  union { bool SYRO; bool ADDR_FE00_FFFF; };
+  /*p25.SYRO*/ bool ADDR_FE00_FFFF;
 
 
-  /*p25.WUKO*/ bool WUKO;
-  /*p25.COTA*/ bool COTA;
+  /*p25.WUKO*/ bool WIN_TILE_READ;
+  /*p25.COTA*/ bool OAM_IN_CLKn;
 
   /*p25.MYFU*/ bool MA00n;
   /*p25.MASA*/ bool MA01n;
@@ -40,9 +40,9 @@ struct P25_VramInterface {
   /*p25.VAPE*/ bool VAPE;
   /*p25.AVER*/ bool AVER;
   /*p25.XUJY*/ bool XUJY;
-  /*p25.BYCU*/ bool BYCU;
+  /*p25.BYCU*/ bool OAM_IN_CLK;
   /*p25.TEFA*/ bool TEFA;
-  /*p25.SOSE*/ bool SOSE;
+  /*p25.SOSE*/ bool ADDR_VRAM;
   /*p25.TUCA*/ bool CPU_VRAM_RD;
   /*p25.TUJA*/ bool CPU_VRAM_WR;
   /*p25.TEGU*/ bool CPU_VRAM_CLK;
@@ -57,18 +57,20 @@ struct P25_VramInterface {
   /*p25.TYJY*/ bool CPU_VRAM_WR2;
   /*p25.SALE*/ bool CPU_VRAM_CLK2;
 
+  /*p25.RENA*/ bool MD_IN;
+  /*p25.RYJE*/ bool MD_INb;
+  /*p25.RAHU*/ bool D_TO_MD;
+
+  /*p25.ROFA*/ bool MD_OUT;
+  /*p25.RELA*/ bool MD_OUTb;
+  /*p25.REVO*/ bool MD_OUTc;
+  /*p25.SAZO*/ bool MD_OUTd;
+  /*p25.ROCY*/ bool MD_OUTe;
+
   /*p25.ROPY*/ bool ROPY;
   /*p25.SERE*/ bool SERE;
   /*p25.RUVY*/ bool CPU_VRAM_CLK2n;
   /*p25.SOHY*/ bool MWR;
-  /*p25.SAZO*/ bool SAZO;
-  /*p25.RYJE*/ bool RYJE;
-  /*p25.REVO*/ bool REVO;
-  /*p25.RELA*/ bool MD_OUTb;
-  /*p25.ROCY*/ bool ROCY;
-  /*p25.RENA*/ bool MD_IN;
-  /*p25.ROFA*/ bool MD_OUT;
-  /*p25.RAHU*/ bool RAHU;
 
   /*p25.RYLU*/ bool RYLU;
   /*p25.SOHO*/ bool SOHO;
@@ -93,7 +95,7 @@ struct P25_VramInterface {
   // something debug
   /*p25.TUSO*/ bool TUSO;
   /*p25.SOLE*/ bool SOLE;
-  /*p25.P10_*/ bool P10_Bn;
+  /*p25.????*/ bool P10_Bn;
 
   /*p25.SYNU*/ bool SYNU;
   /*p25.SYMA*/ bool SYMA;
@@ -112,7 +114,7 @@ struct P25_VramInterface {
   /*p25.RYTY*/ bool RYTY;
   /*p25.RADY*/ bool RADY;
 
-  /*p25.ROVE*/ bool ROVE;
+  /*p25.ROVE*/ bool D_TO_MDn;
 
   /*p25.SEFA*/ bool SEFA_00;
   /*p25.SOGO*/ bool SOGO_01;
@@ -132,51 +134,22 @@ struct P25_VramInterface {
   /*p25.REKU*/ bool REKU_06;
   /*p25.RYZE*/ bool RYZE_07;
 
-  /*p25.CEDE*/ bool CEDE;
+  /*p25.CEDE*/ bool DO_DMAn;
 
-  /*p25.RALO*/ bool RALO_00;
-  /*p25.TUNE*/ bool TUNE_01;
-  /*p25.SERA*/ bool SERA_02;
-  /*p25.TENU*/ bool TENU_03;
-  /*p25.SYSA*/ bool SYSA_04;
-  /*p25.SUGY*/ bool SUGY_05;
-  /*p25.TUBE*/ bool TUBE_06;
-  /*p25.SYZO*/ bool SYZO_07;
-  /*p25.WEJO*/ bool WEJO_00;
-  /*p25.BUBO*/ bool BUBO_01;
-  /*p25.BETU*/ bool BETU_02;
-  /*p25.CYME*/ bool CYME_03;
-  /*p25.BAXU*/ bool BAXU_04;
-  /*p25.BUHU*/ bool BUHU_05;
-  /*p25.BYNY*/ bool BYNY_06;
-  /*p25.BYPY*/ bool BYPY_07;
-  /*p25.WASA*/ bool WASA_00;
-  /*p25.BOMO*/ bool BOMO_01;
-  /*p25.BASA*/ bool BASA_02;
-  /*p25.CAKO*/ bool CAKO_03;
-  /*p25.BUMA*/ bool BUMA_04;
-  /*p25.BUPY*/ bool BUPY_05;
-  /*p25.BASY*/ bool BASY_06;
-  /*p25.BAPE*/ bool BAPE_07;
+  /*p25.RALO*/ bool D0n;
+  /*p25.TUNE*/ bool D1n;
+  /*p25.SERA*/ bool D2n;
+  /*p25.TENU*/ bool D3n;
+  /*p25.SYSA*/ bool D4n;
+  /*p25.SUGY*/ bool D5n;
+  /*p25.TUBE*/ bool D6n;
+  /*p25.SYZO*/ bool D7n;
 
-  /*p25.XANE*/ bool XANE;
-  /*p25.XEDU*/ bool XEDU;
-  /*p25.XAKY*/ bool XAKY;
-  /*p25.XUXU*/ bool XUXU;
-  /*p25.XYNE*/ bool XYNE;
-  /*p25.XODY*/ bool XODY;
-  /*p25.XECA*/ bool XECA;
-  /*p25.XOBA*/ bool XOBA;
-  /*p25.XOPO*/ bool XOPO;
-  /*p25.XYBO*/ bool XYBO;
-  /*p25.RYSU*/ bool RYSU;
-  /*p25.RESE*/ bool RESE;
-  /*p25.RUSE*/ bool RUSE;
-  /*p25.RYNA*/ bool RYNA;
-  /*p25.RUMO*/ bool RUMO;
+  /*p25.XANE*/ bool A_TO_MAn;
+  /*p25.XEDU*/ bool A_TO_MA;
 
-  /*p25.TYVY*/ bool TYVY;
-  /*p25.SEBY*/ bool SEBY;
+  /*p25.TYVY*/ bool MD_TO_Dn;
+  /*p25.SEBY*/ bool MD_TO_D;
 
   /*p25.RERY*/ bool RERY_00;
   /*p25.RUNA*/ bool RUNA_01;
@@ -187,32 +160,9 @@ struct P25_VramInterface {
   /*p25.RABO*/ bool RABO_06;
   /*p25.SAME*/ bool SAME_07;
 
-  /*p25.RUGA*/ bool RUGA_00;
-  /*p25.ROTA*/ bool ROTA_01;
-  /*p25.RYBU*/ bool RYBU_02;
-  /*p25.RAJU*/ bool RAJU_03;
-  /*p25.TYJA*/ bool TYJA_04;
-  /*p25.REXU*/ bool REXU_05;
-  /*p25.RUPY*/ bool RUPY_06;
-  /*p25.TOKU*/ bool TOKU_07;
-
   /*p25.XUCY*/ bool XUCY;
-  /*p25.XEZE*/ bool XEZE;
+  /*p25.XEZE*/ bool WIN_TILE_READn;
   /*p25.VUZA*/ bool VUZA;
-
-  /*p25.XONU*/ bool XONU_00;
-  /*p25.WUDO*/ bool WUDO_01;
-  /*p25.WAWE*/ bool WAWE_02;
-  /*p25.WOLU*/ bool WOLU_03;
-  /*p25.VAPY*/ bool VAPY_04;
-  /*p25.SEZU*/ bool SEZU_05;
-  /*p25.VEJY*/ bool VEJY_06;
-  /*p25.RUSA*/ bool RUSA_07;
-  /*p25.ROHA*/ bool ROHA_08;
-  /*p25.RESO*/ bool RESO_09;
-  /*p25.SUVO*/ bool SUVO_10;
-  /*p25.TOBO*/ bool TOBO_11;
-  /*p25.VURY*/ bool VURY_12;
 };
 
 

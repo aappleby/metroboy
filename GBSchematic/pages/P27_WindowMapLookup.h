@@ -4,10 +4,6 @@ struct P27_WindowMapLookup {
 
   /*p27.LENA*/ bool LENA;
   /*p27.MYMA*/ bool MYMA;
-  /*p27.XUHA*/ bool XUHA;
-  /*p27.VYNO*/ bool VYNO;
-  /*p27.VUJO*/ bool VUJO;
-  /*p27.VYMU*/ bool VYMU;
   /*p27.MOSU*/ bool MOSU;
   /*p27.LYRY*/ bool LYRY;
   /*p27.SYLO*/ bool SYLO;
@@ -57,9 +53,11 @@ struct P27_WindowMapLookup {
 
   /*p27.ROZE*/ bool ROZE;
   /*p27.PAHA*/ bool PAHA;
-  /*p27.SUHA*/ bool SUHA;
-  /*p27.SYBY*/ bool SYBY;
-  /*p27.SOZU*/ bool SOZU;
+
+  /*p27.SUHA*/ bool FINE_X0;
+  /*p27.SYBY*/ bool FINE_X1;
+  /*p27.SOZU*/ bool FINE_X2;
+
   /*p27.PECU*/ bool PECU;
   /*p27.RONE*/ bool RONE;
   /*p27.POHU*/ bool POHU;
@@ -74,7 +72,7 @@ struct P27_WindowMapLookup {
   /*p27.TAVE*/ bool TAVE;
   /*p27.XAHY*/ bool XAHY;
   /*p27.XOFO*/ bool XOFO;
-  /*p27.XACO*/ bool XACO;
+  /*p27.XACO*/ bool RST_XACO;
   /*p27.PYNU*/ bool PYNU;
   /*p27.NUNY*/ bool NUNY;
   /*p27.NOCU*/ bool NOCU;
@@ -116,29 +114,28 @@ struct P27_WindowMapLookup {
   /*p27.MESU*/ bool MESU;
   /*p27.NYVA*/ bool NYVA;
   /*p27.LOVY*/ bool LOVY;
-  /*p27.WYKA*/ bool WYKA;
-  /*p27.WODY*/ bool WODY;
-  /*p27.WOBO*/ bool WOBO;
-  /*p27.WYKO*/ bool WYKO;
-  /*p27.XOLO*/ bool XOLO;
-  /*p27.TUFU*/ bool TUFU;
-  /*p27.TAXA*/ bool TAXA;
-  /*p27.TOZO*/ bool TOZO;
-  /*p27.TATE*/ bool TATE;
-  /*p27.TEKE*/ bool TEKE;
-  /*p27.XEJA*/ bool XEJA;
-  /*p27.XAMO*/ bool XAMO;
-  /*p27.XAHE*/ bool XAHE;
-  /*p27.XULO*/ bool XULO;
-  /*p27.WUJU*/ bool WUJU;
-  /*p27.VYTO*/ bool VYTO;
-  /*p27.VEHA*/ bool VEHA;
-  /*p27.VACE*/ bool VACE;
-  /*p27.VOVO*/ bool VOVO;
-  /*p27.VULO*/ bool VULO;
-  /*p27.VEVY*/ bool VEVY;
-  /*p27.VEZA*/ bool VEZA;
-  /*p27.VOGU*/ bool VOGU;
+
+  /*p27.WYKA*/ bool MA00;
+  /*p27.WODY*/ bool MA01;
+  /*p27.WOBO*/ bool MA02;
+  /*p27.WYKO*/ bool MA03;
+  /*p27.XOLO*/ bool MA04;
+
+  /*p27.XUHA*/ bool MA00_2; // probably wrong
+  /*p27.VYNO*/ bool MA01_2;
+  /*p27.VUJO*/ bool MA02_2;
+  /*p27.VYMU*/ bool MA03_2;
+
+  /*p27.TUFU*/ bool MA05;
+  /*p27.TAXA*/ bool MA06;
+  /*p27.TOZO*/ bool MA07;
+  /*p27.TATE*/ bool MA08;
+  /*p27.TEKE*/ bool MA09;
+
+  /*p27.VEVY*/ bool MA10;
+  /*p27.VEZA*/ bool MA11;
+  /*p27.VOGU*/ bool MA12;
+
   /*p27.RYCE*/ bool RYCE;
   /*p27.VEKU*/ bool VEKU;
   /*p27.TAKA*/ bool TAKA;

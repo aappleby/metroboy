@@ -38,7 +38,7 @@ public:
   /*p31.ZUVE*/ bool OAM_A_LATCH6;
   /*p31.ECED*/ bool OAM_A_LATCH7;
 
-  /*p31.XEGA*/ bool XEGA;
+  /*p31.XEGA*/ bool OAM_A_IN_CLK;
 
   /*p31.YLOR*/ bool OAM_A_D0;
   /*p31.ZYTY*/ bool OAM_A_D1;

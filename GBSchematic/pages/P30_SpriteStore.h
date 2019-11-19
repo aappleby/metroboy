@@ -116,16 +116,16 @@ struct P30_SpriteStore {
   /*p30.GATE*/ bool GATE;
 
 
-  /*p30.AXUV*/ bool AXUV;
-  /*p30.BADA*/ bool BADA;
-  /*p30.APEV*/ bool APEV;
-  /*p30.BADO*/ bool BADO;
-  /*p30.BEXY*/ bool BEXY;
-  /*p30.BYHE*/ bool BYHE;
-  /*p30.AFYM*/ bool AFYM;
-  /*p30.AZAP*/ bool AZAP;
-  /*p30.AFUT*/ bool AFUT;
-  /*p30.AFYX*/ bool AFYX;
+  /*p30.AXUV*/ bool SPRITE0_IDX0;
+  /*p30.BADA*/ bool SPRITE0_IDX1;
+  /*p30.APEV*/ bool SPRITE0_IDX2;
+  /*p30.BADO*/ bool SPRITE0_IDX3;
+  /*p30.BEXY*/ bool SPRITE0_IDX4;
+  /*p30.BYHE*/ bool SPRITE0_IDX5;
+  /*p30.AFYM*/ bool SPRITE0_LINE0;
+  /*p30.AZAP*/ bool SPRITE0_LINE1;
+  /*p30.AFUT*/ bool SPRITE0_LINE2;
+  /*p30.AFYX*/ bool SPRITE0_LINE3;
 
   /*p30.GECU*/ bool GECU;
   /*p30.FOXY*/ bool FOXY;

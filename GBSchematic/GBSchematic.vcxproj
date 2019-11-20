@@ -196,11 +196,7 @@
     <ClCompile Include="pages\P29_SpriteControl.cpp" />
     <ClCompile Include="pages\P30_SpriteStore.cpp" />
     <ClCompile Include="pages\P31_SpriteXMatchers.cpp" />
-    <ClCompile Include="pages\P32_BgPixelShifter.cpp" />
-    <ClCompile Include="pages\P33_SpritePixelShifter.cpp" />
-    <ClCompile Include="pages\P34_SpritePaletteShifter.cpp" />
-    <ClCompile Include="pages\P35_PixelMux.cpp" />
-    <ClCompile Include="pages\P36_Palettes.cpp" />
+    <ClCompile Include="pages\PixelPipe.cpp" />
     <ClCompile Include="pages\System.cpp" />
     <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
@@ -232,11 +228,7 @@
     <ClInclude Include="pages\P29_SpriteControl.h" />
     <ClInclude Include="pages\P30_SpriteStore.h" />
     <ClInclude Include="pages\P31_SpriteXMatchers.h" />
-    <ClInclude Include="pages\P32_BgPixelShifter.h" />
-    <ClInclude Include="pages\P33_SpritePixelShifter.h" />
-    <ClInclude Include="pages\P34_SpritePaletteShifter.h" />
-    <ClInclude Include="pages\P35_PixelMux.h" />
-    <ClInclude Include="pages\P36_Palettes.h" />
+    <ClInclude Include="pages\PixelPipe.h" />
     <ClInclude Include="pages\System.h" />
     <ClInclude Include="pages\TristateBus.h" />
     <ClInclude Include="Register.h" />

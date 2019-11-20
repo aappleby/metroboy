@@ -6,7 +6,7 @@
 
 void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  /*p28.WEFE*/ c.p28.WEFE = not(b.chip.P10_B);
+  /*p28.WEFE*/ c.p28.P10_Bn = not(b.chip.P10_B);
   /*p28.YVAL*/ c.p28.YVAL = not(b.p28.CLK3);
   /*p28.YRYV*/ c.p28.YRYV = not(b.p28.YVAL);
   /*p28.ZODO*/ c.p28.OAM_CLK = not(b.p28.YRYV);
@@ -186,15 +186,6 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p29.XABU*/ if (b.p28.OAM_B_LATCH_TO_D) c.D6 = b.p29.OAM_B_LATCH6;
   /*p29.YTUX*/ if (b.p28.OAM_B_LATCH_TO_D) c.D7 = b.p29.OAM_B_LATCH7;
 
-  /*p29.ABON*/ c.p29.ABON = not(b.p29.TEXY);
-  /*p29.FUGY*/ if (b.p29.ABON) c.MA05 = b.p29.OAM_B_D1;
-  /*p29.GAVO*/ if (b.p29.ABON) c.MA06 = b.p29.OAM_B_D2;
-  /*p29.WYGA*/ if (b.p29.ABON) c.MA07 = b.p29.OAM_B_D3;
-  /*p29.WUNE*/ if (b.p29.ABON) c.MA08 = b.p29.OAM_B_D4;
-  /*p29.GOTU*/ if (b.p29.ABON) c.MA09 = b.p29.OAM_B_D5;
-  /*p29.GEGU*/ if (b.p29.ABON) c.MA10 = b.p29.OAM_B_D6;
-  /*p29.XEHE*/ if (b.p29.ABON) c.MA11 = b.p29.OAM_B_D7;
-
   //----------
   // OAM address generator
 
@@ -214,8 +205,8 @@ void P28_OAM::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p28.GYKA*/ c.p28.IDX_4n = not(b.p30.TS_IDX_4);
   /*p28.GYBU*/ c.p28.IDX_5n = not(b.p30.TS_IDX_5);
 
-  /*p28.WYDU*/ c.p28.WYDU = not(b.p28.WEFE);
-  /*p28.GECA*/ c.p28.GECA = not(b.p28.WEFE);
+  /*p28.WYDU*/ c.p28.WYDU = not(b.p28.P10_Bn);
+  /*p28.GECA*/ c.p28.GECA = not(b.p28.P10_Bn);
 
   /*p28.WUWE*/ c.p28.SCANZn = not(b.chip.P10_B);
   /*p28.GUSE*/ c.p28.SCAN0n = not(b.p28.SCAN0);

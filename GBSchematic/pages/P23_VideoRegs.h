@@ -11,14 +11,14 @@ struct P23_VideoRegs {
   /*p23.WYCE*/ bool WYCE;
   /*p23.XUBO*/ bool XUBO;
 
-  /*p23.VYXE*/ bool BG_EN;
-  /*p23.XYLO*/ bool SPRITE_EN;
-  /*p23.XYMO*/ bool SPRITE_SIZE;
-  /*p23.XAFO*/ bool BG_MAP_SEL;
+  /*p23.VYXE*/ bool LCDC_BGEN;
+  /*p23.XYLO*/ bool LCDC_SPEN;
+  /*p23.XYMO*/ bool LCDC_SPSIZE;
+  /*p23.XAFO*/ bool LCDC_BGMAP;
   /*p23.WEXU*/ bool BG_TILE_SEL;
-  /*p23.WYMO*/ bool WIN_EN;
+  /*p23.WYMO*/ bool LCDC_WINEN;
   /*p23.WOKY*/ bool WIN_MAP_SEL;
-  /*p23.XONA*/ bool LCD_ON;
+  /*p23.XONA*/ bool LCDC_EN;
 
   // SCY
   /*p23.ANYP*/ bool ANYP;

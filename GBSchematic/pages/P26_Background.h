@@ -7,106 +7,85 @@ public:
 
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
-  /*p26.VAVA*/ bool VAVA;
 
   /*p26.AXAD*/ bool AXAD;
   /*p26.ASUL*/ bool ASUL;
-  /*p26.ACEN*/ bool ACEN;
+  /*p26.ACEN*/ bool FETCH_MAPn;
   /*p26.BEJE*/ bool BEJE;
-  /*p26.BAFY*/ bool BAFY;
+  /*p26.BAFY*/ bool FETCH_MAP;
 
-  /*p26.FAFO*/ bool FAFO_S;
-  /*p26.EMUX*/ bool EMUX_S;
-  /*p26.ECAB*/ bool ECAB_S;
-  /*p26.ETAM*/ bool ETAM_S;
-  /*p26.DOTO*/ bool DOTO_S;
-  /*p26.DABA*/ bool DABA_S;
-  /*p26.EFYK*/ bool EFYK_S;
-  /*p26.EJOK*/ bool EJOK_S;
+  /*p26.FAFO*/ bool TILE_Y0;
+  /*p26.EMUX*/ bool TILE_Y1;
+  /*p26.ECAB*/ bool TILE_Y2;
 
-  /*p26.FAFO*/ bool FAFO_C;
-  /*p26.EMUX*/ bool EMUX_C;
-  /*p26.ECAB*/ bool ECAB_C;
-  /*p26.ETAM*/ bool ETAM_C;
-  /*p26.DOTO*/ bool DOTO_C;
-  /*p26.DABA*/ bool DABA_C;
-  /*p26.EFYK*/ bool EFYK_C;
-  /*p26.EJOK*/ bool EJOK_C;
+  /*p26.ETAM*/ bool MAP_Y0;
+  /*p26.DOTO*/ bool MAP_Y1;
+  /*p26.DABA*/ bool MAP_Y2;
+  /*p26.EFYK*/ bool MAP_Y3;
+  /*p26.EJOK*/ bool MAP_Y4;
 
-  /*p26.ASUM*/ bool ASUM;
-  /*p26.EVAD*/ bool EVAD;
-  /*p26.DAHU*/ bool DAHU;
-  /*p26.DODE*/ bool DODE;
-  /*p26.DUHO*/ bool DUHO;
-  /*p26.CASE*/ bool CASE;
-  /*p26.CYPO*/ bool CYPO;
-  /*p26.CETA*/ bool CETA;
-  /*p26.DAFE*/ bool DAFE;
+  /*p26.FAFO*/ bool TILE_Y0C;
+  /*p26.EMUX*/ bool TILE_Y1C;
+  /*p26.ECAB*/ bool TILE_Y2C;
+  /*p26.ETAM*/ bool MAP_Y0C;
+  /*p26.DOTO*/ bool MAP_Y1C;
+  /*p26.DABA*/ bool MAP_Y2C;
+  /*p26.EFYK*/ bool MAP_Y3C;
+  /*p26.EJOK*/ bool MAP_Y4C;
 
+  /*p26.ATAD*/ bool TILE_X0;
+  /*p26.BEHU*/ bool TILE_X1;
+  /*p26.APYH*/ bool TILE_X2;
+  /*p26.BABE*/ bool MAP_X0;
+  /*p26.ABOD*/ bool MAP_X1;
+  /*p26.BEWY*/ bool MAP_X2;
+  /*p26.BYCA*/ bool MAP_X3;
+  /*p26.ACUL*/ bool MAP_X4;
 
-  /*p26.ATAD*/ bool ATAD_S;
-  /*p26.BEHU*/ bool BEHU_S;
-  /*p26.APYH*/ bool APYH_S;
-  /*p26.BABE*/ bool BABE_S;
-  /*p26.ABOD*/ bool ABOD_S;
-  /*p26.BEWY*/ bool BEWY_S;
-  /*p26.BYCA*/ bool BYCA_S;
-  /*p26.ACUL*/ bool ACUL_S;
+  /*p26.ATAD*/ bool TILE_X0C;
+  /*p26.BEHU*/ bool TILE_X1C;
+  /*p26.APYH*/ bool TILE_X2C;
+  /*p26.BABE*/ bool MAP_X0C;
+  /*p26.ABOD*/ bool MAP_X1C;
+  /*p26.BEWY*/ bool MAP_X2C;
+  /*p26.BYCA*/ bool MAP_X3C;
+  /*p26.ACUL*/ bool MAP_X4C;
 
-  /*p26.ATAD*/ bool ATAD_C;
-  /*p26.BEHU*/ bool BEHU_C;
-  /*p26.APYH*/ bool APYH_C;
-  /*p26.BABE*/ bool BABE_C;
-  /*p26.ABOD*/ bool ABOD_C;
-  /*p26.BEWY*/ bool BEWY_C;
-  /*p26.BYCA*/ bool BYCA_C;
-  /*p26.ACUL*/ bool ACUL_C;
+  /*p26.XOGA*/ bool OAM_A_D7n;
+  /*p26.XURA*/ bool OAM_A_D7o;
+  /*p26.TAJO*/ bool OAM_A_D7p;
+  /*p26.XENU*/ bool OAM_A_D7q;
+  /*p26.XYKE*/ bool OAM_A_D7r;
+  /*p26.XABA*/ bool OAM_A_D7s;
+  /*p26.TAFU*/ bool OAM_A_D7t;
+  /*p26.XUHO*/ bool OAM_A_D7u;
 
-  /*p26.AMUV*/ bool AMUV;
-  /*p26.COXO*/ bool COXO;
-  /*p26.COVE*/ bool COVE;
-  /*p26.AXEP*/ bool AXEP;
-  /*p26.AFEB*/ bool AFEB;
-  /*p26.ALEL*/ bool ALEL;
-  /*p26.COLY*/ bool COLY;
-  /*p26.AJAN*/ bool AJAN;
+  /*p26.TEDE*/ bool MASK_PIPE_SET0;
+  /*p26.XALA*/ bool MASK_PIPE_SET1;
+  /*p26.TYRA*/ bool MASK_PIPE_SET2;
+  /*p26.XYRU*/ bool MASK_PIPE_SET3;
+  /*p26.XUKU*/ bool MASK_PIPE_SET4;
+  /*p26.XELY*/ bool MASK_PIPE_SET5;
+  /*p26.TYKO*/ bool MASK_PIPE_SET6;
+  /*p26.TUWU*/ bool MASK_PIPE_SET7;
 
+  /*p26.WOKA*/ bool MASK_PIPE_RST0;
+  /*p26.WEDE*/ bool MASK_PIPE_RST1;
+  /*p26.TUFO*/ bool MASK_PIPE_RST2;
+  /*p26.WEVO*/ bool MASK_PIPE_RST3;
+  /*p26.WEDY*/ bool MASK_PIPE_RST4;
+  /*p26.WUJA*/ bool MASK_PIPE_RST5;
+  /*p26.TENA*/ bool MASK_PIPE_RST6;
+  /*p26.WUBU*/ bool MASK_PIPE_RST7;
 
-  /*p26.XOGA*/ bool XOGA;
-  /*p26.XURA*/ bool XURA;
-  /*p26.TAJO*/ bool TAJO;
-  /*p26.XENU*/ bool XENU;
-  /*p26.XYKE*/ bool XYKE;
-  /*p26.XABA*/ bool XABA;
-  /*p26.TAFU*/ bool TAFU;
-  /*p26.XUHO*/ bool XUHO;
-
-  /*p26.TEDE*/ bool TEDE;
-  /*p26.XALA*/ bool XALA;
-  /*p26.TYRA*/ bool TYRA;
-  /*p26.XYRU*/ bool XYRU;
-  /*p26.XUKU*/ bool XUKU;
-  /*p26.XELY*/ bool XELY;
-  /*p26.TYKO*/ bool TYKO;
-  /*p26.TUWU*/ bool TUWU;
-
-  /*p26.WOKA*/ bool WOKA;
-  /*p26.WEDE*/ bool WEDE;
-  /*p26.TUFO*/ bool TUFO;
-  /*p26.WEVO*/ bool WEVO;
-  /*p26.WEDY*/ bool WEDY;
-  /*p26.WUJA*/ bool WUJA;
-  /*p26.TENA*/ bool TENA;
-  /*p26.WUBU*/ bool WUBU;
-
-  /*p26.VEZO*/ bool VEZO;
-  /*p26.WURU*/ bool WURU;
-  /*p26.VOSA*/ bool VOSA;
-  /*p26.WYFU*/ bool WYFU;
-  /*p26.XETE*/ bool XETE;
-  /*p26.WODA*/ bool WODA;
-  /*p26.VUMO*/ bool VUMO;
-
+  /*p26.VEZO*/ bool MASK_PIPE_0;
+  /*p26.WURU*/ bool MASK_PIPE_1;
+  /*p26.VOSA*/ bool MASK_PIPE_2;
+  /*p26.WYFU*/ bool MASK_PIPE_3;
+  /*p26.XETE*/ bool MASK_PIPE_4;
+  /*p26.WODA*/ bool MASK_PIPE_5;
+  /*p26.VUMO*/ bool MASK_PIPE_6;
+  /*p26.VAVA*/ bool MASK_PIPE_7;
 };
 
 

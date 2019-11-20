@@ -24,7 +24,7 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p27.NUPA*/ c.p27.WY_MATCH7n = xor(b.p23.WY7, b.p21.V7);
 
   // WIN_EN polarity?
-  /*p27.PALO*/ c.p27.WY_MATCH_HI  = nand(b.p23.WIN_EN, b.p27.WY_MATCH4n, b.p27.WY_MATCH5n, b.p27.WY_MATCH6n, b.p27.WY_MATCH7n);
+  /*p27.PALO*/ c.p27.WY_MATCH_HI  = nand(b.p23.LCDC_WINEN, b.p27.WY_MATCH4n, b.p27.WY_MATCH5n, b.p27.WY_MATCH6n, b.p27.WY_MATCH7n);
   /*p27.NELE*/ c.p27.WY_MATCH_HIn = not(b.p27.WY_MATCH_HI);
   /*p27.PAFU*/ c.p27.WY_MATCHn    = nand(b.p27.WY_MATCH_HIn, b.p27.WY_MATCH0n, b.p27.WY_MATCH1n, b.p27.WY_MATCH2n, b.p27.WY_MATCH3n);
   /*p27.ROGE*/ c.p27.WY_MATCH     = not(b.p27.WY_MATCHn);
@@ -73,7 +73,7 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p27.TAVE*/ c.p27.TAVE = not(b.p27.SUVU);
   /*p27.XAHY*/ c.p27.XAHY = not(b.p28.ATEJ);
 
-  /*p27.XOFO*/ c.p27.XOFO = nand(b.p23.WIN_EN, b.p27.XAHY, b.sys.VID_RESETn1);
+  /*p27.XOFO*/ c.p27.XOFO = nand(b.p23.LCDC_WINEN, b.p27.XAHY, b.sys.VID_RESETn1);
   /*p27.XACO*/ c.p27.RST_XACO = not(b.p27.XOFO);
   /*p27.PYNU*/ c.p27.PYNU = or(b.p27.NUNU, b.p27.XOFO);
   /*p27.NUNY*/ c.p27.NUNY = and(!b.p27.NOPA, b.p27.PYNU);
@@ -108,34 +108,34 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // dunno, top right
 
-  c.p27.MOCE = nand(b.p27.LAXU, b.p27.NYVA, b.p27.NYXU);
-  c.p27.LYRY = not(b.p27.MOCE);
-  c.p27.LAXE = not(b.p27.LAXU);
-  c.p27.MYSO = nor(b.p24.LOBY, b.p27.LAXE, b.p27.LYZU);
-  c.p27.NAKO = not(b.p27.MESU);
-  c.p27.NOFU = not(b.p27.NYVA);
-  c.p27.MOFU = and(b.p27.MYSO, b.p27.NAKO);
-  c.p27.NOGU = nand(b.p27.NAKO, b.p27.NOFU);
-  c.p27.NYDY = nand(b.p27.MYSO, b.p27.MESU, b.p27.NOFU);
+  /*p27.MOCE*/ c.p27.MOCE = nand(b.p27.LAXU, b.p27.NYVA, b.p27.NYXU);
+  /*p27.LYRY*/ c.p27.LYRY = not(b.p27.MOCE);
+  /*p27.LAXE*/ c.p27.LAXE = not(b.p27.LAXU);
+  /*p27.MYSO*/ c.p27.MYSO = nor(b.p24.LOBY, b.p27.LAXE, b.p27.LYZU);
+  /*p27.NAKO*/ c.p27.NAKO = not(b.p27.MESU);
+  /*p27.NOFU*/ c.p27.NOFU = not(b.p27.NYVA);
+  /*p27.MOFU*/ c.p27.MOFU = and(b.p27.MYSO, b.p27.NAKO);
+  /*p27.NOGU*/ c.p27.NOGU = nand(b.p27.NAKO, b.p27.NOFU);
+  /*p27.NYDY*/ c.p27.NYDY = nand(b.p27.MYSO, b.p27.MESU, b.p27.NOFU);
 
 
-  c.p27.NENY = not(b.p27.NOGU);
-  c.p27.LURY = and(!b.p27.LOVY, b.p21.XYMU);
-  c.p27.LONY = unk2(b.p27.LURY, !b.p27.LOVY);
-  c.p27.MYMA = not(b.p27.LONY);
-  c.p27.LUSU = not(b.p27.LONY);
-  c.p27.LENA = not(b.p27.LUSU);
-  c.p27.POTU = and(b.p27.LENA, b.p27.NENY);
-  c.p27.NETA = and(b.p27.LENA, b.p27.NOGU);
+  /*p27.NENY*/ c.p27.NENY = not(b.p27.NOGU);
+  /*p27.LURY*/ c.p27.LURY = and(!b.p27.LOVY, b.p21.XYMU);
+  /*p27.LONY*/ c.p27.LONY = unk2(b.p27.LURY, !b.p27.LOVY);
+  /*p27.MYMA*/ c.p27.MYMA = not(b.p27.LONY);
+  /*p27.LUSU*/ c.p27.LUSU = not(b.p27.LONY);
+  /*p27.LENA*/ c.p27.LENA = not(b.p27.LUSU);
+  /*p27.POTU*/ c.p27.POTU = and(b.p27.LENA, b.p27.NENY);
+  /*p27.NETA*/ c.p27.NETA = and(b.p27.LENA, b.p27.NOGU);
 
-  c.p27.LYZU = tock_pos( a.sys.CLK_AxCxExGx4,  b.sys.CLK_AxCxExGx4, b.p21.XYMU, b.p27.LYZU,  b.p27.LAXU);
+  /*p27.LYZU*/ c.p27.LYZU = tock_pos( a.sys.CLK_AxCxExGx4,  b.sys.CLK_AxCxExGx4, b.p21.XYMU, b.p27.LYZU,  b.p27.LAXU);
 
   // weird clock is weird
-  c.p27.LEBO = nand(b.sys.CLK_AxCxExGx4, b.p27.MOCE);
-  c.p27.LAXU = tock_pos( a.p27.LEBO,  b.p27.LEBO, b.p27.NYXU, b.p27.LAXU, !b.p27.LAXU);
-  c.p27.MESU = tock_pos(!a.p27.LAXU, !b.p27.LAXU, b.p27.NYXU, b.p27.MESU, !b.p27.MESU);
-  c.p27.NYVA = tock_pos(!a.p27.MESU, !b.p27.MESU, b.p27.NYXU, b.p27.NYVA, !b.p27.NYVA);
-  c.p27.LOVY = tock_pos( a.p21.CLK_xBxDxFxHc,  b.p21.CLK_xBxDxFxHc, b.p27.NYXU, b.p27.LOVY,  b.p27.LYRY);
+  /*p27.LEBO*/ c.p27.LEBO = nand(b.sys.CLK_AxCxExGx4, b.p27.MOCE);
+  /*p27.LAXU*/ c.p27.LAXU = tock_pos( a.p27.LEBO,  b.p27.LEBO, b.p27.NYXU, b.p27.LAXU, !b.p27.LAXU);
+  /*p27.MESU*/ c.p27.MESU = tock_pos(!a.p27.LAXU, !b.p27.LAXU, b.p27.NYXU, b.p27.MESU, !b.p27.MESU);
+  /*p27.NYVA*/ c.p27.NYVA = tock_pos(!a.p27.MESU, !b.p27.MESU, b.p27.NYXU, b.p27.NYVA, !b.p27.NYVA);
+  /*p27.LOVY*/ c.p27.LOVY = tock_pos( a.p21.CLK_xBxDxFxHc,  b.p21.CLK_xBxDxFxHc, b.p27.NYXU, b.p27.LOVY,  b.p27.LYRY);
 
   //----------
   // address output bus
@@ -189,14 +189,14 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // computes SECA and TAVA
 
-  c.p27.RYCE = and(b.p27.SOBU, !b.p27.SUDA);
-  c.p27.SECA = nor(b.p27.RYCE, b.sys.VID_RESET5, b.p28.ATEJ);
-  c.p27.VEKU = nor(b.p29.WUTY, b.p27.TAVE);
-  c.p27.TAKA = unk2(b.p27.VEKU, b.p27.SECA);
-  c.p27.TUKU = not(b.p24.TOMU);
-  c.p27.SOWO = not(b.p27.TAKA);
-  c.p27.TEKY = and(b.p29.OAM_SCAN, b.p27.TUKU, b.p27.LYRY, b.p27.SOWO);
+  /*p27.RYCE*/ c.p27.RYCE = and(b.p27.SOBU, !b.p27.SUDA);
+  /*p27.SECA*/ c.p27.SECA = nor(b.p27.RYCE, b.sys.VID_RESET5, b.p28.ATEJ);
+  /*p27.VEKU*/ c.p27.VEKU = nor(b.p29.WUTY, b.p27.TAVE);
+  /*p27.TAKA*/ c.p27.TAKA = unk2(b.p27.VEKU, b.p27.SECA);
+  /*p27.TUKU*/ c.p27.TUKU = not(b.p24.TOMU);
+  /*p27.SOWO*/ c.p27.SOWO = not(b.p27.TAKA);
+  /*p27.TEKY*/ c.p27.TEKY = and(b.p29.OAM_SCAN, b.p27.TUKU, b.p27.LYRY, b.p27.SOWO);
 
-  c.p27.SOBU = tock_pos(a.p21.CLK_AxCxExGxa, b.p21.CLK_AxCxExGxa, b.p27.P10_Bn, b.p27.SOBU, b.p27.TEKY);
-  c.p27.SUDA = tock_pos(a.sys.CLK_xBxDxFxH5, b.sys.CLK_xBxDxFxH5, b.p27.P10_Bn, b.p27.SUDA, b.p27.SOBU);
+  /*p27.SOBU*/ c.p27.SOBU = tock_pos(a.p21.CLK_AxCxExGxa, b.p21.CLK_AxCxExGxa, b.p27.P10_Bn, b.p27.SOBU, b.p27.TEKY);
+  /*p27.SUDA*/ c.p27.SUDA = tock_pos(a.sys.CLK_xBxDxFxH5, b.sys.CLK_xBxDxFxH5, b.p27.P10_Bn, b.p27.SUDA, b.p27.SOBU);
 }

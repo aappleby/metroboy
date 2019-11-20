@@ -14,13 +14,13 @@ struct P29_SpriteControl {
   /*p29.FEPO*/ bool OAM_SCAN;
   /*p29.WUTY*/ bool WUTY;
   /*p29.XEFY*/ bool XEFY;
-  /*p29.PUCO*/ bool PUCO;
-  /*p29.XADO*/ bool XADO;
+  /*p29.PUCO*/ bool SPRITE_PIX_LATCH_B;
+  /*p29.XADO*/ bool SPRITE_PIX_LATCH_A;
   /*p29.TUVO*/ bool TUVO;
   /*p29.TYFO*/ bool TYFO;
   /*p29.XOCE*/ bool CLK_XOCE;
   /*p29.CATU*/ bool IN_FRAME;
-  /*p29.DENY*/ bool READ_SPRITE0;
+  /*p29.DENY*/ bool DENY;
   /*p29.XYME*/ bool XYME;
   /*p29.GOWO*/ bool GOWO;
   /*p29.GUGY*/ bool GUGY;
@@ -29,7 +29,7 @@ struct P29_SpriteControl {
   /*p29.GYMA*/ bool GYMA;
   /*p29.FAME*/ bool FAME;
   /*p29.FADO*/ bool FADO;
-  /*p29.FURO*/ bool SPRITE0_SELo;
+  /*p29.FURO*/ bool FURO;
   /*p29.BUZA*/ bool STORE_SPRITE_IDX;
   
   /*p29.DEGE*/ bool SPRITE_DELTA0;
@@ -42,7 +42,7 @@ struct P29_SpriteControl {
   /*p29.GEWY*/ bool SPRITE_DELTA7;
 
   // sprite matcher clock lines
-  /*p29.FUXU*/ bool MATCHER0_CLKb;
+  /*p29.FUXU*/ bool FUXU;
   /*p29.YFAG*/ bool YFAG;
   /*p29.GECY*/ bool GECY;
   /*p29.DOKU*/ bool DOKU;
@@ -54,7 +54,7 @@ struct P29_SpriteControl {
   /*p29.GAMY*/ bool GAMY;
 
   // sprite matcher reset lines
-  /*p29.DYNA*/ bool MATCHER0_RST;
+  /*p29.DYNA*/ bool DYNA;
   /*p29.WUPA*/ bool WUPA;
   /*p29.GAFY*/ bool GAFY;
   /*p29.ASYS*/ bool ASYS;
@@ -66,8 +66,8 @@ struct P29_SpriteControl {
   /*p29.CACU*/ bool CACU;
 
   // sprite store clock lines
-  /*p29.AKOL*/ bool SPRITE0_CLKa;
-  /*p29.BYMY*/ bool SPRITE0_CLKb;
+  /*p29.AKOL*/ bool AKOL;
+  /*p29.BYMY*/ bool BYMY;
   /*p29.WUSE*/ bool WUSE;
   /*p29.ZURU*/ bool ZURU;
   /*p29.WYLU*/ bool WYLU;
@@ -186,7 +186,7 @@ struct P29_SpriteControl {
   /*p29.YLOZ*/ bool YLOZ;
   /*p29.DEGO*/ bool DEGO;
   /*p29.DYDU*/ bool DYDU;
-  /*p29.YDUG*/ bool SPRITE0_MATCH_Xn;
+  /*p29.YDUG*/ bool SPRITE0_MATCHn;
   /*p29.YGEM*/ bool YGEM;
   /*p29.EFYL*/ bool EFYL;
   /*p29.DYKA*/ bool DYKA;
@@ -194,8 +194,8 @@ struct P29_SpriteControl {
   /*p29.EGOM*/ bool EGOM;
   /*p29.FEFY*/ bool FEFY;
   /*p29.FOVE*/ bool FOVE;
-  /*p29.WEFU*/ bool SPRITE0_MATCH_X;
-  /*p29.GEZE*/ bool GEZE;
+  /*p29.WEFU*/ bool SPRITE0_MATCH_Xa;
+  /*p29.GEZE*/ bool SPRITE0_MATCH_Xb;
   /*p29.GUVA*/ bool SPRITE0_SELn;
   /*p29.GAJA*/ bool GAJA;
   /*p29.FUMA*/ bool FUMA;
@@ -220,7 +220,7 @@ struct P29_SpriteControl {
   /*p29.GUTU*/ bool GUTU;
   /*p29.GEKE*/ bool GEKE;
   /*p29.GYGA*/ bool GYGA;
-  /*p29.FOXA*/ bool READ_SPRITE0n;
+  /*p29.FOXA*/ bool FOXA;
   /*p29.GUZE*/ bool GUZE;
   /*p29.FONO*/ bool FONO;
   /*p29.EXUQ*/ bool READ_SPRITE0_SYNCn;
@@ -242,7 +242,7 @@ struct P29_SpriteControl {
   /*p29.GAKE*/ bool GAKE;
   /*p29.FOKO*/ bool FOKO;
   /*p29.EFEV*/ bool EFEV;
-  /*p29.DYWE*/ bool MATCHER0_RSTn;
+  /*p29.DYWE*/ bool DYWE;
 
   /*p29.WUKY*/ bool FLIP_Y;
   /*p29.WAGO*/ bool WAGO;
@@ -252,7 +252,7 @@ struct P29_SpriteControl {
 
   /*p29.XUQU*/ bool XUQU;
 
-  /*p29.FUFO*/ bool SPRITE_SIZEn;
+  /*p29.FUFO*/ bool LCDC_SPSIZEn;
   /*p29.GEJY*/ bool GEJY;
   /*p29.FAMU*/ bool FAMU;
 

@@ -49,7 +49,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // VID reset tree
 
-  /*p01.XODO*/ pc.VID_RESET1  = and(pb.SYS_RESETn4, b.p23.LCD_ON); // polarity?
+  /*p01.XODO*/ pc.VID_RESET1  = and(pb.SYS_RESETn4, b.p23.LCDC_EN); // polarity?
   /*p01.XAPO*/ pc.VID_RESETn1 = not(pb.VID_RESET1);
 
   /*p01.LYHA*/ pc.VID_RESET2  = not(pb.VID_RESETn1);

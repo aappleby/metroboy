@@ -23,7 +23,7 @@ public:
   /*p28.LEKO*/ bool LEKO;
   /*p28.ATEJ*/ bool ATEJ;
   /*p28.ACYL*/ bool ACYL;
-  /*p28.WEFE*/ bool WEFE;
+  /*p28.WEFE*/ bool P10_Bn;
   /*p28.WEWU*/ bool OAM_A_CPU_RD;
 
   /*p28.WUME*/ bool OAM_B_LATCH_TO_D;

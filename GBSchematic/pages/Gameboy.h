@@ -24,11 +24,7 @@
 #include "P29_SpriteControl.h"
 #include "P30_SpriteStore.h"
 #include "P31_SpriteXMatchers.h"
-#include "P32_BgPixelShifter.h"
-#include "P33_SpritePixelShifter.h"
-#include "P34_SpritePaletteShifter.h"
-#include "P35_PixelMux.h"
-#include "P36_Palettes.h"
+#include "PixelPipe.h"
 
 
 //-----------------------------------------------------------------------------

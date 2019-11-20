@@ -1,11 +1,6 @@
 #pragma once
 
-struct Gameboy;
-
 struct P24_LcdControl {
-public:
-
-  static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   /*p24.SACU*/ bool CLKPIPE;
   /*p24.ROXO*/ bool ROXO;
@@ -38,12 +33,12 @@ public:
   /*p24.KASA*/ bool KASA;
   /*p24.UMOB*/ bool UMOB;
   /*p24.USEC*/ bool USEC;
-  /*p24.KAHE*/ bool KAHE;
-  /*p24.KUPA*/ bool KUPA;
-  /*p24.KYMO*/ bool KYMO;
-  /*p24.KOFO*/ bool KOFO;
+  /*p24.KAHE*/ bool CPLn;
+  /*p24.KUPA*/ bool FRn;
+  /*p24.KYMO*/ bool CPL;
+  /*p24.KOFO*/ bool FR;
 
-  /*p24.KEDY*/ bool LCD_OFF;
+  /*p24.KEDY*/ bool LCDC_ENn;
 };
 
 

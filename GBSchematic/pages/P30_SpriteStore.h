@@ -214,16 +214,16 @@ struct P30_SpriteStore {
   /*p30.DYSY*/ bool DYSY;
   /*p30.FOFO*/ bool FOFO;
 
-  /*p30.YGUS*/ bool YGUS;
-  /*p30.YSOK*/ bool YSOK;
-  /*p30.YZEP*/ bool YZEP;
-  /*p30.WYTE*/ bool WYTE;
-  /*p30.ZONY*/ bool ZONY;
-  /*p30.YWAK*/ bool YWAK;
-  /*p30.FYHY*/ bool FYHY;
-  /*p30.GYHO*/ bool GYHO;
-  /*p30.BOZU*/ bool BOZU;
-  /*p30.CUFO*/ bool CUFO;
+  /*p30.YGUS*/ bool STORE0_IDX0;
+  /*p30.YSOK*/ bool STORE0_IDX1;
+  /*p30.YZEP*/ bool STORE0_IDX2;
+  /*p30.WYTE*/ bool STORE0_IDX3;
+  /*p30.ZONY*/ bool STORE0_IDX4;
+  /*p30.YWAK*/ bool STORE0_IDX5;
+  /*p30.FYHY*/ bool STORE0_LINE0;
+  /*p30.GYHO*/ bool STORE0_LINE1;
+  /*p30.BOZU*/ bool STORE0_LINE2;
+  /*p30.CUFO*/ bool STORE0_LINE3;
 
 };
 

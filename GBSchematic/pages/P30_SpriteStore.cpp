@@ -9,12 +9,12 @@ void P30_SpriteStore::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p30.CYKE*/ c.p30.CYKE = not(b.p21.CLK_2Mb);
   /*p30.WUDA*/ c.p30.WUDA = not(b.p30.CYKE);
 
-  /*p30.XECU*/ c.p30.IDX_5 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_5, b.p28.OAM_A7);
-  /*p30.YDUF*/ c.p30.IDX_4 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_4, b.p28.OAM_A6);
-  /*p30.XOBE*/ c.p30.IDX_3 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_3, b.p28.OAM_A5);
-  /*p30.ZUZE*/ c.p30.IDX_2 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_2, b.p28.OAM_A4);
-  /*p30.XEDY*/ c.p30.IDX_1 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_1, b.p28.OAM_A3);
   /*p30.XADU*/ c.p30.IDX_0 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_0, b.p28.OAM_A2);
+  /*p30.XEDY*/ c.p30.IDX_1 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_1, b.p28.OAM_A3);
+  /*p30.ZUZE*/ c.p30.IDX_2 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_2, b.p28.OAM_A4);
+  /*p30.XOBE*/ c.p30.IDX_3 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_3, b.p28.OAM_A5);
+  /*p30.YDUF*/ c.p30.IDX_4 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_4, b.p28.OAM_A6);
+  /*p30.XECU*/ c.p30.IDX_5 = tock_pos(a.p30.WUDA, b.p30.WUDA, b.p28.P10_Bn, b.p30.IDX_5, b.p28.OAM_A7);
 
   // so this is a bit weird as we have a tri-state bus inside one schematic...
 
@@ -29,6 +29,38 @@ void P30_SpriteStore::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p30.CUCU*/ if (b.p29.OAM_SCAN) c.p30.TS_LINE_1 = b.p29.SPRITE_DELTA2;
   /*p30.CUCA*/ if (b.p29.OAM_SCAN) c.p30.TS_LINE_2 = b.p29.SPRITE_DELTA0;
   /*p30.CEGA*/ if (b.p29.OAM_SCAN) c.p30.TS_LINE_3 = b.p29.SPRITE_DELTA3;
+
+  //----------
+  // store 0
+
+  /*p30.YGUS*/ c.p30.STORE0_IDX0  = tock_pos(a.p29.STORE0_CLKa, b.p29.STORE0_CLKa, 0, b.p30.STORE0_IDX0,  b.p30.TS_IDX_0);
+  /*p30.YSOK*/ c.p30.STORE0_IDX1  = tock_pos(a.p29.STORE0_CLKa, b.p29.STORE0_CLKa, 0, b.p30.STORE0_IDX1,  b.p30.TS_IDX_1);
+  /*p30.YZEP*/ c.p30.STORE0_IDX2  = tock_pos(a.p29.STORE0_CLKa, b.p29.STORE0_CLKa, 0, b.p30.STORE0_IDX2,  b.p30.TS_IDX_2);
+  /*p30.WYTE*/ c.p30.STORE0_IDX3  = tock_pos(a.p29.STORE0_CLKa, b.p29.STORE0_CLKa, 0, b.p30.STORE0_IDX3,  b.p30.TS_IDX_3);
+  /*p30.ZONY*/ c.p30.STORE0_IDX4  = tock_pos(a.p29.STORE0_CLKa, b.p29.STORE0_CLKa, 0, b.p30.STORE0_IDX4,  b.p30.TS_IDX_4);
+  /*p30.YWAK*/ c.p30.STORE0_IDX5  = tock_pos(a.p29.STORE0_CLKa, b.p29.STORE0_CLKa, 0, b.p30.STORE0_IDX5,  b.p30.TS_IDX_5);
+  /*p30.FYHY*/ c.p30.STORE0_LINE0 = tock_pos(a.p29.STORE0_CLKb, b.p29.STORE0_CLKb, 0, b.p30.STORE0_LINE0, b.p30.TS_LINE_0);
+  /*p30.GYHO*/ c.p30.STORE0_LINE1 = tock_pos(a.p29.STORE0_CLKb, b.p29.STORE0_CLKb, 0, b.p30.STORE0_LINE1, b.p30.TS_LINE_1);
+  /*p30.BOZU*/ c.p30.STORE0_LINE2 = tock_pos(a.p29.STORE0_CLKb, b.p29.STORE0_CLKb, 0, b.p30.STORE0_LINE2, b.p30.TS_LINE_2);
+  /*p30.CUFO*/ c.p30.STORE0_LINE3 = tock_pos(a.p29.STORE0_CLKb, b.p29.STORE0_CLKb, 0, b.p30.STORE0_LINE3, b.p30.TS_LINE_3);
+
+  /*p30.ZETU*/ if (b.p29.SPRITE0_SEL) c.p30.TS_IDX_0  = b.p30.STORE0_IDX0;
+  /*p30.ZECE*/ if (b.p29.SPRITE0_SEL) c.p30.TS_IDX_1  = b.p30.STORE0_IDX1;
+  /*p30.ZAVE*/ if (b.p29.SPRITE0_SEL) c.p30.TS_IDX_2  = b.p30.STORE0_IDX2;
+  /*p30.WOKO*/ if (b.p29.SPRITE0_SEL) c.p30.TS_IDX_3  = b.p30.STORE0_IDX3;
+  /*p30.ZUMU*/ if (b.p29.SPRITE0_SEL) c.p30.TS_IDX_4  = b.p30.STORE0_IDX4;
+  /*p30.ZEDY*/ if (b.p29.SPRITE0_SEL) c.p30.TS_IDX_5  = b.p30.STORE0_IDX5;
+  /*p30.GOFO*/ if (b.p29.SPRITE0_SEL) c.p30.TS_LINE_0 = b.p30.STORE0_LINE0;
+  /*p30.WEHE*/ if (b.p29.SPRITE0_SEL) c.p30.TS_LINE_1 = b.p30.STORE0_LINE1;
+  /*p30.AJAL*/ if (b.p29.SPRITE0_SEL) c.p30.TS_LINE_2 = b.p30.STORE0_LINE2;
+  /*p30.BUKY*/ if (b.p29.SPRITE0_SEL) c.p30.TS_LINE_3 = b.p30.STORE0_LINE3;
+
+
+
+
+
+
+
 
   /*p30.AXUV*/ c.p30.AXUV = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.AXUV, b.p30.TS_IDX_0 );
   /*p30.BADA*/ c.p30.BADA = tock_pos(a.p29.AKOL, b.p29.AKOL, 0, b.p30.BADA, b.p30.TS_IDX_1 );
@@ -139,26 +171,4 @@ void P30_SpriteStore::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p30.BYME*/ c.p30.BYME = not(!b.p30.CANA); if (b.p29.FADO) c.p30.TS_LINE_1 = b.p30.BYME; c.p30.CANA = tock_pos(a.p29.FAKA, b.p29.FAKA, 0, b.p30.CANA, b.p30.TS_LINE_1);
   /*p30.COHO*/ c.p30.COHO = not(!b.p30.DYSY); if (b.p29.FADO) c.p30.TS_LINE_2 = b.p30.COHO; c.p30.DYSY = tock_pos(a.p29.FAKA, b.p29.FAKA, 0, b.p30.DYSY, b.p30.TS_LINE_2);
   /*p30.GATE*/ c.p30.GATE = not(!b.p30.FOFO); if (b.p29.FADO) c.p30.TS_LINE_3 = b.p30.GATE; c.p30.FOFO = tock_pos(a.p29.FAKA, b.p29.FAKA, 0, b.p30.FOFO, b.p30.TS_LINE_3);
-   
-  /*p30.YGUS*/ c.p30.YGUS = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YGUS, b.p30.TS_IDX_0);
-  /*p30.YSOK*/ c.p30.YSOK = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YSOK, b.p30.TS_IDX_1);
-  /*p30.YZEP*/ c.p30.YZEP = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YZEP, b.p30.TS_IDX_2);
-  /*p30.WYTE*/ c.p30.WYTE = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.WYTE, b.p30.TS_IDX_3);
-  /*p30.ZONY*/ c.p30.ZONY = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.ZONY, b.p30.TS_IDX_4);
-  /*p30.YWAK*/ c.p30.YWAK = tock_pos(a.p29.GENY, b.p29.GENY, 0, b.p30.YWAK, b.p30.TS_IDX_5);
-  /*p30.FYHY*/ c.p30.FYHY = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.FYHY, b.p30.TS_LINE_0);
-  /*p30.GYHO*/ c.p30.GYHO = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.GYHO, b.p30.TS_LINE_1);
-  /*p30.BOZU*/ c.p30.BOZU = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.BOZU, b.p30.TS_LINE_2);
-  /*p30.CUFO*/ c.p30.CUFO = tock_pos(a.p29.ENOB, b.p29.ENOB, 0, b.p30.CUFO, b.p30.TS_LINE_3);
-
-  /*p30.ZETU*/ if (b.p29.FURO) c.p30.TS_IDX_0  = b.p30.YGUS;
-  /*p30.ZECE*/ if (b.p29.FURO) c.p30.TS_IDX_1  = b.p30.YSOK;
-  /*p30.ZAVE*/ if (b.p29.FURO) c.p30.TS_IDX_2  = b.p30.YZEP;
-  /*p30.WOKO*/ if (b.p29.FURO) c.p30.TS_IDX_3  = b.p30.WYTE;
-  /*p30.ZUMU*/ if (b.p29.FURO) c.p30.TS_IDX_4  = b.p30.ZONY;
-  /*p30.ZEDY*/ if (b.p29.FURO) c.p30.TS_IDX_5  = b.p30.YWAK;
-  /*p30.GOFO*/ if (b.p29.FURO) c.p30.TS_LINE_0 = b.p30.FYHY;
-  /*p30.WEHE*/ if (b.p29.FURO) c.p30.TS_LINE_1 = b.p30.GYHO;
-  /*p30.AJAL*/ if (b.p29.FURO) c.p30.TS_LINE_2 = b.p30.BOZU;
-  /*p30.BUKY*/ if (b.p29.FURO) c.p30.TS_LINE_3 = b.p30.CUFO;
 }

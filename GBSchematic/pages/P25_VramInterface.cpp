@@ -56,16 +56,6 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  // not sure this makes sense as or(and(a,b),c)...
-  /*p25.CUFE*/ c.p25.CUFE = or(and(b.sys.ADDR_OAM, b.sys.DMA_RUNNING_SYNC), b.sys.CPUCLK_ABCDxxxx9);
-  /*p25.VAPE*/ c.p25.VAPE = and(b.p29.TACU, b.p29.TUVO);
-  /*p25.AVER*/ c.p25.AVER = and(b.p28.ACYL, b.p29.XYSO);
-  /*p25.XUJY*/ c.p25.XUJY = not(b.p25.VAPE);
-  /*p25.BYCU*/ c.p25.OAM_IN_CLK  = nor(b.p25.CUFE, b.p25.XUJY, b.p25.AVER);
-  /*p25.COTA*/ c.p25.OAM_IN_CLKn = not(b.p25.OAM_IN_CLK);
-
-  //----------
-
   /*p25.SYRO*/ c.p25.ADDR_FE00_FFFF = not(b.sys.ADDR_0000_FE00);
   /*p25.TEFA*/ c.p25.TEFA = nor(b.p25.ADDR_FE00_FFFF, b.sys.ADDR_VALID_AND_NOT_VRAM);\
 
@@ -87,7 +77,7 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p25.RUVY*/ c.p25.CPU_VRAM_CLK2n = not(b.p25.CPU_VRAM_CLK2);
 
-  /*p25.ROPY*/ c.p25.ROPY    = not(b.p21.XYMU);
+  /*p25.ROPY*/ c.p25.ROPY    = not(b.p21.RENDERING);
   /*p25.SERE*/ c.p25.SERE    = and(b.p25.CPU_VRAM_RD2,   b.p25.ROPY);
   /*p25.SAZO*/ c.p25.MD_OUTd = and(b.p25.CPU_VRAM_CLK2n, b.p25.SERE);
   /*p25.RYJE*/ c.p25.MD_INb  = not(b.p25.MD_OUTd);
@@ -213,7 +203,7 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  /*p25.XANE*/ c.p25.A_TO_MAn = nor(b.sys.VRAM_TO_OAMn, b.p21.XYMU);
+  /*p25.XANE*/ c.p25.A_TO_MAn = nor(b.sys.VRAM_TO_OAMn, b.p21.RENDERING);
   /*p25.XEDU*/ c.p25.A_TO_MA = not(b.p25.A_TO_MAn);
 
   /*p25.XAKY*/ if (b.p25.A_TO_MA) c.chip.MA00 = b.A00;
@@ -272,29 +262,9 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p25.TUBE*/ c.p25.D6n = not(b.chip.D6_C);
   /*p25.SYZO*/ c.p25.D7n = not(b.chip.D7_C);
 
-  /*p25.CEDE*/ c.p25.DO_DMAn = not(b.sys.DO_DMA);
-
-  /*p25.WEJO*/ if (b.p25.DO_DMAn) c.OAM_A_D0 = not(b.p25.D0n);
-  /*p25.BUBO*/ if (b.p25.DO_DMAn) c.OAM_A_D1 = not(b.p25.D1n);
-  /*p25.BETU*/ if (b.p25.DO_DMAn) c.OAM_A_D2 = not(b.p25.D2n);
-  /*p25.CYME*/ if (b.p25.DO_DMAn) c.OAM_A_D3 = not(b.p25.D3n);
-  /*p25.BAXU*/ if (b.p25.DO_DMAn) c.OAM_A_D4 = not(b.p25.D4n);
-  /*p25.BUHU*/ if (b.p25.DO_DMAn) c.OAM_A_D5 = not(b.p25.D5n);
-  /*p25.BYNY*/ if (b.p25.DO_DMAn) c.OAM_A_D6 = not(b.p25.D6n);
-  /*p25.BYPY*/ if (b.p25.DO_DMAn) c.OAM_A_D7 = not(b.p25.D7n);
-
-  /*p25.WASA*/ if (b.p25.DO_DMAn) c.OAM_B_D0 = not(b.p25.D0n);
-  /*p25.BOMO*/ if (b.p25.DO_DMAn) c.OAM_B_D1 = not(b.p25.D1n);
-  /*p25.BASA*/ if (b.p25.DO_DMAn) c.OAM_B_D2 = not(b.p25.D2n);
-  /*p25.CAKO*/ if (b.p25.DO_DMAn) c.OAM_B_D3 = not(b.p25.D3n);
-  /*p25.BUMA*/ if (b.p25.DO_DMAn) c.OAM_B_D4 = not(b.p25.D4n);
-  /*p25.BUPY*/ if (b.p25.DO_DMAn) c.OAM_B_D5 = not(b.p25.D5n);
-  /*p25.BASY*/ if (b.p25.DO_DMAn) c.OAM_B_D6 = not(b.p25.D6n);
-  /*p25.BAPE*/ if (b.p25.DO_DMAn) c.OAM_B_D7 = not(b.p25.D7n);
-
   //----------
 
-  /*p25.TYVY*/ c.p25.MD_TO_Dn = nand(b.p25.SERE, b.p28.LEKO);
+  /*p25.TYVY*/ c.p25.MD_TO_Dn = nand(b.p25.SERE, b.p28.CPU_READ_MYSTERY);
   /*p25.SEBY*/ c.p25.MD_TO_D = not(b.p25.MD_TO_Dn);
 
   /*p25.RERY*/ c.p25.RERY_00 = not(b.MD0);

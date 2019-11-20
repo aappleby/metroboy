@@ -494,8 +494,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p04.MAKA*/ pc.FROM_CPU5_SYNC = tock_pos(pa.CLK_xBxDxFxH2, pb.CLK_xBxDxFxH2, pb.SYS_RESETn2, pb.FROM_CPU5_SYNC, pb.FROM_CPU5);
 
   /*p04.NAXY*/ pc.NAXY = nor(pb.FROM_CPU5_SYNC, pb.LUVY);
-  /*p04.POWU*/ pc.POWU = and(pb.DMA_RUNNING_SYNC, pb.NAXY);
-  /*p04.LUPA*/ pc.WYJA = unk3(b.p28.AMAB, pb.CPU_WR2, pb.POWU);
+  /*p04.POWU*/ pc.POWU = and(pb.DMA_RUNNING_SYNCn, pb.NAXY);
 
   /*p04.LYXE*/ pc.LYXE = or(pb.FF46_WR, pb.DMA_RST);
   /*p04.LUPA*/ pc.LUPA = nor(pb.FF46_WRn, pb.LYXE);
@@ -512,10 +511,10 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
 
 
-  /*p04.DUGA*/ pc.OAM_ADDR_DMA = not(pb.DMA_RUNNING_SYNC);
-
-
   /*p04.LOKY*/ pc.DMA_RUNNING = nand(pb.LARA, !pb.LENE);
+  /*p04.MATU*/ c.sys.DMA_RUNNING_SYNCn = tock_pos(pa.CPUCLK_xxxxEFGH8, pb.CPUCLK_xxxxEFGH8, pb.SYS_RESETn2, pb.DMA_RUNNING_SYNCn, pb.DMA_RUNNING);
+  /*p28.BOGE*/ c.p28.DMA_RUNNING_SYNCb = not(b.sys.DMA_RUNNING_SYNCn);
+
   /*p04.META*/ pc.DMA_CLK = and(pb.CPUCLK_xxxxEFGH8, pb.DMA_RUNNING);
 
   /*p04.LOKO*/ pc.DMA_RST = nand(pb.SYS_RESETn2, !pb.LENE);
@@ -535,13 +534,11 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p04.MUDA*/ pc.DMA_VRAM  = nor(pb.DMA_A13, pb.DMA_A14, pb.DMA_A15n);
   /*p04.LOGO*/ pc.DMA_VRAMn = not(pb.DMA_VRAM);
 
-  /*p04.MATU*/ pc.DMA_RUNNING_SYNC = tock_pos(pa.CPUCLK_xxxxEFGH8, pb.CPUCLK_xxxxEFGH8, pb.SYS_RESETn2, pb.DMA_RUNNING_SYNC, pb.DMA_RUNNING);
-
-  /*p04.MORY*/ pc.DO_DMAn   = nand(pb.DMA_RUNNING_SYNC, pb.DMA_VRAMn);
+  /*p04.MORY*/ pc.DO_DMAn   = nand(pb.DMA_RUNNING_SYNCn, pb.DMA_VRAMn);
   /*p04.LUMA*/ pc.DO_DMA    = not(pb.DO_DMAn);
 
   // polarity?
-  /*p04.MUHO*/ pc.VRAM_TO_OAMb = nand(pb.DMA_RUNNING_SYNC, pb.DMA_VRAM);
+  /*p04.MUHO*/ pc.VRAM_TO_OAMb = nand(pb.DMA_RUNNING_SYNCn, pb.DMA_VRAM);
   /*p04.LUFA*/ pc.VRAM_TO_OAMn = not(pb.VRAM_TO_OAMb);
   /*p04.AHOC*/ pc.VRAM_TO_OAMa = not(pb.VRAM_TO_OAMn);
 

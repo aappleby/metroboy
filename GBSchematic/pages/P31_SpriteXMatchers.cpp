@@ -17,15 +17,17 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // CHECK CLK/RESET WIRES  
 
-  // matcher 1
-  /*p31.XEPE*/ c.p31.M0X0 = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.M0X0, b.p31.OAM_A_D0b);
-  /*p31.YLAH*/ c.p31.M0X1 = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.M0X1, b.p31.OAM_A_D1b);
-  /*p31.ZOLA*/ c.p31.M0X2 = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.M0X2, b.p31.OAM_A_D2b);
-  /*p31.ZULU*/ c.p31.M0X3 = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.M0X3, b.p31.OAM_A_D3b);
-  /*p31.WELO*/ c.p31.M0X4 = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.M0X4, b.p31.OAM_A_D4b);
-  /*p31.XUNY*/ c.p31.M0X5 = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.M0X5, b.p31.OAM_A_D5b);
-  /*p31.WOTE*/ c.p31.M0X6 = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.M0X6, b.p31.OAM_A_D6b);
-  /*p31.XAKO*/ c.p31.M0X7 = tock_pos(a.p29.FUXU, b.p29.FUXU, b.p29.DYNA, b.p31.M0X7, b.p31.OAM_A_D7b);
+  //----------
+  // matcher 0
+
+  /*p31.XEPE*/ c.p31.M0X0 = tock_pos(a.p29.MATCH0_CLK, b.p29.MATCH0_CLK, b.p29.MATCH0_RST, b.p31.M0X0, b.p31.OAM_A_D0b);
+  /*p31.YLAH*/ c.p31.M0X1 = tock_pos(a.p29.MATCH0_CLK, b.p29.MATCH0_CLK, b.p29.MATCH0_RST, b.p31.M0X1, b.p31.OAM_A_D1b);
+  /*p31.ZOLA*/ c.p31.M0X2 = tock_pos(a.p29.MATCH0_CLK, b.p29.MATCH0_CLK, b.p29.MATCH0_RST, b.p31.M0X2, b.p31.OAM_A_D2b);
+  /*p31.ZULU*/ c.p31.M0X3 = tock_pos(a.p29.MATCH0_CLK, b.p29.MATCH0_CLK, b.p29.MATCH0_RST, b.p31.M0X3, b.p31.OAM_A_D3b);
+  /*p31.WELO*/ c.p31.M0X4 = tock_pos(a.p29.MATCH0_CLK, b.p29.MATCH0_CLK, b.p29.MATCH0_RST, b.p31.M0X4, b.p31.OAM_A_D4b);
+  /*p31.XUNY*/ c.p31.M0X5 = tock_pos(a.p29.MATCH0_CLK, b.p29.MATCH0_CLK, b.p29.MATCH0_RST, b.p31.M0X5, b.p31.OAM_A_D5b);
+  /*p31.WOTE*/ c.p31.M0X6 = tock_pos(a.p29.MATCH0_CLK, b.p29.MATCH0_CLK, b.p29.MATCH0_RST, b.p31.M0X6, b.p31.OAM_A_D6b);
+  /*p31.XAKO*/ c.p31.M0X7 = tock_pos(a.p29.MATCH0_CLK, b.p29.MATCH0_CLK, b.p29.MATCH0_RST, b.p31.M0X7, b.p31.OAM_A_D7b);
 
   /*p31.ZOGY*/ c.p31.MATCHER0_MATCH0 = xor(b.p31.M0X0, b.p21.X0n);
   /*p31.ZEBA*/ c.p31.MATCHER0_MATCH1 = xor(b.p31.M0X1, b.p21.X1n);
@@ -39,7 +41,9 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.XEBA*/ c.p31.SP_MATCH_0A = nor(b.p31.MATCHER0_MATCH4, b.p31.MATCHER0_MATCH5, b.p31.MATCHER0_MATCH6, b.p31.MATCHER0_MATCH7);
   /*p31.ZAKO*/ c.p31.SP_MATCH_0B = nor(b.p31.MATCHER0_MATCH0, b.p31.MATCHER0_MATCH1, b.p31.MATCHER0_MATCH2, b.p31.MATCHER0_MATCH3);
 
-  // matcher 2
+  //----------
+  // matcher
+
   /*p31.XOLY*/ c.p31.XOLY = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.XOLY, b.p31.OAM_A_D0b);
   /*p31.XYBA*/ c.p31.XYBA = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.XYBA, b.p31.OAM_A_D1b);
   /*p31.XABE*/ c.p31.XABE = tock_pos(a.p29.YFAG, b.p29.YFAG, b.p29.WUPA, b.p31.XABE, b.p31.OAM_A_D2b);
@@ -60,7 +64,9 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.YWOS*/ c.p31.YWOS = nor(b.p31.YVAP, b.p31.XENY, b.p31.XAVU, b.p31.XEVA);
   /*p31.ZURE*/ c.p31.ZURE = nor(b.p31.YHOK, b.p31.YCAH, b.p31.YDAJ, b.p31.YVUZ);
 
-  // matcher 3
+  //----------
+  // matcher
+
   /*p31.ERAZ*/ c.p31.ERAZ = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.ERAZ, b.p31.OAM_A_D0b);
   /*p31.EPUM*/ c.p31.EPUM = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.EPUM, b.p31.OAM_A_D1b);
   /*p31.EROL*/ c.p31.EROL = tock_pos(a.p29.GECY, b.p29.GECY, b.p29.GAFY, b.p31.EROL, b.p31.OAM_A_D2b);
@@ -81,7 +87,9 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.DAJE*/ c.p31.DAJE = nor(b.p31.EJOT, b.p31.ESAJ, b.p31.DUCU, b.p31.EWUD);
   /*p31.CYCO*/ c.p31.CYCO = nor(b.p31.DUSE, b.p31.DAGU, b.p31.DYZE, b.p31.DESO);
 
-  // matcher 4
+  //----------
+  // matcher
+
   /*p31.DANY*/ c.p31.DANY = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.DANY, b.p31.OAM_A_D0b);
   /*p31.DUKO*/ c.p31.DUKO = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.DUKO, b.p31.OAM_A_D1b);
   /*p31.DESU*/ c.p31.DESU = tock_pos(a.p29.ASYS, b.p29.ASYS, b.p29.DOKU, b.p31.DESU, b.p31.OAM_A_D2b);
@@ -102,7 +110,9 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.CYVY*/ c.p31.CYVY = nor(b.p31.COLA, b.p31.BOBA, b.p31.COLU, b.p31.BAHU);
   /*p31.EWAM*/ c.p31.EWAM = nor(b.p31.EDYM, b.p31.EMYB, b.p31.EBEF, b.p31.EWOK);
 
-  // matcher 5
+  //----------
+  // matcher
+
   /*p31.YCOL*/ c.p31.YCOL = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.YCOL, b.p31.OAM_A_D0b);
   /*p31.YRAC*/ c.p31.YRAC = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.YRAC, b.p31.OAM_A_D1b);
   /*p31.YMEM*/ c.p31.YMEM = tock_pos(a.p29.ZAPE, b.p29.ZAPE, b.p29.XAHO, b.p31.YMEM, b.p31.OAM_A_D2b);
@@ -123,7 +133,9 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.YWAP*/ c.p31.YWAP = nor(b.p31.ZARE, b.p31.ZEMU, b.p31.ZYGO, b.p31.ZUZY);
   /*p31.YDOT*/ c.p31.YDOT = nor(b.p31.XOSU, b.p31.ZUVU, b.p31.XUCO, b.p31.ZULO);
 
-  // matcher 6
+  //----------
+  // matcher
+
   /*p31.WEDU*/ c.p31.WEDU = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.WEDU, b.p31.OAM_A_D0b);
   /*p31.YGAJ*/ c.p31.YGAJ = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.YGAJ, b.p31.OAM_A_D1b);
   /*p31.ZYJO*/ c.p31.ZYJO = tock_pos(a.p29.WUNU, b.p29.WUNU, b.p29.WOFO, b.p31.ZYJO, b.p31.OAM_A_D2b);
@@ -144,7 +156,9 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.YKOK*/ c.p31.YKOK = nor(b.p31.ZYKU, b.p31.ZYPU, b.p31.XAHA, b.p31.ZEFE);
   /*p31.YNAZ*/ c.p31.YNAZ = nor(b.p31.XEJU, b.p31.ZATE, b.p31.ZAKU, b.p31.YBOX);
 
-  // matcher 7
+  //----------
+  // matcher
+
   /*p31.GAVY*/ c.p31.GAVY = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.GAVY, b.p31.OAM_A_D0b);
   /*p31.GYPU*/ c.p31.GYPU = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.GYPU, b.p31.OAM_A_D1b);
   /*p31.GADY*/ c.p31.GADY = tock_pos(a.p29.CEXU, b.p29.CEXU, b.p29.WUZO, b.p31.GADY, b.p31.OAM_A_D2b);
@@ -165,7 +179,9 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.DAMA*/ c.p31.DAMA = nor(b.p31.DUZE, b.p31.DAGA, b.p31.DAWU, b.p31.EJAW);
   /*p31.FEHA*/ c.p31.FEHA = nor(b.p31.GOHO, b.p31.GASU, b.p31.GABU, b.p31.GAFE);
 
-  // matcher 8
+  //----------
+  // matcher
+
   /*p31.XUVY*/ c.p31.XUVY = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.XUVY, b.p31.OAM_A_D0b);
   /*p31.XERE*/ c.p31.XERE = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.XERE, b.p31.OAM_A_D1b);
   /*p31.XUZO*/ c.p31.XUZO = tock_pos(a.p29.WEME, b.p29.WEME, b.p29.DOSY, b.p31.XUZO, b.p31.OAM_A_D2b);
@@ -186,7 +202,9 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.YTUB*/ c.p31.YTUB = nor(b.p31.ZYWU, b.p31.ZUZA, b.p31.ZEJO, b.p31.ZEDA);
   /*p31.YLEV*/ c.p31.YLEV = nor(b.p31.YMAM, b.p31.YTYP, b.p31.YFOP, b.p31.YVAC);
 
-  // matcher 9
+  //----------
+  // matcher
+
   /*p31.FUSA*/ c.p31.FUSA = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.FUSA, b.p31.OAM_A_D0b);
   /*p31.FAXA*/ c.p31.FAXA = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.FAXA, b.p31.OAM_A_D1b);
   /*p31.FOZY*/ c.p31.FOZY = tock_pos(a.p29.CYLA, b.p29.CYLA, b.p29.EJAD, b.p31.FOZY, b.p31.OAM_A_D2b);
@@ -207,7 +225,9 @@ void P31_SpriteXMatchers::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.COGY*/ c.p31.COGY = nor(b.p31.BAZY, b.p31.CYLE, b.p31.CEVA, b.p31.BUMY);
   /*p31.FYMA*/ c.p31.FYMA = nor(b.p31.GUZO, b.p31.GOLA, b.p31.GEVE, b.p31.GUDE);
 
-  // matcher 10
+  //----------
+  // matcher
+
   /*p31.FOKA*/ c.p31.FOKA = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.FOKA, b.p31.OAM_A_D0b);
   /*p31.FYTY*/ c.p31.FYTY = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.FYTY, b.p31.OAM_A_D1b);
   /*p31.FUBY*/ c.p31.FUBY = tock_pos(a.p29.CACU, b.p29.CACU, b.p29.GAMY, b.p31.FUBY, b.p31.OAM_A_D2b);

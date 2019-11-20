@@ -9,11 +9,11 @@
 
 void P24_LcdControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  /*p24.LOBY*/ c.p24.LOBY = not(b.p21.XYMU);
+  /*p24.LOBY*/ c.p24.LOBY = not(b.p21.RENDERING);
   /*p24.NAFY*/ c.p24.NAFY = nor(b.p27.MOSU, b.p24.LOBY);
   /*p24.NYKA*/ c.p24.NYKA = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.p24.NAFY, b.p24.NYKA, b.p27.LYRY);
   /*p24.PORY*/ c.p24.PORY = tock_pos(a.p21.CLK_xBxDxFxHc, b.p21.CLK_xBxDxFxHc, b.p24.NAFY, b.p24.PORY, b.p24.NYKA);
-  /*p24.PYGO*/ c.p24.PYGO = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.p21.XYMU, b.p24.PYGO, b.p24.PORY);
+  /*p24.PYGO*/ c.p24.PYGO = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.p21.RENDERING, b.p24.PYGO, b.p24.PORY);
   /*p24.TOMU*/ c.p24.TOMU = not(b.p27.SYLO);
   /*p24.POKY*/ c.p24.POKY = unk2(b.p24.PYGO, b.p24.LOBY);
   /*p24.SOCY*/ c.p24.SOCY = not(b.p24.TOMU);
@@ -22,7 +22,7 @@ void P24_LcdControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p24.SEGU*/ c.p24.SEGU = not(b.p24.TYFA);
   /*p24.SACU*/ c.p24.CLKPIPE = nor(b.p24.SEGU, b.p27.ROXY);
   /*p24.ROXO*/ c.p24.ROXO = not(b.p24.SEGU);
-  /*p24.PAHO*/ c.p24.PAHO = tock_pos(a.p24.ROXO, b.p24.ROXO, b.p21.XYMU, b.p24.PAHO, b.p21.X3);
+  /*p24.PAHO*/ c.p24.PAHO = tock_pos(a.p24.ROXO, b.p24.ROXO, b.p21.RENDERING, b.p24.PAHO, b.p21.X3);
 
   /*p24.POME*/ c.p24.POME = nor(b.p29.AVAP, b.p24.POFY);
   /*p24.RUJU*/ c.p24.RUJU = or(b.p24.PAHO, b.sys.VID_RESET3, b.p24.POME);

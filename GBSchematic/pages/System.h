@@ -434,7 +434,7 @@ struct System {
   /*p04.POKU*/ bool DMA_A14; 
   /*p04.MARU*/ bool DMA_A15; 
 
-  /*p04.MATU*/ bool DMA_RUNNING_SYNC; // -> p25,p28
+  /*p04.MATU*/ bool DMA_RUNNING_SYNCn; // -> p25,p28
 
   /*p04.NAVO*/ bool DMA_DONE;
   /*p04.NOLO*/ bool DMA_DONEn;

@@ -6,7 +6,7 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P26_Background::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void P26_Background::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
 
   /*p26.AXAD*/ c.p26.AXAD = not(b.p27.PORE);
 
@@ -81,43 +81,4 @@ void P26_Background::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p26.AMUV*/ if (b.p26.FETCH_MAP) c.MA10 = b.p23.LCDC_BGMAP;
   /*p26.COVE*/ if (b.p26.FETCH_MAP) c.MA11 = b.p28.P10_Bn;
   /*p26.COXO*/ if (b.p26.FETCH_MAP) c.MA12 = b.p28.P10_Bn;
-
-  //----------
-  // background shift register connected to VAVA3
-
-  /*p26.XOGA*/ c.p26.OAM_A_D7n = not(b.p31.OAM_A_D7);
-  /*p26.XURA*/ c.p26.OAM_A_D7o = not(b.p31.OAM_A_D7);
-  /*p26.TAJO*/ c.p26.OAM_A_D7p = not(b.p31.OAM_A_D7);
-  /*p26.XENU*/ c.p26.OAM_A_D7q = not(b.p31.OAM_A_D7);
-  /*p26.XYKE*/ c.p26.OAM_A_D7r = not(b.p31.OAM_A_D7);
-  /*p26.XABA*/ c.p26.OAM_A_D7s = not(b.p31.OAM_A_D7);
-  /*p26.TAFU*/ c.p26.OAM_A_D7t = not(b.p31.OAM_A_D7);
-  /*p26.XUHO*/ c.p26.OAM_A_D7u = not(b.p31.OAM_A_D7);
-
-  /*p26.TEDE*/ c.p26.MASK_PIPE_SET0 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK0);
-  /*p26.XALA*/ c.p26.MASK_PIPE_SET1 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK1);
-  /*p26.TYRA*/ c.p26.MASK_PIPE_SET2 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK2);
-  /*p26.XYRU*/ c.p26.MASK_PIPE_SET3 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK3);
-  /*p26.XUKU*/ c.p26.MASK_PIPE_SET4 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK4);
-  /*p26.XELY*/ c.p26.MASK_PIPE_SET5 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK5);
-  /*p26.TYKO*/ c.p26.MASK_PIPE_SET6 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK6);
-  /*p26.TUWU*/ c.p26.MASK_PIPE_SET7 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK7);
-
-  /*p26.WOKA*/ c.p26.MASK_PIPE_RST0 = nand(b.p26.OAM_A_D7n, b.p34.SPRITE_MASK0);
-  /*p26.WEDE*/ c.p26.MASK_PIPE_RST1 = nand(b.p26.OAM_A_D7o, b.p34.SPRITE_MASK1);
-  /*p26.TUFO*/ c.p26.MASK_PIPE_RST2 = nand(b.p26.OAM_A_D7p, b.p34.SPRITE_MASK2);
-  /*p26.WEVO*/ c.p26.MASK_PIPE_RST3 = nand(b.p26.OAM_A_D7q, b.p34.SPRITE_MASK3);
-  /*p26.WEDY*/ c.p26.MASK_PIPE_RST4 = nand(b.p26.OAM_A_D7r, b.p34.SPRITE_MASK4);
-  /*p26.WUJA*/ c.p26.MASK_PIPE_RST5 = nand(b.p26.OAM_A_D7s, b.p34.SPRITE_MASK5);
-  /*p26.TENA*/ c.p26.MASK_PIPE_RST6 = nand(b.p26.OAM_A_D7t, b.p34.SPRITE_MASK6);
-  /*p26.WUBU*/ c.p26.MASK_PIPE_RST7 = nand(b.p26.OAM_A_D7u, b.p34.SPRITE_MASK7);
-
-  /*p26.VEZO*/ c.p26.MASK_PIPE_0 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p26.MASK_PIPE_SET0, b.p26.MASK_PIPE_RST0, b.p26.MASK_PIPE_0, 0);
-  /*p26.WURU*/ c.p26.MASK_PIPE_1 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p26.MASK_PIPE_SET1, b.p26.MASK_PIPE_RST1, b.p26.MASK_PIPE_1, b.p26.MASK_PIPE_0);
-  /*p26.VOSA*/ c.p26.MASK_PIPE_2 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p26.MASK_PIPE_SET2, b.p26.MASK_PIPE_RST2, b.p26.MASK_PIPE_2, b.p26.MASK_PIPE_1);
-  /*p26.WYFU*/ c.p26.MASK_PIPE_3 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p26.MASK_PIPE_SET3, b.p26.MASK_PIPE_RST3, b.p26.MASK_PIPE_3, b.p26.MASK_PIPE_2);
-  /*p26.XETE*/ c.p26.MASK_PIPE_4 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p26.MASK_PIPE_SET4, b.p26.MASK_PIPE_RST4, b.p26.MASK_PIPE_4, b.p26.MASK_PIPE_3);
-  /*p26.WODA*/ c.p26.MASK_PIPE_5 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p26.MASK_PIPE_SET5, b.p26.MASK_PIPE_RST5, b.p26.MASK_PIPE_5, b.p26.MASK_PIPE_4);
-  /*p26.VUMO*/ c.p26.MASK_PIPE_6 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p26.MASK_PIPE_SET6, b.p26.MASK_PIPE_RST6, b.p26.MASK_PIPE_6, b.p26.MASK_PIPE_5);
-  /*p26.VAVA*/ c.p26.MASK_PIPE_7 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p26.MASK_PIPE_SET7, b.p26.MASK_PIPE_RST7, b.p26.MASK_PIPE_7, b.p26.MASK_PIPE_6);
 }

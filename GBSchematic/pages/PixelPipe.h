@@ -106,107 +106,104 @@ struct P32_BgPixelShifter {
 
 struct P33_SpritePixelShifter {
 
-  union { bool NURO; bool SPR_PIX_B_0; };
-  union { bool MASO; bool SPR_PIX_B_1; };
-  union { bool LEFE; bool SPR_PIX_B_2; };
-  union { bool LESU; bool SPR_PIX_B_3; };
-  union { bool WYHO; bool SPR_PIX_B_4; };
-  union { bool WORA; bool SPR_PIX_B_5; };
-  union { bool VAFO; bool SPR_PIX_B_6; };
-  union { bool WUFY; bool SPR_PIX_B_7; };
+  /*p33.NURO*/ bool SPR_PIX_B_0;
+  /*p33.MASO*/ bool SPR_PIX_B_1;
+  /*p33.LEFE*/ bool SPR_PIX_B_2;
+  /*p33.LESU*/ bool SPR_PIX_B_3;
+  /*p33.WYHO*/ bool SPR_PIX_B_4;
+  /*p33.WORA*/ bool SPR_PIX_B_5;
+  /*p33.VAFO*/ bool SPR_PIX_B_6;
+  /*p33.WUFY*/ bool SPR_PIX_B_7;
 
-  union { bool NYLU; bool SPR_PIX_A_0; };
-  union { bool PEFU; bool SPR_PIX_A_1; };
-  union { bool NATY; bool SPR_PIX_A_2; };
-  union { bool PYJO; bool SPR_PIX_A_3; };
-  union { bool VARE; bool SPR_PIX_A_4; };
-  union { bool WEBA; bool SPR_PIX_A_5; };
-  union { bool VANU; bool SPR_PIX_A_6; };
-  union { bool VUPY; bool SPR_PIX_A_7; };
+  /*p33.NYLU*/ bool SPR_PIX_A_0;
+  /*p33.PEFU*/ bool SPR_PIX_A_1;
+  /*p33.NATY*/ bool SPR_PIX_A_2;
+  /*p33.PYJO*/ bool SPR_PIX_A_3;
+  /*p33.VARE*/ bool SPR_PIX_A_4;
+  /*p33.WEBA*/ bool SPR_PIX_A_5;
+  /*p33.VANU*/ bool SPR_PIX_A_6;
+  /*p33.VUPY*/ bool SPR_PIX_A_7;
 
-  /*p33.POBE*/ bool POBE;
-  /*p33.PACY*/ bool PACY;
-  /*p33.PONO*/ bool PONO;
-  /*p33.PUGU*/ bool PUGU;
-  /*p33.PUTE*/ bool PUTE;
-  /*p33.PULY*/ bool PULY;
-  /*p33.PELO*/ bool PELO;
-  /*p33.PAWE*/ bool PAWE;
+  /*p33.REWO*/ bool SPR_PIX_B0;
+  /*p33.PEBA*/ bool SPR_PIX_B1;
+  /*p33.MOFO*/ bool SPR_PIX_B2;
+  /*p33.PUDU*/ bool SPR_PIX_B3;
+  /*p33.SAJA*/ bool SPR_PIX_B4;
+  /*p33.SUNY*/ bool SPR_PIX_B5;
+  /*p33.SEMO*/ bool SPR_PIX_B6;
+  /*p33.SEGA*/ bool SPR_PIX_B7;
 
-  /*p33.PUDU*/ bool PUDU;
-  /*p33.RAMU*/ bool RAMU;
-  /*p33.SELE*/ bool SELE;
-  /*p33.SAJA*/ bool SAJA;
-  /*p33.MYTU*/ bool MYTU;
-  /*p33.MOFO*/ bool MOFO;
-  /*p33.SUNY*/ bool SUNY;
-  /*p33.SUTO*/ bool SUTO;
-  /*p33.PEFO*/ bool PEFO;
-  /*p33.REWO*/ bool REWO;
-  /*p33.RYDU*/ bool RYDU;
-  /*p33.SEGA*/ bool SEGA;
-  /*p33.PEBA*/ bool PEBA;
-  /*p33.ROKA*/ bool ROKA;
-  /*p33.RAMA*/ bool RAMA;
-  /*p33.SEMO*/ bool SEMO;
+  /*p33.RATA*/ bool SPR_PIX_B0n;
+  /*p33.NUCA*/ bool SPR_PIX_B1n;
+  /*p33.LASE*/ bool SPR_PIX_B2n;
+  /*p33.LUBO*/ bool SPR_PIX_B3n;
+  /*p33.WERY*/ bool SPR_PIX_B4n;
+  /*p33.WURA*/ bool SPR_PIX_B5n;
+  /*p33.SULU*/ bool SPR_PIX_B6n;
+  /*p33.WAMY*/ bool SPR_PIX_B7n;
 
-  /*p33.LUBO*/ bool LUBO;
-  /*p33.SOLO*/ bool SOLO;
-  /*p33.VOBY*/ bool VOBY;
-  /*p33.WERY*/ bool WERY;
-  /*p33.LUMO*/ bool LUMO;
-  /*p33.LASE*/ bool LASE;
-  /*p33.WURA*/ bool WURA;
-  /*p33.WYCO*/ bool WYCO;
-  /*p33.LOZA*/ bool LOZA;
-  /*p33.RATA*/ bool RATA;
-  /*p33.SELU*/ bool SELU;
-  /*p33.WAMY*/ bool WAMY;
-  /*p33.NUCA*/ bool NUCA;
-  /*p33.SYBO*/ bool SYBO;
-  /*p33.SERY*/ bool SERY;
-  /*p33.SULU*/ bool SULU;
+  /*p33.POBE*/ bool SPR_PIX_FLIP0;
+  /*p33.PACY*/ bool SPR_PIX_FLIP1;
+  /*p33.PONO*/ bool SPR_PIX_FLIP2;
+  /*p33.PUGU*/ bool SPR_PIX_FLIP3;
+  /*p33.PUTE*/ bool SPR_PIX_FLIP4;
+  /*p33.PULY*/ bool SPR_PIX_FLIP5;
+  /*p33.PELO*/ bool SPR_PIX_FLIP6;
+  /*p33.PAWE*/ bool SPR_PIX_FLIP7;
+ 
+  /*p33.PEFO*/ bool SPR_PIX_A0;
+  /*p33.ROKA*/ bool SPR_PIX_A1;
+  /*p33.MYTU*/ bool SPR_PIX_A2;
+  /*p33.RAMU*/ bool SPR_PIX_A3;
+  /*p33.SELE*/ bool SPR_PIX_A4;
+  /*p33.SUTO*/ bool SPR_PIX_A5;
+  /*p33.RAMA*/ bool SPR_PIX_A6;
+  /*p33.RYDU*/ bool SPR_PIX_A7;
 
-  /*p33.LUFY*/ bool LUFY;
-  /*p33.MAME*/ bool MAME;
-  /*p33.REHU*/ bool REHU;
-  /*p33.RANO*/ bool RANO;
+  /*p33.LOZA*/ bool SPR_PIX_A0n;
+  /*p33.SYBO*/ bool SPR_PIX_A1n;
+  /*p33.LUMO*/ bool SPR_PIX_A2n;
+  /*p33.SOLO*/ bool SPR_PIX_A3n;
+  /*p33.VOBY*/ bool SPR_PIX_A4n;
+  /*p33.WYCO*/ bool SPR_PIX_A5n;
+  /*p33.SERY*/ bool SPR_PIX_A6n;
+  /*p33.SELU*/ bool SPR_PIX_A7n;
 
-  /*p33.WAXO*/ bool WAXO;
-  /*p33.TYGA*/ bool TYGA;
-  /*p33.XATO*/ bool XATO;
-  /*p33.VEXU*/ bool VEXU;
+  /*p33.PABE*/ bool SPR_PIX_B_SET0;
+  /*p33.MYTO*/ bool SPR_PIX_B_SET1;
+  /*p33.LELA*/ bool SPR_PIX_B_SET2;
+  /*p33.MAME*/ bool SPR_PIX_B_SET3;
+  /*p33.VEXU*/ bool SPR_PIX_B_SET4;
+  /*p33.VABY*/ bool SPR_PIX_B_SET5;
+  /*p33.TUXA*/ bool SPR_PIX_B_SET6;
+  /*p33.VUNE*/ bool SPR_PIX_B_SET7;
 
-  /*p33.MAJO*/ bool MAJO;
-  /*p33.MYXA*/ bool MYXA;
-  /*p33.LYDE*/ bool LYDE;
-  /*p33.LELA*/ bool LELA;
+  /*p33.PYZU*/ bool SPR_PIX_B_RST0;
+  /*p33.MADA*/ bool SPR_PIX_B_RST1;
+  /*p33.LYDE*/ bool SPR_PIX_B_RST2;
+  /*p33.LUFY*/ bool SPR_PIX_B_RST3;
+  /*p33.XATO*/ bool SPR_PIX_B_RST4;
+  /*p33.XEXU*/ bool SPR_PIX_B_RST5;
+  /*p33.TUPE*/ bool SPR_PIX_B_RST6;
+  /*p33.XYVE*/ bool SPR_PIX_B_RST7;
 
-  /*p33.XEXU*/ bool XEXU;
-  /*p33.VABY*/ bool VABY;
-  /*p33.XOLE*/ bool XOLE;
-  /*p33.VUME*/ bool VUME;
+  /*p33.MEZU*/ bool SPR_PIX_A_SET0;
+  /*p33.RUSY*/ bool SPR_PIX_A_SET1;
+  /*p33.MYXA*/ bool SPR_PIX_A_SET2;
+  /*p33.RANO*/ bool SPR_PIX_A_SET3;
+  /*p33.TYGA*/ bool SPR_PIX_A_SET4;
+  /*p33.VUME*/ bool SPR_PIX_A_SET5;
+  /*p33.TAPO*/ bool SPR_PIX_A_SET6;
+  /*p33.TESO*/ bool SPR_PIX_A_SET7;
 
-  /*p33.MOFY*/ bool MOFY;
-  /*p33.MEZU*/ bool MEZU;
-  /*p33.PYZU*/ bool PYZU;
-  /*p33.PABE*/ bool PABE;
-
-  /*p33.TULA*/ bool TULA;
-  /*p33.TESO*/ bool TESO;
-  /*p33.XYVE*/ bool XYVE;
-  /*p33.VUNE*/ bool VUNE;
-
-  /*p33.MADA*/ bool MADA;
-  /*p33.MYTO*/ bool MYTO;
-  /*p33.RUCA*/ bool RUCA;
-  /*p33.RUSY*/ bool RUSY;
-
-  /*p33.TABY*/ bool TABY;
-  /*p33.TAPO*/ bool TAPO;
-  /*p33.TUPE*/ bool TUPE;
-  /*p33.TUXA*/ bool TUXA;
-
+  /*p33.MOFY*/ bool SPR_PIX_A_RST0;
+  /*p33.RUCA*/ bool SPR_PIX_A_RST1;
+  /*p33.MAJO*/ bool SPR_PIX_A_RST2;
+  /*p33.REHU*/ bool SPR_PIX_A_RST3;
+  /*p33.WAXO*/ bool SPR_PIX_A_RST4;
+  /*p33.XOLE*/ bool SPR_PIX_A_RST5;
+  /*p33.TABY*/ bool SPR_PIX_A_RST6;
+  /*p33.TULA*/ bool SPR_PIX_A_RST7;
 };
 
 struct P34_SpritePaletteShifter {
@@ -214,61 +211,62 @@ struct P34_SpritePaletteShifter {
   /*p34.LAFU*/ bool OBP0PIXELn;
   /*p34.LEKA*/ bool OBP1PIXELn;
 
-  /*p34.LESY*/ bool SPRITE_MASK0;
-  /*p34.LOTA*/ bool SPRITE_MASK1;
-  /*p34.LYKU*/ bool SPRITE_MASK2;
-  /*p34.ROBY*/ bool SPRITE_MASK3;
-  /*p34.TYTA*/ bool SPRITE_MASK4;
-  /*p34.TYCO*/ bool SPRITE_MASK5;
-  /*p34.SOKA*/ bool SPRITE_MASK6;
-  /*p34.XOVU*/ bool SPRITE_MASK7;
+  /*p34.LESY*/ bool SPRITE_MASK0n;
+  /*p34.LOTA*/ bool SPRITE_MASK1n;
+  /*p34.LYKU*/ bool SPRITE_MASK2n;
+  /*p34.ROBY*/ bool SPRITE_MASK3n;
+  /*p34.TYTA*/ bool SPRITE_MASK4n;
+  /*p34.TYCO*/ bool SPRITE_MASK5n;
+  /*p34.SOKA*/ bool SPRITE_MASK6n;
+  /*p34.XOVU*/ bool SPRITE_MASK7n;
 
 
-  /*p34.MEFU*/ bool MEFU;
-  /*p34.MEVE*/ bool MEVE;
-  /*p34.MYZO*/ bool MYZO;
-  /*p34.RUDA*/ bool RUDA;
-  /*p34.VOTO*/ bool VOTO;
-  /*p34.VYSA*/ bool VYSA;
-  /*p34.TORY*/ bool TORY;
-  /*p34.WOPE*/ bool WOPE;
+  /*p34.MEFU*/ bool SPRITE_MASK0;
+  /*p34.MEVE*/ bool SPRITE_MASK1;
+  /*p34.MYZO*/ bool SPRITE_MASK2;
+  /*p34.RUDA*/ bool SPRITE_MASK3;
+  /*p34.VOTO*/ bool SPRITE_MASK4;
+  /*p34.VYSA*/ bool SPRITE_MASK5;
+  /*p34.TORY*/ bool SPRITE_MASK6;
+  /*p34.WOPE*/ bool SPRITE_MASK7;
 
-  /*p34.SYPY*/ bool SYPY;
-  /*p34.TOTU*/ bool TOTU;
-  /*p34.NARO*/ bool NARO;
-  /*p34.WEXY*/ bool WEXY;
-  /*p34.RYZY*/ bool RYZY;
-  /*p34.RYFE*/ bool RYFE;
-  /*p34.LADY*/ bool LADY;
-  /*p34.LAFY*/ bool LAFY;
+  /*p34.SYPY*/ bool OAM_A_D4n;
+  /*p34.TOTU*/ bool OAM_A_D4o;
+  /*p34.NARO*/ bool OAM_A_D4p;
+  /*p34.WEXY*/ bool OAM_A_D4q;
+  /*p34.RYZY*/ bool OAM_A_D4r;
+  /*p34.RYFE*/ bool OAM_A_D4s;
+  /*p34.LADY*/ bool OAM_A_D4t;
+  /*p34.LAFY*/ bool OAM_A_D4u;
 
-  /*p34.PUME*/ bool PUME;
-  /*p34.SUCO*/ bool SUCO;
-  /*p34.SORO*/ bool SORO;
-  /*p34.TAFA*/ bool TAFA;
-  /*p34.PAMO*/ bool PAMO;
-  /*p34.PYZY*/ bool PYZY;
-  /*p34.SUKY*/ bool SUKY;
-  /*p34.TOWA*/ bool TOWA;
-  /*p34.RORA*/ bool RORA;
-  /*p34.RUDU*/ bool RUDU;
-  /*p34.MENE*/ bool MENE;
-  /*p34.PAZO*/ bool PAZO;
-  /*p34.LUKE*/ bool LUKE;
-  /*p34.LOWA*/ bool LOWA;
-  /*p34.LAMY*/ bool LAMY;
-  /*p34.LUNU*/ bool LUNU;
+  /*p34.PUME*/ bool SPRITE_PAL_PIPE_SET0n;
+  /*p34.SORO*/ bool SPRITE_PAL_PIPE_SET1n;
+  /*p34.PAMO*/ bool SPRITE_PAL_PIPE_SET2n;
+  /*p34.SUKY*/ bool SPRITE_PAL_PIPE_SET3n;
+  /*p34.RORA*/ bool SPRITE_PAL_PIPE_SET4n;
+  /*p34.MENE*/ bool SPRITE_PAL_PIPE_SET5n;
+  /*p34.LUKE*/ bool SPRITE_PAL_PIPE_SET6n;
+  /*p34.LAMY*/ bool SPRITE_PAL_PIPE_SET7n;
 
-  /*p34.RUGO*/ bool RUGO;
-  /*p34.SATA*/ bool SATA;
-  /*p34.ROSA*/ bool ROSA;
-  /*p34.SOMY*/ bool SOMY;
-  /*p34.PALU*/ bool PALU;
-  /*p34.NUKE*/ bool NUKE;
-  /*p34.MODA*/ bool MODA;
-  /*p34.LYME*/ bool LYME;
+  /*p34.SUCO*/ bool SPRITE_PAL_PIPE_RST0n;
+  /*p34.TAFA*/ bool SPRITE_PAL_PIPE_RST1n;
+  /*p34.PYZY*/ bool SPRITE_PAL_PIPE_RST2n;
+  /*p34.TOWA*/ bool SPRITE_PAL_PIPE_RST3n;
+  /*p34.RUDU*/ bool SPRITE_PAL_PIPE_RST4n;
+  /*p34.PAZO*/ bool SPRITE_PAL_PIPE_RST5n;
+  /*p34.LOWA*/ bool SPRITE_PAL_PIPE_RST6n;
+  /*p34.LUNU*/ bool SPRITE_PAL_PIPE_RST7n;
 
-  /*p34.LOME*/ bool LOME;
+  /*p34.RUGO*/ bool SPRITE_PAL_PIPE_0;
+  /*p34.SATA*/ bool SPRITE_PAL_PIPE_1;
+  /*p34.ROSA*/ bool SPRITE_PAL_PIPE_2;
+  /*p34.SOMY*/ bool SPRITE_PAL_PIPE_3;
+  /*p34.PALU*/ bool SPRITE_PAL_PIPE_4;
+  /*p34.NUKE*/ bool SPRITE_PAL_PIPE_5;
+  /*p34.MODA*/ bool SPRITE_PAL_PIPE_6;
+  /*p34.LYME*/ bool SPRITE_PAL_PIPE_7;
+
+  /*p34.LOME*/ bool SPRITE_PAL_PIPE_7n;
 };
 
 

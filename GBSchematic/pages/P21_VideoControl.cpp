@@ -25,7 +25,7 @@ void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // x counter. this is a little weird, presumably because it can tick at 4 mhz but not always?
 
-  /*p21.TADY*/ c.p21.TADY = nor(b.p28.ATEJ, b.sys.VID_RESET3);
+  /*p21.TADY*/ c.p21.TADY = nor(b.p28.SPRITE_COUNT_RST, b.sys.VID_RESET3);
 
   /*p21.RYBO*/ c.p21.RYBO = xor(b.p21.X0, b.p21.X1);
   /*p21.XUKE*/ c.p21.XUKE = and(b.p21.X0, b.p21.X1);
@@ -168,7 +168,7 @@ void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   
   /*p21.XAJO*/ c.p21.X_009 = and(b.p21.X0, b.p21.X3);
 
-  /*p21.XYMU*/ c.p21.XYMU = or(b.p21.WEGO, b.p29.AVAP);
+  /*p21.XYMU*/ c.p21.RENDERING = or(b.p21.WEGO, b.p29.AVAP);
   /*p21.WUSA*/ c.p21.WUSA = or(b.p21.X_009, b.p21.WEGO);
   /*p21.TOBA*/ c.p21.TOBA = and(b.p24.CLKPIPE, b.p21.WUSA);
   /*p21.SEMU*/ c.p21.SEMU = or(b.p21.TOBA, b.p27.POVA);
@@ -194,8 +194,17 @@ void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p21.TOBE*/ c.p21.FF41_RDa = and(b.sys.CPU_RD2, b.p22.FF41);
   /*p21.VAVE*/ c.p21.FF41_RDb = b.p21.FF41_RDa; // buffer, not inverter
 
-  /*p21.SADU*/ c.p21.STAT_MODE0 = nor(b.p21.XYMU, b.p21.INT_VBL);
-  /*p21.XATY*/ c.p21.STAT_MODE1 = nor(b.p28.ACYL, b.p21.XYMU);
+  // 00: hblank   - rendering 0, vbl 0, oam 0
+  // 01: vblank   - rendering 0, vbl 1, oam 0
+  // 10: oam scan - rendering 0, vbl 0, oam 1
+  // 11: render   - rendering 1, vbl 0, oam 0
+
+  // so one of these has the wrong polarity
+
+
+
+  /*p21.SADU*/ c.p21.STAT_MODE0n = nor(b.p21.RENDERING, b.p21.INT_VBL);
+  /*p21.XATY*/ c.p21.STAT_MODE1n = nor(b.p28.OAM_ADDR_PARSEn, b.p21.RENDERING);
 
   /*p21.SEPA*/ c.p21.FF41_WR  = and(b.sys.CPU_WR2, b.p22.FF41);
   /*p21.RYJU*/ c.p21.FF41_WRn = not(b.p21.FF41_WR);
@@ -210,8 +219,8 @@ void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p21.PAGO*/ c.p21.STAT_LYC_MATCH1 = nor(b.sys.SYS_RESETn6, b.p21.FF41_WRn);  // schematic wrong, this is NOR
   /*p21.RUPO*/ c.p21.STAT_LYC_MATCH2 = or(b.p21.INT_LYC, b.p21.STAT_LYC_MATCH1); // this is another of the weird or gates. could be nor?
 
-  /*p21.TEBY*/ if (b.p21.FF41_RDa) c.D0 = not(b.p21.STAT_MODE0);
-  /*p21.WUGA*/ if (b.p21.FF41_RDa) c.D1 = not(b.p21.STAT_MODE1);
+  /*p21.TEBY*/ if (b.p21.FF41_RDa) c.D0 = not(b.p21.STAT_MODE0n);
+  /*p21.WUGA*/ if (b.p21.FF41_RDa) c.D1 = not(b.p21.STAT_MODE1n);
   /*p21.SEGO*/ if (b.p21.FF41_RDa) c.D2 = not(b.p21.STAT_LYC_MATCH2);
   /*p21.PUZO*/ if (b.p21.FF41_RDb) c.D3 = b.p21.INT_HBL_EN;
   /*p21.POFO*/ if (b.p21.FF41_RDb) c.D4 = b.p21.INT_VBL_EN;

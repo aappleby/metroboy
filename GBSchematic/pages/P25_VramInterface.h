@@ -36,7 +36,9 @@ struct P25_VramInterface {
   /*p25.PEDU*/ bool MA11b;
   /*p25.PONY*/ bool MA12b;
 
-  /*p25.CUFE*/ bool CUFE;
+  // guess
+  /*p25.CUFE*/ bool OAM_WR;
+
   /*p25.VAPE*/ bool VAPE;
   /*p25.AVER*/ bool AVER;
   /*p25.XUJY*/ bool XUJY;

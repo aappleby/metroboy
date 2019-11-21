@@ -25,7 +25,7 @@ void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // x counter. this is a little weird, presumably because it can tick at 4 mhz but not always?
 
-  /*p21.TADY*/ c.p21.TADY = nor(b.p28.SPRITE_COUNT_RST, b.sys.VID_RESET3);
+  /*p21.TADY*/ c.p21.TADY = nor(b.p28.NEW_LINE, b.sys.VID_RESET3);
 
   /*p21.RYBO*/ c.p21.RYBO = xor(b.p21.X0, b.p21.X1);
   /*p21.XUKE*/ c.p21.XUKE = and(b.p21.X0, b.p21.X1);

@@ -71,11 +71,12 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p27.ROMO*/ c.p27.ROMO = not(b.p24.POKY);
   /*p27.SUVU*/ c.p27.SUVU = nand(b.p21.RENDERING, b.p27.ROMO, b.p24.NYKA, b.p24.PORY);
   /*p27.TAVE*/ c.p27.TAVE = not(b.p27.SUVU);
-  /*p27.XAHY*/ c.p27.XAHY = not(b.p28.SPRITE_COUNT_RST);
 
   /*p27.XOFO*/ c.p27.XOFO = nand(b.p23.LCDC_WINEN, b.p27.XAHY, b.sys.VID_RESETn1);
+  /*p27.XAHY*/   c.p27.XAHY = not(b.p28.NEW_LINE);
   /*p27.XACO*/ c.p27.RST_XACO = not(b.p27.XOFO);
   /*p27.PYNU*/ c.p27.PYNU = or(b.p27.NUNU, b.p27.XOFO);
+
   /*p27.NUNY*/ c.p27.NUNY = and(!b.p27.NOPA, b.p27.PYNU);
   /*p27.NOCU*/ c.p27.NOCU = not(b.p27.PYNU);
   /*p27.PORE*/ c.p27.PORE = not(b.p27.NOCU);
@@ -190,7 +191,7 @@ void P27_WindowMapLookup_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // computes SECA and TAVA
 
   /*p27.RYCE*/ c.p27.RYCE = and(b.p27.SOBU, !b.p27.SUDA);
-  /*p27.SECA*/ c.p27.SECA = nor(b.p27.RYCE, b.sys.VID_RESET5, b.p28.SPRITE_COUNT_RST);
+  /*p27.SECA*/ c.p27.SECA = nor(b.p27.RYCE, b.sys.VID_RESET5, b.p28.NEW_LINE);
   /*p27.VEKU*/ c.p27.VEKU = nor(b.p29.WUTY, b.p27.TAVE);
   /*p27.TAKA*/ c.p27.TAKA = unk2(b.p27.VEKU, b.p27.SECA);
   /*p27.TUKU*/ c.p27.TUKU = not(b.p24.TOMU);

@@ -13,6 +13,9 @@
 #include "Channel3.h"
 #include "Channel4.h"
 
+#include "Sprites.h"
+#include "PixelPipe.h"
+
 #include "P21_VideoControl.h"
 #include "P22_PpuDecode.h"
 #include "P23_VideoRegs.h"
@@ -20,11 +23,6 @@
 #include "P25_VramInterface.h"
 #include "P26_Background.h"
 #include "P27_WindowMapLookup.h"
-#include "P28_OAM.h"
-#include "P29_SpriteControl.h"
-#include "P30_SpriteStore.h"
-#include "P31_SpriteXMatchers.h"
-#include "PixelPipe.h"
 
 
 //-----------------------------------------------------------------------------

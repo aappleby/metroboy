@@ -10,28 +10,28 @@
 void P23_VideoRegs::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // FF40 LCDC
-  /*p23.VYRE*/ c.p23.VYRE = and(b.p22.FF40, b.sys.CPU_RD2);
-  /*p23.WARU*/ c.p23.WARU = and(b.p22.FF40, b.sys.CPU_WR2);
-  /*p23.WYCE*/ c.p23.WYCE = not(b.p23.VYRE);
-  /*p23.XUBO*/ c.p23.XUBO = not(b.p23.WARU);
+  /*p23.VYRE*/ c.p23.FF40_RD = and(b.p22.FF40, b.sys.CPU_RD2);
+  /*p23.WARU*/ c.p23.FF40_WR = and(b.p22.FF40, b.sys.CPU_WR2);
+  /*p23.WYCE*/ c.p23.FF40_RDn = not(b.p23.FF40_RD);
+  /*p23.XUBO*/ c.p23.FF40_WRn = not(b.p23.FF40_WR);
 
-  /*p23.VYXE*/ c.p23.LCDC_BGEN    = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.LCDC_BGEN,   b.D0);
-  /*p23.XYLO*/ c.p23.LCDC_SPEN    = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.LCDC_SPEN,   b.D1);
-  /*p23.XYMO*/ c.p23.LCDC_SPSIZE  = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.LCDC_SPSIZE, b.D2);
-  /*p23.XAFO*/ c.p23.LCDC_BGMAP   = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.LCDC_BGMAP,  b.D3);
-  /*p23.WEXU*/ c.p23.BG_TILE_SEL  = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.BG_TILE_SEL, b.D4);
-  /*p23.WYMO*/ c.p23.LCDC_WINEN   = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.LCDC_WINEN,  b.D5);
-  /*p23.WOKY*/ c.p23.WIN_MAP_SEL  = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.WIN_MAP_SEL, b.D6);
-  /*p23.XONA*/ c.p23.LCDC_EN      = tock_pos(a.p23.XUBO, b.p23.XUBO, b.sys.SYS_RESETn7, b.p23.LCDC_EN,     b.D7);
+  /*p23.VYXE*/ c.p23.LCDC_BGEN    = tock_pos(a.p23.FF40_WRn, b.p23.FF40_WRn, b.sys.SYS_RESETn7, b.p23.LCDC_BGEN,   b.D0);
+  /*p23.XYLO*/ c.p23.LCDC_SPEN    = tock_pos(a.p23.FF40_WRn, b.p23.FF40_WRn, b.sys.SYS_RESETn7, b.p23.LCDC_SPEN,   b.D1);
+  /*p23.XYMO*/ c.p23.LCDC_SPSIZE  = tock_pos(a.p23.FF40_WRn, b.p23.FF40_WRn, b.sys.SYS_RESETn7, b.p23.LCDC_SPSIZE, b.D2);
+  /*p23.XAFO*/ c.p23.LCDC_BGMAP   = tock_pos(a.p23.FF40_WRn, b.p23.FF40_WRn, b.sys.SYS_RESETn7, b.p23.LCDC_BGMAP,  b.D3);
+  /*p23.WEXU*/ c.p23.BG_TILE_SEL  = tock_pos(a.p23.FF40_WRn, b.p23.FF40_WRn, b.sys.SYS_RESETn7, b.p23.BG_TILE_SEL, b.D4);
+  /*p23.WYMO*/ c.p23.LCDC_WINEN   = tock_pos(a.p23.FF40_WRn, b.p23.FF40_WRn, b.sys.SYS_RESETn7, b.p23.LCDC_WINEN,  b.D5);
+  /*p23.WOKY*/ c.p23.WIN_MAP_SEL  = tock_pos(a.p23.FF40_WRn, b.p23.FF40_WRn, b.sys.SYS_RESETn7, b.p23.WIN_MAP_SEL, b.D6);
+  /*p23.XONA*/ c.p23.LCDC_EN      = tock_pos(a.p23.FF40_WRn, b.p23.FF40_WRn, b.sys.SYS_RESETn7, b.p23.LCDC_EN,     b.D7);
 
-  /*p23.WYPO*/ if (b.p23.WYCE) c.D0 = b.p23.LCDC_BGEN;
-  /*p23.XERO*/ if (b.p23.WYCE) c.D1 = b.p23.LCDC_SPEN;
-  /*p23.WYJU*/ if (b.p23.WYCE) c.D2 = b.p23.LCDC_SPSIZE;
-  /*p23.WUKA*/ if (b.p23.WYCE) c.D3 = b.p23.LCDC_BGMAP;
-  /*p23.VOKE*/ if (b.p23.WYCE) c.D4 = b.p23.BG_TILE_SEL;
-  /*p23.VATO*/ if (b.p23.WYCE) c.D5 = b.p23.LCDC_WINEN;
-  /*p23.VAHA*/ if (b.p23.WYCE) c.D6 = b.p23.WIN_MAP_SEL;
-  /*p23.XEBU*/ if (b.p23.WYCE) c.D7 = b.p23.LCDC_EN;
+  /*p23.WYPO*/ if (b.p23.FF40_RDn) c.D0 = b.p23.LCDC_BGEN;
+  /*p23.XERO*/ if (b.p23.FF40_RDn) c.D1 = b.p23.LCDC_SPEN;
+  /*p23.WYJU*/ if (b.p23.FF40_RDn) c.D2 = b.p23.LCDC_SPSIZE;
+  /*p23.WUKA*/ if (b.p23.FF40_RDn) c.D3 = b.p23.LCDC_BGMAP;
+  /*p23.VOKE*/ if (b.p23.FF40_RDn) c.D4 = b.p23.BG_TILE_SEL;
+  /*p23.VATO*/ if (b.p23.FF40_RDn) c.D5 = b.p23.LCDC_WINEN;
+  /*p23.VAHA*/ if (b.p23.FF40_RDn) c.D6 = b.p23.WIN_MAP_SEL;
+  /*p23.XEBU*/ if (b.p23.FF40_RDn) c.D7 = b.p23.LCDC_EN;
 
   // FF4B WX
   /*p23.WYZE*/ c.p23.WYZE = and(b.sys.CPU_RD2, b.p22.FF4B);

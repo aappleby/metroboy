@@ -6,10 +6,10 @@ struct P23_VideoRegs {
   static void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   // LCDC
-  /*p23.VYRE*/ bool VYRE;
-  /*p23.WARU*/ bool WARU;
-  /*p23.WYCE*/ bool WYCE;
-  /*p23.XUBO*/ bool XUBO;
+  /*p23.VYRE*/ bool FF40_RD;
+  /*p23.WARU*/ bool FF40_WR;
+  /*p23.WYCE*/ bool FF40_RDn;
+  /*p23.XUBO*/ bool FF40_WRn;
 
   /*p23.VYXE*/ bool LCDC_BGEN;
   /*p23.XYLO*/ bool LCDC_SPEN;

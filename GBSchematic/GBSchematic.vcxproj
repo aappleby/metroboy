@@ -192,11 +192,8 @@
     <ClCompile Include="pages\P25_VramInterface.cpp" />
     <ClCompile Include="pages\P26_Background.cpp" />
     <ClCompile Include="pages\P27_WindowMapLookup.cpp" />
-    <ClCompile Include="pages\P28_OAM.cpp" />
-    <ClCompile Include="pages\P29_SpriteControl.cpp" />
-    <ClCompile Include="pages\P30_SpriteStore.cpp" />
-    <ClCompile Include="pages\P31_SpriteXMatchers.cpp" />
     <ClCompile Include="pages\PixelPipe.cpp" />
+    <ClCompile Include="pages\Sprites.cpp" />
     <ClCompile Include="pages\System.cpp" />
     <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
@@ -224,11 +221,8 @@
     <ClInclude Include="pages\P25_VramInterface.h" />
     <ClInclude Include="pages\P26_Background.h" />
     <ClInclude Include="pages\P27_WindowMapLookup.h" />
-    <ClInclude Include="pages\P28_OAM.h" />
-    <ClInclude Include="pages\P29_SpriteControl.h" />
-    <ClInclude Include="pages\P30_SpriteStore.h" />
-    <ClInclude Include="pages\P31_SpriteXMatchers.h" />
     <ClInclude Include="pages\PixelPipe.h" />
+    <ClInclude Include="pages\Sprites.h" />
     <ClInclude Include="pages\System.h" />
     <ClInclude Include="pages\TristateBus.h" />
     <ClInclude Include="Register.h" />

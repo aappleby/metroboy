@@ -2,17 +2,15 @@
 
 struct P32_BgPixelShifter {
 
-  /*p32.SOHU*/ bool BG_PIX_B_7;
-  /*p32.PYBO*/ bool BG_PIX_A_7;
 
-  /*p32.RAWU*/ bool RAWU;
-  /*p32.POZO*/ bool POZO;
-  /*p32.PYZO*/ bool PYZO;
-  /*p32.POXA*/ bool POXA;
-  /*p32.PULO*/ bool PULO;
-  /*p32.POJU*/ bool POJU;
-  /*p32.POWY*/ bool POWY;
-  /*p32.PYJU*/ bool PYJU;
+  /*p32.RAWU*/ bool VRAM_D0;
+  /*p32.POZO*/ bool VRAM_D1;
+  /*p32.PYZO*/ bool VRAM_D2;
+  /*p32.POXA*/ bool VRAM_D3;
+  /*p32.PULO*/ bool VRAM_D4;
+  /*p32.POJU*/ bool VRAM_D5;
+  /*p32.POWY*/ bool VRAM_D6;
+  /*p32.PYJU*/ bool VRAM_D7;
 
 
   /*p32.LESO*/ bool LESO;
@@ -32,14 +30,14 @@ struct P32_BgPixelShifter {
   /*p32.NASA*/ bool NASA;
   /*p32.NEFO*/ bool NEFO;
 
-  /*p32.TOSA*/ bool TOSA;
-  /*p32.RUCO*/ bool RUCO;
-  /*p32.TYCE*/ bool TYCE;
-  /*p32.REVY*/ bool REVY;
-  /*p32.RYGA*/ bool RYGA;
-  /*p32.RYLE*/ bool RYLE;
-  /*p32.RAPU*/ bool RAPU;
-  /*p32.SOJA*/ bool SOJA;
+  /*p32.TOSA*/ bool BG_PIX_B0;
+  /*p32.RUCO*/ bool BG_PIX_B1;
+  /*p32.TYCE*/ bool BG_PIX_B2;
+  /*p32.REVY*/ bool BG_PIX_B3;
+  /*p32.RYGA*/ bool BG_PIX_B4;
+  /*p32.RYLE*/ bool BG_PIX_B5;
+  /*p32.RAPU*/ bool BG_PIX_B6;
+  /*p32.SOJA*/ bool BG_PIX_B7;
 
   /*p32.LUHE*/ bool LUHE;
   /*p32.NOLY*/ bool NOLY;
@@ -50,57 +48,60 @@ struct P32_BgPixelShifter {
   /*p32.NEZE*/ bool NEZE;
   /*p32.NOBO*/ bool NOBO;
 
-  /*p32.SEJA*/ bool SEJA;
-  /*p32.SENO*/ bool SENO;
-  /*p32.SURE*/ bool SURE;
-  /*p32.SEBO*/ bool SEBO;
-  /*p32.SUCA*/ bool SUCA;
-  /*p32.SYWE*/ bool SYWE;
-  /*p32.SUPU*/ bool SUPU;
-  /*p32.RYJY*/ bool RYJY;
+  /*p32.SEJA*/ bool BG_PIPE_B_RST0;
+  /*p32.SENO*/ bool BG_PIPE_B_RST1;
+  /*p32.SURE*/ bool BG_PIPE_B_RST2;
+  /*p32.SEBO*/ bool BG_PIPE_B_RST3;
+  /*p32.SUCA*/ bool BG_PIPE_B_RST4;
+  /*p32.SYWE*/ bool BG_PIPE_B_RST5;
+  /*p32.SUPU*/ bool BG_PIPE_B_RST6;
+  /*p32.RYJY*/ bool BG_PIPE_B_RST7;
 
-  /*p32.TUXE*/ bool TUXE;
-  /*p32.SOLY*/ bool SOLY;
-  /*p32.RUCE*/ bool RUCE;
-  /*p32.RYJA*/ bool RYJA;
-  /*p32.RUTO*/ bool RUTO;
-  /*p32.RAJA*/ bool RAJA;
-  /*p32.RAJO*/ bool RAJO;
-  /*p32.RAGA*/ bool RAGA;
+  /*p32.TUXE*/ bool BG_PIPE_B_SET0;
+  /*p32.SOLY*/ bool BG_PIPE_B_SET1;
+  /*p32.RUCE*/ bool BG_PIPE_B_SET2;
+  /*p32.RYJA*/ bool BG_PIPE_B_SET3;
+  /*p32.RUTO*/ bool BG_PIPE_B_SET4;
+  /*p32.RAJA*/ bool BG_PIPE_B_SET5;
+  /*p32.RAJO*/ bool BG_PIPE_B_SET6;
+  /*p32.RAGA*/ bool BG_PIPE_B_SET7;
 
-  /*p32.LOTY*/ bool LOTY;
-  /*p32.NEXA*/ bool NEXA;
-  /*p32.LUTU*/ bool LUTU;
-  /*p32.LUJA*/ bool LUJA;
-  /*p32.MOSY*/ bool MOSY;
-  /*p32.LERU*/ bool LERU;
-  /*p32.NYHA*/ bool NYHA;
-  /*p32.NADY*/ bool NADY;
+  /*p32.LOTY*/ bool BG_PIPE_A_RST0;
+  /*p32.NEXA*/ bool BG_PIPE_A_RST1;
+  /*p32.LUTU*/ bool BG_PIPE_A_RST2;
+  /*p32.LUJA*/ bool BG_PIPE_A_RST3;
+  /*p32.MOSY*/ bool BG_PIPE_A_RST4;
+  /*p32.LERU*/ bool BG_PIPE_A_RST5;
+  /*p32.NYHA*/ bool BG_PIPE_A_RST6;
+  /*p32.NADY*/ bool BG_PIPE_A_RST7;
 
-  /*p32.LAKY*/ bool LAKY;
-  /*p32.NYXO*/ bool NYXO;
-  /*p32.LOTO*/ bool LOTO;
-  /*p32.LYDU*/ bool LYDU;
-  /*p32.MYVY*/ bool MYVY;
-  /*p32.LODO*/ bool LODO;
-  /*p32.NUTE*/ bool NUTE;
-  /*p32.NAJA*/ bool NAJA;
+  /*p32.LAKY*/ bool BG_PIPE_A_SET0;
+  /*p32.NYXO*/ bool BG_PIPE_A_SET1;
+  /*p32.LOTO*/ bool BG_PIPE_A_SET2;
+  /*p32.LYDU*/ bool BG_PIPE_A_SET3;
+  /*p32.MYVY*/ bool BG_PIPE_A_SET4;
+  /*p32.LODO*/ bool BG_PIPE_A_SET5;
+  /*p32.NUTE*/ bool BG_PIPE_A_SET6;
+  /*p32.NAJA*/ bool BG_PIPE_A_SET7;
 
-  /*p32.TOMY*/ bool TOMY;
-  /*p32.TACA*/ bool TACA;
-  /*p32.SADY*/ bool SADY;
-  /*p32.RYSA*/ bool RYSA;
-  /*p32.SOBO*/ bool SOBO;
-  /*p32.SETU*/ bool SETU;
-  /*p32.RALU*/ bool RALU;
+  /*p32.TOMY*/ bool BG_PIPE_B0;
+  /*p32.TACA*/ bool BG_PIPE_B1;
+  /*p32.SADY*/ bool BG_PIPE_B2;
+  /*p32.RYSA*/ bool BG_PIPE_B3;
+  /*p32.SOBO*/ bool BG_PIPE_B4;
+  /*p32.SETU*/ bool BG_PIPE_B5;
+  /*p32.RALU*/ bool BG_PIPE_B6;
+  /*p32.SOHU*/ bool BG_PIPE_B7;
 
-  /*p32.MYDE*/ bool MYDE;
-  /*p32.NOZO*/ bool NOZO;
-  /*p32.MOJU*/ bool MOJU;
-  /*p32.MACU*/ bool MACU;
-  /*p32.NEPO*/ bool NEPO;
-  /*p32.MODU*/ bool MODU;
-  /*p32.NEDA*/ bool NEDA;
+
+  /*p32.MYDE*/ bool BG_PIPE_A0;
+  /*p32.NOZO*/ bool BG_PIPE_A1;
+  /*p32.MOJU*/ bool BG_PIPE_A2;
+  /*p32.MACU*/ bool BG_PIPE_A3;
+  /*p32.NEPO*/ bool BG_PIPE_A4;
+  /*p32.MODU*/ bool BG_PIPE_A5;
+  /*p32.NEDA*/ bool BG_PIPE_A6;
+  /*p32.PYBO*/ bool BG_PIPE_A7;
 };
 
 

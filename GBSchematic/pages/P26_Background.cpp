@@ -8,7 +8,7 @@
 
 void P26_Background::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
 
-  /*p26.AXAD*/ c.p26.AXAD = not(b.p27.PORE);
+  /*p26.AXAD*/ c.p26.AXAD = not(b.p27.WIN_TILE_AB);
 
   //----------
   // y + scy;
@@ -31,10 +31,10 @@ void P26_Background::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
   /*p26.EFYK*/ c.p26.MAP_Y3  = add_s(b.p21.V6, b.p23.SCY6, b.p26.MAP_Y2C);
   /*p26.EJOK*/ c.p26.MAP_Y4  = add_s(b.p21.V7, b.p23.SCY7, b.p26.MAP_Y3C);
 
-  /*p26.ASUL*/ c.p26.ASUL = and(b.p26.AXAD, b.p27.NETA);
+  /*p26.ASUL*/ c.p26.ASUL = and(b.p26.AXAD, b.p27.WIN_TILE_READa);
   /*p26.BEJE*/ c.p26.BEJE = not(b.p26.ASUL);
 
-  /*p26.ASUM*/ if (b.p26.BEJE) c.MA00 = b.p27.MA00_2;
+  /*p26.ASUM*/ if (b.p26.BEJE) c.MA00 = b.p27.XUHA;
   /*p26.EVAD*/ if (b.p26.BEJE) c.MA01 = b.p26.TILE_Y0;
   /*p26.DAHU*/ if (b.p26.BEJE) c.MA02 = b.p26.TILE_Y1;
   /*p26.DODE*/ if (b.p26.BEJE) c.MA03 = b.p26.TILE_Y2;
@@ -79,6 +79,6 @@ void P26_Background::tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
   /*p26.DAFE*/ if (b.p26.FETCH_MAP) c.MA09 = b.p26.MAP_Y4;
 
   /*p26.AMUV*/ if (b.p26.FETCH_MAP) c.MA10 = b.p23.LCDC_BGMAP;
-  /*p26.COVE*/ if (b.p26.FETCH_MAP) c.MA11 = b.p28.P10_Bn;
-  /*p26.COXO*/ if (b.p26.FETCH_MAP) c.MA12 = b.p28.P10_Bn;
+  /*p26.COVE*/ if (b.p26.FETCH_MAP) c.MA11 = b.spr.P10_Bn;
+  /*p26.COXO*/ if (b.p26.FETCH_MAP) c.MA12 = b.spr.P10_Bn;
 }

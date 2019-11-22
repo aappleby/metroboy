@@ -40,6 +40,8 @@ struct Gameboy {
   Channel3   ch3;
   Channel4   ch4;
 
+  Sprites    spr;
+
   P21_VideoControl         p21;
   P22_PpuDecode            p22;
   P23_VideoRegs            p23;
@@ -47,10 +49,6 @@ struct Gameboy {
   P25_VramInterface        p25;
   P26_Background           p26;
   P27_WindowMapLookup      p27;
-  P28_OAM                  p28;
-  P29_SpriteControl        p29;
-  P30_SpriteStore          p30;
-  P31_SpriteXMatchers      p31;
   P32_BgPixelShifter       p32;
   P33_SpritePixelShifter   p33;
   P34_SpritePaletteShifter p34;
@@ -96,6 +94,11 @@ struct Gameboy {
     };
   };
 
+  /*p18.BARY*/ bool WAVE_DAC0;
+  /*p18.BYKA*/ bool WAVE_DAC1;
+  /*p18.BOPA*/ bool WAVE_DAC2;
+  /*p18.BELY*/ bool WAVE_DAC3;
+
   //----------
   // vram bus
 
@@ -105,11 +108,17 @@ struct Gameboy {
   //----------
   // oam bus
 
+  bool OAM_CLK;
+
   bool TS_OAM_A_D0,TS_OAM_A_D1,TS_OAM_A_D2,TS_OAM_A_D3,TS_OAM_A_D4,TS_OAM_A_D5,TS_OAM_A_D6,TS_OAM_A_D7;
   bool TS_OAM_B_D0,TS_OAM_B_D1,TS_OAM_B_D2,TS_OAM_B_D3,TS_OAM_B_D4,TS_OAM_B_D5,TS_OAM_B_D6,TS_OAM_B_D7;
 
   //----------
   // wave ram bus
+
+  bool WAVE_RAM_CTRL1;
+  bool WAVE_RAM_CTRL3;
+  bool WAVE_WRn;
 
   bool WAVE_D0;
   bool WAVE_D1;
@@ -119,6 +128,11 @@ struct Gameboy {
   bool WAVE_D5;
   bool WAVE_D6;
   bool WAVE_D7;
+
+  /*p18.BOLE*/ bool WAVE_A0;
+  /*p18.AGYL*/ bool WAVE_A1;
+  /*p18.AFUM*/ bool WAVE_A2;
+  /*p18.AXOL*/ bool WAVE_A3;
 };
 
 //-----------------------------------------------------------------------------

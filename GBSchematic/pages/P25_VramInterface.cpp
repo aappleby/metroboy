@@ -77,8 +77,9 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p25.RUVY*/ c.p25.CPU_VRAM_CLK2n = not(b.p25.CPU_VRAM_CLK2);
 
-  /*p25.ROPY*/ c.p25.ROPY    = not(b.p21.RENDERING);
-  /*p25.SERE*/ c.p25.SERE    = and(b.p25.CPU_VRAM_RD2,   b.p25.ROPY);
+  /*p25.SERE*/ c.p25.SERE = and(b.p25.CPU_VRAM_RD2,   b.p25.RENDERINGn);
+  /*p25.ROPY*/   c.p25.RENDERINGn = not(b.p21.RENDERING);
+
   /*p25.SAZO*/ c.p25.MD_OUTd = and(b.p25.CPU_VRAM_CLK2n, b.p25.SERE);
   /*p25.RYJE*/ c.p25.MD_INb  = not(b.p25.MD_OUTd);
   /*p25.REVO*/ c.p25.MD_OUTc = not(b.p25.MD_INb);
@@ -98,38 +99,32 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   c.chip.MD6_B = b.p25.MD_OUT;
   c.chip.MD7_B = b.p25.MD_OUT;
 
-  /*p25.RYLU*/ c.p25.RYLU      = nand(b.p25.CPU_VRAM_CLK2, b.p25.ROPY);
-  /*p25.SOHO*/ c.p25.SOHO      = and(b.p29.TACU, b.p29.TEXY);
-  /*p25.RAWA*/ c.p25.RAWA      = not(b.p25.SOHO);
-  /*p25.APAM*/ c.p25.APAM      = not(b.sys.VRAM_TO_OAMn);
-
-  /*p25.SUTU*/ c.p25.MCS       = nor(b.p27.LENA, b.sys.VRAM_TO_OAMn, b.p29.TEXY, b.p25.SERE);
-  /*p25.SOHY*/ c.p25.MWR       = nand(b.p25.CPU_VRAM_WR2, b.p25.SERE);
-  /*p25.RACU*/ c.p25.MOE       = and(b.p25.RYLU, b.p25.RAWA, b.p27.MYMA, b.p25.APAM);
 
 
-  /*p25.TODE*/ c.p25.MCS_An    = and(b.p25.MCS, b.p25.DBG_TUTOn);
-  /*p25.SEWO*/ c.p25.MCS_Dn    = or(b.p25.DBG_TUTO, b.p25.MCS);
 
-  /*p25.TAXY*/ c.p25.MWR_An    = and(b.p25.MWR, b.p25.DBG_TUTOn);
-  /*p25.SOFY*/ c.p25.MWR_Dn    = or(b.p25.DBG_TUTO, b.p25.MWR);
 
-  /*p25.SEMA*/ c.p25.MOE_An    = and(b.p25.MOE, b.p25.DBG_TUTOn);
-  /*p25.RUTE*/ c.p25.MOE_Dn    = or(b.p25.DBG_TUTO, b.p25.MOE); // schematic wrong, second input is RACU
+  /*p25.SOKY*/ c.chip.MCS_A = not(b.p25.MCS_An);
+  /*p25.SETY*/ c.chip.MCS_D = not(b.p25.MCS_Dn);
+  /*p25.TODE*/   c.p25.MCS_An = and(b.p25.MCS, b.p25.DBG_TUTOn);
+  /*p25.SEWO*/   c.p25.MCS_Dn = or(b.p25.MCS, b.p25.DBG_TUTO);
+  /*p25.SUTU*/     c.p25.MCS = nor(b.p27.LENA, b.sys.VRAM_TO_OAMn, b.spr.TEXY, b.p25.SERE);
 
-  /*p25.SOKY*/ c.p25.MCS_A     = not(b.p25.MCS_An);
-  /*p25.SETY*/ c.p25.MCS_D     = not(b.p25.MCS_Dn);
-  /*p25.SYSY*/ c.p25.MWR_A     = not(b.p25.MWR_An);
-  /*p25.RAGU*/ c.p25.MWR_D     = not(b.p25.MWR_Dn);
-  /*p25.REFO*/ c.p25.MOE_A     = not(b.p25.MOE_An);
-  /*p25.SAHA*/ c.p25.MOE_D     = not(b.p25.MOE_Dn);
+  /*p25.SYSY*/ c.chip.MWR_A = not(b.p25.MWR_An);
+  /*p25.RAGU*/ c.chip.MWR_D = not(b.p25.MWR_Dn);
+  /*p25.TAXY*/   c.p25.MWR_An = and(b.p25.MWR, b.p25.DBG_TUTOn);
+  /*p25.SOFY*/   c.p25.MWR_Dn = or(b.p25.MWR, b.p25.DBG_TUTO);
+  /*p25.SOHY*/     c.p25.MWR = nand(b.p25.CPU_VRAM_WR2, b.p25.SERE);
 
-  c.chip.MCS_A = b.p25.MCS_A;
-  c.chip.MCS_D = b.p25.MCS_D;
-  c.chip.MWR_A = b.p25.MWR_A;
-  c.chip.MWR_D = b.p25.MWR_D;
-  c.chip.MOE_A = b.p25.MOE_A;
-  c.chip.MOE_D = b.p25.MOE_D;
+  /*p25.REFO*/ c.chip.MOE_A = not(b.p25.MOE_An);
+  /*p25.SAHA*/ c.chip.MOE_D = not(b.p25.MOE_Dn);
+  /*p25.SEMA*/   c.p25.MOE_An    = and(b.p25.MOE, b.p25.DBG_TUTOn);
+  /*p25.RUTE*/   c.p25.MOE_Dn    = or(b.p25.MOE, b.p25.DBG_TUTO); // schematic wrong, second input is RACU
+  /*p25.RACU*/     c.p25.MOE = and(b.p25.RYLU, b.p25.RAWA, b.p27.MYMA, b.p25.VRAM_TO_OAM);
+  /*p25.RYLU*/       c.p25.RYLU = nand(b.p25.CPU_VRAM_CLK2, b.p25.RENDERINGn);
+  /*p25.RAWA*/       c.p25.RAWA = not(b.p25.SOHO);
+  /*p25.SOHO*/         c.p25.SOHO = and(b.spr.TACU, b.spr.TEXY);
+  /*p27.MYMA*/       c.p27.MYMA = not(b.p27.LONY);
+  /*p25.APAM*/       c.p25.VRAM_TO_OAM = not(b.sys.VRAM_TO_OAMn);
 
   //----------
 
@@ -150,7 +145,7 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p25.TUTO*/ c.p25.DBG_TUTO   = and(b.sys.MODE_DBG2, !b.p25.DBG_SOTO);
   /*p25.RACO*/ c.p25.DBG_TUTOn  = not(b.p25.DBG_TUTO);
 
-  /*p25.TUSO*/ c.p25.TUSO = nor(b.sys.MODE_DBG2, b.sys.CPUCLK_xxxxxFGH2);
+  /*p25.TUSO*/ c.p25.TUSO = nor(b.sys.MODE_DBG2, b.sys.CPU_CLK1n);
   /*p25.SOLE*/ c.p25.SOLE = not(b.p25.TUSO);
   /*p25.????*/ c.p25.P10_Bn = not(b.chip.P10_B);
 
@@ -264,7 +259,7 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  /*p25.TYVY*/ c.p25.MD_TO_Dn = nand(b.p25.SERE, b.p28.CPU_READ_MYSTERY);
+  /*p25.TYVY*/ c.p25.MD_TO_Dn = nand(b.p25.SERE, b.spr.CPU_READ_MYSTERY);
   /*p25.SEBY*/ c.p25.MD_TO_D = not(b.p25.MD_TO_Dn);
 
   /*p25.RERY*/ c.p25.RERY_00 = not(b.MD0);
@@ -287,28 +282,6 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  /*p25.XUCY*/ c.p25.XUCY = nand(b.p27.NETA, b.p27.PORE);
-  /*p25.XEZE*/ c.p25.WIN_TILE_READn = nand(b.p27.POTU, b.p27.PORE);
-  /*p25.WUKO*/ c.p25.WIN_TILE_READ = not(b.p25.WIN_TILE_READn);
-
   //----------
-
-
-  /*p25.XONU*/ if (b.p25.XUCY) c.MA00 = b.p27.MA00_2;
-  /*p25.WUDO*/ if (b.p25.XUCY) c.MA01 = b.p27.MA01_2;
-  /*p25.WAWE*/ if (b.p25.XUCY) c.MA02 = b.p27.MA02_2;
-  /*p25.WOLU*/ if (b.p25.XUCY) c.MA03 = b.p27.MA03_2;
-
-  //----------
-  /*p25.VUZA*/ c.p25.VUZA = nor(b.p23.BG_TILE_SEL, b.p32.PYJU);
-
-  /*p25.VAPY*/ if (b.p27.NETA) c.MA04 = b.p32.RAWU;
-  /*p25.SEZU*/ if (b.p27.NETA) c.MA05 = b.p32.POZO;
-  /*p25.VEJY*/ if (b.p27.NETA) c.MA06 = b.p32.PYZO;
-  /*p25.RUSA*/ if (b.p27.NETA) c.MA07 = b.p32.POXA;
-  /*p25.ROHA*/ if (b.p27.NETA) c.MA08 = b.p32.PULO;
-  /*p25.RESO*/ if (b.p27.NETA) c.MA09 = b.p32.POJU;
-  /*p25.SUVO*/ if (b.p27.NETA) c.MA10 = b.p32.POWY;
-  /*p25.TOBO*/ if (b.p27.NETA) c.MA11 = b.p32.PYJU;
-  /*p25.VUZA*/ if (b.p27.NETA) c.MA12 = b.p25.VUZA;
+  // window something address gen
 }

@@ -4,8 +4,9 @@ struct P25_VramInterface {
 
   /*p25.SYRO*/ bool ADDR_FE00_FFFF;
 
+  /*p25.XEZE*/ bool WIN_MAP_READn;
+  /*p25.WUKO*/ bool WIN_MAP_READ;
 
-  /*p25.WUKO*/ bool WIN_TILE_READ;
   /*p25.COTA*/ bool OAM_IN_CLKn;
 
   /*p25.MYFU*/ bool MA00n;
@@ -69,7 +70,7 @@ struct P25_VramInterface {
   /*p25.SAZO*/ bool MD_OUTd;
   /*p25.ROCY*/ bool MD_OUTe;
 
-  /*p25.ROPY*/ bool ROPY;
+  /*p25.ROPY*/ bool RENDERINGn;
   /*p25.SERE*/ bool SERE;
   /*p25.RUVY*/ bool CPU_VRAM_CLK2n;
   /*p25.SOHY*/ bool MWR;
@@ -77,7 +78,7 @@ struct P25_VramInterface {
   /*p25.RYLU*/ bool RYLU;
   /*p25.SOHO*/ bool SOHO;
   /*p25.RAWA*/ bool RAWA;
-  /*p25.APAM*/ bool APAM;
+  /*p25.APAM*/ bool VRAM_TO_OAM;
   /*p25.SUTU*/ bool MCS;
   /*p25.RACU*/ bool MOE;
   /*p25.RACO*/ bool DBG_TUTOn;
@@ -87,12 +88,6 @@ struct P25_VramInterface {
   /*p25.SEMA*/ bool MOE_An;
   /*p25.TAXY*/ bool MWR_An;
   /*p25.SOFY*/ bool MWR_Dn;
-  /*p25.SAHA*/ bool MOE_D;
-  /*p25.SETY*/ bool MCS_D;
-  /*p25.SOKY*/ bool MCS_A;
-  /*p25.REFO*/ bool MOE_A;
-  /*p25.SYSY*/ bool MWR_A;
-  /*p25.RAGU*/ bool MWR_D;
 
   // something debug
   /*p25.TUSO*/ bool TUSO;
@@ -162,9 +157,8 @@ struct P25_VramInterface {
   /*p25.RABO*/ bool RABO_06;
   /*p25.SAME*/ bool SAME_07;
 
-  /*p25.XUCY*/ bool XUCY;
-  /*p25.XEZE*/ bool WIN_TILE_READn;
-  /*p25.VUZA*/ bool VUZA;
+  /*p25.XUCY*/ bool WIN_TILE_READb;
+  /*p25.VUZA*/ bool WIN_TILE_BANK;
 };
 
 

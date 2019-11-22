@@ -8,10 +8,10 @@ struct P27_WindowMapLookup {
   /*p27.LYRY*/ bool LYRY;
   /*p27.SYLO*/ bool SYLO;
   /*p27.ROXY*/ bool ROXY;
-  /*p27.POVA*/ bool POVA;
-  /*p27.NETA*/ bool NETA;
+  /*p27.POVA*/ bool FINE_MATCH_TRIG;
+  /*p27.NETA*/ bool WIN_TILE_READa;
   /*p27.POTU*/ bool POTU;
-  /*p27.PORE*/ bool PORE;
+  /*p27.PORE*/ bool WIN_TILE_AB;
   /*p27.VYPO*/ bool P10_Bn;
 
   /*p27.MOFU*/ bool MOFU;
@@ -51,28 +51,22 @@ struct P27_WindowMapLookup {
   /*p27.NOGY*/ bool WIN_MATCHn;
   /*p27.NUKO*/ bool WIN_MATCH;
 
-  /*p27.ROZE*/ bool ROZE;
+  /*p27.ROZE*/ bool FINE_COUNT_STOPn;
   /*p27.PAHA*/ bool PAHA;
 
-  /*p27.SUHA*/ bool FINE_X0;
-  /*p27.SYBY*/ bool FINE_X1;
-  /*p27.SOZU*/ bool FINE_X2;
-
-  /*p27.PECU*/ bool PECU;
-  /*p27.RONE*/ bool RONE;
-  /*p27.POHU*/ bool POHU;
 
 
 
 
-  /*p27.PANY*/ bool PANY;
-  /*p27.SEKO*/ bool SEKO;
+
+  /*p27.PANY*/ bool WIN_MATCH_ONSCREEN;
+  /*p27.SEKO*/ bool WIN_TRIGGER;
   /*p27.ROMO*/ bool ROMO;
   /*p27.SUVU*/ bool SUVU;
   /*p27.TAVE*/ bool TAVE;
-  /*p27.XAHY*/ bool XAHY;
-  /*p27.XOFO*/ bool XOFO;
-  /*p27.XACO*/ bool RST_XACO;
+  /*p27.XAHY*/ bool NEW_LINEn;
+  /*p27.XOFO*/ bool WIN_TILE_X_RST;
+  /*p27.XACO*/ bool WIN_TILE_X_RSTn;
   /*p27.PYNU*/ bool PYNU;
   /*p27.NUNY*/ bool NUNY;
   /*p27.NOCU*/ bool NOCU;
@@ -81,22 +75,30 @@ struct P27_WindowMapLookup {
   /*p27.TUXY*/ bool TUXY;
   /*p27.SUZU*/ bool SUZU;
   /*p27.TEVO*/ bool TEVO;
-  /*p27.PASO*/ bool PASO;
-  /*p27.VETU*/ bool VETU;
+  /*p27.PASO*/ bool FINE_RST;
+  /*p27.VETU*/ bool WIN_TILE_X_CLK;
   /*p27.ROCO*/ bool ROCO;
   /*p27.NYFO*/ bool NYFO;
-  /*p27.WAZY*/ bool WAZY;
+  /*p27.WAZY*/ bool WIN_TILE_ABn;
   /*p27.SYNY*/ bool IN_FRAME_Yn;
   /*p27.NOPA*/ bool NOPA;
   /*p27.PYCO*/ bool PYCO;
   /*p27.NUNU*/ bool NUNU;
-  /*p27.RYKU*/ bool RYKU;
-  /*p27.ROGA*/ bool ROGA;
-  /*p27.RUBU*/ bool RUBU;
-  /*p27.NYZE*/ bool NYZE;
-  /*p27.PUXA*/ bool PUXA;
-  /*p27.RYFA*/ bool RYFA;
-  /*p27.RENE*/ bool RENE;
+
+  /*p27.PECU*/ bool FINE_CLK;
+  /*p27.RYKU*/ bool FINE_CNT0;
+  /*p27.ROGA*/ bool FINE_CNT1;
+  /*p27.RUBU*/ bool FINE_CNT2;
+  /*p27.SUHA*/ bool FINE_MATCH0;
+  /*p27.SYBY*/ bool FINE_MATCH1;
+  /*p27.SOZU*/ bool FINE_MATCH2;
+  /*p27.RONE*/ bool FINE_MATCH;
+  /*p27.POHU*/ bool FINE_MATCHn;
+
+  /*p27.NYZE*/ bool FINE_MATCH_SYNC2;
+  /*p27.PUXA*/ bool FINE_MATCH_SYNC1;
+  /*p27.RYFA*/ bool WIN_MATCH_ONSCREEN_SYNC1;
+  /*p27.RENE*/ bool WIN_MATCH_ONSCREEN_SYNC2;
   /*p27.SOVY*/ bool SOVY;
   /*p27.MOCE*/ bool MOCE;
   /*p27.LEBO*/ bool LEBO;
@@ -115,22 +117,22 @@ struct P27_WindowMapLookup {
   /*p27.NYVA*/ bool NYVA;
   /*p27.LOVY*/ bool LOVY;
 
-  /*p27.WYKA*/ bool MA00;
-  /*p27.WODY*/ bool MA01;
-  /*p27.WOBO*/ bool MA02;
-  /*p27.WYKO*/ bool MA03;
-  /*p27.XOLO*/ bool MA04;
+  /*p27.WYKA*/ bool WIN_MAP_X0;
+  /*p27.WODY*/ bool WIN_MAP_X1;
+  /*p27.WOBO*/ bool WIN_MAP_X2;
+  /*p27.WYKO*/ bool WIN_MAP_X3;
+  /*p27.XOLO*/ bool WIN_MAP_X4;
 
-  /*p27.XUHA*/ bool MA00_2; // probably wrong
-  /*p27.VYNO*/ bool MA01_2;
-  /*p27.VUJO*/ bool MA02_2;
-  /*p27.VYMU*/ bool MA03_2;
+  /*p27.XUHA*/ bool XUHA;
+  /*p27.VYNO*/ bool WIN_TILE_Y0;
+  /*p27.VUJO*/ bool WIN_TILE_Y1;
+  /*p27.VYMU*/ bool WIN_TILE_Y2;
 
-  /*p27.TUFU*/ bool MA05;
-  /*p27.TAXA*/ bool MA06;
-  /*p27.TOZO*/ bool MA07;
-  /*p27.TATE*/ bool MA08;
-  /*p27.TEKE*/ bool MA09;
+  /*p27.TUFU*/ bool WIN_MAP_Y0;
+  /*p27.TAXA*/ bool WIN_MAP_Y1;
+  /*p27.TOZO*/ bool WIN_MAP_Y2;
+  /*p27.TATE*/ bool WIN_MAP_Y3;
+  /*p27.TEKE*/ bool WIN_MAP_Y4;
 
   /*p27.VEVY*/ bool MA10;
   /*p27.VEZA*/ bool MA11;

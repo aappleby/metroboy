@@ -80,7 +80,7 @@ struct CpuSignals {
 
   bool FROM_CPU6;  // PORTD_00: -> P07.LEXY, doesn't do anything
   
-  bool TO_CPU;     // PORTD_01: <- P01.BOWA abcde___
+  bool CPU_CLK1;   // PORTD_01: <- P01.BOWA abcde___
   bool BEDO;       // PORTD_02: <- P01.BEDO _____fgh
 
   bool BEKO;       // PORTD_03: <- P01.BEKO ____efgh connection not indicated on P01

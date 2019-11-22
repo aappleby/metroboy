@@ -118,6 +118,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p09.COTO*/ if (pb.FF26_RDna) c.D0 = not(b.ch1.CH1_ACTIVEn);
   /*p09.EFUS*/ if (pb.FF26_RDnb) c.D1 = not(b.ch2.CH2_ACTIVEn);
   /*p09.FATE*/ if (pb.FF26_RDnd) c.D2 = not(b.ch3.CH3_ACTIVEn);
+  /*p18.ERED*/   c.ch3.CH3_ACTIVEn = not(b.ch3.CH3_ACTIVE);
   /*p09.KOGE*/ if (pb.FF26_RDnc) c.D3 = not(b.ch4.CH4_ACTIVEn);
   /*p09.HOPE*/ if (pb.NR52_RDn1) c.D7 = pb.ALL_SOUND_ON;
 

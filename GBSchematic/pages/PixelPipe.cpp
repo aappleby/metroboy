@@ -6,6 +6,15 @@
 
 void P32_BgPixelShifter_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
+  /*p32.RAWU*/ c.p32.VRAM_D0 = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.VRAM_D0, b.MD0);
+  /*p32.POZO*/ c.p32.VRAM_D1 = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.VRAM_D1, b.MD1);
+  /*p32.PYZO*/ c.p32.VRAM_D2 = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.VRAM_D2, b.MD2);
+  /*p32.POXA*/ c.p32.VRAM_D3 = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.VRAM_D3, b.MD3);
+  /*p32.PULO*/ c.p32.VRAM_D4 = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.VRAM_D4, b.MD4);
+  /*p32.POJU*/ c.p32.VRAM_D5 = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.VRAM_D5, b.MD5);
+  /*p32.POWY*/ c.p32.VRAM_D6 = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.VRAM_D6, b.MD6);
+  /*p32.PYJU*/ c.p32.VRAM_D7 = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.VRAM_D7, b.MD7);
+
   //----------
   // BGP
 
@@ -87,21 +96,54 @@ void P32_BgPixelShifter_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // P32
 
-  /*p32.LESO*/ c.p32.LESO = not(b.p27.MOFU);
-  /*p32.AJAR*/ c.p32.AJAR = not(b.p32.LESO);
+  /*p27.MYSO*/ c.p27.MYSO = nor(b.p24.RENDERINGn, b.p27.LAXE, b.p27.LYZU);
+  /*p27.LAXE*/   c.p27.LAXE = not(b.p27.LAXU);
+
   /*p32.LABU*/ c.p32.LABU = not(b.p32.AJAR);
-
-  /*p32.RAWU*/ c.p32.RAWU = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.RAWU, b.MD0);
-  /*p32.POZO*/ c.p32.POZO = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.POZO, b.MD1);
-  /*p32.PYZO*/ c.p32.PYZO = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.PYZO, b.MD2);
-  /*p32.POXA*/ c.p32.POXA = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.POXA, b.MD3);
-  /*p32.PULO*/ c.p32.PULO = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.PULO, b.MD4);
-  /*p32.POJU*/ c.p32.POJU = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.POJU, b.MD5);
-  /*p32.POWY*/ c.p32.POWY = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.POWY, b.MD6);
-  /*p32.PYJU*/ c.p32.PYJU = tock_pos(a.p32.LABU, b.p32.LABU, b.p27.P10_Bn, b.p32.PYJU, b.MD7);
-
-  /*p32.METE*/ c.p32.METE = not(b.p27.NYDY);
+  /*p32.AJAR*/   c.p32.AJAR = not(b.p32.LESO);
+  /*p32.LESO*/     c.p32.LESO = not(b.p27.MOFU);
+  /*p27.MOFU*/       c.p27.MOFU = and(b.p27.MYSO, b.p27.NAKO);
   /*p32.LOMA*/ c.p32.LOMA = not(b.p32.METE);
+  /*p32.METE*/   c.p32.METE = not(b.p27.NYDY);
+  /*p27.NYDY*/     c.p27.NYDY = nand(b.p27.MYSO, b.p27.MESU, b.p27.NOFU);
+  /*p32.LUXA*/ c.p32.LUXA = not(b.p27.NYXU);
+  /*p32.LOZE*/ c.p32.LOZE = not(b.p27.NYXU);
+
+  /*p32.TUXE*/ c.p32.BG_PIPE_B_SET0 = nand(b.p32.LUXA, !b.p32.VRAM_D0);
+  /*p32.SOLY*/ c.p32.BG_PIPE_B_SET1 = nand(b.p32.LUXA, !b.p32.VRAM_D1);
+  /*p32.RUCE*/ c.p32.BG_PIPE_B_SET2 = nand(b.p32.LUXA, !b.p32.VRAM_D2);
+  /*p32.RYJA*/ c.p32.BG_PIPE_B_SET3 = nand(b.p32.LUXA, !b.p32.VRAM_D3);
+  /*p32.RUTO*/ c.p32.BG_PIPE_B_SET4 = nand(b.p32.LUXA, !b.p32.VRAM_D4);
+  /*p32.RAJA*/ c.p32.BG_PIPE_B_SET5 = nand(b.p32.LUXA, !b.p32.VRAM_D5);
+  /*p32.RAJO*/ c.p32.BG_PIPE_B_SET6 = nand(b.p32.LUXA, !b.p32.VRAM_D6);
+  /*p32.RAGA*/ c.p32.BG_PIPE_B_SET7 = nand(b.p32.LUXA, !b.p32.VRAM_D7);
+
+  /*p32.TOSA*/ c.p32.BG_PIX_B0 = not(!b.p32.VRAM_D0);
+  /*p32.RUCO*/ c.p32.BG_PIX_B1 = not(!b.p32.VRAM_D1);
+  /*p32.TYCE*/ c.p32.BG_PIX_B2 = not(!b.p32.VRAM_D2);
+  /*p32.REVY*/ c.p32.BG_PIX_B3 = not(!b.p32.VRAM_D3);
+  /*p32.RYGA*/ c.p32.BG_PIX_B4 = not(!b.p32.VRAM_D4);
+  /*p32.RYLE*/ c.p32.BG_PIX_B5 = not(!b.p32.VRAM_D5);
+  /*p32.RAPU*/ c.p32.BG_PIX_B6 = not(!b.p32.VRAM_D6);
+  /*p32.SOJA*/ c.p32.BG_PIX_B7 = not(!b.p32.VRAM_D7);
+
+  /*p32.SEJA*/ c.p32.BG_PIPE_B_RST0 = nand(b.p32.LUXA, b.p32.BG_PIX_B0);
+  /*p32.SENO*/ c.p32.BG_PIPE_B_RST1 = nand(b.p32.LUXA, b.p32.BG_PIX_B1);
+  /*p32.SURE*/ c.p32.BG_PIPE_B_RST2 = nand(b.p32.LUXA, b.p32.BG_PIX_B2);
+  /*p32.SEBO*/ c.p32.BG_PIPE_B_RST3 = nand(b.p32.LUXA, b.p32.BG_PIX_B3);
+  /*p32.SUCA*/ c.p32.BG_PIPE_B_RST4 = nand(b.p32.LUXA, b.p32.BG_PIX_B4);
+  /*p32.SYWE*/ c.p32.BG_PIPE_B_RST5 = nand(b.p32.LUXA, b.p32.BG_PIX_B5);
+  /*p32.SUPU*/ c.p32.BG_PIPE_B_RST6 = nand(b.p32.LUXA, b.p32.BG_PIX_B6);
+  /*p32.RYJY*/ c.p32.BG_PIPE_B_RST7 = nand(b.p32.LUXA, b.p32.BG_PIX_B7);
+
+  /*p32.TOMY*/ c.p32.BG_PIPE_B0 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_B_SET0, b.p32.BG_PIPE_B_RST0, b.p32.BG_PIPE_B0, b.chip.P10_B);
+  /*p32.TACA*/ c.p32.BG_PIPE_B1 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_B_SET1, b.p32.BG_PIPE_B_RST1, b.p32.BG_PIPE_B1, b.p32.BG_PIPE_B0);
+  /*p32.SADY*/ c.p32.BG_PIPE_B2 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_B_SET2, b.p32.BG_PIPE_B_RST2, b.p32.BG_PIPE_B2, b.p32.BG_PIPE_B1);
+  /*p32.RYSA*/ c.p32.BG_PIPE_B3 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_B_SET3, b.p32.BG_PIPE_B_RST3, b.p32.BG_PIPE_B3, b.p32.BG_PIPE_B2);
+  /*p32.SOBO*/ c.p32.BG_PIPE_B4 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_B_SET4, b.p32.BG_PIPE_B_RST4, b.p32.BG_PIPE_B4, b.p32.BG_PIPE_B3);
+  /*p32.SETU*/ c.p32.BG_PIPE_B5 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_B_SET5, b.p32.BG_PIPE_B_RST5, b.p32.BG_PIPE_B5, b.p32.BG_PIPE_B4);
+  /*p32.RALU*/ c.p32.BG_PIPE_B6 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_B_SET6, b.p32.BG_PIPE_B_RST6, b.p32.BG_PIPE_B6, b.p32.BG_PIPE_B5);
+  /*p32.SOHU*/ c.p32.BG_PIPE_B7 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_B_SET7, b.p32.BG_PIPE_B_RST7, b.p32.BG_PIPE_B7, b.p32.BG_PIPE_B6);
 
   /*p32.LEGU*/ c.p32.LEGU = latch_pos(b.p32.LOMA, b.p32.LEGU, b.MD0);
   /*p32.NUDU*/ c.p32.NUDU = latch_pos(b.p32.LOMA, b.p32.NUDU, b.MD1);
@@ -112,14 +154,14 @@ void P32_BgPixelShifter_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p32.NASA*/ c.p32.NASA = latch_pos(b.p32.LOMA, b.p32.NASA, b.MD6);
   /*p32.NEFO*/ c.p32.NEFO = latch_pos(b.p32.LOMA, b.p32.NEFO, b.MD7);
 
-  /*p32.TOSA*/ c.p32.TOSA = not(!b.p32.RAWU);
-  /*p32.RUCO*/ c.p32.RUCO = not(!b.p32.POZO);
-  /*p32.TYCE*/ c.p32.TYCE = not(!b.p32.PYZO);
-  /*p32.REVY*/ c.p32.REVY = not(!b.p32.POXA);
-  /*p32.RYGA*/ c.p32.RYGA = not(!b.p32.PULO);
-  /*p32.RYLE*/ c.p32.RYLE = not(!b.p32.POJU);
-  /*p32.RAPU*/ c.p32.RAPU = not(!b.p32.POWY);
-  /*p32.SOJA*/ c.p32.SOJA = not(!b.p32.PYJU);
+  /*p32.LAKY*/ c.p32.BG_PIPE_A_SET0 = nand(b.p32.LOZE, b.p32.LEGU);
+  /*p32.NYXO*/ c.p32.BG_PIPE_A_SET1 = nand(b.p32.LOZE, b.p32.NUDU);
+  /*p32.LOTO*/ c.p32.BG_PIPE_A_SET2 = nand(b.p32.LOZE, b.p32.MUKU);
+  /*p32.LYDU*/ c.p32.BG_PIPE_A_SET3 = nand(b.p32.LOZE, b.p32.LUZO);
+  /*p32.MYVY*/ c.p32.BG_PIPE_A_SET4 = nand(b.p32.LOZE, b.p32.MEGU);
+  /*p32.LODO*/ c.p32.BG_PIPE_A_SET5 = nand(b.p32.LOZE, b.p32.MYJY);
+  /*p32.NUTE*/ c.p32.BG_PIPE_A_SET6 = nand(b.p32.LOZE, b.p32.NASA);
+  /*p32.NAJA*/ c.p32.BG_PIPE_A_SET7 = nand(b.p32.LOZE, b.p32.NEFO);
 
   /*p32.LUHE*/ c.p32.LUHE = not(b.p32.LEGU);
   /*p32.NOLY*/ c.p32.NOLY = not(b.p32.NUDU);
@@ -130,86 +172,50 @@ void P32_BgPixelShifter_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p32.NEZE*/ c.p32.NEZE = not(b.p32.NASA);
   /*p32.NOBO*/ c.p32.NOBO = not(b.p32.NEFO);
 
-  /*p32.LUXA*/ c.p32.LUXA = not(b.p27.NYXU);
-  /*p32.SEJA*/ c.p32.SEJA = nand(b.p32.TOSA, b.p32.LUXA);
-  /*p32.SENO*/ c.p32.SENO = nand(b.p32.RUCO, b.p32.LUXA);
-  /*p32.SURE*/ c.p32.SURE = nand(b.p32.TYCE, b.p32.LUXA);
-  /*p32.SEBO*/ c.p32.SEBO = nand(b.p32.REVY, b.p32.LUXA);
-  /*p32.SUCA*/ c.p32.SUCA = nand(b.p32.RYGA, b.p32.LUXA);
-  /*p32.SYWE*/ c.p32.SYWE = nand(b.p32.RYLE, b.p32.LUXA);
-  /*p32.SUPU*/ c.p32.SUPU = nand(b.p32.RAPU, b.p32.LUXA);
-  /*p32.RYJY*/ c.p32.RYJY = nand(b.p32.SOJA, b.p32.LUXA);
-  /*p32.TUXE*/ c.p32.TUXE = nand(b.p32.LUXA, !b.p32.RAWU);
-  /*p32.SOLY*/ c.p32.SOLY = nand(b.p32.LUXA, !b.p32.POZO);
-  /*p32.RUCE*/ c.p32.RUCE = nand(b.p32.LUXA, !b.p32.PYZO);
-  /*p32.RYJA*/ c.p32.RYJA = nand(b.p32.LUXA, !b.p32.POXA);
-  /*p32.RUTO*/ c.p32.RUTO = nand(b.p32.LUXA, !b.p32.PULO);
-  /*p32.RAJA*/ c.p32.RAJA = nand(b.p32.LUXA, !b.p32.POJU);
-  /*p32.RAJO*/ c.p32.RAJO = nand(b.p32.LUXA, !b.p32.POWY);
-  /*p32.RAGA*/ c.p32.RAGA = nand(b.p32.LUXA, !b.p32.PYJU);
+  /*p32.LOTY*/ c.p32.BG_PIPE_A_RST0 = nand(b.p32.LOZE, b.p32.LUHE);
+  /*p32.NEXA*/ c.p32.BG_PIPE_A_RST1 = nand(b.p32.LOZE, b.p32.NOLY);
+  /*p32.LUTU*/ c.p32.BG_PIPE_A_RST2 = nand(b.p32.LOZE, b.p32.LEKE);
+  /*p32.LUJA*/ c.p32.BG_PIPE_A_RST3 = nand(b.p32.LOZE, b.p32.LOMY);
+  /*p32.MOSY*/ c.p32.BG_PIPE_A_RST4 = nand(b.p32.LOZE, b.p32.LALA);
+  /*p32.LERU*/ c.p32.BG_PIPE_A_RST5 = nand(b.p32.LOZE, b.p32.LOXA);
+  /*p32.NYHA*/ c.p32.BG_PIPE_A_RST6 = nand(b.p32.LOZE, b.p32.NEZE);
+  /*p32.NADY*/ c.p32.BG_PIPE_A_RST7 = nand(b.p32.LOZE, b.p32.NOBO);
 
-  /*p32.LOZE*/ c.p32.LOZE = not(b.p27.NYXU);
-  /*p32.LOTY*/ c.p32.LOTY = nand(b.p32.LUHE, b.p32.LOZE);
-  /*p32.NEXA*/ c.p32.NEXA = nand(b.p32.NOLY, b.p32.LOZE);
-  /*p32.LUTU*/ c.p32.LUTU = nand(b.p32.LEKE, b.p32.LOZE);
-  /*p32.LUJA*/ c.p32.LUJA = nand(b.p32.LOMY, b.p32.LOZE);
-  /*p32.MOSY*/ c.p32.MOSY = nand(b.p32.LALA, b.p32.LOZE);
-  /*p32.LERU*/ c.p32.LERU = nand(b.p32.LOXA, b.p32.LOZE);
-  /*p32.NYHA*/ c.p32.NYHA = nand(b.p32.NEZE, b.p32.LOZE);
-  /*p32.NADY*/ c.p32.NADY = nand(b.p32.NOBO, b.p32.LOZE);
-  /*p32.LAKY*/ c.p32.LAKY = nand(b.p32.LOZE, b.p32.LEGU);
-  /*p32.NYXO*/ c.p32.NYXO = nand(b.p32.LOZE, b.p32.NUDU);
-  /*p32.LOTO*/ c.p32.LOTO = nand(b.p32.LOZE, b.p32.MUKU);
-  /*p32.LYDU*/ c.p32.LYDU = nand(b.p32.LOZE, b.p32.LUZO);
-  /*p32.MYVY*/ c.p32.MYVY = nand(b.p32.LOZE, b.p32.MEGU);
-  /*p32.LODO*/ c.p32.LODO = nand(b.p32.LOZE, b.p32.MYJY);
-  /*p32.NUTE*/ c.p32.NUTE = nand(b.p32.LOZE, b.p32.NASA);
-  /*p32.NAJA*/ c.p32.NAJA = nand(b.p32.LOZE, b.p32.NEFO);
-
-  /*p32.TOMY*/ c.p32.TOMY = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.TUXE, b.p32.SEJA, b.p32.TOMY, b.chip.P10_B);
-  /*p32.TACA*/ c.p32.TACA = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.SOLY, b.p32.SENO, b.p32.TACA, b.p32.TOMY);
-  /*p32.SADY*/ c.p32.SADY = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.RUCE, b.p32.SURE, b.p32.SADY, b.p32.TACA);
-  /*p32.RYSA*/ c.p32.RYSA = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.RYJA, b.p32.SEBO, b.p32.RYSA, b.p32.SADY);
-  /*p32.SOBO*/ c.p32.SOBO = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.RUTO, b.p32.SUCA, b.p32.SOBO, b.p32.RYSA);
-  /*p32.SETU*/ c.p32.SETU = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.RAJA, b.p32.SYWE, b.p32.SETU, b.p32.SOBO);
-  /*p32.RALU*/ c.p32.RALU = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.RAJO, b.p32.SUPU, b.p32.RALU, b.p32.SETU);
-  /*p32.SOHU*/ c.p32.BG_PIX_B_7 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.RAGA, b.p32.RYJY, b.p32.BG_PIX_B_7, b.p32.RALU);
-
-  /*p32.MYDE*/ c.p32.MYDE = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.LAKY, b.p32.LOTY, b.p32.MYDE, b.chip.P10_B);
-  /*p32.NOZO*/ c.p32.NOZO = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.NYXO, b.p32.NEXA, b.p32.NOZO, b.p32.MYDE);
-  /*p32.MOJU*/ c.p32.MOJU = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.LOTO, b.p32.LUTU, b.p32.MOJU, b.p32.NOZO);
-  /*p32.MACU*/ c.p32.MACU = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.LYDU, b.p32.LUJA, b.p32.MACU, b.p32.MOJU);
-  /*p32.NEPO*/ c.p32.NEPO = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.MYVY, b.p32.MOSY, b.p32.NEPO, b.p32.MACU);
-  /*p32.MODU*/ c.p32.MODU = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.LODO, b.p32.LERU, b.p32.MODU, b.p32.NEPO);
-  /*p32.NEDA*/ c.p32.NEDA = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.NUTE, b.p32.NYHA, b.p32.NEDA, b.p32.MODU);
-  /*p32.PYBO*/ c.p32.BG_PIX_A_7 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.NAJA, b.p32.NADY, b.p32.BG_PIX_A_7, b.p32.NEDA);
+  /*p32.MYDE*/ c.p32.BG_PIPE_A0 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_A_SET0, b.p32.BG_PIPE_A_RST0, b.p32.BG_PIPE_A0, b.chip.P10_B);
+  /*p32.NOZO*/ c.p32.BG_PIPE_A1 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_A_SET1, b.p32.BG_PIPE_A_RST1, b.p32.BG_PIPE_A1, b.p32.BG_PIPE_A0);
+  /*p32.MOJU*/ c.p32.BG_PIPE_A2 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_A_SET2, b.p32.BG_PIPE_A_RST2, b.p32.BG_PIPE_A2, b.p32.BG_PIPE_A1);
+  /*p32.MACU*/ c.p32.BG_PIPE_A3 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_A_SET3, b.p32.BG_PIPE_A_RST3, b.p32.BG_PIPE_A3, b.p32.BG_PIPE_A2);
+  /*p32.NEPO*/ c.p32.BG_PIPE_A4 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_A_SET4, b.p32.BG_PIPE_A_RST4, b.p32.BG_PIPE_A4, b.p32.BG_PIPE_A3);
+  /*p32.MODU*/ c.p32.BG_PIPE_A5 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_A_SET5, b.p32.BG_PIPE_A_RST5, b.p32.BG_PIPE_A5, b.p32.BG_PIPE_A4);
+  /*p32.NEDA*/ c.p32.BG_PIPE_A6 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_A_SET6, b.p32.BG_PIPE_A_RST6, b.p32.BG_PIPE_A6, b.p32.BG_PIPE_A5);
+  /*p32.PYBO*/ c.p32.BG_PIPE_A7 = srtock_pos(a.p24.CLKPIPE, b.p24.CLKPIPE, b.p32.BG_PIPE_A_SET7, b.p32.BG_PIPE_A_RST7, b.p32.BG_PIPE_A7, b.p32.BG_PIPE_A6);
 
   //----------
   // Sprite x flip
 
-  /*p29.XONO*/ c.p29.FLIP_X = and(!b.p31.OAM_A_D5, b.p29.TEXY);
-  /*p33.PUTE*/ c.p33.SPR_PIX_FLIP0 = mux2(b.MD7, b.MD0, b.p29.FLIP_X);
-  /*p33.PELO*/ c.p33.SPR_PIX_FLIP1 = mux2(b.MD6, b.MD1, b.p29.FLIP_X);
-  /*p33.PONO*/ c.p33.SPR_PIX_FLIP2 = mux2(b.MD5, b.MD2, b.p29.FLIP_X);
-  /*p33.POBE*/ c.p33.SPR_PIX_FLIP3 = mux2(b.MD4, b.MD3, b.p29.FLIP_X);
-  /*p33.PACY*/ c.p33.SPR_PIX_FLIP4 = mux2(b.MD3, b.MD4, b.p29.FLIP_X);
-  /*p33.PUGU*/ c.p33.SPR_PIX_FLIP5 = mux2(b.MD2, b.MD5, b.p29.FLIP_X);
-  /*p33.PAWE*/ c.p33.SPR_PIX_FLIP6 = mux2(b.MD1, b.MD6, b.p29.FLIP_X);
-  /*p33.PULY*/ c.p33.SPR_PIX_FLIP7 = mux2(b.MD0, b.MD7, b.p29.FLIP_X);
+  /*p29.XONO*/ c.spr.FLIP_X = and(!b.spr.OAM_A_D5, b.spr.TEXY);
+  /*p33.PUTE*/ c.p33.SPR_PIX_FLIP0 = mux2(b.MD7, b.MD0, b.spr.FLIP_X);
+  /*p33.PELO*/ c.p33.SPR_PIX_FLIP1 = mux2(b.MD6, b.MD1, b.spr.FLIP_X);
+  /*p33.PONO*/ c.p33.SPR_PIX_FLIP2 = mux2(b.MD5, b.MD2, b.spr.FLIP_X);
+  /*p33.POBE*/ c.p33.SPR_PIX_FLIP3 = mux2(b.MD4, b.MD3, b.spr.FLIP_X);
+  /*p33.PACY*/ c.p33.SPR_PIX_FLIP4 = mux2(b.MD3, b.MD4, b.spr.FLIP_X);
+  /*p33.PUGU*/ c.p33.SPR_PIX_FLIP5 = mux2(b.MD2, b.MD5, b.spr.FLIP_X);
+  /*p33.PAWE*/ c.p33.SPR_PIX_FLIP6 = mux2(b.MD1, b.MD6, b.spr.FLIP_X);
+  /*p33.PULY*/ c.p33.SPR_PIX_FLIP7 = mux2(b.MD0, b.MD7, b.spr.FLIP_X);
 
   //----------
   // Sprite pipe B
 
   // Sprite latch might be wrong
 
-  /*p33.REWO*/ c.p33.SPR_PIX_B0     = latch_pos(b.p29.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B0, b.p33.SPR_PIX_FLIP0);
-  /*p33.PEBA*/ c.p33.SPR_PIX_B1     = latch_pos(b.p29.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B1, b.p33.SPR_PIX_FLIP1);
-  /*p33.MOFO*/ c.p33.SPR_PIX_B2     = latch_pos(b.p29.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B2, b.p33.SPR_PIX_FLIP2);
-  /*p33.PUDU*/ c.p33.SPR_PIX_B3     = latch_pos(b.p29.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B3, b.p33.SPR_PIX_FLIP3);
-  /*p33.SAJA*/ c.p33.SPR_PIX_B4     = latch_pos(b.p29.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B4, b.p33.SPR_PIX_FLIP4);
-  /*p33.SUNY*/ c.p33.SPR_PIX_B5     = latch_pos(b.p29.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B5, b.p33.SPR_PIX_FLIP5);
-  /*p33.SEMO*/ c.p33.SPR_PIX_B6     = latch_pos(b.p29.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B6, b.p33.SPR_PIX_FLIP6);
-  /*p33.SEGA*/ c.p33.SPR_PIX_B7     = latch_pos(b.p29.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B7, b.p33.SPR_PIX_FLIP7);
+  /*p33.REWO*/ c.p33.SPR_PIX_B0     = latch_pos(b.spr.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B0, b.p33.SPR_PIX_FLIP0);
+  /*p33.PEBA*/ c.p33.SPR_PIX_B1     = latch_pos(b.spr.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B1, b.p33.SPR_PIX_FLIP1);
+  /*p33.MOFO*/ c.p33.SPR_PIX_B2     = latch_pos(b.spr.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B2, b.p33.SPR_PIX_FLIP2);
+  /*p33.PUDU*/ c.p33.SPR_PIX_B3     = latch_pos(b.spr.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B3, b.p33.SPR_PIX_FLIP3);
+  /*p33.SAJA*/ c.p33.SPR_PIX_B4     = latch_pos(b.spr.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B4, b.p33.SPR_PIX_FLIP4);
+  /*p33.SUNY*/ c.p33.SPR_PIX_B5     = latch_pos(b.spr.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B5, b.p33.SPR_PIX_FLIP5);
+  /*p33.SEMO*/ c.p33.SPR_PIX_B6     = latch_pos(b.spr.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B6, b.p33.SPR_PIX_FLIP6);
+  /*p33.SEGA*/ c.p33.SPR_PIX_B7     = latch_pos(b.spr.SPRITE_PIX_LATCH_B, b.p33.SPR_PIX_B7, b.p33.SPR_PIX_FLIP7);
 
   /*p33.RATA*/ c.p33.SPR_PIX_B0n    = not(b.p33.SPR_PIX_B0);
   /*p33.NUCA*/ c.p33.SPR_PIX_B1n    = not(b.p33.SPR_PIX_B1);
@@ -252,14 +258,14 @@ void P32_BgPixelShifter_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // Sprite latch might be wrong
 
-  /*p33.PEFO*/ c.p33.SPR_PIX_A0 = latch_pos(b.p29.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A0, b.p33.SPR_PIX_FLIP0);
-  /*p33.ROKA*/ c.p33.SPR_PIX_A1 = latch_pos(b.p29.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A1, b.p33.SPR_PIX_FLIP1);
-  /*p33.MYTU*/ c.p33.SPR_PIX_A2 = latch_pos(b.p29.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A2, b.p33.SPR_PIX_FLIP2);
-  /*p33.RAMU*/ c.p33.SPR_PIX_A3 = latch_pos(b.p29.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A3, b.p33.SPR_PIX_FLIP3);
-  /*p33.SELE*/ c.p33.SPR_PIX_A4 = latch_pos(b.p29.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A4, b.p33.SPR_PIX_FLIP4);
-  /*p33.SUTO*/ c.p33.SPR_PIX_A5 = latch_pos(b.p29.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A5, b.p33.SPR_PIX_FLIP5);
-  /*p33.RAMA*/ c.p33.SPR_PIX_A6 = latch_pos(b.p29.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A6, b.p33.SPR_PIX_FLIP6);
-  /*p33.RYDU*/ c.p33.SPR_PIX_A7 = latch_pos(b.p29.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A7, b.p33.SPR_PIX_FLIP7);
+  /*p33.PEFO*/ c.p33.SPR_PIX_A0 = latch_pos(b.spr.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A0, b.p33.SPR_PIX_FLIP0);
+  /*p33.ROKA*/ c.p33.SPR_PIX_A1 = latch_pos(b.spr.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A1, b.p33.SPR_PIX_FLIP1);
+  /*p33.MYTU*/ c.p33.SPR_PIX_A2 = latch_pos(b.spr.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A2, b.p33.SPR_PIX_FLIP2);
+  /*p33.RAMU*/ c.p33.SPR_PIX_A3 = latch_pos(b.spr.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A3, b.p33.SPR_PIX_FLIP3);
+  /*p33.SELE*/ c.p33.SPR_PIX_A4 = latch_pos(b.spr.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A4, b.p33.SPR_PIX_FLIP4);
+  /*p33.SUTO*/ c.p33.SPR_PIX_A5 = latch_pos(b.spr.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A5, b.p33.SPR_PIX_FLIP5);
+  /*p33.RAMA*/ c.p33.SPR_PIX_A6 = latch_pos(b.spr.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A6, b.p33.SPR_PIX_FLIP6);
+  /*p33.RYDU*/ c.p33.SPR_PIX_A7 = latch_pos(b.spr.SPRITE_PIX_LATCH_A, b.p33.SPR_PIX_A7, b.p33.SPR_PIX_FLIP7);
 
   /*p33.LOZA*/ c.p33.SPR_PIX_A0n = not(b.p33.SPR_PIX_A0);
   /*p33.SYBO*/ c.p33.SPR_PIX_A1n = not(b.p33.SPR_PIX_A1);
@@ -300,14 +306,14 @@ void P32_BgPixelShifter_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // P34
 
-  /*p34.MEFU*/ c.p34.SPRITE_MASK0 = or(b.p29.XEFY, b.p33.SPR_PIX_A_0, b.p33.SPR_PIX_B_0);
-  /*p34.MEVE*/ c.p34.SPRITE_MASK1 = or(b.p29.XEFY, b.p33.SPR_PIX_A_1, b.p33.SPR_PIX_B_1);
-  /*p34.MYZO*/ c.p34.SPRITE_MASK2 = or(b.p29.XEFY, b.p33.SPR_PIX_A_2, b.p33.SPR_PIX_B_2);
-  /*p34.RUDA*/ c.p34.SPRITE_MASK3 = or(b.p29.XEFY, b.p33.SPR_PIX_A_3, b.p33.SPR_PIX_B_3);
-  /*p34.VOTO*/ c.p34.SPRITE_MASK4 = or(b.p29.XEFY, b.p33.SPR_PIX_A_4, b.p33.SPR_PIX_B_4);
-  /*p34.VYSA*/ c.p34.SPRITE_MASK5 = or(b.p29.XEFY, b.p33.SPR_PIX_A_5, b.p33.SPR_PIX_B_5);
-  /*p34.TORY*/ c.p34.SPRITE_MASK6 = or(b.p29.XEFY, b.p33.SPR_PIX_A_6, b.p33.SPR_PIX_B_6);
-  /*p34.WOPE*/ c.p34.SPRITE_MASK7 = or(b.p29.XEFY, b.p33.SPR_PIX_A_7, b.p33.SPR_PIX_B_7);
+  /*p34.MEFU*/ c.p34.SPRITE_MASK0 = or(b.spr.XEFY, b.p33.SPR_PIX_A_0, b.p33.SPR_PIX_B_0);
+  /*p34.MEVE*/ c.p34.SPRITE_MASK1 = or(b.spr.XEFY, b.p33.SPR_PIX_A_1, b.p33.SPR_PIX_B_1);
+  /*p34.MYZO*/ c.p34.SPRITE_MASK2 = or(b.spr.XEFY, b.p33.SPR_PIX_A_2, b.p33.SPR_PIX_B_2);
+  /*p34.RUDA*/ c.p34.SPRITE_MASK3 = or(b.spr.XEFY, b.p33.SPR_PIX_A_3, b.p33.SPR_PIX_B_3);
+  /*p34.VOTO*/ c.p34.SPRITE_MASK4 = or(b.spr.XEFY, b.p33.SPR_PIX_A_4, b.p33.SPR_PIX_B_4);
+  /*p34.VYSA*/ c.p34.SPRITE_MASK5 = or(b.spr.XEFY, b.p33.SPR_PIX_A_5, b.p33.SPR_PIX_B_5);
+  /*p34.TORY*/ c.p34.SPRITE_MASK6 = or(b.spr.XEFY, b.p33.SPR_PIX_A_6, b.p33.SPR_PIX_B_6);
+  /*p34.WOPE*/ c.p34.SPRITE_MASK7 = or(b.spr.XEFY, b.p33.SPR_PIX_A_7, b.p33.SPR_PIX_B_7);
 
   /*p34.LESY*/ c.p34.SPRITE_MASK0n = not(b.p34.SPRITE_MASK0);
   /*p34.LOTA*/ c.p34.SPRITE_MASK1n = not(b.p34.SPRITE_MASK1);
@@ -318,23 +324,23 @@ void P32_BgPixelShifter_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p34.SOKA*/ c.p34.SPRITE_MASK6n = not(b.p34.SPRITE_MASK6);
   /*p34.XOVU*/ c.p34.SPRITE_MASK7n = not(b.p34.SPRITE_MASK7);
 
-  /*p34.SYPY*/ c.p34.OAM_A_D4n = not(b.p31.OAM_A_D4); // sprite palette
-  /*p34.TOTU*/ c.p34.OAM_A_D4o = not(b.p31.OAM_A_D4);
-  /*p34.NARO*/ c.p34.OAM_A_D4p = not(b.p31.OAM_A_D4);
-  /*p34.WEXY*/ c.p34.OAM_A_D4q = not(b.p31.OAM_A_D4);
-  /*p34.RYZY*/ c.p34.OAM_A_D4r = not(b.p31.OAM_A_D4);
-  /*p34.RYFE*/ c.p34.OAM_A_D4s = not(b.p31.OAM_A_D4);
-  /*p34.LADY*/ c.p34.OAM_A_D4t = not(b.p31.OAM_A_D4);
-  /*p34.LAFY*/ c.p34.OAM_A_D4u = not(b.p31.OAM_A_D4);
+  /*p34.SYPY*/ c.p34.OAM_A_D4n = not(b.spr.OAM_A_D4); // sprite palette
+  /*p34.TOTU*/ c.p34.OAM_A_D4o = not(b.spr.OAM_A_D4);
+  /*p34.NARO*/ c.p34.OAM_A_D4p = not(b.spr.OAM_A_D4);
+  /*p34.WEXY*/ c.p34.OAM_A_D4q = not(b.spr.OAM_A_D4);
+  /*p34.RYZY*/ c.p34.OAM_A_D4r = not(b.spr.OAM_A_D4);
+  /*p34.RYFE*/ c.p34.OAM_A_D4s = not(b.spr.OAM_A_D4);
+  /*p34.LADY*/ c.p34.OAM_A_D4t = not(b.spr.OAM_A_D4);
+  /*p34.LAFY*/ c.p34.OAM_A_D4u = not(b.spr.OAM_A_D4);
 
-  /*p34.PUME*/ c.p34.SPRITE_PAL_PIPE_SET0n = nand(b.p34.SPRITE_MASK0n, b.p31.OAM_A_D4);
-  /*p34.SORO*/ c.p34.SPRITE_PAL_PIPE_SET1n = nand(b.p34.SPRITE_MASK1n, b.p31.OAM_A_D4);
-  /*p34.PAMO*/ c.p34.SPRITE_PAL_PIPE_SET2n = nand(b.p34.SPRITE_MASK2n, b.p31.OAM_A_D4);
-  /*p34.SUKY*/ c.p34.SPRITE_PAL_PIPE_SET3n = nand(b.p34.SPRITE_MASK3n, b.p31.OAM_A_D4);
-  /*p34.RORA*/ c.p34.SPRITE_PAL_PIPE_SET4n = nand(b.p34.SPRITE_MASK4n, b.p31.OAM_A_D4);
-  /*p34.MENE*/ c.p34.SPRITE_PAL_PIPE_SET5n = nand(b.p34.SPRITE_MASK5n, b.p31.OAM_A_D4);
-  /*p34.LUKE*/ c.p34.SPRITE_PAL_PIPE_SET6n = nand(b.p34.SPRITE_MASK6n, b.p31.OAM_A_D4);
-  /*p34.LAMY*/ c.p34.SPRITE_PAL_PIPE_SET7n = nand(b.p34.SPRITE_MASK7n, b.p31.OAM_A_D4);
+  /*p34.PUME*/ c.p34.SPRITE_PAL_PIPE_SET0n = nand(b.p34.SPRITE_MASK0n, b.spr.OAM_A_D4);
+  /*p34.SORO*/ c.p34.SPRITE_PAL_PIPE_SET1n = nand(b.p34.SPRITE_MASK1n, b.spr.OAM_A_D4);
+  /*p34.PAMO*/ c.p34.SPRITE_PAL_PIPE_SET2n = nand(b.p34.SPRITE_MASK2n, b.spr.OAM_A_D4);
+  /*p34.SUKY*/ c.p34.SPRITE_PAL_PIPE_SET3n = nand(b.p34.SPRITE_MASK3n, b.spr.OAM_A_D4);
+  /*p34.RORA*/ c.p34.SPRITE_PAL_PIPE_SET4n = nand(b.p34.SPRITE_MASK4n, b.spr.OAM_A_D4);
+  /*p34.MENE*/ c.p34.SPRITE_PAL_PIPE_SET5n = nand(b.p34.SPRITE_MASK5n, b.spr.OAM_A_D4);
+  /*p34.LUKE*/ c.p34.SPRITE_PAL_PIPE_SET6n = nand(b.p34.SPRITE_MASK6n, b.spr.OAM_A_D4);
+  /*p34.LAMY*/ c.p34.SPRITE_PAL_PIPE_SET7n = nand(b.p34.SPRITE_MASK7n, b.spr.OAM_A_D4);
 
   /*p34.SUCO*/ c.p34.SPRITE_PAL_PIPE_RST0n = nand(b.p34.SPRITE_MASK0n, b.p34.OAM_A_D4n);
   /*p34.TAFA*/ c.p34.SPRITE_PAL_PIPE_RST1n = nand(b.p34.SPRITE_MASK1n, b.p34.OAM_A_D4o);
@@ -356,23 +362,23 @@ void P32_BgPixelShifter_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   
   //----------
 
-  /*p26.XOGA*/ c.p26.OAM_A_D7n = not(b.p31.OAM_A_D7); // sprite priority
-  /*p26.XURA*/ c.p26.OAM_A_D7o = not(b.p31.OAM_A_D7);
-  /*p26.TAJO*/ c.p26.OAM_A_D7p = not(b.p31.OAM_A_D7);
-  /*p26.XENU*/ c.p26.OAM_A_D7q = not(b.p31.OAM_A_D7);
-  /*p26.XYKE*/ c.p26.OAM_A_D7r = not(b.p31.OAM_A_D7);
-  /*p26.XABA*/ c.p26.OAM_A_D7s = not(b.p31.OAM_A_D7);
-  /*p26.TAFU*/ c.p26.OAM_A_D7t = not(b.p31.OAM_A_D7);
-  /*p26.XUHO*/ c.p26.OAM_A_D7u = not(b.p31.OAM_A_D7);
+  /*p26.XOGA*/ c.p26.OAM_A_D7n = not(b.spr.OAM_A_D7); // sprite priority
+  /*p26.XURA*/ c.p26.OAM_A_D7o = not(b.spr.OAM_A_D7);
+  /*p26.TAJO*/ c.p26.OAM_A_D7p = not(b.spr.OAM_A_D7);
+  /*p26.XENU*/ c.p26.OAM_A_D7q = not(b.spr.OAM_A_D7);
+  /*p26.XYKE*/ c.p26.OAM_A_D7r = not(b.spr.OAM_A_D7);
+  /*p26.XABA*/ c.p26.OAM_A_D7s = not(b.spr.OAM_A_D7);
+  /*p26.TAFU*/ c.p26.OAM_A_D7t = not(b.spr.OAM_A_D7);
+  /*p26.XUHO*/ c.p26.OAM_A_D7u = not(b.spr.OAM_A_D7);
 
-  /*p26.TEDE*/ c.p26.MASK_PIPE_SET0 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK0);
-  /*p26.XALA*/ c.p26.MASK_PIPE_SET1 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK1);
-  /*p26.TYRA*/ c.p26.MASK_PIPE_SET2 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK2);
-  /*p26.XYRU*/ c.p26.MASK_PIPE_SET3 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK3);
-  /*p26.XUKU*/ c.p26.MASK_PIPE_SET4 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK4);
-  /*p26.XELY*/ c.p26.MASK_PIPE_SET5 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK5);
-  /*p26.TYKO*/ c.p26.MASK_PIPE_SET6 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK6);
-  /*p26.TUWU*/ c.p26.MASK_PIPE_SET7 = nand(b.p31.OAM_A_D7,  b.p34.SPRITE_MASK7);
+  /*p26.TEDE*/ c.p26.MASK_PIPE_SET0 = nand(b.spr.OAM_A_D7,  b.p34.SPRITE_MASK0);
+  /*p26.XALA*/ c.p26.MASK_PIPE_SET1 = nand(b.spr.OAM_A_D7,  b.p34.SPRITE_MASK1);
+  /*p26.TYRA*/ c.p26.MASK_PIPE_SET2 = nand(b.spr.OAM_A_D7,  b.p34.SPRITE_MASK2);
+  /*p26.XYRU*/ c.p26.MASK_PIPE_SET3 = nand(b.spr.OAM_A_D7,  b.p34.SPRITE_MASK3);
+  /*p26.XUKU*/ c.p26.MASK_PIPE_SET4 = nand(b.spr.OAM_A_D7,  b.p34.SPRITE_MASK4);
+  /*p26.XELY*/ c.p26.MASK_PIPE_SET5 = nand(b.spr.OAM_A_D7,  b.p34.SPRITE_MASK5);
+  /*p26.TYKO*/ c.p26.MASK_PIPE_SET6 = nand(b.spr.OAM_A_D7,  b.p34.SPRITE_MASK6);
+  /*p26.TUWU*/ c.p26.MASK_PIPE_SET7 = nand(b.spr.OAM_A_D7,  b.p34.SPRITE_MASK7);
 
   /*p26.WOKA*/ c.p26.MASK_PIPE_RST0 = nand(b.p26.OAM_A_D7n, b.p34.SPRITE_MASK0);
   /*p26.WEDE*/ c.p26.MASK_PIPE_RST1 = nand(b.p26.OAM_A_D7o, b.p34.SPRITE_MASK1);
@@ -397,8 +403,8 @@ void P32_BgPixelShifter_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // Input background and sprite pixels
 
-  /*p35.RAJY*/ c.p35.PIX_BG0  = and(b.p23.LCDC_BGEN, b.p32.BG_PIX_A_7);
-  /*p35.TADE*/ c.p35.PIX_BG1  = and(b.p23.LCDC_BGEN, b.p32.BG_PIX_B_7);
+  /*p35.RAJY*/ c.p35.PIX_BG0  = and(b.p23.LCDC_BGEN, b.p32.BG_PIPE_A7);
+  /*p35.TADE*/ c.p35.PIX_BG1  = and(b.p23.LCDC_BGEN, b.p32.BG_PIPE_B7);
 
   /*p35.WOXA*/ c.p35.PIX_SP0 = and(b.p23.LCDC_SPEN, b.p33.SPR_PIX_A_7);
   /*p35.XULA*/ c.p35.PIX_SP1 = and(b.p23.LCDC_SPEN, b.p33.SPR_PIX_B_7);

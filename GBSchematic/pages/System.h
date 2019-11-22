@@ -128,8 +128,9 @@ struct System {
   /*p01.UVYT*/ bool CPUCLK_xxxxEFGH8;
   /*p01.DOVA*/ bool CPUCLK_xxxxEFGH9;
 
-  /*p01.BOWA*/ bool CPUCLK_ABCDExxx2; // -> PORTD_01
-  /*p01.BEDO*/ bool CPUCLK_xxxxxFGH2; // -> PORTD_02
+  /*p01.BOWA*/ bool CPU_CLK1a; // -> PORTD_01, abcd____
+  /*p01.BEDO*/ bool CPU_CLK1n; // -> PORTD_02, ____efgh
+
   /*p01.BUKE*/ bool CPUCLK_xxxxxFxx1; // -> PORTD_06
   /*p01.BATE*/ bool CPUCLK_xxxxxFxx2;
   /*p01.BASU*/ bool CPUCLK_xxxxxFxxn;
@@ -221,7 +222,7 @@ struct System {
   /*p01.ABUZ*/ bool CPU_RD_SYNC;  // ____ef__
 
   /*p01.ULUR*/ bool DIV_06_CLK;
-  /*p01.BALY*/ bool BALY;
+  /*p01.BALY*/ bool DIV_CLKn;
   /*p01.BYXO*/ bool BYXO;
 
 
@@ -436,11 +437,11 @@ struct System {
 
   /*p04.MATU*/ bool DMA_RUNNING_SYNCn; // -> p25,p28
 
-  /*p04.NAVO*/ bool DMA_DONE;
-  /*p04.NOLO*/ bool DMA_DONEn;
+  /*p04.NOLO*/ bool DMA_DONE;
+  /*p04.NAVO*/ bool DMA_DONEn;
 
   /*p04.LUVY*/ bool LUVY;
-  /*p04.MYTE*/ bool MYTE;
+  /*p04.MYTE*/ bool DMA_DONE_SYNC;
   /*p04.LENE*/ bool LENE;
 
   /*p04.LARA*/ bool LARA;
@@ -456,7 +457,7 @@ struct System {
   /*p04.LEBU*/ bool DMA_A15n;
   /*p04.LYXE*/ bool LYXE;
 
-  /*p04.WYJA*/ bool WYJA;
+  /*p04.WYJA*/ bool OAM_CS;
   /*p04.MOPA*/ bool CPUCLK_ABCDxxxx9;
   /*p04.LUMA*/ bool DO_DMA; // if true, addr bus = dma addr
   /*p04.DUGA*/ bool OAM_ADDR_DMA;

@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include "../GBSchematic/Register.h"
 
 struct TextPainter {
   TextPainter();

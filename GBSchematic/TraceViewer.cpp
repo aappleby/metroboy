@@ -1,7 +1,5 @@
 #include "TraceViewer.h"
 
-#include "Timer.h"
-
 #include <vector>
 #include <cstddef>
 #include <float.h>

@@ -17,15 +17,6 @@
 #include "PixelPipe.h"
 #include "BgWindow.h"
 
-#include "P21_VideoControl.h"
-#include "P22_PpuDecode.h"
-#include "P23_VideoRegs.h"
-#include "P24_LcdControl.h"
-#include "P25_VramInterface.h"
-#include "P26_Background.h"
-#include "P27_WindowMapLookup.h"
-
-
 //-----------------------------------------------------------------------------
 
 struct Gameboy {

@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "Timer.h"
 #include "TraceViewer.h"
 #include "../src/TextPainter.h"
 #include "pages/Gameboy.h"

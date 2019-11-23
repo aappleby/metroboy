@@ -186,22 +186,11 @@
     <ClCompile Include="pages\Channel3.cpp" />
     <ClCompile Include="pages\Channel4.cpp" />
     <ClCompile Include="pages\Gameboy.cpp" />
-    <ClCompile Include="pages\P21_VideoControl.cpp" />
-    <ClCompile Include="pages\P22_PpuDecode.cpp" />
-    <ClCompile Include="pages\P23_VideoRegs.cpp" />
-    <ClCompile Include="pages\P24_LcdControl.cpp" />
-    <ClCompile Include="pages\P25_VramInterface.cpp" />
-    <ClCompile Include="pages\P26_Background.cpp" />
-    <ClCompile Include="pages\P27_WindowMapLookup.cpp" />
     <ClCompile Include="pages\PixelPipe.cpp" />
     <ClCompile Include="pages\Sprites.cpp" />
     <ClCompile Include="pages\System.cpp" />
-    <ClCompile Include="Register.cpp" />
     <ClCompile Include="Schematics.cpp" />
     <ClCompile Include="SignalTree.cpp" />
-    <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="TimerHax.cpp" />
-    <ClCompile Include="TraceLog.cpp" />
     <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -216,22 +205,12 @@
     <ClInclude Include="pages\Common.h" />
     <ClInclude Include="pages\CpuSignals.h" />
     <ClInclude Include="pages\Gameboy.h" />
-    <ClInclude Include="pages\P21_VideoControl.h" />
-    <ClInclude Include="pages\P22_PpuDecode.h" />
-    <ClInclude Include="pages\P23_VideoRegs.h" />
-    <ClInclude Include="pages\P24_LcdControl.h" />
-    <ClInclude Include="pages\P25_VramInterface.h" />
-    <ClInclude Include="pages\P26_Background.h" />
-    <ClInclude Include="pages\P27_WindowMapLookup.h" />
     <ClInclude Include="pages\PixelPipe.h" />
     <ClInclude Include="pages\Sprites.h" />
     <ClInclude Include="pages\System.h" />
     <ClInclude Include="pages\TristateBus.h" />
-    <ClInclude Include="Register.h" />
     <ClInclude Include="Schematics.h" />
     <ClInclude Include="SignalTree.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="TraceLog.h" />
     <ClInclude Include="TraceViewer.h" />
   </ItemGroup>
   <ItemGroup>

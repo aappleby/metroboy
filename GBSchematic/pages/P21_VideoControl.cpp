@@ -146,7 +146,7 @@ void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //---
 
-  /*p21.XYMU*/ c.p21.RENDERING = or(b.p21.WEGO, b.spr.AVAP);
+  /*p21.XYMU*/ c.p21.RENDERING = or(b.p21.WEGO, b.spr.SCAN_DONE_TRIG);
   /*p21.WEGO*/   c.p21.WEGO = or(b.sys.VID_RESET3, b.p21.VOGA);
   /*p21.VOGA*/     c.p21.VOGA = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.p21.TADY, b.p21.VOGA, b.p21.RENDER_DONEn);
 

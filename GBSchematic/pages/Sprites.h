@@ -137,7 +137,7 @@ struct Sprites {
   /*p29.TACU*/ bool TACU;
   /*p29.XYSO*/ bool XYSO;
   /*p29.TEXY*/ bool TEXY;
-  /*p29.AVAP*/ bool AVAP;
+  /*p29.AVAP*/ bool SCAN_DONE_TRIG;
   /*p29.FEPO*/ bool OAM_SCAN;
   /*p29.WUTY*/ bool WUTY;
   /*p29.XEFY*/ bool XEFY;
@@ -277,12 +277,12 @@ struct Sprites {
   /*p29.DYTY*/ bool STORE_EN;
   /*p29.BALU*/ bool SCAN_RSTa;
   /*p29.BAGY*/ bool SCAN_RSTo;
-  /*p29.BYBA*/ bool BYBA;
-  /*p29.DOBA*/ bool DOBA;
-  /*p29.BEBU*/ bool BEBU;
+  /*p29.BYBA*/ bool SCAN_DONE_SYNC1;
+  /*p29.DOBA*/ bool SCAN_DONE_SYNC2;
+  /*p29.BEBU*/ bool SCAN_DONE_TRIGn;
 
-  /*p29.TOBU*/ bool TOBU;
-  /*p29.VONU*/ bool VONU;
+  /*p29.TOBU*/ bool TULY_SYNC1;
+  /*p29.VONU*/ bool SPRITE_ABn;
 
   /*p29.TEPA*/ bool RENDERINGn;
   /*p29.TYNO*/ bool TYNO;
@@ -290,7 +290,7 @@ struct Sprites {
   /*p29.SAKY*/ bool SAKY;
   /*p29.TYSO*/ bool TYSO;
   /*p29.TAME*/ bool TAME;
-  /*p29.TOMA*/ bool TOMA;
+  /*p29.TOMA*/ bool TOMA_CLK;
   /*p29.TYTU*/ bool TYTU;
   /*p29.SYCU*/ bool SYCU;
   /*p29.TOPU*/ bool SPRITE_PIX_LATCH_Ao;
@@ -300,9 +300,9 @@ struct Sprites {
   /*p29.PEBY*/ bool SPRITE_PIX_LATCH_Bb;
   /*p29.NYBE*/ bool SPRITE_PIX_LATCH_Bn;
   /*p29.SEBA*/ bool SEBA;
-  /*p29.TOXE*/ bool TOXE;
-  /*p29.TULY*/ bool TULY;
-  /*p29.TESE*/ bool TESE;
+  /*p29.TOXE*/ bool TOXE0;
+  /*p29.TULY*/ bool TULY1;
+  /*p29.TESE*/ bool TESE2;
 
   /*p29.BYJO*/ bool BYJO;
   /*p29.AZEM*/ bool AZEM;
@@ -365,11 +365,12 @@ struct Sprites {
 
   /*p29.WUKY*/ bool FLIP_Y;
   /*p29.WAGO*/ bool WAGO;
-  /*p29.CYVU*/ bool CYVU;
-  /*p29.BORE*/ bool BORE;
-  /*p29.BUVY*/ bool BUVY;
 
-  /*p29.XUQU*/ bool XUQU;
+  /*p29.CYVU*/ bool SPRITE_Y0;
+  /*p29.BORE*/ bool SPRITE_Y1;
+  /*p29.BUVY*/ bool SPRITE_Y2;
+
+  /*p29.XUQU*/ bool SPRITE_AB;
 
   /*p29.FUFO*/ bool LCDC_SPSIZEn;
   /*p29.GEJY*/ bool GEJY;

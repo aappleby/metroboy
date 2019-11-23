@@ -1,25 +1,23 @@
 #pragma once
 
-struct P32_BgPixelShifter {
+struct PixelPipe {
 
-
-  /*p32.RAWU*/ bool VRAM_D0;
-  /*p32.POZO*/ bool VRAM_D1;
-  /*p32.PYZO*/ bool VRAM_D2;
-  /*p32.POXA*/ bool VRAM_D3;
-  /*p32.PULO*/ bool VRAM_D4;
-  /*p32.POJU*/ bool VRAM_D5;
-  /*p32.POWY*/ bool VRAM_D6;
-  /*p32.PYJU*/ bool VRAM_D7;
-
+  /*p32.RAWU*/ bool VRAM_TEMP_D0;
+  /*p32.POZO*/ bool VRAM_TEMP_D1;
+  /*p32.PYZO*/ bool VRAM_TEMP_D2;
+  /*p32.POXA*/ bool VRAM_TEMP_D3;
+  /*p32.PULO*/ bool VRAM_TEMP_D4;
+  /*p32.POJU*/ bool VRAM_TEMP_D5;
+  /*p32.POWY*/ bool VRAM_TEMP_D6;
+  /*p32.PYJU*/ bool VRAM_TEMP_D7;
 
   /*p32.LESO*/ bool LESO;
   /*p32.AJAR*/ bool AJAR;
-  /*p32.LABU*/ bool LABU;
-  /*p32.METE*/ bool METE;
-  /*p32.LOMA*/ bool LOMA;
-  /*p32.LOZE*/ bool LOZE;
-  /*p32.LUXA*/ bool LUXA;
+  /*p32.LABU*/ bool VRAM_TEMP_CLK;
+  /*p32.METE*/ bool BG_SEQ_TRIG_3;
+  /*p32.LOMA*/ bool BG_SEQ_TRIG_3o;
+  /*p32.LOZE*/ bool BG_PIPE_A_LOAD;
+  /*p32.LUXA*/ bool BG_PIPE_B_LOAD;
 
   /*p32.LEGU*/ bool LEGU;
   /*p32.NUDU*/ bool NUDU;
@@ -93,7 +91,6 @@ struct P32_BgPixelShifter {
   /*p32.RALU*/ bool BG_PIPE_B6;
   /*p32.SOHU*/ bool BG_PIPE_B7;
 
-
   /*p32.MYDE*/ bool BG_PIPE_A0;
   /*p32.NOZO*/ bool BG_PIPE_A1;
   /*p32.MOJU*/ bool BG_PIPE_A2;
@@ -102,10 +99,6 @@ struct P32_BgPixelShifter {
   /*p32.MODU*/ bool BG_PIPE_A5;
   /*p32.NEDA*/ bool BG_PIPE_A6;
   /*p32.PYBO*/ bool BG_PIPE_A7;
-};
-
-
-struct P33_SpritePixelShifter {
 
   /*p33.NURO*/ bool SPR_PIX_B_0;
   /*p33.MASO*/ bool SPR_PIX_B_1;
@@ -205,9 +198,6 @@ struct P33_SpritePixelShifter {
   /*p33.XOLE*/ bool SPR_PIX_A_RST5;
   /*p33.TABY*/ bool SPR_PIX_A_RST6;
   /*p33.TULA*/ bool SPR_PIX_A_RST7;
-};
-
-struct P34_SpritePaletteShifter {
 
   /*p34.LAFU*/ bool OBP0PIXELn;
   /*p34.LEKA*/ bool OBP1PIXELn;
@@ -220,7 +210,6 @@ struct P34_SpritePaletteShifter {
   /*p34.TYCO*/ bool SPRITE_MASK5n;
   /*p34.SOKA*/ bool SPRITE_MASK6n;
   /*p34.XOVU*/ bool SPRITE_MASK7n;
-
 
   /*p34.MEFU*/ bool SPRITE_MASK0;
   /*p34.MEVE*/ bool SPRITE_MASK1;
@@ -268,12 +257,7 @@ struct P34_SpritePaletteShifter {
   /*p34.LYME*/ bool SPRITE_PAL_PIPE_7;
 
   /*p34.LOME*/ bool SPRITE_PAL_PIPE_7n;
-};
 
-
-
-
-struct P35_PixelMux {
   /*p35.WOXA*/ bool PIX_SP0;
   /*p35.XULA*/ bool PIX_SP1;
   /*p35.NULY*/ bool PIX_SPn;
@@ -334,9 +318,6 @@ struct P35_PixelMux {
 
   /*p35.REMY*/ bool LD0n;
   /*p35.RAVO*/ bool LD1n;
-};
-
-struct P36_Palettes {
 
   /*p36.VUSO*/ bool FF47_RD;
   /*p36.VELY*/ bool FF47_WR;

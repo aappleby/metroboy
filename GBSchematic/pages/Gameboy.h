@@ -15,6 +15,7 @@
 
 #include "Sprites.h"
 #include "PixelPipe.h"
+#include "BgWindow.h"
 
 #include "P21_VideoControl.h"
 #include "P22_PpuDecode.h"
@@ -41,6 +42,7 @@ struct Gameboy {
   Channel4   ch4;
 
   Sprites    spr;
+  PixelPipe  pix;
 
   P21_VideoControl         p21;
   P22_PpuDecode            p22;
@@ -49,11 +51,6 @@ struct Gameboy {
   P25_VramInterface        p25;
   P26_Background           p26;
   P27_WindowMapLookup      p27;
-  P32_BgPixelShifter       p32;
-  P33_SpritePixelShifter   p33;
-  P34_SpritePaletteShifter p34;
-  P35_PixelMux             p35;
-  P36_Palettes             p36;
 
   //----------
   // main bus

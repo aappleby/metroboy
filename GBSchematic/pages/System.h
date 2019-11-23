@@ -147,7 +147,6 @@ struct System {
   // clocks for the apu
 
   /*p09.AJER*/ bool AJER_2M;
-  /*p09.DYFA*/ bool DYFA_1M;
   /*p01.BAVU*/ bool BAVU_1M;
 
   /*p01.JESO*/ bool CLK_512Ka;

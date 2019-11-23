@@ -19,13 +19,6 @@ struct ApuControl {
   /*p09.KEPY*/ bool APU_RESETn6;
   /*p09.KUBY*/ bool APU_RESETn7;
   
-  /*p09.BATA*/ bool BATA; // some 2m clock
-  /*p09.CALO*/ bool CALO; // some 2m clock
-  /*p09.CATE*/ bool CATE;
-  /*p09.CELY*/ bool CELY;
-  /*p09.CONE*/ bool CONE;
-  /*p09.BAZA*/ bool DBG_SWEEP_CLK;
-
   //----------
   // FF24 NR50
 

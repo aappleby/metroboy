@@ -260,9 +260,6 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
                                      b.sys.AJER_2M,
                                      !b.sys.AJER_2M);
 
-  /*p01.BATA*/ c.apu.BATA = not(b.sys.AJER_2M);
-  /*p01.CALO*/ c.apu.CALO = tock_pos(a.apu.BATA, b.apu.BATA, b.apu.APU_RESETn, b.apu.CALO, !b.apu.CALO);
-  /*p01.DYFA*/ c.sys.DYFA_1M = not(!b.apu.CALO);
 
   /*p01.CYBO*/ c.sys.CLK_AxCxExGx7 = not(b.sys.CLK_xBxDxFxH1);
   /*p01.CERY*/ c.sys.CLK_ABxxEFxx1 = tock_pos(a.sys.CLK_AxCxExGx7,

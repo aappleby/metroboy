@@ -115,6 +115,8 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p09.HADA*/ pc.ALL_SOUND_ON  = tock_pos(pa.NR52_WRn1, pb.NR52_WRn1, b.sys.SYS_RESETn3, pb.ALL_SOUND_ON, b.D7); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
   /*p09.EDEK*/ pc.DBG_APU       = not(!pb.DBG_APUn);
 
+  /*p13.CARA*/ c.ch1.CH1_ACTIVEn = not(b.ch1.CH1_ACTIVE);
+
   /*p09.COTO*/ if (pb.FF26_RDna) c.D0 = not(b.ch1.CH1_ACTIVEn);
   /*p09.EFUS*/ if (pb.FF26_RDnb) c.D1 = not(b.ch2.CH2_ACTIVEn);
   /*p09.FATE*/ if (pb.FF26_RDnd) c.D2 = not(b.ch3.CH3_ACTIVEn);

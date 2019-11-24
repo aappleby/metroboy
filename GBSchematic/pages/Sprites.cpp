@@ -8,7 +8,11 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p28.WEFE*/ c.spr.P10_Bn = not(b.chip.P10_B);
   /*p28.AWOH*/ c.spr.CLK_2Mn = not(b.p21.CLK_2Mb);
+  
+  /*p04.DECY*/ c.sys.FROM_CPU5n = not(b.cpu.FROM_CPU5);
+  /*p04.CATY*/ c.sys.FROM_CPU5  = not(b.sys.FROM_CPU5n);
   /*p28.BOFE*/ c.spr.FROM_CPU5n = not(b.sys.FROM_CPU5);
+  
   /*p28.MYNU*/ c.spr.CPU_READ_MYSTERYn = nand(b.sys.CPU_RD2, b.sys.FROM_CPU5);
   /*p28.LEKO*/ c.spr.CPU_READ_MYSTERY  = not(b.spr.CPU_READ_MYSTERYn);
 
@@ -54,6 +58,8 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p04.WYJA*/     c.sys.OAM_CS = unk3(b.spr.AMAB, b.sys.CPU_WR2, b.sys.POWU);
   /*p04.POWU*/       c.sys.POWU = and(b.sys.DMA_RUNNING_SYNCn, b.sys.NAXY);
   /*p04.NAXY*/         c.sys.NAXY = nor(b.sys.FROM_CPU5_SYNC, b.sys.LUVY);
+  /*p04.MAKA*/           c.sys.FROM_CPU5_SYNC = tock_pos(a.sys.CLK_xBxDxFxH2, b.sys.CLK_xBxDxFxH2, b.sys.SYS_RESETn2, b.sys.FROM_CPU5_SYNC, b.sys.FROM_CPU5);
+
 
   // these are unused
   /*

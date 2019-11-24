@@ -583,12 +583,6 @@ void P25_VramInterface_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  /*p25.SYRO*/ c.p25.ADDR_FE00_FFFF = not(b.sys.ADDR_0000_FE00);
-  /*p25.TEFA*/ c.p25.TEFA = nor(b.p25.ADDR_FE00_FFFF, b.sys.ADDR_VALID_AND_NOT_VRAM);\
-
-    // guess
-    /*p25.SOSE*/ c.p25.ADDR_VRAM = and(b.A15, b.p25.TEFA);
-
   // guess
   /*p25.TUCA*/ c.p25.CPU_VRAM_RD  = and (b.p25.ADDR_VRAM, b.sys.CPU_RD_SYNC);
   /*p25.TUJA*/ c.p25.CPU_VRAM_WR  = and (b.p25.ADDR_VRAM, b.sys.CPU_WR_SYNC);

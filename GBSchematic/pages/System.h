@@ -100,7 +100,6 @@ struct System {
   /*p01.BUGO*/ bool CLK_xBCDExxx2;
 
   /*p01.AFAS*/ bool CLK_xxxDxxxx1;
-  /*p01.BUTO*/ bool CLK_ABCDExxx3;
   /*p01.BELE*/ bool CLK_xxxxxFGH1;
 
   //----------
@@ -131,8 +130,6 @@ struct System {
   /*p01.BUKE*/ bool CPUCLK_xxxxxFxx1; // -> PORTD_06
   /*p01.BATE*/ bool CPUCLK_xxxxxFxx2;
   /*p01.BASU*/ bool CPUCLK_xxxxxFxxn;
-
-  /*p01.BYJU*/ bool BYJU; // abcde___
 
   //----------
   // clocks for the cart
@@ -171,8 +168,6 @@ struct System {
 
   /*p01.BOGA*/ bool DIV_CLK;  // ABCDExxx -> PORTD_08
   /*p01.UFOL*/ bool DIV_RSTn;
-  /*p01.TAGY*/ bool DIV_RD;
-  /*p01.TAPE*/ bool DIV_WR;
 
   // out to high half mux
   /*p01.UVYN*/ bool CLK_16K;
@@ -206,11 +201,8 @@ struct System {
   //----------
   // Gated rd/wr signals
 
-  /*p01.AREV*/ bool CPU_WR_SYNCn;
   /*p01.APOV*/ bool CPU_WR_SYNC;      // ___d____
 
-  /*p01.AGUT*/ bool AGUT;         // abcd__gh
-  /*p01.AWOD*/ bool CPU_RD_SYNCn;
   /*p01.ABUZ*/ bool CPU_RD_SYNC;  // ____ef__
 
   /*p01.ULUR*/ bool DIV_06_CLK;
@@ -430,10 +422,7 @@ struct System {
 
   /*p10.AMUS*/ bool ADDR_xxxxxxxx0xx00000;
   /*p10.ANAP*/ bool ADDR_111111110xx00000; // -> p07.APER
-  /*p10.BYKO*/ bool ADDR_xxxxxxxxxx0xxxxx;
-  /*p10.AKUG*/ bool ADDR_xxxxxxxxx0xxxxxx;
-  /*p10.ATOZ*/ bool FF00_WRn;
-  /*p10.ACAT*/ bool FF00_RD;
+  /*p10.ATOZ*/ bool FF00_CLK;
 
   /*p05.JUTE*/ bool JOYP_RA;
   /*p05.KECY*/ bool JOYP_LB;
@@ -441,39 +430,19 @@ struct System {
   /*p05.KYME*/ bool JOYP_DS;
   /*p05.KELY*/ bool P14_D;
   /*p05.COFY*/ bool P15_D;
-  /*p05.KUKO*/ bool FF00_D6;
-  /*p05.KERU*/ bool FF00_D7;
-
-  /*p05.KURA*/ bool FF60_0n;
-  /*p05.JEVA*/ bool FF60_0o;
-
-  /*p05.KENA*/ bool SOUT;
+  /*p05.KUKO*/ bool DBG_FF00_D6;
+  /*p05.KERU*/ bool DBG_FF00_D7;
 
   /*p05.KORE*/ bool P05_NC0;
   /*p05.KYWE*/ bool P05_NC1;
-
-  /*p05.BYZO*/ bool FF00_RDn;
 
   /*p05.KEVU*/ bool JOYP_L0;
   /*p05.KAPA*/ bool JOYP_L1;
   /*p05.KEJA*/ bool JOYP_L2;
   /*p05.KOLO*/ bool JOYP_L3;
 
-  /*p05.KOLE*/ bool P10_A;
-  /*p05.KYBU*/ bool P10_D;
-  /*p05.KYTO*/ bool P11_A;
-  /*p05.KABU*/ bool P11_D;
-  /*p05.KYHU*/ bool P12_A;
-  /*p05.KASY*/ bool P12_D;
-  /*p05.KORY*/ bool P13_A;
-  /*p05.KALE*/ bool P13_D;
-  /*p05.KARU*/ bool P14_A;
-  /*p05.CELA*/ bool P15_A;
-
   //----------
   // P06
-
-  /*p06.SARE*/ bool ADDR_XX00_XX07;
 
   // counter that triggers INT_SERIAL
   /*p06.CAFA*/ bool SER_CNT0;
@@ -483,41 +452,17 @@ struct System {
   /*p06.COBA*/ bool SER_CNT3n;
 
   /*p06.COTY*/ bool SER_CLK;
-  /*p06.CAVE*/ bool SER_CLK_MUXn;
-  /*p06.DAWA*/ bool SER_TICK;
-  /*p06.EDYL*/ bool SER_TICKn;
 
-  /*p06.SEFY*/ bool A02n;
+
   /*p06.SANO*/ bool ADDR_FF00_FF03;
 
   //----------
   // FF01 SB
 
-  /*p06.URYS*/ bool FF01_WRn;
-  /*p06.DAKU*/ bool FF01_WR;
-  /*p06.UFEG*/ bool FF01_RD;
-
-  /*p06.EPYT*/ bool SER_TICK2;
-  /*p06.DEHO*/ bool SER_TICKn2;
-  /*p06.DAWE*/ bool SER_TICK3;
-
-  /*p06.CUFU*/ bool SER_DATA0_SETn;
-  /*p06.DOCU*/ bool SER_DATA1_SETn;
-  /*p06.DELA*/ bool SER_DATA2_SETn;
-  /*p06.DYGE*/ bool SER_DATA3_SETn;
-  /*p06.DOLA*/ bool SER_DATA4_SETn;
-  /*p06.ELOK*/ bool SER_DATA5_SETn;
-  /*p06.EDEL*/ bool SER_DATA6_SETn;
-  /*p06.EFEF*/ bool SER_DATA7_SETn;
-
-  /*p06.COHY*/ bool SER_DATA0_RSTn;
-  /*p06.DUMO*/ bool SER_DATA1_RSTn;
-  /*p06.DYBO*/ bool SER_DATA2_RSTn;
-  /*p06.DAJU*/ bool SER_DATA3_RSTn;
-  /*p06.DYLY*/ bool SER_DATA4_RSTn;
-  /*p06.EHUJ*/ bool SER_DATA5_RSTn;
-  /*p06.EFAK*/ bool SER_DATA6_RSTn;
-  /*p06.EGUV*/ bool SER_DATA7_RSTn;
+  /*p06.DAWA*/ bool SER_CLK1;
+  /*p06.EDYL*/ bool SER_CLKn;
+  /*p06.EPYT*/ bool SER_CLK2;
+  /*p06.DAWE*/ bool SER_CLK3;
 
   /*p06.CAGE*/ bool SIN_Cn;
 
@@ -535,18 +480,12 @@ struct System {
   //----------
   // FF02 SC
 
-  /*p06.CABY*/ bool XFER_RESET;
+
   /*p06.ETAF*/ bool XFER_START;
   /*p06.CULY*/ bool XFER_DIR;
-  /*p06.JAGO*/ bool XFER_DIRn;
 
-  /*p06.UWAM*/ bool FF02_WRn;
-  /*p06.UCOM*/ bool FF02_RD;
 
-  /*p06.KEXU*/ bool SCK_A;
-  /*p06.KUJO*/ bool SCK_D;
-
-  /*p06.CARO*/ bool SER_RST;
+  /*p06.UWAM*/ bool FF02_CLK;
 
   //----------
   // P07
@@ -569,6 +508,7 @@ struct System {
   /*p07.UBAL*/ bool CPU_WR_MUX;
   /*p07.UJYV*/ bool CPU_RD_MUX;
   /*p07.DYKY*/ bool CPU_WRn;
+  /*p08.REDU*/ bool CPU_RDo;
 
   //----------
   // Bootrom control
@@ -576,10 +516,6 @@ struct System {
   /*p07.TUTU*/ bool ADDR_BOOT;
   /*p07.TUGE*/ bool BOOT_BIT_CLK;
   /*p07.TEPU*/ bool BOOT_BIT;
-
-  /*p07.WALE*/ bool ADDR_x1111111n;
-  /*p07.WOLY*/ bool HRAM_CSn;
-  /*p07.WUTA*/ bool HRAM_CS;
 
   // FF60 - secret debug register
   /*p07.APER*/ bool FF60_WRn;
@@ -590,18 +526,9 @@ struct System {
   /*p07.SOHA*/ bool ADDR_FFXXn2;
   /*p07.SARO*/ bool ADDR_OAM;
 
-  /*p07.TONA*/ bool ADDR_08n;
 
-  /*p07.ZUFA*/ bool ADDR_00XX2;
-  /*p07.ZORO*/ bool ADDR_0XXX;
-  /*p07.ZADU*/ bool ADDR_X0XX;
-
-  /*p07.RYCU*/ bool ADDR_FE00_FFFF;
-  /*p07.ROPE*/ bool ADDR_FEXXn;
   /*p07.SYKE*/ bool ADDR_FFXX;
-  /*p07.TUNA*/ bool ADDR_0000_FE00;
 
-  /*p07.LECO*/ bool LECO;
   /*p07.ROMY*/ bool DBG_0;
   /*p07.RYNE*/ bool DBG_1;
   /*p07.REJY*/ bool DBG_2;
@@ -622,7 +549,6 @@ struct System {
   // Address pin driver
 
   /*p08.LOXO*/ bool ADDR_LATCHb;
-  /*p08.LASY*/ bool ADDR_LATCHn;
   /*p08.MATE*/ bool ADDR_LATCH;
 
   /*p08.ALOR*/ bool ADDR_LATCH_00;
@@ -640,8 +566,6 @@ struct System {
   /*p08.LOBU*/ bool ADDR_LATCH_12;
   /*p08.LONU*/ bool ADDR_LATCH_13;
   /*p08.NYRE*/ bool ADDR_LATCH_14;
-
-  /*p08.SOBY*/ bool SOBY_15;
   /*p08.SEPY*/ bool ADDR_LATCH_15;
 
   /*p08.AMET*/ bool ADDR_MUX_00;
@@ -661,63 +585,11 @@ struct System {
   /*p08.PEGE*/ bool ADDR_MUX_14;
   /*p08.TAZY*/ bool ADDR_MUX_15;
 
-  /*p08.KUPO*/ bool PIN_A00_A;
-  /*p08.CABA*/ bool PIN_A01_A;
-  /*p08.BOKU*/ bool PIN_A02_A;
-  /*p08.BOTY*/ bool PIN_A03_A;
-  /*p08.BYLA*/ bool PIN_A04_A;
-  /*p08.BADU*/ bool PIN_A05_A;
-  /*p08.CEPU*/ bool PIN_A06_A;
-  /*p08.DEFY*/ bool PIN_A07_A;
-  /*p08.MYNY*/ bool PIN_A08_A;
-  /*p08.MUNE*/ bool PIN_A09_A;
-  /*p08.ROXU*/ bool PIN_A10_A;
-  /*p08.LEPY*/ bool PIN_A11_A;
-  /*p08.LUCE*/ bool PIN_A12_A;
-  /*p08.LABE*/ bool PIN_A13_A;
-  /*p08.PUHE*/ bool PIN_A14_A;
-  /*p08.SUZE*/ bool PIN_A15_A;
-
-  /*p08.KOTY*/ bool PIN_A00_D;
-  /*p08.COTU*/ bool PIN_A01_D;
-  /*p08.BAJO*/ bool PIN_A02_D;
-  /*p08.BOLA*/ bool PIN_A03_D;
-  /*p08.BEVO*/ bool PIN_A04_D;
-  /*p08.AJAV*/ bool PIN_A05_D;
-  /*p08.CYKA*/ bool PIN_A06_D;
-  /*p08.COLO*/ bool PIN_A07_D;
-  /*p08.MEGO*/ bool PIN_A08_D;
-  /*p08.MENY*/ bool PIN_A09_D;
-  /*p08.RORE*/ bool PIN_A10_D;
-  /*p08.LYNY*/ bool PIN_A11_D;
-  /*p08.LOSO*/ bool PIN_A12_D;
-  /*p08.LEVA*/ bool PIN_A13_D;
-  /*p08.PAHY*/ bool PIN_A14_D;
-  /*p08.RULO*/ bool PIN_A15_D;
-
   //----------
   // Chip data pin driver.
 
   /*p08.RORU*/ bool DBUS_OUTn;
   /*p08.LULA*/ bool DBUS_OUT;  // True if the internal data bus is driving the external data bus
-
-  /*p25.RUXA*/ bool D0_A;
-  /*p25.RUJA*/ bool D1_A;
-  /*p25.RABY*/ bool D2_A;
-  /*p25.RERA*/ bool D3_A;
-  /*p25.RORY*/ bool D4_A;
-  /*p25.RYVO*/ bool D5_A;
-  /*p25.RAVU*/ bool D6_A;
-  /*p25.RAFY*/ bool D7_A;
-
-  /*p08.RUNE*/ bool D0_D;
-  /*p08.RYPU*/ bool D1_D;
-  /*p08.SULY*/ bool D2_D;
-  /*p08.SEZE*/ bool D3_D;
-  /*p08.RESY*/ bool D4_D;
-  /*p08.TAMU*/ bool D5_D;
-  /*p08.ROGY*/ bool D6_D;
-  /*p08.RYDA*/ bool D7_D;
 
   /*p08.LAVO*/ bool LATCH_DX_C;
 
@@ -729,17 +601,6 @@ struct System {
   /*p08.SAGO*/ bool LATCH_D5_C;
   /*p08.RUPA*/ bool LATCH_D6_C;
   /*p08.SAZY*/ bool LATCH_D7_C;
-
-  /*p08.LYRA*/ bool DBG_D_RD;
-
-  /*p08.TOVO*/ bool DBG_D0_Cn : 1;
-  /*p08.RUZY*/ bool DBG_D1_Cn : 1;
-  /*p08.ROME*/ bool DBG_D2_Cn : 1;
-  /*p08.SAZA*/ bool DBG_D3_Cn : 1;
-  /*p08.TEHE*/ bool DBG_D4_Cn : 1;
-  /*p08.RATU*/ bool DBG_D5_Cn : 1;
-  /*p08.SOCA*/ bool DBG_D6_Cn : 1;
-  /*p08.RYBA*/ bool DBG_D7_Cn : 1;
 
   //----------
 
@@ -777,31 +638,12 @@ struct System {
   /*p08.NEFE*/ bool A14_C;
   /*p08.SYZU*/ bool A15_C;
 
-  /*p08.SORE*/ bool ADDR_0000_7FFF;
   /*p08.TEVY*/ bool ADDR_NOT_VRAM;
 
   /*p08.LEVO*/ bool ADDR_VALID_AND_NOT_VRAMn;
   /*p08.LAGU*/ bool LAGU;
-  /*p08.LYWE*/ bool LYWE;
   /*p08.MOCA*/ bool MOCA;
-  /*p08.MEXO*/ bool MEXO;
-  /*p08.NEVY*/ bool NEVY;
   /*p08.MOTY*/ bool MOTY;
-  /*p08.PUVA*/ bool PUVA;
-  /*p08.TYMU*/ bool TYMU;
-  /*p08.TYNU*/ bool TYNU;
-  /*p08.TOZA*/ bool TOZA;
-
-  /*p08.SOGY*/ bool A14n;
-  /*p08.TUMA*/ bool CART_RAM;
-
-  /*p08.TYHO*/ bool CS_A;
-  /*p08.UVER*/ bool WR_A;
-  /*p08.USUF*/ bool WR_D;
-  /*p08.UGAC*/ bool RD_A;
-  /*p08.URUN*/ bool RD_D;
 
   /*p08.MULE*/ bool MODE_DBG1o;
-
-  /*p08.REDU*/ bool CPU_RDo;
 };

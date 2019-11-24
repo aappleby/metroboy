@@ -120,6 +120,11 @@ struct Gameboy {
   bool BOOT_CS;
 
   //----------
+  // high ram bus
+
+  bool HRAM_CS;
+
+  //----------
   // wave ram bus
 
   bool WAVE_RAM_CTRL1;

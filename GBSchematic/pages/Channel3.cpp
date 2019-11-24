@@ -1,7 +1,9 @@
 #include "../Schematics.h"
 #include "Gameboy.h"
 
-void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
+  (void)chip_in;
+  (void)cpu_in;
 
   //----------
   // FF1A NR30 - Channel 3 Sound on/off (R/W)

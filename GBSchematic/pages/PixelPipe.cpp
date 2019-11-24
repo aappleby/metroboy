@@ -4,7 +4,8 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void PixelPipe_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void PixelPipe_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
+  (void)cpu_in;
 
   /*p32.LABU*/ c.pix.VRAM_TEMP_CLK = not(b.pix.AJAR);
   /*p32.AJAR*/   c.pix.AJAR = not(b.pix.LESO);
@@ -145,7 +146,7 @@ void PixelPipe_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p32.NYHA*/ wire BG_PIPE_A_RST6 = nand(BG_PIPE_A_LOAD, /*p32.NEZE*/ not(b.pix.BG_PIX_A6));
     /*p32.NADY*/ wire BG_PIPE_A_RST7 = nand(BG_PIPE_A_LOAD, /*p32.NOBO*/ not(b.pix.BG_PIX_A7));
 
-    /*p32.MYDE*/ c.pix.BG_PIPE_A0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, BG_PIPE_A_SET0, BG_PIPE_A_RST0, b.pix.BG_PIPE_A0, b.chip.P10_B);
+    /*p32.MYDE*/ c.pix.BG_PIPE_A0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, BG_PIPE_A_SET0, BG_PIPE_A_RST0, b.pix.BG_PIPE_A0, chip_in.P10_B);
     /*p32.NOZO*/ c.pix.BG_PIPE_A1 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, BG_PIPE_A_SET1, BG_PIPE_A_RST1, b.pix.BG_PIPE_A1, b.pix.BG_PIPE_A0);
     /*p32.MOJU*/ c.pix.BG_PIPE_A2 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, BG_PIPE_A_SET2, BG_PIPE_A_RST2, b.pix.BG_PIPE_A2, b.pix.BG_PIPE_A1);
     /*p32.MACU*/ c.pix.BG_PIPE_A3 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, BG_PIPE_A_SET3, BG_PIPE_A_RST3, b.pix.BG_PIPE_A3, b.pix.BG_PIPE_A2);
@@ -177,7 +178,7 @@ void PixelPipe_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p32.SUPU*/ c.pix.BG_PIPE_B_RST6 = nand(BG_PIPE_B_LOAD, /*p32.RAPU*/ not(!b.pix.VRAM_TEMP_D6));
     /*p32.RYJY*/ c.pix.BG_PIPE_B_RST7 = nand(BG_PIPE_B_LOAD, /*p32.SOJA*/ not(!b.pix.VRAM_TEMP_D7));
 
-    /*p32.TOMY*/ c.pix.BG_PIPE_B0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.BG_PIPE_B_SET0, b.pix.BG_PIPE_B_RST0, b.pix.BG_PIPE_B0, b.chip.P10_B);
+    /*p32.TOMY*/ c.pix.BG_PIPE_B0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.BG_PIPE_B_SET0, b.pix.BG_PIPE_B_RST0, b.pix.BG_PIPE_B0, chip_in.P10_B);
     /*p32.TACA*/ c.pix.BG_PIPE_B1 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.BG_PIPE_B_SET1, b.pix.BG_PIPE_B_RST1, b.pix.BG_PIPE_B1, b.pix.BG_PIPE_B0);
     /*p32.SADY*/ c.pix.BG_PIPE_B2 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.BG_PIPE_B_SET2, b.pix.BG_PIPE_B_RST2, b.pix.BG_PIPE_B2, b.pix.BG_PIPE_B1);
     /*p32.RYSA*/ c.pix.BG_PIPE_B3 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.BG_PIPE_B_SET3, b.pix.BG_PIPE_B_RST3, b.pix.BG_PIPE_B3, b.pix.BG_PIPE_B2);
@@ -189,7 +190,17 @@ void PixelPipe_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     //----------
     // Sprite pix & mask
 
-    /*p29.XONO*/ wire FLIP_X = and(!b.spr.OAM_A_D5, b.spr.TEXY);
+    /*p29.XADO*/ c.spr.SPRITE_PIX_LATCH_A = not(b.spr.SPRITE_PIX_LATCH_An);
+    /*p29.WENY*/   c.spr.SPRITE_PIX_LATCH_An = not(b.spr.SPRITE_PIX_LATCH_Ab);
+    /*p29.VYWA*/     c.spr.SPRITE_PIX_LATCH_Ab = not(b.spr.SPRITE_PIX_LATCH_Ao);
+    /*p29.TOPU*/       c.spr.SPRITE_PIX_LATCH_Ao = and(b.spr.SPRITE_ABn, b.spr.SYCU);
+
+    /*p29.PUCO*/ c.spr.SPRITE_PIX_LATCH_B = not(b.spr.SPRITE_PIX_LATCH_Bn);
+    /*p29.NYBE*/   c.spr.SPRITE_PIX_LATCH_Bn = not(b.spr.SPRITE_PIX_LATCH_Bb);
+    /*p29.PEBY*/     c.spr.SPRITE_PIX_LATCH_Bb = not(b.spr.SPRITE_PIX_LATCH_Bo);
+    /*p29.RACA*/       c.spr.SPRITE_PIX_LATCH_Bo = and(b.spr.SPRITE_ABn, b.spr.SYCU);
+
+    /*p29.XONO*/ wire FLIP_X = and(!b.spr.OAM_A_D5, b.spr.SPRITE_READn);
 
     /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2(b.MD7, b.MD0, FLIP_X);
     /*p33.PACY*/ wire SPR_PIX_FLIP1 = mux2(b.MD6, b.MD1, FLIP_X);
@@ -257,7 +268,7 @@ void PixelPipe_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p33.TABY*/ wire SPR_PIX_A_RST6 = nand(b.pix.SPRITE_MASK6, /*p33.SERY*/ not(b.pix.SPR_PIX_A6));
     /*p33.TULA*/ wire SPR_PIX_A_RST7 = nand(b.pix.SPRITE_MASK7, /*p33.SELU*/ not(b.pix.SPR_PIX_A7));
 
-    /*p33.NYLU*/ c.pix.SPR_PIX_A_0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_A_SET0, SPR_PIX_A_RST0, b.pix.SPR_PIX_A_0, b.chip.P10_B);
+    /*p33.NYLU*/ c.pix.SPR_PIX_A_0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_A_SET0, SPR_PIX_A_RST0, b.pix.SPR_PIX_A_0, chip_in.P10_B);
     /*p33.PEFU*/ c.pix.SPR_PIX_A_1 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_A_SET1, SPR_PIX_A_RST1, b.pix.SPR_PIX_A_1, b.pix.SPR_PIX_A_0);
     /*p33.NATY*/ c.pix.SPR_PIX_A_2 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_A_SET2, SPR_PIX_A_RST2, b.pix.SPR_PIX_A_2, b.pix.SPR_PIX_A_1);
     /*p33.PYJO*/ c.pix.SPR_PIX_A_3 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_A_SET3, SPR_PIX_A_RST3, b.pix.SPR_PIX_A_3, b.pix.SPR_PIX_A_2);
@@ -287,7 +298,7 @@ void PixelPipe_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p33.TUPE*/ wire SPR_PIX_B_RST6 = nand(b.pix.SPRITE_MASK6, /*p33.SULU*/ not(b.pix.SPR_PIX_B6));
     /*p33.XYVE*/ wire SPR_PIX_B_RST7 = nand(b.pix.SPRITE_MASK7, /*p33.WAMY*/ not(b.pix.SPR_PIX_B7));
 
-    /*p33.NURO*/ c.pix.SPR_PIX_B_0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_B_SET0, SPR_PIX_B_RST0, b.pix.SPR_PIX_B_0, b.chip.P10_B);
+    /*p33.NURO*/ c.pix.SPR_PIX_B_0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_B_SET0, SPR_PIX_B_RST0, b.pix.SPR_PIX_B_0, chip_in.P10_B);
     /*p33.MASO*/ c.pix.SPR_PIX_B_1 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_B_SET1, SPR_PIX_B_RST1, b.pix.SPR_PIX_B_1, b.pix.SPR_PIX_B_0);
     /*p33.LEFE*/ c.pix.SPR_PIX_B_2 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_B_SET2, SPR_PIX_B_RST2, b.pix.SPR_PIX_B_2, b.pix.SPR_PIX_B_1);
     /*p33.LESU*/ c.pix.SPR_PIX_B_3 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, SPR_PIX_B_SET3, SPR_PIX_B_RST3, b.pix.SPR_PIX_B_3, b.pix.SPR_PIX_B_2);
@@ -317,7 +328,7 @@ void PixelPipe_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p34.LOWA*/ c.pix.SPRITE_PAL_PIPE_RST6n = nand(b.pix.SPRITE_MASK6n, /*p34.LADY*/ not(b.spr.OAM_A_D4));
     /*p34.LUNU*/ c.pix.SPRITE_PAL_PIPE_RST7n = nand(b.pix.SPRITE_MASK7n, /*p34.LAFY*/ not(b.spr.OAM_A_D4));
 
-    /*p34.RUGO*/ c.pix.SPRITE_PAL_PIPE_0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.SPRITE_PAL_PIPE_SET0n, b.pix.SPRITE_PAL_PIPE_RST0n, b.pix.SPRITE_PAL_PIPE_0, b.chip.P10_B);
+    /*p34.RUGO*/ c.pix.SPRITE_PAL_PIPE_0 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.SPRITE_PAL_PIPE_SET0n, b.pix.SPRITE_PAL_PIPE_RST0n, b.pix.SPRITE_PAL_PIPE_0, chip_in.P10_B);
     /*p34.SATA*/ c.pix.SPRITE_PAL_PIPE_1 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.SPRITE_PAL_PIPE_SET1n, b.pix.SPRITE_PAL_PIPE_RST1n, b.pix.SPRITE_PAL_PIPE_1, b.pix.SPRITE_PAL_PIPE_0);
     /*p34.ROSA*/ c.pix.SPRITE_PAL_PIPE_2 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.SPRITE_PAL_PIPE_SET2n, b.pix.SPRITE_PAL_PIPE_RST2n, b.pix.SPRITE_PAL_PIPE_2, b.pix.SPRITE_PAL_PIPE_1);
     /*p34.SOMY*/ c.pix.SPRITE_PAL_PIPE_3 = srtock_pos(a.vid.CLKPIPE, b.vid.CLKPIPE, b.pix.SPRITE_PAL_PIPE_SET3n, b.pix.SPRITE_PAL_PIPE_RST3n, b.pix.SPRITE_PAL_PIPE_3, b.pix.SPRITE_PAL_PIPE_2);
@@ -459,6 +470,6 @@ void PixelPipe_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p35.REMY*/ c.pix.LD0n = not(b.pix.LD0);
   /*p35.RAVO*/ c.pix.LD1n = not(b.pix.LD1);
 
-  c.chip.LD0 = not(b.pix.LD0n);
-  c.chip.LD1 = not(b.pix.LD1n);
+  c.chip_out.LD0 = not(b.pix.LD0n);
+  c.chip_out.LD1 = not(b.pix.LD1n);
 }

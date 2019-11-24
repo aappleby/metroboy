@@ -424,12 +424,13 @@ struct System {
   /*p10.ANAP*/ bool ADDR_111111110xx00000; // -> p07.APER
   /*p10.ATOZ*/ bool FF00_CLK;
 
+  /*p05.KELY*/ bool KELY;
+  /*p05.COFY*/ bool COFY;
+
   /*p05.JUTE*/ bool JOYP_RA;
   /*p05.KECY*/ bool JOYP_LB;
   /*p05.JALE*/ bool JOYP_UC;
   /*p05.KYME*/ bool JOYP_DS;
-  /*p05.KELY*/ bool P14_D;
-  /*p05.COFY*/ bool P15_D;
   /*p05.KUKO*/ bool DBG_FF00_D6;
   /*p05.KERU*/ bool DBG_FF00_D7;
 

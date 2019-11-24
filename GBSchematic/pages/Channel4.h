@@ -10,7 +10,6 @@
 // STOP
 
 struct Channel4 {
-  void tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
 
   //----------
   // Clock/reset

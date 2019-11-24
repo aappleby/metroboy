@@ -7,7 +7,9 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
+  (void)chip_in;
+  (void)cpu_in;
 
   /*p15.AZEG*/ c.ch2.AZEG = not(b.sys.CLK_xBxDxFxH1);
 

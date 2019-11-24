@@ -7,54 +7,7 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void Channel1_tick(const Gameboy& qa, const Gameboy& qb, Gameboy& qc) {
-  const Channel1& pa = qa.ch1;
-  const Channel1& pb = qb.ch1;
-  Channel1& pc = qc.ch1;
-
-  //----------
-  // Inputs
-
-  wire ZERO     = qb.chip.P10_B;
-  wire RESETn   = qb.apu.APU_RESETn;
-  wire RESETo   = qb.apu.APU_RESETn3;
-  wire RESET    = qb.apu.APU_RESET1;
-  wire aCLK_2M  = qa.sys.AJER_2M;
-  wire aCLK_1M  = qa.sys.CPUCLK_xxxxEFGH9;
-  wire aCLK_512 = qa.sys.CLK_512a;
-  wire bCLK_2M  = qb.sys.AJER_2M;
-  wire bCLK_1M  = qb.sys.CPUCLK_xxxxEFGH9;
-  wire bCLK_512 = qb.sys.CLK_512a;
-  wire bCLK_256 = qb.sys.CLK_256a;
-  wire bCLK_128 = qb.sys.CLK_128a;
-
-  bool CPU_RD   = qb.sys.CPU_RD;
-  bool CPU_RDn  = qb.apu.CPU_RDn;
-  wire APU_WR   = qb.apu.APU_WR;
-  bool CPU_WR_WEIRD = qb.apu.CPU_WR_WEIRD;
-
-  wire ADDR_FF10 = qb.apu.ADDR_FF10;
-  wire ADDR_FF11 = qb.apu.ADDR_FF11;
-  wire ADDR_FF12 = qb.apu.ADDR_FF12;
-  wire ADDR_FF13 = qb.apu.ADDR_FF13;
-  wire ADDR_FF14 = qb.apu.ADDR_FF14;
-
-  wire NR41_LEN3b = qb.ch4.NR41_LEN3b; // wat?
-
-  wire D0 = qb.D0;
-  wire D1 = qb.D1;
-  wire D2 = qb.D2;
-  wire D3 = qb.D3;
-  wire D4 = qb.D4;
-  wire D5 = qb.D5;
-  wire D6 = qb.D6;
-  wire D7 = qb.D7;
-
-  bool DBG_APU   = qb.apu.DBG_APU;
-  wire DBG_SWEEP = qb.apu.DBG_SWEEP;
-}
-
-void P11_Ch1Regs_tick(const Gameboy& qa, const Gameboy& qb, Gameboy& qc) {
+void Channel1_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& qa, const Gameboy& qb, Gameboy& qc) {
 
   const Channel1& pa = qa.ch1;
   const Channel1& pb = qb.ch1;
@@ -63,7 +16,7 @@ void P11_Ch1Regs_tick(const Gameboy& qa, const Gameboy& qb, Gameboy& qc) {
   //----------
   // Inputs
 
-  wire ZERO     = qb.chip.P10_B;
+  wire ZERO     = chip_in.P10_B;
   wire RESET    = qb.apu.APU_RESET1;
 
   wire aCLK_2M  = qa.sys.AJER_2M;
@@ -118,7 +71,7 @@ void P11_Ch1Regs_tick(const Gameboy& qa, const Gameboy& qb, Gameboy& qc) {
 
   /*p10.BAFU*/ wire CPU_WRn = not(CPU_WR);
   /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
-  /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(qb.cpu.FROM_CPU5, APU_WR);
+  /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(cpu_in.FROM_CPU5, APU_WR);
 
   /*p09.AGUR*/ wire RESETn = not(RESET);
   /*p09.ATYV*/ wire RESETo = not(RESET);

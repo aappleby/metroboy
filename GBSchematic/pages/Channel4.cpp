@@ -1,4 +1,4 @@
-#include "../Schematics.h"
+#include "Channel4.h"
 #include "Gameboy.h"
 
 /*
@@ -29,7 +29,10 @@ p09.DBG_APU;
 */
 
 
-void Channel4::tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
+  (void)chip_in;
+  (void)cpu_in;
+
   const Channel4& pa = a.ch4;
   const Channel4& pb = b.ch4;
   Channel4& pc = c.ch4;

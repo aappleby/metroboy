@@ -1,38 +1,37 @@
 #include "Gameboy.h"
 
-//-----------------------------------------------------------------------------
-
-void Gameboy_tick(const Gameboy& /*a*/, const Gameboy& b, Gameboy& c) {
-  /*P10.TACE*/ c.apu.AMP_ENn = and(b.ch1.CH1_AMP_ENn, b.ch2.CH2_AMP_ENn, b.ch3.CH3_AMP_ENna, b.ch4.CH4_AMP_ENn);
-}
+#pragma warning(disable : 4189)
+#pragma warning(disable : 4100)
 
 //-----------------------------------------------------------------------------
 
-void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   const System& pa = a.sys;
   const System& pb = b.sys;
   System& pc = c.sys;
 
+  /*P10.TACE*/ c.apu.AMP_ENn = and(b.ch1.CH1_AMP_ENn, b.ch2.CH2_AMP_ENn, b.ch3.CH3_AMP_ENna, b.ch4.CH4_AMP_ENn);
+
   //----------
   // CPU reset
 
-  /*p01.UCOB*/ pc.CLK_BAD1    = not(b.chip.CLKIN_A);
-  /*p01.ATEZ*/ pc.CLK_BAD2    = not(b.chip.CLKIN_A);
-  /*p01.ABOL*/ pc.CPUCLK_REQn = not(b.cpu.CPUCLK_REQ);
+  /*p01.UCOB*/ pc.CLK_BAD1    = not(chip_in.CLKIN_A);
+  /*p01.ATEZ*/ pc.CLK_BAD2    = not(chip_in.CLKIN_A);
+  /*p01.ABOL*/ pc.CPUCLK_REQn = not(cpu_in.CPUCLK_REQ);
 
-  /*p01.TUBO*/ pc.NO_CLOCK    = or(pb.CPUCLK_REQn, /*p01.UPYF*/ or(b.chip.RST, pb.CLK_BAD1));
+  /*p01.TUBO*/ pc.NO_CLOCK    = or(pb.CPUCLK_REQn, /*p01.UPYF*/ or(chip_in.RST, pb.CLK_BAD1));
   /*p01.UNUT*/ pc.TIMEOUT     = and(pb.NO_CLOCK, pb.DIV_15);
   /*p01.TABA*/ pc.CPU_RESET   = or(pb.MODE_DBG2, pb.MODE_DBG1, pb.TIMEOUT);
   /*p01.ALYP*/ pc.CPU_RESETn  = not(pb.CPU_RESET);
 
-  c.cpu.CPU_RESET = pb.CPU_RESET;
+  c.cpu_out.CPU_RESET = pb.CPU_RESET;
 
   //----------
   // SYS reset tree
 
   /*p01.BOMA*/ pc.RESET_CLK = not(pb.DIV_CLK);
-  /*p01.ASOL*/ pc.RESET_IN  = or (/*p01.AFAR*/ nor(pb.CPU_RESETn, b.chip.RST), b.chip.RST);
+  /*p01.ASOL*/ pc.RESET_IN  = or (/*p01.AFAR*/ nor(pb.CPU_RESETn, chip_in.RST), chip_in.RST);
   /*p01.AFER*/ pc.RESET_REG = tock_pos(pa.RESET_CLK, pb.RESET_CLK, pb.MODE_PROD, pb.RESET_REG, pb.RESET_IN);
 
   /*p01.AVOR*/ c.sys.SYS_RESET4  = or( b.sys.RESET_REG, b.sys.RESET_IN);
@@ -67,8 +66,8 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // Clock tree
 
-  /*p01.ARYS*/ pc.CLK_AxCxExGx5  = not(b.chip.CLKIN_B);
-  /*p01.ANOS*/ pc.CLK_AxCxExGx6  = nand(b.chip.CLKIN_B, pb.CLK_xBxDxFxH3);
+  /*p01.ARYS*/ pc.CLK_AxCxExGx5  = not(chip_in.CLKIN_B);
+  /*p01.ANOS*/ pc.CLK_AxCxExGx6  = nand(chip_in.CLKIN_B, pb.CLK_xBxDxFxH3);
   /*p01.APUV*/ pc.CLK_AxCxExGx1  = not(pb.CLK_xBxDxFxH1);
   /*p01.ARYF*/ pc.CLK_AxCxExGx2  = not(pb.CLK_xBxDxFxH1);
   /*p01.ALET*/ pc.CLK_AxCxExGx4  = not(pb.CLK_xBxDxFxH2);
@@ -132,7 +131,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p01.BOGA*/ pc.DIV_CLK = not(pb.DIV_CLKn);
   /*p01.BEDO*/ pc.CPU_CLK1n = not(/*p01.BYXO*/ not(/*p01.BUVU*/ and(pb.CPUCLK_REQ, pb.DIV_CLKn)));
   
-  c.cpu.CPU_CLK1 = /*p01.BOWA*/ not(pb.CPU_CLK1n);
+  c.cpu_out.CPU_CLK1 = /*p01.BOWA*/ not(pb.CPU_CLK1n);
   
   //----------
   // Cartridge clock
@@ -145,7 +144,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // FF04 DIV
 
   {
-    /*p01.UFOL*/ pc.DIV_RSTn = nor(pb.CLK_BAD1, b.chip.RST, /*p01.TAPE*/ and(pb.CPU_WR, pb.FF04_FF07, pb.A1n, pb.A0n));
+    /*p01.UFOL*/ pc.DIV_RSTn = nor(pb.CLK_BAD1, chip_in.RST, /*p01.TAPE*/ and(pb.CPU_WR, pb.FF04_FF07, pb.A1n, pb.A0n));
 
     /*p01.UKUP*/ pc.DIV_00 = tock_pos(pa.DIV_CLK,    pb.DIV_CLK,    pb.DIV_RSTn, pb.DIV_00, !pb.DIV_00);
     /*p01.UFOR*/ pc.DIV_01 = tock_pos(!pa.DIV_00,    !pb.DIV_00,    pb.DIV_RSTn, pb.DIV_01, !pb.DIV_01);
@@ -229,7 +228,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p02.AWOB*/ pc.TO_CPU2 = latch_pos(pb.DIV_CLK, pb.TO_CPU2, pb.ANY_BUTTON);
 
-  /*p02.KERY*/ pc.ANY_BUTTON = or(b.chip.P13_C, b.chip.P12_C, b.chip.P11_C, b.chip.P10_C);
+  /*p02.KERY*/ pc.ANY_BUTTON = or(chip_in.P13_C, chip_in.P12_C, chip_in.P11_C, chip_in.P10_C);
   /*p02.BATU*/ pc.JP_GLITCH0 = tock_pos(pa.DIV_CLK, pb.DIV_CLK, pb.SYS_RESETn1, pb.JP_GLITCH0, pb.ANY_BUTTON);
   /*p02.ACEF*/ pc.JP_GLITCH1 = tock_pos(pa.DIV_CLK, pb.DIV_CLK, pb.SYS_RESETn1, pb.JP_GLITCH1, pb.JP_GLITCH0);
   /*p02.AGEM*/ pc.JP_GLITCH2 = tock_pos(pa.DIV_CLK, pb.DIV_CLK, pb.SYS_RESETn1, pb.JP_GLITCH2, pb.JP_GLITCH1);
@@ -248,11 +247,11 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p07.REFA*/ wire FF0F_WRn  = nand(ADDR_XX0X, ADDR_XXXF, pb.ADDR_FFXX, pb.CPU_WR); // schematic wrong, is NAND
     /*p02.ROTU*/ wire FF0F_WRa  = not(FF0F_WRn);
 
-    /*p02.LETY*/ wire INT_VBL_ACK  = not(b.cpu.FROM_CPU9);
-    /*p02.LEJA*/ wire INT_SER_ACK  = not(b.cpu.FROM_CPU8);
-    /*p02.LESA*/ wire INT_JOY_ACK  = not(b.cpu.FROM_CPU10);
-    /*p02.LUFE*/ wire INT_STAT_ACK = not(b.cpu.FROM_CPU7);
-    /*p02.LAMO*/ wire INT_TIM_ACK  = not(b.cpu.FROM_CPU11);
+    /*p02.LETY*/ wire INT_VBL_ACK  = not(cpu_in.FROM_CPU9);
+    /*p02.LEJA*/ wire INT_SER_ACK  = not(cpu_in.FROM_CPU8);
+    /*p02.LESA*/ wire INT_JOY_ACK  = not(cpu_in.FROM_CPU10);
+    /*p02.LUFE*/ wire INT_STAT_ACK = not(cpu_in.FROM_CPU7);
+    /*p02.LAMO*/ wire INT_TIM_ACK  = not(cpu_in.FROM_CPU11);
 
     /*p02.MYZU*/ wire FF0F_SET0 = nand(FF0F_WRa, INT_VBL_ACK, b.D0);
     /*p02.MODY*/ wire FF0F_SET1 = nand(FF0F_WRa, INT_SER_ACK, b.D1);
@@ -266,7 +265,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p02.TUNY*/ wire FF0F_RST3 = and(/*p02.SULO*/ or(b.D3, FF0F_WRn), INT_STAT_ACK, pb.SYS_RESETn1);
     /*p02.TYME*/ wire FF0F_RST4 = and(/*p02.SEME*/ or(b.D4, FF0F_WRn), INT_TIM_ACK,  pb.SYS_RESETn1);
 
-    /*p02.PESU*/ wire FF0F_IN = not(b.chip.P10_B);
+    /*p02.PESU*/ wire FF0F_IN = not(chip_in.P10_B);
 
     /*p02.LOPE*/ pc.FF0F_0 = srtock_pos(a.vid.INT_VBL_BUF, b.vid.INT_VBL_BUF, FF0F_SET0, FF0F_RST0, pb.FF0F_0, FF0F_IN);
     /*p02.UBUL*/ pc.FF0F_1 = srtock_pos(pa.SER_CNT3,       pb.SER_CNT3,       FF0F_SET1, FF0F_RST1, pb.FF0F_1, FF0F_IN);
@@ -373,7 +372,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p03.TECY*/ pc.TECY = mux2(pb.UKAP, pb.TEKO, pb.TAC_1);
   /*p03.SOGU*/ pc.TIMA_CLK = nor(pb.TECY, !pb.TAC_2);
 
-  /*p03.MUZU*/ pc.MUZU = or(b.cpu.FROM_CPU5, pb.FF05_WRn);
+  /*p03.MUZU*/ pc.MUZU = or(cpu_in.FROM_CPU5, pb.FF05_WRn);
   /*p03.MEKE*/ pc.MEKE = not(pb.INT_TIMER);
   /*p03.MEXU*/ pc.TIMA_LOAD = nand(pb.MUZU, pb.SYS_RESETn1, pb.MEKE);
 
@@ -474,19 +473,19 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p04.LUFA*/ pc.VRAM_TO_OAMn = not(pb.VRAM_TO_OAMb);
     /*p04.AHOC*/ pc.VRAM_TO_OAMa = not(pb.VRAM_TO_OAMn);
 
-    /*p04.ECAL*/ if (pb.VRAM_TO_OAMa) c.chip.MA00 = pb.DMA_A00;
-    /*p04.EGEZ*/ if (pb.VRAM_TO_OAMa) c.chip.MA01 = pb.DMA_A01;
-    /*p04.FUHE*/ if (pb.VRAM_TO_OAMa) c.chip.MA02 = pb.DMA_A02;
-    /*p04.FYZY*/ if (pb.VRAM_TO_OAMa) c.chip.MA03 = pb.DMA_A03;
-    /*p04.DAMU*/ if (pb.VRAM_TO_OAMa) c.chip.MA04 = pb.DMA_A04;
-    /*p04.DAVA*/ if (pb.VRAM_TO_OAMa) c.chip.MA05 = pb.DMA_A05;
-    /*p04.ETEG*/ if (pb.VRAM_TO_OAMa) c.chip.MA06 = pb.DMA_A06;
-    /*p04.EREW*/ if (pb.VRAM_TO_OAMa) c.chip.MA07 = pb.DMA_A07;
-    /*p04.EVAX*/ if (pb.VRAM_TO_OAMa) c.chip.MA08 = pb.DMA_A08;
-    /*p04.DUVE*/ if (pb.VRAM_TO_OAMa) c.chip.MA09 = pb.DMA_A09;
-    /*p04.ERAF*/ if (pb.VRAM_TO_OAMa) c.chip.MA10 = pb.DMA_A10;
-    /*p04.FUSY*/ if (pb.VRAM_TO_OAMa) c.chip.MA11 = pb.DMA_A11;
-    /*p04.EXYF*/ if (pb.VRAM_TO_OAMa) c.chip.MA12 = pb.DMA_A12;
+    /*p04.ECAL*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA00 = pb.DMA_A00;
+    /*p04.EGEZ*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA01 = pb.DMA_A01;
+    /*p04.FUHE*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA02 = pb.DMA_A02;
+    /*p04.FYZY*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA03 = pb.DMA_A03;
+    /*p04.DAMU*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA04 = pb.DMA_A04;
+    /*p04.DAVA*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA05 = pb.DMA_A05;
+    /*p04.ETEG*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA06 = pb.DMA_A06;
+    /*p04.EREW*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA07 = pb.DMA_A07;
+    /*p04.EVAX*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA08 = pb.DMA_A08;
+    /*p04.DUVE*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA09 = pb.DMA_A09;
+    /*p04.ERAF*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA10 = pb.DMA_A10;
+    /*p04.FUSY*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA11 = pb.DMA_A11;
+    /*p04.EXYF*/ if (pb.VRAM_TO_OAMa) c.chip_out.MA12 = pb.DMA_A12;
   }
 
   //----------
@@ -501,8 +500,8 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p05.KECY*/ pc.JOYP_LB     = tock_pos(pa.FF00_CLK, pb.FF00_CLK, pb.SYS_RESETn1, pc.JOYP_LB, b.D1);
     /*p05.JALE*/ pc.JOYP_UC     = tock_pos(pa.FF00_CLK, pb.FF00_CLK, pb.SYS_RESETn1, pc.JOYP_UC, b.D2);
     /*p05.KYME*/ pc.JOYP_DS     = tock_pos(pa.FF00_CLK, pb.FF00_CLK, pb.SYS_RESETn1, pc.JOYP_DS, b.D3);
-    /*p05.KELY*/ pc.P14_D       = tock_pos(pa.FF00_CLK, pb.FF00_CLK, pb.SYS_RESETn1, pc.P14_D, b.D4);
-    /*p05.COFY*/ pc.P15_D       = tock_pos(pa.FF00_CLK, pb.FF00_CLK, pb.SYS_RESETn1, pc.P15_D, b.D5);
+    /*p05.KELY*/ pc.KELY        = tock_pos(pa.FF00_CLK, pb.FF00_CLK, pb.SYS_RESETn1, pc.KELY, b.D4);
+    /*p05.COFY*/ pc.COFY        = tock_pos(pa.FF00_CLK, pb.FF00_CLK, pb.SYS_RESETn1, pc.COFY, b.D5);
     /*p05.KUKO*/ pc.DBG_FF00_D6 = tock_pos(pa.FF00_CLK, pb.FF00_CLK, pb.SYS_RESETn1, pc.DBG_FF00_D6, b.D6);
     /*p05.KERU*/ pc.DBG_FF00_D7 = tock_pos(pa.FF00_CLK, pb.FF00_CLK, pb.SYS_RESETn1, pc.DBG_FF00_D7, b.D7);
 
@@ -510,34 +509,39 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
     // FIXME really unsure about these pin assignments, seem to have a few missing signals
 
-    /*p05.KOLE*/ c.chip.P10_A = nand(pb.JOYP_RA, pb.FF60_0);
-    /*p05.KYTO*/ c.chip.P11_A = nand(pb.JOYP_LB, pb.FF60_0);
-    /*p05.KYHU*/ c.chip.P12_A = nand(pb.JOYP_UC, pb.FF60_0);
-    /*p05.KORY*/ c.chip.P13_A = nand(pb.JOYP_DS, pb.FF60_0);
+    /*p05.KOLE*/ c.chip_out.P10_A = nand(pb.JOYP_RA, pb.FF60_0);
+    /*p05.KYBU*/ c.chip_out.P10_D = nor (pb.JOYP_RA, FF60_0n);
 
-    /*p05.KYBU*/ c.chip.P10_D = nor (pb.JOYP_RA, FF60_0n);
-    /*p05.KABU*/ c.chip.P11_D = nor (pb.JOYP_LB, FF60_0n);
-    /*p05.KASY*/ c.chip.P12_D = nor (pb.FF60_0,  FF60_0n); // this one doesn't match?
-    /*p05.KALE*/ c.chip.P13_D = nor (pb.JOYP_DS, FF60_0n);
+    /*p05.KYTO*/ c.chip_out.P11_A = nand(pb.JOYP_LB, pb.FF60_0);
+    /*p05.KABU*/ c.chip_out.P11_D = nor (pb.JOYP_LB, FF60_0n);
 
-    /*p05.KARU*/ c.chip.P14_A = or(!pb.P14_D, FF60_0n);
-    /*p05.CELA*/ c.chip.P15_A = or(!pb.P15_D, FF60_0n);
+    /*p05.KYHU*/ c.chip_out.P12_A = nand(pb.JOYP_UC, pb.FF60_0);
+    /*p05.KASY*/ c.chip_out.P12_D = nor (pb.FF60_0,  FF60_0n); // this one doesn't match?
+
+    /*p05.KORY*/ c.chip_out.P13_A = nand(pb.JOYP_DS, pb.FF60_0);
+    /*p05.KALE*/ c.chip_out.P13_D = nor (pb.JOYP_DS, FF60_0n);
+
+    /*p05.KARU*/ c.chip_out.P14_A = or(!pb.KELY, FF60_0n);
+    /*p05.KARU*/ c.chip_out.P14_D = pb.KELY;
+
+    /*p05.CELA*/ c.chip_out.P15_A = or(!pb.COFY, FF60_0n);
+    /*p05.KARU*/ c.chip_out.P15_D = pb.COFY;
 
     /*p10.ACAT*/ wire FF00_RD  = and(pb.CPU_RD, pb.ADDR_111111110xx00000, /*p10.AKUG*/ not(b.A06), /*p10.BYKO*/ not(b.A05));
     /*p05.BYZO*/ wire FF00_RDn = not(FF00_RD);
 
-    /*p05.KEVU*/ pc.JOYP_L0 = latch_pos(FF00_RDn, pb.JOYP_L0, b.chip.P10_C);
-    /*p05.KAPA*/ pc.JOYP_L1 = latch_pos(FF00_RDn, pb.JOYP_L1, b.chip.P11_C);
-    /*p05.KEJA*/ pc.JOYP_L2 = latch_pos(FF00_RDn, pb.JOYP_L2, b.chip.P12_C);
-    /*p05.KOLO*/ pc.JOYP_L3 = latch_pos(FF00_RDn, pb.JOYP_L3, b.chip.P13_C);
+    /*p05.KEVU*/ pc.JOYP_L0 = latch_pos(FF00_RDn, pb.JOYP_L0, chip_in.P10_C);
+    /*p05.KAPA*/ pc.JOYP_L1 = latch_pos(FF00_RDn, pb.JOYP_L1, chip_in.P11_C);
+    /*p05.KEJA*/ pc.JOYP_L2 = latch_pos(FF00_RDn, pb.JOYP_L2, chip_in.P12_C);
+    /*p05.KOLO*/ pc.JOYP_L3 = latch_pos(FF00_RDn, pb.JOYP_L3, chip_in.P13_C);
 
     // polarity?
     /*p05.KEMA*/ if (FF00_RDn) c.D0 = pb.JOYP_L0;
     /*p05.KURO*/ if (FF00_RDn) c.D1 = pb.JOYP_L1;
     /*p05.KUVE*/ if (FF00_RDn) c.D2 = pb.JOYP_L2;
     /*p05.JEKU*/ if (FF00_RDn) c.D3 = pb.JOYP_L3;
-    /*p05.KOCE*/ if (FF00_RDn) c.D4 = pb.P14_D;
-    /*p05.CUDY*/ if (FF00_RDn) c.D5 = pb.P15_D;
+    /*p05.KOCE*/ if (FF00_RDn) c.D4 = pb.KELY;
+    /*p05.CUDY*/ if (FF00_RDn) c.D5 = pb.COFY;
   }
 
   //----------
@@ -578,7 +582,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
     /*p06.COTY*/ pc.SER_CLK = tock_pos(pa.CLK_16K, pb.CLK_16K, pb.FF02_CLK, pb.SER_CLK, !pb.SER_CLK);
 
-    /*p06.CAVE*/ wire SER_CLK_MUXn = mux2n(pb.SER_CLK, b.chip.SCK_C, pb.XFER_DIR);
+    /*p06.CAVE*/ wire SER_CLK_MUXn = mux2n(pb.SER_CLK, chip_in.SCK_C, pb.XFER_DIR);
     /*p06.DAWA*/ pc.SER_CLK1 = or(SER_CLK_MUXn, !pb.XFER_START); // this must stop the clock or something when the transmit's done
     /*p06.EDYL*/ pc.SER_CLKn = not(pb.SER_CLK1);
     /*p06.EPYT*/ pc.SER_CLK2 = not(pb.SER_CLKn);
@@ -612,7 +616,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p06.EFAK*/ wire SER_DATA6_RSTn = or(and(FF01_WRn, b.D6), pb.SYS_RESETn1);
     /*p06.EGUV*/ wire SER_DATA7_RSTn = or(and(FF01_WRn, b.D7), pb.SYS_RESETn1);
 
-    /*p06.CAGE*/ pc.SIN_Cn = not(b.chip.SIN_C);
+    /*p06.CAGE*/ pc.SIN_Cn = not(chip_in.SIN_C);
     /*p06.CUBA*/ pc.SER_DATA0 = srtock_pos(pa.SER_CLK3, pb.SER_CLK3, SER_DATA0_SETn, SER_DATA0_RSTn, pb.SER_DATA0, pb.SIN_Cn);
     /*p06.DEGU*/ pc.SER_DATA1 = srtock_pos(pa.SER_CLK3, pb.SER_CLK3, SER_DATA1_SETn, SER_DATA1_RSTn, pb.SER_DATA1, pb.SER_DATA0);
     /*p06.DYRA*/ pc.SER_DATA2 = srtock_pos(pa.SER_CLK3, pb.SER_CLK3, SER_DATA2_SETn, SER_DATA2_RSTn, pb.SER_DATA2, pb.SER_DATA1);
@@ -637,17 +641,11 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p06.CORE*/ if (FF02_RD) c.D0 = pb.XFER_DIR;
     /*p06.ELUV*/ if (FF02_RD) c.D7 = pb.XFER_START;
 
-    /*p05.KENA*/ c.chip.SOUT  = mux2(pb.DBG_FF00_D6, pb.SER_OUT, pb.FF60_0);
-    /*p06.KEXU*/ c.chip.SCK_A = nand(pb.SER_CLK, pb.XFER_DIR);
-    /*p06.CULY*/ c.chip.SCK_B = pb.XFER_DIR;
-    /*p06.KUJO*/ c.chip.SCK_D = nor (pb.SER_CLK, /*p06.JAGO*/ not(pb.XFER_DIR));
+    /*p05.KENA*/ c.chip_out.SOUT  = mux2(pb.DBG_FF00_D6, pb.SER_OUT, pb.FF60_0);
+    /*p06.KEXU*/ c.chip_out.SCK_A = nand(pb.SER_CLK, pb.XFER_DIR);
+    /*p06.CULY*/ c.chip_out.SCK_B = pb.XFER_DIR;
+    /*p06.KUJO*/ c.chip_out.SCK_D = nor (pb.SER_CLK, /*p06.JAGO*/ not(pb.XFER_DIR));
   }
-
-  //----------
-  // doesn't do anything
-
-  pc.PIN_NC = not(b.cpu.FROM_CPU6);
-  c.chip.PIN_NC = pc.PIN_NC;
 
   //----------
   // Bootrom control
@@ -710,26 +708,26 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // P08
 
   // address valid and not vram
-  /*p08.TEXO*/ pc.ADDR_VALID_AND_NOT_VRAM = and(b.cpu.ADDR_VALID, pb.ADDR_NOT_VRAM);
+  /*p08.TEXO*/ pc.ADDR_VALID_AND_NOT_VRAM = and(cpu_in.ADDR_VALID, pb.ADDR_NOT_VRAM);
   /*p08.TEVY*/   pc.ADDR_NOT_VRAM = or(b.A13, b.A14, /*p08.SORE*/ not(b.A15));
 
   /*p08.MOCA*/ pc.MOCA = nor(pb.ADDR_VALID_AND_NOT_VRAM, pb.MODE_DBG1);
   /*p08.MOTY*/ pc.MOTY = or(pb.MOCA, /*p08.LYWE*/ not(pb.LAGU));
-  /*p08.LAGU*/   pc.LAGU = or(and(b.cpu.CPU_RAW_RD, pb.ADDR_VALID_AND_NOT_VRAMn), b.cpu.CPU_RAW_WR);
+  /*p08.LAGU*/   pc.LAGU = or(and(cpu_in.CPU_RAW_RD, pb.ADDR_VALID_AND_NOT_VRAMn), cpu_in.CPU_RAW_WR);
   /*p08.LEVO*/     pc.ADDR_VALID_AND_NOT_VRAMn = not(pb.ADDR_VALID_AND_NOT_VRAM);
 
   //----------
   // Cart select/read/write signals
 
   {
-    /*p01.AGUT*/ wire AGUT = and(or(pb.CLK_ABCDxxxx3, pb.CLK_ABxxxxGH1), b.cpu.ADDR_VALID);
+    /*p01.AGUT*/ wire AGUT = and(or(pb.CLK_ABCDxxxx3, pb.CLK_ABxxxxGH1), cpu_in.ADDR_VALID);
     /*p01.ABUZ*/ pc.CPU_RD_SYNC = not(/*p01.AWOD*/ or(pb.MODE_DBG2, AGUT));
 
     // debug override of CPU_RD/CPU_WR
 
-    /*p01.APOV*/ pc.CPU_WR_SYNC  = not(/*p01.AREV*/ nand(b.cpu.CPU_RAW_WR, pb.CLK_xxxDxxxx1));
-    /*p07.UBAL*/ pc.CPU_WR_MUX   = mux2(b.chip.WR_C, pb.CPU_WR_SYNC,   pb.MODE_DBG2);
-    /*p07.UJYV*/ pc.CPU_RD_MUX   = mux2(b.chip.RD_C, b.cpu.CPU_RAW_RD, pb.MODE_DBG2);
+    /*p01.APOV*/ pc.CPU_WR_SYNC  = not(/*p01.AREV*/ nand(cpu_in.CPU_RAW_WR, pb.CLK_xxxDxxxx1));
+    /*p07.UBAL*/ pc.CPU_WR_MUX   = mux2(chip_in.WR_C, pb.CPU_WR_SYNC,   pb.MODE_DBG2);
+    /*p07.UJYV*/ pc.CPU_RD_MUX   = mux2(chip_in.RD_C, cpu_in.CPU_RAW_RD, pb.MODE_DBG2);
 
     /*p07.TEDO*/ pc.CPU_RD       = not(pb.CPU_RD_MUX);
     /*p07.TAPU*/ pc.CPU_WR       = not(pb.CPU_WR_MUX);
@@ -742,15 +740,15 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p08.TUMA*/ wire CART_RAM = and(b.A13, /*p08.SOGY*/ not(b.A14), b.A15);
     /*p08.TYNU*/ wire TYNU = or(and(b.A15, b.A14), CART_RAM); // not sure this is right
     /*p08.TOZA*/ wire TOZA = and(pb.CPU_RD_SYNC, TYNU, ADDR_0000_FE00);
-    /*p08.TYHO*/ c.chip.CS_A = mux2(pb.DMA_A15, TOZA, pb.DO_DMA); // polarity?
+    /*p08.TYHO*/ c.chip_out.CS_A = mux2(pb.DMA_A15, TOZA, pb.DO_DMA); // polarity?
 
     /*p08.TYMU*/ wire TYMU = nor(pb.DO_DMA, pb.MOTY);
-    /*p08.UGAC*/ c.chip.RD_A = nand(TYMU, pb.MODE_DBG2n1);
-    /*p08.URUN*/ c.chip.RD_D = nor (TYMU, pb.MODE_DBG2);
+    /*p08.UGAC*/ c.chip_out.RD_A = nand(TYMU, pb.MODE_DBG2n1);
+    /*p08.URUN*/ c.chip_out.RD_D = nor (TYMU, pb.MODE_DBG2);
 
     /*p08.PUVA*/ wire PUVA = or(/*p08.NEVY*/ or(/*p08.MEXO*/ not(pb.CPU_WR_SYNC), pb.MOCA), pb.DO_DMA);
-    /*p08.UVER*/ c.chip.WR_A = nand(PUVA, pb.MODE_DBG2n1);
-    /*p08.USUF*/ c.chip.WR_D = nor (PUVA, pb.MODE_DBG2);
+    /*p08.UVER*/ c.chip_out.WR_A = nand(PUVA, pb.MODE_DBG2n1);
+    /*p08.USUF*/ c.chip_out.WR_D = nor (PUVA, pb.MODE_DBG2);
   }
 
   //----------
@@ -794,39 +792,39 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p08.PEGE*/ pc.ADDR_MUX_14 = mux2(pb.DMA_A14, pb.ADDR_LATCH_14, pb.DO_DMA);
     /*p08.TAZY*/ pc.ADDR_MUX_15 = mux2(pb.DMA_A15, pb.ADDR_LATCH_15, pb.DO_DMA);
 
-    /*p08.KUPO*/ c.chip.A00_A = nand(pb.ADDR_MUX_00, pb.MODE_DBG2n1);
-    /*p08.CABA*/ c.chip.A01_A = nand(pb.ADDR_MUX_01, pb.MODE_DBG2n1);
-    /*p08.BOKU*/ c.chip.A02_A = nand(pb.ADDR_MUX_02, pb.MODE_DBG2n1);
-    /*p08.BOTY*/ c.chip.A03_A = nand(pb.ADDR_MUX_03, pb.MODE_DBG2n1);
-    /*p08.BYLA*/ c.chip.A04_A = nand(pb.ADDR_MUX_04, pb.MODE_DBG2n1);
-    /*p08.BADU*/ c.chip.A05_A = nand(pb.ADDR_MUX_05, pb.MODE_DBG2n1);
-    /*p08.CEPU*/ c.chip.A06_A = nand(pb.ADDR_MUX_06, pb.MODE_DBG2n1);
-    /*p08.DEFY*/ c.chip.A07_A = nand(pb.ADDR_MUX_07, pb.MODE_DBG2n1);
-    /*p08.MYNY*/ c.chip.A08_A = nand(pb.ADDR_MUX_08, pb.MODE_DBG2n1);
-    /*p08.MUNE*/ c.chip.A09_A = nand(pb.ADDR_MUX_09, pb.MODE_DBG2n1);
-    /*p08.ROXU*/ c.chip.A10_A = nand(pb.ADDR_MUX_10, pb.MODE_DBG2n1);
-    /*p08.LEPY*/ c.chip.A11_A = nand(pb.ADDR_MUX_11, pb.MODE_DBG2n1);
-    /*p08.LUCE*/ c.chip.A12_A = nand(pb.ADDR_MUX_12, pb.MODE_DBG2n1);
-    /*p08.LABE*/ c.chip.A13_A = nand(pb.ADDR_MUX_13, pb.MODE_DBG2n1);
-    /*p08.PUHE*/ c.chip.A14_A = nand(pb.ADDR_MUX_14, pb.MODE_DBG2n1);
-    /*p08.SUZE*/ c.chip.A15_A = nand(pb.ADDR_MUX_15, pb.MODE_DBG2n2);
+    /*p08.KUPO*/ c.chip_out.A00_A = nand(pb.ADDR_MUX_00, pb.MODE_DBG2n1);
+    /*p08.CABA*/ c.chip_out.A01_A = nand(pb.ADDR_MUX_01, pb.MODE_DBG2n1);
+    /*p08.BOKU*/ c.chip_out.A02_A = nand(pb.ADDR_MUX_02, pb.MODE_DBG2n1);
+    /*p08.BOTY*/ c.chip_out.A03_A = nand(pb.ADDR_MUX_03, pb.MODE_DBG2n1);
+    /*p08.BYLA*/ c.chip_out.A04_A = nand(pb.ADDR_MUX_04, pb.MODE_DBG2n1);
+    /*p08.BADU*/ c.chip_out.A05_A = nand(pb.ADDR_MUX_05, pb.MODE_DBG2n1);
+    /*p08.CEPU*/ c.chip_out.A06_A = nand(pb.ADDR_MUX_06, pb.MODE_DBG2n1);
+    /*p08.DEFY*/ c.chip_out.A07_A = nand(pb.ADDR_MUX_07, pb.MODE_DBG2n1);
+    /*p08.MYNY*/ c.chip_out.A08_A = nand(pb.ADDR_MUX_08, pb.MODE_DBG2n1);
+    /*p08.MUNE*/ c.chip_out.A09_A = nand(pb.ADDR_MUX_09, pb.MODE_DBG2n1);
+    /*p08.ROXU*/ c.chip_out.A10_A = nand(pb.ADDR_MUX_10, pb.MODE_DBG2n1);
+    /*p08.LEPY*/ c.chip_out.A11_A = nand(pb.ADDR_MUX_11, pb.MODE_DBG2n1);
+    /*p08.LUCE*/ c.chip_out.A12_A = nand(pb.ADDR_MUX_12, pb.MODE_DBG2n1);
+    /*p08.LABE*/ c.chip_out.A13_A = nand(pb.ADDR_MUX_13, pb.MODE_DBG2n1);
+    /*p08.PUHE*/ c.chip_out.A14_A = nand(pb.ADDR_MUX_14, pb.MODE_DBG2n1);
+    /*p08.SUZE*/ c.chip_out.A15_A = nand(pb.ADDR_MUX_15, pb.MODE_DBG2n2);
 
-    /*p08.KOTY*/ c.chip.A00_D = nor(pb.ADDR_MUX_00, pb.MODE_DBG2);
-    /*p08.COTU*/ c.chip.A01_D = nor(pb.ADDR_MUX_01, pb.MODE_DBG2);
-    /*p08.BAJO*/ c.chip.A02_D = nor(pb.ADDR_MUX_02, pb.MODE_DBG2);
-    /*p08.BOLA*/ c.chip.A03_D = nor(pb.ADDR_MUX_03, pb.MODE_DBG2);
-    /*p08.BEVO*/ c.chip.A04_D = nor(pb.ADDR_MUX_04, pb.MODE_DBG2);
-    /*p08.AJAV*/ c.chip.A05_D = nor(pb.ADDR_MUX_05, pb.MODE_DBG2);
-    /*p08.CYKA*/ c.chip.A06_D = nor(pb.ADDR_MUX_06, pb.MODE_DBG2);
-    /*p08.COLO*/ c.chip.A07_D = nor(pb.ADDR_MUX_07, pb.MODE_DBG2);
-    /*p08.MEGO*/ c.chip.A08_D = nor(pb.ADDR_MUX_08, pb.MODE_DBG2);
-    /*p08.MENY*/ c.chip.A09_D = nor(pb.ADDR_MUX_09, pb.MODE_DBG2);
-    /*p08.RORE*/ c.chip.A10_D = nor(pb.ADDR_MUX_10, pb.MODE_DBG2);
-    /*p08.LYNY*/ c.chip.A11_D = nor(pb.ADDR_MUX_11, pb.MODE_DBG2);
-    /*p08.LOSO*/ c.chip.A12_D = nor(pb.ADDR_MUX_12, pb.MODE_DBG2);
-    /*p08.LEVA*/ c.chip.A13_D = nor(pb.ADDR_MUX_13, pb.MODE_DBG2);
-    /*p08.PAHY*/ c.chip.A14_D = nor(pb.ADDR_MUX_14, pb.MODE_DBG2);
-    /*p08.RULO*/ c.chip.A15_D = nor(pb.ADDR_MUX_15, pb.MODE_DBG2);
+    /*p08.KOTY*/ c.chip_out.A00_D = nor(pb.ADDR_MUX_00, pb.MODE_DBG2);
+    /*p08.COTU*/ c.chip_out.A01_D = nor(pb.ADDR_MUX_01, pb.MODE_DBG2);
+    /*p08.BAJO*/ c.chip_out.A02_D = nor(pb.ADDR_MUX_02, pb.MODE_DBG2);
+    /*p08.BOLA*/ c.chip_out.A03_D = nor(pb.ADDR_MUX_03, pb.MODE_DBG2);
+    /*p08.BEVO*/ c.chip_out.A04_D = nor(pb.ADDR_MUX_04, pb.MODE_DBG2);
+    /*p08.AJAV*/ c.chip_out.A05_D = nor(pb.ADDR_MUX_05, pb.MODE_DBG2);
+    /*p08.CYKA*/ c.chip_out.A06_D = nor(pb.ADDR_MUX_06, pb.MODE_DBG2);
+    /*p08.COLO*/ c.chip_out.A07_D = nor(pb.ADDR_MUX_07, pb.MODE_DBG2);
+    /*p08.MEGO*/ c.chip_out.A08_D = nor(pb.ADDR_MUX_08, pb.MODE_DBG2);
+    /*p08.MENY*/ c.chip_out.A09_D = nor(pb.ADDR_MUX_09, pb.MODE_DBG2);
+    /*p08.RORE*/ c.chip_out.A10_D = nor(pb.ADDR_MUX_10, pb.MODE_DBG2);
+    /*p08.LYNY*/ c.chip_out.A11_D = nor(pb.ADDR_MUX_11, pb.MODE_DBG2);
+    /*p08.LOSO*/ c.chip_out.A12_D = nor(pb.ADDR_MUX_12, pb.MODE_DBG2);
+    /*p08.LEVA*/ c.chip_out.A13_D = nor(pb.ADDR_MUX_13, pb.MODE_DBG2);
+    /*p08.PAHY*/ c.chip_out.A14_D = nor(pb.ADDR_MUX_14, pb.MODE_DBG2);
+    /*p08.RULO*/ c.chip_out.A15_D = nor(pb.ADDR_MUX_15, pb.MODE_DBG2);
   }
 
   //----------
@@ -850,43 +848,43 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p08.RORU*/ pc.DBUS_OUTn = mux2(pb.CPU_RDo, pb.MOTY, pb.MODE_DBG2);
     /*p08.LULA*/ pc.DBUS_OUT  = not(pb.DBUS_OUTn);
 
-    /*p25.RUXA*/ c.chip.D0_A = nand(b.D0, pb.DBUS_OUT);
-    /*p25.RUJA*/ c.chip.D1_A = nand(b.D1, pb.DBUS_OUT);
-    /*p25.RABY*/ c.chip.D2_A = nand(b.D2, pb.DBUS_OUT);
-    /*p25.RERA*/ c.chip.D3_A = nand(b.D3, pb.DBUS_OUT);
-    /*p25.RORY*/ c.chip.D4_A = nand(b.D4, pb.DBUS_OUT);
-    /*p25.RYVO*/ c.chip.D5_A = nand(b.D5, pb.DBUS_OUT);
-    /*p25.RAFY*/ c.chip.D7_A = nand(b.D6, pb.DBUS_OUT);
-    /*p25.RAVU*/ c.chip.D6_A = nand(b.D7, pb.DBUS_OUT);
+    /*p25.RUXA*/ c.chip_out.D0_A = nand(b.D0, pb.DBUS_OUT);
+    /*p25.RUJA*/ c.chip_out.D1_A = nand(b.D1, pb.DBUS_OUT);
+    /*p25.RABY*/ c.chip_out.D2_A = nand(b.D2, pb.DBUS_OUT);
+    /*p25.RERA*/ c.chip_out.D3_A = nand(b.D3, pb.DBUS_OUT);
+    /*p25.RORY*/ c.chip_out.D4_A = nand(b.D4, pb.DBUS_OUT);
+    /*p25.RYVO*/ c.chip_out.D5_A = nand(b.D5, pb.DBUS_OUT);
+    /*p25.RAFY*/ c.chip_out.D7_A = nand(b.D6, pb.DBUS_OUT);
+    /*p25.RAVU*/ c.chip_out.D6_A = nand(b.D7, pb.DBUS_OUT);
 
-    /*p08.LULA*/ c.chip.D0_B = pb.DBUS_OUT;
-    /*p08.LULA*/ c.chip.D1_B = pb.DBUS_OUT;
-    /*p08.LULA*/ c.chip.D2_B = pb.DBUS_OUT;
-    /*p08.LULA*/ c.chip.D3_B = pb.DBUS_OUT;
-    /*p08.LULA*/ c.chip.D4_B = pb.DBUS_OUT;
-    /*p08.LULA*/ c.chip.D5_B = pb.DBUS_OUT;
-    /*p08.LULA*/ c.chip.D6_B = pb.DBUS_OUT;
-    /*p08.LULA*/ c.chip.D7_B = pb.DBUS_OUT;
+    /*p08.LULA*/ c.chip_out.D0_B = pb.DBUS_OUT;
+    /*p08.LULA*/ c.chip_out.D1_B = pb.DBUS_OUT;
+    /*p08.LULA*/ c.chip_out.D2_B = pb.DBUS_OUT;
+    /*p08.LULA*/ c.chip_out.D3_B = pb.DBUS_OUT;
+    /*p08.LULA*/ c.chip_out.D4_B = pb.DBUS_OUT;
+    /*p08.LULA*/ c.chip_out.D5_B = pb.DBUS_OUT;
+    /*p08.LULA*/ c.chip_out.D6_B = pb.DBUS_OUT;
+    /*p08.LULA*/ c.chip_out.D7_B = pb.DBUS_OUT;
 
-    /*p08.RUNE*/ c.chip.D0_D = nor (b.D0, pb.DBUS_OUTn);
-    /*p08.RYPU*/ c.chip.D1_D = nor (b.D1, pb.DBUS_OUTn);
-    /*p08.SULY*/ c.chip.D2_D = nor (b.D2, pb.DBUS_OUTn);
-    /*p08.SEZE*/ c.chip.D3_D = nor (b.D3, pb.DBUS_OUTn);
-    /*p08.RESY*/ c.chip.D4_D = nor (b.D4, pb.DBUS_OUTn);
-    /*p08.TAMU*/ c.chip.D5_D = nor (b.D5, pb.DBUS_OUTn);
-    /*p08.ROGY*/ c.chip.D6_D = nor (b.D6, pb.DBUS_OUTn);
-    /*p08.RYDA*/ c.chip.D7_D = nor (b.D7, pb.DBUS_OUTn);
+    /*p08.RUNE*/ c.chip_out.D0_D = nor (b.D0, pb.DBUS_OUTn);
+    /*p08.RYPU*/ c.chip_out.D1_D = nor (b.D1, pb.DBUS_OUTn);
+    /*p08.SULY*/ c.chip_out.D2_D = nor (b.D2, pb.DBUS_OUTn);
+    /*p08.SEZE*/ c.chip_out.D3_D = nor (b.D3, pb.DBUS_OUTn);
+    /*p08.RESY*/ c.chip_out.D4_D = nor (b.D4, pb.DBUS_OUTn);
+    /*p08.TAMU*/ c.chip_out.D5_D = nor (b.D5, pb.DBUS_OUTn);
+    /*p08.ROGY*/ c.chip_out.D6_D = nor (b.D6, pb.DBUS_OUTn);
+    /*p08.RYDA*/ c.chip_out.D7_D = nor (b.D7, pb.DBUS_OUTn);
 
-    /*p08.LAVO*/ pc.LATCH_DX_C = nand(b.cpu.CPU_RAW_RD, pb.ADDR_VALID_AND_NOT_VRAM, b.cpu.FROM_CPU5); // polarity?
+    /*p08.LAVO*/ pc.LATCH_DX_C = nand(cpu_in.CPU_RAW_RD, pb.ADDR_VALID_AND_NOT_VRAM, cpu_in.FROM_CPU5); // polarity?
 
-    /*p08.SOMA*/ pc.LATCH_D0_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D0_C, b.chip.D0_C);
-    /*p08.RONY*/ pc.LATCH_D1_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D1_C, b.chip.D1_C);
-    /*p08.RAXY*/ pc.LATCH_D2_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D2_C, b.chip.D2_C);
-    /*p08.SELO*/ pc.LATCH_D3_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D3_C, b.chip.D3_C);
-    /*p08.SODY*/ pc.LATCH_D4_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D4_C, b.chip.D4_C);
-    /*p08.SAGO*/ pc.LATCH_D5_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D5_C, b.chip.D5_C);
-    /*p08.RUPA*/ pc.LATCH_D6_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D6_C, b.chip.D6_C);
-    /*p08.SAZY*/ pc.LATCH_D7_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D7_C, b.chip.D7_C);
+    /*p08.SOMA*/ pc.LATCH_D0_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D0_C, chip_in.D0_C);
+    /*p08.RONY*/ pc.LATCH_D1_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D1_C, chip_in.D1_C);
+    /*p08.RAXY*/ pc.LATCH_D2_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D2_C, chip_in.D2_C);
+    /*p08.SELO*/ pc.LATCH_D3_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D3_C, chip_in.D3_C);
+    /*p08.SODY*/ pc.LATCH_D4_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D4_C, chip_in.D4_C);
+    /*p08.SAGO*/ pc.LATCH_D5_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D5_C, chip_in.D5_C);
+    /*p08.RUPA*/ pc.LATCH_D6_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D6_C, chip_in.D6_C);
+    /*p08.SAZY*/ pc.LATCH_D7_C = latch_pos(pb.LATCH_DX_C, pb.LATCH_D7_C, chip_in.D7_C);
 
     /*p08.RYMA*/ if (pb.LATCH_DX_C) c.D0 = pb.LATCH_D0_C;
     /*p08.RUVO*/ if (pb.LATCH_DX_C) c.D1 = pb.LATCH_D1_C;
@@ -903,33 +901,33 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   {
     // debug enable signals
-    /*p07.UBET*/ pc.T1n        = not(b.chip.T1);
-    /*p07.UVAR*/ pc.T2n        = not(b.chip.T2);
-    /*p07.UMUT*/ pc.MODE_DBG1  = and(b.chip.T1, pb.T2n);
+    /*p07.UBET*/ pc.T1n        = not(chip_in.T1);
+    /*p07.UVAR*/ pc.T2n        = not(chip_in.T2);
+    /*p07.UMUT*/ pc.MODE_DBG1  = and(chip_in.T1, pb.T2n);
     /*p07.YAZA*/ pc.MODE_DBG1n = not(pb.MODE_DBG1);
-    /*p07.UNOR*/ pc.MODE_DBG2  = and(b.chip.T2, pb.T1n);
-    /*p07.UPOJ*/ pc.MODE_PROD  = nand(pb.T1n, pb.T2n, b.chip.RST);
+    /*p07.UNOR*/ pc.MODE_DBG2  = and(chip_in.T2, pb.T1n);
+    /*p07.UPOJ*/ pc.MODE_PROD  = nand(pb.T1n, pb.T2n, chip_in.RST);
     /*p07.APET*/ pc.MODE_DEBUG = or(pb.MODE_DBG1, pb.MODE_DBG2);
 
     /*p05.AFOP*/ wire AFOP = not(/*p05.APYS*/ nor(pb.MODE_DBG2, /*p05.ADYR*/ not(/*p05.AXYN*/ not(pb.CPU_CLK1n))));
-    /*p05.ANOC*/ if (AFOP) c.D0 = not(b.chip.P10_B);
-    /*p05.ATAJ*/ if (AFOP) c.D1 = not(b.chip.P10_B);
-    /*p05.AJEC*/ if (AFOP) c.D2 = not(b.chip.P10_B);
-    /*p05.ASUZ*/ if (AFOP) c.D3 = not(b.chip.P10_B);
-    /*p05.BENU*/ if (AFOP) c.D4 = not(b.chip.P10_B);
-    /*p05.AKAJ*/ if (AFOP) c.D5 = not(b.chip.P10_B);
-    /*p05.ARAR*/ if (AFOP) c.D6 = not(b.chip.P10_B);
-    /*p05.BEDA*/ if (AFOP) c.D7 = not(b.chip.P10_B);
+    /*p05.ANOC*/ if (AFOP) c.D0 = not(chip_in.P10_B);
+    /*p05.ATAJ*/ if (AFOP) c.D1 = not(chip_in.P10_B);
+    /*p05.AJEC*/ if (AFOP) c.D2 = not(chip_in.P10_B);
+    /*p05.ASUZ*/ if (AFOP) c.D3 = not(chip_in.P10_B);
+    /*p05.BENU*/ if (AFOP) c.D4 = not(chip_in.P10_B);
+    /*p05.AKAJ*/ if (AFOP) c.D5 = not(chip_in.P10_B);
+    /*p05.ARAR*/ if (AFOP) c.D6 = not(chip_in.P10_B);
+    /*p05.BEDA*/ if (AFOP) c.D7 = not(chip_in.P10_B);
 
     /*p07.LECO*/ wire LECO = nor(pb.CPU_CLK1n, pb.MODE_DBG2);
-    /*p07.ROMY*/ if (LECO) c.D0 = b.chip.P10_B;
-    /*p07.RYNE*/ if (LECO) c.D1 = b.chip.P10_B;
-    /*p07.REJY*/ if (LECO) c.D2 = b.chip.P10_B;
-    /*p07.RASE*/ if (LECO) c.D3 = b.chip.P10_B;
-    /*p07.REKA*/ if (LECO) c.D4 = b.chip.P10_B;
-    /*p07.ROWE*/ if (LECO) c.D5 = b.chip.P10_B;
-    /*p07.RYKE*/ if (LECO) c.D6 = b.chip.P10_B;
-    /*p07.RARU*/ if (LECO) c.D7 = b.chip.P10_B;
+    /*p07.ROMY*/ if (LECO) c.D0 = chip_in.P10_B;
+    /*p07.RYNE*/ if (LECO) c.D1 = chip_in.P10_B;
+    /*p07.REJY*/ if (LECO) c.D2 = chip_in.P10_B;
+    /*p07.RASE*/ if (LECO) c.D3 = chip_in.P10_B;
+    /*p07.REKA*/ if (LECO) c.D4 = chip_in.P10_B;
+    /*p07.ROWE*/ if (LECO) c.D5 = chip_in.P10_B;
+    /*p07.RYKE*/ if (LECO) c.D6 = chip_in.P10_B;
+    /*p07.RARU*/ if (LECO) c.D7 = chip_in.P10_B;
 
     /*p08.TOVA*/ pc.MODE_DBG2n1 = not(pb.MODE_DBG2);
     /*p08.RYCA*/ pc.MODE_DBG2n2 = not(pb.MODE_DBG2);
@@ -948,14 +946,14 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
     /*p08.LYRA*/ wire DBG_D_RD = nand(pb.MODE_DBG2, pb.DBUS_OUTn); // polarity?
 
-    /*p08.TUTY*/ if (DBG_D_RD) c.D0 = not(/*p08.TOVO*/ not(b.chip.D0_C));
-    /*p08.SYWA*/ if (DBG_D_RD) c.D1 = not(/*p08.RUZY*/ not(b.chip.D1_C));
-    /*p08.SUGU*/ if (DBG_D_RD) c.D2 = not(/*p08.ROME*/ not(b.chip.D2_C));
-    /*p08.TAWO*/ if (DBG_D_RD) c.D3 = not(/*p08.SAZA*/ not(b.chip.D3_C));
-    /*p08.TUTE*/ if (DBG_D_RD) c.D4 = not(/*p08.TEHE*/ not(b.chip.D4_C));
-    /*p08.SAJO*/ if (DBG_D_RD) c.D5 = not(/*p08.RATU*/ not(b.chip.D5_C));
-    /*p08.TEMY*/ if (DBG_D_RD) c.D6 = not(/*p08.SOCA*/ not(b.chip.D6_C));
-    /*p08.ROPA*/ if (DBG_D_RD) c.D7 = not(/*p08.RYBA*/ not(b.chip.D7_C));
+    /*p08.TUTY*/ if (DBG_D_RD) c.D0 = not(/*p08.TOVO*/ not(chip_in.D0_C));
+    /*p08.SYWA*/ if (DBG_D_RD) c.D1 = not(/*p08.RUZY*/ not(chip_in.D1_C));
+    /*p08.SUGU*/ if (DBG_D_RD) c.D2 = not(/*p08.ROME*/ not(chip_in.D2_C));
+    /*p08.TAWO*/ if (DBG_D_RD) c.D3 = not(/*p08.SAZA*/ not(chip_in.D3_C));
+    /*p08.TUTE*/ if (DBG_D_RD) c.D4 = not(/*p08.TEHE*/ not(chip_in.D4_C));
+    /*p08.SAJO*/ if (DBG_D_RD) c.D5 = not(/*p08.RATU*/ not(chip_in.D5_C));
+    /*p08.TEMY*/ if (DBG_D_RD) c.D6 = not(/*p08.SOCA*/ not(chip_in.D6_C));
+    /*p08.ROPA*/ if (DBG_D_RD) c.D7 = not(/*p08.RYBA*/ not(chip_in.D7_C));
 #if 0
     //----------
     // if NET01 high, drive external address bus onto internal address

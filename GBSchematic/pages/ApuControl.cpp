@@ -5,7 +5,9 @@
 
 //-----------------------------------------------------------------------------
 
-void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void P09_ApuControl_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
+  (void)chip_in;
+
   const ApuControl& pa = a.apu;
   const ApuControl& pb = b.apu;
   ApuControl& pc = c.apu;
@@ -29,7 +31,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p10.BAFU*/ pc.CPU_WRn = not(b.sys.CPU_WR);
   /*p10.BOGY*/ pc.APU_WR  = not(pb.CPU_WRn);
 
-  /*p16.ANUJ*/ pc.CPU_WR_WEIRD = and(b.cpu.FROM_CPU5, pb.APU_WR);
+  /*p16.ANUJ*/ pc.CPU_WR_WEIRD = and(cpu_in.FROM_CPU5, pb.APU_WR);
 
   //----------
   // FF24 NR50

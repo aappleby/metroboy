@@ -4,12 +4,12 @@
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void Sprites_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  /*p28.WEFE*/ c.spr.P10_Bn = not(b.chip.P10_B);
+  /*p28.WEFE*/ c.spr.P10_Bn = not(chip_in.P10_B);
   /*p28.AWOH*/ c.spr.CLK_2Mn = not(b.vid.CLK_2Mb);
   
-  /*p04.DECY*/ c.sys.FROM_CPU5n = not(b.cpu.FROM_CPU5);
+  /*p04.DECY*/ c.sys.FROM_CPU5n = not(cpu_in.FROM_CPU5);
   /*p04.CATY*/ c.sys.FROM_CPU5  = not(b.sys.FROM_CPU5n);
   /*p28.BOFE*/ c.spr.FROM_CPU5n = not(b.sys.FROM_CPU5);
   
@@ -136,9 +136,9 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p29.XEFY*/ c.spr.XEFY = not(b.spr.WUTY);
 
-  /*p29.TYSO*/ c.spr.TYSO = or(b.spr.SAKY, b.spr.RENDERINGn);
+  /*p29.TYSO*/ c.spr.SPRITE_READb = or(b.spr.SAKY, b.spr.RENDERINGn); // seems wrong
   /*p29.SAKY*/   c.spr.SAKY = nor(b.spr.TULY1, b.spr.SPRITE_ABn);
-  /*p29.TEXY*/ c.spr.TEXY = not(b.spr.TYSO);
+  /*p29.TEXY*/ c.spr.SPRITE_READn = not(b.spr.SPRITE_READb);
 
   /*p29.TUVO*/ c.spr.TUVO = or(b.spr.RENDERINGn, b.spr.TULY1, b.spr.SPRITE_ABn);
 
@@ -164,17 +164,6 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p29.SYCU*/ c.spr.SYCU = nor(b.spr.TYTU, b.spr.RENDERINGn, b.spr.TYFO);
 
-  /*p29.XADO*/ c.spr.SPRITE_PIX_LATCH_A = not(b.spr.SPRITE_PIX_LATCH_An);
-  /*p29.WENY*/   c.spr.SPRITE_PIX_LATCH_An = not(b.spr.SPRITE_PIX_LATCH_Ab);
-  /*p29.VYWA*/     c.spr.SPRITE_PIX_LATCH_Ab = not(b.spr.SPRITE_PIX_LATCH_Ao);
-  /*p29.TOPU*/       c.spr.SPRITE_PIX_LATCH_Ao = and(b.spr.SPRITE_ABn, b.spr.SYCU);
-
-  /*p29.PUCO*/ c.spr.SPRITE_PIX_LATCH_B = not(b.spr.SPRITE_PIX_LATCH_Bn);
-  /*p29.NYBE*/   c.spr.SPRITE_PIX_LATCH_Bn = not(b.spr.SPRITE_PIX_LATCH_Bb);
-  /*p29.PEBY*/     c.spr.SPRITE_PIX_LATCH_Bb = not(b.spr.SPRITE_PIX_LATCH_Bo);
-  /*p29.RACA*/       c.spr.SPRITE_PIX_LATCH_Bo = and(b.spr.SPRITE_ABn, b.spr.SYCU);
-
-
   //----------
 
 
@@ -189,69 +178,78 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
 
-  /*p28.ZAXA*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D0 = b.D0;
-  /*p28.ZAKY*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D1 = b.D1;
-  /*p28.WULE*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D2 = b.D2;
-  /*p28.ZOZO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D3 = b.D3;
-  /*p28.ZUFO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D4 = b.D4;
-  /*p28.ZATO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D5 = b.D5;
-  /*p28.YVUC*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D6 = b.D6;
-  /*p28.ZUFE*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D7 = b.D7;
-  /*p28.ZAMY*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D0 = b.D0;
-  /*p28.ZOPU*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D1 = b.D1;
-  /*p28.WYKY*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D2 = b.D2;
-  /*p28.ZAJA*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D3 = b.D3;
-  /*p28.ZUGA*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D4 = b.D4;
-  /*p28.ZUMO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D5 = b.D5;
-  /*p28.XYTO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D6 = b.D6;
-  /*p28.ZYFA*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D7 = b.D7;
-  /*p28.AZUL*/   c.spr.D_TO_OAMD = not(b.spr.D_TO_OAMDn);
-  /*p28.APAG*/     c.spr.D_TO_OAMDn = amux2(b.spr.CPU_OAM_WR_CLK3, b.spr.AMAB, b.spr.AJUJ, b.spr.ADDR_OAMn);
-  /*p28.XUPA*/       c.spr.CPU_OAM_WR_CLK3 = not(b.spr.CPU_OAM_WR_CLK2);
-  /*p28.WUJE*/         c.spr.CPU_OAM_WR_CLK2 = or(b.spr.CPU_OAM_WR_CLK1, b.spr.CPU_OAM_WR);
-  /*p28.XYNY*/           c.spr.CPU_OAM_WR_CLK1 = not(b.sys.CPUCLK_ABCDxxxx9);
-  /*p28.XUTO*/           c.spr.CPU_OAM_WR = and(b.sys.ADDR_OAM, b.sys.CPU_WR2);
-  /*p28.AMAB*/       c.spr.AMAB = and(b.sys.ADDR_OAM, b.spr.AJUJ);
-  /*p28.AJUJ*/         c.spr.AJUJ = nor(b.sys.DMA_RUNNING_SYNCn, b.spr.OAM_ADDR_PARSEn, b.spr.OAM_ADDR_RENDERn); // polarity...
-  /*p28.ADAH*/       c.spr.ADDR_OAMn = not(b.sys.ADDR_OAM);
+
+  {
+    // OAM address mux
+
+    /*p28.AZUL*/   c.spr.D_TO_OAMD = not(b.spr.D_TO_OAMDn);
+    /*p28.APAG*/     c.spr.D_TO_OAMDn = amux2(b.spr.CPU_OAM_WR_CLK3, b.spr.AMAB, b.spr.AJUJ, b.spr.ADDR_OAMn);
+    /*p28.XUPA*/       c.spr.CPU_OAM_WR_CLK3 = not(b.spr.CPU_OAM_WR_CLK2);
+    /*p28.WUJE*/         c.spr.CPU_OAM_WR_CLK2 = or(b.spr.CPU_OAM_WR_CLK1, b.spr.CPU_OAM_WR);
+    /*p28.XYNY*/           c.spr.CPU_OAM_WR_CLK1 = not(b.sys.CPUCLK_ABCDxxxx9);
+    /*p28.XUTO*/           c.spr.CPU_OAM_WR = and(b.sys.ADDR_OAM, b.sys.CPU_WR2);
+    /*p28.AMAB*/       c.spr.AMAB = and(b.sys.ADDR_OAM, b.spr.AJUJ);
+    /*p28.AJUJ*/         c.spr.AJUJ = nor(b.sys.DMA_RUNNING_SYNCn, b.spr.OAM_ADDR_PARSEn, b.spr.OAM_ADDR_RENDERn); // polarity...
+    /*p28.ADAH*/       c.spr.ADDR_OAMn = not(b.sys.ADDR_OAM);
+
+    /*p28.AZAR*/ c.spr.VRAM_TO_OAMc = not(b.sys.VRAM_TO_OAMn);
+
+    /*p25.CEDE*/ c.vid.DO_DMAn = not(b.sys.DO_DMA);
+
+    /*p28.ZAXA*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D0 = b.D0;
+    /*p28.ZAKY*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D1 = b.D1;
+    /*p28.WULE*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D2 = b.D2;
+    /*p28.ZOZO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D3 = b.D3;
+    /*p28.ZUFO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D4 = b.D4;
+    /*p28.ZATO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D5 = b.D5;
+    /*p28.YVUC*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D6 = b.D6;
+    /*p28.ZUFE*/ if (b.spr.D_TO_OAMD) c.TS_OAM_A_D7 = b.D7;
+    /*p28.ZAMY*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D0 = b.D0;
+    /*p28.ZOPU*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D1 = b.D1;
+    /*p28.WYKY*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D2 = b.D2;
+    /*p28.ZAJA*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D3 = b.D3;
+    /*p28.ZUGA*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D4 = b.D4;
+    /*p28.ZUMO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D5 = b.D5;
+    /*p28.XYTO*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D6 = b.D6;
+    /*p28.ZYFA*/ if (b.spr.D_TO_OAMD) c.TS_OAM_B_D7 = b.D7;
 
 
-  /*p28.WUZU*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D0 = b.MD0;
-  /*p28.AXER*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D1 = b.MD1;
-  /*p28.ASOX*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D2 = b.MD2;
-  /*p28.CETU*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D3 = b.MD3;
-  /*p28.ARYN*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D4 = b.MD4;
-  /*p28.ACOT*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D5 = b.MD5;
-  /*p28.CUJE*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D6 = b.MD6;
-  /*p28.ATER*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D7 = b.MD7;
-  /*p28.WOWA*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D0 = b.MD0;
-  /*p28.AVEB*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D1 = b.MD1;
-  /*p28.AMUH*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D2 = b.MD2;
-  /*p28.COFO*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D3 = b.MD3;
-  /*p28.AZOZ*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D4 = b.MD4;
-  /*p28.AGYK*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D5 = b.MD5;
-  /*p28.BUSE*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D6 = b.MD6;
-  /*p28.ANUM*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D7 = b.MD7;
-  /*p28.AZAR*/   c.spr.VRAM_TO_OAMc = not(b.sys.VRAM_TO_OAMn);
+    /*p28.WUZU*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D0 = b.MD0;
+    /*p28.AXER*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D1 = b.MD1;
+    /*p28.ASOX*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D2 = b.MD2;
+    /*p28.CETU*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D3 = b.MD3;
+    /*p28.ARYN*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D4 = b.MD4;
+    /*p28.ACOT*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D5 = b.MD5;
+    /*p28.CUJE*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D6 = b.MD6;
+    /*p28.ATER*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_A_D7 = b.MD7;
+    /*p28.WOWA*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D0 = b.MD0;
+    /*p28.AVEB*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D1 = b.MD1;
+    /*p28.AMUH*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D2 = b.MD2;
+    /*p28.COFO*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D3 = b.MD3;
+    /*p28.AZOZ*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D4 = b.MD4;
+    /*p28.AGYK*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D5 = b.MD5;
+    /*p28.BUSE*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D6 = b.MD6;
+    /*p28.ANUM*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D7 = b.MD7;
 
-  /*p25.WEJO*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D0 = not(b.vid.D0n);
-  /*p25.BUBO*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D1 = not(b.vid.D1n);
-  /*p25.BETU*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D2 = not(b.vid.D2n);
-  /*p25.CYME*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D3 = not(b.vid.D3n);
-  /*p25.BAXU*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D4 = not(b.vid.D4n);
-  /*p25.BUHU*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D5 = not(b.vid.D5n);
-  /*p25.BYNY*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D6 = not(b.vid.D6n);
-  /*p25.BYPY*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D7 = not(b.vid.D7n);
-  /*p25.WASA*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D0 = not(b.vid.D0n);
-  /*p25.BOMO*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D1 = not(b.vid.D1n);
-  /*p25.BASA*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D2 = not(b.vid.D2n);
-  /*p25.CAKO*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D3 = not(b.vid.D3n);
-  /*p25.BUMA*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D4 = not(b.vid.D4n);
-  /*p25.BUPY*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D5 = not(b.vid.D5n);
-  /*p25.BASY*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D6 = not(b.vid.D6n);
-  /*p25.BAPE*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D7 = not(b.vid.D7n);
-  /*p25.CEDE*/   c.vid.DO_DMAn = not(b.sys.DO_DMA);
-
+    // DO_DMAn polarity probably wrong
+    /*p25.WEJO*/ if (b.vid.DO_DMAn) c.TS_OAM_A_D0 = not(/*p25.RALO*/ not(chip_in.D0_C));
+    /*p25.BUBO*/ if (b.vid.DO_DMAn) c.TS_OAM_A_D1 = not(/*p25.TUNE*/ not(chip_in.D1_C));
+    /*p25.BETU*/ if (b.vid.DO_DMAn) c.TS_OAM_A_D2 = not(/*p25.SERA*/ not(chip_in.D2_C));
+    /*p25.CYME*/ if (b.vid.DO_DMAn) c.TS_OAM_A_D3 = not(/*p25.TENU*/ not(chip_in.D3_C));
+    /*p25.BAXU*/ if (b.vid.DO_DMAn) c.TS_OAM_A_D4 = not(/*p25.SYSA*/ not(chip_in.D4_C));
+    /*p25.BUHU*/ if (b.vid.DO_DMAn) c.TS_OAM_A_D5 = not(/*p25.SUGY*/ not(chip_in.D5_C));
+    /*p25.BYNY*/ if (b.vid.DO_DMAn) c.TS_OAM_A_D6 = not(/*p25.TUBE*/ not(chip_in.D6_C));
+    /*p25.BYPY*/ if (b.vid.DO_DMAn) c.TS_OAM_A_D7 = not(/*p25.SYZO*/ not(chip_in.D7_C));
+    /*p25.WASA*/ if (b.vid.DO_DMAn) c.TS_OAM_B_D0 = not(/*p25.RALO*/ not(chip_in.D0_C));
+    /*p25.BOMO*/ if (b.vid.DO_DMAn) c.TS_OAM_B_D1 = not(/*p25.TUNE*/ not(chip_in.D1_C));
+    /*p25.BASA*/ if (b.vid.DO_DMAn) c.TS_OAM_B_D2 = not(/*p25.SERA*/ not(chip_in.D2_C));
+    /*p25.CAKO*/ if (b.vid.DO_DMAn) c.TS_OAM_B_D3 = not(/*p25.TENU*/ not(chip_in.D3_C));
+    /*p25.BUMA*/ if (b.vid.DO_DMAn) c.TS_OAM_B_D4 = not(/*p25.SYSA*/ not(chip_in.D4_C));
+    /*p25.BUPY*/ if (b.vid.DO_DMAn) c.TS_OAM_B_D5 = not(/*p25.SUGY*/ not(chip_in.D5_C));
+    /*p25.BASY*/ if (b.vid.DO_DMAn) c.TS_OAM_B_D6 = not(/*p25.TUBE*/ not(chip_in.D6_C));
+    /*p25.BAPE*/ if (b.vid.DO_DMAn) c.TS_OAM_B_D7 = not(/*p25.SYZO*/ not(chip_in.D7_C));
+  }
+  
 
   //----------
   // OAM data in latch/reg
@@ -335,7 +333,7 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p28.GYBU*/ c.spr.IDX_5n = not(b.spr.TS_IDX_5);
 
 
-  /*p28.WUWE*/ c.spr.SCANZn = not(b.chip.P10_B);
+  /*p28.WUWE*/ c.spr.SCANZn = not(chip_in.P10_B);
   /*p28.GUSE*/ c.spr.SCAN0n = not(b.spr.SCAN0);
   /*p28.GEMA*/ c.spr.SCAN1n = not(b.spr.SCAN1);
   /*p28.FUTO*/ c.spr.SCAN2n = not(b.spr.SCAN2);
@@ -365,7 +363,7 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p28.GECA*/ c.spr.GECA = not(b.spr.P10_Bn);
   /*p28.WYDU*/ c.spr.WYDU = not(b.spr.P10_Bn);
-  /*p28.GEFY*/ c.spr.GEFY = not(b.chip.P10_B);
+  /*p28.GEFY*/ c.spr.GEFY = not(chip_in.P10_B);
 
   // so byte 0 is the palette number? something wrong here...
 
@@ -392,7 +390,7 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p29.FEMO*/ c.spr.V6n = not(b.vid.V6);
   /*p29.GUSU*/ c.spr.V7n = not(b.vid.V7);
 
-  /*p29.ERUC*/ c.spr.YDIFF0 = add_c(b.spr.V0n, !b.spr.OAM_B_D0, b.chip.P10_B);
+  /*p29.ERUC*/ c.spr.YDIFF0 = add_c(b.spr.V0n, !b.spr.OAM_B_D0, chip_in.P10_B);
   /*p29.ENEF*/ c.spr.YDIFF1 = add_s(b.spr.V1n, !b.spr.OAM_B_D1, b.spr.YDIFF_C0);
   /*p29.FECO*/ c.spr.YDIFF2 = add_s(b.spr.V2n, !b.spr.OAM_B_D2, b.spr.YDIFF_C1);
   /*p29.GYKY*/ c.spr.YDIFF3 = add_s(b.spr.V3n, !b.spr.OAM_B_D3, b.spr.YDIFF_C2);
@@ -401,7 +399,7 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p29.GOJU*/ c.spr.YDIFF6 = add_s(b.spr.V6n, !b.spr.OAM_B_D6, b.spr.YDIFF_C5);
   /*p29.WUHU*/ c.spr.YDIFF7 = add_s(b.spr.V7n, !b.spr.OAM_B_D7, b.spr.YDIFF_C6);
 
-  /*p29.ERUC*/ c.spr.YDIFF_C0 = add_s(b.spr.V0n, !b.spr.OAM_B_D0, b.chip.P10_B);
+  /*p29.ERUC*/ c.spr.YDIFF_C0 = add_s(b.spr.V0n, !b.spr.OAM_B_D0, chip_in.P10_B);
   /*p29.ENEF*/ c.spr.YDIFF_C1 = add_c(b.spr.V1n, !b.spr.OAM_B_D1, b.spr.YDIFF_C0);
   /*p29.FECO*/ c.spr.YDIFF_C2 = add_c(b.spr.V2n, !b.spr.OAM_B_D2, b.spr.YDIFF_C1);
   /*p29.GYKY*/ c.spr.YDIFF_C3 = add_c(b.spr.V3n, !b.spr.OAM_B_D3, b.spr.YDIFF_C2);
@@ -434,29 +432,31 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p29.GUPO*/ c.spr.GUPO = not(b.spr.DEGO);
   /*p29.GEDE*/ c.spr.GEDE = or(b.spr.GUPO, b.spr.FUMA);
-  /*p29.EMOL*/ c.spr.EMOL = nor(b.spr.DEGO, b.spr.FUMA);
+
   /*p29.WEBO*/ c.spr.WEBO = not(b.spr.YLOZ);
   /*p29.WUTO*/ c.spr.WUTO = or(b.spr.WEBO, b.spr.GEDE);
-  /*p29.GYFY*/ c.spr.GYFY = nor(b.spr.YLOZ, b.spr.GEDE);
   /*p29.WUNA*/ c.spr.WUNA = not(b.spr.XAGE);
   /*p29.XYLA*/ c.spr.XYLA = or(b.spr.WUNA, b.spr.WUTO);
-  /*p29.GONO*/ c.spr.GONO = nor(b.spr.XAGE, b.spr.WUTO);
   /*p29.GABA*/ c.spr.GABA = not(b.spr.EGOM);
   /*p29.WEJA*/ c.spr.WEJA = or(b.spr.GABA, b.spr.XYLA);
-  /*p29.GEGA*/ c.spr.GEGA = nor(b.spr.EGOM, b.spr.XYLA);
   /*p29.WASE*/ c.spr.WASE = not(b.spr.YBEZ);
   /*p29.WYLA*/ c.spr.WYLA = or(b.spr.WASE, b.spr.WEJA);
-  /*p29.XOJA*/ c.spr.XOJA = nor(b.spr.YBEZ, b.spr.WEJA);
   /*p29.GYTE*/ c.spr.GYTE = not(b.spr.DYKA);
   /*p29.FAVO*/ c.spr.FAVO = or(b.spr.GYTE, b.spr.WYLA);
-  /*p29.GUTU*/ c.spr.GUTU = nor(b.spr.DYKA, b.spr.WYLA);
   /*p29.GEKE*/ c.spr.GEKE = not(b.spr.EFYL);
   /*p29.GYGA*/ c.spr.GYGA = or(b.spr.GEKE, b.spr.FAVO);
-  /*p29.GUZE*/ c.spr.GUZE = nor(b.spr.YGEM, b.spr.GYGA);
   /*p29.FADO*/ c.spr.FADO = not(b.spr.GUZE);
 
-  /*p29.FOXA*/ c.spr.FOXA = nor(b.spr.EFYL, b.spr.FAVO);
   /*p29.DENY*/ c.spr.DENY = not(b.spr.FOXA);
+  
+  /*p29.GUZE*/ c.spr.GUZE = nor(b.spr.YGEM, b.spr.GYGA);
+  /*p29.FOXA*/ c.spr.FOXA = nor(b.spr.EFYL, b.spr.FAVO);
+  /*p29.GUTU*/ c.spr.GUTU = nor(b.spr.DYKA, b.spr.WYLA);
+  /*p29.XOJA*/ c.spr.XOJA = nor(b.spr.YBEZ, b.spr.WEJA);
+  /*p29.GEGA*/ c.spr.GEGA = nor(b.spr.EGOM, b.spr.XYLA);
+  /*p29.GONO*/ c.spr.GONO = nor(b.spr.XAGE, b.spr.WUTO);
+  /*p29.GYFY*/ c.spr.GYFY = nor(b.spr.YLOZ, b.spr.GEDE);
+  /*p29.EMOL*/ c.spr.EMOL = nor(b.spr.DEGO, b.spr.FUMA);
 
   /*p29.GUGY*/ c.spr.GUGY = not(b.spr.GUTU);
   /*p29.XYME*/ c.spr.XYME = not(b.spr.XOJA);
@@ -504,7 +504,6 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // Sprite tile fetch address generation
 
-  /*p29.ABON*/ c.spr.ABON = not(b.spr.TEXY);
 
   /*p29.WUKY*/ c.spr.FLIP_Y = not(b.spr.OAM_A_D6);
 
@@ -513,25 +512,11 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p29.BORE*/ c.spr.SPRITE_Y1 = xor(b.spr.FLIP_Y, b.spr.TS_LINE_2);
   /*p29.BUVY*/ c.spr.SPRITE_Y2 = xor(b.spr.FLIP_Y, b.spr.TS_LINE_3);
 
-  /*p29.ABEM*/ if (b.spr.ABON) c.MA00 = b.spr.SPRITE_AB;
-  /*p29.BAXE*/ if (b.spr.ABON) c.MA01 = b.spr.SPRITE_Y0;
-  /*p29.ARAS*/ if (b.spr.ABON) c.MA02 = b.spr.SPRITE_Y1;
-  /*p29.AGAG*/ if (b.spr.ABON) c.MA03 = b.spr.SPRITE_Y2;
 
   /*p29.FUFO*/ c.spr.LCDC_SPSIZEn = not(b.vid.LCDC_SPSIZE);
   /*p29.WAGO*/ c.spr.WAGO = xor(b.spr.FLIP_Y, b.spr.TS_LINE_0);
   /*p29.GEJY*/ c.spr.GEJY = amux2(b.spr.LCDC_SPSIZEn, !b.spr.OAM_B_D0, // polarity?
                                   b.vid.LCDC_SPSIZE,  b.spr.WAGO);
-
-  /*p29.FAMU*/ if (b.spr.ABON) c.MA04 = b.spr.GEJY;
-  /*p29.FUGY*/ if (b.spr.ABON) c.MA05 = b.spr.OAM_B_D1;
-  /*p29.GAVO*/ if (b.spr.ABON) c.MA06 = b.spr.OAM_B_D2;
-  /*p29.WYGA*/ if (b.spr.ABON) c.MA07 = b.spr.OAM_B_D3;
-  /*p29.WUNE*/ if (b.spr.ABON) c.MA08 = b.spr.OAM_B_D4;
-  /*p29.GOTU*/ if (b.spr.ABON) c.MA09 = b.spr.OAM_B_D5;
-  /*p29.GEGU*/ if (b.spr.ABON) c.MA10 = b.spr.OAM_B_D6;
-  /*p29.XEHE*/ if (b.spr.ABON) c.MA11 = b.spr.OAM_B_D7;
-  /*p29.DYSO*/ if (b.spr.ABON) c.MA12 = b.chip.P10_B;   // sprites always in low half of tile store
 
   //----------
   // Active sprite counter
@@ -644,67 +629,66 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // store 0
 
-  /*p29.DYHU*/ c.spr.STORE0_CLKn = not(b.spr.STORE0_CLK);
-  /*p29.CEMY*/   c.spr.STORE0_CLK  = or(b.spr.STORE_EN, b.spr.STORE0_SEL); // 0000
-  /*p29.DEZO*/     c.spr.STORE0_SEL  = nand(b.spr.SPRITE_COUNT0n, b.spr.SPRITE_COUNT1n, b.spr.SPRITE_COUNT2n, b.spr.SPRITE_COUNT3n); // 0000
+  {
+    /*p31.ZOGY*/ wire STORE0_MATCH0 = xor(b.spr.STORE0_X0, b.vid.X0n);
+    /*p31.ZEBA*/ wire STORE0_MATCH1 = xor(b.spr.STORE0_X1, b.vid.X1n);
+    /*p31.ZAHA*/ wire STORE0_MATCH2 = xor(b.spr.STORE0_X2, b.vid.X2n);
+    /*p31.ZOKY*/ wire STORE0_MATCH3 = xor(b.spr.STORE0_X3, b.vid.X3n);
+    /*p31.WOJU*/ wire STORE0_MATCH4 = xor(b.spr.STORE0_X4, b.vid.X4n);
+    /*p31.YFUN*/ wire STORE0_MATCH5 = xor(b.spr.STORE0_X5, b.vid.X5n);
+    /*p31.WYZA*/ wire STORE0_MATCH6 = xor(b.spr.STORE0_X6, b.vid.X6n);
+    /*p31.YPUK*/ wire STORE0_MATCH7 = xor(b.spr.STORE0_X7, b.vid.X7n);
+    /*p31.ZAKO*/ wire STORE0_MATCHA = nor(STORE0_MATCH0, STORE0_MATCH1, STORE0_MATCH2, STORE0_MATCH3);
+    /*p31.XEBA*/ wire STORE0_MATCHB = nor(STORE0_MATCH4, STORE0_MATCH5, STORE0_MATCH6, STORE0_MATCH7);
+    /*p29.YDUG*/ c.spr.STORE0_MATCHn = nand(b.spr.MATCH_EN, STORE0_MATCHB, STORE0_MATCHA);
 
-  /*p29.DYWE*/ c.spr.STORE0_RST = or(b.spr.NEW_LINE4, b.spr.SPRITE0_GET_SYNCn);
-  /*p29.EBOJ*/   c.spr.SPRITE0_GET_SYNCn = tock_pos(a.spr.WUTY, b.spr.WUTY, b.spr.NEW_LINE3, b.spr.SPRITE0_GET_SYNCn, b.spr.SPRITE0_GETn);
-  /*p29.GUVA*/     c.spr.SPRITE0_GETn = nor(b.spr.STORE0_MATCHn,  b.chip.P10_B);
 
-  /*p30.YGUS*/ c.spr.STORE0_IDX0  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,                 b.spr.STORE0_IDX0,  b.spr.TS_IDX_0);
-  /*p30.YSOK*/ c.spr.STORE0_IDX1  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,                 b.spr.STORE0_IDX1,  b.spr.TS_IDX_1);
-  /*p30.YZEP*/ c.spr.STORE0_IDX2  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,                 b.spr.STORE0_IDX2,  b.spr.TS_IDX_2);
-  /*p30.WYTE*/ c.spr.STORE0_IDX3  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,                 b.spr.STORE0_IDX3,  b.spr.TS_IDX_3);
-  /*p30.ZONY*/ c.spr.STORE0_IDX4  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,                 b.spr.STORE0_IDX4,  b.spr.TS_IDX_4);
-  /*p30.YWAK*/ c.spr.STORE0_IDX5  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,                 b.spr.STORE0_IDX5,  b.spr.TS_IDX_5);
-  /*p29.GENY*/   c.spr.STORE0_CLKa = not(b.spr.STORE0_CLKn);
+    /*p29.GUVA*/ wire SPRITE0_GETn = nor(b.spr.STORE0_MATCHn,  chip_in.P10_B);
+    /*p29.EBOJ*/ c.spr.SPRITE0_GET_SYNCn = tock_pos(a.spr.WUTY, b.spr.WUTY, b.spr.NEW_LINE3, b.spr.SPRITE0_GET_SYNCn, SPRITE0_GETn);
+    /*p29.DYWE*/ wire STORE0_RST    = or(b.spr.NEW_LINE4, b.spr.SPRITE0_GET_SYNCn);
+    /*p29.DYNA*/ wire STORE0_RSTn   = not(STORE0_RST);
 
-  /*p30.FYHY*/ c.spr.STORE0_LINE0 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,                 b.spr.STORE0_LINE0, b.spr.TS_LINE_0);
-  /*p30.GYHO*/ c.spr.STORE0_LINE1 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,                 b.spr.STORE0_LINE1, b.spr.TS_LINE_1);
-  /*p30.BOZU*/ c.spr.STORE0_LINE2 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,                 b.spr.STORE0_LINE2, b.spr.TS_LINE_2);
-  /*p30.CUFO*/ c.spr.STORE0_LINE3 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,                 b.spr.STORE0_LINE3, b.spr.TS_LINE_3);
-  /*p29.ENOB*/   c.spr.STORE0_CLKb = not(b.spr.STORE0_CLKn);
+    /*p29.DEZO*/ wire STORE0_SEL    = nand(b.spr.SPRITE_COUNT0n, b.spr.SPRITE_COUNT1n, b.spr.SPRITE_COUNT2n, b.spr.SPRITE_COUNT3n);
+    /*p29.CEMY*/ wire STORE0_CLK    = or(b.spr.STORE_EN, STORE0_SEL);
+    /*p29.DYHU*/ wire STORE0_CLKn   = not(STORE0_CLK);
+    /*p29.GENY*/ c.spr.STORE0_CLKa  = not(STORE0_CLKn);
+    /*p29.ENOB*/ c.spr.STORE0_CLKb  = not(STORE0_CLKn);
+    /*p29.FUXU*/ c.spr.STORE0_CLKc  = not(STORE0_CLKn);
 
-  /*p31.XEPE*/ c.spr.STORE0_X0    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, b.spr.STORE0_RSTn, b.spr.STORE0_X0,    b.spr.OAM_A_D0b);
-  /*p31.YLAH*/ c.spr.STORE0_X1    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, b.spr.STORE0_RSTn, b.spr.STORE0_X1,    b.spr.OAM_A_D1b);
-  /*p31.ZOLA*/ c.spr.STORE0_X2    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, b.spr.STORE0_RSTn, b.spr.STORE0_X2,    b.spr.OAM_A_D2b);
-  /*p31.ZULU*/ c.spr.STORE0_X3    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, b.spr.STORE0_RSTn, b.spr.STORE0_X3,    b.spr.OAM_A_D3b);
-  /*p31.WELO*/ c.spr.STORE0_X4    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, b.spr.STORE0_RSTn, b.spr.STORE0_X4,    b.spr.OAM_A_D4b);
-  /*p31.XUNY*/ c.spr.STORE0_X5    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, b.spr.STORE0_RSTn, b.spr.STORE0_X5,    b.spr.OAM_A_D5b);
-  /*p31.WOTE*/ c.spr.STORE0_X6    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, b.spr.STORE0_RSTn, b.spr.STORE0_X6,    b.spr.OAM_A_D6b);
-  /*p31.XAKO*/ c.spr.STORE0_X7    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, b.spr.STORE0_RSTn, b.spr.STORE0_X7,    b.spr.OAM_A_D7b);
-  /*p29.FUXU*/   c.spr.STORE0_CLKc = not(b.spr.STORE0_CLKn);
-  /*p29.DYNA*/   c.spr.STORE0_RSTn = not(b.spr.STORE0_RST);
+    /*p30.YGUS*/ c.spr.STORE0_IDX0  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX0,  b.spr.TS_IDX_0);
+    /*p30.YSOK*/ c.spr.STORE0_IDX1  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX1,  b.spr.TS_IDX_1);
+    /*p30.YZEP*/ c.spr.STORE0_IDX2  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX2,  b.spr.TS_IDX_2);
+    /*p30.WYTE*/ c.spr.STORE0_IDX3  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX3,  b.spr.TS_IDX_3);
+    /*p30.ZONY*/ c.spr.STORE0_IDX4  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX4,  b.spr.TS_IDX_4);
+    /*p30.YWAK*/ c.spr.STORE0_IDX5  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX5,  b.spr.TS_IDX_5);
+    /*p30.FYHY*/ c.spr.STORE0_LINE0 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,           b.spr.STORE0_LINE0, b.spr.TS_LINE_0);
+    /*p30.GYHO*/ c.spr.STORE0_LINE1 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,           b.spr.STORE0_LINE1, b.spr.TS_LINE_1);
+    /*p30.BOZU*/ c.spr.STORE0_LINE2 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,           b.spr.STORE0_LINE2, b.spr.TS_LINE_2);
+    /*p30.CUFO*/ c.spr.STORE0_LINE3 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,           b.spr.STORE0_LINE3, b.spr.TS_LINE_3);
+    /*p31.XEPE*/ c.spr.STORE0_X0    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X0,    b.spr.OAM_A_D0b);
+    /*p31.YLAH*/ c.spr.STORE0_X1    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X1,    b.spr.OAM_A_D1b);
+    /*p31.ZOLA*/ c.spr.STORE0_X2    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X2,    b.spr.OAM_A_D2b);
+    /*p31.ZULU*/ c.spr.STORE0_X3    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X3,    b.spr.OAM_A_D3b);
+    /*p31.WELO*/ c.spr.STORE0_X4    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X4,    b.spr.OAM_A_D4b);
+    /*p31.XUNY*/ c.spr.STORE0_X5    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X5,    b.spr.OAM_A_D5b);
+    /*p31.WOTE*/ c.spr.STORE0_X6    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X6,    b.spr.OAM_A_D6b);
+    /*p31.XAKO*/ c.spr.STORE0_X7    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X7,    b.spr.OAM_A_D7b);
 
-  /*p29.YDUG*/ c.spr.STORE0_MATCHn = nand(b.spr.MATCH_EN, b.spr.STORE0_MATCHB, b.spr.STORE0_MATCHA);
-  /*p31.ZAKO*/   c.spr.STORE0_MATCHA = nor(b.spr.STORE0_MATCH0, b.spr.STORE0_MATCH1, b.spr.STORE0_MATCH2, b.spr.STORE0_MATCH3);
-  /*p31.ZOGY*/     c.spr.STORE0_MATCH0 = xor(b.spr.STORE0_X0, b.vid.X0n);
-  /*p31.ZEBA*/     c.spr.STORE0_MATCH1 = xor(b.spr.STORE0_X1, b.vid.X1n);
-  /*p31.ZAHA*/     c.spr.STORE0_MATCH2 = xor(b.spr.STORE0_X2, b.vid.X2n);
-  /*p31.ZOKY*/     c.spr.STORE0_MATCH3 = xor(b.spr.STORE0_X3, b.vid.X3n);
-  /*p31.XEBA*/   c.spr.STORE0_MATCHB = nor(b.spr.STORE0_MATCH4, b.spr.STORE0_MATCH5, b.spr.STORE0_MATCH6, b.spr.STORE0_MATCH7);
-  /*p31.WOJU*/     c.spr.STORE0_MATCH4 = xor(b.spr.STORE0_X4, b.vid.X4n);
-  /*p31.YFUN*/     c.spr.STORE0_MATCH5 = xor(b.spr.STORE0_X5, b.vid.X5n);
-  /*p31.WYZA*/     c.spr.STORE0_MATCH6 = xor(b.spr.STORE0_X6, b.vid.X6n);
-  /*p31.YPUK*/     c.spr.STORE0_MATCH7 = xor(b.spr.STORE0_X7, b.vid.X7n);
+    /*p29.FURO*/ wire SPRITE0_GET = not(SPRITE0_GETn);
+    /*p30.ZETU*/ if (SPRITE0_GET) c.spr.TS_IDX_0  = b.spr.STORE0_IDX0;
+    /*p30.ZECE*/ if (SPRITE0_GET) c.spr.TS_IDX_1  = b.spr.STORE0_IDX1;
+    /*p30.ZAVE*/ if (SPRITE0_GET) c.spr.TS_IDX_2  = b.spr.STORE0_IDX2;
+    /*p30.WOKO*/ if (SPRITE0_GET) c.spr.TS_IDX_3  = b.spr.STORE0_IDX3;
+    /*p30.ZUMU*/ if (SPRITE0_GET) c.spr.TS_IDX_4  = b.spr.STORE0_IDX4;
+    /*p30.ZEDY*/ if (SPRITE0_GET) c.spr.TS_IDX_5  = b.spr.STORE0_IDX5;
+    /*p30.GOFO*/ if (SPRITE0_GET) c.spr.TS_LINE_0 = b.spr.STORE0_LINE0;
+    /*p30.WEHE*/ if (SPRITE0_GET) c.spr.TS_LINE_1 = b.spr.STORE0_LINE1;
+    /*p30.AJAL*/ if (SPRITE0_GET) c.spr.TS_LINE_2 = b.spr.STORE0_LINE2;
+    /*p30.BUKY*/ if (SPRITE0_GET) c.spr.TS_LINE_3 = b.spr.STORE0_LINE3;
 
-  /*p30.ZETU*/ if (b.spr.SPRITE0_GET) c.spr.TS_IDX_0  = b.spr.STORE0_IDX0;
-  /*p30.ZECE*/ if (b.spr.SPRITE0_GET) c.spr.TS_IDX_1  = b.spr.STORE0_IDX1;
-  /*p30.ZAVE*/ if (b.spr.SPRITE0_GET) c.spr.TS_IDX_2  = b.spr.STORE0_IDX2;
-  /*p30.WOKO*/ if (b.spr.SPRITE0_GET) c.spr.TS_IDX_3  = b.spr.STORE0_IDX3;
-  /*p30.ZUMU*/ if (b.spr.SPRITE0_GET) c.spr.TS_IDX_4  = b.spr.STORE0_IDX4;
-  /*p30.ZEDY*/ if (b.spr.SPRITE0_GET) c.spr.TS_IDX_5  = b.spr.STORE0_IDX5;
-  /*p30.GOFO*/ if (b.spr.SPRITE0_GET) c.spr.TS_LINE_0 = b.spr.STORE0_LINE0;
-  /*p30.WEHE*/ if (b.spr.SPRITE0_GET) c.spr.TS_LINE_1 = b.spr.STORE0_LINE1;
-  /*p30.AJAL*/ if (b.spr.SPRITE0_GET) c.spr.TS_LINE_2 = b.spr.STORE0_LINE2;
-  /*p30.BUKY*/ if (b.spr.SPRITE0_GET) c.spr.TS_LINE_3 = b.spr.STORE0_LINE3;
-  /*p29.FURO*/   c.spr.SPRITE0_GET = not(b.spr.SPRITE0_GETn);
-
-  // this chains to the next matcher
-
-  /*p29.GEZE*/ c.spr.SPRITE0_MATCH_OUTn  = or (b.spr.SPRITE0_MATCH_OUT, b.chip.P10_B);
-  /*p29.WEFU*/   c.spr.SPRITE0_MATCH_OUT  = not(b.spr.STORE0_MATCHn);
+    // this chains to the next matcher
+    /*p29.GEZE*/ c.spr.SPRITE0_MATCH_OUTn = or (/*p29.WEFU*/ not(b.spr.STORE0_MATCHn), chip_in.P10_B);
+  }
 
   //----------
   // store 1

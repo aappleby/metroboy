@@ -102,6 +102,24 @@ struct Gameboy {
   bool TS_OAM_B_D0,TS_OAM_B_D1,TS_OAM_B_D2,TS_OAM_B_D3,TS_OAM_B_D4,TS_OAM_B_D5,TS_OAM_B_D6,TS_OAM_B_D7;
 
   //----------
+  // boot rom bus
+
+  bool BOOTROM_A1nA0n;
+  bool BOOTROM_A1nA0;
+  bool BOOTROM_A1A0n;
+  bool BOOTROM_A1A0;
+  bool BOOTROM_A2n;
+  bool BOOTROM_A3n;
+  bool BOOTROM_A5nA4n;
+  bool BOOTROM_A5nA4;
+  bool BOOTROM_A5A4n;
+  bool BOOTROM_A5A4;
+  bool BOOTROM_A6n;
+  bool BOOTROM_A7n;
+
+  bool BOOT_CS;
+
+  //----------
   // wave ram bus
 
   bool WAVE_RAM_CTRL1;

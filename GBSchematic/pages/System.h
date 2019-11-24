@@ -7,9 +7,8 @@ struct System {
   //----------
   // CPU reset tree
 
-  /*p01.UPYF*/ bool UPYF;
-  /*p01.TUBO*/ bool TUBO;
-  /*p01.UNUT*/ bool UNUT;
+  /*p01.TUBO*/ bool NO_CLOCK;
+  /*p01.UNUT*/ bool TIMEOUT;
   /*p01.TABA*/ bool CPU_RESET;
   /*p01.ALYP*/ bool CPU_RESETn;
 
@@ -18,10 +17,9 @@ struct System {
 
   /*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
 
-  /*p01.AFAR*/ bool AFAR; // this is the sys reset register
-  /*p01.AFAR*/ bool ASOL;
+  /*p01.ASOL*/ bool RESET_IN;
   /*p01.AFER*/ bool RESET_REG;
-  /*p01.AVOR*/ bool AVOR;
+  /*p01.AVOR*/ bool SYS_RESET4;
   /*p01.ALUR*/ bool SYS_RESETn1;
   /*p01.DULA*/ bool SYS_RESET1;
   /*p09.HAPO*/ bool SYS_RESET2;
@@ -128,7 +126,6 @@ struct System {
   /*p01.UVYT*/ bool CPUCLK_xxxxEFGH8;
   /*p01.DOVA*/ bool CPUCLK_xxxxEFGH9;
 
-  /*p01.BOWA*/ bool CPU_CLK1a; // -> PORTD_01, abcd____
   /*p01.BEDO*/ bool CPU_CLK1n; // -> PORTD_02, ____efgh
 
   /*p01.BUKE*/ bool CPUCLK_xxxxxFxx1; // -> PORTD_06
@@ -140,7 +137,6 @@ struct System {
   //----------
   // clocks for the cart
 
-  /*p01.BUVU*/ bool BUVU; // _____fgh
   /*p01.AVOK*/ bool AVOK;
 
   //----------
@@ -157,20 +153,17 @@ struct System {
   /*p01.BUFY*/ bool CLK_256a;
   /*p01.BYFE*/ bool CLK_128a;
 
-  /*p01.COKE*/ bool COKE; // ? clock
-  /*p01.BURE*/ bool BURE;
-  /*p01.FYNE*/ bool FYNE;
-  /*p01.CULO*/ bool CULO;
-  /*p01.APEF*/ bool APEF;
-  /*p01.GALE*/ bool GALE;
-  /*p01.BEZE*/ bool BEZE;
-  /*p01.BULE*/ bool BULE;
-  /*p01.GEXY*/ bool GEXY;
-  /*p01.COFU*/ bool COFU;
-  /*p01.BARU*/ bool BARU;
-  /*p01.BARA*/ bool BARA;
-  /*p01.CARU*/ bool CARU;
-  /*p01.BYLU*/ bool BYLU;
+  /*p01.COKE*/ bool AJER_2Mn;
+  /*p01.BURE*/ bool CLK_512n;
+
+  /*p01.GALE*/ bool CLK_512b;
+  /*p01.BEZE*/ bool CLK_256b;
+  /*p01.BULE*/ bool CLK_128b;
+
+  /*p01.BARA*/ bool CLK_512;
+  /*p01.CARU*/ bool CLK_256;
+  /*p01.BYLU*/ bool CLK_128;
+
   /*p01.ATYK*/ bool ATYK;
 
   //----------
@@ -222,7 +215,6 @@ struct System {
 
   /*p01.ULUR*/ bool DIV_06_CLK;
   /*p01.BALY*/ bool DIV_CLKn;
-  /*p01.BYXO*/ bool BYXO;
 
 
   /*p02.ASOK*/ bool INT_JP;
@@ -238,40 +230,6 @@ struct System {
   Bit 3: Serial   Interrupt Request (INT 58h)  (1=Request)
   Bit 4: Joypad   Interrupt Request (INT 60h)  (1=Request)
   */
-
-  /*p07.SEMY*/ bool ADDR_XX0X;
-  /*p07.SAPA*/ bool ADDR_XXXF;
-  /*p07.ROLO*/ bool FF0F_RDn;
-  /*p07.REFA*/ bool FF0F_WRn;
-
-  /*p02.ROTU*/ bool FF0F_WRa;
-  /*p02.POLA*/ bool FF0F_RDa;
-
-  /*p02.LETY*/ bool LETY;
-  /*p02.LEJA*/ bool LEJA;
-  /*p02.LESA*/ bool LESA;
-  /*p02.LUFE*/ bool LUFE;
-  /*p02.LAMO*/ bool LAMO;
-
-  /*p02.MUXE*/ bool MUXE;
-  /*p02.NABE*/ bool NABE;
-  /*p02.RAKE*/ bool RAKE;
-  /*p02.SULO*/ bool SULO;
-  /*p02.SEME*/ bool SEME;
-
-  /*p02.MYZU*/ bool FF0F_SET0;
-  /*p02.MODY*/ bool FF0F_SET1;
-  /*p02.PYHU*/ bool FF0F_SET2;
-  /*p02.TOME*/ bool FF0F_SET3;
-  /*p02.TOGA*/ bool FF0F_SET4;
-
-  /*p02.LYTA*/ bool FF0F_RST0;
-  /*p02.MOVU*/ bool FF0F_RST1;
-  /*p02.PYGA*/ bool FF0F_RST2;
-  /*p02.TUNY*/ bool FF0F_RST3;
-  /*p02.TYME*/ bool FF0F_RST4;
-
-  /*p02.PESU*/ bool FF0F_IN;
 
   /*p02.LOPE*/ bool FF0F_0;
   /*p02.UBUL*/ bool FF0F_1;
@@ -405,10 +363,6 @@ struct System {
   //----------
   // DMA
 
-  /*p04.MOLU*/ bool FF46_RDn1;
-  /*p04.NYGO*/ bool FF46_RD;
-  /*p04.PUSY*/ bool FF46_RDn2;
-  /*p04.LAVY*/ bool FF46_WRn;
   /*p04.LORU*/ bool FF46_WR;
 
   /*p04.LOKY*/ bool DMA_RUNNING;
@@ -517,13 +471,6 @@ struct System {
   /*p05.CELA*/ bool P15_A;
 
   //----------
-
-  /*p05.AXYN*/ bool AXYN;
-  /*p05.ADYR*/ bool ADYR;
-  /*p05.APYS*/ bool APYS;
-  /*p05.AFOP*/ bool AFOP;
-
-  //----------
   // P06
 
   /*p06.SARE*/ bool ADDR_XX00_XX07;
@@ -626,37 +573,9 @@ struct System {
   //----------
   // Bootrom control
 
-  /*p07.TYRO*/ bool ADDR_0x0x0000;
-  /*p07.TUFA*/ bool ADDR_x1x1xxxx;
-
   /*p07.TUTU*/ bool ADDR_BOOT;
-  /*p07.TEXE*/ bool BOOT_BIT_RD;
-  /*p07.TUGE*/ bool BOOT_BIT_WRn;
+  /*p07.TUGE*/ bool BOOT_BIT_CLK;
   /*p07.TEPU*/ bool BOOT_BIT;
-  /*p07.SATO*/ bool BOOT_BIT_IN;
-  /*p07.TERA*/ bool BOOT_BITn;
-
-  /*p07.YULA*/ bool BOOT_RD;
-  /*p07.ZADO*/ bool BOOT_CSn;
-  /*p07.ZERY*/ bool BOOT_CS;
-
-  /*p07.ZOLE*/ bool ADDR_00;
-  /*p07.ZAJE*/ bool ADDR_01;
-  /*p07.ZUBU*/ bool ADDR_10;
-  /*p07.ZAPY*/ bool ADDR_11;
-
-  /*p07.ZYRA*/ bool BOOTROM_A7n;
-  /*p07.ZAGE*/ bool BOOTROM_A6n;
-  /*p07.ZYKY*/ bool BOOTROM_A5nA4n;
-  /*p07.ZYGA*/ bool BOOTROM_A5nA4;
-  /*p07.ZOVY*/ bool BOOTROM_A5A4n;
-  /*p07.ZUKO*/ bool BOOTROM_A5A4;
-  /*p07.ZABU*/ bool BOOTROM_A3n;
-  /*p07.ZOKE*/ bool BOOTROM_A2n;
-  /*p07.ZETE*/ bool BOOTROM_A1nA0n;
-  /*p07.ZEFU*/ bool BOOTROM_A1nA0;
-  /*p07.ZYRO*/ bool BOOTROM_A1A0n;
-  /*p07.ZAPA*/ bool BOOTROM_A1A0;
 
   /*p07.WALE*/ bool ADDR_x1111111n;
   /*p07.WOLY*/ bool HRAM_CSn;
@@ -670,12 +589,9 @@ struct System {
   /*p07.BAKO*/ bool ADDR_FFXXn1;
   /*p07.SOHA*/ bool ADDR_FFXXn2;
   /*p07.SARO*/ bool ADDR_OAM;
-  /*p07.ZYBA*/ bool ADDR_00n;
-  /*p07.ZUVY*/ bool ADDR_01n;
-  /*p07.ZUFY*/ bool ADDR_04n;
-  /*p07.ZERA*/ bool ADDR_05n;
+
   /*p07.TONA*/ bool ADDR_08n;
-  /*p07.TULO*/ bool ADDR_00XX;
+
   /*p07.ZUFA*/ bool ADDR_00XX2;
   /*p07.ZORO*/ bool ADDR_0XXX;
   /*p07.ZADU*/ bool ADDR_X0XX;

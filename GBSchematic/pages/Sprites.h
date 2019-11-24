@@ -130,10 +130,6 @@ struct Sprites {
   /*p28.XUVA*/ bool XUVA; // unused
 
 
-  /*p29.XONO*/ bool FLIP_X;
-
-
-
   /*p29.TACU*/ bool TACU;
   /*p29.XYSO*/ bool XYSO;
   /*p29.TEXY*/ bool TEXY;

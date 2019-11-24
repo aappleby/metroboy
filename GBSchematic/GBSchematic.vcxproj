@@ -180,7 +180,7 @@
     <ClCompile Include="..\src\TextPainter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pages\ApuControl.cpp" />
-    <ClCompile Include="pages\BgWindow.cpp" />
+    <ClCompile Include="pages\Video.cpp" />
     <ClCompile Include="pages\Channel1.cpp" />
     <ClCompile Include="pages\Channel2.cpp" />
     <ClCompile Include="pages\Channel3.cpp" />
@@ -196,7 +196,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\TextPainter.h" />
     <ClInclude Include="pages\ApuControl.h" />
-    <ClInclude Include="pages\BgWindow.h" />
+    <ClInclude Include="pages\Video.h" />
     <ClInclude Include="pages\Channel1.h" />
     <ClInclude Include="pages\Channel2.h" />
     <ClInclude Include="pages\Channel3.h" />

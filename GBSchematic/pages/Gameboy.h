@@ -12,10 +12,9 @@
 #include "Channel2.h"
 #include "Channel3.h"
 #include "Channel4.h"
-
 #include "Sprites.h"
 #include "PixelPipe.h"
-#include "BgWindow.h"
+#include "Video.h"
 
 //-----------------------------------------------------------------------------
 
@@ -34,14 +33,7 @@ struct Gameboy {
 
   Sprites    spr;
   PixelPipe  pix;
-
-  P21_VideoControl         p21;
-  P22_PpuDecode            p22;
-  P23_VideoRegs            p23;
-  P24_LcdControl           p24;
-  P25_VramInterface        p25;
-  P26_Background           p26;
-  P27_WindowMapLookup      p27;
+  Video      vid;
 
   //----------
   // main bus

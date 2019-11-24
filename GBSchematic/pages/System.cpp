@@ -50,7 +50,7 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // VID reset tree
 
-  /*p01.XODO*/ c.sys.VID_RESET1  = and(b.sys.SYS_RESETn4, b.p23.LCDC_EN); // polarity?
+  /*p01.XODO*/ c.sys.VID_RESET1  = and(b.sys.SYS_RESETn4, b.vid.LCDC_EN); // polarity?
   /*p01.XAPO*/ c.sys.VID_RESETn1 = not(b.sys.VID_RESET1);
   /*p01.LYHA*/ c.sys.VID_RESET2  = not(b.sys.VID_RESETn1);
   /*p01.TOFU*/ c.sys.VID_RESET3  = not(b.sys.VID_RESETn1);
@@ -268,10 +268,10 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
     /*p02.PESU*/ wire FF0F_IN = not(b.chip.P10_B);
 
-    /*p02.LOPE*/ pc.FF0F_0 = srtock_pos(a.p21.INT_VBL_BUF, b.p21.INT_VBL_BUF, FF0F_SET0, FF0F_RST0, pb.FF0F_0, FF0F_IN);
+    /*p02.LOPE*/ pc.FF0F_0 = srtock_pos(a.vid.INT_VBL_BUF, b.vid.INT_VBL_BUF, FF0F_SET0, FF0F_RST0, pb.FF0F_0, FF0F_IN);
     /*p02.UBUL*/ pc.FF0F_1 = srtock_pos(pa.SER_CNT3,       pb.SER_CNT3,       FF0F_SET1, FF0F_RST1, pb.FF0F_1, FF0F_IN);
     /*p02.ULAK*/ pc.FF0F_2 = srtock_pos(pa.INT_JP,         pb.INT_JP,         FF0F_SET2, FF0F_RST2, pb.FF0F_2, FF0F_IN);
-    /*p02.LALU*/ pc.FF0F_3 = srtock_pos(a.p21.INT_STAT,    b.p21.INT_STAT,    FF0F_SET3, FF0F_RST3, pb.FF0F_3, FF0F_IN);
+    /*p02.LALU*/ pc.FF0F_3 = srtock_pos(a.vid.INT_STAT,    b.vid.INT_STAT,    FF0F_SET3, FF0F_RST3, pb.FF0F_3, FF0F_IN);
     /*p02.NYBO*/ pc.FF0F_4 = srtock_pos(pa.INT_TIMER,      pb.INT_TIMER,      FF0F_SET4, FF0F_RST4, pb.FF0F_4, FF0F_IN);
 
     /*p07.ROLO*/ wire FF0F_RDn = nand(ADDR_XX0X, ADDR_XXXF, pb.ADDR_FFXX, pb.CPU_RD); // schematic wrong, is NAND
@@ -407,10 +407,10 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   // FF46 DMA
 
   {
-    /*p04.MOLU*/ wire FF46_RDn1 = nand(b.p22.FF46, pb.CPU_RD2);
+    /*p04.MOLU*/ wire FF46_RDn1 = nand(b.vid.FF46, pb.CPU_RD2);
     /*p04.NYGO*/ wire FF46_RD   = not(FF46_RDn1);
     /*p04.PUSY*/ wire FF46_RDn2 = not(FF46_RD);
-    /*p04.LAVY*/ wire FF46_WRn  = nand(b.p22.FF46, pb.CPU_WR2);
+    /*p04.LAVY*/ wire FF46_WRn  = nand(b.vid.FF46, pb.CPU_WR2);
     /*p04.LORU*/ pc.FF46_WR   = not(FF46_WRn);
 
     /*p04.NAFA*/ pc.DMA_A08 = tock_pos(pa.FF46_WR, pb.FF46_WR, 0, pb.DMA_A08, b.D0);
@@ -563,9 +563,9 @@ void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p03.RYFO*/ pc.FF04_FF07 = and(b.A02, ADDR_XX00_XX07, pb.ADDR_FFXX);
   /*p06.SANO*/ pc.ADDR_FF00_FF03 = and(ADDR_XX00_XX07, /*p06.SEFY*/ not(b.A02), pb.ADDR_FFXX);
 
-  /*p25.SYRO*/ c.p25.ADDR_FE00_FFFF = not(ADDR_0000_FE00);
-  /*p25.TEFA*/ c.p25.TEFA = nor(b.p25.ADDR_FE00_FFFF, b.sys.ADDR_VALID_AND_NOT_VRAM);
-  /*p25.SOSE*/ c.p25.ADDR_VRAM = and(b.A15, b.p25.TEFA);
+  /*p25.SYRO*/ c.vid.ADDR_FE00_FFFF = not(ADDR_0000_FE00);
+  /*p25.TEFA*/ c.vid.TEFA = nor(b.vid.ADDR_FE00_FFFF, b.sys.ADDR_VALID_AND_NOT_VRAM);
+  /*p25.SOSE*/ c.vid.ADDR_VRAM = and(b.A15, b.vid.TEFA);
 
   //----------
   // Serial port

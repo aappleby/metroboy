@@ -15,36 +15,16 @@ struct PixelPipe {
   /*p32.AJAR*/ bool AJAR;
   /*p32.LABU*/ bool VRAM_TEMP_CLK;
   /*p32.METE*/ bool BG_SEQ_TRIG_3;
-  /*p32.LOMA*/ bool BG_SEQ_TRIG_3o;
-  /*p32.LOZE*/ bool BG_PIPE_A_LOAD;
-  /*p32.LUXA*/ bool BG_PIPE_B_LOAD;
+  /*p32.LOMA*/ bool BG_LATCH;
 
-  /*p32.LEGU*/ bool LEGU;
-  /*p32.NUDU*/ bool NUDU;
-  /*p32.MUKU*/ bool MUKU;
-  /*p32.LUZO*/ bool LUZO;
-  /*p32.MEGU*/ bool MEGU;
-  /*p32.MYJY*/ bool MYJY;
-  /*p32.NASA*/ bool NASA;
-  /*p32.NEFO*/ bool NEFO;
-
-  /*p32.TOSA*/ bool BG_PIX_B0;
-  /*p32.RUCO*/ bool BG_PIX_B1;
-  /*p32.TYCE*/ bool BG_PIX_B2;
-  /*p32.REVY*/ bool BG_PIX_B3;
-  /*p32.RYGA*/ bool BG_PIX_B4;
-  /*p32.RYLE*/ bool BG_PIX_B5;
-  /*p32.RAPU*/ bool BG_PIX_B6;
-  /*p32.SOJA*/ bool BG_PIX_B7;
-
-  /*p32.LUHE*/ bool LUHE;
-  /*p32.NOLY*/ bool NOLY;
-  /*p32.LEKE*/ bool LEKE;
-  /*p32.LOMY*/ bool LOMY;
-  /*p32.LALA*/ bool LALA;
-  /*p32.LOXA*/ bool LOXA;
-  /*p32.NEZE*/ bool NEZE;
-  /*p32.NOBO*/ bool NOBO;
+  /*p32.LEGU*/ bool BG_PIX_A0;
+  /*p32.NUDU*/ bool BG_PIX_A1;
+  /*p32.MUKU*/ bool BG_PIX_A2;
+  /*p32.LUZO*/ bool BG_PIX_A3;
+  /*p32.MEGU*/ bool BG_PIX_A4;
+  /*p32.MYJY*/ bool BG_PIX_A5;
+  /*p32.NASA*/ bool BG_PIX_A6;
+  /*p32.NEFO*/ bool BG_PIX_A7;
 
   /*p32.SEJA*/ bool BG_PIPE_B_RST0;
   /*p32.SENO*/ bool BG_PIPE_B_RST1;
@@ -63,24 +43,6 @@ struct PixelPipe {
   /*p32.RAJA*/ bool BG_PIPE_B_SET5;
   /*p32.RAJO*/ bool BG_PIPE_B_SET6;
   /*p32.RAGA*/ bool BG_PIPE_B_SET7;
-
-  /*p32.LOTY*/ bool BG_PIPE_A_RST0;
-  /*p32.NEXA*/ bool BG_PIPE_A_RST1;
-  /*p32.LUTU*/ bool BG_PIPE_A_RST2;
-  /*p32.LUJA*/ bool BG_PIPE_A_RST3;
-  /*p32.MOSY*/ bool BG_PIPE_A_RST4;
-  /*p32.LERU*/ bool BG_PIPE_A_RST5;
-  /*p32.NYHA*/ bool BG_PIPE_A_RST6;
-  /*p32.NADY*/ bool BG_PIPE_A_RST7;
-
-  /*p32.LAKY*/ bool BG_PIPE_A_SET0;
-  /*p32.NYXO*/ bool BG_PIPE_A_SET1;
-  /*p32.LOTO*/ bool BG_PIPE_A_SET2;
-  /*p32.LYDU*/ bool BG_PIPE_A_SET3;
-  /*p32.MYVY*/ bool BG_PIPE_A_SET4;
-  /*p32.LODO*/ bool BG_PIPE_A_SET5;
-  /*p32.NUTE*/ bool BG_PIPE_A_SET6;
-  /*p32.NAJA*/ bool BG_PIPE_A_SET7;
 
   /*p32.TOMY*/ bool BG_PIPE_B0;
   /*p32.TACA*/ bool BG_PIPE_B1;
@@ -127,24 +89,6 @@ struct PixelPipe {
   /*p33.SEMO*/ bool SPR_PIX_B6;
   /*p33.SEGA*/ bool SPR_PIX_B7;
 
-  /*p33.RATA*/ bool SPR_PIX_B0n;
-  /*p33.NUCA*/ bool SPR_PIX_B1n;
-  /*p33.LASE*/ bool SPR_PIX_B2n;
-  /*p33.LUBO*/ bool SPR_PIX_B3n;
-  /*p33.WERY*/ bool SPR_PIX_B4n;
-  /*p33.WURA*/ bool SPR_PIX_B5n;
-  /*p33.SULU*/ bool SPR_PIX_B6n;
-  /*p33.WAMY*/ bool SPR_PIX_B7n;
-
-  /*p33.POBE*/ bool SPR_PIX_FLIP0;
-  /*p33.PACY*/ bool SPR_PIX_FLIP1;
-  /*p33.PONO*/ bool SPR_PIX_FLIP2;
-  /*p33.PUGU*/ bool SPR_PIX_FLIP3;
-  /*p33.PUTE*/ bool SPR_PIX_FLIP4;
-  /*p33.PULY*/ bool SPR_PIX_FLIP5;
-  /*p33.PELO*/ bool SPR_PIX_FLIP6;
-  /*p33.PAWE*/ bool SPR_PIX_FLIP7;
- 
   /*p33.PEFO*/ bool SPR_PIX_A0;
   /*p33.ROKA*/ bool SPR_PIX_A1;
   /*p33.MYTU*/ bool SPR_PIX_A2;
@@ -153,51 +97,6 @@ struct PixelPipe {
   /*p33.SUTO*/ bool SPR_PIX_A5;
   /*p33.RAMA*/ bool SPR_PIX_A6;
   /*p33.RYDU*/ bool SPR_PIX_A7;
-
-  /*p33.LOZA*/ bool SPR_PIX_A0n;
-  /*p33.SYBO*/ bool SPR_PIX_A1n;
-  /*p33.LUMO*/ bool SPR_PIX_A2n;
-  /*p33.SOLO*/ bool SPR_PIX_A3n;
-  /*p33.VOBY*/ bool SPR_PIX_A4n;
-  /*p33.WYCO*/ bool SPR_PIX_A5n;
-  /*p33.SERY*/ bool SPR_PIX_A6n;
-  /*p33.SELU*/ bool SPR_PIX_A7n;
-
-  /*p33.PABE*/ bool SPR_PIX_B_SET0;
-  /*p33.MYTO*/ bool SPR_PIX_B_SET1;
-  /*p33.LELA*/ bool SPR_PIX_B_SET2;
-  /*p33.MAME*/ bool SPR_PIX_B_SET3;
-  /*p33.VEXU*/ bool SPR_PIX_B_SET4;
-  /*p33.VABY*/ bool SPR_PIX_B_SET5;
-  /*p33.TUXA*/ bool SPR_PIX_B_SET6;
-  /*p33.VUNE*/ bool SPR_PIX_B_SET7;
-
-  /*p33.PYZU*/ bool SPR_PIX_B_RST0;
-  /*p33.MADA*/ bool SPR_PIX_B_RST1;
-  /*p33.LYDE*/ bool SPR_PIX_B_RST2;
-  /*p33.LUFY*/ bool SPR_PIX_B_RST3;
-  /*p33.XATO*/ bool SPR_PIX_B_RST4;
-  /*p33.XEXU*/ bool SPR_PIX_B_RST5;
-  /*p33.TUPE*/ bool SPR_PIX_B_RST6;
-  /*p33.XYVE*/ bool SPR_PIX_B_RST7;
-
-  /*p33.MEZU*/ bool SPR_PIX_A_SET0;
-  /*p33.RUSY*/ bool SPR_PIX_A_SET1;
-  /*p33.MYXA*/ bool SPR_PIX_A_SET2;
-  /*p33.RANO*/ bool SPR_PIX_A_SET3;
-  /*p33.TYGA*/ bool SPR_PIX_A_SET4;
-  /*p33.VUME*/ bool SPR_PIX_A_SET5;
-  /*p33.TAPO*/ bool SPR_PIX_A_SET6;
-  /*p33.TESO*/ bool SPR_PIX_A_SET7;
-
-  /*p33.MOFY*/ bool SPR_PIX_A_RST0;
-  /*p33.RUCA*/ bool SPR_PIX_A_RST1;
-  /*p33.MAJO*/ bool SPR_PIX_A_RST2;
-  /*p33.REHU*/ bool SPR_PIX_A_RST3;
-  /*p33.WAXO*/ bool SPR_PIX_A_RST4;
-  /*p33.XOLE*/ bool SPR_PIX_A_RST5;
-  /*p33.TABY*/ bool SPR_PIX_A_RST6;
-  /*p33.TULA*/ bool SPR_PIX_A_RST7;
 
   /*p34.LAFU*/ bool OBP0PIXELn;
   /*p34.LEKA*/ bool OBP1PIXELn;
@@ -219,15 +118,6 @@ struct PixelPipe {
   /*p34.VYSA*/ bool SPRITE_MASK5;
   /*p34.TORY*/ bool SPRITE_MASK6;
   /*p34.WOPE*/ bool SPRITE_MASK7;
-
-  /*p34.SYPY*/ bool OAM_A_D4n;
-  /*p34.TOTU*/ bool OAM_A_D4o;
-  /*p34.NARO*/ bool OAM_A_D4p;
-  /*p34.WEXY*/ bool OAM_A_D4q;
-  /*p34.RYZY*/ bool OAM_A_D4r;
-  /*p34.RYFE*/ bool OAM_A_D4s;
-  /*p34.LADY*/ bool OAM_A_D4t;
-  /*p34.LAFY*/ bool OAM_A_D4u;
 
   /*p34.PUME*/ bool SPRITE_PAL_PIPE_SET0n;
   /*p34.SORO*/ bool SPRITE_PAL_PIPE_SET1n;
@@ -319,19 +209,15 @@ struct PixelPipe {
   /*p35.REMY*/ bool LD0n;
   /*p35.RAVO*/ bool LD1n;
 
-  /*p36.VUSO*/ bool FF47_RD;
-  /*p36.VELY*/ bool FF47_WR;
-  /*p36.TEPY*/ bool FF47_RDn;
-  /*p36.TEPO*/ bool FF47_WRn;
-
-  /*p36.MENA*/ bool BGP_D7;
-  /*p36.MORU*/ bool BGP_D5;
-  /*p36.MAXY*/ bool BGP_D3;
-  /*p36.NUSY*/ bool BGP_D1;
-  /*p36.MOGY*/ bool BGP_D6;
-  /*p36.MUKE*/ bool BGP_D4;
-  /*p36.PYLU*/ bool BGP_D2;
+  /*p36.TEPO*/ bool BGP_CLK;
   /*p36.PAVO*/ bool BGP_D0;
+  /*p36.PYLU*/ bool BGP_D2;
+  /*p36.MUKE*/ bool BGP_D4;
+  /*p36.MOGY*/ bool BGP_D6;
+  /*p36.NUSY*/ bool BGP_D1;
+  /*p36.MAXY*/ bool BGP_D3;
+  /*p36.MORU*/ bool BGP_D5;
+  /*p36.MENA*/ bool BGP_D7;
 
   /*p36.XUFY*/ bool FF48_RD;
   /*p36.XOMA*/ bool FF48_WR;

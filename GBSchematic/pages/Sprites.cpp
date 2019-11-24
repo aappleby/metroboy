@@ -7,7 +7,7 @@
 void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p28.WEFE*/ c.spr.P10_Bn = not(b.chip.P10_B);
-  /*p28.AWOH*/ c.spr.CLK_2Mn = not(b.p21.CLK_2Mb);
+  /*p28.AWOH*/ c.spr.CLK_2Mn = not(b.vid.CLK_2Mb);
   
   /*p04.DECY*/ c.sys.FROM_CPU5n = not(b.cpu.FROM_CPU5);
   /*p04.CATY*/ c.sys.FROM_CPU5  = not(b.sys.FROM_CPU5n);
@@ -26,16 +26,16 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
 
 
-  /*p25.COTA*/ c.p25.OAM_IN_CLKn = not(b.p25.OAM_IN_CLK); // -> OAM
-  /*p25.BYCU*/   c.p25.OAM_IN_CLK = nor(b.p25.OAM_WR, b.p25.XUJY, b.p25.AVER);
-  /*p25.CUFE*/     c.p25.OAM_WR = or(and(b.sys.ADDR_OAM, b.sys.DMA_RUNNING_SYNCn), b.sys.CPUCLK_ABCDxxxx9);
-  /*p25.XUJY*/     c.p25.XUJY = not(b.p25.VAPE);
-  /*p25.VAPE*/       c.p25.VAPE = and(b.spr.TACU, b.spr.TUVO);
+  /*p25.COTA*/ c.vid.OAM_IN_CLKn = not(b.vid.OAM_IN_CLK); // -> OAM
+  /*p25.BYCU*/   c.vid.OAM_IN_CLK = nor(b.vid.OAM_WR, b.vid.XUJY, b.vid.AVER);
+  /*p25.CUFE*/     c.vid.OAM_WR = or(and(b.sys.ADDR_OAM, b.sys.DMA_RUNNING_SYNCn), b.sys.CPUCLK_ABCDxxxx9);
+  /*p25.XUJY*/     c.vid.XUJY = not(b.vid.VAPE);
+  /*p25.VAPE*/       c.vid.VAPE = and(b.spr.TACU, b.spr.TUVO);
   /*p29.TACU*/         c.spr.TACU = nand(b.spr.TYTU, b.spr.TYFO);
-  /*p25.AVER*/     c.p25.AVER = and(b.spr.OAM_ADDR_PARSEn, b.spr.XYSO);
+  /*p25.AVER*/     c.vid.AVER = and(b.spr.OAM_ADDR_PARSEn, b.spr.XYSO);
   /*p29.XYSO*/       c.spr.XYSO = not(b.spr.WOJO);
-  /*p29.WOJO*/         c.spr.WOJO = nor(!b.p21.CLK_2Ma, !b.spr.CLK_WOSU);
-  /*p29.WOSU*/           c.spr.CLK_WOSU = tock_pos(a.p21.CLK_AxCxExGxc, b.p21.CLK_AxCxExGxc, b.sys.VID_RESETn1, b.spr.CLK_WOSU, !b.p21.CLK_2Ma);
+  /*p29.WOJO*/         c.spr.WOJO = nor(!b.vid.CLK_2Ma, !b.spr.CLK_WOSU);
+  /*p29.WOSU*/           c.spr.CLK_WOSU = tock_pos(a.vid.CLK_AxCxExGxc, b.vid.CLK_AxCxExGxc, b.sys.VID_RESETn1, b.spr.CLK_WOSU, !b.vid.CLK_2Ma);
 
 
 
@@ -63,7 +63,7 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // these are unused
   /*
-  c.spr.XUCA = not(b.p23.FF40_WR);
+  c.spr.XUCA = not(b.vid.FF40_WR);
   c.spr.XECY = tock_pos(a.spr.XUCA, b.spr.XUCA, 0,          b.spr.XECY, b.sys.SYS_RESETn4); // ? weird
   c.spr.XUVA = tock_pos(a.spr.XYNY, b.spr.XYNY, b.sys.XARE, b.spr.XUVA, b.spr.XECY);
   */
@@ -88,22 +88,22 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
 
 
-  /*p29.CATU*/ c.spr.IN_LINE  = tock_pos(a.p21.CLK_2Mb, b.p21.CLK_2Mb, b.sys.VID_RESETn3, b.spr.IN_LINE, b.spr.IN_LINEb);
-  /*p29.ABOV*/   c.spr.IN_LINEb = and(b.p21.LINE_DONEo, b.spr.LINE_144n);
-  /*p29.ALES*/     c.spr.LINE_144n = not(b.p21.LINE_144);
+  /*p29.CATU*/ c.spr.IN_LINE  = tock_pos(a.vid.CLK_2Mb, b.vid.CLK_2Mb, b.sys.VID_RESETn3, b.spr.IN_LINE, b.spr.IN_LINEb);
+  /*p29.ABOV*/   c.spr.IN_LINEb = and(b.vid.LINE_DONEo, b.spr.LINE_144n);
+  /*p29.ALES*/     c.spr.LINE_144n = not(b.vid.LINE_144);
 
 
-  /*p29.BUZA*/ c.spr.STORE_SPRITE_IDX = and(!b.spr.CENO, b.p21.RENDERING);
+  /*p29.BUZA*/ c.spr.STORE_SPRITE_IDX = and(!b.spr.CENO, b.vid.RENDERING);
   /*p29.CEHA*/ c.spr.CEHA = not(!b.spr.CENO);
   
-  /*p29.CENO*/ c.spr.CENO = tock_pos(a.p21.CLK_2Mb, b.p21.CLK_2Mb, b.sys.VID_RESETn3, b.spr.CENO, b.spr.BESU);
+  /*p29.CENO*/ c.spr.CENO = tock_pos(a.vid.CLK_2Mb, b.vid.CLK_2Mb, b.sys.VID_RESETn3, b.spr.CENO, b.spr.BESU);
   /*p28.BESU*/   c.spr.BESU = or(b.spr.IN_LINE, b.spr.ASEN);
   /*p28.ASEN*/     c.spr.ASEN = or(b.sys.VID_RESET6, b.spr.SCAN_DONE_TRIG);
 
 
 
   {
-    /*p28.GAVA*/ c.spr.SCAN_CLK  = or(b.spr.SCAN_DONE, b.p21.CLK_2Mb);
+    /*p28.GAVA*/ c.spr.SCAN_CLK  = or(b.spr.SCAN_DONE, b.vid.CLK_2Mb);
     /*p28.ANOM*/ c.spr.SCAN_RSTn = nor(b.sys.VID_RESET6, b.spr.NEW_LINE);
     /*p29.BALU*/ c.spr.SCAN_RSTa = not(b.spr.SCAN_RSTn);
     /*p29.BAGY*/ c.spr.SCAN_RSTo = not(b.spr.SCAN_RSTa);
@@ -116,7 +116,7 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
     /*p28.FONY*/ c.spr.SCAN5 = tock_pos(!a.spr.SCAN4,    !b.spr.SCAN4,   b.spr.SCAN_RSTn, b.spr.SCAN5, !b.spr.SCAN5);
 
     /*p28.FETO*/ c.spr.SCAN_DONE = and(b.spr.SCAN0, b.spr.SCAN1, b.spr.SCAN2, b.spr.SCAN5);
-    /*p29.BYBA*/ c.spr.SCAN_DONE_SYNC1 = tock_pos(a.p21.CLK_2Mb,       b.p21.CLK_2Mb,       b.spr.SCAN_RSTo, b.spr.SCAN_DONE_SYNC1, b.spr.SCAN_DONE);
+    /*p29.BYBA*/ c.spr.SCAN_DONE_SYNC1 = tock_pos(a.vid.CLK_2Mb,       b.vid.CLK_2Mb,       b.spr.SCAN_RSTo, b.spr.SCAN_DONE_SYNC1, b.spr.SCAN_DONE);
     /*p29.DOBA*/ c.spr.SCAN_DONE_SYNC2 = tock_pos(a.sys.CLK_AxCxExGx4, b.sys.CLK_AxCxExGx4, b.spr.SCAN_RSTo, b.spr.SCAN_DONE_SYNC2, b.spr.SCAN_DONE_SYNC1);
 
     /*p29.BEBU*/ c.spr.SCAN_DONE_TRIGn = or(b.spr.SCAN_RSTa, b.spr.SCAN_DONE_SYNC2, !b.spr.SCAN_DONE_SYNC1);
@@ -128,13 +128,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // undeciphered
 
-  /*p29.TEPA*/ c.spr.RENDERINGn = not(b.p21.RENDERING);
+  /*p29.TEPA*/ c.spr.RENDERINGn = not(b.vid.RENDERING);
 
   /*p29.WUTY*/ c.spr.WUTY = not(b.spr.VUSA);
   /*p29.VUSA*/   c.spr.VUSA = or(!b.spr.TYFO, b.spr.TYNO);
   /*p29.TYNO*/     c.spr.TYNO = nand(b.spr.TOXE0, b.spr.SEBA, b.spr.SPRITE_ABn);
 
   /*p29.XEFY*/ c.spr.XEFY = not(b.spr.WUTY);
+
   /*p29.TYSO*/ c.spr.TYSO = or(b.spr.SAKY, b.spr.RENDERINGn);
   /*p29.SAKY*/   c.spr.SAKY = nor(b.spr.TULY1, b.spr.SPRITE_ABn);
   /*p29.TEXY*/ c.spr.TEXY = not(b.spr.TYSO);
@@ -145,21 +146,21 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
 
 
-  /*p29.TYFO*/ c.spr.TYFO = tock_pos( a.p21.CLK_xBxDxFxHd,  b.p21.CLK_xBxDxFxHd, b.p27.P10_Bn, b.spr.TYFO, b.spr.TAME);
+  /*p29.TYFO*/ c.spr.TYFO = tock_pos( a.vid.CLK_xBxDxFxHd,  b.vid.CLK_xBxDxFxHd, b.vid.P10_Bn, b.spr.TYFO, b.spr.TAME);
 
-  /*p29.TOMA*/ c.spr.TOMA_CLK = nand(b.p21.CLK_xBxDxFxHd, b.spr.TAME);
+  /*p29.TOMA*/ c.spr.TOMA_CLK = nand(b.vid.CLK_xBxDxFxHd, b.spr.TAME);
 
 
-  /*p29.TOXE*/ c.spr.TOXE0 = tock_pos( a.spr.TOMA_CLK, b.spr.TOMA_CLK, b.p27.SECA_RST, b.spr.TOXE0, !b.spr.TOXE0);
-  /*p29.TULY*/ c.spr.TULY1 = tock_pos(!a.spr.TOXE0,     !b.spr.TOXE0,  b.p27.SECA_RST, b.spr.TULY1, !b.spr.TULY1);
-  /*p29.TESE*/ c.spr.TESE2 = tock_pos(!a.spr.TULY1,     !b.spr.TULY1,  b.p27.SECA_RST, b.spr.TESE2, !b.spr.TESE2);
+  /*p29.TOXE*/ c.spr.TOXE0 = tock_pos( a.spr.TOMA_CLK, b.spr.TOMA_CLK, b.vid.SECA_RST, b.spr.TOXE0, !b.spr.TOXE0);
+  /*p29.TULY*/ c.spr.TULY1 = tock_pos(!a.spr.TOXE0,     !b.spr.TOXE0,  b.vid.SECA_RST, b.spr.TULY1, !b.spr.TULY1);
+  /*p29.TESE*/ c.spr.TESE2 = tock_pos(!a.spr.TULY1,     !b.spr.TULY1,  b.vid.SECA_RST, b.spr.TESE2, !b.spr.TESE2);
 
   /*p29.TAME*/ c.spr.TAME = nand(b.spr.TESE2, b.spr.TOXE0);
 
 
-  /*p29.TOBU*/ c.spr.TULY_SYNC1 = tock_pos(a.sys.CLK_AxCxExGx10, b.sys.CLK_AxCxExGx10, b.p21.RENDERING, b.spr.TULY_SYNC1, b.spr.TULY1);
-  /*p29.VONU*/ c.spr.SPRITE_ABn = tock_pos(a.sys.CLK_AxCxExGx10, b.sys.CLK_AxCxExGx10, b.p21.RENDERING, b.spr.SPRITE_ABn, !b.spr.TULY_SYNC1);
-  /*p29.SEBA*/ c.spr.SEBA       = tock_pos(a.p21.CLK_xBxDxFxHd,  b.p21.CLK_xBxDxFxHd,  b.p21.RENDERING, b.spr.SEBA,       b.spr.SPRITE_ABn);
+  /*p29.TOBU*/ c.spr.TULY_SYNC1 = tock_pos(a.sys.CLK_AxCxExGx10, b.sys.CLK_AxCxExGx10, b.vid.RENDERING, b.spr.TULY_SYNC1, b.spr.TULY1);
+  /*p29.VONU*/ c.spr.SPRITE_ABn = tock_pos(a.sys.CLK_AxCxExGx10, b.sys.CLK_AxCxExGx10, b.vid.RENDERING, b.spr.SPRITE_ABn, !b.spr.TULY_SYNC1);
+  /*p29.SEBA*/ c.spr.SEBA       = tock_pos(a.vid.CLK_xBxDxFxHd,  b.vid.CLK_xBxDxFxHd,  b.vid.RENDERING, b.spr.SEBA,       b.spr.SPRITE_ABn);
 
   /*p29.SYCU*/ c.spr.SYCU = nor(b.spr.TYTU, b.spr.RENDERINGn, b.spr.TYFO);
 
@@ -233,23 +234,23 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p28.ANUM*/ if (b.spr.VRAM_TO_OAMc) c.TS_OAM_B_D7 = b.MD7;
   /*p28.AZAR*/   c.spr.VRAM_TO_OAMc = not(b.sys.VRAM_TO_OAMn);
 
-  /*p25.WEJO*/ if (b.p25.DO_DMAn)      c.TS_OAM_A_D0 = not(b.p25.D0n);
-  /*p25.BUBO*/ if (b.p25.DO_DMAn)      c.TS_OAM_A_D1 = not(b.p25.D1n);
-  /*p25.BETU*/ if (b.p25.DO_DMAn)      c.TS_OAM_A_D2 = not(b.p25.D2n);
-  /*p25.CYME*/ if (b.p25.DO_DMAn)      c.TS_OAM_A_D3 = not(b.p25.D3n);
-  /*p25.BAXU*/ if (b.p25.DO_DMAn)      c.TS_OAM_A_D4 = not(b.p25.D4n);
-  /*p25.BUHU*/ if (b.p25.DO_DMAn)      c.TS_OAM_A_D5 = not(b.p25.D5n);
-  /*p25.BYNY*/ if (b.p25.DO_DMAn)      c.TS_OAM_A_D6 = not(b.p25.D6n);
-  /*p25.BYPY*/ if (b.p25.DO_DMAn)      c.TS_OAM_A_D7 = not(b.p25.D7n);
-  /*p25.WASA*/ if (b.p25.DO_DMAn)      c.TS_OAM_B_D0 = not(b.p25.D0n);
-  /*p25.BOMO*/ if (b.p25.DO_DMAn)      c.TS_OAM_B_D1 = not(b.p25.D1n);
-  /*p25.BASA*/ if (b.p25.DO_DMAn)      c.TS_OAM_B_D2 = not(b.p25.D2n);
-  /*p25.CAKO*/ if (b.p25.DO_DMAn)      c.TS_OAM_B_D3 = not(b.p25.D3n);
-  /*p25.BUMA*/ if (b.p25.DO_DMAn)      c.TS_OAM_B_D4 = not(b.p25.D4n);
-  /*p25.BUPY*/ if (b.p25.DO_DMAn)      c.TS_OAM_B_D5 = not(b.p25.D5n);
-  /*p25.BASY*/ if (b.p25.DO_DMAn)      c.TS_OAM_B_D6 = not(b.p25.D6n);
-  /*p25.BAPE*/ if (b.p25.DO_DMAn)      c.TS_OAM_B_D7 = not(b.p25.D7n);
-  /*p25.CEDE*/   c.p25.DO_DMAn = not(b.sys.DO_DMA);
+  /*p25.WEJO*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D0 = not(b.vid.D0n);
+  /*p25.BUBO*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D1 = not(b.vid.D1n);
+  /*p25.BETU*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D2 = not(b.vid.D2n);
+  /*p25.CYME*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D3 = not(b.vid.D3n);
+  /*p25.BAXU*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D4 = not(b.vid.D4n);
+  /*p25.BUHU*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D5 = not(b.vid.D5n);
+  /*p25.BYNY*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D6 = not(b.vid.D6n);
+  /*p25.BYPY*/ if (b.vid.DO_DMAn)      c.TS_OAM_A_D7 = not(b.vid.D7n);
+  /*p25.WASA*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D0 = not(b.vid.D0n);
+  /*p25.BOMO*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D1 = not(b.vid.D1n);
+  /*p25.BASA*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D2 = not(b.vid.D2n);
+  /*p25.CAKO*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D3 = not(b.vid.D3n);
+  /*p25.BUMA*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D4 = not(b.vid.D4n);
+  /*p25.BUPY*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D5 = not(b.vid.D5n);
+  /*p25.BASY*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D6 = not(b.vid.D6n);
+  /*p25.BAPE*/ if (b.vid.DO_DMAn)      c.TS_OAM_B_D7 = not(b.vid.D7n);
+  /*p25.CEDE*/   c.vid.DO_DMAn = not(b.sys.DO_DMA);
 
 
   //----------
@@ -280,7 +281,7 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.BAXO*/ c.spr.OAM_A_D5 = tock_pos(a.spr.OAM_A_IN_CLK, b.spr.OAM_A_IN_CLK, 0, b.spr.OAM_A_D5, b.spr.OAM_A_LATCH5);
   /*p31.YZOS*/ c.spr.OAM_A_D6 = tock_pos(a.spr.OAM_A_IN_CLK, b.spr.OAM_A_IN_CLK, 0, b.spr.OAM_A_D6, b.spr.OAM_A_LATCH6);
   /*p31.DEPO*/ c.spr.OAM_A_D7 = tock_pos(a.spr.OAM_A_IN_CLK, b.spr.OAM_A_IN_CLK, 0, b.spr.OAM_A_D7, b.spr.OAM_A_LATCH7);
-  /*p31.XEGA*/   c.spr.OAM_A_IN_CLK = not(b.p25.OAM_IN_CLKn);
+  /*p31.XEGA*/   c.spr.OAM_A_IN_CLK = not(b.vid.OAM_IN_CLKn);
 
   /*p29.XUSO*/ c.spr.OAM_B_D0 = tock_pos(a.spr.OAM_B_IN_CLK, b.spr.OAM_B_IN_CLK, 0, b.spr.OAM_B_D0, b.spr.OAM_B_LATCH0);
   /*p29.XEGU*/ c.spr.OAM_B_D1 = tock_pos(a.spr.OAM_B_IN_CLK, b.spr.OAM_B_IN_CLK, 0, b.spr.OAM_B_D1, b.spr.OAM_B_LATCH1);
@@ -290,7 +291,7 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p29.WYSO*/ c.spr.OAM_B_D5 = tock_pos(a.spr.OAM_B_IN_CLK, b.spr.OAM_B_IN_CLK, 0, b.spr.OAM_B_D5, b.spr.OAM_B_LATCH5);
   /*p29.XOTE*/ c.spr.OAM_B_D6 = tock_pos(a.spr.OAM_B_IN_CLK, b.spr.OAM_B_IN_CLK, 0, b.spr.OAM_B_D6, b.spr.OAM_B_LATCH6);
   /*p29.YZAB*/ c.spr.OAM_B_D7 = tock_pos(a.spr.OAM_B_IN_CLK, b.spr.OAM_B_IN_CLK, 0, b.spr.OAM_B_D7, b.spr.OAM_B_LATCH7);
-  /*p29.YWOK*/   c.spr.OAM_B_IN_CLK = not(b.p25.OAM_IN_CLKn);
+  /*p29.YWOK*/   c.spr.OAM_B_IN_CLK = not(b.vid.OAM_IN_CLKn);
 
   /*p31.XACA*/ if (b.spr.OAM_A_CPU_RD) c.D0 = b.spr.OAM_A_LATCH0;
   /*p31.XAGU*/ if (b.spr.OAM_A_CPU_RD) c.D1 = b.spr.OAM_A_LATCH1;
@@ -354,10 +355,10 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   // polarity issues here
   /*p28.BOGE*/ c.spr.DMA_RUNNING_SYNCb = not(b.sys.DMA_RUNNING_SYNCn);
-  /*p28.AJON*/ c.spr.OAM_ADDR_RENDERn = and(b.spr.DMA_RUNNING_SYNCb, b.p21.RENDERING);
+  /*p28.AJON*/ c.spr.OAM_ADDR_RENDERn = and(b.spr.DMA_RUNNING_SYNCb, b.vid.RENDERING);
   /*p28.ACYL*/ c.spr.OAM_ADDR_PARSEn  = and(b.spr.DMA_RUNNING_SYNCb, b.spr.BESU);
 
-  /*p28.ASAM*/ c.spr.OAM_ADDR_CPU    = or(b.spr.OAM_ADDR_PARSEn , b.p21.RENDERING, b.sys.DMA_RUNNING_SYNCn);
+  /*p28.ASAM*/ c.spr.OAM_ADDR_CPU    = or(b.spr.OAM_ADDR_PARSEn , b.vid.RENDERING, b.sys.DMA_RUNNING_SYNCn);
   /*p28.BETE*/ c.spr.OAM_ADDR_RENDER = not(b.spr.OAM_ADDR_RENDERn);
   /*p28.APAR*/ c.spr.OAM_ADDR_PARSE  = not(b.spr.OAM_ADDR_PARSEn);
   /*p04.DUGA*/ c.sys.OAM_ADDR_DMA    = not(b.sys.DMA_RUNNING_SYNCn);
@@ -382,14 +383,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   //----------
   // Sprite y comparator
 
-  /*p29.EBOS*/ c.spr.V0n = not(b.p21.V0);
-  /*p29.DASA*/ c.spr.V1n = not(b.p21.V1);
-  /*p29.FUKY*/ c.spr.V2n = not(b.p21.V2);
-  /*p29.FUVE*/ c.spr.V3n = not(b.p21.V3);
-  /*p29.FEPU*/ c.spr.V4n = not(b.p21.V4);
-  /*p29.FOFA*/ c.spr.V5n = not(b.p21.V5);
-  /*p29.FEMO*/ c.spr.V6n = not(b.p21.V6);
-  /*p29.GUSU*/ c.spr.V7n = not(b.p21.V7);
+  /*p29.EBOS*/ c.spr.V0n = not(b.vid.V0);
+  /*p29.DASA*/ c.spr.V1n = not(b.vid.V1);
+  /*p29.FUKY*/ c.spr.V2n = not(b.vid.V2);
+  /*p29.FUVE*/ c.spr.V3n = not(b.vid.V3);
+  /*p29.FEPU*/ c.spr.V4n = not(b.vid.V4);
+  /*p29.FOFA*/ c.spr.V5n = not(b.vid.V5);
+  /*p29.FEMO*/ c.spr.V6n = not(b.vid.V6);
+  /*p29.GUSU*/ c.spr.V7n = not(b.vid.V7);
 
   /*p29.ERUC*/ c.spr.YDIFF0 = add_c(b.spr.V0n, !b.spr.OAM_B_D0, b.chip.P10_B);
   /*p29.ENEF*/ c.spr.YDIFF1 = add_s(b.spr.V1n, !b.spr.OAM_B_D1, b.spr.YDIFF_C0);
@@ -420,14 +421,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p29.GESE*/ c.spr.SPR_MATCH_Y = not(b.spr.SPR_MATCH_Yn);
   /*p29.WOTA*/   c.spr.SPR_MATCH_Yn = nand(b.spr.SPRITE_DELTA4, b.spr.SPRITE_DELTA5, b.spr.SPRITE_DELTA6, b.spr.SPRITE_DELTA7, b.spr.YDIFF_C7, b.spr.GOVU);
-  /*p29.GOVU*/     c.spr.GOVU = or(b.spr.YDIFF3, b.p23.LCDC_SPSIZE);
+  /*p29.GOVU*/     c.spr.GOVU = or(b.spr.YDIFF3, b.vid.LCDC_SPSIZE);
 
 
   //----------
   // Sprite priority
 
-  /*p29.AROR*/ c.spr.MATCH_EN = and(b.spr.AZEM, b.p23.LCDC_SPEN);
-  /*p29.AZEM*/   c.spr.AZEM = and(b.spr.BYJO, b.p21.RENDERING);
+  /*p29.AROR*/ c.spr.MATCH_EN = and(b.spr.AZEM, b.vid.LCDC_SPEN);
+  /*p29.AZEM*/   c.spr.AZEM = and(b.spr.BYJO, b.vid.RENDERING);
   /*p29.BYJO*/     c.spr.BYJO = not(b.spr.CEHA);
 
 
@@ -517,10 +518,10 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p29.ARAS*/ if (b.spr.ABON) c.MA02 = b.spr.SPRITE_Y1;
   /*p29.AGAG*/ if (b.spr.ABON) c.MA03 = b.spr.SPRITE_Y2;
 
-  /*p29.FUFO*/ c.spr.LCDC_SPSIZEn = not(b.p23.LCDC_SPSIZE);
+  /*p29.FUFO*/ c.spr.LCDC_SPSIZEn = not(b.vid.LCDC_SPSIZE);
   /*p29.WAGO*/ c.spr.WAGO = xor(b.spr.FLIP_Y, b.spr.TS_LINE_0);
   /*p29.GEJY*/ c.spr.GEJY = amux2(b.spr.LCDC_SPSIZEn, !b.spr.OAM_B_D0, // polarity?
-                                  b.p23.LCDC_SPSIZE,  b.spr.WAGO);
+                                  b.vid.LCDC_SPSIZE,  b.spr.WAGO);
 
   /*p29.FAMU*/ if (b.spr.ABON) c.MA04 = b.spr.GEJY;
   /*p29.FUGY*/ if (b.spr.ABON) c.MA05 = b.spr.OAM_B_D1;
@@ -624,7 +625,7 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p30.YDUF*/ c.spr.IDX_4 = tock_pos(a.spr.WUDA, b.spr.WUDA, b.spr.P10_Bn, b.spr.IDX_4, b.spr.OAM_A6);
   /*p30.XECU*/ c.spr.IDX_5 = tock_pos(a.spr.WUDA, b.spr.WUDA, b.spr.P10_Bn, b.spr.IDX_5, b.spr.OAM_A7);
   /*p30.WUDA*/   c.spr.WUDA = not(b.spr.CYKE);
-  /*p30.CYKE*/     c.spr.CYKE = not(b.p21.CLK_2Mb);
+  /*p30.CYKE*/     c.spr.CYKE = not(b.vid.CLK_2Mb);
 
   // so this is a bit weird as we have a tri-state bus inside one schematic...
 
@@ -678,15 +679,15 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p29.YDUG*/ c.spr.STORE0_MATCHn = nand(b.spr.MATCH_EN, b.spr.STORE0_MATCHB, b.spr.STORE0_MATCHA);
   /*p31.ZAKO*/   c.spr.STORE0_MATCHA = nor(b.spr.STORE0_MATCH0, b.spr.STORE0_MATCH1, b.spr.STORE0_MATCH2, b.spr.STORE0_MATCH3);
-  /*p31.ZOGY*/     c.spr.STORE0_MATCH0 = xor(b.spr.STORE0_X0, b.p21.X0n);
-  /*p31.ZEBA*/     c.spr.STORE0_MATCH1 = xor(b.spr.STORE0_X1, b.p21.X1n);
-  /*p31.ZAHA*/     c.spr.STORE0_MATCH2 = xor(b.spr.STORE0_X2, b.p21.X2n);
-  /*p31.ZOKY*/     c.spr.STORE0_MATCH3 = xor(b.spr.STORE0_X3, b.p21.X3n);
+  /*p31.ZOGY*/     c.spr.STORE0_MATCH0 = xor(b.spr.STORE0_X0, b.vid.X0n);
+  /*p31.ZEBA*/     c.spr.STORE0_MATCH1 = xor(b.spr.STORE0_X1, b.vid.X1n);
+  /*p31.ZAHA*/     c.spr.STORE0_MATCH2 = xor(b.spr.STORE0_X2, b.vid.X2n);
+  /*p31.ZOKY*/     c.spr.STORE0_MATCH3 = xor(b.spr.STORE0_X3, b.vid.X3n);
   /*p31.XEBA*/   c.spr.STORE0_MATCHB = nor(b.spr.STORE0_MATCH4, b.spr.STORE0_MATCH5, b.spr.STORE0_MATCH6, b.spr.STORE0_MATCH7);
-  /*p31.WOJU*/     c.spr.STORE0_MATCH4 = xor(b.spr.STORE0_X4, b.p21.X4n);
-  /*p31.YFUN*/     c.spr.STORE0_MATCH5 = xor(b.spr.STORE0_X5, b.p21.X5n);
-  /*p31.WYZA*/     c.spr.STORE0_MATCH6 = xor(b.spr.STORE0_X6, b.p21.X6n);
-  /*p31.YPUK*/     c.spr.STORE0_MATCH7 = xor(b.spr.STORE0_X7, b.p21.X7n);
+  /*p31.WOJU*/     c.spr.STORE0_MATCH4 = xor(b.spr.STORE0_X4, b.vid.X4n);
+  /*p31.YFUN*/     c.spr.STORE0_MATCH5 = xor(b.spr.STORE0_X5, b.vid.X5n);
+  /*p31.WYZA*/     c.spr.STORE0_MATCH6 = xor(b.spr.STORE0_X6, b.vid.X6n);
+  /*p31.YPUK*/     c.spr.STORE0_MATCH7 = xor(b.spr.STORE0_X7, b.vid.X7n);
 
   /*p30.ZETU*/ if (b.spr.SPRITE0_GET) c.spr.TS_IDX_0  = b.spr.STORE0_IDX0;
   /*p30.ZECE*/ if (b.spr.SPRITE0_GET) c.spr.TS_IDX_1  = b.spr.STORE0_IDX1;
@@ -736,14 +737,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.DYFU*/ c.spr.STORE1_X6 = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, b.spr.DOKU, b.spr.STORE1_X6, b.spr.OAM_A_D6b);
   /*p31.CUSY*/ c.spr.STORE1_X7 = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, b.spr.DOKU, b.spr.STORE1_X7, b.spr.OAM_A_D7b);
 
-  /*p31.EDYM*/ c.spr.STORE1_MATCH0 = xor(b.spr.STORE1_X0, b.p21.X0n);
-  /*p31.EMYB*/ c.spr.STORE1_MATCH1 = xor(b.spr.STORE1_X1, b.p21.X1n);
-  /*p31.EBEF*/ c.spr.STORE1_MATCH2 = xor(b.spr.STORE1_X2, b.p21.X2n);
-  /*p31.EWOK*/ c.spr.STORE1_MATCH3 = xor(b.spr.STORE1_X3, b.p21.X3n);
-  /*p31.COLA*/ c.spr.STORE1_MATCH4 = xor(b.spr.STORE1_X4, b.p21.X4n);
-  /*p31.BOBA*/ c.spr.STORE1_MATCH5 = xor(b.spr.STORE1_X5, b.p21.X5n);
-  /*p31.COLU*/ c.spr.STORE1_MATCH6 = xor(b.spr.STORE1_X6, b.p21.X6n);
-  /*p31.BAHU*/ c.spr.STORE1_MATCH7 = xor(b.spr.STORE1_X7, b.p21.X7n);
+  /*p31.EDYM*/ c.spr.STORE1_MATCH0 = xor(b.spr.STORE1_X0, b.vid.X0n);
+  /*p31.EMYB*/ c.spr.STORE1_MATCH1 = xor(b.spr.STORE1_X1, b.vid.X1n);
+  /*p31.EBEF*/ c.spr.STORE1_MATCH2 = xor(b.spr.STORE1_X2, b.vid.X2n);
+  /*p31.EWOK*/ c.spr.STORE1_MATCH3 = xor(b.spr.STORE1_X3, b.vid.X3n);
+  /*p31.COLA*/ c.spr.STORE1_MATCH4 = xor(b.spr.STORE1_X4, b.vid.X4n);
+  /*p31.BOBA*/ c.spr.STORE1_MATCH5 = xor(b.spr.STORE1_X5, b.vid.X5n);
+  /*p31.COLU*/ c.spr.STORE1_MATCH6 = xor(b.spr.STORE1_X6, b.vid.X6n);
+  /*p31.BAHU*/ c.spr.STORE1_MATCH7 = xor(b.spr.STORE1_X7, b.vid.X7n);
 
   /*p30.BEMO*/ if (b.spr.DYDO) c.spr.TS_IDX_0  = not(!b.spr.STORE1_IDX0);
   /*p30.CYBY*/ if (b.spr.DYDO) c.spr.TS_IDX_1  = not(!b.spr.STORE1_IDX1);
@@ -982,15 +983,15 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   /*p29.YLOZ*/ c.spr.YLOZ = nand(b.spr.MATCH_EN, b.spr.ZURE, b.spr.YWOS);
   /*p31.YWOS*/   c.spr.YWOS = nor(b.spr.YVAP, b.spr.XENY, b.spr.XAVU, b.spr.XEVA);
-  /*p31.YVAP*/     c.spr.YVAP = xor(b.spr.XOMY, b.p21.X4n);
-  /*p31.XENY*/     c.spr.XENY = xor(b.spr.WUHA, b.p21.X5n);
-  /*p31.XAVU*/     c.spr.XAVU = xor(b.spr.WYNA, b.p21.X6n);
-  /*p31.XEVA*/     c.spr.XEVA = xor(b.spr.WECO, b.p21.X7n);
+  /*p31.YVAP*/     c.spr.YVAP = xor(b.spr.XOMY, b.vid.X4n);
+  /*p31.XENY*/     c.spr.XENY = xor(b.spr.WUHA, b.vid.X5n);
+  /*p31.XAVU*/     c.spr.XAVU = xor(b.spr.WYNA, b.vid.X6n);
+  /*p31.XEVA*/     c.spr.XEVA = xor(b.spr.WECO, b.vid.X7n);
   /*p31.ZURE*/   c.spr.ZURE = nor(b.spr.YHOK, b.spr.YCAH, b.spr.YDAJ, b.spr.YVUZ);
-  /*p31.YHOK*/     c.spr.YHOK = xor(b.spr.XOLY, b.p21.X0n);
-  /*p31.YCAH*/     c.spr.YCAH = xor(b.spr.XYBA, b.p21.X1n);
-  /*p31.YDAJ*/     c.spr.YDAJ = xor(b.spr.XABE, b.p21.X2n);
-  /*p31.YVUZ*/     c.spr.YVUZ = xor(b.spr.XEKA, b.p21.X3n);
+  /*p31.YHOK*/     c.spr.YHOK = xor(b.spr.XOLY, b.vid.X0n);
+  /*p31.YCAH*/     c.spr.YCAH = xor(b.spr.XYBA, b.vid.X1n);
+  /*p31.YDAJ*/     c.spr.YDAJ = xor(b.spr.XABE, b.vid.X2n);
+  /*p31.YVUZ*/     c.spr.YVUZ = xor(b.spr.XEKA, b.vid.X3n);
 
   //----------
   // matcher
@@ -1004,14 +1005,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.EXUK*/ c.spr.EXUK = tock_pos(a.spr.GECY, b.spr.GECY, b.spr.GAFY, b.spr.EXUK, b.spr.OAM_A_D6b);
   /*p31.FEDE*/ c.spr.FEDE = tock_pos(a.spr.GECY, b.spr.GECY, b.spr.GAFY, b.spr.FEDE, b.spr.OAM_A_D7b);
 
-  /*p31.EJOT*/ c.spr.EJOT = xor(b.spr.FAZU, b.p21.X4n);
-  /*p31.ESAJ*/ c.spr.ESAJ = xor(b.spr.FAXE, b.p21.X5n);
-  /*p31.DUCU*/ c.spr.DUCU = xor(b.spr.EXUK, b.p21.X6n);
-  /*p31.EWUD*/ c.spr.EWUD = xor(b.spr.FEDE, b.p21.X7n);
-  /*p31.DUSE*/ c.spr.DUSE = xor(b.spr.ERAZ, b.p21.X0n);
-  /*p31.DAGU*/ c.spr.DAGU = xor(b.spr.EPUM, b.p21.X1n);
-  /*p31.DYZE*/ c.spr.DYZE = xor(b.spr.EROL, b.p21.X2n);
-  /*p31.DESO*/ c.spr.DESO = xor(b.spr.EHYN, b.p21.X3n);
+  /*p31.EJOT*/ c.spr.EJOT = xor(b.spr.FAZU, b.vid.X4n);
+  /*p31.ESAJ*/ c.spr.ESAJ = xor(b.spr.FAXE, b.vid.X5n);
+  /*p31.DUCU*/ c.spr.DUCU = xor(b.spr.EXUK, b.vid.X6n);
+  /*p31.EWUD*/ c.spr.EWUD = xor(b.spr.FEDE, b.vid.X7n);
+  /*p31.DUSE*/ c.spr.DUSE = xor(b.spr.ERAZ, b.vid.X0n);
+  /*p31.DAGU*/ c.spr.DAGU = xor(b.spr.EPUM, b.vid.X1n);
+  /*p31.DYZE*/ c.spr.DYZE = xor(b.spr.EROL, b.vid.X2n);
+  /*p31.DESO*/ c.spr.DESO = xor(b.spr.EHYN, b.vid.X3n);
   /*p31.DAJE*/ c.spr.DAJE = nor(b.spr.EJOT, b.spr.ESAJ, b.spr.DUCU, b.spr.EWUD);
   /*p31.CYCO*/ c.spr.CYCO = nor(b.spr.DUSE, b.spr.DAGU, b.spr.DYZE, b.spr.DESO);
 
@@ -1030,14 +1031,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.ZECU*/ c.spr.ZECU = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.ZECU, b.spr.OAM_A_D6b);
   /*p31.ZESA*/ c.spr.ZESA = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.ZESA, b.spr.OAM_A_D7b);
 
-  /*p31.ZARE*/ c.spr.ZARE = xor(b.spr.ZOLY, b.p21.X4n);
-  /*p31.ZEMU*/ c.spr.ZEMU = xor(b.spr.ZOGO, b.p21.X5n);
-  /*p31.ZYGO*/ c.spr.ZYGO = xor(b.spr.ZECU, b.p21.X6n);
-  /*p31.ZUZY*/ c.spr.ZUZY = xor(b.spr.ZESA, b.p21.X7n);
-  /*p31.XOSU*/ c.spr.XOSU = xor(b.spr.YCOL, b.p21.X0n);
-  /*p31.ZUVU*/ c.spr.ZUVU = xor(b.spr.YRAC, b.p21.X1n);
-  /*p31.XUCO*/ c.spr.XUCO = xor(b.spr.YMEM, b.p21.X2n);
-  /*p31.ZULO*/ c.spr.ZULO = xor(b.spr.YVAG, b.p21.X3n);
+  /*p31.ZARE*/ c.spr.ZARE = xor(b.spr.ZOLY, b.vid.X4n);
+  /*p31.ZEMU*/ c.spr.ZEMU = xor(b.spr.ZOGO, b.vid.X5n);
+  /*p31.ZYGO*/ c.spr.ZYGO = xor(b.spr.ZECU, b.vid.X6n);
+  /*p31.ZUZY*/ c.spr.ZUZY = xor(b.spr.ZESA, b.vid.X7n);
+  /*p31.XOSU*/ c.spr.XOSU = xor(b.spr.YCOL, b.vid.X0n);
+  /*p31.ZUVU*/ c.spr.ZUVU = xor(b.spr.YRAC, b.vid.X1n);
+  /*p31.XUCO*/ c.spr.XUCO = xor(b.spr.YMEM, b.vid.X2n);
+  /*p31.ZULO*/ c.spr.ZULO = xor(b.spr.YVAG, b.vid.X3n);
   /*p31.YWAP*/ c.spr.YWAP = nor(b.spr.ZARE, b.spr.ZEMU, b.spr.ZYGO, b.spr.ZUZY);
   /*p31.YDOT*/ c.spr.YDOT = nor(b.spr.XOSU, b.spr.ZUVU, b.spr.XUCO, b.spr.ZULO);
 
@@ -1053,14 +1054,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.WYDE*/ c.spr.WYDE = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.WYDE, b.spr.OAM_A_D6b);
   /*p31.XEPA*/ c.spr.XEPA = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.XEPA, b.spr.OAM_A_D7b);
 
-  /*p31.ZYKU*/ c.spr.ZYKU = xor(b.spr.YBED, b.p21.X4n);
-  /*p31.ZYPU*/ c.spr.ZYPU = xor(b.spr.ZALA, b.p21.X5n);
-  /*p31.XAHA*/ c.spr.XAHA = xor(b.spr.WYDE, b.p21.X6n);
-  /*p31.ZEFE*/ c.spr.ZEFE = xor(b.spr.XEPA, b.p21.X7n);
-  /*p31.XEJU*/ c.spr.XEJU = xor(b.spr.WEDU, b.p21.X0n);
-  /*p31.ZATE*/ c.spr.ZATE = xor(b.spr.YGAJ, b.p21.X1n);
-  /*p31.ZAKU*/ c.spr.ZAKU = xor(b.spr.ZYJO, b.p21.X2n);
-  /*p31.YBOX*/ c.spr.YBOX = xor(b.spr.XURY, b.p21.X3n);
+  /*p31.ZYKU*/ c.spr.ZYKU = xor(b.spr.YBED, b.vid.X4n);
+  /*p31.ZYPU*/ c.spr.ZYPU = xor(b.spr.ZALA, b.vid.X5n);
+  /*p31.XAHA*/ c.spr.XAHA = xor(b.spr.WYDE, b.vid.X6n);
+  /*p31.ZEFE*/ c.spr.ZEFE = xor(b.spr.XEPA, b.vid.X7n);
+  /*p31.XEJU*/ c.spr.XEJU = xor(b.spr.WEDU, b.vid.X0n);
+  /*p31.ZATE*/ c.spr.ZATE = xor(b.spr.YGAJ, b.vid.X1n);
+  /*p31.ZAKU*/ c.spr.ZAKU = xor(b.spr.ZYJO, b.vid.X2n);
+  /*p31.YBOX*/ c.spr.YBOX = xor(b.spr.XURY, b.vid.X3n);
   /*p31.YKOK*/ c.spr.YKOK = nor(b.spr.ZYKU, b.spr.ZYPU, b.spr.XAHA, b.spr.ZEFE);
   /*p31.YNAZ*/ c.spr.YNAZ = nor(b.spr.XEJU, b.spr.ZATE, b.spr.ZAKU, b.spr.YBOX);
 
@@ -1076,14 +1077,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.EBOW*/ c.spr.EBOW = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.EBOW, b.spr.OAM_A_D6b);
   /*p31.FYCA*/ c.spr.FYCA = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.FYCA, b.spr.OAM_A_D7b);
 
-  /*p31.DUZE*/ c.spr.DUZE = xor(b.spr.EZUF, b.p21.X4n);
-  /*p31.DAGA*/ c.spr.DAGA = xor(b.spr.ENAD, b.p21.X5n);
-  /*p31.DAWU*/ c.spr.DAWU = xor(b.spr.EBOW, b.p21.X6n);
-  /*p31.EJAW*/ c.spr.EJAW = xor(b.spr.FYCA, b.p21.X7n);
-  /*p31.GOHO*/ c.spr.GOHO = xor(b.spr.GAVY, b.p21.X0n);
-  /*p31.GASU*/ c.spr.GASU = xor(b.spr.GYPU, b.p21.X1n);
-  /*p31.GABU*/ c.spr.GABU = xor(b.spr.GADY, b.p21.X2n);
-  /*p31.GAFE*/ c.spr.GAFE = xor(b.spr.GAZA, b.p21.X3n);
+  /*p31.DUZE*/ c.spr.DUZE = xor(b.spr.EZUF, b.vid.X4n);
+  /*p31.DAGA*/ c.spr.DAGA = xor(b.spr.ENAD, b.vid.X5n);
+  /*p31.DAWU*/ c.spr.DAWU = xor(b.spr.EBOW, b.vid.X6n);
+  /*p31.EJAW*/ c.spr.EJAW = xor(b.spr.FYCA, b.vid.X7n);
+  /*p31.GOHO*/ c.spr.GOHO = xor(b.spr.GAVY, b.vid.X0n);
+  /*p31.GASU*/ c.spr.GASU = xor(b.spr.GYPU, b.vid.X1n);
+  /*p31.GABU*/ c.spr.GABU = xor(b.spr.GADY, b.vid.X2n);
+  /*p31.GAFE*/ c.spr.GAFE = xor(b.spr.GAZA, b.vid.X3n);
   /*p31.DAMA*/ c.spr.DAMA = nor(b.spr.DUZE, b.spr.DAGA, b.spr.DAWU, b.spr.EJAW);
   /*p31.FEHA*/ c.spr.FEHA = nor(b.spr.GOHO, b.spr.GASU, b.spr.GABU, b.spr.GAFE);
 
@@ -1099,14 +1100,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.YNEP*/ c.spr.YNEP = tock_pos(a.spr.WEME, b.spr.WEME, b.spr.DOSY, b.spr.YNEP, b.spr.OAM_A_D6b);
   /*p31.YZOF*/ c.spr.YZOF = tock_pos(a.spr.WEME, b.spr.WEME, b.spr.DOSY, b.spr.YZOF, b.spr.OAM_A_D7b);
 
-  /*p31.ZYWU*/ c.spr.ZYWU = xor(b.spr.YPOD, b.p21.X4n);
-  /*p31.ZUZA*/ c.spr.ZUZA = xor(b.spr.YROP, b.p21.X5n);
-  /*p31.ZEJO*/ c.spr.ZEJO = xor(b.spr.YNEP, b.p21.X6n);
-  /*p31.ZEDA*/ c.spr.ZEDA = xor(b.spr.YZOF, b.p21.X7n);
-  /*p31.YMAM*/ c.spr.YMAM = xor(b.spr.XUVY, b.p21.X0n);
-  /*p31.YTYP*/ c.spr.YTYP = xor(b.spr.XERE, b.p21.X1n);
-  /*p31.YFOP*/ c.spr.YFOP = xor(b.spr.XUZO, b.p21.X2n);
-  /*p31.YVAC*/ c.spr.YVAC = xor(b.spr.XEXA, b.p21.X3n);
+  /*p31.ZYWU*/ c.spr.ZYWU = xor(b.spr.YPOD, b.vid.X4n);
+  /*p31.ZUZA*/ c.spr.ZUZA = xor(b.spr.YROP, b.vid.X5n);
+  /*p31.ZEJO*/ c.spr.ZEJO = xor(b.spr.YNEP, b.vid.X6n);
+  /*p31.ZEDA*/ c.spr.ZEDA = xor(b.spr.YZOF, b.vid.X7n);
+  /*p31.YMAM*/ c.spr.YMAM = xor(b.spr.XUVY, b.vid.X0n);
+  /*p31.YTYP*/ c.spr.YTYP = xor(b.spr.XERE, b.vid.X1n);
+  /*p31.YFOP*/ c.spr.YFOP = xor(b.spr.XUZO, b.vid.X2n);
+  /*p31.YVAC*/ c.spr.YVAC = xor(b.spr.XEXA, b.vid.X3n);
   /*p31.YTUB*/ c.spr.YTUB = nor(b.spr.ZYWU, b.spr.ZUZA, b.spr.ZEJO, b.spr.ZEDA);
   /*p31.YLEV*/ c.spr.YLEV = nor(b.spr.YMAM, b.spr.YTYP, b.spr.YFOP, b.spr.YVAC);
 
@@ -1122,14 +1123,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.DURY*/ c.spr.DURY = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.DURY, b.spr.OAM_A_D6b);
   /*p31.CUVY*/ c.spr.CUVY = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.CUVY, b.spr.OAM_A_D7b);
 
-  /*p31.BAZY*/ c.spr.BAZY = xor(b.spr.CYWE, b.p21.X4n);
-  /*p31.CYLE*/ c.spr.CYLE = xor(b.spr.DYBY, b.p21.X5n);
-  /*p31.CEVA*/ c.spr.CEVA = xor(b.spr.DURY, b.p21.X6n);
-  /*p31.BUMY*/ c.spr.BUMY = xor(b.spr.CUVY, b.p21.X7n);
-  /*p31.GUZO*/ c.spr.GUZO = xor(b.spr.FUSA, b.p21.X0n);
-  /*p31.GOLA*/ c.spr.GOLA = xor(b.spr.FAXA, b.p21.X1n);
-  /*p31.GEVE*/ c.spr.GEVE = xor(b.spr.FOZY, b.p21.X2n);
-  /*p31.GUDE*/ c.spr.GUDE = xor(b.spr.FESY, b.p21.X3n);
+  /*p31.BAZY*/ c.spr.BAZY = xor(b.spr.CYWE, b.vid.X4n);
+  /*p31.CYLE*/ c.spr.CYLE = xor(b.spr.DYBY, b.vid.X5n);
+  /*p31.CEVA*/ c.spr.CEVA = xor(b.spr.DURY, b.vid.X6n);
+  /*p31.BUMY*/ c.spr.BUMY = xor(b.spr.CUVY, b.vid.X7n);
+  /*p31.GUZO*/ c.spr.GUZO = xor(b.spr.FUSA, b.vid.X0n);
+  /*p31.GOLA*/ c.spr.GOLA = xor(b.spr.FAXA, b.vid.X1n);
+  /*p31.GEVE*/ c.spr.GEVE = xor(b.spr.FOZY, b.vid.X2n);
+  /*p31.GUDE*/ c.spr.GUDE = xor(b.spr.FESY, b.vid.X3n);
   /*p31.COGY*/ c.spr.COGY = nor(b.spr.BAZY, b.spr.CYLE, b.spr.CEVA, b.spr.BUMY);
   /*p31.FYMA*/ c.spr.FYMA = nor(b.spr.GUZO, b.spr.GOLA, b.spr.GEVE, b.spr.GUDE);
 
@@ -1145,14 +1146,14 @@ void Sprites_tick(const Gameboy& a, const Gameboy& b, Gameboy& c) {
   /*p31.ENOR*/ c.spr.ENOR = tock_pos(a.spr.CACU, b.spr.CACU, b.spr.GAMY, b.spr.ENOR, b.spr.OAM_A_D6b);
   /*p31.DEPY*/ c.spr.DEPY = tock_pos(a.spr.CACU, b.spr.CACU, b.spr.GAMY, b.spr.DEPY, b.spr.OAM_A_D7b);
 
-  /*p31.CEKO*/ c.spr.CEKO = xor(b.spr.DUHY, b.p21.X4n);
-  /*p31.DETY*/ c.spr.DETY = xor(b.spr.EJUF, b.p21.X5n);
-  /*p31.DOZO*/ c.spr.DOZO = xor(b.spr.ENOR, b.p21.X6n);
-  /*p31.CONY*/ c.spr.CONY = xor(b.spr.DEPY, b.p21.X7n);
-  /*p31.FUZU*/ c.spr.FUZU = xor(b.spr.FOKA, b.p21.X0n);
-  /*p31.FESO*/ c.spr.FESO = xor(b.spr.FYTY, b.p21.X1n);
-  /*p31.FOKY*/ c.spr.FOKY = xor(b.spr.FUBY, b.p21.X2n);
-  /*p31.FYVA*/ c.spr.FYVA = xor(b.spr.GOXU, b.p21.X3n);
+  /*p31.CEKO*/ c.spr.CEKO = xor(b.spr.DUHY, b.vid.X4n);
+  /*p31.DETY*/ c.spr.DETY = xor(b.spr.EJUF, b.vid.X5n);
+  /*p31.DOZO*/ c.spr.DOZO = xor(b.spr.ENOR, b.vid.X6n);
+  /*p31.CONY*/ c.spr.CONY = xor(b.spr.DEPY, b.vid.X7n);
+  /*p31.FUZU*/ c.spr.FUZU = xor(b.spr.FOKA, b.vid.X0n);
+  /*p31.FESO*/ c.spr.FESO = xor(b.spr.FYTY, b.vid.X1n);
+  /*p31.FOKY*/ c.spr.FOKY = xor(b.spr.FUBY, b.vid.X2n);
+  /*p31.FYVA*/ c.spr.FYVA = xor(b.spr.GOXU, b.vid.X3n);
   /*p31.CEHU*/ c.spr.CEHU = nor(b.spr.CEKO, b.spr.DETY, b.spr.DOZO, b.spr.CONY);
   /*p31.EKES*/ c.spr.EKES = nor(b.spr.FUZU, b.spr.FESO, b.spr.FOKY, b.spr.FYVA);
 }

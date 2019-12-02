@@ -1,6 +1,8 @@
 #include "Sch_Video.h"
 #include "Sch_Gameboy.h"
 
+namespace Schematics {
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
@@ -1034,3 +1036,7 @@ void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gam
     /*p25.PONY*/ c.chip_out.MA12 = not(/*p25.REHO*/ not(b.MA12));
   }
 }
+
+//-----------------------------------------------------------------------------
+
+};

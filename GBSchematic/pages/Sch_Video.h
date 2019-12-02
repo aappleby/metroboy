@@ -1,5 +1,9 @@
 #pragma once
 
+namespace Schematics {
+
+//-----------------------------------------------------------------------------
+
 struct Video {
   /*p27.MOXE*/ bool CLK_xBxDxFxHa;
   /*p27.MEHE*/ bool CLK_xBxDxFxHb;
@@ -537,5 +541,6 @@ struct Video {
   /*p27.SUDA*/ bool TEKY_SYNC2;
 };
 
+//-----------------------------------------------------------------------------
 
-
+};

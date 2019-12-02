@@ -179,6 +179,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\TextPainter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pages\Schematics.cpp" />
     <ClCompile Include="pages\Sch_ApuControl.cpp" />
     <ClCompile Include="pages\Sch_Video.cpp" />
     <ClCompile Include="pages\Sch_Channel1.cpp" />
@@ -189,12 +190,12 @@
     <ClCompile Include="pages\Sch_PixelPipe.cpp" />
     <ClCompile Include="pages\Sch_Sprites.cpp" />
     <ClCompile Include="pages\Sch_System.cpp" />
-    <ClCompile Include="Schematics.cpp" />
     <ClCompile Include="SignalTree.cpp" />
     <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\TextPainter.h" />
+    <ClInclude Include="pages\Schematics.h" />
     <ClInclude Include="pages\Sch_ApuControl.h" />
     <ClInclude Include="pages\Sch_Video.h" />
     <ClInclude Include="pages\Sch_Channel1.h" />
@@ -208,8 +209,6 @@
     <ClInclude Include="pages\Sch_PixelPipe.h" />
     <ClInclude Include="pages\Sch_Sprites.h" />
     <ClInclude Include="pages\Sch_System.h" />
-    <ClInclude Include="pages\Sch_TristateBus.h" />
-    <ClInclude Include="Schematics.h" />
     <ClInclude Include="SignalTree.h" />
     <ClInclude Include="TraceViewer.h" />
   </ItemGroup>

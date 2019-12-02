@@ -5,6 +5,9 @@
 
 #pragma warning(disable:4201)
 
+namespace Schematics {
+
+//-----------------------------------------------------------------------------
 
 inline void r(int i, int y, const char* name, int v) {
   if (i == 0) {
@@ -125,3 +128,5 @@ bool count_pos (bool clk1, bool clk2, bool load, bool d1, bool d2);
 bool srtock_pos(bool clk1, bool clk2, bool set, bool rst, bool d1, bool d2);
 
 //-----------------------------------------------------------------------------
+
+};

@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Schematics {
+
 struct CpuIn;
 struct ChipIn;
 struct Gameboy;
@@ -651,4 +653,8 @@ struct System {
   /*p08.MOTY*/ bool MOTY;
 
   /*p08.MULE*/ bool MODE_DBG1o;
+};
+
+//-----------------------------------------------------------------------------
+
 };

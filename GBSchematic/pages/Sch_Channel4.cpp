@@ -1,6 +1,10 @@
 #include "Sch_Channel4.h"
 #include "Sch_Gameboy.h"
 
+namespace Schematics {
+
+//-----------------------------------------------------------------------------
+
 /*
 // inputs
 p01.CPUCLK_xxxxEFGH9;
@@ -355,3 +359,7 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
   /*p20.APYR*/ pc.CH4_DAC2 = and(pb.VOL2, pb.CH4_RAW_BIT);
   /*p20.BOZA*/ pc.CH4_DAC3 = and(pb.VOL3, pb.CH4_RAW_BIT);
 }
+
+//-----------------------------------------------------------------------------
+
+};

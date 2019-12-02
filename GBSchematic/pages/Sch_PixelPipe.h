@@ -1,5 +1,9 @@
 #pragma once
 
+namespace Schematics {
+
+//-----------------------------------------------------------------------------
+
 struct PixelPipe {
 
   /*p32.RAWU*/ bool VRAM_TEMP_D0;
@@ -255,4 +259,8 @@ struct PixelPipe {
   /*p36.LUKY*/ bool LUKY;
   /*p36.LODE*/ bool LODE;
   /*p36.LAJU*/ bool LAJU;
+};
+
+//-----------------------------------------------------------------------------
+
 };

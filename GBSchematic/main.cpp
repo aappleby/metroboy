@@ -216,21 +216,23 @@ const std::vector<SignalData> sample_signals =
 {
   //SignalData("RESET",    offsetof(Gameboy, chip.RST)),
   //SignalData("CLKIN_B",  offsetof(Gameboy, chip.CLKIN_B)),
-  SignalData("AJER_2M",  offsetof(Gameboy, sys.AJER_2M)),
+  SignalData("AJER_2M",  offsetof(Schematics::Gameboy, sys.AJER_2M)),
 };
 
 //-----------------------------------------------------------------------------
 
 #if 1
 
-void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
+namespace Schematics {
+  void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
+};
 
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
   printf("Hello World Again\n\n");
 
-  CpuIn cpu_in = {};
+  Schematics::CpuIn cpu_in = {};
 
   cpu_in.CPU_RAW_RD = false;
   cpu_in.CPU_RAW_WR = false;
@@ -238,7 +240,7 @@ int main(int argc, char** argv) {
   cpu_in.FROM_CPU5 = false;
   cpu_in.CPUCLK_REQ = true;
 
-  ChipIn chip_in = {};
+  Schematics::ChipIn chip_in = {};
 
   chip_in.RST     = false;
   chip_in.CLKIN_A = true;
@@ -246,13 +248,13 @@ int main(int argc, char** argv) {
   chip_in.T1 = false;
   chip_in.T2 = false;
 
-  Gameboy gba = {};
-  Gameboy gbb = {};
-  Gameboy gbc = {};
+  Schematics::Gameboy gba = {};
+  Schematics::Gameboy gbb = {};
+  Schematics::Gameboy gbc = {};
 
   for (int i = 0; i < 10; i++) {
     gbc.sys.tick(cpu_in, chip_in, gba, gbb, gbc);
-    printf("diff %d\n", memcmp(&gbb, &gbc, sizeof(Gameboy)));
+    printf("diff %d\n", memcmp(&gbb, &gbc, sizeof(Schematics::Gameboy)));
 
     gba = gbb;
     gbb = gbc;

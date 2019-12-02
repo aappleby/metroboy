@@ -1,6 +1,8 @@
 #include "Sch_ApuControl.h"
 #include "Sch_Gameboy.h"
 
+namespace Schematics {
+
 //-----------------------------------------------------------------------------
 
 void P09_ApuControl_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
@@ -193,3 +195,6 @@ void P09_ApuControl_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameb
   /*p10.DUGO*/ pc.ADDR_FF1E = nor(pb.ADDR_FF1Xn, pb.ADDR_1110an);
 }
 
+//-----------------------------------------------------------------------------
+
+};

@@ -1,6 +1,8 @@
 #include "Sch_PixelPipe.h"
 #include "Sch_Gameboy.h"
 
+namespace Schematics {
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
@@ -474,3 +476,7 @@ void PixelPipe_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a
   c.chip_out.LD0 = not(b.pix.LD0n);
   c.chip_out.LD1 = not(b.pix.LD1n);
 }
+
+//-----------------------------------------------------------------------------
+
+};

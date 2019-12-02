@@ -3,6 +3,8 @@
 
 #pragma warning(disable : 4189)
 
+namespace Schematics {
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
@@ -567,3 +569,7 @@ void Channel1_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& qa
   /*p13.AGOF*/ pc.CH1_OUT2 = and(pb.ENV2, BIT_OUT);
   /*p13.ACEG*/ pc.CH1_OUT3 = and(pb.ENV3, BIT_OUT);
 }
+
+//-----------------------------------------------------------------------------
+
+};

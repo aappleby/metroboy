@@ -2,6 +2,10 @@
 #include <stdint.h>
 #pragma warning(disable:4201)
 
+namespace Schematics {
+
+//-----------------------------------------------------------------------------
+
 struct ApuControl {
 
   /*p16.ANUJ*/ bool CPU_WR_WEIRD;
@@ -164,4 +168,8 @@ struct ApuControl {
   /*p10.CAFY*/ bool ADDR_FF24;
   /*p10.CORA*/ bool ADDR_FF25;
   /*p10.DOXY*/ bool ADDR_FF26;
+};
+
+//-----------------------------------------------------------------------------
+
 };

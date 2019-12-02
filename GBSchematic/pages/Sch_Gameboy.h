@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Schematics.h"
+#include "Schematics.h"
 
 #include "Sch_ChipSignals.h"
 #include "Sch_CpuSignals.h"
@@ -15,6 +15,8 @@
 #include "Sch_Sprites.h"
 #include "Sch_PixelPipe.h"
 #include "Sch_Video.h"
+
+namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
@@ -137,3 +139,5 @@ struct Gameboy {
 };
 
 //-----------------------------------------------------------------------------
+
+};

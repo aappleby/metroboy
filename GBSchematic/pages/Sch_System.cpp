@@ -4,6 +4,8 @@
 #pragma warning(disable : 4189)
 #pragma warning(disable : 4100)
 
+namespace Schematics {
+
 //-----------------------------------------------------------------------------
 
 void System::tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
@@ -1025,3 +1027,7 @@ void System::tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, 
 
 #endif
 }
+
+//-----------------------------------------------------------------------------
+
+};

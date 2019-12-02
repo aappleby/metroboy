@@ -1,6 +1,8 @@
 #include "Sch_Channel2.h"
 #include "Sch_Gameboy.h"
 
+namespace Schematics {
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
@@ -265,3 +267,7 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   /*p15.AMOV*/ c.ch2.AMOV = and(b.ch2.FENA, b.ch2.BONU);
   /*p15.ASOG*/ c.ch2.ASOG = and(b.ch2.FOMY, b.ch2.BONU);
 }
+
+//-----------------------------------------------------------------------------
+
+};

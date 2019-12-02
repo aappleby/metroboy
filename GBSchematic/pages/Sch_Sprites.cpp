@@ -1,6 +1,8 @@
 #include "Sch_Sprites.h"
 #include "Sch_Gameboy.h"
 
+namespace Schematics {
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
@@ -1142,3 +1144,7 @@ void Sprites_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, 
   /*p31.CEHU*/ c.spr.CEHU = nor(b.spr.CEKO, b.spr.DETY, b.spr.DOZO, b.spr.CONY);
   /*p31.EKES*/ c.spr.EKES = nor(b.spr.FUZU, b.spr.FESO, b.spr.FOKY, b.spr.FYVA);
 }
+
+//-----------------------------------------------------------------------------
+
+};

@@ -1,5 +1,9 @@
 #include "Schematics.h"
 
+namespace Schematics {
+
+//-----------------------------------------------------------------------------
+
 bool latch_pos(bool clk, bool d1, bool d2) {
   return clk ? d2 : d1;
 }
@@ -55,3 +59,7 @@ bool count_pos (bool clk1, bool clk2, bool load, bool d1, bool d2) {
     return d1;
   }
 }
+
+//-----------------------------------------------------------------------------
+
+};

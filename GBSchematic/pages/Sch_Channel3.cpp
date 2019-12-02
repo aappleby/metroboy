@@ -1,6 +1,10 @@
 #include "Sch_Channel3.h"
 #include "Sch_Gameboy.h"
 
+namespace Schematics {
+
+//-----------------------------------------------------------------------------
+
 void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
   (void)chip_in;
   (void)cpu_in;
@@ -292,3 +296,7 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   /*p18.AXOL*/ c.WAVE_A3 = mux2(b.ch3.WAVE_IDX4, b.A03, b.ch3.CH3_ACTIVE);
 
 }
+
+//-----------------------------------------------------------------------------
+
+};

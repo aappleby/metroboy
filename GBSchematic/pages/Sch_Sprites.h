@@ -1,5 +1,9 @@
 #pragma once
 
+namespace Schematics {
+
+//-----------------------------------------------------------------------------
+
 struct Sprites {
 
   /*p28.BOGE*/ bool DMA_RUNNING_SYNCb;
@@ -797,4 +801,8 @@ struct Sprites {
   /*p31.FESO*/ bool FESO;
   /*p31.FOKY*/ bool FOKY;
   /*p31.FYVA*/ bool FYVA;
+};
+
+//-----------------------------------------------------------------------------
+
 };

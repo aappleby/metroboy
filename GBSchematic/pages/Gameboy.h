@@ -19,16 +19,8 @@
 //-----------------------------------------------------------------------------
 
 struct Gameboy {
-  int64_t timestamp;
-
-  //ChipSignals  chip;
-  //CpuSignals   cpu;
-
-  //ChipIn  chip_in;
-  ChipOut chip_out;
-
-  //CpuIn  cpu_in;
   CpuOut cpu_out;
+  ChipOut chip_out;
 
   System     sys;
   ApuControl apu;

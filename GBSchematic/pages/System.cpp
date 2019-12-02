@@ -5,7 +5,7 @@
 
 //-----------------------------------------------------------------------------
 
-void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void System::tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   const System& pa = a.sys;
   const System& pb = b.sys;
@@ -16,36 +16,40 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
   //----------
   // CPU reset
 
-  /*p01.UCOB*/ pc.CLK_BAD1    = not(chip_in.CLKIN_A);
-  /*p01.ATEZ*/ pc.CLK_BAD2    = not(chip_in.CLKIN_A);
-  /*p01.ABOL*/ pc.CPUCLK_REQn = not(cpu_in.CPUCLK_REQ);
+  /*p01.UCOB*/ wire CLK_BAD1    = not(chip_in.CLKIN_A);
+  /*p01.ATEZ*/ wire CLK_BAD2    = not(chip_in.CLKIN_A);
+  /*p01.ABOL*/ wire CPUCLK_REQn = not(cpu_in.CPUCLK_REQ);
 
-  /*p01.TUBO*/ pc.NO_CLOCK    = or(pb.CPUCLK_REQn, /*p01.UPYF*/ or(chip_in.RST, pb.CLK_BAD1));
-  /*p01.UNUT*/ pc.TIMEOUT     = and(pb.NO_CLOCK, pb.DIV_15);
-  /*p01.TABA*/ pc.CPU_RESET   = or(pb.MODE_DBG2, pb.MODE_DBG1, pb.TIMEOUT);
-  /*p01.ALYP*/ pc.CPU_RESETn  = not(pb.CPU_RESET);
+  /*p01.TUBO*/ wire NO_CLOCK    = or(CPUCLK_REQn, /*p01.UPYF*/ or(chip_in.RST, CLK_BAD1));
+  /*p01.UNUT*/ wire TIMEOUT     = and(NO_CLOCK, pb.DIV_15);
+  /*p01.TABA*/ wire CPU_RESET   = or(pb.MODE_DBG2, pb.MODE_DBG1, TIMEOUT);
+  /*p01.ALYP*/ wire CPU_RESETn  = not(CPU_RESET);
 
-  c.cpu_out.CPU_RESET = pb.CPU_RESET;
+  c.cpu_out.CPU_RESET = CPU_RESET;
 
   //----------
   // SYS reset tree
 
-  /*p01.BOMA*/ pc.RESET_CLK = not(pb.DIV_CLK);
-  /*p01.ASOL*/ pc.RESET_IN  = or (/*p01.AFAR*/ nor(pb.CPU_RESETn, chip_in.RST), chip_in.RST);
-  /*p01.AFER*/ pc.RESET_REG = tock_pos(pa.RESET_CLK, pb.RESET_CLK, pb.MODE_PROD, pb.RESET_REG, pb.RESET_IN);
+  /*p01.BOMA*/ wire RESET_CLKa = not(pa.DIV_CLK);
+  /*p01.BOMA*/ wire RESET_CLKb = not(pb.DIV_CLK);
 
-  /*p01.AVOR*/ c.sys.SYS_RESET4  = or( b.sys.RESET_REG, b.sys.RESET_IN);
-  /*p01.ALUR*/ c.sys.SYS_RESETn1 = not(b.sys.SYS_RESET4);
-  /*p01.DULA*/ c.sys.SYS_RESET1  = not(b.sys.SYS_RESETn1);
-  /*P09.HAPO*/ c.sys.SYS_RESET2  = not(b.sys.SYS_RESETn1);
-  /*p01.CUNU*/ c.sys.SYS_RESETn2 = not(b.sys.SYS_RESET1);
-  /*P09.GUFO*/ c.sys.SYS_RESETn3 = not(b.sys.SYS_RESET2);
-  /*p01.XORE*/ c.sys.SYS_RESET3  = not(b.sys.SYS_RESETn2);
-  /*p01.XEBE*/ c.sys.SYS_RESETn4 = not(b.sys.SYS_RESET3);
-  /*p01.WALU*/ c.sys.SYS_RESETn5 = not(b.sys.SYS_RESET3);
-  /*p01.WESY*/ c.sys.SYS_RESETn6 = not(b.sys.SYS_RESET3);
-  /*p01.XARE*/ c.sys.SYS_RESETn7 = not(b.sys.SYS_RESET3);
+  /*p01.ASOL*/ wire RESET_IN  = or (/*p01.AFAR*/ nor(CPU_RESETn, chip_in.RST), chip_in.RST);
+  /*p01.AFER*/ RESET_REG = tock_pos(RESET_CLKa, RESET_CLKb, pb.MODE_PROD, pb.RESET_REG, RESET_IN);
 
+
+  /*p01.AVOR*/ SYS_RESET4  = or(pb.RESET_REG, RESET_IN);
+  /*p01.ALUR*/   SYS_RESETn1 = not(SYS_RESET4);
+  /*p01.DULA*/     SYS_RESET1  = not(SYS_RESETn1);
+  /*p01.CUNU*/       SYS_RESETn2 = not(SYS_RESET1);
+  /*p01.XORE*/         SYS_RESET3  = not(SYS_RESETn2);
+  /*p01.XEBE*/           SYS_RESETn4 = not(SYS_RESET3);
+  /*p01.WALU*/           SYS_RESETn5 = not(SYS_RESET3);
+  /*p01.WESY*/           SYS_RESETn6 = not(SYS_RESET3);
+  /*p01.XARE*/           SYS_RESETn7 = not(SYS_RESET3);
+  /*P09.HAPO*/     SYS_RESET2  = not(SYS_RESETn1);
+  /*P09.GUFO*/       SYS_RESETn3 = not(SYS_RESET2);
+
+#if 0
   //----------
   // VID reset tree
 
@@ -1017,5 +1021,6 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
     }
 #endif
   }
-}
 
+#endif
+}

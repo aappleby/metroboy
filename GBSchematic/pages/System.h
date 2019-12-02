@@ -1,24 +1,26 @@
 #pragma once
 
+struct Gameboy;
+
 //-----------------------------------------------------------------------------
 
 struct System {
 
-  //----------
-  // CPU reset tree
+  void tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
 
-  /*p01.TUBO*/ bool NO_CLOCK;
-  /*p01.UNUT*/ bool TIMEOUT;
-  /*p01.TABA*/ bool CPU_RESET;
-  /*p01.ALYP*/ bool CPU_RESETn;
+  ///*p01.TUBO*/ bool NO_CLOCK;
+  ///*p01.UNUT*/ bool TIMEOUT;
+  ///*p01.TABA*/ bool CPU_RESET;
+  ///*p01.ALYP*/ bool CPU_RESETn;
 
   //----------
   // SYS reset tree
 
-  /*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
-
-  /*p01.ASOL*/ bool RESET_IN;
+  ///*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
+  ///*p01.ASOL*/ bool RESET_IN;
   /*p01.AFER*/ bool RESET_REG;
+
+  
   /*p01.AVOR*/ bool SYS_RESET4;
   /*p01.ALUR*/ bool SYS_RESETn1;
   /*p01.DULA*/ bool SYS_RESET1;
@@ -58,10 +60,10 @@ struct System {
   //----------
   // Clock control
 
-  /*p01.ABOL*/ bool CPUCLK_REQn;
-  /*p01.BUTY*/ bool CPUCLK_REQ;
-  /*p01.UCOB*/ bool CLK_BAD1;
-  /*p01.ATEZ*/ bool CLK_BAD2;
+  ///*p01.ABOL*/ bool CPUCLK_REQn;
+  ///*p01.BUTY*/ bool CPUCLK_REQ;
+  ///*p01.UCOB*/ bool CLK_BAD1;
+  ///*p01.ATEZ*/ bool CLK_BAD2;
 
   //----------
   // 4M clocks

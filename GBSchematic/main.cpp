@@ -230,65 +230,33 @@ int main(int argc, char** argv) {
   (void)argv;
   printf("Hello World Again\n\n");
 
+  CpuIn cpu_in = {};
+
+  cpu_in.CPU_RAW_RD = false;
+  cpu_in.CPU_RAW_WR = false;
+  cpu_in.ADDR_VALID = true;
+  cpu_in.FROM_CPU5 = false;
+  cpu_in.CPUCLK_REQ = true;
+
+  ChipIn chip_in = {};
+
+  chip_in.RST     = false;
+  chip_in.CLKIN_A = true;
+  chip_in.CLKIN_B = 1;
+  chip_in.T1 = false;
+  chip_in.T2 = false;
+
   Gameboy gba = {};
   Gameboy gbb = {};
   Gameboy gbc = {};
 
-#if 0
-  gba.cpu.CPU_RAW_RD = false;
-  gba.cpu.CPU_RAW_WR = false;
-  gba.cpu.ADDR_VALID = true;
+  for (int i = 0; i < 10; i++) {
+    gbc.sys.tick(cpu_in, chip_in, gba, gbb, gbc);
+    printf("diff %d\n", memcmp(&gbb, &gbc, sizeof(Gameboy)));
 
-  gba.cpu.FROM_CPU5 = false;
-  gba.cpu.CPUCLK_REQ = true;
-
-  gba.chip.RST     = false;
-  gba.chip.CLKIN_A = true;
-  gba.chip.CLKIN_B = 1;
-  gba.chip.T1 = false;
-  gba.chip.T2 = false;
-
-
-  gbb.cpu.CPU_RAW_RD = false;
-  gbb.cpu.CPU_RAW_WR = false;
-  gbb.cpu.ADDR_VALID = true;
-
-  gbb.cpu.FROM_CPU5 = false;
-  gbb.cpu.CPUCLK_REQ = true;
-
-  gbb.chip.RST     = false;
-  gbb.chip.CLKIN_A = true;
-  gbb.chip.CLKIN_B = 0;
-  gbb.chip.T1 = false;
-  gbb.chip.T2 = false;
-
-  Gameboy gbc = gbb;
-
-  gbc.cpu.CPU_RAW_RD = false;
-  gbc.cpu.CPU_RAW_WR = false;
-  gbc.cpu.ADDR_VALID = true;
-
-  gbc.cpu.FROM_CPU5 = false;
-  gbc.cpu.CPUCLK_REQ = true;
-
-  gbc.chip.RST     = false;
-  gbc.chip.CLKIN_A = true;
-  gbc.chip.CLKIN_B = 1;
-  gbc.chip.T1 = false;
-  gbc.chip.T2 = false;
-#endif
-
-  //System_tick(gba, gbb, gbc);
-  //step_forwards(gba, gbb, gbc);
-
-  int matchBC = memcmp(&gbb, &gbc, sizeof(Gameboy));
-  printf("%d\n", matchBC);
-
-  //int matchCD = memcmp(&gbc, &gbd, sizeof(Gameboy));
-  //int matchDE = memcmp(&gbd, &gbe, sizeof(Gameboy));
-
-  //printf("\n");
-  //printf("%d %d %d\n", matchBC, matchCD, matchDE);
+    gba = gbb;
+    gbb = gbc;
+  }
 
   printf("\n");
   return 0;

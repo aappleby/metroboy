@@ -1,7 +1,5 @@
-#include "ApuControl.h"
-#include "../Schematics.h"
-
-#include "Gameboy.h"
+#include "Sch_ApuControl.h"
+#include "Sch_Gameboy.h"
 
 //-----------------------------------------------------------------------------
 

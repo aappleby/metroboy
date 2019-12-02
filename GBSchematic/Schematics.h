@@ -125,25 +125,3 @@ bool count_pos (bool clk1, bool clk2, bool load, bool d1, bool d2);
 bool srtock_pos(bool clk1, bool clk2, bool set, bool rst, bool d1, bool d2);
 
 //-----------------------------------------------------------------------------
-
-struct Resets;
-struct AddressDecoder;
-struct Clocks;
-struct CpuBus;
-struct Debug;
-struct DmaBus;
-struct ExtBus;
-struct MemBus;
-struct APU;
-struct Background;
-struct Joypad;
-struct LCD;
-struct OAM;
-struct PPU;
-struct Serial;
-struct Sprites;
-struct System;
-struct Timer;
-struct Vram;
-struct Window;
-

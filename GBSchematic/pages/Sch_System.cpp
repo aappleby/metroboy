@@ -1,4 +1,5 @@
-#include "Gameboy.h"
+#include "Sch_System.h"
+#include "Sch_Gameboy.h"
 
 #pragma warning(disable : 4189)
 #pragma warning(disable : 4100)

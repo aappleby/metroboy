@@ -1,5 +1,5 @@
-#include "Channel4.h"
-#include "Gameboy.h"
+#include "Sch_Channel4.h"
+#include "Sch_Gameboy.h"
 
 /*
 // inputs

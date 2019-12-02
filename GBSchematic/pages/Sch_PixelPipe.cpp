@@ -1,4 +1,5 @@
-#include "Gameboy.h"
+#include "Sch_PixelPipe.h"
+#include "Sch_Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,

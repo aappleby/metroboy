@@ -1,7 +1,5 @@
-#include "Channel2.h"
-#include "../Schematics.h"
-
-#include "Gameboy.h"
+#include "Sch_Channel2.h"
+#include "Sch_Gameboy.h"
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,

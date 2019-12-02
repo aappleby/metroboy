@@ -1,5 +1,5 @@
-#include "../Schematics.h"
-#include "Gameboy.h"
+#include "Sch_Channel3.h"
+#include "Sch_Gameboy.h"
 
 void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
   (void)chip_in;

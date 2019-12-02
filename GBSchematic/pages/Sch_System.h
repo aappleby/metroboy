@@ -1,5 +1,7 @@
 #pragma once
 
+struct CpuIn;
+struct ChipIn;
 struct Gameboy;
 
 //-----------------------------------------------------------------------------

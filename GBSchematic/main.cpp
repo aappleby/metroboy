@@ -6,7 +6,7 @@
 
 #include "TraceViewer.h"
 #include "../src/TextPainter.h"
-#include "pages/Gameboy.h"
+#include "pages/Sch_Gameboy.h"
 
 #ifdef _MSC_VER
 #include <include/SDL.h>

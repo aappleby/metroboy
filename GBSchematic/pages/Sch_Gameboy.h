@@ -2,19 +2,19 @@
 
 #include "../Schematics.h"
 
-#include "ChipSignals.h"
-#include "CpuSignals.h"
+#include "Sch_ChipSignals.h"
+#include "Sch_CpuSignals.h"
 
-#include "System.h"
+#include "Sch_System.h"
 
-#include "ApuControl.h"
-#include "Channel1.h"
-#include "Channel2.h"
-#include "Channel3.h"
-#include "Channel4.h"
-#include "Sprites.h"
-#include "PixelPipe.h"
-#include "Video.h"
+#include "Sch_ApuControl.h"
+#include "Sch_Channel1.h"
+#include "Sch_Channel2.h"
+#include "Sch_Channel3.h"
+#include "Sch_Channel4.h"
+#include "Sch_Sprites.h"
+#include "Sch_PixelPipe.h"
+#include "Sch_Video.h"
 
 //-----------------------------------------------------------------------------
 

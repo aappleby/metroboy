@@ -1,3 +1,4 @@
+
 #pragma once
 
 namespace Schematics {
@@ -15,11 +16,11 @@ struct Video {
   /*p29.XYVA*/ bool CLK_AxCxExGxb;
   /*p29.XYFY*/ bool CLK_AxCxExGxc;
 
-  /*p29.WUVU*/ bool CLK_2Ma;
-  /*p29.XUPY*/ bool CLK_2Mb;
-
-  /*p21.VENA*/ bool CLK_1Ma;
-  /*p21.TALU*/ bool CLK_1Mb;
+  /*p29.WUVU*/ bool CLK_AxxDExxHa;
+  /*p29.XUPY*/ bool CLK_AxxDExxHb;
+  /*p21.VENA*/ bool CLK_AxxxxFGHa;
+  /*p21.TALU*/ bool CLK_AxxxxFGHb;
+  /*p21.SONO*/ bool CLK_xBCDExxxa;
 
   /*p21.XYMU*/ bool RENDERING;
   /*p21.NYPE*/ bool LINE_DONE_DELAYn;
@@ -28,7 +29,7 @@ struct Video {
   /*p21.NAPO*/ bool NAPO;
   /*p21.PURE*/ bool LINE_DONEa;
 
-  /*p21.PARU*/ bool INT_VBL;
+  /*p21.PARU*/ bool VBLANK;
   /*p21.TAPA*/ bool INT_OAM;
   /*p21.TARU*/ bool INT_HBL;
   /*p21.VYPU*/ bool INT_VBL_BUF;
@@ -65,7 +66,7 @@ struct Video {
   /*p21.ADAZ*/ bool X6n;
   /*p21.ASAH*/ bool X7n;
 
-  /*p21.TADY*/ bool TADY;
+  /*p21.TADY*/ bool X_RST;
   /*p21.XUKE*/ bool XUKE;
   /*p21.XYLE*/ bool XYLE;
   /*p21.RYBO*/ bool RYBO;
@@ -113,11 +114,12 @@ struct Video {
   /*p21.TOZU*/ bool CNT_007n;
   /*p21.TECE*/ bool CNT_045n;
   /*p21.TEBO*/ bool CNT_083n;
-  /*p21.TEGY*/ bool TEGY;
   /*p21.SANU*/ bool CNT_113n;
-  /*p21.SONO*/ bool SONO_CLK;
-  /*p21.SYGU*/ bool SYGU;
-  /*p21.RYNO*/ bool RYNO;
+
+  /*p21.TEGY*/ bool LINE_STROBEa;
+  /*p21.SYGU*/ bool LINE_STROBEb;
+
+  /*p21.RYNO*/ bool CPGn;
 
   /*p21.POPU*/ bool LINE_144_SYNC;
   /*p21.XUGU*/ bool X_167n;
@@ -126,7 +128,7 @@ struct Video {
   /*p21.TOLU*/ bool INT_VBLn;
 
   /*p21.SEPA*/ bool FF41_WR;
-  /*p21.VOGA*/ bool VOGA;
+  /*p21.VOGA*/ bool RENDER_DONE_SYNCn;
   /*p21.WEGO*/ bool WEGO;
   /*p21.XAJO*/ bool X_009;
   /*p21.WUSA*/ bool WUSA;
@@ -367,7 +369,6 @@ struct Video {
   /*p25.SAZO*/ bool MD_OUTd;
   /*p25.ROCY*/ bool MD_OUTe;
 
-  /*p25.ROPY*/ bool RENDERINGo;
   /*p25.SERE*/ bool SERE;
   /*p25.RUVY*/ bool CPU_VRAM_CLK2n;
   /*p25.SOHY*/ bool MWR;
@@ -461,7 +462,6 @@ struct Video {
   /*p27.XAHY*/ bool NEW_LINEn;
   /*p27.XOFO*/ bool MAP_X_RST;
   /*p27.XACO*/ bool MAP_X_RSTn;
-  /*p27.PYNU*/ bool TILE_ABb;
   /*p27.NUNY*/ bool NUNY;
   /*p27.NOCU*/ bool TILE_Y_CLK;
   /*p27.PUKU*/ bool PUKU;
@@ -474,7 +474,7 @@ struct Video {
   /*p27.ROCO*/ bool ROCO_4M;
   /*p27.NYFO*/ bool NYFO;
   /*p27.WAZY*/ bool TILE_ABo;
-  /*p27.SYNY*/ bool IN_FRAME_Yn;
+  /*p27.SYNY*/ bool Y_RST;
   /*p27.NOPA*/ bool NOPA;
   /*p27.PYCO*/ bool WIN_MATCH_SYNC1;
   /*p27.NUNU*/ bool WIN_MATCH_SYNC2;

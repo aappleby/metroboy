@@ -10,28 +10,17 @@ struct Gameboy;
 
 struct System {
 
-  void tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
-
-  ///*p01.TUBO*/ bool NO_CLOCK;
-  ///*p01.UNUT*/ bool TIMEOUT;
-  ///*p01.TABA*/ bool CPU_RESET;
-  ///*p01.ALYP*/ bool CPU_RESETn;
-
   //----------
   // SYS reset tree
 
-  ///*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
-  ///*p01.ASOL*/ bool RESET_IN;
+  /*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
   /*p01.AFER*/ bool RESET_REG;
 
   
-  /*p01.AVOR*/ bool SYS_RESET4;
   /*p01.ALUR*/ bool SYS_RESETn1;
-  /*p01.DULA*/ bool SYS_RESET1;
   /*p09.HAPO*/ bool SYS_RESET2;
   /*p01.CUNU*/ bool SYS_RESETn2;
   /*p01.GUFO*/ bool SYS_RESETn3;
-  /*p01.XORE*/ bool SYS_RESET3;
   /*p01.XEBE*/ bool SYS_RESETn4;
   /*p01.WALU*/ bool SYS_RESETn5;
   /*p01.WESY*/ bool SYS_RESETn6;
@@ -52,127 +41,55 @@ struct System {
   /*p01.ABEZ*/ bool VID_RESETn3;
 
   //----------
-  // APU reset tree
-
-  /*p09.JYRO*/ bool APU_RST; // This is the root of the APU reset tree
-
-  /*p01.BOPO*/ bool APU_RESETn1;
-  /*p01.ATUS*/ bool APU_RESETn2;
-  /*p01.BELA*/ bool APU_RESETn3;
-  /*p09.KAME*/ bool APU_RESETn5;
-
-  //----------
   // Clock control
 
-  ///*p01.ABOL*/ bool CPUCLK_REQn;
-  ///*p01.BUTY*/ bool CPUCLK_REQ;
-  ///*p01.UCOB*/ bool CLK_BAD1;
-  ///*p01.ATEZ*/ bool CLK_BAD2;
+  /*p01.ABOL*/ bool CPUCLK_REQn;
+  /*p01.BUTY*/ bool CPUCLK_REQ;
+  /*p01.UCOB*/ bool CLK_BAD1;
+  /*p01.ATEZ*/ bool CLK_BAD2;
 
   //----------
   // 4M clocks
-  /*p01.APUV*/ bool CLK_AxCxExGx1;
-  /*p01.ARYF*/ bool CLK_AxCxExGx2;
-  /*p01.ATAL*/ bool CLK_AxCxExGx3;
-  /*p01.ALET*/ bool CLK_AxCxExGx4;
-  /*p01.ARYS*/ bool CLK_AxCxExGx5;
-  /*p01.ANOS*/ bool CLK_AxCxExGx6;
-  /*p01.CYBO*/ bool CLK_AxCxExGx7;
-  /*p01.ATAG*/ bool CLK_AxCxExGx8;
-  /*p01.ZAXY*/ bool CLK_AxCxExGx9;
-  /*p01.TAVA*/ bool CLK_AxCxExGx10;
+  /*p01.ARYS*/ bool CLK_AxCxExGx5; // not(CLKIN_B);
 
-  /*p01.AMUK*/ bool CLK_xBxDxFxH1;
-  /*p01.ZEME*/ bool CLK_xBxDxFxH2;
-  /*p01.AVET*/ bool CLK_xBxDxFxH3;
-  /*p01.AZOF*/ bool CLK_xBxDxFxH4;
-  /*p01.LAPE*/ bool CLK_xBxDxFxH5;
+  /*p01.ANOS*/ bool CLK_AxCxExGx6; // deglitch 1
+  /*p01.AVET*/ bool CLK_xBxDxFxH3; // deglitch 2
+  /*p01.ATAL*/ bool CLK_AxCxExGx3; // drives phase generator
 
-  // 2M clocks
-  /*p01.CERY*/ bool CLK_ABxxEFxx1; // ab__ef__
+  /*p01.ALET*/ bool CLK_AxCxExGx4; // video
+  /*p01.LAPE*/ bool CLK_xBxDxFxH5; // video
+  /*p01.TAVA*/ bool CLK_AxCxExGx10; // sprites
+  /*p01.ZEME*/ bool CLK_xBxDxFxH2; // sprites, video
 
   // 1M clocks
 
   // 1mhz phase generator, regs in order of triggering.
-  /*p01.AFUR*/ bool CLK_ABCDxxxx1;
-  /*p01.ALEF*/ bool CLK_xBCDExxx1;
-  /*p01.APUK*/ bool CLK_xxCDEFxx1;
-  /*p01.ADYK*/ bool CLK_xxxDEFGx1;
-  /*p01.ATYP*/ bool CLK_xxxxEFGH1;
-  /*p01.AFEP*/ bool CLK_AxxxxFGH1;
-  /*p01.AROV*/ bool CLK_ABxxxxGH1;
-  /*p01.ADAR*/ bool CLK_ABCxxxxH1;
-  /*p01.AJAX*/ bool CLK_ABCDxxxx3;
-  /*p01.BUGO*/ bool CLK_xBCDExxx2;
+  /*p01.AFUR*/ bool PHASE_ABCDxxxx1; // sys
+  /*p01.ALEF*/ bool PHASE_xBCDExxx1; // sys
+  /*p01.APUK*/ bool PHASE_xxCDEFxx1; // sys
+  /*p01.ADYK*/ bool PHASE_xxxDEFGx1; // sys
 
-  /*p01.AFAS*/ bool CLK_xxxDxxxx1;
-  /*p01.BELE*/ bool CLK_xxxxxFGH1;
+  /*p01.AFAS*/ bool PHASE_xxxxEFGx3; // sys, vid
 
-  //----------
-  // clocks for the cpu
+  /*p01.BUKE*/ bool PHASE_AxxxxxGH6; // ch3, PORTD_06?
 
-  /*p01.BAPY*/ bool CPUCLK_xxDExxxx1;
-  /*p01.BUFA*/ bool CPUCLK_xxDExxxx2;
-  /*p01.BYLY*/ bool CPUCLK_xxDExxxx3;
-  /*p01.BERU*/ bool CPUCLK_ABxxEFGH1;
-  /*p01.BOLO*/ bool CPUCLK_ABxxEFGH2;
-  /*p01.BYDA*/ bool CPUCLK_ABxxEFGH3;
+  /*p01.UVYT*/ bool PHASE_ABCDxxxx7b; // sys
+  /*p01.DOVA*/ bool PHASE_ABCDxxxx7c; // apu
 
-  /*p01.NULE*/ bool CPUCLK_ABCDxxxx1;
-  /*p01.BUDE*/ bool CPUCLK_ABCDxxxx2; // -> PORTD_04
-  /*p01.BEVA*/ bool CPUCLK_ABCDxxxx3;
-  /*p01.BEJA*/ bool CPUCLK_ABCDxxxx4;
-  /*p01.BELO*/ bool CPUCLK_ABCDxxxx5;
-  /*p01.BYRY*/ bool CPUCLK_xxxxEFGH1;
-  /*p01.BEKO*/ bool CPUCLK_xxxxEFGH2; // -> PORTD_03
-  /*p01.BAVY*/ bool CPUCLK_xxxxEFGH3;
-  /*p01.BANE*/ bool CPUCLK_xxxxEFGH4;
-  /*p01.BAZE*/ bool CPUCLK_xxxxEFGH5;
-  /*p01.UVYT*/ bool CPUCLK_xxxxEFGH8;
-  /*p01.DOVA*/ bool CPUCLK_xxxxEFGH9;
+  /*p04.MOPA*/ bool PHASE_xxxxEFGH8b; // sys, sprites
 
-  /*p01.BEDO*/ bool CPU_CLK1n; // -> PORTD_02, ____efgh
+  /*p01.BOGA*/ bool BOGA_xBCDEFGH; // sys, PORTD_08?
+  /*p01.BEDO*/ bool BEDO_Axxxxxxx; // sys, PORTD_02
 
-  /*p01.BUKE*/ bool CPUCLK_xxxxxFxx1; // -> PORTD_06
-  /*p01.BATE*/ bool CPUCLK_xxxxxFxx2;
-  /*p01.BASU*/ bool CPUCLK_xxxxxFxxn;
-
-  //----------
-  // clocks for the cart
-
-  /*p01.AVOK*/ bool AVOK;
-
-  //----------
-  // clocks for the apu
-
-  /*p09.AJER*/ bool AJER_2M;
-  /*p01.BAVU*/ bool BAVU_1M;
-
-  /*p01.JESO*/ bool CLK_512Ka;
-  /*p01.HAMA*/ bool CLK_512Kn;
-
-  // these are used by all the channels
-  /*p01.HORU*/ bool CLK_512a;
-  /*p01.BUFY*/ bool CLK_256a;
-  /*p01.BYFE*/ bool CLK_128a;
-
-  /*p01.COKE*/ bool AJER_2Mn;
-  /*p01.BURE*/ bool CLK_512n;
-
-  /*p01.GALE*/ bool CLK_512b;
-  /*p01.BEZE*/ bool CLK_256b;
-  /*p01.BULE*/ bool CLK_128b;
-
-  /*p01.BARA*/ bool CLK_512;
-  /*p01.CARU*/ bool CLK_256;
-  /*p01.BYLU*/ bool CLK_128;
-
-  /*p01.ATYK*/ bool ATYK;
+  // redundant
+  ///*p01.BYLY*/ bool CPUCLK_xxDExxxx3;
+  ///*p01.BYDA*/ bool CPUCLK_ABxxEFGH3;
+  ///*p01.BEVA*/ bool CPUCLK_ABCDxxxx3;
+  ///*p01.BAVY*/ bool CPUCLK_xxxxEFGH3;
 
   //----------
   // DIV
 
-  /*p01.BOGA*/ bool DIV_CLK;  // ABCDExxx -> PORTD_08
   /*p01.UFOL*/ bool DIV_RSTn;
 
   // out to high half mux
@@ -207,12 +124,10 @@ struct System {
   //----------
   // Gated rd/wr signals
 
-  /*p01.APOV*/ bool CPU_WR_SYNC;      // ___d____
-
-  /*p01.ABUZ*/ bool CPU_RD_SYNC;  // ____ef__
+  /*p01.APOV*/ bool CPU_WR_xxxxEFGx;
+  /*p01.ABUZ*/ bool ADDR_VALID_ABxxxxxx;
 
   /*p01.ULUR*/ bool DIV_06_CLK;
-  /*p01.BALY*/ bool DIV_CLKn;
 
 
   /*p02.ASOK*/ bool INT_JP;
@@ -259,8 +174,7 @@ struct System {
 
   //----------
 
-  /*p03.RYFO*/ union { bool FF04_FF07; };
-  /*p03.TOVY*/ union { bool A0n; };
+  /*p03.RYFO*/ bool FF04_FF07;
 
   //----------
   // FF07 TAC
@@ -409,7 +323,6 @@ struct System {
   /*p04.LYXE*/ bool LYXE;
 
   /*p04.WYJA*/ bool OAM_CS;
-  /*p04.MOPA*/ bool CPUCLK_ABCDxxxx9;
   /*p04.LUMA*/ bool DO_DMA; // if true, addr bus = dma addr
   /*p04.DUGA*/ bool OAM_ADDR_DMA;
 
@@ -511,11 +424,6 @@ struct System {
   /*p07.TAPU*/ bool CPU_WR;
   /*p07.ASOT*/ bool CPU_RD2;
   /*p07.CUPA*/ bool CPU_WR2;
-  /*p07.AJAS*/ bool CPU_RDn;
-  /*p07.UBAL*/ bool CPU_WR_MUX;
-  /*p07.UJYV*/ bool CPU_RD_MUX;
-  /*p07.DYKY*/ bool CPU_WRn;
-  /*p08.REDU*/ bool CPU_RDo;
 
   //----------
   // Bootrom control
@@ -529,12 +437,10 @@ struct System {
   /*p07.BURO*/ bool FF60_0;
   /*p07.AMUT*/ bool FF60_1;
 
-  /*p07.BAKO*/ bool ADDR_FFXXn1;
-  /*p07.SOHA*/ bool ADDR_FFXXn2;
   /*p07.SARO*/ bool ADDR_OAM;
 
 
-  /*p07.SYKE*/ bool ADDR_FFXX;
+  /*p07.SYKE*/ bool ADDR_FFXX; // used by a bunch of stuff
 
   /*p07.ROMY*/ bool DBG_0;
   /*p07.RYNE*/ bool DBG_1;
@@ -546,11 +452,10 @@ struct System {
   /*p07.RARU*/ bool DBG_7;
 
 
-  /*p08.TOLA*/ bool A1n;
-  /*p08.TOVA*/ union { bool MODE_DBG2n1; bool NET01; };
+  /*p08.TOVA*/ bool MODE_DBG2n1;
   /*p08.RYCA*/ bool MODE_DBG2n2;
 
-  /*p08.TEXO*/ bool ADDR_VALID_AND_NOT_VRAM;
+  /*p08.TEXO*/ bool ADDR_VALID_AND_NOT_VRAM; // sys, temp
 
   //----------
   // Address pin driver
@@ -644,13 +549,6 @@ struct System {
   /*p08.LEFY*/ bool A13_C;
   /*p08.NEFE*/ bool A14_C;
   /*p08.SYZU*/ bool A15_C;
-
-  /*p08.TEVY*/ bool ADDR_NOT_VRAM;
-
-  /*p08.LEVO*/ bool ADDR_VALID_AND_NOT_VRAMn;
-  /*p08.LAGU*/ bool LAGU;
-  /*p08.MOCA*/ bool MOCA;
-  /*p08.MOTY*/ bool MOTY;
 
   /*p08.MULE*/ bool MODE_DBG1o;
 };

@@ -1,20 +1,21 @@
 #pragma once
-
-namespace Schematics {
-
-//-----------------------------------------------------------------------------
+#include "Gameboy.h"
+#include "Regs.h"
 
 struct PixelPipe {
 
-  /*p32.RAWU*/ bool BG_PIX_B0;
-  /*p32.POZO*/ bool BG_PIX_B1;
-  /*p32.PYZO*/ bool BG_PIX_B2;
-  /*p32.POXA*/ bool BG_PIX_B3;
-  /*p32.PULO*/ bool BG_PIX_B4;
-  /*p32.POJU*/ bool BG_PIX_B5;
-  /*p32.POWY*/ bool BG_PIX_B6;
-  /*p32.PYJU*/ bool BG_PIX_B7;
+  void reset();
+  void tick(Gameboy& gb, bool CPU_RD, bool CPU_WR);
+  void tock(Gameboy& gb, bool CPU_RD, bool CPU_WR);
 
+  Reg8 BGP;
+  Reg8 OBP0;
+  Reg8 OBP1;
+
+  Reg8 VRAM_A;
+  Reg8 VRAM_B;
+
+#if 0
   /*p32.LESO*/ bool LESO;
   /*p32.AJAR*/ bool AJAR;
   /*p32.LABU*/ bool VRAM_TEMP_CLK;
@@ -30,23 +31,23 @@ struct PixelPipe {
   /*p32.NASA*/ bool BG_PIX_A6;
   /*p32.NEFO*/ bool BG_PIX_A7;
 
-  /*p32.SEJA*/ bool BG_PIPE_B_RST0;
-  /*p32.SENO*/ bool BG_PIPE_B_RST1;
-  /*p32.SURE*/ bool BG_PIPE_B_RST2;
-  /*p32.SEBO*/ bool BG_PIPE_B_RST3;
-  /*p32.SUCA*/ bool BG_PIPE_B_RST4;
-  /*p32.SYWE*/ bool BG_PIPE_B_RST5;
-  /*p32.SUPU*/ bool BG_PIPE_B_RST6;
-  /*p32.RYJY*/ bool BG_PIPE_B_RST7;
+  /*p32.MYDE*/ bool BG_PIPE_A0;
+  /*p32.NOZO*/ bool BG_PIPE_A1;
+  /*p32.MOJU*/ bool BG_PIPE_A2;
+  /*p32.MACU*/ bool BG_PIPE_A3;
+  /*p32.NEPO*/ bool BG_PIPE_A4;
+  /*p32.MODU*/ bool BG_PIPE_A5;
+  /*p32.NEDA*/ bool BG_PIPE_A6;
+  /*p32.PYBO*/ bool BG_PIPE_A7;
 
-  /*p32.TUXE*/ bool BG_PIPE_B_SET0;
-  /*p32.SOLY*/ bool BG_PIPE_B_SET1;
-  /*p32.RUCE*/ bool BG_PIPE_B_SET2;
-  /*p32.RYJA*/ bool BG_PIPE_B_SET3;
-  /*p32.RUTO*/ bool BG_PIPE_B_SET4;
-  /*p32.RAJA*/ bool BG_PIPE_B_SET5;
-  /*p32.RAJO*/ bool BG_PIPE_B_SET6;
-  /*p32.RAGA*/ bool BG_PIPE_B_SET7;
+  /*p32.RAWU*/ bool BG_PIX_B0;
+  /*p32.POZO*/ bool BG_PIX_B1;
+  /*p32.PYZO*/ bool BG_PIX_B2;
+  /*p32.POXA*/ bool BG_PIX_B3;
+  /*p32.PULO*/ bool BG_PIX_B4;
+  /*p32.POJU*/ bool BG_PIX_B5;
+  /*p32.POWY*/ bool BG_PIX_B6;
+  /*p32.PYJU*/ bool BG_PIX_B7;
 
   /*p32.TOMY*/ bool BG_PIPE_B0;
   /*p32.TACA*/ bool BG_PIPE_B1;
@@ -57,14 +58,14 @@ struct PixelPipe {
   /*p32.RALU*/ bool BG_PIPE_B6;
   /*p32.SOHU*/ bool BG_PIPE_B7;
 
-  /*p32.MYDE*/ bool BG_PIPE_A0;
-  /*p32.NOZO*/ bool BG_PIPE_A1;
-  /*p32.MOJU*/ bool BG_PIPE_A2;
-  /*p32.MACU*/ bool BG_PIPE_A3;
-  /*p32.NEPO*/ bool BG_PIPE_A4;
-  /*p32.MODU*/ bool BG_PIPE_A5;
-  /*p32.NEDA*/ bool BG_PIPE_A6;
-  /*p32.PYBO*/ bool BG_PIPE_A7;
+  /*p33.NYLU*/ bool SPR_PIPE_A0;
+  /*p33.PEFU*/ bool SPR_PIPE_A1;
+  /*p33.NATY*/ bool SPR_PIPE_A2;
+  /*p33.PYJO*/ bool SPR_PIPE_A3;
+  /*p33.VARE*/ bool SPR_PIPE_A4;
+  /*p33.WEBA*/ bool SPR_PIPE_A5;
+  /*p33.VANU*/ bool SPR_PIPE_A6;
+  /*p33.VUPY*/ bool SPR_PIPE_A7;
 
   /*p33.NURO*/ bool SPR_PIX_B_0;
   /*p33.MASO*/ bool SPR_PIX_B_1;
@@ -74,15 +75,6 @@ struct PixelPipe {
   /*p33.WORA*/ bool SPR_PIX_B_5;
   /*p33.VAFO*/ bool SPR_PIX_B_6;
   /*p33.WUFY*/ bool SPR_PIX_B_7;
-
-  /*p33.NYLU*/ bool SPR_PIX_A_0;
-  /*p33.PEFU*/ bool SPR_PIX_A_1;
-  /*p33.NATY*/ bool SPR_PIX_A_2;
-  /*p33.PYJO*/ bool SPR_PIX_A_3;
-  /*p33.VARE*/ bool SPR_PIX_A_4;
-  /*p33.WEBA*/ bool SPR_PIX_A_5;
-  /*p33.VANU*/ bool SPR_PIX_A_6;
-  /*p33.VUPY*/ bool SPR_PIX_A_7;
 
   /*p33.REWO*/ bool SPR_PIX_B0;
   /*p33.PEBA*/ bool SPR_PIX_B1;
@@ -259,8 +251,5 @@ struct PixelPipe {
   /*p36.LUKY*/ bool LUKY;
   /*p36.LODE*/ bool LODE;
   /*p36.LAJU*/ bool LAJU;
-};
-
-//-----------------------------------------------------------------------------
-
+#endif
 };

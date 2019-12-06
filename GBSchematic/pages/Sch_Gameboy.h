@@ -21,6 +21,8 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct Gameboy {
+  int64_t timestamp;
+
   CpuOut cpu_out;
   ChipOut chip_out;
 

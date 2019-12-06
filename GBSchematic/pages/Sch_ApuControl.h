@@ -17,21 +17,60 @@ struct ApuControl {
   /*p09.KYDU*/ bool CPU_RD1;
   /*p09.AGUZ*/ bool CPU_RDn;
 
+  /*p09.JYRO*/ bool APU_RST; // This is the root of the APU reset tree
+    
   /*p09.KEBA*/ bool APU_RESET1;
   /*p09.AGUR*/ bool APU_RESETn;
   /*p09.AFAT*/ bool APU_RESETn2;
   /*p09.ATYV*/ bool APU_RESETn3;
+  /*p09.KAME*/ bool APU_RESETn5;
   /*p09.KEPY*/ bool APU_RESETn6;
   /*p09.KUBY*/ bool APU_RESETn7;
-  
+
+  /*p01.BOPO*/ bool APU_RESETn8;
+  /*p01.ATUS*/ bool APU_RESETn9;
+  /*p01.BELA*/ bool APU_RESETn4;
+
+  //----------
+  // clocks for the apu
+
+  /*p01.AZOF*/ bool CLK_xBxDxFxH4; // apu
+  /*p01.APUV*/ bool CLK_AxCxExGx1; // apu
+  /*p01.ARYF*/ bool CLK_AxCxExGx2; // apu
+  /*p01.CYBO*/ bool CLK_AxCxExGx7; // apu
+  /*p01.AMUK*/ bool CLK_xBxDxFxH1; // apu
+  /*p01.CERY*/ bool CLK_ABxxEFxx1; // apu
+  /*p01.ATAG*/ bool CLK_AxCxExGx8; // apu
+
+  /*p01.ATYK*/ bool ATYK;
+  /*p01.AVOK*/ bool AVOK;
+
+  /*p09.AJER*/ bool AJER_2M;
+  /*p01.COKE*/ bool AJER_2Mn;
+  /*p01.BAVU*/ bool BAVU_1M;
+
+  /*p01.JESO*/ bool CLK_512Ka;
+  /*p01.HAMA*/ bool CLK_512Kn;
+
+  /*p01.HORU*/ bool CLK_512a;
+  /*p01.BUFY*/ bool CLK_256a;
+  /*p01.BYFE*/ bool CLK_128a;
+
+  /*p01.BURE*/ bool CLK_512n;
+
+  /*p01.GALE*/ bool CLK_512b;
+  /*p01.BEZE*/ bool CLK_256b;
+  /*p01.BULE*/ bool CLK_128b;
+
+  /*p01.BARA*/ bool CLK_512;
+  /*p01.CARU*/ bool CLK_256;
+  /*p01.BYLU*/ bool CLK_128;
+
   //----------
   // FF24 NR50
 
-  /*p09.BYMA*/ bool FF24n;
-
   /*p09.BEFU*/ bool NR50_RDn1;
   /*p09.ADAK*/ bool NR50_RD1;
-
   /*p09.BOSU*/ bool NR50_WRn1;
   /*p09.BUBU*/ bool NR50_WRn2;
   /*p09.ATAF*/ bool NR50_WRn3;
@@ -41,28 +80,25 @@ struct ApuControl {
   union {
     uint8_t NR50;
     struct {
-      /*p09.APEG*/ bool VOL_L0 : 1;
-      /*p09.BYGA*/ bool VOL_L1 : 1;
-      /*p09.AGER*/ bool VOL_L2 : 1;
-      /*p09.APOS*/ bool VIN_TO_L : 1;
-      /*p09.BYRE*/ bool VOL_R0 : 1;
-      /*p09.BUMO*/ bool VOL_R1 : 1;
-      /*p09.COZU*/ bool VOL_R2 : 1;
-      /*p09.BEDU*/ bool VIN_TO_R : 1;
+      /*p09.APEG*/ bool NR50_VOL_L0 : 1;
+      /*p09.BYGA*/ bool NR50_VOL_L1 : 1;
+      /*p09.AGER*/ bool NR50_VOL_L2 : 1;
+      /*p09.APOS*/ bool NR50_VIN_TO_L : 1;
+      /*p09.BYRE*/ bool NR50_VOL_R0 : 1;
+      /*p09.BUMO*/ bool NR50_VOL_R1 : 1;
+      /*p09.COZU*/ bool NR50_VOL_R2 : 1;
+      /*p09.BEDU*/ bool NR50_VIN_TO_R : 1;
     };
   };
 
   //----------
   // FF25 NR51
 
-  /*p09.GEPA*/ bool ADDR_FF25n;
-
-  /*p09.GUMU*/ bool FF25_RD;
-  /*p09.HEFA*/ bool FF25_RDn;
-
-  /*p09.BUPO*/ bool FF25_WRn;
-  /*p09.BONO*/ bool FF25_WRa;
-  /*p09.BYFA*/ bool FF25_WRb;
+  /*p09.GUMU*/ bool NR51_RD;
+  /*p09.HEFA*/ bool NR51_RDn;
+  /*p09.BUPO*/ bool NR51_WRn;
+  /*p09.BONO*/ bool NR51_WRa;
+  /*p09.BYFA*/ bool NR51_WRb;
 
   union {
     uint8_t NR51;
@@ -81,10 +117,10 @@ struct ApuControl {
   //----------
   // FF26 NR52
   
-  /*p09.DOLE*/ bool FF26_RDna;
-  /*p09.KAMU*/ bool FF26_RDnb;
-  /*p09.DURU*/ bool FF26_RDnd;
-  /*p09.FEWA*/ bool FF26_RDnc;
+  /*p09.DOLE*/ bool NR52_RDna;
+  /*p09.KAMU*/ bool NR52_RDnb;
+  /*p09.DURU*/ bool NR52_RDnd;
+  /*p09.FEWA*/ bool NR52_RDnc;
   /*p09.JURE*/ bool NR52_RDn1;
 
   /*p09.ETUC*/ bool NR52_WR1;
@@ -92,15 +128,24 @@ struct ApuControl {
   /*p09.BOPY*/ bool NR52_WRn2;
   /*p09.FOKU*/ bool NR52_WRn3;
 
-  /*p09.EFOP*/ bool DBG_APU_IN;
-  /*p09.FERO*/ bool DBG_APUn; // secret debug bit
-  /*p09.BOWY*/ bool DBG_SWEEP; // secret debug bit
-  /*p09.HADA*/ bool ALL_SOUND_ON; //FF26_7
-  /*p09.EDEK*/ bool DBG_APU;
+  /*p09.EFOP*/ bool NR52_DBG_APU_IN;
+  /*p09.FERO*/ bool NR52_DBG_APUn; // secret debug bit
+  /*p09.BOWY*/ bool NR52_DBG_SWEEP; // secret debug bit
+  /*p09.HADA*/ bool NR52_ALL_SOUND_ON; //FF26_7
+  /*p09.EDEK*/ bool NR52_DBG_APU;
+
+  //----------
 
   /*p10.TACE*/ bool AMP_ENn;
   /*p10.BAFU*/ bool CPU_WRn;
   /*p10.BOGY*/ bool APU_WR;
+
+  //----------
+
+  /*p07.BAKO*/ bool ADDR_FFXXn1;
+
+  /*p09.BYMA*/ bool ADDR_FF24n;
+  /*p09.GEPA*/ bool ADDR_FF25n;
 
   /*p10.ATUP*/ bool ADDR_xxx0xxxx;
   /*p10.BOXY*/ bool ADDR_xx0xxxxx;

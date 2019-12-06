@@ -7,8 +7,8 @@ namespace Schematics {
 
 /*
 // inputs
-p01.CPUCLK_xxxxEFGH9;
-p01.CPUCLK_xxxxEFGH9;
+p01.PHASE_ABCDxxxx7c;
+p01.PHASE_ABCDxxxx7c;
 p01.BAVU_1M;
 p01.CLK_512Kn;
 p01.CLK_512Kn
@@ -41,9 +41,9 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
   const Channel4& pb = b.ch4;
   Channel4& pc = c.ch4;
 
-  /*p20.ALOP*/ pc.CLK_128n = not(b.sys.CLK_128a);
+  /*p20.ALOP*/ pc.CLK_128n = not(b.apu.CLK_128a);
 
-  /*p09.KUBY*/ pc.RSTn = not(b.sys.APU_RST);
+  /*p09.KUBY*/ pc.RSTn = not(b.apu.APU_RST);
   /*p09.KEBA*/ pc.RSTa = not(pb.RSTn);
   /*p09.DAPA*/ pc.RSTo = not(pb.RSTa);
   /*p09.KAME*/ pc.RSTp = not(pb.RSTa);
@@ -66,7 +66,7 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
   /*p19.DOTU*/ pc.FF20_WRb = not(pb.FF20_WRn);
   /*p19.EPEK*/ pc.FF20_WRc = not(pb.FF20_WRn);
 
-  /*p19.DODA*/ pc.LEN_CLKn = nor(b.sys.CLK_256a, pb.LEN_STOP, pb.NR43_FREQ2); // this doesn't seem right
+  /*p19.DODA*/ pc.LEN_CLKn = nor(b.apu.CLK_256a, pb.LEN_STOP, pb.NR43_FREQ2); // this doesn't seem right
   /*p19.CUWA*/ pc.LEN_CLKa = not(pb.LEN_CLKn);
 
   /*p19.DANO*/ pc.NR41_LEN0  = count_pos(pa.LEN_CLKa,  pb.LEN_CLKa,   pb.FF20_WRb, pb.NR41_LEN0,   b.D0);
@@ -167,7 +167,7 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
   //----------
   // Control
 
-  /*p20.GYSU*/ pc.CH4_START   = tock_pos(a.sys.CPUCLK_xxxxEFGH9, b.sys.CPUCLK_xxxxEFGH9, pb.RSTu, pb.CH4_START, pb.NR44_START);
+  /*p20.GYSU*/ pc.CH4_START   = tock_pos(a.sys.PHASE_ABCDxxxx7c, b.sys.PHASE_ABCDxxxx7c, pb.RSTu, pb.CH4_START, pb.NR44_START);
   /*p20.EFOT*/ pc.CH4_STOP    = and(pb.NR44_STOP,   pb.LEN_STOP);
   /*p20.FEGY*/ pc.CH4_OFF     = or (pb.CH4_AMP_ENn, pb.CH4_STOP, pb.RSTa);
   /*p20.GENA*/ pc.CH4_ACTIVE  = or (pb.RESTART1, pb.CH4_OFF);
@@ -175,8 +175,8 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
 
   /*p20.HAZO*/ pc.RESTART_IN   = or(pb.RESTART_RST, pb.CH4_START);
 
-  /*p20.GONE*/ pc.RESTART1 = tock_pos(a.sys.CLK_512Kn, b.sys.CLK_512Kn, pb.RESTART_RSTn, pb.RESTART1, pb.RESTART_IN);
-  /*p20.GORA*/ pc.RESTART2 = tock_pos(a.sys.CLK_512Kn, b.sys.CLK_512Kn, pb.RSTt,         pb.RESTART2, pb.RESTART1);
+  /*p20.GONE*/ pc.RESTART1 = tock_pos(a.apu.CLK_512Kn, b.apu.CLK_512Kn, pb.RESTART_RSTn, pb.RESTART1, pb.RESTART_IN);
+  /*p20.GORA*/ pc.RESTART2 = tock_pos(a.apu.CLK_512Kn, b.apu.CLK_512Kn, pb.RSTt,         pb.RESTART2, pb.RESTART1);
 
   /*p20.FALE*/ pc.RESTART_RSTn = nor(pb.RESTART2, pb.RSTa);
   /*p20.HELU*/ pc.RESTART_RST  = not(pb.RESTART_RSTn);
@@ -184,12 +184,12 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
   // one of these is wrong, right now we would stop the div clock when ch4 active
   // fixed kyku but still might be a polarity error?
 
-  /*p20.GATY*/ pc.RESTART3  = tock_pos(a.sys.CLK_512Kn, b.sys.CLK_512Kn, pb.RSTt,         pb.RESTART3, pb.RESTART2);
+  /*p20.GATY*/ pc.RESTART3  = tock_pos(a.apu.CLK_512Kn, b.apu.CLK_512Kn, pb.RSTt,         pb.RESTART3, pb.RESTART2);
   /*p20.HAPU*/ pc.DIV_GATE2 = not(pb.RESTART3);
   /*p20.HERY*/ pc.DIV_GATE1 = nor(pb.RSTa, pb.CH4_AMP_ENn);
   /*p20.JERY*/ pc.DIV_GATE3 = or(pb.DIV_GATE1, pb.DIV_GATE2);
 
-  /*p20.KYKU*/ pc.DIV_CLKb  = nor(b.sys.CLK_512Ka, pb.DIV_GATE3); // schematic wrong
+  /*p20.KYKU*/ pc.DIV_CLKb  = nor(b.apu.CLK_512Ka, pb.DIV_GATE3); // schematic wrong
   /*p20.KONY*/ pc.DIV_CLKn  = not(pb.DIV_CLKb);
   /*p20.KANU*/ pc.DIV_CLKa  = not(pb.DIV_CLKn);
   /*p20.GOFU*/ pc.DIV_LOADn = nor(pb.RESTART1, pb.FREQ_GATEn);
@@ -203,7 +203,7 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
   //----------
   // Debug
 
-  /*p20.DYRY*/ pc.DBG_CH4 = and(pb.NR44_STOPn, b.apu.DBG_APU);
+  /*p20.DYRY*/ pc.DBG_CH4 = and(pb.NR44_STOPn, b.apu.NR52_DBG_APU);
   /*p20.COMO*/ pc.DBG_COMO = and(pb.CPU_RDc, pb.DBG_CH4);
   /*p20.BAGU*/ pc.DBG_BAGU = nand(pb.FF23a, pb.DBG_COMO);
   /*p20.BEFA*/ pc.DBG_BEFA = not(pb.FREQ_CLK);
@@ -212,10 +212,10 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
   //----------
   // Frequency timer
 
-  /*p20.GYBA*/ pc.FREQ_GATE_CLK  = not(b.sys.BAVU_1M);
+  /*p20.GYBA*/ pc.FREQ_GATE_CLK  = not(b.apu.BAVU_1M);
   /*p20.GUNY*/ pc.FREQ_GATE_RSTn = nor(pb.RESTART1, pb.RSTa);
   /*p20.GARY*/ pc.FREQ_GATEn     = tock_pos(pa.FREQ_GATE_CLK, pb.FREQ_GATE_CLK, pb.FREQ_GATE_RSTn, pb.FREQ_GATEn, pb.DIV_MAX);
-  /*p20.CARY*/ pc.FREQ_CLK = and(b.sys.BAVU_1M, pb.FREQ_GATEn);
+  /*p20.CARY*/ pc.FREQ_CLK = and(b.apu.BAVU_1M, pb.FREQ_GATEn);
 
   /*p20.CEXO*/ pc.FREQ_00 = tock_pos( pa.FREQ_CLK,  pb.FREQ_CLK, pb.RSTo, pb.FREQ_00, !pb.FREQ_00);
   /*p20.DEKO*/ pc.FREQ_01 = tock_pos(!pa.FREQ_00,   !pb.FREQ_00, pb.RSTo, pb.FREQ_01, !pb.FREQ_01);
@@ -315,9 +315,9 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
 
   // Generates a 1 usec pulse when the env timer hits 111
   /*p20.GEXE*/ pc.ENV_PULSEn     = not(pb.ENV_PULSE);
-  /*p20.HURY*/ pc.ENV_PULSE_RST1 = nor(b.sys.CLK_512a, pb.ENV_PULSEn);
+  /*p20.HURY*/ pc.ENV_PULSE_RST1 = nor(b.apu.CLK_512a, pb.ENV_PULSEn);
   /*p20.GOPA*/ pc.ENV_PULSE_RST2 = nor(pb.ENV_PULSE_RST1, pb.ENV_OFF, pb.RESTART1, pb.RSTa);
-  /*p20.FOSY*/ pc.ENV_PULSE      = tock_pos(a.sys.CLK_512a, b.sys.CLK_512a, pb.ENV_PULSE_RST2, pb.ENV_PULSE, pb.ENV_TIMER_MAX);
+  /*p20.FOSY*/ pc.ENV_PULSE      = tock_pos(a.apu.CLK_512a, b.apu.CLK_512a, pb.ENV_PULSE_RST2, pb.ENV_PULSE, pb.ENV_TIMER_MAX);
   
   /*p20.EMET*/ pc.ENV_STOP_RST = nor(pb.RESTART1, pb.RSTa);
   /*p20.FYNO*/ pc.ENV_STOP     = tock_pos(pa.ENV_PULSE, pb.ENV_PULSE, pb.ENV_STOP_RST, pb.ENV_STOP, pb.ENV_MAX);
@@ -350,7 +350,7 @@ void Channel4_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
   // lfsr output w/ debug overrides
   /*p20.GAME*/ pc.LFSR_OUT     = nand(pb.CH4_ACTIVE,  pb.LFSR_15);
   /*p20.EZUL*/ pc.CH4_BIT_MUX  = mux2(pb.LFSR_CLKa,   pb.LFSR_OUT, pb.DBG_CH4);
-  /*p20.COTE*/ pc.DBG_CH4_MUTE = and (pb.NR44_STOPn,  b.apu.DBG_APU);
+  /*p20.COTE*/ pc.DBG_CH4_MUTE = and (pb.NR44_STOPn,  b.apu.NR52_DBG_APU);
   /*p20.DATO*/ pc.CH4_RAW_BIT  = or  (pb.CH4_BIT_MUX, pb.DBG_CH4_MUTE);
 
   /*p20.GEVY*/ pc.CH4_AMP_ENn = nor(pb.NR42_ENV_DIR, pb.NR42_ENV_VOL0, pb.NR42_ENV_VOL1, pb.NR42_ENV_VOL2, pb.NR42_ENV_VOL3);

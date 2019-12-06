@@ -64,31 +64,40 @@ void dump(void* blob, int size) {
 
 //-----------------------------------------------------------------------------
 
-#if 0
-void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
+#if 1
+
+namespace Schematics {
+  void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
+  void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
+};
+
+void step_forwards(Schematics::Gameboy& gbIn, Schematics::Gameboy& gbOut) {
   //----------
   // old state
 
-  Gameboy a = gbIn;
+  int64_t old_timestamp = gbIn.timestamp;
+  Schematics::Gameboy a = gbIn;
 
   //----------
   // old state + new inputs
 
-  Gameboy b = a;
-  b.timestamp = a.timestamp + 1;
+  Schematics::Gameboy b = a;
 
-  b.cpu.CPU_RAW_RD = false;
-  b.cpu.CPU_RAW_WR = false;
-  b.cpu.ADDR_VALID = true;
+  Schematics::CpuIn cpu_in = {};
 
-  b.cpu.FROM_CPU5 = false;
-  b.cpu.CPUCLK_REQ = true;
+  cpu_in.CPU_RAW_RD = true;
+  cpu_in.CPU_RAW_WR = false;
+  cpu_in.ADDR_VALID = true;
+  cpu_in.FROM_CPU5 = false;
+  cpu_in.CPUCLK_REQ = true;
 
-  b.chip.RST     = false;
-  b.chip.CLKIN_A = true;
-  b.chip.CLKIN_B = b.timestamp & 1;
-  b.chip.T1 = false;
-  b.chip.T2 = false;
+  Schematics::ChipIn chip_in = {};
+
+  chip_in.RST     = false;
+  chip_in.CLKIN_A = true;
+  chip_in.CLKIN_B = (old_timestamp + 1) & 1;
+  chip_in.T1 = false;
+  chip_in.T2 = false;
 
   //----------
   // unmerged signals
@@ -96,132 +105,146 @@ void step_forwards(Gameboy& gbIn, Gameboy& gbOut) {
   //----------
   // destination state
   
-  Gameboy c;
+  Schematics::Gameboy c;
 
-  Gameboy* pa = &a;
-  Gameboy* pb = &b;
-  Gameboy* pc = &c;
+  Schematics::Gameboy* pa = &a;
+  Schematics::Gameboy* pb = &b;
+  Schematics::Gameboy* pc = &c;
 
   for (int rep = 0; rep < 40; rep++) {
-    pc->timestamp = pb->timestamp;
-    pc->cpu = pb->cpu;
-    pc->chip = pb->chip;
+    pa->A = 0xA000;
+    pb->A = 0xA000;
+    pc->A = 0xA000;
 
-    System_tick(*pa, *pb, *pc);
-    //P09_ApuControl_tick(*pa, *pb, *pc);
+    System_tick(cpu_in, chip_in, *pa, *pb, *pc);
+    //P21_VideoControl_tick(cpu_in, chip_in, *pa, *pb, *pc);
 
-    if (memcmp(pb, pc, sizeof(Gameboy)) == 0) {
-      printf("%d\n", rep);
+    if (memcmp(pb, pc, sizeof(Schematics::Gameboy)) == 0) {
+      //printf("%d %d\n", old_timestamp, rep);
       break;
     }
 
-    Gameboy* pt = pa; pa = pb; pb = pc; pc = pt;
+    Schematics::Gameboy* pt = pa; pa = pb; pb = pc; pc = pt;
   }
 
   gbOut = *pb;
+  gbOut.timestamp = old_timestamp + 1;
 }
 #endif
 
-#if 0
-const std::vector<SignalData> P01_ClocksReset::signals() {
-  return
-  {
-    SignalData("-----Clocks-----"),
-    SignalData("PHASE_ABCD", offsetof(P01_ClocksReset, CLK_ABCDxxxx1)),
-    SignalData("PHASE_BCDE", offsetof(P01_ClocksReset, CLK_xBCDExxx1)),
-    SignalData("PHASE_CDEF", offsetof(P01_ClocksReset, CLK_xxCDEFxx1)),
-    SignalData("PHASE_DEFG", offsetof(P01_ClocksReset, CLK_xxxDEFGx1)),
-    SignalData("COKE", offsetof(P01_ClocksReset, COKE)),
-
-    /*
-    SignalData("-----DIV-----"),
-    SignalData("DIV_00",    offsetof(P01_ClocksReset, DIV_00)),
-    SignalData("DIV_01",    offsetof(P01_ClocksReset, DIV_01)),
-    SignalData("DIV_02",    offsetof(P01_ClocksReset, DIV_02)),
-    SignalData("DIV_03",    offsetof(P01_ClocksReset, DIV_03)),
-    SignalData("DIV_04",    offsetof(P01_ClocksReset, DIV_04)),
-    SignalData("DIV_05",    offsetof(P01_ClocksReset, DIV_05)),
-    SignalData("DIV_06",    offsetof(P01_ClocksReset, DIV_06)),
-    SignalData("DIV_07",    offsetof(P01_ClocksReset, DIV_07)),
-    SignalData("DIV_08",    offsetof(P01_ClocksReset, DIV_08)),
-    SignalData("DIV_09",    offsetof(P01_ClocksReset, DIV_09)),
-    SignalData("DIV_10",    offsetof(P01_ClocksReset, DIV_10)),
-    SignalData("DIV_11",    offsetof(P01_ClocksReset, DIV_11)),
-    SignalData("DIV_12",    offsetof(P01_ClocksReset, DIV_12)),
-    SignalData("DIV_13",    offsetof(P01_ClocksReset, DIV_13)),
-    SignalData("DIV_14",    offsetof(P01_ClocksReset, DIV_14)),
-    SignalData("DIV_15",    offsetof(P01_ClocksReset, DIV_15)),
-    */
-
-    /*
-    SignalData("----------"),
-    SignalData("BARA",       offsetof(P01_ClocksReset, BARA)),
-    SignalData("CARU",       offsetof(P01_ClocksReset, CARU)),
-    SignalData("BYLU",       offsetof(P01_ClocksReset, BYLU)),
-
-    SignalData("----------"),
-    SignalData("ATYK",       offsetof(P01_ClocksReset, ATYK)),
-    SignalData("AVOK",       offsetof(P01_ClocksReset, AVOK)),
-    SignalData("JESO",       offsetof(P01_ClocksReset, JESO)),
-    */
-  };
-}
-#endif
-
-#if 0
-const std::vector<SignalData> P03_Timer::signals() {
-  return
-  {
-    SignalData("-----TAC-----"),
-    SignalData("TAC_0", offsetof(P03_Timer, TAC_0)),
-    SignalData("TAC_1", offsetof(P03_Timer, TAC_1)),
-    SignalData("TAC_2", offsetof(P03_Timer, TAC_2)),
-
-    SignalData("-----TMA-----"),
-    SignalData("TMA_0", offsetof(P03_Timer, TMA_0)),
-    SignalData("TMA_1", offsetof(P03_Timer, TMA_1)),
-    SignalData("TMA_2", offsetof(P03_Timer, TMA_2)),
-    SignalData("TMA_3", offsetof(P03_Timer, TMA_3)),
-    SignalData("TMA_4", offsetof(P03_Timer, TMA_4)),
-    SignalData("TMA_5", offsetof(P03_Timer, TMA_5)),
-    SignalData("TMA_6", offsetof(P03_Timer, TMA_6)),
-    SignalData("TMA_7", offsetof(P03_Timer, TMA_7)),
-
-    SignalData("-----TIMA-----"),
-    SignalData("TIMA_0", offsetof(P03_Timer, TIMA_0)),
-    SignalData("TIMA_1", offsetof(P03_Timer, TIMA_1)),
-    SignalData("TIMA_2", offsetof(P03_Timer, TIMA_2)),
-    SignalData("TIMA_3", offsetof(P03_Timer, TIMA_3)),
-    SignalData("TIMA_4", offsetof(P03_Timer, TIMA_4)),
-    SignalData("TIMA_5", offsetof(P03_Timer, TIMA_5)),
-    SignalData("TIMA_6", offsetof(P03_Timer, TIMA_6)),
-    SignalData("TIMA_7", offsetof(P03_Timer, TIMA_7)),
-
-    SignalData("-----Int-----"),
-    SignalData("NYDU",   offsetof(P03_Timer, NYDU)),
-    SignalData("INT_TIMER",   offsetof(P03_Timer, INT_TIMER)),
-
-    SignalData("-----Clock mux-----"),
-    SignalData("UVYR",   offsetof(P03_Timer, UVYR)),
-    SignalData("UKAP",   offsetof(P03_Timer, UKAP)),
-    SignalData("UBOT",   offsetof(P03_Timer, UBOT)),
-    SignalData("TEKO",   offsetof(P03_Timer, TEKO)),
-    SignalData("TECY",   offsetof(P03_Timer, TECY)),
-    SignalData("SOGU",   offsetof(P03_Timer, SOGU)),
-  };
-}
-#endif
-
-const std::vector<SignalData> sample_signals =
+std::vector<SignalData> sample_signals =
 {
+  SignalData("-----Clocks-----"),
+  SignalData("PHASE_ABCDxxxx1", offsetof(Schematics::Gameboy, sys.PHASE_ABCDxxxx1)),
+  SignalData("PHASE_xBCDExxx1", offsetof(Schematics::Gameboy, sys.PHASE_xBCDExxx1)),
+  SignalData("PHASE_xxCDEFxx1", offsetof(Schematics::Gameboy, sys.PHASE_xxCDEFxx1)),
+  SignalData("PHASE_xxxDEFGx1", offsetof(Schematics::Gameboy, sys.PHASE_xxxDEFGx1)),
+
+  SignalData("chip_out.CS_A", offsetof(Schematics::Gameboy, chip_out.CS_A)),
+  SignalData("chip_out.RD_A", offsetof(Schematics::Gameboy, chip_out.RD_A)),
+  SignalData("chip_out.RD_D", offsetof(Schematics::Gameboy, chip_out.RD_D)),
+  SignalData("chip_out.WR_A", offsetof(Schematics::Gameboy, chip_out.WR_A)),
+  SignalData("chip_out.WR_D", offsetof(Schematics::Gameboy, chip_out.WR_D)),
+
+  SignalData("DO_DMA", offsetof(Schematics::Gameboy, sys.DO_DMA)),
+
+
+  SignalData("vid.CLK_xBxDxFxHa", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHa)),
+  SignalData("vid.CLK_xBxDxFxHb", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHb)),
+  SignalData("vid.CLK_xBxDxFxHc", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHc)),
+  SignalData("vid.CLK_xBxDxFxHd", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHd)),
+  SignalData("vid.CLK_xBxDxFxHe", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHe)),
+
+
+  SignalData("vid.CLK_AxCxExGxa", offsetof(Schematics::Gameboy, vid.CLK_AxCxExGxa)),
+  SignalData("vid.CLK_AxCxExGxb", offsetof(Schematics::Gameboy, vid.CLK_AxCxExGxb)),
+  SignalData("vid.CLK_AxCxExGxc", offsetof(Schematics::Gameboy, vid.CLK_AxCxExGxc)),
+
+
+
+
+
+
+
+  /*
+  SignalData("-----DIV-----"),
+  SignalData("DIV_00",    offsetof(P01_ClocksReset, DIV_00)),
+  SignalData("DIV_01",    offsetof(P01_ClocksReset, DIV_01)),
+  SignalData("DIV_02",    offsetof(P01_ClocksReset, DIV_02)),
+  SignalData("DIV_03",    offsetof(P01_ClocksReset, DIV_03)),
+  SignalData("DIV_04",    offsetof(P01_ClocksReset, DIV_04)),
+  SignalData("DIV_05",    offsetof(P01_ClocksReset, DIV_05)),
+  SignalData("DIV_06",    offsetof(P01_ClocksReset, DIV_06)),
+  SignalData("DIV_07",    offsetof(P01_ClocksReset, DIV_07)),
+  SignalData("DIV_08",    offsetof(P01_ClocksReset, DIV_08)),
+  SignalData("DIV_09",    offsetof(P01_ClocksReset, DIV_09)),
+  SignalData("DIV_10",    offsetof(P01_ClocksReset, DIV_10)),
+  SignalData("DIV_11",    offsetof(P01_ClocksReset, DIV_11)),
+  SignalData("DIV_12",    offsetof(P01_ClocksReset, DIV_12)),
+  SignalData("DIV_13",    offsetof(P01_ClocksReset, DIV_13)),
+  SignalData("DIV_14",    offsetof(P01_ClocksReset, DIV_14)),
+  SignalData("DIV_15",    offsetof(P01_ClocksReset, DIV_15)),
+  */
+
+  /*
+  SignalData("----------"),
+  SignalData("BARA",       offsetof(P01_ClocksReset, BARA)),
+  SignalData("CARU",       offsetof(P01_ClocksReset, CARU)),
+  SignalData("BYLU",       offsetof(P01_ClocksReset, BYLU)),
+
+  SignalData("----------"),
+  SignalData("ATYK",       offsetof(P01_ClocksReset, ATYK)),
+  SignalData("AVOK",       offsetof(P01_ClocksReset, AVOK)),
+  SignalData("JESO",       offsetof(P01_ClocksReset, JESO)),
+  */
+
   //SignalData("RESET",    offsetof(Gameboy, chip.RST)),
   //SignalData("CLKIN_B",  offsetof(Gameboy, chip.CLKIN_B)),
-  SignalData("AJER_2M",  offsetof(Schematics::Gameboy, sys.AJER_2M)),
+  //SignalData("AJER_2M",  offsetof(Schematics::Gameboy, sys.AJER_2M)),
+
+  /*
+  SignalData("-----TAC-----"),
+  SignalData("TAC_0", offsetof(P03_Timer, TAC_0)),
+  SignalData("TAC_1", offsetof(P03_Timer, TAC_1)),
+  SignalData("TAC_2", offsetof(P03_Timer, TAC_2)),
+
+  SignalData("-----TMA-----"),
+  SignalData("TMA_0", offsetof(P03_Timer, TMA_0)),
+  SignalData("TMA_1", offsetof(P03_Timer, TMA_1)),
+  SignalData("TMA_2", offsetof(P03_Timer, TMA_2)),
+  SignalData("TMA_3", offsetof(P03_Timer, TMA_3)),
+  SignalData("TMA_4", offsetof(P03_Timer, TMA_4)),
+  SignalData("TMA_5", offsetof(P03_Timer, TMA_5)),
+  SignalData("TMA_6", offsetof(P03_Timer, TMA_6)),
+  SignalData("TMA_7", offsetof(P03_Timer, TMA_7)),
+
+  SignalData("-----TIMA-----"),
+  SignalData("TIMA_0", offsetof(P03_Timer, TIMA_0)),
+  SignalData("TIMA_1", offsetof(P03_Timer, TIMA_1)),
+  SignalData("TIMA_2", offsetof(P03_Timer, TIMA_2)),
+  SignalData("TIMA_3", offsetof(P03_Timer, TIMA_3)),
+  SignalData("TIMA_4", offsetof(P03_Timer, TIMA_4)),
+  SignalData("TIMA_5", offsetof(P03_Timer, TIMA_5)),
+  SignalData("TIMA_6", offsetof(P03_Timer, TIMA_6)),
+  SignalData("TIMA_7", offsetof(P03_Timer, TIMA_7)),
+
+  SignalData("-----Int-----"),
+  SignalData("NYDU",   offsetof(P03_Timer, NYDU)),
+  SignalData("INT_TIMER",   offsetof(P03_Timer, INT_TIMER)),
+
+  SignalData("-----Clock mux-----"),
+  SignalData("UVYR",   offsetof(P03_Timer, UVYR)),
+  SignalData("UKAP",   offsetof(P03_Timer, UKAP)),
+  SignalData("UBOT",   offsetof(P03_Timer, UBOT)),
+  SignalData("TEKO",   offsetof(P03_Timer, TEKO)),
+  SignalData("TECY",   offsetof(P03_Timer, TECY)),
+  SignalData("SOGU",   offsetof(P03_Timer, SOGU)),
+  */
 };
 
 //-----------------------------------------------------------------------------
 
-#if 1
+#if 0
 
 namespace Schematics {
   void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
@@ -252,8 +275,9 @@ int main(int argc, char** argv) {
   Schematics::Gameboy gbb = {};
   Schematics::Gameboy gbc = {};
 
-  for (int i = 0; i < 10; i++) {
-    gbc.sys.tick(cpu_in, chip_in, gba, gbb, gbc);
+  for (int i = 0; i < 20; i++) {
+    //gbc.sys.tick(cpu_in, chip_in, gba, gbb, gbc);
+    System_tick(cpu_in, chip_in, gba, gbb, gbc);
     printf("diff %d\n", memcmp(&gbb, &gbc, sizeof(Schematics::Gameboy)));
 
     gba = gbb;
@@ -267,7 +291,7 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-#if 0
+#if 1
 int main(int /*argc*/, char** /*argv*/) {
   printf("hello world\n");
 
@@ -295,10 +319,10 @@ int main(int /*argc*/, char** /*argv*/) {
   // Generate trace
 
   const int timer_count = 1024;
-  Gameboy* samples = new Gameboy[timer_count];
-  memset(samples, 0xCD, timer_count * sizeof(Gameboy));
+  Schematics::Gameboy* samples = new Schematics::Gameboy[timer_count];
+  memset(samples, 0xCD, timer_count * sizeof(Schematics::Gameboy));
 
-  Gameboy reset_sample = {};
+  Schematics::Gameboy reset_sample = {};
   reset_sample.timestamp = -1;
 
   uint64_t timeA = SDL_GetPerformanceCounter();
@@ -410,10 +434,10 @@ int main(int /*argc*/, char** /*argv*/) {
       int cursor = (int)floor(center);
       if (cursor > 0) {
         printf("debugging sample %d\n", cursor);
-        Gameboy sampleA = samples[cursor-1];
-        Gameboy sampleB = samples[cursor];
+        Schematics::Gameboy sampleA = samples[cursor-1];
+        Schematics::Gameboy sampleB = samples[cursor];
 
-        Gameboy temp = {};
+        Schematics::Gameboy temp = {};
         step_forwards(sampleA, temp);
       }
 
@@ -437,7 +461,7 @@ int main(int /*argc*/, char** /*argv*/) {
 
     render_labels(tp, 100, 16, sample_signals, 0);
 
-    tv.render(samples, sizeof(Gameboy), timer_count, sample_signals, center, span);
+    tv.render(samples, sizeof(Schematics::Gameboy), timer_count, sample_signals, center, span);
 
     std::string temp;
     temp.clear();

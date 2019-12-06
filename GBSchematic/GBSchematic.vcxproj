@@ -72,6 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <CustomBuildBeforeTargets>Compile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -109,6 +110,19 @@
       <AdditionalDependencies>SDL2.lib;SDL2Main.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\SDL2\lib\x64</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>../../Metron/x64/Debug/Metron.exe</Command>
+    </CustomBuildStep>
+    <CustomBuild>
+      <Command>C:\Users\aappl\Desktop\Metron\x64\Debug\Metron.exe %(FullPath) -o %(Filename).mtr --</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>Running Metron</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <LinkObjects>false</LinkObjects>
+      <Outputs>%(Filename).mtr</Outputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -179,8 +193,20 @@
   <ItemGroup>
     <ClCompile Include="..\src\TextPainter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="models\Gameboy.cpp" />
+    <CustomBuild Include="models\System.cpp" />
+    <CustomBuild Include="models\Regs.cpp" />
+    <CustomBuild Include="models\PixelPipe.cpp" />
     <ClCompile Include="pages\Schematics.cpp" />
     <ClCompile Include="pages\Sch_ApuControl.cpp" />
+    <ClCompile Include="pages\Sch_Bootrom.cpp" />
+    <ClCompile Include="pages\Sch_Debug.cpp" />
+    <ClCompile Include="pages\Sch_DMA.cpp" />
+    <ClCompile Include="pages\Sch_Interrupts.cpp" />
+    <ClCompile Include="pages\Sch_Joypad.cpp" />
+    <ClCompile Include="pages\Sch_Pins.cpp" />
+    <ClCompile Include="pages\Sch_Serial.cpp" />
+    <ClCompile Include="pages\Sch_Timer.cpp" />
     <ClCompile Include="pages\Sch_Video.cpp" />
     <ClCompile Include="pages\Sch_Channel1.cpp" />
     <ClCompile Include="pages\Sch_Channel2.cpp" />
@@ -195,8 +221,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\TextPainter.h" />
+    <ClInclude Include="models\Gameboy.h" />
+    <ClInclude Include="models\PixelPipe.h" />
+    <ClInclude Include="models\Regs.h" />
+    <ClInclude Include="models\System.h" />
     <ClInclude Include="pages\Schematics.h" />
     <ClInclude Include="pages\Sch_ApuControl.h" />
+    <ClInclude Include="pages\Sch_Joypad.h" />
+    <ClInclude Include="pages\Sch_Timer.h" />
     <ClInclude Include="pages\Sch_Video.h" />
     <ClInclude Include="pages\Sch_Channel1.h" />
     <ClInclude Include="pages\Sch_Channel2.h" />

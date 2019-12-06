@@ -101,7 +101,7 @@ struct CpuOut {
   //----------
   // top left port
 
-  bool CPU_CLK1;       // PORTD_01: <- P01.BOWA abcde___
+  bool CLK_xBCDEFGH;   // PORTD_01: <- P01.BOWA
   bool BEDO;           // PORTD_02: <- P01.BEDO _____fgh
 
   bool BEKO;           // PORTD_03: <- P01.BEKO ____efgh connection not indicated on P01

@@ -21,17 +21,17 @@ void Channel1_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& qa
   wire ZERO     = chip_in.P10_B;
   wire RESET    = qb.apu.APU_RESET1;
 
-  wire aCLK_2M  = qa.sys.AJER_2M;
-  wire bCLK_2M  = qb.sys.AJER_2M;
+  wire aCLK_2M  = qa.apu.AJER_2M;
+  wire bCLK_2M  = qb.apu.AJER_2M;
 
-  wire aCLK_1M  = qa.sys.CPUCLK_xxxxEFGH9;
-  wire bCLK_1M  = qb.sys.CPUCLK_xxxxEFGH9;
+  wire aCLK_1M  = qa.sys.PHASE_ABCDxxxx7c;
+  wire bCLK_1M  = qb.sys.PHASE_ABCDxxxx7c;
 
-  wire aCLK_512 = qa.sys.CLK_512a;
-  wire bCLK_512 = qb.sys.CLK_512a;
+  wire aCLK_512 = qa.apu.CLK_512a;
+  wire bCLK_512 = qb.apu.CLK_512a;
 
-  wire bCLK_256 = qb.sys.CLK_256a;
-  wire bCLK_128 = qb.sys.CLK_128a;
+  wire bCLK_256 = qb.apu.CLK_256a;
+  wire bCLK_128 = qb.apu.CLK_128a;
 
   wire CPU_RD   = qb.sys.CPU_RD;
   wire CPU_WR   = qb.sys.CPU_WR;
@@ -53,8 +53,8 @@ void Channel1_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& qa
   wire D6 = qb.D6;
   wire D7 = qb.D7;
 
-  bool DBG_APU = qb.apu.DBG_APU;
-  wire DBG_SWEEP = qb.apu.DBG_SWEEP;
+  bool DBG_APU = qb.apu.NR52_DBG_APU;
+  wire DBG_SWEEP = qb.apu.NR52_DBG_SWEEP;
 
   //----------
   // Outputs

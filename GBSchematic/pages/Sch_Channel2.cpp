@@ -11,7 +11,7 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   (void)chip_in;
   (void)cpu_in;
 
-  /*p15.AZEG*/ c.ch2.AZEG = not(b.sys.CLK_xBxDxFxH1);
+  /*p15.AZEG*/ c.ch2.AZEG = not(b.apu.CLK_xBxDxFxH1);
 
   /*p14.HUDE*/ c.ch2.APU_RESETn1 = not(b.apu.APU_RESET1);
 
@@ -73,7 +73,7 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   // FF18 NR23
 
   /*p14.FOGE*/ c.ch2.FOGE = not(b.apu.CPU_RDn);
-  /*p14.FAPE*/ c.ch2.FAPE = and(b.ch2.FOGE, b.apu.DBG_APU);
+  /*p14.FAPE*/ c.ch2.FAPE = and(b.ch2.FOGE, b.apu.NR52_DBG_APU);
 
   /*p14.GOTE*/ c.ch2.GOTE = not(b.apu.ADDR_FF19);
   /*p14.HYPO*/ c.ch2.HYPO = or(b.ch2.GOTE, b.ch2.FAPE);
@@ -176,7 +176,7 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
 
   //----------
 
-  /*p15.HOTA*/ c.ch2.HOTA = not(b.sys.CLK_128a);
+  /*p15.HOTA*/ c.ch2.HOTA = not(b.apu.CLK_128a);
   /*p15.JYNA*/ c.ch2.JYNA = tock_pos(a.ch2.HOTA, b.ch2.HOTA, b.ch2.KATY, b.ch2.JYNA, !b.ch2.JYNA);
   /*p15.KYLO*/ c.ch2.KYLO = not(b.ch2.JYNA);
   /*p15.KENE*/ c.ch2.KENE = not(b.ch2.KYLO);
@@ -184,9 +184,9 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   /*p15.JONA*/ c.ch2.JONA = count_pos(a.ch2.JORE, b.ch2.JORE, b.ch2.JAKE, b.ch2.JONA, !b.ch2.NR22_ENV_TIMER1);
   /*p15.JEVY*/ c.ch2.JEVY = count_pos(a.ch2.JONA, b.ch2.JONA, b.ch2.JAKE, b.ch2.JEVY, !b.ch2.NR22_ENV_TIMER2);
   /*p15.KYVO*/ c.ch2.KYVO = and(!b.ch2.JORE, b.ch2.JONA, b.ch2.JEVY);
-  /*p15.JOPA*/ c.ch2.JOPA = tock_pos(a.sys.CLK_512a, b.sys.CLK_512a, b.ch2.HAFE, b.ch2.JOPA, b.ch2.KYVO);
+  /*p15.JOPA*/ c.ch2.JOPA = tock_pos(a.apu.CLK_512a, b.apu.CLK_512a, b.ch2.HAFE, b.ch2.JOPA, b.ch2.KYVO);
   /*p15.HEPO*/ c.ch2.HEPO = tock_pos(a.ch2.JOPA,     b.ch2.JOPA,     b.ch2.HYPA, b.ch2.HEPO, b.ch2.GUFY);
-  /*p15.DOPE*/ c.ch2.DOPE = tock_pos(a.sys.CPUCLK_xxxxEFGH9, b.sys.CPUCLK_xxxxEFGH9, b.ch2.CYWU, b.ch2.DOPE, b.ch2.NR24_START);
+  /*p15.DOPE*/ c.ch2.DOPE = tock_pos(a.sys.PHASE_ABCDxxxx7c, b.sys.PHASE_ABCDxxxx7c, b.ch2.CYWU, b.ch2.DOPE, b.ch2.NR24_START);
   /*p15.DERA*/ c.ch2.DERA = nor(b.apu.APU_RESET1, b.ch2.DOPE);
   /*p15.DALA*/ c.ch2.DALA = or(b.ch2.CELO, b.ch2.DOPE);
   /*p15.CELO*/ c.ch2.CELO = not(b.ch2.DOXA);
@@ -199,7 +199,7 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   /*p15.CAZA*/ c.ch2.CAZA = tock_pos(a.ch2.CEMO, b.ch2.CEMO, b.ch2.CEXE, b.ch2.CAZA, b.ch2.DORY);
   /*p15.BYHO*/ c.ch2.BYHO = not(b.ch2.BUWE);
 
-  /*p15.DEME*/ c.ch2.DEME = or(b.ch2.CYRE, b.sys.CLK_256a, b.ch2.NR24_STOP);
+  /*p15.DEME*/ c.ch2.DEME = or(b.ch2.CYRE, b.apu.CLK_256a, b.ch2.NR24_STOP);
   /*p15.DORA*/ c.ch2.DORA = and(b.ch2.CYRE, b.ch2.NR24_STOP);
   /*p15.FUTE*/ c.ch2.CH2_AMP_ENn = nor(b.ch2.FF17_D3,b.ch2.FF17_D4,b.ch2.FF17_D5,b.ch2.FF17_D6,b.ch2.FF17_D7);
   /*p15.DYRO*/ c.ch2.DYRO = not(b.ch2.DEME);
@@ -221,7 +221,7 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   /*p15.CYRE*/ c.ch2.CYRE    = tock_pos(!a.ch2.AKYD_05,  !b.ch2.AKYD_05, b.ch2.BENY, b.ch2.CYRE,    !b.ch2.CYRE);
 
   /*p15.GADE*/ c.ch2.GADE = not(b.ch2.JOPA);
-  /*p15.HOLY*/ c.ch2.HOLY = nor(b.sys.CLK_512a, b.ch2.GADE);
+  /*p15.HOLY*/ c.ch2.HOLY = nor(b.apu.CLK_512a, b.ch2.GADE);
   /*p15.JUPU*/ c.ch2.JUPU = nor(b.ch2.NR22_ENV_TIMER0, b.ch2.NR22_ENV_TIMER1, b.ch2.NR22_ENV_TIMER2);
   /*p15.HOFO*/ c.ch2.HOFO = or(b.ch2.JOPA, b.ch2.JUPU, b.ch2.JEME);
   /*p15.HAFE*/ c.ch2.HAFE = or(b.ch2.HOLY, b.ch2.ELOX, b.apu.APU_RESET1);
@@ -249,7 +249,7 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
 
   /*p15.DOME*/ c.ch2.DOME = tock_pos(a.ch2.DAVU, b.ch2.DAVU, b.apu.APU_RESETn2, b.ch2.DOME, b.ch2.EXES);
   /*p15.CYSE*/ c.ch2.CYSE = and(b.ch2.DANE, b.ch2.DOME);
-  /*p15.BONU*/ c.ch2.BONU = or(b.ch2.CYSE, b.apu.DBG_APU);
+  /*p15.BONU*/ c.ch2.BONU = or(b.ch2.CYSE, b.apu.NR52_DBG_APU);
   /*p15.FOPY*/ c.ch2.FOPY = amux2(b.ch2.FOMY, b.ch2.FF17_D3, !b.ch2.FOMY, !b.ch2.FF17_D3);
   /*p15.ETUP*/ c.ch2.ETUP = amux2(b.ch2.FETE, b.ch2.FF17_D3, !b.ch2.FETE, !b.ch2.FF17_D3);
   /*p15.FARU*/ c.ch2.FARU = amux2(b.ch2.FENO, b.ch2.FF17_D3, !b.ch2.FENO, !b.ch2.FF17_D3);

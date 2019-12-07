@@ -41,9 +41,9 @@ void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gam
   //----------
 
   /*p01.ZAXY*/ wire ZAXY_AxCxExGx = not(b.apu.CLK_xBxDxFxH4);
-  /*p01.ZEME*/ c.sys.CLK_xBxDxFxH2  = not(ZAXY_AxCxExGx); // sprites, video
-  /*p01.ALET*/ c.sys.CLK_AxCxExGx4  = not(b.sys.CLK_xBxDxFxH2); // sprites, video
-  /*p01.LAPE*/ c.sys.CLK_xBxDxFxH5  = not(b.sys.CLK_AxCxExGx4); // video
+  /*p01.ZEME*/ c.sys.CLK_xBxDxFxH2  = not(ZAXY_AxCxExGx);
+  /*p01.ALET*/ c.sys.CLK_AxCxExGx4  = not(b.sys.CLK_xBxDxFxH2);
+  /*p01.LAPE*/ c.sys.CLK_xBxDxFxH5  = not(b.sys.CLK_AxCxExGx4);
   
   /*p27.MOXE*/ c.vid.CLK_xBxDxFxHa = not(b.sys.CLK_AxCxExGx4);
   /*p27.MEHE*/ c.vid.CLK_xBxDxFxHb = not(b.sys.CLK_AxCxExGx4);
@@ -60,7 +60,6 @@ void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gam
 
   /*p21.VENA*/ c.vid.CLK_AxxxxFGHa = tock_pos(!a.vid.CLK_AxxDExxHa, !b.vid.CLK_AxxDExxHa, b.sys.VID_RESETn1, b.vid.CLK_AxxxxFGHa, !b.vid.CLK_AxxxxFGHa);
   /*p21.TALU*/ c.vid.CLK_AxxxxFGHb = not(!b.vid.CLK_AxxxxFGHa);
-  /*p21.SONO*/ c.vid.CLK_xBCDExxxa = not(b.vid.CLK_AxxxxFGHb);
 
   //----------
   // x counter. this is a little weird, presumably because it can tick at 4 mhz but not always?
@@ -153,6 +152,7 @@ void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gam
   /*p21.TEBO*/ c.vid.CNT_083n = nand(b.vid.CNT_6,  b.vid.CNT_4n, b.vid.CNT_4,  b.vid.CNT_6n, b.vid.CNT_2n, b.vid.CNT_1,  b.vid.CNT_0);  // 1010011 == 83
   /*p21.SANU*/ c.vid.CNT_113n = nand(b.vid.CNT_6, b.vid.CNT_5, b.vid.CNT_4, b.vid.CNT_0);
 
+  /*p21.SONO*/ c.vid.CLK_xBCDExxxa = not(b.vid.CLK_AxxxxFGHb);
   /*p21.RUTU*/ c.vid.LINE_DONEn = tock_pos(a.vid.CLK_xBCDExxxa, b.vid.CLK_xBCDExxxa, b.sys.VID_RESETn2, b.vid.LINE_DONEn, b.vid.CNT_113n);
 
   // so this is like a strobe that fires 4x per line
@@ -567,8 +567,12 @@ void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gam
   //----------
 
   // guess
-  /*p25.TUJA*/ c.vid.CPU_VRAM_WR  = and (b.vid.ADDR_VRAM, b.sys.CPU_WR_xxxxEFGx);
-  /*p25.TEGU*/ c.vid.CPU_VRAM_CLK = nand(b.vid.ADDR_VRAM, b.sys.PHASE_xxxxEFGx3);
+  {
+    /*p01.AREV*/ wire AREV = nand(cpu_in.CPU_RAW_WR, b.sys.PHASE_xxxxEFGx3);
+    /*p01.APOV*/ wire CPU_WR_xxxxEFGx  = not(AREV);
+    /*p25.TUJA*/ c.vid.CPU_VRAM_WR  = and (b.vid.ADDR_VRAM, CPU_WR_xxxxEFGx);
+    /*p25.TEGU*/ c.vid.CPU_VRAM_CLK = nand(b.vid.ADDR_VRAM, b.sys.PHASE_xxxxEFGx3);
+  }
 
   /*p25.TEFY*/ c.vid.MCS_Cn = not(chip_in.MCS_C);
   /*p25.SUDO*/ c.vid.MWR_Cn = not(chip_in.MWR_C);
@@ -577,12 +581,11 @@ void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gam
   /*p25.ROPY*/ wire RENDERINGo = not(b.vid.RENDERING);
 
   {
-    /*p25.TUCA*/ c.vid.CPU_VRAM_RD  = and (b.vid.ADDR_VRAM, b.sys.ADDR_VALID_ABxxxxxx);
-    /*p25.TOLE*/ c.vid.CPU_VRAM_RD2  = mux2(b.vid.MCS_Cn, b.vid.CPU_VRAM_RD , b.vid.DBG_TUTO);
-    /*p25.SERE*/ c.vid.SERE = and(b.vid.CPU_VRAM_RD2,   RENDERINGo);
+    /*p25.TUCA*/ wire CPU_VRAM_RD  = and (b.vid.ADDR_VRAM, b.sys.ADDR_VALID_ABxxxxxx);
+    /*p25.TOLE*/ wire CPU_VRAM_RD2 = mux2(b.vid.MCS_Cn, CPU_VRAM_RD , b.vid.DBG_TUTO);
+    /*p25.SERE*/ c.vid.SERE = and(CPU_VRAM_RD2, RENDERINGo);
   }
 
-  /*p25.TYJY*/ c.vid.CPU_VRAM_WR2  = mux2(b.vid.MWR_Cn, b.vid.CPU_VRAM_WR , b.vid.DBG_TUTO);
   /*p25.SALE*/ c.vid.CPU_VRAM_CLK2 = mux2(b.vid.MOE_Cn, b.vid.CPU_VRAM_CLK, b.vid.DBG_TUTO);
 
   /*p25.RUVY*/ c.vid.CPU_VRAM_CLK2n = not(b.vid.CPU_VRAM_CLK2);
@@ -594,55 +597,61 @@ void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gam
   /*p25.ROCY*/ c.vid.MD_OUTe = and(b.vid.MD_OUTd, b.vid.MD_OUTc);
   /*p25.RAHU*/ c.vid.D_TO_MD = not(b.vid.MD_OUTe);
 
-  /*p25.RELA*/ c.vid.MD_OUTb = or(b.vid.MD_OUTc, b.vid.MD_OUTd);
-  /*p25.RENA*/ c.vid.MD_IN   = not(b.vid.MD_OUTb);
+  {
+    /*p25.RELA*/ wire MD_OUTb = or(b.vid.MD_OUTc, b.vid.MD_OUTd);
+    /*p25.RENA*/ wire MD_IN   = not(MD_OUTb);
 
-  /*p25.ROFA*/ c.chip_out.MD0_B = not(b.vid.MD_IN);
-  /*p25.ROFA*/ c.chip_out.MD1_B = not(b.vid.MD_IN);
-  /*p25.ROFA*/ c.chip_out.MD2_B = not(b.vid.MD_IN);
-  /*p25.ROFA*/ c.chip_out.MD3_B = not(b.vid.MD_IN);
-  /*p25.ROFA*/ c.chip_out.MD4_B = not(b.vid.MD_IN);
-  /*p25.ROFA*/ c.chip_out.MD5_B = not(b.vid.MD_IN);
-  /*p25.ROFA*/ c.chip_out.MD6_B = not(b.vid.MD_IN);
-  /*p25.ROFA*/ c.chip_out.MD7_B = not(b.vid.MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD0_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD1_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD2_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD3_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD4_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD5_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD6_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD7_B = not(MD_IN);
+
+    /*p25.RODY*/ if (MD_IN) c.MD0 = chip_in.MD0_C;
+    /*p25.REBA*/ if (MD_IN) c.MD1 = chip_in.MD1_C;
+    /*p25.RYDO*/ if (MD_IN) c.MD2 = chip_in.MD2_C;
+    /*p25.REMO*/ if (MD_IN) c.MD3 = chip_in.MD3_C;
+    /*p25.ROCE*/ if (MD_IN) c.MD4 = chip_in.MD4_C;
+    /*p25.ROPU*/ if (MD_IN) c.MD5 = chip_in.MD5_C;
+    /*p25.RETA*/ if (MD_IN) c.MD6 = chip_in.MD6_C;
+    /*p25.RAKU*/ if (MD_IN) c.MD7 = chip_in.MD7_C;
+  }
 
 
+  {
+    /*p25.SUTU*/     c.vid.MCS = nor(b.vid.LONYb, b.sys.VRAM_TO_OAMn, b.spr.SPRITE_READn, b.vid.SERE);
+    /*p25.TODE*/   c.vid.MCS_An = and(b.vid.MCS, b.vid.DBG_TUTOn);
+    /*p25.SEWO*/   c.vid.MCS_Dn = or(b.vid.MCS, b.vid.DBG_TUTO);
+    /*p25.SOKY*/ c.chip_out.MCS_A = not(b.vid.MCS_An);
+    /*p25.SETY*/ c.chip_out.MCS_D = not(b.vid.MCS_Dn);
+  }
 
+  {
+    /*p25.TYJY*/       c.vid.CPU_VRAM_WR2  = mux2(b.vid.MWR_Cn, b.vid.CPU_VRAM_WR , b.vid.DBG_TUTO);
+    /*p25.SOHY*/     c.vid.MWR = nand(b.vid.CPU_VRAM_WR2, b.vid.SERE);
+    /*p25.TAXY*/   c.vid.MWR_An = and(b.vid.MWR, b.vid.DBG_TUTOn);
+    /*p25.SOFY*/   c.vid.MWR_Dn = or(b.vid.MWR, b.vid.DBG_TUTO);
+    /*p25.SYSY*/ c.chip_out.MWR_A = not(b.vid.MWR_An);
+    /*p25.RAGU*/ c.chip_out.MWR_D = not(b.vid.MWR_Dn);
+  }
 
-
-  /*p25.SOKY*/ c.chip_out.MCS_A = not(b.vid.MCS_An);
-  /*p25.SETY*/ c.chip_out.MCS_D = not(b.vid.MCS_Dn);
-  /*p25.TODE*/   c.vid.MCS_An = and(b.vid.MCS, b.vid.DBG_TUTOn);
-  /*p25.SEWO*/   c.vid.MCS_Dn = or(b.vid.MCS, b.vid.DBG_TUTO);
-  /*p25.SUTU*/     c.vid.MCS = nor(b.vid.LONYb, b.sys.VRAM_TO_OAMn, b.spr.SPRITE_READn, b.vid.SERE);
-
-  /*p25.SYSY*/ c.chip_out.MWR_A = not(b.vid.MWR_An);
-  /*p25.RAGU*/ c.chip_out.MWR_D = not(b.vid.MWR_Dn);
-  /*p25.TAXY*/   c.vid.MWR_An = and(b.vid.MWR, b.vid.DBG_TUTOn);
-  /*p25.SOFY*/   c.vid.MWR_Dn = or(b.vid.MWR, b.vid.DBG_TUTO);
-  /*p25.SOHY*/     c.vid.MWR = nand(b.vid.CPU_VRAM_WR2, b.vid.SERE);
-
-  /*p25.REFO*/ c.chip_out.MOE_A = not(b.vid.MOE_An);
-  /*p25.SAHA*/ c.chip_out.MOE_D = not(b.vid.MOE_Dn);
-  /*p25.SEMA*/   c.vid.MOE_An    = and(b.vid.MOE, b.vid.DBG_TUTOn);
-  /*p25.RUTE*/   c.vid.MOE_Dn    = or(b.vid.MOE, b.vid.DBG_TUTO); // schematic wrong, second input is RACU
-  /*p25.RACU*/     c.vid.MOE = and(b.vid.RYLU, b.vid.RAWA, b.vid.MYMA, b.vid.VRAM_TO_OAM);
-  /*p25.RYLU*/       c.vid.RYLU = nand(b.vid.CPU_VRAM_CLK2, b.vid.RENDERINGn);
-  /*p25.RAWA*/       c.vid.RAWA = not(b.vid.SOHO);
-  /*p25.SOHO*/         c.vid.SOHO = and(b.spr.SEQ_5_TRIG, b.spr.SPRITE_READn);
-  /*p27.MYMA*/       c.vid.MYMA = not(b.vid.LONY);
-  /*p25.APAM*/       c.vid.VRAM_TO_OAM = not(b.sys.VRAM_TO_OAMn);
+  {
+    /*p25.REFO*/ c.chip_out.MOE_A = not(b.vid.MOE_An);
+    /*p25.SAHA*/ c.chip_out.MOE_D = not(b.vid.MOE_Dn);
+    /*p25.SEMA*/   c.vid.MOE_An    = and(b.vid.MOE, b.vid.DBG_TUTOn);
+    /*p25.RUTE*/   c.vid.MOE_Dn    = or(b.vid.MOE, b.vid.DBG_TUTO); // schematic wrong, second input is RACU
+    /*p25.RACU*/     c.vid.MOE = and(b.vid.RYLU, b.vid.RAWA, b.vid.MYMA, b.vid.VRAM_TO_OAM);
+    /*p25.RYLU*/       c.vid.RYLU = nand(b.vid.CPU_VRAM_CLK2, b.vid.RENDERINGn);
+    /*p25.RAWA*/       c.vid.RAWA = not(b.vid.SOHO);
+    /*p25.SOHO*/         c.vid.SOHO = and(b.spr.SEQ_5_TRIG, b.spr.SPRITE_READn);
+    /*p27.MYMA*/       c.vid.MYMA = not(b.vid.LONY);
+    /*p25.APAM*/       c.vid.VRAM_TO_OAM = not(b.sys.VRAM_TO_OAMn);
+  }
 
   //----------
-
-  /*p25.RODY*/ if (b.vid.MD_IN) c.MD0 = chip_in.MD0_C;
-  /*p25.REBA*/ if (b.vid.MD_IN) c.MD1 = chip_in.MD1_C;
-  /*p25.RYDO*/ if (b.vid.MD_IN) c.MD2 = chip_in.MD2_C;
-  /*p25.REMO*/ if (b.vid.MD_IN) c.MD3 = chip_in.MD3_C;
-  /*p25.ROCE*/ if (b.vid.MD_IN) c.MD4 = chip_in.MD4_C;
-  /*p25.ROPU*/ if (b.vid.MD_IN) c.MD5 = chip_in.MD5_C;
-  /*p25.RETA*/ if (b.vid.MD_IN) c.MD6 = chip_in.MD6_C;
-  /*p25.RAKU*/ if (b.vid.MD_IN) c.MD7 = chip_in.MD7_C;
 
   //----------
   // more debug stuff
@@ -675,30 +684,6 @@ void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gam
   /*p25.RUJO*/ if (b.vid.D_TO_MD) c.MD5 = b.D5;
   /*p25.TOFA*/ if (b.vid.D_TO_MD) c.MD6 = b.D6;
   /*p25.SUZA*/ if (b.vid.D_TO_MD) c.MD7 = b.D7;
-
-  /*p25.RURA*/ c.chip_out.MD0_D = not(/*p25.SYNU*/ or(b.vid.D_TO_MD, b.MD0));
-  /*p25.RULY*/ c.chip_out.MD1_D = not(/*p25.SYMA*/ or(b.vid.D_TO_MD, b.MD1));
-  /*p25.RARE*/ c.chip_out.MD2_D = not(/*p25.ROKO*/ or(b.vid.D_TO_MD, b.MD2));
-  /*p25.RODU*/ c.chip_out.MD3_D = not(/*p25.SYBU*/ or(b.vid.D_TO_MD, b.MD3));
-  /*p25.RUBE*/ c.chip_out.MD4_D = not(/*p25.SAKO*/ or(b.vid.D_TO_MD, b.MD4));
-  /*p25.RUMU*/ c.chip_out.MD5_D = not(/*p25.SEJY*/ or(b.vid.D_TO_MD, b.MD5));
-  /*p25.RYTY*/ c.chip_out.MD6_D = not(/*p25.SEDO*/ or(b.vid.D_TO_MD, b.MD6));
-  /*p25.RADY*/ c.chip_out.MD7_D = not(/*p25.SAWU*/ or(b.vid.D_TO_MD, b.MD7));
-
-  //----------
-
-  //----------
-
-  /*p25.ROVE*/ c.vid.D_TO_MDn = not(b.vid.D_TO_MD);
-
-  /*p25.REGE*/ c.chip_out.MD0_A = not(/*p25.SEFA*/ and(b.MD0, b.vid.D_TO_MDn));
-  /*p25.RYKY*/ c.chip_out.MD1_A = not(/*p25.SOGO*/ and(b.MD1, b.vid.D_TO_MDn));
-  /*p25.RAZO*/ c.chip_out.MD2_A = not(/*p25.SEFU*/ and(b.MD2, b.vid.D_TO_MDn));
-  /*p25.RADA*/ c.chip_out.MD3_A = not(/*p25.SUNA*/ and(b.MD3, b.vid.D_TO_MDn));
-  /*p25.RYRO*/ c.chip_out.MD4_A = not(/*p25.SUMO*/ and(b.MD4, b.vid.D_TO_MDn));
-  /*p25.REVU*/ c.chip_out.MD5_A = not(/*p25.SAZU*/ and(b.MD5, b.vid.D_TO_MDn));
-  /*p25.REKU*/ c.chip_out.MD6_A = not(/*p25.SAMO*/ and(b.MD6, b.vid.D_TO_MDn));
-  /*p25.RYZE*/ c.chip_out.MD7_A = not(/*p25.SUKE*/ and(b.MD7, b.vid.D_TO_MDn));
 
   //----------
 

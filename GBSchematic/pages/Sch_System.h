@@ -71,8 +71,6 @@ struct System {
 
   /*p01.AFAS*/ bool PHASE_xxxxEFGx3; // sys, vid
 
-  /*p01.BUKE*/ bool PHASE_AxxxxxGH6; // ch3, PORTD_06?
-
   /*p01.UVYT*/ bool PHASE_ABCDxxxx7b; // sys
   /*p01.DOVA*/ bool PHASE_ABCDxxxx7c; // apu
 
@@ -124,7 +122,6 @@ struct System {
   //----------
   // Gated rd/wr signals
 
-  /*p01.APOV*/ bool CPU_WR_xxxxEFGx;
   /*p01.ABUZ*/ bool ADDR_VALID_ABxxxxxx;
 
   /*p01.ULUR*/ bool DIV_06_CLK;

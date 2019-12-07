@@ -345,7 +345,6 @@ struct Video {
   /*p25.BYCU*/ bool OAM_IN_CLK;
   /*p25.TEFA*/ bool TEFA;
   /*p25.SOSE*/ bool ADDR_VRAM;
-  /*p25.TUCA*/ bool CPU_VRAM_RD;
   /*p25.TUJA*/ bool CPU_VRAM_WR;
   /*p25.TEGU*/ bool CPU_VRAM_CLK;
   /*p25.TAVY*/ bool MOE_Cn;
@@ -355,16 +354,13 @@ struct Video {
   /*p25.SUDO*/ bool MWR_Cn;
   /*p25.TEFY*/ bool MCS_Cn;
 
-  /*p25.TOLE*/ bool CPU_VRAM_RD2;
   /*p25.TYJY*/ bool CPU_VRAM_WR2;
   /*p25.SALE*/ bool CPU_VRAM_CLK2;
 
-  /*p25.RENA*/ bool MD_IN;
   /*p25.RYJE*/ bool MD_INb;
   /*p25.RAHU*/ bool D_TO_MD;
 
   /*p25.ROFA*/ bool MD_OUT;
-  /*p25.RELA*/ bool MD_OUTb;
   /*p25.REVO*/ bool MD_OUTc;
   /*p25.SAZO*/ bool MD_OUTd;
   /*p25.ROCY*/ bool MD_OUTe;

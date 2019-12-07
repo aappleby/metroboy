@@ -10,6 +10,30 @@ namespace Schematics {
 
 void Pins_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
+  /*p25.RURA*/ c.chip_out.MD0_D = not(/*p25.SYNU*/ or(b.vid.D_TO_MD, b.MD0));
+  /*p25.RULY*/ c.chip_out.MD1_D = not(/*p25.SYMA*/ or(b.vid.D_TO_MD, b.MD1));
+  /*p25.RARE*/ c.chip_out.MD2_D = not(/*p25.ROKO*/ or(b.vid.D_TO_MD, b.MD2));
+  /*p25.RODU*/ c.chip_out.MD3_D = not(/*p25.SYBU*/ or(b.vid.D_TO_MD, b.MD3));
+  /*p25.RUBE*/ c.chip_out.MD4_D = not(/*p25.SAKO*/ or(b.vid.D_TO_MD, b.MD4));
+  /*p25.RUMU*/ c.chip_out.MD5_D = not(/*p25.SEJY*/ or(b.vid.D_TO_MD, b.MD5));
+  /*p25.RYTY*/ c.chip_out.MD6_D = not(/*p25.SEDO*/ or(b.vid.D_TO_MD, b.MD6));
+  /*p25.RADY*/ c.chip_out.MD7_D = not(/*p25.SAWU*/ or(b.vid.D_TO_MD, b.MD7));
+
+  //----------
+
+  //----------
+
+  /*p25.ROVE*/ c.vid.D_TO_MDn = not(b.vid.D_TO_MD);
+
+  /*p25.REGE*/ c.chip_out.MD0_A = not(/*p25.SEFA*/ and(b.MD0, b.vid.D_TO_MDn));
+  /*p25.RYKY*/ c.chip_out.MD1_A = not(/*p25.SOGO*/ and(b.MD1, b.vid.D_TO_MDn));
+  /*p25.RAZO*/ c.chip_out.MD2_A = not(/*p25.SEFU*/ and(b.MD2, b.vid.D_TO_MDn));
+  /*p25.RADA*/ c.chip_out.MD3_A = not(/*p25.SUNA*/ and(b.MD3, b.vid.D_TO_MDn));
+  /*p25.RYRO*/ c.chip_out.MD4_A = not(/*p25.SUMO*/ and(b.MD4, b.vid.D_TO_MDn));
+  /*p25.REVU*/ c.chip_out.MD5_A = not(/*p25.SAZU*/ and(b.MD5, b.vid.D_TO_MDn));
+  /*p25.REKU*/ c.chip_out.MD6_A = not(/*p25.SAMO*/ and(b.MD6, b.vid.D_TO_MDn));
+  /*p25.RYZE*/ c.chip_out.MD7_A = not(/*p25.SUKE*/ and(b.MD7, b.vid.D_TO_MDn));
+
   //----------
   // Address pin driver
 

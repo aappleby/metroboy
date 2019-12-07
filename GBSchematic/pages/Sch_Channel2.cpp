@@ -26,108 +26,139 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   //----------
   // FF16 NR21
 
-  /*p14.BYGO*/ c.ch2.BYGO = not(b.apu.CPU_RDn);
-  /*p14.CORO*/ c.ch2.CORO = nand(b.apu.ADDR_FF16, b.ch2.BYGO);
-  /*p14.AGYN*/ c.ch2.FF16_WR = nand(b.apu.APU_WR, b.apu.ADDR_FF16); // FF16_WR
-  /*p14.ASYP*/ c.ch2.ASYP = not(b.ch2.FF16_WR);
-  /*p14.BENY*/ c.ch2.BENY = nor(b.ch2.ASYP, b.apu.APU_RESET1, b.ch2.ELOX);
-  /*p14.BACU*/ c.ch2.BACU = and(b.apu.ADDR_FF16, b.apu.APU_WR);
-  /*p14.BUDU*/ c.ch2.BUDU = not(b.ch2.BACU);
+  {
+    /*p10.DAZA*/ wire ADDR_0110an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx0);
+    /*p10.COVY*/ wire ADDR_FF16  = nor(b.apu.ADDR_FF1Xn, ADDR_0110an);
 
-  /*p14.BERA*/ c.ch2.NR21_DUTY0 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, b.apu.APU_RESETn2, b.ch2.NR21_DUTY0, b.D6);
-  /*p14.BAMY*/ c.ch2.NR21_DUTY1 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, b.apu.APU_RESETn2, b.ch2.NR21_DUTY1, b.D7);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);
+    /*p14.BYGO*/ c.ch2.BYGO = not(CPU_RDn);
+    /*p14.CORO*/ c.ch2.CORO = nand(ADDR_FF16, b.ch2.BYGO);
+    /*p14.AGYN*/ c.ch2.FF16_WR = nand(b.apu.APU_WR, ADDR_FF16); // FF16_WR
+    /*p14.ASYP*/ c.ch2.ASYP = not(b.ch2.FF16_WR);
+    /*p14.BENY*/ c.ch2.BENY = nor(b.ch2.ASYP, b.apu.APU_RESET1, b.ch2.ELOX);
+    /*p14.BACU*/ c.ch2.BACU = and(ADDR_FF16, b.apu.APU_WR);
+    /*p14.BUDU*/ c.ch2.BUDU = not(b.ch2.BACU);
 
-  /*p14.CEKA*/ if (b.ch2.CORO) c.D7 = b.ch2.NR21_DUTY0;
-  /*p14.CECY*/ if (b.ch2.CORO) c.D6 = b.ch2.NR21_DUTY1;
+    {
+      /*p09.AFAT*/ wire APU_RESETn = not(b.apu.APU_RESET1);
+      /*p14.BERA*/ c.ch2.NR21_DUTY0 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, APU_RESETn, b.ch2.NR21_DUTY0, b.D6);
+      /*p14.BAMY*/ c.ch2.NR21_DUTY1 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, APU_RESETn, b.ch2.NR21_DUTY1, b.D7);
+    }
+
+    /*p14.CEKA*/ if (b.ch2.CORO) c.D7 = b.ch2.NR21_DUTY0;
+    /*p14.CECY*/ if (b.ch2.CORO) c.D6 = b.ch2.NR21_DUTY1;
+  }
 
   //----------
   // FF17 NR22
 
-  /*p14.ENUF*/ c.ch2.ENUF = and(b.apu.ADDR_FF17, b.apu.APU_WR);
-  /*p14.FYRY*/ c.ch2.FYRY = not(b.apu.ADDR_FF17);
-  /*p14.GURU*/ c.ch2.GURU = or(b.ch2.FYRY, b.apu.CPU_RDn);
-  /*p14.GURE*/ c.ch2.GURE = not(b.apu.ADDR_FF17);
-  /*p14.GEXA*/ c.ch2.GEXA = or(b.ch2.GURE, b.apu.CPU_RDn);
-  /*p14.GERE*/ c.ch2.GERE = and(b.apu.APU_WR, b.apu.ADDR_FF17);
-  /*p14.JEDE*/ c.ch2.JEDE = not(b.ch2.GERE);
+  {
+    /*p10.DUVU*/ wire ADDR_0111an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
+    /*p10.DUTU*/ wire ADDR_FF17  = nor(b.apu.ADDR_FF1Xn, ADDR_0111an);
 
-  /*p14.HYFU*/ c.ch2.NR22_ENV_TIMER0 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER0, b.D0);
-  /*p14.HAVA*/ c.ch2.NR22_ENV_TIMER1 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER1, b.D1);
-  /*p14.HORE*/ c.ch2.NR22_ENV_TIMER2 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER2, b.D2);
-  /*p14.FORE*/ c.ch2.FF17_D3 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D3, b.D3);
-  /*p14.GATA*/ c.ch2.FF17_D4 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D4, b.D4);
-  /*p14.GUFE*/ c.ch2.FF17_D5 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D5, b.D5);
-  /*p14.GURA*/ c.ch2.FF17_D6 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D6, b.D6);
-  /*p14.GAGE*/ c.ch2.FF17_D7 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D7, b.D7);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);
+    /*p14.ENUF*/ c.ch2.ENUF = and(ADDR_FF17, b.apu.APU_WR);
+    /*p14.FYRY*/ c.ch2.FYRY = not(ADDR_FF17);
+    /*p14.GURU*/ c.ch2.GURU = or(b.ch2.FYRY, CPU_RDn);
+    /*p14.GURE*/ c.ch2.GURE = not(ADDR_FF17);
+    /*p14.GEXA*/ c.ch2.GEXA = or(b.ch2.GURE, CPU_RDn);
+    /*p14.GERE*/ c.ch2.GERE = and(b.apu.APU_WR, ADDR_FF17);
+    /*p14.JEDE*/ c.ch2.JEDE = not(b.ch2.GERE);
 
-  /*p14.HUVU*/ if (b.ch2.GEXA) c.D0 = b.ch2.NR22_ENV_TIMER0;
-  /*p14.HYRE*/ if (b.ch2.GEXA) c.D1 = b.ch2.NR22_ENV_TIMER1;
-  /*p14.HAVU*/ if (b.ch2.GEXA) c.D2 = b.ch2.NR22_ENV_TIMER2;
-  /*p14.GENE*/ if (b.ch2.GURU) c.D3 = b.ch2.FF17_D3;
-  /*p14.HUPE*/ if (b.ch2.GURU) c.D4 = b.ch2.FF17_D4;
-  /*p14.HERE*/ if (b.ch2.GURU) c.D5 = b.ch2.FF17_D5;
-  /*p14.HORO*/ if (b.ch2.GURU) c.D6 = b.ch2.FF17_D6;
-  /*p14.HYRY*/ if (b.ch2.GURU) c.D7 = b.ch2.FF17_D7;
+    /*p14.HYFU*/ c.ch2.NR22_ENV_TIMER0 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER0, b.D0);
+    /*p14.HAVA*/ c.ch2.NR22_ENV_TIMER1 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER1, b.D1);
+    /*p14.HORE*/ c.ch2.NR22_ENV_TIMER2 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER2, b.D2);
+    /*p14.FORE*/ c.ch2.FF17_D3 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D3, b.D3);
+    /*p14.GATA*/ c.ch2.FF17_D4 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D4, b.D4);
+    /*p14.GUFE*/ c.ch2.FF17_D5 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D5, b.D5);
+    /*p14.GURA*/ c.ch2.FF17_D6 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D6, b.D6);
+    /*p14.GAGE*/ c.ch2.FF17_D7 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D7, b.D7);
+
+    /*p14.HUVU*/ if (b.ch2.GEXA) c.D0 = b.ch2.NR22_ENV_TIMER0;
+    /*p14.HYRE*/ if (b.ch2.GEXA) c.D1 = b.ch2.NR22_ENV_TIMER1;
+    /*p14.HAVU*/ if (b.ch2.GEXA) c.D2 = b.ch2.NR22_ENV_TIMER2;
+    /*p14.GENE*/ if (b.ch2.GURU) c.D3 = b.ch2.FF17_D3;
+    /*p14.HUPE*/ if (b.ch2.GURU) c.D4 = b.ch2.FF17_D4;
+    /*p14.HERE*/ if (b.ch2.GURU) c.D5 = b.ch2.FF17_D5;
+    /*p14.HORO*/ if (b.ch2.GURU) c.D6 = b.ch2.FF17_D6;
+    /*p14.HYRY*/ if (b.ch2.GURU) c.D7 = b.ch2.FF17_D7;
+  }
 
   //----------
   // FF18 NR23
 
-  /*p14.FOGE*/ c.ch2.FOGE = not(b.apu.CPU_RDn);
-  /*p14.FAPE*/ c.ch2.FAPE = and(b.ch2.FOGE, b.apu.NR52_DBG_APU);
+  {
 
-  /*p14.GOTE*/ c.ch2.GOTE = not(b.apu.ADDR_FF19);
-  /*p14.HYPO*/ c.ch2.HYPO = or(b.ch2.GOTE, b.ch2.FAPE);
+    /*p10.DAFY*/ wire ADDR_1000an = nand(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx0);
+    /*p10.DARA*/ wire ADDR_FF18  = nor(b.apu.ADDR_FF1Xn, ADDR_1000an);
 
-  /*p14.DOSA*/ c.ch2.NR23_WR1 = and(b.apu.ADDR_FF18, b.apu.APU_WR);
-  /*p14.EXUC*/ c.ch2.NR23_WR2 = and(b.apu.ADDR_FF18, b.apu.APU_WR);
+    /*p10.DEJY*/ wire ADDR_1001an = nand(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.DOZA*/ wire ADDR_FF19  = nor(b.apu.ADDR_FF1Xn, ADDR_1001an);
 
-  /*p14.ESUR*/ c.ch2.NR23_WRn1 = not(b.ch2.NR23_WR1);
-  /*p14.FYXO*/ c.ch2.NR23_WRn2 = not(b.ch2.NR23_WR2);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);
+    /*p14.FOGE*/ c.ch2.FOGE = not(CPU_RDn);
+    /*p14.FAPE*/ c.ch2.FAPE = and(b.ch2.FOGE, b.apu.NR52_DBG_APU);
 
-  /*p14.FERY*/ c.ch2.FERY = not(b.apu.ADDR_1xxx);
-  /*p14.GUZA*/ c.ch2.GUZA = nor(b.ch2.FERY, b.ch2.FAPE);
-  /*p14.FUTY*/ c.ch2.FUTY = not(b.ch2.GUZA);
+    /*p14.GOTE*/ c.ch2.GOTE = not(ADDR_FF19);
+    /*p14.HYPO*/ c.ch2.HYPO = or(b.ch2.GOTE, b.ch2.FAPE);
 
-  /*p14.FOFE*/ c.ch2.NR23_FREQ0 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ0, b.D0);
-  /*p14.FOVA*/ c.ch2.NR23_FREQ1 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ1, b.D1);
-  /*p14.FEDY*/ c.ch2.NR23_FREQ2 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ2, b.D2);
-  /*p14.FOME*/ c.ch2.NR23_FREQ3 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ3, b.D3);
-  /*p14.FORA*/ c.ch2.NR23_FREQ4 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ4, b.D4);
-  /*p14.GODA*/ c.ch2.NR23_FREQ5 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ5, b.D5);
-  /*p14.GUMY*/ c.ch2.NR23_FREQ6 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ6, b.D6);
-  /*p14.GUPU*/ c.ch2.NR23_FREQ7 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ7, b.D7);
+    /*p14.DOSA*/ c.ch2.NR23_WR1 = and(ADDR_FF18, b.apu.APU_WR);
+    /*p14.EXUC*/ c.ch2.NR23_WR2 = and(ADDR_FF18, b.apu.APU_WR);
 
-  /*p14.FAVA*/ if (b.ch2.FUTY) c.D0 = b.ch2.CH2_FREQ_00;
-  /*p14.FAJY*/ if (b.ch2.FUTY) c.D1 = b.ch2.CH2_FREQ_01;
-  /*p14.FEGU*/ if (b.ch2.FUTY) c.D2 = b.ch2.CH2_FREQ_02;
-  /*p14.FOSE*/ if (b.ch2.FUTY) c.D3 = b.ch2.CH2_FREQ_03;
-  /*p14.GERO*/ if (b.ch2.FUTY) c.D5 = b.ch2.CH2_FREQ_04; // d4 and d5 are switched on the schematic
-  /*p14.GAKY*/ if (b.ch2.FUTY) c.D4 = b.ch2.CH2_FREQ_05;
-  /*p14.GADU*/ if (b.ch2.FUTY) c.D6 = b.ch2.CH2_FREQ_06;
-  /*p14.GAZO*/ if (b.ch2.FUTY) c.D7 = b.ch2.CH2_FREQ_07;
+    /*p14.ESUR*/ c.ch2.NR23_WRn1 = not(b.ch2.NR23_WR1);
+    /*p14.FYXO*/ c.ch2.NR23_WRn2 = not(b.ch2.NR23_WR2);
+
+    /*p14.FERY*/ c.ch2.FERY = not(b.apu.ADDR_1xxx);
+    /*p14.GUZA*/ c.ch2.GUZA = nor(b.ch2.FERY, b.ch2.FAPE);
+    /*p14.FUTY*/ c.ch2.FUTY = not(b.ch2.GUZA);
+
+    /*p14.FOFE*/ c.ch2.NR23_FREQ0 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ0, b.D0);
+    /*p14.FOVA*/ c.ch2.NR23_FREQ1 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ1, b.D1);
+    /*p14.FEDY*/ c.ch2.NR23_FREQ2 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ2, b.D2);
+    /*p14.FOME*/ c.ch2.NR23_FREQ3 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ3, b.D3);
+    /*p14.FORA*/ c.ch2.NR23_FREQ4 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ4, b.D4);
+    /*p14.GODA*/ c.ch2.NR23_FREQ5 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ5, b.D5);
+    /*p14.GUMY*/ c.ch2.NR23_FREQ6 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ6, b.D6);
+    /*p14.GUPU*/ c.ch2.NR23_FREQ7 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ7, b.D7);
+
+    /*p14.FAVA*/ if (b.ch2.FUTY) c.D0 = b.ch2.CH2_FREQ_00;
+    /*p14.FAJY*/ if (b.ch2.FUTY) c.D1 = b.ch2.CH2_FREQ_01;
+    /*p14.FEGU*/ if (b.ch2.FUTY) c.D2 = b.ch2.CH2_FREQ_02;
+    /*p14.FOSE*/ if (b.ch2.FUTY) c.D3 = b.ch2.CH2_FREQ_03;
+    /*p14.GERO*/ if (b.ch2.FUTY) c.D5 = b.ch2.CH2_FREQ_04; // d4 and d5 are switched on the schematic
+    /*p14.GAKY*/ if (b.ch2.FUTY) c.D4 = b.ch2.CH2_FREQ_05;
+    /*p14.GADU*/ if (b.ch2.FUTY) c.D6 = b.ch2.CH2_FREQ_06;
+    /*p14.GAZO*/ if (b.ch2.FUTY) c.D7 = b.ch2.CH2_FREQ_07;
+  }
 
   //----------
   // FF19 NR24
 
-  c.ch2.JENU = and(b.apu.ADDR_FF19, b.apu.APU_WR);
-  c.ch2.KYSA = not(b.ch2.JENU);
-  c.ch2.NR24_FREQ8  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ8,  b.D0);
-  c.ch2.NR24_FREQ9  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ9,  b.D1);
-  c.ch2.NR24_FREQ10 = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ10, b.D2);
-  c.ch2.NR24_STOP   = tock_pos(a.ch2.EVYF, b.ch2.EVYF, b.ch2.FAZO, b.ch2.NR24_STOP, b.D6);
-  c.ch2.NR24_START  = tock_pos(a.ch2.DETA, b.ch2.DETA, b.ch2.DERA, b.ch2.NR24_START, b.D7);
+  {
+    /*p10.DEJY*/ wire ADDR_1001an = nand(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
+    /*p10.DOZA*/ wire ADDR_FF19  = nor(b.apu.ADDR_FF1Xn, ADDR_1001an);
 
-  c.ch2.DETA = nand(b.apu.APU_WR, b.apu.ADDR_FF19);
+    c.ch2.JENU = and(ADDR_FF19, b.apu.APU_WR);
+    c.ch2.KYSA = not(b.ch2.JENU);
+    c.ch2.NR24_FREQ8  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ8,  b.D0);
+    c.ch2.NR24_FREQ9  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ9,  b.D1);
+    c.ch2.NR24_FREQ10 = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ10, b.D2);
+    c.ch2.NR24_STOP   = tock_pos(a.ch2.EVYF, b.ch2.EVYF, b.ch2.FAZO, b.ch2.NR24_STOP, b.D6);
+    c.ch2.NR24_START  = tock_pos(a.ch2.DETA, b.ch2.DETA, b.ch2.DERA, b.ch2.NR24_START, b.D7);
 
-  /*p14.HUNA*/ if (b.ch2.HYPO) c.D0 = b.ch2.CH2_FREQ_08;
-  /*p14.JARO*/ if (b.ch2.HYPO) c.D1 = b.ch2.CH2_FREQ_09;
-  /*p14.JEKE*/ if (b.ch2.HYPO) c.D2 = b.ch2.CH2_FREQ_10;
+    c.ch2.DETA = nand(b.apu.APU_WR, ADDR_FF19);
 
-  if (b.ch2.HUMA) c.D6 = b.ch2.GOJY;
+    /*p14.HUNA*/ if (b.ch2.HYPO) c.D0 = b.ch2.CH2_FREQ_08;
+    /*p14.JARO*/ if (b.ch2.HYPO) c.D1 = b.ch2.CH2_FREQ_09;
+    /*p14.JEKE*/ if (b.ch2.HYPO) c.D2 = b.ch2.CH2_FREQ_10;
 
-  c.ch2.GADO = not(b.apu.CPU_RDn);
-  c.ch2.EVYF = nor(b.apu.CPU_WR_WEIRD, b.apu.ADDR_FF19);
-  c.ch2.HUMA = nor(b.apu.ADDR_FF19, b.ch2.GADO);
+    if (b.ch2.HUMA) c.D6 = b.ch2.GOJY;
+
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);
+    c.ch2.GADO = not(CPU_RDn);
+    c.ch2.EVYF = nor(b.apu.CPU_WR_WEIRD, ADDR_FF19);
+    c.ch2.HUMA = nor(ADDR_FF19, b.ch2.GADO);
+  }
   
 
 
@@ -226,10 +257,13 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   /*p15.HOFO*/ c.ch2.HOFO = or(b.ch2.JOPA, b.ch2.JUPU, b.ch2.JEME);
   /*p15.HAFE*/ c.ch2.HAFE = or(b.ch2.HOLY, b.ch2.ELOX, b.apu.APU_RESET1);
 
-  /*p15.CULE*/ c.ch2.CULE = not(b.ch2.DAVU);
-  /*p15.CANO*/ c.ch2.CANO_00 = tock_pos(a.ch2.CULE,     b.ch2.CULE,     b.apu.APU_RESETn2, b.ch2.CANO_00, !b.ch2.CANO_00);
-  /*p15.CAGY*/ c.ch2.CAGY_01 = tock_pos(!a.ch2.CANO_00, !b.ch2.CANO_00, b.apu.APU_RESETn2, b.ch2.CAGY_01, !b.ch2.CAGY_01);
-  /*p15.DYVE*/ c.ch2.DYVE_02 = tock_pos(!a.ch2.CAGY_01, !b.ch2.CAGY_01, b.apu.APU_RESETn2, b.ch2.DYVE_02, !b.ch2.DYVE_02);
+  {
+    /*p15.CULE*/ c.ch2.CULE = not(b.ch2.DAVU);
+    /*p09.AFAT*/ wire APU_RESETn = not(b.apu.APU_RESET1);
+    /*p15.CANO*/ c.ch2.CANO_00 = tock_pos(a.ch2.CULE,     b.ch2.CULE,     APU_RESETn, b.ch2.CANO_00, !b.ch2.CANO_00);
+    /*p15.CAGY*/ c.ch2.CAGY_01 = tock_pos(!a.ch2.CANO_00, !b.ch2.CANO_00, APU_RESETn, b.ch2.CAGY_01, !b.ch2.CAGY_01);
+    /*p15.DYVE*/ c.ch2.DYVE_02 = tock_pos(!a.ch2.CAGY_01, !b.ch2.CAGY_01, APU_RESETn, b.ch2.DYVE_02, !b.ch2.DYVE_02);
+  }
 
   /*p15.DYMU*/ c.ch2.DYMU = and(b.ch2.DYVE_02, b.ch2.CAGY_01);
   /*p15.DUGE*/ c.ch2.DUGE = not(b.ch2.CANO_00);
@@ -247,7 +281,10 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
 
 
 
-  /*p15.DOME*/ c.ch2.DOME = tock_pos(a.ch2.DAVU, b.ch2.DAVU, b.apu.APU_RESETn2, b.ch2.DOME, b.ch2.EXES);
+  {
+    /*p09.AFAT*/ wire APU_RESETn = not(b.apu.APU_RESET1);
+    /*p15.DOME*/ c.ch2.DOME = tock_pos(a.ch2.DAVU, b.ch2.DAVU, APU_RESETn, b.ch2.DOME, b.ch2.EXES);
+  }
   /*p15.CYSE*/ c.ch2.CYSE = and(b.ch2.DANE, b.ch2.DOME);
   /*p15.BONU*/ c.ch2.BONU = or(b.ch2.CYSE, b.apu.NR52_DBG_APU);
   /*p15.FOPY*/ c.ch2.FOPY = amux2(b.ch2.FOMY, b.ch2.FF17_D3, !b.ch2.FOMY, !b.ch2.FF17_D3);

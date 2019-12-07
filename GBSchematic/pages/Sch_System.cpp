@@ -71,16 +71,6 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
   }
 
   {
-    /*p01.AFEP*/ wire AFEP_AxxxxFGH = not( b.sys.PHASE_xBCDExxx1);
-    /*p01.AROV*/ wire AROV_xxCDEFxx = not(!b.sys.PHASE_xxCDEFxx1);
-    /*p01.BUGO*/ wire BUGO_xBCDExxx = not(AFEP_AxxxxFGH);
-    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(b.sys.CPUCLK_REQn, BUGO_xBCDExxx, AROV_xxCDEFxx);
-    /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
-    /*p01.BUKE*/ c.sys.PHASE_AxxxxxGH6 = not(BASU_xBCDEFxx);
-  }
-
-
-  {
     /*p01.ATYP*/ wire ATYP_ABCDxxxx = not(!b.sys.PHASE_ABCDxxxx1);  
     /*p01.NULE*/ wire NULE_xxxxEFGH = nor(b.sys.CPUCLK_REQn, ATYP_ABCDxxxx);
     /*p01.BYRY*/ wire BYRY_ABCDxxxx = not(NULE_xxxxEFGH);
@@ -164,10 +154,6 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
     }
 
     // debug override of CPU_RD/CPU_WR
-    {
-      /*p01.AREV*/ wire AREV = nand(cpu_in.CPU_RAW_WR, b.sys.PHASE_xxxxEFGx3);
-      /*p01.APOV*/ c.sys.CPU_WR_xxxxEFGx  = not(AREV);
-    }
     
     {
       /*p07.UJYV*/ wire CPU_RD_MUX   = mux2n(chip_in.RD_C, cpu_in.CPU_RAW_RD, b.sys.MODE_DBG2);
@@ -175,7 +161,9 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
     }
     
     {
-      /*p07.UBAL*/ wire CPU_WR_MUX   = mux2n(chip_in.WR_C, b.sys.CPU_WR_xxxxEFGx,   b.sys.MODE_DBG2);
+      /*p01.AREV*/ wire AREV = nand(cpu_in.CPU_RAW_WR, b.sys.PHASE_xxxxEFGx3);
+      /*p01.APOV*/ wire CPU_WR_xxxxEFGx  = not(AREV);
+      /*p07.UBAL*/ wire CPU_WR_MUX   = mux2n(chip_in.WR_C, CPU_WR_xxxxEFGx,   b.sys.MODE_DBG2);
       /*p07.TAPU*/ c.sys.CPU_WR  = not(CPU_WR_MUX);
     }
     
@@ -223,8 +211,10 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
     }
 
     {
+      /*p01.AREV*/ wire AREV = nand(cpu_in.CPU_RAW_WR, b.sys.PHASE_xxxxEFGx3);
+      /*p01.APOV*/ wire CPU_WR_xxxxEFGx  = not(AREV);
       /*p08.MOCA*/ wire DBG_EXT_RDn = nor(b.sys.ADDR_VALID_AND_NOT_VRAM, b.sys.MODE_DBG1);
-      /*p08.MEXO*/ wire MEXO_ABCDxxxH = not(b.sys.CPU_WR_xxxxEFGx);
+      /*p08.MEXO*/ wire MEXO_ABCDxxxH = not(CPU_WR_xxxxEFGx);
       /*p08.NEVY*/ wire NEVY = or(MEXO_ABCDxxxH, DBG_EXT_RDn);
       /*p08.PUVA*/ wire WR_OUT = or(NEVY, b.sys.DO_DMA);
       /*p08.UVER*/ c.chip_out.WR_A = nand(WR_OUT, b.sys.MODE_DBG2n1);

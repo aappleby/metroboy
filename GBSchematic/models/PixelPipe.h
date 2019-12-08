@@ -218,8 +218,8 @@ struct PixelPipe {
   /*p36.XUFY*/ bool FF48_RD;
   /*p36.XOMA*/ bool FF48_WR;
   /*p36.XOZY*/ bool FF48_RDn;
-  /*p36.XELO*/ bool FF48_WRn;
 
+  /*p36.XELO*/ bool OBP0_CLK;
   /*p36.XANA*/ bool OBP0_D7;
   /*p36.XYZE*/ bool OBP0_D5;
   /*p36.XALO*/ bool OBP0_D3;

@@ -10,29 +10,127 @@ namespace Schematics {
 
 void Pins_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
-  /*p25.RURA*/ c.chip_out.MD0_D = not(/*p25.SYNU*/ or(b.vid.D_TO_MD, b.MD0));
-  /*p25.RULY*/ c.chip_out.MD1_D = not(/*p25.SYMA*/ or(b.vid.D_TO_MD, b.MD1));
-  /*p25.RARE*/ c.chip_out.MD2_D = not(/*p25.ROKO*/ or(b.vid.D_TO_MD, b.MD2));
-  /*p25.RODU*/ c.chip_out.MD3_D = not(/*p25.SYBU*/ or(b.vid.D_TO_MD, b.MD3));
-  /*p25.RUBE*/ c.chip_out.MD4_D = not(/*p25.SAKO*/ or(b.vid.D_TO_MD, b.MD4));
-  /*p25.RUMU*/ c.chip_out.MD5_D = not(/*p25.SEJY*/ or(b.vid.D_TO_MD, b.MD5));
-  /*p25.RYTY*/ c.chip_out.MD6_D = not(/*p25.SEDO*/ or(b.vid.D_TO_MD, b.MD6));
-  /*p25.RADY*/ c.chip_out.MD7_D = not(/*p25.SAWU*/ or(b.vid.D_TO_MD, b.MD7));
+  /*p25.TUTO*/ wire DBG_TUTO = and(b.sys.MODE_DBG2, !b.vid.DBG_SOTO);
+  /*p25.RACO*/ wire DBG_TUTOn = not(DBG_TUTO);
 
-  //----------
+  /*p25.TEFY*/ wire MCS_Cn = not(chip_in.MCS_C);
+  /*p25.TAVY*/ wire MOE_Cn = not(chip_in.MOE_C);
+  /*p25.SUDO*/ wire MWR_Cn = not(chip_in.MWR_C);
 
-  //----------
+  /*p29.SAKY*/ wire SAKY = nor(b.spr.SEQ1, b.spr.SPRITE_ABn);
+  /*p29.TYSO*/ wire SPRITE_READb = or(SAKY, b.spr.RENDERINGn); // seems wrong
+  /*p29.TEXY*/ wire SPRITE_READn = not(SPRITE_READb);
 
-  /*p25.ROVE*/ c.vid.D_TO_MDn = not(b.vid.D_TO_MD);
+  /*p01.AREV*/ wire AREV = nand(cpu_in.CPU_RAW_WR, b.sys.PHASE_xxxxEFGx3);
+  /*p01.APOV*/ wire CPU_WR_xxxxEFGx  = not(AREV);
 
-  /*p25.REGE*/ c.chip_out.MD0_A = not(/*p25.SEFA*/ and(b.MD0, b.vid.D_TO_MDn));
-  /*p25.RYKY*/ c.chip_out.MD1_A = not(/*p25.SOGO*/ and(b.MD1, b.vid.D_TO_MDn));
-  /*p25.RAZO*/ c.chip_out.MD2_A = not(/*p25.SEFU*/ and(b.MD2, b.vid.D_TO_MDn));
-  /*p25.RADA*/ c.chip_out.MD3_A = not(/*p25.SUNA*/ and(b.MD3, b.vid.D_TO_MDn));
-  /*p25.RYRO*/ c.chip_out.MD4_A = not(/*p25.SUMO*/ and(b.MD4, b.vid.D_TO_MDn));
-  /*p25.REVU*/ c.chip_out.MD5_A = not(/*p25.SAZU*/ and(b.MD5, b.vid.D_TO_MDn));
-  /*p25.REKU*/ c.chip_out.MD6_A = not(/*p25.SAMO*/ and(b.MD6, b.vid.D_TO_MDn));
-  /*p25.RYZE*/ c.chip_out.MD7_A = not(/*p25.SUKE*/ and(b.MD7, b.vid.D_TO_MDn));
+  /*p25.TUJA*/ wire CPU_VRAM_WR    = and (b.vid.ADDR_VRAM, CPU_WR_xxxxEFGx);
+  /*p25.TUCA*/ wire CPU_VRAM_RD    = and (b.vid.ADDR_VRAM, b.sys.ADDR_VALID_ABxxxxxx);
+  /*p25.TEGU*/ wire CPU_VRAM_CLK   = nand(b.vid.ADDR_VRAM, b.sys.PHASE_xxxxEFGx3);
+
+  /*p25.TYJY*/ wire CPU_VRAM_WR2   = mux2(MWR_Cn, CPU_VRAM_WR , DBG_TUTO);
+  /*p25.TOLE*/ wire CPU_VRAM_RD2   = mux2(MCS_Cn, CPU_VRAM_RD , DBG_TUTO);
+  /*p25.SALE*/ wire CPU_VRAM_CLK2  = mux2(MOE_Cn, CPU_VRAM_CLK, DBG_TUTO);
+
+  /*p25.RUVY*/ wire CPU_VRAM_CLK2n = not(CPU_VRAM_CLK2);
+
+  /*p25.ROPY*/ wire RENDERINGo = not(b.vid.RENDERING);
+
+  /*p25.SERE*/ wire SERE = and(CPU_VRAM_RD2, RENDERINGo);
+
+  /*p25.SOHY*/ wire MWR = nand(CPU_VRAM_WR2, SERE);
+  /*p25.SUTU*/ wire MCS = nor(b.vid.LONYb, b.sys.DMA_READ_VRAM, SPRITE_READn, SERE);
+
+  /*p27.LURY*/ wire LURY = and(!c.vid.BG_SEQ5_SYNC, b.vid.RENDERING);
+  /*p27.LONY*/ wire LONY = and(LURY, b.vid.BG_SEQ_RSTn);
+
+  /*p25.SOHO*/ wire SOHO = and(b.spr.SEQ_5_TRIG, SPRITE_READn);
+
+  /*p25.RYLU*/ wire RYLU = nand(CPU_VRAM_CLK2, b.vid.RENDERINGn);
+  /*p25.RAWA*/ wire RAWA = not(SOHO);
+  /*p27.MYMA*/ wire MYMA = not(LONY);
+  /*p25.APAM*/ wire DMA_READ_VRAMn = not(b.sys.DMA_READ_VRAM);
+
+  /*p25.RACU*/ wire MOE = and(RYLU, RAWA, MYMA, DMA_READ_VRAMn);
+
+  {
+    /*p25.SEMA*/ wire MOE_An = and(MOE, DBG_TUTOn);
+    /*p25.RUTE*/ wire MOE_Dn = or (MOE, DBG_TUTO); // schematic wrong, second input is RACU
+    /*p25.REFO*/ c.chip_out.MOE_A = not(MOE_An);
+    /*p25.SAHA*/ c.chip_out.MOE_D = not(MOE_Dn);
+  }
+
+  {
+    /*p25.TODE*/ wire MCS_An = and(MCS, DBG_TUTOn);
+    /*p25.SEWO*/ wire MCS_Dn = or (MCS, DBG_TUTO);
+    /*p25.SOKY*/ c.chip_out.MCS_A = not(MCS_An);
+    /*p25.SETY*/ c.chip_out.MCS_D = not(MCS_Dn);
+  }
+
+  {
+    /*p25.TAXY*/ wire MWR_An = and(MWR, DBG_TUTOn);
+    /*p25.SOFY*/ wire MWR_Dn = or (MWR, DBG_TUTO);
+    /*p25.SYSY*/ c.chip_out.MWR_A = not(MWR_An);
+    /*p25.RAGU*/ c.chip_out.MWR_D = not(MWR_Dn);
+  }
+
+  {
+    /*p25.SAZO*/ wire MD_OUTd = and(CPU_VRAM_CLK2n, SERE);
+    /*p25.RYJE*/ wire MD_INb  = not(MD_OUTd);
+
+    /*p25.REVO*/ wire MD_OUTc = not(MD_INb);
+    /*p25.ROCY*/ wire D_TO_MDb = and(MD_OUTd, MD_OUTc);
+    /*p25.RAHU*/ wire D_TO_MDn = not(D_TO_MDb);
+    /*p25.ROVE*/ wire D_TO_MDa = not(D_TO_MDn);
+
+    /*p25.RELA*/ wire MD_OUTb = or(MD_OUTc, MD_OUTd);
+    /*p25.RENA*/ wire MD_IN   = not(MD_OUTb);
+
+    /*p25.TEME*/ if (!D_TO_MDn) c.MD0 = b.D0;
+    /*p25.TEWU*/ if (!D_TO_MDn) c.MD1 = b.D1;
+    /*p25.TYGO*/ if (!D_TO_MDn) c.MD2 = b.D2;
+    /*p25.SOTE*/ if (!D_TO_MDn) c.MD3 = b.D3;
+    /*p25.SEKE*/ if (!D_TO_MDn) c.MD4 = b.D4;
+    /*p25.RUJO*/ if (!D_TO_MDn) c.MD5 = b.D5;
+    /*p25.TOFA*/ if (!D_TO_MDn) c.MD6 = b.D6;
+    /*p25.SUZA*/ if (!D_TO_MDn) c.MD7 = b.D7;
+
+    /*p25.ROFA*/ c.chip_out.MD0_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD1_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD2_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD3_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD4_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD5_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD6_B = not(MD_IN);
+    /*p25.ROFA*/ c.chip_out.MD7_B = not(MD_IN);
+
+    /*p25.REGE*/ c.chip_out.MD0_A = not(/*p25.SEFA*/ and(b.MD0, D_TO_MDa));
+    /*p25.RYKY*/ c.chip_out.MD1_A = not(/*p25.SOGO*/ and(b.MD1, D_TO_MDa));
+    /*p25.RAZO*/ c.chip_out.MD2_A = not(/*p25.SEFU*/ and(b.MD2, D_TO_MDa));
+    /*p25.RADA*/ c.chip_out.MD3_A = not(/*p25.SUNA*/ and(b.MD3, D_TO_MDa));
+    /*p25.RYRO*/ c.chip_out.MD4_A = not(/*p25.SUMO*/ and(b.MD4, D_TO_MDa));
+    /*p25.REVU*/ c.chip_out.MD5_A = not(/*p25.SAZU*/ and(b.MD5, D_TO_MDa));
+    /*p25.REKU*/ c.chip_out.MD6_A = not(/*p25.SAMO*/ and(b.MD6, D_TO_MDa));
+    /*p25.RYZE*/ c.chip_out.MD7_A = not(/*p25.SUKE*/ and(b.MD7, D_TO_MDa));
+
+    /*p25.RURA*/ c.chip_out.MD0_D = not(/*p25.SYNU*/ or (b.MD0, D_TO_MDn));
+    /*p25.RULY*/ c.chip_out.MD1_D = not(/*p25.SYMA*/ or (b.MD1, D_TO_MDn));
+    /*p25.RARE*/ c.chip_out.MD2_D = not(/*p25.ROKO*/ or (b.MD2, D_TO_MDn));
+    /*p25.RODU*/ c.chip_out.MD3_D = not(/*p25.SYBU*/ or (b.MD3, D_TO_MDn));
+    /*p25.RUBE*/ c.chip_out.MD4_D = not(/*p25.SAKO*/ or (b.MD4, D_TO_MDn));
+    /*p25.RUMU*/ c.chip_out.MD5_D = not(/*p25.SEJY*/ or (b.MD5, D_TO_MDn));
+    /*p25.RYTY*/ c.chip_out.MD6_D = not(/*p25.SEDO*/ or (b.MD6, D_TO_MDn));
+    /*p25.RADY*/ c.chip_out.MD7_D = not(/*p25.SAWU*/ or (b.MD7, D_TO_MDn));
+
+    /*p25.RODY*/ if (MD_IN) c.MD0 = chip_in.MD0_C;
+    /*p25.REBA*/ if (MD_IN) c.MD1 = chip_in.MD1_C;
+    /*p25.RYDO*/ if (MD_IN) c.MD2 = chip_in.MD2_C;
+    /*p25.REMO*/ if (MD_IN) c.MD3 = chip_in.MD3_C;
+    /*p25.ROCE*/ if (MD_IN) c.MD4 = chip_in.MD4_C;
+    /*p25.ROPU*/ if (MD_IN) c.MD5 = chip_in.MD5_C;
+    /*p25.RETA*/ if (MD_IN) c.MD6 = chip_in.MD6_C;
+    /*p25.RAKU*/ if (MD_IN) c.MD7 = chip_in.MD7_C;
+  }
 
   //----------
   // Address pin driver
@@ -60,22 +158,22 @@ void Pins_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, con
   /*p08.SOBY*/ wire SOBY = nor(b.A15, b.sys.ADDR_BOOT);
   /*p08.SEPY*/ c.sys.ADDR_LATCH_15 = nand(b.sys.ADDR_VALID_ABxxxxxx, SOBY); // wat?
 
-  /*p08.AMET*/ c.sys.ADDR_MUX_00 = mux2(b.sys.DMA_A00, b.sys.ADDR_LATCH_00, b.sys.DO_DMA);
-  /*p08.ATOL*/ c.sys.ADDR_MUX_01 = mux2(b.sys.DMA_A01, b.sys.ADDR_LATCH_01, b.sys.DO_DMA);
-  /*p08.APOK*/ c.sys.ADDR_MUX_02 = mux2(b.sys.DMA_A02, b.sys.ADDR_LATCH_02, b.sys.DO_DMA);
-  /*p08.AMER*/ c.sys.ADDR_MUX_03 = mux2(b.sys.DMA_A03, b.sys.ADDR_LATCH_03, b.sys.DO_DMA);
-  /*p08.ATEM*/ c.sys.ADDR_MUX_04 = mux2(b.sys.DMA_A04, b.sys.ADDR_LATCH_04, b.sys.DO_DMA);
-  /*p08.ATOV*/ c.sys.ADDR_MUX_05 = mux2(b.sys.DMA_A05, b.sys.ADDR_LATCH_05, b.sys.DO_DMA);
-  /*p08.ATYR*/ c.sys.ADDR_MUX_06 = mux2(b.sys.DMA_A06, b.sys.ADDR_LATCH_06, b.sys.DO_DMA);
-  /*p08.ASUR*/ c.sys.ADDR_MUX_07 = mux2(b.sys.DMA_A07, b.sys.ADDR_LATCH_07, b.sys.DO_DMA);
-  /*p08.MANO*/ c.sys.ADDR_MUX_08 = mux2(b.sys.DMA_A08, b.sys.ADDR_LATCH_08, b.sys.DO_DMA);
-  /*p08.MASU*/ c.sys.ADDR_MUX_09 = mux2(b.sys.DMA_A09, b.sys.ADDR_LATCH_09, b.sys.DO_DMA);
-  /*p08.PAMY*/ c.sys.ADDR_MUX_10 = mux2(b.sys.DMA_A10, b.sys.ADDR_LATCH_10, b.sys.DO_DMA);
-  /*p08.MALE*/ c.sys.ADDR_MUX_11 = mux2(b.sys.DMA_A11, b.sys.ADDR_LATCH_11, b.sys.DO_DMA);
-  /*p08.MOJY*/ c.sys.ADDR_MUX_12 = mux2(b.sys.DMA_A12, b.sys.ADDR_LATCH_12, b.sys.DO_DMA);
-  /*p08.MUCE*/ c.sys.ADDR_MUX_13 = mux2(b.sys.DMA_A13, b.sys.ADDR_LATCH_13, b.sys.DO_DMA);
-  /*p08.PEGE*/ c.sys.ADDR_MUX_14 = mux2(b.sys.DMA_A14, b.sys.ADDR_LATCH_14, b.sys.DO_DMA);
-  /*p08.TAZY*/ c.sys.ADDR_MUX_15 = mux2(b.sys.DMA_A15, b.sys.ADDR_LATCH_15, b.sys.DO_DMA);
+  /*p08.AMET*/ c.sys.ADDR_MUX_00 = mux2(b.sys.DMA_A00, b.sys.ADDR_LATCH_00, b.sys.DMA_READ_CART);
+  /*p08.ATOL*/ c.sys.ADDR_MUX_01 = mux2(b.sys.DMA_A01, b.sys.ADDR_LATCH_01, b.sys.DMA_READ_CART);
+  /*p08.APOK*/ c.sys.ADDR_MUX_02 = mux2(b.sys.DMA_A02, b.sys.ADDR_LATCH_02, b.sys.DMA_READ_CART);
+  /*p08.AMER*/ c.sys.ADDR_MUX_03 = mux2(b.sys.DMA_A03, b.sys.ADDR_LATCH_03, b.sys.DMA_READ_CART);
+  /*p08.ATEM*/ c.sys.ADDR_MUX_04 = mux2(b.sys.DMA_A04, b.sys.ADDR_LATCH_04, b.sys.DMA_READ_CART);
+  /*p08.ATOV*/ c.sys.ADDR_MUX_05 = mux2(b.sys.DMA_A05, b.sys.ADDR_LATCH_05, b.sys.DMA_READ_CART);
+  /*p08.ATYR*/ c.sys.ADDR_MUX_06 = mux2(b.sys.DMA_A06, b.sys.ADDR_LATCH_06, b.sys.DMA_READ_CART);
+  /*p08.ASUR*/ c.sys.ADDR_MUX_07 = mux2(b.sys.DMA_A07, b.sys.ADDR_LATCH_07, b.sys.DMA_READ_CART);
+  /*p08.MANO*/ c.sys.ADDR_MUX_08 = mux2(b.sys.DMA_A08, b.sys.ADDR_LATCH_08, b.sys.DMA_READ_CART);
+  /*p08.MASU*/ c.sys.ADDR_MUX_09 = mux2(b.sys.DMA_A09, b.sys.ADDR_LATCH_09, b.sys.DMA_READ_CART);
+  /*p08.PAMY*/ c.sys.ADDR_MUX_10 = mux2(b.sys.DMA_A10, b.sys.ADDR_LATCH_10, b.sys.DMA_READ_CART);
+  /*p08.MALE*/ c.sys.ADDR_MUX_11 = mux2(b.sys.DMA_A11, b.sys.ADDR_LATCH_11, b.sys.DMA_READ_CART);
+  /*p08.MOJY*/ c.sys.ADDR_MUX_12 = mux2(b.sys.DMA_A12, b.sys.ADDR_LATCH_12, b.sys.DMA_READ_CART);
+  /*p08.MUCE*/ c.sys.ADDR_MUX_13 = mux2(b.sys.DMA_A13, b.sys.ADDR_LATCH_13, b.sys.DMA_READ_CART);
+  /*p08.PEGE*/ c.sys.ADDR_MUX_14 = mux2(b.sys.DMA_A14, b.sys.ADDR_LATCH_14, b.sys.DMA_READ_CART);
+  /*p08.TAZY*/ c.sys.ADDR_MUX_15 = mux2(b.sys.DMA_A15, b.sys.ADDR_LATCH_15, b.sys.DMA_READ_CART);
 
   /*p08.KUPO*/ c.chip_out.A00_A = nand(b.sys.ADDR_MUX_00, b.sys.MODE_DBG2n1);
   /*p08.CABA*/ c.chip_out.A01_A = nand(b.sys.ADDR_MUX_01, b.sys.MODE_DBG2n1);

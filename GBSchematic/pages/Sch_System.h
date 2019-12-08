@@ -36,7 +36,6 @@ struct System {
   /*p01.PYRY*/ bool VID_RESET4;
   /*p01.ROSY*/ bool VID_RESET5;
   /*p01.ATAR*/ bool VID_RESET6;
-  /*p01.AMYG*/ bool VID_RESET7;
   /*p01.LYFE*/ bool VID_RESETn2;
   /*p01.ABEZ*/ bool VID_RESETn3;
 
@@ -271,13 +270,18 @@ struct System {
   //----------
   // DMA
 
-  /*p04.LORU*/ bool FF46_WR;
+  /*p04.LORU*/ bool CLK_DMA_HI;
+  /*p04.META*/ bool CLK_DMA_LO;
 
   /*p04.LOKY*/ bool DMA_RUNNING;
-  /*p04.META*/ bool DMA_CLK;
+  /*p04.MATU*/ bool DMA_RUNNING_SYNC; // -> p25,p28
 
-  /*p04.LOKO*/ bool DMA_RST;
-  /*p04.LAPA*/ bool DMA_RSTn;
+  /*p04.LUVY*/ bool DMA_STARTa;
+  /*p04.LENE*/ bool DMA_STARTb;
+  /*p04.MYTE*/ bool DMA_DONE_SYNC;
+
+  /*p04.LUMA*/ bool DMA_READ_CART; // if true, addr bus = dma addr
+  /*p04.LUFA*/ bool DMA_READ_VRAM;
 
   /*p04.NAKY*/ bool DMA_A00;
   /*p04.PYRO*/ bool DMA_A01; 
@@ -295,34 +299,6 @@ struct System {
   /*p04.PULA*/ bool DMA_A13; 
   /*p04.POKU*/ bool DMA_A14; 
   /*p04.MARU*/ bool DMA_A15; 
-
-  /*p04.MATU*/ bool DMA_RUNNING_SYNCn; // -> p25,p28
-
-  /*p04.NOLO*/ bool DMA_DONE;
-  /*p04.NAVO*/ bool DMA_DONEn;
-
-  /*p04.LUVY*/ bool LUVY;
-  /*p04.MYTE*/ bool DMA_DONE_SYNC;
-  /*p04.LENE*/ bool LENE;
-
-  /*p04.LARA*/ bool LARA;
-  /*p04.MORY*/ bool DO_DMAn;
-
-
-  /*p04.LUPA*/ bool LUPA;
-
-
-  /*p04.LOGO*/ bool DMA_VRAMn;
-  /*p04.MUDA*/ bool DMA_VRAM;
-  /*p04.LEBU*/ bool DMA_A15n;
-  /*p04.LYXE*/ bool LYXE;
-
-
-  /*p04.LUMA*/ bool DO_DMA; // if true, addr bus = dma addr
-
-  /*p04.LUFA*/ bool VRAM_TO_OAMn;
-  /*p04.AHOC*/ bool VRAM_TO_OAMa;
-  /*p04.MUHO*/ bool VRAM_TO_OAMb;
 
 
   //----------

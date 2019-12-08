@@ -15,10 +15,8 @@ struct PixelPipe {
   /*p32.POWY*/ bool BG_PIX_B6;
   /*p32.PYJU*/ bool BG_PIX_B7;
 
-  /*p32.LESO*/ bool LESO;
-  /*p32.AJAR*/ bool AJAR;
   /*p32.LABU*/ bool VRAM_TEMP_CLK;
-  /*p32.METE*/ bool BG_SEQ_TRIG_3;
+
   /*p32.LOMA*/ bool BG_LATCH;
 
   /*p32.LEGU*/ bool BG_PIX_A0;
@@ -102,17 +100,6 @@ struct PixelPipe {
   /*p33.RAMA*/ bool SPR_PIX_A6;
   /*p33.RYDU*/ bool SPR_PIX_A7;
 
-  /*p34.LAFU*/ bool OBP0PIXELn;
-  /*p34.LEKA*/ bool OBP1PIXELn;
-
-  /*p34.LESY*/ bool SPRITE_MASK0n;
-  /*p34.LOTA*/ bool SPRITE_MASK1n;
-  /*p34.LYKU*/ bool SPRITE_MASK2n;
-  /*p34.ROBY*/ bool SPRITE_MASK3n;
-  /*p34.TYTA*/ bool SPRITE_MASK4n;
-  /*p34.TYCO*/ bool SPRITE_MASK5n;
-  /*p34.SOKA*/ bool SPRITE_MASK6n;
-  /*p34.XOVU*/ bool SPRITE_MASK7n;
 
   /*p34.MEFU*/ bool SPRITE_MASK0;
   /*p34.MEVE*/ bool SPRITE_MASK1;
@@ -123,24 +110,6 @@ struct PixelPipe {
   /*p34.TORY*/ bool SPRITE_MASK6;
   /*p34.WOPE*/ bool SPRITE_MASK7;
 
-  /*p34.PUME*/ bool SPRITE_PAL_PIPE_SET0n;
-  /*p34.SORO*/ bool SPRITE_PAL_PIPE_SET1n;
-  /*p34.PAMO*/ bool SPRITE_PAL_PIPE_SET2n;
-  /*p34.SUKY*/ bool SPRITE_PAL_PIPE_SET3n;
-  /*p34.RORA*/ bool SPRITE_PAL_PIPE_SET4n;
-  /*p34.MENE*/ bool SPRITE_PAL_PIPE_SET5n;
-  /*p34.LUKE*/ bool SPRITE_PAL_PIPE_SET6n;
-  /*p34.LAMY*/ bool SPRITE_PAL_PIPE_SET7n;
-
-  /*p34.SUCO*/ bool SPRITE_PAL_PIPE_RST0n;
-  /*p34.TAFA*/ bool SPRITE_PAL_PIPE_RST1n;
-  /*p34.PYZY*/ bool SPRITE_PAL_PIPE_RST2n;
-  /*p34.TOWA*/ bool SPRITE_PAL_PIPE_RST3n;
-  /*p34.RUDU*/ bool SPRITE_PAL_PIPE_RST4n;
-  /*p34.PAZO*/ bool SPRITE_PAL_PIPE_RST5n;
-  /*p34.LOWA*/ bool SPRITE_PAL_PIPE_RST6n;
-  /*p34.LUNU*/ bool SPRITE_PAL_PIPE_RST7n;
-
   /*p34.RUGO*/ bool SPRITE_PAL_PIPE_0;
   /*p34.SATA*/ bool SPRITE_PAL_PIPE_1;
   /*p34.ROSA*/ bool SPRITE_PAL_PIPE_2;
@@ -149,69 +118,6 @@ struct PixelPipe {
   /*p34.NUKE*/ bool SPRITE_PAL_PIPE_5;
   /*p34.MODA*/ bool SPRITE_PAL_PIPE_6;
   /*p34.LYME*/ bool SPRITE_PAL_PIPE_7;
-
-  /*p34.LOME*/ bool SPRITE_PAL_PIPE_7n;
-
-  /*p35.WOXA*/ bool PIX_SP0;
-  /*p35.XULA*/ bool PIX_SP1;
-  /*p35.NULY*/ bool PIX_SPn;
-
-  /*p35.VUMU*/ bool PIX_SP0n;
-  /*p35.WYRU*/ bool PIX_SP0a;
-  /*p35.WELE*/ bool PIX_SP1n;
-  /*p35.WOLO*/ bool PIX_SP1a;
-
-  /*p35.LAVA*/ bool MASK_OPB0;
-
-  /*p35.VYRO*/ bool PAL_OBP0D;
-  /*p35.VATA*/ bool PAL_OBP0C;
-  /*p35.VOLO*/ bool PAL_OBP0B;
-  /*p35.VUGO*/ bool PAL_OBP0A;
-
-  /*p35.WUFU*/ bool COL_OBP00;
-  /*p35.WALY*/ bool COL_OBP01;
-
-  /*p35.LUKU*/ bool MASK_OBP1;
-
-  /*p35.MEXA*/ bool PIX_SP0o;
-  /*p35.LOZO*/ bool PIX_SP0b;
-  /*p35.MABY*/ bool PIX_SP1o;
-  /*p35.LYLE*/ bool PIX_SP1b;
-
-  /*p35.LEDO*/ bool PAL_OBP1D;
-  /*p35.LYKY*/ bool PAL_OBP1C;
-  /*p35.LARU*/ bool PAL_OBP1B;
-  /*p35.LOPU*/ bool PAL_OBP1A;
-
-  /*p35.MOKA*/ bool COL_OBP10;
-  /*p35.MUFA*/ bool COL_OBP11;
-
-  /*p35.RYFU*/ bool MASK_BG0;
-  /*p35.RUTA*/ bool MASK_BG1;
-  /*p35.POKA*/ bool BGPIXELn;
-  /*p35.MUVE*/ bool MASK_BGP;
-
-  /*p35.RAJY*/ bool PIX_BG0;
-  /*p35.TADE*/ bool PIX_BG1;
-
-  /*p35.SOBA*/ bool PIX_BG0n;
-  /*p35.VYCO*/ bool PIX_BG1n;
-  /*p35.NUPO*/ bool PIX_BG0a;
-  /*p35.NALE*/ bool PIX_BG1a;
-
-  /*p35.POBU*/ bool PAL_BGPA;
-  /*p35.NUMA*/ bool PAL_BGPB;
-  /*p35.NUXO*/ bool PAL_BGPC;
-  /*p35.NYPO*/ bool PAL_BGPD;
-
-  /*p35.NURA*/ bool COL_BGP1;
-  /*p35.NELO*/ bool COL_BGP0;
-
-  /*p35.PATY*/ bool LD0;
-  /*p35.PERO*/ bool LD1;
-
-  /*p35.REMY*/ bool LD0n;
-  /*p35.RAVO*/ bool LD1n;
 
   /*p36.TEPO*/ bool BGP_CLK;
   /*p36.PAVO*/ bool BGP_D0;
@@ -223,11 +129,7 @@ struct PixelPipe {
   /*p36.MORU*/ bool BGP_D5;
   /*p36.MENA*/ bool BGP_D7;
 
-  /*p36.XUFY*/ bool FF48_RD;
-  /*p36.XOMA*/ bool FF48_WR;
-  /*p36.XOZY*/ bool FF48_RDn;
-  /*p36.XELO*/ bool FF48_WRn;
-
+  /*p36.XELO*/ bool OBP0_CLK;
   /*p36.XANA*/ bool OBP0_D7;
   /*p36.XYZE*/ bool OBP0_D5;
   /*p36.XALO*/ bool OBP0_D3;
@@ -237,6 +139,7 @@ struct PixelPipe {
   /*p36.XOVA*/ bool OBP0_D2;
   /*p36.XUFU*/ bool OBP0_D0;
 
+  /*p36.LEHO*/ bool OBP1_CLK;
   /*p36.LUXO*/ bool OBP1_D7;
   /*p36.LUGU*/ bool OBP1_D5;
   /*p36.LOSE*/ bool OBP1_D3;
@@ -245,11 +148,6 @@ struct PixelPipe {
   /*p36.LUNE*/ bool OBP1_D4;
   /*p36.MOSA*/ bool OBP1_D2;
   /*p36.MOXY*/ bool OBP1_D0;
-
-  /*p36.MUMY*/ bool FF49_RD;
-  /*p36.MYXE*/ bool FF49_WR;
-  /*p36.LOTE*/ bool FF49_RDn;
-  /*p36.LEHO*/ bool FF49_WRn;
 
   /*p36.LELU*/ bool LELU;
   /*p36.LUGA*/ bool LUGA;

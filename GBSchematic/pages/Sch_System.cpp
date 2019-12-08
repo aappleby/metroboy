@@ -189,7 +189,7 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
       /*p08.TYNU*/ wire A000_FFFF = or(and(b.A15, b.A14), A000_BFFF);
       /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(b.A15, b.A14, b.A13, b.A12, b.A11, b.A10, b.A09);
       /*p08.TOZA*/ wire A000_FDFF_ABxxxxxx = and(b.sys.ADDR_VALID_ABxxxxxx, A000_FFFF, ADDR_0000_FE00);
-      /*p08.TYHO*/ c.chip_out.CS_A = mux2(b.sys.DMA_A15, A000_FDFF_ABxxxxxx, b.sys.DO_DMA); // ABxxxxxx
+      /*p08.TYHO*/ c.chip_out.CS_A = mux2(b.sys.DMA_A15, A000_FDFF_ABxxxxxx, b.sys.DMA_READ_CART); // ABxxxxxx
     }
 
     {
@@ -205,7 +205,7 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
       /*p08.LAGU*/ wire LAGU = or(and(cpu_in.CPU_RAW_RD, ADDR_VALID_AND_NOT_VRAMn), cpu_in.CPU_RAW_WR);
       /*p08.LYWE*/ wire LYWE = not(LAGU);
       /*p08.MOTY*/ wire CPU_EXT_RD = or(DBG_EXT_RDn, LYWE);
-      /*p08.TYMU*/ wire RD_OUT = nor(b.sys.DO_DMA, CPU_EXT_RD);
+      /*p08.TYMU*/ wire RD_OUT = nor(b.sys.DMA_READ_CART, CPU_EXT_RD);
       /*p08.UGAC*/ c.chip_out.RD_A = nand(RD_OUT, b.sys.MODE_DBG2n1);
       /*p08.URUN*/ c.chip_out.RD_D = nor (RD_OUT, b.sys.MODE_DBG2);
     }
@@ -216,7 +216,7 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
       /*p08.MOCA*/ wire DBG_EXT_RDn = nor(b.sys.ADDR_VALID_AND_NOT_VRAM, b.sys.MODE_DBG1);
       /*p08.MEXO*/ wire MEXO_ABCDxxxH = not(CPU_WR_xxxxEFGx);
       /*p08.NEVY*/ wire NEVY = or(MEXO_ABCDxxxH, DBG_EXT_RDn);
-      /*p08.PUVA*/ wire WR_OUT = or(NEVY, b.sys.DO_DMA);
+      /*p08.PUVA*/ wire WR_OUT = or(NEVY, b.sys.DMA_READ_CART);
       /*p08.UVER*/ c.chip_out.WR_A = nand(WR_OUT, b.sys.MODE_DBG2n1);
       /*p08.USUF*/ c.chip_out.WR_D = nor (WR_OUT, b.sys.MODE_DBG2);
     }

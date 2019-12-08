@@ -146,8 +146,6 @@ std::vector<SignalData> sample_signals =
   SignalData("chip_out.WR_A", offsetof(Schematics::Gameboy, chip_out.WR_A)),
   SignalData("chip_out.WR_D", offsetof(Schematics::Gameboy, chip_out.WR_D)),
 
-  SignalData("DO_DMA", offsetof(Schematics::Gameboy, sys.DO_DMA)),
-
 
   SignalData("vid.CLK_xBxDxFxHa", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHa)),
   SignalData("vid.CLK_xBxDxFxHb", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHb)),

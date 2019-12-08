@@ -65,11 +65,17 @@ void Interrupts_tock(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& 
 
   /*p02.PESU*/ wire FF0F_IN = not(chip_in.P10_B);
 
-  /*p02.LOPE*/ c.sys.FF0F_0 = srtock_pos(a.vid.INT_VBL_BUF, b.vid.INT_VBL_BUF, FF0F_SET0, FF0F_RST0, b.sys.FF0F_0, FF0F_IN);
-  /*p02.UBUL*/ c.sys.FF0F_1 = srtock_pos(a.sys.SER_CNT3,       b.sys.SER_CNT3,       FF0F_SET1, FF0F_RST1, b.sys.FF0F_1, FF0F_IN);
-  /*p02.ULAK*/ c.sys.FF0F_2 = srtock_pos(a.sys.INT_JP,         b.sys.INT_JP,         FF0F_SET2, FF0F_RST2, b.sys.FF0F_2, FF0F_IN);
-  /*p02.LALU*/ c.sys.FF0F_3 = srtock_pos(a.vid.INT_STAT,    b.vid.INT_STAT,    FF0F_SET3, FF0F_RST3, b.sys.FF0F_3, FF0F_IN);
-  /*p02.NYBO*/ c.sys.FF0F_4 = srtock_pos(a.sys.INT_TIMER,      b.sys.INT_TIMER,      FF0F_SET4, FF0F_RST4, b.sys.FF0F_4, FF0F_IN);
+  {
+    /*p21.PARU*/ wire VBLANK = not(!b.vid.REG_VBLANK);
+    /*p21.TOLU*/ wire INT_VBLn = not(VBLANK);
+    /*p21.VYPU*/ c.vid.INT_VBL_BUF = not(INT_VBLn);
+    /*p02.LOPE*/ c.sys.FF0F_0 = srtock_pos(a.vid.INT_VBL_BUF, b.vid.INT_VBL_BUF, FF0F_SET0, FF0F_RST0, b.sys.FF0F_0, FF0F_IN);
+  }
+
+  /*p02.UBUL*/ c.sys.FF0F_1 = srtock_pos(a.sys.SER_CNT3,  b.sys.SER_CNT3,  FF0F_SET1, FF0F_RST1, b.sys.FF0F_1, FF0F_IN);
+  /*p02.ULAK*/ c.sys.FF0F_2 = srtock_pos(a.sys.INT_JP,    b.sys.INT_JP,    FF0F_SET2, FF0F_RST2, b.sys.FF0F_2, FF0F_IN);
+  /*p02.LALU*/ c.sys.FF0F_3 = srtock_pos(a.vid.INT_STAT,  b.vid.INT_STAT,  FF0F_SET3, FF0F_RST3, b.sys.FF0F_3, FF0F_IN);
+  /*p02.NYBO*/ c.sys.FF0F_4 = srtock_pos(a.sys.INT_TIMER, b.sys.INT_TIMER, FF0F_SET4, FF0F_RST4, b.sys.FF0F_4, FF0F_IN);
 }
 
 //-----------------------------------------------------------------------------

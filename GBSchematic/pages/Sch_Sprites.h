@@ -26,7 +26,7 @@ struct Sprites {
 
 
   /*p28.ATEJ*/ bool NEW_LINE; // drives sprite count reset, must be new line
-  /*p28.ABAK*/ bool NEW_LINE2;
+
   /*p28.BYVA*/ bool NEW_LINE3;
   /*p29.DYBA*/ bool NEW_LINE4;
 
@@ -43,7 +43,7 @@ struct Sprites {
   /*p28.ZOFE*/ bool OAM_B_CS;
 
 
-  /*p28.AZYB*/ bool SPRITE_COUNT_RSTn;
+
 
 
 
@@ -51,9 +51,8 @@ struct Sprites {
 
   /*p01.TAVA*/ bool CLK_AxCxExGx10; // sprites
 
-  /*p28.BESU*/ bool BESU;
-
-  /*p28.ANEL*/ bool IN_LINE_SYNC;
+  /*p29.CATU*/ bool IN_LINE_SYNCa;
+  /*p28.ANEL*/ bool IN_LINE_SYNCb;
 
   /*p28.YFEL*/ bool SCAN0;
   /*p28.WEWY*/ bool SCAN1;
@@ -62,7 +61,7 @@ struct Sprites {
   /*p28.FAHA*/ bool SCAN4;
   /*p28.FONY*/ bool SCAN5;
 
-  /*p28.ASEN*/ bool ASEN;
+
 
 
 
@@ -80,7 +79,6 @@ struct Sprites {
 
   /*p29.TACU*/ bool SEQ_5_TRIG;
 
-  /*p29.TEXY*/ bool SPRITE_READn;
   /*p29.AVAP*/ bool SCAN_DONE_TRIG;
   /*p29.FEPO*/ bool STORE_MATCH;
   /*p29.WUTY*/ bool WUTY_CLK;
@@ -90,28 +88,31 @@ struct Sprites {
 
   /*p29.TYFO*/ bool SEQ_5_SYNCn;
   /*p29.XOCE*/ bool CLK_XOCE;
-  /*p29.CATU*/ bool IN_LINE;
+
   /*p29.DENY*/ bool DENY;
   /*p29.XYME*/ bool XYME;
   /*p29.GOWO*/ bool GOWO;
   /*p29.GUGY*/ bool GUGY;
-  /*p29.DYDO*/ bool DYDO;
+
   /*p29.GYGY*/ bool GYGY;
-  /*p29.GYMA*/ bool GYMA;
-  /*p29.FAME*/ bool FAME;
-  /*p29.FADO*/ bool FADO;
+
+
   /*p29.BUZA*/ bool STORE_SPRITE_IDX;
 
   // sprite matcher clock lines
   /*p29.YFAG*/ bool YFAG;
   /*p29.GECY*/ bool GECY;
-  /*p29.DOKU*/ bool DOKU;
+
   /*p29.XAHO*/ bool XAHO;
   /*p29.WOFO*/ bool WOFO;
   /*p29.CEXU*/ bool CEXU;
-  /*p29.WEME*/ bool WEME;
+
+  /*p29.WEME*/ bool STORE9_CLKa;
+  /*p29.WUFA*/ bool STORE9_CLKb;
+  /*p29.FAKA*/ bool STORE9_CLKc;
+
   /*p29.CYLA*/ bool CYLA;
-  /*p29.GAMY*/ bool GAMY;
+
 
 
   /*p29.ASYS*/ bool STORE1_CLKa;
@@ -119,12 +120,12 @@ struct Sprites {
   /*p29.BYVY*/ bool STORE1_CLKc;
 
   // sprite matcher reset lines
-  /*p29.WUPA*/ bool WUPA;
+  
   /*p29.GAFY*/ bool GAFY;
   /*p29.ZAPE*/ bool ZAPE;
   /*p29.WUNU*/ bool WUNU;
   /*p29.WUZO*/ bool WUZO;
-  /*p29.DOSY*/ bool DOSY;
+
   /*p29.EJAD*/ bool EJAD;
 
   // sprite store clock lines
@@ -140,8 +141,6 @@ struct Sprites {
   /*p29.BUCY*/ bool BUCY;
   /*p29.FEKA*/ bool FEKA;
   /*p29.XYHA*/ bool XYHA;
-  /*p29.WUFA*/ bool WUFA;
-  /*p29.FAKA*/ bool FAKA;
 
   /*p29.YDYV*/ bool OAM_B_LATCH0;
   /*p29.YCEB*/ bool OAM_B_LATCH1;
@@ -189,12 +188,10 @@ struct Sprites {
   /*p29.VONU*/ bool SPRITE_ABn;
 
   /*p29.TEPA*/ bool RENDERINGn;
-  /*p29.SAKY*/ bool SAKY;
-  /*p29.TYSO*/ bool SPRITE_READb;
 
   /*p29.TOMA*/ bool TOMA_CLK;
 
-  /*p29.SYCU*/ bool SYCU;
+
   /*p29.SEBA*/ bool SEBA;
 
   /*p29.TOXE*/ bool SEQ0;
@@ -204,26 +201,24 @@ struct Sprites {
   /*p29.BYJO*/ bool BYJO;
   /*p29.AZEM*/ bool AZEM;
   /*p29.AROR*/ bool MATCH_EN;
-  /*p29.XAGE*/ bool XAGE;
-  /*p29.YLOZ*/ bool YLOZ;
-  /*p29.DEGO*/ bool DEGO;
+  /*p29.XAGE*/ bool STORE4_MATCHn;
+  /*p29.YLOZ*/ bool STORE3_MATCHn;
+
   /*p29.DYDU*/ bool STORE1_MATCHn;
-  /*p29.YGEM*/ bool YGEM;
-  /*p29.EFYL*/ bool EFYL;
-  /*p29.DYKA*/ bool DYKA;
-  /*p29.YBEZ*/ bool YBEZ;
-  /*p29.EGOM*/ bool EGOM;
+  /*p29.YGEM*/ bool STORE9_MATCHn;
+  /*p29.EFYL*/ bool STORE8_MATCHn;
+  /*p29.DYKA*/ bool STORE7_MATCHn;
+  /*p29.YBEZ*/ bool STORE6_MATCHn;
+  /*p29.EGOM*/ bool STORE5_MATCHn;
 
 
-  /*p29.GAJA*/ bool STORE1_MATCH;
   /*p29.FUMA*/ bool STORE1_MATCH_OUT;
-  /*p29.ENUT*/ bool ENUT;
-  /*p29.GUPO*/ bool GUPO;
-  /*p29.GEDE*/ bool GEDE;
-  /*p29.EMOL*/ bool EMOL;
-  /*p29.WEBO*/ bool WEBO;
-  /*p29.WUTO*/ bool WUTO;
-  /*p29.GYFY*/ bool GYFY;
+  /*p29.GEDE*/ bool STORE2_MATCH_OUT;
+
+  /*p29.DEGO*/ bool STORE2_MATCHn;
+
+  /*p29.WUTO*/ bool STORE3_MATCH_OUT;
+
   /*p29.WUNA*/ bool WUNA;
   /*p29.XYLA*/ bool XYLA;
   /*p29.GONO*/ bool GONO;
@@ -239,7 +234,7 @@ struct Sprites {
   /*p29.GEKE*/ bool GEKE;
   /*p29.GYGA*/ bool GYGA;
   /*p29.FOXA*/ bool FOXA;
-  /*p29.GUZE*/ bool GUZE;
+
 
   
   /*p29.FONO*/ bool SPRITE9_GET_SYNCn;
@@ -252,30 +247,22 @@ struct Sprites {
   /*p29.EGAV*/ bool SPRITE2_GET_SYNCn;
   /*p29.CEDY*/ bool SPRITE1_GET_SYNCn;
 
-  /*p29.DUBU*/ bool DUBU;
+
   /*p29.GORO*/ bool GORO;
   /*p29.GUKY*/ bool GUKY;
   /*p29.WACY*/ bool WACY;
   /*p29.FEVE*/ bool FEVE;
   /*p29.WOHU*/ bool WOHU;
-  /*p29.GAKE*/ bool GAKE;
-  /*p29.FOKO*/ bool FOKO;
-  /*p29.EFEV*/ bool EFEV;
 
-  /*p29.WUKY*/ bool FLIP_Y;
-  /*p29.WAGO*/ bool WAGO;
 
-  /*p29.CYVU*/ bool SPRITE_Y0;
-  /*p29.BORE*/ bool SPRITE_Y1;
-  /*p29.BUVY*/ bool SPRITE_Y2;
 
-  /*p29.XUQU*/ bool SPRITE_AB;
 
-  /*p29.FUFO*/ bool LCDC_SPSIZEn;
-  /*p29.GEJY*/ bool GEJY;
+  
+  
+
   /*p29.FAMU*/ bool FAMU;
 
-  /*p29.BAKY*/ bool SPRITES_FULL;
+
   /*p29.CAKE*/ bool SPRITE_COUNT_CLK;
 
   /*p29.EDEN*/ bool SPRITE_COUNT0n;
@@ -287,19 +274,12 @@ struct Sprites {
   /*p29.CAXU*/ bool SPRITE_COUNT3n;
   /*p29.ELYG*/ bool SPRITE_COUNT3b;
 
-  /*p29.CUVA*/ bool STORE1_SEL;
-  /*p29.BYBY*/ bool STORE1_CLK;
-  /*p29.BUCO*/ bool STORE1_CLKn;
 
-  /*p29.GEBU*/ bool STORE2_SEL;
-  /*p29.WYXO*/ bool STORE2_CLK;
-  /*p29.GYFO*/ bool STORE2_CLKn;
+
   /*p29.CACU*/ bool STORE2_CLKa;
   /*p29.BUZY*/ bool STORE2_CLKb;
   /*p29.FUKE*/ bool STORE2_CLKc;
 
-  /*p29.FOCO*/ bool STORE3_SEL;
-  /*p29.GUVE*/ bool STORE3_CLK;
 
   /*p29.CUPE*/ bool STORE4_SEL;
   /*p29.CECU*/ bool STORE4_CLK;
@@ -316,18 +296,14 @@ struct Sprites {
   /*p29.DEWY*/ bool STORE8_SEL;
   /*p29.CAHO*/ bool STORE8_CLK;
 
-  /*p29.DOGU*/ bool STORE9_SEL;
-  /*p29.CATO*/ bool STORE9_CLK;
-
 
 
 
 
   /*p29.WEKA*/ bool WEKA;
   /*p29.GYVO*/ bool GYVO;
-  /*p29.GUSA*/ bool GUSA;
   /*p29.BUKA*/ bool BUKA;
-  /*p29.DECU*/ bool DECU;
+
   /*p29.BEDE*/ bool BEDE;
   /*p29.DUKE*/ bool DUKE;
   /*p29.DEZY*/ bool STORE_EN_SYNC;
@@ -448,16 +424,16 @@ struct Sprites {
   /*p30.XAZY*/ bool STORE2_LINE2;
   /*p30.XOSY*/ bool STORE2_LINE3;
 
-  /*p30.XUFO*/ bool XUFO;
-  /*p30.XUTE*/ bool XUTE;
-  /*p30.XOTU*/ bool XOTU;
-  /*p30.XYFE*/ bool XYFE;
-  /*p30.YZOR*/ bool YZOR;
-  /*p30.YBER*/ bool YBER;
-  /*p30.DEWU*/ bool DEWU;
-  /*p30.CANA*/ bool CANA;
-  /*p30.DYSY*/ bool DYSY;
-  /*p30.FOFO*/ bool FOFO;
+  /*p30.XUFO*/ bool STORE9_IDX0;
+  /*p30.XUTE*/ bool STORE9_IDX1;
+  /*p30.XOTU*/ bool STORE9_IDX2;
+  /*p30.XYFE*/ bool STORE9_IDX3;
+  /*p30.YZOR*/ bool STORE9_IDX4;
+  /*p30.YBER*/ bool STORE9_IDX5;
+  /*p30.DEWU*/ bool STORE9_LINE0;
+  /*p30.CANA*/ bool STORE9_LINE1;
+  /*p30.DYSY*/ bool STORE9_LINE2;
+  /*p30.FOFO*/ bool STORE9_LINE3;
 
   //----------
   // Sprite store 0
@@ -490,25 +466,6 @@ struct Sprites {
   /*p29.EBOJ*/ bool SPRITE0_GET_SYNCn;
 
   //----------
-
-  /*p31.YWOS*/ bool YWOS;
-  /*p31.DAJE*/ bool DAJE;
-  /*p31.CYVY*/ bool STORE1_MATCHB;
-  /*p31.YWAP*/ bool YWAP;
-  /*p31.YKOK*/ bool YKOK;
-  /*p31.DAMA*/ bool DAMA;
-  /*p31.YTUB*/ bool YTUB;
-  /*p31.COGY*/ bool COGY;
-  /*p31.CEHU*/ bool CEHU;
-  /*p31.ZURE*/ bool ZURE;
-  /*p31.CYCO*/ bool CYCO;
-  /*p31.EWAM*/ bool STORE1_MATCHA;
-  /*p31.YDOT*/ bool YDOT;
-  /*p31.YNAZ*/ bool YNAZ;
-  /*p31.FEHA*/ bool FEHA;
-  /*p31.YLEV*/ bool YLEV;
-  /*p31.FYMA*/ bool FYMA;
-  /*p31.EKES*/ bool EKES;
 
   /*p31.XYKY*/ bool OAM_A_LATCH0;
   /*p31.YRUM*/ bool OAM_A_LATCH1;
@@ -548,15 +505,6 @@ struct Sprites {
   /*p31.XABE*/ bool XABE;
   /*p31.XEKA*/ bool XEKA;
 
-  /*p31.YVAP*/ bool YVAP;
-  /*p31.XENY*/ bool XENY;
-  /*p31.XAVU*/ bool XAVU;
-  /*p31.XEVA*/ bool XEVA;
-  /*p31.YHOK*/ bool YHOK;
-  /*p31.YCAH*/ bool YCAH;
-  /*p31.YDAJ*/ bool YDAJ;
-  /*p31.YVUZ*/ bool YVUZ;
-
   /*p31.FAZU*/ bool FAZU;
   /*p31.FAXE*/ bool FAXE;
   /*p31.EXUK*/ bool EXUK;
@@ -565,15 +513,6 @@ struct Sprites {
   /*p31.EPUM*/ bool EPUM;
   /*p31.EROL*/ bool EROL;
   /*p31.EHYN*/ bool EHYN;
-
-  /*p31.EJOT*/ bool EJOT;
-  /*p31.ESAJ*/ bool ESAJ;
-  /*p31.DUCU*/ bool DUCU;
-  /*p31.EWUD*/ bool EWUD;
-  /*p31.DUSE*/ bool DUSE;
-  /*p31.DAGU*/ bool DAGU;
-  /*p31.DYZE*/ bool DYZE;
-  /*p31.DESO*/ bool DESO;
 
   /*p31.DANY*/ bool STORE1_X0;
   /*p31.DUKO*/ bool STORE1_X1;
@@ -584,15 +523,6 @@ struct Sprites {
   /*p31.DYFU*/ bool STORE1_X6;
   /*p31.CUSY*/ bool STORE1_X7;
 
-  /*p31.EDYM*/ bool STORE1_MATCH0;
-  /*p31.EMYB*/ bool STORE1_MATCH1;
-  /*p31.EBEF*/ bool STORE1_MATCH2;
-  /*p31.EWOK*/ bool STORE1_MATCH3;
-  /*p31.COLA*/ bool STORE1_MATCH4;
-  /*p31.BOBA*/ bool STORE1_MATCH5;
-  /*p31.COLU*/ bool STORE1_MATCH6;
-  /*p31.BAHU*/ bool STORE1_MATCH7;
-
   /*p31.ZOLY*/ bool ZOLY;
   /*p31.ZOGO*/ bool ZOGO;
   /*p31.ZECU*/ bool ZECU;
@@ -601,15 +531,6 @@ struct Sprites {
   /*p31.YRAC*/ bool YRAC;
   /*p31.YMEM*/ bool YMEM;
   /*p31.YVAG*/ bool YVAG;
-
-  /*p31.ZARE*/ bool ZARE;
-  /*p31.ZEMU*/ bool ZEMU;
-  /*p31.ZYGO*/ bool ZYGO;
-  /*p31.ZUZY*/ bool ZUZY;
-  /*p31.XOSU*/ bool XOSU;
-  /*p31.ZUVU*/ bool ZUVU;
-  /*p31.XUCO*/ bool XUCO;
-  /*p31.ZULO*/ bool ZULO;
 
   /*p31.YBED*/ bool YBED;
   /*p31.ZALA*/ bool ZALA;
@@ -620,15 +541,6 @@ struct Sprites {
   /*p31.ZYJO*/ bool ZYJO;
   /*p31.XURY*/ bool XURY;
 
-  /*p31.ZYKU*/ bool ZYKU;
-  /*p31.ZYPU*/ bool ZYPU;
-  /*p31.XAHA*/ bool XAHA;
-  /*p31.ZEFE*/ bool ZEFE;
-  /*p31.XEJU*/ bool XEJU;
-  /*p31.ZATE*/ bool ZATE;
-  /*p31.ZAKU*/ bool ZAKU;
-  /*p31.YBOX*/ bool YBOX;
-
   /*p31.EZUF*/ bool EZUF;
   /*p31.ENAD*/ bool ENAD;
   /*p31.EBOW*/ bool EBOW;
@@ -638,32 +550,14 @@ struct Sprites {
   /*p31.GADY*/ bool GADY;
   /*p31.GAZA*/ bool GAZA;
 
-  /*p31.DUZE*/ bool DUZE;
-  /*p31.DAGA*/ bool DAGA;
-  /*p31.DAWU*/ bool DAWU;
-  /*p31.EJAW*/ bool EJAW;
-  /*p31.GOHO*/ bool GOHO;
-  /*p31.GASU*/ bool GASU;
-  /*p31.GABU*/ bool GABU;
-  /*p31.GAFE*/ bool GAFE;
-
-  /*p31.YPOD*/ bool YPOD;
-  /*p31.YROP*/ bool YROP;
-  /*p31.YNEP*/ bool YNEP;
-  /*p31.YZOF*/ bool YZOF;
-  /*p31.XUVY*/ bool XUVY;
-  /*p31.XERE*/ bool XERE;
-  /*p31.XUZO*/ bool XUZO;
-  /*p31.XEXA*/ bool XEXA;
-
-  /*p31.ZYWU*/ bool ZYWU;
-  /*p31.ZUZA*/ bool ZUZA;
-  /*p31.ZEJO*/ bool ZEJO;
-  /*p31.ZEDA*/ bool ZEDA;
-  /*p31.YMAM*/ bool YMAM;
-  /*p31.YTYP*/ bool YTYP;
-  /*p31.YFOP*/ bool YFOP;
-  /*p31.YVAC*/ bool YVAC;
+  /*p31.XUVY*/ bool STORE9_X0;
+  /*p31.XERE*/ bool STORE9_X1;
+  /*p31.XUZO*/ bool STORE9_X2;
+  /*p31.XEXA*/ bool STORE9_X3;
+  /*p31.YPOD*/ bool STORE9_X4;
+  /*p31.YROP*/ bool STORE9_X5;
+  /*p31.YNEP*/ bool STORE9_X6;
+  /*p31.YZOF*/ bool STORE9_X7;
 
   /*p31.CYWE*/ bool CYWE;
   /*p31.DYBY*/ bool DYBY;
@@ -674,15 +568,6 @@ struct Sprites {
   /*p31.FOZY*/ bool FOZY;
   /*p31.FESY*/ bool FESY;
 
-  /*p31.BAZY*/ bool BAZY;
-  /*p31.CYLE*/ bool CYLE;
-  /*p31.CEVA*/ bool CEVA;
-  /*p31.BUMY*/ bool BUMY;
-  /*p31.GUZO*/ bool GUZO;
-  /*p31.GOLA*/ bool GOLA;
-  /*p31.GEVE*/ bool GEVE;
-  /*p31.GUDE*/ bool GUDE;
-
   /*p31.FOKA*/ bool STORE2_X0;
   /*p31.FYTY*/ bool STORE2_X1;
   /*p31.FUBY*/ bool STORE2_X2;
@@ -691,15 +576,6 @@ struct Sprites {
   /*p31.EJUF*/ bool STORE2_X5;
   /*p31.ENOR*/ bool STORE2_X6;
   /*p31.DEPY*/ bool STORE2_X7;
-
-  /*p31.FUZU*/ bool STORE2_MATCH0;
-  /*p31.FESO*/ bool STORE2_MATCH1;
-  /*p31.FOKY*/ bool STORE2_MATCH2;
-  /*p31.FYVA*/ bool STORE2_MATCH3;
-  /*p31.CEKO*/ bool STORE2_MATCH4;
-  /*p31.DETY*/ bool STORE2_MATCH5;
-  /*p31.DOZO*/ bool STORE2_MATCH6;
-  /*p31.CONY*/ bool STORE2_MATCH7;
 };
 
 //-----------------------------------------------------------------------------

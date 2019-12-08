@@ -50,15 +50,14 @@ struct System {
 
   //----------
   // 4M clocks
-  /*p01.ARYS*/ bool CLK_AxCxExGx5; // not(CLKIN_B);
+  /*p01.ARYS*/ bool ROOTCLK_AxCxExGx5; // not(CLKIN_B);
+  /*p01.ANOS*/ bool ROOTCLK_AxCxExGx6; // deglitch 1
+  /*p01.AVET*/ bool ROOTCLK_xBxDxFxH3; // deglitch 2
 
-  /*p01.ANOS*/ bool CLK_AxCxExGx6; // deglitch 1
-  /*p01.AVET*/ bool CLK_xBxDxFxH3; // deglitch 2
   /*p01.ATAL*/ bool CLK_AxCxExGx3; // drives phase generator
 
   /*p01.ALET*/ bool CLK_AxCxExGx4; // video
-  /*p01.LAPE*/ bool CLK_xBxDxFxH5; // video
-  /*p01.TAVA*/ bool CLK_AxCxExGx10; // sprites
+  /*p01.LAPE*/ bool CLK_xBxDxFxH5; // tag wrong?
   /*p01.ZEME*/ bool CLK_xBxDxFxH2; // sprites, video
 
   // 1M clocks
@@ -309,8 +308,7 @@ struct System {
   /*p04.LARA*/ bool LARA;
   /*p04.MORY*/ bool DO_DMAn;
 
-  /*p04.NAXY*/ bool NAXY;
-  /*p04.POWU*/ bool POWU;
+
   /*p04.LUPA*/ bool LUPA;
 
 
@@ -319,9 +317,8 @@ struct System {
   /*p04.LEBU*/ bool DMA_A15n;
   /*p04.LYXE*/ bool LYXE;
 
-  /*p04.WYJA*/ bool OAM_CS;
+
   /*p04.LUMA*/ bool DO_DMA; // if true, addr bus = dma addr
-  /*p04.DUGA*/ bool OAM_ADDR_DMA;
 
   /*p04.LUFA*/ bool VRAM_TO_OAMn;
   /*p04.AHOC*/ bool VRAM_TO_OAMa;

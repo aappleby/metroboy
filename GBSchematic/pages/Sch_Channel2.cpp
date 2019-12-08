@@ -156,7 +156,8 @@ void P14_Ch2Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);
     c.ch2.GADO = not(CPU_RDn);
-    c.ch2.EVYF = nor(b.apu.CPU_WR_WEIRD, ADDR_FF19);
+    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(cpu_in.FROM_CPU5, b.apu.APU_WR);
+    c.ch2.EVYF = nor(CPU_WR_WEIRD, ADDR_FF19);
     c.ch2.HUMA = nor(ADDR_FF19, b.ch2.GADO);
   }
   

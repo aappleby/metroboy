@@ -189,16 +189,6 @@ void PixelPipe_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a
     //----------
     // Sprite pix & mask
 
-    /*p29.XADO*/ c.spr.SPRITE_PIX_LATCH_A = not(b.spr.SPRITE_PIX_LATCH_An);
-    /*p29.WENY*/   c.spr.SPRITE_PIX_LATCH_An = not(b.spr.SPRITE_PIX_LATCH_Ab);
-    /*p29.VYWA*/     c.spr.SPRITE_PIX_LATCH_Ab = not(b.spr.SPRITE_PIX_LATCH_Ao);
-    /*p29.TOPU*/       c.spr.SPRITE_PIX_LATCH_Ao = and(b.spr.SEQ1, b.spr.SYCU);
-
-    /*p29.PUCO*/ c.spr.SPRITE_PIX_LATCH_B = not(b.spr.SPRITE_PIX_LATCH_Bn);
-    /*p29.NYBE*/   c.spr.SPRITE_PIX_LATCH_Bn = not(b.spr.SPRITE_PIX_LATCH_Bb);
-    /*p29.PEBY*/     c.spr.SPRITE_PIX_LATCH_Bb = not(b.spr.SPRITE_PIX_LATCH_Bo);
-    /*p29.RACA*/       c.spr.SPRITE_PIX_LATCH_Bo = and(b.spr.SPRITE_ABn, b.spr.SYCU);
-
     /*p29.XONO*/ wire FLIP_X = and(!b.spr.OAM_A_D5, b.spr.SPRITE_READn);
 
     /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2(b.MD7, b.MD0, FLIP_X);

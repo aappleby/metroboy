@@ -70,18 +70,16 @@ void Channel1_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
   // FF12 NR12
 
   {
-    /*p11.HATO*/ wire NR12_RSTn = not(b.apu.APU_RESET1);
     
     /*p10.DAMY*/ wire ADDR_0010an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx0);
     /*p10.EDAF*/ wire ADDR_FF12  = nor(b.apu.ADDR_FF1Xn, ADDR_0010an);
-    /*p11.HAXE*/ wire ADDR_FF12n = not(ADDR_FF12);
-    /*p11.GAGO*/ wire ADDR_FF12o = not(ADDR_FF12);
   
     /*p10.BAFU*/ wire CPU_WRn = not(b.sys.CPU_WR);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
+
+    /*p11.HATO*/ wire NR12_RSTn = not(b.apu.APU_RESET1);
     /*p11.KYGY*/ c.ch1.NR12_CLKa  = not(/*p11.HAFU*/ and(APU_WR, ADDR_FF12));
     /*p11.GAXU*/ c.ch1.NR12_CLKb  = nand(APU_WR, ADDR_FF12);
-
     /*p11.JUSA*/ c.ch1.NR12_DELAY0  = tock_pos(a.ch1.NR12_CLKa, b.ch1.NR12_CLKa, NR12_RSTn, b.ch1.NR12_DELAY0,  b.D0);
     /*p11.JUZY*/ c.ch1.NR12_DELAY1  = tock_pos(a.ch1.NR12_CLKa, b.ch1.NR12_CLKa, NR12_RSTn, b.ch1.NR12_DELAY1,  b.D1);
     /*p11.JOMA*/ c.ch1.NR12_DELAY2  = tock_pos(a.ch1.NR12_CLKa, b.ch1.NR12_CLKa, NR12_RSTn, b.ch1.NR12_DELAY2,  b.D2);
@@ -92,17 +90,19 @@ void Channel1_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
     /*p11.JOPU*/ c.ch1.NR12_VOL3    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL3,    b.D7);
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);
-    /*p11.HAMY*/ wire NR12_RDa = or(ADDR_FF12n, CPU_RDn);
-    /*p11.HOCU*/ wire NR12_RDb = or(ADDR_FF12o, CPU_RDn);
+    /*p11.HAXE*/ wire ADDR_FF12n = not(ADDR_FF12);
+    /*p11.GAGO*/ wire ADDR_FF12o = not(ADDR_FF12);
+    /*p11.HAMY*/ wire NR12_RDn = or(ADDR_FF12n, CPU_RDn); // polarity?
+    /*p11.HOCU*/ wire NR12_RDo = or(ADDR_FF12o, CPU_RDn);
 
-    /*p11.JYNE*/ if (NR12_RDa) c.D0 = b.ch1.NR12_DELAY0; // polarity?
-    /*p11.JACA*/ if (NR12_RDa) c.D1 = b.ch1.NR12_DELAY1;
-    /*p11.JOKU*/ if (NR12_RDa) c.D2 = b.ch1.NR12_DELAY2;
-    /*p11.HONO*/ if (NR12_RDb) c.D3 = b.ch1.NR12_ENV_DIR;
-    /*p11.HOWU*/ if (NR12_RDb) c.D4 = b.ch1.NR12_VOL0;
-    /*p11.HEWA*/ if (NR12_RDb) c.D5 = b.ch1.NR12_VOL1;
-    /*p11.HEVE*/ if (NR12_RDb) c.D6 = b.ch1.NR12_VOL2;
-    /*p11.JYSE*/ if (NR12_RDb) c.D7 = b.ch1.NR12_VOL3;
+    /*p11.JYNE*/ if (!NR12_RDn) c.D0 = b.ch1.NR12_DELAY0;
+    /*p11.JACA*/ if (!NR12_RDn) c.D1 = b.ch1.NR12_DELAY1;
+    /*p11.JOKU*/ if (!NR12_RDn) c.D2 = b.ch1.NR12_DELAY2;
+    /*p11.HONO*/ if (!NR12_RDo) c.D3 = b.ch1.NR12_ENV_DIR;
+    /*p11.HOWU*/ if (!NR12_RDo) c.D4 = b.ch1.NR12_VOL0;
+    /*p11.HEWA*/ if (!NR12_RDo) c.D5 = b.ch1.NR12_VOL1;
+    /*p11.HEVE*/ if (!NR12_RDo) c.D6 = b.ch1.NR12_VOL2;
+    /*p11.JYSE*/ if (!NR12_RDo) c.D7 = b.ch1.NR12_VOL3;
 
     /*p13.HOCA*/ c.ch1.CH1_AMP_ENn = nor(b.ch1.NR12_ENV_DIR, b.ch1.NR12_VOL0, b.ch1.NR12_VOL1, b.ch1.NR12_VOL2, b.ch1.NR12_VOL3);
   }
@@ -339,11 +339,8 @@ void Channel1_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
     /*p13.CAJA*/ c.ch1.SHIFTER_CNT1 = count_pos(a.ch1.SHIFTER_CNT0,     b.ch1.SHIFTER_CNT0,     b.ch1.SHIFTER_CNT_LD, b.ch1.SHIFTER_CNT1, !b.ch1.NR10_SHIFT1);
     /*p13.BYRA*/ c.ch1.SHIFTER_CNT2 = count_pos(a.ch1.SHIFTER_CNT1,     b.ch1.SHIFTER_CNT1,     b.ch1.SHIFTER_CNT_LD, b.ch1.SHIFTER_CNT2, !b.ch1.NR10_SHIFT2);
 
-    wire aCLK_2M  = a.apu.AJER_2M;
-    wire bCLK_2M  = b.apu.AJER_2M;
-
     /*p13.ATAT*/ c.ch1.SHIFT_DONE_SYNC_RST = nor(b.apu.APU_RESET1, b.ch1.SWEEP_TRIGGER);
-    /*p13.BYTE*/ c.ch1.SHIFT_DONE_SYNC = tock_pos(aCLK_2M, bCLK_2M,
+    /*p13.BYTE*/ c.ch1.SHIFT_DONE_SYNC = tock_pos(a.apu.AJER_2M, b.apu.AJER_2M,
                                                b.ch1.SHIFT_DONE_SYNC_RST,
                                                b.ch1.SHIFT_DONE_SYNC,
                                                /*p13.COPY*/ and(b.ch1.SHIFTER_CNT0, b.ch1.SHIFTER_CNT1, b.ch1.SHIFTER_CNT2));

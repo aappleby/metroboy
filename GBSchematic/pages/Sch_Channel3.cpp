@@ -143,7 +143,8 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
     /*p16.FAKO*/ wire RESTART_RST = nor(b.apu.APU_RESET1, b.ch3.CH3_RESTART_SYNC);
 
     /*p16.JUZO*/ c.ch3.FF1E_WR = not(FF1E_WRn);
-    /*p16.FOVO*/ c.ch3.FF1E_WRo = nand(b.apu.CPU_WR_WEIRD, ADDR_FF1E);
+    /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(cpu_in.FROM_CPU5, b.apu.APU_WR);
+    /*p16.FOVO*/ c.ch3.FF1E_WRo = nand(CPU_WR_WEIRD, ADDR_FF1E);
     /*p16.EPYX*/ c.ch3.FF1E_WRp = nor(b.apu.APU_WR, ADDR_FF1E); // polarity?
 
     /*p16.JEMO*/ c.ch3.NR34_FREQ8  = tock_pos(a.ch3.FF1E_WR,  b.ch3.FF1E_WR,  APU_RESETs,  b.ch3.NR34_FREQ8,  b.D0);
@@ -281,11 +282,17 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
     /*p17.ABUR*/ wire ABUR_xBCDEFxx = not(BUKE_AxxxxxGH);
     /*p17.BORY*/ wire BORY_AxxxxxGH = not(ABUR_xBCDEFxx);
 
-    /*p17.BYZA*/ wire WAVE_WR = and(b.apu.APU_WR, b.apu.ADDR_FF3X);
+    /*p10.ASAD*/ wire A06n = not(b.A06);
+    /*p10.AVUN*/ wire A07n = not(b.A07);
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.A05, b.A04);
+
+    /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
+
+    /*p17.BYZA*/ wire WAVE_WR = and(b.apu.APU_WR, ADDR_FF3X);
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);
     /*p17.BOKE*/ wire CPU_RDa = not(CPU_RDn);
-    /*p17.BENA*/ wire CPU_WAVE_RD  = nand(CPU_RDa, b.apu.ADDR_FF3X);
+    /*p17.BENA*/ wire CPU_WAVE_RD  = nand(CPU_RDa, ADDR_FF3X);
     /*p17.CAZU*/ wire CPU_WAVE_RDn = not(CPU_WAVE_RD);
     /*p17.BETA*/ wire BETA = or(WAVE_WR, CPU_WAVE_RDn, BORY_AxxxxxGH);
 
@@ -301,10 +308,15 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   }
 
   {
+    /*p10.ASAD*/ wire A06n = not(b.A06);
+    /*p10.AVUN*/ wire A07n = not(b.A07);
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.A05, b.A04);
+
+    /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
     /*p17.BUTU*/ wire SAMPLE_CLK = not(b.ch3.SAMPLE_CLKn);
     /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);
     /*p17.BOKE*/ wire CPU_RDa = not(CPU_RDn);
-    /*p17.BENA*/ wire CPU_WAVE_RD  = nand(CPU_RDa, b.apu.ADDR_FF3X);
+    /*p17.BENA*/ wire CPU_WAVE_RD  = nand(CPU_RDa, ADDR_FF3X);
     /*p17.CAZU*/ wire CPU_WAVE_RDn = not(CPU_WAVE_RD);
 
     /*p18.COKA*/ wire CH3_ACTIVE = not(!b.ch3.CH3_ACTIVEo);
@@ -314,7 +326,12 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
   }
 
   {
-    /*p17.BYZA*/ wire WAVE_WR = and(b.apu.APU_WR, b.apu.ADDR_FF3X);
+    /*p10.ASAD*/ wire A06n = not(b.A06);
+    /*p10.AVUN*/ wire A07n = not(b.A07);
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.A05, b.A04);
+
+    /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
+    /*p17.BYZA*/ wire WAVE_WR = and(b.apu.APU_WR, ADDR_FF3X);
     /*p17.AMYT*/ c.WAVE_WRn = not(WAVE_WR);
   }
 
@@ -356,9 +373,14 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
     /*p17.CUTO*/ wire WAVE_D6n = not(b.WAVE_D6);
     /*p17.AKAF*/ wire WAVE_D7n = not(b.WAVE_D7);
 
+    /*p10.ASAD*/ wire A06n = not(b.A06);
+    /*p10.AVUN*/ wire A07n = not(b.A07);
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.A05, b.A04);
+    /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
+
     /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);
     /*p17.BOKE*/ wire CPU_RDa = not(CPU_RDn);
-    /*p17.BENA*/ wire CPU_WAVE_RD  = nand(CPU_RDa, b.apu.ADDR_FF3X);
+    /*p17.BENA*/ wire CPU_WAVE_RD  = nand(CPU_RDa, ADDR_FF3X);
     /*p17.CAZU*/ wire CPU_WAVE_RDn = not(CPU_WAVE_RD);
     /*p17.DUGU*/ if (CPU_WAVE_RDn) c.D7 = WAVE_D0n;
     /*p17.DESY*/ if (CPU_WAVE_RDn) c.D6 = WAVE_D1n;

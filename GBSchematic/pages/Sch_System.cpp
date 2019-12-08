@@ -51,14 +51,14 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
   //----------
   // Clock input and deglitcher
 
-  /*p01.ARYS*/ c.sys.CLK_AxCxExGx5  = not(chip_in.CLKIN_B);
-  /*p01.ANOS*/ c.sys.CLK_AxCxExGx6  = nand(chip_in.CLKIN_B, b.sys.CLK_xBxDxFxH3);
-  /*p01.AVET*/ c.sys.CLK_xBxDxFxH3  = nand(b.sys.CLK_AxCxExGx6, b.sys.CLK_AxCxExGx5);
+  /*p01.ARYS*/ c.sys.ROOTCLK_AxCxExGx5  = not(chip_in.CLKIN_B);
+  /*p01.ANOS*/ c.sys.ROOTCLK_AxCxExGx6  = nand(chip_in.CLKIN_B, b.sys.ROOTCLK_xBxDxFxH3);
+  /*p01.AVET*/ c.sys.ROOTCLK_xBxDxFxH3  = nand(b.sys.ROOTCLK_AxCxExGx6, b.sys.ROOTCLK_AxCxExGx5);
 
   //----------
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
 
-  /*p01.ATAL*/ c.sys.CLK_AxCxExGx3  = not(b.sys.CLK_xBxDxFxH3); // apu, phase generator
+  /*p01.ATAL*/ c.sys.CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH3); // apu, phase generator
   /*p01.AFUR*/ c.sys.PHASE_ABCDxxxx1 = tock_duo(a.sys.CLK_AxCxExGx3, b.sys.CLK_AxCxExGx3, b.sys.MODE_PROD, b.sys.PHASE_ABCDxxxx1, !b.sys.PHASE_xxxDEFGx1);
   /*p01.ALEF*/ c.sys.PHASE_xBCDExxx1 = tock_duo(a.sys.CLK_AxCxExGx3, b.sys.CLK_AxCxExGx3, b.sys.MODE_PROD, b.sys.PHASE_xBCDExxx1,  b.sys.PHASE_ABCDxxxx1);
   /*p01.APUK*/ c.sys.PHASE_xxCDEFxx1 = tock_duo(a.sys.CLK_AxCxExGx3, b.sys.CLK_AxCxExGx3, b.sys.MODE_PROD, b.sys.PHASE_xxCDEFxx1,  b.sys.PHASE_xBCDExxx1);

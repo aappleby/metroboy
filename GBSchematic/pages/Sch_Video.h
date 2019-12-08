@@ -12,9 +12,9 @@ struct Video {
   /*p29.LAPE*/ bool CLK_xBxDxFxHd;
   /*p29.XOTA*/ bool CLK_xBxDxFxHe;
 
-  /*p27.TAVA*/ bool CLK_AxCxExGxa;
   /*p29.XYVA*/ bool CLK_AxCxExGxb;
   /*p29.XYFY*/ bool CLK_AxCxExGxc;
+  /*p27.TAVA*/ bool CLK_AxCxExGxa; // tag wrong?
 
   /*p29.WUVU*/ bool CLK_AxxDExxHa;
   /*p29.XUPY*/ bool CLK_AxxDExxHb;
@@ -55,7 +55,7 @@ struct Video {
   /*p21.SYBE*/ bool X7;
 
   /*p21.SELA*/ bool LINE_DONEo;
-  /*p21.XYVO*/ bool LINE_144;
+
 
   /*p21.ACAM*/ bool X0n;
   /*p21.AZUB*/ bool X1n;
@@ -79,19 +79,6 @@ struct Video {
   /*p21.TYGE*/ bool TYGE;
   /*p21.ROKU*/ bool ROKU;
 
-  /*p21.SYFU*/ bool LY_MATCH7;
-  /*p21.TERY*/ bool LY_MATCH6;
-  /*p21.TUCY*/ bool LY_MATCH5;
-  /*p21.TYKU*/ bool LY_MATCH4;
-  /*p21.RASY*/ bool LY_MATCH3;
-  /*p21.REDA*/ bool LY_MATCH2;
-  /*p21.TYDE*/ bool LY_MATCH1;
-  /*p21.RYME*/ bool LY_MATCH0;
-  /*p21.SOVU*/ bool LY_MATCHA;
-  /*p21.SUBO*/ bool LY_MATCHB;
-  /*p21.RAPE*/ bool LY_MATCHn;
-  /*p21.PALY*/ bool LY_MATCH;
-
   /*p21.MUDE*/ bool CNT_RSTn;
 
   /*p21.SAXO*/ bool CNT_0;
@@ -110,13 +97,6 @@ struct Video {
   /*p21.TUDA*/ bool CNT_4n;
   /*p21.VATE*/ bool CNT_3n;
 
-  /*p21.VOKU*/ bool CNT_000n;
-  /*p21.TOZU*/ bool CNT_007n;
-  /*p21.TECE*/ bool CNT_045n;
-  /*p21.TEBO*/ bool CNT_083n;
-  /*p21.SANU*/ bool CNT_113n;
-
-  /*p21.TEGY*/ bool LINE_STROBEa;
   /*p21.SYGU*/ bool LINE_STROBEb;
 
   /*p21.RYNO*/ bool CPGn;
@@ -336,13 +316,11 @@ struct Video {
 
   /*p25.COTA*/ bool OAM_IN_CLKn;
 
-  // guess
-  /*p25.CUFE*/ bool OAM_WR;
 
-  /*p25.VAPE*/ bool VAPE;
-  /*p25.AVER*/ bool AVER;
-  /*p25.XUJY*/ bool XUJY;
-  /*p25.BYCU*/ bool OAM_IN_CLK;
+
+
+
+
   /*p25.TEFA*/ bool TEFA;
   /*p25.SOSE*/ bool ADDR_VRAM;
   /*p25.TUJA*/ bool CPU_VRAM_WR;
@@ -389,16 +367,6 @@ struct Video {
 
   /*p25.ROVE*/ bool D_TO_MDn;
 
-  /*p25.CEDE*/ bool DO_DMAn;
-
-  /*p25.XANE*/ bool A_TO_MAn;
-  /*p25.XEDU*/ bool A_TO_MA;
-
-  /*p25.TYVY*/ bool MD_TO_Dn;
-  /*p25.SEBY*/ bool MD_TO_D;
-
-  /*p25.VUZA*/ bool WIN_TILE_BANK;
-
   /*p26.TEDE*/ bool MASK_PIPE_SET0;
   /*p26.XALA*/ bool MASK_PIPE_SET1;
   /*p26.TYRA*/ bool MASK_PIPE_SET2;
@@ -433,15 +401,13 @@ struct Video {
   /*p27.SYLO*/ bool SYLO;
   /*p27.ROXY*/ bool FINE_MATCH_TRIG_OR_NOT_RENDERING;
   /*p27.POVA*/ bool FINE_MATCH_TRIG;
-  /*p27.POTU*/ bool POTU;
+
   /*p27.PORE*/ bool TILE_Y_CLKn;
   /*p27.VYPO*/ bool P10_Bn;
 
   /*p27.MOFU*/ bool MOFU;
   /*p27.NYDY*/ bool BG_SEQ_TRIG_3n;
   /*p27.NYXU*/ bool BG_SEQ_RSTn;
-
-  /*p27.SECA*/ bool SECA_RST;
 
   /*p27.SARY*/ bool WY_MATCH_SYNC;
   /*p27.REPU*/ bool IN_FRAME_Y;
@@ -490,10 +456,8 @@ struct Video {
   /*p27.LAXE*/ bool BG_SEQ0n;
   /*p27.MYSO*/ bool BG_SEQ_TRIG_1357;
   /*p27.NOGU*/ bool BG_SEQ_xx234567;
-  /*p27.NENY*/ bool BG_SEQ_01xxxxxx;
-  /*p27.LURY*/ bool LURY;
+
   /*p27.LONY*/ bool LONY;
-  /*p27.LUSU*/ bool LONYn;
   /*p27.LYZU*/ bool BG_SEQ_x1x3x5x7_DELAY;
 
   /*p27.LAXU*/ bool BG_SEQ_x1x3x5x7;

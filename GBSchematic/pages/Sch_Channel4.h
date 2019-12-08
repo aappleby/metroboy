@@ -63,15 +63,11 @@ struct Channel4 {
   //---------
   // FF23
 
-  /*p10.CUGE*/ bool FF23a;
-  /*p19.BARE*/ bool FF23_RDa;
   /*p19.DULU*/ bool FF23_WRn;
   /*p19.FOXE*/ bool FF23_WRo;
 
   /*p19.CUNY*/ bool NR44_STOP;
   /*p19.HOGA*/ bool NR44_START;
-
-
 
   //----------
   // Control

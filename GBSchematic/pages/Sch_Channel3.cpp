@@ -304,7 +304,7 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
     /*p18.COKA*/ wire CH3_ACTIVE = not(!b.ch3.CH3_ACTIVEo);
 
     /*p17.ATUR*/   wire WAVE_RAM_CTRL1n = mux2(BORU, BUKU, CH3_ACTIVE);
-    /*p17.ALER*/ c.WAVE_RAM_CTRL1 = not(WAVE_RAM_CTRL1n);
+    /*p17.ALER*/ c.ch3.WAVE_RAM_CTRL1 = not(WAVE_RAM_CTRL1n);
   }
 
   {
@@ -322,7 +322,7 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
     /*p18.COKA*/ wire CH3_ACTIVE = not(!b.ch3.CH3_ACTIVEo);
 
     /*p18.BENO*/ wire WAVE_RAM_CTRL3n = mux2(SAMPLE_CLK, CPU_WAVE_RDn, CH3_ACTIVE);
-    /*p18.ATOK*/ c.WAVE_RAM_CTRL3 = not(WAVE_RAM_CTRL3n);  
+    /*p18.ATOK*/ c.ch3.WAVE_RAM_CTRL3 = not(WAVE_RAM_CTRL3n);  
   }
 
   {
@@ -332,7 +332,7 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
 
     /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
     /*p17.BYZA*/ wire WAVE_WR = and(b.apu.APU_WR, ADDR_FF3X);
-    /*p17.AMYT*/ c.WAVE_WRn = not(WAVE_WR);
+    /*p17.AMYT*/ c.ch3.WAVE_WRn = not(WAVE_WR);
   }
 
 
@@ -355,23 +355,23 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
     /*p17.BAJA*/ c.ch3.SAMPLE_CLKc = not(SAMPLE_CLK);
     /*p17.BUFE*/ c.ch3.SAMPLE_CLKd = not(SAMPLE_CLK);
 
-    /*p17.CYFO*/ c.ch3.SAMPLE_0 = tock_pos(a.ch3.SAMPLE_CLKa, b.ch3.SAMPLE_CLKa, APU_RESETv, b.ch3.SAMPLE_0, b.WAVE_D0);
-    /*p17.CESY*/ c.ch3.SAMPLE_1 = tock_pos(a.ch3.SAMPLE_CLKd, b.ch3.SAMPLE_CLKd, APU_RESETv, b.ch3.SAMPLE_1, b.WAVE_D1);
-    /*p17.BUDY*/ c.ch3.SAMPLE_2 = tock_pos(a.ch3.SAMPLE_CLKc, b.ch3.SAMPLE_CLKc, APU_RESETv, b.ch3.SAMPLE_2, b.WAVE_D2);
-    /*p17.BEGU*/ c.ch3.SAMPLE_3 = tock_pos(a.ch3.SAMPLE_CLKb, b.ch3.SAMPLE_CLKb, APU_RESETv, b.ch3.SAMPLE_3, b.WAVE_D3);
-    /*p17.CUVO*/ c.ch3.SAMPLE_4 = tock_pos(a.ch3.SAMPLE_CLKa, b.ch3.SAMPLE_CLKa, APU_RESETv, b.ch3.SAMPLE_4, b.WAVE_D4);
-    /*p17.CEVO*/ c.ch3.SAMPLE_5 = tock_pos(a.ch3.SAMPLE_CLKd, b.ch3.SAMPLE_CLKd, APU_RESETv, b.ch3.SAMPLE_5, b.WAVE_D5);
-    /*p17.BORA*/ c.ch3.SAMPLE_6 = tock_pos(a.ch3.SAMPLE_CLKc, b.ch3.SAMPLE_CLKc, APU_RESETv, b.ch3.SAMPLE_6, b.WAVE_D6);
-    /*p17.BEPA*/ c.ch3.SAMPLE_7 = tock_pos(a.ch3.SAMPLE_CLKb, b.ch3.SAMPLE_CLKb, APU_RESETv, b.ch3.SAMPLE_7, b.WAVE_D7);
+    /*p17.CYFO*/ c.ch3.SAMPLE_0 = tock_pos(a.ch3.SAMPLE_CLKa, b.ch3.SAMPLE_CLKa, APU_RESETv, b.ch3.SAMPLE_0, b.ch3.WAVE_D0);
+    /*p17.CESY*/ c.ch3.SAMPLE_1 = tock_pos(a.ch3.SAMPLE_CLKd, b.ch3.SAMPLE_CLKd, APU_RESETv, b.ch3.SAMPLE_1, b.ch3.WAVE_D1);
+    /*p17.BUDY*/ c.ch3.SAMPLE_2 = tock_pos(a.ch3.SAMPLE_CLKc, b.ch3.SAMPLE_CLKc, APU_RESETv, b.ch3.SAMPLE_2, b.ch3.WAVE_D2);
+    /*p17.BEGU*/ c.ch3.SAMPLE_3 = tock_pos(a.ch3.SAMPLE_CLKb, b.ch3.SAMPLE_CLKb, APU_RESETv, b.ch3.SAMPLE_3, b.ch3.WAVE_D3);
+    /*p17.CUVO*/ c.ch3.SAMPLE_4 = tock_pos(a.ch3.SAMPLE_CLKa, b.ch3.SAMPLE_CLKa, APU_RESETv, b.ch3.SAMPLE_4, b.ch3.WAVE_D4);
+    /*p17.CEVO*/ c.ch3.SAMPLE_5 = tock_pos(a.ch3.SAMPLE_CLKd, b.ch3.SAMPLE_CLKd, APU_RESETv, b.ch3.SAMPLE_5, b.ch3.WAVE_D5);
+    /*p17.BORA*/ c.ch3.SAMPLE_6 = tock_pos(a.ch3.SAMPLE_CLKc, b.ch3.SAMPLE_CLKc, APU_RESETv, b.ch3.SAMPLE_6, b.ch3.WAVE_D6);
+    /*p17.BEPA*/ c.ch3.SAMPLE_7 = tock_pos(a.ch3.SAMPLE_CLKb, b.ch3.SAMPLE_CLKb, APU_RESETv, b.ch3.SAMPLE_7, b.ch3.WAVE_D7);
 
-    /*p17.CUGO*/ wire WAVE_D0n = not(b.WAVE_D0);
-    /*p17.CEGU*/ wire WAVE_D1n = not(b.WAVE_D1);
-    /*p17.ATEC*/ wire WAVE_D2n = not(b.WAVE_D2);
-    /*p17.ADOK*/ wire WAVE_D3n = not(b.WAVE_D3);
-    /*p17.BACA*/ wire WAVE_D4n = not(b.WAVE_D4);
-    /*p17.BERO*/ wire WAVE_D5n = not(b.WAVE_D5);
-    /*p17.CUTO*/ wire WAVE_D6n = not(b.WAVE_D6);
-    /*p17.AKAF*/ wire WAVE_D7n = not(b.WAVE_D7);
+    /*p17.CUGO*/ wire WAVE_D0n = not(b.ch3.WAVE_D0);
+    /*p17.CEGU*/ wire WAVE_D1n = not(b.ch3.WAVE_D1);
+    /*p17.ATEC*/ wire WAVE_D2n = not(b.ch3.WAVE_D2);
+    /*p17.ADOK*/ wire WAVE_D3n = not(b.ch3.WAVE_D3);
+    /*p17.BACA*/ wire WAVE_D4n = not(b.ch3.WAVE_D4);
+    /*p17.BERO*/ wire WAVE_D5n = not(b.ch3.WAVE_D5);
+    /*p17.CUTO*/ wire WAVE_D6n = not(b.ch3.WAVE_D6);
+    /*p17.AKAF*/ wire WAVE_D7n = not(b.ch3.WAVE_D7);
 
     /*p10.ASAD*/ wire A06n = not(b.A06);
     /*p10.AVUN*/ wire A07n = not(b.A07);
@@ -412,15 +412,15 @@ void P16_Ch3Regs_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy&
     /*p18.DOKY*/ wire WAVE_OUT2 = amux2(WAVE_VOL4, WAVE_PLAY_D2, WAVE_PLAY_D3, WAVE_VOL3);
     /*p18.DORE*/ wire WAVE_OUT3 = and(WAVE_PLAY_D3, WAVE_VOL4);
 
-    /*p18.BARY*/ c.WAVE_DAC0 = and(CH3_ACTIVE, WAVE_OUT0);
-    /*p18.BYKA*/ c.WAVE_DAC1 = and(CH3_ACTIVE, WAVE_OUT1);
-    /*p18.BOPA*/ c.WAVE_DAC2 = and(CH3_ACTIVE, WAVE_OUT2);
-    /*p18.BELY*/ c.WAVE_DAC3 = and(CH3_ACTIVE, WAVE_OUT3);
+    /*p18.BARY*/ c.ch3.WAVE_DAC0 = and(CH3_ACTIVE, WAVE_OUT0);
+    /*p18.BYKA*/ c.ch3.WAVE_DAC1 = and(CH3_ACTIVE, WAVE_OUT1);
+    /*p18.BOPA*/ c.ch3.WAVE_DAC2 = and(CH3_ACTIVE, WAVE_OUT2);
+    /*p18.BELY*/ c.ch3.WAVE_DAC3 = and(CH3_ACTIVE, WAVE_OUT3);
 
-    /*p18.BOLE*/ c.WAVE_A0 = mux2(b.ch3.WAVE_IDX1, b.A00, CH3_ACTIVE);
-    /*p18.AGYL*/ c.WAVE_A1 = mux2(b.ch3.WAVE_IDX2, b.A01, CH3_ACTIVE);
-    /*p18.AFUM*/ c.WAVE_A2 = mux2(b.ch3.WAVE_IDX3, b.A02, CH3_ACTIVE);
-    /*p18.AXOL*/ c.WAVE_A3 = mux2(b.ch3.WAVE_IDX4, b.A03, CH3_ACTIVE);
+    /*p18.BOLE*/ c.ch3.WAVE_A0 = mux2(b.ch3.WAVE_IDX1, b.A00, CH3_ACTIVE);
+    /*p18.AGYL*/ c.ch3.WAVE_A1 = mux2(b.ch3.WAVE_IDX2, b.A01, CH3_ACTIVE);
+    /*p18.AFUM*/ c.ch3.WAVE_A2 = mux2(b.ch3.WAVE_IDX3, b.A02, CH3_ACTIVE);
+    /*p18.AXOL*/ c.ch3.WAVE_A3 = mux2(b.ch3.WAVE_IDX4, b.A03, CH3_ACTIVE);
   }
 }
 

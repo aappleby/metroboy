@@ -1,8 +1,7 @@
 #pragma once
-
 #include "Schematics.h"
 
-#include "Sch_ChipSignals.h"
+
 #include "Sch_CpuSignals.h"
 
 #include "Sch_System.h"
@@ -16,6 +15,18 @@
 #include "Sch_PixelPipe.h"
 #include "Sch_Video.h"
 
+#include "Sch_Serial.h"
+#include "Sch_Timer.h"
+#include "Sch_DMA.h"
+#include "Sch_Debug.h"
+#include "Sch_Interrupts.h"
+#include "Sch_Joypad.h"
+#include "Sch_Pins.h"
+#include "Sch_LCD.h"
+#include "Sch_Bootrom.h"
+#include "Sch_Hram.h"
+#include "Sch_OAM.h"
+
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
@@ -24,7 +35,6 @@ struct Gameboy {
   int64_t timestamp;
 
   CpuOut cpu_out;
-  ChipOut chip_out;
 
   System     sys;
   ApuControl apu;
@@ -36,6 +46,17 @@ struct Gameboy {
   Sprites    spr;
   PixelPipe  pix;
   Video      vid;
+  Serial     ser;
+  Timer      tim;
+  DMA        dma;
+  Debug      dbg;
+  Interrupts irq;
+  Joypad     joy;
+  Pins       pin;
+  LCD        lcd;
+  Bootrom    rom;
+  Hram       hrm;
+  OAM        oam;
 
   //----------
   // main bus
@@ -76,68 +97,12 @@ struct Gameboy {
     };
   };
 
-  /*p18.BARY*/ bool WAVE_DAC0;
-  /*p18.BYKA*/ bool WAVE_DAC1;
-  /*p18.BOPA*/ bool WAVE_DAC2;
-  /*p18.BELY*/ bool WAVE_DAC3;
 
   //----------
   // vram bus
 
   bool MA00,MA01,MA02,MA03,MA04,MA05,MA06,MA07,MA08,MA09,MA10,MA11,MA12;
   bool MD0,MD1,MD2,MD3,MD4,MD5,MD6,MD7;
-
-  //----------
-  // oam bus
-
-  bool OAM_CLK;
-
-  bool TS_OAM_A_D0,TS_OAM_A_D1,TS_OAM_A_D2,TS_OAM_A_D3,TS_OAM_A_D4,TS_OAM_A_D5,TS_OAM_A_D6,TS_OAM_A_D7;
-  bool TS_OAM_B_D0,TS_OAM_B_D1,TS_OAM_B_D2,TS_OAM_B_D3,TS_OAM_B_D4,TS_OAM_B_D5,TS_OAM_B_D6,TS_OAM_B_D7;
-
-  //----------
-  // boot rom bus
-
-  bool BOOTROM_A1nA0n;
-  bool BOOTROM_A1nA0;
-  bool BOOTROM_A1A0n;
-  bool BOOTROM_A1A0;
-  bool BOOTROM_A2n;
-  bool BOOTROM_A3n;
-  bool BOOTROM_A5nA4n;
-  bool BOOTROM_A5nA4;
-  bool BOOTROM_A5A4n;
-  bool BOOTROM_A5A4;
-  bool BOOTROM_A6n;
-  bool BOOTROM_A7n;
-
-  bool BOOT_CS;
-
-  //----------
-  // high ram bus
-
-  bool HRAM_CS;
-
-  //----------
-  // wave ram bus
-
-  bool WAVE_RAM_CTRL1;
-  bool WAVE_RAM_CTRL3;
-  bool WAVE_WRn;
-
-  bool WAVE_D0;
-  bool WAVE_D1;
-  bool WAVE_D2;
-  bool WAVE_D3;
-  bool WAVE_D4;
-  bool WAVE_D5;
-  bool WAVE_D6;
-  bool WAVE_D7;
-
-  /*p18.BOLE*/ bool WAVE_A0;
-  /*p18.AGYL*/ bool WAVE_A1;
-  /*p18.AFUM*/ bool WAVE_A2;
-  /*p18.AXOL*/ bool WAVE_A3;
 };
 
 //-----------------------------------------------------------------------------

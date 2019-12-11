@@ -9,7 +9,7 @@ namespace Schematics {
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void Channel1_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void Channel1_tick(const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // FF10 NR10
@@ -410,7 +410,7 @@ void Channel1_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameboy& a,
     /*p12.EXAC*/ c.ch1.SHIFTER_07 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_07, SHIFTER_RST_07, b.ch1.SHIFTER_07, b.ch1.SHIFTER_08);
     /*p12.ELUX*/ c.ch1.SHIFTER_08 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_08, SHIFTER_RST_08, b.ch1.SHIFTER_08, b.ch1.SHIFTER_09);
     /*p12.AGEZ*/ c.ch1.SHIFTER_09 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_09, SHIFTER_RST_09, b.ch1.SHIFTER_09, b.ch1.SHIFTER_10);
-    /*p12.BEKU*/ c.ch1.SHIFTER_10 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_10, SHIFTER_RST_10, b.ch1.SHIFTER_10, chip_in.P10_B);
+    /*p12.BEKU*/ c.ch1.SHIFTER_10 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_10, SHIFTER_RST_10, b.ch1.SHIFTER_10, b.joy.P10_B);
   }
 
   //----------

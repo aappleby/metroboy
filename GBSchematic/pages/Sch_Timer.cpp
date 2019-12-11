@@ -1,32 +1,25 @@
-#include "Sch_System.h"
-#include "Sch_Gameboy.h"
-
-#pragma warning(disable : 4189)
-#pragma warning(disable : 4100)
+#include "Sch_Timer.h"
 
 namespace Schematics {
 
-//-----------------------------------------------------------------------------
 
-void Timer_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
+void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, const Timer& b, Timer& c) {
 
-  const System& pa = a.sys;
-  const System& pb = b.sys;
-  System& pc = c.sys;
-
-  /*p03.TOVY*/ wire A0n = not(b.A00);
-  /*p08.TOLA*/ wire A1n = not(b.A01);
-
-  /*p06.SARE*/ wire ADDR_XX00_XX07 = nor(b.A07, b.A06, b.A05, b.A04, b.A03);
-  /*p03.RYFO*/ c.sys.FF04_FF07 = and(b.A02, ADDR_XX00_XX07, b.sys.ADDR_FFXX);
+  /*p03.TOVY*/ wire A0n = not(in.A00);
+  /*p08.TOLA*/ wire A1n = not(in.A01);
+  /*p06.SARE*/ wire ADDR_XX00_XX07 = nor(in.A07, in.A06, in.A05, in.A04, in.A03);
+  /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A09);
+  /*p07.TONA*/ wire ADDR_08n = not(in.A08);
+  /*p07.SYKE*/ wire ADDR_FFXX = nor(ADDR_0000_FE00, ADDR_08n);
+  /*p03.RYFO*/ wire FF04_FF07 = and(in.A02, ADDR_XX00_XX07, ADDR_FFXX);
 
   {
-    /*p01.ATYP*/ wire ATYP_ABCDxxxx = not(!b.sys.PHASE_ABCDxxxx1);  
-    /*p01.AFEP*/ wire AFEP_AxxxxFGH = not( b.sys.PHASE_xBCDExxx1);
-    /*p01.AROV*/ wire AROV_xxCDEFxx = not(!b.sys.PHASE_xxCDEFxx1);
+    /*p01.ATYP*/ wire ATYP_ABCDxxxx = not(!in.PHASE_ABCDxxxx1);  
+    /*p01.AFEP*/ wire AFEP_AxxxxFGH = not( in.PHASE_xBCDExxx1);
+    /*p01.AROV*/ wire AROV_xxCDEFxx = not(!in.PHASE_xxCDEFxx1);
 
-    /*p01.BAPY*/ wire BAPY_xxxxxxGH = nor(b.sys.CPUCLK_REQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
-    /*p01.NULE*/ wire NULE_xxxxEFGH = nor(b.sys.CPUCLK_REQn, ATYP_ABCDxxxx);
+    /*p01.BAPY*/ wire BAPY_xxxxxxGH = nor(in.CPUCLK_REQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
+    /*p01.NULE*/ wire NULE_xxxxEFGH = nor(in.CPUCLK_REQn, ATYP_ABCDxxxx);
     /*p01.BERU*/ wire BERU_ABCDEFxx = not(BAPY_xxxxxxGH);
     /*p01.BYRY*/ wire BYRY_ABCDxxxx = not(NULE_xxxxEFGH);
     /*p01.BUFA*/ wire BUFA_xxxxxxGH = not(BERU_ABCDEFxx);
@@ -39,103 +32,101 @@ void Timer_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, co
     /*p01.BAZE*/ wire BAZE_ABCDxxxx = not(BELO_xxxxEFGH);
     /*p01.BUTO*/ wire BUTO_xBCDEFGH = nand(AFEP_AxxxxFGH, ATYP_ABCDxxxx, BAZE_ABCDxxxx);
     /*p01.BELE*/ wire BELE_Axxxxxxx = not(BUTO_xBCDEFGH);
-    /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor(BELE_Axxxxxxx, b.sys.CLK_BAD2);
+    /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor(BELE_Axxxxxxx, in.CLK_BAD2);
     /*p01.BALY*/ wire BALY_Axxxxxxx = not(BYJU_xBCDEFGH);
 
-    /*p01.BOGA*/ c.sys.BOGA_xBCDEFGH = not(BALY_Axxxxxxx);
+    /*p01.BOGA*/ c.BOGA_xBCDEFGH = not(BALY_Axxxxxxx);
   }
 
   //----------
   // FF04 DIV
 
   {
-    /*p01.UFOL*/ pc.DIV_RSTn = nor(pb.CLK_BAD1, chip_in.RST, /*p01.TAPE*/ and(pb.CPU_WR, pb.FF04_FF07, A1n, A0n));
+    /*p01.TAPE*/ wire TAPE = and(in.CPU_WR, FF04_FF07, A1n, A0n);
+    /*p01.UFOL*/ wire DIV_RSTn = nor(in.CLK_BAD1, in.RST, TAPE);
 
-    /*p01.UKUP*/ pc.DIV_00 = tock_pos(pa.BOGA_xBCDEFGH,    pb.BOGA_xBCDEFGH,    pb.DIV_RSTn, pb.DIV_00, !pb.DIV_00);
-    /*p01.UFOR*/ pc.DIV_01 = tock_pos(!pa.DIV_00,    !pb.DIV_00,    pb.DIV_RSTn, pb.DIV_01, !pb.DIV_01);
-    /*p01.UNER*/ pc.DIV_02 = tock_pos(!pa.DIV_01,    !pb.DIV_01,    pb.DIV_RSTn, pb.DIV_02, !pb.DIV_02);
-    /*p01.TERO*/ pc.DIV_03 = tock_pos(!pa.DIV_02,    !pb.DIV_02,    pb.DIV_RSTn, pb.DIV_03, !pb.DIV_03);
-    /*p01.UNYK*/ pc.DIV_04 = tock_pos(!pa.DIV_03,    !pb.DIV_03,    pb.DIV_RSTn, pb.DIV_04, !pb.DIV_04);
-    /*p01.TAMA*/ pc.DIV_05 = tock_pos(!pa.DIV_04,    !pb.DIV_04,    pb.DIV_RSTn, pb.DIV_05, !pb.DIV_05);
+    /*p01.UKUP*/ c.DIV_00 = tock_pos( a.BOGA_xBCDEFGH, b.BOGA_xBCDEFGH, DIV_RSTn, b.DIV_00, !b.DIV_00);
+    /*p01.UFOR*/ c.DIV_01 = tock_pos(!a.DIV_00,        !b.DIV_00,       DIV_RSTn, b.DIV_01, !b.DIV_01);
+    /*p01.UNER*/ c.DIV_02 = tock_pos(!a.DIV_01,        !b.DIV_01,       DIV_RSTn, b.DIV_02, !b.DIV_02);
+    /*p01.TERO*/ c.DIV_03 = tock_pos(!a.DIV_02,        !b.DIV_02,       DIV_RSTn, b.DIV_03, !b.DIV_03);
+    /*p01.UNYK*/ c.DIV_04 = tock_pos(!a.DIV_03,        !b.DIV_03,       DIV_RSTn, b.DIV_04, !b.DIV_04);
+    /*p01.TAMA*/ c.DIV_05 = tock_pos(!a.DIV_04,        !b.DIV_04,       DIV_RSTn, b.DIV_05, !b.DIV_05);
 
-    /*p01.ULUR*/ pc.DIV_06_CLK = mux2n(pb.BOGA_xBCDEFGH, !pb.DIV_05, pb.FF60_1);
-    /*p01.UGOT*/ pc.DIV_06 = tock_pos(pa.DIV_06_CLK, pb.DIV_06_CLK, pb.DIV_RSTn, pb.DIV_06, !pb.DIV_06);
-    /*p01.TULU*/ pc.DIV_07 = tock_pos(!pa.DIV_06,    !pb.DIV_06,    pb.DIV_RSTn, pb.DIV_07, !pb.DIV_07);
-    /*p01.TUGO*/ pc.DIV_08 = tock_pos(!pa.DIV_07,    !pb.DIV_07,    pb.DIV_RSTn, pb.DIV_08, !pb.DIV_08);
-    /*p01.TOFE*/ pc.DIV_09 = tock_pos(!pa.DIV_08,    !pb.DIV_08,    pb.DIV_RSTn, pb.DIV_09, !pb.DIV_09);
-    /*p01.TERU*/ pc.DIV_10 = tock_pos(!pa.DIV_09,    !pb.DIV_09,    pb.DIV_RSTn, pb.DIV_10, !pb.DIV_10);
-    /*p01.SOLA*/ pc.DIV_11 = tock_pos(!pa.DIV_10,    !pb.DIV_10,    pb.DIV_RSTn, pb.DIV_11, !pb.DIV_11);
-    /*p01.SUBU*/ pc.DIV_12 = tock_pos(!pa.DIV_11,    !pb.DIV_11,    pb.DIV_RSTn, pb.DIV_12, !pb.DIV_12);
-    /*p01.TEKA*/ pc.DIV_13 = tock_pos(!pa.DIV_12,    !pb.DIV_12,    pb.DIV_RSTn, pb.DIV_13, !pb.DIV_13);
-    /*p01.UKET*/ pc.DIV_14 = tock_pos(!pa.DIV_13,    !pb.DIV_13,    pb.DIV_RSTn, pb.DIV_14, !pb.DIV_14);
-    /*p01.UPOF*/ pc.DIV_15 = tock_pos(!pa.DIV_14,    !pb.DIV_14,    pb.DIV_RSTn, pb.DIV_15, !pb.DIV_15);
+    /*p01.ULUR*/ c.DIV_06_CLK = mux2n(b.BOGA_xBCDEFGH, !b.DIV_05, in.FF60_1);
+    /*p01.UGOT*/ c.DIV_06 = tock_pos(a.DIV_06_CLK, b.DIV_06_CLK, DIV_RSTn, b.DIV_06, !b.DIV_06);
+    /*p01.TULU*/ c.DIV_07 = tock_pos(!a.DIV_06,    !b.DIV_06,    DIV_RSTn, b.DIV_07, !b.DIV_07);
+    /*p01.TUGO*/ c.DIV_08 = tock_pos(!a.DIV_07,    !b.DIV_07,    DIV_RSTn, b.DIV_08, !b.DIV_08);
+    /*p01.TOFE*/ c.DIV_09 = tock_pos(!a.DIV_08,    !b.DIV_08,    DIV_RSTn, b.DIV_09, !b.DIV_09);
+    /*p01.TERU*/ c.DIV_10 = tock_pos(!a.DIV_09,    !b.DIV_09,    DIV_RSTn, b.DIV_10, !b.DIV_10);
+    /*p01.SOLA*/ c.DIV_11 = tock_pos(!a.DIV_10,    !b.DIV_10,    DIV_RSTn, b.DIV_11, !b.DIV_11);
+    /*p01.SUBU*/ c.DIV_12 = tock_pos(!a.DIV_11,    !b.DIV_11,    DIV_RSTn, b.DIV_12, !b.DIV_12);
+    /*p01.TEKA*/ c.DIV_13 = tock_pos(!a.DIV_12,    !b.DIV_12,    DIV_RSTn, b.DIV_13, !b.DIV_13);
+    /*p01.UKET*/ c.DIV_14 = tock_pos(!a.DIV_13,    !b.DIV_13,    DIV_RSTn, b.DIV_14, !b.DIV_14);
+    /*p01.UPOF*/ c.DIV_15 = tock_pos(!a.DIV_14,    !b.DIV_14,    DIV_RSTn, b.DIV_15, !b.DIV_15);
 
-    /*p01.UMEK*/ pc.DIV_06n = not(pb.DIV_06);
-    /*p01.UREK*/ pc.DIV_07n = not(pb.DIV_07);
-    /*p01.UTOK*/ pc.DIV_08n = not(pb.DIV_08);
-    /*p01.SAPY*/ pc.DIV_09n = not(pb.DIV_09);
-    /*p01.UMER*/ pc.DIV_10n = not(pb.DIV_10);
-    /*p01.RAVE*/ pc.DIV_11n = not(pb.DIV_11);
-    /*p01.RYSO*/ pc.DIV_12n = not(pb.DIV_12);
-    /*p01.UDOR*/ pc.DIV_13n = not(pb.DIV_13);
+    /*p01.UMEK*/ c.DIV_06n = not(b.DIV_06);
+    /*p01.UREK*/ c.DIV_07n = not(b.DIV_07);
+    /*p01.UTOK*/ c.DIV_08n = not(b.DIV_08);
+    /*p01.SAPY*/ c.DIV_09n = not(b.DIV_09);
+    /*p01.UMER*/ c.DIV_10n = not(b.DIV_10);
+    /*p01.RAVE*/ c.DIV_11n = not(b.DIV_11);
+    /*p01.RYSO*/ c.DIV_12n = not(b.DIV_12);
+    /*p01.UDOR*/ c.DIV_13n = not(b.DIV_13);
 
-    /*p01.TAGY*/ wire DIV_RD = and(pb.CPU_RD, pb.FF04_FF07, A1n, A0n);
-    /*p01.TAWU*/ if (DIV_RD) c.D0 = not(pb.DIV_06n);
-    /*p01.TAKU*/ if (DIV_RD) c.D1 = not(pb.DIV_07n);
-    /*p01.TEMU*/ if (DIV_RD) c.D2 = not(pb.DIV_08n);
-    /*p01.TUSE*/ if (DIV_RD) c.D3 = not(pb.DIV_09n);
-    /*p01.UPUG*/ if (DIV_RD) c.D4 = not(pb.DIV_10n);
-    /*p01.SEPU*/ if (DIV_RD) c.D5 = not(pb.DIV_11n);
-    /*p01.SAWA*/ if (DIV_RD) c.D6 = not(pb.DIV_12n);
-    /*p01.TATU*/ if (DIV_RD) c.D7 = not(pb.DIV_13n);
+    /*p01.TAGY*/ wire DIV_RD = and(in.CPU_RD, FF04_FF07, A1n, A0n);
 
-    /*p01.UVYN*/ pc.CLK_16K = not(pb.DIV_05);
+    /*p01.TAWU*/ if (DIV_RD) out.D0 = not(b.DIV_06n);
+    /*p01.TAKU*/ if (DIV_RD) out.D1 = not(b.DIV_07n);
+    /*p01.TEMU*/ if (DIV_RD) out.D2 = not(b.DIV_08n);
+    /*p01.TUSE*/ if (DIV_RD) out.D3 = not(b.DIV_09n);
+    /*p01.UPUG*/ if (DIV_RD) out.D4 = not(b.DIV_10n);
+    /*p01.SEPU*/ if (DIV_RD) out.D5 = not(b.DIV_11n);
+    /*p01.SAWA*/ if (DIV_RD) out.D6 = not(b.DIV_12n);
+    /*p01.TATU*/ if (DIV_RD) out.D7 = not(b.DIV_13n);
   }
 
   //----------
   // TAC
+  {
+    /*p03.SARA*/ c.FF07_WRn = nand(in.CPU_WR, FF04_FF07, in.A00, in.A01); // nand? guess it happens on the neg edge of CPU_WR?
+    /*p03.SOPU*/ c.TAC_0 = tock_pos(a.FF07_WRn, b.FF07_WRn, in.SYS_RESETn, b.TAC_0, in.D0);
+    /*p03.SAMY*/ c.TAC_1 = tock_pos(a.FF07_WRn, b.FF07_WRn, in.SYS_RESETn, b.TAC_1, in.D1);
+    /*p03.SABO*/ c.TAC_2 = tock_pos(a.FF07_WRn, b.FF07_WRn, in.SYS_RESETn, b.TAC_2, in.D2);
 
-  /*p03.SORA*/ pc.FF07_RD = and (pb.CPU_RD, pb.FF04_FF07, b.A00, b.A01);
-  /*p03.SARA*/ pc.FF07_WR = nand(pb.CPU_WR, pb.FF04_FF07, b.A00, b.A01); // nand? guess it happens on the neg edge of CPU_WR?
+    /*p03.RYLA*/ wire FF07_D0 = not(!b.TAC_0);
+    /*p03.ROTE*/ wire FF07_D1 = not(!b.TAC_1);
+    /*p03.SUPE*/ wire FF07_D2 = not(!b.TAC_2);
 
-  /*p03.SOPU*/ pc.TAC_0 = tock_pos(pa.FF07_WR, pb.FF07_WR, pb.SYS_RESETn1, pb.TAC_0, b.D0);
-  /*p03.SAMY*/ pc.TAC_1 = tock_pos(pa.FF07_WR, pb.FF07_WR, pb.SYS_RESETn1, pb.TAC_1, b.D1);
-  /*p03.SABO*/ pc.TAC_2 = tock_pos(pa.FF07_WR, pb.FF07_WR, pb.SYS_RESETn1, pb.TAC_2, b.D2);
-
-  /*p03.RYLA*/ pc.FF07_D0 = not(!pb.TAC_0);
-  /*p03.ROTE*/ pc.FF07_D1 = not(!pb.TAC_1);
-  /*p03.SUPE*/ pc.FF07_D2 = not(!pb.TAC_2);
-
-  if (pb.FF07_RD) {
-    c.D2 = pb.FF07_D0;
-    c.D1 = pb.FF07_D1;
-    c.D0 = pb.FF07_D2;
+    /*p03.SORA*/ wire FF07_RD = and (in.CPU_RD, FF04_FF07, in.A00, in.A01);
+    if (FF07_RD) out.D2 = FF07_D0;
+    if (FF07_RD) out.D1 = FF07_D1;
+    if (FF07_RD) out.D0 = FF07_D2;
   }
 
   //----------
   // TMA
 
   {
-    /*p03.TUBY*/ pc.FF06_RD = and (pb.CPU_RD, pb.FF04_FF07, b.A01, A0n);
-    /*p03.TYJU*/ pc.FF06_WR = nand(pb.CPU_WR, pb.FF04_FF07, b.A01, A0n);
+    /*p03.TYJU*/ c.FF06_WRn = nand(in.CPU_WR, FF04_FF07, in.A01, A0n);
+    /*p03.SABU*/ c.TMA_0 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_0, in.D0);
+    /*p03.NYKE*/ c.TMA_1 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_1, in.D1);
+    /*p03.MURU*/ c.TMA_2 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_2, in.D2);
+    /*p03.TYVA*/ c.TMA_3 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_3, in.D3);
+    /*p03.TYRU*/ c.TMA_4 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_4, in.D4);
+    /*p03.SUFY*/ c.TMA_5 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_5, in.D5);
+    /*p03.PETO*/ c.TMA_6 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_6, in.D6);
+    /*p03.SETA*/ c.TMA_7 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_7, in.D7);
 
-    /*p03.SABU*/ pc.TMA_0 = tock_pos(pa.FF06_WR, pb.FF06_WR, pb.SYS_RESETn1, pb.TMA_0, b.D0);
-    /*p03.NYKE*/ pc.TMA_1 = tock_pos(pa.FF06_WR, pb.FF06_WR, pb.SYS_RESETn1, pb.TMA_1, b.D1);
-    /*p03.MURU*/ pc.TMA_2 = tock_pos(pa.FF06_WR, pb.FF06_WR, pb.SYS_RESETn1, pb.TMA_2, b.D2);
-    /*p03.TYVA*/ pc.TMA_3 = tock_pos(pa.FF06_WR, pb.FF06_WR, pb.SYS_RESETn1, pb.TMA_3, b.D3);
-    /*p03.TYRU*/ pc.TMA_4 = tock_pos(pa.FF06_WR, pb.FF06_WR, pb.SYS_RESETn1, pb.TMA_4, b.D4);
-    /*p03.SUFY*/ pc.TMA_5 = tock_pos(pa.FF06_WR, pb.FF06_WR, pb.SYS_RESETn1, pb.TMA_5, b.D5);
-    /*p03.PETO*/ pc.TMA_6 = tock_pos(pa.FF06_WR, pb.FF06_WR, pb.SYS_RESETn1, pb.TMA_6, b.D6);
-    /*p03.SETA*/ pc.TMA_7 = tock_pos(pa.FF06_WR, pb.FF06_WR, pb.SYS_RESETn1, pb.TMA_7, b.D7);
-
-    /*p03.SETE*/ if (pb.FF06_RD) c.D0 = pb.TMA_0;
-    /*p03.PYRE*/ if (pb.FF06_RD) c.D1 = pb.TMA_1;
-    /*p03.NOLA*/ if (pb.FF06_RD) c.D2 = pb.TMA_2;
-    /*p03.SALU*/ if (pb.FF06_RD) c.D3 = pb.TMA_3;
-    /*p03.SUPO*/ if (pb.FF06_RD) c.D4 = pb.TMA_4;
-    /*p03.SOTU*/ if (pb.FF06_RD) c.D5 = pb.TMA_5;
-    /*p03.REVA*/ if (pb.FF06_RD) c.D6 = pb.TMA_6;
-    /*p03.SAPU*/ if (pb.FF06_RD) c.D7 = pb.TMA_7;
+    // small tribuffer, must be high trigger
+    /*p03.TUBY*/ wire FF06_RD = and (in.CPU_RD, FF04_FF07, in.A01, A0n);
+    /*p03.SETE*/ if (FF06_RD) out.D0 = b.TMA_0;
+    /*p03.PYRE*/ if (FF06_RD) out.D1 = b.TMA_1;
+    /*p03.NOLA*/ if (FF06_RD) out.D2 = b.TMA_2;
+    /*p03.SALU*/ if (FF06_RD) out.D3 = b.TMA_3;
+    /*p03.SUPO*/ if (FF06_RD) out.D4 = b.TMA_4;
+    /*p03.SOTU*/ if (FF06_RD) out.D5 = b.TMA_5;
+    /*p03.REVA*/ if (FF06_RD) out.D6 = b.TMA_6;
+    /*p03.SAPU*/ if (FF06_RD) out.D7 = b.TMA_7;
   }
 
   //----------
@@ -143,63 +134,66 @@ void Timer_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, co
 
   // Reload mux
 
-  /*p03.TEDA*/ pc.FF05_RD  = and(pb.FF04_FF07, pb.CPU_RD, A1n, b.A00);
-  /*p03.TOPE*/ pc.FF05_WRn = nand(pb.CPU_WR, pb.FF04_FF07, A1n, b.A00);
+  /*p03.TEDA*/ wire FF05_RD  = and(FF04_FF07, in.CPU_RD, A1n, in.A00);
+  /*p03.TOPE*/ wire FF05_WRn = nand(in.CPU_WR, FF04_FF07, A1n, in.A00);
 
-  /*p03.ROKE*/ pc.TIMA_MUX_0 = mux2n(pb.TMA_0, b.D0, pb.FF05_WRn);
-  /*p03.PETU*/ pc.TIMA_MUX_1 = mux2n(pb.TMA_1, b.D1, pb.FF05_WRn);
-  /*p03.NYKU*/ pc.TIMA_MUX_2 = mux2n(pb.TMA_2, b.D2, pb.FF05_WRn);
-  /*p03.SOCE*/ pc.TIMA_MUX_3 = mux2n(pb.TMA_3, b.D3, pb.FF05_WRn);
-  /*p03.SALA*/ pc.TIMA_MUX_4 = mux2n(pb.TMA_4, b.D4, pb.FF05_WRn);
-  /*p03.SYRU*/ pc.TIMA_MUX_5 = mux2n(pb.TMA_5, b.D5, pb.FF05_WRn);
-  /*p03.REFU*/ pc.TIMA_MUX_6 = mux2n(pb.TMA_6, b.D6, pb.FF05_WRn);
-  /*p03.RATO*/ pc.TIMA_MUX_7 = mux2n(pb.TMA_7, b.D7, pb.FF05_WRn);
+  /*p03.ROKE*/ wire TIMA_MUX_0 = mux2n(b.TMA_0, in.D0, FF05_WRn);
+  /*p03.PETU*/ wire TIMA_MUX_1 = mux2n(b.TMA_1, in.D1, FF05_WRn);
+  /*p03.NYKU*/ wire TIMA_MUX_2 = mux2n(b.TMA_2, in.D2, FF05_WRn);
+  /*p03.SOCE*/ wire TIMA_MUX_3 = mux2n(b.TMA_3, in.D3, FF05_WRn);
+  /*p03.SALA*/ wire TIMA_MUX_4 = mux2n(b.TMA_4, in.D4, FF05_WRn);
+  /*p03.SYRU*/ wire TIMA_MUX_5 = mux2n(b.TMA_5, in.D5, FF05_WRn);
+  /*p03.REFU*/ wire TIMA_MUX_6 = mux2n(b.TMA_6, in.D6, FF05_WRn);
+  /*p03.RATO*/ wire TIMA_MUX_7 = mux2n(b.TMA_7, in.D7, FF05_WRn);
 
-  /*p03.MULO*/ pc.TIMA_RST = not(pb.SYS_RESETn1);
+  /*p03.MULO*/ wire TIMA_RST = not(in.SYS_RESETn);
 
-  /*p03.PUXY*/ pc.TIMA_LD_0 = nor(pb.TIMA_RST, pb.TIMA_MUX_0);
-  /*p03.NERO*/ pc.TIMA_LD_1 = nor(pb.TIMA_RST, pb.TIMA_MUX_1);
-  /*p03.NADA*/ pc.TIMA_LD_2 = nor(pb.TIMA_RST, pb.TIMA_MUX_2);
-  /*p03.REPA*/ pc.TIMA_LD_3 = nor(pb.TIMA_RST, pb.TIMA_MUX_3);
-  /*p03.ROLU*/ pc.TIMA_LD_4 = nor(pb.TIMA_RST, pb.TIMA_MUX_4);
-  /*p03.RUGY*/ pc.TIMA_LD_5 = nor(pb.TIMA_RST, pb.TIMA_MUX_5);
-  /*p03.PYMA*/ pc.TIMA_LD_6 = nor(pb.TIMA_RST, pb.TIMA_MUX_6);
-  /*p03.PAGU*/ pc.TIMA_LD_7 = nor(pb.TIMA_RST, pb.TIMA_MUX_7);
+  /*p03.PUXY*/ wire TIMA_LD_0 = nor(TIMA_RST, TIMA_MUX_0);
+  /*p03.NERO*/ wire TIMA_LD_1 = nor(TIMA_RST, TIMA_MUX_1);
+  /*p03.NADA*/ wire TIMA_LD_2 = nor(TIMA_RST, TIMA_MUX_2);
+  /*p03.REPA*/ wire TIMA_LD_3 = nor(TIMA_RST, TIMA_MUX_3);
+  /*p03.ROLU*/ wire TIMA_LD_4 = nor(TIMA_RST, TIMA_MUX_4);
+  /*p03.RUGY*/ wire TIMA_LD_5 = nor(TIMA_RST, TIMA_MUX_5);
+  /*p03.PYMA*/ wire TIMA_LD_6 = nor(TIMA_RST, TIMA_MUX_6);
+  /*p03.PAGU*/ wire TIMA_LD_7 = nor(TIMA_RST, TIMA_MUX_7);
 
   // Clock mux
-  /*p03.UVYR*/ pc.CLK_64Kn = not(pb.DIV_03);
-  /*p03.UKAP*/ pc.UKAP = mux2n(pb.CLK_16K, pb.CLK_64Kn, pb.TAC_0);
-  /*p03.UBOT*/ pc.UBOT = not(pb.DIV_01);
-  /*p03.TEKO*/ pc.TEKO = mux2n(pb.UBOT, pb.DIV_07n, pb.TAC_0);
-  /*p03.TECY*/ pc.TECY = mux2n(pb.UKAP, pb.TEKO, pb.TAC_1);
-  /*p03.SOGU*/ pc.TIMA_CLK = nor(pb.TECY, !pb.TAC_2);
+  /*p03.UBOT*/ wire CLK_256Kn = not(b.DIV_01);
+  /*p03.UVYR*/ wire CLK_64Kn  = not(b.DIV_03);
+  /*p01.UVYN*/ wire CLK_16Kn  = not(b.DIV_05);
+  /*p01.UREK*/ wire CLK_4Kn   = not(b.DIV_07);
 
-  /*p03.MUZU*/ pc.MUZU = or(cpu_in.FROM_CPU5, pb.FF05_WRn);
-  /*p03.MEKE*/ pc.MEKE = not(pb.INT_TIMER);
-  /*p03.MEXU*/ pc.TIMA_LOAD = nand(pb.MUZU, pb.SYS_RESETn1, pb.MEKE);
+  /*p03.UKAP*/ wire CLK_MUXa = mux2n(CLK_16Kn, CLK_64Kn, b.TAC_0);
+  /*p03.TEKO*/ wire CLK_MUXb = mux2n(CLK_256Kn, CLK_4Kn, b.TAC_0);
+  /*p03.TECY*/ wire CLK_MUXc = mux2n(CLK_MUXa, CLK_MUXb, b.TAC_1);
 
-  /*p03.REGA*/ pc.TIMA_0 = count_pos(pa.TIMA_CLK, pb.TIMA_CLK, pb.TIMA_LOAD, pb.TIMA_0, pb.TIMA_LD_0);
-  /*p03.POVY*/ pc.TIMA_1 = count_pos(pa.TIMA_0,   pb.TIMA_0,   pb.TIMA_LOAD, pb.TIMA_1, pb.TIMA_LD_1);
-  /*p03.PERU*/ pc.TIMA_2 = count_pos(pa.TIMA_1,   pb.TIMA_1,   pb.TIMA_LOAD, pb.TIMA_2, pb.TIMA_LD_2);
-  /*p03.RATE*/ pc.TIMA_3 = count_pos(pa.TIMA_2,   pb.TIMA_2,   pb.TIMA_LOAD, pb.TIMA_3, pb.TIMA_LD_3);
-  /*p03.RUBY*/ pc.TIMA_4 = count_pos(pa.TIMA_3,   pb.TIMA_3,   pb.TIMA_LOAD, pb.TIMA_4, pb.TIMA_LD_4);
-  /*p03.RAGE*/ pc.TIMA_5 = count_pos(pa.TIMA_4,   pb.TIMA_4,   pb.TIMA_LOAD, pb.TIMA_5, pb.TIMA_LD_5);
-  /*p03.PEDA*/ pc.TIMA_6 = count_pos(pa.TIMA_5,   pb.TIMA_5,   pb.TIMA_LOAD, pb.TIMA_6, pb.TIMA_LD_6);
-  /*p03.NUGA*/ pc.TIMA_7 = count_pos(pa.TIMA_6,   pb.TIMA_6,   pb.TIMA_LOAD, pb.TIMA_7, pb.TIMA_LD_7);
+  /*p03.MUZU*/ wire MUZU = or(in.FROM_CPU5, FF05_WRn);
+  /*p03.MEKE*/ wire INT_TIMERn = not(b.INT_TIMER);
+  /*p03.MEXU*/ wire TIMA_LOAD = nand(MUZU, in.SYS_RESETn, INT_TIMERn);
 
-  /*p03.SOKU*/ if (pb.FF05_RD) c.D0 = pb.TIMA_0;
-  /*p03.RACY*/ if (pb.FF05_RD) c.D1 = pb.TIMA_1;
-  /*p03.RAVY*/ if (pb.FF05_RD) c.D2 = pb.TIMA_2;
-  /*p03.SOSY*/ if (pb.FF05_RD) c.D3 = pb.TIMA_3;
-  /*p03.SOMU*/ if (pb.FF05_RD) c.D4 = pb.TIMA_4;
-  /*p03.SURO*/ if (pb.FF05_RD) c.D5 = pb.TIMA_5;
-  /*p03.ROWU*/ if (pb.FF05_RD) c.D6 = pb.TIMA_6;
-  /*p03.PUSO*/ if (pb.FF05_RD) c.D7 = pb.TIMA_7;
+  /*p03.SOGU*/ c.TIMA_CLK = nor(CLK_MUXc, !b.TAC_2);
+  /*p03.REGA*/ c.TIMA_0 = count_pos(a.TIMA_CLK, b.TIMA_CLK, TIMA_LOAD, b.TIMA_0, TIMA_LD_0);
+  /*p03.POVY*/ c.TIMA_1 = count_pos(a.TIMA_0,   b.TIMA_0,   TIMA_LOAD, b.TIMA_1, TIMA_LD_1);
+  /*p03.PERU*/ c.TIMA_2 = count_pos(a.TIMA_1,   b.TIMA_1,   TIMA_LOAD, b.TIMA_2, TIMA_LD_2);
+  /*p03.RATE*/ c.TIMA_3 = count_pos(a.TIMA_2,   b.TIMA_2,   TIMA_LOAD, b.TIMA_3, TIMA_LD_3);
+  /*p03.RUBY*/ c.TIMA_4 = count_pos(a.TIMA_3,   b.TIMA_3,   TIMA_LOAD, b.TIMA_4, TIMA_LD_4);
+  /*p03.RAGE*/ c.TIMA_5 = count_pos(a.TIMA_4,   b.TIMA_4,   TIMA_LOAD, b.TIMA_5, TIMA_LD_5);
+  /*p03.PEDA*/ c.TIMA_6 = count_pos(a.TIMA_5,   b.TIMA_5,   TIMA_LOAD, b.TIMA_6, TIMA_LD_6);
+  /*p03.NUGA*/ c.TIMA_7 = count_pos(a.TIMA_6,   b.TIMA_6,   TIMA_LOAD, b.TIMA_7, TIMA_LD_7);
 
-  /*p03.MUGY*/ pc.TIMA_LOADn   = not(pb.TIMA_LOAD);
-  /*p03.NYDU*/ pc.TIMA_MAX     = tock_pos(pa.BOGA_xBCDEFGH, pb.BOGA_xBCDEFGH, pb.TIMA_LOADn, pb.TIMA_MAX, pb.TIMA_7);
-  /*p03.MERY*/ pc.INT_TIMER_IN = nor(!pb.TIMA_MAX, pb.TIMA_7);
-  /*p03.MOBA*/ pc.INT_TIMER    = tock_pos(pa.BOGA_xBCDEFGH, pb.BOGA_xBCDEFGH, pb.SYS_RESETn1, pb.INT_TIMER, pb.INT_TIMER_IN);
+  /*p03.SOKU*/ if (FF05_RD) out.D0 = b.TIMA_0;
+  /*p03.RACY*/ if (FF05_RD) out.D1 = b.TIMA_1;
+  /*p03.RAVY*/ if (FF05_RD) out.D2 = b.TIMA_2;
+  /*p03.SOSY*/ if (FF05_RD) out.D3 = b.TIMA_3;
+  /*p03.SOMU*/ if (FF05_RD) out.D4 = b.TIMA_4;
+  /*p03.SURO*/ if (FF05_RD) out.D5 = b.TIMA_5;
+  /*p03.ROWU*/ if (FF05_RD) out.D6 = b.TIMA_6;
+  /*p03.PUSO*/ if (FF05_RD) out.D7 = b.TIMA_7;
+
+  /*p03.MUGY*/ wire TIMA_LOADn   = not(TIMA_LOAD);
+  /*p03.NYDU*/ c.TIMA_MAX     = tock_pos(a.BOGA_xBCDEFGH, b.BOGA_xBCDEFGH, TIMA_LOADn, b.TIMA_MAX, b.TIMA_7);
+  /*p03.MERY*/ wire INT_TIMER_IN = nor(!b.TIMA_MAX, b.TIMA_7);
+  /*p03.MOBA*/ c.INT_TIMER    = tock_pos(a.BOGA_xBCDEFGH, b.BOGA_xBCDEFGH, in.SYS_RESETn, b.INT_TIMER, INT_TIMER_IN);
 }
 
 //-----------------------------------------------------------------------------

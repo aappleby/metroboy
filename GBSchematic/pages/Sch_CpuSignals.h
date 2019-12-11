@@ -71,7 +71,7 @@ struct CpuOut {
   //----------
   // top right wire by itself
 
-  bool TO_CPU2;        // <- P02.ASOK
+  bool TO_CPU2;        // <- P02.AWOB
 
   //----------
   // top right port

@@ -261,7 +261,7 @@ void System::tick(Gameboy& gb, bool LCDC_EN, bool APU_RESET1, bool DBG_APUn, boo
     /*p02.TUNY*/ wire FF0F_RST3 = _and(_or(gb.bus.D3, !FF0F_WR), INT_STAT_ACK, !SYS_RESET);
     /*p02.TYME*/ wire FF0F_RST4 = _and(_or(gb.bus.D4, !FF0F_WR), INT_TIM_ACK,  !SYS_RESET);
 
-    /*p02.PESU*/ wire FF0F_IN = not(chip_in.P10_B);
+    /*p02.PESU*/ wire FF0F_IN = not(b.joy.P10_B);
 
     /*p02.LOPE*/ FF0F_0.tock(b.vid.INT_VBL_BUF, FF0F_SET0, FF0F_RST0, FF0F_IN);
     /*p02.UBUL*/ FF0F_1.tock(SER_CNT3,          FF0F_SET1, FF0F_RST1, FF0F_IN);

@@ -11,10 +11,11 @@ void P09_ApuControl_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameb
 
   /*P10.TACE*/ c.apu.AMP_ENn = and(b.ch1.CH1_AMP_ENn, b.ch2.CH2_AMP_ENn, b.ch3.CH3_AMP_ENna, b.ch4.CH4_AMP_ENn);
 
-  /*P09.HAPO*/ c.sys.SYS_RESET2  = not(b.sys.SYS_RESETn1); // apu
-  /*P09.GUFO*/ c.sys.SYS_RESETn3 = not(b.sys.SYS_RESET2);
-
-  /*p09.JYRO*/ c.apu.APU_RST = or(b.sys.SYS_RESET2, !b.apu.NR52_ALL_SOUND_ON);
+  
+  {
+    /*P09.HAPO*/ wire SYS_RESET2  = not(b.sys.SYS_RESETn);
+    /*p09.JYRO*/ c.apu.APU_RST = or(SYS_RESET2, !b.apu.NR52_ALL_SOUND_ON);
+  }
 
   {
     /*p09.KUBY*/ wire APU_RESETn7 = not(b.apu.APU_RST);
@@ -34,14 +35,17 @@ void P09_ApuControl_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameb
   //----------
   // APU clocks
 
-  /*p01.ATAL*/ c.sys.CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH3);
-  /*p01.AZOF*/ c.apu.CLK_xBxDxFxH4  = not(b.sys.CLK_AxCxExGx3);
-  /*p01.ATAG*/ c.apu.CLK_AxCxExGx8  = not(b.apu.CLK_xBxDxFxH4);
-  /*p01.AMUK*/ c.apu.CLK_xBxDxFxH1  = not(b.apu.CLK_AxCxExGx8);
+  ///*p01.ATAL*/ c.sys.CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH);
+  {
+    wire CLK_AxCxExGx3 = not(b.sys.ROOTCLK_xBxDxFxH);
+    /*p01.AZOF*/ c.apu.CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
+    /*p01.ATAG*/ c.apu.CLK_AxCxExGx8  = not(b.apu.CLK_xBxDxFxH4);
+    /*p01.AMUK*/ c.apu.CLK_xBxDxFxH1  = not(b.apu.CLK_AxCxExGx8);
+  }
 
 
   {
-    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH3);
+    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH);
     /*p01.AZOF*/ wire CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
     /*p01.ATAG*/ wire CLK_AxCxExGx8  = not(CLK_xBxDxFxH4);
     /*p01.AMUK*/ wire CLK_xBxDxFxH1  = not(CLK_AxCxExGx8);
@@ -52,7 +56,7 @@ void P09_ApuControl_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameb
 
   {
     /*p01.BELA*/ wire APU_RESETn4 = not(b.apu.APU_RESET1);
-    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH3);
+    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH);
     /*p01.AZOF*/ wire CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
     /*p01.ATAG*/ wire CLK_AxCxExGx8  = not(CLK_xBxDxFxH4);
     /*p01.AMUK*/ wire CLK_xBxDxFxH1  = not(CLK_AxCxExGx8);
@@ -62,7 +66,7 @@ void P09_ApuControl_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameb
 
   {
     /*p01.BOPO*/ wire RST = not(b.apu.APU_RESET1);
-    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH3);
+    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH);
     /*p01.AZOF*/ wire CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
     /*p01.ATAG*/ wire CLK_AxCxExGx8  = not(CLK_xBxDxFxH4);
     /*p01.AMUK*/ wire CLK_xBxDxFxH1 = not(CLK_AxCxExGx8);
@@ -82,7 +86,7 @@ void P09_ApuControl_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameb
   {
     /*p01.ATUS*/ wire APU_RESETn = not(b.apu.APU_RESET1);
     /*p01.COKE*/ c.apu.AJER_2Mn = not(b.apu.AJER_2M);
-    /*p01.BARA*/ c.apu.CLK_512 = tock_pos( a.apu.AJER_2Mn,  b.apu.AJER_2Mn, APU_RESETn, b.apu.CLK_512,  b.sys.DIV_10n);
+    /*p01.BARA*/ c.apu.CLK_512 = tock_pos( a.apu.AJER_2Mn,  b.apu.AJER_2Mn, APU_RESETn, b.apu.CLK_512,  b.tim.DIV_10n);
     /*p01.BURE*/ c.apu.CLK_512n = not(!b.apu.CLK_512);
     /*p01.CARU*/ c.apu.CLK_256 = tock_pos( a.apu.CLK_512n,  b.apu.CLK_512n, APU_RESETn, b.apu.CLK_256, !b.apu.CLK_256);
     /*p01.BYLU*/ c.apu.CLK_128 = tock_pos(!a.apu.CLK_256,  !b.apu.CLK_256,  APU_RESETn, b.apu.CLK_128, !b.apu.CLK_128);
@@ -212,11 +216,14 @@ void P09_ApuControl_tick(const ChipIn& chip_in, const CpuIn& cpu_in, const Gameb
     /*p09.FOKU*/ c.apu.NR52_WRn3 = not(NR52_WR1);
 
     /*p09.KEPY*/ wire APU_RESETn6 = not(b.apu.APU_RST);
-    /*p09.EFOP*/ wire NR52_DBG_APU_IN    = and(b.D4, b.sys.MODE_DBG2);
+    /*p09.EFOP*/ wire NR52_DBG_APU_IN    = and(b.D4, b.dbg.MODE_DBG2);
 
     /*p09.FERO*/ c.apu.NR52_DBG_APUn      = tock_pos(a.apu.NR52_WRn3, b.apu.NR52_WRn3, APU_RESETn6, b.apu.NR52_DBG_APUn,     NR52_DBG_APU_IN);
     /*p09.BOWY*/ c.apu.NR52_DBG_SWEEP     = tock_pos(a.apu.NR52_WRn2, b.apu.NR52_WRn2, APU_RESETn6, b.apu.NR52_DBG_SWEEP,    b.D5);
-    /*p09.HADA*/ c.apu.NR52_ALL_SOUND_ON  = tock_pos(a.apu.NR52_WRn1, b.apu.NR52_WRn1, b.sys.SYS_RESETn3, b.apu.NR52_ALL_SOUND_ON, b.D7); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
+
+    /*P09.HAPO*/ wire SYS_RESET2  = not(b.sys.SYS_RESETn);
+    /*P09.GUFO*/ wire SYS_RESETn3 = not(SYS_RESET2);
+    /*p09.HADA*/ c.apu.NR52_ALL_SOUND_ON  = tock_pos(a.apu.NR52_WRn1, b.apu.NR52_WRn1, SYS_RESETn3, b.apu.NR52_ALL_SOUND_ON, b.D7); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
     /*p09.EDEK*/ c.apu.NR52_DBG_APU       = not(!b.apu.NR52_DBG_APUn);
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.sys.CPU_RD);

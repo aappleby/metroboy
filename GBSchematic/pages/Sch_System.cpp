@@ -8,61 +8,64 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
-
-  //----------
-  // Debug mode enable signals
-
-  /*p07.UBET*/ c.sys.T1n        = not(chip_in.T1);
-  /*p07.UVAR*/ c.sys.T2n        = not(chip_in.T2);
-  /*p07.UMUT*/ c.sys.MODE_DBG1  = and(chip_in.T1, b.sys.T2n);
-  /*p07.YAZA*/ c.sys.MODE_DBG1n = not(b.sys.MODE_DBG1);
-  /*p07.UNOR*/ c.sys.MODE_DBG2  = and(chip_in.T2, b.sys.T1n);
-  /*p07.UPOJ*/ c.sys.MODE_PROD  = nand(b.sys.T1n, b.sys.T2n, chip_in.RST);
-  /*p07.APET*/ c.sys.MODE_DEBUG = or(b.sys.MODE_DBG1, b.sys.MODE_DBG2);
+void System_tick(const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c) {
 
   //----------
   // CPU reset
 
-  /*p01.UCOB*/ c.sys.CLK_BAD1    = not(chip_in.CLKIN_A);
-  /*p01.ATEZ*/ c.sys.CLK_BAD2    = not(chip_in.CLKIN_A);
+  /*p01.UCOB*/ c.sys.CLK_BAD1    = not(b.pin.CLKIN_A);
+  /*p01.ATEZ*/ c.sys.CLK_BAD2    = not(b.pin.CLKIN_A);
 
   /*p01.ABOL*/ c.sys.CPUCLK_REQn = not(cpu_in.CPUCLK_REQ);
   /*p01.BUTY*/ c.sys.CPUCLK_REQ  = not(b.sys.CPUCLK_REQn);
 
   {
-    /*p01.TUBO*/ wire NO_CLOCK  = or(b.sys.CPUCLK_REQn, /*p01.UPYF*/ or(chip_in.RST, b.sys.CLK_BAD1));
-    /*p01.UNUT*/ wire TIMEOUT   = and(NO_CLOCK, b.sys.DIV_15);
-    /*p01.TABA*/ wire CPU_RESET   = or(b.sys.MODE_DBG2, b.sys.MODE_DBG1, TIMEOUT);
-    /*p01.ALYP*/ wire CPU_RESETn  = not(CPU_RESET);
-
-
-    /*p01.ASOL*/ wire RESET_IN  = or (/*p01.AFAR*/ nor(CPU_RESETn, chip_in.RST), chip_in.RST);
-    /*p01.BOMA*/ c.sys.RESET_CLK = not(a.sys.BOGA_xBCDEFGH);
-    /*p01.AFER*/ c.sys.RESET_REG = tock_pos(a.sys.RESET_CLK, b.sys.RESET_CLK, b.sys.MODE_PROD, b.sys.RESET_REG, RESET_IN);
-
-    /*p01.AVOR*/ wire AVOR_RESET = or(b.sys.RESET_REG, RESET_IN);
-    /*p01.ALUR*/ c.sys.SYS_RESETn1 = not(AVOR_RESET);  // this goes all over the place
+    /*p01.TUBO*/ wire NO_CLOCK  = or(b.sys.CPUCLK_REQn, /*p01.UPYF*/ or(b.pin.RST, b.sys.CLK_BAD1));
+    /*p01.UNUT*/ wire TIMEOUT   = and(NO_CLOCK, b.tim.DIV_15);
+    /*p01.TABA*/ wire CPU_RESET   = or(b.dbg.MODE_DBG2, b.dbg.MODE_DBG1, TIMEOUT);
 
     // PORTD_07 = RESET_CLK
     c.cpu_out.CPU_RESET = CPU_RESET;
+
+    /*p01.ALYP*/ wire CPU_RESETn  = not(CPU_RESET);
+    /*p01.ASOL*/ wire RESET_IN  = or (/*p01.AFAR*/ nor(CPU_RESETn, b.pin.RST), b.pin.RST);
+    /*p01.BOMA*/ c.sys.RESET_CLK = not(a.sys.BOGA_xBCDEFGH);
+
+    /*p01.AFER*/ c.sys.RESET_REG = tock_pos(a.sys.RESET_CLK, b.sys.RESET_CLK, b.dbg.MODE_PROD, b.sys.RESET_REG, RESET_IN);
+
+    // master system reset
+    /*p01.AVOR*/ wire AVOR_RESET  = or(b.sys.RESET_REG, RESET_IN);
+    /*p01.ALUR*/ c.sys.SYS_RESETn = not(AVOR_RESET);  // this goes all over the place
+
+    // master video reset
+    /*p01.DULA*/ wire DULA_RESET  = not(b.sys.SYS_RESETn);
+    /*p01.CUNU*/ wire CUNU_RESET  = not(DULA_RESET);
+    /*p01.XORE*/ wire XORE_RESET  = not(CUNU_RESET);
+    /*p01.XEBE*/ wire XEBE_RESET  = not(XORE_RESET);
+    /*p01.XODO*/ wire XODO_RESET  = nand(XEBE_RESET, b.vid.LCDC_EN);
+    /*p01.XAPO*/ c.sys.VID_RESETn = not(XODO_RESET);
   }
+
 
   //----------
   // Clock input and deglitcher
 
-  /*p01.ARYS*/ c.sys.ROOTCLK_AxCxExGx5  = not(chip_in.CLKIN_B);
-  /*p01.ANOS*/ c.sys.ROOTCLK_AxCxExGx6  = nand(chip_in.CLKIN_B, b.sys.ROOTCLK_xBxDxFxH3);
-  /*p01.AVET*/ c.sys.ROOTCLK_xBxDxFxH3  = nand(b.sys.ROOTCLK_AxCxExGx6, b.sys.ROOTCLK_AxCxExGx5);
+  {
+    /*p01.ARYS*/ wire CLKIN_Bn  = not(b.pin.CLKIN_B);
+    /*p01.ANOS*/ c.sys.ROOTCLK_AxCxExGx  = nand(b.pin.CLKIN_B, b.sys.ROOTCLK_xBxDxFxH);
+    /*p01.AVET*/ c.sys.ROOTCLK_xBxDxFxH  = nand(b.sys.ROOTCLK_AxCxExGx, CLKIN_Bn);
+  }
 
   //----------
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
 
-  /*p01.ATAL*/ c.sys.CLK_AxCxExGx3  = not(b.sys.ROOTCLK_xBxDxFxH3); // apu, phase generator
-  /*p01.AFUR*/ c.sys.PHASE_ABCDxxxx1 = tock_duo(a.sys.CLK_AxCxExGx3, b.sys.CLK_AxCxExGx3, b.sys.MODE_PROD, b.sys.PHASE_ABCDxxxx1, !b.sys.PHASE_xxxDEFGx1);
-  /*p01.ALEF*/ c.sys.PHASE_xBCDExxx1 = tock_duo(a.sys.CLK_AxCxExGx3, b.sys.CLK_AxCxExGx3, b.sys.MODE_PROD, b.sys.PHASE_xBCDExxx1,  b.sys.PHASE_ABCDxxxx1);
-  /*p01.APUK*/ c.sys.PHASE_xxCDEFxx1 = tock_duo(a.sys.CLK_AxCxExGx3, b.sys.CLK_AxCxExGx3, b.sys.MODE_PROD, b.sys.PHASE_xxCDEFxx1,  b.sys.PHASE_xBCDExxx1);
-  /*p01.ADYK*/ c.sys.PHASE_xxxDEFGx1 = tock_duo(a.sys.CLK_AxCxExGx3, b.sys.CLK_AxCxExGx3, b.sys.MODE_PROD, b.sys.PHASE_xxxDEFGx1,  b.sys.PHASE_xxCDEFxx1);
+  {
+    /*p01.ATAL*/ c.sys.PHASE_CLK = not(b.sys.ROOTCLK_xBxDxFxH); // apu, phase generator
+    /*p01.AFUR*/ c.sys.PHASE_ABCDxxxx1 = tock_duo(a.sys.PHASE_CLK, b.sys.PHASE_CLK, b.dbg.MODE_PROD, b.sys.PHASE_ABCDxxxx1, !b.sys.PHASE_xxxDEFGx1);
+    /*p01.ALEF*/ c.sys.PHASE_xBCDExxx1 = tock_duo(a.sys.PHASE_CLK, b.sys.PHASE_CLK, b.dbg.MODE_PROD, b.sys.PHASE_xBCDExxx1,  b.sys.PHASE_ABCDxxxx1);
+    /*p01.APUK*/ c.sys.PHASE_xxCDEFxx1 = tock_duo(a.sys.PHASE_CLK, b.sys.PHASE_CLK, b.dbg.MODE_PROD, b.sys.PHASE_xxCDEFxx1,  b.sys.PHASE_xBCDExxx1);
+    /*p01.ADYK*/ c.sys.PHASE_xxxDEFGx1 = tock_duo(a.sys.PHASE_CLK, b.sys.PHASE_CLK, b.dbg.MODE_PROD, b.sys.PHASE_xxxDEFGx1,  b.sys.PHASE_xxCDEFxx1);
+  }
 
   {
     /*p01.ATYP*/ wire ATYP_ABCDxxxx = not(!b.sys.PHASE_ABCDxxxx1);  
@@ -128,14 +131,6 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
     /*p07.SYKE*/ c.sys.ADDR_FFXX = nor(ADDR_0000_FE00, ADDR_08n);
   }
 
-  {
-    /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(b.A15, b.A14, b.A13, b.A12, b.A11, b.A10, b.A09);
-    /*p07.RYCU*/ wire ADDR_FE00_FFFF = not(ADDR_0000_FE00);
-    /*p07.SOHA*/ wire ADDR_FFXXn2 = not(b.sys.ADDR_FFXX);
-    /*p07.ROPE*/ wire ADDR_FEXXn = nand(ADDR_FE00_FFFF, ADDR_FFXXn2);
-    /*p07.SARO*/ c.sys.ADDR_OAM = not(ADDR_FEXXn);
-  }
-
   /*
   0b000xxxxxxxxxxxxx - 0x0000 to 0x1FFF (cart rom)
   0b001xxxxxxxxxxxxx - 0x2000 to 0x3FFF (cart rom)
@@ -156,14 +151,14 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
     // debug override of CPU_RD/CPU_WR
     
     {
-      /*p07.UJYV*/ wire CPU_RD_MUX   = mux2n(chip_in.RD_C, cpu_in.CPU_RAW_RD, b.sys.MODE_DBG2);
+      /*p07.UJYV*/ wire CPU_RD_MUX   = mux2n(b.pin.RD_C, cpu_in.CPU_RAW_RD, b.dbg.MODE_DBG2);
       /*p07.TEDO*/ c.sys.CPU_RD  = not(CPU_RD_MUX);
     }
     
     {
       /*p01.AREV*/ wire AREV = nand(cpu_in.CPU_RAW_WR, b.sys.PHASE_xxxxEFGx3);
       /*p01.APOV*/ wire CPU_WR_xxxxEFGx  = not(AREV);
-      /*p07.UBAL*/ wire CPU_WR_MUX   = mux2n(chip_in.WR_C, CPU_WR_xxxxEFGx,   b.sys.MODE_DBG2);
+      /*p07.UBAL*/ wire CPU_WR_MUX   = mux2n(b.pin.WR_C, CPU_WR_xxxxEFGx,   b.dbg.MODE_DBG2);
       /*p07.TAPU*/ c.sys.CPU_WR  = not(CPU_WR_MUX);
     }
     
@@ -182,61 +177,8 @@ void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, c
       /*p01.AROV*/ wire PHASE_xxCDEFxx2 = not(!b.sys.PHASE_xxCDEFxx1);
       /*p01.AJAX*/ wire PHASE_xxxxEFGH3 = not(PHASE_ABCDxxxx2);
       /*p01.AGUT*/ wire AGUT_xxCDEFGH = and(or(PHASE_xxxxEFGH3, PHASE_xxCDEFxx2), cpu_in.ADDR_VALID);
-      /*p01.AWOD*/ wire AWOD = or(b.sys.MODE_DBG2, AGUT_xxCDEFGH);
+      /*p01.AWOD*/ wire AWOD = or(b.dbg.MODE_DBG2, AGUT_xxCDEFGH);
       /*p01.ABUZ*/ c.sys.ADDR_VALID_ABxxxxxx = not(AWOD);
-      /*p08.SOGY*/ wire SOGY = not(b.A14);
-      /*p08.TUMA*/ wire A000_BFFF = and(b.A13, SOGY, b.A15);
-      /*p08.TYNU*/ wire A000_FFFF = or(and(b.A15, b.A14), A000_BFFF);
-      /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(b.A15, b.A14, b.A13, b.A12, b.A11, b.A10, b.A09);
-      /*p08.TOZA*/ wire A000_FDFF_ABxxxxxx = and(b.sys.ADDR_VALID_ABxxxxxx, A000_FFFF, ADDR_0000_FE00);
-      /*p08.TYHO*/ c.chip_out.CS_A = mux2(b.sys.DMA_A15, A000_FDFF_ABxxxxxx, b.sys.DMA_READ_CART); // ABxxxxxx
-    }
-
-    {
-      /*p08.SORE*/ wire SORE = not(b.A15);
-      /*p08.TEVY*/ wire ADDR_NOT_VRAM = or(b.A13, b.A14, SORE);
-      /*p08.TEXO*/ c.sys.ADDR_VALID_AND_NOT_VRAM = and(cpu_in.ADDR_VALID, ADDR_NOT_VRAM);
-    }
-
-
-    {
-      /*p08.MOCA*/ wire DBG_EXT_RDn = nor(b.sys.ADDR_VALID_AND_NOT_VRAM, b.sys.MODE_DBG1);
-      /*p08.LEVO*/ wire ADDR_VALID_AND_NOT_VRAMn = not(b.sys.ADDR_VALID_AND_NOT_VRAM);
-      /*p08.LAGU*/ wire LAGU = or(and(cpu_in.CPU_RAW_RD, ADDR_VALID_AND_NOT_VRAMn), cpu_in.CPU_RAW_WR);
-      /*p08.LYWE*/ wire LYWE = not(LAGU);
-      /*p08.MOTY*/ wire CPU_EXT_RD = or(DBG_EXT_RDn, LYWE);
-      /*p08.TYMU*/ wire RD_OUT = nor(b.sys.DMA_READ_CART, CPU_EXT_RD);
-      /*p08.UGAC*/ c.chip_out.RD_A = nand(RD_OUT, b.sys.MODE_DBG2n1);
-      /*p08.URUN*/ c.chip_out.RD_D = nor (RD_OUT, b.sys.MODE_DBG2);
-    }
-
-    {
-      /*p01.AREV*/ wire AREV = nand(cpu_in.CPU_RAW_WR, b.sys.PHASE_xxxxEFGx3);
-      /*p01.APOV*/ wire CPU_WR_xxxxEFGx  = not(AREV);
-      /*p08.MOCA*/ wire DBG_EXT_RDn = nor(b.sys.ADDR_VALID_AND_NOT_VRAM, b.sys.MODE_DBG1);
-      /*p08.MEXO*/ wire MEXO_ABCDxxxH = not(CPU_WR_xxxxEFGx);
-      /*p08.NEVY*/ wire NEVY = or(MEXO_ABCDxxxH, DBG_EXT_RDn);
-      /*p08.PUVA*/ wire WR_OUT = or(NEVY, b.sys.DMA_READ_CART);
-      /*p08.UVER*/ c.chip_out.WR_A = nand(WR_OUT, b.sys.MODE_DBG2n1);
-      /*p08.USUF*/ c.chip_out.WR_D = nor (WR_OUT, b.sys.MODE_DBG2);
-    }
-
-    {
-      /*p08.MOCA*/ wire DBG_EXT_RDn = nor(b.sys.ADDR_VALID_AND_NOT_VRAM, b.sys.MODE_DBG1);
-      /*p08.LEVO*/ wire ADDR_VALID_AND_NOT_VRAMn = not(b.sys.ADDR_VALID_AND_NOT_VRAM);
-      /*p08.LAGU*/ wire LAGU = or(and(cpu_in.CPU_RAW_RD, ADDR_VALID_AND_NOT_VRAMn), cpu_in.CPU_RAW_WR);
-      /*p08.LYWE*/ wire LYWE = not(LAGU);
-      /*p08.MOTY*/ wire CPU_EXT_RD = or(DBG_EXT_RDn, LYWE);
-      /*p08.REDU*/ wire CPU_RDo = not(b.sys.CPU_RD);
-      /*p08.RORU*/ c.sys.DBUS_OUTn = mux2(CPU_RDo, CPU_EXT_RD, b.sys.MODE_DBG2);
-      /*p08.LULA*/ c.sys.DBUS_OUT  = not(b.sys.DBUS_OUTn);
-    }
-
-    {
-      // addr >= FF80 and not XXFF
-      /*p07.WALE*/ wire ADDR_x1111111n = nand(b.A00, b.A01, b.A02, b.A03, b.A04, b.A05, b.A06);
-      /*p07.WOLY*/ wire WOLY = nand(b.sys.ADDR_FFXX, b.A07, ADDR_x1111111n);
-      /*p07.WUTA*/ c.HRAM_CS = not(WOLY);
     }
   }
 }

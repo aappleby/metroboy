@@ -67,8 +67,8 @@ void dump(void* blob, int size) {
 #if 1
 
 namespace Schematics {
-  void System_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
-  void P21_VideoControl_tick(const CpuIn& cpu_in, const ChipIn& chip_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
+  void System_tick(const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
+  void P21_VideoControl_tick(const CpuIn& cpu_in, const Gameboy& a, const Gameboy& b, Gameboy& c);
 };
 
 void step_forwards(Schematics::Gameboy& gbIn, Schematics::Gameboy& gbOut) {
@@ -91,6 +91,7 @@ void step_forwards(Schematics::Gameboy& gbIn, Schematics::Gameboy& gbOut) {
   cpu_in.FROM_CPU5 = false;
   cpu_in.CPUCLK_REQ = true;
 
+  /*
   Schematics::ChipIn chip_in = {};
 
   chip_in.RST     = false;
@@ -98,6 +99,7 @@ void step_forwards(Schematics::Gameboy& gbIn, Schematics::Gameboy& gbOut) {
   chip_in.CLKIN_B = (old_timestamp + 1) & 1;
   chip_in.T1 = false;
   chip_in.T2 = false;
+  */
 
   //----------
   // unmerged signals
@@ -116,7 +118,7 @@ void step_forwards(Schematics::Gameboy& gbIn, Schematics::Gameboy& gbOut) {
     pb->A = 0xA000;
     pc->A = 0xA000;
 
-    System_tick(cpu_in, chip_in, *pa, *pb, *pc);
+    System_tick(cpu_in, *pa, *pb, *pc);
     //P21_VideoControl_tick(cpu_in, chip_in, *pa, *pb, *pc);
 
     if (memcmp(pb, pc, sizeof(Schematics::Gameboy)) == 0) {
@@ -140,11 +142,11 @@ std::vector<SignalData> sample_signals =
   SignalData("PHASE_xxCDEFxx1", offsetof(Schematics::Gameboy, sys.PHASE_xxCDEFxx1)),
   SignalData("PHASE_xxxDEFGx1", offsetof(Schematics::Gameboy, sys.PHASE_xxxDEFGx1)),
 
-  SignalData("chip_out.CS_A", offsetof(Schematics::Gameboy, chip_out.CS_A)),
-  SignalData("chip_out.RD_A", offsetof(Schematics::Gameboy, chip_out.RD_A)),
-  SignalData("chip_out.RD_D", offsetof(Schematics::Gameboy, chip_out.RD_D)),
-  SignalData("chip_out.WR_A", offsetof(Schematics::Gameboy, chip_out.WR_A)),
-  SignalData("chip_out.WR_D", offsetof(Schematics::Gameboy, chip_out.WR_D)),
+  SignalData("chip_out.CS_A", offsetof(Schematics::Gameboy, pin.CS_A)),
+  SignalData("chip_out.RD_A", offsetof(Schematics::Gameboy, pin.RD_A)),
+  SignalData("chip_out.RD_D", offsetof(Schematics::Gameboy, pin.RD_D)),
+  SignalData("chip_out.WR_A", offsetof(Schematics::Gameboy, pin.WR_A)),
+  SignalData("chip_out.WR_D", offsetof(Schematics::Gameboy, pin.WR_D)),
 
 
   SignalData("vid.CLK_xBxDxFxHa", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHa)),
@@ -153,10 +155,6 @@ std::vector<SignalData> sample_signals =
   SignalData("vid.CLK_xBxDxFxHd", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHd)),
   SignalData("vid.CLK_xBxDxFxHe", offsetof(Schematics::Gameboy, vid.CLK_xBxDxFxHe)),
 
-
-  SignalData("vid.CLK_AxCxExGxa", offsetof(Schematics::Gameboy, vid.CLK_AxCxExGxa)),
-  SignalData("vid.CLK_AxCxExGxb", offsetof(Schematics::Gameboy, vid.CLK_AxCxExGxb)),
-  SignalData("vid.CLK_AxCxExGxc", offsetof(Schematics::Gameboy, vid.CLK_AxCxExGxc)),
 
 
 
@@ -289,7 +287,7 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-#if 1
+#if 0
 int main(int /*argc*/, char** /*argv*/) {
   printf("hello world\n");
 

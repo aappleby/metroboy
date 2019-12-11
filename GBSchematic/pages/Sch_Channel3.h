@@ -176,6 +176,23 @@ struct Channel3 {
   /*p18.FAVE*/ bool CH3_LEN6;
   /*p18.FYRU*/ bool CH3_LEN7;
   /*p18.FEXU*/ bool LEN_DONE;
+
+  //----------
+  // wave ram bus
+
+  bool WAVE_RAM_CTRL1;
+  bool WAVE_RAM_CTRL3;
+  bool WAVE_WRn;
+
+  /*p18.BOLE*/ bool WAVE_A0;
+  /*p18.AGYL*/ bool WAVE_A1;
+  /*p18.AFUM*/ bool WAVE_A2;
+  /*p18.AXOL*/ bool WAVE_A3;
+
+  /*p18.BARY*/ bool WAVE_DAC0;
+  /*p18.BYKA*/ bool WAVE_DAC1;
+  /*p18.BOPA*/ bool WAVE_DAC2;
+  /*p18.BELY*/ bool WAVE_DAC3;
 };
 
 //-----------------------------------------------------------------------------

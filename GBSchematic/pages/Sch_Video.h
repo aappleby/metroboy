@@ -12,9 +12,8 @@ struct Video {
   /*p29.LAPE*/ bool CLK_xBxDxFxHd;
   /*p29.XOTA*/ bool CLK_xBxDxFxHe;
 
-  /*p29.XYVA*/ bool CLK_AxCxExGxb;
   /*p29.XYFY*/ bool CLK_AxCxExGxc;
-  /*p27.TAVA*/ bool CLK_AxCxExGxa; // tag wrong?
+
 
   /*p29.WUVU*/ bool CLK_AxxDExxHa;
   /*p29.XUPY*/ bool CLK_AxxDExxHb;
@@ -147,9 +146,9 @@ struct Video {
   /*p23.XYLO*/ bool LCDC_SPEN;
   /*p23.XYMO*/ bool LCDC_SPSIZE;
   /*p23.XAFO*/ bool LCDC_BGMAP;
-  /*p23.WEXU*/ bool BG_TILE_SEL;
+  /*p23.WEXU*/ bool LCDC_BGTILE;
   /*p23.WYMO*/ bool LCDC_WINEN;
-  /*p23.WOKY*/ bool WIN_MAP_SEL;
+  /*p23.WOKY*/ bool LCDC_WINMAP;
   /*p23.XONA*/ bool LCDC_EN;
 
   // SCY
@@ -228,9 +227,9 @@ struct Video {
   /*p24.SACU*/ bool CLKPIPE;
   /*p24.ROXO*/ bool FINE_MATCH_CLK;
 
-  /*p24.NYKA*/ bool REG_SEQ5a;
-  /*p24.PORY*/ bool REG_SEQ5b;
-  /*p24.PYGO*/ bool REG_SEQ5c;
+  /*p24.NYKA*/ bool BG_SEQ_6;
+  /*p24.PORY*/ bool BG_SEQ_7;
+  /*p24.PYGO*/ bool BG_SEQ_8;
 
   /*p24.SEGU*/ bool SEGU_4M;
   /*p24.LOBY*/ bool RENDERINGn;
@@ -238,14 +237,13 @@ struct Video {
 
 
 
-  /*p24.PAHO*/ bool PAHO;
+  /*p24.PAHO*/ bool PAHO; // something related to hsync
 
 
 
-  /*p24.MEDA*/ bool LINE_000_SYNCn;
+  /*p24.MEDA*/ bool VSYNC_OUTn;
   /*p24.LOFU*/ bool CLK_LINE_EVEN;
   /*p24.LUCA*/ bool LINE_EVEN;
-  /*p24.LEBE*/ bool LEBE;
 
 
 
@@ -258,7 +256,7 @@ struct Video {
 
 
 
-  /*p25.TEFA*/ bool TEFA;
+
   /*p25.SOSE*/ bool ADDR_VRAM;
 
 
@@ -266,10 +264,10 @@ struct Video {
   /*p25.SOTO*/ bool DBG_SOTO;
 
 
-
-
-
-
+  /*p28.ATEJ*/ bool NEW_LINE1;
+  /*p28.ABAK*/ bool NEW_LINE2;
+  /*p28.BYVA*/ bool NEW_LINE3;
+  /*p29.DYBA*/ bool NEW_LINE4;
 
 
   /*p26.VEZO*/ bool MASK_PIPE_0;
@@ -296,13 +294,10 @@ struct Video {
   /*p27.NUKO*/ bool WIN_MATCH;
 
 
+  /*p27.WAZY*/ bool WAZY;
 
-
-
-
-  /*p27.NOCU*/ bool TILE_Y_CLK;
-
-  // combi loop
+  // NOR SR latch
+  /*p27.PUKU*/ bool PUKU;
   /*p27.RYDY*/ bool RYDY;
 
 
@@ -311,9 +306,12 @@ struct Video {
   /*p27.VETU*/ bool MAP_X_CLK;
   /*p27.ROCO*/ bool ROCO_4M;
 
+  /*p27.PYNU*/ bool WIN_RST;
+  /*p27.NOPA*/ bool WIN_RST_SYNC;
+  /*p27.NUNY*/ bool WIN_RST_TRIG;
 
 
-  /*p27.NOPA*/ bool REG_NOPA;
+
   /*p27.PYCO*/ bool WIN_MATCH_SYNC1;
   /*p27.NUNU*/ bool WIN_MATCH_SYNC2;
 
@@ -326,6 +324,7 @@ struct Video {
   /*p27.PUXA*/ bool FINE_MATCH_SYNC1;
   /*p27.RYFA*/ bool WIN_MATCH_ONSCREEN_SYNC1;
   /*p27.RENE*/ bool WIN_MATCH_ONSCREEN_SYNC2;
+  /*p27.SEKO*/ bool WIN_TRIGGER;
   /*p27.SOVY*/ bool REG_SOVY;
 
   /*p27.LEBO*/ bool BG_SEQ_CLK;
@@ -361,12 +360,8 @@ struct Video {
   /*p27.VEZA*/ bool MA11;
   /*p27.VOGU*/ bool MA12;
 
-  /*p27.RYCE*/ bool TEKY_TRIG;
-  /*p27.VEKU*/ bool VEKU;
-  /*p27.TAKA*/ bool TAKA;
-  /*p27.TUKU*/ bool TUKU;
-  /*p27.SOWO*/ bool SOWO;
-  /*p27.TEKY*/ bool TEKY;
+  /*p01.LAPE*/ bool LAPE_xBxDxFxH;
+  /*p27.TAVA*/ bool TAVA_AxCxExGx;
   /*p27.SOBU*/ bool TEKY_SYNC1;
   /*p27.SUDA*/ bool TEKY_SYNC2;
 };

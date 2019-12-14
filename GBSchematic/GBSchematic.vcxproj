@@ -193,19 +193,21 @@
   <ItemGroup>
     <ClCompile Include="..\src\TextPainter.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="models\Gameboy.cpp" />
-    <CustomBuild Include="models\System.cpp" />
-    <CustomBuild Include="models\Regs.cpp" />
-    <CustomBuild Include="models\PixelPipe.cpp" />
     <ClCompile Include="pages\Schematics.cpp" />
     <ClCompile Include="pages\Sch_ApuControl.cpp" />
     <ClCompile Include="pages\Sch_Bootrom.cpp" />
+    <ClCompile Include="pages\Sch_BusControl.cpp" />
+    <ClCompile Include="pages\Sch_Clocks.cpp" />
     <ClCompile Include="pages\Sch_Debug.cpp" />
+    <ClCompile Include="pages\Sch_Decoder.cpp" />
     <ClCompile Include="pages\Sch_DMA.cpp" />
-    <ClCompile Include="pages\Sch_FrameTimer.cpp" />
     <ClCompile Include="pages\Sch_Interrupts.cpp" />
     <ClCompile Include="pages\Sch_Joypad.cpp" />
+    <ClCompile Include="pages\Sch_LCD.cpp" />
+    <ClCompile Include="pages\Sch_OAM.cpp" />
     <ClCompile Include="pages\Sch_Pins.cpp" />
+    <ClCompile Include="pages\Sch_Registers.cpp" />
+    <ClCompile Include="pages\Sch_Resets.cpp" />
     <ClCompile Include="pages\Sch_Sequencer.cpp" />
     <ClCompile Include="pages\Sch_Serial.cpp" />
     <ClCompile Include="pages\Sch_SpriteStore.cpp" />
@@ -218,20 +220,19 @@
     <ClCompile Include="pages\Sch_Gameboy.cpp" />
     <ClCompile Include="pages\Sch_PixelPipe.cpp" />
     <ClCompile Include="pages\Sch_Sprites.cpp" />
-    <ClCompile Include="pages\Sch_System.cpp" />
+    <ClCompile Include="pages\Sch_Vram.cpp" />
     <ClCompile Include="SignalTree.cpp" />
     <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\TextPainter.h" />
-    <ClInclude Include="models\Gameboy.h" />
-    <ClInclude Include="models\PixelPipe.h" />
-    <ClInclude Include="models\Regs.h" />
-    <ClInclude Include="models\System.h" />
     <ClInclude Include="pages\Schematics.h" />
     <ClInclude Include="pages\Sch_ApuControl.h" />
     <ClInclude Include="pages\Sch_Bootrom.h" />
+    <ClInclude Include="pages\Sch_BusControl.h" />
+    <ClInclude Include="pages\Sch_Clocks.h" />
     <ClInclude Include="pages\Sch_Debug.h" />
+    <ClInclude Include="pages\Sch_Decoder.h" />
     <ClInclude Include="pages\Sch_DMA.h" />
     <ClInclude Include="pages\Sch_Hram.h" />
     <ClInclude Include="pages\Sch_Interrupts.h" />
@@ -239,6 +240,9 @@
     <ClInclude Include="pages\Sch_LCD.h" />
     <ClInclude Include="pages\Sch_OAM.h" />
     <ClInclude Include="pages\Sch_Pins.h" />
+    <ClInclude Include="pages\Sch_Registers.h" />
+    <ClInclude Include="pages\Sch_Resets.h" />
+    <ClInclude Include="pages\Sch_Sequencer.h" />
     <ClInclude Include="pages\Sch_Serial.h" />
     <ClInclude Include="pages\Sch_Timer.h" />
     <ClInclude Include="pages\Sch_Video.h" />
@@ -251,7 +255,7 @@
     <ClInclude Include="pages\Sch_Gameboy.h" />
     <ClInclude Include="pages\Sch_PixelPipe.h" />
     <ClInclude Include="pages\Sch_Sprites.h" />
-    <ClInclude Include="pages\Sch_System.h" />
+    <ClInclude Include="pages\Sch_Vram.h" />
     <ClInclude Include="SignalTree.h" />
     <ClInclude Include="TraceViewer.h" />
   </ItemGroup>

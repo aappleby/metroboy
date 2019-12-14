@@ -26,20 +26,35 @@ inline void print_at(int x, int y, const char *format, ...)
   va_end(args);
 }
 
-template<typename T> const T and(const T a, const T b) { return a & b; }
-template<typename T> const T or (const T a, const T b) { return a | b; }
-template<typename T> const T xor(const T a, const T b) { return a ^ b; }
+inline bool not (bool a) { return !a; }
+inline bool and (bool a, bool b) { return a & b; }
+inline bool and (bool a, bool b, bool c) { return  (a & b & c); }
+inline bool and (bool a, bool b, bool c, bool d) { return  (a & b & c & d); }
+inline bool and (bool a, bool b, bool c, bool d, bool e, bool f) { return  (a & b & c & d & e & f); }
+inline bool or  (bool a, bool b) { return a | b; }
+inline bool or  (bool a, bool b, bool c) { return  (a | b | c); }
+inline bool or  (bool a, bool b, bool c, bool d) { return  (a | b | c | d); }
+inline bool xor (bool a, bool b) { return a ^ b; }
+inline bool nor (bool a, bool b) { return !(a | b); }
+inline bool nor (bool a, bool b, bool c) { return !(a | b | c); }
+inline bool nor (bool a, bool b, bool c, bool d) { return !(a | b | c | d); }
+inline bool nor (bool a, bool b, bool c, bool d, bool e) { return !(a | b | c | d | e); }
+inline bool nor (bool a, bool b, bool c, bool d, bool e, bool f) { return !(a | b | c | d | e | f); }
+inline bool nor (bool a, bool b, bool c, bool d, bool e, bool f, bool g, bool h) { return !(a | b | c | d | e | f | g | h); }
+inline bool nand(bool a, bool b) { return !(a & b); }
+inline bool nand(bool a, bool b, bool c) { return !(a & b & c); }
+inline bool nand(bool a, bool b, bool c, bool d) { return !(a & b & c & d); }
+inline bool nand(bool a, bool b, bool c, bool d, bool e) { return !(a & b & c & d & e); }
+inline bool nand(bool a, bool b, bool c, bool d, bool e, bool f) { return !(a & b & c & d & e & f); }
+inline bool nand(bool a, bool b, bool c, bool d, bool e, bool f, bool g) { return !(a & b & c & d & e & f & g); }
 
-template<typename T, typename... Args> const T and (const T first, Args... args) { return first & and(args...); }
-template<typename T, typename... Args> const T or  (const T first, Args... args) { return first | or(args...); }
-template<typename T, typename... Args> const T xor (const T first, Args... args) { return first ^ xor(args...); }
-template<typename T, typename... Args> const T nor (const T first, Args... args) { return !or(first, args...); }
-template<typename T, typename... Args> const T nand(const T first, Args... args) { return !and(first, args...); }
-
-inline const bool not(bool a) { return !a; }
-
-template<typename T>
-inline const T not(T a) { return ~a; }
+/*
+template<typename... Args> const bool and (const bool first, Args... args) { return first & and(args...); }
+template<typename... Args> const bool or  (const bool first, Args... args) { return first | or(args...); }
+template<typename... Args> const bool xor (const bool first, Args... args) { return first ^ xor(args...); }
+template<typename... Args> const bool nor (const bool first, Args... args) { return !or(first, args...); }
+template<typename... Args> const bool nand(const bool first, Args... args) { return !and(first, args...); }
+*/
 
 // Six-rung mux cells are _non_inverting_
 // m = 1 selects input _ZERO_
@@ -77,8 +92,7 @@ inline T amux3(T a0, bool b0, T a1, bool b1, T a2, bool b2) {
   return (b0 ? a0 : 0) | (b1 ? a1 : 0) | (b2 ? a2 : 0);
 }
 
-template<typename T>
-inline T amux4(T a0, bool b0, T a1, bool b1, T a2, bool b2, T a3, bool b3) {
+inline bool amux4(bool a0, bool b0, bool a1, bool b1, bool a2, bool b2, bool a3, bool b3) {
   return (b0 ? a0 : 0) | (b1 ? a1 : 0) | (b2 ? a2 : 0) | (b3 ? a3 : 0);
 }
 

@@ -1,5 +1,7 @@
 #pragma once
-#include "Schematics.h"
+#include "Sch_Common.h"
+
+namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
@@ -12,9 +14,9 @@ struct TimerInput {
   bool CLK_BAD1;
   bool CLK_BAD2;
 
-  bool PHASE_ABCDxxxx1;
-  bool PHASE_xBCDExxx1;
-  bool PHASE_xxCDEFxx1;
+  bool PHASE_ABCDxxxx;
+  bool PHASE_xBCDExxx;
+  bool PHASE_xxCDEFxx;
 
   bool CPU_RD;
   bool CPU_WR;
@@ -151,3 +153,5 @@ struct Timer {
 };
 
 //-----------------------------------------------------------------------------
+
+};

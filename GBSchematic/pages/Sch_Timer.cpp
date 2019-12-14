@@ -2,8 +2,7 @@
 
 namespace Schematics {
 
-
-void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, const Timer& b, Timer& c) {
+void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, const Timer& b, Timer& next) {
 
   /*p03.TOVY*/ wire A0n = not(in.A00);
   /*p08.TOLA*/ wire A1n = not(in.A01);
@@ -14,9 +13,9 @@ void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, c
   /*p03.RYFO*/ wire FF04_FF07 = and(in.A02, ADDR_XX00_XX07, ADDR_FFXX);
 
   {
-    /*p01.ATYP*/ wire ATYP_ABCDxxxx = not(!in.PHASE_ABCDxxxx1);  
-    /*p01.AFEP*/ wire AFEP_AxxxxFGH = not( in.PHASE_xBCDExxx1);
-    /*p01.AROV*/ wire AROV_xxCDEFxx = not(!in.PHASE_xxCDEFxx1);
+    /*p01.ATYP*/ wire ATYP_ABCDxxxx = not(!in.PHASE_ABCDxxxx);  
+    /*p01.AFEP*/ wire AFEP_AxxxxFGH = not( in.PHASE_xBCDExxx);
+    /*p01.AROV*/ wire AROV_xxCDEFxx = not(!in.PHASE_xxCDEFxx);
 
     /*p01.BAPY*/ wire BAPY_xxxxxxGH = nor(in.CPUCLK_REQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
     /*p01.NULE*/ wire NULE_xxxxEFGH = nor(in.CPUCLK_REQn, ATYP_ABCDxxxx);
@@ -35,7 +34,7 @@ void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, c
     /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor(BELE_Axxxxxxx, in.CLK_BAD2);
     /*p01.BALY*/ wire BALY_Axxxxxxx = not(BYJU_xBCDEFGH);
 
-    /*p01.BOGA*/ c.BOGA_xBCDEFGH = not(BALY_Axxxxxxx);
+    /*p01.BOGA*/ next.BOGA_xBCDEFGH = not(BALY_Axxxxxxx);
   }
 
   //----------
@@ -45,33 +44,33 @@ void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, c
     /*p01.TAPE*/ wire TAPE = and(in.CPU_WR, FF04_FF07, A1n, A0n);
     /*p01.UFOL*/ wire DIV_RSTn = nor(in.CLK_BAD1, in.RST, TAPE);
 
-    /*p01.UKUP*/ c.DIV_00 = tock_pos( a.BOGA_xBCDEFGH, b.BOGA_xBCDEFGH, DIV_RSTn, b.DIV_00, !b.DIV_00);
-    /*p01.UFOR*/ c.DIV_01 = tock_pos(!a.DIV_00,        !b.DIV_00,       DIV_RSTn, b.DIV_01, !b.DIV_01);
-    /*p01.UNER*/ c.DIV_02 = tock_pos(!a.DIV_01,        !b.DIV_01,       DIV_RSTn, b.DIV_02, !b.DIV_02);
-    /*p01.TERO*/ c.DIV_03 = tock_pos(!a.DIV_02,        !b.DIV_02,       DIV_RSTn, b.DIV_03, !b.DIV_03);
-    /*p01.UNYK*/ c.DIV_04 = tock_pos(!a.DIV_03,        !b.DIV_03,       DIV_RSTn, b.DIV_04, !b.DIV_04);
-    /*p01.TAMA*/ c.DIV_05 = tock_pos(!a.DIV_04,        !b.DIV_04,       DIV_RSTn, b.DIV_05, !b.DIV_05);
+    /*p01.UKUP*/ next.DIV_00 = tock_pos( a.BOGA_xBCDEFGH, b.BOGA_xBCDEFGH, DIV_RSTn, b.DIV_00, !b.DIV_00);
+    /*p01.UFOR*/ next.DIV_01 = tock_pos(!a.DIV_00,        !b.DIV_00,       DIV_RSTn, b.DIV_01, !b.DIV_01);
+    /*p01.UNER*/ next.DIV_02 = tock_pos(!a.DIV_01,        !b.DIV_01,       DIV_RSTn, b.DIV_02, !b.DIV_02);
+    /*p01.TERO*/ next.DIV_03 = tock_pos(!a.DIV_02,        !b.DIV_02,       DIV_RSTn, b.DIV_03, !b.DIV_03);
+    /*p01.UNYK*/ next.DIV_04 = tock_pos(!a.DIV_03,        !b.DIV_03,       DIV_RSTn, b.DIV_04, !b.DIV_04);
+    /*p01.TAMA*/ next.DIV_05 = tock_pos(!a.DIV_04,        !b.DIV_04,       DIV_RSTn, b.DIV_05, !b.DIV_05);
 
-    /*p01.ULUR*/ c.DIV_06_CLK = mux2n(b.BOGA_xBCDEFGH, !b.DIV_05, in.FF60_1);
-    /*p01.UGOT*/ c.DIV_06 = tock_pos(a.DIV_06_CLK, b.DIV_06_CLK, DIV_RSTn, b.DIV_06, !b.DIV_06);
-    /*p01.TULU*/ c.DIV_07 = tock_pos(!a.DIV_06,    !b.DIV_06,    DIV_RSTn, b.DIV_07, !b.DIV_07);
-    /*p01.TUGO*/ c.DIV_08 = tock_pos(!a.DIV_07,    !b.DIV_07,    DIV_RSTn, b.DIV_08, !b.DIV_08);
-    /*p01.TOFE*/ c.DIV_09 = tock_pos(!a.DIV_08,    !b.DIV_08,    DIV_RSTn, b.DIV_09, !b.DIV_09);
-    /*p01.TERU*/ c.DIV_10 = tock_pos(!a.DIV_09,    !b.DIV_09,    DIV_RSTn, b.DIV_10, !b.DIV_10);
-    /*p01.SOLA*/ c.DIV_11 = tock_pos(!a.DIV_10,    !b.DIV_10,    DIV_RSTn, b.DIV_11, !b.DIV_11);
-    /*p01.SUBU*/ c.DIV_12 = tock_pos(!a.DIV_11,    !b.DIV_11,    DIV_RSTn, b.DIV_12, !b.DIV_12);
-    /*p01.TEKA*/ c.DIV_13 = tock_pos(!a.DIV_12,    !b.DIV_12,    DIV_RSTn, b.DIV_13, !b.DIV_13);
-    /*p01.UKET*/ c.DIV_14 = tock_pos(!a.DIV_13,    !b.DIV_13,    DIV_RSTn, b.DIV_14, !b.DIV_14);
-    /*p01.UPOF*/ c.DIV_15 = tock_pos(!a.DIV_14,    !b.DIV_14,    DIV_RSTn, b.DIV_15, !b.DIV_15);
+    /*p01.ULUR*/ next.DIV_06_CLK = mux2n(b.BOGA_xBCDEFGH, !b.DIV_05, in.FF60_1);
+    /*p01.UGOT*/ next.DIV_06 = tock_pos(a.DIV_06_CLK, b.DIV_06_CLK, DIV_RSTn, b.DIV_06, !b.DIV_06);
+    /*p01.TULU*/ next.DIV_07 = tock_pos(!a.DIV_06,    !b.DIV_06,    DIV_RSTn, b.DIV_07, !b.DIV_07);
+    /*p01.TUGO*/ next.DIV_08 = tock_pos(!a.DIV_07,    !b.DIV_07,    DIV_RSTn, b.DIV_08, !b.DIV_08);
+    /*p01.TOFE*/ next.DIV_09 = tock_pos(!a.DIV_08,    !b.DIV_08,    DIV_RSTn, b.DIV_09, !b.DIV_09);
+    /*p01.TERU*/ next.DIV_10 = tock_pos(!a.DIV_09,    !b.DIV_09,    DIV_RSTn, b.DIV_10, !b.DIV_10);
+    /*p01.SOLA*/ next.DIV_11 = tock_pos(!a.DIV_10,    !b.DIV_10,    DIV_RSTn, b.DIV_11, !b.DIV_11);
+    /*p01.SUBU*/ next.DIV_12 = tock_pos(!a.DIV_11,    !b.DIV_11,    DIV_RSTn, b.DIV_12, !b.DIV_12);
+    /*p01.TEKA*/ next.DIV_13 = tock_pos(!a.DIV_12,    !b.DIV_12,    DIV_RSTn, b.DIV_13, !b.DIV_13);
+    /*p01.UKET*/ next.DIV_14 = tock_pos(!a.DIV_13,    !b.DIV_13,    DIV_RSTn, b.DIV_14, !b.DIV_14);
+    /*p01.UPOF*/ next.DIV_15 = tock_pos(!a.DIV_14,    !b.DIV_14,    DIV_RSTn, b.DIV_15, !b.DIV_15);
 
-    /*p01.UMEK*/ c.DIV_06n = not(b.DIV_06);
-    /*p01.UREK*/ c.DIV_07n = not(b.DIV_07);
-    /*p01.UTOK*/ c.DIV_08n = not(b.DIV_08);
-    /*p01.SAPY*/ c.DIV_09n = not(b.DIV_09);
-    /*p01.UMER*/ c.DIV_10n = not(b.DIV_10);
-    /*p01.RAVE*/ c.DIV_11n = not(b.DIV_11);
-    /*p01.RYSO*/ c.DIV_12n = not(b.DIV_12);
-    /*p01.UDOR*/ c.DIV_13n = not(b.DIV_13);
+    /*p01.UMEK*/ next.DIV_06n = not(b.DIV_06);
+    /*p01.UREK*/ next.DIV_07n = not(b.DIV_07);
+    /*p01.UTOK*/ next.DIV_08n = not(b.DIV_08);
+    /*p01.SAPY*/ next.DIV_09n = not(b.DIV_09);
+    /*p01.UMER*/ next.DIV_10n = not(b.DIV_10);
+    /*p01.RAVE*/ next.DIV_11n = not(b.DIV_11);
+    /*p01.RYSO*/ next.DIV_12n = not(b.DIV_12);
+    /*p01.UDOR*/ next.DIV_13n = not(b.DIV_13);
 
     /*p01.TAGY*/ wire DIV_RD = and(in.CPU_RD, FF04_FF07, A1n, A0n);
 
@@ -88,10 +87,10 @@ void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, c
   //----------
   // TAC
   {
-    /*p03.SARA*/ c.FF07_WRn = nand(in.CPU_WR, FF04_FF07, in.A00, in.A01); // nand? guess it happens on the neg edge of CPU_WR?
-    /*p03.SOPU*/ c.TAC_0 = tock_pos(a.FF07_WRn, b.FF07_WRn, in.SYS_RESETn, b.TAC_0, in.D0);
-    /*p03.SAMY*/ c.TAC_1 = tock_pos(a.FF07_WRn, b.FF07_WRn, in.SYS_RESETn, b.TAC_1, in.D1);
-    /*p03.SABO*/ c.TAC_2 = tock_pos(a.FF07_WRn, b.FF07_WRn, in.SYS_RESETn, b.TAC_2, in.D2);
+    /*p03.SARA*/ next.FF07_WRn = nand(in.CPU_WR, FF04_FF07, in.A00, in.A01); // nand? guess it happens on the neg edge of CPU_WR?
+    /*p03.SOPU*/ next.TAC_0 = tock_pos(a.FF07_WRn, b.FF07_WRn, in.SYS_RESETn, b.TAC_0, in.D0);
+    /*p03.SAMY*/ next.TAC_1 = tock_pos(a.FF07_WRn, b.FF07_WRn, in.SYS_RESETn, b.TAC_1, in.D1);
+    /*p03.SABO*/ next.TAC_2 = tock_pos(a.FF07_WRn, b.FF07_WRn, in.SYS_RESETn, b.TAC_2, in.D2);
 
     /*p03.RYLA*/ wire FF07_D0 = not(!b.TAC_0);
     /*p03.ROTE*/ wire FF07_D1 = not(!b.TAC_1);
@@ -107,15 +106,15 @@ void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, c
   // TMA
 
   {
-    /*p03.TYJU*/ c.FF06_WRn = nand(in.CPU_WR, FF04_FF07, in.A01, A0n);
-    /*p03.SABU*/ c.TMA_0 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_0, in.D0);
-    /*p03.NYKE*/ c.TMA_1 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_1, in.D1);
-    /*p03.MURU*/ c.TMA_2 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_2, in.D2);
-    /*p03.TYVA*/ c.TMA_3 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_3, in.D3);
-    /*p03.TYRU*/ c.TMA_4 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_4, in.D4);
-    /*p03.SUFY*/ c.TMA_5 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_5, in.D5);
-    /*p03.PETO*/ c.TMA_6 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_6, in.D6);
-    /*p03.SETA*/ c.TMA_7 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_7, in.D7);
+    /*p03.TYJU*/ next.FF06_WRn = nand(in.CPU_WR, FF04_FF07, in.A01, A0n);
+    /*p03.SABU*/ next.TMA_0 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_0, in.D0);
+    /*p03.NYKE*/ next.TMA_1 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_1, in.D1);
+    /*p03.MURU*/ next.TMA_2 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_2, in.D2);
+    /*p03.TYVA*/ next.TMA_3 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_3, in.D3);
+    /*p03.TYRU*/ next.TMA_4 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_4, in.D4);
+    /*p03.SUFY*/ next.TMA_5 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_5, in.D5);
+    /*p03.PETO*/ next.TMA_6 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_6, in.D6);
+    /*p03.SETA*/ next.TMA_7 = tock_pos(a.FF06_WRn, b.FF06_WRn, in.SYS_RESETn, b.TMA_7, in.D7);
 
     // small tribuffer, must be high trigger
     /*p03.TUBY*/ wire FF06_RD = and (in.CPU_RD, FF04_FF07, in.A01, A0n);
@@ -171,15 +170,15 @@ void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, c
   /*p03.MEKE*/ wire INT_TIMERn = not(b.INT_TIMER);
   /*p03.MEXU*/ wire TIMA_LOAD = nand(MUZU, in.SYS_RESETn, INT_TIMERn);
 
-  /*p03.SOGU*/ c.TIMA_CLK = nor(CLK_MUXc, !b.TAC_2);
-  /*p03.REGA*/ c.TIMA_0 = count_pos(a.TIMA_CLK, b.TIMA_CLK, TIMA_LOAD, b.TIMA_0, TIMA_LD_0);
-  /*p03.POVY*/ c.TIMA_1 = count_pos(a.TIMA_0,   b.TIMA_0,   TIMA_LOAD, b.TIMA_1, TIMA_LD_1);
-  /*p03.PERU*/ c.TIMA_2 = count_pos(a.TIMA_1,   b.TIMA_1,   TIMA_LOAD, b.TIMA_2, TIMA_LD_2);
-  /*p03.RATE*/ c.TIMA_3 = count_pos(a.TIMA_2,   b.TIMA_2,   TIMA_LOAD, b.TIMA_3, TIMA_LD_3);
-  /*p03.RUBY*/ c.TIMA_4 = count_pos(a.TIMA_3,   b.TIMA_3,   TIMA_LOAD, b.TIMA_4, TIMA_LD_4);
-  /*p03.RAGE*/ c.TIMA_5 = count_pos(a.TIMA_4,   b.TIMA_4,   TIMA_LOAD, b.TIMA_5, TIMA_LD_5);
-  /*p03.PEDA*/ c.TIMA_6 = count_pos(a.TIMA_5,   b.TIMA_5,   TIMA_LOAD, b.TIMA_6, TIMA_LD_6);
-  /*p03.NUGA*/ c.TIMA_7 = count_pos(a.TIMA_6,   b.TIMA_6,   TIMA_LOAD, b.TIMA_7, TIMA_LD_7);
+  /*p03.SOGU*/ next.TIMA_CLK = nor(CLK_MUXc, !b.TAC_2);
+  /*p03.REGA*/ next.TIMA_0 = count_pos(a.TIMA_CLK, b.TIMA_CLK, TIMA_LOAD, b.TIMA_0, TIMA_LD_0);
+  /*p03.POVY*/ next.TIMA_1 = count_pos(a.TIMA_0,   b.TIMA_0,   TIMA_LOAD, b.TIMA_1, TIMA_LD_1);
+  /*p03.PERU*/ next.TIMA_2 = count_pos(a.TIMA_1,   b.TIMA_1,   TIMA_LOAD, b.TIMA_2, TIMA_LD_2);
+  /*p03.RATE*/ next.TIMA_3 = count_pos(a.TIMA_2,   b.TIMA_2,   TIMA_LOAD, b.TIMA_3, TIMA_LD_3);
+  /*p03.RUBY*/ next.TIMA_4 = count_pos(a.TIMA_3,   b.TIMA_3,   TIMA_LOAD, b.TIMA_4, TIMA_LD_4);
+  /*p03.RAGE*/ next.TIMA_5 = count_pos(a.TIMA_4,   b.TIMA_4,   TIMA_LOAD, b.TIMA_5, TIMA_LD_5);
+  /*p03.PEDA*/ next.TIMA_6 = count_pos(a.TIMA_5,   b.TIMA_5,   TIMA_LOAD, b.TIMA_6, TIMA_LD_6);
+  /*p03.NUGA*/ next.TIMA_7 = count_pos(a.TIMA_6,   b.TIMA_6,   TIMA_LOAD, b.TIMA_7, TIMA_LD_7);
 
   /*p03.SOKU*/ if (FF05_RD) out.D0 = b.TIMA_0;
   /*p03.RACY*/ if (FF05_RD) out.D1 = b.TIMA_1;
@@ -191,9 +190,9 @@ void Timer_tick(const TimerInput& in, struct TimerOutput& out, const Timer& a, c
   /*p03.PUSO*/ if (FF05_RD) out.D7 = b.TIMA_7;
 
   /*p03.MUGY*/ wire TIMA_LOADn   = not(TIMA_LOAD);
-  /*p03.NYDU*/ c.TIMA_MAX     = tock_pos(a.BOGA_xBCDEFGH, b.BOGA_xBCDEFGH, TIMA_LOADn, b.TIMA_MAX, b.TIMA_7);
+  /*p03.NYDU*/ next.TIMA_MAX     = tock_pos(a.BOGA_xBCDEFGH, b.BOGA_xBCDEFGH, TIMA_LOADn, b.TIMA_MAX, b.TIMA_7);
   /*p03.MERY*/ wire INT_TIMER_IN = nor(!b.TIMA_MAX, b.TIMA_7);
-  /*p03.MOBA*/ c.INT_TIMER    = tock_pos(a.BOGA_xBCDEFGH, b.BOGA_xBCDEFGH, in.SYS_RESETn, b.INT_TIMER, INT_TIMER_IN);
+  /*p03.MOBA*/ next.INT_TIMER    = tock_pos(a.BOGA_xBCDEFGH, b.BOGA_xBCDEFGH, in.SYS_RESETn, b.INT_TIMER, INT_TIMER_IN);
 }
 
 //-----------------------------------------------------------------------------

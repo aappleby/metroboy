@@ -7,7 +7,7 @@ void System::reset() {
   BOOT_BIT.reset();
 
   CLK_ABCDxxxx.reset();
-  CLK_xBCDExxx.reset();
+  SONO_xBCDExxx.reset();
   CLK_xxCDEFxx.reset();
   CLK_xxxDEFGx.reset();
   ATYK.reset();
@@ -130,7 +130,7 @@ void System::tick(Gameboy& gb, bool LCDC_EN, bool APU_RESET1, bool DBG_APUn, boo
   // Phase generator.
 
   /*p01.ATYP*/ CLK_xxxxEFGH = _not(CLK_ABCDxxxx);
-  /*p01.AFEP*/ CLK_AxxxxFGH = _not(CLK_xBCDExxx);
+  /*p01.AFEP*/ CLK_AxxxxFGH = _not(SONO_xBCDExxx);
   /*p01.AROV*/ CLK_ABxxxxGH = _not(CLK_xxCDEFxx);
   /*p01.ADAR*/ CLK_ABCxxxxH = _not(CLK_xxxDEFGx);
 
@@ -142,7 +142,7 @@ void System::tick(Gameboy& gb, bool LCDC_EN, bool APU_RESET1, bool DBG_APUn, boo
 
   /*p01.BAPY*/ CPUCLK_xxDExxxx = _nor(CLK_ABxxxxGH, CLK_xxxxEFGH);
   /*p01.NULE*/ CPUCLK_ABCDxxxx = _not(CLK_xxxxEFGH);
-  /*p01.BATE*/ CPUCLK_xxxxxFxx = _nor(CLK_xBCDExxx, CLK_ABxxxxGH);
+  /*p01.BATE*/ CPUCLK_xxxxxFxx = _nor(SONO_xBCDExxx, CLK_ABxxxxGH);
   /*p01.BERU*/ CPUCLK_ABxxEFGH = _not(CPUCLK_xxDExxxx);
   /*p01.BYRY*/ CPUCLK_xxxxEFGH = _not(CPUCLK_ABCDxxxx);
 
@@ -261,7 +261,7 @@ void System::tick(Gameboy& gb, bool LCDC_EN, bool APU_RESET1, bool DBG_APUn, boo
     /*p02.TUNY*/ wire FF0F_RST3 = _and(_or(gb.bus.D3, !FF0F_WR), INT_STAT_ACK, !SYS_RESET);
     /*p02.TYME*/ wire FF0F_RST4 = _and(_or(gb.bus.D4, !FF0F_WR), INT_TIM_ACK,  !SYS_RESET);
 
-    /*p02.PESU*/ wire FF0F_IN = not(b.joy.P10_B);
+    /*p02.PESU*/ wire FF0F_IN = not(pins.P10_B);
 
     /*p02.LOPE*/ FF0F_0.tock(b.vid.INT_VBL_BUF, FF0F_SET0, FF0F_RST0, FF0F_IN);
     /*p02.UBUL*/ FF0F_1.tock(SER_CNT3,          FF0F_SET1, FF0F_RST1, FF0F_IN);
@@ -497,8 +497,8 @@ void System::tock(Gameboy& gb, bool APU_RESET1) {
 
     // These registers tick on _BOTH_EDGES_ of the master clock.
     /*p01.ADYK*/ CLK_xxxDEFGx.tock(CLK_AxCxExGx, MODE_PROD, CLK_xxCDEFxx);
-    /*p01.APUK*/ CLK_xxCDEFxx.tock(CLK_AxCxExGx, MODE_PROD, CLK_xBCDExxx);
-    /*p01.ALEF*/ CLK_xBCDExxx.tock(CLK_AxCxExGx, MODE_PROD, CLK_ABCDxxxx);
+    /*p01.APUK*/ CLK_xxCDEFxx.tock(CLK_AxCxExGx, MODE_PROD, SONO_xBCDExxx);
+    /*p01.ALEF*/ SONO_xBCDExxx.tock(CLK_AxCxExGx, MODE_PROD, CLK_ABCDxxxx);
     /*p01.AFUR*/ CLK_ABCDxxxx.tock(CLK_AxCxExGx, MODE_PROD, !oldCLK_xxxDEFGx);
   }
 

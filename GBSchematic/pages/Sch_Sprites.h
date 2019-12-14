@@ -1,4 +1,5 @@
 #pragma once
+#include "Sch_Common.h"
 
 namespace Schematics {
 
@@ -15,21 +16,10 @@ struct Sprites {
 
   /*p28.ACYL*/ bool OAM_ADDR_PARSEn;
 
-  /*p28.GEKA*/ bool OAM_A0;
-  /*p28.ZYFO*/ bool OAM_A1;
-  /*p28.YFOT*/ bool OAM_A2;
-  /*p28.YFOC*/ bool OAM_A3;
-  /*p28.YVOM*/ bool OAM_A4;
-  /*p28.YMEV*/ bool OAM_A5;
-  /*p28.XEMU*/ bool OAM_A6;
-  /*p28.YZET*/ bool OAM_A7;
-
 
   /*p28.WEFE*/ bool P10_Bn;
 
-  /*p28.AWOH*/ bool CLK_xBCxxFGx;
-
-  /*p28.GAVA*/ bool SCAN_CLK;
+  /*p28.AWOH*/ bool AWOH_AxxDExxH;
 
 
   /*p28.ZONE*/ bool OAM_A_CS;
@@ -47,12 +37,12 @@ struct Sprites {
   /*p29.CATU*/ bool IN_LINE_SYNCa;
   /*p28.ANEL*/ bool IN_LINE_SYNCb;
 
-  /*p28.YFEL*/ bool SCAN0;
-  /*p28.WEWY*/ bool SCAN1;
-  /*p28.GOSO*/ bool SCAN2;
-  /*p28.ELYN*/ bool SCAN3;
-  /*p28.FAHA*/ bool SCAN4;
-  /*p28.FONY*/ bool SCAN5;
+  /*p28.YFEL*/ Reg SCAN0;
+  /*p28.WEWY*/ Reg SCAN1;
+  /*p28.GOSO*/ Reg SCAN2;
+  /*p28.ELYN*/ Reg SCAN3;
+  /*p28.FAHA*/ Reg SCAN4;
+  /*p28.FONY*/ Reg SCAN5;
 
 
 
@@ -164,18 +154,18 @@ struct Sprites {
 
   /*p29.WOSU*/ bool CLK_WOSU;
 
-  /*p29.CENO*/ bool CENO;
+  /*p29.CENO*/ Reg CENO;
   /*p29.CEHA*/ bool CEHA;
 
   /*p29.DYTY*/ bool STORE_EN;
 
-  /*p29.BYBA*/ bool SCAN_DONE_SYNC1;
-  /*p29.DOBA*/ bool SCAN_DONE_SYNC2;
+  /*p29.BYBA*/ Reg SCAN_DONE_SYNC1;
+  /*p29.DOBA*/ Reg SCAN_DONE_SYNC2;
 
 
-  /*p29.TOBU*/ bool SPR_DEL0;
-  /*p29.VONU*/ bool SPR_DEL1;
-  /*p29.SEBA*/ bool SPR_DEL2;
+  /*p29.TOBU*/ Reg SPR_DEL0;
+  /*p29.VONU*/ Reg SPR_DEL1;
+  /*p29.SEBA*/ Reg SPR_DEL2;
 
   /*p29.TEPA*/ bool RENDERINGn;
 
@@ -186,14 +176,12 @@ struct Sprites {
 
 
 
-  /*p29.TYFO*/ bool SPR_SEQ_5_SYNCn;
-  /*p29.TOMA*/ bool SPR_SEQ_AxCxExGx;
-  /*p29.TOXE*/ bool SPR_SEQ0;
-  /*p29.TULY*/ bool SPR_SEQ1;
-  /*p29.TESE*/ bool SPR_SEQ2;
+  /*p29.TYFO*/ Reg SPR_SEQ_5_SYNCn;
 
-  /*p29.BYJO*/ bool BYJO;
-  /*p29.AZEM*/ bool AZEM;
+  /*p29.TOXE*/ Reg SPR_SEQ0;
+  /*p29.TULY*/ Reg SPR_SEQ1;
+  /*p29.TESE*/ Reg SPR_SEQ2;
+
   /*p29.AROR*/ bool MATCH_EN;
   /*p29.XAGE*/ bool STORE4_MATCHn;
   /*p29.YLOZ*/ bool STORE3_MATCHn;

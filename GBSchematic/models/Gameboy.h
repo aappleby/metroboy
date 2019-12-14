@@ -418,42 +418,7 @@ struct CpuOut {
 
 //-----------------------------------------------------------------------------
 
-union MainBus {
-  struct {
-    bool A00 : 1;
-    bool A01 : 1;
-    bool A02 : 1;
-    bool A03 : 1;
-    bool A04 : 1;
-    bool A05 : 1;
-    bool A06 : 1;
-    bool A07 : 1;
-    bool A08 : 1;
-    bool A09 : 1;
-    bool A10 : 1;
-    bool A11 : 1;
-    bool A12 : 1;
-    bool A13 : 1;
-    bool A14 : 1;
-    bool A15 : 1;
-    bool D0 : 1;
-    bool D1 : 1;
-    bool D2 : 1;
-    bool D3 : 1;
-    bool D4 : 1;
-    bool D5 : 1;
-    bool D6 : 1;
-    bool D7 : 1;
-    char pad1;
-  };
-  struct {
-    unsigned short A;
-    unsigned char D;
-    unsigned char pad2;
-  };
-};
-
-union VramBus {
+union Bus {
   struct {
     bool A00 : 1;
     bool A01 : 1;
@@ -489,14 +454,8 @@ union VramBus {
 };
 
 struct Gameboy {
-  MainBus bus;
-  VramBus vbus;
-
-  CpuIn cpu_in;
-  ChipIn chip_in;
-
-  CpuOut cpu_out;
-  ChipOut chip_out;
+  Bus bus;
+  Bus vbus;
 
   bool BOOT_CS;
   bool HRAM_CS;

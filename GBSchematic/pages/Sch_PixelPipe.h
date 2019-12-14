@@ -1,10 +1,90 @@
 #pragma once
+#include <stdint.h>
 
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
+struct PixelPipeIn {
+  bool CLKPIPE_A;
+  bool CLKPIPE_B;
+
+  bool BG_LATCH;
+  bool VRAM_TEMP_CLK_A;
+  bool VRAM_TEMP_CLK_B;
+
+  bool FLIP_X;
+  bool LCDC_BGEN;
+  bool LCDC_SPEN;
+  bool OAM_A_D4;
+  bool OAM_A_D7;
+  bool P10_B;
+  bool P10_Bn;
+  bool BG_PIPE_A_LOAD;
+  bool BG_PIPE_B_LOAD;
+
+  bool SPRITE_PIX_LATCH_A;
+  bool SPRITE_PIX_LATCH_B;
+  bool XEFY_CLK;
+
+  bool CPU_RD2;
+  bool CPU_WR2;
+
+  bool MD0;
+  bool MD1;
+  bool MD2;
+  bool MD3;
+  bool MD4;
+  bool MD5;
+  bool MD6;
+  bool MD7;
+
+  bool A00 : 1;
+  bool A01 : 1;
+  bool A02 : 1;
+  bool A03 : 1;
+  bool A04 : 1;
+  bool A05 : 1;
+  bool A06 : 1;
+  bool A07 : 1;
+  bool A08 : 1;
+  bool A09 : 1;
+  bool A10 : 1;
+  bool A11 : 1;
+  bool A12 : 1;
+  bool A13 : 1;
+  bool A14 : 1;
+  bool A15 : 1;
+
+  bool D0 : 1;
+  bool D1 : 1;
+  bool D2 : 1;
+  bool D3 : 1;
+  bool D4 : 1;
+  bool D5 : 1;
+  bool D6 : 1;
+  bool D7 : 1;
+
+};
+
+struct PixelPipeOut {
+  uint8_t LD0;
+  uint8_t LD1;
+
+  bool D0 : 1;
+  bool D1 : 1;
+  bool D2 : 1;
+  bool D3 : 1;
+  bool D4 : 1;
+  bool D5 : 1;
+  bool D6 : 1;
+  bool D7 : 1;
+};
+
 struct PixelPipe {
+
+  /*p32.LABU*/ bool VRAM_TEMP_CLK;
+  /*p32.LOMA*/ bool BG_LATCH;
 
   /*p32.RAWU*/ bool BG_PIX_B0;
   /*p32.POZO*/ bool BG_PIX_B1;
@@ -14,10 +94,6 @@ struct PixelPipe {
   /*p32.POJU*/ bool BG_PIX_B5;
   /*p32.POWY*/ bool BG_PIX_B6;
   /*p32.PYJU*/ bool BG_PIX_B7;
-
-  /*p32.LABU*/ bool VRAM_TEMP_CLK;
-
-  /*p32.LOMA*/ bool BG_LATCH;
 
   /*p32.LEGU*/ bool BG_PIX_A0;
   /*p32.NUDU*/ bool BG_PIX_A1;
@@ -100,6 +176,14 @@ struct PixelPipe {
   /*p33.RAMA*/ bool SPR_PIX_A6;
   /*p33.RYDU*/ bool SPR_PIX_A7;
 
+  /*p26.VEZO*/ bool MASK_PIPE_0;
+  /*p26.WURU*/ bool MASK_PIPE_1;
+  /*p26.VOSA*/ bool MASK_PIPE_2;
+  /*p26.WYFU*/ bool MASK_PIPE_3;
+  /*p26.XETE*/ bool MASK_PIPE_4;
+  /*p26.WODA*/ bool MASK_PIPE_5;
+  /*p26.VUMO*/ bool MASK_PIPE_6;
+  /*p26.VAVA*/ bool MASK_PIPE_7;
 
   /*p34.MEFU*/ bool SPRITE_MASK0;
   /*p34.MEVE*/ bool SPRITE_MASK1;
@@ -118,45 +202,6 @@ struct PixelPipe {
   /*p34.NUKE*/ bool SPRITE_PAL_PIPE_5;
   /*p34.MODA*/ bool SPRITE_PAL_PIPE_6;
   /*p34.LYME*/ bool SPRITE_PAL_PIPE_7;
-
-  /*p36.TEPO*/ bool BGP_CLK;
-  /*p36.PAVO*/ bool BGP_D0;
-  /*p36.PYLU*/ bool BGP_D2;
-  /*p36.MUKE*/ bool BGP_D4;
-  /*p36.MOGY*/ bool BGP_D6;
-  /*p36.NUSY*/ bool BGP_D1;
-  /*p36.MAXY*/ bool BGP_D3;
-  /*p36.MORU*/ bool BGP_D5;
-  /*p36.MENA*/ bool BGP_D7;
-
-  /*p36.XELO*/ bool OBP0_CLK;
-  /*p36.XANA*/ bool OBP0_D7;
-  /*p36.XYZE*/ bool OBP0_D5;
-  /*p36.XALO*/ bool OBP0_D3;
-  /*p36.XUKY*/ bool OBP0_D1;
-  /*p36.XUPO*/ bool OBP0_D6;
-  /*p36.XERU*/ bool OBP0_D4;
-  /*p36.XOVA*/ bool OBP0_D2;
-  /*p36.XUFU*/ bool OBP0_D0;
-
-  /*p36.LEHO*/ bool OBP1_CLK;
-  /*p36.LUXO*/ bool OBP1_D7;
-  /*p36.LUGU*/ bool OBP1_D5;
-  /*p36.LOSE*/ bool OBP1_D3;
-  /*p36.LAWO*/ bool OBP1_D1;
-  /*p36.LEPU*/ bool OBP1_D6;
-  /*p36.LUNE*/ bool OBP1_D4;
-  /*p36.MOSA*/ bool OBP1_D2;
-  /*p36.MOXY*/ bool OBP1_D0;
-
-  /*p36.LELU*/ bool LELU;
-  /*p36.LUGA*/ bool LUGA;
-  /*p36.LYZA*/ bool LYZA;
-  /*p36.LEPA*/ bool LEPA;
-  /*p36.LEBA*/ bool LEBA;
-  /*p36.LUKY*/ bool LUKY;
-  /*p36.LODE*/ bool LODE;
-  /*p36.LAJU*/ bool LAJU;
 };
 
 //-----------------------------------------------------------------------------

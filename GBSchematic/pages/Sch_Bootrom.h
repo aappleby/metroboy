@@ -1,5 +1,5 @@
 #pragma once
-#include "Schematics.h"
+#include "Sch_Common.h"
 
 namespace Schematics {
 
@@ -7,9 +7,14 @@ namespace Schematics {
 
 struct Bootrom {
 
+  void tick(const Bus& bus,
+            const BusControl& ctl,
+            const Debug& dbg,
+            const Decoder& dec,
+            Bus& bus_out);
+
+
   /*p07.TUTU*/ bool ADDR_BOOT;
-  /*p07.TUGE*/ bool BOOT_BIT_CLK;
-  /*p07.TEPU*/ bool BOOT_BIT;
 
   /*p07.ZETE*/ bool BOOTROM_A1nA0n;
   /*p07.ZEFU*/ bool BOOTROM_A1nA0;
@@ -25,6 +30,8 @@ struct Bootrom {
   /*p07.ZYRA*/ bool BOOTROM_A7n;
 
   /*p07.ZERY*/ bool BOOT_CS;
+
+  /*p07.TEPU*/ Reg BOOT_BIT;
 };
 
 //-----------------------------------------------------------------------------

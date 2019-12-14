@@ -4,7 +4,7 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Serial_tick(const SerialInput& in, SerialOutput& out, const Serial& a, const Serial& b, Serial& c) {
+void Serial_tick(const SerialInput& in, SerialOutput& out, const Serial& a, const Serial& b, Serial& next) {
 
   /*p03.TOVY*/ wire A0n = not(in.A00);
   /*p08.TOLA*/ wire A1n = not(in.A01);
@@ -19,23 +19,23 @@ void Serial_tick(const SerialInput& in, SerialOutput& out, const Serial& a, cons
   //----------
   // Serial port
 
-  /*p06.UWAM*/ c.FF02_CLK = nand(in.CPU_WR, ADDR_FF00_FF03, in.A01, A0n);
+  /*p06.UWAM*/ next.FF02_CLK = nand(in.CPU_WR, ADDR_FF00_FF03, in.A01, A0n);
   /*p06.CABY*/ wire XFER_RESET = and(b.SER_CNT3n, in.SYS_RESETn);
-  /*p06.ETAF*/ c.XFER_START = tock_pos(a.FF02_CLK, b.FF02_CLK, XFER_RESET,     b.XFER_START, in.D7);
-  /*p06.CULY*/ c.XFER_DIR   = tock_pos(a.FF02_CLK, b.FF02_CLK, in.SYS_RESETn, b.XFER_DIR,   in.D0);
+  /*p06.ETAF*/ next.XFER_START = tock_pos(a.FF02_CLK, b.FF02_CLK, XFER_RESET,     b.XFER_START, in.D7);
+  /*p06.CULY*/ next.XFER_DIR   = tock_pos(a.FF02_CLK, b.FF02_CLK, in.SYS_RESETn, b.XFER_DIR,   in.D0);
 
-  /*p01.UVYN*/ c.CLK_16K = not(in.DIV_05);
-  /*p06.COTY*/ c.SER_CLK = tock_pos(a.CLK_16K, b.CLK_16K, b.FF02_CLK, b.SER_CLK, !b.SER_CLK);
+  /*p01.UVYN*/ next.CLK_16K = not(in.DIV_05);
+  /*p06.COTY*/ next.SER_CLK = tock_pos(a.CLK_16K, b.CLK_16K, b.FF02_CLK, b.SER_CLK, !b.SER_CLK);
 
   /*p06.CAVE*/ wire SER_CLK_MUXn = mux2n(b.SER_CLK, b.SCK_C, b.XFER_DIR);
 
   /*p06.CARO*/ wire SER_RST  = and(b.FF02_CLK, in.SYS_RESETn);
-  /*p06.DAWA*/ c.SER_CLK1 = or(SER_CLK_MUXn, !b.XFER_START); // this must stop the clock or something when the transmit's done
-  /*p06.CAFA*/ c.SER_CNT0   = tock_pos(a.SER_CLK1, b.SER_CLK1, SER_RST, b.SER_CNT0, !b.SER_CNT0);
-  /*p06.CYLO*/ c.SER_CNT1   = tock_pos(!a.SER_CNT0, !b.SER_CNT0, SER_RST, b.SER_CNT1, !b.SER_CNT1);
-  /*p06.CYDE*/ c.SER_CNT2   = tock_pos(!a.SER_CNT1, !b.SER_CNT1, SER_RST, b.SER_CNT2, !b.SER_CNT2);
-  /*p06.CALY*/ c.SER_CNT3   = tock_pos(!a.SER_CNT2, !b.SER_CNT2, SER_RST, b.SER_CNT3, !b.SER_CNT3);
-  /*p06.COBA*/ c.SER_CNT3n  = not(b.SER_CNT3);
+  /*p06.DAWA*/ next.SER_CLK1 = or(SER_CLK_MUXn, !b.XFER_START); // this must stop the clock or something when the transmit's done
+  /*p06.CAFA*/ next.SER_CNT0   = tock_pos(a.SER_CLK1, b.SER_CLK1, SER_RST, b.SER_CNT0, !b.SER_CNT0);
+  /*p06.CYLO*/ next.SER_CNT1   = tock_pos(!a.SER_CNT0, !b.SER_CNT0, SER_RST, b.SER_CNT1, !b.SER_CNT1);
+  /*p06.CYDE*/ next.SER_CNT2   = tock_pos(!a.SER_CNT1, !b.SER_CNT1, SER_RST, b.SER_CNT2, !b.SER_CNT2);
+  /*p06.CALY*/ next.SER_CNT3   = tock_pos(!a.SER_CNT2, !b.SER_CNT2, SER_RST, b.SER_CNT3, !b.SER_CNT3);
+  /*p06.COBA*/ next.SER_CNT3n  = not(b.SER_CNT3);
   
   /*p06.URYS*/ wire FF01_WRn = nand(in.CPU_WR, ADDR_FF00_FF03, in.A00, A1n);
   /*p06.DAKU*/ wire FF01_WR  = not (FF01_WRn);
@@ -58,24 +58,24 @@ void Serial_tick(const SerialInput& in, SerialOutput& out, const Serial& a, cons
   /*p06.EFAK*/ wire SER_DATA6_RSTn = or(and(FF01_WRn, in.D6), in.SYS_RESETn);
   /*p06.EGUV*/ wire SER_DATA7_RSTn = or(and(FF01_WRn, in.D7), in.SYS_RESETn);
 
-  /*p06.CAGE*/ c.SIN_Cn = not(b.SIN_C);
-  /*p06.EDYL*/ c.SER_CLKn = not(b.SER_CLK1);
-  /*p06.EPYT*/ c.SER_CLK2 = not(b.SER_CLKn);
-  /*p06.DAWE*/ c.SER_CLK3 = not(/*p06.DEHO*/ not(b.SER_CLK2));
-  /*p06.CUBA*/ c.SER_DATA0 = srtock_pos(a.SER_CLK3, b.SER_CLK3, SER_DATA0_SETn, SER_DATA0_RSTn, b.SER_DATA0, b.SIN_Cn);
-  /*p06.DEGU*/ c.SER_DATA1 = srtock_pos(a.SER_CLK3, b.SER_CLK3, SER_DATA1_SETn, SER_DATA1_RSTn, b.SER_DATA1, b.SER_DATA0);
-  /*p06.DYRA*/ c.SER_DATA2 = srtock_pos(a.SER_CLK3, b.SER_CLK3, SER_DATA2_SETn, SER_DATA2_RSTn, b.SER_DATA2, b.SER_DATA1);
-  /*p06.DOJO*/ c.SER_DATA3 = srtock_pos(a.SER_CLK3, b.SER_CLK3, SER_DATA3_SETn, SER_DATA3_RSTn, b.SER_DATA3, b.SER_DATA2);
-  /*p06.DOVU*/ c.SER_DATA4 = srtock_pos(a.SER_CLK2, b.SER_CLK2, SER_DATA4_SETn, SER_DATA4_RSTn, b.SER_DATA4, b.SER_DATA3);
-  /*p06.EJAB*/ c.SER_DATA5 = srtock_pos(a.SER_CLK2, b.SER_CLK2, SER_DATA5_SETn, SER_DATA5_RSTn, b.SER_DATA5, b.SER_DATA4);
-  /*p06.EROD*/ c.SER_DATA6 = srtock_pos(a.SER_CLK2, b.SER_CLK2, SER_DATA6_SETn, SER_DATA6_RSTn, b.SER_DATA6, b.SER_DATA5);
-  /*p06.EDER*/ c.SER_DATA7 = srtock_pos(a.SER_CLK2, b.SER_CLK2, SER_DATA7_SETn, SER_DATA7_RSTn, b.SER_DATA7, b.SER_DATA6);
-  /*p06.ELYS*/ c.SER_OUT   = tock_pos(a.SER_CLKn, b.SER_CLKn, in.SYS_RESETn, b.SER_OUT, b.SER_DATA7);
+  /*p06.CAGE*/ next.SIN_Cn = not(b.SIN_C);
+  /*p06.EDYL*/ next.SER_CLKn = not(b.SER_CLK1);
+  /*p06.EPYT*/ next.SER_CLK2 = not(b.SER_CLKn);
+  /*p06.DAWE*/ next.SER_CLK3 = not(/*p06.DEHO*/ not(b.SER_CLK2));
+  /*p06.CUBA*/ next.SER_DATA0 = srtock_pos(a.SER_CLK3, b.SER_CLK3, SER_DATA0_SETn, SER_DATA0_RSTn, b.SER_DATA0, b.SIN_Cn);
+  /*p06.DEGU*/ next.SER_DATA1 = srtock_pos(a.SER_CLK3, b.SER_CLK3, SER_DATA1_SETn, SER_DATA1_RSTn, b.SER_DATA1, b.SER_DATA0);
+  /*p06.DYRA*/ next.SER_DATA2 = srtock_pos(a.SER_CLK3, b.SER_CLK3, SER_DATA2_SETn, SER_DATA2_RSTn, b.SER_DATA2, b.SER_DATA1);
+  /*p06.DOJO*/ next.SER_DATA3 = srtock_pos(a.SER_CLK3, b.SER_CLK3, SER_DATA3_SETn, SER_DATA3_RSTn, b.SER_DATA3, b.SER_DATA2);
+  /*p06.DOVU*/ next.SER_DATA4 = srtock_pos(a.SER_CLK2, b.SER_CLK2, SER_DATA4_SETn, SER_DATA4_RSTn, b.SER_DATA4, b.SER_DATA3);
+  /*p06.EJAB*/ next.SER_DATA5 = srtock_pos(a.SER_CLK2, b.SER_CLK2, SER_DATA5_SETn, SER_DATA5_RSTn, b.SER_DATA5, b.SER_DATA4);
+  /*p06.EROD*/ next.SER_DATA6 = srtock_pos(a.SER_CLK2, b.SER_CLK2, SER_DATA6_SETn, SER_DATA6_RSTn, b.SER_DATA6, b.SER_DATA5);
+  /*p06.EDER*/ next.SER_DATA7 = srtock_pos(a.SER_CLK2, b.SER_CLK2, SER_DATA7_SETn, SER_DATA7_RSTn, b.SER_DATA7, b.SER_DATA6);
+  /*p06.ELYS*/ next.SER_OUT   = tock_pos(a.SER_CLKn, b.SER_CLKn, in.SYS_RESETn, b.SER_OUT, b.SER_DATA7);
 
-  /*p05.KENA*/ c.SOUT  = mux2n(in.DBG_FF00_D6, b.SER_OUT, in.FF60_0);
-  /*p06.KEXU*/ c.SCK_A = nand(b.SER_CLK, b.XFER_DIR);
-  /*p06.CULY*/ c.SCK_B = b.XFER_DIR;
-  /*p06.KUJO*/ c.SCK_D = nor (b.SER_CLK, /*p06.JAGO*/ not(b.XFER_DIR));
+  /*p05.KENA*/ next.SOUT  = mux2n(in.DBG_FF00_D6, b.SER_OUT, in.FF60_0);
+  /*p06.KEXU*/ next.SCK_A = nand(b.SER_CLK, b.XFER_DIR);
+  /*p06.CULY*/ next.SCK_B = b.XFER_DIR;
+  /*p06.KUJO*/ next.SCK_D = nor (b.SER_CLK, /*p06.JAGO*/ not(b.XFER_DIR));
 
   /*p06.UFEG*/ wire FF01_RD = and(in.CPU_RD, ADDR_FF00_FF03, in.A00, A1n);
   /*p06.CUGY*/ if (FF01_RD) out.D0 = b.SER_DATA0;

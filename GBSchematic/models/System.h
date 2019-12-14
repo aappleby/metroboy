@@ -28,7 +28,7 @@ struct System {
 
   // 1mhz phase generator, regs in order of triggering.
   /*p01.AFUR*/ DuoReg CLK_ABCDxxxx;
-  /*p01.ALEF*/ DuoReg CLK_xBCDExxx;
+  /*p01.ALEF*/ DuoReg SONO_xBCDExxx;
   /*p01.APUK*/ DuoReg CLK_xxCDEFxx;
   /*p01.ADYK*/ DuoReg CLK_xxxDEFGx;
   /*p01.ATYP*/ bool   CLK_xxxxEFGH;

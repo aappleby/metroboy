@@ -205,16 +205,6 @@ struct PixelPipe {
   /*p35.REMY*/ bool LD0n;
   /*p35.RAVO*/ bool LD1n;
 
-  /*p36.TEPO*/ bool BGP_CLK;
-  /*p36.PAVO*/ bool BGP_D0;
-  /*p36.PYLU*/ bool BGP_D2;
-  /*p36.MUKE*/ bool BGP_D4;
-  /*p36.MOGY*/ bool BGP_D6;
-  /*p36.NUSY*/ bool BGP_D1;
-  /*p36.MAXY*/ bool BGP_D3;
-  /*p36.MORU*/ bool BGP_D5;
-  /*p36.MENA*/ bool BGP_D7;
-
   /*p36.XUFY*/ bool FF48_RD;
   /*p36.XOMA*/ bool FF48_WR;
   /*p36.XOZY*/ bool FF48_RDn;

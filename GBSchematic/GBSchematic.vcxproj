@@ -234,7 +234,6 @@
     <ClInclude Include="pages\Sch_Debug.h" />
     <ClInclude Include="pages\Sch_Decoder.h" />
     <ClInclude Include="pages\Sch_DMA.h" />
-    <ClInclude Include="pages\Sch_Hram.h" />
     <ClInclude Include="pages\Sch_Interrupts.h" />
     <ClInclude Include="pages\Sch_Joypad.h" />
     <ClInclude Include="pages\Sch_LCD.h" />

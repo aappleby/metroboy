@@ -24,7 +24,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
 
   {
-    /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.CPU_WR);
+    /*p10.BAFU*/ wire CPU_WRn = not(b.bus.CPU_WR);
     /*p10.BOGY*/ next.apu.APU_WR  = not(CPU_WRn);
   }
 
@@ -153,7 +153,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p09.COZU*/ next.apu.NR50_VOL_R2   = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VOL_R2,   b.bus.D6);
     /*p09.BEDU*/ next.apu.NR50_VIN_TO_R = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VIN_TO_R, b.bus.D7);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
 
     /*p09.BEFU*/ wire NR50_RDn1 = nor(CPU_RDn, ADDR_FF24n);
     /*p09.ADAK*/ wire NR50_RD1  = not(NR50_RDn1);
@@ -188,7 +188,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p09.BEFO*/ next.apu.NR51_6 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_6, b.bus.D6);
     /*p09.BEPU*/ next.apu.NR51_7 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_7, b.bus.D7);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     /*p09.HEFA*/ wire NR51_RDn = nor(ADDR_FF25n, CPU_RDn);
     /*p09.GUMU*/ wire NR51_RD = not(NR51_RDn);
 
@@ -226,7 +226,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p09.HADA*/ next.apu.NR52_ALL_SOUND_ON  = tock_pos(a.apu.NR52_WRn1, b.apu.NR52_WRn1, SYS_RESETn3, b.apu.NR52_ALL_SOUND_ON, b.bus.D7); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
     /*p09.EDEK*/ next.apu.NR52_DBG_APU       = not(!b.apu.NR52_DBG_APUn);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     /*p09.CETO*/ wire CPU_RDa = not(CPU_RDn);
     /*p09.KAZO*/ wire CPU_RDb = not(CPU_RDn);
     /*p09.CURU*/ wire CPU_RDc = not(CPU_RDn);

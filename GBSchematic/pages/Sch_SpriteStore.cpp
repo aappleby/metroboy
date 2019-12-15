@@ -257,12 +257,6 @@ void SpriteStore_tock(const SpriteStoreAll& a, const SpriteStoreAll& b, SpriteSt
   /*p29.DOGU*/ wire STORE9_SEL = nand(b.spr.SPRITE_COUNT0b, b.spr.SPRITE_COUNT1n, b.spr.SPRITE_COUNT2n, b.spr.SPRITE_COUNT3b);
 
 
-  {
-    /*p29.TYNO*/     wire TYNO = nand(b.SPR_SEQ0, b.SPR_DEL2, b.SPR_DEL1);
-    /*p29.VUSA*/   wire VUSA = or(!b.SPR_SEQ_5_SYNCn, TYNO);
-    /*p29.WUTY*/ next.SPRITE_DONE = not(VUSA);
-  }
-
   //----------
   // store 0
 

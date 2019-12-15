@@ -10,16 +10,17 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Debug::tick(const BusControl& ctl,
+void Debug::tick(const BusControl& bus,
                  const Clocks& clocks,
-                 const Bus& bus,
                  const Pins& pins,
                  const Decoder& dec,
-                 const Debug& prev,
                  const Resets& rst,
-                 Bus& bus_out) {
+                 const Debug& prev,
+                 BusControl& bus_out) {
+
   Debug& next = *this;
 
+  /*p27.VYPO*/ wire VYPO = not(pins.P10_B);
   /*p07.UBET*/ next.T1n = not(pins.T1);
   /*p07.UVAR*/ next.T2n = not(pins.T2);
 
@@ -28,18 +29,13 @@ void Debug::tick(const BusControl& ctl,
   /*p07.UNOR*/ next.MODE_DBG2   = and(pins.T2, prev.T1n);
   /*p08.TOVA*/ next.MODE_DBG2n1 = not(prev.MODE_DBG2);
   /*p08.RYCA*/ next.MODE_DBG2n2 = not(prev.MODE_DBG2);
-  /*p07.APET*/ wire MODE_DEBUG  = or(prev.MODE_DBG1, prev.MODE_DBG2);
-
-
-  /*p01.DULA*/ wire DULA_RESET = not(rst.SYS_RESETn);
-  /*p01.CUNU*/ wire CUNU_RESET = not(DULA_RESET);
-  /*p01.XORE*/ wire XORE_RESET = not(CUNU_RESET);
-  /*p01.CUNU*/ wire SOTO_RESET = not(DULA_RESET);
 
   // so is one of the debug pins a clock, and this is a clock divider?
   /*p25.SYCY*/ wire CLK_SOTO = not(prev.MODE_DBG2);
-  /*p25.SOTO*/ next.DBG_SOTO.tock(CLK_SOTO, SOTO_RESET, !prev.DBG_SOTO);
+  /*p25.SOTO*/ next.DBG_SOTO.tock(CLK_SOTO, rst.SOTO_RESET, !prev.DBG_SOTO);
 
+  /*p25.TUTO*/ next.DBG_VRAM  = and(prev.MODE_DBG2, !prev.DBG_SOTO);
+  /*p25.RACO*/ next.DBG_VRAMn = not(prev.DBG_VRAM);
 
   //----------
   // weird debug things, probably not right
@@ -70,19 +66,17 @@ void Debug::tick(const BusControl& ctl,
 
   // FF60 debug reg
 
-  /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus.A05, bus.A06, ctl.CPU_WR, dec.ADDR_111111110xx00000);
+  /*p07.APET*/ wire MODE_DEBUG = or(prev.MODE_DBG1, prev.MODE_DBG2);
+  /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus.A05, bus.A06, bus.CPU_WR, dec.ADDR_111111110xx00000);
   /*p07.BURO*/ next.FF60_0.tock(FF60_WRn, rst.SYS_RESETn, bus.D0);
   /*p07.AMUT*/ next.FF60_1.tock(FF60_WRn, rst.SYS_RESETn, bus.D1);
 
   /*p05.KURA*/ next.FF60_0n = not(prev.FF60_0);
-
   /*p05.JEVA*/ wire FF60_0o = not(prev.FF60_0);
-
   /*p05.KORE*/ next.P05_NC0 = nand(prev.DBG_FF00_D7, prev.FF60_0);
   /*p05.KYWE*/ next.P05_NC1 = nor (prev.DBG_FF00_D7, FF60_0o);
 
-  /*p08.LYRA*/ wire DBG_D_RDn = nand(prev.MODE_DBG2, ctl.CBUS_TO_CEXTn);
-
+  /*p08.LYRA*/ wire DBG_D_RDn = nand(prev.MODE_DBG2, bus.CBUS_TO_CEXTn);
   /*p08.TUTY*/ if (!DBG_D_RDn) bus_out.D0 = not(/*p08.TOVO*/ not(pins.D0_C));
   /*p08.SYWA*/ if (!DBG_D_RDn) bus_out.D1 = not(/*p08.RUZY*/ not(pins.D1_C));
   /*p08.SUGU*/ if (!DBG_D_RDn) bus_out.D2 = not(/*p08.ROME*/ not(pins.D2_C));
@@ -113,22 +107,37 @@ void Debug::tick(const BusControl& ctl,
   /*p08.PEVO*/ wire A14_Cn = not(pins.A14_C);
   /*p08.RAZA*/ wire A15_Cn = not(pins.A15_C);
 
-  /*p08.KEJO*/ if (MODE_DBG2n1) bus_out.A00 = not(A00_Cn);
-  /*p08.BYXE*/ if (MODE_DBG2n1) bus_out.A01 = not(A01_Cn);
-  /*p08.AKAN*/ if (MODE_DBG2n1) bus_out.A02 = not(A02_Cn);
-  /*p08.ANAR*/ if (MODE_DBG2n1) bus_out.A03 = not(A03_Cn);
-  /*p08.AZUV*/ if (MODE_DBG2n1) bus_out.A04 = not(A04_Cn);
-  /*p08.AJOV*/ if (MODE_DBG2n1) bus_out.A05 = not(A05_Cn);
-  /*p08.BYNE*/ if (MODE_DBG2n1) bus_out.A06 = not(A06_Cn);
-  /*p08.BYNA*/ if (MODE_DBG2n1) bus_out.A07 = not(A07_Cn);
-  /*p08.LOFA*/ if (MODE_DBG2n1) bus_out.A08 = not(A08_Cn);
-  /*p08.MAPU*/ if (MODE_DBG2n1) bus_out.A09 = not(A09_Cn);
-  /*p08.RALA*/ if (MODE_DBG2n1) bus_out.A10 = not(A10_Cn);
-  /*p08.LORA*/ if (MODE_DBG2n1) bus_out.A11 = not(A11_Cn);
-  /*p08.LYNA*/ if (MODE_DBG2n1) bus_out.A12 = not(A12_Cn);
-  /*p08.LEFY*/ if (MODE_DBG2n1) bus_out.A13 = not(A13_Cn);
-  /*p08.NEFE*/ if (MODE_DBG2n1) bus_out.A14 = not(A14_Cn);
-  /*p08.SYZU*/ if (MODE_DBG2n2) bus_out.A15 = not(A15_Cn);
+  /*p08.KEJO*/ if (prev.MODE_DBG2n1) bus_out.A00 = not(A00_Cn);
+  /*p08.BYXE*/ if (prev.MODE_DBG2n1) bus_out.A01 = not(A01_Cn);
+  /*p08.AKAN*/ if (prev.MODE_DBG2n1) bus_out.A02 = not(A02_Cn);
+  /*p08.ANAR*/ if (prev.MODE_DBG2n1) bus_out.A03 = not(A03_Cn);
+  /*p08.AZUV*/ if (prev.MODE_DBG2n1) bus_out.A04 = not(A04_Cn);
+  /*p08.AJOV*/ if (prev.MODE_DBG2n1) bus_out.A05 = not(A05_Cn);
+  /*p08.BYNE*/ if (prev.MODE_DBG2n1) bus_out.A06 = not(A06_Cn);
+  /*p08.BYNA*/ if (prev.MODE_DBG2n1) bus_out.A07 = not(A07_Cn);
+  /*p08.LOFA*/ if (prev.MODE_DBG2n1) bus_out.A08 = not(A08_Cn);
+  /*p08.MAPU*/ if (prev.MODE_DBG2n1) bus_out.A09 = not(A09_Cn);
+  /*p08.RALA*/ if (prev.MODE_DBG2n1) bus_out.A10 = not(A10_Cn);
+  /*p08.LORA*/ if (prev.MODE_DBG2n1) bus_out.A11 = not(A11_Cn);
+  /*p08.LYNA*/ if (prev.MODE_DBG2n1) bus_out.A12 = not(A12_Cn);
+  /*p08.LEFY*/ if (prev.MODE_DBG2n1) bus_out.A13 = not(A13_Cn);
+  /*p08.NEFE*/ if (prev.MODE_DBG2n1) bus_out.A14 = not(A14_Cn);
+  /*p08.SYZU*/ if (prev.MODE_DBG2n2) bus_out.A15 = not(A15_Cn);
+
+  //----------
+  // more debug stuff
+
+  /*p25.TUSO*/ wire TUSO = nor(prev.MODE_DBG2, clocks.BOGA_xBCDEFGH);
+  /*p25.SOLE*/ wire SOLE = not(TUSO);
+
+  /*p25.TOVU*/ if (VYPO) bus_out.D0 = SOLE;
+  /*p25.SOSA*/ if (VYPO) bus_out.D1 = SOLE;
+  /*p25.SEDU*/ if (VYPO) bus_out.D2 = SOLE;
+  /*p25.TAXO*/ if (VYPO) bus_out.D3 = SOLE;
+  /*p25.TAHY*/ if (VYPO) bus_out.D4 = SOLE;
+  /*p25.TESU*/ if (VYPO) bus_out.D5 = SOLE;
+  /*p25.TAZU*/ if (VYPO) bus_out.D6 = SOLE;
+  /*p25.TEWA*/ if (VYPO) bus_out.D7 = SOLE;
 }
 
 //-----------------------------------------------------------------------------

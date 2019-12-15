@@ -7,16 +7,16 @@ namespace Schematics {
 // c.cpu.CLK_xBCDEFGH = BOWA_xBCDEFGH;
 
 struct ClocksIn {
-  bool CLKIN_A;
-  bool CLKIN_B;
-  bool MODE_PROD;
   bool CPUCLK_REQ;
   bool VID_RESETn;
 };
 
 struct Clocks {
 
-  void tick(const ClocksIn& in, const Clocks& b);
+  void tick(const Pins& pins,
+            const Debug& debug,
+            const ClocksIn& in,
+            const Clocks& b);
 
   /*p01.ABOL*/ bool CPUCLK_REQn;
   /*p01.BUTY*/ bool CPUCLK_REQ;
@@ -27,10 +27,10 @@ struct Clocks {
   /*p01.AVET*/ bool ROOTCLK_xBxDxFxH;
 
   // Phase generator
-  /*p01.AFUR*/ DuoReg PHASE_ABCDxxxx;
-  /*p01.ALEF*/ DuoReg PHASE_xBCDExxx;
-  /*p01.APUK*/ DuoReg PHASE_xxCDEFxx;
-  /*p01.ADYK*/ DuoReg PHASE_xxxDEFGx;
+  /*p01.AFUR*/ RegDuo PHASE_ABCDxxxx;
+  /*p01.ALEF*/ RegDuo PHASE_xBCDExxx;
+  /*p01.APUK*/ RegDuo PHASE_xxCDEFxx;
+  /*p01.ADYK*/ RegDuo PHASE_xxxDEFGx;
 
   /*p01.AFAS*/ bool AFAS_xxxxEFGx;
   /*p01.UVYT*/ bool UVYT_ABCDxxxx;

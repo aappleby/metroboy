@@ -27,7 +27,7 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p10.DAZA*/ wire ADDR_0110an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx0);
     /*p10.COVY*/ wire ADDR_FF16  = nor(b.apu.ADDR_FF1Xn, ADDR_0110an);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     /*p14.BYGO*/ next.ch2.BYGO = not(CPU_RDn);
     /*p14.CORO*/ next.ch2.CORO = nand(ADDR_FF16, b.ch2.BYGO);
     /*p14.AGYN*/ next.ch2.FF16_WR = nand(b.apu.APU_WR, ADDR_FF16); // FF16_WR
@@ -53,7 +53,7 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p10.DUVU*/ wire ADDR_0111an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
     /*p10.DUTU*/ wire ADDR_FF17  = nor(b.apu.ADDR_FF1Xn, ADDR_0111an);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     /*p14.ENUF*/ next.ch2.ENUF = and(ADDR_FF17, b.apu.APU_WR);
     /*p14.FYRY*/ next.ch2.FYRY = not(ADDR_FF17);
     /*p14.GURU*/ next.ch2.GURU = or(b.ch2.FYRY, CPU_RDn);
@@ -92,7 +92,7 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p10.DEJY*/ wire ADDR_1001an = nand(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
     /*p10.DOZA*/ wire ADDR_FF19  = nor(b.apu.ADDR_FF1Xn, ADDR_1001an);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     /*p14.FOGE*/ next.ch2.FOGE = not(CPU_RDn);
     /*p14.FAPE*/ next.ch2.FAPE = and(b.ch2.FOGE, b.apu.NR52_DBG_APU);
 
@@ -151,7 +151,7 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
     if (b.ch2.HUMA) next.bus.D6 = b.ch2.GOJY;
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     next.ch2.GADO = not(CPU_RDn);
     /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(b.cpu.FROM_CPU5, b.apu.APU_WR);
     next.ch2.EVYF = nor(CPU_WR_WEIRD, ADDR_FF19);

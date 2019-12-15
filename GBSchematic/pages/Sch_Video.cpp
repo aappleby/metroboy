@@ -8,7 +8,6 @@ namespace Schematics {
 // no modifications or simplifications.
 
 struct VideoIn {
-  bool ADDR_VALID;
   bool NEW_LINE1;
   bool SPRITE_DONE;
   bool STORE_MATCH;
@@ -21,58 +20,24 @@ struct VideoIn {
 };
 
 void P21_VideoControl_tick(const VideoIn& in,
-                           const Bus& bus_in,
+                           const BusControl& bus_in,
                            const Pins& pins,
                            const LCD& lcd,
                            const Registers& regs,
                            const Clocks& clocks,
-                           const Resets& resets,
+                           const Resets& rst,
                            const Decoder& dec,
-                           const Debug& dbg,
                            const Video& prev,
                            Video& next,
-                           Bus& bus_out) {
+                           BusControl& bus_out) {
 
   /*p27.VYPO*/ wire VYPO = not(pins.P10_B);
-
-  /*p01.PYRY*/ wire VID_RESET4  = not(resets.VID_RESETn);
-  /*p01.ATAR*/ wire VID_RESET6  = not(resets.VID_RESETn);
-  /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
-
-  {
-    /*p08.SORE*/ wire SORE = not(bus_in.A15);
-    /*p08.TEVY*/ wire ADDR_NOT_VRAM = or(bus_in.A13, bus_in.A14, SORE);
-    /*p08.TEXO*/ wire ADDR_VALID_AND_NOT_VRAM = and(in.ADDR_VALID, ADDR_NOT_VRAM);
-    /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(bus_in.A15, bus_in.A14, bus_in.A13, bus_in.A12, bus_in.A11, bus_in.A10, bus_in.A09);
-    /*p25.SYRO*/ wire ADDR_FE00_FFFF = not(ADDR_0000_FE00);
-    /*p25.TEFA*/ wire TEFA = nor(ADDR_FE00_FFFF, ADDR_VALID_AND_NOT_VRAM);
-    /*p25.SOSE*/ next.ADDR_VRAM = and(bus_in.A15, TEFA);
-  }
-
-  //----------
-
-#if 0
-  /*p27.MYVO*/ next.MYVO_xBxDxFxH = not(clocks.ALET_AxCxExGx);
-  /*p29.LAPE*/ next.LAPE_xBxDxFxH = not(clocks.ALET_AxCxExGx);
-
-  {
-    /*p01.ATAL*/ wire ATAL_AxCxExGx  = not(clocks.ROOTCLK_xBxDxFxH);
-    /*p01.AZOF*/ wire AZOF_xBxDxFxH  = not(ATAL_AxCxExGx);
-    /*p01.ZAXY*/ wire ZAXY_AxCxExGx  = not(AZOF_xBxDxFxH);
-    /*p01.ZEME*/ wire ZEME_xBxDxFxH  = not(ZAXY_AxCxExGx);
-    /*p29.XYVA*/ wire XYVA_AxCxExGx  = not(ZEME_xBxDxFxH);
-    /*p29.XOTA*/ next.XOTA_xBxDxFxH = not(XYVA_AxCxExGx);
-    /*p29.WUVU*/ next.WUVU_AxxDExxH = tock_pos( a.vid.XOTA_xBxDxFxH,  prev.XOTA_xBxDxFxH, prev.rst.VID_RESETn, prev.WUVU_AxxDExxH, !prev.WUVU_AxxDExxH);
-    /*p21.VENA*/ next.VENA_AxxxxFGH = tock_pos(!a.vid.WUVU_AxxDExxH, !prev.WUVU_AxxDExxH, prev.rst.VID_RESETn, prev.VENA_AxxxxFGH, !prev.VENA_AxxxxFGH);
-  }
-#endif
 
   //----------
   // x counter. this is a little weird, presumably because it can tick at 4 mhz but not always?
 
   {
-    /*p01.TOFU*/ wire VID_RESET3  = not(resets.VID_RESETn);
-    /*p21.TADY*/ next.X_RST = nor(in.NEW_LINE1, VID_RESET3);
+    /*p21.TADY*/ next.X_RST = nor(in.NEW_LINE1, rst.VID_RESET3);
 
     /*p21.RYBO*/ wire RYBO = xor(prev.X0, prev.X1);
     /*p21.XUKE*/ wire XUKE = and(prev.X0, prev.X1);
@@ -92,11 +57,11 @@ void P21_VideoControl_tick(const VideoIn& in,
     /*p21.TYGE*/ wire TYGE = xor(prev.X6, TYBA);
     /*p21.ROKU*/ wire ROKU = xor(prev.X7, SURY);
 
-    /*p21.TOCA*/ next.TOCA = not(prev.X3);
-    /*p21.TUHU*/ next.X4.tock(prev.TOCA, prev.X_RST, !prev.X4);
-    /*p21.TUKY*/ next.X5.tock(prev.TOCA, prev.X_RST, SAKE);
-    /*p21.TAKO*/ next.X6.tock(prev.TOCA, prev.X_RST, TYGE);
-    /*p21.SYBE*/ next.X7.tock(prev.TOCA, prev.X_RST, ROKU);
+    /*p21.TOCA*/ wire TOCA = not(prev.X3);
+    /*p21.TUHU*/ next.X4.tock(TOCA, prev.X_RST, !prev.X4);
+    /*p21.TUKY*/ next.X5.tock(TOCA, prev.X_RST, SAKE);
+    /*p21.TAKO*/ next.X6.tock(TOCA, prev.X_RST, TYGE);
+    /*p21.SYBE*/ next.X7.tock(TOCA, prev.X_RST, ROKU);
 
     /*p21.XUGU*/ next.X_167n = nand(prev.X0, prev.X1, prev.X2, prev.X5, prev.X7); // 128 + 32 + 4 + 2 + 1 = 167
     /*p21.XANO*/ next.X_167 = not(prev.X_167n);
@@ -106,11 +71,6 @@ void P21_VideoControl_tick(const VideoIn& in,
   // LY compare
 
   {
-    /*p01.DULA*/ wire DULA_RESET = not(resets.SYS_RESETn);
-    /*p01.CUNU*/ wire CUNU_RESET = not(DULA_RESET);
-    /*p01.XORE*/ wire XORE_RESET = not(CUNU_RESET);
-    /*p01.WESY*/ wire SYS_RESETn6 = not(XORE_RESET); // video
-
     /*p21.SYFU*/ wire LY_MATCH7 = xor(lcd.V7, regs.LYC7);
     /*p21.TERY*/ wire LY_MATCH6 = xor(lcd.V6, regs.LYC6);
     /*p21.TUCY*/ wire LY_MATCH5 = xor(lcd.V5, regs.LYC5);
@@ -126,7 +86,7 @@ void P21_VideoControl_tick(const VideoIn& in,
     /*p21.RAPE*/ wire LY_MATCHn = nand(LY_MATCHA, LY_MATCHB);
     /*p21.PALY*/ wire LY_MATCHa = not(LY_MATCHn);
 
-    /*p21.ROPO*/ next.LYC_MATCH.tock(clocks.TALU_AxxxxFGH, SYS_RESETn6, LY_MATCHa);
+    /*p21.ROPO*/ next.LYC_MATCH.tock(clocks.TALU_AxxxxFGH, rst.WESY_RESET, LY_MATCHa);
   }
 
   //----------
@@ -134,16 +94,16 @@ void P21_VideoControl_tick(const VideoIn& in,
   {
 
     /*p27.XAHY*/ wire NEW_LINEn = not(in.NEW_LINE1);
-    /*p27.XOFO*/ wire MAP_X_RST = nand(regs.LCDC_WINEN, NEW_LINEn, resets.VID_RESETn);
+    /*p27.XOFO*/ wire MAP_X_RST = nand(regs.LCDC_WINEN, NEW_LINEn, rst.VID_RESETn);
     /*p27.PYNU*/ next.WIN_RST = or(prev.WIN_MATCH_SYNC2, MAP_X_RST);
-    /*p27.NOPA*/ next.WIN_RST_SYNC.tock(clocks.ALET_AxCxExGx, resets.VID_RESETn, prev.WIN_RST);
+    /*p27.NOPA*/ next.WIN_RST_SYNC.tock(clocks.ALET_AxCxExGx, rst.VID_RESETn, prev.WIN_RST);
 
     /*p27.NUNY*/ next.WIN_RST_TRIG = and(prev.WIN_RST, !prev.WIN_RST_SYNC);
 
     // PUKU/RYDY form a NOR latch. WIN_RST_TRIG is SET, (VID_RESET | BG_SEQ_7) is RESET.
     /*p27.PUKU*/ next.PUKU = nor(prev.RYDY, prev.WIN_RST_TRIG);
-    /*p27.RYDY*/ next.RYDY = nor(prev.PUKU, VID_RESET4, prev.BG_SEQ_7);
-    /*p27.SOVY*/ next.REG_SOVY.tock(clocks.ALET_AxCxExGx, resets.VID_RESETn, prev.RYDY);
+    /*p27.RYDY*/ next.RYDY = nor(prev.PUKU, rst.VID_RESET4, prev.BG_SEQ_7);
+    /*p27.SOVY*/ next.REG_SOVY.tock(clocks.ALET_AxCxExGx, rst.VID_RESETn, prev.RYDY);
   }
 
   {
@@ -158,13 +118,11 @@ void P21_VideoControl_tick(const VideoIn& in,
     /*p27.SUZU*/   wire SUZU = not(TUXY);
     /*p27.TEVO*/ next.MAP_X_CLK_STOPn = nor(prev.WIN_TRIGGER, SUZU, TAVE);
 
-    /*p01.ROSY*/ wire VID_RESET5  = not(resets.VID_RESETn);
-
     /*p24.TOMU*/     wire TOMU = not(SYLO);
     /*p27.TUKU*/   wire TUKU = not(TOMU);
     /*p27.VEKU*/       wire VEKU = nor(in.SPRITE_DONE, TAVE);
     /*p27.RYCE*/         wire SPRITE_TRIG = and(prev.TEKY_SYNC1, !prev.TEKY_SYNC2);
-    /*p27.SECA*/       wire SPR_SEQ_RST = nor(SPRITE_TRIG, VID_RESET5, in.NEW_LINE1);
+    /*p27.SECA*/       wire SPR_SEQ_RST = nor(SPRITE_TRIG, rst.VID_RESET5, in.NEW_LINE1);
     /*p27.TAKA*/     wire TAKA = unk2(VEKU, SPR_SEQ_RST);
     /*p27.SOWO*/   wire SOWO = not(TAKA);
     /*p27.TEKY*/ wire TEKY = and(in.STORE_MATCH, TUKU, prev.BG_SEQ_5, SOWO);
@@ -193,8 +151,7 @@ void P21_VideoControl_tick(const VideoIn& in,
   //---
 
   {
-    /*p01.TOFU*/ wire VID_RESET3  = not(resets.VID_RESETn);
-    /*p21.WEGO or */ wire WEGO = or(VID_RESET3, prev.RENDER_DONE_SYNC);
+    /*p21.WEGO or */ wire WEGO = or(rst.VID_RESET3, prev.RENDER_DONE_SYNC);
     /*p21.XYMU ???*/ next.RENDERING = or(WEGO, in.SCAN_DONE_TRIG); // the trig here doesn't make sense
     
     /*p24.LOBY not*/ next.RENDERINGn = not(prev.RENDERING);
@@ -212,20 +169,13 @@ void P21_VideoControl_tick(const VideoIn& in,
   // FF41 STAT stuff
 
   {
-    /*p01.DULA*/ wire DULA_RESET = not(resets.SYS_RESETn);
-    /*p01.CUNU*/ wire CUNU_RESET = not(DULA_RESET);
-    /*p01.XORE*/ wire XORE_RESET = not(CUNU_RESET);
-    /*p01.WESY*/ wire WESY_RESET = not(XORE_RESET);
-
-    /*p22.WOFA*/ wire FF41n   = nand(prev.FF4X, prev.WADO_A00,  prev.A01n, prev.A02n, prev.A03n);
-    /*p22.VARY*/ wire FF41    = not(FF41n);
-    /*p21.SEPA*/ wire FF41_WR = and(in.CPU_WR2, FF41);
+    /*p21.SEPA*/ wire FF41_WR = and(in.CPU_WR2, dec.FF41);
 
     /*p21.RYVE*/ wire CLK_STAT= not(FF41_WR);
-    /*p21.ROXE*/ next.INT_HBL_EN.tock(CLK_STAT, WESY_RESET, bus_in.D3);
-    /*p21.RUFO*/ next.INT_VBL_EN.tock(CLK_STAT, WESY_RESET, bus_in.D4);
-    /*p21.REFE*/ next.INT_OAM_EN.tock(CLK_STAT, WESY_RESET, bus_in.D5);
-    /*p21.RUGU*/ next.INT_LYC_EN.tock(CLK_STAT, WESY_RESET, bus_in.D6);
+    /*p21.ROXE*/ next.INT_HBL_EN.tock(CLK_STAT, rst.WESY_RESET, bus_in.D3);
+    /*p21.RUFO*/ next.INT_VBL_EN.tock(CLK_STAT, rst.WESY_RESET, bus_in.D4);
+    /*p21.REFE*/ next.INT_OAM_EN.tock(CLK_STAT, rst.WESY_RESET, bus_in.D5);
+    /*p21.RUGU*/ next.INT_LYC_EN.tock(CLK_STAT, rst.WESY_RESET, bus_in.D6);
 
     /*p21.PARU*/ wire VBLANK = not(!in.REG_VBLANK);
 
@@ -240,11 +190,10 @@ void P21_VideoControl_tick(const VideoIn& in,
 
     /*p21.RYJU*/ wire FF41_WRn = not(FF41_WR);
 
-    /*p01.WESY*/ wire SYS_RESETn6 = not(XORE_RESET);
-    /*p21.PAGO*/ wire STAT_LYC_MATCH1 = nor(SYS_RESETn6, FF41_WRn);  // schematic wrong, this is NOR
+    /*p21.PAGO*/ wire STAT_LYC_MATCH1 = nor(rst.WESY_RESET, FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ wire STAT_LYC_MATCH2 = or(prev.LYC_MATCH, STAT_LYC_MATCH1); // this is another of the weird or gates. could be nor?
 
-    /*p21.TOBE*/ wire FF41_RDa = and(in.CPU_RD2, FF41);
+    /*p21.TOBE*/ wire FF41_RDa = and(in.CPU_RD2, dec.FF41);
     /*p21.VAVE*/ wire FF41_RDb = FF41_RDa; // buffer, not inverter?
     /*p21.TEBY*/ if (FF41_RDa) bus_out.D0 = not(STAT_MODE0n);
     /*p21.WUGA*/ if (FF41_RDa) bus_out.D1 = not(STAT_MODE1n);
@@ -271,29 +220,11 @@ void P21_VideoControl_tick(const VideoIn& in,
 
   //----------
 
-  /*p22.XALY*/ next.ADDR_0x00xxxx = nor(bus_in.A07, bus_in.A05, bus_in.A04);
-  /*p22.WUTU*/ next.FF4Xn         = nand(dec.ADDR_FFXX, bus_in.A06, prev.ADDR_0x00xxxx);
-  /*p22.WERO*/ next.FF4X          = not(prev.FF4Xn);
-
-  /*p22.XOLA*/ next.A00n = not(bus_in.A00);
-  /*p22.XENO*/ next.A01n = not(bus_in.A01);
-  /*p22.XUSY*/ next.A02n = not(bus_in.A02);
-  /*p22.XERA*/ next.A03n = not(bus_in.A03);
-
-  /*p22.WADO*/ next.WADO_A00 = not(prev.A00n);
-  /*p22.WESA*/ next.WESA_A01 = not(prev.A01n);
-  /*p22.WALO*/ next.WALO_A02 = not(prev.A02n);
-  /*p22.WEPO*/ next.WEPO_A03 = not(prev.A03n);
-
-
-
   //----------
   // FF44 LY
 
   {
-    /*p22.WYLE*/ wire FF44n = nand(prev.FF4X, prev.A00n, prev.A01n, prev.WALO_A02,  prev.A03n);
-    /*p22.XOGY*/ wire FF44 = not(FF44n);
-    /*p23.WAFU*/ wire FF44_RD = and(in.CPU_RD2, FF44);
+    /*p23.WAFU*/ wire FF44_RD = and(in.CPU_RD2, dec.FF44);
     /*p23.VARO*/ wire FF44_RDn = not(FF44_RD);
 
     /*p23.WURY*/ wire LY0n = not(lcd.V0);
@@ -313,27 +244,6 @@ void P21_VideoControl_tick(const VideoIn& in,
     /*p23.WAMA*/ if (FF44_RDn) bus_out.D5 = not(LY5n);
     /*p23.WAVO*/ if (FF44_RDn) bus_out.D6 = not(LY6n);
     /*p23.WEZE*/ if (FF44_RDn) bus_out.D7 = not(LY7n);
-  }
-
-  //----------
-  // more debug stuff
-
-  {
-    /*p01.DULA*/ wire DULA_RESET = not(resets.SYS_RESETn);
-    /*p01.CUNU*/ wire CUNU_RESET = not(DULA_RESET);
-    /*p01.XORE*/ wire XORE_RESET = not(CUNU_RESET);
-
-    /*p25.TUSO*/ wire TUSO = nor(dbg.MODE_DBG2, clocks.BOGA_xBCDEFGH);
-    /*p25.SOLE*/ wire SOLE = not(TUSO);
-
-    /*p25.TOVU*/ if (VYPO) bus_out.D0 = SOLE;
-    /*p25.SOSA*/ if (VYPO) bus_out.D1 = SOLE;
-    /*p25.SEDU*/ if (VYPO) bus_out.D2 = SOLE;
-    /*p25.TAXO*/ if (VYPO) bus_out.D3 = SOLE;
-    /*p25.TAHY*/ if (VYPO) bus_out.D4 = SOLE;
-    /*p25.TESU*/ if (VYPO) bus_out.D5 = SOLE;
-    /*p25.TAZU*/ if (VYPO) bus_out.D6 = SOLE;
-    /*p25.TEWA*/ if (VYPO) bus_out.D7 = SOLE;
   }
 
   //----------
@@ -366,12 +276,12 @@ void P21_VideoControl_tick(const VideoIn& in,
     /*p27.NELE*/ wire WY_MATCH_HI    = not(WY_MATCH_HIn);
     /*p27.PAFU*/ wire WY_MATCHn      = nand(WY_MATCH_HI, WY_MATCH0n, WY_MATCH1n, WY_MATCH2n, WY_MATCH3n);
     /*p27.ROGE*/ wire WY_MATCH       = not(WY_MATCHn);
-    /*p27.SARY*/ next.WY_MATCH_SYNC.tock(clocks.TALU_AxxxxFGH, resets.VID_RESETn, WY_MATCH);
+    /*p27.SARY*/ next.WY_MATCH_SYNC.tock(clocks.TALU_AxxxxFGH, rst.VID_RESETn, WY_MATCH);
 
     // polarity or gates wrong
     /*p21.PARU*/ wire VBLANK         = not(!lcd.REG_VBLANK);
 
-    /*p27.REPU*/ wire IN_FRAME_Y     = nor(VBLANK, VID_RESET4);   // schematic wrong, this is NOR
+    /*p27.REPU*/ wire IN_FRAME_Y     = nor(VBLANK, rst.VID_RESET4);   // schematic wrong, this is NOR
     /*p27.REJO*/ wire WIN_CHECK_X    = or(prev.WY_MATCH_SYNC, IN_FRAME_Y); // another weird or gate. should be AND?
 
     /*p27.PUKY*/ wire WX_MATCH_HIn   = nand(WIN_CHECK_X, WX_MATCH4n, WX_MATCH5n, WX_MATCH6n, WX_MATCH7n);
@@ -387,8 +297,8 @@ void P21_VideoControl_tick(const VideoIn& in,
     /*p27.SEKO*/ next.WIN_TRIGGER = nor(prev.WIN_MATCH_ONSCREEN_SYNC2, !prev.WIN_MATCH_ONSCREEN_SYNC1);
 
     /*p27.ROCO*/ next.ROCO_4M = not(prev.SEGU_4M);
-    /*p27.PYCO*/ next.WIN_MATCH_SYNC1.tock(prev.ROCO_4M,            resets.VID_RESETn, prev.WIN_MATCH);
-    /*p27.NUNU*/ next.WIN_MATCH_SYNC2.tock(clocks.MEHE_xBxDxFxH, resets.VID_RESETn, prev.WIN_MATCH_SYNC1);
+    /*p27.PYCO*/ next.WIN_MATCH_SYNC1.tock(prev.ROCO_4M,            rst.VID_RESETn, prev.WIN_MATCH);
+    /*p27.NUNU*/ next.WIN_MATCH_SYNC2.tock(clocks.MEHE_xBxDxFxH, rst.VID_RESETn, prev.WIN_MATCH_SYNC1);
   }
 
   //----------
@@ -426,7 +336,6 @@ void P21_VideoControl_tick(const VideoIn& in,
 
 
   //----------
-  // BG/WIN sequencer
 
   {
     /*p27.NYFO*/ wire WIN_RST_TRIGn = not(prev.WIN_RST_TRIG);
@@ -467,7 +376,7 @@ void P21_VideoControl_tick(const VideoIn& in,
   {
 
     /*p27.XAHY*/ wire NEW_LINEn = not(lcd.NEW_LINE1);
-    /*p27.XOFO*/ wire MAP_X_RST = nand(regs.LCDC_WINEN, NEW_LINEn, resets.VID_RESETn);
+    /*p27.XOFO*/ wire MAP_X_RST = nand(regs.LCDC_WINEN, NEW_LINEn, rst.VID_RESETn);
     /*p27.XACO*/ wire MAP_X_RSTn = not(MAP_X_RST);
 
 
@@ -483,7 +392,7 @@ void P21_VideoControl_tick(const VideoIn& in,
     /*p27.XOLO*/ next.MAP_X4.tock(!prev.MAP_X3, MAP_X_RSTn, !prev.MAP_X4);
 
     /*p21.PARU*/ wire VBLANK = not(!lcd.REG_VBLANK);
-    /*p27.REPU*/ wire Y_RST  = nor(VBLANK, VID_RESET4);   // schematic wrong, this is NOR
+    /*p27.REPU*/ wire Y_RST  = nor(VBLANK, rst.VID_RESET4);   // schematic wrong, this is NOR
     /*p27.SYNY*/ wire Y_RSTn = not(Y_RST);
 
     /*p27.VYNO*/ next.TILE_Y0.tock( WAZY,         Y_RSTn, !prev.TILE_Y0);

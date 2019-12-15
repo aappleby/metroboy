@@ -7,14 +7,13 @@ namespace Schematics {
 
 struct Debug {
 
-  void tick(const BusControl& ctl,
+  void tick(const BusControl& bus,
             const Clocks& clocks,
-            const Bus& bus,
             const Pins& pins,
             const Decoder& dec,
-            const Debug& b,
             const Resets& rst,
-            Bus& bus_out);
+            const Debug& b,
+            BusControl& bus_out);
 
   /*p07.UBET*/ bool T1n;
   /*p07.UVAR*/ bool T2n;
@@ -33,11 +32,12 @@ struct Debug {
 
   /*p07.BURO*/ Reg FF60_0;
   /*p07.AMUT*/ Reg FF60_1;
-
   /*p05.KURA*/ bool FF60_0n;
 
-
   /*p25.SOTO*/ Reg DBG_SOTO;
+  /*p25.TUTO*/ bool DBG_VRAM;
+  /*p25.RACO*/ bool DBG_VRAMn;
+
 };
 
 //-----------------------------------------------------------------------------

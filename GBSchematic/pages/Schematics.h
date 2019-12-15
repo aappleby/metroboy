@@ -58,15 +58,13 @@ template<typename... Args> const bool nand(const bool first, Args... args) { ret
 
 // Six-rung mux cells are _non_inverting_
 // m = 1 selects input _ZERO_
-template<typename T>
-inline const T mux2 (T a, T b, bool m) {
+inline const bool mux2 (bool a, bool b, bool m) {
   return m ? a : b;
 }
 
 // Five-rung mux cells are _inverting_
 // m = 1 selects input _ZERO_
-template<typename T>
-inline const T mux2n (T a, T b, bool m) {
+inline const bool mux2n (bool a, bool b, bool m) {
   return m ? not(a) : not(b);
 }
 
@@ -82,8 +80,8 @@ inline T unk3 (T a, T b, T c) { return (a & b) | c; }
 template<typename T>
 inline T unk1 (T a, T b, T c, T d) { return a ^ b ^ c ^ d; }
 
-template<typename T>
-inline T amux2(T a0, bool b0, T a1, bool b1) {
+
+inline bool amux2(bool a0, bool b0, bool a1, bool b1) {
   return (b0 ? a0 : 0) | (b1 ? a1 : 0);
 }
 

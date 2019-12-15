@@ -6,16 +6,9 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct Bootrom {
+  /*p07.TEPU*/ Reg BOOT_BIT;
 
-  void tick(const Bus& bus,
-            const BusControl& ctl,
-            const Debug& dbg,
-            const Decoder& dec,
-            Bus& bus_out);
-
-
-  /*p07.TUTU*/ bool ADDR_BOOT;
-
+  /*p07.ZERY*/ bool BOOT_CS;
   /*p07.ZETE*/ bool BOOTROM_A1nA0n;
   /*p07.ZEFU*/ bool BOOTROM_A1nA0;
   /*p07.ZYRO*/ bool BOOTROM_A1A0n;
@@ -28,10 +21,6 @@ struct Bootrom {
   /*p07.ZUKO*/ bool BOOTROM_A5A4;
   /*p07.ZAGE*/ bool BOOTROM_A6n;
   /*p07.ZYRA*/ bool BOOTROM_A7n;
-
-  /*p07.ZERY*/ bool BOOT_CS;
-
-  /*p07.TEPU*/ Reg BOOT_BIT;
 };
 
 //-----------------------------------------------------------------------------

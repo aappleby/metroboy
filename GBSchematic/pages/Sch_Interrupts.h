@@ -1,5 +1,5 @@
 #pragma once
-#include "Schematics.h"
+#include "Sch_Common.h"
 
 namespace Schematics {
 
@@ -13,11 +13,11 @@ struct Interrupts {
   Bit 4: Joypad   Interrupt Request (INT 60h)  (1=Request)
   */
 
-  /*p02.LOPE*/ bool FF0F_0;
-  /*p02.UBUL*/ bool FF0F_1;
-  /*p02.ULAK*/ bool FF0F_2;
-  /*p02.LALU*/ bool FF0F_3;
-  /*p02.NYBO*/ bool FF0F_4;
+  /*p02.LOPE*/ RegSR FF0F_0;
+  /*p02.UBUL*/ RegSR FF0F_1;
+  /*p02.ULAK*/ RegSR FF0F_2;
+  /*p02.LALU*/ RegSR FF0F_3;
+  /*p02.NYBO*/ RegSR FF0F_4;
 
   /*p02.MATY*/ bool FF0F_L0;
   /*p02.NEJY*/ bool FF0F_L1;

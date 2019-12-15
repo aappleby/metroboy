@@ -1,10 +1,16 @@
 #include "Sch_Clocks.h"
 
+#include "Sch_Pins.h"
+#include "Sch_Debug.h"
+
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tick(const ClocksIn& in, const Clocks& b) {
+void Clocks::tick(const Pins& pins,
+                  const Debug& dbg,
+                  const ClocksIn& in,
+                  const Clocks& b) {
   
   Clocks& next = *this;
 
@@ -14,21 +20,21 @@ void Clocks::tick(const ClocksIn& in, const Clocks& b) {
   /*p01.ABOL*/ next.CPUCLK_REQn = not(in.CPUCLK_REQ);
   /*p01.BUTY*/ next.CPUCLK_REQ  = not(b.CPUCLK_REQn);
 
-  /*p01.UCOB*/ next.CLK_BAD1 = not(in.CLKIN_A);
-  /*p01.ATEZ*/ next.CLK_BAD2 = not(in.CLKIN_A);
-  /*p01.ARYS*/ wire CLKIN_Bn = not(in.CLKIN_B);
+  /*p01.UCOB*/ next.CLK_BAD1 = not(pins.CLKIN_A);
+  /*p01.ATEZ*/ next.CLK_BAD2 = not(pins.CLKIN_A);
+  /*p01.ARYS*/ wire CLKIN_Bn = not(pins.CLKIN_B);
 
-  /*p01.ANOS*/ next.ROOTCLK_AxCxExGx = nand(in.CLKIN_B, b.ROOTCLK_xBxDxFxH);
+  /*p01.ANOS*/ next.ROOTCLK_AxCxExGx = nand(pins.CLKIN_B, b.ROOTCLK_xBxDxFxH);
   /*p01.AVET*/ next.ROOTCLK_xBxDxFxH = nand(b.ROOTCLK_AxCxExGx, CLKIN_Bn);
 
   //----------
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
 
   /*p01.ATAL*/ wire PHASE_CLK = not(b.ROOTCLK_xBxDxFxH); // apu, phase generator
-  /*p01.AFUR*/ next.PHASE_ABCDxxxx.tock(PHASE_CLK, in.MODE_PROD, !b.PHASE_xxxDEFGx);
-  /*p01.ALEF*/ next.PHASE_xBCDExxx.tock(PHASE_CLK, in.MODE_PROD, b.PHASE_ABCDxxxx);
-  /*p01.APUK*/ next.PHASE_xxCDEFxx.tock(PHASE_CLK, in.MODE_PROD, b.PHASE_xBCDExxx);
-  /*p01.ADYK*/ next.PHASE_xxxDEFGx.tock(PHASE_CLK, in.MODE_PROD, b.PHASE_xxCDEFxx);
+  /*p01.AFUR*/ next.PHASE_ABCDxxxx.tock(PHASE_CLK, dbg.MODE_PROD, !b.PHASE_xxxDEFGx);
+  /*p01.ALEF*/ next.PHASE_xBCDExxx.tock(PHASE_CLK, dbg.MODE_PROD, b.PHASE_ABCDxxxx);
+  /*p01.APUK*/ next.PHASE_xxCDEFxx.tock(PHASE_CLK, dbg.MODE_PROD, b.PHASE_xBCDExxx);
+  /*p01.ADYK*/ next.PHASE_xxxDEFGx.tock(PHASE_CLK, dbg.MODE_PROD, b.PHASE_xxCDEFxx);
 
   //----------
   // Major branches of the clock tree.

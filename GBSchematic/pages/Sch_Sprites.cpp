@@ -7,19 +7,13 @@ namespace Schematics {
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-struct SpritesIn {
-  bool FROM_CPU5;
-};
-
-void Sprites_tick(const SpritesIn& in,
-                  const Bus& bus_in,
-                  const Pins& pins,
+void Sprites_tick(const Pins& pins,
                   const Clocks& clocks,
-                  const Decoder& dec,
-                  const Resets& resets,
                   const DMA& dma,
                   const LCD& lcd,
+                  const OAM& oam,
                   const Video& vid,
+                  const Resets& rst,
                   const Registers& regs,
                   const Sprites& b,
                   Sprites& next) {
@@ -27,27 +21,14 @@ void Sprites_tick(const SpritesIn& in,
   ///*p29.TEPA not*/ next.RENDERINGn = not(prev.RENDERING);
 
   /*p28.WEFE*/ next.P10_Bn = not(pins.P10_B);
-  /*p01.ROSY*/ wire VID_RESET5  = not(resets.VID_RESETn);
-  /*p01.ATAR*/ wire VID_RESET6  = not(resets.VID_RESETn);
-  /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
   
-  /*p04.DECY*/ wire FROM_CPU5n = not(in.FROM_CPU5);
-  /*p04.CATY*/ wire FROM_CPU5  = not(FROM_CPU5n);
-  
-
-  /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(bus_in.A15, bus_in.A14, bus_in.A13, bus_in.A12, bus_in.A11, bus_in.A10, bus_in.A09);
-  /*p07.RYCU*/ wire ADDR_FE00_FFFF = not(ADDR_0000_FE00);
-  /*p07.SOHA*/ wire ADDR_FFXXn2 = not(dec.ADDR_FFXX);
-  /*p07.ROPE*/ wire ADDR_FEXXn = nand(ADDR_FE00_FFFF, ADDR_FFXXn2);
-  /*p07.SARO*/ wire ADDR_OAM = not(ADDR_FEXXn);
-
   {
     // dma polarity backwards?
     //OAM_ADDR_PARSEn  = and(DMA_RUNNING_SYNC, or(IN_LINE_SYNCa, VID_RESET6, SCAN_DONE_TRIG));
 
 
     /*p28.BOGE*/ wire DMA_RUNNING_SYNCb = not(dma.DMA_RUNNING_SYNC);
-    /*p28.ASEN*/ wire ASEN = or(VID_RESET6, b.SCAN_DONE_TRIG);
+    /*p28.ASEN*/ wire ASEN = or(rst.VID_RESET6, b.SCAN_DONE_TRIG);
     /*p28.BESU*/ wire BESU = or(b.IN_LINE_SYNCa, ASEN);
     /*p28.ACYL*/ next.OAM_ADDR_PARSEn  = and(DMA_RUNNING_SYNCb, BESU);
   }
@@ -74,16 +55,16 @@ void Sprites_tick(const SpritesIn& in,
   
   {
 
-    /*p28.ASEN*/ wire ASEN = or(VID_RESET6, b.SCAN_DONE_TRIG);
+    /*p28.ASEN*/ wire ASEN = or(rst.VID_RESET6, b.SCAN_DONE_TRIG);
     /*p28.BESU*/ wire BESU = or(b.IN_LINE_SYNCa, ASEN);
 
-    /*p29.CENO*/ next.CENO.tock(clocks.XUPY_xBCxxFGx, VID_RESETn3, BESU);
+    /*p29.CENO*/ next.CENO.tock(clocks.XUPY_xBCxxFGx, rst.VID_RESETn3, BESU);
   }
 
 
 
   {
-    /*p28.ANOM*/ wire SCAN_RSTn = nor(VID_RESET6, lcd.NEW_LINE1);
+    /*p28.ANOM*/ wire SCAN_RSTn = nor(rst.VID_RESET6, lcd.NEW_LINE1);
     /*p29.BALU*/ wire SCAN_RSTa = not(SCAN_RSTn);
     /*p29.BAGY*/ wire SCAN_RSTo = not(SCAN_RSTa);
 
@@ -119,7 +100,7 @@ void Sprites_tick(const SpritesIn& in,
     /*p27.RYCE*/ wire SPRITE_TRIG = and(vid.TEKY_SYNC1, !vid.TEKY_SYNC2);
 
     /*p29.TOMA*/ wire SEQ_CLK = nand(clocks.LAPE_xBxDxFxH, SEQ_5n);
-    /*p27.SECA*/ wire SPR_SEQ_RST = nor(SPRITE_TRIG, VID_RESET5, lcd.NEW_LINE1);
+    /*p27.SECA*/ wire SPR_SEQ_RST = nor(SPRITE_TRIG, rst.VID_RESET5, lcd.NEW_LINE1);
 
     /*p29.TOXE*/ next.SPR_SEQ0.tock(SEQ_CLK,     SPR_SEQ_RST, !b.SPR_SEQ0);
     /*p29.TULY*/ next.SPR_SEQ1.tock(!b.SPR_SEQ0, SPR_SEQ_RST, !b.SPR_SEQ1);
@@ -174,11 +155,6 @@ void Sprites_tick(const SpritesIn& in,
       /*p25.XUJY*/ next.XUJY = not(VAPE);
     }
 
-    {
-      /*p29.TUVO*/     wire TUVO = or(b.RENDERINGn, b.SPR_SEQ1, b.SPR_DEL1);
-      /*p28.WEFY*/   wire WEFY = and(TUVO, b.SPR_SEQ_5_SYNCn);
-      /*p28.XUJA*/ next.XUJA = not(WEFY);
-    }
 #endif
   }
 
@@ -211,22 +187,22 @@ void Sprites_tick(const SpritesIn& in,
     /*p29.FEMO*/ wire V6n = not(lcd.V6);
     /*p29.GUSU*/ wire V7n = not(lcd.V7);
 
-    /*p29.ERUC*/ wire YDIFF0   = add_c(V0n, !b.OAM_B_D0, pins.P10_B);
-    /*p29.ERUC*/ wire YDIFF_C0 = add_s(V0n, !b.OAM_B_D0, pins.P10_B);
-    /*p29.ENEF*/ wire YDIFF1   = add_s(V1n, !b.OAM_B_D1, YDIFF_C0);
-    /*p29.ENEF*/ wire YDIFF_C1 = add_c(V1n, !b.OAM_B_D1, YDIFF_C0);
-    /*p29.FECO*/ wire YDIFF2   = add_s(V2n, !b.OAM_B_D2, YDIFF_C1);
-    /*p29.FECO*/ wire YDIFF_C2 = add_c(V2n, !b.OAM_B_D2, YDIFF_C1);
-    /*p29.GYKY*/ wire YDIFF3   = add_s(V3n, !b.OAM_B_D3, YDIFF_C2);
-    /*p29.GYKY*/ wire YDIFF_C3 = add_c(V3n, !b.OAM_B_D3, YDIFF_C2);
-    /*p29.GOPU*/ wire YDIFF4   = add_s(V4n, !b.OAM_B_D4, YDIFF_C3);
-    /*p29.GOPU*/ wire YDIFF_C4 = add_c(V4n, !b.OAM_B_D4, YDIFF_C3);
-    /*p29.FUWA*/ wire YDIFF5   = add_s(V5n, !b.OAM_B_D5, YDIFF_C4);
-    /*p29.FUWA*/ wire YDIFF_C5 = add_c(V5n, !b.OAM_B_D5, YDIFF_C4);
-    /*p29.GOJU*/ wire YDIFF6   = add_s(V6n, !b.OAM_B_D6, YDIFF_C5);
-    /*p29.GOJU*/ wire YDIFF_C6 = add_c(V6n, !b.OAM_B_D6, YDIFF_C5);
-    /*p29.WUHU*/ wire YDIFF7   = add_s(V7n, !b.OAM_B_D7, YDIFF_C6);
-    /*p29.WUHU*/ wire YDIFF_C7 = add_c(V7n, !b.OAM_B_D7, YDIFF_C6);
+    /*p29.ERUC*/ wire YDIFF0   = add_c(V0n, !oam.OAM_B_D0, pins.P10_B);
+    /*p29.ERUC*/ wire YDIFF_C0 = add_s(V0n, !oam.OAM_B_D0, pins.P10_B);
+    /*p29.ENEF*/ wire YDIFF1   = add_s(V1n, !oam.OAM_B_D1, YDIFF_C0);
+    /*p29.ENEF*/ wire YDIFF_C1 = add_c(V1n, !oam.OAM_B_D1, YDIFF_C0);
+    /*p29.FECO*/ wire YDIFF2   = add_s(V2n, !oam.OAM_B_D2, YDIFF_C1);
+    /*p29.FECO*/ wire YDIFF_C2 = add_c(V2n, !oam.OAM_B_D2, YDIFF_C1);
+    /*p29.GYKY*/ wire YDIFF3   = add_s(V3n, !oam.OAM_B_D3, YDIFF_C2);
+    /*p29.GYKY*/ wire YDIFF_C3 = add_c(V3n, !oam.OAM_B_D3, YDIFF_C2);
+    /*p29.GOPU*/ wire YDIFF4   = add_s(V4n, !oam.OAM_B_D4, YDIFF_C3);
+    /*p29.GOPU*/ wire YDIFF_C4 = add_c(V4n, !oam.OAM_B_D4, YDIFF_C3);
+    /*p29.FUWA*/ wire YDIFF5   = add_s(V5n, !oam.OAM_B_D5, YDIFF_C4);
+    /*p29.FUWA*/ wire YDIFF_C5 = add_c(V5n, !oam.OAM_B_D5, YDIFF_C4);
+    /*p29.GOJU*/ wire YDIFF6   = add_s(V6n, !oam.OAM_B_D6, YDIFF_C5);
+    /*p29.GOJU*/ wire YDIFF_C6 = add_c(V6n, !oam.OAM_B_D6, YDIFF_C5);
+    /*p29.WUHU*/ wire YDIFF7   = add_s(V7n, !oam.OAM_B_D7, YDIFF_C6);
+    /*p29.WUHU*/ wire YDIFF_C7 = add_c(V7n, !oam.OAM_B_D7, YDIFF_C6);
 
     /*p29.DEGE*/ wire SPRITE_DELTA0 = not(YDIFF0);
     /*p29.DABY*/ wire SPRITE_DELTA1 = not(YDIFF1);

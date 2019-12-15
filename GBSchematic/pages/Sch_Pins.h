@@ -5,100 +5,35 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct Clocks;
-struct BusControl;
-struct DMA;
-struct Debug;
-
-struct PinsIn {
-  bool CPU_RAW_RD;
-  bool CPU_RAW_WR;
-  bool ADDR_VALID;
-  bool ADDR_BOOT;
-  bool DBG_SOTO;
-  bool FROM_CPU5;
-};
-
 struct Pins {
 
-  void tick(PinsIn& in,
-            const Bus& bus,
+  void tick(Cpu& cpu,
+            const BusControl& bus,
             const Debug& dbg,
             const Clocks& clk,
-            const BusControl& ctl,
-            const DMA& dma,
-            const Pins& b,
-            Bus& bus_out);
+            const Decoder& dec,
+            const DMA& dma);
 
-  /* PIN_76 */ bool T2;      // -> P07.UVAR
-  /* PIN_77 */ bool T1;      // -> P07.UBET
+  bool P10_B;
+
+  //----------
+  // Cart pins
 
   /* PIN_71 */ bool RST;     // -> TUBO,ASOL,UFOL,UPOJ
   /* PIN_74 */ bool CLKIN_A; // clock good signal
   /* PIN_74 */ bool CLKIN_B; // clock signal
 
-  /* PIN_78 */ bool WR_C;    // -> P07.UBAL
-  /* PIN_79 */ bool RD_C;    // -> P07.UJYV
-
-  bool P10_B;
-
-//private:
-
-  /*p08.LOXO*/ bool ADDR_LATCHb;
-  /*p08.MATE*/ bool ADDR_LATCH;
-
-  /*p08.ALOR*/ bool ADDR_LATCH_00;
-  /*p08.APUR*/ bool ADDR_LATCH_01;
-  /*p08.ALYR*/ bool ADDR_LATCH_02;
-  /*p08.ARET*/ bool ADDR_LATCH_03;
-  /*p08.AVYS*/ bool ADDR_LATCH_04;
-  /*p08.ATEV*/ bool ADDR_LATCH_05;
-  /*p08.AROS*/ bool ADDR_LATCH_06;
-  /*p08.ARYM*/ bool ADDR_LATCH_07;
-  /*p08.LUNO*/ bool ADDR_LATCH_08;
-  /*p08.LYSA*/ bool ADDR_LATCH_09;
-  /*p08.PATE*/ bool ADDR_LATCH_10;
-  /*p08.LUMY*/ bool ADDR_LATCH_11;
-  /*p08.LOBU*/ bool ADDR_LATCH_12;
-  /*p08.LONU*/ bool ADDR_LATCH_13;
-  /*p08.NYRE*/ bool ADDR_LATCH_14;
-  /*p08.SEPY*/ bool ADDR_LATCH_15;
-
-  /*p08.AMET*/ bool ADDR_MUX_00;
-  /*p08.ATOL*/ bool ADDR_MUX_01;
-  /*p08.APOK*/ bool ADDR_MUX_02;
-  /*p08.AMER*/ bool ADDR_MUX_03;
-  /*p08.ATEM*/ bool ADDR_MUX_04;
-  /*p08.ATOV*/ bool ADDR_MUX_05;
-  /*p08.ATYR*/ bool ADDR_MUX_06;
-  /*p08.ASUR*/ bool ADDR_MUX_07;
-  /*p08.MANO*/ bool ADDR_MUX_08;
-  /*p08.MASU*/ bool ADDR_MUX_09;
-  /*p08.PAMY*/ bool ADDR_MUX_10;
-  /*p08.MALE*/ bool ADDR_MUX_11;
-  /*p08.MOJY*/ bool ADDR_MUX_12;
-  /*p08.MUCE*/ bool ADDR_MUX_13;
-  /*p08.PEGE*/ bool ADDR_MUX_14;
-  /*p08.TAZY*/ bool ADDR_MUX_15;
-
-  /*p08.SOMA*/ bool LATCH_D0;
-  /*p08.RONY*/ bool LATCH_D1;
-  /*p08.RAXY*/ bool LATCH_D2;
-  /*p08.SELO*/ bool LATCH_D3;
-  /*p08.SODY*/ bool LATCH_D4;
-  /*p08.SAGO*/ bool LATCH_D5;
-  /*p08.RUPA*/ bool LATCH_D6;
-  /*p08.SAZY*/ bool LATCH_D7;
-
-  //----------
-  // Cart pins
-
   /* PIN_75 */ bool PHI;
 
+  /* PIN_76 */ bool T2;      // -> P07.UVAR
+  /* PIN_77 */ bool T1;      // -> P07.UBET
+
   /* PIN_78 */ bool WR_A;    // <- P08.UVER
+  /* PIN_78 */ bool WR_C;    // -> P07.UBAL
   /* PIN_78 */ bool WR_D;    // <- P08.USUF
 
   /* PIN_79 */ bool RD_A;    // <- P08.UGAC
+  /* PIN_79 */ bool RD_C;    // -> P07.UJYV
   /* PIN_79 */ bool RD_D;    // <- P08.URUN
 
   /* PIN_80 */ bool CS_A;    // <- P08.TYHO

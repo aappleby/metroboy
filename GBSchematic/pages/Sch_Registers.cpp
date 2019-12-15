@@ -1,7 +1,7 @@
 #include "Sch_Registers.h"
-#include "Schematics.h"
 
 #include "Sch_Decoder.h"
+#include "Sch_Resets.h"
 
 namespace Schematics {
 
@@ -124,63 +124,57 @@ void Registers_tick(const RegistersIn& in,
 //-----------------------------------------------------------------------------
 
 void Registers_tock(const RegistersIn& in,
+                    const Resets& rst,
                     const Decoder& dec,
                     Registers& next) {
-
-  /*p01.DULA*/ wire DULA_RESET = not(in.SYS_RESETn);
-  /*p01.CUNU*/ wire CUNU_RESET = not(DULA_RESET);
-  /*p01.XORE*/ wire XORE_RESET = not(CUNU_RESET);
-  /*p01.WALU*/ wire WALU_RESET = not(XORE_RESET);
-  /*p01.XARE*/ wire XARE_RESET = not(XORE_RESET);
-  /*p01.WESY*/ wire WESY_RESET = not(XORE_RESET);
 
   /*p23.WARU*/ wire FF40_WR = and(dec.FF40, in.CPU_WR2);
   /*p23.XUBO*/ wire FF40_WRn = not(FF40_WR);
 
-  /*p23.VYXE*/ next.LCDC_BGEN    .tock(FF40_WRn, XARE_RESET, in.D0);
-  /*p23.XYLO*/ next.LCDC_SPEN    .tock(FF40_WRn, XARE_RESET, in.D1);
-  /*p23.XYMO*/ next.LCDC_SPSIZE  .tock(FF40_WRn, XARE_RESET, in.D2);
-  /*p23.XAFO*/ next.LCDC_BGMAP   .tock(FF40_WRn, XARE_RESET, in.D3);
-  /*p23.WEXU*/ next.LCDC_BGTILE  .tock(FF40_WRn, XARE_RESET, in.D4);
-  /*p23.WYMO*/ next.LCDC_WINEN   .tock(FF40_WRn, XARE_RESET, in.D5);
-  /*p23.WOKY*/ next.LCDC_WINMAP  .tock(FF40_WRn, XARE_RESET, in.D6);
-  /*p23.XONA*/ next.LCDC_EN      .tock(FF40_WRn, XARE_RESET, in.D7);
+  /*p23.VYXE*/ next.LCDC_BGEN    .tock(FF40_WRn, rst.XARE_RESET, in.D0);
+  /*p23.XYLO*/ next.LCDC_SPEN    .tock(FF40_WRn, rst.XARE_RESET, in.D1);
+  /*p23.XYMO*/ next.LCDC_SPSIZE  .tock(FF40_WRn, rst.XARE_RESET, in.D2);
+  /*p23.XAFO*/ next.LCDC_BGMAP   .tock(FF40_WRn, rst.XARE_RESET, in.D3);
+  /*p23.WEXU*/ next.LCDC_BGTILE  .tock(FF40_WRn, rst.XARE_RESET, in.D4);
+  /*p23.WYMO*/ next.LCDC_WINEN   .tock(FF40_WRn, rst.XARE_RESET, in.D5);
+  /*p23.WOKY*/ next.LCDC_WINMAP  .tock(FF40_WRn, rst.XARE_RESET, in.D6);
+  /*p23.XONA*/ next.LCDC_EN      .tock(FF40_WRn, rst.XARE_RESET, in.D7);
 
   /*p23.BEDY*/ wire FF42_WR = and(dec.FF42, in.CPU_WR2);
   /*p23.CAVO*/ wire FF42_WRn = not(FF42_WR);
 
-  /*p23.GAVE*/ next.SCY0.tock(FF42_WRn, CUNU_RESET, in.D0);
-  /*p23.FYMO*/ next.SCY1.tock(FF42_WRn, CUNU_RESET, in.D1);
-  /*p23.FEZU*/ next.SCY2.tock(FF42_WRn, CUNU_RESET, in.D2);
-  /*p23.FUJO*/ next.SCY3.tock(FF42_WRn, CUNU_RESET, in.D3);
-  /*p23.DEDE*/ next.SCY4.tock(FF42_WRn, CUNU_RESET, in.D4);
-  /*p23.FOTY*/ next.SCY5.tock(FF42_WRn, CUNU_RESET, in.D5);
-  /*p23.FOHA*/ next.SCY6.tock(FF42_WRn, CUNU_RESET, in.D6);
-  /*p23.FUNY*/ next.SCY7.tock(FF42_WRn, CUNU_RESET, in.D7);
+  /*p23.GAVE*/ next.SCY0.tock(FF42_WRn, rst.CUNU_RESETn, in.D0);
+  /*p23.FYMO*/ next.SCY1.tock(FF42_WRn, rst.CUNU_RESETn, in.D1);
+  /*p23.FEZU*/ next.SCY2.tock(FF42_WRn, rst.CUNU_RESETn, in.D2);
+  /*p23.FUJO*/ next.SCY3.tock(FF42_WRn, rst.CUNU_RESETn, in.D3);
+  /*p23.DEDE*/ next.SCY4.tock(FF42_WRn, rst.CUNU_RESETn, in.D4);
+  /*p23.FOTY*/ next.SCY5.tock(FF42_WRn, rst.CUNU_RESETn, in.D5);
+  /*p23.FOHA*/ next.SCY6.tock(FF42_WRn, rst.CUNU_RESETn, in.D6);
+  /*p23.FUNY*/ next.SCY7.tock(FF42_WRn, rst.CUNU_RESETn, in.D7);
 
   /*p23.ARUR*/ wire FF43_WR = and(dec.FF43, in.CPU_WR2);
   /*p23.AMUN*/ wire FF43_WRn = not(FF43_WR);
 
-  /*p23.DATY*/ next.SCX0.tock(FF43_WRn, CUNU_RESET, in.D0);
-  /*p23.DUZU*/ next.SCX1.tock(FF43_WRn, CUNU_RESET, in.D1);
-  /*p23.CYXU*/ next.SCX2.tock(FF43_WRn, CUNU_RESET, in.D2);
-  /*p23.GUBO*/ next.SCX3.tock(FF43_WRn, CUNU_RESET, in.D3);
-  /*p23.BEMY*/ next.SCX4.tock(FF43_WRn, CUNU_RESET, in.D4);
-  /*p23.CUZY*/ next.SCX5.tock(FF43_WRn, CUNU_RESET, in.D5);
-  /*p23.CABU*/ next.SCX6.tock(FF43_WRn, CUNU_RESET, in.D6);
-  /*p23.BAKE*/ next.SCX7.tock(FF43_WRn, CUNU_RESET, in.D7);
+  /*p23.DATY*/ next.SCX0.tock(FF43_WRn, rst.CUNU_RESETn, in.D0);
+  /*p23.DUZU*/ next.SCX1.tock(FF43_WRn, rst.CUNU_RESETn, in.D1);
+  /*p23.CYXU*/ next.SCX2.tock(FF43_WRn, rst.CUNU_RESETn, in.D2);
+  /*p23.GUBO*/ next.SCX3.tock(FF43_WRn, rst.CUNU_RESETn, in.D3);
+  /*p23.BEMY*/ next.SCX4.tock(FF43_WRn, rst.CUNU_RESETn, in.D4);
+  /*p23.CUZY*/ next.SCX5.tock(FF43_WRn, rst.CUNU_RESETn, in.D5);
+  /*p23.CABU*/ next.SCX6.tock(FF43_WRn, rst.CUNU_RESETn, in.D6);
+  /*p23.BAKE*/ next.SCX7.tock(FF43_WRn, rst.CUNU_RESETn, in.D7);
 
   /*p23.XUFA*/ wire FF45_WR = and(in.CPU_WR2, dec.FF45);
   /*p23.WANE*/ wire FF45_WRn = not(FF45_WR);
 
-  /*p23.SYRY*/ next.LYC0.tock(FF45_WRn, WESY_RESET, in.D0);
-  /*p23.VUCE*/ next.LYC1.tock(FF45_WRn, WESY_RESET, in.D1);
-  /*p23.SEDY*/ next.LYC2.tock(FF45_WRn, WESY_RESET, in.D2);
-  /*p23.SALO*/ next.LYC3.tock(FF45_WRn, WESY_RESET, in.D3);
-  /*p23.SOTA*/ next.LYC4.tock(FF45_WRn, WESY_RESET, in.D4);
-  /*p23.VAFA*/ next.LYC5.tock(FF45_WRn, WESY_RESET, in.D5);
-  /*p23.VEVO*/ next.LYC6.tock(FF45_WRn, WESY_RESET, in.D6);
-  /*p23.RAHA*/ next.LYC7.tock(FF45_WRn, WESY_RESET, in.D7);
+  /*p23.SYRY*/ next.LYC0.tock(FF45_WRn, rst.WESY_RESET, in.D0);
+  /*p23.VUCE*/ next.LYC1.tock(FF45_WRn, rst.WESY_RESET, in.D1);
+  /*p23.SEDY*/ next.LYC2.tock(FF45_WRn, rst.WESY_RESET, in.D2);
+  /*p23.SALO*/ next.LYC3.tock(FF45_WRn, rst.WESY_RESET, in.D3);
+  /*p23.SOTA*/ next.LYC4.tock(FF45_WRn, rst.WESY_RESET, in.D4);
+  /*p23.VAFA*/ next.LYC5.tock(FF45_WRn, rst.WESY_RESET, in.D5);
+  /*p23.VEVO*/ next.LYC6.tock(FF45_WRn, rst.WESY_RESET, in.D6);
+  /*p23.RAHA*/ next.LYC7.tock(FF45_WRn, rst.WESY_RESET, in.D7);
 
   /*p36.VELY*/ wire FF47_WR = and(in.CPU_WR2, dec.FF47);
   /*p36.TEPO*/ wire FF47_WRn = not(FF47_WR);
@@ -221,26 +215,26 @@ void Registers_tock(const RegistersIn& in,
   /*p23.WEKO*/ wire FF4A_WR = and(in.CPU_WR2, dec.FF4A);
   /*p23.VEFU*/ wire FF4A_WRn = not(FF4A_WR);
 
-  /*p23.NESO*/ next.WY0.tock(FF4A_WRn, WALU_RESET, in.D0);
-  /*p23.NYRO*/ next.WY1.tock(FF4A_WRn, WALU_RESET, in.D1);
-  /*p23.NAGA*/ next.WY2.tock(FF4A_WRn, WALU_RESET, in.D2);
-  /*p23.MELA*/ next.WY3.tock(FF4A_WRn, WALU_RESET, in.D3);
-  /*p23.NULO*/ next.WY4.tock(FF4A_WRn, WALU_RESET, in.D4);
-  /*p23.NENE*/ next.WY5.tock(FF4A_WRn, WALU_RESET, in.D5);
-  /*p23.NUKA*/ next.WY6.tock(FF4A_WRn, WALU_RESET, in.D6);
-  /*p23.NAFU*/ next.WY7.tock(FF4A_WRn, WALU_RESET, in.D7);
+  /*p23.NESO*/ next.WY0.tock(FF4A_WRn, rst.WALU_RESET, in.D0);
+  /*p23.NYRO*/ next.WY1.tock(FF4A_WRn, rst.WALU_RESET, in.D1);
+  /*p23.NAGA*/ next.WY2.tock(FF4A_WRn, rst.WALU_RESET, in.D2);
+  /*p23.MELA*/ next.WY3.tock(FF4A_WRn, rst.WALU_RESET, in.D3);
+  /*p23.NULO*/ next.WY4.tock(FF4A_WRn, rst.WALU_RESET, in.D4);
+  /*p23.NENE*/ next.WY5.tock(FF4A_WRn, rst.WALU_RESET, in.D5);
+  /*p23.NUKA*/ next.WY6.tock(FF4A_WRn, rst.WALU_RESET, in.D6);
+  /*p23.NAFU*/ next.WY7.tock(FF4A_WRn, rst.WALU_RESET, in.D7);
 
   /*p23.WUZA*/ wire FF4B_WR = and(in.CPU_WR2, dec.FF4B);
   /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
 
-  /*p23.MYPA*/ next.WX0.tock(FF4B_WRn, WALU_RESET, in.D0);
-  /*p23.NOFE*/ next.WX1.tock(FF4B_WRn, WALU_RESET, in.D1);
-  /*p23.NOKE*/ next.WX2.tock(FF4B_WRn, WALU_RESET, in.D2);
-  /*p23.MEBY*/ next.WX3.tock(FF4B_WRn, WALU_RESET, in.D3);
-  /*p23.MYPU*/ next.WX4.tock(FF4B_WRn, WALU_RESET, in.D4);
-  /*p23.MYCE*/ next.WX5.tock(FF4B_WRn, WALU_RESET, in.D5); 
-  /*p23.MUVO*/ next.WX6.tock(FF4B_WRn, WALU_RESET, in.D6);
-  /*p23.NUKU*/ next.WX7.tock(FF4B_WRn, WALU_RESET, in.D7);
+  /*p23.MYPA*/ next.WX0.tock(FF4B_WRn, rst.WALU_RESET, in.D0);
+  /*p23.NOFE*/ next.WX1.tock(FF4B_WRn, rst.WALU_RESET, in.D1);
+  /*p23.NOKE*/ next.WX2.tock(FF4B_WRn, rst.WALU_RESET, in.D2);
+  /*p23.MEBY*/ next.WX3.tock(FF4B_WRn, rst.WALU_RESET, in.D3);
+  /*p23.MYPU*/ next.WX4.tock(FF4B_WRn, rst.WALU_RESET, in.D4);
+  /*p23.MYCE*/ next.WX5.tock(FF4B_WRn, rst.WALU_RESET, in.D5); 
+  /*p23.MUVO*/ next.WX6.tock(FF4B_WRn, rst.WALU_RESET, in.D6);
+  /*p23.NUKU*/ next.WX7.tock(FF4B_WRn, rst.WALU_RESET, in.D7);
 }
 
 //-----------------------------------------------------------------------------

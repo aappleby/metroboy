@@ -7,30 +7,9 @@ namespace Schematics {
 
 struct Sprites {
 
-  /*p28.BODE*/ bool OAM_LATCH;
-
-
-
-
-
-
   /*p28.ACYL*/ bool OAM_ADDR_PARSEn;
-
-
   /*p28.WEFE*/ bool P10_Bn;
-
   /*p28.AWOH*/ bool AWOH_AxxDExxH;
-
-
-  /*p28.ZONE*/ bool OAM_A_CS;
-  /*p28.ZOFE*/ bool OAM_B_CS;
-
-
-
-
-
-
-
 
   /*p01.TAVA*/ bool CLK_AxCxExGx10; // sprites
 
@@ -44,25 +23,13 @@ struct Sprites {
   /*p28.FAHA*/ Reg SCAN4;
   /*p28.FONY*/ Reg SCAN5;
 
-
-
-
-
-  /*p04.MAKA*/ bool FROM_CPU5_SYNC;
-
-
-
-
   /*p28.XUCA*/ bool XUCA; // unused
   /*p28.XECY*/ bool XECY; // unused
   /*p28.XUVA*/ bool XUVA; // unused
 
-
-
   /*p29.AVAP*/ bool SCAN_DONE_TRIG;
   /*p29.FEPO*/ bool STORE_MATCH;
   /*p29.WUTY*/ bool SPRITE_DONE;
-  /*p29.XEFY*/ bool XEFY_CLK;
   /*p29.PUCO*/ bool SPRITE_PIX_LATCH_B;
   /*p29.XADO*/ bool SPRITE_PIX_LATCH_A;
 
@@ -71,35 +38,27 @@ struct Sprites {
   /*p29.DENY*/ bool DENY;
   /*p29.XYME*/ bool XYME;
   /*p29.GOWO*/ bool GOWO;
-
-
   /*p29.GYGY*/ bool GYGY;
-
 
   /*p29.BUZA*/ bool STORE_SPRITE_IDX;
 
   // sprite matcher clock lines
   /*p29.YFAG*/ bool YFAG;
   /*p29.GECY*/ bool GECY;
-
   /*p29.XAHO*/ bool XAHO;
   /*p29.WOFO*/ bool WOFO;
   /*p29.CEXU*/ bool CEXU;
+  /*p29.CYLA*/ bool CYLA;
 
   /*p29.WEME*/ bool STORE9_CLKa;
   /*p29.WUFA*/ bool STORE9_CLKb;
   /*p29.FAKA*/ bool STORE9_CLKc;
-
-  /*p29.CYLA*/ bool CYLA;
-
-
 
   /*p29.ASYS*/ bool STORE1_CLKa;
   /*p29.AHOF*/ bool STORE1_CLKb;
   /*p29.BYVY*/ bool STORE1_CLKc;
 
   // sprite matcher reset lines
-  
 
   /*p29.ZAPE*/ bool ZAPE;
   /*p29.WUNU*/ bool WUNU;
@@ -121,37 +80,8 @@ struct Sprites {
   /*p29.FEKA*/ bool FEKA;
   /*p29.XYHA*/ bool XYHA;
 
-  /*p29.YDYV*/ bool OAM_B_LATCH0;
-  /*p29.YCEB*/ bool OAM_B_LATCH1;
-  /*p29.ZUCA*/ bool OAM_B_LATCH2;
-  /*p29.WONE*/ bool OAM_B_LATCH3;
-  /*p29.ZAXE*/ bool OAM_B_LATCH4;
-  /*p29.XAFU*/ bool OAM_B_LATCH5;
-  /*p29.YSES*/ bool OAM_B_LATCH6;
-  /*p29.ZECA*/ bool OAM_B_LATCH7;
-
-
-  /*p29.XUSO*/ bool OAM_B_D0;
-  /*p29.XEGU*/ bool OAM_B_D1;
-  /*p29.YJEX*/ bool OAM_B_D2;
-  /*p29.XYJU*/ bool OAM_B_D3;
-  /*p29.YBOG*/ bool OAM_B_D4;
-  /*p29.WYSO*/ bool OAM_B_D5;
-  /*p29.XOTE*/ bool OAM_B_D6;
-  /*p29.YZAB*/ bool OAM_B_D7;
-
-
   /*p29.YWOK*/ bool OAM_B_IN_CLK;
-
-
-
-
-
-
-
-
-
-
+  
   /*p29.WOSU*/ bool CLK_WOSU;
 
   /*p29.CENO*/ Reg CENO;
@@ -172,9 +102,6 @@ struct Sprites {
   /*p29.TEXY*/ bool SPRITE_READn;
   /*p25.RAWA*/ bool RAWA;
   /*p25.XUJY*/ bool XUJY;
-  /*p28.WEFY*/ bool XUJA;
-
-
 
   /*p29.TYFO*/ Reg SPR_SEQ_5_SYNCn;
 
@@ -210,8 +137,6 @@ struct Sprites {
   /*p29.FAVO*/ bool STORE7_MATCH_OUT;
   /*p29.GYGA*/ bool STORE8_MATCH_OUT;
   /*p29.FOXA*/ bool FOXA;
-
-
   
   /*p29.FONO*/ bool SPRITE9_GET_SYNCn;
   /*p29.EXUQ*/ bool SPRITE8_GET_SYNCn;
@@ -223,18 +148,11 @@ struct Sprites {
   /*p29.EGAV*/ bool SPRITE2_GET_SYNCn;
   /*p29.CEDY*/ bool SPRITE1_GET_SYNCn;
 
-
   /*p29.GORO*/ bool GORO;
 
   /*p29.WACY*/ bool WACY;
   /*p29.FEVE*/ bool FEVE;
   /*p29.WOHU*/ bool WOHU;
-
-
-
-
-  
-  
 
   /*p29.FAMU*/ bool FAMU;
 
@@ -422,35 +340,6 @@ struct Sprites {
   /*p29.EBOJ*/ bool SPRITE0_GET_SYNCn;
 
   //----------
-
-  /*p31.XYKY*/ bool OAM_A_LATCH0;
-  /*p31.YRUM*/ bool OAM_A_LATCH1;
-  /*p31.YSEX*/ bool OAM_A_LATCH2;
-  /*p31.YVEL*/ bool OAM_A_LATCH3;
-  /*p31.WYNO*/ bool OAM_A_LATCH4;
-  /*p31.CYRA*/ bool OAM_A_LATCH5;
-  /*p31.ZUVE*/ bool OAM_A_LATCH6;
-  /*p31.ECED*/ bool OAM_A_LATCH7;
-
-  /*p31.XEGA*/ bool OAM_A_IN_CLK;
-
-  /*p31.YLOR*/ bool OAM_A_D0;
-  /*p31.ZYTY*/ bool OAM_A_D1;
-  /*p31.ZYVE*/ bool OAM_A_D2;
-  /*p31.ZEZY*/ bool OAM_A_D3;
-  /*p31.GOMO*/ bool OAM_A_D4;
-  /*p31.BAXO*/ bool OAM_A_D5;
-  /*p31.YZOS*/ bool OAM_A_D6;
-  /*p31.DEPO*/ bool OAM_A_D7;
-
-  /*p31.ZAGO*/ bool OAM_A_D0b;
-  /*p31.ZOCY*/ bool OAM_A_D1b;
-  /*p31.YPUR*/ bool OAM_A_D2b;
-  /*p31.YVOK*/ bool OAM_A_D3b;
-  /*p31.COSE*/ bool OAM_A_D4b;
-  /*p31.AROP*/ bool OAM_A_D5b;
-  /*p31.XATU*/ bool OAM_A_D6b;
-  /*p31.BADY*/ bool OAM_A_D7b;
 
   /*p31.XOMY*/ bool XOMY;
   /*p31.WUHA*/ bool WUHA;

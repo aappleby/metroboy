@@ -6,15 +6,16 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Sequencer_tick(const SequencerIn& in, const Sequencer& a, const Sequencer& b, Sequencer& next) {
+void Sequencer_tick(const SequencerIn& in,
+                    const Sequencer& a,
+                    const Sequencer& b,
+                    Sequencer& next) {
+  (void)in;
+  (void)a;
+  (void)b;
+  (void)next;
 
-  /*p01.ATAL*/ wire ATAL_AxCxExGx = not(in.ROOTCLK_xBxDxFxH);
-  /*p01.AZOF*/ wire AZOF_xBxDxFxH = not(ATAL_AxCxExGx);
-  /*p01.ZAXY*/ wire ZAXY_AxCxExGx = not(AZOF_xBxDxFxH);
-  /*p01.ZEME*/ wire ZEME_xBxDxFxH = not(ZAXY_AxCxExGx);
-  /*p01.ALET*/ next.ALET_AxCxExGx = not(ZEME_xBxDxFxH);
-  /*p27.MYVO*/ next.MYVO_xBxDxFxH = not(b.ALET_AxCxExGx);
-
+#if 0
   /*p27.XAHY*/ wire NEW_LINEn = not(in.NEW_LINE);
   /*p27.XOFO*/ wire MAP_X_RST = nand(in.LCDC_WINEN, NEW_LINEn, in.VID_RESETn);
   /*p27.PYNU*/ wire WIN_RST = or(in.WIN_MATCH_SYNC2, MAP_X_RST);
@@ -24,7 +25,6 @@ void Sequencer_tick(const SequencerIn& in, const Sequencer& a, const Sequencer& 
   
   /*p27.PUKU*/ next.PUKU = nor(b.RYDY, WIN_RST_TRIG);
   /*p27.RYDY*/ next.RYDY = nor(b.PUKU, in.VID_RESET4, b.BG_SEQ_7);
-
 
   /*p27.SOVY*/ next.REG_SOVY = tock_pos(a.ALET_AxCxExGx, b.ALET_AxCxExGx, 1, b.REG_SOVY, b.RYDY);
 
@@ -45,6 +45,7 @@ void Sequencer_tick(const SequencerIn& in, const Sequencer& a, const Sequencer& 
   /*p24.NYKA*/ next.BG_SEQ_6     = tock_pos(a.ALET_AxCxExGx, b.ALET_AxCxExGx, b.RENDERING_AND_NOT_WIN_TRIG, b.BG_SEQ_6,     b.BG_SEQ_5);
   /*p24.PORY*/ next.BG_SEQ_7     = tock_pos(a.MYVO_xBxDxFxH, b.MYVO_xBxDxFxH, b.RENDERING_AND_NOT_WIN_TRIG, b.BG_SEQ_7,     b.BG_SEQ_6);
   /*p24.PYGO*/ next.BG_SEQ_8     = tock_pos(a.ALET_AxCxExGx, b.ALET_AxCxExGx, in.RENDERING,                 b.BG_SEQ_8,     b.BG_SEQ_7);
+#endif
 }
 
 //-----------------------------------------------------------------------------

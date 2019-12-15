@@ -14,7 +14,7 @@ void Joypad_tick(const JoypadTickIn& in,
                  const Clocks& clk,
                  const Joypad& prev,
                  Joypad& next,
-                 Bus& bus_out) {
+                 BusControl& bus_out) {
   /*p10.AMUS*/ wire ADDR_xxxxxxxx0xx00000 = nor(in.A00, in.A01, in.A02, in.A03, in.A04, in.A07);
   /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A09);
   /*p07.TONA*/ wire ADDR_08n = not(in.A08);
@@ -60,8 +60,7 @@ void Joypad_tick(const JoypadTickIn& in,
 
 //-----------------------------------------------------------------------------
 
-void Joypad_tock(const Bus& bus,
-                 const BusControl& ctl,
+void Joypad_tock(const BusControl& bus,
                  const Clocks& clk,
                  const Resets& rst,
                  const Joypad& prev,
@@ -81,7 +80,7 @@ void Joypad_tock(const Bus& bus,
   /*p02.AGEM*/ next.JP_GLITCH2.tock(clk.BOGA_xBCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH1);
   /*p02.APUG*/ next.JP_GLITCH3.tock(clk.BOGA_xBCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH2);
 
-  /*p10.ATOZ*/ wire FF00_WRn   = nand(ctl.CPU_WR, ADDR_111111110xx00000, A06n, A05n);
+  /*p10.ATOZ*/ wire FF00_WRn   = nand(bus.CPU_WR, ADDR_111111110xx00000, A06n, A05n);
   /*p05.JUTE*/ next.JOYP_RA    .tock(FF00_WRn, rst.SYS_RESETn, bus.D0);
   /*p05.KECY*/ next.JOYP_LB    .tock(FF00_WRn, rst.SYS_RESETn, bus.D1);
   /*p05.JALE*/ next.JOYP_UC    .tock(FF00_WRn, rst.SYS_RESETn, bus.D2);

@@ -24,7 +24,6 @@
 #include "Sch_Pins.h"
 #include "Sch_LCD.h"
 #include "Sch_Bootrom.h"
-#include "Sch_Hram.h"
 #include "Sch_OAM.h"
 #include "Sch_Vram.h"
 #include "Sch_Registers.h"
@@ -39,16 +38,11 @@ struct Gameboy {
   int64_t timestamp;
 
   Cpu        cpu;
-  //System     sys;
+  Clocks     clk;
   Resets     rst;
-  BusControl ctl;
-  ApuControl apu;
-  Channel1   ch1;
-  Channel2   ch2;
-  Channel3   ch3;
-  Channel4   ch4;
-
-  Decoder   dec;
+  BusControl bus;
+  Decoder    dec;
+  Debug      dbg;
 
   Sprites    spr;
   PixelPipe  pix;
@@ -56,22 +50,20 @@ struct Gameboy {
   Serial     ser;
   Timer      tim;
   DMA        dma;
-  Debug      dbg;
   Interrupts irq;
   Joypad     joy;
   Pins       pin;
   LCD        lcd;
   Bootrom    rom;
-  Hram       hrm;
   OAM        oam;
   Vram       vrm;
   Registers  reg;
-  Clocks     clk;
 
-  //----------
-  // main bus
-
-  Bus bus;
+  ApuControl apu;
+  Channel1   ch1;
+  Channel2   ch2;
+  Channel3   ch3;
+  Channel4   ch4;
 };
 
 //-----------------------------------------------------------------------------

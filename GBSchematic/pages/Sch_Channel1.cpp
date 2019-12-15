@@ -23,7 +23,7 @@ void Channel1_tick(const Pins& pins,
     /*p10.DYVA*/ wire ADDR_FF10  = nor(b.apu.ADDR_FF1Xn, ADDR_0000an);
     /*p11.BUZE*/ wire ADDR_FF10n = not(ADDR_FF10);
 
-    /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.CPU_WR);
+    /*p10.BAFU*/ wire CPU_WRn = not(b.bus.CPU_WR);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
     /*p11.CENU*/ next.ch1.NR10_CLK       = and(APU_WR, ADDR_FF10);
     /*p11.BANY*/ next.ch1.NR10_SHIFT0    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_SHIFT0,    b.bus.D0);
@@ -34,7 +34,7 @@ void Channel1_tick(const Pins& pins,
     /*p11.BANA*/ next.ch1.NR10_DELAY1    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_DELAY1,    b.bus.D5);
     /*p11.BOTU*/ next.ch1.NR10_DELAY2    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_DELAY2,    b.bus.D6);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     /*p11.ATYN*/ wire NR10_RDn = nor(CPU_RDn, ADDR_FF10n);
     /*p11.ASOP*/ wire NR10_RD  = not(NR10_RDn);
 
@@ -54,9 +54,9 @@ void Channel1_tick(const Pins& pins,
     /*p10.DUNO*/ wire ADDR_0001an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
     /*p10.CAXE*/ wire ADDR_FF11  = nor(b.apu.ADDR_FF1Xn, ADDR_0001an);
 
-    /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.CPU_WR);
+    /*p10.BAFU*/ wire CPU_WRn = not(b.bus.CPU_WR);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     /*p11.BUWA*/ wire CPU_RDa = not(CPU_RDn);
     /*p11.BEXU*/ wire NR11_RD = nor(ADDR_FF11, CPU_RDa); // polarity?
     /*p11.COVU*/ wire NR11_WR = and(ADDR_FF11, APU_WR);
@@ -77,7 +77,7 @@ void Channel1_tick(const Pins& pins,
     /*p10.DAMY*/ wire ADDR_0010an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx0);
     /*p10.EDAF*/ wire ADDR_FF12  = nor(b.apu.ADDR_FF1Xn, ADDR_0010an);
   
-    /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.CPU_WR);
+    /*p10.BAFU*/ wire CPU_WRn = not(b.bus.CPU_WR);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
 
     /*p11.HATO*/ wire NR12_RSTn = not(b.apu.APU_RESET1);
@@ -92,7 +92,7 @@ void Channel1_tick(const Pins& pins,
     /*p11.JENA*/ next.ch1.NR12_VOL2    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL2,    b.bus.D6);
     /*p11.JOPU*/ next.ch1.NR12_VOL3    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL3,    b.bus.D7);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     /*p11.HAXE*/ wire ADDR_FF12n = not(ADDR_FF12);
     /*p11.GAGO*/ wire ADDR_FF12o = not(ADDR_FF12);
     /*p11.HAMY*/ wire NR12_RDn = or(ADDR_FF12n, CPU_RDn); // polarity?
@@ -123,7 +123,7 @@ void Channel1_tick(const Pins& pins,
     /*p11.CACA*/ wire ADDR_FF13n = not(ADDR_FF13);
     /*p11.CURE*/ wire ADDR_FF14n = not(ADDR_FF14);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
     /*p11.CEGE*/ wire CPU_RDb  = not(CPU_RDn);
     /*p11.DAXA*/ wire CPU_RDnb = nand(CPU_RDb, b.apu.NR52_DBG_APU);
     /*p11.DYPU*/ wire FF13_RDn = nor(CPU_RDnb, ADDR_FF13n);
@@ -152,7 +152,7 @@ void Channel1_tick(const Pins& pins,
     /*p11.CAMY*/ wire NR14_RSTa = not(b.apu.APU_RESET1);
     /*p13.DADO*/ wire NR14_RSTb = nor(b.apu.APU_RESET1, b.ch1.START);
 
-    /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.CPU_WR);
+    /*p10.BAFU*/ wire CPU_WRn = not(b.bus.CPU_WR);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
     /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(b.cpu.FROM_CPU5, APU_WR);
     /*p11.BAGE*/ next.ch1.NR14_CLKa   = nand(CPU_WR_WEIRD, ADDR_FF14); 
@@ -161,7 +161,7 @@ void Channel1_tick(const Pins& pins,
     /*p13.DOGE*/ next.ch1.FF14_WRnb = nand(APU_WR, ADDR_FF14);
     /*p13.DUPE*/ next.ch1.NR14_START = tock_pos(a.ch1.FF14_WRnb, b.ch1.FF14_WRnb, NR14_RSTb, b.ch1.NR14_START, b.bus.D7);
 
-    /*p11.BUDA*/ wire CPU_RDo = not(b.ctl.CPU_RD);
+    /*p11.BUDA*/ wire CPU_RDo = not(b.bus.CPU_RD);
     /*p11.BALE*/ wire NR14_RD = nand(CPU_RDo, ADDR_FF14);
     /*p11.BYTU*/ if (NR14_RD) next.bus.D6 = b.ch1.NR14_STOP;
   }
@@ -271,7 +271,7 @@ void Channel1_tick(const Pins& pins,
     /*p10.ESOT*/ wire ADDR_0100an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx0);
     /*p10.DUJA*/ wire ADDR_FF14  = nor(b.apu.ADDR_FF1Xn, ADDR_0100an);
 
-    /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.CPU_WR);
+    /*p10.BAFU*/ wire CPU_WRn = not(b.bus.CPU_WR);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
     /*p12.DEBY*/ wire FREQ_WRb = and(APU_WR, ADDR_FF14); // polarity?
     /*p12.DYLA*/ wire FREQ_WRc = not(/*p12.DEPU*/ nand(APU_WR, ADDR_FF13));  // polarity?
@@ -423,7 +423,7 @@ void Channel1_tick(const Pins& pins,
     /*p10.DUNO*/ wire ADDR_0001an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
     /*p10.CAXE*/ wire ADDR_FF11  = nor(b.apu.ADDR_FF1Xn, ADDR_0001an);
 
-    /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.CPU_WR);
+    /*p10.BAFU*/ wire CPU_WRn = not(b.bus.CPU_WR);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
 
     wire bCLK_256 = b.apu.CLK_256a;

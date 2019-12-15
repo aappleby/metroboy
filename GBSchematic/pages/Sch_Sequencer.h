@@ -43,9 +43,6 @@ struct Sequencer {
   bool RYDY;
   bool REG_SOVY;
 
-  bool ALET_AxCxExGx;
-  bool MYVO_xBxDxFxH;
-
   bool WIN_RST_SYNC;
 };
 

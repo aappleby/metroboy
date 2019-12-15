@@ -13,7 +13,7 @@ struct Video {
 
   /*p21.NAPO*/ bool FRAME_EVEN;
 
-  /*p21.VYPU*/ bool INT_VBL_BUF;
+
   /*p21.VOTY*/ bool INT_STAT;
 
   // x counter
@@ -38,7 +38,6 @@ struct Video {
 #endif
 
   /*p21.TADY*/ bool X_RST;
-  /*p21.TOCA*/ bool TOCA;
 
   /*p21.SYGU*/ bool LINE_STROBE;
 

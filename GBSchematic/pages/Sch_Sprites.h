@@ -30,6 +30,8 @@ struct Sprites {
   /*p28.FAHA*/ Reg SCAN4;
   /*p28.FONY*/ Reg SCAN5;
 
+  /*p28.FETO*/ bool SCAN_DONE_d0;
+
   /*p30.XADU*/ Reg SPRITE_IDX0;
   /*p30.XEDY*/ Reg SPRITE_IDX1;
   /*p30.ZUZE*/ Reg SPRITE_IDX2;
@@ -37,9 +39,9 @@ struct Sprites {
   /*p30.YDUF*/ Reg SPRITE_IDX4;
   /*p30.XECU*/ Reg SPRITE_IDX5;
 
-  /*p29.BYBA*/ Reg SCAN_DONE_SYNC1;
-  /*p29.DOBA*/ Reg SCAN_DONE_SYNC2;
-  /*p29.AVAP*/ bool SCAN_DONE_TRIG;
+  /*p29.BYBA*/ Reg SCAN_DONE_d4;
+  /*p29.DOBA*/ Reg SCAN_DONE_d5;
+  /*p29.AVAP*/ bool SCAN_DONE_d0_TRIG;
 
   /*p29.TOXE*/ Reg SPR_SEQ0;
   /*p29.TULY*/ Reg SPR_SEQ1;

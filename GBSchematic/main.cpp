@@ -28,10 +28,30 @@ struct StructTest {
 };
 
 
+#include <math.h>
+
 int main(int /*argc*/, char** /*argv*/) {
   TestLCD();
   //TestClocks();
   //TestSpriteSeq();
+
+#if 0
+  for(int i = 0; i < 8; i++) {
+    double t2 = double(i) / 8.0;
+    double t1 = t2 - 1.0/3.0;
+    double t3 = t2 + 1.0/3.0;
+
+    double s1 = cos(t1 * 2.0 * 3.14159265358979) * 0.5 + 0.5;
+    double s2 = cos(t2 * 2.0 * 3.14159265358979) * 0.5 + 0.5;
+    double s3 = cos(t3 * 2.0 * 3.14159265358979) * 0.5 + 0.5;
+
+    int c1 = int(s1 * (255-64) + 64);
+    int c2 = int(s2 * (255-64) + 64);
+    int c3 = int(s3 * (255-64) + 64);
+
+    printf("0xFF%02x%02x%02x\n", c1, c2, c3);
+  }
+#endif
 
   return 0;
 }

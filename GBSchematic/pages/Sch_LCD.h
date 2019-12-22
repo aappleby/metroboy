@@ -71,18 +71,27 @@ void LCD_tick2(const LCD2& lcd,
 
 //-----------------------------------------------------------------------------
 
-void LCD_tick(const Clocks& clk,
-              const Resets& rst,
-              const LCD& lcd,
-              const Video& vid,
-           
-              bool SCAN_DONE_TRIG,
-              bool DIV_06n,
-              bool DIV_07n,
-              bool LCDC_EN,
-              LCD& next);
-
 struct LCD {
+
+  static void tick(const Clocks& clk,
+                   const Resets& rst,
+                   const LCD& lcd,
+                   const Video& vid,
+                   bool SCAN_DONE_d0_TRIG,
+                   bool DIV_06n,
+                   bool DIV_07n,
+                   bool LCDC_EN,
+                   LCD& next);
+
+  static void tick2(const Clocks& clk,
+                    const Resets& rst,
+                    const LCD& lcd,
+                    const Video& vid,
+                    bool SCAN_DONE_d0_TRIG,
+                    bool DIV_06n,
+                    bool DIV_07n,
+                    bool LCDC_EN,
+                    LCD& next);
 
   // Resets to immediately before the first phase on the first line
   void reset() {
@@ -143,19 +152,12 @@ struct LCD {
   /*p21.PURE*/ bool NEW_LINE_d0n;
   /*p21.SELA*/ bool NEW_LINE_d0b;
 
-  /*p21.XYVO*/ bool VBLANK_d0;
-  /*p29.ALES*/ bool VBLANK_d0n;
+  /*p21.XYVO*/ bool LINE_144_d0;
+  /*p29.ALES*/ bool LINE_144_d0n;
 
   /*p29.ABOV*/ bool VID_LINE_d0;
   /*p29.CATU*/ Reg  VID_LINE_d4;
   /*p28.ANEL*/ Reg  VID_LINE_d6;
-
-  /*p24.LUCA*/ Reg LINE_EVEN;
-  /*p21.NAPO*/ Reg FRAME_EVEN;
-
-  /*p24.MEDA*/ Reg VSYNC_OUTn;
-
-  /*p21.SYGU*/ Reg LINE_STROBE;
 
   /*p28.BYHA*/ bool VID_LINE_TRIG_d4n;
   /*p28.ATEJ*/ bool VID_LINE_TRIG_d4a;
@@ -163,6 +165,18 @@ struct LCD {
   /*p28.BYVA*/ bool VID_LINE_TRIG_d4p;
   /*p29.DYBA*/ bool VID_LINE_TRIG_d4c;
   /*p27.XAHY*/ bool VID_LINE_TRIG_d4o;
+
+#if 0
+
+  /*p24.MEDA*/ Reg VSYNC_OUTn;
+
+  /*p24.LUCA*/ Reg LINE_EVEN;
+  /*p21.NAPO*/ Reg FRAME_EVEN;
+
+  /*p21.SYGU*/ Reg LINE_STROBE;
+
+
+
 
   /*p21.WUSA*/ bool CPEN_LATCH;
 
@@ -180,6 +194,7 @@ struct LCD {
   /* PIN_55 */ bool PIN_CPL;
   /* PIN_56 */ bool PIN_FR;
   /* PIN_57 */ bool PIN_S;
+#endif
 
 
   /*p24.PAHO*/ Reg X_8_SYNC;

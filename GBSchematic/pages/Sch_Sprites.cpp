@@ -27,7 +27,7 @@ void Sprites_tick(const Pins& pins,
   
   {
     /*p28.BOGE*/ wire DMA_CLKENn = not(dma.DMA_CLKEN);
-    /*p28.ASEN*/ wire ASEN = or(rst.VID_RESET6, spr.SCAN_DONE_TRIG);
+    /*p28.ASEN*/ wire ASEN = or(rst.VID_RESET6, spr.SCAN_DONE_d0_TRIG);
     /*p28.BESU*/ wire BESU = or(lcd.VID_LINE_d4, ASEN);
     /*p28.ACYL*/ next.OAM_ADDR_PARSE = and(DMA_CLKENn, BESU);
   }
@@ -154,7 +154,7 @@ void Sprites_tick(const Pins& pins,
     /*p30.YDUF*/ next.SPRITE_IDX4.tock(WUDA, WEFE, oam.OAM_A6);
     /*p30.XECU*/ next.SPRITE_IDX5.tock(WUDA, WEFE, oam.OAM_A7);
 
-    /*p28.ASEN*/ wire ASEN = or(rst.VID_RESET6, spr.SCAN_DONE_TRIG);
+    /*p28.ASEN*/ wire ASEN = or(rst.VID_RESET6, spr.SCAN_DONE_d0_TRIG);
     /*p28.BESU*/ wire BESU = or(lcd.VID_LINE_d4, ASEN);
     /*p29.CENO*/ next.STORE_SPRITE_IDXn.tock(clocks.XUPY_ABxxEFxx, rst.VID_RESETn3, BESU);
 
@@ -185,13 +185,16 @@ void Sprites_tickScanner(const Clocks& clocks,
   // Sprite scanner
 
   {
-    /*p28.ANOM*/ wire SCAN_RSTn = nor(rst.VID_RESET6, lcd.VID_LINE_TRIG_d4n);
+    // something wrong here
+
+    // ANOM = nor(ATEJ, ATAR);
+
+    /*p28.ANOM*/ wire SCAN_RSTn = nor(lcd.VID_LINE_TRIG_d4a, rst.VID_RESET6);
     /*p29.BALU*/ wire SCAN_RSTa = not(SCAN_RSTn);
     /*p29.BAGY*/ wire SCAN_RSTo = not(SCAN_RSTa);
 
-    /*p28.FETO*/ wire SCAN_DONE = and(spr.SCAN0, spr.SCAN1, spr.SCAN2, spr.SCAN5); // 32 + 4 + 2 + 1 = 39
 
-    /*p28.GAVA*/ wire SCAN_CLK = or(SCAN_DONE, clocks.XUPY_ABxxEFxx);
+    /*p28.GAVA*/ wire SCAN_CLK = or(spr.SCAN_DONE_d0, clocks.XUPY_ABxxEFxx);
     /*p28.YFEL*/ next.SCAN0.tock(SCAN_CLK,   SCAN_RSTn, !spr.SCAN0);
     /*p28.WEWY*/ next.SCAN1.tock(!spr.SCAN0, SCAN_RSTn, !spr.SCAN1);
     /*p28.GOSO*/ next.SCAN2.tock(!spr.SCAN1, SCAN_RSTn, !spr.SCAN2);
@@ -199,11 +202,15 @@ void Sprites_tickScanner(const Clocks& clocks,
     /*p28.FAHA*/ next.SCAN4.tock(!spr.SCAN3, SCAN_RSTn, !spr.SCAN4);
     /*p28.FONY*/ next.SCAN5.tock(!spr.SCAN4, SCAN_RSTn, !spr.SCAN5);
 
-    /*p29.BYBA*/ next.SCAN_DONE_SYNC1.tock(clocks.XUPY_ABxxEFxx, SCAN_RSTo, SCAN_DONE);
-    /*p29.DOBA*/ next.SCAN_DONE_SYNC2.tock(clocks.ALET_xBxDxFxH, SCAN_RSTo, spr.SCAN_DONE_SYNC1);
+    /*p28.FETO*/ next.SCAN_DONE_d0 = and(spr.SCAN0, spr.SCAN1, spr.SCAN2, spr.SCAN5); // 32 + 4 + 2 + 1 = 39
 
-    /*p29.BEBU*/ wire SCAN_DONE_TRIGn = or(SCAN_RSTa, spr.SCAN_DONE_SYNC2, !spr.SCAN_DONE_SYNC1);
-    /*p29.AVAP*/ next.SCAN_DONE_TRIG = not(SCAN_DONE_TRIGn);
+    // the second clock here doesn't match the usual synchronizer pattern, but it matches the die.
+    /*p29.BYBA*/ next.SCAN_DONE_d4.tock(clocks.XUPY_ABxxEFxx, SCAN_RSTo, spr.SCAN_DONE_d0);
+    /*p29.DOBA*/ next.SCAN_DONE_d5.tock(clocks.ALET_xBxDxFxH, SCAN_RSTo, spr.SCAN_DONE_d4);
+
+    // which means this trigger is exactly 1 phase long
+    /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or(SCAN_RSTa, spr.SCAN_DONE_d5, !spr.SCAN_DONE_d4);
+    /*p29.AVAP*/ next.SCAN_DONE_d0_TRIG = not(SCAN_DONE_d0_TRIGn);
   }
 }
 

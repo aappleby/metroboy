@@ -99,7 +99,7 @@ void P21_VideoControl_tick(const Bus& bus,
 
     // Weird latch? Weird latch!
     /*p21.XYMU*/ if (WEGO)               next.RENDERING_LATCH = 0;
-    /*p21.XYMU*/ if (spr.SCAN_DONE_TRIG) next.RENDERING_LATCH = 1;
+    /*p21.XYMU*/ if (spr.SCAN_DONE_d0_TRIG) next.RENDERING_LATCH = 1;
     
     /*p24.LOBY*/ next.RENDERINGn = not(vid.RENDERING_LATCH);
     
@@ -208,7 +208,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p27.NYFO*/ wire WIN_MODE_TRIGn = not(vid.WIN_MODE_TRIG);
     /*p27.MOSU*/ wire WIN_MODE_TRIGb = not(WIN_MODE_TRIGn);
 
-    /*p27.NYXU*/ wire BG_SEQ_RSTn = nor(spr.SCAN_DONE_TRIG, WIN_MODE_TRIGb, vid.MAP_X_CLK_STOPn);
+    /*p27.NYXU*/ wire BG_SEQ_RSTn = nor(spr.SCAN_DONE_d0_TRIG, WIN_MODE_TRIGb, vid.MAP_X_CLK_STOPn);
 
     // counts to 5? polarity?
     /*p27.MOCE*/ wire BG_SEQ_5n = nand(vid.BG_SEQ_x1x3x5x7, vid.BG_SEQ_xxxx4567, BG_SEQ_RSTn);

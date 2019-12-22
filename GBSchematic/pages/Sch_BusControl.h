@@ -5,23 +5,10 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct BusControl {
-
-  /*p07.TEDO*/ bool CPU_RD;
-  /*p07.TAPU*/ bool CPU_WR;
-  /*p07.ASOT*/ bool CPU_RD2;
-  /*p07.CUPA*/ bool CPU_WR2;
-
-  /*p08.RORU*/ bool CBUS_TO_CEXTn;
-  /*p08.LULA*/ bool CBUS_TO_CEXT;
-
-  /*p25.RAHU*/ bool CBUS_TO_VBUSn;
-  /*p25.RENA*/ bool VEXT_TO_VBUSn;
-
-  /*p25.SERE*/ bool SERE;
-
-  //----------
-  // Internal main bus
+struct Bus {
+  void reset() {
+    *this = {};
+  }
 
   bool A00;
   bool A01;
@@ -48,32 +35,29 @@ struct BusControl {
   bool D5;
   bool D6;
   bool D7;
+};
 
-  //----------
-  // Internal VRAM bus
+struct BusControl {
 
-  bool MA00;
-  bool MA01;
-  bool MA02;
-  bool MA03;
-  bool MA04;
-  bool MA05;
-  bool MA06;
-  bool MA07;
-  bool MA08;
-  bool MA09;
-  bool MA10;
-  bool MA11;
-  bool MA12;
+  void reset() {
+    *this = {};
+  }
 
-  bool MD0;
-  bool MD1;
-  bool MD2;
-  bool MD3;
-  bool MD4;
-  bool MD5;
-  bool MD6;
-  bool MD7;
+  /*p07.TEDO*/ bool CPU_RD;
+  /*p07.TAPU*/ bool CPU_WR;
+  /*p07.ASOT*/ bool CPU_RD2;
+  /*p07.CUPA*/ bool CPU_WR2;
+
+  /*p08.RORU*/ bool CBUS_TO_CEXTn;
+  /*p08.LULA*/ bool CBUS_TO_CEXT;
+
+  /*p25.RAHU*/ bool CBUS_TO_VBUSn;
+  /*p25.RENA*/ bool VEXT_TO_VBUSn;
+
+  /*p25.SERE*/ bool SERE;
+
+  /*p25.TYVY*/ bool MD_TO_D;
+  /*p25.SEBY*/ bool MD_TO_Dn;
 
   /*p08.ALOR*/ bool ADDR_LATCH_00;
   /*p08.APUR*/ bool ADDR_LATCH_01;

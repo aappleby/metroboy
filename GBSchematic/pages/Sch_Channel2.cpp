@@ -27,7 +27,7 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p10.DAZA*/ wire ADDR_0110an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx0);
     /*p10.COVY*/ wire ADDR_FF16  = nor(b.apu.ADDR_FF1Xn, ADDR_0110an);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
     /*p14.BYGO*/ next.ch2.BYGO = not(CPU_RDn);
     /*p14.CORO*/ next.ch2.CORO = nand(ADDR_FF16, b.ch2.BYGO);
     /*p14.AGYN*/ next.ch2.FF16_WR = nand(b.apu.APU_WR, ADDR_FF16); // FF16_WR
@@ -53,7 +53,7 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p10.DUVU*/ wire ADDR_0111an = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x1xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
     /*p10.DUTU*/ wire ADDR_FF17  = nor(b.apu.ADDR_FF1Xn, ADDR_0111an);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
     /*p14.ENUF*/ next.ch2.ENUF = and(ADDR_FF17, b.apu.APU_WR);
     /*p14.FYRY*/ next.ch2.FYRY = not(ADDR_FF17);
     /*p14.GURU*/ next.ch2.GURU = or(b.ch2.FYRY, CPU_RDn);
@@ -92,7 +92,7 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p10.DEJY*/ wire ADDR_1001an = nand(b.apu.ADDR_1xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx0x, b.apu.ADDR_xxx1); 
     /*p10.DOZA*/ wire ADDR_FF19  = nor(b.apu.ADDR_FF1Xn, ADDR_1001an);
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
     /*p14.FOGE*/ next.ch2.FOGE = not(CPU_RDn);
     /*p14.FAPE*/ next.ch2.FAPE = and(b.ch2.FOGE, b.apu.NR52_DBG_APU);
 
@@ -151,7 +151,7 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
     if (b.ch2.HUMA) next.bus.D6 = b.ch2.GOJY;
 
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
     next.ch2.GADO = not(CPU_RDn);
     /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(b.cpu.FROM_CPU5, b.apu.APU_WR);
     next.ch2.EVYF = nor(CPU_WR_WEIRD, ADDR_FF19);
@@ -172,6 +172,8 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   /*p15.BUFO*/ next.ch2.BUFO = not(b.ch2.ATEP);
   /*p15.BODO*/ next.ch2.BODO = not(b.ch2.CAZA);
   /*p15.CEMO*/ next.ch2.CEMO = tock_pos(a.ch2.BUFO, b.ch2.BUFO, b.ch2.BYHO, b.ch2.CEMO, !b.ch2.CEMO);
+
+  // weird latch?
   /*p15.BUTA*/ next.ch2.BUTA = or(b.ch2.BODO, b.ch2.ARES);
   /*p15.CAMA*/ next.ch2.CAMA = nor(b.ch2.CEMO, b.ch2.BUTA);
   /*p15.DOCA*/ next.ch2.DOCA = not(b.ch2.CAMA);
@@ -215,14 +217,18 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   /*p15.KYVO*/ next.ch2.KYVO = and(!b.ch2.JORE, b.ch2.JONA, b.ch2.JEVY);
   /*p15.JOPA*/ next.ch2.JOPA = tock_pos(a.apu.CLK_512a, b.apu.CLK_512a, b.ch2.HAFE, b.ch2.JOPA, b.ch2.KYVO);
   /*p15.HEPO*/ next.ch2.HEPO = tock_pos(a.ch2.JOPA,     b.ch2.JOPA,     b.ch2.HYPA, b.ch2.HEPO, b.ch2.GUFY);
-  /*p15.DOPE*/ next.ch2.DOPE = tock_pos(a.clk.DOVA_ABCDxxxx, b.clk.DOVA_ABCDxxxx, b.ch2.CYWU, b.ch2.DOPE, b.ch2.NR24_START);
+  /*p15.DOPE*/ next.ch2.DOPE = tock_pos(a.clk.DOVA_xBCDExxx, b.clk.DOVA_xBCDExxx, b.ch2.CYWU, b.ch2.DOPE, b.ch2.NR24_START);
   /*p15.DERA*/ next.ch2.DERA = nor(b.apu.APU_RESET1, b.ch2.DOPE);
+
+  // weird latch?
   /*p15.DALA*/ next.ch2.DALA = or(b.ch2.CELO, b.ch2.DOPE);
   /*p15.CELO*/ next.ch2.CELO = not(b.ch2.DOXA);
   /*p15.HYLE*/ next.ch2.HYLE = or(b.apu.APU_RESET1, b.ch2.ELOX);
   /*p15.HYPA*/ next.ch2.HYPA = nor(b.ch2.ELOX, b.apu.APU_RESET1);
   /*p15.HYLY*/ next.ch2.HYLY = nor(b.ch2.ELOX, b.ch2.JOPA);
   /*p15.JAKE*/ next.ch2.JAKE = not(b.ch2.HYLY);
+
+  // weird latch?
   /*p15.JEME*/ next.ch2.JEME = or(b.ch2.HEPO, b.ch2.HYLE);
   /*p15.ATEP*/ next.ch2.ATEP = tock_pos(a.ch2.AZEG, b.ch2.AZEG, b.ch2.BUWE, b.ch2.ATEP, !b.ch2.ATEP);
   /*p15.CAZA*/ next.ch2.CAZA = tock_pos(a.ch2.CEMO, b.ch2.CEMO, b.ch2.CEXE, b.ch2.CAZA, b.ch2.DORY);
@@ -234,6 +240,8 @@ void P14_Ch2Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   /*p15.DYRO*/ next.ch2.DYRO = not(b.ch2.DEME);
   /*p15.ESYK*/ next.ch2.ESYK = or(b.apu.APU_RESET1, b.ch2.DORA, b.ch2.CH2_AMP_ENn);
   /*p15.ARES*/ next.ch2.ARES = nand(b.apu.APU_RESET1, b.ch2.CH2_AMP_ENn);
+
+  // weird latch?
   /*p15.DANE*/ next.ch2.DANE = or(b.ch2.ELOX, b.ch2.ESYK);
   /*p15.DEFU*/ next.ch2.CH2_ACTIVEn = not(b.ch2.DANE);
   /*p15.BYMO*/ next.ch2.BYMO = not(b.ch2.FF16_WR);

@@ -4,54 +4,151 @@
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
+// just the counters
 
-struct LcdIn {
-  bool LCDC_EN;
-  bool DIV_06n;
-  bool DIV_07n;
+#if 0
+struct LCD2 {
 
-  bool ROXO_4M;
-  bool RENDERING;
-  bool CLKPIPE;
-  bool RENDER_DONE_SYNC;
-  bool FINE_MATCH_TRIG;
-  bool FINE_MATCH_CLK;
-  bool SCAN_DONE_TRIG;
+  // Resets to immediately before the first phase on the first line
+  void reset() {
+    X0.val=true ; X0.clk=true ;
+    X1.val=false; X1.clk=false;
+    X2.val=false; X2.clk=true ;
+    X3.val=false; X3.clk=true ;
+    X4.val=true ; X4.clk=true ;
+    X5.val=true ; X5.clk=false;
+    X6.val=true ; X6.clk=false;
+    Y0.val=false; Y0.clk=false;
+    Y1.val=false; Y1.clk=true ;
+    Y2.val=false; Y2.clk=true ;
+    Y3.val=false; Y3.clk=true ;
+    Y4.val=false; Y4.clk=true ;
+    Y5.val=false; Y5.clk=true ;
+    Y6.val=false; Y6.clk=true ;
+    Y7.val=false; Y7.clk=true ;
+    NEW_LINE_d0a.val=false; NEW_LINE_d0a.clk=false;
+    NEW_LINE_d4a.val=false; NEW_LINE_d4a.clk=true;
+    LINE_153_d4.val=true; LINE_153_d4.clk=false;
+  }
 
-  bool X0;
-  bool X3;
+  /*p21.SAXO*/ Reg X0;
+  /*p21.TYPO*/ Reg X1;
+  /*p21.VYZO*/ Reg X2;
+  /*p21.TELU*/ Reg X3;
+  /*p21.SUDE*/ Reg X4;
+  /*p21.TAHA*/ Reg X5;
+  /*p21.TYRY*/ Reg X6;
+
+  /*p21.MUWY*/ Reg Y0;
+  /*p21.MYRO*/ Reg Y1;
+  /*p21.LEXA*/ Reg Y2;
+  /*p21.LYDO*/ Reg Y3;
+  /*p21.LOVU*/ Reg Y4;
+  /*p21.LEMA*/ Reg Y5;
+  /*p21.MATO*/ Reg Y6;
+  /*p21.LAFO*/ Reg Y7;
+
+  /*p21.RUTU*/ Reg NEW_LINE_d0a;
+  /*p21.NYPE*/ Reg NEW_LINE_d4a;
+
+  /*p21.MYTA*/ Reg LINE_153_d4;
+
+  uint32_t x() const {
+    return (X0 << 0) | (X1 << 1) | (X2 << 2) | (X3 << 3) | (X4 << 4) | (X5 << 5) | (X6 << 6);
+  }
+
+  uint32_t y() const {
+    return (Y0 << 0) | (Y1 << 1) | (Y2 << 2) | (Y3 << 3) | (Y4 << 4) | (Y5 << 5) | (Y6 << 6) | (Y7 << 7);
+  }
 };
 
-//----------
+void LCD_tick2(const LCD2& lcd,
+               bool VID_RESETn,
+               bool SONO_ABCDxxxx,
+               bool TALU_xxxxEFGH,
+               LCD2& next);
+#endif
+
+//-----------------------------------------------------------------------------
+
+void LCD_tick(const Clocks& clk,
+              const Resets& rst,
+              const LCD& lcd,
+              const Video& vid,
+           
+              bool SCAN_DONE_TRIG,
+              bool DIV_06n,
+              bool DIV_07n,
+              bool LCDC_EN,
+              LCD& next);
 
 struct LCD {
 
-  /*p21.SAXO*/ Reg CNT0;
-  /*p21.TYPO*/ Reg CNT1;
-  /*p21.VYZO*/ Reg CNT2;
-  /*p21.TELU*/ Reg CNT3;
-  /*p21.SUDE*/ Reg CNT4;
-  /*p21.TAHA*/ Reg CNT5;
-  /*p21.TYRY*/ Reg CNT6;
+  // Resets to immediately before the first phase on the first line
+  void reset() {
+    X0.val=true ; X0.clk=true ;
+    X1.val=false; X1.clk=false;
+    X2.val=false; X2.clk=true ;
+    X3.val=false; X3.clk=true ;
+    X4.val=true ; X4.clk=true ;
+    X5.val=true ; X5.clk=false;
+    X6.val=true ; X6.clk=false;
+    Y0.val=false; Y0.clk=false;
+    Y1.val=false; Y1.clk=true ;
+    Y2.val=false; Y2.clk=true ;
+    Y3.val=false; Y3.clk=true ;
+    Y4.val=false; Y4.clk=true ;
+    Y5.val=false; Y5.clk=true ;
+    Y6.val=false; Y6.clk=true ;
+    Y7.val=false; Y7.clk=true ;
+    NEW_LINE_d0a.val=false; NEW_LINE_d0a.clk=false;
+    NEW_LINE_d4a.val=false; NEW_LINE_d4a.clk=true;
+    LINE_153_d4.val=true; LINE_153_d4.clk=false;
+  }
 
-  /*p21.MUWY*/ Reg V0;
-  /*p21.MYRO*/ Reg V1;
-  /*p21.LEXA*/ Reg V2;
-  /*p21.LYDO*/ Reg V3;
-  /*p21.LOVU*/ Reg V4;
-  /*p21.LEMA*/ Reg V5;
-  /*p21.MATO*/ Reg V6;
-  /*p21.LAFO*/ Reg V7;
+  uint32_t x() const {
+    return (X0 << 0) | (X1 << 1) | (X2 << 2) | (X3 << 3) | (X4 << 4) | (X5 << 5) | (X6 << 6);
+  }
 
-  /*p21.RUTU*/ Reg LINE_ENDo;
-  /*p21.NYPE*/ Reg LINE_ENDp;
+  uint32_t y() const {
+    return (Y0 << 0) | (Y1 << 1) | (Y2 << 2) | (Y3 << 3) | (Y4 << 4) | (Y5 << 5) | (Y6 << 6) | (Y7 << 7);
+  }
 
-  /*p21.MYTA*/ Reg LINE_153_SYNC;
-  /*p21.POPU*/ Reg REG_VBLANK;
+  /*p21.SAXO*/ Reg X0;
+  /*p21.TYPO*/ Reg X1;
+  /*p21.VYZO*/ Reg X2;
+  /*p21.TELU*/ Reg X3;
+  /*p21.SUDE*/ Reg X4;
+  /*p21.TAHA*/ Reg X5;
+  /*p21.TYRY*/ Reg X6;
 
-  /*p29.ABOV*/ bool IN_LINEa;
-  /*p29.CATU*/ Reg IN_LINEb;
-  /*p28.ANEL*/ Reg IN_LINEc;
+  /*p21.MUWY*/ Reg Y0;
+  /*p21.MYRO*/ Reg Y1;
+  /*p21.LEXA*/ Reg Y2;
+  /*p21.LYDO*/ Reg Y3;
+  /*p21.LOVU*/ Reg Y4;
+  /*p21.LEMA*/ Reg Y5;
+  /*p21.MATO*/ Reg Y6;
+  /*p21.LAFO*/ Reg Y7;
+
+  /*p21.RUTU*/ Reg NEW_LINE_d0a;
+  /*p21.NYPE*/ Reg NEW_LINE_d4a;
+
+  /*p21.NOKO*/ bool LINE_153_d0;
+  /*p21.MYTA*/ Reg  LINE_153_d4;
+
+  /*p21.POPU*/ Reg  VBLANK_d4;
+  /*p21.PARU*/ bool VBLANK_d4n;
+
+  /*p21.PURE*/ bool NEW_LINE_d0n;
+  /*p21.SELA*/ bool NEW_LINE_d0b;
+
+  /*p21.XYVO*/ bool VBLANK_d0;
+  /*p29.ALES*/ bool VBLANK_d0n;
+
+  /*p29.ABOV*/ bool VID_LINE_d0;
+  /*p29.CATU*/ Reg  VID_LINE_d4;
+  /*p28.ANEL*/ Reg  VID_LINE_d6;
 
   /*p24.LUCA*/ Reg LINE_EVEN;
   /*p21.NAPO*/ Reg FRAME_EVEN;
@@ -60,28 +157,32 @@ struct LCD {
 
   /*p21.SYGU*/ Reg LINE_STROBE;
 
-  /*p28.BYHA*/ bool NEW_LINEn;
-  /*p28.ATEJ*/ bool NEW_LINE1;
-  /*p28.ABAK*/ bool NEW_LINE2;
-  /*p28.BYVA*/ bool NEW_LINE3;
-  /*p29.DYBA*/ bool NEW_LINE4;
+  /*p28.BYHA*/ bool VID_LINE_TRIG_d4n;
+  /*p28.ATEJ*/ bool VID_LINE_TRIG_d4a;
+  /*p28.ABAK*/ bool VID_LINE_TRIG_d4b;
+  /*p28.BYVA*/ bool VID_LINE_TRIG_d4p;
+  /*p29.DYBA*/ bool VID_LINE_TRIG_d4c;
+  /*p27.XAHY*/ bool VID_LINE_TRIG_d4o;
+
+  /*p21.WUSA*/ bool CPEN_LATCH;
+
+  /*p24.POME*/ bool POME; 
+  /*p24.RUJU*/ bool RUJU;
 
   //----------
   // LCD pins
 
-  /* PIN_50 */ bool LD1;
-  /* PIN_51 */ bool LD0;
-  /* PIN_52 */ bool CPG;
-  /* PIN_53 */ bool CP;
-  /* PIN_54 */ bool ST;
-  /* PIN_55 */ bool CPL;
-  /* PIN_56 */ bool FR;
-  /* PIN_57 */ bool S;
+  /* PIN_50 */ bool PIN_LD1;
+  /* PIN_51 */ bool PIN_LD0;
+  /* PIN_52 */ bool PIN_CPG;
+  /* PIN_53 */ bool PIN_CP;
+  /* PIN_54 */ bool PIN_ST;
+  /* PIN_55 */ bool PIN_CPL;
+  /* PIN_56 */ bool PIN_FR;
+  /* PIN_57 */ bool PIN_S;
 
 
-
-  // what is this?
-  /*p24.PAHO*/ Reg PAHO;
+  /*p24.PAHO*/ Reg X_8_SYNC;
 
 };
 

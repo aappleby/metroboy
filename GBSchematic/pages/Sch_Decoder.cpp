@@ -10,12 +10,13 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Decoders_tick(const BusControl& bus,
+void Decoder::tick(const Bus& bus,
                    const Clocks& clocks,
-                   const Debug& dbg,
-                   const Cpu& cpu,
-                   const Bootrom& boot,
-                   Decoder& next) {
+                   wire BOOT_BIT,
+                   wire MODE_DBG2,
+                   wire ADDR_VALID) {
+  Decoder& next = *this;
+
   /*p10.AMUS*/ next.ADDR_xxxxxxxx0xx00000 = nor(bus.A00, bus.A01, bus.A02, bus.A03, bus.A04, bus.A07);
   /*p07.TUNA*/ next.ADDR_0000_FE00 = nand(bus.A15, bus.A14, bus.A13, bus.A12, bus.A11, bus.A10, bus.A09);
   /*p07.TONA*/ next.ADDR_08n = not(bus.A08);
@@ -65,29 +66,29 @@ void Decoders_tick(const BusControl& bus,
   /*p22.VUMY*/ next.FF4B = not(FF4Bn);
 
   /*p07.TULO*/ wire ADDR_00XX  = nor(bus.A15, bus.A14, bus.A13, bus.A12, bus.A11, bus.A10, bus.A09, bus.A08);
-  /*p07.TERA*/ wire BOOT_BITn  = not(boot.BOOT_BIT);
+  /*p07.TERA*/ wire BOOT_BITn  = not(BOOT_BIT);
   /*p07.TUTU*/ next.ADDR_BOOT  = and(BOOT_BITn, ADDR_00XX);
 
   /*p07.RYCU*/ wire ADDR_FE00_FFFF = not(next.ADDR_0000_FE00);
   /*p07.SOHA*/ wire ADDR_FFXXn2 = not(next.ADDR_FFXX);
   /*p07.ROPE*/ wire ADDR_FEXXn = nand(ADDR_FE00_FFFF, ADDR_FFXXn2);
-  /*p07.SARO*/ wire ADDR_OAM = not(ADDR_FEXXn);
+  /*p07.SARO*/ next.ADDR_OAM = not(ADDR_FEXXn);
 
 
   /*p08.SORE*/ wire SORE = not(bus.A15);
   /*p08.TEVY*/ next.ADDR_NOT_VRAM = or(bus.A13, bus.A14, SORE);
-  /*p08.TEXO*/ next.ADDR_VALID_AND_NOT_VRAM = and(cpu.ADDR_VALID, next.ADDR_NOT_VRAM);
+  /*p08.TEXO*/ next.ADDR_VALID_AND_NOT_VRAM = and(ADDR_VALID, next.ADDR_NOT_VRAM);
   /*p08.LEVO*/ next.ADDR_VALID_AND_NOT_VRAMn = not(next.ADDR_VALID_AND_NOT_VRAM);
 
   /*p25.TEFA*/ wire TEFA = nor(ADDR_FE00_FFFF, next.ADDR_VALID_AND_NOT_VRAM);
   /*p25.SOSE*/ next.ADDR_VRAM = and(bus.A15, TEFA);
 
-  /*p01.ATYP*/ wire PHASE_ABCDxxxx2 = not(!clocks.PHASE_ABCDxxxx);  
-  /*p01.AROV*/ wire PHASE_xxCDEFxx2 = not(!clocks.PHASE_xxCDEFxx);
-  /*p01.AJAX*/ wire PHASE_xxxxEFGH3 = not(PHASE_ABCDxxxx2);
-  /*p01.AGUT*/ wire AGUT_xxCDEFGH = and(or(PHASE_xxxxEFGH3, PHASE_xxCDEFxx2), cpu.ADDR_VALID);
-  /*p01.AWOD*/ wire AWOD = or(dbg.MODE_DBG2, AGUT_xxCDEFGH);
-  /*p01.ABUZ*/ next.ADDR_VALID_ABxxxxxx = not(AWOD);
+  /*p01.ATYP*/ wire PHASE_xBCDExxx2 = not(!clocks.PHAZ_xBCDExxx);  
+  /*p01.AROV*/ wire PHASE_xxxDEFGx2 = not(!clocks.PHAZ_xxxDEFGx);
+  /*p01.AJAX*/ wire PHASE_AxxxxFGH3 = not(PHASE_xBCDExxx2);
+  /*p01.AGUT*/ wire AGUT_AxxDEFGH = and(or(PHASE_AxxxxFGH3, PHASE_xxxDEFGx2), ADDR_VALID);
+  /*p01.AWOD*/ wire AWOD = or(MODE_DBG2, AGUT_AxxDEFGH);
+  /*p01.ABUZ*/ next.ADDR_VALID_xBCxxxxx = not(AWOD);
 
   /*p03.TOVY*/ next.TOVY_A00n = not(bus.A00);
   /*p08.TOLA*/ next.TOLA_A01n = not(bus.A01);

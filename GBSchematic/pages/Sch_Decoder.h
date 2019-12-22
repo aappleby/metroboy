@@ -5,7 +5,17 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
+
 struct Decoder {
+  void reset() {
+  }
+
+  void tick(const Bus& bus,
+            const Clocks& clocks,
+            wire BOOT_BIT,
+            wire MODE_DBG2,
+            wire ADDR_VALID);
+
   /*p10.AMUS*/ bool ADDR_xxxxxxxx0xx00000;
   /*p07.TUNA*/ bool ADDR_0000_FE00;
   /*p07.TONA*/ bool ADDR_08n;
@@ -30,7 +40,7 @@ struct Decoder {
 
   /*p07.TUTU*/ bool ADDR_BOOT;
   /*p25.SOSE*/ bool ADDR_VRAM;
-  /*p01.ABUZ*/ bool ADDR_VALID_ABxxxxxx;
+  /*p01.ABUZ*/ bool ADDR_VALID_xBCxxxxx;
 
   /*p03.TOVY*/ bool TOVY_A00n;
   /*p08.TOLA*/ bool TOLA_A01n;
@@ -43,6 +53,8 @@ struct Decoder {
   /*p08.TEVY*/ bool ADDR_NOT_VRAM;
   /*p08.TEXO*/ bool ADDR_VALID_AND_NOT_VRAM;
   /*p08.LEVO*/ bool ADDR_VALID_AND_NOT_VRAMn;
+
+  /*p07.SARO*/ bool ADDR_OAM;
 };    
     
 //-----------------------------------------------------------------------------

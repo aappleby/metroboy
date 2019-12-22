@@ -208,7 +208,6 @@
     <ClCompile Include="pages\Sch_Pins.cpp" />
     <ClCompile Include="pages\Sch_Registers.cpp" />
     <ClCompile Include="pages\Sch_Resets.cpp" />
-    <ClCompile Include="pages\Sch_Sequencer.cpp" />
     <ClCompile Include="pages\Sch_Serial.cpp" />
     <ClCompile Include="pages\Sch_SpriteStore.cpp" />
     <ClCompile Include="pages\Sch_Timer.cpp" />
@@ -222,6 +221,9 @@
     <ClCompile Include="pages\Sch_Sprites.cpp" />
     <ClCompile Include="pages\Sch_Vram.cpp" />
     <ClCompile Include="SignalTree.cpp" />
+    <ClCompile Include="tests\TestClocks.cpp" />
+    <ClCompile Include="tests\TestLCD.cpp" />
+    <ClCompile Include="tests\TestSpriteSeq.cpp" />
     <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +236,7 @@
     <ClInclude Include="pages\Sch_Debug.h" />
     <ClInclude Include="pages\Sch_Decoder.h" />
     <ClInclude Include="pages\Sch_DMA.h" />
+    <ClInclude Include="pages\Sch_Globals.h" />
     <ClInclude Include="pages\Sch_Interrupts.h" />
     <ClInclude Include="pages\Sch_Joypad.h" />
     <ClInclude Include="pages\Sch_LCD.h" />
@@ -241,8 +244,8 @@
     <ClInclude Include="pages\Sch_Pins.h" />
     <ClInclude Include="pages\Sch_Registers.h" />
     <ClInclude Include="pages\Sch_Resets.h" />
-    <ClInclude Include="pages\Sch_Sequencer.h" />
     <ClInclude Include="pages\Sch_Serial.h" />
+    <ClInclude Include="pages\Sch_SpriteStore.h" />
     <ClInclude Include="pages\Sch_Timer.h" />
     <ClInclude Include="pages\Sch_Video.h" />
     <ClInclude Include="pages\Sch_Channel1.h" />

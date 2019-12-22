@@ -25,14 +25,14 @@ struct Serial {
   /*p06.COBA*/ bool SER_CNT3n;
 
 
-  /*p06.CUBA*/ RegSR SER_DATA0;
-  /*p06.DEGU*/ RegSR SER_DATA1;
-  /*p06.DYRA*/ RegSR SER_DATA2;
-  /*p06.DOJO*/ RegSR SER_DATA3;
-  /*p06.DOVU*/ RegSR SER_DATA4;
-  /*p06.EJAB*/ RegSR SER_DATA5;
-  /*p06.EROD*/ RegSR SER_DATA6;
-  /*p06.EDER*/ RegSR SER_DATA7;
+  /*p06.CUBA*/ Reg SER_DATA0;
+  /*p06.DEGU*/ Reg SER_DATA1;
+  /*p06.DYRA*/ Reg SER_DATA2;
+  /*p06.DOJO*/ Reg SER_DATA3;
+  /*p06.DOVU*/ Reg SER_DATA4;
+  /*p06.EJAB*/ Reg SER_DATA5;
+  /*p06.EROD*/ Reg SER_DATA6;
+  /*p06.EDER*/ Reg SER_DATA7;
 
   /*p06.ELYS*/ bool SER_OUT;
 

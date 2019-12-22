@@ -9,46 +9,47 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Joypad_tick(const JoypadTickIn& in,
+void Joypad_tick(const Bus& bus,
+                 const BusControl& ctl,
                  const Debug& dbg,
                  const Clocks& clk,
                  const Joypad& prev,
                  Joypad& next,
-                 BusControl& bus_out) {
-  /*p10.AMUS*/ wire ADDR_xxxxxxxx0xx00000 = nor(in.A00, in.A01, in.A02, in.A03, in.A04, in.A07);
-  /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(in.A15, in.A14, in.A13, in.A12, in.A11, in.A10, in.A09);
-  /*p07.TONA*/ wire ADDR_08n = not(in.A08);
+                 Bus& bus_out) {
+  /*p10.AMUS*/ wire ADDR_xxxxxxxx0xx00000 = nor(bus.A00, bus.A01, bus.A02, bus.A03, bus.A04, bus.A07);
+  /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(bus.A15, bus.A14, bus.A13, bus.A12, bus.A11, bus.A10, bus.A09);
+  /*p07.TONA*/ wire ADDR_08n = not(bus.A08);
   /*p07.SYKE*/ wire ADDR_FFXX = nor(ADDR_0000_FE00, ADDR_08n);
   /*p10.ANAP*/ wire ADDR_111111110xx00000 = and(ADDR_xxxxxxxx0xx00000, ADDR_FFXX);
-  /*p10.AKUG*/ wire A06n = not(in.A06);
-  /*p10.BYKO*/ wire A05n = not(in.A05);
+  /*p10.AKUG*/ wire A06n = not(bus.A06);
+  /*p10.BYKO*/ wire A05n = not(bus.A05);
 
-  /*p02.KERY*/ wire ANY_BUTTON = or(prev.P13_C, prev.P12_C, prev.P11_C, prev.P10_C);
+  /*p02.KERY*/ wire ANY_BUTTON = or(prev.PIN_P13_C, prev.PIN_P12_C, prev.PIN_P11_C, prev.PIN_P10_C);
   /*p02.ASOK*/ next.INT_JP  = and(prev.JP_GLITCH3, prev.JP_GLITCH0);
-  /*p02.AWOB*/ next.TO_CPU2 = latch_pos(clk.BOGA_xBCDEFGH, prev.TO_CPU2, ANY_BUTTON);
+  /*p02.AWOB*/ next.WAKE_CPU = latch_pos(clk.BOGA_AxCDEFGH, prev.WAKE_CPU, ANY_BUTTON);
 
   // FIXME really unsure about these pin assignments, seem to have a few missing signals
 
-  /*p05.KOLE*/ next.P10_A = nand(prev.JOYP_RA, dbg.FF60_0);
-  /*p05.KYBU*/ next.P10_D = nor (prev.JOYP_RA, dbg.FF60_0n);
-  /*p05.KYTO*/ next.P11_A = nand(prev.JOYP_LB, dbg.FF60_0);
-  /*p05.KABU*/ next.P11_D = nor (prev.JOYP_LB, dbg.FF60_0n);
-  /*p05.KYHU*/ next.P12_A = nand(prev.JOYP_UC, dbg.FF60_0);
-  /*p05.KASY*/ next.P12_D = nor (prev.JOYP_UC, dbg.FF60_0n); // schematic wrong
-  /*p05.KORY*/ next.P13_A = nand(prev.JOYP_DS, dbg.FF60_0);
-  /*p05.KALE*/ next.P13_D = nor (prev.JOYP_DS, dbg.FF60_0n);
-  /*p05.KARU*/ next.P14_A = or(!prev.JOYP_UDLR, dbg.FF60_0n);
-  /*p05.KARU*/ next.P14_D = prev.JOYP_UDLR;
-  /*p05.CELA*/ next.P15_A = or(!prev.JOYP_ABCS, dbg.FF60_0n);
-  /*p05.KARU*/ next.P15_D = !prev.JOYP_ABCS;
+  /*p05.KOLE*/ next.PIN_P10_A = nand(prev.JOYP_RA, dbg.FF60_0);
+  /*p05.KYBU*/ next.PIN_P10_D = nor (prev.JOYP_RA, dbg.FF60_0n);
+  /*p05.KYTO*/ next.PIN_P11_A = nand(prev.JOYP_LB, dbg.FF60_0);
+  /*p05.KABU*/ next.PIN_P11_D = nor (prev.JOYP_LB, dbg.FF60_0n);
+  /*p05.KYHU*/ next.PIN_P12_A = nand(prev.JOYP_UC, dbg.FF60_0);
+  /*p05.KASY*/ next.PIN_P12_D = nor (prev.JOYP_UC, dbg.FF60_0n); // schematic wrong
+  /*p05.KORY*/ next.PIN_P13_A = nand(prev.JOYP_DS, dbg.FF60_0);
+  /*p05.KALE*/ next.PIN_P13_D = nor (prev.JOYP_DS, dbg.FF60_0n);
+  /*p05.KARU*/ next.PIN_P14_A = or(!prev.JOYP_UDLR, dbg.FF60_0n);
+  /*p05.KARU*/ next.PIN_P14_D = prev.JOYP_UDLR;
+  /*p05.CELA*/ next.PIN_P15_A = or(!prev.JOYP_ABCS, dbg.FF60_0n);
+  /*p05.KARU*/ next.PIN_P15_D = !prev.JOYP_ABCS;
 
-  /*p10.ACAT*/ wire FF00_RD = and (in.CPU_RD, ADDR_111111110xx00000, A06n, A05n);
+  /*p10.ACAT*/ wire FF00_RD = and (ctl.CPU_RD, ADDR_111111110xx00000, A06n, A05n);
   /*p05.BYZO*/ wire FF00_RDn = not(FF00_RD);
 
-  /*p05.KEVU*/ next.JOYP_L0 = latch_pos(FF00_RDn, prev.JOYP_L0, prev.P10_C);
-  /*p05.KAPA*/ next.JOYP_L1 = latch_pos(FF00_RDn, prev.JOYP_L1, prev.P11_C);
-  /*p05.KEJA*/ next.JOYP_L2 = latch_pos(FF00_RDn, prev.JOYP_L2, prev.P12_C);
-  /*p05.KOLO*/ next.JOYP_L3 = latch_pos(FF00_RDn, prev.JOYP_L3, prev.P13_C);
+  /*p05.KEVU*/ next.JOYP_L0 = latch_pos(FF00_RDn, prev.JOYP_L0, prev.PIN_P10_C);
+  /*p05.KAPA*/ next.JOYP_L1 = latch_pos(FF00_RDn, prev.JOYP_L1, prev.PIN_P11_C);
+  /*p05.KEJA*/ next.JOYP_L2 = latch_pos(FF00_RDn, prev.JOYP_L2, prev.PIN_P12_C);
+  /*p05.KOLO*/ next.JOYP_L3 = latch_pos(FF00_RDn, prev.JOYP_L3, prev.PIN_P13_C);
 
   /*p05.KEMA*/ if (!FF00_RDn) bus_out.D0 = prev.JOYP_L0;
   /*p05.KURO*/ if (!FF00_RDn) bus_out.D1 = prev.JOYP_L1;
@@ -60,7 +61,8 @@ void Joypad_tick(const JoypadTickIn& in,
 
 //-----------------------------------------------------------------------------
 
-void Joypad_tock(const BusControl& bus,
+void Joypad_tock(const Bus& bus,
+                 const BusControl& ctl,
                  const Clocks& clk,
                  const Resets& rst,
                  const Joypad& prev,
@@ -74,13 +76,13 @@ void Joypad_tock(const BusControl& bus,
   /*p10.AKUG*/ wire A06n = not(bus.A06);
   /*p10.BYKO*/ wire A05n = not(bus.A05);
 
-  /*p02.KERY*/ wire ANY_BUTTON = or(prev.P13_C, prev.P12_C, prev.P11_C, prev.P10_C);
-  /*p02.BATU*/ next.JP_GLITCH0.tock(clk.BOGA_xBCDEFGH, rst.SYS_RESETn, ANY_BUTTON);
-  /*p02.ACEF*/ next.JP_GLITCH1.tock(clk.BOGA_xBCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH0);
-  /*p02.AGEM*/ next.JP_GLITCH2.tock(clk.BOGA_xBCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH1);
-  /*p02.APUG*/ next.JP_GLITCH3.tock(clk.BOGA_xBCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH2);
+  /*p02.KERY*/ wire ANY_BUTTON = or(prev.PIN_P13_C, prev.PIN_P12_C, prev.PIN_P11_C, prev.PIN_P10_C);
+  /*p02.BATU*/ next.JP_GLITCH0.tock(clk.BOGA_AxCDEFGH, rst.SYS_RESETn, ANY_BUTTON);
+  /*p02.ACEF*/ next.JP_GLITCH1.tock(clk.BOGA_AxCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH0);
+  /*p02.AGEM*/ next.JP_GLITCH2.tock(clk.BOGA_AxCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH1);
+  /*p02.APUG*/ next.JP_GLITCH3.tock(clk.BOGA_AxCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH2);
 
-  /*p10.ATOZ*/ wire FF00_WRn   = nand(bus.CPU_WR, ADDR_111111110xx00000, A06n, A05n);
+  /*p10.ATOZ*/ wire FF00_WRn   = nand(ctl.CPU_WR, ADDR_111111110xx00000, A06n, A05n);
   /*p05.JUTE*/ next.JOYP_RA    .tock(FF00_WRn, rst.SYS_RESETn, bus.D0);
   /*p05.KECY*/ next.JOYP_LB    .tock(FF00_WRn, rst.SYS_RESETn, bus.D1);
   /*p05.JALE*/ next.JOYP_UC    .tock(FF00_WRn, rst.SYS_RESETn, bus.D2);

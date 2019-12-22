@@ -8,7 +8,8 @@ namespace Schematics {
 struct Pins {
 
   void tick(Cpu& cpu,
-            const BusControl& bus,
+            const Bus& bus,
+            const BusControl& ctl,
             const Debug& dbg,
             const Clocks& clk,
             const Decoder& dec,

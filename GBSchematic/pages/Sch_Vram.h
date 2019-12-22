@@ -8,6 +8,32 @@ namespace Schematics {
 struct Vram {
 
   //----------
+  // Internal VRAM bus
+
+  bool MA00;
+  bool MA01;
+  bool MA02;
+  bool MA03;
+  bool MA04;
+  bool MA05;
+  bool MA06;
+  bool MA07;
+  bool MA08;
+  bool MA09;
+  bool MA10;
+  bool MA11;
+  bool MA12;
+
+  bool MD0;
+  bool MD1;
+  bool MD2;
+  bool MD3;
+  bool MD4;
+  bool MD5;
+  bool MD6;
+  bool MD7;
+
+  //----------
   // VRAM control pins
 
   /* PIN_43 */ bool MCS_A;   // <- P25.SOKY

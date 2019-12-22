@@ -7,8 +7,14 @@ namespace Schematics {
 
 struct OAM {
 
+  //----------
+  // These signals connect directly to OAM
 
-  /*p28.GEKA*/ bool OAM_A0;
+  /*p25.COTA*/ bool OAM_CLK_A;
+  /*p28.ZODO*/ bool OAM_CLK_B;
+  /*p28.ZONE*/ bool OAM_A_WR;
+  /*p28.ZOFE*/ bool OAM_B_WR;
+
   /*p28.ZYFO*/ bool OAM_A1;
   /*p28.YFOT*/ bool OAM_A2;
   /*p28.YFOC*/ bool OAM_A3;
@@ -16,6 +22,8 @@ struct OAM {
   /*p28.YMEV*/ bool OAM_A5;
   /*p28.XEMU*/ bool OAM_A6;
   /*p28.YZET*/ bool OAM_A7;
+
+  //----------
 
   bool TS_OAM_A_D0;
   bool TS_OAM_A_D1;
@@ -35,13 +43,8 @@ struct OAM {
   bool TS_OAM_B_D6;
   bool TS_OAM_B_D7;
 
-  /*p25.COTA*/ bool OAM_IN_CLKn;
-
+  /*p28.GEKA*/ bool OAM_A0;
   /*p28.BODE*/ bool OAM_LATCH;
-  /*p28.ZODO*/ bool OAM_CLK;
-  /*p28.ZONE*/ bool OAM_A_CS;
-  /*p28.ZOFE*/ bool OAM_B_CS;
-
 
   /*p31.XYKY*/ bool OAM_A_LATCH0;
   /*p31.YRUM*/ bool OAM_A_LATCH1;

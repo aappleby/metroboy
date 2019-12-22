@@ -16,6 +16,28 @@
 
 using namespace Schematics;
 
+void TestLCD();
+void TestClocks();
+void TestSpriteSeq();
+
+
+struct StructTest {
+  int a;
+  int b;
+  int c;
+};
+
+
+int main(int /*argc*/, char** /*argv*/) {
+  TestLCD();
+  //TestClocks();
+  //TestSpriteSeq();
+
+  return 0;
+}
+
+
+
 //-----------------------------------------------------------------------------
 
 template<typename ... Args>
@@ -54,31 +76,17 @@ int render_labels(TextPainter& tp, int x, int y, const std::vector<SignalData>& 
   return cy - y;
 }
 
-//-----------------------------------------------------------------------------
 
-void dump(void* blob, int size) {
-  uint8_t* src = (uint8_t*)blob;
-  for (int i = 0; i < size; i++) {
-    printf("%c", src[i] ? '+' : '-');
-  }
-  printf("\n");
-}
 
-//-----------------------------------------------------------------------------
 
-/*
-struct ClocksIn {
-  bool CLKIN_A;
-  bool CLKIN_B;
-  bool MODE_PROD;
-  bool CPUCLK_REQ;
-};
-*/
 
-void step(int phase) {
-  (void)phase;
-  //Clocks clocks;
-}
+
+
+
+
+
+
+
 
 
 
@@ -87,168 +95,18 @@ void step(int phase) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
 #if 0
-int step(LcdIn& in, LCD& a, LCD& b, LCD& next) {
-  for (int prop = 0; prop < 2000; prop++) {
-    LCD_tick(in, a, b, next);
-    if (memcmp(&b, &next, sizeof(LCD)) == 0) return prop;
-    a = b;
-    b = next;
-
-  }
-  return 20;
-}
-
-void LCD_test() {
-  LcdIn in = {
-    .ROOTCLK_xBxDxFxH = 0,
-    .VID_RESETn = 0,
-    .LCDC_EN = 1,
-    .DIV_06n = 0,
-    .DIV_07n = 0
-  };
-
-  LCD a = {};
-  LCD b = {};
-  LCD next = {};
-
-  int64_t phase = 0;
-
-  int delay = 4001;
-
-  for (int i = 0; i < delay - 100; i++) {
-    in.VID_RESETn = phase > delay;
-    in.ROOTCLK_xBxDxFxH = phase & 1;
-    step(in, a, b, next);
-    phase++;
-  }
-
-
-  for (int i = 0; i < 200; i++) {
-    in.VID_RESETn = phase > delay;
-    in.ROOTCLK_xBxDxFxH = phase & 1;
-    step(in, a, b, next);
-    printf("%lld %c: %d%d%d%d %d %d%d%d%d %3d %3d %d %d %d %d\n",
-           phase,
-           char('A' + (phase % 8)),
-           b.PHASE_ABCDxxxx,
-           b.PHASE_xBCDExxx,
-           b.PHASE_xxCDEFxx,
-           b.PHASE_xxxDEFGx,
-           b.XOTA_xBxDxFxH,
-           b.WUVU_AxxDExxH,
-           b.VENA_AxxxxFGH,
-           b.TALU_AxxxxFGH,
-           b.SONO_xBCDExxx,
-           b.CNT,
-           b.V,
-           b.LINE_ENDo,
-           b.LINE_ENDp,
-           b.LINE_153_SYNC,
-           b.REG_VBLANK);
-    phase++;
-
-    if ((phase % 8) == 0) printf("\n");
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-};
-
-int main(int /*argc*/, char** /*argv*/) {
-  Schematics::LCD_test();
-}
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-
-namespace Schematics {
-  void System_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-  void P21_VideoControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& c);
-};
-
-void step_forwards(Schematics::Gameboy& gbIn, Schematics::Gameboy& gbOut) {
-  //----------
-  // old state
-
-  int64_t old_timestamp = gbIn.timestamp;
-  Schematics::Gameboy a = gbIn;
-
-  //----------
-  // old state + new inputs
-
-  Schematics::Gameboy b = a;
-
-  /*
-  Schematics::CpuIn cpu_in = {};
-
-  cpu_in.CPU_RAW_RD = true;
-  cpu_in.CPU_RAW_WR = false;
-  cpu_in.ADDR_VALID = true;
-  cpu_in.FROM_CPU5 = false;
-  cpu_in.CPUCLK_REQ = true;
-  */
-
-  /*
-  Schematics::ChipIn chip_in = {};
-
-  chip_in.RST     = false;
-  chip_in.CLKIN_A = true;
-  chip_in.CLKIN_B = (old_timestamp + 1) & 1;
-  chip_in.T1 = false;
-  chip_in.T2 = false;
-  */
-
-  //----------
-  // unmerged signals
-
-  //----------
-  // destination state
-  
-  Schematics::Gameboy c;
-
-  Schematics::Gameboy* pa = &a;
-  Schematics::Gameboy* pb = &b;
-  Schematics::Gameboy* pc = &c;
-
-  for (int rep = 0; rep < 40; rep++) {
-    pa->A = 0xA000;
-    pb->A = 0xA000;
-    pc->A = 0xA000;
-
-    System_tick(*pa, *pb, *pc);
-    //P21_VideoControl_tick(cpu_in, chip_in, *pa, *pb, *pc);
-
-    if (memcmp(pb, pc, sizeof(Schematics::Gameboy)) == 0) {
-      //printf("%d %d\n", old_timestamp, rep);
-      break;
-    }
-
-    Schematics::Gameboy* pt = pa; pa = pb; pb = pc; pc = pt;
-  }
-
-  gbOut = *pb;
-  gbOut.timestamp = old_timestamp + 1;
-}
-#endif
-
-//-----------------------------------------------------------------------------
 
 int main(int /*argc*/, char** /*argv*/) {
   printf("hello world\n");
@@ -460,5 +318,7 @@ int main(int /*argc*/, char** /*argv*/) {
 
   return 0;
 }
+
+#endif
 
 //-----------------------------------------------------------------------------

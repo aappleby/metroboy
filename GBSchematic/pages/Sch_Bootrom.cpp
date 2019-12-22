@@ -5,12 +5,13 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Bootrom_tick(const BusControl& bus,
+void Bootrom_tick(const Bus& bus,
+                  const BusControl& ctl,
                   const Debug& dbg,
                   const Decoder& dec,
                   const Bootrom& prev,
                   Bootrom& next,
-                  BusControl& bus_out) {
+                  Bus& bus_out) {
 
 
 
@@ -19,7 +20,7 @@ void Bootrom_tick(const BusControl& bus,
     /*p07.ZADU*/ wire ADDR_X0XX = nor(bus.A11, bus.A10, bus.A09, bus.A08);
     /*p07.ZUFA*/ wire ADDR_00XX2 = and(ADDR_0XXX, ADDR_X0XX);
     /*p07.YAZA*/ wire MODE_DBG1n = not(dbg.MODE_DBG1);
-    /*p07.YULA*/ wire BOOT_RD    = and(bus.CPU_RD, MODE_DBG1n, dec.ADDR_BOOT);
+    /*p07.YULA*/ wire BOOT_RD    = and(ctl.CPU_RD, MODE_DBG1n, dec.ADDR_BOOT);
     /*p07.ZADO*/ wire BOOT_CSn   = nand(BOOT_RD, ADDR_00XX2);
     /*p07.ZERY*/ next.BOOT_CS    = not(BOOT_CSn);
   }
@@ -51,14 +52,15 @@ void Bootrom_tick(const BusControl& bus,
   {
     /*p07.TYRO*/ wire ADDR_0x0x0000 = nor(bus.A07, bus.A05, bus.A03, bus.A02, bus.A01, bus.A00);
     /*p07.TUFA*/ wire ADDR_x1x1xxxx = and(bus.A04, bus.A06);
-    /*p07.TEXE*/ wire FF50_RD = and(bus.CPU_RD, dec.ADDR_FFXX, ADDR_x1x1xxxx, ADDR_0x0x0000);
+    /*p07.TEXE*/ wire FF50_RD = and(ctl.CPU_RD, dec.ADDR_FFXX, ADDR_x1x1xxxx, ADDR_0x0x0000);
     /*p07.SYPU*/ if (FF50_RD) bus_out.D0 = prev.BOOT_BIT;
   }
 }
 
 //-----------------------------------------------------------------------------
 
-void Bootrom_tock(const BusControl& bus,
+void Bootrom_tock(const Bus& bus,
+                  const BusControl& ctl,
                   const Decoder& dec,
                   const Resets& rst,
                   const Bootrom& prev,
@@ -66,7 +68,7 @@ void Bootrom_tock(const BusControl& bus,
 
   /*p07.TYRO*/ wire ADDR_0x0x0000 = nor(bus.A07, bus.A05, bus.A03, bus.A02, bus.A01, bus.A00);
   /*p07.TUFA*/ wire ADDR_x1x1xxxx = and(bus.A04, bus.A06);
-  /*p07.TUGE*/ wire FF50_WRn = nand(bus.CPU_WR, dec.ADDR_FFXX, ADDR_0x0x0000, ADDR_x1x1xxxx);
+  /*p07.TUGE*/ wire FF50_WRn = nand(ctl.CPU_WR, dec.ADDR_FFXX, ADDR_0x0x0000, ADDR_x1x1xxxx);
   /*p07.SATO*/ wire BOOT_BIT_IN  = or(bus.D0, prev.BOOT_BIT);
   /*p07.TEPU*/ next.BOOT_BIT.tock(FF50_WRn, rst.SYS_RESETn, BOOT_BIT_IN);
 }

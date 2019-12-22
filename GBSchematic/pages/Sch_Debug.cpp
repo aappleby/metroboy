@@ -10,13 +10,14 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Debug::tick(const BusControl& bus,
+void Debug::tick(const Bus& bus,
+                 const BusControl& ctl,
                  const Clocks& clocks,
                  const Pins& pins,
                  const Decoder& dec,
                  const Resets& rst,
                  const Debug& prev,
-                 BusControl& bus_out) {
+                 Bus& bus_out) {
 
   Debug& next = *this;
 
@@ -40,11 +41,11 @@ void Debug::tick(const BusControl& bus,
   //----------
   // weird debug things, probably not right
 
-  /*p05.AXYN*/ wire AXYN_xBCDEFGH = not(clocks.BEDO_Axxxxxxx);
+  /*p05.AXYN*/ wire AXYN_xBCDEFGH = not(clocks.BEDO_xBxxxxxx);
   /*p05.ADYR*/ wire ADYR_Axxxxxxx = not(AXYN_xBCDEFGH);
   /*p05.APYS*/ wire APYS_xBCDEFGH = nor(prev.MODE_DBG2, ADYR_Axxxxxxx);
   /*p05.AFOP*/ wire AFOP_Axxxxxxx = not(APYS_xBCDEFGH);
-  /*p07.LECO*/ wire LECO_xBCDEFGH = nor(clocks.BEDO_Axxxxxxx, prev.MODE_DBG2);
+  /*p07.LECO*/ wire LECO_xBCDEFGH = nor(clocks.BEDO_xBxxxxxx, prev.MODE_DBG2);
 
   /*p05.ANOC*/ if (AFOP_Axxxxxxx) bus_out.D0 = not(pins.P10_B);
   /*p05.ATAJ*/ if (AFOP_Axxxxxxx) bus_out.D1 = not(pins.P10_B);
@@ -67,7 +68,7 @@ void Debug::tick(const BusControl& bus,
   // FF60 debug reg
 
   /*p07.APET*/ wire MODE_DEBUG = or(prev.MODE_DBG1, prev.MODE_DBG2);
-  /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus.A05, bus.A06, bus.CPU_WR, dec.ADDR_111111110xx00000);
+  /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus.A05, bus.A06, ctl.CPU_WR, dec.ADDR_111111110xx00000);
   /*p07.BURO*/ next.FF60_0.tock(FF60_WRn, rst.SYS_RESETn, bus.D0);
   /*p07.AMUT*/ next.FF60_1.tock(FF60_WRn, rst.SYS_RESETn, bus.D1);
 
@@ -76,7 +77,7 @@ void Debug::tick(const BusControl& bus,
   /*p05.KORE*/ next.P05_NC0 = nand(prev.DBG_FF00_D7, prev.FF60_0);
   /*p05.KYWE*/ next.P05_NC1 = nor (prev.DBG_FF00_D7, FF60_0o);
 
-  /*p08.LYRA*/ wire DBG_D_RDn = nand(prev.MODE_DBG2, bus.CBUS_TO_CEXTn);
+  /*p08.LYRA*/ wire DBG_D_RDn = nand(prev.MODE_DBG2, ctl.CBUS_TO_CEXTn);
   /*p08.TUTY*/ if (!DBG_D_RDn) bus_out.D0 = not(/*p08.TOVO*/ not(pins.D0_C));
   /*p08.SYWA*/ if (!DBG_D_RDn) bus_out.D1 = not(/*p08.RUZY*/ not(pins.D1_C));
   /*p08.SUGU*/ if (!DBG_D_RDn) bus_out.D2 = not(/*p08.ROME*/ not(pins.D2_C));
@@ -127,7 +128,7 @@ void Debug::tick(const BusControl& bus,
   //----------
   // more debug stuff
 
-  /*p25.TUSO*/ wire TUSO = nor(prev.MODE_DBG2, clocks.BOGA_xBCDEFGH);
+  /*p25.TUSO*/ wire TUSO = nor(prev.MODE_DBG2, clocks.BOGA_AxCDEFGH);
   /*p25.SOLE*/ wire SOLE = not(TUSO);
 
   /*p25.TOVU*/ if (VYPO) bus_out.D0 = SOLE;

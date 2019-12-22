@@ -47,7 +47,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p19.GONY*/ wire FF21o    = not(FF21a);
     /*p19.DACO*/ wire FF21_WRa = and(b.apu.APU_WR, FF21a);
     /*p19.GOKO*/ wire FF21_WRb = and(b.apu.APU_WR, FF21a);
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
     /*p19.BOXE*/ wire FF21_RDa = or(CPU_RDn, FF21n); // polarity?
     /*p19.HASU*/ wire FF21_RDb = or(CPU_RDn, FF21o);
 
@@ -88,7 +88,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p19.HUMO*/ wire FF22_WRa = and (FF22a, b.apu.APU_WR);
     /*p19.GETU*/ wire FF22_WRn = nand(FF22a, b.apu.APU_WR);
     
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
     /*p19.KEKA*/ wire FF22_RDa = or(CPU_RDn, FF22n);
 
     /*p19.KAGE*/ wire CPU_RDa = not(CPU_RDn);
@@ -127,7 +127,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   // FF23. Some weird debug voodoo here.
 
   {
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
     /*p19.BYLO*/ wire CPU_RDb = not(CPU_RDn);
 
     /*p10.DUFE*/ wire ADDR_0011bn = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
@@ -159,14 +159,18 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p20.FEBY*/ wire RSTt = not(RSTa);
     /*p20.GASO*/ wire RSTu = not(RSTa);
 
-    /*p20.GYSU*/ next.ch4.CH4_START   = tock_pos(a.clk.DOVA_ABCDxxxx, b.clk.DOVA_ABCDxxxx, RSTu, b.ch4.CH4_START, b.ch4.NR44_START);
+    /*p20.GYSU*/ next.ch4.CH4_START   = tock_pos(a.clk.DOVA_xBCDExxx, b.clk.DOVA_xBCDExxx, RSTu, b.ch4.CH4_START, b.ch4.NR44_START);
 
     /*p20.EFOT*/ wire CH4_STOP    = and(b.ch4.NR44_STOP,   b.ch4.LEN_STOP);
     /*p20.FEGY*/ wire CH4_OFF     = or (b.ch4.CH4_AMP_ENn, CH4_STOP, RSTa);
+
+    // weird latch?
     /*p20.GENA*/ next.ch4.CH4_ACTIVE  = or (b.ch4.RESTART1, CH4_OFF);
 
     /*p20.FALE*/ wire RESTART_RSTn = nor(b.ch4.RESTART2, RSTa);
     /*p20.HELU*/ wire RESTART_RST  = not(RESTART_RSTn);
+
+    // weird latch?
     /*p20.HAZO*/ wire RESTART_IN   = or(RESTART_RST, b.ch4.CH4_START);
 
     // one of these is wrong, right now we would stop the div clock when ch4 active
@@ -178,6 +182,8 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
     /*p20.HERY*/ wire DIV_GATE1 = nor(RSTa, b.ch4.CH4_AMP_ENn);
     /*p20.HAPU*/ wire DIV_GATE2 = not(b.ch4.RESTART3);
+
+    // weird latch?
     /*p20.JERY*/ wire DIV_GATE3 = or(DIV_GATE1, DIV_GATE2);
     /*p20.KYKU*/ wire DIV_CLKb  = nor(b.apu.CLK_512Ka, DIV_GATE3); // schematic wrong
     /*p20.KONY*/ wire DIV_CLKn  = not(DIV_CLKb);
@@ -195,7 +201,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   // Debug
 
   {
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.bus.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
     /*p20.COSA*/ wire CPU_RDc = not(CPU_RDn);
     /*p20.CEPY*/ wire NR44_STOPn = not(b.ch4.NR44_STOP);
     /*p10.DUFE*/ wire ADDR_0011bn = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 

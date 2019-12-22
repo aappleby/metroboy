@@ -4,7 +4,8 @@
 namespace Schematics {
 
 struct DMA {
-  /*p04.LOKY*/ bool DMA_RUNNING;
+  /*p04.LARA*/ bool DMA_CLKEN_LATCHn;
+  /*p04.LOKY*/ bool DMA_CLKEN_LATCH;
 
   /*p04.LUMA*/ bool DMA_READ_CART; // if true, addr bus = dma addr
   /*p04.MORY*/ bool DMA_READ_CARTn;
@@ -13,7 +14,7 @@ struct DMA {
   /*p04.MUHO*/ bool DMA_READ_VRAMn;
 
 
-  /*p04.MATU*/ Reg DMA_RUNNING_SYNC; // -> p25,p28
+  /*p04.MATU*/ Reg DMA_CLKEN; // -> p25,p28
   /*p04.MYTE*/ Reg DMA_DONE_SYNC;
 
   /*p04.NAKY*/ Reg DMA_A00;
@@ -35,11 +36,13 @@ struct DMA {
 
   //----------
 
-  /*p04.LUVY*/ Reg DMA_STARTa;
-  /*p04.LENE*/ Reg DMA_STARTb;
+  /*p04.LUVY*/ Reg DMA_ENa;
+  /*p04.LENE*/ Reg DMA_ENb;
 
   /*p04.MAKA*/ Reg FROM_CPU5_SYNC;
   /*p04.POWU*/ bool DMA_WRITE_OAM;
+
+  /*p04.LYXE*/ bool DMA_EN_LATCHn;
 };
 
 };

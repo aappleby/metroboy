@@ -8,6 +8,7 @@ namespace Schematics {
 
 struct Decoder {
   void reset() {
+    *this = {};
   }
 
   void tick(const Bus& bus,

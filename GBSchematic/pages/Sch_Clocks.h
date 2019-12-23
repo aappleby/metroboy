@@ -6,30 +6,86 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 // c.cpu.CLK_xBCDEFGH = BOWA_AxCDEFGH;
 
-struct ClocksIn {
+struct ClockSignals {
+  void reset() {
+    *this = {
+      /*p01.ABOL*/ .CPUCLK_REQn   = 0,
+      /*p01.BUTY*/ .CPUCLK_REQ    = 1,
+      /*p01.UCOB*/ .CLK_BAD1      = 0,
+      /*p01.ATEZ*/ .CLK_BAD2      = 0,
+      /*p01.ARYS*/ .ARYS_xBxDxFxH = 1,
+      /*p01.ANOS*/ .ANOS_xBxDxFxH = 1,
+      /*p01.AVET*/ .ROOT_AxCxExGx = 0,
+      /*p01.ATAL*/ .ATAL_AxCxExGx = 1,
+      /*p01.AZOF*/ .AZOF_xBxDxFxH = 0,
+      /*p01.ZAXY*/ .ZAXY_AxCxExGx = 1,
+      /*p01.ZEME*/ .ZEME_AxCxExGx = 0,
+      /*p01.ALET*/ .ALET_xBxDxFxH = 1,
+      /*p27.MYVO*/ .MYVO_AxCxExGx = 0,
+      /*p29.XYVA*/ .XYVA_AxCxExGx = 1,
+      /*p29.XOTA*/ .XOTA_AxCxExGx = 0,
+      /*p27.MOXE*/ .MOXE_AxCxExGx = 0,
+      /*p27.MEHE*/ .MEHE_AxCxExGx = 0,
+      /*p01.LAPE*/ .LAPE_AxCxExGx = 0,
+      /*p27.TAVA*/ .TAVA_xBxDxFxH = 1,
+      /*p29.XYFY*/ .XYFY_AxCxExGx = 1,
+    };
+  }
+
+  /*p01.ABOL*/ bool CPUCLK_REQn;
+  /*p01.BUTY*/ bool CPUCLK_REQ;
+  /*p01.UCOB*/ bool CLK_BAD1;
+  /*p01.ATEZ*/ bool CLK_BAD2;
+
+  /*p01.ARYS*/ bool ARYS_xBxDxFxH;
+  /*p01.ANOS*/ bool ANOS_xBxDxFxH;
+  /*p01.AVET*/ bool ROOT_AxCxExGx;
+  /*p01.ATAL*/ bool ATAL_AxCxExGx;
+  /*p01.AZOF*/ bool AZOF_xBxDxFxH;
+  /*p01.ZAXY*/ bool ZAXY_AxCxExGx;
+  /*p01.ZEME*/ bool ZEME_AxCxExGx;
+  /*p01.ALET*/ bool ALET_xBxDxFxH;
+  /*p27.MYVO*/ bool MYVO_AxCxExGx;
+  /*p29.XYVA*/ bool XYVA_AxCxExGx;
+  /*p29.XOTA*/ bool XOTA_AxCxExGx;
+  /*p27.MOXE*/ bool MOXE_AxCxExGx;
+  /*p27.MEHE*/ bool MEHE_AxCxExGx;
+  /*p01.LAPE*/ bool LAPE_AxCxExGx;
+  /*p27.TAVA*/ bool TAVA_xBxDxFxH;
+  /*p29.XYFY*/ bool XYFY_AxCxExGx;
 };
 
-void Clocks_tick(const Clocks& clk,
-                 wire CLK,
-                 wire CLK_GOOD,
-                 wire CPUCLK_REQ_,
-                 /*p07.UPOJ*/ wire MODE_PROD,
-                 /*p01.XAPO*/ wire VID_RESETn,
-                 Clocks& next);
-  
+//-----------------------------------------------------------------------------
+
 struct Clocks {
+
+  static ClockSignals tick_slow(const Clocks& clk,
+                                wire CLK,
+                                wire CLK_GOOD,
+                                wire CPUCLK_REQ_,
+                                /*p07.UPOJ*/ wire MODE_PROD,
+                                /*p01.XAPO*/ wire VID_RESETn);
+
+  static void tock_slow(const Clocks& clk,
+                        wire CLK,
+                        wire CLK_GOOD,
+                        wire CPUCLK_REQ_,
+                        /*p07.UPOJ*/ wire MODE_PROD,
+                        /*p01.XAPO*/ wire VID_RESETn,
+                        Clocks& next);
+
+  static void tock_fast(const Clocks& clk,
+                        wire CLK,
+                        wire CLK_GOOD,
+                        wire CPUCLK_REQ_,
+                        /*p07.UPOJ*/ wire MODE_PROD,
+                        /*p01.XAPO*/ wire VID_RESETn,
+                        Clocks& next);
+
 
   // Resets to immediately before the first phase on the first line
   void reset() {
-    phase	        = -1;
-    CLKIN_A	      = true;
-    CLKIN_B	      = false;
-    MODE_PROD	    = true;
-    VID_RESETn	  = true;
-    CPUCLK_REQn	  = false;
-    CPUCLK_REQ	  = true;
-    CLK_BAD1	    = false;
-    CLK_BAD2	    = false;
+    sig.reset();
 
     ARYS_xBxDxFxH	= true;
     ANOS_xBxDxFxH	= true;
@@ -74,18 +130,7 @@ struct Clocks {
     WOSU_xBCxxFGx.clk=true;
   }
 
-  int phase;
-
-  bool CLKIN_A;
-  bool CLKIN_B;
-
-  /*p07.UPOJ*/ bool MODE_PROD;
-  /*p01.XAPO*/ bool VID_RESETn;
-
-  /*p01.ABOL*/ bool CPUCLK_REQn;
-  /*p01.BUTY*/ bool CPUCLK_REQ;
-  /*p01.UCOB*/ bool CLK_BAD1;
-  /*p01.ATEZ*/ bool CLK_BAD2;
+  ClockSignals sig;
 
   /*p01.ARYS*/ bool ARYS_xBxDxFxH;
   /*p01.ANOS*/ bool ANOS_xBxDxFxH;

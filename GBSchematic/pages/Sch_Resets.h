@@ -31,13 +31,12 @@ struct ResetSignals {
 struct Resets {
 
   void reset() {
-    BAD_CLOCK_LATCH = true;
     RESET_CLK = false;
-    RESET_REG.val = false;
-    RESET_REG.clk = false;
+
     SYS_RESETn = true;
     SYS_RESET = false;
     CUNU_RESETn = true;
+
     VID_RESETn = true;
     WESY_RESET = true;
     VID_RESET5 = false;
@@ -51,6 +50,10 @@ struct Resets {
     WALU_RESET = true;
     XARE_RESET = true;
     SOTO_RESET = true;
+
+    BAD_CLOCK_LATCH = true;
+    RESET_REG.val = false;
+    RESET_REG.clk = false;
   };
 
   void tick(const Resets& prev,

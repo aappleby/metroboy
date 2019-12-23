@@ -1,6 +1,7 @@
 #pragma once
 #include "Schematics.h"
 #include <stdint.h>
+#include <memory.h>
 #pragma warning(disable : 4201)
 
 namespace Schematics {

@@ -37,7 +37,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
   ///*p01.ATAL*/ next.sys.CLK_AxCxExGx3  = not(b.sys.ROOT_AxCxExGx);
   {
-    wire CLK_AxCxExGx3 = not(b.clk.ANOS_xBxDxFxH);
+    wire CLK_AxCxExGx3 = not(b.clk.sig.ANOS_xBxDxFxH);
     /*p01.AZOF*/ next.apu.CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
     /*p01.ATAG*/ next.apu.CLK_AxCxExGx8  = not(b.apu.CLK_xBxDxFxH4);
     /*p01.AMUK*/ next.apu.CLK_xBxDxFxH1  = not(b.apu.CLK_AxCxExGx8);
@@ -45,7 +45,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
 
   {
-    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.clk.ANOS_xBxDxFxH);
+    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.clk.sig.ANOS_xBxDxFxH);
     /*p01.AZOF*/ wire CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
     /*p01.ATAG*/ wire CLK_AxCxExGx8  = not(CLK_xBxDxFxH4);
     /*p01.AMUK*/ wire CLK_xBxDxFxH1  = not(CLK_AxCxExGx8);
@@ -56,7 +56,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
   {
     /*p01.BELA*/ wire APU_RESETn4 = not(b.apu.APU_RESET1);
-    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.clk.ANOS_xBxDxFxH);
+    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.clk.sig.ANOS_xBxDxFxH);
     /*p01.AZOF*/ wire CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
     /*p01.ATAG*/ wire CLK_AxCxExGx8  = not(CLK_xBxDxFxH4);
     /*p01.AMUK*/ wire CLK_xBxDxFxH1  = not(CLK_AxCxExGx8);
@@ -66,7 +66,7 @@ void P09_ApuControl_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
   {
     /*p01.BOPO*/ wire RST = not(b.apu.APU_RESET1);
-    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.clk.ANOS_xBxDxFxH);
+    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(b.clk.sig.ANOS_xBxDxFxH);
     /*p01.AZOF*/ wire CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
     /*p01.ATAG*/ wire CLK_AxCxExGx8  = not(CLK_xBxDxFxH4);
     /*p01.AMUK*/ wire CLK_xBxDxFxH1 = not(CLK_AxCxExGx8);

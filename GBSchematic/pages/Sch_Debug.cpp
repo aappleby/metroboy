@@ -41,11 +41,11 @@ void Debug::tick(const Bus& bus,
   //----------
   // weird debug things, probably not right
 
-  /*p05.AXYN*/ wire AXYN_xBCDEFGH = not(clocks.BEDO_xBxxxxxx);
+  /*p05.AXYN*/ wire AXYN_xBCDEFGH = not(clocks.sig.BEDO_xBxxxxxx);
   /*p05.ADYR*/ wire ADYR_Axxxxxxx = not(AXYN_xBCDEFGH);
   /*p05.APYS*/ wire APYS_xBCDEFGH = nor(prev.MODE_DBG2, ADYR_Axxxxxxx);
   /*p05.AFOP*/ wire AFOP_Axxxxxxx = not(APYS_xBCDEFGH);
-  /*p07.LECO*/ wire LECO_xBCDEFGH = nor(clocks.BEDO_xBxxxxxx, prev.MODE_DBG2);
+  /*p07.LECO*/ wire LECO_xBCDEFGH = nor(clocks.sig.BEDO_xBxxxxxx, prev.MODE_DBG2);
 
   /*p05.ANOC*/ if (AFOP_Axxxxxxx) bus_out.D0 = not(pins.P10_B);
   /*p05.ATAJ*/ if (AFOP_Axxxxxxx) bus_out.D1 = not(pins.P10_B);
@@ -128,7 +128,7 @@ void Debug::tick(const Bus& bus,
   //----------
   // more debug stuff
 
-  /*p25.TUSO*/ wire TUSO = nor(prev.MODE_DBG2, clocks.BOGA_AxCDEFGH);
+  /*p25.TUSO*/ wire TUSO = nor(prev.MODE_DBG2, clocks.sig.BOGA_AxCDEFGH);
   /*p25.SOLE*/ wire SOLE = not(TUSO);
 
   /*p25.TOVU*/ if (VYPO) bus_out.D0 = SOLE;

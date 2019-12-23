@@ -451,8 +451,8 @@ void Channel1_tick(const Pins& pins,
   // Restart sequencer
 
   {
-    wire aCLK_1M  = a.clk.DOVA_xBCDExxx;
-    wire bCLK_1M  = b.clk.DOVA_xBCDExxx;
+    wire aCLK_1M  = a.clk.sig.DOVA_xBCDExxx;
+    wire bCLK_1M  = b.clk.sig.DOVA_xBCDExxx;
 
     /*p13.EZEC*/ next.ch1.START = tock_pos(aCLK_1M, bCLK_1M, /*p13.DUKA*/ not(b.apu.APU_RESET1), b.ch1.START, b.ch1.NR14_START);
 

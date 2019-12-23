@@ -33,7 +33,7 @@ void LCD::tick1(const Clocks& clk,
   /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
 
   /*p21.MUDE*/ wire X_RSTn = nor(lcd.NEW_LINE_d0a, VID_RESET2);
-  /*p21.SAXO*/ next.X0.tock(clk.TALU_xxxxEFGH, X_RSTn, !lcd.X0);
+  /*p21.SAXO*/ next.X0.tock(clk.sig.TALU_xxxxEFGH, X_RSTn, !lcd.X0);
   /*p21.TYPO*/ next.X1.tock(!lcd.X0,           X_RSTn, !lcd.X1);
   /*p21.VYZO*/ next.X2.tock(!lcd.X1,           X_RSTn, !lcd.X2);
   /*p21.TELU*/ next.X3.tock(!lcd.X2,           X_RSTn, !lcd.X3);
@@ -43,8 +43,8 @@ void LCD::tick1(const Clocks& clk,
 
   // 113 = 64 + 32 + 16 + 1, schematic is wrong
   /*p21.SANU*/ wire LINE_END = and(lcd.X6, lcd.X5, lcd.X4, lcd.X0);
-  /*p21.RUTU*/ next.NEW_LINE_d0a.tock(clk.SONO_ABCDxxxx, VID_RESETn2, LINE_END);
-  /*p21.NYPE*/ next.NEW_LINE_d4a.tock(clk.TALU_xxxxEFGH, VID_RESETn2, lcd.NEW_LINE_d0a);
+  /*p21.RUTU*/ next.NEW_LINE_d0a.tock(clk.sig.SONO_ABCDxxxx, VID_RESETn2, LINE_END);
+  /*p21.NYPE*/ next.NEW_LINE_d4a.tock(clk.sig.TALU_xxxxEFGH, VID_RESETn2, lcd.NEW_LINE_d0a);
   /*p21.PURE*/ next.NEW_LINE_d0n = not(lcd.NEW_LINE_d0a);
   /*p21.SELA*/ next.NEW_LINE_d0b = not(lcd.NEW_LINE_d0n);
 
@@ -70,8 +70,8 @@ void LCD::tick1(const Clocks& clk,
   /*p21.PARU*/ next.VBLANK_d4n = not(!lcd.VBLANK_d4);
 
   /*p29.ABOV*/ next.VID_LINE_d0 = and(lcd.NEW_LINE_d0b, lcd.LINE_144_d0n);
-  /*p29.CATU*/ next.VID_LINE_d4.tock(clk.XUPY_ABxxEFxx, VID_RESETn3, lcd.VID_LINE_d0);
-  /*p28.ANEL*/ next.VID_LINE_d6.tock(clk.AWOH_xxCDxxGH, VID_RESETn3, lcd.VID_LINE_d4);
+  /*p29.CATU*/ next.VID_LINE_d4.tock(clk.sig.XUPY_ABxxEFxx, VID_RESETn3, lcd.VID_LINE_d0);
+  /*p28.ANEL*/ next.VID_LINE_d6.tock(clk.sig.AWOH_xxCDxxGH, VID_RESETn3, lcd.VID_LINE_d4);
 
 #if 0
   /*p28.ABAF*/ wire VID_LINE_d4n  = not(lcd.VID_LINE_d4);
@@ -114,7 +114,7 @@ void LCD::tick1(const Clocks& clk,
 
     /*p01.LYHA*/ wire VID_RESET2  = not(rst.VID_RESETn);
     /*p01.LYFE*/ wire VID_RESETn2 = not(VID_RESET2);
-    /*p21.SYGU*/ next.LINE_STROBE.tock(clk.SONO_ABCDxxxx, VID_RESETn2, LINE_STROBEa);
+    /*p21.SYGU*/ next.LINE_STROBE.tock(clk.sig.SONO_ABCDxxxx, VID_RESETn2, LINE_STROBEa);
 
     /*p21.RYNO*/ wire CPGn = or(lcd.LINE_STROBE, lcd.NEW_LINE_d0a);
     /*p21.POGU*/ wire POGU = not(CPGn);

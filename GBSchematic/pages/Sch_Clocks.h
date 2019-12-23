@@ -29,6 +29,56 @@ struct ClockSignals {
       /*p01.LAPE*/ .LAPE_AxCxExGx = 0,
       /*p27.TAVA*/ .TAVA_xBxDxFxH = 1,
       /*p29.XYFY*/ .XYFY_AxCxExGx = 1,
+
+      // gated on VID_RESETn
+      /*p29.WUVU*/ .WUVU_xxCDxxGH = 1,
+      /*p21.VENA*/ .VENA_xxxxEFGH = 1,
+      /*p29.WOSU*/ .WOSU_xBCxxFGx = 0,
+      /*p29.XUPY*/ .XUPY_ABxxEFxx = 0,
+      /*p28.AWOH*/ .AWOH_xxCDxxGH = 1,
+      /*p21.TALU*/ .TALU_xxxxEFGH = 1,
+      /*p21.SONO*/ .SONO_ABCDxxxx = 0,
+      /*p29.XOCE*/ .XOCE_AxxDExxH = 1,
+
+      // gated on MODE_PROD
+      /*p01.AFUR*/ .PHAZ_xBCDExxx = 0,
+      /*p01.ALEF*/ .PHAZ_xxCDEFxx = 0,
+      /*p01.APUK*/ .PHAZ_xxxDEFGx = 0,
+      /*p01.ADYK*/ .PHAZ_xxxxEFGH = 1,
+      /*p01.AFEP*/ .AFEP_AxxxxFGH = 1,
+      /*p01.ATYP*/ .ATYP_ABCDxxxx = 0,
+      /*p01.ADAR*/ .ADAR_ABCxxxxH = 0,
+      /*p01.AROV*/ .AROV_xxCDEFxx = 0,
+      /*p01.AFAS*/ .AFAS_xxxxxFGH = 1,
+
+      // gated on CPUCLK_REQ
+      /*p01.NULE*/ .NULE_xxxxEFGH = 1,
+      /*p01.BYRY*/ .BYRY_ABCDxxxx = 0,
+      /*p01.BUDE*/ .BUDE_xxxxEFGH = 1,
+      /*p01.DOVA*/ .DOVA_xBCDExxx = 0,
+      /*p01.UVYT*/ .UVYT_xBCDExxx = 0,
+      /*p01.BEKO*/ .BEKO_ABCDxxxx = 0,
+      /*p04.MOPA*/ .MOPA_AxxxxFGH = 1,
+
+      /*p01.BAPY*/ .BAPY_xxxxxxGH = 1,
+      /*p01.BERU*/ .BERU_ABCDEFxx = 0,
+      /*p01.BUFA*/ .BUFA_xxxxxxGH = 1,
+      /*p01.BOLO*/ .BOLO_ABCDEFxx = 0,
+      /*p01.BEJA*/ .BEJA_xxxxEFGH = 1,
+      /*p01.BANE*/ .BANE_ABCDxxxx = 0,
+      /*p01.BELO*/ .BELO_xxxxEFGH = 1,
+      /*p01.BAZE*/ .BAZE_ABCDxxxx = 0,
+      /*p01.BUTO*/ .BUTO_xBCDEFGH = 1,
+      /*p01.BELE*/ .BELE_Axxxxxxx = 0,
+
+      // gated on CLK_GOOD
+      /*p01.BYJU*/ .BYJU_xBCDEFGH = 1,
+      /*p01.BALY*/ .BALY_Axxxxxxx = 0,
+      /*p01.BOGA*/ .BOGA_AxCDEFGH = 1,
+      /*p01.BUVU*/ .BUVU_Axxxxxxx = 0,
+      /*p01.BYXO*/ .BYXO_xBCDEFGH = 1,
+      /*p01.BEDO*/ .BEDO_xBxxxxxx = 0,
+      /*p01.BOWA*/ .BOWA_AxCDEFGH = 1,
     };
   }
 
@@ -53,6 +103,56 @@ struct ClockSignals {
   /*p01.LAPE*/ bool LAPE_AxCxExGx;
   /*p27.TAVA*/ bool TAVA_xBxDxFxH;
   /*p29.XYFY*/ bool XYFY_AxCxExGx;
+
+  // gated on VID_RESETn
+  /*p29.WUVU*/ bool WUVU_xxCDxxGH;
+  /*p21.VENA*/ bool VENA_xxxxEFGH;
+  /*p29.WOSU*/ bool WOSU_xBCxxFGx;
+  /*p29.XUPY*/ bool XUPY_ABxxEFxx;
+  /*p28.AWOH*/ bool AWOH_xxCDxxGH;
+  /*p21.TALU*/ bool TALU_xxxxEFGH;
+  /*p21.SONO*/ bool SONO_ABCDxxxx;
+  /*p29.XOCE*/ bool XOCE_AxxDExxH;
+
+  // gated on MODE_PROD
+  /*p01.AFUR*/ bool PHAZ_xBCDExxx;
+  /*p01.ALEF*/ bool PHAZ_xxCDEFxx;
+  /*p01.APUK*/ bool PHAZ_xxxDEFGx;
+  /*p01.ADYK*/ bool PHAZ_xxxxEFGH;
+  /*p01.AFEP*/ bool AFEP_AxxxxFGH;
+  /*p01.ATYP*/ bool ATYP_ABCDxxxx;
+  /*p01.ADAR*/ bool ADAR_ABCxxxxH;
+  /*p01.AROV*/ bool AROV_xxCDEFxx;
+  /*p01.AFAS*/ bool AFAS_xxxxxFGH;
+
+  // gated on CPUCLK_REQ
+  /*p01.NULE*/ bool NULE_xxxxEFGH;
+  /*p01.BYRY*/ bool BYRY_ABCDxxxx;
+  /*p01.BUDE*/ bool BUDE_xxxxEFGH;
+  /*p01.DOVA*/ bool DOVA_xBCDExxx;
+  /*p01.UVYT*/ bool UVYT_xBCDExxx;
+  /*p01.BEKO*/ bool BEKO_ABCDxxxx;
+  /*p04.MOPA*/ bool MOPA_AxxxxFGH;
+
+  /*p01.BAPY*/ bool BAPY_xxxxxxGH;
+  /*p01.BERU*/ bool BERU_ABCDEFxx;
+  /*p01.BUFA*/ bool BUFA_xxxxxxGH;
+  /*p01.BOLO*/ bool BOLO_ABCDEFxx;
+  /*p01.BEJA*/ bool BEJA_xxxxEFGH;
+  /*p01.BANE*/ bool BANE_ABCDxxxx;
+  /*p01.BELO*/ bool BELO_xxxxEFGH;
+  /*p01.BAZE*/ bool BAZE_ABCDxxxx;
+  /*p01.BUTO*/ bool BUTO_xBCDEFGH;
+  /*p01.BELE*/ bool BELE_Axxxxxxx;
+
+  // gated on CLK_GOOD
+  /*p01.BYJU*/ bool BYJU_xBCDEFGH;
+  /*p01.BALY*/ bool BALY_Axxxxxxx;
+  /*p01.BOGA*/ bool BOGA_AxCDEFGH;
+  /*p01.BUVU*/ bool BUVU_Axxxxxxx;
+  /*p01.BYXO*/ bool BYXO_xBCDEFGH;
+  /*p01.BEDO*/ bool BEDO_xBxxxxxx;
+  /*p01.BOWA*/ bool BOWA_AxCDEFGH;
 };
 
 //-----------------------------------------------------------------------------
@@ -87,32 +187,6 @@ struct Clocks {
   void reset() {
     sig.reset();
 
-    ARYS_xBxDxFxH	= true;
-    ANOS_xBxDxFxH	= true;
-    ALET_xBxDxFxH	= true;
-    TAVA_xBxDxFxH	= true;
-
-    ROOT_AxCxExGx	= false;
-    MYVO_AxCxExGx	= false;
-    ZEME_AxCxExGx	= false;
-    XOTA_AxCxExGx	= false;
-    MOXE_AxCxExGx	= false;
-    MEHE_AxCxExGx	= false;
-    LAPE_AxCxExGx	= false;
-
-    AFAS_xxxxxFGH	= true;
-    UVYT_xBCDExxx	= false;
-    DOVA_xBCDExxx	= false;
-    MOPA_AxxxxFGH	= true;
-    BOGA_AxCDEFGH	= true;
-    BEDO_xBxxxxxx	= false;	
-    BOWA_AxCDEFGH	= true;
-    XUPY_ABxxEFxx	= false;
-    AWOH_xxCDxxGH	= true;
-    TALU_xxxxEFGH	= true;
-    SONO_ABCDxxxx	= false;
-    XOCE_AxxDExxH	= true;
-
     PHAZ_xBCDExxx.val=false;
     PHAZ_xBCDExxx.clk=true;
     PHAZ_xxCDEFxx.val=false;
@@ -122,8 +196,8 @@ struct Clocks {
     PHAZ_xxxxEFGH.val=true;
     PHAZ_xxxxEFGH.clk=true;
 
-    WUVU_xBCxxFGx.val=true;
-    WUVU_xBCxxFGx.clk=false;
+    WUVU_xxCDxxGH.val=true;
+    WUVU_xxCDxxGH.clk=false;
     VENA_xxxxEFGH.val=true;
     VENA_xxxxEFGH.clk=false;
     WOSU_xBCxxFGx.val=false;
@@ -132,38 +206,12 @@ struct Clocks {
 
   ClockSignals sig;
 
-  /*p01.ARYS*/ bool ARYS_xBxDxFxH;
-  /*p01.ANOS*/ bool ANOS_xBxDxFxH;
-  /*p01.ALET*/ bool ALET_xBxDxFxH;
-  /*p27.TAVA*/ bool TAVA_xBxDxFxH;
-
-  /*p01.AVET*/ bool ROOT_AxCxExGx;
-  /*p27.MYVO*/ bool MYVO_AxCxExGx;
-  /*p01.ZEME*/ bool ZEME_AxCxExGx;
-  /*p29.XOTA*/ bool XOTA_AxCxExGx;
-  /*p27.MOXE*/ bool MOXE_AxCxExGx;
-  /*p27.MEHE*/ bool MEHE_AxCxExGx;
-  /*p01.LAPE*/ bool LAPE_AxCxExGx;
-
-  /*p01.AFAS*/ bool AFAS_xxxxxFGH;
-  /*p01.UVYT*/ bool UVYT_xBCDExxx;
-  /*p01.DOVA*/ bool DOVA_xBCDExxx;
-  /*p04.MOPA*/ bool MOPA_AxxxxFGH;
-  /*p01.BOGA*/ bool BOGA_AxCDEFGH;
-  /*p01.BEDO*/ bool BEDO_xBxxxxxx;
-  /*p01.BOWA*/ bool BOWA_AxCDEFGH;
-  /*p29.XUPY*/ bool XUPY_ABxxEFxx;
-  /*p28.AWOH*/ bool AWOH_xxCDxxGH;
-  /*p21.TALU*/ bool TALU_xxxxEFGH;
-  /*p21.SONO*/ bool SONO_ABCDxxxx;
-  /*p29.XOCE*/ bool XOCE_AxxDExxH;
-
   /*p01.AFUR*/ Reg  PHAZ_xBCDExxx;
   /*p01.ALEF*/ Reg  PHAZ_xxCDEFxx;
   /*p01.APUK*/ Reg  PHAZ_xxxDEFGx;
   /*p01.ADYK*/ Reg  PHAZ_xxxxEFGH;
 
-  /*p29.WUVU*/ Reg  WUVU_xBCxxFGx;
+  /*p29.WUVU*/ Reg  WUVU_xxCDxxGH;
   /*p21.VENA*/ Reg  VENA_xxxxEFGH;
   /*p29.WOSU*/ Reg  WOSU_xBCxxFGx;
 };

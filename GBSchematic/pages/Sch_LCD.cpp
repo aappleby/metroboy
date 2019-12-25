@@ -15,16 +15,16 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void LCD::tick1(const Clocks& clk,
-                const Resets& rst,
-                const LCD& lcd,
-                const Video& vid,
-               
-                bool SCAN_DONE_d0_TRIG,
-                bool DIV_06n,
-                bool DIV_07n,
-                bool LCDC_EN,
-                LCD& next)
+void LCD::tick_slow(const Clocks& clk,
+                    const Resets& rst,
+                    const LCD& lcd,
+                    const Video& vid,
+                    
+                    bool SCAN_DONE_d0_TRIG,
+                    bool DIV_06n,
+                    bool DIV_07n,
+                    bool LCDC_EN,
+                    LCD& next)
 {
   /*p01.LYHA*/ wire VID_RESET2  = not(rst.VID_RESETn);
   /*p01.LYFE*/ wire VID_RESETn2 = not(VID_RESET2);
@@ -33,6 +33,26 @@ void LCD::tick1(const Clocks& clk,
   /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
 
   /*p21.MUDE*/ wire X_RSTn = nor(lcd.NEW_LINE_d0a, VID_RESET2);
+
+  // 113 = 64 + 32 + 16 + 1, schematic is wrong
+  /*p21.SANU*/ wire LINE_END = and(lcd.X6, lcd.X5, lcd.X4, lcd.X0);
+  /*p21.PURE*/ wire NEW_LINE_d0n = not(lcd.NEW_LINE_d0a);
+  /*p21.SELA*/ wire NEW_LINE_d0b = not(NEW_LINE_d0n);
+  /*p21.NOKO*/ wire LINE_153_d0 = and(lcd.Y7, lcd.Y4, lcd.Y3, lcd.Y0); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
+  /*p21.LAMA*/ wire FRAME_RSTn = nor(lcd.LINE_153_d4, VID_RESET2);
+  /*p21.XYVO*/ wire LINE_144_d0  = and(lcd.Y4, lcd.Y7); // 128 + 16 = 144
+  /*p29.ALES*/ wire LINE_144_d0n = not(LINE_144_d0);
+  /*p21.PARU*/ next.VBLANK_d4b = not(!lcd.VBLANK_d4);
+  /*p28.ABAF*/ wire VID_LINE_d4n  = not(lcd.VID_LINE_d4);
+  /*p29.ABOV*/ wire VID_LINE_d0 = and(NEW_LINE_d0b, LINE_144_d0n);
+  /*p28.BYHA*/ next.VID_LINE_TRIG_d4n = and(or(lcd.VID_LINE_d6, VID_LINE_d4n), VID_RESETn3);
+  /*p28.ATEJ*/ next.VID_LINE_TRIG_d4a = not(lcd.VID_LINE_TRIG_d4n);
+  /*p27.XAHY*/ next.VID_LINE_TRIG_d4o = not(lcd.VID_LINE_TRIG_d4a);
+  /*p28.ABAK*/ wire VID_LINE_TRIG_d4b = or (lcd.VID_LINE_TRIG_d4a, VID_RESET7);
+  /*p28.BYVA*/ next.VID_LINE_TRIG_d4p = not(VID_LINE_TRIG_d4b);
+  /*p29.DYBA*/ next.VID_LINE_TRIG_d4c = not(lcd.VID_LINE_TRIG_d4p);
+
+
   /*p21.SAXO*/ next.X0.tock(clk.sig.TALU_xxxxEFGH, X_RSTn, !lcd.X0);
   /*p21.TYPO*/ next.X1.tock(!lcd.X0,           X_RSTn, !lcd.X1);
   /*p21.VYZO*/ next.X2.tock(!lcd.X1,           X_RSTn, !lcd.X2);
@@ -41,19 +61,9 @@ void LCD::tick1(const Clocks& clk,
   /*p21.TAHA*/ next.X5.tock(!lcd.X4,           X_RSTn, !lcd.X5);
   /*p21.TYRY*/ next.X6.tock(!lcd.X5,           X_RSTn, !lcd.X6);
 
-  // 113 = 64 + 32 + 16 + 1, schematic is wrong
-  /*p21.SANU*/ wire LINE_END = and(lcd.X6, lcd.X5, lcd.X4, lcd.X0);
   /*p21.RUTU*/ next.NEW_LINE_d0a.tock(clk.sig.SONO_ABCDxxxx, VID_RESETn2, LINE_END);
   /*p21.NYPE*/ next.NEW_LINE_d4a.tock(clk.sig.TALU_xxxxEFGH, VID_RESETn2, lcd.NEW_LINE_d0a);
-  /*p21.PURE*/ next.NEW_LINE_d0n = not(lcd.NEW_LINE_d0a);
-  /*p21.SELA*/ next.NEW_LINE_d0b = not(lcd.NEW_LINE_d0n);
-
-  // Schematic wrong
-  // NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-
-  /*p21.NOKO*/ next.LINE_153_d0 = and(lcd.Y7, lcd.Y4, lcd.Y3, lcd.Y0);
-  /*p21.MYTA*/ next.LINE_153_d4.tock(lcd.NEW_LINE_d4a, VID_RESETn2, lcd.LINE_153_d0);
-  /*p21.LAMA*/ wire FRAME_RSTn = nor(lcd.LINE_153_d4, VID_RESET2);
+  /*p21.MYTA*/ next.LINE_153_d4.tock(lcd.NEW_LINE_d4a, VID_RESETn2, LINE_153_d0);
 
   /*p21.MUWY*/ next.Y0.tock(lcd.NEW_LINE_d0a, FRAME_RSTn, !lcd.Y0);
   /*p21.MYRO*/ next.Y1.tock(!lcd.Y0,              FRAME_RSTn, !lcd.Y1);
@@ -64,28 +74,10 @@ void LCD::tick1(const Clocks& clk,
   /*p21.MATO*/ next.Y6.tock(!lcd.Y5,              FRAME_RSTn, !lcd.Y6);
   /*p21.LAFO*/ next.Y7.tock(!lcd.Y6,              FRAME_RSTn, !lcd.Y7);
 
-  /*p21.XYVO*/ next.LINE_144_d0  = and(lcd.Y4, lcd.Y7); // 128 + 16 = 144
-  /*p29.ALES*/ next.LINE_144_d0n = not(lcd.LINE_144_d0);
-  /*p21.POPU*/ next.VBLANK_d4.tock(lcd.NEW_LINE_d4a, VID_RESETn2, lcd.LINE_144_d0);
-  /*p21.PARU*/ next.VBLANK_d4n = not(!lcd.VBLANK_d4);
-
-  /*p29.ABOV*/ next.VID_LINE_d0 = and(lcd.NEW_LINE_d0b, lcd.LINE_144_d0n);
-  /*p29.CATU*/ next.VID_LINE_d4.tock(clk.sig.XUPY_ABxxEFxx, VID_RESETn3, lcd.VID_LINE_d0);
+  /*p21.POPU*/ next.VBLANK_d4.tock(lcd.NEW_LINE_d4a, VID_RESETn2, LINE_144_d0);
+  
+  /*p29.CATU*/ next.VID_LINE_d4.tock(clk.sig.XUPY_ABxxEFxx, VID_RESETn3, VID_LINE_d0);
   /*p28.ANEL*/ next.VID_LINE_d6.tock(clk.sig.AWOH_xxCDxxGH, VID_RESETn3, lcd.VID_LINE_d4);
-
-#if 0
-  /*p28.ABAF*/ wire VID_LINE_d4n  = not(lcd.VID_LINE_d4);
-
-  /*p28.BYHA*/ next.VID_LINE_TRIG_d4n = and(or(lcd.VID_LINE_d6, VID_LINE_d4n), VID_RESETn3);
-  /*p28.ATEJ*/ next.VID_LINE_TRIG_d4a = not(lcd.VID_LINE_TRIG_d4n);
-  /*p27.XAHY*/ next.VID_LINE_TRIG_d4o = not(lcd.VID_LINE_TRIG_d4a);
-
-  /*p28.ABAK*/ next.VID_LINE_TRIG_d4b = or (lcd.VID_LINE_TRIG_d4a, VID_RESET7);
-  /*p28.BYVA*/ next.VID_LINE_TRIG_d4p = not(lcd.VID_LINE_TRIG_d4b);
-  /*p29.DYBA*/ next.VID_LINE_TRIG_d4c = not(lcd.VID_LINE_TRIG_d4p);
-#endif
-
-#if 0
 
   {
     wire C0 = lcd.X0;
@@ -112,8 +104,6 @@ void LCD::tick1(const Clocks& clk,
 
     /*p21.TEGY*/ wire LINE_STROBEa = nand(CNT_000n, CNT_007n, CNT_045n, CNT_083n);
 
-    /*p01.LYHA*/ wire VID_RESET2  = not(rst.VID_RESETn);
-    /*p01.LYFE*/ wire VID_RESETn2 = not(VID_RESET2);
     /*p21.SYGU*/ next.LINE_STROBE.tock(clk.sig.SONO_ABCDxxxx, VID_RESETn2, LINE_STROBEa);
 
     /*p21.RYNO*/ wire CPGn = or(lcd.LINE_STROBE, lcd.NEW_LINE_d0a);
@@ -177,8 +167,6 @@ void LCD::tick1(const Clocks& clk,
     // if LCDC_ENn, FR = 4k div clock. Otherwise FR = xor(LINE_EVEN,FRAME_EVEN)
 
     /*p24.KEDY*/ wire LCDC_ENn = not(LCDC_EN);
-    /*p01.LYHA*/ wire VID_RESET2  = not(rst.VID_RESETn);
-    /*p01.LYFE*/ wire VID_RESETn2 = not(VID_RESET2);
     /*p24.LOFU*/ wire CLK_LINE_EVEN = not(lcd.NEW_LINE_d0a);
     /*p24.LUCA*/ next.LINE_EVEN.tock(CLK_LINE_EVEN, VID_RESETn2, !lcd.LINE_EVEN);
     /*p21.NAPO*/ next.FRAME_EVEN.tock(lcd.VBLANK_d4, VID_RESETn2, !lcd.FRAME_EVEN);
@@ -194,14 +182,162 @@ void LCD::tick1(const Clocks& clk,
 
   {
     // Vertical sync
-    /*p01.LYHA*/ wire VID_RESET2  = not(rst.VID_RESETn);
-    /*p01.LYFE*/ wire VID_RESETn2 = not(VID_RESET2);
     /*p24.NERU*/ wire LINE_000n = nor(lcd.Y0, lcd.Y1, lcd.Y2, lcd.Y3, lcd.Y4, lcd.Y5, lcd.Y6, lcd.Y7);
     /*p24.MEDA*/ next.VSYNC_OUTn.tock(lcd.NEW_LINE_d4a, VID_RESETn2, LINE_000n);
     /*p24.MURE*/ wire MURE = not(lcd.VSYNC_OUTn);
     next.PIN_S = MURE;
   }
-#endif
+}
+
+//-----------------------------------------------------------------------------
+
+void LCD::tick_fast(const Clocks& clk,
+                    const Resets& rst,
+                    const Video& vid,
+                    
+                    bool SCAN_DONE_d0_TRIG,
+                    bool DIV_06n,
+                    bool DIV_07n,
+                    bool LCDC_EN,
+                    LCD& next)
+{
+  if (!rst.VID_RESETn) {
+    next.VBLANK_d4b = next.VBLANK_d4;
+
+    next.LINE_STROBE.reset(clk.sig.SONO_ABCDxxxx);
+    next.PIN_CPG = nor(false, next.NEW_LINE_d0a);
+    next.CPEN_LATCH = 0;
+    next.PIN_CP = !vid.FINE_MATCH_TRIG;
+
+    next.VID_LINE_TRIG_d4n = 0;
+    next.VID_LINE_TRIG_d4a = 1;
+    next.VID_LINE_TRIG_d4o = 0;
+
+    next.VID_LINE_TRIG_d4p = 0;
+    next.VID_LINE_TRIG_d4c = 1;
+
+    next.RUJU = true;
+    next.POME = true;
+    next.PIN_ST  = next.RUJU;
+    next.PIN_S   = !next.VSYNC_OUTn;
+    next.PIN_CPL = !amux2(LCDC_EN, next.NEW_LINE_d0a, !LCDC_EN, !DIV_06n);
+    next.PIN_FR  = !amux2(LCDC_EN, xor(next.FRAME_EVEN, next.LINE_EVEN), !LCDC_EN, !DIV_07n);
+
+    next.VID_LINE_d4.reset(clk.sig.XUPY_ABxxEFxx);
+    next.VID_LINE_d6.reset(clk.sig.AWOH_xxCDxxGH);
+    next.X_8_SYNC.tock(vid.ROXO_4M, vid.RENDERING_LATCH, vid.X3);
+
+    next.VBLANK_d4.reset(next.NEW_LINE_d4a);
+    next.FRAME_EVEN.reset(next.VBLANK_d4);
+  
+    next.NEW_LINE_d4a.reset(clk.sig.TALU_xxxxEFGH);
+    next.VSYNC_OUTn.reset(next.NEW_LINE_d4a);
+    next.LINE_153_d4.reset(next.NEW_LINE_d4a);
+
+    next.X0.reset(clk.sig.TALU_xxxxEFGH);
+    next.X1.reset(!next.X0);
+    next.X2.reset(!next.X1);
+    next.X3.reset(!next.X2);
+    next.X4.reset(!next.X3);
+    next.X5.reset(!next.X4);
+    next.X6.reset(!next.X5);
+
+    next.NEW_LINE_d0a.reset(clk.sig.SONO_ABCDxxxx);
+
+    next.LINE_EVEN.reset(!next.NEW_LINE_d0a);
+
+    next.Y0.reset(next.NEW_LINE_d0a);
+    next.Y1.reset(!next.Y0);
+    next.Y2.reset(!next.Y1);
+    next.Y3.reset(!next.Y2);
+    next.Y4.reset(!next.Y3);
+    next.Y5.reset(!next.Y4);
+    next.Y6.reset(!next.Y5);
+    next.Y7.reset(!next.Y6);
+
+    return;
+  }
+
+
+  {
+    int lcd_x = next.x();
+    int lcd_y = next.y();
+
+    /*p21.LAMA*/ wire FRAME_RSTn = nor(next.LINE_153_d4, !1);
+    /*p21.PARU*/ next.VBLANK_d4b = next.VBLANK_d4;
+
+
+    /*p21.TEGY*/ wire LINE_STROBEa = nand(lcd_x != 0, lcd_x != 7, lcd_x != 45, lcd_x != 83);
+    /*p21.SYGU*/ next.LINE_STROBE.tock(clk.sig.SONO_ABCDxxxx, 1, LINE_STROBEa);
+    next.PIN_CPG = nor(next.LINE_STROBE, next.NEW_LINE_d0a);
+
+    {
+      // weird gate
+      /*p21.WUSA*/ if (vid.X0 && vid.X3) next.CPEN_LATCH = 1;
+      /*p21.WUSA*/ if (vid.RENDER_DONE_SYNC)  next.CPEN_LATCH = 0;
+
+      next.PIN_CP = !or(and(vid.CLKPIPE, next.CPEN_LATCH), vid.FINE_MATCH_TRIG);
+    }
+
+    /*p28.BYHA*/ next.VID_LINE_TRIG_d4n = or(next.VID_LINE_d6, !next.VID_LINE_d4);
+    /*p28.ATEJ*/ next.VID_LINE_TRIG_d4a = not(next.VID_LINE_TRIG_d4n);
+    /*p27.XAHY*/ next.VID_LINE_TRIG_d4o = not(next.VID_LINE_TRIG_d4a);
+
+    /*p28.ABAK*/ wire VID_LINE_TRIG_d4b = next.VID_LINE_TRIG_d4a;
+    /*p28.BYVA*/ next.VID_LINE_TRIG_d4p = not(VID_LINE_TRIG_d4b);
+    /*p29.DYBA*/ next.VID_LINE_TRIG_d4c = not(next.VID_LINE_TRIG_d4p);
+
+    // Horizontal sync
+
+    if (next.X_8_SYNC) {
+      next.RUJU = true;
+      next.POME = true;
+    }
+
+    if (SCAN_DONE_d0_TRIG) {
+      next.RUJU = false;
+      next.POME = false;
+    }
+
+    next.PIN_ST  = next.RUJU;
+    next.PIN_S   = !next.VSYNC_OUTn;
+    next.PIN_CPL = !amux2(LCDC_EN, next.NEW_LINE_d0a, !LCDC_EN, !DIV_06n);
+    next.PIN_FR  = !amux2(LCDC_EN, xor(next.FRAME_EVEN, next.LINE_EVEN), !LCDC_EN, !DIV_07n);
+
+    /*p29.ABOV*/ wire VID_LINE_d0 = and(next.NEW_LINE_d0a, lcd_y < 144);
+    next.VID_LINE_d4.tock(clk.sig.XUPY_ABxxEFxx, 1, VID_LINE_d0);
+    next.VID_LINE_d6.tock(clk.sig.AWOH_xxCDxxGH, 1, next.VID_LINE_d4);
+    next.X_8_SYNC.tock(vid.ROXO_4M, vid.RENDERING_LATCH, vid.X3);
+
+    next.VBLANK_d4.tock(next.NEW_LINE_d4a, 1, lcd_y >= 144);
+    next.FRAME_EVEN.tock(next.VBLANK_d4, 1, !next.FRAME_EVEN);
+  
+    next.NEW_LINE_d4a.tock(clk.sig.TALU_xxxxEFGH, 1, next.NEW_LINE_d0a);
+    next.VSYNC_OUTn.tock(next.NEW_LINE_d4a, 1, lcd_y == 0);
+    next.LINE_153_d4.tock(next.NEW_LINE_d4a, 1, lcd_y == 153);
+
+    /*p21.MUDE*/ wire X_RSTn = not(next.NEW_LINE_d0a);
+    next.X0.tock(clk.sig.TALU_xxxxEFGH, X_RSTn, !next.X0);
+    next.X1.tock(!next.X0, X_RSTn, !next.X1);
+    next.X2.tock(!next.X1, X_RSTn, !next.X2);
+    next.X3.tock(!next.X2, X_RSTn, !next.X3);
+    next.X4.tock(!next.X3, X_RSTn, !next.X4);
+    next.X5.tock(!next.X4, X_RSTn, !next.X5);
+    next.X6.tock(!next.X5, X_RSTn, !next.X6);
+
+    next.NEW_LINE_d0a.tock(clk.sig.SONO_ABCDxxxx, 1, lcd_x == 113);
+
+    next.LINE_EVEN.tock(!next.NEW_LINE_d0a, 1, !next.LINE_EVEN);
+
+    next.Y0.tock(next.NEW_LINE_d0a, FRAME_RSTn, !next.Y0);
+    next.Y1.tock(!next.Y0, FRAME_RSTn, !next.Y1);
+    next.Y2.tock(!next.Y1, FRAME_RSTn, !next.Y2);
+    next.Y3.tock(!next.Y2, FRAME_RSTn, !next.Y3);
+    next.Y4.tock(!next.Y3, FRAME_RSTn, !next.Y4);
+    next.Y5.tock(!next.Y4, FRAME_RSTn, !next.Y5);
+    next.Y6.tock(!next.Y5, FRAME_RSTn, !next.Y6);
+    next.Y7.tock(!next.Y6, FRAME_RSTn, !next.Y7);
+  }
 }
 
 //-----------------------------------------------------------------------------

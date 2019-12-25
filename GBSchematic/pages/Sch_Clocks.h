@@ -159,14 +159,16 @@ struct ClockSignals {
 
 struct Clocks {
 
-  static ClockSignals tick_slow(const Clocks& clk,
+  static ClockSignals tick_slow(int phase,
+                                const Clocks& clk,
                                 wire CLK,
                                 wire CLK_GOOD,
                                 wire CPUCLK_REQ_,
                                 /*p07.UPOJ*/ wire MODE_PROD,
                                 /*p01.XAPO*/ wire VID_RESETn);
 
-  static void tock_slow(const Clocks& clk,
+  static void tock_slow(int phase,
+                        const Clocks& clk,
                         wire CLK,
                         wire CLK_GOOD,
                         wire CPUCLK_REQ_,
@@ -174,7 +176,8 @@ struct Clocks {
                         /*p01.XAPO*/ wire VID_RESETn,
                         Clocks& next);
 
-  static void tock_fast(const Clocks& clk,
+  static void tock_fast(int phase,
+                        const Clocks& clk,
                         wire CLK,
                         wire CLK_GOOD,
                         wire CPUCLK_REQ_,

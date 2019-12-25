@@ -10,7 +10,8 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-ClockSignals Clocks::tick_slow(const Clocks& clk,
+ClockSignals Clocks::tick_slow(int phase,
+                               const Clocks& clk,
                                wire CLK,
                                wire CLK_GOOD,
                                wire CPUCLK_REQ_,
@@ -94,14 +95,15 @@ ClockSignals Clocks::tick_slow(const Clocks& clk,
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_slow(const Clocks& clk,
+void Clocks::tock_slow(int phase,
+                       const Clocks& clk,
                        wire CLK,
                        wire CLK_GOOD,
                        wire CPUCLK_REQ_,
                        /*p07.UPOJ*/ wire MODE_PROD,
                        /*p01.XAPO*/ wire VID_RESETn,
                        Clocks& next) {
-  ClockSignals sig = tick_slow(clk, CLK, CLK_GOOD, CPUCLK_REQ_, MODE_PROD, VID_RESETn);
+  ClockSignals sig = tick_slow(phase, clk, CLK, CLK_GOOD, CPUCLK_REQ_, MODE_PROD, VID_RESETn);
 
   //----------
   // Clock input and deglitcher
@@ -123,14 +125,15 @@ void Clocks::tock_slow(const Clocks& clk,
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_fast(const Clocks& clk,
+void Clocks::tock_fast(int phase,
+                       const Clocks& clk,
                        wire CLK,
                        wire CLK_GOOD,
                        wire CPUCLK_REQ_,
                        /*p07.UPOJ*/ wire MODE_PROD,
                        /*p01.XAPO*/ wire VID_RESETn,
                        Clocks& next) {
-  ClockSignals sig = tick_slow(clk, CLK, CLK_GOOD, CPUCLK_REQ_, MODE_PROD, VID_RESETn);
+  ClockSignals sig = tick_slow(phase, clk, CLK, CLK_GOOD, CPUCLK_REQ_, MODE_PROD, VID_RESETn);
 
   //----------
 

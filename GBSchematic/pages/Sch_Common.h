@@ -36,6 +36,11 @@ struct VRAM;
 struct Reg {
   operator const bool() const { return val; }
 
+  void reset(bool clk_in) {
+    val = 0;
+    clk = clk_in;
+  }
+
   void tock(bool clk_in, bool rst_in, bool reg_in) {
     /*
     bool mask = !clk & clk_in;
@@ -91,8 +96,8 @@ struct Reg8 {
     clk = clk_in;
   }
 
-  bool val = 0;
-  bool clk = 0;
+  uint8_t val = 0;
+  uint8_t clk = 0;
 };
 #endif
 

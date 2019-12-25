@@ -364,7 +364,7 @@ void P21_VideoControl_tick(const Bus& bus,
     // 00: render   - rendering 1, vbl 0, oam 0
     // so one of these has the wrong polarity
 
-    /*p21.SADU*/ wire STAT_MODE0n = nor(vid.RENDERING_LATCH, lcd.VBLANK_d4n);
+    /*p21.SADU*/ wire STAT_MODE0n = nor(vid.RENDERING_LATCH, lcd.VBLANK_d4b);
     /*p21.XATY*/ wire STAT_MODE1n = nor(vid.RENDERING_LATCH, spr.OAM_ADDR_PARSE);
 
     /*p21.RYJU*/ wire FF41_WRn = not(FF41_WR);
@@ -384,13 +384,13 @@ void P21_VideoControl_tick(const Bus& bus,
 
     /*p21.PURE*/ wire LINE_DONEa = not(lcd.NEW_LINE_d0a);
     /*p21.SELA*/ wire LINE_DONEo = not(LINE_DONEa);
-    /*p21.TOLU*/ wire INT_VBLn = not(lcd.VBLANK_d4n);
+    /*p21.TOLU*/ wire INT_VBLn = not(lcd.VBLANK_d4b);
     /*p21.TAPA*/ wire INT_OAM = and(INT_VBLn, LINE_DONEo);
     /*p21.TARU*/ wire INT_HBL = and(INT_VBLn, vid.RENDER_DONE);
 
     /*p21.SUKO*/ wire INT_STATb = amux4(vid.INT_LYC_EN, vid.LYC_MATCH,
                                         vid.INT_OAM_EN, INT_OAM,
-                                        vid.INT_VBL_EN, lcd.VBLANK_d4n, // polarity?
+                                        vid.INT_VBL_EN, lcd.VBLANK_d4b, // polarity?
                                         vid.INT_HBL_EN, INT_HBL);
 
     /*p21.TUVA*/ wire INT_STATn = not(INT_STATb);
@@ -425,7 +425,7 @@ void P21_VideoControl_tick(const Bus& bus,
 
   {
     // polarity or gates wrong
-    /*p27.REPU*/ wire IN_FRAME_Y  = nor(lcd.VBLANK_d4n, rst.VID_RESET4);   // schematic wrong, this is NOR
+    /*p27.REPU*/ wire IN_FRAME_Y  = nor(lcd.VBLANK_d4b, rst.VID_RESET4);   // schematic wrong, this is NOR
     /*p27.REJO*/ wire WIN_CHECK_X = or(vid.WY_MATCH_SYNC, IN_FRAME_Y); // another weird or gate. should be AND?
 
     /*p27.MYLO*/ wire WX_MATCH0n = xor(vid.X0, regs.WX0);
@@ -449,7 +449,7 @@ void P21_VideoControl_tick(const Bus& bus,
   {
 
     /*p27.XOFO*/ wire X_RST = nand(regs.LCDC_WINEN, lcd.VID_LINE_TRIG_d4o, rst.VID_RESETn);
-    /*p27.REPU*/ wire Y_RST  = nor(lcd.VBLANK_d4n, rst.VID_RESET4);   // schematic wrong, this is NOR
+    /*p27.REPU*/ wire Y_RST  = nor(lcd.VBLANK_d4b, rst.VID_RESET4);   // schematic wrong, this is NOR
 
     /*p27.VETU*/ wire X_CLK = and(vid.MAP_X_CLK_STOPn, vid.WIN_MODE_PORE);
     /*p27.XACO*/ wire X_RSTn = not(X_RST);

@@ -221,7 +221,10 @@
     <ClCompile Include="pages\Sch_Vram.cpp" />
     <ClCompile Include="SignalTree.cpp" />
     <ClCompile Include="tests\TestClocks.cpp" />
-    <ClCompile Include="tests\TestLCD.cpp" />
+    <ClCompile Include="tests\TestLCD.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+      <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</InlineFunctionExpansion>
+    </ClCompile>
     <ClCompile Include="tests\TestSpriteSeq.cpp" />
     <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>

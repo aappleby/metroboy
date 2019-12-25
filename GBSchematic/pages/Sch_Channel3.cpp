@@ -275,10 +275,8 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   }
 
   {
-    /*p01.AFEP*/ wire AFEP_AxxxxFGH = not( b.clk.PHAZ_xxCDEFxx);
-    /*p01.AROV*/ wire AROV_xxCDEFxx = not(!b.clk.PHAZ_xxxDEFGx);
-    /*p01.BUGO*/ wire BUGO_xBCDExxx = not(AFEP_AxxxxFGH);
-    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(b.clk.sig.CPUCLK_REQn, BUGO_xBCDExxx, AROV_xxCDEFxx);
+    /*p01.BUGO*/ wire BUGO_xBCDExxx = not(b.clk.sig.AFEP_AxxxxFGH);
+    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(b.clk.sig.CPUCLK_REQn, BUGO_xBCDExxx, b.clk.sig.AROV_xxCDEFxx);
     /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
     /*p01.BUKE*/ wire BUKE_AxxxxxGH = not(BASU_xBCDEFxx);
     /*p17.ABUR*/ wire ABUR_xBCDEFxx = not(BUKE_AxxxxxGH);

@@ -5,7 +5,7 @@ namespace Schematics {
 
 void Sprites_tickScanner(const ClockSignals& clk,
                          const LCD& lcd,
-                         const ResetRegisters& rst_reg,
+                         const ResetSignals& rst_sig,
                          const Sprites& spr,
                          Sprites& next);
 

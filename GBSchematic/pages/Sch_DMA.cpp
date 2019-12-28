@@ -15,7 +15,7 @@ void DMA_tick(const Bus& bus,
               const Cpu& cpu,
               const Decoder& dec,
               const ClockSignals& clk,
-              const ResetRegisters& rst_reg,
+              const ResetSignals& rst_sig,
               const DMA& dma,
 
               DMA& next,
@@ -56,19 +56,19 @@ void DMA_tick(const Bus& bus,
 
   {
     /*p04.LAVY*/ wire FF46_WRn = nand(dec.FF46, ctl.CPU_WR2);
-    /*p04.LOKO*/ wire DMA_RST  = nand(rst_reg.sig.CUNU_RESETn, !dma.DMA_ENb);
+    /*p04.LOKO*/ wire DMA_RST  = nand(rst_sig.CUNU_RESETn, !dma.DMA_ENb);
 
     // Latch
     /*p04.LYXE*/ if (FF46_WRn) next.DMA_EN_LATCHn = 0;
     /*p04.LYXE*/ if (DMA_RST)  next.DMA_EN_LATCHn = 1;
 
     /*p04.LUPA*/ wire DMA_EN = nor(FF46_WRn, dma.DMA_EN_LATCHn); // this seems redundant
-    /*p04.LUVY*/ next.DMA_ENa.tock(clk.UVYT_xBCDExxx, rst_reg.sig.CUNU_RESETn, DMA_EN);
-    /*p04.LENE*/ next.DMA_ENb.tock(clk.MOPA_AxxxxFGH, rst_reg.sig.CUNU_RESETn, dma.DMA_ENa);
+    /*p04.LUVY*/ next.DMA_ENa.tock(clk.UVYT_xBCDExxx, rst_sig.CUNU_RESETn, DMA_EN);
+    /*p04.LENE*/ next.DMA_ENb.tock(clk.MOPA_AxxxxFGH, rst_sig.CUNU_RESETn, dma.DMA_ENa);
   }
 
   {
-    /*p04.LOKO*/ wire DMA_RST   = nand(rst_reg.sig.CUNU_RESETn, !dma.DMA_ENb);
+    /*p04.LOKO*/ wire DMA_RST   = nand(rst_sig.CUNU_RESETn, !dma.DMA_ENb);
     /*p04.LAPA*/ wire DMA_RSTn  = not(DMA_RST);
 
     /*p04.NAVO*/ wire DMA_DONEn = nand(dma.DMA_A00, dma.DMA_A01, dma.DMA_A02, dma.DMA_A03, dma.DMA_A04, dma.DMA_A07); // 128+16+8+4+2+1 = 159, this must be "dma done"
@@ -86,14 +86,14 @@ void DMA_tick(const Bus& bus,
       next.DMA_CLKEN_LATCHn = 0;
       next.DMA_CLKEN_LATCH  = 1;
     }
-    if (dma.DMA_DONE_SYNC || !rst_reg.sig.CUNU_RESETn) {
+    if (dma.DMA_DONE_SYNC || !rst_sig.CUNU_RESETn) {
       next.DMA_CLKEN_LATCHn = 1;
       next.DMA_CLKEN_LATCH  = 0;
     }
   }
 
 
-  /*p04.MATU*/ next.DMA_CLKEN.tock(clk.UVYT_xBCDExxx, rst_reg.sig.CUNU_RESETn, dma.DMA_CLKEN_LATCH);
+  /*p04.MATU*/ next.DMA_CLKEN.tock(clk.UVYT_xBCDExxx, rst_sig.CUNU_RESETn, dma.DMA_CLKEN_LATCH);
 
   {
     /*p04.LEBU*/ wire DMA_A15n  = not(dma.DMA_A15);
@@ -108,7 +108,7 @@ void DMA_tick(const Bus& bus,
   }
 
   {
-    /*p04.MAKA*/ next.FROM_CPU5_SYNC.tock(clk.ZEME_AxCxExGx, rst_reg.sig.CUNU_RESETn, cpu.FROM_CPU5);
+    /*p04.MAKA*/ next.FROM_CPU5_SYNC.tock(clk.ZEME_AxCxExGx, rst_sig.CUNU_RESETn, cpu.FROM_CPU5);
     /*p04.NAXY*/ wire NAXY = nor(dma.FROM_CPU5_SYNC, dma.DMA_ENa);
     /*p04.POWU*/ next.DMA_WRITE_OAM = and(dma.DMA_CLKEN, NAXY);
   }
@@ -116,7 +116,7 @@ void DMA_tick(const Bus& bus,
 
   {
     /*p04.META*/ wire CLK_DMA_LO = and(clk.UVYT_xBCDExxx, dma.DMA_CLKEN_LATCH);
-    /*p04.LOKO*/ wire DMA_RST    = nand(rst_reg.sig.CUNU_RESETn, !dma.DMA_ENb);
+    /*p04.LOKO*/ wire DMA_RST    = nand(rst_sig.CUNU_RESETn, !dma.DMA_ENb);
     /*p04.LAPA*/ wire DMA_RSTn   = not(DMA_RST);
 
     /*p04.NAKY*/ next.DMA_A00.tock(CLK_DMA_LO,   DMA_RSTn, !dma.DMA_A00);

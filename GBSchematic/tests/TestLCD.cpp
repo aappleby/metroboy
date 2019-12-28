@@ -189,7 +189,7 @@ struct TestGB {
 
         ResetRegisters::tock(rst_sig, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst_reg);
 
-        LCD::tick_slow(clk_sig, prev.rst_reg, prev.lcd, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
+        LCD::tick_slow(clk_sig, rst_sig, prev.lcd, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
         Sprites_tickScanner(clk_sig, prev.lcd, prev.rst_reg, prev.spr, spr);
         dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
       }
@@ -213,7 +213,7 @@ struct TestGB {
 
         ResetRegisters::tock(rst_sig, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst_reg);
 
-        LCD::tick_fast(clk_sig, prev.rst_reg, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
+        LCD::tick_fast(clk_sig, rst_sig, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
         Sprites_tickScanner(clk_sig, prev.lcd, prev.rst_reg, prev.spr, spr);
         dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
       }

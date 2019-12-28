@@ -16,7 +16,7 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 void LCD::tick_slow(const ClockSignals& clk,
-                    const ResetRegisters& rst_reg,
+                    const ResetSignals& rst_sig,
                     const LCD& lcd,
                     const Video& vid,
                     
@@ -26,10 +26,10 @@ void LCD::tick_slow(const ClockSignals& clk,
                     bool LCDC_EN,
                     LCD& next)
 {
-  /*p01.LYHA*/ wire VID_RESET2  = not(rst_reg.sig.VID_RESETn);
+  /*p01.LYHA*/ wire VID_RESET2  = not(rst_sig.VID_RESETn);
   /*p01.LYFE*/ wire VID_RESETn2 = not(VID_RESET2);
-  /*p01.ATAR*/ wire VID_RESET6  = not(rst_reg.sig.VID_RESETn);
-  /*p01.AMYG*/ wire VID_RESET7  = not(rst_reg.sig.VID_RESETn);
+  /*p01.ATAR*/ wire VID_RESET6  = not(rst_sig.VID_RESETn);
+  /*p01.AMYG*/ wire VID_RESET7  = not(rst_sig.VID_RESETn);
   /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
 
   /*p21.MUDE*/ wire X_RSTn = nor(lcd.NEW_LINE_d0a, VID_RESET2);
@@ -113,7 +113,7 @@ void LCD::tick_slow(const ClockSignals& clk,
 
 
   {
-    /*p01.TOFU*/ wire VID_RESET3  = not(rst_reg.sig.VID_RESETn);
+    /*p01.TOFU*/ wire VID_RESET3  = not(rst_sig.VID_RESETn);
     /*p21.WEGO*/ wire WEGO  = or(VID_RESET3, vid.RENDER_DONE_SYNC);
     /*p21.XAJO*/ wire X_009 = and(vid.X0, vid.X3);
 
@@ -130,7 +130,7 @@ void LCD::tick_slow(const ClockSignals& clk,
   {
     // Horizontal sync
 
-    /*p01.TOFU*/ wire VID_RESET3  = not(rst_reg.sig.VID_RESETn);
+    /*p01.TOFU*/ wire VID_RESET3  = not(rst_sig.VID_RESETn);
 
     // Latch loop
     ///*p24.POME*/ wire POME = nor(SCAN_DONE_d0_TRIG, POFY);
@@ -192,7 +192,7 @@ void LCD::tick_slow(const ClockSignals& clk,
 //-----------------------------------------------------------------------------
 
 void LCD::tick_fast(const ClockSignals& clk,
-                    const ResetRegisters& rst_reg,
+                    const ResetSignals& rst_sig,
                     const Video& vid,
                     
                     bool SCAN_DONE_d0_TRIG,
@@ -201,7 +201,7 @@ void LCD::tick_fast(const ClockSignals& clk,
                     bool LCDC_EN,
                     LCD& next)
 {
-  if (!rst_reg.sig.VID_RESETn) {
+  if (!rst_sig.VID_RESETn) {
     next.VBLANK_d4b = next.VBLANK_d4;
 
     next.LINE_STROBE.reset(clk.SONO_ABCDxxxx);

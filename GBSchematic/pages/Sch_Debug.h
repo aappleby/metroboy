@@ -12,7 +12,7 @@ struct Debug {
             const ClockSignals& clk,
             const Pins& pins,
             const Decoder& dec,
-            const ResetRegisters& rst_reg,
+            const ResetSignals& rst_sig,
             const Debug& b,
             Bus& bus_out);
 

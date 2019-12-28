@@ -15,7 +15,7 @@ void Debug::tick(const Bus& bus,
                  const ClockSignals& clk,
                  const Pins& pins,
                  const Decoder& dec,
-                 const ResetRegisters& rst_reg,
+                 const ResetSignals& rst_sig,
                  const Debug& prev,
                  Bus& bus_out) {
 
@@ -33,7 +33,7 @@ void Debug::tick(const Bus& bus,
 
   // so is one of the debug pins a clock, and this is a clock divider?
   /*p25.SYCY*/ wire CLK_SOTO = not(prev.MODE_DBG2);
-  /*p25.SOTO*/ next.DBG_SOTO.tock(CLK_SOTO, rst_reg.sig.SOTO_RESET, !prev.DBG_SOTO);
+  /*p25.SOTO*/ next.DBG_SOTO.tock(CLK_SOTO, rst_sig.SOTO_RESET, !prev.DBG_SOTO);
 
   /*p25.TUTO*/ next.DBG_VRAM  = and(prev.MODE_DBG2, !prev.DBG_SOTO);
   /*p25.RACO*/ next.DBG_VRAMn = not(prev.DBG_VRAM);
@@ -69,8 +69,8 @@ void Debug::tick(const Bus& bus,
 
   /*p07.APET*/ wire MODE_DEBUG = or(prev.MODE_DBG1, prev.MODE_DBG2);
   /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus.A05, bus.A06, ctl.CPU_WR, dec.ADDR_111111110xx00000);
-  /*p07.BURO*/ next.FF60_0.tock(FF60_WRn, rst_reg.sig.SYS_RESETn, bus.D0);
-  /*p07.AMUT*/ next.FF60_1.tock(FF60_WRn, rst_reg.sig.SYS_RESETn, bus.D1);
+  /*p07.BURO*/ next.FF60_0.tock(FF60_WRn, rst_sig.SYS_RESETn, bus.D0);
+  /*p07.AMUT*/ next.FF60_1.tock(FF60_WRn, rst_sig.SYS_RESETn, bus.D1);
 
   /*p05.KURA*/ next.FF60_0n = not(prev.FF60_0);
   /*p05.JEVA*/ wire FF60_0o = not(prev.FF60_0);

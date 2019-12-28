@@ -48,7 +48,7 @@ void Interrupts_tock(const Bus& bus,
                      const Video& vid,
                      const Timer& tim,
                      const Pins& pins,
-                     const ResetRegisters& rst_reg,
+                     const ResetSignals& rst_sig,
                      const Decoder& dec,
                      Interrupts& next) {
 
@@ -73,11 +73,11 @@ void Interrupts_tock(const Bus& bus,
   /*p02.TOME*/ wire FF0F_SET3 = nand(FF0F_WRa, INT_STAT_ACK, bus.D3);
   /*p02.TOGA*/ wire FF0F_SET4 = nand(FF0F_WRa, INT_TIM_ACK,  bus.D4);
 
-  /*p02.LYTA*/ wire FF0F_RST0 = and(MUXE, INT_VBL_ACK,  rst_reg.sig.SYS_RESETn);
-  /*p02.MOVU*/ wire FF0F_RST1 = and(NABE, INT_SER_ACK,  rst_reg.sig.SYS_RESETn);
-  /*p02.PYGA*/ wire FF0F_RST2 = and(RAKE, INT_JOY_ACK,  rst_reg.sig.SYS_RESETn);
-  /*p02.TUNY*/ wire FF0F_RST3 = and(SULO, INT_STAT_ACK, rst_reg.sig.SYS_RESETn);
-  /*p02.TYME*/ wire FF0F_RST4 = and(SEME, INT_TIM_ACK,  rst_reg.sig.SYS_RESETn);
+  /*p02.LYTA*/ wire FF0F_RST0 = and(MUXE, INT_VBL_ACK,  rst_sig.SYS_RESETn);
+  /*p02.MOVU*/ wire FF0F_RST1 = and(NABE, INT_SER_ACK,  rst_sig.SYS_RESETn);
+  /*p02.PYGA*/ wire FF0F_RST2 = and(RAKE, INT_JOY_ACK,  rst_sig.SYS_RESETn);
+  /*p02.TUNY*/ wire FF0F_RST3 = and(SULO, INT_STAT_ACK, rst_sig.SYS_RESETn);
+  /*p02.TYME*/ wire FF0F_RST4 = and(SEME, INT_TIM_ACK,  rst_sig.SYS_RESETn);
 
   /*p02.PESU*/ wire FF0F_IN = not(pins.P10_B);
 

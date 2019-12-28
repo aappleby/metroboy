@@ -6,6 +6,17 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct ResetSignals {
+
+  static ResetSignals tick(const ResetRegisters& prev,
+                           bool MODE_DBG1,
+                           bool MODE_DBG2,
+                           bool RST,
+                           bool CLK_BAD1,
+                           bool CPUCLK_REQn,
+                           bool BOGA_AxCDEFGH,
+                           bool DIV_15,
+                           bool LCDC_EN);
+
   /*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
 
   /*p01.ALUR*/ bool SYS_RESETn;

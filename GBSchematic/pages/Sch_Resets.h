@@ -17,6 +17,28 @@ struct ResetSignals {
                            bool DIV_15,
                            bool LCDC_EN);
 
+  void reset() {
+    RESET_CLK = false;
+
+    SYS_RESETn = true;
+    SYS_RESET = false;
+    CUNU_RESETn = true;
+
+    VID_RESETn = true;
+    WESY_RESET = true;
+    VID_RESET5 = false;
+    VID_RESET6 = false;
+    VID_RESETn3 = true;
+    VID_RESET4 = false;
+    VID_RESET3 = false;
+    XORE_RESET = false;
+    XEBE_RESET = true;
+    XODO_RESET = false;
+    WALU_RESET = true;
+    XARE_RESET = true;
+    SOTO_RESET = true;
+  };
+
   /*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
   /*p01.ALUR*/ bool SYS_RESETn;
   /*p01.DULA*/ bool SYS_RESET;
@@ -42,32 +64,6 @@ struct ResetSignals {
 
 struct ResetRegisters {
 
-  void reset() {
-    sig.RESET_CLK = false;
-
-    sig.SYS_RESETn = true;
-    sig.SYS_RESET = false;
-    sig.CUNU_RESETn = true;
-
-    sig.VID_RESETn = true;
-    sig.WESY_RESET = true;
-    sig.VID_RESET5 = false;
-    sig.VID_RESET6 = false;
-    sig.VID_RESETn3 = true;
-    sig.VID_RESET4 = false;
-    sig.VID_RESET3 = false;
-    sig.XORE_RESET = false;
-    sig.XEBE_RESET = true;
-    sig.XODO_RESET = false;
-    sig.WALU_RESET = true;
-    sig.XARE_RESET = true;
-    sig.SOTO_RESET = true;
-
-    BAD_CLOCK_LATCH = true;
-    RESET_REG.val = false;
-    RESET_REG.clk = false;
-  };
-
   static void tock(const ResetRegisters& rst_reg,
                    bool MODE_PROD,
                    bool MODE_DBG1,
@@ -79,6 +75,14 @@ struct ResetRegisters {
                    bool DIV_15,
                    bool LCDC_EN,
                    ResetRegisters& next);
+
+  void reset() {
+    sig.reset();
+
+    BAD_CLOCK_LATCH = true;
+    RESET_REG.val = false;
+    RESET_REG.clk = false;
+  };
 
   ResetSignals sig;
 

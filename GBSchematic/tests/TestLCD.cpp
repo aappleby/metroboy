@@ -183,9 +183,11 @@ struct TestGB {
         
         clk_sig = ClockSignals::tick_slow(prev.clk_reg, CLKIN, CLK_GOOD, CPUCLK_REQ);
 
-        Clocks::tock_slow(clk_sig, MODE_PROD, prev.rst_reg.sig.VID_RESETn, clk_reg);
+        ResetSignals rst_sig = prev.rst_reg.sig;
+
+        Clocks::tock_slow(clk_sig, MODE_PROD, rst_sig.VID_RESETn, clk_reg);
         
-        ResetSignals rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
+        rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
         ResetRegisters::tock(rst_sig, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst_reg);
 
@@ -204,12 +206,14 @@ struct TestGB {
       // lcd currently requires 12 passes, ouch
       for (int pass = 0; pass < 8; pass++) {
         TestGB prev = *this;
-        
-        clk_sig = ClockSignals::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, prev.rst_reg.sig.VID_RESETn);
 
-        Clocks::tock_fast(clk_phase, MODE_PROD, prev.rst_reg.sig.VID_RESETn, clk_reg);
+        ResetSignals rst_sig = prev.rst_reg.sig;
 
-        ResetSignals rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
+        clk_sig = ClockSignals::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, rst_sig.VID_RESETn);
+
+        Clocks::tock_fast(clk_phase, MODE_PROD, rst_sig.VID_RESETn, clk_reg);
+
+        rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
         ResetRegisters::tock(rst_sig, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst_reg);
 

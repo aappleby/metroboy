@@ -15,7 +15,7 @@ void P21_VideoControl_tick(const Bus& bus,
                            const LCD& lcd,
                            const Registers& regs,
                            const ClockSignals& clk,
-                           const ResetRegisters& rst_reg,
+                           const ResetSignals& rst_sig,
                            const Decoder& dec,
                            const Sprites& spr,
                            const Video& vid,
@@ -56,7 +56,7 @@ void P21_VideoControl_tick(const Bus& bus,
       /*p27.SUDA*/ next.SPRITE_FETCH_SYNC2.tock(clk.LAPE_AxCxExGx, VYPO,  vid.SPRITE_FETCH_SYNC1);
       /*p27.RYCE*/ next.SPRITE_FETCH_TRIG = and(vid.SPRITE_FETCH_SYNC1, !vid.SPRITE_FETCH_SYNC2);
 
-      /*p27.SECA*/ wire SPRITE_FETCH_BEGINn = nor(vid.SPRITE_FETCH_TRIG, rst_reg.sig.VID_RESET5, lcd.VID_LINE_TRIG_d4n);
+      /*p27.SECA*/ wire SPRITE_FETCH_BEGINn = nor(vid.SPRITE_FETCH_TRIG, rst_sig.VID_RESET5, lcd.VID_LINE_TRIG_d4n);
       /*p27.TAKA*/ if (!SPRITE_FETCH_BEGINn) next.SPRITE_FETCH_LATCH = 1; // weird latch
 
       // I guess this blocks sprite fetches for the front porch?
@@ -95,7 +95,7 @@ void P21_VideoControl_tick(const Bus& bus,
   //---
 
   {
-    /*p21.WEGO*/ wire WEGO = or(rst_reg.sig.VID_RESET3, vid.RENDER_DONE_SYNC);
+    /*p21.WEGO*/ wire WEGO = or(rst_sig.VID_RESET3, vid.RENDER_DONE_SYNC);
 
     // Weird latch? Weird latch!
     /*p21.XYMU*/ if (WEGO)               next.RENDERING_LATCH = 0;
@@ -166,10 +166,10 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p27.RENE*/ next.WIN_MATCH_ONSCREEN_SYNC2.tock(clk.ALET_xBxDxFxH, vid.RENDERING_LATCH, vid.WIN_MATCH_ONSCREEN_SYNC1);
     /*p27.SEKO*/ next.WIN_TRIGGER = nor(vid.WIN_MATCH_ONSCREEN_SYNC2, !vid.WIN_MATCH_ONSCREEN_SYNC1);
 
-    /*p27.PYCO*/ next.WIN_MATCH_SYNC1.tock(vid.ROCO_4M,          rst_reg.sig.VID_RESETn, vid.WIN_MATCH);
-    /*p27.NUNU*/ next.WIN_MATCH_SYNC2.tock(clk.MEHE_AxCxExGx, rst_reg.sig.VID_RESETn, vid.WIN_MATCH_SYNC1);
+    /*p27.PYCO*/ next.WIN_MATCH_SYNC1.tock(vid.ROCO_4M,          rst_sig.VID_RESETn, vid.WIN_MATCH);
+    /*p27.NUNU*/ next.WIN_MATCH_SYNC2.tock(clk.MEHE_AxCxExGx, rst_sig.VID_RESETn, vid.WIN_MATCH_SYNC1);
 
-    /*p27.XOFO*/ wire LINE_RST = nand(regs.LCDC_WINEN, lcd.VID_LINE_TRIG_d4o, rst_reg.sig.VID_RESETn);
+    /*p27.XOFO*/ wire LINE_RST = nand(regs.LCDC_WINEN, lcd.VID_LINE_TRIG_d4o, rst_sig.VID_RESETn);
 
     // weird latch
     /*p27.PYNU*/ if (LINE_RST)            next.WIN_MODE_LATCH = 0;
@@ -179,7 +179,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p27.PORE*/ next.WIN_MODE_PORE  = not(vid.WIN_MODE_NOCUn);
     /*p26.AXAD*/ next.WIN_MODE_AXADn = not(vid.WIN_MODE_PORE);
 
-    /*p27.NOPA*/ next.WIN_MODE_SYNC.tock(clk.ALET_xBxDxFxH, rst_reg.sig.VID_RESETn, vid.WIN_MODE_LATCH);
+    /*p27.NOPA*/ next.WIN_MODE_SYNC.tock(clk.ALET_xBxDxFxH, rst_sig.VID_RESETn, vid.WIN_MODE_LATCH);
     /*p27.NUNY*/ next.WIN_MODE_TRIG = and(vid.WIN_MODE_LATCH, !vid.WIN_MODE_SYNC);
 
     // PUKU/RYDY form a NOR latch. WIN_MODE_TRIG is SET, (VID_RESET | BG_SEQ_7) is RESET.
@@ -191,7 +191,7 @@ void P21_VideoControl_tick(const Bus& bus,
       next.PUKU = 0;
       next.WIN_MODE_LATCH2 = 1;
     }
-    if (rst_reg.sig.VID_RESET4 || vid.BG_SEQ_7) {
+    if (rst_sig.VID_RESET4 || vid.BG_SEQ_7) {
       next.PUKU = 1;
       next.WIN_MODE_LATCH2 = 0;
     }
@@ -199,7 +199,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p27.SYLO*/ next.WIN_MODE2n = not(vid.WIN_MODE_LATCH2);
     /*p24.TOMU*/ next.WIN_MODE2b = not(vid.WIN_MODE2n);
 
-    /*p27.SOVY*/ next.WIN_MODE_SYNC2.tock(clk.ALET_xBxDxFxH, rst_reg.sig.VID_RESETn, vid.WIN_MODE_LATCH2);
+    /*p27.SOVY*/ next.WIN_MODE_SYNC2.tock(clk.ALET_xBxDxFxH, rst_sig.VID_RESETn, vid.WIN_MODE_LATCH2);
   }
 
   //----------
@@ -343,7 +343,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p21.RAPE*/ wire LY_MATCHn = nand(LY_MATCHA, LY_MATCHB);
     /*p21.PALY*/ wire LY_MATCHa = not(LY_MATCHn);
 
-    /*p21.ROPO*/ next.LYC_MATCH.tock(clk.TALU_xxxxEFGH, rst_reg.sig.WESY_RESET, LY_MATCHa);
+    /*p21.ROPO*/ next.LYC_MATCH.tock(clk.TALU_xxxxEFGH, rst_sig.WESY_RESET, LY_MATCHa);
   }
 
   //----------
@@ -353,10 +353,10 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p21.SEPA*/ wire FF41_WR = and(ctl.CPU_WR2, dec.FF41);
 
     /*p21.RYVE*/ wire CLK_STAT= not(FF41_WR);
-    /*p21.ROXE*/ next.INT_HBL_EN.tock(CLK_STAT, rst_reg.sig.WESY_RESET, bus.D3);
-    /*p21.RUFO*/ next.INT_VBL_EN.tock(CLK_STAT, rst_reg.sig.WESY_RESET, bus.D4);
-    /*p21.REFE*/ next.INT_OAM_EN.tock(CLK_STAT, rst_reg.sig.WESY_RESET, bus.D5);
-    /*p21.RUGU*/ next.INT_LYC_EN.tock(CLK_STAT, rst_reg.sig.WESY_RESET, bus.D6);
+    /*p21.ROXE*/ next.INT_HBL_EN.tock(CLK_STAT, rst_sig.WESY_RESET, bus.D3);
+    /*p21.RUFO*/ next.INT_VBL_EN.tock(CLK_STAT, rst_sig.WESY_RESET, bus.D4);
+    /*p21.REFE*/ next.INT_OAM_EN.tock(CLK_STAT, rst_sig.WESY_RESET, bus.D5);
+    /*p21.RUGU*/ next.INT_LYC_EN.tock(CLK_STAT, rst_sig.WESY_RESET, bus.D6);
 
     // 11: hblank   - rendering 0, vbl 0, oam 0
     // 10: vblank   - rendering 0, vbl 1, oam 0
@@ -369,7 +369,7 @@ void P21_VideoControl_tick(const Bus& bus,
 
     /*p21.RYJU*/ wire FF41_WRn = not(FF41_WR);
 
-    /*p21.PAGO*/ wire STAT_LYC_MATCH1 = nor(rst_reg.sig.WESY_RESET, FF41_WRn);  // schematic wrong, this is NOR
+    /*p21.PAGO*/ wire STAT_LYC_MATCH1 = nor(rst_sig.WESY_RESET, FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ wire STAT_LYC_MATCH2 = or(vid.LYC_MATCH, STAT_LYC_MATCH1); // this is another of the weird or gates. could be nor?
 
     /*p21.TOBE*/ wire FF41_RDa = and(ctl.CPU_RD2, dec.FF41);
@@ -416,7 +416,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p27.NELE*/ wire WY_MATCH_HI    = not(WY_MATCH_HIn);
     /*p27.PAFU*/ wire WY_MATCHn      = nand(WY_MATCH_HI, WY_MATCH0n, WY_MATCH1n, WY_MATCH2n, WY_MATCH3n);
     /*p27.ROGE*/ wire WY_MATCH       = not(WY_MATCHn);
-    /*p27.SARY*/ next.WY_MATCH_SYNC.tock(clk.TALU_xxxxEFGH, rst_reg.sig.VID_RESETn, WY_MATCH);
+    /*p27.SARY*/ next.WY_MATCH_SYNC.tock(clk.TALU_xxxxEFGH, rst_sig.VID_RESETn, WY_MATCH);
   }
 
 
@@ -425,7 +425,7 @@ void P21_VideoControl_tick(const Bus& bus,
 
   {
     // polarity or gates wrong
-    /*p27.REPU*/ wire IN_FRAME_Y  = nor(lcd.VBLANK_d4b, rst_reg.sig.VID_RESET4);   // schematic wrong, this is NOR
+    /*p27.REPU*/ wire IN_FRAME_Y  = nor(lcd.VBLANK_d4b, rst_sig.VID_RESET4);   // schematic wrong, this is NOR
     /*p27.REJO*/ wire WIN_CHECK_X = or(vid.WY_MATCH_SYNC, IN_FRAME_Y); // another weird or gate. should be AND?
 
     /*p27.MYLO*/ wire WX_MATCH0n = xor(vid.X0, regs.WX0);
@@ -448,8 +448,8 @@ void P21_VideoControl_tick(const Bus& bus,
 
   {
 
-    /*p27.XOFO*/ wire X_RST = nand(regs.LCDC_WINEN, lcd.VID_LINE_TRIG_d4o, rst_reg.sig.VID_RESETn);
-    /*p27.REPU*/ wire Y_RST  = nor(lcd.VBLANK_d4b, rst_reg.sig.VID_RESET4);   // schematic wrong, this is NOR
+    /*p27.XOFO*/ wire X_RST = nand(regs.LCDC_WINEN, lcd.VID_LINE_TRIG_d4o, rst_sig.VID_RESETn);
+    /*p27.REPU*/ wire Y_RST  = nor(lcd.VBLANK_d4b, rst_sig.VID_RESET4);   // schematic wrong, this is NOR
 
     /*p27.VETU*/ wire X_CLK = and(vid.MAP_X_CLK_STOPn, vid.WIN_MODE_PORE);
     /*p27.XACO*/ wire X_RSTn = not(X_RST);
@@ -475,7 +475,7 @@ void P21_VideoControl_tick(const Bus& bus,
   // Pixel counter. This is a little weird, presumably because it can tick at 4 mhz but not always?
 
   {
-    /*p21.TADY*/ next.X_RST = nor(lcd.VID_LINE_TRIG_d4n, rst_reg.sig.VID_RESET3);
+    /*p21.TADY*/ next.X_RST = nor(lcd.VID_LINE_TRIG_d4n, rst_sig.VID_RESET3);
 
     /*p21.RYBO*/ wire RYBO = xor(vid.X0, vid.X1);
     /*p21.XUKE*/ wire XUKE = and(vid.X0, vid.X1);

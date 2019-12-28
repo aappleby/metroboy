@@ -11,7 +11,7 @@ struct Pins {
             const Bus& bus,
             const BusControl& ctl,
             const Debug& dbg,
-            const Clocks& clk,
+            const ClockSignals& clk,
             const Decoder& dec,
             const DMA& dma);
 

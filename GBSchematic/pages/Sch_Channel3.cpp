@@ -5,7 +5,10 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
+void P16_Ch3Regs_tick(const Gameboy& a,
+                      const Gameboy& b,
+                      const ClockSignals& clk,
+                      Gameboy& next) {
 
   //----------
   // FF1A NR30 - Channel 3 Sound on/off (R/W)
@@ -247,7 +250,8 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
   {
     /*p16.GOMA*/ wire APU_RESETn = not(b.apu.APU_RESET1);
-    /*p16.FOBA*/ next.ch3.CH3_RESTART_SYNC = tock_pos(a.clk.sig.DOVA_xBCDExxx, b.clk.sig.DOVA_xBCDExxx, APU_RESETn, b.ch3.CH3_RESTART_SYNC, b.ch3.NR34_START);
+    // FIXME
+    ///*p16.FOBA*/ next.ch3.CH3_RESTART_SYNC = tock_pos(a.clk.DOVA_xBCDExxx, b.clk.DOVA_xBCDExxx, APU_RESETn, b.ch3.CH3_RESTART_SYNC, b.ch3.NR34_START);
   }
 
   {
@@ -275,8 +279,8 @@ void P16_Ch3Regs_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   }
 
   {
-    /*p01.BUGO*/ wire BUGO_xBCDExxx = not(b.clk.sig.AFEP_ABxxxxGH);
-    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(b.clk.sig.CPUCLK_REQn, BUGO_xBCDExxx, b.clk.sig.AROV_xxxDEFGx);
+    /*p01.BUGO*/ wire BUGO_xBCDExxx = not(clk.AFEP_ABxxxxGH);
+    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(clk.CPUCLK_REQn, BUGO_xBCDExxx, clk.AROV_xxxDEFGx);
     /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
     /*p01.BUKE*/ wire BUKE_AxxxxxGH = not(BASU_xBCDEFxx);
     /*p17.ABUR*/ wire ABUR_xBCDEFxx = not(BUKE_AxxxxxGH);

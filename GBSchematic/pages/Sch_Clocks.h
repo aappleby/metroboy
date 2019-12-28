@@ -169,6 +169,7 @@ struct Clocks {
 
   static void tock_slow(int phase,
                         const Clocks& clk,
+                        const ClockSignals& sig,
                         wire CLK,
                         wire CLK_GOOD,
                         wire CPUCLK_REQ_,
@@ -194,8 +195,6 @@ struct Clocks {
 
   // Resets to immediately before the first phase on the first line
   void reset() {
-    sig.reset();
-
     PHAZ_xBCDExxx.val=false;
     PHAZ_xBCDExxx.clk=true;
     PHAZ_xxCDEFxx.val=false;
@@ -212,8 +211,6 @@ struct Clocks {
     WOSU_xBCxxFGx.val=false;
     WOSU_xBCxxFGx.clk=true;
   }
-
-  ClockSignals sig;
 
   /*p01.AFUR*/ Reg  PHAZ_xBCDExxx;
   /*p01.ALEF*/ Reg  PHAZ_xxCDEFxx;

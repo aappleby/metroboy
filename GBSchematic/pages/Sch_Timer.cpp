@@ -14,7 +14,7 @@ void Timer_tickInt(const Cpu& cpu,
                    const Bus& bus,
                    const BusControl& ctl,
                    const Decoder& dec,
-                   const Clocks& clk,
+                   const ClockSignals& clk,
                    const Resets& rst,
                    const Timer& prev,
                    Timer& next) {
@@ -28,10 +28,10 @@ void Timer_tickInt(const Cpu& cpu,
   /*p03.MEXU*/ wire TIMA_LOAD = nand(MUZU, rst.SYS_RESETn, INT_TIMERn);
   /*p03.MUGY*/ wire TIMA_LOADn   = not(TIMA_LOAD);
 
-  /*p03.NYDU*/ next.TIMA_MAX.tock(clk.sig.BOGA_AxCDEFGH, TIMA_LOADn, prev.TIMA_7);
+  /*p03.NYDU*/ next.TIMA_MAX.tock(clk.BOGA_AxCDEFGH, TIMA_LOADn, prev.TIMA_7);
 
   /*p03.MERY*/ wire INT_TIMER_IN = nor(!prev.TIMA_MAX, prev.TIMA_7);
-  /*p03.MOBA*/ next.INT_TIMER.tock(clk.sig.BOGA_AxCDEFGH, rst.SYS_RESETn, INT_TIMER_IN);
+  /*p03.MOBA*/ next.INT_TIMER.tock(clk.BOGA_AxCDEFGH, rst.SYS_RESETn, INT_TIMER_IN);
 }
 
 //-----------------------------------------------------------------------------

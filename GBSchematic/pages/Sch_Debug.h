@@ -9,7 +9,7 @@ struct Debug {
 
   void tick(const Bus& bus,
             const BusControl& ctl,
-            const Clocks& clocks,
+            const ClockSignals& clk,
             const Pins& pins,
             const Decoder& dec,
             const Resets& rst,

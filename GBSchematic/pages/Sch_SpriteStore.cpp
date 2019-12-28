@@ -121,7 +121,7 @@ void SpriteStore_tick(const SpriteStore& sst,
 //----------
 
 void SpriteStore_tock(const SpriteStore& sst,
-                      const Clocks& clocks,
+                      const ClockSignals& clk,
                       const Sprites& spr,
                       const Resets& rst,
                       const LCD& lcd,
@@ -129,7 +129,7 @@ void SpriteStore_tock(const SpriteStore& sst,
 
                       SpriteStore& next) {
 
-  /*p29.DEZY*/ next.STORE_EN_SYNC.tock(clocks.sig.ZEME_AxCxExGx, rst.VID_RESETn, spr.STORE_EN);
+  /*p29.DEZY*/ next.STORE_EN_SYNC.tock(clk.ZEME_AxCxExGx, rst.VID_RESETn, spr.STORE_EN);
 
   /*p29.BAKY*/ wire SPRITES_FULL = and(sst.SPRITE_COUNT1, sst.SPRITE_COUNT3);
   /*p29.CAKE*/ wire SPRITE_COUNT_CLK = or(SPRITES_FULL, sst.STORE_EN_SYNC);

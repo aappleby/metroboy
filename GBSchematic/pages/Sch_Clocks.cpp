@@ -97,19 +97,13 @@ ClockSignals Clocks::tick_slow(int phase,
 
 void Clocks::tock_slow(int phase,
                        const Clocks& clk,
+                       const ClockSignals& sig,
                        wire CLK,
                        wire CLK_GOOD,
                        wire CPUCLK_REQ_,
                        /*p07.UPOJ*/ wire MODE_PROD,
                        /*p01.XAPO*/ wire VID_RESETn,
                        Clocks& next) {
-  ClockSignals sig = tick_slow(phase, clk, CLK, CLK_GOOD, CPUCLK_REQ_, MODE_PROD, VID_RESETn);
-
-  //----------
-  // Clock input and deglitcher
-
-  //----------
-
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
   /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD, !sig.PHAZ_xxxxEFGH);
   /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xBCDExxx);
@@ -119,8 +113,6 @@ void Clocks::tock_slow(int phase,
   /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig.XOTA_AxCxExGx, VID_RESETn, !sig.WUVU_xxCDxxGH);
   /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig.WUVU_xxCDxxGH, VID_RESETn, !sig.VENA_xxxxEFGH);
   /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig.XYFY_xBxDxFxH, VID_RESETn, !sig.WUVU_xxCDxxGH);
-
-  next.sig = sig;
 }
 
 //-----------------------------------------------------------------------------
@@ -307,8 +299,6 @@ void Clocks::tock_fast(int phase,
                        /*p07.UPOJ*/ wire MODE_PROD,
                        /*p01.XAPO*/ wire VID_RESETn,
                        Clocks& next) {
-
-  next.sig = tick_fast(phase, CLK, CLK_GOOD, CPUCLK_REQ_, MODE_PROD, VID_RESETn);
 
   bool xBxDxFxH = (phase & 1);
   bool AxCxExGx = !xBxDxFxH;

@@ -12,7 +12,7 @@ namespace Schematics {
 void Joypad_tick(const Bus& bus,
                  const BusControl& ctl,
                  const Debug& dbg,
-                 const Clocks& clk,
+                 const ClockSignals& clk,
                  const Joypad& prev,
                  Joypad& next,
                  Bus& bus_out) {
@@ -26,7 +26,7 @@ void Joypad_tick(const Bus& bus,
 
   /*p02.KERY*/ wire ANY_BUTTON = or(prev.PIN_P13_C, prev.PIN_P12_C, prev.PIN_P11_C, prev.PIN_P10_C);
   /*p02.ASOK*/ next.INT_JP  = and(prev.JP_GLITCH3, prev.JP_GLITCH0);
-  /*p02.AWOB*/ next.WAKE_CPU = latch_pos(clk.sig.BOGA_AxCDEFGH, prev.WAKE_CPU, ANY_BUTTON);
+  /*p02.AWOB*/ next.WAKE_CPU = latch_pos(clk.BOGA_AxCDEFGH, prev.WAKE_CPU, ANY_BUTTON);
 
   // FIXME really unsure about these pin assignments, seem to have a few missing signals
 
@@ -63,7 +63,7 @@ void Joypad_tick(const Bus& bus,
 
 void Joypad_tock(const Bus& bus,
                  const BusControl& ctl,
-                 const Clocks& clk,
+                 const ClockSignals& clk,
                  const Resets& rst,
                  const Joypad& prev,
                  Joypad& next) {
@@ -77,10 +77,10 @@ void Joypad_tock(const Bus& bus,
   /*p10.BYKO*/ wire A05n = not(bus.A05);
 
   /*p02.KERY*/ wire ANY_BUTTON = or(prev.PIN_P13_C, prev.PIN_P12_C, prev.PIN_P11_C, prev.PIN_P10_C);
-  /*p02.BATU*/ next.JP_GLITCH0.tock(clk.sig.BOGA_AxCDEFGH, rst.SYS_RESETn, ANY_BUTTON);
-  /*p02.ACEF*/ next.JP_GLITCH1.tock(clk.sig.BOGA_AxCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH0);
-  /*p02.AGEM*/ next.JP_GLITCH2.tock(clk.sig.BOGA_AxCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH1);
-  /*p02.APUG*/ next.JP_GLITCH3.tock(clk.sig.BOGA_AxCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH2);
+  /*p02.BATU*/ next.JP_GLITCH0.tock(clk.BOGA_AxCDEFGH, rst.SYS_RESETn, ANY_BUTTON);
+  /*p02.ACEF*/ next.JP_GLITCH1.tock(clk.BOGA_AxCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH0);
+  /*p02.AGEM*/ next.JP_GLITCH2.tock(clk.BOGA_AxCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH1);
+  /*p02.APUG*/ next.JP_GLITCH3.tock(clk.BOGA_AxCDEFGH, rst.SYS_RESETn, prev.JP_GLITCH2);
 
   /*p10.ATOZ*/ wire FF00_WRn   = nand(ctl.CPU_WR, ADDR_111111110xx00000, A06n, A05n);
   /*p05.JUTE*/ next.JOYP_RA    .tock(FF00_WRn, rst.SYS_RESETn, bus.D0);

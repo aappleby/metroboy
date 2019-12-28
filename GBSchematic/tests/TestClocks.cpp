@@ -129,8 +129,8 @@ void sim(int phase, Clocks& clk_reg, bool CLK_GOOD, bool CPUCLK_REQ, bool MODE_P
   bool CLKIN = !(phase & 1);
   for (int j = 0; j < 8; j++) {
     Clocks prev_clk = clk_reg;
-    ClockSignals clk_sig = Clocks::tick_slow(phase, prev_clk, CLKIN, CLK_GOOD, CPUCLK_REQ, MODE_PROD, VID_RESETn);
-    Clocks::tock_slow(phase, prev_clk, clk_sig, CLKIN, CLK_GOOD, CPUCLK_REQ, MODE_PROD, VID_RESETn, clk_reg);
+    ClockSignals clk_sig = ClockSignals::tick_slow(prev_clk, CLKIN, CLK_GOOD, CPUCLK_REQ);
+    Clocks::tock_slow(clk_sig, MODE_PROD, VID_RESETn, clk_reg);
   }
 }
 
@@ -146,7 +146,7 @@ void TestClocks() {
   for (int phase = 0; phase < 16; phase++) {
     bool CLKIN = !(phase & 1);
     sim(phase, clk_reg, true, true, true, true);
-    ClockSignals sig = Clocks::tick_slow(phase, clk_reg, CLKIN, true, true, true, true);
+    ClockSignals sig = ClockSignals::tick_slow(clk_reg, CLKIN, true, true);
     dump(cursor++, sig);
   }
 

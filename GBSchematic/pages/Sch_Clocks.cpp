@@ -3,20 +3,14 @@
 #include "Sch_Pins.h"
 #include "Sch_Debug.h"
 
-#pragma warning(disable:4458)
-#pragma warning(disable:4100)
-
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-ClockSignals Clocks::tick_slow(int phase,
-                               const Clocks& clk,
-                               wire CLK,
-                               wire CLK_GOOD,
-                               wire CPUCLK_REQ_,
-                               /*p07.UPOJ*/ wire MODE_PROD,
-                               /*p01.XAPO*/ wire VID_RESETn) {
+ClockSignals ClockSignals::tick_slow(const Clocks& clk,
+                                     wire CLK,
+                                     wire CLK_GOOD,
+                                     wire CPUCLK_REQ_) {
   ClockSignals sig = {
     /*p01.ABOL*/ .CPUCLK_REQn   = not(CPUCLK_REQ_),
     /*p01.BUTY*/ .CPUCLK_REQ    = not(sig.CPUCLK_REQn),
@@ -95,37 +89,13 @@ ClockSignals Clocks::tick_slow(int phase,
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_slow(int phase,
-                       const Clocks& clk,
-                       const ClockSignals& sig,
-                       wire CLK,
-                       wire CLK_GOOD,
-                       wire CPUCLK_REQ_,
-                       /*p07.UPOJ*/ wire MODE_PROD,
-                       /*p01.XAPO*/ wire VID_RESETn,
-                       Clocks& next) {
-  // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD, !sig.PHAZ_xxxxEFGH);
-  /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xBCDExxx);
-  /*p01.APUK*/ next.PHAZ_xxxDEFGx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xxCDEFxx);
-  /*p01.ADYK*/ next.PHAZ_xxxxEFGH.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xxxDEFGx);
-
-  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig.XOTA_AxCxExGx, VID_RESETn, !sig.WUVU_xxCDxxGH);
-  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig.WUVU_xxCDxxGH, VID_RESETn, !sig.VENA_xxxxEFGH);
-  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig.XYFY_xBxDxFxH, VID_RESETn, !sig.WUVU_xxCDxxGH);
-}
-
-//-----------------------------------------------------------------------------
-
-ClockSignals Clocks::tick_fast(int phase,
-                               wire CLK,
-                               wire CLK_GOOD,
-                               wire CPUCLK_REQ_,
-                               /*p07.UPOJ*/ wire MODE_PROD,
-                               /*p01.XAPO*/ wire VID_RESETn) {
+ClockSignals ClockSignals::tick_fast(int phase,
+                                     wire CLK_GOOD,
+                                     wire CPUCLK_REQ_,
+                                     /*p07.UPOJ*/ wire MODE_PROD,
+                                     /*p01.XAPO*/ wire VID_RESETn) {
 
   ClockSignals sig;
-  //----------
 
   /*p01.ABOL*/ sig.CPUCLK_REQn   = not(CPUCLK_REQ_);
   /*p01.BUTY*/ sig.CPUCLK_REQ    = not(sig.CPUCLK_REQn);
@@ -292,10 +262,26 @@ ClockSignals Clocks::tick_fast(int phase,
   return sig;
 }
 
+//-----------------------------------------------------------------------------
+
+void Clocks::tock_slow(const ClockSignals& sig,
+                       /*p07.UPOJ*/ wire MODE_PROD,
+                       /*p01.XAPO*/ wire VID_RESETn,
+                       Clocks& next) {
+  // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
+  /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD, !sig.PHAZ_xxxxEFGH);
+  /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xBCDExxx);
+  /*p01.APUK*/ next.PHAZ_xxxDEFGx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xxCDEFxx);
+  /*p01.ADYK*/ next.PHAZ_xxxxEFGH.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xxxDEFGx);
+
+  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig.XOTA_AxCxExGx, VID_RESETn, !sig.WUVU_xxCDxxGH);
+  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig.WUVU_xxCDxxGH, VID_RESETn, !sig.VENA_xxxxEFGH);
+  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig.XYFY_xBxDxFxH, VID_RESETn, !sig.WUVU_xxCDxxGH);
+}
+
+//-----------------------------------------------------------------------------
+
 void Clocks::tock_fast(int phase,
-                       wire CLK,
-                       wire CLK_GOOD,
-                       wire CPUCLK_REQ_,
                        /*p07.UPOJ*/ wire MODE_PROD,
                        /*p01.XAPO*/ wire VID_RESETn,
                        Clocks& next) {

@@ -7,6 +7,17 @@ namespace Schematics {
 // c.cpu.CLK_xBCDEFGH = BOWA_AxCDEFGH;
 
 struct ClockSignals {
+  static ClockSignals tick_slow(const Clocks& clk,
+                                wire CLK,
+                                wire CLK_GOOD,
+                                wire CPUCLK_REQ_);
+
+  static ClockSignals tick_fast(int phase,
+                                wire CLK_GOOD,
+                                wire CPUCLK_REQ_,
+                                /*p07.UPOJ*/ wire MODE_PROD,
+                                /*p01.XAPO*/ wire VID_RESETn);
+
   void reset() {
     *this = {
       /*p01.ABOL*/ .CPUCLK_REQn   = 0,
@@ -159,35 +170,12 @@ struct ClockSignals {
 
 struct Clocks {
 
-  static ClockSignals tick_slow(int phase,
-                                const Clocks& clk,
-                                wire CLK,
-                                wire CLK_GOOD,
-                                wire CPUCLK_REQ_,
-                                /*p07.UPOJ*/ wire MODE_PROD,
-                                /*p01.XAPO*/ wire VID_RESETn);
-
-  static void tock_slow(int phase,
-                        const Clocks& clk,
-                        const ClockSignals& sig,
-                        wire CLK,
-                        wire CLK_GOOD,
-                        wire CPUCLK_REQ_,
+  static void tock_slow(const ClockSignals& sig,
                         /*p07.UPOJ*/ wire MODE_PROD,
                         /*p01.XAPO*/ wire VID_RESETn,
                         Clocks& next);
 
-  static ClockSignals tick_fast(int phase,
-                                wire CLK,
-                                wire CLK_GOOD,
-                                wire CPUCLK_REQ_,
-                                /*p07.UPOJ*/ wire MODE_PROD,
-                                /*p01.XAPO*/ wire VID_RESETn);
-
   static void tock_fast(int phase,
-                        wire CLK,
-                        wire CLK_GOOD,
-                        wire CPUCLK_REQ_,
                         /*p07.UPOJ*/ wire MODE_PROD,
                         /*p01.XAPO*/ wire VID_RESETn,
                         Clocks& next);

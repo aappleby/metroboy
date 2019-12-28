@@ -74,7 +74,6 @@ struct ResetRegisters {
                    bool CPUCLK_REQn,
                    bool BOGA_AxCDEFGH,
                    bool DIV_15,
-                   bool LCDC_EN,
                    ResetRegisters& next);
 
   void reset() {

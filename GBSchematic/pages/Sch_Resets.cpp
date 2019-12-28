@@ -61,10 +61,7 @@ void ResetRegisters::tock(const ResetSignals& rst_sig,
                           bool CPUCLK_REQn,
                           bool BOGA_AxCDEFGH,
                           bool DIV_15,
-                          bool LCDC_EN,
                           ResetRegisters& next) {
-  ResetSignals sig = ResetSignals::tick(rst_reg, MODE_DBG1, MODE_DBG2, RST, CLK_BAD1, CPUCLK_REQn, BOGA_AxCDEFGH, DIV_15, LCDC_EN);
-
   /*p01.UPYF*/ bool UPYF = or(RST, CLK_BAD1);
   /*p01.TUBO*/ bool BAD_CLOCK_LATCH2 = !UPYF ? 1 : !CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
   /*p01.BOMA*/ bool RESET_CLK   = not(BOGA_AxCDEFGH);

@@ -64,7 +64,8 @@ struct ResetSignals {
 
 struct ResetRegisters {
 
-  static void tock(const ResetRegisters& rst_reg,
+  static void tock(const ResetSignals& rst_sig,
+                   const ResetRegisters& rst_reg,
                    bool MODE_PROD,
                    bool MODE_DBG1,
                    bool MODE_DBG2,

@@ -51,7 +51,8 @@ ResetSignals ResetSignals::tick(const ResetRegisters& rst_reg,
 
 //-----------------------------------------------------------------------------
 
-void ResetRegisters::tock(const ResetRegisters& rst_reg,
+void ResetRegisters::tock(const ResetSignals& /*rst_sig*/,
+                          const ResetRegisters& rst_reg,
                           bool MODE_PROD,
                           bool MODE_DBG1,
                           bool MODE_DBG2,
@@ -62,7 +63,7 @@ void ResetRegisters::tock(const ResetRegisters& rst_reg,
                           bool DIV_15,
                           bool LCDC_EN,
                           ResetRegisters& next) {
-  ResetSignals rst_sig = ResetSignals::tick(rst_reg, MODE_DBG1, MODE_DBG2, RST, CLK_BAD1, CPUCLK_REQn, BOGA_AxCDEFGH, DIV_15, LCDC_EN);
+  ResetSignals sig = ResetSignals::tick(rst_reg, MODE_DBG1, MODE_DBG2, RST, CLK_BAD1, CPUCLK_REQn, BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
   /*p01.UPYF*/ bool UPYF = or(RST, CLK_BAD1);
   /*p01.TUBO*/ bool BAD_CLOCK_LATCH2 = !UPYF ? 1 : !CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
@@ -75,7 +76,7 @@ void ResetRegisters::tock(const ResetRegisters& rst_reg,
   /*p01.TUBO*/ next.BAD_CLOCK_LATCH = BAD_CLOCK_LATCH2;
   /*p01.AFER*/ next.RESET_REG.tock(RESET_CLK, MODE_PROD, RESET_IN);
 
-  next.sig = rst_sig;
+  next.sig = sig;
 }
 
 //-----------------------------------------------------------------------------

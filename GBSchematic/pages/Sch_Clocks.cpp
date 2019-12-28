@@ -264,16 +264,19 @@ ClockSignals ClockSignals::tick_fast(int phase,
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_slow(const ClockSignals& sig,
-                       /*p07.UPOJ*/ wire MODE_PROD,
-                       /*p01.XAPO*/ wire VID_RESETn,
-                       Clocks& next) {
+void Clocks::tock_slow1(const ClockSignals& sig,
+                        /*p07.UPOJ*/ wire MODE_PROD,
+                        Clocks& next) {
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
   /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD, !sig.PHAZ_xxxxEFGH);
   /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xBCDExxx);
   /*p01.APUK*/ next.PHAZ_xxxDEFGx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xxCDEFxx);
   /*p01.ADYK*/ next.PHAZ_xxxxEFGH.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xxxDEFGx);
+}
 
+void Clocks::tock_slow2(const ClockSignals& sig,
+                        /*p01.XAPO*/ wire VID_RESETn,
+                        Clocks& next) {
   /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig.XOTA_AxCxExGx, VID_RESETn, !sig.WUVU_xxCDxxGH);
   /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig.WUVU_xxCDxxGH, VID_RESETn, !sig.VENA_xxxxEFGH);
   /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig.XYFY_xBxDxFxH, VID_RESETn, !sig.WUVU_xxCDxxGH);
@@ -281,17 +284,45 @@ void Clocks::tock_slow(const ClockSignals& sig,
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_fast(int phase,
-                       /*p07.UPOJ*/ wire MODE_PROD,
-                       /*p01.XAPO*/ wire VID_RESETn,
-                       Clocks& next) {
+void Clocks::tock_fast1(int phase,
+                        /*p07.UPOJ*/ wire MODE_PROD,
+                        Clocks& next) {
 
   bool xBxDxFxH = (phase & 1);
-  bool AxCxExGx = !xBxDxFxH;
 
   bool xBCDExxx = (phase == 1) || (phase == 2) || (phase == 3) || (phase == 4);
   bool xxCDEFxx = (phase == 2) || (phase == 3) || (phase == 4) || (phase == 5);
   bool xxxDEFGx = (phase == 3) || (phase == 4) || (phase == 5) || (phase == 6);
+  bool xxxxEFGH = (phase == 4) || (phase == 5) || (phase == 6) || (phase == 7);
+
+  if (MODE_PROD) {
+    next.PHAZ_xBCDExxx.val = xBCDExxx;
+    next.PHAZ_xxCDEFxx.val = xxCDEFxx;
+    next.PHAZ_xxxDEFGx.val = xxxDEFGx;
+    next.PHAZ_xxxxEFGH.val = xxxxEFGH;
+  }
+  else {
+    next.PHAZ_xBCDExxx.val = 0;
+    next.PHAZ_xxCDEFxx.val = 0;
+    next.PHAZ_xxxDEFGx.val = 0;
+    next.PHAZ_xxxxEFGH.val = 0;
+  }
+
+  next.PHAZ_xBCDExxx.clk = xBxDxFxH;
+  next.PHAZ_xxCDEFxx.clk = xBxDxFxH;
+  next.PHAZ_xxxDEFGx.clk = xBxDxFxH;
+  next.PHAZ_xxxxEFGH.clk = xBxDxFxH;
+}
+
+//-----------------------------------------------------------------------------
+
+void Clocks::tock_fast2(int phase,
+                        /*p01.XAPO*/ wire VID_RESETn,
+                        Clocks& next) {
+
+  bool xBxDxFxH = (phase & 1);
+  bool AxCxExGx = !xBxDxFxH;
+
   bool xxxxEFGH = (phase == 4) || (phase == 5) || (phase == 6) || (phase == 7);
   bool xxCDxxGH = (phase == 2) || (phase == 3) || (phase == 6) || (phase == 7);
   bool xBCxxFGx = (phase == 1) || (phase == 2) || (phase == 5) || (phase == 6);
@@ -317,24 +348,6 @@ void Clocks::tock_fast(int phase,
     next.WOSU_xBCxxFGx.val = 0;
     next.WOSU_xBCxxFGx.clk = xBxDxFxH;
   }
-
-  if (MODE_PROD) {
-    next.PHAZ_xBCDExxx.val = xBCDExxx;
-    next.PHAZ_xxCDEFxx.val = xxCDEFxx;
-    next.PHAZ_xxxDEFGx.val = xxxDEFGx;
-    next.PHAZ_xxxxEFGH.val = xxxxEFGH;
-  }
-  else {
-    next.PHAZ_xBCDExxx.val = 0;
-    next.PHAZ_xxCDEFxx.val = 0;
-    next.PHAZ_xxxDEFGx.val = 0;
-    next.PHAZ_xxxxEFGH.val = 0;
-  }
-
-  next.PHAZ_xBCDExxx.clk = xBxDxFxH;
-  next.PHAZ_xxCDEFxx.clk = xBxDxFxH;
-  next.PHAZ_xxxDEFGx.clk = xBxDxFxH;
-  next.PHAZ_xxxxEFGH.clk = xBxDxFxH;
 }
 
 //-----------------------------------------------------------------------------

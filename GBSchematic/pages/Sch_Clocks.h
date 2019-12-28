@@ -170,16 +170,21 @@ struct ClockSignals {
 
 struct Clocks {
 
-  static void tock_slow(const ClockSignals& sig,
-                        /*p07.UPOJ*/ wire MODE_PROD,
-                        /*p01.XAPO*/ wire VID_RESETn,
-                        Clocks& next);
+  static void tock_slow1(const ClockSignals& sig,
+                         /*p07.UPOJ*/ wire MODE_PROD,
+                         Clocks& next);
 
-  static void tock_fast(int phase,
-                        /*p07.UPOJ*/ wire MODE_PROD,
-                        /*p01.XAPO*/ wire VID_RESETn,
-                        Clocks& next);
+  static void tock_slow2(const ClockSignals& sig,
+                         /*p01.XAPO*/ wire VID_RESETn,
+                         Clocks& next);
 
+  static void tock_fast1(int phase,
+                         /*p07.UPOJ*/ wire MODE_PROD,
+                         Clocks& next);
+
+  static void tock_fast2(int phase,
+                         /*p01.XAPO*/ wire VID_RESETn,
+                         Clocks& next);
 
   // ResetRegisters to immediately before the first phase on the first line
   void reset() {

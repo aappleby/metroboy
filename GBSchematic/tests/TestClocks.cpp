@@ -130,7 +130,8 @@ void sim(int phase, Clocks& clk_reg, bool CLK_GOOD, bool CPUCLK_REQ, bool MODE_P
   for (int j = 0; j < 8; j++) {
     Clocks prev_clk = clk_reg;
     ClockSignals clk_sig = ClockSignals::tick_slow(prev_clk, CLKIN, CLK_GOOD, CPUCLK_REQ);
-    Clocks::tock_slow(clk_sig, MODE_PROD, VID_RESETn, clk_reg);
+    Clocks::tock_slow1(clk_sig, MODE_PROD, clk_reg);
+    Clocks::tock_slow2(clk_sig, VID_RESETn, clk_reg);
   }
 }
 

@@ -185,7 +185,8 @@ struct TestGB {
 
         ResetSignals rst_sig = prev.rst_reg.sig;
 
-        Clocks::tock_slow(clk_sig, MODE_PROD, rst_sig.VID_RESETn, clk_reg);
+        Clocks::tock_slow1(clk_sig, MODE_PROD, clk_reg);
+        Clocks::tock_slow2(clk_sig, rst_sig.VID_RESETn, clk_reg);
         
         rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
@@ -211,7 +212,8 @@ struct TestGB {
 
         clk_sig = ClockSignals::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, rst_sig.VID_RESETn);
 
-        Clocks::tock_fast(clk_phase, MODE_PROD, rst_sig.VID_RESETn, clk_reg);
+        Clocks::tock_fast1(clk_phase, MODE_PROD, clk_reg);
+        Clocks::tock_fast2(clk_phase, rst_sig.VID_RESETn, clk_reg);
 
         rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 

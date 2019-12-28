@@ -6,67 +6,6 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct ResetSignals {
-  /*p01.BOMA*/ wire RESET_CLK; // _____fgh -> PORTD_07
-  /*p01.ALUR*/ wire SYS_RESETn;
-  /*p01.DULA*/ wire SYS_RESET;
-
-  /*p01.CUNU*/ wire CUNU_RESETn;
-  /*p01.XORE*/ wire XORE_RESET;
-  /*p01.XEBE*/ wire XEBE_RESET;
-  /*p01.XODO*/ wire XODO_RESET;
-  /*p01.XAPO*/ wire VID_RESETn;
-
-  /*p01.WESY*/ wire WESY_RESET;
-  /*p01.WALU*/ wire WALU_RESET;
-  /*p01.XARE*/ wire XARE_RESET;
-  /*p01.SOTO*/ wire SOTO_RESET;
-
-  /*p01.ROSY*/ wire VID_RESET5;
-  /*p01.ATAR*/ wire VID_RESET6;
-  /*p01.ABEZ*/ wire VID_RESETn3;
-  /*p01.PYRY*/ wire VID_RESET4;
-  /*p01.TOFU*/ wire VID_RESET3;
-};
-
-struct ResetRegisters {
-
-  void reset() {
-    RESET_CLK = false;
-
-    SYS_RESETn = true;
-    SYS_RESET = false;
-    CUNU_RESETn = true;
-
-    VID_RESETn = true;
-    WESY_RESET = true;
-    VID_RESET5 = false;
-    VID_RESET6 = false;
-    VID_RESETn3 = true;
-    VID_RESET4 = false;
-    VID_RESET3 = false;
-    XORE_RESET = false;
-    XEBE_RESET = true;
-    XODO_RESET = false;
-    WALU_RESET = true;
-    XARE_RESET = true;
-    SOTO_RESET = true;
-
-    BAD_CLOCK_LATCH = true;
-    RESET_REG.val = false;
-    RESET_REG.clk = false;
-  };
-
-  void tick(const ResetRegisters& prev,
-            bool MODE_PROD,
-            bool MODE_DBG1,
-            bool MODE_DBG2,
-            bool RST,
-            bool CLK_BAD1,
-            bool CPUCLK_REQn,
-            bool BOGA_AxCDEFGH,
-            bool DIV_15,
-            bool LCDC_EN);
-
   /*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
 
   /*p01.ALUR*/ bool SYS_RESETn;
@@ -91,6 +30,50 @@ struct ResetRegisters {
   /*p01.WALU*/ bool WALU_RESET;
   /*p01.XARE*/ bool XARE_RESET;
   /*p01.SOTO*/ bool SOTO_RESET;
+};
+
+//-----------------------------------------------------------------------------
+
+struct ResetRegisters {
+
+  void reset() {
+    sig.RESET_CLK = false;
+
+    sig.SYS_RESETn = true;
+    sig.SYS_RESET = false;
+    sig.CUNU_RESETn = true;
+
+    sig.VID_RESETn = true;
+    sig.WESY_RESET = true;
+    sig.VID_RESET5 = false;
+    sig.VID_RESET6 = false;
+    sig.VID_RESETn3 = true;
+    sig.VID_RESET4 = false;
+    sig.VID_RESET3 = false;
+    sig.XORE_RESET = false;
+    sig.XEBE_RESET = true;
+    sig.XODO_RESET = false;
+    sig.WALU_RESET = true;
+    sig.XARE_RESET = true;
+    sig.SOTO_RESET = true;
+
+    BAD_CLOCK_LATCH = true;
+    RESET_REG.val = false;
+    RESET_REG.clk = false;
+  };
+
+  void tick(const ResetRegisters& prev,
+            bool MODE_PROD,
+            bool MODE_DBG1,
+            bool MODE_DBG2,
+            bool RST,
+            bool CLK_BAD1,
+            bool CPUCLK_REQn,
+            bool BOGA_AxCDEFGH,
+            bool DIV_15,
+            bool LCDC_EN);
+
+  ResetSignals sig;
 
   /*p01.TUBO*/ bool BAD_CLOCK_LATCH;
   /*p01.AFER*/ Reg  RESET_REG;

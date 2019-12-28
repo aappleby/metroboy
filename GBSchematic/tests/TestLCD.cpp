@@ -183,7 +183,7 @@ struct TestGB {
         
         clk_sig = ClockSignals::tick_slow(prev.clk_reg, CLKIN, CLK_GOOD, CPUCLK_REQ);
 
-        Clocks::tock_slow(clk_sig, MODE_PROD, prev.rst.VID_RESETn, clk_reg);
+        Clocks::tock_slow(clk_sig, MODE_PROD, prev.rst.sig.VID_RESETn, clk_reg);
         
         rst.tick(prev.rst, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
@@ -203,9 +203,9 @@ struct TestGB {
       for (int pass = 0; pass < 8; pass++) {
         TestGB prev = *this;
         
-        clk_sig = ClockSignals::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, prev.rst.VID_RESETn);
+        clk_sig = ClockSignals::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, prev.rst.sig.VID_RESETn);
 
-        Clocks::tock_fast(clk_phase, MODE_PROD, prev.rst.VID_RESETn, clk_reg);
+        Clocks::tock_fast(clk_phase, MODE_PROD, prev.rst.sig.VID_RESETn, clk_reg);
         rst.tick(prev.rst, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
         LCD::tick_fast(clk_sig, prev.rst, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);

@@ -17,7 +17,7 @@ void P09_ApuControl_tick(const Gameboy& a,
 
   
   {
-    /*P09.HAPO*/ wire SYS_RESET2  = not(b.rst.SYS_RESETn);
+    /*P09.HAPO*/ wire SYS_RESET2  = not(b.rst.sig.SYS_RESETn);
     /*p09.JYRO*/ next.apu.APU_RST = or(SYS_RESET2, !b.apu.NR52_ALL_SOUND_ON);
   }
 
@@ -225,7 +225,7 @@ void P09_ApuControl_tick(const Gameboy& a,
     /*p09.FERO*/ next.apu.NR52_DBG_APUn      = tock_pos(a.apu.NR52_WRn3, b.apu.NR52_WRn3, APU_RESETn6, b.apu.NR52_DBG_APUn,     NR52_DBG_APU_IN);
     /*p09.BOWY*/ next.apu.NR52_DBG_SWEEP     = tock_pos(a.apu.NR52_WRn2, b.apu.NR52_WRn2, APU_RESETn6, b.apu.NR52_DBG_SWEEP,    b.bus.D5);
 
-    /*P09.HAPO*/ wire SYS_RESET2  = not(b.rst.SYS_RESETn);
+    /*P09.HAPO*/ wire SYS_RESET2  = not(b.rst.sig.SYS_RESETn);
     /*P09.GUFO*/ wire SYS_RESETn3 = not(SYS_RESET2);
     /*p09.HADA*/ next.apu.NR52_ALL_SOUND_ON  = tock_pos(a.apu.NR52_WRn1, b.apu.NR52_WRn1, SYS_RESETn3, b.apu.NR52_ALL_SOUND_ON, b.bus.D7); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
     /*p09.EDEK*/ next.apu.NR52_DBG_APU       = not(!b.apu.NR52_DBG_APUn);

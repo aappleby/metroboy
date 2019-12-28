@@ -11,7 +11,7 @@ namespace Schematics {
 struct Bus;
 struct BusControl;
 struct Clocks;
-struct Resets;
+struct ResetRegisters;
 struct Cpu;
 struct PixelPipe;
 struct Serial;

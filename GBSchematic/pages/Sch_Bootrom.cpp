@@ -62,7 +62,7 @@ void Bootrom_tick(const Bus& bus,
 void Bootrom_tock(const Bus& bus,
                   const BusControl& ctl,
                   const Decoder& dec,
-                  const Resets& rst,
+                  const ResetRegisters& rst,
                   const Bootrom& prev,
                   Bootrom& next) {
 

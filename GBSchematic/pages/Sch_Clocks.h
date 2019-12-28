@@ -181,7 +181,7 @@ struct Clocks {
                         Clocks& next);
 
 
-  // Resets to immediately before the first phase on the first line
+  // ResetRegisters to immediately before the first phase on the first line
   void reset() {
     PHAZ_xBCDExxx.val=false;
     PHAZ_xBCDExxx.clk=true;

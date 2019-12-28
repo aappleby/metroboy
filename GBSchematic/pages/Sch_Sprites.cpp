@@ -14,7 +14,7 @@ void Sprites_tick(const Pins& pins,
                   const LCD& lcd,
                   const OAM& oam,
                   const Video& vid,
-                  const Resets& rst,
+                  const ResetRegisters& rst,
                   const Registers& regs,
                   const SpriteStore& sst,
                   const Sprites& spr,
@@ -176,7 +176,7 @@ void Sprites_tick(const Pins& pins,
 
 void Sprites_tickScanner(const ClockSignals& clk,
                          const LCD& lcd,
-                         const Resets& rst,
+                         const ResetRegisters& rst,
                          const Sprites& spr,
                          
                          Sprites& next) {

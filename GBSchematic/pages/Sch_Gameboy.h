@@ -39,7 +39,7 @@ struct Gameboy {
 
   Cpu        cpu;
   Clocks     clk;
-  Resets     rst;
+  ResetRegisters     rst;
   Bus        bus;
   BusControl ctl;
   Decoder    dec;

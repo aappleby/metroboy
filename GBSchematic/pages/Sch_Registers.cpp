@@ -124,7 +124,7 @@ void Registers_tick(const RegistersIn& in,
 //-----------------------------------------------------------------------------
 
 void Registers_tock(const RegistersIn& in,
-                    const Resets& rst,
+                    const ResetRegisters& rst,
                     const Decoder& dec,
                     Registers& next) {
 

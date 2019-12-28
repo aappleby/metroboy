@@ -64,7 +64,7 @@ void Joypad_tick(const Bus& bus,
 void Joypad_tock(const Bus& bus,
                  const BusControl& ctl,
                  const ClockSignals& clk,
-                 const Resets& rst,
+                 const ResetRegisters& rst,
                  const Joypad& prev,
                  Joypad& next) {
 

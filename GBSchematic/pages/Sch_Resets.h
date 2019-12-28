@@ -28,7 +28,7 @@ struct ResetSignals {
   /*p01.TOFU*/ wire VID_RESET3;
 };
 
-struct Resets {
+struct ResetRegisters {
 
   void reset() {
     RESET_CLK = false;
@@ -56,7 +56,7 @@ struct Resets {
     RESET_REG.clk = false;
   };
 
-  void tick(const Resets& prev,
+  void tick(const ResetRegisters& prev,
             bool MODE_PROD,
             bool MODE_DBG1,
             bool MODE_DBG2,

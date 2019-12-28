@@ -48,7 +48,7 @@ void Interrupts_tock(const Bus& bus,
                      const Video& vid,
                      const Timer& tim,
                      const Pins& pins,
-                     const Resets& rst,
+                     const ResetRegisters& rst,
                      const Decoder& dec,
                      Interrupts& next) {
 

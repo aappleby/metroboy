@@ -232,7 +232,7 @@ struct TestGB {
   bool DIV_07n    = true;
   bool DIV_15     = false;
 
-  Resets  rst;
+  ResetRegisters  rst;
   Bus     bus;
   LCD     lcd;
   Sprites spr;

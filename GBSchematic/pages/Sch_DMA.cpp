@@ -15,7 +15,7 @@ void DMA_tick(const Bus& bus,
               const Cpu& cpu,
               const Decoder& dec,
               const ClockSignals& clk,
-              const Resets& rst,
+              const ResetRegisters& rst,
               const DMA& dma,
 
               DMA& next,

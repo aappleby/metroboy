@@ -10,7 +10,7 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Resets::tick(const Resets& prev,
+void ResetRegisters::tick(const ResetRegisters& prev,
                   bool MODE_PROD,
                   bool MODE_DBG1,
                   bool MODE_DBG2,
@@ -20,7 +20,7 @@ void Resets::tick(const Resets& prev,
                   bool BOGA_AxCDEFGH,
                   bool DIV_15,
                   bool LCDC_EN) {
-  Resets& next = *this;
+  ResetRegisters& next = *this;
 
   /*p01.AFER*/ wire prev_RESET_REG = prev.RESET_REG;
   /*p01.TUBO*/ wire prev_BAD_CLOCK_LATCH = prev.BAD_CLOCK_LATCH;
@@ -91,7 +91,7 @@ void Resets::tick(const Resets& prev,
 
 //-----------------------------------------------------------------------------
 
-ResetSignals test_tick(const Resets& prev,
+ResetSignals test_tick(const ResetRegisters& prev,
                        bool MODE_DBG1,
                        bool MODE_DBG2,
                        bool RST,

@@ -8,7 +8,7 @@ namespace Schematics {
 struct LCD {
 
   static void tick_slow(const ClockSignals& clk,
-                        const Resets& rst,
+                        const ResetRegisters& rst,
                         const LCD& lcd,
                         const Video& vid,
                         bool SCAN_DONE_d0_TRIG,
@@ -18,7 +18,7 @@ struct LCD {
                         LCD& next);
 
   static void tick_fast(const ClockSignals& clk,
-                        const Resets& rst,
+                        const ResetRegisters& rst,
                         const Video& vid,
                         bool SCAN_DONE_d0_TRIG,
                         bool DIV_06n,
@@ -26,7 +26,7 @@ struct LCD {
                         bool LCDC_EN,
                         LCD& next);
 
-  // Resets to immediately before the first phase on the first line
+  // ResetRegisters to immediately before the first phase on the first line
   void reset() {
 		VBLANK_d4b = true;
 		VID_LINE_TRIG_d4n = 1;

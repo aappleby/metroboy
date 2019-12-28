@@ -7,7 +7,7 @@ namespace Schematics {
 
 struct ResetSignals {
 
-  static ResetSignals tick(const ResetRegisters& prev,
+  static ResetSignals tick(const ResetRegisters& rst_reg,
                            bool MODE_DBG1,
                            bool MODE_DBG2,
                            bool RST,

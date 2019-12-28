@@ -108,7 +108,7 @@ struct TestGB {
     DIV_07n = true;
     DIV_15  = false;
 
-    rst.reset();
+    rst_reg.reset();
     bus.reset();
     lcd.reset();
     spr.reset();
@@ -183,14 +183,14 @@ struct TestGB {
         
         clk_sig = ClockSignals::tick_slow(prev.clk_reg, CLKIN, CLK_GOOD, CPUCLK_REQ);
 
-        Clocks::tock_slow(clk_sig, MODE_PROD, prev.rst.sig.VID_RESETn, clk_reg);
+        Clocks::tock_slow(clk_sig, MODE_PROD, prev.rst_reg.sig.VID_RESETn, clk_reg);
         
-        ResetSignals rst_sig = ResetSignals::tick(prev.rst, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
+        ResetSignals rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
-        ResetRegisters::tock(rst_sig, prev.rst, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst);
+        ResetRegisters::tock(rst_sig, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst_reg);
 
-        LCD::tick_slow(clk_sig, prev.rst, prev.lcd, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
-        Sprites_tickScanner(clk_sig, prev.lcd, prev.rst, prev.spr, spr);
+        LCD::tick_slow(clk_sig, prev.rst_reg, prev.lcd, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
+        Sprites_tickScanner(clk_sig, prev.lcd, prev.rst_reg, prev.spr, spr);
         dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
       }
     }
@@ -205,16 +205,16 @@ struct TestGB {
       for (int pass = 0; pass < 8; pass++) {
         TestGB prev = *this;
         
-        clk_sig = ClockSignals::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, prev.rst.sig.VID_RESETn);
+        clk_sig = ClockSignals::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, prev.rst_reg.sig.VID_RESETn);
 
-        Clocks::tock_fast(clk_phase, MODE_PROD, prev.rst.sig.VID_RESETn, clk_reg);
+        Clocks::tock_fast(clk_phase, MODE_PROD, prev.rst_reg.sig.VID_RESETn, clk_reg);
 
-        ResetSignals rst_sig = ResetSignals::tick(prev.rst, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
+        ResetSignals rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
-        ResetRegisters::tock(rst_sig, prev.rst, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst);
+        ResetRegisters::tock(rst_sig, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst_reg);
 
-        LCD::tick_fast(clk_sig, prev.rst, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
-        Sprites_tickScanner(clk_sig, prev.lcd, prev.rst, prev.spr, spr);
+        LCD::tick_fast(clk_sig, prev.rst_reg, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
+        Sprites_tickScanner(clk_sig, prev.lcd, prev.rst_reg, prev.spr, spr);
         dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
       }
     }
@@ -237,7 +237,7 @@ struct TestGB {
   bool DIV_07n    = true;
   bool DIV_15     = false;
 
-  ResetRegisters  rst;
+  ResetRegisters  rst_reg;
   Bus     bus;
   LCD     lcd;
   Sprites spr;
@@ -271,7 +271,7 @@ struct LCDTest {
     check(gb2.lcd.x() == 113);
     check(gb2.lcd.y() == 0);
 
-    check_match(gb1.rst, gb2.rst);
+    check_match(gb1.rst_reg, gb2.rst_reg);
     check_match(gb1.bus, gb2.bus);
     check_match(gb1.lcd, gb2.lcd);
     check_match(gb1.spr, gb2.spr);
@@ -289,7 +289,7 @@ struct LCDTest {
     check(gb2.lcd.x() == 0);
     check(gb2.lcd.y() == 0);
 
-    check_match(gb1.rst, gb2.rst);
+    check_match(gb1.rst_reg, gb2.rst_reg);
     check_match(gb1.bus, gb2.bus);
     check_match(gb1.lcd, gb2.lcd);
     check_match(gb1.spr, gb2.spr);

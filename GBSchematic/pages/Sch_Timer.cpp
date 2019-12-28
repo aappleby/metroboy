@@ -15,7 +15,7 @@ void Timer_tickInt(const Cpu& cpu,
                    const BusControl& ctl,
                    const Decoder& dec,
                    const ClockSignals& clk,
-                   const ResetRegisters& rst,
+                   const ResetRegisters& rst_reg,
                    const Timer& prev,
                    Timer& next) {
 
@@ -25,13 +25,13 @@ void Timer_tickInt(const Cpu& cpu,
 
   /*p03.MUZU*/ wire MUZU = or(cpu.FROM_CPU5, FF05_WRn);
   /*p03.MEKE*/ wire INT_TIMERn = not(prev.INT_TIMER);
-  /*p03.MEXU*/ wire TIMA_LOAD = nand(MUZU, rst.sig.SYS_RESETn, INT_TIMERn);
+  /*p03.MEXU*/ wire TIMA_LOAD = nand(MUZU, rst_reg.sig.SYS_RESETn, INT_TIMERn);
   /*p03.MUGY*/ wire TIMA_LOADn   = not(TIMA_LOAD);
 
   /*p03.NYDU*/ next.TIMA_MAX.tock(clk.BOGA_AxCDEFGH, TIMA_LOADn, prev.TIMA_7);
 
   /*p03.MERY*/ wire INT_TIMER_IN = nor(!prev.TIMA_MAX, prev.TIMA_7);
-  /*p03.MOBA*/ next.INT_TIMER.tock(clk.BOGA_AxCDEFGH, rst.sig.SYS_RESETn, INT_TIMER_IN);
+  /*p03.MOBA*/ next.INT_TIMER.tock(clk.BOGA_AxCDEFGH, rst_reg.sig.SYS_RESETn, INT_TIMER_IN);
 }
 
 //-----------------------------------------------------------------------------
@@ -39,7 +39,7 @@ void Timer_tickInt(const Cpu& cpu,
 void Timer_tickTAC(const Bus& bus,
                    const BusControl& ctl,
                    const Decoder& dec,
-                   const ResetRegisters& rst,
+                   const ResetRegisters& rst_reg,
                    Timer& next) {
 
   //----------
@@ -47,9 +47,9 @@ void Timer_tickTAC(const Bus& bus,
 
   /*p03.SARA*/ wire FF07_WRn = nand(ctl.CPU_WR, dec.FF04_FF07, bus.A00, bus.A01);
 
-  /*p03.SOPU*/ next.TAC_0.tock(FF07_WRn, rst.sig.SYS_RESETn, bus.D0);
-  /*p03.SAMY*/ next.TAC_1.tock(FF07_WRn, rst.sig.SYS_RESETn, bus.D1);
-  /*p03.SABO*/ next.TAC_2.tock(FF07_WRn, rst.sig.SYS_RESETn, bus.D2);
+  /*p03.SOPU*/ next.TAC_0.tock(FF07_WRn, rst_reg.sig.SYS_RESETn, bus.D0);
+  /*p03.SAMY*/ next.TAC_1.tock(FF07_WRn, rst_reg.sig.SYS_RESETn, bus.D1);
+  /*p03.SABO*/ next.TAC_2.tock(FF07_WRn, rst_reg.sig.SYS_RESETn, bus.D2);
 
 }
 
@@ -58,7 +58,7 @@ void Timer_tickTAC(const Bus& bus,
 void Timer_tickTMA(const Bus& bus,
                    const BusControl& ctl,
                    const Decoder& dec,
-                   const ResetRegisters& rst,
+                   const ResetRegisters& rst_reg,
                    Timer& next) {
 
   //----------
@@ -66,14 +66,14 @@ void Timer_tickTMA(const Bus& bus,
 
   /*p03.TYJU*/ wire FF06_WRn = nand(ctl.CPU_WR, dec.FF04_FF07, bus.A01, dec.TOVY_A00n);
 
-  /*p03.SABU*/ next.TMA_0.tock(FF06_WRn, rst.sig.SYS_RESETn, bus.D0);
-  /*p03.NYKE*/ next.TMA_1.tock(FF06_WRn, rst.sig.SYS_RESETn, bus.D1);
-  /*p03.MURU*/ next.TMA_2.tock(FF06_WRn, rst.sig.SYS_RESETn, bus.D2);
-  /*p03.TYVA*/ next.TMA_3.tock(FF06_WRn, rst.sig.SYS_RESETn, bus.D3);
-  /*p03.TYRU*/ next.TMA_4.tock(FF06_WRn, rst.sig.SYS_RESETn, bus.D4);
-  /*p03.SUFY*/ next.TMA_5.tock(FF06_WRn, rst.sig.SYS_RESETn, bus.D5);
-  /*p03.PETO*/ next.TMA_6.tock(FF06_WRn, rst.sig.SYS_RESETn, bus.D6);
-  /*p03.SETA*/ next.TMA_7.tock(FF06_WRn, rst.sig.SYS_RESETn, bus.D7);
+  /*p03.SABU*/ next.TMA_0.tock(FF06_WRn, rst_reg.sig.SYS_RESETn, bus.D0);
+  /*p03.NYKE*/ next.TMA_1.tock(FF06_WRn, rst_reg.sig.SYS_RESETn, bus.D1);
+  /*p03.MURU*/ next.TMA_2.tock(FF06_WRn, rst_reg.sig.SYS_RESETn, bus.D2);
+  /*p03.TYVA*/ next.TMA_3.tock(FF06_WRn, rst_reg.sig.SYS_RESETn, bus.D3);
+  /*p03.TYRU*/ next.TMA_4.tock(FF06_WRn, rst_reg.sig.SYS_RESETn, bus.D4);
+  /*p03.SUFY*/ next.TMA_5.tock(FF06_WRn, rst_reg.sig.SYS_RESETn, bus.D5);
+  /*p03.PETO*/ next.TMA_6.tock(FF06_WRn, rst_reg.sig.SYS_RESETn, bus.D6);
+  /*p03.SETA*/ next.TMA_7.tock(FF06_WRn, rst_reg.sig.SYS_RESETn, bus.D7);
 
 }
 

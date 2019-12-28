@@ -51,7 +51,7 @@ ResetSignals ResetSignals::tick(const ResetRegisters& rst_reg,
 
 //-----------------------------------------------------------------------------
 
-void ResetRegisters::tock(const ResetSignals& /*rst_sig*/,
+void ResetRegisters::tock(const ResetSignals& rst_sig,
                           const ResetRegisters& rst_reg,
                           bool MODE_PROD,
                           bool MODE_DBG1,
@@ -76,7 +76,7 @@ void ResetRegisters::tock(const ResetSignals& /*rst_sig*/,
   /*p01.TUBO*/ next.BAD_CLOCK_LATCH = BAD_CLOCK_LATCH2;
   /*p01.AFER*/ next.RESET_REG.tock(RESET_CLK, MODE_PROD, RESET_IN);
 
-  next.sig = sig;
+  next.sig = rst_sig;
 }
 
 //-----------------------------------------------------------------------------

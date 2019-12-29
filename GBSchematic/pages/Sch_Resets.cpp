@@ -8,9 +8,9 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-ResetSignals1 ResetSignals1::tick(const SystemSignals& sys_sig,
-                                  const ClockSignals1& clk_sig1,
-                                  const ResetRegisters& rst_reg) {
+ResetSignals1 ResetSignals1::tick_slow(const SystemSignals& sys_sig,
+                                       const ClockSignals1& clk_sig1,
+                                       const ResetRegisters& rst_reg) {
 
   /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
   /*p01.TUBO*/ bool BAD_CLOCK_LATCH = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
@@ -71,8 +71,8 @@ ResetSignals1 ResetSignals1::tick(const SystemSignals& sys_sig,
 
 //-----------------------------------------------------------------------------
 
-ResetSignals2 ResetSignals2::tick(const SystemSignals& sys_sig,
-                                  const ResetRegisters& rst_reg) {
+ResetSignals2 ResetSignals2::tick_slow(const SystemSignals& sys_sig,
+                                       const ResetRegisters& rst_reg) {
 
   /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
   /*p01.TUBO*/ bool BAD_CLOCK_LATCH = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
@@ -114,10 +114,10 @@ ResetSignals2 ResetSignals2::tick(const SystemSignals& sys_sig,
 
 //-----------------------------------------------------------------------------
 
-void ResetRegisters::tock(const SystemSignals& sys_sig,
-                          const ClockSignals1& clk_sig1,
-                          const ResetRegisters& rst_reg,
-                          ResetRegisters& next) {
+void ResetRegisters::tock_slow(const SystemSignals& sys_sig,
+                               const ClockSignals1& clk_sig1,
+                               const ResetRegisters& rst_reg,
+                               ResetRegisters& next) {
   /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
   /*p01.TUBO*/ bool BAD_CLOCK_LATCH2 = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
   /*p01.BOMA*/ bool RESET_CLK   = not(clk_sig1.BOGA_AxCDEFGH);

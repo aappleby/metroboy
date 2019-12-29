@@ -10,7 +10,7 @@ namespace Schematics {
 
 struct Bus;
 struct BusControl;
-struct Clocks;
+struct ClockRegisters;
 struct ResetRegisters;
 struct ResetSignals1;
 struct Cpu;

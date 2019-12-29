@@ -156,15 +156,15 @@ struct TestGB {
       for (int pass = 0; pass < 12; pass++) {
         TestGB prev = *this;
         
-        clk_sig1 = ClockSignals1::tick_slow(sys_sig, prev.clk_reg, sys_sig.clk());
-        rst_sig1 = ResetSignals1::tick(sys_sig, clk_sig1, prev.rst_reg);
-        clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
+        clk_sig1 = ClockSignals1::tick_slow(sys_sig, prev.clk_reg);
+        rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, prev.rst_reg);
+        clk_sig2 = ClockSignals2::tick_slow(rst_sig1, prev.clk_reg);
 
         //----------
 
-        Clocks::tock_slow1(sys_sig, clk_sig1, clk_reg);
-        Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
-        ResetRegisters::tock(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
+        ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
+        ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
+        ResetRegisters::tock_slow(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
       }
     }
   }
@@ -178,14 +178,14 @@ struct TestGB {
         TestGB prev = *this;
 
         clk_sig1 = ClockSignals1::tick_fast(sys_sig);
-        rst_sig1 = ResetSignals1::tick(sys_sig, clk_sig1, prev.rst_reg);
-        clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
+        rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, prev.rst_reg);
+        clk_sig2 = ClockSignals2::tick_slow(rst_sig1, prev.clk_reg);
 
         //----------
 
-        Clocks::tock_fast1(sys_sig, clk_reg);
-        Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
-        ResetRegisters::tock(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
+        ClockRegisters::tock_fast1(sys_sig, clk_reg);
+        ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
+        ResetRegisters::tock_slow(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
       }
     }
   }
@@ -199,7 +199,7 @@ struct TestGB {
   SystemSignals  sys_sig;
   ClockSignals1  clk_sig1;
   ClockSignals2  clk_sig2;
-  Clocks         clk_reg;
+  ClockRegisters clk_reg;
 
   ResetSignals1  rst_sig1;
   ResetRegisters rst_reg;
@@ -286,12 +286,10 @@ struct LCDTest {
     TestGB gb2;
 
     memset(&gb1, 0, sizeof(gb1));
+    memset(&gb2, 0, sizeof(gb2));
         
     gb1.sys_sig.set_pwron();
-
-    memset(&gb2, 0, sizeof(gb2));
     gb2.sys_sig.set_pwron();
-
     sim_fast_slow(gb1, gb2, 16);
 
     gb1.sys_sig.set_rst(false);

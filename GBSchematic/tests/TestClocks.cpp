@@ -128,7 +128,7 @@ void TestClocks() {
   printf("\033[?6l");
   labels();
 
-  Clocks clk_reg = {};
+  ClockRegisters clk_reg = {};
   ResetRegisters rst_reg = {};
 
   clk_reg.reset();
@@ -138,19 +138,19 @@ void TestClocks() {
   sys_sig.reset();
 
   for (int phase = 0; phase < 16; phase++) {
-    bool CLKIN = !(phase & 1);
 
     for (int pass = 0; pass < 12; pass++) {
-      ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg, CLKIN);
-      ResetSignals1 rst_sig1 = ResetSignals1::tick(sys_sig, clk_sig1, rst_reg);
-      ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(clk_reg);
+      ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
+      ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
+      ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(rst_sig1, clk_reg);
       
-      Clocks::tock_slow1(sys_sig, clk_sig1, clk_reg);
-      Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
+      ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
+      ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
     }
 
-    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg, CLKIN);
-    ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(clk_reg);
+    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
+    ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
+    ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(rst_sig1, clk_reg);
     dump(cursor++, clk_sig1, clk_sig2);
   }
 

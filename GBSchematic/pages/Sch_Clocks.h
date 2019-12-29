@@ -7,10 +7,7 @@ namespace Schematics {
 // c.cpu.CLK_xBCDEFGH = BOWA_AxCDEFGH;
 
 struct ClockSignals1 {
-  static ClockSignals1 tick_slow(const SystemSignals& sys_sig,
-                                 const Clocks& clk,
-                                 wire CLK);
-
+  static ClockSignals1 tick_slow(const SystemSignals& sys_sig, const ClockRegisters& clk);
   static ClockSignals1 tick_fast(const SystemSignals& sys_sig);
 
   void reset() {
@@ -135,9 +132,8 @@ struct ClockSignals1 {
 //-----------------------------------------------------------------------------
 
 struct ClockSignals2 {
-  static ClockSignals2 tick_slow(const Clocks& clk);
-
-  static ClockSignals2 tick_fast(const SystemSignals& sys_sig, wire VID_RESETn);
+  static ClockSignals2 tick_slow(const ResetSignals1& rst_sig1, const ClockRegisters& clk);
+  static ClockSignals2 tick_fast(const SystemSignals& sys_sig, const ResetSignals1& rst_sig1);
 
   void reset() {
     *this = {
@@ -166,24 +162,24 @@ struct ClockSignals2 {
 
 //-----------------------------------------------------------------------------
 
-struct Clocks {
+struct ClockRegisters {
 
   static void tock_slow1(const SystemSignals& sys_sig,
                          const ClockSignals1& clk_sig1,
-                         Clocks& next);
+                         ClockRegisters& next);
 
   static void tock_slow2(const SystemSignals& sys_sig,
                          const ClockSignals1& clk_sig1,
                          const ClockSignals2& clk_sig2,
                          const ResetSignals1& rst_sig1,
-                         Clocks& next);
+                         ClockRegisters& next);
 
   static void tock_fast1(const SystemSignals& sys_sig,
-                         Clocks& next);
+                         ClockRegisters& next);
 
   static void tock_fast2(const SystemSignals& sys_sig,
-                         /*p01.XAPO*/ wire VID_RESETn,
-                         Clocks& next);
+                         const ResetSignals1& rst_sig1,
+                         ClockRegisters& next);
 
   // ResetRegisters to immediately before the first phase on the first line
   void reset() {

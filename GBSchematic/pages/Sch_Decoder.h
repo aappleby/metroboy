@@ -50,7 +50,7 @@ struct Decoder {
   }
 
   void tick(const Bus& bus,
-            const Clocks& clocks,
+            const ClockRegisters& clocks,
             wire BOOT_BIT,
             wire MODE_DBG2,
             wire ADDR_VALID);

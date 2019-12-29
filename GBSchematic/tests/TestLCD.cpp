@@ -93,21 +93,7 @@ struct TestGB {
 
     clk_phase = 5;
 
-    sys_sig = {
-      .RST = false,
-      .CLK_GOOD = true,
-      .MODE_PROD = true,
-      .MODE_DBG1 = false,
-      .MODE_DBG2 = false,
-      .CLK_REQ = true,
-      .ADDR_VALID = false,
-      .BOOT_BIT = true,
-      .LCDC_EN = true,
-      .DIV_06n = true,
-      .DIV_07n = true,
-      .DIV_15 = false,
-    };
-
+    sys_sig.reset();
     clk_sig1.reset();
     clk_sig2.reset();
     clk_reg.reset();
@@ -132,41 +118,28 @@ struct TestGB {
     
     clk_phase = -1;
 
-    sys_sig = {
-      .RST = true,
-      .CLK_GOOD = false,
-      .MODE_PROD = true,
-      .MODE_DBG1 = false,
-      .MODE_DBG2 = false,
-      .CLK_REQ = false,
-      .ADDR_VALID = false,
-      .BOOT_BIT = true,
-      .LCDC_EN = false,
-      .DIV_06n = true,
-      .DIV_07n = true,
-      .DIV_15 = false,
-    };
+    sys_sig.set_pwron();
 
     sim_slow(16);
     //check(lcd.x() == 0);
     //check(lcd.y() == 0);
 
-    sys_sig.RST = false;
+    sys_sig.set_rst(false);
     sim_slow(16);
     //check(lcd.x() == 0);
     //check(lcd.y() == 0);
 
-    sys_sig.CLK_GOOD = true;
+    sys_sig.set_clk_good(true);
     sim_slow(16);
     //check(lcd.x() == 0);
     //check(lcd.y() == 0);
 
-    sys_sig.CLK_REQ = true;
+    sys_sig.set_clk_req(true);
     sim_slow(16);
     //check(lcd.x() == 0);
     //check(lcd.y() == 0);
 
-    sys_sig.LCDC_EN = true;
+    sys_sig.set_lcdc_en(true);
     sim_slow(456*2*154 - 10);
 
     //printf("%d %d\n", lcd.x(), lcd.y());
@@ -322,50 +295,28 @@ struct LCDTest {
     memset(&gb1, 0, sizeof(gb1));
         
     gb1.clk_phase = -1;
-    gb1.sys_sig.BOOT_BIT   = true;
-    gb1.sys_sig.MODE_PROD  = true;
-    gb1.sys_sig.MODE_DBG1  = false;
-    gb1.sys_sig.MODE_DBG2  = false;
-    gb1.sys_sig.ADDR_VALID = false;
-    gb1.sys_sig.DIV_06n = true;
-    gb1.sys_sig.DIV_07n = true;
-    gb1.sys_sig.DIV_15  = false;
-    gb1.sys_sig.RST = true;
-    gb1.sys_sig.CLK_GOOD = false;
-    gb1.sys_sig.CLK_REQ = false;
-    gb1.sys_sig.LCDC_EN = false;
+    gb1.sys_sig.set_pwron();
 
     memset(&gb2, 0, sizeof(gb2));
     gb2.clk_phase = -1;
-    gb2.sys_sig.BOOT_BIT   = true;
-    gb2.sys_sig.MODE_PROD  = true;
-    gb2.sys_sig.MODE_DBG1  = false;
-    gb2.sys_sig.MODE_DBG2  = false;
-    gb2.sys_sig.ADDR_VALID = false;
-    gb2.sys_sig.DIV_06n = true;
-    gb2.sys_sig.DIV_07n = true;
-    gb2.sys_sig.DIV_15  = false;
-    gb2.sys_sig.RST = true;
-    gb2.sys_sig.CLK_GOOD = false;
-    gb2.sys_sig.CLK_REQ = false;
-    gb2.sys_sig.LCDC_EN = false;
+    gb2.sys_sig.set_pwron();
 
     sim_fast_slow(gb1, gb2, 16);
 
-    gb1.sys_sig.RST = false;
-    gb2.sys_sig.RST = false;
+    gb1.sys_sig.set_rst(false);
+    gb2.sys_sig.set_rst(false);
     sim_fast_slow(gb1, gb2, 16);
 
-    gb1.sys_sig.CLK_GOOD = true;
-    gb2.sys_sig.CLK_GOOD = true;
+    gb1.sys_sig.set_clk_good(true);
+    gb2.sys_sig.set_clk_good(true);
     sim_fast_slow(gb1, gb2, 16);
 
-    gb1.sys_sig.CLK_REQ = true;
-    gb2.sys_sig.CLK_REQ = true;
+    gb1.sys_sig.set_clk_req(true);
+    gb2.sys_sig.set_clk_req(true);
     sim_fast_slow(gb1, gb2, 16);
 
-    gb1.sys_sig.LCDC_EN = true;
-    gb2.sys_sig.LCDC_EN = true;
+    gb1.sys_sig.set_lcdc_en(true);
+    gb2.sys_sig.set_lcdc_en(true);
     sim_fast_slow(gb1, gb2, 456*2*154*2);
 
     printf("test_fast_slow pass\n");
@@ -476,19 +427,6 @@ struct LCDTest {
     }
   }
 };
-
-/*
-template<>
-__declspec(noinline) void check_match(const TestGB& a, const TestGB& b) {
-  check_match(a.clk, b.clk);
-  check_match(a.rst, b.rst);
-  check_match(a.bus, b.bus);
-  check_match(a.lcd, b.lcd);
-  check_match(a.spr, b.spr);
-  check_match(a.dec, b.dec);
-  check_match(a.vid, b.vid);
-}
-*/
 
 //-----------------------------------------------------------------------------
 

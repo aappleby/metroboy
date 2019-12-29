@@ -125,22 +125,7 @@ void dump(int x, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
 
 static int cursor = 20;
 
-void sim(int phase, Clocks& clk_reg, bool CLK_GOOD, bool CLK_REQ, bool MODE_PROD, bool VID_RESETn) {
-  SystemSignals sys_sig = {
-    .RST = false,
-    .CLK_GOOD = CLK_GOOD,
-    .MODE_PROD = MODE_PROD,
-    .MODE_DBG1 = false,
-    .MODE_DBG2 = false,
-    .CLK_REQ = CLK_REQ,
-    .ADDR_VALID = false,
-    .BOOT_BIT = true,
-    .LCDC_EN = true,
-    .DIV_06n = true,
-    .DIV_07n = true,
-    .DIV_15 = false,
-  };
-
+void sim(SystemSignals sys_sig, int phase, Clocks& clk_reg, bool VID_RESETn) {
   bool CLKIN = !(phase & 1);
   for (int j = 0; j < 8; j++) {
     Clocks prev_clk = clk_reg;
@@ -160,24 +145,12 @@ void TestClocks() {
   clk_reg.reset();
   printAt(cursor, 1, "rst");
 
-  SystemSignals sys_sig = {
-    .RST = false,
-    .CLK_GOOD = true,
-    .MODE_PROD = true,
-    .MODE_DBG1 = false,
-    .MODE_DBG2 = false,
-    .CLK_REQ = true,
-    .ADDR_VALID = false,
-    .BOOT_BIT = true,
-    .LCDC_EN = true,
-    .DIV_06n = true,
-    .DIV_07n = true,
-    .DIV_15 = false,
-  };
+  SystemSignals sys_sig;
+  sys_sig.reset();
 
   for (int phase = 0; phase < 16; phase++) {
     bool CLKIN = !(phase & 1);
-    sim(phase, clk_reg, true, true, true, true);
+    sim(sys_sig, phase, clk_reg, true);
     ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg, CLKIN);
     ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(clk_reg);
     dump(cursor++, clk_sig1, clk_sig2);

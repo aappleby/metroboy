@@ -38,6 +38,71 @@ struct ClockSignals2;
 //-----------------------------------------------------------------------------
 
 struct SystemSignals {
+  void reset() {
+    RST        = false;
+    CLK_GOOD   = true;
+    MODE_PROD  = true;
+    MODE_DBG1  = false;
+    MODE_DBG2  = false;
+
+    CLK_REQ    = true;
+    ADDR_VALID = false;
+
+    BOOT_BIT   = true;
+    LCDC_EN    = true;
+    DIV_06n    = true;
+    DIV_07n    = true;
+    DIV_15     = false;
+
+    update();
+  }
+
+  void set_pwron() {
+    RST        = true;
+    CLK_GOOD   = false;
+    MODE_PROD  = true;
+    MODE_DBG1  = false;
+    MODE_DBG2  = false;
+
+    CLK_REQ    = false;
+    ADDR_VALID = false;
+
+    BOOT_BIT   = true;
+    LCDC_EN    = false;
+    DIV_06n    = true;
+    DIV_07n    = true;
+    DIV_15     = false;
+
+    update();
+  }
+
+  void set_rst(bool rst) {
+    RST = rst;
+    update();
+  }
+
+  void set_clk_good(bool clk_good) {
+    CLK_GOOD = clk_good;
+    update();
+  }
+
+  void set_clk_req(bool clk_req) {
+    CLK_REQ = clk_req;
+    update();
+  }
+
+  void set_lcdc_en(bool lcdc_en) {
+    LCDC_EN = lcdc_en;
+    update();
+  }
+
+  void update() {
+    /*p01.ABOL*/ CPUCLK_REQn = not(CLK_REQ);
+    /*p01.BUTY*/ CPUCLK_REQ  = not(CPUCLK_REQn);
+    /*p01.UCOB*/ CLK_BAD1    = not(CLK_GOOD);
+    /*p01.ATEZ*/ CLK_BAD2    = not(CLK_GOOD);
+  }
+
   // input pins
   bool RST;
   bool CLK_GOOD;
@@ -49,18 +114,18 @@ struct SystemSignals {
   bool CLK_REQ;
   bool ADDR_VALID;
 
-  // signals trivially derived from the above
-  ///*p01.ABOL*/ .CPUCLK_REQn   = not(sys_sig.CPUCLK_REQ),
-  ///*p01.BUTY*/ .CPUCLK_REQ    = not(sig.CPUCLK_REQn),
-  ///*p01.UCOB*/ .CLK_BAD1      = not(sys_sig.CLK_GOOD),
-  ///*p01.ATEZ*/ .CLK_BAD2      = not(sys_sig.CLK_GOOD),
-
   // other random stuff for convenience
   bool BOOT_BIT;
   bool LCDC_EN;
   bool DIV_06n;
   bool DIV_07n;
   bool DIV_15;
+
+  // signals trivially derived from the above
+  /*p01.ABOL*/ bool CPUCLK_REQn;
+  /*p01.BUTY*/ bool CPUCLK_REQ;
+  /*p01.UCOB*/ bool CLK_BAD1;
+  /*p01.ATEZ*/ bool CLK_BAD2;
 };
 
 //-----------------------------------------------------------------------------

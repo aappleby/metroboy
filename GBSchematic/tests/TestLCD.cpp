@@ -185,7 +185,6 @@ struct TestGB {
 
         ResetSignals rst_sig = prev.rst_reg.sig;
 
-        Clocks::tock_slow1(clk_sig, MODE_PROD, clk_reg);
         Clocks::tock_slow2(clk_sig, rst_sig.VID_RESETn, clk_reg);
         
         rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
@@ -195,6 +194,10 @@ struct TestGB {
         LCD::tick_slow(clk_sig, rst_sig, prev.lcd, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
         Sprites_tickScanner(clk_sig, prev.lcd, rst_sig, prev.spr, spr);
         dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
+
+
+
+        Clocks::tock_slow1(clk_sig, MODE_PROD, clk_reg);
       }
     }
   }
@@ -212,7 +215,7 @@ struct TestGB {
 
         clk_sig = ClockSignals::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, rst_sig.VID_RESETn);
 
-        Clocks::tock_fast1(clk_phase, MODE_PROD, clk_reg);
+
         Clocks::tock_fast2(clk_phase, rst_sig.VID_RESETn, clk_reg);
 
         rst_sig = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
@@ -222,6 +225,8 @@ struct TestGB {
         LCD::tick_fast(clk_sig, rst_sig, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
         Sprites_tickScanner(clk_sig, prev.lcd, rst_sig, prev.spr, spr);
         dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
+
+        Clocks::tock_fast1(clk_phase, MODE_PROD, clk_reg);
       }
     }
   }

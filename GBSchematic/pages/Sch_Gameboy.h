@@ -55,7 +55,7 @@ struct Gameboy {
   Interrupts irq;
   Joypad     joy;
   Pins       pin;
-  LCD        lcd;
+  LCDRegisters  lcd;
   Bootrom    rom;
   OAM        oam;
   Vram       vrm;

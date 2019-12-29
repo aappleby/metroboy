@@ -5,28 +5,16 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct LCD {
+struct LCDRegisters {
 
-  static void tick_slow(const ClockSignals1& clk_sig1,
-                        const ClockSignals2& clk_sig2,
+  static void tick_slow(const ClockSignals2& clk_sig2,
                         const ResetSignals2& rst_sig2,
-                        const LCD& lcd,
-                        const Video& vid,
-                        bool SCAN_DONE_d0_TRIG,
-                        bool DIV_06n,
-                        bool DIV_07n,
-                        bool LCDC_EN,
-                        LCD& next);
+                        const LCDRegisters& lcd,
+                        LCDRegisters& next);
 
-  static void tick_fast(const ClockSignals1& clk_sig1,
-                        const ClockSignals2& clk_sig2,
+  static void tick_fast(const ClockSignals2& clk_sig2,
                         const ResetSignals2& rst_sig2,
-                        const Video& vid,
-                        bool SCAN_DONE_d0_TRIG,
-                        bool DIV_06n,
-                        bool DIV_07n,
-                        bool LCDC_EN,
-                        LCD& next);
+                        LCDRegisters& next);
 
   // ResetRegisters to immediately before the first phase on the first line
   void reset() {
@@ -58,6 +46,8 @@ struct LCD {
     NEW_LINE_d4a.val=false; NEW_LINE_d4a.clk=true;
     LINE_153_d4.val=true; LINE_153_d4.clk=false;
     VBLANK_d4.val = true; VBLANK_d4.clk = false;
+
+#if 0
     X_8_SYNC.val = false; X_8_SYNC.clk = false;
     LINE_STROBE.val = false; LINE_STROBE.clk = false;
 
@@ -78,6 +68,7 @@ struct LCD {
     /* PIN_55 */ PIN_CPL = 1;
     /* PIN_56 */ PIN_FR = 1;
     /* PIN_57 */ PIN_S = 1;
+#endif
   }
 
   uint32_t x() const {
@@ -87,17 +78,6 @@ struct LCD {
   uint32_t y() const {
     return (Y0 << 0) | (Y1 << 1) | (Y2 << 2) | (Y3 << 3) | (Y4 << 4) | (Y5 << 5) | (Y6 << 6) | (Y7 << 7);
   }
-
-  /*p21.PARU*/ bool VBLANK_d4b;
-
-  /*p28.BYHA*/ bool VID_LINE_TRIG_d4n;
-  /*p28.ATEJ*/ bool VID_LINE_TRIG_d4a;
-  /*p28.BYVA*/ bool VID_LINE_TRIG_d4p;
-  /*p29.DYBA*/ bool VID_LINE_TRIG_d4c;
-  /*p27.XAHY*/ bool VID_LINE_TRIG_d4o;
-
-  /*p29.CATU*/ Reg VID_LINE_d4;
-  /*p28.ANEL*/ Reg VID_LINE_d6;
 
   /*p21.SAXO*/ Reg X0;
   /*p21.TYPO*/ Reg X1;
@@ -116,12 +96,25 @@ struct LCD {
   /*p21.MATO*/ Reg Y6;
   /*p21.LAFO*/ Reg Y7;
 
+  /*p21.PARU*/ bool VBLANK_d4b;
+
+  /*p28.BYHA*/ bool VID_LINE_TRIG_d4n;
+  /*p28.ATEJ*/ bool VID_LINE_TRIG_d4a;
+  /*p28.BYVA*/ bool VID_LINE_TRIG_d4p;
+  /*p29.DYBA*/ bool VID_LINE_TRIG_d4c;
+  /*p27.XAHY*/ bool VID_LINE_TRIG_d4o;
+
+  /*p29.CATU*/ Reg VID_LINE_d4;
+  /*p28.ANEL*/ Reg VID_LINE_d6;
+
   /*p21.RUTU*/ Reg NEW_LINE_d0a;
   /*p21.NYPE*/ Reg NEW_LINE_d4a;
   /*p21.MYTA*/ Reg LINE_153_d4;
   /*p21.POPU*/ Reg VBLANK_d4;
-  /*p24.PAHO*/ Reg X_8_SYNC;
+
+#if 0
   /*p21.SYGU*/ Reg LINE_STROBE;
+  /*p24.PAHO*/ Reg X_8_SYNC;
 
   /*p21.WUSA*/ bool CPEN_LATCH;
 
@@ -143,6 +136,7 @@ struct LCD {
   /* PIN_55 */ bool PIN_CPL;
   /* PIN_56 */ bool PIN_FR;
   /* PIN_57 */ bool PIN_S;
+#endif
 };
 
 //-----------------------------------------------------------------------------

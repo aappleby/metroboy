@@ -21,7 +21,7 @@ namespace Schematics {
 
 void Vram_tick(const Bus& bus,
                const Pins& pins,
-               const LCD& lcd,
+               const LCDRegisters& lcd,
                const Registers& regs,
                const Sprites& spr,
                const DMA& dma,

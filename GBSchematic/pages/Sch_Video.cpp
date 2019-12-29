@@ -12,7 +12,7 @@ namespace Schematics {
 void P21_VideoControl_tick(const Bus& bus,
                            const BusControl& ctl,
                            const Pins& pins,
-                           const LCD& lcd,
+                           const LCDRegisters& lcd,
                            const Registers& regs,
                            const ClockSignals1& clk_sig1,
                            const ClockSignals2& clk_sig2,

@@ -12,6 +12,7 @@ struct ClockSignals1 {
 
   void reset() {
     *this = {
+      // ungated
       /*p01.ARYS*/ .ARYS_xBxDxFxH = 1,
       /*p01.ANOS*/ .ANOS_xBxDxFxH = 1,
       /*p01.AVET*/ .ROOT_AxCxExGx = 0,
@@ -71,6 +72,7 @@ struct ClockSignals1 {
     };
   }
 
+  // ungated
   /*p01.ARYS*/ bool ARYS_xBxDxFxH;
   /*p01.ANOS*/ bool ANOS_xBxDxFxH;
   /*p01.AVET*/ bool ROOT_AxCxExGx;
@@ -130,26 +132,23 @@ struct ClockSignals1 {
 };
 
 //-----------------------------------------------------------------------------
+// Video clocks
 
 struct ClockSignals2 {
   static ClockSignals2 tick_slow(const ResetSignals2& rst_sig2, const ClockRegisters& clk);
-  static ClockSignals2 tick_fast(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2);
+  static ClockSignals2 tick_fast(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2, const ClockRegisters& clk_reg);
 
   void reset() {
-    *this = {
-      // gated on VID_RESETn
-      /*p29.WUVU*/ .WUVU_xxCDxxGH = 1,
-      /*p21.VENA*/ .VENA_xxxxEFGH = 1,
-      /*p29.WOSU*/ .WOSU_xBCxxFGx = 0,
-      /*p29.XUPY*/ .XUPY_ABxxEFxx = 0,
-      /*p28.AWOH*/ .AWOH_xxCDxxGH = 1,
-      /*p21.TALU*/ .TALU_xxxxEFGH = 1,
-      /*p21.SONO*/ .SONO_ABCDxxxx = 0,
-      /*p29.XOCE*/ .XOCE_AxxDExxH = 1,
-    };
+    /*p29.WUVU*/ WUVU_xxCDxxGH = 1;
+    /*p21.VENA*/ VENA_xxxxEFGH = 1;
+    /*p29.WOSU*/ WOSU_xBCxxFGx = 0;
+    /*p29.XUPY*/ XUPY_ABxxEFxx = 0;
+    /*p28.AWOH*/ AWOH_xxCDxxGH = 1;
+    /*p21.TALU*/ TALU_xxxxEFGH = 1;
+    /*p21.SONO*/ SONO_ABCDxxxx = 0;
+    /*p29.XOCE*/ XOCE_AxxDExxH = 1;
   }
 
-  // gated on VID_RESETn
   /*p29.WUVU*/ bool WUVU_xxCDxxGH;
   /*p21.VENA*/ bool VENA_xxxxEFGH;
   /*p29.WOSU*/ bool WOSU_xBCxxFGx;
@@ -192,6 +191,11 @@ struct ClockRegisters {
     VENA_xxxxEFGH.val = 1; VENA_xxxxEFGH.clk = 0;
     WOSU_xBCxxFGx.val = 0; WOSU_xBCxxFGx.clk = 1;
   }
+
+private:
+
+  friend struct ClockSignals1;
+  friend struct ClockSignals2;
 
   /*p01.AFUR*/ Reg PHAZ_xBCDExxx;
   /*p01.ALEF*/ Reg PHAZ_xxCDEFxx;

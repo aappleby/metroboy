@@ -21,7 +21,6 @@ struct DMA;
 struct HRAM;
 struct Interrupts;
 struct Joypad;
-struct LCD;
 struct OAM;
 struct Pins;
 struct Registers;
@@ -36,6 +35,8 @@ struct ClockSignals2;
 struct ResetRegisters;
 struct ResetSignals1;
 struct ResetSignals2;
+
+struct LCDRegisters;
 
 //-----------------------------------------------------------------------------
 

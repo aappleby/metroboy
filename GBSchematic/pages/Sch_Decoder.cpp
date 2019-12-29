@@ -11,7 +11,7 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 void Decoder::tick(const Bus& bus,
-                   const ClockRegisters& clocks,
+                   const ClockSignals1& clk_sig1,
                    wire BOOT_BIT,
                    wire MODE_DBG2,
                    wire ADDR_VALID) {
@@ -83,8 +83,8 @@ void Decoder::tick(const Bus& bus,
   /*p25.TEFA*/ wire TEFA = nor(ADDR_FE00_FFFF, next.ADDR_VALID_AND_NOT_VRAM);
   /*p25.SOSE*/ next.ADDR_VRAM = and(bus.A15, TEFA);
 
-  /*p01.ATYP*/ wire PHASE_xBCDExxx2 = not(!clocks.PHAZ_xBCDExxx);  
-  /*p01.AROV*/ wire PHASE_xxxDEFGx2 = not(!clocks.PHAZ_xxxDEFGx);
+  /*p01.ATYP*/ wire PHASE_xBCDExxx2 = not(!clk_sig1.PHAZ_xBCDExxx);  
+  /*p01.AROV*/ wire PHASE_xxxDEFGx2 = not(!clk_sig1.PHAZ_xxxDEFGx);
   /*p01.AJAX*/ wire PHASE_AxxxxFGH3 = not(PHASE_xBCDExxx2);
   /*p01.AGUT*/ wire AGUT_AxxDEFGH = and(or(PHASE_AxxxxFGH3, PHASE_xxxDEFGx2), ADDR_VALID);
   /*p01.AWOD*/ wire AWOD = or(MODE_DBG2, AGUT_AxxDEFGH);

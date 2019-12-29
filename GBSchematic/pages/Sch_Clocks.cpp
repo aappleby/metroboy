@@ -8,7 +8,8 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig, const ClockRegisters& clk_reg) {
+ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
+                                       const ClockRegisters& clk_reg) {
   wire CLK = sys_sig.clk();
 
   ClockSignals1 sig = {
@@ -232,10 +233,10 @@ ClockSignals2 ClockSignals2::tick_slow(const ResetSignals2& rst_sig2, const Cloc
 
 //----------------------------------------
 
-ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2) {
-  int phase = sys_sig.phase();
+#pragma warning(disable : 4189)
 
-  ClockSignals2 sig;
+ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2, const ClockRegisters& clk_reg) {
+  int phase = sys_sig.phase();
 
   bool xxxxEFGH = (phase == 4) || (phase == 5) || (phase == 6) || (phase == 7);
   bool xxCDxxGH = (phase == 2) || (phase == 3) || (phase == 6) || (phase == 7);
@@ -244,9 +245,22 @@ ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const Reset
   bool ABCDxxxx = !xxxxEFGH;
   bool AxxDExxH = !xBCxxFGx;
 
+  ClockSignals2 sig = {
+    // gated on VID_RESETn
+    /*p29.WUVU*/ .WUVU_xxCDxxGH = and(clk_reg.WUVU_xxCDxxGH, rst_sig2.VID_RESETn),
+    /*p21.VENA*/ .VENA_xxxxEFGH = and(clk_reg.VENA_xxxxEFGH, rst_sig2.VID_RESETn),
+    /*p29.WOSU*/ .WOSU_xBCxxFGx = and(clk_reg.WOSU_xBCxxFGx, rst_sig2.VID_RESETn),
+    /*p29.XUPY*/ .XUPY_ABxxEFxx = not(sig.WUVU_xxCDxxGH),
+    /*p28.AWOH*/ .AWOH_xxCDxxGH = not(sig.XUPY_ABxxEFxx),
+    /*p21.TALU*/ .TALU_xxxxEFGH = not(!sig.VENA_xxxxEFGH),
+    /*p21.SONO*/ .SONO_ABCDxxxx = not(sig.TALU_xxxxEFGH),
+    /*p29.XOCE*/ .XOCE_AxxDExxH = not(sig.WOSU_xBCxxFGx),
+  };
 
+#if 0
   if (rst_sig2.VID_RESETn) {
     sig.XUPY_ABxxEFxx = ABxxEFxx;
+    /*
     sig.AWOH_xxCDxxGH = xxCDxxGH;
     sig.WUVU_xxCDxxGH = xxCDxxGH;
 
@@ -256,9 +270,11 @@ ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const Reset
     sig.SONO_ABCDxxxx = ABCDxxxx;
     sig.VENA_xxxxEFGH = xxxxEFGH;
     sig.TALU_xxxxEFGH = xxxxEFGH;
+    */
   }
   else {
     sig.XUPY_ABxxEFxx = 1;
+    /*
     sig.AWOH_xxCDxxGH = 0;
     sig.WUVU_xxCDxxGH = 0;
 
@@ -268,7 +284,10 @@ ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const Reset
     sig.SONO_ABCDxxxx = 1;
     sig.VENA_xxxxEFGH = 0;
     sig.TALU_xxxxEFGH = 0;
+    */
   }
+#endif
+
 
   return sig;
 }

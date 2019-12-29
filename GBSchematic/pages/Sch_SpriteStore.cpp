@@ -48,7 +48,7 @@ void SpriteMatcher_tick(const Sprites& spr,
 
 //----------
 
-void SpriteMatcher_tock(const LCD& lcd,
+void SpriteMatcher_tock(const LCDRegisters& lcd,
                         const Sprites& spr,
                         const SpriteIndexLine& sil,
                         const OAM& oam,
@@ -124,7 +124,7 @@ void SpriteStore_tock(const SpriteStore& sst,
                       const ClockSignals1& clk,
                       const Sprites& spr,
                       const ResetSignals2& rst_sig2,
-                      const LCD& lcd,
+                      const LCDRegisters& lcd,
                       const OAM& oam,
 
                       SpriteStore& next) {

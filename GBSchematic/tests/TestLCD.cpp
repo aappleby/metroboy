@@ -100,8 +100,9 @@ struct TestGB {
     rst_sig2.reset();
     rst_reg.reset();
 
+    lcd.reset();
+
     //bus.reset();
-    //lcd.reset();
     //spr.reset();
     //dec.reset();
     //vid.reset();
@@ -167,6 +168,7 @@ struct TestGB {
         ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
         ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
         ResetRegisters::tock_slow(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
+        LCDRegisters::tick_slow(clk_sig2, rst_sig2, prev.lcd, lcd);
       }
     }
   }
@@ -180,20 +182,21 @@ struct TestGB {
         TestGB prev = *this;
 
         clk_sig1 = ClockSignals1::tick_fast(sys_sig);
-        rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, prev.rst_reg);
-        rst_sig2 = ResetSignals2::tick_slow(sys_sig, prev.rst_reg);
-        clk_sig2 = ClockSignals2::tick_slow(rst_sig2, prev.clk_reg);
+        rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
+        rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
+        clk_sig2 = ClockSignals2::tick_fast(sys_sig, rst_sig2, clk_reg);
 
         //----------
 
         ClockRegisters::tock_fast1(sys_sig, clk_reg);
         ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
-        ResetRegisters::tock_slow(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
+        ResetRegisters::tock_slow(sys_sig, clk_sig1, rst_reg, rst_reg);
+        LCDRegisters::tick_slow(clk_sig2, rst_sig2, prev.lcd, lcd);
       }
     }
   }
 
-  //LCD::tick_slow(clk_sig1, clk_sig2, rst_sig1, prev.lcd, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
+  //LCD::tick_slow(clk_sig2, rst_sig2, prev.lcd, lcd);
   //Sprites_tickScanner(clk_sig1, clk_sig2, prev.lcd, rst_sig1, prev.spr, spr);
   //dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
 
@@ -208,9 +211,10 @@ struct TestGB {
   ResetSignals2  rst_sig2;
   ResetRegisters rst_reg;
 
+  LCDRegisters   lcd;
+
   /*
   Bus     bus;
-  LCD     lcd;
   Sprites spr;
   Decoder dec;
   Video   vid;
@@ -236,8 +240,9 @@ struct LCDTest {
     check_match(gb1.rst_sig1,   gb2.rst_sig1);
     check_match(gb1.rst_reg,    gb2.rst_reg);
 
+    check_match(gb1.lcd, gb2.lcd);
+
     //check_match(gb1.bus, gb2.bus);
-    //check_match(gb1.lcd, gb2.lcd);
     //check_match(gb1.spr, gb2.spr);
     //check_match(gb1.vid, gb2.vid);
   }

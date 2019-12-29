@@ -128,16 +128,16 @@ void TestClocks() {
   printf("\033[?6l");
   labels();
 
-  ClockRegisters clk_reg = {};
-  ResetRegisters rst_reg = {};
+  ClockRegisters clk_reg;
+  ResetRegisters rst_reg;
+  SystemSignals sys_sig;
 
   clk_reg.reset();
-  printAt(cursor, 1, "rst");
-
-  SystemSignals sys_sig;
+  rst_reg.reset();
   sys_sig.reset();
 
   for (int phase = 0; phase < 16; phase++) {
+    sys_sig.next_phase();
 
     for (int pass = 0; pass < 12; pass++) {
       ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);

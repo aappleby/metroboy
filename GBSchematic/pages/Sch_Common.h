@@ -46,7 +46,7 @@ struct SystemSignals {
   bool MODE_DBG2;
 
   // cpu control signals
-  bool CPUCLK_REQ;
+  bool CLK_REQ;
   bool ADDR_VALID;
 
   // signals trivially derived from the above

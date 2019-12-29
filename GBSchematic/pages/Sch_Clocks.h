@@ -11,10 +11,8 @@ struct ClockSignals1 {
                                  const Clocks& clk,
                                  wire CLK);
 
-  static ClockSignals1 tick_fast(int phase,
-                                 wire CLK_GOOD,
-                                 wire CPUCLK_REQ_,
-                                 wire MODE_PROD);
+  static ClockSignals1 tick_fast(const SystemSignals& sys_sig,
+                                 int phase);
 
   void reset() {
     *this = {
@@ -180,20 +178,22 @@ struct ClockSignals2 {
 
 struct Clocks {
 
-  static void tock_slow1(const ClockSignals1& sig,
-                         /*p07.UPOJ*/ wire MODE_PROD,
+  static void tock_slow1(const SystemSignals& sys_sig,
+                         const ClockSignals1& clk_sig1,
                          Clocks& next);
 
-  static void tock_slow2(const ClockSignals1& sig1,
-                         const ClockSignals2& sig2,
+  static void tock_slow2(const SystemSignals& sys_sig,
+                         const ClockSignals1& clk_sig1,
+                         const ClockSignals2& clk_sig2,
                          /*p01.XAPO*/ wire VID_RESETn,
                          Clocks& next);
 
-  static void tock_fast1(int phase,
-                         /*p07.UPOJ*/ wire MODE_PROD,
+  static void tock_fast1(const SystemSignals& sys_sig,
+                         int phase,
                          Clocks& next);
 
-  static void tock_fast2(int phase,
+  static void tock_fast2(const SystemSignals& sys_sig,
+                         int phase,
                          /*p01.XAPO*/ wire VID_RESETn,
                          Clocks& next);
 

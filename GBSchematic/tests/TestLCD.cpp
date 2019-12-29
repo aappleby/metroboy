@@ -99,7 +99,7 @@ struct TestGB {
       .MODE_PROD = true,
       .MODE_DBG1 = false,
       .MODE_DBG2 = false,
-      .CPUCLK_REQ = true,
+      .CLK_REQ = true,
       .ADDR_VALID = false,
       .BOOT_BIT = true,
       .LCDC_EN = true,
@@ -138,7 +138,7 @@ struct TestGB {
       .MODE_PROD = true,
       .MODE_DBG1 = false,
       .MODE_DBG2 = false,
-      .CPUCLK_REQ = false,
+      .CLK_REQ = false,
       .ADDR_VALID = false,
       .BOOT_BIT = true,
       .LCDC_EN = false,
@@ -161,7 +161,7 @@ struct TestGB {
     //check(lcd.x() == 0);
     //check(lcd.y() == 0);
 
-    sys_sig.CPUCLK_REQ = true;
+    sys_sig.CLK_REQ = true;
     sim_slow(16);
     //check(lcd.x() == 0);
     //check(lcd.y() == 0);
@@ -192,8 +192,8 @@ struct TestGB {
 
         //----------
 
-        Clocks::tock_slow1(clk_sig1, sys_sig.MODE_PROD, clk_reg);
-        Clocks::tock_slow2(clk_sig1, clk_sig2, rst_sig1.VID_RESETn, clk_reg);
+        Clocks::tock_slow1(sys_sig, clk_sig1, clk_reg);
+        Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1.VID_RESETn, clk_reg);
         ResetRegisters::tock(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, rst_reg);
       }
     }
@@ -208,14 +208,14 @@ struct TestGB {
       for (int pass = 0; pass < 12; pass++) {
         TestGB prev = *this;
 
-        clk_sig1 = ClockSignals1::tick_fast(clk_phase, sys_sig.CLK_GOOD, sys_sig.CPUCLK_REQ, sys_sig.MODE_PROD);
+        clk_sig1 = ClockSignals1::tick_fast(sys_sig, clk_phase);
         rst_sig1 = ResetSignals1::tick(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH);
         clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
 
         //----------
 
-        Clocks::tock_fast1(clk_phase, sys_sig.MODE_PROD, clk_reg);
-        Clocks::tock_slow2(clk_sig1, clk_sig2, rst_sig1.VID_RESETn, clk_reg);
+        Clocks::tock_fast1(sys_sig, clk_phase, clk_reg);
+        Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1.VID_RESETn, clk_reg);
         ResetRegisters::tock(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, rst_reg);
       }
     }
@@ -332,7 +332,7 @@ struct LCDTest {
     gb1.sys_sig.DIV_15  = false;
     gb1.sys_sig.RST = true;
     gb1.sys_sig.CLK_GOOD = false;
-    gb1.sys_sig.CPUCLK_REQ = false;
+    gb1.sys_sig.CLK_REQ = false;
     gb1.sys_sig.LCDC_EN = false;
 
     memset(&gb2, 0, sizeof(gb2));
@@ -347,7 +347,7 @@ struct LCDTest {
     gb2.sys_sig.DIV_15  = false;
     gb2.sys_sig.RST = true;
     gb2.sys_sig.CLK_GOOD = false;
-    gb2.sys_sig.CPUCLK_REQ = false;
+    gb2.sys_sig.CLK_REQ = false;
     gb2.sys_sig.LCDC_EN = false;
 
     sim_fast_slow(gb1, gb2, 16);
@@ -360,8 +360,8 @@ struct LCDTest {
     gb2.sys_sig.CLK_GOOD = true;
     sim_fast_slow(gb1, gb2, 16);
 
-    gb1.sys_sig.CPUCLK_REQ = true;
-    gb2.sys_sig.CPUCLK_REQ = true;
+    gb1.sys_sig.CLK_REQ = true;
+    gb2.sys_sig.CLK_REQ = true;
     sim_fast_slow(gb1, gb2, 16);
 
     gb1.sys_sig.LCDC_EN = true;

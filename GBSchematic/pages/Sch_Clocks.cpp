@@ -11,7 +11,7 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
                                        const Clocks& clk,
                                        wire CLK) {
   ClockSignals1 sig = {
-    /*p01.ABOL*/ .CPUCLK_REQn   = not(sys_sig.CPUCLK_REQ),
+    /*p01.ABOL*/ .CPUCLK_REQn   = not(sys_sig.CLK_REQ),
     /*p01.BUTY*/ .CPUCLK_REQ    = not(sig.CPUCLK_REQn),
     /*p01.UCOB*/ .CLK_BAD1      = not(sys_sig.CLK_GOOD),
     /*p01.ATEZ*/ .CLK_BAD2      = not(sys_sig.CLK_GOOD),
@@ -79,17 +79,15 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
 
 //----------------------------------------
 
-ClockSignals1 ClockSignals1::tick_fast(int phase,
-                                       wire CLK_GOOD,
-                                       wire CPUCLK_REQ_,
-                                       /*p07.UPOJ*/ wire MODE_PROD) {
+ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig,
+                                       int phase) {
 
   ClockSignals1 sig;
 
-  /*p01.ABOL*/ sig.CPUCLK_REQn   = not(CPUCLK_REQ_);
+  /*p01.ABOL*/ sig.CPUCLK_REQn   = not(sys_sig.CLK_REQ);
   /*p01.BUTY*/ sig.CPUCLK_REQ    = not(sig.CPUCLK_REQn);
-  /*p01.UCOB*/ sig.CLK_BAD1      = not(CLK_GOOD);
-  /*p01.ATEZ*/ sig.CLK_BAD2      = not(CLK_GOOD);
+  /*p01.UCOB*/ sig.CLK_BAD1      = not(sys_sig.CLK_GOOD);
+  /*p01.ATEZ*/ sig.CLK_BAD2      = not(sys_sig.CLK_GOOD);
 
   bool xBxDxFxH = (phase & 1);
   bool AxCxExGx = !xBxDxFxH;
@@ -127,7 +125,7 @@ ClockSignals1 ClockSignals1::tick_fast(int phase,
   bool xBxxxxxx = (phase == 1);
   bool AxCDEFGH = !xBxxxxxx;
 
-  if (MODE_PROD) {
+  if (sys_sig.MODE_PROD) {
     sig.PHAZ_xBCDExxx = xBCDExxx;
     sig.PHAZ_xxCDEFxx = xxCDEFxx;
     sig.PHAZ_xxxDEFGx = xxxDEFGx;
@@ -156,7 +154,7 @@ ClockSignals1 ClockSignals1::tick_fast(int phase,
     sig.BELE_Axxxxxxx = 0;
   }
 
-  if (MODE_PROD && CPUCLK_REQ_) {
+  if (sys_sig.MODE_PROD && sys_sig.CLK_REQ) {
     sig.NULE_xxxxEFGH = AxxxxFGH;
     sig.BUDE_xxxxEFGH = AxxxxFGH;
     sig.MOPA_AxxxxFGH = AxxxxFGH;
@@ -176,18 +174,18 @@ ClockSignals1 ClockSignals1::tick_fast(int phase,
     sig.BOLO_xBCDEFGx = xBCDEFGx;
   }
   else {
-    sig.NULE_xxxxEFGH = CPUCLK_REQ_;
-    sig.BUDE_xxxxEFGH = CPUCLK_REQ_;
-    sig.MOPA_AxxxxFGH = CPUCLK_REQ_;
-    sig.BEJA_xxxxEFGH = CPUCLK_REQ_;
-    sig.BELO_xxxxEFGH = CPUCLK_REQ_;
+    sig.NULE_xxxxEFGH = sys_sig.CLK_REQ;
+    sig.BUDE_xxxxEFGH = sys_sig.CLK_REQ;
+    sig.MOPA_AxxxxFGH = sys_sig.CLK_REQ;
+    sig.BEJA_xxxxEFGH = sys_sig.CLK_REQ;
+    sig.BELO_xxxxEFGH = sys_sig.CLK_REQ;
 
-    sig.BYRY_ABCDxxxx = !CPUCLK_REQ_;
-    sig.DOVA_xBCDExxx = !CPUCLK_REQ_;
-    sig.UVYT_xBCDExxx = !CPUCLK_REQ_;
-    sig.BEKO_ABCDxxxx = !CPUCLK_REQ_;
-    sig.BANE_ABCDxxxx = !CPUCLK_REQ_;
-    sig.BAZE_ABCDxxxx = !CPUCLK_REQ_;
+    sig.BYRY_ABCDxxxx = !sys_sig.CLK_REQ;
+    sig.DOVA_xBCDExxx = !sys_sig.CLK_REQ;
+    sig.UVYT_xBCDExxx = !sys_sig.CLK_REQ;
+    sig.BEKO_ABCDxxxx = !sys_sig.CLK_REQ;
+    sig.BANE_ABCDxxxx = !sys_sig.CLK_REQ;
+    sig.BAZE_ABCDxxxx = !sys_sig.CLK_REQ;
 
     sig.BAPY_AxxxxxxH = 0;
     sig.BUFA_AxxxxxxH = 0;
@@ -195,7 +193,7 @@ ClockSignals1 ClockSignals1::tick_fast(int phase,
     sig.BOLO_xBCDEFGx = 1;
   }
 
-  if (MODE_PROD && CLK_GOOD) {
+  if (sys_sig.MODE_PROD && sys_sig.CLK_GOOD) {
     sig.BYJU_xBCDEFGH = AxCDEFGH;
     sig.BOGA_AxCDEFGH = AxCDEFGH;
     sig.BALY_Axxxxxxx = xBxxxxxx;
@@ -206,17 +204,17 @@ ClockSignals1 ClockSignals1::tick_fast(int phase,
     sig.BALY_Axxxxxxx = 1;
   }
 
-  if (MODE_PROD && CLK_GOOD && CPUCLK_REQ_) {
+  if (sys_sig.MODE_PROD && sys_sig.CLK_GOOD && sys_sig.CLK_REQ) {
     sig.BYXO_xBCDEFGH = AxCDEFGH;
     sig.BOWA_AxCDEFGH = AxCDEFGH;
     sig.BUVU_Axxxxxxx = xBxxxxxx;
     sig.BEDO_xBxxxxxx = xBxxxxxx;
   }
   else {
-    sig.BUVU_Axxxxxxx = CPUCLK_REQ_;
-    sig.BYXO_xBCDEFGH = !CPUCLK_REQ_;
-    sig.BOWA_AxCDEFGH = !CPUCLK_REQ_;
-    sig.BEDO_xBxxxxxx = CPUCLK_REQ_;
+    sig.BUVU_Axxxxxxx = sys_sig.CLK_REQ;
+    sig.BYXO_xBCDEFGH = !sys_sig.CLK_REQ;
+    sig.BOWA_AxCDEFGH = !sys_sig.CLK_REQ;
+    sig.BEDO_xBxxxxxx = sys_sig.CLK_REQ;
   }
 
   return sig;
@@ -284,19 +282,20 @@ ClockSignals2 ClockSignals2::tick_fast(int phase, wire VID_RESETn) {
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_slow1(const ClockSignals1& sig1,
-                        wire MODE_PROD,
+void Clocks::tock_slow1(const SystemSignals& sys_sig,
+                        const ClockSignals1& sig1,
                         Clocks& next) {
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig1.ATAL_xBxDxFxH, MODE_PROD, !sig1.PHAZ_xxxxEFGH);
-  /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig1.ATAL_xBxDxFxH, MODE_PROD,  sig1.PHAZ_xBCDExxx);
-  /*p01.APUK*/ next.PHAZ_xxxDEFGx.duotock(sig1.ATAL_xBxDxFxH, MODE_PROD,  sig1.PHAZ_xxCDEFxx);
-  /*p01.ADYK*/ next.PHAZ_xxxxEFGH.duotock(sig1.ATAL_xBxDxFxH, MODE_PROD,  sig1.PHAZ_xxxDEFGx);
+  /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD, !sig1.PHAZ_xxxxEFGH);
+  /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xBCDExxx);
+  /*p01.APUK*/ next.PHAZ_xxxDEFGx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xxCDEFxx);
+  /*p01.ADYK*/ next.PHAZ_xxxxEFGH.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xxxDEFGx);
 }
 
 //----------------------------------------
 
-void Clocks::tock_slow2(const ClockSignals1& sig1,
+void Clocks::tock_slow2(const SystemSignals& /*sys_sig*/,
+                        const ClockSignals1& sig1,
                         const ClockSignals2& sig2,
                         wire VID_RESETn,
                         Clocks& next) {
@@ -307,7 +306,7 @@ void Clocks::tock_slow2(const ClockSignals1& sig1,
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_fast1(int phase, wire MODE_PROD, Clocks& next) {
+void Clocks::tock_fast1(const SystemSignals& sys_sig, int phase, Clocks& next) {
 
   bool xBxDxFxH = (phase & 1);
 
@@ -316,7 +315,7 @@ void Clocks::tock_fast1(int phase, wire MODE_PROD, Clocks& next) {
   bool xxxDEFGx = (phase == 3) || (phase == 4) || (phase == 5) || (phase == 6);
   bool xxxxEFGH = (phase == 4) || (phase == 5) || (phase == 6) || (phase == 7);
 
-  if (MODE_PROD) {
+  if (sys_sig.MODE_PROD) {
     next.PHAZ_xBCDExxx.val = xBCDExxx;
     next.PHAZ_xxCDEFxx.val = xxCDEFxx;
     next.PHAZ_xxxDEFGx.val = xxxDEFGx;
@@ -337,7 +336,7 @@ void Clocks::tock_fast1(int phase, wire MODE_PROD, Clocks& next) {
 
 //----------------------------------------
 
-void Clocks::tock_fast2(int phase, wire VID_RESETn, Clocks& next) {
+void Clocks::tock_fast2(const SystemSignals& /*sys_sig*/, int phase, wire VID_RESETn, Clocks& next) {
 
   bool xBxDxFxH = (phase & 1);
   bool AxCxExGx = !xBxDxFxH;

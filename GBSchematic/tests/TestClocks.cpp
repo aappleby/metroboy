@@ -125,14 +125,14 @@ void dump(int x, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
 
 static int cursor = 20;
 
-void sim(int phase, Clocks& clk_reg, bool CLK_GOOD, bool CPUCLK_REQ, bool MODE_PROD, bool VID_RESETn) {
+void sim(int phase, Clocks& clk_reg, bool CLK_GOOD, bool CLK_REQ, bool MODE_PROD, bool VID_RESETn) {
   SystemSignals sys_sig = {
     .RST = false,
     .CLK_GOOD = CLK_GOOD,
     .MODE_PROD = MODE_PROD,
     .MODE_DBG1 = false,
     .MODE_DBG2 = false,
-    .CPUCLK_REQ = CPUCLK_REQ,
+    .CLK_REQ = CLK_REQ,
     .ADDR_VALID = false,
     .BOOT_BIT = true,
     .LCDC_EN = true,
@@ -146,8 +146,8 @@ void sim(int phase, Clocks& clk_reg, bool CLK_GOOD, bool CPUCLK_REQ, bool MODE_P
     Clocks prev_clk = clk_reg;
     ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, prev_clk, CLKIN);
     ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(prev_clk);
-    Clocks::tock_slow1(clk_sig1, MODE_PROD, clk_reg);
-    Clocks::tock_slow2(clk_sig1, clk_sig2, VID_RESETn, clk_reg);
+    Clocks::tock_slow1(sys_sig, clk_sig1, clk_reg);
+    Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, VID_RESETn, clk_reg);
   }
 }
 
@@ -166,7 +166,7 @@ void TestClocks() {
     .MODE_PROD = true,
     .MODE_DBG1 = false,
     .MODE_DBG2 = false,
-    .CPUCLK_REQ = true,
+    .CLK_REQ = true,
     .ADDR_VALID = false,
     .BOOT_BIT = true,
     .LCDC_EN = true,

@@ -7,6 +7,11 @@ void plot(int x, int y, bool v) {
   printf("\033[%d;%dH%c", y, x, v ? '#' : '.');
 }
 
+void plot2(int x, int y, int v) {
+  printf("\033[%d;%dH%d", y, x, v);
+}
+
+
 void printAt(int x, int y, const char *format, ...)
 {
   va_list args;
@@ -18,7 +23,27 @@ void printAt(int x, int y, const char *format, ...)
 
 void labels() {
   int line = 3;
-  printAt(0, line++, "ROOT_AxCxExGx");
+  printAt(0, line++, "PHASE");
+  printAt(0, line++, "CLK");
+  line++;
+
+  printAt(0, line++, "ARYS_AxCxExGx");
+  printAt(0, line++, "ANOS_AxCxExGx");
+  printAt(0, line++, "ATAL_AxCxExGx");
+  printAt(0, line++, "ZAXY_AxCxExGx");
+  printAt(0, line++, "ALET_AxCxExGx");
+  printAt(0, line++, "XYVA_AxCxExGx");
+  printAt(0, line++, "TAVA_AxCxExGx");
+  printAt(0, line++, "XYFY_AxCxExGx");
+
+  printAt(0, line++, "AVET_xBxDxFxH");
+  printAt(0, line++, "AZOF_xBxDxFxH");
+  printAt(0, line++, "ZEME_xBxDxFxH");
+  printAt(0, line++, "MYVO_xBxDxFxH");
+  printAt(0, line++, "XOTA_xBxDxFxH");
+  printAt(0, line++, "MOXE_xBxDxFxH");
+  printAt(0, line++, "MEHE_xBxDxFxH");
+  printAt(0, line++, "LAPE_xBxDxFxH");
   line++;
 
   printAt(0, line++, "PHAZ_ABCDxxxx");
@@ -29,7 +54,7 @@ void labels() {
   printAt(0, line++, "ATYP_ABCDxxxx");
   printAt(0, line++, "ADAR_ABCxxxxH");
   printAt(0, line++, "AROV_xxCDEFxx");
-  printAt(0, line++, "AFAS_xxxxxFGH");
+  printAt(0, line++, "AFAS_xxxxEFGx");
   line++;
 
   printAt(0, line++, "NULE_xxxxEFGH");
@@ -73,9 +98,28 @@ void labels() {
   line++;
 }
 
-void dump(int x, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
+void dump(int x, SystemSignals& sys_sig, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
   int line = 3;
-  plot(x, line++, clk_sig1.ROOT_AxCxExGx);
+  plot2(x, line++, sys_sig.phase());
+  plot(x, line++, sys_sig.clk());
+  line++;
+
+  plot(x, line++, clk_sig1.ARYS_AxCxExGx);
+  plot(x, line++, clk_sig1.ANOS_AxCxExGx);
+  plot(x, line++, clk_sig1.ATAL_AxCxExGx);
+  plot(x, line++, clk_sig1.ZAXY_AxCxExGx);
+  plot(x, line++, clk_sig1.ALET_AxCxExGx);
+  plot(x, line++, clk_sig1.XYVA_AxCxExGx);
+  plot(x, line++, clk_sig1.TAVA_AxCxExGx);
+  plot(x, line++, clk_sig1.XYFY_AxCxExGx);
+  plot(x, line++, clk_sig1.AVET_xBxDxFxH);
+  plot(x, line++, clk_sig1.AZOF_xBxDxFxH);
+  plot(x, line++, clk_sig1.ZEME_xBxDxFxH);
+  plot(x, line++, clk_sig1.MYVO_xBxDxFxH);
+  plot(x, line++, clk_sig1.XOTA_xBxDxFxH);
+  plot(x, line++, clk_sig1.MOXE_xBxDxFxH);
+  plot(x, line++, clk_sig1.MEHE_xBxDxFxH);
+  plot(x, line++, clk_sig1.LAPE_xBxDxFxH);
   line++;
 
   plot(x, line++, clk_sig1.PHAZ_ABCDxxxx);
@@ -86,7 +130,7 @@ void dump(int x, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
   plot(x, line++, clk_sig1.ATYP_ABCDxxxx);
   plot(x, line++, clk_sig1.ADAR_ABCxxxxH);
   plot(x, line++, clk_sig1.AROV_xxCDEFxx);
-  plot(x, line++, clk_sig1.AFAS_xxxxxFGH);
+  plot(x, line++, clk_sig1.AFAS_xxxxEFGx);
   line++;
 
   plot(x, line++, clk_sig1.NULE_xxxxEFGH);
@@ -144,7 +188,7 @@ void TestClocks() {
   rst_reg.reset();
   sys_sig.reset();
 
-  for (int phase = 0; phase < 16; phase++) {
+  for (int phase = 0; phase < 8; phase++) {
     sys_sig.next_phase();
 
     for (int pass = 0; pass < 12; pass++) {
@@ -161,7 +205,10 @@ void TestClocks() {
     ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
     ResetSignals2 rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
     ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
-    dump(cursor++, clk_sig1, clk_sig2);
+
+    clk_sig1.check_phase(sys_sig.phase());
+
+    dump(cursor++, sys_sig, clk_sig1, clk_sig2);
   }
 
   /*
@@ -210,5 +257,5 @@ void TestClocks() {
   cursor++;
   */
 
-  printAt(0, 50, "done");
+  printAt(0, 70, "done");
 }

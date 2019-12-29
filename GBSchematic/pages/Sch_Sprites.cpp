@@ -48,7 +48,7 @@ void Sprites_tick(const Pins& pins,
     /*p29.TAME*/ wire SEQ_5n = nand(spr.SPR_SEQ2, spr.SPR_SEQ0);
 
     {
-      /*p29.TOMA*/ wire SEQ_CLK = nand(clk_sig1.LAPE_AxCxExGx, SEQ_5n);
+      /*p29.TOMA*/ wire SEQ_CLK = nand(clk_sig1.LAPE_xBxDxFxH, SEQ_5n);
       /*p27.SECA*/ wire SPR_SEQ_RST = nor(vid.SPRITE_FETCH_TRIG, rst_sig2.VID_RESET5, lcd.VID_LINE_TRIG_d4n);
       /*p29.TOXE*/ next.SPR_SEQ0.tock(SEQ_CLK,       SPR_SEQ_RST, !spr.SPR_SEQ0);
       /*p29.TULY*/ next.SPR_SEQ1.tock(!spr.SPR_SEQ0, SPR_SEQ_RST, !spr.SPR_SEQ1);
@@ -58,10 +58,10 @@ void Sprites_tick(const Pins& pins,
 
     {
       /*p27.VYPO*/ wire VYPO = not(pins.P10_B);
-      /*p29.TYFO*/ next.SEQ_B0d.tock    (clk_sig1.LAPE_AxCxExGx, VYPO, next.SPR_SEQ0);
-      /*p29.TOBU*/ next.SEQ_xx23xx .tock(clk_sig1.TAVA_xBxDxFxH, vid.RENDERING_LATCH, spr.SPR_SEQ1);    // note input is seq 1 not 2
-      /*p29.VONU*/ next.SEQ_xxx34xn.tock(clk_sig1.TAVA_xBxDxFxH, vid.RENDERING_LATCH, spr.SEQ_xx23xx);
-      /*p29.SEBA*/ next.SEQ_xxxx45n.tock(clk_sig1.LAPE_AxCxExGx, vid.RENDERING_LATCH, spr.SEQ_xxx34xn); // is this clock wrong?
+      /*p29.TYFO*/ next.SEQ_B0d.tock    (clk_sig1.LAPE_xBxDxFxH, VYPO, next.SPR_SEQ0);
+      /*p29.TOBU*/ next.SEQ_xx23xx .tock(clk_sig1.TAVA_AxCxExGx, vid.RENDERING_LATCH, spr.SPR_SEQ1);    // note input is seq 1 not 2
+      /*p29.VONU*/ next.SEQ_xxx34xn.tock(clk_sig1.TAVA_AxCxExGx, vid.RENDERING_LATCH, spr.SEQ_xx23xx);
+      /*p29.SEBA*/ next.SEQ_xxxx45n.tock(clk_sig1.LAPE_xBxDxFxH, vid.RENDERING_LATCH, spr.SEQ_xxx34xn); // is this clock wrong?
     }
 
     {
@@ -208,7 +208,7 @@ void Sprites_tickScanner(const ClockSignals1& clk_sig1,
 
     // the second clock here doesn't match the usual synchronizer pattern, but it matches the die.
     /*p29.BYBA*/ next.SCAN_DONE_d4.tock(clk_sig2.XUPY_xBCxxFGx, SCAN_RSTo, spr.SCAN_DONE_d0);
-    /*p29.DOBA*/ next.SCAN_DONE_d5.tock(clk_sig1.ALET_xBxDxFxH, SCAN_RSTo, spr.SCAN_DONE_d4);
+    /*p29.DOBA*/ next.SCAN_DONE_d5.tock(clk_sig1.ALET_AxCxExGx, SCAN_RSTo, spr.SCAN_DONE_d4);
 
     // which means this trigger is exactly 1 phase long
     /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or(SCAN_RSTa, spr.SCAN_DONE_d5, !spr.SCAN_DONE_d4);

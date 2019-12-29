@@ -108,7 +108,7 @@ void DMA_tick(const Bus& bus,
   }
 
   {
-    /*p04.MAKA*/ next.FROM_CPU5_SYNC.tock(clk.ZEME_AxCxExGx, rst_sig.CUNU_RESETn, cpu.FROM_CPU5);
+    /*p04.MAKA*/ next.FROM_CPU5_SYNC.tock(clk.ZEME_xBxDxFxH, rst_sig.CUNU_RESETn, cpu.FROM_CPU5);
     /*p04.NAXY*/ wire NAXY = nor(dma.FROM_CPU5_SYNC, dma.DMA_ENa);
     /*p04.POWU*/ next.DMA_WRITE_OAM = and(dma.DMA_CLKEN, NAXY);
   }

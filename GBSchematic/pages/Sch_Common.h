@@ -41,29 +41,8 @@ struct LCDRegisters;
 //-----------------------------------------------------------------------------
 
 struct SystemSignals {
-  void reset() {
-    clk_phase = 0;
-
-    RST        = false;
-    CLK_GOOD   = true;
-    MODE_PROD  = true;
-    MODE_DBG1  = false;
-    MODE_DBG2  = false;
-
-    CLK_REQ    = true;
-    ADDR_VALID = false;
-
-    BOOT_BIT   = true;
-    LCDC_EN    = true;
-    DIV_06n    = true;
-    DIV_07n    = true;
-    DIV_15     = false;
-
-    update();
-  }
-
-  void set_pwron() {
-    clk_phase = -1;
+  void pwron() {
+    clk_phase = 6;
 
     RST        = true;
     CLK_GOOD   = false;
@@ -76,6 +55,27 @@ struct SystemSignals {
 
     BOOT_BIT   = true;
     LCDC_EN    = false;
+    DIV_06n    = true;
+    DIV_07n    = true;
+    DIV_15     = false;
+
+    update();
+  }
+
+  void reset() {
+    clk_phase = 7;
+
+    RST        = false;
+    CLK_GOOD   = true;
+    MODE_PROD  = true;
+    MODE_DBG1  = false;
+    MODE_DBG2  = false;
+
+    CLK_REQ    = true;
+    ADDR_VALID = false;
+
+    BOOT_BIT   = true;
+    LCDC_EN    = true;
     DIV_06n    = true;
     DIV_07n    = true;
     DIV_15     = false;

@@ -13,22 +13,22 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
   wire CLK = sys_sig.clk();
 
   ClockSignals1 sig = {
-    /*p01.ARYS*/ .ARYS_xBxDxFxH = not(CLK),
-    /*p01.ANOS*/ .ANOS_xBxDxFxH = not(CLK),
-    /*p01.AVET*/ .ROOT_AxCxExGx = CLK,
-    /*p01.ATAL*/ .ATAL_xBxDxFxH = not(sig.ROOT_AxCxExGx),
-    /*p01.AZOF*/ .AZOF_AxCxExGx = not(sig.ATAL_xBxDxFxH),
-    /*p01.ZAXY*/ .ZAXY_xBxDxFxH = not(sig.AZOF_AxCxExGx),
-    /*p01.ZEME*/ .ZEME_AxCxExGx = not(sig.ZAXY_xBxDxFxH),
-    /*p01.ALET*/ .ALET_xBxDxFxH = not(sig.ZEME_AxCxExGx),
-    /*p27.MYVO*/ .MYVO_AxCxExGx = not(sig.ALET_xBxDxFxH),
-    /*p29.XYVA*/ .XYVA_xBxDxFxH = not(sig.ZEME_AxCxExGx),
-    /*p29.XOTA*/ .XOTA_AxCxExGx = not(sig.XYVA_xBxDxFxH),
-    /*p27.MOXE*/ .MOXE_AxCxExGx = not(sig.ALET_xBxDxFxH),
-    /*p27.MEHE*/ .MEHE_AxCxExGx = not(sig.ALET_xBxDxFxH),
-    /*p01.LAPE*/ .LAPE_AxCxExGx = not(sig.ALET_xBxDxFxH),
-    /*p27.TAVA*/ .TAVA_xBxDxFxH = not(sig.LAPE_AxCxExGx),
-    /*p29.XYFY*/ .XYFY_xBxDxFxH = not(sig.XOTA_AxCxExGx),
+    /*p01.ARYS*/ .ARYS_AxCxExGx = CLK,
+    /*p01.ANOS*/ .ANOS_AxCxExGx = CLK,
+    /*p01.AVET*/ .AVET_xBxDxFxH = not(CLK),
+    /*p01.ATAL*/ .ATAL_AxCxExGx = not(sig.AVET_xBxDxFxH),
+    /*p01.AZOF*/ .AZOF_xBxDxFxH = not(sig.ATAL_AxCxExGx),
+    /*p01.ZAXY*/ .ZAXY_AxCxExGx = not(sig.AZOF_xBxDxFxH),
+    /*p01.ZEME*/ .ZEME_xBxDxFxH = not(sig.ZAXY_AxCxExGx),
+    /*p01.ALET*/ .ALET_AxCxExGx = not(sig.ZEME_xBxDxFxH),
+    /*p27.MYVO*/ .MYVO_xBxDxFxH = not(sig.ALET_AxCxExGx),
+    /*p29.XYVA*/ .XYVA_AxCxExGx = not(sig.ZEME_xBxDxFxH),
+    /*p29.XOTA*/ .XOTA_xBxDxFxH = not(sig.XYVA_AxCxExGx),
+    /*p27.MOXE*/ .MOXE_xBxDxFxH = not(sig.ALET_AxCxExGx),
+    /*p27.MEHE*/ .MEHE_xBxDxFxH = not(sig.ALET_AxCxExGx),
+    /*p01.LAPE*/ .LAPE_xBxDxFxH = not(sig.ALET_AxCxExGx),
+    /*p27.TAVA*/ .TAVA_AxCxExGx = not(sig.LAPE_xBxDxFxH),
+    /*p29.XYFY*/ .XYFY_AxCxExGx = not(sig.XOTA_xBxDxFxH),
 
     // gated on MODE_PROD
     /*p01.AFUR*/ .PHAZ_ABCDxxxx = and(clk_reg.PHAZ_ABCDxxxx, sys_sig.MODE_PROD),
@@ -40,7 +40,7 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
     /*p01.ATYP*/ .ATYP_ABCDxxxx = not(!sig.PHAZ_ABCDxxxx),
     /*p01.ADAR*/ .ADAR_ABCxxxxH = not( sig.PHAZ_xxxDEFGx),
     /*p01.AROV*/ .AROV_xxCDEFxx = not(!sig.PHAZ_xxCDEFxx),
-    /*p01.AFAS*/ .AFAS_xxxxxFGH = nor(sig.ADAR_ABCxxxxH, sig.ATYP_ABCDxxxx),
+    /*p01.AFAS*/ .AFAS_xxxxEFGx = nor(sig.ADAR_ABCxxxxH, sig.ATYP_ABCDxxxx),
 
     // gated on CPUCLK_REQ
     /*p01.NULE*/ .NULE_xxxxEFGH = nor(sys_sig.CPUCLK_REQn, sig.ATYP_ABCDxxxx),
@@ -82,55 +82,57 @@ ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig) {
 
   ClockSignals1 sig;
 
-  bool xBxDxFxH = (phase & 1);
+  bool xBxDxFxH = !(phase & 1);
   bool AxCxExGx = !xBxDxFxH;
 
-  /*p01.AVET*/ sig.ROOT_AxCxExGx = AxCxExGx;
-  /*p01.AZOF*/ sig.AZOF_AxCxExGx = AxCxExGx;
-  /*p01.ZEME*/ sig.ZEME_AxCxExGx = AxCxExGx;
-  /*p27.MYVO*/ sig.MYVO_AxCxExGx = AxCxExGx;
-  /*p29.XOTA*/ sig.XOTA_AxCxExGx = AxCxExGx;
-  /*p27.MOXE*/ sig.MOXE_AxCxExGx = AxCxExGx;
-  /*p27.MEHE*/ sig.MEHE_AxCxExGx = AxCxExGx;
-  /*p01.LAPE*/ sig.LAPE_AxCxExGx = AxCxExGx;
+  /*p01.AVET*/ sig.AVET_xBxDxFxH = AxCxExGx;
+  /*p01.AZOF*/ sig.AZOF_xBxDxFxH = AxCxExGx;
+  /*p01.ZEME*/ sig.ZEME_xBxDxFxH = AxCxExGx;
+  /*p27.MYVO*/ sig.MYVO_xBxDxFxH = AxCxExGx;
+  /*p29.XOTA*/ sig.XOTA_xBxDxFxH = AxCxExGx;
+  /*p27.MOXE*/ sig.MOXE_xBxDxFxH = AxCxExGx;
+  /*p27.MEHE*/ sig.MEHE_xBxDxFxH = AxCxExGx;
+  /*p01.LAPE*/ sig.LAPE_xBxDxFxH = AxCxExGx;
 
-  /*p01.ARYS*/ sig.ARYS_xBxDxFxH = xBxDxFxH;
-  /*p01.ANOS*/ sig.ANOS_xBxDxFxH = xBxDxFxH;
-  /*p01.ATAL*/ sig.ATAL_xBxDxFxH = xBxDxFxH;
-  /*p01.ZAXY*/ sig.ZAXY_xBxDxFxH = xBxDxFxH;
-  /*p01.ALET*/ sig.ALET_xBxDxFxH = xBxDxFxH;
-  /*p29.XYVA*/ sig.XYVA_xBxDxFxH = xBxDxFxH;
-  /*p27.TAVA*/ sig.TAVA_xBxDxFxH = xBxDxFxH;
-  /*p29.XYFY*/ sig.XYFY_xBxDxFxH = xBxDxFxH;
+  /*p01.ARYS*/ sig.ARYS_AxCxExGx = xBxDxFxH;
+  /*p01.ANOS*/ sig.ANOS_AxCxExGx = xBxDxFxH;
+  /*p01.ATAL*/ sig.ATAL_AxCxExGx = xBxDxFxH;
+  /*p01.ZAXY*/ sig.ZAXY_AxCxExGx = xBxDxFxH;
+  /*p01.ALET*/ sig.ALET_AxCxExGx = xBxDxFxH;
+  /*p29.XYVA*/ sig.XYVA_AxCxExGx = xBxDxFxH;
+  /*p27.TAVA*/ sig.TAVA_AxCxExGx = xBxDxFxH;
+  /*p29.XYFY*/ sig.XYFY_AxCxExGx = xBxDxFxH;
 
 
+  bool ABCDxxxx = (phase == 0) || (phase == 1) || (phase == 2) || (phase == 3);
   bool xBCDExxx = (phase == 1) || (phase == 2) || (phase == 3) || (phase == 4);
   bool xxCDEFxx = (phase == 2) || (phase == 3) || (phase == 4) || (phase == 5);
   bool xxxDEFGx = (phase == 3) || (phase == 4) || (phase == 5) || (phase == 6);
-  bool xxxxEFGH = (phase == 4) || (phase == 5) || (phase == 6) || (phase == 7);
-  bool ABCDxxxx = !xxxxEFGH;
-  bool xxxxxFGH = (phase == 5) || (phase == 6) || (phase == 7);
-  bool ABxxxxGH = !xxCDEFxx;
-
-  bool AxxxxxxH = (phase == 0) || (phase == 7);
-  bool xBCDEFGx = !AxxxxxxH;
+  bool xxxxEFGH = !ABCDxxxx;
   bool AxxxxFGH = !xBCDExxx;
-  bool xBxxxxxx = (phase == 1);
-  bool AxCDEFGH = !xBxxxxxx;
+  bool ABCxxxxH = !xxxDEFGx;
+
+  bool ABCDEFxx = ABCDxxxx | xxCDEFxx;
+  bool xxxxxxGH = !ABCDEFxx;
+
+  bool Axxxxxxx = (phase == 0);
+  bool xBCDEFGH = !Axxxxxxx;
+
+  bool xxxxEFGx = (phase == 4) || (phase == 5) || (phase == 6);
 
   if (sys_sig.MODE_PROD) {
-    sig.PHAZ_ABCDxxxx = xBCDExxx;
-    sig.PHAZ_xBCDExxx = xxCDEFxx;
-    sig.PHAZ_xxCDEFxx = xxxDEFGx;
-    sig.PHAZ_xxxDEFGx = xxxxEFGH;
+    sig.PHAZ_ABCDxxxx = ABCDxxxx;
+    sig.PHAZ_xBCDExxx = xBCDExxx;
+    sig.PHAZ_xxCDEFxx = xxCDEFxx;
+    sig.PHAZ_xxxDEFGx = xxxDEFGx;
 
-    sig.AFEP_AxxxxFGH = ABxxxxGH;
-    sig.ATYP_ABCDxxxx = xBCDExxx;
-    sig.ADAR_ABCxxxxH = ABCDxxxx;
-    sig.AROV_xxCDEFxx = xxxDEFGx;
-    sig.AFAS_xxxxxFGH = xxxxxFGH;
-    sig.BUTO_xBCDEFGH = AxCDEFGH;
-    sig.BELE_Axxxxxxx = xBxxxxxx;
+    sig.AFEP_AxxxxFGH = AxxxxFGH;
+    sig.ATYP_ABCDxxxx = ABCDxxxx;
+    sig.ADAR_ABCxxxxH = ABCxxxxH;
+    sig.AROV_xxCDEFxx = xxCDEFxx;
+    sig.AFAS_xxxxEFGx = xxxxEFGx;
+    sig.BUTO_xBCDEFGH = xBCDEFGH;
+    sig.BELE_Axxxxxxx = Axxxxxxx;
   }
   else {
     sig.PHAZ_ABCDxxxx = 0;
@@ -142,29 +144,29 @@ ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig) {
     sig.ATYP_ABCDxxxx = 0;
     sig.ADAR_ABCxxxxH = 1;
     sig.AROV_xxCDEFxx = 0;
-    sig.AFAS_xxxxxFGH = 0;
+    sig.AFAS_xxxxEFGx = 0;
     sig.BUTO_xBCDEFGH = 1;
     sig.BELE_Axxxxxxx = 0;
   }
 
   if (sys_sig.MODE_PROD && sys_sig.CLK_REQ) {
-    sig.NULE_xxxxEFGH = AxxxxFGH;
-    sig.BUDE_xxxxEFGH = AxxxxFGH;
-    sig.MOPA_xxxxEFGH = AxxxxFGH;
-    sig.BEJA_xxxxEFGH = AxxxxFGH;
-    sig.BELO_xxxxEFGH = AxxxxFGH;
+    sig.NULE_xxxxEFGH = xxxxEFGH;
+    sig.BUDE_xxxxEFGH = xxxxEFGH;
+    sig.MOPA_xxxxEFGH = xxxxEFGH;
+    sig.BEJA_xxxxEFGH = xxxxEFGH;
+    sig.BELO_xxxxEFGH = xxxxEFGH;
 
-    sig.BYRY_ABCDxxxx = xBCDExxx;
-    sig.DOVA_ABCDxxxx = xBCDExxx;
-    sig.UVYT_ABCDxxxx = xBCDExxx;
-    sig.BEKO_ABCDxxxx = xBCDExxx;
-    sig.BANE_ABCDxxxx = xBCDExxx;
-    sig.BAZE_ABCDxxxx = xBCDExxx;
+    sig.BYRY_ABCDxxxx = ABCDxxxx;
+    sig.DOVA_ABCDxxxx = ABCDxxxx;
+    sig.UVYT_ABCDxxxx = ABCDxxxx;
+    sig.BEKO_ABCDxxxx = ABCDxxxx;
+    sig.BANE_ABCDxxxx = ABCDxxxx;
+    sig.BAZE_ABCDxxxx = ABCDxxxx;
 
-    sig.BAPY_xxxxxxGH = AxxxxxxH;
-    sig.BUFA_xxxxxxGH = AxxxxxxH;
-    sig.BERU_ABCDEFxx = xBCDEFGx;
-    sig.BOLO_ABCDEFxx = xBCDEFGx;
+    sig.BAPY_xxxxxxGH = xxxxxxGH;
+    sig.BUFA_xxxxxxGH = xxxxxxGH;
+    sig.BERU_ABCDEFxx = ABCDEFxx;
+    sig.BOLO_ABCDEFxx = ABCDEFxx;
   }
   else {
     sig.NULE_xxxxEFGH = sys_sig.CLK_REQ;
@@ -187,9 +189,9 @@ ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig) {
   }
 
   if (sys_sig.MODE_PROD && sys_sig.CLK_GOOD) {
-    sig.BYJU_xBCDEFGH = AxCDEFGH;
-    sig.BOGA_xBCDEFGH = AxCDEFGH;
-    sig.BALY_Axxxxxxx = xBxxxxxx;
+    sig.BYJU_xBCDEFGH = xBCDEFGH;
+    sig.BOGA_xBCDEFGH = xBCDEFGH;
+    sig.BALY_Axxxxxxx = Axxxxxxx;
   }
   else {
     sig.BYJU_xBCDEFGH = 0;
@@ -198,10 +200,10 @@ ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig) {
   }
 
   if (sys_sig.MODE_PROD && sys_sig.CLK_GOOD && sys_sig.CLK_REQ) {
-    sig.BYXO_xBCDEFGH = AxCDEFGH;
-    sig.BOWA_xBCDEFGH = AxCDEFGH;
-    sig.BUVU_Axxxxxxx = xBxxxxxx;
-    sig.BEDO_Axxxxxxx = xBxxxxxx;
+    sig.BYXO_xBCDEFGH = xBCDEFGH;
+    sig.BOWA_xBCDEFGH = xBCDEFGH;
+    sig.BUVU_Axxxxxxx = Axxxxxxx;
+    sig.BEDO_Axxxxxxx = Axxxxxxx;
   }
   else {
     sig.BUVU_Axxxxxxx = sys_sig.CLK_REQ;
@@ -233,61 +235,18 @@ ClockSignals2 ClockSignals2::tick_slow(const ResetSignals2& rst_sig2, const Cloc
 
 //----------------------------------------
 
-#pragma warning(disable : 4189)
-
-ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2, const ClockRegisters& clk_reg) {
-  int phase = sys_sig.phase();
-
-  bool xxxxEFGH = (phase == 4) || (phase == 5) || (phase == 6) || (phase == 7);
-  bool xxCDxxGH = (phase == 2) || (phase == 3) || (phase == 6) || (phase == 7);
-  bool xBCxxFGx = (phase == 1) || (phase == 2) || (phase == 5) || (phase == 6);
-  bool ABxxEFxx = !xxCDxxGH;
-  bool ABCDxxxx = !xxxxEFGH;
-  bool AxxDExxH = !xBCxxFGx;
-
-  ClockSignals2 sig = {
-    // gated on VID_RESETn
-    /*p29.WUVU*/ .WUVU_AxxDExxH = and(clk_reg.WUVU_AxxDExxH, rst_sig2.VID_RESETn),
-    /*p21.VENA*/ .VENA_xBCDExxx = and(clk_reg.VENA_xBCDExxx, rst_sig2.VID_RESETn),
-    /*p29.WOSU*/ .WOSU_xxCDxxGH = and(clk_reg.WOSU_xxCDxxGH, rst_sig2.VID_RESETn),
-    /*p29.XUPY*/ .XUPY_xBCxxFGx = not(sig.WUVU_AxxDExxH),
-    /*p28.AWOH*/ .AWOH_AxxDExxH = not(sig.XUPY_xBCxxFGx),
-    /*p21.TALU*/ .TALU_xBCDExxx = not(!sig.VENA_xBCDExxx),
-    /*p21.SONO*/ .SONO_AxxxxFGH = not(sig.TALU_xBCDExxx),
-    /*p29.XOCE*/ .XOCE_ABxxEFxx = not(sig.WOSU_xxCDxxGH),
-  };
-
-#if 0
-  if (rst_sig2.VID_RESETn) {
-    sig.XUPY_xBCxxFGx = ABxxEFxx;
-    /*
-    sig.AWOH_AxxDExxH = xxCDxxGH;
-    sig.WUVU_AxxDExxH = xxCDxxGH;
-
-    sig.XOCE_ABxxEFxx = AxxDExxH;
-    sig.WOSU_xxCDxxGH = xBCxxFGx;
-
-    sig.SONO_AxxxxFGH = ABCDxxxx;
-    sig.VENA_xBCDExxx = xxxxEFGH;
-    sig.TALU_xBCDExxx = xxxxEFGH;
-    */
-  }
-  else {
-    sig.XUPY_xBCxxFGx = 1;
-    /*
-    sig.AWOH_AxxDExxH = 0;
-    sig.WUVU_AxxDExxH = 0;
-
-    sig.XOCE_ABxxEFxx = 1;
-    sig.WOSU_xxCDxxGH = 0;
-
-    sig.SONO_AxxxxFGH = 1;
-    sig.VENA_xBCDExxx = 0;
-    sig.TALU_xBCDExxx = 0;
-    */
-  }
-#endif
-
+ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& /*sys_sig*/, const ResetSignals2& rst_sig2, const ClockRegisters& clk_reg) {
+  ClockSignals2 sig;
+  
+  // gated on VID_RESETn
+  sig.WUVU_AxxDExxH = and(clk_reg.WUVU_AxxDExxH, rst_sig2.VID_RESETn);
+  sig.VENA_xBCDExxx = and(clk_reg.VENA_xBCDExxx, rst_sig2.VID_RESETn);
+  sig.WOSU_xxCDxxGH = and(clk_reg.WOSU_xxCDxxGH, rst_sig2.VID_RESETn);
+  sig.XUPY_xBCxxFGx = not(sig.WUVU_AxxDExxH);
+  sig.AWOH_AxxDExxH = not(sig.XUPY_xBCxxFGx);
+  sig.TALU_xBCDExxx = not(!sig.VENA_xBCDExxx);
+  sig.SONO_AxxxxFGH = not(sig.TALU_xBCDExxx);
+  sig.XOCE_ABxxEFxx = not(sig.WOSU_xxCDxxGH);
 
   return sig;
 }
@@ -298,10 +257,10 @@ void ClockRegisters::tock_slow1(const SystemSignals& sys_sig,
                                 const ClockSignals1& sig1,
                                 ClockRegisters& next) {
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ next.PHAZ_ABCDxxxx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD, !sig1.PHAZ_xxxDEFGx);
-  /*p01.ALEF*/ next.PHAZ_xBCDExxx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_ABCDxxxx);
-  /*p01.APUK*/ next.PHAZ_xxCDEFxx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xBCDExxx);
-  /*p01.ADYK*/ next.PHAZ_xxxDEFGx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xxCDEFxx);
+  /*p01.AFUR*/ next.PHAZ_ABCDxxxx.duotock(sig1.ATAL_AxCxExGx, sys_sig.MODE_PROD, !sig1.PHAZ_xxxDEFGx);
+  /*p01.ALEF*/ next.PHAZ_xBCDExxx.duotock(sig1.ATAL_AxCxExGx, sys_sig.MODE_PROD,  sig1.PHAZ_ABCDxxxx);
+  /*p01.APUK*/ next.PHAZ_xxCDEFxx.duotock(sig1.ATAL_AxCxExGx, sys_sig.MODE_PROD,  sig1.PHAZ_xBCDExxx);
+  /*p01.ADYK*/ next.PHAZ_xxxDEFGx.duotock(sig1.ATAL_AxCxExGx, sys_sig.MODE_PROD,  sig1.PHAZ_xxCDEFxx);
 }
 
 //----------------------------------------
@@ -311,9 +270,9 @@ void ClockRegisters::tock_slow2(const SystemSignals& /*sys_sig*/,
                                 const ClockSignals2& sig2,
                                 const ResetSignals2& rst_sig2,
                                 ClockRegisters& next) {
-  /*p29.WUVU*/ next.WUVU_AxxDExxH.tock( sig1.XOTA_AxCxExGx, rst_sig2.VID_RESETn, !sig2.WUVU_AxxDExxH);
+  /*p29.WUVU*/ next.WUVU_AxxDExxH.tock( sig1.XOTA_xBxDxFxH, rst_sig2.VID_RESETn, !sig2.WUVU_AxxDExxH);
   /*p21.VENA*/ next.VENA_xBCDExxx.tock(!sig2.WUVU_AxxDExxH, rst_sig2.VID_RESETn, !sig2.VENA_xBCDExxx);
-  /*p29.WOSU*/ next.WOSU_xxCDxxGH.tock( sig1.XYFY_xBxDxFxH, rst_sig2.VID_RESETn, !sig2.WUVU_AxxDExxH);
+  /*p29.WOSU*/ next.WOSU_xxCDxxGH.tock( sig1.XYFY_AxCxExGx, rst_sig2.VID_RESETn, !sig2.WUVU_AxxDExxH);
 }
 
 //-----------------------------------------------------------------------------

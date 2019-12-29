@@ -56,6 +56,135 @@ int main(int /*argc*/, char** /*argv*/) {
   return 0;
 }
 
+#if 0
+uint32_t phase_to_color[8] = {
+  0xFF808080,
+  0xFFB0B070,
+  0xFFFF8080,
+  0xFFFFC080,
+
+  0xFFFFFF80,
+  0xFF80FF80,
+  0xFF8080FF,
+  0xFFD080D0,
+
+  /*
+  0xFF6fff6f,
+  0xFFb8e343,
+  0xFFf29f4c,
+  0xFFfb5b86,
+  0xFFcf40cf,
+  0xFF865bfb,
+  0xFF4c9ff2,
+  0xFF43e3b8,
+  */
+};
+
+
+  void sdl_run() {
+
+    TestGB gb;
+    gb.reset();
+
+    const int fb_width = 1900;
+    const int fb_height = 1000;
+    int scale = 2;
+
+    SDL_Window* window = SDL_CreateWindow("MetroBoy Trace Debugger", 4, 35, fb_width, fb_height, SDL_WINDOW_SHOWN);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_Texture* fb_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, fb_width, fb_height);
+
+    uint32_t* background = new uint32_t[fb_width * fb_height];
+    for (int y = 0; y < fb_height; y++) {
+      for (int x = 0; x < fb_width; x++) {
+        int c = ((x ^ y) & 0x20) ? 0x10101010 : 0x15151515;
+        background[x + y * fb_width] = c;
+        //background[x + y * fb_width] = 0;
+      }
+    }
+
+    //----------
+
+    int frame = 0;
+
+    bool quit = false;
+    while (!quit) {
+      SDL_Event event;
+      while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) quit = true;
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) scale++;
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) scale--;
+
+        if (scale < 1) scale = 1;
+      }
+
+      //----------------------------------------
+      // Clear screen
+
+      uint32_t* framebuffer = nullptr;
+      int pitch = 0;
+      SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
+      memcpy(framebuffer, background, fb_width * fb_height * 4);
+
+      //----------------------------------------
+
+      for (int y = 0; y < 154; y++) {
+        for (int x = 0; x < TCYCLES_LINE * 2; x++) {
+          gb.sim_fast(1);
+          
+          uint32_t color = 0;
+
+          //if (gb1.spr.SCAN_DONE_d0)       color = 0x8080FF;
+          //if (spr.SCAN_DONE_d4) color = 0xFF8080;
+          //if (spr.SCAN_DONE_d5) color = 0x80FF80;
+          //if (gb1.spr.SCAN_DONE_d0_TRIG)  color = 0xFFFFFF;
+
+          //color = (gb.lcd.x() << 8) | (gb.lcd.y() << 0);
+
+          //color = phase_to_color[gb.clk_phase & 7];
+
+          if (scale == 1) {
+            int px = x * scale + 10;
+            int py = y * scale + 10;
+            if (px < fb_width && py < fb_height) {
+              framebuffer[px + py * (pitch / 4)] = color;
+            }
+          }
+          else {
+            for (int dy = 0; dy < scale - 1; dy++) {
+              for (int dx = 0; dx < scale - 1; dx++) {
+                int px = x * scale + dx + 10;
+                int py = y * scale + dy + 10;
+                if (px < fb_width && py < fb_height) {
+                  framebuffer[px + py * (pitch / 4)] = color;
+                }
+              }
+            }
+          }
+
+        }
+      }
+
+      if (frame & 1) {
+        for (int y = 0; y < 10; y++) {
+          for (int x = 0; x < 10; x++) {
+            framebuffer[(x + 0) + (y + 0) * (pitch / 4)] = 0xFFAAAA00;
+          }
+        }
+      }
+
+      //----------------------------------------
+      // Swap
+
+      SDL_UnlockTexture(fb_tex);
+      SDL_RenderCopy(renderer, fb_tex, NULL, NULL);
+      SDL_RenderPresent(renderer);
+      frame++;
+    }
+  }
+#endif
+
 
 
 //-----------------------------------------------------------------------------

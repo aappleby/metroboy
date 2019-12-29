@@ -35,7 +35,7 @@ void Vram_tick(const Bus& bus,
 #if 0
   {
     /*p25.TAVY*/     wire MOE_Cn = not(pins.MOE_C);
-    /*p25.TEGU*/     wire CPU_VRAM_CLK = nand(dec.ADDR_VRAM, clocks.AFAS_xxxxxFGH);
+    /*p25.TEGU*/     wire CPU_VRAM_CLK = nand(dec.ADDR_VRAM, clocks.AFAS_xxxxEFGx);
     /*p25.SALE*/   wire CPU_VRAM_CLK2 = mux2(MOE_Cn, CPU_VRAM_CLK, DBG_VRAM);
     /*p25.RYLU*/ wire CPU_READ_VRAMn = nand(CPU_VRAM_CLK2, vid.RENDERINGn);
 
@@ -79,7 +79,7 @@ void Vram_tick(const Bus& bus,
 
   {
     /*p25.SUDO*/       wire MWR_Cn = not(pins.MWR_C);
-    /*p01.AREV*/           wire AREV = nand(vram.cpu.CPU_RAW_WR, vram.sys.AFAS_xxxxxFGH);
+    /*p01.AREV*/           wire AREV = nand(vram.cpu.CPU_RAW_WR, vram.sys.AFAS_xxxxEFGx);
     /*p01.APOV*/         wire CPU_WR_xxxxEFGx  = not(AREV);
     /*p25.TUJA*/       wire CPU_VRAM_WR    = and (dec.ADDR_VRAM, CPU_WR_xxxxEFGx);
     /*p25.TYJY*/     wire CPU_VRAM_WR2   = mux2(MWR_Cn, CPU_VRAM_WR , DBG_VRAM);

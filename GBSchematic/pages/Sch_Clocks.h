@@ -7,11 +7,9 @@ namespace Schematics {
 // c.cpu.CLK_xBCDEFGH = BOWA_AxCDEFGH;
 
 struct ClockSignals1 {
-  static ClockSignals1 tick_slow(const Clocks& clk,
-                                 wire CLK,
-                                 wire CLK_GOOD,
-                                 wire CPUCLK_REQ_,
-                                 wire MODE_PROD);
+  static ClockSignals1 tick_slow(const SystemSignals& sys_sig,
+                                 const Clocks& clk,
+                                 wire CLK);
 
   static ClockSignals1 tick_fast(int phase,
                                  wire CLK_GOOD,

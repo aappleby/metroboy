@@ -7,16 +7,14 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
-                                       wire CLK,
-                                       wire CLK_GOOD,
-                                       wire CPUCLK_REQ_,
-                                       wire MODE_PROD) {
+ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
+                                       const Clocks& clk,
+                                       wire CLK) {
   ClockSignals1 sig = {
-    /*p01.ABOL*/ .CPUCLK_REQn   = not(CPUCLK_REQ_),
+    /*p01.ABOL*/ .CPUCLK_REQn   = not(sys_sig.CPUCLK_REQ),
     /*p01.BUTY*/ .CPUCLK_REQ    = not(sig.CPUCLK_REQn),
-    /*p01.UCOB*/ .CLK_BAD1      = not(CLK_GOOD),
-    /*p01.ATEZ*/ .CLK_BAD2      = not(CLK_GOOD),
+    /*p01.UCOB*/ .CLK_BAD1      = not(sys_sig.CLK_GOOD),
+    /*p01.ATEZ*/ .CLK_BAD2      = not(sys_sig.CLK_GOOD),
     /*p01.ARYS*/ .ARYS_xBxDxFxH = not(CLK),
     /*p01.ANOS*/ .ANOS_xBxDxFxH = not(CLK),
     /*p01.AVET*/ .ROOT_AxCxExGx = CLK,
@@ -35,10 +33,10 @@ ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
     /*p29.XYFY*/ .XYFY_xBxDxFxH = not(sig.XOTA_AxCxExGx),
 
     // gated on MODE_PROD
-    /*p01.AFUR*/ .PHAZ_xBCDExxx = and(clk.PHAZ_xBCDExxx, MODE_PROD),
-    /*p01.ALEF*/ .PHAZ_xxCDEFxx = and(clk.PHAZ_xxCDEFxx, MODE_PROD),
-    /*p01.APUK*/ .PHAZ_xxxDEFGx = and(clk.PHAZ_xxxDEFGx, MODE_PROD),
-    /*p01.ADYK*/ .PHAZ_xxxxEFGH = and(clk.PHAZ_xxxxEFGH, MODE_PROD),
+    /*p01.AFUR*/ .PHAZ_xBCDExxx = and(clk.PHAZ_xBCDExxx, sys_sig.MODE_PROD),
+    /*p01.ALEF*/ .PHAZ_xxCDEFxx = and(clk.PHAZ_xxCDEFxx, sys_sig.MODE_PROD),
+    /*p01.APUK*/ .PHAZ_xxxDEFGx = and(clk.PHAZ_xxxDEFGx, sys_sig.MODE_PROD),
+    /*p01.ADYK*/ .PHAZ_xxxxEFGH = and(clk.PHAZ_xxxxEFGH, sys_sig.MODE_PROD),
 
     /*p01.AFEP*/ .AFEP_ABxxxxGH = not( sig.PHAZ_xxCDEFxx),
     /*p01.ATYP*/ .ATYP_xBCDExxx = not(!sig.PHAZ_xBCDExxx),

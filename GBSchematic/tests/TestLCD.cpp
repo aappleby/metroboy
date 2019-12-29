@@ -186,15 +186,15 @@ struct TestGB {
       for (int pass = 0; pass < 12; pass++) {
         TestGB prev = *this;
         
-        clk_sig1 = ClockSignals1::tick_slow(prev.clk_reg, CLKIN, sys_sig.CLK_GOOD, sys_sig.CPUCLK_REQ, sys_sig.MODE_PROD);
-        rst_sig1 = ResetSignals1::tick(prev.rst_reg, sys_sig.MODE_DBG1, sys_sig.MODE_DBG2, sys_sig.RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, sys_sig.DIV_15, sys_sig.LCDC_EN);
+        clk_sig1 = ClockSignals1::tick_slow(sys_sig, prev.clk_reg, CLKIN);
+        rst_sig1 = ResetSignals1::tick(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH);
         clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
 
         //----------
 
         Clocks::tock_slow1(clk_sig1, sys_sig.MODE_PROD, clk_reg);
         Clocks::tock_slow2(clk_sig1, clk_sig2, rst_sig1.VID_RESETn, clk_reg);
-        ResetRegisters::tock(prev.rst_reg, sys_sig.MODE_PROD, sys_sig.MODE_DBG1, sys_sig.MODE_DBG2, sys_sig.RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, sys_sig.DIV_15, rst_reg);
+        ResetRegisters::tock(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, rst_reg);
       }
     }
   }
@@ -209,14 +209,14 @@ struct TestGB {
         TestGB prev = *this;
 
         clk_sig1 = ClockSignals1::tick_fast(clk_phase, sys_sig.CLK_GOOD, sys_sig.CPUCLK_REQ, sys_sig.MODE_PROD);
-        rst_sig1 = ResetSignals1::tick(prev.rst_reg, sys_sig.MODE_DBG1, sys_sig.MODE_DBG2, sys_sig.RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, sys_sig.DIV_15, sys_sig.LCDC_EN);
+        rst_sig1 = ResetSignals1::tick(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH);
         clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
 
         //----------
 
         Clocks::tock_fast1(clk_phase, sys_sig.MODE_PROD, clk_reg);
         Clocks::tock_slow2(clk_sig1, clk_sig2, rst_sig1.VID_RESETn, clk_reg);
-        ResetRegisters::tock(prev.rst_reg, sys_sig.MODE_PROD, sys_sig.MODE_DBG1, sys_sig.MODE_DBG2, sys_sig.RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, sys_sig.DIV_15, rst_reg);
+        ResetRegisters::tock(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, rst_reg);
       }
     }
   }

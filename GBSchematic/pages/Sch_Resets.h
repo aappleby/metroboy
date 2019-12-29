@@ -7,15 +7,11 @@ namespace Schematics {
 
 struct ResetSignals1 {
 
-  static ResetSignals1 tick(const ResetRegisters& rst_reg,
-                            bool MODE_DBG1,
-                            bool MODE_DBG2,
-                            bool RST,
+  static ResetSignals1 tick(const SystemSignals& sys_sig,
+                            const ResetRegisters& rst_reg,
                             bool CLK_BAD1,
                             bool CPUCLK_REQn,
-                            bool BOGA_AxCDEFGH,
-                            bool DIV_15,
-                            bool LCDC_EN);
+                            bool BOGA_AxCDEFGH);
 
   void reset() {
     RESET_CLK = false;
@@ -58,14 +54,10 @@ struct ResetSignals1 {
 
 struct ResetSignals2 {
 
-  static ResetSignals2 tick(const ResetRegisters& rst_reg,
-                            bool MODE_DBG1,
-                            bool MODE_DBG2,
-                            bool RST,
+  static ResetSignals2 tick(const SystemSignals& sys_sig,
+                            const ResetRegisters& rst_reg,
                             bool CLK_BAD1,
-                            bool CPUCLK_REQn,
-                            bool DIV_15,
-                            bool LCDC_EN);
+                            bool CPUCLK_REQn);
 
   void reset() {
     VID_RESETn = true;
@@ -88,15 +80,11 @@ struct ResetSignals2 {
 
 struct ResetRegisters {
 
-  static void tock(const ResetRegisters& rst_reg,
-                   bool MODE_PROD,
-                   bool MODE_DBG1,
-                   bool MODE_DBG2,
-                   bool RST,
+  static void tock(const SystemSignals& sys_sig,
+                   const ResetRegisters& rst_reg,
                    bool CLK_BAD1,
                    bool CPUCLK_REQn,
                    bool BOGA_AxCDEFGH,
-                   bool DIV_15,
                    ResetRegisters& next);
 
   void reset() {

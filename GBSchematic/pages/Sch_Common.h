@@ -49,6 +49,12 @@ struct SystemSignals {
   bool CPUCLK_REQ;
   bool ADDR_VALID;
 
+  // signals trivially derived from the above
+  ///*p01.ABOL*/ .CPUCLK_REQn   = not(sys_sig.CPUCLK_REQ),
+  ///*p01.BUTY*/ .CPUCLK_REQ    = not(sig.CPUCLK_REQn),
+  ///*p01.UCOB*/ .CLK_BAD1      = not(sys_sig.CLK_GOOD),
+  ///*p01.ATEZ*/ .CLK_BAD2      = not(sys_sig.CLK_GOOD),
+
   // other random stuff for convenience
   bool BOOT_BIT;
   bool LCDC_EN;

@@ -8,8 +8,8 @@ namespace Schematics {
 struct ResetSignals1 {
 
   static ResetSignals1 tick(const SystemSignals& sys_sig,
-                            const ResetRegisters& rst_reg,
-                            bool BOGA_AxCDEFGH);
+                            const ClockSignals1& clk_sig1,
+                            const ResetRegisters& rst_reg);
 
   void reset() {
     RESET_CLK = false;
@@ -77,8 +77,8 @@ struct ResetSignals2 {
 struct ResetRegisters {
 
   static void tock(const SystemSignals& sys_sig,
+                   const ClockSignals1& clk_sig1,
                    const ResetRegisters& rst_reg,
-                   bool BOGA_AxCDEFGH,
                    ResetRegisters& next);
 
   void reset() {

@@ -176,7 +176,7 @@ struct Clocks {
   static void tock_slow2(const SystemSignals& sys_sig,
                          const ClockSignals1& clk_sig1,
                          const ClockSignals2& clk_sig2,
-                         /*p01.XAPO*/ wire VID_RESETn,
+                         const ResetSignals1& rst_sig1,
                          Clocks& next);
 
   static void tock_fast1(const SystemSignals& sys_sig,

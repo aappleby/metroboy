@@ -2,6 +2,7 @@
 
 #include "Sch_Pins.h"
 #include "Sch_Debug.h"
+#include "Sch_Resets.h"
 
 namespace Schematics {
 
@@ -288,11 +289,11 @@ void Clocks::tock_slow1(const SystemSignals& sys_sig,
 void Clocks::tock_slow2(const SystemSignals& /*sys_sig*/,
                         const ClockSignals1& sig1,
                         const ClockSignals2& sig2,
-                        wire VID_RESETn,
+                        const ResetSignals1& rst_sig1,
                         Clocks& next) {
-  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig1.XOTA_AxCxExGx, VID_RESETn, !sig2.WUVU_xxCDxxGH);
-  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig2.WUVU_xxCDxxGH, VID_RESETn, !sig2.VENA_xxxxEFGH);
-  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig1.XYFY_xBxDxFxH, VID_RESETn, !sig2.WUVU_xxCDxxGH);
+  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig1.XOTA_AxCxExGx, rst_sig1.VID_RESETn, !sig2.WUVU_xxCDxxGH);
+  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig2.WUVU_xxCDxxGH, rst_sig1.VID_RESETn, !sig2.VENA_xxxxEFGH);
+  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig1.XYFY_xBxDxFxH, rst_sig1.VID_RESETn, !sig2.WUVU_xxCDxxGH);
 }
 
 //-----------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 #include "../pages/Sch_Clocks.h"
+#include "../pages/Sch_Resets.h"
 
 using namespace Schematics;
 
@@ -123,22 +124,12 @@ void dump(int x, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
 
 static int cursor = 20;
 
-void sim(SystemSignals sys_sig, int phase, Clocks& clk_reg, bool VID_RESETn) {
-  bool CLKIN = !(phase & 1);
-  for (int j = 0; j < 8; j++) {
-    Clocks prev_clk = clk_reg;
-    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, prev_clk, CLKIN);
-    ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(prev_clk);
-    Clocks::tock_slow1(sys_sig, clk_sig1, clk_reg);
-    Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, VID_RESETn, clk_reg);
-  }
-}
-
 void TestClocks() {
   printf("\033[?6l");
   labels();
 
   Clocks clk_reg = {};
+  ResetRegisters rst_reg = {};
 
   clk_reg.reset();
   printAt(cursor, 1, "rst");
@@ -148,7 +139,16 @@ void TestClocks() {
 
   for (int phase = 0; phase < 16; phase++) {
     bool CLKIN = !(phase & 1);
-    sim(sys_sig, phase, clk_reg, true);
+
+    for (int pass = 0; pass < 12; pass++) {
+      ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg, CLKIN);
+      ResetSignals1 rst_sig1 = ResetSignals1::tick(sys_sig, clk_sig1, rst_reg);
+      ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(clk_reg);
+      
+      Clocks::tock_slow1(sys_sig, clk_sig1, clk_reg);
+      Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
+    }
+
     ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg, CLKIN);
     ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(clk_reg);
     dump(cursor++, clk_sig1, clk_sig2);

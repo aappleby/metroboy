@@ -87,7 +87,7 @@ ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
   return sig;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------
 
 ClockSignals1 ClockSignals1::tick_fast(int phase,
                                      wire CLK_GOOD,
@@ -280,7 +280,7 @@ ClockSignals2 ClockSignals2::tick_slow(const Clocks& clk) {
   return sig;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------
 
 ClockSignals2 ClockSignals2::tick_fast(int phase, wire VID_RESETn) {
 
@@ -323,22 +323,24 @@ ClockSignals2 ClockSignals2::tick_fast(int phase, wire VID_RESETn) {
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_slow1(const ClockSignals1& sig,
+void Clocks::tock_slow1(const ClockSignals1& sig1,
                         /*p07.UPOJ*/ wire MODE_PROD,
                         Clocks& next) {
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD, !sig.PHAZ_xxxxEFGH);
-  /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xBCDExxx);
-  /*p01.APUK*/ next.PHAZ_xxxDEFGx.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xxCDEFxx);
-  /*p01.ADYK*/ next.PHAZ_xxxxEFGH.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xxxDEFGx);
+  /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig1.ATAL_xBxDxFxH, MODE_PROD, !sig1.PHAZ_xxxxEFGH);
+  /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig1.ATAL_xBxDxFxH, MODE_PROD,  sig1.PHAZ_xBCDExxx);
+  /*p01.APUK*/ next.PHAZ_xxxDEFGx.duotock(sig1.ATAL_xBxDxFxH, MODE_PROD,  sig1.PHAZ_xxCDEFxx);
+  /*p01.ADYK*/ next.PHAZ_xxxxEFGH.duotock(sig1.ATAL_xBxDxFxH, MODE_PROD,  sig1.PHAZ_xxxDEFGx);
 }
 
-void Clocks::tock_slow2(const ClockSignals1& sig,
+//----------------------------------------
+
+void Clocks::tock_slow2(const ClockSignals1& sig1,
                         /*p01.XAPO*/ wire VID_RESETn,
                         Clocks& next) {
-  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig.XOTA_AxCxExGx, VID_RESETn, !sig.WUVU_xxCDxxGH);
-  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig.WUVU_xxCDxxGH, VID_RESETn, !sig.VENA_xxxxEFGH);
-  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig.XYFY_xBxDxFxH, VID_RESETn, !sig.WUVU_xxCDxxGH);
+  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig1.XOTA_AxCxExGx, VID_RESETn, !sig1.WUVU_xxCDxxGH);
+  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig1.WUVU_xxCDxxGH, VID_RESETn, !sig1.VENA_xxxxEFGH);
+  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig1.XYFY_xBxDxFxH, VID_RESETn, !sig1.WUVU_xxCDxxGH);
 }
 
 //-----------------------------------------------------------------------------
@@ -373,7 +375,7 @@ void Clocks::tock_fast1(int phase,
   next.PHAZ_xxxxEFGH.clk = xBxDxFxH;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------
 
 void Clocks::tock_fast2(int phase,
                         /*p01.XAPO*/ wire VID_RESETn,

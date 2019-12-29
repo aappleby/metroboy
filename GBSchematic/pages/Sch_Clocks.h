@@ -168,6 +168,38 @@ struct ClockSignals1 {
 
 //-----------------------------------------------------------------------------
 
+struct ClockSignals2 {
+  static ClockSignals2 tick_slow(const Clocks& clk);
+
+  static ClockSignals2 tick_fast(int phase, wire VID_RESETn);
+
+  void reset() {
+    *this = {
+      // gated on VID_RESETn
+      /*p29.WUVU*/ .WUVU_xxCDxxGH = 1,
+      /*p21.VENA*/ .VENA_xxxxEFGH = 1,
+      /*p29.WOSU*/ .WOSU_xBCxxFGx = 0,
+      /*p29.XUPY*/ .XUPY_ABxxEFxx = 0,
+      /*p28.AWOH*/ .AWOH_xxCDxxGH = 1,
+      /*p21.TALU*/ .TALU_xxxxEFGH = 1,
+      /*p21.SONO*/ .SONO_ABCDxxxx = 0,
+      /*p29.XOCE*/ .XOCE_AxxDExxH = 1,
+    };
+  }
+
+  // gated on VID_RESETn
+  /*p29.WUVU*/ bool WUVU_xxCDxxGH;
+  /*p21.VENA*/ bool VENA_xxxxEFGH;
+  /*p29.WOSU*/ bool WOSU_xBCxxFGx;
+  /*p29.XUPY*/ bool XUPY_ABxxEFxx;
+  /*p28.AWOH*/ bool AWOH_xxCDxxGH;
+  /*p21.TALU*/ bool TALU_xxxxEFGH;
+  /*p21.SONO*/ bool SONO_ABCDxxxx;
+  /*p29.XOCE*/ bool XOCE_AxxDExxH;
+};
+
+//-----------------------------------------------------------------------------
+
 struct Clocks {
 
   static void tock_slow1(const ClockSignals1& sig,

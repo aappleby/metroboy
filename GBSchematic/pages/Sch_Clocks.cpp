@@ -264,6 +264,65 @@ ClockSignals1 ClockSignals1::tick_fast(int phase,
 
 //-----------------------------------------------------------------------------
 
+ClockSignals2 ClockSignals2::tick_slow(const Clocks& clk) {
+  ClockSignals2 sig = {
+    // gated on VID_RESETn
+    /*p29.WUVU*/ .WUVU_xxCDxxGH = clk.WUVU_xxCDxxGH,
+    /*p21.VENA*/ .VENA_xxxxEFGH = clk.VENA_xxxxEFGH,
+    /*p29.WOSU*/ .WOSU_xBCxxFGx = clk.WOSU_xBCxxFGx,
+    /*p29.XUPY*/ .XUPY_ABxxEFxx = not(sig.WUVU_xxCDxxGH),
+    /*p28.AWOH*/ .AWOH_xxCDxxGH = not(sig.XUPY_ABxxEFxx),
+    /*p21.TALU*/ .TALU_xxxxEFGH = not(!sig.VENA_xxxxEFGH),
+    /*p21.SONO*/ .SONO_ABCDxxxx = not(sig.TALU_xxxxEFGH),
+    /*p29.XOCE*/ .XOCE_AxxDExxH = not(sig.WOSU_xBCxxFGx),
+  };
+
+  return sig;
+}
+
+//-----------------------------------------------------------------------------
+
+ClockSignals2 ClockSignals2::tick_fast(int phase, wire VID_RESETn) {
+
+  ClockSignals2 sig;
+
+  bool xxxxEFGH = (phase == 4) || (phase == 5) || (phase == 6) || (phase == 7);
+  bool xxCDxxGH = (phase == 2) || (phase == 3) || (phase == 6) || (phase == 7);
+  bool xBCxxFGx = (phase == 1) || (phase == 2) || (phase == 5) || (phase == 6);
+  bool ABxxEFxx = !xxCDxxGH;
+  bool ABCDxxxx = !xxxxEFGH;
+  bool AxxDExxH = !xBCxxFGx;
+
+  if (VID_RESETn) {
+    sig.XUPY_ABxxEFxx = ABxxEFxx;
+    sig.AWOH_xxCDxxGH = xxCDxxGH;
+    sig.WUVU_xxCDxxGH = xxCDxxGH;
+
+    sig.XOCE_AxxDExxH = AxxDExxH;
+    sig.WOSU_xBCxxFGx = xBCxxFGx;
+
+    sig.SONO_ABCDxxxx = ABCDxxxx;
+    sig.VENA_xxxxEFGH = xxxxEFGH;
+    sig.TALU_xxxxEFGH = xxxxEFGH;
+  }
+  else {
+    sig.XUPY_ABxxEFxx = 1;
+    sig.AWOH_xxCDxxGH = 0;
+    sig.WUVU_xxCDxxGH = 0;
+
+    sig.XOCE_AxxDExxH = 1;
+    sig.WOSU_xBCxxFGx = 0;
+
+    sig.SONO_ABCDxxxx = 1;
+    sig.VENA_xxxxEFGH = 0;
+    sig.TALU_xxxxEFGH = 0;
+  }
+
+  return sig;
+}
+
+//-----------------------------------------------------------------------------
+
 void Clocks::tock_slow1(const ClockSignals1& sig,
                         /*p07.UPOJ*/ wire MODE_PROD,
                         Clocks& next) {

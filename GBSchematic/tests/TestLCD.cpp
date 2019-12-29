@@ -108,7 +108,6 @@ struct TestGB {
     DIV_07n = true;
     DIV_15  = false;
 
-    rst_reg.reset();
     bus.reset();
     lcd.reset();
     spr.reset();
@@ -119,6 +118,8 @@ struct TestGB {
     clk_sig2.reset();
     clk_reg.reset();
 
+    rst_sig1.reset();
+    rst_reg.reset();
 
     check(lcd.x() == 113);
     check(lcd.y() == 0);
@@ -184,8 +185,9 @@ struct TestGB {
         
         clk_sig1 = ClockSignals1::tick_slow(prev.clk_reg, CLKIN, CLK_GOOD, CPUCLK_REQ);
 
-        ResetSignals1 rst_sig1 = ResetSignals1::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
-        ResetSignals2 rst_sig2;
+        ResetSignals1 prev_rst_sig1 = rst_sig1;
+
+        rst_sig1 = ResetSignals1::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
         clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
 
@@ -197,8 +199,8 @@ struct TestGB {
         //----------
 
         Clocks::tock_slow1(clk_sig1, MODE_PROD, clk_reg);
-        Clocks::tock_slow2(clk_sig1, clk_sig2, prev.rst_reg.sig.VID_RESETn, clk_reg);
-        ResetRegisters::tock(rst_sig1, rst_sig2, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, rst_reg);
+        Clocks::tock_slow2(clk_sig1, clk_sig2, prev_rst_sig1.VID_RESETn, clk_reg);
+        ResetRegisters::tock(prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, rst_reg);
       }
     }
   }
@@ -214,8 +216,9 @@ struct TestGB {
 
         clk_sig1 = ClockSignals1::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD);
 
-        ResetSignals1 rst_sig1 = ResetSignals1::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
-        ResetSignals2 rst_sig2;
+        ResetSignals1 prev_rst_sig1 = rst_sig1;
+
+        rst_sig1 = ResetSignals1::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
         clk_sig2 = ClockSignals2::tick_fast(clk_phase, rst_sig1.VID_RESETn);
 
@@ -227,8 +230,8 @@ struct TestGB {
         //----------
 
         Clocks::tock_fast1(clk_phase, MODE_PROD, clk_reg);
-        Clocks::tock_fast2(clk_phase, prev.rst_reg.sig.VID_RESETn, clk_reg);
-        ResetRegisters::tock(rst_sig1, rst_sig2, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, rst_reg);
+        Clocks::tock_fast2(clk_phase, prev_rst_sig1.VID_RESETn, clk_reg);
+        ResetRegisters::tock(prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, rst_reg);
       }
     }
   }
@@ -250,7 +253,6 @@ struct TestGB {
   bool DIV_07n    = true;
   bool DIV_15     = false;
 
-  ResetRegisters  rst_reg;
   Bus     bus;
   LCD     lcd;
   Sprites spr;
@@ -261,6 +263,9 @@ struct TestGB {
   ClockSignals1  clk_sig1;
   ClockSignals2  clk_sig2;
   Clocks         clk_reg;
+
+  ResetSignals1  rst_sig1;
+  ResetRegisters rst_reg;
 
   uint64_t alignment_pad = 0;
 };

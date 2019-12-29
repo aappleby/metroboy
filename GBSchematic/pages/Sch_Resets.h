@@ -88,9 +88,7 @@ struct ResetSignals2 {
 
 struct ResetRegisters {
 
-  static void tock(const ResetSignals1& rst_sig1,
-                   const ResetSignals2& rst_sig2,
-                   const ResetRegisters& rst_reg,
+  static void tock(const ResetRegisters& rst_reg,
                    bool MODE_PROD,
                    bool MODE_DBG1,
                    bool MODE_DBG2,
@@ -102,14 +100,10 @@ struct ResetRegisters {
                    ResetRegisters& next);
 
   void reset() {
-    sig.reset();
-
     BAD_CLOCK_LATCH = true;
     RESET_REG.val = false;
     RESET_REG.clk = false;
   };
-
-  ResetSignals1 sig;
 
   /*p01.TUBO*/ bool BAD_CLOCK_LATCH;
   /*p01.AFER*/ Reg  RESET_REG;

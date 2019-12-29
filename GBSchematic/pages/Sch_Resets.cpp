@@ -126,9 +126,7 @@ ResetSignals2 ResetSignals2::tick(const ResetRegisters& rst_reg,
 
 //-----------------------------------------------------------------------------
 
-void ResetRegisters::tock(const ResetSignals1& rst_sig1,
-                          const ResetSignals2& /*rst_sig2*/,
-                          const ResetRegisters& rst_reg,
+void ResetRegisters::tock(const ResetRegisters& rst_reg,
                           bool MODE_PROD,
                           bool MODE_DBG1,
                           bool MODE_DBG2,
@@ -148,8 +146,6 @@ void ResetRegisters::tock(const ResetSignals1& rst_sig1,
 
   /*p01.TUBO*/ next.BAD_CLOCK_LATCH = BAD_CLOCK_LATCH2;
   /*p01.AFER*/ next.RESET_REG.tock(RESET_CLK, MODE_PROD, RESET_IN);
-
-  next.sig = rst_sig1;
 }
 
 //-----------------------------------------------------------------------------

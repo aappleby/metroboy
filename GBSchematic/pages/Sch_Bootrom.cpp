@@ -62,7 +62,7 @@ void Bootrom_tick(const Bus& bus,
 void Bootrom_tock(const Bus& bus,
                   const BusControl& ctl,
                   const Decoder& dec,
-                  const ResetRegisters& rst,
+                  const ResetSignals1& rst_sig1,
                   const Bootrom& prev,
                   Bootrom& next) {
 
@@ -70,7 +70,7 @@ void Bootrom_tock(const Bus& bus,
   /*p07.TUFA*/ wire ADDR_x1x1xxxx = and(bus.A04, bus.A06);
   /*p07.TUGE*/ wire FF50_WRn = nand(ctl.CPU_WR, dec.ADDR_FFXX, ADDR_0x0x0000, ADDR_x1x1xxxx);
   /*p07.SATO*/ wire BOOT_BIT_IN  = or(bus.D0, prev.BOOT_BIT);
-  /*p07.TEPU*/ next.BOOT_BIT.tock(FF50_WRn, rst.sig.SYS_RESETn, BOOT_BIT_IN);
+  /*p07.TEPU*/ next.BOOT_BIT.tock(FF50_WRn, rst_sig1.SYS_RESETn, BOOT_BIT_IN);
 }
 
 //-----------------------------------------------------------------------------

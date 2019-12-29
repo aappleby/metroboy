@@ -160,14 +160,14 @@ struct TestGB {
         TestGB prev = *this;
         
         clk_sig1 = ClockSignals1::tick_slow(sys_sig, prev.clk_reg, CLKIN);
-        rst_sig1 = ResetSignals1::tick(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH);
+        rst_sig1 = ResetSignals1::tick(sys_sig, prev.rst_reg, clk_sig1.BOGA_AxCDEFGH);
         clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
 
         //----------
 
         Clocks::tock_slow1(sys_sig, clk_sig1, clk_reg);
         Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1.VID_RESETn, clk_reg);
-        ResetRegisters::tock(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, rst_reg);
+        ResetRegisters::tock(sys_sig, prev.rst_reg, clk_sig1.BOGA_AxCDEFGH, rst_reg);
       }
     }
   }
@@ -182,14 +182,14 @@ struct TestGB {
         TestGB prev = *this;
 
         clk_sig1 = ClockSignals1::tick_fast(sys_sig, clk_phase);
-        rst_sig1 = ResetSignals1::tick(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH);
+        rst_sig1 = ResetSignals1::tick(sys_sig, prev.rst_reg, clk_sig1.BOGA_AxCDEFGH);
         clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
 
         //----------
 
         Clocks::tock_fast1(sys_sig, clk_phase, clk_reg);
         Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1.VID_RESETn, clk_reg);
-        ResetRegisters::tock(sys_sig, prev.rst_reg, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, rst_reg);
+        ResetRegisters::tock(sys_sig, prev.rst_reg, clk_sig1.BOGA_AxCDEFGH, rst_reg);
       }
     }
   }

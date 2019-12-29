@@ -44,7 +44,6 @@ void labels() {
   printAt(0, line++, "BOGA_AxCDEFGH");
   line++;
 
-  printAt(0, line++, "CPUCLK_REQ ");
   printAt(0, line++, "UVYT_xBCDExxx");
   printAt(0, line++, "DOVA_xBCDExxx");
   printAt(0, line++, "BEDO_xBxxxxxx");
@@ -98,7 +97,6 @@ void dump(int x, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
   plot(x, line++, clk_sig1.BOGA_AxCDEFGH);
   line++;
 
-  plot(x, line++, clk_sig1.CPUCLK_REQ);
   plot(x, line++, clk_sig1.UVYT_xBCDExxx);
   plot(x, line++, clk_sig1.DOVA_xBCDExxx);
   plot(x, line++, clk_sig1.BEDO_xBxxxxxx);

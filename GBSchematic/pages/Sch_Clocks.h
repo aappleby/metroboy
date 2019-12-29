@@ -16,10 +16,6 @@ struct ClockSignals1 {
 
   void reset() {
     *this = {
-      /*p01.ABOL*/ .CPUCLK_REQn   = 0,
-      /*p01.BUTY*/ .CPUCLK_REQ    = 1,
-      /*p01.UCOB*/ .CLK_BAD1      = 0,
-      /*p01.ATEZ*/ .CLK_BAD2      = 0,
       /*p01.ARYS*/ .ARYS_xBxDxFxH = 1,
       /*p01.ANOS*/ .ANOS_xBxDxFxH = 1,
       /*p01.AVET*/ .ROOT_AxCxExGx = 0,
@@ -78,11 +74,6 @@ struct ClockSignals1 {
       /*p01.BOWA*/ .BOWA_AxCDEFGH = 1,
     };
   }
-
-  /*p01.ABOL*/ bool CPUCLK_REQn;
-  /*p01.BUTY*/ bool CPUCLK_REQ;
-  /*p01.UCOB*/ bool CLK_BAD1;
-  /*p01.ATEZ*/ bool CLK_BAD2;
 
   /*p01.ARYS*/ bool ARYS_xBxDxFxH;
   /*p01.ANOS*/ bool ANOS_xBxDxFxH;

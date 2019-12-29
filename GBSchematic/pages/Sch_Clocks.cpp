@@ -11,10 +11,6 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
                                        const Clocks& clk,
                                        wire CLK) {
   ClockSignals1 sig = {
-    /*p01.ABOL*/ .CPUCLK_REQn   = not(sys_sig.CLK_REQ),
-    /*p01.BUTY*/ .CPUCLK_REQ    = not(sig.CPUCLK_REQn),
-    /*p01.UCOB*/ .CLK_BAD1      = not(sys_sig.CLK_GOOD),
-    /*p01.ATEZ*/ .CLK_BAD2      = not(sys_sig.CLK_GOOD),
     /*p01.ARYS*/ .ARYS_xBxDxFxH = not(CLK),
     /*p01.ANOS*/ .ANOS_xBxDxFxH = not(CLK),
     /*p01.AVET*/ .ROOT_AxCxExGx = CLK,
@@ -45,7 +41,7 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
     /*p01.AFAS*/ .AFAS_xxxxxFGH = nor(sig.ADAR_ABCxxxxH, sig.ATYP_xBCDExxx),
 
     // gated on CPUCLK_REQ
-    /*p01.NULE*/ .NULE_xxxxEFGH = nor(sig.CPUCLK_REQn, sig.ATYP_xBCDExxx),
+    /*p01.NULE*/ .NULE_xxxxEFGH = nor(sys_sig.CPUCLK_REQn, sig.ATYP_xBCDExxx),
     /*p01.BYRY*/ .BYRY_ABCDxxxx = not(sig.NULE_xxxxEFGH),
     /*p01.BUDE*/ .BUDE_xxxxEFGH = not(sig.BYRY_ABCDxxxx),
     /*p01.DOVA*/ .DOVA_xBCDExxx = not(sig.BUDE_xxxxEFGH),
@@ -53,7 +49,7 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
     /*p01.BEKO*/ .BEKO_ABCDxxxx = not(sig.BUDE_xxxxEFGH),
     /*p04.MOPA*/ .MOPA_AxxxxFGH = not(sig.UVYT_xBCDExxx),
 
-    /*p01.BAPY*/ .BAPY_AxxxxxxH = nor(sig.CPUCLK_REQn, sig.AROV_xxxDEFGx, sig.ATYP_xBCDExxx),
+    /*p01.BAPY*/ .BAPY_AxxxxxxH = nor(sys_sig.CPUCLK_REQn, sig.AROV_xxxDEFGx, sig.ATYP_xBCDExxx),
     /*p01.BERU*/ .BERU_xBCDEFGx = not(sig.BAPY_AxxxxxxH),
     /*p01.BUFA*/ .BUFA_AxxxxxxH = not(sig.BERU_xBCDEFGx),
     /*p01.BOLO*/ .BOLO_xBCDEFGx = not(sig.BUFA_AxxxxxxH),
@@ -65,10 +61,10 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
     /*p01.BELE*/ .BELE_Axxxxxxx = not(sig.BUTO_xBCDEFGH),
 
     // gated on CLK_GOOD
-    /*p01.BYJU*/ .BYJU_xBCDEFGH = nor(sig.BELE_Axxxxxxx, sig.CLK_BAD2),
+    /*p01.BYJU*/ .BYJU_xBCDEFGH = nor(sig.BELE_Axxxxxxx, sys_sig.CLK_BAD2),
     /*p01.BALY*/ .BALY_Axxxxxxx = not(sig.BYJU_xBCDEFGH),
     /*p01.BOGA*/ .BOGA_AxCDEFGH = not(sig.BALY_Axxxxxxx),
-    /*p01.BUVU*/ .BUVU_Axxxxxxx = and(sig.CPUCLK_REQ, sig.BALY_Axxxxxxx),
+    /*p01.BUVU*/ .BUVU_Axxxxxxx = and(sys_sig.CPUCLK_REQ, sig.BALY_Axxxxxxx),
     /*p01.BYXO*/ .BYXO_xBCDEFGH = not(sig.BUVU_Axxxxxxx),
     /*p01.BEDO*/ .BEDO_xBxxxxxx = not(sig.BYXO_xBCDEFGH),
     /*p01.BOWA*/ .BOWA_AxCDEFGH = not(sig.BEDO_xBxxxxxx),
@@ -83,11 +79,6 @@ ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig,
                                        int phase) {
 
   ClockSignals1 sig;
-
-  /*p01.ABOL*/ sig.CPUCLK_REQn   = not(sys_sig.CLK_REQ);
-  /*p01.BUTY*/ sig.CPUCLK_REQ    = not(sig.CPUCLK_REQn);
-  /*p01.UCOB*/ sig.CLK_BAD1      = not(sys_sig.CLK_GOOD);
-  /*p01.ATEZ*/ sig.CLK_BAD2      = not(sys_sig.CLK_GOOD);
 
   bool xBxDxFxH = (phase & 1);
   bool AxCxExGx = !xBxDxFxH;

@@ -9,8 +9,6 @@ struct ResetSignals1 {
 
   static ResetSignals1 tick(const SystemSignals& sys_sig,
                             const ResetRegisters& rst_reg,
-                            bool CLK_BAD1,
-                            bool CPUCLK_REQn,
                             bool BOGA_AxCDEFGH);
 
   void reset() {
@@ -55,9 +53,7 @@ struct ResetSignals1 {
 struct ResetSignals2 {
 
   static ResetSignals2 tick(const SystemSignals& sys_sig,
-                            const ResetRegisters& rst_reg,
-                            bool CLK_BAD1,
-                            bool CPUCLK_REQn);
+                            const ResetRegisters& rst_reg);
 
   void reset() {
     VID_RESETn = true;
@@ -82,8 +78,6 @@ struct ResetRegisters {
 
   static void tock(const SystemSignals& sys_sig,
                    const ResetRegisters& rst_reg,
-                   bool CLK_BAD1,
-                   bool CPUCLK_REQn,
                    bool BOGA_AxCDEFGH,
                    ResetRegisters& next);
 

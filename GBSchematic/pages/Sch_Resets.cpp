@@ -10,12 +10,10 @@ namespace Schematics {
 
 ResetSignals1 ResetSignals1::tick(const SystemSignals& sys_sig,
                                   const ResetRegisters& rst_reg,
-                                  bool CLK_BAD1,
-                                  bool CPUCLK_REQn,
                                   bool BOGA_AxCDEFGH) {
 
-  /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, CLK_BAD1);
-  /*p01.TUBO*/ bool BAD_CLOCK_LATCH = !UPYF ? 1 : !CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
+  /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
+  /*p01.TUBO*/ bool BAD_CLOCK_LATCH = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
   /*p01.UNUT*/ bool TIMEOUT     = and(BAD_CLOCK_LATCH, sys_sig.DIV_15);
   /*p01.TABA*/ bool CPU_RESET   = or(sys_sig.MODE_DBG2, sys_sig.MODE_DBG1, TIMEOUT);
   /*p01.ALYP*/ bool CPU_RESETn  = not(CPU_RESET);
@@ -74,12 +72,10 @@ ResetSignals1 ResetSignals1::tick(const SystemSignals& sys_sig,
 //-----------------------------------------------------------------------------
 
 ResetSignals2 ResetSignals2::tick(const SystemSignals& sys_sig,
-                                  const ResetRegisters& rst_reg,
-                                  bool CLK_BAD1,
-                                  bool CPUCLK_REQn) {
+                                  const ResetRegisters& rst_reg) {
 
-  /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, CLK_BAD1);
-  /*p01.TUBO*/ bool BAD_CLOCK_LATCH = !UPYF ? 1 : !CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
+  /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
+  /*p01.TUBO*/ bool BAD_CLOCK_LATCH = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
   /*p01.UNUT*/ bool TIMEOUT     = and(BAD_CLOCK_LATCH, sys_sig.DIV_15);
   /*p01.TABA*/ bool CPU_RESET   = or(sys_sig.MODE_DBG2, sys_sig.MODE_DBG1, TIMEOUT);
   /*p01.ALYP*/ bool CPU_RESETn  = not(CPU_RESET);
@@ -120,12 +116,10 @@ ResetSignals2 ResetSignals2::tick(const SystemSignals& sys_sig,
 
 void ResetRegisters::tock(const SystemSignals& sys_sig,
                           const ResetRegisters& rst_reg,
-                          bool CLK_BAD1,
-                          bool CPUCLK_REQn,
                           bool BOGA_AxCDEFGH,
                           ResetRegisters& next) {
-  /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, CLK_BAD1);
-  /*p01.TUBO*/ bool BAD_CLOCK_LATCH2 = !UPYF ? 1 : !CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
+  /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
+  /*p01.TUBO*/ bool BAD_CLOCK_LATCH2 = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
   /*p01.BOMA*/ bool RESET_CLK   = not(BOGA_AxCDEFGH);
   /*p01.UNUT*/ bool TIMEOUT     = and(BAD_CLOCK_LATCH2, sys_sig.DIV_15);
   /*p01.TABA*/ bool CPU_RESET   = or(sys_sig.MODE_DBG2, sys_sig.MODE_DBG1, TIMEOUT);

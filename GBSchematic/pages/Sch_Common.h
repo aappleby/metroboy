@@ -39,6 +39,8 @@ struct ClockSignals2;
 
 struct SystemSignals {
   void reset() {
+    clk_phase = 5;
+
     RST        = false;
     CLK_GOOD   = true;
     MODE_PROD  = true;
@@ -58,6 +60,8 @@ struct SystemSignals {
   }
 
   void set_pwron() {
+    clk_phase = -1;
+
     RST        = true;
     CLK_GOOD   = false;
     MODE_PROD  = true;
@@ -102,6 +106,21 @@ struct SystemSignals {
     /*p01.UCOB*/ CLK_BAD1    = not(CLK_GOOD);
     /*p01.ATEZ*/ CLK_BAD2    = not(CLK_GOOD);
   }
+
+  void next_phase() {
+    clk_phase = (clk_phase + 1) & 7;
+  }
+
+  int phase() const {
+    return clk_phase;
+  }
+
+  int clk() const {
+    return !(clk_phase & 1);
+  }
+
+  // master clock
+  int clk_phase;
 
   // input pins
   bool RST;

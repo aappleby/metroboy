@@ -91,8 +91,6 @@ struct TestGB {
   void reset() {
     memset(this, 0, sizeof(*this));
 
-    clk_phase = 5;
-
     sys_sig.reset();
     clk_sig1.reset();
     clk_sig2.reset();
@@ -109,6 +107,8 @@ struct TestGB {
 
     //check(lcd.x() == 113);
     //check(lcd.y() == 0);
+
+    alignment_pad = 0;
   }
 
   //----------------------------------------
@@ -116,8 +116,6 @@ struct TestGB {
   void run_reset_sequence() {
     memset(this, 0, sizeof(*this));
     
-    clk_phase = -1;
-
     sys_sig.set_pwron();
 
     sim_slow(16);
@@ -152,14 +150,13 @@ struct TestGB {
 
   void sim_slow(int phases) {
     for (int p = 0; p < phases; p++) {
-      clk_phase = (clk_phase + 1) & 7;
-      bool CLKIN = !(clk_phase & 1);
+      sys_sig.next_phase();
 
       // lcd currently requires 12 passes, ouch
       for (int pass = 0; pass < 12; pass++) {
         TestGB prev = *this;
         
-        clk_sig1 = ClockSignals1::tick_slow(sys_sig, prev.clk_reg, CLKIN);
+        clk_sig1 = ClockSignals1::tick_slow(sys_sig, prev.clk_reg, sys_sig.clk());
         rst_sig1 = ResetSignals1::tick(sys_sig, clk_sig1, prev.rst_reg);
         clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
 
@@ -174,20 +171,19 @@ struct TestGB {
 
   void sim_fast(int phases) {
     for (int p = 0; p < phases; p++) {
-      clk_phase = (clk_phase + 1) & 7;
-      //bool CLKIN = !(clk_phase & 1);
+      sys_sig.next_phase();
 
       // lcd currently requires 12 passes, ouch
       for (int pass = 0; pass < 12; pass++) {
         TestGB prev = *this;
 
-        clk_sig1 = ClockSignals1::tick_fast(sys_sig, clk_phase);
+        clk_sig1 = ClockSignals1::tick_fast(sys_sig);
         rst_sig1 = ResetSignals1::tick(sys_sig, clk_sig1, prev.rst_reg);
         clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
 
         //----------
 
-        Clocks::tock_fast1(sys_sig, clk_phase, clk_reg);
+        Clocks::tock_fast1(sys_sig, clk_reg);
         Clocks::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
         ResetRegisters::tock(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
       }
@@ -199,8 +195,6 @@ struct TestGB {
   //dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
 
   //----------------------------------------
-
-  int clk_phase;
 
   SystemSignals  sys_sig;
   ClockSignals1  clk_sig1;
@@ -230,7 +224,6 @@ struct LCDTest {
   // run_reset_sequence();
 
   void check_match_gb(const TestGB& gb1, const TestGB& gb2) {
-    check_match(gb1.clk_phase,  gb2.clk_phase);
     check_match(gb1.sys_sig,    gb2.sys_sig);
     check_match(gb1.clk_sig1,   gb2.clk_sig1);
     check_match(gb1.clk_sig2,   gb2.clk_sig2);
@@ -294,11 +287,9 @@ struct LCDTest {
 
     memset(&gb1, 0, sizeof(gb1));
         
-    gb1.clk_phase = -1;
     gb1.sys_sig.set_pwron();
 
     memset(&gb2, 0, sizeof(gb2));
-    gb2.clk_phase = -1;
     gb2.sys_sig.set_pwron();
 
     sim_fast_slow(gb1, gb2, 16);

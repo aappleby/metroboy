@@ -76,8 +76,8 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
 
 //----------------------------------------
 
-ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig,
-                                       int phase) {
+ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig) {
+  int phase = sys_sig.phase();
 
   ClockSignals1 sig;
 
@@ -232,7 +232,8 @@ ClockSignals2 ClockSignals2::tick_slow(const Clocks& clk) {
 
 //----------------------------------------
 
-ClockSignals2 ClockSignals2::tick_fast(int phase, wire VID_RESETn) {
+ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, wire VID_RESETn) {
+  int phase = sys_sig.phase();
 
   ClockSignals2 sig;
 
@@ -298,7 +299,8 @@ void Clocks::tock_slow2(const SystemSignals& /*sys_sig*/,
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_fast1(const SystemSignals& sys_sig, int phase, Clocks& next) {
+void Clocks::tock_fast1(const SystemSignals& sys_sig, Clocks& next) {
+  int phase = sys_sig.phase();
 
   bool xBxDxFxH = (phase & 1);
 
@@ -328,7 +330,9 @@ void Clocks::tock_fast1(const SystemSignals& sys_sig, int phase, Clocks& next) {
 
 //----------------------------------------
 
-void Clocks::tock_fast2(const SystemSignals& /*sys_sig*/, int phase, wire VID_RESETn, Clocks& next) {
+void Clocks::tock_fast2(const SystemSignals& sys_sig, wire VID_RESETn, Clocks& next) {
+
+  int phase = sys_sig.phase();
 
   bool xBxDxFxH = (phase & 1);
   bool AxCxExGx = !xBxDxFxH;

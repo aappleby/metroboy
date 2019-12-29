@@ -56,9 +56,40 @@ struct ResetSignals1 {
 
 //-----------------------------------------------------------------------------
 
+struct ResetSignals2 {
+
+  static ResetSignals2 tick(const ResetRegisters& rst_reg,
+                           bool MODE_DBG1,
+                           bool MODE_DBG2,
+                           bool RST,
+                           bool CLK_BAD1,
+                           bool CPUCLK_REQn,
+                           bool DIV_15,
+                           bool LCDC_EN);
+
+  void reset() {
+    VID_RESETn = true;
+    VID_RESET3 = false;
+    VID_RESET4 = false;
+    VID_RESET5 = false;
+    VID_RESET6 = false;
+    VID_RESETn3 = true;
+  };
+
+  /*p01.XAPO*/ bool VID_RESETn;
+  /*p01.TOFU*/ bool VID_RESET3;
+  /*p01.PYRY*/ bool VID_RESET4;
+  /*p01.ROSY*/ bool VID_RESET5;
+  /*p01.ATAR*/ bool VID_RESET6;
+  /*p01.ABEZ*/ bool VID_RESETn3;
+};
+
+//-----------------------------------------------------------------------------
+
 struct ResetRegisters {
 
-  static void tock(const ResetSignals1& rst_sig,
+  static void tock(const ResetSignals1& rst_sig1,
+                   const ResetSignals2& rst_sig2,
                    const ResetRegisters& rst_reg,
                    bool MODE_PROD,
                    bool MODE_DBG1,

@@ -76,7 +76,7 @@ void OAM_tick(const Bus& bus,
                                                      // so does FROM_CPU5 mean "this is not a real read?"
     /*p04.DECY*/ wire FROM_CPU5n  = not(cpu.FROM_CPU5);
     /*p28.BOTA*/ wire CPU_RD_OAMn = nand(FROM_CPU5n, dec.ADDR_OAM, ctl.CPU_RD2); // Schematic wrong, this is NAND
-    /*p25.CUFE*/ wire OAM_WR      = and(or(dec.ADDR_OAM, dma.DMA_CLKEN), clk_sig1.MOPA_AxxxxFGH); // Possible schematic error - CUFE doesn't make sense as or(and()), only as and(or())
+    /*p25.CUFE*/ wire OAM_WR      = and(or(dec.ADDR_OAM, dma.DMA_CLKEN), clk_sig1.MOPA_ABCxxxxH); // Possible schematic error - CUFE doesn't make sense as or(and()), only as and(or())
 
 
 
@@ -190,7 +190,7 @@ void OAM_tick(const Bus& bus,
 
     /*p28.ADAH*/ wire ADDR_OAMn = not(dec.ADDR_OAM);
     /*p28.XUTO*/ wire CPU_OAM_WR = and(dec.ADDR_OAM, ctl.CPU_WR2);
-    /*p28.XYNY*/ wire CPU_OAM_WR_CLK1 = not(clk_sig1.MOPA_AxxxxFGH);
+    /*p28.XYNY*/ wire CPU_OAM_WR_CLK1 = not(clk_sig1.MOPA_ABCxxxxH);
     /*p28.WUJE*/ wire CPU_OAM_WR_CLK2 = or(CPU_OAM_WR_CLK1, CPU_OAM_WR);
     /*p28.XUPA*/ wire CPU_OAM_WR_CLK3 = not(CPU_OAM_WR_CLK2);
     /*p28.APAG*/ wire D_TO_OAMDn = amux2(CPU_OAM_WR_CLK3, OAM_LOCKn, OAM_BUSYn, ADDR_OAMn);

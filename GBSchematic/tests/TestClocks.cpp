@@ -19,107 +19,96 @@ void printAt(int x, int y, const char *format, ...)
 void labels() {
   int line = 3;
   printAt(0, line++, "ROOT_AxCxExGx");
-  printAt(0, line++, "MYVO_AxCxExGx");
-  printAt(0, line++, "ZEME_AxCxExGx");
-  printAt(0, line++, "XOTA_AxCxExGx");
-  printAt(0, line++, "MOXE_AxCxExGx");
-  printAt(0, line++, "MEHE_AxCxExGx");
-  printAt(0, line++, "LAPE_AxCxExGx");
   line++;
 
-  printAt(0, line++, "ARYS_xBxDxFxH");
-  printAt(0, line++, "ANOS_xBxDxFxH");
-  printAt(0, line++, "ALET_xBxDxFxH");
-  printAt(0, line++, "TAVA_xBxDxFxH");
-  line++;
-
-  //printAt(0, line++, "MODE_PROD");
-  printAt(0, line++, "PHAZ_xBCDExxx");
-  printAt(0, line++, "PHAZ_xxCDEFxx");
   printAt(0, line++, "PHAZ_xxxDEFGx");
   printAt(0, line++, "PHAZ_xxxxEFGH");
-  printAt(0, line++, "AFAS_xxxxxFGH");
+  printAt(0, line++, "PHAZ_AxxxxFGH");
+  printAt(0, line++, "PHAZ_ABxxxxGH");
+  printAt(0, line++, "AFEP_ABCDxxxx");
+  printAt(0, line++, "ATYP_xxxDEFGx");
+  printAt(0, line++, "ADAR_xxCDEFxx");
+  printAt(0, line++, "AROV_AxxxxFGH");
+  printAt(0, line++, "AFAS_ABxxxxxH");
   line++;
 
-  //printAt(0, line++, "CLKIN_A");
-  printAt(0, line++, "BOGA_AxCDEFGH");
+  printAt(0, line++, "NULE_ABCxxxxH");
+  printAt(0, line++, "BYRY_xxxDEFGx");
+  printAt(0, line++, "BUDE_ABCxxxxH");
+  printAt(0, line++, "DOVA_xxxDEFGx");
+  printAt(0, line++, "UVYT_xxxDEFGx");
+  printAt(0, line++, "BEKO_xxxDEFGx");
+  printAt(0, line++, "MOPA_ABCxxxxH");
   line++;
 
-  printAt(0, line++, "UVYT_xBCDExxx");
-  printAt(0, line++, "DOVA_xBCDExxx");
-  printAt(0, line++, "BEDO_xBxxxxxx");
-  printAt(0, line++, "BOWA_AxCDEFGH");
-  printAt(0, line++, "MOPA_AxxxxFGH");
+  printAt(0, line++, "BAPY_xBCxxxxx");
+  printAt(0, line++, "BERU_AxxDEFGH");
+  printAt(0, line++, "BUFA_xBCxxxxx");
+  printAt(0, line++, "BOLO_AxxDEFGH");
+  printAt(0, line++, "BEJA_ABCxxxxH");
+  printAt(0, line++, "BANE_xxxDEFGx");
+  printAt(0, line++, "BELO_ABCxxxxH");
+  printAt(0, line++, "BAZE_xxxDEFGx");
   line++;
 
-  //printAt(0, line++, "VID_RESETn");
-  printAt(0, line++, "SONO_ABCDxxxx");
-  printAt(0, line++, "WOSU_xBCxxFGx");
-  printAt(0, line++, "XUPY_ABxxEFxx");
-  printAt(0, line++, "WUVU_xxCDxxGH");
-  printAt(0, line++, "AWOH_xxCDxxGH");
-  printAt(0, line++, "XOCE_AxxDExxH");
-  printAt(0, line++, "VENA_xxxxEFGH");
-  printAt(0, line++, "TALU_xxxxEFGH");
-  line++;
-
-  printAt(0, line++, "WUVU_xxCDxxGH");
-  printAt(0, line++, "VENA_xxxxEFGH");
-  printAt(0, line++, "WOSU_xBCxxFGx");
+  printAt(0, line++, "BUTO_ABCxEFGH");
+  printAt(0, line++, "BELE_xxxDxxxx");
+  printAt(0, line++, "BYJU_ABCxEFGH");
+  printAt(0, line++, "BALY_xxxDxxxx");
+  printAt(0, line++, "BOGA_ABCxEFGH");
+  printAt(0, line++, "BUVU_xxxDxxxx");
+  printAt(0, line++, "BYXO_ABCxEFGH");
+  printAt(0, line++, "BEDO_xxxDxxxx");
+  printAt(0, line++, "BOWA_ABCxEFGH");
   line++;
 }
 
 void dump(int x, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
   int line = 3;
   plot(x, line++, clk_sig1.ROOT_AxCxExGx);
-  plot(x, line++, clk_sig1.MYVO_AxCxExGx);
-  plot(x, line++, clk_sig1.ZEME_AxCxExGx);
-  plot(x, line++, clk_sig1.XOTA_AxCxExGx);
-  plot(x, line++, clk_sig1.MOXE_AxCxExGx);
-  plot(x, line++, clk_sig1.MEHE_AxCxExGx);
-  plot(x, line++, clk_sig1.LAPE_AxCxExGx);
   line++;
 
-  plot(x, line++, clk_sig1.ARYS_xBxDxFxH);
-  plot(x, line++, clk_sig1.ANOS_xBxDxFxH);
-  plot(x, line++, clk_sig1.ALET_xBxDxFxH);
-  plot(x, line++, clk_sig1.TAVA_xBxDxFxH);
-  line++;
-
-  //plot(x, line++, clk.MODE_PROD);
-  plot(x, line++, clk_sig1.PHAZ_xBCDExxx);
-  plot(x, line++, clk_sig1.PHAZ_xxCDEFxx);
   plot(x, line++, clk_sig1.PHAZ_xxxDEFGx);
   plot(x, line++, clk_sig1.PHAZ_xxxxEFGH);
-  plot(x, line++, clk_sig1.AFAS_xxxxxFGH);
+  plot(x, line++, clk_sig1.PHAZ_AxxxxFGH);
+  plot(x, line++, clk_sig1.PHAZ_ABxxxxGH);
+  plot(x, line++, clk_sig1.AFEP_ABCDxxxx);
+  plot(x, line++, clk_sig1.ATYP_xxxDEFGx);
+  plot(x, line++, clk_sig1.ADAR_xxCDEFxx);
+  plot(x, line++, clk_sig1.AROV_AxxxxFGH);
+  plot(x, line++, clk_sig1.AFAS_ABxxxxxH);
   line++;
 
-  //plot(x, line++, clk.CLKIN_A);
-  plot(x, line++, clk_sig1.BOGA_AxCDEFGH);
+  plot(x, line++, clk_sig1.NULE_ABCxxxxH);
+  plot(x, line++, clk_sig1.BYRY_xxxDEFGx);
+  plot(x, line++, clk_sig1.BUDE_ABCxxxxH);
+  plot(x, line++, clk_sig1.DOVA_xxxDEFGx);
+  plot(x, line++, clk_sig1.UVYT_xxxDEFGx);
+  plot(x, line++, clk_sig1.BEKO_xxxDEFGx);
+  plot(x, line++, clk_sig1.MOPA_ABCxxxxH);
   line++;
 
-  plot(x, line++, clk_sig1.UVYT_xBCDExxx);
-  plot(x, line++, clk_sig1.DOVA_xBCDExxx);
-  plot(x, line++, clk_sig1.BEDO_xBxxxxxx);
-  plot(x, line++, clk_sig1.BOWA_AxCDEFGH);
-  plot(x, line++, clk_sig1.MOPA_AxxxxFGH);
+  plot(x, line++, clk_sig1.BAPY_xBCxxxxx);
+  plot(x, line++, clk_sig1.BERU_AxxDEFGH);
+  plot(x, line++, clk_sig1.BUFA_xBCxxxxx);
+  plot(x, line++, clk_sig1.BOLO_AxxDEFGH);
+  plot(x, line++, clk_sig1.BEJA_ABCxxxxH);
+  plot(x, line++, clk_sig1.BANE_xxxDEFGx);
+  plot(x, line++, clk_sig1.BELO_ABCxxxxH);
+  plot(x, line++, clk_sig1.BAZE_xxxDEFGx);
   line++;
 
-  //plot(x, line++, clk.VID_RESETn);
-  plot(x, line++, clk_sig2.SONO_ABCDxxxx);
-  plot(x, line++, clk_sig2.WOSU_xBCxxFGx);
-  plot(x, line++, clk_sig2.XUPY_ABxxEFxx);
-  plot(x, line++, clk_sig2.WUVU_xxCDxxGH);
-  plot(x, line++, clk_sig2.AWOH_xxCDxxGH);
-  plot(x, line++, clk_sig2.XOCE_AxxDExxH);
-  plot(x, line++, clk_sig2.VENA_xxxxEFGH);
-  plot(x, line++, clk_sig2.TALU_xxxxEFGH);
+  plot(x, line++, clk_sig1.BUTO_ABCxEFGH);
+  plot(x, line++, clk_sig1.BELE_xxxDxxxx);
+  plot(x, line++, clk_sig1.BYJU_ABCxEFGH);
+  plot(x, line++, clk_sig1.BALY_xxxDxxxx);
+  plot(x, line++, clk_sig1.BOGA_ABCxEFGH);
+  plot(x, line++, clk_sig1.BUVU_xxxDxxxx);
+  plot(x, line++, clk_sig1.BYXO_ABCxEFGH);
+  plot(x, line++, clk_sig1.BEDO_xxxDxxxx);
+  plot(x, line++, clk_sig1.BOWA_ABCxEFGH);
   line++;
 
-  plot(x, line++, clk_sig2.WUVU_xxCDxxGH);
-  plot(x, line++, clk_sig2.VENA_xxxxEFGH);
-  plot(x, line++, clk_sig2.WOSU_xBCxxFGx);
-  line++;
 }
 
 static int cursor = 20;

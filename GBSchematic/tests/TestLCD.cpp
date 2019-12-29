@@ -429,7 +429,7 @@ void TestLCD() {
   LCDTest test;
 
   test.test_reset();
-  //test.test_fast_slow();
+  test.test_fast_slow();
   //test.sdl_run();
 
   return;

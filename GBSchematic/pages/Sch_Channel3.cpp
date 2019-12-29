@@ -252,7 +252,7 @@ void P16_Ch3Regs_tick(const SystemSignals& sys_sig,
   {
     /*p16.GOMA*/ wire APU_RESETn = not(b.apu.APU_RESET1);
     // FIXME
-    ///*p16.FOBA*/ next.ch3.CH3_RESTART_SYNC = tock_pos(a.clk.DOVA_xBCDExxx, b.clk.DOVA_xBCDExxx, APU_RESETn, b.ch3.CH3_RESTART_SYNC, b.ch3.NR34_START);
+    ///*p16.FOBA*/ next.ch3.CH3_RESTART_SYNC = tock_pos(a.clk.DOVA_xxxDEFGx, b.clk.DOVA_xxxDEFGx, APU_RESETn, b.ch3.CH3_RESTART_SYNC, b.ch3.NR34_START);
   }
 
   {
@@ -280,8 +280,8 @@ void P16_Ch3Regs_tick(const SystemSignals& sys_sig,
   }
 
   {
-    /*p01.BUGO*/ wire BUGO_xBCDExxx = not(clk.AFEP_ABxxxxGH);
-    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(sys_sig.CPUCLK_REQn, BUGO_xBCDExxx, clk.AROV_xxxDEFGx);
+    /*p01.BUGO*/ wire BUGO_xBCDExxx = not(clk.AFEP_ABCDxxxx);
+    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(sys_sig.CPUCLK_REQn, BUGO_xBCDExxx, clk.AROV_AxxxxFGH);
     /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
     /*p01.BUKE*/ wire BUKE_AxxxxxGH = not(BASU_xBCDEFxx);
     /*p17.ABUR*/ wire ABUR_xBCDEFxx = not(BUKE_AxxxxxGH);

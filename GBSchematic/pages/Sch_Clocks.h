@@ -4,7 +4,7 @@
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
-// c.cpu.CLK_xBCDEFGH = BOWA_AxCDEFGH;
+// c.cpu.CLK_xBCDEFGH = BOWA_ABCxEFGH;
 
 struct ClockSignals1 {
   static ClockSignals1 tick_slow(const SystemSignals& sys_sig, const ClockRegisters& clk);
@@ -31,44 +31,45 @@ struct ClockSignals1 {
       /*p29.XYFY*/ .XYFY_xBxDxFxH = 1,
 
       // gated on MODE_PROD
-      /*p01.AFUR*/ .PHAZ_xBCDExxx = 0,
-      /*p01.ALEF*/ .PHAZ_xxCDEFxx = 1,
-      /*p01.APUK*/ .PHAZ_xxxDEFGx = 1,
-      /*p01.ADYK*/ .PHAZ_xxxxEFGH = 1,
-      /*p01.AFEP*/ .AFEP_ABxxxxGH = 0,
-      /*p01.ATYP*/ .ATYP_xBCDExxx = 0,
-      /*p01.ADAR*/ .ADAR_ABCxxxxH = 0,
-      /*p01.AROV*/ .AROV_xxxDEFGx = 1,
-      /*p01.AFAS*/ .AFAS_xxxxxFGH = 1,
+      /*p01.AFUR*/ .PHAZ_xxxDEFGx = 0,
+      /*p01.ALEF*/ .PHAZ_xxxxEFGH = 1,
+      /*p01.APUK*/ .PHAZ_AxxxxFGH = 1,
+      /*p01.ADYK*/ .PHAZ_ABxxxxGH = 1,
+      /*p01.AFEP*/ .AFEP_ABCDxxxx = 0,
+      /*p01.ATYP*/ .ATYP_xxxDEFGx = 0,
+      /*p01.ADAR*/ .ADAR_xxCDEFxx = 0,
+      /*p01.AROV*/ .AROV_AxxxxFGH = 1,
+      /*p01.AFAS*/ .AFAS_ABxxxxxH = 1,
 
       // gated on CPUCLK_REQ
-      /*p01.NULE*/ .NULE_xxxxEFGH = 1,
-      /*p01.BYRY*/ .BYRY_ABCDxxxx = 0,
-      /*p01.BUDE*/ .BUDE_xxxxEFGH = 1,
-      /*p01.DOVA*/ .DOVA_xBCDExxx = 0,
-      /*p01.UVYT*/ .UVYT_xBCDExxx = 0,
-      /*p01.BEKO*/ .BEKO_ABCDxxxx = 0,
-      /*p04.MOPA*/ .MOPA_AxxxxFGH = 1,
+      /*p01.NULE*/ .NULE_ABCxxxxH = 1,
+      /*p01.BYRY*/ .BYRY_xxxDEFGx = 0,
+      /*p01.BUDE*/ .BUDE_ABCxxxxH = 1,
+      /*p01.DOVA*/ .DOVA_xxxDEFGx = 0,
+      /*p01.UVYT*/ .UVYT_xxxDEFGx = 0,
+      /*p01.BEKO*/ .BEKO_xxxDEFGx = 0,
+      /*p04.MOPA*/ .MOPA_ABCxxxxH = 1,
 
-      /*p01.BAPY*/ .BAPY_AxxxxxxH = 0,
-      /*p01.BERU*/ .BERU_xBCDEFGx = 1,
-      /*p01.BUFA*/ .BUFA_AxxxxxxH = 0,
-      /*p01.BOLO*/ .BOLO_xBCDEFGx = 1,
-      /*p01.BEJA*/ .BEJA_xxxxEFGH = 1,
-      /*p01.BANE*/ .BANE_ABCDxxxx = 0,
-      /*p01.BELO*/ .BELO_xxxxEFGH = 1,
-      /*p01.BAZE*/ .BAZE_ABCDxxxx = 0,
-      /*p01.BUTO*/ .BUTO_xBCDEFGH = 1,
-      /*p01.BELE*/ .BELE_Axxxxxxx = 0,
+      /*p01.BAPY*/ .BAPY_xBCxxxxx = 0,
+      /*p01.BERU*/ .BERU_AxxDEFGH = 1,
+      /*p01.BUFA*/ .BUFA_xBCxxxxx = 0,
+      /*p01.BOLO*/ .BOLO_AxxDEFGH = 1,
+
+      /*p01.BEJA*/ .BEJA_ABCxxxxH = 1,
+      /*p01.BANE*/ .BANE_xxxDEFGx = 0,
+      /*p01.BELO*/ .BELO_ABCxxxxH = 1,
+      /*p01.BAZE*/ .BAZE_xxxDEFGx = 0,
+      /*p01.BUTO*/ .BUTO_ABCxEFGH = 1,
+      /*p01.BELE*/ .BELE_xxxDxxxx = 0,
 
       // gated on CLK_GOOD
-      /*p01.BYJU*/ .BYJU_xBCDEFGH = 1,
-      /*p01.BALY*/ .BALY_Axxxxxxx = 0,
-      /*p01.BOGA*/ .BOGA_AxCDEFGH = 1,
-      /*p01.BUVU*/ .BUVU_Axxxxxxx = 0,
-      /*p01.BYXO*/ .BYXO_xBCDEFGH = 1,
-      /*p01.BEDO*/ .BEDO_xBxxxxxx = 0,
-      /*p01.BOWA*/ .BOWA_AxCDEFGH = 1,
+      /*p01.BYJU*/ .BYJU_ABCxEFGH = 1,
+      /*p01.BALY*/ .BALY_xxxDxxxx = 0,
+      /*p01.BOGA*/ .BOGA_ABCxEFGH = 1,
+      /*p01.BUVU*/ .BUVU_xxxDxxxx = 0,
+      /*p01.BYXO*/ .BYXO_ABCxEFGH = 1,
+      /*p01.BEDO*/ .BEDO_xxxDxxxx = 0,
+      /*p01.BOWA*/ .BOWA_ABCxEFGH = 1,
     };
   }
 
@@ -91,44 +92,44 @@ struct ClockSignals1 {
   /*p29.XYFY*/ bool XYFY_xBxDxFxH;
 
   // gated on MODE_PROD
-  /*p01.AFUR*/ bool PHAZ_xBCDExxx;
-  /*p01.ALEF*/ bool PHAZ_xxCDEFxx;
-  /*p01.APUK*/ bool PHAZ_xxxDEFGx;
-  /*p01.ADYK*/ bool PHAZ_xxxxEFGH;
-  /*p01.AFEP*/ bool AFEP_ABxxxxGH;
-  /*p01.ATYP*/ bool ATYP_xBCDExxx;
-  /*p01.ADAR*/ bool ADAR_ABCxxxxH;
-  /*p01.AROV*/ bool AROV_xxxDEFGx;
-  /*p01.AFAS*/ bool AFAS_xxxxxFGH;
+  /*p01.AFUR*/ bool PHAZ_xxxDEFGx;
+  /*p01.ALEF*/ bool PHAZ_xxxxEFGH;
+  /*p01.APUK*/ bool PHAZ_AxxxxFGH;
+  /*p01.ADYK*/ bool PHAZ_ABxxxxGH;
+  /*p01.AFEP*/ bool AFEP_ABCDxxxx;
+  /*p01.ATYP*/ bool ATYP_xxxDEFGx;
+  /*p01.ADAR*/ bool ADAR_xxCDEFxx;
+  /*p01.AROV*/ bool AROV_AxxxxFGH;
+  /*p01.AFAS*/ bool AFAS_ABxxxxxH;
 
   // gated on CPUCLK_REQ
-  /*p01.NULE*/ bool NULE_xxxxEFGH;
-  /*p01.BYRY*/ bool BYRY_ABCDxxxx;
-  /*p01.BUDE*/ bool BUDE_xxxxEFGH;
-  /*p01.DOVA*/ bool DOVA_xBCDExxx;
-  /*p01.UVYT*/ bool UVYT_xBCDExxx;
-  /*p01.BEKO*/ bool BEKO_ABCDxxxx;
-  /*p04.MOPA*/ bool MOPA_AxxxxFGH;
+  /*p01.NULE*/ bool NULE_ABCxxxxH;
+  /*p01.BYRY*/ bool BYRY_xxxDEFGx;
+  /*p01.BUDE*/ bool BUDE_ABCxxxxH;
+  /*p01.DOVA*/ bool DOVA_xxxDEFGx;
+  /*p01.UVYT*/ bool UVYT_xxxDEFGx;
+  /*p01.BEKO*/ bool BEKO_xxxDEFGx;
+  /*p04.MOPA*/ bool MOPA_ABCxxxxH;
 
-  /*p01.BAPY*/ bool BAPY_AxxxxxxH;
-  /*p01.BERU*/ bool BERU_xBCDEFGx;
-  /*p01.BUFA*/ bool BUFA_AxxxxxxH;
-  /*p01.BOLO*/ bool BOLO_xBCDEFGx;
-  /*p01.BEJA*/ bool BEJA_xxxxEFGH;
-  /*p01.BANE*/ bool BANE_ABCDxxxx;
-  /*p01.BELO*/ bool BELO_xxxxEFGH;
-  /*p01.BAZE*/ bool BAZE_ABCDxxxx;
-  /*p01.BUTO*/ bool BUTO_xBCDEFGH;
-  /*p01.BELE*/ bool BELE_Axxxxxxx;
+  /*p01.BAPY*/ bool BAPY_xBCxxxxx;
+  /*p01.BERU*/ bool BERU_AxxDEFGH;
+  /*p01.BUFA*/ bool BUFA_xBCxxxxx;
+  /*p01.BOLO*/ bool BOLO_AxxDEFGH;
+  /*p01.BEJA*/ bool BEJA_ABCxxxxH;
+  /*p01.BANE*/ bool BANE_xxxDEFGx;
+  /*p01.BELO*/ bool BELO_ABCxxxxH;
+  /*p01.BAZE*/ bool BAZE_xxxDEFGx;
+  /*p01.BUTO*/ bool BUTO_ABCxEFGH;
+  /*p01.BELE*/ bool BELE_xxxDxxxx;
 
   // gated on CLK_GOOD
-  /*p01.BYJU*/ bool BYJU_xBCDEFGH;
-  /*p01.BALY*/ bool BALY_Axxxxxxx;
-  /*p01.BOGA*/ bool BOGA_AxCDEFGH;
-  /*p01.BUVU*/ bool BUVU_Axxxxxxx;
-  /*p01.BYXO*/ bool BYXO_xBCDEFGH;
-  /*p01.BEDO*/ bool BEDO_xBxxxxxx;
-  /*p01.BOWA*/ bool BOWA_AxCDEFGH;
+  /*p01.BYJU*/ bool BYJU_ABCxEFGH;
+  /*p01.BALY*/ bool BALY_xxxDxxxx;
+  /*p01.BOGA*/ bool BOGA_ABCxEFGH;
+  /*p01.BUVU*/ bool BUVU_xxxDxxxx;
+  /*p01.BYXO*/ bool BYXO_ABCxEFGH;
+  /*p01.BEDO*/ bool BEDO_xxxDxxxx;
+  /*p01.BOWA*/ bool BOWA_ABCxEFGH;
 };
 
 //-----------------------------------------------------------------------------
@@ -182,10 +183,10 @@ struct ClockRegisters {
 
   // ResetRegisters to immediately before the first phase on the first line
   void reset() {
-    PHAZ_xBCDExxx.val = 0; PHAZ_xBCDExxx.clk = 1;
-    PHAZ_xxCDEFxx.val = 1; PHAZ_xxCDEFxx.clk = 1;
-    PHAZ_xxxDEFGx.val = 1; PHAZ_xxxDEFGx.clk = 1;
+    PHAZ_xxxDEFGx.val = 0; PHAZ_xxxDEFGx.clk = 1;
     PHAZ_xxxxEFGH.val = 1; PHAZ_xxxxEFGH.clk = 1;
+    PHAZ_AxxxxFGH.val = 1; PHAZ_AxxxxFGH.clk = 1;
+    PHAZ_ABxxxxGH.val = 1; PHAZ_ABxxxxGH.clk = 1;
 
     WUVU_xxCDxxGH.val = 1; WUVU_xxCDxxGH.clk = 0;
     VENA_xxxxEFGH.val = 1; VENA_xxxxEFGH.clk = 0;
@@ -197,10 +198,10 @@ private:
   friend struct ClockSignals1;
   friend struct ClockSignals2;
 
-  /*p01.AFUR*/ Reg PHAZ_xBCDExxx;
-  /*p01.ALEF*/ Reg PHAZ_xxCDEFxx;
-  /*p01.APUK*/ Reg PHAZ_xxxDEFGx;
-  /*p01.ADYK*/ Reg PHAZ_xxxxEFGH;
+  /*p01.AFUR*/ Reg PHAZ_xxxDEFGx;
+  /*p01.ALEF*/ Reg PHAZ_xxxxEFGH;
+  /*p01.APUK*/ Reg PHAZ_AxxxxFGH;
+  /*p01.ADYK*/ Reg PHAZ_ABxxxxGH;
 
   /*p29.WUVU*/ Reg WUVU_xxCDxxGH;
   /*p21.VENA*/ Reg VENA_xxxxEFGH;

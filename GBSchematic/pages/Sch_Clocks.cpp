@@ -31,45 +31,45 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemSignals& sys_sig,
     /*p29.XYFY*/ .XYFY_xBxDxFxH = not(sig.XOTA_AxCxExGx),
 
     // gated on MODE_PROD
-    /*p01.AFUR*/ .PHAZ_xBCDExxx = and(clk_reg.PHAZ_xBCDExxx, sys_sig.MODE_PROD),
-    /*p01.ALEF*/ .PHAZ_xxCDEFxx = and(clk_reg.PHAZ_xxCDEFxx, sys_sig.MODE_PROD),
-    /*p01.APUK*/ .PHAZ_xxxDEFGx = and(clk_reg.PHAZ_xxxDEFGx, sys_sig.MODE_PROD),
-    /*p01.ADYK*/ .PHAZ_xxxxEFGH = and(clk_reg.PHAZ_xxxxEFGH, sys_sig.MODE_PROD),
+    /*p01.AFUR*/ .PHAZ_xxxDEFGx = and(clk_reg.PHAZ_xxxDEFGx, sys_sig.MODE_PROD),
+    /*p01.ALEF*/ .PHAZ_xxxxEFGH = and(clk_reg.PHAZ_xxxxEFGH, sys_sig.MODE_PROD),
+    /*p01.APUK*/ .PHAZ_AxxxxFGH = and(clk_reg.PHAZ_AxxxxFGH, sys_sig.MODE_PROD),
+    /*p01.ADYK*/ .PHAZ_ABxxxxGH = and(clk_reg.PHAZ_ABxxxxGH, sys_sig.MODE_PROD),
 
-    /*p01.AFEP*/ .AFEP_ABxxxxGH = not( sig.PHAZ_xxCDEFxx),
-    /*p01.ATYP*/ .ATYP_xBCDExxx = not(!sig.PHAZ_xBCDExxx),
-    /*p01.ADAR*/ .ADAR_ABCxxxxH = not( sig.PHAZ_xxxxEFGH),
-    /*p01.AROV*/ .AROV_xxxDEFGx = not(!sig.PHAZ_xxxDEFGx),
-    /*p01.AFAS*/ .AFAS_xxxxxFGH = nor(sig.ADAR_ABCxxxxH, sig.ATYP_xBCDExxx),
+    /*p01.AFEP*/ .AFEP_ABCDxxxx = not( sig.PHAZ_xxxxEFGH),
+    /*p01.ATYP*/ .ATYP_xxxDEFGx = not(!sig.PHAZ_xxxDEFGx),
+    /*p01.ADAR*/ .ADAR_xxCDEFxx = not( sig.PHAZ_ABxxxxGH),
+    /*p01.AROV*/ .AROV_AxxxxFGH = not(!sig.PHAZ_AxxxxFGH),
+    /*p01.AFAS*/ .AFAS_ABxxxxxH = nor(sig.ADAR_xxCDEFxx, sig.ATYP_xxxDEFGx),
 
     // gated on CPUCLK_REQ
-    /*p01.NULE*/ .NULE_xxxxEFGH = nor(sys_sig.CPUCLK_REQn, sig.ATYP_xBCDExxx),
-    /*p01.BYRY*/ .BYRY_ABCDxxxx = not(sig.NULE_xxxxEFGH),
-    /*p01.BUDE*/ .BUDE_xxxxEFGH = not(sig.BYRY_ABCDxxxx),
-    /*p01.DOVA*/ .DOVA_xBCDExxx = not(sig.BUDE_xxxxEFGH),
-    /*p01.UVYT*/ .UVYT_xBCDExxx = not(sig.BUDE_xxxxEFGH),
-    /*p01.BEKO*/ .BEKO_ABCDxxxx = not(sig.BUDE_xxxxEFGH),
-    /*p04.MOPA*/ .MOPA_AxxxxFGH = not(sig.UVYT_xBCDExxx),
+    /*p01.NULE*/ .NULE_ABCxxxxH = nor(sys_sig.CPUCLK_REQn, sig.ATYP_xxxDEFGx),
+    /*p01.BYRY*/ .BYRY_xxxDEFGx = not(sig.NULE_ABCxxxxH),
+    /*p01.BUDE*/ .BUDE_ABCxxxxH = not(sig.BYRY_xxxDEFGx),
+    /*p01.DOVA*/ .DOVA_xxxDEFGx = not(sig.BUDE_ABCxxxxH),
+    /*p01.UVYT*/ .UVYT_xxxDEFGx = not(sig.BUDE_ABCxxxxH),
+    /*p01.BEKO*/ .BEKO_xxxDEFGx = not(sig.BUDE_ABCxxxxH),
+    /*p04.MOPA*/ .MOPA_ABCxxxxH = not(sig.UVYT_xxxDEFGx),
 
-    /*p01.BAPY*/ .BAPY_AxxxxxxH = nor(sys_sig.CPUCLK_REQn, sig.AROV_xxxDEFGx, sig.ATYP_xBCDExxx),
-    /*p01.BERU*/ .BERU_xBCDEFGx = not(sig.BAPY_AxxxxxxH),
-    /*p01.BUFA*/ .BUFA_AxxxxxxH = not(sig.BERU_xBCDEFGx),
-    /*p01.BOLO*/ .BOLO_xBCDEFGx = not(sig.BUFA_AxxxxxxH),
-    /*p01.BEJA*/ .BEJA_xxxxEFGH = nand(sig.BOLO_xBCDEFGx, sig.BEKO_ABCDxxxx),
-    /*p01.BANE*/ .BANE_ABCDxxxx = not(sig.BEJA_xxxxEFGH),
-    /*p01.BELO*/ .BELO_xxxxEFGH = not(sig.BANE_ABCDxxxx),
-    /*p01.BAZE*/ .BAZE_ABCDxxxx = not(sig.BELO_xxxxEFGH),
-    /*p01.BUTO*/ .BUTO_xBCDEFGH = nand(sig.AFEP_ABxxxxGH, sig.ATYP_xBCDExxx, sig.BAZE_ABCDxxxx),
-    /*p01.BELE*/ .BELE_Axxxxxxx = not(sig.BUTO_xBCDEFGH),
+    /*p01.BAPY*/ .BAPY_xBCxxxxx = nor(sys_sig.CPUCLK_REQn, sig.AROV_AxxxxFGH, sig.ATYP_xxxDEFGx),
+    /*p01.BERU*/ .BERU_AxxDEFGH = not(sig.BAPY_xBCxxxxx),
+    /*p01.BUFA*/ .BUFA_xBCxxxxx = not(sig.BERU_AxxDEFGH),
+    /*p01.BOLO*/ .BOLO_AxxDEFGH = not(sig.BUFA_xBCxxxxx),
+    /*p01.BEJA*/ .BEJA_ABCxxxxH = nand(sig.BOLO_AxxDEFGH, sig.BEKO_xxxDEFGx),
+    /*p01.BANE*/ .BANE_xxxDEFGx = not(sig.BEJA_ABCxxxxH),
+    /*p01.BELO*/ .BELO_ABCxxxxH = not(sig.BANE_xxxDEFGx),
+    /*p01.BAZE*/ .BAZE_xxxDEFGx = not(sig.BELO_ABCxxxxH),
+    /*p01.BUTO*/ .BUTO_ABCxEFGH = nand(sig.AFEP_ABCDxxxx, sig.ATYP_xxxDEFGx, sig.BAZE_xxxDEFGx),
+    /*p01.BELE*/ .BELE_xxxDxxxx = not(sig.BUTO_ABCxEFGH),
 
     // gated on CLK_GOOD
-    /*p01.BYJU*/ .BYJU_xBCDEFGH = nor(sig.BELE_Axxxxxxx, sys_sig.CLK_BAD2),
-    /*p01.BALY*/ .BALY_Axxxxxxx = not(sig.BYJU_xBCDEFGH),
-    /*p01.BOGA*/ .BOGA_AxCDEFGH = not(sig.BALY_Axxxxxxx),
-    /*p01.BUVU*/ .BUVU_Axxxxxxx = and(sys_sig.CPUCLK_REQ, sig.BALY_Axxxxxxx),
-    /*p01.BYXO*/ .BYXO_xBCDEFGH = not(sig.BUVU_Axxxxxxx),
-    /*p01.BEDO*/ .BEDO_xBxxxxxx = not(sig.BYXO_xBCDEFGH),
-    /*p01.BOWA*/ .BOWA_AxCDEFGH = not(sig.BEDO_xBxxxxxx),
+    /*p01.BYJU*/ .BYJU_ABCxEFGH = nor(sig.BELE_xxxDxxxx, sys_sig.CLK_BAD2),
+    /*p01.BALY*/ .BALY_xxxDxxxx = not(sig.BYJU_ABCxEFGH),
+    /*p01.BOGA*/ .BOGA_ABCxEFGH = not(sig.BALY_xxxDxxxx),
+    /*p01.BUVU*/ .BUVU_xxxDxxxx = and(sys_sig.CPUCLK_REQ, sig.BALY_xxxDxxxx),
+    /*p01.BYXO*/ .BYXO_ABCxEFGH = not(sig.BUVU_xxxDxxxx),
+    /*p01.BEDO*/ .BEDO_xxxDxxxx = not(sig.BYXO_ABCxEFGH),
+    /*p01.BOWA*/ .BOWA_ABCxEFGH = not(sig.BEDO_xxxDxxxx),
   };
 
   return sig;
@@ -119,95 +119,95 @@ ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig) {
   bool AxCDEFGH = !xBxxxxxx;
 
   if (sys_sig.MODE_PROD) {
-    sig.PHAZ_xBCDExxx = xBCDExxx;
-    sig.PHAZ_xxCDEFxx = xxCDEFxx;
-    sig.PHAZ_xxxDEFGx = xxxDEFGx;
-    sig.PHAZ_xxxxEFGH = xxxxEFGH;
+    sig.PHAZ_xxxDEFGx = xBCDExxx;
+    sig.PHAZ_xxxxEFGH = xxCDEFxx;
+    sig.PHAZ_AxxxxFGH = xxxDEFGx;
+    sig.PHAZ_ABxxxxGH = xxxxEFGH;
 
-    sig.AFEP_ABxxxxGH = ABxxxxGH;
-    sig.ATYP_xBCDExxx = xBCDExxx;
-    sig.ADAR_ABCxxxxH = ABCDxxxx;
-    sig.AROV_xxxDEFGx = xxxDEFGx;
-    sig.AFAS_xxxxxFGH = xxxxxFGH;
-    sig.BUTO_xBCDEFGH = AxCDEFGH;
-    sig.BELE_Axxxxxxx = xBxxxxxx;
+    sig.AFEP_ABCDxxxx = ABxxxxGH;
+    sig.ATYP_xxxDEFGx = xBCDExxx;
+    sig.ADAR_xxCDEFxx = ABCDxxxx;
+    sig.AROV_AxxxxFGH = xxxDEFGx;
+    sig.AFAS_ABxxxxxH = xxxxxFGH;
+    sig.BUTO_ABCxEFGH = AxCDEFGH;
+    sig.BELE_xxxDxxxx = xBxxxxxx;
   }
   else {
-    sig.PHAZ_xBCDExxx = 0;
-    sig.PHAZ_xxCDEFxx = 0;
     sig.PHAZ_xxxDEFGx = 0;
     sig.PHAZ_xxxxEFGH = 0;
+    sig.PHAZ_AxxxxFGH = 0;
+    sig.PHAZ_ABxxxxGH = 0;
 
-    sig.AFEP_ABxxxxGH = 1;
-    sig.ATYP_xBCDExxx = 0;
-    sig.ADAR_ABCxxxxH = 1;
-    sig.AROV_xxxDEFGx = 0;
-    sig.AFAS_xxxxxFGH = 0;
-    sig.BUTO_xBCDEFGH = 1;
-    sig.BELE_Axxxxxxx = 0;
+    sig.AFEP_ABCDxxxx = 1;
+    sig.ATYP_xxxDEFGx = 0;
+    sig.ADAR_xxCDEFxx = 1;
+    sig.AROV_AxxxxFGH = 0;
+    sig.AFAS_ABxxxxxH = 0;
+    sig.BUTO_ABCxEFGH = 1;
+    sig.BELE_xxxDxxxx = 0;
   }
 
   if (sys_sig.MODE_PROD && sys_sig.CLK_REQ) {
-    sig.NULE_xxxxEFGH = AxxxxFGH;
-    sig.BUDE_xxxxEFGH = AxxxxFGH;
-    sig.MOPA_AxxxxFGH = AxxxxFGH;
-    sig.BEJA_xxxxEFGH = AxxxxFGH;
-    sig.BELO_xxxxEFGH = AxxxxFGH;
+    sig.NULE_ABCxxxxH = AxxxxFGH;
+    sig.BUDE_ABCxxxxH = AxxxxFGH;
+    sig.MOPA_ABCxxxxH = AxxxxFGH;
+    sig.BEJA_ABCxxxxH = AxxxxFGH;
+    sig.BELO_ABCxxxxH = AxxxxFGH;
 
-    sig.BYRY_ABCDxxxx = xBCDExxx;
-    sig.DOVA_xBCDExxx = xBCDExxx;
-    sig.UVYT_xBCDExxx = xBCDExxx;
-    sig.BEKO_ABCDxxxx = xBCDExxx;
-    sig.BANE_ABCDxxxx = xBCDExxx;
-    sig.BAZE_ABCDxxxx = xBCDExxx;
+    sig.BYRY_xxxDEFGx = xBCDExxx;
+    sig.DOVA_xxxDEFGx = xBCDExxx;
+    sig.UVYT_xxxDEFGx = xBCDExxx;
+    sig.BEKO_xxxDEFGx = xBCDExxx;
+    sig.BANE_xxxDEFGx = xBCDExxx;
+    sig.BAZE_xxxDEFGx = xBCDExxx;
 
-    sig.BAPY_AxxxxxxH = AxxxxxxH;
-    sig.BUFA_AxxxxxxH = AxxxxxxH;
-    sig.BERU_xBCDEFGx = xBCDEFGx;
-    sig.BOLO_xBCDEFGx = xBCDEFGx;
+    sig.BAPY_xBCxxxxx = AxxxxxxH;
+    sig.BUFA_xBCxxxxx = AxxxxxxH;
+    sig.BERU_AxxDEFGH = xBCDEFGx;
+    sig.BOLO_AxxDEFGH = xBCDEFGx;
   }
   else {
-    sig.NULE_xxxxEFGH = sys_sig.CLK_REQ;
-    sig.BUDE_xxxxEFGH = sys_sig.CLK_REQ;
-    sig.MOPA_AxxxxFGH = sys_sig.CLK_REQ;
-    sig.BEJA_xxxxEFGH = sys_sig.CLK_REQ;
-    sig.BELO_xxxxEFGH = sys_sig.CLK_REQ;
+    sig.NULE_ABCxxxxH = sys_sig.CLK_REQ;
+    sig.BUDE_ABCxxxxH = sys_sig.CLK_REQ;
+    sig.MOPA_ABCxxxxH = sys_sig.CLK_REQ;
+    sig.BEJA_ABCxxxxH = sys_sig.CLK_REQ;
+    sig.BELO_ABCxxxxH = sys_sig.CLK_REQ;
 
-    sig.BYRY_ABCDxxxx = !sys_sig.CLK_REQ;
-    sig.DOVA_xBCDExxx = !sys_sig.CLK_REQ;
-    sig.UVYT_xBCDExxx = !sys_sig.CLK_REQ;
-    sig.BEKO_ABCDxxxx = !sys_sig.CLK_REQ;
-    sig.BANE_ABCDxxxx = !sys_sig.CLK_REQ;
-    sig.BAZE_ABCDxxxx = !sys_sig.CLK_REQ;
+    sig.BYRY_xxxDEFGx = !sys_sig.CLK_REQ;
+    sig.DOVA_xxxDEFGx = !sys_sig.CLK_REQ;
+    sig.UVYT_xxxDEFGx = !sys_sig.CLK_REQ;
+    sig.BEKO_xxxDEFGx = !sys_sig.CLK_REQ;
+    sig.BANE_xxxDEFGx = !sys_sig.CLK_REQ;
+    sig.BAZE_xxxDEFGx = !sys_sig.CLK_REQ;
 
-    sig.BAPY_AxxxxxxH = 0;
-    sig.BUFA_AxxxxxxH = 0;
-    sig.BERU_xBCDEFGx = 1;
-    sig.BOLO_xBCDEFGx = 1;
+    sig.BAPY_xBCxxxxx = 0;
+    sig.BUFA_xBCxxxxx = 0;
+    sig.BERU_AxxDEFGH = 1;
+    sig.BOLO_AxxDEFGH = 1;
   }
 
   if (sys_sig.MODE_PROD && sys_sig.CLK_GOOD) {
-    sig.BYJU_xBCDEFGH = AxCDEFGH;
-    sig.BOGA_AxCDEFGH = AxCDEFGH;
-    sig.BALY_Axxxxxxx = xBxxxxxx;
+    sig.BYJU_ABCxEFGH = AxCDEFGH;
+    sig.BOGA_ABCxEFGH = AxCDEFGH;
+    sig.BALY_xxxDxxxx = xBxxxxxx;
   }
   else {
-    sig.BYJU_xBCDEFGH = 0;
-    sig.BOGA_AxCDEFGH = 0;
-    sig.BALY_Axxxxxxx = 1;
+    sig.BYJU_ABCxEFGH = 0;
+    sig.BOGA_ABCxEFGH = 0;
+    sig.BALY_xxxDxxxx = 1;
   }
 
   if (sys_sig.MODE_PROD && sys_sig.CLK_GOOD && sys_sig.CLK_REQ) {
-    sig.BYXO_xBCDEFGH = AxCDEFGH;
-    sig.BOWA_AxCDEFGH = AxCDEFGH;
-    sig.BUVU_Axxxxxxx = xBxxxxxx;
-    sig.BEDO_xBxxxxxx = xBxxxxxx;
+    sig.BYXO_ABCxEFGH = AxCDEFGH;
+    sig.BOWA_ABCxEFGH = AxCDEFGH;
+    sig.BUVU_xxxDxxxx = xBxxxxxx;
+    sig.BEDO_xxxDxxxx = xBxxxxxx;
   }
   else {
-    sig.BUVU_Axxxxxxx = sys_sig.CLK_REQ;
-    sig.BYXO_xBCDEFGH = !sys_sig.CLK_REQ;
-    sig.BOWA_AxCDEFGH = !sys_sig.CLK_REQ;
-    sig.BEDO_xBxxxxxx = sys_sig.CLK_REQ;
+    sig.BUVU_xxxDxxxx = sys_sig.CLK_REQ;
+    sig.BYXO_ABCxEFGH = !sys_sig.CLK_REQ;
+    sig.BOWA_ABCxEFGH = !sys_sig.CLK_REQ;
+    sig.BEDO_xxxDxxxx = sys_sig.CLK_REQ;
   }
 
   return sig;
@@ -298,10 +298,10 @@ void ClockRegisters::tock_slow1(const SystemSignals& sys_sig,
                                 const ClockSignals1& sig1,
                                 ClockRegisters& next) {
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD, !sig1.PHAZ_xxxxEFGH);
-  /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xBCDExxx);
-  /*p01.APUK*/ next.PHAZ_xxxDEFGx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xxCDEFxx);
-  /*p01.ADYK*/ next.PHAZ_xxxxEFGH.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xxxDEFGx);
+  /*p01.AFUR*/ next.PHAZ_xxxDEFGx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD, !sig1.PHAZ_ABxxxxGH);
+  /*p01.ALEF*/ next.PHAZ_xxxxEFGH.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xxxDEFGx);
+  /*p01.APUK*/ next.PHAZ_AxxxxFGH.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xxxxEFGH);
+  /*p01.ADYK*/ next.PHAZ_ABxxxxGH.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_AxxxxFGH);
 }
 
 //----------------------------------------
@@ -329,22 +329,22 @@ void ClockRegisters::tock_fast1(const SystemSignals& sys_sig, ClockRegisters& ne
   bool xxxxEFGH = (phase == 4) || (phase == 5) || (phase == 6) || (phase == 7);
 
   if (sys_sig.MODE_PROD) {
-    next.PHAZ_xBCDExxx.val = xBCDExxx;
-    next.PHAZ_xxCDEFxx.val = xxCDEFxx;
-    next.PHAZ_xxxDEFGx.val = xxxDEFGx;
-    next.PHAZ_xxxxEFGH.val = xxxxEFGH;
+    next.PHAZ_xxxDEFGx.val = xBCDExxx;
+    next.PHAZ_xxxxEFGH.val = xxCDEFxx;
+    next.PHAZ_AxxxxFGH.val = xxxDEFGx;
+    next.PHAZ_ABxxxxGH.val = xxxxEFGH;
   }
   else {
-    next.PHAZ_xBCDExxx.val = 0;
-    next.PHAZ_xxCDEFxx.val = 0;
     next.PHAZ_xxxDEFGx.val = 0;
     next.PHAZ_xxxxEFGH.val = 0;
+    next.PHAZ_AxxxxFGH.val = 0;
+    next.PHAZ_ABxxxxGH.val = 0;
   }
 
-  next.PHAZ_xBCDExxx.clk = xBxDxFxH;
-  next.PHAZ_xxCDEFxx.clk = xBxDxFxH;
   next.PHAZ_xxxDEFGx.clk = xBxDxFxH;
   next.PHAZ_xxxxEFGH.clk = xBxDxFxH;
+  next.PHAZ_AxxxxFGH.clk = xBxDxFxH;
+  next.PHAZ_ABxxxxGH.clk = xBxDxFxH;
 }
 
 //----------------------------------------

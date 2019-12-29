@@ -8,14 +8,14 @@ namespace Schematics {
 struct ResetSignals1 {
 
   static ResetSignals1 tick(const ResetRegisters& rst_reg,
-                           bool MODE_DBG1,
-                           bool MODE_DBG2,
-                           bool RST,
-                           bool CLK_BAD1,
-                           bool CPUCLK_REQn,
-                           bool BOGA_AxCDEFGH,
-                           bool DIV_15,
-                           bool LCDC_EN);
+                            bool MODE_DBG1,
+                            bool MODE_DBG2,
+                            bool RST,
+                            bool CLK_BAD1,
+                            bool CPUCLK_REQn,
+                            bool BOGA_AxCDEFGH,
+                            bool DIV_15,
+                            bool LCDC_EN);
 
   void reset() {
     RESET_CLK = false;
@@ -59,13 +59,13 @@ struct ResetSignals1 {
 struct ResetSignals2 {
 
   static ResetSignals2 tick(const ResetRegisters& rst_reg,
-                           bool MODE_DBG1,
-                           bool MODE_DBG2,
-                           bool RST,
-                           bool CLK_BAD1,
-                           bool CPUCLK_REQn,
-                           bool DIV_15,
-                           bool LCDC_EN);
+                            bool MODE_DBG1,
+                            bool MODE_DBG2,
+                            bool RST,
+                            bool CLK_BAD1,
+                            bool CPUCLK_REQn,
+                            bool DIV_15,
+                            bool LCDC_EN);
 
   void reset() {
     VID_RESETn = true;

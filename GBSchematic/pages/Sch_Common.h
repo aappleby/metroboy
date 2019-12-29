@@ -12,7 +12,7 @@ struct Bus;
 struct BusControl;
 struct Clocks;
 struct ResetRegisters;
-struct ResetSignals;
+struct ResetSignals1;
 struct Cpu;
 struct PixelPipe;
 struct Serial;

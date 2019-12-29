@@ -15,7 +15,7 @@ void Debug::tick(const Bus& bus,
                  const ClockSignals1& clk,
                  const Pins& pins,
                  const Decoder& dec,
-                 const ResetSignals& rst_sig,
+                 const ResetSignals1& rst_sig,
                  const Debug& prev,
                  Bus& bus_out) {
 

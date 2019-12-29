@@ -15,7 +15,7 @@ void Timer_tickInt(const Cpu& cpu,
                    const BusControl& ctl,
                    const Decoder& dec,
                    const ClockSignals1& clk,
-                   const ResetSignals& rst_sig,
+                   const ResetSignals1& rst_sig,
                    const Timer& prev,
                    Timer& next) {
 
@@ -39,7 +39,7 @@ void Timer_tickInt(const Cpu& cpu,
 void Timer_tickTAC(const Bus& bus,
                    const BusControl& ctl,
                    const Decoder& dec,
-                   const ResetSignals& rst_sig,
+                   const ResetSignals1& rst_sig,
                    Timer& next) {
 
   //----------
@@ -58,7 +58,7 @@ void Timer_tickTAC(const Bus& bus,
 void Timer_tickTMA(const Bus& bus,
                    const BusControl& ctl,
                    const Decoder& dec,
-                   const ResetSignals& rst_sig,
+                   const ResetSignals1& rst_sig,
                    Timer& next) {
 
   //----------

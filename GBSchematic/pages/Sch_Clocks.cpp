@@ -8,9 +8,9 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
-                                     wire CLK,
-                                     wire CLK_GOOD,
-                                     wire CPUCLK_REQ_) {
+                                       wire CLK,
+                                       wire CLK_GOOD,
+                                       wire CPUCLK_REQ_) {
   ClockSignals1 sig = {
     /*p01.ABOL*/ .CPUCLK_REQn   = not(CPUCLK_REQ_),
     /*p01.BUTY*/ .CPUCLK_REQ    = not(sig.CPUCLK_REQn),
@@ -80,9 +80,9 @@ ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
 //----------------------------------------
 
 ClockSignals1 ClockSignals1::tick_fast(int phase,
-                                     wire CLK_GOOD,
-                                     wire CPUCLK_REQ_,
-                                     /*p07.UPOJ*/ wire MODE_PROD) {
+                                       wire CLK_GOOD,
+                                       wire CPUCLK_REQ_,
+                                       /*p07.UPOJ*/ wire MODE_PROD) {
 
   ClockSignals1 sig;
 

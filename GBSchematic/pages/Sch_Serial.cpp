@@ -12,7 +12,7 @@ namespace Schematics {
 void Serial_tick(const Bus& bus,
                  const BusControl& ctl,
                  const SerialInput& in,
-                 const ResetSignals& rst_sig,
+                 const ResetSignals1& rst_sig,
                  const Decoder& dec,
                  const Serial& prev,
                  Serial& next,

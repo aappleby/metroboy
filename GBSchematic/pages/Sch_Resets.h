@@ -5,9 +5,9 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct ResetSignals {
+struct ResetSignals1 {
 
-  static ResetSignals tick(const ResetRegisters& rst_reg,
+  static ResetSignals1 tick(const ResetRegisters& rst_reg,
                            bool MODE_DBG1,
                            bool MODE_DBG2,
                            bool RST,
@@ -31,9 +31,6 @@ struct ResetSignals {
     VID_RESETn3 = true;
     VID_RESET4 = false;
     VID_RESET3 = false;
-    XORE_RESET = false;
-    XEBE_RESET = true;
-    XODO_RESET = false;
     WALU_RESET = true;
     XARE_RESET = true;
     SOTO_RESET = true;
@@ -44,9 +41,6 @@ struct ResetSignals {
   /*p01.DULA*/ bool SYS_RESET;
 
   /*p01.CUNU*/ bool CUNU_RESETn;
-  /*p01.XORE*/ bool XORE_RESET;
-  /*p01.XEBE*/ bool XEBE_RESET;
-  /*p01.XODO*/ bool XODO_RESET;
   /*p01.XAPO*/ bool VID_RESETn;
 
   /*p01.WESY*/ bool WESY_RESET;
@@ -64,7 +58,7 @@ struct ResetSignals {
 
 struct ResetRegisters {
 
-  static void tock(const ResetSignals& rst_sig,
+  static void tock(const ResetSignals1& rst_sig,
                    const ResetRegisters& rst_reg,
                    bool MODE_PROD,
                    bool MODE_DBG1,
@@ -84,7 +78,7 @@ struct ResetRegisters {
     RESET_REG.clk = false;
   };
 
-  ResetSignals sig;
+  ResetSignals1 sig;
 
   /*p01.TUBO*/ bool BAD_CLOCK_LATCH;
   /*p01.AFER*/ Reg  RESET_REG;

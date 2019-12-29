@@ -12,7 +12,7 @@ namespace Schematics {
 void Joypad_tick(const Bus& bus,
                  const BusControl& ctl,
                  const Debug& dbg,
-                 const ClockSignals& clk,
+                 const ClockSignals1& clk,
                  const Joypad& prev,
                  Joypad& next,
                  Bus& bus_out) {
@@ -63,7 +63,7 @@ void Joypad_tick(const Bus& bus,
 
 void Joypad_tock(const Bus& bus,
                  const BusControl& ctl,
-                 const ClockSignals& clk,
+                 const ClockSignals1& clk,
                  const ResetSignals& rst_sig,
                  const Joypad& prev,
                  Joypad& next) {

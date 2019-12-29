@@ -25,7 +25,7 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 void Bus_tick(const Cpu& cpu,
-              const ClockSignals& clk,
+              const ClockSignals1& clk,
               const Debug& dbg,
               const Decoder& dec,
               const Pins& pins,

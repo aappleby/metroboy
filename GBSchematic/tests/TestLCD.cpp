@@ -181,7 +181,7 @@ struct TestGB {
       for (int pass = 0; pass < 12; pass++) {
         TestGB prev = *this;
         
-        clk_sig = ClockSignals::tick_slow(prev.clk_reg, CLKIN, CLK_GOOD, CPUCLK_REQ);
+        clk_sig = ClockSignals1::tick_slow(prev.clk_reg, CLKIN, CLK_GOOD, CPUCLK_REQ);
 
         ResetSignals rst_sig1 = prev.rst_reg.sig;
         ResetSignals rst_sig2 = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
@@ -213,7 +213,7 @@ struct TestGB {
         ResetSignals rst_sig1 = prev.rst_reg.sig;
         ResetSignals rst_sig2 = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
-        clk_sig = ClockSignals::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, rst_sig1.VID_RESETn);
+        clk_sig = ClockSignals1::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, rst_sig1.VID_RESETn);
 
         Clocks::tock_fast2(clk_phase, rst_sig1.VID_RESETn, clk_reg);
 
@@ -254,7 +254,7 @@ struct TestGB {
   Video   vid;
 
 
-  ClockSignals   clk_sig;
+  ClockSignals1   clk_sig;
   Clocks         clk_reg;
 
   uint64_t alignment_pad = 0;

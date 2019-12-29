@@ -9,7 +9,7 @@ namespace Schematics {
 // no modifications or simplifications.
 
 void Sprites_tick(const Pins& pins,
-                  const ClockSignals& clk,
+                  const ClockSignals1& clk,
                   const DMA& dma,
                   const LCD& lcd,
                   const OAM& oam,
@@ -174,7 +174,7 @@ void Sprites_tick(const Pins& pins,
 }
 
 
-void Sprites_tickScanner(const ClockSignals& clk,
+void Sprites_tickScanner(const ClockSignals1& clk,
                          const LCD& lcd,
                          const ResetSignals& rst_sig,
                          const Sprites& spr,

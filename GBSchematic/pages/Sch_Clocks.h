@@ -6,13 +6,13 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 // c.cpu.CLK_xBCDEFGH = BOWA_AxCDEFGH;
 
-struct ClockSignals {
-  static ClockSignals tick_slow(const Clocks& clk,
+struct ClockSignals1 {
+  static ClockSignals1 tick_slow(const Clocks& clk,
                                 wire CLK,
                                 wire CLK_GOOD,
                                 wire CPUCLK_REQ_);
 
-  static ClockSignals tick_fast(int phase,
+  static ClockSignals1 tick_fast(int phase,
                                 wire CLK_GOOD,
                                 wire CPUCLK_REQ_,
                                 /*p07.UPOJ*/ wire MODE_PROD,
@@ -170,11 +170,11 @@ struct ClockSignals {
 
 struct Clocks {
 
-  static void tock_slow1(const ClockSignals& sig,
+  static void tock_slow1(const ClockSignals1& sig,
                          /*p07.UPOJ*/ wire MODE_PROD,
                          Clocks& next);
 
-  static void tock_slow2(const ClockSignals& sig,
+  static void tock_slow2(const ClockSignals1& sig,
                          /*p01.XAPO*/ wire VID_RESETn,
                          Clocks& next);
 

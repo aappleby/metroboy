@@ -121,7 +121,7 @@ void SpriteStore_tick(const SpriteStore& sst,
 //----------
 
 void SpriteStore_tock(const SpriteStore& sst,
-                      const ClockSignals& clk,
+                      const ClockSignals1& clk,
                       const Sprites& spr,
                       const ResetSignals& rst_sig,
                       const LCD& lcd,

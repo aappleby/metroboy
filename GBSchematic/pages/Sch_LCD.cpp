@@ -15,7 +15,7 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void LCD::tick_slow(const ClockSignals& clk,
+void LCD::tick_slow(const ClockSignals1& clk,
                     const ResetSignals& rst_sig,
                     const LCD& lcd,
                     const Video& vid,
@@ -191,7 +191,7 @@ void LCD::tick_slow(const ClockSignals& clk,
 
 //-----------------------------------------------------------------------------
 
-void LCD::tick_fast(const ClockSignals& clk,
+void LCD::tick_fast(const ClockSignals1& clk,
                     const ResetSignals& rst_sig,
                     const Video& vid,
                     

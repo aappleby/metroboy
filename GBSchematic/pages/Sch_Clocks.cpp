@@ -7,11 +7,11 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-ClockSignals ClockSignals::tick_slow(const Clocks& clk,
+ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
                                      wire CLK,
                                      wire CLK_GOOD,
                                      wire CPUCLK_REQ_) {
-  ClockSignals sig = {
+  ClockSignals1 sig = {
     /*p01.ABOL*/ .CPUCLK_REQn   = not(CPUCLK_REQ_),
     /*p01.BUTY*/ .CPUCLK_REQ    = not(sig.CPUCLK_REQn),
     /*p01.UCOB*/ .CLK_BAD1      = not(CLK_GOOD),
@@ -89,13 +89,13 @@ ClockSignals ClockSignals::tick_slow(const Clocks& clk,
 
 //-----------------------------------------------------------------------------
 
-ClockSignals ClockSignals::tick_fast(int phase,
+ClockSignals1 ClockSignals1::tick_fast(int phase,
                                      wire CLK_GOOD,
                                      wire CPUCLK_REQ_,
                                      /*p07.UPOJ*/ wire MODE_PROD,
                                      /*p01.XAPO*/ wire VID_RESETn) {
 
-  ClockSignals sig;
+  ClockSignals1 sig;
 
   /*p01.ABOL*/ sig.CPUCLK_REQn   = not(CPUCLK_REQ_);
   /*p01.BUTY*/ sig.CPUCLK_REQ    = not(sig.CPUCLK_REQn);
@@ -264,7 +264,7 @@ ClockSignals ClockSignals::tick_fast(int phase,
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_slow1(const ClockSignals& sig,
+void Clocks::tock_slow1(const ClockSignals1& sig,
                         /*p07.UPOJ*/ wire MODE_PROD,
                         Clocks& next) {
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
@@ -274,7 +274,7 @@ void Clocks::tock_slow1(const ClockSignals& sig,
   /*p01.ADYK*/ next.PHAZ_xxxxEFGH.duotock(sig.ATAL_xBxDxFxH, MODE_PROD,  sig.PHAZ_xxxDEFGx);
 }
 
-void Clocks::tock_slow2(const ClockSignals& sig,
+void Clocks::tock_slow2(const ClockSignals1& sig,
                         /*p01.XAPO*/ wire VID_RESETn,
                         Clocks& next) {
   /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig.XOTA_AxCxExGx, VID_RESETn, !sig.WUVU_xxCDxxGH);

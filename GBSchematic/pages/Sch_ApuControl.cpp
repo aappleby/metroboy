@@ -9,7 +9,7 @@ namespace Schematics {
 
 void P09_ApuControl_tick(const Gameboy& a,
                          const Gameboy& b,
-                         const ClockSignals& clk,
+                         const ClockSignals1& clk,
                          Gameboy& next) {
 
  

@@ -32,7 +32,7 @@ struct Sprites;
 struct Video;
 struct VRAM;
 
-struct ClockSignals;
+struct ClockSignals1;
 
 //-----------------------------------------------------------------------------
 

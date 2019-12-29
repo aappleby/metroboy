@@ -12,7 +12,7 @@ namespace Schematics {
 void Channel1_tick(const Pins& pins,
                    const Gameboy& a,
                    const Gameboy& b,
-                   const ClockSignals& clk,
+                   const ClockSignals1& clk,
                    Gameboy& next) {
 
   //----------

@@ -14,7 +14,7 @@ void Timer_tickInt(const Cpu& cpu,
                    const Bus& bus,
                    const BusControl& ctl,
                    const Decoder& dec,
-                   const ClockSignals& clk,
+                   const ClockSignals1& clk,
                    const ResetSignals& rst_sig,
                    const Timer& prev,
                    Timer& next) {

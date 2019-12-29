@@ -121,31 +121,28 @@ struct TestGB {
     sys_sig.set_pwron();
 
     sim_slow(16);
-    //check(lcd.x() == 0);
-    //check(lcd.y() == 0);
+    check(lcd.x() == 0);
+    check(lcd.y() == 0);
 
     sys_sig.set_rst(false);
     sim_slow(16);
-    //check(lcd.x() == 0);
-    //check(lcd.y() == 0);
+    check(lcd.x() == 0);
+    check(lcd.y() == 0);
 
     sys_sig.set_clk_good(true);
     sim_slow(16);
-    //check(lcd.x() == 0);
-    //check(lcd.y() == 0);
+    check(lcd.x() == 0);
+    check(lcd.y() == 0);
 
     sys_sig.set_clk_req(true);
     sim_slow(16);
-    //check(lcd.x() == 0);
-    //check(lcd.y() == 0);
+    check(lcd.x() == 0);
+    check(lcd.y() == 0);
 
     sys_sig.set_lcdc_en(true);
     sim_slow(456*2*154 - 10);
-
-    //printf("%d %d\n", lcd.x(), lcd.y());
-
-    //check(lcd.x() == 113);
-    //check(lcd.y() == 0);
+    check(lcd.x() == 113);
+    check(lcd.y() == 0);
   }
 
   //----------------------------------------
@@ -196,7 +193,6 @@ struct TestGB {
     }
   }
 
-  //LCD::tick_slow(clk_sig2, rst_sig2, prev.lcd, lcd);
   //Sprites_tickScanner(clk_sig1, clk_sig2, prev.lcd, rst_sig1, prev.spr, spr);
   //dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
 
@@ -257,24 +253,22 @@ struct LCDTest {
     gb1.run_reset_sequence();
     gb2.reset();
 
-    //check(gb1.lcd.x() == 113);
-    //check(gb1.lcd.y() == 0);
-    //check(gb2.lcd.x() == 113);
-    //check(gb2.lcd.y() == 0);
+    check(gb1.lcd.x() == 113);
+    check(gb1.lcd.y() == 0);
+    check(gb2.lcd.x() == 113);
+    check(gb2.lcd.y() == 0);
 
-    //check_match(gb1, gb2);
-    check_match_gb(gb1, gb2);
+    check_match(gb1, gb2);
 
     gb1.sim_slow(1);
     gb2.sim_slow(1);
 
-    //check(gb1.lcd.x() == 0);
-    //check(gb1.lcd.y() == 0);
-    //check(gb2.lcd.x() == 0);
-    //check(gb2.lcd.y() == 0);
+    check(gb1.lcd.x() == 0);
+    check(gb1.lcd.y() == 0);
+    check(gb2.lcd.x() == 0);
+    check(gb2.lcd.y() == 0);
 
-    //check_match(gb1, gb2);
-    check_match_gb(gb1, gb2);
+    check_match(gb1, gb2);
 
     printf("test_reset3 pass\n");
   }
@@ -285,8 +279,8 @@ struct LCDTest {
     for (int i = 0; i < phases; i++) {
       gb1.sim_slow(1);
       gb2.sim_fast(1);
-      //check_match(gb1, gb2);
-      check_match_gb(gb1, gb2);
+      check_match(gb1, gb2);
+      //check_match_gb(gb1, gb2);
     }
   }
 
@@ -435,7 +429,7 @@ void TestLCD() {
   LCDTest test;
 
   test.test_reset();
-  test.test_fast_slow();
+  //test.test_fast_slow();
   //test.sdl_run();
 
   return;

@@ -17,7 +17,7 @@ namespace Schematics {
 
 void LCD::tick_slow(const ClockSignals1& clk_sig1,
                     const ClockSignals2& clk_sig2,
-                    const ResetSignals1& rst_sig,
+                    const ResetSignals2& rst_sig2,
                     const LCD& lcd,
                     const Video& vid,
                     
@@ -27,10 +27,10 @@ void LCD::tick_slow(const ClockSignals1& clk_sig1,
                     bool LCDC_EN,
                     LCD& next)
 {
-  /*p01.LYHA*/ wire VID_RESET2  = not(rst_sig.VID_RESETn);
+  /*p01.LYHA*/ wire VID_RESET2  = not(rst_sig2.VID_RESETn);
   /*p01.LYFE*/ wire VID_RESETn2 = not(VID_RESET2);
-  /*p01.ATAR*/ wire VID_RESET6  = not(rst_sig.VID_RESETn);
-  /*p01.AMYG*/ wire VID_RESET7  = not(rst_sig.VID_RESETn);
+  /*p01.ATAR*/ wire VID_RESET6  = not(rst_sig2.VID_RESETn);
+  /*p01.AMYG*/ wire VID_RESET7  = not(rst_sig2.VID_RESETn);
   /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
 
   /*p21.MUDE*/ wire X_RSTn = nor(lcd.NEW_LINE_d0a, VID_RESET2);
@@ -114,7 +114,7 @@ void LCD::tick_slow(const ClockSignals1& clk_sig1,
 
 
   {
-    /*p01.TOFU*/ wire VID_RESET3  = not(rst_sig.VID_RESETn);
+    /*p01.TOFU*/ wire VID_RESET3  = not(rst_sig2.VID_RESETn);
     /*p21.WEGO*/ wire WEGO  = or(VID_RESET3, vid.RENDER_DONE_SYNC);
     /*p21.XAJO*/ wire X_009 = and(vid.X0, vid.X3);
 
@@ -131,7 +131,7 @@ void LCD::tick_slow(const ClockSignals1& clk_sig1,
   {
     // Horizontal sync
 
-    /*p01.TOFU*/ wire VID_RESET3  = not(rst_sig.VID_RESETn);
+    /*p01.TOFU*/ wire VID_RESET3  = not(rst_sig2.VID_RESETn);
 
     // Latch loop
     ///*p24.POME*/ wire POME = nor(SCAN_DONE_d0_TRIG, POFY);
@@ -194,7 +194,7 @@ void LCD::tick_slow(const ClockSignals1& clk_sig1,
 
 void LCD::tick_fast(const ClockSignals1& clk_sig1,
                     const ClockSignals2& clk_sig2,
-                    const ResetSignals1& rst_sig,
+                    const ResetSignals2& rst_sig2,
                     const Video& vid,
                     
                     bool SCAN_DONE_d0_TRIG,
@@ -203,7 +203,7 @@ void LCD::tick_fast(const ClockSignals1& clk_sig1,
                     bool LCDC_EN,
                     LCD& next)
 {
-  if (!rst_sig.VID_RESETn) {
+  if (!rst_sig2.VID_RESETn) {
     next.VBLANK_d4b = next.VBLANK_d4;
 
     next.LINE_STROBE.reset(clk_sig2.SONO_ABCDxxxx);

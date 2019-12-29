@@ -132,8 +132,8 @@ struct ClockSignals1 {
 //-----------------------------------------------------------------------------
 
 struct ClockSignals2 {
-  static ClockSignals2 tick_slow(const ResetSignals1& rst_sig1, const ClockRegisters& clk);
-  static ClockSignals2 tick_fast(const SystemSignals& sys_sig, const ResetSignals1& rst_sig1);
+  static ClockSignals2 tick_slow(const ResetSignals2& rst_sig2, const ClockRegisters& clk);
+  static ClockSignals2 tick_fast(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2);
 
   void reset() {
     *this = {
@@ -171,14 +171,14 @@ struct ClockRegisters {
   static void tock_slow2(const SystemSignals& sys_sig,
                          const ClockSignals1& clk_sig1,
                          const ClockSignals2& clk_sig2,
-                         const ResetSignals1& rst_sig1,
+                         const ResetSignals2& rst_sig2,
                          ClockRegisters& next);
 
   static void tock_fast1(const SystemSignals& sys_sig,
                          ClockRegisters& next);
 
   static void tock_fast2(const SystemSignals& sys_sig,
-                         const ResetSignals1& rst_sig1,
+                         const ResetSignals2& rst_sig2,
                          ClockRegisters& next);
 
   // ResetRegisters to immediately before the first phase on the first line

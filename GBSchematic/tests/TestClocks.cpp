@@ -142,15 +142,17 @@ void TestClocks() {
     for (int pass = 0; pass < 12; pass++) {
       ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
       ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
-      ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(rst_sig1, clk_reg);
+      ResetSignals2 rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
+      ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
       
       ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
-      ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
+      ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
     }
 
     ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
     ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
-    ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(rst_sig1, clk_reg);
+    ResetSignals2 rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
+    ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
     dump(cursor++, clk_sig1, clk_sig2);
   }
 

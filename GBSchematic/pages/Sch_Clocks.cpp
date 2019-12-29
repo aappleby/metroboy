@@ -214,12 +214,12 @@ ClockSignals1 ClockSignals1::tick_fast(const SystemSignals& sys_sig) {
 
 //-----------------------------------------------------------------------------
 
-ClockSignals2 ClockSignals2::tick_slow(const ResetSignals1& rst_sig1, const ClockRegisters& clk_reg) {
+ClockSignals2 ClockSignals2::tick_slow(const ResetSignals2& rst_sig2, const ClockRegisters& clk_reg) {
   ClockSignals2 sig = {
     // gated on VID_RESETn
-    /*p29.WUVU*/ .WUVU_xxCDxxGH = and(clk_reg.WUVU_xxCDxxGH, rst_sig1.VID_RESETn),
-    /*p21.VENA*/ .VENA_xxxxEFGH = and(clk_reg.VENA_xxxxEFGH, rst_sig1.VID_RESETn),
-    /*p29.WOSU*/ .WOSU_xBCxxFGx = and(clk_reg.WOSU_xBCxxFGx, rst_sig1.VID_RESETn),
+    /*p29.WUVU*/ .WUVU_xxCDxxGH = and(clk_reg.WUVU_xxCDxxGH, rst_sig2.VID_RESETn),
+    /*p21.VENA*/ .VENA_xxxxEFGH = and(clk_reg.VENA_xxxxEFGH, rst_sig2.VID_RESETn),
+    /*p29.WOSU*/ .WOSU_xBCxxFGx = and(clk_reg.WOSU_xBCxxFGx, rst_sig2.VID_RESETn),
     /*p29.XUPY*/ .XUPY_ABxxEFxx = not(sig.WUVU_xxCDxxGH),
     /*p28.AWOH*/ .AWOH_xxCDxxGH = not(sig.XUPY_ABxxEFxx),
     /*p21.TALU*/ .TALU_xxxxEFGH = not(!sig.VENA_xxxxEFGH),
@@ -232,7 +232,7 @@ ClockSignals2 ClockSignals2::tick_slow(const ResetSignals1& rst_sig1, const Cloc
 
 //----------------------------------------
 
-ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const ResetSignals1& rst_sig1) {
+ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2) {
   int phase = sys_sig.phase();
 
   ClockSignals2 sig;
@@ -245,7 +245,7 @@ ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const Reset
   bool AxxDExxH = !xBCxxFGx;
 
 
-  if (rst_sig1.VID_RESETn) {
+  if (rst_sig2.VID_RESETn) {
     sig.XUPY_ABxxEFxx = ABxxEFxx;
     sig.AWOH_xxCDxxGH = xxCDxxGH;
     sig.WUVU_xxCDxxGH = xxCDxxGH;
@@ -276,8 +276,8 @@ ClockSignals2 ClockSignals2::tick_fast(const SystemSignals& sys_sig, const Reset
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tock_slow1(const SystemSignals& sys_sig,
-                        const ClockSignals1& sig1,
-                        ClockRegisters& next) {
+                                const ClockSignals1& sig1,
+                                ClockRegisters& next) {
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
   /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD, !sig1.PHAZ_xxxxEFGH);
   /*p01.ALEF*/ next.PHAZ_xxCDEFxx.duotock(sig1.ATAL_xBxDxFxH, sys_sig.MODE_PROD,  sig1.PHAZ_xBCDExxx);
@@ -288,13 +288,13 @@ void ClockRegisters::tock_slow1(const SystemSignals& sys_sig,
 //----------------------------------------
 
 void ClockRegisters::tock_slow2(const SystemSignals& /*sys_sig*/,
-                        const ClockSignals1& sig1,
-                        const ClockSignals2& sig2,
-                        const ResetSignals1& rst_sig1,
-                        ClockRegisters& next) {
-  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig1.XOTA_AxCxExGx, rst_sig1.VID_RESETn, !sig2.WUVU_xxCDxxGH);
-  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig2.WUVU_xxCDxxGH, rst_sig1.VID_RESETn, !sig2.VENA_xxxxEFGH);
-  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig1.XYFY_xBxDxFxH, rst_sig1.VID_RESETn, !sig2.WUVU_xxCDxxGH);
+                                const ClockSignals1& sig1,
+                                const ClockSignals2& sig2,
+                                const ResetSignals2& rst_sig2,
+                                ClockRegisters& next) {
+  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig1.XOTA_AxCxExGx, rst_sig2.VID_RESETn, !sig2.WUVU_xxCDxxGH);
+  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig2.WUVU_xxCDxxGH, rst_sig2.VID_RESETn, !sig2.VENA_xxxxEFGH);
+  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig1.XYFY_xBxDxFxH, rst_sig2.VID_RESETn, !sig2.WUVU_xxCDxxGH);
 }
 
 //-----------------------------------------------------------------------------
@@ -330,7 +330,7 @@ void ClockRegisters::tock_fast1(const SystemSignals& sys_sig, ClockRegisters& ne
 
 //----------------------------------------
 
-void ClockRegisters::tock_fast2(const SystemSignals& sys_sig, const ResetSignals1& rst_sig1, ClockRegisters& next) {
+void ClockRegisters::tock_fast2(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2, ClockRegisters& next) {
 
   int phase = sys_sig.phase();
 
@@ -342,7 +342,7 @@ void ClockRegisters::tock_fast2(const SystemSignals& sys_sig, const ResetSignals
   bool xBCxxFGx = (phase == 1) || (phase == 2) || (phase == 5) || (phase == 6);
   bool ABxxEFxx = !xxCDxxGH;
 
-  if (rst_sig1.VID_RESETn) {
+  if (rst_sig2.VID_RESETn) {
     next.WUVU_xxCDxxGH.val = xxCDxxGH;
     next.WUVU_xxCDxxGH.clk = AxCxExGx;
 

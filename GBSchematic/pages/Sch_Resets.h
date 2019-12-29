@@ -18,13 +18,7 @@ struct ResetSignals1 {
     SYS_RESET = false;
     CUNU_RESETn = true;
 
-    VID_RESETn = true;
     WESY_RESET = true;
-    VID_RESET5 = false;
-    VID_RESET6 = false;
-    VID_RESETn3 = true;
-    VID_RESET4 = false;
-    VID_RESET3 = false;
     WALU_RESET = true;
     XARE_RESET = true;
     SOTO_RESET = true;
@@ -35,14 +29,8 @@ struct ResetSignals1 {
   /*p01.DULA*/ bool SYS_RESET;
 
   /*p01.CUNU*/ bool CUNU_RESETn;
-  /*p01.XAPO*/ bool VID_RESETn;
 
   /*p01.WESY*/ bool WESY_RESET;
-  /*p01.ROSY*/ bool VID_RESET5;
-  /*p01.ATAR*/ bool VID_RESET6;
-  /*p01.ABEZ*/ bool VID_RESETn3;
-  /*p01.PYRY*/ bool VID_RESET4;
-  /*p01.TOFU*/ bool VID_RESET3;
   /*p01.WALU*/ bool WALU_RESET;
   /*p01.XARE*/ bool XARE_RESET;
   /*p01.SOTO*/ bool SOTO_RESET;

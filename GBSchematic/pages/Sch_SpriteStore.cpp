@@ -123,13 +123,13 @@ void SpriteStore_tick(const SpriteStore& sst,
 void SpriteStore_tock(const SpriteStore& sst,
                       const ClockSignals1& clk,
                       const Sprites& spr,
-                      const ResetSignals1& rst_sig,
+                      const ResetSignals2& rst_sig2,
                       const LCD& lcd,
                       const OAM& oam,
 
                       SpriteStore& next) {
 
-  /*p29.DEZY*/ next.STORE_EN_SYNC.tock(clk.ZEME_AxCxExGx, rst_sig.VID_RESETn, spr.STORE_EN);
+  /*p29.DEZY*/ next.STORE_EN_SYNC.tock(clk.ZEME_AxCxExGx, rst_sig2.VID_RESETn, spr.STORE_EN);
 
   /*p29.BAKY*/ wire SPRITES_FULL = and(sst.SPRITE_COUNT1, sst.SPRITE_COUNT3);
   /*p29.CAKE*/ wire SPRITE_COUNT_CLK = or(SPRITES_FULL, sst.STORE_EN_SYNC);

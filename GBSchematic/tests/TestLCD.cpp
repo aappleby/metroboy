@@ -97,6 +97,7 @@ struct TestGB {
     clk_reg.reset();
 
     rst_sig1.reset();
+    rst_sig2.reset();
     rst_reg.reset();
 
     //bus.reset();
@@ -158,12 +159,13 @@ struct TestGB {
         
         clk_sig1 = ClockSignals1::tick_slow(sys_sig, prev.clk_reg);
         rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, prev.rst_reg);
-        clk_sig2 = ClockSignals2::tick_slow(rst_sig1, prev.clk_reg);
+        rst_sig2 = ResetSignals2::tick_slow(sys_sig, prev.rst_reg);
+        clk_sig2 = ClockSignals2::tick_slow(rst_sig2, prev.clk_reg);
 
         //----------
 
         ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
-        ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
+        ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
         ResetRegisters::tock_slow(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
       }
     }
@@ -179,12 +181,13 @@ struct TestGB {
 
         clk_sig1 = ClockSignals1::tick_fast(sys_sig);
         rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, prev.rst_reg);
-        clk_sig2 = ClockSignals2::tick_slow(rst_sig1, prev.clk_reg);
+        rst_sig2 = ResetSignals2::tick_slow(sys_sig, prev.rst_reg);
+        clk_sig2 = ClockSignals2::tick_slow(rst_sig2, prev.clk_reg);
 
         //----------
 
         ClockRegisters::tock_fast1(sys_sig, clk_reg);
-        ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig1, clk_reg);
+        ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
         ResetRegisters::tock_slow(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
       }
     }
@@ -202,6 +205,7 @@ struct TestGB {
   ClockRegisters clk_reg;
 
   ResetSignals1  rst_sig1;
+  ResetSignals2  rst_sig2;
   ResetRegisters rst_reg;
 
   /*

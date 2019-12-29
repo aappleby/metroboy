@@ -48,24 +48,6 @@ ResetSignals1 ResetSignals1::tick_slow(const SystemSignals& sys_sig,
     /*p01.SOTO*/ rst_sig.SOTO_RESET  = SOTO_RESET;
   }
 
-  {
-    /*p01.XEBE*/ wire XEBE_RESET  = not(XORE_RESET);
-    /*p01.XODO*/ wire XODO_RESET  = nand(XEBE_RESET, sys_sig.LCDC_EN);
-    /*p01.XAPO*/ wire VID_RESETn  = not(XODO_RESET);
-    /*p01.TOFU*/ wire VID_RESET3  = not(VID_RESETn);
-    /*p01.PYRY*/ wire VID_RESET4  = not(VID_RESETn);
-    /*p01.ROSY*/ wire VID_RESET5  = not(VID_RESETn);
-    /*p01.ATAR*/ wire VID_RESET6  = not(VID_RESETn);
-    /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
-
-    /*p01.XAPO*/ rst_sig.VID_RESETn  = VID_RESETn;
-    /*p01.TOFU*/ rst_sig.VID_RESET3  = VID_RESET3;
-    /*p01.PYRY*/ rst_sig.VID_RESET4  = VID_RESET4;
-    /*p01.ROSY*/ rst_sig.VID_RESET5  = VID_RESET5;
-    /*p01.ATAR*/ rst_sig.VID_RESET6  = VID_RESET6;
-    /*p01.ABEZ*/ rst_sig.VID_RESETn3 = VID_RESETn3;
-  }
-
   return rst_sig;
 }
 

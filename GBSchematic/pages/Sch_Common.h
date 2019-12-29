@@ -10,9 +10,6 @@ namespace Schematics {
 
 struct Bus;
 struct BusControl;
-struct ClockRegisters;
-struct ResetRegisters;
-struct ResetSignals1;
 struct Cpu;
 struct PixelPipe;
 struct Serial;
@@ -32,8 +29,13 @@ struct Sprites;
 struct Video;
 struct VRAM;
 
+struct ClockRegisters;
 struct ClockSignals1;
 struct ClockSignals2;
+
+struct ResetRegisters;
+struct ResetSignals1;
+struct ResetSignals2;
 
 //-----------------------------------------------------------------------------
 

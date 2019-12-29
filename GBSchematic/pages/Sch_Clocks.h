@@ -10,12 +10,13 @@ struct ClockSignals1 {
   static ClockSignals1 tick_slow(const Clocks& clk,
                                  wire CLK,
                                  wire CLK_GOOD,
-                                 wire CPUCLK_REQ_);
+                                 wire CPUCLK_REQ_,
+                                 wire MODE_PROD);
 
   static ClockSignals1 tick_fast(int phase,
                                  wire CLK_GOOD,
                                  wire CPUCLK_REQ_,
-                                 /*p07.UPOJ*/ wire MODE_PROD);
+                                 wire MODE_PROD);
 
   void reset() {
     *this = {
@@ -42,13 +43,13 @@ struct ClockSignals1 {
 
       // gated on MODE_PROD
       /*p01.AFUR*/ .PHAZ_xBCDExxx = 0,
-      /*p01.ALEF*/ .PHAZ_xxCDEFxx = 0,
-      /*p01.APUK*/ .PHAZ_xxxDEFGx = 0,
+      /*p01.ALEF*/ .PHAZ_xxCDEFxx = 1,
+      /*p01.APUK*/ .PHAZ_xxxDEFGx = 1,
       /*p01.ADYK*/ .PHAZ_xxxxEFGH = 1,
-      /*p01.AFEP*/ .AFEP_ABxxxxGH = 1,
+      /*p01.AFEP*/ .AFEP_ABxxxxGH = 0,
       /*p01.ATYP*/ .ATYP_xBCDExxx = 0,
       /*p01.ADAR*/ .ADAR_ABCxxxxH = 0,
-      /*p01.AROV*/ .AROV_xxxDEFGx = 0,
+      /*p01.AROV*/ .AROV_xxxDEFGx = 1,
       /*p01.AFAS*/ .AFAS_xxxxxFGH = 1,
 
       // gated on CPUCLK_REQ
@@ -60,10 +61,10 @@ struct ClockSignals1 {
       /*p01.BEKO*/ .BEKO_ABCDxxxx = 0,
       /*p04.MOPA*/ .MOPA_AxxxxFGH = 1,
 
-      /*p01.BAPY*/ .BAPY_AxxxxxxH = 1,
-      /*p01.BERU*/ .BERU_xBCDEFGx = 0,
-      /*p01.BUFA*/ .BUFA_AxxxxxxH = 1,
-      /*p01.BOLO*/ .BOLO_xBCDEFGx = 0,
+      /*p01.BAPY*/ .BAPY_AxxxxxxH = 0,
+      /*p01.BERU*/ .BERU_xBCDEFGx = 1,
+      /*p01.BUFA*/ .BUFA_AxxxxxxH = 0,
+      /*p01.BOLO*/ .BOLO_xBCDEFGx = 1,
       /*p01.BEJA*/ .BEJA_xxxxEFGH = 1,
       /*p01.BANE*/ .BANE_ABCDxxxx = 0,
       /*p01.BELO*/ .BELO_xxxxEFGH = 1,
@@ -200,31 +201,24 @@ struct Clocks {
 
   // ResetRegisters to immediately before the first phase on the first line
   void reset() {
-    PHAZ_xBCDExxx.val=false;
-    PHAZ_xBCDExxx.clk=true;
-    PHAZ_xxCDEFxx.val=false;
-    PHAZ_xxCDEFxx.clk=true;
-    PHAZ_xxxDEFGx.val=false;
-    PHAZ_xxxDEFGx.clk=true;
-    PHAZ_xxxxEFGH.val=true;
-    PHAZ_xxxxEFGH.clk=true;
+    PHAZ_xBCDExxx.val = 0; PHAZ_xBCDExxx.clk = 1;
+    PHAZ_xxCDEFxx.val = 1; PHAZ_xxCDEFxx.clk = 1;
+    PHAZ_xxxDEFGx.val = 1; PHAZ_xxxDEFGx.clk = 1;
+    PHAZ_xxxxEFGH.val = 1; PHAZ_xxxxEFGH.clk = 1;
 
-    WUVU_xxCDxxGH.val=true;
-    WUVU_xxCDxxGH.clk=false;
-    VENA_xxxxEFGH.val=true;
-    VENA_xxxxEFGH.clk=false;
-    WOSU_xBCxxFGx.val=false;
-    WOSU_xBCxxFGx.clk=true;
+    WUVU_xxCDxxGH.val = 1; WUVU_xxCDxxGH.clk = 0;
+    VENA_xxxxEFGH.val = 1; VENA_xxxxEFGH.clk = 0;
+    WOSU_xBCxxFGx.val = 0; WOSU_xBCxxFGx.clk = 1;
   }
 
-  /*p01.AFUR*/ Reg  PHAZ_xBCDExxx;
-  /*p01.ALEF*/ Reg  PHAZ_xxCDEFxx;
-  /*p01.APUK*/ Reg  PHAZ_xxxDEFGx;
-  /*p01.ADYK*/ Reg  PHAZ_xxxxEFGH;
+  /*p01.AFUR*/ Reg PHAZ_xBCDExxx;
+  /*p01.ALEF*/ Reg PHAZ_xxCDEFxx;
+  /*p01.APUK*/ Reg PHAZ_xxxDEFGx;
+  /*p01.ADYK*/ Reg PHAZ_xxxxEFGH;
 
-  /*p29.WUVU*/ Reg  WUVU_xxCDxxGH;
-  /*p21.VENA*/ Reg  VENA_xxxxEFGH;
-  /*p29.WOSU*/ Reg  WOSU_xBCxxFGx;
+  /*p29.WUVU*/ Reg WUVU_xxCDxxGH;
+  /*p21.VENA*/ Reg VENA_xxxxEFGH;
+  /*p29.WOSU*/ Reg WOSU_xBCxxFGx;
 };
 
 //-----------------------------------------------------------------------------

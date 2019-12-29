@@ -10,7 +10,8 @@ namespace Schematics {
 ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
                                        wire CLK,
                                        wire CLK_GOOD,
-                                       wire CPUCLK_REQ_) {
+                                       wire CPUCLK_REQ_,
+                                       wire MODE_PROD) {
   ClockSignals1 sig = {
     /*p01.ABOL*/ .CPUCLK_REQn   = not(CPUCLK_REQ_),
     /*p01.BUTY*/ .CPUCLK_REQ    = not(sig.CPUCLK_REQn),
@@ -34,10 +35,11 @@ ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
     /*p29.XYFY*/ .XYFY_xBxDxFxH = not(sig.XOTA_AxCxExGx),
 
     // gated on MODE_PROD
-    /*p01.AFUR*/ .PHAZ_xBCDExxx = clk.PHAZ_xBCDExxx,
-    /*p01.ALEF*/ .PHAZ_xxCDEFxx = clk.PHAZ_xxCDEFxx,
-    /*p01.APUK*/ .PHAZ_xxxDEFGx = clk.PHAZ_xxxDEFGx,
-    /*p01.ADYK*/ .PHAZ_xxxxEFGH = clk.PHAZ_xxxxEFGH,
+    /*p01.AFUR*/ .PHAZ_xBCDExxx = and(clk.PHAZ_xBCDExxx, MODE_PROD),
+    /*p01.ALEF*/ .PHAZ_xxCDEFxx = and(clk.PHAZ_xxCDEFxx, MODE_PROD),
+    /*p01.APUK*/ .PHAZ_xxxDEFGx = and(clk.PHAZ_xxxDEFGx, MODE_PROD),
+    /*p01.ADYK*/ .PHAZ_xxxxEFGH = and(clk.PHAZ_xxxxEFGH, MODE_PROD),
+
     /*p01.AFEP*/ .AFEP_ABxxxxGH = not( sig.PHAZ_xxCDEFxx),
     /*p01.ATYP*/ .ATYP_xBCDExxx = not(!sig.PHAZ_xBCDExxx),
     /*p01.ADAR*/ .ADAR_ABCxxxxH = not( sig.PHAZ_xxxxEFGH),
@@ -253,6 +255,7 @@ ClockSignals2 ClockSignals2::tick_fast(int phase, wire VID_RESETn) {
   bool ABCDxxxx = !xxxxEFGH;
   bool AxxDExxH = !xBCxxFGx;
 
+
   if (VID_RESETn) {
     sig.XUPY_ABxxEFxx = ABxxEFxx;
     sig.AWOH_xxCDxxGH = xxCDxxGH;
@@ -284,7 +287,7 @@ ClockSignals2 ClockSignals2::tick_fast(int phase, wire VID_RESETn) {
 //-----------------------------------------------------------------------------
 
 void Clocks::tock_slow1(const ClockSignals1& sig1,
-                        /*p07.UPOJ*/ wire MODE_PROD,
+                        wire MODE_PROD,
                         Clocks& next) {
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
   /*p01.AFUR*/ next.PHAZ_xBCDExxx.duotock(sig1.ATAL_xBxDxFxH, MODE_PROD, !sig1.PHAZ_xxxxEFGH);
@@ -297,7 +300,7 @@ void Clocks::tock_slow1(const ClockSignals1& sig1,
 
 void Clocks::tock_slow2(const ClockSignals1& sig1,
                         const ClockSignals2& sig2,
-                        /*p01.XAPO*/ wire VID_RESETn,
+                        wire VID_RESETn,
                         Clocks& next) {
   /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig1.XOTA_AxCxExGx, VID_RESETn, !sig2.WUVU_xxCDxxGH);
   /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig2.WUVU_xxCDxxGH, VID_RESETn, !sig2.VENA_xxxxEFGH);
@@ -306,9 +309,7 @@ void Clocks::tock_slow2(const ClockSignals1& sig1,
 
 //-----------------------------------------------------------------------------
 
-void Clocks::tock_fast1(int phase,
-                        /*p07.UPOJ*/ wire MODE_PROD,
-                        Clocks& next) {
+void Clocks::tock_fast1(int phase, wire MODE_PROD, Clocks& next) {
 
   bool xBxDxFxH = (phase & 1);
 
@@ -338,9 +339,7 @@ void Clocks::tock_fast1(int phase,
 
 //----------------------------------------
 
-void Clocks::tock_fast2(int phase,
-                        /*p01.XAPO*/ wire VID_RESETn,
-                        Clocks& next) {
+void Clocks::tock_fast2(int phase, wire VID_RESETn, Clocks& next) {
 
   bool xBxDxFxH = (phase & 1);
   bool AxCxExGx = !xBxDxFxH;

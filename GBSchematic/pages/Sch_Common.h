@@ -37,6 +37,28 @@ struct ClockSignals2;
 
 //-----------------------------------------------------------------------------
 
+struct SystemSignals {
+  // input pins
+  bool RST;
+  bool CLK_GOOD;
+  bool MODE_PROD;
+  bool MODE_DBG1;
+  bool MODE_DBG2;
+
+  // cpu control signals
+  bool CPUCLK_REQ;
+  bool ADDR_VALID;
+
+  // other random stuff for convenience
+  bool BOOT_BIT;
+  bool LCDC_EN;
+  bool DIV_06n;
+  bool DIV_07n;
+  bool DIV_15;
+};
+
+//-----------------------------------------------------------------------------
+
 struct Reg {
   operator const bool() const { return val; }
 

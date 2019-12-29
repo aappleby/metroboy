@@ -33,6 +33,7 @@ struct Video;
 struct VRAM;
 
 struct ClockSignals1;
+struct ClockSignals2;
 
 //-----------------------------------------------------------------------------
 

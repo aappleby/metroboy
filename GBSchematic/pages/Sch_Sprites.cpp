@@ -9,7 +9,8 @@ namespace Schematics {
 // no modifications or simplifications.
 
 void Sprites_tick(const Pins& pins,
-                  const ClockSignals1& clk,
+                  const ClockSignals1& clk_sig1,
+                  const ClockSignals2& clk_sig2,
                   const DMA& dma,
                   const LCD& lcd,
                   const OAM& oam,
@@ -47,7 +48,7 @@ void Sprites_tick(const Pins& pins,
     /*p29.TAME*/ wire SEQ_5n = nand(spr.SPR_SEQ2, spr.SPR_SEQ0);
 
     {
-      /*p29.TOMA*/ wire SEQ_CLK = nand(clk.LAPE_AxCxExGx, SEQ_5n);
+      /*p29.TOMA*/ wire SEQ_CLK = nand(clk_sig1.LAPE_AxCxExGx, SEQ_5n);
       /*p27.SECA*/ wire SPR_SEQ_RST = nor(vid.SPRITE_FETCH_TRIG, rst_sig.VID_RESET5, lcd.VID_LINE_TRIG_d4n);
       /*p29.TOXE*/ next.SPR_SEQ0.tock(SEQ_CLK,       SPR_SEQ_RST, !spr.SPR_SEQ0);
       /*p29.TULY*/ next.SPR_SEQ1.tock(!spr.SPR_SEQ0, SPR_SEQ_RST, !spr.SPR_SEQ1);
@@ -57,10 +58,10 @@ void Sprites_tick(const Pins& pins,
 
     {
       /*p27.VYPO*/ wire VYPO = not(pins.P10_B);
-      /*p29.TYFO*/ next.SEQ_B0d.tock    (clk.LAPE_AxCxExGx, VYPO, next.SPR_SEQ0);
-      /*p29.TOBU*/ next.SEQ_xx23xx .tock(clk.TAVA_xBxDxFxH, vid.RENDERING_LATCH, spr.SPR_SEQ1);    // note input is seq 1 not 2
-      /*p29.VONU*/ next.SEQ_xxx34xn.tock(clk.TAVA_xBxDxFxH, vid.RENDERING_LATCH, spr.SEQ_xx23xx);
-      /*p29.SEBA*/ next.SEQ_xxxx45n.tock(clk.LAPE_AxCxExGx, vid.RENDERING_LATCH, spr.SEQ_xxx34xn); // is this clock wrong?
+      /*p29.TYFO*/ next.SEQ_B0d.tock    (clk_sig1.LAPE_AxCxExGx, VYPO, next.SPR_SEQ0);
+      /*p29.TOBU*/ next.SEQ_xx23xx .tock(clk_sig1.TAVA_xBxDxFxH, vid.RENDERING_LATCH, spr.SPR_SEQ1);    // note input is seq 1 not 2
+      /*p29.VONU*/ next.SEQ_xxx34xn.tock(clk_sig1.TAVA_xBxDxFxH, vid.RENDERING_LATCH, spr.SEQ_xx23xx);
+      /*p29.SEBA*/ next.SEQ_xxxx45n.tock(clk_sig1.LAPE_AxCxExGx, vid.RENDERING_LATCH, spr.SEQ_xxx34xn); // is this clock wrong?
     }
 
     {
@@ -140,12 +141,12 @@ void Sprites_tick(const Pins& pins,
     /*p29.GOVU*/ wire GOVU = or(YDIFF3, regs.LCDC_SPSIZE);
     /*p29.WOTA*/ wire SPR_MATCH_Yn = nand(SPRITE_DELTA4, SPRITE_DELTA5, SPRITE_DELTA6, SPRITE_DELTA7, YDIFF_C7, GOVU);
     /*p29.GESE*/ wire SPR_MATCH_Y = not(SPR_MATCH_Yn);
-    /*p29.CARE*/ wire STORE_ENn = or(clk.XOCE_AxxDExxH, CEHA, SPR_MATCH_Y);
+    /*p29.CARE*/ wire STORE_ENn = or(clk_sig2.XOCE_AxxDExxH, CEHA, SPR_MATCH_Y);
     /*p29.DYTY*/ next.STORE_EN = not(STORE_ENn);
 
 
     /*p28.WEFE*/ wire WEFE = not(pins.P10_B);
-    /*p30.CYKE*/ wire CYKE = not(clk.XUPY_ABxxEFxx);
+    /*p30.CYKE*/ wire CYKE = not(clk_sig2.XUPY_ABxxEFxx);
     /*p30.WUDA*/ wire WUDA = not(CYKE);
     /*p30.XADU*/ next.SPRITE_IDX0.tock(WUDA, WEFE, oam.OAM_A2);
     /*p30.XEDY*/ next.SPRITE_IDX1.tock(WUDA, WEFE, oam.OAM_A3);
@@ -156,7 +157,7 @@ void Sprites_tick(const Pins& pins,
 
     /*p28.ASEN*/ wire ASEN = or(rst_sig.VID_RESET6, spr.SCAN_DONE_d0_TRIG);
     /*p28.BESU*/ wire BESU = or(lcd.VID_LINE_d4, ASEN);
-    /*p29.CENO*/ next.STORE_SPRITE_IDXn.tock(clk.XUPY_ABxxEFxx, rst_sig.VID_RESETn3, BESU);
+    /*p29.CENO*/ next.STORE_SPRITE_IDXn.tock(clk_sig2.XUPY_ABxxEFxx, rst_sig.VID_RESETn3, BESU);
 
     /*p29.BUZA*/ wire STORE_SPRITE_IDX = and(!spr.STORE_SPRITE_IDXn, vid.RENDERING_LATCH);
 
@@ -174,7 +175,8 @@ void Sprites_tick(const Pins& pins,
 }
 
 
-void Sprites_tickScanner(const ClockSignals1& clk,
+void Sprites_tickScanner(const ClockSignals1& clk_sig1,
+                         const ClockSignals2& clk_sig2,
                          const LCD& lcd,
                          const ResetSignals& rst_sig,
                          const Sprites& spr,
@@ -194,7 +196,7 @@ void Sprites_tickScanner(const ClockSignals1& clk,
     /*p29.BAGY*/ wire SCAN_RSTo = not(SCAN_RSTa);
 
 
-    /*p28.GAVA*/ wire SCAN_CLK = or(spr.SCAN_DONE_d0, clk.XUPY_ABxxEFxx);
+    /*p28.GAVA*/ wire SCAN_CLK = or(spr.SCAN_DONE_d0, clk_sig2.XUPY_ABxxEFxx);
     /*p28.YFEL*/ next.SCAN0.tock(SCAN_CLK,   SCAN_RSTn, !spr.SCAN0);
     /*p28.WEWY*/ next.SCAN1.tock(!spr.SCAN0, SCAN_RSTn, !spr.SCAN1);
     /*p28.GOSO*/ next.SCAN2.tock(!spr.SCAN1, SCAN_RSTn, !spr.SCAN2);
@@ -205,8 +207,8 @@ void Sprites_tickScanner(const ClockSignals1& clk,
     /*p28.FETO*/ next.SCAN_DONE_d0 = and(spr.SCAN0, spr.SCAN1, spr.SCAN2, spr.SCAN5); // 32 + 4 + 2 + 1 = 39
 
     // the second clock here doesn't match the usual synchronizer pattern, but it matches the die.
-    /*p29.BYBA*/ next.SCAN_DONE_d4.tock(clk.XUPY_ABxxEFxx, SCAN_RSTo, spr.SCAN_DONE_d0);
-    /*p29.DOBA*/ next.SCAN_DONE_d5.tock(clk.ALET_xBxDxFxH, SCAN_RSTo, spr.SCAN_DONE_d4);
+    /*p29.BYBA*/ next.SCAN_DONE_d4.tock(clk_sig2.XUPY_ABxxEFxx, SCAN_RSTo, spr.SCAN_DONE_d0);
+    /*p29.DOBA*/ next.SCAN_DONE_d5.tock(clk_sig1.ALET_xBxDxFxH, SCAN_RSTo, spr.SCAN_DONE_d4);
 
     // which means this trigger is exactly 1 phase long
     /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or(SCAN_RSTa, spr.SCAN_DONE_d5, !spr.SCAN_DONE_d4);

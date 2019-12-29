@@ -33,16 +33,6 @@ ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
     /*p27.TAVA*/ .TAVA_xBxDxFxH = not(sig.LAPE_AxCxExGx),
     /*p29.XYFY*/ .XYFY_xBxDxFxH = not(sig.XOTA_AxCxExGx),
 
-    // gated on VID_RESETn
-    /*p29.WUVU*/ .WUVU_xxCDxxGH = clk.WUVU_xxCDxxGH,
-    /*p21.VENA*/ .VENA_xxxxEFGH = clk.VENA_xxxxEFGH,
-    /*p29.WOSU*/ .WOSU_xBCxxFGx = clk.WOSU_xBCxxFGx,
-    /*p29.XUPY*/ .XUPY_ABxxEFxx = not(sig.WUVU_xxCDxxGH),
-    /*p28.AWOH*/ .AWOH_xxCDxxGH = not(sig.XUPY_ABxxEFxx),
-    /*p21.TALU*/ .TALU_xxxxEFGH = not(!sig.VENA_xxxxEFGH),
-    /*p21.SONO*/ .SONO_ABCDxxxx = not(sig.TALU_xxxxEFGH),
-    /*p29.XOCE*/ .XOCE_AxxDExxH = not(sig.WOSU_xBCxxFGx),
-
     // gated on MODE_PROD
     /*p01.AFUR*/ .PHAZ_xBCDExxx = clk.PHAZ_xBCDExxx,
     /*p01.ALEF*/ .PHAZ_xxCDEFxx = clk.PHAZ_xxCDEFxx,
@@ -92,8 +82,7 @@ ClockSignals1 ClockSignals1::tick_slow(const Clocks& clk,
 ClockSignals1 ClockSignals1::tick_fast(int phase,
                                      wire CLK_GOOD,
                                      wire CPUCLK_REQ_,
-                                     /*p07.UPOJ*/ wire MODE_PROD,
-                                     /*p01.XAPO*/ wire VID_RESETn) {
+                                     /*p07.UPOJ*/ wire MODE_PROD) {
 
   ClockSignals1 sig;
 
@@ -128,11 +117,7 @@ ClockSignals1 ClockSignals1::tick_fast(int phase,
   bool xxCDEFxx = (phase == 2) || (phase == 3) || (phase == 4) || (phase == 5);
   bool xxxDEFGx = (phase == 3) || (phase == 4) || (phase == 5) || (phase == 6);
   bool xxxxEFGH = (phase == 4) || (phase == 5) || (phase == 6) || (phase == 7);
-  bool xxCDxxGH = (phase == 2) || (phase == 3) || (phase == 6) || (phase == 7);
-  bool xBCxxFGx = (phase == 1) || (phase == 2) || (phase == 5) || (phase == 6);
-  bool ABxxEFxx = !xxCDxxGH;
   bool ABCDxxxx = !xxxxEFGH;
-  bool AxxDExxH = !xBCxxFGx;
   bool xxxxxFGH = (phase == 5) || (phase == 6) || (phase == 7);
   bool ABxxxxGH = !xxCDEFxx;
 
@@ -141,31 +126,6 @@ ClockSignals1 ClockSignals1::tick_fast(int phase,
   bool AxxxxFGH = !xBCDExxx;
   bool xBxxxxxx = (phase == 1);
   bool AxCDEFGH = !xBxxxxxx;
-
-  if (VID_RESETn) {
-    sig.XUPY_ABxxEFxx = ABxxEFxx;
-    sig.AWOH_xxCDxxGH = xxCDxxGH;
-    sig.WUVU_xxCDxxGH = xxCDxxGH;
-
-    sig.XOCE_AxxDExxH = AxxDExxH;
-    sig.WOSU_xBCxxFGx = xBCxxFGx;
-
-    sig.SONO_ABCDxxxx = ABCDxxxx;
-    sig.VENA_xxxxEFGH = xxxxEFGH;
-    sig.TALU_xxxxEFGH = xxxxEFGH;
-  }
-  else {
-    sig.XUPY_ABxxEFxx = 1;
-    sig.AWOH_xxCDxxGH = 0;
-    sig.WUVU_xxCDxxGH = 0;
-
-    sig.XOCE_AxxDExxH = 1;
-    sig.WOSU_xBCxxFGx = 0;
-
-    sig.SONO_ABCDxxxx = 1;
-    sig.VENA_xxxxEFGH = 0;
-    sig.TALU_xxxxEFGH = 0;
-  }
 
   if (MODE_PROD) {
     sig.PHAZ_xBCDExxx = xBCDExxx;
@@ -336,11 +296,12 @@ void Clocks::tock_slow1(const ClockSignals1& sig1,
 //----------------------------------------
 
 void Clocks::tock_slow2(const ClockSignals1& sig1,
+                        const ClockSignals2& sig2,
                         /*p01.XAPO*/ wire VID_RESETn,
                         Clocks& next) {
-  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig1.XOTA_AxCxExGx, VID_RESETn, !sig1.WUVU_xxCDxxGH);
-  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig1.WUVU_xxCDxxGH, VID_RESETn, !sig1.VENA_xxxxEFGH);
-  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig1.XYFY_xBxDxFxH, VID_RESETn, !sig1.WUVU_xxCDxxGH);
+  /*p29.WUVU*/ next.WUVU_xxCDxxGH.tock( sig1.XOTA_AxCxExGx, VID_RESETn, !sig2.WUVU_xxCDxxGH);
+  /*p21.VENA*/ next.VENA_xxxxEFGH.tock(!sig2.WUVU_xxCDxxGH, VID_RESETn, !sig2.VENA_xxxxEFGH);
+  /*p29.WOSU*/ next.WOSU_xBCxxFGx.tock( sig1.XYFY_xBxDxFxH, VID_RESETn, !sig2.WUVU_xxCDxxGH);
 }
 
 //-----------------------------------------------------------------------------

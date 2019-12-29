@@ -7,7 +7,8 @@ namespace Schematics {
 
 struct LCD {
 
-  static void tick_slow(const ClockSignals1& clk,
+  static void tick_slow(const ClockSignals1& clk_sig1,
+                        const ClockSignals2& clk_sig2,
                         const ResetSignals& rst_sig,
                         const LCD& lcd,
                         const Video& vid,
@@ -17,7 +18,8 @@ struct LCD {
                         bool LCDC_EN,
                         LCD& next);
 
-  static void tick_fast(const ClockSignals1& clk,
+  static void tick_fast(const ClockSignals1& clk_sig1,
+                        const ClockSignals2& clk_sig2,
                         const ResetSignals& rst_sig,
                         const Video& vid,
                         bool SCAN_DONE_d0_TRIG,

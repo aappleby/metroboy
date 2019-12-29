@@ -8,15 +8,14 @@ namespace Schematics {
 
 struct ClockSignals1 {
   static ClockSignals1 tick_slow(const Clocks& clk,
-                                wire CLK,
-                                wire CLK_GOOD,
-                                wire CPUCLK_REQ_);
+                                 wire CLK,
+                                 wire CLK_GOOD,
+                                 wire CPUCLK_REQ_);
 
   static ClockSignals1 tick_fast(int phase,
-                                wire CLK_GOOD,
-                                wire CPUCLK_REQ_,
-                                /*p07.UPOJ*/ wire MODE_PROD,
-                                /*p01.XAPO*/ wire VID_RESETn);
+                                 wire CLK_GOOD,
+                                 wire CPUCLK_REQ_,
+                                 /*p07.UPOJ*/ wire MODE_PROD);
 
   void reset() {
     *this = {
@@ -40,16 +39,6 @@ struct ClockSignals1 {
       /*p01.LAPE*/ .LAPE_AxCxExGx = 0,
       /*p27.TAVA*/ .TAVA_xBxDxFxH = 1,
       /*p29.XYFY*/ .XYFY_xBxDxFxH = 1,
-
-      // gated on VID_RESETn
-      /*p29.WUVU*/ .WUVU_xxCDxxGH = 1,
-      /*p21.VENA*/ .VENA_xxxxEFGH = 1,
-      /*p29.WOSU*/ .WOSU_xBCxxFGx = 0,
-      /*p29.XUPY*/ .XUPY_ABxxEFxx = 0,
-      /*p28.AWOH*/ .AWOH_xxCDxxGH = 1,
-      /*p21.TALU*/ .TALU_xxxxEFGH = 1,
-      /*p21.SONO*/ .SONO_ABCDxxxx = 0,
-      /*p29.XOCE*/ .XOCE_AxxDExxH = 1,
 
       // gated on MODE_PROD
       /*p01.AFUR*/ .PHAZ_xBCDExxx = 0,
@@ -114,16 +103,6 @@ struct ClockSignals1 {
   /*p01.LAPE*/ bool LAPE_AxCxExGx;
   /*p27.TAVA*/ bool TAVA_xBxDxFxH;
   /*p29.XYFY*/ bool XYFY_xBxDxFxH;
-
-  // gated on VID_RESETn
-  /*p29.WUVU*/ bool WUVU_xxCDxxGH;
-  /*p21.VENA*/ bool VENA_xxxxEFGH;
-  /*p29.WOSU*/ bool WOSU_xBCxxFGx;
-  /*p29.XUPY*/ bool XUPY_ABxxEFxx;
-  /*p28.AWOH*/ bool AWOH_xxCDxxGH;
-  /*p21.TALU*/ bool TALU_xxxxEFGH;
-  /*p21.SONO*/ bool SONO_ABCDxxxx;
-  /*p29.XOCE*/ bool XOCE_AxxDExxH;
 
   // gated on MODE_PROD
   /*p01.AFUR*/ bool PHAZ_xBCDExxx;
@@ -206,7 +185,8 @@ struct Clocks {
                          /*p07.UPOJ*/ wire MODE_PROD,
                          Clocks& next);
 
-  static void tock_slow2(const ClockSignals1& sig,
+  static void tock_slow2(const ClockSignals1& sig1,
+                         const ClockSignals2& sig2,
                          /*p01.XAPO*/ wire VID_RESETn,
                          Clocks& next);
 

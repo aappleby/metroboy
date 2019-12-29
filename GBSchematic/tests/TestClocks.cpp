@@ -69,57 +69,57 @@ void labels() {
   line++;
 }
 
-void dump(int x, ClockSignals1& clk) {
+void dump(int x, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
   int line = 3;
-  plot(x, line++, clk.ROOT_AxCxExGx);
-  plot(x, line++, clk.MYVO_AxCxExGx);
-  plot(x, line++, clk.ZEME_AxCxExGx);
-  plot(x, line++, clk.XOTA_AxCxExGx);
-  plot(x, line++, clk.MOXE_AxCxExGx);
-  plot(x, line++, clk.MEHE_AxCxExGx);
-  plot(x, line++, clk.LAPE_AxCxExGx);
+  plot(x, line++, clk_sig1.ROOT_AxCxExGx);
+  plot(x, line++, clk_sig1.MYVO_AxCxExGx);
+  plot(x, line++, clk_sig1.ZEME_AxCxExGx);
+  plot(x, line++, clk_sig1.XOTA_AxCxExGx);
+  plot(x, line++, clk_sig1.MOXE_AxCxExGx);
+  plot(x, line++, clk_sig1.MEHE_AxCxExGx);
+  plot(x, line++, clk_sig1.LAPE_AxCxExGx);
   line++;
 
-  plot(x, line++, clk.ARYS_xBxDxFxH);
-  plot(x, line++, clk.ANOS_xBxDxFxH);
-  plot(x, line++, clk.ALET_xBxDxFxH);
-  plot(x, line++, clk.TAVA_xBxDxFxH);
+  plot(x, line++, clk_sig1.ARYS_xBxDxFxH);
+  plot(x, line++, clk_sig1.ANOS_xBxDxFxH);
+  plot(x, line++, clk_sig1.ALET_xBxDxFxH);
+  plot(x, line++, clk_sig1.TAVA_xBxDxFxH);
   line++;
 
   //plot(x, line++, clk.MODE_PROD);
-  plot(x, line++, clk.PHAZ_xBCDExxx);
-  plot(x, line++, clk.PHAZ_xxCDEFxx);
-  plot(x, line++, clk.PHAZ_xxxDEFGx);
-  plot(x, line++, clk.PHAZ_xxxxEFGH);
-  plot(x, line++, clk.AFAS_xxxxxFGH);
+  plot(x, line++, clk_sig1.PHAZ_xBCDExxx);
+  plot(x, line++, clk_sig1.PHAZ_xxCDEFxx);
+  plot(x, line++, clk_sig1.PHAZ_xxxDEFGx);
+  plot(x, line++, clk_sig1.PHAZ_xxxxEFGH);
+  plot(x, line++, clk_sig1.AFAS_xxxxxFGH);
   line++;
 
   //plot(x, line++, clk.CLKIN_A);
-  plot(x, line++, clk.BOGA_AxCDEFGH);
+  plot(x, line++, clk_sig1.BOGA_AxCDEFGH);
   line++;
 
-  plot(x, line++, clk.CPUCLK_REQ);
-  plot(x, line++, clk.UVYT_xBCDExxx);
-  plot(x, line++, clk.DOVA_xBCDExxx);
-  plot(x, line++, clk.BEDO_xBxxxxxx);
-  plot(x, line++, clk.BOWA_AxCDEFGH);
-  plot(x, line++, clk.MOPA_AxxxxFGH);
+  plot(x, line++, clk_sig1.CPUCLK_REQ);
+  plot(x, line++, clk_sig1.UVYT_xBCDExxx);
+  plot(x, line++, clk_sig1.DOVA_xBCDExxx);
+  plot(x, line++, clk_sig1.BEDO_xBxxxxxx);
+  plot(x, line++, clk_sig1.BOWA_AxCDEFGH);
+  plot(x, line++, clk_sig1.MOPA_AxxxxFGH);
   line++;
 
   //plot(x, line++, clk.VID_RESETn);
-  plot(x, line++, clk.SONO_ABCDxxxx);
-  plot(x, line++, clk.WOSU_xBCxxFGx);
-  plot(x, line++, clk.XUPY_ABxxEFxx);
-  plot(x, line++, clk.WUVU_xxCDxxGH);
-  plot(x, line++, clk.AWOH_xxCDxxGH);
-  plot(x, line++, clk.XOCE_AxxDExxH);
-  plot(x, line++, clk.VENA_xxxxEFGH);
-  plot(x, line++, clk.TALU_xxxxEFGH);
+  plot(x, line++, clk_sig2.SONO_ABCDxxxx);
+  plot(x, line++, clk_sig2.WOSU_xBCxxFGx);
+  plot(x, line++, clk_sig2.XUPY_ABxxEFxx);
+  plot(x, line++, clk_sig2.WUVU_xxCDxxGH);
+  plot(x, line++, clk_sig2.AWOH_xxCDxxGH);
+  plot(x, line++, clk_sig2.XOCE_AxxDExxH);
+  plot(x, line++, clk_sig2.VENA_xxxxEFGH);
+  plot(x, line++, clk_sig2.TALU_xxxxEFGH);
   line++;
 
-  plot(x, line++, clk.WUVU_xxCDxxGH);
-  plot(x, line++, clk.VENA_xxxxEFGH);
-  plot(x, line++, clk.WOSU_xBCxxFGx);
+  plot(x, line++, clk_sig2.WUVU_xxCDxxGH);
+  plot(x, line++, clk_sig2.VENA_xxxxEFGH);
+  plot(x, line++, clk_sig2.WOSU_xBCxxFGx);
   line++;
 }
 
@@ -129,9 +129,10 @@ void sim(int phase, Clocks& clk_reg, bool CLK_GOOD, bool CPUCLK_REQ, bool MODE_P
   bool CLKIN = !(phase & 1);
   for (int j = 0; j < 8; j++) {
     Clocks prev_clk = clk_reg;
-    ClockSignals1 clk_sig = ClockSignals1::tick_slow(prev_clk, CLKIN, CLK_GOOD, CPUCLK_REQ);
-    Clocks::tock_slow1(clk_sig, MODE_PROD, clk_reg);
-    Clocks::tock_slow2(clk_sig, VID_RESETn, clk_reg);
+    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(prev_clk, CLKIN, CLK_GOOD, CPUCLK_REQ);
+    ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(prev_clk);
+    Clocks::tock_slow1(clk_sig1, MODE_PROD, clk_reg);
+    Clocks::tock_slow2(clk_sig1, clk_sig2, VID_RESETn, clk_reg);
   }
 }
 
@@ -147,8 +148,9 @@ void TestClocks() {
   for (int phase = 0; phase < 16; phase++) {
     bool CLKIN = !(phase & 1);
     sim(phase, clk_reg, true, true, true, true);
-    ClockSignals1 sig = ClockSignals1::tick_slow(clk_reg, CLKIN, true, true);
-    dump(cursor++, sig);
+    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(clk_reg, CLKIN, true, true);
+    ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(clk_reg);
+    dump(cursor++, clk_sig1, clk_sig2);
   }
 
   /*

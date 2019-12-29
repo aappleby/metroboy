@@ -3,7 +3,8 @@
 
 namespace Schematics {
 
-void Sprites_tickScanner(const ClockSignals1& clk,
+void Sprites_tickScanner(const ClockSignals1& clk_sig1,
+                         const ClockSignals2& clk_sig2,
                          const LCD& lcd,
                          const ResetSignals& rst_sig,
                          const Sprites& spr,

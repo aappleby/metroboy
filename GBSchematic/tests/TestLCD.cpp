@@ -115,7 +115,8 @@ struct TestGB {
     dec.reset();
     vid.reset();
 
-    clk_sig.reset();
+    clk_sig1.reset();
+    clk_sig2.reset();
     clk_reg.reset();
 
 
@@ -181,22 +182,24 @@ struct TestGB {
       for (int pass = 0; pass < 12; pass++) {
         TestGB prev = *this;
         
-        clk_sig = ClockSignals1::tick_slow(prev.clk_reg, CLKIN, CLK_GOOD, CPUCLK_REQ);
+        clk_sig1 = ClockSignals1::tick_slow(prev.clk_reg, CLKIN, CLK_GOOD, CPUCLK_REQ);
 
         ResetSignals rst_sig1 = prev.rst_reg.sig;
-        ResetSignals rst_sig2 = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
+        ResetSignals rst_sig2 = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
-        Clocks::tock_slow2(clk_sig, rst_sig1.VID_RESETn, clk_reg);
+        clk_sig2 = ClockSignals2::tick_slow(prev.clk_reg);
 
-        ResetRegisters::tock(rst_sig2, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst_reg);
+        Clocks::tock_slow1(clk_sig1, MODE_PROD, clk_reg);
+        Clocks::tock_slow2(clk_sig1, clk_sig2, rst_sig1.VID_RESETn, clk_reg);
 
-        LCD::tick_slow(clk_sig, rst_sig2, prev.lcd, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
-        Sprites_tickScanner(clk_sig, prev.lcd, rst_sig2, prev.spr, spr);
+        ResetRegisters::tock(rst_sig2, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, rst_reg);
+
+        LCD::tick_slow(clk_sig1, clk_sig2, rst_sig2, prev.lcd, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
+        Sprites_tickScanner(clk_sig1, clk_sig2, prev.lcd, rst_sig2, prev.spr, spr);
         dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
 
 
 
-        Clocks::tock_slow1(clk_sig, MODE_PROD, clk_reg);
       }
     }
   }
@@ -210,21 +213,22 @@ struct TestGB {
       for (int pass = 0; pass < 8; pass++) {
         TestGB prev = *this;
 
+        clk_sig1 = ClockSignals1::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD);
+
         ResetSignals rst_sig1 = prev.rst_reg.sig;
-        ResetSignals rst_sig2 = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
+        ResetSignals rst_sig2 = ResetSignals::tick(prev.rst_reg, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, LCDC_EN);
 
-        clk_sig = ClockSignals1::tick_fast(clk_phase, CLK_GOOD, CPUCLK_REQ, MODE_PROD, rst_sig1.VID_RESETn);
-
-        Clocks::tock_fast2(clk_phase, rst_sig1.VID_RESETn, clk_reg);
-
-
-        ResetRegisters::tock(rst_sig2, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig.CLK_BAD1, clk_sig.CPUCLK_REQn, clk_sig.BOGA_AxCDEFGH, DIV_15, rst_reg);
-
-        LCD::tick_fast(clk_sig, rst_sig2, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
-        Sprites_tickScanner(clk_sig, prev.lcd, rst_sig2, prev.spr, spr);
-        dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
+        clk_sig2 = ClockSignals2::tick_fast(clk_phase, rst_sig1.VID_RESETn);
 
         Clocks::tock_fast1(clk_phase, MODE_PROD, clk_reg);
+        Clocks::tock_fast2(clk_phase, rst_sig1.VID_RESETn, clk_reg);
+
+        ResetRegisters::tock(rst_sig2, prev.rst_reg, MODE_PROD, MODE_DBG1, MODE_DBG2, RST, clk_sig1.CLK_BAD1, clk_sig1.CPUCLK_REQn, clk_sig1.BOGA_AxCDEFGH, DIV_15, rst_reg);
+
+        LCD::tick_fast(clk_sig1, clk_sig2, rst_sig2, prev.vid, prev.spr.SCAN_DONE_d0_TRIG, DIV_06n, DIV_07n, LCDC_EN, lcd);
+        Sprites_tickScanner(clk_sig1, clk_sig2, prev.lcd, rst_sig2, prev.spr, spr);
+        dec.tick(bus, prev.clk_reg, BOOT_BIT, MODE_DBG2, ADDR_VALID);
+
       }
     }
   }
@@ -254,7 +258,8 @@ struct TestGB {
   Video   vid;
 
 
-  ClockSignals1   clk_sig;
+  ClockSignals1  clk_sig1;
+  ClockSignals2  clk_sig2;
   Clocks         clk_reg;
 
   uint64_t alignment_pad = 0;
@@ -286,7 +291,8 @@ struct LCDTest {
     check_match(gb1.spr, gb2.spr);
     check_match(gb1.vid, gb2.vid);
 
-    check_match(gb1.clk_sig, gb2.clk_sig);
+    check_match(gb1.clk_sig1, gb2.clk_sig1);
+    check_match(gb1.clk_sig2, gb2.clk_sig2);
     check_match(gb1.clk_reg, gb2.clk_reg);
 
 
@@ -304,7 +310,8 @@ struct LCDTest {
     check_match(gb1.spr, gb2.spr);
     check_match(gb1.vid, gb2.vid);
 
-    check_match(gb1.clk_sig, gb2.clk_sig);
+    check_match(gb1.clk_sig1, gb2.clk_sig1);
+    check_match(gb1.clk_sig2, gb2.clk_sig2);
     check_match(gb1.clk_reg, gb2.clk_reg);
 
     printf("test_reset3 pass\n");

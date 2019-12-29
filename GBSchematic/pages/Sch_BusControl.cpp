@@ -38,7 +38,7 @@ void Bus_tick(const Cpu& cpu,
               BusControl& next,
               Bus& bus_out) {
 
-  /*p01.AREV*/ wire AREV = nand(cpu.CPU_RAW_WR, clk.AFAS_ABxxxxxH);
+  /*p01.AREV*/ wire AREV = nand(cpu.CPU_RAW_WR, clk.AFAS_xxxxxFGH);
   /*p01.APOV*/ wire CPU_WR_xxxxEFGx = not(AREV);
 
   /*p07.UJYV*/ wire CPU_RD_MUX = mux2n(pins.RD_C, cpu.CPU_RAW_RD, debug.MODE_DBG2);
@@ -65,7 +65,7 @@ void Bus_tick(const Cpu& cpu,
 
   {
     /*p25.TAVY*/   wire MOE_Cn = not(vram.MOE_C);
-    /*p25.TEGU*/   wire CPU_VRAM_CLK = nand(dec.ADDR_VRAM, clk.AFAS_ABxxxxxH);
+    /*p25.TEGU*/   wire CPU_VRAM_CLK = nand(dec.ADDR_VRAM, clk.AFAS_xxxxxFGH);
     /*p25.SALE*/ wire CPU_VRAM_CLK2 = mux2(MOE_Cn, CPU_VRAM_CLK, dbg.DBG_VRAM);
     // wires traced wrong? doesn't look like it
     // RUVY = not(SALE)

@@ -41,7 +41,7 @@ void Pins::tick(Cpu& cpu,
   }
 
   {
-    /*p01.AREV*/ wire AREV = nand(cpu.CPU_RAW_WR, clk.AFAS_ABxxxxxH);
+    /*p01.AREV*/ wire AREV = nand(cpu.CPU_RAW_WR, clk.AFAS_xxxxxFGH);
     /*p01.APOV*/ wire CPU_WR_xxxxEFGx  = not(AREV);
     /*p08.MOCA*/ wire DBG_EXT_RDn = nor(dec.ADDR_VALID_AND_NOT_VRAM, dbg.MODE_DBG1);
     /*p08.MEXO*/ wire MEXO_ABCDxxxH = not(CPU_WR_xxxxEFGx);

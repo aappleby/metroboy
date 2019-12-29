@@ -141,12 +141,12 @@ void Sprites_tick(const Pins& pins,
     /*p29.GOVU*/ wire GOVU = or(YDIFF3, regs.LCDC_SPSIZE);
     /*p29.WOTA*/ wire SPR_MATCH_Yn = nand(SPRITE_DELTA4, SPRITE_DELTA5, SPRITE_DELTA6, SPRITE_DELTA7, YDIFF_C7, GOVU);
     /*p29.GESE*/ wire SPR_MATCH_Y = not(SPR_MATCH_Yn);
-    /*p29.CARE*/ wire STORE_ENn = or(clk_sig2.XOCE_AxxDExxH, CEHA, SPR_MATCH_Y);
+    /*p29.CARE*/ wire STORE_ENn = or(clk_sig2.XOCE_ABxxEFxx, CEHA, SPR_MATCH_Y);
     /*p29.DYTY*/ next.STORE_EN = not(STORE_ENn);
 
 
     /*p28.WEFE*/ wire WEFE = not(pins.P10_B);
-    /*p30.CYKE*/ wire CYKE = not(clk_sig2.XUPY_ABxxEFxx);
+    /*p30.CYKE*/ wire CYKE = not(clk_sig2.XUPY_xBCxxFGx);
     /*p30.WUDA*/ wire WUDA = not(CYKE);
     /*p30.XADU*/ next.SPRITE_IDX0.tock(WUDA, WEFE, oam.OAM_A2);
     /*p30.XEDY*/ next.SPRITE_IDX1.tock(WUDA, WEFE, oam.OAM_A3);
@@ -157,7 +157,7 @@ void Sprites_tick(const Pins& pins,
 
     /*p28.ASEN*/ wire ASEN = or(rst_sig2.VID_RESET6, spr.SCAN_DONE_d0_TRIG);
     /*p28.BESU*/ wire BESU = or(lcd.VID_LINE_d4, ASEN);
-    /*p29.CENO*/ next.STORE_SPRITE_IDXn.tock(clk_sig2.XUPY_ABxxEFxx, rst_sig2.VID_RESETn3, BESU);
+    /*p29.CENO*/ next.STORE_SPRITE_IDXn.tock(clk_sig2.XUPY_xBCxxFGx, rst_sig2.VID_RESETn3, BESU);
 
     /*p29.BUZA*/ wire STORE_SPRITE_IDX = and(!spr.STORE_SPRITE_IDXn, vid.RENDERING_LATCH);
 
@@ -196,7 +196,7 @@ void Sprites_tickScanner(const ClockSignals1& clk_sig1,
     /*p29.BAGY*/ wire SCAN_RSTo = not(SCAN_RSTa);
 
 
-    /*p28.GAVA*/ wire SCAN_CLK = or(spr.SCAN_DONE_d0, clk_sig2.XUPY_ABxxEFxx);
+    /*p28.GAVA*/ wire SCAN_CLK = or(spr.SCAN_DONE_d0, clk_sig2.XUPY_xBCxxFGx);
     /*p28.YFEL*/ next.SCAN0.tock(SCAN_CLK,   SCAN_RSTn, !spr.SCAN0);
     /*p28.WEWY*/ next.SCAN1.tock(!spr.SCAN0, SCAN_RSTn, !spr.SCAN1);
     /*p28.GOSO*/ next.SCAN2.tock(!spr.SCAN1, SCAN_RSTn, !spr.SCAN2);
@@ -207,7 +207,7 @@ void Sprites_tickScanner(const ClockSignals1& clk_sig1,
     /*p28.FETO*/ next.SCAN_DONE_d0 = and(spr.SCAN0, spr.SCAN1, spr.SCAN2, spr.SCAN5); // 32 + 4 + 2 + 1 = 39
 
     // the second clock here doesn't match the usual synchronizer pattern, but it matches the die.
-    /*p29.BYBA*/ next.SCAN_DONE_d4.tock(clk_sig2.XUPY_ABxxEFxx, SCAN_RSTo, spr.SCAN_DONE_d0);
+    /*p29.BYBA*/ next.SCAN_DONE_d4.tock(clk_sig2.XUPY_xBCxxFGx, SCAN_RSTo, spr.SCAN_DONE_d0);
     /*p29.DOBA*/ next.SCAN_DONE_d5.tock(clk_sig1.ALET_xBxDxFxH, SCAN_RSTo, spr.SCAN_DONE_d4);
 
     // which means this trigger is exactly 1 phase long

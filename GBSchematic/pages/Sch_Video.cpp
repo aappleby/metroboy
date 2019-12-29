@@ -345,7 +345,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p21.RAPE*/ wire LY_MATCHn = nand(LY_MATCHA, LY_MATCHB);
     /*p21.PALY*/ wire LY_MATCHa = not(LY_MATCHn);
 
-    /*p21.ROPO*/ next.LYC_MATCH.tock(clk_sig2.TALU_xxxxEFGH, rst_sig1.WESY_RESET, LY_MATCHa);
+    /*p21.ROPO*/ next.LYC_MATCH.tock(clk_sig2.TALU_xBCDExxx, rst_sig1.WESY_RESET, LY_MATCHa);
   }
 
   //----------
@@ -418,7 +418,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p27.NELE*/ wire WY_MATCH_HI    = not(WY_MATCH_HIn);
     /*p27.PAFU*/ wire WY_MATCHn      = nand(WY_MATCH_HI, WY_MATCH0n, WY_MATCH1n, WY_MATCH2n, WY_MATCH3n);
     /*p27.ROGE*/ wire WY_MATCH       = not(WY_MATCHn);
-    /*p27.SARY*/ next.WY_MATCH_SYNC.tock(clk_sig2.TALU_xxxxEFGH, rst_sig2.VID_RESETn, WY_MATCH);
+    /*p27.SARY*/ next.WY_MATCH_SYNC.tock(clk_sig2.TALU_xBCDExxx, rst_sig2.VID_RESETn, WY_MATCH);
   }
 
 

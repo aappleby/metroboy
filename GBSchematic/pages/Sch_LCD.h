@@ -18,34 +18,35 @@ struct LCDRegisters {
 
   // ResetRegisters to immediately before the first phase on the first line
   void reset() {
-		VBLANK_d4b = true;
+    X0.val=false; X0.clk=false;
+    X1.val=false; X1.clk=true;
+    X2.val=false; X2.clk=true;
+    X3.val=false; X3.clk=true;
+    X4.val=false; X4.clk=true;
+    X5.val=false; X5.clk=true;
+    X6.val=false; X6.clk=true;
+    Y0.val=false; Y0.clk=true;
+    Y1.val=false; Y1.clk=true;
+    Y2.val=false; Y2.clk=true;
+    Y3.val=false; Y3.clk=true;
+    Y4.val=false; Y4.clk=true;
+    Y5.val=false; Y5.clk=true;
+    Y6.val=false; Y6.clk=true;
+    Y7.val=false; Y7.clk=true;
+
+    VBLANK_d4b = true;
 		VID_LINE_TRIG_d4n = 1;
 		VID_LINE_TRIG_d4a = 0;
 		VID_LINE_TRIG_d4p = 1;
 		VID_LINE_TRIG_d4c = 0;
 		VID_LINE_TRIG_d4o = 1;
 
-    VID_LINE_d4.val = false; VID_LINE_d4.clk = false; 
-    VID_LINE_d6.val = false; VID_LINE_d6.clk = true;
-    X0.val=true ; X0.clk=true ;
-    X1.val=false; X1.clk=false;
-    X2.val=false; X2.clk=true ;
-    X3.val=false; X3.clk=true ;
-    X4.val=true ; X4.clk=true ;
-    X5.val=true ; X5.clk=false;
-    X6.val=true ; X6.clk=false;
-    Y0.val=false; Y0.clk=false;
-    Y1.val=false; Y1.clk=true ;
-    Y2.val=false; Y2.clk=true ;
-    Y3.val=false; Y3.clk=true ;
-    Y4.val=false; Y4.clk=true ;
-    Y5.val=false; Y5.clk=true ;
-    Y6.val=false; Y6.clk=true ;
-    Y7.val=false; Y7.clk=true ;
-    NEW_LINE_d0a.val=false; NEW_LINE_d0a.clk=false;
-    NEW_LINE_d4a.val=false; NEW_LINE_d4a.clk=true;
-    LINE_153_d4.val=true; LINE_153_d4.clk=false;
-    VBLANK_d4.val = true; VBLANK_d4.clk = false;
+    VID_LINE_d4.val  = false; VID_LINE_d4.clk  = false; 
+    VID_LINE_d6.val  = false; VID_LINE_d6.clk  = true;
+    NEW_LINE_d0a.val = true;  NEW_LINE_d0a.clk = true;
+    NEW_LINE_d4a.val = false; NEW_LINE_d4a.clk = false;
+    LINE_153_d4.val  = true;  LINE_153_d4.clk  = false;
+    VBLANK_d4.val    = true;  VBLANK_d4.clk    = false;
 
 #if 0
     X_8_SYNC.val = false; X_8_SYNC.clk = false;

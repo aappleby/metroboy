@@ -160,7 +160,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p20.GASO*/ wire RSTu = not(RSTa);
 
     // FIXME
-    ///*p20.GYSU*/ next.ch4.CH4_START   = tock_pos(a.clk.DOVA_xxxDEFGx, b.clk.DOVA_xxxDEFGx, RSTu, b.ch4.CH4_START, b.ch4.NR44_START);
+    ///*p20.GYSU*/ next.ch4.CH4_START   = tock_pos(a.clk.DOVA_ABCDxxxx, b.clk.DOVA_ABCDxxxx, RSTu, b.ch4.CH4_START, b.ch4.NR44_START);
 
     /*p20.EFOT*/ wire CH4_STOP    = and(b.ch4.NR44_STOP,   b.ch4.LEN_STOP);
     /*p20.FEGY*/ wire CH4_OFF     = or (b.ch4.CH4_AMP_ENn, CH4_STOP, RSTa);

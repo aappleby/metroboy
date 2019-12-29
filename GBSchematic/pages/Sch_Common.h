@@ -42,7 +42,7 @@ struct LCDRegisters;
 
 struct SystemSignals {
   void reset() {
-    clk_phase = 5;
+    clk_phase = 0;
 
     RST        = false;
     CLK_GOOD   = true;

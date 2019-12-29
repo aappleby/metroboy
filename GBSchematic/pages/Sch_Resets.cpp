@@ -30,7 +30,7 @@ ResetSignals1 ResetSignals1::tick_slow(const SystemSignals& sys_sig,
   ResetSignals1 rst_sig;
 
   {
-    /*p01.BOMA*/ wire RESET_CLK    = not(clk_sig1.BOGA_ABCxEFGH);
+    /*p01.BOMA*/ wire RESET_CLK    = not(clk_sig1.BOGA_xBCDEFGH);
     /*p01.BOMA*/ rst_sig.RESET_CLK = RESET_CLK;
   }
 
@@ -102,7 +102,7 @@ void ResetRegisters::tock_slow(const SystemSignals& sys_sig,
                                ResetRegisters& next) {
   /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
   /*p01.TUBO*/ bool BAD_CLOCK_LATCH2 = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : rst_reg.BAD_CLOCK_LATCH;
-  /*p01.BOMA*/ bool RESET_CLK   = not(clk_sig1.BOGA_ABCxEFGH);
+  /*p01.BOMA*/ bool RESET_CLK   = not(clk_sig1.BOGA_xBCDEFGH);
   /*p01.UNUT*/ bool TIMEOUT     = and(BAD_CLOCK_LATCH2, sys_sig.DIV_15);
   /*p01.TABA*/ bool CPU_RESET   = or(sys_sig.MODE_DBG2, sys_sig.MODE_DBG1, TIMEOUT);
   /*p01.ALYP*/ bool CPU_RESETn  = not(CPU_RESET);

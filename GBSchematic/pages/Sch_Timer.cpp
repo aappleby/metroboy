@@ -28,10 +28,10 @@ void Timer_tickInt(const Cpu& cpu,
   /*p03.MEXU*/ wire TIMA_LOAD = nand(MUZU, rst_sig.SYS_RESETn, INT_TIMERn);
   /*p03.MUGY*/ wire TIMA_LOADn   = not(TIMA_LOAD);
 
-  /*p03.NYDU*/ next.TIMA_MAX.tock(clk.BOGA_ABCxEFGH, TIMA_LOADn, prev.TIMA_7);
+  /*p03.NYDU*/ next.TIMA_MAX.tock(clk.BOGA_xBCDEFGH, TIMA_LOADn, prev.TIMA_7);
 
   /*p03.MERY*/ wire INT_TIMER_IN = nor(!prev.TIMA_MAX, prev.TIMA_7);
-  /*p03.MOBA*/ next.INT_TIMER.tock(clk.BOGA_ABCxEFGH, rst_sig.SYS_RESETn, INT_TIMER_IN);
+  /*p03.MOBA*/ next.INT_TIMER.tock(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, INT_TIMER_IN);
 }
 
 //-----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ void Timer_tickDIV(const Timer& tim,
 
                    bool RST,
                    bool CLK_BAD1,
-                   bool BOGA_ABCxEFGH,
+                   bool BOGA_xBCDEFGH,
                    bool FF60_1,
                    
                    Timer& next) {
@@ -96,9 +96,9 @@ void Timer_tickDIV(const Timer& tim,
 
   /*p01.TAPE*/ wire FF04_WR = and(ctl.CPU_WR, dec.FF04_FF07, dec.TOLA_A01n, dec.TOVY_A00n);
   /*p01.UFOL*/ wire DIV_RSTn = nor(CLK_BAD1, RST, FF04_WR);
-  /*p01.ULUR*/ wire DIV_06_CLK = mux2n(BOGA_ABCxEFGH, !tim.DIV_05, FF60_1);
+  /*p01.ULUR*/ wire DIV_06_CLK = mux2n(BOGA_xBCDEFGH, !tim.DIV_05, FF60_1);
 
-  /*p01.UKUP*/ next.DIV_00.tock(BOGA_ABCxEFGH, DIV_RSTn, !tim.DIV_00);
+  /*p01.UKUP*/ next.DIV_00.tock(BOGA_xBCDEFGH, DIV_RSTn, !tim.DIV_00);
   /*p01.UFOR*/ next.DIV_01.tock(!tim.DIV_00,   DIV_RSTn, !tim.DIV_01);
   /*p01.UNER*/ next.DIV_02.tock(!tim.DIV_01,   DIV_RSTn, !tim.DIV_02);
   /*p01.TERO*/ next.DIV_03.tock(!tim.DIV_02,   DIV_RSTn, !tim.DIV_03);

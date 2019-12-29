@@ -44,7 +44,7 @@ void LCDRegisters::tick_slow(const ClockSignals2& clk_sig2,
   /*p28.BYVA*/ next.VID_LINE_TRIG_d4p = not(VID_LINE_TRIG_d4b);
   /*p29.DYBA*/ next.VID_LINE_TRIG_d4c = not(lcd.VID_LINE_TRIG_d4p);
 
-  /*p21.SAXO*/ next.X0.tock(clk_sig2.TALU_xxxxEFGH, X_RSTn, !lcd.X0);
+  /*p21.SAXO*/ next.X0.tock(clk_sig2.TALU_xBCDExxx, X_RSTn, !lcd.X0);
   /*p21.TYPO*/ next.X1.tock(!lcd.X0,                X_RSTn, !lcd.X1);
   /*p21.VYZO*/ next.X2.tock(!lcd.X1,                X_RSTn, !lcd.X2);
   /*p21.TELU*/ next.X3.tock(!lcd.X2,                X_RSTn, !lcd.X3);
@@ -52,8 +52,8 @@ void LCDRegisters::tick_slow(const ClockSignals2& clk_sig2,
   /*p21.TAHA*/ next.X5.tock(!lcd.X4,                X_RSTn, !lcd.X5);
   /*p21.TYRY*/ next.X6.tock(!lcd.X5,                X_RSTn, !lcd.X6);
 
-  /*p21.RUTU*/ next.NEW_LINE_d0a.tock(clk_sig2.SONO_ABCDxxxx, VID_RESETn2, LINE_END);
-  /*p21.NYPE*/ next.NEW_LINE_d4a.tock(clk_sig2.TALU_xxxxEFGH, VID_RESETn2, lcd.NEW_LINE_d0a);
+  /*p21.RUTU*/ next.NEW_LINE_d0a.tock(clk_sig2.SONO_AxxxxFGH, VID_RESETn2, LINE_END);
+  /*p21.NYPE*/ next.NEW_LINE_d4a.tock(clk_sig2.TALU_xBCDExxx, VID_RESETn2, lcd.NEW_LINE_d0a);
   /*p21.MYTA*/ next.LINE_153_d4.tock(lcd.NEW_LINE_d4a, VID_RESETn2, LINE_153_d0);
 
   /*p21.MUWY*/ next.Y0.tock(lcd.NEW_LINE_d0a, FRAME_RSTn, !lcd.Y0);
@@ -67,8 +67,8 @@ void LCDRegisters::tick_slow(const ClockSignals2& clk_sig2,
 
   /*p21.POPU*/ next.VBLANK_d4.tock(lcd.NEW_LINE_d4a, VID_RESETn2, LINE_144_d0);
   
-  /*p29.CATU*/ next.VID_LINE_d4.tock(clk_sig2.XUPY_ABxxEFxx, VID_RESETn3, VID_LINE_d0);
-  /*p28.ANEL*/ next.VID_LINE_d6.tock(clk_sig2.AWOH_xxCDxxGH, VID_RESETn3, lcd.VID_LINE_d4);
+  /*p29.CATU*/ next.VID_LINE_d4.tock(clk_sig2.XUPY_xBCxxFGx, VID_RESETn3, VID_LINE_d0);
+  /*p28.ANEL*/ next.VID_LINE_d6.tock(clk_sig2.AWOH_AxxDExxH, VID_RESETn3, lcd.VID_LINE_d4);
 
 #if 0
 
@@ -97,7 +97,7 @@ void LCDRegisters::tick_slow(const ClockSignals2& clk_sig2,
 
     /*p21.TEGY*/ wire LINE_STROBEa = nand(CNT_000n, CNT_007n, CNT_045n, CNT_083n);
 
-    /*p21.SYGU*/ next.LINE_STROBE.tock(clk_sig2.SONO_ABCDxxxx, VID_RESETn2, LINE_STROBEa);
+    /*p21.SYGU*/ next.LINE_STROBE.tock(clk_sig2.SONO_AxxxxFGH, VID_RESETn2, LINE_STROBEa);
 
     /*p21.RYNO*/ wire CPGn = or(lcd.LINE_STROBE, lcd.NEW_LINE_d0a);
     /*p21.POGU*/ wire POGU = not(CPGn);
@@ -201,15 +201,15 @@ void LCDRegisters::tick_fast(const ClockSignals2& clk_sig2,
     next.VID_LINE_TRIG_d4p = 0;
     next.VID_LINE_TRIG_d4c = 1;
 
-    next.VID_LINE_d4.reset(clk_sig2.XUPY_ABxxEFxx);
-    next.VID_LINE_d6.reset(clk_sig2.AWOH_xxCDxxGH);
+    next.VID_LINE_d4.reset(clk_sig2.XUPY_xBCxxFGx);
+    next.VID_LINE_d6.reset(clk_sig2.AWOH_AxxDExxH);
 
     next.VBLANK_d4.reset(next.NEW_LINE_d4a);
   
-    next.NEW_LINE_d4a.reset(clk_sig2.TALU_xxxxEFGH);
+    next.NEW_LINE_d4a.reset(clk_sig2.TALU_xBCDExxx);
     next.LINE_153_d4.reset(next.NEW_LINE_d4a);
 
-    next.X0.reset(clk_sig2.TALU_xxxxEFGH);
+    next.X0.reset(clk_sig2.TALU_xBCDExxx);
     next.X1.reset(!next.X0);
     next.X2.reset(!next.X1);
     next.X3.reset(!next.X2);
@@ -217,7 +217,7 @@ void LCDRegisters::tick_fast(const ClockSignals2& clk_sig2,
     next.X5.reset(!next.X4);
     next.X6.reset(!next.X5);
 
-    next.NEW_LINE_d0a.reset(clk_sig2.SONO_ABCDxxxx);
+    next.NEW_LINE_d0a.reset(clk_sig2.SONO_AxxxxFGH);
 
     next.Y0.reset(next.NEW_LINE_d0a);
     next.Y1.reset(!next.Y0);
@@ -229,7 +229,7 @@ void LCDRegisters::tick_fast(const ClockSignals2& clk_sig2,
     next.Y7.reset(!next.Y6);
 
 #if 0
-    //next.LINE_STROBE.reset(clk_sig2.SONO_ABCDxxxx);
+    //next.LINE_STROBE.reset(clk_sig2.SONO_AxxxxFGH);
     //next.PIN_CPG = nor(false, next.NEW_LINE_d0a);
     //next.CPEN_LATCH = 0;
     //next.PIN_CP = !vid.FINE_MATCH_TRIG;
@@ -272,7 +272,7 @@ void LCDRegisters::tick_fast(const ClockSignals2& clk_sig2,
 
 
     ///*p21.TEGY*/ wire LINE_STROBEa = nand(lcd_x != 0, lcd_x != 7, lcd_x != 45, lcd_x != 83);
-    ///*p21.SYGU*/ next.LINE_STROBE.tock(clk_sig2.SONO_ABCDxxxx, 1, LINE_STROBEa);
+    ///*p21.SYGU*/ next.LINE_STROBE.tock(clk_sig2.SONO_AxxxxFGH, 1, LINE_STROBEa);
     //next.PIN_CPG = nor(next.LINE_STROBE, next.NEW_LINE_d0a);
 
     {
@@ -307,16 +307,16 @@ void LCDRegisters::tick_fast(const ClockSignals2& clk_sig2,
 
 
     /*p29.ABOV*/ wire VID_LINE_d0 = and(next.NEW_LINE_d0a, lcd_y < 144);
-    next.VID_LINE_d4.tock(clk_sig2.XUPY_ABxxEFxx, 1, VID_LINE_d0);
-    next.VID_LINE_d6.tock(clk_sig2.AWOH_xxCDxxGH, 1, next.VID_LINE_d4);
+    next.VID_LINE_d4.tock(clk_sig2.XUPY_xBCxxFGx, 1, VID_LINE_d0);
+    next.VID_LINE_d6.tock(clk_sig2.AWOH_AxxDExxH, 1, next.VID_LINE_d4);
 
     next.VBLANK_d4.tock(next.NEW_LINE_d4a, 1, lcd_y >= 144);
   
-    next.NEW_LINE_d4a.tock(clk_sig2.TALU_xxxxEFGH, 1, next.NEW_LINE_d0a);
+    next.NEW_LINE_d4a.tock(clk_sig2.TALU_xBCDExxx, 1, next.NEW_LINE_d0a);
     next.LINE_153_d4.tock(next.NEW_LINE_d4a, 1, lcd_y == 153);
 
     /*p21.MUDE*/ wire X_RSTn = not(next.NEW_LINE_d0a);
-    next.X0.tock(clk_sig2.TALU_xxxxEFGH, X_RSTn, !next.X0);
+    next.X0.tock(clk_sig2.TALU_xBCDExxx, X_RSTn, !next.X0);
     next.X1.tock(!next.X0, X_RSTn, !next.X1);
     next.X2.tock(!next.X1, X_RSTn, !next.X2);
     next.X3.tock(!next.X2, X_RSTn, !next.X3);
@@ -324,7 +324,7 @@ void LCDRegisters::tick_fast(const ClockSignals2& clk_sig2,
     next.X5.tock(!next.X4, X_RSTn, !next.X5);
     next.X6.tock(!next.X5, X_RSTn, !next.X6);
 
-    next.NEW_LINE_d0a.tock(clk_sig2.SONO_ABCDxxxx, 1, lcd_x == 113);
+    next.NEW_LINE_d0a.tock(clk_sig2.SONO_AxxxxFGH, 1, lcd_x == 113);
 
     next.Y0.tock(next.NEW_LINE_d0a, FRAME_RSTn, !next.Y0);
     next.Y1.tock(!next.Y0, FRAME_RSTn, !next.Y1);

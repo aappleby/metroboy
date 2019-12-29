@@ -223,7 +223,7 @@ void P14_Ch2Regs_tick(const Gameboy& a,
   /*p15.JOPA*/ next.ch2.JOPA = tock_pos(a.apu.CLK_512a, b.apu.CLK_512a, b.ch2.HAFE, b.ch2.JOPA, b.ch2.KYVO);
   /*p15.HEPO*/ next.ch2.HEPO = tock_pos(a.ch2.JOPA,     b.ch2.JOPA,     b.ch2.HYPA, b.ch2.HEPO, b.ch2.GUFY);
   // FIXME
-  ///*p15.DOPE*/ next.ch2.DOPE = tock_pos(a.clk.DOVA_xxxDEFGx, b.clk.DOVA_xxxDEFGx, b.ch2.CYWU, b.ch2.DOPE, b.ch2.NR24_START);
+  ///*p15.DOPE*/ next.ch2.DOPE = tock_pos(a.clk.DOVA_ABCDxxxx, b.clk.DOVA_ABCDxxxx, b.ch2.CYWU, b.ch2.DOPE, b.ch2.NR24_START);
   /*p15.DERA*/ next.ch2.DERA = nor(b.apu.APU_RESET1, b.ch2.DOPE);
 
   // weird latch?

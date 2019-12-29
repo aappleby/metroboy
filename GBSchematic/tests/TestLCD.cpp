@@ -143,6 +143,10 @@ struct TestGB {
     sim_slow(456*2*154 - 10);
     check(lcd.x() == 113);
     check(lcd.y() == 0);
+
+    sim_slow(3);
+    check(lcd.x() == 0);
+    check(lcd.y() == 0);
   }
 
   //----------------------------------------
@@ -253,22 +257,41 @@ struct LCDTest {
     gb1.run_reset_sequence();
     gb2.reset();
 
-    check(gb1.lcd.x() == 113);
-    check(gb1.lcd.y() == 0);
-    check(gb2.lcd.x() == 113);
-    check(gb2.lcd.y() == 0);
+    printf("%d %d\n", gb1.lcd.x(), gb1.lcd.y());
+    printf("%d %d\n", gb2.lcd.x(), gb2.lcd.y());
 
-    check_match(gb1, gb2);
-
-    gb1.sim_slow(1);
-    gb2.sim_slow(1);
+    check_match_gb(gb1, gb2);
 
     check(gb1.lcd.x() == 0);
     check(gb1.lcd.y() == 0);
     check(gb2.lcd.x() == 0);
     check(gb2.lcd.y() == 0);
 
+    gb1.sim_slow(9);
+    gb2.sim_slow(9);
+
+    printf("%d %d\n", gb1.lcd.x(), gb1.lcd.y());
+    printf("%d %d\n", gb2.lcd.x(), gb2.lcd.y());
+
     check_match(gb1, gb2);
+
+    check(gb1.lcd.x() == 0);
+    check(gb1.lcd.y() == 0);
+    check(gb2.lcd.x() == 0);
+    check(gb2.lcd.y() == 0);
+
+    gb1.sim_slow(1);
+    gb2.sim_slow(1);
+
+    printf("%d %d\n", gb1.lcd.x(), gb1.lcd.y());
+    printf("%d %d\n", gb2.lcd.x(), gb2.lcd.y());
+
+    check_match(gb1, gb2);
+
+    check(gb1.lcd.x() == 1);
+    check(gb1.lcd.y() == 0);
+    check(gb2.lcd.x() == 1);
+    check(gb2.lcd.y() == 0);
 
     printf("test_reset3 pass\n");
   }

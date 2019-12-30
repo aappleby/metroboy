@@ -10,6 +10,9 @@ struct ResetSignals1 {
   static ResetSignals1 tick_slow(const SystemSignals& sys_sig,
                                  const ClockSignals1& clk_sig1,
                                  const ResetRegisters& rst_reg);
+  static ResetSignals1 tick_fast(const SystemSignals& sys_sig,
+                                 const ClockSignals1& clk_sig1,
+                                 const ResetRegisters& rst_reg);
 
   void reset() {
     RESET_CLK = false;
@@ -42,6 +45,8 @@ struct ResetSignals2 {
 
   static ResetSignals2 tick_slow(const SystemSignals& sys_sig,
                                  const ResetRegisters& rst_reg);
+  static ResetSignals2 tick_fast(const SystemSignals& sys_sig,
+                                 const ResetRegisters& rst_reg);
 
   void reset() {
     VID_RESETn = true;
@@ -65,6 +70,10 @@ struct ResetSignals2 {
 struct ResetRegisters {
 
   static void tock_slow(const SystemSignals& sys_sig,
+                        const ClockSignals1& clk_sig1,
+                        const ResetRegisters& rst_reg,
+                        ResetRegisters& next);
+  static void tock_fast(const SystemSignals& sys_sig,
                         const ClockSignals1& clk_sig1,
                         const ResetRegisters& rst_reg,
                         ResetRegisters& next);

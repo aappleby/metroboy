@@ -114,7 +114,11 @@ struct SystemSignals {
     clk_phase = (clk_phase + 1) & 7;
   }
 
-  int phase() const {
+  int phaseB() const {
+    return (clk_phase + 7) & 7;
+  }
+
+  int phaseC() const {
     return clk_phase;
   }
 

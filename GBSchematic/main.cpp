@@ -31,8 +31,8 @@ struct StructTest {
 #include <math.h>
 
 int main(int /*argc*/, char** /*argv*/) {
-  //TestLCD();
   TestClocks();
+  TestLCD();
   //TestSpriteSeq();
 
 #if 0

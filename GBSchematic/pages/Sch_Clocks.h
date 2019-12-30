@@ -3,12 +3,19 @@
 
 namespace Schematics {
 
+inline void check_phase_name(int phase, const bool val, char* name) {
+  bool expected = name[phase + 5] != 'x';
+  if (val != expected) {
+    printf("Phase of %s FAIL\n", name);
+    __debugbreak();
+  }
+}
 //-----------------------------------------------------------------------------
 // c.cpu.CLK_xBCDEFGH = BOWA_xBCDEFGH;
 
 struct ClockSignals1 {
-  static ClockSignals1 tick_slow(const SystemSignals& sys_sig, const ClockRegisters& clk);
-  static ClockSignals1 tick_fast(const SystemSignals& sys_sig);
+  static ClockSignals1 tick_slow(const SystemSignals& sys_sig, const ClockRegisters& clk_reg);
+  static ClockSignals1 tick_fast(const SystemSignals& sys_sig, const ClockRegisters& clk_reg);
 
   void reset() {
     *this = {
@@ -73,68 +80,60 @@ struct ClockSignals1 {
     };
   }
 
-  void check_phase(int phase, const bool val, char* name) {
-    bool expected = name[phase + 5] != 'x';
-    if (val != expected) {
-      printf("Phase of %s FAIL\n", name);
-      __debugbreak();
-    }
-  }
-
   void check_phase(int phase) {
-    check_phase(phase, ARYS_AxCxExGx, "ARYS_AxCxExGx");
-    check_phase(phase, ANOS_AxCxExGx, "ANOS_AxCxExGx");
-    check_phase(phase, AVET_xBxDxFxH, "AVET_xBxDxFxH");
-    check_phase(phase, ATAL_AxCxExGx, "ATAL_AxCxExGx");
-    check_phase(phase, AZOF_xBxDxFxH, "AZOF_xBxDxFxH");
-    check_phase(phase, ZAXY_AxCxExGx, "ZAXY_AxCxExGx");
-    check_phase(phase, ZEME_xBxDxFxH, "ZEME_xBxDxFxH");
-    check_phase(phase, ALET_AxCxExGx, "ALET_AxCxExGx");
-    check_phase(phase, MYVO_xBxDxFxH, "MYVO_xBxDxFxH");
-    check_phase(phase, XYVA_AxCxExGx, "XYVA_AxCxExGx");
-    check_phase(phase, XOTA_xBxDxFxH, "XOTA_xBxDxFxH");
-    check_phase(phase, MOXE_xBxDxFxH, "MOXE_xBxDxFxH");
-    check_phase(phase, MEHE_xBxDxFxH, "MEHE_xBxDxFxH");
-    check_phase(phase, LAPE_xBxDxFxH, "LAPE_xBxDxFxH");
-    check_phase(phase, TAVA_AxCxExGx, "TAVA_AxCxExGx");
-    check_phase(phase, XYFY_AxCxExGx, "XYFY_AxCxExGx");
+    check_phase_name(phase, ARYS_AxCxExGx, "ARYS_AxCxExGx");
+    check_phase_name(phase, ANOS_AxCxExGx, "ANOS_AxCxExGx");
+    check_phase_name(phase, AVET_xBxDxFxH, "AVET_xBxDxFxH");
+    check_phase_name(phase, ATAL_AxCxExGx, "ATAL_AxCxExGx");
+    check_phase_name(phase, AZOF_xBxDxFxH, "AZOF_xBxDxFxH");
+    check_phase_name(phase, ZAXY_AxCxExGx, "ZAXY_AxCxExGx");
+    check_phase_name(phase, ZEME_xBxDxFxH, "ZEME_xBxDxFxH");
+    check_phase_name(phase, ALET_AxCxExGx, "ALET_AxCxExGx");
+    check_phase_name(phase, MYVO_xBxDxFxH, "MYVO_xBxDxFxH");
+    check_phase_name(phase, XYVA_AxCxExGx, "XYVA_AxCxExGx");
+    check_phase_name(phase, XOTA_xBxDxFxH, "XOTA_xBxDxFxH");
+    check_phase_name(phase, MOXE_xBxDxFxH, "MOXE_xBxDxFxH");
+    check_phase_name(phase, MEHE_xBxDxFxH, "MEHE_xBxDxFxH");
+    check_phase_name(phase, LAPE_xBxDxFxH, "LAPE_xBxDxFxH");
+    check_phase_name(phase, TAVA_AxCxExGx, "TAVA_AxCxExGx");
+    check_phase_name(phase, XYFY_AxCxExGx, "XYFY_AxCxExGx");
 
-    check_phase(phase, PHAZ_ABCDxxxx, "PHAZ_ABCDxxxx");
-    check_phase(phase, PHAZ_xBCDExxx, "PHAZ_xBCDExxx");
-    check_phase(phase, PHAZ_xxCDEFxx, "PHAZ_xxCDEFxx");
-    check_phase(phase, PHAZ_xxxDEFGx, "PHAZ_xxxDEFGx");
-    check_phase(phase, AFEP_AxxxxFGH, "AFEP_AxxxxFGH");
-    check_phase(phase, ATYP_ABCDxxxx, "ATYP_ABCDxxxx");
-    check_phase(phase, ADAR_ABCxxxxH, "ADAR_ABCxxxxH");
-    check_phase(phase, AROV_xxCDEFxx, "AROV_xxCDEFxx");
-    check_phase(phase, AFAS_xxxxEFGx, "AFAS_xxxxEFGx");
+    check_phase_name(phase, PHAZ_ABCDxxxx, "PHAZ_ABCDxxxx");
+    check_phase_name(phase, PHAZ_xBCDExxx, "PHAZ_xBCDExxx");
+    check_phase_name(phase, PHAZ_xxCDEFxx, "PHAZ_xxCDEFxx");
+    check_phase_name(phase, PHAZ_xxxDEFGx, "PHAZ_xxxDEFGx");
+    check_phase_name(phase, AFEP_AxxxxFGH, "AFEP_AxxxxFGH");
+    check_phase_name(phase, ATYP_ABCDxxxx, "ATYP_ABCDxxxx");
+    check_phase_name(phase, ADAR_ABCxxxxH, "ADAR_ABCxxxxH");
+    check_phase_name(phase, AROV_xxCDEFxx, "AROV_xxCDEFxx");
+    check_phase_name(phase, AFAS_xxxxEFGx, "AFAS_xxxxEFGx");
 
-    check_phase(phase, NULE_xxxxEFGH, "NULE_xxxxEFGH");
-    check_phase(phase, BYRY_ABCDxxxx, "BYRY_ABCDxxxx");
-    check_phase(phase, BUDE_xxxxEFGH, "BUDE_xxxxEFGH");
-    check_phase(phase, DOVA_ABCDxxxx, "DOVA_ABCDxxxx");
-    check_phase(phase, UVYT_ABCDxxxx, "UVYT_ABCDxxxx");
-    check_phase(phase, BEKO_ABCDxxxx, "BEKO_ABCDxxxx");
-    check_phase(phase, MOPA_xxxxEFGH, "MOPA_xxxxEFGH");
+    check_phase_name(phase, NULE_xxxxEFGH, "NULE_xxxxEFGH");
+    check_phase_name(phase, BYRY_ABCDxxxx, "BYRY_ABCDxxxx");
+    check_phase_name(phase, BUDE_xxxxEFGH, "BUDE_xxxxEFGH");
+    check_phase_name(phase, DOVA_ABCDxxxx, "DOVA_ABCDxxxx");
+    check_phase_name(phase, UVYT_ABCDxxxx, "UVYT_ABCDxxxx");
+    check_phase_name(phase, BEKO_ABCDxxxx, "BEKO_ABCDxxxx");
+    check_phase_name(phase, MOPA_xxxxEFGH, "MOPA_xxxxEFGH");
 
-    check_phase(phase, BAPY_xxxxxxGH, "BAPY_xxxxxxGH");
-    check_phase(phase, BERU_ABCDEFxx, "BERU_ABCDEFxx");
-    check_phase(phase, BUFA_xxxxxxGH, "BUFA_xxxxxxGH");
-    check_phase(phase, BOLO_ABCDEFxx, "BOLO_ABCDEFxx");
-    check_phase(phase, BEJA_xxxxEFGH, "BEJA_xxxxEFGH");
-    check_phase(phase, BANE_ABCDxxxx, "BANE_ABCDxxxx");
-    check_phase(phase, BELO_xxxxEFGH, "BELO_xxxxEFGH");
-    check_phase(phase, BAZE_ABCDxxxx, "BAZE_ABCDxxxx");
-    check_phase(phase, BUTO_xBCDEFGH, "BUTO_xBCDEFGH");
-    check_phase(phase, BELE_Axxxxxxx, "BELE_Axxxxxxx");
+    check_phase_name(phase, BAPY_xxxxxxGH, "BAPY_xxxxxxGH");
+    check_phase_name(phase, BERU_ABCDEFxx, "BERU_ABCDEFxx");
+    check_phase_name(phase, BUFA_xxxxxxGH, "BUFA_xxxxxxGH");
+    check_phase_name(phase, BOLO_ABCDEFxx, "BOLO_ABCDEFxx");
+    check_phase_name(phase, BEJA_xxxxEFGH, "BEJA_xxxxEFGH");
+    check_phase_name(phase, BANE_ABCDxxxx, "BANE_ABCDxxxx");
+    check_phase_name(phase, BELO_xxxxEFGH, "BELO_xxxxEFGH");
+    check_phase_name(phase, BAZE_ABCDxxxx, "BAZE_ABCDxxxx");
+    check_phase_name(phase, BUTO_xBCDEFGH, "BUTO_xBCDEFGH");
+    check_phase_name(phase, BELE_Axxxxxxx, "BELE_Axxxxxxx");
 
-    check_phase(phase, BYJU_xBCDEFGH, "BYJU_xBCDEFGH");
-    check_phase(phase, BALY_Axxxxxxx, "BALY_Axxxxxxx");
-    check_phase(phase, BOGA_xBCDEFGH, "BOGA_xBCDEFGH");
-    check_phase(phase, BUVU_Axxxxxxx, "BUVU_Axxxxxxx");
-    check_phase(phase, BYXO_xBCDEFGH, "BYXO_xBCDEFGH");
-    check_phase(phase, BEDO_Axxxxxxx, "BEDO_Axxxxxxx");
-    check_phase(phase, BOWA_xBCDEFGH, "BOWA_xBCDEFGH");
+    check_phase_name(phase, BYJU_xBCDEFGH, "BYJU_xBCDEFGH");
+    check_phase_name(phase, BALY_Axxxxxxx, "BALY_Axxxxxxx");
+    check_phase_name(phase, BOGA_xBCDEFGH, "BOGA_xBCDEFGH");
+    check_phase_name(phase, BUVU_Axxxxxxx, "BUVU_Axxxxxxx");
+    check_phase_name(phase, BYXO_xBCDEFGH, "BYXO_xBCDEFGH");
+    check_phase_name(phase, BEDO_Axxxxxxx, "BEDO_Axxxxxxx");
+    check_phase_name(phase, BOWA_xBCDEFGH, "BOWA_xBCDEFGH");
   }
 
   // ungated
@@ -214,6 +213,17 @@ struct ClockSignals2 {
     /*p29.XOCE*/ XOCE_ABxxEFxx = 0;
   }
 
+  void check_phase(int phase) {
+    check_phase_name(phase, WUVU_AxxDExxH, "WUVU_AxxDExxH");
+    check_phase_name(phase, VENA_xBCDExxx, "VENA_xBCDExxx");
+    check_phase_name(phase, WOSU_xxCDxxGH, "WOSU_xxCDxxGH");
+    check_phase_name(phase, XUPY_xBCxxFGx, "XUPY_xBCxxFGx");
+    check_phase_name(phase, AWOH_AxxDExxH, "AWOH_AxxDExxH");
+    check_phase_name(phase, TALU_xBCDExxx, "TALU_xBCDExxx");
+    check_phase_name(phase, SONO_AxxxxFGH, "SONO_AxxxxFGH");
+    check_phase_name(phase, XOCE_ABxxEFxx, "XOCE_ABxxEFxx");
+  }
+
   /*p29.WUVU*/ bool WUVU_AxxDExxH;
   /*p21.VENA*/ bool VENA_xBCDExxx;
   /*p29.WOSU*/ bool WOSU_xxCDxxGH;
@@ -232,16 +242,19 @@ struct ClockRegisters {
                          const ClockSignals1& clk_sig1,
                          ClockRegisters& next);
 
+  static void tock_fast1(const SystemSignals& sys_sig,
+                         const ClockSignals1& clk_sig1,
+                         ClockRegisters& next);
+
   static void tock_slow2(const SystemSignals& sys_sig,
                          const ClockSignals1& clk_sig1,
                          const ClockSignals2& clk_sig2,
                          const ResetSignals2& rst_sig2,
                          ClockRegisters& next);
 
-  static void tock_fast1(const SystemSignals& sys_sig,
-                         ClockRegisters& next);
-
   static void tock_fast2(const SystemSignals& sys_sig,
+                         const ClockSignals1& clk_sig1,
+                         const ClockSignals2& clk_sig2,
                          const ResetSignals2& rst_sig2,
                          ClockRegisters& next);
 
@@ -255,6 +268,16 @@ struct ClockRegisters {
     WUVU_AxxDExxH.val = 1; WUVU_AxxDExxH.clk = 1;
     VENA_xBCDExxx.val = 0; VENA_xBCDExxx.clk = 0;
     WOSU_xxCDxxGH.val = 1; WOSU_xxCDxxGH.clk = 0;
+  }
+
+  void check_phase(int phase) {
+    check_phase_name(phase, PHAZ_ABCDxxxx, "PHAZ_ABCDxxxx");
+    check_phase_name(phase, PHAZ_xBCDExxx, "PHAZ_xBCDExxx");
+    check_phase_name(phase, PHAZ_xxCDEFxx, "PHAZ_xxCDEFxx");
+    check_phase_name(phase, PHAZ_xxxDEFGx, "PHAZ_xxxDEFGx");
+    check_phase_name(phase, WUVU_AxxDExxH, "WUVU_AxxDExxH");
+    check_phase_name(phase, VENA_xBCDExxx, "VENA_xBCDExxx");
+    check_phase_name(phase, WOSU_xxCDxxGH, "WOSU_xxCDxxGH");
   }
 
 private:

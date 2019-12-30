@@ -54,17 +54,13 @@ struct TestGB {
     rst_sig2.reset();
     rst_reg.reset();
 
-    lcd.reset();
+    lcd_sig.reset();
+    lcd_reg.reset();
 
     //bus.reset();
     //spr.reset();
     //dec.reset();
     //vid.reset();
-
-    //check(lcd.x() == 113);
-    //check(lcd.y() == 0);
-
-    alignment_pad = 0;
   }
 
   //----------------------------------------
@@ -80,6 +76,7 @@ struct TestGB {
         rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
         rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
         clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
+        lcd_sig  = LCDSignals::tick_slow(clk_sig2, rst_sig2, lcd_reg);
 
         //----------
         TestGB prev = *this;
@@ -87,7 +84,7 @@ struct TestGB {
         ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
         ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
         ResetRegisters::tock_slow(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
-        LCDRegisters::tick_slow(clk_sig2, rst_sig2, prev.lcd, lcd);
+        LCDRegisters::tock_slow(clk_sig2, rst_sig2, lcd_sig, prev.lcd_reg, lcd_reg);
       }
     }
   }
@@ -98,20 +95,18 @@ struct TestGB {
       sys_sig.next_phase();
 
       for (int pass = 0; pass < passes; pass++) {
-        //clk_sig1 = ClockSignals1::tick_fast(sys_sig);
-        clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
-        rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
-        rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
-        //clk_sig2 = ClockSignals2::tick_fast(sys_sig, rst_sig2, clk_reg);
-        clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
+        clk_sig1 = ClockSignals1::tick_fast(sys_sig, clk_reg);
+        rst_sig1 = ResetSignals1::tick_fast(sys_sig, clk_sig1, rst_reg);
+        rst_sig2 = ResetSignals2::tick_fast(sys_sig, rst_reg);
+        clk_sig2 = ClockSignals2::tick_fast(sys_sig, rst_sig2, clk_reg);
+        lcd_sig  = LCDSignals::tick_fast(clk_sig2, rst_sig2, lcd_reg);
 
         //----------
 
-        //ClockRegisters::tock_fast1(sys_sig, clk_reg);
-        ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
-        ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
-        ResetRegisters::tock_slow(sys_sig, clk_sig1, rst_reg, rst_reg);
-        LCDRegisters::tick_slow(clk_sig2, rst_sig2, lcd, lcd);
+        ClockRegisters::tock_fast1(sys_sig, clk_sig1, clk_reg);
+        ClockRegisters::tock_fast2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
+        ResetRegisters::tock_fast(sys_sig, clk_sig1, rst_reg, rst_reg);
+        LCDRegisters::tock_fast(clk_sig2, rst_sig2, lcd_sig, lcd_reg, lcd_reg);
       }
     }
   }
@@ -131,7 +126,8 @@ struct TestGB {
   ResetSignals2  rst_sig2;
   ResetRegisters rst_reg;
 
-  LCDRegisters   lcd;
+  LCDSignals     lcd_sig;
+  LCDRegisters   lcd_reg;
 
   /*
   //Sprites_tickScanner(clk_sig1, clk_sig2, prev.lcd, rst_sig1, prev.spr, spr);
@@ -143,7 +139,7 @@ struct TestGB {
   Video   vid;
   */
 
-  uint64_t alignment_pad = 0;
+  uint64_t alignment_pad;
 };
 
 //-----------------------------------------------------------------------------
@@ -174,7 +170,7 @@ __declspec(noinline) void check(bool x) {
 
 //----------------------------------------
 
-#if 1
+#if 0
 template<>
 void check_match(const TestGB& gb1, const TestGB& gb2) {
   check_match(gb1.sys_sig,    gb2.sys_sig);
@@ -185,7 +181,8 @@ void check_match(const TestGB& gb1, const TestGB& gb2) {
   check_match(gb1.rst_sig1,   gb2.rst_sig1);
   check_match(gb1.rst_reg,    gb2.rst_reg);
 
-  check_match(gb1.lcd, gb2.lcd);
+  check_match(gb1.lcd_sig, gb2.lcd_sig);
+  check_match(gb1.lcd_reg, gb2.lcd_reg);
 
   //check_match(gb1.bus, gb2.bus);
   //check_match(gb1.spr, gb2.spr);
@@ -207,20 +204,20 @@ void sim_fast_slow(TestGB& gb1, TestGB& gb2, int phases) {
 // After boot, we should be in phase 7 and 10 phases from x=1.
 
 void check_boot_phase_alignment(TestGB gb) {
-  check(gb.sys_sig.phase() == 7);
+  check(gb.sys_sig.phaseC() == 7);
 
-  check(gb.lcd.x() == 0);
-  check(gb.lcd.y() == 0);
+  check(gb.lcd_reg.x() == 0);
+  check(gb.lcd_reg.y() == 0);
 
   gb.sim_slow(9, 20);
 
-  check(gb.lcd.x() == 0);
-  check(gb.lcd.y() == 0);
+  check(gb.lcd_reg.x() == 0);
+  check(gb.lcd_reg.y() == 0);
 
   gb.sim_slow(1, 20);
 
-  check(gb.lcd.x() == 1);
-  check(gb.lcd.y() == 0);
+  check(gb.lcd_reg.x() == 1);
+  check(gb.lcd_reg.y() == 0);
 }
 
 //----------------------------------------
@@ -264,9 +261,10 @@ void test_reset() {
 
 void TestLCD() {
 
+  printf("\n");
   printf("TestGB size %zd\n", sizeof(TestGB));
-
   test_reset();
+  printf("\n");
 
   return;
 }

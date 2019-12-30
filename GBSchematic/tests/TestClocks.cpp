@@ -100,7 +100,7 @@ void labels() {
 
 void dump(int x, SystemSignals& sys_sig, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
   int line = 3;
-  plot2(x, line++, sys_sig.phase());
+  plot2(x, line++, sys_sig.phaseC());
   plot(x, line++, sys_sig.clk());
   line++;
 
@@ -177,6 +177,7 @@ void dump(int x, SystemSignals& sys_sig, ClockSignals1& clk_sig1, ClockSignals2&
 static int cursor = 20;
 
 void TestClocks() {
+  printf("TestClocks: ");
   printf("\033[?6l");
   labels();
 
@@ -191,22 +192,24 @@ void TestClocks() {
   for (int phase = 0; phase < 8; phase++) {
     sys_sig.next_phase();
 
+    ClockSignals1 clk_sig1;
+    ResetSignals1 rst_sig1;
+    ResetSignals2 rst_sig2;
+    ClockSignals2 clk_sig2;
+
     for (int pass = 0; pass < 12; pass++) {
-      ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
-      ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
-      ResetSignals2 rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
-      ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
+      clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
+      rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
+      rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
+      clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
       
       ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
       ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
     }
 
-    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
-    ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
-    ResetSignals2 rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
-    ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
-
-    clk_sig1.check_phase(sys_sig.phase());
+    clk_reg.check_phase(sys_sig.phaseC());
+    clk_sig1.check_phase(sys_sig.phaseC());
+    clk_sig2.check_phase(sys_sig.phaseC());
 
     dump(cursor++, sys_sig, clk_sig1, clk_sig2);
   }
@@ -257,5 +260,8 @@ void TestClocks() {
   cursor++;
   */
 
-  printAt(0, 70, "done");
+  //printAt(0, 70, "done");
+
+  printf("\n");
+  printf("pass\n");
 }

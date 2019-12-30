@@ -38,7 +38,8 @@ void TestGB::reset() {
   sys_sig.reset();
   clk_sig1.reset();
   clk_sig2.reset();
-  clk_reg.reset();
+  clk_reg1.reset();
+  clk_reg2.reset();
 
   rst_sig1.reset();
   rst_sig2.reset();
@@ -54,21 +55,21 @@ void TestGB::sim_slow(int phases) {
   for (int p = 0; p < phases; p++) {
     sys_sig.next_phase();
 
-    for (int pass = 0; pass < 20; pass++) {
+    for (int pass = 0; pass < 15; pass++) {
         
-      clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
-      rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
-      rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_sig1, rst_reg);
-      clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
-      lcd_sig  = LCDSignals::tick_slow(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+      clk_sig1.tick_slow(sys_sig, clk_reg1);
+      rst_sig1.tick_slow(sys_sig, clk_sig1, rst_reg);
+      rst_sig2.tick_slow(sys_sig, rst_sig1, rst_reg);
+      clk_sig2.tick_slow(sys_sig, rst_sig2, clk_reg2);
+      lcd_sig.tick_slow(sys_sig, clk_sig2, rst_sig2, lcd_reg);
 
       //----------
       TestGB prev = *this;
 
-      ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
-      ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
-      ResetRegisters::tock_slow(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
-      LCDRegisters::tock_slow(sys_sig, clk_sig2, rst_sig2, lcd_sig, prev.lcd_reg, lcd_reg);
+      clk_reg1.tock_slow(sys_sig, clk_sig1);
+      clk_reg2.tock_slow(sys_sig, clk_sig1, clk_sig2, rst_sig2);
+      rst_reg.tock_slow(sys_sig, clk_sig1, prev.rst_reg);
+      lcd_reg.tock_slow(sys_sig, clk_sig2, rst_sig2, lcd_sig, prev.lcd_reg);
     }
   }
 }
@@ -77,20 +78,47 @@ void TestGB::sim_fast(int phases) {
   for (int p = 0; p < phases; p++) {
     sys_sig.next_phase();
 
-    for (int pass = 0; pass < 20; pass++) {
-      clk_sig1 = ClockSignals1::tick_fast(sys_sig, clk_reg);
-      rst_sig1 = ResetSignals1::tick_fast(sys_sig, clk_sig1, rst_reg);
-      rst_sig2 = ResetSignals2::tick_fast(sys_sig, rst_sig1, rst_reg);
-      clk_sig2 = ClockSignals2::tick_fast(sys_sig, rst_sig2, clk_reg);
-      lcd_sig  = LCDSignals::tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    clk_sig1.tick_fast(sys_sig, clk_reg1);
+    clk_reg1.tock_fast(sys_sig, clk_sig1);
+    clk_sig1.tick_fast(sys_sig, clk_reg1);
 
-      //----------
+    // clk_reg1 locked
+    // clk_sig1 locked
 
-      ClockRegisters::tock_fast1(sys_sig, clk_sig1, clk_reg);
-      ClockRegisters::tock_fast2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
-      ResetRegisters::tock_fast(sys_sig, clk_sig1, rst_reg, rst_reg);
-      LCDRegisters::tock_fast(sys_sig, clk_sig2, rst_sig2, lcd_sig, lcd_reg, lcd_reg);
-    }
+    rst_reg.tock_fast (sys_sig, clk_sig1, rst_reg);
+
+    // rst_reg locked
+
+    rst_sig1.tick_fast(sys_sig, clk_sig1, rst_reg);
+
+    // rst_sig1 locked
+
+    rst_sig2.tick_fast(sys_sig, rst_sig1, rst_reg);
+
+    // rst_sig2 locked
+
+    clk_sig2.tick_fast(sys_sig, rst_sig2, clk_reg2);
+    clk_reg2.tock_fast(sys_sig, clk_sig1, clk_sig2, rst_sig2);
+    clk_sig2.tick_fast(sys_sig, rst_sig2, clk_reg2);
+    clk_reg2.tock_fast(sys_sig, clk_sig1, clk_sig2, rst_sig2);
+
+
+
+
+
+
+
+
+
+
+    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
+
+    clk_sig2.tick_fast(sys_sig, rst_sig2, clk_reg2);
+
+    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
+    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
+
+    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
   }
 }
 

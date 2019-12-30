@@ -28,7 +28,8 @@ struct Sprites;
 struct Video;
 struct VRAM;
 
-struct ClockRegisters;
+struct ClockRegisters1;
+struct ClockRegisters2;
 struct ClockSignals1;
 struct ClockSignals2;
 
@@ -180,6 +181,37 @@ struct SystemSignals {
   /*p01.BUTY*/ bool CPUCLK_REQ;
   /*p01.UCOB*/ bool CLK_BAD1;
   /*p01.ATEZ*/ bool CLK_BAD2;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Wire {
+  Wire() {
+    val = 0;
+  }
+
+  Wire(uint8_t x) {
+    val = x;
+  }
+
+  Wire operator !() {
+    return Wire(~val);
+  }
+
+  operator const bool() const { return val & 1; }
+
+  void reset(bool x) {
+    val = x ? 0xFF : 0x00;
+  }
+
+  void set(bool x) {
+    val = (val << 1) | uint8_t(x);
+  }
+
+  bool posedge() const { return (val & 3) == 1; }
+  bool negedge() const { return (val & 3) == 2; }
+
+  uint8_t val;
 };
 
 //-----------------------------------------------------------------------------

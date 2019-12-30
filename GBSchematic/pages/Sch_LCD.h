@@ -6,15 +6,15 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct LCDSignals {
-  static LCDSignals tick_slow(const SystemSignals& sys_sig,
-                              const ClockSignals2& clk_sig2,
-                              const ResetSignals2& rst_sig2,
-                              const LCDRegisters& lcd);
+  void tick_slow(const SystemSignals& sys_sig,
+                 const ClockSignals2& clk_sig2,
+                 const ResetSignals2& rst_sig2,
+                 const LCDRegisters& lcd);
 
-  static LCDSignals tick_fast(const SystemSignals& sys_sig,
-                              const ClockSignals2& clk_sig2,
-                              const ResetSignals2& rst_sig2,
-                              const LCDRegisters& lcd);
+  void tick_fast(const SystemSignals& sys_sig,
+                 const ClockSignals2& clk_sig2,
+                 const ResetSignals2& rst_sig2,
+                 const LCDRegisters& lcd);
 
   // ResetRegisters to immediately before the first phase on the first line
   void reset() {
@@ -38,19 +38,15 @@ struct LCDSignals {
 
 struct LCDRegisters {
 
-  static void tock_slow(const SystemSignals& sys_sig,
-                        const ClockSignals2& clk_sig2,
-                        const ResetSignals2& rst_sig2,
-                        const LCDSignals& /*lcd_sig*/,
-                        const LCDRegisters& lcd,
-                        LCDRegisters& next);
+  void tock_slow(const SystemSignals& sys_sig,
+                 const ClockSignals2& clk_sig2,
+                 const ResetSignals2& rst_sig2,
+                 const LCDSignals& /*lcd_sig*/,
+                 const LCDRegisters& lcd);
 
-  static void tock_fast(const SystemSignals& sys_sig,
-                        const ClockSignals2& clk_sig2,
-                        const ResetSignals2& rst_sig2,
-                        const LCDSignals& /*lcd_sig*/,
-                        const LCDRegisters& lcd,
-                        LCDRegisters& next);
+  void tock_fast(const SystemSignals& sys_sig,
+                 const ClockSignals2& clk_sig2,
+                 const ResetSignals2& rst_sig2);
 
   // ResetRegisters to immediately before the first phase on the first line
   void reset() {

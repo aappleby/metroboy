@@ -4,13 +4,15 @@
 #include "Sch_Pins.h"
 #include "Sch_Clocks.h"
 
+#pragma warning(disable:4458)
+
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-ResetSignals1 ResetSignals1::tick_slow(const SystemSignals& sys_sig,
-                                       const ClockSignals1& clk_sig1,
-                                       const ResetRegisters& rst_reg) {
+void ResetSignals1::tick_slow(const SystemSignals& sys_sig,
+                              const ClockSignals1& clk_sig1,
+                              const ResetRegisters& rst_reg) {
 
   /*p01.UPYF*/ wire UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
   /*p01.TUBO*/ bool WAITING_FOR_CLKREQ = rst_reg.WAITING_FOR_CLKREQ;
@@ -34,27 +36,24 @@ ResetSignals1 ResetSignals1::tick_slow(const SystemSignals& sys_sig,
   /*p01.WALU*/ wire WALU_RESET  = not(XORE_RESET);
   /*p01.XARE*/ wire XARE_RESET  = not(XORE_RESET);
 
-  ResetSignals1 rst_sig;
+  ResetSignals1& next = *this;
 
-  /*p01.BOMA*/ rst_sig.RESET_CLK   = RESET_CLK;
-  /*p01.ALUR*/ rst_sig.SYS_RESETn  = SYS_RESETn;
-  /*p01.DULA*/ rst_sig.SYS_RESET   = SYS_RESET;
-  /*p01.CUNU*/ rst_sig.CUNU_RESETn = CUNU_RESETn;
-  /*p01.WESY*/ rst_sig.WESY_RESET  = WESY_RESET;
-  /*p01.WALU*/ rst_sig.WALU_RESET  = WALU_RESET;
-  /*p01.XARE*/ rst_sig.XARE_RESET  = XARE_RESET;
-  /*p01.SOTO*/ rst_sig.SOTO_RESET  = SOTO_RESET;
-
-  return rst_sig;
+  /*p01.BOMA*/ next.RESET_CLK   = RESET_CLK;
+  /*p01.ALUR*/ next.SYS_RESETn  = SYS_RESETn;
+  /*p01.DULA*/ next.SYS_RESET   = SYS_RESET;
+  /*p01.CUNU*/ next.CUNU_RESETn = CUNU_RESETn;
+  /*p01.WESY*/ next.WESY_RESET  = WESY_RESET;
+  /*p01.WALU*/ next.WALU_RESET  = WALU_RESET;
+  /*p01.XARE*/ next.XARE_RESET  = XARE_RESET;
+  /*p01.SOTO*/ next.SOTO_RESET  = SOTO_RESET;
 }
 
 //----------------------------------------
 
-ResetSignals1 ResetSignals1::tick_fast(const SystemSignals& sys_sig,
-                                       const ClockSignals1& clk_sig1,
-                                       const ResetRegisters& rst_reg) {
-  ResetSignals1 rst_sig;
-  rst_sig.RESET_CLK = not(clk_sig1.BOGA_xBCDEFGH);
+void ResetSignals1::tick_fast(const SystemSignals& sys_sig,
+                              const ClockSignals1& clk_sig1,
+                              const ResetRegisters& rst_reg) {
+  RESET_CLK = not(clk_sig1.BOGA_xBCDEFGH);
 
   // polarity here seems weird
   /*p01.UPYF*/ wire UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
@@ -66,24 +65,22 @@ ResetSignals1 ResetSignals1::tick_fast(const SystemSignals& sys_sig,
 
   bool RESET = TIMEOUT || rst_reg.RESET_REG || sys_sig.RST || sys_sig.MODE_DBG1 || sys_sig.MODE_DBG2;
 
-  rst_sig.SYS_RESETn  = !RESET;
-  rst_sig.SYS_RESET   =  RESET;
-  rst_sig.CUNU_RESETn = !RESET;
-  rst_sig.WESY_RESET  = !RESET;
-  rst_sig.WALU_RESET  = !RESET;
-  rst_sig.XARE_RESET  = !RESET;
-  rst_sig.SOTO_RESET  = !RESET;
+  ResetSignals1& next = *this;
 
-  return rst_sig;
+  next.SYS_RESETn  = !RESET;
+  next.SYS_RESET   =  RESET;
+  next.CUNU_RESETn = !RESET;
+  next.WESY_RESET  = !RESET;
+  next.WALU_RESET  = !RESET;
+  next.XARE_RESET  = !RESET;
+  next.SOTO_RESET  = !RESET;
 }
 
 //-----------------------------------------------------------------------------
 
-ResetSignals2 ResetSignals2::tick_slow(const SystemSignals& sys_sig,
-                                       const ResetSignals1& rst_sig1,
-                                       const ResetRegisters& /*rst_reg*/) {
-  ResetSignals2 rst_sig;
-
+void ResetSignals2::tick_slow(const SystemSignals& sys_sig,
+                              const ResetSignals1& rst_sig1,
+                              const ResetRegisters& /*rst_reg*/) {
   /*p01.XORE*/ wire XORE_RESET  = not(rst_sig1.CUNU_RESETn);
   /*p01.XEBE*/ wire XEBE_RESET  = not(XORE_RESET);
   /*p01.XODO*/ wire XODO_RESET  = nand(XEBE_RESET, sys_sig.LCDC_EN);
@@ -94,41 +91,40 @@ ResetSignals2 ResetSignals2::tick_slow(const SystemSignals& sys_sig,
   /*p01.ATAR*/ wire VID_RESET6  = not(VID_RESETn);
   /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
 
-  /*p01.XAPO*/ rst_sig.VID_RESETn  = VID_RESETn;
-  /*p01.TOFU*/ rst_sig.VID_RESET3  = VID_RESET3;
-  /*p01.PYRY*/ rst_sig.VID_RESET4  = VID_RESET4;
-  /*p01.ROSY*/ rst_sig.VID_RESET5  = VID_RESET5;
-  /*p01.ATAR*/ rst_sig.VID_RESET6  = VID_RESET6;
-  /*p01.ABEZ*/ rst_sig.VID_RESETn3 = VID_RESETn3;
+  ResetSignals2& next = *this;
 
-  return rst_sig;
+  /*p01.XAPO*/ next.VID_RESETn  = VID_RESETn;
+  /*p01.TOFU*/ next.VID_RESET3  = VID_RESET3;
+  /*p01.PYRY*/ next.VID_RESET4  = VID_RESET4;
+  /*p01.ROSY*/ next.VID_RESET5  = VID_RESET5;
+  /*p01.ATAR*/ next.VID_RESET6  = VID_RESET6;
+  /*p01.ABEZ*/ next.VID_RESETn3 = VID_RESETn3;
 }
 
 //----------------------------------------
 
-ResetSignals2 ResetSignals2::tick_fast(const SystemSignals& sys_sig,
-                                       const ResetSignals1& rst_sig1,
-                                       const ResetRegisters& /*rst_reg*/) {
-  ResetSignals2 rst_sig;
-
+void ResetSignals2::tick_fast(const SystemSignals& sys_sig,
+                              const ResetSignals1& rst_sig1,
+                              const ResetRegisters& /*rst_reg*/) {
   wire VID_RESET  = nand(rst_sig1.SYS_RESETn, sys_sig.LCDC_EN);
 
-  rst_sig.VID_RESETn  = !VID_RESET;
-  rst_sig.VID_RESET3  =  VID_RESET;
-  rst_sig.VID_RESET4  =  VID_RESET;
-  rst_sig.VID_RESET5  =  VID_RESET;
-  rst_sig.VID_RESET6  =  VID_RESET;
-  rst_sig.VID_RESETn3 = !VID_RESET;
+  ResetSignals2& next = *this;
 
-  return rst_sig;
+  next.VID_RESETn  = !VID_RESET;
+  next.VID_RESET3  =  VID_RESET;
+  next.VID_RESET4  =  VID_RESET;
+  next.VID_RESET5  =  VID_RESET;
+  next.VID_RESET6  =  VID_RESET;
+  next.VID_RESETn3 = !VID_RESET;
 }
 
 //-----------------------------------------------------------------------------
 
 void ResetRegisters::tock_slow(const SystemSignals& sys_sig,
                                const ClockSignals1& clk_sig1,
-                               const ResetRegisters& rst_reg,
-                               ResetRegisters& next) {
+                               const ResetRegisters& rst_reg) {
+  ResetRegisters& next = *this;
+
   /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
   /*p01.TUBO*/ bool WAITING_FOR_CLKREQ2 = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : rst_reg.WAITING_FOR_CLKREQ;
   /*p01.BOMA*/ bool RESET_CLK   = not(clk_sig1.BOGA_xBCDEFGH);
@@ -145,10 +141,9 @@ void ResetRegisters::tock_slow(const SystemSignals& sys_sig,
 
 void ResetRegisters::tock_fast(const SystemSignals& sys_sig,
                                const ClockSignals1& clk_sig1,
-                               const ResetRegisters& rst_reg,
-                               ResetRegisters& next) {
+                               const ResetRegisters& /*rst_reg*/) {
+  ResetRegisters& next = *this;
 
-  next.WAITING_FOR_CLKREQ = rst_reg.WAITING_FOR_CLKREQ;
   if (sys_sig.CPUCLK_REQ) next.WAITING_FOR_CLKREQ = 0;
   if (!sys_sig.RST && !sys_sig.CLK_BAD1) next.WAITING_FOR_CLKREQ = 1;
   bool TIMEOUT = and(next.WAITING_FOR_CLKREQ, sys_sig.DIV_15);

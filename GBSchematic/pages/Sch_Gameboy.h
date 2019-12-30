@@ -38,7 +38,8 @@ struct Gameboy {
   int64_t timestamp;
 
   Cpu        cpu;
-  ClockRegisters     clk;
+  ClockRegisters1     clk_reg1;
+  ClockRegisters2     clk_reg2;
   ResetRegisters rst_reg;
   ResetSignals1   rst_sig;
   Bus        bus;

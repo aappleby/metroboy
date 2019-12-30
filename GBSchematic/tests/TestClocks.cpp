@@ -1,5 +1,4 @@
-#include "../pages/Sch_Clocks.h"
-#include "../pages/Sch_Resets.h"
+#include "TestGB.h"
 
 using namespace Schematics;
 
@@ -181,37 +180,12 @@ void TestClocks() {
   printf("\033[?6l");
   labels();
 
-  ClockRegisters clk_reg;
-  ResetRegisters rst_reg;
-  SystemSignals sys_sig;
-
-  clk_reg.reset();
-  rst_reg.reset();
-  sys_sig.reset();
+  TestGB gb;
+  gb.reset();
 
   for (int phase = 0; phase < 8; phase++) {
-    sys_sig.next_phase();
-
-    ClockSignals1 clk_sig1;
-    ResetSignals1 rst_sig1;
-    ResetSignals2 rst_sig2;
-    ClockSignals2 clk_sig2;
-
-    for (int pass = 0; pass < 12; pass++) {
-      clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
-      rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
-      rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_sig1, rst_reg);
-      clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
-      
-      ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);
-      ClockRegisters::tock_slow2(sys_sig, clk_sig1, clk_sig2, rst_sig2, clk_reg);
-    }
-
-    clk_reg.check_phase(sys_sig.phaseC());
-    clk_sig1.check_phase(sys_sig.phaseC());
-    clk_sig2.check_phase(sys_sig.phaseC());
-
-    dump(cursor++, sys_sig, clk_sig1, clk_sig2);
+    gb.sim_slow(1);
+    dump(cursor++, gb.sys_sig, gb.clk_sig1, gb.clk_sig2);
   }
 
   /*

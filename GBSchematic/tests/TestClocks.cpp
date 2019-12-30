@@ -200,7 +200,7 @@ void TestClocks() {
     for (int pass = 0; pass < 12; pass++) {
       clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
       rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
-      rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
+      rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_sig1, rst_reg);
       clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
       
       ClockRegisters::tock_slow1(sys_sig, clk_sig1, clk_reg);

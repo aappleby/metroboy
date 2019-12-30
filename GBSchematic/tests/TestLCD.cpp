@@ -74,7 +74,7 @@ struct TestGB {
         
         clk_sig1 = ClockSignals1::tick_slow(sys_sig, clk_reg);
         rst_sig1 = ResetSignals1::tick_slow(sys_sig, clk_sig1, rst_reg);
-        rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_reg);
+        rst_sig2 = ResetSignals2::tick_slow(sys_sig, rst_sig1, rst_reg);
         clk_sig2 = ClockSignals2::tick_slow(rst_sig2, clk_reg);
         lcd_sig  = LCDSignals::tick_slow(clk_sig2, rst_sig2, lcd_reg);
 
@@ -86,6 +86,12 @@ struct TestGB {
         ResetRegisters::tock_slow(sys_sig, clk_sig1, prev.rst_reg, rst_reg);
         LCDRegisters::tock_slow(clk_sig2, rst_sig2, lcd_sig, prev.lcd_reg, lcd_reg);
       }
+
+      /*
+      if (clk_sig1.BELE_Axxxxxxx) {
+        printf("%d", sys_sig.phaseC());
+      }
+      */
     }
   }
 
@@ -97,7 +103,7 @@ struct TestGB {
       for (int pass = 0; pass < passes; pass++) {
         clk_sig1 = ClockSignals1::tick_fast(sys_sig, clk_reg);
         rst_sig1 = ResetSignals1::tick_fast(sys_sig, clk_sig1, rst_reg);
-        rst_sig2 = ResetSignals2::tick_fast(sys_sig, rst_reg);
+        rst_sig2 = ResetSignals2::tick_fast(sys_sig, rst_sig1, rst_reg);
         clk_sig2 = ClockSignals2::tick_fast(sys_sig, rst_sig2, clk_reg);
         lcd_sig  = LCDSignals::tick_fast(clk_sig2, rst_sig2, lcd_reg);
 

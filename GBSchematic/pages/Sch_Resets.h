@@ -44,8 +44,10 @@ struct ResetSignals1 {
 struct ResetSignals2 {
 
   static ResetSignals2 tick_slow(const SystemSignals& sys_sig,
+                                 const ResetSignals1& rst_sig1,
                                  const ResetRegisters& rst_reg);
   static ResetSignals2 tick_fast(const SystemSignals& sys_sig,
+                                 const ResetSignals1& rst_sig1,
                                  const ResetRegisters& rst_reg);
 
   void reset() {
@@ -79,12 +81,12 @@ struct ResetRegisters {
                         ResetRegisters& next);
 
   void reset() {
-    BAD_CLOCK_LATCH = true;
+    WAITING_FOR_CLKREQ = true;
     RESET_REG.val = false;
     RESET_REG.clk = false;
   };
 
-  /*p01.TUBO*/ bool BAD_CLOCK_LATCH;
+  /*p01.TUBO*/ bool WAITING_FOR_CLKREQ;
   /*p01.AFER*/ Reg  RESET_REG;
 };
 

@@ -12,6 +12,7 @@ void Sprites_tick(const Pins& pins,
                   const ClockSignals1& clk_sig1,
                   const ClockSignals2& clk_sig2,
                   const DMA& dma,
+                  const LCDSignals& lcd_sig,
                   const LCDRegisters& lcd,
                   const OAM& oam,
                   const Video& vid,
@@ -49,7 +50,7 @@ void Sprites_tick(const Pins& pins,
 
     {
       /*p29.TOMA*/ wire SEQ_CLK = nand(clk_sig1.LAPE_xBxDxFxH, SEQ_5n);
-      /*p27.SECA*/ wire SPR_SEQ_RST = nor(vid.SPRITE_FETCH_TRIG, rst_sig2.VID_RESET5, lcd.VID_LINE_TRIG_d4n);
+      /*p27.SECA*/ wire SPR_SEQ_RST = nor(vid.SPRITE_FETCH_TRIG, rst_sig2.VID_RESET5, lcd_sig.VID_LINE_TRIG_d4n);
       /*p29.TOXE*/ next.SPR_SEQ0.tock(SEQ_CLK,       SPR_SEQ_RST, !spr.SPR_SEQ0);
       /*p29.TULY*/ next.SPR_SEQ1.tock(!spr.SPR_SEQ0, SPR_SEQ_RST, !spr.SPR_SEQ1);
       /*p29.TESE*/ next.SPR_SEQ2.tock(!spr.SPR_SEQ1, SPR_SEQ_RST, !spr.SPR_SEQ2);
@@ -177,7 +178,7 @@ void Sprites_tick(const Pins& pins,
 
 void Sprites_tickScanner(const ClockSignals1& clk_sig1,
                          const ClockSignals2& clk_sig2,
-                         const LCDRegisters& lcd,
+                         const LCDSignals& lcd_sig,
                          const ResetSignals2& rst_sig2,
                          const Sprites& spr,
                          
@@ -191,7 +192,7 @@ void Sprites_tickScanner(const ClockSignals1& clk_sig1,
 
     // ANOM = nor(ATEJ, ATAR);
 
-    /*p28.ANOM*/ wire SCAN_RSTn = nor(lcd.VID_LINE_TRIG_d4a, rst_sig2.VID_RESET6);
+    /*p28.ANOM*/ wire SCAN_RSTn = nor(lcd_sig.VID_LINE_TRIG_d4a, rst_sig2.VID_RESET6);
     /*p29.BALU*/ wire SCAN_RSTa = not(SCAN_RSTn);
     /*p29.BAGY*/ wire SCAN_RSTo = not(SCAN_RSTa);
 

@@ -6,13 +6,15 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct LCDSignals {
-  static LCDSignals tick_slow(const ClockSignals2& clk_sig2,
-                        const ResetSignals2& rst_sig2,
-                        const LCDRegisters& lcd);
+  static LCDSignals tick_slow(const SystemSignals& sys_sig,
+                              const ClockSignals2& clk_sig2,
+                              const ResetSignals2& rst_sig2,
+                              const LCDRegisters& lcd);
 
-  static LCDSignals tick_fast(const ClockSignals2& clk_sig2,
-                             const ResetSignals2& rst_sig2,
-                             const LCDRegisters& lcd);
+  static LCDSignals tick_fast(const SystemSignals& sys_sig,
+                              const ClockSignals2& clk_sig2,
+                              const ResetSignals2& rst_sig2,
+                              const LCDRegisters& lcd);
 
   // ResetRegisters to immediately before the first phase on the first line
   void reset() {
@@ -36,13 +38,15 @@ struct LCDSignals {
 
 struct LCDRegisters {
 
-  static void tock_slow(const ClockSignals2& clk_sig2,
+  static void tock_slow(const SystemSignals& sys_sig,
+                        const ClockSignals2& clk_sig2,
                         const ResetSignals2& rst_sig2,
                         const LCDSignals& /*lcd_sig*/,
                         const LCDRegisters& lcd,
                         LCDRegisters& next);
 
-  static void tock_fast(const ClockSignals2& clk_sig2,
+  static void tock_fast(const SystemSignals& sys_sig,
+                        const ClockSignals2& clk_sig2,
                         const ResetSignals2& rst_sig2,
                         const LCDSignals& /*lcd_sig*/,
                         const LCDRegisters& lcd,
@@ -66,13 +70,6 @@ struct LCDRegisters {
     Y6.val=false; Y6.clk=true;
     Y7.val=false; Y7.clk=true;
 
-    VBLANK_d4b = true;
-		VID_LINE_TRIG_d4n = 1;
-		VID_LINE_TRIG_d4a = 0;
-		VID_LINE_TRIG_d4p = 1;
-		VID_LINE_TRIG_d4c = 0;
-		VID_LINE_TRIG_d4o = 1;
-
     VID_LINE_d4.val  = false; VID_LINE_d4.clk  = false; 
     VID_LINE_d6.val  = false; VID_LINE_d6.clk  = true;
     NEW_LINE_d0a.val = true;  NEW_LINE_d0a.clk = true;
@@ -88,6 +85,32 @@ struct LCDRegisters {
 
   uint32_t y() const {
     return (Y0 << 0) | (Y1 << 1) | (Y2 << 2) | (Y3 << 3) | (Y4 << 4) | (Y5 << 5) | (Y6 << 6) | (Y7 << 7);
+  }
+
+  static void check_match(const LCDRegisters& a, const LCDRegisters& b) {
+    check(a.X0.val == b.X0.val);
+    check(a.X1.val == b.X1.val);
+    check(a.X2.val == b.X2.val);
+    check(a.X3.val == b.X3.val);
+    check(a.X4.val == b.X4.val);
+    check(a.X5.val == b.X5.val);
+    check(a.X6.val == b.X6.val);
+
+    check(a.Y0.val == b.Y0.val);
+    check(a.Y1.val == b.Y1.val);
+    check(a.Y2.val == b.Y2.val);
+    check(a.Y3.val == b.Y3.val);
+    check(a.Y4.val == b.Y4.val);
+    check(a.Y5.val == b.Y5.val);
+    check(a.Y6.val == b.Y6.val);
+    check(a.Y7.val == b.Y7.val);
+
+    check(a.VID_LINE_d4.val  == b.VID_LINE_d4.val);
+    check(a.VID_LINE_d6.val  == b.VID_LINE_d6.val);
+    check(a.NEW_LINE_d0a.val == b.NEW_LINE_d0a.val);
+    check(a.NEW_LINE_d4a.val == b.NEW_LINE_d4a.val);
+    check(a.LINE_153_d4.val  == b.LINE_153_d4.val);
+    check(a.VBLANK_d4.val    == b.VBLANK_d4.val);
   }
 
   /*p21.SAXO*/ Reg X0;
@@ -106,13 +129,6 @@ struct LCDRegisters {
   /*p21.LEMA*/ Reg Y5;
   /*p21.MATO*/ Reg Y6;
   /*p21.LAFO*/ Reg Y7;
-
-  /*p21.PARU*/ bool VBLANK_d4b;
-  /*p28.BYHA*/ bool VID_LINE_TRIG_d4n;
-  /*p28.ATEJ*/ bool VID_LINE_TRIG_d4a;
-  /*p28.BYVA*/ bool VID_LINE_TRIG_d4p;
-  /*p29.DYBA*/ bool VID_LINE_TRIG_d4c;
-  /*p27.XAHY*/ bool VID_LINE_TRIG_d4o;
 
   /*p29.CATU*/ Reg VID_LINE_d4;
   /*p28.ANEL*/ Reg VID_LINE_d6;

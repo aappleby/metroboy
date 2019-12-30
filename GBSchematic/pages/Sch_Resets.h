@@ -86,6 +86,11 @@ struct ResetRegisters {
     RESET_REG.clk = false;
   };
 
+  static void check_match(const ResetRegisters& a, const ResetRegisters& b) {
+    check(a.WAITING_FOR_CLKREQ == b.WAITING_FOR_CLKREQ);
+    check(a.RESET_REG.val == b.RESET_REG.val);
+  }
+
   /*p01.TUBO*/ bool WAITING_FOR_CLKREQ;
   /*p01.AFER*/ Reg  RESET_REG;
 };

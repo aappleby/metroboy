@@ -280,6 +280,17 @@ struct ClockRegisters {
     check_phase_name(phase, WOSU_xxCDxxGH, "WOSU_xxCDxxGH");
   }
 
+  static void check_match(const ClockRegisters& a, const ClockRegisters& b) {
+    check(a.PHAZ_ABCDxxxx.val == b.PHAZ_ABCDxxxx.val);
+    check(a.PHAZ_xBCDExxx.val == b.PHAZ_xBCDExxx.val);
+    check(a.PHAZ_xxCDEFxx.val == b.PHAZ_xxCDEFxx.val);
+    check(a.PHAZ_xxxDEFGx.val == b.PHAZ_xxxDEFGx.val);
+
+    check(a.WUVU_AxxDExxH.val == b.WUVU_AxxDExxH.val);
+    check(a.VENA_xBCDExxx.val == b.VENA_xBCDExxx.val);
+    check(a.WOSU_xxCDxxGH.val == b.WOSU_xxCDxxGH.val);
+  }
+
 private:
 
   friend struct ClockSignals1;

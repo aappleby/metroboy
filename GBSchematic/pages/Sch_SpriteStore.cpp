@@ -48,7 +48,7 @@ void SpriteMatcher_tick(const Sprites& spr,
 
 //----------
 
-void SpriteMatcher_tock(const LCDRegisters& lcd,
+void SpriteMatcher_tock(const LCDSignals& lcd_sig,
                         const Sprites& spr,
                         const SpriteIndexLine& sil,
                         const OAM& oam,
@@ -63,9 +63,9 @@ void SpriteMatcher_tock(const LCDRegisters& lcd,
   /*p29.DECU*/ wire STORE_CLKn = not(STORE_CLK);
 
   /*p29.GUZE*/ wire SPRITE_GETn = nor(sst.MATCHn, MATCH_CHAINn);
-  /*p29.FONO*/ next.SPRITE_GET_SYNCn.tock(spr.SPRITE_DONE, lcd.VID_LINE_TRIG_d4p, SPRITE_GETn);
+  /*p29.FONO*/ next.SPRITE_GET_SYNCn.tock(spr.SPRITE_DONE, lcd_sig.VID_LINE_TRIG_d4p, SPRITE_GETn);
 
-  /*p29.DUBU*/ wire STORE_RST  = or(lcd.VID_LINE_TRIG_d4c, sst.SPRITE_GET_SYNCn);
+  /*p29.DUBU*/ wire STORE_RST  = or(lcd_sig.VID_LINE_TRIG_d4c, sst.SPRITE_GET_SYNCn);
   /*p29.DOSY*/ wire STORE_RSTn = not(STORE_RST);
     
   /*p29.WEME*/ wire STORE_CLKa = not(STORE_CLKn);
@@ -124,7 +124,7 @@ void SpriteStore_tock(const SpriteStore& sst,
                       const ClockSignals1& clk,
                       const Sprites& spr,
                       const ResetSignals2& rst_sig2,
-                      const LCDRegisters& lcd,
+                      const LCDSignals& lcd_sig,
                       const OAM& oam,
 
                       SpriteStore& next) {
@@ -133,7 +133,7 @@ void SpriteStore_tock(const SpriteStore& sst,
 
   /*p29.BAKY*/ wire SPRITES_FULL = and(sst.SPRITE_COUNT1, sst.SPRITE_COUNT3);
   /*p29.CAKE*/ wire SPRITE_COUNT_CLK = or(SPRITES_FULL, sst.STORE_EN_SYNC);
-  /*p28.AZYB*/ wire SPRITE_COUNT_RSTn = not(lcd.VID_LINE_TRIG_d4n);
+  /*p28.AZYB*/ wire SPRITE_COUNT_RSTn = not(lcd_sig.VID_LINE_TRIG_d4n);
   /*p29.BESE*/ next.SPRITE_COUNT0.tock(SPRITE_COUNT_CLK,  SPRITE_COUNT_RSTn, !sst.SPRITE_COUNT0);
   /*p29.CUXY*/ next.SPRITE_COUNT1.tock(sst.SPRITE_COUNT0, SPRITE_COUNT_RSTn, !sst.SPRITE_COUNT1);
   /*p29.BEGO*/ next.SPRITE_COUNT2.tock(sst.SPRITE_COUNT1, SPRITE_COUNT_RSTn, !sst.SPRITE_COUNT2);
@@ -160,16 +160,16 @@ void SpriteStore_tock(const SpriteStore& sst,
   /*p29.DEWY*/ wire STORE8_SEL = nand(SPRITE_COUNT0n, SPRITE_COUNT1n, SPRITE_COUNT2n, SPRITE_COUNT3b);
   /*p29.DOGU*/ wire STORE9_SEL = nand(SPRITE_COUNT0b, SPRITE_COUNT1n, SPRITE_COUNT2n, SPRITE_COUNT3b);
 
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE0_SEL, false,             sst.store0, next.store0);
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE1_SEL, sst.store0.MATCHn, sst.store1, next.store1);
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE2_SEL, sst.store1.MATCHn, sst.store2, next.store2);
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE3_SEL, sst.store2.MATCHn, sst.store3, next.store3);
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE4_SEL, sst.store3.MATCHn, sst.store4, next.store4);
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE5_SEL, sst.store4.MATCHn, sst.store5, next.store5);
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE6_SEL, sst.store5.MATCHn, sst.store6, next.store6);
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE7_SEL, sst.store6.MATCHn, sst.store7, next.store7);
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE8_SEL, sst.store7.MATCHn, sst.store8, next.store8);
-  SpriteMatcher_tock(lcd, spr, sst.sil, oam, STORE9_SEL, sst.store8.MATCHn, sst.store9, next.store9);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE0_SEL, false,             sst.store0, next.store0);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE1_SEL, sst.store0.MATCHn, sst.store1, next.store1);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE2_SEL, sst.store1.MATCHn, sst.store2, next.store2);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE3_SEL, sst.store2.MATCHn, sst.store3, next.store3);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE4_SEL, sst.store3.MATCHn, sst.store4, next.store4);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE5_SEL, sst.store4.MATCHn, sst.store5, next.store5);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE6_SEL, sst.store5.MATCHn, sst.store6, next.store6);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE7_SEL, sst.store6.MATCHn, sst.store7, next.store7);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE8_SEL, sst.store7.MATCHn, sst.store8, next.store8);
+  SpriteMatcher_tock(lcd_sig, spr, sst.sil, oam, STORE9_SEL, sst.store8.MATCHn, sst.store9, next.store9);
 }
 
 

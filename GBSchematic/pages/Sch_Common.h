@@ -37,6 +37,29 @@ struct ResetSignals1;
 struct ResetSignals2;
 
 struct LCDRegisters;
+struct LCDSignals;
+
+//-----------------------------------------------------------------------------
+
+template<typename T>
+inline void check_byte_match(const T& a, const T& b) {
+  uint8_t* blobA = (uint8_t*)&a;
+  uint8_t* blobB = (uint8_t*)&b;
+
+  for (int i = 0; i < sizeof(T); i++) {
+    if (blobA[i] != blobB[i]) {
+      printf("Mismatch at %d - 0x%02x 0x%02x", i, blobA[i], blobB[i]);
+      __debugbreak();
+    }
+  }
+}
+
+inline void check(bool x) {
+  if (!x) {
+    printf("check failed\n");
+    __debugbreak();
+  }
+}
 
 //-----------------------------------------------------------------------------
 
@@ -126,6 +149,11 @@ struct SystemSignals {
     return !(clk_phase & 1);
   }
 
+  static void check_match(const SystemSignals& a, const SystemSignals& b) {
+    return check_byte_match(a, b);
+  }
+
+  //----------------------------------------
   // master clock
   int clk_phase;
 

@@ -211,16 +211,27 @@ ClockSignals1 ClockSignals1::tick_fast(const SystemRegisters& sys_reg, const Clo
 //-----------------------------------------------------------------------------
 
 void ClockRegisters1::pwron() {
-  PHAZ_ABCDxxxx.val = 0; PHAZ_ABCDxxxx.clk = 0;
-  PHAZ_xBCDExxx.val = 0; PHAZ_xBCDExxx.clk = 0;
-  PHAZ_xxCDEFxx.val = 0; PHAZ_xxCDEFxx.clk = 0;
-  PHAZ_xxxDEFGx.val = 0; PHAZ_xxxDEFGx.clk = 0;
+  PHAZ_ABCDxxxx.pwron();
+  PHAZ_xBCDExxx.pwron();
+  PHAZ_xxCDEFxx.pwron();
+  PHAZ_xxxDEFGx.pwron();
+
+  PHAZ_ABCDxxxx2.pwron();
+  PHAZ_xBCDExxx2.pwron();
+  PHAZ_xxCDEFxx2.pwron();
+  PHAZ_xxxDEFGx2.pwron();
 }
+
 void ClockRegisters1::reset() {
-  PHAZ_ABCDxxxx.val = 0; PHAZ_ABCDxxxx.clk = 0;
-  PHAZ_xBCDExxx.val = 0; PHAZ_xBCDExxx.clk = 0;
-  PHAZ_xxCDEFxx.val = 0; PHAZ_xxCDEFxx.clk = 0;
-  PHAZ_xxxDEFGx.val = 0; PHAZ_xxxDEFGx.clk = 0;
+  PHAZ_ABCDxxxx.reset(0);
+  PHAZ_xBCDExxx.reset(0);
+  PHAZ_xxCDEFxx.reset(0);
+  PHAZ_xxxDEFGx.reset(0);
+
+  PHAZ_ABCDxxxx2.reset(0, 1, 0);
+  PHAZ_xBCDExxx2.reset(0, 1, 0);
+  PHAZ_xxCDEFxx2.reset(0, 1, 0);
+  PHAZ_xxxDEFGx2.reset(0, 1, 0);
 }
 
 void ClockRegisters1::check_phase(int phase) const {
@@ -231,10 +242,22 @@ void ClockRegisters1::check_phase(int phase) const {
 }
 
 void ClockRegisters1::check_match(const ClockRegisters1& a, const ClockRegisters1& b) {
-  check(a.PHAZ_ABCDxxxx.val == b.PHAZ_ABCDxxxx.val);
-  check(a.PHAZ_xBCDExxx.val == b.PHAZ_xBCDExxx.val);
-  check(a.PHAZ_xxCDEFxx.val == b.PHAZ_xxCDEFxx.val);
-  check(a.PHAZ_xxxDEFGx.val == b.PHAZ_xxxDEFGx.val);
+  check(a.PHAZ_ABCDxxxx == b.PHAZ_ABCDxxxx);
+  check(a.PHAZ_xBCDExxx == b.PHAZ_xBCDExxx);
+  check(a.PHAZ_xxCDEFxx == b.PHAZ_xxCDEFxx);
+  check(a.PHAZ_xxxDEFGx == b.PHAZ_xxxDEFGx);
+}
+
+void ClockRegisters1::commit() {
+  PHAZ_ABCDxxxx2.commit_duo();
+  PHAZ_xBCDExxx2.commit_duo();
+  PHAZ_xxCDEFxx2.commit_duo();
+  PHAZ_xxxDEFGx2.commit_duo();
+
+  check(PHAZ_ABCDxxxx2 == PHAZ_ABCDxxxx);
+  check(PHAZ_xBCDExxx2 == PHAZ_xBCDExxx);
+  check(PHAZ_xxCDEFxx2 == PHAZ_xxCDEFxx);
+  check(PHAZ_xxxDEFGx2 == PHAZ_xxxDEFGx);
 }
 
 //----------------------------------------
@@ -244,7 +267,6 @@ void ClockRegisters1::tock_slow(const SystemRegisters& sys_reg) {
   ClockRegisters1& next = *this;
 
   wire CLK = sys_reg.clk();
-
   /*p01.AVET*/ wire AVET_xBxDxFxH = not(CLK);
   /*p01.ATAL*/ wire ATAL_AxCxExGx = not(AVET_xBxDxFxH);
 
@@ -253,24 +275,33 @@ void ClockRegisters1::tock_slow(const SystemRegisters& sys_reg) {
   /*p01.ALEF*/ next.PHAZ_xBCDExxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx);
   /*p01.APUK*/ next.PHAZ_xxCDEFxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx);
   /*p01.ADYK*/ next.PHAZ_xxxDEFGx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx);
+
+  /*p01.AFUR*/ next.PHAZ_ABCDxxxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD, !prev.PHAZ_xxxDEFGx2);
+  /*p01.ALEF*/ next.PHAZ_xBCDExxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx2);
+  /*p01.APUK*/ next.PHAZ_xxCDEFxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx2);
+  /*p01.ADYK*/ next.PHAZ_xxxDEFGx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx2);
 }
 
 //----------------------------------------
 
 void ClockRegisters1::tock_fast(const SystemRegisters& sys_reg) {
-  int phase = sys_reg.phaseC();
+  ClockRegisters1 prev = *this;
+  ClockRegisters1& next = *this;
 
-  PHAZ_ABCDxxxx.val = (phase == 0) || (phase == 1) || (phase == 2) || (phase == 3);
-  PHAZ_xBCDExxx.val = (phase == 1) || (phase == 2) || (phase == 3) || (phase == 4);
-  PHAZ_xxCDEFxx.val = (phase == 2) || (phase == 3) || (phase == 4) || (phase == 5);
-  PHAZ_xxxDEFGx.val = (phase == 3) || (phase == 4) || (phase == 5) || (phase == 6);
+  wire CLK = sys_reg.clk();
+  /*p01.AVET*/ wire AVET_xBxDxFxH = not(CLK);
+  /*p01.ATAL*/ wire ATAL_AxCxExGx = not(AVET_xBxDxFxH);
 
-  if (!sys_reg.MODE_PROD) {
-    PHAZ_ABCDxxxx.val = 0;
-    PHAZ_xBCDExxx.val = 0;
-    PHAZ_xxCDEFxx.val = 0;
-    PHAZ_xxxDEFGx.val = 0;
-  }
+  // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
+  /*p01.AFUR*/ next.PHAZ_ABCDxxxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD, !prev.PHAZ_xxxDEFGx);
+  /*p01.ALEF*/ next.PHAZ_xBCDExxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx);
+  /*p01.APUK*/ next.PHAZ_xxCDEFxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx);
+  /*p01.ADYK*/ next.PHAZ_xxxDEFGx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx);
+
+  /*p01.AFUR*/ next.PHAZ_ABCDxxxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD, !prev.PHAZ_xxxDEFGx2);
+  /*p01.ALEF*/ next.PHAZ_xBCDExxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx2);
+  /*p01.APUK*/ next.PHAZ_xxCDEFxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx2);
+  /*p01.ADYK*/ next.PHAZ_xxxDEFGx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx2);
 }
 
 //-----------------------------------------------------------------------------

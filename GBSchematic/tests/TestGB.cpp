@@ -121,6 +121,8 @@ void TestGB::sim_slow(int phases) {
 
       LCDSignals lcd_sig = LCDSignals::tick_slow(sys_reg, clk_sig2, rst_sig2, lcd_reg);
       lcd_reg.tock_slow(sys_reg, clk_sig2, rst_sig2, lcd_sig);
+
+      clk_reg1.commit();
     }
   }
 }
@@ -166,6 +168,8 @@ void TestGB::sim_fast(int phases) {
     lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
 
     lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
+
+    clk_reg1.commit();
   }
 }
 

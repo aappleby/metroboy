@@ -219,6 +219,15 @@ struct Wire {
 struct Reg {
   operator const bool() const { return val; }
 
+  bool operator == (const Reg& b) const {
+    return val == b.val;
+  }
+
+  void pwron() {
+    val = 0;
+    clk = 0;
+  }
+
   void reset(bool clk_in) {
     val = 0;
     clk = clk_in;
@@ -252,6 +261,64 @@ struct Reg {
   bool val = 0;
   bool clk = 0;
 };
+
+//-----------------------------------------------------------------------------
+
+struct Reg2 {
+
+  void pwron() {
+    clk_a = clk_b = 0;
+    rst_a = rst_b = 0;
+    val_a = val_b = 0;
+  }
+
+  void reset(bool clk_in, bool rst_in, bool reg_in) {
+    clk_a = clk_b = clk_in;
+    rst_a = rst_b = rst_in;
+    val_a = val_b = reg_in;
+  }
+
+  void set(bool clk_in, bool rst_in, bool reg_in) {
+    clk_b = clk_in;
+    rst_b = rst_in;
+    val_b = reg_in;
+  }
+
+  void commit() {
+    if (!clk_a && clk_b) {
+      val_a = val_b;
+    }
+    if (!rst_b) {
+      val_a = 0;
+    }
+
+    clk_a = clk_b;
+    rst_a = rst_b;
+  }
+
+  void commit_duo() {
+    if (clk_a != clk_b) {
+      val_a = val_b;
+    }
+    if (!rst_b) {
+      val_a = 0;
+    }
+
+    clk_a = clk_b;
+    rst_a = rst_b;
+  }
+
+  operator const bool() const {
+    // not sure about the rst_b
+    return val_a & rst_b;
+  }
+
+  bool clk_a, clk_b;
+  bool rst_a, rst_b;
+  bool val_a, val_b;
+};
+
+//-----------------------------------------------------------------------------
 
 #if 0
 struct Reg8 {

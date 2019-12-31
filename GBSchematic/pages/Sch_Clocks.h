@@ -81,6 +81,7 @@ struct ClockRegisters1 {
   void reset();
   void check_phase(int phase) const;
   static void check_match(const ClockRegisters1& a, const ClockRegisters1& b);
+  void commit();
 
 //private:
 
@@ -91,6 +92,11 @@ struct ClockRegisters1 {
   /*p01.ALEF*/ Reg PHAZ_xBCDExxx;
   /*p01.APUK*/ Reg PHAZ_xxCDEFxx;
   /*p01.ADYK*/ Reg PHAZ_xxxDEFGx;
+
+  /*p01.AFUR*/ Reg2 PHAZ_ABCDxxxx2;
+  /*p01.ALEF*/ Reg2 PHAZ_xBCDExxx2;
+  /*p01.APUK*/ Reg2 PHAZ_xxCDEFxx2;
+  /*p01.ADYK*/ Reg2 PHAZ_xxxDEFGx2;
 };
 
 //-----------------------------------------------------------------------------

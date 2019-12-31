@@ -6,6 +6,7 @@ using namespace Schematics;
 
 void sim_fast_slow(TestGB& gb1, TestGB& gb2, int phases) {
   for (int i = 0; i < phases; i++) {
+    TestGB::check_match(gb1, gb2);
     gb1.sim_slow(1);
     gb2.sim_fast(1);
     TestGB::check_match(gb1, gb2);
@@ -16,7 +17,7 @@ void sim_fast_slow(TestGB& gb1, TestGB& gb2, int phases) {
 // After boot, we should be in phase 7 and 10 phases from x=1.
 
 void check_boot_phase_alignment(TestGB gb) {
-  check(gb.sys_sig.phaseC() == 7);
+  check(gb.sys_sig_c.phaseC() == 7);
 
   check(gb.lcd_reg.x() == 0);
   check(gb.lcd_reg.y() == 0);
@@ -43,20 +44,20 @@ void test_reset() {
 
   sim_fast_slow(gb1, gb2, 16);
 
-  gb1.sys_sig.set_rst(false);
-  gb2.sys_sig.set_rst(false);
+  gb1.sys_sig_c.set_rst(false);
+  gb2.sys_sig_c.set_rst(false);
   sim_fast_slow(gb1, gb2, 16);
 
-  gb1.sys_sig.set_clk_good(true);
-  gb2.sys_sig.set_clk_good(true);
+  gb1.sys_sig_c.set_clk_good(true);
+  gb2.sys_sig_c.set_clk_good(true);
   sim_fast_slow(gb1, gb2, 16);
 
-  gb1.sys_sig.set_clk_req(true);
-  gb2.sys_sig.set_clk_req(true);
+  gb1.sys_sig_c.set_clk_req(true);
+  gb2.sys_sig_c.set_clk_req(true);
   sim_fast_slow(gb1, gb2, 16);
 
-  gb1.sys_sig.set_lcdc_en(true);
-  gb2.sys_sig.set_lcdc_en(true);
+  gb1.sys_sig_c.set_lcdc_en(true);
+  gb2.sys_sig_c.set_lcdc_en(true);
 
   sim_fast_slow(gb1, gb2, 456*2*154 - 7);
   check_boot_phase_alignment(gb1);

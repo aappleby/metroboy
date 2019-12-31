@@ -12,24 +12,22 @@ struct TestGB {
   void pwron();
   void boot(bool fast);
   void reset();
+  
+  void update_signals(bool fast);
+  
+  static void check_signals(const TestGB& a, const TestGB& b);
+  static void check_states(const TestGB& a, const TestGB& b);
+  static void check_match(const TestGB& a, const TestGB& b);
+
   void sim_slow(int phases);
   void sim_fast(int phases);
-  void sim(int phases, bool fast);
 
-  static void check_match(const TestGB& a, const TestGB& b) {
-    SystemSignals::check_match(a.sys_sig,  b.sys_sig);
-    check_byte_match(a.clk_sig1, b.clk_sig1);
-    check_byte_match(a.clk_sig2, b.clk_sig2);
-    ClockRegisters1::check_match(a.clk_reg1,  b.clk_reg1);
-    ClockRegisters2::check_match(a.clk_reg2,  b.clk_reg2);
-    check_byte_match(a.rst_sig1, b.rst_sig1);
-    check_byte_match(a.rst_sig2, b.rst_sig2);
-    ResetRegisters::check_match(a.rst_reg,  b.rst_reg);
-    check_byte_match(a.lcd_sig,  b.lcd_sig);
-    LCDRegisters::check_match(a.lcd_reg,  b.lcd_reg);
+  void sim(int phases, bool fast) {
+    fast ? sim_fast(phases) : sim_slow(phases);
   }
 
-  SystemSignals   sys_sig;
+  SystemSignals   sys_sig_b;
+  SystemSignals   sys_sig_c;
 
   ClockSignals1   clk_sig1;
   ClockRegisters1 clk_reg1;

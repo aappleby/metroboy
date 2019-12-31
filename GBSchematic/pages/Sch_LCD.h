@@ -16,16 +16,6 @@ struct LCDSignals {
                  const ResetSignals2& rst_sig2,
                  const LCDRegisters& lcd);
 
-  // ResetRegisters to immediately before the first phase on the first line
-  void reset() {
-    VBLANK_d4b = true;
-		VID_LINE_TRIG_d4n = 1;
-		VID_LINE_TRIG_d4a = 0;
-		VID_LINE_TRIG_d4p = 1;
-		VID_LINE_TRIG_d4c = 0;
-		VID_LINE_TRIG_d4o = 1;
-  }
-
   /*p21.PARU*/ bool VBLANK_d4b;
   /*p28.BYHA*/ bool VID_LINE_TRIG_d4n;
   /*p28.ATEJ*/ bool VID_LINE_TRIG_d4a;
@@ -48,32 +38,13 @@ struct LCDRegisters {
                  const ClockSignals2& clk_sig2,
                  const ResetSignals2& rst_sig2);
 
-  // ResetRegisters to immediately before the first phase on the first line
-  void reset() {
-    X0.val=false; X0.clk=false;
-    X1.val=false; X1.clk=true;
-    X2.val=false; X2.clk=true;
-    X3.val=false; X3.clk=true;
-    X4.val=false; X4.clk=true;
-    X5.val=false; X5.clk=true;
-    X6.val=false; X6.clk=true;
-    Y0.val=false; Y0.clk=true;
-    Y1.val=false; Y1.clk=true;
-    Y2.val=false; Y2.clk=true;
-    Y3.val=false; Y3.clk=true;
-    Y4.val=false; Y4.clk=true;
-    Y5.val=false; Y5.clk=true;
-    Y6.val=false; Y6.clk=true;
-    Y7.val=false; Y7.clk=true;
+  void tock_fast2(const SystemSignals& sys_sig,
+                  const ClockSignals2& clk_sig2,
+                  const ResetSignals2& rst_sig2);
 
-    VID_LINE_d4.val  = false; VID_LINE_d4.clk  = false; 
-    VID_LINE_d6.val  = false; VID_LINE_d6.clk  = true;
-    NEW_LINE_d0a.val = true;  NEW_LINE_d0a.clk = true;
-    NEW_LINE_d4a.val = false; NEW_LINE_d4a.clk = false;
-    LINE_153_d4.val  = true;  LINE_153_d4.clk  = false;
-    VBLANK_d4.val    = true;  VBLANK_d4.clk    = false;
-
-  }
+  void pwron();
+  void reset();
+  static void check_match(const LCDRegisters& a, const LCDRegisters& b);
 
   uint32_t x() const {
     return (X0 << 0) | (X1 << 1) | (X2 << 2) | (X3 << 3) | (X4 << 4) | (X5 << 5) | (X6 << 6);
@@ -83,31 +54,6 @@ struct LCDRegisters {
     return (Y0 << 0) | (Y1 << 1) | (Y2 << 2) | (Y3 << 3) | (Y4 << 4) | (Y5 << 5) | (Y6 << 6) | (Y7 << 7);
   }
 
-  static void check_match(const LCDRegisters& a, const LCDRegisters& b) {
-    check(a.X0.val == b.X0.val);
-    check(a.X1.val == b.X1.val);
-    check(a.X2.val == b.X2.val);
-    check(a.X3.val == b.X3.val);
-    check(a.X4.val == b.X4.val);
-    check(a.X5.val == b.X5.val);
-    check(a.X6.val == b.X6.val);
-
-    check(a.Y0.val == b.Y0.val);
-    check(a.Y1.val == b.Y1.val);
-    check(a.Y2.val == b.Y2.val);
-    check(a.Y3.val == b.Y3.val);
-    check(a.Y4.val == b.Y4.val);
-    check(a.Y5.val == b.Y5.val);
-    check(a.Y6.val == b.Y6.val);
-    check(a.Y7.val == b.Y7.val);
-
-    check(a.VID_LINE_d4.val  == b.VID_LINE_d4.val);
-    check(a.VID_LINE_d6.val  == b.VID_LINE_d6.val);
-    check(a.NEW_LINE_d0a.val == b.NEW_LINE_d0a.val);
-    check(a.NEW_LINE_d4a.val == b.NEW_LINE_d4a.val);
-    check(a.LINE_153_d4.val  == b.LINE_153_d4.val);
-    check(a.VBLANK_d4.val    == b.VBLANK_d4.val);
-  }
 
   /*p21.SAXO*/ Reg X0;
   /*p21.TYPO*/ Reg X1;
@@ -128,7 +74,11 @@ struct LCDRegisters {
 
   /*p29.CATU*/ Reg VID_LINE_d4;
   /*p28.ANEL*/ Reg VID_LINE_d6;
-  /*p21.RUTU*/ Reg NEW_LINE_d0a;
+
+  ///*p21.RUTU*/ Reg NEW_LINE_d0a;
+  /*p21.RUTU*/ bool NEW_LINE_d0a_clk;
+  /*p21.RUTU*/ bool NEW_LINE_d0a_val;
+
   /*p21.NYPE*/ Reg NEW_LINE_d4a;
   /*p21.MYTA*/ Reg LINE_153_d4;
   /*p21.POPU*/ Reg VBLANK_d4;

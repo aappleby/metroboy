@@ -14,7 +14,6 @@ inline void check_phase_name(int phase, const bool val, char* name) {
 // c.cpu.CLK_xBCDEFGH = BOWA_xBCDEFGH;
 
 struct ClockSignals1 {
-  void reset();
   void check_phase(int phase);
 
   void tick_slow(const SystemSignals& sys_sig, const ClockRegisters1& clk_reg);
@@ -83,7 +82,6 @@ struct ClockSignals1 {
 // Video clocks
 
 struct ClockSignals2 {
-  void reset();
   void check_phase(int phase);
 
   void tick_slow(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
@@ -106,31 +104,14 @@ struct ClockRegisters1 {
   void tock_slow(const SystemSignals& sys_sig,
                  const ClockSignals1& clk_sig1);
 
-  void tock_fast(const SystemSignals& sys_sig,
-                 const ClockSignals1& clk_sig1);
+  void tock_fast(const SystemSignals& sys_sig);
 
-  void reset() {
-    PHAZ_ABCDxxxx.val = 0; PHAZ_ABCDxxxx.clk = 0;
-    PHAZ_xBCDExxx.val = 0; PHAZ_xBCDExxx.clk = 0;
-    PHAZ_xxCDEFxx.val = 0; PHAZ_xxCDEFxx.clk = 0;
-    PHAZ_xxxDEFGx.val = 0; PHAZ_xxxDEFGx.clk = 0;
-  }
+  void pwron();
+  void reset();
+  void check_phase(int phase);
+  static void check_match(const ClockRegisters1& a, const ClockRegisters1& b);
 
-  void check_phase(int phase) {
-    check_phase_name(phase, PHAZ_ABCDxxxx, "PHAZ_ABCDxxxx");
-    check_phase_name(phase, PHAZ_xBCDExxx, "PHAZ_xBCDExxx");
-    check_phase_name(phase, PHAZ_xxCDEFxx, "PHAZ_xxCDEFxx");
-    check_phase_name(phase, PHAZ_xxxDEFGx, "PHAZ_xxxDEFGx");
-  }
-
-  static void check_match(const ClockRegisters1& a, const ClockRegisters1& b) {
-    check(a.PHAZ_ABCDxxxx.val == b.PHAZ_ABCDxxxx.val);
-    check(a.PHAZ_xBCDExxx.val == b.PHAZ_xBCDExxx.val);
-    check(a.PHAZ_xxCDEFxx.val == b.PHAZ_xxCDEFxx.val);
-    check(a.PHAZ_xxxDEFGx.val == b.PHAZ_xxxDEFGx.val);
-  }
-
-private:
+//private:
 
   friend struct ClockSignals1;
   friend struct ClockSignals2;
@@ -151,29 +132,14 @@ struct ClockRegisters2 {
                  const ResetSignals2& rst_sig2);
 
   void tock_fast(const SystemSignals& sys_sig,
-                 const ClockSignals1& clk_sig1,
-                 const ClockSignals2& clk_sig2,
                  const ResetSignals2& rst_sig2);
 
-  void reset() {
-    WUVU_AxxDExxH.val = 1; WUVU_AxxDExxH.clk = 1;
-    VENA_xBCDExxx.val = 0; VENA_xBCDExxx.clk = 0;
-    WOSU_xxCDxxGH.val = 1; WOSU_xxCDxxGH.clk = 0;
-  }
+  void pwron();
+  void reset();
+  void check_phase(int phase);
+  static void check_match(const ClockRegisters2& a, const ClockRegisters2& b);
 
-  void check_phase(int phase) {
-    check_phase_name(phase, WUVU_AxxDExxH, "WUVU_AxxDExxH");
-    check_phase_name(phase, VENA_xBCDExxx, "VENA_xBCDExxx");
-    check_phase_name(phase, WOSU_xxCDxxGH, "WOSU_xxCDxxGH");
-  }
-
-  static void check_match(const ClockRegisters2& a, const ClockRegisters2& b) {
-    check(a.WUVU_AxxDExxH.val == b.WUVU_AxxDExxH.val);
-    check(a.VENA_xBCDExxx.val == b.VENA_xBCDExxx.val);
-    check(a.WOSU_xxCDxxGH.val == b.WOSU_xxCDxxGH.val);
-  }
-
-private:
+//private:
 
   friend struct ClockSignals1;
   friend struct ClockSignals2;

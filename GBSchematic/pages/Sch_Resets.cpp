@@ -31,7 +31,7 @@ void ResetSignals1::tick_slow(const SystemSignals& sys_sig,
   /*p01.SOTO*/ wire SOTO_RESET  = not(SYS_RESET);
   /*p01.CUNU*/ wire CUNU_RESETn = not(SYS_RESET);
   /*p01.XORE*/ wire XORE_RESET  = not(CUNU_RESETn);
-  /*p01.BOMA*/ wire RESET_CLK    = not(clk_sig1.BOGA_xBCDEFGH);
+  /*p01.BOMA*/ wire RESET_CLK   = not(clk_sig1.BOGA_xBCDEFGH);
   /*p01.WESY*/ wire WESY_RESET  = not(XORE_RESET);
   /*p01.WALU*/ wire WALU_RESET  = not(XORE_RESET);
   /*p01.XARE*/ wire XARE_RESET  = not(XORE_RESET);
@@ -51,36 +51,36 @@ void ResetSignals1::tick_slow(const SystemSignals& sys_sig,
 //----------------------------------------
 
 void ResetSignals1::tick_fast(const SystemSignals& sys_sig,
-                              const ClockSignals1& clk_sig1,
                               const ResetRegisters& rst_reg) {
-  RESET_CLK = not(clk_sig1.BOGA_xBCDEFGH);
+
+  bool RESET = false;
 
   // polarity here seems weird
-  /*p01.UPYF*/ wire UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
-  /*p01.TUBO*/ bool WAITING_FOR_CLKREQ = rst_reg.WAITING_FOR_CLKREQ;
-  /*p01.TUBO*/ if (!sys_sig.CPUCLK_REQn) WAITING_FOR_CLKREQ = 0;
-  /*p01.TUBO*/ if (!UPYF)                WAITING_FOR_CLKREQ = 1;
+  bool WAITING_FOR_CLKREQ = rst_reg.WAITING_FOR_CLKREQ;
+  if (sys_sig.CPUCLK_REQ) WAITING_FOR_CLKREQ = 0;
+  if (!sys_sig.RST && sys_sig.CLK_GOOD) WAITING_FOR_CLKREQ = 1;
 
   bool TIMEOUT = and(WAITING_FOR_CLKREQ, sys_sig.DIV_15);
 
-  bool RESET = TIMEOUT || rst_reg.RESET_REG || sys_sig.RST || sys_sig.MODE_DBG1 || sys_sig.MODE_DBG2;
+  RESET = TIMEOUT || rst_reg.RESET_REG || sys_sig.RST || sys_sig.MODE_DBG1 || sys_sig.MODE_DBG2;
 
-  ResetSignals1& next = *this;
+  RESET_CLK = sys_sig.phaseC() == 0;
+  if (!sys_sig.MODE_PROD) RESET_CLK = 0;
+  if (!sys_sig.CLK_GOOD)  RESET_CLK = 1;
 
-  next.SYS_RESETn  = !RESET;
-  next.SYS_RESET   =  RESET;
-  next.CUNU_RESETn = !RESET;
-  next.WESY_RESET  = !RESET;
-  next.WALU_RESET  = !RESET;
-  next.XARE_RESET  = !RESET;
-  next.SOTO_RESET  = !RESET;
+  SYS_RESETn  = !RESET;
+  SYS_RESET   =  RESET;
+  CUNU_RESETn = !RESET;
+  WESY_RESET  = !RESET;
+  WALU_RESET  = !RESET;
+  XARE_RESET  = !RESET;
+  SOTO_RESET  = !RESET;
 }
 
 //-----------------------------------------------------------------------------
 
 void ResetSignals2::tick_slow(const SystemSignals& sys_sig,
-                              const ResetSignals1& rst_sig1,
-                              const ResetRegisters& /*rst_reg*/) {
+                              const ResetSignals1& rst_sig1) {
   /*p01.XORE*/ wire XORE_RESET  = not(rst_sig1.CUNU_RESETn);
   /*p01.XEBE*/ wire XEBE_RESET  = not(XORE_RESET);
   /*p01.XODO*/ wire XODO_RESET  = nand(XEBE_RESET, sys_sig.LCDC_EN);
@@ -104,21 +104,37 @@ void ResetSignals2::tick_slow(const SystemSignals& sys_sig,
 //----------------------------------------
 
 void ResetSignals2::tick_fast(const SystemSignals& sys_sig,
-                              const ResetSignals1& rst_sig1,
-                              const ResetRegisters& /*rst_reg*/) {
-  wire VID_RESET  = nand(rst_sig1.SYS_RESETn, sys_sig.LCDC_EN);
+                              const ResetSignals1& rst_sig1) {
+  wire VID_RESET = rst_sig1.SYS_RESET || !sys_sig.LCDC_EN;
 
-  ResetSignals2& next = *this;
-
-  next.VID_RESETn  = !VID_RESET;
-  next.VID_RESET3  =  VID_RESET;
-  next.VID_RESET4  =  VID_RESET;
-  next.VID_RESET5  =  VID_RESET;
-  next.VID_RESET6  =  VID_RESET;
-  next.VID_RESETn3 = !VID_RESET;
+  VID_RESETn  = !VID_RESET;
+  VID_RESET3  =  VID_RESET;
+  VID_RESET4  =  VID_RESET;
+  VID_RESET5  =  VID_RESET;
+  VID_RESET6  =  VID_RESET;
+  VID_RESETn3 = !VID_RESET;
 }
 
 //-----------------------------------------------------------------------------
+
+void ResetRegisters::pwron() {
+  WAITING_FOR_CLKREQ = false;
+  RESET_REG.val = false;
+  RESET_REG.clk = false;
+}
+
+void ResetRegisters::reset() {
+  WAITING_FOR_CLKREQ = true;
+  RESET_REG.val = false;
+  RESET_REG.clk = false;
+}
+
+void ResetRegisters::check_match(const ResetRegisters& a, const ResetRegisters& b) {
+  check(a.WAITING_FOR_CLKREQ == b.WAITING_FOR_CLKREQ);
+  check(a.RESET_REG.val == b.RESET_REG.val);
+}
+
+//----------------------------------------
 
 void ResetRegisters::tock_slow(const SystemSignals& sys_sig,
                                const ClockSignals1& clk_sig1,
@@ -139,19 +155,76 @@ void ResetRegisters::tock_slow(const SystemSignals& sys_sig,
 
 //----------------------------------------
 
-void ResetRegisters::tock_fast(const SystemSignals& sys_sig,
-                               const ClockSignals1& clk_sig1,
-                               const ResetRegisters& /*rst_reg*/) {
-  ResetRegisters& next = *this;
+void ResetRegisters::tock_fast(const SystemSignals& sys_sig) {
 
-  if (sys_sig.CPUCLK_REQ) next.WAITING_FOR_CLKREQ = 0;
-  if (!sys_sig.RST && !sys_sig.CLK_BAD1) next.WAITING_FOR_CLKREQ = 1;
-  bool TIMEOUT = and(next.WAITING_FOR_CLKREQ, sys_sig.DIV_15);
+  int phase = sys_sig.phaseC();
+  bool BOGA_xBCDEFGH = ((phase != 0) || !sys_sig.MODE_PROD) && sys_sig.CLK_GOOD;
+
+  if (sys_sig.CPUCLK_REQ) WAITING_FOR_CLKREQ = 0;
+  if (!sys_sig.RST && !sys_sig.CLK_BAD1) WAITING_FOR_CLKREQ = 1;
+  bool TIMEOUT = and(WAITING_FOR_CLKREQ, sys_sig.DIV_15);
   
   bool RESET     = TIMEOUT || sys_sig.RST || sys_sig.MODE_DBG2 || sys_sig.MODE_DBG1;
-  bool RESET_CLK = not(clk_sig1.BOGA_xBCDEFGH);
 
-  next.RESET_REG.tock(RESET_CLK, sys_sig.MODE_PROD, RESET);
+  RESET_REG.tock(!BOGA_xBCDEFGH, sys_sig.MODE_PROD, RESET);
+}
+
+//-----------------------------------------------------------------------------
+
+#pragma warning(disable:4100)
+
+void reset_fast(const SystemSignals& sys_sig_b,
+                const SystemSignals& sys_sig_c,
+                ResetRegisters& rst_reg,
+                ResetSignals1& rst_sig1,
+                ResetSignals2& rst_sig2) {
+
+  bool reset_clk_b = sys_sig_b.phaseC() == 0;
+  if (!sys_sig_b.MODE_PROD) reset_clk_b = 0;
+  if (!sys_sig_b.CLK_GOOD)  reset_clk_b = 1;
+
+  bool reset_clk_c = sys_sig_c.phaseC() == 0;
+  if (!sys_sig_c.MODE_PROD) reset_clk_c = 0;
+  if (!sys_sig_c.CLK_GOOD)  reset_clk_c = 1;
+
+  if (reset_clk_b != rst_sig1.RESET_CLK) {
+    printf("x");
+  }
+
+  if (sys_sig_c.CPUCLK_REQ) rst_reg.WAITING_FOR_CLKREQ = 0;
+  if (!sys_sig_c.RST && !sys_sig_c.CLK_BAD1) rst_reg.WAITING_FOR_CLKREQ = 1;
+  bool TIMEOUT = and(rst_reg.WAITING_FOR_CLKREQ, sys_sig_c.DIV_15);
+  bool RESET = TIMEOUT || sys_sig_c.RST || sys_sig_c.MODE_DBG2 || sys_sig_c.MODE_DBG1;
+
+  if (!rst_sig1.RESET_CLK && reset_clk_c) {
+    rst_reg.RESET_REG.val = RESET;
+  }
+
+  rst_sig1.RESET_CLK = reset_clk_c;
+
+  if (!sys_sig_c.MODE_PROD) {
+    rst_reg.RESET_REG.val = 0;
+  }
+
+  RESET |= rst_reg.RESET_REG;
+
+
+  rst_sig1.SYS_RESETn  = !RESET;
+  rst_sig1.SYS_RESET   =  RESET;
+  rst_sig1.CUNU_RESETn = !RESET;
+  rst_sig1.WESY_RESET  = !RESET;
+  rst_sig1.WALU_RESET  = !RESET;
+  rst_sig1.XARE_RESET  = !RESET;
+  rst_sig1.SOTO_RESET  = !RESET;
+
+  wire VID_RESET = RESET || !sys_sig_c.LCDC_EN;
+
+  rst_sig2.VID_RESETn  = !VID_RESET;
+  rst_sig2.VID_RESET3  =  VID_RESET;
+  rst_sig2.VID_RESET4  =  VID_RESET;
+  rst_sig2.VID_RESET5  =  VID_RESET;
+  rst_sig2.VID_RESET6  =  VID_RESET;
+  rst_sig2.VID_RESETn3 = !VID_RESET;
 }
 
 //-----------------------------------------------------------------------------

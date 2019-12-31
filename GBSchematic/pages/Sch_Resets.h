@@ -11,21 +11,7 @@ struct ResetSignals1 {
                  const ClockSignals1& clk_sig1,
                  const ResetRegisters& rst_reg);
   void tick_fast(const SystemSignals& sys_sig,
-                 const ClockSignals1& clk_sig1,
                  const ResetRegisters& rst_reg);
-
-  void reset() {
-    RESET_CLK = false;
-
-    SYS_RESETn = true;
-    SYS_RESET = false;
-    CUNU_RESETn = true;
-
-    WESY_RESET = true;
-    WALU_RESET = true;
-    XARE_RESET = true;
-    SOTO_RESET = true;
-  };
 
   /*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
   /*p01.ALUR*/ bool SYS_RESETn;
@@ -44,20 +30,9 @@ struct ResetSignals1 {
 struct ResetSignals2 {
 
   void tick_slow(const SystemSignals& sys_sig,
-                 const ResetSignals1& rst_sig1,
-                 const ResetRegisters& rst_reg);
+                 const ResetSignals1& rst_sig1);
   void tick_fast(const SystemSignals& sys_sig,
-                 const ResetSignals1& rst_sig1,
-                 const ResetRegisters& rst_reg);
-
-  void reset() {
-    VID_RESETn = true;
-    VID_RESET3 = false;
-    VID_RESET4 = false;
-    VID_RESET5 = false;
-    VID_RESET6 = false;
-    VID_RESETn3 = true;
-  };
+                 const ResetSignals1& rst_sig1);
 
   /*p01.XAPO*/ bool VID_RESETn;
   /*p01.TOFU*/ bool VID_RESET3;
@@ -74,20 +49,11 @@ struct ResetRegisters {
   void tock_slow(const SystemSignals& sys_sig,
                  const ClockSignals1& clk_sig1,
                  const ResetRegisters& rst_reg);
-  void tock_fast(const SystemSignals& sys_sig,
-                 const ClockSignals1& clk_sig1,
-                 const ResetRegisters& rst_reg);
+  void tock_fast(const SystemSignals& sys_sig);
 
-  void reset() {
-    WAITING_FOR_CLKREQ = true;
-    RESET_REG.val = false;
-    RESET_REG.clk = false;
-  };
-
-  static void check_match(const ResetRegisters& a, const ResetRegisters& b) {
-    check(a.WAITING_FOR_CLKREQ == b.WAITING_FOR_CLKREQ);
-    check(a.RESET_REG.val == b.RESET_REG.val);
-  }
+  void pwron();
+  void reset();
+  static void check_match(const ResetRegisters& a, const ResetRegisters& b);
 
   /*p01.TUBO*/ bool WAITING_FOR_CLKREQ;
   /*p01.AFER*/ Reg  RESET_REG;

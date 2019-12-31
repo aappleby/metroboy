@@ -3,16 +3,13 @@
 #include <memory.h>
 #include <string>
 #include <vector>
+#include <math.h>
 
 #include "TraceViewer.h"
 #include "../src/TextPainter.h"
 #include "pages/Sch_Gameboy.h"
 
-#ifdef _MSC_VER
-#include <include/SDL.h>
-#else
-#include <SDL2/SDL.h>
-#endif
+#include "tests/TestGB.h"
 
 using namespace Schematics;
 
@@ -21,40 +18,104 @@ void TestClocks();
 void TestSpriteSeq();
 
 
-struct StructTest {
-  int a;
-  int b;
-  int c;
-};
-
-
-#include <math.h>
 
 int main(int /*argc*/, char** /*argv*/) {
-  TestClocks();
+  //TestClocks();
   TestLCD();
   //TestSpriteSeq();
 
-#if 0
-  for(int i = 0; i < 8; i++) {
-    double t2 = double(i) / 8.0;
-    double t1 = t2 - 1.0/3.0;
-    double t3 = t2 + 1.0/3.0;
+  //TestGB gb;
+  //gb.pwron();
+  
+  /*
+  gb.sim_slow(456*2*152);
 
-    double s1 = cos(t1 * 2.0 * 3.14159265358979) * 0.5 + 0.5;
-    double s2 = cos(t2 * 2.0 * 3.14159265358979) * 0.5 + 0.5;
-    double s3 = cos(t3 * 2.0 * 3.14159265358979) * 0.5 + 0.5;
+  for (int i = 0; i < 2752; i++) {
+    gb.sim_slow(1);
+    printf("%08d %d: %d%d%d%d %d%d%d %d%d %03d %03d %d%d%d%d%d%d\n",
+           i,
+           gb.sys_sig.phaseC(),
+           gb.clk_reg1.PHAZ_ABCDxxxx.val,
+           gb.clk_reg1.PHAZ_xBCDExxx.val,
+           gb.clk_reg1.PHAZ_xxCDEFxx.val,
+           gb.clk_reg1.PHAZ_xxxDEFGx.val,
+           gb.clk_reg2.WUVU_AxxDExxH.val,
+           gb.clk_reg2.VENA_xBCDExxx.val,
+           gb.clk_reg2.WOSU_xxCDxxGH.val,
+           gb.rst_reg.WAITING_FOR_CLKREQ,
+           gb.rst_reg.RESET_REG.val,
+           gb.lcd_reg.x(),
+           gb.lcd_reg.y(),
+           
+           gb.lcd_reg.NEW_LINE_d0a.val,
+           gb.lcd_reg.VID_LINE_d4.val,
+           gb.lcd_reg.NEW_LINE_d4a.val,
+           gb.lcd_reg.VID_LINE_d6.val,
+           gb.lcd_reg.LINE_153_d4.val,
 
-    int c1 = int(s1 * (255-64) + 64);
-    int c2 = int(s2 * (255-64) + 64);
-    int c3 = int(s3 * (255-64) + 64);
-
-    printf("0xFF%02x%02x%02x\n", c1, c2, c3);
+           // line 144, phase 1
+           gb.lcd_reg.VBLANK_d4.val
+           
+           );
+    if (gb.sys_sig.phaseC() == 7) {
+      printf("\n");
+      //printf("\033[?6l");
+    }
   }
-#endif
+  */
 
   return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #if 0
 uint32_t phase_to_color[8] = {
@@ -79,6 +140,12 @@ uint32_t phase_to_color[8] = {
   0xFF43e3b8,
   */
 };
+
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
 
 
   void sdl_run() {
@@ -183,7 +250,6 @@ uint32_t phase_to_color[8] = {
       frame++;
     }
   }
-#endif
 
 
 
@@ -255,7 +321,6 @@ int render_labels(TextPainter& tp, int x, int y, const std::vector<SignalData>& 
 
 
 //-----------------------------------------------------------------------------
-#if 0
 
 int main(int /*argc*/, char** /*argv*/) {
   printf("hello world\n");

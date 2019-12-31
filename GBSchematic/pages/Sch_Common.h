@@ -87,7 +87,7 @@ struct SystemSignals {
   }
 
   void reset() {
-    clk_phase = 7;
+    clk_phase = 140511;
 
     RST        = false;
     CLK_GOOD   = true;
@@ -135,7 +135,7 @@ struct SystemSignals {
   }
 
   void next_phase() {
-    clk_phase = (clk_phase + 1) & 7;
+    clk_phase++;
   }
 
   int phaseB() const {
@@ -143,15 +143,15 @@ struct SystemSignals {
   }
 
   int phaseC() const {
-    return clk_phase;
+    return (clk_phase & 7);
   }
 
   int clk() const {
     return !(clk_phase & 1);
   }
 
-  static void check_match(const SystemSignals& a, const SystemSignals& b) {
-    return check_byte_match(a, b);
+  int phase_count() {
+    return clk_phase;
   }
 
   //----------------------------------------

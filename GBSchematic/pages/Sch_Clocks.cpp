@@ -215,23 +215,13 @@ void ClockRegisters1::pwron() {
   PHAZ_xBCDExxx.pwron();
   PHAZ_xxCDEFxx.pwron();
   PHAZ_xxxDEFGx.pwron();
-
-  PHAZ_ABCDxxxx2.pwron();
-  PHAZ_xBCDExxx2.pwron();
-  PHAZ_xxCDEFxx2.pwron();
-  PHAZ_xxxDEFGx2.pwron();
 }
 
 void ClockRegisters1::reset() {
-  PHAZ_ABCDxxxx.reset(0);
-  PHAZ_xBCDExxx.reset(0);
-  PHAZ_xxCDEFxx.reset(0);
-  PHAZ_xxxDEFGx.reset(0);
-
-  PHAZ_ABCDxxxx2.reset(0, 1, 0);
-  PHAZ_xBCDExxx2.reset(0, 1, 0);
-  PHAZ_xxCDEFxx2.reset(0, 1, 0);
-  PHAZ_xxxDEFGx2.reset(0, 1, 0);
+  PHAZ_ABCDxxxx.reset(0, 1, 0);
+  PHAZ_xBCDExxx.reset(0, 1, 0);
+  PHAZ_xxCDEFxx.reset(0, 1, 0);
+  PHAZ_xxxDEFGx.reset(0, 1, 0);
 }
 
 void ClockRegisters1::check_phase(int phase) const {
@@ -248,60 +238,38 @@ void ClockRegisters1::check_match(const ClockRegisters1& a, const ClockRegisters
   check(a.PHAZ_xxxDEFGx == b.PHAZ_xxxDEFGx);
 }
 
+//----------------------------------------
+
+void ClockRegisters1::tick_slow(const SystemRegisters& sys_reg) {
+  ClockRegisters1 prev = *this;
+  ClockRegisters1& next = *this;
+
+  wire CLK = sys_reg.clk();
+  /*p01.AVET*/ wire AVET_xBxDxFxH = not(CLK);
+  /*p01.ATAL*/ wire ATAL_AxCxExGx = not(AVET_xBxDxFxH);
+
+  /*p01.AFUR*/ next.PHAZ_ABCDxxxx.set(ATAL_AxCxExGx, sys_reg.MODE_PROD, !prev.PHAZ_xxxDEFGx);
+  /*p01.ALEF*/ next.PHAZ_xBCDExxx.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx);
+  /*p01.APUK*/ next.PHAZ_xxCDEFxx.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx);
+  /*p01.ADYK*/ next.PHAZ_xxxDEFGx.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx);
+}
+
+//----------------------------------------
+
+void ClockRegisters1::tick_fast(const SystemRegisters& sys_reg) {
+  PHAZ_ABCDxxxx.set(sys_reg.clk(), sys_reg.MODE_PROD, !PHAZ_xxxDEFGx);
+  PHAZ_xBCDExxx.set(sys_reg.clk(), sys_reg.MODE_PROD,  PHAZ_ABCDxxxx);
+  PHAZ_xxCDEFxx.set(sys_reg.clk(), sys_reg.MODE_PROD,  PHAZ_xBCDExxx);
+  PHAZ_xxxDEFGx.set(sys_reg.clk(), sys_reg.MODE_PROD,  PHAZ_xxCDEFxx);
+}
+
+//----------------------------------------
+
 void ClockRegisters1::commit() {
-  PHAZ_ABCDxxxx2.commit_duo();
-  PHAZ_xBCDExxx2.commit_duo();
-  PHAZ_xxCDEFxx2.commit_duo();
-  PHAZ_xxxDEFGx2.commit_duo();
-
-  check(PHAZ_ABCDxxxx2 == PHAZ_ABCDxxxx);
-  check(PHAZ_xBCDExxx2 == PHAZ_xBCDExxx);
-  check(PHAZ_xxCDEFxx2 == PHAZ_xxCDEFxx);
-  check(PHAZ_xxxDEFGx2 == PHAZ_xxxDEFGx);
-}
-
-//----------------------------------------
-
-void ClockRegisters1::tock_slow(const SystemRegisters& sys_reg) {
-  ClockRegisters1 prev = *this;
-  ClockRegisters1& next = *this;
-
-  wire CLK = sys_reg.clk();
-  /*p01.AVET*/ wire AVET_xBxDxFxH = not(CLK);
-  /*p01.ATAL*/ wire ATAL_AxCxExGx = not(AVET_xBxDxFxH);
-
-  // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ next.PHAZ_ABCDxxxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD, !prev.PHAZ_xxxDEFGx);
-  /*p01.ALEF*/ next.PHAZ_xBCDExxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx);
-  /*p01.APUK*/ next.PHAZ_xxCDEFxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx);
-  /*p01.ADYK*/ next.PHAZ_xxxDEFGx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx);
-
-  /*p01.AFUR*/ next.PHAZ_ABCDxxxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD, !prev.PHAZ_xxxDEFGx2);
-  /*p01.ALEF*/ next.PHAZ_xBCDExxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx2);
-  /*p01.APUK*/ next.PHAZ_xxCDEFxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx2);
-  /*p01.ADYK*/ next.PHAZ_xxxDEFGx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx2);
-}
-
-//----------------------------------------
-
-void ClockRegisters1::tock_fast(const SystemRegisters& sys_reg) {
-  ClockRegisters1 prev = *this;
-  ClockRegisters1& next = *this;
-
-  wire CLK = sys_reg.clk();
-  /*p01.AVET*/ wire AVET_xBxDxFxH = not(CLK);
-  /*p01.ATAL*/ wire ATAL_AxCxExGx = not(AVET_xBxDxFxH);
-
-  // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ next.PHAZ_ABCDxxxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD, !prev.PHAZ_xxxDEFGx);
-  /*p01.ALEF*/ next.PHAZ_xBCDExxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx);
-  /*p01.APUK*/ next.PHAZ_xxCDEFxx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx);
-  /*p01.ADYK*/ next.PHAZ_xxxDEFGx.duotock(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx);
-
-  /*p01.AFUR*/ next.PHAZ_ABCDxxxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD, !prev.PHAZ_xxxDEFGx2);
-  /*p01.ALEF*/ next.PHAZ_xBCDExxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx2);
-  /*p01.APUK*/ next.PHAZ_xxCDEFxx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx2);
-  /*p01.ADYK*/ next.PHAZ_xxxDEFGx2.set(ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx2);
+  PHAZ_ABCDxxxx.commit_duo();
+  PHAZ_xBCDExxx.commit_duo();
+  PHAZ_xxCDEFxx.commit_duo();
+  PHAZ_xxxDEFGx.commit_duo();
 }
 
 //-----------------------------------------------------------------------------
@@ -362,9 +330,9 @@ ClockSignals2 ClockSignals2::tick_fast(const SystemRegisters& /*sys_reg*/, const
 //-----------------------------------------------------------------------------
 
 void ClockRegisters2::pwron() {
-  WUVU_AxxDExxH.val = 0; WUVU_AxxDExxH.clk = 0;
-  VENA_xBCDExxx.val = 0; VENA_xBCDExxx.clk = 0;
-  WOSU_xxCDxxGH.val = 0; WOSU_xxCDxxGH.clk = 0;
+  WUVU_AxxDExxH.pwron();
+  VENA_xBCDExxx.pwron();
+  WOSU_xxCDxxGH.pwron();
 }
 
 void ClockRegisters2::reset() {
@@ -380,40 +348,36 @@ void ClockRegisters2::check_phase(int phase) const {
 }
 
 void ClockRegisters2::check_match(const ClockRegisters2& a, const ClockRegisters2& b) {
-  check(a.WUVU_AxxDExxH.val == b.WUVU_AxxDExxH.val);
-  check(a.VENA_xBCDExxx.val == b.VENA_xBCDExxx.val);
-  check(a.WOSU_xxCDxxGH.val == b.WOSU_xxCDxxGH.val);
+  check(a.WUVU_AxxDExxH == b.WUVU_AxxDExxH);
+  check(a.VENA_xBCDExxx == b.VENA_xBCDExxx);
+  check(a.WOSU_xxCDxxGH == b.WOSU_xxCDxxGH);
 }
 
 //----------------------------------------
 
-void ClockRegisters2::tock_slow(const SystemRegisters& /*sys_reg*/,
-                                const ClockSignals1& clk_sig1,
-                                const ClockSignals2& clk_sig2,
+void ClockRegisters2::tock_slow(const ClockSignals1& clk_sig1,
                                 const ResetSignals2& rst_sig2) {
-  /*p29.WUVU*/ WUVU_AxxDExxH.tock( clk_sig1.XOTA_xBxDxFxH, rst_sig2.VID_RESETn, !clk_sig2.WUVU_AxxDExxH);
-  /*p21.VENA*/ VENA_xBCDExxx.tock(!clk_sig2.WUVU_AxxDExxH, rst_sig2.VID_RESETn, !clk_sig2.VENA_xBCDExxx);
-  /*p29.WOSU*/ WOSU_xxCDxxGH.tock( clk_sig1.XYFY_AxCxExGx, rst_sig2.VID_RESETn, !clk_sig2.WUVU_AxxDExxH);
+  ClockRegisters2 prev = *this;
+  ClockRegisters2& next = *this;
+
+  /*p29.WUVU*/ next.WUVU_AxxDExxH.tock( clk_sig1.XOTA_xBxDxFxH, rst_sig2.VID_RESETn, !prev.WUVU_AxxDExxH);
+  /*p21.VENA*/ next.VENA_xBCDExxx.tock(!prev.WUVU_AxxDExxH,     rst_sig2.VID_RESETn, !prev.VENA_xBCDExxx);
+  /*p29.WOSU*/ next.WOSU_xxCDxxGH.tock( clk_sig1.XYFY_AxCxExGx, rst_sig2.VID_RESETn, !prev.WUVU_AxxDExxH);
 }
 
 //----------------------------------------
 
-void ClockRegisters2::tock_fast(const SystemRegisters& sys_reg,
+void ClockRegisters2::tock_fast(const ClockSignals1& clk_sig1,
                                 const ResetSignals2& rst_sig2) {
-  wire CLK = sys_reg.clk();
-  
-  /*p01.AVET*/ bool AVET_xBxDxFxH = not(CLK);
-  /*p01.ATAL*/ bool ATAL_AxCxExGx = not(AVET_xBxDxFxH);
-  /*p01.AZOF*/ bool AZOF_xBxDxFxH = not(ATAL_AxCxExGx);
-  /*p01.ZAXY*/ bool ZAXY_AxCxExGx = not(AZOF_xBxDxFxH);
-  /*p01.ZEME*/ bool ZEME_xBxDxFxH = not(ZAXY_AxCxExGx);
-  /*p29.XYVA*/ bool XYVA_AxCxExGx = not(ZEME_xBxDxFxH);
-  /*p29.XOTA*/ bool XOTA_xBxDxFxH = not(XYVA_AxCxExGx);
-  /*p29.XYFY*/ bool XYFY_AxCxExGx = not(XOTA_xBxDxFxH);
 
-  /*p21.VENA*/ VENA_xBCDExxx.tock(!WUVU_AxxDExxH, rst_sig2.VID_RESETn, !VENA_xBCDExxx);
-  /*p29.WUVU*/ WUVU_AxxDExxH.tock(XOTA_xBxDxFxH,  rst_sig2.VID_RESETn, !WUVU_AxxDExxH);
-  /*p29.WOSU*/ WOSU_xxCDxxGH.tock(XYFY_AxCxExGx,  rst_sig2.VID_RESETn, !WUVU_AxxDExxH);
+  /*p29.WUVU*/ WUVU_AxxDExxH.tock( clk_sig1.XOTA_xBxDxFxH, rst_sig2.VID_RESETn, !WUVU_AxxDExxH);
+  /*p21.VENA*/ VENA_xBCDExxx.tock(!WUVU_AxxDExxH,          rst_sig2.VID_RESETn, !VENA_xBCDExxx);
+  /*p29.WOSU*/ WOSU_xxCDxxGH.tock( clk_sig1.XYFY_AxCxExGx, rst_sig2.VID_RESETn, !WUVU_AxxDExxH);
+}
+
+//----------------------------------------
+
+void ClockRegisters2::commit() {
 }
 
 //-----------------------------------------------------------------------------

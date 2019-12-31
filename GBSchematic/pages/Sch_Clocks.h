@@ -74,13 +74,14 @@ struct ClockSignals1 {
 
 struct ClockRegisters1 {
 
-  void tock_slow(const SystemRegisters& sys_reg);
-  void tock_fast(const SystemRegisters& sys_reg);
 
   void pwron();
   void reset();
   void check_phase(int phase) const;
   static void check_match(const ClockRegisters1& a, const ClockRegisters1& b);
+
+  void tick_slow(const SystemRegisters& sys_reg);
+  void tick_fast(const SystemRegisters& sys_reg);
   void commit();
 
 //private:
@@ -88,15 +89,11 @@ struct ClockRegisters1 {
   friend struct ClockSignals1;
   friend struct ClockSignals2;
 
-  /*p01.AFUR*/ Reg PHAZ_ABCDxxxx;
-  /*p01.ALEF*/ Reg PHAZ_xBCDExxx;
-  /*p01.APUK*/ Reg PHAZ_xxCDEFxx;
-  /*p01.ADYK*/ Reg PHAZ_xxxDEFGx;
-
-  /*p01.AFUR*/ Reg2 PHAZ_ABCDxxxx2;
-  /*p01.ALEF*/ Reg2 PHAZ_xBCDExxx2;
-  /*p01.APUK*/ Reg2 PHAZ_xxCDEFxx2;
-  /*p01.ADYK*/ Reg2 PHAZ_xxxDEFGx2;
+  // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
+  /*p01.AFUR*/ Reg2 PHAZ_ABCDxxxx;
+  /*p01.ALEF*/ Reg2 PHAZ_xBCDExxx;
+  /*p01.APUK*/ Reg2 PHAZ_xxCDEFxx;
+  /*p01.ADYK*/ Reg2 PHAZ_xxxDEFGx;
 };
 
 //-----------------------------------------------------------------------------
@@ -122,18 +119,17 @@ struct ClockSignals2 {
 
 struct ClockRegisters2 {
 
-  void tock_slow(const SystemRegisters& sys_reg,
-                 const ClockSignals1& clk_sig1,
-                 const ClockSignals2& clk_sig2,
-                 const ResetSignals2& rst_sig2);
-
-  void tock_fast(const SystemRegisters& sys_reg,
-                 const ResetSignals2& rst_sig2);
-
   void pwron();
   void reset();
   void check_phase(int phase) const;
   static void check_match(const ClockRegisters2& a, const ClockRegisters2& b);
+
+  void tock_slow(const ClockSignals1& clk_sig1,
+                 const ResetSignals2& rst_sig2);
+
+  void tock_fast(const ClockSignals1& clk_sig1,
+                 const ResetSignals2& rst_sig2);
+  void commit();
 
 //private:
 

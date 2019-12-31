@@ -31,7 +31,7 @@ struct TestGB {
   ClockRegisters1 clk_reg1;
   ClockRegisters2 clk_reg2;
   ResetRegisters  rst_reg;
-  LCDRegisters    lcd_reg;
+  //LCDRegisters    lcd_reg;
 };
 
 //-----------------------------------------------------------------------------

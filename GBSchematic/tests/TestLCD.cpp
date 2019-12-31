@@ -19,18 +19,18 @@ void sim_fast_slow(TestGB& gb1, TestGB& gb2, int phases, bool check_phases) {
 void check_boot_phase_alignment(TestGB gb) {
   check(gb.sys_reg.phaseC() == 7);
 
-  check(gb.lcd_reg.x() == 0);
-  check(gb.lcd_reg.y() == 0);
+  //check(gb.lcd_reg.x() == 0);
+  //check(gb.lcd_reg.y() == 0);
 
   gb.sim_slow(9);
 
-  check(gb.lcd_reg.x() == 0);
-  check(gb.lcd_reg.y() == 0);
+  //check(gb.lcd_reg.x() == 0);
+  //check(gb.lcd_reg.y() == 0);
 
   gb.sim_slow(1);
 
-  check(gb.lcd_reg.x() == 1);
-  check(gb.lcd_reg.y() == 0);
+  //check(gb.lcd_reg.x() == 1);
+  //check(gb.lcd_reg.y() == 0);
 }
 
 //----------------------------------------

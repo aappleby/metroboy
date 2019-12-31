@@ -14,10 +14,14 @@ struct TestGB {
   void reset();
   
   void update_signals(bool fast);
+  void update_states(bool fast);
   
-  static void check_signals(const TestGB& a, const TestGB& b);
-  static void check_states(const TestGB& a, const TestGB& b);
-  static void check_match(const TestGB& a, const TestGB& b);
+  static void check_signals(TestGB& a, TestGB& b);
+  static void check_states(TestGB& a, TestGB& b);
+  static void check_match(TestGB& a, TestGB& b);
+
+  // only call this if LCDC_EN is high and clocks are stable.
+  void check_clock_phases();
 
   void sim_slow(int phases);
   void sim_fast(int phases);
@@ -26,8 +30,7 @@ struct TestGB {
     fast ? sim_fast(phases) : sim_slow(phases);
   }
 
-  SystemSignals   sys_sig_b;
-  SystemSignals   sys_sig_c;
+  SystemSignals   sys_sig;
 
   ClockSignals1   clk_sig1;
   ClockRegisters1 clk_reg1;

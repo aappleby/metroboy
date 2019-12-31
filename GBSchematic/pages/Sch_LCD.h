@@ -31,8 +31,7 @@ struct LCDRegisters {
   void tock_slow(const SystemSignals& sys_sig,
                  const ClockSignals2& clk_sig2,
                  const ResetSignals2& rst_sig2,
-                 const LCDSignals& /*lcd_sig*/,
-                 const LCDRegisters& lcd);
+                 const LCDSignals& lcd_sig);
 
   void tock_fast(const SystemSignals& sys_sig,
                  const ClockSignals2& clk_sig2,

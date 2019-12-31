@@ -47,8 +47,7 @@ struct ResetSignals2 {
 struct ResetRegisters {
 
   void tock_slow(const SystemSignals& sys_sig,
-                 const ClockSignals1& clk_sig1,
-                 const ResetRegisters& rst_reg);
+                 const ClockSignals1& clk_sig1);
   void tock_fast(const SystemSignals& sys_sig);
 
   void pwron();

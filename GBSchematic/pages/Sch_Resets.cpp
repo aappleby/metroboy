@@ -137,12 +137,12 @@ void ResetRegisters::check_match(const ResetRegisters& a, const ResetRegisters& 
 //----------------------------------------
 
 void ResetRegisters::tock_slow(const SystemSignals& sys_sig,
-                               const ClockSignals1& clk_sig1,
-                               const ResetRegisters& rst_reg) {
+                               const ClockSignals1& clk_sig1) {
+  ResetRegisters prev = *this;
   ResetRegisters& next = *this;
 
   /*p01.UPYF*/ bool UPYF = or(sys_sig.RST, sys_sig.CLK_BAD1);
-  /*p01.TUBO*/ bool WAITING_FOR_CLKREQ2 = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : rst_reg.WAITING_FOR_CLKREQ;
+  /*p01.TUBO*/ bool WAITING_FOR_CLKREQ2 = !UPYF ? 1 : !sys_sig.CPUCLK_REQn ? 0 : prev.WAITING_FOR_CLKREQ;
   /*p01.BOMA*/ bool RESET_CLK   = not(clk_sig1.BOGA_xBCDEFGH);
   /*p01.UNUT*/ bool TIMEOUT     = and(WAITING_FOR_CLKREQ2, sys_sig.DIV_15);
   /*p01.TABA*/ bool CPU_RESET   = or(sys_sig.MODE_DBG2, sys_sig.MODE_DBG1, TIMEOUT);
@@ -174,7 +174,7 @@ void ResetRegisters::tock_fast(const SystemSignals& sys_sig) {
 #pragma warning(disable:4100)
 
 void reset_fast(const SystemSignals& sys_sig_b,
-                const SystemSignals& sys_sig_c,
+                const SystemSignals& sys_sig,
                 ResetRegisters& rst_reg,
                 ResetSignals1& rst_sig1,
                 ResetSignals2& rst_sig2) {
@@ -183,18 +183,18 @@ void reset_fast(const SystemSignals& sys_sig_b,
   if (!sys_sig_b.MODE_PROD) reset_clk_b = 0;
   if (!sys_sig_b.CLK_GOOD)  reset_clk_b = 1;
 
-  bool reset_clk_c = sys_sig_c.phaseC() == 0;
-  if (!sys_sig_c.MODE_PROD) reset_clk_c = 0;
-  if (!sys_sig_c.CLK_GOOD)  reset_clk_c = 1;
+  bool reset_clk_c = sys_sig.phaseC() == 0;
+  if (!sys_sig.MODE_PROD) reset_clk_c = 0;
+  if (!sys_sig.CLK_GOOD)  reset_clk_c = 1;
 
   if (reset_clk_b != rst_sig1.RESET_CLK) {
     printf("x");
   }
 
-  if (sys_sig_c.CPUCLK_REQ) rst_reg.WAITING_FOR_CLKREQ = 0;
-  if (!sys_sig_c.RST && !sys_sig_c.CLK_BAD1) rst_reg.WAITING_FOR_CLKREQ = 1;
-  bool TIMEOUT = and(rst_reg.WAITING_FOR_CLKREQ, sys_sig_c.DIV_15);
-  bool RESET = TIMEOUT || sys_sig_c.RST || sys_sig_c.MODE_DBG2 || sys_sig_c.MODE_DBG1;
+  if (sys_sig.CPUCLK_REQ) rst_reg.WAITING_FOR_CLKREQ = 0;
+  if (!sys_sig.RST && !sys_sig.CLK_BAD1) rst_reg.WAITING_FOR_CLKREQ = 1;
+  bool TIMEOUT = and(rst_reg.WAITING_FOR_CLKREQ, sys_sig.DIV_15);
+  bool RESET = TIMEOUT || sys_sig.RST || sys_sig.MODE_DBG2 || sys_sig.MODE_DBG1;
 
   if (!rst_sig1.RESET_CLK && reset_clk_c) {
     rst_reg.RESET_REG.val = RESET;
@@ -202,7 +202,7 @@ void reset_fast(const SystemSignals& sys_sig_b,
 
   rst_sig1.RESET_CLK = reset_clk_c;
 
-  if (!sys_sig_c.MODE_PROD) {
+  if (!sys_sig.MODE_PROD) {
     rst_reg.RESET_REG.val = 0;
   }
 
@@ -217,7 +217,7 @@ void reset_fast(const SystemSignals& sys_sig_b,
   rst_sig1.XARE_RESET  = !RESET;
   rst_sig1.SOTO_RESET  = !RESET;
 
-  wire VID_RESET = RESET || !sys_sig_c.LCDC_EN;
+  wire VID_RESET = RESET || !sys_sig.LCDC_EN;
 
   rst_sig2.VID_RESETn  = !VID_RESET;
   rst_sig2.VID_RESET3  =  VID_RESET;

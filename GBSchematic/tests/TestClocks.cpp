@@ -185,7 +185,7 @@ void TestClocks() {
 
   for (int phase = 0; phase < 8; phase++) {
     gb.sim_slow(1);
-    dump(cursor++, gb.sys_sig_c, gb.clk_sig1, gb.clk_sig2);
+    dump(cursor++, gb.sys_sig, gb.clk_sig1, gb.clk_sig2);
   }
 
   /*

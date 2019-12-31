@@ -155,12 +155,14 @@ void LCDRegisters::check_match(const LCDRegisters& a, const LCDRegisters& b) {
   check(a.VBLANK_d4.val    == b.VBLANK_d4.val);
 }
 
+//----------------------------------------
+
 void LCDRegisters::tock_slow(const SystemSignals& /*sys_sig*/,
                              const ClockSignals2& clk_sig2,
                              const ResetSignals2& rst_sig2,
-                             const LCDSignals& /*lcd_sig*/,
-                             const LCDRegisters& lcd)
+                             const LCDSignals& /*lcd_sig*/)
 {
+  LCDRegisters prev = *this;
   LCDRegisters& next = *this;
 
   /*p01.LYHA*/ bool VID_RESET2  = not(rst_sig2.VID_RESETn);
@@ -168,23 +170,23 @@ void LCDRegisters::tock_slow(const SystemSignals& /*sys_sig*/,
   /*p01.ATAR*/ bool VID_RESET6  = not(rst_sig2.VID_RESETn);
   /*p01.ABEZ*/ bool VID_RESETn3 = not(VID_RESET6);
 
-  /*p21.MUDE*/ bool X_RSTn       = nor(lcd.NEW_LINE_d0a_val, VID_RESET2);
-  /*p21.SANU*/ bool LINE_END     = and(lcd.X6, lcd.X5, lcd.X4, lcd.X0); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-  /*p21.PURE*/ bool NEW_LINE_d0n = not(lcd.NEW_LINE_d0a_val);
+  /*p21.MUDE*/ bool X_RSTn       = nor(prev.NEW_LINE_d0a_val, VID_RESET2);
+  /*p21.SANU*/ bool LINE_END     = and(prev.X6, prev.X5, prev.X4, prev.X0); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+  /*p21.PURE*/ bool NEW_LINE_d0n = not(prev.NEW_LINE_d0a_val);
   /*p21.SELA*/ bool NEW_LINE_d0b = not(NEW_LINE_d0n);
-  /*p21.NOKO*/ bool LINE_153_d0  = and(lcd.Y7, lcd.Y4, lcd.Y3, lcd.Y0); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-  /*p21.LAMA*/ bool FRAME_RSTn   = nor(lcd.LINE_153_d4, VID_RESET2);
-  /*p21.XYVO*/ bool LINE_144_d0  = and(lcd.Y4, lcd.Y7); // 128 + 16 = 144
+  /*p21.NOKO*/ bool LINE_153_d0  = and(prev.Y7, prev.Y4, prev.Y3, prev.Y0); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
+  /*p21.LAMA*/ bool FRAME_RSTn   = nor(prev.LINE_153_d4, VID_RESET2);
+  /*p21.XYVO*/ bool LINE_144_d0  = and(prev.Y4, prev.Y7); // 128 + 16 = 144
   /*p29.ALES*/ bool LINE_144_d0n = not(LINE_144_d0);
   /*p29.ABOV*/ bool VID_LINE_d0  = and(NEW_LINE_d0b, LINE_144_d0n);
 
-  /*p21.SAXO*/ next.X0.tock(clk_sig2.TALU_xBCDExxx, X_RSTn, !lcd.X0);
-  /*p21.TYPO*/ next.X1.tock(!lcd.X0,                X_RSTn, !lcd.X1);
-  /*p21.VYZO*/ next.X2.tock(!lcd.X1,                X_RSTn, !lcd.X2);
-  /*p21.TELU*/ next.X3.tock(!lcd.X2,                X_RSTn, !lcd.X3);
-  /*p21.SUDE*/ next.X4.tock(!lcd.X3,                X_RSTn, !lcd.X4);
-  /*p21.TAHA*/ next.X5.tock(!lcd.X4,                X_RSTn, !lcd.X5);
-  /*p21.TYRY*/ next.X6.tock(!lcd.X5,                X_RSTn, !lcd.X6);
+  /*p21.SAXO*/ next.X0.tock(clk_sig2.TALU_xBCDExxx, X_RSTn, !prev.X0);
+  /*p21.TYPO*/ next.X1.tock(!prev.X0,                X_RSTn, !prev.X1);
+  /*p21.VYZO*/ next.X2.tock(!prev.X1,                X_RSTn, !prev.X2);
+  /*p21.TELU*/ next.X3.tock(!prev.X2,                X_RSTn, !prev.X3);
+  /*p21.SUDE*/ next.X4.tock(!prev.X3,                X_RSTn, !prev.X4);
+  /*p21.TAHA*/ next.X5.tock(!prev.X4,                X_RSTn, !prev.X5);
+  /*p21.TYRY*/ next.X6.tock(!prev.X5,                X_RSTn, !prev.X6);
 
   if (!next.NEW_LINE_d0a_clk && clk_sig2.SONO_AxxxxFGH) {
     next.NEW_LINE_d0a_val = LINE_END;
@@ -195,22 +197,22 @@ void LCDRegisters::tock_slow(const SystemSignals& /*sys_sig*/,
     next.NEW_LINE_d0a_val = 0;
   }
 
-  /*p21.NYPE*/ next.NEW_LINE_d4a.tock(clk_sig2.TALU_xBCDExxx, VID_RESETn2, lcd.NEW_LINE_d0a_val);
-  /*p21.MYTA*/ next.LINE_153_d4.tock(lcd.NEW_LINE_d4a, VID_RESETn2, LINE_153_d0);
+  /*p21.NYPE*/ next.NEW_LINE_d4a.tock(clk_sig2.TALU_xBCDExxx, VID_RESETn2, prev.NEW_LINE_d0a_val);
+  /*p21.MYTA*/ next.LINE_153_d4.tock(prev.NEW_LINE_d4a, VID_RESETn2, LINE_153_d0);
 
-  /*p21.MUWY*/ next.Y0.tock(lcd.NEW_LINE_d0a_val, FRAME_RSTn, !lcd.Y0);
-  /*p21.MYRO*/ next.Y1.tock(!lcd.Y0,              FRAME_RSTn, !lcd.Y1);
-  /*p21.LEXA*/ next.Y2.tock(!lcd.Y1,              FRAME_RSTn, !lcd.Y2);
-  /*p21.LYDO*/ next.Y3.tock(!lcd.Y2,              FRAME_RSTn, !lcd.Y3);
-  /*p21.LOVU*/ next.Y4.tock(!lcd.Y3,              FRAME_RSTn, !lcd.Y4);
-  /*p21.LEMA*/ next.Y5.tock(!lcd.Y4,              FRAME_RSTn, !lcd.Y5);
-  /*p21.MATO*/ next.Y6.tock(!lcd.Y5,              FRAME_RSTn, !lcd.Y6);
-  /*p21.LAFO*/ next.Y7.tock(!lcd.Y6,              FRAME_RSTn, !lcd.Y7);
+  /*p21.MUWY*/ next.Y0.tock(prev.NEW_LINE_d0a_val, FRAME_RSTn, !prev.Y0);
+  /*p21.MYRO*/ next.Y1.tock(!prev.Y0,              FRAME_RSTn, !prev.Y1);
+  /*p21.LEXA*/ next.Y2.tock(!prev.Y1,              FRAME_RSTn, !prev.Y2);
+  /*p21.LYDO*/ next.Y3.tock(!prev.Y2,              FRAME_RSTn, !prev.Y3);
+  /*p21.LOVU*/ next.Y4.tock(!prev.Y3,              FRAME_RSTn, !prev.Y4);
+  /*p21.LEMA*/ next.Y5.tock(!prev.Y4,              FRAME_RSTn, !prev.Y5);
+  /*p21.MATO*/ next.Y6.tock(!prev.Y5,              FRAME_RSTn, !prev.Y6);
+  /*p21.LAFO*/ next.Y7.tock(!prev.Y6,              FRAME_RSTn, !prev.Y7);
 
-  /*p21.POPU*/ next.VBLANK_d4.tock(lcd.NEW_LINE_d4a, VID_RESETn2, LINE_144_d0);
+  /*p21.POPU*/ next.VBLANK_d4.tock(prev.NEW_LINE_d4a, VID_RESETn2, LINE_144_d0);
   
   /*p29.CATU*/ next.VID_LINE_d4.tock(clk_sig2.XUPY_xBCxxFGx, VID_RESETn3, VID_LINE_d0);
-  /*p28.ANEL*/ next.VID_LINE_d6.tock(clk_sig2.AWOH_AxxDExxH, VID_RESETn3, lcd.VID_LINE_d4);
+  /*p28.ANEL*/ next.VID_LINE_d6.tock(clk_sig2.AWOH_AxxDExxH, VID_RESETn3, prev.VID_LINE_d4);
 }
 
 //----------------------------------------
@@ -239,74 +241,6 @@ void LCDRegisters::tock_fast(const SystemSignals& /*sys_sig*/,
   if (!rst_sig2.VID_RESETn) {
     next.NEW_LINE_d0a_val = 0;
   }
-
-  /*p21.MUWY*/ next.Y0.tock(next.NEW_LINE_d0a_val, 1, !next.Y0);
-  /*p21.MYRO*/ next.Y1.tock(!next.Y0,              1, !next.Y1);
-  /*p21.LEXA*/ next.Y2.tock(!next.Y1,              1, !next.Y2);
-  /*p21.LYDO*/ next.Y3.tock(!next.Y2,              1, !next.Y3);
-  /*p21.LOVU*/ next.Y4.tock(!next.Y3,              1, !next.Y4);
-  /*p21.LEMA*/ next.Y5.tock(!next.Y4,              1, !next.Y5);
-  /*p21.MATO*/ next.Y6.tock(!next.Y5,              1, !next.Y6);
-  /*p21.LAFO*/ next.Y7.tock(!next.Y6,              1, !next.Y7);
-
-  /*p21.NYPE*/ next.NEW_LINE_d4a.tock(clk_sig2.TALU_xBCDExxx, rst_sig2.VID_RESETn, next.NEW_LINE_d0a_val);
-
-  /*p21.MYTA*/ next.LINE_153_d4.tock(next.NEW_LINE_d4a, rst_sig2.VID_RESETn, and(next.Y7, next.Y4, next.Y3, next.Y0));
-
-  /*p21.POPU*/ next.VBLANK_d4.tock(next.NEW_LINE_d4a, rst_sig2.VID_RESETn, and(next.Y4, next.Y7));
-
-  /*p29.CATU*/ next.VID_LINE_d4.tock(clk_sig2.XUPY_xBCxxFGx, rst_sig2.VID_RESETn, and(next.NEW_LINE_d0a_val, nand(next.Y4, next.Y7)));
-  /*p28.ANEL*/ next.VID_LINE_d6.tock(clk_sig2.AWOH_AxxDExxH, rst_sig2.VID_RESETn, next.VID_LINE_d4);
-
-  if (next.NEW_LINE_d0a_val || !rst_sig2.VID_RESETn) {
-    /*p21.SAXO*/ next.X0.val = 0;
-    /*p21.TYPO*/ next.X1.val = 0;
-    /*p21.VYZO*/ next.X2.val = 0;
-    /*p21.TELU*/ next.X3.val = 0;
-    /*p21.SUDE*/ next.X4.val = 0;
-    /*p21.TAHA*/ next.X5.val = 0;
-    /*p21.TYRY*/ next.X6.val = 0;
-  }
-
-  if (next.LINE_153_d4 || !rst_sig2.VID_RESETn) {
-    /*p21.MUWY*/ next.Y0.val = 0;
-    /*p21.MYRO*/ next.Y1.val = 0;
-    /*p21.LEXA*/ next.Y2.val = 0;
-    /*p21.LYDO*/ next.Y3.val = 0;
-    /*p21.LOVU*/ next.Y4.val = 0;
-    /*p21.LEMA*/ next.Y5.val = 0;
-    /*p21.MATO*/ next.Y6.val = 0;
-    /*p21.LAFO*/ next.Y7.val = 0;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void LCDRegisters::tock_fast2(const SystemSignals& sys_sig,
-                              const ClockSignals2& clk_sig2,
-                              const ResetSignals2& rst_sig2)
-{
-  LCDRegisters& next = *this;
-
-  /*p21.SAXO*/ next.X0.tock(clk_sig2.TALU_xBCDExxx, 1, !next.X0);
-  /*p21.TYPO*/ next.X1.tock(!next.X0,               1, !next.X1);
-  /*p21.VYZO*/ next.X2.tock(!next.X1,               1, !next.X2);
-  /*p21.TELU*/ next.X3.tock(!next.X2,               1, !next.X3);
-  /*p21.SUDE*/ next.X4.tock(!next.X3,               1, !next.X4);
-  /*p21.TAHA*/ next.X5.tock(!next.X4,               1, !next.X5);
-  /*p21.TYRY*/ next.X6.tock(!next.X5,               1, !next.X6);
-
-  /*p21.SANU*/ bool LINE_END = and(next.X6, next.X5, next.X4, next.X0);
-
-  if (sys_sig.phaseC() == 5) {
-    next.NEW_LINE_d0a_val = LINE_END;
-  }
-  next.NEW_LINE_d0a_clk = clk_sig2.SONO_AxxxxFGH;
-
-  if (!rst_sig2.VID_RESETn) {
-    next.NEW_LINE_d0a_val = 0;
-  }
-
 
   /*p21.MUWY*/ next.Y0.tock(next.NEW_LINE_d0a_val, 1, !next.Y0);
   /*p21.MYRO*/ next.Y1.tock(!next.Y0,              1, !next.Y1);

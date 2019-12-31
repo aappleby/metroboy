@@ -3,18 +3,10 @@
 
 namespace Schematics {
 
-inline void check_phase_name(int phase, const bool val, char* name) {
-  bool expected = name[phase + 5] != 'x';
-  if (val != expected) {
-    printf("Phase of %s FAIL\n", name);
-    __debugbreak();
-  }
-}
 //-----------------------------------------------------------------------------
-// c.cpu.CLK_xBCDEFGH = BOWA_xBCDEFGH;
 
 struct ClockSignals1 {
-  void check_phase(int phase);
+  void check_phase(int phase) const;
 
   void tick_slow(const SystemSignals& sys_sig, const ClockRegisters1& clk_reg);
   void tick_fast(const SystemSignals& sys_sig, const ClockRegisters1& clk_reg);
@@ -79,10 +71,33 @@ struct ClockSignals1 {
 };
 
 //-----------------------------------------------------------------------------
+
+struct ClockRegisters1 {
+
+  void tock_slow(const SystemSignals& sys_sig);
+  void tock_fast(const SystemSignals& sys_sig);
+
+  void pwron();
+  void reset();
+  void check_phase(int phase) const;
+  static void check_match(const ClockRegisters1& a, const ClockRegisters1& b);
+
+//private:
+
+  friend struct ClockSignals1;
+  friend struct ClockSignals2;
+
+  /*p01.AFUR*/ Reg PHAZ_ABCDxxxx;
+  /*p01.ALEF*/ Reg PHAZ_xBCDExxx;
+  /*p01.APUK*/ Reg PHAZ_xxCDEFxx;
+  /*p01.ADYK*/ Reg PHAZ_xxxDEFGx;
+};
+
+//-----------------------------------------------------------------------------
 // Video clocks
 
 struct ClockSignals2 {
-  void check_phase(int phase);
+  void check_phase(int phase) const;
 
   void tick_slow(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
   void tick_fast(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
@@ -99,31 +114,6 @@ struct ClockSignals2 {
 
 //-----------------------------------------------------------------------------
 
-struct ClockRegisters1 {
-
-  void tock_slow(const SystemSignals& sys_sig,
-                 const ClockSignals1& clk_sig1);
-
-  void tock_fast(const SystemSignals& sys_sig);
-
-  void pwron();
-  void reset();
-  void check_phase(int phase);
-  static void check_match(const ClockRegisters1& a, const ClockRegisters1& b);
-
-//private:
-
-  friend struct ClockSignals1;
-  friend struct ClockSignals2;
-
-  /*p01.AFUR*/ Reg PHAZ_ABCDxxxx;
-  /*p01.ALEF*/ Reg PHAZ_xBCDExxx;
-  /*p01.APUK*/ Reg PHAZ_xxCDEFxx;
-  /*p01.ADYK*/ Reg PHAZ_xxxDEFGx;
-};
-
-//-----------------------------------------------------------------------------
-
 struct ClockRegisters2 {
 
   void tock_slow(const SystemSignals& sys_sig,
@@ -136,7 +126,7 @@ struct ClockRegisters2 {
 
   void pwron();
   void reset();
-  void check_phase(int phase);
+  void check_phase(int phase) const;
   static void check_match(const ClockRegisters2& a, const ClockRegisters2& b);
 
 //private:

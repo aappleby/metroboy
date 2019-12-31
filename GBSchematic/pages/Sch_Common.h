@@ -150,7 +150,7 @@ struct SystemSignals {
     return !(clk_phase & 1);
   }
 
-  int phase_count() {
+  int phase_count() const {
     return clk_phase;
   }
 

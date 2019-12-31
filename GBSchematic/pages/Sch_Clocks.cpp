@@ -6,9 +6,17 @@
 
 namespace Schematics {
 
+void check_phase_name(int phase, const bool val, char* name) {
+  bool expected = name[phase + 5] != 'x';
+  if (val != expected) {
+    printf("Phase of %s FAIL - phase %d, expected %d, actual %d\n", name, phase, expected, val);
+    __debugbreak();
+  }
+}
+
 //-----------------------------------------------------------------------------
 
-void ClockSignals1::check_phase(int phase) {
+void ClockSignals1::check_phase(int phase) const {
   check_phase_name(phase, ARYS_AxCxExGx, "ARYS_AxCxExGx");
   check_phase_name(phase, ANOS_AxCxExGx, "ANOS_AxCxExGx");
   check_phase_name(phase, AVET_xBxDxFxH, "AVET_xBxDxFxH");
@@ -209,7 +217,7 @@ void ClockRegisters1::reset() {
   PHAZ_xxxDEFGx.val = 0; PHAZ_xxxDEFGx.clk = 0;
 }
 
-void ClockRegisters1::check_phase(int phase) {
+void ClockRegisters1::check_phase(int phase) const {
   check_phase_name(phase, PHAZ_ABCDxxxx, "PHAZ_ABCDxxxx");
   check_phase_name(phase, PHAZ_xBCDExxx, "PHAZ_xBCDExxx");
   check_phase_name(phase, PHAZ_xxCDEFxx, "PHAZ_xxCDEFxx");
@@ -225,18 +233,20 @@ void ClockRegisters1::check_match(const ClockRegisters1& a, const ClockRegisters
 
 //----------------------------------------
 
-void ClockRegisters1::tock_slow(const SystemSignals& sys_sig,
-                                const ClockSignals1& clk_sig1) {
+void ClockRegisters1::tock_slow(const SystemSignals& sys_sig) {
+  ClockRegisters1 prev = *this;
+  ClockRegisters1& next = *this;
+
   wire CLK = sys_sig.clk();
 
   /*p01.AVET*/ wire AVET_xBxDxFxH = not(CLK);
   /*p01.ATAL*/ wire ATAL_AxCxExGx = not(AVET_xBxDxFxH);
 
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ PHAZ_ABCDxxxx.duotock(ATAL_AxCxExGx, sys_sig.MODE_PROD, !clk_sig1.PHAZ_xxxDEFGx);
-  /*p01.ALEF*/ PHAZ_xBCDExxx.duotock(ATAL_AxCxExGx, sys_sig.MODE_PROD,  clk_sig1.PHAZ_ABCDxxxx);
-  /*p01.APUK*/ PHAZ_xxCDEFxx.duotock(ATAL_AxCxExGx, sys_sig.MODE_PROD,  clk_sig1.PHAZ_xBCDExxx);
-  /*p01.ADYK*/ PHAZ_xxxDEFGx.duotock(ATAL_AxCxExGx, sys_sig.MODE_PROD,  clk_sig1.PHAZ_xxCDEFxx);
+  /*p01.AFUR*/ next.PHAZ_ABCDxxxx.duotock(ATAL_AxCxExGx, sys_sig.MODE_PROD, !prev.PHAZ_xxxDEFGx);
+  /*p01.ALEF*/ next.PHAZ_xBCDExxx.duotock(ATAL_AxCxExGx, sys_sig.MODE_PROD,  prev.PHAZ_ABCDxxxx);
+  /*p01.APUK*/ next.PHAZ_xxCDEFxx.duotock(ATAL_AxCxExGx, sys_sig.MODE_PROD,  prev.PHAZ_xBCDExxx);
+  /*p01.ADYK*/ next.PHAZ_xxxDEFGx.duotock(ATAL_AxCxExGx, sys_sig.MODE_PROD,  prev.PHAZ_xxCDEFxx);
 }
 
 //----------------------------------------
@@ -259,7 +269,7 @@ void ClockRegisters1::tock_fast(const SystemSignals& sys_sig) {
 
 //-----------------------------------------------------------------------------
 
-void ClockSignals2::check_phase(int phase) {
+void ClockSignals2::check_phase(int phase) const {
   check_phase_name(phase, WUVU_AxxDExxH, "WUVU_AxxDExxH");
   check_phase_name(phase, VENA_xBCDExxx, "VENA_xBCDExxx");
   check_phase_name(phase, WOSU_xxCDxxGH, "WOSU_xxCDxxGH");
@@ -318,7 +328,7 @@ void ClockRegisters2::reset() {
   WOSU_xxCDxxGH.val = 1; WOSU_xxCDxxGH.clk = 0;
 }
 
-void ClockRegisters2::check_phase(int phase) {
+void ClockRegisters2::check_phase(int phase) const {
   check_phase_name(phase, WUVU_AxxDExxH, "WUVU_AxxDExxH");
   check_phase_name(phase, VENA_xBCDExxx, "VENA_xBCDExxx");
   check_phase_name(phase, WOSU_xxCDxxGH, "WOSU_xxCDxxGH");

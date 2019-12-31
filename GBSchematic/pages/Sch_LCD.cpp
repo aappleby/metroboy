@@ -15,10 +15,10 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void LCDSignals::tick_slow(const SystemSignals& /*sys_sig*/,
-                           const ClockSignals2& /*clk_sig2*/,
-                           const ResetSignals2& rst_sig2,
-                           const LCDRegisters& lcd)
+LCDSignals LCDSignals::tick_slow(const SystemRegisters& /*sys_reg*/,
+                                 const ClockSignals2& /*clk_sig2*/,
+                                 const ResetSignals2& rst_sig2,
+                                 const LCDRegisters& lcd)
 {
   /*p01.ATAR*/ bool VID_RESET6  = not(rst_sig2.VID_RESETn);
   /*p01.AMYG*/ bool VID_RESET7  = not(rst_sig2.VID_RESETn);
@@ -34,43 +34,47 @@ void LCDSignals::tick_slow(const SystemSignals& /*sys_sig*/,
   /*p28.BYVA*/ wire VID_LINE_TRIG_d4p = not(VID_LINE_TRIG_d4b);
   /*p29.DYBA*/ wire VID_LINE_TRIG_d4c = not(VID_LINE_TRIG_d4p);
 
-  LCDSignals& next = *this;
+  LCDSignals sig;
 
-  /*p21.PARU*/ next.VBLANK_d4b         = VBLANK_d4b;
-  /*p28.BYHA*/ next.VID_LINE_TRIG_d4n  = VID_LINE_TRIG_d4n;
-  /*p28.ATEJ*/ next.VID_LINE_TRIG_d4a  = VID_LINE_TRIG_d4a;
-  /*p27.XAHY*/ next.VID_LINE_TRIG_d4o  = VID_LINE_TRIG_d4o;
-  /*p28.BYVA*/ next.VID_LINE_TRIG_d4p  = VID_LINE_TRIG_d4p;
-  /*p29.DYBA*/ next.VID_LINE_TRIG_d4c  = VID_LINE_TRIG_d4c;
+  /*p21.PARU*/ sig.VBLANK_d4b         = VBLANK_d4b;
+  /*p28.BYHA*/ sig.VID_LINE_TRIG_d4n  = VID_LINE_TRIG_d4n;
+  /*p28.ATEJ*/ sig.VID_LINE_TRIG_d4a  = VID_LINE_TRIG_d4a;
+  /*p27.XAHY*/ sig.VID_LINE_TRIG_d4o  = VID_LINE_TRIG_d4o;
+  /*p28.BYVA*/ sig.VID_LINE_TRIG_d4p  = VID_LINE_TRIG_d4p;
+  /*p29.DYBA*/ sig.VID_LINE_TRIG_d4c  = VID_LINE_TRIG_d4c;
+
+  return sig;
 }
 
 //----------------------------------------
 
-void LCDSignals::tick_fast(const SystemSignals& /*sys_sig*/,
-                           const ClockSignals2& /*clk_sig2*/,
-                           const ResetSignals2& rst_sig2,
-                           const LCDRegisters& lcd)
+LCDSignals LCDSignals::tick_fast(const SystemRegisters& /*sys_reg*/,
+                                 const ClockSignals2& /*clk_sig2*/,
+                                 const ResetSignals2& rst_sig2,
+                                 const LCDRegisters& lcd)
 {
-  LCDSignals& next = *this;
 
   if (!rst_sig2.VID_RESETn) {
-    next.VBLANK_d4b        = 0;
-    next.VID_LINE_TRIG_d4n = 0;
-    next.VID_LINE_TRIG_d4a = 1;
-    next.VID_LINE_TRIG_d4o = 0;
-    next.VID_LINE_TRIG_d4p = 0;
-    next.VID_LINE_TRIG_d4c = 1;
-    return;
+    LCDSignals sig;
+    sig.VBLANK_d4b        = 0;
+    sig.VID_LINE_TRIG_d4n = 0;
+    sig.VID_LINE_TRIG_d4a = 1;
+    sig.VID_LINE_TRIG_d4o = 0;
+    sig.VID_LINE_TRIG_d4p = 0;
+    sig.VID_LINE_TRIG_d4c = 1;
+    return sig;
   }
   else {
     bool trig = or(lcd.VID_LINE_d6, !lcd.VID_LINE_d4);
 
-    /*p21.PARU*/ next.VBLANK_d4b        = not(!lcd.VBLANK_d4);
-    /*p28.BYHA*/ next.VID_LINE_TRIG_d4n =  trig;
-    /*p28.ATEJ*/ next.VID_LINE_TRIG_d4a = !trig;
-    /*p27.XAHY*/ next.VID_LINE_TRIG_d4o =  trig;
-    /*p28.BYVA*/ next.VID_LINE_TRIG_d4p =  trig;
-    /*p29.DYBA*/ next.VID_LINE_TRIG_d4c = !trig;
+    LCDSignals sig;
+    sig.VBLANK_d4b        = not(!lcd.VBLANK_d4);
+    sig.VID_LINE_TRIG_d4n =  trig;
+    sig.VID_LINE_TRIG_d4a = !trig;
+    sig.VID_LINE_TRIG_d4o =  trig;
+    sig.VID_LINE_TRIG_d4p =  trig;
+    sig.VID_LINE_TRIG_d4c = !trig;
+    return sig;
   }
 }
 
@@ -157,7 +161,7 @@ void LCDRegisters::check_match(const LCDRegisters& a, const LCDRegisters& b) {
 
 //----------------------------------------
 
-void LCDRegisters::tock_slow(const SystemSignals& /*sys_sig*/,
+void LCDRegisters::tock_slow(const SystemRegisters& /*sys_reg*/,
                              const ClockSignals2& clk_sig2,
                              const ResetSignals2& rst_sig2,
                              const LCDSignals& /*lcd_sig*/)
@@ -217,7 +221,7 @@ void LCDRegisters::tock_slow(const SystemSignals& /*sys_sig*/,
 
 //----------------------------------------
 
-void LCDRegisters::tock_fast(const SystemSignals& /*sys_sig*/,
+void LCDRegisters::tock_fast(const SystemRegisters& /*sys_reg*/,
                              const ClockSignals2& clk_sig2,
                              const ResetSignals2& rst_sig2)
 {

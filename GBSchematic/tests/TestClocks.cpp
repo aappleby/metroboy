@@ -97,10 +97,10 @@ void labels() {
   line++;
 }
 
-void dump(int x, SystemSignals& sys_sig, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
+void dump(int x, SystemRegisters& sys_reg, ClockSignals1& clk_sig1, ClockSignals2& clk_sig2) {
   int line = 3;
-  plot2(x, line++, sys_sig.phaseC());
-  plot(x, line++, sys_sig.clk());
+  plot2(x, line++, sys_reg.phaseC());
+  plot(x, line++, sys_reg.clk());
   line++;
 
   plot(x, line++, clk_sig1.ARYS_AxCxExGx);
@@ -185,7 +185,13 @@ void TestClocks() {
 
   for (int phase = 0; phase < 8; phase++) {
     gb.sim_slow(1);
-    dump(cursor++, gb.sys_sig, gb.clk_sig1, gb.clk_sig2);
+
+    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(gb.sys_reg, gb.clk_reg1);
+    ResetSignals1 rst_sig1 = ResetSignals1::tick_fast(gb.sys_reg, gb.rst_reg);
+    ResetSignals2 rst_sig2 = ResetSignals2::tick_fast(gb.sys_reg, rst_sig1);
+    ClockSignals2 clk_sig2 = ClockSignals2::tick_fast(gb.sys_reg, rst_sig2, gb.clk_reg2);
+
+    dump(cursor++, gb.sys_reg, clk_sig1, clk_sig2);
   }
 
   /*

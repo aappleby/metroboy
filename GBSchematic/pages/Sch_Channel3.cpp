@@ -5,7 +5,7 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void P16_Ch3Regs_tick(const SystemSignals& sys_sig,
+void P16_Ch3Regs_tick(const SystemRegisters& sys_reg,
                       const ClockSignals1& clk,
                       const Gameboy& a,
                       const Gameboy& b,
@@ -281,7 +281,7 @@ void P16_Ch3Regs_tick(const SystemSignals& sys_sig,
 
   {
     /*p01.BUGO*/ wire BUGO_xBCDExxx = not(clk.AFEP_AxxxxFGH);
-    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(sys_sig.CPUCLK_REQn, BUGO_xBCDExxx, clk.AROV_xxCDEFxx);
+    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(sys_reg.CPUCLK_REQn, BUGO_xBCDExxx, clk.AROV_xxCDEFxx);
     /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
     /*p01.BUKE*/ wire BUKE_AxxxxxGH = not(BASU_xBCDEFxx);
     /*p17.ABUR*/ wire ABUR_xBCDEFxx = not(BUKE_AxxxxxGH);

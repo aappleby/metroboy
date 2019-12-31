@@ -64,7 +64,7 @@ inline void check(bool x) {
 
 //-----------------------------------------------------------------------------
 
-struct SystemSignals {
+struct SystemRegisters {
   void pwron() {
     clk_phase = 6;
 

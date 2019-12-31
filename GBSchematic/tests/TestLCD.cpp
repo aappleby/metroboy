@@ -17,7 +17,7 @@ void sim_fast_slow(TestGB& gb1, TestGB& gb2, int phases, bool check_phases) {
 // After boot, we should be in phase 7 and 10 phases from x=1.
 
 void check_boot_phase_alignment(TestGB gb) {
-  check(gb.sys_sig.phaseC() == 7);
+  check(gb.sys_reg.phaseC() == 7);
 
   check(gb.lcd_reg.x() == 0);
   check(gb.lcd_reg.y() == 0);
@@ -46,20 +46,20 @@ void test_reset() {
   gb2.pwron();
   sim_fast_slow(gb1, gb2, 16, false);
 
-  gb1.sys_sig.set_rst(false);
-  gb2.sys_sig.set_rst(false);
+  gb1.sys_reg.set_rst(false);
+  gb2.sys_reg.set_rst(false);
   sim_fast_slow(gb1, gb2, 16, false);
 
-  gb1.sys_sig.set_clk_good(true);
-  gb2.sys_sig.set_clk_good(true);
+  gb1.sys_reg.set_clk_good(true);
+  gb2.sys_reg.set_clk_good(true);
   sim_fast_slow(gb1, gb2, 16, false);
 
-  gb1.sys_sig.set_clk_req(true);
-  gb2.sys_sig.set_clk_req(true);
+  gb1.sys_reg.set_clk_req(true);
+  gb2.sys_reg.set_clk_req(true);
   sim_fast_slow(gb1, gb2, 16, false);
 
-  gb1.sys_sig.set_lcdc_en(true);
-  gb2.sys_sig.set_lcdc_en(true);
+  gb1.sys_reg.set_lcdc_en(true);
+  gb2.sys_reg.set_lcdc_en(true);
   sim_fast_slow(gb1, gb2, 16, false);
 
   // video clocks are stable, run a frame with clock phase checking on.

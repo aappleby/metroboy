@@ -10,14 +10,12 @@ TestGB::TestGB() {
 
 void TestGB::pwron() {
   memset(this, 0, sizeof(*this));
-  sys_sig.pwron();
+  sys_reg.pwron();
 
   clk_reg1.pwron();
   clk_reg2.pwron();
   rst_reg.pwron();
   lcd_reg.pwron();
-
-  update_signals(false);
 }
 
 //----------------------------------------
@@ -26,13 +24,13 @@ void TestGB::pwron() {
 
 void TestGB::boot(bool fast) {
   sim(16, fast);
-  sys_sig.set_rst(false);
+  sys_reg.set_rst(false);
   sim(16, fast);
-  sys_sig.set_clk_good(true);
+  sys_reg.set_clk_good(true);
   sim(16, fast);
-  sys_sig.set_clk_req(true);
+  sys_reg.set_clk_req(true);
   sim(16, fast);
-  sys_sig.set_lcdc_en(true);
+  sys_reg.set_lcdc_en(true);
   sim(456*2*154 - 7, fast);
 }
 
@@ -42,59 +40,34 @@ void TestGB::boot(bool fast) {
 void TestGB::reset() {
   pwron();
 
-  sys_sig.reset();
+  sys_reg.reset();
 
   clk_reg1.reset();
   clk_reg2.reset();
   rst_reg.reset();
   lcd_reg.reset();
-
-  update_signals(false);
 }
 
 //-----------------------------------------------------------------------------
 
-void TestGB::update_signals(bool fast) {
-  if (fast) {
-    clk_sig1.tick_fast(sys_sig, clk_reg1);
-    rst_sig1.tick_fast(sys_sig, rst_reg);
-    rst_sig2.tick_fast(sys_sig, rst_sig1);
-    clk_sig2.tick_fast(sys_sig, rst_sig2, clk_reg2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
-  }
-  else {
-    clk_sig1.tick_slow(sys_sig, clk_reg1);
-    rst_sig1.tick_slow(sys_sig, clk_sig1, rst_reg);
-    rst_sig2.tick_slow(sys_sig, rst_sig1);
-    clk_sig2.tick_slow(sys_sig, rst_sig2, clk_reg2);
-    lcd_sig.tick_slow(sys_sig, clk_sig2, rst_sig2, lcd_reg);
-  }
-}
+void TestGB::check_signals(TestGB& gb) {
+  ClockSignals1 slow_clk_sig1 = ClockSignals1::tick_slow(gb.sys_reg, gb.clk_reg1);
+  ResetSignals1 slow_rst_sig1 = ResetSignals1::tick_slow(gb.sys_reg, slow_clk_sig1, gb.rst_reg);
+  ResetSignals2 slow_rst_sig2 = ResetSignals2::tick_slow(gb.sys_reg, slow_rst_sig1);
+  ClockSignals2 slow_clk_sig2 = ClockSignals2::tick_slow(gb.sys_reg, slow_rst_sig2, gb.clk_reg2);
+  LCDSignals    slow_lcd_sig     = LCDSignals::tick_slow(gb.sys_reg, slow_clk_sig2, slow_rst_sig2, gb.lcd_reg);
 
-void TestGB::update_states(bool fast) {
-  if (fast) {
-    clk_reg1.tock_fast(sys_sig);
-    clk_reg2.tock_fast(sys_sig, rst_sig2);
-    rst_reg.tock_fast(sys_sig);
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-  }
-  else {
-    clk_reg1.tock_slow(sys_sig);
-    clk_reg2.tock_slow(sys_sig, clk_sig1, clk_sig2, rst_sig2);
-    rst_reg.tock_slow(sys_sig, clk_sig1);
-    lcd_reg.tock_slow(sys_sig, clk_sig2, rst_sig2, lcd_sig);
-  }
-}
+  ClockSignals1 fast_clk_sig1 = ClockSignals1::tick_fast(gb.sys_reg, gb.clk_reg1);
+  ResetSignals1 fast_rst_sig1 = ResetSignals1::tick_fast(gb.sys_reg, gb.rst_reg);
+  ResetSignals2 fast_rst_sig2 = ResetSignals2::tick_fast(gb.sys_reg, fast_rst_sig1);
+  ClockSignals2 fast_clk_sig2 = ClockSignals2::tick_fast(gb.sys_reg, fast_rst_sig2, gb.clk_reg2);
+  LCDSignals    fast_lcd_sig     = LCDSignals::tick_fast(gb.sys_reg, fast_clk_sig2, fast_rst_sig2, gb.lcd_reg);
 
-//-----------------------------------------------------------------------------
-
-void TestGB::check_signals(TestGB& a, TestGB& b) {
-  check_byte_match(a.sys_sig,  b.sys_sig);
-  check_byte_match(a.clk_sig1, b.clk_sig1);
-  check_byte_match(a.clk_sig2, b.clk_sig2);
-  check_byte_match(a.rst_sig1, b.rst_sig1);
-  check_byte_match(a.rst_sig2, b.rst_sig2);
-  check_byte_match(a.lcd_sig,  b.lcd_sig);
+  check_byte_match(slow_clk_sig1, fast_clk_sig1);
+  check_byte_match(slow_rst_sig1, fast_rst_sig1);
+  check_byte_match(slow_rst_sig2, fast_rst_sig2);
+  check_byte_match(slow_clk_sig2, fast_clk_sig2);
+  check_byte_match(slow_lcd_sig , fast_lcd_sig );
 }
 
 void TestGB::check_states(TestGB& a, TestGB& b) {
@@ -105,37 +78,49 @@ void TestGB::check_states(TestGB& a, TestGB& b) {
 }
 
 void TestGB::check_match(TestGB& a, TestGB& b) {
-  check_signals(a, b);
   check_states(a, b);
+  check_signals(a);
 }
 
 void TestGB::check_clock_phases() {
-  clk_sig1.check_phase(sys_sig.phaseC());
-  clk_sig2.check_phase(sys_sig.phaseC());
-  clk_reg1.check_phase(sys_sig.phaseC());
-  clk_reg2.check_phase(sys_sig.phaseC());
+  ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_reg, clk_reg1);
+  ResetSignals1 rst_sig1 = ResetSignals1::tick_fast(sys_reg, rst_reg);
+  ResetSignals2 rst_sig2 = ResetSignals2::tick_fast(sys_reg, rst_sig1);
+  ClockSignals2 clk_sig2 = ClockSignals2::tick_fast(sys_reg, rst_sig2, clk_reg2);
+  LCDSignals lcd_sig = LCDSignals::tick_slow(sys_reg, clk_sig2, rst_sig2, lcd_reg);
+
+  clk_sig1.check_phase(sys_reg.phaseC());
+  clk_sig2.check_phase(sys_reg.phaseC());
+  clk_reg1.check_phase(sys_reg.phaseC());
+  clk_reg2.check_phase(sys_reg.phaseC());
 }
 
 //-----------------------------------------------------------------------------
 
 void TestGB::sim_slow(int phases) {
   for (int p = 0; p < phases; p++) {
-    sys_sig.next_phase();
+    sys_reg.next_phase();
 
     // needs 10 passes
     for (int pass = 0; pass < 20; pass++) {
-      clk_reg1.tock_slow(sys_sig);
-      clk_sig1.tick_slow(sys_sig, clk_reg1);
+      clk_reg1.tock_slow(sys_reg);
 
-      rst_reg.tock_slow(sys_sig, clk_sig1);
-      rst_sig1.tick_slow(sys_sig, clk_sig1, rst_reg);
-      rst_sig2.tick_slow(sys_sig, rst_sig1);
+      ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(sys_reg, clk_reg1);
 
-      clk_reg2.tock_slow(sys_sig, clk_sig1, clk_sig2, rst_sig2);
-      clk_sig2.tick_slow(sys_sig, rst_sig2, clk_reg2);
+      rst_reg.tock_slow(sys_reg, clk_sig1);
 
-      lcd_reg.tock_slow(sys_sig, clk_sig2, rst_sig2, lcd_sig);
-      lcd_sig.tick_slow(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+      ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(sys_reg, clk_sig1, rst_reg);
+
+      ResetSignals2 rst_sig2 = ResetSignals2::tick_slow(sys_reg, rst_sig1);
+
+      ClockSignals2 clk_sig2 = ClockSignals2::tick_slow(sys_reg, rst_sig2, clk_reg2);
+
+      clk_reg2.tock_slow(sys_reg, clk_sig1, clk_sig2, rst_sig2);
+      
+      clk_sig2 = ClockSignals2::tick_slow(sys_reg, rst_sig2, clk_reg2);
+
+      LCDSignals lcd_sig = LCDSignals::tick_slow(sys_reg, clk_sig2, rst_sig2, lcd_reg);
+      lcd_reg.tock_slow(sys_reg, clk_sig2, rst_sig2, lcd_sig);
     }
   }
 }
@@ -144,47 +129,43 @@ void TestGB::sim_slow(int phases) {
 
 void TestGB::sim_fast(int phases) {
   for (int p = 0; p < phases; p++) {
-    sys_sig.next_phase();
+    sys_reg.next_phase();
 
-    clk_reg1.tock_fast(sys_sig);
-    clk_sig1.tick_fast(sys_sig, clk_reg1);
+    clk_reg1.tock_fast(sys_reg);
 
-    rst_reg.tock_fast(sys_sig);
-    rst_sig1.tick_fast(sys_sig, rst_reg);
-    rst_sig2.tick_fast(sys_sig, rst_sig1);
+    ClockSignals1 clk_sig1 = ClockSignals1::tick_fast(sys_reg, clk_reg1);
 
-    clk_reg2.tock_fast(sys_sig, rst_sig2);
-    clk_sig2.tick_fast(sys_sig, rst_sig2, clk_reg2);
+    rst_reg.tock_fast(sys_reg);
 
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    ResetSignals1 rst_sig1 = ResetSignals1::tick_fast(sys_reg, rst_reg);
 
-    clk_reg2.tock_fast(sys_sig, rst_sig2);
-    clk_sig2.tick_fast(sys_sig, rst_sig2, clk_reg2);
+    ResetSignals2 rst_sig2 = ResetSignals2::tick_fast(sys_reg, rst_sig1);
 
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    clk_reg2.tock_fast(sys_reg, rst_sig2);
 
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    ClockSignals2 clk_sig2A = ClockSignals2::tick_fast(sys_reg, rst_sig2, clk_reg2);
 
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    lcd_reg.tock_fast(sys_reg, clk_sig2A, rst_sig2);
 
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    clk_reg2.tock_fast(sys_reg, rst_sig2);
 
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    ClockSignals2 clk_sig2B = ClockSignals2::tick_fast(sys_reg, rst_sig2, clk_reg2);
 
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
 
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
 
-    lcd_reg.tock_fast(sys_sig, clk_sig2, rst_sig2);
-    lcd_sig.tick_fast(sys_sig, clk_sig2, rst_sig2, lcd_reg);
+    lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
+
+    lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
+
+    lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
+
+    lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
+
+    lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
+
+    lcd_reg.tock_fast(sys_reg, clk_sig2B, rst_sig2);
   }
 }
 

@@ -6,15 +6,15 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct LCDSignals {
-  void tick_slow(const SystemSignals& sys_sig,
-                 const ClockSignals2& clk_sig2,
-                 const ResetSignals2& rst_sig2,
-                 const LCDRegisters& lcd);
+  static LCDSignals tick_slow(const SystemRegisters& sys_reg,
+                              const ClockSignals2& clk_sig2,
+                              const ResetSignals2& rst_sig2,
+                              const LCDRegisters& lcd);
 
-  void tick_fast(const SystemSignals& sys_sig,
-                 const ClockSignals2& clk_sig2,
-                 const ResetSignals2& rst_sig2,
-                 const LCDRegisters& lcd);
+  static LCDSignals tick_fast(const SystemRegisters& sys_reg,
+                              const ClockSignals2& clk_sig2,
+                              const ResetSignals2& rst_sig2,
+                              const LCDRegisters& lcd);
 
   /*p21.PARU*/ bool VBLANK_d4b;
   /*p28.BYHA*/ bool VID_LINE_TRIG_d4n;
@@ -28,16 +28,16 @@ struct LCDSignals {
 
 struct LCDRegisters {
 
-  void tock_slow(const SystemSignals& sys_sig,
+  void tock_slow(const SystemRegisters& sys_reg,
                  const ClockSignals2& clk_sig2,
                  const ResetSignals2& rst_sig2,
                  const LCDSignals& lcd_sig);
 
-  void tock_fast(const SystemSignals& sys_sig,
+  void tock_fast(const SystemRegisters& sys_reg,
                  const ClockSignals2& clk_sig2,
                  const ResetSignals2& rst_sig2);
 
-  void tock_fast2(const SystemSignals& sys_sig,
+  void tock_fast2(const SystemRegisters& sys_reg,
                   const ClockSignals2& clk_sig2,
                   const ResetSignals2& rst_sig2);
 

@@ -8,8 +8,8 @@ namespace Schematics {
 struct ClockSignals1 {
   void check_phase(int phase) const;
 
-  void tick_slow(const SystemSignals& sys_sig, const ClockRegisters1& clk_reg);
-  void tick_fast(const SystemSignals& sys_sig, const ClockRegisters1& clk_reg);
+  static ClockSignals1 tick_slow(const SystemRegisters& sys_reg, const ClockRegisters1& clk_reg);
+  static ClockSignals1 tick_fast(const SystemRegisters& sys_reg, const ClockRegisters1& clk_reg);
 
   // ungated
   /*p01.ARYS*/ bool ARYS_AxCxExGx;
@@ -74,8 +74,8 @@ struct ClockSignals1 {
 
 struct ClockRegisters1 {
 
-  void tock_slow(const SystemSignals& sys_sig);
-  void tock_fast(const SystemSignals& sys_sig);
+  void tock_slow(const SystemRegisters& sys_reg);
+  void tock_fast(const SystemRegisters& sys_reg);
 
   void pwron();
   void reset();
@@ -99,8 +99,8 @@ struct ClockRegisters1 {
 struct ClockSignals2 {
   void check_phase(int phase) const;
 
-  void tick_slow(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
-  void tick_fast(const SystemSignals& sys_sig, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
+  static ClockSignals2 tick_slow(const SystemRegisters& sys_reg, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
+  static ClockSignals2 tick_fast(const SystemRegisters& sys_reg, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
 
   /*p29.WUVU*/ bool WUVU_AxxDExxH;
   /*p21.VENA*/ bool VENA_xBCDExxx;
@@ -116,12 +116,12 @@ struct ClockSignals2 {
 
 struct ClockRegisters2 {
 
-  void tock_slow(const SystemSignals& sys_sig,
+  void tock_slow(const SystemRegisters& sys_reg,
                  const ClockSignals1& clk_sig1,
                  const ClockSignals2& clk_sig2,
                  const ResetSignals2& rst_sig2);
 
-  void tock_fast(const SystemSignals& sys_sig,
+  void tock_fast(const SystemRegisters& sys_reg,
                  const ResetSignals2& rst_sig2);
 
   void pwron();

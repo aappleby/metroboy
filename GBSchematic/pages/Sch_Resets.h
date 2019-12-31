@@ -7,11 +7,11 @@ namespace Schematics {
 
 struct ResetSignals1 {
 
-  void tick_slow(const SystemSignals& sys_sig,
-                 const ClockSignals1& clk_sig1,
-                 const ResetRegisters& rst_reg);
-  void tick_fast(const SystemSignals& sys_sig,
-                 const ResetRegisters& rst_reg);
+  static ResetSignals1 tick_slow(const SystemRegisters& sys_reg,
+                                 const ClockSignals1& clk_sig1,
+                                 const ResetRegisters& rst_reg);
+  static ResetSignals1 tick_fast(const SystemRegisters& sys_reg,
+                                 const ResetRegisters& rst_reg);
 
   /*p01.BOMA*/ bool RESET_CLK; // _____fgh -> PORTD_07
   /*p01.ALUR*/ bool SYS_RESETn;
@@ -29,10 +29,8 @@ struct ResetSignals1 {
 
 struct ResetSignals2 {
 
-  void tick_slow(const SystemSignals& sys_sig,
-                 const ResetSignals1& rst_sig1);
-  void tick_fast(const SystemSignals& sys_sig,
-                 const ResetSignals1& rst_sig1);
+  static ResetSignals2 tick_slow(const SystemRegisters& sys_reg, const ResetSignals1& rst_sig1);
+  static ResetSignals2 tick_fast(const SystemRegisters& sys_reg, const ResetSignals1& rst_sig1);
 
   /*p01.XAPO*/ bool VID_RESETn;
   /*p01.TOFU*/ bool VID_RESET3;
@@ -46,9 +44,9 @@ struct ResetSignals2 {
 
 struct ResetRegisters {
 
-  void tock_slow(const SystemSignals& sys_sig,
+  void tock_slow(const SystemRegisters& sys_reg,
                  const ClockSignals1& clk_sig1);
-  void tock_fast(const SystemSignals& sys_sig);
+  void tock_fast(const SystemRegisters& sys_reg);
 
   void pwron();
   void reset();

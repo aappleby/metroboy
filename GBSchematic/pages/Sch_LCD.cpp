@@ -131,32 +131,34 @@ void LCDRegisters::reset() {
 
 }
 
-void LCDRegisters::check_match(const LCDRegisters& a, const LCDRegisters& b) {
-  check(a.X0.val == b.X0.val);
-  check(a.X1.val == b.X1.val);
-  check(a.X2.val == b.X2.val);
-  check(a.X3.val == b.X3.val);
-  check(a.X4.val == b.X4.val);
-  check(a.X5.val == b.X5.val);
-  check(a.X6.val == b.X6.val);
+bool LCDRegisters::check_match(const LCDRegisters& a, const LCDRegisters& b) {
+  bool ret = true;
+  ret &= check(a.X0.val == b.X0.val);
+  ret &= check(a.X1.val == b.X1.val);
+  ret &= check(a.X2.val == b.X2.val);
+  ret &= check(a.X3.val == b.X3.val);
+  ret &= check(a.X4.val == b.X4.val);
+  ret &= check(a.X5.val == b.X5.val);
+  ret &= check(a.X6.val == b.X6.val);
 
-  check(a.Y0.val == b.Y0.val);
-  check(a.Y1.val == b.Y1.val);
-  check(a.Y2.val == b.Y2.val);
-  check(a.Y3.val == b.Y3.val);
-  check(a.Y4.val == b.Y4.val);
-  check(a.Y5.val == b.Y5.val);
-  check(a.Y6.val == b.Y6.val);
-  check(a.Y7.val == b.Y7.val);
+  ret &= check(a.Y0.val == b.Y0.val);
+  ret &= check(a.Y1.val == b.Y1.val);
+  ret &= check(a.Y2.val == b.Y2.val);
+  ret &= check(a.Y3.val == b.Y3.val);
+  ret &= check(a.Y4.val == b.Y4.val);
+  ret &= check(a.Y5.val == b.Y5.val);
+  ret &= check(a.Y6.val == b.Y6.val);
+  ret &= check(a.Y7.val == b.Y7.val);
 
-  check(a.VID_LINE_d4.val  == b.VID_LINE_d4.val);
-  check(a.VID_LINE_d6.val  == b.VID_LINE_d6.val);
+  ret &= check(a.VID_LINE_d4.val  == b.VID_LINE_d4.val);
+  ret &= check(a.VID_LINE_d6.val  == b.VID_LINE_d6.val);
     
-  check(a.NEW_LINE_d0a_val == b.NEW_LINE_d0a_val);
+  ret &= check(a.NEW_LINE_d0a_val == b.NEW_LINE_d0a_val);
 
-  check(a.NEW_LINE_d4a.val == b.NEW_LINE_d4a.val);
-  check(a.LINE_153_d4.val  == b.LINE_153_d4.val);
-  check(a.VBLANK_d4.val    == b.VBLANK_d4.val);
+  ret &= check(a.NEW_LINE_d4a.val == b.NEW_LINE_d4a.val);
+  ret &= check(a.LINE_153_d4.val  == b.LINE_153_d4.val);
+  ret &= check(a.VBLANK_d4.val    == b.VBLANK_d4.val);
+  return ret;
 }
 
 //----------------------------------------

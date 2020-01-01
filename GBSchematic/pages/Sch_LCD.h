@@ -43,7 +43,7 @@ struct LCDRegisters {
 
   void pwron();
   void reset();
-  static void check_match(const LCDRegisters& a, const LCDRegisters& b);
+  static bool check_match(const LCDRegisters& a, const LCDRegisters& b);
 
   uint32_t x() const {
     return (X0 << 0) | (X1 << 1) | (X2 << 2) | (X3 << 3) | (X4 << 4) | (X5 << 5) | (X6 << 6);

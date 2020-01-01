@@ -220,7 +220,9 @@
     <ClCompile Include="pages\Sch_Sprites.cpp" />
     <ClCompile Include="pages\Sch_Vram.cpp" />
     <ClCompile Include="SignalTree.cpp" />
+    <ClCompile Include="tests\TestBoot.cpp" />
     <ClCompile Include="tests\TestClocks.cpp" />
+    <ClCompile Include="tests\TestFastSlow.cpp" />
     <ClCompile Include="tests\TestGB.cpp" />
     <ClCompile Include="tests\TestLCD.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>

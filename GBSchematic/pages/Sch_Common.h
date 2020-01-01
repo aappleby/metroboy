@@ -2,7 +2,18 @@
 #include "Schematics.h"
 #include <stdint.h>
 #include <memory.h>
+#include <string>
 #pragma warning(disable : 4201)
+
+using std::string;
+
+template<typename ... Args>
+string errprintf(const char* format, Args ... args)
+{
+  char source_buf[1024];
+  snprintf(source_buf, 1024, format, args ...);
+  return source_buf;
+}
 
 namespace Schematics {
 
@@ -42,24 +53,13 @@ struct LCDSignals;
 
 //-----------------------------------------------------------------------------
 
-template<typename T>
-inline void check_byte_match(const T& a, const T& b) {
-  uint8_t* blobA = (uint8_t*)&a;
-  uint8_t* blobB = (uint8_t*)&b;
-
-  for (int i = 0; i < sizeof(T); i++) {
-    if (blobA[i] != blobB[i]) {
-      printf("Mismatch at %d - 0x%02x 0x%02x", i, blobA[i], blobB[i]);
-      __debugbreak();
-    }
-  }
-}
-
-inline void check(bool x) {
+inline bool check(bool x) {
   if (!x) {
     printf("check failed\n");
-    __debugbreak();
+    return false;
+    //__debugbreak();
   }
+  return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -276,12 +276,20 @@ struct Reg2 {
     clk_a = clk_b = clk_in;
     rst_a = rst_b = rst_in;
     val_a = val_b = reg_in;
+
+    if (!rst_in) {
+      val_a = val_b = 0;
+    }
   }
 
   void set(bool clk_in, bool rst_in, bool reg_in) {
     clk_b = clk_in;
     rst_b = rst_in;
     val_b = reg_in;
+
+    if (!rst_in) {
+      val_a = 0;
+    }
   }
 
   void commit() {

@@ -103,72 +103,36 @@ void dump(int x, SystemRegisters& sys_reg, ClockSignals1& clk_sig1, ClockSignals
   plot(x, line++, sys_reg.clk());
   line++;
 
-  plot(x, line++, clk_sig1.ARYS_AxCxExGx);
   plot(x, line++, clk_sig1.ANOS_AxCxExGx);
-  plot(x, line++, clk_sig1.ATAL_AxCxExGx);
-  plot(x, line++, clk_sig1.ZAXY_AxCxExGx);
   plot(x, line++, clk_sig1.ALET_AxCxExGx);
-  plot(x, line++, clk_sig1.XYVA_AxCxExGx);
   plot(x, line++, clk_sig1.TAVA_AxCxExGx);
-  plot(x, line++, clk_sig1.XYFY_AxCxExGx);
   plot(x, line++, clk_sig1.AVET_xBxDxFxH);
-  plot(x, line++, clk_sig1.AZOF_xBxDxFxH);
   plot(x, line++, clk_sig1.ZEME_xBxDxFxH);
   plot(x, line++, clk_sig1.MYVO_xBxDxFxH);
-  plot(x, line++, clk_sig1.XOTA_xBxDxFxH);
   plot(x, line++, clk_sig1.MOXE_xBxDxFxH);
   plot(x, line++, clk_sig1.MEHE_xBxDxFxH);
   plot(x, line++, clk_sig1.LAPE_xBxDxFxH);
   line++;
 
-  plot(x, line++, clk_sig1.PHAZ_ABCDxxxx);
-  plot(x, line++, clk_sig1.PHAZ_xBCDExxx);
-  plot(x, line++, clk_sig1.PHAZ_xxCDEFxx);
-  plot(x, line++, clk_sig1.PHAZ_xxxDEFGx);
-  plot(x, line++, clk_sig1.AFEP_AxxxxFGH);
-  plot(x, line++, clk_sig1.ATYP_ABCDxxxx);
-  plot(x, line++, clk_sig1.ADAR_ABCxxxxH);
-  plot(x, line++, clk_sig1.AROV_xxCDEFxx);
   plot(x, line++, clk_sig1.AFAS_xxxxEFGx);
   line++;
 
-  plot(x, line++, clk_sig1.NULE_xxxxEFGH);
-  plot(x, line++, clk_sig1.BYRY_ABCDxxxx);
-  plot(x, line++, clk_sig1.BUDE_xxxxEFGH);
   plot(x, line++, clk_sig1.DOVA_ABCDxxxx);
   plot(x, line++, clk_sig1.UVYT_ABCDxxxx);
-  plot(x, line++, clk_sig1.BEKO_ABCDxxxx);
   plot(x, line++, clk_sig1.MOPA_xxxxEFGH);
   line++;
 
-  plot(x, line++, clk_sig1.BAPY_xxxxxxGH);
-  plot(x, line++, clk_sig1.BERU_ABCDEFxx);
-  plot(x, line++, clk_sig1.BUFA_xxxxxxGH);
-  plot(x, line++, clk_sig1.BOLO_ABCDEFxx);
-  plot(x, line++, clk_sig1.BEJA_xxxxEFGH);
-  plot(x, line++, clk_sig1.BANE_ABCDxxxx);
-  plot(x, line++, clk_sig1.BELO_xxxxEFGH);
-  plot(x, line++, clk_sig1.BAZE_ABCDxxxx);
   line++;
 
-  plot(x, line++, clk_sig1.BUTO_xBCDEFGH);
-  plot(x, line++, clk_sig1.BELE_Axxxxxxx);
-  plot(x, line++, clk_sig1.BYJU_xBCDEFGH);
-  plot(x, line++, clk_sig1.BALY_Axxxxxxx);
   plot(x, line++, clk_sig1.BOGA_xBCDEFGH);
-  plot(x, line++, clk_sig1.BUVU_Axxxxxxx);
-  plot(x, line++, clk_sig1.BYXO_xBCDEFGH);
   plot(x, line++, clk_sig1.BEDO_Axxxxxxx);
   plot(x, line++, clk_sig1.BOWA_xBCDEFGH);
   line++;
 
-  plot(x, line++, clk_sig2.WUVU_AxxDExxH);
   plot(x, line++, clk_sig2.XUPY_xBCxxFGx);
   plot(x, line++, clk_sig2.AWOH_AxxDExxH);
-  plot(x, line++, clk_sig2.VENA_xBCDExxx);
   plot(x, line++, clk_sig2.TALU_xBCDExxx);
   plot(x, line++, clk_sig2.SONO_AxxxxFGH);
-  plot(x, line++, clk_sig2.WOSU_xxCDxxGH);
   plot(x, line++, clk_sig2.XOCE_ABxxEFxx);
   line++;
 }
@@ -187,11 +151,11 @@ void TestClocks() {
     gb.sim_slow(1);
 
     ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(gb.sys_reg, gb.clk_reg1);
-    ResetSignals1 rst_sig1 = ResetSignals1::tick_fast(gb.sys_reg, gb.rst_reg);
-    ResetSignals2 rst_sig2 = ResetSignals2::tick_fast(gb.sys_reg, rst_sig1);
-    ClockSignals2 clk_sig2 = ClockSignals2::tick_fast(gb.sys_reg, rst_sig2, gb.clk_reg2);
+    //ResetSignals1 rst_sig1 = ResetSignals1::tick_fast(gb.sys_reg, gb.rst_reg);
+    //ResetSignals2 rst_sig2 = ResetSignals2::tick_fast(gb.sys_reg, rst_sig1);
+    //ClockSignals2 clk_sig2 = ClockSignals2::tick_fast(gb.sys_reg, rst_sig2, gb.clk_reg2);
 
-    dump(cursor++, gb.sys_reg, clk_sig1, clk_sig2);
+    //dump(cursor++, gb.sys_reg, clk_sig1, clk_sig2);
   }
 
   /*

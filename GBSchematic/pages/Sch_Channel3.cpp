@@ -5,8 +5,7 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void P16_Ch3Regs_tick(const SystemRegisters& sys_reg,
-                      const ClockSignals1& clk,
+void P16_Ch3Regs_tick(const ClockSignals1& clk_sig,
                       const Gameboy& a,
                       const Gameboy& b,
                       Gameboy& next) {
@@ -252,7 +251,7 @@ void P16_Ch3Regs_tick(const SystemRegisters& sys_reg,
   {
     /*p16.GOMA*/ wire APU_RESETn = not(b.apu.APU_RESET1);
     // FIXME
-    ///*p16.FOBA*/ next.ch3.CH3_RESTART_SYNC = tock_pos(a.clk.DOVA_ABCDxxxx, b.clk.DOVA_ABCDxxxx, APU_RESETn, b.ch3.CH3_RESTART_SYNC, b.ch3.NR34_START);
+    ///*p16.FOBA*/ next.ch3.CH3_RESTART_SYNC = tock_pos(a.clk_sig.DOVA_ABCDxxxx, b.clk_sig.DOVA_ABCDxxxx, APU_RESETn, b.ch3.CH3_RESTART_SYNC, b.ch3.NR34_START);
   }
 
   {
@@ -280,12 +279,6 @@ void P16_Ch3Regs_tick(const SystemRegisters& sys_reg,
   }
 
   {
-    /*p01.BUGO*/ wire BUGO_xBCDExxx = not(clk.AFEP_AxxxxFGH);
-    /*p01.BATE*/ wire BATE_AxxxxxGH = nor(sys_reg.CPUCLK_REQn, BUGO_xBCDExxx, clk.AROV_xxCDEFxx);
-    /*p01.BASU*/ wire BASU_xBCDEFxx = not(BATE_AxxxxxGH);
-    /*p01.BUKE*/ wire BUKE_AxxxxxGH = not(BASU_xBCDEFxx);
-    /*p17.ABUR*/ wire ABUR_xBCDEFxx = not(BUKE_AxxxxxGH);
-    /*p17.BORY*/ wire BORY_AxxxxxGH = not(ABUR_xBCDEFxx);
 
     /*p10.ASAD*/ wire A06n = not(b.bus.A06);
     /*p10.AVUN*/ wire A07n = not(b.bus.A07);
@@ -299,7 +292,7 @@ void P16_Ch3Regs_tick(const SystemRegisters& sys_reg,
     /*p17.BOKE*/ wire CPU_RDa = not(CPU_RDn);
     /*p17.BENA*/ wire CPU_WAVE_RD  = nand(CPU_RDa, ADDR_FF3X);
     /*p17.CAZU*/ wire CPU_WAVE_RDn = not(CPU_WAVE_RD);
-    /*p17.BETA*/ wire BETA = or(WAVE_WR, CPU_WAVE_RDn, BORY_AxxxxxGH);
+    /*p17.BETA*/ wire BETA = or(WAVE_WR, CPU_WAVE_RDn, clk_sig.BORY_AxxxxxGH);
 
     /*p17.BOXO*/ wire BOXO = nor(b.ch3.SAMPLE_CLKn, b.ch3.AZET);
     /*p17.AZOR*/ wire AZOR = not(BETA);

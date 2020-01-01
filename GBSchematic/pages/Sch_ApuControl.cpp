@@ -41,7 +41,7 @@ void P09_ApuControl_tick(const Gameboy& a,
 
   ///*p01.ATAL*/ next.sys.CLK_AxCxExGx3  = not(b.sys.AVET_xBxDxFxH);
   {
-    wire CLK_AxCxExGx3 = not(clk.ANOS_AxCxExGx);
+    /*p01.ATAL*/ wire CLK_AxCxExGx3 = not(clk.ANOS_AxCxExGx);
     /*p01.AZOF*/ next.apu.CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
     /*p01.ATAG*/ next.apu.CLK_AxCxExGx8  = not(b.apu.CLK_xBxDxFxH4);
     /*p01.AMUK*/ next.apu.CLK_xBxDxFxH1  = not(b.apu.CLK_AxCxExGx8);

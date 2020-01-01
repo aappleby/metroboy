@@ -44,16 +44,16 @@ struct ResetSignals2 {
 
 struct ResetRegisters {
 
-  void tock_slow(const SystemRegisters& sys_reg,
-                 const ClockSignals1& clk_sig1);
-  void tock_fast(const SystemRegisters& sys_reg);
-
   void pwron();
   void reset();
-  static void check_match(const ResetRegisters& a, const ResetRegisters& b);
+
+  void tick_slow(const SystemRegisters& sys_reg,
+                 const ClockSignals1& clk_sig1);
+  void tick_fast(const SystemRegisters& sys_reg);
+  void commit();
 
   /*p01.TUBO*/ bool WAITING_FOR_CLKREQ;
-  /*p01.AFER*/ Reg  RESET_REG;
+  /*p01.AFER*/ Reg2 RESET_REG;
 };
 
 //-----------------------------------------------------------------------------

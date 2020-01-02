@@ -48,7 +48,7 @@ void SpriteMatcher_tick(const Sprites& spr,
 
 //----------
 
-void SpriteMatcher_tock(const LCDSignals& lcd_sig,
+void SpriteMatcher_tock(const LcdSignals& lcd_sig,
                         const Sprites& spr,
                         const SpriteIndexLine& sil,
                         const OAM& oam,
@@ -123,13 +123,13 @@ void SpriteStore_tick(const SpriteStore& sst,
 void SpriteStore_tock(const SpriteStore& sst,
                       const ClockSignals1& clk,
                       const Sprites& spr,
-                      const ResetSignals2& rst_sig2,
-                      const LCDSignals& lcd_sig,
+                      const VideoResets& vid_rst,
+                      const LcdSignals& lcd_sig,
                       const OAM& oam,
 
                       SpriteStore& next) {
 
-  /*p29.DEZY*/ next.STORE_EN_SYNC.tock(clk.ZEME_xBxDxFxH, rst_sig2.VID_RESETn, spr.STORE_EN);
+  /*p29.DEZY*/ next.STORE_EN_SYNC.tock(clk.ZEME_xBxDxFxH, vid_rst.VID_RESETn, spr.STORE_EN);
 
   /*p29.BAKY*/ wire SPRITES_FULL = and(sst.SPRITE_COUNT1, sst.SPRITE_COUNT3);
   /*p29.CAKE*/ wire SPRITE_COUNT_CLK = or(SPRITES_FULL, sst.STORE_EN_SYNC);

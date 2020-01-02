@@ -35,7 +35,7 @@ struct Debug {
   /*p07.AMUT*/ Reg FF60_1;
   /*p05.KURA*/ bool FF60_0n;
 
-  /*p25.SOTO*/ Reg DBG_SOTO;
+  /*p25.SOTO*/ Reg SOTO_DBG;
   /*p25.TUTO*/ bool DBG_VRAM;
   /*p25.RACO*/ bool DBG_VRAMn;
 

@@ -47,7 +47,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p19.GONY*/ wire FF21o    = not(FF21a);
     /*p19.DACO*/ wire FF21_WRa = and(b.apu.APU_WR, FF21a);
     /*p19.GOKO*/ wire FF21_WRb = and(b.apu.APU_WR, FF21a);
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p19.BOXE*/ wire FF21_RDa = or(CPU_RDn, FF21n); // polarity?
     /*p19.HASU*/ wire FF21_RDb = or(CPU_RDn, FF21o);
 
@@ -88,7 +88,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p19.HUMO*/ wire FF22_WRa = and (FF22a, b.apu.APU_WR);
     /*p19.GETU*/ wire FF22_WRn = nand(FF22a, b.apu.APU_WR);
     
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p19.KEKA*/ wire FF22_RDa = or(CPU_RDn, FF22n);
 
     /*p19.KAGE*/ wire CPU_RDa = not(CPU_RDn);
@@ -127,7 +127,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   // FF23. Some weird debug voodoo here.
 
   {
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p19.BYLO*/ wire CPU_RDb = not(CPU_RDn);
 
     /*p10.DUFE*/ wire ADDR_0011bn = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 
@@ -202,7 +202,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
   // Debug
 
   {
-    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.CPU_RD);
+    /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p20.COSA*/ wire CPU_RDc = not(CPU_RDn);
     /*p20.CEPY*/ wire NR44_STOPn = not(b.ch4.NR44_STOP);
     /*p10.DUFE*/ wire ADDR_0011bn = nand(b.apu.ADDR_0xxx, b.apu.ADDR_x0xx, b.apu.ADDR_xx1x, b.apu.ADDR_xxx1); 

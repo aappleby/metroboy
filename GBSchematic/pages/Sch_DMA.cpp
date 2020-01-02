@@ -25,8 +25,8 @@ void DMA_tick(const Bus& bus,
   // FF46 DMA
 
   {
-    /*p04.LAVY*/ wire FF46_WRn  = nand(dec.FF46, ctl.CPU_WR2);
-    /*p04.MOLU*/ wire FF46_RDn1 = nand(dec.FF46, ctl.CPU_RD2);
+    /*p04.LAVY*/ wire FF46_WRn  = nand(dec.FF46, ctl.CUPA_CPUWR);
+    /*p04.MOLU*/ wire FF46_RDn1 = nand(dec.FF46, ctl.ASOT_CPURD);
     /*p04.NYGO*/ wire FF46_RD   = not(FF46_RDn1);
     /*p04.PUSY*/ wire FF46_RDn2 = not(FF46_RD);
 
@@ -55,7 +55,7 @@ void DMA_tick(const Bus& bus,
   // lupa - nor - lavy, lyxe
 
   {
-    /*p04.LAVY*/ wire FF46_WRn = nand(dec.FF46, ctl.CPU_WR2);
+    /*p04.LAVY*/ wire FF46_WRn = nand(dec.FF46, ctl.CUPA_CPUWR);
     /*p04.LOKO*/ wire DMA_RST  = nand(rst_sig.CUNU_RESETn, !dma.DMA_ENb);
 
     // Latch

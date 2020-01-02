@@ -5,45 +5,15 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct LCDSignals {
-  static LCDSignals tick_slow(const SystemRegisters& sys_reg,
-                              const ClockSignals2& clk_sig2,
-                              const ResetSignals2& rst_sig2,
-                              const LCDRegisters& lcd);
-
-  static LCDSignals tick_fast(const SystemRegisters& sys_reg,
-                              const ClockSignals2& clk_sig2,
-                              const ResetSignals2& rst_sig2,
-                              const LCDRegisters& lcd);
-
-  /*p21.PARU*/ bool VBLANK_d4b;
-  /*p28.BYHA*/ bool VID_LINE_TRIG_d4n;
-  /*p28.ATEJ*/ bool VID_LINE_TRIG_d4a;
-  /*p28.BYVA*/ bool VID_LINE_TRIG_d4p;
-  /*p29.DYBA*/ bool VID_LINE_TRIG_d4c;
-  /*p27.XAHY*/ bool VID_LINE_TRIG_d4o;
-};
-
-//-----------------------------------------------------------------------------
-
-struct LCDRegisters {
-
-  void tock_slow(const SystemRegisters& sys_reg,
-                 const ClockSignals2& clk_sig2,
-                 const ResetSignals2& rst_sig2,
-                 const LCDSignals& lcd_sig);
-
-  void tock_fast(const SystemRegisters& sys_reg,
-                 const ClockSignals2& clk_sig2,
-                 const ResetSignals2& rst_sig2);
-
-  void tock_fast2(const SystemRegisters& sys_reg,
-                  const ClockSignals2& clk_sig2,
-                  const ResetSignals2& rst_sig2);
+struct LcdRegisters {
 
   void pwron();
   void reset();
-  static bool check_match(const LCDRegisters& a, const LCDRegisters& b);
+
+  void tock_slow(const ClockSignals2& vid_clk,
+                 const VideoResets& vid_rst);
+
+  void commit();
 
   uint32_t x() const {
     return (X0 << 0) | (X1 << 1) | (X2 << 2) | (X3 << 3) | (X4 << 4) | (X5 << 5) | (X6 << 6);
@@ -54,7 +24,7 @@ struct LCDRegisters {
   }
 
 
-  /*p21.SAXO*/ Reg X0;
+  /*p21.SAXO*/ Reg X0; // increments at phase 1, reset to 0 at p909.
   /*p21.TYPO*/ Reg X1;
   /*p21.VYZO*/ Reg X2;
   /*p21.TELU*/ Reg X3;
@@ -62,7 +32,7 @@ struct LCDRegisters {
   /*p21.TAHA*/ Reg X5;
   /*p21.TYRY*/ Reg X6;
 
-  /*p21.MUWY*/ Reg Y0;
+  /*p21.MUWY*/ Reg Y0; // increments at p909, reset to 0 at p153:001
   /*p21.MYRO*/ Reg Y1;
   /*p21.LEXA*/ Reg Y2;
   /*p21.LYDO*/ Reg Y3;
@@ -71,17 +41,30 @@ struct LCDRegisters {
   /*p21.MATO*/ Reg Y6;
   /*p21.LAFO*/ Reg Y7;
 
-  /*p29.CATU*/ Reg VID_LINE_d4;
-  /*p28.ANEL*/ Reg VID_LINE_d6;
-
-  ///*p21.RUTU*/ Reg NEW_LINE_d0a;
   /*p21.RUTU*/ bool NEW_LINE_d0a_clk;
-  /*p21.RUTU*/ bool NEW_LINE_d0a_val;
+  /*p21.RUTU*/ bool NEW_LINE_d0a_val;  // p909+8
 
-  /*p21.NYPE*/ Reg NEW_LINE_d4a;
-  /*p21.MYTA*/ Reg LINE_153_d4;
-  /*p21.POPU*/ Reg VBLANK_d4;
+  /*p29.CATU*/ Reg VID_LINE_d4;        // p001+8
+  /*p21.NYPE*/ Reg NEW_LINE_d4a;       // p001+8
+  /*p28.ANEL*/ Reg VID_LINE_d6;        // p003+8
+                                       
+  /*p21.MYTA*/ Reg LINE_153_d4;        // p153:001 - p000:001
+  /*p21.POPU*/ Reg VBLANK_d4;          // p144:001 - p000:001
 
+};
+
+//-----------------------------------------------------------------------------
+
+struct LcdSignals {
+  static LcdSignals tick_slow(const VideoResets& vid_rst,
+                              const LcdRegisters& lcd);
+
+  /*p21.PARU*/ bool VBLANK_d4b;
+  /*p28.BYHA*/ bool VID_LINE_TRIG_d4n; // p001+2
+  /*p28.ATEJ*/ bool VID_LINE_TRIG_d4a; // p001+2
+  /*p28.BYVA*/ bool VID_LINE_TRIG_d4p; // p001+2
+  /*p29.DYBA*/ bool VID_LINE_TRIG_d4c; // p001+2
+  /*p27.XAHY*/ bool VID_LINE_TRIG_d4o; // p001+2
 };
 
 //-----------------------------------------------------------------------------

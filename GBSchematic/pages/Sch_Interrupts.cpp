@@ -21,7 +21,7 @@ void Interrupts_tick(const BusControl& ctl,
                      Interrupts& next,
                      Bus& bus_out) {
 
-  /*p07.ROLO*/ wire FF0F_RDn = nand(dec.ADDR_XX0X, dec.ADDR_XXXF, dec.ADDR_FFXX, ctl.CPU_RD); // schematic wrong, is NAND
+  /*p07.ROLO*/ wire FF0F_RDn = nand(dec.ADDR_XX0X, dec.ADDR_XXXF, dec.ADDR_FFXX, ctl.TEDO_CPURD); // schematic wrong, is NAND
   /*p02.POLA*/ wire FF0F_RDa = not(FF0F_RDn);
 
   /*p02.MATY*/ next.FF0F_L0 = latch_pos(FF0F_RDn, prev.FF0F_L0, prev.FF0F_0);
@@ -42,17 +42,17 @@ void Interrupts_tick(const BusControl& ctl,
 void Interrupts_tock(const Bus& bus,
                      const BusControl& ctl,
                      const Cpu& cpu,
-                     const LCDRegisters& lcd,
+                     const LcdRegisters& lcd,
                      const Serial& ser,
                      const Joypad& joy,
                      const Video& vid,
-                     const Timer& tim,
+                     const TimerSignals& tim_sig,
                      const Pins& pins,
                      const ResetSignals1& rst_sig,
                      const Decoder& dec,
                      Interrupts& next) {
 
-  /*p07.REFA*/ wire FF0F_WRn  = nand(dec.ADDR_XX0X, dec.ADDR_XXXF, dec.ADDR_FFXX, ctl.CPU_WR); // schematic wrong, is NAND
+  /*p07.REFA*/ wire FF0F_WRn  = nand(dec.ADDR_XX0X, dec.ADDR_XXXF, dec.ADDR_FFXX, ctl.TAPU_CPUWR); // schematic wrong, is NAND
   /*p02.ROTU*/ wire FF0F_WRa  = not(FF0F_WRn);
 
   /*p02.LETY*/ wire INT_VBL_ACK  = not(cpu.FROM_CPU9);
@@ -88,7 +88,7 @@ void Interrupts_tock(const Bus& bus,
   /*p02.UBUL*/ next.FF0F_1.srtock(ser.SER_CNT3,  FF0F_SET1, FF0F_RST1, FF0F_IN);
   /*p02.ULAK*/ next.FF0F_2.srtock(joy.INT_JP,    FF0F_SET2, FF0F_RST2, FF0F_IN);
   /*p02.LALU*/ next.FF0F_3.srtock(vid.INT_STAT,  FF0F_SET3, FF0F_RST3, FF0F_IN);
-  /*p02.NYBO*/ next.FF0F_4.srtock(tim.INT_TIMER, FF0F_SET4, FF0F_RST4, FF0F_IN);
+  /*p02.NYBO*/ next.FF0F_4.srtock(tim_sig.INT_TIMER, FF0F_SET4, FF0F_RST4, FF0F_IN);
 }
 
 //-----------------------------------------------------------------------------

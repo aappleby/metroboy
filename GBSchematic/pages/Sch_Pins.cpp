@@ -30,8 +30,8 @@ void Pins::tick(Cpu& cpu,
   }
 
   {
-    /*p08.MOCA*/ wire DBG_EXT_RDn = nor(dec.ADDR_VALID_AND_NOT_VRAM, dbg.MODE_DBG1);
-    /*p08.LAGU*/ wire LAGU = or(and(cpu.CPU_RAW_RD, dec.ADDR_VALID_AND_NOT_VRAMn), cpu.CPU_RAW_WR);
+    /*p08.MOCA*/ wire DBG_EXT_RDn = nor(ctl.ADDR_VALID_AND_NOT_VRAM, dbg.MODE_DBG1);
+    /*p08.LAGU*/ wire LAGU = or(and(cpu.CPU_RAW_RD, ctl.ADDR_VALID_AND_NOT_VRAMn), cpu.CPU_RAW_WR);
     /*p08.LYWE*/ wire LYWE = not(LAGU);
     /*p08.MOTY*/ wire CPU_EXT_RD = or(DBG_EXT_RDn, LYWE);
     /*p08.TYMU*/ wire RD_OUT = nor(dma.DMA_READ_CART, CPU_EXT_RD);
@@ -43,7 +43,7 @@ void Pins::tick(Cpu& cpu,
   {
     /*p01.AREV*/ wire AREV = nand(cpu.CPU_RAW_WR, clk.AFAS_xxxxEFGx);
     /*p01.APOV*/ wire CPU_WR_xxxxEFGx  = not(AREV);
-    /*p08.MOCA*/ wire DBG_EXT_RDn = nor(dec.ADDR_VALID_AND_NOT_VRAM, dbg.MODE_DBG1);
+    /*p08.MOCA*/ wire DBG_EXT_RDn = nor(ctl.ADDR_VALID_AND_NOT_VRAM, dbg.MODE_DBG1);
     /*p08.MEXO*/ wire MEXO_ABCDxxxH = not(CPU_WR_xxxxEFGx);
     /*p08.NEVY*/ wire NEVY = or(MEXO_ABCDxxxH, DBG_EXT_RDn);
     /*p08.PUVA*/ wire WR_OUT = or(NEVY, dma.DMA_READ_CART);
@@ -52,6 +52,7 @@ void Pins::tick(Cpu& cpu,
     /*p08.USUF*/ next.WR_D = nor (WR_OUT, dbg.MODE_DBG2);
   }
 
+#if 0
   //----------
   // Address pin driver
 
@@ -99,7 +100,7 @@ void Pins::tick(Cpu& cpu,
     /*p08.LAGU*/ wire LAGU = or(and(cpu.CPU_RAW_RD, dec.ADDR_VALID_AND_NOT_VRAMn), cpu.CPU_RAW_WR);
     /*p08.LYWE*/ wire LYWE = not(LAGU);
     /*p08.MOTY*/ wire CPU_EXT_RD = or(DBG_EXT_RDn, LYWE);
-    /*p08.REDU*/ wire CPU_RDo = not(ctl.CPU_RD);
+    /*p08.REDU*/ wire CPU_RDo = not(ctl.TEDO_CPURD);
 
     /*p08.LULA*/ next.D0_B = ctl.CBUS_TO_CEXT;
     /*p08.LULA*/ next.D1_B = ctl.CBUS_TO_CEXT;
@@ -128,6 +129,7 @@ void Pins::tick(Cpu& cpu,
     /*p08.ROGY*/ next.D6_D = nor (bus.D6, ctl.CBUS_TO_CEXTn);
     /*p08.RYDA*/ next.D7_D = nor (bus.D7, ctl.CBUS_TO_CEXTn);
   }
+#endif
 }
 
 //-----------------------------------------------------------------------------

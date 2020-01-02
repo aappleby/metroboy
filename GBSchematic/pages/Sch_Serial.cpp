@@ -21,7 +21,7 @@ void Serial_tick(const Bus& bus,
   //----------
   // Serial port
 
-  /*p06.UWAM*/ wire FF02_WRn = nand(ctl.CPU_WR, dec.ADDR_FF00_FF03, bus.A01, dec.TOVY_A00n);
+  /*p06.UWAM*/ wire FF02_WRn = nand(ctl.TAPU_CPUWR, dec.ADDR_FF00_FF03, bus.A01, dec.TOVY_A00n);
   /*p06.CABY*/ wire XFER_RESET = and(prev.SER_CNT3n, rst_sig.SYS_RESETn);
   /*p06.ETAF*/ next.XFER_START.tock(FF02_WRn, XFER_RESET,    bus.D7);
   /*p06.CULY*/ next.XFER_DIR  .tock(FF02_WRn, rst_sig.SYS_RESETn, bus.D0);
@@ -39,7 +39,7 @@ void Serial_tick(const Bus& bus,
   /*p06.CALY*/ next.SER_CNT3.tock(!prev.SER_CNT2, SER_RST, !prev.SER_CNT3);
   /*p06.COBA*/ next.SER_CNT3n  = not(prev.SER_CNT3);
   
-  /*p06.URYS*/ wire FF01_WRn = nand(ctl.CPU_WR, dec.ADDR_FF00_FF03, bus.A00, dec.TOLA_A01n);
+  /*p06.URYS*/ wire FF01_WRn = nand(ctl.TAPU_CPUWR, dec.ADDR_FF00_FF03, bus.A00, dec.TOLA_A01n);
   /*p06.DAKU*/ wire FF01_WR  = not (FF01_WRn);
 
   /*p06.CUFU*/ wire SER_DATA0_SETn = nand(bus.D0, FF01_WR);
@@ -79,7 +79,7 @@ void Serial_tick(const Bus& bus,
   /*p06.CULY*/ next.SCK_B = prev.XFER_DIR;
   /*p06.KUJO*/ next.SCK_D = nor (prev.SER_CLK, /*p06.JAGO*/ not(prev.XFER_DIR));
 
-  /*p06.UFEG*/ wire FF01_RD = and(ctl.CPU_RD, dec.ADDR_FF00_FF03, bus.A00, dec.TOLA_A01n);
+  /*p06.UFEG*/ wire FF01_RD = and(ctl.TEDO_CPURD, dec.ADDR_FF00_FF03, bus.A00, dec.TOLA_A01n);
   /*p06.CUGY*/ if (FF01_RD) bus_out.D0 = prev.SER_DATA0;
   /*p06.DUDE*/ if (FF01_RD) bus_out.D1 = prev.SER_DATA1;
   /*p06.DETU*/ if (FF01_RD) bus_out.D2 = prev.SER_DATA2;
@@ -89,7 +89,7 @@ void Serial_tick(const Bus& bus,
   /*p06.EFAB*/ if (FF01_RD) bus_out.D6 = prev.SER_DATA6;
   /*p06.ETAK*/ if (FF01_RD) bus_out.D7 = prev.SER_DATA7;
 
-  /*p06.UCOM*/ wire FF02_RD = and (ctl.CPU_RD, dec.ADDR_FF00_FF03, bus.A01, dec.TOVY_A00n);
+  /*p06.UCOM*/ wire FF02_RD = and (ctl.TEDO_CPURD, dec.ADDR_FF00_FF03, bus.A01, dec.TOVY_A00n);
   /*p06.CORE*/ if (FF02_RD) bus_out.D0 = prev.XFER_DIR;
   /*p06.ELUV*/ if (FF02_RD) bus_out.D7 = prev.XFER_START;
 }

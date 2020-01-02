@@ -15,7 +15,7 @@ void Debug::tick(const Bus& bus,
                  const ClockSignals1& clk,
                  const Pins& pins,
                  const Decoder& dec,
-                 const ResetSignals1& rst_sig,
+                 const ResetSignals1& rst_sig1,
                  const Debug& prev,
                  Bus& bus_out) {
 
@@ -32,10 +32,11 @@ void Debug::tick(const Bus& bus,
   /*p08.RYCA*/ next.MODE_DBG2n2 = not(prev.MODE_DBG2);
 
   // so is one of the debug pins a clock, and this is a clock divider?
-  /*p25.SYCY*/ wire CLK_SOTO = not(prev.MODE_DBG2);
-  /*p25.SOTO*/ next.DBG_SOTO.tock(CLK_SOTO, rst_sig.SOTO_RESET, !prev.DBG_SOTO);
+  /*p25.SYCY*/ wire SYCY_CLK = not(prev.MODE_DBG2);
+  /*p01.SOTO*/ wire CUNU_RST = not(rst_sig1.SYS_RESET);
+  /*p25.SOTO*/ next.SOTO_DBG.tock(SYCY_CLK, CUNU_RST, !prev.SOTO_DBG);
 
-  /*p25.TUTO*/ next.DBG_VRAM  = and(prev.MODE_DBG2, !prev.DBG_SOTO);
+  /*p25.TUTO*/ next.DBG_VRAM  = and(prev.MODE_DBG2, !prev.SOTO_DBG);
   /*p25.RACO*/ next.DBG_VRAMn = not(prev.DBG_VRAM);
 
   //----------
@@ -68,15 +69,16 @@ void Debug::tick(const Bus& bus,
   // FF60 debug reg
 
   /*p07.APET*/ wire MODE_DEBUG = or(prev.MODE_DBG1, prev.MODE_DBG2);
-  /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus.A05, bus.A06, ctl.CPU_WR, dec.ADDR_111111110xx00000);
-  /*p07.BURO*/ next.FF60_0.tock(FF60_WRn, rst_sig.SYS_RESETn, bus.D0);
-  /*p07.AMUT*/ next.FF60_1.tock(FF60_WRn, rst_sig.SYS_RESETn, bus.D1);
+  /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus.A05, bus.A06, ctl.TAPU_CPUWR, dec.ADDR_111111110xx00000);
+  /*p07.BURO*/ next.FF60_0.tock(FF60_WRn, rst_sig1.SYS_RESETn, bus.D0);
+  /*p07.AMUT*/ next.FF60_1.tock(FF60_WRn, rst_sig1.SYS_RESETn, bus.D1);
 
   /*p05.KURA*/ next.FF60_0n = not(prev.FF60_0);
   /*p05.JEVA*/ wire FF60_0o = not(prev.FF60_0);
   /*p05.KORE*/ next.P05_NC0 = nand(prev.DBG_FF00_D7, prev.FF60_0);
   /*p05.KYWE*/ next.P05_NC1 = nor (prev.DBG_FF00_D7, FF60_0o);
 
+#if 0
   /*p08.LYRA*/ wire DBG_D_RDn = nand(prev.MODE_DBG2, ctl.CBUS_TO_CEXTn);
   /*p08.TUTY*/ if (!DBG_D_RDn) bus_out.D0 = not(/*p08.TOVO*/ not(pins.D0_C));
   /*p08.SYWA*/ if (!DBG_D_RDn) bus_out.D1 = not(/*p08.RUZY*/ not(pins.D1_C));
@@ -86,6 +88,7 @@ void Debug::tick(const Bus& bus,
   /*p08.SAJO*/ if (!DBG_D_RDn) bus_out.D5 = not(/*p08.RATU*/ not(pins.D5_C));
   /*p08.TEMY*/ if (!DBG_D_RDn) bus_out.D6 = not(/*p08.SOCA*/ not(pins.D6_C));
   /*p08.ROPA*/ if (!DBG_D_RDn) bus_out.D7 = not(/*p08.RYBA*/ not(pins.D7_C));
+#endif
 
   //----------
   // if NET01 high, drive external address bus onto internal address

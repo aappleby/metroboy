@@ -43,7 +43,7 @@ void Joypad_tick(const Bus& bus,
   /*p05.CELA*/ next.PIN_P15_A = or(!prev.JOYP_ABCS, dbg.FF60_0n);
   /*p05.KARU*/ next.PIN_P15_D = !prev.JOYP_ABCS;
 
-  /*p10.ACAT*/ wire FF00_RD = and (ctl.CPU_RD, ADDR_111111110xx00000, A06n, A05n);
+  /*p10.ACAT*/ wire FF00_RD = and (ctl.TEDO_CPURD, ADDR_111111110xx00000, A06n, A05n);
   /*p05.BYZO*/ wire FF00_RDn = not(FF00_RD);
 
   /*p05.KEVU*/ next.JOYP_L0 = latch_pos(FF00_RDn, prev.JOYP_L0, prev.PIN_P10_C);
@@ -82,7 +82,7 @@ void Joypad_tock(const Bus& bus,
   /*p02.AGEM*/ next.JP_GLITCH2.tock(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, prev.JP_GLITCH1);
   /*p02.APUG*/ next.JP_GLITCH3.tock(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, prev.JP_GLITCH2);
 
-  /*p10.ATOZ*/ wire FF00_WRn   = nand(ctl.CPU_WR, ADDR_111111110xx00000, A06n, A05n);
+  /*p10.ATOZ*/ wire FF00_WRn   = nand(ctl.TAPU_CPUWR, ADDR_111111110xx00000, A06n, A05n);
   /*p05.JUTE*/ next.JOYP_RA    .tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D0);
   /*p05.KECY*/ next.JOYP_LB    .tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D1);
   /*p05.JALE*/ next.JOYP_UC    .tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D2);

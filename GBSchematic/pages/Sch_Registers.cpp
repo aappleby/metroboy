@@ -12,7 +12,7 @@ void Registers_tick(const RegistersIn& in,
                     const Decoder& dec,
                     const Registers& prev) {
 
-  /*p23.VYRE*/ wire FF40_RD = and(dec.FF40, in.CPU_RD2);
+  /*p23.VYRE*/ wire FF40_RD = and(dec.FF40, in.ASOT_CPURD);
   /*p23.WYCE*/ wire FF40_RDn = not(FF40_RD);
 
   /*p23.WYPO*/ if (FF40_RDn) out.D0 = prev.LCDC_BGEN;
@@ -24,7 +24,7 @@ void Registers_tick(const RegistersIn& in,
   /*p23.VAHA*/ if (FF40_RDn) out.D6 = prev.LCDC_WINMAP;
   /*p23.XEBU*/ if (FF40_RDn) out.D7 = prev.LCDC_EN;
 
-  /*p23.ANYP*/ wire FF42_RD = and(dec.FF42, in.CPU_RD2);
+  /*p23.ANYP*/ wire FF42_RD = and(dec.FF42, in.ASOT_CPURD);
   /*p23.BUWY*/ wire FF42_RDn = not(FF42_RD);
 
   /*p23.WARE*/ if (FF42_RDn) out.D0 = prev.SCY0;
@@ -36,7 +36,7 @@ void Registers_tick(const RegistersIn& in,
   /*p23.GUNE*/ if (FF42_RDn) out.D6 = prev.SCY6;
   /*p23.GYZA*/ if (FF42_RDn) out.D7 = prev.SCY7;
 
-  /*p23.AVOG*/ wire FF43_RD = and(dec.FF43, in.CPU_RD2);
+  /*p23.AVOG*/ wire FF43_RD = and(dec.FF43, in.ASOT_CPURD);
   /*p23.BEBA*/ wire FF43_RDn = not(FF43_RD);
 
   /*p23.EDOS*/ if (FF43_RDn) out.D0 = prev.SCX0;
@@ -48,7 +48,7 @@ void Registers_tick(const RegistersIn& in,
   /*p23.DOXE*/ if (FF43_RDn) out.D6 = prev.SCX6;
   /*p23.CASY*/ if (FF43_RDn) out.D7 = prev.SCX7;
 
-  /*p23.XYLY*/ wire FF45_RD = and(in.CPU_RD2, dec.FF45);
+  /*p23.XYLY*/ wire FF45_RD = and(in.ASOT_CPURD, dec.FF45);
   /*p23.WEKU*/ wire FF45_RDn = not(FF45_RD);
 
   /*p23.RETU*/ if (FF45_RDn) out.D0 = prev.LYC0;
@@ -60,7 +60,7 @@ void Registers_tick(const RegistersIn& in,
   /*p23.VAFE*/ if (FF45_RDn) out.D6 = prev.LYC6;
   /*p23.PUFY*/ if (FF45_RDn) out.D7 = prev.LYC7;
 
-  /*p36.VUSO*/ wire FF47_RD = and(in.CPU_RD2, dec.FF47);
+  /*p36.VUSO*/ wire FF47_RD = and(in.ASOT_CPURD, dec.FF47);
   /*p36.TEPY*/ wire FF47_RDn = not(FF47_RD);
 
   /*p36.RARO*/ if (FF47_RDn) out.D0 = prev.BGP_D0;
@@ -72,7 +72,7 @@ void Registers_tick(const RegistersIn& in,
   /*p36.LYKA*/ if (FF47_RDn) out.D5 = prev.BGP_D5;
   /*p36.LARY*/ if (FF47_RDn) out.D7 = prev.BGP_D7;
 
-  /*p36.XUFY*/ wire FF48_RD  = and(in.CPU_RD2, dec.FF48);
+  /*p36.XUFY*/ wire FF48_RD  = and(in.ASOT_CPURD, dec.FF48);
   /*p36.XOZY*/ wire FF48_RDn = not(FF48_RD);
 
   /*p36.XARY*/ if (FF48_RDn) out.D0 = prev.OBP0_D0;
@@ -84,7 +84,7 @@ void Registers_tick(const RegistersIn& in,
   /*p36.XOBO*/ if (FF48_RDn) out.D5 = prev.OBP0_D5;
   /*p36.XAWO*/ if (FF48_RDn) out.D7 = prev.OBP0_D7;
 
-  /*p36.MUMY*/ wire FF49_RD  = and(in.CPU_RD2, dec.FF49);
+  /*p36.MUMY*/ wire FF49_RD  = and(in.ASOT_CPURD, dec.FF49);
   /*p36.LOTE*/ wire FF49_RDn = not(FF49_RD);
 
   /*p36.LAJU*/ if (FF49_RDn) out.D0 = prev.OBP1_D0;
@@ -96,7 +96,7 @@ void Registers_tick(const RegistersIn& in,
   /*p36.LUGA*/ if (FF49_RDn) out.D5 = prev.OBP1_D5;
   /*p36.LELU*/ if (FF49_RDn) out.D7 = prev.OBP1_D7;
 
-  /*p23.WAXU*/ wire FF4A_RD = and(in.CPU_RD2, dec.FF4A);
+  /*p23.WAXU*/ wire FF4A_RD = and(in.ASOT_CPURD, dec.FF4A);
   /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
 
   /*p23.PUNU*/ if (FF4A_RDn) out.D0 = prev.WY0;
@@ -108,7 +108,7 @@ void Registers_tick(const RegistersIn& in,
   /*p23.POLO*/ if (FF4A_RDn) out.D6 = prev.WY6;
   /*p23.MERA*/ if (FF4A_RDn) out.D7 = prev.WY7;
 
-  /*p23.WYZE*/ wire FF4B_RD = and(in.CPU_RD2, dec.FF4B);
+  /*p23.WYZE*/ wire FF4B_RD = and(in.ASOT_CPURD, dec.FF4B);
   /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);
 
   /*p23.LOVA*/ if (FF4B_RDn) out.D0 = prev.WX0;
@@ -128,7 +128,7 @@ void Registers_tock(const RegistersIn& in,
                     const Decoder& dec,
                     Registers& next) {
 
-  /*p23.WARU*/ wire FF40_WR = and(dec.FF40, in.CPU_WR2);
+  /*p23.WARU*/ wire FF40_WR = and(dec.FF40, in.CUPA_CPUWR);
   /*p23.XUBO*/ wire FF40_WRn = not(FF40_WR);
 
   /*p23.VYXE*/ next.LCDC_BGEN    .tock(FF40_WRn, rst_sig.XARE_RESET, in.D0);
@@ -140,7 +140,7 @@ void Registers_tock(const RegistersIn& in,
   /*p23.WOKY*/ next.LCDC_WINMAP  .tock(FF40_WRn, rst_sig.XARE_RESET, in.D6);
   /*p23.XONA*/ next.LCDC_EN      .tock(FF40_WRn, rst_sig.XARE_RESET, in.D7);
 
-  /*p23.BEDY*/ wire FF42_WR = and(dec.FF42, in.CPU_WR2);
+  /*p23.BEDY*/ wire FF42_WR = and(dec.FF42, in.CUPA_CPUWR);
   /*p23.CAVO*/ wire FF42_WRn = not(FF42_WR);
 
   /*p23.GAVE*/ next.SCY0.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D0);
@@ -152,7 +152,7 @@ void Registers_tock(const RegistersIn& in,
   /*p23.FOHA*/ next.SCY6.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D6);
   /*p23.FUNY*/ next.SCY7.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D7);
 
-  /*p23.ARUR*/ wire FF43_WR = and(dec.FF43, in.CPU_WR2);
+  /*p23.ARUR*/ wire FF43_WR = and(dec.FF43, in.CUPA_CPUWR);
   /*p23.AMUN*/ wire FF43_WRn = not(FF43_WR);
 
   /*p23.DATY*/ next.SCX0.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D0);
@@ -164,7 +164,7 @@ void Registers_tock(const RegistersIn& in,
   /*p23.CABU*/ next.SCX6.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D6);
   /*p23.BAKE*/ next.SCX7.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D7);
 
-  /*p23.XUFA*/ wire FF45_WR = and(in.CPU_WR2, dec.FF45);
+  /*p23.XUFA*/ wire FF45_WR = and(in.CUPA_CPUWR, dec.FF45);
   /*p23.WANE*/ wire FF45_WRn = not(FF45_WR);
 
   /*p23.SYRY*/ next.LYC0.tock(FF45_WRn, rst_sig.WESY_RESET, in.D0);
@@ -176,7 +176,7 @@ void Registers_tock(const RegistersIn& in,
   /*p23.VEVO*/ next.LYC6.tock(FF45_WRn, rst_sig.WESY_RESET, in.D6);
   /*p23.RAHA*/ next.LYC7.tock(FF45_WRn, rst_sig.WESY_RESET, in.D7);
 
-  /*p36.VELY*/ wire FF47_WR = and(in.CPU_WR2, dec.FF47);
+  /*p36.VELY*/ wire FF47_WR = and(in.CUPA_CPUWR, dec.FF47);
   /*p36.TEPO*/ wire FF47_WRn = not(FF47_WR);
 
   /*p36.PAVO*/ next.BGP_D0.tock(FF47_WRn, 1, in.D0);
@@ -188,7 +188,7 @@ void Registers_tock(const RegistersIn& in,
   /*p36.MORU*/ next.BGP_D5.tock(FF47_WRn, 1, in.D5);
   /*p36.MENA*/ next.BGP_D7.tock(FF47_WRn, 1, in.D7);
 
-  /*p36.XOMA*/ wire FF48_WR  = and(in.CPU_WR2, dec.FF48);
+  /*p36.XOMA*/ wire FF48_WR  = and(in.CUPA_CPUWR, dec.FF48);
   /*p36.XELO*/ wire FF48_WRn = not(FF48_WR);
 
   /*p36.XUFU*/ next.OBP0_D0.tock(FF48_WRn, 1, in.D0);
@@ -200,7 +200,7 @@ void Registers_tock(const RegistersIn& in,
   /*p36.XYZE*/ next.OBP0_D5.tock(FF48_WRn, 1, in.D5);
   /*p36.XANA*/ next.OBP0_D7.tock(FF48_WRn, 1, in.D7);
 
-  /*p36.MYXE*/ wire FF49_WR  = and(in.CPU_WR2, dec.FF49);
+  /*p36.MYXE*/ wire FF49_WR  = and(in.CUPA_CPUWR, dec.FF49);
   /*p36.LEHO*/ wire FF49_WRn = not(FF49_WR);
 
   /*p36.MOXY*/ next.OBP1_D0.tock(FF49_WRn, 1, in.D0);
@@ -212,7 +212,7 @@ void Registers_tock(const RegistersIn& in,
   /*p36.LUGU*/ next.OBP1_D5.tock(FF49_WRn, 1, in.D5);
   /*p36.LUXO*/ next.OBP1_D7.tock(FF49_WRn, 1, in.D7);
 
-  /*p23.WEKO*/ wire FF4A_WR = and(in.CPU_WR2, dec.FF4A);
+  /*p23.WEKO*/ wire FF4A_WR = and(in.CUPA_CPUWR, dec.FF4A);
   /*p23.VEFU*/ wire FF4A_WRn = not(FF4A_WR);
 
   /*p23.NESO*/ next.WY0.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D0);
@@ -224,7 +224,7 @@ void Registers_tock(const RegistersIn& in,
   /*p23.NUKA*/ next.WY6.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D6);
   /*p23.NAFU*/ next.WY7.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D7);
 
-  /*p23.WUZA*/ wire FF4B_WR = and(in.CPU_WR2, dec.FF4B);
+  /*p23.WUZA*/ wire FF4B_WR = and(in.CUPA_CPUWR, dec.FF4B);
   /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
 
   /*p23.MYPA*/ next.WX0.tock(FF4B_WRn, rst_sig.WALU_RESET, in.D0);

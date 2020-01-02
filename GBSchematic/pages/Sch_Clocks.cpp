@@ -3,6 +3,7 @@
 #include "Sch_Pins.h"
 #include "Sch_Debug.h"
 #include "Sch_Resets.h"
+#include "Sch_System.h"
 
 namespace Schematics {
 
@@ -25,22 +26,10 @@ void ClockRegisters1::reset() {
 //----------------------------------------
 
 void ClockRegisters1::tick_slow(const SystemRegisters& sys_reg) {
-  ClockRegisters1 prev = *this;
-  ClockRegisters1& next = *this;
-
-  /*p01.AFUR*/ next.PHAZ_ABCDxxxx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD, !prev.PHAZ_xxxDEFGx);
-  /*p01.ALEF*/ next.PHAZ_xBCDExxx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_ABCDxxxx);
-  /*p01.APUK*/ next.PHAZ_xxCDEFxx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xBCDExxx);
-  /*p01.ADYK*/ next.PHAZ_xxxDEFGx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD,  prev.PHAZ_xxCDEFxx);
-}
-
-//----------------------------------------
-
-void ClockRegisters1::tick_fast(const SystemRegisters& sys_reg) {
-  PHAZ_ABCDxxxx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD, !PHAZ_xxxDEFGx);
-  PHAZ_xBCDExxx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD,  PHAZ_ABCDxxxx);
-  PHAZ_xxCDEFxx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD,  PHAZ_xBCDExxx);
-  PHAZ_xxxDEFGx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD,  PHAZ_xxCDEFxx);
+  /*p01.AFUR*/ PHAZ_ABCDxxxx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD, !PHAZ_xxxDEFGx);
+  /*p01.ALEF*/ PHAZ_xBCDExxx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD,  PHAZ_ABCDxxxx);
+  /*p01.APUK*/ PHAZ_xxCDEFxx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD,  PHAZ_xBCDExxx);
+  /*p01.ADYK*/ PHAZ_xxxDEFGx.set(sys_reg.ATAL_AxCxExGx, sys_reg.MODE_PROD,  PHAZ_xxCDEFxx);
 }
 
 //----------------------------------------
@@ -131,99 +120,51 @@ ClockSignals1 ClockSignals1::tick_slow(const SystemRegisters& sys_reg, const Clo
   return sig;
 }
 
-//----------------------------------------
-
-ClockSignals1 ClockSignals1::tick_fast(const SystemRegisters& sys_reg, const ClockRegisters1& clk_reg) {
-  return tick_slow(sys_reg, clk_reg);
-}
-
-
 //-----------------------------------------------------------------------------
 
-void ClockRegisters2::pwron() {
+void VideoClocks::pwron() {
   WUVU_AxxDExxH.pwron();
   VENA_xBCDExxx.pwron();
   WOSU_xxCDxxGH.pwron();
-
-  WUVU_AxxDExxH2.pwron();
-  VENA_xBCDExxx2.pwron();
-  WOSU_xxCDxxGH2.pwron();
 }
 
-void ClockRegisters2::reset() {
-  WUVU_AxxDExxH.val = 1; WUVU_AxxDExxH.clk = 1;
-  VENA_xBCDExxx.val = 0; VENA_xBCDExxx.clk = 0;
-  WOSU_xxCDxxGH.val = 1; WOSU_xxCDxxGH.clk = 0;
-
-  WUVU_AxxDExxH2.reset(1, 1, 1);
-  VENA_xBCDExxx2.reset(0, 1, 0);
-  WOSU_xxCDxxGH2.reset(0, 1, 1);
+void VideoClocks::reset() {
+  WUVU_AxxDExxH.reset(1, 1, 1);
+  VENA_xBCDExxx.reset(0, 1, 0);
+  WOSU_xxCDxxGH.reset(0, 1, 1);
 }
 
 //----------------------------------------
 
-void ClockRegisters2::tock_slow(const ClockSignals1& clk_sig1, const ResetSignals2& rst_sig2) {
-  ClockRegisters2 prev = *this;
-  ClockRegisters2& next = *this;
+void VideoClocks::tick_slow(const ClockSignals1& clk_sig1, const VideoResets& vid_rst) {
+  VideoClocks prev = *this;
+  VideoClocks& next = *this;
 
   /*p29.XYVA*/ wire XYVA_AxCxExGx = not(clk_sig1.ZEME_xBxDxFxH);
   /*p29.XOTA*/ wire XOTA_xBxDxFxH = not(XYVA_AxCxExGx);
   /*p29.XYFY*/ wire XYFY_AxCxExGx = not(XOTA_xBxDxFxH);
 
-  /*p29.WUVU*/ next.WUVU_AxxDExxH.tock( XOTA_xBxDxFxH, rst_sig2.VID_RESETn, !prev.WUVU_AxxDExxH);
-  /*p21.VENA*/ next.VENA_xBCDExxx.tock(!prev.WUVU_AxxDExxH,     rst_sig2.VID_RESETn, !prev.VENA_xBCDExxx);
-  /*p29.WOSU*/ next.WOSU_xxCDxxGH.tock( XYFY_AxCxExGx, rst_sig2.VID_RESETn, !prev.WUVU_AxxDExxH);
-
-  /*p29.WUVU*/ next.WUVU_AxxDExxH2.set( XOTA_xBxDxFxH, rst_sig2.VID_RESETn, !prev.WUVU_AxxDExxH);
-  /*p21.VENA*/ next.VENA_xBCDExxx2.set(!prev.WUVU_AxxDExxH,     rst_sig2.VID_RESETn, !prev.VENA_xBCDExxx);
-  /*p29.WOSU*/ next.WOSU_xxCDxxGH2.set( XYFY_AxCxExGx, rst_sig2.VID_RESETn, !prev.WUVU_AxxDExxH);
+  /*p29.WUVU*/ next.WUVU_AxxDExxH.set( XOTA_xBxDxFxH, vid_rst.VID_RESETn, !prev.WUVU_AxxDExxH);
+  /*p21.VENA*/ next.VENA_xBCDExxx.set(!prev.WUVU_AxxDExxH,     vid_rst.VID_RESETn, !prev.VENA_xBCDExxx);
+  /*p29.WOSU*/ next.WOSU_xxCDxxGH.set( XYFY_AxCxExGx, vid_rst.VID_RESETn, !prev.WUVU_AxxDExxH);
 }
 
 //----------------------------------------
 
-void ClockRegisters2::tock_fast(const ClockSignals1& clk_sig1, const ResetSignals2& rst_sig2) {
-
-  /*p29.XYVA*/ wire XYVA_AxCxExGx = not(clk_sig1.ZEME_xBxDxFxH);
-  /*p29.XOTA*/ wire XOTA_xBxDxFxH = not(XYVA_AxCxExGx);
-  /*p29.XYFY*/ wire XYFY_AxCxExGx = not(XOTA_xBxDxFxH);
-
-  /*p29.WUVU*/ WUVU_AxxDExxH.tock( XOTA_xBxDxFxH, rst_sig2.VID_RESETn, !WUVU_AxxDExxH);
-  /*p21.VENA*/ VENA_xBCDExxx.tock(!WUVU_AxxDExxH,          rst_sig2.VID_RESETn, !VENA_xBCDExxx);
-  /*p29.WOSU*/ WOSU_xxCDxxGH.tock( XYFY_AxCxExGx, rst_sig2.VID_RESETn, !WUVU_AxxDExxH);
-
-  /*p29.WUVU*/ WUVU_AxxDExxH2.commit();
-  /*p21.VENA*/ VENA_xBCDExxx2.commit();
-  /*p29.WOSU*/ WOSU_xxCDxxGH2.commit();
-
-  /*p29.WUVU*/ WUVU_AxxDExxH2.set( XOTA_xBxDxFxH, rst_sig2.VID_RESETn, !WUVU_AxxDExxH);
-  /*p21.VENA*/ VENA_xBCDExxx2.set(!WUVU_AxxDExxH,          rst_sig2.VID_RESETn, !VENA_xBCDExxx);
-  /*p29.WOSU*/ WOSU_xxCDxxGH2.set( XYFY_AxCxExGx, rst_sig2.VID_RESETn, !WUVU_AxxDExxH);
-
-  /*p29.WUVU*/ WUVU_AxxDExxH2.commit();
-  /*p21.VENA*/ VENA_xBCDExxx2.commit();
-  /*p29.WOSU*/ WOSU_xxCDxxGH2.commit();
+void VideoClocks::commit() {
+  /*p29.WUVU*/ WUVU_AxxDExxH.commit();
+  /*p21.VENA*/ VENA_xBCDExxx.commit();
+  /*p29.WOSU*/ WOSU_xxCDxxGH.commit();
 }
 
 //----------------------------------------
 
-void ClockRegisters2::commit() {
-  /*p29.WUVU*/ WUVU_AxxDExxH2.commit();
-  /*p21.VENA*/ VENA_xBCDExxx2.commit();
-  /*p29.WOSU*/ WOSU_xxCDxxGH2.commit();
-
-  check(WUVU_AxxDExxH2 == WUVU_AxxDExxH);
-  check(VENA_xBCDExxx2 == VENA_xBCDExxx);
-  check(WOSU_xxCDxxGH2 == WOSU_xxCDxxGH);
-}
-
-//----------------------------------------
-
-ClockSignals2 ClockSignals2::tick_slow(const SystemRegisters& /*sys_reg*/, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg) {
+ClockSignals2 ClockSignals2::tick_slow(const SystemRegisters& /*sys_reg*/, const VideoResets& vid_rst, const VideoClocks& clk_reg) {
   ClockSignals2 sig;
 
-  /*p29.WUVU*/ wire WUVU_AxxDExxH = and(clk_reg.WUVU_AxxDExxH, rst_sig2.VID_RESETn);
-  /*p21.VENA*/ wire VENA_xBCDExxx = and(clk_reg.VENA_xBCDExxx, rst_sig2.VID_RESETn);
-  /*p29.WOSU*/ wire WOSU_xxCDxxGH = and(clk_reg.WOSU_xxCDxxGH, rst_sig2.VID_RESETn);
+  /*p29.WUVU*/ wire WUVU_AxxDExxH = and(clk_reg.WUVU_AxxDExxH, vid_rst.VID_RESETn);
+  /*p21.VENA*/ wire VENA_xBCDExxx = and(clk_reg.VENA_xBCDExxx, vid_rst.VID_RESETn);
+  /*p29.WOSU*/ wire WOSU_xxCDxxGH = and(clk_reg.WOSU_xxCDxxGH, vid_rst.VID_RESETn);
   
 
   /*p29.XUPY*/ sig.XUPY_xBCxxFGx = not(WUVU_AxxDExxH);
@@ -234,20 +175,6 @@ ClockSignals2 ClockSignals2::tick_slow(const SystemRegisters& /*sys_reg*/, const
 
   /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!WUVU_AxxDExxH, !WOSU_xxCDxxGH);
   /*p29.XYSO*/ sig.XYSO_ABCxDEFx = not(WOJO_xxxDxxxH);
-
-  return sig;
-}
-
-//----------------------------------------
-
-ClockSignals2 ClockSignals2::tick_fast(const SystemRegisters& /*sys_reg*/, const ResetSignals2& /*rst_sig2*/, const ClockRegisters2& clk_reg) {
-  ClockSignals2 sig;
-
-  sig.XUPY_xBCxxFGx = !clk_reg.WUVU_AxxDExxH;
-  sig.AWOH_AxxDExxH =  clk_reg.WUVU_AxxDExxH;
-  sig.TALU_xBCDExxx =  clk_reg.VENA_xBCDExxx;
-  sig.SONO_AxxxxFGH = !clk_reg.VENA_xBCDExxx;
-  sig.XOCE_ABxxEFxx = !clk_reg.WOSU_xxCDxxGH;
 
   return sig;
 }

@@ -16,11 +16,67 @@ using namespace Schematics;
 void TestLCD();
 void TestClocks();
 void TestSpriteSeq();
-
+void test_clock_phases();
 
 
 int main(int /*argc*/, char** /*argv*/) {
-  TestClocks();
+  test_clock_phases();
+  printf("\n");
+
+  TestGB gb;
+  gb.reset();
+
+  //gb.sys_reg.CPU_RAW_RD = 1;
+
+  //gb.sim(456*2*152);
+
+  for (int i = 0; i < 912*2; i++) {
+    gb.sim(1);
+
+    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(gb.sys_reg, gb.clk_reg1);
+    ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(gb.sys_reg, clk_sig1, gb.rst_reg);
+    VideoResets vid_rst = VideoResets::tick_slow(gb.sys_reg, rst_sig1);
+    ClockSignals2 vid_clk_sig = ClockSignals2::tick_slow(gb.sys_reg, vid_rst, gb.vid_clk_reg);
+    LcdSignals lcd_sig = LcdSignals::tick_slow(vid_rst, gb.lcd_reg);
+    BusControl bus_ctl = BusControl::tick(gb.sys_reg, clk_sig1);
+
+    Decoder dcd = Decoder::tick(gb.bus, clk_sig1, gb.sys_reg.BOOT_BIT, gb.sys_reg.MODE_DBG2, gb.sys_reg.ADDR_VALID);
+
+
+    printf("%03d:%03d:%03d %03d %d %03d %03d %d%d%d%d%d%d %d%d%d%d%d%d %d%d%d%d\n",
+           gb.sys_reg.phase_count / (912*154),
+           (gb.sys_reg.phase_count / 912) % 154,
+           gb.sys_reg.phase_count % 912,
+           gb.sys_reg.phase(),
+           vid_clk_sig.TALU_xBCDExxx,
+           gb.lcd_reg.x(),
+           gb.lcd_reg.y(),
+           gb.lcd_reg.NEW_LINE_d0a_val,
+           gb.lcd_reg.VID_LINE_d4.val,
+           gb.lcd_reg.NEW_LINE_d4a.val,
+           gb.lcd_reg.VID_LINE_d6.val,
+           gb.lcd_reg.LINE_153_d4.val,
+           gb.lcd_reg.VBLANK_d4.val,
+           lcd_sig.VBLANK_d4b,
+           lcd_sig.VID_LINE_TRIG_d4n,
+           lcd_sig.VID_LINE_TRIG_d4a,
+           lcd_sig.VID_LINE_TRIG_d4p,
+           lcd_sig.VID_LINE_TRIG_d4c,
+           lcd_sig.VID_LINE_TRIG_d4o,
+           bus_ctl.TEDO_CPURD,
+           bus_ctl.TAPU_CPUWR,
+           bus_ctl.ASOT_CPURD,
+           bus_ctl.CUPA_CPUWR);
+
+
+ 
+
+    
+    if ((i % 8) == 7) printf("\n");
+
+  }
+
+  //TestClocks();
   //TestLCD();
   //TestSpriteSeq();
 
@@ -39,9 +95,9 @@ int main(int /*argc*/, char** /*argv*/) {
            gb.clk_reg1.PHAZ_xBCDExxx.val,
            gb.clk_reg1.PHAZ_xxCDEFxx.val,
            gb.clk_reg1.PHAZ_xxxDEFGx.val,
-           gb.clk_reg2.WUVU_AxxDExxH.val,
-           gb.clk_reg2.VENA_xBCDExxx.val,
-           gb.clk_reg2.WOSU_xxCDxxGH.val,
+           gb.vid_clk.WUVU_AxxDExxH.val,
+           gb.vid_clk.VENA_xBCDExxx.val,
+           gb.vid_clk.WOSU_xxCDxxGH.val,
            gb.rst_reg.WAITING_FOR_CLKREQ,
            gb.rst_reg.RESET_REG.val,
            gb.lcd_reg.x(),

@@ -209,6 +209,7 @@
     <ClCompile Include="pages\Sch_Resets.cpp" />
     <ClCompile Include="pages\Sch_Serial.cpp" />
     <ClCompile Include="pages\Sch_SpriteStore.cpp" />
+    <ClCompile Include="pages\Sch_System.cpp" />
     <ClCompile Include="pages\Sch_Timer.cpp" />
     <ClCompile Include="pages\Sch_Video.cpp" />
     <ClCompile Include="pages\Sch_Channel1.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="pages\Sch_Resets.h" />
     <ClInclude Include="pages\Sch_Serial.h" />
     <ClInclude Include="pages\Sch_SpriteStore.h" />
+    <ClInclude Include="pages\Sch_System.h" />
     <ClInclude Include="pages\Sch_Timer.h" />
     <ClInclude Include="pages\Sch_Video.h" />
     <ClInclude Include="pages\Sch_Channel1.h" />
@@ -266,10 +268,6 @@
     <ClInclude Include="SignalTree.h" />
     <ClInclude Include="tests\TestGB.h" />
     <ClInclude Include="TraceViewer.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="notes.txt" />
-    <Text Include="scratch.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -38,8 +38,8 @@ struct Gameboy {
   int64_t timestamp;
 
   Cpu        cpu;
-  ClockRegisters1     clk_reg1;
-  ClockRegisters2     clk_reg2;
+  ClockRegisters1     sys_clk;
+  VideoClocks     vid_clk;
   ResetRegisters rst_reg;
   ResetSignals1   rst_sig;
   Bus        bus;
@@ -56,11 +56,11 @@ struct Gameboy {
   Interrupts irq;
   Joypad     joy;
   Pins       pin;
-  LCDRegisters  lcd;
+  //LcdRegisters  lcd;
   Bootrom    rom;
   OAM        oam;
   Vram       vrm;
-  Registers  reg;
+  //LcdRegisterseg;
 
   ApuControl apu;
   Channel1   ch1;

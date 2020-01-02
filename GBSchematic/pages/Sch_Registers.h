@@ -8,8 +8,8 @@ namespace Schematics {
 struct RegistersIn {
   bool SYS_RESETn;
 
-  bool CPU_RD2;
-  bool CPU_WR2;
+  bool ASOT_CPURD;
+  bool CUPA_CPUWR;
 
   bool A00 : 1;
   bool A01 : 1;

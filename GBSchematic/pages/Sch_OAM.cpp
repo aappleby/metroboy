@@ -20,7 +20,7 @@ void OAM_tick(const Bus& bus,
               const Cpu& cpu,
               const Pins& pins,
               const ClockSignals1& clk_sig1,
-              const ClockSignals2& clk_sig2,
+              const ClockSignals2& vid_clk,
               const Decoder& dec,
               const Sprites& spr,
               const DMA& dma,
@@ -57,8 +57,8 @@ void OAM_tick(const Bus& bus,
     }
 #endif
 
-    /*p25.AVER*/ wire AVER = and(spr.OAM_ADDR_PARSE, clk_sig2.XYSO_ABCxDEFx);
-    /*p28.AJEP*/ wire AJEP = and(spr.OAM_ADDR_PARSE, clk_sig2.XOCE_ABxxEFxx);
+    /*p25.AVER*/ wire AVER = and(spr.OAM_ADDR_PARSE, vid_clk.XYSO_ABCxDEFx);
+    /*p28.AJEP*/ wire AJEP = and(spr.OAM_ADDR_PARSE, vid_clk.XOCE_ABxxEFxx);
     
     /*p29.TUVO*/ wire TUVO = or(vid.RENDERINGn, spr.SPR_SEQ1, spr.SEQ_xxx34xn);
     /*p29.TAME*/ wire TAME = nand(spr.SPR_SEQ2, spr.SPR_SEQ0);
@@ -73,7 +73,7 @@ void OAM_tick(const Bus& bus,
 
                                                      // so does FROM_CPU5 mean "this is not a real read?"
     /*p04.DECY*/ wire FROM_CPU5n  = not(cpu.FROM_CPU5);
-    /*p28.BOTA*/ wire CPU_RD_OAMn = nand(FROM_CPU5n, dec.ADDR_OAM, ctl.CPU_RD2); // Schematic wrong, this is NAND
+    /*p28.BOTA*/ wire CPU_RD_OAMn = nand(FROM_CPU5n, dec.ADDR_OAM, ctl.ASOT_CPURD); // Schematic wrong, this is NAND
     /*p25.CUFE*/ wire OAM_WR      = and(or(dec.ADDR_OAM, dma.DMA_CLKEN), clk_sig1.MOPA_xxxxEFGH); // Possible schematic error - CUFE doesn't make sense as or(and()), only as and(or())
 
 
@@ -100,7 +100,7 @@ void OAM_tick(const Bus& bus,
 
 
     /*p28.WAFO*/ wire OAM_A0n   = not(prev.OAM_A0);
-    /*p04.WYJA*/ wire OAM_WR    = unk3(OAM_LOCKn, ctl.CPU_WR2, dma.DMA_WRITE_OAM);
+    /*p04.WYJA*/ wire OAM_WR    = unk3(OAM_LOCKn, ctl.CUPA_CPUWR, dma.DMA_WRITE_OAM);
     /*p28.YNYC*/ wire OAM_B_WRn = and(OAM_WR, OAM_A0n);
     /*p28.YLYC*/ wire OAM_A_WRn = and(OAM_WR, prev.OAM_A0);
     /*p28.ZOFE*/ next.OAM_B_WR  = not(OAM_B_WRn); // -> OAM
@@ -187,7 +187,7 @@ void OAM_tick(const Bus& bus,
     /*p28.AMAB*/ wire OAM_LOCKn = and(dec.ADDR_OAM, OAM_BUSYn);
 
     /*p28.ADAH*/ wire ADDR_OAMn = not(dec.ADDR_OAM);
-    /*p28.XUTO*/ wire CPU_OAM_WR = and(dec.ADDR_OAM, ctl.CPU_WR2);
+    /*p28.XUTO*/ wire CPU_OAM_WR = and(dec.ADDR_OAM, ctl.CUPA_CPUWR);
     /*p28.XYNY*/ wire CPU_OAM_WR_CLK1 = not(clk_sig1.MOPA_xxxxEFGH);
     /*p28.WUJE*/ wire CPU_OAM_WR_CLK2 = or(CPU_OAM_WR_CLK1, CPU_OAM_WR);
     /*p28.XUPA*/ wire CPU_OAM_WR_CLK3 = not(CPU_OAM_WR_CLK2);
@@ -310,7 +310,7 @@ void OAM_tick(const Bus& bus,
     /*p28.AJUJ*/ wire OAM_BUSYn = nor(dma.DMA_CLKEN, spr.OAM_ADDR_PARSE, OAM_ADDR_RENDERn);
     /*p28.AMAB*/ wire OAM_LOCKn = and(dec.ADDR_OAM, OAM_BUSYn);
 
-    /*p28.MYNU*/ wire CPU_READ_MYSTERYn = nand(ctl.CPU_RD2, cpu.FROM_CPU5);
+    /*p28.MYNU*/ wire CPU_READ_MYSTERYn = nand(ctl.ASOT_CPURD, cpu.FROM_CPU5);
     /*p28.LEKO*/ wire CPU_READ_MYSTERY  = not(CPU_READ_MYSTERYn);
 
     /*p28.WAFO*/ wire OAM_A0n   = not(prev.OAM_A0);

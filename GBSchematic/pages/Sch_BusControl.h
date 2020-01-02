@@ -6,9 +6,9 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct Bus {
-  void reset() {
-    *this = {};
-  }
+
+  void pwron() { *this = {}; }
+  void reset() { *this = {}; }
 
   bool A00;
   bool A01;
@@ -39,15 +39,17 @@ struct Bus {
 
 struct BusControl {
 
-  void reset() {
-    *this = {};
-  }
+  static BusControl tick(const SystemRegisters& sys_reg, const ClockSignals1& clk_sig1);
 
-  /*p07.TEDO*/ bool CPU_RD;
-  /*p07.TAPU*/ bool CPU_WR;
-  /*p07.ASOT*/ bool CPU_RD2;
-  /*p07.CUPA*/ bool CPU_WR2;
+  /*p07.TEDO*/ bool TEDO_CPURD;
+  /*p07.TAPU*/ bool TAPU_CPUWR; //p4-p6
+  /*p07.ASOT*/ bool ASOT_CPURD;
+  /*p07.CUPA*/ bool CUPA_CPUWR; //p4-p6
 
+  /*p08.TEXO*/ bool ADDR_VALID_AND_NOT_VRAM;
+  /*p08.LEVO*/ bool ADDR_VALID_AND_NOT_VRAMn;
+
+#if 0
   /*p08.RORU*/ bool CBUS_TO_CEXTn;
   /*p08.LULA*/ bool CBUS_TO_CEXT;
 
@@ -101,6 +103,8 @@ struct BusControl {
   /*p08.SAGO*/ bool LATCH_D5;
   /*p08.RUPA*/ bool LATCH_D6;
   /*p08.SAZY*/ bool LATCH_D7;
+
+#endif
 };
 
 //-----------------------------------------------------------------------------

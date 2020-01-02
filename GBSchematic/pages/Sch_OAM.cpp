@@ -57,7 +57,7 @@ void OAM_tick(const Bus& bus,
     }
 #endif
 
-    /*p25.AVER*/ wire AVER = and(spr.OAM_ADDR_PARSE, clk_sig2.XYSO);
+    /*p25.AVER*/ wire AVER = and(spr.OAM_ADDR_PARSE, clk_sig2.XYSO_ABCxDEFx);
     /*p28.AJEP*/ wire AJEP = and(spr.OAM_ADDR_PARSE, clk_sig2.XOCE_ABxxEFxx);
     
     /*p29.TUVO*/ wire TUVO = or(vid.RENDERINGn, spr.SPR_SEQ1, spr.SEQ_xxx34xn);

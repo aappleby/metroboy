@@ -34,18 +34,13 @@ struct ApuControl {
   //----------
   // clocks for the apu
 
-  /*p01.AZOF*/ bool CLK_xBxDxFxH4; // apu
-  /*p01.APUV*/ bool CLK_AxCxExGx1; // apu
-  /*p01.ARYF*/ bool CLK_AxCxExGx2; // apu
-  /*p01.CYBO*/ bool CLK_AxCxExGx7; // apu
-  /*p01.AMUK*/ bool CLK_xBxDxFxH1; // apu
-  /*p01.CERY*/ bool CLK_ABxxEFxx1; // apu
-  /*p01.ATAG*/ bool CLK_AxCxExGx8; // apu
+  /*p01.CERY*/ bool CERY; // apu
   /*p01.ATYK*/ bool ATYK;
   /*p01.AVOK*/ bool AVOK;
   /*p09.AJER*/ bool AJER_2M;
-  /*p01.COKE*/ bool AJER_2Mn;
+  /*p01.COKE*/ bool COKE;
   /*p01.BAVU*/ bool BAVU_1M;
+
   /*p01.JESO*/ bool CLK_512Ka;
   /*p01.HAMA*/ bool CLK_512Kn;
   /*p01.HORU*/ bool CLK_512a;

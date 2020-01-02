@@ -29,6 +29,12 @@ void P21_VideoControl_tick(const Bus& bus,
 
   /*p27.VYPO*/ wire VYPO = not(pins.P10_B);
 
+  /*p01.LAPE*/ wire LAPE_xBxDxFxH = not(clk_sig1.ALET_AxCxExGx);
+  /*p27.MYVO*/ wire MYVO_xBxDxFxH = not(clk_sig1.ALET_AxCxExGx);
+  /*p27.MOXE*/ wire MOXE_xBxDxFxH = not(clk_sig1.ALET_AxCxExGx);
+  /*p27.MEHE*/ wire MEHE_xBxDxFxH = not(clk_sig1.ALET_AxCxExGx);
+  /*p27.TAVA*/ wire TAVA_AxCxExGx = not(LAPE_xBxDxFxH);
+
   //----------
 
   {
@@ -41,7 +47,7 @@ void P21_VideoControl_tick(const Bus& bus,
       /*p27.ROXY*/ if (vid.FINE_MATCH_TRIG) next.FINE_MATCH_DUMP = 0;
 
       /*p24.SOCY*/ wire WIN_MODE2p = not(vid.WIN_MODE2b);
-      /*p24.VYBO*/ wire VYBO = nor(sst.STORE_MATCH, vid.RENDER_DONE, clk_sig1.MYVO_xBxDxFxH);
+      /*p24.VYBO*/ wire VYBO = nor(sst.STORE_MATCH, vid.RENDER_DONE, MYVO_xBxDxFxH);
       /*p24.TYFA*/ wire TYFA = and(WIN_MODE2p, vid.FRONT_PORCH_LATCHn, VYBO);
 
       /*p24.SEGU*/ next.SEGU_4M = not(TYFA);
@@ -55,8 +61,8 @@ void P21_VideoControl_tick(const Bus& bus,
       /*p27.SOWO*/ wire SPRITE_FETCH_LATCHn = not(vid.SPRITE_FETCH_LATCH);
       /*p27.TUKU*/ wire WIN_MODE2o = not(vid.WIN_MODE2b);
       /*p27.TEKY*/ wire SPRITE_FETCH = and(sst.STORE_MATCH, WIN_MODE2o, vid.BG_SEQ_5, SPRITE_FETCH_LATCHn);
-      /*p27.SOBU*/ next.SPRITE_FETCH_SYNC1.tock(clk_sig1.TAVA_AxCxExGx, VYPO, SPRITE_FETCH);
-      /*p27.SUDA*/ next.SPRITE_FETCH_SYNC2.tock(clk_sig1.LAPE_xBxDxFxH, VYPO,  vid.SPRITE_FETCH_SYNC1);
+      /*p27.SOBU*/ next.SPRITE_FETCH_SYNC1.tock(TAVA_AxCxExGx, VYPO, SPRITE_FETCH);
+      /*p27.SUDA*/ next.SPRITE_FETCH_SYNC2.tock(LAPE_xBxDxFxH, VYPO,  vid.SPRITE_FETCH_SYNC1);
       /*p27.RYCE*/ next.SPRITE_FETCH_TRIG = and(vid.SPRITE_FETCH_SYNC1, !vid.SPRITE_FETCH_SYNC2);
 
       /*p27.SECA*/ wire SPRITE_FETCH_BEGINn = nor(vid.SPRITE_FETCH_TRIG, rst_sig2.VID_RESET5, lcd_sig.VID_LINE_TRIG_d4n);
@@ -147,7 +153,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p27.POHU*/ wire FINE_MATCH   = not(FINE_MATCHn);
 
     /*p27.PUXA*/ next.FINE_MATCH_SYNC1.tock(vid.ROXO_4M,          vid.RENDERING_LATCH, FINE_MATCH);
-    /*p27.NYZE*/ next.FINE_MATCH_SYNC2.tock(clk_sig1.MOXE_xBxDxFxH, vid.RENDERING_LATCH, vid.FINE_MATCH_SYNC1);
+    /*p27.NYZE*/ next.FINE_MATCH_SYNC2.tock(MOXE_xBxDxFxH, vid.RENDERING_LATCH, vid.FINE_MATCH_SYNC1);
     /*p27.POVA*/ next.FINE_MATCH_TRIG = and(vid.FINE_MATCH_SYNC1, !vid.FINE_MATCH_SYNC2);
   }
 
@@ -170,7 +176,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p27.SEKO*/ next.WIN_TRIGGER = nor(vid.WIN_MATCH_ONSCREEN_SYNC2, !vid.WIN_MATCH_ONSCREEN_SYNC1);
 
     /*p27.PYCO*/ next.WIN_MATCH_SYNC1.tock(vid.ROCO_4M,            rst_sig2.VID_RESETn, vid.WIN_MATCH);
-    /*p27.NUNU*/ next.WIN_MATCH_SYNC2.tock(clk_sig1.MEHE_xBxDxFxH, rst_sig2.VID_RESETn, vid.WIN_MATCH_SYNC1);
+    /*p27.NUNU*/ next.WIN_MATCH_SYNC2.tock(MEHE_xBxDxFxH, rst_sig2.VID_RESETn, vid.WIN_MATCH_SYNC1);
 
     /*p27.XOFO*/ wire LINE_RST = nand(regs.LCDC_WINEN, lcd_sig.VID_LINE_TRIG_d4o, rst_sig2.VID_RESETn);
 
@@ -230,11 +236,11 @@ void P21_VideoControl_tick(const Bus& bus,
 
     /*p24.NAFY*/ wire RENDERING_AND_NOT_WIN_TRIG = nor(WIN_MODE_TRIGb, vid.RENDERINGn);
     /*p24.NYKA*/ next.BG_SEQ_6.tock(clk_sig1.ALET_AxCxExGx, RENDERING_AND_NOT_WIN_TRIG, vid.BG_SEQ_5);
-    /*p24.PORY*/ next.BG_SEQ_7.tock(clk_sig1.MYVO_xBxDxFxH, RENDERING_AND_NOT_WIN_TRIG, vid.BG_SEQ_6);
+    /*p24.PORY*/ next.BG_SEQ_7.tock(MYVO_xBxDxFxH, RENDERING_AND_NOT_WIN_TRIG, vid.BG_SEQ_6);
 
     /*p27.LYZU*/ next.BG_SEQ_x1x3x5x7_DELAY.tock(clk_sig1.ALET_AxCxExGx, vid.RENDERING_LATCH, vid.BG_SEQ_x1x3x5x7);
 
-    /*p27.LOVY*/ next.BG_SEQ5_SYNC.tock(clk_sig1.MYVO_xBxDxFxH, BG_SEQ_RSTn, vid.BG_SEQ_5);
+    /*p27.LOVY*/ next.BG_SEQ5_SYNC.tock(MYVO_xBxDxFxH, BG_SEQ_RSTn, vid.BG_SEQ_5);
     /*p27.LURY*/ wire LURY = and(!vid.BG_SEQ5_SYNC, vid.RENDERING_LATCH);
     
     // weird latch? polarity?

@@ -181,10 +181,10 @@ void P16_Ch3Regs_tick(const ClockSignals1& clk_sig,
 
     /*p16.GAZE*/ wire APU_RESETo = not(b.apu.APU_RESET1);
 
-    /*p16.FABO*/ next.ch3.CLK_xxCDxxGH = not(b.apu.CLK_ABxxEFxx1);
+    /*p16.FABO*/ next.ch3.CLK_xxCDxxGH = not(b.apu.CERY);
     /*p16.GARA*/ next.ch3.GARA = tock_pos(a.ch3.CLK_xxCDxxGH,  b.ch3.CLK_xxCDxxGH,  APU_RESETn, b.ch3.GARA, GOFY);
     /*p16.GYTA*/ next.ch3.GYTA = tock_pos(a.ch3.CLK_xxCDxxGH,  b.ch3.CLK_xxCDxxGH,  APU_RESETo, b.ch3.GYTA, b.ch3.GARA);
-    /*p16.GYRA*/ next.ch3.GYRA = tock_pos(a.apu.CLK_ABxxEFxx1, b.apu.CLK_ABxxEFxx1, APU_RESETo, b.ch3.GYRA, b.ch3.GYTA);
+    /*p16.GYRA*/ next.ch3.GYRA = tock_pos(a.apu.CERY, b.apu.CERY, APU_RESETo, b.ch3.GYRA, b.ch3.GYTA);
   }
 
   {
@@ -193,7 +193,7 @@ void P16_Ch3Regs_tick(const ClockSignals1& clk_sig,
 
     // weird latch?
     /*p16.GUGU*/ wire FREQ_CLK_STOP = or(FUVO, FAJU);
-    /*p18.HEFO*/ wire FREQ_CLKn = nor(b.apu.CLK_ABxxEFxx1, FREQ_CLK_STOP);
+    /*p18.HEFO*/ wire FREQ_CLKn = nor(b.apu.CERY, FREQ_CLK_STOP);
 
     /*p18.HEMA*/ wire WAVE_CLKb = not(b.ch3.WAVE_CLKo);
     /*p18.GASE*/ wire WAVE_CLKn = not(WAVE_CLKb);
@@ -220,7 +220,7 @@ void P16_Ch3Regs_tick(const ClockSignals1& clk_sig,
   }
 
   {
-    /*p18.HUPA*/ wire HUPA = and(b.ch3.WAVE_CLKo, b.apu.CLK_ABxxEFxx1);
+    /*p18.HUPA*/ wire HUPA = and(b.ch3.WAVE_CLKo, b.apu.CERY);
     /*p18.GAFU*/ wire GAFU = nor(b.apu.APU_RESET1, b.ch3.GARA, HUPA);
     
     /*p18.JYFO*/ next.ch3.JYFO_CLK  = not(b.ch3.FREQ_10);
@@ -267,14 +267,14 @@ void P16_Ch3Regs_tick(const ClockSignals1& clk_sig,
 
   {
     /*p17.BAMA*/ wire APU_RESETn = not(b.apu.APU_RESET1);
-    /*p17.COZY*/ next.ch3.COZY_CLK = not(b.apu.CLK_xBxDxFxH1);
-    /*p17.ARUC*/ next.ch3.ARUC_CLK = not(b.apu.CLK_xBxDxFxH1);
+    /*p17.COZY*/ next.ch3.COZY_CLK = not(clk_sig.AMUK_xBxDxFxH);
+    /*p17.ARUC*/ next.ch3.ARUC_CLK = not(clk_sig.AMUK_xBxDxFxH);
 
     /*p18.HEMA*/ wire WAVE_CLKb = not(b.ch3.WAVE_CLKo);
     /*p18.GASE*/ wire WAVE_CLKn = not(WAVE_CLKb);
-    /*p17.BUSA*/ next.ch3.BUSA        = tock_pos(a.apu.CLK_xBxDxFxH1, b.apu.CLK_xBxDxFxH1, APU_RESETn, b.ch3.BUSA,        WAVE_CLKn); // ?
+    ///*p17.BUSA*/ next.ch3.BUSA        = tock_pos(clk.AMUK_xBxDxFxH, clk.AMUK_xBxDxFxH, APU_RESETn, b.ch3.BUSA,        WAVE_CLKn); // ?
     /*p17.BANO*/ next.ch3.BANO        = tock_pos(a.ch3.COZY_CLK,      b.ch3.COZY_CLK,      APU_RESETn, b.ch3.BANO,        b.ch3.BUSA);
-    /*p17.AZUS*/ next.ch3.SAMPLE_CLKn = tock_pos(a.apu.CLK_xBxDxFxH1, b.apu.CLK_xBxDxFxH1, APU_RESETn, b.ch3.SAMPLE_CLKn, b.ch3.BANO);
+    ///*p17.AZUS*/ next.ch3.SAMPLE_CLKn = tock_pos(clk.AMUK_xBxDxFxH, clk.AMUK_xBxDxFxH, APU_RESETn, b.ch3.SAMPLE_CLKn, b.ch3.BANO);
     /*p17.AZET*/ next.ch3.AZET        = tock_pos(a.ch3.ARUC_CLK,      b.ch3.ARUC_CLK,      APU_RESETn, b.ch3.AZET,        b.ch3.SAMPLE_CLKn);
   }
 

@@ -15,9 +15,9 @@ ResetSignals1 ResetSignals1::tick_slow(const SystemRegisters& sys_reg,
                                        const ResetRegisters& rst_reg) {
 
 
-  /*p01.UPYF*/ wire UPYF = or(sys_reg.RST, sys_reg.CLK_BAD1);
+  /*p01.UPYF*/ wire UPYF = or(sys_reg.RST, sys_reg.UCOB_CLKBAD);
   /*p01.TUBO*/ bool WAITING_FOR_CLKREQ = rst_reg.WAITING_FOR_CLKREQ;
-  /*p01.TUBO*/ if (!sys_reg.CPUCLK_REQn) WAITING_FOR_CLKREQ = 0;
+  /*p01.TUBO*/ if (!sys_reg.ABOL_CLKREQn) WAITING_FOR_CLKREQ = 0;
   /*p01.TUBO*/ if (!UPYF)                WAITING_FOR_CLKREQ = 1;
 
   /*p01.UNUT*/ wire TIMEOUT     = and(WAITING_FOR_CLKREQ, sys_reg.DIV_15);
@@ -59,7 +59,7 @@ ResetSignals1 ResetSignals1::tick_fast(const SystemRegisters& sys_reg, const Res
 
   // polarity here seems weird
   bool WAITING_FOR_CLKREQ = rst_reg.WAITING_FOR_CLKREQ;
-  if (sys_reg.CPUCLK_REQ) WAITING_FOR_CLKREQ = 0;
+  if (sys_reg.BUTY_CLKREQ) WAITING_FOR_CLKREQ = 0;
   if (!sys_reg.RST && sys_reg.CLK_GOOD) WAITING_FOR_CLKREQ = 1;
 
   bool TIMEOUT = and(WAITING_FOR_CLKREQ, sys_reg.DIV_15);
@@ -68,7 +68,7 @@ ResetSignals1 ResetSignals1::tick_fast(const SystemRegisters& sys_reg, const Res
 
   ResetSignals1 sig;
 
-  sig.RESET_CLK = sys_reg.phaseC() == 0;
+  sig.RESET_CLK = sys_reg.phase() == 0;
   if (!sys_reg.MODE_PROD) sig.RESET_CLK = 0;
   if (!sys_reg.CLK_GOOD)  sig.RESET_CLK = 1;
 
@@ -146,8 +146,8 @@ void ResetRegisters::tick_slow(const SystemRegisters& sys_reg,
   ResetRegisters prev = *this;
   ResetRegisters& next = *this;
 
-  /*p01.UPYF*/ bool UPYF = or(sys_reg.RST, sys_reg.CLK_BAD1);
-  /*p01.TUBO*/ bool WAITING_FOR_CLKREQ2 = !UPYF ? 1 : !sys_reg.CPUCLK_REQn ? 0 : prev.WAITING_FOR_CLKREQ;
+  /*p01.UPYF*/ bool UPYF = or(sys_reg.RST, sys_reg.UCOB_CLKBAD);
+  /*p01.TUBO*/ bool WAITING_FOR_CLKREQ2 = !UPYF ? 1 : !sys_reg.ABOL_CLKREQn ? 0 : prev.WAITING_FOR_CLKREQ;
   /*p01.BOMA*/ bool RESET_CLK   = not(clk_sig1.BOGA_xBCDEFGH);
   /*p01.UNUT*/ bool TIMEOUT     = and(WAITING_FOR_CLKREQ2, sys_reg.DIV_15);
   /*p01.TABA*/ bool CPU_RESET   = or(sys_reg.MODE_DBG2, sys_reg.MODE_DBG1, TIMEOUT);
@@ -162,11 +162,11 @@ void ResetRegisters::tick_slow(const SystemRegisters& sys_reg,
 
 void ResetRegisters::tick_fast(const SystemRegisters& sys_reg) {
 
-  int phase = sys_reg.phaseC();
+  int phase = sys_reg.phase();
   bool BOGA_xBCDEFGH = ((phase != 0) || !sys_reg.MODE_PROD) && sys_reg.CLK_GOOD;
 
-  if (sys_reg.CPUCLK_REQ) WAITING_FOR_CLKREQ = 0;
-  if (!sys_reg.RST && !sys_reg.CLK_BAD1) WAITING_FOR_CLKREQ = 1;
+  if (sys_reg.BUTY_CLKREQ) WAITING_FOR_CLKREQ = 0;
+  if (!sys_reg.RST && !sys_reg.UCOB_CLKBAD) WAITING_FOR_CLKREQ = 1;
   bool TIMEOUT = and(WAITING_FOR_CLKREQ, sys_reg.DIV_15);
   
   bool RESET     = TIMEOUT || sys_reg.RST || sys_reg.MODE_DBG2 || sys_reg.MODE_DBG1;

@@ -46,10 +46,13 @@ void Sprites_tick(const Pins& pins,
   // Sequencer
 
   {
+    /*p01.LAPE*/ wire LAPE_xBxDxFxH = not(clk_sig1.ALET_AxCxExGx);
+    /*p27.TAVA*/ wire TAVA_AxCxExGx = not(LAPE_xBxDxFxH);
+
     /*p29.TAME*/ wire SEQ_5n = nand(spr.SPR_SEQ2, spr.SPR_SEQ0);
 
     {
-      /*p29.TOMA*/ wire SEQ_CLK = nand(clk_sig1.LAPE_xBxDxFxH, SEQ_5n);
+      /*p29.TOMA*/ wire SEQ_CLK = nand(LAPE_xBxDxFxH, SEQ_5n);
       /*p27.SECA*/ wire SPR_SEQ_RST = nor(vid.SPRITE_FETCH_TRIG, rst_sig2.VID_RESET5, lcd_sig.VID_LINE_TRIG_d4n);
       /*p29.TOXE*/ next.SPR_SEQ0.tock(SEQ_CLK,       SPR_SEQ_RST, !spr.SPR_SEQ0);
       /*p29.TULY*/ next.SPR_SEQ1.tock(!spr.SPR_SEQ0, SPR_SEQ_RST, !spr.SPR_SEQ1);
@@ -59,10 +62,10 @@ void Sprites_tick(const Pins& pins,
 
     {
       /*p27.VYPO*/ wire VYPO = not(pins.P10_B);
-      /*p29.TYFO*/ next.SEQ_B0d.tock    (clk_sig1.LAPE_xBxDxFxH, VYPO, next.SPR_SEQ0);
-      /*p29.TOBU*/ next.SEQ_xx23xx .tock(clk_sig1.TAVA_AxCxExGx, vid.RENDERING_LATCH, spr.SPR_SEQ1);    // note input is seq 1 not 2
-      /*p29.VONU*/ next.SEQ_xxx34xn.tock(clk_sig1.TAVA_AxCxExGx, vid.RENDERING_LATCH, spr.SEQ_xx23xx);
-      /*p29.SEBA*/ next.SEQ_xxxx45n.tock(clk_sig1.LAPE_xBxDxFxH, vid.RENDERING_LATCH, spr.SEQ_xxx34xn); // is this clock wrong?
+      /*p29.TYFO*/ next.SEQ_B0d.tock    (LAPE_xBxDxFxH, VYPO, next.SPR_SEQ0);
+      /*p29.TOBU*/ next.SEQ_xx23xx .tock(TAVA_AxCxExGx, vid.RENDERING_LATCH, spr.SPR_SEQ1);    // note input is seq 1 not 2
+      /*p29.VONU*/ next.SEQ_xxx34xn.tock(TAVA_AxCxExGx, vid.RENDERING_LATCH, spr.SEQ_xx23xx);
+      /*p29.SEBA*/ next.SEQ_xxxx45n.tock(LAPE_xBxDxFxH, vid.RENDERING_LATCH, spr.SEQ_xxx34xn); // is this clock wrong?
     }
 
     {

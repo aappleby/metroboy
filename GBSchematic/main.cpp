@@ -20,8 +20,8 @@ void TestSpriteSeq();
 
 
 int main(int /*argc*/, char** /*argv*/) {
-  //TestClocks();
-  TestLCD();
+  TestClocks();
+  //TestLCD();
   //TestSpriteSeq();
 
   //TestGB gb;
@@ -34,7 +34,7 @@ int main(int /*argc*/, char** /*argv*/) {
     gb.sim_slow(1);
     printf("%08d %d: %d%d%d%d %d%d%d %d%d %03d %03d %d%d%d%d%d%d\n",
            i,
-           gb.sys_reg.phaseC(),
+           gb.sys_reg.phase(),
            gb.clk_reg1.PHAZ_ABCDxxxx.val,
            gb.clk_reg1.PHAZ_xBCDExxx.val,
            gb.clk_reg1.PHAZ_xxCDEFxx.val,
@@ -57,7 +57,7 @@ int main(int /*argc*/, char** /*argv*/) {
            gb.lcd_reg.VBLANK_d4.val
            
            );
-    if (gb.sys_reg.phaseC() == 7) {
+    if (gb.sys_reg.phase() == 7) {
       printf("\n");
       //printf("\033[?6l");
     }

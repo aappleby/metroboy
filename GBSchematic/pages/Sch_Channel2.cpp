@@ -13,7 +13,7 @@ void P14_Ch2Regs_tick(const Gameboy& a,
                       const Gameboy& b,
                       const ClockSignals1& clk,
                       Gameboy& next) {
-  /*p15.AZEG*/ next.ch2.AZEG = not(b.apu.CLK_xBxDxFxH1);
+  /*p15.AZEG*/ next.ch2.AZEG = not(clk.AMUK_xBxDxFxH);
 
   /*p14.HUDE*/ next.ch2.APU_RESETn1 = not(b.apu.APU_RESET1);
 

@@ -66,7 +66,7 @@ inline bool check(bool x) {
 
 struct SystemRegisters {
   void pwron() {
-    clk_phase = 6;
+    clk_phase = -1;
 
     RST        = true;
     CLK_GOOD   = false;
@@ -128,26 +128,29 @@ struct SystemRegisters {
   }
 
   void update() {
-    /*p01.ABOL*/ CPUCLK_REQn = not(CLK_REQ);
-    /*p01.BUTY*/ CPUCLK_REQ  = not(CPUCLK_REQn);
-    /*p01.UCOB*/ CLK_BAD1    = not(CLK_GOOD);
-    /*p01.ATEZ*/ CLK_BAD2    = not(CLK_GOOD);
+    /*p01.ABOL*/ ABOL_CLKREQn = not(CLK_REQ);
+    /*p01.BUTY*/ BUTY_CLKREQ  = not(ABOL_CLKREQn);
+    /*p01.UCOB*/ UCOB_CLKBAD  = not(CLK_GOOD);
+    /*p01.ATEZ*/ ATEZ_CLKBAD  = not(CLK_GOOD);
+
+    // ignoring the deglitcher here
+    bool clk = !(clk_phase & 1);
+    /*p01.ARYS*/ wire ARYS_xBxDxFxH = not(clk);
+    /*p01.AVET*/ wire AVET_AxCxExGx = clk;
+    /*p01.ANOS*/ wire ANOS_xBxDxFxH = not(clk);
+
+    /*p01.ATAL*/ ATAL_AxCxExGx = not(ANOS_xBxDxFxH);
+    /*p01.AZOF*/ AZOF_xBxDxFxH = not(ATAL_AxCxExGx);
+
   }
 
   void next_phase() {
     clk_phase++;
+    update();
   }
 
-  int phaseB() const {
-    return (clk_phase + 7) & 7;
-  }
-
-  int phaseC() const {
+  int phase() const {
     return (clk_phase & 7);
-  }
-
-  int clk() const {
-    return !(clk_phase & 1);
   }
 
   int phase_count() const {
@@ -157,6 +160,8 @@ struct SystemRegisters {
   //----------------------------------------
   // master clock
   int clk_phase;
+  /*p01.ATAL*/ bool ATAL_AxCxExGx;
+  /*p01.AZOF*/ bool AZOF_xBxDxFxH;
 
   // input pins
   bool RST;
@@ -177,10 +182,10 @@ struct SystemRegisters {
   bool DIV_15;
 
   // signals trivially derived from the above
-  /*p01.ABOL*/ bool CPUCLK_REQn;
-  /*p01.BUTY*/ bool CPUCLK_REQ;
-  /*p01.UCOB*/ bool CLK_BAD1;
-  /*p01.ATEZ*/ bool CLK_BAD2;
+  /*p01.ABOL*/ bool ABOL_CLKREQn;
+  /*p01.BUTY*/ bool BUTY_CLKREQ;
+  /*p01.UCOB*/ bool UCOB_CLKBAD;
+  /*p01.ATEZ*/ bool ATEZ_CLKBAD;
 };
 
 //-----------------------------------------------------------------------------

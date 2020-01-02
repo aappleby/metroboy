@@ -5,50 +5,9 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct ClockSignals1 {
-  void check_phase(const SystemRegisters& sys_reg) const;
-
-  static ClockSignals1 tick_slow(const SystemRegisters& sys_reg, const ClockRegisters1& clk_reg);
-  static ClockSignals1 tick_fast(const SystemRegisters& sys_reg, const ClockRegisters1& clk_reg);
-
-  // ungated
-  /*p01.ANOS*/ bool ANOS_AxCxExGx; // apu control
-  /*p01.AVET*/ bool AVET_xBxDxFxH; // apu control
-  /*p01.ZEME*/ bool ZEME_xBxDxFxH; // dma, sprite store
-  /*p01.ALET*/ bool ALET_AxCxExGx; // video, sprites
-  /*p27.MYVO*/ bool MYVO_xBxDxFxH; // video
-  /*p27.MOXE*/ bool MOXE_xBxDxFxH; // video
-  /*p27.MEHE*/ bool MEHE_xBxDxFxH; // video
-  /*p01.LAPE*/ bool LAPE_xBxDxFxH; // sprites
-  /*p27.TAVA*/ bool TAVA_AxCxExGx; // sprites, video
-
-  // gated on MODE_PROD
-  /*p01.AROV*/ bool AROV_xxCDEFxx; // decoder
-  /*p01.AJAX*/ bool AJAX_xxxxEFGH; // decoder
-  /*p01.AFAS*/ bool AFAS_xxxxEFGx; // to buscontrol, pins, vram
-
-  // gated on CLK_GOOD
-  /*p01.BOGA*/ bool BOGA_xBCDEFGH; // to joypad, reset, timer, debug
-
-  // gated on CPUCLK_REQ
-  /*p01.DOVA*/ bool DOVA_ABCDxxxx; // main audio 1m clock
-  /*p01.BEDO*/ bool BEDO_Axxxxxxx; // debug clock
-  /*p01.BOWA*/ bool BOWA_xBCDEFGH; // to cpu
-
-  /*p01.UVYT*/ bool UVYT_ABCDxxxx; // dma, to cart?
-  /*p04.MOPA*/ bool MOPA_xxxxEFGH; // oam, dma
-
-  /*p17.BORY*/ bool BORY_AxxxxxGH; // to wave ram
-};
-
-//-----------------------------------------------------------------------------
-
 struct ClockRegisters1 {
-
-
   void pwron();
   void reset();
-  void check_phase(const SystemRegisters& sys_reg) const;
 
   void tick_slow(const SystemRegisters& sys_reg);
   void tick_fast(const SystemRegisters& sys_reg);
@@ -66,31 +25,42 @@ struct ClockRegisters1 {
   /*p01.ADYK*/ Reg2 PHAZ_xxxDEFGx;
 };
 
-//-----------------------------------------------------------------------------
-// Video clocks
+struct ClockSignals1 {
+  static ClockSignals1 tick_slow(const SystemRegisters& sys_reg, const ClockRegisters1& clk_reg);
+  static ClockSignals1 tick_fast(const SystemRegisters& sys_reg, const ClockRegisters1& clk_reg);
 
-struct ClockSignals2 {
-  void check_phase(const SystemRegisters& sys_reg) const;
+  // ungated
+  /*p01.ZEME*/ bool ZEME_xBxDxFxH; // dma, sprite store
+  /*p01.ALET*/ bool ALET_AxCxExGx; // video, sprites
+  /*p01.AMUK*/ bool AMUK_xBxDxFxH; // master apu 4m clock
 
-  static ClockSignals2 tick_slow(const SystemRegisters& sys_reg, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
-  static ClockSignals2 tick_fast(const SystemRegisters& sys_reg, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
+  // gated on MODE_PROD
+  /*p01.AROV*/ bool AROV_xxCDEFxx; // decoder
+  /*p01.AJAX*/ bool AJAX_xxxxEFGH; // decoder
+  /*p01.AFAS*/ bool AFAS_xxxxEFGx; // to buscontrol, pins, vram
 
-  /*p29.XUPY*/ bool XUPY_xBCxxFGx; // lcd, sprites
-  /*p28.AWOH*/ bool AWOH_AxxDExxH; // lcd
-  /*p21.TALU*/ bool TALU_xBCDExxx; // this drives the LCD xy counter
-  /*p21.SONO*/ bool SONO_AxxxxFGH; // lcd
-  /*p29.XOCE*/ bool XOCE_ABxxEFxx; // oam, sprites
-  /*p29.XYSO*/ bool XYSO; // oam
+  // gated on CLK_GOOD
+  /*p01.BOGA*/ bool BOGA_xBCDEFGH; // to joypad, reset, timer, debug
+
+  // gated on BUTY_CLKREQ
+  /*p01.DOVA*/ bool DOVA_ABCDxxxx; // main audio 1m clock
+  /*p01.UVYT*/ bool UVYT_ABCDxxxx; // dma, to cart?
+  /*p04.MOPA*/ bool MOPA_xxxxEFGH; // oam, dma
+
+  /*p01.BEDO*/ bool BEDO_Axxxxxxx; // debug clock
+  /*p01.BOWA*/ bool BOWA_xBCDEFGH; // to cpu
+
+  /*p17.BORY*/ bool BORY_AxxxxxGH; // to wave ram
 
 };
 
 //-----------------------------------------------------------------------------
+// Video clocks
 
 struct ClockRegisters2 {
 
   void pwron();
   void reset();
-  void check_phase(const SystemRegisters& sys_reg) const;
 
   void tock_slow(const ClockSignals1& clk_sig1, const ResetSignals2& rst_sig2);
   void tock_fast(const ClockSignals1& clk_sig1, const ResetSignals2& rst_sig2);
@@ -108,6 +78,20 @@ struct ClockRegisters2 {
   /*p29.WUVU*/ Reg2 WUVU_AxxDExxH2;
   /*p21.VENA*/ Reg2 VENA_xBCDExxx2;
   /*p29.WOSU*/ Reg2 WOSU_xxCDxxGH2;
+};
+
+struct ClockSignals2 {
+
+  static ClockSignals2 tick_slow(const SystemRegisters& sys_reg, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
+  static ClockSignals2 tick_fast(const SystemRegisters& sys_reg, const ResetSignals2& rst_sig2, const ClockRegisters2& clk_reg);
+
+  /*p29.XUPY*/ bool XUPY_xBCxxFGx; // lcd, sprites
+  /*p28.AWOH*/ bool AWOH_AxxDExxH; // lcd
+  /*p21.TALU*/ bool TALU_xBCDExxx; // this drives the LCD xy counter
+  /*p21.SONO*/ bool SONO_AxxxxFGH; // lcd
+  /*p29.XOCE*/ bool XOCE_ABxxEFxx; // oam, sprites
+  /*p29.XYSO*/ bool XYSO_ABCxDEFx; // oam
+
 };
 
 //-----------------------------------------------------------------------------

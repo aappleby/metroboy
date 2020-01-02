@@ -39,58 +39,30 @@ void P09_ApuControl_tick(const Gameboy& a,
   //----------
   // APU clocks
 
-  ///*p01.ATAL*/ next.sys.CLK_AxCxExGx3  = not(b.sys.AVET_xBxDxFxH);
-  {
-    /*p01.ATAL*/ wire CLK_AxCxExGx3 = not(clk.ANOS_AxCxExGx);
-    /*p01.AZOF*/ next.apu.CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
-    /*p01.ATAG*/ next.apu.CLK_AxCxExGx8  = not(b.apu.CLK_xBxDxFxH4);
-    /*p01.AMUK*/ next.apu.CLK_xBxDxFxH1  = not(b.apu.CLK_AxCxExGx8);
-  }
 
-
+  // FIXME
   {
-    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(clk.ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
-    /*p01.ATAG*/ wire CLK_AxCxExGx8  = not(CLK_xBxDxFxH4);
-    /*p01.AMUK*/ wire CLK_xBxDxFxH1  = not(CLK_AxCxExGx8);
+    /*p01.APUV*/ wire APUV = not(clk.AMUK_xBxDxFxH);
+    /*p01.CYBO*/ wire CYBO = not(clk.AMUK_xBxDxFxH);
+    /*p01.ARYF*/ wire ARYF = not(clk.AMUK_xBxDxFxH);
+
     /*p09.ATYV*/ wire APU_RESETn3 = not(b.apu.APU_RESET1);
-    /*p01.APUV*/ next.apu.CLK_AxCxExGx1  = not(CLK_xBxDxFxH1);
-    /*p09.AJER*/ next.apu.AJER_2M  = tock_pos(a.apu.CLK_AxCxExGx1, b.apu.CLK_AxCxExGx1, APU_RESETn3, b.apu.AJER_2M, !b.apu.AJER_2M);
-  }
-
-  {
+    ///*p09.AJER*/ next.apu.AJER_2M  = tock_pos(a.apu.APUV, b.apu.APUV, APU_RESETn3, b.apu.AJER_2M, !b.apu.AJER_2M);
+    /*p01.COKE*/ next.apu.COKE = not(b.apu.AJER_2M);
     /*p01.BELA*/ wire APU_RESETn4 = not(b.apu.APU_RESET1);
-    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(clk.ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
-    /*p01.ATAG*/ wire CLK_AxCxExGx8  = not(CLK_xBxDxFxH4);
-    /*p01.AMUK*/ wire CLK_xBxDxFxH1  = not(CLK_AxCxExGx8);
-    /*p01.CYBO*/ next.apu.CLK_AxCxExGx7 = not(CLK_xBxDxFxH1);
-    /*p01.CERY*/ next.apu.CLK_ABxxEFxx1 = tock_pos(a.apu.CLK_AxCxExGx7, b.apu.CLK_AxCxExGx7, APU_RESETn4, b.apu.CLK_ABxxEFxx1, !b.apu.CLK_ABxxEFxx1);
-  }
-
-  {
-    /*p01.BOPO*/ wire RST = not(b.apu.APU_RESET1);
-    /*p01.ATAL*/ wire CLK_AxCxExGx3  = not(clk.ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire CLK_xBxDxFxH4  = not(CLK_AxCxExGx3);
-    /*p01.ATAG*/ wire CLK_AxCxExGx8  = not(CLK_xBxDxFxH4);
-    /*p01.AMUK*/ wire CLK_xBxDxFxH1 = not(CLK_AxCxExGx8);
-    /*p01.ARYF*/ next.apu.CLK_AxCxExGx2 = not(CLK_xBxDxFxH1);
-    /*p01.ATYK*/ next.apu.ATYK = tock_pos(a.apu.CLK_AxCxExGx2, b.apu.CLK_AxCxExGx2, RST, b.apu.ATYK, !b.apu.ATYK);
-    /*p01.AVOK*/ next.apu.AVOK = tock_pos(a.apu.ATYK,          b.apu.ATYK,          RST, b.apu.AVOK, !b.apu.AVOK);
-  }
-
-  /*p01.BAVU*/ next.apu.BAVU_1M   = not(b.apu.AVOK);
-
-  {
+    ///*p01.CERY*/ next.apu.CERY = tock_pos(a.apu.CYBO, b.apu.CYBO, APU_RESETn4, b.apu.CERY, !b.apu.CERY);
+    ///*p01.BOPO*/ wire RST = not(b.apu.APU_RESET1);
+    ///*p01.ATYK*/ next.apu.ATYK = tock_pos(a.apu.ARYF, b.apu.ARYF, RST, b.apu.ATYK, !b.apu.ATYK);
+    ///*p01.AVOK*/ next.apu.AVOK = tock_pos(a.apu.ATYK, b.apu.ATYK, RST, b.apu.AVOK, !b.apu.AVOK);
+    /*p01.BAVU*/ next.apu.BAVU_1M   = not(b.apu.AVOK);
     /*p09.KAME*/ wire APU_RESETn5 = not(b.apu.APU_RESET1);
     /*p01.JESO*/ next.apu.CLK_512Ka = tock_pos(a.apu.BAVU_1M, b.apu.BAVU_1M, APU_RESETn5,  b.apu.CLK_512Ka, !b.apu.CLK_512Ka);
+    /*p01.HAMA*/ next.apu.CLK_512Kn = not(!b.apu.CLK_512Ka);
   }
-  /*p01.HAMA*/ next.apu.CLK_512Kn = not(!b.apu.CLK_512Ka);
 
   {
     /*p01.ATUS*/ wire APU_RESETn = not(b.apu.APU_RESET1);
-    /*p01.COKE*/ next.apu.AJER_2Mn = not(b.apu.AJER_2M);
-    /*p01.BARA*/ next.apu.CLK_512 = tock_pos( a.apu.AJER_2Mn,  b.apu.AJER_2Mn, APU_RESETn, b.apu.CLK_512,  b.tim.DIV_10n);
+    /*p01.BARA*/ next.apu.CLK_512 = tock_pos( a.apu.COKE,  b.apu.COKE, APU_RESETn, b.apu.CLK_512,  b.tim.DIV_10n);
     /*p01.BURE*/ next.apu.CLK_512n = not(!b.apu.CLK_512);
     /*p01.CARU*/ next.apu.CLK_256 = tock_pos( a.apu.CLK_512n,  b.apu.CLK_512n, APU_RESETn, b.apu.CLK_256, !b.apu.CLK_256);
     /*p01.BYLU*/ next.apu.CLK_128 = tock_pos(!a.apu.CLK_256,  !b.apu.CLK_256,  APU_RESETn, b.apu.CLK_128, !b.apu.CLK_128);

@@ -85,7 +85,7 @@ void Timer_tickDIV(const Timer& tim,
                    const Decoder& dec,
 
                    bool RST,
-                   bool CLK_BAD1,
+                   bool UCOB_CLKBAD,
                    bool BOGA_xBCDEFGH,
                    bool FF60_1,
                    
@@ -95,7 +95,7 @@ void Timer_tickDIV(const Timer& tim,
   // FF04 DIV
 
   /*p01.TAPE*/ wire FF04_WR = and(ctl.CPU_WR, dec.FF04_FF07, dec.TOLA_A01n, dec.TOVY_A00n);
-  /*p01.UFOL*/ wire DIV_RSTn = nor(CLK_BAD1, RST, FF04_WR);
+  /*p01.UFOL*/ wire DIV_RSTn = nor(UCOB_CLKBAD, RST, FF04_WR);
   /*p01.ULUR*/ wire DIV_06_CLK = mux2n(BOGA_xBCDEFGH, !tim.DIV_05, FF60_1);
 
   /*p01.UKUP*/ next.DIV_00.tock(BOGA_xBCDEFGH, DIV_RSTn, !tim.DIV_00);

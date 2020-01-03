@@ -10,14 +10,14 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Debug::tick(const Bus& bus,
-                 const BusControl& ctl,
-                 const ClockSignals1& clk,
+void Debug::tick(const BusTristates& bus,
+                 const BusSignals& ctl,
+                 const ClkSignals& clk,
                  const Pins& pins,
                  const Decoder& dec,
-                 const ResetSignals1& rst_sig1,
+                 const RstSignals& rst_sig1,
                  const Debug& prev,
-                 Bus& bus_out) {
+                 BusTristates& bus_out) {
 
   Debug& next = *this;
 

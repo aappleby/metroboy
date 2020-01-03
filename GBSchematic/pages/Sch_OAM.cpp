@@ -15,12 +15,12 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void OAM_tick(const Bus& bus,
-              const BusControl& ctl,
+void OAM_tick(const BusTristates& bus,
+              const BusSignals& ctl,
               const Cpu& cpu,
               const Pins& pins,
-              const ClockSignals1& clk_sig1,
-              const ClockSignals2& vid_clk,
+              const ClkSignals& clk_sig1,
+              const VclkSignals& vid_clk,
               const Decoder& dec,
               const Sprites& spr,
               const DMA& dma,
@@ -30,7 +30,7 @@ void OAM_tick(const Bus& bus,
               const SpriteIndexLine& sil,
 
               OAM& next,
-              Bus& bus_out) {
+              BusTristates& bus_out) {
 
   {
     // TUVO is low for the first 4 phases of a sprite fetch

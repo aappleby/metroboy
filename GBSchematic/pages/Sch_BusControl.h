@@ -5,10 +5,32 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct Bus {
+struct BusTristates {
 
   void pwron() { *this = {}; }
   void reset() { *this = {}; }
+
+  void set_addr(uint16_t addr) {
+    A00 = addr & 0x0001; A01 = addr & 0x0002; A02 = addr & 0x0004; A03 = addr & 0x0008;
+    A04 = addr & 0x0010; A05 = addr & 0x0020; A06 = addr & 0x0040; A07 = addr & 0x0080;
+    A08 = addr & 0x0100; A09 = addr & 0x0200; A10 = addr & 0x0400; A11 = addr & 0x0800;
+    A12 = addr & 0x1000; A13 = addr & 0x2000; A14 = addr & 0x4000; A15 = addr & 0x8000;
+  }
+
+  void set_data(uint8_t data) {
+    D0 = data & 0x0001; D1 = data & 0x0002; D2 = data & 0x0004; D3 = data & 0x0008;
+    D4 = data & 0x0010; D5 = data & 0x0020; D6 = data & 0x0040; D7 = data & 0x0080;
+  }
+
+  int get_addr() const {
+    return pack(A00, A01, A02, A03, A04, A05, A06, A07,
+                A08, A09, A10, A11, A12, A13, A14, A15);
+  }
+
+  int get_data() const {
+    return pack(D0, D1, D2, D3, D4, D5, D6, D7);
+  }
+
 
   bool A00;
   bool A01;
@@ -37,9 +59,9 @@ struct Bus {
   bool D7;
 };
 
-struct BusControl {
+struct BusSignals {
 
-  static BusControl tick(const SystemRegisters& sys_reg, const ClockSignals1& clk_sig1);
+  static BusSignals tick(const SysSignals& sys_sig, const ClkSignals& clk_sig1);
 
   /*p07.TEDO*/ bool TEDO_CPURD;
   /*p07.TAPU*/ bool TAPU_CPUWR; //p4-p6

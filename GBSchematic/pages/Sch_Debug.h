@@ -7,14 +7,14 @@ namespace Schematics {
 
 struct Debug {
 
-  void tick(const Bus& bus,
-            const BusControl& ctl,
-            const ClockSignals1& clk,
+  void tick(const BusTristates& bus,
+            const BusSignals& ctl,
+            const ClkSignals& clk,
             const Pins& pins,
             const Decoder& dec,
-            const ResetSignals1& rst_sig,
+            const RstSignals& rst_sig,
             const Debug& b,
-            Bus& bus_out);
+            BusTristates& bus_out);
 
   /*p07.UBET*/ bool T1n;
   /*p07.UVAR*/ bool T2n;

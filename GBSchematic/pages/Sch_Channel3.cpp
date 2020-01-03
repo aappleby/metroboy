@@ -5,7 +5,7 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void P16_Ch3Regs_tick(const ClockSignals1& clk_sig,
+void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
                       const Gameboy& a,
                       const Gameboy& b,
                       Gameboy& next) {

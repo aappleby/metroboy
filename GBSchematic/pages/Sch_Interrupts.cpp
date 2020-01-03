@@ -15,11 +15,11 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Interrupts_tick(const BusControl& ctl,
+void Interrupts_tick(const BusSignals& ctl,
                      const Decoder& dec,
                      const Interrupts& prev,
                      Interrupts& next,
-                     Bus& bus_out) {
+                     BusTristates& bus_out) {
 
   /*p07.ROLO*/ wire FF0F_RDn = nand(dec.ADDR_XX0X, dec.ADDR_XXXF, dec.ADDR_FFXX, ctl.TEDO_CPURD); // schematic wrong, is NAND
   /*p02.POLA*/ wire FF0F_RDa = not(FF0F_RDn);
@@ -39,8 +39,8 @@ void Interrupts_tick(const BusControl& ctl,
 
 //-----------------------------------------------------------------------------
 
-void Interrupts_tock(const Bus& bus,
-                     const BusControl& ctl,
+void Interrupts_tock(const BusTristates& bus,
+                     const BusSignals& ctl,
                      const Cpu& cpu,
                      const LcdRegisters& lcd,
                      const Serial& ser,
@@ -48,7 +48,7 @@ void Interrupts_tock(const Bus& bus,
                      const Video& vid,
                      const TimerSignals& tim_sig,
                      const Pins& pins,
-                     const ResetSignals1& rst_sig,
+                     const RstSignals& rst_sig,
                      const Decoder& dec,
                      Interrupts& next) {
 

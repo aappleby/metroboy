@@ -32,16 +32,16 @@ void check_phase_name(int phase, const bool val, char* name) {
 
 #pragma warning(disable:4100)
 
-void check_phase(SystemRegisters& sys_reg,
-                 ClockRegisters1& clk_reg1,
-                 ClockSignals1&   clk_sig1,
-                 VideoClocks&     vid_clk_reg,
-                 ClockSignals2&   vid_clk_sig)
+void check_phase(SysSignals&    sys_sig,
+                 ClkRegisters&  clk_reg1,
+                 ClkSignals&    clk_sig1,
+                 VclkRegisters& vclk_reg,
+                 VclkSignals&   vclk_sig)
 {
-  int phase = sys_reg.phase();
+  int phase = sys_sig.phase;
 
-  check_phase_name(phase, sys_reg.ATAL_AxCxExGx, "ATAL_AxCxExGx");
-  check_phase_name(phase, sys_reg.AZOF_xBxDxFxH, "AZOF_xBxDxFxH");
+  check_phase_name(phase, sys_sig.ATAL_AxCxExGx, "ATAL_AxCxExGx");
+  check_phase_name(phase, sys_sig.AZOF_xBxDxFxH, "AZOF_xBxDxFxH");
 
   check_phase_name(phase, clk_reg1.PHAZ_ABCDxxxx, "PHAZ_ABCDxxxx");
   check_phase_name(phase, clk_reg1.PHAZ_xBCDExxx, "PHAZ_xBCDExxx");
@@ -62,16 +62,16 @@ void check_phase(SystemRegisters& sys_reg,
   check_phase_name(phase, clk_sig1.BOWA_xBCDEFGH, "BOWA_xBCDEFGH");
   check_phase_name(phase, clk_sig1.BORY_AxxxxxGH, "BORY_AxxxxxGH");
 
-  if (sys_reg.LCDC_EN) {
-    check_phase_name(phase, vid_clk_reg.WUVU_AxxDExxH, "WUVU_AxxDExxH");
-    check_phase_name(phase, vid_clk_reg.VENA_xBCDExxx, "VENA_xBCDExxx");
-    check_phase_name(phase, vid_clk_reg.WOSU_xxCDxxGH, "WOSU_xxCDxxGH");
+  if (sys_sig.LCDC_EN) {
+    check_phase_name(phase, vclk_reg.WUVU_AxxDExxH, "WUVU_AxxDExxH");
+    check_phase_name(phase, vclk_reg.VENA_xBCDExxx, "VENA_xBCDExxx");
+    check_phase_name(phase, vclk_reg.WOSU_xxCDxxGH, "WOSU_xxCDxxGH");
 
-    check_phase_name(phase, vid_clk_sig.XUPY_xBCxxFGx, "XUPY_xBCxxFGx");
-    check_phase_name(phase, vid_clk_sig.AWOH_AxxDExxH, "AWOH_AxxDExxH");
-    check_phase_name(phase, vid_clk_sig.TALU_xBCDExxx, "TALU_xBCDExxx");
-    check_phase_name(phase, vid_clk_sig.SONO_AxxxxFGH, "SONO_AxxxxFGH");
-    check_phase_name(phase, vid_clk_sig.XOCE_ABxxEFxx, "XOCE_ABxxEFxx");
+    check_phase_name(phase, vclk_sig.XUPY_xBCxxFGx, "XUPY_xBCxxFGx");
+    check_phase_name(phase, vclk_sig.AWOH_AxxDExxH, "AWOH_AxxDExxH");
+    check_phase_name(phase, vclk_sig.TALU_xBCDExxx, "TALU_xBCDExxx");
+    check_phase_name(phase, vclk_sig.SONO_AxxxxFGH, "SONO_AxxxxFGH");
+    check_phase_name(phase, vclk_sig.XOCE_ABxxEFxx, "XOCE_ABxxEFxx");
   }
 }
 
@@ -122,15 +122,15 @@ void labels() {
 //-----------------------------------------------------------------------------
 
 void dump(int x,
-          SystemRegisters& sys_reg,
-          ClockRegisters1& clk_reg1,
-          ClockSignals1& clk_sig1,
-          VideoClocks& vid_clk_reg,
-          ClockSignals2& vid_clk_sig) {
+          SysSignals&    sys_sig,
+          ClkRegisters&  clk_reg1,
+          ClkSignals&    clk_sig1,
+          VclkRegisters& vclk_reg,
+          VclkSignals&   vclk_sig) {
   int line = 3;
-  plot2(x, line++, sys_reg.phase());
-  plot(x, line++, sys_reg.ATAL_AxCxExGx);
-  plot(x, line++, sys_reg.AZOF_xBxDxFxH);
+  plot2(x, line++, sys_sig.phase);
+  plot(x, line++, sys_sig.ATAL_AxCxExGx);
+  plot(x, line++, sys_sig.AZOF_xBxDxFxH);
   line++;
 
   plot(x, line++, clk_reg1.PHAZ_ABCDxxxx);
@@ -154,17 +154,17 @@ void dump(int x,
   plot(x, line++, clk_sig1.BORY_AxxxxxGH);
   line++;
 
-  plot(x, line++, vid_clk_reg.WUVU_AxxDExxH);
-  plot(x, line++, vid_clk_reg.VENA_xBCDExxx);
-  plot(x, line++, vid_clk_reg.WOSU_xxCDxxGH);
+  plot(x, line++, vclk_reg.WUVU_AxxDExxH);
+  plot(x, line++, vclk_reg.VENA_xBCDExxx);
+  plot(x, line++, vclk_reg.WOSU_xxCDxxGH);
   line++;
 
-  plot(x, line++, vid_clk_sig.XUPY_xBCxxFGx);
-  plot(x, line++, vid_clk_sig.AWOH_AxxDExxH);
-  plot(x, line++, vid_clk_sig.TALU_xBCDExxx);
-  plot(x, line++, vid_clk_sig.SONO_AxxxxFGH);
-  plot(x, line++, vid_clk_sig.XOCE_ABxxEFxx);
-  plot(x, line++, vid_clk_sig.XYSO_ABCxDEFx);
+  plot(x, line++, vclk_sig.XUPY_xBCxxFGx);
+  plot(x, line++, vclk_sig.AWOH_AxxDExxH);
+  plot(x, line++, vclk_sig.TALU_xBCDExxx);
+  plot(x, line++, vclk_sig.SONO_AxxxxFGH);
+  plot(x, line++, vclk_sig.XOCE_ABxxEFxx);
+  plot(x, line++, vclk_sig.XYSO_ABCxDEFx);
   line++;
 }
 
@@ -178,14 +178,15 @@ void test_clock_phases() {
   for (int phase = 0; phase < 48; phase++) {
     gb.sim(1);
 
-    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(gb.sys_reg, gb.clk_reg1);
-    ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(gb.sys_reg, clk_sig1, gb.rst_reg);
-    VideoResets vid_rst = VideoResets::tick_slow(gb.sys_reg, rst_sig1);
-    ClockSignals2 vid_clk_sig = ClockSignals2::tick_slow(gb.sys_reg, vid_rst, gb.vid_clk_reg);
+    SysSignals sys_sig   = gb.sys_reg.signals();
+    ClkSignals clk_sig1  = gb.clk_reg1.signals(sys_sig);
+    RstSignals rst_sig1  = gb.rst_reg.rst_signals(sys_sig, clk_sig1);
+    VrstSignals vid_rst  = gb.rst_reg.vrst_signals(sys_sig, rst_sig1);
+    VclkSignals vclk_sig = gb.vclk_reg.signals();
 
-    check_phase(gb.sys_reg,
+    check_phase(sys_sig,
                 gb.clk_reg1, clk_sig1,
-                gb.vid_clk_reg, vid_clk_sig);
+                gb.vclk_reg, vclk_sig);
   }
   printf("pass\n");
 }
@@ -207,10 +208,11 @@ void TestClocks() {
 
   // The video clock gen WUVU/VENA/WOSU can be in different phases depending on when LCDC_EN goes high.
 
-  gb.sys_reg.MODE_PROD = true;
-  gb.sys_reg.RST = false;
-  gb.sys_reg.CLK_GOOD = true;
-  gb.sys_reg.CLK_REQ = true;
+  gb.sys_reg.PIN_MODE_DBG1 = false;
+  gb.sys_reg.PIN_MODE_DBG2 = false;
+  gb.sys_reg.PIN_RST = false;
+  gb.sys_reg.PIN_CLK_GOOD = true;
+  gb.sys_reg.CPU_CLK_REQ = true;
 
   // setting LCDC_EN on phase 6 or 7 makes phase match
   // but it looks like cpu writes take effect on phase 4?
@@ -221,19 +223,20 @@ void TestClocks() {
   for (int phase = 0; phase < 48; phase++) {
     gb.sim(1);
 
-    ClockSignals1 clk_sig1 = ClockSignals1::tick_slow(gb.sys_reg, gb.clk_reg1);
-    ResetSignals1 rst_sig1 = ResetSignals1::tick_slow(gb.sys_reg, clk_sig1, gb.rst_reg);
-    VideoResets vid_rst = VideoResets::tick_slow(gb.sys_reg, rst_sig1);
-    ClockSignals2 vid_clk_sig = ClockSignals2::tick_slow(gb.sys_reg, vid_rst, gb.vid_clk_reg);
+    SysSignals sys_sig  = gb.sys_reg.signals();
+    ClkSignals clk_sig1 = gb.clk_reg1.signals(sys_sig);
+    RstSignals rst_sig1 = gb.rst_reg.rst_signals(sys_sig, clk_sig1);
+    VrstSignals vid_rst = gb.rst_reg.vrst_signals(sys_sig, rst_sig1);
+    VclkSignals vclk_sig = gb.vclk_reg.signals();
 
-    check_phase(gb.sys_reg,
+    check_phase(sys_sig,
                 gb.clk_reg1, clk_sig1,
-                gb.vid_clk_reg, vid_clk_sig);
+                gb.vclk_reg, vclk_sig);
 
     dump(cursor,
-         gb.sys_reg,
+         sys_sig,
          gb.clk_reg1, clk_sig1,
-         gb.vid_clk_reg, vid_clk_sig);
+         gb.vclk_reg, vclk_sig);
     cursor++;
   }
 

@@ -10,16 +10,16 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void DMA_tick(const Bus& bus,
-              const BusControl& ctl,
+void DMA_tick(const BusTristates& bus,
+              const BusSignals& ctl,
               const Cpu& cpu,
               const Decoder& dec,
-              const ClockSignals1& clk,
-              const ResetSignals1& rst_sig,
+              const ClkSignals& clk,
+              const RstSignals& rst_sig,
               const DMA& dma,
 
               DMA& next,
-              Bus& bus_out) {
+              BusTristates& bus_out) {
 
   //----------
   // FF46 DMA

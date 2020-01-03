@@ -11,7 +11,7 @@ namespace Schematics {
 
 void P14_Ch2Regs_tick(const Gameboy& a,
                       const Gameboy& b,
-                      const ClockSignals1& clk,
+                      const ClkSignals& clk,
                       Gameboy& next) {
   /*p15.AZEG*/ next.ch2.AZEG = not(clk.AMUK_xBxDxFxH);
 

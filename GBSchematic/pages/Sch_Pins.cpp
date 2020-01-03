@@ -12,10 +12,10 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 void Pins::tick(Cpu& cpu,
-                const Bus& bus,
-                const BusControl& ctl,
+                const BusTristates& bus,
+                const BusSignals& ctl,
                 const Debug& dbg,
-                const ClockSignals1& clk,
+                const ClkSignals& clk,
                 const Decoder& dec,
                 const DMA& dma) {
 

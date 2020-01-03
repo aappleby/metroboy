@@ -72,24 +72,24 @@ bool LcdRegisters::check_match(const LcdRegisters& a, const LcdRegisters& b) {
 
 string check_signals(TestGB& gb) {
   string ret;
-  ClockSignals1 slow_clk_sig1 = ClockSignals1::tick_slow(gb.sys_reg, gb.sys_clk);
-  ClockSignals1 fast_clk_sig1 = ClockSignals1::tick_fast(gb.sys_reg, gb.sys_clk);
+  ClkSignals slow_clk_sig1 = ClkSignals::tick_slow(gb.sys_reg, gb.sys_clk);
+  ClkSignals fast_clk_sig1 = ClkSignals::tick_fast(gb.sys_reg, gb.sys_clk);
   
   ret = check_byte_match(slow_clk_sig1, fast_clk_sig1);
   if (ret.size()) return string("clk_sig1 mismatch\n") + ret;
 
-  ResetSignals1 slow_rst_sig1 = ResetSignals1::tick_slow(gb.sys_reg, slow_clk_sig1, gb.rst_reg);
-  ResetSignals1 fast_rst_sig1 = ResetSignals1::tick_fast(gb.sys_reg, gb.rst_reg);
+  RstSignals slow_rst_sig1 = RstSignals::tick_slow(gb.sys_reg, slow_clk_sig1, gb.rst_reg);
+  RstSignals fast_rst_sig1 = RstSignals::tick_fast(gb.sys_reg, gb.rst_reg);
   ret = check_byte_match(slow_rst_sig1, fast_rst_sig1);
   if (ret.size()) return string("rst_sig1 mismatch\n") + ret;
 
-  VideoResets slow_vid_rst = VideoResets::tick_slow(gb.sys_reg, slow_rst_sig1);
-  VideoResets fast_vid_rst = VideoResets::tick_fast(gb.sys_reg, fast_rst_sig1);
+  VrstSignals slow_vid_rst = VrstSignals::tick_slow(gb.sys_reg, slow_rst_sig1);
+  VrstSignals fast_vid_rst = VrstSignals::tick_fast(gb.sys_reg, fast_rst_sig1);
   ret = check_byte_match(slow_vid_rst, fast_vid_rst);
   if (ret.size()) return string("vid_rst mismatch\n") + ret;
 
-  ClockSignals2 slow_vid_clk = ClockSignals2::tick_slow(gb.sys_reg, slow_vid_rst, gb.vid_clk);
-  ClockSignals2 fast_vid_clk = ClockSignals2::tick_fast(gb.sys_reg, fast_vid_rst, gb.vid_clk);
+  VclkSignals slow_vid_clk = VclkSignals::tick_slow(gb.sys_reg, slow_vid_rst, gb.vid_clk);
+  VclkSignals fast_vid_clk = VclkSignals::tick_fast(gb.sys_reg, fast_vid_rst, gb.vid_clk);
   ret = check_byte_match(slow_vid_clk, fast_vid_clk);
   if (ret.size()) return string("vid_clk mismatch\n") + ret;
 

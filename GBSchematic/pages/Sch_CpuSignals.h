@@ -71,7 +71,13 @@ struct Cpu {
   bool BEDO;           // PORTD_02: <- P01.BEDO _____fgh
   bool BEKO;           // PORTD_03: <- P01.BEKO ____efgh connection not indicated on P01
   bool PHI_OUT;        // PORTD_04: <- P01.BUDE abcd____
-  bool FROM_CPU5;      // PORTD_05: -> FROM_CPU5 - controls driving the external data pins onto the internal data bus and other stuff. is this actually a clock, or like OE?
+
+  // controls driving the external data pins onto the internal data bus and
+  // other stuff. is this actually a clock, or like OE?
+  // if this is low, writes to the APU don't happen and writes to TIMA don't
+  // actually load TIMA (I think).
+  bool FROM_CPU5;      // PORTD_05: -> FROM_CPU5
+  
   bool BUKE;           // PORTD_06: <- P01.BUKE _____f__
   bool RESET_CLK;      // PORTD_07: <- P01.RESET_CLK _____fgh
   bool BOGA;           // PORTD_08: <- P01.BOGA abcde___

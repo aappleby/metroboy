@@ -35,14 +35,14 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-BusControl BusControl::tick(const SystemRegisters& sys_reg,
-                            const ClockSignals1& clk_sig1) {
+BusSignals BusSignals::tick(const SysSignals& sys_sig,
+                            const ClkSignals& clk_sig1) {
 
-  /*p01.AREV*/ wire AREV = nand(sys_reg.CPU_RAW_WR, clk_sig1.AFAS_xxxxEFGx);
+  /*p01.AREV*/ wire AREV = nand(sys_sig.CPU_RAW_WR, clk_sig1.AFAS_xxxxEFGx);
   /*p01.APOV*/ wire CPU_WR_xxxxEFGx = not(AREV);
 
-  /*p07.UJYV*/ wire CPU_RD_MUX = mux2n(sys_reg.RD_C, sys_reg.CPU_RAW_RD, sys_reg.MODE_DBG2);
-  /*p07.UBAL*/ wire CPU_WR_MUX = mux2n(sys_reg.WR_C, CPU_WR_xxxxEFGx, sys_reg.MODE_DBG2);
+  /*p07.UJYV*/ wire CPU_RD_MUX = mux2n(sys_sig.PIN_RD_C, sys_sig.CPU_RAW_RD, sys_sig.PIN_MODE_DBG2);
+  /*p07.UBAL*/ wire CPU_WR_MUX = mux2n(sys_sig.PIN_WR_C, CPU_WR_xxxxEFGx, sys_sig.PIN_MODE_DBG2);
 
   /*p07.TEDO*/ wire TEDO_CPURD  = not(CPU_RD_MUX);
   /*p07.TAPU*/ wire TAPU_CPUWR  = not(CPU_WR_MUX);
@@ -62,19 +62,19 @@ BusControl BusControl::tick(const SystemRegisters& sys_reg,
   /*p07.TUNA*/ wire ADDR_0000_FDFF = nand(bus.A15, bus.A14, bus.A13, bus.A12, bus.A11, bus.A10, bus.A09);
   /*p07.RYCU*/ wire ADDR_FE00_FFFF = not(ADDR_0000_FDFF);
 
-  /*p08.TEXO*/ wire ADDR_VALID_AND_NOT_VRAM = and(sys_reg.ADDR_VALID, ADDR_NOT_VRAM);
+  /*p08.TEXO*/ wire ADDR_VALID_AND_NOT_VRAM = and(sys_sig.ADDR_VALID, ADDR_NOT_VRAM);
   /*p08.LEVO*/ wire ADDR_VALID_AND_NOT_VRAMn = not(ADDR_VALID_AND_NOT_VRAM);
   /*p25.TEFA*/ wire TEFA = nor(ADDR_FE00_FFFF, ADDR_VALID_AND_NOT_VRAM);
   /*p25.SOSE*/ wire ADDR_RAM = and(bus.A15, TEFA);
 
 
-  /*p08.MOCA*/ wire DBG_EXT_RDn = nor(ADDR_VALID_AND_NOT_VRAM, sys_reg.MODE_DBG1);
-  /*p08.LAGU*/ wire LAGU = or(and(sys_reg.CPU_RAW_RD, ADDR_VALID_AND_NOT_VRAMn), sys_reg.CPU_RAW_WR);
+  /*p08.MOCA*/ wire DBG_EXT_RDn = nor(ADDR_VALID_AND_NOT_VRAM, sys_sig.MODE_DBG1);
+  /*p08.LAGU*/ wire LAGU = or(and(sys_sig.CPU_RAW_RD, ADDR_VALID_AND_NOT_VRAMn), sys_sig.CPU_RAW_WR);
   /*p08.LYWE*/ wire LYWE = not(LAGU);
   /*p08.MOTY*/ wire CPU_EXT_RD = or(DBG_EXT_RDn, LYWE);
 
   /*p11.BUDA*/ wire CPU_RDo = not(TEDO_CPURD);
-  /*p08.RORU*/ wire CBUS_TO_CEXTn = mux2(CPU_RDo, CPU_EXT_RD, sys_reg.MODE_DBG2);
+  /*p08.RORU*/ wire CBUS_TO_CEXTn = mux2(CPU_RDo, CPU_EXT_RD, sys_sig.MODE_DBG2);
   /*p08.LULA*/ wire CBUS_TO_CEXT  = not(CBUS_TO_CEXTn);
 #endif
 

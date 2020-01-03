@@ -9,14 +9,14 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Serial_tick(const Bus& bus,
-                 const BusControl& ctl,
+void Serial_tick(const BusTristates& bus,
+                 const BusSignals& ctl,
                  const SerialInput& in,
-                 const ResetSignals1& rst_sig,
+                 const RstSignals& rst_sig,
                  const Decoder& dec,
                  const Serial& prev,
                  Serial& next,
-                 Bus& bus_out) {
+                 BusTristates& bus_out) {
 
   //----------
   // Serial port

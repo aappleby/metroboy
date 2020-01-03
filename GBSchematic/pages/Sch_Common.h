@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <memory.h>
 #include <string>
-#pragma warning(disable : 4201)
+
 
 using std::string;
 
@@ -19,8 +19,8 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct Bus;
-struct BusControl;
+struct BusTristates;
+struct BusSignals;
 struct Cpu;
 struct PixelPipe;
 struct Serial;
@@ -39,33 +39,21 @@ struct Sprites;
 struct Video;
 struct VRAM;
 
-struct SystemRegisters;
+struct SysRegisters;
+struct SysSignals;
 
-struct ClockRegisters1;
-struct VideoClocks;
-struct ClockSignals1;
-struct ClockSignals2;
+struct ClkRegisters;
+struct ClkSignals;
 
-struct ResetRegisters;
-struct ResetSignals1;
-struct VideoResets;
+struct VclkRegisters;
+struct VclkSignals;
+
+struct RstRegisters;
+struct RstSignals;
+struct VrstSignals;
 
 struct LcdRegisters;
 struct LcdSignals;
-
-//-----------------------------------------------------------------------------
-
-/*
-inline bool check(bool x) {
-  if (!x) {
-    printf("check failed\n");
-    return false;
-    //__debugbreak();
-  }
-  return true;
-}
-*/
-
 
 //-----------------------------------------------------------------------------
 
@@ -81,8 +69,8 @@ struct Reg {
     clk = 0;
   }
 
-  void reset(bool clk_in) {
-    val = 0;
+  void reset(bool val_in, bool clk_in) {
+    val = val_in;
     clk = clk_in;
   }
 
@@ -118,10 +106,13 @@ struct Reg2 {
     val_a = val_b = 0;
   }
 
-  void reset(bool clk_in, bool rst_in, bool reg_in) {
+  void reset(bool clk_in, bool reg_in) {
     clk_a = clk_b = clk_in;
     val_a = val_b = reg_in;
-    if (!rst_in) val_a = val_b = 0;
+  }
+  
+  void set2(bool reg_in) {
+    val_a = val_b = reg_in;
   }
 
   void set(bool clk_in, bool rst_in, bool reg_in) {
@@ -139,6 +130,8 @@ struct Reg2 {
     if (clk_a != clk_b) val_a = val_b;
     clk_a = clk_b;
   }
+
+  bool get() const { return val_a; }
 
   operator const bool() const {
     return val_a;
@@ -162,6 +155,11 @@ struct Counter {
     clk_a = clk_b = clk_in;
     val = val_in;
     carry = carry_in;
+  }
+
+  void set2(bool reg_in) {
+    val = reg_in;
+    carry = 0;
   }
 
   void set(bool clk_in, bool load, bool in) {

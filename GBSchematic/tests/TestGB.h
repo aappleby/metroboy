@@ -16,13 +16,14 @@ struct TestGB {
   void reset();
   
   void sim(int phases);
+  void commit();
 
-  SystemRegisters sys_reg;
-  ClockRegisters1 clk_reg1;
-  ResetRegisters  rst_reg;
-  VideoClocks     vid_clk_reg;
+  SysRegisters sys_reg;
+  ClkRegisters    clk_reg1;
+  RstRegisters  rst_reg;
+  VclkRegisters   vclk_reg;
   LcdRegisters    lcd_reg;
-  Bus             bus;
+  BusTristates             bus;
 };
 
 //-----------------------------------------------------------------------------

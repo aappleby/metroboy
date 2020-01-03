@@ -9,13 +9,13 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Joypad_tick(const Bus& bus,
-                 const BusControl& ctl,
+void Joypad_tick(const BusTristates& bus,
+                 const BusSignals& ctl,
                  const Debug& dbg,
-                 const ClockSignals1& clk,
+                 const ClkSignals& clk,
                  const Joypad& prev,
                  Joypad& next,
-                 Bus& bus_out) {
+                 BusTristates& bus_out) {
   /*p10.AMUS*/ wire ADDR_xxxxxxxx0xx00000 = nor(bus.A00, bus.A01, bus.A02, bus.A03, bus.A04, bus.A07);
   /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(bus.A15, bus.A14, bus.A13, bus.A12, bus.A11, bus.A10, bus.A09);
   /*p07.TONA*/ wire ADDR_08n = not(bus.A08);
@@ -61,10 +61,10 @@ void Joypad_tick(const Bus& bus,
 
 //-----------------------------------------------------------------------------
 
-void Joypad_tock(const Bus& bus,
-                 const BusControl& ctl,
-                 const ClockSignals1& clk,
-                 const ResetSignals1& rst_sig,
+void Joypad_tock(const BusTristates& bus,
+                 const BusSignals& ctl,
+                 const ClkSignals& clk,
+                 const RstSignals& rst_sig,
                  const Joypad& prev,
                  Joypad& next) {
 

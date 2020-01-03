@@ -5,13 +5,13 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Bootrom_tick(const Bus& bus,
-                  const BusControl& ctl,
+void Bootrom_tick(const BusTristates& bus,
+                  const BusSignals& ctl,
                   const Debug& dbg,
                   const Decoder& dec,
                   const Bootrom& prev,
                   Bootrom& next,
-                  Bus& bus_out) {
+                  BusTristates& bus_out) {
 
 
 
@@ -59,10 +59,10 @@ void Bootrom_tick(const Bus& bus,
 
 //-----------------------------------------------------------------------------
 
-void Bootrom_tock(const Bus& bus,
-                  const BusControl& ctl,
+void Bootrom_tock(const BusTristates& bus,
+                  const BusSignals& ctl,
                   const Decoder& dec,
-                  const ResetSignals1& rst_sig1,
+                  const RstSignals& rst_sig1,
                   const Bootrom& prev,
                   Bootrom& next) {
 

@@ -19,7 +19,7 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Vram_tick(const Bus& bus,
+void Vram_tick(const BusTristates& bus,
                const Pins& pins,
                const LcdRegisters& lcd,
                const Registers& regs,
@@ -268,7 +268,7 @@ void Vram_tick(const Bus& bus,
 //-----------------------------------------------------------------------------
 // VRAM data driver
 
-void Vram_tick2(const Bus& /*bus*/, const BusControl& /*ctl*/, const Vram& /*vram*/, Vram& /*next*/, Bus& /*bus_out*/) {
+void Vram_tick2(const BusTristates& /*bus*/, const BusSignals& /*ctl*/, const Vram& /*vram*/, Vram& /*next*/, BusTristates& /*bus_out*/) {
 
 #if 0
   /*p25.ROFA*/ next.MD0_B = not(ctl.VEXT_TO_VBUSn);

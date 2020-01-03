@@ -230,6 +230,7 @@
       <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</InlineFunctionExpansion>
     </ClCompile>
     <ClCompile Include="tests\TestSpriteSeq.cpp" />
+    <ClCompile Include="tests\TestTimer.cpp" />
     <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -248,6 +249,7 @@
     <ClInclude Include="pages\Sch_LCD.h" />
     <ClInclude Include="pages\Sch_OAM.h" />
     <ClInclude Include="pages\Sch_Pins.h" />
+    <ClInclude Include="pages\Sch_Ram.h" />
     <ClInclude Include="pages\Sch_Registers.h" />
     <ClInclude Include="pages\Sch_Resets.h" />
     <ClInclude Include="pages\Sch_Serial.h" />

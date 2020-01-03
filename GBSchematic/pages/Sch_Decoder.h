@@ -8,13 +8,11 @@ namespace Schematics {
 
 struct Decoder {
 
-  static Decoder tick(const Bus& bus,
-                      const ClockSignals1& clk_sig1,
-                      wire BOOT_BIT,
-                      wire MODE_DBG2,
-                      wire ADDR_VALID);
+  static Decoder tick(const SysSignals&   sys_sig,
+                      const ClkSignals&   clk_sig,
+                      const BusTristates& bus_tri);
 
-  /*p10.AMUS*/ bool ADDR_xxxxxxxx0xx00000;
+  /*p10.AMUS*/ bool ADDR_0xx00000;
   /*p07.TUNA*/ bool ADDR_0000_FE00;
   /*p07.TONA*/ bool ADDR_08n;
   /*p10.ANAP*/ bool ADDR_111111110xx00000;

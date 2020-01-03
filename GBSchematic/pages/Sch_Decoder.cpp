@@ -5,32 +5,32 @@
 #include "Sch_CpuSignals.h"
 #include "Sch_Clocks.h"
 #include "Sch_Debug.h"
+#include "Sch_System.h"
 
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-Decoder Decoder::tick(const Bus& bus,
-                      const ClockSignals1& clk_sig1,
-                      wire BOOT_BIT,
-                      wire MODE_DBG2,
-                      wire ADDR_VALID) {
-  /*p10.AMUS*/ wire ADDR_xxxxxxxx0xx00000 = nor(bus.A00, bus.A01, bus.A02, bus.A03, bus.A04, bus.A07);
-  /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(bus.A15, bus.A14, bus.A13, bus.A12, bus.A11, bus.A10, bus.A09);
-  /*p07.TONA*/ wire ADDR_08n = not(bus.A08);
+Decoder Decoder::tick(const SysSignals&   sys_sig,
+                      const ClkSignals&   clk_sig,
+                      const BusTristates& bus_tri)
+{
+  /*p10.AMUS*/ wire ADDR_0xx00000 = nor(bus_tri.A00, bus_tri.A01, bus_tri.A02, bus_tri.A03, bus_tri.A04, bus_tri.A07);
+  /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(bus_tri.A15, bus_tri.A14, bus_tri.A13, bus_tri.A12, bus_tri.A11, bus_tri.A10, bus_tri.A09);
+  /*p07.TONA*/ wire ADDR_08n = not(bus_tri.A08);
   /*p07.SYKE*/ wire ADDR_FFXX = nor(ADDR_0000_FE00, ADDR_08n);
-  /*p10.ANAP*/ wire ADDR_111111110xx00000 = and(ADDR_xxxxxxxx0xx00000, ADDR_FFXX);
+  /*p10.ANAP*/ wire ADDR_111111110xx00000 = and(ADDR_0xx00000, ADDR_FFXX);
 
-  /*p22.XOLA*/ wire A00n = not(bus.A00);
-  /*p22.XENO*/ wire A01n = not(bus.A01);
-  /*p22.XUSY*/ wire A02n = not(bus.A02);
-  /*p22.XERA*/ wire A03n = not(bus.A03);
-  /*p22.XALY*/ wire ADDR_0x00xxxx  = nor(bus.A07, bus.A05, bus.A04);
-  /*p22.WUTU*/ wire FF4Xn          = nand(ADDR_FFXX, bus.A06, ADDR_0x00xxxx);
+  /*p22.XOLA*/ wire A00n = not(bus_tri.A00);
+  /*p22.XENO*/ wire A01n = not(bus_tri.A01);
+  /*p22.XUSY*/ wire A02n = not(bus_tri.A02);
+  /*p22.XERA*/ wire A03n = not(bus_tri.A03);
+  /*p22.XALY*/ wire ADDR_0x00xxxx  = nor(bus_tri.A07, bus_tri.A05, bus_tri.A04);
+  /*p22.WUTU*/ wire FF4Xn          = nand(ADDR_FFXX, bus_tri.A06, ADDR_0x00xxxx);
   /*p22.WERO*/ wire FF4X           = not(FF4Xn);
 
-  /*p07.SEMY*/ wire ADDR_XX0X = nor(bus.A07, bus.A06, bus.A05, bus.A04);
-  /*p07.SAPA*/ wire ADDR_XXXF = and(bus.A00, bus.A01, bus.A02, bus.A03);
+  /*p07.SEMY*/ wire ADDR_XX0X = nor(bus_tri.A07, bus_tri.A06, bus_tri.A05, bus_tri.A04);
+  /*p07.SAPA*/ wire ADDR_XXXF = and(bus_tri.A00, bus_tri.A01, bus_tri.A02, bus_tri.A03);
 
   /*p22.WADO*/ wire WADO_A00 = not(A00n);
   /*p22.WESA*/ wire WESA_A01 = not(A01n);
@@ -39,16 +39,16 @@ Decoder Decoder::tick(const Bus& bus,
 
   /*p22.WORU*/ wire FF40n = nand(FF4X, A00n, A01n, A02n, A03n);
   /*p22.WOFA*/ wire FF41n = nand(FF4X, WADO_A00, A01n, A02n, A03n);
-  /*p22.WEBU*/ wire FF42n = nand(FF4X, A00n, bus.A01, A02n, A03n);
-  /*p22.WAVU*/ wire FF43n = nand(FF4X, bus.A00, bus.A01, A02n, A03n);
+  /*p22.WEBU*/ wire FF42n = nand(FF4X, A00n, bus_tri.A01, A02n, A03n);
+  /*p22.WAVU*/ wire FF43n = nand(FF4X, bus_tri.A00, bus_tri.A01, A02n, A03n);
   /*p22.WYLE*/ wire FF44n = nand(FF4X, A00n, A01n, WALO_A02,  A03n);
-  /*p22.WETY*/ wire FF45n = nand(FF4X, bus.A00, A01n, bus.A02, A03n);
+  /*p22.WETY*/ wire FF45n = nand(FF4X, bus_tri.A00, A01n, bus_tri.A02, A03n);
   /*p22.WATE*/ wire FF46n = nand(FF4X, A00n, WESA_A01, WALO_A02, A03n);
-  /*p22.WYBO*/ wire FF47n = nand(FF4X, bus.A00, bus.A01, bus.A02, A03n);
-  /*p22.WETA*/ wire FF48n = nand(FF4X, A00n, A01n, A02n, bus.A03);
-  /*p22.VAMA*/ wire FF49n = nand(FF4X, bus.A00, A01n, A02n, bus.A03);
-  /*p22.WYVO*/ wire FF4An = nand(FF4X, A00n, bus.A01, A02n, bus.A03);
-  /*p22.WAGE*/ wire FF4Bn = nand(FF4X, bus.A00, bus.A01, A02n, bus.A03);
+  /*p22.WYBO*/ wire FF47n = nand(FF4X, bus_tri.A00, bus_tri.A01, bus_tri.A02, A03n);
+  /*p22.WETA*/ wire FF48n = nand(FF4X, A00n, A01n, A02n, bus_tri.A03);
+  /*p22.VAMA*/ wire FF49n = nand(FF4X, bus_tri.A00, A01n, A02n, bus_tri.A03);
+  /*p22.WYVO*/ wire FF4An = nand(FF4X, A00n, bus_tri.A01, A02n, bus_tri.A03);
+  /*p22.WAGE*/ wire FF4Bn = nand(FF4X, bus_tri.A00, bus_tri.A01, A02n, bus_tri.A03);
 
   /*p22.VOCA*/ wire FF40 = not(FF40n);
   /*p22.VARY*/ wire FF41 = not(FF41n);
@@ -63,8 +63,8 @@ Decoder Decoder::tick(const Bus& bus,
   /*p22.VYGA*/ wire FF4A = not(FF4An);
   /*p22.VUMY*/ wire FF4B = not(FF4Bn);
 
-  /*p07.TULO*/ wire ADDR_00XX  = nor(bus.A15, bus.A14, bus.A13, bus.A12, bus.A11, bus.A10, bus.A09, bus.A08);
-  /*p07.TERA*/ wire BOOT_BITn  = not(BOOT_BIT);
+  /*p07.TULO*/ wire ADDR_00XX  = nor(bus_tri.A15, bus_tri.A14, bus_tri.A13, bus_tri.A12, bus_tri.A11, bus_tri.A10, bus_tri.A09, bus_tri.A08);
+  /*p07.TERA*/ wire BOOT_BITn  = not(sys_sig.BOOT_BIT);
   /*p07.TUTU*/ wire ADDR_BOOT  = and(BOOT_BITn, ADDR_00XX);
 
   /*p07.RYCU*/ wire ADDR_FE00_FFFF = not(ADDR_0000_FE00);
@@ -72,18 +72,18 @@ Decoder Decoder::tick(const Bus& bus,
   /*p07.ROPE*/ wire ADDR_FEXXn = nand(ADDR_FE00_FFFF, ADDR_FFXXn2);
   /*p07.SARO*/ wire ADDR_OAM = not(ADDR_FEXXn);
 
-  /*p01.AGUT*/ wire AGUT_xxCDEFGH = and(or(clk_sig1.AJAX_xxxxEFGH, clk_sig1.AROV_xxCDEFxx), ADDR_VALID);
-  /*p01.AWOD*/ wire AWOD = or(MODE_DBG2, AGUT_xxCDEFGH);
+  /*p01.AGUT*/ wire AGUT_xxCDEFGH = and(or(clk_sig.AJAX_xxxxEFGH, clk_sig.AROV_xxCDEFxx), sys_sig.CPU_ADDR_VALID);
+  /*p01.AWOD*/ wire AWOD = or(sys_sig.PIN_MODE_DBG2, AGUT_xxCDEFGH);
   /*p01.ABUZ*/ wire ADDR_VALID_xBCxxxxx = not(AWOD);
 
-  /*p03.TOVY*/ wire TOVY_A00n = not(bus.A00);
-  /*p08.TOLA*/ wire TOLA_A01n = not(bus.A01);
-  /*p06.SEFY*/ wire SEFY_A02n = not(bus.A02);
+  /*p03.TOVY*/ wire TOVY_A00n = not(bus_tri.A00);
+  /*p08.TOLA*/ wire TOLA_A01n = not(bus_tri.A01);
+  /*p06.SEFY*/ wire SEFY_A02n = not(bus_tri.A02);
 
-  /*p06.SARE*/ wire ADDR_XX00_XX07 = nor(bus.A07, bus.A06, bus.A05, bus.A04, bus.A03);
+  /*p06.SARE*/ wire ADDR_XX00_XX07 = nor(bus_tri.A07, bus_tri.A06, bus_tri.A05, bus_tri.A04, bus_tri.A03);
   /*p06.SANO*/ wire ADDR_FF00_FF03 = and(ADDR_XX00_XX07, SEFY_A02n, ADDR_FFXX);
 
-  /*p03.RYFO*/ wire FF04_FF07 = and(bus.A02, ADDR_XX00_XX07, ADDR_FFXX);
+  /*p03.RYFO*/ wire FF04_FF07 = and(bus_tri.A02, ADDR_XX00_XX07, ADDR_FFXX);
 
 #if 0
   bool HRAM_CS;
@@ -95,7 +95,7 @@ Decoder Decoder::tick(const Bus& bus,
 
 
   return {
-    /*p10.AMUS*/ .ADDR_xxxxxxxx0xx00000 = ADDR_xxxxxxxx0xx00000,
+    /*p10.AMUS*/ .ADDR_0xx00000 = ADDR_0xx00000,
     /*p07.TUNA*/ .ADDR_0000_FE00 = ADDR_0000_FE00,
     /*p07.TONA*/ .ADDR_08n = ADDR_08n,
     /*p10.ANAP*/ .ADDR_111111110xx00000 = ADDR_111111110xx00000,

@@ -9,23 +9,23 @@ namespace Schematics {
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
 
-void P21_VideoControl_tick(const Bus& bus,
-                           const BusControl& ctl,
+void P21_VideoControl_tick(const BusTristates& bus,
+                           const BusSignals& ctl,
                            const Pins& pins,
                            const LcdSignals& lcd_sig,
                            const LcdRegisters& lcd,
                            const Registers& regs,
-                           const ClockSignals1& clk_sig1,
-                           const ClockSignals2& vid_clk,
-                           const ResetSignals1& rst_sig1,
-                           const VideoResets& vid_rst,
+                           const ClkSignals& clk_sig1,
+                           const VclkSignals& vid_clk,
+                           const RstSignals& rst_sig1,
+                           const VrstSignals& vid_rst,
                            const Decoder& dec,
                            const Sprites& spr,
                            const Video& vid,
                            const SpriteStore& sst,
 
                            Video& next,
-                           Bus& bus_out) {
+                           BusTristates& bus_out) {
 
   /*p27.VYPO*/ wire VYPO = not(pins.P10_B);
 
@@ -391,7 +391,7 @@ void P21_VideoControl_tick(const Bus& bus,
     /*p21.SASY*/ if (FF41_RDb) bus_out.D5 = vid.INT_OAM_EN;
     /*p21.POTE*/ if (FF41_RDb) bus_out.D6 = vid.INT_LYC_EN;
 
-    /*p21.PURE*/ wire LINE_DONEa = not(lcd.NEW_LINE_d0a_val);
+    /*p21.PURE*/ wire LINE_DONEa = not(lcd.NEW_LINE_d0a);
     /*p21.SELA*/ wire LINE_DONEo = not(LINE_DONEa);
     /*p21.TOLU*/ wire INT_VBLn = not(lcd_sig.VBLANK_d4b);
     /*p21.TAPA*/ wire INT_OAM = and(INT_VBLn, LINE_DONEo);

@@ -179,13 +179,13 @@ void test_clock_phases() {
     gb.sim(1);
 
     SysSignals sys_sig   = gb.sys_reg.signals();
-    ClkSignals clk_sig1  = gb.clk_reg1.signals(sys_sig);
+    ClkSignals clk_sig1  = gb.clk_reg.signals(sys_sig);
     RstSignals rst_sig1  = gb.rst_reg.rst_signals(sys_sig, clk_sig1);
     VrstSignals vid_rst  = gb.rst_reg.vrst_signals(sys_sig, rst_sig1);
     VclkSignals vclk_sig = gb.vclk_reg.signals();
 
     check_phase(sys_sig,
-                gb.clk_reg1, clk_sig1,
+                gb.clk_reg, clk_sig1,
                 gb.vclk_reg, vclk_sig);
   }
   printf("pass\n");
@@ -224,18 +224,18 @@ void TestClocks() {
     gb.sim(1);
 
     SysSignals sys_sig  = gb.sys_reg.signals();
-    ClkSignals clk_sig1 = gb.clk_reg1.signals(sys_sig);
+    ClkSignals clk_sig1 = gb.clk_reg.signals(sys_sig);
     RstSignals rst_sig1 = gb.rst_reg.rst_signals(sys_sig, clk_sig1);
     VrstSignals vid_rst = gb.rst_reg.vrst_signals(sys_sig, rst_sig1);
     VclkSignals vclk_sig = gb.vclk_reg.signals();
 
     check_phase(sys_sig,
-                gb.clk_reg1, clk_sig1,
+                gb.clk_reg, clk_sig1,
                 gb.vclk_reg, vclk_sig);
 
     dump(cursor,
          sys_sig,
-         gb.clk_reg1, clk_sig1,
+         gb.clk_reg, clk_sig1,
          gb.vclk_reg, vclk_sig);
     cursor++;
   }

@@ -282,6 +282,10 @@ void Z80::tock(const int tcycle_, const Bus bus_to_cpu_, const uint8_t imask_, c
       ime_ = false;
     } else {
       state = first_state(op);
+      if (state == INVALID) {
+        printf("x\n");
+      }
+
     }
   }
 
@@ -324,6 +328,11 @@ void Z80::state_machine() {
   state_ = INVALID;
 
   write = 0xFF;
+
+  if (state == INVALID) {
+    printf("x\n");
+  }
+
 
   if (state == INT3) {
     if (imask & intf & INT_JOYPAD_MASK) { temp = 0x0060; int_ack = INT_JOYPAD_MASK; }
@@ -601,7 +610,9 @@ void Z80::state_machine() {
   }
 
   if (write == 0xFF) printf("write fail\n");
-  if (state_ == INVALID) printf("fail state invalid\n");
+  if (state_ == INVALID) {
+    printf("fail state invalid\n");
+  }
 }
 
 //-----------------------------------------------------------------------------

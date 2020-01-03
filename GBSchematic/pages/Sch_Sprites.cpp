@@ -17,7 +17,7 @@ void Sprites_tick(const Pins& pins,
                   const OAM& oam,
                   const Video& vid,
                   const VrstSignals& vid_rst,
-                  const Registers& regs,
+                  const VidRegisters& regs,
                   const SpriteStore& sst,
                   const Sprites& spr,
 

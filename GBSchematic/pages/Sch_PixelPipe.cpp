@@ -25,7 +25,7 @@ struct PixelPipeIn {
   /*p32.LUXA*/ bool BG_PIPE_B_LOAD;
 };
 
-void PixelPipe_Tick(const Registers& regs,
+void PixelPipe_Tick(const VidRegisters& regs,
                     const PixelPipeIn& in,
                     const PixelPipe& pix,
 
@@ -340,15 +340,15 @@ void PixelPipe_Tick(const Registers& regs,
   /*p35.VUGO*/ wire PAL_OBP0A = and(PIX_SP0n, PIX_SP1n, MASK_OPB0);
     
 
-  /*p35.WUFU*/ wire COL_OBP00 = amux4(regs.OBP0_D7, PAL_OBP0D,
-                                      regs.OBP0_D5, PAL_OBP0C,
-                                      regs.OBP0_D3, PAL_OBP0B,
-                                      regs.OBP0_D1, PAL_OBP0A);
+  /*p35.WUFU*/ wire COL_OBP00 = amux4(regs.OBP07, PAL_OBP0D,
+                                      regs.OBP05, PAL_OBP0C,
+                                      regs.OBP03, PAL_OBP0B,
+                                      regs.OBP01, PAL_OBP0A);
 
-  /*p35.WALY*/ wire COL_OBP01 = amux4(regs.OBP0_D6, PAL_OBP0D,
-                                      regs.OBP0_D4, PAL_OBP0C,
-                                      regs.OBP0_D2, PAL_OBP0B,
-                                      regs.OBP0_D0, PAL_OBP0A);
+  /*p35.WALY*/ wire COL_OBP01 = amux4(regs.OBP06, PAL_OBP0D,
+                                      regs.OBP04, PAL_OBP0C,
+                                      regs.OBP02, PAL_OBP0B,
+                                      regs.OBP00, PAL_OBP0A);
 
   //----------
   // Sprite palette 1 lookup
@@ -364,15 +364,15 @@ void PixelPipe_Tick(const Registers& regs,
   /*p35.LARU*/ wire PAL_OBP1B = and(PIX_SP1o, PIX_SP0b, MASK_OBP1);
   /*p35.LOPU*/ wire PAL_OBP1A = and(PIX_SP1o, PIX_SP0o, MASK_OBP1);
 
-  /*p35.MOKA*/ wire COL_OBP10 = amux4(regs.OBP1_D7, PAL_OBP1D,
-                                      regs.OBP1_D5, PAL_OBP1C,
-                                      regs.OBP1_D3, PAL_OBP1B,
-                                      regs.OBP1_D1, PAL_OBP1A);
+  /*p35.MOKA*/ wire COL_OBP10 = amux4(regs.OBP17, PAL_OBP1D,
+                                      regs.OBP15, PAL_OBP1C,
+                                      regs.OBP13, PAL_OBP1B,
+                                      regs.OBP11, PAL_OBP1A);
 
-  /*p35.MUFA*/ wire COL_OBP11 = amux4(regs.OBP1_D6, PAL_OBP1D,
-                                      regs.OBP1_D4, PAL_OBP1C,
-                                      regs.OBP1_D2, PAL_OBP1B,
-                                      regs.OBP1_D0, PAL_OBP1A);
+  /*p35.MUFA*/ wire COL_OBP11 = amux4(regs.OBP16, PAL_OBP1D,
+                                      regs.OBP14, PAL_OBP1C,
+                                      regs.OBP12, PAL_OBP1B,
+                                      regs.OBP10, PAL_OBP1A);
 
   //----------
   // Background/window palette lookup
@@ -388,15 +388,15 @@ void PixelPipe_Tick(const Registers& regs,
   /*p35.NUXO*/ wire PAL_BGPC = and(PIX_BG1n, PIX_BG0a, MASK_BGP);
   /*p35.NYPO*/ wire PAL_BGPD = and(PIX_BG1a, PIX_BG0a, MASK_BGP);
 
-  /*p35.NURA*/ wire COL_BGP1 = amux4(regs.BGP_D7, PAL_BGPD,
-                                     regs.BGP_D5, PAL_BGPC,
-                                     regs.BGP_D3, PAL_BGPB,
-                                     regs.BGP_D1, PAL_BGPA);
+  /*p35.NURA*/ wire COL_BGP1 = amux4(regs.BGP7, PAL_BGPD,
+                                     regs.BGP5, PAL_BGPC,
+                                     regs.BGP3, PAL_BGPB,
+                                     regs.BGP1, PAL_BGPA);
 
-  /*p35.NELO*/ wire COL_BGP0 = amux4(regs.BGP_D6, PAL_BGPD,
-                                     regs.BGP_D4, PAL_BGPC,
-                                     regs.BGP_D2, PAL_BGPB,
-                                     regs.BGP_D0, PAL_BGPA);
+  /*p35.NELO*/ wire COL_BGP0 = amux4(regs.BGP6, PAL_BGPD,
+                                     regs.BGP4, PAL_BGPC,
+                                     regs.BGP2, PAL_BGPB,
+                                     regs.BGP0, PAL_BGPA);
 
   //----------
   // Pixel merge and send

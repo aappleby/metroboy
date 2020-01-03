@@ -37,13 +37,15 @@ int main(int argc, char** argv) {
   return ret;
 }
 
+//-----------------------------------------------------------------------------
+
 int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
-  return 0;
+  //return 0;
 
   //---------
 
@@ -58,7 +60,9 @@ int MetroBoyApp::main_(int /*argc*/, char** /*argv*/) {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  load("microtests/build/dmg", "poweron_000_div");
+  //load("microtests/build/dmg", "poweron_000_div");
+
+  load("microtests/build/dmg", "minimal");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;

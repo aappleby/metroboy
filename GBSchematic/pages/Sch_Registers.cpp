@@ -2,239 +2,288 @@
 
 #include "Sch_Decoder.h"
 #include "Sch_Resets.h"
+#include "Sch_BusControl.h"
+
 
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Registers_tick(const RegistersIn& in,
-                    RegistersOut& out,
-                    const Decoder& dec,
-                    const Registers& prev) {
+void VidRegisters::pwron() {
+  big_pwron(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,
+            LCDC_BGTILE, LCDC_WINEN, LCDC_WINMAP, LCDC_EN);
 
-  /*p23.VYRE*/ wire FF40_RD = and(dec.FF40, in.ASOT_CPURD);
-  /*p23.WYCE*/ wire FF40_RDn = not(FF40_RD);
+  big_pwron(SCY0,  SCY1,  SCY2,  SCY3,  SCY4,  SCY5,  SCY6,  SCY7);
+  big_pwron(SCX0,  SCX1,  SCX2,  SCX3,  SCX4,  SCX5,  SCX6,  SCX7);
+  big_pwron(LYC0,  LYC1,  LYC2,  LYC3,  LYC4,  LYC5,  LYC6,  LYC7);
+  big_pwron(BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7);
+  big_pwron(OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07);
+  big_pwron(OBP10, OBP11, OBP12, OBP13, OBP14, OBP15, OBP16, OBP17);
+  big_pwron(WY0,   WY1,   WY2,   WY3,   WY4,   WY5,   WY6,   WY7);
+  big_pwron(WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7);
+}
 
-  /*p23.WYPO*/ if (FF40_RDn) out.D0 = prev.LCDC_BGEN;
-  /*p23.XERO*/ if (FF40_RDn) out.D1 = prev.LCDC_SPEN;
-  /*p23.WYJU*/ if (FF40_RDn) out.D2 = prev.LCDC_SPSIZE;
-  /*p23.WUKA*/ if (FF40_RDn) out.D3 = prev.LCDC_BGMAP;
-  /*p23.VOKE*/ if (FF40_RDn) out.D4 = prev.LCDC_BGTILE;
-  /*p23.VATO*/ if (FF40_RDn) out.D5 = prev.LCDC_WINEN;
-  /*p23.VAHA*/ if (FF40_RDn) out.D6 = prev.LCDC_WINMAP;
-  /*p23.XEBU*/ if (FF40_RDn) out.D7 = prev.LCDC_EN;
+void VidRegisters::reset() {
+  big_reset(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,
+            LCDC_BGTILE, LCDC_WINEN, LCDC_WINMAP, LCDC_EN);
 
-  /*p23.ANYP*/ wire FF42_RD = and(dec.FF42, in.ASOT_CPURD);
-  /*p23.BUWY*/ wire FF42_RDn = not(FF42_RD);
+  big_reset(SCY0,  SCY1,  SCY2,  SCY3,  SCY4,  SCY5,  SCY6,  SCY7);
+  big_reset(SCX0,  SCX1,  SCX2,  SCX3,  SCX4,  SCX5,  SCX6,  SCX7);
+  big_reset(LYC0,  LYC1,  LYC2,  LYC3,  LYC4,  LYC5,  LYC6,  LYC7);
+  big_reset(BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7);
+  big_reset(OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07);
+  big_reset(OBP10, OBP11, OBP12, OBP13, OBP14, OBP15, OBP16, OBP17);
+  big_reset(WY0,   WY1,   WY2,   WY3,   WY4,   WY5,   WY6,   WY7);
+  big_reset(WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7);
+}
 
-  /*p23.WARE*/ if (FF42_RDn) out.D0 = prev.SCY0;
-  /*p23.GOBA*/ if (FF42_RDn) out.D1 = prev.SCY1;
-  /*p23.GONU*/ if (FF42_RDn) out.D2 = prev.SCY2;
-  /*p23.GODO*/ if (FF42_RDn) out.D3 = prev.SCY3;
-  /*p23.CUSA*/ if (FF42_RDn) out.D4 = prev.SCY4;
-  /*p23.GYZO*/ if (FF42_RDn) out.D5 = prev.SCY5;
-  /*p23.GUNE*/ if (FF42_RDn) out.D6 = prev.SCY6;
-  /*p23.GYZA*/ if (FF42_RDn) out.D7 = prev.SCY7;
+void VidRegisters::commit() {
+  big_commit(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,
+             LCDC_BGTILE, LCDC_WINEN, LCDC_WINMAP, LCDC_EN);
 
-  /*p23.AVOG*/ wire FF43_RD = and(dec.FF43, in.ASOT_CPURD);
-  /*p23.BEBA*/ wire FF43_RDn = not(FF43_RD);
-
-  /*p23.EDOS*/ if (FF43_RDn) out.D0 = prev.SCX0;
-  /*p23.EKOB*/ if (FF43_RDn) out.D1 = prev.SCX1;
-  /*p23.CUGA*/ if (FF43_RDn) out.D2 = prev.SCX2;
-  /*p23.WONY*/ if (FF43_RDn) out.D3 = prev.SCX3;
-  /*p23.CEDU*/ if (FF43_RDn) out.D4 = prev.SCX4;
-  /*p23.CATA*/ if (FF43_RDn) out.D5 = prev.SCX5;
-  /*p23.DOXE*/ if (FF43_RDn) out.D6 = prev.SCX6;
-  /*p23.CASY*/ if (FF43_RDn) out.D7 = prev.SCX7;
-
-  /*p23.XYLY*/ wire FF45_RD = and(in.ASOT_CPURD, dec.FF45);
-  /*p23.WEKU*/ wire FF45_RDn = not(FF45_RD);
-
-  /*p23.RETU*/ if (FF45_RDn) out.D0 = prev.LYC0;
-  /*p23.VOJO*/ if (FF45_RDn) out.D1 = prev.LYC1;
-  /*p23.RAZU*/ if (FF45_RDn) out.D2 = prev.LYC2;
-  /*p23.REDY*/ if (FF45_RDn) out.D3 = prev.LYC3;
-  /*p23.RACE*/ if (FF45_RDn) out.D4 = prev.LYC4;
-  /*p23.VAZU*/ if (FF45_RDn) out.D5 = prev.LYC5;
-  /*p23.VAFE*/ if (FF45_RDn) out.D6 = prev.LYC6;
-  /*p23.PUFY*/ if (FF45_RDn) out.D7 = prev.LYC7;
-
-  /*p36.VUSO*/ wire FF47_RD = and(in.ASOT_CPURD, dec.FF47);
-  /*p36.TEPY*/ wire FF47_RDn = not(FF47_RD);
-
-  /*p36.RARO*/ if (FF47_RDn) out.D0 = prev.BGP_D0;
-  /*p36.REDO*/ if (FF47_RDn) out.D2 = prev.BGP_D2;
-  /*p36.LACE*/ if (FF47_RDn) out.D4 = prev.BGP_D4;
-  /*p36.LODY*/ if (FF47_RDn) out.D6 = prev.BGP_D6;
-  /*p36.PABA*/ if (FF47_RDn) out.D1 = prev.BGP_D1;
-  /*p36.LOBE*/ if (FF47_RDn) out.D3 = prev.BGP_D3;
-  /*p36.LYKA*/ if (FF47_RDn) out.D5 = prev.BGP_D5;
-  /*p36.LARY*/ if (FF47_RDn) out.D7 = prev.BGP_D7;
-
-  /*p36.XUFY*/ wire FF48_RD  = and(in.ASOT_CPURD, dec.FF48);
-  /*p36.XOZY*/ wire FF48_RDn = not(FF48_RD);
-
-  /*p36.XARY*/ if (FF48_RDn) out.D0 = prev.OBP0_D0;
-  /*p36.XUNO*/ if (FF48_RDn) out.D2 = prev.OBP0_D2;
-  /*p36.XAJU*/ if (FF48_RDn) out.D4 = prev.OBP0_D4;
-  /*p36.XAXA*/ if (FF48_RDn) out.D6 = prev.OBP0_D6;
-  /*p36.XOKE*/ if (FF48_RDn) out.D1 = prev.OBP0_D1;
-  /*p36.XUBY*/ if (FF48_RDn) out.D3 = prev.OBP0_D3;
-  /*p36.XOBO*/ if (FF48_RDn) out.D5 = prev.OBP0_D5;
-  /*p36.XAWO*/ if (FF48_RDn) out.D7 = prev.OBP0_D7;
-
-  /*p36.MUMY*/ wire FF49_RD  = and(in.ASOT_CPURD, dec.FF49);
-  /*p36.LOTE*/ wire FF49_RDn = not(FF49_RD);
-
-  /*p36.LAJU*/ if (FF49_RDn) out.D0 = prev.OBP1_D0;
-  /*p36.LODE*/ if (FF49_RDn) out.D2 = prev.OBP1_D2;
-  /*p36.LUKY*/ if (FF49_RDn) out.D4 = prev.OBP1_D4;
-  /*p36.LEBA*/ if (FF49_RDn) out.D6 = prev.OBP1_D6;
-  /*p36.LEPA*/ if (FF49_RDn) out.D1 = prev.OBP1_D1;
-  /*p36.LYZA*/ if (FF49_RDn) out.D3 = prev.OBP1_D3;
-  /*p36.LUGA*/ if (FF49_RDn) out.D5 = prev.OBP1_D5;
-  /*p36.LELU*/ if (FF49_RDn) out.D7 = prev.OBP1_D7;
-
-  /*p23.WAXU*/ wire FF4A_RD = and(in.ASOT_CPURD, dec.FF4A);
-  /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
-
-  /*p23.PUNU*/ if (FF4A_RDn) out.D0 = prev.WY0;
-  /*p23.PODA*/ if (FF4A_RDn) out.D1 = prev.WY1;
-  /*p23.PYGU*/ if (FF4A_RDn) out.D2 = prev.WY2;
-  /*p23.LOKA*/ if (FF4A_RDn) out.D3 = prev.WY3;
-  /*p23.MEGA*/ if (FF4A_RDn) out.D4 = prev.WY4;
-  /*p23.PELA*/ if (FF4A_RDn) out.D5 = prev.WY5;
-  /*p23.POLO*/ if (FF4A_RDn) out.D6 = prev.WY6;
-  /*p23.MERA*/ if (FF4A_RDn) out.D7 = prev.WY7;
-
-  /*p23.WYZE*/ wire FF4B_RD = and(in.ASOT_CPURD, dec.FF4B);
-  /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);
-
-  /*p23.LOVA*/ if (FF4B_RDn) out.D0 = prev.WX0;
-  /*p23.MUKA*/ if (FF4B_RDn) out.D1 = prev.WX1;
-  /*p23.MOKO*/ if (FF4B_RDn) out.D2 = prev.WX2;
-  /*p23.LOLE*/ if (FF4B_RDn) out.D3 = prev.WX3;
-  /*p23.MELE*/ if (FF4B_RDn) out.D4 = prev.WX4;
-  /*p23.MUFE*/ if (FF4B_RDn) out.D5 = prev.WX5;
-  /*p23.MULY*/ if (FF4B_RDn) out.D6 = prev.WX6;
-  /*p23.MARA*/ if (FF4B_RDn) out.D7 = prev.WX7;
+  big_commit(SCY0,  SCY1,  SCY2,  SCY3,  SCY4,  SCY5,  SCY6,  SCY7);
+  big_commit(SCX0,  SCX1,  SCX2,  SCX3,  SCX4,  SCX5,  SCX6,  SCX7);
+  big_commit(LYC0,  LYC1,  LYC2,  LYC3,  LYC4,  LYC5,  LYC6,  LYC7);
+  big_commit(BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7);
+  big_commit(OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07);
+  big_commit(OBP10, OBP11, OBP12, OBP13, OBP14, OBP15, OBP16, OBP17);
+  big_commit(WY0,   WY1,   WY2,   WY3,   WY4,   WY5,   WY6,   WY7);
+  big_commit(WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7);
 }
 
 //-----------------------------------------------------------------------------
 
-void Registers_tock(const RegistersIn& in,
-                    const RstSignals& rst_sig,
-                    const Decoder& dec,
-                    Registers& next) {
+void VidRegisters::tick(const SysSignals& /*sys_sig*/,
+                     const RstSignals& rst_sig,
+                     const BusSignals& bus_sig,
+                     const Decoder&    dec_sig,
+                     BusTristates & bus_out) {
 
-  /*p23.WARU*/ wire FF40_WR = and(dec.FF40, in.CUPA_CPUWR);
+  //----------
+
+  /*p23.VYRE*/ wire FF40_RD = and(dec_sig.FF40, bus_sig.ASOT_CPURD);
+  /*p23.WYCE*/ wire FF40_RDn = not(FF40_RD);
+  /*p23.WARU*/ wire FF40_WR = and(dec_sig.FF40, bus_sig.CUPA_CPUWR);
   /*p23.XUBO*/ wire FF40_WRn = not(FF40_WR);
 
-  /*p23.VYXE*/ next.LCDC_BGEN    .tock(FF40_WRn, rst_sig.XARE_RESET, in.D0);
-  /*p23.XYLO*/ next.LCDC_SPEN    .tock(FF40_WRn, rst_sig.XARE_RESET, in.D1);
-  /*p23.XYMO*/ next.LCDC_SPSIZE  .tock(FF40_WRn, rst_sig.XARE_RESET, in.D2);
-  /*p23.XAFO*/ next.LCDC_BGMAP   .tock(FF40_WRn, rst_sig.XARE_RESET, in.D3);
-  /*p23.WEXU*/ next.LCDC_BGTILE  .tock(FF40_WRn, rst_sig.XARE_RESET, in.D4);
-  /*p23.WYMO*/ next.LCDC_WINEN   .tock(FF40_WRn, rst_sig.XARE_RESET, in.D5);
-  /*p23.WOKY*/ next.LCDC_WINMAP  .tock(FF40_WRn, rst_sig.XARE_RESET, in.D6);
-  /*p23.XONA*/ next.LCDC_EN      .tock(FF40_WRn, rst_sig.XARE_RESET, in.D7);
+  /*p23.WYPO*/ if (!FF40_RDn) bus_out.D0 = LCDC_BGEN;
+  /*p23.XERO*/ if (!FF40_RDn) bus_out.D1 = LCDC_SPEN;
+  /*p23.WYJU*/ if (!FF40_RDn) bus_out.D2 = LCDC_SPSIZE;
+  /*p23.WUKA*/ if (!FF40_RDn) bus_out.D3 = LCDC_BGMAP;
+  /*p23.VOKE*/ if (!FF40_RDn) bus_out.D4 = LCDC_BGTILE;
+  /*p23.VATO*/ if (!FF40_RDn) bus_out.D5 = LCDC_WINEN;
+  /*p23.VAHA*/ if (!FF40_RDn) bus_out.D6 = LCDC_WINMAP;
+  /*p23.XEBU*/ if (!FF40_RDn) bus_out.D7 = LCDC_EN;
 
-  /*p23.BEDY*/ wire FF42_WR = and(dec.FF42, in.CUPA_CPUWR);
+  /*p23.VYXE*/ LCDC_BGEN    .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D0);
+  /*p23.XYLO*/ LCDC_SPEN    .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D1);
+  /*p23.XYMO*/ LCDC_SPSIZE  .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D2);
+  /*p23.XAFO*/ LCDC_BGMAP   .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D3);
+  /*p23.WEXU*/ LCDC_BGTILE  .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D4);
+  /*p23.WYMO*/ LCDC_WINEN   .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D5);
+  /*p23.WOKY*/ LCDC_WINMAP  .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D6);
+  /*p23.XONA*/ LCDC_EN      .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D7);
+
+  //----------
+
+  /*p23.ANYP*/ wire FF42_RD = and(dec_sig.FF42, bus_sig.ASOT_CPURD);
+  /*p23.BUWY*/ wire FF42_RDn = not(FF42_RD);
+  /*p23.BEDY*/ wire FF42_WR = and(dec_sig.FF42, bus_sig.CUPA_CPUWR);
   /*p23.CAVO*/ wire FF42_WRn = not(FF42_WR);
 
-  /*p23.GAVE*/ next.SCY0.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D0);
-  /*p23.FYMO*/ next.SCY1.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D1);
-  /*p23.FEZU*/ next.SCY2.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D2);
-  /*p23.FUJO*/ next.SCY3.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D3);
-  /*p23.DEDE*/ next.SCY4.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D4);
-  /*p23.FOTY*/ next.SCY5.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D5);
-  /*p23.FOHA*/ next.SCY6.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D6);
-  /*p23.FUNY*/ next.SCY7.tock(FF42_WRn, rst_sig.CUNU_RESETn, in.D7);
+  /*p23.WARE*/ if (!FF42_RDn) bus_out.D0 = SCY0;
+  /*p23.GOBA*/ if (!FF42_RDn) bus_out.D1 = SCY1;
+  /*p23.GONU*/ if (!FF42_RDn) bus_out.D2 = SCY2;
+  /*p23.GODO*/ if (!FF42_RDn) bus_out.D3 = SCY3;
+  /*p23.CUSA*/ if (!FF42_RDn) bus_out.D4 = SCY4;
+  /*p23.GYZO*/ if (!FF42_RDn) bus_out.D5 = SCY5;
+  /*p23.GUNE*/ if (!FF42_RDn) bus_out.D6 = SCY6;
+  /*p23.GYZA*/ if (!FF42_RDn) bus_out.D7 = SCY7;
 
-  /*p23.ARUR*/ wire FF43_WR = and(dec.FF43, in.CUPA_CPUWR);
+  /*p23.GAVE*/ SCY0.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D0);
+  /*p23.FYMO*/ SCY1.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D1);
+  /*p23.FEZU*/ SCY2.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D2);
+  /*p23.FUJO*/ SCY3.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D3);
+  /*p23.DEDE*/ SCY4.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D4);
+  /*p23.FOTY*/ SCY5.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D5);
+  /*p23.FOHA*/ SCY6.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D6);
+  /*p23.FUNY*/ SCY7.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D7);
+
+  //----------
+
+  /*p23.AVOG*/ wire FF43_RD = and(dec_sig.FF43, bus_sig.ASOT_CPURD);
+  /*p23.BEBA*/ wire FF43_RDn = not(FF43_RD);
+  /*p23.ARUR*/ wire FF43_WR = and(dec_sig.FF43, bus_sig.CUPA_CPUWR);
   /*p23.AMUN*/ wire FF43_WRn = not(FF43_WR);
 
-  /*p23.DATY*/ next.SCX0.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D0);
-  /*p23.DUZU*/ next.SCX1.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D1);
-  /*p23.CYXU*/ next.SCX2.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D2);
-  /*p23.GUBO*/ next.SCX3.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D3);
-  /*p23.BEMY*/ next.SCX4.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D4);
-  /*p23.CUZY*/ next.SCX5.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D5);
-  /*p23.CABU*/ next.SCX6.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D6);
-  /*p23.BAKE*/ next.SCX7.tock(FF43_WRn, rst_sig.CUNU_RESETn, in.D7);
+  /*p23.EDOS*/ if (!FF43_RDn) bus_out.D0 = SCX0;
+  /*p23.EKOB*/ if (!FF43_RDn) bus_out.D1 = SCX1;
+  /*p23.CUGA*/ if (!FF43_RDn) bus_out.D2 = SCX2;
+  /*p23.WONY*/ if (!FF43_RDn) bus_out.D3 = SCX3;
+  /*p23.CEDU*/ if (!FF43_RDn) bus_out.D4 = SCX4;
+  /*p23.CATA*/ if (!FF43_RDn) bus_out.D5 = SCX5;
+  /*p23.DOXE*/ if (!FF43_RDn) bus_out.D6 = SCX6;
+  /*p23.CASY*/ if (!FF43_RDn) bus_out.D7 = SCX7;
 
-  /*p23.XUFA*/ wire FF45_WR = and(in.CUPA_CPUWR, dec.FF45);
+  /*p23.DATY*/ SCX0.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D0);
+  /*p23.DUZU*/ SCX1.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D1);
+  /*p23.CYXU*/ SCX2.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D2);
+  /*p23.GUBO*/ SCX3.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D3);
+  /*p23.BEMY*/ SCX4.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D4);
+  /*p23.CUZY*/ SCX5.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D5);
+  /*p23.CABU*/ SCX6.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D6);
+  /*p23.BAKE*/ SCX7.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D7);
+
+  //----------
+
+  /*p23.XYLY*/ wire FF45_RD = and(bus_sig.ASOT_CPURD, dec_sig.FF45);
+  /*p23.WEKU*/ wire FF45_RDn = not(FF45_RD);
+  /*p23.XUFA*/ wire FF45_WR = and(bus_sig.CUPA_CPUWR, dec_sig.FF45);
   /*p23.WANE*/ wire FF45_WRn = not(FF45_WR);
 
-  /*p23.SYRY*/ next.LYC0.tock(FF45_WRn, rst_sig.WESY_RESET, in.D0);
-  /*p23.VUCE*/ next.LYC1.tock(FF45_WRn, rst_sig.WESY_RESET, in.D1);
-  /*p23.SEDY*/ next.LYC2.tock(FF45_WRn, rst_sig.WESY_RESET, in.D2);
-  /*p23.SALO*/ next.LYC3.tock(FF45_WRn, rst_sig.WESY_RESET, in.D3);
-  /*p23.SOTA*/ next.LYC4.tock(FF45_WRn, rst_sig.WESY_RESET, in.D4);
-  /*p23.VAFA*/ next.LYC5.tock(FF45_WRn, rst_sig.WESY_RESET, in.D5);
-  /*p23.VEVO*/ next.LYC6.tock(FF45_WRn, rst_sig.WESY_RESET, in.D6);
-  /*p23.RAHA*/ next.LYC7.tock(FF45_WRn, rst_sig.WESY_RESET, in.D7);
+  /*p23.RETU*/ if (!FF45_RDn) bus_out.D0 = LYC0;
+  /*p23.VOJO*/ if (!FF45_RDn) bus_out.D1 = LYC1;
+  /*p23.RAZU*/ if (!FF45_RDn) bus_out.D2 = LYC2;
+  /*p23.REDY*/ if (!FF45_RDn) bus_out.D3 = LYC3;
+  /*p23.RACE*/ if (!FF45_RDn) bus_out.D4 = LYC4;
+  /*p23.VAZU*/ if (!FF45_RDn) bus_out.D5 = LYC5;
+  /*p23.VAFE*/ if (!FF45_RDn) bus_out.D6 = LYC6;
+  /*p23.PUFY*/ if (!FF45_RDn) bus_out.D7 = LYC7;
 
-  /*p36.VELY*/ wire FF47_WR = and(in.CUPA_CPUWR, dec.FF47);
+  /*p23.SYRY*/ LYC0.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D0);
+  /*p23.VUCE*/ LYC1.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D1);
+  /*p23.SEDY*/ LYC2.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D2);
+  /*p23.SALO*/ LYC3.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D3);
+  /*p23.SOTA*/ LYC4.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D4);
+  /*p23.VAFA*/ LYC5.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D5);
+  /*p23.VEVO*/ LYC6.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D6);
+  /*p23.RAHA*/ LYC7.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D7);
+
+  //----------
+
+  /*p36.VUSO*/ wire FF47_RD = and(bus_sig.ASOT_CPURD, dec_sig.FF47);
+  /*p36.TEPY*/ wire FF47_RDn = not(FF47_RD);
+  /*p36.VELY*/ wire FF47_WR = and(bus_sig.CUPA_CPUWR, dec_sig.FF47);
   /*p36.TEPO*/ wire FF47_WRn = not(FF47_WR);
 
-  /*p36.PAVO*/ next.BGP_D0.tock(FF47_WRn, 1, in.D0);
-  /*p36.PYLU*/ next.BGP_D2.tock(FF47_WRn, 1, in.D2);
-  /*p36.MUKE*/ next.BGP_D4.tock(FF47_WRn, 1, in.D4);
-  /*p36.MOGY*/ next.BGP_D6.tock(FF47_WRn, 1, in.D6);
-  /*p36.NUSY*/ next.BGP_D1.tock(FF47_WRn, 1, in.D1);
-  /*p36.MAXY*/ next.BGP_D3.tock(FF47_WRn, 1, in.D3);
-  /*p36.MORU*/ next.BGP_D5.tock(FF47_WRn, 1, in.D5);
-  /*p36.MENA*/ next.BGP_D7.tock(FF47_WRn, 1, in.D7);
+  /*p36.RARO*/ if (!FF47_RDn) bus_out.D0 = BGP0;
+  /*p36.REDO*/ if (!FF47_RDn) bus_out.D2 = BGP2;
+  /*p36.LACE*/ if (!FF47_RDn) bus_out.D4 = BGP4;
+  /*p36.LODY*/ if (!FF47_RDn) bus_out.D6 = BGP6;
+  /*p36.PABA*/ if (!FF47_RDn) bus_out.D1 = BGP1;
+  /*p36.LOBE*/ if (!FF47_RDn) bus_out.D3 = BGP3;
+  /*p36.LYKA*/ if (!FF47_RDn) bus_out.D5 = BGP5;
+  /*p36.LARY*/ if (!FF47_RDn) bus_out.D7 = BGP7;
 
-  /*p36.XOMA*/ wire FF48_WR  = and(in.CUPA_CPUWR, dec.FF48);
+  /*p36.PAVO*/ BGP0.set(FF47_WRn, 1, bus_out.D0);
+  /*p36.PYLU*/ BGP2.set(FF47_WRn, 1, bus_out.D2);
+  /*p36.MUKE*/ BGP4.set(FF47_WRn, 1, bus_out.D4);
+  /*p36.MOGY*/ BGP6.set(FF47_WRn, 1, bus_out.D6);
+  /*p36.NUSY*/ BGP1.set(FF47_WRn, 1, bus_out.D1);
+  /*p36.MAXY*/ BGP3.set(FF47_WRn, 1, bus_out.D3);
+  /*p36.MORU*/ BGP5.set(FF47_WRn, 1, bus_out.D5);
+  /*p36.MENA*/ BGP7.set(FF47_WRn, 1, bus_out.D7);
+
+  //----------
+
+  /*p36.XUFY*/ wire FF48_RD  = and(bus_sig.ASOT_CPURD, dec_sig.FF48);
+  /*p36.XOZY*/ wire FF48_RDn = not(FF48_RD);
+  /*p36.XOMA*/ wire FF48_WR  = and(bus_sig.CUPA_CPUWR, dec_sig.FF48);
   /*p36.XELO*/ wire FF48_WRn = not(FF48_WR);
 
-  /*p36.XUFU*/ next.OBP0_D0.tock(FF48_WRn, 1, in.D0);
-  /*p36.XOVA*/ next.OBP0_D2.tock(FF48_WRn, 1, in.D2);
-  /*p36.XERU*/ next.OBP0_D4.tock(FF48_WRn, 1, in.D4);
-  /*p36.XUPO*/ next.OBP0_D6.tock(FF48_WRn, 1, in.D6);
-  /*p36.XUKY*/ next.OBP0_D1.tock(FF48_WRn, 1, in.D1);
-  /*p36.XALO*/ next.OBP0_D3.tock(FF48_WRn, 1, in.D3);
-  /*p36.XYZE*/ next.OBP0_D5.tock(FF48_WRn, 1, in.D5);
-  /*p36.XANA*/ next.OBP0_D7.tock(FF48_WRn, 1, in.D7);
+  /*p36.XARY*/ if (!FF48_RDn) bus_out.D0 = OBP00;
+  /*p36.XUNO*/ if (!FF48_RDn) bus_out.D2 = OBP02;
+  /*p36.XAJU*/ if (!FF48_RDn) bus_out.D4 = OBP04;
+  /*p36.XAXA*/ if (!FF48_RDn) bus_out.D6 = OBP06;
+  /*p36.XOKE*/ if (!FF48_RDn) bus_out.D1 = OBP01;
+  /*p36.XUBY*/ if (!FF48_RDn) bus_out.D3 = OBP03;
+  /*p36.XOBO*/ if (!FF48_RDn) bus_out.D5 = OBP05;
+  /*p36.XAWO*/ if (!FF48_RDn) bus_out.D7 = OBP07;
 
-  /*p36.MYXE*/ wire FF49_WR  = and(in.CUPA_CPUWR, dec.FF49);
+  /*p36.XUFU*/ OBP00.set(FF48_WRn, 1, bus_out.D0);
+  /*p36.XOVA*/ OBP02.set(FF48_WRn, 1, bus_out.D2);
+  /*p36.XERU*/ OBP04.set(FF48_WRn, 1, bus_out.D4);
+  /*p36.XUPO*/ OBP06.set(FF48_WRn, 1, bus_out.D6);
+  /*p36.XUKY*/ OBP01.set(FF48_WRn, 1, bus_out.D1);
+  /*p36.XALO*/ OBP03.set(FF48_WRn, 1, bus_out.D3);
+  /*p36.XYZE*/ OBP05.set(FF48_WRn, 1, bus_out.D5);
+  /*p36.XANA*/ OBP07.set(FF48_WRn, 1, bus_out.D7);
+
+  //----------
+
+  /*p36.MUMY*/ wire FF49_RD  = and(bus_sig.ASOT_CPURD, dec_sig.FF49);
+  /*p36.LOTE*/ wire FF49_RDn = not(FF49_RD);
+  /*p36.MYXE*/ wire FF49_WR  = and(bus_sig.CUPA_CPUWR, dec_sig.FF49);
   /*p36.LEHO*/ wire FF49_WRn = not(FF49_WR);
 
-  /*p36.MOXY*/ next.OBP1_D0.tock(FF49_WRn, 1, in.D0);
-  /*p36.MOSA*/ next.OBP1_D2.tock(FF49_WRn, 1, in.D2);
-  /*p36.LUNE*/ next.OBP1_D4.tock(FF49_WRn, 1, in.D4);
-  /*p36.LEPU*/ next.OBP1_D6.tock(FF49_WRn, 1, in.D6);
-  /*p36.LAWO*/ next.OBP1_D1.tock(FF49_WRn, 1, in.D1);
-  /*p36.LOSE*/ next.OBP1_D3.tock(FF49_WRn, 1, in.D3);
-  /*p36.LUGU*/ next.OBP1_D5.tock(FF49_WRn, 1, in.D5);
-  /*p36.LUXO*/ next.OBP1_D7.tock(FF49_WRn, 1, in.D7);
 
-  /*p23.WEKO*/ wire FF4A_WR = and(in.CUPA_CPUWR, dec.FF4A);
+  /*p36.LAJU*/ if (!FF49_RDn) bus_out.D0 = OBP10;
+  /*p36.LODE*/ if (!FF49_RDn) bus_out.D2 = OBP12;
+  /*p36.LUKY*/ if (!FF49_RDn) bus_out.D4 = OBP14;
+  /*p36.LEBA*/ if (!FF49_RDn) bus_out.D6 = OBP16;
+  /*p36.LEPA*/ if (!FF49_RDn) bus_out.D1 = OBP11;
+  /*p36.LYZA*/ if (!FF49_RDn) bus_out.D3 = OBP13;
+  /*p36.LUGA*/ if (!FF49_RDn) bus_out.D5 = OBP15;
+  /*p36.LELU*/ if (!FF49_RDn) bus_out.D7 = OBP17;
+
+  /*p36.MOXY*/ OBP10.set(FF49_WRn, 1, bus_out.D0);
+  /*p36.MOSA*/ OBP12.set(FF49_WRn, 1, bus_out.D2);
+  /*p36.LUNE*/ OBP14.set(FF49_WRn, 1, bus_out.D4);
+  /*p36.LEPU*/ OBP16.set(FF49_WRn, 1, bus_out.D6);
+  /*p36.LAWO*/ OBP11.set(FF49_WRn, 1, bus_out.D1);
+  /*p36.LOSE*/ OBP13.set(FF49_WRn, 1, bus_out.D3);
+  /*p36.LUGU*/ OBP15.set(FF49_WRn, 1, bus_out.D5);
+  /*p36.LUXO*/ OBP17.set(FF49_WRn, 1, bus_out.D7);
+
+  //----------
+
+  /*p23.WAXU*/ wire FF4A_RD = and(bus_sig.ASOT_CPURD, dec_sig.FF4A);
+  /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
+  /*p23.WEKO*/ wire FF4A_WR = and(bus_sig.CUPA_CPUWR, dec_sig.FF4A);
   /*p23.VEFU*/ wire FF4A_WRn = not(FF4A_WR);
 
-  /*p23.NESO*/ next.WY0.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D0);
-  /*p23.NYRO*/ next.WY1.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D1);
-  /*p23.NAGA*/ next.WY2.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D2);
-  /*p23.MELA*/ next.WY3.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D3);
-  /*p23.NULO*/ next.WY4.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D4);
-  /*p23.NENE*/ next.WY5.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D5);
-  /*p23.NUKA*/ next.WY6.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D6);
-  /*p23.NAFU*/ next.WY7.tock(FF4A_WRn, rst_sig.WALU_RESET, in.D7);
+  /*p23.PUNU*/ if (!FF4A_RDn) bus_out.D0 = WY0;
+  /*p23.PODA*/ if (!FF4A_RDn) bus_out.D1 = WY1;
+  /*p23.PYGU*/ if (!FF4A_RDn) bus_out.D2 = WY2;
+  /*p23.LOKA*/ if (!FF4A_RDn) bus_out.D3 = WY3;
+  /*p23.MEGA*/ if (!FF4A_RDn) bus_out.D4 = WY4;
+  /*p23.PELA*/ if (!FF4A_RDn) bus_out.D5 = WY5;
+  /*p23.POLO*/ if (!FF4A_RDn) bus_out.D6 = WY6;
+  /*p23.MERA*/ if (!FF4A_RDn) bus_out.D7 = WY7;
 
-  /*p23.WUZA*/ wire FF4B_WR = and(in.CUPA_CPUWR, dec.FF4B);
+  /*p23.NESO*/ WY0.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D0);
+  /*p23.NYRO*/ WY1.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D1);
+  /*p23.NAGA*/ WY2.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D2);
+  /*p23.MELA*/ WY3.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D3);
+  /*p23.NULO*/ WY4.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D4);
+  /*p23.NENE*/ WY5.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D5);
+  /*p23.NUKA*/ WY6.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D6);
+  /*p23.NAFU*/ WY7.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D7);
+
+  //----------
+
+  /*p23.WYZE*/ wire FF4B_RD = and(bus_sig.ASOT_CPURD, dec_sig.FF4B);
+  /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);
+  /*p23.WUZA*/ wire FF4B_WR = and(bus_sig.CUPA_CPUWR, dec_sig.FF4B);
   /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
 
-  /*p23.MYPA*/ next.WX0.tock(FF4B_WRn, rst_sig.WALU_RESET, in.D0);
-  /*p23.NOFE*/ next.WX1.tock(FF4B_WRn, rst_sig.WALU_RESET, in.D1);
-  /*p23.NOKE*/ next.WX2.tock(FF4B_WRn, rst_sig.WALU_RESET, in.D2);
-  /*p23.MEBY*/ next.WX3.tock(FF4B_WRn, rst_sig.WALU_RESET, in.D3);
-  /*p23.MYPU*/ next.WX4.tock(FF4B_WRn, rst_sig.WALU_RESET, in.D4);
-  /*p23.MYCE*/ next.WX5.tock(FF4B_WRn, rst_sig.WALU_RESET, in.D5); 
-  /*p23.MUVO*/ next.WX6.tock(FF4B_WRn, rst_sig.WALU_RESET, in.D6);
-  /*p23.NUKU*/ next.WX7.tock(FF4B_WRn, rst_sig.WALU_RESET, in.D7);
+  /*p23.LOVA*/ if (!FF4B_RDn) bus_out.D0 = WX0;
+  /*p23.MUKA*/ if (!FF4B_RDn) bus_out.D1 = WX1;
+  /*p23.MOKO*/ if (!FF4B_RDn) bus_out.D2 = WX2;
+  /*p23.LOLE*/ if (!FF4B_RDn) bus_out.D3 = WX3;
+  /*p23.MELE*/ if (!FF4B_RDn) bus_out.D4 = WX4;
+  /*p23.MUFE*/ if (!FF4B_RDn) bus_out.D5 = WX5;
+  /*p23.MULY*/ if (!FF4B_RDn) bus_out.D6 = WX6;
+  /*p23.MARA*/ if (!FF4B_RDn) bus_out.D7 = WX7;
+
+  /*p23.MYPA*/ WX0.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D0);
+  /*p23.NOFE*/ WX1.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D1);
+  /*p23.NOKE*/ WX2.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D2);
+  /*p23.MEBY*/ WX3.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D3);
+  /*p23.MYPU*/ WX4.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D4);
+  /*p23.MYCE*/ WX5.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D5); 
+  /*p23.MUVO*/ WX6.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D6);
+  /*p23.NUKU*/ WX7.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D7);
 }
 
 //-----------------------------------------------------------------------------

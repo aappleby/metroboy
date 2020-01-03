@@ -12,12 +12,13 @@ TestGB::TestGB() {
 
 void TestGB::pwron() {
   memset(this, 0, sizeof(*this));
+
   sys_reg.pwron();
-  clk_reg1.pwron();
+  clk_reg.pwron();
   rst_reg.pwron();
   vclk_reg.pwron();
   lcd_reg.pwron();
-  bus.pwron();
+  bus_tri.pwron();
 }
 
 //----------------------------------------
@@ -27,11 +28,11 @@ void TestGB::reset() {
   pwron();
 
   sys_reg.reset();
-  clk_reg1.reset();
+  clk_reg.reset();
   rst_reg.reset();
   vclk_reg.reset();
   lcd_reg.reset();
-  bus.reset();
+  bus_tri.reset();
 }
 
 //----------------------------------------
@@ -59,7 +60,7 @@ void TestGB::sim(int phases) {
     // needs 10 passes
     for (int pass = 0; pass < 20; pass++) {
       
-      ClkSignals clk_sig1 = clk_reg1.tick_slow(sys_sig);
+      ClkSignals clk_sig1 = clk_reg.tick_slow(sys_sig);
       RstSignals rst_sig1 = rst_reg.tick_slow(sys_sig, clk_sig1);
       VrstSignals vid_rst = rst_reg.vrst_signals(sys_sig, rst_sig1);
 
@@ -75,7 +76,7 @@ void TestGB::sim(int phases) {
 }
 
 void TestGB::commit() {
-  clk_reg1.commit();
+  clk_reg.commit();
   rst_reg.commit();
   vclk_reg.commit();
   lcd_reg.commit();

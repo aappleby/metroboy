@@ -34,7 +34,7 @@ struct Interrupts;
 struct Joypad;
 struct OAM;
 struct Pins;
-struct Registers;
+struct VidRegisters;
 struct Sprites;
 struct Video;
 struct VRAM;
@@ -140,6 +140,30 @@ struct Reg2 {
   bool clk_a, clk_b;
   bool val_a, val_b;
 };
+
+inline void big_pwron(Reg2& first) { first.pwron(); }
+template<typename... Args> inline void big_pwron(Reg2& first, Args&... args) {
+  big_pwron(first);
+  big_pwron(args...);
+}
+
+inline void big_reset(Reg2& first) { first.reset(1, 0); }
+template<typename... Args> inline void big_reset(Reg2& first, Args&... args) {
+  big_reset(first);
+  big_reset(args...);
+}
+
+inline void big_commit(Reg2& first) { first.commit(); }
+template<typename... Args> inline void big_commit(Reg2& first, Args&... args) {
+  big_commit(first);
+  big_commit(args...);
+}
+
+inline void big_set2(bool x, Reg2& first) { first.set2(x); }
+template<typename... Args> inline void big_set2(uint8_t x, Reg2& first, Args&... args) {
+  big_set2((x & 1), first);
+  big_set2((x >> 1), args...);
+}
 
 //-----------------------------------------------------------------------------
 

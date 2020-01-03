@@ -85,22 +85,22 @@ void P09_ApuControl_tick(const Gameboy& a,
   {
     /*p07.BAKO*/ next.apu.ADDR_FFXXn1 = not(b.dec.ADDR_FFXX);
 
-    /*p10.ATUP*/ wire A04n = not(b.bus.A04);
-    /*p10.BOXY*/ wire A05n = not(b.bus.A05);
-    /*p10.ASAD*/ wire A06n = not(b.bus.A06);
-    /*p10.AVUN*/ wire A07n = not(b.bus.A07);
+    /*p10.ATUP*/ wire A04n = not(b.bus.A04());
+    /*p10.BOXY*/ wire A05n = not(b.bus.A05());
+    /*p10.ASAD*/ wire A06n = not(b.bus.A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.A07());
 
-    /*p10.ATEG*/ wire ADDR_XX1Xn = or(b.bus.A07, b.bus.A06, b.bus.A05,  A04n);
-    /*p10.AWET*/ wire ADDR_XX2Xn = or(b.bus.A07, b.bus.A06,  A05n, b.bus.A04);
+    /*p10.ATEG*/ wire ADDR_XX1Xn = or(b.bus.A07(), b.bus.A06(), b.bus.A05(),  A04n);
+    /*p10.AWET*/ wire ADDR_XX2Xn = or(b.bus.A07(), b.bus.A06(),  A05n, b.bus.A04());
 
     /*p10.BUNO*/ wire ADDR_FF1X  = nor(b.apu.ADDR_FFXXn1, ADDR_XX1Xn);
     /*p10.BANU*/ next.apu.ADDR_FF1Xn = not(ADDR_FF1X);
     /*p10.BEZY*/ next.apu.ADDR_FF2Xn = or(ADDR_XX2Xn, b.apu.ADDR_FFXXn1);
 
-    /*p10.DYTE*/ next.apu.ADDR_xxx0  = not(b.bus.A00);
-    /*p10.AFOB*/ next.apu.ADDR_xx0x  = not(b.bus.A01);
-    /*p10.ABUB*/ next.apu.ADDR_x0xx  = not(b.bus.A02);
-    /*p10.ACOL*/ next.apu.ADDR_0xxx  = not(b.bus.A03);
+    /*p10.DYTE*/ next.apu.ADDR_xxx0  = not(b.bus.A00());
+    /*p10.AFOB*/ next.apu.ADDR_xx0x  = not(b.bus.A01());
+    /*p10.ABUB*/ next.apu.ADDR_x0xx  = not(b.bus.A02());
+    /*p10.ACOL*/ next.apu.ADDR_0xxx  = not(b.bus.A03());
 
     /*p10.DOSO*/ next.apu.ADDR_xxx1  = not(b.apu.ADDR_xxx0);
     /*p10.DUPA*/ next.apu.ADDR_xx1x  = not(b.apu.ADDR_xx0x);
@@ -121,28 +121,30 @@ void P09_ApuControl_tick(const Gameboy& a,
 
     /*p09.BUBU*/ next.apu.NR50_WRn2 = not(NR50_WR1);
     /*p09.ATAF*/ next.apu.NR50_WRn3 = not(NR50_WR2);
-    /*p09.APEG*/ next.apu.NR50_VOL_L0   = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VOL_L0,   b.bus.D0);
-    /*p09.BYGA*/ next.apu.NR50_VOL_L1   = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VOL_L1,   b.bus.D1);
-    /*p09.AGER*/ next.apu.NR50_VOL_L2   = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VOL_L2,   b.bus.D2);
-    /*p09.APOS*/ next.apu.NR50_VIN_TO_L = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VIN_TO_L, b.bus.D3);
-    /*p09.BYRE*/ next.apu.NR50_VOL_R0   = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VOL_R0,   b.bus.D4);
-    /*p09.BUMO*/ next.apu.NR50_VOL_R1   = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VOL_R1,   b.bus.D5);
-    /*p09.COZU*/ next.apu.NR50_VOL_R2   = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VOL_R2,   b.bus.D6);
-    /*p09.BEDU*/ next.apu.NR50_VIN_TO_R = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VIN_TO_R, b.bus.D7);
+    /*p09.APEG*/ next.apu.NR50_VOL_L0   = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VOL_L0,   b.bus.D0());
+    /*p09.BYGA*/ next.apu.NR50_VOL_L1   = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VOL_L1,   b.bus.D1());
+    /*p09.AGER*/ next.apu.NR50_VOL_L2   = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VOL_L2,   b.bus.D2());
+    /*p09.APOS*/ next.apu.NR50_VIN_TO_L = tock_pos(a.apu.NR50_WRn3, b.apu.NR50_WRn3, b.apu.APU_RST, b.apu.NR50_VIN_TO_L, b.bus.D3());
+    /*p09.BYRE*/ next.apu.NR50_VOL_R0   = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VOL_R0,   b.bus.D4());
+    /*p09.BUMO*/ next.apu.NR50_VOL_R1   = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VOL_R1,   b.bus.D5());
+    /*p09.COZU*/ next.apu.NR50_VOL_R2   = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VOL_R2,   b.bus.D6());
+    /*p09.BEDU*/ next.apu.NR50_VIN_TO_R = tock_pos(a.apu.NR50_WRn2, b.apu.NR50_WRn2, b.apu.APU_RST, b.apu.NR50_VIN_TO_R, b.bus.D7());
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
 
     /*p09.BEFU*/ wire NR50_RDn1 = nor(CPU_RDn, ADDR_FF24n);
     /*p09.ADAK*/ wire NR50_RD1  = not(NR50_RDn1);
 
-    /*p09.AKOD*/ if (NR50_RD1) next.bus.D0 = b.apu.NR50_VOL_L0;
-    /*p09.AWED*/ if (NR50_RD1) next.bus.D1 = b.apu.NR50_VOL_L1;
-    /*p09.AVUD*/ if (NR50_RD1) next.bus.D2 = b.apu.NR50_VOL_L2;
-    /*p09.AXEM*/ if (NR50_RD1) next.bus.D3 = b.apu.NR50_VIN_TO_L;
-    /*p09.AMAD*/ if (NR50_RD1) next.bus.D4 = b.apu.NR50_VOL_R0;
-    /*p09.ARUX*/ if (NR50_RD1) next.bus.D5 = b.apu.NR50_VOL_R1;
-    /*p09.BOCY*/ if (NR50_RD1) next.bus.D6 = b.apu.NR50_VOL_R2;
-    /*p09.ATUM*/ if (NR50_RD1) next.bus.D7 = b.apu.NR50_VIN_TO_R;
+    if (NR50_RD1) next.bus.set_data(
+      /*p09.AKOD*/ b.apu.NR50_VOL_L0,
+      /*p09.AWED*/ b.apu.NR50_VOL_L1,
+      /*p09.AVUD*/ b.apu.NR50_VOL_L2,
+      /*p09.AXEM*/ b.apu.NR50_VIN_TO_L,
+      /*p09.AMAD*/ b.apu.NR50_VOL_R0,
+      /*p09.ARUX*/ b.apu.NR50_VOL_R1,
+      /*p09.BOCY*/ b.apu.NR50_VOL_R2,
+      /*p09.ATUM*/ b.apu.NR50_VIN_TO_R
+    );
   }
 
   //----------
@@ -156,27 +158,29 @@ void P09_ApuControl_tick(const Gameboy& a,
     /*p09.BONO*/ next.apu.NR51_WRa = not(b.apu.NR51_WRn);
     /*p09.BYFA*/ next.apu.NR51_WRb = not(b.apu.NR51_WRn);
 
-    /*p09.ANEV*/ next.apu.NR51_0 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_0, b.bus.D0);
-    /*p09.BOGU*/ next.apu.NR51_1 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_1, b.bus.D1);
-    /*p09.BAFO*/ next.apu.NR51_2 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_2, b.bus.D2);
-    /*p09.ATUF*/ next.apu.NR51_3 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_3, b.bus.D3);
-    /*p09.BUME*/ next.apu.NR51_4 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_4, b.bus.D4);
-    /*p09.BOFA*/ next.apu.NR51_5 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_5, b.bus.D5);
-    /*p09.BEFO*/ next.apu.NR51_6 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_6, b.bus.D6);
-    /*p09.BEPU*/ next.apu.NR51_7 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_7, b.bus.D7);
+    /*p09.ANEV*/ next.apu.NR51_0 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_0, b.bus.D0());
+    /*p09.BOGU*/ next.apu.NR51_1 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_1, b.bus.D1());
+    /*p09.BAFO*/ next.apu.NR51_2 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_2, b.bus.D2());
+    /*p09.ATUF*/ next.apu.NR51_3 = tock_pos(a.apu.NR51_WRa, b.apu.NR51_WRa, b.apu.APU_RST, b.apu.NR51_3, b.bus.D3());
+    /*p09.BUME*/ next.apu.NR51_4 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_4, b.bus.D4());
+    /*p09.BOFA*/ next.apu.NR51_5 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_5, b.bus.D5());
+    /*p09.BEFO*/ next.apu.NR51_6 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_6, b.bus.D6());
+    /*p09.BEPU*/ next.apu.NR51_7 = tock_pos(a.apu.NR51_WRb, b.apu.NR51_WRb, b.apu.APU_RST, b.apu.NR51_7, b.bus.D7());
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p09.HEFA*/ wire NR51_RDn = nor(ADDR_FF25n, CPU_RDn);
     /*p09.GUMU*/ wire NR51_RD = not(NR51_RDn);
 
-    /*p09.CAPU*/ if (NR51_RD) next.bus.D1 = b.apu.NR51_0;
-    /*p09.CAGA*/ if (NR51_RD) next.bus.D2 = b.apu.NR51_1;
-    /*p09.BOCA*/ if (NR51_RD) next.bus.D3 = b.apu.NR51_2;
-    /*p09.BUZU*/ if (NR51_RD) next.bus.D0 = b.apu.NR51_3;
-    /*p09.CERE*/ if (NR51_RD) next.bus.D7 = b.apu.NR51_4;
-    /*p09.CADA*/ if (NR51_RD) next.bus.D6 = b.apu.NR51_5;
-    /*p09.CAVU*/ if (NR51_RD) next.bus.D4 = b.apu.NR51_6;
-    /*p09.CUDU*/ if (NR51_RD) next.bus.D5 = b.apu.NR51_7;
+    if (NR51_RD) next.bus.set_data(
+      /*p09.CAPU*/ b.apu.NR51_0,
+      /*p09.CAGA*/ b.apu.NR51_1,
+      /*p09.BOCA*/ b.apu.NR51_2,
+      /*p09.BUZU*/ b.apu.NR51_3,
+      /*p09.CERE*/ b.apu.NR51_4,
+      /*p09.CADA*/ b.apu.NR51_5,
+      /*p09.CAVU*/ b.apu.NR51_6,
+      /*p09.CUDU*/ b.apu.NR51_7
+    );
   }
 
   //----------
@@ -193,14 +197,14 @@ void P09_ApuControl_tick(const Gameboy& a,
     /*p09.FOKU*/ next.apu.NR52_WRn3 = not(NR52_WR1);
 
     /*p09.KEPY*/ wire APU_RESETn6 = not(b.apu.APU_RST);
-    /*p09.EFOP*/ wire NR52_DBG_APU_IN    = and(b.bus.D4, b.dbg.MODE_DBG2);
+    /*p09.EFOP*/ wire NR52_DBG_APU_IN    = and(b.bus.D4(), b.dbg.MODE_DBG2);
 
     /*p09.FERO*/ next.apu.NR52_DBG_APUn      = tock_pos(a.apu.NR52_WRn3, b.apu.NR52_WRn3, APU_RESETn6, b.apu.NR52_DBG_APUn,     NR52_DBG_APU_IN);
-    /*p09.BOWY*/ next.apu.NR52_DBG_SWEEP     = tock_pos(a.apu.NR52_WRn2, b.apu.NR52_WRn2, APU_RESETn6, b.apu.NR52_DBG_SWEEP,    b.bus.D5);
+    /*p09.BOWY*/ next.apu.NR52_DBG_SWEEP     = tock_pos(a.apu.NR52_WRn2, b.apu.NR52_WRn2, APU_RESETn6, b.apu.NR52_DBG_SWEEP,    b.bus.D5());
 
     /*P09.HAPO*/ wire SYS_RESET2  = not(b.rst_sig.SYS_RESETn);
     /*P09.GUFO*/ wire SYS_RESETn3 = not(SYS_RESET2);
-    /*p09.HADA*/ next.apu.NR52_ALL_SOUND_ON  = tock_pos(a.apu.NR52_WRn1, b.apu.NR52_WRn1, SYS_RESETn3, b.apu.NR52_ALL_SOUND_ON, b.bus.D7); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
+    /*p09.HADA*/ next.apu.NR52_ALL_SOUND_ON  = tock_pos(a.apu.NR52_WRn1, b.apu.NR52_WRn1, SYS_RESETn3, b.apu.NR52_ALL_SOUND_ON, b.bus.D7()); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
     /*p09.EDEK*/ next.apu.NR52_DBG_APU       = not(!b.apu.NR52_DBG_APUn);
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
@@ -220,11 +224,13 @@ void P09_ApuControl_tick(const Gameboy& a,
     /*p18.ERED*/ wire CH3_ACTIVEn = not(CH3_ACTIVE);
     /*p20.JUWA*/ wire CH4_ACTIVEn = not(b.ch4.CH4_ACTIVE);
 
-    /*p09.COTO*/ if (NR52_RDna) next.bus.D0 = not(b.ch1.CH1_ACTIVEn);
-    /*p09.EFUS*/ if (NR52_RDnb) next.bus.D1 = not(b.ch2.CH2_ACTIVEn);
-    /*p09.FATE*/ if (NR52_RDnd) next.bus.D2 = not(CH3_ACTIVEn);
-    /*p09.KOGE*/ if (NR52_RDnc) next.bus.D3 = not(CH4_ACTIVEn);
-    /*p09.HOPE*/ if (NR52_RDne) next.bus.D7 = b.apu.NR52_ALL_SOUND_ON;
+    if (NR52_RDna) next.bus.set_data(
+      /*p09.COTO*/ not(b.ch1.CH1_ACTIVEn),
+      /*p09.EFUS*/ not(b.ch2.CH2_ACTIVEn),
+      /*p09.FATE*/ not(CH3_ACTIVEn),
+      /*p09.KOGE*/ not(CH4_ACTIVEn),
+      /*p09.HOPE*/ b.apu.NR52_ALL_SOUND_ON
+    );
   }
 }
 

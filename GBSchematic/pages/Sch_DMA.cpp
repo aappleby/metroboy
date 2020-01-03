@@ -31,23 +31,25 @@ void DMA_tick(const BusTristates& bus,
     /*p04.PUSY*/ wire FF46_RDn2 = not(FF46_RD);
 
     /*p04.LORU*/ wire CLK_DMA_HI = not(FF46_WRn);
-    /*p04.NAFA*/ next.DMA_A08.tock(CLK_DMA_HI, 1, bus.D0);
-    /*p04.PYNE*/ next.DMA_A09.tock(CLK_DMA_HI, 1, bus.D1);
-    /*p04.PARA*/ next.DMA_A10.tock(CLK_DMA_HI, 1, bus.D2);
-    /*p04.NYDO*/ next.DMA_A11.tock(CLK_DMA_HI, 1, bus.D3);
-    /*p04.NYGY*/ next.DMA_A12.tock(CLK_DMA_HI, 1, bus.D4);
-    /*p04.PULA*/ next.DMA_A13.tock(CLK_DMA_HI, 1, bus.D5);
-    /*p04.POKU*/ next.DMA_A14.tock(CLK_DMA_HI, 1, bus.D6);
-    /*p04.MARU*/ next.DMA_A15.tock(CLK_DMA_HI, 1, bus.D7);
+    /*p04.NAFA*/ next.DMA_A08.tock(CLK_DMA_HI, 1, bus.D0());
+    /*p04.PYNE*/ next.DMA_A09.tock(CLK_DMA_HI, 1, bus.D1());
+    /*p04.PARA*/ next.DMA_A10.tock(CLK_DMA_HI, 1, bus.D2());
+    /*p04.NYDO*/ next.DMA_A11.tock(CLK_DMA_HI, 1, bus.D3());
+    /*p04.NYGY*/ next.DMA_A12.tock(CLK_DMA_HI, 1, bus.D4());
+    /*p04.PULA*/ next.DMA_A13.tock(CLK_DMA_HI, 1, bus.D5());
+    /*p04.POKU*/ next.DMA_A14.tock(CLK_DMA_HI, 1, bus.D6());
+    /*p04.MARU*/ next.DMA_A15.tock(CLK_DMA_HI, 1, bus.D7());
 
-    /*p04.POLY*/ if (FF46_RDn2) bus_out.D0 = dma.DMA_A08;
-    /*p04.ROFO*/ if (FF46_RDn2) bus_out.D1 = dma.DMA_A09;
-    /*p04.REMA*/ if (FF46_RDn2) bus_out.D2 = dma.DMA_A10;
-    /*p04.PANE*/ if (FF46_RDn2) bus_out.D3 = dma.DMA_A11;
-    /*p04.PARE*/ if (FF46_RDn2) bus_out.D4 = dma.DMA_A12;
-    /*p04.RALY*/ if (FF46_RDn2) bus_out.D5 = dma.DMA_A13;
-    /*p04.RESU*/ if (FF46_RDn2) bus_out.D6 = dma.DMA_A14;
-    /*p04.NUVY*/ if (FF46_RDn2) bus_out.D7 = dma.DMA_A15;
+    if (FF46_RDn2) bus_out.set_data(
+      /*p04.POLY*/ dma.DMA_A08,
+      /*p04.ROFO*/ dma.DMA_A09,
+      /*p04.REMA*/ dma.DMA_A10,
+      /*p04.PANE*/ dma.DMA_A11,
+      /*p04.PARE*/ dma.DMA_A12,
+      /*p04.RALY*/ dma.DMA_A13,
+      /*p04.RESU*/ dma.DMA_A14,
+      /*p04.NUVY*/ dma.DMA_A15
+    );
   }
 
   // schematic incorrect.

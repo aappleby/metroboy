@@ -48,30 +48,34 @@ void Debug::tick(const BusTristates& bus,
   /*p05.AFOP*/ wire AFOP_Axxxxxxx = not(APYS_xBCDEFGH);
   /*p07.LECO*/ wire LECO_xBCDEFGH = nor(clk.BEDO_Axxxxxxx, prev.MODE_DBG2);
 
-  /*p05.ANOC*/ if (AFOP_Axxxxxxx) bus_out.D0 = not(pins.P10_B);
-  /*p05.ATAJ*/ if (AFOP_Axxxxxxx) bus_out.D1 = not(pins.P10_B);
-  /*p05.AJEC*/ if (AFOP_Axxxxxxx) bus_out.D2 = not(pins.P10_B);
-  /*p05.ASUZ*/ if (AFOP_Axxxxxxx) bus_out.D3 = not(pins.P10_B);
-  /*p05.BENU*/ if (AFOP_Axxxxxxx) bus_out.D4 = not(pins.P10_B);
-  /*p05.AKAJ*/ if (AFOP_Axxxxxxx) bus_out.D5 = not(pins.P10_B);
-  /*p05.ARAR*/ if (AFOP_Axxxxxxx) bus_out.D6 = not(pins.P10_B);
-  /*p05.BEDA*/ if (AFOP_Axxxxxxx) bus_out.D7 = not(pins.P10_B);
+  if (AFOP_Axxxxxxx) bus_out.set_data(
+    /*p05.ANOC*/ not(pins.P10_B),
+    /*p05.ATAJ*/ not(pins.P10_B),
+    /*p05.AJEC*/ not(pins.P10_B),
+    /*p05.ASUZ*/ not(pins.P10_B),
+    /*p05.BENU*/ not(pins.P10_B),
+    /*p05.AKAJ*/ not(pins.P10_B),
+    /*p05.ARAR*/ not(pins.P10_B),
+    /*p05.BEDA*/ not(pins.P10_B)
+  );
 
-  /*p07.ROMY*/ if (LECO_xBCDEFGH) bus_out.D0 = pins.P10_B;
-  /*p07.RYNE*/ if (LECO_xBCDEFGH) bus_out.D1 = pins.P10_B;
-  /*p07.REJY*/ if (LECO_xBCDEFGH) bus_out.D2 = pins.P10_B;
-  /*p07.RASE*/ if (LECO_xBCDEFGH) bus_out.D3 = pins.P10_B;
-  /*p07.REKA*/ if (LECO_xBCDEFGH) bus_out.D4 = pins.P10_B;
-  /*p07.ROWE*/ if (LECO_xBCDEFGH) bus_out.D5 = pins.P10_B;
-  /*p07.RYKE*/ if (LECO_xBCDEFGH) bus_out.D6 = pins.P10_B;
-  /*p07.RARU*/ if (LECO_xBCDEFGH) bus_out.D7 = pins.P10_B;
+  if (LECO_xBCDEFGH) bus_out.set_data(
+    /*p07.ROMY*/ pins.P10_B,
+    /*p07.RYNE*/ pins.P10_B,
+    /*p07.REJY*/ pins.P10_B,
+    /*p07.RASE*/ pins.P10_B,
+    /*p07.REKA*/ pins.P10_B,
+    /*p07.ROWE*/ pins.P10_B,
+    /*p07.RYKE*/ pins.P10_B,
+    /*p07.RARU*/ pins.P10_B
+  );
 
   // FF60 debug reg
 
   /*p07.APET*/ wire MODE_DEBUG = or(prev.MODE_DBG1, prev.MODE_DBG2);
-  /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus.A05, bus.A06, ctl.TAPU_CPUWR, dec.ADDR_111111110xx00000);
-  /*p07.BURO*/ next.FF60_0.tock(FF60_WRn, rst_sig1.SYS_RESETn, bus.D0);
-  /*p07.AMUT*/ next.FF60_1.tock(FF60_WRn, rst_sig1.SYS_RESETn, bus.D1);
+  /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus.A05(), bus.A06(), ctl.TAPU_CPUWR, dec.ADDR_111111110xx00000);
+  /*p07.BURO*/ next.FF60_0.tock(FF60_WRn, rst_sig1.SYS_RESETn, bus.D0());
+  /*p07.AMUT*/ next.FF60_1.tock(FF60_WRn, rst_sig1.SYS_RESETn, bus.D1());
 
   /*p05.KURA*/ next.FF60_0n = not(prev.FF60_0);
   /*p05.JEVA*/ wire FF60_0o = not(prev.FF60_0);
@@ -111,22 +115,24 @@ void Debug::tick(const BusTristates& bus,
   /*p08.PEVO*/ wire A14_Cn = not(pins.A14_C);
   /*p08.RAZA*/ wire A15_Cn = not(pins.A15_C);
 
-  /*p08.KEJO*/ if (prev.MODE_DBG2n1) bus_out.A00 = not(A00_Cn);
-  /*p08.BYXE*/ if (prev.MODE_DBG2n1) bus_out.A01 = not(A01_Cn);
-  /*p08.AKAN*/ if (prev.MODE_DBG2n1) bus_out.A02 = not(A02_Cn);
-  /*p08.ANAR*/ if (prev.MODE_DBG2n1) bus_out.A03 = not(A03_Cn);
-  /*p08.AZUV*/ if (prev.MODE_DBG2n1) bus_out.A04 = not(A04_Cn);
-  /*p08.AJOV*/ if (prev.MODE_DBG2n1) bus_out.A05 = not(A05_Cn);
-  /*p08.BYNE*/ if (prev.MODE_DBG2n1) bus_out.A06 = not(A06_Cn);
-  /*p08.BYNA*/ if (prev.MODE_DBG2n1) bus_out.A07 = not(A07_Cn);
-  /*p08.LOFA*/ if (prev.MODE_DBG2n1) bus_out.A08 = not(A08_Cn);
-  /*p08.MAPU*/ if (prev.MODE_DBG2n1) bus_out.A09 = not(A09_Cn);
-  /*p08.RALA*/ if (prev.MODE_DBG2n1) bus_out.A10 = not(A10_Cn);
-  /*p08.LORA*/ if (prev.MODE_DBG2n1) bus_out.A11 = not(A11_Cn);
-  /*p08.LYNA*/ if (prev.MODE_DBG2n1) bus_out.A12 = not(A12_Cn);
-  /*p08.LEFY*/ if (prev.MODE_DBG2n1) bus_out.A13 = not(A13_Cn);
-  /*p08.NEFE*/ if (prev.MODE_DBG2n1) bus_out.A14 = not(A14_Cn);
-  /*p08.SYZU*/ if (prev.MODE_DBG2n2) bus_out.A15 = not(A15_Cn);
+  if (prev.MODE_DBG2n1) bus_out.set_addr(
+    /*p08.KEJO*/ not(A00_Cn),
+    /*p08.BYXE*/ not(A01_Cn),
+    /*p08.AKAN*/ not(A02_Cn),
+    /*p08.ANAR*/ not(A03_Cn),
+    /*p08.AZUV*/ not(A04_Cn),
+    /*p08.AJOV*/ not(A05_Cn),
+    /*p08.BYNE*/ not(A06_Cn),
+    /*p08.BYNA*/ not(A07_Cn),
+    /*p08.LOFA*/ not(A08_Cn),
+    /*p08.MAPU*/ not(A09_Cn),
+    /*p08.RALA*/ not(A10_Cn),
+    /*p08.LORA*/ not(A11_Cn),
+    /*p08.LYNA*/ not(A12_Cn),
+    /*p08.LEFY*/ not(A13_Cn),
+    /*p08.NEFE*/ not(A14_Cn),
+    /*p08.SYZU*/ not(A15_Cn)
+  );
 
   //----------
   // more debug stuff
@@ -134,14 +140,16 @@ void Debug::tick(const BusTristates& bus,
   /*p25.TUSO*/ wire TUSO = nor(prev.MODE_DBG2, clk.BOGA_xBCDEFGH);
   /*p25.SOLE*/ wire SOLE = not(TUSO);
 
-  /*p25.TOVU*/ if (VYPO) bus_out.D0 = SOLE;
-  /*p25.SOSA*/ if (VYPO) bus_out.D1 = SOLE;
-  /*p25.SEDU*/ if (VYPO) bus_out.D2 = SOLE;
-  /*p25.TAXO*/ if (VYPO) bus_out.D3 = SOLE;
-  /*p25.TAHY*/ if (VYPO) bus_out.D4 = SOLE;
-  /*p25.TESU*/ if (VYPO) bus_out.D5 = SOLE;
-  /*p25.TAZU*/ if (VYPO) bus_out.D6 = SOLE;
-  /*p25.TEWA*/ if (VYPO) bus_out.D7 = SOLE;
+  if (VYPO) bus_out.set_data(
+    /*p25.TOVU*/ SOLE,
+    /*p25.SOSA*/ SOLE,
+    /*p25.SEDU*/ SOLE,
+    /*p25.TAXO*/ SOLE,
+    /*p25.TAHY*/ SOLE,
+    /*p25.TESU*/ SOLE,
+    /*p25.TAZU*/ SOLE,
+    /*p25.TEWA*/ SOLE
+  );
 }
 
 //-----------------------------------------------------------------------------

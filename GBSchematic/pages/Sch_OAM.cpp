@@ -111,14 +111,14 @@ void OAM_tick(const BusTristates& bus,
   // OAM address generator
 
   {
-    /*p28.GARO*/ wire A0n = not(bus.A00);
-    /*p28.WACU*/ wire A1n = not(bus.A01);
-    /*p28.GOSE*/ wire A2n = not(bus.A02);
-    /*p28.WAPE*/ wire A3n = not(bus.A03);
-    /*p28.FEVU*/ wire A4n = not(bus.A04);
-    /*p28.GERA*/ wire A5n = not(bus.A05);
-    /*p28.WAXA*/ wire A6n = not(bus.A06);
-    /*p28.FOBY*/ wire A7n = not(bus.A07);
+    /*p28.GARO*/ wire A0n = not(bus.A00());
+    /*p28.WACU*/ wire A1n = not(bus.A01());
+    /*p28.GOSE*/ wire A2n = not(bus.A02());
+    /*p28.WAPE*/ wire A3n = not(bus.A03());
+    /*p28.FEVU*/ wire A4n = not(bus.A04());
+    /*p28.GERA*/ wire A5n = not(bus.A05());
+    /*p28.WAXA*/ wire A6n = not(bus.A06());
+    /*p28.FOBY*/ wire A7n = not(bus.A07());
 
     /*p28.FYKE*/ wire IDX_0n = not(sil.TS_IDX_0);
     /*p28.FUGU*/ wire IDX_1n = not(sil.TS_IDX_1);
@@ -196,23 +196,23 @@ void OAM_tick(const BusTristates& bus,
 
     /*p28.AZAR*/ wire DMA_READ_VRAMp = not(dma.DMA_READ_VRAM);
 
-    /*p28.ZAXA*/ if (D_TO_OAMD) next.TS_OAM_A_D0 = bus.D0;
-    /*p28.ZAKY*/ if (D_TO_OAMD) next.TS_OAM_A_D1 = bus.D1;
-    /*p28.WULE*/ if (D_TO_OAMD) next.TS_OAM_A_D2 = bus.D2;
-    /*p28.ZOZO*/ if (D_TO_OAMD) next.TS_OAM_A_D3 = bus.D3;
-    /*p28.ZUFO*/ if (D_TO_OAMD) next.TS_OAM_A_D4 = bus.D4;
-    /*p28.ZATO*/ if (D_TO_OAMD) next.TS_OAM_A_D5 = bus.D5;
-    /*p28.YVUC*/ if (D_TO_OAMD) next.TS_OAM_A_D6 = bus.D6;
-    /*p28.ZUFE*/ if (D_TO_OAMD) next.TS_OAM_A_D7 = bus.D7;
+    /*p28.ZAXA*/ if (D_TO_OAMD) next.TS_OAM_A_D0 = bus.D0();
+    /*p28.ZAKY*/ if (D_TO_OAMD) next.TS_OAM_A_D1 = bus.D1();
+    /*p28.WULE*/ if (D_TO_OAMD) next.TS_OAM_A_D2 = bus.D2();
+    /*p28.ZOZO*/ if (D_TO_OAMD) next.TS_OAM_A_D3 = bus.D3();
+    /*p28.ZUFO*/ if (D_TO_OAMD) next.TS_OAM_A_D4 = bus.D4();
+    /*p28.ZATO*/ if (D_TO_OAMD) next.TS_OAM_A_D5 = bus.D5();
+    /*p28.YVUC*/ if (D_TO_OAMD) next.TS_OAM_A_D6 = bus.D6();
+    /*p28.ZUFE*/ if (D_TO_OAMD) next.TS_OAM_A_D7 = bus.D7();
 
-    /*p28.ZAMY*/ if (D_TO_OAMD) next.TS_OAM_B_D0 = bus.D0;
-    /*p28.ZOPU*/ if (D_TO_OAMD) next.TS_OAM_B_D1 = bus.D1;
-    /*p28.WYKY*/ if (D_TO_OAMD) next.TS_OAM_B_D2 = bus.D2;
-    /*p28.ZAJA*/ if (D_TO_OAMD) next.TS_OAM_B_D3 = bus.D3;
-    /*p28.ZUGA*/ if (D_TO_OAMD) next.TS_OAM_B_D4 = bus.D4;
-    /*p28.ZUMO*/ if (D_TO_OAMD) next.TS_OAM_B_D5 = bus.D5;
-    /*p28.XYTO*/ if (D_TO_OAMD) next.TS_OAM_B_D6 = bus.D6;
-    /*p28.ZYFA*/ if (D_TO_OAMD) next.TS_OAM_B_D7 = bus.D7;
+    /*p28.ZAMY*/ if (D_TO_OAMD) next.TS_OAM_B_D0 = bus.D0();
+    /*p28.ZOPU*/ if (D_TO_OAMD) next.TS_OAM_B_D1 = bus.D1();
+    /*p28.WYKY*/ if (D_TO_OAMD) next.TS_OAM_B_D2 = bus.D2();
+    /*p28.ZAJA*/ if (D_TO_OAMD) next.TS_OAM_B_D3 = bus.D3();
+    /*p28.ZUGA*/ if (D_TO_OAMD) next.TS_OAM_B_D4 = bus.D4();
+    /*p28.ZUMO*/ if (D_TO_OAMD) next.TS_OAM_B_D5 = bus.D5();
+    /*p28.XYTO*/ if (D_TO_OAMD) next.TS_OAM_B_D6 = bus.D6();
+    /*p28.ZYFA*/ if (D_TO_OAMD) next.TS_OAM_B_D7 = bus.D7();
   
     /*p28.WUZU*/ if (!DMA_READ_VRAMp) next.TS_OAM_A_D0 = vram.MD0;
     /*p28.AXER*/ if (!DMA_READ_VRAMp) next.TS_OAM_A_D1 = vram.MD1;
@@ -317,25 +317,31 @@ void OAM_tick(const BusTristates& bus,
 
     /*p28.WUKU*/ wire OAM_A_CPU_RDn = and(CPU_READ_MYSTERY, OAM_LOCKn, prev.OAM_A0);
     /*p28.WEWU*/ wire OAM_A_CPU_RD  = not(OAM_A_CPU_RDn);
-    /*p31.XACA*/ if (OAM_A_CPU_RD) bus_out.D0 = prev.OAM_A_LATCH0;
-    /*p31.XAGU*/ if (OAM_A_CPU_RD) bus_out.D1 = prev.OAM_A_LATCH1;
-    /*p31.XEPU*/ if (OAM_A_CPU_RD) bus_out.D2 = prev.OAM_A_LATCH2;
-    /*p31.XYGU*/ if (OAM_A_CPU_RD) bus_out.D3 = prev.OAM_A_LATCH3;
-    /*p31.XUNA*/ if (OAM_A_CPU_RD) bus_out.D4 = prev.OAM_A_LATCH4;
-    /*p31.DEVE*/ if (OAM_A_CPU_RD) bus_out.D5 = prev.OAM_A_LATCH5;
-    /*p31.ZEHA*/ if (OAM_A_CPU_RD) bus_out.D6 = prev.OAM_A_LATCH6;
-    /*p31.FYRA*/ if (OAM_A_CPU_RD) bus_out.D7 = prev.OAM_A_LATCH7;
+
+    if (OAM_A_CPU_RD) bus_out.set_data(
+      /*p31.XACA*/ prev.OAM_A_LATCH0,
+      /*p31.XAGU*/ prev.OAM_A_LATCH1,
+      /*p31.XEPU*/ prev.OAM_A_LATCH2,
+      /*p31.XYGU*/ prev.OAM_A_LATCH3,
+      /*p31.XUNA*/ prev.OAM_A_LATCH4,
+      /*p31.DEVE*/ prev.OAM_A_LATCH5,
+      /*p31.ZEHA*/ prev.OAM_A_LATCH6,
+      /*p31.FYRA*/ prev.OAM_A_LATCH7
+    );
 
     /*p28.GUKO*/ wire OAM_B_CPU_RDn = and(CPU_READ_MYSTERY, OAM_LOCKn, OAM_A0n);
     /*p28.WUME*/ wire OAM_B_CPU_RD  = not(OAM_B_CPU_RDn);
-    /*p29.YFAP*/ if (OAM_B_CPU_RD) bus_out.D0 = prev.OAM_B_LATCH0;
-    /*p29.XELE*/ if (OAM_B_CPU_RD) bus_out.D1 = prev.OAM_B_LATCH1;
-    /*p29.YPON*/ if (OAM_B_CPU_RD) bus_out.D2 = prev.OAM_B_LATCH2;
-    /*p29.XUVO*/ if (OAM_B_CPU_RD) bus_out.D3 = prev.OAM_B_LATCH3;
-    /*p29.ZYSA*/ if (OAM_B_CPU_RD) bus_out.D4 = prev.OAM_B_LATCH4;
-    /*p29.YWEG*/ if (OAM_B_CPU_RD) bus_out.D5 = prev.OAM_B_LATCH5;
-    /*p29.XABU*/ if (OAM_B_CPU_RD) bus_out.D6 = prev.OAM_B_LATCH6;
-    /*p29.YTUX*/ if (OAM_B_CPU_RD) bus_out.D7 = prev.OAM_B_LATCH7;
+
+    if (OAM_B_CPU_RD) bus_out.set_data(
+      /*p29.YFAP*/ prev.OAM_B_LATCH0,
+      /*p29.XELE*/ prev.OAM_B_LATCH1,
+      /*p29.YPON*/ prev.OAM_B_LATCH2,
+      /*p29.XUVO*/ prev.OAM_B_LATCH3,
+      /*p29.ZYSA*/ prev.OAM_B_LATCH4,
+      /*p29.YWEG*/ prev.OAM_B_LATCH5,
+      /*p29.XABU*/ prev.OAM_B_LATCH6,
+      /*p29.YTUX*/ prev.OAM_B_LATCH7
+    );
   }
 }
 

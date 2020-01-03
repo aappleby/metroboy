@@ -30,11 +30,13 @@ void Interrupts_tick(const BusSignals& ctl,
   /*p02.MOPO*/ next.FF0F_L3 = latch_pos(FF0F_RDn, prev.FF0F_L3, prev.FF0F_3);
   /*p02.PAVY*/ next.FF0F_L4 = latch_pos(FF0F_RDn, prev.FF0F_L4, prev.FF0F_4);
 
-  /*p02.NELA*/ if (FF0F_RDa) bus_out.D0 = prev.FF0F_L0;
-  /*p02.NABO*/ if (FF0F_RDa) bus_out.D1 = prev.FF0F_L1;
-  /*p02.ROVA*/ if (FF0F_RDa) bus_out.D2 = prev.FF0F_L2;
-  /*p02.PADO*/ if (FF0F_RDa) bus_out.D3 = prev.FF0F_L3;
-  /*p02.PEGY*/ if (FF0F_RDa) bus_out.D4 = prev.FF0F_L4;
+  if (FF0F_RDa) bus_out.set_data(
+    /*p02.NELA*/ prev.FF0F_L0,
+    /*p02.NABO*/ prev.FF0F_L1,
+    /*p02.ROVA*/ prev.FF0F_L2,
+    /*p02.PADO*/ prev.FF0F_L3,
+    /*p02.PEGY*/ prev.FF0F_L4
+  );
 }
 
 //-----------------------------------------------------------------------------
@@ -61,17 +63,17 @@ void Interrupts_tock(const BusTristates& bus,
   /*p02.LUFE*/ wire INT_STAT_ACK = not(cpu.FROM_CPU7);
   /*p02.LAMO*/ wire INT_TIM_ACK  = not(cpu.FROM_CPU11);
 
-  /*p02.MUXE*/ wire MUXE = or(bus.D0, FF0F_WRn);
-  /*p02.NABE*/ wire NABE = or(bus.D1, FF0F_WRn);
-  /*p02.RAKE*/ wire RAKE = or(bus.D2, FF0F_WRn);
-  /*p02.SULO*/ wire SULO = or(bus.D3, FF0F_WRn);
-  /*p02.SEME*/ wire SEME = or(bus.D4, FF0F_WRn);
+  /*p02.MUXE*/ wire MUXE = or(bus.D0(), FF0F_WRn);
+  /*p02.NABE*/ wire NABE = or(bus.D1(), FF0F_WRn);
+  /*p02.RAKE*/ wire RAKE = or(bus.D2(), FF0F_WRn);
+  /*p02.SULO*/ wire SULO = or(bus.D3(), FF0F_WRn);
+  /*p02.SEME*/ wire SEME = or(bus.D4(), FF0F_WRn);
 
-  /*p02.MYZU*/ wire FF0F_SET0 = nand(FF0F_WRa, INT_VBL_ACK,  bus.D0);
-  /*p02.MODY*/ wire FF0F_SET1 = nand(FF0F_WRa, INT_SER_ACK,  bus.D1);
-  /*p02.PYHU*/ wire FF0F_SET2 = nand(FF0F_WRa, INT_JOY_ACK,  bus.D2);
-  /*p02.TOME*/ wire FF0F_SET3 = nand(FF0F_WRa, INT_STAT_ACK, bus.D3);
-  /*p02.TOGA*/ wire FF0F_SET4 = nand(FF0F_WRa, INT_TIM_ACK,  bus.D4);
+  /*p02.MYZU*/ wire FF0F_SET0 = nand(FF0F_WRa, INT_VBL_ACK,  bus.D0());
+  /*p02.MODY*/ wire FF0F_SET1 = nand(FF0F_WRa, INT_SER_ACK,  bus.D1());
+  /*p02.PYHU*/ wire FF0F_SET2 = nand(FF0F_WRa, INT_JOY_ACK,  bus.D2());
+  /*p02.TOME*/ wire FF0F_SET3 = nand(FF0F_WRa, INT_STAT_ACK, bus.D3());
+  /*p02.TOGA*/ wire FF0F_SET4 = nand(FF0F_WRa, INT_TIM_ACK,  bus.D4());
 
   /*p02.LYTA*/ wire FF0F_RST0 = and(MUXE, INT_VBL_ACK,  rst_sig.SYS_RESETn);
   /*p02.MOVU*/ wire FF0F_RST1 = and(NABE, INT_SER_ACK,  rst_sig.SYS_RESETn);

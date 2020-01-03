@@ -162,7 +162,6 @@ TimerSignals Timer::tick(const SysSignals& sys_sig,
   tickTIMA   (sys_sig, clk_sig, rst_sig, bus_sig, dec_sig, bus_tri);
   tickTMA    (                  rst_sig, bus_sig, dec_sig, bus_tri);
   tickTAC    (                  rst_sig, bus_sig, dec_sig, bus_tri);
-  tickBusRead(                           bus_sig, dec_sig, bus_tri);
 
   return signals();
 }
@@ -174,11 +173,12 @@ void Timer::tickDIV(const SysSignals&   sys_sig,
                     const ClkSignals&   clk_sig,
                     const BusSignals&   bus_sig,
                     const Decoder&      dec_sig,
-                    const BusTristates& bus_tri)
+                    BusTristates& bus_tri)
 {
-  /*p03.TOVY*/ wire TOVY_A00n = not(bus_tri.A00);
-  /*p08.TOLA*/ wire TOLA_A01n = not(bus_tri.A01);
+  /*p03.TOVY*/ wire TOVY_A00n = not(bus_tri.A00());
+  /*p08.TOLA*/ wire TOLA_A01n = not(bus_tri.A01());
   /*p01.TAPE*/ wire FF04_WR = and(bus_sig.TAPU_CPUWR, dec_sig.FF04_FF07, TOLA_A01n, TOVY_A00n);
+  /*p01.TAGY*/ wire FF04_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, TOLA_A01n,     TOVY_A00n);
 
   /*p01.UFOL*/ wire DIV_RSTn = nor(sys_sig.UCOB_CLKBAD, sys_sig.PIN_RST, FF04_WR);
   /*p01.ULUR*/ wire DIV_06_CLK = mux2n(clk_sig.BOGA_xBCDEFGH, !DIV_05, sys_sig.FF60_1);
@@ -202,6 +202,18 @@ void Timer::tickDIV(const SysSignals&   sys_sig,
 
   /*p01.UKET*/ DIV_14.set(!DIV_13,    DIV_RSTn, !DIV_14);
   /*p01.UPOF*/ DIV_15.set(!DIV_14,    DIV_RSTn, !DIV_15);
+
+  TimerSignals tim_sig = signals();
+  if (FF04_RD) bus_tri.set_data(
+    /*p01.TAWU*/ not(tim_sig.DIV_06n),
+    /*p01.TAKU*/ not(tim_sig.DIV_07n),
+    /*p01.TEMU*/ not(tim_sig.DIV_08n),
+    /*p01.TUSE*/ not(tim_sig.DIV_09n),
+    /*p01.UPUG*/ not(tim_sig.DIV_10n),
+    /*p01.SEPU*/ not(tim_sig.DIV_11n),
+    /*p01.SAWA*/ not(tim_sig.DIV_12n),
+    /*p01.TATU*/ not(tim_sig.DIV_13n)
+  );
 }
 
 //-----------------------------------------------------------------------------
@@ -212,19 +224,20 @@ void Timer::tickTIMA(const SysSignals&   sys_sig,
                      const RstSignals&   rst_sig,
                      const BusSignals&   bus_sig,
                      const Decoder&      dec_sig,
-                     const BusTristates& bus_tri)
+                     BusTristates& bus_tri)
 {
-  /*p08.TOLA*/ wire TOLA_A01n = not(bus_tri.A01);
-  /*p03.TOPE*/ wire FF05_WRn = nand(bus_sig.TAPU_CPUWR, dec_sig.FF04_FF07, TOLA_A01n, bus_tri.A00);
+  /*p08.TOLA*/ wire TOLA_A01n = not(bus_tri.A01());
+  /*p03.TOPE*/ wire FF05_WRn = nand(bus_sig.TAPU_CPUWR, dec_sig.FF04_FF07, TOLA_A01n, bus_tri.A00());
+  /*p03.TEDA*/ wire FF05_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, TOLA_A01n,     bus_tri.A00());
 
-  /*p03.ROKE*/ wire TIMA_MUX_0 = mux2n(TMA_0, bus_tri.D0, FF05_WRn);
-  /*p03.PETU*/ wire TIMA_MUX_1 = mux2n(TMA_1, bus_tri.D1, FF05_WRn);
-  /*p03.NYKU*/ wire TIMA_MUX_2 = mux2n(TMA_2, bus_tri.D2, FF05_WRn);
-  /*p03.SOCE*/ wire TIMA_MUX_3 = mux2n(TMA_3, bus_tri.D3, FF05_WRn);
-  /*p03.SALA*/ wire TIMA_MUX_4 = mux2n(TMA_4, bus_tri.D4, FF05_WRn);
-  /*p03.SYRU*/ wire TIMA_MUX_5 = mux2n(TMA_5, bus_tri.D5, FF05_WRn);
-  /*p03.REFU*/ wire TIMA_MUX_6 = mux2n(TMA_6, bus_tri.D6, FF05_WRn);
-  /*p03.RATO*/ wire TIMA_MUX_7 = mux2n(TMA_7, bus_tri.D7, FF05_WRn);
+  /*p03.ROKE*/ wire TIMA_MUX_0 = mux2n(TMA_0, bus_tri.D0(), FF05_WRn);
+  /*p03.PETU*/ wire TIMA_MUX_1 = mux2n(TMA_1, bus_tri.D1(), FF05_WRn);
+  /*p03.NYKU*/ wire TIMA_MUX_2 = mux2n(TMA_2, bus_tri.D2(), FF05_WRn);
+  /*p03.SOCE*/ wire TIMA_MUX_3 = mux2n(TMA_3, bus_tri.D3(), FF05_WRn);
+  /*p03.SALA*/ wire TIMA_MUX_4 = mux2n(TMA_4, bus_tri.D4(), FF05_WRn);
+  /*p03.SYRU*/ wire TIMA_MUX_5 = mux2n(TMA_5, bus_tri.D5(), FF05_WRn);
+  /*p03.REFU*/ wire TIMA_MUX_6 = mux2n(TMA_6, bus_tri.D6(), FF05_WRn);
+  /*p03.RATO*/ wire TIMA_MUX_7 = mux2n(TMA_7, bus_tri.D7(), FF05_WRn);
 
   /*p03.MULO*/ wire TIMA_RST = not(rst_sig.SYS_RESETn);
 
@@ -267,6 +280,17 @@ void Timer::tickTIMA(const SysSignals&   sys_sig,
 
   /*p03.NYDU*/ TIMA_MAX.set(clk_sig.BOGA_xBCDEFGH, TIMA_LOADn, TIMA_7.c());
   /*p03.MOBA*/ INT_TIMER.set(clk_sig.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, INT_TIMER_IN);
+
+  if (FF05_RD) bus_tri.set_data(
+    /*p03.SOKU*/ TIMA_0.v(),
+    /*p03.RACY*/ TIMA_1.v(),
+    /*p03.RAVY*/ TIMA_2.v(),
+    /*p03.SOSY*/ TIMA_3.v(),
+    /*p03.SOMU*/ TIMA_4.v(),
+    /*p03.SURO*/ TIMA_5.v(),
+    /*p03.ROWU*/ TIMA_6.v(),
+    /*p03.PUSO*/ TIMA_7.v()
+  );
 }
 
 //-----------------------------------------------------------------------------
@@ -275,19 +299,31 @@ void Timer::tickTIMA(const SysSignals&   sys_sig,
 void Timer::tickTMA(const RstSignals&   rst_sig,
                     const BusSignals&   bus_sig,
                     const Decoder&      dec_sig,
-                    const BusTristates& bus_tri)
+                    BusTristates& bus_tri)
 {
-  /*p03.TOVY*/ wire TOVY_A00n = not(bus_tri.A00);
-  /*p03.TYJU*/ wire FF06_WRn = nand(bus_sig.TAPU_CPUWR, dec_sig.FF04_FF07, TOVY_A00n, bus_tri.A01);
+  /*p03.TOVY*/ wire TOVY_A00n = not(bus_tri.A00());
+  /*p03.TYJU*/ wire FF06_WRn = nand(bus_sig.TAPU_CPUWR, dec_sig.FF04_FF07, TOVY_A00n, bus_tri.A01());
+  /*p03.TUBY*/ wire FF06_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, bus_tri.A01(), TOVY_A00n);
 
-  /*p03.SABU*/ TMA_0.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D0);
-  /*p03.NYKE*/ TMA_1.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D1);
-  /*p03.MURU*/ TMA_2.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D2);
-  /*p03.TYVA*/ TMA_3.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D3);
-  /*p03.TYRU*/ TMA_4.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D4);
-  /*p03.SUFY*/ TMA_5.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D5);
-  /*p03.PETO*/ TMA_6.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D6);
-  /*p03.SETA*/ TMA_7.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D7);
+  /*p03.SABU*/ TMA_0.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D0());
+  /*p03.NYKE*/ TMA_1.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D1());
+  /*p03.MURU*/ TMA_2.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D2());
+  /*p03.TYVA*/ TMA_3.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D3());
+  /*p03.TYRU*/ TMA_4.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D4());
+  /*p03.SUFY*/ TMA_5.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D5());
+  /*p03.PETO*/ TMA_6.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D6());
+  /*p03.SETA*/ TMA_7.set(FF06_WRn, rst_sig.SYS_RESETn, bus_tri.D7());
+
+  if (FF06_RD) bus_tri.set_data(
+    /*p03.SETE*/ TMA_0,
+    /*p03.PYRE*/ TMA_1,
+    /*p03.NOLA*/ TMA_2,
+    /*p03.SALU*/ TMA_3,
+    /*p03.SUPO*/ TMA_4,
+    /*p03.SOTU*/ TMA_5,
+    /*p03.REVA*/ TMA_6,
+    /*p03.SAPU*/ TMA_7
+  );
 }
 
 //-----------------------------------------------------------------------------
@@ -296,60 +332,19 @@ void Timer::tickTMA(const RstSignals&   rst_sig,
 void Timer::tickTAC(const RstSignals&   rst_sig,
                     const BusSignals&   bus_sig,
                     const Decoder&      dec_sig,
-                    const BusTristates& bus_tri) {
-  /*p03.SARA*/ wire FF07_WRn = nand(bus_sig.TAPU_CPUWR, dec_sig.FF04_FF07, bus_tri.A00, bus_tri.A01);
+                    BusTristates& bus_tri) {
+  /*p03.SARA*/ wire FF07_WRn = nand(bus_sig.TAPU_CPUWR, dec_sig.FF04_FF07, bus_tri.A00(), bus_tri.A01());
+  /*p03.SORA*/ wire FF07_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, bus_tri.A00(), bus_tri.A01());
 
-  /*p03.SOPU*/ TAC_0.set(FF07_WRn, rst_sig.SYS_RESETn, bus_tri.D0);
-  /*p03.SAMY*/ TAC_1.set(FF07_WRn, rst_sig.SYS_RESETn, bus_tri.D1);
-  /*p03.SABO*/ TAC_2.set(FF07_WRn, rst_sig.SYS_RESETn, bus_tri.D2);
+  /*p03.SOPU*/ TAC_0.set(FF07_WRn, rst_sig.SYS_RESETn, bus_tri.D0());
+  /*p03.SAMY*/ TAC_1.set(FF07_WRn, rst_sig.SYS_RESETn, bus_tri.D1());
+  /*p03.SABO*/ TAC_2.set(FF07_WRn, rst_sig.SYS_RESETn, bus_tri.D2());
 
-}
-
-//-----------------------------------------------------------------------------
-
-void Timer::tickBusRead(const BusSignals& bus_sig,
-                        const Decoder&    dec_sig,
-                        BusTristates&     bus_tri) const
-{
-  /*p03.TOVY*/ wire TOVY_A00n = not(bus_tri.A00);
-  /*p08.TOLA*/ wire TOLA_A01n = not(bus_tri.A01);
-
-  /*p01.TAGY*/ wire FF04_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, TOLA_A01n,   TOVY_A00n);
-  /*p03.TEDA*/ wire FF05_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, TOLA_A01n,   bus_tri.A00);
-  /*p03.TUBY*/ wire FF06_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, bus_tri.A01, TOVY_A00n);
-  /*p03.SORA*/ wire FF07_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, bus_tri.A00, bus_tri.A01);
-
-  TimerSignals tim_sig = signals();
-  /*p01.TAWU*/ if (FF04_RD) bus_tri.D0 = not(tim_sig.DIV_06n);
-  /*p01.TAKU*/ if (FF04_RD) bus_tri.D1 = not(tim_sig.DIV_07n);
-  /*p01.TEMU*/ if (FF04_RD) bus_tri.D2 = not(tim_sig.DIV_08n);
-  /*p01.TUSE*/ if (FF04_RD) bus_tri.D3 = not(tim_sig.DIV_09n);
-  /*p01.UPUG*/ if (FF04_RD) bus_tri.D4 = not(tim_sig.DIV_10n);
-  /*p01.SEPU*/ if (FF04_RD) bus_tri.D5 = not(tim_sig.DIV_11n);
-  /*p01.SAWA*/ if (FF04_RD) bus_tri.D6 = not(tim_sig.DIV_12n);
-  /*p01.TATU*/ if (FF04_RD) bus_tri.D7 = not(tim_sig.DIV_13n);
-
-  /*p03.SOKU*/ if (FF05_RD) bus_tri.D0 = TIMA_0.v();
-  /*p03.RACY*/ if (FF05_RD) bus_tri.D1 = TIMA_1.v();
-  /*p03.RAVY*/ if (FF05_RD) bus_tri.D2 = TIMA_2.v();
-  /*p03.SOSY*/ if (FF05_RD) bus_tri.D3 = TIMA_3.v();
-  /*p03.SOMU*/ if (FF05_RD) bus_tri.D4 = TIMA_4.v();
-  /*p03.SURO*/ if (FF05_RD) bus_tri.D5 = TIMA_5.v();
-  /*p03.ROWU*/ if (FF05_RD) bus_tri.D6 = TIMA_6.v();
-  /*p03.PUSO*/ if (FF05_RD) bus_tri.D7 = TIMA_7.v();
-
-  /*p03.SETE*/ if (FF06_RD) bus_tri.D0 = TMA_0;
-  /*p03.PYRE*/ if (FF06_RD) bus_tri.D1 = TMA_1;
-  /*p03.NOLA*/ if (FF06_RD) bus_tri.D2 = TMA_2;
-  /*p03.SALU*/ if (FF06_RD) bus_tri.D3 = TMA_3;
-  /*p03.SUPO*/ if (FF06_RD) bus_tri.D4 = TMA_4;
-  /*p03.SOTU*/ if (FF06_RD) bus_tri.D5 = TMA_5;
-  /*p03.REVA*/ if (FF06_RD) bus_tri.D6 = TMA_6;
-  /*p03.SAPU*/ if (FF06_RD) bus_tri.D7 = TMA_7;
-
-  /*p03.RYLA*/ if (FF07_RD) bus_tri.D2 = TAC_0;
-  /*p03.ROTE*/ if (FF07_RD) bus_tri.D1 = TAC_1;
-  /*p03.SUPE*/ if (FF07_RD) bus_tri.D0 = TAC_2;
+  if (FF07_RD) bus_tri.set_data(
+    /*p03.RYLA*/ TAC_0,
+    /*p03.ROTE*/ TAC_1,
+    /*p03.SUPE*/ TAC_2
+  );
 }
 
 //-----------------------------------------------------------------------------

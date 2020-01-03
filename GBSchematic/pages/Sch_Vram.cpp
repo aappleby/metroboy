@@ -235,19 +235,19 @@ void Vram_tick(const BusTristates& bus,
     /*p25.XANE*/ wire VRAM_LOCKn = nor(dma.DMA_READ_VRAM, vid.RENDERING_LATCH);
     /*p25.XEDU*/ wire VRAM_LOCK = not(VRAM_LOCKn);
 
-    /*p25.XAKY*/ if (!VRAM_LOCK) next.MA00 = bus.A00;
-    /*p25.XUXU*/ if (!VRAM_LOCK) next.MA01 = bus.A01;
-    /*p25.XYNE*/ if (!VRAM_LOCK) next.MA02 = bus.A02;
-    /*p25.XODY*/ if (!VRAM_LOCK) next.MA03 = bus.A03;
-    /*p25.XECA*/ if (!VRAM_LOCK) next.MA04 = bus.A04;
-    /*p25.XOBA*/ if (!VRAM_LOCK) next.MA05 = bus.A05;
-    /*p25.XOPO*/ if (!VRAM_LOCK) next.MA06 = bus.A06;
-    /*p25.XYBO*/ if (!VRAM_LOCK) next.MA07 = bus.A07;
-    /*p25.RYSU*/ if (!VRAM_LOCK) next.MA08 = bus.A08;
-    /*p25.RESE*/ if (!VRAM_LOCK) next.MA09 = bus.A09;
-    /*p25.RUSE*/ if (!VRAM_LOCK) next.MA10 = bus.A10;
-    /*p25.RYNA*/ if (!VRAM_LOCK) next.MA11 = bus.A11;
-    /*p25.RUMO*/ if (!VRAM_LOCK) next.MA12 = bus.A12;
+    /*p25.XAKY*/ if (!VRAM_LOCK) next.MA00 = bus.A00();
+    /*p25.XUXU*/ if (!VRAM_LOCK) next.MA01 = bus.A01();
+    /*p25.XYNE*/ if (!VRAM_LOCK) next.MA02 = bus.A02();
+    /*p25.XODY*/ if (!VRAM_LOCK) next.MA03 = bus.A03();
+    /*p25.XECA*/ if (!VRAM_LOCK) next.MA04 = bus.A04();
+    /*p25.XOBA*/ if (!VRAM_LOCK) next.MA05 = bus.A05();
+    /*p25.XOPO*/ if (!VRAM_LOCK) next.MA06 = bus.A06();
+    /*p25.XYBO*/ if (!VRAM_LOCK) next.MA07 = bus.A07();
+    /*p25.RYSU*/ if (!VRAM_LOCK) next.MA08 = bus.A08();
+    /*p25.RESE*/ if (!VRAM_LOCK) next.MA09 = bus.A09();
+    /*p25.RUSE*/ if (!VRAM_LOCK) next.MA10 = bus.A10();
+    /*p25.RYNA*/ if (!VRAM_LOCK) next.MA11 = bus.A11();
+    /*p25.RUMO*/ if (!VRAM_LOCK) next.MA12 = bus.A12();
   }
 
   /*p25.LEXE*/ next.MA00_D = not(/*p25.MYFU*/ not(vram.MA00));
@@ -309,14 +309,14 @@ void Vram_tick2(const BusTristates& /*bus*/, const BusSignals& /*ctl*/, const Vr
   /*p25.TOKU*/ if (!ctl.MD_TO_Dn) bus_out.D7 = /*p25.SAME*/ not(vram.MD7);
 
   // big tri
-  /*p25.TEME*/ if (!ctl.CBUS_TO_VBUSn) next.MD0 = bus.D0;
-  /*p25.TEWU*/ if (!ctl.CBUS_TO_VBUSn) next.MD1 = bus.D1;
-  /*p25.TYGO*/ if (!ctl.CBUS_TO_VBUSn) next.MD2 = bus.D2;
-  /*p25.SOTE*/ if (!ctl.CBUS_TO_VBUSn) next.MD3 = bus.D3;
-  /*p25.SEKE*/ if (!ctl.CBUS_TO_VBUSn) next.MD4 = bus.D4;
-  /*p25.RUJO*/ if (!ctl.CBUS_TO_VBUSn) next.MD5 = bus.D5;
-  /*p25.TOFA*/ if (!ctl.CBUS_TO_VBUSn) next.MD6 = bus.D6;
-  /*p25.SUZA*/ if (!ctl.CBUS_TO_VBUSn) next.MD7 = bus.D7;
+  /*p25.TEME*/ if (!ctl.CBUS_TO_VBUSn) next.MD0 = \1();
+  /*p25.TEWU*/ if (!ctl.CBUS_TO_VBUSn) next.MD1 = \1();
+  /*p25.TYGO*/ if (!ctl.CBUS_TO_VBUSn) next.MD2 = \1();
+  /*p25.SOTE*/ if (!ctl.CBUS_TO_VBUSn) next.MD3 = \1();
+  /*p25.SEKE*/ if (!ctl.CBUS_TO_VBUSn) next.MD4 = \1();
+  /*p25.RUJO*/ if (!ctl.CBUS_TO_VBUSn) next.MD5 = \1();
+  /*p25.TOFA*/ if (!ctl.CBUS_TO_VBUSn) next.MD6 = \1();
+  /*p25.SUZA*/ if (!ctl.CBUS_TO_VBUSn) next.MD7 = \1();
 
   // small tri
   /*p25.RODY*/ if (!ctl.VEXT_TO_VBUSn) next.MD0 = vram.MD0_C;

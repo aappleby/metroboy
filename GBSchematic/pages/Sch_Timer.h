@@ -85,28 +85,24 @@ struct Timer {
                const ClkSignals&   clk_sig,
                const BusSignals&   bus_sig,
                const Decoder&      dec_sig,
-               const BusTristates& bus_tri);
+               BusTristates& bus_tri);
 
   void tickTIMA(const SysSignals&   sys_sig,
                 const ClkSignals&   clk_sig,
                 const RstSignals&   rst_sig,
                 const BusSignals&   bus_sig,
                 const Decoder&      dec_sig,
-                const BusTristates& bus_tri);
+                BusTristates& bus_tri);
 
   void tickTMA(const RstSignals&   rst_sig,
                const BusSignals&   bus_sig,
                const Decoder&      dec_sig,
-               const BusTristates& bus_tri);
+               BusTristates& bus_tri);
 
   void tickTAC(const RstSignals&   rst_sig,
                const BusSignals&   bus_sig,
                const Decoder&      dec_sig,
-               const BusTristates& bus_tri);
-
-  void tickBusRead(const BusSignals& bus_sig,
-                   const Decoder&    dec_sig,
-                   BusTristates&     bus_tri) const;
+               BusTristates& bus_tri);
 
   //----------
   // FF04 DIV

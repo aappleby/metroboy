@@ -72,6 +72,7 @@ void test_timer() {
         rst_reg.commit();
         timer.commit();
         vid_reg.commit();
+        bus_tri.commit();
       }
     }
 

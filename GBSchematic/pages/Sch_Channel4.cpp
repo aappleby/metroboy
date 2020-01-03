@@ -26,12 +26,12 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     
     /*p19.CUWA*/ next.ch4.LEN_CLKa   = not(LEN_CLKn);
     /*p19.DOPU*/ next.ch4.NR41_LEN3b = not(!b.ch4.NR41_LEN3);                     
-    /*p19.DANO*/ next.ch4.NR41_LEN0  = count_pos(a.ch4.LEN_CLKa,   b.ch4.LEN_CLKa,   FF20_WRb, b.ch4.NR41_LEN0, b.bus.D0);
-    /*p19.FAVY*/ next.ch4.NR41_LEN1  = count_pos(a.ch4.NR41_LEN0,  b.ch4.NR41_LEN0,  FF20_WRb, b.ch4.NR41_LEN1, b.bus.D1);
-    /*p19.DENA*/ next.ch4.NR41_LEN2  = count_pos(a.ch4.NR41_LEN1,  b.ch4.NR41_LEN1,  FF20_WRb, b.ch4.NR41_LEN2, b.bus.D2);
-    /*p19.CEDO*/ next.ch4.NR41_LEN3  = count_pos(a.ch4.NR41_LEN2,  b.ch4.NR41_LEN2,  FF20_WRb, b.ch4.NR41_LEN3, b.bus.D3);
-    /*p19.FYLO*/ next.ch4.NR41_LEN4  = count_pos(a.ch4.NR41_LEN3b, b.ch4.NR41_LEN3b, FF20_WRc, b.ch4.NR41_LEN4, b.bus.D4);
-    /*p19.EDOP*/ next.ch4.NR41_LEN5  = count_pos(a.ch4.NR41_LEN4,  b.ch4.NR41_LEN4,  FF20_WRc, b.ch4.NR41_LEN5, b.bus.D5);
+    /*p19.DANO*/ next.ch4.NR41_LEN0  = count_pos(a.ch4.LEN_CLKa,   b.ch4.LEN_CLKa,   FF20_WRb, b.ch4.NR41_LEN0, b.bus.D0());
+    /*p19.FAVY*/ next.ch4.NR41_LEN1  = count_pos(a.ch4.NR41_LEN0,  b.ch4.NR41_LEN0,  FF20_WRb, b.ch4.NR41_LEN1, b.bus.D1());
+    /*p19.DENA*/ next.ch4.NR41_LEN2  = count_pos(a.ch4.NR41_LEN1,  b.ch4.NR41_LEN1,  FF20_WRb, b.ch4.NR41_LEN2, b.bus.D2());
+    /*p19.CEDO*/ next.ch4.NR41_LEN3  = count_pos(a.ch4.NR41_LEN2,  b.ch4.NR41_LEN2,  FF20_WRb, b.ch4.NR41_LEN3, b.bus.D3());
+    /*p19.FYLO*/ next.ch4.NR41_LEN4  = count_pos(a.ch4.NR41_LEN3b, b.ch4.NR41_LEN3b, FF20_WRc, b.ch4.NR41_LEN4, b.bus.D4());
+    /*p19.EDOP*/ next.ch4.NR41_LEN5  = count_pos(a.ch4.NR41_LEN4,  b.ch4.NR41_LEN4,  FF20_WRc, b.ch4.NR41_LEN5, b.bus.D5());
     /*p19.FUGO*/ next.ch4.LEN_STOP   = tock_pos(!a.ch4.NR41_LEN5,  !b.ch4.NR41_LEN5, LEN_RSTn, b.ch4.LEN_STOP,  !b.ch4.LEN_STOP);
 
     // No read circuit for FF20?
@@ -57,23 +57,25 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
     /*p19.DYKE*/ next.ch4.FF21_WRn = not(FF21_WRa);
     /*p19.FUPA*/ next.ch4.FF21_WRo = not(FF21_WRb);
-    /*p19.EMOK*/ next.ch4.NR42_ENV_TIMER0 = tock_pos(a.ch4.FF21_WRn, b.ch4.FF21_WRn, RSTq, b.ch4.NR42_ENV_TIMER0, b.bus.D0);
-    /*p19.ETYJ*/ next.ch4.NR42_ENV_TIMER1 = tock_pos(a.ch4.FF21_WRn, b.ch4.FF21_WRn, RSTq, b.ch4.NR42_ENV_TIMER1, b.bus.D1);
-    /*p19.EZYK*/ next.ch4.NR42_ENV_TIMER2 = tock_pos(a.ch4.FF21_WRn, b.ch4.FF21_WRn, RSTq, b.ch4.NR42_ENV_TIMER2, b.bus.D2);
-    /*p19.GEKY*/ next.ch4.NR42_ENV_DIR    = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_DIR,    b.bus.D3);
-    /*p19.GARU*/ next.ch4.NR42_ENV_VOL0   = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_VOL0,   b.bus.D4);
-    /*p19.GOKY*/ next.ch4.NR42_ENV_VOL1   = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_VOL1,   b.bus.D5);
-    /*p19.GOZO*/ next.ch4.NR42_ENV_VOL2   = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_VOL2,   b.bus.D6);
-    /*p19.GEDU*/ next.ch4.NR42_ENV_VOL3   = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_VOL3,   b.bus.D7);
+    /*p19.EMOK*/ next.ch4.NR42_ENV_TIMER0 = tock_pos(a.ch4.FF21_WRn, b.ch4.FF21_WRn, RSTq, b.ch4.NR42_ENV_TIMER0, b.bus.D0());
+    /*p19.ETYJ*/ next.ch4.NR42_ENV_TIMER1 = tock_pos(a.ch4.FF21_WRn, b.ch4.FF21_WRn, RSTq, b.ch4.NR42_ENV_TIMER1, b.bus.D1());
+    /*p19.EZYK*/ next.ch4.NR42_ENV_TIMER2 = tock_pos(a.ch4.FF21_WRn, b.ch4.FF21_WRn, RSTq, b.ch4.NR42_ENV_TIMER2, b.bus.D2());
+    /*p19.GEKY*/ next.ch4.NR42_ENV_DIR    = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_DIR,    b.bus.D3());
+    /*p19.GARU*/ next.ch4.NR42_ENV_VOL0   = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_VOL0,   b.bus.D4());
+    /*p19.GOKY*/ next.ch4.NR42_ENV_VOL1   = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_VOL1,   b.bus.D5());
+    /*p19.GOZO*/ next.ch4.NR42_ENV_VOL2   = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_VOL2,   b.bus.D6());
+    /*p19.GEDU*/ next.ch4.NR42_ENV_VOL3   = tock_pos(a.ch4.FF21_WRo, b.ch4.FF21_WRo, RSTq, b.ch4.NR42_ENV_VOL3,   b.bus.D7());
 
-    /*p19.DEMY*/ if (FF21_RDa) next.bus.D0 = b.ch4.NR42_ENV_TIMER0;
-    /*p19.COCE*/ if (FF21_RDa) next.bus.D1 = b.ch4.NR42_ENV_TIMER1;
-    /*p19.CUZU*/ if (FF21_RDa) next.bus.D2 = b.ch4.NR42_ENV_TIMER2;
-    /*p19.GOME*/ if (FF21_RDb) next.bus.D3 = b.ch4.NR42_ENV_DIR;
-    /*p19.HEDA*/ if (FF21_RDb) next.bus.D4 = b.ch4.NR42_ENV_VOL0;
-    /*p19.GODU*/ if (FF21_RDb) next.bus.D5 = b.ch4.NR42_ENV_VOL1;
-    /*p19.HOGE*/ if (FF21_RDb) next.bus.D6 = b.ch4.NR42_ENV_VOL2;
-    /*p19.HACU*/ if (FF21_RDb) next.bus.D7 = b.ch4.NR42_ENV_VOL3;
+    if (FF21_RDa) next.bus.set_data(
+      /*p19.DEMY*/ b.ch4.NR42_ENV_TIMER0,
+      /*p19.COCE*/ b.ch4.NR42_ENV_TIMER1,
+      /*p19.CUZU*/ b.ch4.NR42_ENV_TIMER2,
+      /*p19.GOME*/ b.ch4.NR42_ENV_DIR,
+      /*p19.HEDA*/ b.ch4.NR42_ENV_VOL0,
+      /*p19.GODU*/ b.ch4.NR42_ENV_VOL1,
+      /*p19.HOGE*/ b.ch4.NR42_ENV_VOL2,
+      /*p19.HACU*/ b.ch4.NR42_ENV_VOL3
+    );
   }
 
   //----------
@@ -104,23 +106,25 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p19.HOVA*/ next.ch4.FF22_WRo = not (FF22_WRa);
     /*p19.HOSO*/ next.ch4.FF22_WRp = nand(FF22a, b.apu.APU_WR);
     /*p19.EFUG*/ next.ch4.FF22_WRq = not (FF22_WRn);
-    /*p19.JARE*/ next.ch4.NR43_DIV0  = tock_pos(a.ch4.FF22_WRo, b.ch4.FF22_WRo, RSTp, b.ch4.NR43_DIV0,  b.bus.D0);
-    /*p19.JERO*/ next.ch4.NR43_DIV1  = tock_pos(a.ch4.FF22_WRo, b.ch4.FF22_WRo, RSTp, b.ch4.NR43_DIV1,  b.bus.D1);
-    /*p19.JAKY*/ next.ch4.NR43_DIV2  = tock_pos(a.ch4.FF22_WRo, b.ch4.FF22_WRo, RSTp, b.ch4.NR43_DIV2,  b.bus.D2);
-    /*p19.JAMY*/ next.ch4.NR43_MODE  = tock_pos(a.ch4.FF22_WRp, b.ch4.FF22_WRp, RSTr, b.ch4.NR43_MODE,  b.bus.D3);
-    /*p19.FETA*/ next.ch4.NR43_FREQ0 = tock_pos(a.ch4.FF22_WRq, b.ch4.FF22_WRq, RSTo, b.ch4.NR43_FREQ0, b.bus.D4);
-    /*p19.FYTO*/ next.ch4.NR43_FREQ1 = tock_pos(a.ch4.FF22_WRq, b.ch4.FF22_WRq, RSTo, b.ch4.NR43_FREQ1, b.bus.D5);
-    /*p19.GOGO*/ next.ch4.NR43_FREQ2 = tock_pos(a.ch4.FF22_WRq, b.ch4.FF22_WRq, RSTo, b.ch4.NR43_FREQ2, b.bus.D6);
-    /*p19.GAFO*/ next.ch4.NR43_FREQ3 = tock_pos(a.ch4.FF22_WRq, b.ch4.FF22_WRq, RSTo, b.ch4.NR43_FREQ3, b.bus.D7);
+    /*p19.JARE*/ next.ch4.NR43_DIV0  = tock_pos(a.ch4.FF22_WRo, b.ch4.FF22_WRo, RSTp, b.ch4.NR43_DIV0,  b.bus.D0());
+    /*p19.JERO*/ next.ch4.NR43_DIV1  = tock_pos(a.ch4.FF22_WRo, b.ch4.FF22_WRo, RSTp, b.ch4.NR43_DIV1,  b.bus.D1());
+    /*p19.JAKY*/ next.ch4.NR43_DIV2  = tock_pos(a.ch4.FF22_WRo, b.ch4.FF22_WRo, RSTp, b.ch4.NR43_DIV2,  b.bus.D2());
+    /*p19.JAMY*/ next.ch4.NR43_MODE  = tock_pos(a.ch4.FF22_WRp, b.ch4.FF22_WRp, RSTr, b.ch4.NR43_MODE,  b.bus.D3());
+    /*p19.FETA*/ next.ch4.NR43_FREQ0 = tock_pos(a.ch4.FF22_WRq, b.ch4.FF22_WRq, RSTo, b.ch4.NR43_FREQ0, b.bus.D4());
+    /*p19.FYTO*/ next.ch4.NR43_FREQ1 = tock_pos(a.ch4.FF22_WRq, b.ch4.FF22_WRq, RSTo, b.ch4.NR43_FREQ1, b.bus.D5());
+    /*p19.GOGO*/ next.ch4.NR43_FREQ2 = tock_pos(a.ch4.FF22_WRq, b.ch4.FF22_WRq, RSTo, b.ch4.NR43_FREQ2, b.bus.D6());
+    /*p19.GAFO*/ next.ch4.NR43_FREQ3 = tock_pos(a.ch4.FF22_WRq, b.ch4.FF22_WRq, RSTo, b.ch4.NR43_FREQ3, b.bus.D7());
 
-    /*p19.KAMO*/ if (FF22_RDa) next.bus.D0 = b.ch4.NR43_DIV0;
-    /*p19.KAKU*/ if (FF22_RDa) next.bus.D1 = b.ch4.NR43_DIV1;
-    /*p19.KYRO*/ if (FF22_RDa) next.bus.D2 = b.ch4.NR43_DIV2;
-    /*p19.KETA*/ if (FF22_RDb) next.bus.D3 = b.ch4.NR43_MODE;
-    /*p19.GEDA*/ if (FF22_RDc) next.bus.D4 = b.ch4.NR43_FREQ0;
-    /*p19.GYPE*/ if (FF22_RDc) next.bus.D5 = b.ch4.NR43_FREQ1;
-    /*p19.GAKA*/ if (FF22_RDc) next.bus.D6 = b.ch4.NR43_FREQ2;
-    /*p19.HAPY*/ if (FF22_RDc) next.bus.D7 = b.ch4.NR43_FREQ3;
+    if (FF22_RDa) next.bus.set_data(
+      /*p19.KAMO*/ b.ch4.NR43_DIV0,
+      /*p19.KAKU*/ b.ch4.NR43_DIV1,
+      /*p19.KYRO*/ b.ch4.NR43_DIV2,
+      /*p19.KETA*/ b.ch4.NR43_MODE,
+      /*p19.GEDA*/ b.ch4.NR43_FREQ0,
+      /*p19.GYPE*/ b.ch4.NR43_FREQ1,
+      /*p19.GAKA*/ b.ch4.NR43_FREQ2,
+      /*p19.HAPY*/ b.ch4.NR43_FREQ3
+    );
   }
 
   //----------
@@ -141,13 +145,21 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
     /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(b.cpu.FROM_CPU5, b.apu.APU_WR);
     /*p19.DULU*/ next.ch4.FF23_WRn = nand(CPU_WR_WEIRD, FF23a);
-    /*p19.CUNY*/ next.ch4.NR44_STOP  = tock_pos(a.ch4.FF23_WRn, b.ch4.FF23_WRn, RSTs, b.ch4.NR44_STOP,  b.bus.D6);
+    /*p19.CUNY*/ next.ch4.NR44_STOP  = tock_pos(a.ch4.FF23_WRn, b.ch4.FF23_WRn, RSTs, b.ch4.NR44_STOP,  b.bus.D6());
 
     /*p20.GUZY*/ wire NR44_START_RST = nor(b.ch4.CH4_START, RSTa);
     /*p19.FOXE*/ next.ch4.FF23_WRo = nand(b.apu.APU_WR, FF23a);
-    /*p19.HOGA*/ next.ch4.NR44_START = tock_pos(a.ch4.FF23_WRo, b.ch4.FF23_WRo, NR44_START_RST, b.ch4.NR44_START, b.bus.D7);
+    /*p19.HOGA*/ next.ch4.NR44_START = tock_pos(a.ch4.FF23_WRo, b.ch4.FF23_WRo, NR44_START_RST, b.ch4.NR44_START, b.bus.D7());
 
-    /*p19.CURY*/ if (FF23_RDa) next.bus.D6 = b.ch4.NR44_STOP;
+    if (FF23_RDa) next.bus.set_data(
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      /*p19.CURY*/ b.ch4.NR44_STOP
+    );
   }
 
   //----------
@@ -212,7 +224,9 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p20.COMO*/ next.ch4.DBG_COMO = and(CPU_RDc, b.ch4.DBG_CH4);
     /*p20.BAGU*/ next.ch4.DBG_BAGU = nand(FF23a, b.ch4.DBG_COMO);
     /*p20.BEFA*/ next.ch4.DBG_BEFA = not(b.ch4.FREQ_CLK);
-    /*p20.ATEL*/ if (b.ch4.DBG_BAGU) next.bus.D0 = b.ch4.DBG_BEFA;
+
+    // FIXME
+    ///*p20.ATEL*/ if (b.ch4.DBG_BAGU) next.\1() = b.ch4.DBG_BEFA;
   }
 
   //----------

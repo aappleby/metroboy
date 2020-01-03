@@ -323,14 +323,16 @@ void P21_VideoControl_tick(const BusTristates& bus,
     /*p23.XUCE*/ wire LY6n = not(lcd.Y6);
     /*p23.XOWO*/ wire LY7n = not(lcd.Y7);
 
-    /*p23.VEGA*/ if (FF44_RDn) bus_out.D0 = not(LY0n);
-    /*p23.WUVA*/ if (FF44_RDn) bus_out.D1 = not(LY1n);
-    /*p23.LYCO*/ if (FF44_RDn) bus_out.D2 = not(LY2n);
-    /*p23.WOJY*/ if (FF44_RDn) bus_out.D3 = not(LY3n);
-    /*p23.VYNE*/ if (FF44_RDn) bus_out.D4 = not(LY4n);
-    /*p23.WAMA*/ if (FF44_RDn) bus_out.D5 = not(LY5n);
-    /*p23.WAVO*/ if (FF44_RDn) bus_out.D6 = not(LY6n);
-    /*p23.WEZE*/ if (FF44_RDn) bus_out.D7 = not(LY7n);
+    if (!FF44_RDn) bus_out.set_data(
+      /*p23.VEGA*/ not(LY0n),
+      /*p23.WUVA*/ not(LY1n),
+      /*p23.LYCO*/ not(LY2n),
+      /*p23.WOJY*/ not(LY3n),
+      /*p23.VYNE*/ not(LY4n),
+      /*p23.WAMA*/ not(LY5n),
+      /*p23.WAVO*/ not(LY6n),
+      /*p23.WEZE*/ not(LY7n)
+    );
   }
 
   //----------
@@ -362,10 +364,10 @@ void P21_VideoControl_tick(const BusTristates& bus,
     /*p21.SEPA*/ wire FF41_WR = and(ctl.CUPA_CPUWR, dec.FF41);
 
     /*p21.RYVE*/ wire CLK_STAT= not(FF41_WR);
-    /*p21.ROXE*/ next.INT_HBL_EN.tock(CLK_STAT, rst_sig1.WESY_RESET, bus.D3);
-    /*p21.RUFO*/ next.INT_VBL_EN.tock(CLK_STAT, rst_sig1.WESY_RESET, bus.D4);
-    /*p21.REFE*/ next.INT_OAM_EN.tock(CLK_STAT, rst_sig1.WESY_RESET, bus.D5);
-    /*p21.RUGU*/ next.INT_LYC_EN.tock(CLK_STAT, rst_sig1.WESY_RESET, bus.D6);
+    /*p21.ROXE*/ next.INT_HBL_EN.tock(CLK_STAT, rst_sig1.WESY_RESET, bus.D0());
+    /*p21.RUFO*/ next.INT_VBL_EN.tock(CLK_STAT, rst_sig1.WESY_RESET, bus.D1());
+    /*p21.REFE*/ next.INT_OAM_EN.tock(CLK_STAT, rst_sig1.WESY_RESET, bus.D2());
+    /*p21.RUGU*/ next.INT_LYC_EN.tock(CLK_STAT, rst_sig1.WESY_RESET, bus.D3());
 
     // 11: hblank   - rendering 0, vbl 0, oam 0
     // 10: vblank   - rendering 0, vbl 1, oam 0
@@ -383,13 +385,16 @@ void P21_VideoControl_tick(const BusTristates& bus,
 
     /*p21.TOBE*/ wire FF41_RDa = and(ctl.ASOT_CPURD, dec.FF41);
     /*p21.VAVE*/ wire FF41_RDb = FF41_RDa; // buffer, not inverter?
-    /*p21.TEBY*/ if (FF41_RDa) bus_out.D0 = not(STAT_MODE0n);
-    /*p21.WUGA*/ if (FF41_RDa) bus_out.D1 = not(STAT_MODE1n);
-    /*p21.SEGO*/ if (FF41_RDa) bus_out.D2 = not(STAT_LYC_MATCH2);
-    /*p21.PUZO*/ if (FF41_RDb) bus_out.D3 = vid.INT_HBL_EN;
-    /*p21.POFO*/ if (FF41_RDb) bus_out.D4 = vid.INT_VBL_EN;
-    /*p21.SASY*/ if (FF41_RDb) bus_out.D5 = vid.INT_OAM_EN;
-    /*p21.POTE*/ if (FF41_RDb) bus_out.D6 = vid.INT_LYC_EN;
+
+    if (FF41_RDa) bus_out.set_data(
+      /*p21.TEBY*/ not(STAT_MODE0n),
+      /*p21.WUGA*/ not(STAT_MODE1n),
+      /*p21.SEGO*/ not(STAT_LYC_MATCH2),
+      /*p21.PUZO*/ vid.INT_HBL_EN,
+      /*p21.POFO*/ vid.INT_VBL_EN,
+      /*p21.SASY*/ vid.INT_OAM_EN,
+      /*p21.POTE*/ vid.INT_LYC_EN
+    );
 
     /*p21.PURE*/ wire LINE_DONEa = not(lcd.NEW_LINE_d0a);
     /*p21.SELA*/ wire LINE_DONEo = not(LINE_DONEa);

@@ -22,9 +22,9 @@ void Pins::tick(Cpu& cpu,
   Pins& next = *this;
 
   {
-    /*p08.SOGY*/ wire SOGY = not(bus.A14);
-    /*p08.TUMA*/ wire A000_BFFF = and(bus.A13, SOGY, bus.A15);
-    /*p08.TYNU*/ wire A000_FFFF = or(and(bus.A15, bus.A14), A000_BFFF);
+    /*p08.SOGY*/ wire SOGY = not(bus.A14());
+    /*p08.TUMA*/ wire A000_BFFF = and(bus.A13(), SOGY, bus.A15());
+    /*p08.TYNU*/ wire A000_FFFF = or(and(bus.A15(), bus.A14()), A000_BFFF);
     /*p08.TOZA*/ wire A000_FDFF_ABxxxxxx = and(dec.ADDR_VALID_xBCxxxxx, A000_FFFF, dec.ADDR_0000_FE00);
     /*p08.TYHO*/ next.CS_A = mux2(dma.DMA_A15, A000_FDFF_ABxxxxxx, dma.DMA_READ_CART); // ABxxxxxx
   }
@@ -111,23 +111,23 @@ void Pins::tick(Cpu& cpu,
     /*p08.LULA*/ next.D6_B = ctl.CBUS_TO_CEXT;
     /*p08.LULA*/ next.D7_B = ctl.CBUS_TO_CEXT;
 
-    /*p25.RUXA*/ next.D0_A = nand(bus.D0, ctl.CBUS_TO_CEXT);
-    /*p25.RUJA*/ next.D1_A = nand(bus.D1, ctl.CBUS_TO_CEXT);
-    /*p25.RABY*/ next.D2_A = nand(bus.D2, ctl.CBUS_TO_CEXT);
-    /*p25.RERA*/ next.D3_A = nand(bus.D3, ctl.CBUS_TO_CEXT);
-    /*p25.RORY*/ next.D4_A = nand(bus.D4, ctl.CBUS_TO_CEXT);
-    /*p25.RYVO*/ next.D5_A = nand(bus.D5, ctl.CBUS_TO_CEXT);
-    /*p25.RAFY*/ next.D7_A = nand(bus.D6, ctl.CBUS_TO_CEXT);
-    /*p25.RAVU*/ next.D6_A = nand(bus.D7, ctl.CBUS_TO_CEXT);
+    /*p25.RUXA*/ next.D0_A = nand(\1(), ctl.CBUS_TO_CEXT);
+    /*p25.RUJA*/ next.D1_A = nand(\1(), ctl.CBUS_TO_CEXT);
+    /*p25.RABY*/ next.D2_A = nand(\1(), ctl.CBUS_TO_CEXT);
+    /*p25.RERA*/ next.D3_A = nand(\1(), ctl.CBUS_TO_CEXT);
+    /*p25.RORY*/ next.D4_A = nand(\1(), ctl.CBUS_TO_CEXT);
+    /*p25.RYVO*/ next.D5_A = nand(\1(), ctl.CBUS_TO_CEXT);
+    /*p25.RAFY*/ next.D7_A = nand(\1(), ctl.CBUS_TO_CEXT);
+    /*p25.RAVU*/ next.D6_A = nand(\1(), ctl.CBUS_TO_CEXT);
 
-    /*p08.RUNE*/ next.D0_D = nor (bus.D0, ctl.CBUS_TO_CEXTn);
-    /*p08.RYPU*/ next.D1_D = nor (bus.D1, ctl.CBUS_TO_CEXTn);
-    /*p08.SULY*/ next.D2_D = nor (bus.D2, ctl.CBUS_TO_CEXTn);
-    /*p08.SEZE*/ next.D3_D = nor (bus.D3, ctl.CBUS_TO_CEXTn);
-    /*p08.RESY*/ next.D4_D = nor (bus.D4, ctl.CBUS_TO_CEXTn);
-    /*p08.TAMU*/ next.D5_D = nor (bus.D5, ctl.CBUS_TO_CEXTn);
-    /*p08.ROGY*/ next.D6_D = nor (bus.D6, ctl.CBUS_TO_CEXTn);
-    /*p08.RYDA*/ next.D7_D = nor (bus.D7, ctl.CBUS_TO_CEXTn);
+    /*p08.RUNE*/ next.D0_D = nor (\1(), ctl.CBUS_TO_CEXTn);
+    /*p08.RYPU*/ next.D1_D = nor (\1(), ctl.CBUS_TO_CEXTn);
+    /*p08.SULY*/ next.D2_D = nor (\1(), ctl.CBUS_TO_CEXTn);
+    /*p08.SEZE*/ next.D3_D = nor (\1(), ctl.CBUS_TO_CEXTn);
+    /*p08.RESY*/ next.D4_D = nor (\1(), ctl.CBUS_TO_CEXTn);
+    /*p08.TAMU*/ next.D5_D = nor (\1(), ctl.CBUS_TO_CEXTn);
+    /*p08.ROGY*/ next.D6_D = nor (\1(), ctl.CBUS_TO_CEXTn);
+    /*p08.RYDA*/ next.D7_D = nor (\1(), ctl.CBUS_TO_CEXTn);
   }
 #endif
 }

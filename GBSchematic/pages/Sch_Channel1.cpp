@@ -27,25 +27,27 @@ void Channel1_tick(const Pins& pins,
     /*p10.BAFU*/ wire CPU_WRn = not(b.ctl.TAPU_CPUWR);
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
     /*p11.CENU*/ next.ch1.NR10_CLK       = and(APU_WR, ADDR_FF10);
-    /*p11.BANY*/ next.ch1.NR10_SHIFT0    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_SHIFT0,    b.bus.D0);
-    /*p11.ARAX*/ next.ch1.NR10_SHIFT1    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_SHIFT1,    b.bus.D1);
-    /*p11.ANAZ*/ next.ch1.NR10_SHIFT2    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_SHIFT2,    b.bus.D2);
-    /*p11.AVAF*/ next.ch1.NR10_SWEEP_DIR = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_SWEEP_DIR, b.bus.D3);
-    /*p11.ADEK*/ next.ch1.NR10_DELAY0    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_DELAY0,    b.bus.D4);
-    /*p11.BANA*/ next.ch1.NR10_DELAY1    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_DELAY1,    b.bus.D5);
-    /*p11.BOTU*/ next.ch1.NR10_DELAY2    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_DELAY2,    b.bus.D6);
+    /*p11.BANY*/ next.ch1.NR10_SHIFT0    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_SHIFT0,    b.bus.D0());
+    /*p11.ARAX*/ next.ch1.NR10_SHIFT1    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_SHIFT1,    b.bus.D1());
+    /*p11.ANAZ*/ next.ch1.NR10_SHIFT2    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_SHIFT2,    b.bus.D2());
+    /*p11.AVAF*/ next.ch1.NR10_SWEEP_DIR = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_SWEEP_DIR, b.bus.D3());
+    /*p11.ADEK*/ next.ch1.NR10_DELAY0    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_DELAY0,    b.bus.D4());
+    /*p11.BANA*/ next.ch1.NR10_DELAY1    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_DELAY1,    b.bus.D5());
+    /*p11.BOTU*/ next.ch1.NR10_DELAY2    = tock_pos(a.ch1.NR10_CLK, b.ch1.NR10_CLK, RESETn, b.ch1.NR10_DELAY2,    b.bus.D6());
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p11.ATYN*/ wire NR10_RDn = nor(CPU_RDn, ADDR_FF10n);
     /*p11.ASOP*/ wire NR10_RD  = not(NR10_RDn);
 
-    /*p11.AMYD*/ if (NR10_RD) next.bus.D0 = b.ch1.NR10_SHIFT0;
-    /*p11.ATAX*/ if (NR10_RD) next.bus.D1 = b.ch1.NR10_SHIFT1;
-    /*p11.AZYP*/ if (NR10_RD) next.bus.D2 = b.ch1.NR10_SHIFT2;
-    /*p11.AFOX*/ if (NR10_RD) next.bus.D3 = b.ch1.NR10_SWEEP_DIR;
-    /*p11.AVEK*/ if (NR10_RD) next.bus.D4 = b.ch1.NR10_DELAY0;
-    /*p11.AKUX*/ if (NR10_RD) next.bus.D5 = b.ch1.NR10_DELAY1;
-    /*p11.AWOS*/ if (NR10_RD) next.bus.D6 = b.ch1.NR10_DELAY2;
+    if (NR10_RD) next.bus.set_data(
+      /*p11.AMYD*/ b.ch1.NR10_SHIFT0,
+      /*p11.ATAX*/ b.ch1.NR10_SHIFT1,
+      /*p11.AZYP*/ b.ch1.NR10_SHIFT2,
+      /*p11.AFOX*/ b.ch1.NR10_SWEEP_DIR,
+      /*p11.AVEK*/ b.ch1.NR10_DELAY0,
+      /*p11.AKUX*/ b.ch1.NR10_DELAY1,
+      /*p11.AWOS*/ b.ch1.NR10_DELAY2
+    );
   }
 
   //----------
@@ -63,11 +65,13 @@ void Channel1_tick(const Pins& pins,
     /*p11.COVU*/ wire NR11_WR = and(ADDR_FF11, APU_WR);
 
     /*p11.DAFO*/ next.ch1.NR11_CLK    = not(NR11_WR);
-    /*p11.CENA*/ next.ch1.NR11_DUTY_0 = tock_pos(a.ch1.NR11_CLK, b.ch1.NR11_CLK, RESET1n, b.ch1.NR11_DUTY_0, b.bus.D6);
-    /*p11.DYCA*/ next.ch1.NR11_DUTY_1 = tock_pos(a.ch1.NR11_CLK, b.ch1.NR11_CLK, RESET1n, b.ch1.NR11_DUTY_1, b.bus.D7);
+    /*p11.CENA*/ next.ch1.NR11_DUTY_0 = tock_pos(a.ch1.NR11_CLK, b.ch1.NR11_CLK, RESET1n, b.ch1.NR11_DUTY_0, b.bus.D0());
+    /*p11.DYCA*/ next.ch1.NR11_DUTY_1 = tock_pos(a.ch1.NR11_CLK, b.ch1.NR11_CLK, RESET1n, b.ch1.NR11_DUTY_1, b.bus.D1());
 
-    /*p11.BOWO*/ if (NR11_RD) next.bus.D6 = b.ch1.NR11_DUTY_0;
-    /*p11.CUDA*/ if (NR11_RD) next.bus.D7 = b.ch1.NR11_DUTY_1;
+    if (NR11_RD) next.bus.set_data(
+      /*p11.BOWO*/ b.ch1.NR11_DUTY_0,
+      /*p11.CUDA*/ b.ch1.NR11_DUTY_1
+    );
   }
 
   //----------
@@ -84,14 +88,14 @@ void Channel1_tick(const Pins& pins,
     /*p11.HATO*/ wire NR12_RSTn = not(b.apu.APU_RESET1);
     /*p11.KYGY*/ next.ch1.NR12_CLKa  = not(/*p11.HAFU*/ and(APU_WR, ADDR_FF12));
     /*p11.GAXU*/ next.ch1.NR12_CLKb  = nand(APU_WR, ADDR_FF12);
-    /*p11.JUSA*/ next.ch1.NR12_DELAY0  = tock_pos(a.ch1.NR12_CLKa, b.ch1.NR12_CLKa, NR12_RSTn, b.ch1.NR12_DELAY0,  b.bus.D0);
-    /*p11.JUZY*/ next.ch1.NR12_DELAY1  = tock_pos(a.ch1.NR12_CLKa, b.ch1.NR12_CLKa, NR12_RSTn, b.ch1.NR12_DELAY1,  b.bus.D1);
-    /*p11.JOMA*/ next.ch1.NR12_DELAY2  = tock_pos(a.ch1.NR12_CLKa, b.ch1.NR12_CLKa, NR12_RSTn, b.ch1.NR12_DELAY2,  b.bus.D2);
-    /*p11.JAFY*/ next.ch1.NR12_ENV_DIR = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_ENV_DIR, b.bus.D3);
-    /*p11.JATY*/ next.ch1.NR12_VOL0    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL0,    b.bus.D4);
-    /*p11.JAXO*/ next.ch1.NR12_VOL1    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL1,    b.bus.D5);
-    /*p11.JENA*/ next.ch1.NR12_VOL2    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL2,    b.bus.D6);
-    /*p11.JOPU*/ next.ch1.NR12_VOL3    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL3,    b.bus.D7);
+    /*p11.JUSA*/ next.ch1.NR12_DELAY0  = tock_pos(a.ch1.NR12_CLKa, b.ch1.NR12_CLKa, NR12_RSTn, b.ch1.NR12_DELAY0,  b.bus.D0());
+    /*p11.JUZY*/ next.ch1.NR12_DELAY1  = tock_pos(a.ch1.NR12_CLKa, b.ch1.NR12_CLKa, NR12_RSTn, b.ch1.NR12_DELAY1,  b.bus.D1());
+    /*p11.JOMA*/ next.ch1.NR12_DELAY2  = tock_pos(a.ch1.NR12_CLKa, b.ch1.NR12_CLKa, NR12_RSTn, b.ch1.NR12_DELAY2,  b.bus.D2());
+    /*p11.JAFY*/ next.ch1.NR12_ENV_DIR = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_ENV_DIR, b.bus.D3());
+    /*p11.JATY*/ next.ch1.NR12_VOL0    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL0,    b.bus.D4());
+    /*p11.JAXO*/ next.ch1.NR12_VOL1    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL1,    b.bus.D5());
+    /*p11.JENA*/ next.ch1.NR12_VOL2    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL2,    b.bus.D6());
+    /*p11.JOPU*/ next.ch1.NR12_VOL3    = tock_pos(a.ch1.NR12_CLKb, b.ch1.NR12_CLKb, NR12_RSTn, b.ch1.NR12_VOL3,    b.bus.D7());
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p11.HAXE*/ wire ADDR_FF12n = not(ADDR_FF12);
@@ -99,14 +103,16 @@ void Channel1_tick(const Pins& pins,
     /*p11.HAMY*/ wire NR12_RDn = or(ADDR_FF12n, CPU_RDn); // polarity?
     /*p11.HOCU*/ wire NR12_RDo = or(ADDR_FF12o, CPU_RDn);
 
-    /*p11.JYNE*/ if (!NR12_RDn) next.bus.D0 = b.ch1.NR12_DELAY0;
-    /*p11.JACA*/ if (!NR12_RDn) next.bus.D1 = b.ch1.NR12_DELAY1;
-    /*p11.JOKU*/ if (!NR12_RDn) next.bus.D2 = b.ch1.NR12_DELAY2;
-    /*p11.HONO*/ if (!NR12_RDo) next.bus.D3 = b.ch1.NR12_ENV_DIR;
-    /*p11.HOWU*/ if (!NR12_RDo) next.bus.D4 = b.ch1.NR12_VOL0;
-    /*p11.HEWA*/ if (!NR12_RDo) next.bus.D5 = b.ch1.NR12_VOL1;
-    /*p11.HEVE*/ if (!NR12_RDo) next.bus.D6 = b.ch1.NR12_VOL2;
-    /*p11.JYSE*/ if (!NR12_RDo) next.bus.D7 = b.ch1.NR12_VOL3;
+    if (!NR12_RDn) next.bus.set_data(
+      /*p11.JYNE*/ b.ch1.NR12_DELAY0,
+      /*p11.JACA*/ b.ch1.NR12_DELAY1,
+      /*p11.JOKU*/ b.ch1.NR12_DELAY2,
+      /*p11.HONO*/ b.ch1.NR12_ENV_DIR,
+      /*p11.HOWU*/ b.ch1.NR12_VOL0,
+      /*p11.HEWA*/ b.ch1.NR12_VOL1,
+      /*p11.HEVE*/ b.ch1.NR12_VOL2,
+      /*p11.JYSE*/ b.ch1.NR12_VOL3
+    );
 
     /*p13.HOCA*/ next.ch1.CH1_AMP_ENn = nor(b.ch1.NR12_ENV_DIR, b.ch1.NR12_VOL0, b.ch1.NR12_VOL1, b.ch1.NR12_VOL2, b.ch1.NR12_VOL3);
   }
@@ -131,17 +137,22 @@ void Channel1_tick(const Pins& pins,
     /*p11.EVAJ*/ wire FF13_RDa = not(FF13_RDn);
     /*p11.DUPY*/ wire FF14_RDa = or(CPU_RDnb, ADDR_FF14n); // polarity?
 
-    /*p11.FORU*/ if (FF13_RDa) next.bus.D0 = b.ch1.FREQ_CNT_00;
-    /*p11.GEFU*/ if (FF13_RDa) next.bus.D1 = b.ch1.FREQ_CNT_01;
-    /*p11.KYVU*/ if (FF13_RDa) next.bus.D2 = b.ch1.FREQ_CNT_02;
-    /*p11.KUMO*/ if (FF13_RDa) next.bus.D3 = b.ch1.FREQ_CNT_03;
-    /*p11.KARY*/ if (FF13_RDa) next.bus.D4 = b.ch1.FREQ_CNT_04;
-    /*p11.GODE*/ if (FF13_RDa) next.bus.D5 = b.ch1.FREQ_CNT_05;
-    /*p11.GOJE*/ if (FF13_RDa) next.bus.D6 = b.ch1.FREQ_CNT_06;
-    /*p11.FOZE*/ if (FF13_RDa) next.bus.D7 = b.ch1.FREQ_CNT_07;
-    /*p11.DOPA*/ if (FF14_RDa) next.bus.D0 = b.ch1.FREQ_CNT_08;
-    /*p11.DEMU*/ if (FF14_RDa) next.bus.D1 = b.ch1.FREQ_CNT_09;
-    /*p11.DEXO*/ if (FF14_RDa) next.bus.D2 = b.ch1.FREQ_CNT_10;
+    if (FF13_RDa) next.bus.set_data(
+      /*p11.FORU*/ b.ch1.FREQ_CNT_00,
+      /*p11.GEFU*/ b.ch1.FREQ_CNT_01,
+      /*p11.KYVU*/ b.ch1.FREQ_CNT_02,
+      /*p11.KUMO*/ b.ch1.FREQ_CNT_03,
+      /*p11.KARY*/ b.ch1.FREQ_CNT_04,
+      /*p11.GODE*/ b.ch1.FREQ_CNT_05,
+      /*p11.GOJE*/ b.ch1.FREQ_CNT_06,
+      /*p11.FOZE*/ b.ch1.FREQ_CNT_07
+    );
+
+    if (FF14_RDa) next.bus.set_data(
+      /*p11.DOPA*/ b.ch1.FREQ_CNT_08,
+      /*p11.DEMU*/ b.ch1.FREQ_CNT_09,
+      /*p11.DEXO*/ b.ch1.FREQ_CNT_10
+    );
   }
 
   //----------
@@ -157,14 +168,23 @@ void Channel1_tick(const Pins& pins,
     /*p10.BOGY*/ wire APU_WR  = not(CPU_WRn);
     /*p16.ANUJ*/ wire CPU_WR_WEIRD = and(b.cpu.FROM_CPU5, APU_WR);
     /*p11.BAGE*/ next.ch1.NR14_CLKa   = nand(CPU_WR_WEIRD, ADDR_FF14); 
-    /*p11.BOKO*/ next.ch1.NR14_STOP = tock_pos(a.ch1.NR14_CLKa, b.ch1.NR14_CLKa, NR14_RSTa, b.ch1.NR14_STOP, b.bus.D6);
+    /*p11.BOKO*/ next.ch1.NR14_STOP = tock_pos(a.ch1.NR14_CLKa, b.ch1.NR14_CLKa, NR14_RSTa, b.ch1.NR14_STOP, b.bus.D6());
 
     /*p13.DOGE*/ next.ch1.FF14_WRnb = nand(APU_WR, ADDR_FF14);
-    /*p13.DUPE*/ next.ch1.NR14_START = tock_pos(a.ch1.FF14_WRnb, b.ch1.FF14_WRnb, NR14_RSTb, b.ch1.NR14_START, b.bus.D7);
+    /*p13.DUPE*/ next.ch1.NR14_START = tock_pos(a.ch1.FF14_WRnb, b.ch1.FF14_WRnb, NR14_RSTb, b.ch1.NR14_START, b.bus.D7());
 
     /*p11.BUDA*/ wire CPU_RDo = not(b.ctl.TEDO_CPURD);
     /*p11.BALE*/ wire NR14_RD = nand(CPU_RDo, ADDR_FF14);
-    /*p11.BYTU*/ if (NR14_RD) next.bus.D6 = b.ch1.NR14_STOP;
+
+    if (NR14_RD) next.bus.set_data(
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      /*p11.BYTU*/ b.ch1.NR14_STOP
+    );
   }
 
   //----------
@@ -277,29 +297,29 @@ void Channel1_tick(const Pins& pins,
     /*p12.DEBY*/ wire FREQ_WRb = and(APU_WR, ADDR_FF14); // polarity?
     /*p12.DYLA*/ wire FREQ_WRc = not(/*p12.DEPU*/ nand(APU_WR, ADDR_FF13));  // polarity?
 
-    /*p12.GYLU*/ wire SUMMER00_SET = nand(FREQ_WRc, b.bus.D0);
-    /*p12.GETA*/ wire SUMMER01_SET = nand(FREQ_WRc, b.bus.D1);
-    /*p12.GOLO*/ wire SUMMER02_SET = nand(FREQ_WRc, b.bus.D2);
-    /*p12.GOPE*/ wire SUMMER03_SET = nand(FREQ_WRc, b.bus.D3);
-    /*p12.KOVU*/ wire SUMMER04_SET = nand(FREQ_WRc, b.bus.D4);
-    /*p12.KYPA*/ wire SUMMER05_SET = nand(FREQ_WRc, b.bus.D5);
-    /*p12.ELER*/ wire SUMMER06_SET = nand(FREQ_WRc, b.bus.D6);
-    /*p12.ETOL*/ wire SUMMER07_SET = nand(FREQ_WRc, b.bus.D7);
-    /*p12.BUGU*/ wire SUMMER08_SET = nand(FREQ_WRb, b.bus.D0);
-    /*p12.BUDO*/ wire SUMMER09_SET = nand(FREQ_WRb, b.bus.D1);
-    /*p12.AFEG*/ wire SUMMER10_SET = nand(FREQ_WRb, b.bus.D2);
+    /*p12.GYLU*/ wire SUMMER00_SET = nand(FREQ_WRc, b.bus.D0());
+    /*p12.GETA*/ wire SUMMER01_SET = nand(FREQ_WRc, b.bus.D1());
+    /*p12.GOLO*/ wire SUMMER02_SET = nand(FREQ_WRc, b.bus.D2());
+    /*p12.GOPE*/ wire SUMMER03_SET = nand(FREQ_WRc, b.bus.D3());
+    /*p12.KOVU*/ wire SUMMER04_SET = nand(FREQ_WRc, b.bus.D4());
+    /*p12.KYPA*/ wire SUMMER05_SET = nand(FREQ_WRc, b.bus.D5());
+    /*p12.ELER*/ wire SUMMER06_SET = nand(FREQ_WRc, b.bus.D6());
+    /*p12.ETOL*/ wire SUMMER07_SET = nand(FREQ_WRc, b.bus.D7());
+    /*p12.BUGU*/ wire SUMMER08_SET = nand(FREQ_WRb, b.bus.D0());
+    /*p12.BUDO*/ wire SUMMER09_SET = nand(FREQ_WRb, b.bus.D1());
+    /*p12.AFEG*/ wire SUMMER10_SET = nand(FREQ_WRb, b.bus.D2());
 
-    /*p12.EFOR*/ wire SUMMER00_RST = nor(b.apu.APU_RESET1, /*p12.EJYF*/ and(FREQ_WRc, /*p12.DEKE*/ not(b.bus.D0)));
-    /*p12.GATO*/ wire SUMMER01_RST = nor(b.apu.APU_RESET1, /*p12.FOPU*/ and(FREQ_WRc, /*p12.GULU*/ not(b.bus.D1)));
-    /*p12.GYFU*/ wire SUMMER02_RST = nor(b.apu.APU_RESET1, /*p12.FOKE*/ and(FREQ_WRc, /*p12.FULE*/ not(b.bus.D2)));
-    /*p12.GAMO*/ wire SUMMER03_RST = nor(b.apu.APU_RESET1, /*p12.FEGA*/ and(FREQ_WRc, /*p12.ETUV*/ not(b.bus.D3)));
-    /*p12.KAPO*/ wire SUMMER04_RST = nor(b.apu.APU_RESET1, /*p12.KAVO*/ and(FREQ_WRc, /*p12.KOPU*/ not(b.bus.D4)));
-    /*p12.KAJU*/ wire SUMMER05_RST = nor(b.apu.APU_RESET1, /*p12.KYFU*/ and(FREQ_WRc, /*p12.JULO*/ not(b.bus.D5)));
-    /*p12.ELUF*/ wire SUMMER06_RST = nor(b.apu.APU_RESET1, /*p12.ETOK*/ and(FREQ_WRc, /*p12.DYLU*/ not(b.bus.D6)));
-    /*p12.ESEL*/ wire SUMMER07_RST = nor(b.apu.APU_RESET1, /*p12.EMAR*/ and(FREQ_WRc, /*p12.DULO*/ not(b.bus.D7)));
-    /*p12.BOXU*/ wire SUMMER08_RST = nor(b.apu.APU_RESET1, /*p12.BASO*/ and(FREQ_WRb, /*p12.BYSU*/ not(b.bus.D0)));
-    /*p12.BOVU*/ wire SUMMER09_RST = nor(b.apu.APU_RESET1, /*p12.AMAC*/ and(FREQ_WRb, /*p12.BOFU*/ not(b.bus.D1)));
-    /*p12.APAJ*/ wire SUMMER10_RST = nor(b.apu.APU_RESET1, /*p12.AJUX*/ and(FREQ_WRb, /*p12.BYFU*/ not(b.bus.D2)));
+    /*p12.EFOR*/ wire SUMMER00_RST = nor(b.apu.APU_RESET1, /*p12.EJYF*/ and(FREQ_WRc, /*p12.DEKE*/ not(b.bus.D0())));
+    /*p12.GATO*/ wire SUMMER01_RST = nor(b.apu.APU_RESET1, /*p12.FOPU*/ and(FREQ_WRc, /*p12.GULU*/ not(b.bus.D1())));
+    /*p12.GYFU*/ wire SUMMER02_RST = nor(b.apu.APU_RESET1, /*p12.FOKE*/ and(FREQ_WRc, /*p12.FULE*/ not(b.bus.D2())));
+    /*p12.GAMO*/ wire SUMMER03_RST = nor(b.apu.APU_RESET1, /*p12.FEGA*/ and(FREQ_WRc, /*p12.ETUV*/ not(b.bus.D3())));
+    /*p12.KAPO*/ wire SUMMER04_RST = nor(b.apu.APU_RESET1, /*p12.KAVO*/ and(FREQ_WRc, /*p12.KOPU*/ not(b.bus.D4())));
+    /*p12.KAJU*/ wire SUMMER05_RST = nor(b.apu.APU_RESET1, /*p12.KYFU*/ and(FREQ_WRc, /*p12.JULO*/ not(b.bus.D5())));
+    /*p12.ELUF*/ wire SUMMER06_RST = nor(b.apu.APU_RESET1, /*p12.ETOK*/ and(FREQ_WRc, /*p12.DYLU*/ not(b.bus.D6())));
+    /*p12.ESEL*/ wire SUMMER07_RST = nor(b.apu.APU_RESET1, /*p12.EMAR*/ and(FREQ_WRc, /*p12.DULO*/ not(b.bus.D7())));
+    /*p12.BOXU*/ wire SUMMER08_RST = nor(b.apu.APU_RESET1, /*p12.BASO*/ and(FREQ_WRb, /*p12.BYSU*/ not(b.bus.D0())));
+    /*p12.BOVU*/ wire SUMMER09_RST = nor(b.apu.APU_RESET1, /*p12.AMAC*/ and(FREQ_WRb, /*p12.BOFU*/ not(b.bus.D1())));
+    /*p12.APAJ*/ wire SUMMER10_RST = nor(b.apu.APU_RESET1, /*p12.AJUX*/ and(FREQ_WRb, /*p12.BYFU*/ not(b.bus.D2())));
 
     /*p13.BOJE*/ wire SUMMER_CLKa = and(b.ch1.SHIFTER_EN, /*p13.ATUV*/ and(b.ch1.SWEEP_TRIGGER, b.ch1.FREQ_OVERFLOW));
     /*p13.BUSO*/ wire SUMMER_CLKb = or(b.ch1.SHIFTER_EN, b.ch1.FREQ_OVERFLOW, b.ch1.SWEEP_TRIGGER);
@@ -430,12 +450,12 @@ void Channel1_tick(const Pins& pins,
     wire bCLK_256 = b.apu.CLK_256a;
     wire bCLK_128 = b.apu.CLK_128a;
 
-    /*p13.BACY*/ next.ch1.NR11_LEN0 = count_pos(a.ch1.CH1_LEN_CLK, b.ch1.CH1_LEN_CLK, b.ch1.FF11_WRc, b.ch1.NR11_LEN0, b.bus.D0);
-    /*p13.CAVY*/ next.ch1.NR11_LEN1 = count_pos(a.ch1.NR11_LEN0,   b.ch1.NR11_LEN0,   b.ch1.FF11_WRc, b.ch1.NR11_LEN1, b.bus.D1);
-    /*p13.BOVY*/ next.ch1.NR11_LEN2 = count_pos(a.ch1.NR11_LEN1,   b.ch1.NR11_LEN1,   b.ch1.FF11_WRc, b.ch1.NR11_LEN2, b.bus.D2);
-    /*p13.CUNO*/ next.ch1.NR11_LEN3 = count_pos(a.ch1.NR11_LEN2,   b.ch1.NR11_LEN2,   b.ch1.FF11_WRc, b.ch1.NR11_LEN3, b.bus.D3);
-    /*p13.CURA*/ next.ch1.NR11_LEN4 = count_pos(a.ch1.NR11_LEN3n,  b.ch1.NR11_LEN3n,  b.ch1.FF11_WRa, b.ch1.NR11_LEN4, b.bus.D4);
-    /*p13.ERAM*/ next.ch1.NR11_LEN5 = count_pos(a.ch1.NR11_LEN4,   b.ch1.NR11_LEN4,   b.ch1.FF11_WRa, b.ch1.NR11_LEN5, b.bus.D5);
+    /*p13.BACY*/ next.ch1.NR11_LEN0 = count_pos(a.ch1.CH1_LEN_CLK, b.ch1.CH1_LEN_CLK, b.ch1.FF11_WRc, b.ch1.NR11_LEN0, b.bus.D0());
+    /*p13.CAVY*/ next.ch1.NR11_LEN1 = count_pos(a.ch1.NR11_LEN0,   b.ch1.NR11_LEN0,   b.ch1.FF11_WRc, b.ch1.NR11_LEN1, b.bus.D1());
+    /*p13.BOVY*/ next.ch1.NR11_LEN2 = count_pos(a.ch1.NR11_LEN1,   b.ch1.NR11_LEN1,   b.ch1.FF11_WRc, b.ch1.NR11_LEN2, b.bus.D2());
+    /*p13.CUNO*/ next.ch1.NR11_LEN3 = count_pos(a.ch1.NR11_LEN2,   b.ch1.NR11_LEN2,   b.ch1.FF11_WRc, b.ch1.NR11_LEN3, b.bus.D3());
+    /*p13.CURA*/ next.ch1.NR11_LEN4 = count_pos(a.ch1.NR11_LEN3n,  b.ch1.NR11_LEN3n,  b.ch1.FF11_WRa, b.ch1.NR11_LEN4, b.bus.D4());
+    /*p13.ERAM*/ next.ch1.NR11_LEN5 = count_pos(a.ch1.NR11_LEN4,   b.ch1.NR11_LEN4,   b.ch1.FF11_WRa, b.ch1.NR11_LEN5, b.bus.D5());
     /*p13.CANU*/   next.ch1.CH1_LEN_CLK = not(b.ch1.CH1_LEN_CLKn);
     /*p13.CAPY*/     next.ch1.CH1_LEN_CLKn = nor(bCLK_256, !b.ch1.NR14_STOP, b.ch1.CH1_LEN_DONE); // use_len polarity?
     /*p13.CUSO*/   next.ch1.NR11_LEN3n = not(!b.ch1.NR11_LEN3);

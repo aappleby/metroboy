@@ -104,31 +104,60 @@ struct Reg2 {
   void pwron() {
     clk_a = clk_b = 0;
     val_a = val_b = 0;
+    changed = false;
   }
 
   void reset(bool clk_in, bool reg_in) {
     clk_a = clk_b = clk_in;
     val_a = val_b = reg_in;
+    changed = false;
   }
-  
-  void set2(bool reg_in) {
-    val_a = val_b = reg_in;
+
+  void next_phase() {
   }
 
   void set(bool clk_in, bool rst_in, bool reg_in) {
     clk_b = clk_in;
     val_b = reg_in;
-    if (!rst_in) val_a = 0;
+    
+    if (!rst_in) {
+      if (val_a) changed = true;
+      val_a = 0;
+      val_b = 0;
+    }
   }
 
-  void commit() {
-    if (!clk_a && clk_b) val_a = val_b;
+  bool commit() {
+    bool posedge = !clk_a && clk_b;
     clk_a = clk_b;
+
+    if (posedge && (val_a != val_b)) {
+      val_a = val_b;
+      changed = true;
+    }
+
+    bool ret = changed;
+    changed = false;
+    return ret;
   }
 
-  void commit_duo() {
-    if (clk_a != clk_b) val_a = val_b;
+  bool commit_duo() {
+    bool edge = clk_a != clk_b;
     clk_a = clk_b;
+
+    if (edge && (val_a != val_b)) {
+      val_a = val_b;
+      changed = true;
+    }
+
+    bool ret = changed;
+    changed = false;
+    return ret;
+  }
+
+  void set2(bool reg_in) {
+    val_a = val_b = reg_in;
+    changed = false;
   }
 
   bool get() const { return val_a; }
@@ -139,6 +168,7 @@ struct Reg2 {
 
   bool clk_a, clk_b;
   bool val_a, val_b;
+  bool changed;
 };
 
 inline void big_pwron(Reg2& first) { first.pwron(); }
@@ -153,10 +183,12 @@ template<typename... Args> inline void big_reset(Reg2& first, Args&... args) {
   big_reset(args...);
 }
 
-inline void big_commit(Reg2& first) { first.commit(); }
-template<typename... Args> inline void big_commit(Reg2& first, Args&... args) {
-  big_commit(first);
-  big_commit(args...);
+inline bool big_commit(Reg2& first) { return first.commit(); }
+template<typename... Args> inline bool big_commit(Reg2& first, Args&... args) {
+  bool result = false;
+  result |= big_commit(first);
+  result |= big_commit(args...);
+  return result;
 }
 
 inline void big_set2(bool x, Reg2& first) { first.set2(x); }
@@ -173,33 +205,41 @@ struct Counter {
     clk_a = clk_b = 0;
     val = 0;
     carry = 0;
+    changed = false;
   }
 
   void reset(bool clk_in, bool val_in, bool carry_in) {
     clk_a = clk_b = clk_in;
     val = val_in;
     carry = carry_in;
+    changed = false;
   }
 
   void set2(bool reg_in) {
     val = reg_in;
     carry = 0;
+    changed = false;
   }
 
   void set(bool clk_in, bool load, bool in) {
     clk_b = clk_in;
     if (load) {
+      if ((val != in) || carry) changed = true;
       val = in;
       carry = 0;
     }
   }
 
-  void commit() {
+  bool commit() {
     if (!clk_a && clk_b) {
       carry = val;
       val = !val;
+      changed = true;
     }
     clk_a = clk_b;
+    bool ret = changed;
+    changed = false;
+    return ret;
   }
 
   bool v() const {
@@ -212,6 +252,7 @@ struct Counter {
 
   bool clk_a, clk_b;
   bool val, carry;
+  bool changed;
 };
 
 //-----------------------------------------------------------------------------

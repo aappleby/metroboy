@@ -176,7 +176,7 @@ void test_clock_phases() {
   gb.reset();
 
   for (int phase = 0; phase < 48; phase++) {
-    gb.sim(1);
+    gb.sim_phase(1);
 
     SysSignals sys_sig   = gb.sys_reg.signals();
     ClkSignals clk_sig1  = gb.clk_reg.signals(sys_sig);
@@ -218,10 +218,10 @@ void TestClocks() {
   // but it looks like cpu writes take effect on phase 4?
 
   gb.sys_reg.LCDC_EN = false;
-  gb.sim(16);
+  gb.sim_phase(16);
 
   for (int phase = 0; phase < 48; phase++) {
-    gb.sim(1);
+    gb.sim_phase(1);
 
     SysSignals sys_sig  = gb.sys_reg.signals();
     ClkSignals clk_sig1 = gb.clk_reg.signals(sys_sig);

@@ -22,7 +22,7 @@ void test_timer();
 
 
 int main(int /*argc*/, char** /*argv*/) {
-  test_clock_phases();
+  //test_clock_phases();
   test_timer();
   printf("\n");
 

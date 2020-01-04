@@ -24,7 +24,10 @@ struct Timer {
 
   void pwron();
   void reset();
-  void commit();
+  void phase_begin();
+  void phase_end();
+  void pass_begin();
+  bool pass_end();
 
   TimerSignals tick(const SysSignals& sys_sig,
                     const ClkSignals& clk_sig,

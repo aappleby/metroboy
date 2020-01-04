@@ -5,17 +5,23 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
+struct VidSignals {
+};
+
 struct VidRegisters {
 
   void pwron();
   void reset();
-  void commit();
-
-  void tick(const SysSignals& sys_sig,
-            const RstSignals& rst_sig,
-            const BusSignals& bus_sig,
-            const Decoder&    dec_sig,
-            BusTristates & bus_out);
+  void phase_begin();
+  void phase_end();
+  void pass_begin();
+  bool pass_end();
+  
+  VidSignals tick(const SysSignals& sys_sig,
+                  const RstSignals& rst_sig,
+                  const BusSignals& bus_sig,
+                  const Decoder&    dec_sig,
+                  BusTristates & bus_out);
 
   int get_lcdc() const {
     return pack(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,

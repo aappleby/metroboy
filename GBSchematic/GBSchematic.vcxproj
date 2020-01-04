@@ -196,6 +196,7 @@
     <ClCompile Include="pages\Sch_ApuControl.cpp" />
     <ClCompile Include="pages\Sch_Bootrom.cpp" />
     <ClCompile Include="pages\Sch_BusControl.cpp" />
+    <ClCompile Include="pages\Sch_Cart.cpp" />
     <ClCompile Include="pages\Sch_Clocks.cpp" />
     <ClCompile Include="pages\Sch_Debug.cpp" />
     <ClCompile Include="pages\Sch_Decoder.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="pages\Sch_ApuControl.h" />
     <ClInclude Include="pages\Sch_Bootrom.h" />
     <ClInclude Include="pages\Sch_BusControl.h" />
+    <ClInclude Include="pages\Sch_Cart.h" />
     <ClInclude Include="pages\Sch_Clocks.h" />
     <ClInclude Include="pages\Sch_Debug.h" />
     <ClInclude Include="pages\Sch_Decoder.h" />
@@ -269,6 +271,7 @@
     <ClInclude Include="pages\Sch_Sprites.h" />
     <ClInclude Include="pages\Sch_Vram.h" />
     <ClInclude Include="SignalTree.h" />
+    <ClInclude Include="tests\BusDump.h" />
     <ClInclude Include="tests\TestGB.h" />
     <ClInclude Include="TraceViewer.h" />
   </ItemGroup>

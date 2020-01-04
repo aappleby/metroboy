@@ -14,34 +14,54 @@ namespace Schematics {
 void RstRegisters::pwron() {
   WAITING_FOR_CLKREQ = false;
   RESET_REG.pwron();
+  changed = false;
 }
 
 void RstRegisters::reset() {
   WAITING_FOR_CLKREQ = true;
   RESET_REG.reset(0, 0);
+  changed = false;
 }
 
-//----------------------------------------
+void RstRegisters::phase_begin() {
+}
+
+void RstRegisters::phase_end() {
+}
+
+void RstRegisters::pass_begin() {
+}
+
+bool RstRegisters::pass_end() {
+  changed |= RESET_REG.commit();
+
+  bool ret = changed;
+  changed = false;
+  return ret;
+}
+
+//-----------------------------------------------------------------------------
 
 RstSignals RstRegisters::tick_slow(const SysSignals& sys_sig, const ClkSignals& clk_sig) {
   /*p01.UPYF*/ wire UPYF = or(sys_sig.PIN_RST, sys_sig.UCOB_CLKBAD);
+
   /*p01.TUBO*/ wire WAITING_FOR_CLKREQ2 = !UPYF ? 1 : !sys_sig.ABOL_CLKREQn ? 0 : WAITING_FOR_CLKREQ;
+
+
   /*p01.BOMA*/ wire RESET_CLK   = not(clk_sig.BOGA_xBCDEFGH);
   /*p01.UNUT*/ wire TIMEOUT     = and(WAITING_FOR_CLKREQ2, sys_sig.DIV_15);
   /*p01.TABA*/ wire CPU_RESET   = or(sys_sig.PIN_MODE_DBG2, sys_sig.PIN_MODE_DBG1, TIMEOUT);
   /*p01.ALYP*/ wire CPU_RESETn  = not(CPU_RESET);
   /*p01.ASOL*/ wire RESET_IN    = or (/*p01.AFAR*/ nor(CPU_RESETn, sys_sig.PIN_RST), sys_sig.PIN_RST);
 
+  if (WAITING_FOR_CLKREQ != WAITING_FOR_CLKREQ2) {
+    changed = true;
+  }
+
   /*p01.TUBO*/ WAITING_FOR_CLKREQ = WAITING_FOR_CLKREQ2;
   /*p01.AFER*/ RESET_REG.set(RESET_CLK, sys_sig.MODE_PROD, RESET_IN);
 
   return rst_signals(sys_sig, clk_sig);
-}
-
-//----------------------------------------
-
-void RstRegisters::commit() {
-  RESET_REG.commit();
 }
 
 //-----------------------------------------------------------------------------

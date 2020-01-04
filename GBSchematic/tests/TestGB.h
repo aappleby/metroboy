@@ -14,11 +14,16 @@ struct TestGB {
 
   TestGB();
   void pwron();
-  void boot();
   void reset();
-  
-  void sim(int phases);
-  void commit();
+  void phase_begin();
+  void phase_end();
+  void pass_begin();
+  bool pass_end();
+
+  int sim_phase(int phase_count);
+  int sim_pass();
+
+  void boot();
 
   SysRegisters  sys_reg;
   ClkRegisters  clk_reg;
@@ -28,6 +33,8 @@ struct TestGB {
   LcdRegisters  lcd_reg;
   BusTristates  bus_tri;
   Timer         timer;
+
+  uint8_t rom[65536];
 };
 
 //-----------------------------------------------------------------------------

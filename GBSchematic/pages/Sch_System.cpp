@@ -49,12 +49,18 @@ void SysRegisters::reset() {
   FF60_1         = false;
 }
 
-void SysRegisters::commit() {
+void SysRegisters::phase_begin() {
+  phase_count++;
 }
 
-SysSignals SysRegisters::next_phase() {
-  phase_count++;
-  return signals();
+void SysRegisters::phase_end() {
+}
+
+void SysRegisters::pass_begin() {
+}
+
+bool SysRegisters::pass_end() {
+  return false;
 }
 
 int SysRegisters::phase() const {

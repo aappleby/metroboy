@@ -37,27 +37,37 @@ void VidRegisters::reset() {
   big_reset(WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7);
 }
 
-void VidRegisters::commit() {
-  big_commit(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,
-             LCDC_BGTILE, LCDC_WINEN, LCDC_WINMAP, LCDC_EN);
+void VidRegisters::phase_begin() {
+}
 
-  big_commit(SCY0,  SCY1,  SCY2,  SCY3,  SCY4,  SCY5,  SCY6,  SCY7);
-  big_commit(SCX0,  SCX1,  SCX2,  SCX3,  SCX4,  SCX5,  SCX6,  SCX7);
-  big_commit(LYC0,  LYC1,  LYC2,  LYC3,  LYC4,  LYC5,  LYC6,  LYC7);
-  big_commit(BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7);
-  big_commit(OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07);
-  big_commit(OBP10, OBP11, OBP12, OBP13, OBP14, OBP15, OBP16, OBP17);
-  big_commit(WY0,   WY1,   WY2,   WY3,   WY4,   WY5,   WY6,   WY7);
-  big_commit(WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7);
+void VidRegisters::phase_end() {
+}
+
+void VidRegisters::pass_begin() {
+}
+
+bool VidRegisters::pass_end() {
+  bool changed = false;
+  changed |= big_commit(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,
+                        LCDC_BGTILE, LCDC_WINEN, LCDC_WINMAP, LCDC_EN);
+  changed |= big_commit(SCY0,  SCY1,  SCY2,  SCY3,  SCY4,  SCY5,  SCY6,  SCY7);
+  changed |= big_commit(SCX0,  SCX1,  SCX2,  SCX3,  SCX4,  SCX5,  SCX6,  SCX7);
+  changed |= big_commit(LYC0,  LYC1,  LYC2,  LYC3,  LYC4,  LYC5,  LYC6,  LYC7);
+  changed |= big_commit(BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7);
+  changed |= big_commit(OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07);
+  changed |= big_commit(OBP10, OBP11, OBP12, OBP13, OBP14, OBP15, OBP16, OBP17);
+  changed |= big_commit(WY0,   WY1,   WY2,   WY3,   WY4,   WY5,   WY6,   WY7);
+  changed |= big_commit(WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7);
+  return changed;
 }
 
 //-----------------------------------------------------------------------------
 
-void VidRegisters::tick(const SysSignals& /*sys_sig*/,
-                     const RstSignals& rst_sig,
-                     const BusSignals& bus_sig,
-                     const Decoder&    dec_sig,
-                     BusTristates & bus_out) {
+VidSignals VidRegisters::tick(const SysSignals& /*sys_sig*/,
+                              const RstSignals& rst_sig,
+                              const BusSignals& bus_sig,
+                              const Decoder&    dec_sig,
+                              BusTristates & bus_out) {
 
   //----------
 
@@ -301,6 +311,8 @@ void VidRegisters::tick(const SysSignals& /*sys_sig*/,
   /*p23.MYCE*/ WX5.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D5()); 
   /*p23.MUVO*/ WX6.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D6());
   /*p23.NUKU*/ WX7.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D7());
+
+  return {};
 }
 
 //-----------------------------------------------------------------------------

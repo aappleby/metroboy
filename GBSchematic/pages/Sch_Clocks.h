@@ -31,9 +31,12 @@ struct ClkSignals {
 struct ClkRegisters {
   void pwron();
   void reset();
-  ClkSignals tick_slow(const SysSignals& sys_sig);
-  void commit();
+  void phase_begin();
+  void phase_end();
+  void pass_begin();
+  bool pass_end();
 
+  ClkSignals tick_slow(const SysSignals& sys_sig);
   ClkSignals signals(const SysSignals& sys_sig) const;
 
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
@@ -59,8 +62,12 @@ struct VclkSignals {
 struct VclkRegisters {
   void pwron();
   void reset();
-  void tick_slow(const ClkSignals& clk_sig1, const VrstSignals& vid_rst);
-  void commit();
+  void phase_begin();
+  void phase_end();
+  void pass_begin();
+  bool pass_end();
+
+  VclkSignals tick_slow(const ClkSignals& clk_sig1, const VrstSignals& vid_rst);
   VclkSignals signals();
 
   /*p29.WUVU*/ Reg2 WUVU_AxxDExxH;

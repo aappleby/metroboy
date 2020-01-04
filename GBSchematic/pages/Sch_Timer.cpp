@@ -105,48 +105,59 @@ void Timer::reset() {
 
 //-----------------------------------------------------------------------------
 
-void Timer::commit() {
-  DIV_00.commit();
-  DIV_01.commit();
-  DIV_02.commit();
-  DIV_03.commit();
-  DIV_04.commit();
-  DIV_05.commit();
-  DIV_06.commit();
-  DIV_07.commit();
-  DIV_08.commit();
-  DIV_09.commit();
-  DIV_10.commit();
-  DIV_11.commit();
-  DIV_12.commit();
-  DIV_13.commit();
-  DIV_14.commit();
-  DIV_15.commit();
+void Timer::phase_begin() {
+}
 
-  TIMA_0.commit();
-  TIMA_1.commit();
-  TIMA_2.commit();
-  TIMA_3.commit();
-  TIMA_4.commit();
-  TIMA_5.commit();
-  TIMA_6.commit();
-  TIMA_7.commit();
+void Timer::phase_end() {
+}
 
-  TIMA_MAX.commit();
-  INT_TIMER.commit();
+void Timer::pass_begin() {
+}
 
-  TMA_0.commit();
-  TMA_1.commit();
-  TMA_2.commit();
-  TMA_3.commit();
-  TMA_4.commit();
-  TMA_5.commit();
-  TMA_6.commit();
-  TMA_7.commit();
+bool Timer::pass_end() {
+  bool changed = false;
+  changed |= DIV_00.commit();
+  changed |= DIV_01.commit();
+  changed |= DIV_02.commit();
+  changed |= DIV_03.commit();
+  changed |= DIV_04.commit();
+  changed |= DIV_05.commit();
+  changed |= DIV_06.commit();
+  changed |= DIV_07.commit();
+  changed |= DIV_08.commit();
+  changed |= DIV_09.commit();
+  changed |= DIV_10.commit();
+  changed |= DIV_11.commit();
+  changed |= DIV_12.commit();
+  changed |= DIV_13.commit();
+  changed |= DIV_14.commit();
+  changed |= DIV_15.commit();
 
-  TAC_0.commit();
-  TAC_1.commit();
-  TAC_2.commit();
+  changed |= TIMA_0.commit();
+  changed |= TIMA_1.commit();
+  changed |= TIMA_2.commit();
+  changed |= TIMA_3.commit();
+  changed |= TIMA_4.commit();
+  changed |= TIMA_5.commit();
+  changed |= TIMA_6.commit();
+  changed |= TIMA_7.commit();
+
+  changed |= TIMA_MAX.commit();
+  changed |= INT_TIMER.commit();
+
+  changed |= TMA_0.commit();
+  changed |= TMA_1.commit();
+  changed |= TMA_2.commit();
+  changed |= TMA_3.commit();
+  changed |= TMA_4.commit();
+  changed |= TMA_5.commit();
+  changed |= TMA_6.commit();
+  changed |= TMA_7.commit();
+
+  changed |= TAC_0.commit();
+  changed |= TAC_1.commit();
+  changed |= TAC_2.commit();
+  return changed;
 }
 
 //-----------------------------------------------------------------------------

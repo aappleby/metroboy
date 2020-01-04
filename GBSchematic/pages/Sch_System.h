@@ -48,10 +48,12 @@ struct SysSignals {
 struct SysRegisters {
   void pwron();
   void reset();
-  void commit();
-  SysSignals next_phase();
-  int phase() const;
+  void phase_begin();
+  void phase_end();
+  void pass_begin();
+  bool pass_end();
 
+  int phase() const;
   SysSignals signals() const;
 
   //----------------------------------------

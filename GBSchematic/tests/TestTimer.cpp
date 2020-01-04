@@ -9,90 +9,42 @@ using namespace Schematics;
 void test_timer() {
   printf("test_timer:\n");
 
-  SysRegisters sys_reg;
-  ClkRegisters clk_reg;
-  RstRegisters rst_reg;
-  VidRegisters vid_reg;
-  BusTristates bus_tri;
-  Timer timer;
+  TestGB gb;
+  gb.reset();
 
-  sys_reg.reset();
-  clk_reg.reset();
-  rst_reg.reset();
-  vid_reg.reset();
+  gb.timer.set_tma(0xBA);
+  gb.timer.set_tac(0b101);
 
-  bus_tri.reset();
-  bus_tri.set_addr(0xFF40);
-  bus_tri.set_data(0x80);
-  sys_reg.CPU_RAW_WR = true;
+  int max_passes = 0;
 
-  timer.reset();
-  timer.set_tma(0xBA);
-  timer.set_tac(0b101);
+  for (int i = 0; i < 8*1024*1024; i++) {
 
-  //vid_reg.set_scy(0xCD);
-
-  /*
-  for (int i = 0; i < 8000; i++) {
-    SysSignals sys_sig =  sys_reg.next_phase();
-
-    for (int pass = 0; pass < 32; pass++) {
-      ClkSignals clk_sig = clk_reg.tick_slow(sys_sig);
-      RstSignals rst_sig = rst_reg.tick_slow(sys_sig, clk_sig);
-      BusSignals bus_sig = BusSignals::tick(sys_sig, clk_sig);
-      Decoder    dec_sig = Decoder::tick(sys_sig, clk_sig, bus_tri);
-
-      TimerSignals tim_sig = timer.tick(sys_sig, clk_sig, rst_sig, bus_sig, dec_sig, bus_tri);
-
-      sys_reg.commit();
-      clk_reg.commit();
-      rst_reg.commit();
-      timer.commit();
-    }
-  }
-  */
-
-  for (int i = 0; i < 512; i++) {
-
-    for (int j = 0; j < 1; j++) {
-      SysSignals sys_sig =  sys_reg.next_phase();
-
-      for (int pass = 0; pass < 32; pass++) {
-        ClkSignals clk_sig = clk_reg.tick_slow(sys_sig);
-        RstSignals rst_sig = rst_reg.tick_slow(sys_sig, clk_sig);
-        BusSignals bus_sig = BusSignals::tick(sys_sig, clk_sig);
-        Decoder    dec_sig = Decoder::tick(sys_sig, clk_sig, bus_tri);
-        
-        vid_reg.tick(sys_sig, rst_sig, bus_sig, dec_sig, bus_tri);
-
-        TimerSignals tim_sig = timer.tick(sys_sig, clk_sig, rst_sig, bus_sig, dec_sig, bus_tri);
-
-        sys_reg.commit();
-        clk_reg.commit();
-        rst_reg.commit();
-        timer.commit();
-        vid_reg.commit();
-        bus_tri.commit();
-      }
+    gb.bus_tri.set_addr((uint16_t)0x0000);
+    int passes = gb.sim_phase(1);
+    if (passes > max_passes) {
+      max_passes = passes;
+      printf("max_passes %d\n", max_passes);
     }
 
-    printf("phase:%05d div:%05d tima:%03d c:%d tma:%03d tac:%02x M:%d I:%d lcdc:0x%02x scy:0x%02x addr:0x%04x data:0x%02x\n",
-           sys_reg.phase_count,
-           timer.get_div(),
-           timer.get_tima(),
-           timer.TIMA_7.c(),
-           timer.get_tma(),
-           timer.get_tac(),
-           timer.get_tima_max(),
-           timer.get_int_timer(),
-           vid_reg.get_lcdc(),
-           vid_reg.get_scy(),
-           bus_tri.get_addr(),
-           bus_tri.get_data());
+    /*
+    printf("phase:%05d passes:%d div:%05d tima:%03d c:%d tma:%03d tac:%02x M:%d I:%d lcdc:0x%02x scy:0x%02x addr:0x%04x data:0x%02x\n",
+           gb.sys_reg.phase_count,
+           passes,
+           gb.timer.get_div(),
+           gb.timer.get_tima(),
+           gb.timer.TIMA_7.c(),
+           gb.timer.get_tma(),
+           gb.timer.get_tac(),
+           gb.timer.get_tima_max(),
+           gb.timer.get_int_timer(),
+           gb.vid_reg.get_lcdc(),
+           gb.vid_reg.get_scy(),
+           gb.bus_tri.get_addr(),
+           gb.bus_tri.get_data());
 
-    if ((sys_reg.phase_count % 8) == 7) printf("\n");
+    if ((gb.sys_reg.phase_count % 8) == 7) printf("\n");
+    */
   }
-
 
   printf("test_timer: pass\n");
 }

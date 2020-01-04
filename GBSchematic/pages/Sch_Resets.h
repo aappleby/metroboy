@@ -31,14 +31,19 @@ struct RstSignals {
 struct RstRegisters {
   void pwron();
   void reset();
-  RstSignals tick_slow(const SysSignals& sys_sig, const ClkSignals& clk_sig1);
-  void commit();
+  void phase_begin();
+  void phase_end();
+  void pass_begin();
+  bool pass_end();
 
+  RstSignals tick_slow(const SysSignals& sys_sig, const ClkSignals& clk_sig1);
   RstSignals  rst_signals (const SysSignals& sys_sig, const ClkSignals& clk_sig1);
   VrstSignals vrst_signals(const SysSignals& sys_sig, const RstSignals& rst_sig);
 
   /*p01.TUBO*/ bool WAITING_FOR_CLKREQ;
   /*p01.AFER*/ Reg2 RESET_REG;
+
+  bool changed;
 };
 
 //-----------------------------------------------------------------------------

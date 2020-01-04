@@ -20,12 +20,12 @@ struct LcdRegisters {
 
   void pwron();
   void reset();
+  void phase_begin();
+  void phase_end();
+  void pass_begin();
+  bool pass_end();
 
-  void tock_slow(const VclkSignals& vid_clk,
-                 const VrstSignals& vid_rst);
-
-  void commit();
-
+  LcdSignals tock_slow(const VclkSignals& vid_clk, const VrstSignals& vid_rst);
   LcdSignals signals(const VrstSignals& vid_rst);
 
   uint32_t x() const {

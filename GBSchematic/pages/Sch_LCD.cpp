@@ -69,8 +69,47 @@ void LcdRegisters::reset() {
 
 //----------------------------------------
 
-void LcdRegisters::tock_slow(const VclkSignals& vid_clk,
-                             const VrstSignals& vid_rst)
+void LcdRegisters::phase_begin() {
+}
+
+void LcdRegisters::phase_end() {
+}
+
+void LcdRegisters::pass_begin() {
+}
+
+bool LcdRegisters::pass_end() {
+  bool changed = false;
+  changed |= X0.commit();
+  changed |= X1.commit();
+  changed |= X2.commit();
+  changed |= X3.commit();
+  changed |= X4.commit();
+  changed |= X5.commit();
+  changed |= X6.commit();
+
+  changed |= Y0.commit();
+  changed |= Y1.commit();
+  changed |= Y2.commit();
+  changed |= Y3.commit();
+  changed |= Y4.commit();
+  changed |= Y5.commit();
+  changed |= Y6.commit();
+  changed |= Y7.commit();
+
+  changed |= NEW_LINE_d0a.commit();
+  changed |= VID_LINE_d4.commit();
+  changed |= NEW_LINE_d4a.commit();
+  changed |= VID_LINE_d6.commit();
+               
+  changed |= LINE_153_d4.commit();
+  changed |= VBLANK_d4.commit();
+  return changed;
+}
+
+//----------------------------------------
+
+LcdSignals LcdRegisters::tock_slow(const VclkSignals& vid_clk, const VrstSignals& vid_rst)
 {
   wire TALU = vid_clk.TALU_xBCDExxx;
   /*p01.LYHA*/ wire VID_RESET2 = not(vid_rst.VID_RESETn);
@@ -112,35 +151,8 @@ void LcdRegisters::tock_slow(const VclkSignals& vid_clk,
   /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
   /*p29.CATU*/ VID_LINE_d4.set(vid_clk.XUPY_xBCxxFGx, VID_RESETn3, VID_LINE_d0);
   /*p28.ANEL*/ VID_LINE_d6.set(vid_clk.AWOH_AxxDExxH, VID_RESETn3, VID_LINE_d4);
-}
 
-//----------------------------------------
-
-void LcdRegisters::commit() {
-  X0.commit();
-  X1.commit();
-  X2.commit();
-  X3.commit();
-  X4.commit();
-  X5.commit();
-  X6.commit();
-
-  Y0.commit();
-  Y1.commit();
-  Y2.commit();
-  Y3.commit();
-  Y4.commit();
-  Y5.commit();
-  Y6.commit();
-  Y7.commit();
-
-  NEW_LINE_d0a.commit();
-  VID_LINE_d4.commit();
-  NEW_LINE_d4a.commit();
-  VID_LINE_d6.commit();
-               
-  LINE_153_d4.commit();
-  VBLANK_d4.commit();
+  return signals(vid_rst);
 }
 
 //-----------------------------------------------------------------------------

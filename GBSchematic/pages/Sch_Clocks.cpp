@@ -36,11 +36,22 @@ ClkSignals ClkRegisters::tick_slow(const SysSignals& sys_sig) {
 
 //----------------------------------------
 
-void ClkRegisters::commit() {
-  PHAZ_ABCDxxxx.commit_duo();
-  PHAZ_xBCDExxx.commit_duo();
-  PHAZ_xxCDEFxx.commit_duo();
-  PHAZ_xxxDEFGx.commit_duo();
+void ClkRegisters::phase_begin() {
+}
+
+void ClkRegisters::phase_end() {
+}
+
+void ClkRegisters::pass_begin() {
+}
+
+bool ClkRegisters::pass_end() {
+  bool changed = false;
+  changed |= PHAZ_ABCDxxxx.commit_duo();
+  changed |= PHAZ_xBCDExxx.commit_duo();
+  changed |= PHAZ_xxCDEFxx.commit_duo();
+  changed |= PHAZ_xxxDEFGx.commit_duo();
+  return changed;
 }
 
 //----------------------------------------
@@ -131,9 +142,26 @@ void VclkRegisters::reset() {
   WOSU_xxCDxxGH.reset(0, 1);
 }
 
+void VclkRegisters::phase_begin() {
+}
+
+void VclkRegisters::phase_end() {
+}
+
+void VclkRegisters::pass_begin() {
+}
+
+bool VclkRegisters::pass_end() {
+  bool changed = false;
+  /*p29.WUVU*/ changed |= WUVU_AxxDExxH.commit();
+  /*p21.VENA*/ changed |= VENA_xBCDExxx.commit();
+  /*p29.WOSU*/ changed |= WOSU_xxCDxxGH.commit();
+  return changed;
+}
+
 //----------------------------------------
 
-void VclkRegisters::tick_slow(const ClkSignals& clk_sig1, const VrstSignals& vid_rst) {
+VclkSignals VclkRegisters::tick_slow(const ClkSignals& clk_sig1, const VrstSignals& vid_rst) {
   /*p29.XYVA*/ wire XYVA_AxCxExGx = not(clk_sig1.ZEME_xBxDxFxH);
   /*p29.XOTA*/ wire XOTA_xBxDxFxH = not(XYVA_AxCxExGx);
   /*p29.XYFY*/ wire XYFY_AxCxExGx = not(XOTA_xBxDxFxH);
@@ -141,14 +169,8 @@ void VclkRegisters::tick_slow(const ClkSignals& clk_sig1, const VrstSignals& vid
   /*p29.WUVU*/ WUVU_AxxDExxH.set( XOTA_xBxDxFxH, vid_rst.VID_RESETn, !WUVU_AxxDExxH);
   /*p21.VENA*/ VENA_xBCDExxx.set(!WUVU_AxxDExxH, vid_rst.VID_RESETn, !VENA_xBCDExxx);
   /*p29.WOSU*/ WOSU_xxCDxxGH.set( XYFY_AxCxExGx, vid_rst.VID_RESETn, !WUVU_AxxDExxH);
-}
 
-//----------------------------------------
-
-void VclkRegisters::commit() {
-  /*p29.WUVU*/ WUVU_AxxDExxH.commit();
-  /*p21.VENA*/ VENA_xBCDExxx.commit();
-  /*p29.WOSU*/ WOSU_xxCDxxGH.commit();
+  return signals();
 }
 
 //----------------------------------------

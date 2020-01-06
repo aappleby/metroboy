@@ -12,8 +12,8 @@ void test_timer() {
   TestGB gb;
   gb.reset();
 
-  gb.timer.set_tma(0xBA);
-  gb.timer.set_tac(0b101);
+  gb.tim_reg.set_tma(0xBA);
+  gb.tim_reg.set_tac(0b101);
 
   int max_passes = 0;
 

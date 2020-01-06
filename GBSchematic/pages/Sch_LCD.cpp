@@ -16,28 +16,11 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 void LcdRegisters::pwron() {
-  X0.reset(0, 0);
-  X1.reset(0, 0);
-  X2.reset(0, 0);
-  X3.reset(0, 0);
-  X4.reset(0, 0);
-  X5.reset(0, 0);
-  X6.reset(0, 0);
-  Y0.reset(0, 0);
-  Y1.reset(0, 0);
-  Y2.reset(0, 0);
-  Y3.reset(0, 0);
-  Y4.reset(0, 0);
-  Y5.reset(0, 0);
-  Y6.reset(0, 0);
-  Y7.reset(0, 0);
-
-  VID_LINE_d4.reset(0, 0);
-  VID_LINE_d6.reset(0, 0);
-  NEW_LINE_d0a.reset(0, 0);
-  NEW_LINE_d4a.reset(0, 0);
-  LINE_153_d4.reset(0, 0);
-  VBLANK_d4.reset(0, 0);
+  pwron_all(X0, X1, X2, X3, X4, X5, X6,
+            Y0, Y1, Y2, Y3, Y4, Y5, Y6, Y7);
+  pwron_all(VID_LINE_d4, VID_LINE_d6,
+            NEW_LINE_d0a, NEW_LINE_d4a,
+            LINE_153_d4, VBLANK_d4 );
 }
 
 //----------------------------------------
@@ -159,13 +142,15 @@ LcdSignals LcdRegisters::tock_slow(const VclkSignals& vid_clk, const VrstSignals
 
 LcdSignals LcdRegisters::signals(const VrstSignals& vid_rst)
 {
-  /*p01.ATAR*/ bool VID_RESET6  = not(vid_rst.VID_RESETn);
-  /*p01.AMYG*/ bool VID_RESET7  = not(vid_rst.VID_RESETn);
-  /*p01.ABEZ*/ bool VID_RESETn3 = not(VID_RESET6);
+  /*p01.ATAR*/ wire VID_RESET6  = not(vid_rst.VID_RESETn);
+  /*p01.AMYG*/ wire VID_RESET7  = not(vid_rst.VID_RESETn);
+  /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
 
-  /*p28.ABAF*/ bool VID_LINE_d4n      = not(VID_LINE_d4);
+  /*p28.ABAF*/ wire VID_LINE_d4n = not(VID_LINE_d4);
 
-  /*p21.PARU*/ wire VBLANK_d4b        = not(!VBLANK_d4);
+  /*p21.PARU*/ wire VBLANK_d4b = not(!VBLANK_d4);
+  /*p21.TOLU*/ wire INT_VBLn = not(VBLANK_d4b);
+
   /*p28.BYHA*/ wire VID_LINE_TRIG_d4n = and(or(VID_LINE_d6, VID_LINE_d4n), VID_RESETn3);
   /*p28.ATEJ*/ wire VID_LINE_TRIG_d4a = not(VID_LINE_TRIG_d4n);
   /*p28.ABAK*/ wire VID_LINE_TRIG_d4b = or (VID_LINE_TRIG_d4a, VID_RESET7);
@@ -174,12 +159,23 @@ LcdSignals LcdRegisters::signals(const VrstSignals& vid_rst)
   /*p29.DYBA*/ wire VID_LINE_TRIG_d4c = not(VID_LINE_TRIG_d4p);
 
   return {
+    /*p21.POPU*/ .VBLANK_d4         = VBLANK_d4,
     /*p21.PARU*/ .VBLANK_d4b        = VBLANK_d4b,
+    /*p21.VYPU*/ .INT_VBL           = not(INT_VBLn),
     /*p28.BYHA*/ .VID_LINE_TRIG_d4n = VID_LINE_TRIG_d4n,
     /*p28.ATEJ*/ .VID_LINE_TRIG_d4a = VID_LINE_TRIG_d4a,
     /*p28.BYVA*/ .VID_LINE_TRIG_d4p = VID_LINE_TRIG_d4p,
     /*p29.DYBA*/ .VID_LINE_TRIG_d4c = VID_LINE_TRIG_d4c,
     /*p27.XAHY*/ .VID_LINE_TRIG_d4o = VID_LINE_TRIG_d4o,
+
+    /*p21.MUWY*/ .Y0 = Y0,
+    /*p21.MYRO*/ .Y1 = Y1,
+    /*p21.LEXA*/ .Y2 = Y2,
+    /*p21.LYDO*/ .Y3 = Y3,
+    /*p21.LOVU*/ .Y4 = Y4,
+    /*p21.LEMA*/ .Y5 = Y5,
+    /*p21.MATO*/ .Y6 = Y6,
+    /*p21.LAFO*/ .Y7 = Y7,
   };
 }
 

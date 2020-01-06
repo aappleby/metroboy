@@ -36,9 +36,14 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 BusSignals BusSignals::tick(const SysSignals& sys_sig,
-                            const ClkSignals& clk_sig1) {
+                            const ClkSignals& clk_sig,
+                            const DebugSignals& dbg_sig,
+                            const DecoderSignals& dec_sig,
+                            const VramPins& vram_pins,
+                            const VidSignals& vid_sig,
+                            BusTristates& bus_tri) {
 
-  /*p01.AREV*/ wire AREV = nand(sys_sig.CPU_RAW_WR, clk_sig1.AFAS_xxxxEFGx);
+  /*p01.AREV*/ wire AREV = nand(sys_sig.CPU_RAW_WR, clk_sig.AFAS_xxxxEFGx);
   /*p01.APOV*/ wire CPU_WR_xxxxEFGx = not(AREV);
 
   /*p07.UJYV*/ wire CPU_RD_MUX = mux2n(sys_sig.PIN_RD_C, sys_sig.CPU_RAW_RD, sys_sig.PIN_MODE_DBG2);
@@ -53,116 +58,71 @@ BusSignals BusSignals::tick(const SysSignals& sys_sig,
   /*p07.ASOT*/ wire ASOT_CPURD = not(CPU_RDn);
   /*p07.CUPA*/ wire CUPA_CPUWR = not(CPU_WRn);
 
-
-#if 0
-  /*p08.SORE*/ wire ADDR_0000_7FFF = not(bus.A15);
-  /*p08.TEVY*/ wire ADDR_NOT_VRAM = or(bus.A13, bus.A14, ADDR_0000_7FFF);
+  /*p08.SORE*/ wire ADDR_0000_7FFF = not(bus_tri.A15());
+  /*p08.TEVY*/ wire ADDR_NOT_VRAM = or(bus_tri.A13(), bus_tri.A14(), ADDR_0000_7FFF);
   wire ADDR_VRAM = not(ADDR_NOT_VRAM);
 
-  /*p07.TUNA*/ wire ADDR_0000_FDFF = nand(bus.A15, bus.A14, bus.A13, bus.A12, bus.A11, bus.A10, bus.A09);
+  /*p07.TUNA*/ wire ADDR_0000_FDFF = nand(bus_tri.A15(), bus_tri.A14(), bus_tri.A13(),
+                                          bus_tri.A12(), bus_tri.A11(), bus_tri.A10(),
+                                          bus_tri.A09());
   /*p07.RYCU*/ wire ADDR_FE00_FFFF = not(ADDR_0000_FDFF);
 
-  /*p08.TEXO*/ wire ADDR_VALID_AND_NOT_VRAM = and(sys_sig.ADDR_VALID, ADDR_NOT_VRAM);
+  /*p08.TEXO*/ wire ADDR_VALID_AND_NOT_VRAM = and(sys_sig.CPU_ADDR_VALID, ADDR_NOT_VRAM);
   /*p08.LEVO*/ wire ADDR_VALID_AND_NOT_VRAMn = not(ADDR_VALID_AND_NOT_VRAM);
   /*p25.TEFA*/ wire TEFA = nor(ADDR_FE00_FFFF, ADDR_VALID_AND_NOT_VRAM);
-  /*p25.SOSE*/ wire ADDR_RAM = and(bus.A15, TEFA);
+  /*p25.SOSE*/ wire ADDR_RAM = and(bus_tri.A15(), TEFA);
 
 
-  /*p08.MOCA*/ wire DBG_EXT_RDn = nor(ADDR_VALID_AND_NOT_VRAM, sys_sig.MODE_DBG1);
+  /*p08.MOCA*/ wire DBG_EXT_RDn = nor(ADDR_VALID_AND_NOT_VRAM, sys_sig.PIN_MODE_DBG1);
   /*p08.LAGU*/ wire LAGU = or(and(sys_sig.CPU_RAW_RD, ADDR_VALID_AND_NOT_VRAMn), sys_sig.CPU_RAW_WR);
   /*p08.LYWE*/ wire LYWE = not(LAGU);
+
+  /*p08.REDU*/ wire CPU_RDo = not(TEDO_CPURD);
   /*p08.MOTY*/ wire CPU_EXT_RD = or(DBG_EXT_RDn, LYWE);
-
-  /*p11.BUDA*/ wire CPU_RDo = not(TEDO_CPURD);
-  /*p08.RORU*/ wire CBUS_TO_CEXTn = mux2(CPU_RDo, CPU_EXT_RD, sys_sig.MODE_DBG2);
+  /*p08.RORU*/ wire CBUS_TO_CEXTn = mux2(CPU_RDo, CPU_EXT_RD, sys_sig.PIN_MODE_DBG2);
   /*p08.LULA*/ wire CBUS_TO_CEXT  = not(CBUS_TO_CEXTn);
-#endif
 
-  return {
-    /*p07.TEDO*/ .TEDO_CPURD = TEDO_CPURD,
-    /*p07.TAPU*/ .TAPU_CPUWR = TAPU_CPUWR,
-    /*p07.ASOT*/ .ASOT_CPURD = ASOT_CPURD,
-    /*p07.CUPA*/ .CUPA_CPUWR = CUPA_CPUWR,
+  /*p25.TAVY*/   wire MOE_Cn = not(vram_pins.MOE_C);
+  /*p25.TEGU*/   wire CPU_RAM_CLK = nand(ADDR_RAM, clk_sig.AFAS_xxxxEFGx);
+  /*p25.SALE*/ wire CPU_RAM_CLK2 = mux2(MOE_Cn, CPU_RAM_CLK, dbg_sig.DBG_VRAM);
+  // wires traced wrong? doesn't look like it
+  // RUVY = not(SALE)
+  // SAZO = and(SERE, RUVY)
+  // RYJE = not(SAZO)
+  // REVO = not(RYJE)
 
-#if 0
-    /*p08.RORU*/ .CBUS_TO_CEXTn = CBUS_TO_CEXTn,
-    /*p08.LULA*/ .CBUS_TO_CEXT  = CBUS_TO_CEXT,
-#endif
-  };
-}
+  // RELA = or(...., ???)
 
-//-----------------------------------------------------------------------------
+  // so it must be that some tribuffers are active-high, some are active-low.....
 
-};
+  // TEME - wires on 1 5 6 9 10
+  // REBA - much smaller tribuffer
 
 
 
+  /*p25.TEFY*/ wire MCS_Cn = not(vram_pins.MCS_C);
+  /*p25.TUCA*/ wire CPU_VRAM_RD  = and (ADDR_VRAM, dec_sig.ADDR_VALID_xBCxxxxx);
+  /*p25.TOLE*/ wire CPU_VRAM_RD2 = mux2(MCS_Cn, CPU_VRAM_RD, dbg_sig.DBG_VRAM);
+  /*p25.ROPY*/ wire ROPY_RENDERINGn = not(vid_sig.RENDERING_LATCH);
+  /*p25.SERE*/ wire SERE = and(CPU_VRAM_RD2, ROPY_RENDERINGn);
+  /*p04.DECY*/ wire FROM_CPU5n = not(sys_sig.CPU_FROM_CPU5);
+  /*p04.CATY*/ wire FROM_CPU5  = not(FROM_CPU5n);
+
+  /*p28.MYNU*/ wire CPU_READ_MYSTERYn = nand(ASOT_CPURD, FROM_CPU5);
+  /*p28.LEKO*/ wire CPU_READ_MYSTERY  = not(CPU_READ_MYSTERYn);
+  /*p25.TYVY*/ wire MD_TO_D = nand(SERE, CPU_READ_MYSTERY);
+  /*p25.SEBY*/ wire MD_TO_Dn = not(MD_TO_D);
 
 
+  // this can't be right, md_outd and md_outc are effectively the same signal
+  // yeah that's what it looks like on the schematic
+  /*p25.RUVY*/       wire CPU_RAM_CLK2n = not(CPU_RAM_CLK2);
+  /*p25.SAZO*/     wire MD_OUTd = and(CPU_RAM_CLK2n, SERE);
+  /*p25.RYJE*/   wire MD_INb  = not(MD_OUTd);
+  /*p25.REVO*/ wire MD_OUTc = not(MD_INb);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-  {
-    /*p25.TAVY*/   wire MOE_Cn = not(vram.MOE_C);
-    /*p25.TEGU*/   wire CPU_RAM_CLK = nand(dec.ADDR_RAM, clk.AFAS_xxxxEFGx);
-    /*p25.SALE*/ wire CPU_RAM_CLK2 = mux2(MOE_Cn, CPU_VRAM_CLK, dbg.DBG_VRAM);
-    // wires traced wrong? doesn't look like it
-    // RUVY = not(SALE)
-    // SAZO = and(SERE, RUVY)
-    // RYJE = not(SAZO)
-    // REVO = not(RYJE)
-
-    // RELA = or(...., ???)
-
-    // this can't be right, md_outd and md_outc are effectively the same signal
-    // yeah that's what it looks like on the schematic
-    /*p25.RUVY*/       wire CPU_RAM_CLK2n = not(CPU_RAM_CLK2);
-    /*p25.SAZO*/     wire MD_OUTd = and(CPU_RAM_CLK2n, ctl.SERE);
-    /*p25.RYJE*/   wire MD_INb  = not(MD_OUTd);
-    /*p25.REVO*/ wire MD_OUTc = not(MD_INb);
-
-    // so it must be that some tribuffers are active-high, some are active-low.....
-
-    // TEME - wires on 1 5 6 9 10
-    // REBA - much smaller tribuffer
-
-    /*p25.RELA*/ wire VEXT_TO_VBUSb  = or(MD_OUTc, MD_OUTd);
-    /*p25.ROCY*/ wire CBUS_TO_VBUSb = and(MD_OUTc, MD_OUTd);
-
-    /*p25.RAHU*/ next.CBUS_TO_VBUSn = not(CBUS_TO_VBUSb);
-    /*p25.RENA*/ next.VEXT_TO_VBUSn = not(VEXT_TO_VBUSb);
-  }
-#endif
-
-#if 0
-  {
-    /*p25.TEFY*/ wire MCS_Cn = not(vram.MCS_C);
-    /*p25.TUCA*/ wire CPU_VRAM_RD  = and (dec.ADDR_VRAM, dec.ADDR_VALID_ABxxxxxx);
-    /*p25.TOLE*/ wire CPU_VRAM_RD2 = mux2(MCS_Cn, CPU_VRAM_RD, dbg.DBG_VRAM);
-    /*p25.ROPY*/ wire ROPY_RENDERINGn = not(vid.RENDERING_LATCH);
-    /*p25.SERE*/ wire SERE = and(CPU_VRAM_RD2, ROPY_RENDERINGn);
-    /*p04.DECY*/ wire FROM_CPU5n = not(cpu.FROM_CPU5);
-    /*p04.CATY*/ wire FROM_CPU5  = not(FROM_CPU5n);
-
-    /*p28.MYNU*/ wire CPU_READ_MYSTERYn = nand(bus.ASOT_CPURD, FROM_CPU5);
-    /*p28.LEKO*/ wire CPU_READ_MYSTERY  = not(CPU_READ_MYSTERYn);
-    /*p25.TYVY*/ wire MD_TO_D = nand(SERE, CPU_READ_MYSTERY);
-    /*p25.SEBY*/ wire MD_TO_Dn = not(MD_TO_D);
-  }
-#endif
+  /*p25.RELA*/ wire VEXT_TO_VBUSb  = or(MD_OUTc, MD_OUTd);
+  /*p25.ROCY*/ wire CBUS_TO_VBUSb = and(MD_OUTc, MD_OUTd);
 
 #if 0
   // Cart responds to 0x0000 - 0x7FFF (rom)
@@ -236,3 +196,40 @@ BusSignals BusSignals::tick(const SysSignals& sys_sig,
     /*p08.TAJU*/ if (LATCH_DX) bus_out.D7 = ctl.LATCH_D7;
   }
 #endif
+
+  return {
+    /*p07.TEDO*/ .TEDO_CPURD = TEDO_CPURD,
+    /*p07.TAPU*/ .TAPU_CPUWR = TAPU_CPUWR,
+    /*p07.ASOT*/ .ASOT_CPURD = ASOT_CPURD,
+    /*p07.CUPA*/ .CUPA_CPUWR = CUPA_CPUWR,
+    /*p08.TEXO*/ .ADDR_VALID_AND_NOT_VRAM = ADDR_VALID_AND_NOT_VRAM,
+    /*p08.LEVO*/ .ADDR_VALID_AND_NOT_VRAMn = ADDR_VALID_AND_NOT_VRAMn,
+    /*p08.RORU*/ .CBUS_TO_CEXTn = CBUS_TO_CEXTn,
+    /*p08.LULA*/ .CBUS_TO_CEXT  = CBUS_TO_CEXT,
+    /*p25.RAHU*/ .CBUS_TO_VBUSn = not(CBUS_TO_VBUSb),
+    /*p25.RENA*/ .VEXT_TO_VBUSn = not(VEXT_TO_VBUSb),
+  };
+}
+
+//-----------------------------------------------------------------------------
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

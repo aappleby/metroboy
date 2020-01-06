@@ -14,47 +14,11 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 void Timer::pwron() {
-  DIV_00.pwron();
-  DIV_01.pwron();
-  DIV_02.pwron();
-  DIV_03.pwron();
-  DIV_04.pwron();
-  DIV_05.pwron();
-  DIV_06.pwron();
-  DIV_07.pwron();
-  DIV_08.pwron();
-  DIV_09.pwron();
-  DIV_10.pwron();
-  DIV_11.pwron();
-  DIV_12.pwron();
-  DIV_13.pwron();
-  DIV_14.pwron();
-  DIV_15.pwron();
-
-  TIMA_MAX.pwron();
-  INT_TIMER.pwron();
-
-  TIMA_0.pwron();
-  TIMA_1.pwron();
-  TIMA_2.pwron();
-  TIMA_3.pwron();
-  TIMA_4.pwron();
-  TIMA_5.pwron();
-  TIMA_6.pwron();
-  TIMA_7.pwron();
-
-  TMA_0.pwron();
-  TMA_1.pwron();
-  TMA_2.pwron();
-  TMA_3.pwron();
-  TMA_4.pwron();
-  TMA_5.pwron();
-  TMA_6.pwron();
-  TMA_7.pwron();
-
-  TAC_0.pwron();
-  TAC_1.pwron();
-  TAC_2.pwron();
+  pwron_all(DIV_00, DIV_01, DIV_02, DIV_03, DIV_04, DIV_05, DIV_06, DIV_07,
+            DIV_08, DIV_09, DIV_10, DIV_11, DIV_12, DIV_13, DIV_14, DIV_15);
+  pwron_all(TIMA_0, TIMA_1, TIMA_2, TIMA_3, TIMA_4, TIMA_5, TIMA_6, TIMA_7, TIMA_MAX, INT_TIMER);
+  pwron_all(TMA_0, TMA_1, TMA_2, TMA_3, TMA_4, TMA_5, TMA_6, TMA_7);
+  pwron_all(TAC_0, TAC_1, TAC_2);
 }
 
 //-----------------------------------------------------------------------------
@@ -116,47 +80,11 @@ void Timer::pass_begin() {
 
 bool Timer::pass_end() {
   bool changed = false;
-  changed |= DIV_00.commit();
-  changed |= DIV_01.commit();
-  changed |= DIV_02.commit();
-  changed |= DIV_03.commit();
-  changed |= DIV_04.commit();
-  changed |= DIV_05.commit();
-  changed |= DIV_06.commit();
-  changed |= DIV_07.commit();
-  changed |= DIV_08.commit();
-  changed |= DIV_09.commit();
-  changed |= DIV_10.commit();
-  changed |= DIV_11.commit();
-  changed |= DIV_12.commit();
-  changed |= DIV_13.commit();
-  changed |= DIV_14.commit();
-  changed |= DIV_15.commit();
-
-  changed |= TIMA_0.commit();
-  changed |= TIMA_1.commit();
-  changed |= TIMA_2.commit();
-  changed |= TIMA_3.commit();
-  changed |= TIMA_4.commit();
-  changed |= TIMA_5.commit();
-  changed |= TIMA_6.commit();
-  changed |= TIMA_7.commit();
-
-  changed |= TIMA_MAX.commit();
-  changed |= INT_TIMER.commit();
-
-  changed |= TMA_0.commit();
-  changed |= TMA_1.commit();
-  changed |= TMA_2.commit();
-  changed |= TMA_3.commit();
-  changed |= TMA_4.commit();
-  changed |= TMA_5.commit();
-  changed |= TMA_6.commit();
-  changed |= TMA_7.commit();
-
-  changed |= TAC_0.commit();
-  changed |= TAC_1.commit();
-  changed |= TAC_2.commit();
+  changed |= commit_all(DIV_00, DIV_01, DIV_02, DIV_03, DIV_04, DIV_05, DIV_06, DIV_07,
+                        DIV_08, DIV_09, DIV_10, DIV_11, DIV_12, DIV_13, DIV_14, DIV_15);
+  changed |= commit_all(TIMA_0, TIMA_1, TIMA_2, TIMA_3, TIMA_4, TIMA_5, TIMA_6, TIMA_7, TIMA_MAX, INT_TIMER);
+  changed |= commit_all(TMA_0, TMA_1, TMA_2, TMA_3, TMA_4, TMA_5, TMA_6, TMA_7);
+  changed |= commit_all(TAC_0, TAC_1, TAC_2);
   return changed;
 }
 
@@ -166,7 +94,7 @@ TimerSignals Timer::tick(const SysSignals& sys_sig,
                          const ClkSignals& clk_sig,
                          const RstSignals& rst_sig,
                          const BusSignals& bus_sig,
-                         const Decoder&    dec_sig,
+                         const DecoderSignals& dec_sig,
                          BusTristates&     bus_tri) {
 
   tickDIV    (sys_sig, clk_sig,          bus_sig, dec_sig, bus_tri);
@@ -183,7 +111,7 @@ TimerSignals Timer::tick(const SysSignals& sys_sig,
 void Timer::tickDIV(const SysSignals&   sys_sig,
                     const ClkSignals&   clk_sig,
                     const BusSignals&   bus_sig,
-                    const Decoder&      dec_sig,
+                    const DecoderSignals& dec_sig,
                     BusTristates& bus_tri)
 {
   /*p03.TOVY*/ wire TOVY_A00n = not(bus_tri.A00());
@@ -234,7 +162,7 @@ void Timer::tickTIMA(const SysSignals&   sys_sig,
                      const ClkSignals&   clk_sig,
                      const RstSignals&   rst_sig,
                      const BusSignals&   bus_sig,
-                     const Decoder&      dec_sig,
+                     const DecoderSignals& dec_sig,
                      BusTristates& bus_tri)
 {
   /*p08.TOLA*/ wire TOLA_A01n = not(bus_tri.A01());
@@ -309,7 +237,7 @@ void Timer::tickTIMA(const SysSignals&   sys_sig,
 
 void Timer::tickTMA(const RstSignals&   rst_sig,
                     const BusSignals&   bus_sig,
-                    const Decoder&      dec_sig,
+                    const DecoderSignals& dec_sig,
                     BusTristates& bus_tri)
 {
   /*p03.TOVY*/ wire TOVY_A00n = not(bus_tri.A00());
@@ -342,7 +270,7 @@ void Timer::tickTMA(const RstSignals&   rst_sig,
 
 void Timer::tickTAC(const RstSignals&   rst_sig,
                     const BusSignals&   bus_sig,
-                    const Decoder&      dec_sig,
+                    const DecoderSignals& dec_sig,
                     BusTristates& bus_tri) {
   /*p03.SARA*/ wire FF07_WRn = nand(bus_sig.TAPU_CPUWR, dec_sig.FF04_FF07, bus_tri.A00(), bus_tri.A01());
   /*p03.SORA*/ wire FF07_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, bus_tri.A00(), bus_tri.A01());

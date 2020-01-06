@@ -110,7 +110,13 @@ private:
 
 struct BusSignals {
 
-  static BusSignals tick(const SysSignals& sys_sig, const ClkSignals& clk_sig1);
+  static BusSignals BusSignals::tick(const SysSignals& sys_sig,
+                                     const ClkSignals& clk_sig,
+                                     const DebugSignals& dbg_sig,
+                                     const DecoderSignals& dec_sig,
+                                     const VramPins& vram_pins,
+                                     const VidSignals& vid_sig,
+                                     BusTristates& bus_tri);
 
   /*p07.TEDO*/ bool TEDO_CPURD;
   /*p07.TAPU*/ bool TAPU_CPUWR; //p4-p6
@@ -120,7 +126,6 @@ struct BusSignals {
   /*p08.TEXO*/ bool ADDR_VALID_AND_NOT_VRAM;
   /*p08.LEVO*/ bool ADDR_VALID_AND_NOT_VRAMn;
 
-#if 0
   /*p08.RORU*/ bool CBUS_TO_CEXTn;
   /*p08.LULA*/ bool CBUS_TO_CEXT;
 
@@ -174,8 +179,6 @@ struct BusSignals {
   /*p08.SAGO*/ bool LATCH_D5;
   /*p08.RUPA*/ bool LATCH_D6;
   /*p08.SAZY*/ bool LATCH_D7;
-
-#endif
 };
 
 //-----------------------------------------------------------------------------

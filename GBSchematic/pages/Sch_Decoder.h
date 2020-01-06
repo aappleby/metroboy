@@ -5,12 +5,11 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
+struct DecoderSignals {
 
-struct Decoder {
-
-  static Decoder tick(const SysSignals&   sys_sig,
-                      const ClkSignals&   clk_sig,
-                      const BusTristates& bus_tri);
+  static DecoderSignals tick(const SysSignals&   sys_sig,
+                             const ClkSignals&   clk_sig,
+                             const BusTristates& bus_tri);
 
   /*p10.AMUS*/ bool ADDR_0xx00000;
   /*p07.TUNA*/ bool ADDR_0000_FE00;
@@ -34,7 +33,6 @@ struct Decoder {
   /*p22.VYGA*/ bool FF4A;
   /*p22.VUMY*/ bool FF4B;
 
-  /*p07.TUTU*/ bool ADDR_BOOT;
   /*p01.ABUZ*/ bool ADDR_VALID_xBCxxxxx;
 
   /*p03.TOVY*/ bool TOVY_A00n;

@@ -5,6 +5,8 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
+#if 0
+
 void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
 
   //----------
@@ -403,6 +405,8 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p20.BOZA*/ next.ch4.CH4_DAC3 = and(b.ch4.VOL3, CH4_RAW_BIT);
   }
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 

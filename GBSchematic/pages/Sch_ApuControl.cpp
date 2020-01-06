@@ -5,6 +5,7 @@
 
 namespace Schematics {
 
+#if 0
 //-----------------------------------------------------------------------------
 
 void P09_ApuControl_tick(const Gameboy& a,
@@ -83,7 +84,7 @@ void P09_ApuControl_tick(const Gameboy& a,
   // decodin'
 
   {
-    /*p07.BAKO*/ next.apu.ADDR_FFXXn1 = not(b.dec.ADDR_FFXX);
+    /*p07.BAKO*/ next.apu.ADDR_FFXXn1 = not(b.dec_sig.ADDR_FFXX);
 
     /*p10.ATUP*/ wire A04n = not(b.bus.A04());
     /*p10.BOXY*/ wire A05n = not(b.bus.A05());
@@ -233,6 +234,7 @@ void P09_ApuControl_tick(const Gameboy& a,
     );
   }
 }
+#endif
 
 //-----------------------------------------------------------------------------
 

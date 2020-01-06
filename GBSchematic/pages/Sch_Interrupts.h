@@ -3,8 +3,25 @@
 
 namespace Schematics {
 
-struct Interrupts {
+struct JoypadSignals;
+struct TimerSignals;
 
+struct InterruptSignals {
+};
+
+struct InterruptRegisters {
+
+  void tick(const BusSignals& ctl,
+            const Cpu& cpu,
+            const LcdSignals& lcd_sig,
+            const SerialSignals& ser_sig,
+            const JoypadSignals& joy_sig,
+            const VidSignals& vid_sig,
+            const TimerSignals& tim_sig,
+            const JoypadPins& joy_pins,
+            const RstSignals& rst_sig,
+            const DecoderSignals& dec,
+            BusTristates& bus_tri);
   /*
   Bit 0: V-Blank  Interrupt Request (INT 40h)  (1=Request)
   Bit 1: LCD STAT Interrupt Request (INT 48h)  (1=Request)
@@ -13,17 +30,17 @@ struct Interrupts {
   Bit 4: Joypad   Interrupt Request (INT 60h)  (1=Request)
   */
 
-  /*p02.LOPE*/ Reg FF0F_0;
-  /*p02.UBUL*/ Reg FF0F_1;
-  /*p02.ULAK*/ Reg FF0F_2;
-  /*p02.LALU*/ Reg FF0F_3;
-  /*p02.NYBO*/ Reg FF0F_4;
+  /*p02.LOPE*/ Reg2 FF0F_0;
+  /*p02.UBUL*/ Reg2 FF0F_1;
+  /*p02.ULAK*/ Reg2 FF0F_2;
+  /*p02.LALU*/ Reg2 FF0F_3;
+  /*p02.NYBO*/ Reg2 FF0F_4;
 
-  /*p02.MATY*/ bool FF0F_L0;
-  /*p02.NEJY*/ bool FF0F_L1;
-  /*p02.NUTY*/ bool FF0F_L2;
-  /*p02.MOPO*/ bool FF0F_L3;
-  /*p02.PAVY*/ bool FF0F_L4;
+  /*p02.MATY*/ Reg2 FF0F_L0;
+  /*p02.NEJY*/ Reg2 FF0F_L1;
+  /*p02.NUTY*/ Reg2 FF0F_L2;
+  /*p02.MOPO*/ Reg2 FF0F_L3;
+  /*p02.PAVY*/ Reg2 FF0F_L4;
 
 };
 

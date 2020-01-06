@@ -119,6 +119,7 @@ ClkSignals ClkRegisters::signals(const SysSignals& sys_sig) const {
     /*p01.AJAX*/ .AJAX_xxxxEFGH = AJAX_xxxxEFGH, // decoder
     /*p01.AFAS*/ .AFAS_xxxxEFGx = AFAS_xxxxEFGx, // to buscontrol, pins, vram
     /*p01.BOGA*/ .BOGA_xBCDEFGH = BOGA_xBCDEFGH, // to joypad, reset, timer, debug
+    /*p01.BUDE*/ .BUDE_xxxxEFGH = BUDE_xxxxEFGH, // to cart
     /*p01.DOVA*/ .DOVA_ABCDxxxx = DOVA_ABCDxxxx, // main audio 1m clock
     /*p01.UVYT*/ .UVYT_ABCDxxxx = UVYT_ABCDxxxx, // dma, to cart?
     /*p04.MOPA*/ .MOPA_xxxxEFGH = MOPA_xxxxEFGH, // oam, dma

@@ -4,7 +4,10 @@
 #include "../pages/Sch_System.h"
 #include "../pages/Sch_BusControl.h"
 #include "../pages/Sch_Registers.h"
+#include "../pages/Sch_Serial.h"
 #include "../pages/Sch_Timer.h"
+#include "../pages/Sch_Video.h"
+#include "../pages/Sch_Debug.h"
 
 namespace Schematics {
 
@@ -25,14 +28,17 @@ struct TestGB {
 
   void boot();
 
-  SysRegisters  sys_reg;
-  ClkRegisters  clk_reg;
-  RstRegisters  rst_reg;
-  VclkRegisters vclk_reg;
-  VidRegisters  vid_reg;
-  LcdRegisters  lcd_reg;
-  BusTristates  bus_tri;
-  Timer         timer;
+  SysRegisters    sys_reg;
+  ClkRegisters    clk_reg;
+  RstRegisters    rst_reg;
+  DebugRegisters  dbg_reg;
+  VclkRegisters   vclk_reg;
+  VidRegisters    vid_reg;
+  VidRegisters2   vid_reg2;
+  LcdRegisters    lcd_reg;
+  BusTristates    bus_tri;
+  Timer           tim_reg;
+  SerialRegisters ser_reg;
 
   uint8_t rom[65536];
 };

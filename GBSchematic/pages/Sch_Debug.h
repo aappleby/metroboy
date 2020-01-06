@@ -3,19 +3,11 @@
 
 namespace Schematics {
 
+struct SysPins;
+
 //-----------------------------------------------------------------------------
 
-struct Debug {
-
-  void tick(const BusTristates& bus,
-            const BusSignals& ctl,
-            const ClkSignals& clk,
-            const Pins& pins,
-            const Decoder& dec,
-            const RstSignals& rst_sig,
-            const Debug& b,
-            BusTristates& bus_out);
-
+struct DebugSignals {
   /*p07.UBET*/ bool T1n;
   /*p07.UVAR*/ bool T2n;
 
@@ -31,14 +23,34 @@ struct Debug {
   /*p05.KORE*/ bool P05_NC0;
   /*p05.KYWE*/ bool P05_NC1;
 
-  /*p07.BURO*/ Reg FF60_0;
-  /*p07.AMUT*/ Reg FF60_1;
+  /*p07.BURO*/ bool FF60_0;
   /*p05.KURA*/ bool FF60_0n;
+  /*p07.AMUT*/ bool FF60_1;
 
-  /*p25.SOTO*/ Reg SOTO_DBG;
   /*p25.TUTO*/ bool DBG_VRAM;
   /*p25.RACO*/ bool DBG_VRAMn;
+};
 
+struct DebugRegisters {
+
+  void pwron();
+  void reset();
+  void phase_begin();
+  void phase_end();
+  void pass_begin();
+  bool pass_end();
+
+  void tick(const BusSignals& bus_sig,
+            const ClkSignals& clk_sig,
+            const SysPins& sys_pins,
+            const JoypadPins& joy_pins,
+            const DecoderSignals& dec_sig,
+            const RstSignals& rst_sig1,
+            BusTristates& bus_tri);
+
+  /*p07.BURO*/ Reg2 FF60_0;
+  /*p07.AMUT*/ Reg2 FF60_1;
+  /*p25.SOTO*/ Reg2 SOTO_DBG;
 };
 
 //-----------------------------------------------------------------------------

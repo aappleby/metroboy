@@ -5,6 +5,8 @@
 
 namespace Schematics {
 
+#if 0
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
@@ -340,6 +342,8 @@ void P14_Ch2Regs_tick(const Gameboy& a,
   /*p15.AMOV*/ next.ch2.AMOV = and(b.ch2.FENA, b.ch2.BONU);
   /*p15.ASOG*/ next.ch2.ASOG = and(b.ch2.FOMY, b.ch2.BONU);
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 

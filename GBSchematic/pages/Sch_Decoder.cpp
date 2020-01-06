@@ -11,9 +11,9 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-Decoder Decoder::tick(const SysSignals&   sys_sig,
-                      const ClkSignals&   clk_sig,
-                      const BusTristates& bus_tri)
+DecoderSignals DecoderSignals::tick(const SysSignals&   sys_sig,
+                                    const ClkSignals&   clk_sig,
+                                    const BusTristates& bus_tri)
 {
   /*p10.AMUS*/ wire ADDR_0xx00000 = nor(bus_tri.A00(), bus_tri.A01(), bus_tri.A02(), bus_tri.A03(), bus_tri.A04(), bus_tri.A07());
   /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(bus_tri.A15(), bus_tri.A14(), bus_tri.A13(), bus_tri.A12(), bus_tri.A11(), bus_tri.A10(), bus_tri.A09());
@@ -62,10 +62,6 @@ Decoder Decoder::tick(const SysSignals&   sys_sig,
   /*p22.TEGO*/ wire FF49 = not(FF49n);
   /*p22.VYGA*/ wire FF4A = not(FF4An);
   /*p22.VUMY*/ wire FF4B = not(FF4Bn);
-
-  /*p07.TULO*/ wire ADDR_00XX  = nor(bus_tri.A15(), bus_tri.A14(), bus_tri.A13(), bus_tri.A12(), bus_tri.A11(), bus_tri.A10(), bus_tri.A09(), bus_tri.A08());
-  /*p07.TERA*/ wire BOOT_BITn  = not(sys_sig.BOOT_BIT);
-  /*p07.TUTU*/ wire ADDR_BOOT  = and(BOOT_BITn, ADDR_00XX);
 
   /*p07.RYCU*/ wire ADDR_FE00_FFFF = not(ADDR_0000_FE00);
   /*p07.SOHA*/ wire ADDR_FFXXn2 = not(ADDR_FFXX);
@@ -117,7 +113,6 @@ Decoder Decoder::tick(const SysSignals&   sys_sig,
     /*p22.VYGA*/ .FF4A = FF4A,
     /*p22.VUMY*/ .FF4B = FF4B,
 
-    /*p07.TUTU*/ .ADDR_BOOT = ADDR_BOOT,
     /*p01.ABUZ*/ .ADDR_VALID_xBCxxxxx = ADDR_VALID_xBCxxxxx,
 
     /*p03.TOVY*/ .TOVY_A00n = TOVY_A00n,

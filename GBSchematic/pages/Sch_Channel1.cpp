@@ -5,6 +5,8 @@
 
 namespace Schematics {
 
+#if 0
+
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
@@ -625,6 +627,8 @@ void Channel1_tick(const Pins& pins,
   /*p13.AGOF*/ next.ch1.CH1_OUT2 = and(b.ch1.ENV2, BIT_OUT);
   /*p13.ACEG*/ next.ch1.CH1_OUT3 = and(b.ch1.ENV3, BIT_OUT);
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 

@@ -3,41 +3,203 @@
 
 namespace Schematics {
 
+struct VramBus;
+struct DmaSignals;
+
 //-----------------------------------------------------------------------------
 
-struct Pins {
-
-  void tick(Cpu& cpu,
-            const BusTristates& bus,
-            const BusSignals& ctl,
-            const Debug& dbg,
-            const ClkSignals& clk,
-            const Decoder& dec,
-            const DMA& dma);
-
-  bool P10_B;
-
-  //----------
-  // Cart pins
-
+struct SysPins {
   /* PIN_71 */ bool RST;     // -> TUBO,ASOL,UFOL,UPOJ
   /* PIN_74 */ bool CLKIN_A; // clock good signal
   /* PIN_74 */ bool CLKIN_B; // clock signal
 
-  /* PIN_75 */ bool PHI;
-
   /* PIN_76 */ bool T2;      // -> P07.UVAR
   /* PIN_77 */ bool T1;      // -> P07.UBET
+};
 
-  /* PIN_78 */ bool WR_A;    // <- P08.UVER
-  /* PIN_78 */ bool WR_C;    // -> P07.UBAL
-  /* PIN_78 */ bool WR_D;    // <- P08.USUF
+//-----------------------------------------------------------------------------
 
-  /* PIN_79 */ bool RD_A;    // <- P08.UGAC
-  /* PIN_79 */ bool RD_C;    // -> P07.UJYV
-  /* PIN_79 */ bool RD_D;    // <- P08.URUN
+struct VramPins {
 
-  /* PIN_80 */ bool CS_A;    // <- P08.TYHO
+  static VramPins tick(const BusSignals& bus_sig,
+                       const VramBus& vram_bus,
+                       const DebugSignals& dbg_sig,
+                       bool MCS_C, bool MOE_C, bool MWR_C,
+                       uint8_t MD_C);
+
+  //----------
+  // VRAM control pins
+
+  /* PIN_43 */ bool MCS_A;   // <- P25.SOKY
+  /* PIN_43 */ bool MCS_C;   // -> P25.TEFY
+  /* PIN_43 */ bool MCS_D;   // <- P25.SETY
+                             
+  /* PIN_45 */ bool MOE_A;   // <- P25.REFO
+  /* PIN_45 */ bool MOE_C;   // -> P25.TAVY
+  /* PIN_45 */ bool MOE_D;   // <- P25.SAHA
+                             
+  /* PIN_49 */ bool MWR_A;   // <- P25.SYSY
+  /* PIN_49 */ bool MWR_C;   // -> P25.SUDO
+  /* PIN_49 */ bool MWR_D;   // <- P25.RAGU
+
+  //----------
+  // VRAM address pins
+
+  /* PIN_34 */ bool MA00_D;  // <- P04.ECAL
+  /* PIN_35 */ bool MA01_D;  // <- P04.EGEZ
+  /* PIN_36 */ bool MA02_D;  // <- P04.FUHE
+  /* PIN_37 */ bool MA03_D;  // <- P04.FYZY
+  /* PIN_38 */ bool MA04_D;  // <- P04.DAMU
+  /* PIN_39 */ bool MA05_D;  // <- P04.DAVA
+  /* PIN_40 */ bool MA06_D;  // <- P04.ETEG
+  /* PIN_41 */ bool MA07_D;  // <- P04.EREW
+  /* PIN_42 */ bool MA12_D;  // <- P04.EXYF
+  /* PIN_44 */ bool MA10_D;  // <- P04.ERAF
+  /* PIN_46 */ bool MA11_D;  // <- P04.FUSY
+  /* PIN_47 */ bool MA09_D;  // <- P04.DUVE
+  /* PIN_48 */ bool MA08_D;  // <- P04.EVAX
+
+  //----------
+  // VRAM data pins
+
+  /* PIN_33 */ bool MD0_A;   // <- P25.REGE
+  /* PIN_33 */ bool MD0_B;   // <- P25.ROFA
+  /* PIN_33 */ bool MD0_C;   // -> P25.RODY
+  /* PIN_33 */ bool MD0_D;   // <- P25.RURA
+
+  /* PIN_31 */ bool MD1_A;   // <- P25.RYKY
+  /* PIN_31 */ bool MD1_B;   // <- P25.ROFA
+  /* PIN_31 */ bool MD1_C;   // -> P25.REBA
+  /* PIN_31 */ bool MD1_D;   // <- P25.RULY
+                             
+  /* PIN_30 */ bool MD2_A;   // <- P25.RAZO
+  /* PIN_30 */ bool MD2_B;   // <- P25.ROFA
+  /* PIN_30 */ bool MD2_C;   // -> P25.RYDO
+  /* PIN_30 */ bool MD2_D;   // <- P25.RARE
+                             
+  /* PIN_29 */ bool MD3_A;   // <- P25.RADA
+  /* PIN_29 */ bool MD3_B;   // <- P25.ROFA
+  /* PIN_29 */ bool MD3_C;   // -> P25.REMO
+  /* PIN_29 */ bool MD3_D;   // <- P25.RODU
+                             
+  /* PIN_28 */ bool MD4_A;   // <- P25.RYRO
+  /* PIN_28 */ bool MD4_B;   // <- P25.ROFA
+  /* PIN_28 */ bool MD4_C;   // -> P25.ROCE
+  /* PIN_28 */ bool MD4_D;   // <- P25.RUBE
+
+  /* PIN_27 */ bool MD5_A;   // <- P25.REVU
+  /* PIN_27 */ bool MD5_B;   // <- P25.ROFA
+  /* PIN_27 */ bool MD5_C;   // -> P25.ROPU
+  /* PIN_27 */ bool MD5_D;   // <- P25.RUMU
+                            
+  /* PIN_26 */ bool MD6_A;   // <- P25.REKU
+  /* PIN_26 */ bool MD6_B;   // <- P25.ROFA
+  /* PIN_26 */ bool MD6_C;   // -> P25.RETA
+  /* PIN_26 */ bool MD6_D;   // <- P25.RYTY
+                             
+  /* PIN_25 */ bool MD7_A;   // <- P25.RYZE
+  /* PIN_25 */ bool MD7_B;   // <- P25.ROFA
+  /* PIN_25 */ bool MD7_C;   // -> P25.RAKU
+  /* PIN_25 */ bool MD7_D;   // <- P25.RADY
+};
+
+//-----------------------------------------------------------------------------
+
+struct SerialPins {
+  //----------
+  // Serial pins
+
+  /* PIN_68 */ bool SCK_A;   // <- P06.KEXU
+  /* PIN_68 */ bool SCK_B;   // <- P06.CULY
+  /* PIN_68 */ bool SCK_C;   // -> P06.CAVE
+  /* PIN_68 */ bool SCK_D;   // <- P06.KUJO
+
+  /* PIN_69 */ bool SIN_A;   // nc?
+  /* PIN_69 */ bool SIN_B;   // nc?
+  /* PIN_69 */ bool SIN_C;   // -> P06.CAGE
+  /* PIN_69 */ bool SIN_D;   // nc?
+
+  /* PIN_70 */ bool SOUT;    // <- P05.KENA
+};
+
+//-----------------------------------------------------------------------------
+
+struct LcdPins {
+};
+
+//-----------------------------------------------------------------------------
+
+struct JoypadPins {
+
+  // The B connections on the joypad pins are werid.
+  // They seem to be used as an input, or at least I can't find the driver
+  // PESU
+  // RARU ROWE RYKE RYNE RASE REJY REKA ROMY
+  // RUNY VYPO TOMY? SEZU? RAWU? PUTE? MYDE RUGO? NYLU WYMO?
+  // WEFE WUWE GEFY WYGA? FABY ECAB? DYSO ERUC GEZE GUVA 
+  // ARAR ATAJ ASUZ AJEC AKAJ ANOC BENU BEDA
+  // BEKU
+
+  /* PIN_67 */ bool P10_A;   // <- P05.KOLE
+  /* PIN_67 */ bool P10_B;   
+  /* PIN_67 */ bool P10_C;   // -> P02.KERY, P05.KEVU
+  /* PIN_67 */ bool P10_D;   // <- P05.KYBU
+
+  /* PIN_66 */ bool P11_A;   // <- P05.KYTO
+  /* PIN_66 */ bool P11_B;   
+  /* PIN_66 */ bool P11_C;   // -> P02.KERY, P05.KAPA
+  /* PIN_66 */ bool P11_D;   // <- P05.KABU
+
+  /* PIN_65 */ bool P12_A;   // <- P05.KYHU
+  /* PIN_65 */ bool P12_B;   
+  /* PIN_65 */ bool P12_C;   // -> P02.KERY, P05.KEJA
+  /* PIN_65 */ bool P12_D;   // <- P05.KASY
+                        
+  /* PIN_64 */ bool P13_A;   // <- P05.KORY
+  /* PIN_64 */ bool P13_B;   
+  /* PIN_64 */ bool P13_C;   // -> P02.KERY, P05.KOLO
+  /* PIN_64 */ bool P13_D;   // <- P05.KALE
+                         
+  /* PIN_63 */ bool P14_A;   // <- p05.KARU
+  /* PIN_63 */ bool P14_D;   // <- p05.KELY
+
+  /* PIN_62 */ bool P15_A;   // <- p05.CELA
+  /* PIN_62 */ bool P15_D;   // <- p05.COFY
+};
+
+//-----------------------------------------------------------------------------
+
+struct AudioPins {
+};
+
+
+//-----------------------------------------------------------------------------
+
+struct CartPins {
+
+  static void tick(const SysSignals& sys_sig,
+                   const BusSignals& bus_sig,
+                   const DebugSignals& dbg_sig,
+                   const ClkSignals& clk_sig,
+                   const DecoderSignals& dec_sig,
+                   const DmaSignals& dma_sig,
+                   BusTristates& bus_tri,
+                   CartPins& cart_pins);
+
+  //----------
+  // Cart pins
+
+  /* PIN_75 */ bool PHI;     // <- P01.BUDE/BEVA
+
+  /* PIN_78 */ bool WRn_A;   // <- P08.UVER
+  /* PIN_78 */ bool WRn_C;   // -> P07.UBAL
+  /* PIN_78 */ bool WRn_D;   // <- P08.USUF
+
+  /* PIN_79 */ bool RDn_A;   // <- P08.UGAC
+  /* PIN_79 */ bool RDn_C;   // -> P07.UJYV
+  /* PIN_79 */ bool RDn_D;   // <- P08.URUN
+
+  /* PIN_80 */ bool CSn_A;   // <- P08.TYHO
 
   //----------
   // Address pins

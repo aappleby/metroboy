@@ -4,95 +4,110 @@
 #include "Sch_BusControl.h"
 #include "Sch_Debug.h"
 #include "Sch_Clocks.h"
+#include "Sch_Pins.h"
+#include "Sch_Decoder.h"
 
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Joypad_tick(const BusTristates& bus,
-                 const BusSignals& ctl,
-                 const Debug& dbg,
-                 const ClkSignals& clk,
-                 const Joypad& prev,
-                 Joypad& next,
-                 BusTristates& bus_out) {
-  /*p10.AMUS*/ wire ADDR_xxxxxxxx0xx00000 = nor(bus.A00(), bus.A01(), bus.A02(), bus.A03(), bus.A04(), bus.A07());
-  /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(bus.A15(), bus.A14(), bus.A13(), bus.A12(), bus.A11(), bus.A10(), bus.A09());
-  /*p07.TONA*/ wire ADDR_08n = not(bus.A08());
-  /*p07.SYKE*/ wire ADDR_FFXX = nor(ADDR_0000_FE00, ADDR_08n);
-  /*p10.ANAP*/ wire ADDR_111111110xx00000 = and(ADDR_xxxxxxxx0xx00000, ADDR_FFXX);
-  /*p10.AKUG*/ wire A06n = not(bus.A06());
-  /*p10.BYKO*/ wire A05n = not(bus.A05());
+void JoypadRegisters::pwron() {
+  pwron_all(JP_GLITCH0, JP_GLITCH1, JP_GLITCH2, JP_GLITCH3);
+  pwron_all(JOYP_RA, JOYP_LB, JOYP_UC, JOYP_DS,
+            JOYP_UDLR, JOYP_ABCS, DBG_FF00_D6, DBG_FF00_D7);
+  pwron_all(JOYP_L0, JOYP_L1, JOYP_L2, JOYP_L3, WAKE_CPU);
+}
 
-  /*p02.KERY*/ wire ANY_BUTTON = or(prev.PIN_P13_C, prev.PIN_P12_C, prev.PIN_P11_C, prev.PIN_P10_C);
-  /*p02.ASOK*/ next.INT_JP  = and(prev.JP_GLITCH3, prev.JP_GLITCH0);
-  /*p02.AWOB*/ next.WAKE_CPU = latch_pos(clk.BOGA_xBCDEFGH, prev.WAKE_CPU, ANY_BUTTON);
+void JoypadRegisters::reset() {
+}
 
-  // FIXME really unsure about these pin assignments, seem to have a few missing signals
+void JoypadRegisters::phase_begin() {
+}
 
-  /*p05.KOLE*/ next.PIN_P10_A = nand(prev.JOYP_RA, dbg.FF60_0);
-  /*p05.KYBU*/ next.PIN_P10_D = nor (prev.JOYP_RA, dbg.FF60_0n);
-  /*p05.KYTO*/ next.PIN_P11_A = nand(prev.JOYP_LB, dbg.FF60_0);
-  /*p05.KABU*/ next.PIN_P11_D = nor (prev.JOYP_LB, dbg.FF60_0n);
-  /*p05.KYHU*/ next.PIN_P12_A = nand(prev.JOYP_UC, dbg.FF60_0);
-  /*p05.KASY*/ next.PIN_P12_D = nor (prev.JOYP_UC, dbg.FF60_0n); // schematic wrong
-  /*p05.KORY*/ next.PIN_P13_A = nand(prev.JOYP_DS, dbg.FF60_0);
-  /*p05.KALE*/ next.PIN_P13_D = nor (prev.JOYP_DS, dbg.FF60_0n);
-  /*p05.KARU*/ next.PIN_P14_A = or(!prev.JOYP_UDLR, dbg.FF60_0n);
-  /*p05.KARU*/ next.PIN_P14_D = prev.JOYP_UDLR;
-  /*p05.CELA*/ next.PIN_P15_A = or(!prev.JOYP_ABCS, dbg.FF60_0n);
-  /*p05.KARU*/ next.PIN_P15_D = !prev.JOYP_ABCS;
+void JoypadRegisters::phase_end() {
+}
 
-  /*p10.ACAT*/ wire FF00_RD = and (ctl.TEDO_CPURD, ADDR_111111110xx00000, A06n, A05n);
-  /*p05.BYZO*/ wire FF00_RDn = not(FF00_RD);
+void JoypadRegisters::pass_begin() {
+}
 
-  /*p05.KEVU*/ next.JOYP_L0 = latch_pos(FF00_RDn, prev.JOYP_L0, prev.PIN_P10_C);
-  /*p05.KAPA*/ next.JOYP_L1 = latch_pos(FF00_RDn, prev.JOYP_L1, prev.PIN_P11_C);
-  /*p05.KEJA*/ next.JOYP_L2 = latch_pos(FF00_RDn, prev.JOYP_L2, prev.PIN_P12_C);
-  /*p05.KOLO*/ next.JOYP_L3 = latch_pos(FF00_RDn, prev.JOYP_L3, prev.PIN_P13_C);
-
-  if (!FF00_RDn) bus_out.set_data(
-    /*p05.KEMA*/ prev.JOYP_L0,
-    /*p05.KURO*/ prev.JOYP_L1,
-    /*p05.KUVE*/ prev.JOYP_L2,
-    /*p05.JEKU*/ prev.JOYP_L3,
-    /*p05.KOCE*/ prev.JOYP_UDLR,
-    /*p05.CUDY*/ prev.JOYP_ABCS
-  );
+bool JoypadRegisters::pass_end() {
+  bool changed = false;
+  changed |= commit_all(JP_GLITCH0, JP_GLITCH1, JP_GLITCH2, JP_GLITCH3);
+  changed |= commit_all(JOYP_RA, JOYP_LB, JOYP_UC, JOYP_DS,
+                        JOYP_UDLR, JOYP_ABCS, DBG_FF00_D6, DBG_FF00_D7);
+  changed |= commit_all(JOYP_L0, JOYP_L1, JOYP_L2, JOYP_L3, WAKE_CPU);
+  return changed;
 }
 
 //-----------------------------------------------------------------------------
 
-void Joypad_tock(const BusTristates& bus,
-                 const BusSignals& ctl,
-                 const ClkSignals& clk,
-                 const RstSignals& rst_sig,
-                 const Joypad& prev,
-                 Joypad& next) {
+JoypadSignals JoypadRegisters::tick(const ClkSignals& clk,
+                                    const RstSignals& rst_sig,
+                                    const BusSignals& bus_ctl,
+                                    const DebugSignals& dbg_sig,
+                                    const DecoderSignals& dec_sig,
+                                    JoypadPins& joy_pins,
+                                    BusTristates& bus_tri) {
+  /*p10.AKUG*/ wire A06n = not(bus_tri.A06());
+  /*p10.BYKO*/ wire A05n = not(bus_tri.A05());
 
-  /*p10.AMUS*/ wire ADDR_xxxxxxxx0xx00000 = nor(bus.A00(), bus.A01(), bus.A02(), bus.A03(), bus.A04(), bus.A07());
-  /*p07.TUNA*/ wire ADDR_0000_FE00 = nand(bus.A15(), bus.A14(), bus.A13(), bus.A12(), bus.A11(), bus.A10(), bus.A09());
-  /*p07.TONA*/ wire ADDR_08n = not(bus.A08());
-  /*p07.SYKE*/ wire ADDR_FFXX = nor(ADDR_0000_FE00, ADDR_08n);
-  /*p10.ANAP*/ wire ADDR_111111110xx00000 = and(ADDR_xxxxxxxx0xx00000, ADDR_FFXX);
-  /*p10.AKUG*/ wire A06n = not(bus.A06());
-  /*p10.BYKO*/ wire A05n = not(bus.A05());
+  // FIXME really unsure about these pin assignments, seem to have a few missing signals
 
-  /*p02.KERY*/ wire ANY_BUTTON = or(prev.PIN_P13_C, prev.PIN_P12_C, prev.PIN_P11_C, prev.PIN_P10_C);
-  /*p02.BATU*/ next.JP_GLITCH0.tock(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, ANY_BUTTON);
-  /*p02.ACEF*/ next.JP_GLITCH1.tock(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, prev.JP_GLITCH0);
-  /*p02.AGEM*/ next.JP_GLITCH2.tock(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, prev.JP_GLITCH1);
-  /*p02.APUG*/ next.JP_GLITCH3.tock(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, prev.JP_GLITCH2);
+  /*p05.KOLE*/ joy_pins.P10_A = nand(JOYP_RA,  dbg_sig.FF60_0);
+  /*p05.KYBU*/ joy_pins.P10_D = nor (JOYP_RA,  dbg_sig.FF60_0n);
+  /*p05.KYTO*/ joy_pins.P11_A = nand(JOYP_LB,  dbg_sig.FF60_0);
+  /*p05.KABU*/ joy_pins.P11_D = nor (JOYP_LB,  dbg_sig.FF60_0n);
+  /*p05.KYHU*/ joy_pins.P12_A = nand(JOYP_UC,  dbg_sig.FF60_0);
+  /*p05.KASY*/ joy_pins.P12_D = nor (JOYP_UC,  dbg_sig.FF60_0n); // schematic wrong
+  /*p05.KORY*/ joy_pins.P13_A = nand(JOYP_DS,  dbg_sig.FF60_0);
+  /*p05.KALE*/ joy_pins.P13_D = nor (JOYP_DS,  dbg_sig.FF60_0n);
+  /*p05.KARU*/ joy_pins.P14_A = or(!JOYP_UDLR, dbg_sig.FF60_0n);
+  /*p05.KARU*/ joy_pins.P14_D = JOYP_UDLR;
+  /*p05.CELA*/ joy_pins.P15_A = or(!JOYP_ABCS, dbg_sig.FF60_0n);
+  /*p05.KARU*/ joy_pins.P15_D = !JOYP_ABCS;
 
-  /*p10.ATOZ*/ wire FF00_WRn   = nand(ctl.TAPU_CPUWR, ADDR_111111110xx00000, A06n, A05n);
-  /*p05.JUTE*/ next.JOYP_RA    .tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D0());
-  /*p05.KECY*/ next.JOYP_LB    .tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D1());
-  /*p05.JALE*/ next.JOYP_UC    .tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D2());
-  /*p05.KYME*/ next.JOYP_DS    .tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D3());
-  /*p05.KELY*/ next.JOYP_UDLR  .tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D4());
-  /*p05.COFY*/ next.JOYP_ABCS  .tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D5());
-  /*p05.KUKO*/ next.DBG_FF00_D6.tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D6());
-  /*p05.KERU*/ next.DBG_FF00_D7.tock(FF00_WRn, rst_sig.SYS_RESETn, bus.D7());
+  /*p02.KERY*/ wire ANY_BUTTON = or(joy_pins.P13_C, joy_pins.P12_C, joy_pins.P11_C, joy_pins.P10_C);
+
+  /*p02.AWOB*/ WAKE_CPU.set(ANY_BUTTON, clk.BOGA_xBCDEFGH);
+
+  /*p02.BATU*/ JP_GLITCH0.set(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, ANY_BUTTON);
+  /*p02.ACEF*/ JP_GLITCH1.set(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, JP_GLITCH0);
+  /*p02.AGEM*/ JP_GLITCH2.set(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, JP_GLITCH1);
+  /*p02.APUG*/ JP_GLITCH3.set(clk.BOGA_xBCDEFGH, rst_sig.SYS_RESETn, JP_GLITCH2);
+  /*p02.ASOK*/ wire INT_JP = and(JP_GLITCH3, JP_GLITCH0);
+
+  /*p10.ATOZ*/ wire FF00_WRn   = nand(bus_ctl.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000, A06n, A05n);
+  /*p05.JUTE*/ JOYP_RA    .set(FF00_WRn, rst_sig.SYS_RESETn, bus_tri.D0());
+  /*p05.KECY*/ JOYP_LB    .set(FF00_WRn, rst_sig.SYS_RESETn, bus_tri.D1());
+  /*p05.JALE*/ JOYP_UC    .set(FF00_WRn, rst_sig.SYS_RESETn, bus_tri.D2());
+  /*p05.KYME*/ JOYP_DS    .set(FF00_WRn, rst_sig.SYS_RESETn, bus_tri.D3());
+  /*p05.KELY*/ JOYP_UDLR  .set(FF00_WRn, rst_sig.SYS_RESETn, bus_tri.D4());
+  /*p05.COFY*/ JOYP_ABCS  .set(FF00_WRn, rst_sig.SYS_RESETn, bus_tri.D5());
+  /*p05.KUKO*/ DBG_FF00_D6.set(FF00_WRn, rst_sig.SYS_RESETn, bus_tri.D6());
+  /*p05.KERU*/ DBG_FF00_D7.set(FF00_WRn, rst_sig.SYS_RESETn, bus_tri.D7());
+
+  /*p10.ACAT*/ wire FF00_RD = and (bus_ctl.TEDO_CPURD, dec_sig.ADDR_111111110xx00000, A06n, A05n);
+  /*p05.BYZO*/ wire FF00_RDn = not(FF00_RD);
+  /*p05.KEVU*/ JOYP_L0.set(joy_pins.P10_C, FF00_RDn);
+  /*p05.KAPA*/ JOYP_L1.set(joy_pins.P11_C, FF00_RDn);
+  /*p05.KEJA*/ JOYP_L2.set(joy_pins.P12_C, FF00_RDn);
+  /*p05.KOLO*/ JOYP_L3.set(joy_pins.P13_C, FF00_RDn);
+
+  if (!FF00_RDn) bus_tri.set_data(
+    /*p05.KEMA*/ JOYP_L0,
+    /*p05.KURO*/ JOYP_L1,
+    /*p05.KUVE*/ JOYP_L2,
+    /*p05.JEKU*/ JOYP_L3,
+    /*p05.KOCE*/ JOYP_UDLR,
+    /*p05.CUDY*/ JOYP_ABCS,
+    /*p05.KUKO*/ DBG_FF00_D6,
+    /*p05.KERU*/ DBG_FF00_D7
+  );
+
+  return {
+    .INT_JP = INT_JP,
+    .WAKE_CPU = WAKE_CPU,
+  };
 }
 
 //-----------------------------------------------------------------------------

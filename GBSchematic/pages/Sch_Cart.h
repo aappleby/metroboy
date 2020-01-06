@@ -13,11 +13,12 @@ struct Cart {
   void pass_begin();
   bool pass_end();
 
-  void tick(bool CLK, bool WRn, bool RDn, bool CSn, bool RSTn, BusTristates& bus_tri);
+  void tick(CartPins& pins);
 
   uint16_t addr;
   bool old_clk;
-  uint8_t rom[65536];
+  uint8_t rom[32768];
+  uint8_t ram[16384];
 };
 
 //-----------------------------------------------------------------------------

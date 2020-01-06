@@ -20,12 +20,14 @@ struct ClkSignals {
   /*p01.BOGA*/ wire BOGA_xBCDEFGH; // to joypad, reset, timer, debug
 
   // gated on BUTY_CLKREQ
+  /*p01.BUDE*/ wire BUDE_xxxxEFGH;
   /*p01.DOVA*/ wire DOVA_ABCDxxxx; // main audio 1m clock
   /*p01.UVYT*/ wire UVYT_ABCDxxxx; // dma, to cart?
   /*p04.MOPA*/ wire MOPA_xxxxEFGH; // oam, dma
   /*p01.BEDO*/ wire BEDO_Axxxxxxx; // debug clock
   /*p01.BOWA*/ wire BOWA_xBCDEFGH; // to cpu
   /*p17.BORY*/ wire BORY_AxxxxxGH; // to wave ram
+
 };
 
 struct ClkRegisters {

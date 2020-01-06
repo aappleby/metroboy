@@ -29,6 +29,7 @@
 #include "Sch_Registers.h"
 #include "Sch_Clocks.h"
 #include "Sch_Decoder.h"
+#include "Sch_Joypad.h"
 
 namespace Schematics {
 
@@ -44,22 +45,23 @@ struct Gameboy {
   RstSignals   rst_sig;
   BusTristates        bus;
   BusSignals ctl;
-  Decoder    dec;
-  Debug      dbg;
+  //Decoder    dec;
+  //Debug      dbg;
 
-  Sprites    spr;
-  PixelPipe  pix;
-  Video      vid;
-  Serial     ser;
+  //Sprites    spr;
+  //PixelPipe  pix;
+  //Video      vid;
+  //Serial     ser;
   Timer      tim;
-  DMA        dma;
-  Interrupts irq;
-  Joypad     joy;
-  Pins       pin;
+  //DMA        dma;
+  //Interrupts irq;
+  //Joypad     joy;
+  //Pins       pin;
+
   //LcdRegisters  lcd;
   Bootrom    rom;
-  OAM        oam;
-  Vram       vrm;
+  //OAM        oam;
+  //Vram       vrm;
   //LcdRegisterseg;
 
   ApuControl apu;

@@ -5,6 +5,8 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
+#if 0
+
 void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
                       const Gameboy& a,
                       const Gameboy& b,
@@ -455,6 +457,8 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p18.AXOL*/ next.ch3.WAVE_A3 = mux2(b.ch3.WAVE_IDX4, b.bus.A03(), CH3_ACTIVE);
   }
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 

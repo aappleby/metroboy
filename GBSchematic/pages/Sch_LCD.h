@@ -6,12 +6,24 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct LcdSignals {
+  /*p21.POPU*/ wire VBLANK_d4;
   /*p21.PARU*/ wire VBLANK_d4b;
+  /*p21.VYPU*/ wire INT_VBL;
   /*p28.BYHA*/ wire VID_LINE_TRIG_d4n; // p001+2
   /*p28.ATEJ*/ wire VID_LINE_TRIG_d4a; // p001+2
   /*p28.BYVA*/ wire VID_LINE_TRIG_d4p; // p001+2
   /*p29.DYBA*/ wire VID_LINE_TRIG_d4c; // p001+2
   /*p27.XAHY*/ wire VID_LINE_TRIG_d4o; // p001+2
+  /*p29.CATU*/ wire VID_LINE_d4;       // p001+8
+
+  /*p21.MUWY*/ wire Y0; // increments at p909, reset to 0 at p153:001
+  /*p21.MYRO*/ wire Y1;
+  /*p21.LEXA*/ wire Y2;
+  /*p21.LYDO*/ wire Y3;
+  /*p21.LOVU*/ wire Y4;
+  /*p21.LEMA*/ wire Y5;
+  /*p21.MATO*/ wire Y6;
+  /*p21.LAFO*/ wire Y7;
 };
 
 //-----------------------------------------------------------------------------

@@ -37,8 +37,8 @@ struct LcdRegisters {
   void pass_begin();
   bool pass_end();
 
-  LcdSignals tock_slow(const VclkSignals& vid_clk, const VrstSignals& vid_rst);
-  LcdSignals signals(const VrstSignals& vid_rst);
+  LcdSignals tock_slow(const VclkSignals& vid_clk, const RstSignals& rst_sig);
+  LcdSignals signals(const RstSignals& rst_sig);
 
   uint32_t x() const {
     return (X0 << 0) | (X1 << 1) | (X2 << 2) | (X3 << 3) | (X4 << 4) | (X5 << 5) | (X6 << 6);

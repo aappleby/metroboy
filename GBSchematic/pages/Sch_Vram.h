@@ -3,15 +3,23 @@
 
 namespace Schematics {
 
+struct OamSignals;
 struct PixelPipeSignals;
 
 //-----------------------------------------------------------------------------
 // Internal VRAM bus
 
 struct VramBus {
-  bool MCS;
-  bool MOEn;
-  bool MWR;
+  static VramBus tick(const LcdSignals& lcd_sig,
+                      const VidRegisters2& vid_regs,
+                      const SpriteSignals& spr_sig,
+                      const DmaSignals& dma_sig,
+                      const OamSignals& oam_sig,
+                      const VidSignals& vid_sig,
+                      const PixelPipeSignals& pix_sig,
+                      const JoypadPins& joy_pins,
+                      const SpriteTristate& spr_tri,
+                      const BusTristates& bus_tri);
 
   bool MA00;
   bool MA01;

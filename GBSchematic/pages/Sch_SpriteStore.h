@@ -74,7 +74,7 @@ struct SpriteStoreRegisters {
   bool pass_end();
 
   SpriteStoreSignals tick(const ClkSignals& clk_sig,
-                          const VrstSignals& vid_rst,
+                          const RstSignals& rst_sig,
                           const LcdSignals& lcd_sig,
                           const SpriteSignals& spr_sig,
                           const VidSignals& vid_sig,

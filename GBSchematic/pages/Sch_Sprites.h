@@ -48,7 +48,7 @@ struct SpriteRegisters {
 
   SpriteSignals tick(const ClkSignals& clk_sig1,
                      const VclkSignals& vid_clk,
-                     const VrstSignals& vid_rst,
+                     const RstSignals& rst_sig,
                      const JoypadPins& joy_pins,
                      const DmaSignals& dma_sig,
                      const LcdSignals& lcd_sig,

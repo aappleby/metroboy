@@ -40,7 +40,6 @@ int main(int /*argc*/, char** /*argv*/) {
 
     ClkSignals clk_sig1 = gb.clk_reg1.signals(gb.sys_reg);
     RstSignals rst_sig1 = gb.rst_reg.rst_signals(gb.sys_reg, clk_sig1);
-    VrstSignals vid_rst = gb.rst_reg.vrst_signals(gb.sys_reg, rst_sig1);
     VclkSignals vid_clk_sig = gb.vclk_reg.signals();
     LcdSignals lcd_sig = gb.lcd_reg.signals(vid_rst);
     BusSignals bus_ctl = BusSignals::tick(gb.sys_reg, clk_sig1);

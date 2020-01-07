@@ -3,7 +3,7 @@
 
 #include "Sch_SpriteStore.h"
 
-#pragma warning(disable:4100)
+//#pragma warning(disable:4100)
 
 namespace Schematics {
 
@@ -18,16 +18,15 @@ bool VidRegisters::pass_end() { return false; }
 
 
 VidSignals VidRegisters::tick(const ClkSignals& clk_sig,
-                              const RstSignals& rst_sig1,
-                              const VclkSignals& vid_clk,
-                              const VrstSignals& vid_rst,
+                              const RstSignals& /*rst_sig*/,
+                              const VclkSignals& /*vid_clk*/,
                               const JoypadPins& joy_pins,
-                              const BusSignals& bus_sig,
-                              const DecoderSignals& dec_sig,
-                              const CartPins& cart_pins,
-                              const LcdSignals& lcd_sig,
-                              const SpriteStoreSignals& sst_sig,
-                              BusTristates& bus_tri) {
+                              const BusSignals& /*bus_sig*/,
+                              const DecoderSignals& /*dec_sig*/,
+                              const CartPins& /*cart_pins*/,
+                              const LcdSignals& /*lcd_sig*/,
+                              const SpriteStoreSignals& /*sst_sig*/,
+                              BusTristates& /*bus_tri*/) {
 
   /*p27.VYPO*/ wire VYPO = not(joy_pins.P10_B);
 

@@ -6,9 +6,9 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct Bootrom {
-  void tick(const BusSignals& bus_sig,
+  void tick(const SysSignals& sys_sig,
+            const BusSignals& bus_sig,
             const RstSignals& rst_sig,
-            const DebugSignals& dbg_sig,
             const DecoderSignals& dec_sig,
             BusTristates& bus_tri);
 

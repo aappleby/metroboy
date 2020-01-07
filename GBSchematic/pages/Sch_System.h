@@ -5,6 +5,17 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
+struct SysPins {
+  /* PIN_71 */ bool RST;     // -> TUBO,ASOL,UFOL,UPOJ
+  /* PIN_74 */ bool CLKIN_A; // clock good signal
+  /* PIN_74 */ bool CLKIN_B; // clock signal
+
+  /* PIN_76 */ bool T2;      // -> P07.UVAR
+  /* PIN_77 */ bool T1;      // -> P07.UBET
+};
+
+//-----------------------------------------------------------------------------
+
 struct SysSignals {
   // master clock
   const int phase;
@@ -12,10 +23,11 @@ struct SysSignals {
   // input pins
   wire PIN_RST;
   wire PIN_CLK_GOOD;
-  wire PIN_MODE_DBG1;
-  wire PIN_MODE_DBG2;
+  bool PIN_T1;
+  bool PIN_T2;
   wire PIN_RD_C;
   wire PIN_WR_C;
+  bool PIN_P10_B;
 
   // signals from cpu
   wire CPU_CLK_REQ;
@@ -26,12 +38,13 @@ struct SysSignals {
 
   // other random stuff for convenience
   wire MODE_PROD;
+  wire MODE_DBG1;
+  wire MODE_DBG2;
   wire BOOT_BIT;
   wire LCDC_EN;
   wire DIV_06n;
   wire DIV_07n;
   wire DIV_15;
-  wire FF60_1;
 
   // signals trivially derived from the above
   /*p01.ATAL*/ wire ATAL_AxCxExGx;
@@ -64,10 +77,11 @@ struct SysRegisters {
   // input pins
   bool PIN_RST;
   bool PIN_CLK_GOOD;
-  bool PIN_MODE_DBG1;
-  bool PIN_MODE_DBG2;
+  bool PIN_T1;
+  bool PIN_T2;
   bool PIN_RD_C;
   bool PIN_WR_C;
+  bool PIN_P10_B;
 
   // signals from cpu
   bool CPU_CLK_REQ;
@@ -82,7 +96,6 @@ struct SysRegisters {
   bool DIV_06n;
   bool DIV_07n;
   bool DIV_15;
-  bool FF60_1;
 };
 
 //-----------------------------------------------------------------------------

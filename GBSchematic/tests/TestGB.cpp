@@ -120,15 +120,14 @@ int TestGB::sim_pass() {
   for (int pass = 0; pass < 32; pass++) {
     pass_begin();
 
-    SysSignals   sys_sig  = sys_reg.signals();
-    ClkSignals   clk_sig  = clk_reg.tick_slow(sys_sig);
-    RstSignals   rst_sig  = rst_reg.tick_slow(sys_sig, clk_sig);
+    SysSignals     sys_sig  = sys_reg.signals();
+    ClkSignals     clk_sig  = clk_reg.tick_slow(sys_sig);
+    RstSignals     rst_sig  = rst_reg.tick_slow(sys_sig, clk_sig);
+    VclkSignals    vclk_sig = vclk_reg.tick_slow(clk_sig, rst_sig);
+    DecoderSignals dec_sig  = DecoderSignals::tick(sys_sig, clk_sig, bus_tri);
+    BusSignals     bus_sig  = BusSignals::tick(sys_sig, clk_sig, bus_tri);
 
     //DebugSignals dbg_sig  = dbg_reg.tick(bus_sig, clk_sig, 
-    //BusSignals   bus_sig  = BusSignals::tick(sys_sig, clk_sig);
-    //VrstSignals  vid_rst  = rst_reg.vrst_signals(sys_sig, rst_sig);
-    //VclkSignals  vclk_sig = vclk_reg.tick_slow(clk_sig, vid_rst);
-    //DecoderSignals dec_sig  = DecoderSignals::tick(sys_sig, clk_sig, bus_tri);
     //VidSignals   vid_sig  = vid_reg.tick(sys_sig, rst_sig, bus_sig, dec_sig, bus_tri);
     //TimerSignals tim_sig  = tim_reg.tick(sys_sig, clk_sig, rst_sig, bus_sig, dec_sig, bus_tri);
     //LcdSignals   lcd_sig  = lcd_reg.tock_slow(vclk_sig, vid_rst);

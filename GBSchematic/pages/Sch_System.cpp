@@ -9,8 +9,8 @@ void SysRegisters::pwron() {
 
   PIN_RST        = true;
   PIN_CLK_GOOD   = false;
-  PIN_MODE_DBG1  = false;
-  PIN_MODE_DBG2  = false;
+  PIN_T1         = false;
+  PIN_T2         = false;
 
   CPU_CLK_REQ    = false;
   CPU_ADDR_VALID = false;
@@ -23,7 +23,6 @@ void SysRegisters::pwron() {
   DIV_06n        = true;
   DIV_07n        = true;
   DIV_15         = false;
-  FF60_1         = false;
 }
 
 void SysRegisters::reset() {
@@ -32,8 +31,8 @@ void SysRegisters::reset() {
 
   PIN_RST        = false;
   PIN_CLK_GOOD   = true;
-  PIN_MODE_DBG1  = false;
-  PIN_MODE_DBG2  = false;
+  PIN_T1         = false;
+  PIN_T2         = false;
 
   CPU_CLK_REQ    = true;
   CPU_ADDR_VALID = false;
@@ -46,7 +45,6 @@ void SysRegisters::reset() {
   DIV_06n        = true;
   DIV_07n        = true;
   DIV_15         = false;
-  FF60_1         = false;
 }
 
 void SysRegisters::phase_begin() {
@@ -84,28 +82,38 @@ SysSignals SysRegisters::signals() const {
   /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
   /*p01.UCOB*/ wire UCOB_CLKBAD   = not(PIN_CLK_GOOD);
   /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(PIN_CLK_GOOD);
-  wire MODE_PROD = !PIN_MODE_DBG1 && !PIN_MODE_DBG2;
+
+  /*p07.UBET*/ wire T1n = not(PIN_T1);
+  /*p07.UVAR*/ wire T2n = not(PIN_T2);
+  /*p07.UPOJ*/ wire MODE_PROD   = nand(T1n, T2n, PIN_RST);
+  /*p07.UMUT*/ wire MODE_DBG1   = and(PIN_T1, T2n);
+  /*p07.UNOR*/ wire MODE_DBG2   = and(PIN_T2, T1n);
 
   return {
     .phase          = phase         ,
     .PIN_RST        = PIN_RST       ,
     .PIN_CLK_GOOD   = PIN_CLK_GOOD  ,
-    .PIN_MODE_DBG1  = PIN_MODE_DBG1 ,
-    .PIN_MODE_DBG2  = PIN_MODE_DBG2 ,
+    .PIN_T1         = PIN_T1        ,
+    .PIN_T2         = PIN_T2        ,
     .PIN_RD_C       = PIN_RD_C      ,
     .PIN_WR_C       = PIN_WR_C      ,
+    .PIN_P10_B      = PIN_P10_B     ,
+
     .CPU_CLK_REQ    = CPU_CLK_REQ   ,
     .CPU_ADDR_VALID = CPU_ADDR_VALID,
     .CPU_RAW_RD     = CPU_RAW_RD    ,
     .CPU_RAW_WR     = CPU_RAW_WR    ,
     .CPU_FROM_CPU5  = CPU_FROM_CPU5 ,
+
     .MODE_PROD      = MODE_PROD     ,
+    .MODE_DBG1      = MODE_DBG1     ,
+    .MODE_DBG2      = MODE_DBG2     ,
     .BOOT_BIT       = BOOT_BIT      ,
     .LCDC_EN        = LCDC_EN       ,
     .DIV_06n        = DIV_06n       ,
     .DIV_07n        = DIV_07n       ,
     .DIV_15         = DIV_15        ,
-    .FF60_1         = FF60_1        ,
+
     .ATAL_AxCxExGx  = ATAL_AxCxExGx ,
     .AZOF_xBxDxFxH  = AZOF_xBxDxFxH ,
     .ABOL_CLKREQn   = ABOL_CLKREQn  ,

@@ -71,6 +71,12 @@ VidSignals2 VidRegisters2::tick(const SysSignals& /*sys_sig*/,
                                 const BusSignals& bus_sig,
                                 const DecoderSignals& dec_sig,
                                 BusTristates & bus_out) {
+  
+  /*p01.CUNU*/ bool CUNU_RESETn = not(rst_sig.SYS_RESET);
+  /*p01.XORE*/ bool XORE_RESET  = not(CUNU_RESETn);
+  /*p01.WESY*/ bool WESY_RESET  = not(XORE_RESET);
+  /*p01.WALU*/ bool WALU_RESET  = not(XORE_RESET);
+  /*p01.XARE*/ bool XARE_RESET  = not(XORE_RESET);
 
   //----------
 
@@ -90,14 +96,14 @@ VidSignals2 VidRegisters2::tick(const SysSignals& /*sys_sig*/,
     /*p23.XEBU*/ LCDC_EN
   );
 
-  /*p23.VYXE*/ LCDC_BGEN    .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D0());
-  /*p23.XYLO*/ LCDC_SPEN    .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D1());
-  /*p23.XYMO*/ LCDC_SPSIZE  .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D2());
-  /*p23.XAFO*/ LCDC_BGMAP   .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D3());
-  /*p23.WEXU*/ LCDC_BGTILE  .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D4());
-  /*p23.WYMO*/ LCDC_WINEN   .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D5());
-  /*p23.WOKY*/ LCDC_WINMAP  .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D6());
-  /*p23.XONA*/ LCDC_EN      .set(FF40_WRn, rst_sig.XARE_RESET, bus_out.D7());
+  /*p23.VYXE*/ LCDC_BGEN    .set(FF40_WRn, XARE_RESET, bus_out.D0());
+  /*p23.XYLO*/ LCDC_SPEN    .set(FF40_WRn, XARE_RESET, bus_out.D1());
+  /*p23.XYMO*/ LCDC_SPSIZE  .set(FF40_WRn, XARE_RESET, bus_out.D2());
+  /*p23.XAFO*/ LCDC_BGMAP   .set(FF40_WRn, XARE_RESET, bus_out.D3());
+  /*p23.WEXU*/ LCDC_BGTILE  .set(FF40_WRn, XARE_RESET, bus_out.D4());
+  /*p23.WYMO*/ LCDC_WINEN   .set(FF40_WRn, XARE_RESET, bus_out.D5());
+  /*p23.WOKY*/ LCDC_WINMAP  .set(FF40_WRn, XARE_RESET, bus_out.D6());
+  /*p23.XONA*/ LCDC_EN      .set(FF40_WRn, XARE_RESET, bus_out.D7());
 
   //----------
 
@@ -117,14 +123,14 @@ VidSignals2 VidRegisters2::tick(const SysSignals& /*sys_sig*/,
     /*p23.GYZA*/ SCY7
   );
 
-  /*p23.GAVE*/ SCY0.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D0());
-  /*p23.FYMO*/ SCY1.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D1());
-  /*p23.FEZU*/ SCY2.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D2());
-  /*p23.FUJO*/ SCY3.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D3());
-  /*p23.DEDE*/ SCY4.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D4());
-  /*p23.FOTY*/ SCY5.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D5());
-  /*p23.FOHA*/ SCY6.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D6());
-  /*p23.FUNY*/ SCY7.set(FF42_WRn, rst_sig.CUNU_RESETn, bus_out.D7());
+  /*p23.GAVE*/ SCY0.set(FF42_WRn, CUNU_RESETn, bus_out.D0());
+  /*p23.FYMO*/ SCY1.set(FF42_WRn, CUNU_RESETn, bus_out.D1());
+  /*p23.FEZU*/ SCY2.set(FF42_WRn, CUNU_RESETn, bus_out.D2());
+  /*p23.FUJO*/ SCY3.set(FF42_WRn, CUNU_RESETn, bus_out.D3());
+  /*p23.DEDE*/ SCY4.set(FF42_WRn, CUNU_RESETn, bus_out.D4());
+  /*p23.FOTY*/ SCY5.set(FF42_WRn, CUNU_RESETn, bus_out.D5());
+  /*p23.FOHA*/ SCY6.set(FF42_WRn, CUNU_RESETn, bus_out.D6());
+  /*p23.FUNY*/ SCY7.set(FF42_WRn, CUNU_RESETn, bus_out.D7());
 
   //----------
 
@@ -144,14 +150,14 @@ VidSignals2 VidRegisters2::tick(const SysSignals& /*sys_sig*/,
     /*p23.CASY*/ SCX7
   );
 
-  /*p23.DATY*/ SCX0.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D0());
-  /*p23.DUZU*/ SCX1.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D1());
-  /*p23.CYXU*/ SCX2.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D2());
-  /*p23.GUBO*/ SCX3.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D3());
-  /*p23.BEMY*/ SCX4.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D4());
-  /*p23.CUZY*/ SCX5.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D5());
-  /*p23.CABU*/ SCX6.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D6());
-  /*p23.BAKE*/ SCX7.set(FF43_WRn, rst_sig.CUNU_RESETn, bus_out.D7());
+  /*p23.DATY*/ SCX0.set(FF43_WRn, CUNU_RESETn, bus_out.D0());
+  /*p23.DUZU*/ SCX1.set(FF43_WRn, CUNU_RESETn, bus_out.D1());
+  /*p23.CYXU*/ SCX2.set(FF43_WRn, CUNU_RESETn, bus_out.D2());
+  /*p23.GUBO*/ SCX3.set(FF43_WRn, CUNU_RESETn, bus_out.D3());
+  /*p23.BEMY*/ SCX4.set(FF43_WRn, CUNU_RESETn, bus_out.D4());
+  /*p23.CUZY*/ SCX5.set(FF43_WRn, CUNU_RESETn, bus_out.D5());
+  /*p23.CABU*/ SCX6.set(FF43_WRn, CUNU_RESETn, bus_out.D6());
+  /*p23.BAKE*/ SCX7.set(FF43_WRn, CUNU_RESETn, bus_out.D7());
 
   //----------
 
@@ -171,14 +177,14 @@ VidSignals2 VidRegisters2::tick(const SysSignals& /*sys_sig*/,
     /*p23.PUFY*/ LYC7
   );
 
-  /*p23.SYRY*/ LYC0.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D0());
-  /*p23.VUCE*/ LYC1.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D1());
-  /*p23.SEDY*/ LYC2.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D2());
-  /*p23.SALO*/ LYC3.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D3());
-  /*p23.SOTA*/ LYC4.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D4());
-  /*p23.VAFA*/ LYC5.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D5());
-  /*p23.VEVO*/ LYC6.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D6());
-  /*p23.RAHA*/ LYC7.set(FF45_WRn, rst_sig.WESY_RESET, bus_out.D7());
+  /*p23.SYRY*/ LYC0.set(FF45_WRn, WESY_RESET, bus_out.D0());
+  /*p23.VUCE*/ LYC1.set(FF45_WRn, WESY_RESET, bus_out.D1());
+  /*p23.SEDY*/ LYC2.set(FF45_WRn, WESY_RESET, bus_out.D2());
+  /*p23.SALO*/ LYC3.set(FF45_WRn, WESY_RESET, bus_out.D3());
+  /*p23.SOTA*/ LYC4.set(FF45_WRn, WESY_RESET, bus_out.D4());
+  /*p23.VAFA*/ LYC5.set(FF45_WRn, WESY_RESET, bus_out.D5());
+  /*p23.VEVO*/ LYC6.set(FF45_WRn, WESY_RESET, bus_out.D6());
+  /*p23.RAHA*/ LYC7.set(FF45_WRn, WESY_RESET, bus_out.D7());
 
   //----------
 
@@ -279,14 +285,14 @@ VidSignals2 VidRegisters2::tick(const SysSignals& /*sys_sig*/,
     /*p23.MERA*/ WY7
   );
 
-  /*p23.NESO*/ WY0.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D0());
-  /*p23.NYRO*/ WY1.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D1());
-  /*p23.NAGA*/ WY2.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D2());
-  /*p23.MELA*/ WY3.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D3());
-  /*p23.NULO*/ WY4.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D4());
-  /*p23.NENE*/ WY5.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D5());
-  /*p23.NUKA*/ WY6.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D6());
-  /*p23.NAFU*/ WY7.set(FF4A_WRn, rst_sig.WALU_RESET, bus_out.D7());
+  /*p23.NESO*/ WY0.set(FF4A_WRn, WALU_RESET, bus_out.D0());
+  /*p23.NYRO*/ WY1.set(FF4A_WRn, WALU_RESET, bus_out.D1());
+  /*p23.NAGA*/ WY2.set(FF4A_WRn, WALU_RESET, bus_out.D2());
+  /*p23.MELA*/ WY3.set(FF4A_WRn, WALU_RESET, bus_out.D3());
+  /*p23.NULO*/ WY4.set(FF4A_WRn, WALU_RESET, bus_out.D4());
+  /*p23.NENE*/ WY5.set(FF4A_WRn, WALU_RESET, bus_out.D5());
+  /*p23.NUKA*/ WY6.set(FF4A_WRn, WALU_RESET, bus_out.D6());
+  /*p23.NAFU*/ WY7.set(FF4A_WRn, WALU_RESET, bus_out.D7());
 
   //----------
 
@@ -306,14 +312,14 @@ VidSignals2 VidRegisters2::tick(const SysSignals& /*sys_sig*/,
     /*p23.MARA*/ WX7
   );
 
-  /*p23.MYPA*/ WX0.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D0());
-  /*p23.NOFE*/ WX1.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D1());
-  /*p23.NOKE*/ WX2.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D2());
-  /*p23.MEBY*/ WX3.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D3());
-  /*p23.MYPU*/ WX4.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D4());
-  /*p23.MYCE*/ WX5.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D5()); 
-  /*p23.MUVO*/ WX6.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D6());
-  /*p23.NUKU*/ WX7.set(FF4B_WRn, rst_sig.WALU_RESET, bus_out.D7());
+  /*p23.MYPA*/ WX0.set(FF4B_WRn, WALU_RESET, bus_out.D0());
+  /*p23.NOFE*/ WX1.set(FF4B_WRn, WALU_RESET, bus_out.D1());
+  /*p23.NOKE*/ WX2.set(FF4B_WRn, WALU_RESET, bus_out.D2());
+  /*p23.MEBY*/ WX3.set(FF4B_WRn, WALU_RESET, bus_out.D3());
+  /*p23.MYPU*/ WX4.set(FF4B_WRn, WALU_RESET, bus_out.D4());
+  /*p23.MYCE*/ WX5.set(FF4B_WRn, WALU_RESET, bus_out.D5()); 
+  /*p23.MUVO*/ WX6.set(FF4B_WRn, WALU_RESET, bus_out.D6());
+  /*p23.NUKU*/ WX7.set(FF4B_WRn, WALU_RESET, bus_out.D7());
 
   return {};
 }

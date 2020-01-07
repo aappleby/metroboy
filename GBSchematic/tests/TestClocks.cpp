@@ -180,8 +180,7 @@ void test_clock_phases() {
 
     SysSignals sys_sig   = gb.sys_reg.signals();
     ClkSignals clk_sig1  = gb.clk_reg.signals(sys_sig);
-    RstSignals rst_sig1  = gb.rst_reg.rst_signals(sys_sig, clk_sig1);
-    VrstSignals vid_rst  = gb.rst_reg.vrst_signals(sys_sig, rst_sig1);
+    RstSignals rst_sig1  = gb.rst_reg.tick_slow(sys_sig, clk_sig1);
     VclkSignals vclk_sig = gb.vclk_reg.signals();
 
     check_phase(sys_sig,
@@ -208,10 +207,12 @@ void TestClocks() {
 
   // The video clock gen WUVU/VENA/WOSU can be in different phases depending on when LCDC_EN goes high.
 
-  gb.sys_reg.PIN_MODE_DBG1 = false;
-  gb.sys_reg.PIN_MODE_DBG2 = false;
   gb.sys_reg.PIN_RST = false;
   gb.sys_reg.PIN_CLK_GOOD = true;
+  gb.sys_reg.PIN_T1 = false;
+  gb.sys_reg.PIN_T2 = false;
+  gb.sys_reg.PIN_RD_C = false;
+  gb.sys_reg.PIN_WR_C = false;
   gb.sys_reg.CPU_CLK_REQ = true;
 
   // setting LCDC_EN on phase 6 or 7 makes phase match
@@ -225,8 +226,7 @@ void TestClocks() {
 
     SysSignals sys_sig  = gb.sys_reg.signals();
     ClkSignals clk_sig1 = gb.clk_reg.signals(sys_sig);
-    RstSignals rst_sig1 = gb.rst_reg.rst_signals(sys_sig, clk_sig1);
-    VrstSignals vid_rst = gb.rst_reg.vrst_signals(sys_sig, rst_sig1);
+    RstSignals rst_sig  = gb.rst_reg.tick_slow(sys_sig, clk_sig1);
     VclkSignals vclk_sig = gb.vclk_reg.signals();
 
     check_phase(sys_sig,

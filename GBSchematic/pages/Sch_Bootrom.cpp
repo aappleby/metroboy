@@ -1,5 +1,9 @@
 #include "Sch_Bootrom.h"
-#include "Sch_Gameboy.h"
+
+#include "Sch_System.h"
+#include "Sch_BusControl.h"
+#include "Sch_Decoder.h"
+#include "Sch_Resets.h"
 
 namespace Schematics {
 
@@ -43,9 +47,9 @@ static const uint8_t DMG_ROM_bin[] = {
   0xfb, 0x86, 0x20, 0xfe, 0x3e, 0x01, 0xe0, 0x50
 };
 
-void Bootrom::tick(const BusSignals& bus_sig,
+void Bootrom::tick(const SysSignals& sys_sig,
+                   const BusSignals& bus_sig,
                    const RstSignals& rst_sig,
-                   const DebugSignals& dbg_sig,
                    const DecoderSignals& dec_sig,
                    BusTristates& bus_tri) {
 
@@ -57,7 +61,7 @@ void Bootrom::tick(const BusSignals& bus_sig,
   /*p07.ZORO*/ wire ADDR_0XXX = nor(bus_tri.A15(), bus_tri.A14(), bus_tri.A13(), bus_tri.A12());
   /*p07.ZADU*/ wire ADDR_X0XX = nor(bus_tri.A11(), bus_tri.A10(), bus_tri.A09(), bus_tri.A08());
   /*p07.ZUFA*/ wire ADDR_00XX2 = and(ADDR_0XXX, ADDR_X0XX);
-  /*p07.YAZA*/ wire MODE_DBG1n = not(dbg_sig.MODE_DBG1);
+  /*p07.YAZA*/ wire MODE_DBG1n = not(sys_sig.MODE_DBG1);
   /*p07.YULA*/ wire BOOT_RD    = and(bus_sig.TEDO_CPURD, MODE_DBG1n, ADDR_BOOT);
   /*p07.ZADO*/ wire BOOT_CSn   = nand(BOOT_RD, ADDR_00XX2);
   /*p07.ZERY*/ wire BOOT_CS    = not(BOOT_CSn);

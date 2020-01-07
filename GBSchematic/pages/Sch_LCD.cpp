@@ -92,10 +92,10 @@ bool LcdRegisters::pass_end() {
 
 //----------------------------------------
 
-LcdSignals LcdRegisters::tock_slow(const VclkSignals& vid_clk, const VrstSignals& vid_rst)
+LcdSignals LcdRegisters::tock_slow(const VclkSignals& vid_clk, const RstSignals& rst_sig)
 {
   wire TALU = vid_clk.TALU_xBCDExxx;
-  /*p01.LYHA*/ wire VID_RESET2 = not(vid_rst.VID_RESETn);
+  /*p01.LYHA*/ wire VID_RESET2 = not(rst_sig.VID_RESETn);
   /*p21.MUDE*/ wire X_RSTn = nor(NEW_LINE_d0a, VID_RESET2);
   /*p21.SAXO*/ X0.set(TALU, X_RSTn, !X0);
   /*p21.TYPO*/ X1.set(!X0,  X_RSTn, !X1);
@@ -107,7 +107,7 @@ LcdSignals LcdRegisters::tock_slow(const VclkSignals& vid_clk, const VrstSignals
 
   /*p21.SANU*/ wire LINE_END     = and(X6, X5, X4, X0); // 113 = 64 + 32 + 16 + 1, schematic is wrong
   /*p01.LYFE*/ wire VID_RESETn2 = not(VID_RESET2);
-  /*p21.RUTU*/ NEW_LINE_d0a.set(vid_clk.SONO_AxxxxFGH, vid_rst.VID_RESETn, LINE_END);
+  /*p21.RUTU*/ NEW_LINE_d0a.set(vid_clk.SONO_AxxxxFGH, rst_sig.VID_RESETn, LINE_END);
   /*p21.NYPE*/ NEW_LINE_d4a.set(vid_clk.TALU_xBCDExxx, VID_RESETn2, NEW_LINE_d0a);
   
   /*p21.NOKO*/ wire LINE_153_d0  = and(Y7, Y4, Y3, Y0); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
@@ -130,20 +130,20 @@ LcdSignals LcdRegisters::tock_slow(const VclkSignals& vid_clk, const VrstSignals
   /*p21.SELA*/ wire NEW_LINE_d0b = not(NEW_LINE_d0n);
   /*p29.ALES*/ wire LINE_144_d0n = not(LINE_144_d0);
   /*p29.ABOV*/ wire VID_LINE_d0  = and(NEW_LINE_d0b, LINE_144_d0n);
-  /*p01.ATAR*/ wire VID_RESET6  = not(vid_rst.VID_RESETn);
+  /*p01.ATAR*/ wire VID_RESET6  = not(rst_sig.VID_RESETn);
   /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
   /*p29.CATU*/ VID_LINE_d4.set(vid_clk.XUPY_xBCxxFGx, VID_RESETn3, VID_LINE_d0);
   /*p28.ANEL*/ VID_LINE_d6.set(vid_clk.AWOH_AxxDExxH, VID_RESETn3, VID_LINE_d4);
 
-  return signals(vid_rst);
+  return signals(rst_sig);
 }
 
 //-----------------------------------------------------------------------------
 
-LcdSignals LcdRegisters::signals(const VrstSignals& vid_rst)
+LcdSignals LcdRegisters::signals(const RstSignals& rst_sig)
 {
-  /*p01.ATAR*/ wire VID_RESET6  = not(vid_rst.VID_RESETn);
-  /*p01.AMYG*/ wire VID_RESET7  = not(vid_rst.VID_RESETn);
+  /*p01.ATAR*/ wire VID_RESET6  = not(rst_sig.VID_RESETn);
+  /*p01.AMYG*/ wire VID_RESET7  = not(rst_sig.VID_RESETn);
   /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
 
   /*p28.ABAF*/ wire VID_LINE_d4n = not(VID_LINE_d4);

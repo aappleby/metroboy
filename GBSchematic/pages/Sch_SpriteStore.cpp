@@ -106,7 +106,7 @@ bool SpriteStoreRegisters::pass_end() {
 }
 
 SpriteStoreSignals SpriteStoreRegisters::tick(const ClkSignals& clk_sig,
-                                              const VrstSignals& vid_rst,
+                                              const RstSignals& rst_sig,
                                               const LcdSignals& lcd_sig,
                                               const SpriteSignals& spr_sig,
                                               const VidSignals& vid_sig,
@@ -148,7 +148,7 @@ SpriteStoreSignals SpriteStoreRegisters::tick(const ClkSignals& clk_sig,
   /*p29.FOVE*/ wire FOVE = nand(store_sig9.MATCHn, store_sig8.MATCHn, store_sig7.MATCHn, store_sig6.MATCHn, store_sig5.MATCHn);
   /*p29.FEPO*/ wire STORE_MATCH = or(FEFY, FOVE);
 
-  /*p29.DEZY*/ STORE_EN_SYNC.set(clk_sig.ZEME_xBxDxFxH, vid_rst.VID_RESETn, spr_sig.STORE_EN);
+  /*p29.DEZY*/ STORE_EN_SYNC.set(clk_sig.ZEME_xBxDxFxH, rst_sig.VID_RESETn, spr_sig.STORE_EN);
 
   /*p29.BAKY*/ wire SPRITES_FULL = and(SPRITE_COUNT1, SPRITE_COUNT3);
   /*p29.CAKE*/ wire SPRITE_COUNT_CLK = or(SPRITES_FULL, STORE_EN_SYNC);

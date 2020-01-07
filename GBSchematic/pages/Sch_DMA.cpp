@@ -17,6 +17,8 @@ DmaSignals DmaRegisters::tick(const Cpu& cpu_sig,
                               const RstSignals& rst_sig,
                               BusTristates& bus_tri) {
 
+  /*p01.CUNU*/ wire CUNU_RESETn = not(rst_sig.SYS_RESET);
+
   //----------
   // FF46 DMA
 
@@ -35,7 +37,7 @@ DmaSignals DmaRegisters::tick(const Cpu& cpu_sig,
     DMA_CLKEN_LATCHn = 0;
     DMA_CLKEN_LATCH  = 1;
   }
-  if (DMA_DONE_SYNC || !rst_sig.CUNU_RESETn) {
+  if (DMA_DONE_SYNC || !CUNU_RESETn) {
     DMA_CLKEN_LATCHn = 1;
     DMA_CLKEN_LATCH  = 0;
   }
@@ -59,7 +61,7 @@ DmaSignals DmaRegisters::tick(const Cpu& cpu_sig,
   /*p04.META*/ wire CLK_DMA_LO = and(clk_sig.UVYT_ABCDxxxx, DMA_CLKEN_LATCH);
   /*p04.LORU*/ wire CLK_DMA_HI = not(FF46_WRn);
 
-  /*p04.LOKO*/ wire DMA_RST   = nand(rst_sig.CUNU_RESETn, !DMA_ENb);
+  /*p04.LOKO*/ wire DMA_RST   = nand(CUNU_RESETn, !DMA_ENb);
   /*p04.LAPA*/ wire DMA_RSTn  = not(DMA_RST);
 
   /*p04.LYXE*/ if (FF46_WRn) DMA_EN_LATCHn = 0;
@@ -67,12 +69,12 @@ DmaSignals DmaRegisters::tick(const Cpu& cpu_sig,
 
   /*p04.LUPA*/ wire DMA_EN = nor(FF46_WRn, DMA_EN_LATCHn); // this seems redundant
 
-  /*p04.MAKA*/ FROM_CPU5_SYNC.set(clk_sig.ZEME_xBxDxFxH, rst_sig.CUNU_RESETn, cpu_sig.FROM_CPU5);
+  /*p04.MAKA*/ FROM_CPU5_SYNC.set(clk_sig.ZEME_xBxDxFxH, CUNU_RESETn, cpu_sig.FROM_CPU5);
 
-  /*p04.MATU*/ DMA_CLKEN.set(clk_sig.UVYT_ABCDxxxx, rst_sig.CUNU_RESETn, DMA_CLKEN_LATCH);
+  /*p04.MATU*/ DMA_CLKEN.set(clk_sig.UVYT_ABCDxxxx, CUNU_RESETn, DMA_CLKEN_LATCH);
   /*p04.MYTE*/ DMA_DONE_SYNC.set(clk_sig.MOPA_xxxxEFGH, DMA_RSTn, DMA_DONE);
-  /*p04.LUVY*/ DMA_ENa.set(clk_sig.UVYT_ABCDxxxx, rst_sig.CUNU_RESETn, DMA_EN);
-  /*p04.LENE*/ DMA_ENb.set(clk_sig.MOPA_xxxxEFGH, rst_sig.CUNU_RESETn, DMA_ENa);
+  /*p04.LUVY*/ DMA_ENa.set(clk_sig.UVYT_ABCDxxxx, CUNU_RESETn, DMA_EN);
+  /*p04.LENE*/ DMA_ENb.set(clk_sig.MOPA_xxxxEFGH, CUNU_RESETn, DMA_ENa);
 
   /*p04.NAKY*/ DMA_A00.set(CLK_DMA_LO, DMA_RSTn, !DMA_A00);
   /*p04.PYRO*/ DMA_A01.set(!DMA_A00,   DMA_RSTn, !DMA_A01);

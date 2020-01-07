@@ -67,7 +67,6 @@ struct SysSignals;
 struct VclkSignals;
 struct VidSignals;
 struct VidSignals2;
-struct VrstSignals;
 
 //-----------------------------------------------------------------------------
 

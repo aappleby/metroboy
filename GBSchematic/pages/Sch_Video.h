@@ -111,7 +111,6 @@ struct VidRegisters {
   VidSignals tick(const ClkSignals& clk_sig,
                   const RstSignals& rst_sig1,
                   const VclkSignals& vid_clk,
-                  const VrstSignals& vid_rst,
                   const JoypadPins& joy_pins,
                   const BusSignals& bus_sig,
                   const DecoderSignals& dec_sig,

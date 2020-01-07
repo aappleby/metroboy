@@ -120,7 +120,9 @@ void Timer::tickDIV(const SysSignals&   sys_sig,
   /*p01.TAGY*/ wire FF04_RD = and(bus_sig.TEDO_CPURD, dec_sig.FF04_FF07, TOLA_A01n,     TOVY_A00n);
 
   /*p01.UFOL*/ wire DIV_RSTn = nor(sys_sig.UCOB_CLKBAD, sys_sig.PIN_RST, FF04_WR);
-  /*p01.ULUR*/ wire DIV_06_CLK = mux2n(clk_sig.BOGA_xBCDEFGH, !DIV_05, sys_sig.FF60_1);
+  
+  ///*p01.ULUR*/ wire DIV_06_CLK = mux2n(clk_sig.BOGA_xBCDEFGH, !DIV_05, sys_sig.FF60_1);
+  wire DIV_06_CLK = !DIV_05;
 
   /*p01.UKUP*/ DIV_00.set(clk_sig.BOGA_xBCDEFGH, DIV_RSTn, !DIV_00);
   /*p01.UFOR*/ DIV_01.set(!DIV_00,    DIV_RSTn, !DIV_01);

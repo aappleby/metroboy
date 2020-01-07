@@ -59,7 +59,7 @@ uint32_t SpriteRegisters::index() const {
 
 SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
                                     const VclkSignals& vid_clk,
-                                    const VrstSignals& vid_rst,
+                                    const RstSignals& rst_sig,
                                     const JoypadPins& joy_pins,
                                     const DmaSignals& dma_sig,
                                     const LcdSignals& lcd_sig,
@@ -70,7 +70,11 @@ SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
                                     const OamPins& oam_pins,
                                     SpriteTristate& sil_tri) {
 
-  /*p28.ANOM*/ wire SCAN_RSTn = nor(lcd_sig.VID_LINE_TRIG_d4a, vid_rst.VID_RESET6);
+  /*p01.ROSY*/ wire VID_RESET5 = not(rst_sig.VID_RESETn);
+  /*p01.ATAR*/ wire VID_RESET6 = not(rst_sig.VID_RESETn);
+  /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
+
+  /*p28.ANOM*/ wire SCAN_RSTn = nor(lcd_sig.VID_LINE_TRIG_d4a, VID_RESET6);
   /*p29.BALU*/ wire SCAN_RSTa = not(SCAN_RSTn);
   /*p29.BAGY*/ wire SCAN_RSTo = not(SCAN_RSTa);
 
@@ -78,7 +82,7 @@ SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
   /*p29.AVAP*/ wire SCAN_DONE_d0_TRIG = not(SCAN_DONE_d0_TRIGn);
 
   /*p28.BOGE*/ wire DMA_CLKENn = not(dma_sig.DMA_CLKEN);
-  /*p28.ASEN*/ wire ASEN = or(vid_rst.VID_RESET6, SCAN_DONE_d0_TRIG);
+  /*p28.ASEN*/ wire ASEN = or(VID_RESET6, SCAN_DONE_d0_TRIG);
   /*p28.BESU*/ wire BESU = or(lcd_sig.VID_LINE_d4, ASEN);
   /*p28.ACYL*/ wire OAM_ADDR_PARSE = and(DMA_CLKENn, BESU);
 
@@ -97,7 +101,7 @@ SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
   /*p29.TAME*/ wire SEQ_5n = nand(SPR_SEQ2, SPR_SEQ0);
 
   /*p29.TOMA*/ wire SEQ_CLK = nand(LAPE_xBxDxFxH, SEQ_5n);
-  /*p27.SECA*/ wire SPR_SEQ_RST = nor(vid_sig.SPRITE_FETCH_TRIG, vid_rst.VID_RESET5, lcd_sig.VID_LINE_TRIG_d4n);
+  /*p27.SECA*/ wire SPR_SEQ_RST = nor(vid_sig.SPRITE_FETCH_TRIG, VID_RESET5, lcd_sig.VID_LINE_TRIG_d4n);
   /*p29.TOXE*/ SPR_SEQ0.set(SEQ_CLK,       SPR_SEQ_RST, !SPR_SEQ0);
   /*p29.TULY*/ SPR_SEQ1.set(!SPR_SEQ0, SPR_SEQ_RST, !SPR_SEQ1);
   /*p29.TESE*/ SPR_SEQ2.set(!SPR_SEQ1, SPR_SEQ_RST, !SPR_SEQ2);
@@ -187,7 +191,7 @@ SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
   /*p30.YDUF*/ SPRITE_IDX4.set(WUDA, WEFE, oam_pins.A6);
   /*p30.XECU*/ SPRITE_IDX5.set(WUDA, WEFE, oam_pins.A7);
 
-  /*p29.CENO*/ STORE_SPRITE_IDXn.set(vid_clk.XUPY_xBCxxFGx, vid_rst.VID_RESETn3, BESU);
+  /*p29.CENO*/ STORE_SPRITE_IDXn.set(vid_clk.XUPY_xBCxxFGx, VID_RESETn3, BESU);
 
   /*p29.BUZA*/ wire STORE_SPRITE_IDX = and(!STORE_SPRITE_IDXn, vid_sig.RENDERING_LATCH);
 
@@ -211,7 +215,6 @@ SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
 void Sprites_tickScanner(const ClkSignals& clk_sig,
                          const VclkSignals& vid_clk,
                          const LcdSignals& lcd_sig,
-                         const VrstSignals& vid_rst,
                          const Sprites& spr,
                          
                          Sprites& next) {

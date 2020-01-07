@@ -153,23 +153,19 @@ void VclkRegisters::pass_begin() {
 }
 
 bool VclkRegisters::pass_end() {
-  bool changed = false;
-  /*p29.WUVU*/ changed |= WUVU_AxxDExxH.commit();
-  /*p21.VENA*/ changed |= VENA_xBCDExxx.commit();
-  /*p29.WOSU*/ changed |= WOSU_xxCDxxGH.commit();
-  return changed;
+  return commit_all(WUVU_AxxDExxH, VENA_xBCDExxx, WOSU_xxCDxxGH);
 }
 
 //----------------------------------------
 
-VclkSignals VclkRegisters::tick_slow(const ClkSignals& clk_sig1, const VrstSignals& vid_rst) {
-  /*p29.XYVA*/ wire XYVA_AxCxExGx = not(clk_sig1.ZEME_xBxDxFxH);
+VclkSignals VclkRegisters::tick_slow(const ClkSignals& clk_sig, const RstSignals& rst_sig) {
+  /*p29.XYVA*/ wire XYVA_AxCxExGx = not(clk_sig.ZEME_xBxDxFxH);
   /*p29.XOTA*/ wire XOTA_xBxDxFxH = not(XYVA_AxCxExGx);
   /*p29.XYFY*/ wire XYFY_AxCxExGx = not(XOTA_xBxDxFxH);
 
-  /*p29.WUVU*/ WUVU_AxxDExxH.set( XOTA_xBxDxFxH, vid_rst.VID_RESETn, !WUVU_AxxDExxH);
-  /*p21.VENA*/ VENA_xBCDExxx.set(!WUVU_AxxDExxH, vid_rst.VID_RESETn, !VENA_xBCDExxx);
-  /*p29.WOSU*/ WOSU_xxCDxxGH.set( XYFY_AxCxExGx, vid_rst.VID_RESETn, !WUVU_AxxDExxH);
+  /*p29.WUVU*/ WUVU_AxxDExxH.set( XOTA_xBxDxFxH, rst_sig.VID_RESETn, !WUVU_AxxDExxH);
+  /*p21.VENA*/ VENA_xBCDExxx.set(!WUVU_AxxDExxH, rst_sig.VID_RESETn, !VENA_xBCDExxx);
+  /*p29.WOSU*/ WOSU_xxCDxxGH.set( XYFY_AxCxExGx, rst_sig.VID_RESETn, !WUVU_AxxDExxH);
 
   return signals();
 }

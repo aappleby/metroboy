@@ -69,7 +69,7 @@ DecoderSignals DecoderSignals::tick(const SysSignals&   sys_sig,
   /*p07.SARO*/ wire ADDR_OAM = not(ADDR_FEXXn);
 
   /*p01.AGUT*/ wire AGUT_xxCDEFGH = and(or(clk_sig.AJAX_xxxxEFGH, clk_sig.AROV_xxCDEFxx), sys_sig.CPU_ADDR_VALID);
-  /*p01.AWOD*/ wire AWOD = or(sys_sig.PIN_MODE_DBG2, AGUT_xxCDEFGH);
+  /*p01.AWOD*/ wire AWOD = or(sys_sig.MODE_DBG2, AGUT_xxCDEFGH);
   /*p01.ABUZ*/ wire ADDR_VALID_xBCxxxxx = not(AWOD);
 
   /*p03.TOVY*/ wire TOVY_A00n = not(bus_tri.A00());

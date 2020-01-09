@@ -20,7 +20,7 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct Bootrom;
-struct Cpu;
+struct CpuPins;
 struct Debug;
 struct DMA;
 struct HRAM;
@@ -31,7 +31,7 @@ struct Pins;
 struct PixelPipe;
 struct Serial;
 struct Sprites;
-struct Timer;
+struct TimerRegisters;
 struct Video;
 struct VRAM;
 
@@ -51,7 +51,7 @@ struct RstRegisters;
 struct SysRegisters;
 struct VclkRegisters;
 struct VidRegisters;
-struct VidRegisters2;
+struct VidConfig;
 
 struct BusSignals;
 struct ClkSignals;
@@ -93,48 +93,6 @@ bool commit_all(T& first, Args&... args) {
   changed |= commit_all(args...);
   return changed;
 }
-
-//-----------------------------------------------------------------------------
-
-struct Reg {
-  operator const bool() const { return val; }
-
-  bool operator == (const Reg& b) const {
-    return val == b.val;
-  }
-
-  void pwron() {
-    val = 0;
-    clk = 0;
-  }
-
-  void reset(bool val_in, bool clk_in) {
-    val = val_in;
-    clk = clk_in;
-  }
-
-  void tock(bool clk_in, bool rst_in, bool reg_in) {
-    if (!clk && clk_in) val = reg_in;
-    if (!rst_in) val = 0;
-    clk = clk_in;
-  }
-
-  void duotock(bool clk_in, bool rst_in, bool reg_in) {
-    if (!rst_in) val = 0;
-    else if (clk != clk_in) val = reg_in;
-    clk = clk_in;
-  }
-
-  void srtock(bool clk_in, bool set, bool rst, bool reg_in) {
-    if (!clk && clk_in) val = reg_in;
-    if (!set) val = 1;
-    if (!rst) val = 0;
-    clk = clk_in;
-  }
-
-  bool val = 0;
-  bool clk = 0;
-};
 
 //-----------------------------------------------------------------------------
 
@@ -229,12 +187,14 @@ struct Reg2 {
     clk_a = clk_b = 0;
     set_b = rst_b = 1;
     val_a = val_b = 0;
+    dirty = false;
   }
 
   void reset(bool clk_in, bool reg_in) {
     clk_a = clk_b = clk_in;
     val_a = val_b = reg_in;
     set_b = rst_b = 1;
+    dirty = false;
   }
 
   bool get() const { return val_a; }
@@ -245,6 +205,7 @@ struct Reg2 {
     val_b = reg_in;
     set_b = 1;
     rst_b = 1;
+    dirty = true;
   }
 
   void set(bool clk_in, bool rst_in, bool reg_in) {
@@ -252,6 +213,7 @@ struct Reg2 {
     val_b = reg_in;
     set_b = 1;
     rst_b = rst_in;
+    dirty = true;
   }
 
   void set(bool clk_in, bool set_in, bool rst_in, bool reg_in) {
@@ -259,6 +221,7 @@ struct Reg2 {
     val_b = reg_in;
     set_b = set_in;
     rst_b = rst_in;
+    dirty = true;
   }
 
   void set2(bool reg_in) {
@@ -274,6 +237,7 @@ struct Reg2 {
     val_b = val_a;
     set_b = !(!latch_in && val_in);
     rst_b = !(!latch_in && !val_in);
+    dirty = true;
   }
 
   void srlatch(bool set_in, bool rst_in) {
@@ -281,9 +245,16 @@ struct Reg2 {
     val_b = val_a;
     set_b = set_in;
     rst_b = rst_in;
+    dirty = true;
   }
 
   bool commit() {
+    if (!dirty) {
+      printf("Committing non-dirty reg\n");
+      __debugbreak();
+    }
+    dirty = false;
+
     bool old_val = val_a;
     if (!clk_a && clk_b) val_a = val_b;
     if (!set_b) val_a = 1;
@@ -293,6 +264,12 @@ struct Reg2 {
   }
 
   bool commit_duo() {
+    if (!dirty) {
+      printf("Committing non-dirty reg\n");
+      __debugbreak();
+    }
+    dirty = false;
+
     bool old_val = val_a;
     if (clk_a != clk_b) val_a = val_b;
     if (!set_b) val_a = 1;
@@ -303,6 +280,7 @@ struct Reg2 {
 
   bool clk_a, val_a;
   bool clk_b, set_b, rst_b, val_b;
+  bool dirty;
 };
 
 inline void big_reset(Reg2& first) { first.reset(1, 0); }

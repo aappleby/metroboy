@@ -246,7 +246,6 @@
     <ClInclude Include="pages\Sch_Debug.h" />
     <ClInclude Include="pages\Sch_Decoder.h" />
     <ClInclude Include="pages\Sch_DMA.h" />
-    <ClInclude Include="pages\Sch_Globals.h" />
     <ClInclude Include="pages\Sch_Interrupts.h" />
     <ClInclude Include="pages\Sch_Joypad.h" />
     <ClInclude Include="pages\Sch_LCD.h" />
@@ -265,7 +264,7 @@
     <ClInclude Include="pages\Sch_Channel3.h" />
     <ClInclude Include="pages\Sch_Channel4.h" />
     <ClInclude Include="pages\Sch_Common.h" />
-    <ClInclude Include="pages\Sch_CpuSignals.h" />
+    <ClInclude Include="pages\Sch_CpuPins.h" />
     <ClInclude Include="pages\Sch_Gameboy.h" />
     <ClInclude Include="pages\Sch_PixelPipe.h" />
     <ClInclude Include="pages\Sch_Sprites.h" />

@@ -2,7 +2,7 @@
 
 #include "Sch_Bootrom.h"
 #include "Sch_BusControl.h"
-#include "Sch_CpuSignals.h"
+#include "Sch_CpuPins.h"
 #include "Sch_Clocks.h"
 #include "Sch_Debug.h"
 #include "Sch_System.h"

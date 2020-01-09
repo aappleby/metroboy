@@ -3,6 +3,14 @@
 
 namespace Schematics {
 
+template<typename T>
+inline void phase_begin(T& first) { first.pwron(); }
+
+template<typename T, typename... Args> inline void phase_begin_all(T& first, Args&... args) {
+  phase_begin(first);
+  phase_begin(args...);
+}
+
 //-----------------------------------------------------------------------------
 
 TestGB::TestGB() {
@@ -41,14 +49,6 @@ void TestGB::reset() {
 }
 
 //----------------------------------------
-
-template<typename T>
-inline void phase_begin(T& first) { first.pwron(); }
-
-template<typename T, typename... Args> inline void big_pwron(T& first, Args&... args) {
-  phase_begin(first);
-  phase_begin(args...);
-}
 
 void TestGB::phase_begin() {
   sys_reg.phase_begin();
@@ -94,7 +94,7 @@ bool TestGB::pass_end() {
   changed |= sys_reg.pass_end();
   changed |= clk_reg.pass_end();
   changed |= rst_reg.pass_end();
-  changed |= dbg_reg.pass_end();
+  //changed |= dbg_reg.pass_end();
   changed |= vclk_reg.pass_end();
   changed |= vid_reg.pass_end();
   changed |= lcd_reg.pass_end();
@@ -126,11 +126,39 @@ int TestGB::sim_pass() {
     VclkSignals    vclk_sig = vclk_reg.tick_slow(clk_sig, rst_sig);
     DecoderSignals dec_sig  = DecoderSignals::tick(sys_sig, clk_sig, bus_tri);
     BusSignals     bus_sig  = BusSignals::tick(sys_sig, clk_sig, bus_tri);
+    LcdSignals     lcd_sig  = lcd_reg.tock_slow(vclk_sig, rst_sig);
 
-    //DebugSignals dbg_sig  = dbg_reg.tick(bus_sig, clk_sig, 
-    //VidSignals   vid_sig  = vid_reg.tick(sys_sig, rst_sig, bus_sig, dec_sig, bus_tri);
-    //TimerSignals tim_sig  = tim_reg.tick(sys_sig, clk_sig, rst_sig, bus_sig, dec_sig, bus_tri);
-    //LcdSignals   lcd_sig  = lcd_reg.tock_slow(vclk_sig, vid_rst);
+    dbg_reg.tick(sys_sig, bus_sig, rst_sig, clk_sig, dec_sig, bus_tri);
+
+    //VidSignals vid_sig = vid_reg.tick(clk_sig, rst_sig, vclk_sig, joypad_pins, bus_sig, dec_sig, cart_pins, lcd_sig, sst_sig, bus_tri);
+    //SpriteStoreSignals sst_sig = sst_reg.tick(clk_sig, rst_sig, lcd_sig, spr_sig, vid_sig, oam_sig);
+
+    TimerSignals tim_sig  = tim_reg.tick(sys_sig, clk_sig, rst_sig, bus_sig, dec_sig, bus_tri);
+    VidSignals2 vid_sig2 = vid_reg2.tick(sys_sig, rst_sig, bus_sig, dec_sig, bus_tri);
+    SerialSignals ser_sig = ser_reg.tick(bus_sig, rst_sig, dec_sig, serial_pins, bus_tri);
+
+    //SpriteSignals spr_sig = spr_reg.tick(clk_sig, vid_clk, rst_sig, joy_pins, dma_sig, lcd_sig,
+    //                                     vid_reg2, vid_sig, sst_sig, oam_sig, oam_pins, sil_out);
+
+
+    //PixelPipeSignals pxp_sig = pxp_reg.tick(vid_reg2, vram_bus,
+    //        BG_LATCH, VRAM_TEMP_CLK, SPRITE_VRAM_LATCH_A, SPRITE_VRAM_LATCH_B, SPRITE_DONE, FLIP_X);
+
+    //OamSignals oam_sig = oam_reg.tick(cpu, clk_sig, bus_sig, cart_pins, joy_pins, vid_clk, dec_sig,
+    //                                  spr_sig, dma_sig, vid_sig, sil, vram_tri, bus_tri, oam_pins);
+
+
+    //JoypadSignals joy_sig = joy_reg.tick(clk_sig, rst_sig, bus_sig, dbg_sig, dec_sig, joy_pins, bus_tri);
+
+
+    //DmaSignals dma_sig = dma_reg.tick(cpu_sig, bus_sig, dec_sig, clk_sig, rst_sig, bus_tri);
+
+    //InterruptRegisters int_regs;
+
+    //InterruptSignals int_sig = int_reg.tick(bus_sig, cpu_sig, lcd_sig, ser_sig, joy_sig, vid_sig,
+    //                                        tim_sig, joy_pins, rst_sig, dec_sig, bus_tri);
+
+
 
     if (pass == 30) {
       printf("x\n");

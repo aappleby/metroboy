@@ -70,7 +70,7 @@ struct VclkRegisters {
   bool pass_end();
 
   VclkSignals tick_slow(const ClkSignals& clk_sig, const RstSignals& rst_sig);
-  VclkSignals signals();
+  VclkSignals signals() const;
 
   /*p29.WUVU*/ Reg2 WUVU_AxxDExxH;
   /*p21.VENA*/ Reg2 VENA_xBCDExxx;

@@ -5,41 +5,42 @@ namespace Schematics {
 
 struct VramBus;
 struct DmaSignals;
-struct DebugSignals1;
+struct DmaRegisters;
 
 //-----------------------------------------------------------------------------
 
 struct VramPinsIn {
-  /* PIN_43 */ bool MCS_C;   // -> P25.TEFY
-  /* PIN_45 */ bool MOE_C;   // -> P25.TAVY
-  /* PIN_49 */ bool MWR_C;   // -> P25.SUDO
 
-  /* PIN_33 */ bool MD0_C;   // -> P25.RODY
-  /* PIN_31 */ bool MD1_C;   // -> P25.REBA
-  /* PIN_30 */ bool MD2_C;   // -> P25.RYDO
-  /* PIN_29 */ bool MD3_C;   // -> P25.REMO
-  /* PIN_28 */ bool MD4_C;   // -> P25.ROCE
-  /* PIN_27 */ bool MD5_C;   // -> P25.ROPU
-  /* PIN_26 */ bool MD6_C;   // -> P25.RETA
-  /* PIN_25 */ bool MD7_C;   // -> P25.RAKU
 };
 
 struct VramPins {
 
-  static VramPins tick(const BusSignals& bus_sig,
-                       const VramBus& vram_bus,
-                       const VramPinsIn& vram_pins_in);
+  void tick(const SysSignals& sys_sig,
+            const ClkSignals& clk_sig,
+            const RstSignals& rst_sig,
+            const BusSignals& bus_sig,
+            const DecoderSignals& dec_sig,
+            const VidRegisters& vid_reg,
+            const VramBus& vram_bus,
+            BusTristates& bus_tri);
+
+  bool commit();
+
+  /*p25.SOTO*/ Reg2 SOTO_DBG;
 
   //----------
   // VRAM control pins
 
   /* PIN_43 */ bool MCS_A;   // <- P25.SOKY
+  /* PIN_43 */ bool MCS_C;   // -> P25.TEFY
   /* PIN_43 */ bool MCS_D;   // <- P25.SETY
-                             
+
   /* PIN_45 */ bool MOE_A;   // <- P25.REFO
+  /* PIN_45 */ bool MOE_C;   // -> P25.TAVY
   /* PIN_45 */ bool MOE_D;   // <- P25.SAHA
                              
   /* PIN_49 */ bool MWR_A;   // <- P25.SYSY
+  /* PIN_49 */ bool MWR_C;   // -> P25.SUDO
   /* PIN_49 */ bool MWR_D;   // <- P25.RAGU
 
   //----------
@@ -79,6 +80,15 @@ struct VramPins {
   /* PIN_27 */ bool MD5_B;   // <- P25.ROFA
   /* PIN_26 */ bool MD6_B;   // <- P25.ROFA
   /* PIN_25 */ bool MD7_B;   // <- P25.ROFA
+
+  /* PIN_33 */ bool MD0_C;   // -> P25.RODY
+  /* PIN_31 */ bool MD1_C;   // -> P25.REBA
+  /* PIN_30 */ bool MD2_C;   // -> P25.RYDO
+  /* PIN_29 */ bool MD3_C;   // -> P25.REMO
+  /* PIN_28 */ bool MD4_C;   // -> P25.ROCE
+  /* PIN_27 */ bool MD5_C;   // -> P25.ROPU
+  /* PIN_26 */ bool MD6_C;   // -> P25.RETA
+  /* PIN_25 */ bool MD7_C;   // -> P25.RAKU
 
   /* PIN_33 */ bool MD0_D;   // <- P25.RURA
   /* PIN_31 */ bool MD1_D;   // <- P25.RULY
@@ -169,6 +179,7 @@ struct CartPins {
             const ClkSignals& clk_sig,
             const DecoderSignals& dec_sig,
             const DmaSignals& dma_sig,
+            const DmaRegisters& dma_reg,
             BusTristates& bus_tri);
 
   //----------
@@ -311,6 +322,15 @@ struct CartPins {
   /*p08.LOBU*/ Reg2 ADDR_LATCH_12;
   /*p08.LONU*/ Reg2 ADDR_LATCH_13;
   /*p08.NYRE*/ Reg2 ADDR_LATCH_14;
+
+  /*p08.SOMA*/ Reg2 DATA_LATCH_00;
+  /*p08.RONY*/ Reg2 DATA_LATCH_01;
+  /*p08.RAXY*/ Reg2 DATA_LATCH_02;
+  /*p08.SELO*/ Reg2 DATA_LATCH_03;
+  /*p08.SODY*/ Reg2 DATA_LATCH_04;
+  /*p08.SAGO*/ Reg2 DATA_LATCH_05;
+  /*p08.RUPA*/ Reg2 DATA_LATCH_06;
+  /*p08.SAZY*/ Reg2 DATA_LATCH_07;
 };
 
 //-----------------------------------------------------------------------------

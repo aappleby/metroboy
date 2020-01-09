@@ -5,25 +5,14 @@
 #include "Sch_OAM.h"
 #include "Sch_BusControl.h"
 #include "Sch_Video.h"
+#include "Sch_Vram.h"
+#include "Sch_System.h"
 
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 // This file should contain the schematics as directly translated to C,
 // no modifications or simplifications.
-
-struct PixelPipeIn {
-  bool CLKPIPE;
-
-  bool P10_B;
-  bool P10_Bn;
-
-  bool OAM_A_D4;
-  bool OAM_A_D7;
-
-  /*p32.LOZE*/ bool BG_PIPE_A_LOAD;
-  /*p32.LUXA*/ bool BG_PIPE_B_LOAD;
-};
 
 void PixelPipeRegisters::pwron() {
   pwron_all(BG_PIX_A0,  BG_PIX_A1,  BG_PIX_A2,  BG_PIX_A3,  BG_PIX_A4,  BG_PIX_A5,  BG_PIX_A6,  BG_PIX_A7);
@@ -58,49 +47,45 @@ bool PixelPipeRegisters::pass_end() {
   return changed;
 }
 
-void PixelPipeRegisters::tick(const VidRegisters2& vid_reg,
-                              const PixelPipeIn& in,
-                              bool MD0,
-                              bool MD1,
-                              bool MD2,
-                              bool MD3,
-                              bool MD4,
-                              bool MD5,
-                              bool MD6,
-                              bool MD7,
-                              bool BG_LATCH,
-                              bool VRAM_TEMP_CLK,
-                              /*p29.XADO*/ bool SPRITE_VRAM_LATCH_A,
-                              /*p29.PUCO*/ bool SPRITE_VRAM_LATCH_B,
-                              /*p29.WUTY*/ bool SPRITE_DONE,
-                              /*p29.XONO*/ bool FLIP_X) {
+void PixelPipeRegisters::tick(const SysSignals& sys_sig,
+                              const VidConfig& vid_reg,
+                              const VramBus& vram_bus,
+                              const OamRegisters& oam_reg,
+                              /*p32.LOMA*/ wire BG_LATCH,
+                              /*p32.LABU*/ wire VRAM_TEMP_CLK,
+                              /*p29.XADO*/ wire SPRITE_VRAM_LATCH_A,
+                              /*p29.PUCO*/ wire SPRITE_VRAM_LATCH_B,
+                              /*p29.WUTY*/ wire SPRITE_DONE,
+                              /*p29.XONO*/ wire FLIP_X,
+                              /*p24.SACU*/ wire CLKPIPE,
+                              /*p27.NYXU*/ wire NYXU_BG_SEQ_RSTn) {
 
-  /*p32.LEGU*/ BG_PIX_A0.latch(BG_LATCH, MD0);
-  /*p32.NUDU*/ BG_PIX_A1.latch(BG_LATCH, MD1);
-  /*p32.MUKU*/ BG_PIX_A2.latch(BG_LATCH, MD2);
-  /*p32.LUZO*/ BG_PIX_A3.latch(BG_LATCH, MD3);
-  /*p32.MEGU*/ BG_PIX_A4.latch(BG_LATCH, MD4);
-  /*p32.MYJY*/ BG_PIX_A5.latch(BG_LATCH, MD5);
-  /*p32.NASA*/ BG_PIX_A6.latch(BG_LATCH, MD6);
-  /*p32.NEFO*/ BG_PIX_A7.latch(BG_LATCH, MD7);
+  /*p32.LEGU*/ BG_PIX_A0.latch(BG_LATCH, vram_bus.MD0);
+  /*p32.NUDU*/ BG_PIX_A1.latch(BG_LATCH, vram_bus.MD1);
+  /*p32.MUKU*/ BG_PIX_A2.latch(BG_LATCH, vram_bus.MD2);
+  /*p32.LUZO*/ BG_PIX_A3.latch(BG_LATCH, vram_bus.MD3);
+  /*p32.MEGU*/ BG_PIX_A4.latch(BG_LATCH, vram_bus.MD4);
+  /*p32.MYJY*/ BG_PIX_A5.latch(BG_LATCH, vram_bus.MD5);
+  /*p32.NASA*/ BG_PIX_A6.latch(BG_LATCH, vram_bus.MD6);
+  /*p32.NEFO*/ BG_PIX_A7.latch(BG_LATCH, vram_bus.MD7);
 
-  /*p32.RAWU*/ BG_PIX_B0.set(VRAM_TEMP_CLK, in.P10_Bn, MD0);
-  /*p32.POZO*/ BG_PIX_B1.set(VRAM_TEMP_CLK, in.P10_Bn, MD1);
-  /*p32.PYZO*/ BG_PIX_B2.set(VRAM_TEMP_CLK, in.P10_Bn, MD2);
-  /*p32.POXA*/ BG_PIX_B3.set(VRAM_TEMP_CLK, in.P10_Bn, MD3);
-  /*p32.PULO*/ BG_PIX_B4.set(VRAM_TEMP_CLK, in.P10_Bn, MD4);
-  /*p32.POJU*/ BG_PIX_B5.set(VRAM_TEMP_CLK, in.P10_Bn, MD5);
-  /*p32.POWY*/ BG_PIX_B6.set(VRAM_TEMP_CLK, in.P10_Bn, MD6);
-  /*p32.PYJU*/ BG_PIX_B7.set(VRAM_TEMP_CLK, in.P10_Bn, MD7);
+  /*p32.RAWU*/ BG_PIX_B0.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD0);
+  /*p32.POZO*/ BG_PIX_B1.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD1);
+  /*p32.PYZO*/ BG_PIX_B2.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD2);
+  /*p32.POXA*/ BG_PIX_B3.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD3);
+  /*p32.PULO*/ BG_PIX_B4.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD4);
+  /*p32.POJU*/ BG_PIX_B5.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD5);
+  /*p32.POWY*/ BG_PIX_B6.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD6);
+  /*p32.PYJU*/ BG_PIX_B7.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD7);
 
-  /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2(MD7, MD0, FLIP_X);
-  /*p33.PACY*/ wire SPR_PIX_FLIP1 = mux2(MD6, MD1, FLIP_X);
-  /*p33.PONO*/ wire SPR_PIX_FLIP2 = mux2(MD5, MD2, FLIP_X);
-  /*p33.PUGU*/ wire SPR_PIX_FLIP3 = mux2(MD4, MD3, FLIP_X);
-  /*p33.PUTE*/ wire SPR_PIX_FLIP4 = mux2(MD3, MD4, FLIP_X);
-  /*p33.PULY*/ wire SPR_PIX_FLIP5 = mux2(MD2, MD5, FLIP_X);
-  /*p33.PELO*/ wire SPR_PIX_FLIP6 = mux2(MD1, MD6, FLIP_X);
-  /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2(MD0, MD7, FLIP_X);
+  /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2(vram_bus.MD7, vram_bus.MD0, FLIP_X);
+  /*p33.PACY*/ wire SPR_PIX_FLIP1 = mux2(vram_bus.MD6, vram_bus.MD1, FLIP_X);
+  /*p33.PONO*/ wire SPR_PIX_FLIP2 = mux2(vram_bus.MD5, vram_bus.MD2, FLIP_X);
+  /*p33.PUGU*/ wire SPR_PIX_FLIP3 = mux2(vram_bus.MD4, vram_bus.MD3, FLIP_X);
+  /*p33.PUTE*/ wire SPR_PIX_FLIP4 = mux2(vram_bus.MD3, vram_bus.MD4, FLIP_X);
+  /*p33.PULY*/ wire SPR_PIX_FLIP5 = mux2(vram_bus.MD2, vram_bus.MD5, FLIP_X);
+  /*p33.PELO*/ wire SPR_PIX_FLIP6 = mux2(vram_bus.MD1, vram_bus.MD6, FLIP_X);
+  /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2(vram_bus.MD0, vram_bus.MD7, FLIP_X);
 
   /*p33.PEFO*/ SPR_PIX_A0.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP0);
   /*p33.ROKA*/ SPR_PIX_A1.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP1);
@@ -143,64 +128,66 @@ void PixelPipeRegisters::tick(const VidRegisters2& vid_reg,
   // Background pipe A
 
   {
-    /*p32.LAKY*/ wire BG_PIPE_A_SET0 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, BG_PIX_A0);
-    /*p32.NYXO*/ wire BG_PIPE_A_SET1 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, BG_PIX_A1);
-    /*p32.LOTO*/ wire BG_PIPE_A_SET2 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, BG_PIX_A2);
-    /*p32.LYDU*/ wire BG_PIPE_A_SET3 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, BG_PIX_A3);
-    /*p32.MYVY*/ wire BG_PIPE_A_SET4 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, BG_PIX_A4);
-    /*p32.LODO*/ wire BG_PIPE_A_SET5 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, BG_PIX_A5);
-    /*p32.NUTE*/ wire BG_PIPE_A_SET6 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, BG_PIX_A6);
-    /*p32.NAJA*/ wire BG_PIPE_A_SET7 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, BG_PIX_A7);
+    /*p32.LOZE*/ wire LOZE_PIPE_A_LOAD = not(NYXU_BG_SEQ_RSTn);
+    /*p32.LAKY*/ wire BG_PIPE_A_SET0 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A0);
+    /*p32.NYXO*/ wire BG_PIPE_A_SET1 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A1);
+    /*p32.LOTO*/ wire BG_PIPE_A_SET2 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A2);
+    /*p32.LYDU*/ wire BG_PIPE_A_SET3 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A3);
+    /*p32.MYVY*/ wire BG_PIPE_A_SET4 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A4);
+    /*p32.LODO*/ wire BG_PIPE_A_SET5 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A5);
+    /*p32.NUTE*/ wire BG_PIPE_A_SET6 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A6);
+    /*p32.NAJA*/ wire BG_PIPE_A_SET7 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A7);
 
-    /*p32.LOTY*/ wire BG_PIPE_A_RST0 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, /*p32.LUHE*/ not(BG_PIX_A0));
-    /*p32.NEXA*/ wire BG_PIPE_A_RST1 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, /*p32.NOLY*/ not(BG_PIX_A1));
-    /*p32.LUTU*/ wire BG_PIPE_A_RST2 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, /*p32.LEKE*/ not(BG_PIX_A2));
-    /*p32.LUJA*/ wire BG_PIPE_A_RST3 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, /*p32.LOMY*/ not(BG_PIX_A3));
-    /*p32.MOSY*/ wire BG_PIPE_A_RST4 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, /*p32.LALA*/ not(BG_PIX_A4));
-    /*p32.LERU*/ wire BG_PIPE_A_RST5 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, /*p32.LOXA*/ not(BG_PIX_A5));
-    /*p32.NYHA*/ wire BG_PIPE_A_RST6 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, /*p32.NEZE*/ not(BG_PIX_A6));
-    /*p32.NADY*/ wire BG_PIPE_A_RST7 = nand(/*LOZE*/ in.BG_PIPE_A_LOAD, /*p32.NOBO*/ not(BG_PIX_A7));
+    /*p32.LOTY*/ wire BG_PIPE_A_RST0 = nand(LOZE_PIPE_A_LOAD, /*p32.LUHE*/ not(BG_PIX_A0));
+    /*p32.NEXA*/ wire BG_PIPE_A_RST1 = nand(LOZE_PIPE_A_LOAD, /*p32.NOLY*/ not(BG_PIX_A1));
+    /*p32.LUTU*/ wire BG_PIPE_A_RST2 = nand(LOZE_PIPE_A_LOAD, /*p32.LEKE*/ not(BG_PIX_A2));
+    /*p32.LUJA*/ wire BG_PIPE_A_RST3 = nand(LOZE_PIPE_A_LOAD, /*p32.LOMY*/ not(BG_PIX_A3));
+    /*p32.MOSY*/ wire BG_PIPE_A_RST4 = nand(LOZE_PIPE_A_LOAD, /*p32.LALA*/ not(BG_PIX_A4));
+    /*p32.LERU*/ wire BG_PIPE_A_RST5 = nand(LOZE_PIPE_A_LOAD, /*p32.LOXA*/ not(BG_PIX_A5));
+    /*p32.NYHA*/ wire BG_PIPE_A_RST6 = nand(LOZE_PIPE_A_LOAD, /*p32.NEZE*/ not(BG_PIX_A6));
+    /*p32.NADY*/ wire BG_PIPE_A_RST7 = nand(LOZE_PIPE_A_LOAD, /*p32.NOBO*/ not(BG_PIX_A7));
 
-    /*p32.MYDE*/ BG_PIPE_A0.set(in.CLKPIPE, BG_PIPE_A_SET0, BG_PIPE_A_RST0, in.P10_B);
-    /*p32.NOZO*/ BG_PIPE_A1.set(in.CLKPIPE, BG_PIPE_A_SET1, BG_PIPE_A_RST1, BG_PIPE_A0);
-    /*p32.MOJU*/ BG_PIPE_A2.set(in.CLKPIPE, BG_PIPE_A_SET2, BG_PIPE_A_RST2, BG_PIPE_A1);
-    /*p32.MACU*/ BG_PIPE_A3.set(in.CLKPIPE, BG_PIPE_A_SET3, BG_PIPE_A_RST3, BG_PIPE_A2);
-    /*p32.NEPO*/ BG_PIPE_A4.set(in.CLKPIPE, BG_PIPE_A_SET4, BG_PIPE_A_RST4, BG_PIPE_A3);
-    /*p32.MODU*/ BG_PIPE_A5.set(in.CLKPIPE, BG_PIPE_A_SET5, BG_PIPE_A_RST5, BG_PIPE_A4);
-    /*p32.NEDA*/ BG_PIPE_A6.set(in.CLKPIPE, BG_PIPE_A_SET6, BG_PIPE_A_RST6, BG_PIPE_A5);
-    /*p32.PYBO*/ BG_PIPE_A7.set(in.CLKPIPE, BG_PIPE_A_SET7, BG_PIPE_A_RST7, BG_PIPE_A6);
+    /*p32.MYDE*/ BG_PIPE_A0.set(CLKPIPE, BG_PIPE_A_SET0, BG_PIPE_A_RST0, sys_sig.PIN_P10_B);
+    /*p32.NOZO*/ BG_PIPE_A1.set(CLKPIPE, BG_PIPE_A_SET1, BG_PIPE_A_RST1, BG_PIPE_A0);
+    /*p32.MOJU*/ BG_PIPE_A2.set(CLKPIPE, BG_PIPE_A_SET2, BG_PIPE_A_RST2, BG_PIPE_A1);
+    /*p32.MACU*/ BG_PIPE_A3.set(CLKPIPE, BG_PIPE_A_SET3, BG_PIPE_A_RST3, BG_PIPE_A2);
+    /*p32.NEPO*/ BG_PIPE_A4.set(CLKPIPE, BG_PIPE_A_SET4, BG_PIPE_A_RST4, BG_PIPE_A3);
+    /*p32.MODU*/ BG_PIPE_A5.set(CLKPIPE, BG_PIPE_A_SET5, BG_PIPE_A_RST5, BG_PIPE_A4);
+    /*p32.NEDA*/ BG_PIPE_A6.set(CLKPIPE, BG_PIPE_A_SET6, BG_PIPE_A_RST6, BG_PIPE_A5);
+    /*p32.PYBO*/ BG_PIPE_A7.set(CLKPIPE, BG_PIPE_A_SET7, BG_PIPE_A_RST7, BG_PIPE_A6);
   }
 
   //----------
   // Background pipe B
 
   {
-    /*p32.TUXE*/ wire BG_PIPE_B_SET0 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, !BG_PIX_B0);
-    /*p32.SOLY*/ wire BG_PIPE_B_SET1 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, !BG_PIX_B1);
-    /*p32.RUCE*/ wire BG_PIPE_B_SET2 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, !BG_PIX_B2);
-    /*p32.RYJA*/ wire BG_PIPE_B_SET3 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, !BG_PIX_B3);
-    /*p32.RUTO*/ wire BG_PIPE_B_SET4 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, !BG_PIX_B4);
-    /*p32.RAJA*/ wire BG_PIPE_B_SET5 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, !BG_PIX_B5);
-    /*p32.RAJO*/ wire BG_PIPE_B_SET6 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, !BG_PIX_B6);
-    /*p32.RAGA*/ wire BG_PIPE_B_SET7 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, !BG_PIX_B7);
+    /*p32.LUXA*/ wire LUXA_PIPE_B_LOAD = not(NYXU_BG_SEQ_RSTn);
+    /*p32.TUXE*/ wire BG_PIPE_B_SET0 = nand(LUXA_PIPE_B_LOAD, !BG_PIX_B0);
+    /*p32.SOLY*/ wire BG_PIPE_B_SET1 = nand(LUXA_PIPE_B_LOAD, !BG_PIX_B1);
+    /*p32.RUCE*/ wire BG_PIPE_B_SET2 = nand(LUXA_PIPE_B_LOAD, !BG_PIX_B2);
+    /*p32.RYJA*/ wire BG_PIPE_B_SET3 = nand(LUXA_PIPE_B_LOAD, !BG_PIX_B3);
+    /*p32.RUTO*/ wire BG_PIPE_B_SET4 = nand(LUXA_PIPE_B_LOAD, !BG_PIX_B4);
+    /*p32.RAJA*/ wire BG_PIPE_B_SET5 = nand(LUXA_PIPE_B_LOAD, !BG_PIX_B5);
+    /*p32.RAJO*/ wire BG_PIPE_B_SET6 = nand(LUXA_PIPE_B_LOAD, !BG_PIX_B6);
+    /*p32.RAGA*/ wire BG_PIPE_B_SET7 = nand(LUXA_PIPE_B_LOAD, !BG_PIX_B7);
 
-    /*p32.SEJA*/ wire BG_PIPE_B_RST0 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, /*p32.TOSA*/ not(!BG_PIX_B0));
-    /*p32.SENO*/ wire BG_PIPE_B_RST1 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, /*p32.RUCO*/ not(!BG_PIX_B1));
-    /*p32.SURE*/ wire BG_PIPE_B_RST2 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, /*p32.TYCE*/ not(!BG_PIX_B2));
-    /*p32.SEBO*/ wire BG_PIPE_B_RST3 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, /*p32.REVY*/ not(!BG_PIX_B3));
-    /*p32.SUCA*/ wire BG_PIPE_B_RST4 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, /*p32.RYGA*/ not(!BG_PIX_B4));
-    /*p32.SYWE*/ wire BG_PIPE_B_RST5 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, /*p32.RYLE*/ not(!BG_PIX_B5));
-    /*p32.SUPU*/ wire BG_PIPE_B_RST6 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, /*p32.RAPU*/ not(!BG_PIX_B6));
-    /*p32.RYJY*/ wire BG_PIPE_B_RST7 = nand(/*LUXA*/ in.BG_PIPE_B_LOAD, /*p32.SOJA*/ not(!BG_PIX_B7));
+    /*p32.SEJA*/ wire BG_PIPE_B_RST0 = nand(LUXA_PIPE_B_LOAD, /*p32.TOSA*/ not(!BG_PIX_B0));
+    /*p32.SENO*/ wire BG_PIPE_B_RST1 = nand(LUXA_PIPE_B_LOAD, /*p32.RUCO*/ not(!BG_PIX_B1));
+    /*p32.SURE*/ wire BG_PIPE_B_RST2 = nand(LUXA_PIPE_B_LOAD, /*p32.TYCE*/ not(!BG_PIX_B2));
+    /*p32.SEBO*/ wire BG_PIPE_B_RST3 = nand(LUXA_PIPE_B_LOAD, /*p32.REVY*/ not(!BG_PIX_B3));
+    /*p32.SUCA*/ wire BG_PIPE_B_RST4 = nand(LUXA_PIPE_B_LOAD, /*p32.RYGA*/ not(!BG_PIX_B4));
+    /*p32.SYWE*/ wire BG_PIPE_B_RST5 = nand(LUXA_PIPE_B_LOAD, /*p32.RYLE*/ not(!BG_PIX_B5));
+    /*p32.SUPU*/ wire BG_PIPE_B_RST6 = nand(LUXA_PIPE_B_LOAD, /*p32.RAPU*/ not(!BG_PIX_B6));
+    /*p32.RYJY*/ wire BG_PIPE_B_RST7 = nand(LUXA_PIPE_B_LOAD, /*p32.SOJA*/ not(!BG_PIX_B7));
 
-    /*p32.TOMY*/ BG_PIPE_B0.set(in.CLKPIPE, BG_PIPE_B_SET0, BG_PIPE_B_RST0, in.P10_B);
-    /*p32.TACA*/ BG_PIPE_B1.set(in.CLKPIPE, BG_PIPE_B_SET1, BG_PIPE_B_RST1, BG_PIPE_B0);
-    /*p32.SADY*/ BG_PIPE_B2.set(in.CLKPIPE, BG_PIPE_B_SET2, BG_PIPE_B_RST2, BG_PIPE_B1);
-    /*p32.RYSA*/ BG_PIPE_B3.set(in.CLKPIPE, BG_PIPE_B_SET3, BG_PIPE_B_RST3, BG_PIPE_B2);
-    /*p32.SOBO*/ BG_PIPE_B4.set(in.CLKPIPE, BG_PIPE_B_SET4, BG_PIPE_B_RST4, BG_PIPE_B3);
-    /*p32.SETU*/ BG_PIPE_B5.set(in.CLKPIPE, BG_PIPE_B_SET5, BG_PIPE_B_RST5, BG_PIPE_B4);
-    /*p32.RALU*/ BG_PIPE_B6.set(in.CLKPIPE, BG_PIPE_B_SET6, BG_PIPE_B_RST6, BG_PIPE_B5);
-    /*p32.SOHU*/ BG_PIPE_B7.set(in.CLKPIPE, BG_PIPE_B_SET7, BG_PIPE_B_RST7, BG_PIPE_B6);
+    /*p32.TOMY*/ BG_PIPE_B0.set(CLKPIPE, BG_PIPE_B_SET0, BG_PIPE_B_RST0, sys_sig.PIN_P10_B);
+    /*p32.TACA*/ BG_PIPE_B1.set(CLKPIPE, BG_PIPE_B_SET1, BG_PIPE_B_RST1, BG_PIPE_B0);
+    /*p32.SADY*/ BG_PIPE_B2.set(CLKPIPE, BG_PIPE_B_SET2, BG_PIPE_B_RST2, BG_PIPE_B1);
+    /*p32.RYSA*/ BG_PIPE_B3.set(CLKPIPE, BG_PIPE_B_SET3, BG_PIPE_B_RST3, BG_PIPE_B2);
+    /*p32.SOBO*/ BG_PIPE_B4.set(CLKPIPE, BG_PIPE_B_SET4, BG_PIPE_B_RST4, BG_PIPE_B3);
+    /*p32.SETU*/ BG_PIPE_B5.set(CLKPIPE, BG_PIPE_B_SET5, BG_PIPE_B_RST5, BG_PIPE_B4);
+    /*p32.RALU*/ BG_PIPE_B6.set(CLKPIPE, BG_PIPE_B_SET6, BG_PIPE_B_RST6, BG_PIPE_B5);
+    /*p32.SOHU*/ BG_PIPE_B7.set(CLKPIPE, BG_PIPE_B_SET7, BG_PIPE_B_RST7, BG_PIPE_B6);
   }
 
   //----------
@@ -225,14 +212,14 @@ void PixelPipeRegisters::tick(const VidRegisters2& vid_reg,
     /*p33.TABY*/ wire SPR_PIX_A_RST6 = nand(SPRITE_MASK6n, /*p33.SERY*/ not(SPR_PIX_A6));
     /*p33.TULA*/ wire SPR_PIX_A_RST7 = nand(SPRITE_MASK7n, /*p33.SELU*/ not(SPR_PIX_A7));
 
-    /*p33.NYLU*/ SPR_PIPE_A0.set(in.CLKPIPE, SPR_PIX_A_SET0, SPR_PIX_A_RST0, in.P10_B);
-    /*p33.PEFU*/ SPR_PIPE_A1.set(in.CLKPIPE, SPR_PIX_A_SET1, SPR_PIX_A_RST1, SPR_PIPE_A0);
-    /*p33.NATY*/ SPR_PIPE_A2.set(in.CLKPIPE, SPR_PIX_A_SET2, SPR_PIX_A_RST2, SPR_PIPE_A1);
-    /*p33.PYJO*/ SPR_PIPE_A3.set(in.CLKPIPE, SPR_PIX_A_SET3, SPR_PIX_A_RST3, SPR_PIPE_A2);
-    /*p33.VARE*/ SPR_PIPE_A4.set(in.CLKPIPE, SPR_PIX_A_SET4, SPR_PIX_A_RST4, SPR_PIPE_A3);
-    /*p33.WEBA*/ SPR_PIPE_A5.set(in.CLKPIPE, SPR_PIX_A_SET5, SPR_PIX_A_RST5, SPR_PIPE_A4);
-    /*p33.VANU*/ SPR_PIPE_A6.set(in.CLKPIPE, SPR_PIX_A_SET6, SPR_PIX_A_RST6, SPR_PIPE_A5);
-    /*p33.VUPY*/ SPR_PIPE_A7.set(in.CLKPIPE, SPR_PIX_A_SET7, SPR_PIX_A_RST7, SPR_PIPE_A6);
+    /*p33.NYLU*/ SPR_PIPE_A0.set(CLKPIPE, SPR_PIX_A_SET0, SPR_PIX_A_RST0, sys_sig.PIN_P10_B);
+    /*p33.PEFU*/ SPR_PIPE_A1.set(CLKPIPE, SPR_PIX_A_SET1, SPR_PIX_A_RST1, SPR_PIPE_A0);
+    /*p33.NATY*/ SPR_PIPE_A2.set(CLKPIPE, SPR_PIX_A_SET2, SPR_PIX_A_RST2, SPR_PIPE_A1);
+    /*p33.PYJO*/ SPR_PIPE_A3.set(CLKPIPE, SPR_PIX_A_SET3, SPR_PIX_A_RST3, SPR_PIPE_A2);
+    /*p33.VARE*/ SPR_PIPE_A4.set(CLKPIPE, SPR_PIX_A_SET4, SPR_PIX_A_RST4, SPR_PIPE_A3);
+    /*p33.WEBA*/ SPR_PIPE_A5.set(CLKPIPE, SPR_PIX_A_SET5, SPR_PIX_A_RST5, SPR_PIPE_A4);
+    /*p33.VANU*/ SPR_PIPE_A6.set(CLKPIPE, SPR_PIX_A_SET6, SPR_PIX_A_RST6, SPR_PIPE_A5);
+    /*p33.VUPY*/ SPR_PIPE_A7.set(CLKPIPE, SPR_PIX_A_SET7, SPR_PIX_A_RST7, SPR_PIPE_A6);
   }
 
   //----------
@@ -257,78 +244,78 @@ void PixelPipeRegisters::tick(const VidRegisters2& vid_reg,
     /*p33.TUPE*/ wire SPR_PIX_B_RST6 = nand(SPRITE_MASK6n, /*p33.SULU*/ not(SPR_PIX_B6));
     /*p33.XYVE*/ wire SPR_PIX_B_RST7 = nand(SPRITE_MASK7n, /*p33.WAMY*/ not(SPR_PIX_B7));
 
-    /*p33.NURO*/ SPR_PIPE_B0.set(in.CLKPIPE, SPR_PIX_B_SET0, SPR_PIX_B_RST0, in.P10_B);
-    /*p33.MASO*/ SPR_PIPE_B1.set(in.CLKPIPE, SPR_PIX_B_SET1, SPR_PIX_B_RST1, SPR_PIPE_B0);
-    /*p33.LEFE*/ SPR_PIPE_B2.set(in.CLKPIPE, SPR_PIX_B_SET2, SPR_PIX_B_RST2, SPR_PIPE_B1);
-    /*p33.LESU*/ SPR_PIPE_B3.set(in.CLKPIPE, SPR_PIX_B_SET3, SPR_PIX_B_RST3, SPR_PIPE_B2);
-    /*p33.WYHO*/ SPR_PIPE_B4.set(in.CLKPIPE, SPR_PIX_B_SET4, SPR_PIX_B_RST4, SPR_PIPE_B3);
-    /*p33.WORA*/ SPR_PIPE_B5.set(in.CLKPIPE, SPR_PIX_B_SET5, SPR_PIX_B_RST5, SPR_PIPE_B4);
-    /*p33.VAFO*/ SPR_PIPE_B6.set(in.CLKPIPE, SPR_PIX_B_SET6, SPR_PIX_B_RST6, SPR_PIPE_B5);
-    /*p33.WUFY*/ SPR_PIPE_B7.set(in.CLKPIPE, SPR_PIX_B_SET7, SPR_PIX_B_RST7, SPR_PIPE_B6);
+    /*p33.NURO*/ SPR_PIPE_B0.set(CLKPIPE, SPR_PIX_B_SET0, SPR_PIX_B_RST0, sys_sig.PIN_P10_B);
+    /*p33.MASO*/ SPR_PIPE_B1.set(CLKPIPE, SPR_PIX_B_SET1, SPR_PIX_B_RST1, SPR_PIPE_B0);
+    /*p33.LEFE*/ SPR_PIPE_B2.set(CLKPIPE, SPR_PIX_B_SET2, SPR_PIX_B_RST2, SPR_PIPE_B1);
+    /*p33.LESU*/ SPR_PIPE_B3.set(CLKPIPE, SPR_PIX_B_SET3, SPR_PIX_B_RST3, SPR_PIPE_B2);
+    /*p33.WYHO*/ SPR_PIPE_B4.set(CLKPIPE, SPR_PIX_B_SET4, SPR_PIX_B_RST4, SPR_PIPE_B3);
+    /*p33.WORA*/ SPR_PIPE_B5.set(CLKPIPE, SPR_PIX_B_SET5, SPR_PIX_B_RST5, SPR_PIPE_B4);
+    /*p33.VAFO*/ SPR_PIPE_B6.set(CLKPIPE, SPR_PIX_B_SET6, SPR_PIX_B_RST6, SPR_PIPE_B5);
+    /*p33.WUFY*/ SPR_PIPE_B7.set(CLKPIPE, SPR_PIX_B_SET7, SPR_PIX_B_RST7, SPR_PIPE_B6);
   }
 
   //----------
   // Palette pipe
 
   {
-    /*p34.PUME*/ wire SPRITE_PAL_PIPE_SET0n = nand(SPRITE_MASK0n, in.OAM_A_D4);
-    /*p34.SORO*/ wire SPRITE_PAL_PIPE_SET1n = nand(SPRITE_MASK1n, in.OAM_A_D4);
-    /*p34.PAMO*/ wire SPRITE_PAL_PIPE_SET2n = nand(SPRITE_MASK2n, in.OAM_A_D4);
-    /*p34.SUKY*/ wire SPRITE_PAL_PIPE_SET3n = nand(SPRITE_MASK3n, in.OAM_A_D4);
-    /*p34.RORA*/ wire SPRITE_PAL_PIPE_SET4n = nand(SPRITE_MASK4n, in.OAM_A_D4);
-    /*p34.MENE*/ wire SPRITE_PAL_PIPE_SET5n = nand(SPRITE_MASK5n, in.OAM_A_D4);
-    /*p34.LUKE*/ wire SPRITE_PAL_PIPE_SET6n = nand(SPRITE_MASK6n, in.OAM_A_D4);
-    /*p34.LAMY*/ wire SPRITE_PAL_PIPE_SET7n = nand(SPRITE_MASK7n, in.OAM_A_D4);
+    /*p34.PUME*/ wire SPRITE_PAL_PIPE_SET0n = nand(SPRITE_MASK0n, oam_reg.REG_OAM_A4);
+    /*p34.SORO*/ wire SPRITE_PAL_PIPE_SET1n = nand(SPRITE_MASK1n, oam_reg.REG_OAM_A4);
+    /*p34.PAMO*/ wire SPRITE_PAL_PIPE_SET2n = nand(SPRITE_MASK2n, oam_reg.REG_OAM_A4);
+    /*p34.SUKY*/ wire SPRITE_PAL_PIPE_SET3n = nand(SPRITE_MASK3n, oam_reg.REG_OAM_A4);
+    /*p34.RORA*/ wire SPRITE_PAL_PIPE_SET4n = nand(SPRITE_MASK4n, oam_reg.REG_OAM_A4);
+    /*p34.MENE*/ wire SPRITE_PAL_PIPE_SET5n = nand(SPRITE_MASK5n, oam_reg.REG_OAM_A4);
+    /*p34.LUKE*/ wire SPRITE_PAL_PIPE_SET6n = nand(SPRITE_MASK6n, oam_reg.REG_OAM_A4);
+    /*p34.LAMY*/ wire SPRITE_PAL_PIPE_SET7n = nand(SPRITE_MASK7n, oam_reg.REG_OAM_A4);
 
-    /*p34.SUCO*/ wire SPRITE_PAL_PIPE_RST0n = nand(SPRITE_MASK0n, /*p34.SYPY*/ not(in.OAM_A_D4));
-    /*p34.TAFA*/ wire SPRITE_PAL_PIPE_RST1n = nand(SPRITE_MASK1n, /*p34.TOTU*/ not(in.OAM_A_D4));
-    /*p34.PYZY*/ wire SPRITE_PAL_PIPE_RST2n = nand(SPRITE_MASK2n, /*p34.NARO*/ not(in.OAM_A_D4));
-    /*p34.TOWA*/ wire SPRITE_PAL_PIPE_RST3n = nand(SPRITE_MASK3n, /*p34.WEXY*/ not(in.OAM_A_D4));
-    /*p34.RUDU*/ wire SPRITE_PAL_PIPE_RST4n = nand(SPRITE_MASK4n, /*p34.RYZY*/ not(in.OAM_A_D4));
-    /*p34.PAZO*/ wire SPRITE_PAL_PIPE_RST5n = nand(SPRITE_MASK5n, /*p34.RYFE*/ not(in.OAM_A_D4));
-    /*p34.LOWA*/ wire SPRITE_PAL_PIPE_RST6n = nand(SPRITE_MASK6n, /*p34.LADY*/ not(in.OAM_A_D4));
-    /*p34.LUNU*/ wire SPRITE_PAL_PIPE_RST7n = nand(SPRITE_MASK7n, /*p34.LAFY*/ not(in.OAM_A_D4));
+    /*p34.SUCO*/ wire SPRITE_PAL_PIPE_RST0n = nand(SPRITE_MASK0n, /*p34.SYPY*/ not(oam_reg.REG_OAM_A4));
+    /*p34.TAFA*/ wire SPRITE_PAL_PIPE_RST1n = nand(SPRITE_MASK1n, /*p34.TOTU*/ not(oam_reg.REG_OAM_A4));
+    /*p34.PYZY*/ wire SPRITE_PAL_PIPE_RST2n = nand(SPRITE_MASK2n, /*p34.NARO*/ not(oam_reg.REG_OAM_A4));
+    /*p34.TOWA*/ wire SPRITE_PAL_PIPE_RST3n = nand(SPRITE_MASK3n, /*p34.WEXY*/ not(oam_reg.REG_OAM_A4));
+    /*p34.RUDU*/ wire SPRITE_PAL_PIPE_RST4n = nand(SPRITE_MASK4n, /*p34.RYZY*/ not(oam_reg.REG_OAM_A4));
+    /*p34.PAZO*/ wire SPRITE_PAL_PIPE_RST5n = nand(SPRITE_MASK5n, /*p34.RYFE*/ not(oam_reg.REG_OAM_A4));
+    /*p34.LOWA*/ wire SPRITE_PAL_PIPE_RST6n = nand(SPRITE_MASK6n, /*p34.LADY*/ not(oam_reg.REG_OAM_A4));
+    /*p34.LUNU*/ wire SPRITE_PAL_PIPE_RST7n = nand(SPRITE_MASK7n, /*p34.LAFY*/ not(oam_reg.REG_OAM_A4));
 
-    /*p34.RUGO*/ PAL_PIPE_0.set(in.CLKPIPE, SPRITE_PAL_PIPE_SET0n, SPRITE_PAL_PIPE_RST0n, in.P10_B);
-    /*p34.SATA*/ PAL_PIPE_1.set(in.CLKPIPE, SPRITE_PAL_PIPE_SET1n, SPRITE_PAL_PIPE_RST1n, PAL_PIPE_0);
-    /*p34.ROSA*/ PAL_PIPE_2.set(in.CLKPIPE, SPRITE_PAL_PIPE_SET2n, SPRITE_PAL_PIPE_RST2n, PAL_PIPE_1);
-    /*p34.SOMY*/ PAL_PIPE_3.set(in.CLKPIPE, SPRITE_PAL_PIPE_SET3n, SPRITE_PAL_PIPE_RST3n, PAL_PIPE_2);
-    /*p34.PALU*/ PAL_PIPE_4.set(in.CLKPIPE, SPRITE_PAL_PIPE_SET4n, SPRITE_PAL_PIPE_RST4n, PAL_PIPE_3);
-    /*p34.NUKE*/ PAL_PIPE_5.set(in.CLKPIPE, SPRITE_PAL_PIPE_SET5n, SPRITE_PAL_PIPE_RST5n, PAL_PIPE_4);
-    /*p34.MODA*/ PAL_PIPE_6.set(in.CLKPIPE, SPRITE_PAL_PIPE_SET6n, SPRITE_PAL_PIPE_RST6n, PAL_PIPE_5);
-    /*p34.LYME*/ PAL_PIPE_7.set(in.CLKPIPE, SPRITE_PAL_PIPE_SET7n, SPRITE_PAL_PIPE_RST7n, PAL_PIPE_6);
+    /*p34.RUGO*/ PAL_PIPE_0.set(CLKPIPE, SPRITE_PAL_PIPE_SET0n, SPRITE_PAL_PIPE_RST0n, sys_sig.PIN_P10_B);
+    /*p34.SATA*/ PAL_PIPE_1.set(CLKPIPE, SPRITE_PAL_PIPE_SET1n, SPRITE_PAL_PIPE_RST1n, PAL_PIPE_0);
+    /*p34.ROSA*/ PAL_PIPE_2.set(CLKPIPE, SPRITE_PAL_PIPE_SET2n, SPRITE_PAL_PIPE_RST2n, PAL_PIPE_1);
+    /*p34.SOMY*/ PAL_PIPE_3.set(CLKPIPE, SPRITE_PAL_PIPE_SET3n, SPRITE_PAL_PIPE_RST3n, PAL_PIPE_2);
+    /*p34.PALU*/ PAL_PIPE_4.set(CLKPIPE, SPRITE_PAL_PIPE_SET4n, SPRITE_PAL_PIPE_RST4n, PAL_PIPE_3);
+    /*p34.NUKE*/ PAL_PIPE_5.set(CLKPIPE, SPRITE_PAL_PIPE_SET5n, SPRITE_PAL_PIPE_RST5n, PAL_PIPE_4);
+    /*p34.MODA*/ PAL_PIPE_6.set(CLKPIPE, SPRITE_PAL_PIPE_SET6n, SPRITE_PAL_PIPE_RST6n, PAL_PIPE_5);
+    /*p34.LYME*/ PAL_PIPE_7.set(CLKPIPE, SPRITE_PAL_PIPE_SET7n, SPRITE_PAL_PIPE_RST7n, PAL_PIPE_6);
   }
 
   //----------
   // Background mask pipe
   
   {
-    /*p26.TEDE*/ wire MASK_PIPE_SET0 = nand(SPRITE_MASK0n, in.OAM_A_D7);
-    /*p26.XALA*/ wire MASK_PIPE_SET1 = nand(SPRITE_MASK1n, in.OAM_A_D7);
-    /*p26.TYRA*/ wire MASK_PIPE_SET2 = nand(SPRITE_MASK2n, in.OAM_A_D7);
-    /*p26.XYRU*/ wire MASK_PIPE_SET3 = nand(SPRITE_MASK3n, in.OAM_A_D7);
-    /*p26.XUKU*/ wire MASK_PIPE_SET4 = nand(SPRITE_MASK4n, in.OAM_A_D7);
-    /*p26.XELY*/ wire MASK_PIPE_SET5 = nand(SPRITE_MASK5n, in.OAM_A_D7);
-    /*p26.TYKO*/ wire MASK_PIPE_SET6 = nand(SPRITE_MASK6n, in.OAM_A_D7);
-    /*p26.TUWU*/ wire MASK_PIPE_SET7 = nand(SPRITE_MASK7n, in.OAM_A_D7);
+    /*p26.TEDE*/ wire MASK_PIPE_SET0 = nand(SPRITE_MASK0n, oam_reg.REG_OAM_A7);
+    /*p26.XALA*/ wire MASK_PIPE_SET1 = nand(SPRITE_MASK1n, oam_reg.REG_OAM_A7);
+    /*p26.TYRA*/ wire MASK_PIPE_SET2 = nand(SPRITE_MASK2n, oam_reg.REG_OAM_A7);
+    /*p26.XYRU*/ wire MASK_PIPE_SET3 = nand(SPRITE_MASK3n, oam_reg.REG_OAM_A7);
+    /*p26.XUKU*/ wire MASK_PIPE_SET4 = nand(SPRITE_MASK4n, oam_reg.REG_OAM_A7);
+    /*p26.XELY*/ wire MASK_PIPE_SET5 = nand(SPRITE_MASK5n, oam_reg.REG_OAM_A7);
+    /*p26.TYKO*/ wire MASK_PIPE_SET6 = nand(SPRITE_MASK6n, oam_reg.REG_OAM_A7);
+    /*p26.TUWU*/ wire MASK_PIPE_SET7 = nand(SPRITE_MASK7n, oam_reg.REG_OAM_A7);
 
-    /*p26.WOKA*/ wire MASK_PIPE_RST0 = nand(SPRITE_MASK0n, /*p26.XOGA*/ not(in.OAM_A_D7));
-    /*p26.WEDE*/ wire MASK_PIPE_RST1 = nand(SPRITE_MASK1n, /*p26.XURA*/ not(in.OAM_A_D7));
-    /*p26.TUFO*/ wire MASK_PIPE_RST2 = nand(SPRITE_MASK2n, /*p26.TAJO*/ not(in.OAM_A_D7));
-    /*p26.WEVO*/ wire MASK_PIPE_RST3 = nand(SPRITE_MASK3n, /*p26.XENU*/ not(in.OAM_A_D7));
-    /*p26.WEDY*/ wire MASK_PIPE_RST4 = nand(SPRITE_MASK4n, /*p26.XYKE*/ not(in.OAM_A_D7));
-    /*p26.WUJA*/ wire MASK_PIPE_RST5 = nand(SPRITE_MASK5n, /*p26.XABA*/ not(in.OAM_A_D7));
-    /*p26.TENA*/ wire MASK_PIPE_RST6 = nand(SPRITE_MASK6n, /*p26.TAFU*/ not(in.OAM_A_D7));
-    /*p26.WUBU*/ wire MASK_PIPE_RST7 = nand(SPRITE_MASK7n, /*p26.XUHO*/ not(in.OAM_A_D7));
+    /*p26.WOKA*/ wire MASK_PIPE_RST0 = nand(SPRITE_MASK0n, /*p26.XOGA*/ not(oam_reg.REG_OAM_A7));
+    /*p26.WEDE*/ wire MASK_PIPE_RST1 = nand(SPRITE_MASK1n, /*p26.XURA*/ not(oam_reg.REG_OAM_A7));
+    /*p26.TUFO*/ wire MASK_PIPE_RST2 = nand(SPRITE_MASK2n, /*p26.TAJO*/ not(oam_reg.REG_OAM_A7));
+    /*p26.WEVO*/ wire MASK_PIPE_RST3 = nand(SPRITE_MASK3n, /*p26.XENU*/ not(oam_reg.REG_OAM_A7));
+    /*p26.WEDY*/ wire MASK_PIPE_RST4 = nand(SPRITE_MASK4n, /*p26.XYKE*/ not(oam_reg.REG_OAM_A7));
+    /*p26.WUJA*/ wire MASK_PIPE_RST5 = nand(SPRITE_MASK5n, /*p26.XABA*/ not(oam_reg.REG_OAM_A7));
+    /*p26.TENA*/ wire MASK_PIPE_RST6 = nand(SPRITE_MASK6n, /*p26.TAFU*/ not(oam_reg.REG_OAM_A7));
+    /*p26.WUBU*/ wire MASK_PIPE_RST7 = nand(SPRITE_MASK7n, /*p26.XUHO*/ not(oam_reg.REG_OAM_A7));
 
-    /*p26.VEZO*/ MASK_PIPE_0.set(in.CLKPIPE, MASK_PIPE_SET0, MASK_PIPE_RST0, in.P10_B);
-    /*p26.WURU*/ MASK_PIPE_1.set(in.CLKPIPE, MASK_PIPE_SET1, MASK_PIPE_RST1, MASK_PIPE_0);
-    /*p26.VOSA*/ MASK_PIPE_2.set(in.CLKPIPE, MASK_PIPE_SET2, MASK_PIPE_RST2, MASK_PIPE_1);
-    /*p26.WYFU*/ MASK_PIPE_3.set(in.CLKPIPE, MASK_PIPE_SET3, MASK_PIPE_RST3, MASK_PIPE_2);
-    /*p26.XETE*/ MASK_PIPE_4.set(in.CLKPIPE, MASK_PIPE_SET4, MASK_PIPE_RST4, MASK_PIPE_3);
-    /*p26.WODA*/ MASK_PIPE_5.set(in.CLKPIPE, MASK_PIPE_SET5, MASK_PIPE_RST5, MASK_PIPE_4);
-    /*p26.VUMO*/ MASK_PIPE_6.set(in.CLKPIPE, MASK_PIPE_SET6, MASK_PIPE_RST6, MASK_PIPE_5);
-    /*p26.VAVA*/ MASK_PIPE_7.set(in.CLKPIPE, MASK_PIPE_SET7, MASK_PIPE_RST7, MASK_PIPE_6);
+    /*p26.VEZO*/ MASK_PIPE_0.set(CLKPIPE, MASK_PIPE_SET0, MASK_PIPE_RST0, sys_sig.PIN_P10_B);
+    /*p26.WURU*/ MASK_PIPE_1.set(CLKPIPE, MASK_PIPE_SET1, MASK_PIPE_RST1, MASK_PIPE_0);
+    /*p26.VOSA*/ MASK_PIPE_2.set(CLKPIPE, MASK_PIPE_SET2, MASK_PIPE_RST2, MASK_PIPE_1);
+    /*p26.WYFU*/ MASK_PIPE_3.set(CLKPIPE, MASK_PIPE_SET3, MASK_PIPE_RST3, MASK_PIPE_2);
+    /*p26.XETE*/ MASK_PIPE_4.set(CLKPIPE, MASK_PIPE_SET4, MASK_PIPE_RST4, MASK_PIPE_3);
+    /*p26.WODA*/ MASK_PIPE_5.set(CLKPIPE, MASK_PIPE_SET5, MASK_PIPE_RST5, MASK_PIPE_4);
+    /*p26.VUMO*/ MASK_PIPE_6.set(CLKPIPE, MASK_PIPE_SET6, MASK_PIPE_RST6, MASK_PIPE_5);
+    /*p26.VAVA*/ MASK_PIPE_7.set(CLKPIPE, MASK_PIPE_SET7, MASK_PIPE_RST7, MASK_PIPE_6);
   }
 
     //----------

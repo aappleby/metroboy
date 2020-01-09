@@ -1,7 +1,7 @@
 #include "Sch_Interrupts.h"
 
 #include "Sch_BusControl.h"
-#include "Sch_CpuSignals.h"
+#include "Sch_CpuPins.h"
 #include "Sch_Decoder.h"
 #include "Sch_Pins.h"
 #include "Sch_Resets.h"
@@ -10,33 +10,34 @@
 #include "Sch_Joypad.h"
 #include "Sch_Video.h"
 #include "Sch_Timer.h"
+#include "Sch_System.h"
 
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void InterruptRegisters::tick(const BusSignals& ctl,
-                              const Cpu& cpu,
+void InterruptRegisters::tick(const SysSignals& sys_sig,
+                              const BusSignals& bus_sig,
+                              const CpuPins& cpu_pins,
                               const LcdSignals& lcd_sig,
                               const SerialSignals& ser_sig,
                               const JoypadSignals& joy_sig,
                               const VidSignals& vid_sig,
                               const TimerSignals& tim_sig,
-                              const JoypadPins& joy_pins,
                               const RstSignals& rst_sig,
-                              const DecoderSignals& dec,
+                              const DecoderSignals& dec_sig,
                               BusTristates& bus_tri) {
 
-  /*p07.ROLO*/ wire FF0F_RDn = nand(dec.ADDR_XX0X, dec.ADDR_XXXF, dec.ADDR_FFXX, ctl.TEDO_CPURD); // schematic wrong, is NAND
+  /*p07.ROLO*/ wire FF0F_RDn = nand(dec_sig.ADDR_XX0X, dec_sig.ADDR_XXXF, dec_sig.ADDR_FFXX, bus_sig.TEDO_CPURD); // schematic wrong, is NAND
   /*p02.POLA*/ wire FF0F_RDa = not(FF0F_RDn);
-  /*p07.REFA*/ wire FF0F_WRn  = nand(dec.ADDR_XX0X, dec.ADDR_XXXF, dec.ADDR_FFXX, ctl.TAPU_CPUWR); // schematic wrong, is NAND
-  /*p02.ROTU*/ wire FF0F_WRa  = not(FF0F_WRn);
+  /*p07.REFA*/ wire FF0F_WRn = nand(dec_sig.ADDR_XX0X, dec_sig.ADDR_XXXF, dec_sig.ADDR_FFXX, bus_sig.TAPU_CPUWR); // schematic wrong, is NAND
+  /*p02.ROTU*/ wire FF0F_WRa = not(FF0F_WRn);
 
-  /*p02.LETY*/ wire INT_VBL_ACK  = not(cpu.FROM_CPU9);
-  /*p02.LEJA*/ wire INT_SER_ACK  = not(cpu.FROM_CPU8);
-  /*p02.LESA*/ wire INT_JOY_ACK  = not(cpu.FROM_CPU10);
-  /*p02.LUFE*/ wire INT_STAT_ACK = not(cpu.FROM_CPU7);
-  /*p02.LAMO*/ wire INT_TIM_ACK  = not(cpu.FROM_CPU11);
+  /*p02.LETY*/ wire INT_VBL_ACK  = not(cpu_pins.FROM_CPU9);
+  /*p02.LEJA*/ wire INT_SER_ACK  = not(cpu_pins.FROM_CPU8);
+  /*p02.LESA*/ wire INT_JOY_ACK  = not(cpu_pins.FROM_CPU10);
+  /*p02.LUFE*/ wire INT_STAT_ACK = not(cpu_pins.FROM_CPU7);
+  /*p02.LAMO*/ wire INT_TIM_ACK  = not(cpu_pins.FROM_CPU11);
 
   /*p02.MUXE*/ wire MUXE = or(bus_tri.D0(), FF0F_WRn);
   /*p02.NABE*/ wire NABE = or(bus_tri.D1(), FF0F_WRn);
@@ -56,9 +57,9 @@ void InterruptRegisters::tick(const BusSignals& ctl,
   /*p02.TUNY*/ wire FF0F_RST3 = and(SULO, INT_STAT_ACK, rst_sig.SYS_RESETn);
   /*p02.TYME*/ wire FF0F_RST4 = and(SEME, INT_TIM_ACK,  rst_sig.SYS_RESETn);
 
-  /*p02.PESU*/ wire FF0F_IN = not(joy_pins.P10_B);
+  /*p02.PESU*/ wire FF0F_IN = not(sys_sig.PIN_P10_B);
 
-  /*p21.PARU*/ wire VBLANK = not(!lcd_sig.VBLANK_d4);
+  /*p21.PARU*/ wire VBLANK = not(!lcd_sig.POPU_VBLANK_d4);
   /*p21.TOLU*/ wire INT_VBLn = not(VBLANK);
   /*p21.VYPU*/ wire INT_VBL  = not(INT_VBLn);
 

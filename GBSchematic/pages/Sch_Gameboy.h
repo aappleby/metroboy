@@ -2,7 +2,7 @@
 #include "Sch_Common.h"
 
 
-#include "Sch_CpuSignals.h"
+#include "Sch_CpuPins.h"
 
 #include "Sch_ApuControl.h"
 #include "Sch_Channel1.h"
@@ -38,7 +38,7 @@ namespace Schematics {
 struct Gameboy {
   int64_t timestamp;
 
-  Cpu        cpu;
+  CpuPins        cpu;
   ClkRegisters     sys_clk;
   VclkRegisters     vid_clk;
   RstRegisters rst_reg;
@@ -52,7 +52,7 @@ struct Gameboy {
   //PixelPipe  pix;
   //Video      vid;
   //Serial     ser;
-  Timer      tim;
+  TimerRegisters      tim;
   //DMA        dma;
   //Interrupts irq;
   //Joypad     joy;

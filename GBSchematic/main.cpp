@@ -66,7 +66,7 @@ int main(int /*argc*/, char** /*argv*/) {
            lcd_sig.VID_LINE_TRIG_d4a,
            lcd_sig.VID_LINE_TRIG_d4p,
            lcd_sig.VID_LINE_TRIG_d4c,
-           lcd_sig.VID_LINE_TRIG_d4o,
+           lcd_sig.XAHY_VID_LINE_TRIG_d4n,
            bus_ctl.TEDO_CPURD,
            bus_ctl.TAPU_CPUWR,
            bus_ctl.ASOT_CPURD,

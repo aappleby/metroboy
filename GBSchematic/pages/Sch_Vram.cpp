@@ -14,17 +14,21 @@
 #include "Sch_Clocks.h"
 #include "Sch_Debug.h"
 #include "Sch_SpriteStore.h"
+#include "Sch_System.h"
 
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-VramBus VramBus::tick(const LcdSignals& lcd_sig,
-                      const VidRegisters2& vid_regs,
+VramBus VramBus::tick(const SysSignals& sys_sig,
+                      const LcdRegisters& lcd_reg,
+                      const VidConfig& vid_cfg,
                       const SpriteSignals& spr_sig,
                       const DmaSignals& dma_sig,
-                      const OamSignals& oam_sig,
+                      const DmaRegisters& dma_reg,
+                      const OamRegisters& oam_reg,
                       const VidSignals& vid_sig,
+                      const VidRegisters& vid_reg,
                       const PixelPipeSignals& pix_sig,
                       const JoypadPins& joy_pins,
                       const SpriteTristate& spr_tri,
@@ -35,109 +39,109 @@ VramBus VramBus::tick(const LcdSignals& lcd_sig,
   //----------
   // vid x/y + scroll x/y
 
-  /*p26.FAFO*/ wire TILE_Y0C  = add_c(lcd_sig.Y0, vid_regs.SCY0, 0);
-  /*p26.EMUX*/ wire TILE_Y1C  = add_c(lcd_sig.Y1, vid_regs.SCY1, TILE_Y0C);
-  /*p26.ECAB*/ wire TILE_Y2C  = add_c(lcd_sig.Y2, vid_regs.SCY2, TILE_Y1C);
-  /*p26.ETAM*/ wire MAP_Y0C   = add_c(lcd_sig.Y3, vid_regs.SCY3, TILE_Y2C);
-  /*p26.DOTO*/ wire MAP_Y1C   = add_c(lcd_sig.Y4, vid_regs.SCY4, MAP_Y0C);
-  /*p26.DABA*/ wire MAP_Y2C   = add_c(lcd_sig.Y5, vid_regs.SCY5, MAP_Y1C);
-  /*p26.EFYK*/ wire MAP_Y3C   = add_c(lcd_sig.Y6, vid_regs.SCY6, MAP_Y2C);
-  /*p26.EJOK*/ wire MAP_Y4C   = add_c(lcd_sig.Y7, vid_regs.SCY7, MAP_Y3C);
+  /*p26.FAFO*/ wire TILE_Y0C  = add_c(lcd_reg.Y0, vid_cfg.SCY0, 0);
+  /*p26.EMUX*/ wire TILE_Y1C  = add_c(lcd_reg.Y1, vid_cfg.SCY1, TILE_Y0C);
+  /*p26.ECAB*/ wire TILE_Y2C  = add_c(lcd_reg.Y2, vid_cfg.SCY2, TILE_Y1C);
+  /*p26.ETAM*/ wire MAP_Y0C   = add_c(lcd_reg.Y3, vid_cfg.SCY3, TILE_Y2C);
+  /*p26.DOTO*/ wire MAP_Y1C   = add_c(lcd_reg.Y4, vid_cfg.SCY4, MAP_Y0C);
+  /*p26.DABA*/ wire MAP_Y2C   = add_c(lcd_reg.Y5, vid_cfg.SCY5, MAP_Y1C);
+  /*p26.EFYK*/ wire MAP_Y3C   = add_c(lcd_reg.Y6, vid_cfg.SCY6, MAP_Y2C);
+  /*p26.EJOK*/ wire MAP_Y4C   = add_c(lcd_reg.Y7, vid_cfg.SCY7, MAP_Y3C);
 
-  /*p26.FAFO*/ wire TILE_Y0S  = add_s(lcd_sig.Y0, vid_regs.SCY0, 0);
-  /*p26.EMUX*/ wire TILE_Y1S  = add_s(lcd_sig.Y1, vid_regs.SCY1, TILE_Y0C);
-  /*p26.ECAB*/ wire TILE_Y2S  = add_s(lcd_sig.Y2, vid_regs.SCY2, TILE_Y1C);
-  /*p26.ETAM*/ wire MAP_Y0S   = add_s(lcd_sig.Y3, vid_regs.SCY3, TILE_Y2C);
-  /*p26.DOTO*/ wire MAP_Y1S   = add_s(lcd_sig.Y4, vid_regs.SCY4, MAP_Y0C);
-  /*p26.DABA*/ wire MAP_Y2S   = add_s(lcd_sig.Y5, vid_regs.SCY5, MAP_Y1C);
-  /*p26.EFYK*/ wire MAP_Y3S   = add_s(lcd_sig.Y6, vid_regs.SCY6, MAP_Y2C);
-  /*p26.EJOK*/ wire MAP_Y4S   = add_s(lcd_sig.Y7, vid_regs.SCY7, MAP_Y3C);
+  /*p26.FAFO*/ wire TILE_Y0S  = add_s(lcd_reg.Y0, vid_cfg.SCY0, 0);
+  /*p26.EMUX*/ wire TILE_Y1S  = add_s(lcd_reg.Y1, vid_cfg.SCY1, TILE_Y0C);
+  /*p26.ECAB*/ wire TILE_Y2S  = add_s(lcd_reg.Y2, vid_cfg.SCY2, TILE_Y1C);
+  /*p26.ETAM*/ wire MAP_Y0S   = add_s(lcd_reg.Y3, vid_cfg.SCY3, TILE_Y2C);
+  /*p26.DOTO*/ wire MAP_Y1S   = add_s(lcd_reg.Y4, vid_cfg.SCY4, MAP_Y0C);
+  /*p26.DABA*/ wire MAP_Y2S   = add_s(lcd_reg.Y5, vid_cfg.SCY5, MAP_Y1C);
+  /*p26.EFYK*/ wire MAP_Y3S   = add_s(lcd_reg.Y6, vid_cfg.SCY6, MAP_Y2C);
+  /*p26.EJOK*/ wire MAP_Y4S   = add_s(lcd_reg.Y7, vid_cfg.SCY7, MAP_Y3C);
 
-  /*p26.ATAD*/ wire TILE_X0C  = add_c(vid_sig.X0, vid_regs.SCX0, 0);
-  /*p26.BEHU*/ wire TILE_X1C  = add_c(vid_sig.X1, vid_regs.SCX1, TILE_X0C);
-  /*p26.APYH*/ wire TILE_X2C  = add_c(vid_sig.X2, vid_regs.SCX2, TILE_X1C);
-  /*p26.BABE*/ wire MAP_X0C   = add_c(vid_sig.X3, vid_regs.SCX3, TILE_X2C);
-  /*p26.ABOD*/ wire MAP_X1C   = add_c(vid_sig.X4, vid_regs.SCX4, MAP_X0C);
-  /*p26.BEWY*/ wire MAP_X2C   = add_c(vid_sig.X5, vid_regs.SCX5, MAP_X1C);
-  /*p26.BYCA*/ wire MAP_X3C   = add_c(vid_sig.X6, vid_regs.SCX6, MAP_X2C);
-  /*p26.ACUL*/ wire MAP_X4C   = add_c(vid_sig.X7, vid_regs.SCX7, MAP_X3C);
+  /*p26.ATAD*/ wire TILE_X0C  = add_c(vid_reg.X0, vid_cfg.SCX0, 0);
+  /*p26.BEHU*/ wire TILE_X1C  = add_c(vid_reg.X1, vid_cfg.SCX1, TILE_X0C);
+  /*p26.APYH*/ wire TILE_X2C  = add_c(vid_reg.X2, vid_cfg.SCX2, TILE_X1C);
+  /*p26.BABE*/ wire MAP_X0C   = add_c(vid_reg.X3, vid_cfg.SCX3, TILE_X2C);
+  /*p26.ABOD*/ wire MAP_X1C   = add_c(vid_reg.X4, vid_cfg.SCX4, MAP_X0C);
+  /*p26.BEWY*/ wire MAP_X2C   = add_c(vid_reg.X5, vid_cfg.SCX5, MAP_X1C);
+  /*p26.BYCA*/ wire MAP_X3C   = add_c(vid_reg.X6, vid_cfg.SCX6, MAP_X2C);
+  /*p26.ACUL*/ wire MAP_X4C   = add_c(vid_reg.X7, vid_cfg.SCX7, MAP_X3C);
 
-  /*p26.ATAD*/ wire TILE_X0S  = add_s(vid_sig.X0, vid_regs.SCX0, 0);
-  /*p26.BEHU*/ wire TILE_X1S  = add_s(vid_sig.X1, vid_regs.SCX1, TILE_X0C);
-  /*p26.APYH*/ wire TILE_X2S  = add_s(vid_sig.X2, vid_regs.SCX2, TILE_X1C);
-  /*p26.BABE*/ wire MAP_X0S   = add_s(vid_sig.X3, vid_regs.SCX3, TILE_X2C);
-  /*p26.ABOD*/ wire MAP_X1S   = add_s(vid_sig.X4, vid_regs.SCX4, MAP_X0C);
-  /*p26.BEWY*/ wire MAP_X2S   = add_s(vid_sig.X5, vid_regs.SCX5, MAP_X1C);
-  /*p26.BYCA*/ wire MAP_X3S   = add_s(vid_sig.X6, vid_regs.SCX6, MAP_X2C);
-  /*p26.ACUL*/ wire MAP_X4S   = add_s(vid_sig.X7, vid_regs.SCX7, MAP_X3C);
+  /*p26.ATAD*/ wire TILE_X0S  = add_s(vid_reg.X0, vid_cfg.SCX0, 0);
+  /*p26.BEHU*/ wire TILE_X1S  = add_s(vid_reg.X1, vid_cfg.SCX1, TILE_X0C);
+  /*p26.APYH*/ wire TILE_X2S  = add_s(vid_reg.X2, vid_cfg.SCX2, TILE_X1C);
+  /*p26.BABE*/ wire MAP_X0S   = add_s(vid_reg.X3, vid_cfg.SCX3, TILE_X2C);
+  /*p26.ABOD*/ wire MAP_X1S   = add_s(vid_reg.X4, vid_cfg.SCX4, MAP_X0C);
+  /*p26.BEWY*/ wire MAP_X2S   = add_s(vid_reg.X5, vid_cfg.SCX5, MAP_X1C);
+  /*p26.BYCA*/ wire MAP_X3S   = add_s(vid_reg.X6, vid_cfg.SCX6, MAP_X2C);
+  /*p26.ACUL*/ wire MAP_X4S   = add_s(vid_reg.X7, vid_cfg.SCX7, MAP_X3C);
 
   //----------
 
-  /*p29.WUKY*/ wire FLIP_Y = not(oam_sig.OAM_A_D6);
+  /*p29.WUKY*/ wire FLIP_Y = not(oam_reg.REG_OAM_A6);
   /*p29.XUQU*/ wire SPRITE_AB = not(!spr_sig.SEQ_xxx34xn);
-  /*p29.FUFO*/ wire LCDC_SPSIZEn = not(vid_regs.LCDC_SPSIZE);
+  /*p29.FUFO*/ wire LCDC_SPSIZEn = not(vid_cfg.LCDC_SPSIZE);
 
   /*p29.WAGO*/ wire WAGO      = xor(FLIP_Y, spr_tri.TS_LINE_0);
   /*p29.CYVU*/ wire SPRITE_Y0 = xor(FLIP_Y, spr_tri.TS_LINE_1);
   /*p29.BORE*/ wire SPRITE_Y1 = xor(FLIP_Y, spr_tri.TS_LINE_2);
   /*p29.BUVY*/ wire SPRITE_Y2 = xor(FLIP_Y, spr_tri.TS_LINE_3);
-  /*p29.GEJY*/ wire SPRITE_Y3 = amux2(LCDC_SPSIZEn, !oam_sig.OAM_B_D0, vid_regs.LCDC_SPSIZE,  WAGO);
+  /*p29.GEJY*/ wire SPRITE_Y3 = amux2(LCDC_SPSIZEn, !oam_reg.REG_OAM_B0, vid_cfg.LCDC_SPSIZE,  WAGO);
 
-  /*p29.ABON*/ wire SPRITE_READn = not(spr_sig.SPRITE_READ);
+  /*p29.ABON*/ wire SPRITE_READn = not(spr_sig.TEXY_SPRITE_READ);
   /*p29.ABEM*/ if (!SPRITE_READn) vram_bus.MA00 = SPRITE_AB;
   /*p29.BAXE*/ if (!SPRITE_READn) vram_bus.MA01 = SPRITE_Y0;
   /*p29.ARAS*/ if (!SPRITE_READn) vram_bus.MA02 = SPRITE_Y1;
   /*p29.AGAG*/ if (!SPRITE_READn) vram_bus.MA03 = SPRITE_Y2;
   /*p29.FAMU*/ if (!SPRITE_READn) vram_bus.MA04 = SPRITE_Y3;
-  /*p29.FUGY*/ if (!SPRITE_READn) vram_bus.MA05 = oam_sig.OAM_B_D1;
-  /*p29.GAVO*/ if (!SPRITE_READn) vram_bus.MA06 = oam_sig.OAM_B_D2;
-  /*p29.WYGA*/ if (!SPRITE_READn) vram_bus.MA07 = oam_sig.OAM_B_D3;
-  /*p29.WUNE*/ if (!SPRITE_READn) vram_bus.MA08 = oam_sig.OAM_B_D4;
-  /*p29.GOTU*/ if (!SPRITE_READn) vram_bus.MA09 = oam_sig.OAM_B_D5;
-  /*p29.GEGU*/ if (!SPRITE_READn) vram_bus.MA10 = oam_sig.OAM_B_D6;
-  /*p29.XEHE*/ if (!SPRITE_READn) vram_bus.MA11 = oam_sig.OAM_B_D7;
+  /*p29.FUGY*/ if (!SPRITE_READn) vram_bus.MA05 = oam_reg.REG_OAM_B1;
+  /*p29.GAVO*/ if (!SPRITE_READn) vram_bus.MA06 = oam_reg.REG_OAM_B2;
+  /*p29.WYGA*/ if (!SPRITE_READn) vram_bus.MA07 = oam_reg.REG_OAM_B3;
+  /*p29.WUNE*/ if (!SPRITE_READn) vram_bus.MA08 = oam_reg.REG_OAM_B4;
+  /*p29.GOTU*/ if (!SPRITE_READn) vram_bus.MA09 = oam_reg.REG_OAM_B5;
+  /*p29.GEGU*/ if (!SPRITE_READn) vram_bus.MA10 = oam_reg.REG_OAM_B6;
+  /*p29.XEHE*/ if (!SPRITE_READn) vram_bus.MA11 = oam_reg.REG_OAM_B7;
   /*p29.DYSO*/ if (!SPRITE_READn) vram_bus.MA12 = joy_pins.P10_B;   // sprites always in low half of tile store
 
-  /*p25.VUZA*/ wire TILE_BANK = nor(vid_regs.LCDC_BGTILE, pix_sig.BG_PIX_B7); // register reused
+  /*p25.VUZA*/ wire TILE_BANK = nor(vid_cfg.LCDC_BGTILE, pix_sig.BG_PIX_B7); // register reused
 
-  /*p25.XONU*/ if (vid_sig.WIN_TILE_READ) vram_bus.MA00 = vid_sig.TILE_READ_AB;
-  /*p25.WUDO*/ if (vid_sig.WIN_TILE_READ) vram_bus.MA01 = vid_sig.TILE_Y0;
-  /*p25.WAWE*/ if (vid_sig.WIN_TILE_READ) vram_bus.MA02 = vid_sig.TILE_Y1;
-  /*p25.WOLU*/ if (vid_sig.WIN_TILE_READ) vram_bus.MA03 = vid_sig.TILE_Y2;
+  /*p25.XONU*/ if (vid_sig.XUCY_WIN_TILE_READ) vram_bus.MA00 = vid_sig.XUHA_TILE_READ_AB;
+  /*p25.WUDO*/ if (vid_sig.XUCY_WIN_TILE_READ) vram_bus.MA01 = vid_reg.TILE_Y0;
+  /*p25.WAWE*/ if (vid_sig.XUCY_WIN_TILE_READ) vram_bus.MA02 = vid_reg.TILE_Y1;
+  /*p25.WOLU*/ if (vid_sig.XUCY_WIN_TILE_READ) vram_bus.MA03 = vid_reg.TILE_Y2;
 
-  /*p26.ASUM*/ if (vid_sig.BG_TILE_READ) vram_bus.MA00 = vid_sig.TILE_READ_AB;
-  /*p26.EVAD*/ if (vid_sig.BG_TILE_READ) vram_bus.MA01 = TILE_Y0S;
-  /*p26.DAHU*/ if (vid_sig.BG_TILE_READ) vram_bus.MA02 = TILE_Y1S;
-  /*p26.DODE*/ if (vid_sig.BG_TILE_READ) vram_bus.MA03 = TILE_Y2S;
+  /*p26.ASUM*/ if (vid_sig.BEJE_BG_TILE_READ) vram_bus.MA00 = vid_sig.XUHA_TILE_READ_AB;
+  /*p26.EVAD*/ if (vid_sig.BEJE_BG_TILE_READ) vram_bus.MA01 = TILE_Y0S;
+  /*p26.DAHU*/ if (vid_sig.BEJE_BG_TILE_READ) vram_bus.MA02 = TILE_Y1S;
+  /*p26.DODE*/ if (vid_sig.BEJE_BG_TILE_READ) vram_bus.MA03 = TILE_Y2S;
 
-  /*p25.VAPY*/ if (vid_sig.TILE_READ) vram_bus.MA04 = pix_sig.BG_PIX_B0; // register reused
-  /*p25.SEZU*/ if (vid_sig.TILE_READ) vram_bus.MA05 = pix_sig.BG_PIX_B1;
-  /*p25.VEJY*/ if (vid_sig.TILE_READ) vram_bus.MA06 = pix_sig.BG_PIX_B2;
-  /*p25.RUSA*/ if (vid_sig.TILE_READ) vram_bus.MA07 = pix_sig.BG_PIX_B3;
-  /*p25.ROHA*/ if (vid_sig.TILE_READ) vram_bus.MA08 = pix_sig.BG_PIX_B4;
-  /*p25.RESO*/ if (vid_sig.TILE_READ) vram_bus.MA09 = pix_sig.BG_PIX_B5;
-  /*p25.SUVO*/ if (vid_sig.TILE_READ) vram_bus.MA10 = pix_sig.BG_PIX_B6;
-  /*p25.TOBO*/ if (vid_sig.TILE_READ) vram_bus.MA11 = pix_sig.BG_PIX_B7;
-  /*p25.VUZA*/ if (vid_sig.TILE_READ) vram_bus.MA12 = TILE_BANK;
-
-  // small tri
-  /*p25.WUKO*/ wire WIN_MAP_READn = not(vid_sig.WIN_MAP_READ);
-  /*p27.XEJA*/ if (!WIN_MAP_READn) vram_bus.MA00 = vid_sig.MAP_X0;
-  /*p27.XAMO*/ if (!WIN_MAP_READn) vram_bus.MA01 = vid_sig.MAP_X1;
-  /*p27.XAHE*/ if (!WIN_MAP_READn) vram_bus.MA02 = vid_sig.MAP_X2;
-  /*p27.XULO*/ if (!WIN_MAP_READn) vram_bus.MA03 = vid_sig.MAP_X3;
-  /*p27.WUJU*/ if (!WIN_MAP_READn) vram_bus.MA04 = vid_sig.MAP_X4;
-  /*p27.VYTO*/ if (!WIN_MAP_READn) vram_bus.MA05 = vid_sig.MAP_Y0;
-  /*p27.VEHA*/ if (!WIN_MAP_READn) vram_bus.MA06 = vid_sig.MAP_Y1;
-  /*p27.VACE*/ if (!WIN_MAP_READn) vram_bus.MA07 = vid_sig.MAP_Y2;
-  /*p27.VOVO*/ if (!WIN_MAP_READn) vram_bus.MA08 = vid_sig.MAP_Y3;
-  /*p27.VULO*/ if (!WIN_MAP_READn) vram_bus.MA09 = vid_sig.MAP_Y4;
-  /*p27.VEVY*/ if (!WIN_MAP_READn) vram_bus.MA10 = vid_regs.LCDC_WINMAP;
-  /*p27.VEZA*/ if (!WIN_MAP_READn) vram_bus.MA11 = spr_sig.P10_Bn;
-  /*p27.VOGU*/ if (!WIN_MAP_READn) vram_bus.MA12 = spr_sig.P10_Bn;
+  /*p25.VAPY*/ if (vid_sig.NETA_TILE_READ) vram_bus.MA04 = pix_sig.BG_PIX_B0; // register reused
+  /*p25.SEZU*/ if (vid_sig.NETA_TILE_READ) vram_bus.MA05 = pix_sig.BG_PIX_B1;
+  /*p25.VEJY*/ if (vid_sig.NETA_TILE_READ) vram_bus.MA06 = pix_sig.BG_PIX_B2;
+  /*p25.RUSA*/ if (vid_sig.NETA_TILE_READ) vram_bus.MA07 = pix_sig.BG_PIX_B3;
+  /*p25.ROHA*/ if (vid_sig.NETA_TILE_READ) vram_bus.MA08 = pix_sig.BG_PIX_B4;
+  /*p25.RESO*/ if (vid_sig.NETA_TILE_READ) vram_bus.MA09 = pix_sig.BG_PIX_B5;
+  /*p25.SUVO*/ if (vid_sig.NETA_TILE_READ) vram_bus.MA10 = pix_sig.BG_PIX_B6;
+  /*p25.TOBO*/ if (vid_sig.NETA_TILE_READ) vram_bus.MA11 = pix_sig.BG_PIX_B7;
+  /*p25.VUZA*/ if (vid_sig.NETA_TILE_READ) vram_bus.MA12 = TILE_BANK;
 
   // small tri
-  /*p26.BAFY*/ wire BG_MAP_READn  = not(vid_sig.BG_MAP_READ);
+  /*p25.WUKO*/ wire WIN_MAP_READn = not(vid_sig.XEZE_WIN_MAP_READ);
+  /*p27.XEJA*/ if (!WIN_MAP_READn) vram_bus.MA00 = vid_reg.MAP_X0;
+  /*p27.XAMO*/ if (!WIN_MAP_READn) vram_bus.MA01 = vid_reg.MAP_X1;
+  /*p27.XAHE*/ if (!WIN_MAP_READn) vram_bus.MA02 = vid_reg.MAP_X2;
+  /*p27.XULO*/ if (!WIN_MAP_READn) vram_bus.MA03 = vid_reg.MAP_X3;
+  /*p27.WUJU*/ if (!WIN_MAP_READn) vram_bus.MA04 = vid_reg.MAP_X4;
+  /*p27.VYTO*/ if (!WIN_MAP_READn) vram_bus.MA05 = vid_reg.MAP_Y0;
+  /*p27.VEHA*/ if (!WIN_MAP_READn) vram_bus.MA06 = vid_reg.MAP_Y1;
+  /*p27.VACE*/ if (!WIN_MAP_READn) vram_bus.MA07 = vid_reg.MAP_Y2;
+  /*p27.VOVO*/ if (!WIN_MAP_READn) vram_bus.MA08 = vid_reg.MAP_Y3;
+  /*p27.VULO*/ if (!WIN_MAP_READn) vram_bus.MA09 = vid_reg.MAP_Y4;
+  /*p27.VEVY*/ if (!WIN_MAP_READn) vram_bus.MA10 = vid_cfg.LCDC_WINMAP;
+  /*p27.VEZA*/ if (!WIN_MAP_READn) vram_bus.MA11 = sys_sig.P10_Bn;
+  /*p27.VOGU*/ if (!WIN_MAP_READn) vram_bus.MA12 = sys_sig.P10_Bn;
+
+  // small tri
+  /*p26.BAFY*/ wire BG_MAP_READn  = not(vid_sig.ACEN_BG_MAP_READ);
   /*p26.AXEP*/ if (!BG_MAP_READn) vram_bus.MA00 = MAP_X0S;
   /*p26.AFEB*/ if (!BG_MAP_READn) vram_bus.MA01 = MAP_X1S;
   /*p26.ALEL*/ if (!BG_MAP_READn) vram_bus.MA02 = MAP_X2S;
@@ -148,26 +152,26 @@ VramBus VramBus::tick(const LcdSignals& lcd_sig,
   /*p26.CYPO*/ if (!BG_MAP_READn) vram_bus.MA07 = MAP_Y2S;
   /*p26.CETA*/ if (!BG_MAP_READn) vram_bus.MA08 = MAP_Y3S;
   /*p26.DAFE*/ if (!BG_MAP_READn) vram_bus.MA09 = MAP_Y4S;
-  /*p26.AMUV*/ if (!BG_MAP_READn) vram_bus.MA10 = vid_regs.LCDC_BGMAP;
-  /*p26.COVE*/ if (!BG_MAP_READn) vram_bus.MA11 = spr_sig.P10_Bn;
-  /*p26.COXO*/ if (!BG_MAP_READn) vram_bus.MA12 = spr_sig.P10_Bn;
+  /*p26.AMUV*/ if (!BG_MAP_READn) vram_bus.MA10 = vid_cfg.LCDC_BGMAP;
+  /*p26.COVE*/ if (!BG_MAP_READn) vram_bus.MA11 = sys_sig.P10_Bn;
+  /*p26.COXO*/ if (!BG_MAP_READn) vram_bus.MA12 = sys_sig.P10_Bn;
 
   /*p04.AHOC*/ wire DMA_READ_VRAMo = not(dma_sig.DMA_READ_VRAM);
-  /*p04.ECAL*/ if (!DMA_READ_VRAMo) vram_bus.MA00 = dma_sig.DMA_A00;
-  /*p04.EGEZ*/ if (!DMA_READ_VRAMo) vram_bus.MA01 = dma_sig.DMA_A01;
-  /*p04.FUHE*/ if (!DMA_READ_VRAMo) vram_bus.MA02 = dma_sig.DMA_A02;
-  /*p04.FYZY*/ if (!DMA_READ_VRAMo) vram_bus.MA03 = dma_sig.DMA_A03;
-  /*p04.DAMU*/ if (!DMA_READ_VRAMo) vram_bus.MA04 = dma_sig.DMA_A04;
-  /*p04.DAVA*/ if (!DMA_READ_VRAMo) vram_bus.MA05 = dma_sig.DMA_A05;
-  /*p04.ETEG*/ if (!DMA_READ_VRAMo) vram_bus.MA06 = dma_sig.DMA_A06;
-  /*p04.EREW*/ if (!DMA_READ_VRAMo) vram_bus.MA07 = dma_sig.DMA_A07;
-  /*p04.EVAX*/ if (!DMA_READ_VRAMo) vram_bus.MA08 = dma_sig.DMA_A08;
-  /*p04.DUVE*/ if (!DMA_READ_VRAMo) vram_bus.MA09 = dma_sig.DMA_A09;
-  /*p04.ERAF*/ if (!DMA_READ_VRAMo) vram_bus.MA10 = dma_sig.DMA_A10;
-  /*p04.FUSY*/ if (!DMA_READ_VRAMo) vram_bus.MA11 = dma_sig.DMA_A11;
-  /*p04.EXYF*/ if (!DMA_READ_VRAMo) vram_bus.MA12 = dma_sig.DMA_A12;
+  /*p04.ECAL*/ if (!DMA_READ_VRAMo) vram_bus.MA00 = dma_reg.DMA_A00;
+  /*p04.EGEZ*/ if (!DMA_READ_VRAMo) vram_bus.MA01 = dma_reg.DMA_A01;
+  /*p04.FUHE*/ if (!DMA_READ_VRAMo) vram_bus.MA02 = dma_reg.DMA_A02;
+  /*p04.FYZY*/ if (!DMA_READ_VRAMo) vram_bus.MA03 = dma_reg.DMA_A03;
+  /*p04.DAMU*/ if (!DMA_READ_VRAMo) vram_bus.MA04 = dma_reg.DMA_A04;
+  /*p04.DAVA*/ if (!DMA_READ_VRAMo) vram_bus.MA05 = dma_reg.DMA_A05;
+  /*p04.ETEG*/ if (!DMA_READ_VRAMo) vram_bus.MA06 = dma_reg.DMA_A06;
+  /*p04.EREW*/ if (!DMA_READ_VRAMo) vram_bus.MA07 = dma_reg.DMA_A07;
+  /*p04.EVAX*/ if (!DMA_READ_VRAMo) vram_bus.MA08 = dma_reg.DMA_A08;
+  /*p04.DUVE*/ if (!DMA_READ_VRAMo) vram_bus.MA09 = dma_reg.DMA_A09;
+  /*p04.ERAF*/ if (!DMA_READ_VRAMo) vram_bus.MA10 = dma_reg.DMA_A10;
+  /*p04.FUSY*/ if (!DMA_READ_VRAMo) vram_bus.MA11 = dma_reg.DMA_A11;
+  /*p04.EXYF*/ if (!DMA_READ_VRAMo) vram_bus.MA12 = dma_reg.DMA_A12;
 
-  /*p25.XANE*/ wire VRAM_LOCKn = nor(dma_sig.DMA_READ_VRAM, vid_sig.RENDERING_LATCH);
+  /*p25.XANE*/ wire VRAM_LOCKn = nor(dma_sig.DMA_READ_VRAM, vid_reg.XYMU_RENDERING_LATCH);
   /*p25.XEDU*/ wire VRAM_LOCK = not(VRAM_LOCKn);
 
   /*p25.XAKY*/ if (!VRAM_LOCK) vram_bus.MA00 = bus_tri.A00();

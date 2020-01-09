@@ -9,15 +9,15 @@ struct SpriteSeq {
   /*p01.LAPE*/ bool LAPE;
   /*p27.TAVA*/ bool TAVA;
 
-  /*p29.TOXE*/ Reg SEQ_B0;
-  /*p29.TULY*/ Reg SEQ_B1;
-  /*p29.TESE*/ Reg SEQ_B2;
+  /*p29.TOXE*/ Reg2 SEQ_B0;
+  /*p29.TULY*/ Reg2 SEQ_B1;
+  /*p29.TESE*/ Reg2 SEQ_B2;
 
-  /*p29.TOBU*/ Reg SEQ_3;
-  /*p29.VONU*/ Reg SPRITE_AB;
-  /*p29.SEBA*/ Reg SEQ_4d;
+  /*p29.TOBU*/ Reg2 SEQ_3;
+  /*p29.VONU*/ Reg2 SPRITE_AB;
+  /*p29.SEBA*/ Reg2 SEQ_4d;
 
-  /*p29.TYFO*/ Reg SEQ_B0d;
+  /*p29.TYFO*/ Reg2 SEQ_B0d;
 
   /*p29.TOMA*/ bool SEQ_CLK;
   /*p27.SECA*/ bool SEQ_RST;
@@ -153,15 +153,15 @@ void SpriteSeq_tick(SpriteSeq& prev, SpriteSeq& next,
   /*p25.XUJY*/ next.XUJY = XUJY;
   /*p28.XUJA*/ next.XUJA = XUJA;
 
-  /*p29.TOXE*/ next.SEQ_B0.tock( SEQ_CLK, SEQ_RST, !SEQ_B0);
-  /*p29.TULY*/ next.SEQ_B1.tock(!SEQ_B0,  SEQ_RST, !SEQ_B1);
-  /*p29.TESE*/ next.SEQ_B2.tock(!SEQ_B1,  SEQ_RST, !SEQ_B2);
+  /*p29.TOXE*/ next.SEQ_B0.set( SEQ_CLK, SEQ_RST, !SEQ_B0);
+  /*p29.TULY*/ next.SEQ_B1.set(!SEQ_B0,  SEQ_RST, !SEQ_B1);
+  /*p29.TESE*/ next.SEQ_B2.set(!SEQ_B1,  SEQ_RST, !SEQ_B2);
 
-  /*p29.TOBU*/ next.SEQ_3.tock (TAVA, RENDERING_LATCH, SEQ_B1);
-  /*p29.VONU*/ next.SPRITE_AB.tock (TAVA, RENDERING_LATCH, SEQ_3);
-  /*p29.SEBA*/ next.SEQ_4d.tock(LAPE, RENDERING_LATCH, SPRITE_AB);
+  /*p29.TOBU*/ next.SEQ_3.set(TAVA, RENDERING_LATCH, SEQ_B1);
+  /*p29.VONU*/ next.SPRITE_AB.set(TAVA, RENDERING_LATCH, SEQ_3);
+  /*p29.SEBA*/ next.SEQ_4d.set(LAPE, RENDERING_LATCH, SPRITE_AB);
 
-  /*p29.TYFO*/ next.SEQ_B0d.tock( LAPE, VYPO, SEQ_B0); // am i suuuure this is seq_b0d?
+  /*p29.TYFO*/ next.SEQ_B0d.set( LAPE, VYPO, SEQ_B0); // am i suuuure this is seq_b0d?
 }
 
 //-----------------------------------------------------------------------------

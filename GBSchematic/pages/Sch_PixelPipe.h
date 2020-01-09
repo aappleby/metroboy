@@ -3,9 +3,11 @@
 
 namespace Schematics {
 
+struct VramBus;
+struct OamRegisters;
+
 //-----------------------------------------------------------------------------
 
-struct PixelPipeIn;
 
 struct PixelPipeSignals {
   /*p32.RAWU*/ bool BG_PIX_B0;
@@ -24,22 +26,18 @@ struct PixelPipeRegisters {
   void reset();
   bool pass_end();
 
-  void tick(const VidRegisters2& vid_Reg2,
-            const PixelPipeIn& in,
-            bool MD0,
-            bool MD1,
-            bool MD2,
-            bool MD3,
-            bool MD4,
-            bool MD5,
-            bool MD6,
-            bool MD7,
-            bool BG_LATCH,
-            bool VRAM_TEMP_CLK,
-            /*p29.XADO*/ bool SPRITE_VRAM_LATCH_A,
-            /*p29.PUCO*/ bool SPRITE_VRAM_LATCH_B,
-            /*p29.WUTY*/ bool SPRITE_DONE,
-            /*p29.XONO*/ bool FLIP_X);
+  void tick(const SysSignals& sys_sig,
+            const VidConfig& vid_reg,
+            const VramBus& vram_bus,
+            const OamRegisters& oam_reg,
+            /*p32.LOMA*/ wire BG_LATCH,
+            /*p32.LABU*/ wire VRAM_TEMP_CLK,
+            /*p29.XADO*/ wire SPRITE_VRAM_LATCH_A,
+            /*p29.PUCO*/ wire SPRITE_VRAM_LATCH_B,
+            /*p29.WUTY*/ wire SPRITE_DONE,
+            /*p29.XONO*/ wire FLIP_X,
+            /*p24.SACU*/ wire CLKPIPE,
+            /*p27.NYXU*/ wire NYXU_BG_SEQ_RSTn);
 
   bool LD0;
   bool LD1;

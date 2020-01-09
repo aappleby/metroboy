@@ -89,6 +89,8 @@ SysSignals SysRegisters::signals() const {
   /*p07.UMUT*/ wire MODE_DBG1   = and(PIN_T1, T2n);
   /*p07.UNOR*/ wire MODE_DBG2   = and(PIN_T2, T1n);
 
+  /*p28.WEFE*/ wire P10_Bn = not(PIN_P10_B);
+
   return {
     .phase          = phase         ,
     .PIN_RST        = PIN_RST       ,
@@ -120,6 +122,7 @@ SysSignals SysRegisters::signals() const {
     .BUTY_CLKREQ    = BUTY_CLKREQ   ,
     .UCOB_CLKBAD    = UCOB_CLKBAD   ,
     .ATEZ_CLKBAD    = ATEZ_CLKBAD   ,
+    .P10_Bn         = P10_Bn        ,
   };
 }
 

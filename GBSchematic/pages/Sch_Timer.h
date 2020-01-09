@@ -20,7 +20,7 @@ struct TimerSignals {
 
 //-----------------------------------------------------------------------------
 
-struct Timer {
+struct TimerRegisters {
 
   void pwron();
   void reset();

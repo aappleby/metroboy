@@ -8,7 +8,7 @@ namespace Schematics {
 struct VidSignals2 {
 };
 
-struct VidRegisters2 {
+struct VidConfig {
 
   void pwron();
   void reset();

@@ -70,10 +70,10 @@ void Bootrom::tick(const SysSignals& sys_sig,
   /*p07.ZUVY*/ wire ADDR_01n = not(bus_tri.A01());
   /*p07.ZUFY*/ wire ADDR_04n = not(bus_tri.A04());
   /*p07.ZERA*/ wire ADDR_05n = not(bus_tri.A05());
-  /*p07.ZOLE*/ wire ADDR_00 = and(ADDR_01n, ADDR_00n);
-  /*p07.ZAJE*/ wire ADDR_01 = and(ADDR_01n, bus_tri.A00());
-  /*p07.ZUBU*/ wire ADDR_10 = and(bus_tri.A01(), ADDR_00n);
-  /*p07.ZAPY*/ wire ADDR_11 = and(bus_tri.A01(), bus_tri.A00());
+  /*p07.ZOLE*/ wire ADDR_00  = and(ADDR_01n, ADDR_00n);
+  /*p07.ZAJE*/ wire ADDR_01  = and(ADDR_01n, bus_tri.A00());
+  /*p07.ZUBU*/ wire ADDR_10  = and(bus_tri.A01(), ADDR_00n);
+  /*p07.ZAPY*/ wire ADDR_11  = and(bus_tri.A01(), bus_tri.A00());
 
   /*p07.ZETE*/ wire BOOTROM_A1nA0n = not(ADDR_00);
   /*p07.ZEFU*/ wire BOOTROM_A1nA0  = not(ADDR_01);

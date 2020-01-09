@@ -11,14 +11,14 @@ struct InterruptSignals {
 
 struct InterruptRegisters {
 
-  void tick(const BusSignals& ctl,
-            const Cpu& cpu,
+  void tick(const SysSignals& sys_sig,
+            const BusSignals& ctl,
+            const CpuPins& cpu,
             const LcdSignals& lcd_sig,
             const SerialSignals& ser_sig,
             const JoypadSignals& joy_sig,
             const VidSignals& vid_sig,
             const TimerSignals& tim_sig,
-            const JoypadPins& joy_pins,
             const RstSignals& rst_sig,
             const DecoderSignals& dec,
             BusTristates& bus_tri);

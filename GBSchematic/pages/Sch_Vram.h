@@ -5,17 +5,22 @@ namespace Schematics {
 
 struct OamSignals;
 struct PixelPipeSignals;
+struct DmaRegisters;
+struct OamRegisters;
 
 //-----------------------------------------------------------------------------
 // Internal VRAM bus
 
 struct VramBus {
-  static VramBus tick(const LcdSignals& lcd_sig,
-                      const VidRegisters2& vid_regs,
+  static VramBus tick(const SysSignals& sys_sig,
+                      const LcdRegisters& lcd_reg,
+                      const VidConfig& vid_cfg,
                       const SpriteSignals& spr_sig,
                       const DmaSignals& dma_sig,
-                      const OamSignals& oam_sig,
+                      const DmaRegisters& dma_reg,
+                      const OamRegisters& oam_reg,
                       const VidSignals& vid_sig,
+                      const VidRegisters& vid_reg,
                       const PixelPipeSignals& pix_sig,
                       const JoypadPins& joy_pins,
                       const SpriteTristate& spr_tri,

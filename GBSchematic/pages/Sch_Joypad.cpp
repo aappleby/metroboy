@@ -44,26 +44,28 @@ bool JoypadRegisters::pass_end() {
 JoypadSignals JoypadRegisters::tick(const ClkSignals& clk,
                                     const RstSignals& rst_sig,
                                     const BusSignals& bus_ctl,
-                                    const DebugSignals& dbg_sig,
+                                    const DebugSignals& /*dbg_sig*/,
                                     const DecoderSignals& dec_sig,
                                     JoypadPins& joy_pins,
                                     BusTristates& bus_tri) {
   /*p10.AKUG*/ wire A06n = not(bus_tri.A06());
   /*p10.BYKO*/ wire A05n = not(bus_tri.A05());
 
-  // FIXME really unsure about these pin assignments, seem to have a few missing signals
+  // FIXME
+  wire FF60_0 = 0;
+  wire FF60_0n = 1;
 
-  /*p05.KOLE*/ joy_pins.P10_A = nand(JOYP_RA,  dbg_sig.FF60_0);
-  /*p05.KYBU*/ joy_pins.P10_D = nor (JOYP_RA,  dbg_sig.FF60_0n);
-  /*p05.KYTO*/ joy_pins.P11_A = nand(JOYP_LB,  dbg_sig.FF60_0);
-  /*p05.KABU*/ joy_pins.P11_D = nor (JOYP_LB,  dbg_sig.FF60_0n);
-  /*p05.KYHU*/ joy_pins.P12_A = nand(JOYP_UC,  dbg_sig.FF60_0);
-  /*p05.KASY*/ joy_pins.P12_D = nor (JOYP_UC,  dbg_sig.FF60_0n); // schematic wrong
-  /*p05.KORY*/ joy_pins.P13_A = nand(JOYP_DS,  dbg_sig.FF60_0);
-  /*p05.KALE*/ joy_pins.P13_D = nor (JOYP_DS,  dbg_sig.FF60_0n);
-  /*p05.KARU*/ joy_pins.P14_A = or(!JOYP_UDLR, dbg_sig.FF60_0n);
+  /*p05.KOLE*/ joy_pins.P10_A = nand(JOYP_RA,  FF60_0);
+  /*p05.KYBU*/ joy_pins.P10_D = nor (JOYP_RA,  FF60_0n);
+  /*p05.KYTO*/ joy_pins.P11_A = nand(JOYP_LB,  FF60_0);
+  /*p05.KABU*/ joy_pins.P11_D = nor (JOYP_LB,  FF60_0n);
+  /*p05.KYHU*/ joy_pins.P12_A = nand(JOYP_UC,  FF60_0);
+  /*p05.KASY*/ joy_pins.P12_D = nor (JOYP_UC,  FF60_0n); // schematic wrong
+  /*p05.KORY*/ joy_pins.P13_A = nand(JOYP_DS,  FF60_0);
+  /*p05.KALE*/ joy_pins.P13_D = nor (JOYP_DS,  FF60_0n);
+  /*p05.KARU*/ joy_pins.P14_A = or(!JOYP_UDLR, FF60_0n);
   /*p05.KARU*/ joy_pins.P14_D = JOYP_UDLR;
-  /*p05.CELA*/ joy_pins.P15_A = or(!JOYP_ABCS, dbg_sig.FF60_0n);
+  /*p05.CELA*/ joy_pins.P15_A = or(!JOYP_ABCS, FF60_0n);
   /*p05.KARU*/ joy_pins.P15_D = !JOYP_ABCS;
 
   /*p02.KERY*/ wire ANY_BUTTON = or(joy_pins.P13_C, joy_pins.P12_C, joy_pins.P11_C, joy_pins.P10_C);

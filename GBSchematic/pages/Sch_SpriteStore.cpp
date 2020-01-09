@@ -8,7 +8,6 @@
 #include "Sch_LCD.h"
 #include "Sch_OAM.h"
 
-#pragma warning(disable:4100)
 
 namespace Schematics {
 
@@ -16,81 +15,104 @@ namespace Schematics {
 
 bool SpriteMatcherRegisters::commit() {
   bool changed = false;
-  changed |= commit_all(SPRITE_GET_SYNCn);
+  changed |= commit_all(FONO_STORE_CLEARn);
   changed |= commit_all(STORE_X0, STORE_X1, STORE_X2, STORE_X3, STORE_X4, STORE_X5, STORE_X6, STORE_X7);
   changed |= commit_all(STORE_IDX0, STORE_IDX1, STORE_IDX2, STORE_IDX3, STORE_IDX4, STORE_IDX5);
   changed |= commit_all(STORE_LINE0, STORE_LINE1, STORE_LINE2, STORE_LINE3);
   return changed;
 }
 
-SpriteMatcherSignals SpriteMatcherRegisters::tick(const LcdSignals& lcd_sig,
-                                                  const SpriteSignals& spr_sig,
-                                                  const VidSignals& vid_sig,
-                                                  const OamSignals& oam_sig,
-                                                  bool MATCH_CHAINn,
-                                                  bool STORE_SEL,
-                                                  SpriteTristate& spr_tri) {
+//-----------------------------------------------------------------------------
 
-  /*p31.YMAM*/ wire MATCH0 = xor(STORE_X0, vid_sig.X0n);
-  /*p31.YTYP*/ wire MATCH1 = xor(STORE_X1, vid_sig.X1n);
-  /*p31.YFOP*/ wire MATCH2 = xor(STORE_X2, vid_sig.X2n);
-  /*p31.YVAC*/ wire MATCH3 = xor(STORE_X3, vid_sig.X3n);
-  /*p31.ZYWU*/ wire MATCH4 = xor(STORE_X4, vid_sig.X4n);
-  /*p31.ZUZA*/ wire MATCH5 = xor(STORE_X5, vid_sig.X5n);
-  /*p31.ZEJO*/ wire MATCH6 = xor(STORE_X6, vid_sig.X6n);
-  /*p31.ZEDA*/ wire MATCH7 = xor(STORE_X7, vid_sig.X7n);
-  /*p31.YLEV*/ wire MATCHA = nor(MATCH0, MATCH1, MATCH2, MATCH3);
-  /*p31.YTUB*/ wire MATCHB = nor(MATCH4, MATCH5, MATCH6, MATCH7);
-  /*p29.YGEM*/ wire MATCHn = nand(spr_sig.MATCH_EN, MATCHA, MATCHB);
+void SpriteMatcherRegisters::tick_store(const LcdSignals& lcd_sig,
+                                   const SpriteSignals& spr_sig,
+                                   const OamRegisters& oam_reg,
+                                   bool STORE_SEL,
+                                   SpriteTristate& spr_tri) {
 
-  /*p29.CATO*/ wire STORE_CLK = or(spr_sig.STORE_EN, STORE_SEL);
+  /*p31.ZAGO*/ wire SPRITE_X0 = not(!oam_reg.REG_OAM_A0);
+  /*p31.ZOCY*/ wire SPRITE_X1 = not(!oam_reg.REG_OAM_A1);
+  /*p31.YPUR*/ wire SPRITE_X2 = not(!oam_reg.REG_OAM_A2);
+  /*p31.YVOK*/ wire SPRITE_X3 = not(!oam_reg.REG_OAM_A3);
+  /*p31.COSE*/ wire SPRITE_X4 = not(!oam_reg.REG_OAM_A4);
+  /*p31.AROP*/ wire SPRITE_X5 = not(!oam_reg.REG_OAM_A5);
+  /*p31.XATU*/ wire SPRITE_X6 = not(!oam_reg.REG_OAM_A6);
+  /*p31.BADY*/ wire SPRITE_X7 = not(!oam_reg.REG_OAM_A7);
+
+  /*p29.CATO*/ wire STORE_CLK = or(spr_sig.DYTY_STORE_EN, STORE_SEL);
   /*p29.DECU*/ wire STORE_CLKn = not(STORE_CLK);
-
-  /*p29.GUZE*/ wire SPRITE_GETn = nor(MATCHn, MATCH_CHAINn);
-  /*p29.FONO*/ SPRITE_GET_SYNCn.set(spr_sig.SPRITE_DONE, lcd_sig.VID_LINE_TRIG_d4p, SPRITE_GETn);
-
-  /*p29.DUBU*/ wire STORE_RST  = or(lcd_sig.VID_LINE_TRIG_d4c, SPRITE_GET_SYNCn);
+  /*p29.DUBU*/ wire STORE_RST  = or(lcd_sig.DYBA_VID_LINE_TRIG_d4, FONO_STORE_CLEARn);
   /*p29.DOSY*/ wire STORE_RSTn = not(STORE_RST);
-    
+
   /*p29.WEME*/ wire STORE_CLKa = not(STORE_CLKn);
-  /*p31.XUVY*/ STORE_X0.set(STORE_CLKa, STORE_RSTn, oam_sig.OAM_A_D0b);
-  /*p31.XERE*/ STORE_X1.set(STORE_CLKa, STORE_RSTn, oam_sig.OAM_A_D1b);
-  /*p31.XUZO*/ STORE_X2.set(STORE_CLKa, STORE_RSTn, oam_sig.OAM_A_D2b);
-  /*p31.XEXA*/ STORE_X3.set(STORE_CLKa, STORE_RSTn, oam_sig.OAM_A_D3b);
-  /*p31.YPOD*/ STORE_X4.set(STORE_CLKa, STORE_RSTn, oam_sig.OAM_A_D4b);
-  /*p31.YROP*/ STORE_X5.set(STORE_CLKa, STORE_RSTn, oam_sig.OAM_A_D5b);
-  /*p31.YNEP*/ STORE_X6.set(STORE_CLKa, STORE_RSTn, oam_sig.OAM_A_D6b);
-  /*p31.YZOF*/ STORE_X7.set(STORE_CLKa, STORE_RSTn, oam_sig.OAM_A_D7b);
+  /*p31.XUVY*/ STORE_X0.set(STORE_CLKa, STORE_RSTn, SPRITE_X0);
+  /*p31.XERE*/ STORE_X1.set(STORE_CLKa, STORE_RSTn, SPRITE_X1);
+  /*p31.XUZO*/ STORE_X2.set(STORE_CLKa, STORE_RSTn, SPRITE_X2);
+  /*p31.XEXA*/ STORE_X3.set(STORE_CLKa, STORE_RSTn, SPRITE_X3);
+  /*p31.YPOD*/ STORE_X4.set(STORE_CLKa, STORE_RSTn, SPRITE_X4);
+  /*p31.YROP*/ STORE_X5.set(STORE_CLKa, STORE_RSTn, SPRITE_X5);
+  /*p31.YNEP*/ STORE_X6.set(STORE_CLKa, STORE_RSTn, SPRITE_X6);
+  /*p31.YZOF*/ STORE_X7.set(STORE_CLKa, STORE_RSTn, SPRITE_X7);
 
   /*p29.WUFA*/ wire STORE_CLKb = not(STORE_CLKn);
-  /*p30.XUFO*/ STORE_IDX0.set(STORE_CLKb, 1, spr_tri.TS_IDX_0);
-  /*p30.XUTE*/ STORE_IDX1.set(STORE_CLKb, 1, spr_tri.TS_IDX_1);
-  /*p30.XOTU*/ STORE_IDX2.set(STORE_CLKb, 1, spr_tri.TS_IDX_2);
-  /*p30.XYFE*/ STORE_IDX3.set(STORE_CLKb, 1, spr_tri.TS_IDX_3);
-  /*p30.YZOR*/ STORE_IDX4.set(STORE_CLKb, 1, spr_tri.TS_IDX_4);
-  /*p30.YBER*/ STORE_IDX5.set(STORE_CLKb, 1, spr_tri.TS_IDX_5);
+  /*p30.XUFO*/ STORE_IDX0.set(STORE_CLKb, spr_tri.TS_IDX_0);
+  /*p30.XUTE*/ STORE_IDX1.set(STORE_CLKb, spr_tri.TS_IDX_1);
+  /*p30.XOTU*/ STORE_IDX2.set(STORE_CLKb, spr_tri.TS_IDX_2);
+  /*p30.XYFE*/ STORE_IDX3.set(STORE_CLKb, spr_tri.TS_IDX_3);
+  /*p30.YZOR*/ STORE_IDX4.set(STORE_CLKb, spr_tri.TS_IDX_4);
+  /*p30.YBER*/ STORE_IDX5.set(STORE_CLKb, spr_tri.TS_IDX_5);
 
   /*p29.FAKA*/ wire STORE_CLKc = not(STORE_CLKn);
-  /*p30.DEWU*/ STORE_LINE0.set(STORE_CLKc, 1, spr_tri.TS_LINE_0);
-  /*p30.CANA*/ STORE_LINE1.set(STORE_CLKc, 1, spr_tri.TS_LINE_1);
-  /*p30.DYSY*/ STORE_LINE2.set(STORE_CLKc, 1, spr_tri.TS_LINE_2);
-  /*p30.FOFO*/ STORE_LINE3.set(STORE_CLKc, 1, spr_tri.TS_LINE_3);
+  /*p30.DEWU*/ STORE_LINE0.set(STORE_CLKc, spr_tri.TS_LINE_0);
+  /*p30.CANA*/ STORE_LINE1.set(STORE_CLKc, spr_tri.TS_LINE_1);
+  /*p30.DYSY*/ STORE_LINE2.set(STORE_CLKc, spr_tri.TS_LINE_2);
+  /*p30.FOFO*/ STORE_LINE3.set(STORE_CLKc, spr_tri.TS_LINE_3);
+}
 
-  /*p29.FADO*/ wire SPRITE_GET = not(SPRITE_GETn);
-  /*p30.YHAL*/ if (SPRITE_GET) spr_tri.TS_IDX_0  = not(!STORE_IDX0);
-  /*p30.YRAD*/ if (SPRITE_GET) spr_tri.TS_IDX_1  = not(!STORE_IDX1);
-  /*p30.XYRA*/ if (SPRITE_GET) spr_tri.TS_IDX_2  = not(!STORE_IDX2);
-  /*p30.YNEV*/ if (SPRITE_GET) spr_tri.TS_IDX_3  = not(!STORE_IDX3);
-  /*p30.ZOJY*/ if (SPRITE_GET) spr_tri.TS_IDX_4  = not(!STORE_IDX4);
-  /*p30.ZARO*/ if (SPRITE_GET) spr_tri.TS_IDX_5  = not(!STORE_IDX5);
-  /*p30.CAWO*/ if (SPRITE_GET) spr_tri.TS_LINE_0 = not(!STORE_LINE0);
-  /*p30.BYME*/ if (SPRITE_GET) spr_tri.TS_LINE_1 = not(!STORE_LINE1);
-  /*p30.COHO*/ if (SPRITE_GET) spr_tri.TS_LINE_2 = not(!STORE_LINE2);
-  /*p30.GATE*/ if (SPRITE_GET) spr_tri.TS_LINE_3 = not(!STORE_LINE3);
+//-----------------------------------------------------------------------------
 
-  return {
-    .MATCHn = MATCHn,
-  };
+bool SpriteMatcherRegisters::tick_fetch(const LcdSignals& lcd_sig,
+                                   const SpriteSignals& spr_sig,
+                                   const VidRegisters& vid_reg,
+                                   bool MATCH_CHAINn,
+                                   SpriteTristate& spr_tri) {
+
+  /*p21.ACAM*/ wire X0n = not(vid_reg.X0);
+  /*p21.AZUB*/ wire X1n = not(vid_reg.X1);
+  /*p21.AMEL*/ wire X2n = not(vid_reg.X2);
+  /*p21.AHAL*/ wire X3n = not(vid_reg.X3);
+  /*p21.APUX*/ wire X4n = not(vid_reg.X4);
+  /*p21.ABEF*/ wire X5n = not(vid_reg.X5);
+  /*p21.ADAZ*/ wire X6n = not(vid_reg.X6);
+  /*p21.ASAH*/ wire X7n = not(vid_reg.X7);
+
+  /*p31.YMAM*/ wire MATCH0 = xor(STORE_X0, X0n);
+  /*p31.YTYP*/ wire MATCH1 = xor(STORE_X1, X1n);
+  /*p31.YFOP*/ wire MATCH2 = xor(STORE_X2, X2n);
+  /*p31.YVAC*/ wire MATCH3 = xor(STORE_X3, X3n);
+  /*p31.ZYWU*/ wire MATCH4 = xor(STORE_X4, X4n);
+  /*p31.ZUZA*/ wire MATCH5 = xor(STORE_X5, X5n);
+  /*p31.ZEJO*/ wire MATCH6 = xor(STORE_X6, X6n);
+  /*p31.ZEDA*/ wire MATCH7 = xor(STORE_X7, X7n);
+  /*p31.YLEV*/ wire MATCHA = nor(MATCH0, MATCH1, MATCH2, MATCH3);
+  /*p31.YTUB*/ wire MATCHB = nor(MATCH4, MATCH5, MATCH6, MATCH7);
+  /*p29.YGEM*/ wire MATCHn = nand(spr_sig.AROR_MATCH_EN, MATCHA, MATCHB);
+
+  /*p29.GUZE*/ wire GUZE_SPRITE_GETn = nor(MATCHn, MATCH_CHAINn);
+  /*p29.FONO*/ FONO_STORE_CLEARn.set(spr_sig.WUTY_SPRITE_DONE, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUZE_SPRITE_GETn);
+  /*p29.FADO*/ wire FADO_SPRITE_GET = not(GUZE_SPRITE_GETn);
+  /*p30.YHAL*/ if (FADO_SPRITE_GET) spr_tri.TS_IDX_0  = not(!STORE_IDX0);
+  /*p30.YRAD*/ if (FADO_SPRITE_GET) spr_tri.TS_IDX_1  = not(!STORE_IDX1);
+  /*p30.XYRA*/ if (FADO_SPRITE_GET) spr_tri.TS_IDX_2  = not(!STORE_IDX2);
+  /*p30.YNEV*/ if (FADO_SPRITE_GET) spr_tri.TS_IDX_3  = not(!STORE_IDX3);
+  /*p30.ZOJY*/ if (FADO_SPRITE_GET) spr_tri.TS_IDX_4  = not(!STORE_IDX4);
+  /*p30.ZARO*/ if (FADO_SPRITE_GET) spr_tri.TS_IDX_5  = not(!STORE_IDX5);
+  /*p30.CAWO*/ if (FADO_SPRITE_GET) spr_tri.TS_LINE_0 = not(!STORE_LINE0);
+  /*p30.BYME*/ if (FADO_SPRITE_GET) spr_tri.TS_LINE_1 = not(!STORE_LINE1);
+  /*p30.COHO*/ if (FADO_SPRITE_GET) spr_tri.TS_LINE_2 = not(!STORE_LINE2);
+  /*p30.GATE*/ if (FADO_SPRITE_GET) spr_tri.TS_LINE_3 = not(!STORE_LINE3);
+
+  return MATCHn;
 }
 
 //-----------------------------------------------------------------------------
@@ -105,12 +127,13 @@ bool SpriteStoreRegisters::pass_end() {
   return changed;
 }
 
-SpriteStoreSignals SpriteStoreRegisters::tick(const ClkSignals& clk_sig,
-                                              const RstSignals& rst_sig,
-                                              const LcdSignals& lcd_sig,
-                                              const SpriteSignals& spr_sig,
-                                              const VidSignals& vid_sig,
-                                              const OamSignals& oam_sig) {
+//-----------------------------------------------------------------------------
+
+void SpriteStoreRegisters::tick_store(const ClkSignals& clk_sig,
+                                      const RstSignals& rst_sig,
+                                      const LcdSignals& lcd_sig,
+                                      const SpriteSignals& spr_sig,
+                                      const OamRegisters& oam_reg) {
 
   /*p29.EDEN*/ wire SPRITE_COUNT0n = not(SPRITE_COUNT0);
   /*p29.CYPY*/ wire SPRITE_COUNT1n = not(SPRITE_COUNT1);
@@ -133,47 +156,51 @@ SpriteStoreSignals SpriteStoreRegisters::tick(const ClkSignals& clk_sig,
   /*p29.DEWY*/ wire STORE8_SEL = nand(SPRITE_COUNT0n, SPRITE_COUNT1n, SPRITE_COUNT2n, SPRITE_COUNT3b);
   /*p29.DOGU*/ wire STORE9_SEL = nand(SPRITE_COUNT0b, SPRITE_COUNT1n, SPRITE_COUNT2n, SPRITE_COUNT3b);
 
-  const auto store_sig0 = store0.tick(lcd_sig, spr_sig, vid_sig, oam_sig, false,             STORE0_SEL, spr_tri);
-  const auto store_sig1 = store1.tick(lcd_sig, spr_sig, vid_sig, oam_sig, store_sig0.MATCHn, STORE1_SEL, spr_tri);
-  const auto store_sig2 = store2.tick(lcd_sig, spr_sig, vid_sig, oam_sig, store_sig1.MATCHn, STORE2_SEL, spr_tri);
-  const auto store_sig3 = store3.tick(lcd_sig, spr_sig, vid_sig, oam_sig, store_sig2.MATCHn, STORE3_SEL, spr_tri);
-  const auto store_sig4 = store4.tick(lcd_sig, spr_sig, vid_sig, oam_sig, store_sig3.MATCHn, STORE4_SEL, spr_tri);
-  const auto store_sig5 = store5.tick(lcd_sig, spr_sig, vid_sig, oam_sig, store_sig4.MATCHn, STORE5_SEL, spr_tri);
-  const auto store_sig6 = store6.tick(lcd_sig, spr_sig, vid_sig, oam_sig, store_sig5.MATCHn, STORE6_SEL, spr_tri);
-  const auto store_sig7 = store7.tick(lcd_sig, spr_sig, vid_sig, oam_sig, store_sig6.MATCHn, STORE7_SEL, spr_tri);
-  const auto store_sig8 = store8.tick(lcd_sig, spr_sig, vid_sig, oam_sig, store_sig7.MATCHn, STORE8_SEL, spr_tri);
-  const auto store_sig9 = store9.tick(lcd_sig, spr_sig, vid_sig, oam_sig, store_sig8.MATCHn, STORE9_SEL, spr_tri);
+  store0.tick_store(lcd_sig, spr_sig, oam_reg, STORE0_SEL, spr_tri);
+  store1.tick_store(lcd_sig, spr_sig, oam_reg, STORE1_SEL, spr_tri);
+  store2.tick_store(lcd_sig, spr_sig, oam_reg, STORE2_SEL, spr_tri);
+  store3.tick_store(lcd_sig, spr_sig, oam_reg, STORE3_SEL, spr_tri);
+  store4.tick_store(lcd_sig, spr_sig, oam_reg, STORE4_SEL, spr_tri);
+  store5.tick_store(lcd_sig, spr_sig, oam_reg, STORE5_SEL, spr_tri);
+  store6.tick_store(lcd_sig, spr_sig, oam_reg, STORE6_SEL, spr_tri);
+  store7.tick_store(lcd_sig, spr_sig, oam_reg, STORE7_SEL, spr_tri);
+  store8.tick_store(lcd_sig, spr_sig, oam_reg, STORE8_SEL, spr_tri);
+  store9.tick_store(lcd_sig, spr_sig, oam_reg, STORE9_SEL, spr_tri);
 
-  /*p29.FEFY*/ wire FEFY = nand(store_sig4.MATCHn, store_sig3.MATCHn, store_sig2.MATCHn, store_sig1.MATCHn, store_sig0.MATCHn);
-  /*p29.FOVE*/ wire FOVE = nand(store_sig9.MATCHn, store_sig8.MATCHn, store_sig7.MATCHn, store_sig6.MATCHn, store_sig5.MATCHn);
-  /*p29.FEPO*/ wire STORE_MATCH = or(FEFY, FOVE);
-
-  /*p29.DEZY*/ STORE_EN_SYNC.set(clk_sig.ZEME_xBxDxFxH, rst_sig.VID_RESETn, spr_sig.STORE_EN);
+  /*p29.DEZY*/ STORE_EN_SYNC.set(clk_sig.ZEME_xBxDxFxH, rst_sig.VID_RESETn, spr_sig.DYTY_STORE_EN);
 
   /*p29.BAKY*/ wire SPRITES_FULL = and(SPRITE_COUNT1, SPRITE_COUNT3);
   /*p29.CAKE*/ wire SPRITE_COUNT_CLK = or(SPRITES_FULL, STORE_EN_SYNC);
-  /*p28.AZYB*/ wire SPRITE_COUNT_RSTn = not(lcd_sig.VID_LINE_TRIG_d4n);
+  /*p28.AZYB*/ wire SPRITE_COUNT_RSTn = not(lcd_sig.BYHA_VID_LINE_TRIG_d4n);
   /*p29.BESE*/ SPRITE_COUNT0.set(SPRITE_COUNT_CLK,  SPRITE_COUNT_RSTn, !SPRITE_COUNT0);
   /*p29.CUXY*/ SPRITE_COUNT1.set(SPRITE_COUNT0,     SPRITE_COUNT_RSTn, !SPRITE_COUNT1);
   /*p29.BEGO*/ SPRITE_COUNT2.set(SPRITE_COUNT1,     SPRITE_COUNT_RSTn, !SPRITE_COUNT2);
   /*p29.DYBE*/ SPRITE_COUNT3.set(SPRITE_COUNT2,     SPRITE_COUNT_RSTn, !SPRITE_COUNT3);
-
-  return {
-    .STORE_MATCH = STORE_MATCH,
-  };
 }
 
+//-----------------------------------------------------------------------------
 
+bool SpriteStoreRegisters::tick_fetch(const LcdSignals& lcd_sig,
+                                      const SpriteSignals& spr_sig,
+                                      const VidRegisters& vid_reg) {
 
+  wire match0n = store0.tick_fetch(lcd_sig, spr_sig, vid_reg, false,   spr_tri);
+  wire match1n = store1.tick_fetch(lcd_sig, spr_sig, vid_reg, match0n, spr_tri);
+  wire match2n = store2.tick_fetch(lcd_sig, spr_sig, vid_reg, match1n, spr_tri);
+  wire match3n = store3.tick_fetch(lcd_sig, spr_sig, vid_reg, match2n, spr_tri);
+  wire match4n = store4.tick_fetch(lcd_sig, spr_sig, vid_reg, match3n, spr_tri);
+  wire match5n = store5.tick_fetch(lcd_sig, spr_sig, vid_reg, match4n, spr_tri);
+  wire match6n = store6.tick_fetch(lcd_sig, spr_sig, vid_reg, match5n, spr_tri);
+  wire match7n = store7.tick_fetch(lcd_sig, spr_sig, vid_reg, match6n, spr_tri);
+  wire match8n = store8.tick_fetch(lcd_sig, spr_sig, vid_reg, match7n, spr_tri);
+  wire match9n = store9.tick_fetch(lcd_sig, spr_sig, vid_reg, match8n, spr_tri);
 
+  /*p29.FEFY*/ wire FEFY = nand(match4n, match3n, match2n, match1n, match0n);
+  /*p29.FOVE*/ wire FOVE = nand(match9n, match8n, match7n, match6n, match5n);
+  /*p29.FEPO*/ wire STORE_MATCH = or(FEFY, FOVE);
 
-
-
-
-
-
-
-
+  return STORE_MATCH;
+}
 
 //-----------------------------------------------------------------------------
 

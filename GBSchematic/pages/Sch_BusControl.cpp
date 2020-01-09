@@ -1,6 +1,6 @@
 #include "Sch_BusControl.h"
 
-#include "Sch_CpuSignals.h"
+#include "Sch_CpuPins.h"
 #include "Sch_Clocks.h"
 #include "Sch_Pins.h"
 #include "Sch_Debug.h"

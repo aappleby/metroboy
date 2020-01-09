@@ -151,31 +151,22 @@ LcdSignals LcdRegisters::signals(const RstSignals& rst_sig)
   /*p21.PARU*/ wire VBLANK_d4b = not(!VBLANK_d4);
   /*p21.TOLU*/ wire INT_VBLn = not(VBLANK_d4b);
 
-  /*p28.BYHA*/ wire VID_LINE_TRIG_d4n = and(or(VID_LINE_d6, VID_LINE_d4n), VID_RESETn3);
-  /*p28.ATEJ*/ wire VID_LINE_TRIG_d4a = not(VID_LINE_TRIG_d4n);
-  /*p28.ABAK*/ wire VID_LINE_TRIG_d4b = or (VID_LINE_TRIG_d4a, VID_RESET7);
-  /*p27.XAHY*/ wire VID_LINE_TRIG_d4o = not(VID_LINE_TRIG_d4a);
-  /*p28.BYVA*/ wire VID_LINE_TRIG_d4p = not(VID_LINE_TRIG_d4b);
-  /*p29.DYBA*/ wire VID_LINE_TRIG_d4c = not(VID_LINE_TRIG_d4p);
+  /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and(or(VID_LINE_d6, VID_LINE_d4n), VID_RESETn3);
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4  = not(BYHA_VID_LINE_TRIG_d4n);
+  /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4  = or (ATEJ_VID_LINE_TRIG_d4, VID_RESET7);
+  /*p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4);
+  /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n = not(ABAK_VID_LINE_TRIG_d4);
+  /*p29.DYBA*/ wire DYBA_VID_LINE_TRIG_d4  = not(BYVA_VID_LINE_TRIG_d4n);
 
   return {
-    /*p21.POPU*/ .VBLANK_d4         = VBLANK_d4,
-    /*p21.PARU*/ .VBLANK_d4b        = VBLANK_d4b,
-    /*p21.VYPU*/ .INT_VBL           = not(INT_VBLn),
-    /*p28.BYHA*/ .VID_LINE_TRIG_d4n = VID_LINE_TRIG_d4n,
-    /*p28.ATEJ*/ .VID_LINE_TRIG_d4a = VID_LINE_TRIG_d4a,
-    /*p28.BYVA*/ .VID_LINE_TRIG_d4p = VID_LINE_TRIG_d4p,
-    /*p29.DYBA*/ .VID_LINE_TRIG_d4c = VID_LINE_TRIG_d4c,
-    /*p27.XAHY*/ .VID_LINE_TRIG_d4o = VID_LINE_TRIG_d4o,
-
-    /*p21.MUWY*/ .Y0 = Y0,
-    /*p21.MYRO*/ .Y1 = Y1,
-    /*p21.LEXA*/ .Y2 = Y2,
-    /*p21.LYDO*/ .Y3 = Y3,
-    /*p21.LOVU*/ .Y4 = Y4,
-    /*p21.LEMA*/ .Y5 = Y5,
-    /*p21.MATO*/ .Y6 = Y6,
-    /*p21.LAFO*/ .Y7 = Y7,
+    /*p21.POPU*/ .POPU_VBLANK_d4         = VBLANK_d4,
+    /*p21.PARU*/ .PARU_VBLANK_d4         = VBLANK_d4b,
+    /*p21.VYPU*/ .VYPU_INT_VBL           = not(INT_VBLn),
+    /*p28.BYHA*/ .BYHA_VID_LINE_TRIG_d4n = BYHA_VID_LINE_TRIG_d4n,
+    /*p28.ATEJ*/ .ATEJ_VID_LINE_TRIG_d4  = ATEJ_VID_LINE_TRIG_d4,
+    /*p28.BYVA*/ .BYVA_VID_LINE_TRIG_d4n = BYVA_VID_LINE_TRIG_d4n,
+    /*p29.DYBA*/ .DYBA_VID_LINE_TRIG_d4  = DYBA_VID_LINE_TRIG_d4,
+    /*p27.XAHY*/ .XAHY_VID_LINE_TRIG_d4n = XAHY_VID_LINE_TRIG_d4n,
   };
 }
 
@@ -189,6 +180,61 @@ LcdSignals LcdRegisters::signals(const RstSignals& rst_sig)
 
 
 
+
+
+
+
+
+#if 0
+    X_8_SYNC.val = false; X_8_SYNC.clk = false;
+    LINE_STROBE.val = false; LINE_STROBE.clk = false;
+
+    /*p21.WUSA*/ CPEN_LATCH = 0;
+
+    /*p24.POME*/ POME = 0;
+    /*p24.RUJU*/ RUJU = 0;
+
+    /*p24.MEDA*/ VSYNC_OUTn.val = false; VSYNC_OUTn.clk = false;
+    /*p24.LUCA*/ LINE_EVEN.val = true;  LINE_EVEN.clk = true;
+    /*p21.NAPO*/ FRAME_EVEN.val = true; FRAME_EVEN.clk = true;
+
+    /* PIN_50 */ PIN_LD1 = 0;
+    /* PIN_51 */ PIN_LD0 = 0;
+    /* PIN_52 */ PIN_CPG = 1;
+    /* PIN_53 */ PIN_CP = 1;
+    /* PIN_54 */ PIN_ST = 0;
+    /* PIN_55 */ PIN_CPL = 1;
+    /* PIN_56 */ PIN_FR = 1;
+    /* PIN_57 */ PIN_S = 1;
+#endif
+
+
+
+#if 0
+  /*p21.SYGU*/ Reg2 LINE_STROBE;
+  /*p24.PAHO*/ Reg2 X_8_SYNC;
+
+  /*p21.WUSA*/ bool CPEN_LATCH;
+
+  /*p24.POME*/ bool POME; 
+  /*p24.RUJU*/ bool RUJU;
+
+  /*p24.MEDA*/ Reg2 VSYNC_OUTn;
+  /*p24.LUCA*/ Reg2 LINE_EVEN;
+  /*p21.NAPO*/ Reg2 FRAME_EVEN;
+
+  //----------
+  // LCD pins
+
+  /* PIN_50 */ bool PIN_LD1;
+  /* PIN_51 */ bool PIN_LD0;
+  /* PIN_52 */ bool PIN_CPG;
+  /* PIN_53 */ bool PIN_CP;
+  /* PIN_54 */ bool PIN_ST;
+  /* PIN_55 */ bool PIN_CPL;
+  /* PIN_56 */ bool PIN_FR;
+  /* PIN_57 */ bool PIN_S;
+#endif
 
 
 #if 0
@@ -376,7 +422,7 @@ LcdSignals LcdRegisters::signals(const RstSignals& rst_sig)
 
     next.VID_LINE_TRIG_d4n = 0;
     next.VID_LINE_TRIG_d4a = 1;
-    next.VID_LINE_TRIG_d4o = 0;
+    next.XAHY_VID_LINE_TRIG_d4n = 0;
 
     next.VID_LINE_TRIG_d4p = 0;
     next.VID_LINE_TRIG_d4c = 1;
@@ -418,7 +464,7 @@ LcdSignals LcdRegisters::signals(const RstSignals& rst_sig)
 
     /*p28.BYHA*/ next.VID_LINE_TRIG_d4n = or(next.VID_LINE_d6, !next.VID_LINE_d4);
     /*p28.ATEJ*/ next.VID_LINE_TRIG_d4a = not(next.VID_LINE_TRIG_d4n);
-    /*p27.XAHY*/ next.VID_LINE_TRIG_d4o = not(next.VID_LINE_TRIG_d4a);
+    /*p27.XAHY*/ next.XAHY_VID_LINE_TRIG_d4n = not(next.VID_LINE_TRIG_d4a);
 
     /*p28.ABAK*/ bool VID_LINE_TRIG_d4b = next.VID_LINE_TRIG_d4a;
     /*p28.BYVA*/ next.VID_LINE_TRIG_d4p = not(VID_LINE_TRIG_d4b);

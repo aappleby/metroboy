@@ -4,26 +4,25 @@
 namespace Schematics {
 
 struct OamSignals;
+struct OamRegisters;
 struct OamPins;
+struct DmaRegisters;
 
 //-----------------------------------------------------------------------------
 
 struct SpriteSignals {
-  /*p28.WEFE*/ bool P10_Bn;
-  /*p28.ACYL*/ bool OAM_ADDR_PARSE;
-  /*p29.PUCO*/ bool SPRITE_PIX_LATCH_B;
-  /*p29.XADO*/ bool SPRITE_PIX_LATCH_A;
+  /*p28.ACYL*/ bool ACYL_OAM_ADDR_PARSE;
+  /*p29.PUCO*/ bool PUCO_SPRITE_PIX_LATCH_B;
+  /*p29.XADO*/ bool XADO_SPRITE_PIX_LATCH_A;
 
-  /*p29.WUTY*/ bool SPRITE_DONE;
-  
-  /*p29.DYTY*/ bool STORE_EN;
+  /*p29.WUTY*/ bool WUTY_SPRITE_DONE; // -> sst
+  /*p29.DYTY*/ bool DYTY_STORE_EN;    // -> sst
+  /*p29.AROR*/ bool AROR_MATCH_EN;    // -> sst
 
-  /*p29.AROR*/ bool MATCH_EN;
+  /*p29.TEXY*/ bool TEXY_SPRITE_READ;
 
-  /*p29.TEXY*/ bool SPRITE_READ;
-
-  /*p28.FETO*/ bool SCAN_DONE_d0;
-  /*p29.AVAP*/ bool SCAN_DONE_d0_TRIG;
+  /*p28.FETO*/ bool FETO_SCAN_DONE_d0;
+  /*p29.AVAP*/ bool AVAP_SCAN_DONE_d0_TRIG;
 
   /*p29.TOXE*/ bool SPR_SEQ0;
   /*p29.TULY*/ bool SPR_SEQ1;
@@ -40,24 +39,54 @@ struct SpriteSignals {
   /*p28.FONY*/ bool SCAN5;
 };
 
+struct SpriteDelta {
+  /*p29.GESE*/ wire SPR_MATCH_Y;
+  /*p29.DEGE*/ wire SPRITE_DELTA0;
+  /*p29.DABY*/ wire SPRITE_DELTA1;
+  /*p29.DABU*/ wire SPRITE_DELTA2;
+  /*p29.GYSA*/ wire SPRITE_DELTA3;
+  /*p29.GACE*/ wire SPRITE_DELTA4;
+  /*p29.GUVU*/ wire SPRITE_DELTA5;
+  /*p29.GYDA*/ wire SPRITE_DELTA6;
+  /*p29.GEWY*/ wire SPRITE_DELTA7;
+};
+
 //-----------------------------------------------------------------------------
 
 struct SpriteRegisters {
   void reset();
   uint32_t index() const;
 
-  SpriteSignals tick(const ClkSignals& clk_sig1,
+  SpriteDelta storeMatchY(const SysSignals& sys_sig,
+                          const LcdRegisters& lcd_reg,
+                          const OamRegisters& oam_reg,
+                          const VidConfig& vid_reg2);
+
+  SpriteSignals tick(const ClkSignals& clk_sig,
+                     const SysSignals& sys_sig,
                      const VclkSignals& vid_clk,
                      const RstSignals& rst_sig,
-                     const JoypadPins& joy_pins,
-                     const DmaSignals& dma_sig,
+                     const DmaRegisters& dma_reg,
                      const LcdSignals& lcd_sig,
-                     const VidRegisters2& vid_reg,
-                     const VidSignals& vid_sig,
-                     const SpriteStoreSignals& sst_sig,
-                     const OamSignals& oam_sig,
+                     const LcdRegisters& lcd_reg,
+                     const VidConfig& vid_cfg,
+                     const VidRegisters& vid_reg,
+                     const OamRegisters& oam_reg,
                      const OamPins& oam_pins,
-                     SpriteTristate& sil_out);
+                     SpriteTristate& sil_out,
+                     bool STORE_MATCH);
+
+  bool MATCH_EN(const VidRegisters& vid_reg,
+                const VidConfig& vid_reg2) const;
+
+  void sprite_seq(const SysSignals& sys_sig,
+                  const ClkSignals& clk_sig,
+                  const RstSignals& rst_sig,
+                  const VidSignals& vid_sig,
+                  const VidRegisters& vid_reg,
+                  const LcdSignals& lcd_sig);
+
+  wire scanner(const ClkSignals& clk_sig, const VclkSignals& vid_clk, const RstSignals& rst_sig, const LcdSignals& lcd_sig);
 
   /*p29.CENO*/ Reg2 STORE_SPRITE_IDXn;
 

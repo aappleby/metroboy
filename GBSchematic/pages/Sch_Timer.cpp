@@ -6,14 +6,14 @@
 #include "Sch_Pins.h"
 #include "Sch_Debug.h"
 #include "Sch_Resets.h"
-#include "Sch_CpuSignals.h"
+#include "Sch_CpuPins.h"
 #include "Sch_System.h"
 
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void Timer::pwron() {
+void TimerRegisters::pwron() {
   pwron_all(DIV_00, DIV_01, DIV_02, DIV_03, DIV_04, DIV_05, DIV_06, DIV_07,
             DIV_08, DIV_09, DIV_10, DIV_11, DIV_12, DIV_13, DIV_14, DIV_15);
   pwron_all(TIMA_0, TIMA_1, TIMA_2, TIMA_3, TIMA_4, TIMA_5, TIMA_6, TIMA_7, TIMA_MAX, INT_TIMER);
@@ -23,7 +23,7 @@ void Timer::pwron() {
 
 //-----------------------------------------------------------------------------
 
-void Timer::reset() {
+void TimerRegisters::reset() {
   DIV_00.reset(1, 0);
   DIV_01.reset(1, 0);
   DIV_02.reset(1, 0);
@@ -69,16 +69,16 @@ void Timer::reset() {
 
 //-----------------------------------------------------------------------------
 
-void Timer::phase_begin() {
+void TimerRegisters::phase_begin() {
 }
 
-void Timer::phase_end() {
+void TimerRegisters::phase_end() {
 }
 
-void Timer::pass_begin() {
+void TimerRegisters::pass_begin() {
 }
 
-bool Timer::pass_end() {
+bool TimerRegisters::pass_end() {
   bool changed = false;
   changed |= commit_all(DIV_00, DIV_01, DIV_02, DIV_03, DIV_04, DIV_05, DIV_06, DIV_07,
                         DIV_08, DIV_09, DIV_10, DIV_11, DIV_12, DIV_13, DIV_14, DIV_15);
@@ -90,7 +90,7 @@ bool Timer::pass_end() {
 
 //-----------------------------------------------------------------------------
 
-TimerSignals Timer::tick(const SysSignals& sys_sig,
+TimerSignals TimerRegisters::tick(const SysSignals& sys_sig,
                          const ClkSignals& clk_sig,
                          const RstSignals& rst_sig,
                          const BusSignals& bus_sig,
@@ -108,7 +108,7 @@ TimerSignals Timer::tick(const SysSignals& sys_sig,
 //-----------------------------------------------------------------------------
 // FF04 DIV
 
-void Timer::tickDIV(const SysSignals&   sys_sig,
+void TimerRegisters::tickDIV(const SysSignals&   sys_sig,
                     const ClkSignals&   clk_sig,
                     const BusSignals&   bus_sig,
                     const DecoderSignals& dec_sig,
@@ -160,7 +160,7 @@ void Timer::tickDIV(const SysSignals&   sys_sig,
 //-----------------------------------------------------------------------------
 // FF05 TIMA
 
-void Timer::tickTIMA(const SysSignals&   sys_sig,
+void TimerRegisters::tickTIMA(const SysSignals&   sys_sig,
                      const ClkSignals&   clk_sig,
                      const RstSignals&   rst_sig,
                      const BusSignals&   bus_sig,
@@ -237,7 +237,7 @@ void Timer::tickTIMA(const SysSignals&   sys_sig,
 //-----------------------------------------------------------------------------
 // FF06 TMA
 
-void Timer::tickTMA(const RstSignals&   rst_sig,
+void TimerRegisters::tickTMA(const RstSignals&   rst_sig,
                     const BusSignals&   bus_sig,
                     const DecoderSignals& dec_sig,
                     BusTristates& bus_tri)
@@ -270,7 +270,7 @@ void Timer::tickTMA(const RstSignals&   rst_sig,
 //-----------------------------------------------------------------------------
 // FF07 TAC
 
-void Timer::tickTAC(const RstSignals&   rst_sig,
+void TimerRegisters::tickTAC(const RstSignals&   rst_sig,
                     const BusSignals&   bus_sig,
                     const DecoderSignals& dec_sig,
                     BusTristates& bus_tri) {
@@ -290,7 +290,7 @@ void Timer::tickTAC(const RstSignals&   rst_sig,
 
 //-----------------------------------------------------------------------------
 
-TimerSignals Timer::signals() const
+TimerSignals TimerRegisters::signals() const
 {
   return {
     /*p01.UMEK*/ .DIV_06n   = not(DIV_06),

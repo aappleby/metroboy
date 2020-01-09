@@ -4,6 +4,7 @@
 namespace Schematics {
 
 struct OamSignals;
+struct OamRegisters;
 
 //-----------------------------------------------------------------------------
 
@@ -23,23 +24,23 @@ struct SpriteTristate {
 
 //-----------------------------------------------------------------------------
 
-struct SpriteMatcherSignals {
-  bool MATCHn;
-};
-
 struct SpriteMatcherRegisters {
 
   bool commit();
 
-  SpriteMatcherSignals tick(const LcdSignals& lcd_sig,
-                            const SpriteSignals& spr_sig,
-                            const VidSignals& vid_sig,
-                            const OamSignals& oam_sig,
-                            bool MATCH_CHAINn,
-                            bool STORE_SEL,
-                            SpriteTristate& spr_tri);
+  void tick_store(const LcdSignals& lcd_sig,
+             const SpriteSignals& spr_sig,
+             const OamRegisters& oam_reg,
+             bool STORE_SEL,
+             SpriteTristate& spr_tri);
 
-  Reg2 SPRITE_GET_SYNCn;
+  bool tick_fetch(const LcdSignals& lcd_sig,
+             const SpriteSignals& spr_sig,
+             const VidRegisters& vid_reg,
+             bool MATCH_CHAINn,
+             SpriteTristate& spr_tri);
+
+  Reg2 FONO_STORE_CLEARn;
 
   Reg2 STORE_X0;
   Reg2 STORE_X1;
@@ -65,20 +66,19 @@ struct SpriteMatcherRegisters {
 
 //-----------------------------------------------------------------------------
 
-struct SpriteStoreSignals {
-  /*p29.FEPO*/ bool STORE_MATCH;
-};
-
 struct SpriteStoreRegisters {
 
   bool pass_end();
 
-  SpriteStoreSignals tick(const ClkSignals& clk_sig,
-                          const RstSignals& rst_sig,
-                          const LcdSignals& lcd_sig,
-                          const SpriteSignals& spr_sig,
-                          const VidSignals& vid_sig,
-                          const OamSignals& oam_sig);
+  void tick_store(const ClkSignals& clk_sig,
+            const RstSignals& rst_sig,
+            const LcdSignals& lcd_sig,
+            const SpriteSignals& spr_sig,
+            const OamRegisters& oam_reg);
+
+  bool tick_fetch(const LcdSignals& lcd_sig,
+                  const SpriteSignals& spr_sig,
+                  const VidRegisters& vid_reg);
 
   SpriteMatcherRegisters store0;
   SpriteMatcherRegisters store1;

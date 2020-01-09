@@ -108,6 +108,8 @@ private:
   bool changed;
 };
 
+//-----------------------------------------------------------------------------
+
 struct BusSignals {
 
   static BusSignals BusSignals::tick(const SysSignals& sys_sig,
@@ -115,9 +117,9 @@ struct BusSignals {
                                      BusTristates& bus_tri);
 
   /*p07.TEDO*/ bool TEDO_CPURD;
-  /*p07.TAPU*/ bool TAPU_CPUWR; //p4-p6
+  /*p07.TAPU*/ bool TAPU_CPUWR; // xxxxEFGx
   /*p07.ASOT*/ bool ASOT_CPURD;
-  /*p07.CUPA*/ bool CUPA_CPUWR; //p4-p6
+  /*p07.CUPA*/ bool CUPA_CPUWR; // xxxxEFGx
 
   /*p08.TEXO*/ bool ADDR_VALID_AND_NOT_VRAM;
   /*p08.LEVO*/ bool ADDR_VALID_AND_NOT_VRAMn;
@@ -125,22 +127,8 @@ struct BusSignals {
   /*p08.RORU*/ bool CBUS_TO_CEXTn;
   /*p08.LULA*/ bool CBUS_TO_CEXT;
 
-  ///*p25.RAHU*/ bool CBUS_TO_VBUSn;
-  ///*p25.RENA*/ bool VEXT_TO_VBUSn;
-
-  /*p25.SERE*/ bool SERE;
-
   /*p25.TYVY*/ bool MD_TO_D;
   /*p25.SEBY*/ bool MD_TO_Dn;
-
-  /*p08.SOMA*/ bool LATCH_D0;
-  /*p08.RONY*/ bool LATCH_D1;
-  /*p08.RAXY*/ bool LATCH_D2;
-  /*p08.SELO*/ bool LATCH_D3;
-  /*p08.SODY*/ bool LATCH_D4;
-  /*p08.SAGO*/ bool LATCH_D5;
-  /*p08.RUPA*/ bool LATCH_D6;
-  /*p08.SAZY*/ bool LATCH_D7;
 };
 
 //-----------------------------------------------------------------------------

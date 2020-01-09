@@ -172,7 +172,7 @@ VclkSignals VclkRegisters::tick_slow(const ClkSignals& clk_sig, const RstSignals
 
 //----------------------------------------
 
-VclkSignals VclkRegisters::signals() {
+VclkSignals VclkRegisters::signals() const {
   /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!WUVU_AxxDExxH, !WOSU_xxCDxxGH);
   /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(WUVU_AxxDExxH);  // lcd, sprites
   /*p28.AWOH*/ wire AWOH_AxxDExxH = not(XUPY_xBCxxFGx);  // lcd

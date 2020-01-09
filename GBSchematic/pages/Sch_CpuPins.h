@@ -4,7 +4,7 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct Cpu {
+struct CpuPins {
 
   //----------
   // top right wire by itself

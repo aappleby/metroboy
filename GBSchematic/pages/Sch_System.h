@@ -53,6 +53,7 @@ struct SysSignals {
   /*p01.BUTY*/ wire BUTY_CLKREQ;
   /*p01.UCOB*/ wire UCOB_CLKBAD;
   /*p01.ATEZ*/ wire ATEZ_CLKBAD;
+  /*p28.WEFE*/ bool P10_Bn;
 };
 
 //-----------------------------------------------------------------------------

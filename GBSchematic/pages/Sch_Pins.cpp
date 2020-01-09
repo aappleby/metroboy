@@ -4,10 +4,12 @@
 #include "Sch_Debug.h"
 #include "Sch_Clocks.h"
 #include "Sch_BusControl.h"
-#include "Sch_CpuSignals.h"
+#include "Sch_CpuPins.h"
 #include "Sch_Decoder.h"
 #include "Sch_Vram.h"
+#include "Sch_Video.h"
 #include "Sch_System.h"
+#include "Sch_Resets.h"
 
 #pragma warning(disable:4458)
 
@@ -15,48 +17,54 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-VramPins VramPins::tick(const BusSignals& /*bus_sig*/,
-                        const VramBus& vram_bus,
-                        const VramPinsIn& /*vram_pins_in*/) {
+bool VramPins::commit() {
+  return SOTO_DBG.commit();
+}
 
-  // FIXME
-  wire MCS = false;
-  wire MOEn = false;
-  wire MWR = false;
-  wire CBUS_TO_VBUSn = false;
-  wire VEXT_TO_VBUSn = false;
-  wire DBG_VRAM = false;
-  wire DBG_VRAMn = true;
+//-----------------------------------------------------------------------------
 
-#if 0
-  // so is one of the debug pins a clock, and this is a clock divider?
-  /*p25.SYCY*/ wire SYCY_CLK = not(MODE_DBG2);
-  /*p01.CUNU*/ wire CUNU_RST = not(rst_sig.SYS_RESET);
-  /*p25.SOTO*/ SOTO_DBG.set(SYCY_CLK, CUNU_RST, !SOTO_DBG);
+void VramPins::tick(const SysSignals& sys_sig,
+                    const ClkSignals& clk_sig,
+                    const RstSignals& rst_sig,
+                    const BusSignals& bus_sig,
+                    const DecoderSignals& dec_sig,
+                    const VidRegisters& vid_reg,
+                    const VramBus& vram_bus,
+                    BusTristates& bus_tri) {
 
-  /*p25.TUTO*/ wire DBG_VRAM  = and(MODE_DBG2, !SOTO_DBG);
-  /*p25.RACO*/ wire DBG_VRAMn = not(DBG_VRAM);
-#endif
+  /*p25.TEFY*/ wire MCS_Cn = not(MCS_C);
+  /*p25.TAVY*/ wire MOE_Cn = not(MOE_C);
+  /*p25.SUDO*/ wire MWR_Cn = not(MWR_C);
 
-#if 0
+  // this decoder chunk seems way overcomplicated...
+  /*p08.SORE*/ wire ADDR_0000_7FFF = not(bus_tri.A15());
+  /*p08.TEVY*/ wire ADDR_NOT_VRAM = or(bus_tri.A13(), bus_tri.A14(), ADDR_0000_7FFF);
+  /*p08.TEXO*/ wire ADDR_VALID_AND_NOT_VRAM = and(sys_sig.CPU_ADDR_VALID, ADDR_NOT_VRAM);
+
   /*p07.TUNA*/ wire ADDR_0000_FDFF = nand(bus_tri.A15(), bus_tri.A14(), bus_tri.A13(),
                                           bus_tri.A12(), bus_tri.A11(), bus_tri.A10(),
                                           bus_tri.A09());
   /*p07.RYCU*/ wire ADDR_FE00_FFFF = not(ADDR_0000_FDFF);
   /*p25.TEFA*/ wire TEFA = nor(ADDR_FE00_FFFF, ADDR_VALID_AND_NOT_VRAM);
-  /*p25.SOSE*/ wire SOSE = and(bus_tri.A15(), TEFA);
-  /*p25.TAVY*/ wire MOE_Cn = not(vram_pins.MOE_C);
-  /*p25.TEGU*/ wire CPU_RAM_CLK = nand(SOSE, clk_sig.AFAS_xxxxEFGx);
-  /*p25.SALE*/ wire CPU_RAM_CLK2 = mux2(MOE_Cn, CPU_RAM_CLK, dbg_sig.DBG_VRAM);
-  /*p25.TEFY*/ wire MCS_Cn = not(vram_pins.MCS_C);
-  /*p25.TUCA*/ wire CPU_VRAM_RD  = and (SOSE, dec_sig.ADDR_VALID_xBCxxxxx);
-  /*p25.TOLE*/ wire CPU_VRAM_RD2 = mux2(MCS_Cn, CPU_VRAM_RD, dbg_sig.DBG_VRAM);
-  /*p25.ROPY*/ wire ROPY_RENDERINGn = not(vid_sig.RENDERING_LATCH);
+  /*p25.SOSE*/ wire SOSE_ADDR_VRAM = and(bus_tri.A15(), TEFA);
+
+  // so is one of the debug pins a clock, and this is a clock divider?
+  /*p25.SYCY*/ wire SYCY_CLK = not(sys_sig.MODE_DBG2);
+  /*p01.CUNU*/ wire CUNU_RST = not(rst_sig.SYS_RESET);
+  /*p25.SOTO*/ SOTO_DBG.set(SYCY_CLK, CUNU_RST, !SOTO_DBG);
+  /*p25.TUTO*/ wire TUTO_DBG_VRAM  = and(sys_sig.MODE_DBG2, !SOTO_DBG);
+  /*p25.RACO*/ wire RACO_DBG_VRAMn = not(TUTO_DBG_VRAM);
+
+  /*p25.TEGU*/ wire CPU_RAM_CLK = nand(SOSE_ADDR_VRAM, clk_sig.AFAS_xxxxEFGx);
+  /*p25.SALE*/ wire CPU_RAM_CLK2 = mux2(MOE_Cn, CPU_RAM_CLK, TUTO_DBG_VRAM);
+  /*p25.TUCA*/ wire CPU_VRAM_RD  = and (SOSE_ADDR_VRAM, dec_sig.ADDR_VALID_xBCxxxxx);
+  /*p25.TOLE*/ wire CPU_VRAM_RD2 = mux2(MCS_Cn, CPU_VRAM_RD, TUTO_DBG_VRAM);
+  /*p25.ROPY*/ wire ROPY_RENDERINGn = not(vid_reg.XYMU_RENDERING_LATCH);
   /*p25.SERE*/ wire SERE = and(CPU_VRAM_RD2, ROPY_RENDERINGn);
   /*p04.DECY*/ wire FROM_CPU5n = not(sys_sig.CPU_FROM_CPU5);
   /*p04.CATY*/ wire FROM_CPU5  = not(FROM_CPU5n);
 
-  /*p28.MYNU*/ wire CPU_READ_MYSTERYn = nand(ASOT_CPURD, FROM_CPU5);
+  /*p28.MYNU*/ wire CPU_READ_MYSTERYn = nand(bus_sig.ASOT_CPURD, FROM_CPU5);
   /*p28.LEKO*/ wire CPU_READ_MYSTERY  = not(CPU_READ_MYSTERYn);
   /*p25.TYVY*/ wire MD_TO_D = nand(SERE, CPU_READ_MYSTERY);
   /*p25.SEBY*/ wire MD_TO_Dn = not(MD_TO_D);
@@ -72,15 +80,13 @@ VramPins VramPins::tick(const BusSignals& /*bus_sig*/,
   /*p25.ROCY*/ wire CBUS_TO_VBUSb = and(MD_OUTc, MD_OUTd);
   /*p25.RAHU*/ wire CBUS_TO_VBUSn = not(CBUS_TO_VBUSb);
   /*p25.RENA*/ wire VEXT_TO_VBUSn = not(VEXT_TO_VBUSb);
-#endif
+
+  {
+    /*p25.TEGU*/     wire CPU_VRAM_CLK = nand(SOSE_ADDR_VRAM, clk_sig.AFAS_xxxxEFGx);
+    /*p25.SALE*/   wire CPU_VRAM_CLK2 = mux2(MOE_Cn, CPU_VRAM_CLK, TUTO_DBG_VRAM);
+    /*p25.RYLU*/ wire CPU_READ_VRAMn = nand(CPU_VRAM_CLK2, ROPY_RENDERINGn);
 
 #if 0
-  {
-    /*p25.TAVY*/     wire MOE_Cn = not(vram_pins.MOE_C);
-    /*p25.TEGU*/     wire CPU_VRAM_CLK = nand(dec.ADDR_VRAM, clocks.AFAS_xxxxEFGx);
-    /*p25.SALE*/   wire CPU_VRAM_CLK2 = mux2(MOE_Cn, CPU_VRAM_CLK, DBG_VRAM);
-    /*p25.RYLU*/ wire CPU_READ_VRAMn = nand(CPU_VRAM_CLK2, vid.RENDERINGn);
-
     /*p29.TACU*/     wire SPR_SEQ_5_TRIG = nand(SEQ_5, vram.SPR_SEQ_5_SYNCn);
     /*p25.SOHO*/   wire SPR_READ_VRAM = and(SPR_SEQ_5_TRIG, spr.SPRITE_READn);
     /*p25.RAWA*/ wire SPR_READ_VRAMn = not(SPR_READ_VRAM);
@@ -95,136 +101,87 @@ VramPins VramPins::tick(const BusSignals& /*bus_sig*/,
                                  SPR_READ_VRAMn,
                                  BG_READ_VRAMn,
                                  DMA_READ_VRAMn);
+
+    /*p25.SEMA*/ wire MOE_An = and(MOEn, DBG_VRAMn);
+    /*p25.RUTE*/ wire MOE_Dn = or (MOEn, DBG_VRAM); // schematic wrong, second input is RACU
+    /*p25.REFO*/ MOE_A = not(MOE_An);
+    /*p25.SAHA*/ MOE_D = not(MOE_Dn);
+#endif
   }
 
   {
-    /*p25.TEFY*/ wire MCS_Cn = not(vram.MCS_C);
-    /*p25.TUCA*/ wire CPU_VRAM_RD  = and (dec_sig.ADDR_VRAM, dec_sig.ADDR_VALID_ABxxxxxx);
-    /*p25.TOLE*/ wire CPU_VRAM_RD2 = mux2(MCS_Cn, CPU_VRAM_RD, dbg.DBG_VRAM);
-    /*p25.ROPY*/ wire ROPY_RENDERINGn = not(vid.RENDERING_LATCH);
+#if 0
+    /*p25.TEFY*/ wire MCS_Cn = not(MCS_C);
     /*p25.SERE*/ wire SERE = and(CPU_VRAM_RD2, ROPY_RENDERINGn);
     /*p25.SUTU*/ wire MCS = nor(vid_sig.BG_READ_VRAM, dma_sig.DMA_READ_VRAM, spr_sig.SPRITE_READn, SERE);
-  }
 
-  {
-  }
-
-  {
-    /*p25.SUDO*/       wire MWR_Cn = not(pins.MWR_C);
-    /*p01.AREV*/           wire AREV = nand(vram.cpu.CPU_RAW_WR, vram.sys.AFAS_xxxxEFGx);
-    /*p01.APOV*/         wire CPU_WR_xxxxEFGx  = not(AREV);
-    /*p25.TUJA*/       wire CPU_VRAM_WR    = and (dec.ADDR_VRAM, CPU_WR_xxxxEFGx);
-    /*p25.TYJY*/     wire CPU_VRAM_WR2   = mux2(MWR_Cn, CPU_VRAM_WR , DBG_VRAM);
-    /*p25.SOHY*/   wire MWR = nand(CPU_VRAM_WR2, bus.SERE);
-  }
+    /*p25.TODE*/ wire MCS_An = and(MCS, RACO_DBG_VRAMn);
+    /*p25.SEWO*/ wire MCS_Dn = or (MCS, TUTO_DBG_VRAM);
+    /*p25.SOKY*/ MCS_A = not(MCS_An);
+    /*p25.SETY*/ MCS_D = not(MCS_Dn);
 #endif
+  }
 
-  /*p25.TODE*/ wire MCS_An = and(MCS, DBG_VRAMn);
-  /*p25.SEWO*/ wire MCS_Dn = or (MCS, DBG_VRAM);
-  /*p25.SOKY*/ wire MCS_A = not(MCS_An);
-  /*p25.SETY*/ wire MCS_D = not(MCS_Dn);
 
-  /*p25.SEMA*/ wire MOE_An = and(MOEn, DBG_VRAMn);
-  /*p25.RUTE*/ wire MOE_Dn = or (MOEn, DBG_VRAM); // schematic wrong, second input is RACU
-  /*p25.REFO*/ wire MOE_A = not(MOE_An);
-  /*p25.SAHA*/ wire MOE_D = not(MOE_Dn);
+  {
+    /*p01.AREV*/ wire AREV = nand(sys_sig.CPU_RAW_WR, clk_sig.AFAS_xxxxEFGx);
+    /*p01.APOV*/ wire CPU_WR_xxxxEFGx  = not(AREV);
+  
+    /*p01.AGUT*/ wire AGUT_xxCDEFGH = and(or(clk_sig.AJAX_xxxxEFGH, clk_sig.AROV_xxCDEFxx), sys_sig.CPU_ADDR_VALID);
+    /*p01.AWOD*/ wire AWOD = or(sys_sig.MODE_DBG2, AGUT_xxCDEFGH);
+    /*p01.ABUZ*/ wire ADDR_VALID_xBCxxxxx = not(AWOD);
 
-  /*p25.TAXY*/ wire MWR_An = and(MWR, DBG_VRAMn);
-  /*p25.SOFY*/ wire MWR_Dn = or (MWR, DBG_VRAM);
-  /*p25.SYSY*/ wire MWR_A = not(MWR_An);
-  /*p25.RAGU*/ wire MWR_D = not(MWR_Dn);
+    /*p25.TUJA*/ wire CPU_VRAM_WR    = and (SOSE_ADDR_VRAM, CPU_WR_xxxxEFGx);
 
-  /*p25.LEXE*/ wire MA00_D = not(/*p25.MYFU*/ not(vram_bus.MA00));
-  /*p25.LOZU*/ wire MA01_D = not(/*p25.MASA*/ not(vram_bus.MA01));
-  /*p25.LACA*/ wire MA02_D = not(/*p25.MYRE*/ not(vram_bus.MA02));
-  /*p25.LUVO*/ wire MA03_D = not(/*p25.MAVU*/ not(vram_bus.MA03));
-  /*p25.LOLY*/ wire MA04_D = not(/*p25.MEPA*/ not(vram_bus.MA04));
-  /*p25.LALO*/ wire MA05_D = not(/*p25.MYSA*/ not(vram_bus.MA05));
-  /*p25.LEFA*/ wire MA06_D = not(/*p25.MEWY*/ not(vram_bus.MA06));
-  /*p25.LUBY*/ wire MA07_D = not(/*p25.MUME*/ not(vram_bus.MA07));
-  /*p25.TUJY*/ wire MA08_D = not(/*p25.VOVA*/ not(vram_bus.MA08));
-  /*p25.TAGO*/ wire MA09_D = not(/*p25.VODE*/ not(vram_bus.MA09));
-  /*p25.NUVA*/ wire MA10_D = not(/*p25.RUKY*/ not(vram_bus.MA10));
-  /*p25.PEDU*/ wire MA11_D = not(/*p25.RUMA*/ not(vram_bus.MA11));
-  /*p25.PONY*/ wire MA12_D = not(/*p25.REHO*/ not(vram_bus.MA12));
+    /*p25.TYJY*/ wire CPU_VRAM_WR2   = mux2(MWR_Cn, CPU_VRAM_WR , TUTO_DBG_VRAM);
+    /*p25.SOHY*/ wire MWR = nand(CPU_VRAM_WR2, SERE);
+    /*p25.TAXY*/ wire MWR_An = and(MWR, RACO_DBG_VRAMn);
+    /*p25.SOFY*/ wire MWR_Dn = or (MWR, TUTO_DBG_VRAM);
+    /*p25.SYSY*/ MWR_A = not(MWR_An);
+    /*p25.RAGU*/ MWR_D = not(MWR_Dn);
+  }
+
+  /*p25.LEXE*/ MA00_D = not(/*p25.MYFU*/ not(vram_bus.MA00));
+  /*p25.LOZU*/ MA01_D = not(/*p25.MASA*/ not(vram_bus.MA01));
+  /*p25.LACA*/ MA02_D = not(/*p25.MYRE*/ not(vram_bus.MA02));
+  /*p25.LUVO*/ MA03_D = not(/*p25.MAVU*/ not(vram_bus.MA03));
+  /*p25.LOLY*/ MA04_D = not(/*p25.MEPA*/ not(vram_bus.MA04));
+  /*p25.LALO*/ MA05_D = not(/*p25.MYSA*/ not(vram_bus.MA05));
+  /*p25.LEFA*/ MA06_D = not(/*p25.MEWY*/ not(vram_bus.MA06));
+  /*p25.LUBY*/ MA07_D = not(/*p25.MUME*/ not(vram_bus.MA07));
+  /*p25.TUJY*/ MA08_D = not(/*p25.VOVA*/ not(vram_bus.MA08));
+  /*p25.TAGO*/ MA09_D = not(/*p25.VODE*/ not(vram_bus.MA09));
+  /*p25.NUVA*/ MA10_D = not(/*p25.RUKY*/ not(vram_bus.MA10));
+  /*p25.PEDU*/ MA11_D = not(/*p25.RUMA*/ not(vram_bus.MA11));
+  /*p25.PONY*/ MA12_D = not(/*p25.REHO*/ not(vram_bus.MA12));
 
   /*p25.ROVE*/ wire CBUS_TO_VBUS = not(CBUS_TO_VBUSn);
-  /*p25.REGE*/ wire MD0_A = not(/*p25.SEFA*/ and(vram_bus.MD0, CBUS_TO_VBUS));
-  /*p25.RYKY*/ wire MD1_A = not(/*p25.SOGO*/ and(vram_bus.MD1, CBUS_TO_VBUS));
-  /*p25.RAZO*/ wire MD2_A = not(/*p25.SEFU*/ and(vram_bus.MD2, CBUS_TO_VBUS));
-  /*p25.RADA*/ wire MD3_A = not(/*p25.SUNA*/ and(vram_bus.MD3, CBUS_TO_VBUS));
-  /*p25.RYRO*/ wire MD4_A = not(/*p25.SUMO*/ and(vram_bus.MD4, CBUS_TO_VBUS));
-  /*p25.REVU*/ wire MD5_A = not(/*p25.SAZU*/ and(vram_bus.MD5, CBUS_TO_VBUS));
-  /*p25.REKU*/ wire MD6_A = not(/*p25.SAMO*/ and(vram_bus.MD6, CBUS_TO_VBUS));
-  /*p25.RYZE*/ wire MD7_A = not(/*p25.SUKE*/ and(vram_bus.MD7, CBUS_TO_VBUS));
+  /*p25.REGE*/ MD0_A = not(/*p25.SEFA*/ and(vram_bus.MD0, CBUS_TO_VBUS));
+  /*p25.RYKY*/ MD1_A = not(/*p25.SOGO*/ and(vram_bus.MD1, CBUS_TO_VBUS));
+  /*p25.RAZO*/ MD2_A = not(/*p25.SEFU*/ and(vram_bus.MD2, CBUS_TO_VBUS));
+  /*p25.RADA*/ MD3_A = not(/*p25.SUNA*/ and(vram_bus.MD3, CBUS_TO_VBUS));
+  /*p25.RYRO*/ MD4_A = not(/*p25.SUMO*/ and(vram_bus.MD4, CBUS_TO_VBUS));
+  /*p25.REVU*/ MD5_A = not(/*p25.SAZU*/ and(vram_bus.MD5, CBUS_TO_VBUS));
+  /*p25.REKU*/ MD6_A = not(/*p25.SAMO*/ and(vram_bus.MD6, CBUS_TO_VBUS));
+  /*p25.RYZE*/ MD7_A = not(/*p25.SUKE*/ and(vram_bus.MD7, CBUS_TO_VBUS));
 
-  /*p25.ROFA*/ wire MD0_B = not(VEXT_TO_VBUSn);
-  /*p25.ROFA*/ wire MD1_B = not(VEXT_TO_VBUSn);
-  /*p25.ROFA*/ wire MD2_B = not(VEXT_TO_VBUSn);
-  /*p25.ROFA*/ wire MD3_B = not(VEXT_TO_VBUSn);
-  /*p25.ROFA*/ wire MD4_B = not(VEXT_TO_VBUSn);
-  /*p25.ROFA*/ wire MD5_B = not(VEXT_TO_VBUSn);
-  /*p25.ROFA*/ wire MD6_B = not(VEXT_TO_VBUSn);
-  /*p25.ROFA*/ wire MD7_B = not(VEXT_TO_VBUSn);
+  /*p25.ROFA*/ MD0_B = not(VEXT_TO_VBUSn);
+  /*p25.ROFA*/ MD1_B = not(VEXT_TO_VBUSn);
+  /*p25.ROFA*/ MD2_B = not(VEXT_TO_VBUSn);
+  /*p25.ROFA*/ MD3_B = not(VEXT_TO_VBUSn);
+  /*p25.ROFA*/ MD4_B = not(VEXT_TO_VBUSn);
+  /*p25.ROFA*/ MD5_B = not(VEXT_TO_VBUSn);
+  /*p25.ROFA*/ MD6_B = not(VEXT_TO_VBUSn);
+  /*p25.ROFA*/ MD7_B = not(VEXT_TO_VBUSn);
 
-  /*p25.RURA*/ wire MD0_D = not(/*p25.SYNU*/ or(vram_bus.MD0, CBUS_TO_VBUSn));
-  /*p25.RULY*/ wire MD1_D = not(/*p25.SYMA*/ or(vram_bus.MD1, CBUS_TO_VBUSn));
-  /*p25.RARE*/ wire MD2_D = not(/*p25.ROKO*/ or(vram_bus.MD2, CBUS_TO_VBUSn));
-  /*p25.RODU*/ wire MD3_D = not(/*p25.SYBU*/ or(vram_bus.MD3, CBUS_TO_VBUSn));
-  /*p25.RUBE*/ wire MD4_D = not(/*p25.SAKO*/ or(vram_bus.MD4, CBUS_TO_VBUSn));
-  /*p25.RUMU*/ wire MD5_D = not(/*p25.SEJY*/ or(vram_bus.MD5, CBUS_TO_VBUSn));
-  /*p25.RYTY*/ wire MD6_D = not(/*p25.SEDO*/ or(vram_bus.MD6, CBUS_TO_VBUSn));
-  /*p25.RADY*/ wire MD7_D = not(/*p25.SAWU*/ or(vram_bus.MD7, CBUS_TO_VBUSn));
-
-  return {
-    /* PIN_43 */ .MCS_A  = MCS_A ,
-    /* PIN_43 */ .MCS_D  = MCS_D ,
-    /* PIN_45 */ .MOE_A  = MOE_A ,
-    /* PIN_45 */ .MOE_D  = MOE_D ,
-    /* PIN_49 */ .MWR_A  = MWR_A ,
-    /* PIN_49 */ .MWR_D  = MWR_D ,
-
-    /* PIN_34 */ .MA00_D = MA00_D,
-    /* PIN_35 */ .MA01_D = MA01_D,
-    /* PIN_36 */ .MA02_D = MA02_D,
-    /* PIN_37 */ .MA03_D = MA03_D,
-    /* PIN_38 */ .MA04_D = MA04_D,
-    /* PIN_39 */ .MA05_D = MA05_D,
-    /* PIN_40 */ .MA06_D = MA06_D,
-    /* PIN_41 */ .MA07_D = MA07_D,
-    /* PIN_42 */ .MA12_D = MA12_D,
-    /* PIN_44 */ .MA10_D = MA10_D,
-    /* PIN_46 */ .MA11_D = MA11_D,
-    /* PIN_47 */ .MA09_D = MA09_D,
-    /* PIN_48 */ .MA08_D = MA08_D,
-
-    /* PIN_33 */ .MD0_A  = MD0_A ,
-    /* PIN_31 */ .MD1_A  = MD1_A ,
-    /* PIN_30 */ .MD2_A  = MD2_A ,
-    /* PIN_29 */ .MD3_A  = MD3_A ,
-    /* PIN_28 */ .MD4_A  = MD4_A ,
-    /* PIN_27 */ .MD5_A  = MD5_A ,
-    /* PIN_26 */ .MD6_A  = MD6_A ,
-    /* PIN_25 */ .MD7_A  = MD7_A ,
-
-    /* PIN_33 */ .MD0_B  = MD0_B ,
-    /* PIN_31 */ .MD1_B  = MD1_B ,
-    /* PIN_30 */ .MD2_B  = MD2_B ,
-    /* PIN_29 */ .MD3_B  = MD3_B ,
-    /* PIN_28 */ .MD4_B  = MD4_B ,
-    /* PIN_27 */ .MD5_B  = MD5_B ,
-    /* PIN_26 */ .MD6_B  = MD6_B ,
-    /* PIN_25 */ .MD7_B  = MD7_B ,
-
-    /* PIN_33 */ .MD0_D  = MD0_D ,
-    /* PIN_31 */ .MD1_D  = MD1_D ,
-    /* PIN_30 */ .MD2_D  = MD2_D ,
-    /* PIN_29 */ .MD3_D  = MD3_D ,
-    /* PIN_28 */ .MD4_D  = MD4_D ,
-    /* PIN_27 */ .MD5_D  = MD5_D ,
-    /* PIN_26 */ .MD6_D  = MD6_D ,
-    /* PIN_25 */ .MD7_D  = MD7_D ,
-  };
+  /*p25.RURA*/ MD0_D = not(/*p25.SYNU*/ or(vram_bus.MD0, CBUS_TO_VBUSn));
+  /*p25.RULY*/ MD1_D = not(/*p25.SYMA*/ or(vram_bus.MD1, CBUS_TO_VBUSn));
+  /*p25.RARE*/ MD2_D = not(/*p25.ROKO*/ or(vram_bus.MD2, CBUS_TO_VBUSn));
+  /*p25.RODU*/ MD3_D = not(/*p25.SYBU*/ or(vram_bus.MD3, CBUS_TO_VBUSn));
+  /*p25.RUBE*/ MD4_D = not(/*p25.SAKO*/ or(vram_bus.MD4, CBUS_TO_VBUSn));
+  /*p25.RUMU*/ MD5_D = not(/*p25.SEJY*/ or(vram_bus.MD5, CBUS_TO_VBUSn));
+  /*p25.RYTY*/ MD6_D = not(/*p25.SEDO*/ or(vram_bus.MD6, CBUS_TO_VBUSn));
+  /*p25.RADY*/ MD7_D = not(/*p25.SAWU*/ or(vram_bus.MD7, CBUS_TO_VBUSn));
 }
 
 //-----------------------------------------------------------------------------
@@ -234,6 +191,7 @@ void CartPins::tick(const SysSignals& sys_sig,
                     const ClkSignals& clk_sig,
                     const DecoderSignals& dec_sig,
                     const DmaSignals& dma_sig,
+                    const DmaRegisters& dma_reg,
                     BusTristates& bus_tri) {
   CartPins& cart_pins = *this;
 
@@ -241,7 +199,7 @@ void CartPins::tick(const SysSignals& sys_sig,
   /*p08.TUMA*/ wire A000_BFFF = and(bus_tri.A13(), SOGY, bus_tri.A15());
   /*p08.TYNU*/ wire A000_FFFF = or(and(bus_tri.A15(), bus_tri.A14()), A000_BFFF);
   /*p08.TOZA*/ wire A000_FDFF_ABxxxxxx = and(dec_sig.ADDR_VALID_xBCxxxxx, A000_FFFF, dec_sig.ADDR_0000_FE00);
-  /*p08.TYHO*/ wire CSn_A = mux2(dma_sig.DMA_A15, A000_FDFF_ABxxxxxx, dma_sig.DMA_READ_CART); // ABxxxxxx
+  /*p08.TYHO*/ wire CSn_A = mux2(dma_reg.DMA_A15, A000_FDFF_ABxxxxxx, dma_sig.DMA_READ_CART); // ABxxxxxx
 
   /*p08.MOCA*/ wire DBG_EXT_RDn = nor(bus_sig.ADDR_VALID_AND_NOT_VRAM, sys_sig.MODE_DBG1);
   /*p08.LAGU*/ wire LAGU = or(and(sys_sig.CPU_RAW_RD, bus_sig.ADDR_VALID_AND_NOT_VRAMn), sys_sig.CPU_RAW_WR);
@@ -308,49 +266,48 @@ void CartPins::tick(const SysSignals& sys_sig,
   /*p08.SOBY*/ wire SOBY = nor(bus_tri.A15(), ADDR_BOOT);
   /*p08.SEPY*/ wire ADDR_LATCH_15 = nand(dec_sig.ADDR_VALID_xBCxxxxx, SOBY); // wat?
 
-  /*p08.AMET*/ wire ADDR_OUT_00 = mux2(dma_sig.DMA_A00, cart_pins.ADDR_LATCH_00, dma_sig.DMA_READ_CART);
-  /*p08.ATOL*/ wire ADDR_OUT_01 = mux2(dma_sig.DMA_A01, cart_pins.ADDR_LATCH_01, dma_sig.DMA_READ_CART);
-  /*p08.APOK*/ wire ADDR_OUT_02 = mux2(dma_sig.DMA_A02, cart_pins.ADDR_LATCH_02, dma_sig.DMA_READ_CART);
-  /*p08.AMER*/ wire ADDR_OUT_03 = mux2(dma_sig.DMA_A03, cart_pins.ADDR_LATCH_03, dma_sig.DMA_READ_CART);
-  /*p08.ATEM*/ wire ADDR_OUT_04 = mux2(dma_sig.DMA_A04, cart_pins.ADDR_LATCH_04, dma_sig.DMA_READ_CART);
-  /*p08.ATOV*/ wire ADDR_OUT_05 = mux2(dma_sig.DMA_A05, cart_pins.ADDR_LATCH_05, dma_sig.DMA_READ_CART);
-  /*p08.ATYR*/ wire ADDR_OUT_06 = mux2(dma_sig.DMA_A06, cart_pins.ADDR_LATCH_06, dma_sig.DMA_READ_CART);
-  /*p08.ASUR*/ wire ADDR_OUT_07 = mux2(dma_sig.DMA_A07, cart_pins.ADDR_LATCH_07, dma_sig.DMA_READ_CART);
-  /*p08.MANO*/ wire ADDR_OUT_08 = mux2(dma_sig.DMA_A08, cart_pins.ADDR_LATCH_08, dma_sig.DMA_READ_CART);
-  /*p08.MASU*/ wire ADDR_OUT_09 = mux2(dma_sig.DMA_A09, cart_pins.ADDR_LATCH_09, dma_sig.DMA_READ_CART);
-  /*p08.PAMY*/ wire ADDR_OUT_10 = mux2(dma_sig.DMA_A10, cart_pins.ADDR_LATCH_10, dma_sig.DMA_READ_CART);
-  /*p08.MALE*/ wire ADDR_OUT_11 = mux2(dma_sig.DMA_A11, cart_pins.ADDR_LATCH_11, dma_sig.DMA_READ_CART);
-  /*p08.MOJY*/ wire ADDR_OUT_12 = mux2(dma_sig.DMA_A12, cart_pins.ADDR_LATCH_12, dma_sig.DMA_READ_CART);
-  /*p08.MUCE*/ wire ADDR_OUT_13 = mux2(dma_sig.DMA_A13, cart_pins.ADDR_LATCH_13, dma_sig.DMA_READ_CART);
-  /*p08.PEGE*/ wire ADDR_OUT_14 = mux2(dma_sig.DMA_A14, cart_pins.ADDR_LATCH_14, dma_sig.DMA_READ_CART);
+  /*p08.AMET*/ wire ADDR_OUT_00 = mux2(dma_reg.DMA_A00, cart_pins.ADDR_LATCH_00, dma_sig.DMA_READ_CART);
+  /*p08.ATOL*/ wire ADDR_OUT_01 = mux2(dma_reg.DMA_A01, cart_pins.ADDR_LATCH_01, dma_sig.DMA_READ_CART);
+  /*p08.APOK*/ wire ADDR_OUT_02 = mux2(dma_reg.DMA_A02, cart_pins.ADDR_LATCH_02, dma_sig.DMA_READ_CART);
+  /*p08.AMER*/ wire ADDR_OUT_03 = mux2(dma_reg.DMA_A03, cart_pins.ADDR_LATCH_03, dma_sig.DMA_READ_CART);
+  /*p08.ATEM*/ wire ADDR_OUT_04 = mux2(dma_reg.DMA_A04, cart_pins.ADDR_LATCH_04, dma_sig.DMA_READ_CART);
+  /*p08.ATOV*/ wire ADDR_OUT_05 = mux2(dma_reg.DMA_A05, cart_pins.ADDR_LATCH_05, dma_sig.DMA_READ_CART);
+  /*p08.ATYR*/ wire ADDR_OUT_06 = mux2(dma_reg.DMA_A06, cart_pins.ADDR_LATCH_06, dma_sig.DMA_READ_CART);
+  /*p08.ASUR*/ wire ADDR_OUT_07 = mux2(dma_reg.DMA_A07, cart_pins.ADDR_LATCH_07, dma_sig.DMA_READ_CART);
+  /*p08.MANO*/ wire ADDR_OUT_08 = mux2(dma_reg.DMA_A08, cart_pins.ADDR_LATCH_08, dma_sig.DMA_READ_CART);
+  /*p08.MASU*/ wire ADDR_OUT_09 = mux2(dma_reg.DMA_A09, cart_pins.ADDR_LATCH_09, dma_sig.DMA_READ_CART);
+  /*p08.PAMY*/ wire ADDR_OUT_10 = mux2(dma_reg.DMA_A10, cart_pins.ADDR_LATCH_10, dma_sig.DMA_READ_CART);
+  /*p08.MALE*/ wire ADDR_OUT_11 = mux2(dma_reg.DMA_A11, cart_pins.ADDR_LATCH_11, dma_sig.DMA_READ_CART);
+  /*p08.MOJY*/ wire ADDR_OUT_12 = mux2(dma_reg.DMA_A12, cart_pins.ADDR_LATCH_12, dma_sig.DMA_READ_CART);
+  /*p08.MUCE*/ wire ADDR_OUT_13 = mux2(dma_reg.DMA_A13, cart_pins.ADDR_LATCH_13, dma_sig.DMA_READ_CART);
+  /*p08.PEGE*/ wire ADDR_OUT_14 = mux2(dma_reg.DMA_A14, cart_pins.ADDR_LATCH_14, dma_sig.DMA_READ_CART);
 
   // wat?
-  /*p08.TAZY*/ wire ADDR_OUT_15 = mux2(dma_sig.DMA_A15, ADDR_LATCH_15, dma_sig.DMA_READ_CART);
-
-#if 0
+  /*p08.TAZY*/ wire ADDR_OUT_15 = mux2(dma_reg.DMA_A15, ADDR_LATCH_15, dma_sig.DMA_READ_CART);
 
   //----------
   // if NET01 high, drive external address bus onto internal address
   // these may be backwards, probably don't want to drive external address onto bus normally...
 
-  /*p08.KOVA*/ wire A00_Cn = not(pins.A00_C);
-  /*p08.CAMU*/ wire A01_Cn = not(pins.A01_C);
-  /*p08.BUXU*/ wire A02_Cn = not(pins.A02_C);
-  /*p08.BASE*/ wire A03_Cn = not(pins.A03_C);
-  /*p08.AFEC*/ wire A04_Cn = not(pins.A04_C);
-  /*p08.ABUP*/ wire A05_Cn = not(pins.A05_C);
-  /*p08.CYGU*/ wire A06_Cn = not(pins.A06_C);
-  /*p08.COGO*/ wire A07_Cn = not(pins.A07_C);
-  /*p08.MUJY*/ wire A08_Cn = not(pins.A08_C);
-  /*p08.NENA*/ wire A09_Cn = not(pins.A09_C);
-  /*p08.SURA*/ wire A10_Cn = not(pins.A10_C);
-  /*p08.MADY*/ wire A11_Cn = not(pins.A11_C);
-  /*p08.LAHE*/ wire A12_Cn = not(pins.A12_C);
-  /*p08.LURA*/ wire A13_Cn = not(pins.A13_C);
-  /*p08.PEVO*/ wire A14_Cn = not(pins.A14_C);
-  /*p08.RAZA*/ wire A15_Cn = not(pins.A15_C);
+  /*p08.KOVA*/ wire A00_Cn = not(A00_C);
+  /*p08.CAMU*/ wire A01_Cn = not(A01_C);
+  /*p08.BUXU*/ wire A02_Cn = not(A02_C);
+  /*p08.BASE*/ wire A03_Cn = not(A03_C);
+  /*p08.AFEC*/ wire A04_Cn = not(A04_C);
+  /*p08.ABUP*/ wire A05_Cn = not(A05_C);
+  /*p08.CYGU*/ wire A06_Cn = not(A06_C);
+  /*p08.COGO*/ wire A07_Cn = not(A07_C);
+  /*p08.MUJY*/ wire A08_Cn = not(A08_C);
+  /*p08.NENA*/ wire A09_Cn = not(A09_C);
+  /*p08.SURA*/ wire A10_Cn = not(A10_C);
+  /*p08.MADY*/ wire A11_Cn = not(A11_C);
+  /*p08.LAHE*/ wire A12_Cn = not(A12_C);
+  /*p08.LURA*/ wire A13_Cn = not(A13_C);
+  /*p08.PEVO*/ wire A14_Cn = not(A14_C);
+  /*p08.RAZA*/ wire A15_Cn = not(A15_C);
 
-  if (MODE_DBG2n1) bus_out.set_addr(
+  /*p08.TOVA*/ wire TOVA_DBG2 = not(sys_sig.MODE_DBG2);
+  if (TOVA_DBG2) bus_tri.set_addr(
     /*p08.KEJO*/ not(A00_Cn),
     /*p08.BYXE*/ not(A01_Cn),
     /*p08.AKAN*/ not(A02_Cn),
@@ -368,7 +325,6 @@ void CartPins::tick(const SysSignals& sys_sig,
     /*p08.NEFE*/ not(A14_Cn),
     /*p08.SYZU*/ not(A15_Cn)
   );
-#endif
 
   /*p08.KUPO*/ cart_pins.A00_A = nand(ADDR_OUT_00, MODE_DBG2n1);
   /*p08.CABA*/ cart_pins.A01_A = nand(ADDR_OUT_01, MODE_DBG2n1);
@@ -410,25 +366,25 @@ void CartPins::tick(const SysSignals& sys_sig,
   // Data bus driver
   /*p08.LAVO*/ wire DATA_LATCH = nand(sys_sig.CPU_RAW_RD, bus_sig.ADDR_VALID_AND_NOT_VRAM, sys_sig.CPU_FROM_CPU5); // polarity?
 
-#if 0
-  /*p08.SOMA*/ DATA_LATCH_00.latch(DATA_LATCH, pins.D0_C);
-  /*p08.RONY*/ DATA_LATCH_01.latch(DATA_LATCH, pins.D1_C);
-  /*p08.RAXY*/ DATA_LATCH_02.latch(DATA_LATCH, pins.D2_C);
-  /*p08.SELO*/ DATA_LATCH_03.latch(DATA_LATCH, pins.D3_C);
-  /*p08.SODY*/ DATA_LATCH_04.latch(DATA_LATCH, pins.D4_C);
-  /*p08.SAGO*/ DATA_LATCH_05.latch(DATA_LATCH, pins.D5_C);
-  /*p08.RUPA*/ DATA_LATCH_06.latch(DATA_LATCH, pins.D6_C);
-  /*p08.SAZY*/ DATA_LATCH_07.latch(DATA_LATCH, pins.D7_C);
+  /*p08.SOMA*/ DATA_LATCH_00.latch(DATA_LATCH, D0_C);
+  /*p08.RONY*/ DATA_LATCH_01.latch(DATA_LATCH, D1_C);
+  /*p08.RAXY*/ DATA_LATCH_02.latch(DATA_LATCH, D2_C);
+  /*p08.SELO*/ DATA_LATCH_03.latch(DATA_LATCH, D3_C);
+  /*p08.SODY*/ DATA_LATCH_04.latch(DATA_LATCH, D4_C);
+  /*p08.SAGO*/ DATA_LATCH_05.latch(DATA_LATCH, D5_C);
+  /*p08.RUPA*/ DATA_LATCH_06.latch(DATA_LATCH, D6_C);
+  /*p08.SAZY*/ DATA_LATCH_07.latch(DATA_LATCH, D7_C);
 
-  /*p08.RYMA*/ if (DATA_LATCH) bus_out.D0 = DATA_LATCH_00;
-  /*p08.RUVO*/ if (DATA_LATCH) bus_out.D1 = DATA_LATCH_01;
-  /*p08.RYKO*/ if (DATA_LATCH) bus_out.D2 = DATA_LATCH_02;
-  /*p08.TAVO*/ if (DATA_LATCH) bus_out.D3 = DATA_LATCH_03;
-  /*p08.TEPE*/ if (DATA_LATCH) bus_out.D4 = DATA_LATCH_04;
-  /*p08.SAFO*/ if (DATA_LATCH) bus_out.D5 = DATA_LATCH_05;
-  /*p08.SEVU*/ if (DATA_LATCH) bus_out.D6 = DATA_LATCH_06;
-  /*p08.TAJU*/ if (DATA_LATCH) bus_out.D7 = DATA_LATCH_07;
-#endif
+  if (DATA_LATCH) bus_tri.set_data(
+    /*p08.RYMA*/ DATA_LATCH_00,
+    /*p08.RUVO*/ DATA_LATCH_01,
+    /*p08.RYKO*/ DATA_LATCH_02,
+    /*p08.TAVO*/ DATA_LATCH_03,
+    /*p08.TEPE*/ DATA_LATCH_04,
+    /*p08.SAFO*/ DATA_LATCH_05,
+    /*p08.SEVU*/ DATA_LATCH_06,
+    /*p08.TAJU*/ DATA_LATCH_07
+  );
 
   /*p08.LULA*/ cart_pins.D0_B = bus_sig.CBUS_TO_CEXT;
   /*p08.LULA*/ cart_pins.D1_B = bus_sig.CBUS_TO_CEXT;

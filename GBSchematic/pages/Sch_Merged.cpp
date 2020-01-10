@@ -122,6 +122,7 @@ static const uint8_t DMG_ROM_bin[] = {
 //-----------------------------------------------------------------------------
 
 void tick_everything() {
+  //----------------------------------------
   // sch_system
 
   /*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
@@ -141,6 +142,7 @@ void tick_everything() {
   /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and(ext_pins.T2, UBET_T1n);
   /*p28.WEFE*/ wire WEFE_P10_Bn = not(joy_pins.P10_B);
 
+  //----------------------------------------
   // sch_clocks
 
   /*p01.AFUR*/ clk_reg.PHAZ_ABCDxxxx.set(ATAL_AxCxExGx, UPOJ_MODE_PROD, !clk_reg.PHAZ_xxxDEFGx);
@@ -202,6 +204,7 @@ void tick_everything() {
   /*p17.ABUR*/ wire ABUR_xBCDEFxx = not(BUKE_AxxxxxGH);
   /*p17.BORY*/ wire BORY_AxxxxxGH = not(ABUR_xBCDEFxx);
 
+  //----------------------------------------
   // sch_resets
 
   /*p01.UPYF*/ wire UPYF        = or(ext_pins.RST, UCOB_CLKBAD);
@@ -225,6 +228,7 @@ void tick_everything() {
   /*p01.TUBO*/ rst_reg.WAITING_FOR_CLKREQ.sr_latch(!UPYF, !ABOL_CLKREQn);
   /*p01.AFER*/ rst_reg.RESET_REG.set(RESET_CLK, UPOJ_MODE_PROD, RESET_IN);
 
+  //----------------------------------------
   // sch_clocks
 
   /*p29.XYVA*/ wire XYVA_AxCxExGx = not(ZEME_xBxDxFxH);
@@ -243,6 +247,7 @@ void tick_everything() {
   /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(vclk_reg.WOSU_xxCDxxGH);  // oam, sprites
   /*p29.XYSO*/ wire XYSO_ABCxDEFx = not(WOJO_xxxDxxxH);  // oam
 
+  //----------------------------------------
   // sch_decoder
 
   /*p10.AMUS*/ wire ADDR_0xx00000 = nor(bus_tri.A00(), bus_tri.A01(), bus_tri.A02(), bus_tri.A03(), bus_tri.A04(), bus_tri.A07());
@@ -311,6 +316,7 @@ void tick_everything() {
 
   /*p03.RYFO*/ wire FF04_FF07 = and(bus_tri.A02(), ADDR_XX00_XX07, ADDR_FFXX);
 
+  //----------------------------------------
   // sch_buscontrol
 
   /*p01.AREV*/ wire AREV = nand(cpu_pins.CPU_RAW_WR, AFAS_xxxxEFGx);
@@ -342,6 +348,7 @@ void tick_everything() {
   /*p08.RORU*/ wire CBUS_TO_CEXTn = mux2(CPU_RDo, CPU_EXT_RD, UNOR_MODE_DBG2);
   /*p08.LULA*/ wire CBUS_TO_CEXT  = not(CBUS_TO_CEXTn);
 
+  //----------------------------------------
   // sch_lcd
 
   /*p01.LYHA*/ wire VID_RESET2 = not(VID_RESETn);
@@ -398,10 +405,12 @@ void tick_everything() {
   /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n = not(ABAK_VID_LINE_TRIG_d4);
   /*p29.DYBA*/ wire DYBA_VID_LINE_TRIG_d4  = not(BYVA_VID_LINE_TRIG_d4n);
 
+  //----------------------------------------
   // sch_debug
 
   /*p27.VYPO*/ wire VYPO_P10Bn = not(joy_pins.P10_B);
 
+  //----------------------------------------
   // sch_dma
 
   // schematic incorrect.
@@ -472,6 +481,7 @@ void tick_everything() {
     /*p04.NUVY*/ dma_reg.DMA_A15
   );
 
+  //----------------------------------------
   // sch_timer.tick_div
 
   /*p01.TAPE*/ wire FF04_WR = and(TAPU_CPUWR, FF04_FF07, TOLA_A01n, TOVY_A00n);
@@ -521,6 +531,7 @@ void tick_everything() {
     /*p01.TATU*/ not(DIV_13n)
   );
 
+  //----------------------------------------
   // sch_timer.tick_tima
 
   /*p03.TOPE*/ wire FF05_WRn = nand(TAPU_CPUWR, FF04_FF07, TOLA_A01n, bus_tri.A00());
@@ -588,6 +599,7 @@ void tick_everything() {
     /*p03.PUSO*/ tim_reg.TIMA_7.v()
   );
 
+  //----------------------------------------
   // sch_timer.tick_tma
 
   /*p03.TYJU*/ wire FF06_WRn = nand(TAPU_CPUWR, FF04_FF07, TOVY_A00n, bus_tri.A01());
@@ -613,6 +625,7 @@ void tick_everything() {
     /*p03.SAPU*/ tim_reg.TMA_7
   );
 
+  //----------------------------------------
   // sch_timer.tick_tac
 
   /*p03.SARA*/ wire FF07_WRn = nand(TAPU_CPUWR, FF04_FF07, bus_tri.A00(), bus_tri.A01());
@@ -628,6 +641,7 @@ void tick_everything() {
     /*p03.SUPE*/ tim_reg.TAC_2
   );
 
+  //----------------------------------------
   // sch_serial
 
   /*p06.COBA*/ wire SER_CNT3n = not(ser_reg.SER_CNT3);
@@ -711,6 +725,7 @@ void tick_everything() {
     /*p06.ELUV*/ ser_reg.XFER_START
   );
 
+  //----------------------------------------
   // sch_joypad
 
   // FIXME
@@ -771,6 +786,7 @@ void tick_everything() {
     /*p05.KERU*/ joy_reg.DBG_FF00_D7
   );
 
+  //----------------------------------------
   // video config
 
   /*p01.WESY*/ wire WESY_RESET  = not(XORE_RESET);
@@ -1020,6 +1036,7 @@ void tick_everything() {
   /*p23.MUVO*/ cfg_reg.WX6.set(FF4B_WRn, WALU_RESET, bus_tri.D6());
   /*p23.NUKU*/ cfg_reg.WX7.set(FF4B_WRn, WALU_RESET, bus_tri.D7());
 
+  //----------------------------------------
   // sch_bootrom
 
   /*p07.TULO*/ wire ADDR_00XX  = nor(bus_tri.A15(), bus_tri.A14(), bus_tri.A13(), bus_tri.A12(), bus_tri.A11(), bus_tri.A10(), bus_tri.A09(), bus_tri.A08());
@@ -1072,6 +1089,7 @@ void tick_everything() {
     bus_tri.set_data(DMG_ROM_bin[addr & 0xFF]);
   }
 
+  //----------------------------------------
   // sch_sprites
 
   /*p28.ANOM*/ wire SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4, VID_RESET6);
@@ -1133,7 +1151,7 @@ void tick_everything() {
   /*p29.TYSO*/ wire SPRITE_READq = or(SAKY, RENDERINGn); // seems wrong
   /*p29.TEXY*/ wire SPRITE_READ = not(SPRITE_READq);
     
-  //----------
+  //----------------------------------------
   // Sprite y comparator
 
   /*p29.EBOS*/ wire V0n = not(lcd_reg.Y0);
@@ -1221,6 +1239,7 @@ void tick_everything() {
   /*p29.VONU*/ spr_reg.VONU_SEQ_xxx34xn.set(TAVA_AxCxExGx, vid_reg.XYMU_RENDERING_LATCH, spr_reg.TOBU_SEQ_xx23xx);
   /*p29.SEBA*/ spr_reg.SEBA_SEQ_xxxx45n.set(LAPE_xBxDxFxH, vid_reg.XYMU_RENDERING_LATCH, spr_reg.VONU_SEQ_xxx34xn); // is this clock wrong?
 
+  //----------------------------------------
   // sprite store
 
   /*p21.ACAM*/ wire X0n = not(vid_reg.X0);
@@ -1262,6 +1281,7 @@ void tick_everything() {
   /*p29.DEWY*/ wire STORE8_SEL = nand(SPRITE_COUNT0n, SPRITE_COUNT1n, SPRITE_COUNT2n, SPRITE_COUNT3b);
   /*p29.DOGU*/ wire STORE9_SEL = nand(SPRITE_COUNT0b, SPRITE_COUNT1n, SPRITE_COUNT2n, SPRITE_COUNT3b);
 
+  //----------------------------------------
   // sprite store 0
 
   /*p31.ZOGY*/ wire STORE0_MATCH0n = xor(sst_reg.STORE0_X0, X0n);
@@ -1323,6 +1343,7 @@ void tick_everything() {
   /*p30.AJAL*/ if (!SPRITE0_GETn) sil_tri.TS_LINE_2 = sst_reg.STORE0_LINE2;
   /*p30.BUKY*/ if (!SPRITE0_GETn) sil_tri.TS_LINE_3 = sst_reg.STORE0_LINE3;
 
+  //----------------------------------------
   // sprite store 1
 
   /*p31.EDYM*/ wire STORE1_MATCH0 = xor(sst_reg.STORE1_X0, X0n);
@@ -1385,6 +1406,7 @@ void tick_everything() {
   /*p30.BACO*/ if (SPRITE1_GET) sil_tri.TS_LINE_2 = not(!sst_reg.STORE1_LINE2);
   /*p30.AHUM*/ if (SPRITE1_GET) sil_tri.TS_LINE_3 = not(!sst_reg.STORE1_LINE3);
 
+  //----------------------------------------
   // sprite store 2
 
   /*p31.FUZU*/ wire STORE2_MATCH0 = xor(sst_reg.STORE2_X0, X0n);
@@ -1447,6 +1469,7 @@ void tick_everything() {
   /*p30.WUXE*/ if (SPRITE2_GET) sil_tri.TS_LINE_2 = not(!sst_reg.STORE2_LINE2);
   /*p30.WERE*/ if (SPRITE2_GET) sil_tri.TS_LINE_3 = not(!sst_reg.STORE2_LINE3);
 
+  //----------------------------------------
   // sprite store 3
 
   /*p31.YHOK*/ wire STORE3_MATCH0 = xor(sst_reg.XOLY, X0n);
@@ -1509,6 +1532,7 @@ void tick_everything() {
   /*p30.YJEM*/ if (SPRITE3_GET) sil_tri.TS_LINE_2 = not(!sst_reg.ZENE);
   /*p30.YWAV*/ if (SPRITE3_GET) sil_tri.TS_LINE_3 = not(!sst_reg.ZYLU);
 
+  //----------------------------------------
   // sprite store 4
 
   /*p31.ZYKU*/ wire ZYKU = xor(sst_reg.YBED, X4n);
@@ -1569,7 +1593,9 @@ void tick_everything() {
   /*p30.BOVE*/ if (SPRITE4_GET) sil_tri.TS_LINE_2 = not(!sst_reg.CONO);
   /*p30.BEVY*/ if (SPRITE4_GET) sil_tri.TS_LINE_3 = not(!sst_reg.CAJU);
 
+  //----------------------------------------
   // sprite store 5
+
   /*p31.BAZY*/ wire BAZY = xor(sst_reg.CYWE, X4n);
   /*p31.CYLE*/ wire CYLE = xor(sst_reg.DYBY, X5n);
   /*p31.CEVA*/ wire CEVA = xor(sst_reg.DURY, X6n);
@@ -1629,7 +1655,9 @@ void tick_everything() {
   /*p30.BODU*/ if (GYGY) sil_tri.TS_LINE_2 = not(!sst_reg.ABUX);
   /*p30.BUJA*/ if (GYGY) sil_tri.TS_LINE_3 = not(!sst_reg.ABEG);
 
+  //----------------------------------------
   // sprite store 6
+
   /*p31.ZARE*/ wire ZARE = xor(sst_reg.ZOLY, X4n);
   /*p31.ZEMU*/ wire ZEMU = xor(sst_reg.ZOGO, X5n);
   /*p31.ZYGO*/ wire ZYGO = xor(sst_reg.ZECU, X6n);
@@ -1688,7 +1716,9 @@ void tick_everything() {
   /*p30.ZYTO*/ if (XYME) sil_tri.TS_LINE_2 = not(!sst_reg.ZEXO);
   /*p30.YKOZ*/ if (XYME) sil_tri.TS_LINE_3 = not(!sst_reg.ZAFU);
 
+  //----------------------------------------
   // sprite store 7
+
   /*p31.DUSE*/ wire STORE7_MATCH0 = xor(sst_reg.STORE7_X0, X0n);
   /*p31.DAGU*/ wire STORE7_MATCH1 = xor(sst_reg.STORE7_X1, X1n);
   /*p31.DYZE*/ wire STORE7_MATCH2 = xor(sst_reg.STORE7_X2, X2n);
@@ -1747,7 +1777,9 @@ void tick_everything() {
   /*p30.WABU*/ if (!STORE7_RDn) sil_tri.TS_LINE_2 = not(!sst_reg.XAKU);
   /*p30.YPOZ*/ if (!STORE7_RDn) sil_tri.TS_LINE_3 = not(!sst_reg.YGUM);
 
+  //----------------------------------------
   // sprite store 8
+
   /*p31.DUZE*/ wire DUZE = xor(sst_reg.EZUF, X4n);
   /*p31.DAGA*/ wire DAGA = xor(sst_reg.ENAD, X5n);
   /*p31.DAWU*/ wire DAWU = xor(sst_reg.EBOW, X6n);
@@ -1804,7 +1836,9 @@ void tick_everything() {
   /*p30.AHAC*/ if (DENY) sil_tri.TS_LINE_2 = sst_reg.AFUT;
   /*p30.BAZU*/ if (DENY) sil_tri.TS_LINE_3 = sst_reg.AFYX;
 
+  //----------------------------------------
   // sprite store 9
+
   /*p31.YMAM*/ wire STORE9_MATCH0 = xor(sst_reg.STORE9_X0, X0n);
   /*p31.YTYP*/ wire STORE9_MATCH1 = xor(sst_reg.STORE9_X1, X1n);
   /*p31.YFOP*/ wire STORE9_MATCH2 = xor(sst_reg.STORE9_X2, X2n);
@@ -1862,6 +1896,7 @@ void tick_everything() {
   /*p30.COHO*/ if (SPRITE9_GET) sil_tri.TS_LINE_2 = not(!sst_reg.STORE9_LINE2);
   /*p30.GATE*/ if (SPRITE9_GET) sil_tri.TS_LINE_3 = not(!sst_reg.STORE9_LINE3);
 
+  //----------------------------------------
   // sprite store
 
   /*p29.DEZY*/ sst_reg.STORE_EN_SYNC.set(ZEME_xBxDxFxH, VID_RESETn, STORE_EN);
@@ -1882,6 +1917,9 @@ void tick_everything() {
   /*p30.CUCU*/ if (FEPO_STORE_MATCH) sil_tri.TS_LINE_1 = SPRITE_DELTA2;
   /*p30.CUCA*/ if (FEPO_STORE_MATCH) sil_tri.TS_LINE_2 = SPRITE_DELTA0;
   /*p30.CEGA*/ if (FEPO_STORE_MATCH) sil_tri.TS_LINE_3 = SPRITE_DELTA3;
+
+  //----------------------------------------
+
 }
 
 

@@ -11,6 +11,8 @@
 
 namespace Schematics {
 
+#if 0
+
 //-----------------------------------------------------------------------------
 
 bool SpriteMatcherRegisters::commit() {
@@ -197,10 +199,12 @@ bool SpriteStoreRegisters::tick_fetch(const LcdSignals& lcd_sig,
 
   /*p29.FEFY*/ wire FEFY = nand(match4n, match3n, match2n, match1n, match0n);
   /*p29.FOVE*/ wire FOVE = nand(match9n, match8n, match7n, match6n, match5n);
-  /*p29.FEPO*/ wire STORE_MATCH = or(FEFY, FOVE);
+  /*p29.FEPO*/ wire FEPO_STORE_MATCH = or(FEFY, FOVE);
 
-  return STORE_MATCH;
+  return FEPO_STORE_MATCH;
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 

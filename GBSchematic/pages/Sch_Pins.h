@@ -6,6 +6,7 @@ namespace Schematics {
 struct VramBus;
 struct DmaSignals;
 struct DmaRegisters;
+struct SpriteRegisters;
 
 //-----------------------------------------------------------------------------
 
@@ -21,6 +22,7 @@ struct VramPins {
             const BusSignals& bus_sig,
             const DecoderSignals& dec_sig,
             const VidRegisters& vid_reg,
+            const SpriteRegisters& spr_reg,
             const VramBus& vram_bus,
             BusTristates& bus_tri);
 

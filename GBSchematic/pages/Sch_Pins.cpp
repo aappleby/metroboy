@@ -10,6 +10,7 @@
 #include "Sch_Video.h"
 #include "Sch_System.h"
 #include "Sch_Resets.h"
+#include "Sch_Sprites.h"
 
 #pragma warning(disable:4458)
 
@@ -29,6 +30,7 @@ void VramPins::tick(const SysSignals& sys_sig,
                     const BusSignals& bus_sig,
                     const DecoderSignals& dec_sig,
                     const VidRegisters& vid_reg,
+                    const SpriteRegisters& /*spr_reg*/,
                     const VramBus& vram_bus,
                     BusTristates& bus_tri) {
 
@@ -87,7 +89,7 @@ void VramPins::tick(const SysSignals& sys_sig,
     /*p25.RYLU*/ wire CPU_READ_VRAMn = nand(CPU_VRAM_CLK2, ROPY_RENDERINGn);
 
 #if 0
-    /*p29.TACU*/     wire SPR_SEQ_5_TRIG = nand(SEQ_5, vram.SPR_SEQ_5_SYNCn);
+    /*p29.TACU*/     wire SPR_SEQ_5_TRIG = nand(spr_reg.TYFO_SEQ_B0d, TYTU);
     /*p25.SOHO*/   wire SPR_READ_VRAM = and(SPR_SEQ_5_TRIG, spr.SPRITE_READn);
     /*p25.RAWA*/ wire SPR_READ_VRAMn = not(SPR_READ_VRAM);
 

@@ -112,19 +112,19 @@ void OamRegisters::tick(const SysSignals& sys_sig,
 
 
   {
-    /*p29.TUVO*/ wire SPR_OAM_RDn = or(LOBY_RENDERINGn, spr_sig.SPR_SEQ1, spr_sig.SEQ_xxx34xn);
+    /*p29.TUVO*/ wire SPR_OAM_RDn = or(LOBY_RENDERINGn, spr_sig.TULY_SPR_SEQ1, spr_sig.VONU_SEQ_xxx34xn);
     /*p28.AJEP*/   wire AJEP = and(spr_sig.ACYL_OAM_ADDR_PARSE, vclk_sig.XOCE_ABxxEFxx);
-    /*p28.WEFY*/     wire WEFY = and(SPR_OAM_RDn, spr_sig.SEQ_B0d);
+    /*p28.WEFY*/     wire WEFY = and(SPR_OAM_RDn, spr_sig.TYFO_SEQ_B0d);
     /*p28.XUJA*/   wire XUJA = not(WEFY);
     /*p04.DECY*/     wire FROM_CPU5n  = not(cpu_pins.FROM_CPU5);
     /*p28.BOTA*/   wire CPU_RD_OAMn = nand(FROM_CPU5n, dec_sig.ADDR_OAM, bus_sig.ASOT_CPURD); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire OAM_LATCHn = and (AJEP, XUJA, CPU_RD_OAMn);
 
-    /*p29.TAME*/ wire TAME_SEQ_5n = nand(spr_sig.SPR_SEQ2, spr_sig.SPR_SEQ0);
-    /*p29.TYTU*/ wire TYTU_SEQ_5 = not(TAME_SEQ_5n);
-    /*p29.TACU*/ wire TACU_SEQ_5_TRIG = nand(TYTU_SEQ_5, spr_sig.SEQ_B0d);
+    /*p29.TAME*/ wire TAME = nand(spr_sig.TESE_SPR_SEQ2, spr_sig.TOXE_SPR_SEQ0);
+    /*p29.TYTU*/ wire TYTU = not(TAME);
+    /*p29.TACU*/ wire TACU = nand(TYTU, spr_sig.TYFO_SEQ_B0d);
     /*p25.AVER*/ wire AVER = and(spr_sig.ACYL_OAM_ADDR_PARSE, vclk_sig.XYSO_ABCxDEFx);
-    /*p25.VAPE*/ wire VAPE = and(SPR_OAM_RDn, TACU_SEQ_5_TRIG);
+    /*p25.VAPE*/ wire VAPE = and(SPR_OAM_RDn, TACU);
     /*p25.XUJY*/ wire XUJY = not(VAPE);
 
     /*p25.CUFE*/ wire CUFE_OAM_WR = and(or(dec_sig.ADDR_OAM, dma_reg.REG_DMA_RW_EN), clk_sig.MOPA_xxxxEFGH); // Possible schematic error - CUFE doesn't make sense as or(and()), only as and(or())

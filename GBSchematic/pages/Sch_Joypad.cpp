@@ -48,12 +48,13 @@ JoypadSignals JoypadRegisters::tick(const ClkSignals& clk,
                                     const DecoderSignals& dec_sig,
                                     JoypadPins& joy_pins,
                                     BusTristates& bus_tri) {
-  /*p10.AKUG*/ wire A06n = not(bus_tri.A06());
-  /*p10.BYKO*/ wire A05n = not(bus_tri.A05());
 
   // FIXME
   wire FF60_0 = 0;
   wire FF60_0n = 1;
+
+  /*p10.AKUG*/ wire A06n = not(bus_tri.A06());
+  /*p10.BYKO*/ wire A05n = not(bus_tri.A05());
 
   /*p05.KOLE*/ joy_pins.P10_A = nand(JOYP_RA,  FF60_0);
   /*p05.KYBU*/ joy_pins.P10_D = nor (JOYP_RA,  FF60_0n);

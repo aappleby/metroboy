@@ -58,62 +58,50 @@ uint32_t SpriteRegisters::index() const {
 
 //-----------------------------------------------------------------------------
 
-bool SpriteRegisters::MATCH_EN(const VidRegisters& vid_reg, const ConfigRegisters& vid_reg2) const {
-  /*p29.CEHA*/ wire CEHA = not(!STORE_SPRITE_IDXn);
-  /*p29.BYJO*/ wire BYJO = not(CEHA);
-  /*p29.AZEM*/ wire AZEM = and(BYJO, vid_reg.XYMU_RENDERING_LATCH);
-  /*p29.AROR*/ wire MATCH_EN = and(AZEM, vid_reg2.LCDC_SPEN);
-  return MATCH_EN;
-}
+void SpriteRegisters::tick(const ClkSignals& clk_sig,
+                           const SysSignals& sys_sig,
+                           const VclkSignals& vid_clk,
+                           const RstSignals& rst_sig,
+                           const DmaRegisters& dma_reg,
+                           const LcdSignals& lcd_sig,
+                           const LcdRegisters& lcd_reg,
+                           const ConfigRegisters& cfg_reg,
+                           const VidRegisters& vid_reg,
+                           const VidSignals& vid_sig,
+                           const OamRegisters& oam_reg,
+                           const OamPins& oam_pins,
+                           SpriteTristate& sil_tri,
+                           bool FEPO_STORE_MATCH) {
 
-//-----------------------------------------------------------------------------
+  ///*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIG = scanner(clk_sig, vid_clk, rst_sig, lcd_sig);
 
-void SpriteRegisters::sprite_seq(const SysSignals& sys_sig,
-                                 const ClkSignals& clk_sig,
-                                 const RstSignals& rst_sig,
-                                 const VidSignals& vid_sig,
-                                 const VidRegisters& vid_reg,
-                                 const LcdSignals& lcd_sig) {
-  /*p01.ROSY*/ wire VID_RESET5 = not(rst_sig.VID_RESETn);
-  /*p01.LAPE*/ wire LAPE_xBxDxFxH = not(clk_sig.ALET_AxCxExGx);
-  /*p27.TAVA*/ wire TAVA_AxCxExGx = not(LAPE_xBxDxFxH);
+  // something wrong here
+  // ANOM = nor(ATEJ, ATAR);
 
-  /*p29.TAME*/ wire SEQ_5n = nand(SPR_SEQ2, SPR_SEQ0);
-
-  ///*p29.TOMA*/ SEQ_CLK = or(AxCxExGx, SEQ_5);
-
-  /*p29.TOMA*/ wire TOMA_AxCxExGx = nand(LAPE_xBxDxFxH, SEQ_5n);
-  /*p27.SECA*/ wire SPR_SEQ_RST = nor(vid_sig.RYCE_SPRITE_FETCH_TRIG, VID_RESET5, lcd_sig.BYHA_VID_LINE_TRIG_d4n);
-  /*p29.TOXE*/ SPR_SEQ0.set(TOMA_AxCxExGx, SPR_SEQ_RST, !SPR_SEQ0);
-  /*p29.TULY*/ SPR_SEQ1.set(!SPR_SEQ0,     SPR_SEQ_RST, !SPR_SEQ1);
-  /*p29.TESE*/ SPR_SEQ2.set(!SPR_SEQ1,     SPR_SEQ_RST, !SPR_SEQ2);
-
-  /*p29.TYFO*/ SEQ_B0d    .set(LAPE_xBxDxFxH, sys_sig.P10_Bn,               SPR_SEQ0);
-  /*p29.TOBU*/ SEQ_xx23xx .set(TAVA_AxCxExGx, vid_reg.XYMU_RENDERING_LATCH, SPR_SEQ1);    // note input is seq 1 not 2
-  /*p29.VONU*/ SEQ_xxx34xn.set(TAVA_AxCxExGx, vid_reg.XYMU_RENDERING_LATCH, SEQ_xx23xx);
-  /*p29.SEBA*/ SEQ_xxxx45n.set(LAPE_xBxDxFxH, vid_reg.XYMU_RENDERING_LATCH, SEQ_xxx34xn); // is this clock wrong?
-}
-
-//-----------------------------------------------------------------------------
-
-SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
-                                    const SysSignals& sys_sig,
-                                    const VclkSignals& vid_clk,
-                                    const RstSignals& rst_sig,
-                                    const DmaRegisters& dma_reg,
-                                    const LcdSignals& lcd_sig,
-                                    const LcdRegisters& lcd_reg,
-                                    const ConfigRegisters& vid_cfg,
-                                    const VidRegisters& vid_reg,
-                                    const OamRegisters& oam_reg,
-                                    const OamPins& oam_pins,
-                                    SpriteTristate& sil_tri,
-                                    bool STORE_MATCH) {
-
-  /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIG = scanner(clk_sig, vid_clk, rst_sig, lcd_sig);
-
-  /*p01.ROSY*/ wire VID_RESET5 = not(rst_sig.VID_RESETn);
   /*p01.ATAR*/ wire VID_RESET6 = not(rst_sig.VID_RESETn);
+  /*p28.ANOM*/ wire SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4, VID_RESET6);
+  /*p29.BALU*/ wire SCAN_RSTa = not(SCAN_RSTn);
+  /*p29.BAGY*/ wire SCAN_RSTo = not(SCAN_RSTa);
+
+  /*p28.FETO*/ wire SCAN_DONE_d0 = and(SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
+  /*p28.GAVA*/ wire SCAN_CLK = or(SCAN_DONE_d0, vid_clk.XUPY_xBCxxFGx);
+  /*p28.YFEL*/ SCAN0.set(SCAN_CLK, SCAN_RSTn, !SCAN0);
+  /*p28.WEWY*/ SCAN1.set(!SCAN0,   SCAN_RSTn, !SCAN1);
+  /*p28.GOSO*/ SCAN2.set(!SCAN1,   SCAN_RSTn, !SCAN2);
+  /*p28.ELYN*/ SCAN3.set(!SCAN2,   SCAN_RSTn, !SCAN3);
+  /*p28.FAHA*/ SCAN4.set(!SCAN3,   SCAN_RSTn, !SCAN4);
+  /*p28.FONY*/ SCAN5.set(!SCAN4,   SCAN_RSTn, !SCAN5);
+
+  // the second clock here doesn't match the usual synchronizer pattern, but it matches the die.
+  /*p29.BYBA*/ SCAN_DONE_d4.set(vid_clk.XUPY_xBCxxFGx, SCAN_RSTo, SCAN_DONE_d0);
+  /*p29.DOBA*/ SCAN_DONE_d5.set(clk_sig.ALET_AxCxExGx, SCAN_RSTo, SCAN_DONE_d4);
+
+  // which means this trigger is exactly 1 phase long
+  /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or(SCAN_RSTa, SCAN_DONE_d5, !SCAN_DONE_d4);
+  /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIG = not(SCAN_DONE_d0_TRIGn);
+
+
+  /*p01.ROSY*/ wire VID_RESET5 = not(rst_sig.VID_RESETn);
   /*p01.ABEZ*/ wire VID_RESETn3 = not(VID_RESET6);
 
   /*p28.ASEN*/ wire ASEN = or(VID_RESET6, AVAP_SCAN_DONE_d0_TRIG);
@@ -124,33 +112,39 @@ SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
   /*p28.ACYL*/ wire ACYL_OAM_ADDR_PARSE = and(DMA_RW_ENn, BESU);
 
 
-  /*p29.AROR*/ wire MATCH_EN = this->MATCH_EN(vid_reg, vid_cfg);
+  ///*p29.AROR*/ wire MATCH_EN = this->MATCH_EN(vid_reg, cfg_reg);
+
+  /*p29.CEHA*/ wire CEHA = not(!STORE_SPRITE_IDXn);
+  /*p29.BYJO*/ wire BYJO = not(CEHA);
+  /*p29.AZEM*/ wire AZEM = and(BYJO, vid_reg.XYMU_RENDERING_LATCH);
+  /*p29.AROR*/ wire MATCH_EN = and(AZEM, cfg_reg.LCDC_SPEN);
+
 
   //----------
   // Sequencer
   
   {
-    /*p29.TYTU*/ wire SPR_SEQ0n = not(SPR_SEQ0);
+    /*p29.TYTU*/ wire SPR_SEQ0n = not(TOXE_SPR_SEQ0);
     /*p24.LOBY*/ wire LOBY_RENDERINGn = not(vid_reg.XYMU_RENDERING_LATCH);
-    /*p29.SYCU*/ wire SYCU = nor(SPR_SEQ0n, LOBY_RENDERINGn, SEQ_B0d);
+    /*p29.SYCU*/ wire SYCU = nor(SPR_SEQ0n, LOBY_RENDERINGn, TYFO_SEQ_B0d);
 
-    /*p29.TOPU*/ wire SPRITE_PIX_LATCH_Ao = and(SPR_SEQ1, SYCU);
+    /*p29.TOPU*/ wire SPRITE_PIX_LATCH_Ao = and(TULY_SPR_SEQ1, SYCU);
     /*p29.VYWA*/ wire SPRITE_PIX_LATCH_Ab = not(SPRITE_PIX_LATCH_Ao);
     /*p29.WENY*/ wire SPRITE_PIX_LATCH_An = not(SPRITE_PIX_LATCH_Ab);
     /*p29.XADO*/ wire SPRITE_PIX_LATCH_A  = not(SPRITE_PIX_LATCH_An);
 
-    /*p29.RACA*/ wire SPRITE_PIX_LATCH_Bo = and(SEQ_xxx34xn, SYCU);
+    /*p29.RACA*/ wire SPRITE_PIX_LATCH_Bo = and(VONU_SEQ_xxx34xn, SYCU);
     /*p29.PEBY*/ wire SPRITE_PIX_LATCH_Bb = not(SPRITE_PIX_LATCH_Bo);
     /*p29.NYBE*/ wire SPRITE_PIX_LATCH_Bn = not(SPRITE_PIX_LATCH_Bb);
     /*p29.PUCO*/ wire SPRITE_PIX_LATCH_B  = not(SPRITE_PIX_LATCH_Bn);
 
-    /*p29.TYNO*/ wire TYNO = nand(SPR_SEQ0, SEQ_xxxx45n, SEQ_xxx34xn);
-    /*p29.VUSA*/ wire VUSA = or(!SEQ_B0d, TYNO);
+    /*p29.TYNO*/ wire TYNO = nand(TOXE_SPR_SEQ0, SEBA_SEQ_xxxx45n, VONU_SEQ_xxx34xn);
+    /*p29.VUSA*/ wire VUSA = or(!TYFO_SEQ_B0d, TYNO);
     /*p29.WUTY*/ wire WUTY_SPRITE_DONE = not(VUSA);
   }
 
   {
-    /*p29.SAKY*/ wire SAKY = nor(SPR_SEQ1, SEQ_xxx34xn);
+    /*p29.SAKY*/ wire SAKY = nor(TULY_SPR_SEQ1, VONU_SEQ_xxx34xn);
     /*p29.TEPA*/ wire RENDERINGn = not(vid_reg.XYMU_RENDERING_LATCH);
     /*p29.TYSO*/ wire SPRITE_READq = or(SAKY, RENDERINGn); // seems wrong
     /*p29.TEXY*/ wire SPRITE_READ = not(SPRITE_READq);
@@ -161,46 +155,8 @@ SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
   //----------
   // Sprite y comparator
 
-  SpriteDelta spr_delta = storeMatchY(sys_sig, lcd_reg, oam_reg, vid_cfg);
+  //SpriteDelta spr_delta = storeMatchY(sys_sig, lcd_reg, oam_reg, vid_cfg);
 
-  /*p29.CEHA*/ wire CEHA = not(!STORE_SPRITE_IDXn);
-  /*p29.CARE*/ wire STORE_ENn = or(vid_clk.XOCE_ABxxEFxx, CEHA, spr_delta.SPR_MATCH_Y);
-  /*p29.DYTY*/ wire STORE_EN = not(STORE_ENn);
-
-  /*p28.WEFE*/ wire WEFE = not(sys_sig.PIN_P10_B);
-  /*p30.CYKE*/ wire CYKE = not(vid_clk.XUPY_xBCxxFGx);
-  /*p30.WUDA*/ wire WUDA = not(CYKE);
-  /*p30.XADU*/ SPRITE_IDX0.set(WUDA, WEFE, oam_pins.A2);
-  /*p30.XEDY*/ SPRITE_IDX1.set(WUDA, WEFE, oam_pins.A3);
-  /*p30.ZUZE*/ SPRITE_IDX2.set(WUDA, WEFE, oam_pins.A4);
-  /*p30.XOBE*/ SPRITE_IDX3.set(WUDA, WEFE, oam_pins.A5);
-  /*p30.YDUF*/ SPRITE_IDX4.set(WUDA, WEFE, oam_pins.A6);
-  /*p30.XECU*/ SPRITE_IDX5.set(WUDA, WEFE, oam_pins.A7);
-
-  /*p29.CENO*/ STORE_SPRITE_IDXn.set(vid_clk.XUPY_xBCxxFGx, VID_RESETn3, BESU);
-  /*p29.BUZA*/ wire STORE_SPRITE_IDX = and(!STORE_SPRITE_IDXn, vid_reg.XYMU_RENDERING_LATCH);
-
-  /*p30.WENU*/ if (STORE_MATCH)      sil_tri.TS_LINE_0 = spr_delta.SPRITE_DELTA1; // order wrong
-  /*p30.CUCU*/ if (STORE_MATCH)      sil_tri.TS_LINE_1 = spr_delta.SPRITE_DELTA2;
-  /*p30.CUCA*/ if (STORE_MATCH)      sil_tri.TS_LINE_2 = spr_delta.SPRITE_DELTA0;
-  /*p30.CEGA*/ if (STORE_MATCH)      sil_tri.TS_LINE_3 = spr_delta.SPRITE_DELTA3;
-  /*p30.WEZA*/ if (STORE_SPRITE_IDX) sil_tri.TS_IDX_0  = SPRITE_IDX5; // order wrong
-  /*p30.WUCO*/ if (STORE_SPRITE_IDX) sil_tri.TS_IDX_1  = SPRITE_IDX4;
-  /*p30.WYDA*/ if (STORE_SPRITE_IDX) sil_tri.TS_IDX_2  = SPRITE_IDX3;
-  /*p30.ZYSU*/ if (STORE_SPRITE_IDX) sil_tri.TS_IDX_3  = SPRITE_IDX2;
-  /*p30.WYSE*/ if (STORE_SPRITE_IDX) sil_tri.TS_IDX_4  = SPRITE_IDX1;
-  /*p30.WUZY*/ if (STORE_SPRITE_IDX) sil_tri.TS_IDX_5  = SPRITE_IDX0;
-
-  return {
-  };
-}
-
-//-----------------------------------------------------------------------------
-
-SpriteDelta SpriteRegisters::storeMatchY(const SysSignals& sys_sig,
-                                         const LcdRegisters& lcd_reg,
-                                         const OamRegisters& oam_reg,
-                                         const ConfigRegisters& vid_reg2) {
   /*p29.EBOS*/ wire V0n = not(lcd_reg.Y0);
   /*p29.DASA*/ wire V1n = not(lcd_reg.Y1);
   /*p29.FUKY*/ wire V2n = not(lcd_reg.Y2);
@@ -236,55 +192,55 @@ SpriteDelta SpriteRegisters::storeMatchY(const SysSignals& sys_sig,
   /*p29.GYDA*/ wire SPRITE_DELTA6 = not(YDIFF6);
   /*p29.GEWY*/ wire SPRITE_DELTA7 = not(YDIFF7);
 
-  /*p29.GOVU*/ wire GOVU = or(YDIFF3, vid_reg2.LCDC_SPSIZE);
+  /*p29.GOVU*/ wire GOVU = or(YDIFF3, cfg_reg.LCDC_SPSIZE);
   /*p29.WOTA*/ wire SPR_MATCH_Yn = nand(SPRITE_DELTA4, SPRITE_DELTA5, SPRITE_DELTA6, SPRITE_DELTA7, YDIFF_C7, GOVU);
   /*p29.GESE*/ wire SPR_MATCH_Y = not(SPR_MATCH_Yn);
 
-  return {
-    /*p29.GESE*/ SPR_MATCH_Y,
-    /*p29.DEGE*/ SPRITE_DELTA0,
-    /*p29.DABY*/ SPRITE_DELTA1,
-    /*p29.DABU*/ SPRITE_DELTA2,
-    /*p29.GYSA*/ SPRITE_DELTA3,
-    /*p29.GACE*/ SPRITE_DELTA4,
-    /*p29.GUVU*/ SPRITE_DELTA5,
-    /*p29.GYDA*/ SPRITE_DELTA6,
-    /*p29.GEWY*/ SPRITE_DELTA7,
-  };
-}
 
-//-----------------------------------------------------------------------------
+  /*p29.CARE*/ wire STORE_ENn = or(vid_clk.XOCE_ABxxEFxx, CEHA, SPR_MATCH_Y);
+  /*p29.DYTY*/ wire STORE_EN = not(STORE_ENn);
 
-wire SpriteRegisters::scanner(const ClkSignals& clk_sig,
-                              const VclkSignals& vid_clk,
-                              const RstSignals& rst_sig,
-                              const LcdSignals& lcd_sig) {
+  /*p28.WEFE*/ wire WEFE = not(sys_sig.PIN_P10_B);
+  /*p30.CYKE*/ wire CYKE = not(vid_clk.XUPY_xBCxxFGx);
+  /*p30.WUDA*/ wire WUDA = not(CYKE);
+  /*p30.XADU*/ SPRITE_IDX0.set(WUDA, WEFE, oam_pins.A2);
+  /*p30.XEDY*/ SPRITE_IDX1.set(WUDA, WEFE, oam_pins.A3);
+  /*p30.ZUZE*/ SPRITE_IDX2.set(WUDA, WEFE, oam_pins.A4);
+  /*p30.XOBE*/ SPRITE_IDX3.set(WUDA, WEFE, oam_pins.A5);
+  /*p30.YDUF*/ SPRITE_IDX4.set(WUDA, WEFE, oam_pins.A6);
+  /*p30.XECU*/ SPRITE_IDX5.set(WUDA, WEFE, oam_pins.A7);
 
-  // something wrong here
-  // ANOM = nor(ATEJ, ATAR);
+  /*p29.CENO*/ STORE_SPRITE_IDXn.set(vid_clk.XUPY_xBCxxFGx, VID_RESETn3, BESU);
+  /*p29.BUZA*/ wire BUZA_STORE_SPRITE_IDX = and(!STORE_SPRITE_IDXn, vid_reg.XYMU_RENDERING_LATCH);
 
-  /*p01.ATAR*/ wire VID_RESET6 = not(rst_sig.VID_RESETn);
-  /*p28.ANOM*/ wire SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4, VID_RESET6);
-  /*p29.BALU*/ wire SCAN_RSTa = not(SCAN_RSTn);
-  /*p29.BAGY*/ wire SCAN_RSTo = not(SCAN_RSTa);
+  /*p30.WENU*/ if (FEPO_STORE_MATCH)      sil_tri.TS_LINE_0 = SPRITE_DELTA1; // order wrong
+  /*p30.CUCU*/ if (FEPO_STORE_MATCH)      sil_tri.TS_LINE_1 = SPRITE_DELTA2;
+  /*p30.CUCA*/ if (FEPO_STORE_MATCH)      sil_tri.TS_LINE_2 = SPRITE_DELTA0;
+  /*p30.CEGA*/ if (FEPO_STORE_MATCH)      sil_tri.TS_LINE_3 = SPRITE_DELTA3;
+  /*p30.WEZA*/ if (BUZA_STORE_SPRITE_IDX) sil_tri.TS_IDX_0  = SPRITE_IDX5; // order wrong
+  /*p30.WUCO*/ if (BUZA_STORE_SPRITE_IDX) sil_tri.TS_IDX_1  = SPRITE_IDX4;
+  /*p30.WYDA*/ if (BUZA_STORE_SPRITE_IDX) sil_tri.TS_IDX_2  = SPRITE_IDX3;
+  /*p30.ZYSU*/ if (BUZA_STORE_SPRITE_IDX) sil_tri.TS_IDX_3  = SPRITE_IDX2;
+  /*p30.WYSE*/ if (BUZA_STORE_SPRITE_IDX) sil_tri.TS_IDX_4  = SPRITE_IDX1;
+  /*p30.WUZY*/ if (BUZA_STORE_SPRITE_IDX) sil_tri.TS_IDX_5  = SPRITE_IDX0;
 
-  /*p28.FETO*/ wire SCAN_DONE_d0 = and(SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
-  /*p28.GAVA*/ wire SCAN_CLK = or(SCAN_DONE_d0, vid_clk.XUPY_xBCxxFGx);
-  /*p28.YFEL*/ SCAN0.set(SCAN_CLK, SCAN_RSTn, !SCAN0);
-  /*p28.WEWY*/ SCAN1.set(!SCAN0,   SCAN_RSTn, !SCAN1);
-  /*p28.GOSO*/ SCAN2.set(!SCAN1,   SCAN_RSTn, !SCAN2);
-  /*p28.ELYN*/ SCAN3.set(!SCAN2,   SCAN_RSTn, !SCAN3);
-  /*p28.FAHA*/ SCAN4.set(!SCAN3,   SCAN_RSTn, !SCAN4);
-  /*p28.FONY*/ SCAN5.set(!SCAN4,   SCAN_RSTn, !SCAN5);
+  /*p01.LAPE*/ wire LAPE_xBxDxFxH = not(clk_sig.ALET_AxCxExGx);
+  /*p27.TAVA*/ wire TAVA_AxCxExGx = not(LAPE_xBxDxFxH);
 
-  // the second clock here doesn't match the usual synchronizer pattern, but it matches the die.
-  /*p29.BYBA*/ SCAN_DONE_d4.set(vid_clk.XUPY_xBCxxFGx, SCAN_RSTo, SCAN_DONE_d0);
-  /*p29.DOBA*/ SCAN_DONE_d5.set(clk_sig.ALET_AxCxExGx, SCAN_RSTo, SCAN_DONE_d4);
+  /*p29.TAME*/ wire SEQ_5n = nand(TESE_SPR_SEQ2, TOXE_SPR_SEQ0);
 
-  // which means this trigger is exactly 1 phase long
-  /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or(SCAN_RSTa, SCAN_DONE_d5, !SCAN_DONE_d4);
-  /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIG = not(SCAN_DONE_d0_TRIGn);
-  return AVAP_SCAN_DONE_d0_TRIG;
+  ///*p29.TOMA*/ SEQ_CLK = or(AxCxExGx, SEQ_5);
+
+  /*p29.TOMA*/ wire TOMA_AxCxExGx = nand(LAPE_xBxDxFxH, SEQ_5n);
+  /*p27.SECA*/ wire SPR_SEQ_RST = nor(vid_sig.RYCE_SPRITE_FETCH_TRIG, VID_RESET5, lcd_sig.BYHA_VID_LINE_TRIG_d4n);
+  /*p29.TOXE*/ TOXE_SPR_SEQ0.set(TOMA_AxCxExGx, SPR_SEQ_RST, !TOXE_SPR_SEQ0);
+  /*p29.TULY*/ TULY_SPR_SEQ1.set(!TOXE_SPR_SEQ0,     SPR_SEQ_RST, !TULY_SPR_SEQ1);
+  /*p29.TESE*/ TESE_SPR_SEQ2.set(!TULY_SPR_SEQ1,     SPR_SEQ_RST, !TESE_SPR_SEQ2);
+
+  /*p29.TYFO*/ TYFO_SEQ_B0d    .set(LAPE_xBxDxFxH, sys_sig.P10_Bn,               TOXE_SPR_SEQ0);
+  /*p29.TOBU*/ TOBU_SEQ_xx23xx .set(TAVA_AxCxExGx, vid_reg.XYMU_RENDERING_LATCH, TULY_SPR_SEQ1);    // note input is seq 1 not 2
+  /*p29.VONU*/ VONU_SEQ_xxx34xn.set(TAVA_AxCxExGx, vid_reg.XYMU_RENDERING_LATCH, TOBU_SEQ_xx23xx);
+  /*p29.SEBA*/ SEBA_SEQ_xxxx45n.set(LAPE_xBxDxFxH, vid_reg.XYMU_RENDERING_LATCH, VONU_SEQ_xxx34xn); // is this clock wrong?
 }
 
 //-----------------------------------------------------------------------------

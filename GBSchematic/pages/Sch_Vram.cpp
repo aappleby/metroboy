@@ -78,7 +78,7 @@ VramBus VramBus::tick(const SysSignals& sys_sig,
   //----------
 
   /*p29.WUKY*/ wire FLIP_Y = not(oam_reg.REG_OAM_A6);
-  /*p29.XUQU*/ wire SPRITE_AB = not(!spr_sig.SEQ_xxx34xn);
+  /*p29.XUQU*/ wire SPRITE_AB = not(!spr_sig.VONU_SEQ_xxx34xn);
   /*p29.FUFO*/ wire LCDC_SPSIZEn = not(vid_cfg.LCDC_SPSIZE);
 
   /*p29.WAGO*/ wire WAGO      = xor(FLIP_Y, spr_tri.TS_LINE_0);

@@ -24,12 +24,12 @@ struct SpriteSignals {
   /*p28.FETO*/ bool FETO_SCAN_DONE_d0;
   /*p29.AVAP*/ bool AVAP_SCAN_DONE_d0_TRIG;
 
-  /*p29.TOXE*/ bool SPR_SEQ0;
-  /*p29.TULY*/ bool SPR_SEQ1;
-  /*p29.TESE*/ bool SPR_SEQ2;
-  /*p29.VONU*/ bool SEQ_xxx34xn;
+  /*p29.TOXE*/ bool TOXE_SPR_SEQ0;
+  /*p29.TULY*/ bool TULY_SPR_SEQ1;
+  /*p29.TESE*/ bool TESE_SPR_SEQ2;
+  /*p29.VONU*/ bool VONU_SEQ_xxx34xn;
 
-  /*p29.TYFO*/ bool SEQ_B0d;
+  /*p29.TYFO*/ bool TYFO_SEQ_B0d;
 
   /*p28.YFEL*/ bool SCAN0;
   /*p28.WEWY*/ bool SCAN1;
@@ -57,36 +57,20 @@ struct SpriteRegisters {
   void reset();
   uint32_t index() const;
 
-  SpriteDelta storeMatchY(const SysSignals& sys_sig,
-                          const LcdRegisters& lcd_reg,
-                          const OamRegisters& oam_reg,
-                          const ConfigRegisters& vid_reg2);
-
-  SpriteSignals tick(const ClkSignals& clk_sig,
-                     const SysSignals& sys_sig,
-                     const VclkSignals& vid_clk,
-                     const RstSignals& rst_sig,
-                     const DmaRegisters& dma_reg,
-                     const LcdSignals& lcd_sig,
-                     const LcdRegisters& lcd_reg,
-                     const ConfigRegisters& vid_cfg,
-                     const VidRegisters& vid_reg,
-                     const OamRegisters& oam_reg,
-                     const OamPins& oam_pins,
-                     SpriteTristate& sil_out,
-                     bool STORE_MATCH);
-
-  bool MATCH_EN(const VidRegisters& vid_reg,
-                const ConfigRegisters& vid_reg2) const;
-
-  void sprite_seq(const SysSignals& sys_sig,
-                  const ClkSignals& clk_sig,
-                  const RstSignals& rst_sig,
-                  const VidSignals& vid_sig,
-                  const VidRegisters& vid_reg,
-                  const LcdSignals& lcd_sig);
-
-  wire scanner(const ClkSignals& clk_sig, const VclkSignals& vid_clk, const RstSignals& rst_sig, const LcdSignals& lcd_sig);
+  void tick(const ClkSignals& clk_sig,
+            const SysSignals& sys_sig,
+            const VclkSignals& vid_clk,
+            const RstSignals& rst_sig,
+            const DmaRegisters& dma_reg,
+            const LcdSignals& lcd_sig,
+            const LcdRegisters& lcd_reg,
+            const ConfigRegisters& vid_cfg,
+            const VidRegisters& vid_reg,
+            const VidSignals& vid_sig,
+            const OamRegisters& oam_reg,
+            const OamPins& oam_pins,
+            SpriteTristate& sil_out,
+            bool STORE_MATCH);
 
   /*p29.CENO*/ Reg2 STORE_SPRITE_IDXn;
 
@@ -107,14 +91,14 @@ struct SpriteRegisters {
   /*p29.BYBA*/ Reg2 SCAN_DONE_d4;
   /*p29.DOBA*/ Reg2 SCAN_DONE_d5;
 
-  /*p29.TOXE*/ Reg2 SPR_SEQ0;
-  /*p29.TULY*/ Reg2 SPR_SEQ1;
-  /*p29.TESE*/ Reg2 SPR_SEQ2;
+  /*p29.TOXE*/ Reg2 TOXE_SPR_SEQ0;
+  /*p29.TULY*/ Reg2 TULY_SPR_SEQ1;
+  /*p29.TESE*/ Reg2 TESE_SPR_SEQ2;
   
-  /*p29.TOBU*/ Reg2 SEQ_xx23xx;
-  /*p29.VONU*/ Reg2 SEQ_xxx34xn;
-  /*p29.SEBA*/ Reg2 SEQ_xxxx45n;
-  /*p29.TYFO*/ Reg2 SEQ_B0d;
+  /*p29.TOBU*/ Reg2 TOBU_SEQ_xx23xx;
+  /*p29.VONU*/ Reg2 VONU_SEQ_xxx34xn;
+  /*p29.SEBA*/ Reg2 SEBA_SEQ_xxxx45n;
+  /*p29.TYFO*/ Reg2 TYFO_SEQ_B0d;
 
 };
 

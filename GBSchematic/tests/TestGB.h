@@ -62,7 +62,7 @@ struct TestGB {
   DebugRegisters  dbg_reg;
   VclkRegisters   vclk_reg;
   VidRegisters    vid_reg;
-  VidConfig   vid_reg2;
+  ConfigRegisters       vid_cfg;
   LcdRegisters    lcd_reg;
   BusTristates    bus_tri;
   TimerRegisters  tim_reg;

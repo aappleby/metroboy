@@ -39,6 +39,8 @@ VidSignals VidRegisters::tick(const SysSignals& sys_sig,
                               bool AVAP_SCAN_DONE_d0_TRIG,
                               bool WUTY_SPRITE_DONE) {
 
+  VidSignals sig = {};
+
   /*p27.VYPO*/ wire VYPO = not(sys_sig.PIN_P10_B);
 
   /*p01.LAPE*/ wire LAPE_xBxDxFxH = not(clk_sig.ALET_AxCxExGx);
@@ -94,14 +96,16 @@ VidSignals VidRegisters::tick(const SysSignals& sys_sig,
     /*p01.ROSY*/ wire ROSY_VID_RESET = not(rst_sig.VID_RESETn);
     /*p27.SECA*/ wire SPRITE_FETCH_BEGINn = nor(RYCE_SPRITE_FETCH_TRIG, ROSY_VID_RESET, lcd_sig.BYHA_VID_LINE_TRIG_d4n);
     /*p27.VEKU*/ wire SPRITE_FETCH_ENDn = nor(WUTY_SPRITE_DONE, TAVE);
-    /*p27.TAKA*/ _SPRITE_FETCH_LATCH.latch(!SPRITE_FETCH_BEGINn, !SPRITE_FETCH_ENDn); // polarity?
+    /*p27.TAKA*/ _SPRITE_FETCH_LATCH.sr_latch(!SPRITE_FETCH_BEGINn, !SPRITE_FETCH_ENDn); // polarity?
+
+    sig.RYCE_SPRITE_FETCH_TRIG = RYCE_SPRITE_FETCH_TRIG;
   }
 
 
   {
     /*p01.TOFU*/ wire VID_RESET3  = not(rst_sig.VID_RESETn);
     /*p21.WEGO*/ wire WEGO = or(VID_RESET3, RENDER_DONE_SYNC);
-    /*p21.XYMU*/ XYMU_RENDERING_LATCH.latch(AVAP_SCAN_DONE_d0_TRIG, WEGO);
+    /*p21.XYMU*/ XYMU_RENDERING_LATCH.sr_latch(AVAP_SCAN_DONE_d0_TRIG, WEGO);
 
     /*p21.TADY*/ wire TADY_X_RST = nor(lcd_sig.BYHA_VID_LINE_TRIG_d4n, VID_RESET3);
     /*p21.VOGA*/ RENDER_DONE_SYNC.set(clk_sig.ALET_AxCxExGx, TADY_X_RST, WODU_RENDER_DONE);
@@ -119,7 +123,7 @@ VidSignals VidRegisters::tick(const SysSignals& sys_sig,
     /*p27.LENA*/ wire BG_READ_VRAM  = not(BG_READ_VRAMn);
     /*p27.POTU*/ wire POTU          = and(BG_READ_VRAM, BG_SEQ_01xxxxxx);
     /*p25.XEZE*/ wire XEZE_WIN_MAP_READ  = nand(POTU, WIN_MODE_PORE);
-    /*p26.ACEN*/ sig.ACEN_BG_MAP_READ   = and (POTU, WIN_MODE_AXADn);
+    /*p26.ACEN*/ wire ACEN_BG_MAP_READ   = and (POTU, WIN_MODE_AXADn);
 
 
     /*p27.NOFU*/ wire BG_SEQ_0123xxxx = not(BG_SEQ_xxxx4567);
@@ -129,8 +133,14 @@ VidSignals VidRegisters::tick(const SysSignals& sys_sig,
 
     /*p25.XUCY*/ wire XUCY_WIN_TILE_READ = nand(TILE_READ, WIN_MODE_PORE);
     /*p26.ASUL*/ wire BG_TILE_READn = and (TILE_READ, WIN_MODE_AXADn);
-    /*p26.BEJE*/ sig.BEJE_BG_TILE_READ  = not(BG_TILE_READn);
+    /*p26.BEJE*/ wire BEJE_BG_TILE_READ  = not(BG_TILE_READn);
 
+    sig.XEZE_WIN_MAP_READ  = XEZE_WIN_MAP_READ;
+    sig.ACEN_BG_MAP_READ   = ACEN_BG_MAP_READ;
+    sig.XUHA_TILE_READ_AB  = XUHA_TILE_READ_AB;
+    sig.NETA_TILE_READ     = NETA_TILE_READ;
+    sig.XUCY_WIN_TILE_READ = XUCY_WIN_TILE_READ;
+    sig.BEJE_BG_TILE_READ  = BEJE_BG_TILE_READ;
   }
 
   //----------
@@ -168,11 +178,11 @@ VidSignals VidRegisters::tick(const SysSignals& sys_sig,
     /*p27.LOVY*/ BG_SEQ5_SYNC.set(MYVO_xBxDxFxH, BG_SEQ_RSTn, BG_SEQ_5);
     /*p27.LURY*/ wire LURY = and(!BG_SEQ5_SYNC, XYMU_RENDERING_LATCH);
     
-    /*p27.LONY*/ LONY_LATCH.latch(LURY, NYXU_BG_SEQ_RSTn); // polarity?
+    /*p27.LONY*/ LONY_LATCH.sr_latch(LURY, NYXU_BG_SEQ_RSTn); // polarity? wait, are we sure this was a latch?
     
     // The first tile generated is thrown away. I'm calling that section of rendering the front porch.
     /*p24.PYGO*/ PYGO_TILE_DONE.set(clk_sig.ALET_AxCxExGx, XYMU_RENDERING_LATCH, BG_SEQ_7);
-    /*p24.POKY*/ POKY_FRONT_PORCH_LATCHn.latch(PYGO_TILE_DONE, LOBY_RENDERINGn);
+    /*p24.POKY*/ POKY_FRONT_PORCH_LATCHn.sr_latch(PYGO_TILE_DONE, LOBY_RENDERINGn);
 
     /*p27.LAXE*/ wire BG_SEQ0n = not(BG_SEQ_x1x3x5x7);
     /*p27.MYSO*/ wire BG_SEQ_TRIG_1357 = nor(LOBY_RENDERINGn, BG_SEQ0n, BG_SEQ_x1x3x5x7_DELAY);
@@ -233,7 +243,7 @@ VidSignals VidRegisters::tick(const SysSignals& sys_sig,
     // 00: render   - rendering 1, vbl 0, oam 0
     // so one of these has the wrong polarity
 
-    /*p21.SADU*/ wire STAT_MODE0n = nor(XYMU_RENDERING_LATCH, lcd_sig.PARU_VBLANK_d4);
+    /*p21.SADU*/ wire STAT_MODE0n = nor(XYMU_RENDERING_LATCH, lcd_sig.PARU_INT_VBL);
     /*p21.XATY*/ wire STAT_MODE1n = nor(XYMU_RENDERING_LATCH, spr_sig.ACYL_OAM_ADDR_PARSE);
 
     /*p21.TOBE*/ wire FF41_RDa = and(bus_sig.ASOT_CPURD, dec_sig.FF41);
@@ -251,33 +261,22 @@ VidSignals VidRegisters::tick(const SysSignals& sys_sig,
 
     /*p21.PURE*/ wire LINE_DONEa = not(lcd_reg.NEW_LINE_d0a);
     /*p21.SELA*/ wire LINE_DONEo = not(LINE_DONEa);
-    /*p21.TOLU*/ wire INT_VBLn = not(lcd_sig.PARU_VBLANK_d4);
-    /*p21.TAPA*/ wire INT_OAM = and(INT_VBLn, LINE_DONEo);
-    /*p21.TARU*/ wire INT_HBL = and(INT_VBLn, WODU_RENDER_DONE);
+    /*p21.TOLU*/ wire INT_VBLn = not(lcd_sig.PARU_INT_VBL);
+    /*p21.TAPA*/ wire TAPA_INT_OAM = and(INT_VBLn, LINE_DONEo);
+    /*p21.TARU*/ wire TARU_INT_HBL = and(INT_VBLn, WODU_RENDER_DONE);
 
-    /*p21.SUKO*/ wire INT_STATb = amux4(INT_LYC_EN, ROPO_LYC_MATCH,
-                                        INT_OAM_EN, INT_OAM,
-                                        INT_VBL_EN, lcd_sig.PARU_VBLANK_d4, // polarity?
-                                        INT_HBL_EN, INT_HBL);
+    /*p21.SUKO*/ wire INT_STATb = amux4(INT_LYC_EN, ROPO_INT_LYC,
+                                        INT_OAM_EN, TAPA_INT_OAM,
+                                        INT_VBL_EN, lcd_sig.PARU_INT_VBL, // polarity?
+                                        INT_HBL_EN, TARU_INT_HBL);
 
     /*p21.TUVA*/ wire INT_STATn = not(INT_STATb);
     /*p21.VOTY*/ wire INT_STAT  = not(INT_STATn);
+
+    sig.VOTY_INT_STAT = INT_STAT;
   }
 
-#if 0
-  return {
-    /*p21.VOTY*/ .INT_STAT = INT_STAT,
-    /*p26.ACEN*/ .ACEN_BG_MAP_READ = ,
-    /*p25.XEZE*/ .XEZE_WIN_MAP_READ = ,
-    /*p26.BEJE*/ .BEJE_BG_TILE_READ = ,
-    /*p27.XUHA*/ .XUHA_TILE_READ_AB = ,
-    /*p25.XUCY*/ .XUCY_WIN_TILE_READ = ,
-    /*p27.NETA*/ .NETA_TILE_READ = ,
-    /*p27.RYCE*/ .RYCE_SPRITE_FETCH_TRIG = ,
-  };
-#endif
-
-  return {};
+  return sig;
 }
 
 //-----------------------------------------------------------------------------
@@ -285,7 +284,7 @@ VidSignals VidRegisters::tick(const SysSignals& sys_sig,
 // We stop the pipe as soon as there's a store match or we switch to window mode
 
 void VidRegisters::fineMatch(const ClkSignals& clk_sig,
-                             const VidConfig& vid_reg2,
+                             const ConfigRegisters& vid_reg2,
                              bool TEVO_CLK_STOPn,
                              bool STORE_MATCH) {
 
@@ -320,7 +319,7 @@ void VidRegisters::fineMatch(const ClkSignals& clk_sig,
 
   /*p27.PAHA*/ wire RENDERINGn = not(XYMU_RENDERING_LATCH);
   /*p27.POVA*/ wire FINE_MATCH_TRIG = and(FINE_MATCH_SYNC1, !FINE_MATCH_SYNC2);
-  /*p27.ROXY*/ FINE_MATCH_DUMP.latch(RENDERINGn, FINE_MATCH_TRIG);
+  /*p??.ROXY*/ FINE_MATCH_DUMP.sr_latch(RENDERINGn, FINE_MATCH_TRIG);
 
   /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERING_LATCH);
   /*p27.ROZE*/ wire FINE_COUNT_STOPn = nand(FINE_CNT0, FINE_CNT1, FINE_CNT2);
@@ -336,7 +335,7 @@ void VidRegisters::fineMatch(const ClkSignals& clk_sig,
 
 void VidRegisters::mapCounter(const RstSignals& rst_sig,
                               const LcdSignals& lcd_sig,
-                              const VidConfig& vid_reg2,
+                              const ConfigRegisters& vid_reg2,
                               bool TEVO_CLK_STOPn) {
   /*p01.PYRY*/ wire PYRY_VID_RST = not(rst_sig.VID_RESETn);
   /*p27.XOFO*/ wire XOFO_WIN_RST = nand(vid_reg2.LCDC_WINEN, lcd_sig.XAHY_VID_LINE_TRIG_d4n, rst_sig.VID_RESETn);
@@ -355,7 +354,7 @@ void VidRegisters::mapCounter(const RstSignals& rst_sig,
   /*p27.XOLO*/ MAP_X4.set(!MAP_X3,    XACO_X_RSTn, !MAP_X4);
 
   /*p27.WAZY*/ wire WAZY_Y_CLK = not(PORE_WIN_MODE);
-  /*p27.REPU*/ wire REPU_RST  = nor(lcd_sig.PARU_VBLANK_d4, PYRY_VID_RST);   // schematic wrong, this is NOR
+  /*p27.REPU*/ wire REPU_RST  = nor(lcd_sig.PARU_INT_VBL, PYRY_VID_RST);   // schematic wrong, this is NOR
   /*p27.SYNY*/ wire SYNY_RSTn = not(REPU_RST);
 
   /*p27.VYNO*/ TILE_Y0.set(WAZY_Y_CLK, SYNY_RSTn, !TILE_Y0);
@@ -412,7 +411,7 @@ void VidRegisters::lyMatch(const BusSignals& bus_sig,
                            const VclkSignals& vid_clk,
                            const RstSignals& rst_sig,
                            const LcdRegisters& lcd_reg,
-                           const VidConfig& vid_reg2) {
+                           const ConfigRegisters& vid_reg2) {
   /*p21.SYFU*/ wire LY_MATCH7 = xor(lcd_reg.Y7, vid_reg2.LYC7);
   /*p21.TERY*/ wire LY_MATCH6 = xor(lcd_reg.Y6, vid_reg2.LYC6);
   /*p21.TUCY*/ wire LY_MATCH5 = xor(lcd_reg.Y5, vid_reg2.LYC5);
@@ -435,9 +434,9 @@ void VidRegisters::lyMatch(const BusSignals& bus_sig,
   /*p21.SEPA*/ wire FF41_WR = and(bus_sig.CUPA_CPUWR, dec_sig.FF41);
   /*p21.RYJU*/ wire FF41_WRn = not(FF41_WR);
 
-  /*p21.ROPO*/ ROPO_LYC_MATCH.set(vid_clk.TALU_xBCDExxx, WESY_RESET, LY_MATCHa);
+  /*p21.ROPO*/ ROPO_INT_LYC.set(vid_clk.TALU_xBCDExxx, WESY_RESET, LY_MATCHa); // this is the lyc interrupt?
   /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(WESY_RESET, FF41_WRn);  // schematic wrong, this is NOR
-  /*p21.RUPO*/ RUPO_LATCH_LYC_MATCH.latch(ROPO_LYC_MATCH, PAGO_LYC_MATCH_RST); // this is another of the weird or gates. could be nor?
+  /*p21.RUPO*/ RUPO_LATCH_LYC_MATCH.sr_latch(ROPO_INT_LYC, PAGO_LYC_MATCH_RST);
 }
 
 //-----------------------------------------------------------------------------
@@ -447,7 +446,7 @@ bool VidRegisters::winMatch(const ClkSignals& clk_sig,
                             const RstSignals& rst_sig,
                             const LcdSignals& lcd_sig,
                             const LcdRegisters& lcd_reg,
-                            const VidConfig& vid_reg2,
+                            const ConfigRegisters& vid_reg2,
                             bool SEGU_4M,
                             bool ROCO_4M) {
   
@@ -476,7 +475,7 @@ bool VidRegisters::winMatch(const ClkSignals& clk_sig,
 
   // polarity or gates wrong
   /*p01.PYRY*/ wire VID_RESET4  = not(rst_sig.VID_RESETn);
-  /*p27.REPU*/ wire IN_FRAME_Y  = nor(lcd_sig.PARU_VBLANK_d4, VID_RESET4);   // schematic wrong, this is NOR
+  /*p27.REPU*/ wire IN_FRAME_Y  = nor(lcd_sig.PARU_INT_VBL, VID_RESET4);   // schematic wrong, this is NOR
   /*p27.REJO*/ wire WIN_CHECK_X = or(WY_MATCH_SYNC, IN_FRAME_Y); // another weird or gate. should be AND?
 
   /*p27.MYLO*/ wire WX_MATCH0n = xor(X0, vid_reg2.WX0);
@@ -505,7 +504,7 @@ bool VidRegisters::winMatch(const ClkSignals& clk_sig,
   /*p27.NUNU*/ WIN_MATCH_SYNC2.set(MEHE_xBxDxFxH, rst_sig.VID_RESETn, WIN_MATCH_SYNC1);
 
   /*p27.XOFO*/ wire WIN_MODE_RST = nand(vid_reg2.LCDC_WINEN, lcd_sig.XAHY_VID_LINE_TRIG_d4n, rst_sig.VID_RESETn);
-  /*p27.PYNU*/ WIN_MODE_LATCH1.latch(WIN_MATCH_SYNC2, WIN_MODE_RST);
+  /*p27.PYNU*/ WIN_MODE_LATCH1.sr_latch(WIN_MATCH_SYNC2, WIN_MODE_RST);
 
   /*p27.NOCU*/ wire WIN_MODE_NOCUn = not(WIN_MODE_LATCH1);
   /*p27.PORE*/ wire WIN_MODE_PORE  = not(WIN_MODE_NOCUn);
@@ -518,7 +517,7 @@ bool VidRegisters::winMatch(const ClkSignals& clk_sig,
   ///*p27.PUKU*/ PUKU = nor(RYDY, WIN_MODE_TRIG);
   ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BG_SEQ_7);
 
-  /*p27.RYDY*/ RYDY_WIN_MODE_LATCH.latch(NUNY_WIN_MODE_TRIG, VID_RESET4 || BG_SEQ_7);
+  /*p27.RYDY*/ RYDY_WIN_MODE_LATCH.sr_latch(NUNY_WIN_MODE_TRIG, VID_RESET4 || BG_SEQ_7);
 
   /*p27.SOVY*/ SOVY_WIN_MODE_SYNC.set(clk_sig.ALET_AxCxExGx, rst_sig.VID_RESETn, RYDY_WIN_MODE_LATCH);
 

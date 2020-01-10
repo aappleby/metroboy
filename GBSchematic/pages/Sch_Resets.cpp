@@ -56,7 +56,7 @@ RstSignals RstRegisters::tick_slow(const SysSignals& sys_sig, const ClkSignals& 
   /*p01.XODO*/ wire VID_RESET   = nand(XEBE_RESET, sys_sig.LCDC_EN);
   /*p01.XAPO*/ wire VID_RESETn  = not(VID_RESET);
 
-  /*p01.TUBO*/ WAITING_FOR_CLKREQ.srlatch(!UPYF, !sys_sig.ABOL_CLKREQn);
+  /*p01.TUBO*/ WAITING_FOR_CLKREQ.sr_latch(!UPYF, !sys_sig.ABOL_CLKREQn);
   /*p01.AFER*/ RESET_REG.set(RESET_CLK, sys_sig.MODE_PROD, RESET_IN);
 
   return {

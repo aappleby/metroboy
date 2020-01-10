@@ -9,7 +9,7 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-void VidConfig::pwron() {
+void ConfigRegisters::pwron() {
   pwron_all(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,
             LCDC_BGTILE, LCDC_WINEN, LCDC_WINMAP, LCDC_EN);
 
@@ -23,7 +23,7 @@ void VidConfig::pwron() {
   pwron_all(WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7);
 }
 
-void VidConfig::reset() {
+void ConfigRegisters::reset() {
   // FIXME
   /*
   big_reset(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,
@@ -40,16 +40,16 @@ void VidConfig::reset() {
   */
 }
 
-void VidConfig::phase_begin() {
+void ConfigRegisters::phase_begin() {
 }
 
-void VidConfig::phase_end() {
+void ConfigRegisters::phase_end() {
 }
 
-void VidConfig::pass_begin() {
+void ConfigRegisters::pass_begin() {
 }
 
-bool VidConfig::pass_end() {
+bool ConfigRegisters::pass_end() {
   bool changed = false;
   changed |= commit_all(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,
                         LCDC_BGTILE, LCDC_WINEN, LCDC_WINMAP, LCDC_EN);
@@ -66,7 +66,7 @@ bool VidConfig::pass_end() {
 
 //-----------------------------------------------------------------------------
 
-VidSignals2 VidConfig::tick(const SysSignals& /*sys_sig*/,
+VidSignals2 ConfigRegisters::tick(const SysSignals& /*sys_sig*/,
                                 const RstSignals& rst_sig,
                                 const BusSignals& bus_sig,
                                 const DecoderSignals& dec_sig,

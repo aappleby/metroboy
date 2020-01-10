@@ -145,23 +145,23 @@ void OamRegisters::tick(const SysSignals& sys_sig,
     /*p28.ZONE*/ oam_pins.WR_A = not(YLYC_OAM_A_WRn);
     /*p28.ZOFE*/ oam_pins.WR_B = not(YNYC_OAM_B_WRn);
 
-    /*p31.XYKY*/ LATCH_OAM_A0.latch(OAM_LATCH, oam_pins.A_D0);
-    /*p31.YRUM*/ LATCH_OAM_A1.latch(OAM_LATCH, oam_pins.A_D1);
-    /*p31.YSEX*/ LATCH_OAM_A2.latch(OAM_LATCH, oam_pins.A_D2);
-    /*p31.YVEL*/ LATCH_OAM_A3.latch(OAM_LATCH, oam_pins.A_D3);
-    /*p31.WYNO*/ LATCH_OAM_A4.latch(OAM_LATCH, oam_pins.A_D4);
-    /*p31.CYRA*/ LATCH_OAM_A5.latch(OAM_LATCH, oam_pins.A_D5);
-    /*p31.ZUVE*/ LATCH_OAM_A6.latch(OAM_LATCH, oam_pins.A_D6);
-    /*p31.ECED*/ LATCH_OAM_A7.latch(OAM_LATCH, oam_pins.A_D7);
+    /*p31.XYKY*/ LATCH_OAM_A0.tp_latch(OAM_LATCH, oam_pins.A_D0);
+    /*p31.YRUM*/ LATCH_OAM_A1.tp_latch(OAM_LATCH, oam_pins.A_D1);
+    /*p31.YSEX*/ LATCH_OAM_A2.tp_latch(OAM_LATCH, oam_pins.A_D2);
+    /*p31.YVEL*/ LATCH_OAM_A3.tp_latch(OAM_LATCH, oam_pins.A_D3);
+    /*p31.WYNO*/ LATCH_OAM_A4.tp_latch(OAM_LATCH, oam_pins.A_D4);
+    /*p31.CYRA*/ LATCH_OAM_A5.tp_latch(OAM_LATCH, oam_pins.A_D5);
+    /*p31.ZUVE*/ LATCH_OAM_A6.tp_latch(OAM_LATCH, oam_pins.A_D6);
+    /*p31.ECED*/ LATCH_OAM_A7.tp_latch(OAM_LATCH, oam_pins.A_D7);
 
-    /*p29.YDYV*/ LATCH_OAM_B0.latch(OAM_LATCH, oam_pins.B_D0);
-    /*p29.YCEB*/ LATCH_OAM_B1.latch(OAM_LATCH, oam_pins.B_D1);
-    /*p29.ZUCA*/ LATCH_OAM_B2.latch(OAM_LATCH, oam_pins.B_D2);
-    /*p29.WONE*/ LATCH_OAM_B3.latch(OAM_LATCH, oam_pins.B_D3);
-    /*p29.ZAXE*/ LATCH_OAM_B4.latch(OAM_LATCH, oam_pins.B_D4);
-    /*p29.XAFU*/ LATCH_OAM_B5.latch(OAM_LATCH, oam_pins.B_D5);
-    /*p29.YSES*/ LATCH_OAM_B6.latch(OAM_LATCH, oam_pins.B_D6);
-    /*p29.ZECA*/ LATCH_OAM_B7.latch(OAM_LATCH, oam_pins.B_D7);
+    /*p29.YDYV*/ LATCH_OAM_B0.tp_latch(OAM_LATCH, oam_pins.B_D0);
+    /*p29.YCEB*/ LATCH_OAM_B1.tp_latch(OAM_LATCH, oam_pins.B_D1);
+    /*p29.ZUCA*/ LATCH_OAM_B2.tp_latch(OAM_LATCH, oam_pins.B_D2);
+    /*p29.WONE*/ LATCH_OAM_B3.tp_latch(OAM_LATCH, oam_pins.B_D3);
+    /*p29.ZAXE*/ LATCH_OAM_B4.tp_latch(OAM_LATCH, oam_pins.B_D4);
+    /*p29.XAFU*/ LATCH_OAM_B5.tp_latch(OAM_LATCH, oam_pins.B_D5);
+    /*p29.YSES*/ LATCH_OAM_B6.tp_latch(OAM_LATCH, oam_pins.B_D6);
+    /*p29.ZECA*/ LATCH_OAM_B7.tp_latch(OAM_LATCH, oam_pins.B_D7);
 
     /*p31.XEGA*/ wire OAM_A_IN_CLK = not(oam_pins.CLK_A);
     /*p31.YLOR*/ REG_OAM_A0.set(OAM_A_IN_CLK, LATCH_OAM_A0);

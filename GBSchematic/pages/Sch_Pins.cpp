@@ -244,21 +244,21 @@ void CartPins::tick(const SysSignals& sys_sig,
   /*p08.LASY*/ wire LASY = not(LOXO);
   /*p08.MATE*/ wire ADDR_LATCH  = not(LASY);
 
-  /*p08.ALOR*/ cart_pins.ADDR_LATCH_00.latch(ADDR_LATCH, bus_tri.A00());
-  /*p08.APUR*/ cart_pins.ADDR_LATCH_01.latch(ADDR_LATCH, bus_tri.A01());
-  /*p08.ALYR*/ cart_pins.ADDR_LATCH_02.latch(ADDR_LATCH, bus_tri.A02());
-  /*p08.ARET*/ cart_pins.ADDR_LATCH_03.latch(ADDR_LATCH, bus_tri.A03());
-  /*p08.AVYS*/ cart_pins.ADDR_LATCH_04.latch(ADDR_LATCH, bus_tri.A04());
-  /*p08.ATEV*/ cart_pins.ADDR_LATCH_05.latch(ADDR_LATCH, bus_tri.A05());
-  /*p08.AROS*/ cart_pins.ADDR_LATCH_06.latch(ADDR_LATCH, bus_tri.A06());
-  /*p08.ARYM*/ cart_pins.ADDR_LATCH_07.latch(ADDR_LATCH, bus_tri.A07());
-  /*p08.LUNO*/ cart_pins.ADDR_LATCH_08.latch(ADDR_LATCH, bus_tri.A08());
-  /*p08.LYSA*/ cart_pins.ADDR_LATCH_09.latch(ADDR_LATCH, bus_tri.A09());
-  /*p08.PATE*/ cart_pins.ADDR_LATCH_10.latch(ADDR_LATCH, bus_tri.A10());
-  /*p08.LUMY*/ cart_pins.ADDR_LATCH_11.latch(ADDR_LATCH, bus_tri.A11());
-  /*p08.LOBU*/ cart_pins.ADDR_LATCH_12.latch(ADDR_LATCH, bus_tri.A12());
-  /*p08.LONU*/ cart_pins.ADDR_LATCH_13.latch(ADDR_LATCH, bus_tri.A13());
-  /*p08.NYRE*/ cart_pins.ADDR_LATCH_14.latch(ADDR_LATCH, bus_tri.A14());
+  /*p08.ALOR*/ cart_pins.ADDR_LATCH_00.tp_latch(ADDR_LATCH, bus_tri.A00());
+  /*p08.APUR*/ cart_pins.ADDR_LATCH_01.tp_latch(ADDR_LATCH, bus_tri.A01());
+  /*p08.ALYR*/ cart_pins.ADDR_LATCH_02.tp_latch(ADDR_LATCH, bus_tri.A02());
+  /*p08.ARET*/ cart_pins.ADDR_LATCH_03.tp_latch(ADDR_LATCH, bus_tri.A03());
+  /*p08.AVYS*/ cart_pins.ADDR_LATCH_04.tp_latch(ADDR_LATCH, bus_tri.A04());
+  /*p08.ATEV*/ cart_pins.ADDR_LATCH_05.tp_latch(ADDR_LATCH, bus_tri.A05());
+  /*p08.AROS*/ cart_pins.ADDR_LATCH_06.tp_latch(ADDR_LATCH, bus_tri.A06());
+  /*p08.ARYM*/ cart_pins.ADDR_LATCH_07.tp_latch(ADDR_LATCH, bus_tri.A07());
+  /*p08.LUNO*/ cart_pins.ADDR_LATCH_08.tp_latch(ADDR_LATCH, bus_tri.A08());
+  /*p08.LYSA*/ cart_pins.ADDR_LATCH_09.tp_latch(ADDR_LATCH, bus_tri.A09());
+  /*p08.PATE*/ cart_pins.ADDR_LATCH_10.tp_latch(ADDR_LATCH, bus_tri.A10());
+  /*p08.LUMY*/ cart_pins.ADDR_LATCH_11.tp_latch(ADDR_LATCH, bus_tri.A11());
+  /*p08.LOBU*/ cart_pins.ADDR_LATCH_12.tp_latch(ADDR_LATCH, bus_tri.A12());
+  /*p08.LONU*/ cart_pins.ADDR_LATCH_13.tp_latch(ADDR_LATCH, bus_tri.A13());
+  /*p08.NYRE*/ cart_pins.ADDR_LATCH_14.tp_latch(ADDR_LATCH, bus_tri.A14());
 
   // FIXME
   wire ADDR_BOOT = false;
@@ -366,14 +366,14 @@ void CartPins::tick(const SysSignals& sys_sig,
   // Data bus driver
   /*p08.LAVO*/ wire DATA_LATCH = nand(sys_sig.CPU_RAW_RD, bus_sig.ADDR_VALID_AND_NOT_VRAM, sys_sig.CPU_FROM_CPU5); // polarity?
 
-  /*p08.SOMA*/ DATA_LATCH_00.latch(DATA_LATCH, D0_C);
-  /*p08.RONY*/ DATA_LATCH_01.latch(DATA_LATCH, D1_C);
-  /*p08.RAXY*/ DATA_LATCH_02.latch(DATA_LATCH, D2_C);
-  /*p08.SELO*/ DATA_LATCH_03.latch(DATA_LATCH, D3_C);
-  /*p08.SODY*/ DATA_LATCH_04.latch(DATA_LATCH, D4_C);
-  /*p08.SAGO*/ DATA_LATCH_05.latch(DATA_LATCH, D5_C);
-  /*p08.RUPA*/ DATA_LATCH_06.latch(DATA_LATCH, D6_C);
-  /*p08.SAZY*/ DATA_LATCH_07.latch(DATA_LATCH, D7_C);
+  /*p08.SOMA*/ DATA_LATCH_00.tp_latch(DATA_LATCH, D0_C);
+  /*p08.RONY*/ DATA_LATCH_01.tp_latch(DATA_LATCH, D1_C);
+  /*p08.RAXY*/ DATA_LATCH_02.tp_latch(DATA_LATCH, D2_C);
+  /*p08.SELO*/ DATA_LATCH_03.tp_latch(DATA_LATCH, D3_C);
+  /*p08.SODY*/ DATA_LATCH_04.tp_latch(DATA_LATCH, D4_C);
+  /*p08.SAGO*/ DATA_LATCH_05.tp_latch(DATA_LATCH, D5_C);
+  /*p08.RUPA*/ DATA_LATCH_06.tp_latch(DATA_LATCH, D6_C);
+  /*p08.SAZY*/ DATA_LATCH_07.tp_latch(DATA_LATCH, D7_C);
 
   if (DATA_LATCH) bus_tri.set_data(
     /*p08.RYMA*/ DATA_LATCH_00,

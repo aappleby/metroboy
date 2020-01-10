@@ -58,7 +58,7 @@ uint32_t SpriteRegisters::index() const {
 
 //-----------------------------------------------------------------------------
 
-bool SpriteRegisters::MATCH_EN(const VidRegisters& vid_reg, const VidConfig& vid_reg2) const {
+bool SpriteRegisters::MATCH_EN(const VidRegisters& vid_reg, const ConfigRegisters& vid_reg2) const {
   /*p29.CEHA*/ wire CEHA = not(!STORE_SPRITE_IDXn);
   /*p29.BYJO*/ wire BYJO = not(CEHA);
   /*p29.AZEM*/ wire AZEM = and(BYJO, vid_reg.XYMU_RENDERING_LATCH);
@@ -103,7 +103,7 @@ SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
                                     const DmaRegisters& dma_reg,
                                     const LcdSignals& lcd_sig,
                                     const LcdRegisters& lcd_reg,
-                                    const VidConfig& vid_cfg,
+                                    const ConfigRegisters& vid_cfg,
                                     const VidRegisters& vid_reg,
                                     const OamRegisters& oam_reg,
                                     const OamPins& oam_pins,
@@ -200,7 +200,7 @@ SpriteSignals SpriteRegisters::tick(const ClkSignals& clk_sig,
 SpriteDelta SpriteRegisters::storeMatchY(const SysSignals& sys_sig,
                                          const LcdRegisters& lcd_reg,
                                          const OamRegisters& oam_reg,
-                                         const VidConfig& vid_reg2) {
+                                         const ConfigRegisters& vid_reg2) {
   /*p29.EBOS*/ wire V0n = not(lcd_reg.Y0);
   /*p29.DASA*/ wire V1n = not(lcd_reg.Y1);
   /*p29.FUKY*/ wire V2n = not(lcd_reg.Y2);

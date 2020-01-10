@@ -7,7 +7,7 @@ namespace Schematics {
 
 struct LcdSignals {
   /*p21.POPU*/ wire POPU_VBLANK_d4;
-  /*p21.PARU*/ wire PARU_VBLANK_d4;
+  /*p21.PARU*/ wire PARU_INT_VBL;
   /*p21.VYPU*/ wire VYPU_INT_VBL;
   /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n; // p001+2
   /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4;  // p001+2

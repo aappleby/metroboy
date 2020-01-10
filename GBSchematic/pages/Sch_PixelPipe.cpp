@@ -48,7 +48,7 @@ bool PixelPipeRegisters::pass_end() {
 }
 
 void PixelPipeRegisters::tick(const SysSignals& sys_sig,
-                              const VidConfig& vid_reg,
+                              const ConfigRegisters& vid_reg,
                               const VramBus& vram_bus,
                               const OamRegisters& oam_reg,
                               /*p32.LOMA*/ wire BG_LATCH,
@@ -60,14 +60,14 @@ void PixelPipeRegisters::tick(const SysSignals& sys_sig,
                               /*p24.SACU*/ wire CLKPIPE,
                               /*p27.NYXU*/ wire NYXU_BG_SEQ_RSTn) {
 
-  /*p32.LEGU*/ BG_PIX_A0.latch(BG_LATCH, vram_bus.MD0);
-  /*p32.NUDU*/ BG_PIX_A1.latch(BG_LATCH, vram_bus.MD1);
-  /*p32.MUKU*/ BG_PIX_A2.latch(BG_LATCH, vram_bus.MD2);
-  /*p32.LUZO*/ BG_PIX_A3.latch(BG_LATCH, vram_bus.MD3);
-  /*p32.MEGU*/ BG_PIX_A4.latch(BG_LATCH, vram_bus.MD4);
-  /*p32.MYJY*/ BG_PIX_A5.latch(BG_LATCH, vram_bus.MD5);
-  /*p32.NASA*/ BG_PIX_A6.latch(BG_LATCH, vram_bus.MD6);
-  /*p32.NEFO*/ BG_PIX_A7.latch(BG_LATCH, vram_bus.MD7);
+  /*p32.LEGU*/ BG_PIX_A0.tp_latch(BG_LATCH, vram_bus.MD0);
+  /*p32.NUDU*/ BG_PIX_A1.tp_latch(BG_LATCH, vram_bus.MD1);
+  /*p32.MUKU*/ BG_PIX_A2.tp_latch(BG_LATCH, vram_bus.MD2);
+  /*p32.LUZO*/ BG_PIX_A3.tp_latch(BG_LATCH, vram_bus.MD3);
+  /*p32.MEGU*/ BG_PIX_A4.tp_latch(BG_LATCH, vram_bus.MD4);
+  /*p32.MYJY*/ BG_PIX_A5.tp_latch(BG_LATCH, vram_bus.MD5);
+  /*p32.NASA*/ BG_PIX_A6.tp_latch(BG_LATCH, vram_bus.MD6);
+  /*p32.NEFO*/ BG_PIX_A7.tp_latch(BG_LATCH, vram_bus.MD7);
 
   /*p32.RAWU*/ BG_PIX_B0.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD0);
   /*p32.POZO*/ BG_PIX_B1.set(VRAM_TEMP_CLK, sys_sig.P10_Bn, vram_bus.MD1);
@@ -87,23 +87,23 @@ void PixelPipeRegisters::tick(const SysSignals& sys_sig,
   /*p33.PELO*/ wire SPR_PIX_FLIP6 = mux2(vram_bus.MD1, vram_bus.MD6, FLIP_X);
   /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2(vram_bus.MD0, vram_bus.MD7, FLIP_X);
 
-  /*p33.PEFO*/ SPR_PIX_A0.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP0);
-  /*p33.ROKA*/ SPR_PIX_A1.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP1);
-  /*p33.MYTU*/ SPR_PIX_A2.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP2);
-  /*p33.RAMU*/ SPR_PIX_A3.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP3);
-  /*p33.SELE*/ SPR_PIX_A4.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP4);
-  /*p33.SUTO*/ SPR_PIX_A5.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP5);
-  /*p33.RAMA*/ SPR_PIX_A6.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP6);
-  /*p33.RYDU*/ SPR_PIX_A7.latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP7);
+  /*p33.PEFO*/ SPR_PIX_A0.tp_latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP0);
+  /*p33.ROKA*/ SPR_PIX_A1.tp_latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP1);
+  /*p33.MYTU*/ SPR_PIX_A2.tp_latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP2);
+  /*p33.RAMU*/ SPR_PIX_A3.tp_latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP3);
+  /*p33.SELE*/ SPR_PIX_A4.tp_latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP4);
+  /*p33.SUTO*/ SPR_PIX_A5.tp_latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP5);
+  /*p33.RAMA*/ SPR_PIX_A6.tp_latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP6);
+  /*p33.RYDU*/ SPR_PIX_A7.tp_latch(SPRITE_VRAM_LATCH_A, SPR_PIX_FLIP7);
 
-  /*p33.REWO*/ SPR_PIX_B0.latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP0);
-  /*p33.PEBA*/ SPR_PIX_B1.latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP1);
-  /*p33.MOFO*/ SPR_PIX_B2.latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP2);
-  /*p33.PUDU*/ SPR_PIX_B3.latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP3);
-  /*p33.SAJA*/ SPR_PIX_B4.latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP4);
-  /*p33.SUNY*/ SPR_PIX_B5.latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP5);
-  /*p33.SEMO*/ SPR_PIX_B6.latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP6);
-  /*p33.SEGA*/ SPR_PIX_B7.latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP7);
+  /*p33.REWO*/ SPR_PIX_B0.tp_latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP0);
+  /*p33.PEBA*/ SPR_PIX_B1.tp_latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP1);
+  /*p33.MOFO*/ SPR_PIX_B2.tp_latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP2);
+  /*p33.PUDU*/ SPR_PIX_B3.tp_latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP3);
+  /*p33.SAJA*/ SPR_PIX_B4.tp_latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP4);
+  /*p33.SUNY*/ SPR_PIX_B5.tp_latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP5);
+  /*p33.SEMO*/ SPR_PIX_B6.tp_latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP6);
+  /*p33.SEGA*/ SPR_PIX_B7.tp_latch(SPRITE_VRAM_LATCH_B, SPR_PIX_FLIP7);
 
   /*p29.XEFY*/ wire LOAD_SPRITE_TO_PIPE = not(SPRITE_DONE);
   /*p34.MEFU*/ wire SPRITE_MASK0 = or(LOAD_SPRITE_TO_PIPE, SPR_PIPE_A0, SPR_PIPE_B0);

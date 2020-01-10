@@ -204,6 +204,7 @@
     <ClCompile Include="pages\Sch_Interrupts.cpp" />
     <ClCompile Include="pages\Sch_Joypad.cpp" />
     <ClCompile Include="pages\Sch_LCD.cpp" />
+    <ClCompile Include="pages\Sch_Merged.cpp" />
     <ClCompile Include="pages\Sch_OAM.cpp" />
     <ClCompile Include="pages\Sch_Pins.cpp" />
     <ClCompile Include="pages\Sch_Registers.cpp" />

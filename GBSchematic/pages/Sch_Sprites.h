@@ -60,7 +60,7 @@ struct SpriteRegisters {
   SpriteDelta storeMatchY(const SysSignals& sys_sig,
                           const LcdRegisters& lcd_reg,
                           const OamRegisters& oam_reg,
-                          const VidConfig& vid_reg2);
+                          const ConfigRegisters& vid_reg2);
 
   SpriteSignals tick(const ClkSignals& clk_sig,
                      const SysSignals& sys_sig,
@@ -69,7 +69,7 @@ struct SpriteRegisters {
                      const DmaRegisters& dma_reg,
                      const LcdSignals& lcd_sig,
                      const LcdRegisters& lcd_reg,
-                     const VidConfig& vid_cfg,
+                     const ConfigRegisters& vid_cfg,
                      const VidRegisters& vid_reg,
                      const OamRegisters& oam_reg,
                      const OamPins& oam_pins,
@@ -77,7 +77,7 @@ struct SpriteRegisters {
                      bool STORE_MATCH);
 
   bool MATCH_EN(const VidRegisters& vid_reg,
-                const VidConfig& vid_reg2) const;
+                const ConfigRegisters& vid_reg2) const;
 
   void sprite_seq(const SysSignals& sys_sig,
                   const ClkSignals& clk_sig,

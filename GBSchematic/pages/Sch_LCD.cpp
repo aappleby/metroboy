@@ -160,7 +160,7 @@ LcdSignals LcdRegisters::signals(const RstSignals& rst_sig)
 
   return {
     /*p21.POPU*/ .POPU_VBLANK_d4         = VBLANK_d4,
-    /*p21.PARU*/ .PARU_VBLANK_d4         = VBLANK_d4b,
+    /*p21.PARU*/ .PARU_INT_VBL           = VBLANK_d4b,
     /*p21.VYPU*/ .VYPU_INT_VBL           = not(INT_VBLn),
     /*p28.BYHA*/ .BYHA_VID_LINE_TRIG_d4n = BYHA_VID_LINE_TRIG_d4n,
     /*p28.ATEJ*/ .ATEJ_VID_LINE_TRIG_d4  = ATEJ_VID_LINE_TRIG_d4,

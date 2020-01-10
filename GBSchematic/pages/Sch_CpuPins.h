@@ -57,7 +57,7 @@ struct CpuPins {
   //----------
   // top center port
 
-  bool BUTY_CLKREQ;     // PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  bool CLKREQ;         // PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
   bool AFER;           // PORTC_01: <- P01.AFER , reset related reg
   bool PIN_RESET;      // PORTC_02: <- PIN_RESET directly connected to the pad
   bool CLKIN_A;        // PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,

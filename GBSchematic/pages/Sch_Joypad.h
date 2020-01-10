@@ -44,11 +44,11 @@ struct JoypadRegisters {
   /*p05.KUKO*/ Reg2 DBG_FF00_D6;
   /*p05.KERU*/ Reg2 DBG_FF00_D7;
 
-  /*p05.KEVU*/ Latch JOYP_L0;
-  /*p05.KAPA*/ Latch JOYP_L1;
-  /*p05.KEJA*/ Latch JOYP_L2;
-  /*p05.KOLO*/ Latch JOYP_L3;
-  /*p02.AWOB*/ Latch WAKE_CPU;
+  /*p05.KEVU*/ Reg2 JOYP_L0;
+  /*p05.KAPA*/ Reg2 JOYP_L1;
+  /*p05.KEJA*/ Reg2 JOYP_L2;
+  /*p05.KOLO*/ Reg2 JOYP_L3;
+  /*p02.AWOB*/ Reg2 WAKE_CPU;
 };
 
 //-----------------------------------------------------------------------------

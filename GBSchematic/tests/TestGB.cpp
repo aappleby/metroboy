@@ -117,6 +117,9 @@ int TestGB::sim_phase(int phase_count) {
 }
 
 int TestGB::sim_pass() {
+
+  int done = 0;
+
   for (int pass = 0; pass < 32; pass++) {
     pass_begin();
 
@@ -130,11 +133,14 @@ int TestGB::sim_pass() {
 
     dbg_reg.tick(sys_sig, bus_sig, rst_sig, clk_sig, dec_sig, bus_tri);
 
+    //bool MATCHn = sst_reg.tick_fetch(lcd_sig, spr_sig, vid_reg);
+
+
     //VidSignals vid_sig = vid_reg.tick(clk_sig, rst_sig, vclk_sig, joypad_pins, bus_sig, dec_sig, cart_pins, lcd_sig, sst_sig, bus_tri);
     //SpriteStoreSignals sst_sig = sst_reg.tick(clk_sig, rst_sig, lcd_sig, spr_sig, vid_sig, oam_sig);
 
     TimerSignals tim_sig  = tim_reg.tick(sys_sig, clk_sig, rst_sig, bus_sig, dec_sig, bus_tri);
-    VidSignals2 vid_sig2 = vid_reg2.tick(sys_sig, rst_sig, bus_sig, dec_sig, bus_tri);
+    VidSignals2 vid_sig2 = vid_cfg.tick(sys_sig, rst_sig, bus_sig, dec_sig, bus_tri);
     SerialSignals ser_sig = ser_reg.tick(bus_sig, rst_sig, dec_sig, serial_pins, bus_tri);
 
     //SpriteSignals spr_sig = spr_reg.tick(clk_sig, vid_clk, rst_sig, joy_pins, dma_sig, lcd_sig,
@@ -160,12 +166,16 @@ int TestGB::sim_pass() {
 
 
 
-    if (pass == 30) {
-      printf("x\n");
-    }
-
     bool changed = pass_end();
-    if (!changed) return pass + 1;
+    if (!changed) {
+      done++;
+      if (done == 4) return pass;
+    } else {
+      if (done) {
+        printf("unstable!\n");
+        __debugbreak();
+      }
+    }
   }
 
   printf("Sim did not stabilize after 32 passes\n");

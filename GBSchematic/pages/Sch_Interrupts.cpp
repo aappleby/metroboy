@@ -66,14 +66,14 @@ void InterruptRegisters::tick(const SysSignals& sys_sig,
   /*p02.LOPE*/ FF0F_0.set(INT_VBL,           FF0F_SET0, FF0F_RST0, FF0F_IN);
   /*p02.UBUL*/ FF0F_1.set(ser_sig.SER_CNT3,  FF0F_SET1, FF0F_RST1, FF0F_IN);
   /*p02.ULAK*/ FF0F_2.set(joy_sig.INT_JP,    FF0F_SET2, FF0F_RST2, FF0F_IN);
-  /*p02.LALU*/ FF0F_3.set(vid_sig.INT_STAT,  FF0F_SET3, FF0F_RST3, FF0F_IN);
+  /*p02.LALU*/ FF0F_3.set(vid_sig.VOTY_INT_STAT,  FF0F_SET3, FF0F_RST3, FF0F_IN);
   /*p02.NYBO*/ FF0F_4.set(tim_sig.INT_TIMER, FF0F_SET4, FF0F_RST4, FF0F_IN);
 
-  /*p02.MATY*/ FF0F_L0.latch(FF0F_RDn, FF0F_0);
-  /*p02.NEJY*/ FF0F_L1.latch(FF0F_RDn, FF0F_1);
-  /*p02.NUTY*/ FF0F_L2.latch(FF0F_RDn, FF0F_2);
-  /*p02.MOPO*/ FF0F_L3.latch(FF0F_RDn, FF0F_3);
-  /*p02.PAVY*/ FF0F_L4.latch(FF0F_RDn, FF0F_4);
+  /*p02.MATY*/ FF0F_L0.tp_latch(FF0F_RDn, FF0F_0);
+  /*p02.NEJY*/ FF0F_L1.tp_latch(FF0F_RDn, FF0F_1);
+  /*p02.NUTY*/ FF0F_L2.tp_latch(FF0F_RDn, FF0F_2);
+  /*p02.MOPO*/ FF0F_L3.tp_latch(FF0F_RDn, FF0F_3);
+  /*p02.PAVY*/ FF0F_L4.tp_latch(FF0F_RDn, FF0F_4);
 
   if (FF0F_RDa) bus_tri.set_data(
     /*p02.NELA*/ FF0F_L0,

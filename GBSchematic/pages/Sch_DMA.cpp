@@ -8,6 +8,7 @@
 
 namespace Schematics {
 
+#if 0
 //-----------------------------------------------------------------------------
 
 DmaSignals DmaRegisters::tick(const CpuPins& cpu_sig,
@@ -52,13 +53,13 @@ DmaSignals DmaRegisters::tick(const CpuPins& cpu_sig,
     /*p04.NOLO*/ wire DMA_DONE  = not(DMA_DONEn);
     /*p04.MYTE*/ DMA_DONE_SYNC.set(clk_sig.MOPA_xxxxEFGH, DMA_RSTn, DMA_DONE);
 
-    /*p04.LYXE*/ LATCH_DMA_ENn_d0.latch(DMA_RST, FF46_WRn);
+    /*p04.LYXE*/ LATCH_DMA_ENn_d0.sr_latch(DMA_RST, FF46_WRn);
     /*p04.LUPA*/ wire DMA_EN = nor(FF46_WRn, LATCH_DMA_ENn_d0); // this seems redundant
 
     /*p04.LUVY*/ REG_DMA_EN_d0.set(clk_sig.UVYT_ABCDxxxx, CUNU_RESETn, DMA_EN);
     /*p04.LENE*/ REG_DMA_EN_d4.set(clk_sig.MOPA_xxxxEFGH, CUNU_RESETn, REG_DMA_EN_d0);
 
-    /*p04.LOKY*/ LATCH_DMA_EN_d4.latch(REG_DMA_EN_d4, DMA_DONE_SYNC || !CUNU_RESETn);
+    /*p04.LOKY*/ LATCH_DMA_EN_d4.tp_latch(REG_DMA_EN_d4, DMA_DONE_SYNC || !CUNU_RESETn); // lara/loky nand sr latch
     /*p04.MATU*/ REG_DMA_RW_EN.set(clk_sig.UVYT_ABCDxxxx, CUNU_RESETn, LATCH_DMA_EN_d4);
   }
 
@@ -102,7 +103,7 @@ DmaSignals DmaRegisters::tick(const CpuPins& cpu_sig,
 
   return sig;
 }
-
+#endif
 //-----------------------------------------------------------------------------
 
 };

@@ -51,7 +51,7 @@ struct RstRegisters;
 struct SysRegisters;
 struct VclkRegisters;
 struct VidRegisters;
-struct VidConfig;
+struct ConfigRegisters;
 
 struct BusSignals;
 struct ClkSignals;
@@ -95,6 +95,7 @@ bool commit_all(T& first, Args&... args) {
 }
 
 //-----------------------------------------------------------------------------
+// FIXME replace tristate bools with this
 
 struct Tristate {
 
@@ -140,6 +141,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
+#if 0
 struct Latch {
 
   void pwron() {
@@ -178,6 +180,7 @@ struct Latch {
 private:
   bool val_, set_, rst_;
 };
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -232,7 +235,7 @@ struct Reg2 {
   }
 
   // double check this
-  void latch(bool latch_in, bool val_in) {
+  void tp_latch(bool latch_in, bool val_in) {
     clk_b = clk_a;
     val_b = val_a;
     set_b = !(!latch_in && val_in);
@@ -240,7 +243,7 @@ struct Reg2 {
     dirty = true;
   }
 
-  void srlatch(bool set_in, bool rst_in) {
+  void sr_latch(bool set_in, bool rst_in) {
     clk_b = clk_a;
     val_b = val_a;
     set_b = set_in;

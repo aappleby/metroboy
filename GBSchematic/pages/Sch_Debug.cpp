@@ -74,8 +74,8 @@ void DebugRegisters::tick(const SysSignals& sys_sig,
   );
 
   // FF60 debug reg
-  /*p07.APET*/ wire MODE_DEBUG = or(sys_sig.MODE_DBG1, sys_sig.MODE_DBG2);
-  /*p07.APER*/ wire FF60_WRn = nand(MODE_DEBUG, bus_tri.A05(), bus_tri.A06(), bus_sig.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000);
+  /*p07.APET*/ wire APET_MODE_DBG = or(sys_sig.MODE_DBG1, sys_sig.MODE_DBG2);
+  /*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, bus_tri.A05(), bus_tri.A06(), bus_sig.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000);
 
   /*p05.KURA*/ wire FF60_0n = not(FF60_0);
   /*p05.JEVA*/ wire FF60_0o = not(FF60_0);

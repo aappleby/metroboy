@@ -27,7 +27,7 @@ struct PixelPipeRegisters {
   bool pass_end();
 
   void tick(const SysSignals& sys_sig,
-            const VidConfig& vid_reg,
+            const ConfigRegisters& vid_reg,
             const VramBus& vram_bus,
             const OamRegisters& oam_reg,
             /*p32.LOMA*/ wire BG_LATCH,

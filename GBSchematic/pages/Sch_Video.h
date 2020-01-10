@@ -6,7 +6,7 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct VidSignals {
-  /*p21.VOTY*/ bool INT_STAT;
+  /*p21.VOTY*/ bool VOTY_INT_STAT;
   /*p26.ACEN*/ bool ACEN_BG_MAP_READ;
   /*p25.XEZE*/ bool XEZE_WIN_MAP_READ;
   /*p26.BEJE*/ bool BEJE_BG_TILE_READ;
@@ -48,14 +48,14 @@ struct VidRegisters {
                const VclkSignals& vid_clk,
                const RstSignals& rst_sig,
                const LcdRegisters& lcd_reg,
-               const VidConfig& vid_reg2);
+               const ConfigRegisters& vid_reg2);
 
   bool winMatch(const ClkSignals& clk_sig,
                 const VclkSignals& vid_clk,
                 const RstSignals& rst_sig,
                 const LcdSignals& lcd_sig,
                 const LcdRegisters& lcd_reg,
-                const VidConfig& vid_reg2,
+                const ConfigRegisters& vid_reg2,
                 bool SEGU_4M,
                 bool ROCO_4M);
 
@@ -63,16 +63,16 @@ struct VidRegisters {
 
   void mapCounter(const RstSignals& rst_sig,
                   const LcdSignals& lcd_sig,
-                  const VidConfig& vid_reg2,
+                  const ConfigRegisters& vid_reg2,
                   bool MAP_X_CLK_STOPn);
 
   void fineMatch(const ClkSignals& clk_sig,
-                 const VidConfig& vid_reg2,
+                 const ConfigRegisters& vid_reg2,
                  bool MAP_X_CLK_STOPn,
                  bool STORE_MATCH);
 
-  /*p27.ROXY*/ Reg2 FINE_MATCH_DUMP;
-  /*p27.PUXA*/ Reg2 FINE_MATCH_SYNC1;
+  /*p??.ROXY*/ Reg2 FINE_MATCH_DUMP;
+  /*p??.PUXA*/ Reg2 FINE_MATCH_SYNC1;
   /*p27.NYZE*/ Reg2 FINE_MATCH_SYNC2;
   /*p27.RYKU*/ Reg2 FINE_CNT0;
   /*p27.ROGA*/ Reg2 FINE_CNT1;
@@ -106,7 +106,7 @@ struct VidRegisters {
   /*p21.REFE*/ Reg2 INT_OAM_EN;
   /*p21.RUGU*/ Reg2 INT_LYC_EN;
 
-  /*p21.ROPO*/ Reg2 ROPO_LYC_MATCH;
+  /*p21.ROPO*/ Reg2 ROPO_INT_LYC;
   /*p21.RUPO*/ Reg2 RUPO_LATCH_LYC_MATCH;
 
   /*p27.SARY*/ Reg2 WY_MATCH_SYNC;

@@ -22,7 +22,7 @@ namespace Schematics {
 
 VramBus VramBus::tick(const SysSignals& sys_sig,
                       const LcdRegisters& lcd_reg,
-                      const VidConfig& vid_cfg,
+                      const ConfigRegisters& vid_cfg,
                       const SpriteSignals& spr_sig,
                       const DmaSignals& dma_sig,
                       const DmaRegisters& dma_reg,

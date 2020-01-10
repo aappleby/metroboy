@@ -1,5 +1,4 @@
 #include "Sch_Channel3.h"
-#include "Sch_Gameboy.h"
 
 namespace Schematics {
 

@@ -7,7 +7,6 @@
 
 #include "TraceViewer.h"
 #include "../src/TextPainter.h"
-#include "pages/Sch_Gameboy.h"
 
 #include "tests/TestGB.h"
 
@@ -23,7 +22,7 @@ void test_timer();
 
 int main(int /*argc*/, char** /*argv*/) {
   //test_clock_phases();
-  test_timer();
+  //test_timer();
   printf("\n");
 
 #if 0

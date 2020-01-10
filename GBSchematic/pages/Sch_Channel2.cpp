@@ -1,5 +1,4 @@
 #include "Sch_Channel2.h"
-#include "Sch_Gameboy.h"
 
 #pragma warning(disable:4100)
 

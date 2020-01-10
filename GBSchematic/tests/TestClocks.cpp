@@ -2,6 +2,8 @@
 
 using namespace Schematics;
 
+#if 0
+
 void plot(int x, int y, bool v) {
   printf("\033[%d;%dH%c", y, x, v ? '#' : '.');
 }
@@ -29,8 +31,6 @@ void check_phase_name(int phase, const bool val, char* name) {
 }
 
 //-----------------------------------------------------------------------------
-
-#pragma warning(disable:4100)
 
 void check_phase(SysSignals&    sys_sig,
                  ClkRegisters&  clk_reg1,
@@ -119,174 +119,4 @@ void labels() {
   line++;
 }
 
-//-----------------------------------------------------------------------------
-
-void dump(int x,
-          SysSignals&    sys_sig,
-          ClkRegisters&  clk_reg1,
-          ClkSignals&    clk_sig1,
-          VclkRegisters& vclk_reg,
-          VclkSignals&   vclk_sig) {
-  int line = 3;
-  plot2(x, line++, sys_sig.phase);
-  plot(x, line++, sys_sig.ATAL_AxCxExGx);
-  plot(x, line++, sys_sig.AZOF_xBxDxFxH);
-  line++;
-
-  plot(x, line++, clk_reg1.PHAZ_ABCDxxxx);
-  plot(x, line++, clk_reg1.PHAZ_xBCDExxx);
-  plot(x, line++, clk_reg1.PHAZ_xxCDEFxx);
-  plot(x, line++, clk_reg1.PHAZ_xxxDEFGx);
-  line++;
-
-  plot(x, line++, clk_sig1.ZEME_xBxDxFxH);
-  plot(x, line++, clk_sig1.ALET_AxCxExGx);
-  plot(x, line++, clk_sig1.AMUK_xBxDxFxH);
-  plot(x, line++, clk_sig1.AROV_xxCDEFxx);
-  plot(x, line++, clk_sig1.AJAX_xxxxEFGH);
-  plot(x, line++, clk_sig1.AFAS_xxxxEFGx);
-  plot(x, line++, clk_sig1.BOGA_xBCDEFGH);
-  plot(x, line++, clk_sig1.DOVA_ABCDxxxx);
-  plot(x, line++, clk_sig1.UVYT_ABCDxxxx);
-  plot(x, line++, clk_sig1.MOPA_xxxxEFGH);
-  plot(x, line++, clk_sig1.BEDO_Axxxxxxx);
-  plot(x, line++, clk_sig1.BOWA_xBCDEFGH);
-  plot(x, line++, clk_sig1.BORY_AxxxxxGH);
-  line++;
-
-  plot(x, line++, vclk_reg.WUVU_AxxDExxH);
-  plot(x, line++, vclk_reg.VENA_xBCDExxx);
-  plot(x, line++, vclk_reg.WOSU_xxCDxxGH);
-  line++;
-
-  plot(x, line++, vclk_sig.XUPY_xBCxxFGx);
-  plot(x, line++, vclk_sig.AWOH_AxxDExxH);
-  plot(x, line++, vclk_sig.TALU_xBCDExxx);
-  plot(x, line++, vclk_sig.SONO_AxxxxFGH);
-  plot(x, line++, vclk_sig.XOCE_ABxxEFxx);
-  plot(x, line++, vclk_sig.XYSO_ABCxDEFx);
-  line++;
-}
-
-//-----------------------------------------------------------------------------
-
-void test_clock_phases() {
-  printf("test_clock_phases: ");
-  TestGB gb;
-  gb.reset();
-
-  for (int phase = 0; phase < 48; phase++) {
-    gb.sim_phase(1);
-
-    SysSignals sys_sig   = gb.sys_reg.signals();
-    ClkSignals clk_sig1  = gb.clk_reg.signals(sys_sig);
-    RstSignals rst_sig1  = gb.rst_reg.tick_slow(sys_sig, clk_sig1);
-    VclkSignals vclk_sig = gb.vclk_reg.signals();
-
-    check_phase(sys_sig,
-                gb.clk_reg, clk_sig1,
-                gb.vclk_reg, vclk_sig);
-  }
-  printf("pass\n");
-}
-
-//-----------------------------------------------------------------------------
-
-static int cursor = 20;
-
-void TestClocks() {
-  printf("TestClocks: ");
-  printf("\033[?6l");
-  labels();
-
-  TestGB gb;
-  //gb.reset();
-  gb.pwron();
-
-  // CLK_GOOD - BOGA_xBCDEFGH
-
-  // The video clock gen WUVU/VENA/WOSU can be in different phases depending on when LCDC_EN goes high.
-
-  gb.sys_reg.PIN_RST = false;
-  gb.sys_reg.PIN_CLK_GOOD = true;
-  gb.sys_reg.PIN_T1 = false;
-  gb.sys_reg.PIN_T2 = false;
-  gb.sys_reg.PIN_RD_C = false;
-  gb.sys_reg.PIN_WR_C = false;
-  gb.sys_reg.CPU_CLK_REQ = true;
-
-  // setting LCDC_EN on phase 6 or 7 makes phase match
-  // but it looks like cpu writes take effect on phase 4?
-
-  gb.sys_reg.LCDC_EN = false;
-  gb.sim_phase(16);
-
-  for (int phase = 0; phase < 48; phase++) {
-    gb.sim_phase(1);
-
-    SysSignals sys_sig  = gb.sys_reg.signals();
-    ClkSignals clk_sig1 = gb.clk_reg.signals(sys_sig);
-    RstSignals rst_sig  = gb.rst_reg.tick_slow(sys_sig, clk_sig1);
-    VclkSignals vclk_sig = gb.vclk_reg.signals();
-
-    check_phase(sys_sig,
-                gb.clk_reg, clk_sig1,
-                gb.vclk_reg, vclk_sig);
-
-    dump(cursor,
-         sys_sig,
-         gb.clk_reg, clk_sig1,
-         gb.vclk_reg, vclk_sig);
-    cursor++;
-  }
-
-  /*
-  bool CLK_GOOD = false;
-  bool BUTY_CLKREQ = false;
-  bool MODE_PROD = false;
-  bool VID_RESETn = 0;
-
-  //----------
-
-  CLK_GOOD = false;
-  BUTY_CLKREQ = false;
-  MODE_PROD = false;
-  VID_RESETn = 0;
-
-  printAt(cursor, 1, "rst");
-  sim(clk, CLK_GOOD, BUTY_CLKREQ, MODE_PROD, VID_RESETn);
-  cursor++;
-
-  //----------
-
-  MODE_PROD = true;
-  printAt(cursor, 1, "prod");
-  sim(clk, CLK_GOOD, BUTY_CLKREQ, MODE_PROD, VID_RESETn);
-  cursor++;
-
-  //----------
-
-  CLK_GOOD = true;
-  printAt(cursor, 1, "clk_good");
-  sim(clk, CLK_GOOD, BUTY_CLKREQ, MODE_PROD, VID_RESETn);
-  cursor++;
-
-  //----------
-
-  BUTY_CLKREQ = true;
-  printAt(cursor, 1, "clkreq");
-  sim(clk, CLK_GOOD, BUTY_CLKREQ, MODE_PROD, VID_RESETn);
-  cursor++;
-
-  //----------
-
-  VID_RESETn = true;
-  printAt(cursor, 1, "vid_rst");
-  sim(clk, CLK_GOOD, BUTY_CLKREQ, MODE_PROD, VID_RESETn);
-  cursor++;
-  */
-
-  printf("pass\n");
-}
-
-//-----------------------------------------------------------------------------
+#endif

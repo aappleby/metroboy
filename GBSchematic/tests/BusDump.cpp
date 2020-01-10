@@ -3,10 +3,12 @@
 
 using namespace Schematics;
 
+#if 0
+
 void test_bus_dump(BusDump* dump_log, int len) {
 
   TestGB gb;
-  gb.reset();
+  //gb.reset();
 
   // Preload the rom reads into the gameboy.
   for (int i = 0; i < len; i++) {
@@ -24,7 +26,7 @@ void test_bus_dump(BusDump* dump_log, int len) {
     gb.sys_reg.CPU_RAW_RD = dump.cpu_rd;
     gb.sys_reg.CPU_RAW_WR = dump.cpu_wr;
 
-    gb.sim_phase(8);
+    //gb.sim_phase(8);
 
     int new_addr = gb.bus_tri.get_addr();
     int new_data = gb.bus_tri.get_data();
@@ -107,3 +109,5 @@ BusDump poweron_004_div[] = {
 void test_bus_dumps() {
   test_bus_dump(poweron_000_div, sizeof(poweron_000_div) / sizeof(poweron_000_div[0]));
 }
+
+#endif

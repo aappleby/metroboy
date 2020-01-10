@@ -2,6 +2,8 @@
 
 using namespace Schematics;
 
+#if 0
+
 void plot(int x, int y, bool v);
 void printAt(int x, int y, const char *format, ...);
 
@@ -357,3 +359,5 @@ void TestSpriteSeq() {
 
   printAt(0, 50, "done");
 }
+
+#endif

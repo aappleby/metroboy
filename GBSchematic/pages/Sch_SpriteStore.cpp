@@ -213,629 +213,629 @@ bool SpriteStoreRegisters::tick_fetch(const LcdSignals& lcd_sig,
   // store 0
 
   {
-    /*p31.ZOGY*/ wire STORE0_MATCH0n = xor(b.spr.STORE0_X0, b.vid.X0n);
-    /*p31.ZEBA*/ wire STORE0_MATCH1n = xor(b.spr.STORE0_X1, b.vid.X1n);
-    /*p31.ZAHA*/ wire STORE0_MATCH2n = xor(b.spr.STORE0_X2, b.vid.X2n);
-    /*p31.ZOKY*/ wire STORE0_MATCH3n = xor(b.spr.STORE0_X3, b.vid.X3n);
-    /*p31.WOJU*/ wire STORE0_MATCH4n = xor(b.spr.STORE0_X4, b.vid.X4n);
-    /*p31.YFUN*/ wire STORE0_MATCH5n = xor(b.spr.STORE0_X5, b.vid.X5n);
-    /*p31.WYZA*/ wire STORE0_MATCH6n = xor(b.spr.STORE0_X6, b.vid.X6n);
-    /*p31.YPUK*/ wire STORE0_MATCH7n = xor(b.spr.STORE0_X7, b.vid.X7n);
+    /*p31.ZOGY*/ wire STORE0_MATCH0n = xor(STORE0_X0, X0n);
+    /*p31.ZEBA*/ wire STORE0_MATCH1n = xor(STORE0_X1, X1n);
+    /*p31.ZAHA*/ wire STORE0_MATCH2n = xor(STORE0_X2, X2n);
+    /*p31.ZOKY*/ wire STORE0_MATCH3n = xor(STORE0_X3, X3n);
+    /*p31.WOJU*/ wire STORE0_MATCH4n = xor(STORE0_X4, X4n);
+    /*p31.YFUN*/ wire STORE0_MATCH5n = xor(STORE0_X5, X5n);
+    /*p31.WYZA*/ wire STORE0_MATCH6n = xor(STORE0_X6, X6n);
+    /*p31.YPUK*/ wire STORE0_MATCH7n = xor(STORE0_X7, X7n);
     /*p31.ZAKO*/ wire STORE0_MATCHA = nor(STORE0_MATCH0n, STORE0_MATCH1n, STORE0_MATCH2n, STORE0_MATCH3n);
     /*p31.XEBA*/ wire STORE0_MATCHB = nor(STORE0_MATCH4n, STORE0_MATCH5n, STORE0_MATCH6n, STORE0_MATCH7n);
 
-    /*p29.YDUG*/ spr.STORE0_MATCHn = nand(b.spr.MATCH_EN, STORE0_MATCHB, STORE0_MATCHA);
-    /*p29.WEFU*/ wire STORE0_MATCH = not(b.spr.STORE0_MATCHn);
-    /*p29.GEZE*/ spr.STORE0_MATCH_OUT = or (STORE0_MATCH, pins.P10_B);
+    /*p29.YDUG*/ sst_reg.STORE0_MATCHn = nand(MATCH_EN, STORE0_MATCHB, STORE0_MATCHA);
+    /*p29.WEFU*/ wire STORE0_MATCH = not(STORE0_MATCHn);
+    /*p29.GEZE*/ sst_reg.STORE0_MATCH_OUT = or (STORE0_MATCH, pins.P10_B);
 
-    /*p29.GUVA*/ wire SPRITE0_GET = nor(b.spr.STORE0_MATCHn,  pins.P10_B);
-    /*p29.EBOJ*/ spr.SPRITE0_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE0_GET_SYNCn, SPRITE0_GET);
+    /*p29.GUVA*/ wire SPRITE0_GET = nor(STORE0_MATCHn,  pins.P10_B);
+    /*p29.EBOJ*/ sst_reg.SPRITE0_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE0_GET_SYNCn, SPRITE0_GET);
 
-    /*p29.CEMY*/ wire STORE0_CLK    = or(b.spr.STORE_EN, STORE0_SEL);
+    /*p29.CEMY*/ wire STORE0_CLK    = or(STORE_EN, STORE0_SEL);
     /*p29.DYHU*/ wire STORE0_CLKn   = not(STORE0_CLK);
-    /*p29.DYWE*/ wire STORE0_RST    = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE0_GET_SYNCn);
+    /*p29.DYWE*/ wire STORE0_RST    = or(DYBA_VID_LINE_TRIG_d4, SPRITE0_GET_SYNCn);
     /*p29.DYNA*/ wire STORE0_RSTn   = not(STORE0_RST);
 
-    /*p29.GENY*/ spr.STORE0_CLKa  = not(STORE0_CLKn);
-    /*p30.YGUS*/ spr.STORE0_IDX0  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX0,  b.spr.TS_IDX_0);
-    /*p30.YSOK*/ spr.STORE0_IDX1  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX1,  b.spr.TS_IDX_1);
-    /*p30.YZEP*/ spr.STORE0_IDX2  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX2,  b.spr.TS_IDX_2);
-    /*p30.WYTE*/ spr.STORE0_IDX3  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX3,  b.spr.TS_IDX_3);
-    /*p30.ZONY*/ spr.STORE0_IDX4  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX4,  b.spr.TS_IDX_4);
-    /*p30.YWAK*/ spr.STORE0_IDX5  = tock_pos(a.spr.STORE0_CLKa, b.spr.STORE0_CLKa, 0,           b.spr.STORE0_IDX5,  b.spr.TS_IDX_5);
+    /*p29.GENY*/ sst_reg.STORE0_CLKa  = not(STORE0_CLKn);
+    /*p30.YGUS*/ sst_reg.STORE0_IDX0 .set(STORE0_CLKa, STORE0_CLKa, 0,           STORE0_IDX0,  TS_IDX_0);
+    /*p30.YSOK*/ sst_reg.STORE0_IDX1 .set(STORE0_CLKa, STORE0_CLKa, 0,           STORE0_IDX1,  TS_IDX_1);
+    /*p30.YZEP*/ sst_reg.STORE0_IDX2 .set(STORE0_CLKa, STORE0_CLKa, 0,           STORE0_IDX2,  TS_IDX_2);
+    /*p30.WYTE*/ sst_reg.STORE0_IDX3 .set(STORE0_CLKa, STORE0_CLKa, 0,           STORE0_IDX3,  TS_IDX_3);
+    /*p30.ZONY*/ sst_reg.STORE0_IDX4 .set(STORE0_CLKa, STORE0_CLKa, 0,           STORE0_IDX4,  TS_IDX_4);
+    /*p30.YWAK*/ sst_reg.STORE0_IDX5 .set(STORE0_CLKa, STORE0_CLKa, 0,           STORE0_IDX5,  TS_IDX_5);
     
-    /*p29.ENOB*/ spr.STORE0_CLKb  = not(STORE0_CLKn);
-    /*p30.FYHY*/ spr.STORE0_LINE0 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,           b.spr.STORE0_LINE0, b.spr.TS_LINE_0);
-    /*p30.GYHO*/ spr.STORE0_LINE1 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,           b.spr.STORE0_LINE1, b.spr.TS_LINE_1);
-    /*p30.BOZU*/ spr.STORE0_LINE2 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,           b.spr.STORE0_LINE2, b.spr.TS_LINE_2);
-    /*p30.CUFO*/ spr.STORE0_LINE3 = tock_pos(a.spr.STORE0_CLKb, b.spr.STORE0_CLKb, 0,           b.spr.STORE0_LINE3, b.spr.TS_LINE_3);
+    /*p29.ENOB*/ sst_reg.STORE0_CLKb  = not(STORE0_CLKn);
+    /*p30.FYHY*/ sst_reg.STORE0_LINE0.set(STORE0_CLKb, STORE0_CLKb, 0,           STORE0_LINE0, TS_LINE_0);
+    /*p30.GYHO*/ sst_reg.STORE0_LINE1.set(STORE0_CLKb, STORE0_CLKb, 0,           STORE0_LINE1, TS_LINE_1);
+    /*p30.BOZU*/ sst_reg.STORE0_LINE2.set(STORE0_CLKb, STORE0_CLKb, 0,           STORE0_LINE2, TS_LINE_2);
+    /*p30.CUFO*/ sst_reg.STORE0_LINE3.set(STORE0_CLKb, STORE0_CLKb, 0,           STORE0_LINE3, TS_LINE_3);
 
-    /*p29.FUXU*/ spr.STORE0_CLKc  = not(STORE0_CLKn);
-    /*p31.XEPE*/ spr.STORE0_X0    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X0,    b.spr.OAM_A_D0b);
-    /*p31.YLAH*/ spr.STORE0_X1    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X1,    b.spr.OAM_A_D1b);
-    /*p31.ZOLA*/ spr.STORE0_X2    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X2,    b.spr.OAM_A_D2b);
-    /*p31.ZULU*/ spr.STORE0_X3    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X3,    b.spr.OAM_A_D3b);
-    /*p31.WELO*/ spr.STORE0_X4    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X4,    b.spr.OAM_A_D4b);
-    /*p31.XUNY*/ spr.STORE0_X5    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X5,    b.spr.OAM_A_D5b);
-    /*p31.WOTE*/ spr.STORE0_X6    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X6,    b.spr.OAM_A_D6b);
-    /*p31.XAKO*/ spr.STORE0_X7    = tock_pos(a.spr.STORE0_CLKc, b.spr.STORE0_CLKc, STORE0_RSTn, b.spr.STORE0_X7,    b.spr.OAM_A_D7b);
+    /*p29.FUXU*/ sst_reg.STORE0_CLKc  = not(STORE0_CLKn);
+    /*p31.XEPE*/ sst_reg.STORE0_X0   .set(STORE0_CLKc, STORE0_CLKc, STORE0_RSTn, STORE0_X0,    OAM_A_D0b);
+    /*p31.YLAH*/ sst_reg.STORE0_X1   .set(STORE0_CLKc, STORE0_CLKc, STORE0_RSTn, STORE0_X1,    OAM_A_D1b);
+    /*p31.ZOLA*/ sst_reg.STORE0_X2   .set(STORE0_CLKc, STORE0_CLKc, STORE0_RSTn, STORE0_X2,    OAM_A_D2b);
+    /*p31.ZULU*/ sst_reg.STORE0_X3   .set(STORE0_CLKc, STORE0_CLKc, STORE0_RSTn, STORE0_X3,    OAM_A_D3b);
+    /*p31.WELO*/ sst_reg.STORE0_X4   .set(STORE0_CLKc, STORE0_CLKc, STORE0_RSTn, STORE0_X4,    OAM_A_D4b);
+    /*p31.XUNY*/ sst_reg.STORE0_X5   .set(STORE0_CLKc, STORE0_CLKc, STORE0_RSTn, STORE0_X5,    OAM_A_D5b);
+    /*p31.WOTE*/ sst_reg.STORE0_X6   .set(STORE0_CLKc, STORE0_CLKc, STORE0_RSTn, STORE0_X6,    OAM_A_D6b);
+    /*p31.XAKO*/ sst_reg.STORE0_X7   .set(STORE0_CLKc, STORE0_CLKc, STORE0_RSTn, STORE0_X7,    OAM_A_D7b);
 
     /*p29.FURO*/ wire SPRITE0_GETn = not(SPRITE0_GET);
 
     // small tri - input must be inverting
-    /*p30.ZETU*/ if (!SPRITE0_GETn) spr.TS_IDX_0  = b.spr.STORE0_IDX0;
-    /*p30.ZECE*/ if (!SPRITE0_GETn) spr.TS_IDX_1  = b.spr.STORE0_IDX1;
-    /*p30.ZAVE*/ if (!SPRITE0_GETn) spr.TS_IDX_2  = b.spr.STORE0_IDX2;
-    /*p30.WOKO*/ if (!SPRITE0_GETn) spr.TS_IDX_3  = b.spr.STORE0_IDX3;
-    /*p30.ZUMU*/ if (!SPRITE0_GETn) spr.TS_IDX_4  = b.spr.STORE0_IDX4;
-    /*p30.ZEDY*/ if (!SPRITE0_GETn) spr.TS_IDX_5  = b.spr.STORE0_IDX5;
-    /*p30.GOFO*/ if (!SPRITE0_GETn) spr.TS_LINE_0 = b.spr.STORE0_LINE0;
-    /*p30.WEHE*/ if (!SPRITE0_GETn) spr.TS_LINE_1 = b.spr.STORE0_LINE1;
-    /*p30.AJAL*/ if (!SPRITE0_GETn) spr.TS_LINE_2 = b.spr.STORE0_LINE2;
-    /*p30.BUKY*/ if (!SPRITE0_GETn) spr.TS_LINE_3 = b.spr.STORE0_LINE3;
+    /*p30.ZETU*/ if (!SPRITE0_GETn) sil_tri.TS_IDX_0  = STORE0_IDX0;
+    /*p30.ZECE*/ if (!SPRITE0_GETn) sil_tri.TS_IDX_1  = STORE0_IDX1;
+    /*p30.ZAVE*/ if (!SPRITE0_GETn) sil_tri.TS_IDX_2  = STORE0_IDX2;
+    /*p30.WOKO*/ if (!SPRITE0_GETn) sil_tri.TS_IDX_3  = STORE0_IDX3;
+    /*p30.ZUMU*/ if (!SPRITE0_GETn) sil_tri.TS_IDX_4  = STORE0_IDX4;
+    /*p30.ZEDY*/ if (!SPRITE0_GETn) sil_tri.TS_IDX_5  = STORE0_IDX5;
+    /*p30.GOFO*/ if (!SPRITE0_GETn) sil_tri.TS_LINE_0 = STORE0_LINE0;
+    /*p30.WEHE*/ if (!SPRITE0_GETn) sil_tri.TS_LINE_1 = STORE0_LINE1;
+    /*p30.AJAL*/ if (!SPRITE0_GETn) sil_tri.TS_LINE_2 = STORE0_LINE2;
+    /*p30.BUKY*/ if (!SPRITE0_GETn) sil_tri.TS_LINE_3 = STORE0_LINE3;
   }
 
   //----------
   // store 1
 
   {
-    /*p31.EDYM*/ wire STORE1_MATCH0 = xor(b.spr.STORE1_X0, b.vid.X0n);
-    /*p31.EMYB*/ wire STORE1_MATCH1 = xor(b.spr.STORE1_X1, b.vid.X1n);
-    /*p31.EBEF*/ wire STORE1_MATCH2 = xor(b.spr.STORE1_X2, b.vid.X2n);
-    /*p31.EWOK*/ wire STORE1_MATCH3 = xor(b.spr.STORE1_X3, b.vid.X3n);
-    /*p31.COLA*/ wire STORE1_MATCH4 = xor(b.spr.STORE1_X4, b.vid.X4n);
-    /*p31.BOBA*/ wire STORE1_MATCH5 = xor(b.spr.STORE1_X5, b.vid.X5n);
-    /*p31.COLU*/ wire STORE1_MATCH6 = xor(b.spr.STORE1_X6, b.vid.X6n);
-    /*p31.BAHU*/ wire STORE1_MATCH7 = xor(b.spr.STORE1_X7, b.vid.X7n);
+    /*p31.EDYM*/ wire STORE1_MATCH0 = xor(STORE1_X0, X0n);
+    /*p31.EMYB*/ wire STORE1_MATCH1 = xor(STORE1_X1, X1n);
+    /*p31.EBEF*/ wire STORE1_MATCH2 = xor(STORE1_X2, X2n);
+    /*p31.EWOK*/ wire STORE1_MATCH3 = xor(STORE1_X3, X3n);
+    /*p31.COLA*/ wire STORE1_MATCH4 = xor(STORE1_X4, X4n);
+    /*p31.BOBA*/ wire STORE1_MATCH5 = xor(STORE1_X5, X5n);
+    /*p31.COLU*/ wire STORE1_MATCH6 = xor(STORE1_X6, X6n);
+    /*p31.BAHU*/ wire STORE1_MATCH7 = xor(STORE1_X7, X7n);
     /*p31.CYVY*/ wire STORE1_MATCHB = nor(STORE1_MATCH4, STORE1_MATCH5, STORE1_MATCH6, STORE1_MATCH7);
     /*p31.EWAM*/ wire STORE1_MATCHA = nor(STORE1_MATCH0, STORE1_MATCH1, STORE1_MATCH2, STORE1_MATCH3);
 
-    /*p29.DYDU*/ spr.STORE1_MATCHn    = nand(b.spr.MATCH_EN, STORE1_MATCHA, STORE1_MATCHB);
-    /*p29.GAJA*/ wire STORE1_MATCH = not(b.spr.STORE1_MATCHn);
-    /*p29.FUMA*/ spr.STORE1_MATCH_OUT = or(STORE1_MATCH, b.spr.STORE0_MATCH_OUT);
+    /*p29.DYDU*/ sst_reg.STORE1_MATCHn    = nand(MATCH_EN, STORE1_MATCHA, STORE1_MATCHB);
+    /*p29.GAJA*/ wire STORE1_MATCH = not(STORE1_MATCHn);
+    /*p29.FUMA*/ sst_reg.STORE1_MATCH_OUT = or(STORE1_MATCH, STORE0_MATCH_OUT);
 
-    /*p29.ENUT*/ wire SPRITE1_GETn = nor(b.spr.STORE1_MATCHn, b.spr.STORE0_MATCH_OUT);
+    /*p29.ENUT*/ wire SPRITE1_GETn = nor(STORE1_MATCHn, STORE0_MATCH_OUT);
 
-    /*p29.BYBY*/ wire STORE1_CLK  = or(b.spr.STORE_EN, STORE1_SEL);
+    /*p29.BYBY*/ wire STORE1_CLK  = or(STORE_EN, STORE1_SEL);
     /*p29.BUCO*/ wire STORE1_CLKn = not(STORE1_CLK);
 
-    /*p29.CEDY*/ spr.SPRITE1_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE1_GET_SYNCn, SPRITE1_GETn);
-    /*p29.EFEV*/ wire STORE1_RST = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE1_GET_SYNCn);
+    /*p29.CEDY*/ sst_reg.SPRITE1_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE1_GET_SYNCn, SPRITE1_GETn);
+    /*p29.EFEV*/ wire STORE1_RST = or(DYBA_VID_LINE_TRIG_d4, SPRITE1_GET_SYNCn);
     /*p29.DOKU*/ wire STORE1_RSTn = not(STORE1_RST);
 
-    /*p29.BYVY*/ spr.STORE1_CLKc = not(STORE1_CLKn);
-    /*p30.CAJY*/ spr.STORE1_IDX0  = tock_pos(a.spr.STORE1_CLKc, b.spr.STORE1_CLKc, 0,    b.spr.STORE1_IDX0,  b.spr.TS_IDX_0 );
-    /*p30.CUZA*/ spr.STORE1_IDX1  = tock_pos(a.spr.STORE1_CLKc, b.spr.STORE1_CLKc, 0,    b.spr.STORE1_IDX1,  b.spr.TS_IDX_1 );
-    /*p30.COMA*/ spr.STORE1_IDX2  = tock_pos(a.spr.STORE1_CLKc, b.spr.STORE1_CLKc, 0,    b.spr.STORE1_IDX2,  b.spr.TS_IDX_2 );
-    /*p30.CUFA*/ spr.STORE1_IDX3  = tock_pos(a.spr.STORE1_CLKc, b.spr.STORE1_CLKc, 0,    b.spr.STORE1_IDX3,  b.spr.TS_IDX_3 );
-    /*p30.CEBO*/ spr.STORE1_IDX4  = tock_pos(a.spr.STORE1_CLKc, b.spr.STORE1_CLKc, 0,    b.spr.STORE1_IDX4,  b.spr.TS_IDX_4 );
-    /*p30.CADU*/ spr.STORE1_IDX5  = tock_pos(a.spr.STORE1_CLKc, b.spr.STORE1_CLKc, 0,    b.spr.STORE1_IDX5,  b.spr.TS_IDX_5 );
+    /*p29.BYVY*/ sst_reg.STORE1_CLKc = not(STORE1_CLKn);
+    /*p30.CAJY*/ sst_reg.STORE1_IDX0 .set(STORE1_CLKc, STORE1_CLKc, 0,    STORE1_IDX0,  TS_IDX_0 );
+    /*p30.CUZA*/ sst_reg.STORE1_IDX1 .set(STORE1_CLKc, STORE1_CLKc, 0,    STORE1_IDX1,  TS_IDX_1 );
+    /*p30.COMA*/ sst_reg.STORE1_IDX2 .set(STORE1_CLKc, STORE1_CLKc, 0,    STORE1_IDX2,  TS_IDX_2 );
+    /*p30.CUFA*/ sst_reg.STORE1_IDX3 .set(STORE1_CLKc, STORE1_CLKc, 0,    STORE1_IDX3,  TS_IDX_3 );
+    /*p30.CEBO*/ sst_reg.STORE1_IDX4 .set(STORE1_CLKc, STORE1_CLKc, 0,    STORE1_IDX4,  TS_IDX_4 );
+    /*p30.CADU*/ sst_reg.STORE1_IDX5 .set(STORE1_CLKc, STORE1_CLKc, 0,    STORE1_IDX5,  TS_IDX_5 );
                                                                                            
-    /*p29.AHOF*/ spr.STORE1_CLKb = not(STORE1_CLKn);
-    /*p30.ABUG*/ spr.STORE1_LINE0 = tock_pos(a.spr.STORE1_CLKb, b.spr.STORE1_CLKb, 0,    b.spr.STORE1_LINE0, b.spr.TS_LINE_0);
-    /*p30.AMES*/ spr.STORE1_LINE1 = tock_pos(a.spr.STORE1_CLKb, b.spr.STORE1_CLKb, 0,    b.spr.STORE1_LINE1, b.spr.TS_LINE_1);
-    /*p30.ABOP*/ spr.STORE1_LINE2 = tock_pos(a.spr.STORE1_CLKb, b.spr.STORE1_CLKb, 0,    b.spr.STORE1_LINE2, b.spr.TS_LINE_2);
-    /*p30.AROF*/ spr.STORE1_LINE3 = tock_pos(a.spr.STORE1_CLKb, b.spr.STORE1_CLKb, 0,    b.spr.STORE1_LINE3, b.spr.TS_LINE_3);
+    /*p29.AHOF*/ sst_reg.STORE1_CLKb = not(STORE1_CLKn);
+    /*p30.ABUG*/ sst_reg.STORE1_LINE0.set(STORE1_CLKb, STORE1_CLKb, 0,    STORE1_LINE0, TS_LINE_0);
+    /*p30.AMES*/ sst_reg.STORE1_LINE1.set(STORE1_CLKb, STORE1_CLKb, 0,    STORE1_LINE1, TS_LINE_1);
+    /*p30.ABOP*/ sst_reg.STORE1_LINE2.set(STORE1_CLKb, STORE1_CLKb, 0,    STORE1_LINE2, TS_LINE_2);
+    /*p30.AROF*/ sst_reg.STORE1_LINE3.set(STORE1_CLKb, STORE1_CLKb, 0,    STORE1_LINE3, TS_LINE_3);
 
-    /*p29.ASYS*/ spr.STORE1_CLKa = not(STORE1_CLKn);
-    /*p31.DANY*/ spr.STORE1_X0    = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, STORE1_RSTn, b.spr.STORE1_X0,    b.spr.OAM_A_D0b);
-    /*p31.DUKO*/ spr.STORE1_X1    = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, STORE1_RSTn, b.spr.STORE1_X1,    b.spr.OAM_A_D1b);
-    /*p31.DESU*/ spr.STORE1_X2    = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, STORE1_RSTn, b.spr.STORE1_X2,    b.spr.OAM_A_D2b);
-    /*p31.DAZO*/ spr.STORE1_X3    = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, STORE1_RSTn, b.spr.STORE1_X3,    b.spr.OAM_A_D3b);
-    /*p31.DAKE*/ spr.STORE1_X4    = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, STORE1_RSTn, b.spr.STORE1_X4,    b.spr.OAM_A_D4b);
-    /*p31.CESO*/ spr.STORE1_X5    = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, STORE1_RSTn, b.spr.STORE1_X5,    b.spr.OAM_A_D5b);
-    /*p31.DYFU*/ spr.STORE1_X6    = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, STORE1_RSTn, b.spr.STORE1_X6,    b.spr.OAM_A_D6b);
-    /*p31.CUSY*/ spr.STORE1_X7    = tock_pos(a.spr.STORE1_CLKa, b.spr.STORE1_CLKa, STORE1_RSTn, b.spr.STORE1_X7,    b.spr.OAM_A_D7b);
+    /*p29.ASYS*/ sst_reg.STORE1_CLKa = not(STORE1_CLKn);
+    /*p31.DANY*/ sst_reg.STORE1_X0   .set(STORE1_CLKa, STORE1_CLKa, STORE1_RSTn, STORE1_X0,    OAM_A_D0b);
+    /*p31.DUKO*/ sst_reg.STORE1_X1   .set(STORE1_CLKa, STORE1_CLKa, STORE1_RSTn, STORE1_X1,    OAM_A_D1b);
+    /*p31.DESU*/ sst_reg.STORE1_X2   .set(STORE1_CLKa, STORE1_CLKa, STORE1_RSTn, STORE1_X2,    OAM_A_D2b);
+    /*p31.DAZO*/ sst_reg.STORE1_X3   .set(STORE1_CLKa, STORE1_CLKa, STORE1_RSTn, STORE1_X3,    OAM_A_D3b);
+    /*p31.DAKE*/ sst_reg.STORE1_X4   .set(STORE1_CLKa, STORE1_CLKa, STORE1_RSTn, STORE1_X4,    OAM_A_D4b);
+    /*p31.CESO*/ sst_reg.STORE1_X5   .set(STORE1_CLKa, STORE1_CLKa, STORE1_RSTn, STORE1_X5,    OAM_A_D5b);
+    /*p31.DYFU*/ sst_reg.STORE1_X6   .set(STORE1_CLKa, STORE1_CLKa, STORE1_RSTn, STORE1_X6,    OAM_A_D6b);
+    /*p31.CUSY*/ sst_reg.STORE1_X7   .set(STORE1_CLKa, STORE1_CLKa, STORE1_RSTn, STORE1_X7,    OAM_A_D7b);
 
     /*p29.DYDO*/ wire SPRITE1_GET = not(SPRITE1_GETn);
-    /*p30.BEMO*/ if (SPRITE1_GET) spr.TS_IDX_0  = not(!b.spr.STORE1_IDX0);
-    /*p30.CYBY*/ if (SPRITE1_GET) spr.TS_IDX_1  = not(!b.spr.STORE1_IDX1);
-    /*p30.BETY*/ if (SPRITE1_GET) spr.TS_IDX_2  = not(!b.spr.STORE1_IDX2);
-    /*p30.CEGY*/ if (SPRITE1_GET) spr.TS_IDX_3  = not(!b.spr.STORE1_IDX3);
-    /*p30.CELU*/ if (SPRITE1_GET) spr.TS_IDX_4  = not(!b.spr.STORE1_IDX4);
-    /*p30.CUBO*/ if (SPRITE1_GET) spr.TS_IDX_5  = not(!b.spr.STORE1_IDX5);
-    /*p30.BEFE*/ if (SPRITE1_GET) spr.TS_LINE_0 = not(!b.spr.STORE1_LINE0);
-    /*p30.BYRO*/ if (SPRITE1_GET) spr.TS_LINE_1 = not(!b.spr.STORE1_LINE1);
-    /*p30.BACO*/ if (SPRITE1_GET) spr.TS_LINE_2 = not(!b.spr.STORE1_LINE2);
-    /*p30.AHUM*/ if (SPRITE1_GET) spr.TS_LINE_3 = not(!b.spr.STORE1_LINE3);
+    /*p30.BEMO*/ if (SPRITE1_GET) sil_tri.TS_IDX_0  = not(!STORE1_IDX0);
+    /*p30.CYBY*/ if (SPRITE1_GET) sil_tri.TS_IDX_1  = not(!STORE1_IDX1);
+    /*p30.BETY*/ if (SPRITE1_GET) sil_tri.TS_IDX_2  = not(!STORE1_IDX2);
+    /*p30.CEGY*/ if (SPRITE1_GET) sil_tri.TS_IDX_3  = not(!STORE1_IDX3);
+    /*p30.CELU*/ if (SPRITE1_GET) sil_tri.TS_IDX_4  = not(!STORE1_IDX4);
+    /*p30.CUBO*/ if (SPRITE1_GET) sil_tri.TS_IDX_5  = not(!STORE1_IDX5);
+    /*p30.BEFE*/ if (SPRITE1_GET) sil_tri.TS_LINE_0 = not(!STORE1_LINE0);
+    /*p30.BYRO*/ if (SPRITE1_GET) sil_tri.TS_LINE_1 = not(!STORE1_LINE1);
+    /*p30.BACO*/ if (SPRITE1_GET) sil_tri.TS_LINE_2 = not(!STORE1_LINE2);
+    /*p30.AHUM*/ if (SPRITE1_GET) sil_tri.TS_LINE_3 = not(!STORE1_LINE3);
   }
 
   //----------
   // store 2
 
   {
-    /*p31.FUZU*/ wire STORE2_MATCH0 = xor(b.spr.STORE2_X0, b.vid.X0n);
-    /*p31.FESO*/ wire STORE2_MATCH1 = xor(b.spr.STORE2_X1, b.vid.X1n);
-    /*p31.FOKY*/ wire STORE2_MATCH2 = xor(b.spr.STORE2_X2, b.vid.X2n);
-    /*p31.FYVA*/ wire STORE2_MATCH3 = xor(b.spr.STORE2_X3, b.vid.X3n);
-    /*p31.CEKO*/ wire STORE2_MATCH4 = xor(b.spr.STORE2_X4, b.vid.X4n);
-    /*p31.DETY*/ wire STORE2_MATCH5 = xor(b.spr.STORE2_X5, b.vid.X5n);
-    /*p31.DOZO*/ wire STORE2_MATCH6 = xor(b.spr.STORE2_X6, b.vid.X6n);
-    /*p31.CONY*/ wire STORE2_MATCH7 = xor(b.spr.STORE2_X7, b.vid.X7n);
+    /*p31.FUZU*/ wire STORE2_MATCH0 = xor(STORE2_X0, X0n);
+    /*p31.FESO*/ wire STORE2_MATCH1 = xor(STORE2_X1, X1n);
+    /*p31.FOKY*/ wire STORE2_MATCH2 = xor(STORE2_X2, X2n);
+    /*p31.FYVA*/ wire STORE2_MATCH3 = xor(STORE2_X3, X3n);
+    /*p31.CEKO*/ wire STORE2_MATCH4 = xor(STORE2_X4, X4n);
+    /*p31.DETY*/ wire STORE2_MATCH5 = xor(STORE2_X5, X5n);
+    /*p31.DOZO*/ wire STORE2_MATCH6 = xor(STORE2_X6, X6n);
+    /*p31.CONY*/ wire STORE2_MATCH7 = xor(STORE2_X7, X7n);
     /*p31.CEHU*/ wire STORE2_MATCHA = nor(STORE2_MATCH4, STORE2_MATCH5, STORE2_MATCH6, STORE2_MATCH7);
     /*p31.EKES*/ wire STORE2_MATCHB = nor(STORE2_MATCH0, STORE2_MATCH1, STORE2_MATCH2, STORE2_MATCH3);
 
-    /*p29.DEGO*/ spr.STORE2_MATCHn = nand(b.spr.MATCH_EN, STORE2_MATCHB, STORE2_MATCHA);
-    /*p29.GUPO*/ wire STORE2_MATCH = not(b.spr.STORE2_MATCHn);
-    /*p29.GEDE*/ spr.STORE2_MATCH_OUT = or(STORE2_MATCH, b.spr.STORE1_MATCH_OUT);
+    /*p29.DEGO*/ sst_reg.STORE2_MATCHn = nand(MATCH_EN, STORE2_MATCHB, STORE2_MATCHA);
+    /*p29.GUPO*/ wire STORE2_MATCH = not(STORE2_MATCHn);
+    /*p29.GEDE*/ sst_reg.STORE2_MATCH_OUT = or(STORE2_MATCH, STORE1_MATCH_OUT);
 
-    /*p29.EMOL*/ wire SPRITE2_GETn = nor(spr.STORE2_MATCHn, b.spr.STORE1_MATCH_OUT);
-    /*p29.EGAV*/ spr.SPRITE2_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE2_GET_SYNCn, SPRITE2_GETn);
+    /*p29.EMOL*/ wire SPRITE2_GETn = nor(sst_reg.STORE2_MATCHn, STORE1_MATCH_OUT);
+    /*p29.EGAV*/ sst_reg.SPRITE2_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE2_GET_SYNCn, SPRITE2_GETn);
 
-    /*p29.WYXO*/ wire STORE2_CLK = or(b.spr.STORE_EN, STORE2_SEL); // 0010
+    /*p29.WYXO*/ wire STORE2_CLK = or(STORE_EN, STORE2_SEL); // 0010
     /*p29.GYFO*/ wire STORE2_CLKn = not(STORE2_CLK); // 0010
-    /*p29.FOKO*/ wire STORE2_RST  = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE2_GET_SYNCn);
+    /*p29.FOKO*/ wire STORE2_RST  = or(DYBA_VID_LINE_TRIG_d4, SPRITE2_GET_SYNCn);
     /*p29.GAMY*/ wire STORE2_RSTn = not(STORE2_RST);
 
-    /*p29.BUZY*/ spr.STORE2_CLKb = not(STORE2_CLKn);
-    /*p30.BOXA*/ spr.STORE2_IDX0 = tock_pos(a.spr.STORE2_CLKb, b.spr.STORE2_CLKb, 0, b.spr.STORE2_IDX0, b.spr.TS_IDX_0 );
-    /*p30.BUNA*/ spr.STORE2_IDX1 = tock_pos(a.spr.STORE2_CLKb, b.spr.STORE2_CLKb, 0, b.spr.STORE2_IDX1, b.spr.TS_IDX_1 );
-    /*p30.BULU*/ spr.STORE2_IDX2 = tock_pos(a.spr.STORE2_CLKb, b.spr.STORE2_CLKb, 0, b.spr.STORE2_IDX2, b.spr.TS_IDX_2 );
-    /*p30.BECA*/ spr.STORE2_IDX3 = tock_pos(a.spr.STORE2_CLKb, b.spr.STORE2_CLKb, 0, b.spr.STORE2_IDX3, b.spr.TS_IDX_3 );
-    /*p30.BYHU*/ spr.STORE2_IDX4 = tock_pos(a.spr.STORE2_CLKb, b.spr.STORE2_CLKb, 0, b.spr.STORE2_IDX4, b.spr.TS_IDX_4 );
-    /*p30.BUHE*/ spr.STORE2_IDX5 = tock_pos(a.spr.STORE2_CLKb, b.spr.STORE2_CLKb, 0, b.spr.STORE2_IDX5, b.spr.TS_IDX_5 );
+    /*p29.BUZY*/ sst_reg.STORE2_CLKb = not(STORE2_CLKn);
+    /*p30.BOXA*/ sst_reg.STORE2_IDX0.set(STORE2_CLKb, STORE2_CLKb, 0, STORE2_IDX0, TS_IDX_0 );
+    /*p30.BUNA*/ sst_reg.STORE2_IDX1.set(STORE2_CLKb, STORE2_CLKb, 0, STORE2_IDX1, TS_IDX_1 );
+    /*p30.BULU*/ sst_reg.STORE2_IDX2.set(STORE2_CLKb, STORE2_CLKb, 0, STORE2_IDX2, TS_IDX_2 );
+    /*p30.BECA*/ sst_reg.STORE2_IDX3.set(STORE2_CLKb, STORE2_CLKb, 0, STORE2_IDX3, TS_IDX_3 );
+    /*p30.BYHU*/ sst_reg.STORE2_IDX4.set(STORE2_CLKb, STORE2_CLKb, 0, STORE2_IDX4, TS_IDX_4 );
+    /*p30.BUHE*/ sst_reg.STORE2_IDX5.set(STORE2_CLKb, STORE2_CLKb, 0, STORE2_IDX5, TS_IDX_5 );
 
-    /*p29.FUKE*/ spr.STORE2_CLKc = not(STORE2_CLKn);
-    /*p30.YKUK*/ spr.STORE2_LINE0 = tock_pos(a.spr.STORE2_CLKc, b.spr.STORE2_CLKc, 0, b.spr.STORE2_LINE0, b.spr.TS_LINE_0);
-    /*p30.YLOV*/ spr.STORE2_LINE1 = tock_pos(a.spr.STORE2_CLKc, b.spr.STORE2_CLKc, 0, b.spr.STORE2_LINE1, b.spr.TS_LINE_1);
-    /*p30.XAZY*/ spr.STORE2_LINE2 = tock_pos(a.spr.STORE2_CLKc, b.spr.STORE2_CLKc, 0, b.spr.STORE2_LINE2, b.spr.TS_LINE_2);
-    /*p30.XOSY*/ spr.STORE2_LINE3 = tock_pos(a.spr.STORE2_CLKc, b.spr.STORE2_CLKc, 0, b.spr.STORE2_LINE3, b.spr.TS_LINE_3);
+    /*p29.FUKE*/ sst_reg.STORE2_CLKc = not(STORE2_CLKn);
+    /*p30.YKUK*/ sst_reg.STORE2_LINE0.set(STORE2_CLKc, STORE2_CLKc, 0, STORE2_LINE0, TS_LINE_0);
+    /*p30.YLOV*/ sst_reg.STORE2_LINE1.set(STORE2_CLKc, STORE2_CLKc, 0, STORE2_LINE1, TS_LINE_1);
+    /*p30.XAZY*/ sst_reg.STORE2_LINE2.set(STORE2_CLKc, STORE2_CLKc, 0, STORE2_LINE2, TS_LINE_2);
+    /*p30.XOSY*/ sst_reg.STORE2_LINE3.set(STORE2_CLKc, STORE2_CLKc, 0, STORE2_LINE3, TS_LINE_3);
 
-    /*p29.CACU*/ spr.STORE2_CLKa = not(STORE2_CLKn);
-    /*p31.FOKA*/ spr.STORE2_X0 = tock_pos(a.spr.STORE2_CLKa, b.spr.STORE2_CLKa, STORE2_RSTn, b.spr.STORE2_X0, b.spr.OAM_A_D0b);
-    /*p31.FYTY*/ spr.STORE2_X1 = tock_pos(a.spr.STORE2_CLKa, b.spr.STORE2_CLKa, STORE2_RSTn, b.spr.STORE2_X1, b.spr.OAM_A_D1b);
-    /*p31.FUBY*/ spr.STORE2_X2 = tock_pos(a.spr.STORE2_CLKa, b.spr.STORE2_CLKa, STORE2_RSTn, b.spr.STORE2_X2, b.spr.OAM_A_D2b);
-    /*p31.GOXU*/ spr.STORE2_X3 = tock_pos(a.spr.STORE2_CLKa, b.spr.STORE2_CLKa, STORE2_RSTn, b.spr.STORE2_X3, b.spr.OAM_A_D3b);
-    /*p31.DUHY*/ spr.STORE2_X4 = tock_pos(a.spr.STORE2_CLKa, b.spr.STORE2_CLKa, STORE2_RSTn, b.spr.STORE2_X4, b.spr.OAM_A_D4b);
-    /*p31.EJUF*/ spr.STORE2_X5 = tock_pos(a.spr.STORE2_CLKa, b.spr.STORE2_CLKa, STORE2_RSTn, b.spr.STORE2_X5, b.spr.OAM_A_D5b);
-    /*p31.ENOR*/ spr.STORE2_X6 = tock_pos(a.spr.STORE2_CLKa, b.spr.STORE2_CLKa, STORE2_RSTn, b.spr.STORE2_X6, b.spr.OAM_A_D6b);
-    /*p31.DEPY*/ spr.STORE2_X7 = tock_pos(a.spr.STORE2_CLKa, b.spr.STORE2_CLKa, STORE2_RSTn, b.spr.STORE2_X7, b.spr.OAM_A_D7b);
+    /*p29.CACU*/ sst_reg.STORE2_CLKa = not(STORE2_CLKn);
+    /*p31.FOKA*/ sst_reg.STORE2_X0.set(STORE2_CLKa, STORE2_CLKa, STORE2_RSTn, STORE2_X0, OAM_A_D0b);
+    /*p31.FYTY*/ sst_reg.STORE2_X1.set(STORE2_CLKa, STORE2_CLKa, STORE2_RSTn, STORE2_X1, OAM_A_D1b);
+    /*p31.FUBY*/ sst_reg.STORE2_X2.set(STORE2_CLKa, STORE2_CLKa, STORE2_RSTn, STORE2_X2, OAM_A_D2b);
+    /*p31.GOXU*/ sst_reg.STORE2_X3.set(STORE2_CLKa, STORE2_CLKa, STORE2_RSTn, STORE2_X3, OAM_A_D3b);
+    /*p31.DUHY*/ sst_reg.STORE2_X4.set(STORE2_CLKa, STORE2_CLKa, STORE2_RSTn, STORE2_X4, OAM_A_D4b);
+    /*p31.EJUF*/ sst_reg.STORE2_X5.set(STORE2_CLKa, STORE2_CLKa, STORE2_RSTn, STORE2_X5, OAM_A_D5b);
+    /*p31.ENOR*/ sst_reg.STORE2_X6.set(STORE2_CLKa, STORE2_CLKa, STORE2_RSTn, STORE2_X6, OAM_A_D6b);
+    /*p31.DEPY*/ sst_reg.STORE2_X7.set(STORE2_CLKa, STORE2_CLKa, STORE2_RSTn, STORE2_X7, OAM_A_D7b);
 
 
     /*p29.FAME*/ wire SPRITE2_GET = not(SPRITE2_GETn);
-    /*p30.AXEC*/ if (SPRITE2_GET) spr.TS_IDX_0  = not(!b.spr.STORE2_IDX0);
-    /*p30.CYRO*/ if (SPRITE2_GET) spr.TS_IDX_1  = not(!b.spr.STORE2_IDX1);
-    /*p30.CUVU*/ if (SPRITE2_GET) spr.TS_IDX_2  = not(!b.spr.STORE2_IDX2);
-    /*p30.APON*/ if (SPRITE2_GET) spr.TS_IDX_3  = not(!b.spr.STORE2_IDX3);
-    /*p30.AFOZ*/ if (SPRITE2_GET) spr.TS_IDX_4  = not(!b.spr.STORE2_IDX4);
-    /*p30.CUBE*/ if (SPRITE2_GET) spr.TS_IDX_5  = not(!b.spr.STORE2_IDX5);
-    /*p30.ZABY*/ if (SPRITE2_GET) spr.TS_LINE_0 = not(!b.spr.STORE2_LINE0);
-    /*p30.ZUKE*/ if (SPRITE2_GET) spr.TS_LINE_1 = not(!b.spr.STORE2_LINE1);
-    /*p30.WUXE*/ if (SPRITE2_GET) spr.TS_LINE_2 = not(!b.spr.STORE2_LINE2);
-    /*p30.WERE*/ if (SPRITE2_GET) spr.TS_LINE_3 = not(!b.spr.STORE2_LINE3);
+    /*p30.AXEC*/ if (SPRITE2_GET) sil_tri.TS_IDX_0  = not(!STORE2_IDX0);
+    /*p30.CYRO*/ if (SPRITE2_GET) sil_tri.TS_IDX_1  = not(!STORE2_IDX1);
+    /*p30.CUVU*/ if (SPRITE2_GET) sil_tri.TS_IDX_2  = not(!STORE2_IDX2);
+    /*p30.APON*/ if (SPRITE2_GET) sil_tri.TS_IDX_3  = not(!STORE2_IDX3);
+    /*p30.AFOZ*/ if (SPRITE2_GET) sil_tri.TS_IDX_4  = not(!STORE2_IDX4);
+    /*p30.CUBE*/ if (SPRITE2_GET) sil_tri.TS_IDX_5  = not(!STORE2_IDX5);
+    /*p30.ZABY*/ if (SPRITE2_GET) sil_tri.TS_LINE_0 = not(!STORE2_LINE0);
+    /*p30.ZUKE*/ if (SPRITE2_GET) sil_tri.TS_LINE_1 = not(!STORE2_LINE1);
+    /*p30.WUXE*/ if (SPRITE2_GET) sil_tri.TS_LINE_2 = not(!STORE2_LINE2);
+    /*p30.WERE*/ if (SPRITE2_GET) sil_tri.TS_LINE_3 = not(!STORE2_LINE3);
   }
 
   // store 3
   {
-    /*p31.YHOK*/ wire STORE3_MATCH0 = xor(b.spr.XOLY, b.vid.X0n);
-    /*p31.YCAH*/ wire STORE3_MATCH1 = xor(b.spr.XYBA, b.vid.X1n);
-    /*p31.YDAJ*/ wire STORE3_MATCH2 = xor(b.spr.XABE, b.vid.X2n);
-    /*p31.YVUZ*/ wire STORE3_MATCH3 = xor(b.spr.XEKA, b.vid.X3n);
-    /*p31.YVAP*/ wire STORE3_MATCH4 = xor(b.spr.XOMY, b.vid.X4n);
-    /*p31.XENY*/ wire STORE3_MATCH5 = xor(b.spr.WUHA, b.vid.X5n);
-    /*p31.XAVU*/ wire STORE3_MATCH6 = xor(b.spr.WYNA, b.vid.X6n);
-    /*p31.XEVA*/ wire STORE3_MATCH7 = xor(b.spr.WECO, b.vid.X7n);
+    /*p31.YHOK*/ wire STORE3_MATCH0 = xor(XOLY, X0n);
+    /*p31.YCAH*/ wire STORE3_MATCH1 = xor(XYBA, X1n);
+    /*p31.YDAJ*/ wire STORE3_MATCH2 = xor(XABE, X2n);
+    /*p31.YVUZ*/ wire STORE3_MATCH3 = xor(XEKA, X3n);
+    /*p31.YVAP*/ wire STORE3_MATCH4 = xor(XOMY, X4n);
+    /*p31.XENY*/ wire STORE3_MATCH5 = xor(WUHA, X5n);
+    /*p31.XAVU*/ wire STORE3_MATCH6 = xor(WYNA, X6n);
+    /*p31.XEVA*/ wire STORE3_MATCH7 = xor(WECO, X7n);
     /*p31.ZURE*/ wire STORE3_MATCHA = nor(STORE3_MATCH0, STORE3_MATCH1, STORE3_MATCH2, STORE3_MATCH3);
     /*p31.YWOS*/ wire STORE3_MATCHB = nor(STORE3_MATCH4, STORE3_MATCH5, STORE3_MATCH6, STORE3_MATCH7);
 
-    /*p29.YLOZ*/ spr.STORE3_MATCHn = nand(b.spr.MATCH_EN, STORE3_MATCHA, STORE3_MATCHB);
-    /*p29.WEBO*/ wire STORE3_MATCH = not(b.spr.STORE3_MATCHn);
-    /*p29.WUTO*/ spr.STORE3_MATCH_OUT = or(STORE3_MATCH, b.spr.STORE2_MATCH_OUT);
+    /*p29.YLOZ*/ wire STORE3_MATCHn = nand(MATCH_EN, STORE3_MATCHA, STORE3_MATCHB);
+    /*p29.WEBO*/ wire STORE3_MATCH = not(STORE3_MATCHn);
+    /*p29.WUTO*/ wire STORE3_MATCH_OUT = or(STORE3_MATCH, STORE2_MATCH_OUT);
 
-    /*p29.GYFY*/ wire SPRITE3_GETn = nor(b.spr.STORE3_MATCHn, b.spr.STORE2_MATCH_OUT);
-    /*p29.GOTA*/ spr.SPRITE3_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE3_GET_SYNCn, SPRITE3_GETn);
+    /*p29.GYFY*/ wire SPRITE3_GETn = nor(STORE3_MATCHn, STORE2_MATCH_OUT);
+    /*p29.GOTA*/ sst_reg.SPRITE3_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE3_GET_SYNCn, SPRITE3_GETn);
 
-    /*p29.GAKE*/ wire STORE3_RST = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE3_GET_SYNCn);
+    /*p29.GAKE*/ wire STORE3_RST = or(DYBA_VID_LINE_TRIG_d4, SPRITE3_GET_SYNCn);
     /*p29.WUPA*/ wire STORE3_RSTn = not(STORE3_RST);
 
-    /*p29.GUVE*/ wire STORE3_CLK = or(b.spr.STORE_EN, STORE3_SEL); // 0011
+    /*p29.GUVE*/ wire STORE3_CLK = or(STORE_EN, STORE3_SEL); // 0011
     /*p29.GUSA*/ wire STORE3_CLKn = not(STORE3_CLK);
     
-    /*p29.FEKA*/ spr.FEKA = not(STORE3_CLKn);
-    /*p30.DAFU*/ spr.DAFU = tock_pos(a.spr.FEKA, b.spr.FEKA, 0,          b.spr.DAFU, b.spr.TS_IDX_0 );
-    /*p30.DEBA*/ spr.DEBA = tock_pos(a.spr.FEKA, b.spr.FEKA, 0,          b.spr.DEBA, b.spr.TS_IDX_1 );
-    /*p30.DUHA*/ spr.DUHA = tock_pos(a.spr.FEKA, b.spr.FEKA, 0,          b.spr.DUHA, b.spr.TS_IDX_2 );
-    /*p30.DUNY*/ spr.DUNY = tock_pos(a.spr.FEKA, b.spr.FEKA, 0,          b.spr.DUNY, b.spr.TS_IDX_3 );
-    /*p30.DESE*/ spr.DESE = tock_pos(a.spr.FEKA, b.spr.FEKA, 0,          b.spr.DESE, b.spr.TS_IDX_4 );
-    /*p30.DEVY*/ spr.DEVY = tock_pos(a.spr.FEKA, b.spr.FEKA, 0,          b.spr.DEVY, b.spr.TS_IDX_5 );
+    /*p29.FEKA*/ sst_reg.FEKA = not(STORE3_CLKn);
+    /*p30.DAFU*/ sst_reg.DAFU.set(FEKA, FEKA, 0,          DAFU, TS_IDX_0 );
+    /*p30.DEBA*/ sst_reg.DEBA.set(FEKA, FEKA, 0,          DEBA, TS_IDX_1 );
+    /*p30.DUHA*/ sst_reg.DUHA.set(FEKA, FEKA, 0,          DUHA, TS_IDX_2 );
+    /*p30.DUNY*/ sst_reg.DUNY.set(FEKA, FEKA, 0,          DUNY, TS_IDX_3 );
+    /*p30.DESE*/ sst_reg.DESE.set(FEKA, FEKA, 0,          DESE, TS_IDX_4 );
+    /*p30.DEVY*/ sst_reg.DEVY.set(FEKA, FEKA, 0,          DEVY, TS_IDX_5 );
 
-    /*p29.XYHA*/ spr.XYHA = not(STORE3_CLKn);
-    /*p30.ZURY*/ spr.ZURY = tock_pos(a.spr.XYHA, b.spr.XYHA, 0,          b.spr.ZURY, b.spr.TS_LINE_0);
-    /*p30.ZURO*/ spr.ZURO = tock_pos(a.spr.XYHA, b.spr.XYHA, 0,          b.spr.ZURO, b.spr.TS_LINE_1);
-    /*p30.ZENE*/ spr.ZENE = tock_pos(a.spr.XYHA, b.spr.XYHA, 0,          b.spr.ZENE, b.spr.TS_LINE_2);
-    /*p30.ZYLU*/ spr.ZYLU = tock_pos(a.spr.XYHA, b.spr.XYHA, 0,          b.spr.ZYLU, b.spr.TS_LINE_3);
+    /*p29.XYHA*/ sst_reg.XYHA = not(STORE3_CLKn);
+    /*p30.ZURY*/ sst_reg.ZURY.set(XYHA, XYHA, 0,          ZURY, TS_LINE_0);
+    /*p30.ZURO*/ sst_reg.ZURO.set(XYHA, XYHA, 0,          ZURO, TS_LINE_1);
+    /*p30.ZENE*/ sst_reg.ZENE.set(XYHA, XYHA, 0,          ZENE, TS_LINE_2);
+    /*p30.ZYLU*/ sst_reg.ZYLU.set(XYHA, XYHA, 0,          ZYLU, TS_LINE_3);
 
-    /*p29.YFAG*/ spr.YFAG = not(STORE3_CLKn);
-    /*p31.XOLY*/ spr.XOLY = tock_pos(a.spr.YFAG, b.spr.YFAG, STORE3_RSTn, b.spr.XOLY, b.spr.OAM_A_D0b);
-    /*p31.XYBA*/ spr.XYBA = tock_pos(a.spr.YFAG, b.spr.YFAG, STORE3_RSTn, b.spr.XYBA, b.spr.OAM_A_D1b);
-    /*p31.XABE*/ spr.XABE = tock_pos(a.spr.YFAG, b.spr.YFAG, STORE3_RSTn, b.spr.XABE, b.spr.OAM_A_D2b);
-    /*p31.XEKA*/ spr.XEKA = tock_pos(a.spr.YFAG, b.spr.YFAG, STORE3_RSTn, b.spr.XEKA, b.spr.OAM_A_D3b);
-    /*p31.XOMY*/ spr.XOMY = tock_pos(a.spr.YFAG, b.spr.YFAG, STORE3_RSTn, b.spr.XOMY, b.spr.OAM_A_D4b);
-    /*p31.WUHA*/ spr.WUHA = tock_pos(a.spr.YFAG, b.spr.YFAG, STORE3_RSTn, b.spr.WUHA, b.spr.OAM_A_D5b);
-    /*p31.WYNA*/ spr.WYNA = tock_pos(a.spr.YFAG, b.spr.YFAG, STORE3_RSTn, b.spr.WYNA, b.spr.OAM_A_D6b);
-    /*p31.WECO*/ spr.WECO = tock_pos(a.spr.YFAG, b.spr.YFAG, STORE3_RSTn, b.spr.WECO, b.spr.OAM_A_D7b);
+    /*p29.YFAG*/ sst_reg.YFAG = not(STORE3_CLKn);
+    /*p31.XOLY*/ sst_reg.XOLY.set(YFAG, YFAG, STORE3_RSTn, XOLY, OAM_A_D0b);
+    /*p31.XYBA*/ sst_reg.XYBA.set(YFAG, YFAG, STORE3_RSTn, XYBA, OAM_A_D1b);
+    /*p31.XABE*/ sst_reg.XABE.set(YFAG, YFAG, STORE3_RSTn, XABE, OAM_A_D2b);
+    /*p31.XEKA*/ sst_reg.XEKA.set(YFAG, YFAG, STORE3_RSTn, XEKA, OAM_A_D3b);
+    /*p31.XOMY*/ sst_reg.XOMY.set(YFAG, YFAG, STORE3_RSTn, XOMY, OAM_A_D4b);
+    /*p31.WUHA*/ sst_reg.WUHA.set(YFAG, YFAG, STORE3_RSTn, WUHA, OAM_A_D5b);
+    /*p31.WYNA*/ sst_reg.WYNA.set(YFAG, YFAG, STORE3_RSTn, WYNA, OAM_A_D6b);
+    /*p31.WECO*/ sst_reg.WECO.set(YFAG, YFAG, STORE3_RSTn, WECO, OAM_A_D7b);
 
     /*p29.GYMA*/ wire SPRITE3_GET = not(SPRITE3_GETn);
-    /*p30.DEZU*/ if (SPRITE3_GET) spr.TS_IDX_0  = not(!b.spr.DAFU);
-    /*p30.EFUD*/ if (SPRITE3_GET) spr.TS_IDX_1  = not(!b.spr.DEBA);
-    /*p30.DONY*/ if (SPRITE3_GET) spr.TS_IDX_2  = not(!b.spr.DUHA);
-    /*p30.DOWA*/ if (SPRITE3_GET) spr.TS_IDX_3  = not(!b.spr.DUNY);
-    /*p30.DYGO*/ if (SPRITE3_GET) spr.TS_IDX_4  = not(!b.spr.DESE);
-    /*p30.ENAP*/ if (SPRITE3_GET) spr.TS_IDX_5  = not(!b.spr.DEVY);
-    /*p30.ZYPO*/ if (SPRITE3_GET) spr.TS_LINE_0 = not(!b.spr.ZURY);
-    /*p30.ZEXE*/ if (SPRITE3_GET) spr.TS_LINE_1 = not(!b.spr.ZURO);
-    /*p30.YJEM*/ if (SPRITE3_GET) spr.TS_LINE_2 = not(!b.spr.ZENE);
-    /*p30.YWAV*/ if (SPRITE3_GET) spr.TS_LINE_3 = not(!b.spr.ZYLU);
+    /*p30.DEZU*/ if (SPRITE3_GET) sil_tri.TS_IDX_0  = not(!DAFU);
+    /*p30.EFUD*/ if (SPRITE3_GET) sil_tri.TS_IDX_1  = not(!DEBA);
+    /*p30.DONY*/ if (SPRITE3_GET) sil_tri.TS_IDX_2  = not(!DUHA);
+    /*p30.DOWA*/ if (SPRITE3_GET) sil_tri.TS_IDX_3  = not(!DUNY);
+    /*p30.DYGO*/ if (SPRITE3_GET) sil_tri.TS_IDX_4  = not(!DESE);
+    /*p30.ENAP*/ if (SPRITE3_GET) sil_tri.TS_IDX_5  = not(!DEVY);
+    /*p30.ZYPO*/ if (SPRITE3_GET) sil_tri.TS_LINE_0 = not(!ZURY);
+    /*p30.ZEXE*/ if (SPRITE3_GET) sil_tri.TS_LINE_1 = not(!ZURO);
+    /*p30.YJEM*/ if (SPRITE3_GET) sil_tri.TS_LINE_2 = not(!ZENE);
+    /*p30.YWAV*/ if (SPRITE3_GET) sil_tri.TS_LINE_3 = not(!ZYLU);
   }
 
   // store 4
   {
-    /*p31.ZYKU*/ wire ZYKU = xor(b.spr.YBED, b.vid.X4n);
-    /*p31.ZYPU*/ wire ZYPU = xor(b.spr.ZALA, b.vid.X5n);
-    /*p31.XAHA*/ wire XAHA = xor(b.spr.WYDE, b.vid.X6n);
-    /*p31.ZEFE*/ wire ZEFE = xor(b.spr.XEPA, b.vid.X7n);
-    /*p31.XEJU*/ wire XEJU = xor(b.spr.WEDU, b.vid.X0n);
-    /*p31.ZATE*/ wire ZATE = xor(b.spr.YGAJ, b.vid.X1n);
-    /*p31.ZAKU*/ wire ZAKU = xor(b.spr.ZYJO, b.vid.X2n);
-    /*p31.YBOX*/ wire YBOX = xor(b.spr.XURY, b.vid.X3n);
+    /*p31.ZYKU*/ wire ZYKU = xor(YBED, X4n);
+    /*p31.ZYPU*/ wire ZYPU = xor(ZALA, X5n);
+    /*p31.XAHA*/ wire XAHA = xor(WYDE, X6n);
+    /*p31.ZEFE*/ wire ZEFE = xor(XEPA, X7n);
+    /*p31.XEJU*/ wire XEJU = xor(WEDU, X0n);
+    /*p31.ZATE*/ wire ZATE = xor(YGAJ, X1n);
+    /*p31.ZAKU*/ wire ZAKU = xor(ZYJO, X2n);
+    /*p31.YBOX*/ wire YBOX = xor(XURY, X3n);
     /*p31.YKOK*/ wire YKOK = nor(ZYKU, ZYPU, XAHA, ZEFE);
     /*p31.YNAZ*/ wire YNAZ = nor(XEJU, ZATE, ZAKU, YBOX);
-    /*p29.XAGE*/ spr.STORE4_MATCHn = nand(b.spr.MATCH_EN, YNAZ, YKOK);
-    /*p29.WUNA*/ wire STORE4_MATCH = not(b.spr.STORE4_MATCHn);
+    /*p29.XAGE*/ sst_reg.STORE4_MATCHn = nand(MATCH_EN, YNAZ, YKOK);
+    /*p29.WUNA*/ wire STORE4_MATCH = not(STORE4_MATCHn);
 
-    /*p29.XUDY*/ spr.SPRITE4_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE4_GET_SYNCn, b.spr.GONO);
-    /*p29.WOHU*/ spr.WOHU = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE4_GET_SYNCn);
-    /*p29.XYLA*/ spr.STORE4_MATCH_OUT = or(STORE4_MATCH, b.spr.STORE3_MATCH_OUT);
+    /*p29.XUDY*/ sst_reg.SPRITE4_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE4_GET_SYNCn, GONO);
+    /*p29.WOHU*/ sst_reg.WOHU = or(DYBA_VID_LINE_TRIG_d4, SPRITE4_GET_SYNCn);
+    /*p29.XYLA*/ sst_reg.STORE4_MATCH_OUT = or(STORE4_MATCH, STORE3_MATCH_OUT);
 
-    /*p29.CECU*/ wire STORE4_CLK = or(b.spr.STORE_EN, STORE4_SEL); // 0100
-    /*p29.DUKE*/ spr.DUKE = not(STORE4_CLK);
+    /*p29.CECU*/ wire STORE4_CLK = or(STORE_EN, STORE4_SEL); // 0100
+    /*p29.DUKE*/ sst_reg.DUKE = not(STORE4_CLK);
     
     // i think these are swapped
-    /*p29.WUNU*/ spr.WUNU = not(b.spr.WOHU);
-    /*p29.WOFO*/ spr.WOFO = not(b.spr.DUKE);
-    /*p31.WEDU*/ spr.WEDU = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.WEDU, b.spr.OAM_A_D0b);
-    /*p31.YGAJ*/ spr.YGAJ = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.YGAJ, b.spr.OAM_A_D1b);
-    /*p31.ZYJO*/ spr.ZYJO = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.ZYJO, b.spr.OAM_A_D2b);
-    /*p31.XURY*/ spr.XURY = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.XURY, b.spr.OAM_A_D3b);
-    /*p31.YBED*/ spr.YBED = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.YBED, b.spr.OAM_A_D4b);
-    /*p31.ZALA*/ spr.ZALA = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.ZALA, b.spr.OAM_A_D5b);
-    /*p31.WYDE*/ spr.WYDE = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.WYDE, b.spr.OAM_A_D6b);
-    /*p31.XEPA*/ spr.XEPA = tock_pos(a.spr.WUNU, b.spr.WUNU, b.spr.WOFO, b.spr.XEPA, b.spr.OAM_A_D7b);
+    /*p29.WUNU*/ sst_reg.WUNU = not(WOHU);
+    /*p29.WOFO*/ sst_reg.WOFO = not(DUKE);
+    /*p31.WEDU*/ sst_reg.WEDU.set(WUNU, WUNU, WOFO, WEDU, OAM_A_D0b);
+    /*p31.YGAJ*/ sst_reg.YGAJ.set(WUNU, WUNU, WOFO, YGAJ, OAM_A_D1b);
+    /*p31.ZYJO*/ sst_reg.ZYJO.set(WUNU, WUNU, WOFO, ZYJO, OAM_A_D2b);
+    /*p31.XURY*/ sst_reg.XURY.set(WUNU, WUNU, WOFO, XURY, OAM_A_D3b);
+    /*p31.YBED*/ sst_reg.YBED.set(WUNU, WUNU, WOFO, YBED, OAM_A_D4b);
+    /*p31.ZALA*/ sst_reg.ZALA.set(WUNU, WUNU, WOFO, ZALA, OAM_A_D5b);
+    /*p31.WYDE*/ sst_reg.WYDE.set(WUNU, WUNU, WOFO, WYDE, OAM_A_D6b);
+    /*p31.XEPA*/ sst_reg.XEPA.set(WUNU, WUNU, WOFO, XEPA, OAM_A_D7b);
 
-    /*p29.WYLU*/ spr.WYLU = not(b.spr.DUKE);
-    /*p30.XYNU*/ spr.XYNU = tock_pos(a.spr.WYLU, b.spr.WYLU, 0, b.spr.XYNU, b.spr.TS_IDX_0 );
-    /*p30.XEGE*/ spr.XEGE = tock_pos(a.spr.WYLU, b.spr.WYLU, 0, b.spr.XEGE, b.spr.TS_IDX_1 );
-    /*p30.XABO*/ spr.XABO = tock_pos(a.spr.WYLU, b.spr.WYLU, 0, b.spr.XABO, b.spr.TS_IDX_2 );
-    /*p30.WANU*/ spr.WANU = tock_pos(a.spr.WYLU, b.spr.WYLU, 0, b.spr.WANU, b.spr.TS_IDX_3 );
-    /*p30.XEFE*/ spr.XEFE = tock_pos(a.spr.WYLU, b.spr.WYLU, 0, b.spr.XEFE, b.spr.TS_IDX_4 );
-    /*p30.XAVE*/ spr.XAVE = tock_pos(a.spr.WYLU, b.spr.WYLU, 0, b.spr.XAVE, b.spr.TS_IDX_5 );
+    /*p29.WYLU*/ sst_reg.WYLU = not(DUKE);
+    /*p30.XYNU*/ sst_reg.XYNU.set(WYLU, WYLU, 0, XYNU, TS_IDX_0 );
+    /*p30.XEGE*/ sst_reg.XEGE.set(WYLU, WYLU, 0, XEGE, TS_IDX_1 );
+    /*p30.XABO*/ sst_reg.XABO.set(WYLU, WYLU, 0, XABO, TS_IDX_2 );
+    /*p30.WANU*/ sst_reg.WANU.set(WYLU, WYLU, 0, WANU, TS_IDX_3 );
+    /*p30.XEFE*/ sst_reg.XEFE.set(WYLU, WYLU, 0, XEFE, TS_IDX_4 );
+    /*p30.XAVE*/ sst_reg.XAVE.set(WYLU, WYLU, 0, XAVE, TS_IDX_5 );
 
-    /*p29.EWOT*/ spr.EWOT = not(b.spr.DUKE);
-    /*p30.CUMU*/ spr.CUMU = tock_pos(a.spr.EWOT, b.spr.EWOT, 0, b.spr.CUMU, b.spr.TS_LINE_0);
-    /*p30.CAPO*/ spr.CAPO = tock_pos(a.spr.EWOT, b.spr.EWOT, 0, b.spr.CAPO, b.spr.TS_LINE_1);
-    /*p30.CONO*/ spr.CONO = tock_pos(a.spr.EWOT, b.spr.EWOT, 0, b.spr.CONO, b.spr.TS_LINE_2);
-    /*p30.CAJU*/ spr.CAJU = tock_pos(a.spr.EWOT, b.spr.EWOT, 0, b.spr.CAJU, b.spr.TS_LINE_3);
+    /*p29.EWOT*/ sst_reg.EWOT = not(DUKE);
+    /*p30.CUMU*/ sst_reg.CUMU.set(EWOT, EWOT, 0, CUMU, TS_LINE_0);
+    /*p30.CAPO*/ sst_reg.CAPO.set(EWOT, EWOT, 0, CAPO, TS_LINE_1);
+    /*p30.CONO*/ sst_reg.CONO.set(EWOT, EWOT, 0, CONO, TS_LINE_2);
+    /*p30.CAJU*/ sst_reg.CAJU.set(EWOT, EWOT, 0, CAJU, TS_LINE_3);
 
-    /*p29.GONO*/ spr.GONO = nor(b.spr.STORE4_MATCHn, b.spr.STORE3_MATCH_OUT);
+    /*p29.GONO*/ sst_reg.GONO = nor(STORE4_MATCHn, STORE3_MATCH_OUT);
 
-    /*p29.GOWO*/ spr.GOWO = not(b.spr.GONO);
-    /*p30.WAJA*/ if (b.spr.GOWO) spr.TS_IDX_0  = not(!b.spr.XYNU);
-    /*p30.WOXY*/ if (b.spr.GOWO) spr.TS_IDX_1  = not(!b.spr.XEGE);
-    /*p30.XYRE*/ if (b.spr.GOWO) spr.TS_IDX_2  = not(!b.spr.XABO);
-    /*p30.WERU*/ if (b.spr.GOWO) spr.TS_IDX_3  = not(!b.spr.WANU);
-    /*p30.WEPY*/ if (b.spr.GOWO) spr.TS_IDX_4  = not(!b.spr.XEFE);
-    /*p30.WUXU*/ if (b.spr.GOWO) spr.TS_IDX_5  = not(!b.spr.XAVE);
-    /*p30.BYDO*/ if (b.spr.GOWO) spr.TS_LINE_0 = not(!b.spr.CUMU);
-    /*p30.BUCE*/ if (b.spr.GOWO) spr.TS_LINE_1 = not(!b.spr.CAPO);
-    /*p30.BOVE*/ if (b.spr.GOWO) spr.TS_LINE_2 = not(!b.spr.CONO);
-    /*p30.BEVY*/ if (b.spr.GOWO) spr.TS_LINE_3 = not(!b.spr.CAJU);
+    /*p29.GOWO*/ sst_reg.GOWO = not(GONO);
+    /*p30.WAJA*/ if (GOWO) sil_tri.TS_IDX_0  = not(!XYNU);
+    /*p30.WOXY*/ if (GOWO) sil_tri.TS_IDX_1  = not(!XEGE);
+    /*p30.XYRE*/ if (GOWO) sil_tri.TS_IDX_2  = not(!XABO);
+    /*p30.WERU*/ if (GOWO) sil_tri.TS_IDX_3  = not(!WANU);
+    /*p30.WEPY*/ if (GOWO) sil_tri.TS_IDX_4  = not(!XEFE);
+    /*p30.WUXU*/ if (GOWO) sil_tri.TS_IDX_5  = not(!XAVE);
+    /*p30.BYDO*/ if (GOWO) sil_tri.TS_LINE_0 = not(!CUMU);
+    /*p30.BUCE*/ if (GOWO) sil_tri.TS_LINE_1 = not(!CAPO);
+    /*p30.BOVE*/ if (GOWO) sil_tri.TS_LINE_2 = not(!CONO);
+    /*p30.BEVY*/ if (GOWO) sil_tri.TS_LINE_3 = not(!CAJU);
   }
 
   {
-    // store 5
-    /*p31.BAZY*/ wire BAZY = xor(b.spr.CYWE, b.vid.X4n);
-    /*p31.CYLE*/ wire CYLE = xor(b.spr.DYBY, b.vid.X5n);
-    /*p31.CEVA*/ wire CEVA = xor(b.spr.DURY, b.vid.X6n);
-    /*p31.BUMY*/ wire BUMY = xor(b.spr.CUVY, b.vid.X7n);
-    /*p31.GUZO*/ wire GUZO = xor(b.spr.FUSA, b.vid.X0n);
-    /*p31.GOLA*/ wire GOLA = xor(b.spr.FAXA, b.vid.X1n);
-    /*p31.GEVE*/ wire GEVE = xor(b.spr.FOZY, b.vid.X2n);
-    /*p31.GUDE*/ wire GUDE = xor(b.spr.FESY, b.vid.X3n);
-    /*p31.COGY*/ wire COGY = nor(BAZY, CYLE, CEVA, BUMY);
-    /*p31.FYMA*/ wire FYMA = nor(GUZO, GOLA, GEVE, GUDE);
-    /*p29.EGOM*/ spr.STORE5_MATCHn = nand(b.spr.MATCH_EN, FYMA, COGY);
+  // store 5
+  /*p31.BAZY*/ wire BAZY = xor(CYWE, X4n);
+  /*p31.CYLE*/ wire CYLE = xor(DYBY, X5n);
+  /*p31.CEVA*/ wire CEVA = xor(DURY, X6n);
+  /*p31.BUMY*/ wire BUMY = xor(CUVY, X7n);
+  /*p31.GUZO*/ wire GUZO = xor(FUSA, X0n);
+  /*p31.GOLA*/ wire GOLA = xor(FAXA, X1n);
+  /*p31.GEVE*/ wire GEVE = xor(FOZY, X2n);
+  /*p31.GUDE*/ wire GUDE = xor(FESY, X3n);
+  /*p31.COGY*/ wire COGY = nor(BAZY, CYLE, CEVA, BUMY);
+  /*p31.FYMA*/ wire FYMA = nor(GUZO, GOLA, GEVE, GUDE);
+  /*p29.EGOM*/ sst_reg.STORE5_MATCHn = nand(MATCH_EN, FYMA, COGY);
 
-    /*p29.GEGA*/ spr.GEGA = nor(b.spr.STORE5_MATCHn, b.spr.STORE4_MATCH_OUT);
-    /*p29.WAFY*/ spr.SPRITE5_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE5_GET_SYNCn, b.spr.GEGA);
-    /*p29.FEVE*/ spr.FEVE = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE5_GET_SYNCn);
-    /*p29.EJAD*/ spr.EJAD = not(b.spr.FEVE);
-    /*p29.GABA*/ wire STORE5_MATCH = not(b.spr.STORE5_MATCHn);
+  /*p29.GEGA*/ sst_reg.GEGA = nor(STORE5_MATCHn, STORE4_MATCH_OUT);
+  /*p29.WAFY*/ sst_reg.SPRITE5_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE5_GET_SYNCn, GEGA);
+  /*p29.FEVE*/ sst_reg.FEVE = or(DYBA_VID_LINE_TRIG_d4, SPRITE5_GET_SYNCn);
+  /*p29.EJAD*/ sst_reg.EJAD = not(FEVE);
+  /*p29.GABA*/ wire STORE5_MATCH = not(STORE5_MATCHn);
     
-    /*p29.WEJA*/ spr.STORE5_MATCH_OUT = or(STORE5_MATCH, b.spr.STORE4_MATCH_OUT);
+  /*p29.WEJA*/ sst_reg.STORE5_MATCH_OUT = or(STORE5_MATCH, STORE4_MATCH_OUT);
 
-    /*p29.CADO*/ wire STORE5_CLK = or(b.spr.STORE_EN, STORE5_SEL); // 0101
-    /*p29.BEDE*/ spr.BEDE = not(STORE5_CLK);
+  /*p29.CADO*/ wire STORE5_CLK = or(STORE_EN, STORE5_SEL); // 0101
+  /*p29.BEDE*/ sst_reg.BEDE = not(STORE5_CLK);
 
-    /*p29.CYLA*/ spr.CYLA = not(b.spr.BEDE);
-    /*p31.FUSA*/ spr.FUSA = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.FUSA, b.spr.OAM_A_D0b);
-    /*p31.FAXA*/ spr.FAXA = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.FAXA, b.spr.OAM_A_D1b);
-    /*p31.FOZY*/ spr.FOZY = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.FOZY, b.spr.OAM_A_D2b);
-    /*p31.FESY*/ spr.FESY = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.FESY, b.spr.OAM_A_D3b);
-    /*p31.CYWE*/ spr.CYWE = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.CYWE, b.spr.OAM_A_D4b);
-    /*p31.DYBY*/ spr.DYBY = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.DYBY, b.spr.OAM_A_D5b);
-    /*p31.DURY*/ spr.DURY = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.DURY, b.spr.OAM_A_D6b);
-    /*p31.CUVY*/ spr.CUVY = tock_pos(a.spr.CYLA, b.spr.CYLA, b.spr.EJAD, b.spr.CUVY, b.spr.OAM_A_D7b);
+  /*p29.CYLA*/ sst_reg.CYLA = not(BEDE);
+  /*p31.FUSA*/ sst_reg.FUSA.set(CYLA, CYLA, EJAD, FUSA, OAM_A_D0b);
+  /*p31.FAXA*/ sst_reg.FAXA.set(CYLA, CYLA, EJAD, FAXA, OAM_A_D1b);
+  /*p31.FOZY*/ sst_reg.FOZY.set(CYLA, CYLA, EJAD, FOZY, OAM_A_D2b);
+  /*p31.FESY*/ sst_reg.FESY.set(CYLA, CYLA, EJAD, FESY, OAM_A_D3b);
+  /*p31.CYWE*/ sst_reg.CYWE.set(CYLA, CYLA, EJAD, CYWE, OAM_A_D4b);
+  /*p31.DYBY*/ sst_reg.DYBY.set(CYLA, CYLA, EJAD, DYBY, OAM_A_D5b);
+  /*p31.DURY*/ sst_reg.DURY.set(CYLA, CYLA, EJAD, DURY, OAM_A_D6b);
+  /*p31.CUVY*/ sst_reg.CUVY.set(CYLA, CYLA, EJAD, CUVY, OAM_A_D7b);
 
-    /*p29.DYMO*/ spr.DYMO = not(b.spr.BEDE);
-    /*p30.EKAP*/ spr.EKAP = tock_pos(a.spr.DYMO, b.spr.DYMO, 0, b.spr.EKAP, b.spr.TS_IDX_0 );
-    /*p30.ETAV*/ spr.ETAV = tock_pos(a.spr.DYMO, b.spr.DYMO, 0, b.spr.ETAV, b.spr.TS_IDX_1 );
-    /*p30.EBEX*/ spr.EBEX = tock_pos(a.spr.DYMO, b.spr.DYMO, 0, b.spr.EBEX, b.spr.TS_IDX_2 );
-    /*p30.GORU*/ spr.GORU = tock_pos(a.spr.DYMO, b.spr.DYMO, 0, b.spr.GORU, b.spr.TS_IDX_3 );
-    /*p30.ETYM*/ spr.ETYM = tock_pos(a.spr.DYMO, b.spr.DYMO, 0, b.spr.ETYM, b.spr.TS_IDX_4 );
-    /*p30.EKOP*/ spr.EKOP = tock_pos(a.spr.DYMO, b.spr.DYMO, 0, b.spr.EKOP, b.spr.TS_IDX_5 );
+  /*p29.DYMO*/ sst_reg.DYMO = not(BEDE);
+  /*p30.EKAP*/ sst_reg.EKAP.set(DYMO, DYMO, 0, EKAP, TS_IDX_0 );
+  /*p30.ETAV*/ sst_reg.ETAV.set(DYMO, DYMO, 0, ETAV, TS_IDX_1 );
+  /*p30.EBEX*/ sst_reg.EBEX.set(DYMO, DYMO, 0, EBEX, TS_IDX_2 );
+  /*p30.GORU*/ sst_reg.GORU.set(DYMO, DYMO, 0, GORU, TS_IDX_3 );
+  /*p30.ETYM*/ sst_reg.ETYM.set(DYMO, DYMO, 0, ETYM, TS_IDX_4 );
+  /*p30.EKOP*/ sst_reg.EKOP.set(DYMO, DYMO, 0, EKOP, TS_IDX_5 );
 
-    /*p29.BUCY*/ spr.BUCY = not(b.spr.BEDE);
-    /*p30.ANED*/ spr.ANED = tock_pos(a.spr.BUCY, b.spr.BUCY, 0, b.spr.ANED, b.spr.TS_LINE_0);
-    /*p30.ACEP*/ spr.ACEP = tock_pos(a.spr.BUCY, b.spr.BUCY, 0, b.spr.ACEP, b.spr.TS_LINE_1);
-    /*p30.ABUX*/ spr.ABUX = tock_pos(a.spr.BUCY, b.spr.BUCY, 0, b.spr.ABUX, b.spr.TS_LINE_2);
-    /*p30.ABEG*/ spr.ABEG = tock_pos(a.spr.BUCY, b.spr.BUCY, 0, b.spr.ABEG, b.spr.TS_LINE_3);
+  /*p29.BUCY*/ sst_reg.BUCY = not(BEDE);
+  /*p30.ANED*/ sst_reg.ANED.set(BUCY, BUCY, 0, ANED, TS_LINE_0);
+  /*p30.ACEP*/ sst_reg.ACEP.set(BUCY, BUCY, 0, ACEP, TS_LINE_1);
+  /*p30.ABUX*/ sst_reg.ABUX.set(BUCY, BUCY, 0, ABUX, TS_LINE_2);
+  /*p30.ABEG*/ sst_reg.ABEG.set(BUCY, BUCY, 0, ABEG, TS_LINE_3);
 
-    /*p29.GYGY*/ spr.GYGY = not(b.spr.GEGA);
-    /*p30.DALO*/ if (b.spr.GYGY) spr.TS_IDX_0  = not(!b.spr.EKAP);
-    /*p30.DALY*/ if (b.spr.GYGY) spr.TS_IDX_1  = not(!b.spr.ETAV);
-    /*p30.DUZA*/ if (b.spr.GYGY) spr.TS_IDX_2  = not(!b.spr.EBEX);
-    /*p30.WAGA*/ if (b.spr.GYGY) spr.TS_IDX_3  = not(!b.spr.GORU);
-    /*p30.DYNY*/ if (b.spr.GYGY) spr.TS_IDX_4  = not(!b.spr.ETYM);
-    /*p30.DOBO*/ if (b.spr.GYGY) spr.TS_IDX_5  = not(!b.spr.EKOP);
-    /*p30.AWAT*/ if (b.spr.GYGY) spr.TS_LINE_0 = not(!b.spr.ANED);
-    /*p30.BACE*/ if (b.spr.GYGY) spr.TS_LINE_1 = not(!b.spr.ACEP);
-    /*p30.BODU*/ if (b.spr.GYGY) spr.TS_LINE_2 = not(!b.spr.ABUX);
-    /*p30.BUJA*/ if (b.spr.GYGY) spr.TS_LINE_3 = not(!b.spr.ABEG);
+  /*p29.GYGY*/ sst_reg.GYGY = not(GEGA);
+  /*p30.DALO*/ if (GYGY) sil_tri.TS_IDX_0  = not(!EKAP);
+  /*p30.DALY*/ if (GYGY) sil_tri.TS_IDX_1  = not(!ETAV);
+  /*p30.DUZA*/ if (GYGY) sil_tri.TS_IDX_2  = not(!EBEX);
+  /*p30.WAGA*/ if (GYGY) sil_tri.TS_IDX_3  = not(!GORU);
+  /*p30.DYNY*/ if (GYGY) sil_tri.TS_IDX_4  = not(!ETYM);
+  /*p30.DOBO*/ if (GYGY) sil_tri.TS_IDX_5  = not(!EKOP);
+  /*p30.AWAT*/ if (GYGY) sil_tri.TS_LINE_0 = not(!ANED);
+  /*p30.BACE*/ if (GYGY) sil_tri.TS_LINE_1 = not(!ACEP);
+  /*p30.BODU*/ if (GYGY) sil_tri.TS_LINE_2 = not(!ABUX);
+  /*p30.BUJA*/ if (GYGY) sil_tri.TS_LINE_3 = not(!ABEG);
 
   }
 
   {
-    // store 6
-    /*p31.ZARE*/ wire ZARE = xor(b.spr.ZOLY, b.vid.X4n);
-    /*p31.ZEMU*/ wire ZEMU = xor(b.spr.ZOGO, b.vid.X5n);
-    /*p31.ZYGO*/ wire ZYGO = xor(b.spr.ZECU, b.vid.X6n);
-    /*p31.ZUZY*/ wire ZUZY = xor(b.spr.ZESA, b.vid.X7n);
-    /*p31.XOSU*/ wire XOSU = xor(b.spr.YCOL, b.vid.X0n);
-    /*p31.ZUVU*/ wire ZUVU = xor(b.spr.YRAC, b.vid.X1n);
-    /*p31.XUCO*/ wire XUCO = xor(b.spr.YMEM, b.vid.X2n);
-    /*p31.ZULO*/ wire ZULO = xor(b.spr.YVAG, b.vid.X3n);
-    /*p31.YWAP*/ wire YWAP = nor(ZARE, ZEMU, ZYGO, ZUZY);
-    /*p31.YDOT*/ wire YDOT = nor(XOSU, ZUVU, XUCO, ZULO);
-    /*p29.YBEZ*/ spr.STORE6_MATCHn = nand(b.spr.MATCH_EN, YDOT, YWAP);
+  // sprite store 6
+  /*p31.ZARE*/ wire ZARE = xor(ZOLY, X4n);
+  /*p31.ZEMU*/ wire ZEMU = xor(ZOGO, X5n);
+  /*p31.ZYGO*/ wire ZYGO = xor(ZECU, X6n);
+  /*p31.ZUZY*/ wire ZUZY = xor(ZESA, X7n);
+  /*p31.XOSU*/ wire XOSU = xor(YCOL, X0n);
+  /*p31.ZUVU*/ wire ZUVU = xor(YRAC, X1n);
+  /*p31.XUCO*/ wire XUCO = xor(YMEM, X2n);
+  /*p31.ZULO*/ wire ZULO = xor(YVAG, X3n);
+  /*p31.YWAP*/ wire YWAP = nor(ZARE, ZEMU, ZYGO, ZUZY);
+  /*p31.YDOT*/ wire YDOT = nor(XOSU, ZUVU, XUCO, ZULO);
+  /*p29.YBEZ*/ sst_reg.STORE6_MATCHn = nand(MATCH_EN, YDOT, YWAP);
 
-    /*p29.XOJA*/ spr.XOJA = nor(b.spr.STORE6_MATCHn, b.spr.STORE5_MATCH_OUT);
-    /*p29.WOMY*/ spr.SPRITE6_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE6_GET_SYNCn, b.spr.XOJA);
-    /*p29.WACY*/ spr.WACY = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE6_GET_SYNCn);
-    /*p29.XAHO*/ spr.XAHO = not(b.spr.WACY);
-    /*p29.WASE*/ wire STORE6_MATCH = not(b.spr.STORE6_MATCHn);
-    /*p29.WYLA*/ spr.STORE6_MATCH_OUT = or(STORE6_MATCH, b.spr.STORE5_MATCH_OUT);
+  /*p29.XOJA*/ sst_reg.XOJA = nor(STORE6_MATCHn, STORE5_MATCH_OUT);
+  /*p29.WOMY*/ sst_reg.SPRITE6_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE6_GET_SYNCn, XOJA);
+  /*p29.WACY*/ sst_reg.WACY = or(DYBA_VID_LINE_TRIG_d4, SPRITE6_GET_SYNCn);
+  /*p29.XAHO*/ sst_reg.XAHO = not(WACY);
+  /*p29.WASE*/ wire STORE6_MATCH = not(STORE6_MATCHn);
+  /*p29.WYLA*/ sst_reg.STORE6_MATCH_OUT = or(STORE6_MATCH, STORE5_MATCH_OUT);
 
-    /*p29.XUJO*/ wire STORE6_CLK = or(b.spr.STORE_EN, STORE6_SEL); // 0110
-    /*p29.WEKA*/ spr.WEKA = not(STORE6_CLK);
+  /*p29.XUJO*/ wire STORE6_CLK = or(STORE_EN, STORE6_SEL); // 0110
+  /*p29.WEKA*/ sst_reg.WEKA = not(STORE6_CLK);
 
-    /*p29.ZAPE*/ spr.ZAPE = not(b.spr.WEKA);
-    /*p31.YCOL*/ spr.YCOL = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.YCOL, b.spr.OAM_A_D0b);
-    /*p31.YRAC*/ spr.YRAC = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.YRAC, b.spr.OAM_A_D1b);
-    /*p31.YMEM*/ spr.YMEM = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.YMEM, b.spr.OAM_A_D2b);
-    /*p31.YVAG*/ spr.YVAG = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.YVAG, b.spr.OAM_A_D3b);
-    /*p31.ZOLY*/ spr.ZOLY = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.ZOLY, b.spr.OAM_A_D4b);
-    /*p31.ZOGO*/ spr.ZOGO = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.ZOGO, b.spr.OAM_A_D5b);
-    /*p31.ZECU*/ spr.ZECU = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.ZECU, b.spr.OAM_A_D6b);
-    /*p31.ZESA*/ spr.ZESA = tock_pos(a.spr.ZAPE, b.spr.ZAPE, b.spr.XAHO, b.spr.ZESA, b.spr.OAM_A_D7b);
+  /*p29.ZAPE*/ sst_reg.ZAPE = not(WEKA);
+  /*p31.YCOL*/ sst_reg.YCOL.set(ZAPE, ZAPE, XAHO, YCOL, OAM_A_D0b);
+  /*p31.YRAC*/ sst_reg.YRAC.set(ZAPE, ZAPE, XAHO, YRAC, OAM_A_D1b);
+  /*p31.YMEM*/ sst_reg.YMEM.set(ZAPE, ZAPE, XAHO, YMEM, OAM_A_D2b);
+  /*p31.YVAG*/ sst_reg.YVAG.set(ZAPE, ZAPE, XAHO, YVAG, OAM_A_D3b);
+  /*p31.ZOLY*/ sst_reg.ZOLY.set(ZAPE, ZAPE, XAHO, ZOLY, OAM_A_D4b);
+  /*p31.ZOGO*/ sst_reg.ZOGO.set(ZAPE, ZAPE, XAHO, ZOGO, OAM_A_D5b);
+  /*p31.ZECU*/ sst_reg.ZECU.set(ZAPE, ZAPE, XAHO, ZECU, OAM_A_D6b);
+  /*p31.ZESA*/ sst_reg.ZESA.set(ZAPE, ZAPE, XAHO, ZESA, OAM_A_D7b);
 
-    /*p29.WUSE*/ spr.WUSE = not(b.spr.WEKA);
-    /*p30.GECU*/ spr.GECU = tock_pos(a.spr.WUSE, b.spr.WUSE, 0, b.spr.GECU, b.spr.TS_IDX_0 );
-    /*p30.FOXY*/ spr.FOXY = tock_pos(a.spr.WUSE, b.spr.WUSE, 0, b.spr.FOXY, b.spr.TS_IDX_1 );
-    /*p30.GOHU*/ spr.GOHU = tock_pos(a.spr.WUSE, b.spr.WUSE, 0, b.spr.GOHU, b.spr.TS_IDX_2 );
-    /*p30.FOGO*/ spr.FOGO = tock_pos(a.spr.WUSE, b.spr.WUSE, 0, b.spr.FOGO, b.spr.TS_IDX_3 );
-    /*p30.GACY*/ spr.GACY = tock_pos(a.spr.WUSE, b.spr.WUSE, 0, b.spr.GACY, b.spr.TS_IDX_4 );
-    /*p30.GABO*/ spr.GABO = tock_pos(a.spr.WUSE, b.spr.WUSE, 0, b.spr.GABO, b.spr.TS_IDX_5 );
+  /*p29.WUSE*/ sst_reg.WUSE = not(WEKA);
+  /*p30.GECU*/ sst_reg.GECU.set(WUSE, WUSE, 0, GECU, TS_IDX_0 );
+  /*p30.FOXY*/ sst_reg.FOXY.set(WUSE, WUSE, 0, FOXY, TS_IDX_1 );
+  /*p30.GOHU*/ sst_reg.GOHU.set(WUSE, WUSE, 0, GOHU, TS_IDX_2 );
+  /*p30.FOGO*/ sst_reg.FOGO.set(WUSE, WUSE, 0, FOGO, TS_IDX_3 );
+  /*p30.GACY*/ sst_reg.GACY.set(WUSE, WUSE, 0, GACY, TS_IDX_4 );
+  /*p30.GABO*/ sst_reg.GABO.set(WUSE, WUSE, 0, GABO, TS_IDX_5 );
     
-    /*p29.ZURU*/ spr.ZURU = not(b.spr.WEKA);
-    /*p30.ZUBE*/ spr.ZUBE = tock_pos(a.spr.ZURU, b.spr.ZURU, 0, b.spr.ZUBE, b.spr.TS_LINE_0);
-    /*p30.ZUMY*/ spr.ZUMY = tock_pos(a.spr.ZURU, b.spr.ZURU, 0, b.spr.ZUMY, b.spr.TS_LINE_1);
-    /*p30.ZEXO*/ spr.ZEXO = tock_pos(a.spr.ZURU, b.spr.ZURU, 0, b.spr.ZEXO, b.spr.TS_LINE_2);
-    /*p30.ZAFU*/ spr.ZAFU = tock_pos(a.spr.ZURU, b.spr.ZURU, 0, b.spr.ZAFU, b.spr.TS_LINE_3);
+  /*p29.ZURU*/ sst_reg.ZURU = not(WEKA);
+  /*p30.ZUBE*/ sst_reg.ZUBE.set(ZURU, ZURU, 0, ZUBE, TS_LINE_0);
+  /*p30.ZUMY*/ sst_reg.ZUMY.set(ZURU, ZURU, 0, ZUMY, TS_LINE_1);
+  /*p30.ZEXO*/ sst_reg.ZEXO.set(ZURU, ZURU, 0, ZEXO, TS_LINE_2);
+  /*p30.ZAFU*/ sst_reg.ZAFU.set(ZURU, ZURU, 0, ZAFU, TS_LINE_3);
 
-    /*p29.XYME*/ spr.XYME = not(b.spr.XOJA);
-    /*p30.WOCY*/ if (b.spr.XYME) spr.TS_IDX_0  = not(!b.spr.GECU);
-    /*p30.ELYC*/ if (b.spr.XYME) spr.TS_IDX_1  = not(!b.spr.FOXY);
-    /*p30.WABO*/ if (b.spr.XYME) spr.TS_IDX_2  = not(!b.spr.GOHU);
-    /*p30.EZOC*/ if (b.spr.XYME) spr.TS_IDX_3  = not(!b.spr.FOGO);
-    /*p30.WYWY*/ if (b.spr.XYME) spr.TS_IDX_4  = not(!b.spr.GACY);
-    /*p30.WATO*/ if (b.spr.XYME) spr.TS_IDX_5  = not(!b.spr.GABO);
-    /*p30.ZUDO*/ if (b.spr.XYME) spr.TS_LINE_0 = not(!b.spr.ZUBE);
-    /*p30.YBUK*/ if (b.spr.XYME) spr.TS_LINE_1 = not(!b.spr.ZUMY);
-    /*p30.ZYTO*/ if (b.spr.XYME) spr.TS_LINE_2 = not(!b.spr.ZEXO);
-    /*p30.YKOZ*/ if (b.spr.XYME) spr.TS_LINE_3 = not(!b.spr.ZAFU);
+  /*p29.XYME*/ sst_reg.XYME = not(XOJA);
+  /*p30.WOCY*/ if (XYME) sil_tri.TS_IDX_0  = not(!GECU);
+  /*p30.ELYC*/ if (XYME) sil_tri.TS_IDX_1  = not(!FOXY);
+  /*p30.WABO*/ if (XYME) sil_tri.TS_IDX_2  = not(!GOHU);
+  /*p30.EZOC*/ if (XYME) sil_tri.TS_IDX_3  = not(!FOGO);
+  /*p30.WYWY*/ if (XYME) sil_tri.TS_IDX_4  = not(!GACY);
+  /*p30.WATO*/ if (XYME) sil_tri.TS_IDX_5  = not(!GABO);
+  /*p30.ZUDO*/ if (XYME) sil_tri.TS_LINE_0 = not(!ZUBE);
+  /*p30.YBUK*/ if (XYME) sil_tri.TS_LINE_1 = not(!ZUMY);
+  /*p30.ZYTO*/ if (XYME) sil_tri.TS_LINE_2 = not(!ZEXO);
+  /*p30.YKOZ*/ if (XYME) sil_tri.TS_LINE_3 = not(!ZAFU);
   }
 
   {
-    // store 7
-    /*p31.DUSE*/ wire MATCH0 = xor(b.spr.STORE7_X0, b.vid.X0n);
-    /*p31.DAGU*/ wire MATCH1 = xor(b.spr.STORE7_X1, b.vid.X1n);
-    /*p31.DYZE*/ wire MATCH2 = xor(b.spr.STORE7_X2, b.vid.X2n);
-    /*p31.DESO*/ wire MATCH3 = xor(b.spr.STORE7_X3, b.vid.X3n);
-    /*p31.EJOT*/ wire MATCH4 = xor(b.spr.STORE7_X4, b.vid.X4n);
-    /*p31.ESAJ*/ wire MATCH5 = xor(b.spr.STORE7_X5, b.vid.X5n);
-    /*p31.DUCU*/ wire MATCH6 = xor(b.spr.STORE7_X6, b.vid.X6n);
-    /*p31.EWUD*/ wire MATCH7 = xor(b.spr.STORE7_X7, b.vid.X7n);
-    /*p31.CYCO*/ wire MATCHA = nor(MATCH0, MATCH1, MATCH2, MATCH3);
-    /*p31.DAJE*/ wire MATCHB = nor(MATCH4, MATCH5, MATCH6, MATCH7);
-    /*p29.DYKA*/ spr.STORE7_MATCHn = nand(b.spr.MATCH_EN, MATCHA, MATCHB);
-    /*p29.GYTE*/ wire STORE7_MATCH = not(b.spr.STORE7_MATCHn);
-    /*p29.FAVO*/ spr.STORE7_MATCH_OUT = or(STORE7_MATCH, b.spr.STORE6_MATCH_OUT);
+  // sprite store 7
+  /*p31.DUSE*/ wire MATCH0 = xor(STORE7_X0, X0n);
+  /*p31.DAGU*/ wire MATCH1 = xor(STORE7_X1, X1n);
+  /*p31.DYZE*/ wire MATCH2 = xor(STORE7_X2, X2n);
+  /*p31.DESO*/ wire MATCH3 = xor(STORE7_X3, X3n);
+  /*p31.EJOT*/ wire MATCH4 = xor(STORE7_X4, X4n);
+  /*p31.ESAJ*/ wire MATCH5 = xor(STORE7_X5, X5n);
+  /*p31.DUCU*/ wire MATCH6 = xor(STORE7_X6, X6n);
+  /*p31.EWUD*/ wire MATCH7 = xor(STORE7_X7, X7n);
+  /*p31.CYCO*/ wire MATCHA = nor(MATCH0, MATCH1, MATCH2, MATCH3);
+  /*p31.DAJE*/ wire MATCHB = nor(MATCH4, MATCH5, MATCH6, MATCH7);
+  /*p29.DYKA*/ sst_reg.STORE7_MATCHn = nand(MATCH_EN, MATCHA, MATCHB);
+  /*p29.GYTE*/ wire STORE7_MATCH = not(STORE7_MATCHn);
+  /*p29.FAVO*/ sst_reg.STORE7_MATCH_OUT = or(STORE7_MATCH, STORE6_MATCH_OUT);
 
-    /*p29.GUTU*/ wire STORE7_RD = nor(b.spr.STORE7_MATCHn, b.spr.STORE6_MATCH_OUT);
-    /*p29.WAPO*/ spr.SPRITE7_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE7_GET_SYNCn, STORE7_RD);
-    /*p29.GUKY*/ wire STORE7_RST = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE7_GET_SYNCn);
-    /*p29.GAFY*/ wire STORE7_RSTn = not(STORE7_RST);
+  /*p29.GUTU*/ wire STORE7_RD = nor(STORE7_MATCHn, STORE6_MATCH_OUT);
+  /*p29.WAPO*/ sst_reg.SPRITE7_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE7_GET_SYNCn, STORE7_RD);
+  /*p29.GUKY*/ wire STORE7_RST = or(DYBA_VID_LINE_TRIG_d4, SPRITE7_GET_SYNCn);
+  /*p29.GAFY*/ wire STORE7_RSTn = not(STORE7_RST);
 
-    /*p29.GAPE*/ wire STORE7_CLK = or(b.spr.STORE_EN, STORE7_SEL); // 0111
-    /*p29.GYVO*/ wire STORE7_CLKn = not(STORE7_CLK);
+  /*p29.GAPE*/ wire STORE7_CLK = or(STORE_EN, STORE7_SEL); // 0111
+  /*p29.GYVO*/ wire STORE7_CLKn = not(STORE7_CLK);
 
-    /*p29.GECY*/ spr.GECY = not(STORE7_CLKn);
-    /*p31.ERAZ*/ spr.STORE7_X0 = tock_pos(a.spr.GECY, b.spr.GECY, STORE7_RSTn, b.spr.STORE7_X0, b.spr.OAM_A_D0b);
-    /*p31.EPUM*/ spr.STORE7_X1 = tock_pos(a.spr.GECY, b.spr.GECY, STORE7_RSTn, b.spr.STORE7_X1, b.spr.OAM_A_D1b);
-    /*p31.EROL*/ spr.STORE7_X2 = tock_pos(a.spr.GECY, b.spr.GECY, STORE7_RSTn, b.spr.STORE7_X2, b.spr.OAM_A_D2b);
-    /*p31.EHYN*/ spr.STORE7_X3 = tock_pos(a.spr.GECY, b.spr.GECY, STORE7_RSTn, b.spr.STORE7_X3, b.spr.OAM_A_D3b);
-    /*p31.FAZU*/ spr.STORE7_X4 = tock_pos(a.spr.GECY, b.spr.GECY, STORE7_RSTn, b.spr.STORE7_X4, b.spr.OAM_A_D4b);
-    /*p31.FAXE*/ spr.STORE7_X5 = tock_pos(a.spr.GECY, b.spr.GECY, STORE7_RSTn, b.spr.STORE7_X5, b.spr.OAM_A_D5b);
-    /*p31.EXUK*/ spr.STORE7_X6 = tock_pos(a.spr.GECY, b.spr.GECY, STORE7_RSTn, b.spr.STORE7_X6, b.spr.OAM_A_D6b);
-    /*p31.FEDE*/ spr.STORE7_X7 = tock_pos(a.spr.GECY, b.spr.GECY, STORE7_RSTn, b.spr.STORE7_X7, b.spr.OAM_A_D7b);
+  /*p29.GECY*/ sst_reg.GECY = not(STORE7_CLKn);
+  /*p31.ERAZ*/ sst_reg.STORE7_X0.set(GECY, GECY, STORE7_RSTn, STORE7_X0, OAM_A_D0b);
+  /*p31.EPUM*/ sst_reg.STORE7_X1.set(GECY, GECY, STORE7_RSTn, STORE7_X1, OAM_A_D1b);
+  /*p31.EROL*/ sst_reg.STORE7_X2.set(GECY, GECY, STORE7_RSTn, STORE7_X2, OAM_A_D2b);
+  /*p31.EHYN*/ sst_reg.STORE7_X3.set(GECY, GECY, STORE7_RSTn, STORE7_X3, OAM_A_D3b);
+  /*p31.FAZU*/ sst_reg.STORE7_X4.set(GECY, GECY, STORE7_RSTn, STORE7_X4, OAM_A_D4b);
+  /*p31.FAXE*/ sst_reg.STORE7_X5.set(GECY, GECY, STORE7_RSTn, STORE7_X5, OAM_A_D5b);
+  /*p31.EXUK*/ sst_reg.STORE7_X6.set(GECY, GECY, STORE7_RSTn, STORE7_X6, OAM_A_D6b);
+  /*p31.FEDE*/ sst_reg.STORE7_X7.set(GECY, GECY, STORE7_RSTn, STORE7_X7, OAM_A_D7b);
 
-    /*p29.FEFO*/ spr.FEFO = not(STORE7_CLKn);
-    /*p30.FUZO*/ spr.FUZO = tock_pos(a.spr.FEFO, b.spr.FEFO, 0, b.spr.FUZO, b.spr.TS_IDX_0 );
-    /*p30.GESY*/ spr.GESY = tock_pos(a.spr.FEFO, b.spr.FEFO, 0, b.spr.GESY, b.spr.TS_IDX_1 );
-    /*p30.FYSU*/ spr.FYSU = tock_pos(a.spr.FEFO, b.spr.FEFO, 0, b.spr.FYSU, b.spr.TS_IDX_2 );
-    /*p30.FEFA*/ spr.FEFA = tock_pos(a.spr.FEFO, b.spr.FEFO, 0, b.spr.FEFA, b.spr.TS_IDX_3 );
-    /*p30.GYNO*/ spr.GYNO = tock_pos(a.spr.FEFO, b.spr.FEFO, 0, b.spr.GYNO, b.spr.TS_IDX_4 );
-    /*p30.GULE*/ spr.GULE = tock_pos(a.spr.FEFO, b.spr.FEFO, 0, b.spr.GULE, b.spr.TS_IDX_5 );
+  /*p29.FEFO*/ sst_reg.FEFO = not(STORE7_CLKn);
+  /*p30.FUZO*/ sst_reg.FUZO.set(FEFO, FEFO, 0, FUZO, TS_IDX_0 );
+  /*p30.GESY*/ sst_reg.GESY.set(FEFO, FEFO, 0, GESY, TS_IDX_1 );
+  /*p30.FYSU*/ sst_reg.FYSU.set(FEFO, FEFO, 0, FYSU, TS_IDX_2 );
+  /*p30.FEFA*/ sst_reg.FEFA.set(FEFO, FEFO, 0, FEFA, TS_IDX_3 );
+  /*p30.GYNO*/ sst_reg.GYNO.set(FEFO, FEFO, 0, GYNO, TS_IDX_4 );
+  /*p30.GULE*/ sst_reg.GULE.set(FEFO, FEFO, 0, GULE, TS_IDX_5 );
 
-    /*p29.WABE*/ spr.WABE = not(STORE7_CLKn);
-    /*p30.XYGO*/ spr.XYGO = tock_pos(a.spr.WABE, b.spr.WABE, 0, b.spr.XYGO, b.spr.TS_LINE_0);
-    /*p30.XYNA*/ spr.XYNA = tock_pos(a.spr.WABE, b.spr.WABE, 0, b.spr.XYNA, b.spr.TS_LINE_1);
-    /*p30.XAKU*/ spr.XAKU = tock_pos(a.spr.WABE, b.spr.WABE, 0, b.spr.XAKU, b.spr.TS_LINE_2);
-    /*p30.YGUM*/ spr.YGUM = tock_pos(a.spr.WABE, b.spr.WABE, 0, b.spr.YGUM, b.spr.TS_LINE_3);
+  /*p29.WABE*/ sst_reg.WABE = not(STORE7_CLKn);
+  /*p30.XYGO*/ sst_reg.XYGO.set(WABE, WABE, 0, XYGO, TS_LINE_0);
+  /*p30.XYNA*/ sst_reg.XYNA.set(WABE, WABE, 0, XYNA, TS_LINE_1);
+  /*p30.XAKU*/ sst_reg.XAKU.set(WABE, WABE, 0, XAKU, TS_LINE_2);
+  /*p30.YGUM*/ sst_reg.YGUM.set(WABE, WABE, 0, YGUM, TS_LINE_3);
 
-    /*p29.GUGY*/ wire STORE7_RDn = not(STORE7_RD);
-    /*p30.EVYT*/ if (!STORE7_RDn) spr.TS_IDX_0  = not(!b.spr.FUZO);
-    /*p30.WABA*/ if (!STORE7_RDn) spr.TS_IDX_1  = not(!b.spr.GESY);
-    /*p30.ETAD*/ if (!STORE7_RDn) spr.TS_IDX_2  = not(!b.spr.FYSU);
-    /*p30.ELEP*/ if (!STORE7_RDn) spr.TS_IDX_3  = not(!b.spr.FEFA);
-    /*p30.WYGO*/ if (!STORE7_RDn) spr.TS_IDX_4  = not(!b.spr.GYNO);
-    /*p30.WAKO*/ if (!STORE7_RDn) spr.TS_IDX_5  = not(!b.spr.GULE);
-    /*p30.WANA*/ if (!STORE7_RDn) spr.TS_LINE_0 = not(!b.spr.XYGO);
-    /*p30.WAXE*/ if (!STORE7_RDn) spr.TS_LINE_1 = not(!b.spr.XYNA);
-    /*p30.WABU*/ if (!STORE7_RDn) spr.TS_LINE_2 = not(!b.spr.XAKU);
-    /*p30.YPOZ*/ if (!STORE7_RDn) spr.TS_LINE_3 = not(!b.spr.YGUM);
+  /*p29.GUGY*/ wire STORE7_RDn = not(STORE7_RD);
+  /*p30.EVYT*/ if (!STORE7_RDn) sil_tri.TS_IDX_0  = not(!FUZO);
+  /*p30.WABA*/ if (!STORE7_RDn) sil_tri.TS_IDX_1  = not(!GESY);
+  /*p30.ETAD*/ if (!STORE7_RDn) sil_tri.TS_IDX_2  = not(!FYSU);
+  /*p30.ELEP*/ if (!STORE7_RDn) sil_tri.TS_IDX_3  = not(!FEFA);
+  /*p30.WYGO*/ if (!STORE7_RDn) sil_tri.TS_IDX_4  = not(!GYNO);
+  /*p30.WAKO*/ if (!STORE7_RDn) sil_tri.TS_IDX_5  = not(!GULE);
+  /*p30.WANA*/ if (!STORE7_RDn) sil_tri.TS_LINE_0 = not(!XYGO);
+  /*p30.WAXE*/ if (!STORE7_RDn) sil_tri.TS_LINE_1 = not(!XYNA);
+  /*p30.WABU*/ if (!STORE7_RDn) sil_tri.TS_LINE_2 = not(!XAKU);
+  /*p30.YPOZ*/ if (!STORE7_RDn) sil_tri.TS_LINE_3 = not(!YGUM);
 
   }
 
 
   {
-    // store 8
-    /*p31.DUZE*/ wire DUZE = xor(b.spr.EZUF, b.vid.X4n);
-    /*p31.DAGA*/ wire DAGA = xor(b.spr.ENAD, b.vid.X5n);
-    /*p31.DAWU*/ wire DAWU = xor(b.spr.EBOW, b.vid.X6n);
-    /*p31.EJAW*/ wire EJAW = xor(b.spr.FYCA, b.vid.X7n);
-    /*p31.GOHO*/ wire GOHO = xor(b.spr.GAVY, b.vid.X0n);
-    /*p31.GASU*/ wire GASU = xor(b.spr.GYPU, b.vid.X1n);
-    /*p31.GABU*/ wire GABU = xor(b.spr.GADY, b.vid.X2n);
-    /*p31.GAFE*/ wire GAFE = xor(b.spr.GAZA, b.vid.X3n);
-    /*p31.DAMA*/ wire DAMA = nor(DUZE, DAGA, DAWU, EJAW);
-    /*p31.FEHA*/ wire FEHA = nor(GOHO, GASU, GABU, GAFE);
-    /*p29.EFYL*/ spr.STORE8_MATCHn = nand(b.spr.MATCH_EN, FEHA, DAMA);
-    /*p29.GEKE*/ wire STORE8_MATCH = not(b.spr.STORE8_MATCHn);
-    /*p29.GYGA*/ spr.STORE8_MATCH_OUT = or(STORE8_MATCH, b.spr.STORE7_MATCH_OUT);
-    /*p29.FOXA*/ spr.FOXA = nor(b.spr.STORE8_MATCHn, b.spr.STORE7_MATCH_OUT);
+  // sprite store 8
+  /*p31.DUZE*/ wire DUZE = xor(EZUF, X4n);
+  /*p31.DAGA*/ wire DAGA = xor(ENAD, X5n);
+  /*p31.DAWU*/ wire DAWU = xor(EBOW, X6n);
+  /*p31.EJAW*/ wire EJAW = xor(FYCA, X7n);
+  /*p31.GOHO*/ wire GOHO = xor(GAVY, X0n);
+  /*p31.GASU*/ wire GASU = xor(GYPU, X1n);
+  /*p31.GABU*/ wire GABU = xor(GADY, X2n);
+  /*p31.GAFE*/ wire GAFE = xor(GAZA, X3n);
+  /*p31.DAMA*/ wire DAMA = nor(DUZE, DAGA, DAWU, EJAW);
+  /*p31.FEHA*/ wire FEHA = nor(GOHO, GASU, GABU, GAFE);
+  /*p29.EFYL*/ sst_reg.STORE8_MATCHn = nand(MATCH_EN, FEHA, DAMA);
+  /*p29.GEKE*/ wire STORE8_MATCH = not(STORE8_MATCHn);
+  /*p29.GYGA*/ sst_reg.STORE8_MATCH_OUT = or(STORE8_MATCH, STORE7_MATCH_OUT);
+  /*p29.FOXA*/ sst_reg.FOXA = nor(STORE8_MATCHn, STORE7_MATCH_OUT);
 
-    /*p29.EXUQ*/ spr.SPRITE8_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE8_GET_SYNCn, b.spr.FOXA);
-    /*p29.GORO*/ spr.GORO = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE8_GET_SYNCn);
-    /*p29.WUZO*/ spr.WUZO = not(b.spr.GORO);
+  /*p29.EXUQ*/ sst_reg.SPRITE8_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE8_GET_SYNCn, FOXA);
+  /*p29.GORO*/ sst_reg.GORO = or(DYBA_VID_LINE_TRIG_d4, SPRITE8_GET_SYNCn);
+  /*p29.WUZO*/ sst_reg.WUZO = not(GORO);
 
-    /*p29.CAHO*/ wire STORE8_CLK = or(b.spr.STORE_EN, STORE8_SEL); // 1000
-    /*p29.BUKA*/ spr.BUKA = not(STORE8_CLK);
-    /*p29.CEXU*/ spr.CEXU = not(b.spr.BUKA);
-    /*p29.AKOL*/ spr.AKOL = not(b.spr.BUKA);
-    /*p29.BYMY*/ spr.BYMY = not(b.spr.BUKA);
-    /*p31.GAVY*/ spr.GAVY = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.GAVY, b.spr.OAM_A_D0b);
-    /*p31.GYPU*/ spr.GYPU = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.GYPU, b.spr.OAM_A_D1b);
-    /*p31.GADY*/ spr.GADY = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.GADY, b.spr.OAM_A_D2b);
-    /*p31.GAZA*/ spr.GAZA = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.GAZA, b.spr.OAM_A_D3b);
-    /*p31.EZUF*/ spr.EZUF = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.EZUF, b.spr.OAM_A_D4b);
-    /*p31.ENAD*/ spr.ENAD = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.ENAD, b.spr.OAM_A_D5b);
-    /*p31.EBOW*/ spr.EBOW = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.EBOW, b.spr.OAM_A_D6b);
-    /*p31.FYCA*/ spr.FYCA = tock_pos(a.spr.CEXU, b.spr.CEXU, b.spr.WUZO, b.spr.FYCA, b.spr.OAM_A_D7b);
+  /*p29.CAHO*/ wire STORE8_CLK = or(STORE_EN, STORE8_SEL); // 1000
+  /*p29.BUKA*/ sst_reg.BUKA = not(STORE8_CLK);
+  /*p29.CEXU*/ sst_reg.CEXU = not(BUKA);
+  /*p29.AKOL*/ sst_reg.AKOL = not(BUKA);
+  /*p29.BYMY*/ sst_reg.BYMY = not(BUKA);
+  /*p31.GAVY*/ sst_reg.GAVY.set(CEXU, CEXU, WUZO, GAVY, OAM_A_D0b);
+  /*p31.GYPU*/ sst_reg.GYPU.set(CEXU, CEXU, WUZO, GYPU, OAM_A_D1b);
+  /*p31.GADY*/ sst_reg.GADY.set(CEXU, CEXU, WUZO, GADY, OAM_A_D2b);
+  /*p31.GAZA*/ sst_reg.GAZA.set(CEXU, CEXU, WUZO, GAZA, OAM_A_D3b);
+  /*p31.EZUF*/ sst_reg.EZUF.set(CEXU, CEXU, WUZO, EZUF, OAM_A_D4b);
+  /*p31.ENAD*/ sst_reg.ENAD.set(CEXU, CEXU, WUZO, ENAD, OAM_A_D5b);
+  /*p31.EBOW*/ sst_reg.EBOW.set(CEXU, CEXU, WUZO, EBOW, OAM_A_D6b);
+  /*p31.FYCA*/ sst_reg.FYCA.set(CEXU, CEXU, WUZO, FYCA, OAM_A_D7b);
 
 
-    /*p30.AXUV*/ spr.AXUV = tock_pos(a.spr.AKOL, b.spr.AKOL, 0, b.spr.AXUV, b.spr.TS_IDX_0 );
-    /*p30.BADA*/ spr.BADA = tock_pos(a.spr.AKOL, b.spr.AKOL, 0, b.spr.BADA, b.spr.TS_IDX_1 );
-    /*p30.APEV*/ spr.APEV = tock_pos(a.spr.AKOL, b.spr.AKOL, 0, b.spr.APEV, b.spr.TS_IDX_2 );
-    /*p30.BADO*/ spr.BADO = tock_pos(a.spr.AKOL, b.spr.AKOL, 0, b.spr.BADO, b.spr.TS_IDX_3 );
-    /*p30.BEXY*/ spr.BEXY = tock_pos(a.spr.AKOL, b.spr.AKOL, 0, b.spr.BEXY, b.spr.TS_IDX_4 );
-    /*p30.BYHE*/ spr.BYHE = tock_pos(a.spr.AKOL, b.spr.AKOL, 0, b.spr.BYHE, b.spr.TS_IDX_5 );
-    /*p30.AFYM*/ spr.AFYM = tock_pos(a.spr.BYMY, b.spr.BYMY, 0, b.spr.AFYM, b.spr.TS_LINE_0);
-    /*p30.AZAP*/ spr.AZAP = tock_pos(a.spr.BYMY, b.spr.BYMY, 0, b.spr.AZAP, b.spr.TS_LINE_1);
-    /*p30.AFUT*/ spr.AFUT = tock_pos(a.spr.BYMY, b.spr.BYMY, 0, b.spr.AFUT, b.spr.TS_LINE_2);
-    /*p30.AFYX*/ spr.AFYX = tock_pos(a.spr.BYMY, b.spr.BYMY, 0, b.spr.AFYX, b.spr.TS_LINE_3);
+  /*p30.AXUV*/ sst_reg.AXUV.set(AKOL, AKOL, 0, AXUV, TS_IDX_0 );
+  /*p30.BADA*/ sst_reg.BADA.set(AKOL, AKOL, 0, BADA, TS_IDX_1 );
+  /*p30.APEV*/ sst_reg.APEV.set(AKOL, AKOL, 0, APEV, TS_IDX_2 );
+  /*p30.BADO*/ sst_reg.BADO.set(AKOL, AKOL, 0, BADO, TS_IDX_3 );
+  /*p30.BEXY*/ sst_reg.BEXY.set(AKOL, AKOL, 0, BEXY, TS_IDX_4 );
+  /*p30.BYHE*/ sst_reg.BYHE.set(AKOL, AKOL, 0, BYHE, TS_IDX_5 );
+  /*p30.AFYM*/ sst_reg.AFYM.set(BYMY, BYMY, 0, AFYM, TS_LINE_0);
+  /*p30.AZAP*/ sst_reg.AZAP.set(BYMY, BYMY, 0, AZAP, TS_LINE_1);
+  /*p30.AFUT*/ sst_reg.AFUT.set(BYMY, BYMY, 0, AFUT, TS_LINE_2);
+  /*p30.AFYX*/ sst_reg.AFYX.set(BYMY, BYMY, 0, AFYX, TS_LINE_3);
 
-    /*p29.DENY*/ spr.DENY = not(b.spr.FOXA);
-    /*p30.ADYB*/ if (b.spr.DENY) spr.TS_IDX_0  = b.spr.AXUV;
-    /*p30.APOB*/ if (b.spr.DENY) spr.TS_IDX_1  = b.spr.BADA;
-    /*p30.APYV*/ if (b.spr.DENY) spr.TS_IDX_2  = b.spr.APEV;
-    /*p30.AFEN*/ if (b.spr.DENY) spr.TS_IDX_3  = b.spr.BADO;
-    /*p30.AKYH*/ if (b.spr.DENY) spr.TS_IDX_4  = b.spr.BEXY;
-    /*p30.APOC*/ if (b.spr.DENY) spr.TS_IDX_5  = b.spr.BYHE;
-    /*p30.BUJY*/ if (b.spr.DENY) spr.TS_LINE_0 = b.spr.AFYM;
-    /*p30.BOSO*/ if (b.spr.DENY) spr.TS_LINE_1 = b.spr.AZAP;
-    /*p30.AHAC*/ if (b.spr.DENY) spr.TS_LINE_2 = b.spr.AFUT;
-    /*p30.BAZU*/ if (b.spr.DENY) spr.TS_LINE_3 = b.spr.AFYX;
+  /*p29.DENY*/ sst_reg.DENY = not(FOXA);
+  /*p30.ADYB*/ if (DENY) sil_tri.TS_IDX_0  = AXUV;
+  /*p30.APOB*/ if (DENY) sil_tri.TS_IDX_1  = BADA;
+  /*p30.APYV*/ if (DENY) sil_tri.TS_IDX_2  = APEV;
+  /*p30.AFEN*/ if (DENY) sil_tri.TS_IDX_3  = BADO;
+  /*p30.AKYH*/ if (DENY) sil_tri.TS_IDX_4  = BEXY;
+  /*p30.APOC*/ if (DENY) sil_tri.TS_IDX_5  = BYHE;
+  /*p30.BUJY*/ if (DENY) sil_tri.TS_LINE_0 = AFYM;
+  /*p30.BOSO*/ if (DENY) sil_tri.TS_LINE_1 = AZAP;
+  /*p30.AHAC*/ if (DENY) sil_tri.TS_LINE_2 = AFUT;
+  /*p30.BAZU*/ if (DENY) sil_tri.TS_LINE_3 = AFYX;
   }
 
   {
-    // store 9
-    /*p31.YMAM*/ wire MATCH0 = xor(b.spr.STORE9_X0, b.vid.X0n);
-    /*p31.YTYP*/ wire MATCH1 = xor(b.spr.STORE9_X1, b.vid.X1n);
-    /*p31.YFOP*/ wire MATCH2 = xor(b.spr.STORE9_X2, b.vid.X2n);
-    /*p31.YVAC*/ wire MATCH3 = xor(b.spr.STORE9_X3, b.vid.X3n);
-    /*p31.ZYWU*/ wire MATCH4 = xor(b.spr.STORE9_X4, b.vid.X4n);
-    /*p31.ZUZA*/ wire MATCH5 = xor(b.spr.STORE9_X5, b.vid.X5n);
-    /*p31.ZEJO*/ wire MATCH6 = xor(b.spr.STORE9_X6, b.vid.X6n);
-    /*p31.ZEDA*/ wire MATCH7 = xor(b.spr.STORE9_X7, b.vid.X7n);
-    /*p31.YLEV*/ wire MATCHA = nor(MATCH0, MATCH1, MATCH2, MATCH3);
-    /*p31.YTUB*/ wire MATCHB = nor(MATCH4, MATCH5, MATCH6, MATCH7);
-    /*p29.YGEM*/ spr.STORE9_MATCHn = nand(b.spr.MATCH_EN, MATCHA, MATCHB);
+  // sprite store 9
+  /*p31.YMAM*/ wire MATCH0 = xor(STORE9_X0, X0n);
+  /*p31.YTYP*/ wire MATCH1 = xor(STORE9_X1, X1n);
+  /*p31.YFOP*/ wire MATCH2 = xor(STORE9_X2, X2n);
+  /*p31.YVAC*/ wire MATCH3 = xor(STORE9_X3, X3n);
+  /*p31.ZYWU*/ wire MATCH4 = xor(STORE9_X4, X4n);
+  /*p31.ZUZA*/ wire MATCH5 = xor(STORE9_X5, X5n);
+  /*p31.ZEJO*/ wire MATCH6 = xor(STORE9_X6, X6n);
+  /*p31.ZEDA*/ wire MATCH7 = xor(STORE9_X7, X7n);
+  /*p31.YLEV*/ wire MATCHA = nor(MATCH0, MATCH1, MATCH2, MATCH3);
+  /*p31.YTUB*/ wire MATCHB = nor(MATCH4, MATCH5, MATCH6, MATCH7);
+  /*p29.YGEM*/ sst_reg.STORE9_MATCHn = nand(MATCH_EN, MATCHA, MATCHB);
 
-    /*p29.CATO*/ wire STORE9_CLK = or(b.spr.STORE_EN, STORE9_SEL); // 1001
-    /*p29.DECU*/ wire STORE9_CLKn = not(STORE9_CLK);
+  /*p29.CATO*/ wire STORE9_CLK = or(STORE_EN, STORE9_SEL); // 1001
+  /*p29.DECU*/ wire STORE9_CLKn = not(STORE9_CLK);
 
-    /*p29.GUZE*/ wire SPRITE9_GETn = nor(b.spr.STORE9_MATCHn, b.spr.STORE8_MATCH_OUT);
-    /*p29.FONO*/ spr.SPRITE9_GET_SYNCn = tock_pos(a.spr.SPRITE_DONE, b.spr.SPRITE_DONE, b.lcd.VID_LINE_TRIG_d4p, b.spr.SPRITE9_GET_SYNCn, SPRITE9_GETn);
+  /*p29.GUZE*/ wire SPRITE9_GETn = nor(STORE9_MATCHn, STORE8_MATCH_OUT);
+  /*p29.FONO*/ sst_reg.SPRITE9_GET_SYNCn.set(SPRITE_DONE, SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE9_GET_SYNCn, SPRITE9_GETn);
 
-    /*p29.DUBU*/ wire STORE9_RST  = or(b.lcd.VID_LINE_TRIG_d4c, b.spr.SPRITE9_GET_SYNCn);
-    /*p29.DOSY*/ wire STORE9_RSTn = not(STORE9_RST);
+  /*p29.DUBU*/ wire STORE9_RST  = or(DYBA_VID_LINE_TRIG_d4, SPRITE9_GET_SYNCn);
+  /*p29.DOSY*/ wire STORE9_RSTn = not(STORE9_RST);
     
-    /*p29.WEME*/ spr.STORE9_CLKa = not(STORE9_CLKn);
-    /*p31.XUVY*/ spr.STORE9_X0    = tock_pos(a.spr.STORE9_CLKa, b.spr.STORE9_CLKa, STORE9_RSTn, b.spr.STORE9_X0,    b.spr.OAM_A_D0b);
-    /*p31.XERE*/ spr.STORE9_X1    = tock_pos(a.spr.STORE9_CLKa, b.spr.STORE9_CLKa, STORE9_RSTn, b.spr.STORE9_X1,    b.spr.OAM_A_D1b);
-    /*p31.XUZO*/ spr.STORE9_X2    = tock_pos(a.spr.STORE9_CLKa, b.spr.STORE9_CLKa, STORE9_RSTn, b.spr.STORE9_X2,    b.spr.OAM_A_D2b);
-    /*p31.XEXA*/ spr.STORE9_X3    = tock_pos(a.spr.STORE9_CLKa, b.spr.STORE9_CLKa, STORE9_RSTn, b.spr.STORE9_X3,    b.spr.OAM_A_D3b);
-    /*p31.YPOD*/ spr.STORE9_X4    = tock_pos(a.spr.STORE9_CLKa, b.spr.STORE9_CLKa, STORE9_RSTn, b.spr.STORE9_X4,    b.spr.OAM_A_D4b);
-    /*p31.YROP*/ spr.STORE9_X5    = tock_pos(a.spr.STORE9_CLKa, b.spr.STORE9_CLKa, STORE9_RSTn, b.spr.STORE9_X5,    b.spr.OAM_A_D5b);
-    /*p31.YNEP*/ spr.STORE9_X6    = tock_pos(a.spr.STORE9_CLKa, b.spr.STORE9_CLKa, STORE9_RSTn, b.spr.STORE9_X6,    b.spr.OAM_A_D6b);
-    /*p31.YZOF*/ spr.STORE9_X7    = tock_pos(a.spr.STORE9_CLKa, b.spr.STORE9_CLKa, STORE9_RSTn, b.spr.STORE9_X7,    b.spr.OAM_A_D7b);
+  /*p29.WEME*/ sst_reg.STORE9_CLKa = not(STORE9_CLKn);
+  /*p31.XUVY*/ sst_reg.STORE9_X0   .set(STORE9_CLKa, STORE9_CLKa, STORE9_RSTn, STORE9_X0,    OAM_A_D0b);
+  /*p31.XERE*/ sst_reg.STORE9_X1   .set(STORE9_CLKa, STORE9_CLKa, STORE9_RSTn, STORE9_X1,    OAM_A_D1b);
+  /*p31.XUZO*/ sst_reg.STORE9_X2   .set(STORE9_CLKa, STORE9_CLKa, STORE9_RSTn, STORE9_X2,    OAM_A_D2b);
+  /*p31.XEXA*/ sst_reg.STORE9_X3   .set(STORE9_CLKa, STORE9_CLKa, STORE9_RSTn, STORE9_X3,    OAM_A_D3b);
+  /*p31.YPOD*/ sst_reg.STORE9_X4   .set(STORE9_CLKa, STORE9_CLKa, STORE9_RSTn, STORE9_X4,    OAM_A_D4b);
+  /*p31.YROP*/ sst_reg.STORE9_X5   .set(STORE9_CLKa, STORE9_CLKa, STORE9_RSTn, STORE9_X5,    OAM_A_D5b);
+  /*p31.YNEP*/ sst_reg.STORE9_X6   .set(STORE9_CLKa, STORE9_CLKa, STORE9_RSTn, STORE9_X6,    OAM_A_D6b);
+  /*p31.YZOF*/ sst_reg.STORE9_X7   .set(STORE9_CLKa, STORE9_CLKa, STORE9_RSTn, STORE9_X7,    OAM_A_D7b);
 
-    /*p29.WUFA*/ spr.STORE9_CLKb = not(STORE9_CLKn);
-    /*p30.XUFO*/ spr.STORE9_IDX0  = tock_pos(a.spr.STORE9_CLKb, b.spr.STORE9_CLKb, 0,           b.spr.STORE9_IDX0,  b.spr.TS_IDX_0 );
-    /*p30.XUTE*/ spr.STORE9_IDX1  = tock_pos(a.spr.STORE9_CLKb, b.spr.STORE9_CLKb, 0,           b.spr.STORE9_IDX1,  b.spr.TS_IDX_1 );
-    /*p30.XOTU*/ spr.STORE9_IDX2  = tock_pos(a.spr.STORE9_CLKb, b.spr.STORE9_CLKb, 0,           b.spr.STORE9_IDX2,  b.spr.TS_IDX_2 );
-    /*p30.XYFE*/ spr.STORE9_IDX3  = tock_pos(a.spr.STORE9_CLKb, b.spr.STORE9_CLKb, 0,           b.spr.STORE9_IDX3,  b.spr.TS_IDX_3 );
-    /*p30.YZOR*/ spr.STORE9_IDX4  = tock_pos(a.spr.STORE9_CLKb, b.spr.STORE9_CLKb, 0,           b.spr.STORE9_IDX4,  b.spr.TS_IDX_4 );
-    /*p30.YBER*/ spr.STORE9_IDX5  = tock_pos(a.spr.STORE9_CLKb, b.spr.STORE9_CLKb, 0,           b.spr.STORE9_IDX5,  b.spr.TS_IDX_5 );
+  /*p29.WUFA*/ sst_reg.STORE9_CLKb = not(STORE9_CLKn);
+  /*p30.XUFO*/ sst_reg.STORE9_IDX0 .set(STORE9_CLKb, STORE9_CLKb, 0,           STORE9_IDX0,  TS_IDX_0 );
+  /*p30.XUTE*/ sst_reg.STORE9_IDX1 .set(STORE9_CLKb, STORE9_CLKb, 0,           STORE9_IDX1,  TS_IDX_1 );
+  /*p30.XOTU*/ sst_reg.STORE9_IDX2 .set(STORE9_CLKb, STORE9_CLKb, 0,           STORE9_IDX2,  TS_IDX_2 );
+  /*p30.XYFE*/ sst_reg.STORE9_IDX3 .set(STORE9_CLKb, STORE9_CLKb, 0,           STORE9_IDX3,  TS_IDX_3 );
+  /*p30.YZOR*/ sst_reg.STORE9_IDX4 .set(STORE9_CLKb, STORE9_CLKb, 0,           STORE9_IDX4,  TS_IDX_4 );
+  /*p30.YBER*/ sst_reg.STORE9_IDX5 .set(STORE9_CLKb, STORE9_CLKb, 0,           STORE9_IDX5,  TS_IDX_5 );
 
-    /*p29.FAKA*/ spr.STORE9_CLKc = not(STORE9_CLKn);
-    /*p30.DEWU*/ spr.STORE9_LINE0 = tock_pos(a.spr.STORE9_CLKc, b.spr.STORE9_CLKc, 0,           b.spr.STORE9_LINE0, b.spr.TS_LINE_0);
-    /*p30.CANA*/ spr.STORE9_LINE1 = tock_pos(a.spr.STORE9_CLKc, b.spr.STORE9_CLKc, 0,           b.spr.STORE9_LINE1, b.spr.TS_LINE_1);
-    /*p30.DYSY*/ spr.STORE9_LINE2 = tock_pos(a.spr.STORE9_CLKc, b.spr.STORE9_CLKc, 0,           b.spr.STORE9_LINE2, b.spr.TS_LINE_2);
-    /*p30.FOFO*/ spr.STORE9_LINE3 = tock_pos(a.spr.STORE9_CLKc, b.spr.STORE9_CLKc, 0,           b.spr.STORE9_LINE3, b.spr.TS_LINE_3);
+  /*p29.FAKA*/ sst_reg.STORE9_CLKc = not(STORE9_CLKn);
+  /*p30.DEWU*/ sst_reg.STORE9_LINE0.set(STORE9_CLKc, STORE9_CLKc, 0,           STORE9_LINE0, TS_LINE_0);
+  /*p30.CANA*/ sst_reg.STORE9_LINE1.set(STORE9_CLKc, STORE9_CLKc, 0,           STORE9_LINE1, TS_LINE_1);
+  /*p30.DYSY*/ sst_reg.STORE9_LINE2.set(STORE9_CLKc, STORE9_CLKc, 0,           STORE9_LINE2, TS_LINE_2);
+  /*p30.FOFO*/ sst_reg.STORE9_LINE3.set(STORE9_CLKc, STORE9_CLKc, 0,           STORE9_LINE3, TS_LINE_3);
 
-    /*p29.FADO*/ wire SPRITE9_GET = not(SPRITE9_GETn);
-    /*p30.YHAL*/ if (SPRITE9_GET) spr.TS_IDX_0  = not(!b.spr.STORE9_IDX0);
-    /*p30.YRAD*/ if (SPRITE9_GET) spr.TS_IDX_1  = not(!b.spr.STORE9_IDX1);
-    /*p30.XYRA*/ if (SPRITE9_GET) spr.TS_IDX_2  = not(!b.spr.STORE9_IDX2);
-    /*p30.YNEV*/ if (SPRITE9_GET) spr.TS_IDX_3  = not(!b.spr.STORE9_IDX3);
-    /*p30.ZOJY*/ if (SPRITE9_GET) spr.TS_IDX_4  = not(!b.spr.STORE9_IDX4);
-    /*p30.ZARO*/ if (SPRITE9_GET) spr.TS_IDX_5  = not(!b.spr.STORE9_IDX5);
-    /*p30.CAWO*/ if (SPRITE9_GET) spr.TS_LINE_0 = not(!b.spr.STORE9_LINE0);
-    /*p30.BYME*/ if (SPRITE9_GET) spr.TS_LINE_1 = not(!b.spr.STORE9_LINE1);
-    /*p30.COHO*/ if (SPRITE9_GET) spr.TS_LINE_2 = not(!b.spr.STORE9_LINE2);
-    /*p30.GATE*/ if (SPRITE9_GET) spr.TS_LINE_3 = not(!b.spr.STORE9_LINE3);
+  /*p29.FADO*/ wire SPRITE9_GET = not(SPRITE9_GETn);
+  /*p30.YHAL*/ if (SPRITE9_GET) sil_tri.TS_IDX_0  = not(!STORE9_IDX0);
+  /*p30.YRAD*/ if (SPRITE9_GET) sil_tri.TS_IDX_1  = not(!STORE9_IDX1);
+  /*p30.XYRA*/ if (SPRITE9_GET) sil_tri.TS_IDX_2  = not(!STORE9_IDX2);
+  /*p30.YNEV*/ if (SPRITE9_GET) sil_tri.TS_IDX_3  = not(!STORE9_IDX3);
+  /*p30.ZOJY*/ if (SPRITE9_GET) sil_tri.TS_IDX_4  = not(!STORE9_IDX4);
+  /*p30.ZARO*/ if (SPRITE9_GET) sil_tri.TS_IDX_5  = not(!STORE9_IDX5);
+  /*p30.CAWO*/ if (SPRITE9_GET) sil_tri.TS_LINE_0 = not(!STORE9_LINE0);
+  /*p30.BYME*/ if (SPRITE9_GET) sil_tri.TS_LINE_1 = not(!STORE9_LINE1);
+  /*p30.COHO*/ if (SPRITE9_GET) sil_tri.TS_LINE_2 = not(!STORE9_LINE2);
+  /*p30.GATE*/ if (SPRITE9_GET) sil_tri.TS_LINE_3 = not(!STORE9_LINE3);
 
   }
 #endif

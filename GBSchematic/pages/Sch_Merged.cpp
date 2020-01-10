@@ -1104,8 +1104,6 @@ void tick_everything() {
   /*p28.BOGE*/ wire DMA_RW_ENn = not(dma_reg.REG_DMA_RW_EN);
   /*p28.ACYL*/ wire ACYL_OAM_ADDR_PARSE = and(DMA_RW_ENn, BESU);
 
-  ///*p29.AROR*/ wire MATCH_EN = this->MATCH_EN(vid_reg, cfg_reg);
-
   /*p29.CEHA*/ wire CEHA = not(!spr_reg.STORE_SPRITE_IDXn);
   /*p29.BYJO*/ wire BYJO = not(CEHA);
   /*p29.AZEM*/ wire AZEM = and(BYJO, vid_reg.XYMU_RENDERING_LATCH);
@@ -1135,12 +1133,8 @@ void tick_everything() {
   /*p29.TYSO*/ wire SPRITE_READq = or(SAKY, RENDERINGn); // seems wrong
   /*p29.TEXY*/ wire SPRITE_READ = not(SPRITE_READq);
     
-  ///*p29.XONO*/ wire FLIP_X = and(oam.OAM_A_D5, SPRITE_READn);
-
   //----------
   // Sprite y comparator
-
-  //SpriteDelta spr_delta = storeMatchY(sys_sig, lcd_reg, oam_reg, vid_cfg);
 
   /*p29.EBOS*/ wire V0n = not(lcd_reg.Y0);
   /*p29.DASA*/ wire V1n = not(lcd_reg.Y1);
@@ -1199,10 +1193,6 @@ void tick_everything() {
   /*p29.BUZA*/ wire STORE_SPRITE_IDX = and(!spr_reg.STORE_SPRITE_IDXn, vid_reg.XYMU_RENDERING_LATCH);
 
 #if 0
-  /*p30.WENU*/ if (FEPO_STORE_MATCH)      sil_tri.TS_LINE_0 = SPRITE_DELTA1; // order wrong
-  /*p30.CUCU*/ if (FEPO_STORE_MATCH)      sil_tri.TS_LINE_1 = SPRITE_DELTA2;
-  /*p30.CUCA*/ if (FEPO_STORE_MATCH)      sil_tri.TS_LINE_2 = SPRITE_DELTA0;
-  /*p30.CEGA*/ if (FEPO_STORE_MATCH)      sil_tri.TS_LINE_3 = SPRITE_DELTA3;
   /*p30.WEZA*/ if (BUZA_STORE_SPRITE_IDX) sil_tri.TS_IDX_0  = spr_reg.SPRITE_IDX5; // order wrong
   /*p30.WUCO*/ if (BUZA_STORE_SPRITE_IDX) sil_tri.TS_IDX_1  = spr_reg.SPRITE_IDX4;
   /*p30.WYDA*/ if (BUZA_STORE_SPRITE_IDX) sil_tri.TS_IDX_2  = spr_reg.SPRITE_IDX3;
@@ -1218,8 +1208,8 @@ void tick_everything() {
 
   ///*p29.TOMA*/ SEQ_CLK = or(AxCxExGx, SEQ_5);
 
-#if 0
   /*p29.TOMA*/ wire TOMA_AxCxExGx = nand(LAPE_xBxDxFxH, SEQ_5n);
+#if 0
   /*p27.SECA*/ wire SPR_SEQ_RST = nor(RYCE_SPRITE_FETCH_TRIG, VID_RESET5, BYHA_VID_LINE_TRIG_d4n);
   /*p29.TOXE*/ spr_reg.TOXE_SPR_SEQ0.set(TOMA_AxCxExGx,          SPR_SEQ_RST, !spr_reg.TOXE_SPR_SEQ0);
   /*p29.TULY*/ spr_reg.TULY_SPR_SEQ1.set(!spr_reg.TOXE_SPR_SEQ0, SPR_SEQ_RST, !spr_reg.TULY_SPR_SEQ1);
@@ -1395,7 +1385,503 @@ void tick_everything() {
   /*p30.BACO*/ if (SPRITE1_GET) sil_tri.TS_LINE_2 = not(!sst_reg.STORE1_LINE2);
   /*p30.AHUM*/ if (SPRITE1_GET) sil_tri.TS_LINE_3 = not(!sst_reg.STORE1_LINE3);
 
+  // sprite store 2
 
+  /*p31.FUZU*/ wire STORE2_MATCH0 = xor(sst_reg.STORE2_X0, X0n);
+  /*p31.FESO*/ wire STORE2_MATCH1 = xor(sst_reg.STORE2_X1, X1n);
+  /*p31.FOKY*/ wire STORE2_MATCH2 = xor(sst_reg.STORE2_X2, X2n);
+  /*p31.FYVA*/ wire STORE2_MATCH3 = xor(sst_reg.STORE2_X3, X3n);
+  /*p31.CEKO*/ wire STORE2_MATCH4 = xor(sst_reg.STORE2_X4, X4n);
+  /*p31.DETY*/ wire STORE2_MATCH5 = xor(sst_reg.STORE2_X5, X5n);
+  /*p31.DOZO*/ wire STORE2_MATCH6 = xor(sst_reg.STORE2_X6, X6n);
+  /*p31.CONY*/ wire STORE2_MATCH7 = xor(sst_reg.STORE2_X7, X7n);
+  /*p31.CEHU*/ wire STORE2_MATCHA = nor(STORE2_MATCH4, STORE2_MATCH5, STORE2_MATCH6, STORE2_MATCH7);
+  /*p31.EKES*/ wire STORE2_MATCHB = nor(STORE2_MATCH0, STORE2_MATCH1, STORE2_MATCH2, STORE2_MATCH3);
+
+  /*p29.DEGO*/ wire STORE2_MATCHn = nand(MATCH_EN, STORE2_MATCHB, STORE2_MATCHA);
+  /*p29.GUPO*/ wire STORE2_MATCH = not(STORE2_MATCHn);
+  /*p29.GEDE*/ wire STORE2_MATCH_OUT = or(STORE2_MATCH, STORE1_MATCH_OUT);
+
+  /*p29.EMOL*/ wire SPRITE2_GETn = nor(STORE2_MATCHn, STORE1_MATCH_OUT);
+  /*p29.EGAV*/ sst_reg.SPRITE2_GET_SYNCn.set(WUTY_SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE2_GETn);
+
+  /*p29.WYXO*/ wire STORE2_CLK = or(STORE_EN, STORE2_SEL); // 0010
+  /*p29.GYFO*/ wire STORE2_CLKn = not(STORE2_CLK); // 0010
+  /*p29.FOKO*/ wire STORE2_RST  = or(DYBA_VID_LINE_TRIG_d4, sst_reg.SPRITE2_GET_SYNCn);
+  /*p29.GAMY*/ wire STORE2_RSTn = not(STORE2_RST);
+
+  /*p29.BUZY*/ wire STORE2_CLKb = not(STORE2_CLKn);
+  /*p30.BOXA*/ sst_reg.STORE2_IDX0.set(STORE2_CLKb, sil_tri.TS_IDX_0);
+  /*p30.BUNA*/ sst_reg.STORE2_IDX1.set(STORE2_CLKb, sil_tri.TS_IDX_1);
+  /*p30.BULU*/ sst_reg.STORE2_IDX2.set(STORE2_CLKb, sil_tri.TS_IDX_2);
+  /*p30.BECA*/ sst_reg.STORE2_IDX3.set(STORE2_CLKb, sil_tri.TS_IDX_3);
+  /*p30.BYHU*/ sst_reg.STORE2_IDX4.set(STORE2_CLKb, sil_tri.TS_IDX_4);
+  /*p30.BUHE*/ sst_reg.STORE2_IDX5.set(STORE2_CLKb, sil_tri.TS_IDX_5);
+
+  /*p29.FUKE*/ wire STORE2_CLKc = not(STORE2_CLKn);
+  /*p30.YKUK*/ sst_reg.STORE2_LINE0.set(STORE2_CLKc, sil_tri.TS_LINE_0);
+  /*p30.YLOV*/ sst_reg.STORE2_LINE1.set(STORE2_CLKc, sil_tri.TS_LINE_1);
+  /*p30.XAZY*/ sst_reg.STORE2_LINE2.set(STORE2_CLKc, sil_tri.TS_LINE_2);
+  /*p30.XOSY*/ sst_reg.STORE2_LINE3.set(STORE2_CLKc, sil_tri.TS_LINE_3);
+
+  /*p29.CACU*/ wire STORE2_CLKa = not(STORE2_CLKn);
+  /*p31.FOKA*/ sst_reg.STORE2_X0.set(STORE2_CLKa, STORE2_RSTn, SPRITE_X0);
+  /*p31.FYTY*/ sst_reg.STORE2_X1.set(STORE2_CLKa, STORE2_RSTn, SPRITE_X1);
+  /*p31.FUBY*/ sst_reg.STORE2_X2.set(STORE2_CLKa, STORE2_RSTn, SPRITE_X2);
+  /*p31.GOXU*/ sst_reg.STORE2_X3.set(STORE2_CLKa, STORE2_RSTn, SPRITE_X3);
+  /*p31.DUHY*/ sst_reg.STORE2_X4.set(STORE2_CLKa, STORE2_RSTn, SPRITE_X4);
+  /*p31.EJUF*/ sst_reg.STORE2_X5.set(STORE2_CLKa, STORE2_RSTn, SPRITE_X5);
+  /*p31.ENOR*/ sst_reg.STORE2_X6.set(STORE2_CLKa, STORE2_RSTn, SPRITE_X6);
+  /*p31.DEPY*/ sst_reg.STORE2_X7.set(STORE2_CLKa, STORE2_RSTn, SPRITE_X7);
+
+
+  /*p29.FAME*/ wire SPRITE2_GET = not(SPRITE2_GETn);
+  /*p30.AXEC*/ if (SPRITE2_GET) sil_tri.TS_IDX_0  = not(!sst_reg.STORE2_IDX0);
+  /*p30.CYRO*/ if (SPRITE2_GET) sil_tri.TS_IDX_1  = not(!sst_reg.STORE2_IDX1);
+  /*p30.CUVU*/ if (SPRITE2_GET) sil_tri.TS_IDX_2  = not(!sst_reg.STORE2_IDX2);
+  /*p30.APON*/ if (SPRITE2_GET) sil_tri.TS_IDX_3  = not(!sst_reg.STORE2_IDX3);
+  /*p30.AFOZ*/ if (SPRITE2_GET) sil_tri.TS_IDX_4  = not(!sst_reg.STORE2_IDX4);
+  /*p30.CUBE*/ if (SPRITE2_GET) sil_tri.TS_IDX_5  = not(!sst_reg.STORE2_IDX5);
+  /*p30.ZABY*/ if (SPRITE2_GET) sil_tri.TS_LINE_0 = not(!sst_reg.STORE2_LINE0);
+  /*p30.ZUKE*/ if (SPRITE2_GET) sil_tri.TS_LINE_1 = not(!sst_reg.STORE2_LINE1);
+  /*p30.WUXE*/ if (SPRITE2_GET) sil_tri.TS_LINE_2 = not(!sst_reg.STORE2_LINE2);
+  /*p30.WERE*/ if (SPRITE2_GET) sil_tri.TS_LINE_3 = not(!sst_reg.STORE2_LINE3);
+
+  // sprite store 3
+
+  /*p31.YHOK*/ wire STORE3_MATCH0 = xor(sst_reg.XOLY, X0n);
+  /*p31.YCAH*/ wire STORE3_MATCH1 = xor(sst_reg.XYBA, X1n);
+  /*p31.YDAJ*/ wire STORE3_MATCH2 = xor(sst_reg.XABE, X2n);
+  /*p31.YVUZ*/ wire STORE3_MATCH3 = xor(sst_reg.XEKA, X3n);
+  /*p31.YVAP*/ wire STORE3_MATCH4 = xor(sst_reg.XOMY, X4n);
+  /*p31.XENY*/ wire STORE3_MATCH5 = xor(sst_reg.WUHA, X5n);
+  /*p31.XAVU*/ wire STORE3_MATCH6 = xor(sst_reg.WYNA, X6n);
+  /*p31.XEVA*/ wire STORE3_MATCH7 = xor(sst_reg.WECO, X7n);
+  /*p31.ZURE*/ wire STORE3_MATCHA = nor(STORE3_MATCH0, STORE3_MATCH1, STORE3_MATCH2, STORE3_MATCH3);
+  /*p31.YWOS*/ wire STORE3_MATCHB = nor(STORE3_MATCH4, STORE3_MATCH5, STORE3_MATCH6, STORE3_MATCH7);
+
+  /*p29.YLOZ*/ wire STORE3_MATCHn = nand(MATCH_EN, STORE3_MATCHA, STORE3_MATCHB);
+  /*p29.WEBO*/ wire STORE3_MATCH = not(STORE3_MATCHn);
+  /*p29.WUTO*/ wire STORE3_MATCH_OUT = or(STORE3_MATCH, STORE2_MATCH_OUT);
+
+  /*p29.GYFY*/ wire SPRITE3_GETn = nor(STORE3_MATCHn, STORE2_MATCH_OUT);
+  /*p29.GOTA*/ sst_reg.SPRITE3_GET_SYNCn.set(WUTY_SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE3_GETn);
+
+  /*p29.GAKE*/ wire STORE3_RST = or(DYBA_VID_LINE_TRIG_d4, sst_reg.SPRITE3_GET_SYNCn);
+  /*p29.WUPA*/ wire STORE3_RSTn = not(STORE3_RST);
+
+  /*p29.GUVE*/ wire STORE3_CLK = or(STORE_EN, STORE3_SEL); // 0011
+  /*p29.GUSA*/ wire STORE3_CLKn = not(STORE3_CLK);
+    
+  /*p29.FEKA*/ wire FEKA = not(STORE3_CLKn);
+  /*p30.DAFU*/ sst_reg.DAFU.set(FEKA, sil_tri.TS_IDX_0);
+  /*p30.DEBA*/ sst_reg.DEBA.set(FEKA, sil_tri.TS_IDX_1);
+  /*p30.DUHA*/ sst_reg.DUHA.set(FEKA, sil_tri.TS_IDX_2);
+  /*p30.DUNY*/ sst_reg.DUNY.set(FEKA, sil_tri.TS_IDX_3);
+  /*p30.DESE*/ sst_reg.DESE.set(FEKA, sil_tri.TS_IDX_4);
+  /*p30.DEVY*/ sst_reg.DEVY.set(FEKA, sil_tri.TS_IDX_5);
+
+  /*p29.XYHA*/ wire XYHA = not(STORE3_CLKn);
+  /*p30.ZURY*/ sst_reg.ZURY.set(XYHA, sil_tri.TS_LINE_0);
+  /*p30.ZURO*/ sst_reg.ZURO.set(XYHA, sil_tri.TS_LINE_1);
+  /*p30.ZENE*/ sst_reg.ZENE.set(XYHA, sil_tri.TS_LINE_2);
+  /*p30.ZYLU*/ sst_reg.ZYLU.set(XYHA, sil_tri.TS_LINE_3);
+
+  /*p29.YFAG*/ wire YFAG = not(STORE3_CLKn);
+  /*p31.XOLY*/ sst_reg.XOLY.set(YFAG, STORE3_RSTn, SPRITE_X0);
+  /*p31.XYBA*/ sst_reg.XYBA.set(YFAG, STORE3_RSTn, SPRITE_X1);
+  /*p31.XABE*/ sst_reg.XABE.set(YFAG, STORE3_RSTn, SPRITE_X2);
+  /*p31.XEKA*/ sst_reg.XEKA.set(YFAG, STORE3_RSTn, SPRITE_X3);
+  /*p31.XOMY*/ sst_reg.XOMY.set(YFAG, STORE3_RSTn, SPRITE_X4);
+  /*p31.WUHA*/ sst_reg.WUHA.set(YFAG, STORE3_RSTn, SPRITE_X5);
+  /*p31.WYNA*/ sst_reg.WYNA.set(YFAG, STORE3_RSTn, SPRITE_X6);
+  /*p31.WECO*/ sst_reg.WECO.set(YFAG, STORE3_RSTn, SPRITE_X7);
+
+  /*p29.GYMA*/ wire SPRITE3_GET = not(SPRITE3_GETn);
+  /*p30.DEZU*/ if (SPRITE3_GET) sil_tri.TS_IDX_0  = not(!sst_reg.DAFU);
+  /*p30.EFUD*/ if (SPRITE3_GET) sil_tri.TS_IDX_1  = not(!sst_reg.DEBA);
+  /*p30.DONY*/ if (SPRITE3_GET) sil_tri.TS_IDX_2  = not(!sst_reg.DUHA);
+  /*p30.DOWA*/ if (SPRITE3_GET) sil_tri.TS_IDX_3  = not(!sst_reg.DUNY);
+  /*p30.DYGO*/ if (SPRITE3_GET) sil_tri.TS_IDX_4  = not(!sst_reg.DESE);
+  /*p30.ENAP*/ if (SPRITE3_GET) sil_tri.TS_IDX_5  = not(!sst_reg.DEVY);
+  /*p30.ZYPO*/ if (SPRITE3_GET) sil_tri.TS_LINE_0 = not(!sst_reg.ZURY);
+  /*p30.ZEXE*/ if (SPRITE3_GET) sil_tri.TS_LINE_1 = not(!sst_reg.ZURO);
+  /*p30.YJEM*/ if (SPRITE3_GET) sil_tri.TS_LINE_2 = not(!sst_reg.ZENE);
+  /*p30.YWAV*/ if (SPRITE3_GET) sil_tri.TS_LINE_3 = not(!sst_reg.ZYLU);
+
+  // sprite store 4
+
+  /*p31.ZYKU*/ wire ZYKU = xor(sst_reg.YBED, X4n);
+  /*p31.ZYPU*/ wire ZYPU = xor(sst_reg.ZALA, X5n);
+  /*p31.XAHA*/ wire XAHA = xor(sst_reg.WYDE, X6n);
+  /*p31.ZEFE*/ wire ZEFE = xor(sst_reg.XEPA, X7n);
+  /*p31.XEJU*/ wire XEJU = xor(sst_reg.WEDU, X0n);
+  /*p31.ZATE*/ wire ZATE = xor(sst_reg.YGAJ, X1n);
+  /*p31.ZAKU*/ wire ZAKU = xor(sst_reg.ZYJO, X2n);
+  /*p31.YBOX*/ wire YBOX = xor(sst_reg.XURY, X3n);
+  /*p31.YKOK*/ wire YKOK = nor(ZYKU, ZYPU, XAHA, ZEFE);
+  /*p31.YNAZ*/ wire YNAZ = nor(XEJU, ZATE, ZAKU, YBOX);
+  /*p29.XAGE*/ wire STORE4_MATCHn = nand(MATCH_EN, YNAZ, YKOK);
+  /*p29.WUNA*/ wire STORE4_MATCH = not(STORE4_MATCHn);
+
+  /*p29.GONO*/ wire SPRITE4_GETn = nor(STORE4_MATCHn, STORE3_MATCH_OUT);
+  /*p29.XUDY*/ sst_reg.SPRITE4_GET_SYNCn.set(WUTY_SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE4_GETn);
+  /*p29.WOHU*/ wire WOHU = or(DYBA_VID_LINE_TRIG_d4, sst_reg.SPRITE4_GET_SYNCn);
+  /*p29.XYLA*/ wire STORE4_MATCH_OUT = or(STORE4_MATCH, STORE3_MATCH_OUT);
+
+  /*p29.CECU*/ wire STORE4_CLK = or(STORE_EN, STORE4_SEL); // 0100
+  /*p29.DUKE*/ wire DUKE = not(STORE4_CLK);
+  
+  /*p29.WUNU*/ wire WUNU = not(WOHU); // i think these are swapped
+  /*p29.WOFO*/ wire WOFO = not(DUKE);
+  /*p31.WEDU*/ sst_reg.WEDU.set(WUNU, WOFO, SPRITE_X0);
+  /*p31.YGAJ*/ sst_reg.YGAJ.set(WUNU, WOFO, SPRITE_X1);
+  /*p31.ZYJO*/ sst_reg.ZYJO.set(WUNU, WOFO, SPRITE_X2);
+  /*p31.XURY*/ sst_reg.XURY.set(WUNU, WOFO, SPRITE_X3);
+  /*p31.YBED*/ sst_reg.YBED.set(WUNU, WOFO, SPRITE_X4);
+  /*p31.ZALA*/ sst_reg.ZALA.set(WUNU, WOFO, SPRITE_X5);
+  /*p31.WYDE*/ sst_reg.WYDE.set(WUNU, WOFO, SPRITE_X6);
+  /*p31.XEPA*/ sst_reg.XEPA.set(WUNU, WOFO, SPRITE_X7);
+
+  /*p29.WYLU*/ wire WYLU = not(DUKE);
+  /*p30.XYNU*/ sst_reg.XYNU.set(WYLU, sil_tri.TS_IDX_0);
+  /*p30.XEGE*/ sst_reg.XEGE.set(WYLU, sil_tri.TS_IDX_1);
+  /*p30.XABO*/ sst_reg.XABO.set(WYLU, sil_tri.TS_IDX_2);
+  /*p30.WANU*/ sst_reg.WANU.set(WYLU, sil_tri.TS_IDX_3);
+  /*p30.XEFE*/ sst_reg.XEFE.set(WYLU, sil_tri.TS_IDX_4);
+  /*p30.XAVE*/ sst_reg.XAVE.set(WYLU, sil_tri.TS_IDX_5);
+
+  /*p29.EWOT*/ wire EWOT = not(DUKE);
+  /*p30.CUMU*/ sst_reg.CUMU.set(EWOT, sil_tri.TS_LINE_0);
+  /*p30.CAPO*/ sst_reg.CAPO.set(EWOT, sil_tri.TS_LINE_1);
+  /*p30.CONO*/ sst_reg.CONO.set(EWOT, sil_tri.TS_LINE_2);
+  /*p30.CAJU*/ sst_reg.CAJU.set(EWOT, sil_tri.TS_LINE_3);
+
+  /*p29.GOWO*/ wire SPRITE4_GET = not(SPRITE4_GETn);
+  /*p30.WAJA*/ if (SPRITE4_GET) sil_tri.TS_IDX_0  = not(!sst_reg.XYNU);
+  /*p30.WOXY*/ if (SPRITE4_GET) sil_tri.TS_IDX_1  = not(!sst_reg.XEGE);
+  /*p30.XYRE*/ if (SPRITE4_GET) sil_tri.TS_IDX_2  = not(!sst_reg.XABO);
+  /*p30.WERU*/ if (SPRITE4_GET) sil_tri.TS_IDX_3  = not(!sst_reg.WANU);
+  /*p30.WEPY*/ if (SPRITE4_GET) sil_tri.TS_IDX_4  = not(!sst_reg.XEFE);
+  /*p30.WUXU*/ if (SPRITE4_GET) sil_tri.TS_IDX_5  = not(!sst_reg.XAVE);
+  /*p30.BYDO*/ if (SPRITE4_GET) sil_tri.TS_LINE_0 = not(!sst_reg.CUMU);
+  /*p30.BUCE*/ if (SPRITE4_GET) sil_tri.TS_LINE_1 = not(!sst_reg.CAPO);
+  /*p30.BOVE*/ if (SPRITE4_GET) sil_tri.TS_LINE_2 = not(!sst_reg.CONO);
+  /*p30.BEVY*/ if (SPRITE4_GET) sil_tri.TS_LINE_3 = not(!sst_reg.CAJU);
+
+  // sprite store 5
+  /*p31.BAZY*/ wire BAZY = xor(sst_reg.CYWE, X4n);
+  /*p31.CYLE*/ wire CYLE = xor(sst_reg.DYBY, X5n);
+  /*p31.CEVA*/ wire CEVA = xor(sst_reg.DURY, X6n);
+  /*p31.BUMY*/ wire BUMY = xor(sst_reg.CUVY, X7n);
+  /*p31.GUZO*/ wire GUZO = xor(sst_reg.FUSA, X0n);
+  /*p31.GOLA*/ wire GOLA = xor(sst_reg.FAXA, X1n);
+  /*p31.GEVE*/ wire GEVE = xor(sst_reg.FOZY, X2n);
+  /*p31.GUDE*/ wire GUDE = xor(sst_reg.FESY, X3n);
+  /*p31.COGY*/ wire COGY = nor(BAZY, CYLE, CEVA, BUMY);
+  /*p31.FYMA*/ wire FYMA = nor(GUZO, GOLA, GEVE, GUDE);
+  /*p29.EGOM*/ wire STORE5_MATCHn = nand(MATCH_EN, FYMA, COGY);
+
+  /*p29.GEGA*/ wire GEGA = nor(STORE5_MATCHn, STORE4_MATCH_OUT);
+  /*p29.WAFY*/ sst_reg.SPRITE5_GET_SYNCn.set(WUTY_SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, GEGA);
+  /*p29.FEVE*/ wire FEVE = or(DYBA_VID_LINE_TRIG_d4, sst_reg.SPRITE5_GET_SYNCn);
+  /*p29.EJAD*/ wire EJAD = not(FEVE);
+  /*p29.GABA*/ wire STORE5_MATCH = not(STORE5_MATCHn);
+    
+  /*p29.WEJA*/ wire STORE5_MATCH_OUT = or(STORE5_MATCH, STORE4_MATCH_OUT);
+
+  /*p29.CADO*/ wire STORE5_CLK = or(STORE_EN, STORE5_SEL); // 0101
+  /*p29.BEDE*/ wire BEDE = not(STORE5_CLK);
+
+  /*p29.CYLA*/ wire CYLA = not(BEDE);
+  /*p31.FUSA*/ sst_reg.FUSA.set(CYLA, EJAD, SPRITE_X0);
+  /*p31.FAXA*/ sst_reg.FAXA.set(CYLA, EJAD, SPRITE_X1);
+  /*p31.FOZY*/ sst_reg.FOZY.set(CYLA, EJAD, SPRITE_X2);
+  /*p31.FESY*/ sst_reg.FESY.set(CYLA, EJAD, SPRITE_X3);
+  /*p31.CYWE*/ sst_reg.CYWE.set(CYLA, EJAD, SPRITE_X4);
+  /*p31.DYBY*/ sst_reg.DYBY.set(CYLA, EJAD, SPRITE_X5);
+  /*p31.DURY*/ sst_reg.DURY.set(CYLA, EJAD, SPRITE_X6);
+  /*p31.CUVY*/ sst_reg.CUVY.set(CYLA, EJAD, SPRITE_X7);
+
+  /*p29.DYMO*/ wire DYMO = not(BEDE);
+  /*p30.EKAP*/ sst_reg.EKAP.set(DYMO, sil_tri.TS_IDX_0);
+  /*p30.ETAV*/ sst_reg.ETAV.set(DYMO, sil_tri.TS_IDX_1);
+  /*p30.EBEX*/ sst_reg.EBEX.set(DYMO, sil_tri.TS_IDX_2);
+  /*p30.GORU*/ sst_reg.GORU.set(DYMO, sil_tri.TS_IDX_3);
+  /*p30.ETYM*/ sst_reg.ETYM.set(DYMO, sil_tri.TS_IDX_4);
+  /*p30.EKOP*/ sst_reg.EKOP.set(DYMO, sil_tri.TS_IDX_5);
+
+  /*p29.BUCY*/ wire BUCY = not(BEDE);
+  /*p30.ANED*/ sst_reg.ANED.set(BUCY, sil_tri.TS_LINE_0);
+  /*p30.ACEP*/ sst_reg.ACEP.set(BUCY, sil_tri.TS_LINE_1);
+  /*p30.ABUX*/ sst_reg.ABUX.set(BUCY, sil_tri.TS_LINE_2);
+  /*p30.ABEG*/ sst_reg.ABEG.set(BUCY, sil_tri.TS_LINE_3);
+
+  /*p29.GYGY*/ wire GYGY = not(GEGA);
+  /*p30.DALO*/ if (GYGY) sil_tri.TS_IDX_0  = not(!sst_reg.EKAP);
+  /*p30.DALY*/ if (GYGY) sil_tri.TS_IDX_1  = not(!sst_reg.ETAV);
+  /*p30.DUZA*/ if (GYGY) sil_tri.TS_IDX_2  = not(!sst_reg.EBEX);
+  /*p30.WAGA*/ if (GYGY) sil_tri.TS_IDX_3  = not(!sst_reg.GORU);
+  /*p30.DYNY*/ if (GYGY) sil_tri.TS_IDX_4  = not(!sst_reg.ETYM);
+  /*p30.DOBO*/ if (GYGY) sil_tri.TS_IDX_5  = not(!sst_reg.EKOP);
+  /*p30.AWAT*/ if (GYGY) sil_tri.TS_LINE_0 = not(!sst_reg.ANED);
+  /*p30.BACE*/ if (GYGY) sil_tri.TS_LINE_1 = not(!sst_reg.ACEP);
+  /*p30.BODU*/ if (GYGY) sil_tri.TS_LINE_2 = not(!sst_reg.ABUX);
+  /*p30.BUJA*/ if (GYGY) sil_tri.TS_LINE_3 = not(!sst_reg.ABEG);
+
+  // sprite store 6
+  /*p31.ZARE*/ wire ZARE = xor(sst_reg.ZOLY, X4n);
+  /*p31.ZEMU*/ wire ZEMU = xor(sst_reg.ZOGO, X5n);
+  /*p31.ZYGO*/ wire ZYGO = xor(sst_reg.ZECU, X6n);
+  /*p31.ZUZY*/ wire ZUZY = xor(sst_reg.ZESA, X7n);
+  /*p31.XOSU*/ wire XOSU = xor(sst_reg.YCOL, X0n);
+  /*p31.ZUVU*/ wire ZUVU = xor(sst_reg.YRAC, X1n);
+  /*p31.XUCO*/ wire XUCO = xor(sst_reg.YMEM, X2n);
+  /*p31.ZULO*/ wire ZULO = xor(sst_reg.YVAG, X3n);
+  /*p31.YWAP*/ wire YWAP = nor(ZARE, ZEMU, ZYGO, ZUZY);
+  /*p31.YDOT*/ wire YDOT = nor(XOSU, ZUVU, XUCO, ZULO);
+  /*p29.YBEZ*/ wire STORE6_MATCHn = nand(MATCH_EN, YDOT, YWAP);
+
+  /*p29.XOJA*/ wire XOJA = nor(STORE6_MATCHn, STORE5_MATCH_OUT);
+  /*p29.WOMY*/ sst_reg.SPRITE6_GET_SYNCn.set(WUTY_SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, XOJA);
+  /*p29.WACY*/ wire WACY = or(DYBA_VID_LINE_TRIG_d4, sst_reg.SPRITE6_GET_SYNCn);
+  /*p29.XAHO*/ wire XAHO = not(WACY);
+  /*p29.WASE*/ wire STORE6_MATCH = not(STORE6_MATCHn);
+  /*p29.WYLA*/ wire STORE6_MATCH_OUT = or(STORE6_MATCH, STORE5_MATCH_OUT);
+
+  /*p29.XUJO*/ wire STORE6_CLK = or(STORE_EN, STORE6_SEL); // 0110
+  /*p29.WEKA*/ wire WEKA = not(STORE6_CLK);
+
+  /*p29.ZAPE*/ wire ZAPE = not(WEKA);
+  /*p31.YCOL*/ sst_reg.YCOL.set(ZAPE, XAHO, SPRITE_X0);
+  /*p31.YRAC*/ sst_reg.YRAC.set(ZAPE, XAHO, SPRITE_X1);
+  /*p31.YMEM*/ sst_reg.YMEM.set(ZAPE, XAHO, SPRITE_X2);
+  /*p31.YVAG*/ sst_reg.YVAG.set(ZAPE, XAHO, SPRITE_X3);
+  /*p31.ZOLY*/ sst_reg.ZOLY.set(ZAPE, XAHO, SPRITE_X4);
+  /*p31.ZOGO*/ sst_reg.ZOGO.set(ZAPE, XAHO, SPRITE_X5);
+  /*p31.ZECU*/ sst_reg.ZECU.set(ZAPE, XAHO, SPRITE_X6);
+  /*p31.ZESA*/ sst_reg.ZESA.set(ZAPE, XAHO, SPRITE_X7);
+
+  /*p29.WUSE*/ wire WUSE = not(WEKA);
+  /*p30.GECU*/ sst_reg.GECU.set(WUSE, sil_tri.TS_IDX_0);
+  /*p30.FOXY*/ sst_reg.FOXY.set(WUSE, sil_tri.TS_IDX_1);
+  /*p30.GOHU*/ sst_reg.GOHU.set(WUSE, sil_tri.TS_IDX_2);
+  /*p30.FOGO*/ sst_reg.FOGO.set(WUSE, sil_tri.TS_IDX_3);
+  /*p30.GACY*/ sst_reg.GACY.set(WUSE, sil_tri.TS_IDX_4);
+  /*p30.GABO*/ sst_reg.GABO.set(WUSE, sil_tri.TS_IDX_5);
+    
+  /*p29.ZURU*/ wire ZURU = not(WEKA);
+  /*p30.ZUBE*/ sst_reg.ZUBE.set(ZURU, sil_tri.TS_LINE_0);
+  /*p30.ZUMY*/ sst_reg.ZUMY.set(ZURU, sil_tri.TS_LINE_1);
+  /*p30.ZEXO*/ sst_reg.ZEXO.set(ZURU, sil_tri.TS_LINE_2);
+  /*p30.ZAFU*/ sst_reg.ZAFU.set(ZURU, sil_tri.TS_LINE_3);
+
+  /*p29.XYME*/ wire XYME = not(XOJA);
+  /*p30.WOCY*/ if (XYME) sil_tri.TS_IDX_0  = not(!sst_reg.GECU);
+  /*p30.ELYC*/ if (XYME) sil_tri.TS_IDX_1  = not(!sst_reg.FOXY);
+  /*p30.WABO*/ if (XYME) sil_tri.TS_IDX_2  = not(!sst_reg.GOHU);
+  /*p30.EZOC*/ if (XYME) sil_tri.TS_IDX_3  = not(!sst_reg.FOGO);
+  /*p30.WYWY*/ if (XYME) sil_tri.TS_IDX_4  = not(!sst_reg.GACY);
+  /*p30.WATO*/ if (XYME) sil_tri.TS_IDX_5  = not(!sst_reg.GABO);
+  /*p30.ZUDO*/ if (XYME) sil_tri.TS_LINE_0 = not(!sst_reg.ZUBE);
+  /*p30.YBUK*/ if (XYME) sil_tri.TS_LINE_1 = not(!sst_reg.ZUMY);
+  /*p30.ZYTO*/ if (XYME) sil_tri.TS_LINE_2 = not(!sst_reg.ZEXO);
+  /*p30.YKOZ*/ if (XYME) sil_tri.TS_LINE_3 = not(!sst_reg.ZAFU);
+
+  // sprite store 7
+  /*p31.DUSE*/ wire STORE7_MATCH0 = xor(sst_reg.STORE7_X0, X0n);
+  /*p31.DAGU*/ wire STORE7_MATCH1 = xor(sst_reg.STORE7_X1, X1n);
+  /*p31.DYZE*/ wire STORE7_MATCH2 = xor(sst_reg.STORE7_X2, X2n);
+  /*p31.DESO*/ wire STORE7_MATCH3 = xor(sst_reg.STORE7_X3, X3n);
+  /*p31.EJOT*/ wire STORE7_MATCH4 = xor(sst_reg.STORE7_X4, X4n);
+  /*p31.ESAJ*/ wire STORE7_MATCH5 = xor(sst_reg.STORE7_X5, X5n);
+  /*p31.DUCU*/ wire STORE7_MATCH6 = xor(sst_reg.STORE7_X6, X6n);
+  /*p31.EWUD*/ wire STORE7_MATCH7 = xor(sst_reg.STORE7_X7, X7n);
+  /*p31.CYCO*/ wire STORE7_MATCHA = nor(STORE7_MATCH0, STORE7_MATCH1, STORE7_MATCH2, STORE7_MATCH3);
+  /*p31.DAJE*/ wire STORE7_MATCHB = nor(STORE7_MATCH4, STORE7_MATCH5, STORE7_MATCH6, STORE7_MATCH7);
+  /*p29.DYKA*/ wire STORE7_MATCHn = nand(MATCH_EN, STORE7_MATCHA, STORE7_MATCHB);
+  /*p29.GYTE*/ wire STORE7_MATCH = not(STORE7_MATCHn);
+  /*p29.FAVO*/ wire STORE7_MATCH_OUT = or(STORE7_MATCH, STORE6_MATCH_OUT);
+
+  /*p29.GUTU*/ wire STORE7_RD = nor(STORE7_MATCHn, STORE6_MATCH_OUT);
+  /*p29.WAPO*/ sst_reg.SPRITE7_GET_SYNCn.set(WUTY_SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, STORE7_RD);
+  /*p29.GUKY*/ wire STORE7_RST = or(DYBA_VID_LINE_TRIG_d4, sst_reg.SPRITE7_GET_SYNCn);
+  /*p29.GAFY*/ wire STORE7_RSTn = not(STORE7_RST);
+
+  /*p29.GAPE*/ wire STORE7_CLK = or(STORE_EN, STORE7_SEL); // 0111
+  /*p29.GYVO*/ wire STORE7_CLKn = not(STORE7_CLK);
+
+  /*p29.GECY*/ wire GECY = not(STORE7_CLKn);
+  /*p31.ERAZ*/ sst_reg.STORE7_X0.set(GECY, STORE7_RSTn, SPRITE_X0);
+  /*p31.EPUM*/ sst_reg.STORE7_X1.set(GECY, STORE7_RSTn, SPRITE_X1);
+  /*p31.EROL*/ sst_reg.STORE7_X2.set(GECY, STORE7_RSTn, SPRITE_X2);
+  /*p31.EHYN*/ sst_reg.STORE7_X3.set(GECY, STORE7_RSTn, SPRITE_X3);
+  /*p31.FAZU*/ sst_reg.STORE7_X4.set(GECY, STORE7_RSTn, SPRITE_X4);
+  /*p31.FAXE*/ sst_reg.STORE7_X5.set(GECY, STORE7_RSTn, SPRITE_X5);
+  /*p31.EXUK*/ sst_reg.STORE7_X6.set(GECY, STORE7_RSTn, SPRITE_X6);
+  /*p31.FEDE*/ sst_reg.STORE7_X7.set(GECY, STORE7_RSTn, SPRITE_X7);
+
+  /*p29.FEFO*/ wire FEFO = not(STORE7_CLKn);
+  /*p30.FUZO*/ sst_reg.FUZO.set(FEFO, sil_tri.TS_IDX_0);
+  /*p30.GESY*/ sst_reg.GESY.set(FEFO, sil_tri.TS_IDX_1);
+  /*p30.FYSU*/ sst_reg.FYSU.set(FEFO, sil_tri.TS_IDX_2);
+  /*p30.FEFA*/ sst_reg.FEFA.set(FEFO, sil_tri.TS_IDX_3);
+  /*p30.GYNO*/ sst_reg.GYNO.set(FEFO, sil_tri.TS_IDX_4);
+  /*p30.GULE*/ sst_reg.GULE.set(FEFO, sil_tri.TS_IDX_5);
+
+  /*p29.WABE*/ wire WABE = not(STORE7_CLKn);
+  /*p30.XYGO*/ sst_reg.XYGO.set(WABE, sil_tri.TS_LINE_0);
+  /*p30.XYNA*/ sst_reg.XYNA.set(WABE, sil_tri.TS_LINE_1);
+  /*p30.XAKU*/ sst_reg.XAKU.set(WABE, sil_tri.TS_LINE_2);
+  /*p30.YGUM*/ sst_reg.YGUM.set(WABE, sil_tri.TS_LINE_3);
+
+  /*p29.GUGY*/ wire STORE7_RDn = not(STORE7_RD);
+  /*p30.EVYT*/ if (!STORE7_RDn) sil_tri.TS_IDX_0  = not(!sst_reg.FUZO);
+  /*p30.WABA*/ if (!STORE7_RDn) sil_tri.TS_IDX_1  = not(!sst_reg.GESY);
+  /*p30.ETAD*/ if (!STORE7_RDn) sil_tri.TS_IDX_2  = not(!sst_reg.FYSU);
+  /*p30.ELEP*/ if (!STORE7_RDn) sil_tri.TS_IDX_3  = not(!sst_reg.FEFA);
+  /*p30.WYGO*/ if (!STORE7_RDn) sil_tri.TS_IDX_4  = not(!sst_reg.GYNO);
+  /*p30.WAKO*/ if (!STORE7_RDn) sil_tri.TS_IDX_5  = not(!sst_reg.GULE);
+  /*p30.WANA*/ if (!STORE7_RDn) sil_tri.TS_LINE_0 = not(!sst_reg.XYGO);
+  /*p30.WAXE*/ if (!STORE7_RDn) sil_tri.TS_LINE_1 = not(!sst_reg.XYNA);
+  /*p30.WABU*/ if (!STORE7_RDn) sil_tri.TS_LINE_2 = not(!sst_reg.XAKU);
+  /*p30.YPOZ*/ if (!STORE7_RDn) sil_tri.TS_LINE_3 = not(!sst_reg.YGUM);
+
+  // sprite store 8
+  /*p31.DUZE*/ wire DUZE = xor(sst_reg.EZUF, X4n);
+  /*p31.DAGA*/ wire DAGA = xor(sst_reg.ENAD, X5n);
+  /*p31.DAWU*/ wire DAWU = xor(sst_reg.EBOW, X6n);
+  /*p31.EJAW*/ wire EJAW = xor(sst_reg.FYCA, X7n);
+  /*p31.GOHO*/ wire GOHO = xor(sst_reg.GAVY, X0n);
+  /*p31.GASU*/ wire GASU = xor(sst_reg.GYPU, X1n);
+  /*p31.GABU*/ wire GABU = xor(sst_reg.GADY, X2n);
+  /*p31.GAFE*/ wire GAFE = xor(sst_reg.GAZA, X3n);
+  /*p31.DAMA*/ wire DAMA = nor(DUZE, DAGA, DAWU, EJAW);
+  /*p31.FEHA*/ wire FEHA = nor(GOHO, GASU, GABU, GAFE);
+  /*p29.EFYL*/ wire STORE8_MATCHn = nand(MATCH_EN, FEHA, DAMA);
+  /*p29.GEKE*/ wire STORE8_MATCH = not(STORE8_MATCHn);
+  /*p29.GYGA*/ wire STORE8_MATCH_OUT = or(STORE8_MATCH, STORE7_MATCH_OUT);
+  /*p29.FOXA*/ wire FOXA = nor(STORE8_MATCHn, STORE7_MATCH_OUT);
+
+  /*p29.EXUQ*/ sst_reg.SPRITE8_GET_SYNCn.set(WUTY_SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, FOXA);
+  /*p29.GORO*/ wire GORO = or(DYBA_VID_LINE_TRIG_d4, sst_reg.SPRITE8_GET_SYNCn);
+  /*p29.WUZO*/ wire WUZO = not(GORO);
+
+  /*p29.CAHO*/ wire STORE8_CLK = or(STORE_EN, STORE8_SEL); // 1000
+  /*p29.BUKA*/ wire BUKA = not(STORE8_CLK);
+  /*p29.CEXU*/ wire CEXU = not(BUKA);
+  /*p29.AKOL*/ wire AKOL = not(BUKA);
+  /*p29.BYMY*/ wire BYMY = not(BUKA);
+  /*p31.GAVY*/ sst_reg.GAVY.set(CEXU, WUZO, SPRITE_X0);
+  /*p31.GYPU*/ sst_reg.GYPU.set(CEXU, WUZO, SPRITE_X1);
+  /*p31.GADY*/ sst_reg.GADY.set(CEXU, WUZO, SPRITE_X2);
+  /*p31.GAZA*/ sst_reg.GAZA.set(CEXU, WUZO, SPRITE_X3);
+  /*p31.EZUF*/ sst_reg.EZUF.set(CEXU, WUZO, SPRITE_X4);
+  /*p31.ENAD*/ sst_reg.ENAD.set(CEXU, WUZO, SPRITE_X5);
+  /*p31.EBOW*/ sst_reg.EBOW.set(CEXU, WUZO, SPRITE_X6);
+  /*p31.FYCA*/ sst_reg.FYCA.set(CEXU, WUZO, SPRITE_X7);
+
+  /*p30.AXUV*/ sst_reg.AXUV.set(AKOL, sil_tri.TS_IDX_0 );
+  /*p30.BADA*/ sst_reg.BADA.set(AKOL, sil_tri.TS_IDX_1 );
+  /*p30.APEV*/ sst_reg.APEV.set(AKOL, sil_tri.TS_IDX_2 );
+  /*p30.BADO*/ sst_reg.BADO.set(AKOL, sil_tri.TS_IDX_3 );
+  /*p30.BEXY*/ sst_reg.BEXY.set(AKOL, sil_tri.TS_IDX_4 );
+  /*p30.BYHE*/ sst_reg.BYHE.set(AKOL, sil_tri.TS_IDX_5 );
+  /*p30.AFYM*/ sst_reg.AFYM.set(BYMY, sil_tri.TS_LINE_0);
+  /*p30.AZAP*/ sst_reg.AZAP.set(BYMY, sil_tri.TS_LINE_1);
+  /*p30.AFUT*/ sst_reg.AFUT.set(BYMY, sil_tri.TS_LINE_2);
+  /*p30.AFYX*/ sst_reg.AFYX.set(BYMY, sil_tri.TS_LINE_3);
+
+  /*p29.DENY*/ wire DENY = not(FOXA);
+  /*p30.ADYB*/ if (DENY) sil_tri.TS_IDX_0  = sst_reg.AXUV;
+  /*p30.APOB*/ if (DENY) sil_tri.TS_IDX_1  = sst_reg.BADA;
+  /*p30.APYV*/ if (DENY) sil_tri.TS_IDX_2  = sst_reg.APEV;
+  /*p30.AFEN*/ if (DENY) sil_tri.TS_IDX_3  = sst_reg.BADO;
+  /*p30.AKYH*/ if (DENY) sil_tri.TS_IDX_4  = sst_reg.BEXY;
+  /*p30.APOC*/ if (DENY) sil_tri.TS_IDX_5  = sst_reg.BYHE;
+  /*p30.BUJY*/ if (DENY) sil_tri.TS_LINE_0 = sst_reg.AFYM;
+  /*p30.BOSO*/ if (DENY) sil_tri.TS_LINE_1 = sst_reg.AZAP;
+  /*p30.AHAC*/ if (DENY) sil_tri.TS_LINE_2 = sst_reg.AFUT;
+  /*p30.BAZU*/ if (DENY) sil_tri.TS_LINE_3 = sst_reg.AFYX;
+
+  // sprite store 9
+  /*p31.YMAM*/ wire STORE9_MATCH0 = xor(sst_reg.STORE9_X0, X0n);
+  /*p31.YTYP*/ wire STORE9_MATCH1 = xor(sst_reg.STORE9_X1, X1n);
+  /*p31.YFOP*/ wire STORE9_MATCH2 = xor(sst_reg.STORE9_X2, X2n);
+  /*p31.YVAC*/ wire STORE9_MATCH3 = xor(sst_reg.STORE9_X3, X3n);
+  /*p31.ZYWU*/ wire STORE9_MATCH4 = xor(sst_reg.STORE9_X4, X4n);
+  /*p31.ZUZA*/ wire STORE9_MATCH5 = xor(sst_reg.STORE9_X5, X5n);
+  /*p31.ZEJO*/ wire STORE9_MATCH6 = xor(sst_reg.STORE9_X6, X6n);
+  /*p31.ZEDA*/ wire STORE9_MATCH7 = xor(sst_reg.STORE9_X7, X7n);
+  /*p31.YLEV*/ wire STORE9_MATCHA = nor(STORE9_MATCH0, STORE9_MATCH1, STORE9_MATCH2, STORE9_MATCH3);
+  /*p31.YTUB*/ wire STORE9_MATCHB = nor(STORE9_MATCH4, STORE9_MATCH5, STORE9_MATCH6, STORE9_MATCH7);
+  /*p29.YGEM*/ wire STORE9_MATCHn = nand(MATCH_EN, STORE9_MATCHA, STORE9_MATCHB);
+
+  /*p29.CATO*/ wire STORE9_CLK = or(STORE_EN, STORE9_SEL); // 1001
+  /*p29.DECU*/ wire STORE9_CLKn = not(STORE9_CLK);
+
+  /*p29.GUZE*/ wire SPRITE9_GETn = nor(STORE9_MATCHn, STORE8_MATCH_OUT);
+  /*p29.FONO*/ sst_reg.SPRITE9_GET_SYNCn.set(WUTY_SPRITE_DONE, BYVA_VID_LINE_TRIG_d4n, SPRITE9_GETn);
+
+  /*p29.DUBU*/ wire STORE9_RST  = or(DYBA_VID_LINE_TRIG_d4, sst_reg.SPRITE9_GET_SYNCn);
+  /*p29.DOSY*/ wire STORE9_RSTn = not(STORE9_RST);
+    
+  /*p29.WEME*/ wire STORE9_CLKa = not(STORE9_CLKn);
+  /*p31.XUVY*/ sst_reg.STORE9_X0.set(STORE9_CLKa, STORE9_RSTn, SPRITE_X0);
+  /*p31.XERE*/ sst_reg.STORE9_X1.set(STORE9_CLKa, STORE9_RSTn, SPRITE_X1);
+  /*p31.XUZO*/ sst_reg.STORE9_X2.set(STORE9_CLKa, STORE9_RSTn, SPRITE_X2);
+  /*p31.XEXA*/ sst_reg.STORE9_X3.set(STORE9_CLKa, STORE9_RSTn, SPRITE_X3);
+  /*p31.YPOD*/ sst_reg.STORE9_X4.set(STORE9_CLKa, STORE9_RSTn, SPRITE_X4);
+  /*p31.YROP*/ sst_reg.STORE9_X5.set(STORE9_CLKa, STORE9_RSTn, SPRITE_X5);
+  /*p31.YNEP*/ sst_reg.STORE9_X6.set(STORE9_CLKa, STORE9_RSTn, SPRITE_X6);
+  /*p31.YZOF*/ sst_reg.STORE9_X7.set(STORE9_CLKa, STORE9_RSTn, SPRITE_X7);
+
+  /*p29.WUFA*/ wire STORE9_CLKb = not(STORE9_CLKn);
+  /*p30.XUFO*/ sst_reg.STORE9_IDX0.set(STORE9_CLKb, sil_tri.TS_IDX_0);
+  /*p30.XUTE*/ sst_reg.STORE9_IDX1.set(STORE9_CLKb, sil_tri.TS_IDX_1);
+  /*p30.XOTU*/ sst_reg.STORE9_IDX2.set(STORE9_CLKb, sil_tri.TS_IDX_2);
+  /*p30.XYFE*/ sst_reg.STORE9_IDX3.set(STORE9_CLKb, sil_tri.TS_IDX_3);
+  /*p30.YZOR*/ sst_reg.STORE9_IDX4.set(STORE9_CLKb, sil_tri.TS_IDX_4);
+  /*p30.YBER*/ sst_reg.STORE9_IDX5.set(STORE9_CLKb, sil_tri.TS_IDX_5);
+
+  /*p29.FAKA*/ wire STORE9_CLKc = not(STORE9_CLKn);
+  /*p30.DEWU*/ sst_reg.STORE9_LINE0.set(STORE9_CLKc, sil_tri.TS_LINE_0);
+  /*p30.CANA*/ sst_reg.STORE9_LINE1.set(STORE9_CLKc, sil_tri.TS_LINE_1);
+  /*p30.DYSY*/ sst_reg.STORE9_LINE2.set(STORE9_CLKc, sil_tri.TS_LINE_2);
+  /*p30.FOFO*/ sst_reg.STORE9_LINE3.set(STORE9_CLKc, sil_tri.TS_LINE_3);
+
+  /*p29.FADO*/ wire SPRITE9_GET = not(SPRITE9_GETn);
+  /*p30.YHAL*/ if (SPRITE9_GET) sil_tri.TS_IDX_0  = not(!sst_reg.STORE9_IDX0);
+  /*p30.YRAD*/ if (SPRITE9_GET) sil_tri.TS_IDX_1  = not(!sst_reg.STORE9_IDX1);
+  /*p30.XYRA*/ if (SPRITE9_GET) sil_tri.TS_IDX_2  = not(!sst_reg.STORE9_IDX2);
+  /*p30.YNEV*/ if (SPRITE9_GET) sil_tri.TS_IDX_3  = not(!sst_reg.STORE9_IDX3);
+  /*p30.ZOJY*/ if (SPRITE9_GET) sil_tri.TS_IDX_4  = not(!sst_reg.STORE9_IDX4);
+  /*p30.ZARO*/ if (SPRITE9_GET) sil_tri.TS_IDX_5  = not(!sst_reg.STORE9_IDX5);
+  /*p30.CAWO*/ if (SPRITE9_GET) sil_tri.TS_LINE_0 = not(!sst_reg.STORE9_LINE0);
+  /*p30.BYME*/ if (SPRITE9_GET) sil_tri.TS_LINE_1 = not(!sst_reg.STORE9_LINE1);
+  /*p30.COHO*/ if (SPRITE9_GET) sil_tri.TS_LINE_2 = not(!sst_reg.STORE9_LINE2);
+  /*p30.GATE*/ if (SPRITE9_GET) sil_tri.TS_LINE_3 = not(!sst_reg.STORE9_LINE3);
+
+  // sprite store
+
+  /*p29.DEZY*/ sst_reg.STORE_EN_SYNC.set(ZEME_xBxDxFxH, VID_RESETn, STORE_EN);
+
+  /*p29.BAKY*/ wire SPRITES_FULL = and(sst_reg.SPRITE_COUNT1, sst_reg.SPRITE_COUNT3);
+  /*p29.CAKE*/ wire SPRITE_COUNT_CLK = or(SPRITES_FULL, sst_reg.STORE_EN_SYNC);
+  /*p28.AZYB*/ wire SPRITE_COUNT_RSTn = not(BYHA_VID_LINE_TRIG_d4n);
+  /*p29.BESE*/ sst_reg.SPRITE_COUNT0.set(SPRITE_COUNT_CLK,  SPRITE_COUNT_RSTn, !sst_reg.SPRITE_COUNT0);
+  /*p29.CUXY*/ sst_reg.SPRITE_COUNT1.set(sst_reg.SPRITE_COUNT0,     SPRITE_COUNT_RSTn, !sst_reg.SPRITE_COUNT1);
+  /*p29.BEGO*/ sst_reg.SPRITE_COUNT2.set(sst_reg.SPRITE_COUNT1,     SPRITE_COUNT_RSTn, !sst_reg.SPRITE_COUNT2);
+  /*p29.DYBE*/ sst_reg.SPRITE_COUNT3.set(sst_reg.SPRITE_COUNT2,     SPRITE_COUNT_RSTn, !sst_reg.SPRITE_COUNT3);
+
+  /*p29.FEFY*/ wire FEFY = nand(STORE4_MATCHn, STORE3_MATCHn, STORE2_MATCHn, STORE1_MATCHn, STORE0_MATCHn);
+  /*p29.FOVE*/ wire FOVE = nand(STORE9_MATCHn, STORE8_MATCHn, STORE7_MATCHn, STORE6_MATCHn, STORE5_MATCHn);
+  /*p29.FEPO*/ wire FEPO_STORE_MATCH = or(FEFY, FOVE);
+
+  /*p30.WENU*/ if (FEPO_STORE_MATCH) sil_tri.TS_LINE_0 = SPRITE_DELTA1; // order wrong
+  /*p30.CUCU*/ if (FEPO_STORE_MATCH) sil_tri.TS_LINE_1 = SPRITE_DELTA2;
+  /*p30.CUCA*/ if (FEPO_STORE_MATCH) sil_tri.TS_LINE_2 = SPRITE_DELTA0;
+  /*p30.CEGA*/ if (FEPO_STORE_MATCH) sil_tri.TS_LINE_3 = SPRITE_DELTA3;
 }
 
 

@@ -4,43 +4,16 @@
 namespace Schematics {
 
 //-----------------------------------------------------------------------------
-// Fake registers used for puppeteering the sim while we get things working.
 
-struct SysRegisters {
-
-  //----------------------------------------
-  // master clock
-
-  int phase_count;
-
-  // input pins
-  bool PIN_RST;
-  bool PIN_CLK_GOOD;
-  bool PIN_T1;
-  bool PIN_T2;
-  bool PIN_RD_C;
-  bool PIN_WR_C;
-  bool PIN_P10_B;
-
-  // signals from cpu
-  bool CPU_CLK_REQ;
-  bool CPU_ADDR_VALID;
-  bool CPU_RAW_RD;
-  bool CPU_RAW_WR;
-  bool CPU_FROM_CPU5;
-
-  // other random stuff for convenience
-  bool BOOT_BIT;
-  bool LCDC_EN;
-  bool DIV_06n;
-  bool DIV_07n;
-  bool DIV_15;
+struct Cart {
+  uint16_t addr;
+  bool old_clk;
+  uint8_t rom[32768];
+  uint8_t ram[16384];
 };
 
-//-----------------------------------------------------------------------------
-
-struct Bootrom {
-  /*p07.TEPU*/ Reg2 BOOT_BIT;
+struct Ram8K {
+  uint8_t ram[8192];
 };
 
 //-----------------------------------------------------------------------------
@@ -104,13 +77,89 @@ struct BusTristates {
   bool changed;
 };
 
+struct SpriteTristate {
+  bool TS_IDX_0;
+  bool TS_IDX_1;
+  bool TS_IDX_2;
+  bool TS_IDX_3;
+  bool TS_IDX_4;
+  bool TS_IDX_5;
+
+  bool TS_LINE_0;
+  bool TS_LINE_1;
+  bool TS_LINE_2;
+  bool TS_LINE_3;
+};
+
+
+struct VramBus {
+  bool MA00;
+  bool MA01;
+  bool MA02;
+  bool MA03;
+  bool MA04;
+  bool MA05;
+  bool MA06;
+  bool MA07;
+  bool MA08;
+  bool MA09;
+  bool MA10;
+  bool MA11;
+  bool MA12;
+
+  bool MD0;
+  bool MD1;
+  bool MD2;
+  bool MD3;
+  bool MD4;
+  bool MD5;
+  bool MD6;
+  bool MD7;
+};
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+// Fake registers used for puppeteering the sim while we get things working.
+
+struct SysRegisters {
+
+  //----------------------------------------
+  // master clock
+
+  int phase_count;
+
+  // input pins
+  bool PIN_RST;
+  bool PIN_CLK_GOOD;
+  bool PIN_T1;
+  bool PIN_T2;
+  bool PIN_RD_C;
+  bool PIN_WR_C;
+  bool PIN_P10_B;
+
+  // signals from cpu
+  bool CPU_CLK_REQ;
+  bool CPU_ADDR_VALID;
+  bool CPU_RAW_RD;
+  bool CPU_RAW_WR;
+  bool CPU_FROM_CPU5;
+
+  // other random stuff for convenience
+  bool BOOT_BIT;
+  bool LCDC_EN;
+  bool DIV_06n;
+  bool DIV_07n;
+  bool DIV_15;
+};
+
 //-----------------------------------------------------------------------------
 
-struct Cart {
-  uint16_t addr;
-  bool old_clk;
-  uint8_t rom[32768];
-  uint8_t ram[16384];
+struct Bootrom {
+  /*p07.TEPU*/ Reg2 BOOT_BIT;
 };
 
 //-----------------------------------------------------------------------------
@@ -370,7 +419,19 @@ struct LcdRegisters {
   /*p28.ANEL*/ Reg2 VID_LINE_d6;  // p003+8
                                  
   /*p21.MYTA*/ Reg2 LINE_153_d4;  // p153:001 - p000:001
-  /*p21.POPU*/ Reg2 VBLANK_d4;    // p144:001 - p000:001
+  /*p21.POPU*/ Reg2 POPU_VBLANK_d4;    // p144:001 - p000:001
+
+  /*p21.SYGU*/ Reg2 LINE_STROBE;
+  /*p24.PAHO*/ Reg2 X_8_SYNC;
+
+  /*p21.WUSA*/ Reg2 CPEN_LATCH;
+
+  /*p24.POME*/ Reg2 POME; // nand latch with p24.RUJU
+  /*p24.RUJU*/ Reg2 RUJU; // nand latch with p24.POME
+
+  /*p24.MEDA*/ Reg2 VSYNC_OUTn;
+  /*p24.LUCA*/ Reg2 LINE_EVEN;
+  /*p21.NAPO*/ Reg2 FRAME_EVEN;
 };
 
 //-----------------------------------------------------------------------------
@@ -470,8 +531,6 @@ struct PixelPipeRegisters {
 
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-
 struct RstRegisters {
   /*p01.TUBO*/ Reg2 WAITING_FOR_CLKREQ;
   /*p01.AFER*/ Reg2 RESET_REG;
@@ -501,37 +560,6 @@ struct SerialRegisters {
   /*p06.EDER*/ Reg2 SER_DATA7;
 
   /*p06.ELYS*/ Reg2 SER_OUT;
-};
-
-//-----------------------------------------------------------------------------
-
-struct SpriteSignals {
-  /*p28.ACYL*/ bool ACYL_OAM_ADDR_PARSE;
-  /*p29.PUCO*/ bool PUCO_SPRITE_PIX_LATCH_B;
-  /*p29.XADO*/ bool XADO_SPRITE_PIX_LATCH_A;
-
-  /*p29.WUTY*/ bool WUTY_SPRITE_DONE; // -> sst
-  /*p29.DYTY*/ bool DYTY_STORE_EN;    // -> sst
-  /*p29.AROR*/ bool AROR_MATCH_EN;    // -> sst
-
-  /*p29.TEXY*/ bool TEXY_SPRITE_READ;
-
-  /*p28.FETO*/ bool FETO_SCAN_DONE_d0;
-  /*p29.AVAP*/ bool AVAP_SCAN_DONE_d0_TRIG;
-
-  /*p29.TOXE*/ bool TOXE_SPR_SEQ0;
-  /*p29.TULY*/ bool TULY_SPR_SEQ1;
-  /*p29.TESE*/ bool TESE_SPR_SEQ2;
-  /*p29.VONU*/ bool VONU_SEQ_xxx34xn;
-
-  /*p29.TYFO*/ bool TYFO_SEQ_B0d;
-
-  /*p28.YFEL*/ bool SCAN0;
-  /*p28.WEWY*/ bool SCAN1;
-  /*p28.GOSO*/ bool SCAN2;
-  /*p28.ELYN*/ bool SCAN3;
-  /*p28.FAHA*/ bool SCAN4;
-  /*p28.FONY*/ bool SCAN5;
 };
 
 //-----------------------------------------------------------------------------
@@ -569,20 +597,6 @@ struct SpriteRegisters {
 };
 
 //-----------------------------------------------------------------------------
-
-struct SpriteTristate {
-  bool TS_IDX_0;
-  bool TS_IDX_1;
-  bool TS_IDX_2;
-  bool TS_IDX_3;
-  bool TS_IDX_4;
-  bool TS_IDX_5;
-
-  bool TS_LINE_0;
-  bool TS_LINE_1;
-  bool TS_LINE_2;
-  bool TS_LINE_3;
-};
 
 struct SpriteStoreRegisters {
 
@@ -986,34 +1000,6 @@ struct VidRegisters {
 };
 
 //-----------------------------------------------------------------------------
-// Internal VRAM bus
-
-struct VramBus {
-  bool MA00;
-  bool MA01;
-  bool MA02;
-  bool MA03;
-  bool MA04;
-  bool MA05;
-  bool MA06;
-  bool MA07;
-  bool MA08;
-  bool MA09;
-  bool MA10;
-  bool MA11;
-  bool MA12;
-
-  bool MD0;
-  bool MD1;
-  bool MD2;
-  bool MD3;
-  bool MD4;
-  bool MD5;
-  bool MD6;
-  bool MD7;
-};
-
-//-----------------------------------------------------------------------------
 // Video clocks
 
 struct VclkRegisters {
@@ -1061,12 +1047,6 @@ struct OamRegisters {
   /*p29.WYSO*/ Reg2 REG_OAM_B5;
   /*p29.XOTE*/ Reg2 REG_OAM_B6;
   /*p29.YZAB*/ Reg2 REG_OAM_B7;
-};
-
-//-----------------------------------------------------------------------------
-
-struct Ram8K {
-  uint8_t ram[8192];
 };
 
 //-----------------------------------------------------------------------------

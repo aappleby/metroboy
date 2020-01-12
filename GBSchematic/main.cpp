@@ -12,18 +12,25 @@
 
 using namespace Schematics;
 
-void TestLCD();
-void TestClocks();
-void TestSpriteSeq();
-
-void test_clock_phases();
-void test_timer();
-
-
 int main(int /*argc*/, char** /*argv*/) {
   //test_clock_phases();
   //test_timer();
-  printf("\n");
+
+  printf("begin\n");
+
+  TestGB gb;
+  memset(&gb, 0, sizeof(gb));
+
+  gb.ext_pins.CLK = 0;
+  gb.ext_pins.CLK_GOOD = 0;
+  gb.ext_pins.RST = 0;
+  gb.ext_pins.T1 = 0;
+  gb.ext_pins.T2 = 0;
+
+  gb.tick_everything();
+  //gb.commit_everything();
+
+  printf("end\n");
 
 #if 0
 

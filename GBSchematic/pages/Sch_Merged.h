@@ -7,9 +7,8 @@ namespace Schematics {
 
 struct Cart {
   uint16_t addr;
-  bool old_clk;
-  uint8_t rom[32768];
   uint8_t ram[16384];
+  uint8_t rom[65536];
 };
 
 struct Ram8K {
@@ -20,101 +19,76 @@ struct Ram8K {
 
 struct BusTristates {
 
-  int get_addr() const { return addr; }
-  int get_data() const { return data; }
-
-  void set_addr(uint16_t new_addr) {
-    if (addr != new_addr) {
-      addr = new_addr;
-      changed = true;
-    }
+  int get_addr() const {
+    return pack(A00, A01, A02, A03, A04, A05, A06, A07,
+                A08, A09, A10, A11, A12, A13, A14, A15);
   }
 
-  void set_data(uint8_t new_data) {
-    if (data != new_data) {
-      data = new_data;
-      changed = true;
-    }
-  }
+  Tribuf A00;
+  Tribuf A01;
+  Tribuf A02;
+  Tribuf A03;
+  Tribuf A04;
+  Tribuf A05;
+  Tribuf A06;
+  Tribuf A07;
+  Tribuf A08;
+  Tribuf A09;
+  Tribuf A10;
+  Tribuf A11;
+  Tribuf A12;
+  Tribuf A13;
+  Tribuf A14;
+  Tribuf A15;
 
-  void set_addr(bool a00=0, bool a01=0, bool a02=0, bool a03=0, bool a04=0, bool a05=0, bool a06=0, bool a07=0,
-                bool a08=0, bool a09=0, bool a10=0, bool a11=0, bool a12=0, bool a13=0, bool a14=0, bool a15=0) {
-    return set_addr((uint16_t)pack(a00, a01, a02, a03, a04, a05, a06, a07, a08, a09, a10, a11, a12, a13, a14, a15));
-  }
-
-  void set_data(bool d0, bool d1=0, bool d2=0, bool d3=0, bool d4=0, bool d5=0, bool d6=0, bool d7=0) {
-    return set_data((uint8_t)pack(d0, d1, d2, d3, d4, d5, d6, d7));
-  }
-
-  bool A00() const { return (addr & 0x0001); }
-  bool A01() const { return (addr & 0x0002); }
-  bool A02() const { return (addr & 0x0004); }
-  bool A03() const { return (addr & 0x0008); }
-  bool A04() const { return (addr & 0x0010); }
-  bool A05() const { return (addr & 0x0020); }
-  bool A06() const { return (addr & 0x0040); }
-  bool A07() const { return (addr & 0x0080); }
-  bool A08() const { return (addr & 0x0100); }
-  bool A09() const { return (addr & 0x0200); }
-  bool A10() const { return (addr & 0x0400); }
-  bool A11() const { return (addr & 0x0800); }
-  bool A12() const { return (addr & 0x1000); }
-  bool A13() const { return (addr & 0x2000); }
-  bool A14() const { return (addr & 0x4000); }
-  bool A15() const { return (addr & 0x8000); }
-
-  bool D0()  const { return (data & 0x0001); }
-  bool D1()  const { return (data & 0x0002); }
-  bool D2()  const { return (data & 0x0004); }
-  bool D3()  const { return (data & 0x0008); }
-  bool D4()  const { return (data & 0x0010); }
-  bool D5()  const { return (data & 0x0020); }
-  bool D6()  const { return (data & 0x0040); }
-  bool D7()  const { return (data & 0x0080); }
-
-  uint16_t addr;
-  uint8_t data;
-  bool changed;
+  Tribuf D0;
+  Tribuf D1;
+  Tribuf D2;
+  Tribuf D3;
+  Tribuf D4;
+  Tribuf D5;
+  Tribuf D6;
+  Tribuf D7;
 };
 
 struct SpriteTristate {
-  bool TS_IDX_0;
-  bool TS_IDX_1;
-  bool TS_IDX_2;
-  bool TS_IDX_3;
-  bool TS_IDX_4;
-  bool TS_IDX_5;
+  Tribuf TS_IDX_0;
+  Tribuf TS_IDX_1;
+  Tribuf TS_IDX_2;
+  Tribuf TS_IDX_3;
+  Tribuf TS_IDX_4;
+  Tribuf TS_IDX_5;
 
-  bool TS_LINE_0;
-  bool TS_LINE_1;
-  bool TS_LINE_2;
-  bool TS_LINE_3;
+  Tribuf TS_LINE_0;
+  Tribuf TS_LINE_1;
+  Tribuf TS_LINE_2;
+  Tribuf TS_LINE_3;
 };
 
 
 struct VramBus {
-  bool MA00;
-  bool MA01;
-  bool MA02;
-  bool MA03;
-  bool MA04;
-  bool MA05;
-  bool MA06;
-  bool MA07;
-  bool MA08;
-  bool MA09;
-  bool MA10;
-  bool MA11;
-  bool MA12;
+  Tribuf MA00;
+  Tribuf MA01;
+  Tribuf MA02;
+  Tribuf MA03;
+  Tribuf MA04;
+  Tribuf MA05;
+  Tribuf MA06;
+  Tribuf MA07;
+  Tribuf MA08;
+  Tribuf MA09;
+  Tribuf MA10;
+  Tribuf MA11;
+  Tribuf MA12;
 
-  bool MD0;
-  bool MD1;
-  bool MD2;
-  bool MD3;
-  bool MD4;
-  bool MD5;
-  bool MD6;
-  bool MD7;
+  Tribuf MD0;
+  Tribuf MD1;
+  Tribuf MD2;
+  Tribuf MD3;
+  Tribuf MD4;
+  Tribuf MD5;
+  Tribuf MD6;
+  Tribuf MD7;
 };
 
 
@@ -123,43 +97,37 @@ struct VramBus {
 
 
 //-----------------------------------------------------------------------------
-// Fake registers used for puppeteering the sim while we get things working.
 
-struct SysRegisters {
+struct BusRegisters {
 
-  //----------------------------------------
-  // master clock
-
-  int phase_count;
-
-  // input pins
-  bool PIN_RST;
-  bool PIN_CLK_GOOD;
-  bool PIN_T1;
-  bool PIN_T2;
-  bool PIN_RD_C;
-  bool PIN_WR_C;
-  bool PIN_P10_B;
-
-  // signals from cpu
-  bool CPU_CLK_REQ;
-  bool CPU_ADDR_VALID;
-  bool CPU_RAW_RD;
-  bool CPU_RAW_WR;
-  bool CPU_FROM_CPU5;
-
-  // other random stuff for convenience
-  bool BOOT_BIT;
-  bool LCDC_EN;
-  bool DIV_06n;
-  bool DIV_07n;
-  bool DIV_15;
-};
-
-//-----------------------------------------------------------------------------
-
-struct Bootrom {
   /*p07.TEPU*/ Reg2 BOOT_BIT;
+
+  /*p25.SOTO*/ Reg2 SOTO_DBG;
+
+  /*p08.ALOR*/ Reg2 ADDR_LATCH_00;
+  /*p08.APUR*/ Reg2 ADDR_LATCH_01;
+  /*p08.ALYR*/ Reg2 ADDR_LATCH_02;
+  /*p08.ARET*/ Reg2 ADDR_LATCH_03;
+  /*p08.AVYS*/ Reg2 ADDR_LATCH_04;
+  /*p08.ATEV*/ Reg2 ADDR_LATCH_05;
+  /*p08.AROS*/ Reg2 ADDR_LATCH_06;
+  /*p08.ARYM*/ Reg2 ADDR_LATCH_07;
+  /*p08.LUNO*/ Reg2 ADDR_LATCH_08;
+  /*p08.LYSA*/ Reg2 ADDR_LATCH_09;
+  /*p08.PATE*/ Reg2 ADDR_LATCH_10;
+  /*p08.LUMY*/ Reg2 ADDR_LATCH_11;
+  /*p08.LOBU*/ Reg2 ADDR_LATCH_12;
+  /*p08.LONU*/ Reg2 ADDR_LATCH_13;
+  /*p08.NYRE*/ Reg2 ADDR_LATCH_14;
+
+  /*p08.SOMA*/ Reg2 DATA_LATCH_00;
+  /*p08.RONY*/ Reg2 DATA_LATCH_01;
+  /*p08.RAXY*/ Reg2 DATA_LATCH_02;
+  /*p08.SELO*/ Reg2 DATA_LATCH_03;
+  /*p08.SODY*/ Reg2 DATA_LATCH_04;
+  /*p08.SAGO*/ Reg2 DATA_LATCH_05;
+  /*p08.RUPA*/ Reg2 DATA_LATCH_06;
+  /*p08.SAZY*/ Reg2 DATA_LATCH_07;
 };
 
 //-----------------------------------------------------------------------------
@@ -308,7 +276,7 @@ struct DebugRegisters {
 struct DmaRegisters {
   /*p04.MAKA*/ Reg2 FROM_CPU5_SYNC;
 
-  /*p04.MATU*/ Reg2 REG_DMA_RW_EN; // -> p25,p28
+  /*p04.MATU*/ Reg2 REG_DMA_RUNNING; // -> p25,p28
   /*p04.MYTE*/ Reg2 DMA_DONE_SYNC;
   /*p04.LUVY*/ Reg2 REG_DMA_EN_d0;
   /*p04.LENE*/ Reg2 REG_DMA_EN_d4;
@@ -367,7 +335,6 @@ struct JoypadRegisters {
   /*p02.ACEF*/ Reg2 JP_GLITCH1;
   /*p02.AGEM*/ Reg2 JP_GLITCH2;
   /*p02.APUG*/ Reg2 JP_GLITCH3;
-
   /*p05.JUTE*/ Reg2 JOYP_RA;
   /*p05.KECY*/ Reg2 JOYP_LB;
   /*p05.JALE*/ Reg2 JOYP_UC;
@@ -376,7 +343,6 @@ struct JoypadRegisters {
   /*p05.COFY*/ Reg2 JOYP_ABCS;
   /*p05.KUKO*/ Reg2 DBG_FF00_D6;
   /*p05.KERU*/ Reg2 DBG_FF00_D7;
-
   /*p05.KEVU*/ Reg2 JOYP_L0;
   /*p05.KAPA*/ Reg2 JOYP_L1;
   /*p05.KEJA*/ Reg2 JOYP_L2;
@@ -413,13 +379,13 @@ struct LcdRegisters {
   /*p21.MATO*/ Reg2 Y6;
   /*p21.LAFO*/ Reg2 Y7;
 
-  /*p21.RUTU*/ Reg2 NEW_LINE_d0a; // p909+8
+  /*p21.RUTU*/ Reg2 RUTU_NEW_LINE_d0; // p909+8
   /*p29.CATU*/ Reg2 VID_LINE_d4;  // p001+8
-  /*p21.NYPE*/ Reg2 NEW_LINE_d4a; // p001+8
+  /*p21.NYPE*/ Reg2 NYPE_NEW_LINE_d4; // p001+8
   /*p28.ANEL*/ Reg2 VID_LINE_d6;  // p003+8
                                  
   /*p21.MYTA*/ Reg2 LINE_153_d4;  // p153:001 - p000:001
-  /*p21.POPU*/ Reg2 POPU_VBLANK_d4;    // p144:001 - p000:001
+  /*p21.POPU*/ Reg2 POPU_IN_VBLANK_d4;    // p144:001 - p000:001
 
   /*p21.SYGU*/ Reg2 LINE_STROBE;
   /*p24.PAHO*/ Reg2 X_8_SYNC;
@@ -606,7 +572,7 @@ struct SpriteStoreRegisters {
   /*p29.BEGO*/ Reg2 SPRITE_COUNT2;
   /*p29.DYBE*/ Reg2 SPRITE_COUNT3;
 
-  /*p29.EBOJ*/ Reg2 SPRITE0_GET_SYNCn;
+  /*p29.EBOJ*/ Reg2 SPRITE0_GET_SYNC;
   /*p30.YGUS*/ Reg2 STORE0_IDX0;
   /*p30.YSOK*/ Reg2 STORE0_IDX1;
   /*p30.YZEP*/ Reg2 STORE0_IDX2;
@@ -686,7 +652,7 @@ struct SpriteStoreRegisters {
   /*p31.WYNA*/ Reg2 WYNA;
   /*p31.WECO*/ Reg2 WECO;
 
-  /*p29.XUDY*/ Reg2 SPRITE4_GET_SYNCn;
+  /*p29.XUDY*/ Reg2 SPRITE4_GET_SYNC;
   /*p31.WEDU*/ Reg2 WEDU;
   /*p31.YGAJ*/ Reg2 YGAJ;
   /*p31.ZYJO*/ Reg2 ZYJO;
@@ -707,7 +673,7 @@ struct SpriteStoreRegisters {
   /*p30.CAJU*/ Reg2 CAJU;
 
   // store 5
-  /*p29.WAFY*/ Reg2 SPRITE5_GET_SYNCn;
+  /*p29.WAFY*/ Reg2 SPRITE5_GET_SYNC;
   /*p31.FUSA*/ Reg2 FUSA;
   /*p31.FAXA*/ Reg2 FAXA;
   /*p31.FOZY*/ Reg2 FOZY;
@@ -749,7 +715,7 @@ struct SpriteStoreRegisters {
   /*p30.ZAFU*/ Reg2 ZAFU;
 
   // sprite store 7
-  /*p29.WAPO*/ Reg2 SPRITE7_GET_SYNCn;
+  /*p29.WAPO*/ Reg2 SPRITE7_GET_SYNC;
   /*p31.ERAZ*/ Reg2 STORE7_X0;
   /*p31.EPUM*/ Reg2 STORE7_X1;
   /*p31.EROL*/ Reg2 STORE7_X2;
@@ -791,7 +757,7 @@ struct SpriteStoreRegisters {
   /*p30.AFYX*/ Reg2 AFYX;
 
   // sprite store 9
-  /*p29.FONO*/ Reg2 SPRITE9_GET_SYNCn;
+  /*p29.FONO*/ Reg2 SPRITE9_GET_SYNC;
   /*p31.XUVY*/ Reg2 STORE9_X0;
   /*p31.XERE*/ Reg2 STORE9_X1;
   /*p31.XUZO*/ Reg2 STORE9_X2;
@@ -838,8 +804,8 @@ struct TimerRegisters {
     TIMA_4.set2(x & 0x10); TIMA_5.set2(x & 0x20); TIMA_6.set2(x & 0x40); TIMA_7.set2(x & 0x80);
   }
 
-  bool get_tima_max()  { return TIMA_MAX; }
-  bool get_int_timer() { return INT_TIMER; }
+  wire get_tima_max()  { return TIMA_MAX; }
+  wire get_int_timer() { return INT_TIMER; }
 
   int get_tma() const {
     return pack(TMA_0, TMA_1, TMA_2, TMA_3, TMA_4, TMA_5, TMA_6, TMA_7);
@@ -954,7 +920,7 @@ struct VidRegisters {
   /*p21.REFE*/ Reg2 INT_OAM_EN;
   /*p21.RUGU*/ Reg2 INT_LYC_EN;
 
-  /*p21.ROPO*/ Reg2 ROPO_INT_LYC;
+  /*p21.ROPO*/ Reg2 ROPO_LY_MATCH_SYNC;
   /*p21.RUPO*/ Reg2 RUPO_LATCH_LYC_MATCH;
 
   /*p27.SARY*/ Reg2 WY_MATCH_SYNC;
@@ -963,7 +929,7 @@ struct VidRegisters {
   /*p27.PYCO*/ Reg2 WIN_MATCH_SYNC1;
   /*p27.NUNU*/ Reg2 WIN_MATCH_SYNC2;
 
-  /*p27.LONY*/ Reg2 LONY_LATCH;
+  /*p27.LONY*/ Reg2 BG_READ_VRAM_LATCHn;
 
   /*p27.LAXU*/ Reg2 BG_SEQ_x1x3x5x7;
   /*p27.MESU*/ Reg2 BG_SEQ_xx23xx67;

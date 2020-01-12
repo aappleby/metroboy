@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <memory.h>
 #include <string>
+#include <assert.h>
 
 
 using std::string;
@@ -48,7 +49,6 @@ struct VramPins;
 struct ClkRegisters;
 struct LcdRegisters;
 struct RstRegisters;
-struct SysRegisters;
 struct VclkRegisters;
 struct VidRegisters;
 struct ConfigRegisters;
@@ -95,21 +95,91 @@ bool commit_all(T& first, Args&... args) {
 }
 
 //-----------------------------------------------------------------------------
-// FIXME replace tristate bools with this
 
-struct Tristate {
+struct PinIn {
 
-  void pwron() {
-    val_a = val_b = 1;
+  PinIn() {
+    val = 0;
+  }
+
+  operator bool() const {
+    return val;
+  }
+
+  void set(bool val_in) {
+    val = val_in;
+  }
+
+  bool commit() { return false; }
+
+private:
+  bool val;
+
+};
+
+struct PinOut {
+
+  PinOut() {
+    val_a = 0;
+    val_b = 0;
+    dirty = 0;
+  }
+
+  operator bool() const {
+    return val_a;
+  }
+
+  void operator = (wire val_in) {
+    assert(!dirty);
+    val_b = val_in;
+    dirty = true;
+  }
+
+  bool commit() {
+    assert(dirty);
     dirty = false;
+    if (val_a != val_b) {
+      val_a = val_b;
+      return true;
+    }
+    return false;
+  }
+
+private:
+  bool val_a;
+  bool val_b;
+  bool dirty;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Tribuf {
+
+  Tribuf() {
+    val_a = 0;
+    val_b = 0;
+    dirty = 0;
   }
 
   void reset(bool val_in) {
     val_a = val_b = val_in;
-    dirty = false;
+    dirty = 0;
   }
 
   bool get() const { return val_a; }
+
+  void operator = (const bool val_in) {
+    if (dirty) {
+      printf("bus collision!\n");
+      __debugbreak();
+    }
+    val_b = val_in;
+    dirty = true;
+  }
+
+  void pass() {
+    dirty = true;
+  }
 
   operator const bool() const {
     return val_a;
@@ -118,12 +188,17 @@ struct Tristate {
   void set(bool val_in) {
     if (dirty) {
       printf("bus collision!\n");
+      __debugbreak();
     }
     val_b = val_in;
     dirty = true;
   }
 
   bool commit() {
+    if (!dirty) {
+      printf("tribuf undriven!\n");
+      __debugbreak();
+    }
     dirty = false;
     if (val_a != val_b) {
       val_a = val_b;
@@ -134,53 +209,41 @@ struct Tristate {
   }
 
 private:
-  bool val_a, val_b;
+  bool val_a;
+  bool val_b;
   bool dirty;
 };
 
-
 //-----------------------------------------------------------------------------
 
-#if 0
-struct Latch {
+struct Signal {
 
-  void pwron() {
-    val_ = set_ = rst_ = 0;
+  Signal() {
+    val = 0;
+    dirty = 0;
   }
 
-  void reset(bool val_in) {
-    val_ = val_in;
-    set_ = rst_ = 0;
+  void operator=(const bool new_val) {
+    if (dirty) __debugbreak();
+    val = new_val;
+    dirty = 1;
   }
-
-  bool get() const { return val_; }
 
   operator const bool() const {
-    return val_;
-  }
-
-  void set(bool set_in, bool rst_in) {
-    set_ = set_in;
-    rst_ = rst_in;
+    if (!dirty) __debugbreak();
+    return val;
   }
 
   bool commit() {
-    bool new_val = val_;
-    if (set_) new_val = 1;
-    if (rst_) new_val = 0;
-    if (val_ != new_val) {
-      val_ = new_val;
-      return true;
-    }
-    else {
-      return false;
-    }
+    if (dirty) __debugbreak();
+    dirty = true;
+    return false;
   }
 
 private:
-  bool val_, set_, rst_;
+  bool val;
+  bool dirty;
 };
-#endif
 
 //-----------------------------------------------------------------------------
 
@@ -188,16 +251,9 @@ struct Reg2 {
 
   void pwron() {
     clk_a = clk_b = 0;
-    set_b = rst_b = 1;
+    set_b = rst_b = 0;
     val_a = val_b = 0;
-    dirty = false;
-  }
-
-  void reset(bool clk_in, bool reg_in) {
-    clk_a = clk_b = clk_in;
-    val_a = val_b = reg_in;
-    set_b = rst_b = 1;
-    dirty = false;
+    dirty = 0;
   }
 
   bool get() const { return val_a; }
@@ -286,11 +342,13 @@ struct Reg2 {
   bool dirty;
 };
 
+/*
 inline void big_reset(Reg2& first) { first.reset(1, 0); }
 template<typename... Args> inline void big_reset(Reg2& first, Args&... args) {
   big_reset(first);
   big_reset(args...);
 }
+*/
 
 inline void big_set2(bool x, Reg2& first) { first.set2(x); }
 template<typename... Args> inline void big_set2(uint8_t x, Reg2& first, Args&... args) {

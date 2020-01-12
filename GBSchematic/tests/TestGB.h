@@ -7,39 +7,44 @@ namespace Schematics {
 
 struct TestGB {
 
-  VramPins vram_pins;
-  SerialPins serial_pins;
-  JoypadPins joypad_pins;
-  CartPins cart_pins;
-  OamPins oam_pins;
+  void tick_everything();
+  bool commit_everything();
 
-  VramBus vrm_tri;
+  Cart   cart;
+  Ram8K  main_ram;
+  Ram8K  video_ram;
 
-  Cart    cart;
-  Ram8K   vram;
-  Ram8K   ram;
-  Ram8K   hram;
-  Bootrom bootrom;
-
-  SysRegisters    sys_reg;
-  ClkRegisters    clk_reg;
-  RstRegisters    rst_reg;
-  DebugRegisters  dbg_reg;
-  VclkRegisters   vclk_reg;
-  VidRegisters    vid_reg;
+  BusRegisters bus_reg;
+  ClkRegisters clk_reg;
   ConfigRegisters cfg_reg;
-  LcdRegisters    lcd_reg;
-  BusTristates    bus_tri;
-  TimerRegisters  tim_reg;
-  SerialRegisters ser_reg;
-
-  SpriteStoreRegisters sst_reg;
-  SpriteRegisters spr_reg;
-  PixelPipeRegisters pxp_reg;
-  OamRegisters oam_reg;
-  JoypadRegisters joy_reg;
+  DebugRegisters dbg_reg;
   DmaRegisters dma_reg;
   InterruptRegisters int_reg;
+  JoypadRegisters joy_reg;
+  LcdRegisters lcd_reg;
+  OamRegisters oam_reg;
+  PixelPipeRegisters pxp_reg;
+  RstRegisters rst_reg;
+  SerialRegisters ser_reg;
+  SpriteRegisters spr_reg;
+  SpriteStoreRegisters sst_reg;
+  TimerRegisters tim_reg;
+  VclkRegisters vclk_reg;
+  VidRegisters vid_reg;
+
+  ExtPins ext_pins;
+  VramPins vram_pins;
+  SerialPins ser_pins;
+  JoypadPins joy_pins;
+  CpuPins cpu_pins;
+  CartPins cart_pins;
+  OamPins oam_pins;
+  LcdPins lcd_pins;
+  WavePins wave_pins;
+
+  VramBus vrm_tri;
+  BusTristates bus_tri;
+  SpriteTristate sil_tri;
 
   uint8_t rom[65536];
 };

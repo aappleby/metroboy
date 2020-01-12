@@ -100,22 +100,36 @@ struct PinIn {
 
   PinIn() {
     val = 0;
+    dirty = 0;
   }
 
   operator bool() const {
+    if (!dirty) {
+      printf("Reading undriven PinIn!\n");
+      __debugbreak();
+    }
     return val;
   }
 
   void set(bool val_in) {
     val = val_in;
+    dirty = 1;
   }
 
-  bool commit() { return false; }
+  bool commit() {
+    if (!dirty) {
+      printf("Committing undriven PinIn!\n");
+      __debugbreak();
+    }
+    return false;
+  }
 
 private:
   bool val;
-
+  bool dirty;
 };
+
+//-----------------------------------------------------------------------------
 
 struct PinOut {
 
@@ -125,24 +139,30 @@ struct PinOut {
     dirty = 0;
   }
 
+  void sync_set(wire val_in) {
+    set(val_in);
+    commit();
+  }
+
   operator bool() const {
     return val_a;
   }
 
-  void operator = (wire val_in) {
-    assert(!dirty);
+  void set(wire val_in) {
+    if (dirty) __debugbreak();
     val_b = val_in;
     dirty = true;
   }
 
   bool commit() {
-    assert(dirty);
-    dirty = false;
-    if (val_a != val_b) {
-      val_a = val_b;
-      return true;
+    if (!dirty) {
+      printf("PinOut not set!\n");
+      __debugbreak();
     }
-    return false;
+    dirty = false;
+    bool changed = val_a != val_b;
+    val_a = val_b;
+    return changed;
   }
 
 private:
@@ -158,59 +178,56 @@ struct Tribuf {
   Tribuf() {
     val_a = 0;
     val_b = 0;
+    oe_a = 0;
+    oe_b = 0;
     dirty = 0;
   }
 
-  void reset(bool val_in) {
-    val_a = val_b = val_in;
-    dirty = 0;
+  void sync_set(const bool oe_in, const bool val_in) {
+    set(oe_in, val_in);
+    commit();
   }
 
-  bool get() const { return val_a; }
-
-  void operator = (const bool val_in) {
-    if (dirty) {
+  void set(const bool oe_in, const bool val_in) {
+    if (dirty && oe_b && oe_in) {
       printf("bus collision!\n");
       __debugbreak();
     }
+    oe_b = oe_in;
     val_b = val_in;
-    dirty = true;
-  }
-
-  void pass() {
     dirty = true;
   }
 
   operator const bool() const {
-    return val_a;
-  }
-
-  void set(bool val_in) {
-    if (dirty) {
-      printf("bus collision!\n");
+    // this fires too much
+    /*
+    if (!oe_a) {
+      printf("reading undriven tribuf\n");
       __debugbreak();
     }
-    val_b = val_in;
-    dirty = true;
+    */
+    if (!oe_a) return 1;
+    return val_a;
   }
 
   bool commit() {
     if (!dirty) {
-      printf("tribuf undriven!\n");
+      printf("tribuf not set!\n");
       __debugbreak();
     }
     dirty = false;
-    if (val_a != val_b) {
-      val_a = val_b;
-      val_b = 1;
-      return true;
-    }
-    return false;
+
+    bool changed = (val_a != val_b) || (oe_a != oe_b);
+    val_a = val_b;
+    oe_a = oe_b;
+    return changed;
   }
 
 private:
   bool val_a;
   bool val_b;
+  bool oe_a;
+  bool oe_b;
   bool dirty;
 };
 

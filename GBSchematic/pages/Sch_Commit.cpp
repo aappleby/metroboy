@@ -655,7 +655,7 @@ bool TestGB::commit_everything() {
   /*p08.SAZY*/ changed |= bus_reg.DATA_LATCH_07.commit();
 
 
-  changed |= cpu_pins.TO_CPU2.commit();        // <- P02.AWOB
+  changed |= cpu_pins.TO_CPU2.commit();      // <- P02.AWOB
   changed |= cpu_pins.CPU_RAW_RD.commit();   // PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
   changed |= cpu_pins.CPU_RAW_WR.commit();   // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
   changed |= cpu_pins.T1nT2.commit();        // PORTA_02: <- P07.T1nT2
@@ -663,32 +663,32 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.READ_BOOTROM.commit(); // PORTA_04: <- P07.READ_BOOTROM
   changed |= cpu_pins.T1T2n.commit();        // PORTA_05: <- P07.T1T2n
   changed |= cpu_pins.ADDR_VALID.commit();   // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
-  changed |= cpu_pins.CPU_A00.commit();      // PORTB_00: -> A00
+  //changed |= cpu_pins.CPU_A00.commit();      // PORTB_00: -> A00
   changed |= cpu_pins.FROM_CPU9.commit();    // PORTB_01: -> P02.LETY, vblank int ack
-  changed |= cpu_pins.CPU_A08.commit();      // PORTB_02: -> A08
+  //changed |= cpu_pins.CPU_A08.commit();      // PORTB_02: -> A08
   changed |= cpu_pins.TO_CPU3.commit();      // PORTB_03: <- P02.LOPE, vblank int
-  changed |= cpu_pins.CPU_A01.commit();      // PORTB_04: -> A01
+  //changed |= cpu_pins.CPU_A01.commit();      // PORTB_04: -> A01
   changed |= cpu_pins.FROM_CPU8.commit();    // PORTB_05: -> P02.LEJA, stat int ack
-  changed |= cpu_pins.CPU_A09.commit();      // PORTB_06: -> A09
+  //changed |= cpu_pins.CPU_A09.commit();      // PORTB_06: -> A09
   changed |= cpu_pins.TO_CPU6.commit();      // PORTB_07: <- P02.LALU, stat int
-  changed |= cpu_pins.CPU_A02.commit();      // PORTB_08: -> A02
+  //changed |= cpu_pins.CPU_A02.commit();      // PORTB_08: -> A02
   changed |= cpu_pins.FROM_CPU10.commit();   // PORTB_09: -> P02.LESA, timer int ack
-  changed |= cpu_pins.CPU_A10.commit();      // PORTB_10: -> A10
+  //changed |= cpu_pins.CPU_A10.commit();      // PORTB_10: -> A10
   changed |= cpu_pins.TO_CPU7.commit();      // PORTB_11: <- P02.NYBO, timer int
-  changed |= cpu_pins.CPU_A03.commit();      // PORTB_12: -> A03
+  //changed |= cpu_pins.CPU_A03.commit();      // PORTB_12: -> A03
   changed |= cpu_pins.FROM_CPU7.commit();    // PORTB_13: -> P02.LUFE, serial int ack
-  changed |= cpu_pins.CPU_A11.commit();      // PORTB_14: -> A11
+  //changed |= cpu_pins.CPU_A11.commit();      // PORTB_14: -> A11
   changed |= cpu_pins.TO_CPU4.commit();      // PORTB_15: <- P02.UBUL, serial int
-  changed |= cpu_pins.CPU_A04.commit();      // PORTB_16: -> A04
+  //changed |= cpu_pins.CPU_A04.commit();      // PORTB_16: -> A04
   changed |= cpu_pins.FROM_CPU11.commit();   // PORTB_17: -> P02.LAMO, joypad int ack
-  changed |= cpu_pins.CPU_A12.commit();      // PORTB_18: -> A12
+  //changed |= cpu_pins.CPU_A12.commit();      // PORTB_18: -> A12
   changed |= cpu_pins.TO_CPU5.commit();      // PORTB_19: <- P02.ULAK, joypad int
-  changed |= cpu_pins.CPU_A05.commit();      // PORTB_20: -> A05
-  changed |= cpu_pins.CPU_A13.commit();      // PORTB_22: -> A13
-  changed |= cpu_pins.CPU_A06.commit();      // PORTB_24: -> A06
-  changed |= cpu_pins.CPU_A14.commit();      // PORTB_26: -> A14
-  changed |= cpu_pins.CPU_A07.commit();      // PORTB_28: -> A07
-  changed |= cpu_pins.CPU_A15.commit();      // PORTB_30: -> A15
+  //changed |= cpu_pins.CPU_A05.commit();      // PORTB_20: -> A05
+  //changed |= cpu_pins.CPU_A13.commit();      // PORTB_22: -> A13
+  //changed |= cpu_pins.CPU_A06.commit();      // PORTB_24: -> A06
+  //changed |= cpu_pins.CPU_A14.commit();      // PORTB_26: -> A14
+  //changed |= cpu_pins.CPU_A07.commit();      // PORTB_28: -> A07
+  //changed |= cpu_pins.CPU_A15.commit();      // PORTB_30: -> A15
   changed |= cpu_pins.CLKREQ.commit();       // PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
   changed |= cpu_pins.AFER.commit();         // PORTC_01: <- P01.AFER , reset related reg
   changed |= cpu_pins.PIN_RESET.commit();    // PORTC_02: <- PIN_RESET directly connected to the pad
@@ -696,21 +696,13 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.CPU_RESET.commit();    // PORTC_04: <- P01.CPU_RESET
   changed |= cpu_pins.FROM_CPU6.commit();    // PORTD_00: -> P07.LEXY, doesn't do anything
   changed |= cpu_pins.CLK_xBCDEFGH.commit(); // PORTD_01: <- P01.BOWA
-  changed |= cpu_pins.BEDO.commit();         // PORTD_02: <- P01.BEDO _____fgh
+  changed |= cpu_pins.CLK_Axxxxxxx.commit(); // PORTD_02: <- P01.BEDO _____fgh
   changed |= cpu_pins.BEKO.commit();         // PORTD_03: <- P01.BEKO ____efgh connection not indicated on P01
-  changed |= cpu_pins.PHI_OUT.commit();      // PORTD_04: <- P01.BUDE abcd____
+  changed |= cpu_pins.BUDE.commit();         // PORTD_04: <- P01.BUDE abcd____
   changed |= cpu_pins.FROM_CPU5.commit();    // PORTD_05: -> FROM_CPU5
   changed |= cpu_pins.BUKE.commit();         // PORTD_06: <- P01.BUKE _____f__
-  changed |= cpu_pins.RESET_CLK.commit();    // PORTD_07: <- P01.RESET_CLK _____fgh
+  changed |= cpu_pins.BOMA.commit();    // PORTD_07: <- P01.RESET_CLK _____fgh
   changed |= cpu_pins.BOGA.commit();         // PORTD_08: <- P01.BOGA abcde___
-  changed |= cpu_pins.CPU_D0.commit();
-  changed |= cpu_pins.CPU_D1.commit();
-  changed |= cpu_pins.CPU_D2.commit();
-  changed |= cpu_pins.CPU_D3.commit();
-  changed |= cpu_pins.CPU_D4.commit();
-  changed |= cpu_pins.CPU_D5.commit();
-  changed |= cpu_pins.CPU_D6.commit();
-  changed |= cpu_pins.CPU_D7.commit();
 
   changed |= oam_pins.CLK_A.commit();
   changed |= oam_pins.OE.commit();
@@ -914,15 +906,18 @@ bool TestGB::commit_everything() {
   /* PIN_68 */ changed |= ser_pins.SCK_B.commit();   // <- P06.CULY
   /* PIN_68 */ changed |= ser_pins.SCK_C.commit();   // -> P06.CAVE
   /* PIN_68 */ changed |= ser_pins.SCK_D.commit();   // <- P06.KUJO
-  /* PIN_69 */ changed |= ser_pins.SIN_A.commit();   // nc?
-  /* PIN_69 */ changed |= ser_pins.SIN_B.commit();   // nc?
+  ///* PIN_69 */ changed |= ser_pins.SIN_A.commit();   // nc?
+  ///* PIN_69 */ changed |= ser_pins.SIN_B.commit();   // nc?
   /* PIN_69 */ changed |= ser_pins.SIN_C.commit();   // -> P06.CAGE
-  /* PIN_69 */ changed |= ser_pins.SIN_D.commit();   // nc?
+  ///* PIN_69 */ changed |= ser_pins.SIN_D.commit();   // nc?
   /* PIN_70 */ changed |= ser_pins.SOUT.commit();    // <- P05.KENA
   /* PIN_71 */ changed |= ext_pins.RST.commit();
   /* PIN_72 */ /*GND*/
-  /* PIN_73 */ changed |= ext_pins.CLK_GOOD.commit();
-  /* PIN_74 */ changed |= ext_pins.CLK.commit();
+  
+  /* PIN_73 */ /*CLKOUT*/
+  /* PIN_74 */ changed |= ext_pins.CLKIN_A.commit();
+  /* PIN_74 */ changed |= ext_pins.CLKIN_B.commit();
+
   /* PIN_75 */ changed |= cart_pins.PHI.commit();     // <- P01.BUDE/BEVA
   /* PIN_76 */ changed |= ext_pins.T2.commit();
   /* PIN_77 */ changed |= ext_pins.T1.commit();

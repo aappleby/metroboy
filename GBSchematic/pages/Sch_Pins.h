@@ -62,44 +62,44 @@ struct CpuPins {
   PinIn  CPU_RAW_WR;   // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
   PinOut T1nT2;        // PORTA_02: <- P07.T1nT2
   PinOut SYRO;         // PORTA_03: <- P25.SYRO
-  PinOut READ_BOOTROM; // PORTA_04: <- P07.READ_BOOTROM
+  PinOut READ_BOOTROM; // PORTA_04: <- P07.READ_BOOTROM tutu?
   PinOut T1T2n;        // PORTA_05: <- P07.T1T2n
   PinIn  ADDR_VALID;   // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
 
   //----------
   // bottom right port
 
-  PinIn  CPU_A00;      // PORTB_00: -> A00
+  Tribuf CPU_A00;      // PORTB_00: -> A00
   PinIn  FROM_CPU9;    // PORTB_01: -> P02.LETY, vblank int ack
-  PinIn  CPU_A08;      // PORTB_02: -> A08
+  Tribuf CPU_A08;      // PORTB_02: -> A08
   PinOut TO_CPU3;      // PORTB_03: <- P02.LOPE, vblank int
-  PinIn  CPU_A01;      // PORTB_04: -> A01
+  Tribuf CPU_A01;      // PORTB_04: -> A01
   PinIn  FROM_CPU8;    // PORTB_05: -> P02.LEJA, stat int ack
-  PinIn  CPU_A09;      // PORTB_06: -> A09
+  Tribuf CPU_A09;      // PORTB_06: -> A09
   PinOut TO_CPU6;      // PORTB_07: <- P02.LALU, stat int
-  PinIn  CPU_A02;      // PORTB_08: -> A02
+  Tribuf CPU_A02;      // PORTB_08: -> A02
   PinIn  FROM_CPU10;   // PORTB_09: -> P02.LESA, timer int ack
-  PinIn  CPU_A10;      // PORTB_10: -> A10
+  Tribuf CPU_A10;      // PORTB_10: -> A10
   PinOut TO_CPU7;      // PORTB_11: <- P02.NYBO, timer int
-  PinIn  CPU_A03;      // PORTB_12: -> A03
+  Tribuf CPU_A03;      // PORTB_12: -> A03
   PinIn  FROM_CPU7;    // PORTB_13: -> P02.LUFE, serial int ack
-  PinIn  CPU_A11;      // PORTB_14: -> A11
+  Tribuf CPU_A11;      // PORTB_14: -> A11
   PinOut TO_CPU4;      // PORTB_15: <- P02.UBUL, serial int
-  PinIn  CPU_A04;      // PORTB_16: -> A04
+  Tribuf CPU_A04;      // PORTB_16: -> A04
   PinIn  FROM_CPU11;   // PORTB_17: -> P02.LAMO, joypad int ack
-  PinIn  CPU_A12;      // PORTB_18: -> A12
+  Tribuf CPU_A12;      // PORTB_18: -> A12
   PinOut TO_CPU5;      // PORTB_19: <- P02.ULAK, joypad int
-  PinIn  CPU_A05;      // PORTB_20: -> A05
-  PinIn  CPU_A13;      // PORTB_22: -> A13
-  PinIn  CPU_A06;      // PORTB_24: -> A06
-  PinIn  CPU_A14;      // PORTB_26: -> A14
-  PinIn  CPU_A07;      // PORTB_28: -> A07
-  PinIn  CPU_A15;      // PORTB_30: -> A15
+  Tribuf CPU_A05;      // PORTB_20: -> A05
+  Tribuf CPU_A13;      // PORTB_22: -> A13
+  Tribuf CPU_A06;      // PORTB_24: -> A06
+  Tribuf CPU_A14;      // PORTB_26: -> A14
+  Tribuf CPU_A07;      // PORTB_28: -> A07
+  Tribuf CPU_A15;      // PORTB_30: -> A15
 
   //----------
   // top center port
 
-  PinIn CLKREQ;        // PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  PinIn  CLKREQ;       // PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
   PinOut AFER;         // PORTC_01: <- P01.AFER , reset related reg
   PinOut PIN_RESET;    // PORTC_02: <- PIN_RESET directly connected to the pad
   PinOut CLKIN_A;      // PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
@@ -110,9 +110,9 @@ struct CpuPins {
 
   PinIn  FROM_CPU6;    // PORTD_00: -> P07.LEXY, doesn't do anything
   PinOut CLK_xBCDEFGH; // PORTD_01: <- P01.BOWA
-  PinOut BEDO;         // PORTD_02: <- P01.BEDO _____fgh
-  PinOut BEKO;         // PORTD_03: <- P01.BEKO ____efgh connection not indicated on P01
-  PinOut PHI_OUT;      // PORTD_04: <- P01.BUDE abcd____
+  PinOut CLK_Axxxxxxx; // PORTD_02: <- P01.BEDO
+  PinOut BEKO;         // PORTD_03: <- P01.BEKO connection not indicated on P01
+  PinOut BUDE;         // PORTD_04: <- P01.BUDE
 
   // controls driving the external data pins onto the internal data bus and
   // other stuff. is this actually a clock, or like OE?
@@ -121,30 +121,18 @@ struct CpuPins {
   PinIn FROM_CPU5;     // PORTD_05: -> FROM_CPU5
   
   PinOut BUKE;         // PORTD_06: <- P01.BUKE _____f__
-  PinOut RESET_CLK;    // PORTD_07: <- P01.RESET_CLK _____fgh
+  PinOut BOMA;    // PORTD_07: <- P01.RESET_CLK _____fgh
   PinOut BOGA;         // PORTD_08: <- P01.BOGA abcde___
-
-  //----------
-  // bottom left port, tristate data bus
-
-  Tribuf CPU_D0;
-  Tribuf CPU_D1;
-  Tribuf CPU_D2;
-  Tribuf CPU_D3;
-  Tribuf CPU_D4;
-  Tribuf CPU_D5;
-  Tribuf CPU_D6;
-  Tribuf CPU_D7;
 };
 
 //-----------------------------------------------------------------------------
 
 struct ExtPins {
-  /* PIN_73 */ Signal CLK;
-  /* PIN_71 */ Signal CLK_GOOD;
-  /* PIN_71 */ Signal RST;
-  /* PIN_77 */ Signal T1;
-  /* PIN_76 */ Signal T2;
+  /* PIN_71 */ PinIn RST;
+  /* PIN_74 */ PinIn CLKIN_A; // CLK_GOOD
+  /* PIN_74 */ PinIn CLKIN_B; // CLK
+  /* PIN_76 */ PinIn T2;
+  /* PIN_77 */ PinIn T1;
 };
 
 //-----------------------------------------------------------------------------

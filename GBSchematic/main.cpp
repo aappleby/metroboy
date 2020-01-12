@@ -10,6 +10,12 @@
 
 #include "tests/TestGB.h"
 
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
+
 using namespace Schematics;
 
 int main(int /*argc*/, char** /*argv*/) {
@@ -21,16 +27,96 @@ int main(int /*argc*/, char** /*argv*/) {
   TestGB gb;
   memset(&gb, 0, sizeof(gb));
 
-  gb.ext_pins.CLK = 0;
-  gb.ext_pins.CLK_GOOD = 0;
-  gb.ext_pins.RST = 0;
-  gb.ext_pins.T1 = 0;
-  gb.ext_pins.T2 = 0;
+  uint64_t timeA = SDL_GetPerformanceCounter();
+  
+  const int phase_count = 1000;
+  for (int i = 0; i < phase_count; i++) {
+    gb.ext_pins.RST.set(1);
+    gb.ext_pins.CLKIN_A.set(0);
+    gb.ext_pins.CLKIN_B.set(i & 1);
+    gb.ext_pins.T2.set(0);
+    gb.ext_pins.T1.set(0);
 
-  gb.tick_everything();
+    gb.cpu_pins.CLKREQ.set(0);
+    gb.cpu_pins.CPU_RAW_RD.set(0);   // PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
+    gb.cpu_pins.CPU_RAW_WR.set(0);   // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
+    gb.cpu_pins.ADDR_VALID.set(0);   // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
+
+    gb.cpu_pins.FROM_CPU5.set(0);    // PORTD_05: -> FROM_CPU5
+    gb.cpu_pins.FROM_CPU6.set(0);    // PORTD_00: -> P07.LEXY, doesn't do anything
+    gb.cpu_pins.FROM_CPU7.set(0);    // PORTB_13: -> P02.LUFE, serial int ack
+    gb.cpu_pins.FROM_CPU8.set(0);    // PORTB_05: -> P02.LEJA, stat int ack
+    gb.cpu_pins.FROM_CPU9.set(0);    // PORTB_01: -> P02.LETY, vblank int ack
+    gb.cpu_pins.FROM_CPU10.set(0);   // PORTB_09: -> P02.LESA, timer int ack
+    gb.cpu_pins.FROM_CPU11.set(0);   // PORTB_17: -> P02.LAMO, joypad int ack
+
+    gb.cart_pins.WRn_C.set(0);   // -> P07.UBAL
+    gb.cart_pins.RDn_C.set(0);   // -> P07.UJYV
+    gb.cart_pins.A00_C.set(0);   // -> P08.KOVA
+    gb.cart_pins.A01_C.set(0);   // -> P08.CAMU
+    gb.cart_pins.A02_C.set(0);   // -> P08.BUXU
+    gb.cart_pins.A03_C.set(0);   // -> P08.BASE
+    gb.cart_pins.A04_C.set(0);   // -> P08.AFEC
+    gb.cart_pins.A05_C.set(0);   // -> P08.ABUP
+    gb.cart_pins.A06_C.set(0);   // -> P08.CYGU
+    gb.cart_pins.A07_C.set(0);   // -> P08.COGO
+    gb.cart_pins.A08_C.set(0);   // -> P08.MUJY
+    gb.cart_pins.A09_C.set(0);   // -> P08.NENA
+    gb.cart_pins.A10_C.set(0);   // -> P08.SURA
+    gb.cart_pins.A11_C.set(0);   // -> P08.MADY
+    gb.cart_pins.A12_C.set(0);   // -> P08.LAHE
+    gb.cart_pins.A13_C.set(0);   // -> P08.LURA
+    gb.cart_pins.A14_C.set(0);   // -> P08.PEVO
+    gb.cart_pins.A15_C.set(0);   // -> P08.RAZA
+
+    gb.cart_pins.D0_C.set(0);    // -> P08.TOVO,SOMA
+    gb.cart_pins.D1_C.set(0);    // -> P08.RUZY,RONY
+    gb.cart_pins.D2_C.set(0);    // -> P08.ROME,RAXY
+    gb.cart_pins.D3_C.set(0);    // -> P08.SAZA,SELO
+    gb.cart_pins.D4_C.set(0);    // -> P08.TEHE,SODY
+    gb.cart_pins.D5_C.set(0);    // -> P08.RATU,SAGO
+    gb.cart_pins.D6_C.set(0);    // -> P08.SOCA,RUPA
+    gb.cart_pins.D7_C.set(0);    // -> P08.RYBA,SAZY
+
+    gb.ser_pins.SCK_C.set(0);   // -> P06.CAVE
+    gb.ser_pins.SIN_C.set(0);   // -> P06.CAGE
+
+    gb.joy_pins.P10_C.set(0);   // -> P02.KERY, P05.KEVU
+    gb.joy_pins.P11_C.set(0);   // -> P02.KERY, P05.KAPA
+    gb.joy_pins.P12_C.set(0);   // -> P02.KERY, P05.KEJA
+    gb.joy_pins.P13_C.set(0);   // -> P02.KERY, P05.KOLO
+
+    gb.vram_pins.MCS_C.set(0);   // -> P25.TEFY
+    gb.vram_pins.MOE_C.set(0);   // -> P25.TAVY
+    gb.vram_pins.MWR_C.set(0);   // -> P25.SUDO
+    gb.vram_pins.MD0_C.set(0);   // -> P25.RODY
+    gb.vram_pins.MD1_C.set(0);   // -> P25.REBA
+    gb.vram_pins.MD2_C.set(0);   // -> P25.RYDO
+    gb.vram_pins.MD3_C.set(0);   // -> P25.REMO
+    gb.vram_pins.MD4_C.set(0);   // -> P25.ROCE
+    gb.vram_pins.MD5_C.set(0);   // -> P25.ROPU
+    gb.vram_pins.MD6_C.set(0);   // -> P25.RETA
+    gb.vram_pins.MD7_C.set(0);   // -> P25.RAKU
+
+    gb.joy_pins.P10_B.set(0);
+    gb.joy_pins.P11_B.set(0);
+    gb.joy_pins.P12_B.set(0);
+    gb.joy_pins.P13_B.set(0);
+    gb.tick_everything();
+    gb.commit_everything();
+  }
+
+  uint64_t timeB = SDL_GetPerformanceCounter();
   //gb.commit_everything();
 
   printf("end\n");
+
+  double elapsed = double(timeB - timeA) / SDL_GetPerformanceFrequency();
+
+  printf("freq %lld\n", SDL_GetPerformanceFrequency());
+  printf("time %lld\n", (timeB - timeA));
+  printf("time %f\n", 1000.0 * elapsed);
+  printf("freq %f\n", phase_count / elapsed);
 
 #if 0
 

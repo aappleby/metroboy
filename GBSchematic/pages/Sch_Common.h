@@ -6,7 +6,18 @@
 #include <assert.h>
 
 
+//-----------------------------------------------------------------------------
+
 using std::string;
+
+template<typename ... Args>
+void sprintf(std::string& out, const char* format, Args ... args)
+{
+  char source_buf[1024];
+  snprintf(source_buf, 1024, format, args ...);
+  out.append(source_buf);
+}
+
 
 template<typename ... Args>
 string errprintf(const char* format, Args ... args)
@@ -16,9 +27,21 @@ string errprintf(const char* format, Args ... args)
   return source_buf;
 }
 
-namespace Schematics {
+static const uint32_t phase_to_color[8] = {
+  0xFF808080,
+  0xFFB0B070,
+  0xFFFF8080,
+  0xFFFFC080,
+
+  0xFFFFFF80,
+  0xFF80FF80,
+  0xFF8080FF,
+  0xFFD080D0,
+};
 
 //-----------------------------------------------------------------------------
+
+namespace Schematics {
 
 struct Bootrom;
 struct CpuPins;
@@ -40,7 +63,7 @@ struct BusTristates;
 struct SpriteTristate;
 
 struct AudioPins;
-struct CartPins;
+struct ExtPins;
 struct JoypadPins;
 struct LcdPins;
 struct SerialPins;
@@ -105,13 +128,19 @@ struct PinIn {
 
   operator bool() const {
     if (!dirty) {
-      printf("Reading undriven PinIn!\n");
-      __debugbreak();
+      //printf("Reading undriven PinIn!\n");
+      //__debugbreak();
+      // I think that reading an undriven pin can't be an error; D0_C goes directly to RALO.
+      return 1;
     }
     return val;
   }
 
   void set(bool val_in) {
+    if (dirty) {
+      printf("Redundant set() on PinIn!\n");
+      __debugbreak();
+    }
     val = val_in;
     dirty = 1;
   }
@@ -121,6 +150,7 @@ struct PinIn {
       printf("Committing undriven PinIn!\n");
       __debugbreak();
     }
+    dirty = false;
     return false;
   }
 
@@ -198,6 +228,11 @@ struct Tribuf {
     dirty = true;
   }
 
+  void set_sync(const bool oe_in, const bool val_in) {
+    set(oe_in, val_in);
+    commit();
+  }
+
   operator const bool() const {
     // this fires too much
     /*
@@ -224,6 +259,10 @@ struct Tribuf {
   }
 
 private:
+
+  void operator = (const bool in);
+  void operator = (const Tribuf&);
+
   bool val_a;
   bool val_b;
   bool oe_a;
@@ -273,8 +312,19 @@ struct Reg2 {
     dirty = 0;
   }
 
-  bool get() const { return val_a; }
-  operator const bool() const { return val_a; }
+  bool get() const {
+    return val_a;
+  }
+  
+  operator const bool() const {
+    /*
+    if (dirty) {
+      printf("reading dirty reg\n");
+      __debugbreak();
+    }
+    */
+    return val_a;
+  }
 
   void set(bool clk_in, bool reg_in) {
     clk_b = clk_in;
@@ -313,6 +363,20 @@ struct Reg2 {
     val_b = val_a;
     set_b = !(!latch_in && val_in);
     rst_b = !(!latch_in && !val_in);
+    dirty = true;
+  }
+
+  void tp_latch(bool latch_in, const PinIn& val_in) {
+    clk_b = clk_a;
+    val_b = val_a;
+    if (!latch_in) {
+      set_b = !val_in;
+      rst_b = val_in;
+    }
+    else {
+      set_b = true;
+      rst_b = true;
+    }
     dirty = true;
   }
 

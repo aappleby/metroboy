@@ -35,6 +35,7 @@ inline bool or  (bool a, bool b) { return a | b; }
 inline bool or  (bool a, bool b, bool c) { return  (a | b | c); }
 inline bool or  (bool a, bool b, bool c, bool d) { return  (a | b | c | d); }
 inline bool xor (bool a, bool b) { return a ^ b; }
+inline bool xnor(bool a, bool b) { return a == b; }
 inline bool nor (bool a, bool b) { return !(a | b); }
 inline bool nor (bool a, bool b, bool c) { return !(a | b | c); }
 inline bool nor (bool a, bool b, bool c, bool d) { return !(a | b | c | d); }

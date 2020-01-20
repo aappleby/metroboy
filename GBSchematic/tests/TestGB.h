@@ -7,12 +7,20 @@ namespace Schematics {
 
 struct TestGB {
 
+  void pass_init(bool RST, bool CLKIN_A, bool CLKIN_B);
+  void cpu_init(bool CLKREQ);
+  void pin_init();
+  void tick_ext();
+
   void tick_everything();
   bool commit_everything();
 
-  Cart   cart;
-  Ram8K  main_ram;
-  Ram8K  video_ram;
+  //-----------------------------------------------------------------------------
+
+  uint8_t rom[65536];
+  uint8_t ram[8192];
+  uint8_t vram[8192];
+  uint8_t hiram[128];
 
   BusRegisters bus_reg;
   ClkRegisters clk_reg;
@@ -32,21 +40,15 @@ struct TestGB {
   VclkRegisters vclk_reg;
   VidRegisters vid_reg;
 
-  ExtPins ext_pins;
+  SysPins sys_pins;
   VramPins vram_pins;
   SerialPins ser_pins;
   JoypadPins joy_pins;
   CpuPins cpu_pins;
-  CartPins cart_pins;
+  ExtPins ext_pins;
   OamPins oam_pins;
   LcdPins lcd_pins;
   WavePins wave_pins;
-
-  VramBus vrm_tri;
-  BusTristates bus_tri;
-  SpriteTristate sil_tri;
-
-  uint8_t rom[65536];
 };
 
 //-----------------------------------------------------------------------------

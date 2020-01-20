@@ -69,32 +69,56 @@ struct CpuPins {
   //----------
   // bottom right port
 
-  Tribuf CPU_A00;      // PORTB_00: -> A00
+  Tribuf A00;          // PORTB_00: -> A00
   PinIn  FROM_CPU9;    // PORTB_01: -> P02.LETY, vblank int ack
-  Tribuf CPU_A08;      // PORTB_02: -> A08
+  Tribuf A08;          // PORTB_02: -> A08
   PinOut TO_CPU3;      // PORTB_03: <- P02.LOPE, vblank int
-  Tribuf CPU_A01;      // PORTB_04: -> A01
+  Tribuf A01;          // PORTB_04: -> A01
   PinIn  FROM_CPU8;    // PORTB_05: -> P02.LEJA, stat int ack
-  Tribuf CPU_A09;      // PORTB_06: -> A09
+  Tribuf A09;          // PORTB_06: -> A09
   PinOut TO_CPU6;      // PORTB_07: <- P02.LALU, stat int
-  Tribuf CPU_A02;      // PORTB_08: -> A02
+  Tribuf A02;          // PORTB_08: -> A02
   PinIn  FROM_CPU10;   // PORTB_09: -> P02.LESA, timer int ack
-  Tribuf CPU_A10;      // PORTB_10: -> A10
+  Tribuf A10;          // PORTB_10: -> A10
   PinOut TO_CPU7;      // PORTB_11: <- P02.NYBO, timer int
-  Tribuf CPU_A03;      // PORTB_12: -> A03
+  Tribuf A03;          // PORTB_12: -> A03
   PinIn  FROM_CPU7;    // PORTB_13: -> P02.LUFE, serial int ack
-  Tribuf CPU_A11;      // PORTB_14: -> A11
+  Tribuf A11;          // PORTB_14: -> A11
   PinOut TO_CPU4;      // PORTB_15: <- P02.UBUL, serial int
-  Tribuf CPU_A04;      // PORTB_16: -> A04
+  Tribuf A04;          // PORTB_16: -> A04
   PinIn  FROM_CPU11;   // PORTB_17: -> P02.LAMO, joypad int ack
-  Tribuf CPU_A12;      // PORTB_18: -> A12
+  Tribuf A12;          // PORTB_18: -> A12
   PinOut TO_CPU5;      // PORTB_19: <- P02.ULAK, joypad int
-  Tribuf CPU_A05;      // PORTB_20: -> A05
-  Tribuf CPU_A13;      // PORTB_22: -> A13
-  Tribuf CPU_A06;      // PORTB_24: -> A06
-  Tribuf CPU_A14;      // PORTB_26: -> A14
-  Tribuf CPU_A07;      // PORTB_28: -> A07
-  Tribuf CPU_A15;      // PORTB_30: -> A15
+  Tribuf A05;          // PORTB_20: -> A05
+  Tribuf A13;          // PORTB_22: -> A13
+  Tribuf A06;          // PORTB_24: -> A06
+  Tribuf A14;          // PORTB_26: -> A14
+  Tribuf A07;          // PORTB_28: -> A07
+  Tribuf A15;          // PORTB_30: -> A15
+
+  int get_addr() const {
+    return pack(A00, A01, A02, A03, A04, A05, A06, A07,
+                A08, A09, A10, A11, A12, A13, A14, A15);
+  }
+
+  void set_addr_sync(uint16_t addr) {
+    A00.set_sync(1, addr & 0x0001);
+    A01.set_sync(1, addr & 0x0002);
+    A02.set_sync(1, addr & 0x0004);
+    A03.set_sync(1, addr & 0x0008);
+    A04.set_sync(1, addr & 0x0010);
+    A05.set_sync(1, addr & 0x0020);
+    A06.set_sync(1, addr & 0x0040);
+    A07.set_sync(1, addr & 0x0080);
+    A08.set_sync(1, addr & 0x0100);
+    A09.set_sync(1, addr & 0x0200);
+    A10.set_sync(1, addr & 0x0400);
+    A11.set_sync(1, addr & 0x0800);
+    A12.set_sync(1, addr & 0x1000);
+    A13.set_sync(1, addr & 0x2000);
+    A14.set_sync(1, addr & 0x4000);
+    A15.set_sync(1, addr & 0x8000);
+  }
 
   //----------
   // top center port
@@ -123,11 +147,24 @@ struct CpuPins {
   PinOut BUKE;         // PORTD_06: <- P01.BUKE _____f__
   PinOut BOMA;    // PORTD_07: <- P01.RESET_CLK _____fgh
   PinOut BOGA;         // PORTD_08: <- P01.BOGA abcde___
+
+  //----------
+  // bottom left port, tristate data bus
+
+  Tribuf D0;
+  Tribuf D1;
+  Tribuf D2;
+  Tribuf D3;
+  Tribuf D4;
+  Tribuf D5;
+  Tribuf D6;
+  Tribuf D7;
 };
 
 //-----------------------------------------------------------------------------
+// Clock/reset/debug
 
-struct ExtPins {
+struct SysPins {
   /* PIN_71 */ PinIn RST;
   /* PIN_74 */ PinIn CLKIN_A; // CLK_GOOD
   /* PIN_74 */ PinIn CLKIN_B; // CLK
@@ -285,7 +322,7 @@ struct JoypadPins {
 
 //-----------------------------------------------------------------------------
 
-struct CartPins {
+struct ExtPins {
 
   //----------
   // Cart pins

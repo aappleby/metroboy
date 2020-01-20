@@ -5,99 +5,6 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct Cart {
-  uint16_t addr;
-  uint8_t ram[16384];
-  uint8_t rom[65536];
-};
-
-struct Ram8K {
-  uint8_t ram[8192];
-};
-
-//-----------------------------------------------------------------------------
-
-struct BusTristates {
-
-  int get_addr() const {
-    return pack(A00, A01, A02, A03, A04, A05, A06, A07,
-                A08, A09, A10, A11, A12, A13, A14, A15);
-  }
-
-  Tribuf A00;
-  Tribuf A01;
-  Tribuf A02;
-  Tribuf A03;
-  Tribuf A04;
-  Tribuf A05;
-  Tribuf A06;
-  Tribuf A07;
-  Tribuf A08;
-  Tribuf A09;
-  Tribuf A10;
-  Tribuf A11;
-  Tribuf A12;
-  Tribuf A13;
-  Tribuf A14;
-  Tribuf A15;
-
-  Tribuf D0;
-  Tribuf D1;
-  Tribuf D2;
-  Tribuf D3;
-  Tribuf D4;
-  Tribuf D5;
-  Tribuf D6;
-  Tribuf D7;
-};
-
-struct SpriteTristate {
-  Tribuf TS_IDX_0;
-  Tribuf TS_IDX_1;
-  Tribuf TS_IDX_2;
-  Tribuf TS_IDX_3;
-  Tribuf TS_IDX_4;
-  Tribuf TS_IDX_5;
-
-  Tribuf TS_LINE_0;
-  Tribuf TS_LINE_1;
-  Tribuf TS_LINE_2;
-  Tribuf TS_LINE_3;
-};
-
-
-struct VramBus {
-  Tribuf MA00;
-  Tribuf MA01;
-  Tribuf MA02;
-  Tribuf MA03;
-  Tribuf MA04;
-  Tribuf MA05;
-  Tribuf MA06;
-  Tribuf MA07;
-  Tribuf MA08;
-  Tribuf MA09;
-  Tribuf MA10;
-  Tribuf MA11;
-  Tribuf MA12;
-
-  Tribuf MD0;
-  Tribuf MD1;
-  Tribuf MD2;
-  Tribuf MD3;
-  Tribuf MD4;
-  Tribuf MD5;
-  Tribuf MD6;
-  Tribuf MD7;
-};
-
-
-
-
-
-
-//-----------------------------------------------------------------------------
-
 struct BusRegisters {
 
   /*p07.TEPU*/ Reg2 BOOT_BIT;
@@ -560,6 +467,17 @@ struct SpriteRegisters {
   /*p29.SEBA*/ Reg2 SEBA_SEQ_xxxx45n;
   /*p29.TYFO*/ Reg2 TYFO_SEQ_B0d;
 
+  Tribuf TS_IDX_0;
+  Tribuf TS_IDX_1;
+  Tribuf TS_IDX_2;
+  Tribuf TS_IDX_3;
+  Tribuf TS_IDX_4;
+  Tribuf TS_IDX_5;
+
+  Tribuf TS_LINE_0;
+  Tribuf TS_LINE_1;
+  Tribuf TS_LINE_2;
+  Tribuf TS_LINE_3;
 };
 
 //-----------------------------------------------------------------------------
@@ -912,7 +830,7 @@ struct VidRegisters {
 
   /*p21.VOGA*/ Reg2 RENDER_DONE_SYNC;
 
-  /*p27.PYNU*/ Reg2 WIN_MODE_LATCH1;
+  /*p27.PYNU*/ Reg2 PYNU_WIN_MODE_LATCH;
   /*p27.RYDY*/ Reg2 RYDY_WIN_MODE_LATCH;
 
   /*p21.ROXE*/ Reg2 INT_HBL_EN;
@@ -960,9 +878,38 @@ struct VidRegisters {
   /*p24.PYGO*/ Reg2 PYGO_TILE_DONE;
   /*p24.POKY*/ Reg2 POKY_FRONT_PORCH_LATCHn;
 
+  /*p27.REJO*/ Reg2 WY_MATCH_LATCH;
+
   /*p27.TAKA*/ Reg2 _SPRITE_FETCH_LATCH;
   /*p27.SOBU*/ Reg2 _SPRITE_FETCH_SYNC1;
   /*p27.SUDA*/ Reg2 _SPRITE_FETCH_SYNC2;
+
+
+
+  // vram bus
+
+  Tribuf MA00;
+  Tribuf MA01;
+  Tribuf MA02;
+  Tribuf MA03;
+  Tribuf MA04;
+  Tribuf MA05;
+  Tribuf MA06;
+  Tribuf MA07;
+  Tribuf MA08;
+  Tribuf MA09;
+  Tribuf MA10;
+  Tribuf MA11;
+  Tribuf MA12;
+
+  Tribuf MD0;
+  Tribuf MD1;
+  Tribuf MD2;
+  Tribuf MD3;
+  Tribuf MD4;
+  Tribuf MD5;
+  Tribuf MD6;
+  Tribuf MD7;
 };
 
 //-----------------------------------------------------------------------------

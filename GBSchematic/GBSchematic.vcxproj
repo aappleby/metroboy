@@ -194,7 +194,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pages\Schematics.cpp" />
     <ClCompile Include="pages\Sch_ApuControl.cpp" />
-    <ClCompile Include="pages\Sch_Commit.cpp" />
     <ClCompile Include="pages\Sch_Merged.cpp" />
     <ClCompile Include="pages\Sch_Channel1.cpp" />
     <ClCompile Include="pages\Sch_Channel2.cpp" />

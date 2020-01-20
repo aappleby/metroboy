@@ -12,99 +12,124 @@
 
 #ifdef _MSC_VER
 #include <include/SDL.h>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 #else
 #include <SDL2/SDL.h>
 #endif
 
 using namespace Schematics;
 
-int main(int /*argc*/, char** /*argv*/) {
+#pragma warning(disable:4189)
+#pragma warning(disable:4702)
+
+//-----------------------------------------------------------------------------
+
+const int fb_width = 1888;
+const int fb_height = 992;
+
+bool quit = false;
+int frame_count = 0;
+
+SDL_Window* window = nullptr;
+SDL_GLContext gl_context = nullptr;
+const uint8_t* keyboard_state = nullptr;
+
+uint64_t timer_freq, frame_begin, frame_end, frame_time = 0;
+uint64_t app_begin = 0;
+
+//-----------------------------------------------------------------------------
+
+void sim_phase(TestGB& gb, bool RST, bool CLKIN_A, bool CLKIN_B, bool CLKREQ) {
+  const int pass_count = 20;
+  for (int j = 0; j < pass_count; j++) {
+    gb.pass_init(RST, CLKIN_A, CLKIN_B);
+    gb.cpu_init(CLKREQ);  
+    gb.pin_init();
+    gb.tick_everything();
+    bool changed = gb.commit_everything();
+    printf(changed ? "x" : ".");
+  }
+}
+
+void sim_phase2(TestGB& gb, bool RST, bool CLKIN_A, bool CLKIN_B, bool CLKREQ) {
+  const int pass_count = 20;
+  for (int j = 0; j < pass_count; j++) {
+    gb.pass_init(RST, CLKIN_A, CLKIN_B);
+    gb.cpu_init(CLKREQ);  
+    gb.pin_init();
+    gb.tick_everything();
+    gb.commit_everything();
+  }
+}
+
+int main2(int /*argc*/, char** /*argv*/) {
   //test_clock_phases();
   //test_timer();
-
-  printf("begin\n");
 
   TestGB gb;
   memset(&gb, 0, sizeof(gb));
 
   uint64_t timeA = SDL_GetPerformanceCounter();
-  
-  const int phase_count = 1000;
-  for (int i = 0; i < phase_count; i++) {
-    gb.ext_pins.RST.set(1);
-    gb.ext_pins.CLKIN_A.set(0);
-    gb.ext_pins.CLKIN_B.set(i & 1);
-    gb.ext_pins.T2.set(0);
-    gb.ext_pins.T1.set(0);
 
-    gb.cpu_pins.CLKREQ.set(0);
-    gb.cpu_pins.CPU_RAW_RD.set(0);   // PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
-    gb.cpu_pins.CPU_RAW_WR.set(0);   // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
-    gb.cpu_pins.ADDR_VALID.set(0);   // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
+  int phase_counter = 0;
 
-    gb.cpu_pins.FROM_CPU5.set(0);    // PORTD_05: -> FROM_CPU5
-    gb.cpu_pins.FROM_CPU6.set(0);    // PORTD_00: -> P07.LEXY, doesn't do anything
-    gb.cpu_pins.FROM_CPU7.set(0);    // PORTB_13: -> P02.LUFE, serial int ack
-    gb.cpu_pins.FROM_CPU8.set(0);    // PORTB_05: -> P02.LEJA, stat int ack
-    gb.cpu_pins.FROM_CPU9.set(0);    // PORTB_01: -> P02.LETY, vblank int ack
-    gb.cpu_pins.FROM_CPU10.set(0);   // PORTB_09: -> P02.LESA, timer int ack
-    gb.cpu_pins.FROM_CPU11.set(0);   // PORTB_17: -> P02.LAMO, joypad int ack
+  bool RST = 1;
+  bool CLKIN_A = 0;
+  bool CLKIN_B = 0;
+  bool CLKREQ = 0;
 
-    gb.cart_pins.WRn_C.set(0);   // -> P07.UBAL
-    gb.cart_pins.RDn_C.set(0);   // -> P07.UJYV
-    gb.cart_pins.A00_C.set(0);   // -> P08.KOVA
-    gb.cart_pins.A01_C.set(0);   // -> P08.CAMU
-    gb.cart_pins.A02_C.set(0);   // -> P08.BUXU
-    gb.cart_pins.A03_C.set(0);   // -> P08.BASE
-    gb.cart_pins.A04_C.set(0);   // -> P08.AFEC
-    gb.cart_pins.A05_C.set(0);   // -> P08.ABUP
-    gb.cart_pins.A06_C.set(0);   // -> P08.CYGU
-    gb.cart_pins.A07_C.set(0);   // -> P08.COGO
-    gb.cart_pins.A08_C.set(0);   // -> P08.MUJY
-    gb.cart_pins.A09_C.set(0);   // -> P08.NENA
-    gb.cart_pins.A10_C.set(0);   // -> P08.SURA
-    gb.cart_pins.A11_C.set(0);   // -> P08.MADY
-    gb.cart_pins.A12_C.set(0);   // -> P08.LAHE
-    gb.cart_pins.A13_C.set(0);   // -> P08.LURA
-    gb.cart_pins.A14_C.set(0);   // -> P08.PEVO
-    gb.cart_pins.A15_C.set(0);   // -> P08.RAZA
-
-    gb.cart_pins.D0_C.set(0);    // -> P08.TOVO,SOMA
-    gb.cart_pins.D1_C.set(0);    // -> P08.RUZY,RONY
-    gb.cart_pins.D2_C.set(0);    // -> P08.ROME,RAXY
-    gb.cart_pins.D3_C.set(0);    // -> P08.SAZA,SELO
-    gb.cart_pins.D4_C.set(0);    // -> P08.TEHE,SODY
-    gb.cart_pins.D5_C.set(0);    // -> P08.RATU,SAGO
-    gb.cart_pins.D6_C.set(0);    // -> P08.SOCA,RUPA
-    gb.cart_pins.D7_C.set(0);    // -> P08.RYBA,SAZY
-
-    gb.ser_pins.SCK_C.set(0);   // -> P06.CAVE
-    gb.ser_pins.SIN_C.set(0);   // -> P06.CAGE
-
-    gb.joy_pins.P10_C.set(0);   // -> P02.KERY, P05.KEVU
-    gb.joy_pins.P11_C.set(0);   // -> P02.KERY, P05.KAPA
-    gb.joy_pins.P12_C.set(0);   // -> P02.KERY, P05.KEJA
-    gb.joy_pins.P13_C.set(0);   // -> P02.KERY, P05.KOLO
-
-    gb.vram_pins.MCS_C.set(0);   // -> P25.TEFY
-    gb.vram_pins.MOE_C.set(0);   // -> P25.TAVY
-    gb.vram_pins.MWR_C.set(0);   // -> P25.SUDO
-    gb.vram_pins.MD0_C.set(0);   // -> P25.RODY
-    gb.vram_pins.MD1_C.set(0);   // -> P25.REBA
-    gb.vram_pins.MD2_C.set(0);   // -> P25.RYDO
-    gb.vram_pins.MD3_C.set(0);   // -> P25.REMO
-    gb.vram_pins.MD4_C.set(0);   // -> P25.ROCE
-    gb.vram_pins.MD5_C.set(0);   // -> P25.ROPU
-    gb.vram_pins.MD6_C.set(0);   // -> P25.RETA
-    gb.vram_pins.MD7_C.set(0);   // -> P25.RAKU
-
-    gb.joy_pins.P10_B.set(0);
-    gb.joy_pins.P11_B.set(0);
-    gb.joy_pins.P12_B.set(0);
-    gb.joy_pins.P13_B.set(0);
-    gb.tick_everything();
-    gb.commit_everything();
+  printf("reset\n");
+  RST = 1;
+  for (int i = 0; i < 16; i++) {
+    CLKIN_B = phase_counter & 1;
+    sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
+    printf("\n");
+    phase_counter++;
   }
+
+  printf("!reset\n");
+  RST = 0;
+  for (int i = 0; i < 16; i++) {
+    CLKIN_B = phase_counter & 1;
+    sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
+    printf("\n");
+    phase_counter++;
+  }
+
+  printf("clkgood\n");
+  CLKIN_A = 1;
+  for (int i = 0; i < 16; i++) {
+    CLKIN_B = phase_counter & 1;
+    sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
+    printf("\n");
+    phase_counter++;
+  }
+
+  printf("clkreq\n");
+  CLKREQ = 1;
+  for (int i = 0; i < 16; i++) {
+    CLKIN_B = phase_counter & 1;
+    sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
+    printf("\n");
+    phase_counter++;
+  }
+
+  printf("lcd %d %d\n", gb.lcd_reg.x(), gb.lcd_reg.y());
+
+  for (int i = 0; i < 1024; i++) {
+    CLKIN_B = phase_counter & 1;
+    sim_phase2(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
+    phase_counter++;
+  }
+
+  for (int i = 0; i < 1024; i++) {
+    CLKIN_B = phase_counter & 1;
+    sim_phase2(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
+    phase_counter++;
+  }
+
+  printf("lcd %d %d\n", gb.lcd_reg.x(), gb.lcd_reg.y());
 
   uint64_t timeB = SDL_GetPerformanceCounter();
   //gb.commit_everything();
@@ -116,7 +141,7 @@ int main(int /*argc*/, char** /*argv*/) {
   printf("freq %lld\n", SDL_GetPerformanceFrequency());
   printf("time %lld\n", (timeB - timeA));
   printf("time %f\n", 1000.0 * elapsed);
-  printf("freq %f\n", phase_count / elapsed);
+  printf("freq %f\n", phase_counter / elapsed);
 
 #if 0
 
@@ -207,171 +232,6 @@ int main(int /*argc*/, char** /*argv*/) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-uint32_t phase_to_color[8] = {
-  0xFF808080,
-  0xFFB0B070,
-  0xFFFF8080,
-  0xFFFFC080,
-
-  0xFFFFFF80,
-  0xFF80FF80,
-  0xFF8080FF,
-  0xFFD080D0,
-
-  /*
-  0xFF6fff6f,
-  0xFFb8e343,
-  0xFFf29f4c,
-  0xFFfb5b86,
-  0xFFcf40cf,
-  0xFF865bfb,
-  0xFF4c9ff2,
-  0xFF43e3b8,
-  */
-};
-
-#ifdef _MSC_VER
-#include <include/SDL.h>
-#else
-#include <SDL2/SDL.h>
-#endif
-
-
-  void sdl_run() {
-
-    TestGB gb;
-    gb.reset();
-
-    const int fb_width = 1900;
-    const int fb_height = 1000;
-    int scale = 2;
-
-    SDL_Window* window = SDL_CreateWindow("MetroBoy Trace Debugger", 4, 35, fb_width, fb_height, SDL_WINDOW_SHOWN);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    SDL_Texture* fb_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, fb_width, fb_height);
-
-    uint32_t* background = new uint32_t[fb_width * fb_height];
-    for (int y = 0; y < fb_height; y++) {
-      for (int x = 0; x < fb_width; x++) {
-        int c = ((x ^ y) & 0x20) ? 0x10101010 : 0x15151515;
-        background[x + y * fb_width] = c;
-        //background[x + y * fb_width] = 0;
-      }
-    }
-
-    //----------
-
-    int frame = 0;
-
-    bool quit = false;
-    while (!quit) {
-      SDL_Event event;
-      while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) quit = true;
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) scale++;
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) scale--;
-
-        if (scale < 1) scale = 1;
-      }
-
-      //----------------------------------------
-      // Clear screen
-
-      uint32_t* framebuffer = nullptr;
-      int pitch = 0;
-      SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
-      memcpy(framebuffer, background, fb_width * fb_height * 4);
-
-      //----------------------------------------
-
-      for (int y = 0; y < 154; y++) {
-        for (int x = 0; x < TCYCLES_LINE * 2; x++) {
-          gb.sim_fast(1);
-          
-          uint32_t color = 0;
-
-          //if (gb1.spr.SCAN_DONE_d0)       color = 0x8080FF;
-          //if (spr.SCAN_DONE_d4) color = 0xFF8080;
-          //if (spr.SCAN_DONE_d5) color = 0x80FF80;
-          //if (gb1.spr.SCAN_DONE_d0_TRIG)  color = 0xFFFFFF;
-
-          //color = (gb.lcd.x() << 8) | (gb.lcd.y() << 0);
-
-          //color = phase_to_color[gb.clk_phase & 7];
-
-          if (scale == 1) {
-            int px = x * scale + 10;
-            int py = y * scale + 10;
-            if (px < fb_width && py < fb_height) {
-              framebuffer[px + py * (pitch / 4)] = color;
-            }
-          }
-          else {
-            for (int dy = 0; dy < scale - 1; dy++) {
-              for (int dx = 0; dx < scale - 1; dx++) {
-                int px = x * scale + dx + 10;
-                int py = y * scale + dy + 10;
-                if (px < fb_width && py < fb_height) {
-                  framebuffer[px + py * (pitch / 4)] = color;
-                }
-              }
-            }
-          }
-
-        }
-      }
-
-      if (frame & 1) {
-        for (int y = 0; y < 10; y++) {
-          for (int x = 0; x < 10; x++) {
-            framebuffer[(x + 0) + (y + 0) * (pitch / 4)] = 0xFFAAAA00;
-          }
-        }
-      }
-
-      //----------------------------------------
-      // Swap
-
-      SDL_UnlockTexture(fb_tex);
-      SDL_RenderCopy(renderer, fb_tex, NULL, NULL);
-      SDL_RenderPresent(renderer);
-      frame++;
-    }
-  }
-
-
-
-//-----------------------------------------------------------------------------
-
-template<typename ... Args>
-void sprintf(std::string& out, const char* format, Args ... args)
-{
-  char source_buf[1024];
-  snprintf(source_buf, 1024, format, args ...);
-  out.append(source_buf);
-}
-
 //-----------------------------------------------------------------------------
 
 int render_labels(TextPainter& tp, int x, int y, const std::vector<SignalData>& signals, int depth) {
@@ -415,142 +275,43 @@ int render_labels(TextPainter& tp, int x, int y, const std::vector<SignalData>& 
 
 
 
-//-----------------------------------------------------------------------------
 
 
 
 
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------
-
-int main(int /*argc*/, char** /*argv*/) {
-  printf("hello world\n");
+void sdl_run() {
 
   const int fb_width = 1900;
   const int fb_height = 1000;
-  const int gb_width = 160 * 2;
-  const int gb_height = 144 * 2;
+  int scale = 2;
 
   SDL_Window* window = SDL_CreateWindow("MetroBoy Trace Debugger", 4, 35, fb_width, fb_height, SDL_WINDOW_SHOWN);
   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   SDL_Texture* fb_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, fb_width, fb_height);
-  const uint8_t* keyboard_state = SDL_GetKeyboardState(nullptr);
 
   uint32_t* background = new uint32_t[fb_width * fb_height];
   for (int y = 0; y < fb_height; y++) {
     for (int x = 0; x < fb_width; x++) {
       int c = ((x ^ y) & 0x20) ? 0x10101010 : 0x15151515;
       background[x + y * fb_width] = c;
+      //background[x + y * fb_width] = 0;
     }
   }
 
-  TextPainter tp;
-
-  //----------
-  // Generate trace
-
-#if 0
-  const int timer_count = 1024;
-  Schematics::Gameboy* samples = new Schematics::Gameboy[timer_count];
-  memset(samples, 0xCD, timer_count * sizeof(Schematics::Gameboy));
-
-  Schematics::Gameboy reset_sample = {};
-  reset_sample.timestamp = -1;
-
-  uint64_t timeA = SDL_GetPerformanceCounter();
-
-
-  step_forwards(reset_sample, samples[0]);
-
-  for (int i = 1; i < timer_count; i++) {
-    samples[i] = samples[i-1];
-    step_forwards(samples[i-1], samples[i]);
-  }
-
-  uint64_t timeB = SDL_GetPerformanceCounter();
-
-  printf("%f\n", double(timeB - timeA) / double(SDL_GetPerformanceFrequency()));
-#endif
-
   //----------
 
-  int64_t cycle_cursor = 0;
-  uint64_t frame_begin, frame_end, frame_time = 0;
-  uint64_t freq = SDL_GetPerformanceFrequency();
-
-  //double center = 512.0;
-  //int zoom = -8;
-  //double center = 8191;
-  //int zoom = -8;
-
-  double center = 10;
-  int zoom = -36;
+  int frame = 0;
 
   bool quit = false;
   while (!quit) {
-    frame_begin = SDL_GetPerformanceCounter();
-
-    int step_count = 0;
-    int step_size = 1;
-
-    //----------------------------------------
-    // Process events
-
-    if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-      step_size = 16;
-    }
-
-    double span = 4096.0 * pow(2.0, float(zoom) / 4);
-
-    bool debug_cycle = false;
-
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-      if (event.type == SDL_KEYDOWN) {
-        switch (event.key.keysym.sym) {
-        case SDLK_RIGHT:  {
-          int delta = int(span / 8.0f);
-          if (delta == 0) delta = 1;
-          center += delta;
-          //if (center > timer_count) center = timer_count;
-          break;
-        }
-        case SDLK_LEFT:   {
-          int delta = int(span / 8.0f);
-          if (delta == 0) delta = 1;
-          center -= delta;
-          if (center < 0) center = 0;
-          break;
-        }
-        case SDLK_UP:   {
-          zoom--;
-          if (zoom < -40) zoom = -40;
-          break;
-        }
-        case SDLK_DOWN: {
-          zoom++;
-          if (zoom > 40) zoom = 40;
-          break;
-        }
-        case SDLK_ESCAPE: {
-          quit = true;
-          break;
-        }
-        case SDLK_d: debug_cycle = true; break;
-        }
-      }
       if (event.type == SDL_QUIT) quit = true;
+      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
+      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) scale++;
+      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) scale--;
+      if (scale < 1) scale = 1;
     }
-
-    span = 4096.0 * pow(2.0, float(zoom) / 4);
 
     //----------------------------------------
     // Clear screen
@@ -559,89 +320,56 @@ int main(int /*argc*/, char** /*argv*/) {
     int pitch = 0;
     SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
     memcpy(framebuffer, background, fb_width * fb_height * 4);
-    tp.begin_frame(framebuffer, fb_width, fb_height);
 
     //----------------------------------------
-    // Run sim
 
-    /*
-    if (center > 0 && center < timer_count) {
-      Sample sample = samples[int(center) - 1];
-      step_forwards(&sample);
-    }
-    */
-
-    /*
-    if (debug_cycle) {
-      int cursor = (int)floor(center);
-      if (cursor > 0) {
-        printf("debugging sample %d\n", cursor);
-        Schematics::Gameboy sampleA = samples[cursor-1];
-        Schematics::Gameboy sampleB = samples[cursor];
-
-        Schematics::Gameboy temp = {};
-        step_forwards(sampleA, temp);
+    if (frame & 1) {
+      for (int y = 0; y < 10; y++) {
+        for (int x = 0; x < 10; x++) {
+          framebuffer[(x + 0) + (y + 0) * (pitch / 4)] = 0xFFAAAA00;
+        }
       }
-
-      //Sample sampleA = 
     }
-    */
 
-    //----------------------------------------
-    // Render trace
-
-    cycle_cursor += step_count;
-    step_count = 0;
-
-    /*
-    TraceViewer tv;
-
-    tv.framebuffer = framebuffer;
-    tv.fb_width = fb_width;
-    tv.fb_height = fb_height;
-
-    tv.screen_x = 200;
-    tv.screen_y = 16;
-
-    render_labels(tp, 100, 16, sample_signals, 0);
-
-    tv.render(samples, sizeof(Schematics::Gameboy), timer_count, sample_signals, center, span);
-    */
-
-    std::string temp;
-    temp.clear();
-    sprintf(temp, "Cycle %lld, center %f, zoom %d, span %f", cycle_cursor, center, zoom, span);
-    tp.render_text(3,3, temp.c_str());
-
-    //----------------------------------------
-    // Render stats
-
-    static double smoothed_frame_time = 0;
-    smoothed_frame_time *= 0.98;
-    smoothed_frame_time += (1000.0 * double(frame_time) / double(freq)) * 0.02;
-
-    {
-      std::string temp2;
-      sprintf(temp2, "frame time %2.2f msec, %6d cyc/frame\n", (double)smoothed_frame_time, 0);
-      tp.render_text(fb_width - 256, fb_height - 12, temp2.c_str());
-    }
-  
     //----------------------------------------
     // Swap
 
     SDL_UnlockTexture(fb_tex);
     SDL_RenderCopy(renderer, fb_tex, NULL, NULL);
-
-    frame_end = SDL_GetPerformanceCounter();
-    frame_time = frame_end - frame_begin;
-
     SDL_RenderPresent(renderer);
-
+    frame++;
   }
-
-  return 0;
 }
 
-#endif
+
+
+
+//-----------------------------------------------------------------------------
+
+int main(int, char**)
+{
+  init();
+
+  while (!quit)
+  {
+    frame_begin = SDL_GetPerformanceCounter();
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      ImGui_ImplSDL2_ProcessEvent(&event);
+      if (event.type == SDL_QUIT) quit = true;
+      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
+    }
+    update();
+    render_frame();
+    render_ui();
+    frame_end = SDL_GetPerformanceCounter();
+    frame_time = frame_end - frame_begin;
+    frame_count++;
+    SDL_GL_SwapWindow(window);
+  }
+
+  close();
+  return 0;
+}
 
 //-----------------------------------------------------------------------------

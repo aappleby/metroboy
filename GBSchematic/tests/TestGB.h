@@ -7,23 +7,27 @@ namespace Schematics {
 
 struct TestGB {
 
-  void pass_init(bool RST, bool CLKIN_A, bool CLKIN_B);
-  void cpu_init(bool CLKREQ);
-  void pin_init();
-  void tick_ext();
+  void sys_preset(bool RST, bool CLKIN_A, bool CLKIN_B);
+  void cpu_preset(bool CLKREQ, uint16_t addr, uint8_t data);
+  void ext_preset();
+  void ser_preset();
+  void joy_preset();
+  void vram_preset();
 
   void tick_everything();
   bool commit_everything();
 
   //-----------------------------------------------------------------------------
 
+  /*
   uint8_t rom[65536];
   uint8_t ram[8192];
   uint8_t vram[8192];
   uint8_t hiram[128];
+  */
 
-  BusRegisters bus_reg;
   ClkRegisters clk_reg;
+  BusRegisters bus_reg;
   ConfigRegisters cfg_reg;
   DebugRegisters dbg_reg;
   DmaRegisters dma_reg;

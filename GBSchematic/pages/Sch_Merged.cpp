@@ -552,7 +552,8 @@ void TestGB::tick_everything() {
     /*p04.LUVY*/ dma_reg.REG_DMA_EN_d0.set(UVYT_ABCDxxxx, CUNU_RSTn, DMA_EN);
     /*p04.LENE*/ dma_reg.REG_DMA_EN_d4.set(MOPA_xxxxEFGH, CUNU_RSTn, dma_reg.REG_DMA_EN_d0);
 
-    /*p04.LOKY*/ dma_reg.LATCH_DMA_EN_d4.tp_latch(dma_reg.REG_DMA_EN_d4, dma_reg.DMA_DONE_SYNC || !CUNU_RSTn); // lara/loky nand sr latch
+    // FIXME is this sr_latch or tp_latch?
+    /*p04.LOKY*/ dma_reg.LATCH_DMA_EN_d4.sr_latch(dma_reg.REG_DMA_EN_d4, dma_reg.DMA_DONE_SYNC || !CUNU_RSTn); // lara/loky nand sr latch
     /*p04.MATU*/ dma_reg.REG_DMA_RUNNING.set(UVYT_ABCDxxxx, CUNU_RSTn, dma_reg.LATCH_DMA_EN_d4);
 
     /*p04.META*/ wire CLK_DMA_LO = and(UVYT_ABCDxxxx, dma_reg.LATCH_DMA_EN_d4);
@@ -673,16 +674,17 @@ void TestGB::tick_everything() {
     /*p03.RUGY*/ wire TIMA_LD_5 = nor(TIMA_RST, TIMA_MUX_5);
     /*p03.PYMA*/ wire TIMA_LD_6 = nor(TIMA_RST, TIMA_MUX_6);
     /*p03.PAGU*/ wire TIMA_LD_7 = nor(TIMA_RST, TIMA_MUX_7);
-    /*p03.REGA*/ tim_reg.TIMA_0.set(TIMA_CLK,   TIMA_LOAD, TIMA_LD_0);
-    /*p03.POVY*/ tim_reg.TIMA_1.set(tim_reg.TIMA_0.c(), TIMA_LOAD, TIMA_LD_1);
-    /*p03.PERU*/ tim_reg.TIMA_2.set(tim_reg.TIMA_1.c(), TIMA_LOAD, TIMA_LD_2);
-    /*p03.RATE*/ tim_reg.TIMA_3.set(tim_reg.TIMA_2.c(), TIMA_LOAD, TIMA_LD_3);
-    /*p03.RUBY*/ tim_reg.TIMA_4.set(tim_reg.TIMA_3.c(), TIMA_LOAD, TIMA_LD_4);
-    /*p03.RAGE*/ tim_reg.TIMA_5.set(tim_reg.TIMA_4.c(), TIMA_LOAD, TIMA_LD_5);
-    /*p03.PEDA*/ tim_reg.TIMA_6.set(tim_reg.TIMA_5.c(), TIMA_LOAD, TIMA_LD_6);
-    /*p03.NUGA*/ tim_reg.TIMA_7.set(tim_reg.TIMA_6.c(), TIMA_LOAD, TIMA_LD_7);
+    /*p03.REGA*/ tim_reg.TIMA_0.count(TIMA_CLK,           TIMA_LOAD, TIMA_LD_0);
+    /*p03.POVY*/ tim_reg.TIMA_1.count(tim_reg.TIMA_0.c(), TIMA_LOAD, TIMA_LD_1);
+    /*p03.PERU*/ tim_reg.TIMA_2.count(tim_reg.TIMA_1.c(), TIMA_LOAD, TIMA_LD_2);
+    /*p03.RATE*/ tim_reg.TIMA_3.count(tim_reg.TIMA_2.c(), TIMA_LOAD, TIMA_LD_3);
+    /*p03.RUBY*/ tim_reg.TIMA_4.count(tim_reg.TIMA_3.c(), TIMA_LOAD, TIMA_LD_4);
+    /*p03.RAGE*/ tim_reg.TIMA_5.count(tim_reg.TIMA_4.c(), TIMA_LOAD, TIMA_LD_5);
+    /*p03.PEDA*/ tim_reg.TIMA_6.count(tim_reg.TIMA_5.c(), TIMA_LOAD, TIMA_LD_6);
+    /*p03.NUGA*/ tim_reg.TIMA_7.count(tim_reg.TIMA_6.c(), TIMA_LOAD, TIMA_LD_7);
 
     /*p03.MUGY*/ wire TIMA_LOADn = not(TIMA_LOAD);
+
     /*p03.NYDU*/ tim_reg.TIMA_MAX.set(BOGA_xBCDEFGH, TIMA_LOADn, tim_reg.TIMA_7.c());
 
     /*p03.MERY*/ wire INT_TIMER_IN = nor(!tim_reg.TIMA_MAX, tim_reg.TIMA_7.c());
@@ -2447,21 +2449,21 @@ void TestGB::tick_everything() {
 
         // Window vram map read address gen
         {
-          /*p25.XEZE*/ wire XEZE_WIN_MAP_READ = nand(BGW_READ_01xxxxxx, PORE_WIN_MODE);
-          /*p25.WUKO*/ wire WIN_MAP_READn = not(XEZE_WIN_MAP_READ);
-          /*p27.XEJA*/ vid_reg.MA00.set(!WIN_MAP_READn, vid_reg.MAP_X0);
-          /*p27.XAMO*/ vid_reg.MA01.set(!WIN_MAP_READn, vid_reg.MAP_X1);
-          /*p27.XAHE*/ vid_reg.MA02.set(!WIN_MAP_READn, vid_reg.MAP_X2);
-          /*p27.XULO*/ vid_reg.MA03.set(!WIN_MAP_READn, vid_reg.MAP_X3);
-          /*p27.WUJU*/ vid_reg.MA04.set(!WIN_MAP_READn, vid_reg.MAP_X4);
-          /*p27.VYTO*/ vid_reg.MA05.set(!WIN_MAP_READn, vid_reg.MAP_Y0);
-          /*p27.VEHA*/ vid_reg.MA06.set(!WIN_MAP_READn, vid_reg.MAP_Y1);
-          /*p27.VACE*/ vid_reg.MA07.set(!WIN_MAP_READn, vid_reg.MAP_Y2);
-          /*p27.VOVO*/ vid_reg.MA08.set(!WIN_MAP_READn, vid_reg.MAP_Y3);
-          /*p27.VULO*/ vid_reg.MA09.set(!WIN_MAP_READn, vid_reg.MAP_Y4);
-          /*p27.VEVY*/ vid_reg.MA10.set(!WIN_MAP_READn, cfg_reg.LCDC_WINMAP);
-          /*p27.VEZA*/ vid_reg.MA11.set(!WIN_MAP_READn, VYPO_P10_Bn);
-          /*p27.VOGU*/ vid_reg.MA12.set(!WIN_MAP_READn, VYPO_P10_Bn);
+          /*p25.XEZE*/ wire XEZE_WIN_MAP_READn = nand(BGW_READ_01xxxxxx, PORE_WIN_MODE);
+          /*p25.WUKO*/ wire WIN_MAP_READ = not(XEZE_WIN_MAP_READn);
+          /*p27.XEJA*/ vid_reg.MA00.set(WIN_MAP_READ, vid_reg.MAP_X0);
+          /*p27.XAMO*/ vid_reg.MA01.set(WIN_MAP_READ, vid_reg.MAP_X1);
+          /*p27.XAHE*/ vid_reg.MA02.set(WIN_MAP_READ, vid_reg.MAP_X2);
+          /*p27.XULO*/ vid_reg.MA03.set(WIN_MAP_READ, vid_reg.MAP_X3);
+          /*p27.WUJU*/ vid_reg.MA04.set(WIN_MAP_READ, vid_reg.MAP_X4);
+          /*p27.VYTO*/ vid_reg.MA05.set(WIN_MAP_READ, vid_reg.MAP_Y0);
+          /*p27.VEHA*/ vid_reg.MA06.set(WIN_MAP_READ, vid_reg.MAP_Y1);
+          /*p27.VACE*/ vid_reg.MA07.set(WIN_MAP_READ, vid_reg.MAP_Y2);
+          /*p27.VOVO*/ vid_reg.MA08.set(WIN_MAP_READ, vid_reg.MAP_Y3);
+          /*p27.VULO*/ vid_reg.MA09.set(WIN_MAP_READ, vid_reg.MAP_Y4);
+          /*p27.VEVY*/ vid_reg.MA10.set(WIN_MAP_READ, cfg_reg.LCDC_WINMAP);
+          /*p27.VEZA*/ vid_reg.MA11.set(WIN_MAP_READ, VYPO_P10_Bn);
+          /*p27.VOGU*/ vid_reg.MA12.set(WIN_MAP_READ, VYPO_P10_Bn);
         }
       }
 
@@ -3146,6 +3148,9 @@ void TestGB::tick_everything() {
       /*p08.NYRE*/ bus_reg.ADDR_LATCH_14.tp_latch(ADDR_LATCH, cpu_pins.A14);
     }
 
+#if 0
+    // so the address bus is technically a tribuf, but we're going to ignore
+    // this debug circuit for now.
     {
       // If we're in debug mode 2, drive external address bus onto internal address
       // these may be backwards, probably don't want to drive external address onto bus normally...
@@ -3184,6 +3189,7 @@ void TestGB::tick_everything() {
       /*p08.NEFE*/ cpu_pins.A14.set(!TOVA_MODE_DBG2n, not(A14_Cn));
       /*p08.SYZU*/ cpu_pins.A15.set(!TOVA_MODE_DBG2n, not(A15_Cn));
     }
+#endif
 
     {
  

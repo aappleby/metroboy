@@ -1,139 +1,264 @@
 #include "TextPainter.h"
 
-#ifdef _MSC_VER
-#include <include/SDL.h>
-#else
-#include <SDL2/SDL.h>
-#endif
+#include <stdio.h>
+#include <SDL.h>
+#include <GL/gl3w.h>
 
-static const int glyph_width = 6;
-static const int glyph_height = 12;
-static const int glyph_stride = 256;
+//-----------------------------------------------------------------------------
 
-static const int console_width = 80;
-static const int console_height = 10;
+const char* inst_vert_src = R"(
+#version 460
 
-TextPainter::TextPainter() {
-  SDL_Surface* terminus_surface = SDL_LoadBMP("terminus2.bmp");
-  font = (uint8_t*)terminus_surface->pixels;
+uniform vec4 screen_size = vec4(1920.0, 1080.0, 1.0 / 1920.0, 1.0 / 1080.0);
+uniform vec4 text_pos = vec4(0.0, 0.0, 1.0, 1.0);
+uniform vec4 palette[16];
+
+layout (location = 0) in vec2 corner_pos;
+layout (location = 1) in vec4 v_inst;
+
+const float glyph_size_x = 6.0;
+const float glyph_size_y = 12.0;
+
+const float glyph_shift_x = 0.0;
+const float glyph_shift_y = 3.0;
+
+const float screen_stride_x = 6.0;
+const float screen_stride_y = 12.0;
+
+const float atlas_stride_x = 8.0;
+const float atlas_stride_y = 16.0;
+
+out vec2 tc_glyph;
+out vec4 fg_color;
+out vec4 bg_color;
+out float scale;
+
+vec4 screen_to_norm(float x, float y) {
+  x = x * screen_size.z * 2.0 - 1.0;
+  y = -y * screen_size.w * 2.0 + 1.0;
+  return vec4(x, y, 1.0, 1.0);
 }
 
-void TextPainter::begin_frame(uint32_t* fb, int width, int height) {
-  framebuffer = fb;
-  fb_width = width;
-  fb_height = height;
+void main() {
+  vec2 screen_pos = v_inst.xy;
+
+  int c = int(v_inst.z);
+  int s = int(v_inst.w);
+
+  int col = c % 32;
+  int row = c / 32;
+  int fg_style = s % 16;
+  int bg_style = s / 16;
+
+  vec2 atlas_pos = vec2(col, row);
+
+  float quad_x = (screen_pos.x * screen_stride_x) + (corner_pos.x * glyph_size_x);
+  float quad_y = (screen_pos.y * screen_stride_y) + (corner_pos.y * glyph_size_y);
+
+  quad_x = quad_x * text_pos.z + text_pos.x;
+  quad_y = quad_y * text_pos.w + text_pos.y;
+
+  float glyph_x = (atlas_pos.x * atlas_stride_x) + (corner_pos.x * glyph_size_x) + glyph_shift_x;
+  float glyph_y = (atlas_pos.y * atlas_stride_y) + (corner_pos.y * glyph_size_y) + glyph_shift_y;
+
+  glyph_x /= 256.0;
+  glyph_y /= 256.0;
+
+  gl_Position = screen_to_norm(quad_x, quad_y);
+  tc_glyph = vec2(glyph_x, glyph_y);
+  fg_color = palette[fg_style];
+  bg_color = palette[bg_style];
+  scale = text_pos.z;
 }
+)";
 
-void TextPainter::render_glyph(int dst_x, int dst_y, char c, uint32_t color) {
-  int glyph_row = (c >> 5) * 16 + 2;
-  int glyph_col = (c & 31) * 8;
-  int src_cursor = glyph_col + (glyph_row * glyph_stride);
-  int dst_cursor = dst_x + dst_y * fb_width;
+//----------------------------------------
 
-  for (int y = 0; y < glyph_height; y++) {
-    for (int x = 0; x < glyph_width; x++) {
-      if (font[src_cursor]) framebuffer[dst_cursor] = color;
-      src_cursor++;
-      dst_cursor++;
-    }
-    src_cursor += (glyph_stride - glyph_width);
-    dst_cursor += (fb_width - glyph_width);
+const char* inst_frag_src = R"(
+#version 460
+
+uniform sampler2D font_tex;
+
+in vec2 tc_glyph;
+in vec4 fg_color;
+in vec4 bg_color;
+in float scale;
+
+out vec4 fs_out;
+  
+void main() {
+  float p = texture(font_tex, tc_glyph).r;
+  fs_out = mix(bg_color, fg_color, p);
+}
+)";
+
+//-----------------------------------------------------------------------------
+
+void TextPainter::init(int fb_width_, int fb_height_) {
+  fb_width = fb_width_;
+  fb_height = fb_height_;
+
+  const char* name = "TextPainter";
+  char buf[1024];
+  int len = 0;
+
+  int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vertexShader, 1, &inst_vert_src, NULL);
+  glCompileShader(vertexShader);
+
+  glGetShaderInfoLog(vertexShader, 1024, &len, buf);
+  printf("%s vert shader log:\n%s", name, buf);
+
+  int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragmentShader, 1, &inst_frag_src, NULL);
+  glCompileShader(fragmentShader);
+
+  glGetShaderInfoLog(fragmentShader, 1024, &len, buf);
+  printf("%s frag shader log:\n%s", name, buf);
+
+  text_prog = glCreateProgram();
+  glAttachShader(text_prog, vertexShader);
+  glAttachShader(text_prog, fragmentShader);
+  glLinkProgram(text_prog);
+  glUseProgram(text_prog);
+
+  glGetProgramInfoLog(text_prog, 1024, &len, buf);
+  printf("%s shader prog log:\n%s", name, buf);
+
+  glUseProgram(text_prog);
+  glUniform4f(glGetUniformLocation(text_prog, "palette") + 0, 0, 0, 0, 1);
+  glUniform4f(glGetUniformLocation(text_prog, "palette") + 1, 1, 1, 1, 1);
+
+  uint8_t quad_tris[2*3*2] = {
+    0, 0,
+    0, 1,
+    1, 1,
+
+    0, 0,
+    1, 1,
+    1, 0
+  };
+
+  {
+    glGenBuffers(1, &quad_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, quad_vbo);
+    glBufferStorage(GL_ARRAY_BUFFER, sizeof(quad_tris), quad_tris,
+                    GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
   }
-}
 
-void TextPainter::render_text(int dst_x, int dst_y, const char* text) {
-  int xcursor = 0;
-  int ycursor = 0;
-
-  uint32_t color = 0xFFCCCCCC;
-
-  for (const char* c = text; *c; c++) {
-    switch(*c) {
-    case 1: color = 0xFFCCCCCC; continue;
-    case 2: color = 0xFFFF8888; continue;
-    case 3: color = 0xFF88FF88; continue;
-    case 4: color = 0xFF8888FF; continue;
-    case 5: color = 0xFF88FFFF; continue;
-    case 6: color = 0xFFFF88FF; continue;
-    case 7: color = 0xFFFFFF88; continue;
-    case '\n':
-      xcursor = 0;
-      ycursor += glyph_height;
-      continue;
-    default:
-      break;
-    }
-
-    render_glyph(dst_x + xcursor, dst_y + ycursor, *c, color);
-
-    xcursor += glyph_width;
-    if (xcursor > (fb_width - glyph_width)) {
-      xcursor = 0;
-      ycursor += glyph_height;
-    }
+  {
+    glGenBuffers(1, &inst_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, inst_vbo);
+    glBufferStorage(GL_ARRAY_BUFFER, 65536*4, nullptr,
+                    GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
+    glBindBuffer(GL_ARRAY_BUFFER, inst_vbo);
+    inst_map = (uint32_t*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
   }
+
+  {
+    glGenVertexArrays(1, &text_vao);
+    glBindVertexArray(text_vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, quad_vbo);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_UNSIGNED_BYTE, GL_FALSE, 2, (void*)0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, inst_vbo);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_FALSE, 4, (void*)0);
+    glVertexAttribDivisor(1, 1);
+  }
+
+  SDL_Surface* font_surf = SDL_LoadBMP("terminus2.bmp");
+  uint8_t* pix = (uint8_t*)font_surf->pixels;
+  for (int i = 0; i < 65536; i++) pix[i] = pix[i] ? 0xFF : 0x00;
+  
+  glGenTextures(1, &font_tex);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, font_tex);
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8,
+                font_surf->w, font_surf->h, 0,
+                GL_RED, GL_UNSIGNED_BYTE, pix);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::draw_bbox(int sx, int sy, int w, int h, uint32_t color) {
-  int ax = sx;
-  int bx = sx + w;
-  int ay = sy;
-  int by = sy + h;
-  int x, y;
+void TextPainter::begin_frame() {
 
-  for (x = ax, y = ay; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
+  /*
+  uint32_t temp1 = inst_vbo_a;
+  inst_vbo_a = inst_vbo_b;
+  inst_vbo_b = temp1;
 
-  for (x = ax, y = by; x <= bx; x++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
+  uint32_t* temp2 = inst_map_a;
+  inst_map_a = inst_map_b;
+  inst_map_b = temp2;
+  */
 
-  for (x = ax, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
-
-  for (x = bx, y = ay + 1; y <= by - 1; y++) {
-    if (x >= 0 && x <= fb_width && y >= 0 && y <= fb_height) framebuffer[x + y * fb_width] = color;
-  }
+  inst_begin = 0;
+  inst_end = 0;
 }
 
-
-
-#if 0
 //-----------------------------------------------------------------------------
-// Console
 
-void MetroBoyApp::render_console(int sx, int sy, uint8_t* font) {
-
-  for (int cy = 0; cy < console_height; cy++) {
-    char* line = &console_buf[(((cy + cursor_y)) % console_height) * console_width];
-
-    for (int cx = 0; cx < console_width; cx++) {
-      char c = *line;
-      int row = (c >> 5) * 16 + 3;
-      int col = (c & 31) * 8;
-
-      int src_cursor = col + (row * glyph_stride);
-      int dst_cursor = (sx + (cx * glyph_width)) + (sy + (cy * glyph_height)) * fb_width;
-
-      for (int y = 0; y < glyph_height; y++) {
-        for (int x = 0; x < glyph_width; x++) {
-          if (font[src_cursor]) framebuffer[dst_cursor] = 0xFF00FF00;
-          src_cursor++;
-          dst_cursor++;
-        }
-        src_cursor += (glyph_stride - glyph_width);
-        dst_cursor += (fb_width - glyph_width);
-      }
-
-      line++;
-    }
+void TextPainter::add_char(char c) {
+  if (c < 10) {
+    fg_pal = c;
   }
-
-  draw_bbox(sx - 2, sy - 2, console_width * glyph_width + 4, console_height * glyph_height + 4, 0xFF00FF00);
+  else if (c == '\n') {
+    text_x = 0;
+    text_y++;
+  }
+  else {
+    inst_map[inst_end++] = (text_x << 0) | (text_y << 8) | (c << 16) | (fg_pal << 24) | (bg_pal << 28);
+    text_x++;
+  }
 }
 
-#endif
+void TextPainter::add_text(const char* text, int len) {
+  for (int i = 0; i < len; i++) {
+    add_char(text[i]);
+  }
+}
+
+void TextPainter::dprintf(const char* format, ...) {
+  char buffer[256];
+  va_list args;
+  va_start(args, format);
+  int count = vsnprintf(buffer, 256, format, args);
+  va_end(args);
+  add_text(buffer, count);
+}
+
+void TextPainter::render(float x, float y, float scale) {
+  glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
+
+  // Render the glyphs
+  glUseProgram(text_prog);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, font_tex);
+  glUniform1i(glGetUniformLocation(text_prog, "font_tex"), 0);
+  glUniform4f(glGetUniformLocation(text_prog, "text_pos"), x, y, scale, scale);
+  glUniform4f(glGetUniformLocation(text_prog, "screen_size"),
+              (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
+  glBindVertexArray(text_vao);
+  glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, 6, inst_end - inst_begin, inst_begin);
+  text_x = 0;
+  text_y = 0;
+  inst_begin = inst_end;
+}
+
+void TextPainter::set_pal(int index, float r, float g, float b, float a) {
+  glUseProgram(text_prog);
+  glUniform4f(glGetUniformLocation(text_prog, "palette") + index, r, g, b, a);
+}
+
+//-----------------------------------------------------------------------------

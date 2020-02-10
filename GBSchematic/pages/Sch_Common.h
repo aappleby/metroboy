@@ -119,380 +119,407 @@ bool commit_all(T& first, Args&... args) {
 
 //-----------------------------------------------------------------------------
 
+enum SignalFlags {
+  VAL = 0b000001,
+  HIZ = 0b000010,
+  CLK = 0b000100,
+  SET = 0b001000,
+  RST = 0b010000,
+  ERR = 0b100000,
+};
+
+union SignalState {
+  uint8_t state;
+  struct {
+    bool val : 1;
+    bool hiz : 1;
+    bool clk : 1;
+    bool set : 1;
+    bool rst : 1;
+    bool err : 1;
+    bool carry : 1;
+  };
+
+  SignalState(uint8_t s) : state(s) {}
+  void operator =  (uint8_t s)           { state = s; }
+  bool operator == (uint8_t s) const     { return state == s; }
+  bool operator != (SignalState s) const { return state != s.state; }
+};
+
+static_assert(sizeof(SignalState) == 1, "SignalState size != 1");
+
+//-----------------------------------------------------------------------------
+// I think that reading a Z pin can't be an error; D0_C goes directly to RALO.
+// Not sure how that doesn't break in harware, but whatev.
+
 struct PinIn {
 
-  PinIn() {
-    val = 0;
-    dirty = 0;
-  }
-
   operator bool() const {
-    if (!dirty) {
-      //printf("Reading undriven PinIn!\n");
-      //__debugbreak();
-      // I think that reading an undriven pin can't be an error; D0_C goes directly to RALO.
-      return 1;
-    }
-    return val;
+    if (a.err) __debugbreak();
+    if (!b.err) __debugbreak();
+    return a.val;
   }
 
-  void set(bool val_in) {
-    if (dirty) {
-      printf("Redundant set() on PinIn!\n");
-      __debugbreak();
-    }
-    val = val_in;
-    dirty = 1;
+  void preset(bool oe, bool val) {
+    if (!a.err) __debugbreak();
+    a.val = val;
+    a.hiz = !oe;
+    a.set = 0;
+    a.rst = 0;
+    a.err = 0;
   }
 
-  bool commit() {
-    if (!dirty) {
-      printf("Committing undriven PinIn!\n");
-      __debugbreak();
-    }
-    dirty = false;
+  bool clear_preset() {
+    if ( a.err) __debugbreak();
+    if (!b.err) __debugbreak();
+    a = ERR;
     return false;
   }
 
 private:
-  bool val;
-  bool dirty;
+  SignalState a = ERR;
+  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
 struct PinOut {
 
-  PinOut() {
-    val_a = 0;
-    val_b = 0;
-    dirty = 0;
-  }
-
-  void sync_set(wire val_in) {
-    set(val_in);
-    commit();
-  }
-
   operator bool() const {
-    return val_a;
+    if (a.err) __debugbreak();
+    if (a.hiz) __debugbreak();
+    return a.val;
   }
 
-  void set(wire val_in) {
-    if (dirty) __debugbreak();
-    val_b = val_in;
-    dirty = true;
+  void preset(wire val) {
+    if (!a.err) __debugbreak();
+    a.val = val;
+    a.hiz = 0;
+    a.clk = 0;
+    a.set = 0;
+    a.rst = 0;
+    a.err = 0;
+    a.carry = 0;
+  }
+
+  void set(wire val) {
+    if (!b.err) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = 0;
+    b.set = 0;
+    b.rst = 0;
+    b.err = 0;
+    b.carry = 0;
   }
 
   bool commit() {
-    if (!dirty) {
-      printf("PinOut not set!\n");
-      __debugbreak();
-    }
-    dirty = false;
-    bool changed = val_a != val_b;
-    val_a = val_b;
+    if (a.err) __debugbreak();
+    if (b.err) __debugbreak();
+    bool changed = a != b;
+    a = b;
+    b = ERR;
     return changed;
   }
 
-private:
-  bool val_a;
-  bool val_b;
-  bool dirty;
+  SignalState a = 0;
+  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
 struct Tribuf {
 
-  Tribuf() {
-    val_a = 0;
-    val_b = 0;
-    oe_a = 0;
-    oe_b = 0;
-    dirty = 0;
+  operator bool() const {
+    if (a.err)    __debugbreak();
+    //if (a.hiz) __debugbreak();
+    return a.val;
   }
 
-  void sync_set(const bool oe_in, const bool val_in) {
-    set(oe_in, val_in);
-    commit();
+  void preset(bool oe, bool val) {
+    if (!a.err) __debugbreak();
+    a.val = val;
+    a.hiz = !oe;
+    a.clk = 0;
+    a.set = 0;
+    a.rst = 0;
+    a.err = 0;
   }
 
-  void set(const bool oe_in, const bool val_in) {
-    if (dirty && oe_b && oe_in) {
-      printf("bus collision!\n");
-      __debugbreak();
+  void set(bool oe, bool val) {
+    if (!b.err && !b.hiz) {
+      if (oe) __debugbreak();
+      return;
     }
-    oe_b = oe_in;
-    val_b = val_in;
-    dirty = true;
-  }
 
-  void set_sync(const bool oe_in, const bool val_in) {
-    set(oe_in, val_in);
-    commit();
-  }
-
-  operator const bool() const {
-    // this fires too much
-    /*
-    if (!oe_a) {
-      printf("reading undriven tribuf\n");
-      __debugbreak();
-    }
-    */
-    if (!oe_a) return 1;
-    return val_a;
+    b.val = val;
+    b.hiz = !oe;
+    b.clk = 0;
+    b.set = 0;
+    b.rst = 0;
+    b.err = 0;
   }
 
   bool commit() {
-    if (!dirty) {
-      printf("tribuf not set!\n");
-      __debugbreak();
-    }
-    dirty = false;
-
-    bool changed = (val_a != val_b) || (oe_a != oe_b);
-    val_a = val_b;
-    oe_a = oe_b;
+    if (a.err) __debugbreak();
+    if (b.err) __debugbreak();
+    bool changed = a.val != b.val || a.hiz != b.hiz;
+    a = b;
+    b = ERR;
     return changed;
   }
 
-private:
-
-  void operator = (const bool in);
-  void operator = (const Tribuf&);
-
-  bool val_a;
-  bool val_b;
-  bool oe_a;
-  bool oe_b;
-  bool dirty;
+  SignalState a = 0;
+  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
 struct Signal {
 
-  Signal() {
-    val = 0;
-    dirty = 0;
-  }
-
-  void operator=(const bool new_val) {
-    if (dirty) __debugbreak();
-    val = new_val;
-    dirty = 1;
+  void operator = (wire val) {
+    if (!a.err) __debugbreak();
+    a = val;
   }
 
   operator const bool() const {
-    if (!dirty) __debugbreak();
-    return val;
+    if (a.err) __debugbreak();
+    return a.val;
   }
 
-  bool commit() {
-    if (dirty) __debugbreak();
-    dirty = true;
-    return false;
-  }
-
-private:
-  bool val;
-  bool dirty;
+  SignalState a = ERR;
+  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
-struct Reg2 {
-
-  void pwron() {
-    clk_a = clk_b = 0;
-    set_b = rst_b = 0;
-    val_a = val_b = 0;
-    dirty = 0;
-  }
-
-  bool get() const {
-    return val_a;
-  }
-  
+struct Reg3 {
   operator const bool() const {
-    /*
-    if (dirty) {
-      printf("reading dirty reg\n");
-      __debugbreak();
-    }
-    */
-    return val_a;
+    if (a.err) __debugbreak();
+    //if (!b.err) __debugbreak();
+    return a.val;
   }
 
-  void set(bool clk_in, bool reg_in) {
-    clk_b = clk_in;
-    val_b = reg_in;
-    set_b = 1;
-    rst_b = 1;
-    dirty = true;
+  void set(bool clk, bool val) {
+    set(clk, 1, 1, val);
   }
 
-  void set(bool clk_in, bool rst_in, bool reg_in) {
-    clk_b = clk_in;
-    val_b = reg_in;
-    set_b = 1;
-    rst_b = rst_in;
-    dirty = true;
+  void set(bool clk, bool rstN, bool val) {
+    set(clk, 1, rstN, val);
   }
 
-  void set(bool clk_in, bool set_in, bool rst_in, bool reg_in) {
-    clk_b = clk_in;
-    val_b = reg_in;
-    set_b = set_in;
-    rst_b = rst_in;
-    dirty = true;
-  }
-
-  void set2(bool reg_in) {
-    clk_b = clk_a;
-    val_b = val_a = reg_in;
-    set_b = 1;
-    rst_b = 1;
-  }
-
-  // double check this
-  void tp_latch(bool latch_in, bool val_in) {
-    clk_b = clk_a;
-    val_b = val_a;
-    set_b = !(!latch_in && val_in);
-    rst_b = !(!latch_in && !val_in);
-    dirty = true;
-  }
-
-  void tp_latch(bool latch_in, const PinIn& val_in) {
-    clk_b = clk_a;
-    val_b = val_a;
-    if (!latch_in) {
-      set_b = !val_in;
-      rst_b = val_in;
-    }
-    else {
-      set_b = true;
-      rst_b = true;
-    }
-    dirty = true;
-  }
-
-  void sr_latch(bool set_in, bool rst_in) {
-    clk_b = clk_a;
-    val_b = val_a;
-    set_b = set_in;
-    rst_b = rst_in;
-    dirty = true;
+  void set(bool clk, bool setN, bool rstN, bool val) {
+    if (a.err)  __debugbreak();
+    if (!b.err) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = clk;
+    b.set = !setN;
+    b.rst = !rstN;
+    b.err = 0;
   }
 
   bool commit() {
-    if (!dirty) {
-      printf("Committing non-dirty reg\n");
-      __debugbreak();
-    }
-    dirty = false;
+    if (a.err) __debugbreak();
+    if (b.err) __debugbreak();
 
-    bool old_val = val_a;
-    if (!clk_a && clk_b) val_a = val_b;
-    if (!set_b) val_a = 1;
-    if (!rst_b) val_a = 0;
-    clk_a = clk_b;
-    return old_val != val_a;
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    a.err = 0;
+
+    b = ERR;
+
+    return old_a != new_a;
   }
 
   bool commit_duo() {
-    if (!dirty) {
-      printf("Committing non-dirty reg\n");
-      __debugbreak();
-    }
-    dirty = false;
+    if (a.err) __debugbreak();
+    if (b.err) __debugbreak();
+    
+    bool old_a = a.val;
+    bool new_a = (a.clk != b.clk) ? b.val : a.val;
 
-    bool old_val = val_a;
-    if (clk_a != clk_b) val_a = val_b;
-    if (!set_b) val_a = 1;
-    if (!rst_b) val_a = 0;
-    clk_a = clk_b;
-    return old_val != val_a;
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    a.err = 0;
+
+    b = ERR;
+
+    return old_a != new_a;
   }
 
-  bool clk_a, val_a;
-  bool clk_b, set_b, rst_b, val_b;
-  bool dirty;
+  SignalState a = 0;
+  SignalState b = ERR;
 };
-
-/*
-inline void big_reset(Reg2& first) { first.reset(1, 0); }
-template<typename... Args> inline void big_reset(Reg2& first, Args&... args) {
-  big_reset(first);
-  big_reset(args...);
-}
-*/
-
-inline void big_set2(bool x, Reg2& first) { first.set2(x); }
-template<typename... Args> inline void big_set2(uint8_t x, Reg2& first, Args&... args) {
-  big_set2((x & 1), first);
-  big_set2((x >> 1), args...);
-}
 
 //-----------------------------------------------------------------------------
 
-struct Counter {
-
-  void pwron() {
-    clk_a = clk_b = 0;
-    val = 0;
-    carry = 0;
-    changed = false;
+struct RegDuo {
+  operator const bool() const {
+    if (a.err) __debugbreak();
+    //if (!b.err) __debugbreak();
+    return a.val;
   }
 
-  void reset(bool clk_in, bool val_in, bool carry_in) {
-    clk_a = clk_b = clk_in;
-    val = val_in;
-    carry = carry_in;
-    changed = false;
+  void set(bool clk, bool setN, bool rstN, bool val) {
+    if (a.err)  __debugbreak();
+    if (!b.err) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = clk;
+    b.set = !setN;
+    b.rst = !rstN;
+    b.err = 0;
   }
 
-  void set2(bool reg_in) {
-    val = reg_in;
-    carry = 0;
-    changed = false;
+  bool commit_duo() {
+    if (a.err) __debugbreak();
+    if (b.err) __debugbreak();
+    
+    bool old_a = a.val;
+    bool new_a = (a.clk != b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    a.err = 0;
+
+    b = ERR;
+
+    return old_a != new_a;
   }
 
-  void set(bool clk_in, bool load, bool in) {
-    clk_b = clk_in;
-    if (load) {
-      if ((val != in) || carry) changed = true;
-      val = in;
-      carry = 0;
-    }
+  SignalState a = 0;
+  SignalState b = ERR;
+};
+
+//-----------------------------------------------------------------------------
+
+struct Latch3 {
+  operator const bool() const {
+    if (a.err) __debugbreak();
+    return a.val;
+  }
+
+  void sr_latch(bool setN, bool rstN) {
+    if (a.err)  __debugbreak();
+    if (!b.err) __debugbreak();
+    b.val = 0;
+    b.hiz = 0;
+    b.clk = 0;
+    b.set = !setN;
+    b.rst = !rstN;
+    b.err = 0;
+  }
+
+  void tp_latch(bool latchN, bool val) {
+    if (a.err)  __debugbreak();
+    if (!b.err) __debugbreak();
+    b.val = 0;
+    b.hiz = 0;
+    b.clk = 0;
+    b.set = !latchN && val;
+    b.rst = !latchN && !val;
+    b.err = 0;
   }
 
   bool commit() {
-    if (!clk_a && clk_b) {
-      carry = val;
-      val = !val;
-      changed = true;
-    }
-    clk_a = clk_b;
-    bool ret = changed;
-    changed = false;
-    return ret;
+    if (a.err) __debugbreak();
+    if (b.err) __debugbreak();
+
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    a.err = 0;
+
+    b = ERR;
+
+    return old_a != new_a;
   }
 
-  bool v() const {
-    return val;
+  SignalState a = 0;
+  SignalState b = ERR;
+};
+
+//-----------------------------------------------------------------------------
+// FIXME good chance that count's not right (polarity or something)
+// Does this really contain two bits of data just to track the carry bit?
+
+struct Counter {
+  const bool v() const {
+    if (a.err) __debugbreak();
+    return a.val;
   }
 
-  bool c() const {
-    return carry;
+  const bool c() const {
+    if (a.err) __debugbreak();
+    return a.carry;
   }
 
-  bool clk_a, clk_b;
-  bool val, carry;
-  bool changed;
+  void count(bool clk, bool loadN, bool val) {
+    if (a.err)  __debugbreak();
+    if (!b.err) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = clk;
+    b.set = !loadN && val;
+    b.rst = !loadN && !val;
+    b.err = 0;
+  }
+
+  bool commit() {
+    if (a.err) __debugbreak();
+    if (b.err) __debugbreak();
+
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    a.err = 0;
+    a.carry = old_a && !new_a && !b.set && !b.rst;
+
+    b = ERR;
+
+    return old_a != new_a;
+  }
+
+  SignalState a = 0;
+  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------

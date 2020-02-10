@@ -69,55 +69,77 @@ struct CpuPins {
   //----------
   // bottom right port
 
-  Tribuf A00;          // PORTB_00: -> A00
+  PinIn  A00;          // PORTB_00: -> A00
   PinIn  FROM_CPU9;    // PORTB_01: -> P02.LETY, vblank int ack
-  Tribuf A08;          // PORTB_02: -> A08
+  PinIn  A08;          // PORTB_02: -> A08
   PinOut TO_CPU3;      // PORTB_03: <- P02.LOPE, vblank int
-  Tribuf A01;          // PORTB_04: -> A01
+  PinIn  A01;          // PORTB_04: -> A01
   PinIn  FROM_CPU8;    // PORTB_05: -> P02.LEJA, stat int ack
-  Tribuf A09;          // PORTB_06: -> A09
+  PinIn  A09;          // PORTB_06: -> A09
   PinOut TO_CPU6;      // PORTB_07: <- P02.LALU, stat int
-  Tribuf A02;          // PORTB_08: -> A02
+  PinIn  A02;          // PORTB_08: -> A02
   PinIn  FROM_CPU10;   // PORTB_09: -> P02.LESA, timer int ack
-  Tribuf A10;          // PORTB_10: -> A10
+  PinIn  A10;          // PORTB_10: -> A10
   PinOut TO_CPU7;      // PORTB_11: <- P02.NYBO, timer int
-  Tribuf A03;          // PORTB_12: -> A03
+  PinIn  A03;          // PORTB_12: -> A03
   PinIn  FROM_CPU7;    // PORTB_13: -> P02.LUFE, serial int ack
-  Tribuf A11;          // PORTB_14: -> A11
+  PinIn  A11;          // PORTB_14: -> A11
   PinOut TO_CPU4;      // PORTB_15: <- P02.UBUL, serial int
-  Tribuf A04;          // PORTB_16: -> A04
+  PinIn  A04;          // PORTB_16: -> A04
   PinIn  FROM_CPU11;   // PORTB_17: -> P02.LAMO, joypad int ack
-  Tribuf A12;          // PORTB_18: -> A12
+  PinIn  A12;          // PORTB_18: -> A12
   PinOut TO_CPU5;      // PORTB_19: <- P02.ULAK, joypad int
-  Tribuf A05;          // PORTB_20: -> A05
-  Tribuf A13;          // PORTB_22: -> A13
-  Tribuf A06;          // PORTB_24: -> A06
-  Tribuf A14;          // PORTB_26: -> A14
-  Tribuf A07;          // PORTB_28: -> A07
-  Tribuf A15;          // PORTB_30: -> A15
+  PinIn  A05;          // PORTB_20: -> A05
+  PinIn  A13;          // PORTB_22: -> A13
+  PinIn  A06;          // PORTB_24: -> A06
+  PinIn  A14;          // PORTB_26: -> A14
+  PinIn  A07;          // PORTB_28: -> A07
+  PinIn  A15;          // PORTB_30: -> A15
 
   int get_addr() const {
     return pack(A00, A01, A02, A03, A04, A05, A06, A07,
                 A08, A09, A10, A11, A12, A13, A14, A15);
   }
 
-  void set_addr_sync(uint16_t addr) {
-    A00.set_sync(1, addr & 0x0001);
-    A01.set_sync(1, addr & 0x0002);
-    A02.set_sync(1, addr & 0x0004);
-    A03.set_sync(1, addr & 0x0008);
-    A04.set_sync(1, addr & 0x0010);
-    A05.set_sync(1, addr & 0x0020);
-    A06.set_sync(1, addr & 0x0040);
-    A07.set_sync(1, addr & 0x0080);
-    A08.set_sync(1, addr & 0x0100);
-    A09.set_sync(1, addr & 0x0200);
-    A10.set_sync(1, addr & 0x0400);
-    A11.set_sync(1, addr & 0x0800);
-    A12.set_sync(1, addr & 0x1000);
-    A13.set_sync(1, addr & 0x2000);
-    A14.set_sync(1, addr & 0x4000);
-    A15.set_sync(1, addr & 0x8000);
+  void preset_addr(bool oe, uint16_t addr) {
+    A00.preset(oe, addr & 0x0001);
+    A01.preset(oe, addr & 0x0002);
+    A02.preset(oe, addr & 0x0004);
+    A03.preset(oe, addr & 0x0008);
+    A04.preset(oe, addr & 0x0010);
+    A05.preset(oe, addr & 0x0020);
+    A06.preset(oe, addr & 0x0040);
+    A07.preset(oe, addr & 0x0080);
+    A08.preset(oe, addr & 0x0100);
+    A09.preset(oe, addr & 0x0200);
+    A10.preset(oe, addr & 0x0400);
+    A11.preset(oe, addr & 0x0800);
+    A12.preset(oe, addr & 0x1000);
+    A13.preset(oe, addr & 0x2000);
+    A14.preset(oe, addr & 0x4000);
+    A15.preset(oe, addr & 0x8000);
+  }
+
+  void preset_data(bool oe, uint8_t data) {
+    D0.preset(oe, data & 0x01);
+    D1.preset(oe, data & 0x02);
+    D2.preset(oe, data & 0x04);
+    D3.preset(oe, data & 0x08);
+    D4.preset(oe, data & 0x10);
+    D5.preset(oe, data & 0x20);
+    D6.preset(oe, data & 0x40);
+    D7.preset(oe, data & 0x80);
+  }
+
+  void set_data(bool oe, uint8_t data) {
+    D0.set(oe, data & 0x01);
+    D1.set(oe, data & 0x02);
+    D2.set(oe, data & 0x04);
+    D3.set(oe, data & 0x08);
+    D4.set(oe, data & 0x10);
+    D5.set(oe, data & 0x20);
+    D6.set(oe, data & 0x40);
+    D7.set(oe, data & 0x80);
   }
 
   //----------

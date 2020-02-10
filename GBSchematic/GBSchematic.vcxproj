@@ -73,15 +73,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <CustomBuildBeforeTargets>Compile</CustomBuildBeforeTargets>
+    <IncludePath>C:\Users\aappl\Desktop\MetroBoy\imgui;C:\Users\aappl\Desktop\MetroBoy\SDL2\include;C:\Users\aappl\Desktop\MetroBoy\gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\aappl\Desktop\MetroBoy\imgui;C:\Users\aappl\Desktop\MetroBoy\SDL2\include;C:\Users\aappl\Desktop\MetroBoy\gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\aappl\Desktop\MetroBoy\imgui;C:\Users\aappl\Desktop\MetroBoy\SDL2\include;C:\Users\aappl\Desktop\MetroBoy\gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\aappl\Desktop\MetroBoy\imgui;C:\Users\aappl\Desktop\MetroBoy\SDL2\include;C:\Users\aappl\Desktop\MetroBoy\gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -190,7 +194,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\gl3w\src\gl3w.c" />
+    <ClCompile Include="..\imgui\examples\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\imgui\examples\imgui_impl_sdl.cpp" />
+    <ClCompile Include="..\imgui\imgui.cpp" />
+    <ClCompile Include="..\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\src\TextPainter.cpp" />
+    <ClCompile Include="AppBase.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pages\Schematics.cpp" />
     <ClCompile Include="pages\Sch_ApuControl.cpp" />
@@ -199,6 +211,7 @@
     <ClCompile Include="pages\Sch_Channel2.cpp" />
     <ClCompile Include="pages\Sch_Channel3.cpp" />
     <ClCompile Include="pages\Sch_Channel4.cpp" />
+    <ClCompile Include="Sch_Common.cpp" />
     <ClCompile Include="SignalTree.cpp" />
     <ClCompile Include="tests\BusDump.cpp" />
     <ClCompile Include="tests\TestBoot.cpp" />
@@ -213,7 +226,18 @@
     <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\gl3w\include\GL\gl3w.h" />
+    <ClInclude Include="..\imgui\examples\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\imgui\examples\imgui_impl_sdl.h" />
+    <ClInclude Include="..\imgui\imconfig.h" />
+    <ClInclude Include="..\imgui\imgui.h" />
+    <ClInclude Include="..\imgui\imgui_internal.h" />
+    <ClInclude Include="..\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\imgui\imstb_truetype.h" />
     <ClInclude Include="..\src\TextPainter.h" />
+    <ClInclude Include="AppBase.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="pages\Schematics.h" />
     <ClInclude Include="pages\Sch_ApuControl.h" />
     <ClInclude Include="pages\Sch_Merged.h" />

@@ -1,3 +1,4 @@
+#include "main.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <memory.h>
@@ -5,70 +6,388 @@
 #include <vector>
 #include <math.h>
 
-#include "TraceViewer.h"
-#include "../src/TextPainter.h"
+#include <GL/gl3w.h>
+#include <gl/gl.h>
+#include <gl/glu.h>
 
-#include "tests/TestGB.h"
-
-#ifdef _MSC_VER
-#include <include/SDL.h>
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#else
-#include <SDL2/SDL.h>
-#endif
+#include <SDL.h>
+#include <imgui.h>
+#include <examples/imgui_impl_sdl.h>
+#include <examples/imgui_impl_opengl3.h>
 
 using namespace Schematics;
 
 #pragma warning(disable:4189)
-#pragma warning(disable:4702)
+//#pragma warning(disable:4702)
+
+//----------------------------------------
+
+#if 0
+const GLchar* viz_vert_source = R"(
+#version 460
+
+uniform vec4 screen_size = vec4(1920.0, 1080.0, 1.0 / 1920.0, 1.0 / 1080.0);
+uniform vec4 quad_pos = vec4(128.4, 128.0, 32.0, 32.0);
+
+layout(location = 0) in  vec2 vpos;
+layout(location = 0) out vec2 vtex;
+
+vec4 screen_to_norm(float x, float y) {
+  x = x * screen_size.z * 2.0 - 1.0;
+  y = -y * screen_size.w * 2.0 + 1.0;
+  return vec4(x, y, 1.0, 1.0);
+}
+
+void main() {
+  float x = quad_pos.x;
+  float y = quad_pos.y;
+  float w = quad_pos.z;
+  float h = quad_pos.w;
+
+  x = mix(x, x + w, vpos.x);
+  y = mix(y, y + h, vpos.y);
+
+  gl_Position = screen_to_norm(x, y);
+  vtex = vpos;
+}
+)";
+
+//----------
+
+const GLchar* viz_frag_source = R"(
+#version 460
+
+uniform sampler2D atlas_sampler;
+
+layout(location = 0) in vec2 ftex;
+layout(location = 0) out vec4 frag;
+
+void main() {
+  int t = int(texture(tex, ftex).r * 255.0);
+
+  bool val = (t & 0x01) == 0x01;
+  bool hiz = (t & 0x02) == 0x02;
+  bool clk = (t & 0x04) == 0x04;
+  bool set = (t & 0x08) == 0x08;
+  bool rst = (t & 0x10) == 0x10;
+  bool err = (t & 0x20) == 0x20;
+
+
+  frag = vec4(val, hiz, clk, 1.0);
+}
+)";
+#endif
 
 //-----------------------------------------------------------------------------
 
-const int fb_width = 1888;
-const int fb_height = 992;
+void Main::init() {
+  base::init();
 
-bool quit = false;
-int frame_count = 0;
+  text.init(fb_width, fb_height);
 
-SDL_Window* window = nullptr;
-SDL_GLContext gl_context = nullptr;
-const uint8_t* keyboard_state = nullptr;
+  gb_tex = create_texture(64, 64, 2);
 
-uint64_t timer_freq, frame_begin, frame_end, frame_time = 0;
-uint64_t app_begin = 0;
+  RST = 0;
+  CLKIN_A = 1;
+  CLKIN_B = 0;
+  CLKREQ = 1;
+
+  gb.cfg_reg.LCDC_EN.a.val = 1;
+
+  //----------------------------------------
+
+  //viz_prog = compile_shader("gb_viz", viz_vert_source, viz_frag_source);
+}
+
+void Main::close() {
+  base::close();
+}
 
 //-----------------------------------------------------------------------------
 
-void sim_phase(TestGB& gb, bool RST, bool CLKIN_A, bool CLKIN_B, bool CLKREQ) {
-  const int pass_count = 20;
-  for (int j = 0; j < pass_count; j++) {
-    gb.pass_init(RST, CLKIN_A, CLKIN_B);
-    gb.cpu_init(CLKREQ);  
-    gb.pin_init();
-    gb.tick_everything();
-    bool changed = gb.commit_everything();
-    printf(changed ? "x" : ".");
+int main(int argc, char** argv)
+{
+  Main m;
+  return m.main(argc, argv);
+  //m.init();
+  //return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void Main::begin_frame() {
+  base::begin_frame();
+}
+
+//-----------------------------------------------------------------------------
+
+void Main::update() {
+  base::update();
+
+  if ((frame_count % 1) == 0) {
+
+    while(1) {
+      CLKIN_B = phase_counter & 1;
+      gb.sys_preset(RST, CLKIN_A, CLKIN_B);
+      gb.cpu_preset(CLKREQ, 0x0000, 0x00);
+      gb.ext_preset();
+      gb.ser_preset();
+      gb.joy_preset();
+      gb.vram_preset();
+
+      //gb.pin_init();
+      gb.tick_everything();
+
+      // FIXME still don't know who drives these, so we always set them to 0.
+      gb.joy_pins.P10_B.set(0);
+      gb.joy_pins.P11_B.set(0);
+      gb.joy_pins.P12_B.set(0);
+      gb.joy_pins.P13_B.set(0);
+
+      // this is going to break once the gb is actually driving the data bus
+      gb.cpu_pins.set_data(true, 0);
+
+      bool changed = gb.commit_everything();
+      if (!changed) {
+        phase_counter++;
+        break;
+      }
+    }
+
+  }
+  
+  {
+    uint8_t* pix = new uint8_t[64 * 64 * 4];
+    memset(pix, 0, 64*64*4);
+    memcpy(pix, &gb, sizeof(gb));
+    update_texture(gb_tex, 64, 64, 2, pix);
+    delete [] pix;
   }
 }
 
-void sim_phase2(TestGB& gb, bool RST, bool CLKIN_A, bool CLKIN_B, bool CLKREQ) {
-  const int pass_count = 20;
-  for (int j = 0; j < pass_count; j++) {
-    gb.pass_init(RST, CLKIN_A, CLKIN_B);
-    gb.cpu_init(CLKREQ);  
-    gb.pin_init();
-    gb.tick_everything();
-    gb.commit_everything();
-  }
+//-----------------------------------------------------------------------------
+
+void Main::print(SignalState s) {
+  text.add_char(s.val ? '1' : '0');
 }
+
+void Main::render_frame() {
+  base::render_frame();
+  text.begin_frame();
+
+  text.set_pal(0, 0.0, 0.0, 0.0, 0.3);
+  text.set_pal(1, 0.8, 0.8, 0.8, 1.0);
+  text.set_pal(2, 0.6, 1.0, 0.6, 1.0);
+
+  text.dprintf(" ----- SYS_REG -----\n");
+  text.dprintf("PHASE    %08d\n", phase_counter);
+  text.dprintf("RST      %08d\n", RST);
+  text.dprintf("CLKIN_A  %d\n", CLKIN_A);
+  text.dprintf("CLKIN_B  %d\n", CLKIN_B);
+  text.dprintf("CLKREQ   %d\n", CLKREQ);
+
+  text.dprintf(" ----- CLK_REG -----\n");
+  text.dprintf("PHAZ     \2%d%d%d%d\1\n",
+               gb.clk_reg.PHAZ_ABCDxxxx.a.val,
+               gb.clk_reg.PHAZ_xBCDExxx.a.val,
+               gb.clk_reg.PHAZ_xxCDEFxx.a.val,
+               gb.clk_reg.PHAZ_xxxDEFGx.a.val);
+
+  text.dprintf(" ----- BUS_REG -----\n");
+  text.dprintf("BOOT_BIT %d\n", gb.bus_reg.BOOT_BIT.a.val);
+  text.dprintf("SOTO_DBG %d\n", gb.bus_reg.SOTO_DBG.a.val);
+
+  text.dprintf("ADDR_LATCH ");
+  print(gb.bus_reg.ADDR_LATCH_00.a);
+  print(gb.bus_reg.ADDR_LATCH_01.a);
+  print(gb.bus_reg.ADDR_LATCH_02.a);
+  print(gb.bus_reg.ADDR_LATCH_03.a);
+  print(gb.bus_reg.ADDR_LATCH_04.a);
+  print(gb.bus_reg.ADDR_LATCH_05.a);
+  print(gb.bus_reg.ADDR_LATCH_06.a);
+  print(gb.bus_reg.ADDR_LATCH_07.a);
+  print(gb.bus_reg.ADDR_LATCH_08.a);
+  print(gb.bus_reg.ADDR_LATCH_09.a);
+  print(gb.bus_reg.ADDR_LATCH_10.a);
+  print(gb.bus_reg.ADDR_LATCH_11.a);
+  print(gb.bus_reg.ADDR_LATCH_12.a);
+  print(gb.bus_reg.ADDR_LATCH_13.a);
+  print(gb.bus_reg.ADDR_LATCH_14.a);
+  text.newline();
+
+  text.dprintf("DATA_LATCH ");
+  print(gb.bus_reg.DATA_LATCH_00.a);
+  print(gb.bus_reg.DATA_LATCH_01.a);
+  print(gb.bus_reg.DATA_LATCH_02.a);
+  print(gb.bus_reg.DATA_LATCH_03.a);
+  print(gb.bus_reg.DATA_LATCH_04.a);
+  print(gb.bus_reg.DATA_LATCH_05.a);
+  print(gb.bus_reg.DATA_LATCH_06.a);
+  print(gb.bus_reg.DATA_LATCH_07.a);
+  text.newline();
+
+  text.dprintf(" ----- LCDC -----\n");
+  text.dprintf("BGEN   %d\n", gb.cfg_reg.LCDC_BGEN.a.val);
+  text.dprintf("SPEN   %d\n", gb.cfg_reg.LCDC_SPEN.a.val);   
+  text.dprintf("SPSIZE %d\n", gb.cfg_reg.LCDC_SPSIZE.a.val);
+  text.dprintf("BGMAP  %d\n", gb.cfg_reg.LCDC_BGMAP.a.val);
+  text.dprintf("BGTILE %d\n", gb.cfg_reg.LCDC_BGTILE.a.val);
+  text.dprintf("WINEN  %d\n", gb.cfg_reg.LCDC_WINEN.a.val);
+  text.dprintf("WINMAP %d\n", gb.cfg_reg.LCDC_WINMAP.a.val);
+  text.dprintf("EN     %d\n", gb.cfg_reg.LCDC_EN.a.val);
+
+  text.dprintf(" ----- LCD CFG -----\n");
+  text.dprintf("SCY  0x%02x\n", gb.cfg_reg.get_scy());
+  text.dprintf("SCX  0x%02x\n", gb.cfg_reg.get_scx());
+  text.dprintf("LYC  0x%02x\n", gb.cfg_reg.get_lyc());
+  text.dprintf("BGP  0x%02x\n", gb.cfg_reg.get_bgp());
+  text.dprintf("OBP0 0x%02x\n", gb.cfg_reg.get_obp0());
+  text.dprintf("OBP1 0x%02x\n", gb.cfg_reg.get_obp1());
+  text.dprintf("WY   0x%02x\n", gb.cfg_reg.get_wy());
+  text.dprintf("WX   0x%02x\n", gb.cfg_reg.get_wx());
+
+  text.dprintf(" ----- DBG REG ----- \n");
+  text.dprintf("FF60_0 %d\n", gb.dbg_reg.FF60_0.a.val);
+  text.dprintf("FF60_1 %d\n", gb.dbg_reg.FF60_1.a.val);
+
+  text.dprintf(" ----- DMA REG -----\n");
+  text.dprintf("FROM_CPU5_SYNC   %d\n", gb.dma_reg.FROM_CPU5_SYNC.a.val);
+  text.dprintf("REG_DMA_RUNNING  %d\n", gb.dma_reg.REG_DMA_RUNNING.a.val);
+  text.dprintf("DMA_DONE_SYNC    %d\n", gb.dma_reg.DMA_DONE_SYNC.a.val);
+  text.dprintf("REG_DMA_EN_d0    %d\n", gb.dma_reg.REG_DMA_EN_d0.a.val);  
+  text.dprintf("REG_DMA_EN_d4    %d\n", gb.dma_reg.REG_DMA_EN_d4.a.val);
+  text.dprintf("LATCH_DMA_ENn_d0 %d\n", gb.dma_reg.LATCH_DMA_ENn_d0.a.val);
+  text.dprintf("LATCH_DMA_EN_d4  %d\n", gb.dma_reg.LATCH_DMA_EN_d4.a.val);
+  text.dprintf("DMA ADDR LO      0x%02x\n", gb.dma_reg.get_addr_lo());
+  text.dprintf("DMA ADDR HI      0x%02x\n", gb.dma_reg.get_addr_hi());
+
+  text.dprintf(" ----- INT REG -----\n");
+  text.dprintf("FF0F_0  %d\n", gb.int_reg.FF0F_0.a.val);
+  text.dprintf("FF0F_1  %d\n", gb.int_reg.FF0F_1.a.val);
+  text.dprintf("FF0F_2  %d\n", gb.int_reg.FF0F_2.a.val);
+  text.dprintf("FF0F_3  %d\n", gb.int_reg.FF0F_3.a.val);
+  text.dprintf("FF0F_4  %d\n", gb.int_reg.FF0F_4.a.val);
+  text.dprintf("FF0F_L0 %d\n", gb.int_reg.FF0F_L0.a.val);
+  text.dprintf("FF0F_L1 %d\n", gb.int_reg.FF0F_L1.a.val);
+  text.dprintf("FF0F_L2 %d\n", gb.int_reg.FF0F_L2.a.val);
+  text.dprintf("FF0F_L3 %d\n", gb.int_reg.FF0F_L3.a.val);
+  text.dprintf("FF0F_L4 %d\n", gb.int_reg.FF0F_L4.a.val);
+
+  text.dprintf(" ----- JOY REG -----\n");
+  text.dprintf("JP_GLITCH0  %d\n", gb.joy_reg.JP_GLITCH0  .a.val);
+  text.dprintf("JP_GLITCH1  %d\n", gb.joy_reg.JP_GLITCH1  .a.val);
+  text.dprintf("JP_GLITCH2  %d\n", gb.joy_reg.JP_GLITCH2  .a.val);
+  text.dprintf("JP_GLITCH3  %d\n", gb.joy_reg.JP_GLITCH3  .a.val);
+  text.dprintf("JOYP_RA     %d\n", gb.joy_reg.JOYP_RA     .a.val);
+  text.dprintf("JOYP_LB     %d\n", gb.joy_reg.JOYP_LB     .a.val);
+  text.dprintf("JOYP_UC     %d\n", gb.joy_reg.JOYP_UC     .a.val);
+  text.dprintf("JOYP_DS     %d\n", gb.joy_reg.JOYP_DS     .a.val);
+  text.dprintf("JOYP_UDLR   %d\n", gb.joy_reg.JOYP_UDLR   .a.val);
+  text.dprintf("JOYP_ABCS   %d\n", gb.joy_reg.JOYP_ABCS   .a.val);
+  text.dprintf("DBG_FF00_D6 %d\n", gb.joy_reg.DBG_FF00_D6 .a.val);
+  text.dprintf("DBG_FF00_D7 %d\n", gb.joy_reg.DBG_FF00_D7 .a.val);
+  text.dprintf("JOYP_L0     %d\n", gb.joy_reg.JOYP_L0     .a.val);
+  text.dprintf("JOYP_L1     %d\n", gb.joy_reg.JOYP_L1     .a.val);
+  text.dprintf("JOYP_L2     %d\n", gb.joy_reg.JOYP_L2     .a.val);
+  text.dprintf("JOYP_L3     %d\n", gb.joy_reg.JOYP_L3     .a.val);
+  text.dprintf("WAKE_CPU    %d\n", gb.joy_reg.WAKE_CPU    .a.val);
+
+  text.render(4, 4, 1.0);
+
+  text.dprintf(" ----- LCD REG -----\n");
+  text.dprintf("LCD X       %d\n", gb.lcd_reg.x());
+  text.dprintf("LCD Y       %d\n", gb.lcd_reg.y());
+  text.dprintf("RUTU_NEW_LINE_d0  %d\n", gb.lcd_reg.RUTU_NEW_LINE_d0  .a.val);
+  text.dprintf("VID_LINE_d4       %d\n", gb.lcd_reg.VID_LINE_d4       .a.val);
+  text.dprintf("NYPE_NEW_LINE_d4  %d\n", gb.lcd_reg.NYPE_NEW_LINE_d4  .a.val);
+  text.dprintf("VID_LINE_d6       %d\n", gb.lcd_reg.VID_LINE_d6       .a.val);
+  text.dprintf("LINE_153_d4       %d\n", gb.lcd_reg.LINE_153_d4       .a.val);
+  text.dprintf("POPU_IN_VBLANK_d4 %d\n", gb.lcd_reg.POPU_IN_VBLANK_d4 .a.val);
+  text.dprintf("LINE_STROBE       %d\n", gb.lcd_reg.LINE_STROBE       .a.val);
+  text.dprintf("X_8_SYNC          %d\n", gb.lcd_reg.X_8_SYNC          .a.val);
+  text.dprintf("CPEN_LATCH        %d\n", gb.lcd_reg.CPEN_LATCH        .a.val);
+  text.dprintf("POME              %d\n", gb.lcd_reg.POME              .a.val);
+  text.dprintf("RUJU              %d\n", gb.lcd_reg.RUJU              .a.val);
+  text.dprintf("VSYNC_OUTn        %d\n", gb.lcd_reg.VSYNC_OUTn        .a.val);
+  text.dprintf("LINE_EVEN         %d\n", gb.lcd_reg.LINE_EVEN         .a.val);
+  text.dprintf("FRAME_EVEN        %d\n", gb.lcd_reg.FRAME_EVEN        .a.val);
+
+  text.render(200, 4, 1.0);
+
+  /*
+  glUseProgram(viz_prog);
+
+  glUniform4f(glGetUniformLocation(viz_prog, "screen_size"),
+              (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, gb_tex);
+  glUniform1i(glGetUniformLocation(viz_prog, "tex"), 0);
+
+  glUniform4f(glGetUniformLocation(viz_prog, "quad_pos"),
+              (float)128, (float)128, (float)64 * 8, (float)64 * 8);
+
+  glBindVertexArray(quad_buf.vao);
+  glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+  */
+
+  //blit(font_tex, 512, 128, 256, 256);
+}
+
+//-----------------------------------------------------------------------------
+
+void Main::render_ui() {
+  ImGui::Begin("GB Sim Stats");
+  ImGui::Text("now   %f\n", now);
+  ImGui::Text("phase %d\n", phase_counter);
+  ImGui::Text("freq  %f\n", phase_counter / now);
+  ImGui::End();
+
+  base::render_ui();
+}
+
+//-----------------------------------------------------------------------------
+
+void Main::end_frame() {
+  base::end_frame();
+}
+
+//-----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+
+void Main::sim_phase() {
+}
+
+
+
+//-----------------------------------------------------------------------------
 
 int main2(int /*argc*/, char** /*argv*/) {
+#if 0
   //test_clock_phases();
   //test_timer();
 
   TestGB gb;
-  memset(&gb, 0, sizeof(gb));
+  //memset(&gb, 0, sizeof(gb));
 
   uint64_t timeA = SDL_GetPerformanceCounter();
 
@@ -82,51 +401,39 @@ int main2(int /*argc*/, char** /*argv*/) {
   printf("reset\n");
   RST = 1;
   for (int i = 0; i < 16; i++) {
-    CLKIN_B = phase_counter & 1;
     sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
     printf("\n");
-    phase_counter++;
   }
 
   printf("!reset\n");
   RST = 0;
   for (int i = 0; i < 16; i++) {
-    CLKIN_B = phase_counter & 1;
     sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
     printf("\n");
-    phase_counter++;
   }
 
   printf("clkgood\n");
   CLKIN_A = 1;
   for (int i = 0; i < 16; i++) {
-    CLKIN_B = phase_counter & 1;
     sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
     printf("\n");
-    phase_counter++;
   }
 
   printf("clkreq\n");
   CLKREQ = 1;
   for (int i = 0; i < 16; i++) {
-    CLKIN_B = phase_counter & 1;
     sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
     printf("\n");
-    phase_counter++;
   }
 
   printf("lcd %d %d\n", gb.lcd_reg.x(), gb.lcd_reg.y());
 
   for (int i = 0; i < 1024; i++) {
-    CLKIN_B = phase_counter & 1;
-    sim_phase2(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
-    phase_counter++;
+    sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
   }
 
   for (int i = 0; i < 1024; i++) {
-    CLKIN_B = phase_counter & 1;
-    sim_phase2(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
-    phase_counter++;
+    sim_phase(gb, RST, CLKIN_A, CLKIN_B, CLKREQ);
   }
 
   printf("lcd %d %d\n", gb.lcd_reg.x(), gb.lcd_reg.y());
@@ -142,6 +449,7 @@ int main2(int /*argc*/, char** /*argv*/) {
   printf("time %lld\n", (timeB - timeA));
   printf("time %f\n", 1000.0 * elapsed);
   printf("freq %f\n", phase_counter / elapsed);
+#endif
 
 #if 0
 
@@ -198,177 +506,6 @@ int main2(int /*argc*/, char** /*argv*/) {
   }
 #endif
 
-  return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------
-
-int render_labels(TextPainter& tp, int x, int y, const std::vector<SignalData>& signals, int depth) {
-  int cx = x;
-  int cy = y;
-
-  for (const SignalData& s : signals) {
-
-    if (!s.children.empty()) {
-      tp.render_text(cx + 6 * depth, cy, s.name);
-      cy += 12;
-      cy += render_labels(tp, cx, cy, s.children, depth + 1);
-    }
-    else {
-      tp.render_text(cx + 6 * depth, cy, s.name);
-      if (s.bit_width == 0) {
-        cy += 12;
-      }
-      else {
-        cy += s.bit_width * 12;
-      }
-    }
-
-  }
-
-  return cy - y;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void sdl_run() {
-
-  const int fb_width = 1900;
-  const int fb_height = 1000;
-  int scale = 2;
-
-  SDL_Window* window = SDL_CreateWindow("MetroBoy Trace Debugger", 4, 35, fb_width, fb_height, SDL_WINDOW_SHOWN);
-  SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-  SDL_Texture* fb_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, fb_width, fb_height);
-
-  uint32_t* background = new uint32_t[fb_width * fb_height];
-  for (int y = 0; y < fb_height; y++) {
-    for (int x = 0; x < fb_width; x++) {
-      int c = ((x ^ y) & 0x20) ? 0x10101010 : 0x15151515;
-      background[x + y * fb_width] = c;
-      //background[x + y * fb_width] = 0;
-    }
-  }
-
-  //----------
-
-  int frame = 0;
-
-  bool quit = false;
-  while (!quit) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      if (event.type == SDL_QUIT) quit = true;
-      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
-      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) scale++;
-      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) scale--;
-      if (scale < 1) scale = 1;
-    }
-
-    //----------------------------------------
-    // Clear screen
-
-    uint32_t* framebuffer = nullptr;
-    int pitch = 0;
-    SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
-    memcpy(framebuffer, background, fb_width * fb_height * 4);
-
-    //----------------------------------------
-
-    if (frame & 1) {
-      for (int y = 0; y < 10; y++) {
-        for (int x = 0; x < 10; x++) {
-          framebuffer[(x + 0) + (y + 0) * (pitch / 4)] = 0xFFAAAA00;
-        }
-      }
-    }
-
-    //----------------------------------------
-    // Swap
-
-    SDL_UnlockTexture(fb_tex);
-    SDL_RenderCopy(renderer, fb_tex, NULL, NULL);
-    SDL_RenderPresent(renderer);
-    frame++;
-  }
-}
-
-
-
-
-//-----------------------------------------------------------------------------
-
-int main(int, char**)
-{
-  init();
-
-  while (!quit)
-  {
-    frame_begin = SDL_GetPerformanceCounter();
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      ImGui_ImplSDL2_ProcessEvent(&event);
-      if (event.type == SDL_QUIT) quit = true;
-      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
-    }
-    update();
-    render_frame();
-    render_ui();
-    frame_end = SDL_GetPerformanceCounter();
-    frame_time = frame_end - frame_begin;
-    frame_count++;
-    SDL_GL_SwapWindow(window);
-  }
-
-  close();
   return 0;
 }
 

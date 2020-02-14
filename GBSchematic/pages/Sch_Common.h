@@ -161,22 +161,25 @@ struct PinIn {
   }
 
   void preset(bool oe, bool val) {
-    if (!a.err) __debugbreak();
+    //if (!a.err) __debugbreak();
     a.val = val;
     a.hiz = !oe;
+    a.clk = 0;
     a.set = 0;
     a.rst = 0;
     a.err = 0;
+    a.carry = 0;
   }
 
   bool clear_preset() {
+    /*
     if ( a.err) __debugbreak();
     if (!b.err) __debugbreak();
     a = ERR;
+    */
     return false;
   }
 
-private:
   SignalState a = ERR;
   SignalState b = ERR;
 };

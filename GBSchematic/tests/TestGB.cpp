@@ -28,11 +28,11 @@ void TestGB::cpu_preset(bool CLKREQ, uint16_t addr, /*FIXME*/ uint8_t /*data*/) 
 
   cpu_pins.FROM_CPU5.preset(true, 0);    // PORTD_05: -> FROM_CPU5
   cpu_pins.FROM_CPU6.preset(true, 0);    // PORTD_00: -> P07.LEXY, doesn't do anything
-  cpu_pins.FROM_CPU7.preset(true, 0);    // PORTB_13: -> P02.LUFE, serial int ack
-  cpu_pins.FROM_CPU8.preset(true, 0);    // PORTB_05: -> P02.LEJA, stat int ack
-  cpu_pins.FROM_CPU9.preset(true, 0);    // PORTB_01: -> P02.LETY, vblank int ack
-  cpu_pins.FROM_CPU10.preset(true, 0);   // PORTB_09: -> P02.LESA, timer int ack
-  cpu_pins.FROM_CPU11.preset(true, 0);   // PORTB_17: -> P02.LAMO, joypad int ack
+  cpu_pins.ACK_SERIAL.preset(true, 0);    // PORTB_13: -> P02.LUFE, serial int ack
+  cpu_pins.ACK_STAT.preset(true, 0);    // PORTB_05: -> P02.LEJA, stat int ack
+  cpu_pins.ACK_VBLANK.preset(true, 0);    // PORTB_01: -> P02.LETY, vblank int ack
+  cpu_pins.ACK_TIMER.preset(true, 0);   // PORTB_09: -> P02.LESA, timer int ack
+  cpu_pins.ACK_JOYPAD.preset(true, 0);   // PORTB_17: -> P02.LAMO, joypad int ack
 
   cpu_pins.preset_addr(true, addr);
 }
@@ -837,20 +837,20 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.READ_BOOTROM.commit(); // PORTA_04: <- P07.READ_BOOTROM
   changed |= cpu_pins.T1T2n.commit();        // PORTA_05: <- P07.T1T2n
   changed |= cpu_pins.ADDR_VALID.clear_preset();   // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
-  changed |= cpu_pins.FROM_CPU9.clear_preset();    // PORTB_01: -> P02.LETY, vblank int ack
-  changed |= cpu_pins.TO_CPU3.commit();      // PORTB_03: <- P02.LOPE, vblank int
-  changed |= cpu_pins.FROM_CPU8.clear_preset();    // PORTB_05: -> P02.LEJA, stat int ack
-  changed |= cpu_pins.TO_CPU6.commit();      // PORTB_07: <- P02.LALU, stat int
-  changed |= cpu_pins.FROM_CPU10.clear_preset();   // PORTB_09: -> P02.LESA, timer int ack
-  changed |= cpu_pins.TO_CPU7.commit();      // PORTB_11: <- P02.NYBO, timer int
-  changed |= cpu_pins.FROM_CPU7.clear_preset();    // PORTB_13: -> P02.LUFE, serial int ack
-  changed |= cpu_pins.TO_CPU4.commit();      // PORTB_15: <- P02.UBUL, serial int
-  changed |= cpu_pins.FROM_CPU11.clear_preset();   // PORTB_17: -> P02.LAMO, joypad int ack
-  changed |= cpu_pins.TO_CPU5.commit();      // PORTB_19: <- P02.ULAK, joypad int
+  changed |= cpu_pins.ACK_VBLANK.clear_preset();    // PORTB_01: -> P02.LETY, vblank int ack
+  changed |= cpu_pins.INT_VBLANK.commit();      // PORTB_03: <- P02.LOPE, vblank int
+  changed |= cpu_pins.ACK_STAT.clear_preset();    // PORTB_05: -> P02.LEJA, stat int ack
+  changed |= cpu_pins.INT_STAT.commit();      // PORTB_07: <- P02.LALU, stat int
+  changed |= cpu_pins.ACK_TIMER.clear_preset();   // PORTB_09: -> P02.LESA, timer int ack
+  changed |= cpu_pins.INT_TIMER.commit();      // PORTB_11: <- P02.NYBO, timer int
+  changed |= cpu_pins.ACK_SERIAL.clear_preset();    // PORTB_13: -> P02.LUFE, serial int ack
+  changed |= cpu_pins.INT_SERIAL.commit();      // PORTB_15: <- P02.UBUL, serial int
+  changed |= cpu_pins.ACK_JOYPAD.clear_preset();   // PORTB_17: -> P02.LAMO, joypad int ack
+  changed |= cpu_pins.INT_JOYPAD.commit();      // PORTB_19: <- P02.ULAK, joypad int
   changed |= cpu_pins.CLKREQ.clear_preset();       // PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
   changed |= cpu_pins.AFER.commit();         // PORTC_01: <- P01.AFER , reset related reg
   changed |= cpu_pins.PIN_RESET.commit();    // PORTC_02: <- PIN_RESET directly connected to the pad
-  changed |= cpu_pins.CLKIN_A.commit();      // PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  changed |= cpu_pins.CLK_GOOD.commit();      // PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   changed |= cpu_pins.CPU_RESET.commit();    // PORTC_04: <- P01.CPU_RESET
   changed |= cpu_pins.FROM_CPU6.clear_preset();    // PORTD_00: -> P07.LEXY, doesn't do anything
   changed |= cpu_pins.CLK_xBCDEFGH.commit(); // PORTD_01: <- P01.BOWA

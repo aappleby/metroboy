@@ -26,32 +26,33 @@ struct TestGB {
   uint8_t hiram[128];
   */
 
-  ClkRegisters clk_reg;
-  BusRegisters bus_reg;
-  ConfigRegisters cfg_reg;
-  DebugRegisters dbg_reg;
-  DmaRegisters dma_reg;
-  InterruptRegisters int_reg;
-  JoypadRegisters joy_reg;
-  LcdRegisters lcd_reg;
-  OamRegisters oam_reg;
-  PixelPipeRegisters pxp_reg;
-  RstRegisters rst_reg;
-  SerialRegisters ser_reg;
-  SpriteRegisters spr_reg;
-  SpriteStoreRegisters sst_reg;
-  TimerRegisters tim_reg;
-  VclkRegisters vclk_reg;
-  VidRegisters vid_reg;
+  ClkRegisters clk_reg; // dumped
+  BusRegisters bus_reg;// dumped
+  ConfigRegisters cfg_reg;// dumped
+  DebugRegisters dbg_reg;// dumped
+  DmaRegisters dma_reg;// dumped
+  InterruptRegisters int_reg;// dumped
+  JoypadRegisters joy_reg;// dumped
 
-  SysPins sys_pins;
-  VramPins vram_pins;
-  SerialPins ser_pins;
-  JoypadPins joy_pins;
-  CpuPins cpu_pins;
-  ExtPins ext_pins;
-  OamPins oam_pins;
-  LcdPins lcd_pins;
+  LcdRegisters lcd_reg;// dumped
+  PixelPipeRegisters pxp_reg;// dumped
+  RstRegisters rst_reg;// dumped
+  SerialRegisters ser_reg;// dumped
+  SpriteRegisters spr_reg;// dumped
+  SpriteStoreRegisters sst_reg;// dumped
+  TimerRegisters tim_reg;// dumped
+  VclkRegisters vclk_reg;// dumped
+  VidRegisters vid_reg;// dumped
+  OamRegisters oam_reg;// dumped
+
+  SysPins sys_pins; // dumped
+  VramPins vram_pins; // dumped
+  SerialPins ser_pins; // dumped
+  JoypadPins joy_pins; // dumped
+  CpuPins cpu_pins; // dumped
+  ExtPins ext_pins; // dumped
+  OamPins oam_pins; // dumped
+  LcdPins lcd_pins; // dumped
   WavePins wave_pins;
 };
 

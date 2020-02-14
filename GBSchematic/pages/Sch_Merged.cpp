@@ -92,7 +92,7 @@ void TestGB::tick_everything() {
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n = not(UNOR_MODE_DBG2);
   /*p08.RYCA*/ wire RYCA_MODE_DBG2n = not(UNOR_MODE_DBG2);
 
-  cpu_pins.CLKIN_A.set(sys_pins.CLKIN_A);
+  cpu_pins.CLK_GOOD.set(sys_pins.CLKIN_A);
   cpu_pins.T1nT2.set(UNOR_MODE_DBG2);
   cpu_pins.T1T2n.set(UMUT_MODE_DBG1);
 
@@ -3632,7 +3632,7 @@ void TestGB::tick_everything() {
 
     {
       /*p21.TOLU*/ wire INT_VBLn = not(PARU_VBLANK_d4);
-      /*p02.LETY*/ wire INT_VBL_ACK  = not(cpu_pins.FROM_CPU9);
+      /*p02.LETY*/ wire INT_VBL_ACK  = not(cpu_pins.ACK_VBLANK);
       /*p21.VYPU*/ wire VYPU_INT_VBL  = not(INT_VBLn);
       /*p02.MUXE*/ wire MUXE = or(cpu_pins.D0, FF0F_WRn);
       /*p02.MYZU*/ wire FF0F_SET0 = nand(FF0F_WRa, INT_VBL_ACK,  cpu_pins.D0);
@@ -3641,7 +3641,7 @@ void TestGB::tick_everything() {
     }
 
     {
-      /*p02.LEJA*/ wire INT_SER_ACK  = not(cpu_pins.FROM_CPU8);
+      /*p02.LEJA*/ wire INT_SER_ACK  = not(cpu_pins.ACK_STAT);
       /*p02.NABE*/ wire NABE = or(cpu_pins.D1, FF0F_WRn);
       /*p02.MODY*/ wire FF0F_SET1 = nand(FF0F_WRa, INT_SER_ACK,  cpu_pins.D1);
       /*p02.MOVU*/ wire FF0F_RST1 = and(NABE, INT_SER_ACK,  ALUR_RSTn);
@@ -3649,7 +3649,7 @@ void TestGB::tick_everything() {
     }
 
     {
-      /*p02.LESA*/ wire INT_JOY_ACK  = not(cpu_pins.FROM_CPU10);
+      /*p02.LESA*/ wire INT_JOY_ACK  = not(cpu_pins.ACK_TIMER);
       /*p02.RAKE*/ wire RAKE = or(cpu_pins.D2, FF0F_WRn);
       /*p02.PYHU*/ wire FF0F_SET2 = nand(FF0F_WRa, INT_JOY_ACK,  cpu_pins.D2);
       /*p02.PYGA*/ wire FF0F_RST2 = and(RAKE, INT_JOY_ACK,  ALUR_RSTn);
@@ -3659,7 +3659,7 @@ void TestGB::tick_everything() {
 
     {
       /*p21.TOLU*/ wire INT_VBLn = not(PARU_VBLANK_d4);
-      /*p02.LUFE*/ wire INT_STAT_ACK = not(cpu_pins.FROM_CPU7);
+      /*p02.LUFE*/ wire INT_STAT_ACK = not(cpu_pins.ACK_SERIAL);
       /*p02.SULO*/ wire SULO = or(cpu_pins.D3, FF0F_WRn);
       /*p02.TOME*/ wire FF0F_SET3 = nand(FF0F_WRa, INT_STAT_ACK, cpu_pins.D3);
       /*p02.TUNY*/ wire FF0F_RST3 = and(SULO, INT_STAT_ACK, ALUR_RSTn);
@@ -3675,7 +3675,7 @@ void TestGB::tick_everything() {
     }
 
     {
-      /*p02.LAMO*/ wire INT_TIM_ACK  = not(cpu_pins.FROM_CPU11);
+      /*p02.LAMO*/ wire INT_TIM_ACK  = not(cpu_pins.ACK_JOYPAD);
       /*p02.SEME*/ wire SEME = or(cpu_pins.D4, FF0F_WRn);
       /*p02.TOGA*/ wire FF0F_SET4 = nand(FF0F_WRa, INT_TIM_ACK,  cpu_pins.D4);
       /*p02.TYME*/ wire FF0F_RST4 = and(SEME, INT_TIM_ACK,  ALUR_RSTn);
@@ -3697,10 +3697,10 @@ void TestGB::tick_everything() {
     }
   }
 
-  cpu_pins.TO_CPU3.set(int_reg.FF0F_0);
-  cpu_pins.TO_CPU4.set(int_reg.FF0F_1);
-  cpu_pins.TO_CPU5.set(int_reg.FF0F_2);
-  cpu_pins.TO_CPU6.set(int_reg.FF0F_3);
-  cpu_pins.TO_CPU7.set(int_reg.FF0F_4);
+  cpu_pins.INT_VBLANK.set(int_reg.FF0F_0);
+  cpu_pins.INT_SERIAL.set(int_reg.FF0F_1);
+  cpu_pins.INT_JOYPAD.set(int_reg.FF0F_2);
+  cpu_pins.INT_STAT.set(int_reg.FF0F_3);
+  cpu_pins.INT_TIMER.set(int_reg.FF0F_4);
 }
 

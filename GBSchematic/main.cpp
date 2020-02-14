@@ -124,6 +124,8 @@ void Main::begin_frame() {
 void Main::update() {
   base::update();
 
+  gb.cpu_preset(CLKREQ, 0x0000, 0x00);
+
   if ((frame_count % 1) == 0) {
 
     while(1) {
@@ -167,152 +169,68 @@ void Main::update() {
 
 //-----------------------------------------------------------------------------
 
-void Main::print(SignalState s) {
-  text.add_char(s.val ? '1' : '0');
-}
-
 void Main::render_frame() {
   base::render_frame();
   text.begin_frame();
 
-  text.set_pal(0, 0.0, 0.0, 0.0, 0.3);
+  text.set_pal(0, 0.0, 0.0, 0.0, 0.5);
   text.set_pal(1, 0.8, 0.8, 0.8, 1.0);
   text.set_pal(2, 0.6, 1.0, 0.6, 1.0);
 
   text.dprintf(" ----- SYS_REG -----\n");
   text.dprintf("PHASE    %08d\n", phase_counter);
+
+  int p = phase_counter & 7;
+  text.dprintf("PHASE    %c%c%c%c%c%c%c%c\n",
+               p == 0 ? 'A' : '_',
+               p == 1 ? 'B' : '_',
+               p == 2 ? 'C' : '_',
+               p == 3 ? 'D' : '_',
+               p == 4 ? 'E' : '_',
+               p == 5 ? 'F' : '_',
+               p == 6 ? 'G' : '_',
+               p == 7 ? 'H' : '_');
+
   text.dprintf("RST      %08d\n", RST);
   text.dprintf("CLKIN_A  %d\n", CLKIN_A);
   text.dprintf("CLKIN_B  %d\n", CLKIN_B);
   text.dprintf("CLKREQ   %d\n", CLKREQ);
 
-  text.dprintf(" ----- CLK_REG -----\n");
-  text.dprintf("PHAZ     \2%d%d%d%d\1\n",
-               gb.clk_reg.PHAZ_ABCDxxxx.a.val,
-               gb.clk_reg.PHAZ_xBCDExxx.a.val,
-               gb.clk_reg.PHAZ_xxCDEFxx.a.val,
-               gb.clk_reg.PHAZ_xxxDEFGx.a.val);
+  gb.clk_reg.dump(text);
+  gb.bus_reg.dump(text);
+  gb.cfg_reg.dump(text);
+  gb.dbg_reg.dump(text);
+  gb.dma_reg.dump(text);
+  gb.int_reg.dump(text);
+  gb.joy_reg.dump(text);
+  text.render(192 * 0, 4, 1.0);
 
-  text.dprintf(" ----- BUS_REG -----\n");
-  text.dprintf("BOOT_BIT %d\n", gb.bus_reg.BOOT_BIT.a.val);
-  text.dprintf("SOTO_DBG %d\n", gb.bus_reg.SOTO_DBG.a.val);
+  gb.lcd_reg.dump(text);
+  gb.pxp_reg.dump(text);
+  gb.rst_reg.dump(text);
+  gb.ser_reg.dump(text);
+  gb.spr_reg.dump(text);
+  gb.sst_reg.dump(text);
+  gb.tim_reg.dump(text);
+  text.render(192 * 1 + 4, 4, 1.0);
 
-  text.dprintf("ADDR_LATCH ");
-  print(gb.bus_reg.ADDR_LATCH_00.a);
-  print(gb.bus_reg.ADDR_LATCH_01.a);
-  print(gb.bus_reg.ADDR_LATCH_02.a);
-  print(gb.bus_reg.ADDR_LATCH_03.a);
-  print(gb.bus_reg.ADDR_LATCH_04.a);
-  print(gb.bus_reg.ADDR_LATCH_05.a);
-  print(gb.bus_reg.ADDR_LATCH_06.a);
-  print(gb.bus_reg.ADDR_LATCH_07.a);
-  print(gb.bus_reg.ADDR_LATCH_08.a);
-  print(gb.bus_reg.ADDR_LATCH_09.a);
-  print(gb.bus_reg.ADDR_LATCH_10.a);
-  print(gb.bus_reg.ADDR_LATCH_11.a);
-  print(gb.bus_reg.ADDR_LATCH_12.a);
-  print(gb.bus_reg.ADDR_LATCH_13.a);
-  print(gb.bus_reg.ADDR_LATCH_14.a);
-  text.newline();
+  gb.vid_reg.dump(text);
+  gb.vclk_reg.dump(text);
+  gb.oam_reg.dump(text);
+  text.render(192 * 2 + 4, 4, 1.0);
 
-  text.dprintf("DATA_LATCH ");
-  print(gb.bus_reg.DATA_LATCH_00.a);
-  print(gb.bus_reg.DATA_LATCH_01.a);
-  print(gb.bus_reg.DATA_LATCH_02.a);
-  print(gb.bus_reg.DATA_LATCH_03.a);
-  print(gb.bus_reg.DATA_LATCH_04.a);
-  print(gb.bus_reg.DATA_LATCH_05.a);
-  print(gb.bus_reg.DATA_LATCH_06.a);
-  print(gb.bus_reg.DATA_LATCH_07.a);
-  text.newline();
+  gb.oam_pins.dump(text);
+  gb.cpu_pins.dump(text);
+  gb.sys_pins.dump(text);
+  gb.vram_pins.dump(text);
+  gb.ser_pins.dump(text);
+  gb.lcd_pins.dump(text);
+  gb.joy_pins.dump(text);
+  text.render(192 * 3 + 4, 4, 1.0);
 
-  text.dprintf(" ----- LCDC -----\n");
-  text.dprintf("BGEN   %d\n", gb.cfg_reg.LCDC_BGEN.a.val);
-  text.dprintf("SPEN   %d\n", gb.cfg_reg.LCDC_SPEN.a.val);   
-  text.dprintf("SPSIZE %d\n", gb.cfg_reg.LCDC_SPSIZE.a.val);
-  text.dprintf("BGMAP  %d\n", gb.cfg_reg.LCDC_BGMAP.a.val);
-  text.dprintf("BGTILE %d\n", gb.cfg_reg.LCDC_BGTILE.a.val);
-  text.dprintf("WINEN  %d\n", gb.cfg_reg.LCDC_WINEN.a.val);
-  text.dprintf("WINMAP %d\n", gb.cfg_reg.LCDC_WINMAP.a.val);
-  text.dprintf("EN     %d\n", gb.cfg_reg.LCDC_EN.a.val);
-
-  text.dprintf(" ----- LCD CFG -----\n");
-  text.dprintf("SCY  0x%02x\n", gb.cfg_reg.get_scy());
-  text.dprintf("SCX  0x%02x\n", gb.cfg_reg.get_scx());
-  text.dprintf("LYC  0x%02x\n", gb.cfg_reg.get_lyc());
-  text.dprintf("BGP  0x%02x\n", gb.cfg_reg.get_bgp());
-  text.dprintf("OBP0 0x%02x\n", gb.cfg_reg.get_obp0());
-  text.dprintf("OBP1 0x%02x\n", gb.cfg_reg.get_obp1());
-  text.dprintf("WY   0x%02x\n", gb.cfg_reg.get_wy());
-  text.dprintf("WX   0x%02x\n", gb.cfg_reg.get_wx());
-
-  text.dprintf(" ----- DBG REG ----- \n");
-  text.dprintf("FF60_0 %d\n", gb.dbg_reg.FF60_0.a.val);
-  text.dprintf("FF60_1 %d\n", gb.dbg_reg.FF60_1.a.val);
-
-  text.dprintf(" ----- DMA REG -----\n");
-  text.dprintf("FROM_CPU5_SYNC   %d\n", gb.dma_reg.FROM_CPU5_SYNC.a.val);
-  text.dprintf("REG_DMA_RUNNING  %d\n", gb.dma_reg.REG_DMA_RUNNING.a.val);
-  text.dprintf("DMA_DONE_SYNC    %d\n", gb.dma_reg.DMA_DONE_SYNC.a.val);
-  text.dprintf("REG_DMA_EN_d0    %d\n", gb.dma_reg.REG_DMA_EN_d0.a.val);  
-  text.dprintf("REG_DMA_EN_d4    %d\n", gb.dma_reg.REG_DMA_EN_d4.a.val);
-  text.dprintf("LATCH_DMA_ENn_d0 %d\n", gb.dma_reg.LATCH_DMA_ENn_d0.a.val);
-  text.dprintf("LATCH_DMA_EN_d4  %d\n", gb.dma_reg.LATCH_DMA_EN_d4.a.val);
-  text.dprintf("DMA ADDR LO      0x%02x\n", gb.dma_reg.get_addr_lo());
-  text.dprintf("DMA ADDR HI      0x%02x\n", gb.dma_reg.get_addr_hi());
-
-  text.dprintf(" ----- INT REG -----\n");
-  text.dprintf("FF0F_0  %d\n", gb.int_reg.FF0F_0.a.val);
-  text.dprintf("FF0F_1  %d\n", gb.int_reg.FF0F_1.a.val);
-  text.dprintf("FF0F_2  %d\n", gb.int_reg.FF0F_2.a.val);
-  text.dprintf("FF0F_3  %d\n", gb.int_reg.FF0F_3.a.val);
-  text.dprintf("FF0F_4  %d\n", gb.int_reg.FF0F_4.a.val);
-  text.dprintf("FF0F_L0 %d\n", gb.int_reg.FF0F_L0.a.val);
-  text.dprintf("FF0F_L1 %d\n", gb.int_reg.FF0F_L1.a.val);
-  text.dprintf("FF0F_L2 %d\n", gb.int_reg.FF0F_L2.a.val);
-  text.dprintf("FF0F_L3 %d\n", gb.int_reg.FF0F_L3.a.val);
-  text.dprintf("FF0F_L4 %d\n", gb.int_reg.FF0F_L4.a.val);
-
-  text.dprintf(" ----- JOY REG -----\n");
-  text.dprintf("JP_GLITCH0  %d\n", gb.joy_reg.JP_GLITCH0  .a.val);
-  text.dprintf("JP_GLITCH1  %d\n", gb.joy_reg.JP_GLITCH1  .a.val);
-  text.dprintf("JP_GLITCH2  %d\n", gb.joy_reg.JP_GLITCH2  .a.val);
-  text.dprintf("JP_GLITCH3  %d\n", gb.joy_reg.JP_GLITCH3  .a.val);
-  text.dprintf("JOYP_RA     %d\n", gb.joy_reg.JOYP_RA     .a.val);
-  text.dprintf("JOYP_LB     %d\n", gb.joy_reg.JOYP_LB     .a.val);
-  text.dprintf("JOYP_UC     %d\n", gb.joy_reg.JOYP_UC     .a.val);
-  text.dprintf("JOYP_DS     %d\n", gb.joy_reg.JOYP_DS     .a.val);
-  text.dprintf("JOYP_UDLR   %d\n", gb.joy_reg.JOYP_UDLR   .a.val);
-  text.dprintf("JOYP_ABCS   %d\n", gb.joy_reg.JOYP_ABCS   .a.val);
-  text.dprintf("DBG_FF00_D6 %d\n", gb.joy_reg.DBG_FF00_D6 .a.val);
-  text.dprintf("DBG_FF00_D7 %d\n", gb.joy_reg.DBG_FF00_D7 .a.val);
-  text.dprintf("JOYP_L0     %d\n", gb.joy_reg.JOYP_L0     .a.val);
-  text.dprintf("JOYP_L1     %d\n", gb.joy_reg.JOYP_L1     .a.val);
-  text.dprintf("JOYP_L2     %d\n", gb.joy_reg.JOYP_L2     .a.val);
-  text.dprintf("JOYP_L3     %d\n", gb.joy_reg.JOYP_L3     .a.val);
-  text.dprintf("WAKE_CPU    %d\n", gb.joy_reg.WAKE_CPU    .a.val);
-
-  text.render(4, 4, 1.0);
-
-  text.dprintf(" ----- LCD REG -----\n");
-  text.dprintf("LCD X       %d\n", gb.lcd_reg.x());
-  text.dprintf("LCD Y       %d\n", gb.lcd_reg.y());
-  text.dprintf("RUTU_NEW_LINE_d0  %d\n", gb.lcd_reg.RUTU_NEW_LINE_d0  .a.val);
-  text.dprintf("VID_LINE_d4       %d\n", gb.lcd_reg.VID_LINE_d4       .a.val);
-  text.dprintf("NYPE_NEW_LINE_d4  %d\n", gb.lcd_reg.NYPE_NEW_LINE_d4  .a.val);
-  text.dprintf("VID_LINE_d6       %d\n", gb.lcd_reg.VID_LINE_d6       .a.val);
-  text.dprintf("LINE_153_d4       %d\n", gb.lcd_reg.LINE_153_d4       .a.val);
-  text.dprintf("POPU_IN_VBLANK_d4 %d\n", gb.lcd_reg.POPU_IN_VBLANK_d4 .a.val);
-  text.dprintf("LINE_STROBE       %d\n", gb.lcd_reg.LINE_STROBE       .a.val);
-  text.dprintf("X_8_SYNC          %d\n", gb.lcd_reg.X_8_SYNC          .a.val);
-  text.dprintf("CPEN_LATCH        %d\n", gb.lcd_reg.CPEN_LATCH        .a.val);
-  text.dprintf("POME              %d\n", gb.lcd_reg.POME              .a.val);
-  text.dprintf("RUJU              %d\n", gb.lcd_reg.RUJU              .a.val);
-  text.dprintf("VSYNC_OUTn        %d\n", gb.lcd_reg.VSYNC_OUTn        .a.val);
-  text.dprintf("LINE_EVEN         %d\n", gb.lcd_reg.LINE_EVEN         .a.val);
-  text.dprintf("FRAME_EVEN        %d\n", gb.lcd_reg.FRAME_EVEN        .a.val);
-
-  text.render(200, 4, 1.0);
+  gb.ext_pins.dump(text);
+  gb.wave_pins.dump(text);
+  text.render(192 * 4 + 4, 4, 1.0);
 
   /*
   glUseProgram(viz_prog);

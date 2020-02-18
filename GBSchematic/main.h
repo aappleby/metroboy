@@ -5,6 +5,8 @@
 
 #include "tests/TestGB.h"
 
+#include "StateManager.h"
+
 using namespace Schematics;
 
 class Main : public AppBase {
@@ -23,14 +25,7 @@ private:
 
   //----------
 
-  void sim_phase();
-
-  TestGB gb;
-  int phase_counter = 0;
-  bool RST = 1;
-  bool CLKIN_A = 0;
-  bool CLKIN_B = 0;
-  bool CLKREQ = 0;
+  StateManager<TestGB> gbs;
 
   //----------
 

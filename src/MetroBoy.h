@@ -5,12 +5,12 @@
 
 //-----------------------------------------------------------------------------
 
-class MetroBoy {
+class StateManager {
 public:
 
-  MetroBoy();
-  MetroBoy(const MetroBoy&) = delete;
-  MetroBoy& operator=(const MetroBoy&) = delete;
+  StateManager();
+  StateManager(const StateManager&) = delete;
+  StateManager& operator=(const StateManager&) = delete;
 
   Gameboy& gb() {
     return *current_gb;

@@ -213,6 +213,7 @@
     <ClCompile Include="pages\Sch_Channel4.cpp" />
     <ClCompile Include="Sch_Common.cpp" />
     <ClCompile Include="SignalTree.cpp" />
+    <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="tests\BusDump.cpp" />
     <ClCompile Include="tests\TestBoot.cpp" />
     <ClCompile Include="tests\TestClocks.cpp" />
@@ -248,6 +249,7 @@
     <ClInclude Include="pages\Sch_Channel4.h" />
     <ClInclude Include="pages\Sch_Common.h" />
     <ClInclude Include="SignalTree.h" />
+    <ClInclude Include="StateManager.h" />
     <ClInclude Include="tests\BusDump.h" />
     <ClInclude Include="tests\TestGB.h" />
     <ClInclude Include="TraceViewer.h" />

@@ -11,7 +11,7 @@ extern const int op_sizes[];
 
 //-----------------------------------------------------------------------------
 
-MetroBoy::MetroBoy()
+StateManager::StateManager()
 {
   gb_out = {};
   current_gb = new Gameboy();
@@ -23,7 +23,7 @@ MetroBoy::MetroBoy()
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::load_rom(const char* filename, bool run_bootrom) {
+void StateManager::load_rom(const char* filename, bool run_bootrom) {
   FILE* rom_file = fopen(filename, "rb");
   fseek(rom_file, 0, SEEK_END);
   size_t rom_size = ftell(rom_file);
@@ -34,7 +34,7 @@ void MetroBoy::load_rom(const char* filename, bool run_bootrom) {
   current_gb->reset(rom_size, run_bootrom ? 0x0000 : 0x0100);
 }
 
-void MetroBoy::load_dump() {
+void StateManager::load_dump() {
   FILE* dump_file = fopen("dump.MetroBoy", "rb");
   size_t size = fread(current_gb, 1, sizeof(Gameboy), dump_file);
   assert(size == sizeof(Gameboy));
@@ -43,7 +43,7 @@ void MetroBoy::load_dump() {
   fclose(dump_file);
 }
 
-void MetroBoy::save_dump() {
+void StateManager::save_dump() {
   FILE* dump_file = fopen("dump.MetroBoy", "wb");
   fwrite(current_gb, 1, sizeof(Gameboy), dump_file);
   fwrite(rom_buf, 1, 1024 * 1024, dump_file);
@@ -52,7 +52,7 @@ void MetroBoy::save_dump() {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::reset(uint16_t new_pc) {
+void StateManager::reset(uint16_t new_pc) {
   clear_frame_history();
   clear_line_history();
   clear_cycle_history();
@@ -64,7 +64,7 @@ void MetroBoy::reset(uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::run_fast(uint8_t buttons, int fast_cycles) {
+void StateManager::run_fast(uint8_t buttons, int fast_cycles) {
   clear_frame_history();
   clear_line_history();
   clear_cycle_history();
@@ -76,7 +76,7 @@ void MetroBoy::run_fast(uint8_t buttons, int fast_cycles) {
 
 //-------------------------------------
 
-void MetroBoy::run_vsync(uint8_t buttons) {
+void StateManager::run_vsync(uint8_t buttons) {
   clear_frame_history();
   clear_line_history();
   clear_cycle_history();
@@ -99,7 +99,7 @@ void MetroBoy::run_vsync(uint8_t buttons) {
 
 //-------------------------------------
 
-void MetroBoy::run_to(uint16_t breakpoint) {
+void StateManager::run_to(uint16_t breakpoint) {
   clear_frame_history();
   clear_line_history();
   clear_cycle_history();
@@ -113,7 +113,7 @@ void MetroBoy::run_to(uint16_t breakpoint) {
 
 //-------------------------------------
 
-void MetroBoy::step_frame() {
+void StateManager::step_frame() {
   clear_line_history();
   clear_cycle_history();
 
@@ -134,7 +134,7 @@ void MetroBoy::step_frame() {
   } while (gb_out.y != 144);
 }
 
-void MetroBoy::step_line() {
+void StateManager::step_line() {
   clear_cycle_history();
 
   gb_line.push_back(current_gb);
@@ -151,7 +151,7 @@ void MetroBoy::step_line() {
   } while (gb_out.y == line);
 }
 
-void MetroBoy::step_cycle() {
+void StateManager::step_cycle() {
   gb_cycle.push_back(current_gb);
   fb_cycle.push_back(current_fb);
 
@@ -163,7 +163,7 @@ void MetroBoy::step_cycle() {
   cycle();
 }
 
-void MetroBoy::step_over() {
+void StateManager::step_over() {
   gb_cycle.push_back(current_gb);
   fb_cycle.push_back(current_fb);
 
@@ -196,7 +196,7 @@ void MetroBoy::step_over() {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::unstep_frame() {
+void StateManager::unstep_frame() {
   if (gb_frame.empty()) return;
 
   delete current_gb;
@@ -209,7 +209,7 @@ void MetroBoy::unstep_frame() {
   fb_frame.pop_back();
 }
 
-void MetroBoy::unstep_line() {
+void StateManager::unstep_line() {
   if (gb_line.empty()) return;
 
   delete current_gb;
@@ -222,7 +222,7 @@ void MetroBoy::unstep_line() {
   fb_line.pop_back();
 }
 
-void MetroBoy::unstep_cycle() {
+void StateManager::unstep_cycle() {
   if (gb_cycle.empty()) return;
 
   delete current_gb;
@@ -237,21 +237,21 @@ void MetroBoy::unstep_cycle() {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::clear_frame_history() {
+void StateManager::clear_frame_history() {
   for (auto g : gb_frame) delete g;
   for (auto f : fb_frame) delete f;
   gb_frame.clear();
   fb_frame.clear();
 }
 
-void MetroBoy::clear_line_history() {
+void StateManager::clear_line_history() {
   for (auto g : gb_line) delete g;
   for (auto f : fb_line) delete f;
   gb_line.clear();
   fb_line.clear();
 }
 
-void MetroBoy::clear_cycle_history() {
+void StateManager::clear_cycle_history() {
   for (auto g : gb_cycle) delete g;
   for (auto f : fb_cycle) delete f;
   gb_cycle.clear();
@@ -260,7 +260,7 @@ void MetroBoy::clear_cycle_history() {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::cycle() {
+void StateManager::cycle() {
   current_gb->tick();
   current_gb->tock();
 
@@ -283,7 +283,7 @@ void MetroBoy::cycle() {
   cycles++;
 }
 
-void MetroBoy::mcycle() {
+void StateManager::mcycle() {
   cycle();
   if ((current_gb->get_tcycle() & 3) == 0) return;
   cycle();

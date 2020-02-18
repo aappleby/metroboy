@@ -9,117 +9,142 @@ namespace Schematics {
 
 struct ClkRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf(" ----- CLK_REG -----\n");
-    text.dprintf("PHAZ     \2%d%d%d%d\1\n",
-                 PHAZ_ABCDxxxx.a.val,
-                 PHAZ_xBCDExxx.a.val,
-                 PHAZ_xxCDEFxx.a.val,
-                 PHAZ_xxxDEFGx.a.val);
+    //text.dprintf("PHAZ     \2%d%d%d%d\1\n",
+    //             PHAZ_ABCDxxxx.a.val,
+    //             PHAZ_xBCDExxx.a.val,
+    //             PHAZ_xxCDEFxx.a.val,
+    //             PHAZ_xxxDEFGx.a.val);
+
+    dump_long(text, "PHAZ_ABCDxxxx ", PHAZ_ABCDxxxx.a);
+    dump_long(text, "PHAZ_xBCDExxx ", PHAZ_xBCDExxx.a);
+    dump_long(text, "PHAZ_xxCDEFxx ", PHAZ_xxCDEFxx.a);
+    dump_long(text, "PHAZ_xxxDEFGx ", PHAZ_xxxDEFGx.a);
+    text.newline();
   }
 
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ Reg3 PHAZ_ABCDxxxx;
-  /*p01.ALEF*/ Reg3 PHAZ_xBCDExxx;
-  /*p01.APUK*/ Reg3 PHAZ_xxCDEFxx;
-  /*p01.ADYK*/ Reg3 PHAZ_xxxDEFGx;
+  /*p01.AFUR*/ RegDuo PHAZ_ABCDxxxx;
+  /*p01.ALEF*/ RegDuo PHAZ_xBCDExxx;
+  /*p01.APUK*/ RegDuo PHAZ_xxCDEFxx;
+  /*p01.ADYK*/ RegDuo PHAZ_xxxDEFGx;
 };
 
 //-----------------------------------------------------------------------------
 
 struct BusRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf(" ----- BUS_REG -----\n");
-    text.dprintf("BOOT_BIT %d\n", BOOT_BIT.a.val);
-    text.dprintf("SOTO_DBG %d\n", SOTO_DBG.a.val);
+    
+    dump_long(text, "BOOT_BIT ", BOOT_BIT.a);
+    dump_long(text, "SOTO_DBG ", SOTO_DBG.a);
 
     text.dprintf("ADDR_LATCH ");
-    text.add_char(ADDR_LATCH_00.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_01.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_02.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_03.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_04.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_05.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_06.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_07.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_08.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_09.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_10.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_11.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_12.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_13.a.val ? '1' : '0');
-    text.add_char(ADDR_LATCH_14.a.val ? '1' : '0');
+    dump2(text, INT_ADDR_LATCH_14.a);
+    dump2(text, INT_ADDR_LATCH_13.a);
+    dump2(text, INT_ADDR_LATCH_12.a);
+    text.add_char(':');
+    dump2(text, INT_ADDR_LATCH_11.a);
+    dump2(text, INT_ADDR_LATCH_10.a);
+    dump2(text, INT_ADDR_LATCH_09.a);
+    dump2(text, INT_ADDR_LATCH_08.a);
+    text.add_char(':');
+    dump2(text, INT_ADDR_LATCH_07.a);
+    dump2(text, INT_ADDR_LATCH_06.a);
+    dump2(text, INT_ADDR_LATCH_05.a);
+    dump2(text, INT_ADDR_LATCH_04.a);
+    text.add_char(':');
+    dump2(text, INT_ADDR_LATCH_03.a);
+    dump2(text, INT_ADDR_LATCH_02.a);
+    dump2(text, INT_ADDR_LATCH_01.a);
+    dump2(text, INT_ADDR_LATCH_00.a);
     text.newline();
 
     text.dprintf("DATA_LATCH ");
-    text.add_char(DATA_LATCH_00.a.val ? '1' : '0');
-    text.add_char(DATA_LATCH_01.a.val ? '1' : '0');
-    text.add_char(DATA_LATCH_02.a.val ? '1' : '0');
-    text.add_char(DATA_LATCH_03.a.val ? '1' : '0');
-    text.add_char(DATA_LATCH_04.a.val ? '1' : '0');
-    text.add_char(DATA_LATCH_05.a.val ? '1' : '0');
-    text.add_char(DATA_LATCH_06.a.val ? '1' : '0');
-    text.add_char(DATA_LATCH_07.a.val ? '1' : '0');
+    dump2(text, EXT_DATA_LATCH_07.a);
+    dump2(text, EXT_DATA_LATCH_06.a);
+    dump2(text, EXT_DATA_LATCH_05.a);
+    dump2(text, EXT_DATA_LATCH_04.a);
+    text.add_char(':');
+    dump2(text, EXT_DATA_LATCH_03.a);
+    dump2(text, EXT_DATA_LATCH_02.a);
+    dump2(text, EXT_DATA_LATCH_01.a);
+    dump2(text, EXT_DATA_LATCH_00.a);
+    text.newline();
     text.newline();
   }
 
   /*p07.TEPU*/ Reg3 BOOT_BIT;
   /*p25.SOTO*/ Reg3 SOTO_DBG;
 
-  /*p08.ALOR*/ Latch3 ADDR_LATCH_00;
-  /*p08.APUR*/ Latch3 ADDR_LATCH_01;
-  /*p08.ALYR*/ Latch3 ADDR_LATCH_02;
-  /*p08.ARET*/ Latch3 ADDR_LATCH_03;
-  /*p08.AVYS*/ Latch3 ADDR_LATCH_04;
-  /*p08.ATEV*/ Latch3 ADDR_LATCH_05;
-  /*p08.AROS*/ Latch3 ADDR_LATCH_06;
-  /*p08.ARYM*/ Latch3 ADDR_LATCH_07;
-  /*p08.LUNO*/ Latch3 ADDR_LATCH_08;
-  /*p08.LYSA*/ Latch3 ADDR_LATCH_09;
-  /*p08.PATE*/ Latch3 ADDR_LATCH_10;
-  /*p08.LUMY*/ Latch3 ADDR_LATCH_11;
-  /*p08.LOBU*/ Latch3 ADDR_LATCH_12;
-  /*p08.LONU*/ Latch3 ADDR_LATCH_13;
-  /*p08.NYRE*/ Latch3 ADDR_LATCH_14;
+  /*p08.ALOR*/ Latch3 INT_ADDR_LATCH_00;
+  /*p08.APUR*/ Latch3 INT_ADDR_LATCH_01;
+  /*p08.ALYR*/ Latch3 INT_ADDR_LATCH_02;
+  /*p08.ARET*/ Latch3 INT_ADDR_LATCH_03;
+  /*p08.AVYS*/ Latch3 INT_ADDR_LATCH_04;
+  /*p08.ATEV*/ Latch3 INT_ADDR_LATCH_05;
+  /*p08.AROS*/ Latch3 INT_ADDR_LATCH_06;
+  /*p08.ARYM*/ Latch3 INT_ADDR_LATCH_07;
+  /*p08.LUNO*/ Latch3 INT_ADDR_LATCH_08;
+  /*p08.LYSA*/ Latch3 INT_ADDR_LATCH_09;
+  /*p08.PATE*/ Latch3 INT_ADDR_LATCH_10;
+  /*p08.LUMY*/ Latch3 INT_ADDR_LATCH_11;
+  /*p08.LOBU*/ Latch3 INT_ADDR_LATCH_12;
+  /*p08.LONU*/ Latch3 INT_ADDR_LATCH_13;
+  /*p08.NYRE*/ Latch3 INT_ADDR_LATCH_14;
 
-  /*p08.SOMA*/ Latch3 DATA_LATCH_00;
-  /*p08.RONY*/ Latch3 DATA_LATCH_01;
-  /*p08.RAXY*/ Latch3 DATA_LATCH_02;
-  /*p08.SELO*/ Latch3 DATA_LATCH_03;
-  /*p08.SODY*/ Latch3 DATA_LATCH_04;
-  /*p08.SAGO*/ Latch3 DATA_LATCH_05;
-  /*p08.RUPA*/ Latch3 DATA_LATCH_06;
-  /*p08.SAZY*/ Latch3 DATA_LATCH_07;
+  /*p08.SOMA*/ Latch3 EXT_DATA_LATCH_00;
+  /*p08.RONY*/ Latch3 EXT_DATA_LATCH_01;
+  /*p08.RAXY*/ Latch3 EXT_DATA_LATCH_02;
+  /*p08.SELO*/ Latch3 EXT_DATA_LATCH_03;
+  /*p08.SODY*/ Latch3 EXT_DATA_LATCH_04;
+  /*p08.SAGO*/ Latch3 EXT_DATA_LATCH_05;
+  /*p08.RUPA*/ Latch3 EXT_DATA_LATCH_06;
+  /*p08.SAZY*/ Latch3 EXT_DATA_LATCH_07;
 };
 
 //-----------------------------------------------------------------------------
 
 struct ConfigRegisters {
 
-  void dump(TextPainter& text) {
+  ConfigRegisters() {
+    SCX0.a.val = SCX0.b.val = 1;
+  }
+
+  void dump_regs(TextPainter& text) {
     text.dprintf(" ----- PPU CFG -----\n");
-    text.dprintf("BGEN   %d\n", LCDC_BGEN.a.val);
-    text.dprintf("SPEN   %d\n", LCDC_SPEN.a.val);   
-    text.dprintf("SPSIZE %d\n", LCDC_SPSIZE.a.val);
-    text.dprintf("BGMAP  %d\n", LCDC_BGMAP.a.val);
-    text.dprintf("BGTILE %d\n", LCDC_BGTILE.a.val);
-    text.dprintf("WINEN  %d\n", LCDC_WINEN.a.val);
-    text.dprintf("WINMAP %d\n", LCDC_WINMAP.a.val);
-    text.dprintf("EN     %d\n", LCDC_EN.a.val);
-    text.dprintf("SCY    0x%02x\n", get_scy());
-    text.dprintf("SCX    0x%02x\n", get_scx());
-    text.dprintf("LYC    0x%02x\n", get_lyc());
-    text.dprintf("BGP    0x%02x\n", get_bgp());
-    text.dprintf("OBP0   0x%02x\n", get_obp0());
-    text.dprintf("OBP1   0x%02x\n", get_obp1());
-    text.dprintf("WY     0x%02x\n", get_wy());
-    text.dprintf("WX     0x%02x\n", get_wx());
+    dump_long(text, "LCDC_BGEN   ", LCDC_BGEN.a  );
+    dump_long(text, "LCDC_SPEN   ", LCDC_SPEN.a  );   
+    dump_long(text, "LCDC_SPSIZE ", LCDC_SPSIZE.a);
+    dump_long(text, "LCDC_BGMAP  ", LCDC_BGMAP.a );
+    dump_long(text, "LCDC_BGTILE ", LCDC_BGTILE.a);
+    dump_long(text, "LCDC_WINEN  ", LCDC_WINEN.a );
+    dump_long(text, "LCDC_WINMAP ", LCDC_WINMAP.a);
+    dump_long(text, "LCDC_EN     ", LCDC_EN.a    );
+
+    dump(text,      "SCY         ", SCY0,  SCY1,  SCY2,  SCY3,  SCY4,  SCY5,  SCY6,  SCY7);
+    dump(text,      "SCX         ", SCX0,  SCX1,  SCX2,  SCX3,  SCX4,  SCX5,  SCX6,  SCX7);
+    dump(text,      "LYC         ", LYC0,  LYC1,  LYC2,  LYC3,  LYC4,  LYC5,  LYC6,  LYC7);
+    dump(text,      "BGP         ", BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7);
+    dump(text,      "OBP0        ", OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07);
+    dump(text,      "OBP1        ", OBP10, OBP11, OBP12, OBP13, OBP14, OBP15, OBP16, OBP17);
+    dump(text,      "WY          ", WY0,   WY1,   WY2,   WY3,   WY4,   WY5,   WY6,   WY7);
+    dump(text,      "WX          ", WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7);
+
+    text.newline();
   }
 
   int get_lcdc() const {
-    return pack(LCDC_BGEN, LCDC_SPEN, LCDC_SPSIZE, LCDC_BGMAP,
-                LCDC_BGTILE, LCDC_WINEN, LCDC_WINMAP, LCDC_EN);
+    return pack(LCDC_BGEN,
+                LCDC_SPEN,
+                LCDC_SPSIZE,
+                LCDC_BGMAP,
+                LCDC_BGTILE,
+                LCDC_WINEN,
+                LCDC_WINMAP,
+                LCDC_EN);
   }
 
   int get_scy()  const { return pack(SCY0,  SCY1,  SCY2,  SCY3,  SCY4,  SCY5,  SCY6,  SCY7); }
@@ -242,10 +267,11 @@ struct ConfigRegisters {
 
 struct DebugRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf(" ----- DBG REG ----- \n");
-    text.dprintf("FF60_0 %d\n", FF60_0.a.val);
-    text.dprintf("FF60_1 %d\n", FF60_1.a.val);
+    FF60_0.dump(text, "FF60_0 ");
+    FF60_1.dump(text, "FF60_1 ");
+    text.newline();
   }
 
   /*p07.BURO*/ Reg3 FF60_0;
@@ -256,17 +282,18 @@ struct DebugRegisters {
 
 struct DmaRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf(" ----- DMA REG -----\n");
-    text.dprintf("FROM_CPU5_SYNC   %d\n",     FROM_CPU5_SYNC.a.val);
-    text.dprintf("REG_DMA_RUNNING  %d\n",     REG_DMA_RUNNING.a.val);
-    text.dprintf("DMA_DONE_SYNC    %d\n",     DMA_DONE_SYNC.a.val);
-    text.dprintf("REG_DMA_EN_d0    %d\n",     REG_DMA_EN_d0.a.val);  
-    text.dprintf("REG_DMA_EN_d4    %d\n",     REG_DMA_EN_d4.a.val);
-    text.dprintf("LATCH_DMA_ENn_d0 %d\n",     LATCH_DMA_ENn_d0.a.val);
-    text.dprintf("LATCH_DMA_EN_d4  %d\n",     LATCH_DMA_EN_d4.a.val);
+    FROM_CPU5_SYNC   .dump(text, "FROM_CPU5_SYNC   ");
+    REG_DMA_RUNNING  .dump(text, "REG_DMA_RUNNING  ");
+    DMA_DONE_SYNC    .dump(text, "DMA_DONE_SYNC    ");
+    REG_DMA_EN_d0    .dump(text, "REG_DMA_EN_d0    ");  
+    REG_DMA_EN_d4    .dump(text, "REG_DMA_EN_d4    ");
+    LATCH_DMA_ENn_d0 .dump(text, "LATCH_DMA_ENn_d0 ");
+    LATCH_DMA_EN_d4  .dump(text, "LATCH_DMA_EN_d4  ");
     text.dprintf("DMA ADDR LO      0x%02x\n", get_addr_lo());
     text.dprintf("DMA ADDR HI      0x%02x\n", get_addr_hi());
+    text.newline();
   }
 
   /*p04.MAKA*/ Reg3 FROM_CPU5_SYNC;
@@ -313,18 +340,19 @@ struct DmaRegisters {
 
 struct InterruptRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
   text.dprintf(" ----- INT REG -----\n");
-    text.dprintf("FF0F_0  %d\n", FF0F_0.a.val);
-    text.dprintf("FF0F_1  %d\n", FF0F_1.a.val);
-    text.dprintf("FF0F_2  %d\n", FF0F_2.a.val);
-    text.dprintf("FF0F_3  %d\n", FF0F_3.a.val);
-    text.dprintf("FF0F_4  %d\n", FF0F_4.a.val);
-    text.dprintf("FF0F_L0 %d\n", FF0F_L0.a.val);
-    text.dprintf("FF0F_L1 %d\n", FF0F_L1.a.val);
-    text.dprintf("FF0F_L2 %d\n", FF0F_L2.a.val);
-    text.dprintf("FF0F_L3 %d\n", FF0F_L3.a.val);
-    text.dprintf("FF0F_L4 %d\n", FF0F_L4.a.val);
+    FF0F_0 .dump(text, "FF0F_0  ");
+    FF0F_1 .dump(text, "FF0F_1  ");
+    FF0F_2 .dump(text, "FF0F_2  ");
+    FF0F_3 .dump(text, "FF0F_3  ");
+    FF0F_4 .dump(text, "FF0F_4  ");
+    FF0F_L0.dump(text, "FF0F_L0 ");
+    FF0F_L1.dump(text, "FF0F_L1 ");
+    FF0F_L2.dump(text, "FF0F_L2 ");
+    FF0F_L3.dump(text, "FF0F_L3 ");
+    FF0F_L4.dump(text, "FF0F_L4 ");
+    text.newline();
   }
 
   /*p02.LOPE*/ Reg3 FF0F_0;
@@ -344,25 +372,26 @@ struct InterruptRegisters {
 
 struct JoypadRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf(" ----- JOY REG -----\n");
-    text.dprintf("JP_GLITCH0  %d\n", JP_GLITCH0  .a.val);
-    text.dprintf("JP_GLITCH1  %d\n", JP_GLITCH1  .a.val);
-    text.dprintf("JP_GLITCH2  %d\n", JP_GLITCH2  .a.val);
-    text.dprintf("JP_GLITCH3  %d\n", JP_GLITCH3  .a.val);
-    text.dprintf("JOYP_RA     %d\n", JOYP_RA     .a.val);
-    text.dprintf("JOYP_LB     %d\n", JOYP_LB     .a.val);
-    text.dprintf("JOYP_UC     %d\n", JOYP_UC     .a.val);
-    text.dprintf("JOYP_DS     %d\n", JOYP_DS     .a.val);
-    text.dprintf("JOYP_UDLR   %d\n", JOYP_UDLR   .a.val);
-    text.dprintf("JOYP_ABCS   %d\n", JOYP_ABCS   .a.val);
-    text.dprintf("DBG_FF00_D6 %d\n", DBG_FF00_D6 .a.val);
-    text.dprintf("DBG_FF00_D7 %d\n", DBG_FF00_D7 .a.val);
-    text.dprintf("JOYP_L0     %d\n", JOYP_L0     .a.val);
-    text.dprintf("JOYP_L1     %d\n", JOYP_L1     .a.val);
-    text.dprintf("JOYP_L2     %d\n", JOYP_L2     .a.val);
-    text.dprintf("JOYP_L3     %d\n", JOYP_L3     .a.val);
-    text.dprintf("WAKE_CPU    %d\n", WAKE_CPU    .a.val);
+    JP_GLITCH0 .dump(text, "JP_GLITCH0  ");
+    JP_GLITCH1 .dump(text, "JP_GLITCH1  ");
+    JP_GLITCH2 .dump(text, "JP_GLITCH2  ");
+    JP_GLITCH3 .dump(text, "JP_GLITCH3  ");
+    JOYP_RA    .dump(text, "JOYP_RA     ");
+    JOYP_LB    .dump(text, "JOYP_LB     ");
+    JOYP_UC    .dump(text, "JOYP_UC     ");
+    JOYP_DS    .dump(text, "JOYP_DS     ");
+    JOYP_UDLR  .dump(text, "JOYP_UDLR   ");
+    JOYP_ABCS  .dump(text, "JOYP_ABCS   ");
+    DBG_FF00_D6.dump(text, "DBG_FF00_D6 ");
+    DBG_FF00_D7.dump(text, "DBG_FF00_D7 ");
+    JOYP_L0    .dump(text, "JOYP_L0     ");
+    JOYP_L1    .dump(text, "JOYP_L1     ");
+    JOYP_L2    .dump(text, "JOYP_L2     ");
+    JOYP_L3    .dump(text, "JOYP_L3     ");
+    WAKE_CPU   .dump(text, "WAKE_CPU    ");
+    text.newline();
   }
 
   /*p02.BATU*/ Reg3 JP_GLITCH0;
@@ -396,24 +425,27 @@ struct LcdRegisters {
     return (Y0 << 0) | (Y1 << 1) | (Y2 << 2) | (Y3 << 3) | (Y4 << 4) | (Y5 << 5) | (Y6 << 6) | (Y7 << 7);
   }
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf(" ----- LCD REG -----\n");
-    text.dprintf("LCD X             %d\n", x());
-    text.dprintf("LCD Y             %d\n", y());
-    text.dprintf("RUTU_NEW_LINE_d0  %d\n", RUTU_NEW_LINE_d0  .a.val);
-    text.dprintf("VID_LINE_d4       %d\n", VID_LINE_d4       .a.val);
-    text.dprintf("NYPE_NEW_LINE_d4  %d\n", NYPE_NEW_LINE_d4  .a.val);
-    text.dprintf("VID_LINE_d6       %d\n", VID_LINE_d6       .a.val);
-    text.dprintf("LINE_153_d4       %d\n", LINE_153_d4       .a.val);
-    text.dprintf("POPU_IN_VBLANK_d4 %d\n", POPU_IN_VBLANK_d4 .a.val);
-    text.dprintf("LINE_STROBE       %d\n", LINE_STROBE       .a.val);
-    text.dprintf("X_8_SYNC          %d\n", X_8_SYNC          .a.val);
-    text.dprintf("CPEN_LATCH        %d\n", CPEN_LATCH        .a.val);
-    text.dprintf("POME              %d\n", POME              .a.val);
-    text.dprintf("RUJU              %d\n", RUJU              .a.val);
-    text.dprintf("VSYNC_OUTn        %d\n", VSYNC_OUTn        .a.val);
-    text.dprintf("LINE_EVEN         %d\n", LINE_EVEN         .a.val);
-    text.dprintf("FRAME_EVEN        %d\n", FRAME_EVEN        .a.val);
+
+    dump(text, "LCD X ", X0, X1, X2, X3, X4, X5, X6);
+    dump(text, "LCD Y ", Y0, Y1, Y2, Y3, Y4, Y5, Y6, Y7);
+
+    dump_long(text, "RUTU_NEW_LINE_d0  ", RUTU_NEW_LINE_d0.a );
+    dump_long(text, "VID_LINE_d4       ", VID_LINE_d4.a      );
+    dump_long(text, "NYPE_NEW_LINE_d4  ", NYPE_NEW_LINE_d4.a );
+    dump_long(text, "VID_LINE_d6       ", VID_LINE_d6.a      );
+    dump_long(text, "LINE_153_d4       ", LINE_153_d4.a      );
+    dump_long(text, "POPU_IN_VBLANK_d4 ", POPU_IN_VBLANK_d4.a);
+    dump_long(text, "LINE_STROBE       ", LINE_STROBE.a      );
+    dump_long(text, "X_8_SYNC          ", X_8_SYNC.a         );
+    dump_long(text, "CPEN_LATCH        ", CPEN_LATCH.a       );
+    dump_long(text, "POME              ", POME.a             );
+    dump_long(text, "RUJU              ", RUJU.a             );
+    dump_long(text, "VSYNC_OUTn        ", VSYNC_OUTn.a       );
+    dump_long(text, "LINE_EVEN         ", LINE_EVEN.a        );
+    dump_long(text, "FRAME_EVEN        ", FRAME_EVEN.a       );
+    text.newline();
   }
 
   /*p21.SAXO*/ Reg3 X0; // increments at phase 1, reset to 0 at p909.
@@ -458,7 +490,7 @@ struct LcdRegisters {
 
 struct PixelPipeRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf("----- PXP_REG -----\n");
     text.dprintf("BG_PIX_A   0x%02x\n", bg_pix_a());
     text.dprintf("BG_PIX_B   0x%02x\n", bg_pix_b());
@@ -470,6 +502,7 @@ struct PixelPipeRegisters {
     text.dprintf("SPR_PIPE_B 0x%02x\n", spr_pipe_b());
     text.dprintf("PAL_PIPE   0x%02x\n", pal_pipe());
     text.dprintf("MASK_PIPE  0x%02x\n", mask_pipe());
+    text.newline();
   }
 
   uint8_t bg_pix_a()   { return (uint8_t)pack(BG_PIX_A0,   BG_PIX_A1,   BG_PIX_A2,   BG_PIX_A3,   BG_PIX_A4,   BG_PIX_A5,   BG_PIX_A6,   BG_PIX_A7);   }
@@ -578,10 +611,11 @@ struct PixelPipeRegisters {
 
 struct RstRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf("----- RST_REG -----\n");
-    text.dprintf("WAITING_FOR_CLKREQ %d\n", WAITING_FOR_CLKREQ.a.val);
-    text.dprintf("RESET_REG          %d\n", RESET_REG.a.val);
+    WAITING_FOR_CLKREQ.dump(text, "WAITING_FOR_CLKREQ ");
+    RESET_REG         .dump(text, "RESET_REG          ");
+    text.newline();
   }
 
   /*p01.TUBO*/ Latch3 WAITING_FOR_CLKREQ;
@@ -592,7 +626,7 @@ struct RstRegisters {
 
 struct SerialRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf("----- SER_REG -----\n");
     text.dprintf("SER_CLK    %d\n", SER_CLK.a.val);
     text.dprintf("XFER_START %d\n", XFER_START.a.val);
@@ -600,6 +634,7 @@ struct SerialRegisters {
     text.dprintf("SER_OUT    %d\n", SER_OUT.a.val);
     text.dprintf("SER_CNT    %d\n", ser_cnt());
     text.dprintf("SER_DATA   %d\n", ser_data());
+    text.newline();
   }
 
   uint8_t ser_cnt()  { return (uint8_t)pack(SER_CNT0,SER_CNT1,SER_CNT2,SER_CNT3); }
@@ -631,25 +666,26 @@ struct SerialRegisters {
 
 struct SpriteRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf("----- SPR_REG -----\n");
 
-    text.dprintf("TOXE_SPR_SEQ0     %d\n", TOXE_SPR_SEQ0.a.val);
-    text.dprintf("TULY_SPR_SEQ1     %d\n", TULY_SPR_SEQ1.a.val);
-    text.dprintf("TESE_SPR_SEQ2     %d\n", TESE_SPR_SEQ2.a.val);
-    text.dprintf("TOBU_SEQ_xx23xx   %d\n", TOBU_SEQ_xx23xx.a.val);
-    text.dprintf("VONU_SEQ_xxx34xn  %d\n", VONU_SEQ_xxx34xn.a.val);
-    text.dprintf("SEBA_SEQ_xxxx45n  %d\n", SEBA_SEQ_xxxx45n.a.val);
-    text.dprintf("TYFO_SEQ_B0d      %d\n", TYFO_SEQ_B0d.a.val);
-    text.dprintf("STORE_SPRITE_IDXn %d\n", STORE_SPRITE_IDXn.a.val);
+    TOXE_SPR_SEQ0    .dump(text, "TOXE_SPR_SEQ0    ");
+    TULY_SPR_SEQ1    .dump(text, "TULY_SPR_SEQ1    ");
+    TESE_SPR_SEQ2    .dump(text, "TESE_SPR_SEQ2    ");
+    TOBU_SEQ_xx23xx  .dump(text, "TOBU_SEQ_xx23xx  ");
+    VONU_SEQ_xxx34xn .dump(text, "VONU_SEQ_xxx34xn ");
+    SEBA_SEQ_xxxx45n .dump(text, "SEBA_SEQ_xxxx45n ");
+    TYFO_SEQ_B0d     .dump(text, "TYFO_SEQ_B0d     ");
+    STORE_SPRITE_IDXn.dump(text, "STORE_SPRITE_IDXn");
 
     text.dprintf("SCAN    %d\n", scan());
-    text.dprintf("SCAN_DONE_d4 %d\n", SCAN_DONE_d4.a.val);
-    text.dprintf("SCAN_DONE_d5 %d\n", SCAN_DONE_d5.a.val);
+    SCAN_DONE_d4.dump(text, "SCAN_DONE_d4 ");
+    SCAN_DONE_d5.dump(text, "SCAN_DONE_d5 ");
 
     text.dprintf("SPR_IDX %d\n", spr_idx());
     text.dprintf("TS_IDX  %d\n", ts_idx());
     text.dprintf("TS_LINE %d\n", ts_line());
+    text.newline();
   }
 
   int scan()    { return pack(SCAN0, SCAN1, SCAN2, SCAN3, SCAN4); }
@@ -701,7 +737,7 @@ struct SpriteRegisters {
 
 struct SpriteStoreRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf("----- SPR_STORE -----\n");
     text.dprintf("SPRITE_COUNT %d\n", pack(SPRITE_COUNT0, SPRITE_COUNT1, SPRITE_COUNT2, SPRITE_COUNT3));
 
@@ -723,6 +759,7 @@ struct SpriteStoreRegisters {
                  pack(STORE2_IDX0,  STORE2_IDX1,  STORE2_IDX2,  STORE2_IDX3, STORE2_IDX4, STORE2_IDX5),
                  pack(STORE2_LINE0, STORE2_LINE1, STORE2_LINE2, STORE2_LINE3));
     text.dprintf("...\n");
+    text.newline();
   }
 
   /*p29.DEZY*/ Reg3 STORE_EN_SYNC;
@@ -941,14 +978,59 @@ struct SpriteStoreRegisters {
 
 struct TimerRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf("----- TIM_REG -----\n");
-    text.dprintf("DIV  %d\n", get_div());
-    text.dprintf("TIMA %d\n", get_tima());
-    text.dprintf("TMA  %d\n", get_tma());
-    text.dprintf("TAC  %d %d %d\n", TAC_0.a.val, TAC_1.a.val, TAC_2.a.val);
-    text.dprintf("TIMA_MAX %d\n", TIMA_MAX.a.val);
-    text.dprintf("INT_TIMER %d\n", INT_TIMER.a.val);
+    text.dprintf("DIV       %d\n", get_div());
+    text.dprintf("TIMA      %d\n", get_tima());
+    text.dprintf("TMA       %d\n", get_tma());
+    text.newline();
+
+    DIV_00   .dump(text, "DIV_00    ");
+    DIV_01   .dump(text, "DIV_01    ");
+    DIV_02   .dump(text, "DIV_02    ");
+    DIV_03   .dump(text, "DIV_03    ");
+    DIV_04   .dump(text, "DIV_04    ");
+    DIV_05   .dump(text, "DIV_05    ");
+    DIV_06   .dump(text, "DIV_06    ");
+    DIV_07   .dump(text, "DIV_07    ");
+    DIV_08   .dump(text, "DIV_08    ");
+    DIV_09   .dump(text, "DIV_09    ");
+    DIV_10   .dump(text, "DIV_10    ");
+    DIV_11   .dump(text, "DIV_11    ");
+    DIV_12   .dump(text, "DIV_12    ");
+    DIV_13   .dump(text, "DIV_13    ");
+    DIV_14   .dump(text, "DIV_14    ");
+    DIV_15   .dump(text, "DIV_15    ");
+    text.newline();
+
+    TIMA_0   .dump(text, "TIMA_0    ");
+    TIMA_1   .dump(text, "TIMA_1    ");
+    TIMA_2   .dump(text, "TIMA_2    ");
+    TIMA_3   .dump(text, "TIMA_3    ");
+    TIMA_4   .dump(text, "TIMA_4    ");
+    TIMA_5   .dump(text, "TIMA_5    ");
+    TIMA_6   .dump(text, "TIMA_6    ");
+    TIMA_7   .dump(text, "TIMA_7    ");
+    text.newline();
+
+    TMA_0    .dump(text, "TMA_0     ");
+    TMA_1    .dump(text, "TMA_1     ");
+    TMA_2    .dump(text, "TMA_2     ");
+    TMA_3    .dump(text, "TMA_3     ");
+    TMA_4    .dump(text, "TMA_4     ");
+    TMA_5    .dump(text, "TMA_5     ");
+    TMA_6    .dump(text, "TMA_6     ");
+    TMA_7    .dump(text, "TMA_7     ");
+    text.newline();
+
+    TAC_0    .dump(text, "TAC_0     ");
+    TAC_1    .dump(text, "TAC_1     ");
+    TAC_2    .dump(text, "TAC_2     ");
+    text.newline();
+
+    TIMA_MAX .dump(text, "TIMA_MAX  ");
+    INT_TIMER.dump(text, "INT_TIMER ");
+    text.newline();
   }
 
   int get_div() const {
@@ -1061,7 +1143,7 @@ struct TimerRegisters {
 
 struct VidRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf("----- VID_REG -----\n");
 
     text.dprintf("PIX X    %d\n", pack(X0, X1, X2, X3, X4, X5, X6, X7));
@@ -1073,41 +1155,41 @@ struct VidRegisters {
     text.dprintf("MAxx     0x%04x\n", pack(MA00, MA01, MA02, MA03, MA04, MA05, MA06, MA07, MA08, MA09, MA10, MA11, MA12));
     text.dprintf("MDxx     0x%02x\n", pack(MD0, MD1, MD2, MD3, MD4, MD5, MD6, MD7));
 
-    text.dprintf("FINE_MATCH_DUMP          %d\n", FINE_MATCH_DUMP          .a.val);
-    text.dprintf("FINE_MATCH_SYNC1         %d\n", FINE_MATCH_SYNC1         .a.val);
-    text.dprintf("FINE_MATCH_SYNC2         %d\n", FINE_MATCH_SYNC2         .a.val);
-    text.dprintf("NOPA_WIN_MODE_SYNC       %d\n", NOPA_WIN_MODE_SYNC       .a.val);
-    text.dprintf("SOVY_WIN_MODE_SYNC       %d\n", SOVY_WIN_MODE_SYNC       .a.val);
-    text.dprintf("XYMU_RENDERING_LATCH     %d\n", XYMU_RENDERING_LATCH     .a.val);
-    text.dprintf("RENDER_DONE_SYNC         %d\n", RENDER_DONE_SYNC         .a.val);
-    text.dprintf("PYNU_WIN_MODE_LATCH      %d\n", PYNU_WIN_MODE_LATCH      .a.val);
-    text.dprintf("RYDY_WIN_MODE_LATCH      %d\n", RYDY_WIN_MODE_LATCH      .a.val);
-    text.dprintf("INT_HBL_EN               %d\n", INT_HBL_EN               .a.val);
-    text.dprintf("INT_VBL_EN               %d\n", INT_VBL_EN               .a.val);
-    text.dprintf("INT_OAM_EN               %d\n", INT_OAM_EN               .a.val);
-    text.dprintf("INT_LYC_EN               %d\n", INT_LYC_EN               .a.val);
-    text.dprintf("ROPO_LY_MATCH_SYNC       %d\n", ROPO_LY_MATCH_SYNC       .a.val);
-    text.dprintf("RUPO_LATCH_LYC_MATCH     %d\n", RUPO_LATCH_LYC_MATCH     .a.val);
-    text.dprintf("WY_MATCH_SYNC            %d\n", WY_MATCH_SYNC            .a.val);
-    text.dprintf("WIN_MATCH_ONSCREEN_SYNC1 %d\n", WIN_MATCH_ONSCREEN_SYNC1 .a.val);
-    text.dprintf("WIN_MATCH_ONSCREEN_SYNC2 %d\n", WIN_MATCH_ONSCREEN_SYNC2 .a.val);
-    text.dprintf("WIN_MATCH_SYNC1          %d\n", WIN_MATCH_SYNC1          .a.val);
-    text.dprintf("WIN_MATCH_SYNC2          %d\n", WIN_MATCH_SYNC2          .a.val);
-    text.dprintf("BG_READ_VRAM_LATCHn      %d\n", BG_READ_VRAM_LATCHn      .a.val);
-    text.dprintf("BG_SEQ_x1x3x5x7          %d\n", BG_SEQ_x1x3x5x7          .a.val);
-    text.dprintf("BG_SEQ_xx23xx67          %d\n", BG_SEQ_xx23xx67          .a.val);
-    text.dprintf("BG_SEQ_xxxx4567          %d\n", BG_SEQ_xxxx4567          .a.val);
-    text.dprintf("BG_SEQ5_SYNC             %d\n", BG_SEQ5_SYNC             .a.val);
-    text.dprintf("BG_SEQ_6                 %d\n", BG_SEQ_6                 .a.val);
-    text.dprintf("BG_SEQ_7                 %d\n", BG_SEQ_7                 .a.val);
-    text.dprintf("BG_SEQ_x1x3x5x7_DELAY    %d\n", BG_SEQ_x1x3x5x7_DELAY    .a.val);
-    text.dprintf("PYGO_TILE_DONE           %d\n", PYGO_TILE_DONE           .a.val);
-    text.dprintf("POKY_FRONT_PORCH_LATCHn  %d\n", POKY_FRONT_PORCH_LATCHn  .a.val);
-    text.dprintf("WY_MATCH_LATCH           %d\n", WY_MATCH_LATCH           .a.val);
-    text.dprintf("_SPRITE_FETCH_LATCH      %d\n", _SPRITE_FETCH_LATCH      .a.val);
-    text.dprintf("_SPRITE_FETCH_SYNC1      %d\n", _SPRITE_FETCH_SYNC1      .a.val);
-    text.dprintf("_SPRITE_FETCH_SYNC2      %d\n", _SPRITE_FETCH_SYNC2      .a.val);
-
+    FINE_MATCH_DUMP         .dump(text, "FINE_MATCH_DUMP          ");
+    FINE_MATCH_SYNC1        .dump(text, "FINE_MATCH_SYNC1         ");
+    FINE_MATCH_SYNC2        .dump(text, "FINE_MATCH_SYNC2         ");
+    NOPA_WIN_MODE_SYNC      .dump(text, "NOPA_WIN_MODE_SYNC       ");
+    SOVY_WIN_MODE_SYNC      .dump(text, "SOVY_WIN_MODE_SYNC       ");
+    XYMU_RENDERING_LATCH    .dump(text, "XYMU_RENDERING_LATCH     ");
+    RENDER_DONE_SYNC        .dump(text, "RENDER_DONE_SYNC         ");
+    PYNU_WIN_MODE_LATCH     .dump(text, "PYNU_WIN_MODE_LATCH      ");
+    RYDY_WIN_MODE_LATCH     .dump(text, "RYDY_WIN_MODE_LATCH      ");
+    INT_HBL_EN              .dump(text, "INT_HBL_EN               ");
+    INT_VBL_EN              .dump(text, "INT_VBL_EN               ");
+    INT_OAM_EN              .dump(text, "INT_OAM_EN               ");
+    INT_LYC_EN              .dump(text, "INT_LYC_EN               ");
+    ROPO_LY_MATCH_SYNC      .dump(text, "ROPO_LY_MATCH_SYNC       ");
+    RUPO_LATCH_LYC_MATCH    .dump(text, "RUPO_LATCH_LYC_MATCH     ");
+    WY_MATCH_SYNC           .dump(text, "WY_MATCH_SYNC            ");
+    WIN_MATCH_ONSCREEN_SYNC1.dump(text, "WIN_MATCH_ONSCREEN_SYNC1 ");
+    WIN_MATCH_ONSCREEN_SYNC2.dump(text, "WIN_MATCH_ONSCREEN_SYNC2 ");
+    WIN_MATCH_SYNC1         .dump(text, "WIN_MATCH_SYNC1          ");
+    WIN_MATCH_SYNC2         .dump(text, "WIN_MATCH_SYNC2          ");
+    BG_READ_VRAM_LATCHn     .dump(text, "BG_READ_VRAM_LATCHn      ");
+    BG_SEQ_x1x3x5x7         .dump(text, "BG_SEQ_x1x3x5x7          ");
+    BG_SEQ_xx23xx67         .dump(text, "BG_SEQ_xx23xx67          ");
+    BG_SEQ_xxxx4567         .dump(text, "BG_SEQ_xxxx4567          ");
+    BG_SEQ5_SYNC            .dump(text, "BG_SEQ5_SYNC             ");
+    BG_SEQ_6                .dump(text, "BG_SEQ_6                 ");
+    BG_SEQ_7                .dump(text, "BG_SEQ_7                 ");
+    BG_SEQ_x1x3x5x7_DELAY   .dump(text, "BG_SEQ_x1x3x5x7_DELAY    ");
+    PYGO_TILE_DONE          .dump(text, "PYGO_TILE_DONE           ");
+    POKY_FRONT_PORCH_LATCHn .dump(text, "POKY_FRONT_PORCH_LATCHn  ");
+    WY_MATCH_LATCH          .dump(text, "WY_MATCH_LATCH           ");
+    _SPRITE_FETCH_LATCH     .dump(text, "_SPRITE_FETCH_LATCH      ");
+    _SPRITE_FETCH_SYNC1     .dump(text, "_SPRITE_FETCH_SYNC1      ");
+    _SPRITE_FETCH_SYNC2     .dump(text, "_SPRITE_FETCH_SYNC2      ");
+    text.newline();
   }
 
   /*p21.XEHO*/ Reg3 X0;
@@ -1220,11 +1302,12 @@ struct VidRegisters {
 
 struct VclkRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf("----- VCLK_REG -----\n");
-    text.dprintf("WUVU_AxxDExxH %d\n", WUVU_AxxDExxH.a.val);
-    text.dprintf("VENA_xBCDExxx %d\n", VENA_xBCDExxx.a.val);
-    text.dprintf("WOSU_xxCDxxGH %d\n", WOSU_xxCDxxGH.a.val);
+    WUVU_AxxDExxH.dump(text, "WUVU_AxxDExxH ");
+    VENA_xBCDExxx.dump(text, "VENA_xBCDExxx ");
+    WOSU_xxCDxxGH.dump(text, "WOSU_xxCDxxGH ");
+    text.newline();
   }
 
   /*p29.WUVU*/ Reg3 WUVU_AxxDExxH;
@@ -1236,12 +1319,13 @@ struct VclkRegisters {
 
 struct OamRegisters {
 
-  void dump(TextPainter& text) {
+  void dump_regs(TextPainter& text) {
     text.dprintf("----- OAM_REG -----\n");
     text.dprintf("LATCH_A 0x%02x\n", pack(LATCH_OAM_A0,LATCH_OAM_A1,LATCH_OAM_A2,LATCH_OAM_A3,LATCH_OAM_A4,LATCH_OAM_A5,LATCH_OAM_A6,LATCH_OAM_A7));
     text.dprintf("LATCH_B 0x%02x\n", pack(LATCH_OAM_B0,LATCH_OAM_B1,LATCH_OAM_B2,LATCH_OAM_B3,LATCH_OAM_B4,LATCH_OAM_B5,LATCH_OAM_B6,LATCH_OAM_B7));
     text.dprintf("REG_A   0x%02x\n", pack(REG_OAM_A0,REG_OAM_A1,REG_OAM_A2,REG_OAM_A3,REG_OAM_A4,REG_OAM_A5,REG_OAM_A6,REG_OAM_A7));
     text.dprintf("REG_B   0x%02x\n", pack(REG_OAM_B0,REG_OAM_B1,REG_OAM_B2,REG_OAM_B3,REG_OAM_B4,REG_OAM_B5,REG_OAM_B6,REG_OAM_B7));
+    text.newline();
   }
 
   /*p31.XYKY*/ Latch3 LATCH_OAM_A0;

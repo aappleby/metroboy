@@ -4,12 +4,12 @@
 namespace Schematics {
 
 struct WavePins {
-  void dump(TextPainter& text) {
+  void dump_pins(TextPainter& text) {
     text.dprintf("----- WAVE_PINS -----\n");
-    text.dprintf("CLK_AxxxxxGH %d\n", CLK_AxxxxxGH.a.val);
+    text.dprintf("CLK_AxxxxxGH %d\n", BORY_AxxxxxGH.a.val);
   }
 
-  PinOut CLK_AxxxxxGH;
+  PinOut BORY_AxxxxxGH;
 };
 
 //-----------------------------------------------------------------------------
@@ -17,15 +17,47 @@ struct WavePins {
 
 struct OamPins {
 
-  void dump(TextPainter& text) {
+  void dump_pins(TextPainter& text) {
     text.dprintf("----- OAM_PINS -----\n");
     text.dprintf("CLK_A %d\n", CLK_A.a.val);
     text.dprintf("OE    %d\n", OE.a.val);
     text.dprintf("WR_A  %d\n", WR_A.a.val);
     text.dprintf("WR_B  %d\n", WR_B.a.val);
-    text.dprintf("Axx   %d\n", pack(A0, A1, A2, A3, A4, A5, A6, A7));
-    text.dprintf("A_Dx  0x%02x\n", pack(A_D0, A_D1, A_D2, A_D3, A_D4, A_D5, A_D6, A_D7));
-    text.dprintf("B_Dx  0x%02x\n", pack(B_D0, B_D1, B_D2, B_D3, B_D4, B_D5, B_D6, B_D7));
+
+    text.add_text("Axx   ");
+    dump2(text, A7.a);
+    dump2(text, A6.a);
+    dump2(text, A5.a);
+    dump2(text, A4.a);
+    dump2(text, A3.a);
+    dump2(text, A2.a);
+    dump2(text, A1.a);
+    dump2(text, A0.a);
+    text.newline();
+
+    text.add_text("A_Dx  ");
+    dump2(text, A_D7.a);
+    dump2(text, A_D6.a);
+    dump2(text, A_D5.a);
+    dump2(text, A_D4.a);
+    dump2(text, A_D3.a);
+    dump2(text, A_D2.a);
+    dump2(text, A_D1.a);
+    dump2(text, A_D0.a);
+    text.newline();
+
+    text.add_text("B_Dx  ");
+    dump2(text, B_D7.a);
+    dump2(text, B_D6.a);
+    dump2(text, B_D5.a);
+    dump2(text, B_D4.a);
+    dump2(text, B_D3.a);
+    dump2(text, B_D2.a);
+    dump2(text, B_D1.a);
+    dump2(text, B_D0.a);
+    text.newline();
+
+    text.newline();
   }
 
   /*p25.COTA*/ PinOut CLK_A;
@@ -65,93 +97,89 @@ struct OamPins {
 
 struct CpuPins {
 
-  void dump(TextPainter& text) {
-    text.dprintf("----- CPU_PINS -----\n");
-    text.dprintf("PIN_RESET    %d\n", PIN_RESET   .a.val);
-    text.dprintf("CPU_RESET    %d\n", CPU_RESET   .a.val);
-    text.dprintf("CLK_GOOD     %d\n", CLK_GOOD    .a.val);
-    text.dprintf("CLKREQ       %d\n", CLKREQ      .a.val);
-    text.dprintf("CPU_RAW_RD   %d\n", CPU_RAW_RD  .a.val);
-    text.dprintf("CPU_RAW_WR   %d\n", CPU_RAW_WR  .a.val);
-    text.dprintf("ADDR_VALID   %d\n", ADDR_VALID  .a.val);
-    text.dprintf("Axx          0x%04x\n", get_addr());
-    text.dprintf("Dxx          0x%04x\n", get_data());
+  void dump_pins(TextPainter& text) {
+    text.dprintf("----- CPU_PINS IN -----\n");
 
-    text.dprintf("T1nT2        %d\n", T1nT2        .a.val);
-    text.dprintf("T1T2n        %d\n", T1T2n        .a.val);
-    text.dprintf("SYRO         %d\n", SYRO         .a.val);
-    text.dprintf("READ_BOOTROM %d\n", READ_BOOTROM .a.val);
+    text.dprintf("CLKREQ        %d\n", CLKREQ      .a.val);
+    text.dprintf("CPU_RAW_RD    %d\n", CPU_RAW_RD  .a.val);
+    text.dprintf("CPU_RAW_WR    %d\n", CPU_RAW_WR  .a.val);
+    text.dprintf("ADDR_VALID    %d\n", ADDR_VALIDn  .a.val);
+    text.dprintf("FROM_CPU5     %d\n", FROM_CPU5   .a.val);
+    text.dprintf("FROM_CPU6     %d\n", FROM_CPU6   .a.val);
 
-    text.dprintf("ACK_VBLANK   %d\n", ACK_VBLANK .a.val);
-    text.dprintf("ACK_STAT     %d\n", ACK_STAT   .a.val);
-    text.dprintf("ACK_TIMER    %d\n", ACK_TIMER  .a.val);
-    text.dprintf("ACK_SERIAL   %d\n", ACK_SERIAL .a.val);
-    text.dprintf("ACK_JOYPAD   %d\n", ACK_JOYPAD .a.val);
-    text.dprintf("INT_VBLANK   %d\n", INT_VBLANK .a.val);
-    text.dprintf("INT_STAT     %d\n", INT_STAT   .a.val);
-    text.dprintf("INT_TIMER    %d\n", INT_TIMER  .a.val);
-    text.dprintf("INT_SERIAL   %d\n", INT_SERIAL .a.val);
-    text.dprintf("INT_JOYPAD   %d\n", INT_JOYPAD .a.val);
+    text.dprintf("ACK_VBLANK    %d\n", ACK_VBLANK .a.val);
+    text.dprintf("ACK_STAT      %d\n", ACK_STAT   .a.val);
+    text.dprintf("ACK_TIMER     %d\n", ACK_TIMER  .a.val);
+    text.dprintf("ACK_SERIAL    %d\n", ACK_SERIAL .a.val);
+    text.dprintf("ACK_JOYPAD    %d\n", ACK_JOYPAD .a.val);
 
-    text.dprintf("AFER         %d\n", AFER        .a.val);
-    text.dprintf("FROM_CPU6    %d\n", FROM_CPU6   .a.val);
-    text.dprintf("CLK_xBCDEFGH %d\n", CLK_xBCDEFGH.a.val);
-    text.dprintf("CLK_Axxxxxxx %d\n", CLK_Axxxxxxx.a.val);
-    text.dprintf("BEKO         %d\n", BEKO        .a.val);
-    text.dprintf("BUDE         %d\n", BUDE        .a.val);
-    text.dprintf("FROM_CPU5    %d\n", FROM_CPU5   .a.val);
-    text.dprintf("BUKE         %d\n", BUKE        .a.val);
-    text.dprintf("BOMA         %d\n", BOMA        .a.val);
-    text.dprintf("BOGA         %d\n", BOGA        .a.val);
+
+
+    text.dprintf("----- CPU_PINS OUT -----\n");
+
+    text.dprintf("AFER          %d\n", AFER        .a.val);
+    text.dprintf("PIN_RESET     %d\n", PIN_RESET   .a.val);
+    text.dprintf("CPU_RESET     %d\n", CPU_RESET   .a.val);
+    text.dprintf("CLK_GOOD      %d\n", CLK_GOOD    .a.val);
+    text.dprintf("T1nT2         %d\n", T1nT2        .a.val);
+    text.dprintf("T1T2n         %d\n", T1T2n        .a.val);
+
+    text.dprintf("BOWA_xBCDEFGH %d\n", BOWA_xBCDEFGH.a.val);
+    text.dprintf("BEDO_Axxxxxxx %d\n", BEDO_Axxxxxxx.a.val);
+    text.dprintf("BEKO_ABCDxxxx %d\n", BEKO_ABCDxxxx.a.val);
+    text.dprintf("BUDE_xxxxEFGH %d\n", BUDE_xxxxEFGH.a.val);
+    text.dprintf("BUKE_AxxxxxGH %d\n", BUKE_AxxxxxGH.a.val);
+    text.dprintf("BOMA_Axxxxxxx %d\n", BOMA_Axxxxxxx.a.val);
+    text.dprintf("BOGA_xBCDEFGH %d\n", BOGA_xBCDEFGH.a.val);
+
+    text.dprintf("TO_CPU2       %d\n", TO_CPU2      .a.val);
+    text.dprintf("SYRO          %d\n", SYRO         .a.val);
+    text.dprintf("READ_BOOTROM  %d\n", READ_BOOTROM .a.val);
+
+    text.dprintf("INT_VBLANK    %d\n", INT_VBLANK .a.val);
+    text.dprintf("INT_STAT      %d\n", INT_STAT   .a.val);
+    text.dprintf("INT_TIMER     %d\n", INT_TIMER  .a.val);
+    text.dprintf("INT_SERIAL    %d\n", INT_SERIAL .a.val);
+    text.dprintf("INT_JOYPAD    %d\n", INT_JOYPAD .a.val);
+
+    text.dprintf("----- CPU BUS -----\n");
+    
+    text.add_text("Axx ");
+    dump2(text, A15.a);
+    dump2(text, A14.a);
+    dump2(text, A13.a);
+    dump2(text, A12.a);
+    text.add_char(':');
+    dump2(text, A11.a);
+    dump2(text, A10.a);
+    dump2(text, A09.a);
+    dump2(text, A08.a);
+    text.add_char(':');
+    dump2(text, A07.a);
+    dump2(text, A06.a);
+    dump2(text, A05.a);
+    dump2(text, A04.a);
+    text.add_char(':');
+    dump2(text, A03.a);
+    dump2(text, A02.a);
+    dump2(text, A01.a);
+    dump2(text, A00.a);
+    text.newline();
+
+    text.add_text("Dxx ");
+    dump2(text, D7.a);
+    dump2(text, D6.a);
+    dump2(text, D5.a);
+    dump2(text, D4.a);
+    text.add_char(':');
+    dump2(text, D3.a);
+    dump2(text, D2.a);
+    dump2(text, D1.a);
+    dump2(text, D0.a);
+    text.newline();
+
+    text.newline();
   }
-
-  //----------
-  // top right wire by itself
-
-  PinOut TO_CPU2;        // <- P02.AWOB
-
-  //----------
-  // top right port
-
-  // ADDR_VALID and one of the other signals might be switched
-
-  PinIn  CPU_RAW_RD;   // PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
-  PinIn  CPU_RAW_WR;   // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
-  PinOut T1nT2;        // PORTA_02: <- P07.T1nT2
-  PinOut SYRO;         // PORTA_03: <- P25.SYRO
-  PinOut READ_BOOTROM; // PORTA_04: <- P07.READ_BOOTROM tutu?
-  PinOut T1T2n;        // PORTA_05: <- P07.T1T2n
-  PinIn  ADDR_VALID;   // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
-
-  //----------
-  // bottom right port
-
-  PinIn  A00;          // PORTB_00: -> A00
-  PinIn  ACK_VBLANK;    // PORTB_01: -> P02.LETY, vblank int ack
-  PinIn  A08;          // PORTB_02: -> A08
-  PinOut INT_VBLANK;   // PORTB_03: <- P02.LOPE, vblank int
-  PinIn  A01;          // PORTB_04: -> A01
-  PinIn  ACK_STAT;     // PORTB_05: -> P02.LEJA, stat int ack
-  PinIn  A09;          // PORTB_06: -> A09
-  PinOut INT_STAT;     // PORTB_07: <- P02.LALU, stat int
-  PinIn  A02;          // PORTB_08: -> A02
-  PinIn  ACK_TIMER;    // PORTB_09: -> P02.LESA, timer int ack
-  PinIn  A10;          // PORTB_10: -> A10
-  PinOut INT_TIMER;    // PORTB_11: <- P02.NYBO, timer int
-  PinIn  A03;          // PORTB_12: -> A03
-  PinIn  ACK_SERIAL;   // PORTB_13: -> P02.LUFE, serial int ack
-  PinIn  A11;          // PORTB_14: -> A11
-  PinOut INT_SERIAL;   // PORTB_15: <- P02.UBUL, serial int
-  PinIn  A04;          // PORTB_16: -> A04
-  PinIn  ACK_JOYPAD;   // PORTB_17: -> P02.LAMO, joypad int ack
-  PinIn  A12;          // PORTB_18: -> A12
-  PinOut INT_JOYPAD;   // PORTB_19: <- P02.ULAK, joypad int
-  PinIn  A05;          // PORTB_20: -> A05
-  PinIn  A13;          // PORTB_22: -> A13
-  PinIn  A06;          // PORTB_24: -> A06
-  PinIn  A14;          // PORTB_26: -> A14
-  PinIn  A07;          // PORTB_28: -> A07
-  PinIn  A15;          // PORTB_30: -> A15
 
   int get_addr() const {
     return pack(A00, A01, A02, A03, A04, A05, A06, A07,
@@ -181,6 +209,7 @@ struct CpuPins {
     A15.preset(oe, addr & 0x8000);
   }
 
+  /*
   void preset_data(bool oe, uint8_t data) {
     D0.preset(oe, data & 0x01);
     D1.preset(oe, data & 0x02);
@@ -191,6 +220,7 @@ struct CpuPins {
     D6.preset(oe, data & 0x40);
     D7.preset(oe, data & 0x80);
   }
+  */
 
   void set_data(bool oe, uint8_t data) {
     D0.set(oe, data & 0x01);
@@ -204,33 +234,74 @@ struct CpuPins {
   }
 
   //----------
-  // top center port
 
-  PinIn  CLKREQ;       // PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
-  PinOut AFER;         // PORTC_01: <- P01.AFER , reset related reg
-  PinOut PIN_RESET;    // PORTC_02: <- PIN_RESET directly connected to the pad
-  PinOut CLK_GOOD;      // PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  PinOut CPU_RESET;    // PORTC_04: <- P01.CPU_RESET
+
+  // ADDR_VALID and one of the other signals might be switched
+
+  PinIn  CLKREQ;       // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  PinIn  CPU_RAW_RD;   // top right port PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
+  PinIn  CPU_RAW_WR;   // top right port PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
+  PinIn  ADDR_VALIDn;   // top right port PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
+  PinIn  FROM_CPU5;    // PORTD_05: -> FROM_CPU5
+  PinIn  FROM_CPU6;    // top left port PORTD_00: -> P07.LEXY, doesn't do anything
+
+  PinIn  A00;          // bottom right port PORTB_00: -> A00
+  PinIn  A01;          // bottom right port PORTB_04: -> A01
+  PinIn  A02;          // bottom right port PORTB_08: -> A02
+  PinIn  A03;          // bottom right port PORTB_12: -> A03
+  PinIn  A04;          // bottom right port PORTB_16: -> A04
+  PinIn  A05;          // bottom right port PORTB_20: -> A05
+  PinIn  A06;          // bottom right port PORTB_24: -> A06
+  PinIn  A07;          // bottom right port PORTB_28: -> A07
+  PinIn  A08;          // bottom right port PORTB_02: -> A08
+  PinIn  A09;          // bottom right port PORTB_06: -> A09
+  PinIn  A10;          // bottom right port PORTB_10: -> A10
+  PinIn  A11;          // bottom right port PORTB_14: -> A11
+  PinIn  A12;          // bottom right port PORTB_18: -> A12
+  PinIn  A13;          // bottom right port PORTB_22: -> A13
+  PinIn  A14;          // bottom right port PORTB_26: -> A14
+  PinIn  A15;          // bottom right port PORTB_30: -> A15
+
+  PinIn  ACK_VBLANK;   // bottom right port PORTB_01: -> P02.LETY, vblank int ack
+  PinIn  ACK_STAT;     // bottom right port PORTB_05: -> P02.LEJA, stat int ack
+  PinIn  ACK_TIMER;    // bottom right port PORTB_09: -> P02.LESA, timer int ack
+  PinIn  ACK_SERIAL;   // bottom right port PORTB_13: -> P02.LUFE, serial int ack
+  PinIn  ACK_JOYPAD;   // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
 
   //----------
-  // top left port
 
-  PinIn  FROM_CPU6;    // PORTD_00: -> P07.LEXY, doesn't do anything
-  PinOut CLK_xBCDEFGH; // PORTD_01: <- P01.BOWA
-  PinOut CLK_Axxxxxxx; // PORTD_02: <- P01.BEDO
-  PinOut BEKO;         // PORTD_03: <- P01.BEKO connection not indicated on P01
-  PinOut BUDE;         // PORTD_04: <- P01.BUDE
+  PinOut AFER;         // top center port PORTC_01: <- P01.AFER , reset related reg
+  PinOut PIN_RESET;    // top center port PORTC_02: <- PIN_RESET directly connected to the pad
+  PinOut CLK_GOOD;     // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  PinOut CPU_RESET;    // top center port PORTC_04: <- P01.CPU_RESET
+  PinOut T1nT2;        // top right port PORTA_02: <- P07.T1nT2
+  PinOut T1T2n;        // top right port PORTA_05: <- P07.T1T2n
 
-  // controls driving the external data pins onto the internal data bus and
-  // other stuff. is this actually a clock, or like OE?
+  PinOut BOWA_xBCDEFGH; // top left port PORTD_01: <- P01.BOWA
+  PinOut BEDO_Axxxxxxx; // top left port PORTD_02: <- P01.BEDO
+  PinOut BEKO_ABCDxxxx;         // top left port PORTD_03: <- P01.BEKO connection not indicated on P01
+  PinOut BUDE_xxxxEFGH;         // top left port PORTD_04: <- P01.BUDE
+  PinOut BUKE_AxxxxxGH;         // PORTD_06: <- P01.BUKE _____f__
+  PinOut BOMA_Axxxxxxx;         // PORTD_07: <- P01.RESET_CLK _____fgh
+  PinOut BOGA_xBCDEFGH;         // PORTD_08: <- P01.BOGA abcde___
+
+  PinOut TO_CPU2;      // top right wire by itself <- P02.AWOB
+  PinOut SYRO;         // top right port PORTA_03: <- P25.SYRO
+
+  // TUTU-> ->YULA ->SOBY
+  PinOut READ_BOOTROM; // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+
+  PinOut INT_VBLANK;   // bottom right port PORTB_03: <- P02.LOPE, vblank int
+  PinOut INT_STAT;     // bottom right port PORTB_07: <- P02.LALU, stat int
+  PinOut INT_TIMER;    // bottom right port PORTB_11: <- P02.NYBO, timer int
+  PinOut INT_SERIAL;   // bottom right port PORTB_15: <- P02.UBUL, serial int
+  PinOut INT_JOYPAD;   // bottom right port PORTB_19: <- P02.ULAK, joypad int
+
+  // FROM_CPU5 controls driving the external data pins onto the internal data
+  // bus and other stuff. is this actually a clock, or like OE?
   // if this is low, writes to the APU don't happen and writes to TIMA don't
   // actually load TIMA (I think).
-  PinIn FROM_CPU5;     // PORTD_05: -> FROM_CPU5
   
-  PinOut BUKE;         // PORTD_06: <- P01.BUKE _____f__
-  PinOut BOMA;    // PORTD_07: <- P01.RESET_CLK _____fgh
-  PinOut BOGA;         // PORTD_08: <- P01.BOGA abcde___
-
   //----------
   // bottom left port, tristate data bus
 
@@ -249,18 +320,19 @@ struct CpuPins {
 
 struct SysPins {
 
-  void dump(TextPainter& text) {
+  void dump_pins(TextPainter& text) {
     text.dprintf("----- SYS_PINS -----\n");
-    text.dprintf("RST     %d\n", RST.a.val);
-    text.dprintf("CLKIN_A %d\n", CLKIN_A.a.val);
-    text.dprintf("CLKIN_B %d\n", CLKIN_B.a.val);
-    text.dprintf("T1      %d\n", T1.a.val);
-    text.dprintf("T2      %d\n", T2.a.val);
+    text.dprintf("RST      %d\n", RST.a.val);
+    text.dprintf("CLK_GOOD %d\n", CLK_GOOD.a.val);
+    text.dprintf("CLK_IN   %d\n", CLK_IN.a.val);
+    text.dprintf("T1       %d\n", T1.a.val);
+    text.dprintf("T2       %d\n", T2.a.val);
+    text.newline();
   }
 
   /* PIN_71 */ PinIn RST;
-  /* PIN_74 */ PinIn CLKIN_A; // CLK_GOOD
-  /* PIN_74 */ PinIn CLKIN_B; // CLK
+  /* PIN_74 */ PinIn CLK_GOOD;
+  /* PIN_74 */ PinIn CLK_IN;
   /* PIN_76 */ PinIn T2;
   /* PIN_77 */ PinIn T1;
 };
@@ -269,7 +341,7 @@ struct SysPins {
 
 struct VramPins {
 
-  void dump(TextPainter& text) {
+  void dump_pins(TextPainter& text) {
     text.dprintf("----- VRAM_PINS -----\n");
     text.dprintf("MCS  %d:x:%d:%d\n", MCS_A.a.val, MCS_C.a.val, MCS_D.a.val);
     text.dprintf("MOE  %d:x:%d:%d\n", MOE_A.a.val, MOE_C.a.val, MOE_D.a.val);
@@ -281,6 +353,7 @@ struct VramPins {
     text.dprintf("MDx_B 0x%02x\n", pack(MD0_B, MD1_B, MD2_B, MD3_B, MD4_B, MD5_B, MD6_B, MD7_B));
     text.dprintf("MDx_C 0x%02x\n", pack(MD0_C, MD1_C, MD2_C, MD3_C, MD4_C, MD5_C, MD6_C, MD7_C));
     text.dprintf("MDx_D 0x%02x\n", pack(MD0_D, MD1_D, MD2_D, MD3_D, MD4_D, MD5_D, MD6_D, MD7_D));
+    text.newline();
   }
 
   //----------
@@ -358,11 +431,12 @@ struct VramPins {
 //-----------------------------------------------------------------------------
 
 struct SerialPins {
-  void dump(TextPainter& text) {
+  void dump_pins(TextPainter& text) {
     text.dprintf("----- SER_PINS -----\n");
     text.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.a.val, SCK_B.a.val, SCK_C.a.val, SCK_D.a.val);
     text.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.a.val, SIN_B.a.val, SIN_C.a.val, SIN_D.a.val);
     text.dprintf("SOUT %d\n", SOUT.a.val);
+    text.newline();
   }
 
   //----------
@@ -384,16 +458,17 @@ struct SerialPins {
 //-----------------------------------------------------------------------------
 
 struct LcdPins {
-  void dump(TextPainter& text) {
+  void dump_pins(TextPainter& text) {
     text.dprintf("----- LCD_PINS -----\n");
-    text.dprintf("LD1 %d\n", LD1.a.val);
-    text.dprintf("LD0 %d\n", LD0.a.val);
-    text.dprintf("CPG %d\n", CPG.a.val);
-    text.dprintf("CP  %d\n", CP .a.val);
-    text.dprintf("ST  %d\n", ST .a.val);
-    text.dprintf("CPL %d\n", CPL.a.val);
-    text.dprintf("FR  %d\n", FR .a.val);
-    text.dprintf("S   %d\n", S  .a.val);
+    LD1.dump(text, "LD1 ");
+    LD0.dump(text, "LD0 ");
+    CPG.dump(text, "CPG ");
+    CP .dump(text, "CP  ");
+    ST .dump(text, "ST  ");
+    CPL.dump(text, "CPL ");
+    FR .dump(text, "FR  ");
+    S  .dump(text, "S   ");
+    text.newline();
   }
 
   /* PIN_50 */ PinOut LD1;
@@ -410,7 +485,7 @@ struct LcdPins {
 
 struct JoypadPins {
 
-  void dump(TextPainter& text) {
+  void dump_pins(TextPainter& text) {
     text.dprintf("----- JOY_PINS -----\n");
     text.dprintf("P10 %d:%d:%d:%d\n", P10_A.a.val, P10_B.a.val, P10_C.a.val, P10_D.a.val);
     text.dprintf("P11 %d:%d:%d:%d\n", P11_A.a.val, P11_B.a.val, P11_C.a.val, P11_D.a.val);
@@ -418,6 +493,7 @@ struct JoypadPins {
     text.dprintf("P13 %d:%d:%d:%d\n", P13_A.a.val, P13_B.a.val, P13_C.a.val, P13_D.a.val);
     text.dprintf("P14 %d:x:x:%d\n", P14_A.a.val, P14_D.a.val);
     text.dprintf("P15 %d:x:x:%d\n", P15_A.a.val, P15_D.a.val);
+    text.newline();
   }
 
   // The B connections on the joypad pins are werid.
@@ -460,28 +536,54 @@ struct JoypadPins {
 
 struct ExtPins {
 
-  void dump(TextPainter& text) {
+  inline void dump_pins(TextPainter& text, const PinOut& a, const PinOut& d) {
+    dump_pin(text, a.a, d.a);
+  }
+
+  inline void dump_pins(TextPainter& text, const PinOut& a, const PinOut& b, const PinIn& c, const PinOut& d) {
+    dump_pin(text, a.a, b.a, c.a, d.a);
+  }
+
+  void dump_pins(TextPainter& text) {
     text.dprintf("----- EXT_PINS -----\n");
 
     text.dprintf("PHI %d\n", PHI.a.val);
-    text.dprintf("WRn %d:x:%d:%d\n", WRn_A.a.val, WRn_C.a.val, WRn_D.a.val);
-    text.dprintf("RDn %d:x:%d:%d\n", RDn_A.a.val, RDn_C.a.val, RDn_D.a.val);
-    text.dprintf("CSn %d\n",         CSn_A.a.val);
+    text.dprintf("WRn %d:x:%d:%d\n", WR_A.a.val, WR_C.a.val, WR_D.a.val);
+    text.dprintf("RDn %d:x:%d:%d\n", RD_A.a.val, RD_C.a.val, RD_D.a.val);
+    text.dprintf("CSn %d\n",         CS_A.a.val);
 
-    text.dprintf("Axx_A 0x%04x\n",
-                 pack(A00_A, A01_A, A02_A, A03_A, A04_A, A05_A, A06_A, A07_A,
-                      A08_A, A09_A, A10_A, A11_A, A12_A, A13_A, A14_A, A15_A));
-    text.dprintf("Axx_C 0x%04x\n",
-                 pack(A00_C, A01_C, A02_C, A03_C, A04_C, A05_C, A06_C, A07_C,
-                      A08_C, A09_C, A10_C, A11_C, A12_C, A13_C, A14_C, A15_C));
-    text.dprintf("Axx_D 0x%04x\n",
-                 pack(A00_D, A01_D, A02_D, A03_D, A04_D, A05_D, A06_D, A07_D,
-                      A08_D, A09_D, A10_D, A11_D, A12_D, A13_D, A14_D, A15_D));
+    text.add_text("Axx ");
+    dump_pins(text, A15_A, A15_D);
+    dump_pins(text, A14_A, A14_D);
+    dump_pins(text, A13_A, A13_D);
+    dump_pins(text, A12_A, A12_D);
+    text.add_char(':');
+    dump_pins(text, A11_A, A11_D);
+    dump_pins(text, A10_A, A10_D);
+    dump_pins(text, A09_A, A09_D);
+    dump_pins(text, A08_A, A08_D);
+    text.add_char(':');
+    dump_pins(text, A07_A, A07_D);
+    dump_pins(text, A06_A, A06_D);
+    dump_pins(text, A05_A, A05_D);
+    dump_pins(text, A04_A, A04_D);
+    text.add_char(':');
+    dump_pins(text, A03_A, A03_D);
+    dump_pins(text, A02_A, A02_D);
+    dump_pins(text, A01_A, A01_D);
+    dump_pins(text, A00_A, A00_D);
+    text.newline();
 
-    text.dprintf("Dxx_A 0x%02x\n", pack(D0_A, D1_A, D2_A, D3_A, D4_A, D5_A, D6_A, D7_A));
-    text.dprintf("Dxx_B 0x%02x\n", pack(D0_B, D1_B, D2_B, D3_B, D4_B, D5_B, D6_B, D7_B));
-    text.dprintf("Dxx_C 0x%02x\n", pack(D0_C, D1_C, D2_C, D3_C, D4_C, D5_C, D6_C, D7_C));
-    text.dprintf("Dxx_D 0x%02x\n", pack(D0_D, D1_D, D2_D, D3_D, D4_D, D5_D, D6_D, D7_D));
+    text.add_text("Dxx ");
+    dump_pins(text, D7_A, D7_B, D7_C, D7_D);
+    dump_pins(text, D6_A, D6_B, D6_C, D6_D);
+    dump_pins(text, D5_A, D5_B, D5_C, D5_D);
+    dump_pins(text, D4_A, D4_B, D4_C, D4_D);
+    dump_pins(text, D3_A, D3_B, D3_C, D3_D);
+    dump_pins(text, D2_A, D2_B, D2_C, D2_D);
+    dump_pins(text, D1_A, D1_B, D1_C, D1_D);
+    dump_pins(text, D0_A, D0_B, D0_C, D0_D);
+    text.newline();
   }
 
   //----------
@@ -489,15 +591,15 @@ struct ExtPins {
 
   /* PIN_75 */ PinOut PHI;     // <- P01.BUDE/BEVA
 
-  /* PIN_78 */ PinOut WRn_A;   // <- P08.UVER
-  /* PIN_78 */ PinIn  WRn_C;   // -> P07.UBAL
-  /* PIN_78 */ PinOut WRn_D;   // <- P08.USUF
+  /* PIN_78 */ PinOut WR_A;   // <- P08.UVER
+  /* PIN_78 */ PinIn  WR_C;   // -> P07.UBAL
+  /* PIN_78 */ PinOut WR_D;   // <- P08.USUF
 
-  /* PIN_79 */ PinOut RDn_A;   // <- P08.UGAC
-  /* PIN_79 */ PinIn  RDn_C;   // -> P07.UJYV
-  /* PIN_79 */ PinOut RDn_D;   // <- P08.URUN
+  /* PIN_79 */ PinOut RD_A;   // <- P08.UGAC
+  /* PIN_79 */ PinIn  RD_C;   // -> P07.UJYV
+  /* PIN_79 */ PinOut RD_D;   // <- P08.URUN
 
-  /* PIN_80 */ PinOut CSn_A;   // <- P08.TYHO
+  /* PIN_80 */ PinOut CS_A;   // <- P08.TYHO
 
   //----------
   // Address pins

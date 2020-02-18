@@ -5,6 +5,8 @@
 #include <string>
 #include <assert.h>
 
+#include "../src/TextPainter.h"
+
 
 //-----------------------------------------------------------------------------
 
@@ -26,18 +28,6 @@ string errprintf(const char* format, Args ... args)
   snprintf(source_buf, 1024, format, args ...);
   return source_buf;
 }
-
-static const uint32_t phase_to_color[8] = {
-  0xFF808080,
-  0xFFB0B070,
-  0xFFFF8080,
-  0xFFFFC080,
-
-  0xFFFFFF80,
-  0xFF80FF80,
-  0xFF8080FF,
-  0xFFD080D0,
-};
 
 //-----------------------------------------------------------------------------
 
@@ -93,82 +83,105 @@ struct VidSignals2;
 
 //-----------------------------------------------------------------------------
 
-template<typename T> 
-void pwron_all(T& first) {
-  first.pwron();
-}
+union SignalState;
+struct SignalBase;
 
-template<typename T, typename... Args>
-void pwron_all(T& first, Args&... args) {
-  pwron_all(first);
-  pwron_all(args...);
-}
+void dump_long(TextPainter& text, const char* label, SignalState a);
+void dump2(TextPainter& text, SignalState a);
+void dump_pin(TextPainter& text, SignalState a, SignalState d);
+void dump_pin(TextPainter& text, SignalState a, SignalState b, SignalState c, SignalState d);
 
-template<typename T> 
-bool commit_all(T& first) {
-  return first.commit();
-}
+void dump(TextPainter& text, const char* label,
+          SignalBase a, SignalBase b, SignalBase c, SignalBase d,
+          SignalBase e, SignalBase f, SignalBase g);
 
-template<typename T, typename... Args>
-bool commit_all(T& first, Args&... args) {
-  bool changed = false;
-  changed |= commit_all(first);
-  changed |= commit_all(args...);
-  return changed;
-}
+void dump(TextPainter& text, const char* label,
+          SignalBase a, SignalBase b, SignalBase c, SignalBase d,
+          SignalBase e, SignalBase f, SignalBase g, SignalBase h);
+
 
 //-----------------------------------------------------------------------------
 
 enum SignalFlags {
-  VAL = 0b000001,
-  HIZ = 0b000010,
-  CLK = 0b000100,
-  SET = 0b001000,
-  RST = 0b010000,
-  ERR = 0b100000,
+  SET_0   = 0b00000000,
+  SET_1   = 0b00000001,
+
+  VAL     = 0b00000001,
+  HIZ     = 0b00000010,
+  CLK     = 0b00000100,
+  SET     = 0b00001000,
+  RST     = 0b00010000,
+  CARRY   = 0b00100000,
+  ERROR   = 0b01000000,
+  //CHANGED = 0b10000000,
 };
 
 union SignalState {
   uint8_t state;
   struct {
-    bool val : 1;
-    bool hiz : 1;
-    bool clk : 1;
-    bool set : 1;
-    bool rst : 1;
-    bool err : 1;
-    bool carry : 1;
+    bool val     : 1;
+    bool hiz     : 1;
+    bool clk     : 1;
+    bool set     : 1;
+    bool rst     : 1;
+    bool carry   : 1;
+    bool error   : 1;
+    //bool changed : 1;
   };
 
-  SignalState(uint8_t s) : state(s) {}
-  void operator =  (uint8_t s)           { state = s; }
-  bool operator == (uint8_t s) const     { return state == s; }
+  SignalState(SignalFlags s) : state(uint8_t(s)) {}
   bool operator != (SignalState s) const { return state != s.state; }
+
+  SignalState operator!() const {
+    SignalState c = SET_0;
+    c.val     = !val;
+    c.hiz     = hiz;
+    c.clk     = clk;
+    c.set     = set;
+    c.rst     = rst;
+    c.carry   = carry;
+    //c.changed = changed;
+    c.error   = error;
+    return c;
+  }
+
+  void dump(TextPainter& text, const char* label) {
+    dump_long(text, label, *this);
+  }
 };
 
 static_assert(sizeof(SignalState) == 1, "SignalState size != 1");
+
+struct SignalBase {
+
+  operator const bool() const {
+    if (a.error) __debugbreak();
+    //if (a.hiz)   __debugbreak();
+    return a.val;
+  }
+
+  void dump(TextPainter& text, const char* label) {
+    a.dump(text, label);
+  }
+
+  SignalState a = SET_0;
+  SignalState b = ERROR;
+};
+
+static_assert(sizeof(SignalBase) == 2, "SignalBase size != 2");
 
 //-----------------------------------------------------------------------------
 // I think that reading a Z pin can't be an error; D0_C goes directly to RALO.
 // Not sure how that doesn't break in harware, but whatev.
 
-struct PinIn {
-
-  operator bool() const {
-    if (a.err) __debugbreak();
-    if (!b.err) __debugbreak();
-    return a.val;
-  }
+struct PinIn : public SignalBase {
 
   void preset(bool oe, bool val) {
-    //if (!a.err) __debugbreak();
-    a.val = val;
-    a.hiz = !oe;
-    a.clk = 0;
-    a.set = 0;
-    a.rst = 0;
-    a.err = 0;
-    a.carry = 0;
+    a = oe ? (val ? SET_1 : SET_0) : HIZ;
+  }
+
+  void preset(SignalState c) {
+    a = c;
   }
 
   bool clear_preset() {
@@ -179,129 +192,86 @@ struct PinIn {
     */
     return false;
   }
-
-  SignalState a = ERR;
-  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
-struct PinOut {
-
-  operator bool() const {
-    if (a.err) __debugbreak();
-    if (a.hiz) __debugbreak();
-    return a.val;
-  }
-
-  void preset(wire val) {
-    if (!a.err) __debugbreak();
-    a.val = val;
-    a.hiz = 0;
-    a.clk = 0;
-    a.set = 0;
-    a.rst = 0;
-    a.err = 0;
-    a.carry = 0;
-  }
+struct PinOut : public SignalBase {
 
   void set(wire val) {
-    if (!b.err) __debugbreak();
+    if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
-    b.err = 0;
     b.carry = 0;
+    //b.changed = 0;
+    b.error = 0;
   }
 
   bool commit() {
-    if (a.err) __debugbreak();
-    if (b.err) __debugbreak();
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
     bool changed = a != b;
     a = b;
-    b = ERR;
+    b = ERROR;
     return changed;
   }
-
-  SignalState a = 0;
-  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
-struct Tribuf {
+struct Tribuf : public SignalBase {
 
-  operator bool() const {
-    if (a.err)    __debugbreak();
-    //if (a.hiz) __debugbreak();
-    return a.val;
-  }
-
-  void preset(bool oe, bool val) {
-    if (!a.err) __debugbreak();
-    a.val = val;
-    a.hiz = !oe;
-    a.clk = 0;
-    a.set = 0;
-    a.rst = 0;
-    a.err = 0;
+  Tribuf() {
+    a = HIZ;
+    b = ERROR;
   }
 
   void set(bool oe, bool val) {
-    if (!b.err && !b.hiz) {
+    if (!b.error && !b.hiz) {
       if (oe) __debugbreak();
       return;
     }
 
-    b.val = val;
+    b.val = val && oe;
     b.hiz = !oe;
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
-    b.err = 0;
+    b.carry = 0;
+    //b.changed = 0;
+    b.error = 0;
   }
 
   bool commit() {
-    if (a.err) __debugbreak();
-    if (b.err) __debugbreak();
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
     bool changed = a.val != b.val || a.hiz != b.hiz;
     a = b;
-    b = ERR;
+    b = ERROR;
     return changed;
   }
-
-  SignalState a = 0;
-  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
-struct Signal {
+struct Signal : public SignalBase {
+
+  Signal() {
+    a = ERROR;
+  }
 
   void operator = (wire val) {
-    if (!a.err) __debugbreak();
-    a = val;
+    if (!a.error) __debugbreak();
+    a = val ? SET_1 : SET_0;
   }
-
-  operator const bool() const {
-    if (a.err) __debugbreak();
-    return a.val;
-  }
-
-  SignalState a = ERR;
-  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
-struct Reg3 {
-  operator const bool() const {
-    if (a.err) __debugbreak();
-    //if (!b.err) __debugbreak();
-    return a.val;
-  }
+struct Reg3 : public SignalBase {
 
   void set(bool clk, bool val) {
     set(clk, 1, 1, val);
@@ -312,19 +282,21 @@ struct Reg3 {
   }
 
   void set(bool clk, bool setN, bool rstN, bool val) {
-    if (a.err)  __debugbreak();
-    if (!b.err) __debugbreak();
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
     b.clk = clk;
     b.set = !setN;
     b.rst = !rstN;
-    b.err = 0;
+    b.carry = 0;
+    //b.changed = 0;
+    b.error = 0;
   }
 
   bool commit() {
-    if (a.err) __debugbreak();
-    if (b.err) __debugbreak();
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
 
     bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
@@ -337,62 +309,36 @@ struct Reg3 {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    a.err = 0;
+    a.carry = 0;
+    //a.changed = 0;
+    a.error = 0;
 
-    b = ERR;
-
-    return old_a != new_a;
-  }
-
-  bool commit_duo() {
-    if (a.err) __debugbreak();
-    if (b.err) __debugbreak();
-    
-    bool old_a = a.val;
-    bool new_a = (a.clk != b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    a.err = 0;
-
-    b = ERR;
+    b = ERROR;
 
     return old_a != new_a;
   }
-
-  SignalState a = 0;
-  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
-struct RegDuo {
-  operator const bool() const {
-    if (a.err) __debugbreak();
-    //if (!b.err) __debugbreak();
-    return a.val;
-  }
+struct RegDuo : public SignalBase {
 
-  void set(bool clk, bool setN, bool rstN, bool val) {
-    if (a.err)  __debugbreak();
-    if (!b.err) __debugbreak();
-    b.val = val;
+  void set(bool clk, bool rstN, SignalState c) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = c.val;
     b.hiz = 0;
     b.clk = clk;
-    b.set = !setN;
+    b.set = 0;
     b.rst = !rstN;
-    b.err = 0;
+    b.carry = 0;
+    //b.changed = 0;
+    b.error = 0;
   }
 
   bool commit_duo() {
-    if (a.err) __debugbreak();
-    if (b.err) __debugbreak();
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
     
     bool old_a = a.val;
     bool new_a = (a.clk != b.clk) ? b.val : a.val;
@@ -405,50 +351,49 @@ struct RegDuo {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    a.err = 0;
+    a.carry = 0;
+    //a.changed = 0;
+    a.error = 0;
 
-    b = ERR;
+    b = ERROR;
 
     return old_a != new_a;
   }
-
-  SignalState a = 0;
-  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 
-struct Latch3 {
-  operator const bool() const {
-    if (a.err) __debugbreak();
-    return a.val;
-  }
+struct Latch3 : public SignalBase {
 
   void sr_latch(bool setN, bool rstN) {
-    if (a.err)  __debugbreak();
-    if (!b.err) __debugbreak();
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
     b.val = 0;
     b.hiz = 0;
     b.clk = 0;
     b.set = !setN;
     b.rst = !rstN;
-    b.err = 0;
+    b.carry = 0;
+    //b.changed = 0;
+    b.error = 0;
   }
 
   void tp_latch(bool latchN, bool val) {
-    if (a.err)  __debugbreak();
-    if (!b.err) __debugbreak();
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
     b.val = 0;
     b.hiz = 0;
     b.clk = 0;
     b.set = !latchN && val;
     b.rst = !latchN && !val;
-    b.err = 0;
+    b.carry = 0;
+    //b.changed = 0;
+    b.error = 0;
   }
 
   bool commit() {
-    if (a.err) __debugbreak();
-    if (b.err) __debugbreak();
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
 
     bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
@@ -461,46 +406,49 @@ struct Latch3 {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    a.err = 0;
+    a.carry = 0;
+    //a.changed = 0;
+    a.error = 0;
 
-    b = ERR;
+    b = ERROR;
 
     return old_a != new_a;
   }
-
-  SignalState a = 0;
-  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------
 // FIXME good chance that count's not right (polarity or something)
 // Does this really contain two bits of data just to track the carry bit?
 
-struct Counter {
+struct Counter : public SignalBase {
   const bool v() const {
-    if (a.err) __debugbreak();
+    if (a.error) __debugbreak();
+    if (a.hiz)   __debugbreak();
     return a.val;
   }
 
   const bool c() const {
-    if (a.err) __debugbreak();
+    if (a.error) __debugbreak();
+    if (a.hiz)   __debugbreak();
     return a.carry;
   }
 
   void count(bool clk, bool loadN, bool val) {
-    if (a.err)  __debugbreak();
-    if (!b.err) __debugbreak();
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
     b.clk = clk;
     b.set = !loadN && val;
     b.rst = !loadN && !val;
-    b.err = 0;
+    b.carry = 0;
+    //b.changed = 0;
+    b.error = 0;
   }
 
   bool commit() {
-    if (a.err) __debugbreak();
-    if (b.err) __debugbreak();
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
 
     bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
@@ -513,16 +461,14 @@ struct Counter {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    a.err = 0;
     a.carry = old_a && !new_a && !b.set && !b.rst;
+    //a.changed = 0;
+    a.error = 0;
 
-    b = ERR;
+    b = ERROR;
 
     return old_a != new_a;
   }
-
-  SignalState a = 0;
-  SignalState b = ERR;
 };
 
 //-----------------------------------------------------------------------------

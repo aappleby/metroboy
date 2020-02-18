@@ -8,11 +8,13 @@ struct TextPainter {
   void begin_frame();
 
   void add_char(const char c);
+  void add_char(const char c, const char d);
+  void add_text(const char* text);
   void add_text(const char* text, int len);
   void dprintf(const char* format, ...);
   void render(float x, float y, float scale);
 
-  void newline() { add_char('\n'); }
+  void newline() { add_char(1, '\n'); }
 
   void set_pal(int index, float r, float g, float b, float a);
 
@@ -33,10 +35,12 @@ struct TextPainter {
   int inst_begin = 0;
   int inst_end = 0;
 
-  uint32_t  text_vao;
   uint32_t  quad_vbo;
-  uint32_t  inst_vbo;
-  uint32_t* inst_map;
+
+  int buf_idx = 0;
+  uint32_t  text_vaos[3];
+  uint32_t  inst_vbos[3];
+  uint32_t* inst_maps[3];
 };
 
 #if 0

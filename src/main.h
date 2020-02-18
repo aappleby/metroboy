@@ -24,7 +24,7 @@ public:
 
   void loop();
 
-  MetroBoy metroboy;
+  StateManager metroboy;
   bool rom_loaded = false;
   const char* filename = nullptr;
   std::string text_buf;

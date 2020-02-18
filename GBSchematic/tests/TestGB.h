@@ -7,17 +7,14 @@ namespace Schematics {
 
 struct TestGB {
 
-  void sys_preset(bool RST, bool CLKIN_A, bool CLKIN_B);
-  void cpu_preset(bool CLKREQ, uint16_t addr, uint8_t data);
   void ext_preset();
-  void ser_preset();
-  void joy_preset();
-  void vram_preset();
 
   void tick_everything();
   bool commit_everything();
 
   //-----------------------------------------------------------------------------
+
+  int phase_counter = -1;
 
   /*
   uint8_t rom[65536];

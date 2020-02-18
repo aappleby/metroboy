@@ -393,24 +393,6 @@ void AppBase::begin_frame() {
 //-----------------------------------------------------------------------------
 
 void AppBase::update() {
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-    ImGui_ImplSDL2_ProcessEvent(&event);
-    if (event.type == SDL_QUIT) quit = true;
-    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
-
-    if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
-    case SDLK_RIGHT:
-      break;
-    case SDLK_LEFT:
-      break;
-    case SDLK_UP:
-      break;
-    case SDLK_DOWN:
-      break;
-    }
-  }
-
   glUseProgram(blit_prog);
   glUniform4f(glGetUniformLocation(blit_prog, "screen_size"),
               (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);

@@ -12,6 +12,7 @@ const char* inst_vert_src = R"(
 uniform vec4 screen_size = vec4(1920.0, 1080.0, 1.0 / 1920.0, 1.0 / 1080.0);
 uniform vec4 text_pos = vec4(0.0, 0.0, 1.0, 1.0);
 uniform vec4 palette[16];
+uniform vec4 bg_palette = vec4(0.0, 0.0, 0.0, 0.5);
 
 layout (location = 0) in vec2 corner_pos;
 layout (location = 1) in vec4 v_inst;
@@ -27,6 +28,9 @@ const float screen_stride_y = 12.0;
 
 const float atlas_stride_x = 8.0;
 const float atlas_stride_y = 16.0;
+
+const float atlas_width = 256.0;
+const float atlas_height = 256.0;
 
 out vec2 tc_glyph;
 out vec4 fg_color;
@@ -61,13 +65,13 @@ void main() {
   float glyph_x = (atlas_pos.x * atlas_stride_x) + (corner_pos.x * glyph_size_x) + glyph_shift_x;
   float glyph_y = (atlas_pos.y * atlas_stride_y) + (corner_pos.y * glyph_size_y) + glyph_shift_y;
 
-  glyph_x /= 256.0;
-  glyph_y /= 256.0;
+  glyph_x *= 1.0 / atlas_width;
+  glyph_y *= 1.0 / atlas_height;
 
   gl_Position = screen_to_norm(quad_x, quad_y);
   tc_glyph = vec2(glyph_x, glyph_y);
   fg_color = palette[fg_style];
-  bg_color = palette[bg_style];
+  bg_color = bg_palette;
   scale = text_pos.z;
 }
 )";
@@ -146,24 +150,22 @@ void TextPainter::init(int fb_width_, int fb_height_) {
                     GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
   }
 
-  {
-    glGenBuffers(1, &inst_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, inst_vbo);
+  for (buf_idx = 0; buf_idx < 3; buf_idx++) {
+    glGenBuffers(1, &inst_vbos[buf_idx]);
+    glBindBuffer(GL_ARRAY_BUFFER, inst_vbos[buf_idx]);
     glBufferStorage(GL_ARRAY_BUFFER, 65536*4, nullptr,
                     GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
-    glBindBuffer(GL_ARRAY_BUFFER, inst_vbo);
-    inst_map = (uint32_t*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-  }
+    glBindBuffer(GL_ARRAY_BUFFER, inst_vbos[buf_idx]);
+    inst_maps[buf_idx] = (uint32_t*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 
-  {
-    glGenVertexArrays(1, &text_vao);
-    glBindVertexArray(text_vao);
+    glGenVertexArrays(1, &text_vaos[buf_idx]);
+    glBindVertexArray(text_vaos[buf_idx]);
 
     glBindBuffer(GL_ARRAY_BUFFER, quad_vbo);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_UNSIGNED_BYTE, GL_FALSE, 2, (void*)0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, inst_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, inst_vbos[buf_idx]);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_FALSE, 4, (void*)0);
     glVertexAttribDivisor(1, 1);
@@ -192,24 +194,14 @@ void TextPainter::init(int fb_width_, int fb_height_) {
 //-----------------------------------------------------------------------------
 
 void TextPainter::begin_frame() {
-
-  /*
-  uint32_t temp1 = inst_vbo_a;
-  inst_vbo_a = inst_vbo_b;
-  inst_vbo_b = temp1;
-
-  uint32_t* temp2 = inst_map_a;
-  inst_map_a = inst_map_b;
-  inst_map_b = temp2;
-  */
-
   inst_begin = 0;
   inst_end = 0;
+  buf_idx = (buf_idx + 1) % 3;
 }
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::add_char(char c) {
+void TextPainter::add_char(const char c) {
   if (c < 10) {
     fg_pal = c;
   }
@@ -218,8 +210,19 @@ void TextPainter::add_char(char c) {
     text_y++;
   }
   else {
-    inst_map[inst_end++] = (text_x << 0) | (text_y << 8) | (c << 16) | (fg_pal << 24) | (bg_pal << 28);
+    inst_maps[buf_idx][inst_end++] = (text_x << 0) | (text_y << 8) | (c << 16) | (fg_pal << 24) | (bg_pal << 28);
     text_x++;
+  }
+}
+
+void TextPainter::add_char(const char c, const char d) {
+  add_char(c);
+  add_char(d);
+}
+
+void TextPainter::add_text(const char* text) {
+  for(; *text; text++) {
+    add_char(*text);
   }
 }
 
@@ -249,7 +252,7 @@ void TextPainter::render(float x, float y, float scale) {
   glUniform4f(glGetUniformLocation(text_prog, "text_pos"), x, y, scale, scale);
   glUniform4f(glGetUniformLocation(text_prog, "screen_size"),
               (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
-  glBindVertexArray(text_vao);
+  glBindVertexArray(text_vaos[buf_idx]);
   glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, 6, inst_end - inst_begin, inst_begin);
   text_x = 0;
   text_y = 0;

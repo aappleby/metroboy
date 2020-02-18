@@ -1,45 +1,14 @@
 #include "TestGB.h"
 
+#pragma warning(disable:4458)
+
 using namespace Schematics;
-
-template<typename T>
-inline void phase_begin(T& first) { first.pwron(); }
-
-template<typename T, typename... Args> inline void phase_begin_all(T& first, Args&... args) {
-  phase_begin(first);
-  phase_begin(args...);
-}
 
 //-----------------------------------------------------------------------------
 
-void TestGB::sys_preset(bool RST, bool CLKIN_A, bool CLKIN_B) {
-  sys_pins.RST.preset(true, RST);
-  sys_pins.CLKIN_A.preset(true, CLKIN_A);
-  sys_pins.CLKIN_B.preset(true, CLKIN_B);
-  sys_pins.T2.preset(true, 0);
-  sys_pins.T1.preset(true, 0);
-}
-
-void TestGB::cpu_preset(bool CLKREQ, uint16_t addr, /*FIXME*/ uint8_t /*data*/) {
-  cpu_pins.CLKREQ.preset(true, CLKREQ);
-  cpu_pins.CPU_RAW_RD.preset(true, 0);   // PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
-  cpu_pins.CPU_RAW_WR.preset(true, 0);   // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
-  cpu_pins.ADDR_VALID.preset(true, 0);   // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
-
-  cpu_pins.FROM_CPU5.preset(true, 0);    // PORTD_05: -> FROM_CPU5
-  cpu_pins.FROM_CPU6.preset(true, 0);    // PORTD_00: -> P07.LEXY, doesn't do anything
-  cpu_pins.ACK_SERIAL.preset(true, 0);    // PORTB_13: -> P02.LUFE, serial int ack
-  cpu_pins.ACK_STAT.preset(true, 0);    // PORTB_05: -> P02.LEJA, stat int ack
-  cpu_pins.ACK_VBLANK.preset(true, 0);    // PORTB_01: -> P02.LETY, vblank int ack
-  cpu_pins.ACK_TIMER.preset(true, 0);   // PORTB_09: -> P02.LESA, timer int ack
-  cpu_pins.ACK_JOYPAD.preset(true, 0);   // PORTB_17: -> P02.LAMO, joypad int ack
-
-  cpu_pins.preset_addr(true, addr);
-}
-
 void TestGB::ext_preset() {
-  ext_pins.WRn_C.preset(true, 0);   // -> P07.UBAL
-  ext_pins.RDn_C.preset(true, 0);   // -> P07.UJYV
+  ext_pins.WR_C.preset(true, 0);   // -> P07.UBAL
+  ext_pins.RD_C.preset(true, 0);   // -> P07.UJYV
   ext_pins.A00_C.preset(true, 0);   // -> P08.KOVA
   ext_pins.A01_C.preset(true, 0);   // -> P08.CAMU
   ext_pins.A02_C.preset(true, 0);   // -> P08.BUXU
@@ -57,7 +26,7 @@ void TestGB::ext_preset() {
   ext_pins.A14_C.preset(true, 0);   // -> P08.PEVO
   ext_pins.A15_C.preset(true, 0);   // -> P08.RAZA
 
-  if (!ext_pins.RDn_A && !ext_pins.CSn_A) {
+  if (!ext_pins.RD_A && !ext_pins.CS_A) {
     uint16_t ext_addr = (uint16_t)pack(ext_pins.A00_A, ext_pins.A01_A, ext_pins.A02_A, ext_pins.A03_A,
                                        ext_pins.A04_A, ext_pins.A05_A, ext_pins.A06_A, ext_pins.A07_A,
                                        ext_pins.A08_A, ext_pins.A09_A, ext_pins.A10_A, ext_pins.A11_A,
@@ -119,41 +88,15 @@ void TestGB::ext_preset() {
   }
 }
 
-void TestGB::ser_preset() {
-  ser_pins.SCK_C.preset(true, 0);   // -> P06.CAVE
-  ser_pins.SIN_C.preset(true, 0);   // -> P06.CAGE
-}
-
-void TestGB::joy_preset() {
-  joy_pins.P10_C.preset(true, 0);   // -> P02.KERY, P05.KEVU
-  joy_pins.P11_C.preset(true, 0);   // -> P02.KERY, P05.KAPA
-  joy_pins.P12_C.preset(true, 0);   // -> P02.KERY, P05.KEJA
-  joy_pins.P13_C.preset(true, 0);   // -> P02.KERY, P05.KOLO
-}
-
-void TestGB::vram_preset() {
-  vram_pins.MCS_C.preset(true, 0);   // -> P25.TEFY
-  vram_pins.MOE_C.preset(true, 0);   // -> P25.TAVY
-  vram_pins.MWR_C.preset(true, 0);   // -> P25.SUDO
-  vram_pins.MD0_C.preset(true, 0);   // -> P25.RODY
-  vram_pins.MD1_C.preset(true, 0);   // -> P25.REBA
-  vram_pins.MD2_C.preset(true, 0);   // -> P25.RYDO
-  vram_pins.MD3_C.preset(true, 0);   // -> P25.REMO
-  vram_pins.MD4_C.preset(true, 0);   // -> P25.ROCE
-  vram_pins.MD5_C.preset(true, 0);   // -> P25.ROPU
-  vram_pins.MD6_C.preset(true, 0);   // -> P25.RETA
-  vram_pins.MD7_C.preset(true, 0);   // -> P25.RAKU
-}
-
 //-----------------------------------------------------------------------------
 
 bool TestGB::commit_everything() {
   bool changed = false;
 
-  /*p01.AFUR*/ changed |= clk_reg.PHAZ_ABCDxxxx.commit();
-  /*p01.ALEF*/ changed |= clk_reg.PHAZ_xBCDExxx.commit();
-  /*p01.APUK*/ changed |= clk_reg.PHAZ_xxCDEFxx.commit();
-  /*p01.ADYK*/ changed |= clk_reg.PHAZ_xxxDEFGx.commit();
+  /*p01.AFUR*/ changed |= clk_reg.PHAZ_ABCDxxxx.commit_duo();
+  /*p01.ALEF*/ changed |= clk_reg.PHAZ_xBCDExxx.commit_duo();
+  /*p01.APUK*/ changed |= clk_reg.PHAZ_xxCDEFxx.commit_duo();
+  /*p01.ADYK*/ changed |= clk_reg.PHAZ_xxxDEFGx.commit_duo();
 
   /*p23.VYXE*/ changed |= cfg_reg.LCDC_BGEN.commit();
   /*p23.XYLO*/ changed |= cfg_reg.LCDC_SPEN.commit();
@@ -802,29 +745,29 @@ bool TestGB::commit_everything() {
 
   /*p07.TEPU*/ changed |= bus_reg.BOOT_BIT.commit();
   /*p25.SOTO*/ changed |= bus_reg.SOTO_DBG.commit();
-  /*p08.ALOR*/ changed |= bus_reg.ADDR_LATCH_00.commit();
-  /*p08.APUR*/ changed |= bus_reg.ADDR_LATCH_01.commit();
-  /*p08.ALYR*/ changed |= bus_reg.ADDR_LATCH_02.commit();
-  /*p08.ARET*/ changed |= bus_reg.ADDR_LATCH_03.commit();
-  /*p08.AVYS*/ changed |= bus_reg.ADDR_LATCH_04.commit();
-  /*p08.ATEV*/ changed |= bus_reg.ADDR_LATCH_05.commit();
-  /*p08.AROS*/ changed |= bus_reg.ADDR_LATCH_06.commit();
-  /*p08.ARYM*/ changed |= bus_reg.ADDR_LATCH_07.commit();
-  /*p08.LUNO*/ changed |= bus_reg.ADDR_LATCH_08.commit();
-  /*p08.LYSA*/ changed |= bus_reg.ADDR_LATCH_09.commit();
-  /*p08.PATE*/ changed |= bus_reg.ADDR_LATCH_10.commit();
-  /*p08.LUMY*/ changed |= bus_reg.ADDR_LATCH_11.commit();
-  /*p08.LOBU*/ changed |= bus_reg.ADDR_LATCH_12.commit();
-  /*p08.LONU*/ changed |= bus_reg.ADDR_LATCH_13.commit();
-  /*p08.NYRE*/ changed |= bus_reg.ADDR_LATCH_14.commit();
-  /*p08.SOMA*/ changed |= bus_reg.DATA_LATCH_00.commit();
-  /*p08.RONY*/ changed |= bus_reg.DATA_LATCH_01.commit();
-  /*p08.RAXY*/ changed |= bus_reg.DATA_LATCH_02.commit();
-  /*p08.SELO*/ changed |= bus_reg.DATA_LATCH_03.commit();
-  /*p08.SODY*/ changed |= bus_reg.DATA_LATCH_04.commit();
-  /*p08.SAGO*/ changed |= bus_reg.DATA_LATCH_05.commit();
-  /*p08.RUPA*/ changed |= bus_reg.DATA_LATCH_06.commit();
-  /*p08.SAZY*/ changed |= bus_reg.DATA_LATCH_07.commit();
+  /*p08.ALOR*/ changed |= bus_reg.INT_ADDR_LATCH_00.commit();
+  /*p08.APUR*/ changed |= bus_reg.INT_ADDR_LATCH_01.commit();
+  /*p08.ALYR*/ changed |= bus_reg.INT_ADDR_LATCH_02.commit();
+  /*p08.ARET*/ changed |= bus_reg.INT_ADDR_LATCH_03.commit();
+  /*p08.AVYS*/ changed |= bus_reg.INT_ADDR_LATCH_04.commit();
+  /*p08.ATEV*/ changed |= bus_reg.INT_ADDR_LATCH_05.commit();
+  /*p08.AROS*/ changed |= bus_reg.INT_ADDR_LATCH_06.commit();
+  /*p08.ARYM*/ changed |= bus_reg.INT_ADDR_LATCH_07.commit();
+  /*p08.LUNO*/ changed |= bus_reg.INT_ADDR_LATCH_08.commit();
+  /*p08.LYSA*/ changed |= bus_reg.INT_ADDR_LATCH_09.commit();
+  /*p08.PATE*/ changed |= bus_reg.INT_ADDR_LATCH_10.commit();
+  /*p08.LUMY*/ changed |= bus_reg.INT_ADDR_LATCH_11.commit();
+  /*p08.LOBU*/ changed |= bus_reg.INT_ADDR_LATCH_12.commit();
+  /*p08.LONU*/ changed |= bus_reg.INT_ADDR_LATCH_13.commit();
+  /*p08.NYRE*/ changed |= bus_reg.INT_ADDR_LATCH_14.commit();
+  /*p08.SOMA*/ changed |= bus_reg.EXT_DATA_LATCH_00.commit();
+  /*p08.RONY*/ changed |= bus_reg.EXT_DATA_LATCH_01.commit();
+  /*p08.RAXY*/ changed |= bus_reg.EXT_DATA_LATCH_02.commit();
+  /*p08.SELO*/ changed |= bus_reg.EXT_DATA_LATCH_03.commit();
+  /*p08.SODY*/ changed |= bus_reg.EXT_DATA_LATCH_04.commit();
+  /*p08.SAGO*/ changed |= bus_reg.EXT_DATA_LATCH_05.commit();
+  /*p08.RUPA*/ changed |= bus_reg.EXT_DATA_LATCH_06.commit();
+  /*p08.SAZY*/ changed |= bus_reg.EXT_DATA_LATCH_07.commit();
 
   //----------------------------------------
   // PINS
@@ -836,7 +779,7 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.SYRO.commit();         // PORTA_03: <- P25.SYRO
   changed |= cpu_pins.READ_BOOTROM.commit(); // PORTA_04: <- P07.READ_BOOTROM
   changed |= cpu_pins.T1T2n.commit();        // PORTA_05: <- P07.T1T2n
-  changed |= cpu_pins.ADDR_VALID.clear_preset();   // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
+  changed |= cpu_pins.ADDR_VALIDn.clear_preset();   // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
   changed |= cpu_pins.ACK_VBLANK.clear_preset();    // PORTB_01: -> P02.LETY, vblank int ack
   changed |= cpu_pins.INT_VBLANK.commit();      // PORTB_03: <- P02.LOPE, vblank int
   changed |= cpu_pins.ACK_STAT.clear_preset();    // PORTB_05: -> P02.LEJA, stat int ack
@@ -853,14 +796,14 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.CLK_GOOD.commit();      // PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   changed |= cpu_pins.CPU_RESET.commit();    // PORTC_04: <- P01.CPU_RESET
   changed |= cpu_pins.FROM_CPU6.clear_preset();    // PORTD_00: -> P07.LEXY, doesn't do anything
-  changed |= cpu_pins.CLK_xBCDEFGH.commit(); // PORTD_01: <- P01.BOWA
-  changed |= cpu_pins.CLK_Axxxxxxx.commit(); // PORTD_02: <- P01.BEDO _____fgh
-  changed |= cpu_pins.BEKO.commit();         // PORTD_03: <- P01.BEKO ____efgh connection not indicated on P01
-  changed |= cpu_pins.BUDE.commit();         // PORTD_04: <- P01.BUDE abcd____
+  changed |= cpu_pins.BOWA_xBCDEFGH.commit(); // PORTD_01: <- P01.BOWA
+  changed |= cpu_pins.BEDO_Axxxxxxx.commit(); // PORTD_02: <- P01.BEDO _____fgh
+  changed |= cpu_pins.BEKO_ABCDxxxx.commit();         // PORTD_03: <- P01.BEKO ____efgh connection not indicated on P01
+  changed |= cpu_pins.BUDE_xxxxEFGH.commit();         // PORTD_04: <- P01.BUDE abcd____
   changed |= cpu_pins.FROM_CPU5.clear_preset();    // PORTD_05: -> FROM_CPU5
-  changed |= cpu_pins.BUKE.commit();         // PORTD_06: <- P01.BUKE _____f__
-  changed |= cpu_pins.BOMA.commit();         // PORTD_07: <- P01.RESET_CLK _____fgh
-  changed |= cpu_pins.BOGA.commit();         // PORTD_08: <- P01.BOGA abcde___
+  changed |= cpu_pins.BUKE_AxxxxxGH.commit();         // PORTD_06: <- P01.BUKE _____f__
+  changed |= cpu_pins.BOMA_Axxxxxxx.commit();         // PORTD_07: <- P01.RESET_CLK _____fgh
+  changed |= cpu_pins.BOGA_xBCDEFGH.commit();         // PORTD_08: <- P01.BOGA abcde___
 
   changed |= cpu_pins.A00.clear_preset();
   changed |= cpu_pins.A01.clear_preset();
@@ -916,7 +859,7 @@ bool TestGB::commit_everything() {
   changed |= oam_pins.B_D6.commit();
   changed |= oam_pins.B_D7.commit();
 
-  changed |= wave_pins.CLK_AxxxxxGH.commit();
+  changed |= wave_pins.BORY_AxxxxxGH.commit();
 
   // Package pins
 
@@ -1099,18 +1042,18 @@ bool TestGB::commit_everything() {
   /* PIN_71 */ changed |= sys_pins.RST.clear_preset();
   /* PIN_72 */ /*GND*/
   /* PIN_73 */ /*CLKOUT*/
-  /* PIN_74 */ changed |= sys_pins.CLKIN_A.clear_preset();
-  /* PIN_74 */ changed |= sys_pins.CLKIN_B.clear_preset();
+  /* PIN_74 */ changed |= sys_pins.CLK_GOOD.clear_preset();
+  /* PIN_74 */ changed |= sys_pins.CLK_IN.clear_preset();
   /* PIN_75 */ changed |= ext_pins.PHI.commit();     // <- P01.BUDE/BEVA
   /* PIN_76 */ changed |= sys_pins.T2.clear_preset();
   /* PIN_77 */ changed |= sys_pins.T1.clear_preset();
-  /* PIN_78 */ changed |= ext_pins.WRn_A.commit();   // <- P08.UVER
-  /* PIN_78 */ changed |= ext_pins.WRn_C.clear_preset();   // -> P07.UBAL
-  /* PIN_78 */ changed |= ext_pins.WRn_D.commit();   // <- P08.USUF
-  /* PIN_79 */ changed |= ext_pins.RDn_A.commit();   // <- P08.UGAC
-  /* PIN_79 */ changed |= ext_pins.RDn_C.clear_preset();   // -> P07.UJYV
-  /* PIN_79 */ changed |= ext_pins.RDn_D.commit();   // <- P08.URUN
-  /* PIN_80 */ changed |= ext_pins.CSn_A.commit();   // <- P08.TYHO
+  /* PIN_78 */ changed |= ext_pins.WR_A.commit();   // <- P08.UVER
+  /* PIN_78 */ changed |= ext_pins.WR_C.clear_preset();   // -> P07.UBAL
+  /* PIN_78 */ changed |= ext_pins.WR_D.commit();   // <- P08.USUF
+  /* PIN_79 */ changed |= ext_pins.RD_A.commit();   // <- P08.UGAC
+  /* PIN_79 */ changed |= ext_pins.RD_C.clear_preset();   // -> P07.UJYV
+  /* PIN_79 */ changed |= ext_pins.RD_D.commit();   // <- P08.URUN
+  /* PIN_80 */ changed |= ext_pins.CS_A.commit();   // <- P08.TYHO
 
   return changed;
 }

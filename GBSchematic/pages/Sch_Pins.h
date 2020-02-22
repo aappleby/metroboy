@@ -98,32 +98,14 @@ struct OamPins {
 struct CpuPins {
 
   void dump_pins(TextPainter& text) {
-    text.dprintf("----- CPU_PINS IN -----\n");
-
-    text.dprintf("CLKREQ        %d\n", CLKREQ      .a.val);
-    text.dprintf("CPU_RAW_RD    %d\n", CPU_RAW_RD  .a.val);
-    text.dprintf("CPU_RAW_WR    %d\n", CPU_RAW_WR  .a.val);
-    text.dprintf("ADDR_VALID    %d\n", ADDR_VALIDn  .a.val);
-    text.dprintf("FROM_CPU5     %d\n", FROM_CPU5   .a.val);
-    text.dprintf("FROM_CPU6     %d\n", FROM_CPU6   .a.val);
-
-    text.dprintf("ACK_VBLANK    %d\n", ACK_VBLANK .a.val);
-    text.dprintf("ACK_STAT      %d\n", ACK_STAT   .a.val);
-    text.dprintf("ACK_TIMER     %d\n", ACK_TIMER  .a.val);
-    text.dprintf("ACK_SERIAL    %d\n", ACK_SERIAL .a.val);
-    text.dprintf("ACK_JOYPAD    %d\n", ACK_JOYPAD .a.val);
-
-
-
-    text.dprintf("----- CPU_PINS OUT -----\n");
-
-    text.dprintf("AFER          %d\n", AFER        .a.val);
+    text.dprintf("----- CPU DBG/RST -----\n");
     text.dprintf("PIN_RESET     %d\n", PIN_RESET   .a.val);
     text.dprintf("CPU_RESET     %d\n", CPU_RESET   .a.val);
     text.dprintf("CLK_GOOD      %d\n", CLK_GOOD    .a.val);
     text.dprintf("T1nT2         %d\n", T1nT2        .a.val);
     text.dprintf("T1T2n         %d\n", T1T2n        .a.val);
 
+    text.dprintf("----- CPU CLOCKS -----\n");
     text.dprintf("BOWA_xBCDEFGH %d\n", BOWA_xBCDEFGH.a.val);
     text.dprintf("BEDO_Axxxxxxx %d\n", BEDO_Axxxxxxx.a.val);
     text.dprintf("BEKO_ABCDxxxx %d\n", BEKO_ABCDxxxx.a.val);
@@ -132,17 +114,33 @@ struct CpuPins {
     text.dprintf("BOMA_Axxxxxxx %d\n", BOMA_Axxxxxxx.a.val);
     text.dprintf("BOGA_xBCDEFGH %d\n", BOGA_xBCDEFGH.a.val);
 
+    text.dprintf("----- FROM CPU -----\n");
+    text.dprintf("CLKREQ        %d\n", CLKREQ      .a.val);
+    text.dprintf("FROM_CPU5     %d\n", FROM_CPU5   .a.val);
+    text.dprintf("FROM_CPU6     %d\n", FROM_CPU6   .a.val);
+
+    text.dprintf("----- TO CPU -----\n");
+    text.dprintf("AFER          %d\n", AFER        .a.val);
     text.dprintf("TO_CPU2       %d\n", TO_CPU2      .a.val);
     text.dprintf("SYRO          %d\n", SYRO         .a.val);
     text.dprintf("READ_BOOTROM  %d\n", READ_BOOTROM .a.val);
 
+    text.dprintf("----- CPU INT -----\n");
     text.dprintf("INT_VBLANK    %d\n", INT_VBLANK .a.val);
     text.dprintf("INT_STAT      %d\n", INT_STAT   .a.val);
     text.dprintf("INT_TIMER     %d\n", INT_TIMER  .a.val);
     text.dprintf("INT_SERIAL    %d\n", INT_SERIAL .a.val);
     text.dprintf("INT_JOYPAD    %d\n", INT_JOYPAD .a.val);
+    text.dprintf("ACK_VBLANK    %d\n", ACK_VBLANK .a.val);
+    text.dprintf("ACK_STAT      %d\n", ACK_STAT   .a.val);
+    text.dprintf("ACK_TIMER     %d\n", ACK_TIMER  .a.val);
+    text.dprintf("ACK_SERIAL    %d\n", ACK_SERIAL .a.val);
+    text.dprintf("ACK_JOYPAD    %d\n", ACK_JOYPAD .a.val);
 
     text.dprintf("----- CPU BUS -----\n");
+    text.dprintf("CPU_RAW_RD    %d\n", CPU_RAW_RD  .a.val);
+    text.dprintf("CPU_RAW_WR    %d\n", CPU_RAW_WR  .a.val);
+    text.dprintf("ADDR_VALID    %d\n", ADDR_VALIDn  .a.val);
     
     text.add_text("Axx ");
     dump2(text, A15.a);
@@ -548,9 +546,9 @@ struct ExtPins {
     text.dprintf("----- EXT_PINS -----\n");
 
     text.dprintf("PHI %d\n", PHI.a.val);
-    text.dprintf("WRn %d:x:%d:%d\n", WR_A.a.val, WR_C.a.val, WR_D.a.val);
-    text.dprintf("RDn %d:x:%d:%d\n", RD_A.a.val, RD_C.a.val, RD_D.a.val);
-    text.dprintf("CSn %d\n",         CS_A.a.val);
+    text.dprintf("WR  %d\n", WR_A.a.val);
+    text.dprintf("RD  %d\n", RD_A.a.val);
+    text.dprintf("CS  %d\n", CS_A.a.val);
 
     text.add_text("Axx ");
     dump_pins(text, A15_A, A15_D);

@@ -19,6 +19,127 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
+uint8_t Main::read_cycle(uint16_t addr) {
+  TestGB* gb = gbs.state();
+
+  for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
+    gb->phase_counter++;
+
+    for (int pass = 0; pass < 256; pass++) {
+      int phase = gb->phase_counter;
+      gb->sys_pins.CLK_IN.preset(true, !(phase & 1));
+
+      gb->cpu_pins.CPU_RAW_RD.preset(true, 1);
+      gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
+      gb->cpu_pins.ADDR_VALIDn.preset(true, 1);
+      gb->cpu_pins.preset_addr(true, addr);
+
+      // FIXME still don't know who drives these, so we always set them to 0.
+      gb->joy_pins.P10_B.set(0);
+      gb->joy_pins.P11_B.set(0);
+      gb->joy_pins.P12_B.set(0);
+      gb->joy_pins.P13_B.set(0);
+
+      gb->tick_everything();
+      bool changed = gb->commit_everything();
+      if (!changed) break;
+      if (pass == 199) printf("stuck!\n");
+      if (pass == 200) __debugbreak();
+    }
+  }
+
+  return (uint8_t)gb->cpu_pins.get_data();
+}
+
+void Main::write_cycle(uint16_t addr, uint8_t data) {
+  TestGB* gb = gbs.state();
+
+  for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
+    gb->phase_counter++;
+
+    for (int pass = 0; pass < 256; pass++) {
+      int phase = gb->phase_counter;
+      gb->sys_pins.CLK_IN.preset(true, !(phase & 1));
+
+      gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
+      gb->cpu_pins.CPU_RAW_WR.preset(true, 1);
+      gb->cpu_pins.ADDR_VALIDn.preset(true, 1);
+      gb->cpu_pins.preset_addr(true, addr);
+      gb->cpu_pins.set_data(true, data);
+
+      // FIXME still don't know who drives these, so we always set them to 0.
+      gb->joy_pins.P10_B.set(0);
+      gb->joy_pins.P11_B.set(0);
+      gb->joy_pins.P12_B.set(0);
+      gb->joy_pins.P13_B.set(0);
+
+      gb->tick_everything();
+      bool changed = gb->commit_everything();
+      if (!changed) break;
+      if (pass == 199) printf("stuck!\n");
+      if (pass == 200) __debugbreak();
+    }
+  }
+}
+
+void Main::pass_cycle() {
+  TestGB* gb = gbs.state();
+
+  for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
+    gb->phase_counter++;
+
+    for (int pass = 0; pass < 256; pass++) {
+      int phase = gb->phase_counter;
+      gb->sys_pins.CLK_IN.preset(true, !(phase & 1));
+
+      gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
+      gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
+      gb->cpu_pins.ADDR_VALIDn.preset(true, 0);
+      gb->cpu_pins.preset_addr(true, 0x0000);
+
+      // FIXME still don't know who drives these, so we always set them to 0.
+      gb->joy_pins.P10_B.set(0);
+      gb->joy_pins.P11_B.set(0);
+      gb->joy_pins.P12_B.set(0);
+      gb->joy_pins.P13_B.set(0);
+
+      gb->tick_everything();
+      bool changed = gb->commit_everything();
+      if (!changed) break;
+      if (pass == 199) printf("stuck!\n");
+      if (pass == 200) __debugbreak();
+    }
+  }
+}
+
+uint8_t Main::rw_cycle(uint16_t addr, uint8_t data) {
+  write_cycle(addr, data);
+  return read_cycle(addr);
+}
+
+//-----------------------------------------------------------------------------
+
+/*
+AF=$01B0
+BC=$0013
+DE=$00D8
+HL=$014D
+Stack Pointer=$FFFE
+[$FF05] = $00   ; TIMA
+[$FF06] = $00   ; TMA
+[$FF07] = $00   ; TAC
+[$FF40] = $91   ; LCDC
+[$FF42] = $00   ; SCY
+[$FF43] = $00   ; SCX
+[$FF45] = $00   ; LYC
+[$FF47] = $FC   ; BGP
+[$FF48] = $FF   ; OBP0
+[$FF49] = $FF   ; OBP1
+[$FF4A] = $00   ; WY
+[$FF4B] = $00   ; WX
+[$FFFF] = $00   ; IE
+*/
+
 void Main::init() {
   base::init();
 
@@ -45,11 +166,47 @@ void Main::init() {
   gb->cpu_pins.ACK_TIMER.preset(true, 0);
   gb->cpu_pins.ACK_JOYPAD.preset(true, 0);
 
-  //gb->cpu_pins.preset_data(false, 0x00);
-
-  //gb->cpu_pins.preset_addr(true, 0xFF05);
-  //gb->cpu_pins.preset_data(true, 0x55);
   gb->ext_preset();
+
+  pass_cycle();
+  gb->sys_pins.RST.preset(true, 0);
+  pass_cycle();
+  gb->sys_pins.CLK_GOOD.preset(true, 1);
+  pass_cycle();
+  gb->cpu_pins.CLKREQ.preset(true, 1);
+  pass_cycle();
+
+  /*
+  printf("joyp 0x%02x 0x%02x\n", rw_cycle(0xFF00, 0x00), rw_cycle(0xFF00, 0xFF));
+  printf("sb   0x%02x 0x%02x\n", rw_cycle(0xFF01, 0x00), rw_cycle(0xFF01, 0xFF));
+  printf("sc   0x%02x 0x%02x\n", rw_cycle(0xFF02, 0x00), rw_cycle(0xFF02, 0xFF));
+  printf("nc   0x%02x 0x%02x\n", rw_cycle(0xFF03, 0x00), rw_cycle(0xFF03, 0xFF));
+
+  printf("div  0x%02x 0x%02x\n", rw_cycle(0xFF04, 0x00), rw_cycle(0xFF04, 0xFF));
+  printf("tima 0x%02x 0x%02x\n", rw_cycle(0xFF05, 0x00), rw_cycle(0xFF05, 0xFF));
+  printf("tma  0x%02x 0x%02x\n", rw_cycle(0xFF06, 0x00), rw_cycle(0xFF06, 0xFF));
+  printf("tac  0x%02x 0x%02x\n", rw_cycle(0xFF07, 0x00), rw_cycle(0xFF07, 0xFF));
+  printf("if   0x%02x 0x%02x\n", rw_cycle(0xFF0F, 0x00), rw_cycle(0xFF0F, 0xFF));
+
+  printf("lcdc 0x%02x 0x%02x\n", rw_cycle(0xFF40, 0x00), rw_cycle(0xFF40, 0xFF));
+  printf("stat 0x%02x 0x%02x\n", rw_cycle(0xFF41, 0x00), rw_cycle(0xFF41, 0xFF));
+  printf("scy  0x%02x 0x%02x\n", rw_cycle(0xFF42, 0x00), rw_cycle(0xFF42, 0xFF));
+  printf("scx  0x%02x 0x%02x\n", rw_cycle(0xFF43, 0x00), rw_cycle(0xFF43, 0xFF));
+  printf("ly   0x%02x 0x%02x\n", rw_cycle(0xFF44, 0x00), rw_cycle(0xFF44, 0xFF));
+  printf("lyc  0x%02x 0x%02x\n", rw_cycle(0xFF45, 0x00), rw_cycle(0xFF45, 0xFF));
+  printf("lyc  0x%02x 0x%02x\n", rw_cycle(0xFF46, 0x00), rw_cycle(0xFF46, 0xFF));
+  printf("bgp  0x%02x 0x%02x\n", rw_cycle(0xFF47, 0x00), rw_cycle(0xFF47, 0xFF));
+  printf("obp0 0x%02x 0x%02x\n", rw_cycle(0xFF48, 0x00), rw_cycle(0xFF48, 0xFF));
+  printf("obp1 0x%02x 0x%02x\n", rw_cycle(0xFF49, 0x00), rw_cycle(0xFF49, 0xFF));
+  printf("wy   0x%02x 0x%02x\n", rw_cycle(0xFF4A, 0x00), rw_cycle(0xFF4A, 0xFF));
+  printf("wx   0x%02x 0x%02x\n", rw_cycle(0xFF4B, 0x00), rw_cycle(0xFF4B, 0xFF));
+  */
+
+  /*
+  for(int addr = 0xFF00; addr <= 0xFFFF; addr++) {
+    printf("0x%04x    0x%02x 0x%02x\n", addr, rw_cycle((uint16_t)addr, 0x00), rw_cycle((uint16_t)addr, 0xFF));
+  }
+  */
 
   auto gb_step = [this](TestGB* gb){
     gb->phase_counter++;
@@ -58,58 +215,21 @@ void Main::init() {
       int phase = gb->phase_counter;
       gb->sys_pins.CLK_IN.preset(true, !(phase & 1));
 
-      if (phase == 8)  gb->sys_pins.RST.preset(true, 0);
-      if (phase == 16) gb->sys_pins.CLK_GOOD.preset(true, 1);
-      if (phase == 24) gb->cpu_pins.CLKREQ.preset(true, 1);
-
-
-      if (phase >= 32 && phase < 40) {
-        gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
-        gb->cpu_pins.CPU_RAW_WR.preset(true, 1);
-        gb->cpu_pins.ADDR_VALIDn.preset(true, 1);
-        gb->cpu_pins.preset_addr(true, 0xA123);
-        gb->cpu_pins.set_data(true, 0x55);
-      }
-      else {
-        gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
-        gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-        gb->cpu_pins.ADDR_VALIDn.preset(true, 1);
-        gb->cpu_pins.preset_addr(true, 0x0000);
-      }
-
       /*
       if (phase >= 32 && phase < 40) {
         gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
         gb->cpu_pins.CPU_RAW_WR.preset(true, 1);
         gb->cpu_pins.ADDR_VALIDn.preset(true, 1);
-        gb->cpu_pins.preset_addr(true, 0xA000);
+        gb->cpu_pins.preset_addr(true, 0xFF42);
         gb->cpu_pins.set_data(true, 0x55);
       }
-      if (phase >= 40 && phase < 48) {
+      else if (phase >= 40 && phase < 48) {
         gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
         gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-        gb->cpu_pins.ADDR_VALIDn.preset(true, 1);
+        gb->cpu_pins.ADDR_VALIDn.preset(true, 0);
         gb->cpu_pins.preset_addr(true, 0x0000);
-        //gb->cpu_pins.set_data(true, 0x55);
-      }
-      if (phase >= 55) {
-        gb->cpu_pins.CPU_RAW_RD.preset(true, 1);
-        gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-        gb->cpu_pins.ADDR_VALIDn.preset(true, 1);
-        gb->cpu_pins.preset_addr(true, 0xA000);
-        //gb->cpu_pins.set_data(true, 0x55);
       }
       */
-
-      //gb->sys_preset(gb->RST, gb->CLKIN_A, gb->CLKIN_B);
-      //gb->cpu_preset(gb->CLKREQ, 0x0000, 0x00);
-      //gb->ext_preset();
-      //gb->ser_preset();
-      //gb->joy_preset();
-      //gb->vram_preset();
-
-
-      gb->tick_everything();
 
       // FIXME still don't know who drives these, so we always set them to 0.
       gb->joy_pins.P10_B.set(0);
@@ -117,13 +237,10 @@ void Main::init() {
       gb->joy_pins.P12_B.set(0);
       gb->joy_pins.P13_B.set(0);
 
+      gb->tick_everything();
       bool changed = gb->commit_everything();
-      if (!changed) {
-        break;
-      }
-      if (pass == 199) {
-        printf("stuck!\n");
-      }
+      if (!changed) break;
+      if (pass == 199) printf("stuck!\n");
       if (pass == 200) __debugbreak();
     }
   };
@@ -185,7 +302,7 @@ void Main::render_frame() {
   uint64_t begin = SDL_GetPerformanceCounter();
 
   text.begin_frame();
-
+  
   text.set_pal(0, 0.4, 0.4, 0.4, 1.0); // grey
   text.set_pal(1, 0.8, 0.8, 0.8, 1.0); // white 
   

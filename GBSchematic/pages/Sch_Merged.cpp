@@ -299,20 +299,18 @@ void TestGB::tick_everything() {
   //----------------------------------------
   // sch_buscontrol
 
-  /*p01.AREV*/   wire AREV = nand(cpu_pins.CPU_RAW_WR, AFAS_xxxxEFGx);
-  /*p01.APOV*/ wire APOV_CPU_WR_xxxxEFGx = not(AREV);
+  /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, UNOR_MODE_DBG2);
+  /*p07.TEDO*/ wire TEDO_BUS_RD     = not(UJYV_BUS_RD_MUX);
+  /*p07.AJAS*/ wire AJAS_BUS_RDn    = not(TEDO_BUS_RD);
+  /*p07.ASOT*/ wire ASOT_BUS_RD     = not(AJAS_BUS_RDn);
 
-  /*p07.UJYV*/ wire   CPU_RD_MUX = mux2n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, UNOR_MODE_DBG2);
-  /*p07.TEDO*/ wire TEDO_CPURD  = not(CPU_RD_MUX);
+  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDxxxH = nand(cpu_pins.CPU_RAW_WR, AFAS_xxxxEFGx);
+  /*p01.APOV*/ wire APOV_CPU_WR_xxxxEFGx  = not(AREV_CPU_WRn_ABCDxxxH);
 
-  /*p07.UBAL*/ wire   CPU_WR_MUX = mux2n(ext_pins.WR_C, APOV_CPU_WR_xxxxEFGx, UNOR_MODE_DBG2);
-  /*p07.TAPU*/ wire TAPU_CPUWR  = not(CPU_WR_MUX);
-    
-  /*p07.AJAS*/   wire CPU_RDn = not(TEDO_CPURD);
-  /*p07.ASOT*/ wire ASOT_CPURD = not(CPU_RDn);
-
-  /*p07.DYKY*/   wire CPU_WRn = not(TAPU_CPUWR);
-  /*p07.CUPA*/ wire CUPA_CPUWR = not(CPU_WRn);
+  /*p07.UBAL*/ wire UBAL_BUS_WR_MUX       = mux2n(ext_pins.WR_C, APOV_CPU_WR_xxxxEFGx, UNOR_MODE_DBG2);
+  /*p07.TAPU*/ wire TAPU_BUS_WR_ABCDxxxH  = not(UBAL_BUS_WR_MUX);
+  /*p07.DYKY*/ wire DYKY_BUS_WRn_xxxxEFGx = not(TAPU_BUS_WR_ABCDxxxH);
+  /*p07.CUPA*/ wire CUPA_BUS_WR_ABCDxxxH  = not(DYKY_BUS_WRn_xxxxEFGx);
 
   //----------------------------------------
   // sch_lcd
@@ -532,7 +530,7 @@ void TestGB::tick_everything() {
     /*p04.LUFA*/ DMA_READ_VRAM = not(DMA_READ_VRAMn);
 
     /*p22.XEDA*/ wire FF46 = not(FF46n);
-    /*p04.LAVY*/ wire FF46_WRn  = nand(FF46, CUPA_CPUWR);
+    /*p04.LAVY*/ wire FF46_WRn  = nand(FF46, CUPA_BUS_WR_ABCDxxxH);
     /*p04.LORU*/ wire FF46_WR = not(FF46_WRn);
 
     /*p04.MAKA*/ dma_reg.FROM_CPU5_SYNC.set(ZEME_xBxDxFxH, CUNU_RSTn, cpu_pins.FROM_CPU5);
@@ -573,7 +571,7 @@ void TestGB::tick_everything() {
     /*p04.MARU*/ dma_reg.DMA_A15.set(FF46_WR, cpu_pins.D7);
 
     {
-      /*p04.MOLU*/ wire FF46_RDn1 = nand(FF46, ASOT_CPURD);
+      /*p04.MOLU*/ wire FF46_RDn1 = nand(FF46, ASOT_BUS_RD);
       /*p04.NYGO*/ wire FF46_RD   = not(FF46_RDn1);
       /*p04.PUSY*/ wire FF46_RDn2 = not(FF46_RD);
 
@@ -593,7 +591,7 @@ void TestGB::tick_everything() {
 
   // div
   {
-    /*p01.TAGY*/ wire FF04_RD = and(TEDO_CPURD, FF04_FF07, TOLA_A01n, TOVY_A00n);
+    /*p01.TAGY*/ wire FF04_RD = and(TEDO_BUS_RD, FF04_FF07, TOLA_A01n, TOVY_A00n);
      
     /*p01.UMEK*/ wire DIV_06n = not(tim_reg.DIV_06);
     /*p01.UREK*/ wire DIV_07n = not(tim_reg.DIV_07);
@@ -613,7 +611,7 @@ void TestGB::tick_everything() {
     /*p01.SAWA*/ cpu_pins.D6.set(FF04_RD, not(DIV_12n));
     /*p01.TATU*/ cpu_pins.D7.set(FF04_RD, not(DIV_13n));
 
-    /*p01.TAPE*/   wire FF04_WR = and(TAPU_CPUWR, FF04_FF07, TOLA_A01n, TOVY_A00n);
+    /*p01.TAPE*/   wire FF04_WR = and(TAPU_BUS_WR_ABCDxxxH, FF04_FF07, TOLA_A01n, TOVY_A00n);
     /*p01.UFOL*/ wire DIV_RSTn = nor(UCOB_CLKBAD, sys_pins.RST, FF04_WR);
 
     /*p01.UKUP*/ tim_reg.DIV_00.set(BOGA_xBCDEFGH,   DIV_RSTn, !tim_reg.DIV_00);
@@ -639,13 +637,16 @@ void TestGB::tick_everything() {
 
   // sch_timer.tick_tima
   {
-    /*p03.TEDA*/ wire FF05_RD = and(TEDO_CPURD, FF04_FF07, TOLA_A01n,     cpu_pins.A00);
-    /*p03.TOPE*/ wire FF05_WRn = nand(TAPU_CPUWR, FF04_FF07, TOLA_A01n, cpu_pins.A00);
+    /*p03.TEDA*/ wire FF05_RD = and(TEDO_BUS_RD, FF04_FF07, TOLA_A01n,     cpu_pins.A00);
+    /*p03.TOPE*/ wire FF05_WRn = nand(TAPU_BUS_WR_ABCDxxxH, FF04_FF07, TOLA_A01n, cpu_pins.A00);
     /*p03.UBOT*/ wire CLK_256Kn = not(tim_reg.DIV_01);
     /*p03.UVYR*/ wire CLK_64Kn  = not(tim_reg.DIV_03);
     /*p03.MEKE*/ wire INT_TIMERn = not(tim_reg.INT_TIMER);
+
     /*p03.MUZU*/ wire MUZU       = or(cpu_pins.FROM_CPU5, FF05_WRn);
     /*p03.MEXU*/ wire TIMA_LOAD  = nand(MUZU, ALUR_RSTn, INT_TIMERn);
+
+
     /*p01.UVYN*/ wire DIV_05n = not(tim_reg.DIV_05);
     /*p03.UKAP*/ wire CLK_MUXa = mux2n(DIV_05n,  CLK_64Kn, tim_reg.TAC_0);
     /*p01.UREK*/ wire DIV_07n = not(tim_reg.DIV_07);
@@ -670,14 +671,14 @@ void TestGB::tick_everything() {
     /*p03.RUGY*/ wire TIMA_LD_5 = nor(TIMA_RST, TIMA_MUX_5);
     /*p03.PYMA*/ wire TIMA_LD_6 = nor(TIMA_RST, TIMA_MUX_6);
     /*p03.PAGU*/ wire TIMA_LD_7 = nor(TIMA_RST, TIMA_MUX_7);
-    /*p03.REGA*/ tim_reg.TIMA_0.count(TIMA_CLK,           TIMA_LOAD, TIMA_LD_0);
-    /*p03.POVY*/ tim_reg.TIMA_1.count(tim_reg.TIMA_0.c(), TIMA_LOAD, TIMA_LD_1);
-    /*p03.PERU*/ tim_reg.TIMA_2.count(tim_reg.TIMA_1.c(), TIMA_LOAD, TIMA_LD_2);
-    /*p03.RATE*/ tim_reg.TIMA_3.count(tim_reg.TIMA_2.c(), TIMA_LOAD, TIMA_LD_3);
-    /*p03.RUBY*/ tim_reg.TIMA_4.count(tim_reg.TIMA_3.c(), TIMA_LOAD, TIMA_LD_4);
-    /*p03.RAGE*/ tim_reg.TIMA_5.count(tim_reg.TIMA_4.c(), TIMA_LOAD, TIMA_LD_5);
-    /*p03.PEDA*/ tim_reg.TIMA_6.count(tim_reg.TIMA_5.c(), TIMA_LOAD, TIMA_LD_6);
-    /*p03.NUGA*/ tim_reg.TIMA_7.count(tim_reg.TIMA_6.c(), TIMA_LOAD, TIMA_LD_7);
+    /*p03.REGA*/ tim_reg.TIMA_0.tima_count(TIMA_CLK,           TIMA_LOAD, TIMA_LD_0);
+    /*p03.POVY*/ tim_reg.TIMA_1.tima_count(tim_reg.TIMA_0.c(), TIMA_LOAD, TIMA_LD_1);
+    /*p03.PERU*/ tim_reg.TIMA_2.tima_count(tim_reg.TIMA_1.c(), TIMA_LOAD, TIMA_LD_2);
+    /*p03.RATE*/ tim_reg.TIMA_3.tima_count(tim_reg.TIMA_2.c(), TIMA_LOAD, TIMA_LD_3);
+    /*p03.RUBY*/ tim_reg.TIMA_4.tima_count(tim_reg.TIMA_3.c(), TIMA_LOAD, TIMA_LD_4);
+    /*p03.RAGE*/ tim_reg.TIMA_5.tima_count(tim_reg.TIMA_4.c(), TIMA_LOAD, TIMA_LD_5);
+    /*p03.PEDA*/ tim_reg.TIMA_6.tima_count(tim_reg.TIMA_5.c(), TIMA_LOAD, TIMA_LD_6);
+    /*p03.NUGA*/ tim_reg.TIMA_7.tima_count(tim_reg.TIMA_6.c(), TIMA_LOAD, TIMA_LD_7);
 
     /*p03.MUGY*/ wire TIMA_LOADn = not(TIMA_LOAD);
 
@@ -698,8 +699,8 @@ void TestGB::tick_everything() {
 
   // sch_timer.tick_tma
   {
-    /*p03.TYJU*/ wire FF06_WRn = nand(TAPU_CPUWR, FF04_FF07, TOVY_A00n, cpu_pins.A01);
-    /*p03.TUBY*/ wire FF06_RD = and(TEDO_CPURD, FF04_FF07, cpu_pins.A01, TOVY_A00n);
+    /*p03.TYJU*/ wire FF06_WRn = nand(TAPU_BUS_WR_ABCDxxxH, FF04_FF07, TOVY_A00n, cpu_pins.A01);
+    /*p03.TUBY*/ wire FF06_RD = and(TEDO_BUS_RD, FF04_FF07, cpu_pins.A01, TOVY_A00n);
 
     /*p03.SABU*/ tim_reg.TMA_0.set(FF06_WRn, ALUR_RSTn, cpu_pins.D0);
     /*p03.NYKE*/ tim_reg.TMA_1.set(FF06_WRn, ALUR_RSTn, cpu_pins.D1);
@@ -722,8 +723,8 @@ void TestGB::tick_everything() {
 
   // sch_timer.tick_tac
   {
-    /*p03.SARA*/ wire FF07_WRn = nand(TAPU_CPUWR, FF04_FF07, cpu_pins.A00, cpu_pins.A01);
-    /*p03.SORA*/ wire FF07_RD = and(TEDO_CPURD, FF04_FF07, cpu_pins.A00, cpu_pins.A01);
+    /*p03.SARA*/ wire FF07_WRn = nand(TAPU_BUS_WR_ABCDxxxH, FF04_FF07, cpu_pins.A00, cpu_pins.A01);
+    /*p03.SORA*/ wire FF07_RD = and(TEDO_BUS_RD, FF04_FF07, cpu_pins.A00, cpu_pins.A01);
 
     /*p03.SOPU*/ tim_reg.TAC_0.set(FF07_WRn, ALUR_RSTn, cpu_pins.D0);
     /*p03.SAMY*/ tim_reg.TAC_1.set(FF07_WRn, ALUR_RSTn, cpu_pins.D1);
@@ -736,11 +737,11 @@ void TestGB::tick_everything() {
 
   //----------------------------------------
   // serial
-  [this, TEDO_CPURD, TAPU_CPUWR, ALUR_RSTn, TOVY_A00n, TOLA_A01n, ADDR_XX00_XX07, ADDR_FFXX] {
+  [this, TEDO_BUS_RD, TAPU_BUS_WR_ABCDxxxH, ALUR_RSTn, TOVY_A00n, TOLA_A01n, ADDR_XX00_XX07, ADDR_FFXX] {
     /*p06.SEFY*/   wire SEFY_A02n = not(cpu_pins.A02);
     /*p06.SANO*/ wire ADDR_FF00_FF03 = and(ADDR_XX00_XX07, SEFY_A02n, ADDR_FFXX);
     /*p06.COBA*/ wire SER_CNT3n = not(ser_reg.SER_CNT3);
-    /*p06.UWAM*/ wire FF02_WRn = nand(TAPU_CPUWR, ADDR_FF00_FF03, cpu_pins.A01, TOVY_A00n);
+    /*p06.UWAM*/ wire FF02_WRn = nand(TAPU_BUS_WR_ABCDxxxH, ADDR_FF00_FF03, cpu_pins.A01, TOVY_A00n);
     /*p06.CABY*/ wire XFER_RESET = and(SER_CNT3n, ALUR_RSTn);
     /*p06.ETAF*/ ser_reg.XFER_START.set(FF02_WRn, XFER_RESET,         cpu_pins.D0);
     /*p06.CULY*/ ser_reg.XFER_DIR  .set(FF02_WRn, ALUR_RSTn, cpu_pins.D1);
@@ -757,7 +758,7 @@ void TestGB::tick_everything() {
     /*p06.CYDE*/ ser_reg.SER_CNT2.set(!ser_reg.SER_CNT1, SER_RST, !ser_reg.SER_CNT2);
     /*p06.CALY*/ ser_reg.SER_CNT3.set(!ser_reg.SER_CNT2, SER_RST, !ser_reg.SER_CNT3);
 
-    /*p06.URYS*/ wire FF01_WRn = nand(TAPU_CPUWR, ADDR_FF00_FF03, cpu_pins.A00, TOLA_A01n);
+    /*p06.URYS*/ wire FF01_WRn = nand(TAPU_BUS_WR_ABCDxxxH, ADDR_FF00_FF03, cpu_pins.A00, TOLA_A01n);
     /*p06.DAKU*/ wire FF01_WR  = not (FF01_WRn);
 
     /*p06.CUFU*/ wire SER_DATA0_SETn = nand(cpu_pins.D0, FF01_WR);
@@ -799,7 +800,7 @@ void TestGB::tick_everything() {
                  ser_pins.SCK_B.set(ser_reg.XFER_DIR);
     /*p06.KUJO*/ ser_pins.SCK_D.set(nor(ser_reg.SER_CLK, /*p06.JAGO*/ not(ser_reg.XFER_DIR)));
 
-    /*p06.UFEG*/ wire FF01_RD = and(TEDO_CPURD, ADDR_FF00_FF03, cpu_pins.A00, TOLA_A01n);
+    /*p06.UFEG*/ wire FF01_RD = and(TEDO_BUS_RD, ADDR_FF00_FF03, cpu_pins.A00, TOLA_A01n);
 
     /*p06.CUGY*/ cpu_pins.D0.set(FF01_RD, ser_reg.SER_DATA0);
     /*p06.DUDE*/ cpu_pins.D1.set(FF01_RD, ser_reg.SER_DATA1);
@@ -810,7 +811,7 @@ void TestGB::tick_everything() {
     /*p06.EFAB*/ cpu_pins.D6.set(FF01_RD, ser_reg.SER_DATA6);
     /*p06.ETAK*/ cpu_pins.D7.set(FF01_RD, ser_reg.SER_DATA7);
 
-    /*p06.UCOM*/ wire FF02_RD = and (TEDO_CPURD, ADDR_FF00_FF03, cpu_pins.A01, TOVY_A00n);
+    /*p06.UCOM*/ wire FF02_RD = and (TEDO_BUS_RD, ADDR_FF00_FF03, cpu_pins.A01, TOVY_A00n);
 
     /*p06.CORE*/ cpu_pins.D0.set(FF02_RD, ser_reg.XFER_DIR);
     /*p06.ELUV*/ cpu_pins.D1.set(FF02_RD, ser_reg.XFER_START);
@@ -818,7 +819,7 @@ void TestGB::tick_everything() {
 
   //----------------------------------------
   // sch_joypad
-  [this, BOGA_xBCDEFGH, ALUR_RSTn, TEDO_CPURD, TAPU_CPUWR, ADDR_111111110xx00000] {
+  [this, BOGA_xBCDEFGH, ALUR_RSTn, TEDO_BUS_RD, TAPU_BUS_WR_ABCDxxxH, ADDR_111111110xx00000] {
 
     // FIXME
     wire FF60_0 = 0;
@@ -849,7 +850,7 @@ void TestGB::tick_everything() {
     /*p02.AGEM*/ joy_reg.JP_GLITCH2.set(BOGA_xBCDEFGH, ALUR_RSTn, joy_reg.JP_GLITCH1);
     /*p02.APUG*/ joy_reg.JP_GLITCH3.set(BOGA_xBCDEFGH, ALUR_RSTn, joy_reg.JP_GLITCH2);
 
-    /*p10.ATOZ*/ wire FF00_WRn   = nand(TAPU_CPUWR, ADDR_111111110xx00000, A06n, A05n);
+    /*p10.ATOZ*/ wire FF00_WRn   = nand(TAPU_BUS_WR_ABCDxxxH, ADDR_111111110xx00000, A06n, A05n);
     /*p05.JUTE*/ joy_reg.JOYP_RA    .set(FF00_WRn, ALUR_RSTn, cpu_pins.D0);
     /*p05.KECY*/ joy_reg.JOYP_LB    .set(FF00_WRn, ALUR_RSTn, cpu_pins.D1);
     /*p05.JALE*/ joy_reg.JOYP_UC    .set(FF00_WRn, ALUR_RSTn, cpu_pins.D2);
@@ -859,7 +860,7 @@ void TestGB::tick_everything() {
     /*p05.KUKO*/ joy_reg.DBG_FF00_D6.set(FF00_WRn, ALUR_RSTn, cpu_pins.D6);
     /*p05.KERU*/ joy_reg.DBG_FF00_D7.set(FF00_WRn, ALUR_RSTn, cpu_pins.D7);
 
-    /*p10.ACAT*/ wire FF00_RD = and (TEDO_CPURD, ADDR_111111110xx00000, A06n, A05n);
+    /*p10.ACAT*/ wire FF00_RD = and (TEDO_BUS_RD, ADDR_111111110xx00000, A06n, A05n);
     /*p05.BYZO*/ wire FF00_RDn = not(FF00_RD);
     /*p05.KEVU*/ joy_reg.JOYP_L0.set(joy_pins.P10_C, FF00_RDn);
     /*p05.KAPA*/ joy_reg.JOYP_L1.set(joy_pins.P11_C, FF00_RDn);
@@ -884,9 +885,9 @@ void TestGB::tick_everything() {
   // FF402 LCDC
   {
     /*p22.VOCA*/ wire FF40 = not(FF40n);
-    /*p23.VYRE*/ wire FF40_RD = and(FF40, ASOT_CPURD);
+    /*p23.VYRE*/ wire FF40_RD = and(FF40, ASOT_BUS_RD);
     /*p23.WYCE*/ wire FF40_RDn = not(FF40_RD);
-    /*p23.WARU*/ wire FF40_WR = and(FF40, CUPA_CPUWR);
+    /*p23.WARU*/ wire FF40_WR = and(FF40, CUPA_BUS_WR_ABCDxxxH);
     /*p23.XUBO*/ wire FF40_WRn = not(FF40_WR);
 
     /*p23.WYPO*/ cpu_pins.D0.set(!FF40_RDn, cfg_reg.LCDC_BGEN);
@@ -912,9 +913,9 @@ void TestGB::tick_everything() {
   // FF42 SCY
   {
     /*p22.XARO*/ wire FF42 = not(FF42n);
-    /*p23.ANYP*/ wire FF42_RD = and(FF42, ASOT_CPURD);
+    /*p23.ANYP*/ wire FF42_RD = and(FF42, ASOT_BUS_RD);
     /*p23.BUWY*/ wire FF42_RDn = not(FF42_RD);
-    /*p23.BEDY*/ wire FF42_WR = and(FF42, CUPA_CPUWR);
+    /*p23.BEDY*/ wire FF42_WR = and(FF42, CUPA_BUS_WR_ABCDxxxH);
     /*p23.CAVO*/ wire FF42_WRn = not(FF42_WR);
 
     /*p23.WARE*/ cpu_pins.D0.set(!FF42_RDn, cfg_reg.SCY0);
@@ -939,9 +940,9 @@ void TestGB::tick_everything() {
   // FF43 SCX
   {
     /*p22.XAVY*/ wire FF43 = not(FF43n);
-    /*p23.AVOG*/ wire FF43_RD = and(FF43, ASOT_CPURD);
+    /*p23.AVOG*/ wire FF43_RD = and(FF43, ASOT_BUS_RD);
     /*p23.BEBA*/ wire FF43_RDn = not(FF43_RD);
-    /*p23.ARUR*/ wire FF43_WR = and(FF43, CUPA_CPUWR);
+    /*p23.ARUR*/ wire FF43_WR = and(FF43, CUPA_BUS_WR_ABCDxxxH);
     /*p23.AMUN*/ wire FF43_WRn = not(FF43_WR);
 
     /*p23.EDOS*/ cpu_pins.D0.set(!FF43_RDn, cfg_reg.SCX0);
@@ -966,7 +967,7 @@ void TestGB::tick_everything() {
   // FF44 LY
   {
     /*p22.XOGY*/ wire FF44 = not(FF44n);
-    /*p23.WAFU*/ wire FF44_RD = and(ASOT_CPURD, FF44);
+    /*p23.WAFU*/ wire FF44_RD = and(ASOT_BUS_RD, FF44);
     /*p23.VARO*/ wire FF44_RDn = not(FF44_RD);
 
     /*p23.WURY*/ wire LY0n = not(lcd_reg.Y0);
@@ -991,9 +992,9 @@ void TestGB::tick_everything() {
   // FF45
   {
     /*p22.XAYU*/ wire FF45 = not(FF45n);
-    /*p23.XYLY*/ wire FF45_RD = and(ASOT_CPURD, FF45);
+    /*p23.XYLY*/ wire FF45_RD = and(ASOT_BUS_RD, FF45);
     /*p23.WEKU*/ wire FF45_RDn = not(FF45_RD);
-    /*p23.XUFA*/ wire FF45_WR = and(CUPA_CPUWR, FF45);
+    /*p23.XUFA*/ wire FF45_WR = and(CUPA_BUS_WR_ABCDxxxH, FF45);
     /*p23.WANE*/ wire FF45_WRn = not(FF45_WR);
 
     /*p23.RETU*/ cpu_pins.D0.set(!FF45_RDn, cfg_reg.LYC0);
@@ -1018,9 +1019,9 @@ void TestGB::tick_everything() {
   // FF47
   {
     /*p22.WERA*/ wire FF47 = not(FF47n);
-    /*p36.VUSO*/ wire FF47_RD = and(ASOT_CPURD, FF47);
+    /*p36.VUSO*/ wire FF47_RD = and(ASOT_BUS_RD, FF47);
     /*p36.TEPY*/ wire FF47_RDn = not(FF47_RD);
-    /*p36.VELY*/ wire FF47_WR = and(CUPA_CPUWR, FF47);
+    /*p36.VELY*/ wire FF47_WR = and(CUPA_BUS_WR_ABCDxxxH, FF47);
     /*p36.TEPO*/ wire FF47_WRn = not(FF47_WR);
 
     /*p36.RARO*/ cpu_pins.D0.set(!FF47_RDn, cfg_reg.BGP0);
@@ -1045,9 +1046,9 @@ void TestGB::tick_everything() {
   // FF48
   {
     /*p22.XAYO*/ wire FF48 = not(FF48n);
-    /*p36.XUFY*/ wire FF48_RD  = and(ASOT_CPURD, FF48);
+    /*p36.XUFY*/ wire FF48_RD  = and(ASOT_BUS_RD, FF48);
     /*p36.XOZY*/ wire FF48_RDn = not(FF48_RD);
-    /*p36.XOMA*/ wire FF48_WR  = and(CUPA_CPUWR, FF48);
+    /*p36.XOMA*/ wire FF48_WR  = and(CUPA_BUS_WR_ABCDxxxH, FF48);
     /*p36.XELO*/ wire FF48_WRn = not(FF48_WR);
 
     /*p36.XARY*/ cpu_pins.D0.set(!FF48_RDn, cfg_reg.OBP00);
@@ -1072,9 +1073,9 @@ void TestGB::tick_everything() {
   // FF49
   {
     /*p22.TEGO*/ wire FF49 = not(FF49n);
-    /*p36.MUMY*/ wire FF49_RD  = and(ASOT_CPURD, FF49);
+    /*p36.MUMY*/ wire FF49_RD  = and(ASOT_BUS_RD, FF49);
     /*p36.LOTE*/ wire FF49_RDn = not(FF49_RD); // where does this go?
-    /*p36.MYXE*/ wire FF49_WR  = and(CUPA_CPUWR, FF49);
+    /*p36.MYXE*/ wire FF49_WR  = and(CUPA_BUS_WR_ABCDxxxH, FF49);
     /*p36.LEHO*/ wire FF49_WRn = not(FF49_WR);
 
     /*p36.LAJU*/ cpu_pins.D0.set(!FF49_RDn, cfg_reg.OBP10);
@@ -1100,9 +1101,9 @@ void TestGB::tick_everything() {
   {
     /*p22.VYGA*/ wire FF4A = not(FF4An);
     /*p22.VUMY*/ wire FF4B = not(FF4Bn);
-    /*p23.WAXU*/ wire FF4A_RD = and(ASOT_CPURD, FF4A);
+    /*p23.WAXU*/ wire FF4A_RD = and(ASOT_BUS_RD, FF4A);
     /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
-    /*p23.WYZE*/ wire FF4B_RD = and(ASOT_CPURD, FF4B);
+    /*p23.WYZE*/ wire FF4B_RD = and(ASOT_BUS_RD, FF4B);
     /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);
 
     /*p23.PUNU*/ cpu_pins.D0.set(!FF4A_RDn, cfg_reg.WY0);
@@ -1123,9 +1124,9 @@ void TestGB::tick_everything() {
     /*p23.MULY*/ cpu_pins.D6.set(!FF4B_RDn, cfg_reg.WX6);
     /*p23.MARA*/ cpu_pins.D7.set(!FF4B_RDn, cfg_reg.WX7);
 
-    /*p23.WEKO*/ wire FF4A_WR = and(CUPA_CPUWR, FF4A);
+    /*p23.WEKO*/ wire FF4A_WR = and(CUPA_BUS_WR_ABCDxxxH, FF4A);
     /*p23.VEFU*/ wire FF4A_WRn = not(FF4A_WR);
-    /*p23.WUZA*/ wire FF4B_WR = and(CUPA_CPUWR, FF4B);
+    /*p23.WUZA*/ wire FF4B_WR = and(CUPA_BUS_WR_ABCDxxxH, FF4B);
     /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
 
     /*p01.WALU*/ wire WALU_RESET = not(XORE_RST);
@@ -2222,9 +2223,9 @@ void TestGB::tick_everything() {
 
 
   // stat read
-  [this, ASOT_CPURD, CUPA_CPUWR, FF41n, WESY_RST, PARU_VBLANK_d4, ACYL_OAM_ADDR_PARSE] {
+  [this, ASOT_BUS_RD, CUPA_BUS_WR_ABCDxxxH, FF41n, WESY_RST, PARU_VBLANK_d4, ACYL_OAM_ADDR_PARSE] {
     /*p22.VARY*/ wire FF41 = not(FF41n);
-    /*p21.SEPA*/ wire FF41_WR = and(CUPA_CPUWR, FF41);
+    /*p21.SEPA*/ wire FF41_WR = and(CUPA_BUS_WR_ABCDxxxH, FF41);
     /*p21.RYVE*/ wire RYVE_FF41_WRn = not(FF41_WR);
 
     /*p21.ROXE*/ vid_reg.INT_HBL_EN.set(RYVE_FF41_WRn, WESY_RST, cpu_pins.D0);
@@ -2240,7 +2241,7 @@ void TestGB::tick_everything() {
 
     /*p21.SADU*/ wire STAT_MODE0n = nor(vid_reg.XYMU_RENDERING_LATCH, PARU_VBLANK_d4);
     /*p21.XATY*/ wire STAT_MODE1n = nor(vid_reg.XYMU_RENDERING_LATCH, ACYL_OAM_ADDR_PARSE);
-    /*p21.TOBE*/ wire FF41_RDa = and(ASOT_CPURD, FF41);
+    /*p21.TOBE*/ wire FF41_RDa = and(ASOT_BUS_RD, FF41);
     /*p21.VAVE*/ wire FF41_RDb = FF41_RDa; // buffer, not inverter?. 
 
     /*p21.TEBY*/ cpu_pins.D0.set(FF41_RDa, not(STAT_MODE0n));
@@ -2929,7 +2930,7 @@ void TestGB::tick_everything() {
 
   /*p04.DECY*/ wire FROM_CPU5n = not(cpu_pins.FROM_CPU5);
   /*p04.CATY*/   wire FROM_CPU5  = not(FROM_CPU5n);
-  /*p28.MYNU*/ wire CPU_READ_MYSTERYn = nand(ASOT_CPURD, FROM_CPU5);
+  /*p28.MYNU*/ wire CPU_READ_MYSTERYn = nand(ASOT_BUS_RD, FROM_CPU5);
   /*p28.LEKO*/ wire CPU_READ_MYSTERY  = not(CPU_READ_MYSTERYn);
   /*p25.SYRO*/ wire SYRO_FE00_FFFF = not(TUNA_0000_FDFF);
   /*p25.TEFA*/   wire TEFA = nor(SYRO_FE00_FFFF, TEXO_ADDR_VALID_AND_NOT_VRAM);
@@ -3153,6 +3154,7 @@ void TestGB::tick_everything() {
     // this seems reasonable
     RD_A = 1;
     WR_A = 0;
+
     EXT_DATA_PINS_OUT = 0;
     if (cpu_pins.ADDR_VALIDn && ADDR_NOT_VRAM && cpu_pins.CPU_RAW_WR) {
       RD_A = 0;
@@ -3184,6 +3186,7 @@ void TestGB::tick_everything() {
 #endif
 
 #if 0
+    // TYNU, LAGU, and LOXO are weird
 
     /*p08.SORE*/ SORE = not(A15)
     /*p08.TEVY*/ TEVY = or(A13, A14, SORE) // overlay border color wrong, this is OR
@@ -3262,7 +3265,7 @@ void TestGB::tick_everything() {
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RDn, LYWE);
     /*p08.TYMU*/ wire TYMU_RD_OUTn = nor(LUMA_DMA_READ_CART, MOTY_CPU_EXT_RD);
 
-    /*p08.REDU*/ wire REDU_CPU_RDo = not(TEDO_CPURD);
+    /*p08.REDU*/ wire REDU_CPU_RDo = not(TEDO_BUS_RD);
     /*p08.RORU*/ wire RORU_EXT_DATA_PINS_OUTn = mux2(REDU_CPU_RDo, MOTY_CPU_EXT_RD, UNOR_MODE_DBG2);
     /*p08.LULA*/ wire LULA_EXT_DATA_PINS_OUT  = not(RORU_EXT_DATA_PINS_OUTn);
 
@@ -3378,8 +3381,8 @@ void TestGB::tick_everything() {
       /*p25.RERA*/ ext_pins.D3_A.set(nand(cpu_pins.D3, LULA_EXT_DATA_PINS_OUT));
       /*p25.RORY*/ ext_pins.D4_A.set(nand(cpu_pins.D4, LULA_EXT_DATA_PINS_OUT));
       /*p25.RYVO*/ ext_pins.D5_A.set(nand(cpu_pins.D5, LULA_EXT_DATA_PINS_OUT));
-      /*p25.RAFY*/ ext_pins.D7_A.set(nand(cpu_pins.D6, LULA_EXT_DATA_PINS_OUT));
-      /*p25.RAVU*/ ext_pins.D6_A.set(nand(cpu_pins.D7, LULA_EXT_DATA_PINS_OUT));
+      /*p25.RAFY*/ ext_pins.D6_A.set(nand(cpu_pins.D6, LULA_EXT_DATA_PINS_OUT));
+      /*p25.RAVU*/ ext_pins.D7_A.set(nand(cpu_pins.D7, LULA_EXT_DATA_PINS_OUT));
 
       /*p08.RUNE*/ ext_pins.D0_D.set(nor (cpu_pins.D0, RORU_EXT_DATA_PINS_OUTn));
       /*p08.RYPU*/ ext_pins.D1_D.set(nor (cpu_pins.D1, RORU_EXT_DATA_PINS_OUTn));
@@ -3495,7 +3498,7 @@ void TestGB::tick_everything() {
     /*p28.AJEP*/ wire AJEP = and(ACYL_OAM_ADDR_PARSE, XOCE_ABxxEFxx);
     /*p28.WEFY*/ wire WEFY = and(SPR_OAM_RDn, spr_reg.TYFO_SEQ_B0d);
     /*p28.XUJA*/ wire XUJA = not(WEFY);
-    /*p28.BOTA*/ wire CPU_RD_OAMn = nand(FROM_CPU5n, ADDR_OAM, ASOT_CPURD); // Schematic wrong, this is NAND
+    /*p28.BOTA*/ wire CPU_RD_OAMn = nand(FROM_CPU5n, ADDR_OAM, ASOT_BUS_RD); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire OAM_LATCHn = and (AJEP, XUJA, CPU_RD_OAMn);
     /*p28.BODE*/ wire OAM_LATCH  = not(OAM_LATCHn); // to the tribus receiver below
     /*p28.YVAL*/ wire OAM_LATCHo = not(OAM_LATCH);
@@ -3547,14 +3550,14 @@ void TestGB::tick_everything() {
     /*p28.AMAB*/ wire OAM_LOCKn = and(ADDR_OAM, OAM_BUSYn);
     /*p04.NAXY*/ wire NAXY = nor(dma_reg.FROM_CPU5_SYNC, dma_reg.REG_DMA_EN_d0);
     /*p04.POWU*/ wire DMA_WRITE_OAM = and(dma_reg.REG_DMA_RUNNING, NAXY);
-    /*p04.WYJA*/ wire WYJA_OAM_WR    = or(and(OAM_LOCKn, CUPA_CPUWR), DMA_WRITE_OAM);
+    /*p04.WYJA*/ wire WYJA_OAM_WR    = or(and(OAM_LOCKn, CUPA_BUS_WR_ABCDxxxH), DMA_WRITE_OAM);
     /*p28.WAFO*/ wire WAFO_OAM_A0n   = not(oam_pins.A0);
     /*p28.YNYC*/ wire YNYC_OAM_B_WRn = and(WYJA_OAM_WR, WAFO_OAM_A0n);
     /*p28.YLYC*/ wire YLYC_OAM_A_WRn = and(WYJA_OAM_WR, oam_pins.A0);
     /*p28.ZONE*/ oam_pins.WR_A.set(not(YLYC_OAM_A_WRn));
     /*p28.ZOFE*/ oam_pins.WR_B.set(not(YNYC_OAM_B_WRn));
 
-    /*p28.XUTO*/ wire CPU_OAM_WR = and(ADDR_OAM, CUPA_CPUWR);
+    /*p28.XUTO*/ wire CPU_OAM_WR = and(ADDR_OAM, CUPA_BUS_WR_ABCDxxxH);
     /*p28.XYNY*/ wire CPU_OAM_WR_CLK1 = not(MOPA_xxxxEFGH);
     /*p28.WUJE*/ wire CPU_OAM_WR_CLK2 = or(CPU_OAM_WR_CLK1, CPU_OAM_WR);
     /*p28.XUPA*/ wire CPU_OAM_WR_CLK3 = not(CPU_OAM_WR_CLK2);
@@ -3656,7 +3659,7 @@ void TestGB::tick_everything() {
     /*p07.ZADU*/ wire ADDR_X0XX = nor(cpu_pins.A11, cpu_pins.A10, cpu_pins.A09, cpu_pins.A08);
     /*p07.ZUFA*/ wire ADDR_00XX2 = and(ADDR_0XXX, ADDR_X0XX);
     /*p07.YAZA*/ wire MODE_DBG1n = not(UMUT_MODE_DBG1);
-    /*p07.YULA*/ wire BOOT_RD    = and(TEDO_CPURD, MODE_DBG1n, TUTU_ADDR_BOOT);
+    /*p07.YULA*/ wire BOOT_RD    = and(TEDO_BUS_RD, MODE_DBG1n, TUTU_ADDR_BOOT);
     /*p07.ZADO*/ wire BOOT_CSn   = nand(BOOT_RD, ADDR_00XX2);
     /*p07.ZERY*/ wire BOOT_CS    = not(BOOT_CSn);
 
@@ -3684,8 +3687,8 @@ void TestGB::tick_everything() {
 
     /*p07.TYRO*/ wire ADDR_0x0x0000 = nor(cpu_pins.A07, cpu_pins.A05, cpu_pins.A03, cpu_pins.A02, cpu_pins.A01, cpu_pins.A00);
     /*p07.TUFA*/ wire ADDR_x1x1xxxx = and(cpu_pins.A04, cpu_pins.A06);
-    /*p07.TEXE*/ wire FF50_RD  = and (TEDO_CPURD, ADDR_FFXX, ADDR_0x0x0000, ADDR_x1x1xxxx);
-    /*p07.TUGE*/ wire FF50_WRn = nand(TAPU_CPUWR, ADDR_FFXX, ADDR_0x0x0000, ADDR_x1x1xxxx);
+    /*p07.TEXE*/ wire FF50_RD  = and (TEDO_BUS_RD, ADDR_FFXX, ADDR_0x0x0000, ADDR_x1x1xxxx);
+    /*p07.TUGE*/ wire FF50_WRn = nand(TAPU_BUS_WR_ABCDxxxH, ADDR_FFXX, ADDR_0x0x0000, ADDR_x1x1xxxx);
     /*p07.SATO*/ wire BOOT_BIT_IN  = or(cpu_pins.D0, bus_reg.BOOT_BIT);
   
     /*p07.TEPU*/ bus_reg.BOOT_BIT.set(FF50_WRn, ALUR_RSTn, BOOT_BIT_IN);
@@ -3715,9 +3718,9 @@ void TestGB::tick_everything() {
   if (1) {
     /*p07.SEMY*/ wire ADDR_XX0X = nor(cpu_pins.A07, cpu_pins.A06, cpu_pins.A05, cpu_pins.A04);
     /*p07.SAPA*/ wire ADDR_XXXF = and(cpu_pins.A00, cpu_pins.A01, cpu_pins.A02, cpu_pins.A03);
-    /*p07.ROLO*/ wire FF0F_RDn = nand(ADDR_XX0X, ADDR_XXXF, ADDR_FFXX, TEDO_CPURD); // schematic wrong, is NAND
+    /*p07.ROLO*/ wire FF0F_RDn = nand(ADDR_XX0X, ADDR_XXXF, ADDR_FFXX, TEDO_BUS_RD); // schematic wrong, is NAND
     /*p02.POLA*/ wire FF0F_RDa = not(FF0F_RDn);
-    /*p07.REFA*/ wire FF0F_WRn = nand(ADDR_XX0X, ADDR_XXXF, ADDR_FFXX, TAPU_CPUWR); // schematic wrong, is NAND
+    /*p07.REFA*/ wire FF0F_WRn = nand(ADDR_XX0X, ADDR_XXXF, ADDR_FFXX, TAPU_BUS_WR_ABCDxxxH); // schematic wrong, is NAND
     /*p02.ROTU*/ wire FF0F_WRa = not(FF0F_WRn);
     /*p02.PESU*/ wire FF0F_IN  = not(joy_pins.P10_B);
 

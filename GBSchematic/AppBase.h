@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include <SDL.h>
+#include <include/SDL.h>
 
 struct Buf{
   int len;

@@ -1,5 +1,7 @@
 #pragma once
 #include <stdint.h>
+
+#if 0
 #include "SignalTree.h"
 
 class TraceViewer {
@@ -17,3 +19,4 @@ public:
 
   int render_signals(const std::vector<SignalData>& signals, void* blob, int x, int y);
 };
+#endif

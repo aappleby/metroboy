@@ -1,5 +1,7 @@
 #include "TraceViewer.h"
 
+#if 0
+
 #include <vector>
 #include <cstddef>
 #include <float.h>
@@ -57,7 +59,7 @@ int TraceViewer::render_signals(const std::vector<SignalData>& signals, void* bl
 }
 
 
-
+#endif
 
 
 

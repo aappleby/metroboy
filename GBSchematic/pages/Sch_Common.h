@@ -157,6 +157,7 @@ struct SignalBase {
   operator const bool() const {
     if (a.error) __debugbreak();
     //if (a.hiz)   __debugbreak();
+    if (a.hiz) return 1;
     return a.val;
   }
 
@@ -433,14 +434,14 @@ struct Counter : public SignalBase {
     return a.carry;
   }
 
-  void count(bool clk, bool loadN, bool val) {
+  void tima_count(bool clk, bool load, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
     b.clk = clk;
-    b.set = !loadN && val;
-    b.rst = !loadN && !val;
+    b.set = load && val;
+    b.rst = load && !val;
     b.carry = 0;
     //b.changed = 0;
     b.error = 0;

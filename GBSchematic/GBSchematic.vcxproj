@@ -73,19 +73,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <CustomBuildBeforeTargets>Compile</CustomBuildBeforeTargets>
-    <IncludePath>C:\Users\aappl\Desktop\MetroBoy\imgui;C:\Users\aappl\Desktop\MetroBoy\SDL2\include;C:\Users\aappl\Desktop\MetroBoy\gl3w\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\aappl\Desktop\MetroBoy\imgui;C:\Users\aappl\Desktop\MetroBoy\SDL2\include;C:\Users\aappl\Desktop\MetroBoy\gl3w\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\aappl\Desktop\MetroBoy\imgui;C:\Users\aappl\Desktop\MetroBoy\SDL2\include;C:\Users\aappl\Desktop\MetroBoy\gl3w\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\aappl\Desktop\MetroBoy\imgui;C:\Users\aappl\Desktop\MetroBoy\SDL2\include;C:\Users\aappl\Desktop\MetroBoy\gl3w\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -212,18 +212,9 @@
     <ClCompile Include="pages\Sch_Channel3.cpp" />
     <ClCompile Include="pages\Sch_Channel4.cpp" />
     <ClCompile Include="Sch_Common.cpp" />
-    <ClCompile Include="SignalTree.cpp" />
     <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="tests\BusDump.cpp" />
-    <ClCompile Include="tests\TestBoot.cpp" />
-    <ClCompile Include="tests\TestClocks.cpp" />
-    <ClCompile Include="tests\TestFastSlow.cpp" />
     <ClCompile Include="tests\TestGB.cpp" />
-    <ClCompile Include="tests\TestLCD.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
-      <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</InlineFunctionExpansion>
-    </ClCompile>
-    <ClCompile Include="tests\TestSpriteSeq.cpp" />
     <ClCompile Include="TraceViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -248,7 +239,6 @@
     <ClInclude Include="pages\Sch_Channel3.h" />
     <ClInclude Include="pages\Sch_Channel4.h" />
     <ClInclude Include="pages\Sch_Common.h" />
-    <ClInclude Include="SignalTree.h" />
     <ClInclude Include="StateManager.h" />
     <ClInclude Include="tests\BusDump.h" />
     <ClInclude Include="tests\TestGB.h" />

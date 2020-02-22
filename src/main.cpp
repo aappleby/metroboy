@@ -242,7 +242,7 @@ void MetroBoyApp::loop() {
 
   SDL_LockTexture(fb_tex, NULL, (void**)(&framebuffer), &pitch);
   memcpy(framebuffer, background, fb_width * fb_height * 4);
-  tp.begin_frame(framebuffer, fb_width, fb_height);
+  //tp.begin_frame(framebuffer, fb_width, fb_height);
 
   //----------------------------------------
   // Left column text
@@ -250,31 +250,31 @@ void MetroBoyApp::loop() {
   Gameboy& gameboy = metroboy.gb();
   Framebuffer& fb = metroboy.fb();
 
-  int spacing = 192 + 32;
+  //int spacing = 192 + 32;
 
   gameboy.dump1(text_buf);
   //gameboy.get_oam().dump(text_buf);
-  tp.render_text(spacing * 0 + 4, 4, text_buf.c_str());
+  //tp.render_text(spacing * 0 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   sprintf(text_buf, "\003--------------PPU--------------\001\n");
   
   gameboy.get_ppu().dump(text_buf);
 
-  tp.render_text(spacing * 1 + 4, 4, text_buf.c_str());
+  //tp.render_text(spacing * 1 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   gameboy.dump3(text_buf);
-  tp.render_text(spacing * 2 + 4, 4, text_buf.c_str());
+  //tp.render_text(spacing * 2 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   sprintf(text_buf, "\003--------------SPU--------------\001\n");
   gameboy.get_spu().dump(text_buf);
-  tp.render_text(spacing * 2 + 4, 640 + 4, text_buf.c_str());
+  //tp.render_text(spacing * 2 + 4, 640 + 4, text_buf.c_str());
   text_buf.clear();
 
   gameboy.dump4(text_buf);
-  tp.render_text(spacing * 3 + 4, 4, text_buf.c_str());
+  //tp.render_text(spacing * 3 + 4, 4, text_buf.c_str());
   text_buf.clear();
 
   //gameboy.get_spu().dump(text_buf);
@@ -314,8 +314,8 @@ void MetroBoyApp::loop() {
     }
   }
 
-  tp.draw_bbox(gb_screenx - 2, gb_screeny - 2, 320 + 3, 288 + 3, 0x505050);
-  tp.draw_bbox(gb_screenx - 1, gb_screeny - 1, 320+1, 288+1, 0x101010);
+  //tp.draw_bbox(gb_screenx - 2, gb_screeny - 2, 320 + 3, 288 + 3, 0x505050);
+  //tp.draw_bbox(gb_screenx - 1, gb_screeny - 1, 320+1, 288+1, 0x101010);
 
   //----------------------------------------
   // Reference image
@@ -385,7 +385,7 @@ void MetroBoyApp::loop() {
   };
 
   sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
-  tp.render_text(gb_screenx, 32 * 20, text_buf.c_str());
+  //tp.render_text(gb_screenx, 32 * 20, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------
@@ -420,7 +420,7 @@ void MetroBoyApp::loop() {
     text_buf.append(source_buf);
   }
   
-  tp.render_text(fb_width - 256, fb_height - 12, text_buf.c_str());
+  //tp.render_text(fb_width - 256, fb_height - 12, text_buf.c_str());
   text_buf.clear();
 
   //----------------------------------------

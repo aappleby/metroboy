@@ -17,6 +17,11 @@ public:
 
 private:
 
+  uint8_t read_cycle (uint16_t addr);
+  void    write_cycle(uint16_t addr, uint8_t data);
+  void    pass_cycle ();
+  uint8_t rw_cycle(uint16_t addr, uint8_t data);
+
   typedef AppBase base;
 
   TextPainter text;

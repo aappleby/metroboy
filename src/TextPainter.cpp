@@ -1,7 +1,7 @@
 #include "TextPainter.h"
 
 #include <stdio.h>
-#include <SDL.h>
+#include <include/SDL.h>
 #include <GL/gl3w.h>
 
 //-----------------------------------------------------------------------------
@@ -133,30 +133,31 @@ void TextPainter::init(int fb_width_, int fb_height_) {
   glUniform4f(glGetUniformLocation(text_prog, "palette") + 0, 0, 0, 0, 1);
   glUniform4f(glGetUniformLocation(text_prog, "palette") + 1, 1, 1, 1, 1);
 
-  uint8_t quad_tris[2*3*2] = {
-    0, 0,
-    0, 1,
-    1, 1,
-
-    0, 0,
-    1, 1,
-    1, 0
-  };
 
   {
-    glGenBuffers(1, &quad_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, quad_vbo);
-    glBufferStorage(GL_ARRAY_BUFFER, sizeof(quad_tris), quad_tris,
-                    GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
+    uint8_t quad_tris[2*3*2] = {
+      0, 0,
+      0, 1,
+      1, 1,
+
+      0, 0,
+      1, 1,
+      1, 0
+    };
+    glCreateBuffers(1, &quad_vbo);
+    glNamedBufferStorage(quad_vbo, sizeof(quad_tris), quad_tris, 0);
   }
 
   for (buf_idx = 0; buf_idx < 3; buf_idx++) {
-    glGenBuffers(1, &inst_vbos[buf_idx]);
+    glCreateBuffers(1, &inst_vbos[buf_idx]);
     glBindBuffer(GL_ARRAY_BUFFER, inst_vbos[buf_idx]);
-    glBufferStorage(GL_ARRAY_BUFFER, 65536*4, nullptr,
-                    GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
-    glBindBuffer(GL_ARRAY_BUFFER, inst_vbos[buf_idx]);
-    inst_maps[buf_idx] = (uint32_t*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+    glNamedBufferStorage(inst_vbos[buf_idx], 65536*4, nullptr,
+                         GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
+    
+    inst_maps[buf_idx] = (uint32_t*)glMapNamedBufferRange(inst_vbos[buf_idx],
+                                                          0,
+                                                          65536*4,
+                                                          GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
 
     glGenVertexArrays(1, &text_vaos[buf_idx]);
     glBindVertexArray(text_vaos[buf_idx]);
@@ -170,6 +171,7 @@ void TextPainter::init(int fb_width_, int fb_height_) {
     glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_FALSE, 4, (void*)0);
     glVertexAttribDivisor(1, 1);
   }
+  buf_idx = 0;
 
   SDL_Surface* font_surf = SDL_LoadBMP("terminus2.bmp");
   uint8_t* pix = (uint8_t*)font_surf->pixels;
@@ -242,8 +244,6 @@ void TextPainter::dprintf(const char* format, ...) {
 }
 
 void TextPainter::render(float x, float y, float scale) {
-  glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
-
   // Render the glyphs
   glUseProgram(text_prog);
   glActiveTexture(GL_TEXTURE0);

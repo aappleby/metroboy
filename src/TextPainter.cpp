@@ -98,10 +98,7 @@ void main() {
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::init(int fb_width_, int fb_height_) {
-  fb_width = fb_width_;
-  fb_height = fb_height_;
-
+void TextPainter::init() {
   const char* name = "TextPainter";
   char buf[1024];
   int len = 0;
@@ -125,6 +122,14 @@ void TextPainter::init(int fb_width_, int fb_height_) {
   glAttachShader(text_prog, fragmentShader);
   glLinkProgram(text_prog);
   glUseProgram(text_prog);
+
+  set_pal(0, 0.4, 0.4, 0.4, 1.0); // grey
+  set_pal(1, 0.8, 0.8, 0.8, 1.0); // white 
+  set_pal(2, 0.6, 1.0, 0.6, 1.0); // lo-z out = green
+  set_pal(3, 1.0, 0.6, 0.6, 1.0); // hi-z out = red
+  set_pal(4, 0.6, 0.6, 1.0, 1.0); // lo-z in = blue
+  set_pal(5, 1.0, 1.0, 0.6, 1.0); // hi-z in = yellow
+  set_pal(6, 1.0, 0.6, 1.0, 1.0); // error magenta
 
   glGetProgramInfoLog(text_prog, 1024, &len, buf);
   printf("%s shader prog log:\n%s", name, buf);
@@ -201,6 +206,9 @@ void TextPainter::begin_frame() {
   buf_idx = (buf_idx + 1) % 3;
 }
 
+void TextPainter::end_frame() {
+}
+
 //-----------------------------------------------------------------------------
 
 void TextPainter::add_char(const char c) {
@@ -234,6 +242,10 @@ void TextPainter::add_text(const char* text, int len) {
   }
 }
 
+void TextPainter::add_string(const std::string& text) {
+  for (auto c : text) add_char(c);
+}
+
 void TextPainter::dprintf(const char* format, ...) {
   char buffer[256];
   va_list args;
@@ -244,6 +256,11 @@ void TextPainter::dprintf(const char* format, ...) {
 }
 
 void TextPainter::render(float x, float y, float scale) {
+  int temp[4] = {0};
+  glGetIntegerv(GL_VIEWPORT, temp);
+  int fb_width  = temp[2];
+  int fb_height = temp[3];
+
   // Render the glyphs
   glUseProgram(text_prog);
   glActiveTexture(GL_TEXTURE0);

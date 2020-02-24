@@ -1,5 +1,5 @@
-#include "../pages/Sch_Merged.h"
-#include "../pages/Sch_Pins.h"
+#include "Sch_Merged.h"
+#include "Sch_Pins.h"
 
 namespace Schematics {
 

@@ -6,12 +6,12 @@
 //-----------------------------------------------------------------------------
 
 template<class T>
-class StateManager {
+class StateManager2 {
 public:
 
   typedef std::function<void(T*)> step_func;
 
-  StateManager() {
+  StateManager2() {
     states.push_back(new T());
   }
 
@@ -61,8 +61,8 @@ public:
   step_func step_callback = nullptr;
   std::vector<T*> states;
 
-  StateManager(const StateManager&) = delete;
-  StateManager& operator=(const StateManager&) = delete;
+  StateManager2(const StateManager2&) = delete;
+  StateManager2& operator=(const StateManager2&) = delete;
 };
 
 //-----------------------------------------------------------------------------

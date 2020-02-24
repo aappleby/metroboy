@@ -1,25 +1,35 @@
 #pragma once
 #include <stdint.h>
+#include <string>
 
 struct TextPainter {
 
-  void init(int fb_width_, int fb_height_);
-
+  void init();
   void begin_frame();
+  void end_frame();
 
   void add_char(const char c);
   void add_char(const char c, const char d);
   void add_text(const char* text);
   void add_text(const char* text, int len);
+  void add_string(const std::string& text);
   void dprintf(const char* format, ...);
-  void render(float x, float y, float scale);
+
+  void render(float x, float y, float scale = 1.0f);
+
+  void render(const std::string& text, float x, float y, float scale = 1.0f) {
+    add_string(text);
+    render(x, y, scale);
+  }
+
+  void render(const std::string& text, int x, int y) {
+    add_string(text);
+    render(float(x), float(y), 1.0f);
+  }
 
   void newline() { add_char(1, '\n'); }
 
   void set_pal(int index, float r, float g, float b, float a);
-
-  int fb_width;
-  int fb_height;
 
   uint32_t text_prog;
   uint32_t font_tex;

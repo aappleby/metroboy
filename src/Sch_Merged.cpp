@@ -2,7 +2,7 @@
 
 #include "Sch_Common.h"
 #include "Sch_Pins.h"
-#include "../tests/TestGB.h"
+#include "TestGB.h"
 
 #pragma warning(disable:4456)
 

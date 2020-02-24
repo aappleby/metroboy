@@ -2,10 +2,8 @@
 
 #include <stdio.h>
 #include <GL/gl3w.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
 
-#include <SDL.h>
+#include <include/SDL.h>
 #include <imgui.h>
 #include <examples/imgui_impl_sdl.h>
 #include <examples/imgui_impl_opengl3.h>
@@ -73,6 +71,8 @@ void AppBase::init() {
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  text_painter.init();
 }
 
 void AppBase::close() {
@@ -188,16 +188,30 @@ void main() {
 
 uniform vec4 quad_col = vec4(1.0, 1.0, 1.0, 1.0);
 uniform sampler2D tex;
+uniform bool solid = false;
 uniform bool mono = false;
+uniform bool palette = false;
 
 layout(location = 0) in vec2 ftex;
 layout(location = 0) out vec4 frag;
 
 void main() {
-  frag = texture(tex, ftex) * quad_col;
-  if (mono) {
-    frag = vec4(frag.r, frag.r, frag.r, 1.0);
+  if (solid) {
+    frag = vec4(1.0, 0.0, 1.0, 1.0);
+    return;
   }
+
+  vec4 src = texture(tex, ftex);
+  if (mono) {
+    frag = vec4(src.r, src.r, src.r, 1.0) * quad_col;
+  }
+  else if (palette) {
+    frag = vec4(1.0, 0.0, 1.0, 1.0);
+  }
+  else {
+    frag = src * quad_col;
+  }
+  frag.a = 1.0;
 }
   )";
 
@@ -317,7 +331,13 @@ int AppBase::compile_shader(const char* name, const char* vert_source, const cha
 
 void AppBase::blit(uint32_t tex, int x, int y, int w, int h) {
   glUseProgram(blit_prog);
+
+  glUniform4f(glGetUniformLocation(blit_prog, "screen_size"),
+              (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
+
   glUniform1i(glGetUniformLocation(blit_prog, "mono"), 0);
+  glUniform1i(glGetUniformLocation(blit_prog, "solid"), 0);
+  glUniform1i(glGetUniformLocation(blit_prog, "palette"), 0);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
@@ -335,7 +355,12 @@ void AppBase::blit(uint32_t tex, int x, int y, int w, int h) {
 void AppBase::blit_mono(uint32_t tex, int x, int y, int w, int h) {
   glUseProgram(blit_prog);
 
+  glUniform4f(glGetUniformLocation(blit_prog, "screen_size"),
+              (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
+
   glUniform1i(glGetUniformLocation(blit_prog, "mono"), 1);
+  glUniform1i(glGetUniformLocation(blit_prog, "solid"), 0);
+  glUniform1i(glGetUniformLocation(blit_prog, "palette"), 0);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
@@ -364,11 +389,25 @@ void AppBase::check_gl_error() {
 int AppBase::main(int, char**) {
   init();
   while (!quit) {
-    begin_frame();
+
+    update_begin = SDL_GetPerformanceCounter();
     update();
+    update_end = SDL_GetPerformanceCounter();
+    last_update_time = update_end - update_begin;
+    last_update_time_smooth *= 0.98;
+    last_update_time_smooth += (1000.0 * double(last_update_time) / double(timer_freq)) * 0.02;
+
+    frame_begin = SDL_GetPerformanceCounter();
+    begin_frame();
     render_frame();
     render_ui();
     end_frame();
+    frame_end = SDL_GetPerformanceCounter();
+
+    last_frame_time = frame_end - frame_begin;
+    last_frame_time_smooth *= 0.98;
+    last_frame_time_smooth += (1000.0 * double(last_frame_time) / double(timer_freq)) * 0.02;
+    frame_count++;
   }
   close();
   return 0;
@@ -376,9 +415,15 @@ int AppBase::main(int, char**) {
 
 //-----------------------------------------------------------------------------
 
+void AppBase::update() {
+}
+
+//-----------------------------------------------------------------------------
+
 void AppBase::begin_frame() {
-  frame_begin = SDL_GetPerformanceCounter();
   now = float(frame_begin - app_begin) / float(timer_freq);
+
+  text_painter.begin_frame();
 
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplSDL2_NewFrame(window);
@@ -392,16 +437,11 @@ void AppBase::begin_frame() {
 
 //-----------------------------------------------------------------------------
 
-void AppBase::update() {
-  glUseProgram(blit_prog);
-  glUniform4f(glGetUniformLocation(blit_prog, "screen_size"),
-              (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
-}
-
-//-----------------------------------------------------------------------------
-
 void AppBase::render_frame() {
   blit_mono(bg_tex, 0, 0, fb_width, fb_height);
+
+  //text_painter.dprintf("Hello World\n");
+  //text_painter.render(4, 4, 1.0);
 }
 
 //-----------------------------------------------------------------------------
@@ -426,10 +466,9 @@ void AppBase::render_ui() {
 //-----------------------------------------------------------------------------
 
 void AppBase::end_frame() {
+  text_painter.end_frame();
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-  frame_end = SDL_GetPerformanceCounter();
-  frame_count++;
   SDL_GL_SwapWindow(window);
   check_gl_error();
 }

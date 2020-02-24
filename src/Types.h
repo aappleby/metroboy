@@ -43,45 +43,12 @@ void sprintf(std::string& out, const char* format, Args ... args)
 }
 
 inline void print_bus(std::string& d, const char* name, const Bus& bus) {
-  /*
-  struct Bus {
-    uint16_t addr;
-    uint16_t data;
-    uint8_t  read;
-    uint8_t  write;
-    uint8_t  lock;
-    uint8_t  dma;
-    uint8_t  ack;
-  };
-  */
-
   sprintf(d, "%-11s %04x:%04x %s%s%s%s%s\n", name, bus.addr, bus.data,
     bus.read  ? "\003R \001" : "- ",
     bus.write ? "\002W \001" : "- ",
     bus.lock  ? "\004L \001" : "- ",
     bus.dma   ? "\005D \001" : "- ",
     bus.ack   ? "\006A \001" : "- ");
-
-  /*
-  if (bus.lock) {
-    if (bus.write) {
-      sprintf(d, "\007%-10s \002W*0x%04x\001 = 0x%04x\n", name, bus.addr, bus.data);
-    } else if (bus.read) {
-      sprintf(d, "\007%-10s \003R*0x%04x\001 = 0x%04x\n", name, bus.addr, bus.data);
-    } else {
-      sprintf(d, "\007%-10s \001-*------\001\n", name);
-    }
-  }
-  else {
-    if (bus.write) {
-      sprintf(d, "\007%-10s \002W:0x%04x\001 = 0x%04x\n", name, bus.addr, bus.data);
-    } else if (bus.read) {
-      sprintf(d, "\007%-10s \003R:0x%04x\001 = 0x%04x\n", name, bus.addr, bus.data);
-    } else {
-      sprintf(d, "\007%-10s \001-:------\001\n", name);
-    }
-  }
-  */
 }
 
 //-----------------------------------------------------------------------------

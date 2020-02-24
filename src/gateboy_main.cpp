@@ -1,4 +1,5 @@
-#include "main.h"
+#include "gateboy_main.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <memory.h>
@@ -10,7 +11,7 @@
 #include <gl/gl.h>
 #include <gl/glu.h>
 
-#include <SDL.h>
+#include <include/SDL.h>
 #include <imgui.h>
 #include <examples/imgui_impl_sdl.h>
 #include <examples/imgui_impl_opengl3.h>
@@ -19,7 +20,7 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-uint8_t Main::read_cycle(uint16_t addr) {
+uint8_t GateboyMain::read_cycle(uint16_t addr) {
   TestGB* gb = gbs.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
@@ -51,7 +52,7 @@ uint8_t Main::read_cycle(uint16_t addr) {
   return (uint8_t)gb->cpu_pins.get_data();
 }
 
-void Main::write_cycle(uint16_t addr, uint8_t data) {
+void GateboyMain::write_cycle(uint16_t addr, uint8_t data) {
   TestGB* gb = gbs.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
@@ -82,7 +83,7 @@ void Main::write_cycle(uint16_t addr, uint8_t data) {
   }
 }
 
-void Main::pass_cycle() {
+void GateboyMain::pass_cycle() {
   TestGB* gb = gbs.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
@@ -112,7 +113,7 @@ void Main::pass_cycle() {
   }
 }
 
-uint8_t Main::rw_cycle(uint16_t addr, uint8_t data) {
+uint8_t GateboyMain::rw_cycle(uint16_t addr, uint8_t data) {
   write_cycle(addr, data);
   return read_cycle(addr);
 }
@@ -140,10 +141,10 @@ Stack Pointer=$FFFE
 [$FFFF] = $00   ; IE
 */
 
-void Main::init() {
+void GateboyMain::init() {
   base::init();
 
-  text.init(fb_width, fb_height);
+  text.init();
 
   gb_tex = create_texture(64, 64, 2);
 
@@ -248,27 +249,27 @@ void Main::init() {
   gbs.set_step(gb_step);
 }
 
-void Main::close() {
+void GateboyMain::close() {
   base::close();
 }
 
 //-----------------------------------------------------------------------------
 
-int main(int argc, char** argv)
+int gateboy_main(int argc, char** argv)
 {
-  Main m;
+  GateboyMain m;
   return m.main(argc, argv);
 }
 
 //-----------------------------------------------------------------------------
 
-void Main::begin_frame() {
+void GateboyMain::begin_frame() {
   base::begin_frame();
 }
 
 //-----------------------------------------------------------------------------
 
-void Main::update() {
+void GateboyMain::update() {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     ImGui_ImplSDL2_ProcessEvent(&event);
@@ -296,24 +297,13 @@ void Main::update() {
 
 //-----------------------------------------------------------------------------
 
-void Main::render_frame() {
+void GateboyMain::render_frame() {
   base::render_frame();
 
   uint64_t begin = SDL_GetPerformanceCounter();
 
   text.begin_frame();
   
-  text.set_pal(0, 0.4, 0.4, 0.4, 1.0); // grey
-  text.set_pal(1, 0.8, 0.8, 0.8, 1.0); // white 
-  
-  text.set_pal(2, 0.6, 1.0, 0.6, 1.0); // lo-z out = green
-  text.set_pal(3, 1.0, 0.6, 0.6, 1.0); // hi-z out = red
-
-  text.set_pal(4, 0.6, 0.6, 1.0, 1.0); // lo-z in = blue
-  text.set_pal(5, 1.0, 1.0, 0.6, 1.0); // hi-z in = yellow
-
-  text.set_pal(6, 1.0, 0.6, 1.0, 1.0); // error magenta
-
   text.dprintf(" ----- SYS_REG -----\n");
   text.dprintf("PHASE    %08d\n", gbs.state()->phase_counter);
 
@@ -392,7 +382,7 @@ void Main::render_frame() {
 
 //-----------------------------------------------------------------------------
 
-void Main::render_ui() {
+void GateboyMain::render_ui() {
   ImGui::Begin("GB Sim Stats");
   ImGui::Text("now   %f\n", now);
   ImGui::Text("phase %d\n", gbs.state()->phase_counter);
@@ -404,7 +394,7 @@ void Main::render_ui() {
 
 //-----------------------------------------------------------------------------
 
-void Main::end_frame() {
+void GateboyMain::end_frame() {
   base::end_frame();
 }
 

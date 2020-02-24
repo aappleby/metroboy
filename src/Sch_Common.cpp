@@ -1,4 +1,4 @@
-#include "pages/Sch_Common.h"
+#include "Sch_Common.h"
 
 namespace Schematics {
 

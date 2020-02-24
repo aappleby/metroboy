@@ -41,13 +41,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)_debug</TargetName>
-    <IncludePath>$(SolutionDir)SDL2;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)SDL2;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -72,6 +72,7 @@
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -98,6 +99,7 @@
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,19 +110,44 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="gl3w\include\GL\gl3w.h" />
+    <ClInclude Include="gl3w\include\GL\glcorearb.h" />
+    <ClInclude Include="imgui\examples\imgui_impl_opengl3.h" />
+    <ClInclude Include="imgui\examples\imgui_impl_sdl.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imstb_textedit.h" />
+    <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="src\AppBase.h" />
     <ClInclude Include="src\Assembler.h" />
     <ClInclude Include="src\Audio.h" />
+    <ClInclude Include="src\BusDump.h" />
     <ClInclude Include="src\Buttons.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Gameboy.h" />
+    <ClInclude Include="src\gateboy_main.h" />
     <ClInclude Include="src\IRAM.h" />
     <ClInclude Include="src\MetroBoy.h" />
     <ClInclude Include="src\MMU.h" />
     <ClInclude Include="src\OAM.h" />
     <ClInclude Include="src\Opcodes.h" />
     <ClInclude Include="src\PPU.h" />
+    <ClInclude Include="src\Schematics.h" />
+    <ClInclude Include="src\Sch_ApuControl.h" />
+    <ClInclude Include="src\Sch_Channel1.h" />
+    <ClInclude Include="src\Sch_Channel2.h" />
+    <ClInclude Include="src\Sch_Channel3.h" />
+    <ClInclude Include="src\Sch_Channel4.h" />
+    <ClInclude Include="src\Sch_Common.h" />
+    <ClInclude Include="src\Sch_Merged.h" />
+    <ClInclude Include="src\Sch_Pins.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\SPU.h" />
+    <ClInclude Include="src\StateManager.h" />
+    <ClInclude Include="src\StateManager2.h" />
+    <ClInclude Include="src\TestGB.h" />
     <ClInclude Include="src\test_codegen.h" />
     <ClInclude Include="src\test_micro.h" />
     <ClInclude Include="src\test_mooneye.h" />
@@ -132,22 +159,43 @@
     <ClInclude Include="src\VRAM.h" />
     <ClInclude Include="src\Z80.h" />
     <ClInclude Include="src\ZRAM.h" />
-    <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\metroboy_main.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gl3w\src\gl3w.c" />
+    <ClCompile Include="imgui\examples\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="imgui\examples\imgui_impl_sdl.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\AppBase.cpp" />
     <ClCompile Include="src\Assembler.cpp" />
     <ClCompile Include="src\Audio.cpp" />
+    <ClCompile Include="src\BusDump.cpp" />
     <ClCompile Include="src\Buttons.cpp" />
     <ClCompile Include="src\Constants.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
+    <ClCompile Include="src\gateboy_main.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\MMU.cpp" />
     <ClCompile Include="src\OAM.cpp" />
     <ClCompile Include="src\PPU.cpp" />
+    <ClCompile Include="src\Schematics.cpp" />
+    <ClCompile Include="src\Sch_ApuControl.cpp" />
+    <ClCompile Include="src\Sch_Channel1.cpp" />
+    <ClCompile Include="src\Sch_Channel2.cpp" />
+    <ClCompile Include="src\Sch_Channel3.cpp" />
+    <ClCompile Include="src\Sch_Channel4.cpp" />
+    <ClCompile Include="src\Sch_Common.cpp" />
+    <ClCompile Include="src\Sch_Merged.cpp" />
     <ClCompile Include="src\Serial.cpp" />
     <ClCompile Include="src\SPU.cpp" />
+    <ClCompile Include="src\StateManager.cpp" />
+    <ClCompile Include="src\StateManager2.cpp" />
+    <ClCompile Include="src\TestGB.cpp" />
     <ClCompile Include="src\test_codegen.cpp" />
     <ClCompile Include="src\test_micro.cpp" />
     <ClCompile Include="src\test_mooneye.cpp" />
@@ -157,10 +205,11 @@
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Types.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
+    <ClCompile Include="src\vram_dump.cpp" />
     <ClCompile Include="src\Wishbone.cpp" />
     <ClCompile Include="src\Z80.cpp" />
     <ClCompile Include="src\ZRAM.cpp" />
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\metroboy_main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="microtests\000-oam_lock.s" />

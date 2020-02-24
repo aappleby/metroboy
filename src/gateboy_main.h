@@ -1,15 +1,15 @@
 #pragma once
 
 #include "AppBase.h"
-#include "../src/TextPainter.h"
+#include "TextPainter.h"
 
-#include "tests/TestGB.h"
+#include "TestGB.h"
 
-#include "StateManager.h"
+#include "StateManager2.h"
 
 using namespace Schematics;
 
-class Main : public AppBase {
+class GateboyMain : public AppBase {
 public:
 
   void init();
@@ -30,7 +30,7 @@ private:
 
   //----------
 
-  StateManager<TestGB> gbs;
+  StateManager2<TestGB> gbs;
 
   //----------
 

@@ -1,6 +1,13 @@
 #pragma once
+
+#include "TextPainter.h"
+
 #include <stdint.h>
+#ifdef _MSC_VER
 #include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
 
 struct Buf{
   int len;
@@ -22,8 +29,8 @@ public:
 
 protected:
 
-  virtual void begin_frame() = 0;
   virtual void update() = 0;
+  virtual void begin_frame() = 0;
   virtual void render_frame() = 0;
   virtual void render_ui() = 0;
   virtual void end_frame() = 0;
@@ -50,7 +57,12 @@ protected:
 
   bool quit = false;
   int frame_count = 0;
-  uint64_t timer_freq, frame_begin, frame_end;
+  uint64_t timer_freq;
+  uint64_t frame_begin, frame_end, last_frame_time;
+  double last_update_time_smooth = 0;
+  uint64_t update_begin, update_end, last_update_time;
+  double last_frame_time_smooth = 0;
+
   uint64_t app_begin = 0;
   float now;
 
@@ -60,6 +72,8 @@ protected:
   SDL_Window* window = nullptr;
   SDL_GLContext gl_context = nullptr;
   const uint8_t* keyboard_state = nullptr;
+
+  TextPainter text_painter;
 
   //Buf quad_buf;
   uint32_t quad_vao;

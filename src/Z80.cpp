@@ -442,10 +442,37 @@ void Z80::state_machine() {
   }
 
   if (JP_A16) {
-    if (                   state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
-    if (                   state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }
-    if (                   state == ARG2)   { pc = addr + 1;   hi = bus;                                                                                                    addr = pc;           write = false; state_ = PTR1; }
-    if (                   state == PTR1)   { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE;}
+    //if (                   state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
+    //if (                   state == ARG1)   { pc = addr + 1;   lo = bus;                                                                                                    addr = pc;           write = false; state_ = ARG2; }
+    //if (                   state == ARG2)   { pc = addr + 1;   hi = bus;                                                                                                    addr = pc;           write = false; state_ = PTR1; }
+    //if (                   state == PTR1)   { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE;}
+
+    if (state == ARG0) {
+      pc = addr + 1;
+      addr = pc;
+      write = false;
+      state_ = ARG1;
+    }
+    if (state == ARG1) {
+      pc = addr + 1;
+      lo = bus;
+      addr = pc;
+      write = false;
+      state_ = ARG2;
+    }
+    if (state == ARG2) {
+      pc = addr + 1;
+      hi = bus;
+      addr = pc;
+      write = false;
+      state_ = PTR1;
+    }
+    if (state == PTR1) {
+      pc = temp;
+      addr = pc;
+      write = false;
+      state_ = DECODE;
+    }
   }
 
   if (JP_CC_A16) {

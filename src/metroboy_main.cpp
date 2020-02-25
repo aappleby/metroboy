@@ -208,12 +208,6 @@ void MetroBoyApp::blit_map() {
 
   y += 384 + 32;
 
-  /*
-  int map_offset = (lcdc & FLAG_BG_MAP_1) ? 0x1C00 : 0x1800;
-  int tile_offset = (lcdc & FLAG_TILE_0) ? 0x0000 : 0x0800;
-  uint8_t map_flip = (lcdc & FLAG_TILE_0) ? 0x00 : 0x80;
-  */
-
   glUniform4f(glGetUniformLocation(blit_map_prog, "quad_pos"), x, y, 256, 256);
   glUniform4f(glGetUniformLocation(blit_map_prog, "quad_tex"), 0, 0, 256, 256);
   glUniform1i(glGetUniformLocation(blit_map_prog, "use_map"), 1);
@@ -222,12 +216,6 @@ void MetroBoyApp::blit_map() {
   glDrawArrays(GL_TRIANGLES, 0, 6);
 
   y += 256 + 32;
-
-  /*
-  int map_offset = (lcdc & FLAG_WIN_MAP_1) ? 0x1C00 : 0x1800;
-  int tile_offset = (lcdc & FLAG_TILE_0) ? 0x0000 : 0x0800;
-  uint8_t map_flip = (lcdc & FLAG_TILE_0) ? 0x00 : 0x80;
-  */
 
   glUniform4f(glGetUniformLocation(blit_map_prog, "quad_pos"), x, y, 256, 256);
   glUniform4f(glGetUniformLocation(blit_map_prog, "quad_tex"), 0, 0, 256, 256);
@@ -241,6 +229,8 @@ void MetroBoyApp::blit_map() {
 
 void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   std::string gb_filename = prefix + "/" + name + ".gb";
+
+#if 0
   std::string golden_filename = prefix + "/" + name + ".bmp";
   SDL_Surface* golden_surface = SDL_LoadBMP(golden_filename.c_str());
 
@@ -285,6 +275,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
     }
     overlay_mode = 1;
   }
+#endif
 
   printf("Loading rom %s\n", gb_filename.c_str());
   memset(rom_buf, 0, 1024 * 1024);
@@ -437,6 +428,9 @@ void MetroBoyApp::update() {
   step_down = false;
 
   cycles_end = metroboy.total_tcycles();
+
+  update_texture(gb_tex, 160, 144, 1, (void*)metroboy.fb().buf);
+  update_texture(trace_tex, 456, 154, 4, (void*)metroboy.get_trace());
 }
 
 //-----------------------------------------------------------------------------
@@ -467,19 +461,11 @@ void MetroBoyApp::render_frame() {
   //----------------------------------------
   // Gameboy screen
 
-  uint8_t blah[160*144];
-  for (int i = 0; i < 160*144; i++) blah[i] = uint8_t(i);
-  update_texture(gb_tex, 160, 144, 1, blah);
-
   const int gb_screenx = 1248;
   const int gb_screeny = fb_height - 288 - 32;
 
-  update_texture(gb_tex, 160, 144, 1, (void*)metroboy.fb().buf);
   blit_mono(gb_tex, gb_screenx, gb_screeny, 160 * 2, 144 * 2);
-
   blit_map();
-
-  update_texture(trace_tex, 456, 154, 4, (void*)metroboy.get_trace());
   blit(trace_tex, 512 + 32 * 8, fb_height - 160 - 32, 456, 154);
 
   /*
@@ -595,7 +581,7 @@ void MetroBoyApp::render_ui() {
   text_painter.render(text_buf, spacing * 0 + 4, 4);
   text_buf.clear();
 
-  sprintf(text_buf, "\003--------------PPU--------------\001\n");
+  sprintf(text_buf, "\002--------------PPU--------------\001\n");
   gameboy.get_ppu().dump(text_buf);
   text_painter.render(text_buf, spacing * 1 + 4, 4);
   text_buf.clear();
@@ -604,7 +590,7 @@ void MetroBoyApp::render_ui() {
   text_painter.render(text_buf, spacing * 2 + 4, 4);
   text_buf.clear();
 
-  sprintf(text_buf, "\003--------------SPU--------------\001\n");
+  sprintf(text_buf, "\002--------------SPU--------------\001\n");
   gameboy.get_spu().dump(text_buf);
   text_painter.render(text_buf, spacing * 2 + 4, 640 + 4);
   text_buf.clear();
@@ -617,7 +603,7 @@ void MetroBoyApp::render_ui() {
   // Perf timer
 
   sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", last_frame_time_smooth, (int)(cycles_end - cycles_begin) / 4);
-  text_painter.render(text_buf, fb_width - 256, fb_height - 12);
+  text_painter.render(text_buf, 0, fb_height - 12);
   text_buf.clear();
 }
 

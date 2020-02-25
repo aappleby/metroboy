@@ -403,10 +403,12 @@ int AppBase::main(int, char**) {
     render_ui();
     end_frame();
     frame_end = SDL_GetPerformanceCounter();
-
     last_frame_time = frame_end - frame_begin;
     last_frame_time_smooth *= 0.98;
     last_frame_time_smooth += (1000.0 * double(last_frame_time) / double(timer_freq)) * 0.02;
+
+    SDL_GL_SwapWindow(window);
+    check_gl_error();
     frame_count++;
   }
   close();
@@ -460,6 +462,10 @@ void AppBase::render_ui() {
   ImGui::Text("(%.1f FPS)", io.Framerate);
   ImGui::End();
 
+  text_painter.dprintf("%f\n", last_update_time_smooth);
+  text_painter.dprintf("%f\n", last_frame_time_smooth);
+  text_painter.render(0, float(fb_height - 48));
+
   //ImGui::ShowDemoWindow();
 }
 
@@ -469,8 +475,6 @@ void AppBase::end_frame() {
   text_painter.end_frame();
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-  SDL_GL_SwapWindow(window);
-  check_gl_error();
 }
 
 //-----------------------------------------------------------------------------

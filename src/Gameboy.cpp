@@ -311,11 +311,11 @@ trace_val = ppu_out.vram_addr; // this one's pretty cool
 
 void Gameboy::dump1(std::string& d) {
 
-  sprintf(d, "\003--------------CPU--------------\001\n");
+  sprintf(d, "\002--------------CPU--------------\001\n");
   z80.dump(d);
   sprintf(d, "\n");
 
-  sprintf(d, "\003--------------BUS--------------\001\n");
+  sprintf(d, "\002--------------BUS--------------\001\n");
   sprintf(d, "tcycle         %d\n", tcycle);
   //sprintf(d, "dma_mode_a     %d\n", dma_mode_a);
   sprintf(d, "dma_count_a    %d\n", dma_count_a);
@@ -363,24 +363,24 @@ void Gameboy::dump1(std::string& d) {
 
 
   /*
-  sprintf(d, "\003--------------TIMER------------\001\n");
+  sprintf(d, "\002--------------TIMER------------\001\n");
   timer.dump(d);
   sprintf(d, "\n");
   */
 
-  sprintf(d, "\003--------------MMU--------------\001\n");
+  sprintf(d, "\002--------------MMU--------------\001\n");
   mmu.dump(d);
   sprintf(d, "\n");
 
-  sprintf(d, "\003--------------VRAM-------------\001\n");
+  sprintf(d, "\002--------------VRAM-------------\001\n");
   vram.dump(d);
   sprintf(d, "\n");
 
-  sprintf(d, "\003--------------IRAM-------------\001\n");
+  sprintf(d, "\002--------------IRAM-------------\001\n");
   iram.dump(d);
   sprintf(d, "\n");
 
-  sprintf(d, "\003--------------OAM--------------\001\n");
+  sprintf(d, "\002--------------OAM--------------\001\n");
   oam.dump(d);
   sprintf(d, "\n");
 }
@@ -388,22 +388,22 @@ void Gameboy::dump1(std::string& d) {
 //-----------------------------------------------------------------------------
 
 void Gameboy::dump2(std::string& d) {
-  sprintf(d, "\003--------------ZRAM-------------\001\n");
+  sprintf(d, "\002--------------ZRAM-------------\001\n");
   zram.dump(d);
   sprintf(d, "\n");
 
-  sprintf(d, "\003--------------BUTTONS----------\001\n");
+  sprintf(d, "\002--------------BUTTONS----------\001\n");
   buttons.dump(d);
   sprintf(d, "\n");
 
-  sprintf(d, "\003--------------SERIAL-----------\001\n");
+  sprintf(d, "\002--------------SERIAL-----------\001\n");
   serial.dump(d);
 }
 
 //-----------------------------------------------------------------------------
 
 void Gameboy::dump3(std::string& d) {
-  sprintf(d, "\003--------------DISASM-----------\001\n");
+  sprintf(d, "\002--------------DISASM-----------\001\n");
 
   uint16_t pc = z80.get_pc();
   const uint8_t* segment;
@@ -432,7 +432,7 @@ void Gameboy::dump3(std::string& d) {
 }
 
 void Gameboy::dump4(std::string& d) {
-  sprintf(d, "\003--------------TIMER------------\001\n");
+  sprintf(d, "\002--------------TIMER------------\001\n");
   timer.dump(d);
   sprintf(d, "\n");
 }

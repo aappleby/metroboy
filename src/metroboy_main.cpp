@@ -21,6 +21,7 @@
 #include <imgui.h>
 #include <examples/imgui_impl_sdl.h>
 #include <examples/imgui_impl_opengl3.h>
+#include <glm/glm.hpp>
 
 extern const uint32_t gb_colors[];
 extern uint8_t rom_buf[];
@@ -180,6 +181,15 @@ void main() {
   glBufferStorage(GL_SHADER_STORAGE_BUFFER, vram_size, nullptr, GL_DYNAMIC_STORAGE_BIT);
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, vram_ssbo);
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+  grid_painter.init();
+
+  view_smooth.min.x = -fb_width / 2;
+  view_smooth.max.x = fb_width / 2;
+  view_smooth.min.y = -fb_height / 2;
+  view_smooth.max.y = fb_height / 2;
+  view_smooth.screen_size.x = fb_width;
+  view_smooth.screen_size.y = fb_height;
 };
 
 //-----------------------------------------------------------------------------
@@ -301,6 +311,53 @@ void MetroBoyApp::update() {
     ImGui_ImplSDL2_ProcessEvent(&event);
     if (event.type == SDL_QUIT) quit = true;
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
+
+    if (event.type == SDL_MOUSEWHEEL) {
+
+      int screen_w = 0, screen_h = 0;
+      SDL_GetWindowSize(window, &screen_w, &screen_h);
+      printf("screen %d,%d\n", screen_w, screen_h);
+
+      int mouse_x = 0, mouse_y = 0;
+      SDL_GetMouseState(&mouse_x, &mouse_y);
+      printf("mouse %d,%d\n", mouse_x, mouse_y);
+
+      int screen_x = mouse_x;
+      int screen_y = screen_h - mouse_y;
+
+      Viewport a = Viewport::from_origin_zoom(screen_w, screen_h, origin_x, origin_y, zoom_level);
+
+      double scale = exp2(-double(event.wheel.y) * 0.25);
+
+      Viewport b = a.zoom_in_on(dvec2(screen_x, screen_y), scale);
+
+      origin_x = b.ox();
+      origin_y = b.oy();
+      zoom_level += double(event.wheel.y) * 0.25;
+
+      /*
+      double scale = pow(2.0, zoom_level);
+      printf("scale %fn", scale);
+
+      double offset_x =  (mouse_x - screen_w / 2) / scale;
+      double offset_y = -(mouse_y - screen_h / 2) / scale;
+      printf("offset %f,%f\n", offset_x, offset_y);
+
+      double world_x = origin_x + offset_x;
+      double world_y = origin_y + offset_y;
+      printf("world %f,%f\n", world_x, world_y);
+
+      */
+    }
+
+    if (event.type == SDL_MOUSEMOTION && (event.motion.state & SDL_BUTTON_LMASK)) {
+      //printf("drag %d %d\n", event.motion.xrel, event.motion.yrel);
+
+      double scale = pow(2.0, zoom_level);
+
+      origin_x += double(-event.motion.xrel) / scale;
+      origin_y += double( event.motion.yrel) / scale;
+    }
 
     if (event.type == SDL_DROPFILE) {
       metroboy.load_rom(event.drop.file, false);
@@ -431,6 +488,9 @@ void MetroBoyApp::update() {
 
   update_texture(gb_tex, 160, 144, 1, (void*)metroboy.fb().buf);
   update_texture(trace_tex, 456, 154, 4, (void*)metroboy.get_trace());
+
+  //double delta = 1.0 / 60.0;
+  //grid_painter.update(delta, zoom_level, origin_x, origin_y);
 }
 
 //-----------------------------------------------------------------------------
@@ -443,6 +503,17 @@ void MetroBoyApp::begin_frame() {
 
 void MetroBoyApp::render_frame() {
   AppBase::render_frame();
+
+  Viewport a = Viewport::from_origin_zoom(fb_width, fb_height, origin_x, origin_y, zoom_level);
+
+  view_smooth.min.x = ease(view_smooth.min.x, a.min.x, 3);
+  view_smooth.min.y = ease(view_smooth.min.y, a.min.y, 3);
+  view_smooth.max.x = ease(view_smooth.max.x, a.max.x, 3);
+  view_smooth.max.y = ease(view_smooth.max.y, a.max.y, 3);
+  view_smooth.screen_size.x = fb_width;
+  view_smooth.screen_size.y = fb_height;
+
+  grid_painter.render(view_smooth);
 
   //----------------------------------------
   // Wave thingy
@@ -464,9 +535,9 @@ void MetroBoyApp::render_frame() {
   const int gb_screenx = 1248;
   const int gb_screeny = fb_height - 288 - 32;
 
-  blit_mono(gb_tex, gb_screenx, gb_screeny, 160 * 2, 144 * 2);
-  blit_map();
-  blit(trace_tex, 512 + 32 * 8, fb_height - 160 - 32, 456, 154);
+  //blit_mono(gb_tex, gb_screenx, gb_screeny, 160 * 2, 144 * 2);
+  //blit_map();
+  //blit(trace_tex, 512 + 32 * 8, fb_height - 160 - 32, 456, 154);
 
   /*
   if (overlay_mode == 0 || overlay_mode == 1) {
@@ -602,8 +673,9 @@ void MetroBoyApp::render_ui() {
   //----------------------------------------
   // Perf timer
 
+  sprintf(text_buf, "zoom %f origin_x %f origin_y %f\n", zoom_level, origin_x, origin_y);
   sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", last_frame_time_smooth, (int)(cycles_end - cycles_begin) / 4);
-  text_painter.render(text_buf, 0, fb_height - 12);
+  text_painter.render(text_buf, 0, fb_height - 24);
   text_buf.clear();
 }
 

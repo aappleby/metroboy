@@ -66,7 +66,7 @@ protected:
   uint64_t app_begin = 0;
   float now;
 
-  const int fb_width = 1888;
+  const int fb_width = 1856;
   const int fb_height = 1024;
 
   SDL_Window* window = nullptr;

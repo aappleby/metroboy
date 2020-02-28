@@ -8,6 +8,8 @@
 #include <examples/imgui_impl_sdl.h>
 #include <examples/imgui_impl_opengl3.h>
 
+#include <dwmapi.h>
+
 //-----------------------------------------------------------------------------
 
 void AppBase::init() {
@@ -28,7 +30,8 @@ void AppBase::init() {
                             fb_width, fb_height,
                             SDL_WINDOW_OPENGL /*| SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI*/);
   gl_context = SDL_GL_CreateContext(window);
-  SDL_GL_SetSwapInterval(1); // Enable vsync
+
+  SDL_GL_SetSwapInterval(0); // Enable vsync
   gl3wInit();
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
@@ -386,10 +389,13 @@ void AppBase::check_gl_error() {
 
 //-----------------------------------------------------------------------------
 
+#pragma warning(disable:4458)
+#pragma warning(disable:4189)
+
 int AppBase::main(int, char**) {
+
   init();
   while (!quit) {
-
     update_begin = SDL_GetPerformanceCounter();
     update();
     update_end = SDL_GetPerformanceCounter();
@@ -408,6 +414,7 @@ int AppBase::main(int, char**) {
     last_frame_time_smooth += (1000.0 * double(last_frame_time) / double(timer_freq)) * 0.02;
 
     SDL_GL_SwapWindow(window);
+
     check_gl_error();
     frame_count++;
   }
@@ -427,9 +434,9 @@ void AppBase::begin_frame() {
 
   text_painter.begin_frame();
 
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplSDL2_NewFrame(window);
-  ImGui::NewFrame();
+  //ImGui_ImplOpenGL3_NewFrame();
+  //ImGui_ImplSDL2_NewFrame(window);
+  //ImGui::NewFrame();
 
   glViewport(0, 0, fb_width, fb_height);
   glClearColor(0.1f, 0.1f, 0.2f, 0.f);
@@ -440,7 +447,7 @@ void AppBase::begin_frame() {
 //-----------------------------------------------------------------------------
 
 void AppBase::render_frame() {
-  blit_mono(bg_tex, 0, 0, fb_width, fb_height);
+  //blit_mono(bg_tex, 0, 0, fb_width, fb_height);
 
   //text_painter.dprintf("Hello World\n");
   //text_painter.render(4, 4, 1.0);
@@ -449,6 +456,7 @@ void AppBase::render_frame() {
 //-----------------------------------------------------------------------------
 
 void AppBase::render_ui() {
+  /*
   ImGuiIO& io = ImGui::GetIO();
   ImGui::SetNextWindowPos({(float)fb_width,(float)fb_height}, 0, {1,1});
   ImGui::SetNextWindowBgAlpha(0.2f);
@@ -465,6 +473,7 @@ void AppBase::render_ui() {
   text_painter.dprintf("%f\n", last_update_time_smooth);
   text_painter.dprintf("%f\n", last_frame_time_smooth);
   text_painter.render(0, float(fb_height - 48));
+  */
 
   //ImGui::ShowDemoWindow();
 }
@@ -473,8 +482,8 @@ void AppBase::render_ui() {
 
 void AppBase::end_frame() {
   text_painter.end_frame();
-  ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  //ImGui::Render();
+  //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 //-----------------------------------------------------------------------------

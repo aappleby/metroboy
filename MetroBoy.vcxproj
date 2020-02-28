@@ -43,11 +43,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)_debug</TargetName>
-    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(SolutionDir)glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(SolutionDir)glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -62,17 +62,16 @@
       <SupportJustMyCode>false</SupportJustMyCode>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <SDLCheck>
       </SDLCheck>
-      <MinimalRebuild>
-      </MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BrowseInformation>true</BrowseInformation>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -100,6 +99,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BrowseInformation>true</BrowseInformation>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,6 +128,7 @@
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Gameboy.h" />
     <ClInclude Include="src\gateboy_main.h" />
+    <ClInclude Include="src\GridPainter.h" />
     <ClInclude Include="src\IRAM.h" />
     <ClInclude Include="src\MetroBoy.h" />
     <ClInclude Include="src\MMU.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="src\TextPainter.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\Types.h" />
+    <ClInclude Include="src\Viewport.h" />
     <ClInclude Include="src\VRAM.h" />
     <ClInclude Include="src\Z80.h" />
     <ClInclude Include="src\ZRAM.h" />
@@ -177,6 +179,7 @@
     <ClCompile Include="src\Constants.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
     <ClCompile Include="src\gateboy_main.cpp" />
+    <ClCompile Include="src\GridPainter.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
@@ -204,6 +207,7 @@
     <ClCompile Include="src\TextPainter.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Types.cpp" />
+    <ClCompile Include="src\Viewport.cpp" />
     <ClCompile Include="src\VRAM.cpp" />
     <ClCompile Include="src\vram_dump.cpp" />
     <ClCompile Include="src\Wishbone.cpp" />

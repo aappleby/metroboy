@@ -2,6 +2,16 @@
 #include <stdint.h>
 #include <string>
 
+#include "Viewport.h"
+
+struct TextUniforms {
+  vec4 screen_size;
+  vec4 viewport;
+  vec4 text_pos;
+  vec4 bg_palette;
+  vec4 palette[16];
+};
+
 class TextPainter {
 public:
 
@@ -32,15 +42,19 @@ public:
 
   void set_pal(int index, float r, float g, float b, float a);
 
+  void set_viewport(Viewport vp) { viewport = vp; }
+
 private:
+
+  Viewport viewport;
 
   uint32_t text_prog;
   uint32_t font_tex;
-  
+  uint64_t font_ptr;
+
   int text_x = 0;
   int text_y = 0;
 
-  int bg_pal = 0;
   int fg_pal = 1;
 
   int pal_locs[16];
@@ -48,10 +62,11 @@ private:
   int inst_begin = 0;
   int inst_end = 0;
 
-  uint32_t  quad_vbo;
+  uint32_t dummy_vao;
 
-  int buf_idx = 0;
-  uint32_t  text_vaos[3];
-  uint32_t  inst_vbos[3];
-  uint32_t* inst_maps[3];
+  uint32_t  inst_vbo;
+  uint32_t* inst_data;
+
+  uint32_t text_ubo;
+  TextUniforms text_uniforms;
 };

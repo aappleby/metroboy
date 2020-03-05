@@ -62,18 +62,17 @@ public:
   GridPainter grid_painter;
 
   uint32_t blit_map_prog;
-  uint32_t blit_vram_prog;
-  uint32_t blit_ram_prog;
+  uint32_t blit_map_ubo;
   
   uint32_t gb_tex;
   uint32_t vram_ssbo;
   uint32_t trace_tex;
 
-  double zoom_level = 0;
-  double origin_x = 0;
-  double origin_y = 0;
-
+  Viewport view;
   Viewport view_smooth;
+  Viewport view_snap;
+
+  uint32_t view_ubo;
 
   //----------
   // gb state

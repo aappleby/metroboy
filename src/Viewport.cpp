@@ -5,10 +5,9 @@
 #pragma warning(disable:4189)
 
 double ease(double a, double b, double delta) {
-  if (a == b) return a;
   double t = 1.0 - pow(0.1, delta / 70.0);
   double c = a + (b - a) * t;
-  return c == a ? b : c;
+  return ((float)c == (float)a) ? b : c;
 }
 
 dvec2 Viewport::worldToScreen(dvec2 v) const {
@@ -49,7 +48,10 @@ b.max.x = b.min.x + bw;
 
 #endif
 
-Viewport Viewport::zoom_in_on(dvec2 screen_pos, double scale) {
+//-----------------------------------------------------------------------------
+
+Viewport Viewport::zoom(dvec2 screen_pos, double zoom) {
+
   Viewport& a = *this;
 
   double nx = screen_pos.x / screen_size.x;
@@ -61,6 +63,7 @@ Viewport Viewport::zoom_in_on(dvec2 screen_pos, double scale) {
   Viewport b;
   b.screen_size = a.screen_size;
 
+  double scale = exp2(-zoom);
   b.min.x = a.min.x + nx * aw * (1 - scale);
   b.max.x = b.min.x + aw * scale;
 
@@ -70,20 +73,38 @@ Viewport Viewport::zoom_in_on(dvec2 screen_pos, double scale) {
   return b;
 }
 
-Viewport Viewport::from_origin_zoom(double fb_width, double fb_height, double ox, double oy, double zoom) {
+//-----------------------------------------------------------------------------
 
-  double w = fb_width / exp2(zoom);
-  double h = fb_height / exp2(zoom);
+Viewport Viewport::pan(dvec2 delta) {
+  Viewport& a = *this;
+  Viewport b;
+  b.screen_size = screen_size;
 
-  Viewport v;
-  v.min.x = ox - w * 0.5;
-  v.min.y = oy - h * 0.5;
-  v.max.x = ox + w * 0.5;
-  v.max.y = oy + h * 0.5;
-  v.screen_size.x = fb_width;
-  v.screen_size.y = fb_height;
+  double scale = screen_size.x / (max.x - min.x);
+  b.min.x = a.min.x + double(-delta.x) / scale;
+  b.min.y = a.min.y + double(-delta.y) / scale;
+  b.max.x = a.max.x + double(-delta.x) / scale;
+  b.max.y = a.max.y + double(-delta.y) / scale;
 
-  return v;
+  return b;
+}
+
+//-----------------------------------------------------------------------------
+
+Viewport Viewport::snap() {
+  Viewport& a = *this;
+  Viewport b;
+  b.screen_size = a.screen_size;
+
+  double zoom  = round(a.get_zoom() * 4.0) / 4.0;
+  double scale = exp2(zoom);
+
+  b.min.x = round(a.min.x * scale) / scale;
+  b.min.y = round(a.min.y * scale) / scale;
+  b.max.x = round(a.max.x * scale) / scale;
+  b.max.y = round(a.max.y * scale) / scale;
+
+  return b;
 }
 
 //-----------------------------------------------------------------------------
@@ -97,7 +118,7 @@ static struct Autotest {
 
     dvec2 s(1920,0);
 
-    Viewport b = a.zoom_in_on(s, 0.5);
+    Viewport b = a.zoom(s, 0.5);
 
     printf("b.min.x %f\n", b.min.x);
     printf("b.min.y %f\n", b.min.y);

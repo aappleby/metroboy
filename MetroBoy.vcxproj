@@ -112,6 +112,7 @@
   <ItemGroup>
     <ClInclude Include="gl3w\include\GL\gl3w.h" />
     <ClInclude Include="gl3w\include\GL\glcorearb.h" />
+    <ClInclude Include="glm\glm\glm.hpp" />
     <ClInclude Include="imgui\examples\imgui_impl_opengl3.h" />
     <ClInclude Include="imgui\examples\imgui_impl_sdl.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -198,6 +199,7 @@
     <ClCompile Include="src\SPU.cpp" />
     <ClCompile Include="src\StateManager.cpp" />
     <ClCompile Include="src\StateManager2.cpp" />
+    <ClCompile Include="src\Terminus.cpp" />
     <ClCompile Include="src\TestGB.cpp" />
     <ClCompile Include="src\test_codegen.cpp" />
     <ClCompile Include="src\test_micro.cpp" />

@@ -12,12 +12,98 @@
 
 //-----------------------------------------------------------------------------
 
+const char* blit_hdr = R"(
+#version 460
+#extension GL_ARB_bindless_texture : require
+
+layout(std140, binding = 0) uniform BlitUniforms
+{
+  uvec2  tex_ptr;
+  double pad1;
+
+  vec4 quad_pos;
+  vec4 viewport;
+  vec4 screen_size;
+  vec4 quad_col;
+  int  solid;
+  int  mono;
+  int  palette;
+  int  pad2;
+};
+
+)";
+
+//-----------------------------------------------------------------------------
+
+const char* blit_vert_src = R"(
+
+layout(location = 0) in  vec2 vpos;
+layout(location = 0) out vec2 vtex;
+
+void main() {
+  float x = quad_pos.x;
+  float y = quad_pos.y;
+  float w = quad_pos.z;
+  float h = quad_pos.w;
+
+  x = mix(x, x + w, vpos.x);
+  y = mix(y, y + h, vpos.y);
+
+  x *= screen_size.z;
+  y *= screen_size.w;
+
+  x = x * 2.0 - 1.0;
+  y = (1.0 - y) * 2.0 - 1.0;
+  gl_Position = vec4(x, y, 1.0, 1.0);
+
+  vtex = vpos;
+}
+
+)";
+
+//-----------------------------------------------------------------------------
+
+const char* blit_frag_src = R"(
+
+layout(location = 0) in  vec2 ftex;
+layout(location = 0) out vec4 frag;
+
+void main() {
+  if (bool(solid)) {
+    frag = vec4(1.0, 0.0, 1.0, 1.0);
+  }
+  else if (bool(mono)) {
+    frag = vec4(texture(sampler2D(tex_ptr), ftex).rrr, 1.0) * quad_col;
+  }
+  else if (bool(palette)) {
+    frag = vec4(1.0, 0.0, 1.0, 1.0);
+  }
+  else {
+    frag = texture(sampler2D(tex_ptr), ftex) * quad_col;
+  }
+}
+
+)";
+
+//-----------------------------------------------------------------------------
+
+void debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum /*severity*/,
+                 GLsizei /*length*/, const GLchar* message, const GLvoid* /*userParam*/) {
+	printf("GLDEBUG: %s\n", message);
+}
+
+//-----------------------------------------------------------------------------
+
 void AppBase::init() {
   SDL_Init(SDL_INIT_VIDEO);
 
   app_begin = SDL_GetPerformanceCounter();
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+  // debug context?
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
+                      SDL_GL_CONTEXT_DEBUG_FLAG |
+                      SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG |
+                      SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
@@ -30,9 +116,14 @@ void AppBase::init() {
                             fb_width, fb_height,
                             SDL_WINDOW_OPENGL /*| SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI*/);
   gl_context = SDL_GL_CreateContext(window);
-
   SDL_GL_SetSwapInterval(0); // Enable vsync
+
   gl3wInit();
+  glEnable(GL_DEBUG_OUTPUT);
+  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+  glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+  glDebugMessageCallback(debugOutput, nullptr);
+
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
   ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
@@ -44,28 +135,26 @@ void AppBase::init() {
   quad_init();
   blit_init();
 
-  printf("%d\n", glGetError());
-
   {
-    checker_tex = create_texture(32, 32, 1);
-    uint8_t blah[32*32];
+    checker_tex = create_texture(32, 32);
+    uint32_t blah[32*32];
     for (int y = 0; y < 32; y++)
     for (int x = 0; x < 32; x++) {
-      blah[x + 32 * y] = ((x^y)&1) ? 0xFF : 0x00;
+      blah[x + 32 * y] = ((x^y)&1) ? 0xFFFFFFFF : 0xFF000000;
     }
-    update_texture(checker_tex, 32, 32, 1, blah);
+    update_texture(checker_tex, 32, 32, blah);
   }
 
   {
     const int tile_width = fb_width / 32;
     const int tile_height = fb_height / 32;
-    bg_tex = create_texture(tile_width, tile_height, 1);
-    uint8_t* tile_pix = new uint8_t[tile_width * tile_height];
+    bg_tex = create_texture(tile_width, tile_height);
+    uint32_t* tile_pix = new uint32_t[tile_width * tile_height];
     for (int y = 0; y < tile_height; y++)
     for (int x = 0; x < tile_width; x++) {
-      tile_pix[x + y * tile_width] = ((x^y)&1) ? 0x0C : 0x17;
+      tile_pix[x + y * tile_width] = ((x^y)&1) ? 0xFF0C0C0C : 0xFF171717;
     }
-    update_texture(bg_tex, tile_width, tile_height, 1, tile_pix);
+    update_texture(bg_tex, tile_width, tile_height, tile_pix);
     delete [] tile_pix;
   }
 
@@ -76,6 +165,10 @@ void AppBase::init() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   text_painter.init();
+
+  glGenBuffers(1, &blit_ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, blit_ubo);
+  glNamedBufferStorage(blit_ubo, sizeof(BlitUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
 }
 
 void AppBase::close() {
@@ -152,171 +245,97 @@ void AppBase::quad_init() {
 //-----------------------------------------------------------------------------
 
 void AppBase::blit_init() {
-  const GLchar* blit_vert_source = R"(
-#version 460
-
-uniform vec4 screen_size = vec4(1920.0, 1080.0, 1.0 / 1920.0, 1.0 / 1080.0);
-uniform vec4 quad_pos = vec4(128.4, 128.0, 32.0, 32.0);
-
-layout(location = 0) in  vec2 vpos;
-layout(location = 0) out vec2 vtex;
-
-vec4 screen_to_norm(float x, float y) {
-  x *= screen_size.z;
-  y *= screen_size.w;
-
-  x = x * 2.0 - 1.0;
-  y = (1.0 - y) * 2.0 - 1.0;
-  return vec4(x, y, 1.0, 1.0);
-}
-
-void main() {
-  float x = quad_pos.x;
-  float y = quad_pos.y;
-  float w = quad_pos.z;
-  float h = quad_pos.w;
-
-  x = mix(x, x + w, vpos.x);
-  y = mix(y, y + h, vpos.y);
-
-  gl_Position = screen_to_norm(x, y);
-  vtex = vpos;
-}
-  )";
-
-  //----------------------------------------
-
-  const GLchar* blit_frag_source = R"(
-#version 460
-
-uniform vec4 quad_col = vec4(1.0, 1.0, 1.0, 1.0);
-uniform sampler2D tex;
-uniform bool solid = false;
-uniform bool mono = false;
-uniform bool palette = false;
-
-layout(location = 0) in vec2 ftex;
-layout(location = 0) out vec4 frag;
-
-void main() {
-  if (solid) {
-    frag = vec4(1.0, 0.0, 1.0, 1.0);
-    return;
-  }
-
-  vec4 src = texture(tex, ftex);
-  if (mono) {
-    frag = vec4(src.r, src.r, src.r, 1.0) * quad_col;
-  }
-  else if (palette) {
-    frag = vec4(1.0, 0.0, 1.0, 1.0);
-  }
-  else {
-    frag = src * quad_col;
-  }
-  frag.a = 1.0;
-}
-  )";
-
-  blit_prog = compile_shader("quad", blit_vert_source, blit_frag_source);
+  blit_prog = compile_shader(blit_hdr, blit_vert_src, blit_frag_src);
 }
 
 //-----------------------------------------------------------------------------
 
-uint32_t AppBase::create_texture(int width, int height, int channels, bool filter) {
+uint32_t AppBase::create_texture(int width, int height) {
   uint32_t tex = 0;
   glGenTextures(1, &tex);
   printf("quad_tex %d\n", tex);
-  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
 
+  /*
   if (channels == 1) {
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8,
-                 width, height, 0,
-                 GL_RED, GL_UNSIGNED_BYTE, nullptr);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glTextureStorage2D(tex, 1, GL_R8, width, height);
   }
   else if (channels == 2) {
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8,
-                 width, height, 0,
-                 GL_RG, GL_UNSIGNED_BYTE, nullptr);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glTextureStorage2D(tex, 1, GL_RG8, width, height);
   }
   else if (channels == 3) {
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
-                 width, height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glTextureStorage2D(tex, 1, GL_RGB8, width, height);
   }
   else if (channels == 4) {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
-                 width, height, 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTextureStorage2D(tex, 1, GL_RGBA8, width, height);
   }
+  */
+  glTextureStorage2D(tex, 1, GL_RGBA8, width, height);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter ? GL_LINEAR : GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter ? GL_LINEAR : GL_NEAREST);
+  bool filter = false;
+
+  glTextureParameteri(tex, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTextureParameteri(tex, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTextureParameteri(tex, GL_TEXTURE_MIN_FILTER, filter ? GL_LINEAR : GL_NEAREST);
+  glTextureParameteri(tex, GL_TEXTURE_MAG_FILTER, filter ? GL_LINEAR : GL_NEAREST);
+
+
+	uint64_t handle = glGetTextureHandleARB(tex);
+  printf("texture handle 0x%016llx\n", handle);
+	glMakeTextureHandleResidentARB(handle);
+
   return tex;
 }
 
 //-----------------------------------------------------------------------------
 
-void AppBase::update_texture(uint32_t tex, int width, int height, int channels, void* pix) {
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, tex);
-
+void AppBase::update_texture(uint32_t tex, int width, int height, void* pix) {
+  /*
   if (channels == 1) {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexSubImage2D(GL_TEXTURE_2D, 0,
+    glTextureSubImage2D(tex, 0,
                     0, 0, width, height,
                     GL_RED, GL_UNSIGNED_BYTE, pix);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
   }
   else if (channels == 2) {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexSubImage2D(GL_TEXTURE_2D, 0,
+    glTextureSubImage2D(tex, 0,
                     0, 0, width, height,
                     GL_RG, GL_UNSIGNED_BYTE, pix);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
   }
   else if (channels == 3) {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexSubImage2D(GL_TEXTURE_2D, 0,
+    glTextureSubImage2D(tex, 0,
                     0, 0, width, height,
                     GL_RGB, GL_UNSIGNED_BYTE, pix);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
   }
   else if (channels == 4) {
-    glTexSubImage2D(GL_TEXTURE_2D, 0,
+    glTextureSubImage2D(tex, 0,
                     0, 0, width, height,
                     GL_RGBA, GL_UNSIGNED_BYTE, pix);
   }
+  */
+
+  glTextureSubImage2D(tex, 0,
+                  0, 0, width, height,
+                  GL_RGBA, GL_UNSIGNED_BYTE, pix);
 }
 
 //-----------------------------------------------------------------------------
 
-int AppBase::compile_shader(const char* name, const char* vert_source, const char* frag_source) {
-  char buf[1024];
-  int len = 0;
-
+int AppBase::compile_shader(const char* hdr, const char* vert_src, const char* frag_src) {
+  const char* vert_srcs[] = { hdr, vert_src };
   int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vert_source, NULL);
+  glShaderSource(vertexShader, 2, vert_srcs, NULL);
   glCompileShader(vertexShader);
 
-  glGetShaderInfoLog(vertexShader, 1024, &len, buf);
-  printf("%s vert shader log:\n%s", name, buf);
-
+  const char* frag_srcs[] = { hdr, frag_src };
   int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &frag_source, NULL);
+  glShaderSource(fragmentShader, 2, frag_srcs, NULL);
   glCompileShader(fragmentShader);
-
-  glGetShaderInfoLog(fragmentShader, 1024, &len, buf);
-  printf("%s frag shader log:\n%s", name, buf);
 
   int shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
@@ -324,67 +343,37 @@ int AppBase::compile_shader(const char* name, const char* vert_source, const cha
   glLinkProgram(shaderProgram);
   glUseProgram(shaderProgram);
 
-  glGetProgramInfoLog(shaderProgram, 1024, &len, buf);
-  printf("%s shader prog log:\n%s", name, buf);
-
   return shaderProgram;
 }
 
 //-----------------------------------------------------------------------------
 
+#pragma warning(disable:4100)
+
 void AppBase::blit(uint32_t tex, int x, int y, int w, int h) {
+  int gl_width, gl_height;
+  SDL_GL_GetDrawableSize(window, &gl_width, &gl_height);
+
+  blit_uniforms = {
+    .tex_ptr = glGetTextureHandleARB(tex),
+    .pad1 = 0,
+
+    .quad_pos = {x,y,w,h},
+    .viewport = {0,0,0,0},
+    .screen_size = {(float)gl_width, (float)gl_height, 1.0f / gl_width, 1.0f / gl_height},
+    .quad_col = {1,1,1,1},
+
+    .solid = 0,
+    .mono = 0,
+    .palette = 0,
+    .pad2 = 0,
+  };
+  glNamedBufferSubData(blit_ubo, 0, sizeof(blit_uniforms), &blit_uniforms);
+
   glUseProgram(blit_prog);
-
-  glUniform4f(glGetUniformLocation(blit_prog, "screen_size"),
-              (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
-
-  glUniform1i(glGetUniformLocation(blit_prog, "mono"), 0);
-  glUniform1i(glGetUniformLocation(blit_prog, "solid"), 0);
-  glUniform1i(glGetUniformLocation(blit_prog, "palette"), 0);
-
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, tex);
-  glUniform1i(glGetUniformLocation(blit_prog, "tex"), 0);
-
-  glUniform4f(glGetUniformLocation(blit_prog, "quad_pos"),
-              (float)x, (float)y, (float)w, (float)h);
-  glUniform4f(glGetUniformLocation(blit_prog, "quad_col"),
-              1.0, 1.0, 1.0, 1.1);
-
   glBindVertexArray(quad_vao);
+  glBindBufferBase(GL_UNIFORM_BUFFER, 0, blit_ubo);
   glDrawArrays(GL_TRIANGLES, 0, 6);
-}
-
-void AppBase::blit_mono(uint32_t tex, int x, int y, int w, int h) {
-  glUseProgram(blit_prog);
-
-  glUniform4f(glGetUniformLocation(blit_prog, "screen_size"),
-              (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
-
-  glUniform1i(glGetUniformLocation(blit_prog, "mono"), 1);
-  glUniform1i(glGetUniformLocation(blit_prog, "solid"), 0);
-  glUniform1i(glGetUniformLocation(blit_prog, "palette"), 0);
-
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, tex);
-  glUniform1i(glGetUniformLocation(blit_prog, "tex"), 0);
-
-  glUniform4f(glGetUniformLocation(blit_prog, "quad_pos"),
-              (float)x, (float)y, (float)w, (float)h);
-  glUniform4f(glGetUniformLocation(blit_prog, "quad_col"),
-              1.0, 1.0, 1.0, 1.1);
-
-  glBindVertexArray(quad_vao);
-  glDrawArrays(GL_TRIANGLES, 0, 6);
-}
-
-//-----------------------------------------------------------------------------
-
-void AppBase::check_gl_error() {
-  int error = glGetError();
-  if (error) {
-    printf("GL error %d\n", error);
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -414,8 +403,6 @@ int AppBase::main(int, char**) {
     last_frame_time_smooth += (1000.0 * double(last_frame_time) / double(timer_freq)) * 0.02;
 
     SDL_GL_SwapWindow(window);
-
-    check_gl_error();
     frame_count++;
   }
   close();
@@ -447,10 +434,6 @@ void AppBase::begin_frame() {
 //-----------------------------------------------------------------------------
 
 void AppBase::render_frame() {
-  //blit_mono(bg_tex, 0, 0, fb_width, fb_height);
-
-  //text_painter.dprintf("Hello World\n");
-  //text_painter.render(4, 4, 1.0);
 }
 
 //-----------------------------------------------------------------------------

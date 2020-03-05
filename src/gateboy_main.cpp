@@ -146,7 +146,7 @@ void GateboyMain::init() {
 
   text.init();
 
-  gb_tex = create_texture(64, 64, 2);
+  gb_tex = create_texture(64, 64);
 
   TestGB* gb = gbs.state();
   gb->sys_pins.RST.preset(true, 1);

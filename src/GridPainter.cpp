@@ -7,56 +7,58 @@
 
 //-----------------------------------------------------------------------------
 
-static const GLchar* vert_source = R"(
+static const GLchar* vert_hdr = R"(
 #version 460
 
+struct Rect {
+  float x;
+  float y;
+  float w;
+  float h;
+};
+
+layout(std140, binding = 0) uniform GridUniforms
+{
+  Rect viewport;
+};
+
+)";
+
+//-----------------------------------------------------------------------------
+
+static const GLchar* vert_src = R"(
+
 layout(location = 0) in  vec2 vert_pos;
+layout(location = 0) out vec2 world_pos; // interpolating this is going to lose precision...
 
 void main() {
-  gl_Position = vec4(vert_pos.x, vert_pos.y, 1.0, 1.0);
+  world_pos.x = vert_pos.x * viewport.w + viewport.x;
+  world_pos.y = vert_pos.y * viewport.h + viewport.y;
+
+  gl_Position = vec4(2.0 * vert_pos.x - 1.0, -2.0 * vert_pos.y + 1.0, 1.0, 1.0);
 }
 
 )";
 
 //-----------------------------------------------------------------------------
 
-static const GLchar* frag_source = R"(
-#version 460
+static const GLchar* frag_src = R"(
 
-uniform vec4 screen_size = vec4(1920.0, 1080.0, 1.0 / 1920.0, 1.0 / 1080.0);
+layout(location = 0) in  vec2 world_pos;
 layout(location = 0) out vec4 frag_col;
 
-uniform dvec3 origin = dvec3(0, 0, 0);
-
 void main() {
-  double screen_offset_x = gl_FragCoord.x - screen_size.x * 0.5;
-  double screen_offset_y = gl_FragCoord.y - screen_size.y * 0.5;
+  bool bx = fract(world_pos.x * (1.0 / 64.0)) > 0.5;
+  bool by = fract(world_pos.y * (1.0 / 64.0)) > 0.5;
+  bool b = bx ^^ by;
 
-  double scale = pow(2.0, float(origin.z));
+  float ga = 14.0 / 255.0;
+  float gb = 19.0 / 255.0;
 
-  double world_x = origin.x + screen_offset_x / scale;
-  double world_y = origin.y + screen_offset_y / scale;
-
-  if (world_x >= 0 && world_x <= 32 && world_y >= 0 && world_y <= 32) {
-    frag_col = vec4(1.0, 0.0, 1.0, 1.0);
-    return;
-  }
-
-  frag_col.r = float(world_x);
-  frag_col.g = float(world_y);
-  frag_col.b = 0.5;
+  frag_col.r = b ? ga : gb;
+  frag_col.g = b ? ga : gb;
+  frag_col.b = b ? ga : gb;
   frag_col.a = 1.0;
-
-  /*
-  double x = (gl_FragCoord.x - screen_size.x * 0.5 - origin.x) * scale;
-  double y = (gl_FragCoord.y - screen_size.y * 0.5 + origin.y) * scale;
-
-
-  frag_col.r = fract(x / 64.0) > 0.5 ? 1.0 : 0.0;
-  frag_col.g = fract(y / 64.0) > 0.5 ? 1.0 : 0.0;
-  frag_col.b = 0.5;
-  frag_col.a = 1.0;
-  */
 }
 
 )";
@@ -65,8 +67,8 @@ void main() {
 
 void GridPainter::init() {
   float quad[] = {
-    -1, -1,  1, -1,  1,  1,
-    -1, -1,  1,  1, -1,  1,
+     0,  0,  1,  0,  1,  1,
+     0,  0,  1,  1,  0,  1,
   };
 
   glGenVertexArrays(1, &grid_vao);
@@ -78,23 +80,23 @@ void GridPainter::init() {
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-  const char* name = "grid_painter";
-  char buf[1024];
-  int len = 0;
+  const GLchar* vert_srcs[] = {
+    vert_hdr,
+    vert_src
+  };
 
   int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vert_source, NULL);
+  glShaderSource(vertexShader, 2, vert_srcs, NULL);
   glCompileShader(vertexShader);
 
-  glGetShaderInfoLog(vertexShader, 1024, &len, buf);
-  printf("%s vert shader log:\n%s", name, buf);
+  const GLchar* frag_srcs[] = {
+    vert_hdr,
+    frag_src
+  };
 
   int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &frag_source, NULL);
+  glShaderSource(fragmentShader, 2, frag_srcs, NULL);
   glCompileShader(fragmentShader);
-
-  glGetShaderInfoLog(fragmentShader, 1024, &len, buf);
-  printf("%s frag shader log:\n%s", name, buf);
 
   grid_prog = glCreateProgram();
   glAttachShader(grid_prog, vertexShader);
@@ -102,52 +104,24 @@ void GridPainter::init() {
   glLinkProgram(grid_prog);
   glUseProgram(grid_prog);
 
-  glGetProgramInfoLog(grid_prog, 1024, &len, buf);
-  printf("%s shader prog log:\n%s", name, buf);
-  printf("glGetError %d\n", glGetError());
-
   last_frame_time = SDL_GetPerformanceCounter();
+
+  glGenBuffers(1, &grid_ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, grid_ubo);
+  glNamedBufferStorage(grid_ubo, sizeof(GridUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
 }
 
-//-----------------------------------------------------------------------------
-
-/*
-void GridPainter::update(double delta, double zoom_level, double origin_x, double origin_y) {
-  //origin_x = sin(frame_count * 0.01) * 200;
-  //origin_y = cos(frame_count * 0.01) * 200;
-
-  double factor = pow(0.1, delta / 0.4);
-
-  zoom_level_smooth = zoom_level_smooth * factor + zoom_level * (1.0 - factor);
-
-  origin_x_smooth = origin_x_smooth * factor + origin_x * (1.0 - factor);
-  origin_y_smooth = origin_y_smooth * factor + origin_y * (1.0 - factor);
-}
-*/
 
 //-----------------------------------------------------------------------------
 
 #pragma warning(disable:4189)
 
-void GridPainter::render(Viewport vp) {
+void GridPainter::render() {
+  grid_uniforms.viewport = {(float)viewport.mx(), (float)viewport.my(), (float)viewport.dx(), (float)viewport.dy() };
+  glNamedBufferSubData(grid_ubo, 0, sizeof(grid_uniforms), &grid_uniforms);
   
   glUseProgram(grid_prog);
-
-  double origin_x = (vp.min.x + vp.max.x) * 0.5;
-  double origin_y = (vp.min.y + vp.max.y) * 0.5;
-  double scale = vp.screen_size.x / (vp.max.x - vp.min.x);
-  double zoom = log2(scale);
-
-  glUniform3d(glGetUniformLocation(grid_prog, "origin"), origin_x, origin_y, zoom);
-
-  int temp[4] = {0};
-  glGetIntegerv(GL_VIEWPORT, temp);
-  int fb_width  = temp[2];
-  int fb_height = temp[3];
-  glUniform4f(glGetUniformLocation(grid_prog, "screen_size"),
-              (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
-
-
+  glBindBufferBase(GL_UNIFORM_BUFFER, 0, grid_ubo);
   glBindVertexArray(grid_vao);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }

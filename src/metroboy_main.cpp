@@ -29,16 +29,128 @@ extern uint8_t vram_dump[];
 
 void run_test(const std::string& prefix, const std::string& name);
 
+//----------------------------------------
+
+struct BlitMapUniforms {
+  vec4 screen_size;
+  vec4 quad_pos;
+  vec4 quad_tex;
+  vec4 pal[4];
+  int  which_map;
+  int  use_map;
+  int  alt_map;
+  int  pad1;
+};
+
+//----------------------------------------
+
+const char* blit_map_hdr = R"(
+#version 460
+
+layout(std140, binding = 0) uniform BlitMapUniforms {
+  vec4 screen_size2;
+  vec4 quad_pos2;
+  vec4 quad_tex2;
+  vec4 pal2[4];
+  int  which_map2;
+  int  use_map2;
+  int  alt_map2;
+  int  pad2;
+};
+
+layout(std430, binding = 0) buffer vramBuffer {
+  uint tiles[1536]; // 6k of tile data
+  uint maps[512];   // 2k of map data
+};
+)";
+
+//----------------------------------------
+
+const char* blit_map_vert_src = R"(
+
+layout(location = 0) in  vec2 vpos;
+layout(location = 0) out vec2 vtex;
+
+vec4 screen_to_norm(float x, float y) {
+  x *= screen_size2.z;
+  y *= screen_size2.w;
+
+  x = x * 2.0 - 1.0;
+  y = (1.0 - y) * 2.0 - 1.0;
+  return vec4(x, y, 1.0, 1.0);
+}
+
+void main() {
+  float x = quad_pos2.x;
+  float y = quad_pos2.y;
+  float w = quad_pos2.z;
+  float h = quad_pos2.w;
+
+  x = mix(x, x + w, vpos.x);
+  y = mix(y, y + h, vpos.y);
+
+  gl_Position = screen_to_norm(x, y);
+
+  vtex.x = mix(quad_tex2.x, quad_tex2.x + quad_tex2.z, vpos.x);
+  vtex.y = mix(quad_tex2.y, quad_tex2.y + quad_tex2.w, vpos.y);
+}
+
+)";
+
+//----------------------------------------
+
+const char* blit_map_frag_src = R"(
+
+layout(location = 0) in  vec2 ftex;
+layout(location = 0) out vec4 frag;
+
+uint decode_tile2(uint tile_index, uint tile_x, uint tile_y) {
+  vec4 temp = unpackUnorm4x8(tiles[(tile_index * 4) + (tile_y >> 1)]) * 255.0;
+
+  uint pix_a = ((tile_y & 1) == 0) ? int(temp[0]) : int(temp[2]);
+  uint pix_b = ((tile_y & 1) == 0) ? int(temp[1]) : int(temp[3]);
+
+  pix_a = (pix_a >> (7 - tile_x)) & 1;
+  pix_b = (pix_b >> (7 - tile_x)) & 1;
+
+  return pix_a + (2 * pix_b);
+}
+
+void main() {
+  uint pix_x = int(ftex.x) & 0xFF;
+  uint pix_y = int(ftex.y) & 0xFF;
+
+  uint map_x = pix_x >> 3;
+  uint map_y = pix_y >> 3;
+
+  uint tile_x = pix_x & 7;
+  uint tile_y = pix_y & 7;
+
+  if (bool(use_map2)) {
+    uint map_index = map_y * 32 + map_x;
+    uint map_addr = bool(which_map2) ? (map_index >> 2) + 256 : (map_index >> 2);
+    uint tile_index = uint(unpackUnorm4x8(maps[map_addr])[map_index & 3] * 255.0);
+    if (bool(alt_map2) && (tile_index < 128)) tile_index += 256;
+    frag = pal2[decode_tile2(tile_index, tile_x, tile_y)];
+  }
+  else {
+    uint tile_index = map_y * 16 + map_x;
+    frag = pal2[decode_tile2(tile_index, tile_x, tile_y)];
+  }
+}
+)";
+
+
 //-----------------------------------------------------------------------------
 
 void MetroBoyApp::init() {
   AppBase::init();
 
-  gb_tex = create_texture(160, 144, 1);
+  gb_tex = create_texture(160, 144);
 
   uint32_t* trace = new uint32_t[456 * 154];
-  trace_tex = create_texture(456, 154, 4);
-  update_texture(trace_tex, 456, 154, 4, trace);
+  trace_tex = create_texture(456, 154);
+  update_texture(trace_tex, 456, 154, trace);
   delete [] trace;
 
   audio_init();
@@ -75,102 +187,7 @@ void MetroBoyApp::init() {
 
   //----------------------------------------
 
-  const char* blit_map_vert_source = R"(
-#version 460
-
-uniform vec4 screen_size = vec4(1920.0, 1080.0, 1.0 / 1920.0, 1.0 / 1080.0);
-uniform vec4 quad_pos = vec4(128.4, 128.0, 32.0, 32.0);
-uniform vec4 quad_tex = vec4(0.0, 0.0, 256.0, 256.0);
-
-layout(location = 0) in  vec2 vpos;
-layout(location = 0) out vec2 vtex;
-
-vec4 screen_to_norm(float x, float y) {
-  x *= screen_size.z;
-  y *= screen_size.w;
-
-  x = x * 2.0 - 1.0;
-  y = (1.0 - y) * 2.0 - 1.0;
-  return vec4(x, y, 1.0, 1.0);
-}
-
-void main() {
-  float x = quad_pos.x;
-  float y = quad_pos.y;
-  float w = quad_pos.z;
-  float h = quad_pos.w;
-
-  x = mix(x, x + w, vpos.x);
-  y = mix(y, y + h, vpos.y);
-
-  gl_Position = screen_to_norm(x, y);
-
-  vtex.x = mix(quad_tex.x, quad_tex.x + quad_tex.z, vpos.x);
-  vtex.y = mix(quad_tex.y, quad_tex.y + quad_tex.w, vpos.y);
-}
-  )";
-
-  //----------------------------------------
-
-  const char* blit_map_frag_source = R"(
-#version 460
-
-uniform bool which_map = false;
-uniform bool use_map = true;
-uniform bool alt_map = true;
-
-uniform vec4 pal[4] = {
-  {0.48, 0.48, 0.48, 1.0},
-  {0.36, 0.36, 0.36, 1.0},
-  {0.24, 0.24, 0.24, 1.0},
-  {0.12, 0.12, 0.12, 1.0},
-};
-
-layout(std430, binding = 2) buffer vramBuffer {
-  uint tiles[1536]; // 6k of tile data
-  uint maps[512];   // 2k of map data
-};
-
-layout(location = 0) in  vec2 ftex;
-layout(location = 0) out vec4 frag;
-
-uint decode_tile2(uint tile_index, uint tile_x, uint tile_y) {
-  vec4 temp = unpackUnorm4x8(tiles[(tile_index * 4) + (tile_y >> 1)]) * 255.0;
-
-  uint pix_a = ((tile_y & 1) == 0) ? int(temp[0]) : int(temp[2]);
-  uint pix_b = ((tile_y & 1) == 0) ? int(temp[1]) : int(temp[3]);
-
-  pix_a = (pix_a >> (7 - tile_x)) & 1;
-  pix_b = (pix_b >> (7 - tile_x)) & 1;
-
-  return pix_a + (2 * pix_b);
-}
-
-void main() {
-  uint pix_x = int(ftex.x) & 0xFF;
-  uint pix_y = int(ftex.y) & 0xFF;
-
-  uint map_x = pix_x >> 3;
-  uint map_y = pix_y >> 3;
-
-  uint tile_x = pix_x & 7;
-  uint tile_y = pix_y & 7;
-
-  if (use_map) {
-    uint map_index = map_y * 32 + map_x;
-    uint map_addr = which_map ? (map_index >> 2) + 256 : (map_index >> 2);
-    uint tile_index = uint(unpackUnorm4x8(maps[map_addr])[map_index & 3] * 255.0);
-    if (alt_map && (tile_index < 128)) tile_index += 256;
-    frag = pal[decode_tile2(tile_index, tile_x, tile_y)];
-  }
-  else {
-    uint tile_index = map_y * 16 + map_x;
-    frag = pal[decode_tile2(tile_index, tile_x, tile_y)];
-  }
-}
-  )";
-
-  blit_map_prog = compile_shader("blit_map_prog", blit_map_vert_source, blit_map_frag_source);
+  blit_map_prog = compile_shader(blit_map_hdr, blit_map_vert_src, blit_map_frag_src);
 
   //----------------------------------------
 
@@ -179,59 +196,94 @@ void main() {
   glGenBuffers(1, &vram_ssbo);
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, vram_ssbo);
   glBufferStorage(GL_SHADER_STORAGE_BUFFER, vram_size, nullptr, GL_DYNAMIC_STORAGE_BIT);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, vram_ssbo);
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
   grid_painter.init();
 
-  view_smooth.min.x = -fb_width / 2;
-  view_smooth.max.x = fb_width / 2;
-  view_smooth.min.y = -fb_height / 2;
-  view_smooth.max.y = fb_height / 2;
-  view_smooth.screen_size.x = fb_width;
-  view_smooth.screen_size.y = fb_height;
+  view.min.x = 0;
+  view.max.x = fb_width;
+  view.min.y = 0;
+  view.max.y = fb_height;
+  view.screen_size.x = fb_width;
+  view.screen_size.y = fb_height;
+  view_smooth = view;
+  view_snap = view;
+
+  glGenBuffers(1, &view_ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, view_ubo);
+  glNamedBufferStorage(view_ubo, 128, nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glBindBufferBase(GL_UNIFORM_BUFFER, 0, view_ubo);
+
+  glGenBuffers(1, &blit_map_ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, blit_map_ubo);
+  glNamedBufferStorage(blit_map_ubo, sizeof(BlitMapUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
 };
 
 //-----------------------------------------------------------------------------
 
 void MetroBoyApp::blit_map() {
-  float x = float(fb_width - 256 - 32);
-  float y = 32 * 1;
+  BlitMapUniforms blit_map_uniforms = {
+    .screen_size = {(float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height},
+    .quad_pos = {},
+    .quad_tex = {},
+    .pal = {
+      {0.48, 0.48, 0.48, 1.0},
+      {0.36, 0.36, 0.36, 1.0},
+      {0.24, 0.24, 0.24, 1.0},
+      {0.12, 0.12, 0.12, 1.0},
+    },
+    .which_map = 0,
+    .use_map = 0,
+    .alt_map = 0,
+    .pad1 = 0,
+  };
+
+  //----------
 
   const int vram_size = 8192;
   glNamedBufferSubData(vram_ssbo, 0, vram_size, vram_dump);
 
+  //----------
+
   glUseProgram(blit_map_prog);
-  glUniform4f(glGetUniformLocation(blit_map_prog, "screen_size"),
-              (float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height);
   glBindVertexArray(quad_vao);
+  glBindBufferBase(GL_UNIFORM_BUFFER, 0, blit_map_ubo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, vram_ssbo);
 
   //----------
 
-  glUniform4f(glGetUniformLocation(blit_map_prog, "quad_pos"), x, y, 256, 384);
-  glUniform4f(glGetUniformLocation(blit_map_prog, "quad_tex"), 0, 0, 128, 192);
+  float x = float(fb_width - 256 - 32);
+  float y = 32 * 1;
 
-  glUniform1i(glGetUniformLocation(blit_map_prog, "use_map"), 0);
-  glUniform1i(glGetUniformLocation(blit_map_prog, "which_map"), 0);
-  glUniform1i(glGetUniformLocation(blit_map_prog, "alt_map"), 0);
+  blit_map_uniforms.quad_pos = {x, y, 256, 384};
+  blit_map_uniforms.quad_tex = {0, 0, 128, 192};
+  blit_map_uniforms.use_map = 0;
+  blit_map_uniforms.which_map = 0;
+  blit_map_uniforms.alt_map = 0;
+
+  glNamedBufferSubData(blit_map_ubo, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 
   y += 384 + 32;
 
-  glUniform4f(glGetUniformLocation(blit_map_prog, "quad_pos"), x, y, 256, 256);
-  glUniform4f(glGetUniformLocation(blit_map_prog, "quad_tex"), 0, 0, 256, 256);
-  glUniform1i(glGetUniformLocation(blit_map_prog, "use_map"), 1);
-  glUniform1i(glGetUniformLocation(blit_map_prog, "which_map"), 1);
-  glUniform1i(glGetUniformLocation(blit_map_prog, "alt_map"), 1);
+  blit_map_uniforms.quad_pos = {x, y, 256, 256};
+  blit_map_uniforms.quad_tex = {0, 0, 256, 256};
+  blit_map_uniforms.use_map = 1;
+  blit_map_uniforms.which_map = 1;
+  blit_map_uniforms.alt_map = 1;
+
+  glNamedBufferSubData(blit_map_ubo, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 
   y += 256 + 32;
 
-  glUniform4f(glGetUniformLocation(blit_map_prog, "quad_pos"), x, y, 256, 256);
-  glUniform4f(glGetUniformLocation(blit_map_prog, "quad_tex"), 0, 0, 256, 256);
-  glUniform1i(glGetUniformLocation(blit_map_prog, "use_map"), 1);
-  glUniform1i(glGetUniformLocation(blit_map_prog, "which_map"), 0);
-  glUniform1i(glGetUniformLocation(blit_map_prog, "alt_map"), 1);
+  blit_map_uniforms.quad_pos = {x, y, 256, 256};
+  blit_map_uniforms.quad_tex = {0, 0, 256, 256};
+  blit_map_uniforms.use_map = 1;
+  blit_map_uniforms.which_map = 0;
+  blit_map_uniforms.alt_map = 1;
+
+  glNamedBufferSubData(blit_map_ubo, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -306,6 +358,9 @@ void MetroBoyApp::close() {
 void MetroBoyApp::update() {
   AppBase::update();
 
+  int mouse_x = 0, mouse_y = 0;
+  SDL_GetMouseState(&mouse_x, &mouse_y);
+
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     ImGui_ImplSDL2_ProcessEvent(&event);
@@ -313,50 +368,11 @@ void MetroBoyApp::update() {
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
 
     if (event.type == SDL_MOUSEWHEEL) {
-
-      int screen_w = 0, screen_h = 0;
-      SDL_GetWindowSize(window, &screen_w, &screen_h);
-      printf("screen %d,%d\n", screen_w, screen_h);
-
-      int mouse_x = 0, mouse_y = 0;
-      SDL_GetMouseState(&mouse_x, &mouse_y);
-      printf("mouse %d,%d\n", mouse_x, mouse_y);
-
-      int screen_x = mouse_x;
-      int screen_y = screen_h - mouse_y;
-
-      Viewport a = Viewport::from_origin_zoom(screen_w, screen_h, origin_x, origin_y, zoom_level);
-
-      double scale = exp2(-double(event.wheel.y) * 0.25);
-
-      Viewport b = a.zoom_in_on(dvec2(screen_x, screen_y), scale);
-
-      origin_x = b.ox();
-      origin_y = b.oy();
-      zoom_level += double(event.wheel.y) * 0.25;
-
-      /*
-      double scale = pow(2.0, zoom_level);
-      printf("scale %fn", scale);
-
-      double offset_x =  (mouse_x - screen_w / 2) / scale;
-      double offset_y = -(mouse_y - screen_h / 2) / scale;
-      printf("offset %f,%f\n", offset_x, offset_y);
-
-      double world_x = origin_x + offset_x;
-      double world_y = origin_y + offset_y;
-      printf("world %f,%f\n", world_x, world_y);
-
-      */
+      view = view.zoom({mouse_x, mouse_y}, double(event.wheel.y) * 0.25);
     }
 
     if (event.type == SDL_MOUSEMOTION && (event.motion.state & SDL_BUTTON_LMASK)) {
-      //printf("drag %d %d\n", event.motion.xrel, event.motion.yrel);
-
-      double scale = pow(2.0, zoom_level);
-
-      origin_x += double(-event.motion.xrel) / scale;
-      origin_y += double( event.motion.yrel) / scale;
+      view = view.pan({event.motion.xrel, event.motion.yrel});
     }
 
     if (event.type == SDL_DROPFILE) {
@@ -486,11 +502,46 @@ void MetroBoyApp::update() {
 
   cycles_end = metroboy.total_tcycles();
 
-  update_texture(gb_tex, 160, 144, 1, (void*)metroboy.fb().buf);
-  update_texture(trace_tex, 456, 154, 4, (void*)metroboy.get_trace());
+  uint32_t* dummy = new uint32_t[160 * 144];
+  for (int i = 0; i < 160*144; i++) { dummy[i] = i * 0x1234567; }
+  //update_texture(gb_tex, 160, 144, 1, (void*)metroboy.fb().buf);
+  update_texture(gb_tex, 160, 144, dummy);
+  delete [] dummy;
 
-  //double delta = 1.0 / 60.0;
-  //grid_painter.update(delta, zoom_level, origin_x, origin_y);
+
+  update_texture(trace_tex, 456, 154, (void*)metroboy.get_trace());
+
+  double ease_speed = 1.8;
+
+  view_smooth.min.x = ease(view_smooth.min.x, view.min.x, ease_speed);
+  view_smooth.min.y = ease(view_smooth.min.y, view.min.y, ease_speed);
+  view_smooth.max.x = ease(view_smooth.max.x, view.max.x, ease_speed);
+  view_smooth.max.y = ease(view_smooth.max.y, view.max.y, ease_speed);
+
+  Viewport snap = view.snap();
+  view_snap.min.x = ease(view_snap.min.x, snap.min.x, ease_speed);
+  view_snap.min.y = ease(view_snap.min.y, snap.min.y, ease_speed);
+  view_snap.max.x = ease(view_snap.max.x, snap.max.x, ease_speed);
+  view_snap.max.y = ease(view_snap.max.y, snap.max.y, ease_speed);
+
+  if (view_snap == snap) {
+    view = view_snap;
+    view_smooth = view_snap;
+  }
+
+  text_painter.set_viewport(view_snap);
+  grid_painter.set_viewport(view_snap);
+
+  {
+    float uniforms[] = {
+      (float)view_snap.mx(),
+      (float)view_snap.my(),
+      (float)view_snap.dx(),
+      (float)view_snap.dy(),
+    };
+
+    glNamedBufferSubData(view_ubo, 0, sizeof(uniforms), uniforms);
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -504,16 +555,7 @@ void MetroBoyApp::begin_frame() {
 void MetroBoyApp::render_frame() {
   AppBase::render_frame();
 
-  Viewport a = Viewport::from_origin_zoom(fb_width, fb_height, origin_x, origin_y, zoom_level);
-
-  view_smooth.min.x = ease(view_smooth.min.x, a.min.x, 3);
-  view_smooth.min.y = ease(view_smooth.min.y, a.min.y, 3);
-  view_smooth.max.x = ease(view_smooth.max.x, a.max.x, 3);
-  view_smooth.max.y = ease(view_smooth.max.y, a.max.y, 3);
-  view_smooth.screen_size.x = fb_width;
-  view_smooth.screen_size.y = fb_height;
-
-  grid_painter.render(view_smooth);
+  grid_painter.render();
 
   //----------------------------------------
   // Wave thingy
@@ -536,8 +578,9 @@ void MetroBoyApp::render_frame() {
   const int gb_screeny = fb_height - 288 - 32;
 
   //blit_mono(gb_tex, gb_screenx, gb_screeny, 160 * 2, 144 * 2);
-  //blit_map();
-  //blit(trace_tex, 512 + 32 * 8, fb_height - 160 - 32, 456, 154);
+  blit(gb_tex, gb_screenx, gb_screeny, 160 * 2, 144 * 2);
+  blit_map();
+  blit(trace_tex, 512 + 32 * 8, fb_height - 160 - 32, 456, 154);
 
   /*
   if (overlay_mode == 0 || overlay_mode == 1) {
@@ -673,9 +716,11 @@ void MetroBoyApp::render_ui() {
   //----------------------------------------
   // Perf timer
 
-  sprintf(text_buf, "zoom %f origin_x %f origin_y %f\n", zoom_level, origin_x, origin_y);
+  sprintf(text_buf, "view        zoom %f view_x %f view_y %f\n", view.get_zoom(),        view.min.x, view.min.y);
+  sprintf(text_buf, "view_smooth zoom %f view_x %f view_y %f\n", view_smooth.get_zoom(), view_smooth.min.x, view_smooth.min.y);
+  sprintf(text_buf, "view_snap   zoom %f view_x %f view_y %f\n", view_snap.get_zoom(),   view_snap.min.x, view_snap.min.y);
   sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", last_frame_time_smooth, (int)(cycles_end - cycles_begin) / 4);
-  text_painter.render(text_buf, 0, fb_height - 24);
+  text_painter.render(text_buf, 0, fb_height - 48);
   text_buf.clear();
 }
 

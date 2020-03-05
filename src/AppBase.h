@@ -12,9 +12,6 @@
 #endif
 
 struct BlitUniforms {
-  uint64_t tex_ptr;
-  uint64_t pad1;
-
   vec4 quad_pos;
   vec4 viewport;
   vec4 screen_size;

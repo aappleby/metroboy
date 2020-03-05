@@ -13,14 +13,15 @@
 //-----------------------------------------------------------------------------
 
 const char* blit_hdr = R"(
-#version 460
-#extension GL_ARB_bindless_texture : require
+#version 300 es
 
-layout(std140, binding = 0) uniform BlitUniforms
+precision highp float;
+precision highp int;
+
+uniform sampler2D tex;
+
+layout(std140) uniform BlitUniforms
 {
-  uvec2  tex_ptr;
-  double pad1;
-
   vec4 quad_pos;
   vec4 viewport;
   vec4 screen_size;
@@ -73,13 +74,13 @@ void main() {
     frag = vec4(1.0, 0.0, 1.0, 1.0);
   }
   else if (bool(mono)) {
-    frag = vec4(texture(sampler2D(tex_ptr), ftex).rrr, 1.0) * quad_col;
+    frag = vec4(texture(tex, ftex).rrr, 1.0) * quad_col;
   }
   else if (bool(palette)) {
     frag = vec4(1.0, 0.0, 1.0, 1.0);
   }
   else {
-    frag = texture(sampler2D(tex_ptr), ftex) * quad_col;
+    frag = texture(tex, ftex) * quad_col;
   }
 }
 
@@ -355,9 +356,6 @@ void AppBase::blit(uint32_t tex, int x, int y, int w, int h) {
   SDL_GL_GetDrawableSize(window, &gl_width, &gl_height);
 
   blit_uniforms = {
-    .tex_ptr = glGetTextureHandleARB(tex),
-    .pad1 = 0,
-
     .quad_pos = {x,y,w,h},
     .viewport = {0,0,0,0},
     .screen_size = {(float)gl_width, (float)gl_height, 1.0f / gl_width, 1.0f / gl_height},
@@ -371,8 +369,13 @@ void AppBase::blit(uint32_t tex, int x, int y, int w, int h) {
   glNamedBufferSubData(blit_ubo, 0, sizeof(blit_uniforms), &blit_uniforms);
 
   glUseProgram(blit_prog);
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex);
+  glUniform1i(glGetUniformLocation(blit_prog, "tex"), 0);
+
   glBindVertexArray(quad_vao);
-  glBindBufferBase(GL_UNIFORM_BUFFER, 0, blit_ubo);
+  glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(blit_prog, "BlitUniforms"), blit_ubo);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

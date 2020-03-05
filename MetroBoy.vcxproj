@@ -218,6 +218,9 @@
     <ClCompile Include="src\metroboy_main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="gl3w\gl3w_gen.py">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="microtests\000-oam_lock.s" />
     <None Include="microtests\000-write_to_x8000.s" />
     <None Include="microtests\001-vram_unlocked.s" />

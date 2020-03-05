@@ -8,7 +8,10 @@
 //-----------------------------------------------------------------------------
 
 static const GLchar* vert_hdr = R"(
-#version 460
+#version 300 es
+
+precision highp float;
+precision highp int;
 
 struct Rect {
   float x;
@@ -17,7 +20,7 @@ struct Rect {
   float h;
 };
 
-layout(std140, binding = 0) uniform GridUniforms
+layout(std140) uniform GridUniforms
 {
   Rect viewport;
 };
@@ -121,7 +124,7 @@ void GridPainter::render() {
   glNamedBufferSubData(grid_ubo, 0, sizeof(grid_uniforms), &grid_uniforms);
   
   glUseProgram(grid_prog);
-  glBindBufferBase(GL_UNIFORM_BUFFER, 0, grid_ubo);
+  glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(grid_prog, "GridUniforms"), grid_ubo);
   glBindVertexArray(grid_vao);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }

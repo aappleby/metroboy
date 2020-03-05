@@ -58,10 +58,11 @@ layout(std140, binding = 0) uniform BlitMapUniforms {
   int  pad2;
 };
 
-layout(std430, binding = 0) buffer vramBuffer {
-  uint tiles[1536]; // 6k of tile data
-  uint maps[512];   // 2k of map data
+layout(std140, binding = 1) uniform vramBuffer {
+  uvec4 tiles[384]; // 6k of tile data
+  uvec4 maps[128];   // 2k of map data
 };
+
 )";
 
 //----------------------------------------
@@ -105,7 +106,10 @@ layout(location = 0) in  vec2 ftex;
 layout(location = 0) out vec4 frag;
 
 uint decode_tile2(uint tile_index, uint tile_x, uint tile_y) {
-  vec4 temp = unpackUnorm4x8(tiles[(tile_index * 4) + (tile_y >> 1)]) * 255.0;
+  uint flat_index = tile_index * 16 + tile_y * 2;
+  uvec4 packed_uvec4 = tiles[flat_index / 16];
+  uint packed_tile = packed_uvec4[(flat_index >> 2) & 3];
+  vec4 temp = unpackUnorm4x8(packed_tile) * 255.0;
 
   uint pix_a = ((tile_y & 1) == 0) ? int(temp[0]) : int(temp[2]);
   uint pix_b = ((tile_y & 1) == 0) ? int(temp[1]) : int(temp[3]);
@@ -127,10 +131,16 @@ void main() {
   uint tile_y = pix_y & 7;
 
   if (bool(use_map2)) {
-    uint map_index = map_y * 32 + map_x;
-    uint map_addr = bool(which_map2) ? (map_index >> 2) + 256 : (map_index >> 2);
-    uint tile_index = uint(unpackUnorm4x8(maps[map_addr])[map_index & 3] * 255.0);
+    uint flat_map_index = map_y * 32 + map_x;
+    if (bool(which_map2)) flat_map_index += 1024;
+
+    uvec4 packed_map_uvec4 = maps[flat_map_index >> 4];
+    uint  packed_map_uint  = packed_map_uvec4[(flat_map_index >> 2) & 3];
+    vec4  unpacked_map     = unpackUnorm4x8(packed_map_uint);
+    uint tile_index = uint(unpacked_map[flat_map_index & 3] * 255.0);
+
     if (bool(alt_map2) && (tile_index < 128)) tile_index += 256;
+
     frag = pal2[decode_tile2(tile_index, tile_x, tile_y)];
   }
   else {
@@ -194,9 +204,9 @@ void MetroBoyApp::init() {
   const int vram_size = 8192;
 
   glGenBuffers(1, &vram_ssbo);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, vram_ssbo);
-  glBufferStorage(GL_SHADER_STORAGE_BUFFER, vram_size, nullptr, GL_DYNAMIC_STORAGE_BIT);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+  glBindBuffer(GL_UNIFORM_BUFFER, vram_ssbo);
+  glBufferStorage(GL_UNIFORM_BUFFER, vram_size, nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
   grid_painter.init();
 
@@ -217,6 +227,12 @@ void MetroBoyApp::init() {
   glGenBuffers(1, &blit_map_ubo);
   glBindBuffer(GL_UNIFORM_BUFFER, blit_map_ubo);
   glNamedBufferStorage(blit_map_ubo, sizeof(BlitMapUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
+
+  {
+    int temp = -3;
+    glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &temp);
+    printf("GL_MAX_UNIFORM_BLOCK_SIZE %d\n", temp);
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -247,8 +263,8 @@ void MetroBoyApp::blit_map() {
 
   glUseProgram(blit_map_prog);
   glBindVertexArray(quad_vao);
-  glBindBufferBase(GL_UNIFORM_BUFFER, 0, blit_map_ubo);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, vram_ssbo);
+  glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(blit_map_prog, "BlitMapUniforms"), blit_map_ubo);
+  glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(blit_map_prog, "vramBuffer"), vram_ssbo);
 
   //----------
 

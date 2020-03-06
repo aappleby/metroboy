@@ -7,9 +7,7 @@
 #include <vector>
 #include <math.h>
 
-#include <GL/gl3w.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+//#include <GL/gl3w.h>
 
 #include <include/SDL.h>
 #include <imgui.h>

@@ -1,14 +1,10 @@
 #include "AppBase.h"
 
 #include <stdio.h>
-#include <GL/gl3w.h>
-
 #include <include/SDL.h>
 #include <imgui.h>
 #include <examples/imgui_impl_sdl.h>
 #include <examples/imgui_impl_opengl3.h>
-
-#include <dwmapi.h>
 
 //-----------------------------------------------------------------------------
 
@@ -119,11 +115,21 @@ void AppBase::init() {
   gl_context = SDL_GL_CreateContext(window);
   SDL_GL_SetSwapInterval(0); // Enable vsync
 
-  gl3wInit();
+  //gl3wInit();
+
+  printf("OpenGL loaded\n");
+  gladLoadGLES2Loader(SDL_GL_GetProcAddress);
+  printf("Vendor:   %s\n", glGetString(GL_VENDOR));
+  printf("Renderer: %s\n", glGetString(GL_RENDERER));
+  printf("Version:  %s\n", glGetString(GL_VERSION));
+
+
+  /*
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
   glDebugMessageCallback(debugOutput, nullptr);
+  */
 
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
@@ -169,7 +175,8 @@ void AppBase::init() {
 
   glGenBuffers(1, &blit_ubo);
   glBindBuffer(GL_UNIFORM_BUFFER, blit_ubo);
-  glNamedBufferStorage(blit_ubo, sizeof(BlitUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
+  //glNamedBufferStorage(blit_ubo, sizeof(BlitUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(BlitUniforms), nullptr, GL_DYNAMIC_DRAW);
 }
 
 void AppBase::close() {
@@ -196,8 +203,11 @@ uint32_t AppBase::create_vbo(int size_bytes) {
   uint32_t vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  /*
   glBufferStorage(GL_ARRAY_BUFFER, size_bytes, nullptr,
                   GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
+  */
+  glBufferData(GL_ARRAY_BUFFER, size_bytes, nullptr, GL_DYNAMIC_DRAW);
   return vbo;
 }
 
@@ -205,19 +215,25 @@ uint32_t AppBase::create_vbo(void* data, int size_bytes) {
   uint32_t vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  /*
   glBufferStorage(GL_ARRAY_BUFFER, size_bytes, nullptr,
                   GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT);
   void* dst = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
   memcpy(dst, data, size_bytes);
   glUnmapBuffer(GL_ARRAY_BUFFER);
+  */
+  glBufferData(GL_ARRAY_BUFFER, size_bytes, data, GL_DYNAMIC_DRAW);
   return vbo;
 }
 
 void AppBase::update_vbo(uint32_t vbo, void* data, int size_bytes) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  /*
   void* dst = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
   memcpy(dst, data, size_bytes);
   glUnmapBuffer(GL_ARRAY_BUFFER);
+  */
+  glBufferData(GL_ARRAY_BUFFER, size_bytes, data, GL_DYNAMIC_DRAW);
 }
 
 //-----------------------------------------------------------------------------
@@ -255,6 +271,7 @@ uint32_t AppBase::create_texture(int width, int height) {
   uint32_t tex = 0;
   glGenTextures(1, &tex);
   printf("quad_tex %d\n", tex);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
 
   /*
@@ -271,19 +288,30 @@ uint32_t AppBase::create_texture(int width, int height) {
     glTextureStorage2D(tex, 1, GL_RGBA8, width, height);
   }
   */
+  /*
   glTextureStorage2D(tex, 1, GL_RGBA8, width, height);
+  */
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
   bool filter = false;
 
+  /*
   glTextureParameteri(tex, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTextureParameteri(tex, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTextureParameteri(tex, GL_TEXTURE_MIN_FILTER, filter ? GL_LINEAR : GL_NEAREST);
   glTextureParameteri(tex, GL_TEXTURE_MAG_FILTER, filter ? GL_LINEAR : GL_NEAREST);
+  */
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter ? GL_LINEAR : GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter ? GL_LINEAR : GL_NEAREST);
 
 
+  /*
 	uint64_t handle = glGetTextureHandleARB(tex);
   printf("texture handle 0x%016llx\n", handle);
 	glMakeTextureHandleResidentARB(handle);
+  */
 
   return tex;
 }
@@ -320,7 +348,14 @@ void AppBase::update_texture(uint32_t tex, int width, int height, void* pix) {
   }
   */
 
+  /*
   glTextureSubImage2D(tex, 0,
+                  0, 0, width, height,
+                  GL_RGBA, GL_UNSIGNED_BYTE, pix);
+  */
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex);
+  glTexSubImage2D(GL_TEXTURE_2D, 0,
                   0, 0, width, height,
                   GL_RGBA, GL_UNSIGNED_BYTE, pix);
 }
@@ -366,7 +401,10 @@ void AppBase::blit(uint32_t tex, int x, int y, int w, int h) {
     .palette = 0,
     .pad2 = 0,
   };
-  glNamedBufferSubData(blit_ubo, 0, sizeof(blit_uniforms), &blit_uniforms);
+
+  //glNamedBufferSubData(blit_ubo, 0, sizeof(blit_uniforms), &blit_uniforms);
+  glBindBuffer(GL_UNIFORM_BUFFER, blit_ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(blit_uniforms), &blit_uniforms);
 
   glUseProgram(blit_prog);
 
@@ -430,7 +468,7 @@ void AppBase::begin_frame() {
 
   glViewport(0, 0, fb_width, fb_height);
   glClearColor(0.1f, 0.1f, 0.2f, 0.f);
-  glClearDepth(1.0);
+  glClearDepthf(1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

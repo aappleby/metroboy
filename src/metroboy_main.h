@@ -65,14 +65,12 @@ public:
   uint32_t blit_map_ubo;
   
   uint32_t gb_tex;
-  uint32_t vram_ssbo;
+  uint32_t vram_ubo;
   uint32_t trace_tex;
 
   Viewport view;
   Viewport view_smooth;
   Viewport view_snap;
-
-  uint32_t view_ubo;
 
   //----------
   // gb state

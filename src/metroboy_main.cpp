@@ -10,8 +10,6 @@
 #include "test_wpol.h"
 #include "test_screenshot.h"
 
-#include <GL/gl3w.h>
-
 #ifdef _MSC_VER
 #include <include/SDL.h>
 #else
@@ -203,10 +201,10 @@ void MetroBoyApp::init() {
 
   const int vram_size = 8192;
 
-  glGenBuffers(1, &vram_ssbo);
-  glBindBuffer(GL_UNIFORM_BUFFER, vram_ssbo);
-  glBufferStorage(GL_UNIFORM_BUFFER, vram_size, nullptr, GL_DYNAMIC_STORAGE_BIT);
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  glGenBuffers(1, &vram_ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, vram_ubo);
+  //glBufferStorage(GL_UNIFORM_BUFFER, vram_size, nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glBufferData(GL_UNIFORM_BUFFER, vram_size, nullptr, GL_DYNAMIC_DRAW);
 
   grid_painter.init();
 
@@ -219,14 +217,10 @@ void MetroBoyApp::init() {
   view_smooth = view;
   view_snap = view;
 
-  glGenBuffers(1, &view_ubo);
-  glBindBuffer(GL_UNIFORM_BUFFER, view_ubo);
-  glNamedBufferStorage(view_ubo, 128, nullptr, GL_DYNAMIC_STORAGE_BIT);
-  glBindBufferBase(GL_UNIFORM_BUFFER, 0, view_ubo);
-
   glGenBuffers(1, &blit_map_ubo);
   glBindBuffer(GL_UNIFORM_BUFFER, blit_map_ubo);
-  glNamedBufferStorage(blit_map_ubo, sizeof(BlitMapUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
+  //glNamedBufferStorage(blit_map_ubo, sizeof(BlitMapUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(BlitMapUniforms), nullptr, GL_DYNAMIC_DRAW);
 
   {
     int temp = -3;
@@ -257,14 +251,16 @@ void MetroBoyApp::blit_map() {
   //----------
 
   const int vram_size = 8192;
-  glNamedBufferSubData(vram_ssbo, 0, vram_size, vram_dump);
+  //glNamedBufferSubData(vram_ubo, 0, vram_size, vram_dump);
+  glBindBuffer(GL_UNIFORM_BUFFER, vram_ubo);
+  glBufferData(GL_UNIFORM_BUFFER, vram_size, vram_dump, GL_DYNAMIC_DRAW);
 
   //----------
 
   glUseProgram(blit_map_prog);
   glBindVertexArray(quad_vao);
   glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(blit_map_prog, "BlitMapUniforms"), blit_map_ubo);
-  glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(blit_map_prog, "vramBuffer"), vram_ssbo);
+  glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(blit_map_prog, "vramBuffer"), vram_ubo);
 
   //----------
 
@@ -277,7 +273,9 @@ void MetroBoyApp::blit_map() {
   blit_map_uniforms.which_map = 0;
   blit_map_uniforms.alt_map = 0;
 
-  glNamedBufferSubData(blit_map_ubo, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
+  //glNamedBufferSubData(blit_map_ubo, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
+  glBindBuffer(GL_UNIFORM_BUFFER, blit_map_ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 
   y += 384 + 32;
@@ -288,7 +286,10 @@ void MetroBoyApp::blit_map() {
   blit_map_uniforms.which_map = 1;
   blit_map_uniforms.alt_map = 1;
 
-  glNamedBufferSubData(blit_map_ubo, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
+  //glNamedBufferSubData(blit_map_ubo, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
+  glBindBuffer(GL_UNIFORM_BUFFER, blit_map_ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
+
   glDrawArrays(GL_TRIANGLES, 0, 6);
 
   y += 256 + 32;
@@ -299,7 +300,9 @@ void MetroBoyApp::blit_map() {
   blit_map_uniforms.which_map = 0;
   blit_map_uniforms.alt_map = 1;
 
-  glNamedBufferSubData(blit_map_ubo, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
+  //glNamedBufferSubData(blit_map_ubo, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
+  glBindBuffer(GL_UNIFORM_BUFFER, blit_map_ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(blit_map_uniforms), &blit_map_uniforms);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -547,17 +550,6 @@ void MetroBoyApp::update() {
 
   text_painter.set_viewport(view_snap);
   grid_painter.set_viewport(view_snap);
-
-  {
-    float uniforms[] = {
-      (float)view_snap.mx(),
-      (float)view_snap.my(),
-      (float)view_snap.dx(),
-      (float)view_snap.dy(),
-    };
-
-    glNamedBufferSubData(view_ubo, 0, sizeof(uniforms), uniforms);
-  }
 }
 
 //-----------------------------------------------------------------------------

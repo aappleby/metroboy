@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glad/glad.h>
 #include "TextPainter.h"
 
 #include <stdint.h>
@@ -65,8 +66,8 @@ protected:
   uint64_t app_begin = 0;
   float now;
 
-  const int fb_width = 1856;
-  const int fb_height = 1024;
+  int fb_width = 1856;
+  int fb_height = 1024;
 
   SDL_Window* window = nullptr;
   SDL_GLContext gl_context = nullptr;

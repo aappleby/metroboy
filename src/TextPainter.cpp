@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <include/SDL.h>
-#include <GL/gl3w.h>
+#include <glad/glad.h>
 
 extern const char* terminus;
 
@@ -181,16 +181,6 @@ void TextPainter::init() {
 
       glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER, temp);
       printf("GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER %d\n", temp[0]);
-
-      /*
-      ,
-      ,
-      GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER
-      GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER
-      */
-
-      //glGetActiveUniform(program, (GLuint)i, bufSize, &length, &size, &type, name);
-      //printf("Uniform #%d Type: %u Name: %s\n", i, type, name);
     }
   }
 
@@ -209,7 +199,8 @@ void TextPainter::init() {
     glGenBuffers(1, &inst_vbo);
     inst_data = new uint32_t[65536];
     glBindBuffer(GL_ARRAY_BUFFER, inst_vbo);
-    glNamedBufferStorage(inst_vbo, 65536 * 4, nullptr, GL_DYNAMIC_STORAGE_BIT);
+    //glNamedBufferStorage(inst_vbo, 65536 * 4, nullptr, GL_DYNAMIC_STORAGE_BIT);
+    glBufferData(GL_ARRAY_BUFFER, 65536 * 4, nullptr, GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, 4, 0);
@@ -218,22 +209,22 @@ void TextPainter::init() {
 
   glGenTextures(1, &font_tex);
   glBindTexture(GL_TEXTURE_2D, font_tex);
-  glTextureStorage2D(font_tex, 1, GL_RGBA8, 256, 128);
+  //glTextureStorage2D(font_tex, 1, GL_RGBA8, 256, 128);
 
   uint32_t* dst_pix = new uint32_t[32768];
   for (int i = 0; i < 32768; i++) dst_pix[i] = terminus[i] == '#' ? 0xFFFFFFFF : 0x00000000;
-  glTextureSubImage2D(font_tex, 0, 0, 0, 256, 128, GL_RGBA, GL_UNSIGNED_BYTE, dst_pix);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, dst_pix);
   delete [] dst_pix;
 
-  glTextureParameteri(font_tex, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTextureParameteri(font_tex, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTextureParameteri(font_tex, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTextureParameteri(font_tex, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   glGenBuffers(1, &text_ubo);
   glBindBuffer(GL_UNIFORM_BUFFER, text_ubo);
-  glNamedBufferStorage(text_ubo, sizeof(TextUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(TextUniforms), nullptr, GL_DYNAMIC_DRAW);
+  //glNamedBufferStorage(text_ubo, sizeof(TextUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
 
   text_uniforms.bg_palette = vec4(0.0, 0.0, 0.0, 0.5);
 }
@@ -249,7 +240,9 @@ void TextPainter::render(float x, float y, float scale) {
   text_uniforms.text_pos = {x, y, scale, scale};
   text_uniforms.screen_size = {(float)fb_width, (float)fb_height, 1.0f / fb_width, 1.0f / fb_height};
   text_uniforms.viewport = {(float)viewport.mx(), (float)viewport.my(), 1.0f / (float)viewport.dx(), 1.0f / (float)viewport.dy()};
-  glNamedBufferSubData(text_ubo, 0, sizeof(text_uniforms), &text_uniforms);
+
+  glBindBuffer(GL_UNIFORM_BUFFER, text_ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(text_uniforms), &text_uniforms);
 
   glUseProgram(text_prog);
 
@@ -257,15 +250,19 @@ void TextPainter::render(float x, float y, float scale) {
   glBindTexture(GL_TEXTURE_2D, font_tex);
   glUniform1i(glGetUniformLocation(text_prog, "font_tex"), 0);
 
-  glNamedBufferSubData(inst_vbo, inst_begin * 4, (inst_end - inst_begin)*4, inst_data + inst_begin);
+  //glNamedBufferSubData(inst_vbo, inst_begin * 4, (inst_end - inst_begin)*4, inst_data + inst_begin);
+  glBindBuffer(GL_ARRAY_BUFFER, inst_vbo);
+  glBufferSubData(GL_ARRAY_BUFFER, inst_begin * 4, (inst_end - inst_begin)*4, inst_data + inst_begin);
 
   glBindVertexArray(dummy_vao);
   glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(text_prog, "TextUniforms"), text_ubo);
-  glDrawArraysInstancedBaseInstance(GL_TRIANGLE_STRIP, 0, 4, inst_end - inst_begin, inst_begin);
+
+  //glDrawArraysInstancedBaseInstance(GL_TRIANGLE_STRIP, 0, 4, inst_end - inst_begin, inst_begin);
+  glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, inst_end - inst_begin);
 
   text_x = 0;
   text_y = 0;
-  inst_begin = inst_end;
+  inst_begin = inst_end = 0;
 }
 
 //-----------------------------------------------------------------------------

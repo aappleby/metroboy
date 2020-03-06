@@ -43,7 +43,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)_debug</TargetName>
-    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(SolutionDir)glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(SolutionDir)glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -110,8 +110,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="gl3w\include\GL\gl3w.h" />
-    <ClInclude Include="gl3w\include\GL\glcorearb.h" />
+    <ClInclude Include="glad\glad.h" />
+    <ClInclude Include="glad\khrplatform.h" />
     <ClInclude Include="glm\glm\glm.hpp" />
     <ClInclude Include="imgui\examples\imgui_impl_opengl3.h" />
     <ClInclude Include="imgui\examples\imgui_impl_sdl.h" />
@@ -165,7 +165,7 @@
     <ClInclude Include="src\metroboy_main.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gl3w\src\gl3w.c" />
+    <ClCompile Include="glad\glad.c" />
     <ClCompile Include="imgui\examples\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\examples\imgui_impl_sdl.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -218,9 +218,6 @@
     <ClCompile Include="src\metroboy_main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="gl3w\gl3w_gen.py">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </None>
     <None Include="microtests\000-oam_lock.s" />
     <None Include="microtests\000-write_to_x8000.s" />
     <None Include="microtests\001-vram_unlocked.s" />

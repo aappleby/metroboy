@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <GL/gl3w.h>
 #include <include/SDL.h>
+#include <glad/glad.h>
 
 //-----------------------------------------------------------------------------
 
@@ -79,7 +79,8 @@ void GridPainter::init() {
 
   glGenBuffers(1, &grid_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, grid_vbo);
-  glBufferStorage(GL_ARRAY_BUFFER, sizeof(quad), quad, 0);
+  //glBufferStorage(GL_ARRAY_BUFFER, sizeof(quad), quad, 0);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -111,7 +112,8 @@ void GridPainter::init() {
 
   glGenBuffers(1, &grid_ubo);
   glBindBuffer(GL_UNIFORM_BUFFER, grid_ubo);
-  glNamedBufferStorage(grid_ubo, sizeof(GridUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
+  //glNamedBufferStorage(grid_ubo, sizeof(GridUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(GridUniforms), nullptr, GL_DYNAMIC_DRAW);
 }
 
 
@@ -121,7 +123,9 @@ void GridPainter::init() {
 
 void GridPainter::render() {
   grid_uniforms.viewport = {(float)viewport.mx(), (float)viewport.my(), (float)viewport.dx(), (float)viewport.dy() };
-  glNamedBufferSubData(grid_ubo, 0, sizeof(grid_uniforms), &grid_uniforms);
+  //glNamedBufferSubData(grid_ubo, 0, sizeof(grid_uniforms), &grid_uniforms);
+  glBindBuffer(GL_UNIFORM_BUFFER, grid_ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(grid_uniforms), &grid_uniforms);
   
   glUseProgram(grid_prog);
   glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(grid_prog, "GridUniforms"), grid_ubo);

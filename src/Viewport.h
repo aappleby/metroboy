@@ -31,4 +31,12 @@ struct Viewport {
   Viewport zoom(dvec2 screen_pos, double zoom);
   Viewport pan(dvec2 delta);
   Viewport snap();
+  Viewport ease(Viewport target, double delta);
+  Viewport reset(int screen_w, int screen_h) {
+    return {
+      {0,0},
+      {screen_w, screen_h},
+      {screen_w, screen_h}
+    };
+  }
 };

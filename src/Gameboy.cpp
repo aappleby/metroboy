@@ -4,6 +4,7 @@
 #include "Constants.h"
 
 #include <assert.h>
+#include <imgui.h>
 
 extern uint8_t rom_buf[];
 extern const uint8_t DMG_ROM_bin[];
@@ -405,7 +406,7 @@ void Gameboy::dump2(std::string& d) {
 void Gameboy::dump3(std::string& d) {
   sprintf(d, "\002--------------DISASM-----------\001\n");
 
-  uint16_t pc = z80.get_pc();
+  uint16_t pc = z80.get_op_addr();
   const uint8_t* segment;
   
   if (ADDR_IRAM_BEGIN <= pc && pc <= ADDR_IRAM_END) {

@@ -758,26 +758,26 @@ void TestGB::tick_everything() {
     /*p06.CYDE*/ ser_reg.SER_CNT2.set(!ser_reg.SER_CNT1, SER_RST, !ser_reg.SER_CNT2);
     /*p06.CALY*/ ser_reg.SER_CNT3.set(!ser_reg.SER_CNT2, SER_RST, !ser_reg.SER_CNT3);
 
-    /*p06.URYS*/ wire FF01_WRn = nand(TAPU_BUS_WR_ABCDxxxH, ADDR_FF00_FF03, cpu_pins.A00, TOLA_A01n);
-    /*p06.DAKU*/ wire FF01_WR  = not (FF01_WRn);
+    /*p06.URYS*/ wire FF01_WRn_xxxxDEFx = nand(TAPU_BUS_WR_ABCDxxxH, ADDR_FF00_FF03, cpu_pins.A00, TOLA_A01n);
+    /*p06.DAKU*/ wire FF01_WR_ABCDxxxH  = not (FF01_WRn_xxxxDEFx);
 
-    /*p06.CUFU*/ wire SER_DATA0_SETn = nand(cpu_pins.D0, FF01_WR);
-    /*p06.DOCU*/ wire SER_DATA1_SETn = nand(cpu_pins.D1, FF01_WR);
-    /*p06.DELA*/ wire SER_DATA2_SETn = nand(cpu_pins.D2, FF01_WR);
-    /*p06.DYGE*/ wire SER_DATA3_SETn = nand(cpu_pins.D3, FF01_WR);
-    /*p06.DOLA*/ wire SER_DATA4_SETn = nand(cpu_pins.D4, FF01_WR);
-    /*p06.ELOK*/ wire SER_DATA5_SETn = nand(cpu_pins.D5, FF01_WR);
-    /*p06.EDEL*/ wire SER_DATA6_SETn = nand(cpu_pins.D6, FF01_WR);
-    /*p06.EFEF*/ wire SER_DATA7_SETn = nand(cpu_pins.D7, FF01_WR);
+    /*p06.CUFU*/ wire SER_DATA0_SETn = nand(cpu_pins.D0, FF01_WR_ABCDxxxH);
+    /*p06.DOCU*/ wire SER_DATA1_SETn = nand(cpu_pins.D1, FF01_WR_ABCDxxxH);
+    /*p06.DELA*/ wire SER_DATA2_SETn = nand(cpu_pins.D2, FF01_WR_ABCDxxxH);
+    /*p06.DYGE*/ wire SER_DATA3_SETn = nand(cpu_pins.D3, FF01_WR_ABCDxxxH);
+    /*p06.DOLA*/ wire SER_DATA4_SETn = nand(cpu_pins.D4, FF01_WR_ABCDxxxH);
+    /*p06.ELOK*/ wire SER_DATA5_SETn = nand(cpu_pins.D5, FF01_WR_ABCDxxxH);
+    /*p06.EDEL*/ wire SER_DATA6_SETn = nand(cpu_pins.D6, FF01_WR_ABCDxxxH);
+    /*p06.EFEF*/ wire SER_DATA7_SETn = nand(cpu_pins.D7, FF01_WR_ABCDxxxH);
 
-    /*p06.COHY*/ wire SER_DATA0_RSTn = or(and(FF01_WRn, cpu_pins.D0), ALUR_RSTn);
-    /*p06.DUMO*/ wire SER_DATA1_RSTn = or(and(FF01_WRn, cpu_pins.D1), ALUR_RSTn);
-    /*p06.DYBO*/ wire SER_DATA2_RSTn = or(and(FF01_WRn, cpu_pins.D2), ALUR_RSTn);
-    /*p06.DAJU*/ wire SER_DATA3_RSTn = or(and(FF01_WRn, cpu_pins.D3), ALUR_RSTn);
-    /*p06.DYLY*/ wire SER_DATA4_RSTn = or(and(FF01_WRn, cpu_pins.D4), ALUR_RSTn);
-    /*p06.EHUJ*/ wire SER_DATA5_RSTn = or(and(FF01_WRn, cpu_pins.D5), ALUR_RSTn);
-    /*p06.EFAK*/ wire SER_DATA6_RSTn = or(and(FF01_WRn, cpu_pins.D6), ALUR_RSTn);
-    /*p06.EGUV*/ wire SER_DATA7_RSTn = or(and(FF01_WRn, cpu_pins.D7), ALUR_RSTn);
+    /*p06.COHY*/ wire SER_DATA0_RSTn = or(and(FF01_WRn_xxxxDEFx, cpu_pins.D0), ALUR_RSTn);
+    /*p06.DUMO*/ wire SER_DATA1_RSTn = or(and(FF01_WRn_xxxxDEFx, cpu_pins.D1), ALUR_RSTn);
+    /*p06.DYBO*/ wire SER_DATA2_RSTn = or(and(FF01_WRn_xxxxDEFx, cpu_pins.D2), ALUR_RSTn);
+    /*p06.DAJU*/ wire SER_DATA3_RSTn = or(and(FF01_WRn_xxxxDEFx, cpu_pins.D3), ALUR_RSTn);
+    /*p06.DYLY*/ wire SER_DATA4_RSTn = or(and(FF01_WRn_xxxxDEFx, cpu_pins.D4), ALUR_RSTn);
+    /*p06.EHUJ*/ wire SER_DATA5_RSTn = or(and(FF01_WRn_xxxxDEFx, cpu_pins.D5), ALUR_RSTn);
+    /*p06.EFAK*/ wire SER_DATA6_RSTn = or(and(FF01_WRn_xxxxDEFx, cpu_pins.D6), ALUR_RSTn);
+    /*p06.EGUV*/ wire SER_DATA7_RSTn = or(and(FF01_WRn_xxxxDEFx, cpu_pins.D7), ALUR_RSTn);
 
     /*p06.CAGE*/ wire SIN_Cn = not(ser_pins.SIN_C);
     /*p06.EDYL*/ wire SER_CLKn = not(SER_CLK1);

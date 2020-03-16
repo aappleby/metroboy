@@ -12,7 +12,7 @@ struct Z80 {
   void    tock(const int tcycle_, const Bus cpu_in_, const uint8_t imask_, const uint8_t intf_);
   void    dump(std::string& d);
 
-  uint16_t get_pc() const { return pc2; }
+  uint16_t get_op_addr() const { return op_addr; }
   uint8_t  get_a()  const { return a; }
   uint8_t  get_op() const { return op; }
   int      get_state() const { return state; }
@@ -25,11 +25,13 @@ private:
   Bus cpu_to_bus;
   uint8_t out_int_ack;
 
-  uint8_t op, cb;
+  uint16_t op_addr;
+  uint8_t op;
+  uint8_t cb;
   bool ime, ime_;
   bool interrupt;
 
-  Z80State state, state2, state_;
+  Z80State state, state_;
 
 #pragma warning(push)
 #pragma warning(disable : 4201)
@@ -42,11 +44,9 @@ private:
   union { uint16_t temp; struct { uint8_t  lo; uint8_t  hi; }; };
 #pragma warning(pop)
 
-  uint8_t bus;
-
-  // internal address register
   uint16_t addr;
-  uint8_t data_out;
+  uint8_t bus_in;
+  uint8_t bus_out;
   uint8_t write;
 
   bool no_branch;
@@ -57,7 +57,6 @@ private:
   uint8_t int_ack;
   uint8_t imask;
   uint8_t intf;
-  uint16_t pc2;
 
   //----------
 

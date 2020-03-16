@@ -1,5 +1,7 @@
 #include "gateboy_main.h"
 
+#include "GLBase.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <memory.h>
@@ -144,7 +146,7 @@ void GateboyMain::init() {
 
   text.init();
 
-  gb_tex = create_texture(64, 64);
+  gb_tex = create_texture_u32(64, 64);
 
   TestGB* gb = gbs.state();
   gb->sys_pins.RST.preset(true, 1);
@@ -267,13 +269,9 @@ void GateboyMain::begin_frame() {
 
 //-----------------------------------------------------------------------------
 
-void GateboyMain::update() {
+void GateboyMain::update(double delta) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
-    ImGui_ImplSDL2_ProcessEvent(&event);
-    if (event.type == SDL_QUIT) quit = true;
-    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) quit = true;
-
     if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
     case SDLK_RIGHT:
       gbs.step();
@@ -290,7 +288,7 @@ void GateboyMain::update() {
     }
   }
   
-  base::update();
+  base::update(delta);
 }
 
 //-----------------------------------------------------------------------------
@@ -300,7 +298,8 @@ void GateboyMain::render_frame() {
 
   uint64_t begin = SDL_GetPerformanceCounter();
 
-  text.begin_frame();
+  Viewport view = {{0,0},{1920,1080},{1920,1080}};
+  text.begin_frame(view);
   
   text.dprintf(" ----- SYS_REG -----\n");
   text.dprintf("PHASE    %08d\n", gbs.state()->phase_counter);
@@ -382,9 +381,9 @@ void GateboyMain::render_frame() {
 
 void GateboyMain::render_ui() {
   ImGui::Begin("GB Sim Stats");
-  ImGui::Text("now   %f\n", now);
+  //ImGui::Text("now   %f\n", now);
   ImGui::Text("phase %d\n", gbs.state()->phase_counter);
-  ImGui::Text("freq  %f\n", gbs.state()->phase_counter / now);
+  //ImGui::Text("freq  %f\n", gbs.state()->phase_counter / now);
   ImGui::End();
 
   base::render_ui();

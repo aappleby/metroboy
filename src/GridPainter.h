@@ -27,8 +27,6 @@ private:
 
   Viewport viewport;
 
-  uint64_t last_frame_time = 0;
-
   double zoom_level_smooth = 0;
   double origin_x_smooth = 0;
   double origin_y_smooth = 0;

@@ -40,8 +40,8 @@ private:
   //----------
   // AppBase::
 
+  void update(double delta);
   void begin_frame();
-  void update();
   void render_frame();
   void render_ui();
   void end_frame();

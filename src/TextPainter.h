@@ -5,7 +5,6 @@
 #include "Viewport.h"
 
 struct TextUniforms {
-  vec4 screen_size;
   vec4 viewport;
   vec4 text_pos;
   vec4 bg_palette;
@@ -16,7 +15,7 @@ class TextPainter {
 public:
 
   void init();
-  void begin_frame();
+  void begin_frame(Viewport view);
   void end_frame();
 
   void add_char(const char c);
@@ -27,6 +26,9 @@ public:
   void dprintf(const char* format, ...);
 
   void render(float x, float y, float scale = 1.0f);
+  void render(int x, int y, int scale = 1) {
+    render(float(x), float(y), float(scale));
+  }
 
   void render(const std::string& text, float x, float y, float scale = 1.0f) {
     add_string(text);
@@ -35,14 +37,12 @@ public:
 
   void render(const std::string& text, int x, int y) {
     add_string(text);
-    render(float(x), float(y), 1.0f);
+    render(x, y, 1);
   }
 
   void newline() { add_char(1, '\n'); }
 
   void set_pal(int index, float r, float g, float b, float a);
-
-  void set_viewport(Viewport vp) { viewport = vp; }
 
 private:
 

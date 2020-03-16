@@ -1,9 +1,9 @@
 #pragma once
 
-#include "TextPainter.h"
 #include "AppBase.h"
 #include "StateManager.h"
 #include "GridPainter.h"
+#include "GBBlitter.h"
 
 #include <string>
 
@@ -21,15 +21,14 @@ public:
   virtual void init();
   virtual void close();
   virtual void begin_frame();
-  virtual void update();
+  virtual void update(double delta);
   virtual void render_frame();
   virtual void render_ui();
   virtual void end_frame();
+  virtual Viewport get_viewport() { return view_snap; }
 
   void load(const std::string& prefix, const std::string& name);
   void load(const std::string& name) { load("./", name); }
-
-  void blit_map();
 
   enum RunMode {
     RUN_FAST,
@@ -60,22 +59,22 @@ public:
   // viz
 
   GridPainter grid_painter;
+  GBBlitter gb_blitter;
 
-  uint32_t blit_map_prog;
-  uint32_t blit_map_ubo;
-  
   uint32_t gb_tex;
   uint32_t vram_ubo;
   uint32_t trace_tex;
 
   Viewport view;
   Viewport view_smooth;
-  Viewport view_snap;
 
   //----------
   // gb state
 
-  StateManager metroboy;
+  const int gb_screen_x = 32*24;
+  const int gb_screen_y = 32*11;
+
+  MetroBoy metroboy;
   int64_t cycles_begin, cycles_end;
 
   //----------

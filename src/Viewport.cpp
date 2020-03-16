@@ -1,14 +1,21 @@
 #include "Viewport.h"
 #include <math.h>
 
-#pragma warning(disable:4100)
-#pragma warning(disable:4189)
+//-----------------------------------------------------------------------------
+
+double ema_coeff1(double fc, double fs) {
+  double c = cos(2.0 * 3.14159265358979 * fc / fs);
+  double a = c - 1 + sqrt(c * (c - 4) + 3);
+  return a;
+}
 
 double ease(double a, double b, double delta) {
-  double t = 1.0 - pow(0.1, delta / 70.0);
+  double t = 1.0 - pow(0.1, delta / 0.08);
   double c = a + (b - a) * t;
   return ((float)c == (float)a) ? b : c;
 }
+
+//-----------------------------------------------------------------------------
 
 dvec2 Viewport::worldToScreen(dvec2 v) const {
   double x = screen_size.x * (v.x - min.x) / (max.x - min.x);
@@ -28,26 +35,6 @@ double Viewport::get_zoom() const {
   return z;
 }
 
-#if 0
-
-nx = screen_pos.x / screen_size.x;
-
-aw = a.max.x - a.min.x;
-bw = b.max.x - b.min.x;
-
-awx = nx * aw + a.min.x;
-bwx = nx * bw + b.min.x;
-bw = aw * delta
-
-
-nx * aw + a.min.x = nx * aw * delta + b.min.x;
-
-b.min.x = nx * aw + a.min.x - nx * aw * delta
-b.max.x = b.min.x + bw;
-
-
-#endif
-
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::zoom(dvec2 screen_pos, double zoom) {
@@ -65,9 +52,8 @@ Viewport Viewport::zoom(dvec2 screen_pos, double zoom) {
 
   double scale = exp2(-zoom);
   b.min.x = a.min.x + nx * aw * (1 - scale);
-  b.max.x = b.min.x + aw * scale;
-
   b.min.y = a.min.y + ny * ah * (1 - scale);
+  b.max.x = b.min.x + aw * scale;
   b.max.y = b.min.y + ah * scale;
 
   return b;
@@ -109,20 +95,17 @@ Viewport Viewport::snap() {
 
 //-----------------------------------------------------------------------------
 
-static struct Autotest {
-  Autotest() {
-    Viewport a;
-    a.min = dvec2(0,0);
-    a.max = dvec2(100,100);
-    a.screen_size = dvec2(1920,1080);
+Viewport Viewport::ease(Viewport target, double delta) {
+  Viewport& a = *this;
+  Viewport b;
+  b.screen_size = a.screen_size;
 
-    dvec2 s(1920,0);
+  b.min.x = ::ease(a.min.x, target.min.x, delta);
+  b.min.y = ::ease(a.min.y, target.min.y, delta);
+  b.max.x = ::ease(a.max.x, target.max.x, delta);
+  b.max.y = ::ease(a.max.y, target.max.y, delta);
 
-    Viewport b = a.zoom(s, 0.5);
+  return b;
+}
 
-    printf("b.min.x %f\n", b.min.x);
-    printf("b.min.y %f\n", b.min.y);
-    printf("b.max.x %f\n", b.max.x);
-    printf("b.max.y %f\n", b.max.y);
-  }
-} autotest;
+//-----------------------------------------------------------------------------

@@ -104,7 +104,7 @@ int run_screenshot_test(const std::string& prefix, const std::string& name) {
   fclose(rom_file);
 
   Gameboy gameboy;
-  Framebuffer fb;
+  uint8_t fb[160*144];
   gameboy.reset(rom_size, 0x100);
 
   int i = 0;
@@ -119,7 +119,7 @@ int run_screenshot_test(const std::string& prefix, const std::string& name) {
       int y = gb_out.y;
 
       if (x >= 0 && x < 160 && y >= 0 && y < 144) {
-        fb.buf[x + y * 160] = gb_out.pix;
+        fb[x + y * 160] = gb_out.pix;
       }
     }
   }
@@ -128,7 +128,7 @@ int run_screenshot_test(const std::string& prefix, const std::string& name) {
 
   for (int y = 0; y < 144; y++) {
     for (int x = 0; x < 160; x++) {
-      if (fb.buf[x + y * 160] != golden[x + y * 160]) {
+      if (fb[x + y * 160] != golden[x + y * 160]) {
         diff++;
       }
     }

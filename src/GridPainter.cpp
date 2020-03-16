@@ -3,15 +3,12 @@
 #include <stdio.h>
 #include <math.h>
 #include <include/SDL.h>
-#include <glad/glad.h>
+
+#include "GLBase.h"
 
 //-----------------------------------------------------------------------------
 
-static const GLchar* vert_hdr = R"(
-#version 300 es
-
-precision highp float;
-precision highp int;
+static const GLchar* grid_glsl = R"(
 
 struct Rect {
   float x;
@@ -25,11 +22,7 @@ layout(std140) uniform GridUniforms
   Rect viewport;
 };
 
-)";
-
-//-----------------------------------------------------------------------------
-
-static const GLchar* vert_src = R"(
+#ifdef _VERTEX_
 
 layout(location = 0) in  vec2 vert_pos;
 layout(location = 0) out vec2 world_pos; // interpolating this is going to lose precision...
@@ -41,11 +34,7 @@ void main() {
   gl_Position = vec4(2.0 * vert_pos.x - 1.0, -2.0 * vert_pos.y + 1.0, 1.0, 1.0);
 }
 
-)";
-
-//-----------------------------------------------------------------------------
-
-static const GLchar* frag_src = R"(
+#else
 
 layout(location = 0) in  vec2 world_pos;
 layout(location = 0) out vec4 frag_col;
@@ -64,56 +53,26 @@ void main() {
   frag_col.a = 1.0;
 }
 
+#endif
+
 )";
 
 //-----------------------------------------------------------------------------
 
 void GridPainter::init() {
+  grid_prog = create_shader("grid_glsl", grid_glsl);
+
   float quad[] = {
      0,  0,  1,  0,  1,  1,
      0,  0,  1,  1,  0,  1,
   };
 
-  glGenVertexArrays(1, &grid_vao);
-  glBindVertexArray(grid_vao);
-
-  glGenBuffers(1, &grid_vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, grid_vbo);
-  //glBufferStorage(GL_ARRAY_BUFFER, sizeof(quad), quad, 0);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_DYNAMIC_DRAW);
+  grid_vao = create_vao();
+  grid_vbo = create_vbo(sizeof(quad), quad);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-  const GLchar* vert_srcs[] = {
-    vert_hdr,
-    vert_src
-  };
-
-  int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 2, vert_srcs, NULL);
-  glCompileShader(vertexShader);
-
-  const GLchar* frag_srcs[] = {
-    vert_hdr,
-    frag_src
-  };
-
-  int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 2, frag_srcs, NULL);
-  glCompileShader(fragmentShader);
-
-  grid_prog = glCreateProgram();
-  glAttachShader(grid_prog, vertexShader);
-  glAttachShader(grid_prog, fragmentShader);
-  glLinkProgram(grid_prog);
-  glUseProgram(grid_prog);
-
-  last_frame_time = SDL_GetPerformanceCounter();
-
-  glGenBuffers(1, &grid_ubo);
-  glBindBuffer(GL_UNIFORM_BUFFER, grid_ubo);
-  //glNamedBufferStorage(grid_ubo, sizeof(GridUniforms), nullptr, GL_DYNAMIC_STORAGE_BIT);
-  glBufferData(GL_UNIFORM_BUFFER, sizeof(GridUniforms), nullptr, GL_DYNAMIC_DRAW);
+  grid_ubo = create_ubo(sizeof(GridUniforms));
 }
 
 
@@ -122,14 +81,14 @@ void GridPainter::init() {
 #pragma warning(disable:4189)
 
 void GridPainter::render() {
+  bind_shader(grid_prog);
+
   grid_uniforms.viewport = {(float)viewport.mx(), (float)viewport.my(), (float)viewport.dx(), (float)viewport.dy() };
-  //glNamedBufferSubData(grid_ubo, 0, sizeof(grid_uniforms), &grid_uniforms);
-  glBindBuffer(GL_UNIFORM_BUFFER, grid_ubo);
-  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(grid_uniforms), &grid_uniforms);
-  
-  glUseProgram(grid_prog);
-  glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(grid_prog, "GridUniforms"), grid_ubo);
-  glBindVertexArray(grid_vao);
+  update_ubo(grid_ubo, sizeof(grid_uniforms), &grid_uniforms);
+  bind_ubo(grid_prog, "GridUniforms", 0, grid_ubo);
+
+  bind_vao(grid_vao);
+
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

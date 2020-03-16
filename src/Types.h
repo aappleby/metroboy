@@ -18,10 +18,6 @@ struct Bus {
   uint8_t  ack;
 };
 
-struct Framebuffer {
-  uint8_t buf[160*144];
-};
-
 const uint8_t F_CARRY = 0x10;
 const uint8_t F_HALF_CARRY = 0x20;
 const uint8_t F_NEGATIVE = 0x40;

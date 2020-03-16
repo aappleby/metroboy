@@ -47,7 +47,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(SolutionDir)glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(SolutionDir)glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -113,8 +113,6 @@
     <ClInclude Include="glad\glad.h" />
     <ClInclude Include="glad\khrplatform.h" />
     <ClInclude Include="glm\glm\glm.hpp" />
-    <ClInclude Include="imgui\examples\imgui_impl_opengl3.h" />
-    <ClInclude Include="imgui\examples\imgui_impl_sdl.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_internal.h" />
@@ -124,11 +122,14 @@
     <ClInclude Include="src\AppBase.h" />
     <ClInclude Include="src\Assembler.h" />
     <ClInclude Include="src\Audio.h" />
+    <ClInclude Include="src\Blitter.h" />
     <ClInclude Include="src\BusDump.h" />
     <ClInclude Include="src\Buttons.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\Gameboy.h" />
     <ClInclude Include="src\gateboy_main.h" />
+    <ClInclude Include="src\GBBlitter.h" />
+    <ClInclude Include="src\GLBase.h" />
     <ClInclude Include="src\GridPainter.h" />
     <ClInclude Include="src\IRAM.h" />
     <ClInclude Include="src\MetroBoy.h" />
@@ -166,8 +167,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad.c" />
-    <ClCompile Include="imgui\examples\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="imgui\examples\imgui_impl_sdl.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -175,11 +174,14 @@
     <ClCompile Include="src\AppBase.cpp" />
     <ClCompile Include="src\Assembler.cpp" />
     <ClCompile Include="src\Audio.cpp" />
+    <ClCompile Include="src\Blitter.cpp" />
     <ClCompile Include="src\BusDump.cpp" />
     <ClCompile Include="src\Buttons.cpp" />
     <ClCompile Include="src\Constants.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
     <ClCompile Include="src\gateboy_main.cpp" />
+    <ClCompile Include="src\GBBlitter.cpp" />
+    <ClCompile Include="src\GLBase.cpp" />
     <ClCompile Include="src\GridPainter.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
     <ClCompile Include="src\main.cpp" />

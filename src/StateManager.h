@@ -5,19 +5,61 @@
 
 //-----------------------------------------------------------------------------
 
-class StateManager {
+struct MetroboyState {
+  int frame = 0;
+  int line = 0;
+  int cycle = 0;
+
+  Gameboy gb;
+  uint8_t fb[160*144];
+};
+
+//-----------------------------------------------------------------------------
+
+class StateManagerBase {
 public:
 
-  StateManager();
-  StateManager(const StateManager&) = delete;
-  StateManager& operator=(const StateManager&) = delete;
+  void load_dump();
+  void save_dump();
+
+  void push_frame();
+  void push_line();
+  void push_cycle();
+
+  void pop_frame();
+  void pop_line();
+  void pop_cycle();
+
+  void clear();
+  void clear_frame_history();
+  void clear_line_history();
+  void clear_cycle_history();
+
+protected:
+
+  StateManagerBase();
+
+  MetroboyState* current;
+  std::vector<MetroboyState*> mb_frame;
+  std::vector<MetroboyState*> mb_line;
+  std::vector<MetroboyState*> mb_cycle;
+};
+
+//-----------------------------------------------------------------------------
+
+class MetroBoy : public StateManagerBase {
+public:
+
+  MetroBoy();
+  MetroBoy(const MetroBoy&) = delete;
+  MetroBoy& operator=(const MetroBoy&) = delete;
 
   Gameboy& gb() {
-    return *current_gb;
+    return current->gb;
   }
 
-  Framebuffer& fb() {
-    return *current_fb;
+  uint8_t* fb() {
+    return current->fb;
   }
 
   int64_t total_tcycles() {
@@ -27,8 +69,6 @@ public:
   const uint32_t* get_trace() const { return tracebuffer; }
 
   void load_rom(const char* filename, bool run_bootrom);
-  void load_dump();
-  void save_dump();
 
   void reset(uint16_t new_pc);
 
@@ -41,31 +81,12 @@ public:
   void step_cycle();
   void step_over();
 
-  void unstep_frame();
-  void unstep_line();
-  void unstep_cycle();
-
   void cycle();
   void mcycle();
-
-  void clear_frame_history();
-  void clear_line_history();
-  void clear_cycle_history();
 
   Gameboy::HostOut gb_out;
 
 private:
-
-  Gameboy*     current_gb;
-  Framebuffer* current_fb;
-
-  std::vector<Framebuffer*> fb_frame;
-  std::vector<Framebuffer*> fb_line;
-  std::vector<Framebuffer*> fb_cycle;
-
-  std::vector<Gameboy*> gb_frame;
-  std::vector<Gameboy*> gb_line;
-  std::vector<Gameboy*> gb_cycle;
 
   int64_t cycles;
   bool trace;

@@ -52,6 +52,8 @@ private:
   uint32_t font_tex;
   uint64_t font_ptr;
 
+  uint32_t dump_tex;
+
   int text_x = 0;
   int text_y = 0;
 

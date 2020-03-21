@@ -30,6 +30,12 @@ public:
 
   //----------
 
+  int redraw_count = 500;
+
+  void redraw() {
+    redraw_count++;
+  }
+
 protected:
 
   int frame_count = 0;

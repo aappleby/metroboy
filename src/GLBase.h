@@ -24,4 +24,13 @@ void  update_texture_u32(int tex, int width, int height, const uint32_t* pix);
 int   create_texture_u8(int width, int height, const uint8_t* data = nullptr);
 void  update_texture_u8(int tex, int width, int height, const uint8_t* pix);
 
+// basically an unsigned 8-bit integer texture
+int   create_table_u8(int width, int height, const uint8_t* data = nullptr);
+void  update_table_u8(int tex, int width, int height, const uint8_t* pix);
+
+// basically an unsigned 32-bit integer texture
+int   create_table_u32(int width, int height, const uint32_t* data = nullptr);
+void  update_table_u32(int tex, int width, int height, const uint32_t* pix);
+
 void  bind_texture(int prog, const char* name, int index, int tex);
+void  bind_table  (int prog, const char* name, int index, int tex);

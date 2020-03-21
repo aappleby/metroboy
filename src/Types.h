@@ -8,14 +8,20 @@ typedef int16_t sample_t;
 
 //-----------------------------------------------------------------------------
 
-struct Bus {
+struct Req {
+  int      phase;
   uint16_t addr;
   uint16_t data;
   uint8_t  read;
   uint8_t  write;
-  uint8_t  lock;
-  uint8_t  dma;
-  uint8_t  ack;
+};
+
+struct Ack {
+  int      phase;
+  uint16_t addr;
+  uint16_t data;
+  uint8_t  read;
+  uint8_t  write;
 };
 
 const uint8_t F_CARRY = 0x10;
@@ -38,13 +44,16 @@ void sprintf(std::string& out, const char* format, Args ... args)
   out.append(source_buf);
 }
 
-inline void print_bus(std::string& d, const char* name, const Bus& bus) {
-  sprintf(d, "%-11s %04x:%04x %s%s%s%s%s\n", name, bus.addr, bus.data,
-    bus.read  ? "\003R \001" : "- ",
-    bus.write ? "\002W \001" : "- ",
-    bus.lock  ? "\004L \001" : "- ",
-    bus.dma   ? "\005D \001" : "- ",
-    bus.ack   ? "\006A \001" : "- ");
+inline void print_req(std::string& d, const char* name, const Req& req) {
+  sprintf(d, "%-16s %04x:%04x %s%s\n", name, req.addr, req.data,
+    req.read  ? "\003R \001" : "- ",
+    req.write ? "\002W \001" : "- ");
+}
+
+inline void print_ack(std::string& d, const char* name, const Ack& ack) {
+  sprintf(d, "%-16s %04x:%04x %s%s\n", name, ack.addr, ack.data,
+    ack.read  ? "\003R \001" : "- ",
+    ack.write ? "\002W \001" : "- ");
 }
 
 //-----------------------------------------------------------------------------

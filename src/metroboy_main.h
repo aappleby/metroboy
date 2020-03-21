@@ -1,9 +1,10 @@
 #pragma once
 
 #include "AppBase.h"
-#include "StateManager.h"
+#include "MetroBoy.h"
 #include "GridPainter.h"
 #include "GBBlitter.h"
+#include "DumpPainter.h"
 
 #include <string>
 
@@ -29,6 +30,8 @@ public:
 
   void load(const std::string& prefix, const std::string& name);
   void load(const std::string& name) { load("./", name); }
+
+  void load_memdump(const std::string& prefix, const std::string& name);
 
   enum RunMode {
     RUN_FAST,
@@ -60,6 +63,7 @@ public:
 
   GridPainter grid_painter;
   GBBlitter gb_blitter;
+  DumpPainter dump_painter;
 
   uint32_t gb_tex;
   uint32_t vram_ubo;
@@ -71,7 +75,7 @@ public:
   //----------
   // gb state
 
-  const int gb_screen_x = 32*24;
+  const int gb_screen_x = 32*24 + 32*10;
   const int gb_screen_y = 32*11;
 
   MetroBoy metroboy;

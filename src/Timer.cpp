@@ -5,36 +5,50 @@
 
 void Timer::reset() {
   *this = {};
-  tcycle = -1;
   counter = 10994 + 1;
 }
 
 //-----------------------------------------------------------------------------
 
-
 bool Timer::get_interrupt() const {
   return do_int;
 }
 
-void Timer::tock(const int tcycle_, const Bus bus_to_timer_) {
-  const int tphase = tcycle_ & 3;
+//-----------------------------------------------------------------------------
+
+Ack Timer::on_ibus_req(Req ibus_req) {
+  bool timer_hit = (ibus_req.addr & 0xFFFC) == 0xFF04;
+  if (!timer_hit) return {};
+
+  Ack ack = {
+    .addr  = ibus_req.addr,
+    .data  = 0,
+    .read  = ibus_req.read,
+    .write = ibus_req.write,
+  };
+
+  if (ibus_req.write) {
+    if (ibus_req.addr == ADDR_DIV)  { counter = 1; }
+    if (ibus_req.addr == ADDR_TIMA) { tima    = uint8_t(ibus_req.data); }
+    if (ibus_req.addr == ADDR_TMA)  { tma     = uint8_t(ibus_req.data); }
+    if (ibus_req.addr == ADDR_TAC)  { tac     = uint8_t(ibus_req.data) | 0b11111000; }
+  }
+
+  if (ibus_req.read) {
+    if (ibus_req.addr == ADDR_DIV)  { ack.data = uint8_t(counter >> 6); }
+    if (ibus_req.addr == ADDR_TIMA) { ack.data = uint8_t(tima); }
+    if (ibus_req.addr == ADDR_TMA)  { ack.data = tma; }
+    if (ibus_req.addr == ADDR_TAC)  { ack.data = tac | 0b11111000; }
+  }
+
+  return ack;
+}
+
+//-----------------------------------------------------------------------------
+
+void Timer::tock(int tcycle) {
+  const int tphase = tcycle & 3;
   if (tphase != 0) return;
-
-  tcycle = tcycle_;
-  bus_to_timer = bus_to_timer_;
-  timer_to_bus = {};
-
-  if ((bus_to_timer.addr & 0xFFFC) == 0xFF04) {
-    timer_to_bus = bus_to_timer;
-    timer_to_bus.ack = true;
-  }
-
-  if (bus_to_timer.read) {
-    if (bus_to_timer.addr == ADDR_DIV)  { timer_to_bus.data = uint8_t(counter >> 6); }
-    if (bus_to_timer.addr == ADDR_TIMA) { timer_to_bus.data = uint8_t(tima); }
-    if (bus_to_timer.addr == ADDR_TMA)  { timer_to_bus.data = tma; }
-    if (bus_to_timer.addr == ADDR_TAC)  { timer_to_bus.data = tac | 0b11111000; }
-  }
 
   //----------------------------------------
 
@@ -42,41 +56,30 @@ void Timer::tock(const int tcycle_, const Bus bus_to_timer_) {
   counter++;
 
   static const uint16_t masks[] = { 0x80, 0x02, 0x08, 0x20 };
-  bool tick_ = (counter & masks[tac & 3]) && (tac & 4);
+  bool do_tick_ = (counter & masks[tac & 3]) && (tac & 4);
 
-  if (tick && !tick_) {
+  if (do_tick && !do_tick_) {
     tima++;
     if (tima & 0x100) {
       tima = tma;
       do_int = true;
     }
   }
-  tick = tick_;
-
-  //----------------------------------------
-  // Writes
-
-  if (bus_to_timer.write) {
-    if (bus_to_timer.addr == ADDR_DIV)  { counter = 1; }
-    if (bus_to_timer.addr == ADDR_TIMA) { tima    = uint8_t(bus_to_timer_.data); }
-    if (bus_to_timer.addr == ADDR_TMA)  { tma     = uint8_t(bus_to_timer_.data); }
-    if (bus_to_timer.addr == ADDR_TAC)  { tac     = uint8_t(bus_to_timer_.data) | 0b11111000; }
-  }
+  do_tick = do_tick_;
 }
 
 //-----------------------------------------------------------------------------
 
 void Timer::dump(std::string& d) {
+  sprintf(d, "\002--------------TIMER------------\001\n");
   sprintf(d,   "CNT         0x%04x\n", counter);
   sprintf(d,   "DIV         0x%02x\n", uint8_t(counter >> 6));
   sprintf(d,   "TIMA        0x%02x\n", tima);
   sprintf(d,   "TMA         0x%02x\n", tma);
   sprintf(d,   "TAC         %s\n",     byte_to_bits(tac));
-  sprintf(d,   "INT         %d\n",     do_int);
+  sprintf(d,   "DO_INT      %d\n",     do_int);
+  sprintf(d,   "DO_TICK     %d\n",     do_tick);
   sprintf(d,   "\n");
-
-  print_bus(d, "bus_to_tmr", bus_to_timer);
-  print_bus(d, "tmr_to_bus", timer_to_bus);
 }
 
 //-----------------------------------------------------------------------------

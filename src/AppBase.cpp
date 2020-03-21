@@ -217,6 +217,14 @@ int AppBase::main(int, char**) {
 
     update(delta);
 
+    /*
+    if (!redraw_count) {
+      SDL_GL_SwapWindow(window);
+      SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+      SDL_Delay(10);
+    }
+    */
+
     //----------------------------------------
     // Client app update
 
@@ -273,8 +281,8 @@ int AppBase::main(int, char**) {
     ImGui::End();
     */
 
-    text_painter.dprintf("(%.1f FPS)", io.Framerate);
-    text_painter.render(screen_w - 80, screen_h - 12);
+    text_painter.dprintf("%d (%.1f FPS)", redraw_count, io.Framerate);
+    text_painter.render(screen_w - 100, screen_h - 12);
 
     //----------------------------------------
     // Render ImGui
@@ -334,6 +342,7 @@ int AppBase::main(int, char**) {
     SDL_GL_SwapWindow(window);
     SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
     frame_count++;
+    if (redraw_count) redraw_count--;
   }
 
   //----------------------------------------

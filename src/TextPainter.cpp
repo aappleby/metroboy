@@ -87,6 +87,11 @@ out vec4 fs_out;
 
 void main() {
   float p = texture(font_tex, tc_glyph).r;
+
+  //p = ((p - 0.5) * 10.0) + 0.5;
+  //p = clamp(p, 0.0, 1.0);
+
+  //float p = texelFetch(font_tex, ivec2(tc_glyph.x, tc_glyph.y), 0).r;
   fs_out = mix(bg_color, fg_color, p);
 }
 

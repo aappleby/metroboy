@@ -18,22 +18,32 @@
 
 #include <imgui.h>
 #include <examples/imgui_impl_sdl.h>
+#include <vector>
 
 extern const uint32_t gb_colors[];
 extern uint8_t rom_buf[];
-extern uint8_t vram_dump[];
 
 void run_test(const std::string& prefix, const std::string& name);
+
+std::string junk(65536, 0);
 
 //-----------------------------------------------------------------------------
 
 void MetroBoyApp::init() {
   AppBase::init();
+  keyboard_state = SDL_GetKeyboardState(nullptr);
+  audio_init();
 
   gb_tex = create_texture_u8(160, 144);
   trace_tex = create_texture_u32(456, 154);
 
-  audio_init();
+  gb_blitter.init();
+  grid_painter.init();
+  dump_painter.init();
+
+  view = view.reset(screen_w, screen_h);
+  view_smooth = view;
+  view_snap = view;
 
   //run_microtests();
   //run_screenshot_tests();
@@ -56,24 +66,63 @@ void MetroBoyApp::init() {
   //load("instr_timing");
 
   //load("microtests/build/dmg", "poweron_000_div");
+  //load("microtests/build/dmg", "minimal");
+  //load("micro_cpu/build/dmg", "cpu_mov");
 
-  load("microtests/build/dmg", "minimal");
+  load("roms/gb-test-roms/cpu_instrs/individual", "01-special");
+  load("roms/gb-test-roms/cpu_instrs/individual", "02-interrupts");
+  load("roms/gb-test-roms/cpu_instrs/individual", "03-op sp,hl");
+  load("roms/gb-test-roms/cpu_instrs/individual", "04-op r,imm");
+  load("roms/gb-test-roms/cpu_instrs/individual", "05-op rp");
+  load("roms/gb-test-roms/cpu_instrs/individual", "06-ld r,r");
+  load("roms/gb-test-roms/cpu_instrs/individual", "07-jr,jp,call,ret,rst");
+  load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
+  load("roms/gb-test-roms/cpu_instrs/individual", "09-op r,r");
+  load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
+  load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
+
+
+  //load_memdump("roms", "LinksAwakening_house");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;
   //runmode = RUN_VSYNC;
-
-  keyboard_state = SDL_GetKeyboardState(nullptr);
-
-  //----------------------------------------
-
-  gb_blitter.init();
-  grid_painter.init();
-
-  view = view.reset(screen_w, screen_h);
-  view_smooth = view;
-  view_snap = view;
 };
+
+//-----------------------------------------------------------------------------
+
+void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& name) {
+  std::string filename = prefix + "/" + name + ".dump";
+
+  FILE* file = nullptr;
+  fopen_s(&file, filename.c_str(), "rb");
+
+  std::vector<uint8_t> buf(65536, 0);
+  size_t size = fread(buf.data(), 1, 65536, file);
+  if(size != 65536) assert(false);
+
+  memcpy(metroboy.gb().get_vram(), &buf[0x8000], 8192);
+
+  metroboy.gb().ppu.lcdc = buf[0xFF40];
+  metroboy.gb().ppu.stat = buf[0xFF41];
+  metroboy.gb().ppu.scy  = buf[0xFF42];
+  metroboy.gb().ppu.scx  = buf[0xFF43];
+  metroboy.gb().ppu.ly   = buf[0xFF44];
+  metroboy.gb().ppu.lyc  = buf[0xFF45];
+  //metroboy.gb().ppu.dma  = buf[0xFF46];
+  metroboy.gb().ppu.bgp  = buf[0xFF47];
+  metroboy.gb().ppu.obp0 = buf[0xFF48];
+  metroboy.gb().ppu.obp1 = buf[0xFF49];
+  metroboy.gb().ppu.wy   = buf[0xFF4A];
+  metroboy.gb().ppu.wx   = buf[0xFF4B];
+  metroboy.gb().ppu.update_palettes();
+
+  uint8_t* oam_flat = (uint8_t*)metroboy.gb().oam.ram;
+
+  for (int i = 0; i < 256; i++) {
+    oam_flat[i] = buf[ADDR_OAM_BEGIN + i];
+  }
+}
 
 //-----------------------------------------------------------------------------
 
@@ -151,7 +200,6 @@ void MetroBoyApp::update(double delta) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     ImGuiIO& io = ImGui::GetIO();
-    /*
     if (!io.WantCaptureMouse) {
       if (event.type == SDL_MOUSEWHEEL) {
         view = view.zoom({mouse_x, mouse_y}, double(event.wheel.y) * 0.25);
@@ -161,7 +209,6 @@ void MetroBoyApp::update(double delta) {
         view = view.pan({event.motion.xrel, event.motion.yrel});
       }
     }
-    */
 
     if (!io.WantCaptureKeyboard) {
       if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
@@ -335,8 +382,31 @@ void MetroBoyApp::render_frame() {
   // Gameboy screen
 
   gb_blitter.blit_screen(view_snap, gb_screen_x, gb_screen_y, 2, metroboy.fb());
-  gb_blitter.blit_map(view_snap, vram_dump);
+  gb_blitter.blit_map(view_snap, metroboy.get_vram());
   gb_blitter.blit_trace(view_snap, gb_screen_x, gb_screen_y + 320, metroboy.get_trace());
+
+  //dump_painter.render(view_snap, 900, 100, 16, 8, metroboy.gb().get_zram());
+  //dump_painter.render(view_snap, 900, 300, 64, 128, metroboy.gb().get_iram());
+
+  /*
+  if ((frame_count % 10) == 0) {
+    for (int i = 0; i < 65536; i++) {
+      static uint32_t c = 1;
+      c *= 0x1234567;
+      c ^= c >> 16;
+      junk[i] = uint8_t(c);
+    }
+
+    char* cursor = junk.data();
+    for (int i = 0; i < 200; i++) {
+      snprintf(cursor, 256, "line %03d hello world %05d\n", i, frame_count);
+      cursor += 256;
+    }
+  }
+
+  dump_painter.render(view_snap, 900, 100, 256, 256, (const uint8_t*)junk.data());
+  */
+
 
 #if 0
   /*
@@ -438,31 +508,65 @@ void MetroBoyApp::render_ui() {
   //----------------------------------------
   // Left column text
 
+  int column = 0;
+
   Gameboy& gameboy = metroboy.gb();
 
-  int spacing = 192 + 32;
+  gameboy.dump_cpu(text_buf);
+  sprintf(text_buf, "\n");
 
-  gameboy.dump1(text_buf);
-  text_painter.render(text_buf, spacing * 0 + 4, 4);
+  gameboy.dump_bus(text_buf);
+  sprintf(text_buf, "\n");
+
+  gameboy.dump_timer(text_buf);
+  sprintf(text_buf, "\n");
+
+  text_painter.render(text_buf, column, 0);
   text_buf.clear();
+  column += 32 * 7;
 
-  sprintf(text_buf, "\002--------------PPU--------------\001\n");
+  gameboy.dump_zram(text_buf);
+  sprintf(text_buf, "\n");
+
+  gameboy.dump_cart(text_buf);
+  sprintf(text_buf, "\n");
+
+  gameboy.dump_vram(text_buf);
+  sprintf(text_buf, "\n");
+
+  gameboy.dump_iram(text_buf);
+  sprintf(text_buf, "\n");
+
+  gameboy.dump_oam(text_buf);
+  sprintf(text_buf, "\n");
+  
+  gameboy.dump_joypad(text_buf);
+  sprintf(text_buf, "\n");
+  
+  gameboy.dump_serial(text_buf);
+  sprintf(text_buf, "\n");
+
+  text_painter.render(text_buf, column, 0);
+  text_buf.clear();
+  column += 32 * 7;
+
   gameboy.get_ppu().dump(text_buf);
-  text_painter.render(text_buf, spacing * 1 + 4, 4);
-  text_buf.clear();
+  sprintf(text_buf, "\n");
 
-  gameboy.dump3(text_buf);
-  text_painter.render(text_buf, spacing * 2 + 4, 4);
+  text_painter.render(text_buf, column, 0);
   text_buf.clear();
+  column += 32 * 7;
 
-  sprintf(text_buf, "\002--------------SPU--------------\001\n");
+  gameboy.dump_disasm(text_buf);
+  sprintf(text_buf, "\n");
+
   gameboy.get_spu().dump(text_buf);
-  text_painter.render(text_buf, spacing * 2 + 4, 640 + 4);
-  text_buf.clear();
+  sprintf(text_buf, "\n");
 
-  gameboy.dump4(text_buf);
-  text_painter.render(text_buf, spacing * 3 + 4, 4);
+  text_painter.render(text_buf, column, 0);
   text_buf.clear();
+  column += 32 * 7;
+
 
   //----------------------------------------
   // Perf timer

@@ -222,37 +222,35 @@ void Z80::reset(uint16_t new_pc) {
   op_addr = pc;
 
   addr = new_pc;
-
-  cpu_to_bus.addr = new_pc;
-  cpu_to_bus.data = 0x00;
-  cpu_to_bus.read = 1;
-  cpu_to_bus.write = 0;
+  bus_out = 0;
+  write = 0;
 
   out_int_ack = 0;
 }
 
+//-----------------------------------------------------------------------------
 
+Req Z80::get_bus_req() const {
+  return {
+    .addr  = addr,
+    .data  = bus_out,
+    .read  = !((bool)write),
+    .write = (bool)write,
+  };
+}
 
-
-
-
-
+void Z80::on_bus_ack(Ack ibus_ack_) {
+  bus_in = (uint8_t)ibus_ack_.data;
+}
 
 //-----------------------------------------------------------------------------
 
-Bus Z80::tick() const {
-  return cpu_to_bus;
-}
-
-void Z80::tock(const int tcycle_, const Bus bus_to_cpu_, const uint8_t imask_, const uint8_t intf_) {
+void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
   const int tphase = tcycle_ & 3;
   if (tphase != 0) return;
 
   tcycle = tcycle_;
-  bus_to_cpu = bus_to_cpu_;
-  cpu_to_bus = {};
 
-  bus_in = (uint8_t)bus_to_cpu_.data;
   ime = ime_;
 
   if (state == DECODE) {
@@ -293,10 +291,6 @@ void Z80::tock(const int tcycle_, const Bus bus_to_cpu_, const uint8_t imask_, c
   state_machine();
   state = state_;
 
-  cpu_to_bus.addr = addr;
-  cpu_to_bus.data = bus_out;
-  cpu_to_bus.read = !((bool)write);
-  cpu_to_bus.write = (bool)write;
   out_int_ack = int_ack;
 }
 
@@ -441,41 +435,10 @@ void Z80::state_machine() {
   }
 
   if (JP_A16) {
-    //if (                   state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
-    //if (                   state == ARG1)   { pc = addr + 1;   lo = bus_in;                                                                                                 addr = pc;           write = false; state_ = ARG2; }
-    //if (                   state == ARG2)   { pc = addr + 1;   hi = bus_in;                                                                                                 addr = pc;           write = false; state_ = PTR1; }
-    //if (                   state == PTR1)   { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE;}
-
-    if (state == ARG0) {
-      printf("JP_A16 ARG0\n");
-      pc = addr + 1;
-      addr = pc;
-      write = false;
-      state_ = ARG1;
-    }
-    if (state == ARG1) {
-      printf("JP_A16 ARG1\n");
-      pc = addr + 1;
-      lo = bus_in;
-      addr = pc;
-      write = false;
-      state_ = ARG2;
-    }
-    if (state == ARG2) {
-      printf("JP_A16 ARG2\n");
-      pc = addr + 1;
-      hi = bus_in;
-      addr = pc;
-      write = false;
-      state_ = PTR1;
-    }
-    if (state == PTR1) {
-      printf("JP_A16 PTR1\n");
-      pc = temp;
-      addr = pc;
-      write = false;
-      state_ = DECODE;
-    }
+    if (                   state == ARG0)   { pc = addr + 1;                                                                                                                addr = pc;           write = false; state_ = ARG1; }
+    if (                   state == ARG1)   { pc = addr + 1;   lo = bus_in;                                                                                                 addr = pc;           write = false; state_ = ARG2; }
+    if (                   state == ARG2)   { pc = addr + 1;   hi = bus_in;                                                                                                 addr = pc;           write = false; state_ = PTR1; }
+    if (                   state == PTR1)   { pc = temp;                                                                                                                    addr = pc;           write = false; state_ = DECODE;}
   }
 
   if (JP_CC_A16) {
@@ -1064,8 +1027,6 @@ void Z80::dump(std::string& d) {
   sprintf(d, "bus_in         0x%02x\n", bus_in);
   sprintf(d, "bus_out        0x%02x\n", bus_out);
   sprintf(d, "write          %d\n",     write);
-  print_bus(d, "bus_to_cpu", bus_to_cpu);
-  print_bus(d, "cpu_to_bus", cpu_to_bus);
   sprintf(d, "\n");
 
   sprintf(d, "IME            %d\n", ime);
@@ -1075,7 +1036,6 @@ void Z80::dump(std::string& d) {
   sprintf(d, "intf           0x%02x\n", intf);
   sprintf(d, "int_ack        0x%02x\n", int_ack);
   sprintf(d, "out_int_ack    0x%02x\n", out_int_ack);
-  sprintf(d, "\n");
 }
 
 //-----------------------------------------------------------------------------

@@ -98,15 +98,13 @@ int create_texture_u32(int width, int height, const uint32_t* data) {
 
   bool filter = false;
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter ? GL_LINEAR : GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter ? GL_LINEAR : GL_NEAREST);
 
   return tex;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------
 
 void update_texture_u32(int tex, int width, int height, const uint32_t* pix) {
   glActiveTexture(GL_TEXTURE0);
@@ -130,15 +128,13 @@ int create_texture_u8(int width, int height, const uint8_t* data) {
 
   bool filter = false;
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter ? GL_LINEAR : GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter ? GL_LINEAR : GL_NEAREST);
 
   return tex;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------
 
 void update_texture_u8(int tex, int width, int height, const uint8_t* pix) {
   glActiveTexture(GL_TEXTURE0);
@@ -152,7 +148,69 @@ void update_texture_u8(int tex, int width, int height, const uint8_t* pix) {
 
 //-----------------------------------------------------------------------------
 
+int create_table_u8(int width, int height, const uint8_t* data) {
+  int tex = 0;
+  glGenTextures(1, (GLuint*)&tex);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex);
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, data);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  return tex;
+}
+
+//----------------------------------------
+
+void update_table_u8(int tex, int width, int height, const uint8_t* pix) {
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glTexSubImage2D(GL_TEXTURE_2D, 0,
+                  0, 0, width, height,
+                  GL_RED_INTEGER, GL_UNSIGNED_BYTE, pix);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+}
+
+//-----------------------------------------------------------------------------
+
+int create_table_u32(int width, int height, const uint32_t* data) {
+  int tex = 0;
+  glGenTextures(1, (GLuint*)&tex);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8UI, width, height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_BYTE, data);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  return tex;
+}
+
+//----------------------------------------
+
+void update_table_u32(int tex, int width, int height, const uint32_t* pix) {
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex);
+  glTexSubImage2D(GL_TEXTURE_2D, 0,
+                  0, 0, width, height,
+                  GL_RGBA_INTEGER, GL_UNSIGNED_BYTE, pix);
+}
+
+//-----------------------------------------------------------------------------
+
 void bind_texture(int prog, const char* name, int index, int tex) {
+  glActiveTexture(GL_TEXTURE0 + index);
+  glBindTexture(GL_TEXTURE_2D, tex);
+  glUniform1i(glGetUniformLocation(prog, name), index);
+}
+
+void bind_table(int prog, const char* name, int index, int tex) {
   glActiveTexture(GL_TEXTURE0 + index);
   glBindTexture(GL_TEXTURE_2D, tex);
   glUniform1i(glGetUniformLocation(prog, name), index);

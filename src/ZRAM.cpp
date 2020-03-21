@@ -6,47 +6,77 @@
 
 void ZRAM::reset() {
   *this = {};
+
+  int c = 0;
+  ram[c++] = 'h';
+  ram[c++] = 'e';
+  ram[c++] = 'l';
+  ram[c++] = 'l';
+  ram[c++] = 'o';
+  ram[c++] = ' ';
+  ram[c++] = 'w';
+  ram[c++] = 'o';
+  ram[c++] = 'r';
+  ram[c++] = 'l';
+  ram[c++] = 'd';
+  ram[c++] = 8;
+  ram[c++] = 8;
+  ram[c++] = 8;
+  ram[c++] = 8;
+  ram[c++] = 8;
+  ram[c++] = 'h';
+  ram[c++] = 'e';
+  ram[c++] = 'l';
+  ram[c++] = 'l';
+  ram[c++] = 'o';
+  ram[c++] = ' ';
+  ram[c++] = 'w';
+  ram[c++] = 'o';
+  ram[c++] = 'r';
+  ram[c++] = 'l';
+  ram[c++] = 'd';
+  ram[c++] = 8;
+  ram[c++] = 8;
+  ram[c++] = 8;
+  ram[c++] = 8;
+  ram[c++] = 8;
 }
 
 //-----------------------------------------------------------------------------
 
-Bus ZRAM::tick() const {
-  return zram_to_bus;
-}
+Ack ZRAM::on_ibus_req(Req ibus_req) {
+  bool zram_hit = ((ibus_req.addr & 0xFF80) == 0xFF80) && (ibus_req.addr != 0xFFFF);
+  if (!zram_hit) return {};
 
-void ZRAM::tock(const int tcycle_, const Bus bus_to_zram_) {
-  const int tphase = tcycle_ & 3;
-  if (tphase != 0) return;
-
-  tcycle = tcycle_;
-  bus_to_zram = bus_to_zram_;
-  zram_to_bus = {};
-
-  bool hit = (ADDR_ZEROPAGE_BEGIN <= bus_to_zram.addr && bus_to_zram.addr <= ADDR_ZEROPAGE_END);
-
-  if (hit) {
-    zram_to_bus = bus_to_zram;
-    zram_to_bus.ack = true;
+  if (ibus_req.write) {
+    ram[ibus_req.addr & 0x007F] = (uint8_t)ibus_req.data;
   }
 
-  if (bus_to_zram.write) {
-    if (ADDR_ZEROPAGE_BEGIN <= bus_to_zram.addr && bus_to_zram.addr <= ADDR_ZEROPAGE_END) {
-      ram[bus_to_zram.addr - ADDR_ZEROPAGE_BEGIN] = (uint8_t)bus_to_zram.data;
-    }
-  }
-  else if (bus_to_zram.read) {
-    if (ADDR_ZEROPAGE_BEGIN <= bus_to_zram.addr && bus_to_zram.addr <= ADDR_ZEROPAGE_END) {
-      zram_to_bus.data = ram[bus_to_zram.addr - ADDR_ZEROPAGE_BEGIN];
-    }
-  }
+  return {
+    .addr  = ibus_req.addr,
+    .data  = uint16_t(ibus_req.read ? ram[ibus_req.addr & 0x007F] : 0),
+    .read  = ibus_req.read,
+    .write = ibus_req.write,
+  };
 }
 
 //-----------------------------------------------------------------------------
 
 void ZRAM::dump(std::string& d) {
-  sprintf(d, "tcycle %d\n", tcycle);
-  print_bus(d, "bus_to_zram", bus_to_zram);
-  print_bus(d, "zram_to_bus", zram_to_bus);
+  sprintf(d, "\002---------------ZRAM-------------\001\n");
+  for (int y = 0; y < 16; y++) {
+    sprintf(d, "%04x: ", y * 8 + ADDR_ZEROPAGE_BEGIN);
+    for (int x = 0; x < 8; x++) {
+      uint8_t b = ram[x + y * 8];
+      uint8_t l = (b >> 0) & 0x0F;
+      uint8_t h = (b >> 4) & 0x0F;
+
+      d.push_back(h > 9 ? '7' + h : '0' + h);
+      d.push_back(l > 9 ? '7' + l : '0' + l);
+      d.push_back(' ');
+    }
+    d.push_back('\n');
+  }
 }
 
 //-----------------------------------------------------------------------------

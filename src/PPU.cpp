@@ -52,7 +52,7 @@ void PPU::reset(bool run_bootrom) {
   // Fixup if we're not running the bootrom
 
   if (!run_bootrom) {
-    dma = 0xFF;
+    //dma = 0xFF;
     bgp = 0xFC;
     obp0 = 0xFF;
     obp1 = 0xFF;
@@ -68,10 +68,11 @@ void PPU::reset(bool run_bootrom) {
     counter_delay3 = 398;
 
     lcdc = 0x91;
-    palettes[0] = 0xfc;
     pix_count = 160;
     pix_discard_scx = 0;
     pix_discard_pad = 8;
+
+    update_palettes();
   }
 }
 
@@ -79,6 +80,7 @@ void PPU::reset(bool run_bootrom) {
 // interrupt glitch - oam stat fires on vblank
 // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
+#if 0
 PPU::Out PPU::tick(const int tcycle_) const {
   (void)tcycle_;
 
@@ -137,11 +139,6 @@ PPU::Out PPU::tick(const int tcycle_) const {
   //  oam_addr_ = 0;
   //}
   //else
-  if (counter_ < 80 && ((counter_ & 1) == 0)) {
-    // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
-    out.ppu_to_oam.addr = ADDR_OAM_BEGIN + ((counter_ << 1) & 0b11111100);
-    out.ppu_to_oam.read = true;
-  }
 
   //----------------------------------------
   // locking
@@ -173,73 +170,205 @@ PPU::Out PPU::tick(const int tcycle_) const {
 
   return out;
 }
+#endif
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_) {
-  const int tphase = tcycle_ & 3;
-  if ((lcdc & FLAG_LCD_ON) == 0) {
-    this->tock_lcdoff(tcycle_, bus_to_ppu_, vram_to_ppu_, oam_to_ppu_);
-    return;
+Req PPU::get_vbus_req(int /*tcycle*/) {
+  uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
+  uint8_t map_y = ((scy + line) >> 3) & 31;
+
+  uint16_t fetch_addr = 0;
+
+  if (fetch_type == FETCH_BACKGROUND) {
+    if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = tile_map_address(lcdc, new_map_x, map_y);
+    else if (fetch_state == FETCH_TILE_LO)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
+    else if (fetch_state == FETCH_TILE_HI)   fetch_addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
+  }
+  else if (fetch_type == FETCH_WINDOW) {
+    if      (fetch_state == FETCH_TILE_MAP)  fetch_addr = win_map_address(lcdc, map_x, win_y_latch);
+    else if (fetch_state == FETCH_TILE_LO)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
+    else if (fetch_state == FETCH_TILE_HI)   fetch_addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
+  }
+  else if (fetch_type == FETCH_SPRITE) {
+    if      (fetch_state == FETCH_SPRITE_LO) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
+    else if (fetch_state == FETCH_SPRITE_HI) fetch_addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
   }
 
-  tcycle = tcycle_;
-  bus_to_ppu = bus_to_ppu_;
-  vram_to_ppu = vram_to_ppu_;
-  oam_to_ppu = oam_to_ppu_;
+  if (pix_count + pix_discard_pad == 168) {
+    fetch_addr = 0;
+  }
 
-  ppu_to_vram = {};
-  ppu_to_oam = {};
+  return {
+    .phase = 0,
+    .addr  = fetch_addr,
+    .data  = 0,
+    .read  = fetch_addr != 0,
+    .write = 0,
+  };
+}
 
-  if (tphase == 0) {
-    uint16_t addr = bus_to_ppu.addr;
-    uint8_t data = (uint8_t)bus_to_ppu.data;
-    bool ack = (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END);
+//----------------------------------------
 
-    if (ack && bus_to_ppu.read) {
-      switch (addr) {
-      case ADDR_LCDC: data = lcdc; break;
-      case ADDR_STAT: data = stat; break;
-      case ADDR_SCY:  data = scy; break;
-      case ADDR_SCX:  data = scx; break;
-      case ADDR_LY:   data = ly; break;
-      case ADDR_LYC:  data = lyc; break;
-      case ADDR_DMA:  data = dma; break;
-      case ADDR_BGP:  data = bgp; break;
-      case ADDR_OBP0: data = obp0; break;
-      case ADDR_OBP1: data = obp1; break;
-      case ADDR_WY:   data = wy; break;
-      case ADDR_WX:   data = wx; break;
+Req PPU::get_obus_req(int /*tcycle*/) {
+  uint16_t fetch_addr = 0;
+
+  // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
+  if (counter < 80 && ((counter & 1) == 0)) {
+    return {
+      .addr  = uint16_t(ADDR_OAM_BEGIN + ((counter << 1) & 0b11111100)),
+      .data  = 0,
+      .read  = 1,
+      .write = 0,
+    };
+  }
+
+  if (fetch_type == FETCH_SPRITE && fetch_state == FETCH_SPRITE_MAP) {
+    fetch_addr = ADDR_OAM_BEGIN + (sprite_index << 2) + 2;
+  }
+
+  if (pix_count + pix_discard_pad == 168) {
+    fetch_addr = 0;
+  }
+
+  return {
+    .addr  = fetch_addr,
+    .data  = 0,
+    .read  = fetch_addr != 0,
+    .write = 0,
+  };
+}
+
+//-----------------------------------------------------------------------------
+
+Ack PPU::on_ibus_req(Req ibus_req) {
+  if (ibus_req.addr == ADDR_DMA) return {};
+  bool hit = (ADDR_GPU_BEGIN <= ibus_req.addr && ibus_req.addr <= ADDR_GPU_END);
+  uint8_t data = (uint8_t)ibus_req.data;
+
+  if (hit && ibus_req.read) {
+    switch (ibus_req.addr) {
+    case ADDR_LCDC: data = lcdc; break;
+    case ADDR_STAT: data = stat; break;
+    case ADDR_SCY:  data = scy; break;
+    case ADDR_SCX:  data = scx; break;
+    case ADDR_LY:   data = ly; break;
+    case ADDR_LYC:  data = lyc; break;
+    //case ADDR_DMA:  data = dma; break;
+    case ADDR_BGP:  data = bgp; break;
+    case ADDR_OBP0: data = obp0; break;
+    case ADDR_OBP1: data = obp1; break;
+    case ADDR_WY:   data = wy; break;
+    case ADDR_WX:   data = wx; break;
+    default:        data = 0; break;
+    }
+
+    return {
+      .phase = ibus_req.phase,
+      .addr  = ibus_req.addr,
+      .data  = data,
+      .read  = 1,
+      .write = 0,
+    };
+  }
+
+  if (hit && ibus_req.write && ibus_req.phase == 0) {
+    switch (ibus_req.addr) {
+    case ADDR_LCDC: lcdc = data; break;
+    case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
+    case ADDR_SCY:  scy = data;  break;
+    case ADDR_SCX:  scx = data;  break;
+    case ADDR_LY:   ly = data;   break;
+    case ADDR_LYC:  lyc = data;  break;
+    //case ADDR_DMA:  dma = data;  break;
+    case ADDR_BGP:  bgp = data;  break;
+    case ADDR_OBP0: obp0 = data; break;
+    case ADDR_OBP1: obp1 = data; break;
+    case ADDR_WY:   wy = data;   break;
+    case ADDR_WX:   wx = data;   break;
+    };
+
+    update_palettes();
+
+    return {
+      .phase = ibus_req.phase,
+      .addr  = ibus_req.addr,
+      .data  = data,
+      .read  = 0,
+      .write = 1,
+    };
+  }
+
+  return {};
+}
+
+//-----------------------------------------------------------------------------
+
+void PPU::on_vbus_ack(Ack ack) {
+  uint8_t data = (uint8_t)ack.data;
+
+  if (ack.read) {
+    if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
+      if (fetch_state == FETCH_TILE_MAP) tile_map = data;
+      if (fetch_state == FETCH_TILE_LO)  tile_lo = data;
+      if (fetch_state == FETCH_TILE_HI)  tile_hi = data;
+    }
+    else if (fetch_type == FETCH_SPRITE) {
+      if (fetch_state == FETCH_SPRITE_LO) sprite_lo = data;
+      if (fetch_state == FETCH_SPRITE_HI) sprite_hi = data;
+    }
+  }
+}
+
+//----------------------------------------
+
+void PPU::on_obus_ack(Ack ack) {
+  uint8_t lo = uint8_t(ack.data >> 0);
+  uint8_t hi = uint8_t(ack.data >> 8);
+
+  if (ack.read) {
+    if (ack.addr & 2) {
+      this->spriteP = lo;
+      this->spriteF = hi;
+    }
+    else {
+      this->spriteY = lo;
+      this->spriteX = hi;
+    }
+
+    //-----------------------------------
+    // Build sprite table
+
+    if (counter < 86 && sprite_count < 10) {
+      int si = (ack.addr - ADDR_OAM_BEGIN) >> 2;
+      int sy = spriteY - 16;
+      int sx = spriteX;
+
+      uint8_t sprite_height = (lcdc & FLAG_TALL_SPRITES) ? 16 : 8;
+      if ((sx < 168) && (sy <= line) && (line < sy + sprite_height)) {
+        sprite_x[sprite_count] = spriteX;
+        sprite_y[sprite_count] = spriteY;
+        sprite_i[sprite_count] = (uint8_t)si;
+        sprite_count++;
       }
     }
+  }
+}
 
-    if (ack && bus_to_ppu.write) {
-      switch (addr) {
-      case ADDR_LCDC: lcdc = data; break;
-      case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
-      case ADDR_SCY:  scy = data;  break;
-      case ADDR_SCX:  scx = data;  break;
-      case ADDR_LY:   ly = data;   break;
-      case ADDR_LYC:  lyc = data;  break;
-      case ADDR_DMA:  dma = data;  break;
-      case ADDR_BGP:  bgp = palettes[0] = data;
-      case ADDR_OBP0: obp0 = palettes[2] = data; break;
-      case ADDR_OBP1: obp1 = palettes[3] = data; break;
-      case ADDR_WY:   wy = data;   break;
-      case ADDR_WX:   wx = data;   break;
-      };
-    }
+//-----------------------------------------------------------------------------
 
-    ppu_to_bus = {};
-    if (ack) {
-      ppu_to_bus = bus_to_ppu;
-      ppu_to_bus.data = data;
-      ppu_to_bus.ack = true;
-    }
+void PPU::tock(const int tcycle) {
+  //from_int(tcycle, ibus);
+
+  if ((lcdc & FLAG_LCD_ON) == 0) {
+    tock_lcdoff();
+    return;
   }
 
   //----------------------------------------
   // Update state machiney stuff
+
+  const int tphase = tcycle & 3;
 
   counter_delay3 = counter_delay2;
   counter_delay2 = counter_delay1;
@@ -298,29 +427,6 @@ void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_,
   //-----------------------------------
   // Handle OAM/VRAM reads
 
-  if (oam_to_ppu.read) {
-    if (oam_to_ppu.addr & 2) {
-      this->spriteP = uint8_t(oam_to_ppu.data >> 0);
-      this->spriteF = uint8_t(oam_to_ppu.data >> 8);
-    }
-    else {
-      this->spriteY = uint8_t(oam_to_ppu.data >> 0);
-      this->spriteX = uint8_t(oam_to_ppu.data >> 8);
-    }
-  }
-
-  if (vram_to_ppu.read) {
-    if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
-      if (fetch_state == FETCH_TILE_MAP) tile_map = (uint8_t)vram_to_ppu.data;
-      if (fetch_state == FETCH_TILE_LO)  tile_lo = (uint8_t)vram_to_ppu.data;
-      if (fetch_state == FETCH_TILE_HI)  tile_hi = (uint8_t)vram_to_ppu.data;
-    }
-    else if (fetch_type == FETCH_SPRITE) {
-      if (fetch_state == FETCH_SPRITE_LO) sprite_lo = (uint8_t)vram_to_ppu.data;
-      if (fetch_state == FETCH_SPRITE_HI) sprite_hi = (uint8_t)vram_to_ppu.data;
-    }
-  }
-
   if (!fetch_delay && (fetch_state == FETCH_SPRITE_HI))  {
     if (spriteF & SPRITE_FLIP_X) {
       sprite_lo = flip2(sprite_lo);
@@ -341,23 +447,6 @@ void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_,
   }
 
   //-----------------------------------
-  // Build sprite table
-
-  if (oam_to_ppu.read && counter < 86 && sprite_count < 10) {
-    int si = (oam_to_ppu.addr - ADDR_OAM_BEGIN) >> 2;
-    int sy = spriteY - 16;
-    int sx = spriteX;
-
-    uint8_t sprite_height = (lcdc & FLAG_TALL_SPRITES) ? 16 : 8;
-    if ((sx < 168) && (sy <= line) && (line < sy + sprite_height)) {
-      this->sprite_x[sprite_count] = spriteX;
-      this->sprite_y[sprite_count] = spriteY;
-      this->sprite_i[sprite_count] = (uint8_t)si;
-      this->sprite_count++;
-    }
-  }
-
-  //-----------------------------------
   // Window stuff
 
   win_retrig_old = win_retrig_new;
@@ -370,6 +459,8 @@ void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_,
     (line >= wy) &&
     (pix_count + pix_discard_pad == wx);
 
+  /*
+  // what was this about? writes to FF40 do something weird?
   in_window_late = false;
   if (bus_to_ppu.write && bus_to_ppu.addr == 0xFF40 && (bus_to_ppu.data & FLAG_WIN_ON)) {
     in_window_late =
@@ -377,6 +468,7 @@ void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_,
       (line >= wy) &&
       (pix_count + pix_discard_pad == wx + 1);
   }
+  */
 
   if (!in_window_old && in_window_new) {
     win_y_latch = win_y_counter;
@@ -589,13 +681,13 @@ void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_,
     bool fire_stat_hblank1 = hblank_delay2 <= 6;
     bool fire_stat_vblank1 = (line == 144 && counter >= 4) || (line >= 145);
     bool fire_stat_lyc1    = compare_line == lyc;
-    bool fire_stat_glitch1 = bus_to_ppu.write && bus_to_ppu.addr == ADDR_STAT && stat_int1 != 0;
+    //bool fire_stat_glitch1 = ibus_req.write && ibus_req.addr == ADDR_STAT && stat_int1 != 0;
     bool fire_stat_oam1    = (line > 0) && (line < 144) && (counter == 0);
 
     bool fire_stat_hblank2 = hblank_delay2 <= 6;
     bool fire_stat_vblank2 = (line == 144 && counter >= 4) || (line >= 145);
     bool fire_stat_lyc2    = compare_line == lyc;
-    bool fire_stat_glitch2 = bus_to_ppu.write && bus_to_ppu.addr == ADDR_STAT && stat_int2 != 0;
+    //bool fire_stat_glitch2 = ibus_req.write && ibus_req.addr == ADDR_STAT && stat_int2 != 0;
     bool fire_stat_oam2   = ((line == 0 && counter == 4) || (line > 0 && line <= 144 && counter == 4));
 
     uint8_t stat_ = stat;
@@ -613,13 +705,13 @@ void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_,
     if (fire_stat_hblank1) stat_int1_ |= EI_HBLANK;
     if (fire_stat_vblank1) stat_int1_ |= EI_VBLANK;
     if (fire_stat_lyc1)    stat_int1_ |= EI_LYC;
-    if (fire_stat_glitch1) stat_int1_ |= EI_GLITCH;
+    //if (fire_stat_glitch1) stat_int1_ |= EI_GLITCH;
     if (fire_stat_oam1)    stat_int1_ |= EI_OAM;
 
     if (fire_stat_hblank2) stat_int2_ |= EI_HBLANK;
     if (fire_stat_vblank2) stat_int2_ |= EI_VBLANK;
     if (fire_stat_lyc2)    stat_int2_ |= EI_LYC;
-    if (fire_stat_glitch2) stat_int2_ |= EI_GLITCH;
+    //if (fire_stat_glitch2) stat_int2_ |= EI_GLITCH;
     if (fire_stat_oam2)    stat_int2_ |= EI_OAM;
 
     vblank1 = line == 144 && counter == 4;
@@ -635,6 +727,7 @@ void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_,
     old_stat_int2 = (stat_ & stat_int2_);
   }
 
+  /*
   ppu_to_vram.addr = 0;
   ppu_to_oam.addr = 0;
 
@@ -664,65 +757,13 @@ void PPU::tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_,
 
   if (ppu_to_vram.addr) ppu_to_vram.read = true;
   if (ppu_to_oam.addr) ppu_to_oam.read = true;
+  */
 
 } // PPU::tock
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_lcdoff(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_) {
-  const int tphase = tcycle_ & 3;
-  tcycle = tcycle_;
-  bus_to_ppu = bus_to_ppu_;
-  vram_to_ppu = vram_to_ppu_;
-  oam_to_ppu = oam_to_ppu_;
-
-  if (tphase == 0) {
-    uint16_t addr = bus_to_ppu.addr;
-    uint8_t data = (uint8_t)bus_to_ppu.data;
-    bool ack = (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END);
-
-    if (ack && bus_to_ppu.read) {
-      switch (addr) {
-      case ADDR_LCDC: data = lcdc; break;
-      case ADDR_STAT: data = stat; break;
-      case ADDR_SCY:  data = scy; break;
-      case ADDR_SCX:  data = scx; break;
-      case ADDR_LY:   data = ly; break;
-      case ADDR_LYC:  data = lyc; break;
-      case ADDR_DMA:  data = dma; break;
-      case ADDR_BGP:  data = bgp; break;
-      case ADDR_OBP0: data = obp0; break;
-      case ADDR_OBP1: data = obp1; break;
-      case ADDR_WY:   data = wy; break;
-      case ADDR_WX:   data = wx; break;
-      }
-    }
-
-    if (ack && bus_to_ppu.write) {
-      switch (addr) {
-      case ADDR_LCDC: lcdc = data; break;
-      case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
-      case ADDR_SCY:  scy = data;  break;
-      case ADDR_SCX:  scx = data;  break;
-      case ADDR_LY:   ly = data;   break;
-      case ADDR_LYC:  lyc = data;  break;
-      case ADDR_DMA:  dma = data;  break;
-      case ADDR_BGP:  bgp = palettes[0] = data;
-      case ADDR_OBP0: obp0 = palettes[2] = data; break;
-      case ADDR_OBP1: obp1 = palettes[3] = data; break;
-      case ADDR_WY:   wy = data;   break;
-      case ADDR_WX:   wx = data;   break;
-      };
-    }
-
-    ppu_to_bus = {};
-    if (ack) {
-      ppu_to_bus = bus_to_ppu;
-      ppu_to_bus.data = data;
-      ppu_to_bus.ack = true;
-    }
-  }
-
+void PPU::tock_lcdoff() {
   counter = 4;
   counter_delay1 = 3;
   counter_delay2 = 2;
@@ -753,8 +794,6 @@ void PPU::tock_lcdoff(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_t
   state = PPU_STATE_HBLANK;
   stat &= 0b11111100;
 
-  ppu_to_vram = {};
-  ppu_to_oam = {};
   stat1 = 0;
   stat2 = 0;
   vblank1 = 0;
@@ -898,14 +937,11 @@ void PPU::bus_write_early(uint16_t addr, uint8_t data) {
     case ADDR_LY:   ly = data;   break;
     case ADDR_LYC:  lyc = data;  break;
     case ADDR_DMA:  dma = data;  break;
-    case ADDR_BGP: {
-      bgp |= data;
-      palettes[0] |= data;
-      break;
-    }
-    case ADDR_OBP0: obp0 = palettes[2] = data; break;
-    case ADDR_OBP1: obp1 = palettes[3] = data; break;
+    case ADDR_BGP:  bgp |= data; break;
+    case ADDR_OBP0: obp0 = data; break;
+    case ADDR_OBP1: obp1 = data; break;
     };
+    update_palettes();
   }
 }
 
@@ -951,12 +987,12 @@ void PPU::bus_write_late(uint16_t addr, uint8_t data) {
     //case ADDR_DMA:  dma = data;  break;
     case ADDR_BGP: {
       bgp = data;
-      palettes[0] = data;
       break;
     }
     case ADDR_WY:   wy = data;   break;
     case ADDR_WX:   wx = data;   break;
     };
+    update_palettes();
   }
 }
 #endif
@@ -989,6 +1025,7 @@ const char* fetch_names2[] = {
 
 
 void PPU::dump(std::string& d) const {
+  sprintf(d, "\002--------------PPU--------------\001\n");
 
   sprintf(d, "LCDC      %s\n", byte_to_bits(lcdc));
   sprintf(d, "STAT      %s\n", byte_to_bits(stat));
@@ -996,10 +1033,10 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "SCX       %d\n", scx);
   sprintf(d, "LY        %d\n", ly);
   sprintf(d, "LYC       %d\n", lyc);
-  sprintf(d, "DMA       %d\n", dma);
-  sprintf(d, "BGP       0x%02x\n", palettes[0]);
-  sprintf(d, "OBP0      0x%02x\n", palettes[2]);
-  sprintf(d, "OBP1      0x%02x\n", palettes[3]);
+  //sprintf(d, "DMA       %d\n", dma);
+  sprintf(d, "BGP       0x%02x\n", bgp);
+  sprintf(d, "OBP0      0x%02x\n", obp0);
+  sprintf(d, "OBP1      0x%02x\n", obp1);
   sprintf(d, "WY        %d\n", wy);
   sprintf(d, "WX        %d\n", wx);
   sprintf(d, "wyc       %d\n", win_y_counter);
@@ -1011,14 +1048,6 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "counter   %d\n", counter);
   sprintf(d, "hdelay    %d\n", hblank_delay2);
   sprintf(d, "\n");
-
-  /*
-  sprintf(d, "pal[0]    0x%02x\n", palettes[0]);
-  sprintf(d, "pal[1]    0x%02x\n", palettes[1]);
-  sprintf(d, "pal[2]    0x%02x\n", palettes[2]);
-  sprintf(d, "pal[3]    0x%02x\n", palettes[3]);
-  sprintf(d, "\n");
-  */
 
   sprintf(d, "compare_line  %d\n", compare_line);
   sprintf(d, "stat_int1     %d\n", stat_int1);
@@ -1042,6 +1071,11 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "spriteF      %d\n",     spriteF);
   sprintf(d, "sprite_lo    0x%02x\n", sprite_lo);
   sprintf(d, "sprite_hi    0x%02x\n", sprite_hi);
+
+  for (int i = 0; i < 10; i++) {
+    sprintf(d, "sprite %d %d %d\n", sprite_i[i], sprite_x[i], sprite_y[i]);
+  }
+
   sprintf(d, "\n");
 
   //----------
@@ -1054,8 +1088,8 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "in_window_new   %d\n", in_window_new);
   sprintf(d, "in_window_early %d\n", in_window_early);
   sprintf(d, "in_window_late  %d\n", in_window_late);
-  sprintf(d, "win_retrig_old  %d\n", in_window_late);
-  sprintf(d, "win_retrig_new  %d\n", in_window_late);
+  sprintf(d, "win_retrig_old  %d\n", win_retrig_old);
+  sprintf(d, "win_retrig_new  %d\n", win_retrig_new);
   sprintf(d, "\n");
 
   //----------
@@ -1079,77 +1113,32 @@ void PPU::dump(std::string& d) const {
   sprintf(d, "bg_pal_lo       %s\n", byte_to_bits(bg_pal_lo));
   sprintf(d, "bg_pal_hi       %s\n", byte_to_bits(bg_pal_hi));
 
-  /*
-  sprintf(d, "ob_pix_lo       %s\n", byte_to_bits(ob_pix_lo));
-  sprintf(d, "ob_pix_hi       %s\n", byte_to_bits(ob_pix_hi));
-  sprintf(d, "ob_pal_lo       %s\n", byte_to_bits(ob_pal_lo));
-  sprintf(d, "ob_pal_hi       %s\n", byte_to_bits(ob_pal_hi));
-  sprintf(d, "\n");
-  */
-
-  /*
-  sprintf(d, "%s\n", in_window_old ? "in_window_old" : "");
-  sprintf(d, "%s\n", in_window_new ? "in_window_new" : "");
-  sprintf(d, "%s\n", in_window_early ? "in_window_early" : "");
-  sprintf(d, "%s\n", in_window_late ? "in_window_late" : "");
-  sprintf(d, "%s\n", win_retrig_old ? "win_retrig_old" : "");
-  sprintf(d, "%s\n", win_retrig_new ? "win_retrig_new" : "");
-  sprintf(d, "map x   %d\n", map_x);
-  sprintf(d, "map y   %d\n", map_y);
-  */
-
-  /*
-  sprintf(d, "scx disc %d\n", pix_discard_scx);
-  sprintf(d, "pad disc %d\n", pix_discard_pad);
-  sprintf(d, "pix      %d\n", pix_count);
-  sprintf(d, "pipe     %d\n", pipe_count);
-  sprintf(d, "fetch    %s\n", fetch_names1[fetch_type]);
-  sprintf(d, "         %s\n", fetch_names2[fetch_state]);
-  sprintf(d, "latched  %d\n", tile_latched);
-  sprintf(d, "\n");
-  */
-
-  /*
-  sprintf(d, "stat_int_lyc    %d %d\n", stat_int_lyc, bool(stat & EI_LYC));
-  sprintf(d, "stat_int_oam    %d %d\n", stat_int_oam, bool(stat & EI_OAM));
-  sprintf(d, "stat_int_vblank %d %d\n", stat_int_vblank, bool(stat & EI_VBLANK));
-  sprintf(d, "stat_int_hblank %d %d\n", stat_int_vblank, bool(stat & EI_HBLANK));
-  */
-
-  /*
-  uint8_t* si = sprite_i;
-  uint8_t* sx = sprite_x;
-  uint8_t* sy = sprite_y;
-
-  sprintf(d, "sprite_i [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", si[0], si[1], si[2], si[3], si[4], si[5], si[6], si[7], si[8], si[9]);
-  sprintf(d, "sprite_x [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sx[0], sx[1], sx[2], sx[3], sx[4], sx[5], sx[6], sx[7], sx[8], sx[9]);
-  sprintf(d, "sprite_y [%3d %3d %3d %3d %3d %3d %3d %3d %3d %3d]\n", sy[0], sy[1], sy[2], sy[3], sy[4], sy[5], sy[6], sy[7], sy[8], sy[9]);
-  */
-
   {
+    /*
     auto out = tick(tcycle);
 
-    print_bus(d, "bus_to_ppu",  bus_to_ppu);
-    print_bus(d, "ppu_to_bus",  out.ppu_to_bus);
+    pribus(d, "bus_to_ppu",  bus_to_ppu);
+    pribus(d, "ppu_to_bus",  out.ppu_to_bus);
     sprintf(d, "\n");
 
-    print_bus(d, "ppu_to_vram", out.ppu_to_vram);
-    print_bus(d, "vram_to_ppu", vram_to_ppu);
+    pribus(d, "ppu_to_vram", out.ppu_to_vram);
+    pribus(d, "vram_to_ppu", vram_to_ppu);
     sprintf(d, "\n");
 
-    print_bus(d, "ppu_to_oam",  out.ppu_to_oam);
-    print_bus(d, "oam_to_ppu",  oam_to_ppu);
+    pribus(d, "ppu_to_oam",  out.ppu_to_oam);
+    pribus(d, "oam_to_ppu",  oam_to_ppu);
     sprintf(d, "\n");
+    */
 
-    dumpit(out.x         ,"%d");
-    dumpit(out.y         ,"%d");
-    dumpit(out.counter   ,"%d");
-    dumpit(out.pix_out   ,"0x%02x");
-    dumpit(out.pix_oe    ,"%d");
-    dumpit(out.stat1     ,"%d");
-    dumpit(out.stat2     ,"%d");
-    dumpit(out.vblank1   ,"%d");
-    dumpit(out.vblank2   ,"%d");
+    dumpit(pix_count ,"%d");
+    dumpit(line      ,"%d");
+    dumpit(counter   ,"%d");
+    dumpit(pix_out   ,"0x%02x");
+    dumpit(pix_oe    ,"%d");
+    dumpit(stat1     ,"%d");
+    dumpit(stat2     ,"%d");
+    dumpit(vblank1   ,"%d");
+    dumpit(vblank2   ,"%d");
   }
 }
 

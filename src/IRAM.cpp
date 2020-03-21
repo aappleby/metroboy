@@ -1,6 +1,7 @@
 #include "IRAM.h"
 
 #include "Constants.h"
+#include <assert.h>
 
 //-----------------------------------------------------------------------------
 
@@ -10,69 +11,40 @@ void IRAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-IRAM::Out IRAM::tick() const {
-  return {
-    iram_to_bus,
-    iram_to_dma
-  };
-}
+Ack IRAM::on_ebus_req(Req ebus_req) {
+  bool hit = (ebus_req.addr & 0xC000) == 0xC000;
+  if (!hit) return {};
 
-void IRAM::tock(int tcycle_, Bus bus_to_iram_, Bus dma_to_iram_) {
-  const int tphase = tcycle_ & 3;
-  if (tphase != 0) return;
-
-  tcycle = tcycle_;
-  bus_to_iram = bus_to_iram_;
-  dma_to_iram = dma_to_iram_;
-  iram_to_bus = {};
-  iram_to_dma = {};
-
-  if ((ADDR_IRAM_BEGIN <= dma_to_iram.addr && dma_to_iram.addr <= ADDR_IRAM_END) ||
-      (ADDR_ECHO_BEGIN <= dma_to_iram.addr && dma_to_iram.addr <= ADDR_ECHO_END)) {
-    iram_to_dma = dma_to_iram;
-    iram_to_dma.ack = true;
+  if (ebus_req.read) {
+    return {
+      .phase = ebus_req.phase,
+      .addr  = ebus_req.addr,
+      .data  = ram[ebus_req.addr & 0x1FFF],
+      .read  = 1,
+      .write = 0,
+    };
   }
-
-  if ((ADDR_IRAM_BEGIN <= bus_to_iram.addr && bus_to_iram.addr <= ADDR_IRAM_END) ||
-      (ADDR_ECHO_BEGIN <= bus_to_iram.addr && bus_to_iram.addr <= ADDR_ECHO_END)) {
-    iram_to_bus = bus_to_iram;
-    iram_to_bus.ack = true;
+  else if (ebus_req.write) {
+    ram[ebus_req.addr & 0x1FFF] = uint8_t(ebus_req.data);
+    return {
+      .phase = ebus_req.phase,
+      .addr  = ebus_req.addr,
+      .data  = ebus_req.data,
+      .read  = 0,
+      .write = 1,
+    };
   }
-
-  if (dma_to_iram.read) {
-    if (ADDR_IRAM_BEGIN <= dma_to_iram.addr && dma_to_iram.addr <= ADDR_IRAM_END) {
-      iram_to_dma.data = ram[dma_to_iram.addr - ADDR_IRAM_BEGIN];
-    }
-    else if (ADDR_ECHO_BEGIN <= dma_to_iram.addr && dma_to_iram.addr <= ADDR_ECHO_END) {
-      iram_to_dma.data = ram[dma_to_iram.addr - ADDR_ECHO_BEGIN];
-    }   
-  }
-  else if (bus_to_iram.write) {
-    if (ADDR_IRAM_BEGIN <= bus_to_iram.addr && bus_to_iram.addr <= ADDR_IRAM_END) {
-      ram[bus_to_iram.addr - ADDR_IRAM_BEGIN] = (uint8_t)bus_to_iram.data;
-    }
-    else if (ADDR_ECHO_BEGIN <= bus_to_iram.addr && bus_to_iram.addr <= ADDR_ECHO_END) {
-      ram[bus_to_iram.addr - ADDR_ECHO_BEGIN] = (uint8_t)bus_to_iram.data;
-    }
-  }
-  else if (bus_to_iram.read) {
-    if (ADDR_IRAM_BEGIN <= bus_to_iram.addr && bus_to_iram.addr <= ADDR_IRAM_END) {
-      iram_to_bus.data = ram[bus_to_iram.addr - ADDR_IRAM_BEGIN];
-    }
-    else if (ADDR_ECHO_BEGIN <= bus_to_iram.addr && bus_to_iram.addr <= ADDR_ECHO_END) {
-      iram_to_bus.data = ram[bus_to_iram.addr - ADDR_ECHO_BEGIN];
-    }   
+  else {
+    assert(false);
+    return {};
   }
 }
 
 //-----------------------------------------------------------------------------
 
 void IRAM::dump(std::string& d) {
-  print_bus(d, "bus_to_iram", bus_to_iram);
-  print_bus(d, "iram_to_bus", iram_to_bus);
+  sprintf(d, "\002--------------IRAM-------------\001\n");
   sprintf(d, "\n");
-  print_bus(d, "dma_to_iram", dma_to_iram);
-  print_bus(d, "iram_to_dma", iram_to_dma);
 }
 
 //-----------------------------------------------------------------------------

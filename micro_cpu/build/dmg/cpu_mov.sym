@@ -1,0 +1,5 @@
+; this file was created with wlalink by ville helin <vhelin@iki.fi>.
+; wla symbolic information for "build/dmg/cpu_mov.gb".
+
+[labels]
+00:0150 main

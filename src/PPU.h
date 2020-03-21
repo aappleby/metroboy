@@ -7,11 +7,8 @@
 //-----------------------------------------------------------------------------
 
 struct PPU {
+  /*
   struct Out {
-    Bus ppu_to_bus;
-    Bus ppu_to_vram;
-    Bus ppu_to_oam;
-
     int x;
     int y;
     int counter;
@@ -23,10 +20,20 @@ struct PPU {
     bool vblank1;
     bool vblank2;
   };
+  */
 
   void reset(bool run_bootrom);
-  Out  tick(const int tcycle_) const;
-  void tock(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_);
+
+  Ack  on_ibus_req(Req ibus_req);
+
+  Req  get_vbus_req(int tcycle);
+  Req  get_obus_req(int tcycle);
+
+  void on_vbus_ack(Ack vbus_ack_);
+  void on_obus_ack(Ack obus_ack_);
+
+  void tock(const int tcycle);
+
   void dump(std::string& out) const;
 
   uint8_t get_stat()       const { return stat; }
@@ -34,23 +41,11 @@ struct PPU {
   bool get_old_stat_int1() const { return old_stat_int2; }
   bool get_old_stat_int2() const { return old_stat_int2; }
 
-private:
+//private:
 
-  void tock_lcdoff(const int tcycle_, const Bus bus_to_ppu_, const Bus vram_to_ppu_, const Bus oam_to_ppu_);
+  void tock_lcdoff();
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
-
-  //----------
-  // Buses
-
-  int tcycle;
-  Bus bus_to_ppu;
-  Bus vram_to_ppu;
-  Bus oam_to_ppu;
-
-  Bus ppu_to_bus;
-  Bus ppu_to_vram;
-  Bus ppu_to_oam;
 
   //----------
   // Timers and states
@@ -82,7 +77,7 @@ private:
   uint8_t scx;  // FF43
   uint8_t ly;   // FF44
   uint8_t lyc;  // FF45
-  uint8_t dma;  // FF46
+  //uint8_t dma;  // FF46
   uint8_t bgp;  // FF47
   uint8_t obp0; // FF48
   uint8_t obp1; // FF49
@@ -90,6 +85,13 @@ private:
   uint8_t wx;   // FF4B
 
   uint8_t palettes[4];
+
+  void update_palettes() {
+    palettes[0] = bgp;
+    palettes[1] = bgp;
+    palettes[2] = obp0;
+    palettes[3] = obp1;
+  }
 
   //----------
   // interrupt stuff

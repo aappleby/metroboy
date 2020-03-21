@@ -7,9 +7,13 @@ enum Z80State;
 
 struct Z80 {
   void    reset(uint16_t new_pc);
-  Bus     tick() const;
+
   uint8_t get_int_ack() const { return out_int_ack; }
-  void    tock(const int tcycle_, const Bus cpu_in_, const uint8_t imask_, const uint8_t intf_);
+
+  Req  get_bus_req() const;
+  void on_bus_ack(Ack ibus_ack_);
+
+  void    tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_);
   void    dump(std::string& d);
 
   uint16_t get_op_addr() const { return op_addr; }
@@ -21,8 +25,7 @@ struct Z80 {
 
 private:
   int tcycle;
-  Bus bus_to_cpu;
-  Bus cpu_to_bus;
+
   uint8_t out_int_ack;
 
   uint16_t op_addr;

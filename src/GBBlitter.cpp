@@ -330,11 +330,11 @@ static vec4 default_pal[4] = {
   {0.12, 0.12, 0.12, 1.0},
 };
 
-void GBBlitter::blit_map(Viewport view, const uint8_t* vram_dump) {
+void GBBlitter::blit_map(Viewport view, const uint8_t* vram) {
 
   //----------
 
-  update_ubo(vram_ubo, 8192, vram_dump);
+  update_ubo(vram_ubo, 8192, vram);
 
   //----------
 

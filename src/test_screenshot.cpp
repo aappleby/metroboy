@@ -110,7 +110,6 @@ int run_screenshot_test(const std::string& prefix, const std::string& name) {
   int i = 0;
   const int ticks = 400000;
   for (; i < ticks; i++) {
-    gameboy.tick();
     gameboy.tock();
     Gameboy::HostOut gb_out = gameboy.get_host_data();
 

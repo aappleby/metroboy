@@ -21,26 +21,26 @@ const int samples_per_frame = output_hz / 60;
 //-----------------------------------------------------------------------------
 // Memory map
 
-#define ADDR_BOOTROM_BEGIN    000
-#define ADDR_BOOTROM_END      0FF
+#define ADDR_BOOT_BEGIN  0x0000
+#define ADDR_BOOT_END    0x00FF
 
-#define ADDR_ROM_BEGIN    000
-#define ADDR_ROM_END   0x7FFF
+#define ADDR_ROM_BEGIN   0x0000
+#define ADDR_ROM_END     0x7FFF
 
-#define ADDR_VRAM_BEGIN 0x8000
+#define ADDR_VRAM_BEGIN  0x8000
 
-#define ADDR_TILE0      0x8000
-#define ADDR_TILE1      0x8800
-#define ADDR_MAP0       0x9800
-#define ADDR_MAP1       0x9C00
+#define ADDR_TILE0       0x8000
+#define ADDR_TILE1       0x8800
+#define ADDR_MAP0        0x9800
+#define ADDR_MAP1        0x9C00
 
-#define ADDR_VRAM_END   0x9FFF
+#define ADDR_VRAM_END    0x9FFF
 
-#define ADDR_CRAM_BEGIN 0xA000
-#define ADDR_CRAM_END   0xBFFF
+#define ADDR_CRAM_BEGIN  0xA000
+#define ADDR_CRAM_END    0xBFFF
 
-#define ADDR_IRAM_BEGIN 0xC000
-#define ADDR_IRAM_END   0xDFFF
+#define ADDR_IRAM_BEGIN  0xC000
+#define ADDR_IRAM_END    0xDFFF
 
 #define ADDR_ECHO_BEGIN  0xE000
 #define ADDR_ECHO_END    0xFDFF
@@ -93,6 +93,10 @@ const int samples_per_frame = output_hz / 60;
 
 #define ADDR_IE     0xFFFF
 #define ADDR_IOBUS_END 0xFFFF
+
+inline bool in_range(uint16_t addr, uint16_t begin, uint16_t end) {
+  return (begin <= addr) && (addr <= end);
+}
 
 //-----------------------------------------------------------------------------
 // Flags

@@ -3,16 +3,12 @@
 
 //-----------------------------------------------------------------------------
 
-struct OAM {
+struct Bootrom {
+  void reset(uint16_t new_pc);
+  Ack  on_ibus_req(Req ibus_req);
+  void dump(std::string& d);
 
-  void reset();
-  Ack  on_obus_req(Req obus_req);
-  void dump(std::string& out) const;
-
-  const uint8_t* get() const { return (uint8_t*)ram; }
-
-//private:
-  uint16_t ram[128];
+  bool disable_bootrom;
 };
 
 //-----------------------------------------------------------------------------

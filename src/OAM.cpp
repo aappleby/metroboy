@@ -1,6 +1,7 @@
 #include "OAM.h"
 
 #include "Constants.h"
+#include <assert.h>
 
 //-----------------------------------------------------------------------------
 
@@ -10,52 +11,67 @@ void OAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-OAM::Out OAM::tick() const {
-  return {
-    oam_to_bus,
-    oam_to_ppu
-  };
+Ack OAM::on_obus_req(Req obus_req) {
+  bool hit = (obus_req.addr >= ADDR_OAM_BEGIN) && (obus_req.addr <= ADDR_OAM_END);
+  if (!hit) return {};
+
+  if (hit && obus_req.write) {
+    uint16_t oam_addr = obus_req.addr & 0x00FF;
+    uint16_t d = ram[oam_addr >> 1];
+    if (oam_addr & 1) d = (d & 0x00FF) | (obus_req.data << 8);
+    else              d = (d & 0xFF00) | (obus_req.data << 0);
+    ram[oam_addr >> 1] = d;
+
+    return {
+      .phase = obus_req.phase,
+      .addr  = obus_req.addr,
+      .data  = obus_req.data,
+      .read  = 0,
+      .write = 1,
+    };
+  }
+  else if (hit && obus_req.read) {
+    return {
+      .phase = obus_req.phase,
+      .addr  = obus_req.addr,
+      .data  = ram[(obus_req.addr & 0x00FF) >> 1],
+      .read  = 1,
+      .write = 0,
+    };
+  }
+  else {
+    assert(false);
+    return {};
+  }
 }
 
-void OAM::tock(int tcycle_, const Bus bus_to_oam_, Bus dma_to_oam_, Bus ppu_to_oam_) {
-  const int tphase = tcycle_ & 3;
-  tcycle = tcycle_;
-  bus_to_oam = bus_to_oam_;
-  dma_to_oam = dma_to_oam_;
-  ppu_to_oam = ppu_to_oam_;
+void OAM::dump(std::string& d) const {
+  sprintf(d, "\002--------------OAM--------------\001\n");
+  /*
+  uint8_t* flat = (uint8_t*)ram;
+  for (int y = 0; y < 40; y++) {
+    sprintf(d, "%04x: ", y * 8 + ADDR_OAM_BEGIN);
+    for (int x = 0; x < 4; x++) {
+      uint8_t b = flat[x + y * 4];
+      uint8_t l = (b >> 0) & 0x0F;
+      uint8_t h = (b >> 4) & 0x0F;
 
-  oam_to_bus = {};
-  oam_to_ppu = {};
-
-  // oam - cpu bus
-
-  if (tphase == 0) {
-    uint16_t addr = bus_to_oam.addr;
-    uint8_t data = (uint8_t)bus_to_oam.data;
-    bool ack = (ADDR_OAM_BEGIN <= addr && addr <= ADDR_OAM_END);
-    if (ppu_to_oam.lock) ack = false;
-
-    if (ack && bus_to_oam.write) {
-      uint16_t d = ram[(addr - ADDR_OAM_BEGIN) >> 1];
-      
-      if (addr & 1) d = (d & 0x00FF) | (data << 8);
-      else d = (d & 0xFF00) | (data << 0);
-      
-      ram[(addr - ADDR_OAM_BEGIN) >> 1] = d;
+      d.push_back(h > 9 ? '7' + h : '0' + h);
+      d.push_back(l > 9 ? '7' + l : '0' + l);
+      d.push_back(' ');
     }
-    else if (ack && bus_to_oam.read) {
-      uint16_t data16 = ram[(addr - ADDR_OAM_BEGIN) >> 1];
-      data = uint16_t(addr & 1 ? (data16 >> 8) : (data16 & 0xFF));
-    }
-
-    oam_to_bus = {};
-    if (ack) {
-      oam_to_bus = bus_to_oam;
-      oam_to_bus.data = data;
-      oam_to_bus.ack = true;
-    }
+    d.push_back('\n');
   }
+  */
 
+  sprintf(d, "\n");
+}
+
+//-----------------------------------------------------------------------------
+
+
+
+/*
 
   if (ppu_to_oam.lock) {
     if (ppu_to_oam.read) {
@@ -76,16 +92,4 @@ void OAM::tock(int tcycle_, const Bus bus_to_oam_, Bus dma_to_oam_, Bus ppu_to_o
       ram[(dma_to_oam.addr - ADDR_OAM_BEGIN) >> 1] = d;
     }
   }
-}
-
-void OAM::dump(std::string& d) const {
-  print_bus(d, "bus_to_oam", bus_to_oam);
-  print_bus(d, "oam_to_bus", oam_to_bus);
-  sprintf(d, "\n");
-  print_bus(d, "ppu_to_oam", ppu_to_oam);
-  print_bus(d, "oam_to_ppu", oam_to_ppu);
-  sprintf(d, "\n");
-  print_bus(d, "dma_to_oam", dma_to_oam);
-}
-
-//-----------------------------------------------------------------------------
+*/

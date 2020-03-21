@@ -5,10 +5,12 @@
 
 struct SPU {
   void reset();
-  Bus  tick() const;
+
+  Ack on_ibus_req(Req ibus_req);
+
   sample_t get_l() const { return out_l; }
   sample_t get_r() const { return out_r; }
-  void tock(const int tcycle_, const Bus cpu_in_);
+  void tock(const int tcycle_);
 
   void  dump(std::string& out) const;
   const uint8_t* get_wave() const { return s3_wave; }
@@ -16,11 +18,9 @@ struct SPU {
 private:
 
   int tcycle;
-  Bus cpu_in;
-  Bus cpu_out;
 
-  void bus_read (const int tphase, const Bus cpu_in_);
-  void bus_write(const int tphase, const Bus cpu_in_);
+  Ack bus_read (Req ibus_req);
+  Ack bus_write(Req ibus_req);
 
   //----------
 

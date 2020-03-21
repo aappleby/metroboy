@@ -513,7 +513,6 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
   int i = 0;
   const int ticks = 100000;  // bits_ram_en needs lots of tcycles
   for (; i < ticks; i++) {
-    gameboy.tick();
     //assert(!gameboy.ppu.vram_delay == !gameboy.ppu.fetch_delay);
 
     gameboy.tock();

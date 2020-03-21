@@ -39,23 +39,24 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-Bus SPU::tick() const {
-  return cpu_out;
+Ack SPU::on_ibus_req(Req ibus_req) {
+  if (ibus_req.addr < 0xFF10) return {};
+  if (ibus_req.addr > 0xFF3F) return {};
+
+  if (ibus_req.read)  return bus_read(ibus_req);
+  if (ibus_req.write) return bus_write(ibus_req);
+  return {};
 }
 
-void SPU::tock(const int tcycle_, const Bus cpu_in_) {
+//-----------------------------------------------------------------------------
+
+void SPU::tock(const int tcycle_) {
   const int tphase = tcycle_ & 3;
   if (tphase != 0) return;
-
-  tcycle = tcycle_;
-  cpu_in = cpu_in_;
 
   bool sound_on = (nr52 & 0x80);
   uint16_t spu_clock_ = (spu_clock + 1) & 0x3FFF;
   uint16_t clock_flip = (~spu_clock) & spu_clock_;
-
-  bus_read(tphase, cpu_in);
-  bus_write(tphase, cpu_in);
 
   if (!sound_on) {
     s1_out = 0;
@@ -313,44 +314,52 @@ void SPU::tock(const int tcycle_, const Bus cpu_in_) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_read(const int /*tphase_*/, const Bus cpu_in_) {
-  if (!cpu_in_.read) return;
+Ack SPU::bus_read(Req ibus_req) {
 
-  cpu_out = {};
+  Ack ack = {
+    .phase = 0,
+    .addr  = ibus_req.addr,
+    .data  = 0,
+    .read  = 1,
+    .write = 0,
+  };
 
-  if (cpu_in_.addr < 0xFF10) return;
-  if (cpu_in_.addr > 0xFF3F) return;
+  //----------
+  // wavetable
+
+  if (ibus_req.addr >= 0xFF30 && ibus_req.addr <= 0xFF3F) {
+    ack.data = s3_wave[ibus_req.addr & 0xF];
+    return ack;
+  }
+
+
+  switch (ibus_req.addr) {
+  case 0xFF10: ack.data = nr10 | 0x80; break;
+  case 0xFF11: ack.data = nr11 | 0x3F; break;
+  case 0xFF12: ack.data = nr12 | 0x00; break;
+  case 0xFF13: ack.data = nr13 | 0xFF; break;
+  case 0xFF14: ack.data = nr14 | 0xBF; break;
+
+  case 0xFF15: ack.data = nr20 | 0xFF; break;
+  case 0xFF16: ack.data = nr21 | 0x3F; break;
+  case 0xFF17: ack.data = nr22 | 0x00; break;
+  case 0xFF18: ack.data = nr23 | 0xFF; break;
+  case 0xFF19: ack.data = nr24 | 0xBF; break;
   
-  cpu_out.addr = cpu_in_.addr;
-  cpu_out.read = 1;
+  case 0xFF1A: ack.data = nr30 | 0x7F; break;
+  case 0xFF1B: ack.data = nr31 | 0xFF; break;
+  case 0xFF1C: ack.data = nr32 | 0x9F; break;
+  case 0xFF1D: ack.data = nr33 | 0xFF; break;
+  case 0xFF1E: ack.data = nr34 | 0xBF; break;
 
-  switch (cpu_in_.addr) {
-  case 0xFF10: cpu_out.data = nr10 | 0x80; break;
-  case 0xFF11: cpu_out.data = nr11 | 0x3F; break;
-  case 0xFF12: cpu_out.data = nr12 | 0x00; break;
-  case 0xFF13: cpu_out.data = nr13 | 0xFF; break;
-  case 0xFF14: cpu_out.data = nr14 | 0xBF; break;
+  case 0xFF1F: ack.data = nr40 | 0xFF; break;
+  case 0xFF20: ack.data = nr41 | 0xFF; break;
+  case 0xFF21: ack.data = nr42 | 0x00; break;
+  case 0xFF22: ack.data = nr43 | 0x00; break;
+  case 0xFF23: ack.data = nr44 | 0xBF; break;
 
-  case 0xFF15: cpu_out.data = nr20 | 0xFF; break;
-  case 0xFF16: cpu_out.data = nr21 | 0x3F; break;
-  case 0xFF17: cpu_out.data = nr22 | 0x00; break;
-  case 0xFF18: cpu_out.data = nr23 | 0xFF; break;
-  case 0xFF19: cpu_out.data = nr24 | 0xBF; break;
-  
-  case 0xFF1A: cpu_out.data = nr30 | 0x7F; break;
-  case 0xFF1B: cpu_out.data = nr31 | 0xFF; break;
-  case 0xFF1C: cpu_out.data = nr32 | 0x9F; break;
-  case 0xFF1D: cpu_out.data = nr33 | 0xFF; break;
-  case 0xFF1E: cpu_out.data = nr34 | 0xBF; break;
-  
-  case 0xFF1F: cpu_out.data = nr40 | 0xFF; break;
-  case 0xFF20: cpu_out.data = nr41 | 0xFF; break;
-  case 0xFF21: cpu_out.data = nr42 | 0x00; break;
-  case 0xFF22: cpu_out.data = nr43 | 0x00; break;
-  case 0xFF23: cpu_out.data = nr44 | 0xBF; break;
-
-  case 0xFF24: cpu_out.data = nr50 | 0x00; break;
-  case 0xFF25: cpu_out.data = nr51 | 0x00; break;
+  case 0xFF24: ack.data = nr50 | 0x00; break;
+  case 0xFF25: ack.data = nr51 | 0x00; break;
 
   case 0xFF26: {
     uint8_t bus_out_ = (nr52 & 0x80) | 0x70;
@@ -358,101 +367,98 @@ void SPU::bus_read(const int /*tphase_*/, const Bus cpu_in_) {
     if (s2_enable) bus_out_ |= 0b00000010;
     if (s3_enable) bus_out_ |= 0b00000100;
     if (s4_enable) bus_out_ |= 0b00001000;
-    cpu_out.data = bus_out_;
+    ack.data = bus_out_;
     break;
+  }
+  default: return {};
   }
 
-  default: {
-    cpu_out = {};
-    break;
-  }
+  return ack;
+}
+
+//-----------------------------------------------------------------------------
+
+Ack SPU::bus_write(Req ibus_req) {
+  bool sound_on = (nr52 & 0x80);
+
+  Ack ack = {
+    .phase = 0,
+    .addr  = ibus_req.addr,
+    .data  = ibus_req.data,
+    .read  = 0,
+    .write = 1,
+  };
+
+  if (!sound_on) {
+    if (ibus_req.addr == 0xFF26) {
+      nr52 = (uint8_t)ibus_req.data | 0b01110000;
+      if (nr52 & 0x80) reset();
+    }
+    return ack;
   }
 
   //----------
   // wavetable
 
-  if (cpu_in_.addr >= 0xFF30 && cpu_in_.addr <= 0xFF3F) {
-    cpu_out = { cpu_in_.addr, s3_wave[cpu_in_.addr & 0xF], true, false };
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void SPU::bus_write(const int /*tphase_*/, const Bus cpu_in_) {
-  if (!cpu_in_.write) return;
-  if (cpu_in_.addr < 0xFF10) return;
-  if (cpu_in_.addr > 0xFF3F) return;
-
-  bool sound_on = (nr52 & 0x80);
-
-  if (!sound_on) {
-    if (cpu_in_.addr == 0xFF26) {
-      nr52 = (uint8_t)cpu_in_.data | 0b01110000;
-      if (nr52 & 0x80) reset();
-    }
-    return;
+  if (ibus_req.addr >= 0xFF30 && ibus_req.addr <= 0xFF3F) {
+    s3_wave[ibus_req.addr & 0xF] = (uint8_t)ibus_req.data;
+    return ack;
   }
 
   //----------
   // glitches n stuff
 
-  if (cpu_in_.addr == 0xFF12) {
+  if (ibus_req.addr == 0xFF12) {
     if ((nr12 & 0x08) && s1_enable) s1_env_volume = (s1_env_volume + 1) & 15;
-    if ((cpu_in_.data & 0xF8) == 0) s1_enable = false;
+    if ((ibus_req.data & 0xF8) == 0) s1_enable = false;
   }
 
-  if (cpu_in_.addr == 0xFF17) {
+  if (ibus_req.addr == 0xFF17) {
     if ((nr22 & 0x08) && s2_enable) s2_env_volume = (s2_env_volume + 1) & 15;
-    if ((cpu_in_.data & 0xF8) == 0) s2_enable = false;
+    if ((ibus_req.data & 0xF8) == 0) s2_enable = false;
   }
 
-  if (cpu_in_.addr == 0xFF21) {
+  if (ibus_req.addr == 0xFF21) {
     if ((nr42 & 0x08) && s4_enable) s4_env_volume = (s4_env_volume + 1) & 15;
-    if ((cpu_in_.data & 0xF8) == 0) s4_enable = false;
+    if ((ibus_req.data & 0xF8) == 0) s4_enable = false;
   }
 
   //----------
   // registers
 
-  switch (cpu_in_.addr) {
-  case 0xFF10: nr10 = (uint8_t)cpu_in_.data | 0b10000000; break;
-  case 0xFF11: nr11 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF12: nr12 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF13: nr13 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF14: nr14 = (uint8_t)cpu_in_.data | 0b00111000; break;
-  case 0xFF16: nr21 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF17: nr22 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF18: nr23 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF19: nr24 = (uint8_t)cpu_in_.data | 0b00111000; break;
-  case 0xFF1A: nr30 = (uint8_t)cpu_in_.data | 0b01111111; break;
-  case 0xFF1B: nr31 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF1C: nr32 = (uint8_t)cpu_in_.data | 0b10011111; break;
-  case 0xFF1D: nr33 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF1E: nr34 = (uint8_t)cpu_in_.data | 0b00111000; break;
-  case 0xFF20: nr41 = (uint8_t)cpu_in_.data | 0b11000000; break;
-  case 0xFF21: nr42 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF22: nr43 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF23: nr44 = (uint8_t)cpu_in_.data | 0b00111111; break;
-  case 0xFF24: nr50 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF25: nr51 = (uint8_t)cpu_in_.data | 0b00000000; break;
-  case 0xFF26: nr52 = (uint8_t)cpu_in_.data | 0b01110000; break;
-  }
-
-  //----------
-  // wavetable
-
-  if (cpu_in_.addr >= 0xFF30 && cpu_in_.addr <= 0xFF3F) {
-    s3_wave[cpu_in_.addr & 0xF] = (uint8_t)cpu_in_.data;
+  switch (ibus_req.addr) {
+  case 0xFF10: nr10 = (uint8_t)ibus_req.data | 0b10000000; break;
+  case 0xFF11: nr11 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF12: nr12 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF13: nr13 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF14: nr14 = (uint8_t)ibus_req.data | 0b00111000; break;
+  case 0xFF16: nr21 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF17: nr22 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF18: nr23 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF19: nr24 = (uint8_t)ibus_req.data | 0b00111000; break;
+  case 0xFF1A: nr30 = (uint8_t)ibus_req.data | 0b01111111; break;
+  case 0xFF1B: nr31 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF1C: nr32 = (uint8_t)ibus_req.data | 0b10011111; break;
+  case 0xFF1D: nr33 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF1E: nr34 = (uint8_t)ibus_req.data | 0b00111000; break;
+  case 0xFF20: nr41 = (uint8_t)ibus_req.data | 0b11000000; break;
+  case 0xFF21: nr42 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF22: nr43 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF23: nr44 = (uint8_t)ibus_req.data | 0b00111111; break;
+  case 0xFF24: nr50 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF25: nr51 = (uint8_t)ibus_req.data | 0b00000000; break;
+  case 0xFF26: nr52 = (uint8_t)ibus_req.data | 0b01110000; break;
+  default: return {};
   }
 
   //----------
   // triggers
 
   {
-    bool s1_trigger_ = cpu_in_.addr == 0xFF14 && (cpu_in_.data & 0x80);
-    bool s2_trigger_ = cpu_in_.addr == 0xFF19 && (cpu_in_.data & 0x80);
-    bool s3_trigger_ = cpu_in_.addr == 0xFF1E && (cpu_in_.data & 0x80);
-    bool s4_trigger_ = cpu_in_.addr == 0xFF23 && (cpu_in_.data & 0x80);
+    bool s1_trigger_ = ibus_req.addr == 0xFF14 && (ibus_req.data & 0x80);
+    bool s2_trigger_ = ibus_req.addr == 0xFF19 && (ibus_req.data & 0x80);
+    bool s3_trigger_ = ibus_req.addr == 0xFF1E && (ibus_req.data & 0x80);
+    bool s4_trigger_ = ibus_req.addr == 0xFF23 && (ibus_req.data & 0x80);
 
     if (s1_trigger_) {
       uint8_t s1_sweep_period = (nr10 & 0b01110000) >> 4;
@@ -515,11 +521,21 @@ void SPU::bus_write(const int /*tphase_*/, const Bus cpu_in_) {
       s4_lfsr = 0x7FFF;
     }
   }
+
+  return {
+    .phase = 0,
+    .addr  = ibus_req.addr,
+    .data  = ibus_req.data,
+    .read  = 0,
+    .write = 1,
+  };
 }
 
 //-----------------------------------------------------------------------------
 
 void SPU::dump(std::string& d) const {
+  sprintf(d, "\002--------------SPU--------------\001\n");
+
   sprintf(d, "NR10 %s\n", byte_to_bits(nr10));
   sprintf(d, "NR11 %s\n", byte_to_bits(nr11));
   sprintf(d, "NR12 %s\n", byte_to_bits(nr12));

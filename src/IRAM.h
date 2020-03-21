@@ -2,22 +2,12 @@
 #include "Types.h"
 
 struct IRAM {
-  struct Out {
-    Bus iram_to_bus;
-    Bus iram_to_dma;
-  };
 
   void reset();
-  Out  tick() const;
-  void tock(int tcycle_, Bus bus_to_iram_, Bus dma_to_iram_);
+  Ack  on_ebus_req(Req ebus_req);
   void dump(std::string& d);
+  uint8_t* get() { return ram; }
 
-  const uint8_t* get() { return ram; }
 private:
-  int tcycle;
-  Bus bus_to_iram;
-  Bus dma_to_iram;
-  Bus iram_to_bus;
-  Bus iram_to_dma;
   uint8_t ram[8192];
 };

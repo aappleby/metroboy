@@ -81,6 +81,8 @@ void MetroBoyApp::init() {
   load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
   load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
+  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+
 
   //load_memdump("roms", "LinksAwakening_house");
 

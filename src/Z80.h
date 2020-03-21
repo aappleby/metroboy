@@ -65,7 +65,6 @@ private:
 
 private:
 
-  void     state_machine();
   uint8_t  reg_get8(int mux) const;
   uint8_t  reg_get8() const;
   void     reg_put8(int mux, uint8_t reg);

@@ -28,8 +28,13 @@ struct AudioQueue {
   bool closed;
 
   sample_t* get() {
+    if (!dev) return nullptr;
+
     std::unique_lock<std::mutex> lock(mux);
     cv.wait(lock, [&] { return closed || !queue.empty(); });
+
+    printf("get: queue size %zd\n", queue.size());
+
     if (queue.empty()) {
       return nullptr;
     }
@@ -41,7 +46,12 @@ struct AudioQueue {
   }
 
   void put(sample_t* buf) {
+    if (!dev) return;
+
     std::unique_lock<std::mutex> lock(mux);
+
+    printf("put: queue size %zd\n", queue.size());
+
     queue.push_back(buf);
     cv.notify_one();
   }
@@ -62,6 +72,8 @@ sample_t* spu_buffer = nullptr;
 //-----------------------------------------------------------------------------
 
 void audio_callback(void* /*userdata*/, Uint8* stream, int len) {
+  if (!dev) return;
+
   sample_t* buf = audio_queue_out.get();
   if (buf) {
     memcpy(stream, buf, len);
@@ -82,15 +94,23 @@ void audio_init() {
   want.userdata = nullptr;
 
   dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
-  SDL_PauseAudioDevice(dev, 0);
 
-  audio_queue_in.put(new sample_t[samples_per_frame * 2]);
-  audio_queue_in.put(new sample_t[samples_per_frame * 2]);
+  if (dev) {
+    SDL_PauseAudioDevice(dev, 0);
+
+    audio_queue_in.put(new sample_t[samples_per_frame * 2]);
+    audio_queue_in.put(new sample_t[samples_per_frame * 2]);
+  }
+  else {
+    printf("Could not open audio device!\n");
+  }
 }
 
 //-------------------------------------
 
 void audio_stop() {
+  if (!dev) return;
+
   audio_queue_out.close();
   SDL_CloseAudioDevice(dev);
 }
@@ -98,6 +118,8 @@ void audio_stop() {
 //-------------------------------------
 
 void audio_begin() {
+  if (!dev) return;
+
   spu_buffer = audio_queue_in.get();
   spu_write_cursor = 0;
   memset(spu_buffer, 0, samples_per_frame * 2 * sizeof(sample_t));
@@ -106,6 +128,8 @@ void audio_begin() {
 //-------------------------------------
 
 void audio_post(sample_t in_l_i, sample_t in_r_i) {
+  if (!dev) return;
+
   static uint32_t in_l_accum = 0;
   static uint32_t in_r_accum = 0;
   static int sample_count = 0;
@@ -166,6 +190,8 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
 //-------------------------------------
 
 void audio_end() {
+  if (!dev) return;
+
   audio_queue_out.put(spu_buffer);
   spu_buffer = nullptr;
   spu_write_cursor = 0;

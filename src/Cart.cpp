@@ -71,7 +71,7 @@ Ack Cart::on_ebus_req(Req ebus_req) {
 
   // should check what phase this happens on...
   if (ebus_req.write && (rom_hit || ram_hit)) {
-
+    printf("Cart::on_ebus_req write 0x%04x 0x%02x\n", ebus_req.addr, ebus_req.data);
     if (region == 0) {
       ram_enable = (ebus_req.data & 0x0F) == 0x0A;
     }

@@ -308,10 +308,10 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
       else if (EI)          state = DECODE;
       else if (PUSH_RR)     state = DECODE;
       else if (RST_NN)      state = DECODE;
-      else if (RET)         state = POP0;
-      else if (RETI)        state = POP0;
-      else if (RET_CC)      state = POPN; // ret_cc has an extra delay cycle before pop
-      else if (POP_RR)      state = POP0;
+      else if (RET)         state = DECODE;
+      else if (RETI)        state = DECODE;
+      else if (RET_CC)      state = DECODE; // ret_cc has an extra delay cycle before pop
+      else if (POP_RR)      state = DECODE;
       else if (LD_R_D8)     state = ARG0;
       else if (LDM_A_A8)    state = ARG0;
       else if (STM_HL_D8)   state = ARG0;
@@ -538,7 +538,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
   if (LDM_R_HL          && state == READ1)  {                                                                            reg_put8(OP_ROW, bus_in);                             addr = pc;               write = false; state_ = DECODE; }
 
   if (POP_RR) {
-    if (POP_RR          && state == POP0)   { pc = addr + 1;                                                                                                                   addr = sp;               write = false; state_ = POP1;   }
+    if (POP_RR          && state == DECODE) { pc = addr + 1;                                                                                                                   addr = sp;               write = false; state_ = POP1;   }
     if (POP_BC          && state == POP1)   { sp = addr + 1;   c = bus_in;                                                                                                     addr = sp;               write = false; state_ = POP2;   }
     if (POP_DE          && state == POP1)   { sp = addr + 1;   e = bus_in;                                                                                                     addr = sp;               write = false; state_ = POP2;   }
     if (POP_HL          && state == POP1)   { sp = addr + 1;   l = bus_in;                                                                                                     addr = sp;               write = false; state_ = POP2;   }
@@ -571,17 +571,17 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (PUSH_AF         && state == PUSH2)  {                                                                                                                                  addr = pc;               write = false; state_ = DECODE; }
   }
 
-  if (RET               && state == POP0)   { pc = addr + 1;                                                                                                                   addr = sp;               write = false; state_ = POP1;   }
+  if (RET               && state == DECODE) { pc = addr + 1;                                                                                                                   addr = sp;               write = false; state_ = POP1;   }
   if (RET               && state == POP1)   { sp = addr + 1;   lo = bus_in;                                                                                                    addr = sp;               write = false; state_ = POP2;   }
   if (RET               && state == POP2)   { sp = addr + 1;   hi = bus_in;                                                                                                    addr = pc;               write = false; state_ = PTR1;   }
   if (RET               && state == PTR1)   { pc = temp;                                                                                                                       addr = pc;               write = false; state_ = DECODE; }
-  if (RET_CC            && state == POPN)   { pc = addr + 1;                   /* flag test go here? */                                                                        addr = pc;               write = false; state_ = POP0;   }
+  if (RET_CC            && state == DECODE) { pc = addr + 1;                   /* flag test go here? */                                                                        addr = pc;               write = false; state_ = POP0;   }
   if (RET_CC && nb      && state == POP0)   {                                                                                                                                  addr = pc;               write = false; state_ = DECODE; }
   if (RET_CC && tb      && state == POP0)   {                                                                                                                                  addr = sp;               write = false; state_ = POP1;   }
   if (RET_CC            && state == POP1)   { sp = addr + 1;   lo = bus_in;                                                                                                    addr = sp;               write = false; state_ = POP2;   }
   if (RET_CC            && state == POP2)   { sp = addr + 1;   hi = bus_in;                                                                                                    addr = pc;               write = false; state_ = PTR1;   }
   if (RET_CC            && state == PTR1)   { pc = temp;                                                                                                                       addr = pc;               write = false; state_ = DECODE; }
-  if (RETI              && state == POP0)   { pc = addr + 1;                                                                                                                   addr = sp;               write = false; state_ = POP1;   }
+  if (RETI              && state == DECODE) { pc = addr + 1;                                                                                                                   addr = sp;               write = false; state_ = POP1;   }
   if (RETI              && state == POP1)   { sp = addr + 1;   lo = bus_in;                                                                                                    addr = sp;               write = false; state_ = POP2;   }
   if (RETI              && state == POP2)   { sp = addr + 1;   hi = bus_in;                                                                                                    addr = pc;               write = false; state_ = PTR1;   }
   if (RETI              && state == PTR1)   { pc = temp;                                                                 ime = true; ime_ = true;                              addr = pc;               write = false; state_ = DECODE; }

@@ -13,6 +13,8 @@ struct Cart {
   uint8_t* get_flat_ptr(uint16_t addr);
   size_t get_rom_size() const { return rom_size; }
 
+  uint8_t* get_cram() { return ram_buf; }
+
 private:
   size_t rom_size;
   int rom_bank_count;

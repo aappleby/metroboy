@@ -35,7 +35,10 @@ public:
 
   const uint32_t* get_trace() const { return tracebuffer; }
 
-  uint8_t* get_vram() const { return current->gb.get_vram(); }
+  uint8_t* get_vram() { return current->gb.get_vram(); }
+  uint8_t* get_cram() { return current->gb.get_cram(); }
+  uint8_t* get_iram() { return current->gb.get_iram(); }
+  uint8_t* get_eram() { return current->gb.get_eram(); }
 
   void load_rom(const char* filename, bool run_bootrom);
 

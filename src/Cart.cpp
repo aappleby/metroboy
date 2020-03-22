@@ -71,7 +71,6 @@ Ack Cart::on_ebus_req(Req ebus_req) {
 
   // should check what phase this happens on...
   if (ebus_req.write && (rom_hit || ram_hit)) {
-    printf("Cart::on_ebus_req write 0x%04x 0x%02x\n", ebus_req.addr, ebus_req.data);
     if (region == 0) {
       ram_enable = (ebus_req.data & 0x0F) == 0x0A;
     }
@@ -190,6 +189,16 @@ uint8_t* Cart::get_flat_ptr(uint16_t addr) {
 
 void Cart::dump(std::string& d) {
   sprintf(d, "\002--------------CART--------------\001\n");
+
+  sprintf(d, "rom_size       %d\n", rom_size);
+  sprintf(d, "rom_bank_count %d\n", rom_bank_count);
+  sprintf(d, "ram_bank_count %d\n", ram_bank_count);
+  sprintf(d, "ram_enable     %d\n", ram_enable);
+  sprintf(d, "ram_dirty      %d\n", ram_dirty);
+  sprintf(d, "mode           %d\n", mode);
+  sprintf(d, "bank_latch1    %d\n", bank_latch1);
+  sprintf(d, "bank_latch2    %d\n", bank_latch2);
+
   sprintf(d, "\n");
 }
 

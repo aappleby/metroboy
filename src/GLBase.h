@@ -23,6 +23,7 @@ void  update_texture_u32(int tex, int width, int height, const uint32_t* pix);
 
 int   create_texture_u8(int width, int height, const uint8_t* data = nullptr);
 void  update_texture_u8(int tex, int width, int height, const uint8_t* pix);
+void  update_texture_u8(int tex, int dx, int dy, int dw, int dh, const uint8_t* pix);
 
 // basically an unsigned 8-bit integer texture
 int   create_table_u8(int width, int height, const uint8_t* data = nullptr);

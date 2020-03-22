@@ -36,6 +36,7 @@ void MetroBoyApp::init() {
 
   gb_tex = create_texture_u8(160, 144);
   trace_tex = create_texture_u32(456, 154);
+  ram_tex = create_texture_u8(256, 256);
 
   gb_blitter.init();
   grid_painter.init();
@@ -228,9 +229,9 @@ void MetroBoyApp::update(double delta) {
       }
       case SDLK_LEFT:   {
         if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-          step_backward += 10; 
+          step_backward += 10;
         } else {
-          step_backward++; 
+          step_backward++;
         }
         break;
       }
@@ -254,7 +255,7 @@ void MetroBoyApp::update(double delta) {
       SDL_free(event.drop.file);
     }
   }
-  
+
   //----------------------------------------
   // Button input
 
@@ -374,7 +375,7 @@ void MetroBoyApp::render_frame() {
     uint8_t a = (gameboy.get_spu().get_wave()[i] & 0x0F) >> 0;
     uint8_t b = (gameboy.get_spu().get_wave()[i] & 0xF0) >> 4;
     uint32_t color = 0xFFFFFFFF;
-  
+
     framebuffer[(512 + 2 * i + 0) + (100 + b) * fb_width] = color;
     framebuffer[(512 + 2 * i + 1) + (100 + a) * fb_width] = color;
   }
@@ -386,6 +387,16 @@ void MetroBoyApp::render_frame() {
   gb_blitter.blit_screen(view_snap, gb_screen_x, gb_screen_y, 2, metroboy.fb());
   gb_blitter.blit_map(view_snap, metroboy.get_vram());
   gb_blitter.blit_trace(view_snap, gb_screen_x, gb_screen_y + 320, metroboy.get_trace());
+
+  update_texture_u8(ram_tex, 0, 0*32, 256, 128, rom_buf);
+  update_texture_u8(ram_tex, 0, 4*32, 256,  32, metroboy.get_vram());
+  update_texture_u8(ram_tex, 0, 5*32, 256,  32, metroboy.get_cram());
+  update_texture_u8(ram_tex, 0, 6*32, 256,  32, metroboy.get_iram());
+  update_texture_u8(ram_tex, 0, 7*32, 256,  32, metroboy.get_iram());
+  blitter.blit_mono(view_snap, ram_tex, 256, 256,
+                    0, 0, 256, 256,
+                    gb_screen_x, 32, 256, 256);
+
 
   //dump_painter.render(view_snap, 900, 100, 16, 8, metroboy.gb().get_zram());
   //dump_painter.render(view_snap, 900, 300, 64, 128, metroboy.gb().get_iram());
@@ -533,18 +544,12 @@ void MetroBoyApp::render_ui() {
   gameboy.dump_cart(text_buf);
   sprintf(text_buf, "\n");
 
-  gameboy.dump_vram(text_buf);
-  sprintf(text_buf, "\n");
-
-  gameboy.dump_iram(text_buf);
-  sprintf(text_buf, "\n");
-
   gameboy.dump_oam(text_buf);
   sprintf(text_buf, "\n");
-  
+
   gameboy.dump_joypad(text_buf);
   sprintf(text_buf, "\n");
-  
+
   gameboy.dump_serial(text_buf);
   sprintf(text_buf, "\n");
 

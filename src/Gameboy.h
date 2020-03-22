@@ -33,8 +33,8 @@ struct Gameboy {
   void    reset(size_t new_rom_size, uint16_t new_pc);
   void    reset(uint16_t new_pc);
   HostOut get_host_data() const { return gb_to_host; }
-  
-  
+
+
   Ack     on_ibus_req(Req ibus_req);
 
   void    tock();
@@ -44,8 +44,6 @@ struct Gameboy {
   void dump_zram  (std::string& out);
   void dump_timer (std::string& out);
   void dump_cart  (std::string& out);
-  void dump_vram  (std::string& out);
-  void dump_iram  (std::string& out);
   void dump_oam   (std::string& out);
   void dump_joypad(std::string& out);
   void dump_serial(std::string& out);
@@ -56,9 +54,22 @@ struct Gameboy {
   const PPU& get_ppu() const { return ppu; }
 
   int64_t  get_tcycle() const { return tcycle; }
+
+  // 0x0000 - rom
+  // 0x2000 - rom
+  // 0x4000 - rom
+  // 0x6000 - rom
+  // 0x8000 - vram
+  // 0xA000 - cram
+  // 0xC000 - iram
+  // 0xE000 - eram
+
   uint8_t* get_vram()   { return vram.get(); }
-  uint8_t* get_zram()   { return zram.get(); }
+  uint8_t* get_cram()   { return cart.get_cram(); }
   uint8_t* get_iram()   { return iram.get(); }
+  uint8_t* get_eram()   { return iram.get(); }
+
+  uint8_t* get_zram()   { return zram.get(); }
 
   void set_joypad(uint8_t v) { joypad.set(v); }
 

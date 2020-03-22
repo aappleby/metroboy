@@ -137,11 +137,15 @@ int create_texture_u8(int width, int height, const uint8_t* data) {
 //----------------------------------------
 
 void update_texture_u8(int tex, int width, int height, const uint8_t* pix) {
+  update_texture_u8(tex, 0, 0, width, height, pix);
+}
+
+void update_texture_u8(int tex, int dx, int dy, int dw, int dh, const uint8_t* pix) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glTexSubImage2D(GL_TEXTURE_2D, 0,
-                  0, 0, width, height,
+                  dx, dy, dw, dh,
                   GL_RED, GL_UNSIGNED_BYTE, pix);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
@@ -234,7 +238,7 @@ int create_shader(const char* name, const char* src) {
   int vertexShader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertexShader, (int)vert_srcs.size(), vert_srcs.begin(), NULL);
   glCompileShader(vertexShader);
-  
+
   {
     char buf[1024];
     int len = 0;

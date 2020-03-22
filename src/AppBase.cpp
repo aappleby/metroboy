@@ -95,8 +95,8 @@ int AppBase::main(int, char**) {
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
   gl_context = SDL_GL_CreateContext(window);
-  SDL_GL_SetSwapInterval(1); // Enable vsync
-  //SDL_GL_SetSwapInterval(0); // Disable vsync
+  //SDL_GL_SetSwapInterval(1); // Enable vsync
+  SDL_GL_SetSwapInterval(0); // Disable vsync
 
   gladLoadGLES2Loader(SDL_GL_GetProcAddress);
   printf("OpenGL loaded\n");
@@ -105,8 +105,8 @@ int AppBase::main(int, char**) {
   printf("Version:  %s\n", glGetString(GL_VERSION));
   printf("GLSL:     %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-  int ext_count = 0; 
-  glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count); 
+  int ext_count = 0;
+  glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
   printf("Ext count %d\n", ext_count);
 #if 0
   for (int i = 0; i < ext_count; i++) {
@@ -248,7 +248,7 @@ int AppBase::main(int, char**) {
     io.MouseDown[0] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
     io.MouseDown[1] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
     io.MouseDown[2] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
-    
+
     //io.MousePos = ImVec2((float)mx, (float)my);
     auto world_mouse = view.screenToWorld({mx, my});
     io.MousePos = {
@@ -333,7 +333,7 @@ int AppBase::main(int, char**) {
     // Client end frame
 
     end_frame();
-    
+
     text_painter.end_frame();
 
     int err = glGetError();

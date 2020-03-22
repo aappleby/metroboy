@@ -69,13 +69,15 @@ public:
   uint32_t vram_ubo;
   uint32_t trace_tex;
 
+  uint32_t ram_tex;
+
   Viewport view;
   Viewport view_smooth;
 
   //----------
   // gb state
 
-  const int gb_screen_x = 32*24 + 32*10;
+  const int gb_screen_x = 32*32;
   const int gb_screen_y = 32*11;
 
   MetroBoy metroboy;

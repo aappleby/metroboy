@@ -113,7 +113,7 @@ Ack merge (Ack a, Args... args) { return merge(a, merge(args...)); }
 void Gameboy::tock() {
   tcycle++;
   const int tphase = tcycle & 3;
-  
+
   bus_req_cpu = z80.get_bus_req();
   bool cpu_addr_is_boot = bus_req_cpu.addr <= ADDR_BOOT_END && !boot.disable_bootrom;
   bool cpu_addr_is_vram = bus_req_cpu.addr >= ADDR_VRAM_BEGIN && bus_req_cpu.addr <= ADDR_VRAM_END;
@@ -318,7 +318,7 @@ void Gameboy::dump_bus(std::string& d) {
   sprintf(d, "intf   %s\n", byte_to_bits(intf));
   sprintf(d, "boot   %d\n", boot.disable_bootrom);
   sprintf(d, "\n");
-  
+
 
   sprintf(d,   "---CPU:\n");
   print_req(d, "bus_req_cpu ",  bus_req_cpu);
@@ -372,14 +372,6 @@ void Gameboy::dump_cart(std::string& d) {
   cart.dump(d);
 }
 
-void Gameboy::dump_vram(std::string& d) {
-  vram.dump(d);
-}
-
-void Gameboy::dump_iram(std::string& d) {
-  iram.dump(d);
-}
-
 void Gameboy::dump_oam(std::string& d) {
   oam.dump(d);
 }
@@ -397,7 +389,7 @@ void Gameboy::dump_disasm(std::string& d) {
 
   uint16_t pc = z80.get_op_addr();
   const uint8_t* segment;
-  
+
   if (ADDR_IRAM_BEGIN <= pc && pc <= ADDR_IRAM_END) {
     segment = iram.get() + (pc - ADDR_IRAM_BEGIN);
   }

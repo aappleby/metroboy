@@ -42,38 +42,32 @@
 #define LD_DE_D16     (op == 0x11)
 #define LD_HL_D16     (op == 0x21)
 #define LD_SP_D16     (op == 0x31)
-#define LD_RR_D16     ((op & 0b11001111) == 0b00000001)
 
 #define ADD_HL_BC     (op == 0x09)
 #define ADD_HL_DE     (op == 0x19)
 #define ADD_HL_HL     (op == 0x29)
 #define ADD_HL_SP     (op == 0x39)
-#define ADD_HL_RR     ((op & 0b11001111) == 0b00001001)
 
 #define STM_BC_A      (op == 0x02)
 #define STM_DE_A      (op == 0x12)
 #define STM_HLP_A     (op == 0x22)
 #define STM_HLM_A     (op == 0x32)
-#define STM_RR_A      ((op & 0b11001111) == 0b00000010)
 
 #define LDM_A_BC      (op == 0x0A)
 #define LDM_A_DE      (op == 0x1A)
 #define LDM_A_HLP     (op == 0x2A)
 #define LDM_A_HLM     (op == 0x3A)
-#define LDM_A_RR      ((op & 0b11001111) == 0b00001010)
 
 
 #define INC_BC        (op == 0b00000011)
 #define INC_DE        (op == 0b00010011)
 #define INC_HL        (op == 0b00100011)
 #define INC_SP        (op == 0b00110011)
-#define INC_RR        ((op & 0b11001111) == 0b00000011)
 
 #define DEC_BC        (op == 0x0B)
 #define DEC_DE        (op == 0x1B)
 #define DEC_HL        (op == 0x2B)
 #define DEC_SP        (op == 0x3B)
-#define DEC_RR        ((op & 0b11001111) == 0b00001011)
 
 #define INC_AT_HL     (op == 0x34)
 #define DEC_AT_HL     (op == 0x35)
@@ -121,13 +115,11 @@
 #define PUSH_DE       (op == 0b11010101)
 #define PUSH_HL       (op == 0b11100101)
 #define PUSH_AF       (op == 0b11110101)
-#define PUSH_RR       ((op & 0b11001111) == 0b11000101)
 
 #define POP_BC        (op == 0b11000001)
 #define POP_DE        (op == 0b11010001)
 #define POP_HL        (op == 0b11100001)
 #define POP_AF        (op == 0b11110001)
-#define POP_RR        ((op & 0b11001111) == 0b11000001)
 
 #define ALU_A_D8      ((op & 0b11000111) == 0b11000110)
 #define RST_NN        ((op & 0b11000111) == 0b11000111)
@@ -321,26 +313,33 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (                     state == INT1)   {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = pch;            write = 1; read = 0;     state_ = INT2;   break; }
     if (                     state == INT2)   {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = pcl;            write = 1; read = 0;     state_ = INT3;   break; }
     if (                     state == INT3)   {                                                                                                                                         pc = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = INT4;   break; }
-    if (                     state == INT4)   {                                                                                                                                         pc = addr;           addr = xy;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+    if (                     state == INT4)   {                                                                                                                                                              addr = xy;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
     
     if (CALL_A16          && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG1;   break; }
     if (CALL_A16          && state == ARG1)   {                                                 y = bus_in;                                                                             pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG2;   break; }
     if (CALL_A16          && state == ARG2)   {                                                 x = bus_in;                                                                             pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = PUSH0;  break; }
     if (CALL_A16          && state == PUSH0)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = pch;            write = 1; read = 0;     state_ = PUSH1;  break; }
     if (CALL_A16          && state == PUSH1)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = pcl;            write = 1; read = 0;     state_ = PUSH2;  break; }
-    if (CALL_A16          && state == PUSH2)  {                                                                                                                                         pc = addr + 1;       addr = xy;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+    if (CALL_A16          && state == PUSH2)  {                                                                                                                                                              addr = xy;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
 
     if (NOP               && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (STOP              && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (DEC_R             && state == DECODE) { ao = alu(2, r, 1, 0);                           reg_put8(ao.x);                         set_flag(ao.f);                                 pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (INC_R             && state == DECODE) { ao = alu(1, r, 1, 0);                           reg_put8(ao.x);                         set_flag(ao.f);                                 pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (INC_AT_HL         && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = READ1;  break; }
     if (INC_AT_HL         && state == READ1)  { ao = alu(1, bus_in, 1, 0);                      y = ao.x;                               set_flag(ao.f);                                 hl = addr;           addr = hl;               bus_out = y;              write = 1; read = 0;     state_ = WRITE1; break; }
     if (INC_AT_HL         && state == WRITE1) {                                                                                                                                         hl = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (DEC_AT_HL         && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = READ1;  break; }
     if (DEC_AT_HL         && state == READ1)  { ao = alu(2, bus_in, 1, 0);                      y = ao.x;                               set_flag(ao.f);                                 hl = addr;           addr = hl;               bus_out = y;              write = 1; read = 0;     state_ = WRITE1; break; }
     if (DEC_AT_HL         && state == WRITE1) {                                                                                                                                         hl = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (DI                && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (EI                && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
 
     if (JP_HL             && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
@@ -348,13 +347,18 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (MV_R_R            && state == DECODE) {                                                 reg_put8(r);                                                                            pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
     
     if (RLU_R             && state == DECODE) { ao = rlu(OP_ROW, r, f);                         a = ao.x;                               set_flag(ao.f);                                 pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (ALU_A_R           && state == DECODE) { ao = alu(OP_ROW, a, r, f & F_CARRY);            a = ao.x;                               set_flag(ao.f);                                 pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (ADD_HL_BC         && state == DECODE) { ao = alu(1, l, c, 0);                           l = ao.x;                               set_flag(ao.f);                                 pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ALU2;   break; }
     if (ADD_HL_BC         && state == ALU2)   { ao = alu(1, h, b, f & F_CARRY);                 h = ao.x;                               set_flag(ao.f);                                 pc = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (ADD_HL_DE         && state == DECODE) { ao = alu(1, l, e, 0);                           l = ao.x;                               set_flag(ao.f);                                 pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ALU2;   break; }
     if (ADD_HL_DE         && state == ALU2)   { ao = alu(1, h, d, f & F_CARRY);                 h = ao.x;                               set_flag(ao.f);                                 pc = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (ADD_HL_HL         && state == DECODE) { ao = alu(1, l, l, 0);                           l = ao.x;                               set_flag(ao.f);                                 pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ALU2;   break; }
     if (ADD_HL_HL         && state == ALU2)   { ao = alu(1, h, h, f & F_CARRY);                 h = ao.x;                               set_flag(ao.f);                                 pc = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (ADD_HL_SP         && state == DECODE) { ao = alu(1, l, p, 0);                           l = ao.x;                               set_flag(ao.f);                                 pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ALU2;   break; }
     if (ADD_HL_SP         && state == ALU2)   { ao = alu(1, h, s, f & F_CARRY);                 h = ao.x;                               set_flag(ao.f);                                 pc = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
 
@@ -393,21 +397,29 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (HALT && no_halt   && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
     if (HALT && !unhalt   && state == HALT1)  {                                                                                                                                                              addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = HALT1;  break; }
     if (HALT && unhalt    && state == HALT1)  {                                                                                                                                                              addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (INC_BC            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = bc;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
     if (INC_BC            && state == PTR1)   {                                                                                                                                         bc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
-    if (DEC_BC            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = bc;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
+
     if (INC_DE            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = de;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
-    if (DEC_DE            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = de;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
-    if (INC_HL            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
-    if (DEC_HL            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
-    if (INC_SP            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
-    if (DEC_SP            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
-    if (DEC_BC            && state == PTR1)   {                                                                                                                                         bc = addr - 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
     if (INC_DE            && state == PTR1)   {                                                                                                                                         de = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
-    if (DEC_DE            && state == PTR1)   {                                                                                                                                         de = addr - 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (INC_HL            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
     if (INC_HL            && state == PTR1)   {                                                                                                                                         hl = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
-    if (DEC_HL            && state == PTR1)   {                                                                                                                                         hl = addr - 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (INC_SP            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
     if (INC_SP            && state == PTR1)   {                                                                                                                                         sp = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (DEC_BC            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = bc;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
+    if (DEC_BC            && state == PTR1)   {                                                                                                                                         bc = addr - 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (DEC_DE            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = de;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
+    if (DEC_DE            && state == PTR1)   {                                                                                                                                         de = addr - 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (DEC_HL            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
+    if (DEC_HL            && state == PTR1)   {                                                                                                                                         hl = addr - 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (DEC_SP            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
     if (DEC_SP            && state == PTR1)   {                                                                                                                                         sp = addr - 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
 
     if (JP_A16            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG1;   break; }
@@ -447,29 +459,42 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
 
     //----------
 
-    if (LD_RR_D16         && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG1;   break; }
+    if (LD_BC_D16         && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG1;   break; }
     if (LD_BC_D16         && state == ARG1)   {                                                 c = bus_in;                                                                             pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG2;   break; }
     if (LD_BC_D16         && state == ARG2)   {                                                 b = bus_in;                                                                             pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (LD_DE_D16         && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG1;   break; }
     if (LD_DE_D16         && state == ARG1)   {                                                 e = bus_in;                                                                             pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG2;   break; }
     if (LD_DE_D16         && state == ARG2)   {                                                 d = bus_in;                                                                             pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (LD_HL_D16         && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG1;   break; }
     if (LD_HL_D16         && state == ARG1)   {                                                 l = bus_in;                                                                             pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG2;   break; }
     if (LD_HL_D16         && state == ARG2)   {                                                 h = bus_in;                                                                             pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (LD_SP_D16         && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG1;   break; }
     if (LD_SP_D16         && state == ARG1)   {                                                 p = bus_in;                                                                             pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG2;   break; }
     if (LD_SP_D16         && state == ARG2)   {                                                 s = bus_in;                                                                             pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (LD_HL_SP_R8       && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ALU1;   break; }
     if (LD_HL_SP_R8       && state == ARG1)   {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 0;     state_ = ALU1;   break; }
     if (LD_HL_SP_R8       && state == ALU1)   { ao = alu(1, p,     bus_in,  0);                 l = ao.x;                               set_flag(ao.f);                                 pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 0;     state_ = ALU2;   break; }
     if (LD_HL_SP_R8       && state == ALU2)   { ao = alu(1, s, sxt(bus_in), f & F_CARRY);       h = ao.x;                                                                               pc = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (LDM_A_BC          && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = bc;               bus_out = 0;              write = 0; read = 1;     state_ = READ1;  break; }
     if (LDM_A_BC          && state == READ1)  {                                                 a = bus_in;                                                                             bc = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (LDM_A_DE          && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = de;               bus_out = 0;              write = 0; read = 1;     state_ = READ1;  break; }
     if (LDM_A_DE          && state == READ1)  {                                                 a = bus_in;                                                                             de = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (LDM_A_HLP         && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = READ1;  break; }
     if (LDM_A_HLP         && state == READ1)  {                                                 a = bus_in;                                                                             hl = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (LDM_A_HLM         && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = READ1;  break; }
     if (LDM_A_HLM         && state == READ1)  {                                                 a = bus_in;                                                                             hl = addr - 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (LD_R_D8           && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = ARG1;   break; }
     if (LD_R_D8           && state == ARG1)   {                                                 reg_put8(bus_in);                                                                       pc = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (LD_SP_HL          && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = PTR1;   break; }
     if (LD_SP_HL          && state == PTR1)   {                                                                                                                                         sp = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
 
@@ -487,27 +512,38 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
 
     if (LDM_R_HL          && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = hl;               bus_out = 0;              write = 0; read = 1;     state_ = READ1;  break; }
     if (LDM_R_HL          && state == READ1)  {                                                 reg_put8(bus_in);                                                                                            addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
-    if (POP_RR            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP1;   break; }
+
+    if (POP_BC            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP1;   break; }
     if (POP_BC            && state == POP1)   {                                                 c = bus_in;                                                                             sp = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP2;   break; }
-    if (POP_DE            && state == POP1)   {                                                 e = bus_in;                                                                             sp = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP2;   break; }
-    if (POP_HL            && state == POP1)   {                                                 l = bus_in;                                                                             sp = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP2;   break; }
-    if (POP_AF            && state == POP1)   {                                                 f = bus_in;                                                                             sp = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP2;   break; }
     if (POP_BC            && state == POP2)   {                                                 b = bus_in;                                                                             sp = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (POP_DE            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP1;   break; }
+    if (POP_DE            && state == POP1)   {                                                 e = bus_in;                                                                             sp = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP2;   break; }
     if (POP_DE            && state == POP2)   {                                                 d = bus_in;                                                                             sp = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (POP_HL            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP1;   break; }
+    if (POP_HL            && state == POP1)   {                                                 l = bus_in;                                                                             sp = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP2;   break; }
     if (POP_HL            && state == POP2)   {                                                 h = bus_in;                                                                             sp = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
+    if (POP_AF            && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP1;   break; }
+    if (POP_AF            && state == POP1)   {                                                 f = bus_in;                                                                             sp = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = POP2;   break; }
     if (POP_AF            && state == POP2)   {                                                 a = bus_in;                                                                             sp = addr + 1;       addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (PUSH_BC           && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = PUSH0;  break; }
     if (PUSH_BC           && state == PUSH0)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = b;              write = 1; read = 0;     state_ = PUSH1;  break; }
     if (PUSH_BC           && state == PUSH1)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = c;              write = 1; read = 0;     state_ = PUSH2;  break; }
     if (PUSH_BC           && state == PUSH2)  {                                                                                                                                         sp = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (PUSH_DE           && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = PUSH0;  break; }
     if (PUSH_DE           && state == PUSH0)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = d;              write = 1; read = 0;     state_ = PUSH1;  break; }
     if (PUSH_DE           && state == PUSH1)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = e;              write = 1; read = 0;     state_ = PUSH2;  break; }
     if (PUSH_DE           && state == PUSH2)  {                                                                                                                                         sp = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (PUSH_HL           && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = PUSH0;  break; }
     if (PUSH_HL           && state == PUSH0)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = h;              write = 1; read = 0;     state_ = PUSH1;  break; }
     if (PUSH_HL           && state == PUSH1)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = l;              write = 1; read = 0;     state_ = PUSH2;  break; }
     if (PUSH_HL           && state == PUSH2)  {                                                                                                                                         sp = addr;           addr = pc;               bus_out = 0;              write = 0; read = 1;     state_ = DECODE; break; }
+
     if (PUSH_AF           && state == DECODE) {                                                                                                                                         pc = addr + 1;       addr = sp;               bus_out = 0;              write = 0; read = 1;     state_ = PUSH0;  break; }
     if (PUSH_AF           && state == PUSH0)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = a;              write = 1; read = 0;     state_ = PUSH1;  break; }
     if (PUSH_AF           && state == PUSH1)  {                                                                                                                                         sp = addr - 1;       addr = sp;               bus_out = f;              write = 1; read = 0;     state_ = PUSH2;  break; }

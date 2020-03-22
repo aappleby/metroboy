@@ -67,8 +67,14 @@ private:
 private:
 
   uint8_t  reg_get8(int mux) const;
-  uint8_t  reg_get8() const;
   void     reg_put8(int mux, uint8_t reg);
+
+  uint8_t  reg_get8() const;
+  void     reg_put8(uint8_t reg);
+
+  uint8_t  cb_get8() const;
+  void     cb_put8(uint8_t reg);
+
   void     set_flag(uint8_t f_);
 };
 

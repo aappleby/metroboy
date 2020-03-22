@@ -50,6 +50,7 @@ private:
   uint16_t addr;
   uint8_t bus_in;
   uint8_t bus_out;
+  uint8_t read;
   uint8_t write;
 
   bool no_branch;

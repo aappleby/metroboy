@@ -58,6 +58,7 @@ private:
 
   AluOut alu_out;
 
+  bool handle_int;
   uint8_t int_ack;
   uint8_t imask;
   uint8_t intf;

@@ -141,45 +141,11 @@ uint8_t  sxt(uint8_t x) { return x & 0x80 ? 0xFF : 0x00; }
 
 enum Z80State {
   DECODE = 0,
-
   STEP1 = 1,
   STEP2 = 2,
   STEP3 = 3,
   STEP4 = 4,
   STEP5 = 5,
-
-  INT0,
-  INT1,
-  INT2,
-  INT3,
-  INT4,
-
-  HALT1,
-
-  CB1,
-
-  ALU1,
-  ALU2,
-
-  PUSH0,
-  PUSH1,
-  PUSH2,
-
-  POP0,
-  POP1,
-  POP2,
-
-  ARG1,
-  ARG2,
-
-  READ1,
-
-  WRITE1,
-  WRITE2,
-
-  PTR1,
-
-  DELAY,
 
   INVALID
 };
@@ -216,6 +182,7 @@ void Z80::reset(uint16_t new_pc) {
   write = 0;
 
   out_int_ack = 0;
+  handle_int = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -277,6 +244,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     int_ack = 0;
     imask = imask_;
     intf = intf_;
+    handle_int = 0;
 
     no_branch = (JR_CC_R8 || RET_CC || JP_CC_A16 || CALL_CC_A16) && cond_fail;
     no_halt = ((imask & intf) && !ime);
@@ -284,7 +252,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     interrupt = (imask & intf) && ime;
 
     if (interrupt) {
-      state = INT0;
+      handle_int = 1;
       ime = false;
       ime_ = false;
     }
@@ -302,7 +270,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
   }
 
 
-  if (state == INT3) {
+  if (handle_int && state == STEP4) {
     if (imask & intf & INT_JOYPAD_MASK) { xy = 0x0060; int_ack = INT_JOYPAD_MASK; }
     if (imask & intf & INT_SERIAL_MASK) { xy = 0x0058; int_ack = INT_SERIAL_MASK; }
     if (imask & intf & INT_TIMER_MASK)  { xy = 0x0050; int_ack = INT_TIMER_MASK; }
@@ -310,7 +278,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (imask & intf & INT_VBLANK_MASK) { xy = 0x0040; int_ack = INT_VBLANK_MASK; }
   }
 
-  if (PREFIX_CB && state == CB1) cb = bus_in;
+  if (PREFIX_CB && state == STEP1) cb = bus_in;
 
   do {
     uint8_t r = reg_get8();
@@ -319,11 +287,11 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
 #define WRITE(A, B) { addr = A; bus_out = B; write = 1; read = 0; }
 #define PASS(A)     { addr = A; bus_out = 0; write = 0; read = 0; }
 
-    if (                     state == INT0)   {                                                                                                                                                              PASS(sp);       state_ = INT1;   break; }
-    if (                     state == INT1)   {                                                                                                                                         sp = addr - 1;       WRITE(sp, pch); state_ = INT2;   break; }
-    if (                     state == INT2)   {                                                                                                                                         sp = addr - 1;       WRITE(sp, pcl); state_ = INT3;   break; }
-    if (                     state == INT3)   {                                                                                                                                                              PASS(xy);       state_ = INT4;   break; }
-    if (                     state == INT4)   {                                                                                                                                                              READ(xy);       state_ = DECODE; break; }
+    if (handle_int        && state == DECODE) {                                                                                                                                                              PASS(sp);       state_ = STEP1;  break; }
+    if (handle_int        && state == STEP1)  {                                                                                                                                         sp = addr - 1;       WRITE(sp, pch); state_ = STEP2;  break; }
+    if (handle_int        && state == STEP2)  {                                                                                                                                         sp = addr - 1;       WRITE(sp, pcl); state_ = STEP3;  break; }
+    if (handle_int        && state == STEP3)  {                                                                                                                                                              PASS(xy);       state_ = STEP4;  break; }
+    if (handle_int        && state == STEP4)  {                                                                                                                                                              READ(xy);       state_ = DECODE; break; }
     
     if (CALL_A16          && state == DECODE) {                                                                                                                                         pc = addr + 1;       READ(pc);       state_ = STEP1;  break; }
     if (CALL_A16          && state == STEP1)  {                                                 y = bus_in;                                                                             pc = addr + 1;       READ(pc);       state_ = STEP2;  break; }
@@ -394,7 +362,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (CALL_CC_A16 && nb && state == STEP1)  {                                                 y = bus_in;                                                                             pc = addr + 1;       READ(pc);       state_ = STEP2;  break; }
     if (CALL_CC_A16 && nb && state == STEP2)  {                                                 x = bus_in;                                                                             pc = addr + 1;       READ(pc);       state_ = DECODE; break; }
                                                                                                                                                                                                                              
-    if (RST_NN            && state == DECODE) {                                                                                                                                         pc = addr + 1;       READ(sp);       state_ = STEP1;  break; }
+    if (RST_NN            && state == DECODE) {                                                                                                                                         pc = addr + 1;       PASS(sp);       state_ = STEP1;  break; }
     if (RST_NN            && state == STEP1)  {                                                                                                                                         sp = addr - 1;       WRITE(sp, pch); state_ = STEP2;  break; }
     if (RST_NN            && state == STEP2)  {                                                 x = 0x00;                                                                               sp = addr - 1;       WRITE(sp, pcl); state_ = STEP3;  break; }
     if (RST_NN            && state == STEP3)  {                                                 y = op & 0x38;                                                                                               READ(xy);       state_ = DECODE; break; }
@@ -603,11 +571,11 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (STM_A16_SP        && state == STEP3)  {                                                                                                                                         xy = addr + 1;       WRITE(xy, s);   state_ = STEP4;  break; }
     if (STM_A16_SP        && state == STEP4)  {                                                                                                                                                              READ(pc);       state_ = DECODE; break; }
                                                                                                                                                                                                                              
-    if (PREFIX_CB         && state == DECODE) {                                                                                                                                         pc = addr + 1;       READ(pc);       state_ = CB1;    break; }
-    if (OP_CB_R           && state == CB1)    { ao = alu_cb(cb, reg_get8(CB_COL), f);           reg_put8(CB_COL, ao.x);                 set_flag(ao.f);                                 pc = addr + 1;       READ(pc);       state_ = DECODE; break; }
-    if (OP_CB_HL          && state == CB1)    {                                                                                                                                         pc = addr + 1;       READ(hl);       state_ = READ1;  break; }
-    if (OP_CB_HL          && state == READ1)  { ao = alu_cb(cb, bus_in, f);                     y = ao.x;                              set_flag(ao.f);                                                       WRITE(hl, y);   state_ = WRITE1; break; }
-    if (OP_CB_HL          && state == WRITE1) {                                                                                                                                                              READ(pc);       state_ = DECODE; break; }
+    if (PREFIX_CB         && state == DECODE) {                                                                                                                                         pc = addr + 1;       READ(pc);       state_ = STEP1;  break; }
+    if (OP_CB_R           && state == STEP1)  { ao = alu_cb(cb, reg_get8(CB_COL), f);           reg_put8(CB_COL, ao.x);                 set_flag(ao.f);                                 pc = addr + 1;       READ(pc);       state_ = DECODE; break; }
+    if (OP_CB_HL          && state == STEP1)  {                                                                                                                                         pc = addr + 1;       READ(hl);       state_ = STEP2;  break; }
+    if (OP_CB_HL          && state == STEP2)  { ao = alu_cb(cb, bus_in, f);                     y = ao.x;                              set_flag(ao.f);                                                       WRITE(hl, y);   state_ = STEP3; break; }
+    if (OP_CB_HL          && state == STEP3)  {                                                                                                                                                              READ(pc);       state_ = DECODE; break; }
 
   } while(0);
 
@@ -920,41 +888,13 @@ AluOut alu_cb(uint8_t cb, const uint8_t x, const uint8_t f) {
 
 //-----------------------------------------------------------------------------
 
-const char* state_name(Z80State state) {
-  switch(state) {
-  case DECODE: return "DECODE";
-  case INT0: return "INT0";
-  case INT1: return "INT1";
-  case INT2: return "INT2";
-  case INT3: return "INT3";
-  case INT4: return "INT4";
-  case HALT1: return "HALT1";
-  case CB1: return "CB1";
-  case ALU1: return "ALU1";
-  case ALU2: return "ALU2";
-  case PUSH0: return "PUSH0";
-  case PUSH1: return "PUSH1";
-  case PUSH2: return "PUSH2";
-  case POP0: return "POP0";
-  case POP1: return "POP1";
-  case POP2: return "POP2";
-  case ARG1: return "ARG1";
-  case ARG2: return "ARG2";
-  case READ1: return "READ1";
-  case WRITE1: return "WRITE1";
-  case WRITE2: return "WRITE2";
-  case PTR1: return "PTR1";
-  default: return "<invalid>";
-  }
-}
-
 #pragma warning(disable:4458)
 
 void Z80::dump(std::string& d) {
   sprintf(d, "tcycle         %d\n", tcycle);
   sprintf(d, "bgb cycle      0x%08x\n", (tcycle * 8) + 0x00B2D5E6);
-  sprintf(d, "state          %s\n", state_name(state));
-  sprintf(d, "state_         %s\n", state_name(state_));
+  sprintf(d, "state          %d\n", state);
+  sprintf(d, "state_         %d\n", state_);
   sprintf(d, "\n");
 
   sprintf(d, "op_addr        0x%04x\n", op_addr);

@@ -73,7 +73,7 @@ private:
   uint8_t  cb_get8() const;
   void     cb_put8(uint8_t reg);
 
-  void     set_flag(uint8_t f_);
+  void     update_flags();
 };
 
 //-----------------------------------------------------------------------------

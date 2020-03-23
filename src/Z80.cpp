@@ -203,7 +203,8 @@ void Z80::on_bus_ack(Ack ibus_ack_) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::set_flag(uint8_t f_) {
+void Z80::update_flags() {
+  uint8_t f_ = alu_out.f;
   uint8_t mask = PREFIX_CB ? cb_flag_mask[CB_QUAD] : flag_mask[op];
   f = (f & ~mask) | (f_ & mask);
 
@@ -305,36 +306,38 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (JP_HL             && state == 0) { pc = addr + 1;                                                                                                                                                    READ(hl);       state_ = 0; break; }
     if (MV_R_R            && state == 0) { pc = addr + 1;   ao = alu(0,      r,      0,           ao.f);           reg_put8(ao.x);                                                                           READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                
-    if (DEC_R             && state == 0) { pc = addr + 1;   ao = alu(2,      r,      1,           ao.f);           reg_put8(ao.x);                       set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
-    if (INC_R             && state == 0) { pc = addr + 1;   ao = alu(0,      r,      1,           ao.f);           reg_put8(ao.x);                       set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
+    if (DEC_R             && state == 0) { pc = addr + 1;   ao = alu(2,      r,      1,           ao.f);           reg_put8(ao.x);                       update_flags();                                     READ(pc);       state_ = 0; break; }
+    if (INC_R             && state == 0) { pc = addr + 1;   ao = alu(0,      r,      1,           ao.f);           reg_put8(ao.x);                       update_flags();                                     READ(pc);       state_ = 0; break; }
     if (INC_AT_HL         && state == 0) { pc = addr + 1;                                                                                                                                                    READ(hl);       state_ = 1; break; }
-    if (INC_AT_HL         && state == 1) {                  ao = alu(0,      data,   1,           ao.f);           y = ao.x;                             set_flag(ao.f);                                     WRITE(hl, y);   state_ = 2; break; }
+    if (INC_AT_HL         && state == 1) {                  ao = alu(0,      data,   1,           ao.f);           y = ao.x;                             update_flags();                                     WRITE(hl, y);   state_ = 2; break; }
     if (INC_AT_HL         && state == 2) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (DEC_AT_HL         && state == 0) { pc = addr + 1;                                                                                                                                                    READ(hl);       state_ = 1; break; }
-    if (DEC_AT_HL         && state == 1) {                  ao = alu(2,      data,   1,           ao.f);           y = ao.x;                             set_flag(ao.f);                                     WRITE(hl, y);   state_ = 2; break; }
+    if (DEC_AT_HL         && state == 1) {                  ao = alu(2,      data,   1,           ao.f);           y = ao.x;                             update_flags();                                     WRITE(hl, y);   state_ = 2; break; }
     if (DEC_AT_HL         && state == 2) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                              
-    if (RLU_R             && state == 0) { pc = addr + 1;   ao = rlu(OP_ROW, r,                   f);              a = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
-    if (ALU_A_R           && state == 0) { pc = addr + 1;   ao = alu(OP_ROW, a,      r,           f);              a = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
-    if (ADD_HL_BC         && state == 0) { pc = addr + 1;   ao = alu(0,      l,      c,           ao.f);           l = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 1; break; }
-    if (ADD_HL_BC         && state == 1) {                  ao = alu(1,      h,      b,           ao.f);           h = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
-    if (ADD_HL_DE         && state == 0) { pc = addr + 1;   ao = alu(0,      l,      e,           ao.f);           l = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 1; break; }
-    if (ADD_HL_DE         && state == 1) {                  ao = alu(1,      h,      d,           ao.f);           h = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
-    if (ADD_HL_HL         && state == 0) { pc = addr + 1;   ao = alu(0,      l,      l,           ao.f);           l = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 1; break; }
-    if (ADD_HL_HL         && state == 1) {                  ao = alu(1,      h,      h,           ao.f);           h = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
-    if (ADD_HL_SP         && state == 0) { pc = addr + 1;   ao = alu(0,      l,      p,           ao.f);           l = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 1; break; }
-    if (ADD_HL_SP         && state == 1) {                  ao = alu(1,      h,      s,           ao.f);           h = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
+    if (RLU_R             && state == 0) { pc = addr + 1;   ao = rlu(OP_ROW, r,                   f);              a = ao.x;                             update_flags();                                     READ(pc);       state_ = 0; break; }
+
+    if (ALU_A_R           && state == 0) { pc = addr + 1;   ao = alu(OP_ROW, a,      r,           f);              a = ao.x;                             update_flags();                                     READ(pc);       state_ = 0; break; }
+
+    if (ADD_HL_BC         && state == 0) { pc = addr + 1;   ao = alu(0,      l,      c,           ao.f);           l = ao.x;                             update_flags();                                     READ(pc);       state_ = 1; break; }
+    if (ADD_HL_BC         && state == 1) {                  ao = alu(1,      h,      b,           ao.f);           h = ao.x;                             update_flags();                                     READ(pc);       state_ = 0; break; }
+    if (ADD_HL_DE         && state == 0) { pc = addr + 1;   ao = alu(0,      l,      e,           ao.f);           l = ao.x;                             update_flags();                                     READ(pc);       state_ = 1; break; }
+    if (ADD_HL_DE         && state == 1) {                  ao = alu(1,      h,      d,           ao.f);           h = ao.x;                             update_flags();                                     READ(pc);       state_ = 0; break; }
+    if (ADD_HL_HL         && state == 0) { pc = addr + 1;   ao = alu(0,      l,      l,           ao.f);           l = ao.x;                             update_flags();                                     READ(pc);       state_ = 1; break; }
+    if (ADD_HL_HL         && state == 1) {                  ao = alu(1,      h,      h,           ao.f);           h = ao.x;                             update_flags();                                     READ(pc);       state_ = 0; break; }
+    if (ADD_HL_SP         && state == 0) { pc = addr + 1;   ao = alu(0,      l,      p,           ao.f);           l = ao.x;                             update_flags();                                     READ(pc);       state_ = 1; break; }
+    if (ADD_HL_SP         && state == 1) {                  ao = alu(1,      h,      s,           ao.f);           h = ao.x;                             update_flags();                                     READ(pc);       state_ = 0; break; }
 
     if (ADD_SP_R8         && state == 0) { pc = addr + 1;                                                                                                                                                    READ(pc);       state_ = 1; break; }
-    if (ADD_SP_R8         && state == 1) { pc = addr + 1;   ao = alu(0,      p,      data,        ao.f);           y = ao.x;                             set_flag(ao.f);                                     PASS(pc);       state_ = 2; break; }
+    if (ADD_SP_R8         && state == 1) { pc = addr + 1;   ao = alu(0,      p,      data,        ao.f);           y = ao.x;                             update_flags();                                     PASS(pc);       state_ = 2; break; }
     if (ADD_SP_R8         && state == 2) {                  ao = alu(1,      s,      sxt(data),   ao.f);           x = ao.x;                                                                                 PASS(xy)        state_ = 3; break; }
     if (ADD_SP_R8         && state == 3) { sp = addr;                                                                                                                                                        READ(pc);       state_ = 0; break; }
 
     if (ALU_A_D8          && state == 0) { pc = addr + 1;                                                                                                                                                    READ(pc);       state_ = 1; break; }
-    if (ALU_A_D8          && state == 1) { pc = addr + 1;   ao = alu(OP_ROW, a,      data,        f);              a = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
+    if (ALU_A_D8          && state == 1) { pc = addr + 1;   ao = alu(OP_ROW, a,      data,        f);              a = ao.x;                             update_flags();                                     READ(pc);       state_ = 0; break; }
     if (ALU_A_HL          && state == 0) { pc = addr + 1;                                                                                                                                                    READ(hl);       state_ = 1; break; }
-    if (ALU_A_HL          && state == 1) {                  ao = alu(OP_ROW, a,      data,        f);              a = ao.x;                             set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
+    if (ALU_A_HL          && state == 1) {                  ao = alu(OP_ROW, a,      data,        f);              a = ao.x;                             update_flags();                                     READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                  
     if (JR_CC_R8 && tb    && state == 0) { pc = addr + 1;                                                                                                                                                    READ(pc);       state_ = 1; break; }
     if (JR_CC_R8 && tb    && state == 1) { pc = addr + 1;   ao = alu(0,      pcl,    data,        ao.f);           y = ao.x;                                                                                 PASS(pc);       state_ = 2; break; }
@@ -349,7 +352,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
                                                                     
     if (LD_HL_SP_R8       && state == 0) { pc = addr + 1;                                                                                                                                                    READ(pc);       state_ = 1; break; }
     if (LD_HL_SP_R8       && state == 1) { pc = addr + 1;                                                                                                                                                    PASS(pc);       state_ = 2; break; }
-    if (LD_HL_SP_R8       && state == 2) {                  ao = alu(0,      p,      data,        ao.f);           l = ao.x;                             set_flag(ao.f);                                     PASS(pc);       state_ = 3; break; }
+    if (LD_HL_SP_R8       && state == 2) {                  ao = alu(0,      p,      data,        ao.f);           l = ao.x;                             update_flags();                                     PASS(pc);       state_ = 3; break; }
     if (LD_HL_SP_R8       && state == 3) {                  ao = alu(1,      s,      sxt(data),   ao.f);           h = ao.x;                                                                                 READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                              
 
@@ -563,9 +566,9 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (STM_A16_SP        && state == 4) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                     
     if (PREFIX_CB         && state == 0) { pc = addr + 1;                                                                                                                                                    READ(pc);       state_ = 1; break; }
-    if (OP_CB_R           && state == 1) { pc = addr + 1;   ao = alu_cb(cb, reg_get8(CB_COL), f);                  reg_put8(CB_COL, ao.x);               set_flag(ao.f);                                     READ(pc);       state_ = 0; break; }
+    if (OP_CB_R           && state == 1) { pc = addr + 1;   ao = alu_cb(cb, reg_get8(CB_COL), f);                  reg_put8(CB_COL, ao.x);               update_flags();                                     READ(pc);       state_ = 0; break; }
     if (OP_CB_HL          && state == 1) { pc = addr + 1;                                                                                                                                                    READ(hl);       state_ = 2; break; }
-    if (OP_CB_HL          && state == 2) {                  ao = alu_cb(cb, data, f);                              y = ao.x;                             set_flag(ao.f);                                     WRITE(hl, y);   state_ = 3; break; }
+    if (OP_CB_HL          && state == 2) {                  ao = alu_cb(cb, data, f);                              y = ao.x;                             update_flags();                                     WRITE(hl, y);   state_ = 3; break; }
     if (OP_CB_HL          && state == 3) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
 
   } while(0);
@@ -588,6 +591,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
 
 //-----------------------------------------------------------------------------
 
+/*
 uint8_t flag_mask2(uint8_t op, uint8_t cb) {
   uint8_t quad = (op >> 6) & 3;
   uint8_t row  = (op >> 3) & 7;
@@ -616,6 +620,7 @@ uint8_t flag_mask2(uint8_t op, uint8_t cb) {
 
   return 0;
 }
+*/
 
 //-----------------------------------------------------------------------------
 

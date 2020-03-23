@@ -1,8 +1,6 @@
 #pragma once
 #include "Types.h"
 
-enum Z80State;
-
 //-----------------------------------------------------------------------------
 
 struct Z80 {
@@ -34,7 +32,7 @@ private:
   bool ime, ime_;
   bool interrupt;
 
-  Z80State state, state_;
+  int state, state_;
 
 #pragma warning(push)
 #pragma warning(disable : 4201)

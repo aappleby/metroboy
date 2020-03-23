@@ -213,6 +213,8 @@ void Z80::update_flags() {
 
   // ADD_SP_R8 and LD_HL_SP_R8 always clear the zero bit and negative bit.
   if ((op & 0b11101111) == 0b11101000) f &= ~(F_ZERO | F_NEGATIVE);
+
+  alu_out.f = f;
 }
 
 //-----------------------------------------------------------------------------
@@ -307,10 +309,12 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (MV_R_R            && state == 0) { pc = addr + 1;   ao = alu(0,      r,      0,           ao.f);           reg_put8(ao.x);                                                                           READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                
     if (DEC_R             && state == 0) { pc = addr + 1;   ao = alu(2,      r,      1,           ao.f);           reg_put8(ao.x);                       update_flags();                                     READ(pc);       state_ = 0; break; }
+
     if (INC_R             && state == 0) { pc = addr + 1;   ao = alu(0,      r,      1,           ao.f);           reg_put8(ao.x);                       update_flags();                                     READ(pc);       state_ = 0; break; }
+
     if (INC_AT_HL         && state == 0) { pc = addr + 1;                                                                                                                                                    READ(hl);       state_ = 1; break; }
-    if (INC_AT_HL         && state == 1) {                  ao = alu(0,      data,   1,           ao.f);           y = ao.x;                             update_flags();                                     WRITE(hl, y);   state_ = 2; break; }
-    if (INC_AT_HL         && state == 2) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
+    if (INC_AT_HL         && state == 1) {                  ao = alu(0,      data,   1,           ao.f);           y = ao.x;                                                                                 WRITE(hl, y);   state_ = 2; break; }
+    if (INC_AT_HL         && state == 2) {                                                                                                               update_flags();                                     READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (DEC_AT_HL         && state == 0) { pc = addr + 1;                                                                                                                                                    READ(hl);       state_ = 1; break; }
     if (DEC_AT_HL         && state == 1) {                  ao = alu(2,      data,   1,           ao.f);           y = ao.x;                             update_flags();                                     WRITE(hl, y);   state_ = 2; break; }

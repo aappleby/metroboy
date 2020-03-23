@@ -46,10 +46,9 @@ private:
 #pragma warning(pop)
 
   uint16_t addr;
-  uint8_t bus_in;
-  uint8_t bus_out;
-  uint8_t read;
-  uint8_t write;
+  uint8_t  data;
+  uint8_t  read;
+  uint8_t  write;
 
   bool no_branch;
   bool no_halt;

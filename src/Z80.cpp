@@ -167,7 +167,7 @@ void Z80::reset(uint16_t new_pc) {
   op_addr = pc;
 
   addr = new_pc;
-  bus_out = 0;
+  data = 0;
   write = 0;
 
   out_int_ack = 0;
@@ -179,7 +179,7 @@ void Z80::reset(uint16_t new_pc) {
 Req Z80::get_bus_req() const {
   return {
     .addr  = addr,
-    .data  = bus_out,
+    .data  = data,
     .read  = (bool)read,
     .write = (bool)write,
   };
@@ -187,7 +187,7 @@ Req Z80::get_bus_req() const {
 
 void Z80::on_bus_ack(Ack ibus_ack_) {
   if (read) {
-    bus_in = (uint8_t)ibus_ack_.data;
+    data = (uint8_t)ibus_ack_.data;
   }
 }
 
@@ -216,7 +216,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
 
   if (state == 0) {
     op_addr = pc;
-    op = bus_in;
+    op = data;
   }
 
   bool cond_fail = false;
@@ -265,14 +265,14 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (imask & intf & INT_VBLANK_MASK) { xy = 0x0040; int_ack = INT_VBLANK_MASK; }
   }
 
-  if (PREFIX_CB && state == 1) cb = bus_in;
+  if (PREFIX_CB && state == 1) cb = data;
 
   do {
     uint8_t r = reg_get8();
 
-#define READ(A)     { addr = A;              write = 0; read = 1; }
-#define WRITE(A, B) { addr = A; bus_out = B; write = 1; read = 0; }
-#define PASS(A)     { addr = A;              write = 0; read = 0; }
+#define READ(A)     { addr = A;           write = 0; read = 1; }
+#define WRITE(A, B) { addr = A; data = B; write = 1; read = 0; }
+#define PASS(A)     { addr = A;           write = 0; read = 0; }
 
     if (handle_int        && state == 0) {                                                                                                                                                                   PASS(sp);       state_ = 1; break; }
     if (handle_int        && state == 1) {                                                                                                                                              sp = addr - 1;       WRITE(sp, pch); state_ = 2; break; }
@@ -281,8 +281,8 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (handle_int        && state == 4) {                                                                                                                                                                   READ(xy);       state_ = 0; break; }
     
     if (CALL_A16          && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (CALL_A16          && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (CALL_A16          && state == 2) {                                                        x = bus_in;                                                                           pc = addr + 1;       PASS(sp);       state_ = 3; break; }
+    if (CALL_A16          && state == 1) {                                                        y = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (CALL_A16          && state == 2) {                                                        x = data;                                                                             pc = addr + 1;       PASS(sp);       state_ = 3; break; }
     if (CALL_A16          && state == 3) {                                                                                                                                              sp = addr - 1;       WRITE(sp, pch); state_ = 4; break; }
     if (CALL_A16          && state == 4) {                                                                                                                                              sp = addr - 1;       WRITE(sp, pcl); state_ = 5; break; }
     if (CALL_A16          && state == 5) {                                                                                                                                                                   READ(xy);       state_ = 0; break; }
@@ -298,11 +298,11 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (DEC_R             && state == 0) { ao = alu(2,      r,      1,           f & F_CARRY);    reg_put8(ao.x);                       set_flag(ao.f);                                 pc = addr + 1;       READ(pc);       state_ = 0; break; }
     if (INC_R             && state == 0) { ao = alu(0,      r,      1,           f & F_CARRY);    reg_put8(ao.x);                       set_flag(ao.f);                                 pc = addr + 1;       READ(pc);       state_ = 0; break; }
     if (INC_AT_HL         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(hl);       state_ = 1; break; }
-    if (INC_AT_HL         && state == 1) { ao = alu(0,      bus_in, 1,           f & F_CARRY);    y = ao.x;                             set_flag(ao.f);                                                      WRITE(hl, y);   state_ = 2; break; }
+    if (INC_AT_HL         && state == 1) { ao = alu(0,      data,   1,           f & F_CARRY);    y = ao.x;                             set_flag(ao.f);                                                      WRITE(hl, y);   state_ = 2; break; }
     if (INC_AT_HL         && state == 2) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (DEC_AT_HL         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(hl);       state_ = 1; break; }
-    if (DEC_AT_HL         && state == 1) { ao = alu(2,      bus_in, 1,           f & F_CARRY);    y = ao.x;                             set_flag(ao.f);                                                      WRITE(hl, y);   state_ = 2; break; }
+    if (DEC_AT_HL         && state == 1) { ao = alu(2,      data,   1,           f & F_CARRY);    y = ao.x;                             set_flag(ao.f);                                                      WRITE(hl, y);   state_ = 2; break; }
     if (DEC_AT_HL         && state == 2) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                              
     if (RLU_R             && state == 0) { ao = rlu(OP_ROW, r,      f);                           a = ao.x;                             set_flag(ao.f);                                 pc = addr + 1;       READ(pc);       state_ = 0; break; }
@@ -316,41 +316,41 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (ADD_HL_SP         && state == 0) { ao = alu(0,      l,      p,           f & F_CARRY);    l = ao.x;                             set_flag(ao.f);                                 pc = addr + 1;       READ(pc);       state_ = 1; break; }
     if (ADD_HL_SP         && state == 1) { ao = alu(1,      h,      s,           f & F_CARRY);    h = ao.x;                             set_flag(ao.f);                                                      READ(pc);       state_ = 0; break; }
     if (ADD_SP_R8         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (ADD_SP_R8         && state == 1) { ao = alu(0,      p,      bus_in,      f & F_CARRY);    y = ao.x;                             set_flag(ao.f);                                 pc = addr + 1;       PASS(pc);       state_ = 2; break; }
-    if (ADD_SP_R8         && state == 2) { ao = alu(1,      s,      sxt(bus_in), f & F_CARRY);    x = ao.x;                                                                                                  PASS(xy)        state_ = 3; break; }
+    if (ADD_SP_R8         && state == 1) { ao = alu(0,      p,      data,        f & F_CARRY);    y = ao.x;                             set_flag(ao.f);                                 pc = addr + 1;       PASS(pc);       state_ = 2; break; }
+    if (ADD_SP_R8         && state == 2) { ao = alu(1,      s,      sxt(data),   f & F_CARRY);    x = ao.x;                                                                                                  PASS(xy)        state_ = 3; break; }
     if (ADD_SP_R8         && state == 3) {                                                                                                                                              sp = addr;           READ(pc);       state_ = 0; break; }
     if (ALU_A_D8          && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (ALU_A_D8          && state == 1) { ao = alu(OP_ROW, a,      bus_in,      f & F_CARRY);    a = ao.x;                             set_flag(ao.f);                                 pc = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (ALU_A_D8          && state == 1) { ao = alu(OP_ROW, a,      data,        f & F_CARRY);    a = ao.x;                             set_flag(ao.f);                                 pc = addr + 1;       READ(pc);       state_ = 0; break; }
     if (ALU_A_HL          && state == 0) {                                                                                                                                              pc = addr + 1;       READ(hl);       state_ = 1; break; }
-    if (ALU_A_HL          && state == 1) { ao = alu(OP_ROW, a,      bus_in,      f & F_CARRY);    a = ao.x;                             set_flag(ao.f);                                                      READ(pc);       state_ = 0; break; }
+    if (ALU_A_HL          && state == 1) { ao = alu(OP_ROW, a,      data,        f & F_CARRY);    a = ao.x;                             set_flag(ao.f);                                                      READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                  
     if (JR_CC_R8 && tb    && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (JR_CC_R8 && tb    && state == 1) { ao = alu(1,      pcl,    bus_in,      1);              y = ao.x;                                                                                                  PASS(pc);       state_ = 2; break; }
-    if (JR_CC_R8 && tb    && state == 2) { ao = alu(1,      pch,    sxt(bus_in), ao.f & F_CARRY); x = ao.x;                                                                                                  READ(xy);       state_ = 0; break; }
+    if (JR_CC_R8 && tb    && state == 1) { ao = alu(1,      pcl,    data,        1);              y = ao.x;                                                                                                  PASS(pc);       state_ = 2; break; }
+    if (JR_CC_R8 && tb    && state == 2) { ao = alu(1,      pch,    sxt(data),   ao.f & F_CARRY); x = ao.x;                                                                                                  READ(xy);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (JR_CC_R8 && nb    && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
     if (JR_CC_R8 && nb    && state == 1) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (JR_R8             && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (JR_R8             && state == 1) { ao = alu(1,      pcl,    bus_in, 1);                   y = ao.x;                                                                                                  PASS(pc);       state_ = 2; break; }
-    if (JR_R8             && state == 2) { ao = alu(1,      pch,    sxt(bus_in), ao.f & F_CARRY); x = ao.x;                                                                                                  READ(xy);       state_ = 0; break; }
+    if (JR_R8             && state == 1) { ao = alu(1,      pcl,    data, 1);                   y = ao.x;                                                                                                  PASS(pc);       state_ = 2; break; }
+    if (JR_R8             && state == 2) { ao = alu(1,      pch,    sxt(data),   ao.f & F_CARRY); x = ao.x;                                                                                                  READ(xy);       state_ = 0; break; }
                                                                     
     if (LD_HL_SP_R8       && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
     if (LD_HL_SP_R8       && state == 1) {                                                                                                                                              pc = addr + 1;       PASS(pc);       state_ = 2; break; }
-    if (LD_HL_SP_R8       && state == 2) { ao = alu(0,      p,      bus_in,      f & F_CARRY);    l = ao.x;                             set_flag(ao.f);                                                      PASS(pc);       state_ = 3; break; }
-    if (LD_HL_SP_R8       && state == 3) { ao = alu(1,      s,      sxt(bus_in), f & F_CARRY);    h = ao.x;                                                                                                  READ(pc);       state_ = 0; break; }
+    if (LD_HL_SP_R8       && state == 2) { ao = alu(0,      p,      data,        f & F_CARRY);    l = ao.x;                             set_flag(ao.f);                                                      PASS(pc);       state_ = 3; break; }
+    if (LD_HL_SP_R8       && state == 3) { ao = alu(1,      s,      sxt(data),   f & F_CARRY);    h = ao.x;                                                                                                  READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                              
 
     if (CALL_CC_A16 && tb && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (CALL_CC_A16 && tb && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (CALL_CC_A16 && tb && state == 2) {                                                        x = bus_in;                                                                           pc = addr + 1;       PASS(sp);       state_ = 3; break; }
+    if (CALL_CC_A16 && tb && state == 1) {                                                        y = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (CALL_CC_A16 && tb && state == 2) {                                                        x = data;                                                                             pc = addr + 1;       PASS(sp);       state_ = 3; break; }
     if (CALL_CC_A16 && tb && state == 3) {                                                                                                                                              sp = addr - 1;       WRITE(sp, pch); state_ = 4; break; }
     if (CALL_CC_A16 && tb && state == 4) {                                                                                                                                              sp = addr - 1;       WRITE(sp, pcl); state_ = 5; break; }
     if (CALL_CC_A16 && tb && state == 5) {                                                                                                                                              pc = addr + 1;       READ(xy);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (CALL_CC_A16 && nb && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (CALL_CC_A16 && nb && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (CALL_CC_A16 && nb && state == 2) {                                                        x = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (CALL_CC_A16 && nb && state == 1) {                                                        y = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (CALL_CC_A16 && nb && state == 2) {                                                        x = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (RST_NN            && state == 0) {                                                                                                                                              pc = addr + 1;       PASS(sp);       state_ = 1; break; }
     if (RST_NN            && state == 1) {                                                                                                                                              sp = addr - 1;       WRITE(sp, pch); state_ = 2; break; }
@@ -387,79 +387,79 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (DEC_SP            && state == 1) {                                                                                                                                              sp = addr - 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (JP_A16            && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (JP_A16            && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (JP_A16            && state == 2) {                                                        x = bus_in;                                                                           pc = addr + 1;       PASS(pc);       state_ = 3; break; }
+    if (JP_A16            && state == 1) {                                                        y = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (JP_A16            && state == 2) {                                                        x = data;                                                                             pc = addr + 1;       PASS(pc);       state_ = 3; break; }
     if (JP_A16            && state == 3) {                                                                                                                                                                   READ(xy);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (JP_CC_A16 && tb   && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (JP_CC_A16 && tb   && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (JP_CC_A16 && tb   && state == 2) {                                                        x = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 3; break; }
+    if (JP_CC_A16 && tb   && state == 1) {                                                        y = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (JP_CC_A16 && tb   && state == 2) {                                                        x = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 3; break; }
     if (JP_CC_A16 && tb   && state == 3) {                                                                                                                                                                   READ(xy);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (JP_CC_A16 && nb   && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (JP_CC_A16 && nb   && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (JP_CC_A16 && nb   && state == 2) {                                                        x = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (JP_CC_A16 && nb   && state == 1) {                                                        y = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (JP_CC_A16 && nb   && state == 2) {                                                        x = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
                                                                                                                                                                                                                                   
     //----------                                                                                                                                                                                                                  
                                                                                                                                                                                                                                   
     if (LD_BC_D16         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (LD_BC_D16         && state == 1) {                                                        c = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (LD_BC_D16         && state == 2) {                                                        b = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (LD_BC_D16         && state == 1) {                                                        c = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (LD_BC_D16         && state == 2) {                                                        b = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LD_DE_D16         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (LD_DE_D16         && state == 1) {                                                        e = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (LD_DE_D16         && state == 2) {                                                        d = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (LD_DE_D16         && state == 1) {                                                        e = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (LD_DE_D16         && state == 2) {                                                        d = data;                                                                             pc = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LD_HL_D16         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (LD_HL_D16         && state == 1) {                                                        l = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (LD_HL_D16         && state == 2) {                                                        h = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (LD_HL_D16         && state == 1) {                                                        l = data;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (LD_HL_D16         && state == 2) {                                                        h = data;                                                                           pc = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LD_SP_D16         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (LD_SP_D16         && state == 1) {                                                        p = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (LD_SP_D16         && state == 2) {                                                        s = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (LD_SP_D16         && state == 1) {                                                        p = data;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (LD_SP_D16         && state == 2) {                                                        s = data;                                                                           pc = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LDM_A_BC          && state == 0) {                                                                                                                                              pc = addr + 1;       READ(bc);       state_ = 1; break; }
-    if (LDM_A_BC          && state == 1) {                                                        a = bus_in;                                                                           bc = addr;           READ(pc);       state_ = 0; break; }
+    if (LDM_A_BC          && state == 1) {                                                        a = data;                                                                           bc = addr;           READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LDM_A_DE          && state == 0) {                                                                                                                                              pc = addr + 1;       READ(de);       state_ = 1; break; }
-    if (LDM_A_DE          && state == 1) {                                                        a = bus_in;                                                                           de = addr;           READ(pc);       state_ = 0; break; }
+    if (LDM_A_DE          && state == 1) {                                                        a = data;                                                                           de = addr;           READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LDM_A_HLP         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(hl);       state_ = 1; break; }
-    if (LDM_A_HLP         && state == 1) {                                                        a = bus_in;                                                                           hl = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (LDM_A_HLP         && state == 1) {                                                        a = data;                                                                           hl = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LDM_A_HLM         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(hl);       state_ = 1; break; }
-    if (LDM_A_HLM         && state == 1) {                                                        a = bus_in;                                                                           hl = addr - 1;       READ(pc);       state_ = 0; break; }
+    if (LDM_A_HLM         && state == 1) {                                                        a = data;                                                                           hl = addr - 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LD_R_D8           && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (LD_R_D8           && state == 1) {                                                        reg_put8(bus_in);                                                                     pc = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (LD_R_D8           && state == 1) {                                                        reg_put8(data);                                                                     pc = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LD_SP_HL          && state == 0) {                                                                                                                                              pc = addr + 1;       READ(hl);       state_ = 1; break; }
     if (LD_SP_HL          && state == 1) {                                                                                                                                              sp = addr;           READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LDM_A_A16         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (LDM_A_A16         && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (LDM_A_A16         && state == 2) {                                                        x = bus_in;                                                                           pc = addr + 1;       READ(xy);       state_ = 3; break; }
-    if (LDM_A_A16         && state == 3) {                                                        a = bus_in;                                                                                                READ(pc);       state_ = 0; break; }
+    if (LDM_A_A16         && state == 1) {                                                        y = data;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (LDM_A_A16         && state == 2) {                                                        x = data;                                                                           pc = addr + 1;       READ(xy);       state_ = 3; break; }
+    if (LDM_A_A16         && state == 3) {                                                        a = data;                                                                                                READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LDM_R_HL          && state == 0) {                                                                                                                                              pc = addr + 1;       READ(hl);       state_ = 1; break; }
-    if (LDM_R_HL          && state == 1) {                                                        reg_put8(bus_in);                                                                                          READ(pc);       state_ = 0; break; }
+    if (LDM_R_HL          && state == 1) {                                                        reg_put8(data);                                                                                          READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (POP_BC            && state == 0) {                                                                                                                                              pc = addr + 1;       READ(sp);       state_ = 1; break; }
-    if (POP_BC            && state == 1) {                                                        c = bus_in;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
-    if (POP_BC            && state == 2) {                                                        b = bus_in;                                                                           sp = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (POP_BC            && state == 1) {                                                        c = data;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
+    if (POP_BC            && state == 2) {                                                        b = data;                                                                           sp = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (POP_DE            && state == 0) {                                                                                                                                              pc = addr + 1;       READ(sp);       state_ = 1; break; }
-    if (POP_DE            && state == 1) {                                                        e = bus_in;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
-    if (POP_DE            && state == 2) {                                                        d = bus_in;                                                                           sp = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (POP_DE            && state == 1) {                                                        e = data;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
+    if (POP_DE            && state == 2) {                                                        d = data;                                                                           sp = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (POP_HL            && state == 0) {                                                                                                                                              pc = addr + 1;       READ(sp);       state_ = 1; break; }
-    if (POP_HL            && state == 1) {                                                        l = bus_in;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
-    if (POP_HL            && state == 2) {                                                        h = bus_in;                                                                           sp = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (POP_HL            && state == 1) {                                                        l = data;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
+    if (POP_HL            && state == 2) {                                                        h = data;                                                                           sp = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (POP_AF            && state == 0) {                                                                                                                                              pc = addr + 1;       READ(sp);       state_ = 1; break; }
-    if (POP_AF            && state == 1) {                                                        f = bus_in;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
-    if (POP_AF            && state == 2) {                                                        a = bus_in;                                                                           sp = addr + 1;       READ(pc);       state_ = 0; break; }
+    if (POP_AF            && state == 1) {                                                        f = data;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
+    if (POP_AF            && state == 2) {                                                        a = data;                                                                           sp = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (PUSH_BC           && state == 0) {                                                                                                                                              pc = addr + 1;       READ(sp);       state_ = 1; break; }
     if (PUSH_BC           && state == 1) {                                                                                                                                              sp = addr - 1;       WRITE(sp, b);   state_ = 2; break; }
@@ -482,45 +482,45 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (PUSH_AF           && state == 3) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (RET               && state == 0) {                                                                                                                                              pc = addr + 1;       READ(sp);       state_ = 1; break; }
-    if (RET               && state == 1) {                                                        y = bus_in;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
-    if (RET               && state == 2) {                                                        x = bus_in;                                                                           sp = addr + 1;       PASS(xy);       state_ = 3; break; }
+    if (RET               && state == 1) {                                                        y = data;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
+    if (RET               && state == 2) {                                                        x = data;                                                                           sp = addr + 1;       PASS(xy);       state_ = 3; break; }
     if (RET               && state == 3) {                                                                                                                                                                   READ(xy);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (RET_CC && tb      && state == 0) {                                                                                                                                              pc = addr + 1;       PASS(pc);       state_ = 1; break; }
     if (RET_CC && tb      && state == 1) {                                                                                                                                                                   READ(sp);       state_ = 2; break; }
-    if (RET_CC && tb      && state == 2) {                                                        y = bus_in;                                                                           sp = addr + 1;       READ(sp);       state_ = 3; break; }
-    if (RET_CC && tb      && state == 3) {                                                        x = bus_in;                                                                           sp = addr + 1;       PASS(xy);       state_ = 4; break; }
+    if (RET_CC && tb      && state == 2) {                                                        y = data;                                                                           sp = addr + 1;       READ(sp);       state_ = 3; break; }
+    if (RET_CC && tb      && state == 3) {                                                        x = data;                                                                           sp = addr + 1;       PASS(xy);       state_ = 4; break; }
     if (RET_CC && tb      && state == 4) {                                                                                                                                                                   READ(xy);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (RET_CC && nb      && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
     if (RET_CC && nb      && state == 1) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (RETI              && state == 0) {                                                                                                                                              pc = addr + 1;       READ(sp);       state_ = 1; break; }
-    if (RETI              && state == 1) {                                                        y = bus_in;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
-    if (RETI              && state == 2) {                                                        x = bus_in;                                                                           sp = addr + 1;       PASS(xy);       state_ = 3; break; }
+    if (RETI              && state == 1) {                                                        y = data;                                                                           sp = addr + 1;       READ(sp);       state_ = 2; break; }
+    if (RETI              && state == 2) {                                                        x = data;                                                                           sp = addr + 1;       PASS(xy);       state_ = 3; break; }
     if (RETI              && state == 3) {                                                                                                                                                                   READ(xy);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (STM_A16_A         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (STM_A16_A         && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (STM_A16_A         && state == 2) {                                                        x = bus_in;                                                                           pc = addr + 1;       WRITE(xy, a);   state_ = 3; break; }
+    if (STM_A16_A         && state == 1) {                                                        y = data;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (STM_A16_A         && state == 2) {                                                        x = data;                                                                           pc = addr + 1;       WRITE(xy, a);   state_ = 3; break; }
     if (STM_A16_A         && state == 3) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LDM_A_A8          && state == 0) {                                                        x = 0xFF;                                                                             pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (LDM_A_A8          && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(xy);       state_ = 2; break; }
-    if (LDM_A_A8          && state == 2) {                                                        a = bus_in;                                                                                                READ(pc);       state_ = 0; break; }
+    if (LDM_A_A8          && state == 1) {                                                        y = data;                                                                           pc = addr + 1;       READ(xy);       state_ = 2; break; }
+    if (LDM_A_A8          && state == 2) {                                                        a = data;                                                                                                READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (STM_A8_A          && state == 0) {                                                        x = 0xFF;                                                                             pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (STM_A8_A          && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       WRITE(xy, a);   state_ = 2; break; }
+    if (STM_A8_A          && state == 1) {                                                        y = data;                                                                           pc = addr + 1;       WRITE(xy, a);   state_ = 2; break; }
     if (STM_A8_A          && state == 2) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (LDM_A_C           && state == 0) {                                                        y = c; x = 0xFF;                                                                      pc = addr + 1;       READ(xy);       state_ = 1; break; }
-    if (LDM_A_C           && state == 1) {                                                        a = bus_in;                                                                                                READ(pc);       state_ = 0; break; }
+    if (LDM_A_C           && state == 1) {                                                        a = data;                                                                                                READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (STM_C_A           && state == 0) {                                                        x = 0xFF; y = c;                                                                      pc = addr + 1;       WRITE(xy, a);   state_ = 1; break; }
     if (STM_C_A           && state == 1) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (STM_HL_D8         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (STM_HL_D8         && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       WRITE(hl, y);   state_ = 2; break; }
+    if (STM_HL_D8         && state == 1) {                                                        y = data;                                                                           pc = addr + 1;       WRITE(hl, y);   state_ = 2; break; }
     if (STM_HL_D8         && state == 2) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (STM_HL_R          && state == 0) {                                                                                                                                              pc = addr + 1;       WRITE(hl, r);   state_ = 1; break; }
@@ -539,15 +539,15 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     if (STM_HLP_A         && state == 1) {                                                                                                                                              hl = addr + 1;       READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                   
     if (STM_A16_SP        && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
-    if (STM_A16_SP        && state == 1) {                                                        y = bus_in;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
-    if (STM_A16_SP        && state == 2) {                                                        x = bus_in;                                                                           pc = addr + 1;       WRITE(xy, p);   state_ = 3; break; }
+    if (STM_A16_SP        && state == 1) {                                                        y = data;                                                                           pc = addr + 1;       READ(pc);       state_ = 2; break; }
+    if (STM_A16_SP        && state == 2) {                                                        x = data;                                                                           pc = addr + 1;       WRITE(xy, p);   state_ = 3; break; }
     if (STM_A16_SP        && state == 3) {                                                                                                                                              xy = addr + 1;       WRITE(xy, s);   state_ = 4; break; }
     if (STM_A16_SP        && state == 4) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
                                                                                                                                                                                                                                     
     if (PREFIX_CB         && state == 0) {                                                                                                                                              pc = addr + 1;       READ(pc);       state_ = 1; break; }
     if (OP_CB_R           && state == 1) { ao = alu_cb(cb, reg_get8(CB_COL), f);                  reg_put8(CB_COL, ao.x);               set_flag(ao.f);                                 pc = addr + 1;       READ(pc);       state_ = 0; break; }
     if (OP_CB_HL          && state == 1) {                                                                                                                                              pc = addr + 1;       READ(hl);       state_ = 2; break; }
-    if (OP_CB_HL          && state == 2) { ao = alu_cb(cb, bus_in, f);                            y = ao.x;                             set_flag(ao.f);                                                      WRITE(hl, y);   state_ = 3; break; }
+    if (OP_CB_HL          && state == 2) { ao = alu_cb(cb, data, f);                            y = ao.x;                             set_flag(ao.f);                                                      WRITE(hl, y);   state_ = 3; break; }
     if (OP_CB_HL          && state == 3) {                                                                                                                                                                   READ(pc);       state_ = 0; break; }
 
   } while(0);
@@ -889,8 +889,7 @@ void Z80::dump(std::string& d) {
   sprintf(d, "\n");
 
   sprintf(d, "addr           0x%04x\n", addr);
-  sprintf(d, "bus_in         0x%02x\n", bus_in);
-  sprintf(d, "bus_out        0x%02x\n", bus_out);
+  sprintf(d, "data           0x%02x\n", data);
   sprintf(d, "write          %d\n",     write);
   sprintf(d, "\n");
 

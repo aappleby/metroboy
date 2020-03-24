@@ -75,6 +75,8 @@ int AppBase::main(int, char**) {
                             SDL_WINDOW_OPENGL /*| SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI*/);
 
   keyboard_state = SDL_GetKeyboardState(nullptr);
+  app_start = SDL_GetPerformanceCounter();
+  perf_freq = SDL_GetPerformanceFrequency();
 
   //----------------------------------------
   // Init OpenGL context
@@ -95,8 +97,8 @@ int AppBase::main(int, char**) {
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
   gl_context = SDL_GL_CreateContext(window);
-  //SDL_GL_SetSwapInterval(1); // Enable vsync
-  SDL_GL_SetSwapInterval(0); // Disable vsync
+  SDL_GL_SetSwapInterval(1); // Enable vsync
+  //SDL_GL_SetSwapInterval(0); // Disable vsync
 
   gladLoadGLES2Loader(SDL_GL_GetProcAddress);
   printf("OpenGL loaded\n");
@@ -163,12 +165,11 @@ int AppBase::main(int, char**) {
   //----------------------------------------
   // Loop forever
 
-  static uint64_t freq = SDL_GetPerformanceFrequency();
   static uint64_t now  = SDL_GetPerformanceCounter();
 
   while (!quit) {
     uint64_t new_now = SDL_GetPerformanceCounter();
-    double delta = double(new_now - now) / double(freq);
+    double delta = double(new_now - now) / double(perf_freq);
     now = new_now;
 
     //----------------------------------------
@@ -280,9 +281,6 @@ int AppBase::main(int, char**) {
     ImGui::Text("(%.1f FPS)", io.Framerate);
     ImGui::End();
     */
-
-    text_painter.dprintf("%d (%.1f FPS)", redraw_count, io.Framerate);
-    text_painter.render(screen_w - 100, screen_h - 12);
 
     //----------------------------------------
     // Render ImGui

@@ -308,13 +308,30 @@ void MetroBoyApp::update(double delta) {
   cycles_begin = metroboy.total_tcycles();
 
   if (runmode == RUN_FAST) {
-    //fast_cycles += (16.0 - 1000 * (double(last_frame_time) / double(timer_freq))) * 100;
+    int64_t cycle_begin = metroboy.total_tcycles();
+    double begin = double(SDL_GetPerformanceCounter() - app_start);
     metroboy.run_fast(buttons, (int)fast_cycles);
-    //metroboy.run_fast(buttons, 100000);
+    double end = double(SDL_GetPerformanceCounter() - app_start);
+    int64 cycle_end = metroboy.total_tcycles();
+    last_cycles = int(cycle_end - cycle_begin) / 4;
+    sim_time_msec = 1000.0 * double(end - begin) / double(perf_freq);
+    
+    //printf("run_fast %f\n", elapsed_ms);
+    double new_cycles = fast_cycles * (sim_budget_msec / sim_time_msec);
+    //printf("run_fast %f\n", new_cycles);
+    
+    double a = 0.95;
+    fast_cycles = fast_cycles * a + new_cycles * (1.0 - a);
   }
   else if (runmode == RUN_VSYNC) {
     //printf("%d --------\n", frame_count);
+    int64_t cycle_begin = metroboy.total_tcycles();
+    double begin = double(SDL_GetPerformanceCounter() - app_start);
     metroboy.run_vsync(buttons);
+    double end = double(SDL_GetPerformanceCounter() - app_start);
+    int64 cycle_end = metroboy.total_tcycles();
+    last_cycles = int(cycle_end - cycle_begin) / 4;
+    sim_time_msec = 1000.0 * double(end - begin) / double(perf_freq);
   }
   else if (runmode == STEP_CYCLE) {
     while (step_forward--) {
@@ -502,6 +519,7 @@ void MetroBoyApp::render_frame() {
 
 void MetroBoyApp::render_ui() {
 
+#if 1
   //----------------------------------------
   // Stat bar
 
@@ -573,7 +591,23 @@ void MetroBoyApp::render_ui() {
   text_painter.render(text_buf, column, 0);
   text_buf.clear();
   column += 32 * 7;
+#endif
+  {
+    ImGuiIO& io = ImGui::GetIO();
 
+    double sim_cycles_per_sec = double(last_cycles) * (1000.0 / sim_budget_msec);
+    double rt_cycles_per_sec = (114*154*60);
+
+    double app_cycles_per_sec = fast_cycles * io.Framerate;
+
+    text_painter.dprintf("sim budget %2.2f msec/frame\n", sim_budget_msec);
+    text_painter.dprintf("sim time   %02.2f msec/frame\n", sim_time_msec);
+    //text_painter.dprintf("sim rate   %07d cycles/frame\n", int(fast_cycles));
+    text_painter.dprintf("sim rate   %07d cycles/frame\n", last_cycles);
+    text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_cycles_per_sec / rt_cycles_per_sec);
+    text_painter.dprintf("app speed  %1.2fx realtime (%.1f FPS)\n", app_cycles_per_sec / rt_cycles_per_sec, io.Framerate);
+    text_painter.render(screen_w - 300, screen_h - 60);
+  }
 
   //----------------------------------------
   // Perf timer

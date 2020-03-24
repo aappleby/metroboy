@@ -51,7 +51,13 @@ public:
   bool reset = false;
   bool load_dump = false;
   bool save_dump = false;
-  double fast_cycles = 114 * 154;
+  
+  //double fast_cycles = 114 * 154;
+  double sim_budget_msec = 11.0;
+  double sim_time_msec = 0.0;
+  double fast_cycles = 10000;
+  int last_cycles = 0;
+
   RunMode runmode = STEP_CYCLE;
   bool rom_loaded = false;
   int overlay_mode = 0;

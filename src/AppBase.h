@@ -38,6 +38,9 @@ public:
 
 protected:
 
+  uint64_t app_start;
+  uint64_t perf_freq;
+
   int frame_count = 0;
   int screen_w;
   int screen_h;

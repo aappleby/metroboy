@@ -74,6 +74,11 @@ private:
   void     cb_put8(uint8_t reg);
 
   void     update_flags();
+
+  AluOut   alu_cb(const uint8_t cb, const uint8_t x);
+  AluOut   alu(const uint8_t op, const uint8_t x, const uint8_t y);
+  AluOut   rlu(const uint8_t op, const uint8_t x);
+  AluOut   daa(uint8_t x, uint8_t f);
 };
 
 //-----------------------------------------------------------------------------

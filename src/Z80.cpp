@@ -81,7 +81,6 @@
 
 #define RLU_R         ((op & 0b11000111) == 0b00000111)
 
-#define LDM_R_HL      ((op & 0b11000111) == 0b01000110 && !HALT)
 
 #define LDM_B_HL      (op == 0x46)
 #define LDM_C_HL      (op == 0x4E)
@@ -91,7 +90,7 @@
 #define LDM_L_HL      (op == 0x6E)
 #define LDM_A_HL      (op == 0x7E)
 
-
+#define LDM_R_HL      ((op & 0b11000111) == 0b01000110 && !HALT)
 #define STM_HL_R      ((op & 0b11111000) == 0b01110000 && !HALT)
 #define MV_R_R        ((op & 0b11000000) == 0b01000000 && (op & 0b00000111) != 0b00000110 && (op & 0b00111000) != 0b00110000)
 
@@ -240,6 +239,10 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     }
   }
 
+  if (state == 0 && !handle_int) {
+    pc = addr + 1;
+  }
+
 
   if (handle_int && state == 4) {
     if (imask & intf & INT_JOYPAD_MASK) { xy = 0x0060; int_ack = INT_JOYPAD_MASK; }
@@ -274,10 +277,10 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
       if (state == 3) {                PASS(xy);       state_ = 4; break; }
       if (state == 4) {                READ(xy);       state_ = 0; break; }
     }
-
-    if (HALT) {
+    else if (PREFIX_CB) {
+    }
+    else if (HALT) {
       if (state == 0) {
-        pc = addr + 1;
         if (no_halt)  { state_ = 0; }
         if (!no_halt) { state_ = 1; }
       }
@@ -291,6 +294,15 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     else if (OP_QUAD == 0) {
     }
     else if (OP_QUAD == 1) {
+      if (OP_COL == 6) {
+        // ld r,(hl)
+      }
+      else if (OP_ROW == 6) {
+        // st (hl),r
+      }
+      else {
+        // mv r,r
+      }
     }
     else if (OP_QUAD == 2) {
     }
@@ -298,8 +310,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     }
 
     if (state == 0) {
-      pc = addr + 1;
-
       // single-cycle ops
       if (NOP              ) {                                                                      READ(pc);       state_ = 0; }
       if (STOP             ) {                                                                      READ(pc);       state_ = 0; }

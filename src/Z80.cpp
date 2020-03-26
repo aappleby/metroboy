@@ -254,17 +254,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     }
   }
 
-  AluOut& ao = alu_out;
-  bool nb = no_branch;
-  bool tb = !no_branch;
-  state_ = -1;
-
-  write = 0xFF;
-
-  if (state == -1) {
-    printf("x\n");
-  }
-
 
   if (handle_int && state == 4) {
     if (imask & intf & INT_JOYPAD_MASK) { xy = 0x0060; int_ack = INT_JOYPAD_MASK; }
@@ -281,6 +270,11 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
   if (STM_C_A   && state == 0) x = 0xFF;
 
   do {
+    state_ = -1;
+    write = 0xFF;
+    AluOut& ao = alu_out;
+    bool nb = no_branch;
+    bool tb = !no_branch;
     uint8_t r = reg_get8();
 
 #define READ(A)     { addr = A;           write = 0; read = 1; }
@@ -297,7 +291,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
 
     if (state == 0) {
       pc = addr + 1;
-
       if (NOP              ) {                                                                      READ(pc);       state_ = 0; }
       if (STOP             ) {                                                                      READ(pc);       state_ = 0; }
       if (DI               ) {                                                                      READ(pc);       state_ = 0; }
@@ -347,6 +340,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
       if (LD_SP_HL         ) {                                                                      READ(hl);       state_ = 1; }
       if (LDM_A_A16        ) {                                                                      READ(pc);       state_ = 1; }
       if (LDM_R_HL         ) {                                                                      READ(hl);       state_ = 1; }
+
       if (POP_BC           ) {                                                                      READ(sp);       state_ = 1; }
       if (POP_DE           ) {                                                                      READ(sp);       state_ = 1; }
       if (POP_HL           ) {                                                                      READ(sp);       state_ = 1; }
@@ -355,13 +349,14 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
       if (PUSH_DE          ) {                                                                      READ(sp);       state_ = 1; }
       if (PUSH_HL          ) {                                                                      READ(sp);       state_ = 1; }
       if (PUSH_AF          ) {                                                                      READ(sp);       state_ = 1; }
+
       if (RET              ) {                                                                      READ(sp);       state_ = 1; }
       if (RET_CC           ) {                                                                      PASS(pc);       state_ = 1; }
       if (RETI             ) {                                                                      READ(sp);       state_ = 1; }
       if (STM_A16_A        ) {                                                                      READ(pc);       state_ = 1; }
       if (LDM_A_A8         ) {                                                                      READ(pc);       state_ = 1; }
       if (STM_A8_A         ) {                                                                      READ(pc);       state_ = 1; }
-      if (LDM_A_C          ) { ao = alu(0,      0,      c            );  y = ao.x;                  READ(xy);       state_ = 1; }
+      if (LDM_A_C          ) {                                           y = c;                     READ(xy);       state_ = 1; }
       if (STM_HL_D8        ) {                                                                      READ(pc);       state_ = 1; }
       if (STM_A16_SP       ) {                                                                      READ(pc);       state_ = 1; }
       if (PREFIX_CB        ) {                                                                      READ(pc);       state_ = 1; }
@@ -370,7 +365,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
       if (STM_DE_A         ) {                                                                      WRITE(de, a);   state_ = 1; }
       if (STM_HLM_A        ) {                                                                      WRITE(hl, a);   state_ = 1; }
       if (STM_HLP_A        ) {                                                                      WRITE(hl, a);   state_ = 1; }
-      if (STM_C_A          ) { ao = alu(0,      0,      c            );  y = ao.x;                  WRITE(xy, a);   state_ = 1; }
+      if (STM_C_A          ) {                                           y = c;                     WRITE(xy, a);   state_ = 1; }
       update_flags();
       break;
 
@@ -391,8 +386,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
       if (JR_CC_R8 && nb   ) { pc = addr + 1;                                                                                           READ(pc);       state_ = 0; break; }
       if (JR_R8            ) { pc = addr + 1;   ao = alu(0,      pcl,    data         );  y = ao.x;                                     PASS(pc);       state_ = 2; break; }
       if (LD_HL_SP_R8      ) { pc = addr + 1;                                                                                           PASS(pc);       state_ = 2; break; }
-      if (CALL_CC_A16 && tb) { pc = addr + 1;                                             y = data;                                     READ(pc);       state_ = 2; break; }
-      if (CALL_CC_A16 && nb) { pc = addr + 1;                                             y = data;                                     READ(pc);       state_ = 2; break; }
+      if (CALL_CC_A16      ) { pc = addr + 1;                                             y = data;                                     READ(pc);       state_ = 2; break; }
       if (RST_NN           ) { sp = addr - 1;                                                                                           WRITE(sp, pch); state_ = 2; break; }
       if (HALT && !unhalt  ) {                                                                                                          READ(pc);       state_ = 1; break; }
       if (HALT && unhalt   ) {                                                                                                          READ(pc);       state_ = 0; break; }
@@ -405,8 +399,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
       if (DEC_HL           ) { hl = addr - 1;                                                                                           READ(pc);       state_ = 0; break; }
       if (DEC_SP           ) { sp = addr - 1;                                                                                           READ(pc);       state_ = 0; break; }
       if (JP_A16           ) { pc = addr + 1;                                             y = data;                                     READ(pc);       state_ = 2; break; }
-      if (JP_CC_A16 && tb  ) { pc = addr + 1;                                             y = data;                                     READ(pc);       state_ = 2; break; }
-      if (JP_CC_A16 && nb  ) { pc = addr + 1;                                             y = data;                                     READ(pc);       state_ = 2; break; }
+      if (JP_CC_A16        ) { pc = addr + 1;                                             y = data;                                     READ(pc);       state_ = 2; break; }
       if (LD_BC_D16        ) { pc = addr + 1;                                             c = data;                                     READ(pc);       state_ = 2; break; }
       if (LD_DE_D16        ) { pc = addr + 1;                                             e = data;                                     READ(pc);       state_ = 2; break; }
       if (LD_HL_D16        ) { pc = addr + 1;                                             l = data;                                     READ(pc);       state_ = 2; break; }
@@ -527,10 +520,10 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
   } while(0);
 
   if (state_ == 0) {
-    ao.f = f;
+    alu_out.f = f;
   }
 
-  ao.f &= 0xF0;
+  alu_out.f &= 0xF0;
   f &= 0xF0;
 
   if (DI && state_ == 0) { ime = false; ime_ = false; }

@@ -302,7 +302,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
       if (DI               ) {                                                                      update_flags();    READ(pc);       state_ = 0; break; }
       if (EI               ) {                                                                      update_flags();    READ(pc);       state_ = 0; break; }
       if (JP_HL            ) {                                                                      update_flags();    READ(hl);       state_ = 0; break; }
-
       if (MV_R_R           ) { ao = alu(0,      r,      0            );  reg_put8(ao.x);            update_flags();    READ(pc);       state_ = 0; break; }
       if (DEC_R            ) { ao = alu(2,      r,      1            );  reg_put8(ao.x);            update_flags();    READ(pc);       state_ = 0; break; }
       if (INC_R            ) { ao = alu(0,      r,      1            );  reg_put8(ao.x);            update_flags();    READ(pc);       state_ = 0; break; }
@@ -312,67 +311,65 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
       if (ADD_HL_DE        ) { ao = alu(0,      l,      e            );  l = ao.x;                  update_flags();    READ(pc);       state_ = 1; break; }
       if (ADD_HL_HL        ) { ao = alu(0,      l,      l            );  l = ao.x;                  update_flags();    READ(pc);       state_ = 1; break; }
       if (ADD_HL_SP        ) { ao = alu(0,      l,      p            );  l = ao.x;                  update_flags();    READ(pc);       state_ = 1; break; }
-
-      if (HALT && no_halt  ) {                                                                                         READ(pc);       state_ = 0; break; }
-
-      if (CALL_A16         ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (INC_AT_HL        ) {                                                                                         READ(hl);       state_ = 1; break; }
-      if (DEC_AT_HL        ) {                                                                                         READ(hl);       state_ = 1; break; }
-      if (ADD_SP_R8        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (ALU_A_D8         ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (ALU_A_HL         ) {                                                                                         READ(hl);       state_ = 1; break; }
-      if (JR_CC_R8         ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (JR_R8            ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (LD_HL_SP_R8      ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (CALL_CC_A16      ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (RST_NN           ) {                                                                                         PASS(sp);       state_ = 1; break; }
-      if (HALT && !no_halt ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (INC_BC           ) {                                                                                         PASS(bc);       state_ = 1; break; }
-      if (DEC_BC           ) {                                                                                         PASS(bc);       state_ = 1; break; }
-      if (INC_DE           ) {                                                                                         PASS(de);       state_ = 1; break; }
-      if (DEC_DE           ) {                                                                                         PASS(de);       state_ = 1; break; }
-      if (INC_HL           ) {                                                                                         PASS(hl);       state_ = 1; break; }
-      if (DEC_HL           ) {                                                                                         PASS(hl);       state_ = 1; break; }
-      if (INC_SP           ) {                                                                                         PASS(sp);       state_ = 1; break; }
-      if (DEC_SP           ) {                                                                                         PASS(sp);       state_ = 1; break; }
-      if (JP_A16           ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (JP_CC_A16        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (LD_BC_D16        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (LD_DE_D16        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (LD_HL_D16        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (LD_SP_D16        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (LDM_A_BC         ) {                                                                                         READ(bc);       state_ = 1; break; }
-      if (LDM_A_DE         ) {                                                                                         READ(de);       state_ = 1; break; }
-      if (LDM_A_HLP        ) {                                                                                         READ(hl);       state_ = 1; break; }
-      if (LDM_A_HLM        ) {                                                                                         READ(hl);       state_ = 1; break; }
-      if (LD_R_D8          ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (LD_SP_HL         ) {                                                                                         READ(hl);       state_ = 1; break; }
-      if (LDM_A_A16        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (LDM_R_HL         ) {                                                                                         READ(hl);       state_ = 1; break; }
-      if (POP_BC           ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (POP_DE           ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (POP_HL           ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (POP_AF           ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (PUSH_BC          ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (PUSH_DE          ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (PUSH_HL          ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (PUSH_AF          ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (RET              ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (RET_CC           ) {                                                                                         PASS(pc);       state_ = 1; break; }
-      if (RETI             ) {                                                                                         READ(sp);       state_ = 1; break; }
-      if (STM_A16_A        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (LDM_A_A8         ) { ao = alu(0,      0,      data         );                                                READ(pc);       state_ = 1; break; }
-      if (STM_A8_A         ) { ao = alu(0,      0,      data         );                                                READ(pc);       state_ = 1; break; }
-      if (LDM_A_C          ) { ao = alu(0,      0,      c            );  y = ao.x;                                     READ(xy);       state_ = 1; break; }
-      if (STM_HL_D8        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (STM_A16_SP       ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (PREFIX_CB        ) {                                                                                         READ(pc);       state_ = 1; break; }
-      if (STM_HL_R         ) {                                                                                         WRITE(hl, r);   state_ = 1; break; }
-      if (STM_BC_A         ) {                                                                                         WRITE(bc, a);   state_ = 1; break; }
-      if (STM_DE_A         ) {                                                                                         WRITE(de, a);   state_ = 1; break; }
-      if (STM_HLM_A        ) {                                                                                         WRITE(hl, a);   state_ = 1; break; }
-      if (STM_HLP_A        ) {                                                                                         WRITE(hl, a);   state_ = 1; break; }
-      if (STM_C_A          ) { ao = alu(0,      0,      c            );  y = ao.x;                                     WRITE(xy, a);   state_ = 1; break; }
+      if (HALT && no_halt  ) {                                                                      update_flags();    READ(pc);       state_ = 0; break; }
+      if (CALL_A16         ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (INC_AT_HL        ) {                                                                      update_flags();    READ(hl);       state_ = 1; break; }
+      if (DEC_AT_HL        ) {                                                                      update_flags();    READ(hl);       state_ = 1; break; }
+      if (ADD_SP_R8        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (ALU_A_D8         ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (ALU_A_HL         ) {                                                                      update_flags();    READ(hl);       state_ = 1; break; }
+      if (JR_CC_R8         ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (JR_R8            ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (LD_HL_SP_R8      ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (CALL_CC_A16      ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (RST_NN           ) {                                                                      update_flags();    PASS(sp);       state_ = 1; break; }
+      if (HALT && !no_halt ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (INC_BC           ) {                                                                      update_flags();    PASS(bc);       state_ = 1; break; }
+      if (DEC_BC           ) {                                                                      update_flags();    PASS(bc);       state_ = 1; break; }
+      if (INC_DE           ) {                                                                      update_flags();    PASS(de);       state_ = 1; break; }
+      if (DEC_DE           ) {                                                                      update_flags();    PASS(de);       state_ = 1; break; }
+      if (INC_HL           ) {                                                                      update_flags();    PASS(hl);       state_ = 1; break; }
+      if (DEC_HL           ) {                                                                      update_flags();    PASS(hl);       state_ = 1; break; }
+      if (INC_SP           ) {                                                                      update_flags();    PASS(sp);       state_ = 1; break; }
+      if (DEC_SP           ) {                                                                      update_flags();    PASS(sp);       state_ = 1; break; }
+      if (JP_A16           ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (JP_CC_A16        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (LD_BC_D16        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (LD_DE_D16        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (LD_HL_D16        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (LD_SP_D16        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (LDM_A_BC         ) {                                                                      update_flags();    READ(bc);       state_ = 1; break; }
+      if (LDM_A_DE         ) {                                                                      update_flags();    READ(de);       state_ = 1; break; }
+      if (LDM_A_HLP        ) {                                                                      update_flags();    READ(hl);       state_ = 1; break; }
+      if (LDM_A_HLM        ) {                                                                      update_flags();    READ(hl);       state_ = 1; break; }
+      if (LD_R_D8          ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (LD_SP_HL         ) {                                                                      update_flags();    READ(hl);       state_ = 1; break; }
+      if (LDM_A_A16        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (LDM_R_HL         ) {                                                                      update_flags();    READ(hl);       state_ = 1; break; }
+      if (POP_BC           ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (POP_DE           ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (POP_HL           ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (POP_AF           ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (PUSH_BC          ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (PUSH_DE          ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (PUSH_HL          ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (PUSH_AF          ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (RET              ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (RET_CC           ) {                                                                      update_flags();    PASS(pc);       state_ = 1; break; }
+      if (RETI             ) {                                                                      update_flags();    READ(sp);       state_ = 1; break; }
+      if (STM_A16_A        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (LDM_A_A8         ) { ao = alu(0,      0,      data         );                             update_flags();    READ(pc);       state_ = 1; break; }
+      if (STM_A8_A         ) { ao = alu(0,      0,      data         );                             update_flags();    READ(pc);       state_ = 1; break; }
+      if (LDM_A_C          ) { ao = alu(0,      0,      c            );  y = ao.x;                  update_flags();    READ(xy);       state_ = 1; break; }
+      if (STM_HL_D8        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (STM_A16_SP       ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (PREFIX_CB        ) {                                                                      update_flags();    READ(pc);       state_ = 1; break; }
+      if (STM_HL_R         ) {                                                                      update_flags();    WRITE(hl, r);   state_ = 1; break; }
+      if (STM_BC_A         ) {                                                                      update_flags();    WRITE(bc, a);   state_ = 1; break; }
+      if (STM_DE_A         ) {                                                                      update_flags();    WRITE(de, a);   state_ = 1; break; }
+      if (STM_HLM_A        ) {                                                                      update_flags();    WRITE(hl, a);   state_ = 1; break; }
+      if (STM_HLP_A        ) {                                                                      update_flags();    WRITE(hl, a);   state_ = 1; break; }
+      if (STM_C_A          ) { ao = alu(0,      0,      c            );  y = ao.x;                  update_flags();    WRITE(xy, a);   state_ = 1; break; }
     }
 
     if (state == 1) {

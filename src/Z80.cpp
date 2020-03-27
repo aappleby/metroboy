@@ -241,12 +241,29 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     }
   }
 
-  if (LDM_A_A8  && state == 0) x = 0xFF;
-  if (STM_A8_A  && state == 0) x = 0xFF;
-  if (LDM_A_C   && state == 0) x = 0xFF;
-  if (STM_C_A   && state == 0) x = 0xFF;
+  //----------------------------------------
+  // INTERRUPTS
 
-  if (PREFIX_CB) {
+  if (handle_int) {
+    if      (state == 0) {                PASS(sp);       state_ = 1; }
+    else if (state == 1) { sp = addr - 1; WRITE(sp, pch); state_ = 2; }
+    else if (state == 2) { sp = addr - 1; WRITE(sp, pcl); state_ = 3; }
+    else if (state == 3) {                PASS(xy);       state_ = 4; }
+    else if (state == 4) {
+      if      (imask & intf & INT_JOYPAD_MASK) { READ(0x0060); int_ack = INT_JOYPAD_MASK; }
+      else if (imask & intf & INT_SERIAL_MASK) { READ(0x0058); int_ack = INT_SERIAL_MASK; }
+      else if (imask & intf & INT_TIMER_MASK)  { READ(0x0050); int_ack = INT_TIMER_MASK; }
+      else if (imask & intf & INT_STAT_MASK)   { READ(0x0048); int_ack = INT_STAT_MASK; }
+      else if (imask & intf & INT_VBLANK_MASK) { READ(0x0040); int_ack = INT_VBLANK_MASK; }
+      else                                     { READ(0x0000); int_ack = 0; } // glitch int address?
+      state_ = 0;
+    }
+  }
+
+  //----------------------------------------
+  // CB OPS
+
+  else if (PREFIX_CB) {
     AluOut& ao = alu_out;
 
     if      (state == 0)       { pc = addr + 1; READ(pc); state_ = 1; }
@@ -258,6 +275,10 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     else if (state == 2)       {                ao = alu_cb(cb, data); y = ao.x;                           update_flags(); WRITE(hl, y); state_ = 3; }
     else if (state == 3)       {                                                                                           READ(pc);     state_ = 0; }
   }
+
+  //----------------------------------------
+  // REGULAR OPS
+
   else {
     state_ = -1;
     write = 0xFF;
@@ -267,28 +288,9 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     uint8_t r = reg_get8();
 
     //----------------------------------------
-    // INTERRUPTS
-
-    if (handle_int) {
-      if      (state == 0) {                PASS(sp);       state_ = 1; }
-      else if (state == 1) { sp = addr - 1; WRITE(sp, pch); state_ = 2; }
-      else if (state == 2) { sp = addr - 1; WRITE(sp, pcl); state_ = 3; }
-      else if (state == 3) {                PASS(xy);       state_ = 4; }
-      else if (state == 4) {
-        if (imask & intf & INT_JOYPAD_MASK) { xy = 0x0060; int_ack = INT_JOYPAD_MASK; }
-        if (imask & intf & INT_SERIAL_MASK) { xy = 0x0058; int_ack = INT_SERIAL_MASK; }
-        if (imask & intf & INT_TIMER_MASK)  { xy = 0x0050; int_ack = INT_TIMER_MASK; }
-        if (imask & intf & INT_STAT_MASK)   { xy = 0x0048; int_ack = INT_STAT_MASK; }
-        if (imask & intf & INT_VBLANK_MASK) { xy = 0x0040; int_ack = INT_VBLANK_MASK; }
-        READ(xy);
-        state_ = 0;
-      }
-    }
-
-    //----------------------------------------
     // QUAD 0
 
-    else if (OP_QUAD == 0) {
+    if (OP_QUAD == 0) {
       if (OP_COL == 0) {
         if (NOP)                     { pc = addr + 1;                                                    READ(pc);     state_ = 0; }
         else if (STM_A16_SP) {                                                                           
@@ -426,16 +428,8 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
 
     else if (OP_QUAD == 1) {
       if (HALT) {
-        if (state == 0) {
-          pc = addr + 1;
-          if (no_halt)  {             state_ = 0; }
-          if (!no_halt) { unhalt = 0; state_ = 1; }
-        }
-        else if (state == 1) {
-          if (!unhalt  ) { state_ = 1; }
-          if (unhalt   ) { state_ = 0; }
-        }
-        READ(pc);
+        if      (state == 0) { pc = addr + 1; unhalt = 0;  READ(pc);     state_ = !no_halt; }
+        else if (state == 1) {                             READ(pc);     state_ = !unhalt; }
       }
       else if (OP_COL == 6) {
         if      (state == 0) { pc = addr + 1;              READ(hl);     state_ = 1; }
@@ -500,9 +494,9 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         }
       }
       else if (STM_A8_A) {
-        if      (state == 0)       { pc = addr + 1;           READ(pc);     state_ = 1; }
-        else if (state == 1)       { pc = addr + 1; y = data; WRITE(xy, a); state_ = 2; }
-        else if (state == 2)       {                          READ(pc);     state_ = 0; }
+        if      (state == 0)       { pc = addr + 1;                     READ(pc);     state_ = 1; }
+        else if (state == 1)       { pc = addr + 1; xy = 0xFF00 | data; WRITE(xy, a); state_ = 2; }
+        else if (state == 2)       {                                    READ(pc);     state_ = 0; }
       }
       else if (ADD_SP_R8) {
         if      (state == 0)       { pc = addr + 1;                                                      READ(pc); state_ = 1; }
@@ -554,7 +548,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         else if (state == 3)       {                          READ(xy); state_ = 0; }
       }
       else if (STM_C_A) {
-        if      (state == 0)       { pc = addr + 1; y = c;    WRITE(xy, a);   state_ = 1; }
+        if      (state == 0)       { pc = addr + 1; xy = 0xFF00 | c;    WRITE(xy, a);   state_ = 1; }
         else if (state == 1)       {                          READ(pc);       state_ = 0; }
       }
       else if (STM_A16_A) {
@@ -564,7 +558,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         else if (state == 3)       {                          READ(pc);     state_ = 0; }
       }
       else if (LDM_A_C) {
-        if      (state == 0)       { pc = addr + 1; y = c;    READ(xy); state_ = 1; }
+        if      (state == 0)       { pc = addr + 1; xy = 0xFF00 | c;    READ(xy); state_ = 1; }
         else if (state == 1)       {                a = data; READ(pc); state_ = 0; }
       }
       else if (LDM_A_A16) {

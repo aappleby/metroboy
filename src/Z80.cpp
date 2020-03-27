@@ -424,6 +424,32 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         }
         break;
       }
+      else if (STM_A8_A) {
+        if (state == 0) { pc = addr + 1;           READ(pc);     state_ = 1; }
+        if (state == 1) { pc = addr + 1; y = data; WRITE(xy, a); state_ = 2; }
+        if (state == 2) {                          READ(pc);     state_ = 0; }
+        break;
+      }
+      else if (ADD_SP_R8) {
+        if (state == 0) { pc = addr + 1;                                      update_flags(); READ(pc); state_ = 1; }
+        if (state == 1) { pc = addr + 1; ao = alu(0, p,      data); y = ao.x; update_flags(); PASS(pc); state_ = 2; }
+        if (state == 2) {                ao = alu(1, s, sxt(data)); x = ao.x;                 PASS(xy); state_ = 3; }
+        if (state == 3) { sp = addr;                                                          READ(pc); state_ = 0; }
+        break;
+      }
+      else if (LDM_A_A8) {
+        if (state == 0) { pc = addr + 1;                     READ(pc); state_ = 1; }
+        if (state == 1) { pc = addr + 1; xy = 0xFF00 | data; READ(xy); state_ = 2; }
+        if (state == 2) {                a = data;           READ(pc); state_ = 0; }
+        break;
+      }
+      else if (LD_HL_SP_R8) {
+        if (state == 0) { pc = addr + 1;                                       READ(pc); state_ = 1; }
+        if (state == 1) { pc = addr + 1;                                       PASS(pc); state_ = 2; }
+        if (state == 2) { ao = alu(0, p,      data); l = ao.x; update_flags(); PASS(pc); state_ = 3; }
+        if (state == 3) { ao = alu(1, s, sxt(data)); h = ao.x;                 READ(pc); state_ = 0; }
+        break;
+      }
       else if (RET_CC) {
         if (state == 0)       { pc = addr + 1;           PASS(pc); state_ = 1; }
         if (state == 1 && tb) {                          READ(sp); state_ = 2; }

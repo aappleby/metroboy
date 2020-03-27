@@ -280,15 +280,28 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     // QUAD 0
 
     else if (OP_QUAD == 0) {
-      if (NOP) {
-        pc = addr + 1;
-        READ(pc);
-        state_ = 0;
+      if (NOP)          { pc = addr + 1;           READ(pc); state_ = 0; break; }
+      else if (STM_A16_SP) {
+        if (state == 0) { pc = addr + 1;           READ(pc);     state_ = 1; }
+        if (state == 1) { pc = addr + 1; y = data; READ(pc);     state_ = 2; }
+        if (state == 2) { pc = addr + 1; x = data; WRITE(xy, p); state_ = 3; }
+        if (state == 3) { xy = addr + 1;           WRITE(xy, s); state_ = 4; }
+        if (state == 4) {                          READ(pc);     state_ = 0; }
+        break;
       }
-      else if (STOP) {
-        pc = addr + 1;
-        READ(pc);
-        state_ = 0;
+      else if (STOP)    { pc = addr + 1;           READ(pc); state_ = 0; break; }
+      else if (JR_R8) {
+        if (state == 0) { pc = addr + 1;                                        READ(pc); state_ = 1; }
+        if (state == 1) { pc = addr + 1; ao = alu(0, pcl,      data); y = ao.x; PASS(pc); state_ = 2; }
+        if (state == 2) {                ao = alu(1, pch, sxt(data)); x = ao.x; READ(xy); state_ = 0; }
+        break;
+      }
+      else if (JR_CC_R8) {
+        if (state == 0)       { pc = addr + 1;                                        READ(pc); state_ = 1; }
+        if (state == 1 && nb) { pc = addr + 1;                                        READ(pc); state_ = 0; }
+        if (state == 1 && tb) { pc = addr + 1; ao = alu(0, pcl,      data); y = ao.x; PASS(pc); state_ = 2; }
+        if (state == 2)       {                ao = alu(1, pch, sxt(data)); x = ao.x; READ(xy); state_ = 0; }
+        break;
       }
       else {
         if (state == 0) pc = addr + 1;

@@ -424,6 +424,15 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         }
         break;
       }
+      else if (RET_CC) {
+        if (state == 0)       { pc = addr + 1;           PASS(pc); state_ = 1; }
+        if (state == 1 && tb) {                          READ(sp); state_ = 2; }
+        if (state == 1 && nb) {                          READ(pc); state_ = 0; }
+        if (state == 2)       { sp = addr + 1; y = data; READ(sp); state_ = 3; }
+        if (state == 3)       { sp = addr + 1; x = data; PASS(xy); state_ = 4; }
+        if (state == 4)       {                          READ(xy); state_ = 0; }
+        break;
+      }
       else if (RET) {
         if (state == 0) { pc = addr + 1;           READ(sp); state_ = 1; }
         if (state == 1) { sp = addr + 1; y = data; READ(sp); state_ = 2; }

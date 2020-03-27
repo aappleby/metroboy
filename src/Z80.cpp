@@ -408,8 +408,25 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         break;
       }
       else if (OP_COL == 6) {
+        if (STM_HL_D8) {
+          if (state == 0) { pc = addr + 1;           READ(pc);     state_ = 1; }
+          if (state == 1) { pc = addr + 1; y = data; WRITE(hl, y); state_ = 2; }
+          if (state == 2) {                          READ(pc);     state_ = 0; }
+        }
+        else if (LD_R_D8) {
+          if (state == 0) { pc = addr + 1;                 READ(pc); state_ = 1; }
+          if (state == 1) { pc = addr + 1; reg_put8(data); READ(pc); state_ = 0; }
+        }
+        break;
       }
       else if (OP_COL == 7) {
+        pc = addr + 1;
+        ao = rlu(OP_ROW, r);
+        a = ao.x;
+        update_flags();
+        READ(pc);
+        state_ = 0;
+        break;
       }
       else {
         if (state == 0) pc = addr + 1;
@@ -642,31 +659,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         if (state == 3) { xy = op & 0x38; READ(xy);       state_ = 0; }
       }
       break;
-    }
-
-    //----------------------------------------
-
-    if (state == 0) {
-      pc = addr + 1;
-      if (DEC_R            ) { ao = alu(2,      r,      1            );  reg_put8(ao.x);            READ(pc);       state_ = 0; }
-      if (DEC_AT_HL        ) {                                                                      READ(hl);       state_ = 1; }
-      if (LD_R_D8          ) {                                                                      READ(pc);       state_ = 1; }
-      if (STM_HL_D8        ) {                                                                      READ(pc);       state_ = 1; }
-      if (RLU_R            ) { ao = rlu(OP_ROW, r                    );  a = ao.x;                  READ(pc);       state_ = 0; }
-      update_flags();
-      break;
-
-    }
-
-    if (state == 1) {
-      if (DEC_AT_HL        ) {                  ao = alu(2,      data,   1            );  y = ao.x;                  update_flags();    WRITE(hl, y);   state_ = 2; break; }
-      if (LD_R_D8          ) { pc = addr + 1;                                             reg_put8(data);                               READ(pc);       state_ = 0; break; }
-      if (STM_HL_D8        ) { pc = addr + 1;                                             y = data;                                     WRITE(hl, y);   state_ = 2; break; }
-    }
-
-    if (state == 2) {
-      if (DEC_AT_HL        ) {                                                                                                          READ(pc);       state_ = 0; break; }
-      if (STM_HL_D8        ) {                                                                                                          READ(pc);       state_ = 0; break; }
     }
 
   } while(0);

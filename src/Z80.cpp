@@ -344,8 +344,50 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         break;
       }
       else if (OP_COL == 2) {
+        if (state == 0) {
+          if (STM_BC_A ) { pc = addr + 1;           WRITE(bc, a); state_ = 1; }
+          if (STM_DE_A ) { pc = addr + 1;           WRITE(de, a); state_ = 1; }
+          if (STM_HLP_A) { pc = addr + 1;           WRITE(hl, a); state_ = 1; }
+          if (STM_HLM_A) { pc = addr + 1;           WRITE(hl, a); state_ = 1; }
+          if (LDM_A_BC ) { pc = addr + 1;           READ(bc);     state_ = 1; }
+          if (LDM_A_DE ) { pc = addr + 1;           READ(de);     state_ = 1; }
+          if (LDM_A_HLP) { pc = addr + 1;           READ(hl);     state_ = 1; }
+          if (LDM_A_HLM) { pc = addr + 1;           READ(hl);     state_ = 1; }
+        }
+        else if (state == 1) {
+          if (STM_BC_A ) {                          READ(pc);     state_ = 0; }
+          if (STM_DE_A ) {                          READ(pc);     state_ = 0; }
+          if (STM_HLP_A) { hl = addr + 1;           READ(pc);     state_ = 0; }
+          if (STM_HLM_A) { hl = addr - 1;           READ(pc);     state_ = 0; }
+          if (LDM_A_BC ) { bc = addr;     a = data; READ(pc);     state_ = 0; }
+          if (LDM_A_DE ) { de = addr;     a = data; READ(pc);     state_ = 0; }
+          if (LDM_A_HLP) { hl = addr + 1; a = data; READ(pc);     state_ = 0; }
+          if (LDM_A_HLM) { hl = addr - 1; a = data; READ(pc);     state_ = 0; }
+        }
+        break;
       }
       else if (OP_COL == 3) {
+        if (state == 0) {
+          if (INC_BC) { pc = addr + 1; PASS(bc); state_ = 1; }
+          if (DEC_BC) { pc = addr + 1; PASS(bc); state_ = 1; }
+          if (INC_DE) { pc = addr + 1; PASS(de); state_ = 1; }
+          if (DEC_DE) { pc = addr + 1; PASS(de); state_ = 1; }
+          if (INC_HL) { pc = addr + 1; PASS(hl); state_ = 1; }
+          if (DEC_HL) { pc = addr + 1; PASS(hl); state_ = 1; }
+          if (INC_SP) { pc = addr + 1; PASS(sp); state_ = 1; }
+          if (DEC_SP) { pc = addr + 1; PASS(sp); state_ = 1; }
+        }
+        else if (state == 1) {
+          if (INC_BC) { bc = addr + 1; READ(pc); state_ = 0; }
+          if (DEC_BC) { bc = addr - 1; READ(pc); state_ = 0; }
+          if (INC_DE) { de = addr + 1; READ(pc); state_ = 0; }
+          if (DEC_DE) { de = addr - 1; READ(pc); state_ = 0; }
+          if (INC_HL) { hl = addr + 1; READ(pc); state_ = 0; }
+          if (DEC_HL) { hl = addr - 1; READ(pc); state_ = 0; }
+          if (INC_SP) { sp = addr + 1; READ(pc); state_ = 0; }
+          if (DEC_SP) { sp = addr - 1; READ(pc); state_ = 0; }
+        }
+        break;
       }
       else if (OP_COL == 4) {
       }
@@ -592,64 +634,21 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
 
     if (state == 0) {
       pc = addr + 1;
-
-      if (STM_BC_A         ) {                                                                      WRITE(bc, a);   state_ = 1; }
-      if (LDM_A_BC         ) {                                                                      READ(bc);       state_ = 1; }
-      if (STM_DE_A         ) {                                                                      WRITE(de, a);   state_ = 1; }
-      if (LDM_A_DE         ) {                                                                      READ(de);       state_ = 1; }
-      if (STM_HLP_A        ) {                                                                      WRITE(hl, a);   state_ = 1; }
-      if (LDM_A_HLP        ) {                                                                      READ(hl);       state_ = 1; }
-      if (STM_HLM_A        ) {                                                                      WRITE(hl, a);   state_ = 1; }
-      if (LDM_A_HLM        ) {                                                                      READ(hl);       state_ = 1; }
-
-      if (INC_BC           ) {                                                                      PASS(bc);       state_ = 1; }
-      if (DEC_BC           ) {                                                                      PASS(bc);       state_ = 1; }
-      if (INC_DE           ) {                                                                      PASS(de);       state_ = 1; }
-      if (DEC_DE           ) {                                                                      PASS(de);       state_ = 1; }
-      if (INC_HL           ) {                                                                      PASS(hl);       state_ = 1; }
-      if (DEC_HL           ) {                                                                      PASS(hl);       state_ = 1; }
-      if (INC_SP           ) {                                                                      PASS(sp);       state_ = 1; }
-      if (DEC_SP           ) {                                                                      PASS(sp);       state_ = 1; }
-
       if (INC_R            ) { ao = alu(0,      r,      1            );  reg_put8(ao.x);            READ(pc);       state_ = 0; }
       if (INC_AT_HL        ) {                                                                      READ(hl);       state_ = 1; }
-
       if (DEC_R            ) { ao = alu(2,      r,      1            );  reg_put8(ao.x);            READ(pc);       state_ = 0; }
       if (DEC_AT_HL        ) {                                                                      READ(hl);       state_ = 1; }
-
       if (LD_R_D8          ) {                                                                      READ(pc);       state_ = 1; }
       if (STM_HL_D8        ) {                                                                      READ(pc);       state_ = 1; }
-
       if (RLU_R            ) { ao = rlu(OP_ROW, r                    );  a = ao.x;                  READ(pc);       state_ = 0; }
-
       update_flags();
       break;
 
     }
 
     if (state == 1) {
-      if (STM_BC_A         ) {                                                                                                          READ(pc);       state_ = 0; break; }
-      if (LDM_A_BC         ) { bc = addr;                                                 a = data;                                     READ(pc);       state_ = 0; break; }
-      if (STM_DE_A         ) {                                                                                                          READ(pc);       state_ = 0; break; }
-      if (LDM_A_DE         ) { de = addr;                                                 a = data;                                     READ(pc);       state_ = 0; break; }
-      if (STM_HLP_A        ) { hl = addr + 1;                                                                                           READ(pc);       state_ = 0; break; }
-      if (LDM_A_HLP        ) { hl = addr + 1;                                             a = data;                                     READ(pc);       state_ = 0; break; }
-      if (STM_HLM_A        ) { hl = addr - 1;                                                                                           READ(pc);       state_ = 0; break; }
-      if (LDM_A_HLM        ) { hl = addr - 1;                                             a = data;                                     READ(pc);       state_ = 0; break; }
-
-      if (INC_BC           ) { bc = addr + 1;                                                                                           READ(pc);       state_ = 0; break; }
-      if (DEC_BC           ) { bc = addr - 1;                                                                                           READ(pc);       state_ = 0; break; }
-      if (INC_DE           ) { de = addr + 1;                                                                                           READ(pc);       state_ = 0; break; }
-      if (DEC_DE           ) { de = addr - 1;                                                                                           READ(pc);       state_ = 0; break; }
-      if (INC_HL           ) { hl = addr + 1;                                                                                           READ(pc);       state_ = 0; break; }
-      if (DEC_HL           ) { hl = addr - 1;                                                                                           READ(pc);       state_ = 0; break; }
-      if (INC_SP           ) { sp = addr + 1;                                                                                           READ(pc);       state_ = 0; break; }
-      if (DEC_SP           ) { sp = addr - 1;                                                                                           READ(pc);       state_ = 0; break; }
-
       if (INC_AT_HL        ) {                  ao = alu(0,      data,   1            );  y = ao.x;                                     WRITE(hl, y);   state_ = 2; break; }
-
       if (DEC_AT_HL        ) {                  ao = alu(2,      data,   1            );  y = ao.x;                  update_flags();    WRITE(hl, y);   state_ = 2; break; }
-
       if (LD_R_D8          ) { pc = addr + 1;                                             reg_put8(data);                               READ(pc);       state_ = 0; break; }
       if (STM_HL_D8        ) { pc = addr + 1;                                             y = data;                                     WRITE(hl, y);   state_ = 2; break; }
     }

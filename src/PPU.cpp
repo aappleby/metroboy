@@ -200,7 +200,6 @@ Req PPU::get_vbus_req(int /*tcycle*/) {
   }
 
   return {
-    .phase = 0,
     .addr  = fetch_addr,
     .data  = 0,
     .read  = fetch_addr != 0,
@@ -241,7 +240,9 @@ Req PPU::get_obus_req(int /*tcycle*/) {
 
 //-----------------------------------------------------------------------------
 
-Ack PPU::on_ibus_req(Req ibus_req) {
+Ack PPU::on_ibus_req(int tcycle, Req ibus_req) {
+  int tphase = tcycle & 3;
+
   if (ibus_req.addr == ADDR_DMA) return {};
   bool hit = (ADDR_GPU_BEGIN <= ibus_req.addr && ibus_req.addr <= ADDR_GPU_END);
   uint8_t data = (uint8_t)ibus_req.data;
@@ -264,7 +265,6 @@ Ack PPU::on_ibus_req(Req ibus_req) {
     }
 
     return {
-      .phase = ibus_req.phase,
       .addr  = ibus_req.addr,
       .data  = data,
       .read  = 1,
@@ -272,7 +272,7 @@ Ack PPU::on_ibus_req(Req ibus_req) {
     };
   }
 
-  if (hit && ibus_req.write && ibus_req.phase == 0) {
+  if (hit && ibus_req.write && tphase == 0) {
     switch (ibus_req.addr) {
     case ADDR_LCDC: lcdc = data; break;
     case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
@@ -291,7 +291,6 @@ Ack PPU::on_ibus_req(Req ibus_req) {
     update_palettes();
 
     return {
-      .phase = ibus_req.phase,
       .addr  = ibus_req.addr,
       .data  = data,
       .read  = 0,

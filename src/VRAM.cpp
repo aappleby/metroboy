@@ -21,7 +21,6 @@ Ack VRAM::on_vbus_req(Req vbus_req) {
   if (vram_hit && vbus_req.write) {
     ram[vbus_req.addr & 0x1FFF] = uint8_t(vbus_req.data);
     return {
-      .phase = vbus_req.phase,
       .addr  = vbus_req.addr,
       .data  = vbus_req.data,
       .read  = 0,
@@ -30,7 +29,6 @@ Ack VRAM::on_vbus_req(Req vbus_req) {
   }
   else if (vram_hit && vbus_req.read) {
     return {
-      .phase = vbus_req.phase,
       .addr  = vbus_req.addr,
       .data  = ram[vbus_req.addr & 0x1FFF],
       .read  = 1,

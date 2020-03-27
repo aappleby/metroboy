@@ -7,15 +7,15 @@ struct DMA {
 
   //----------
 
-  Ack  on_ibus_req(Req ibus_req);
+  Ack  on_ibus_req(int tcycle, const Req& ibus_req);
 
   Req  get_ebus_req(int tcycle);
   Req  get_vbus_req(int tcycle);
-  Req  get_obus_req(int tcycle);
+  void get_obus_req(int tcycle, Req& req);
 
-  void on_ebus_ack(Ack ibus_ack);
-  void on_vbus_ack(Ack vbus_ack);
-  void on_obus_ack(Ack obus_ack);
+  void on_ebus_ack(const Ack& ibus_ack);
+  void on_vbus_ack(const Ack& vbus_ack);
+  void on_obus_ack(const Ack& obus_ack);
 
   void tock(int tcycle);
   void dump(std::string& d);

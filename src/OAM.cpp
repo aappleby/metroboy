@@ -23,7 +23,6 @@ Ack OAM::on_obus_req(Req obus_req) {
     ram[oam_addr >> 1] = d;
 
     return {
-      .phase = obus_req.phase,
       .addr  = obus_req.addr,
       .data  = obus_req.data,
       .read  = 0,
@@ -32,7 +31,6 @@ Ack OAM::on_obus_req(Req obus_req) {
   }
   else if (hit && obus_req.read) {
     return {
-      .phase = obus_req.phase,
       .addr  = obus_req.addr,
       .data  = ram[(obus_req.addr & 0x00FF) >> 1],
       .read  = 1,

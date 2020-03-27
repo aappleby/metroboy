@@ -6,7 +6,7 @@
 struct Z80 {
   void    reset(uint16_t new_pc);
 
-  uint8_t get_int_ack() const { return out_int_ack; }
+  uint8_t get_int_ack() const { return int_ack; }
 
   Req  get_bus_req() const;
   void on_bus_ack(Ack ibus_ack_);
@@ -24,8 +24,6 @@ struct Z80 {
 private:
   int tcycle;
 
-  uint8_t out_int_ack;
-
   uint16_t op_addr;
   uint8_t op;
   uint8_t cb;
@@ -33,6 +31,12 @@ private:
   bool interrupt;
 
   int state, state_;
+  uint16_t addr;
+  uint8_t  data;
+  bool     read;
+  bool     write;
+  AluOut   alu_out;
+  uint8_t  int_ack;
 
 #pragma warning(push)
 #pragma warning(disable : 4201)
@@ -45,22 +49,6 @@ private:
   union { uint16_t xy; struct { uint8_t   y; uint8_t   x; }; };
 #pragma warning(pop)
 
-  uint16_t addr;
-  uint8_t  data;
-  uint8_t  read;
-  uint8_t  write;
-
-  bool no_branch;
-  bool no_halt;
-
-  AluOut alu_out;
-
-  bool handle_int;
-  uint8_t int_ack;
-  uint8_t imask;
-  uint8_t intf;
-
-  //----------
 
 private:
 

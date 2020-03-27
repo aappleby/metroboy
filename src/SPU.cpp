@@ -317,7 +317,6 @@ void SPU::tock(const int tcycle_) {
 Ack SPU::bus_read(Req ibus_req) {
 
   Ack ack = {
-    .phase = 0,
     .addr  = ibus_req.addr,
     .data  = 0,
     .read  = 1,
@@ -382,7 +381,6 @@ Ack SPU::bus_write(Req ibus_req) {
   bool sound_on = (nr52 & 0x80);
 
   Ack ack = {
-    .phase = 0,
     .addr  = ibus_req.addr,
     .data  = ibus_req.data,
     .read  = 0,
@@ -523,7 +521,6 @@ Ack SPU::bus_write(Req ibus_req) {
   }
 
   return {
-    .phase = 0,
     .addr  = ibus_req.addr,
     .data  = ibus_req.data,
     .read  = 0,

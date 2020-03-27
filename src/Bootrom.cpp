@@ -58,7 +58,6 @@ Ack Bootrom::on_ibus_req(Req ibus_req) {
   if (ibus_req.write && ibus_req.addr == ADDR_DISABLE_BOOTROM) {
     disable_bootrom |= (ibus_req.data != 0);
     return {
-      .phase = ibus_req.phase,
       .addr = ibus_req.addr,
       .data = ibus_req.data,
       .read = 0,
@@ -68,7 +67,6 @@ Ack Bootrom::on_ibus_req(Req ibus_req) {
 
   if (ibus_req.read && ibus_req.addr <= 0x00FF) {
     return {
-      .phase = ibus_req.phase,
       .addr = ibus_req.addr,
       .data = DMG_ROM_bin[ibus_req.addr],
       .read = 1,

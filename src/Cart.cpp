@@ -92,7 +92,6 @@ Ack Cart::on_ebus_req(Req ebus_req) {
       }
     }
     return {
-      .phase = ebus_req.phase,
       .addr  = ebus_req.addr,
       .data  = ebus_req.data,
       .read  = 0,
@@ -101,7 +100,6 @@ Ack Cart::on_ebus_req(Req ebus_req) {
   }
   else if (ebus_req.read && (rom_hit || ram_hit)) {
     Ack ack = {
-      .phase = ebus_req.phase,
       .addr  = ebus_req.addr,
       .data  = 0,
       .read  = 1,

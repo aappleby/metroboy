@@ -9,19 +9,17 @@ typedef int16_t sample_t;
 //-----------------------------------------------------------------------------
 
 struct Req {
-  int      phase;
   uint16_t addr;
   uint16_t data;
-  uint8_t  read;
-  uint8_t  write;
+  uint16_t read;
+  uint16_t write;
 };
 
 struct Ack {
-  int      phase;
   uint16_t addr;
   uint16_t data;
-  uint8_t  read;
-  uint8_t  write;
+  uint16_t read;
+  uint16_t write;
 };
 
 const uint8_t F_CARRY = 0x10;

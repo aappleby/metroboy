@@ -53,9 +53,9 @@ public:
   bool save_dump = false;
   
   //double fast_cycles = 114 * 154;
-  double sim_budget_msec = 15.0;
+  double sim_budget_msec = 200.0;
   double sim_time_msec = 0.0;
-  double fast_cycles = 10000;
+  double fast_cycles = 400000;
   int last_cycles = 0;
 
   RunMode runmode = STEP_CYCLE;

@@ -17,7 +17,6 @@ Ack IRAM::on_ebus_req(Req ebus_req) {
 
   if (ebus_req.read) {
     return {
-      .phase = ebus_req.phase,
       .addr  = ebus_req.addr,
       .data  = ram[ebus_req.addr & 0x1FFF],
       .read  = 1,
@@ -27,7 +26,6 @@ Ack IRAM::on_ebus_req(Req ebus_req) {
   else if (ebus_req.write) {
     ram[ebus_req.addr & 0x1FFF] = uint8_t(ebus_req.data);
     return {
-      .phase = ebus_req.phase,
       .addr  = ebus_req.addr,
       .data  = ebus_req.data,
       .read  = 0,

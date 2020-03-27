@@ -16,7 +16,6 @@ Ack Serial::on_ibus_req(Req ibus_req) {
   if ((ibus_req.addr != ADDR_SB) && (ibus_req.addr != ADDR_SC)) return {};
 
   Ack ack;
-  ack.phase = ibus_req.phase;
   ack.addr  = ibus_req.addr;
   ack.data  = ibus_req.data;
   ack.read  = ibus_req.read;

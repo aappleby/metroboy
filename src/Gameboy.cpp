@@ -50,7 +50,6 @@ Ack Gameboy::on_ibus_req(Req req) {
     if (req.addr == ADDR_IF) intf = (uint8_t)req.data | 0b11100000;
     if (req.addr == ADDR_IE) imask = (uint8_t)req.data;
     return {
-      .phase = req.phase,
       .addr  = req.addr,
       .data  = req.data,
       .read  = 0,
@@ -62,7 +61,6 @@ Ack Gameboy::on_ibus_req(Req req) {
     if (req.addr == ADDR_IF) data = 0b11100000 | intf;
     if (req.addr == ADDR_IE) data = imask;
     return {
-      .phase = req.phase,
       .addr  = req.addr,
       .data  = data,
       .read  = 1,
@@ -99,11 +97,10 @@ Ack merge(Ack a, Ack b) {
   assert(a.data == 0 || b.data == 0);
   assert(a.read + a.write + b.read + b.write <= 1);
   return {
-    int     (a.phase | b.phase),
     uint16_t(a.addr  | b.addr),
     uint16_t(a.data  | b.data),
-    uint8_t (a.read  | b.read),
-    uint8_t (a.write | b.write)
+    uint16_t(a.read  | b.read),
+    uint16_t(a.write | b.write)
   };
 }
 
@@ -173,7 +170,8 @@ void Gameboy::tock() {
   {
     obus_req_cpu = cpu_addr_is_oam  ? bus_req_cpu : Req{0};
     obus_req_ppu = ppu.get_obus_req(tcycle);
-    obus_req_dma = dma.get_obus_req(tcycle);
+    //obus_req_dma = dma.get_obus_req(tcycle);
+    dma.get_obus_req(tcycle, obus_req_dma);
 
     Req obus_req = obus_req_cpu;
     if (obus_req_ppu.read) obus_req = obus_req_ppu;
@@ -203,11 +201,12 @@ void Gameboy::tock() {
   ibus_ack_zram = zram  .on_ibus_req(bus_req_cpu);
   ibus_ack_joy  = joypad.on_ibus_req(bus_req_cpu);
   ibus_ack_ser  = serial.on_ibus_req(bus_req_cpu);
-  ibus_ack_ppu  = ppu   .on_ibus_req(bus_req_cpu);
+  ibus_ack_ppu  = ppu   .on_ibus_req(tcycle, bus_req_cpu);
   ibus_ack_spu  = spu   .on_ibus_req(bus_req_cpu);
-  ibus_ack_dma  = dma   .on_ibus_req(bus_req_cpu);
+  ibus_ack_dma  = dma   .on_ibus_req(tcycle, bus_req_cpu);
   ibus_ack_boot = boot  .on_ibus_req(bus_req_cpu);
 
+  /*
   ibus_ack_cpu = merge(ibus_ack_gb,
                        ibus_ack_tim,
                        ibus_ack_zram,
@@ -217,8 +216,24 @@ void Gameboy::tock() {
                        ibus_ack_spu,
                        ibus_ack_dma,
                        ibus_ack_boot);
+  */
+  ibus_ack_cpu = { 0 };
 
-  bus_ack_cpu = merge(ibus_ack_cpu, ebus_ack_cpu, obus_ack_cpu, vbus_ack_cpu);
+  if (ibus_ack_gb  .read) { ibus_ack_cpu.data = ibus_ack_gb  .data; ibus_ack_cpu.read = 1; }
+  if (ibus_ack_tim .read) { ibus_ack_cpu.data = ibus_ack_tim .data; ibus_ack_cpu.read = 1; }
+  if (ibus_ack_zram.read) { ibus_ack_cpu.data = ibus_ack_zram.data; ibus_ack_cpu.read = 1; }
+  if (ibus_ack_joy .read) { ibus_ack_cpu.data = ibus_ack_joy .data; ibus_ack_cpu.read = 1; }
+  if (ibus_ack_ser .read) { ibus_ack_cpu.data = ibus_ack_ser .data; ibus_ack_cpu.read = 1; }
+  if (ibus_ack_ppu .read) { ibus_ack_cpu.data = ibus_ack_ppu .data; ibus_ack_cpu.read = 1; }
+  if (ibus_ack_spu .read) { ibus_ack_cpu.data = ibus_ack_spu .data; ibus_ack_cpu.read = 1; }
+  if (ibus_ack_dma .read) { ibus_ack_cpu.data = ibus_ack_dma .data; ibus_ack_cpu.read = 1; }
+  if (ibus_ack_boot.read) { ibus_ack_cpu.data = ibus_ack_boot.data; ibus_ack_cpu.read = 1; }
+
+  bus_ack_cpu = { 0 };
+  if (ibus_ack_cpu.read) { bus_ack_cpu.data = ibus_ack_cpu.data; bus_ack_cpu.read = 1; }
+  if (ebus_ack_cpu.read) { bus_ack_cpu.data = ebus_ack_cpu.data; bus_ack_cpu.read = 1; }
+  if (obus_ack_cpu.read) { bus_ack_cpu.data = obus_ack_cpu.data; bus_ack_cpu.read = 1; }
+  if (vbus_ack_cpu.read) { bus_ack_cpu.data = vbus_ack_cpu.data; bus_ack_cpu.read = 1; }
 
   z80.on_bus_ack(bus_ack_cpu);
 

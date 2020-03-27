@@ -195,8 +195,8 @@ void DumpPainter::render(Viewport view, double x, double y, int w, int h, const 
   }
 
 
-  glUniform4f(glGetUniformLocation(dump_prog, "fg_color"), 0.8, 0.8, 0.8, 1.0);
-  glUniform4f(glGetUniformLocation(dump_prog, "bg_color"), 0.0, 0.0, 0.0, 0.5);
+  glUniform4f(glGetUniformLocation(dump_prog, "fg_color"), 0.8f, 0.8f, 0.8f, 1.0f);
+  glUniform4f(glGetUniformLocation(dump_prog, "bg_color"), 0.0f, 0.0f, 0.0f, 0.5f);
 
   bind_texture(dump_prog, "dump_tab", 0, dump_tab);
   //bind_texture(dump_prog, "atlas_tex", 1, atlas_tex);

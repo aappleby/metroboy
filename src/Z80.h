@@ -30,7 +30,7 @@ private:
   bool ime, ime_;
   bool interrupt;
 
-  int state, state_;
+  int      state, state_;
   uint16_t addr;
   uint8_t  data;
   bool     read;
@@ -57,9 +57,6 @@ private:
 
   uint8_t  reg_get8() const;
   void     reg_put8(uint8_t reg);
-
-  uint8_t  cb_get8() const;
-  void     cb_put8(uint8_t reg);
 
   void     update_flags();
 

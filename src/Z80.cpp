@@ -120,8 +120,6 @@
 #define OP_CB_R       (PREFIX_CB && CB_COL != 6)
 #define OP_CB_HL      (PREFIX_CB && CB_COL == 6)
 
-#define INTERRUPT     ((imask_ & intf_) && ime)
-
 #define ALU_A_D8      ((OP_QUAD == 3) && (OP_COL == 6))
 #define RST_NN        ((OP_QUAD == 3) && (OP_COL == 7))
 
@@ -207,6 +205,9 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
   alu_out.f &= 0xF0;
   f &= 0xF0;
   state = state_;
+  state_ = -1;
+  read = 0;
+  write = 0;
   tcycle = tcycle_;
   ime = ime_;
 
@@ -262,9 +263,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
   // REGULAR OPS
 
   else {
-    state_ = -1;
-    read = 0;
-    write = 0;
     AluOut& ao = alu_out;
 
     //----------------------------------------

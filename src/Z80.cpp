@@ -246,7 +246,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
   if (LDM_A_C   && state == 0) x = 0xFF;
   if (STM_C_A   && state == 0) x = 0xFF;
 
-  do {
+  {
     state_ = -1;
     write = 0xFF;
     AluOut& ao = alu_out;
@@ -262,11 +262,11 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
     // INTERRUPTS
 
     if (handle_int) {
-      if (state == 0) {                PASS(sp);       state_ = 1; break; }
-      if (state == 1) { sp = addr - 1; WRITE(sp, pch); state_ = 2; break; }
-      if (state == 2) { sp = addr - 1; WRITE(sp, pcl); state_ = 3; break; }
-      if (state == 3) {                PASS(xy);       state_ = 4; break; }
-      if (state == 4) {
+      if      (state == 0) {                PASS(sp);       state_ = 1; }
+      else if (state == 1) { sp = addr - 1; WRITE(sp, pch); state_ = 2; }
+      else if (state == 2) { sp = addr - 1; WRITE(sp, pcl); state_ = 3; }
+      else if (state == 3) {                PASS(xy);       state_ = 4; }
+      else if (state == 4) {
         if (imask & intf & INT_JOYPAD_MASK) { xy = 0x0060; int_ack = INT_JOYPAD_MASK; }
         if (imask & intf & INT_SERIAL_MASK) { xy = 0x0058; int_ack = INT_SERIAL_MASK; }
         if (imask & intf & INT_TIMER_MASK)  { xy = 0x0050; int_ack = INT_TIMER_MASK; }
@@ -274,7 +274,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         if (imask & intf & INT_VBLANK_MASK) { xy = 0x0040; int_ack = INT_VBLANK_MASK; }
         READ(xy);
         state_ = 0;
-        break;
       }
     }
 
@@ -303,7 +302,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
           if (state == 1 && tb) { pc = addr + 1; ao = alu(0, pcl,      data); y = ao.x; PASS(pc); state_ = 2; }
           if (state == 2)       {                ao = alu(1, pch, sxt(data)); x = ao.x; READ(xy); state_ = 0; }
         }
-        break;
       }
       else if (OP_COL == 1) {
         if (LD_RR_D16) {
@@ -341,7 +339,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
             if (ADD_HL_SP) {                ao = alu(1, h, s ); h = ao.x; update_flags(); READ(pc); state_ = 0; }
           }
         }
-        break;
       }
       else if (OP_COL == 2) {
         if (state == 0) {
@@ -364,7 +361,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
           if (LDM_A_HLP) { hl = addr + 1; a = data; READ(pc);     state_ = 0; }
           if (LDM_A_HLM) { hl = addr - 1; a = data; READ(pc);     state_ = 0; }
         }
-        break;
       }
       else if (OP_COL == 3) {
         if (state == 0) {
@@ -387,7 +383,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
           if (INC_SP) { sp = addr + 1; READ(pc); state_ = 0; }
           if (DEC_SP) { sp = addr - 1; READ(pc); state_ = 0; }
         }
-        break;
       }
       else if (OP_COL == 4) {
         if (INC_AT_HL) {
@@ -396,7 +391,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
           if (state == 2) {                                                                      READ(pc);     state_ = 0; }
         }
         else if (INC_R)   { pc = addr + 1; ao = alu(0, r, 1);    reg_put8(ao.x); update_flags(); READ(pc);     state_ = 0; }
-        break;
       }
       else if (OP_COL == 5) {
         if (DEC_AT_HL) {
@@ -405,7 +399,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
           if (state == 2) {                                                                      READ(pc);     state_ = 0; }
         }
         else if (DEC_R)   { pc = addr + 1; ao = alu(2, r, 1);    reg_put8(ao.x); update_flags(); READ(pc);     state_ = 0; }
-        break;
       }
       else if (OP_COL == 6) {
         if (STM_HL_D8) {
@@ -417,7 +410,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
           if (state == 0) { pc = addr + 1;                 READ(pc); state_ = 1; }
           if (state == 1) { pc = addr + 1; reg_put8(data); READ(pc); state_ = 0; }
         }
-        break;
       }
       else if (OP_COL == 7) {
         pc = addr + 1;
@@ -426,10 +418,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         update_flags();
         READ(pc);
         state_ = 0;
-        break;
-      }
-      else {
-        if (state == 0) pc = addr + 1;
       }
     }
 
@@ -466,7 +454,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         READ(pc);
         state_ = 0;
       }
-      break;
     }
 
     //----------------------------------------
@@ -482,7 +469,6 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         // alu a, r
         { pc = addr + 1; ao = alu(OP_ROW, a, r); a = ao.x; update_flags(); READ(pc); state_ = 0; }
       }
-      break;
     }
 
     //----------------------------------------
@@ -658,10 +644,8 @@ void Z80::tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_) {
         if (state == 2) { sp = addr - 1;  WRITE(sp, pcl); state_ = 3; }
         if (state == 3) { xy = op & 0x38; READ(xy);       state_ = 0; }
       }
-      break;
     }
-
-  } while(0);
+  }
 
   if (state_ == 0) {
     alu_out.f = f;

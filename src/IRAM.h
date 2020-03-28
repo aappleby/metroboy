@@ -4,7 +4,7 @@
 struct IRAM {
 
   void reset();
-  Ack  on_ebus_req(Req ebus_req);
+  bool on_ebus_req(Req ebus_req, Ack& ebus_ack);
   uint8_t* get() { return ram; }
 
 private:

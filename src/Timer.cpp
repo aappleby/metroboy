@@ -1,5 +1,6 @@
 #include "Timer.h"
 #include "Constants.h"
+#include <assert.h>
 
 //-----------------------------------------------------------------------------
 
@@ -16,11 +17,13 @@ bool Timer::get_interrupt() const {
 
 //-----------------------------------------------------------------------------
 
-Ack Timer::on_ibus_req(Req ibus_req) {
+bool Timer::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
   bool timer_hit = (ibus_req.addr & 0xFFFC) == 0xFF04;
-  if (!timer_hit) return {};
+  if (!timer_hit) return false;
 
-  Ack ack = {
+  assert(!ibus_ack.read && !ibus_ack.write);
+
+  ibus_ack = {
     .addr  = ibus_req.addr,
     .data  = 0,
     .read  = ibus_req.read,
@@ -35,13 +38,13 @@ Ack Timer::on_ibus_req(Req ibus_req) {
   }
 
   if (ibus_req.read) {
-    if (ibus_req.addr == ADDR_DIV)  { ack.data = uint8_t(counter >> 6); }
-    if (ibus_req.addr == ADDR_TIMA) { ack.data = uint8_t(tima); }
-    if (ibus_req.addr == ADDR_TMA)  { ack.data = tma; }
-    if (ibus_req.addr == ADDR_TAC)  { ack.data = tac | 0b11111000; }
+    if (ibus_req.addr == ADDR_DIV)  { ibus_ack.data = uint8_t(counter >> 6); }
+    if (ibus_req.addr == ADDR_TIMA) { ibus_ack.data = uint8_t(tima); }
+    if (ibus_req.addr == ADDR_TMA)  { ibus_ack.data = tma; }
+    if (ibus_req.addr == ADDR_TAC)  { ibus_ack.data = tac | 0b11111000; }
   }
 
-  return ack;
+  return true;
 }
 
 //-----------------------------------------------------------------------------

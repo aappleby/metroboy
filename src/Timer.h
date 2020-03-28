@@ -7,7 +7,7 @@ struct Timer {
   void reset();
   bool get_interrupt() const;
 
-  Ack on_ibus_req(Req ibus_req);
+  bool on_ibus_req(Req ibus_req, Ack& ibus_ack);
 
   void tock(int tcycle);
 

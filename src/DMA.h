@@ -7,11 +7,15 @@ struct DMA {
 
   //----------
 
-  Ack  on_ibus_req(int tcycle, const Req& ibus_req);
+  bool on_ibus_req(int tcycle, const Req& ibus_req, Ack& ibus_ack);
+
+  bool has_ebus_req(int tcycle);
+  bool has_vbus_req(int tcycle);
+  bool has_obus_req(int tcycle);
 
   Req  get_ebus_req(int tcycle);
   Req  get_vbus_req(int tcycle);
-  void get_obus_req(int tcycle, Req& req);
+  Req  get_obus_req(int tcycle);
 
   void on_ebus_ack(const Ack& ibus_ack);
   void on_vbus_ack(const Ack& vbus_ack);
@@ -22,22 +26,22 @@ struct DMA {
 
   //----------
 
-  enum DMAMode {
-    DMA_NONE,
-    DMA_VRAM,
-    DMA_IRAM,
-    DMA_CART
+  enum class Mode {
+    NONE,
+    VRAM,
+    IRAM,
+    CART
   };
 
-  DMAMode  dma_mode_x;
-  uint8_t  dma_count_x;
-  uint16_t dma_source_x;
+  Mode     mode_x;
+  uint8_t  count_x;
+  uint16_t source_x;
 
-  DMAMode  dma_mode_a;
-  uint8_t  dma_count_a;
-  uint16_t dma_source_a;
+  Mode     mode_a;
+  uint8_t  count_a;
+  uint16_t source_a;
 
-  DMAMode  dma_mode_b;
-  uint8_t  dma_count_b;
-  uint8_t  dma_data_b;
+  Mode     mode_b;
+  uint8_t  count_b;
+  uint8_t  data_b;
 };

@@ -1,6 +1,6 @@
 #include "SPU.h"
-
 #include "Constants.h"
+#include <assert.h>
 
 const char* byte_to_bits(uint8_t b);
 
@@ -39,13 +39,17 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-Ack SPU::on_ibus_req(Req ibus_req) {
-  if (ibus_req.addr < 0xFF10) return {};
-  if (ibus_req.addr > 0xFF3F) return {};
+bool SPU::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
+  if (ibus_req.addr < 0xFF10) return false;
+  if (ibus_req.addr > 0xFF3F) return false;
 
-  if (ibus_req.read)  return bus_read(ibus_req);
-  if (ibus_req.write) return bus_write(ibus_req);
-  return {};
+  assert(!ibus_ack.read && !ibus_ack.write);
+
+  if (ibus_req.read)  return bus_read(ibus_req, ibus_ack);
+  if (ibus_req.write) return bus_write(ibus_req, ibus_ack);
+
+  assert(false);
+  return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -314,9 +318,9 @@ void SPU::tock(const int tcycle_) {
 
 //-----------------------------------------------------------------------------
 
-Ack SPU::bus_read(Req ibus_req) {
+bool SPU::bus_read(Req ibus_req, Ack& ibus_ack) {
 
-  Ack ack = {
+  ibus_ack = {
     .addr  = ibus_req.addr,
     .data  = 0,
     .read  = 1,
@@ -327,38 +331,37 @@ Ack SPU::bus_read(Req ibus_req) {
   // wavetable
 
   if (ibus_req.addr >= 0xFF30 && ibus_req.addr <= 0xFF3F) {
-    ack.data = s3_wave[ibus_req.addr & 0xF];
-    return ack;
+    ibus_ack.data = s3_wave[ibus_req.addr & 0xF];
+    return true;
   }
 
-
   switch (ibus_req.addr) {
-  case 0xFF10: ack.data = nr10 | 0x80; break;
-  case 0xFF11: ack.data = nr11 | 0x3F; break;
-  case 0xFF12: ack.data = nr12 | 0x00; break;
-  case 0xFF13: ack.data = nr13 | 0xFF; break;
-  case 0xFF14: ack.data = nr14 | 0xBF; break;
+  case 0xFF10: ibus_ack.data = nr10 | 0x80; break;
+  case 0xFF11: ibus_ack.data = nr11 | 0x3F; break;
+  case 0xFF12: ibus_ack.data = nr12 | 0x00; break;
+  case 0xFF13: ibus_ack.data = nr13 | 0xFF; break;
+  case 0xFF14: ibus_ack.data = nr14 | 0xBF; break;
 
-  case 0xFF15: ack.data = nr20 | 0xFF; break;
-  case 0xFF16: ack.data = nr21 | 0x3F; break;
-  case 0xFF17: ack.data = nr22 | 0x00; break;
-  case 0xFF18: ack.data = nr23 | 0xFF; break;
-  case 0xFF19: ack.data = nr24 | 0xBF; break;
+  case 0xFF15: ibus_ack.data = nr20 | 0xFF; break;
+  case 0xFF16: ibus_ack.data = nr21 | 0x3F; break;
+  case 0xFF17: ibus_ack.data = nr22 | 0x00; break;
+  case 0xFF18: ibus_ack.data = nr23 | 0xFF; break;
+  case 0xFF19: ibus_ack.data = nr24 | 0xBF; break;
   
-  case 0xFF1A: ack.data = nr30 | 0x7F; break;
-  case 0xFF1B: ack.data = nr31 | 0xFF; break;
-  case 0xFF1C: ack.data = nr32 | 0x9F; break;
-  case 0xFF1D: ack.data = nr33 | 0xFF; break;
-  case 0xFF1E: ack.data = nr34 | 0xBF; break;
+  case 0xFF1A: ibus_ack.data = nr30 | 0x7F; break;
+  case 0xFF1B: ibus_ack.data = nr31 | 0xFF; break;
+  case 0xFF1C: ibus_ack.data = nr32 | 0x9F; break;
+  case 0xFF1D: ibus_ack.data = nr33 | 0xFF; break;
+  case 0xFF1E: ibus_ack.data = nr34 | 0xBF; break;
 
-  case 0xFF1F: ack.data = nr40 | 0xFF; break;
-  case 0xFF20: ack.data = nr41 | 0xFF; break;
-  case 0xFF21: ack.data = nr42 | 0x00; break;
-  case 0xFF22: ack.data = nr43 | 0x00; break;
-  case 0xFF23: ack.data = nr44 | 0xBF; break;
+  case 0xFF1F: ibus_ack.data = nr40 | 0xFF; break;
+  case 0xFF20: ibus_ack.data = nr41 | 0xFF; break;
+  case 0xFF21: ibus_ack.data = nr42 | 0x00; break;
+  case 0xFF22: ibus_ack.data = nr43 | 0x00; break;
+  case 0xFF23: ibus_ack.data = nr44 | 0xBF; break;
 
-  case 0xFF24: ack.data = nr50 | 0x00; break;
-  case 0xFF25: ack.data = nr51 | 0x00; break;
+  case 0xFF24: ibus_ack.data = nr50 | 0x00; break;
+  case 0xFF25: ibus_ack.data = nr51 | 0x00; break;
 
   case 0xFF26: {
     uint8_t bus_out_ = (nr52 & 0x80) | 0x70;
@@ -366,21 +369,21 @@ Ack SPU::bus_read(Req ibus_req) {
     if (s2_enable) bus_out_ |= 0b00000010;
     if (s3_enable) bus_out_ |= 0b00000100;
     if (s4_enable) bus_out_ |= 0b00001000;
-    ack.data = bus_out_;
+    ibus_ack.data = bus_out_;
     break;
   }
-  default: return {};
+  default: return false;
   }
 
-  return ack;
+  return true;
 }
 
 //-----------------------------------------------------------------------------
 
-Ack SPU::bus_write(Req ibus_req) {
+bool SPU::bus_write(Req ibus_req, Ack& ibus_ack) {
   bool sound_on = (nr52 & 0x80);
 
-  Ack ack = {
+  ibus_ack = {
     .addr  = ibus_req.addr,
     .data  = ibus_req.data,
     .read  = 0,
@@ -391,8 +394,10 @@ Ack SPU::bus_write(Req ibus_req) {
     if (ibus_req.addr == 0xFF26) {
       nr52 = (uint8_t)ibus_req.data | 0b01110000;
       if (nr52 & 0x80) reset();
+      return true;
+    } else {
+      return false;
     }
-    return ack;
   }
 
   //----------
@@ -400,7 +405,7 @@ Ack SPU::bus_write(Req ibus_req) {
 
   if (ibus_req.addr >= 0xFF30 && ibus_req.addr <= 0xFF3F) {
     s3_wave[ibus_req.addr & 0xF] = (uint8_t)ibus_req.data;
-    return ack;
+    return true;
   }
 
   //----------
@@ -520,12 +525,7 @@ Ack SPU::bus_write(Req ibus_req) {
     }
   }
 
-  return {
-    .addr  = ibus_req.addr,
-    .data  = ibus_req.data,
-    .read  = 0,
-    .write = 1,
-  };
+  return true;
 }
 
 //-----------------------------------------------------------------------------

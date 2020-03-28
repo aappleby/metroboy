@@ -6,7 +6,7 @@
 struct Serial {
   void reset();
   
-  Ack  on_ibus_req(Req ibus_req);
+  bool on_ibus_req(Req ibus_req, Ack& ibus_ack);
 
   void dump(std::string& d);
 

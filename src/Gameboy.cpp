@@ -42,36 +42,43 @@ void Gameboy::reset(uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-Ack Gameboy::on_ibus_req(Req req) {
-  bool hit = (req.addr == ADDR_IF) || (req.addr == ADDR_IE);
+//#pragma warning(push)
+#pragma warning(disable:4458)
+
+bool Gameboy::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
+  bool hit = (ibus_req.addr == ADDR_IF) || (ibus_req.addr == ADDR_IE);
   if (!hit) return {};
 
-  if (req.write) {
-    if (req.addr == ADDR_IF) intf = (uint8_t)req.data | 0b11100000;
-    if (req.addr == ADDR_IE) imask = (uint8_t)req.data;
-    return {
-      .addr  = req.addr,
-      .data  = req.data,
+  if (ibus_req.write) {
+    if (ibus_req.addr == ADDR_IF) intf  = (uint8_t)ibus_req.data | 0b11100000;
+    if (ibus_req.addr == ADDR_IE) imask = (uint8_t)ibus_req.data;
+    ibus_ack = {
+      .addr  = ibus_req.addr,
+      .data  = ibus_req.data,
       .read  = 0,
       .write = 1,
     };
+    return true;
   }
-  else if (req.read) {
+  else if (ibus_req.read) {
     uint8_t data = 0;
-    if (req.addr == ADDR_IF) data = 0b11100000 | intf;
-    if (req.addr == ADDR_IE) data = imask;
-    return {
-      .addr  = req.addr,
+    if (ibus_req.addr == ADDR_IF) data = 0b11100000 | intf;
+    if (ibus_req.addr == ADDR_IE) data = imask;
+    ibus_ack = {
+      .addr = ibus_req.addr,
       .data  = data,
       .read  = 1,
       .write = 0,
     };
+    return true;
   }
   else {
     assert(false);
-    return {};
+    return false;
   }
 }
+
+//#pragma warning(pop)
 
 //-----------------------------------------------------------------------------
 
@@ -91,158 +98,102 @@ void print_ack(std::string& d, const char* name, const Ack& ack) {
 
 #pragma warning(disable:4189)
 
-Ack merge(Ack a, Ack b) {
-  assert(a.phase == b.phase);
-  assert(a.addr == 0 || b.addr == 0);
-  assert(a.data == 0 || b.data == 0);
-  assert(a.read + a.write + b.read + b.write <= 1);
-  return {
-    uint16_t(a.addr  | b.addr),
-    uint16_t(a.data  | b.data),
-    uint16_t(a.read  | b.read),
-    uint16_t(a.write | b.write)
-  };
-}
-
-template<typename... Args>
-Ack merge (Ack a, Args... args) { return merge(a, merge(args...)); }
-
 void Gameboy::tock() {
   tcycle++;
   const int tphase = tcycle & 3;
 
-  bus_req_cpu = z80.get_bus_req();
-  bool cpu_addr_is_boot = bus_req_cpu.addr <= ADDR_BOOT_END && !boot.disable_bootrom;
-  bool cpu_addr_is_vram = bus_req_cpu.addr >= ADDR_VRAM_BEGIN && bus_req_cpu.addr <= ADDR_VRAM_END;
-  bool cpu_addr_is_high = bus_req_cpu.addr > ADDR_ECHO_END;
-  bool cpu_addr_is_oam  = bus_req_cpu.addr >= ADDR_OAM_BEGIN  && bus_req_cpu.addr <= ADDR_OAM_END;
-  bool cpu_addr_is_ext  = !cpu_addr_is_boot && !cpu_addr_is_vram && !cpu_addr_is_high;
+  cpu_req = {};
+  cpu_ack = {};
+  ebus_req = {};
+  ebus_ack = {};
+  vbus_req = {};
+  vbus_ack = {};
+  vbus_ack = {};
+  obus_req = {};
+  obus_ack = {};
+  ibus_req = {};
+  ibus_ack = {};
 
-  {
-    ebus_req_cpu = cpu_addr_is_ext ? bus_req_cpu : Req{0};
-    ebus_req_dma = dma.get_ebus_req(tcycle);
+  cpu_req = z80.get_bus_req();
+  int region = cpu_req.addr >> 13;
 
-    Req ebus_req = ebus_req_cpu;
-    if (ebus_req_dma.read) ebus_req = ebus_req_dma;
+  bool cpu_has_req = cpu_req.read || cpu_req.write;
+  bool cpu_has_vbus_req = cpu_has_req && cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
+  bool cpu_has_obus_req = cpu_has_req && cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
+  bool cpu_has_ibus_req = cpu_has_req && cpu_req.addr >= ADDR_IOBUS_BEGIN;
+  bool cpu_has_ebus_req = cpu_has_req && !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
 
-    Ack ebus_ack_cart = cart.on_ebus_req(ebus_req);
-    Ack ebus_ack_iram = iram.on_ebus_req(ebus_req);
-    Ack ebus_ack = merge(ebus_ack_cart, ebus_ack_iram);
-
-    if (ebus_req_dma.read) {
-      ebus_ack_cpu = {};
-      ebus_ack_dma = ebus_ack;
-    }
-    else {
-      ebus_ack_cpu = ebus_ack;
-      ebus_ack_dma = {};
-    }
+  if (cpu_has_ibus_req) {
+    Req ibus_req = cpu_req;
+    Ack ibus_ack = {};
+    this-> on_ibus_req(        ibus_req, ibus_ack);
+    timer. on_ibus_req(        ibus_req, ibus_ack);
+    zram.  on_ibus_req(        ibus_req, ibus_ack);
+    joypad.on_ibus_req(        ibus_req, ibus_ack);
+    serial.on_ibus_req(        ibus_req, ibus_ack);
+    ppu.   on_ibus_req(tcycle, ibus_req, ibus_ack);
+    spu.   on_ibus_req(        ibus_req, ibus_ack);
+    dma.   on_ibus_req(tcycle, ibus_req, ibus_ack);
+    boot.  on_ibus_req(        ibus_req, ibus_ack);
+    z80.on_bus_ack(ibus_ack);
+    //cpu_ack = ibus_ack;
   }
 
-  {
-    vbus_req_cpu = cpu_addr_is_vram ? bus_req_cpu : Req{0};
-    vbus_req_ppu = ppu.get_vbus_req(tcycle);
-    vbus_req_dma = dma.get_vbus_req(tcycle);
-
-    Req vbus_req = vbus_req_cpu;
-    if (vbus_req_ppu.read) vbus_req = vbus_req_ppu;
-    if (vbus_req_dma.read) vbus_req = vbus_req_dma;
-
-    Ack vbus_ack = vram.on_vbus_req(vbus_req);
-
-    if (vbus_req_dma.read) {
-      vbus_ack_cpu = {};
-      vbus_ack_ppu = {};
-      vbus_ack_dma = vbus_ack;
-    }
-    else if (vbus_req_ppu.read) {
-      vbus_ack_cpu = {};
-      vbus_ack_ppu = vbus_ack;
-      vbus_ack_dma = {};
-    }
-    else {
-      vbus_ack_cpu = vbus_ack;
-      vbus_ack_ppu = {};
-      vbus_ack_dma = {};
-    }
+  if (dma.has_ebus_req(tcycle)) {
+    Req ebus_req = dma.get_ebus_req(tcycle);
+    Ack ebus_ack = {};
+    cart.on_ebus_req(ebus_req, ebus_ack);
+    iram.on_ebus_req(ebus_req, ebus_ack);
+    dma.on_ebus_ack(ebus_ack);
+  }
+  else if (cpu_has_ebus_req) {
+    Req ebus_req = cpu_req;
+    Ack ebus_ack = {};
+    cart.on_ebus_req(ebus_req, ebus_ack);
+    iram.on_ebus_req(ebus_req, ebus_ack);
+    z80.on_bus_ack(ebus_ack);
+    // cpu_ack = ebus_ack;
   }
 
-  {
-    obus_req_cpu = cpu_addr_is_oam  ? bus_req_cpu : Req{0};
-    obus_req_ppu = ppu.get_obus_req(tcycle);
-    //obus_req_dma = dma.get_obus_req(tcycle);
-    dma.get_obus_req(tcycle, obus_req_dma);
-
-    Req obus_req = obus_req_cpu;
-    if (obus_req_ppu.read) obus_req = obus_req_ppu;
-    if (obus_req_dma.write) obus_req = obus_req_dma;
-
-    Ack obus_ack = oam.on_obus_req(obus_req);
-
-    if (obus_req_dma.write) {
-      obus_ack_cpu = {};
-      obus_ack_ppu = {};
-      obus_ack_dma = obus_ack;
-    }
-    else if (obus_req_ppu.read) {
-      obus_ack_cpu = {};
-      obus_ack_ppu = obus_ack;
-      obus_ack_dma = {};
-    }
-    else {
-      obus_ack_cpu = obus_ack;
-      obus_ack_ppu = {};
-      obus_ack_dma = {};
-    }
+  if (dma.has_vbus_req(tcycle)) {
+    Req vbus_req = dma.get_vbus_req(tcycle);
+    Ack vbus_ack = {};
+    vram.on_vbus_req(vbus_req, vbus_ack);
+    dma.on_vbus_ack(vbus_ack);
+  }
+  else if (ppu.has_vbus_req(tcycle)) {
+    Req vbus_req = ppu.get_vbus_req(tcycle);
+    Ack vbus_ack = {};
+    vram.on_vbus_req(vbus_req, vbus_ack);
+    ppu.on_vbus_ack(vbus_ack);
+  }
+  else if (cpu_has_vbus_req) {
+    Req vbus_req = cpu_req;
+    Ack vbus_ack = {};
+    vram.on_vbus_req(vbus_req, vbus_ack);
+    z80.on_bus_ack(vbus_ack);
+    // cpu_ack = vbus_ack;
   }
 
-  ibus_ack_gb   = this-> on_ibus_req(bus_req_cpu);
-  ibus_ack_tim  = timer .on_ibus_req(bus_req_cpu);
-  ibus_ack_zram = zram  .on_ibus_req(bus_req_cpu);
-  ibus_ack_joy  = joypad.on_ibus_req(bus_req_cpu);
-  ibus_ack_ser  = serial.on_ibus_req(bus_req_cpu);
-  ibus_ack_ppu  = ppu   .on_ibus_req(tcycle, bus_req_cpu);
-  ibus_ack_spu  = spu   .on_ibus_req(bus_req_cpu);
-  ibus_ack_dma  = dma   .on_ibus_req(tcycle, bus_req_cpu);
-  ibus_ack_boot = boot  .on_ibus_req(bus_req_cpu);
-
-  /*
-  ibus_ack_cpu = merge(ibus_ack_gb,
-                       ibus_ack_tim,
-                       ibus_ack_zram,
-                       ibus_ack_joy,
-                       ibus_ack_ser,
-                       ibus_ack_ppu,
-                       ibus_ack_spu,
-                       ibus_ack_dma,
-                       ibus_ack_boot);
-  */
-  ibus_ack_cpu = { 0 };
-
-  if (ibus_ack_gb  .read) { ibus_ack_cpu.data = ibus_ack_gb  .data; ibus_ack_cpu.read = 1; }
-  if (ibus_ack_tim .read) { ibus_ack_cpu.data = ibus_ack_tim .data; ibus_ack_cpu.read = 1; }
-  if (ibus_ack_zram.read) { ibus_ack_cpu.data = ibus_ack_zram.data; ibus_ack_cpu.read = 1; }
-  if (ibus_ack_joy .read) { ibus_ack_cpu.data = ibus_ack_joy .data; ibus_ack_cpu.read = 1; }
-  if (ibus_ack_ser .read) { ibus_ack_cpu.data = ibus_ack_ser .data; ibus_ack_cpu.read = 1; }
-  if (ibus_ack_ppu .read) { ibus_ack_cpu.data = ibus_ack_ppu .data; ibus_ack_cpu.read = 1; }
-  if (ibus_ack_spu .read) { ibus_ack_cpu.data = ibus_ack_spu .data; ibus_ack_cpu.read = 1; }
-  if (ibus_ack_dma .read) { ibus_ack_cpu.data = ibus_ack_dma .data; ibus_ack_cpu.read = 1; }
-  if (ibus_ack_boot.read) { ibus_ack_cpu.data = ibus_ack_boot.data; ibus_ack_cpu.read = 1; }
-
-  bus_ack_cpu = { 0 };
-  if (ibus_ack_cpu.read) { bus_ack_cpu.data = ibus_ack_cpu.data; bus_ack_cpu.read = 1; }
-  if (ebus_ack_cpu.read) { bus_ack_cpu.data = ebus_ack_cpu.data; bus_ack_cpu.read = 1; }
-  if (obus_ack_cpu.read) { bus_ack_cpu.data = obus_ack_cpu.data; bus_ack_cpu.read = 1; }
-  if (vbus_ack_cpu.read) { bus_ack_cpu.data = vbus_ack_cpu.data; bus_ack_cpu.read = 1; }
-
-  z80.on_bus_ack(bus_ack_cpu);
-
-  dma.on_ebus_ack(ebus_ack_dma);
-  dma.on_vbus_ack(vbus_ack_dma);
-  dma.on_obus_ack(obus_ack_dma);
-
-  ppu.on_vbus_ack(vbus_ack_ppu);
-  ppu.on_obus_ack(obus_ack_ppu);
+  if (dma.has_obus_req(tcycle)) {
+    Req obus_req = dma.get_obus_req(tcycle);
+    Ack obus_ack = {};
+    oam.on_obus_req(obus_req, obus_ack);
+    dma.on_obus_ack(obus_ack);
+  }
+  else if (ppu.has_obus_req(tcycle)) {
+    Req obus_req = ppu.get_obus_req(tcycle);
+    Ack obus_ack = {};
+    oam.on_obus_req(obus_req, obus_ack);
+    ppu.on_obus_ack(obus_ack);
+  }
+  else if (cpu_has_obus_req) {
+    Req obus_req = cpu_req;
+    Ack obus_ack = {};
+    oam.on_obus_req(obus_req, obus_ack);
+    z80.on_bus_ack(obus_ack);
+    //cpu_ack = obus_ack;
+  }
 
   //-----------------------------------
   // interrupt stuff
@@ -336,42 +287,24 @@ void Gameboy::dump_bus(std::string& d) {
 
 
   sprintf(d,   "---CPU:\n");
-  print_req(d, "bus_req_cpu ",  bus_req_cpu);
-  print_ack(d, "bus_ack_cpu ",  bus_ack_cpu);
+  print_req(d, "cpu_req  ", cpu_req);
+  print_ack(d, "cpu_ack  ", cpu_ack);
 
   sprintf(d,   "---IBUS:\n");
-  print_req(d, "ibus_req_cpu",  ibus_req_cpu);
-  print_ack(d, "ibus_ack_gb",   ibus_ack_gb);
-  print_ack(d, "ibus_ack_tim",  ibus_ack_tim);
-  print_ack(d, "ibus_ack_zram", ibus_ack_zram);
-  print_ack(d, "ibus_ack_joy",  ibus_ack_joy);
-  print_ack(d, "ibus_ack_ser",  ibus_ack_ser);
-  print_ack(d, "ibus_ack_ppu",  ibus_ack_ppu);
-  print_ack(d, "ibus_ack_spu",  ibus_ack_spu);
-  print_ack(d, "ibus_ack_dma",  ibus_ack_dma);
-  print_ack(d, "ibus_ack_boot", ibus_ack_boot);
-  print_ack(d, "ibus_ack_cpu",  ibus_ack_cpu);
+  print_req(d, "ibus_req ", ibus_req);
+  print_ack(d, "ibus_ack ", ibus_ack);
 
   sprintf(d,   "---EBUS:\n");
-  print_req(d, "ebus_req_cpu",  ebus_req_cpu);
-  print_req(d, "ebus_req_dma",  ebus_req_dma);
-  print_ack(d, "ebus_ack_cpu",  ebus_ack_cpu);
-  print_ack(d, "ebus_ack_dma",  ebus_ack_dma);
+  print_req(d, "ebus_req ", ebus_req);
+  print_ack(d, "ebus_ack ", ebus_ack);
 
   sprintf(d,   "---VBUS:\n");
-  print_req(d, "vbus_req_cpu",  vbus_req_cpu);
-  print_req(d, "vbus_req_ppu",  vbus_req_ppu);
-  print_req(d, "vbus_req_dma",  vbus_req_dma);
-  print_ack(d, "vbus_ack_cpu",  vbus_ack_cpu);
-  print_ack(d, "vbus_ack_ppu",  vbus_ack_ppu);
-  print_ack(d, "vbus_ack_dma",  vbus_ack_dma);
+  print_req(d, "vbus_req ", vbus_req);
+  print_ack(d, "vbus_ack ", vbus_ack);
 
   sprintf(d,   "---OBUS:\n");
-  print_req(d, "obus_req_cpu",  obus_req_cpu);
-  print_req(d, "obus_req_ppu",  obus_req_ppu);
-  print_req(d, "obus_req_dma",  obus_req_dma);
-  print_ack(d, "obus_ack_ppu",  obus_ack_ppu);
-  print_ack(d, "ebus_ack_dma",  ebus_ack_dma);
+  print_req(d, "obus_req ", obus_req);
+  print_ack(d, "obus_ack ", obus_ack);
   sprintf(d,   "\n");
 }
 

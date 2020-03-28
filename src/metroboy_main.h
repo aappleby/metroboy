@@ -52,11 +52,13 @@ public:
   bool load_dump = false;
   bool save_dump = false;
   
-  //double fast_cycles = 114 * 154;
-  double sim_budget_msec = 200.0;
-  double sim_time_msec = 0.0;
-  double fast_cycles = 400000;
+  double cycles_per_sec_1x = 114 * 154 * 60; // 1.05 mhz
+  double sim_speed = 2.5;
+  double sim_budget_msec = 15.0;
+  double fast_cycles = cycles_per_sec_1x * sim_speed * sim_budget_msec / 1000.0;
   int last_cycles = 0;
+
+  double sim_time_msec = 0.0;
 
   RunMode runmode = STEP_CYCLE;
   bool rom_loaded = false;

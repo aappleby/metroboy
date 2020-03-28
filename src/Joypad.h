@@ -4,7 +4,7 @@
 struct Joypad {
   void reset();
 
-  Ack  on_ibus_req(Req ibus_req);
+  bool on_ibus_req(Req ibus_req, Ack& ibus_ack);
   void dump(std::string& d) const;
 
   uint8_t get() const { return val; }

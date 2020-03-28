@@ -11,9 +11,11 @@ void OAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-Ack OAM::on_obus_req(Req obus_req) {
+bool OAM::on_obus_req(Req obus_req, Ack& obus_ack) {
   bool hit = (obus_req.addr >= ADDR_OAM_BEGIN) && (obus_req.addr <= ADDR_OAM_END);
-  if (!hit) return {};
+  if (!hit) return false;
+
+  assert(!obus_ack.read && !obus_ack.write);
 
   if (hit && obus_req.write) {
     uint16_t oam_addr = obus_req.addr & 0x00FF;
@@ -22,24 +24,26 @@ Ack OAM::on_obus_req(Req obus_req) {
     else              d = (d & 0xFF00) | (obus_req.data << 0);
     ram[oam_addr >> 1] = d;
 
-    return {
+    obus_ack = {
       .addr  = obus_req.addr,
       .data  = obus_req.data,
       .read  = 0,
       .write = 1,
     };
+    return true;
   }
   else if (hit && obus_req.read) {
-    return {
+    obus_ack = {
       .addr  = obus_req.addr,
       .data  = ram[(obus_req.addr & 0x00FF) >> 1],
       .read  = 1,
       .write = 0,
     };
+    return true;
   }
   else {
     assert(false);
-    return {};
+    return false;
   }
 }
 

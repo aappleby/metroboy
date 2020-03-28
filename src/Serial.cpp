@@ -1,6 +1,6 @@
 #include "Serial.h"
-
 #include "Constants.h"
+#include <assert.h>
 
 //-----------------------------------------------------------------------------
 
@@ -12,18 +12,19 @@ void Serial::reset() {
 
 //-----------------------------------------------------------------------------
 
-Ack Serial::on_ibus_req(Req ibus_req) {
-  if ((ibus_req.addr != ADDR_SB) && (ibus_req.addr != ADDR_SC)) return {};
+bool Serial::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
+  if ((ibus_req.addr != ADDR_SB) && (ibus_req.addr != ADDR_SC)) return false;
 
-  Ack ack;
-  ack.addr  = ibus_req.addr;
-  ack.data  = ibus_req.data;
-  ack.read  = ibus_req.read;
-  ack.write = ibus_req.write;
+  assert(!ibus_ack.read && !ibus_ack.write);
+
+  ibus_ack.addr  = ibus_req.addr;
+  ibus_ack.data  = ibus_req.data;
+  ibus_ack.read  = ibus_req.read;
+  ibus_ack.write = ibus_req.write;
 
   if (ibus_req.read) {
-    if (ibus_req.addr == ADDR_SB) ack.data = sb;
-    if (ibus_req.addr == ADDR_SC) ack.data = sc;
+    if (ibus_req.addr == ADDR_SB) ibus_ack.data = sb;
+    if (ibus_req.addr == ADDR_SC) ibus_ack.data = sc;
   }
 
   if (ibus_req.write) {
@@ -31,7 +32,7 @@ Ack Serial::on_ibus_req(Req ibus_req) {
     if (ibus_req.addr == ADDR_SC) sc = (uint8_t)ibus_req.data | 0b01111110;
   }
 
-  return ack;
+  return true;
 }
 
 //-----------------------------------------------------------------------------

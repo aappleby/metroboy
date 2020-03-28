@@ -8,16 +8,19 @@ void Joypad::reset() {
   p1 = 0xCF;
 }
 
-Ack Joypad::on_ibus_req(Req ibus_req) {
-  if (ibus_req.addr != ADDR_P1) return {};
+bool Joypad::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
+  if (ibus_req.addr != ADDR_P1) return false;
+
+  assert(!ibus_ack.read && !ibus_ack.write);
 
   if (ibus_req.read) {
-    return {
+    ibus_ack = {
       .addr  = ibus_req.addr,
       .data  = p1,
       .read  = 1,
       .write = 0,
     };
+    return true;
   }
   else if (ibus_req.write) {
     p1 = (p1 & 0xCF) | (ibus_req.data & 0x30);
@@ -27,16 +30,17 @@ Ack Joypad::on_ibus_req(Req ibus_req) {
     case 0x20: p1 = (p1 & 0xF0) | ((val >> 0) & 0xF); break;
     }
 
-    return {
+    ibus_ack = {
       .addr  = ibus_req.addr,
       .data  = ibus_req.data,
       .read  = 0,
       .write = 1,
     };
+    return true;
   }
   else {
     assert(false);
-    return {};
+    return false;
   }
 }
 

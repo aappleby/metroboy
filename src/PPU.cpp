@@ -1,6 +1,6 @@
 #include "PPU.h"
-
 #include "Constants.h"
+#include <assert.h>
 
 extern const uint32_t gb_colors[];
 
@@ -174,6 +174,10 @@ PPU::Out PPU::tick(const int tcycle_) const {
 
 //-----------------------------------------------------------------------------
 
+bool PPU::has_vbus_req(int /*tcycle*/) {
+  return fetch_type != FETCH_NONE;
+}
+
 Req PPU::get_vbus_req(int /*tcycle*/) {
   uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
   uint8_t map_y = ((scy + line) >> 3) & 31;
@@ -209,6 +213,10 @@ Req PPU::get_vbus_req(int /*tcycle*/) {
 
 //----------------------------------------
 
+bool PPU::has_obus_req(int /*tcycle*/) {
+  return (counter < 80) || (fetch_type == FETCH_SPRITE);
+}
+
 Req PPU::get_obus_req(int /*tcycle*/) {
   uint16_t fetch_addr = 0;
 
@@ -240,11 +248,15 @@ Req PPU::get_obus_req(int /*tcycle*/) {
 
 //-----------------------------------------------------------------------------
 
-Ack PPU::on_ibus_req(int tcycle, Req ibus_req) {
+bool PPU::on_ibus_req(int tcycle, Req ibus_req, Ack& ibus_ack) {
   int tphase = tcycle & 3;
 
-  if (ibus_req.addr == ADDR_DMA) return {};
+  if (ibus_req.addr == ADDR_DMA) return false;
   bool hit = (ADDR_GPU_BEGIN <= ibus_req.addr && ibus_req.addr <= ADDR_GPU_END);
+  if (!hit) return false;
+
+  assert(!ibus_ack.read && !ibus_ack.write);
+
   uint8_t data = (uint8_t)ibus_req.data;
 
   if (hit && ibus_req.read) {
@@ -264,12 +276,13 @@ Ack PPU::on_ibus_req(int tcycle, Req ibus_req) {
     default:        data = 0; break;
     }
 
-    return {
+    ibus_ack = {
       .addr  = ibus_req.addr,
       .data  = data,
       .read  = 1,
       .write = 0,
     };
+    return true;
   }
 
   if (hit && ibus_req.write && tphase == 0) {
@@ -290,15 +303,16 @@ Ack PPU::on_ibus_req(int tcycle, Req ibus_req) {
 
     update_palettes();
 
-    return {
+    ibus_ack = {
       .addr  = ibus_req.addr,
       .data  = data,
       .read  = 0,
       .write = 1,
     };
+    return true;
   }
 
-  return {};
+  return false;
 }
 
 //-----------------------------------------------------------------------------

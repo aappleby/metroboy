@@ -56,12 +56,14 @@ void Cart::reset() {
 
 //-----------------------------------------------------------------------------
 
-Ack Cart::on_ebus_req(Req ebus_req) {
-  if (!ebus_req.read && !ebus_req.write) return {};
+bool Cart::on_ebus_req(Req ebus_req, Ack& ebus_ack) {
+  if (!ebus_req.read && !ebus_req.write) return false;
 
   int region = ebus_req.addr >> 13;
-  if (region == 4) return {}; // vram not on ebus
-  if (region >= 6) return {}; // iram has its own handler
+  if (region == 4) return false;  // vram not on ebus
+  if (region >= 6) return false;  // iram has its own handler
+
+  assert(!ebus_ack.read && !ebus_ack.write);
 
   bool rom_hit = (region < 4);
   bool ram_hit = region == 5;
@@ -91,15 +93,16 @@ Ack Cart::on_ebus_req(Req ebus_req) {
         ram_dirty = true;
       }
     }
-    return {
+    ebus_ack = {
       .addr  = ebus_req.addr,
       .data  = ebus_req.data,
       .read  = 0,
       .write = 1,
     };
+    return true;
   }
   else if (ebus_req.read && (rom_hit || ram_hit)) {
-    Ack ack = {
+    ebus_ack = {
       .addr  = ebus_req.addr,
       .data  = 0,
       .read  = 1,
@@ -108,11 +111,11 @@ Ack Cart::on_ebus_req(Req ebus_req) {
 
     if (region == 0 || region == 1) {
       if (mode == 0) {
-        ack.data  = rom_buf[rom_addr];
+        ebus_ack.data = rom_buf[rom_addr];
       }
       else {
         int rom_bank = rom_bank_count ? (bank_latch2 << 5) & (rom_bank_count - 1) : 0;
-        ack.data  = rom_buf[(rom_addr & 0x3FFF) | (rom_bank << 14)];
+        ebus_ack.data = rom_buf[(rom_addr & 0x3FFF) | (rom_bank << 14)];
       }
     }
     else if (region == 2 || region == 3) {
@@ -123,7 +126,7 @@ Ack Cart::on_ebus_req(Req ebus_req) {
       }
       rom_bank &= (rom_bank_count - 1);
 
-      ack.data  = rom_buf[(rom_addr & 0x3FFF) | (rom_bank << 14)];
+      ebus_ack.data = rom_buf[(rom_addr & 0x3FFF) | (rom_bank << 14)];
     }
     else if (region == 5) {
       if (ram_enable && ram_bank_count) {
@@ -131,14 +134,14 @@ Ack Cart::on_ebus_req(Req ebus_req) {
         ram_bank &= (ram_bank_count - 1);
         if (ram_bank_count == 0) ram_bank = 0;
 
-        ack.data  = ram_buf[(rom_addr - 0xA000) | (ram_bank << 13)];
+        ebus_ack.data = ram_buf[(rom_addr - 0xA000) | (ram_bank << 13)];
       }
     }
-    return ack;
+    return true;
   }
   else {
     assert(false);
-    return {};
+    return false;
   }
 }
 

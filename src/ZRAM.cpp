@@ -1,6 +1,6 @@
 #include "ZRAM.h"
-
 #include "Constants.h"
+#include <assert.h.>
 
 //-----------------------------------------------------------------------------
 
@@ -44,20 +44,23 @@ void ZRAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-Ack ZRAM::on_ibus_req(Req ibus_req) {
+bool ZRAM::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
   bool zram_hit = ((ibus_req.addr & 0xFF80) == 0xFF80) && (ibus_req.addr != 0xFFFF);
-  if (!zram_hit) return {};
+  if (!zram_hit) return false;
+
+  assert(!ibus_ack.read && !ibus_ack.write);
 
   if (ibus_req.write) {
     ram[ibus_req.addr & 0x007F] = (uint8_t)ibus_req.data;
   }
 
-  return {
+  ibus_ack = {
     .addr  = ibus_req.addr,
     .data  = uint16_t(ibus_req.read ? ram[ibus_req.addr & 0x007F] : 0),
     .read  = ibus_req.read,
     .write = ibus_req.write,
   };
+  return true;
 }
 
 //-----------------------------------------------------------------------------

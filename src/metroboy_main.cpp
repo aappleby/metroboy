@@ -87,8 +87,8 @@ void MetroBoyApp::init() {
 
   //load_memdump("roms", "LinksAwakening_house");
 
-  runmode = STEP_CYCLE;
-  //runmode = RUN_FAST;
+  //runmode = STEP_CYCLE;
+  runmode = RUN_FAST;
   //runmode = RUN_VSYNC;
 };
 

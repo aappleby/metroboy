@@ -51,32 +51,34 @@ void Bootrom::reset(uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-Ack Bootrom::on_ibus_req(Req ibus_req) {
+bool Bootrom::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
   bool hit = ((ibus_req.addr <= 0x00FF) || (ibus_req.addr == ADDR_DISABLE_BOOTROM));
-  if (disable_bootrom || !hit) return {};
+  if (disable_bootrom || !hit) return false;
+
+  assert(!ibus_ack.read && !ibus_ack.write);
 
   if (ibus_req.write && ibus_req.addr == ADDR_DISABLE_BOOTROM) {
     disable_bootrom |= (ibus_req.data != 0);
-    return {
+    ibus_ack = {
       .addr = ibus_req.addr,
       .data = ibus_req.data,
       .read = 0,
       .write = 1,
     };
+    return true;
   }
 
   if (ibus_req.read && ibus_req.addr <= 0x00FF) {
-    return {
+    ibus_ack = {
       .addr = ibus_req.addr,
       .data = DMG_ROM_bin[ibus_req.addr],
       .read = 1,
       .write = 0,
     };
+    return true;
   }
-  else {
-    assert(false);
-    return {};
-  }
+
+  return false;
 }
 
 //-----------------------------------------------------------------------------

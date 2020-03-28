@@ -24,7 +24,10 @@ struct PPU {
 
   void reset(bool run_bootrom);
 
-  Ack  on_ibus_req(int tcycle, Req ibus_req);
+  bool on_ibus_req(int tcycle, Req ibus_req, Ack& ibus_ack);
+
+  bool has_vbus_req(int tcycle);
+  bool has_obus_req(int tcycle);
 
   Req  get_vbus_req(int tcycle);
   Req  get_obus_req(int tcycle);

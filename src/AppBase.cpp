@@ -124,6 +124,8 @@ int AppBase::main(int, char**) {
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glClearColor(0.1f, 0.1f, 0.2f, 0.f);
+  glClearDepthf(1.0);
 
   //----------------------------------------
   // Initialize ImGui and ImGui renderer
@@ -231,9 +233,7 @@ int AppBase::main(int, char**) {
 
     SDL_GL_GetDrawableSize(window, &screen_w, &screen_h);
     glViewport(0, 0, screen_w, screen_h);
-    glClearColor(0.1f, 0.1f, 0.2f, 0.f);
-    glClearDepthf(1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     Viewport view = get_viewport();
     text_painter.begin_frame(view);

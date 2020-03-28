@@ -35,7 +35,7 @@ struct Gameboy {
   HostOut get_host_data() const { return gb_to_host; }
 
 
-  Ack     on_ibus_req(Req ibus_req);
+  bool    on_ibus_req(Req ibus_req, Ack& ibus_ack);
 
   void    tock();
 
@@ -98,39 +98,20 @@ struct Gameboy {
 
   //----------
 
-  Req bus_req_cpu;
-  Ack bus_ack_cpu;
+  Req cpu_req;
+  Ack cpu_ack;
 
-  Req ibus_req_cpu;
-  Ack ibus_ack_gb;
-  Ack ibus_ack_tim;
-  Ack ibus_ack_zram;
-  Ack ibus_ack_joy;
-  Ack ibus_ack_ser;
-  Ack ibus_ack_ppu;
-  Ack ibus_ack_spu;
-  Ack ibus_ack_dma;
-  Ack ibus_ack_boot;
-  Ack ibus_ack_cpu;
+  Req ibus_req;
+  Ack ibus_ack;
 
-  Req ebus_req_cpu;
-  Req ebus_req_dma;
-  Ack ebus_ack_cpu;
-  Ack ebus_ack_dma;
+  Req ebus_req;
+  Ack ebus_ack;
 
-  Req obus_req_cpu;
-  Req obus_req_ppu;
-  Req obus_req_dma;
-  Ack obus_ack_cpu;
-  Ack obus_ack_ppu;
-  Ack obus_ack_dma;
+  Req obus_req;
+  Ack obus_ack;
 
-  Req vbus_req_cpu;
-  Req vbus_req_ppu;
-  Req vbus_req_dma;
-  Ack vbus_ack_cpu;
-  Ack vbus_ack_ppu;
-  Ack vbus_ack_dma;
+  Req vbus_req;
+  Ack vbus_ack;
 
   //----------
   // interrupts

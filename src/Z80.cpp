@@ -7,7 +7,7 @@
 
 #pragma warning(disable : 4100)
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------                                        
 
 #define OP_QUAD       ((op >> 6) & 3)
 #define OP_ROW        ((op >> 3) & 7)
@@ -125,15 +125,29 @@
 
 uint8_t  sxt(uint8_t x) { return x & 0x80 ? 0xFF : 0x00; }
 
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------                                                            
 
 void Z80::reset(uint16_t new_pc) {
-  *this = {};
-
-  tcycle = -1;
 
   if (new_pc == 0x100) {
-    pc = new_pc;
+    unhalt = 0;
+    ime = ime_delay = 0;
+    interrupt = 0;
+
+    state = 0;
+    read = 0;
+    write = 0;
+    alu_out = {0};
+    int_ack = 0;
+
+    pc = 0xFF;
+    op_addr = pc;
+    op = 0;
+    cb = 0;
+    addr = 0xFF;
+    data = 0;
+    state = 0;
+
     bc = 0x0013;
     de = 0x00D8;
     hl = 0x014D;
@@ -142,7 +156,23 @@ void Z80::reset(uint16_t new_pc) {
     xy = 0x0000;
   }
   else {
-    pc = new_pc;
+    unhalt = 0;
+    ime = ime_delay = 0;
+    interrupt = 0;
+
+    state = 0;
+    read = 0;
+    write = 0;
+    alu_out = {0};
+    int_ack = 0;
+
+    pc = 0xFFFF;
+    op_addr = pc;
+    op = 0;
+    cb = 0;
+    addr = pc;
+    state = 0;
+
     bc = 0x0000;
     de = 0x0000;
     hl = 0x0000;
@@ -150,11 +180,6 @@ void Z80::reset(uint16_t new_pc) {
     sp = 0x0000;
     xy = 0x0000;
   }
-  op_addr = pc;
-
-  addr = new_pc;
-  data = 0;
-  write = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -198,26 +223,17 @@ void Z80::update_flags() {
 #define WRITE(A, B) { addr = A; data = B; write = 1; read = 0; }
 #define PASS(A)     { addr = A;           write = 0; read = 0; }
 
-void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
-  const int tphase = tcycle_ & 3;
-  if (tphase != 0) return;
-
-  alu_out.f &= 0xF0;
-  f &= 0xF0;
-  state = state_;
-  state_ = -1;
-  read = 0;
-  write = 0;
-  tcycle = tcycle_;
-  ime = ime_;
-
+void Z80::tock_t30(const uint8_t imask, const uint8_t intf) {
   if (state == 0) {
-    op_addr = pc;
     op = data;
     int_ack = 0;
     interrupt = (imask & intf) && ime;
-    alu_out.f = f;
   }
+
+  read = 0;
+  write = 0;
+
+  int state_ = -1;
 
   //----------------------------------------
   // INTERRUPTS
@@ -225,7 +241,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
   if (interrupt) {
     if (state == 0) {
       ime = false;
-      ime_ = false;
+      ime_delay = false;
       PASS(sp);
       state_ = 1;
     }
@@ -270,12 +286,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
 
     if (OP_QUAD == 0) {
       if (OP_COL == 0) {
-        if (NOP)                     {
-          pc = addr + 1;
-          READ(pc);
-          state_ = 0;
-          return;
-        }
+        if (NOP)                     { pc = addr + 1;                                                    READ(pc);     state_ = 0; }
         else if (STM_A16_SP) {                                                                           
           if (state == 0)            { pc = addr + 1;                                                    READ(pc);     state_ = 1; }
           else if (state == 1)       { pc = addr + 1; y = data;                                          READ(pc);     state_ = 2; }
@@ -286,8 +297,8 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
         else if (STOP)               { pc = addr + 1;                                                    READ(pc);     state_ = 0; }
         else if (JR_R8) {                                                                                              
           if (state == 0)            { pc = addr + 1;                                                    READ(pc);     state_ = 1; }
-          else if (state == 1)       { pc = addr + 1; ao = alu(0, pcl,      data); y = ao.x;             PASS(pc);     state_ = 2; }
-          else if (state == 2)       {                ao = alu(1, pch, sxt(data)); x = ao.x;             READ(xy);     state_ = 0; }
+          else if (state == 1)       { pc = addr + 1; ao = alu(0, pcl,      data); pcl = ao.x;           PASS(pc);     state_ = 2; }
+          else if (state == 2)       {                ao = alu(1, pch, sxt(data)); pch = ao.x;           READ(pc);     state_ = 0; }
         }                                                                                                              
         else if (JR_CC_R8) {                                                                                           
           bool cond_fail = false;
@@ -301,8 +312,8 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
           bool tb = !cond_fail;
           if (state == 0)            { pc = addr + 1;                                                    READ(pc);     state_ = 1; }
           else if (state == 1 && nb) { pc = addr + 1;                                                    READ(pc);     state_ = 0; }
-          else if (state == 1 && tb) { pc = addr + 1; ao = alu(0, pcl,      data); y = ao.x;             PASS(pc);     state_ = 2; }
-          else if (state == 2)       {                ao = alu(1, pch, sxt(data)); x = ao.x;             READ(xy);     state_ = 0; }
+          else if (state == 1 && tb) { pc = addr + 1; ao = alu(0, pcl,      data); pcl = ao.x;           PASS(pc);     state_ = 2; }
+          else if (state == 2)       {                ao = alu(1, pch, sxt(data)); pch = ao.x;           READ(pc);     state_ = 0; }
         }                                                                                               
       }                                                                                                 
       else if (OP_COL == 1) {                                                                           
@@ -440,7 +451,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
 
     else if (OP_QUAD == 2) {
       if (OP_COL == 6) {
-        if      (state == 0)       { pc = addr + 1;                                                      READ(hl);     state_ = 1; }
+        if      (state == 0)       { pc = addr + 1;                                                               READ(hl);     state_ = 1; }
         else if (state == 1)       {                ao = alu(OP_ROW, a, reg_get8()); a = ao.x; update_flags();    READ(pc);     state_ = 0; }
       }                                                                                                                
       else                         { pc = addr + 1; ao = alu(OP_ROW, a, reg_get8()); a = ao.x; update_flags();    READ(pc);     state_ = 0; }
@@ -509,6 +520,7 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
         else if (state == 3)       {                ao = alu(1, s, sxt(data)); h = ao.x;                 READ(pc);       state_ = 0; }
       }
       else if (RET_CC) {
+        // dunno why this takes five cycles...
         bool cond_fail = false;
         switch (OP_ROW & 3) {
         case 0: cond_fail = (f & F_ZERO); break;
@@ -520,25 +532,25 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
         bool tb = !cond_fail;
         if      (state == 0)       { pc = addr + 1;                                                      PASS(pc);       state_ = 1; }
         else if (state == 1 && tb) {                                                                     READ(sp);       state_ = 2; }
-        else if (state == 1 && nb) {                                                                     READ(pc);       state_ = 0; }
-        else if (state == 2)       { sp = addr + 1; y = data;                                            READ(sp);       state_ = 3; }
-        else if (state == 3)       { sp = addr + 1; x = data;                                            PASS(xy);       state_ = 4; }
-        else if (state == 4)       {                                                                     READ(xy);       state_ = 0; }
+        else if (state == 1 && nb) {                                                                     READ(pc);       state_ = 0; } 
+        else if (state == 2)       { sp = addr + 1; pcl = data;                                          READ(sp);       state_ = 3; }
+        else if (state == 3)       { sp = addr + 1; pch = data;                                          PASS(pc);       state_ = 4; }
+        else if (state == 4)       {                                                                     READ(pc);       state_ = 0; }
       }                                                                                                                  
       else if (RET) {                                                                                                    
         // dunno why this takes four cycles...                                                                           
         if      (state == 0)       { pc = addr + 1;                                                      READ(sp);       state_ = 1; }
-        else if (state == 1)       { sp = addr + 1; y = data;                                            READ(sp);       state_ = 2; }
-        else if (state == 2)       { sp = addr + 1; x = data;                                            PASS(xy);       state_ = 3; }
-        else if (state == 3)       {                                                                     READ(xy);       state_ = 0; }
+        else if (state == 1)       { sp = addr + 1; pcl = data;                                          READ(sp);       state_ = 2; }
+        else if (state == 2)       { sp = addr + 1; pch = data;                                          PASS(pc);       state_ = 3; }
+        else if (state == 3)       {                                                                     READ(pc);       state_ = 0; }
       }                                                                                                                  
       else if (RETI) {                                                                                                   
         if      (state == 0)       { pc = addr + 1;                                                      READ(sp);       state_ = 1; }
-        else if (state == 1)       { sp = addr + 1; y = data;                                            READ(sp);       state_ = 2; }
-        else if (state == 2)       { sp = addr + 1; x = data;                                            PASS(xy);       state_ = 3; }
-        else if (state == 3)       {                ime = true; ime_ = true;                             READ(xy);       state_ = 0; }
+        else if (state == 1)       { sp = addr + 1; pcl = data;                                          READ(sp);       state_ = 2; }
+        else if (state == 2)       { sp = addr + 1; pch = data;                                          PASS(pc);       state_ = 3; }
+        else if (state == 3)       {                ime = true; ime_delay = true;                        READ(pc);       state_ = 0; }
       }                                                                                                                  
-      else if (JP_HL)              { pc = addr + 1;                                                      READ(hl);       state_ = 0; }
+      else if (JP_HL)              { pc = hl;                                                            READ(pc);       state_ = 0; } // must have a fast path
       else if (LD_SP_HL) {                                                                                               
         if      (state == 0)       { pc = addr + 1;                                                      PASS(hl);       state_ = 1; }
         else if (state == 1)       { sp = addr;                                                          READ(pc);       state_ = 0; }
@@ -582,12 +594,12 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
       else if (JP_A16) {                                                                                                 
         if      (state == 0)       { pc = addr + 1;                                                      READ(pc);       state_ = 1; }
         else if (state == 1)       { pc = addr + 1; y = data;                                            READ(pc);       state_ = 2; }
-        else if (state == 2)       { pc = addr + 1; x = data;                                            PASS(pc);       state_ = 3; }
-        else if (state == 3)       {                                                                     READ(xy);       state_ = 0; }
+        else if (state == 2)       { pc = addr + 1; x = data;                                            PASS(xy);       state_ = 3; }
+        else if (state == 3)       { pc = xy;                                                            READ(xy);       state_ = 0; }
       }                                                                                                  
-      else if (DI)                 { pc = addr + 1; ime = false; ime_ = false;                           READ(pc);       state_ = 0; }
-      else if (EI)                 { pc = addr + 1; ime = ime_;  ime_ = true;                            READ(pc);       state_ = 0; }
-      else if (CALL_CC_A16) {                                                                            
+      else if (DI)                 { pc = addr + 1; ime = false;      ime_delay = false;                 READ(pc);       state_ = 0; }
+      else if (EI)                 { pc = addr + 1; ime = ime_delay;  ime_delay = true;                  READ(pc);       state_ = 0; }
+      else if (CALL_CC_A16) {
         bool cond_fail = false;
         switch (OP_ROW & 3) {
         case 0: cond_fail = (f & F_ZERO); break;
@@ -624,6 +636,19 @@ void Z80::tock(const int tcycle_, const uint8_t imask, const uint8_t intf) {
         else if (state == 3)       { xy = op & 0x38;                                                     READ(xy);       state_ = 0; }
       }
     }
+  }
+
+  alu_out.f &= 0xF0;
+  f &= 0xF0;
+
+  //if (state_ == -1) __debugbreak();
+
+  state = state_;
+  ime = ime_delay;
+
+  if (state == 0) {
+    op_addr = addr;
+    alu_out.f = f;
   }
 }
 
@@ -897,38 +922,35 @@ AluOut Z80::alu_cb(uint8_t cb, const uint8_t x) {
 
 #pragma warning(disable:4458)
 
-void Z80::dump(std::string& d) {
-  sprintf(d, "tcycle         %d\n", tcycle);
-  sprintf(d, "bgb cycle      0x%08x\n", (tcycle * 8) + 0x00B2D5E6);
-  sprintf(d, "state          %d\n", state);
-  sprintf(d, "state_         %d\n", state_);
-  sprintf(d, "\n");
+void Z80::dump(std::string& o) {
+  sprintf(o, "state       %d\n", state);
+  sprintf(o, "\n");
 
-  sprintf(d, "op_addr        0x%04x\n", op_addr);
-  sprintf(d, "OP             0x%02x\n", op);
-  sprintf(d, "CB             0x%02x\n", cb);
-  sprintf(d, "\n");
+  sprintf(o, "op_addr     0x%04x\n", op_addr);
+  sprintf(o, "OP          0x%02x\n", op);
+  sprintf(o, "CB          0x%02x\n", cb);
+  sprintf(o, "\n");
 
-  sprintf(d, "PC             0x%04x\n", pc);
-  sprintf(d, "BC             0x%04x\n", bc);
-  sprintf(d, "DE             0x%04x\n", de);
-  sprintf(d, "HL             0x%04x\n", hl);
-  sprintf(d, "SP             0x%04x\n", sp);
-  sprintf(d, "AF             0x%04x\n", af);
-  sprintf(d, "TEMP           0x%04x\n", xy);
-  sprintf(d, "alu.x          0x%02x\n", alu_out.x);
-  sprintf(d, "alu.g          0x%02x\n", alu_out.f);
-  sprintf(d, "\n");
+  sprintf(o, "PC          0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
+  sprintf(o, "BC          0x%04x 0x%02x 0x%02x\n", bc, b, c);
+  sprintf(o, "DE          0x%04x 0x%02x 0x%02x\n", de, d, e);
+  sprintf(o, "HL          0x%04x 0x%02x 0x%02x\n", hl, h, l);
+  sprintf(o, "SP          0x%04x 0x%02x 0x%02x\n", sp, s, p);
+  sprintf(o, "AF          0x%04x 0x%02x 0x%02x\n", af, a, f);
+  sprintf(o, "TEMP        0x%04x 0x%02x 0x%02x\n", xy, x, y);
+  sprintf(o, "alu.x       0x%02x\n", alu_out.x);
+  sprintf(o, "alu.g       0x%02x\n", alu_out.f);
+  sprintf(o, "\n");
 
-  sprintf(d, "addr           0x%04x\n", addr);
-  sprintf(d, "data           0x%02x\n", data);
-  sprintf(d, "write          %d\n",     write);
-  sprintf(d, "\n");
+  sprintf(o, "addr        0x%04x\n", addr);
+  sprintf(o, "data        0x%02x\n", data);
+  sprintf(o, "write       %d\n",     write);
+  sprintf(o, "\n");
 
-  sprintf(d, "IME            %d\n", ime);
-  sprintf(d, "IME_           %d\n", ime_);
-  sprintf(d, "interrupt      %d\n", interrupt);
-  sprintf(d, "int_ack        0x%02x\n", int_ack);
+  sprintf(o, "IME         %d\n", ime);
+  sprintf(o, "IME_        %d\n", ime_delay);
+  sprintf(o, "interrupt   %d\n", interrupt);
+  sprintf(o, "int_ack     0x%02x\n", int_ack);
 }
 
 //-----------------------------------------------------------------------------

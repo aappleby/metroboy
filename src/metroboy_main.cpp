@@ -60,8 +60,8 @@ void MetroBoyApp::init() {
   //load("gejmboj");
   //load("LinksAwakening");
   //load("Prehistorik Man (U)");
-  //load("SML");
-  //load("tetris");
+  //load("roms/", "SML");
+  //load("roms/", "tetris");
 
   //load("cpu_instrs");
   //load("instr_timing");
@@ -70,25 +70,27 @@ void MetroBoyApp::init() {
   //load("microtests/build/dmg", "minimal");
   //load("micro_cpu/build/dmg", "cpu_mov");
 
-  load("roms/gb-test-roms/cpu_instrs/individual", "01-special");
-  load("roms/gb-test-roms/cpu_instrs/individual", "02-interrupts");
-  load("roms/gb-test-roms/cpu_instrs/individual", "03-op sp,hl");
-  load("roms/gb-test-roms/cpu_instrs/individual", "04-op r,imm");
-  load("roms/gb-test-roms/cpu_instrs/individual", "05-op rp");
-  load("roms/gb-test-roms/cpu_instrs/individual", "06-ld r,r");
-  load("roms/gb-test-roms/cpu_instrs/individual", "07-jr,jp,call,ret,rst");
-  load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
-  load("roms/gb-test-roms/cpu_instrs/individual", "09-op r,r");
-  load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
-  load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
+  //load("microtests/build/dmg", "400-dma");
+
+  //load("roms/gb-test-roms/cpu_instrs/individual", "01-special");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "02-interrupts");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "03-op sp,hl");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "04-op r,imm");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "05-op rp");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "06-ld r,r");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "07-jr,jp,call,ret,rst");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "09-op r,r");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
   load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
 
 
   //load_memdump("roms", "LinksAwakening_house");
 
-  //runmode = STEP_CYCLE;
-  runmode = RUN_FAST;
+  runmode = STEP_CYCLE;
+  //runmode = RUN_FAST;
   //runmode = RUN_VSYNC;
 };
 
@@ -401,10 +403,23 @@ void MetroBoyApp::render_frame() {
   //----------------------------------------
   // Gameboy screen
 
-  gb_blitter.blit_screen(view_snap, gb_screen_x, gb_screen_y, 2, metroboy.fb());
-  gb_blitter.blit_map(view_snap, metroboy.get_vram());
-  gb_blitter.blit_trace(view_snap, gb_screen_x, gb_screen_y + 320, metroboy.get_trace());
+  //const int gb_screen_x = 32 * 32;
+  //const int gb_screen_y = 32 * 11;
 
+  const int gb_screen_x = 960;
+  const int gb_screen_y = 320;
+  gb_blitter.blit_screen(view_snap, gb_screen_x, gb_screen_y, 2, metroboy.fb());
+
+  const int gb_map_x = screen_w - 256 - 32;
+  const int gb_map_y = 32;
+
+  gb_blitter.blit_map   (view_snap, gb_map_x, gb_map_y, metroboy.get_vram());
+
+  const int gb_trace_x = 960;
+  const int gb_trace_y = 320 + 320;
+  gb_blitter.blit_trace (view_snap, gb_trace_x, gb_trace_y, metroboy.get_trace());
+
+  /*
   update_texture_u8(ram_tex, 0, 0*32, 256, 128, rom_buf);
   update_texture_u8(ram_tex, 0, 4*32, 256,  32, metroboy.get_vram());
   update_texture_u8(ram_tex, 0, 5*32, 256,  32, metroboy.get_cram());
@@ -413,6 +428,7 @@ void MetroBoyApp::render_frame() {
   blitter.blit_mono(view_snap, ram_tex, 256, 256,
                     0, 0, 256, 256,
                     gb_screen_x, 32, 256, 256);
+  */
 
 
   //dump_painter.render(view_snap, 900, 100, 16, 8, metroboy.gb().get_zram());
@@ -519,7 +535,6 @@ void MetroBoyApp::render_frame() {
 
 void MetroBoyApp::render_ui() {
 
-#if 1
   //----------------------------------------
   // Stat bar
 
@@ -531,6 +546,8 @@ void MetroBoyApp::render_ui() {
     "STEP_CYCLE",
   };
 
+  const int gb_screen_x = 960;
+  const int gb_screen_y = 320;
   sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
   text_painter.render(text_buf, gb_screen_x, gb_screen_y + 144*2);
   text_buf.clear();
@@ -543,13 +560,16 @@ void MetroBoyApp::render_ui() {
 
   Gameboy& gameboy = metroboy.gb();
 
-  gameboy.dump_cpu(text_buf);
-  sprintf(text_buf, "\n");
-
   gameboy.dump_bus(text_buf);
   sprintf(text_buf, "\n");
 
+  gameboy.dump_cpu(text_buf);
+  sprintf(text_buf, "\n");
+
   gameboy.dump_timer(text_buf);
+  sprintf(text_buf, "\n");
+
+  gameboy.dma.dump(text_buf);
   sprintf(text_buf, "\n");
 
   text_painter.render(text_buf, column, 0);
@@ -591,7 +611,7 @@ void MetroBoyApp::render_ui() {
   text_painter.render(text_buf, column, 0);
   text_buf.clear();
   column += 32 * 7;
-#endif
+
   {
     ImGuiIO& io = ImGui::GetIO();
 
@@ -606,7 +626,8 @@ void MetroBoyApp::render_ui() {
     text_painter.dprintf("sim rate   %07d cycles/frame\n", last_cycles);
     text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_cycles_per_sec / rt_cycles_per_sec);
     text_painter.dprintf("app speed  %1.2fx realtime (%.1f FPS)\n", app_cycles_per_sec / rt_cycles_per_sec, io.Framerate);
-    text_painter.render(screen_w - 300, screen_h - 60);
+    
+    text_painter.render(960, 800);
   }
 
   //----------------------------------------

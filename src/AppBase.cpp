@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <include/SDL.h>
 #include <imgui.h>
-//#include <examples/imgui_impl_sdl.h>
-//#include <examples/imgui_impl_opengl3.h>
 
 //-----------------------------------------------------------------------------
 
@@ -66,10 +64,13 @@ int AppBase::main(int, char**) {
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  screen_w = 1856;
-  screen_h = 1024;
+  //screen_w = 1856;
+  //screen_h = 1024;
 
-  window = SDL_CreateWindow("GBSchematic",
+  screen_w = 1920;
+  screen_h = 1080;
+
+  window = SDL_CreateWindow("MetroBoy Game Boy Simulator",
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                             screen_w, screen_h,
                             SDL_WINDOW_OPENGL /*| SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI*/);
@@ -78,54 +79,7 @@ int AppBase::main(int, char**) {
   app_start = SDL_GetPerformanceCounter();
   perf_freq = SDL_GetPerformanceFrequency();
 
-  //----------------------------------------
-  // Init OpenGL context
-
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
-                      SDL_GL_CONTEXT_DEBUG_FLAG |
-                      SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG |
-                      SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-
-  // using an OpenGL ES 3.0 context causes the gamma to be wrong due to some
-  // incorrect SRGB conversion (I think). So, we use OpenGL 4.0.
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-
-  gl_context = SDL_GL_CreateContext(window);
-  SDL_GL_SetSwapInterval(1); // Enable vsync
-  //SDL_GL_SetSwapInterval(0); // Disable vsync
-
-  gladLoadGLES2Loader(SDL_GL_GetProcAddress);
-  printf("OpenGL loaded\n");
-  printf("Vendor:   %s\n", glGetString(GL_VENDOR));
-  printf("Renderer: %s\n", glGetString(GL_RENDERER));
-  printf("Version:  %s\n", glGetString(GL_VERSION));
-  printf("GLSL:     %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-
-  int ext_count = 0;
-  glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
-  printf("Ext count %d\n", ext_count);
-#if 0
-  for (int i = 0; i < ext_count; i++) {
-    printf("Ext %2d: %s\n", i, glGetStringi(GL_EXTENSIONS, i));
-  }
-#endif
-
-  //----------------------------------------
-  // Set initial GL state
-
-  //glEnable(GL_DEPTH_TEST);
-  //glDepthFunc(GL_LEQUAL);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glClearColor(0.1f, 0.1f, 0.2f, 0.f);
-  glClearDepthf(1.0);
+  gl_context = (SDL_GLContext)init_gl(window);
 
   //----------------------------------------
   // Initialize ImGui and ImGui renderer
@@ -334,8 +288,7 @@ int AppBase::main(int, char**) {
 
     text_painter.end_frame();
 
-    int err = glGetError();
-    if (err) printf("glGetError %d\n", err);
+    check_gl_error();
 
     SDL_GL_SwapWindow(window);
     SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);

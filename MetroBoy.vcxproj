@@ -204,6 +204,7 @@
     <ClCompile Include="src\metroboy_main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="microtests\400-dma.s" />
     <None Include="micro_cpu\cpu_mov.s" />
     <None Include="micro_cpu\cpu_nop.s" />
     <None Include="micro_cpu\header.inc" />

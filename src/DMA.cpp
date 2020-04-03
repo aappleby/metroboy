@@ -78,6 +78,8 @@ bool DMA::on_ibus_req(int tcycle, const Req& ibus_req, Ack& ibus_ack) {
   assert(!ibus_ack.read && !ibus_ack.write);
 
   if (tphase == 0 && ibus_req.write) {
+    //printf("%08d DMA write 0x%02x\n", tcycle, ibus_req.data);
+
     if (ibus_req.data <= 0x7F) mode_x = Mode::CART;
     if (0x80 <= ibus_req.data && ibus_req.data <= 0x9F) mode_x = Mode::VRAM;
     if (0xA0 <= ibus_req.data && ibus_req.data <= 0xBF) mode_x = Mode::CART;
@@ -134,9 +136,9 @@ void DMA::on_obus_ack(const Ack& /*obus_ack*/) {
 //-----------------------------------------------------------------------------
 
 void DMA::tock(int tcycle) {
-  if (mode_x != Mode::NONE) __debugbreak();
-  if (mode_a != Mode::NONE) __debugbreak();
-  if (mode_b != Mode::NONE) __debugbreak();
+  //if (mode_x != Mode::NONE) __debugbreak();
+  //if (mode_a != Mode::NONE) __debugbreak();
+  //if (mode_b != Mode::NONE) __debugbreak();
 
   int tphase = tcycle & 3;
   if (tphase == 0) {
@@ -155,20 +157,19 @@ void DMA::tock(int tcycle) {
 //-----------------------------------------------------------------------------
 
 void DMA::dump(std::string& d) {
-  sprintf(d, "\002--------------BUS--------------\001\n");
-  //sprintf(d, "tcycle         %d\n", tcycle);
+  sprintf(d, "\002--------------DMA--------------\001\n");
  
-  sprintf(d, "mode_x     %d\n", mode_x);
-  sprintf(d, "count_x    %d\n", count_x);
-  sprintf(d, "source_x   0x%04x\n", source_x);
+  sprintf(d, "mode_x      %d\n", mode_x);
+  sprintf(d, "count_x     %d\n", count_x);
+  sprintf(d, "source_x    0x%04x\n", source_x);
   sprintf(d, "\n");
-  sprintf(d, "mode_a     %d\n", mode_a);
-  sprintf(d, "count_a    %d\n", count_a);
-  sprintf(d, "source_a   0x%04x\n", source_a);
+  sprintf(d, "mode_a      %d\n", mode_a);
+  sprintf(d, "count_a     %d\n", count_a);
+  sprintf(d, "source_a    0x%04x\n", source_a);
   sprintf(d, "\n");
-  sprintf(d, "mode_b     %d\n", mode_b);
-  sprintf(d, "count_b    %d\n", count_b);
-  sprintf(d, "data_b     %d\n", data_b);
+  sprintf(d, "mode_b      %d\n", mode_b);
+  sprintf(d, "count_b     %d\n", count_b);
+  sprintf(d, "data_b      %d\n", data_b);
 }
 
 //-----------------------------------------------------------------------------

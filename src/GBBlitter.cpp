@@ -330,7 +330,7 @@ static vec4 default_pal[4] = {
   {0.12, 0.12, 0.12, 1.0},
 };
 
-void GBBlitter::blit_map(Viewport view, const uint8_t* vram) {
+void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, const uint8_t* vram) {
 
   //----------
 
@@ -356,8 +356,8 @@ void GBBlitter::blit_map(Viewport view, const uint8_t* vram) {
     bind_ubo(blit_tile_prog, "BlitTileUniforms", 0, blit_tile_ubo);
     bind_ubo(blit_tile_prog, "vramBuffer", 1, vram_ubo);
 
-    float x = float(1856 - 256 - 32);
-    float y = 32 * 1;
+    float x = float(screen_x);
+    float y = float(screen_y);
 
     uniforms.quad_pos = {x, y, x + 256, y + 128};
     uniforms.quad_tex = {0, 0, 128, 64};
@@ -392,8 +392,8 @@ void GBBlitter::blit_map(Viewport view, const uint8_t* vram) {
       .alt_map = 0,
     };
 
-    float x = float(1856 - 256 - 32);
-    float y = 32 * 1;
+    float x = float(screen_x);
+    float y = float(screen_y);
 
     bind_shader(blit_map_prog);
     bind_vao(quad_vao);

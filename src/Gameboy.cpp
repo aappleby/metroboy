@@ -27,7 +27,8 @@ void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
   zram.reset();
   boot.reset(new_pc);
 
-  tcycle = -1;
+  tcycle_old = -2;
+  tcycle_new = -1;
   trace_val = 0;
 
   intf = 0xE1;
@@ -99,8 +100,11 @@ void print_ack(std::string& d, const char* name, const Ack& ack) {
 #pragma warning(disable:4189)
 
 void Gameboy::tock() {
-  tcycle++;
-  const int tphase = tcycle & 3;
+  tcycle_old = tcycle_new;
+  tcycle_new = tcycle_new + 1;
+  tphase_old = tcycle_old & 3;
+  tphase_new = tcycle_new & 3;
+
 
   cpu_req = {};
   cpu_ack = {};
@@ -114,7 +118,9 @@ void Gameboy::tock() {
   ibus_req = {};
   ibus_ack = {};
 
-  cpu_req = z80.get_bus_req();
+  if (tphase_new == 0) {
+    cpu_req = z80.get_bus_req();
+  }
   int region = cpu_req.addr >> 13;
 
   bool cpu_has_req = cpu_req.read || cpu_req.write;
@@ -126,71 +132,87 @@ void Gameboy::tock() {
   if (cpu_has_ibus_req) {
     Req ibus_req = cpu_req;
     Ack ibus_ack = {};
-    this-> on_ibus_req(        ibus_req, ibus_ack);
-    timer. on_ibus_req(        ibus_req, ibus_ack);
-    zram.  on_ibus_req(        ibus_req, ibus_ack);
-    joypad.on_ibus_req(        ibus_req, ibus_ack);
-    serial.on_ibus_req(        ibus_req, ibus_ack);
-    ppu.   on_ibus_req(tcycle, ibus_req, ibus_ack);
-    spu.   on_ibus_req(        ibus_req, ibus_ack);
-    dma.   on_ibus_req(tcycle, ibus_req, ibus_ack);
-    boot.  on_ibus_req(        ibus_req, ibus_ack);
+    this-> on_ibus_req(                 ibus_req, ibus_ack);
+    timer. on_ibus_req(                 ibus_req, ibus_ack);
+    zram.  on_ibus_req(                 ibus_req, ibus_ack);
+    joypad.on_ibus_req(                 ibus_req, ibus_ack);
+    serial.on_ibus_req(                 ibus_req, ibus_ack);
+    ppu.   on_ibus_req(int(tcycle_new), ibus_req, ibus_ack);
+    spu.   on_ibus_req(                 ibus_req, ibus_ack);
+    dma.   on_ibus_req(int(tcycle_new), ibus_req, ibus_ack);
+    boot.  on_ibus_req(                 ibus_req, ibus_ack);
+
+    cpu_ack = ibus_ack;
     z80.on_bus_ack(ibus_ack);
-    //cpu_ack = ibus_ack;
   }
 
-  if (dma.has_ebus_req(tcycle)) {
-    Req ebus_req = dma.get_ebus_req(tcycle);
-    Ack ebus_ack = {};
+  //-----------------------------------
+  // External bus mux
+
+  if (dma.has_ebus_req(int(tcycle_new))) {
+    ebus_req = dma.get_ebus_req(int(tcycle_new));
+    ebus_ack = {};
     cart.on_ebus_req(ebus_req, ebus_ack);
     iram.on_ebus_req(ebus_req, ebus_ack);
     dma.on_ebus_ack(ebus_ack);
   }
   else if (cpu_has_ebus_req) {
-    Req ebus_req = cpu_req;
-    Ack ebus_ack = {};
+    ebus_req = cpu_req;
+    ebus_ack = {};
     cart.on_ebus_req(ebus_req, ebus_ack);
     iram.on_ebus_req(ebus_req, ebus_ack);
+
+    cpu_ack = ebus_ack;
     z80.on_bus_ack(ebus_ack);
     // cpu_ack = ebus_ack;
   }
 
-  if (dma.has_vbus_req(tcycle)) {
-    Req vbus_req = dma.get_vbus_req(tcycle);
-    Ack vbus_ack = {};
+  //-----------------------------------
+  // Vram bus mux
+
+  if (dma.has_vbus_req(int(tcycle_new))) {
+    vbus_req = dma.get_vbus_req(int(tcycle_new));
+    vbus_ack = {};
     vram.on_vbus_req(vbus_req, vbus_ack);
     dma.on_vbus_ack(vbus_ack);
   }
-  else if (ppu.has_vbus_req(tcycle)) {
-    Req vbus_req = ppu.get_vbus_req(tcycle);
-    Ack vbus_ack = {};
+  else if (ppu.has_vbus_req(int(tcycle_new))) {
+    vbus_req = ppu.get_vbus_req(int(tcycle_new));
+    vbus_ack = {};
     vram.on_vbus_req(vbus_req, vbus_ack);
     ppu.on_vbus_ack(vbus_ack);
   }
   else if (cpu_has_vbus_req) {
-    Req vbus_req = cpu_req;
-    Ack vbus_ack = {};
+    vbus_req = cpu_req;
+    vbus_ack = {};
     vram.on_vbus_req(vbus_req, vbus_ack);
+
+    cpu_ack = vbus_ack;
     z80.on_bus_ack(vbus_ack);
     // cpu_ack = vbus_ack;
   }
 
-  if (dma.has_obus_req(tcycle)) {
-    Req obus_req = dma.get_obus_req(tcycle);
-    Ack obus_ack = {};
+  //-----------------------------------
+  // OAM bus mux
+
+  if (dma.has_obus_req(int(tcycle_new))) {
+    obus_req = dma.get_obus_req(int(tcycle_new));
+    obus_ack = {};
     oam.on_obus_req(obus_req, obus_ack);
     dma.on_obus_ack(obus_ack);
   }
-  else if (ppu.has_obus_req(tcycle)) {
-    Req obus_req = ppu.get_obus_req(tcycle);
-    Ack obus_ack = {};
+  else if (ppu.has_obus_req(int(tcycle_new))) {
+    obus_req = ppu.get_obus_req(int(tcycle_new));
+    obus_ack = {};
     oam.on_obus_req(obus_req, obus_ack);
     ppu.on_obus_ack(obus_ack);
   }
   else if (cpu_has_obus_req) {
-    Req obus_req = cpu_req;
-    Ack obus_ack = {};
+    obus_req = cpu_req;
+    obus_ack = {};
     oam.on_obus_req(obus_req, obus_ack);
+
+    cpu_ack = obus_ack;
     z80.on_bus_ack(obus_ack);
     //cpu_ack = obus_ack;
   }
@@ -201,7 +223,7 @@ void Gameboy::tock() {
   uint8_t intf_ = intf;
   uint8_t imask_ = imask;
 
-  if (tphase == 0 || tphase == 2) {
+  if (tphase_new == 0 || tphase_new == 2) {
     bool fire_int_timer1   = timer.get_interrupt();;
     bool fire_int_buttons1 = joypad.get() != 0xFF;
     //bool fire_int_timer2 = timer_to_bus.overflow;
@@ -222,14 +244,27 @@ void Gameboy::tock() {
   // Z80 bus mux & tock
 
   intf_ &= ~z80.get_int_ack();
-  z80.tock(tcycle, imask_, intf_);
+
+  switch (tphase_new) {
+    case 0:
+      z80.tock_t30(imask_, intf_);
+      break;
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+  };
+  
 
   //-----------------------------------
   // Peripheral bus mux & tocks
 
-  timer.tock(tcycle);
-  ppu  .tock(tcycle);
-  spu  .tock(tcycle);
+  timer.tock(int(tcycle_new));
+  ppu  .tock(int(tcycle_new));
+  spu  .tock(int(tcycle_new));
+  dma  .tock(int(tcycle_new));
 
   intf = intf_;
   imask = imask_;
@@ -279,7 +314,11 @@ void Gameboy::dump_cpu(std::string& d) {
 
 void Gameboy::dump_bus(std::string& d) {
   sprintf(d, "\002------------- BUS --------------\001\n");
-  sprintf(d, "tcycle %d\n", tcycle);
+  sprintf(d, "tcycle_old %lld\n", tcycle_old);
+  sprintf(d, "tcycle_new %lld\n", tcycle_new);
+  sprintf(d, "tphase_old %d\n", int(tcycle_old & 3));
+  sprintf(d, "tphase_new %d\n", int(tcycle_new & 3));
+  sprintf(d, "bgb cycle      0x%08x\n", (tcycle_new * 8) + 0x00B2D5E6);
   sprintf(d, "imask  %s\n", byte_to_bits(imask));
   sprintf(d, "intf   %s\n", byte_to_bits(intf));
   sprintf(d, "boot   %d\n", boot.disable_bootrom);

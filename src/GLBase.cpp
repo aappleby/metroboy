@@ -1,6 +1,7 @@
 #include "GLBase.h"
 #include <stdio.h>
 #include <vector>
+#include <include/SDL.h>
 
 /*
 extern "C" {
@@ -10,17 +11,85 @@ _declspec(dllexport) int NvOptimusEnablement = 0x00000001;
 
 //-----------------------------------------------------------------------------
 
+void debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum /*severity*/,
+                 GLsizei /*length*/, const GLchar* message, const GLvoid* /*userParam*/) {
+	printf("GLDEBUG: %s\n", message);
+}
+
+//-----------------------------------------------------------------------------
+
+void* init_gl(void* window) {
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
+                      SDL_GL_CONTEXT_DEBUG_FLAG |
+                          SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG |
+                          SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+
+  // using an OpenGL ES 3.0 context causes the gamma to be wrong due to some
+  // incorrect SRGB conversion (I think). So, we use OpenGL 4.3 (which supports glDebugMessageCallback).
+
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+
   /*
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  */
+
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+  SDL_GLContext gl_context = SDL_GL_CreateContext((SDL_Window*)window);
+  SDL_GL_SetSwapInterval(1);  // Enable vsync
+  // SDL_GL_SetSwapInterval(0); // Disable vsync
+
+  //gladLoadGLES2Loader(SDL_GL_GetProcAddress);
+  gladLoadGLLoader(SDL_GL_GetProcAddress);
+
+  printf("OpenGL loaded\n");
+  printf("Vendor:   %s\n", glGetString(GL_VENDOR));
+  printf("Renderer: %s\n", glGetString(GL_RENDERER));
+  printf("Version:  %s\n", glGetString(GL_VERSION));
+  printf("GLSL:     %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
   glDebugMessageCallback(debugOutput, nullptr);
-  */
 
+  int ext_count = 0;
+  glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
+  printf("Ext count %d\n", ext_count);
+#if 0
+  for (int i = 0; i < ext_count; i++) {
+    printf("Ext %2d: %s\n", i, glGetStringi(GL_EXTENSIONS, i));
+  }
+#endif
 
-void debugOutput(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum /*severity*/,
-                 GLsizei /*length*/, const GLchar* message, const GLvoid* /*userParam*/) {
-	printf("GLDEBUG: %s\n", message);
+  //----------------------------------------
+  // Set initial GL state
+
+  // glEnable(GL_DEPTH_TEST);
+  // glDepthFunc(GL_LEQUAL);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glClearColor(0.1f, 0.1f, 0.2f, 0.f);
+  glClearDepthf(1.0);
+
+  return (void*)gl_context;
+}
+
+//-----------------------------------------------------------------------------
+
+void check_gl_error() {
+  int err = glGetError();
+  if (err) {
+    printf("glGetError %d\n", err);
+    __debugbreak();
+  }
 }
 
 //-----------------------------------------------------------------------------

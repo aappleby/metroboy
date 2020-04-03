@@ -53,7 +53,7 @@ public:
   bool save_dump = false;
   
   double cycles_per_sec_1x = 114 * 154 * 60; // 1.05 mhz
-  double sim_speed = 2.5;
+  double sim_speed = 2.0;
   double sim_budget_msec = 15.0;
   double fast_cycles = cycles_per_sec_1x * sim_speed * sim_budget_msec / 1000.0;
   int last_cycles = 0;
@@ -84,9 +84,6 @@ public:
 
   //----------
   // gb state
-
-  const int gb_screen_x = 32*32;
-  const int gb_screen_y = 32*11;
 
   MetroBoy metroboy;
   int64_t cycles_begin, cycles_end;

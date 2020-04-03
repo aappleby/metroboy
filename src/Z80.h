@@ -11,7 +11,7 @@ struct Z80 {
   Req  get_bus_req() const;
   void on_bus_ack(Ack ibus_ack_);
 
-  void    tock(const int tcycle_, const uint8_t imask_, const uint8_t intf_);
+  void tock_t30(const uint8_t imask_, const uint8_t intf_);
   void    dump(std::string& d);
 
   uint16_t get_op_addr() const { return op_addr; }
@@ -22,15 +22,14 @@ struct Z80 {
   bool    unhalt;
 
 private:
-  int tcycle;
 
   uint16_t op_addr;
-  uint8_t op;
-  uint8_t cb;
-  bool ime, ime_;
-  bool interrupt;
+  uint8_t  op;
+  uint8_t  cb;
+  bool     ime, ime_delay;
+  bool     interrupt;
 
-  int      state, state_;
+  int      state;
   uint16_t addr;
   uint8_t  data;
   bool     read;

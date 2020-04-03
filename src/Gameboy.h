@@ -53,7 +53,7 @@ struct Gameboy {
   const SPU& get_spu() const { return spu; }
   const PPU& get_ppu() const { return ppu; }
 
-  int64_t  get_tcycle() const { return tcycle; }
+  int64_t  get_tcycle() const { return tcycle_new; }
 
   // 0x0000 - rom
   // 0x2000 - rom
@@ -77,7 +77,10 @@ struct Gameboy {
 
 //private:
 
-  int tcycle;
+  int64_t tcycle_old;
+  int64_t tcycle_new;
+  int tphase_old;
+  int tphase_new;
 
   Z80     z80;
   Timer   timer;

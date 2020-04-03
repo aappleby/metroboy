@@ -2,6 +2,9 @@
 #include <glad/glad.h>
 #include <stdint.h>
 
+void* init_gl(void* window);
+void  check_gl_error();
+
 int   create_shader(const char* name, const char* src);
 void  bind_shader(int shader);
 

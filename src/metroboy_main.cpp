@@ -536,24 +536,6 @@ void MetroBoyApp::render_frame() {
 void MetroBoyApp::render_ui() {
 
   //----------------------------------------
-  // Stat bar
-
-  const char* mode_names[] = {
-    "RUN_FAST",
-    "RUN_VSYNC",
-    "STEP_FRAME",
-    "STEP_LINE",
-    "STEP_CYCLE",
-  };
-
-  const int gb_screen_x = 960;
-  const int gb_screen_y = 320;
-  sprintf(text_buf, "%s %d", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
-  text_painter.render(text_buf, gb_screen_x, gb_screen_y + 144*2);
-  text_buf.clear();
-
-
-  //----------------------------------------
   // Left column text
 
   int column = 0;
@@ -620,6 +602,11 @@ void MetroBoyApp::render_ui() {
 
     double app_cycles_per_sec = fast_cycles * io.Framerate;
 
+    const char* mode_names[] = {
+        "RUN_FAST", "RUN_VSYNC", "STEP_FRAME", "STEP_LINE", "STEP_CYCLE",
+    };
+
+    text_painter.dprintf("%s %d\n", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
     text_painter.dprintf("sim budget %2.2f msec/frame\n", sim_budget_msec);
     text_painter.dprintf("sim time   %02.2f msec/frame\n", sim_time_msec);
     //text_painter.dprintf("sim rate   %07d cycles/frame\n", int(fast_cycles));

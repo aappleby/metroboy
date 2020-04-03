@@ -105,7 +105,6 @@ void Gameboy::tock() {
   tphase_old = tcycle_old & 3;
   tphase_new = tcycle_new & 3;
 
-
   cpu_req = {};
   cpu_ack = {};
   ebus_req = {};
@@ -119,7 +118,7 @@ void Gameboy::tock() {
   ibus_ack = {};
 
   if (tphase_new == 0) {
-    cpu_req = z80.get_bus_req();
+    cpu_req = z80.get_bus_req_t30();
   }
   int region = cpu_req.addr >> 13;
 
@@ -142,8 +141,10 @@ void Gameboy::tock() {
     dma.   on_ibus_req(int(tcycle_new), ibus_req, ibus_ack);
     boot.  on_ibus_req(                 ibus_req, ibus_ack);
 
-    cpu_ack = ibus_ack;
-    z80.on_bus_ack(ibus_ack);
+    if (tphase_new == 0) {
+      cpu_ack = ibus_ack;
+      z80.on_bus_ack_t01(ibus_ack);
+    }
   }
 
   //-----------------------------------
@@ -162,10 +163,12 @@ void Gameboy::tock() {
     cart.on_ebus_req(ebus_req, ebus_ack);
     iram.on_ebus_req(ebus_req, ebus_ack);
 
-    cpu_ack = ebus_ack;
-    z80.on_bus_ack(ebus_ack);
-    // cpu_ack = ebus_ack;
+    if (tphase_new == 0) {
+      cpu_ack = ebus_ack;
+      z80.on_bus_ack_t01(ebus_ack);
+    }
   }
+    
 
   //-----------------------------------
   // Vram bus mux
@@ -187,9 +190,10 @@ void Gameboy::tock() {
     vbus_ack = {};
     vram.on_vbus_req(vbus_req, vbus_ack);
 
-    cpu_ack = vbus_ack;
-    z80.on_bus_ack(vbus_ack);
-    // cpu_ack = vbus_ack;
+    if (tphase_new == 0) {
+      cpu_ack = vbus_ack;
+      z80.on_bus_ack_t01(vbus_ack);
+    }
   }
 
   //-----------------------------------
@@ -212,9 +216,10 @@ void Gameboy::tock() {
     obus_ack = {};
     oam.on_obus_req(obus_req, obus_ack);
 
-    cpu_ack = obus_ack;
-    z80.on_bus_ack(obus_ack);
-    //cpu_ack = obus_ack;
+    if (tphase_new == 0) {
+      cpu_ack = obus_ack;
+      z80.on_bus_ack_t01(obus_ack);
+    }
   }
 
   //-----------------------------------
@@ -243,19 +248,21 @@ void Gameboy::tock() {
   //-----------------------------------
   // Z80 bus mux & tock
 
-  intf_ &= ~z80.get_int_ack();
-
   switch (tphase_new) {
     case 0:
+      intf_ &= ~z80.get_int_ack_t30();
       z80.tock_t30(imask_, intf_);
       break;
     case 1:
+      z80.tock_t01(imask_, intf_);
       break;
     case 2:
+      z80.tock_t12(imask_, intf_);
       break;
     case 3:
+      z80.tock_t23(imask_, intf_);
       break;
-  };
+  }
   
 
   //-----------------------------------

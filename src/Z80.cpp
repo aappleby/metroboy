@@ -184,7 +184,7 @@ void Z80::reset(uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-Req Z80::get_bus_req() const {
+Req Z80::get_bus_req_t30() const {
   return {
     .addr  = addr,
     .data  = data,
@@ -193,7 +193,7 @@ Req Z80::get_bus_req() const {
   };
 }
 
-void Z80::on_bus_ack(Ack ibus_ack_) {
+void Z80::on_bus_ack_t01(Ack ibus_ack_) {
   if (read) {
     data = (uint8_t)ibus_ack_.data;
   }
@@ -233,7 +233,12 @@ void Z80::tock_t30(const uint8_t imask, const uint8_t intf) {
   read = 0;
   write = 0;
 
-  int state_ = -1;
+  state_ = -1;
+}
+
+//-----------------------------------------------------------------------------
+
+void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
 
   //----------------------------------------
   // INTERRUPTS
@@ -637,11 +642,20 @@ void Z80::tock_t30(const uint8_t imask, const uint8_t intf) {
       }
     }
   }
+}
 
+//-----------------------------------------------------------------------------
+
+void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
+}
+
+//-----------------------------------------------------------------------------
+
+void Z80::tock_t23(const uint8_t imask, const uint8_t intf) {
   alu_out.f &= 0xF0;
   f &= 0xF0;
 
-  //if (state_ == -1) __debugbreak();
+  if (state_ == -1) __debugbreak();
 
   state = state_;
   ime = ime_delay;

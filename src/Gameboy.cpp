@@ -168,7 +168,7 @@ void Gameboy::tock() {
       z80.on_bus_ack_t01(ebus_ack);
     }
   }
-    
+
 
   //-----------------------------------
   // Vram bus mux
@@ -263,7 +263,7 @@ void Gameboy::tock() {
       z80.tock_t23(imask_, intf_);
       break;
   }
-  
+
 
   //-----------------------------------
   // Peripheral bus mux & tocks

@@ -1080,13 +1080,13 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
       else if (RET) {
         if      (state == 0)       {                            addr = sp; data = data; read = 1; write = 0; state_ = 1; }
         else if (state == 1)       {                pcl = data; addr = sp; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       {                pch = data; PASS(pc); state_ = 3; }
+        else if (state == 2)       {                pch = data; addr = pc; data = data; read = 1; write = 0; state_ = 3; }
         else if (state == 3)       {                            addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (RETI) {
         if      (state == 0)       {                               addr = sp; data = data; read = 1; write = 0; state_ = 1; }
         else if (state == 1)       { pcl = data;                   addr = sp; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       { pch = data;                   PASS(pc); state_ = 3; }
+        else if (state == 2)       { pch = data;                   addr = pc; data = data; read = 1; write = 0; state_ = 3; }
         else if (state == 3)       { ime = true; ime_delay = true; addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (JP_HL)              { addr = pc; data = data; read = 1; write = 0; state_ = 0; } // must have a fast path

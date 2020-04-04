@@ -37,6 +37,13 @@ private:
   uint8_t  data;
   bool     read;
   bool     write;
+
+  uint8_t alu_op;
+  uint8_t alu_x;
+  uint8_t alu_y;
+  uint8_t alu_o;
+  uint8_t alu_f;
+
   AluOut   alu_out;
   uint8_t  int_ack;
 
@@ -62,10 +69,10 @@ private:
 
   void     update_flags();
 
-  AluOut   alu_cb(const uint8_t cb, const uint8_t x);
-  AluOut   alu(const uint8_t op, const uint8_t x, const uint8_t y);
-  AluOut   rlu(const uint8_t op, const uint8_t x);
-  AluOut   daa(uint8_t x, uint8_t f);
+  void     alu_cb(const uint8_t x);
+  void     alu(const uint8_t x, const uint8_t y);
+  void     rlu(const uint8_t x);
+  void     daa(uint8_t x, uint8_t f);
 };
 
 //-----------------------------------------------------------------------------

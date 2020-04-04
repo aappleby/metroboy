@@ -549,10 +549,10 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
     if      (state == 0)       { }
     else if (state == 1) {
       cb = data;
-      if (OP_CB_R  )           { ao = alu_cb(cb, reg_get8(CB_COL)); reg_put8(CB_COL, ao.x); update_flags(); }
+      if (OP_CB_R  )           { alu_op = cb; alu_cb(reg_get8(CB_COL)); reg_put8(CB_COL, ao.x); update_flags(); }
       if (OP_CB_HL )           {                                                                            }
     }
-    else if (state == 2)       { y = data; ao = alu_cb(cb, y); y = ao.x;                           update_flags(); }
+    else if (state == 2)       { y = data; alu_op = cb; alu_cb(y); y = ao.x;                           update_flags(); }
     else if (state == 3)       {                                                                            }
   }
 
@@ -572,8 +572,8 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
         else if (STOP)               {                                                    }
         else if (JR_R8) {                                                                 
           if (state == 0)            {                                                    }
-          else if (state == 1)       { y = data; ao = alu(0, pcl,      y); pcl = ao.x;    }
-          else if (state == 2)       {           ao = alu(1, pch, sxt(y)); pch = ao.x;    }
+          else if (state == 1)       { y = data; alu_op = 0; alu(pcl,      y); pcl = ao.x;    }
+          else if (state == 2)       {           alu_op = 1; alu(pch, sxt(y)); pch = ao.x;    }
         }                                                                                                              
         else if (JR_CC_R8) {                                                                                           
         }                                                                                               
@@ -601,16 +601,16 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
         }                                                                                 
         else if (ADD_HL_RR) {                                                             
           if (state == 0) {                                                               
-            if      (ADD_HL_BC)      { ao = alu(0, l, c); l = ao.x;                       }
-            else if (ADD_HL_DE)      { ao = alu(0, l, e); l = ao.x;                       }
-            else if (ADD_HL_HL)      { ao = alu(0, l, l); l = ao.x;                       }
-            else if (ADD_HL_SP)      { ao = alu(0, l, p); l = ao.x;                       }
-          }                                                                               
-          else if (state == 1) {                                                          
-            if      (ADD_HL_BC)      { ao = alu(1, h, b); h = ao.x;       update_flags(); }
-            else if (ADD_HL_DE)      { ao = alu(1, h, d); h = ao.x;       update_flags(); }
-            else if (ADD_HL_HL)      { ao = alu(1, h, h); h = ao.x;       update_flags(); }
-            else if (ADD_HL_SP)      { ao = alu(1, h, s); h = ao.x;       update_flags(); }
+            if      (ADD_HL_BC)      { alu_op = 0; alu(l, c); l = ao.x;                       }
+            else if (ADD_HL_DE)      { alu_op = 0; alu(l, e); l = ao.x;                       }
+            else if (ADD_HL_HL)      { alu_op = 0; alu(l, l); l = ao.x;                       }
+            else if (ADD_HL_SP)      { alu_op = 0; alu(l, p); l = ao.x;                       }
+          }                                                                          
+          else if (state == 1) {                                                     
+            if      (ADD_HL_BC)      { alu_op = 1; alu(h, b); h = ao.x;       update_flags(); }
+            else if (ADD_HL_DE)      { alu_op = 1; alu(h, d); h = ao.x;       update_flags(); }
+            else if (ADD_HL_HL)      { alu_op = 1; alu(h, h); h = ao.x;       update_flags(); }
+            else if (ADD_HL_SP)      { alu_op = 1; alu(h, s); h = ao.x;       update_flags(); }
           }
         }
       }
@@ -661,18 +661,18 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
       else if (OP_COL == 4) {
         if (INC_AT_HL) {
           if      (state == 0)       {                                                                       }
-          else if (state == 1)       { y = data; ao = alu(0, y, 1); y = ao.x;                update_flags(); }
+          else if (state == 1)       { y = data; alu_op = 0; alu(y, 1); y = ao.x;                update_flags(); }
           else if (state == 2)       {                                                                       }
         }
-        else if (INC_R)              {           ao = alu(0, reg_get8(), 1); reg_put8(ao.x); update_flags(); }
+        else if (INC_R)              {           alu_op = 0; alu(reg_get8(), 1); reg_put8(ao.x); update_flags(); }
       }
       else if (OP_COL == 5) {
         if (DEC_AT_HL) {
           if      (state == 0)       {                                                                       }
-          else if (state == 1)       { y = data; ao = alu(2, y, 1); y = ao.x;                update_flags(); }
+          else if (state == 1)       { y = data; alu_op = 2; alu(y, 1); y = ao.x;                update_flags(); }
           else if (state == 2)       {                                                                       }
         }
-        else if (DEC_R)              {           ao = alu(2, reg_get8(), 1); reg_put8(ao.x); update_flags(); }
+        else if (DEC_R)              {           alu_op = 2; alu(reg_get8(), 1); reg_put8(ao.x); update_flags(); }
       }
       else if (OP_COL == 6) {
         if (STM_HL_D8) {
@@ -685,7 +685,7 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
           else if (state == 1)       { y = data; reg_put8(y);                             }
         }
       }
-      else if (OP_COL == 7)          {           ao = rlu(OP_ROW, reg_get8()); a = ao.x;     update_flags(); }
+      else if (OP_COL == 7)          {           alu_op = OP_ROW; rlu(reg_get8()); a = ao.x;     update_flags(); }
     }
 
     //----------------------------------------
@@ -714,9 +714,9 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
     else if (OP_QUAD == 2) {
       if (OP_COL == 6) {
         if      (state == 0)       {                                                            }
-        else if (state == 1)       { y = reg_get8(); ao = alu(OP_ROW, a, y); a = ao.x; update_flags(); }
-      }                                                                                         
-      else                         { y = reg_get8(); ao = alu(OP_ROW, a, y); a = ao.x; update_flags(); }
+        else if (state == 1)       { y = reg_get8(); alu_op = OP_ROW; alu(a, y); a = ao.x; update_flags(); }
+      }                                                                                    
+      else                         { y = reg_get8(); alu_op = OP_ROW; alu(a, y); a = ao.x; update_flags(); }
     }
 
     //----------------------------------------
@@ -766,8 +766,8 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
       }                                                                                   
       else if (ADD_SP_R8) {                                                               
         if      (state == 0)       {                                                      }
-        else if (state == 1)       { x = data; ao = alu(0, p, x);      y = ao.x; update_flags(); }
-        else if (state == 2)       {           ao = alu(1, s, sxt(x)); x = ao.x;                 }
+        else if (state == 1)       { x = data; alu_op = 0; alu(p, x);      y = ao.x; update_flags(); }
+        else if (state == 2)       {           alu_op = 1; alu(s, sxt(x)); x = ao.x;                 }
         else if (state == 3)       {                                                      }
       }                                                                                   
       else if (LDM_A_A8) {                                                                
@@ -775,12 +775,7 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
         else if (state == 1)       { xy = 0xFF00 | data;                                  }
         else if (state == 2)       { a = data;                                            }
       }                                                                                   
-      else if (LD_HL_SP_R8) {                                                             
-        if      (state == 0)       {                                                      }
-        else if (state == 1)       {                                                      }
-        else if (state == 2)       { x = data; ao = alu(0, p, x);      l = ao.x; update_flags(); }
-        else if (state == 3)       {           ao = alu(1, s, sxt(x)); h = ao.x;                 }
-      }
+      else if (LD_HL_SP_R8)        {}
       else if (RET_CC)             {}                                                                                                  
       else if (RET)                {}                                                                                   
       else if (RETI)               {}                                                                                   
@@ -859,8 +854,6 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
     bool no_halt = ((imask & intf) && !ime);
 
-    AluOut& ao = alu_out;
-
     //----------------------------------------
     // QUAD 0
 
@@ -882,8 +875,8 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
         }                                                                                                              
         else if (JR_CC_R8) {                                                                                           
           if      (state == 0)       { pc = addr + 1;                                                addr = pc; write = 0; read = 1; state_ = 1; }
-          else if (state == 1)       { pc = addr + 1; x = data; ao = alu(0, pcl,      x); y = ao.x;  addr = pc; write = 0; read = 1; state_ = cond_fail ? 0 : 2; }
-          else if (state == 2)       {                          ao = alu(1, pch, sxt(x)); x = ao.x;  addr = xy; write = 0; read = 1; state_ = 0; }
+          else if (state == 1)       { pc = addr + 1; x = data; alu_op = 0; alu(pcl,      x); y = alu_out.x;  addr = pc; write = 0; read = 1; state_ = cond_fail ? 0 : 2; }
+          else if (state == 2)       {                          alu_op = 1; alu(pch, sxt(x)); x = alu_out.x;  addr = xy; write = 0; read = 1; state_ = 0; }
         }                                                                                               
       }                                                                                                 
       else if (OP_COL == 1) {                                                                           
@@ -1083,10 +1076,10 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
         else if (state == 2)       { READ(pc);       state_ = 0; }
       }                                              
       else if (LD_HL_SP_R8) {                        
-        if      (state == 0)       { READ(pc);       state_ = 1; }
-        else if (state == 1)       { PASS(pc);       state_ = 2; }
-        else if (state == 2)       { PASS(pc);       state_ = 3; }
-        else if (state == 3)       { READ(pc);       state_ = 0; }
+        if      (state == 0)       {                                                             READ(pc);       state_ = 1; }
+        else if (state == 1)       {                                                             PASS(pc);       state_ = 2; }
+        else if (state == 2)       { x = data; alu_op = 0; alu(p, x);      l = alu_out.x; update_flags(); PASS(pc);       state_ = 3; }
+        else if (state == 3)       {           alu_op = 1; alu(s, sxt(x)); h = alu_out.x;                 READ(pc);       state_ = 0; }
       }
       else if (RET_CC) {
         // dunno why this takes five cycles...
@@ -1172,7 +1165,7 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
       }
       else if (ALU_A_D8) {
         if      (state == 0)       {                                                             READ(pc);       state_ = 1; }  
-        else if (state == 1)       { y = data; ao = alu(OP_ROW, a, y); a = ao.x; update_flags(); READ(pc);       state_ = 0; }
+        else if (state == 1)       { y = data; alu_op = OP_ROW; alu(a, y); a = alu_out.x; update_flags(); READ(pc);       state_ = 0; }
       }
       else if (RST_NN) {
         if      (state == 0)       { PASS(sp);       state_ = 1; }
@@ -1268,11 +1261,11 @@ AluOut Z80::alu(const uint8_t op, const uint8_t x, const uint8_t y, const uint8_
 
 #pragma warning(disable : 4458)
 
-AluOut Z80::alu(const uint8_t op, const uint8_t x, const uint8_t y) {
+void Z80::alu(const uint8_t x, const uint8_t y) {
   uint16_t d1 = 0, d2 = 0;
   const bool c = alu_out.f & F_CARRY;
 
-  switch(op) {
+  switch(alu_op) {
   case 0: d1 = (x & 0xF) + (y & 0xF);     d2 = x + y;     break;
   case 1: d1 = (x & 0xF) + (y & 0xF) + c; d2 = x + y + c; break;
   case 2: d1 = (x & 0xF) - (y & 0xF);     d2 = x - y;     break;
@@ -1284,14 +1277,14 @@ AluOut Z80::alu(const uint8_t op, const uint8_t x, const uint8_t y) {
   }
 
   uint8_t z = (uint8_t)d2;
-  uint8_t g = (op == 2 || op == 3 || op == 7) ? F_NEGATIVE : 0;
+  uint8_t g = (alu_op == 2 || alu_op == 3 || alu_op == 7) ? F_NEGATIVE : 0;
 
   if (d1 & 0x010) g |= F_HALF_CARRY;
   if (d2 & 0x100) g |= F_CARRY;
   if (z == 0x000) g |= F_ZERO;
-  if (op == 7)    z = x;
+  if (alu_op == 7)  z = x;
 
-  return {z, g};
+  alu_out = {z, g};
 }
 
 #endif
@@ -1299,7 +1292,7 @@ AluOut Z80::alu(const uint8_t op, const uint8_t x, const uint8_t y) {
 //-----------------------------------------------------------------------------
 // The logic is more annoying, but this can be implemented as two 4-bit additions
 
-AluOut Z80::daa(uint8_t x, uint8_t f) {
+void Z80::daa(uint8_t x, uint8_t f) {
   bool c = f & F_CARRY;
   bool h = f & F_HALF_CARRY;
   bool n = f & F_NEGATIVE;
@@ -1328,58 +1321,64 @@ AluOut Z80::daa(uint8_t x, uint8_t f) {
   if (c) out.f |= F_CARRY;
   if ((hi >> 4) && !n) out.f |= F_CARRY;
   if (!out.x) out.f |= F_ZERO;
-  return out;
+
+  alu_out = out;
 }
 
 //-----------------------------------------------------------------------------
 
-AluOut Z80::rlu(const uint8_t op, const uint8_t x) {
+void Z80::rlu(const uint8_t x) {
   const uint8_t f = alu_out.f;
   AluOut out = { 0 };
 
-  switch (op) {
+  switch (alu_op) {
   case 0:
     out.x = (x << 1) | (x >> 7);
     out.f = (x >> 7) ? F_CARRY : 0;
+    if (!out.x) out.f |= F_ZERO;
     break;
   case 1:
     out.x = (x >> 1) | (x << 7);
     out.f = (x & 1) ? F_CARRY : 0;
+    if (!out.x) out.f |= F_ZERO;
     break;
   case 2:
     out.x = (x << 1) | (f & F_CARRY ? 1 : 0);
     out.f = (x >> 7) ? F_CARRY : 0;
+    if (!out.x) out.f |= F_ZERO;
     break;
   case 3:
     out.x = (x >> 1) | ((f & F_CARRY ? 1 : 0) << 7);
     out.f = (x & 1) ? F_CARRY : 0;
+    if (!out.x) out.f |= F_ZERO;
     break;
   case 4:
     return daa(x, f);
   case 5:
     out.x = ~x;
     out.f = f | 0x60;
+    if (!out.x) out.f |= F_ZERO;
     break;
   case 6:
     out.x = x;
     out.f = (f & 0x80) | 0x10;
+    if (!out.x) out.f |= F_ZERO;
     break;
   case 7:
     out.x = x;
     out.f = (f & 0x90) ^ 0x10;
+    if (!out.x) out.f |= F_ZERO;
     break;
   }
 
-  out.x &= 0xFF;
-  if (!out.x) out.f |= F_ZERO;
 
-  return out;
+  alu_out = out;
 }
 
 //-----------------------------------------------------------------------------
 // idempotent
 
-AluOut Z80::alu_cb(uint8_t cb, const uint8_t x) {
+void Z80::alu_cb(const uint8_t x) {
   const uint8_t f = alu_out.f;
 
   const uint8_t quad = CB_QUAD;
@@ -1391,12 +1390,26 @@ AluOut Z80::alu_cb(uint8_t cb, const uint8_t x) {
   case 0: {
     switch (row) {
     case 0:
-    case 1:
-    case 2:
-    case 3: {
-      out = rlu(row, x);
+      out.x = (x << 1) | (x >> 7);
+      out.f = (x >> 7) ? F_CARRY : 0;
+      if (!out.x) out.f |= F_ZERO;
       break;
-    }
+    case 1:
+      out.x = (x >> 1) | (x << 7);
+      out.f = (x & 1) ? F_CARRY : 0;
+      if (!out.x) out.f |= F_ZERO;
+      break;
+    case 2:
+      out.x = (x << 1) | (f & F_CARRY ? 1 : 0);
+      out.f = (x >> 7) ? F_CARRY : 0;
+      if (!out.x) out.f |= F_ZERO;
+      break;
+    case 3: 
+      out.x = (x >> 1) | ((f & F_CARRY ? 1 : 0) << 7);
+      out.f = (x & 1) ? F_CARRY : 0;
+      if (!out.x) out.f |= F_ZERO;
+      break;
+
     // SLA
     case 4: {
       out.x = (x << 1) & 0xFF;
@@ -1452,7 +1465,7 @@ AluOut Z80::alu_cb(uint8_t cb, const uint8_t x) {
   }
   }
 
-  return out;
+  alu_out = out;
 }
 
 //-----------------------------------------------------------------------------

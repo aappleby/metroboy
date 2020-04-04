@@ -69,9 +69,9 @@ private:
 
   void     update_flags();
 
-  void     alu_cb(const uint8_t x);
-  void     alu(const uint8_t x, const uint8_t y);
-  void     rlu(const uint8_t x);
+  void     alu_cb();
+  void     alu();
+  void     rlu();
   void     daa(uint8_t x, uint8_t f);
 };
 

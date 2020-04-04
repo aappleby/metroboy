@@ -427,47 +427,15 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
     else if (OP_QUAD == 3) {
       if (POP_RR)                  {}
       else if (PUSH_RR)            {}
-      else if (STM_A8_A) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { pc = addr + 1; }
-        else if (state == 2)       {                }
-      }
-      else if (ADD_SP_R8) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { pc = addr + 1; }
-        else if (state == 2)       {                }
-        else if (state == 3)       { sp = addr;     }
-      }
-      else if (LDM_A_A8) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { pc = addr + 1; }
-        else if (state == 2)       {                }
-      }
-      else if (LD_HL_SP_R8) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { pc = addr + 1; }
-        else if (state == 2)       {                }
-        else if (state == 3)       {                }
-      }
-      else if (RET_CC) {
-      }
-      else if (RET) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { sp = addr + 1; }
-        else if (state == 2)       { sp = addr + 1; }
-        else if (state == 3)       {                }
-      }
-      else if (RETI) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { sp = addr + 1; }
-        else if (state == 2)       { sp = addr + 1; }
-        else if (state == 3)       {                }
-      }
-      else if (JP_HL)              { pc = hl;       } // must have a fast path
-      else if (LD_SP_HL) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { sp = addr;     }
-      }
+      else if (STM_A8_A)           {}
+      else if (ADD_SP_R8)          {}
+      else if (LDM_A_A8)           {}
+      else if (LD_HL_SP_R8)        {}
+      else if (RET_CC)             {}
+      else if (RET)                {}
+      else if (RETI)               {}
+      else if (JP_HL)              {}
+      else if (LD_SP_HL)           {}
       else if (JP_CC_A16) {
         if      (state == 0)       { pc = addr + 1; }
         else if (state == 1)       { pc = addr + 1; }
@@ -1015,83 +983,83 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
         else if (state == 3)       {                          addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (STM_A8_A) {
-        if      (state == 0)       {                     addr = pc; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       { xy = 0xFF00 | data; addr = xy; data = a;    read = 0; write = 1; state_ = 2; }
-        else if (state == 2)       {                     addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       { pc = addr + 1;                     addr = pc; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { pc = addr + 1; xy = 0xFF00 | data; addr = xy; data = a;    read = 0; write = 1; state_ = 2; }
+        else if (state == 2)       {                                    addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (ADD_SP_R8) {
-        if      (state == 0)       {                                                                                  addr = pc; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       { alu_op = 0; alu_x = p; alu_y = data;       alu(); y = alu_out.x; update_flags(); addr = pc; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       { alu_op = 1; alu_x = s; alu_y = sxt(alu_y); alu(); x = alu_out.x;                 addr = xy; data = data; read = 1; write = 0; state_ = 3; }
-        else if (state == 3)       {                                                                                  addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       { pc = addr + 1;                                                                                  addr = pc; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { pc = addr + 1; alu_op = 0; alu_x = p; alu_y = data;       alu(); y = alu_out.x; update_flags(); addr = pc; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       {                alu_op = 1; alu_x = s; alu_y = sxt(alu_y); alu(); x = alu_out.x;                 addr = xy; data = data; read = 1; write = 0; state_ = 3; }
+        else if (state == 3)       { sp = addr;                                                                                      addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (LDM_A_A8) {
-        if      (state == 0)       {                     addr = pc; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       { xy = 0xFF00 | data; addr = xy; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       { a = data;           addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       { pc = addr + 1;                     addr = pc; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { pc = addr + 1; xy = 0xFF00 | data; addr = xy; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       {                a = data;           addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (LD_HL_SP_R8) {
-        if      (state == 0)       {                                                                                  addr = pc; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       { alu_op = 0; alu_x = p; alu_y = data;       alu(); l = alu_out.x; update_flags(); addr = pc; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       { alu_op = 1; alu_x = s; alu_y = sxt(alu_y); alu(); h = alu_out.x;                 addr = pc; data = data; read = 1; write = 0; state_ = 3; }
-        else if (state == 3)       {                                                                                  addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        // this is 4 cycles because something about moving data back to HL....
+        if      (state == 0)       { pc = addr + 1;                                                                                  addr = pc; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { pc = addr + 1; alu_op = 0; alu_x = p; alu_y = data;       alu(); l = alu_out.x; update_flags(); addr = pc; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       {                alu_op = 1; alu_x = s; alu_y = sxt(alu_y); alu(); h = alu_out.x;                 addr = pc; data = data; read = 1; write = 0; state_ = 3; }
+        else if (state == 3)       {                                                                                                 addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (RET_CC) {
-        // dunno why this takes five cycles...
-        if      (state == 0)       { pc = addr + 1;             addr = pc; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       {                            addr = pc; data = data; read = 1; write = 0; state_ = cond_fail ? 0 : 2; }
-        else if (state == 2)       {                            addr = sp; data = data; read = 1; write = 0; state_ = 3; }
-        else if (state == 3)       { sp = addr + 1; y = data;   addr = sp; data = data; read = 1; write = 0; state_ = 4; }
-        else if (state == 4)       { sp = addr + 1; x = data;   addr = xy; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       { pc = addr + 1;                               addr = pc; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       {                                              addr = pc; data = data; read = 1; write = 0; state_ = cond_fail ? 0 : 2; }
+        else if (state == 2)       {                                              addr = sp; data = data; read = 1; write = 0; state_ = 3; }
+        else if (state == 3)       { sp = addr + 1; y = data;                     addr = sp; data = data; read = 1; write = 0; state_ = 4; }
+        else if (state == 4)       { sp = addr + 1; x = data;                     addr = xy; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (RET) {
-        if      (state == 0)       {                            addr = sp; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       {                pcl = data; addr = sp; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       {                pch = data; addr = pc; data = data; read = 1; write = 0; state_ = 3; }
-        else if (state == 3)       {                            addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       { pc = addr + 1;                               addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr + 1; pcl = data;                   addr = sp; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       { sp = addr + 1; pch = data;                   addr = pc; data = data; read = 1; write = 0; state_ = 3; }
+        else if (state == 3)       {                                              addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (RETI) {
-        if      (state == 0)       {                               addr = sp; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       { pcl = data;                   addr = sp; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       { pch = data;                   addr = pc; data = data; read = 1; write = 0; state_ = 3; }
-        else if (state == 3)       { ime = true; ime_delay = true; addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       { pc = addr + 1;                               addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr + 1; pcl = data;                   addr = sp; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       { sp = addr + 1; pch = data;                   addr = pc; data = data; read = 1; write = 0; state_ = 3; }
+        else if (state == 3)       {                ime = true; ime_delay = true; addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
-      else if (JP_HL)              { addr = pc; data = data; read = 1; write = 0; state_ = 0; } // must have a fast path
+      else if (JP_HL)              { pc = hl;                                     addr = pc; data = data; read = 1; write = 0; state_ = 0; } // must have a fast path
       else if (LD_SP_HL) {
-        if      (state == 0)       { PASS(hl); state_ = 1; }
-        else if (state == 1)       { addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       { pc = addr + 1;                               addr = hl; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr;                                   addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (JP_CC_A16) {
-        if      (state == 0)       {           addr = pc; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       { y = data; addr = pc; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       { x = data; addr = pc; data = data; read = 1; write = 0; state_ = cond_fail ? 0 : 3; }
-        else if (state == 3)       {           READ(xy); state_ = 0; }
+        if      (state == 0)       {                                              addr = pc; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { y = data;                                    addr = pc; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       { x = data;                                    addr = pc; data = data; read = 1; write = 0; state_ = cond_fail ? 0 : 3; }
+        else if (state == 3)       {                                              addr = xy; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (STM_C_A) {
-        if      (state == 0)       { xy = 0xFF00 | c; WRITE(xy, a); state_ = 1; }
-        else if (state == 1)       {                  addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       { xy = 0xFF00 | c;                             addr = xy; data = a;    read = 0; write = 1; state_ = 1; }
+        else if (state == 1)       {                                              addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (STM_A16_A) {
-        if      (state == 0)       {           addr = pc; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       { y = data; addr = pc; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       { x = data; WRITE(xy, a); state_ = 3; }
-        else if (state == 3)       {           addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       {                                              addr = pc; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { y = data;                                    addr = pc; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       { x = data;                                    addr = xy; data = a;    read = 0; write = 1; state_ = 3; }
+        else if (state == 3)       {                                              addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (LDM_A_C) {
-        if      (state == 0)       { xy = 0xFF00 | c; READ(xy); state_ = 1; }
-        else if (state == 1)       { a = data;        addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        if      (state == 0)       { xy = 0xFF00 | c;                             addr = xy; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { a = data;                                    addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (LDM_A_A16) {
         if      (state == 0)       {           addr = pc; data = data; read = 1; write = 0; state_ = 1; }
         else if (state == 1)       { y = data; addr = pc; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       { x = data; READ(xy); state_ = 3; }
+        else if (state == 2)       { x = data; addr = xy; data = data; read = 1; write = 0; state_ = 3; }
         else if (state == 3)       { a = data; addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (JP_A16) {
         if      (state == 0)       {           addr = pc; data = data; read = 1; write = 0; state_ = 1; }
         else if (state == 1)       { y = data; addr = pc; data = data; read = 1; write = 0; state_ = 2; }
-        else if (state == 2)       { x = data; PASS(xy); state_ = 3; }
-        else if (state == 3)       {           READ(xy); state_ = 0; }
+        else if (state == 2)       { x = data; addr = pc; data = data; read = 1; write = 0; state_ = 3; }
+        else if (state == 3)       {           addr = xy; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (DI)                 { ime = false;      ime_delay = false;                 addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       else if (EI)                 { ime = ime_delay;  ime_delay = true;                  addr = pc; data = data; read = 1; write = 0; state_ = 0; }

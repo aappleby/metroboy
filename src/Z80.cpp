@@ -426,15 +426,8 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
 
     else if (OP_QUAD == 3) {
       if (POP_RR) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { sp = addr + 1; }
-        else if (state == 2)       { sp = addr + 1; }
       }
       else if (PUSH_RR) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { sp = addr - 1; }
-        else if (state == 2)       { sp = addr - 1; }
-        else if (state == 3)       {                }
       }
       else if (STM_A8_A) {
         if      (state == 0)       { pc = addr + 1; }
@@ -979,54 +972,31 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     // QUAD 3
 
     else if (OP_QUAD == 3) {
-      if (POP_RR) {
-        if (state == 0)            {                                                      }
-        else if (state == 1) {
-          if (POP_BC)              { c = data;                                            }
-          if (POP_DE)              { e = data;                                            }
-          if (POP_HL)              { l = data;                                            }
-          if (POP_AF)              { f = data;                                            }
-        }
-        else if (state == 2) {
-          if (POP_BC)              { b = data;                                            }
-          if (POP_DE)              { d = data;                                            }
-          if (POP_HL)              { h = data;                                            }
-          if (POP_AF)              { a = data;                                            }
-        }
-        if (state == 0)            { addr = sp; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1) {
-          if (POP_BC)              { addr = sp; data = data; read = 1; write = 0; state_ = 2; }
-          if (POP_DE)              { addr = sp; data = data; read = 1; write = 0; state_ = 2; }
-          if (POP_HL)              { addr = sp; data = data; read = 1; write = 0; state_ = 2; }
-          if (POP_AF)              { addr = sp; data = data; read = 1; write = 0; state_ = 2; }
-        }
-        else if (state == 2) {
-          if (POP_BC)              { addr = pc; data = data; read = 1; write = 0; state_ = 0; }
-          if (POP_DE)              { addr = pc; data = data; read = 1; write = 0; state_ = 0; }
-          if (POP_HL)              { addr = pc; data = data; read = 1; write = 0; state_ = 0; }
-          if (POP_AF)              { addr = pc; data = data; read = 1; write = 0; state_ = 0; }
-        }
+      if (POP_BC) {
+        if (state == 0)            { pc = addr + 1;           addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr + 1; c = data; addr = sp; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       { sp = addr + 1; b = data; addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+      }
+      else if (POP_DE) {
+        if (state == 0)            { pc = addr + 1;           addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr + 1; e = data; addr = sp; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       { sp = addr + 1; d = data; addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+      }
+      else if (POP_HL) {
+        if (state == 0)            { pc = addr + 1;           addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr + 1; l = data; addr = sp; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       { sp = addr + 1; h = data; addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+      }
+      else if (POP_AF) {
+        if (state == 0)            { pc = addr + 1;           addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr + 1; f = data; addr = sp; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       { sp = addr + 1; a = data; addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (PUSH_RR) {
-        if (state == 0)            {                                                      }
-        else if (state == 1) {
-          if (PUSH_BC)             {                                                      }
-          if (PUSH_DE)             {                                                      }
-          if (PUSH_HL)             {                                                      }
-          if (PUSH_AF)             {                                                      }
-        }
-        else if (state == 2) {
-          if (PUSH_BC)             {                                                      }
-          if (PUSH_DE)             {                                                      }
-          if (PUSH_HL)             {                                                      }
-          if (PUSH_AF)             {                                                      }
-        }
-        else if (state == 3) {
-          if (PUSH_BC)             {                                                      }
-          if (PUSH_DE)             {                                                      }
-          if (PUSH_HL)             {                                                      }
-          if (PUSH_AF)             {                                                      }
-        }
+        if      (state == 0)       { pc = addr + 1; }
+        else if (state == 1)       { sp = addr - 1; }
+        else if (state == 2)       { sp = addr - 1; }
+        else if (state == 3)       {                }
         if (state == 0)            { addr = sp; data = data; read = 1; write = 0; state_ = 1; }
         else if (state == 1) {
           if (PUSH_BC)             { addr = sp; data = b; read = 0; write = 1; state_ = 2; }

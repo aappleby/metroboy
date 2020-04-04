@@ -425,10 +425,8 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
     // QUAD 3
 
     else if (OP_QUAD == 3) {
-      if (POP_RR) {
-      }
-      else if (PUSH_RR) {
-      }
+      if (POP_RR)                  {}
+      else if (PUSH_RR)            {}
       else if (STM_A8_A) {
         if      (state == 0)       { pc = addr + 1; }
         else if (state == 1)       { pc = addr + 1; }
@@ -992,30 +990,29 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
         else if (state == 1)       { sp = addr + 1; f = data; addr = sp; data = data; read = 1; write = 0; state_ = 2; }
         else if (state == 2)       { sp = addr + 1; a = data; addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
-      else if (PUSH_RR) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       { sp = addr - 1; }
-        else if (state == 2)       { sp = addr - 1; }
-        else if (state == 3)       {                }
-        if (state == 0)            { addr = sp; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1) {
-          if (PUSH_BC)             { addr = sp; data = b; read = 0; write = 1; state_ = 2; }
-          if (PUSH_DE)             { addr = sp; data = d; read = 0; write = 1; state_ = 2; }
-          if (PUSH_HL)             { addr = sp; data = h; read = 0; write = 1; state_ = 2; }
-          if (PUSH_AF)             { addr = sp; data = a; read = 0; write = 1; state_ = 2; }
-        }
-        else if (state == 2) {
-          if (PUSH_BC)             { addr = sp; data = c; read = 0; write = 1; state_ = 3; }
-          if (PUSH_DE)             { addr = sp; data = e; read = 0; write = 1; state_ = 3; }
-          if (PUSH_HL)             { addr = sp; data = l; read = 0; write = 1; state_ = 3; }
-          if (PUSH_AF)             { addr = sp; data = f; read = 0; write = 1; state_ = 3; }
-        }
-        else if (state == 3) {
-          if (PUSH_BC)             { addr = pc; data = data; read = 1; write = 0; state_ = 0; }
-          if (PUSH_DE)             { addr = pc; data = data; read = 1; write = 0; state_ = 0; }
-          if (PUSH_HL)             { addr = pc; data = data; read = 1; write = 0; state_ = 0; }
-          if (PUSH_AF)             { addr = pc; data = data; read = 1; write = 0; state_ = 0; }
-        }
+      else if (PUSH_BC) {
+        if (state == 0)            { pc = addr + 1;           addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr - 1;           addr = sp; data = b;    read = 0; write = 1; state_ = 2; }
+        else if (state == 2)       { sp = addr - 1;           addr = sp; data = c;    read = 0; write = 1; state_ = 3; }
+        else if (state == 3)       {                          addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+      }
+      else if (PUSH_DE) {
+        if (state == 0)            { pc = addr + 1;           addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr - 1;           addr = sp; data = d;    read = 0; write = 1; state_ = 2; }
+        else if (state == 2)       { sp = addr - 1;           addr = sp; data = e;    read = 0; write = 1; state_ = 3; }
+        else if (state == 3)       {                          addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+      }
+      else if (PUSH_HL) {
+        if (state == 0)            { pc = addr + 1;           addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr - 1;           addr = sp; data = h;    read = 0; write = 1; state_ = 2; }
+        else if (state == 2)       { sp = addr - 1;           addr = sp; data = l;    read = 0; write = 1; state_ = 3; }
+        else if (state == 3)       {                          addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+      }
+      else if (PUSH_AF) {
+        if (state == 0)            { pc = addr + 1;           addr = sp; data = data; read = 1; write = 0; state_ = 1; }
+        else if (state == 1)       { sp = addr - 1;           addr = sp; data = a;    read = 0; write = 1; state_ = 2; }
+        else if (state == 2)       { sp = addr - 1;           addr = sp; data = f;    read = 0; write = 1; state_ = 3; }
+        else if (state == 3)       {                          addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (STM_A8_A) {
         if      (state == 0)       {                     addr = pc; data = data; read = 1; write = 0; state_ = 1; }
@@ -1035,9 +1032,9 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
       }
       else if (LD_HL_SP_R8) {
         if      (state == 0)       {                                                                                  addr = pc; data = data; read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       {                                                                                  PASS(pc); state_ = 2; }
-        else if (state == 2)       { alu_op = 0; alu_x = p; alu_y = data;       alu(); l = alu_out.x; update_flags(); PASS(pc); state_ = 3; }
-        else if (state == 3)       { alu_op = 1; alu_x = s; alu_y = sxt(alu_y); alu(); h = alu_out.x;                 addr = pc; data = data; read = 1; write = 0; state_ = 0; }
+        else if (state == 1)       { alu_op = 0; alu_x = p; alu_y = data;       alu(); l = alu_out.x; update_flags(); addr = pc; data = data; read = 1; write = 0; state_ = 2; }
+        else if (state == 2)       { alu_op = 1; alu_x = s; alu_y = sxt(alu_y); alu(); h = alu_out.x;                 addr = pc; data = data; read = 1; write = 0; state_ = 3; }
+        else if (state == 3)       {                                                                                  addr = pc; data = data; read = 1; write = 0; state_ = 0; }
       }
       else if (RET_CC) {
         // dunno why this takes five cycles...

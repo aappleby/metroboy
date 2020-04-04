@@ -270,8 +270,8 @@ void Gameboy::tock() {
 
   timer.tock(int(tcycle_new));
   ppu  .tock(int(tcycle_new));
-  spu  .tock(int(tcycle_new));
-  dma  .tock(int(tcycle_new));
+  //spu  .tock(int(tcycle_new));
+  //dma  .tock(int(tcycle_new));
 
   intf = intf_;
   imask = imask_;

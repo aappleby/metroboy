@@ -33,7 +33,6 @@ private:
   bool     interrupt;
 
   int      state, state_;
-  uint16_t addr;
   uint8_t  data;
   bool     read;
   bool     write;
@@ -49,13 +48,15 @@ private:
 
 #pragma warning(push)
 #pragma warning(disable : 4201)
-  union { uint16_t pc; struct { uint8_t pcl; uint8_t pch; }; };
-  union { uint16_t bc; struct { uint8_t   c; uint8_t   b; }; };
-  union { uint16_t de; struct { uint8_t   e; uint8_t   d; }; };
-  union { uint16_t hl; struct { uint8_t   l; uint8_t   h; }; };
-  union { uint16_t af; struct { uint8_t   f; uint8_t   a; }; };
-  union { uint16_t sp; struct { uint8_t   p; uint8_t   s; }; };
-  union { uint16_t xy; struct { uint8_t   y; uint8_t   x; }; };
+  union { uint16_t pc;   struct { uint8_t pcl; uint8_t pch; }; };
+  union { uint16_t bc;   struct { uint8_t   c; uint8_t   b; }; };
+  union { uint16_t de;   struct { uint8_t   e; uint8_t   d; }; };
+  union { uint16_t hl;   struct { uint8_t   l; uint8_t   h; }; };
+  union { uint16_t af;   struct { uint8_t   f; uint8_t   a; }; };
+  union { uint16_t sp;   struct { uint8_t   p; uint8_t   s; }; };
+  union { uint16_t xy;   struct { uint8_t   y; uint8_t   x; }; };
+  union { uint16_t addr; struct { uint8_t  al; uint8_t  ah; }; };
+
 #pragma warning(pop)
 
 

@@ -277,11 +277,11 @@ struct CpuPins {
 
   PinOut BOWA_xBCDEFGH; // top left port PORTD_01: <- P01.BOWA
   PinOut BEDO_Axxxxxxx; // top left port PORTD_02: <- P01.BEDO
-  PinOut BEKO_ABCDxxxx;         // top left port PORTD_03: <- P01.BEKO connection not indicated on P01
-  PinOut BUDE_xxxxEFGH;         // top left port PORTD_04: <- P01.BUDE
-  PinOut BUKE_AxxxxxGH;         // PORTD_06: <- P01.BUKE _____f__
-  PinOut BOMA_Axxxxxxx;         // PORTD_07: <- P01.RESET_CLK _____fgh
-  PinOut BOGA_xBCDEFGH;         // PORTD_08: <- P01.BOGA abcde___
+  PinOut BEKO_ABCDxxxx; // top left port PORTD_03: <- P01.BEKO connection not indicated on P01
+  PinOut BUDE_xxxxEFGH; // top left port PORTD_04: <- P01.BUDE
+  PinOut BUKE_AxxxxxGH; //               PORTD_06: <- P01.BUKE
+  PinOut BOMA_Axxxxxxx; //               PORTD_07: <- P01.RESET_CLK
+  PinOut BOGA_xBCDEFGH; //               PORTD_08: <- P01.BOGA
 
   PinOut TO_CPU2;      // top right wire by itself <- P02.AWOB
   PinOut SYRO;         // top right port PORTA_03: <- P25.SYRO

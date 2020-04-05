@@ -34,7 +34,6 @@ private:
 
   int      state, state_;
   uint8_t  data;
-  bool     read;
   bool     write;
 
   uint8_t alu_op;

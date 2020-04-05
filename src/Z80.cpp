@@ -256,8 +256,21 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
 void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
   uint16_t abus = 0;
   uint8_t dbus = 0;
+  AluOut& ao = alu_out;
 
-  //----------------------------------------
+  bool cond_fail = false;
+  switch (OP_ROW & 3) {
+  case 0: cond_fail = (f & F_ZERO); break;
+  case 1: cond_fail = !(f & F_ZERO); break;
+  case 2: cond_fail = (f & F_CARRY); break;
+  case 3: cond_fail = !(f & F_CARRY); break;
+  }
+  bool nb = cond_fail;
+  bool tb = !cond_fail;
+
+  bool no_halt = ((imask & intf) && !ime);
+
+  //----------
   // INTERRUPTS
 
   if (interrupt) {
@@ -292,339 +305,187 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     }
   }
 
-  //----------------------------------------
+  //----------
   // CB OPS
 
   else if (PREFIX_CB) {
-    AluOut& ao = alu_out;
-
-    if      (state == 0)       { pc = addr + 1; }
+    if      (state == 0)       { pc = addr + 1;                                                                                                    addr = pc;              read = 1; write = 0; state_ = 1; }
     else if (state == 1) {
       cb = data;
-      if (OP_CB_R  )           { pc = addr + 1; alu_op = cb; alu_x = reg_get8(CB_COL); alu_cb(); reg_put8(CB_COL, ao.x); update_flags(); }
-      if (OP_CB_HL )           { pc = addr + 1;                                                                            }
+      if (OP_CB_R  )           { pc = addr + 1;           alu_op = cb; alu_x = reg_get8(CB_COL); alu_cb(); reg_put8(CB_COL, ao.x); update_flags(); addr = pc;              read = 1; write = 0; state_ = 0; }
+      if (OP_CB_HL )           { pc = addr + 1;                                                                                                    addr = hl;              read = 1; write = 0; state_ = 2; }
     }
-    else if (state == 2)       { y = data; alu_op = cb; alu_x = y; alu_cb(); y = ao.x;                           update_flags(); }
-    else if (state == 3)       {                                                                            }
-
-    if      (state == 0)       { addr = pc;              read = 1; write = 0; state_ = 1; }
-    else if (state == 1) {
-      if (OP_CB_R  )           { addr = pc;              read = 1; write = 0; state_ = 0; }
-      if (OP_CB_HL )           { addr = hl;              read = 1; write = 0; state_ = 2; }
-    }
-    else if (state == 2)       { addr = hl; data = y;    read = 0; write = 1; state_ = 3; }
-    else if (state == 3)       { addr = pc;              read = 1; write = 0; state_ = 0; }
+    else if (state == 2)       {                y = data; alu_op = cb; alu_x = y;                alu_cb(); y = ao.x;               update_flags(); addr = hl; data = y;    read = 0; write = 1; state_ = 3; }
+    else if (state == 3)       {                                                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
   }
 
-  //----------------------------------------
+  //----------
   // REGULAR OPS
 
   else {
-    AluOut& ao = alu_out;
-
-    bool cond_fail = false;
-    switch (OP_ROW & 3) {
-    case 0: cond_fail = (f & F_ZERO); break;
-    case 1: cond_fail = !(f & F_ZERO); break;
-    case 2: cond_fail = (f & F_CARRY); break;
-    case 3: cond_fail = !(f & F_CARRY); break;
-    }
-    bool nb = cond_fail;
-    bool tb = !cond_fail;
-
-    bool no_halt = ((imask & intf) && !ime);
-
-    //----------------------------------------
+    //----------
     // QUAD 0
 
     if (OP_QUAD == 0) {
       if (OP_COL == 0) {
-        if      (NOP)                { pc = addr + 1;                                                                               addr = pc;              read = 1; write = 0; state_ = 0; }
-        else if (STM_A16_SP) {
-          if      (state == 0)       { pc = addr + 1;                                                                               addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { pc = addr + 1; y = data;                                                                     addr = pc;              read = 1; write = 0; state_ = 2; }
-          else if (state == 2)       { pc = addr + 1; x = data;                                                                     addr = xy; data = p;    read = 0; write = 1; state_ = 3; }
-          else if (state == 3)       { xy = addr + 1;                                                                               addr = xy; data = s;    read = 0; write = 1; state_ = 4; }
-          else if (state == 4)       {                                                                                              addr = pc;              read = 1; write = 0; state_ = 0; }
-        }
-        else if (STOP)               { pc = addr + 1;                                                                               addr = pc;              read = 1; write = 0; state_ = 0; }
-        else if (JR_R8) {
-          if      (state == 0)       { pc = addr + 1;                                                                               addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { pc = addr + 1;           alu_op = 0; alu_x = pcl; alu_y = data;       alu(); pcl = ao.x;     addr = pc;              read = 1; write = 0; state_ = 2; }
-          else if (state == 2)       {                          alu_op = 1; alu_x = pch; alu_y = sxt(alu_y); alu(); pch = ao.x;     addr = pc;              read = 1; write = 0; state_ = 0; }
-        }
-        else if (JR_CC_R8) {
-          if      (state == 0)       { pc = addr + 1;                                                                               addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { pc = addr + 1;           alu_op = 0; alu_x = pcl; alu_y = data;       alu(); y = alu_out.x;  addr = pc;              read = 1; write = 0; state_ = cond_fail ? 0 : 2; }
-          else if (state == 2)       {                          alu_op = 1; alu_x = pch; alu_y = sxt(alu_y); alu(); x = alu_out.x;  addr = xy;              read = 1; write = 0; state_ = 0; }
-        }
-      }
-      else if (OP_COL == 1) {
-        if      (LD_BC_D16) {
-          if      (state == 0)       { pc = addr + 1;                                                                               addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { pc = addr + 1; c = data;                                                                     addr = pc;              read = 1; write = 0; state_ = 2; }
-          else if (state == 2)       { pc = addr + 1; b = data;                                                                     addr = pc;              read = 1; write = 0; state_ = 0; }
-        }                                                                                                                                                   
-        else if (LD_DE_D16) {                                                                                                                               
-          if      (state == 0)       { pc = addr + 1;                                                                               addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { pc = addr + 1; e = data;                                                                     addr = pc;              read = 1; write = 0; state_ = 2; }
-          else if (state == 2)       { pc = addr + 1; d = data;                                                                     addr = pc;              read = 1; write = 0; state_ = 0; }
-        }                                                                                                                                                   
-        else if (LD_HL_D16) {                                                                                                                               
-          if      (state == 0)       { pc = addr + 1;                                                                               addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { pc = addr + 1; l = data;                                                                     addr = pc;              read = 1; write = 0; state_ = 2; }
-          else if (state == 2)       { pc = addr + 1; h = data;                                                                     addr = pc;              read = 1; write = 0; state_ = 0; }
-        }                                                                                                                                                   
-        else if (LD_SP_D16) {                                                                                                                               
-          if      (state == 0)       { pc = addr + 1;                                                                               addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { pc = addr + 1; p = data;                                                                     addr = pc;              read = 1; write = 0; state_ = 2; }
-          else if (state == 2)       { pc = addr + 1; s = data;                                                                     addr = pc;              read = 1; write = 0; state_ = 0; }
-        }                                                                                                                                                   
-        else if (ADD_HL_BC) {                                                                                                                               
-          if      (state == 0)       { pc = addr + 1; alu_op = 0; alu_x = l; alu_y = c; alu(); l = ao.x;                            addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       {                alu_op = 1; alu_x = h; alu_y = b; alu(); h = ao.x;       update_flags();      addr = pc;              read = 1; write = 0; state_ = 0; }
-        }                                                                                                                                                   
-        else if (ADD_HL_DE) {                                                                                                                               
-          if      (state == 0)       { pc = addr + 1; alu_op = 0; alu_x = l; alu_y = e; alu(); l = ao.x;                            addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       {                alu_op = 1; alu_x = h; alu_y = d; alu(); h = ao.x;       update_flags();      addr = pc;              read = 1; write = 0; state_ = 0; }
-        }                                                                                                                                                   
-        else if (ADD_HL_HL) {                                                                                                                               
-          if      (state == 0)       { pc = addr + 1; alu_op = 0; alu_x = l; alu_y = l; alu(); l = ao.x;                            addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       {                alu_op = 1; alu_x = h; alu_y = h; alu(); h = ao.x;       update_flags();      addr = pc;              read = 1; write = 0; state_ = 0; }
-        }                                                                                                                                                   
-        else if (ADD_HL_SP) {                                                                                                                               
-          if      (state == 0)       { pc = addr + 1; alu_op = 0; alu_x = l; alu_y = p; alu(); l = ao.x;                            addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       {                alu_op = 1; alu_x = h; alu_y = s; alu(); h = ao.x;       update_flags();      addr = pc;              read = 1; write = 0; state_ = 0; }
+        if      (NOP)                { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+        else if (STM_A16_SP) {                                                                                                          
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       { pc = addr + 1; y = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 2; }
+          else if (state == 2)       { pc = addr + 1; x = data;                                                                         addr = xy; data = p;    read = 0; write = 1; state_ = 3; }
+          else if (state == 3)       { xy = addr + 1;                                                                                   addr = xy; data = s;    read = 0; write = 1; state_ = 4; }
+          else if (state == 4)       {                                                                                                  addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                               
+        else if (STOP)               { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+        else if (JR_R8) {                                                                                                               
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       { pc = addr + 1;           alu_op = 0; alu_x = pcl; alu_y = data;       alu(); pcl = ao.x;         addr = pc;              read = 1; write = 0; state_ = 2; }
+          else if (state == 2)       {                          alu_op = 1; alu_x = pch; alu_y = sxt(alu_y); alu(); pch = ao.x;         addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                               
+        else if (JR_CC_R8) {                                                                                                            
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       { pc = addr + 1;           alu_op = 0; alu_x = pcl; alu_y = data;       alu(); y = alu_out.x;      addr = pc;              read = 1; write = 0; state_ = cond_fail ? 0 : 2; }
+          else if (state == 2)       {                          alu_op = 1; alu_x = pch; alu_y = sxt(alu_y); alu(); x = alu_out.x;      addr = xy;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                               
+      }                                                                                                                                 
+      else if (OP_COL == 1) {                                                                                                           
+        if      (LD_BC_D16) {                                                                                                           
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       { pc = addr + 1; c = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 2; }
+          else if (state == 2)       { pc = addr + 1; b = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                                                       
+        else if (LD_DE_D16) {                                                                                                                                   
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       { pc = addr + 1; e = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 2; }
+          else if (state == 2)       { pc = addr + 1; d = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                                                       
+        else if (LD_HL_D16) {                                                                                                                                   
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       { pc = addr + 1; l = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 2; }
+          else if (state == 2)       { pc = addr + 1; h = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                                                       
+        else if (LD_SP_D16) {                                                                                                                                   
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       { pc = addr + 1; p = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 2; }
+          else if (state == 2)       { pc = addr + 1; s = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                                                       
+        else if (ADD_HL_BC) {                                                                                                                                   
+          if      (state == 0)       { pc = addr + 1; alu_op = 0; alu_x = l; alu_y = c; alu(); l = ao.x;                                addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       {                alu_op = 1; alu_x = h; alu_y = b; alu(); h = ao.x;       update_flags();          addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                                                       
+        else if (ADD_HL_DE) {                                                                                                                                   
+          if      (state == 0)       { pc = addr + 1; alu_op = 0; alu_x = l; alu_y = e; alu(); l = ao.x;                                addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       {                alu_op = 1; alu_x = h; alu_y = d; alu(); h = ao.x;       update_flags();          addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                                                       
+        else if (ADD_HL_HL) {                                                                                                                                   
+          if      (state == 0)       { pc = addr + 1; alu_op = 0; alu_x = l; alu_y = l; alu(); l = ao.x;                                addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       {                alu_op = 1; alu_x = h; alu_y = h; alu(); h = ao.x;       update_flags();          addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                                                       
+        else if (ADD_HL_SP) {                                                                                                                                   
+          if      (state == 0)       { pc = addr + 1; alu_op = 0; alu_x = l; alu_y = p; alu(); l = ao.x;                                addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       {                alu_op = 1; alu_x = h; alu_y = s; alu(); h = ao.x;       update_flags();          addr = pc;              read = 1; write = 0; state_ = 0; }
         }
       }
       else if (OP_COL == 2) {
-        if      (state == 0)         { pc = addr + 1; }
-        else if (state == 1) {
-          if      (STM_BC_A )        {                }
-          else if (STM_DE_A )        {                }
-          else if (STM_HLP_A)        { hl = addr + 1; }
-          else if (STM_HLM_A)        { hl = addr - 1; }
-          else if (LDM_A_BC )        { bc = addr;     }
-          else if (LDM_A_DE )        { de = addr;     }
-          else if (LDM_A_HLP)        { hl = addr + 1; }
-          else if (LDM_A_HLM)        { hl = addr - 1; }
-        }
-
         if (state == 0) {
-          if      (STM_BC_A )        {                                                    }
-          else if (STM_DE_A )        {                                                    }
-          else if (STM_HLP_A)        {                                                    }
-          else if (STM_HLM_A)        {                                                    }
-          else if (LDM_A_BC )        {                                                    }
-          else if (LDM_A_DE )        {                                                    }
-          else if (LDM_A_HLP)        {                                                    }
-          else if (LDM_A_HLM)        {                                                    }
-        }
-        else if (state == 1) {
-          if      (STM_BC_A )        {                                                    }
-          else if (STM_DE_A )        {                                                    }
-          else if (STM_HLP_A)        {                                                    }
-          else if (STM_HLM_A)        {                                                    }
-          else if (LDM_A_BC )        { a = data;                                          }
-          else if (LDM_A_DE )        { a = data;                                          }
-          else if (LDM_A_HLP)        { a = data;                                          }
-          else if (LDM_A_HLM)        { a = data;                                          }
-        }
-
-        if (state == 0) {
-          if      (STM_BC_A )        { addr = bc; data = a;    read = 0; write = 1; state_ = 1; }
-          else if (STM_DE_A )        { addr = de; data = a;    read = 0; write = 1; state_ = 1; }
-          else if (STM_HLP_A)        { addr = hl; data = a;    read = 0; write = 1; state_ = 1; }
-          else if (STM_HLM_A)        { addr = hl; data = a;    read = 0; write = 1; state_ = 1; }
-          else if (LDM_A_BC )        { addr = bc;              read = 1; write = 0; state_ = 1; }
-          else if (LDM_A_DE )        { addr = de;              read = 1; write = 0; state_ = 1; }
-          else if (LDM_A_HLP)        { addr = hl;              read = 1; write = 0; state_ = 1; }
-          else if (LDM_A_HLM)        { addr = hl;              read = 1; write = 0; state_ = 1; }
-        }
-        else if (state == 1) {
-          if      (STM_BC_A )        { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (STM_DE_A )        { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (STM_HLP_A)        { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (STM_HLM_A)        { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (LDM_A_BC )        { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (LDM_A_DE )        { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (LDM_A_HLP)        { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (LDM_A_HLM)        { addr = pc;              read = 1; write = 0; state_ = 0; }
-        }
-      }
-      else if (OP_COL == 3) {
-        if (state == 0)              { pc = addr + 1; }
-        else if (state == 1) {
-          if      (INC_BC)           { bc = addr + 1; }
-          else if (DEC_BC)           { bc = addr - 1; }
-          else if (INC_DE)           { de = addr + 1; }
-          else if (DEC_DE)           { de = addr - 1; }
-          else if (INC_HL)           { hl = addr + 1; }
-          else if (DEC_HL)           { hl = addr - 1; }
-          else if (INC_SP)           { sp = addr + 1; }
-          else if (DEC_SP)           { sp = addr - 1; }
-        }
-
-        if (state == 0) {
-          if      (INC_BC)           {                                                    }
-          else if (DEC_BC)           {                                                    }
-          else if (INC_DE)           {                                                    }
-          else if (DEC_DE)           {                                                    }
-          else if (INC_HL)           {                                                    }
-          else if (DEC_HL)           {                                                    }
-          else if (INC_SP)           {                                                    }
-          else if (DEC_SP)           {                                                    }
-        }
-        else if (state == 1) {
-          if      (INC_BC)           {                                                    }
-          else if (DEC_BC)           {                                                    }
-          else if (INC_DE)           {                                                    }
-          else if (DEC_DE)           {                                                    }
-          else if (INC_HL)           {                                                    }
-          else if (DEC_HL)           {                                                    }
-          else if (INC_SP)           {                                                    }
-          else if (DEC_SP)           {                                                    }
-        }
-
-        if (state == 0) {
-          if      (INC_BC)           { addr = bc;              read = 1; write = 0; state_ = 1; }
-          else if (DEC_BC)           { addr = bc;              read = 1; write = 0; state_ = 1; }
-          else if (INC_DE)           { addr = de;              read = 1; write = 0; state_ = 1; }
-          else if (DEC_DE)           { addr = de;              read = 1; write = 0; state_ = 1; }
-          else if (INC_HL)           { addr = hl;              read = 1; write = 0; state_ = 1; }
-          else if (DEC_HL)           { addr = hl;              read = 1; write = 0; state_ = 1; }
-          else if (INC_SP)           { addr = sp;              read = 1; write = 0; state_ = 1; }
-          else if (DEC_SP)           { addr = sp;              read = 1; write = 0; state_ = 1; }
-        }
-        else if (state == 1) {
-          if      (INC_BC)           { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (DEC_BC)           { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (INC_DE)           { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (DEC_DE)           { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (INC_HL)           { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (DEC_HL)           { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (INC_SP)           { addr = pc;              read = 1; write = 0; state_ = 0; }
-          else if (DEC_SP)           { addr = pc;              read = 1; write = 0; state_ = 0; }
+          if      (STM_BC_A )        { pc = addr + 1;                                                                                   addr = bc; data = a;    read = 0; write = 1; state_ = 1; }
+          else if (STM_DE_A )        { pc = addr + 1;                                                                                   addr = de; data = a;    read = 0; write = 1; state_ = 1; }
+          else if (STM_HLP_A)        { pc = addr + 1;                                                                                   addr = hl; data = a;    read = 0; write = 1; state_ = 1; }
+          else if (STM_HLM_A)        { pc = addr + 1;                                                                                   addr = hl; data = a;    read = 0; write = 1; state_ = 1; }
+          else if (LDM_A_BC )        { pc = addr + 1;                                                                                   addr = bc;              read = 1; write = 0; state_ = 1; }
+          else if (LDM_A_DE )        { pc = addr + 1;                                                                                   addr = de;              read = 1; write = 0; state_ = 1; }
+          else if (LDM_A_HLP)        { pc = addr + 1;                                                                                   addr = hl;              read = 1; write = 0; state_ = 1; }
+          else if (LDM_A_HLM)        { pc = addr + 1;                                                                                   addr = hl;              read = 1; write = 0; state_ = 1; }
+        }                                                                                                                               
+        else if (state == 1) {                                                                                                          
+          if      (STM_BC_A )        {                                                                                                  addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (STM_DE_A )        {                                                                                                  addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (STM_HLP_A)        { hl = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (STM_HLM_A)        { hl = addr - 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (LDM_A_BC )        { bc = addr;     a = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (LDM_A_DE )        { de = addr;     a = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (LDM_A_HLP)        { hl = addr + 1; a = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (LDM_A_HLM)        { hl = addr - 1; a = data;                                                                         addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                               
+      }                                                                                                                                 
+      else if (OP_COL == 3) {                                                                                                           
+        if (state == 0) {                                                                                                               
+          if      (INC_BC)           { pc = addr + 1;                                                                                   addr = bc;              read = 1; write = 0; state_ = 1; }
+          else if (DEC_BC)           { pc = addr + 1;                                                                                   addr = bc;              read = 1; write = 0; state_ = 1; }
+          else if (INC_DE)           { pc = addr + 1;                                                                                   addr = de;              read = 1; write = 0; state_ = 1; }
+          else if (DEC_DE)           { pc = addr + 1;                                                                                   addr = de;              read = 1; write = 0; state_ = 1; }
+          else if (INC_HL)           { pc = addr + 1;                                                                                   addr = hl;              read = 1; write = 0; state_ = 1; }
+          else if (DEC_HL)           { pc = addr + 1;                                                                                   addr = hl;              read = 1; write = 0; state_ = 1; }
+          else if (INC_SP)           { pc = addr + 1;                                                                                   addr = sp;              read = 1; write = 0; state_ = 1; }
+          else if (DEC_SP)           { pc = addr + 1;                                                                                   addr = sp;              read = 1; write = 0; state_ = 1; }
+        }                                                                                                                               
+        else if (state == 1) {                                                                                                          
+          if      (INC_BC)           { bc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (DEC_BC)           { bc = addr - 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (INC_DE)           { de = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (DEC_DE)           { de = addr - 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (INC_HL)           { hl = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (DEC_HL)           { hl = addr - 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (INC_SP)           { sp = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
+          else if (DEC_SP)           { sp = addr - 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 0; }
         }
       }
       else if (OP_COL == 4) {
         if (INC_AT_HL) {
-          if      (state == 0)       { pc = addr + 1; }
-          else if (state == 1)       {                }
-          else if (state == 2)       {                }
-        }
-        else if (INC_R)              { pc = addr + 1; }
-
-        if (INC_AT_HL) {
-          if      (state == 0)       {                                                                       }
-          else if (state == 1)       {           alu_op = 0; alu_x = data; alu_y = 1; alu(); y = ao.x;                update_flags(); }
-          else if (state == 2)       {                                                                       }
-        }
-        else if (INC_R)              {           alu_op = 0; alu_x = reg_get8(); alu_y = 1; alu(); reg_put8(ao.x); update_flags(); }
-
-        if (INC_AT_HL) {
-          if      (state == 0)       { addr = hl;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { addr = hl; data = y;    read = 0; write = 1; state_ = 2; }
-          else if (state == 2)       { addr = pc;              read = 1; write = 0; state_ = 0; }
-        }
-        else if (INC_R)              { addr = pc;              read = 1; write = 0; state_ = 0; }
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = hl;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       {                alu_op = 0; alu_x = data;       alu_y = 1; alu(); y = ao.x;       update_flags(); addr = hl; data = y;    read = 0; write = 1; state_ = 2; }
+          else if (state == 2)       {                                                                                                  addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                                                       
+        else if (INC_R)              { pc = addr + 1; alu_op = 0; alu_x = reg_get8(); alu_y = 1; alu(); reg_put8(ao.x); update_flags(); addr = pc;              read = 1; write = 0; state_ = 0; }
       }
       else if (OP_COL == 5) {
         if (DEC_AT_HL) {
-          if      (state == 0)       { pc = addr + 1; }
-          else if (state == 1)       {                }
-          else if (state == 2)       {                }
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = hl;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       {                alu_op = 2; alu_x = data; alu_y = 1; alu(); y = ao.x;             update_flags(); addr = hl; data = y;    read = 0; write = 1; state_ = 2; }
+          else if (state == 2)       {                                                                                                  addr = pc;              read = 1; write = 0; state_ = 0; }
         }
-        else if (DEC_R)              { pc = addr + 1; }
-
-        if (DEC_AT_HL) {
-          if      (state == 0)       {                                                                       }
-          else if (state == 1)       {           alu_op = 2; alu_x = data; alu_y = 1; alu(); y = ao.x;                update_flags(); }
-          else if (state == 2)       {                                                                       }
-        }
-        else if (DEC_R)              {           alu_op = 2; alu_x = reg_get8(); alu_y = 1; alu(); reg_put8(ao.x); update_flags(); }
-
-        if (DEC_AT_HL) {
-          if      (state == 0)       { addr = hl;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { addr = hl; data = y;    read = 0; write = 1; state_ = 2; }
-          else if (state == 2)       { addr = pc;              read = 1; write = 0; state_ = 0; }
-        }
-        else if (DEC_R)              { addr = pc;              read = 1; write = 0; state_ = 0; }
+        else if (DEC_R)              { pc = addr + 1; alu_op = 2; alu_x = reg_get8(); alu_y = 1; alu(); reg_put8(ao.x); update_flags(); addr = pc;              read = 1; write = 0; state_ = 0; }
       }
       else if (OP_COL == 6) {
         if (STM_HL_D8) {
-          if      (state == 0)       { pc = addr + 1; }
-          else if (state == 1)       { pc = addr + 1; }
-          else if (state == 2)       {                }
-        }
-        else if (LD_R_D8) {
-          if      (state == 0)       { pc = addr + 1; }
-          else if (state == 1)       { pc = addr + 1; }
-        }
-
-        if (STM_HL_D8) {
-          if      (state == 0)       {                                                    }
-          else if (state == 1)       { y = data;                                          }
-          else if (state == 2)       {                                                    }
-        }
-        else if (LD_R_D8) {
-          if      (state == 0)       {                                                    }
-          else if (state == 1)       { y = data; reg_put8(y);                             }
-        }
-
-        if (STM_HL_D8) {
-          if      (state == 0)       { addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { addr = hl; data = y;    read = 0; write = 1; state_ = 2; }
-          else if (state == 2)       { addr = pc;              read = 1; write = 0; state_ = 0; }
-        }
-        else if (LD_R_D8) {
-          if      (state == 0)       { addr = pc;              read = 1; write = 0; state_ = 1; }
-          else if (state == 1)       { addr = pc;              read = 1; write = 0; state_ = 0; }
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       { pc = addr + 1; y = data;                                                                         addr = hl; data = y;    read = 0; write = 1; state_ = 2; }
+          else if (state == 2)       {                                                                                                  addr = pc;              read = 1; write = 0; state_ = 0; }
+        }                                                                                                                               
+        else if (LD_R_D8) {                                                                                                             
+          if      (state == 0)       { pc = addr + 1;                                                                                   addr = pc;              read = 1; write = 0; state_ = 1; }
+          else if (state == 1)       { pc = addr + 1; y = data; reg_put8(y);                                                            addr = pc;              read = 1; write = 0; state_ = 0; }
         }
       }
       else if (OP_COL == 7) {
         if (RLU_R) {
-          if      (state == 0)       { pc = addr + 1;  alu_op = OP_ROW; alu_x = reg_get8(); rlu(); a = ao.x;     update_flags();  addr = pc; read = 1; write = 0; state_ = 0; }
+          if      (state == 0)       { pc = addr + 1;  alu_op = OP_ROW; alu_x = reg_get8(); rlu(); a = ao.x;            update_flags(); addr = pc;              read = 1; write = 0; state_ = 0; }
         }
       }
     }
 
-    //----------------------------------------
+    //----------
     // QUAD 1
 
     else if (OP_QUAD == 1) {
       if (HALT) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       {                }
-        if      (state == 0)       { unhalt = 0;                                          }
-        else if (state == 1)       {                                                      }
-        if      (state == 0)       { addr = pc;              read = 1; write = 0; state_ = !no_halt; }
-        else if (state == 1)       { addr = pc;              read = 1; write = 0; state_ = !unhalt; }
-      }
-      else if (OP_COL == 6) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       {                }
-        if      (state == 0)       {                                                      }
-        else if (state == 1)       { y = data; reg_put8(y);                               }
-        if      (state == 0)       { addr = hl;              read = 1; write = 0; state_ = 1; }
-        else if (state == 1)       { addr = pc;              read = 1; write = 0; state_ = 0; }
-      }
-      else if (OP_ROW == 6) {
-        if      (state == 0)       { pc = addr + 1; }
-        else if (state == 1)       {                }
-        if      (state == 0)       {                                                      }
-        else if (state == 1)       {                                                      }
-        if      (state == 0)       { x = reg_get8(); addr = hl; data = x;    read = 0; write = 1; state_ = 1; }
-        else if (state == 1)       {                 addr = pc;              read = 1; write = 0; state_ = 0; }
-      }
-      else {
-        pc = addr + 1; 
-        y = reg_get8(); reg_put8(y);                         
-        addr = pc;              read = 1; write = 0; state_ = 0;
+        if      (state == 0)         { pc = addr + 1; unhalt = 0;                                                                       addr = pc;              read = 1; write = 0; state_ = !no_halt; }
+        else if (state == 1)         {                                                                                                  addr = pc;              read = 1; write = 0; state_ = !unhalt; }
+      }                              
+      else if (OP_COL == 6) {        
+        if      (state == 0)         { pc = addr + 1;                                                                                   addr = hl;              read = 1; write = 0; state_ = 1; }
+        else if (state == 1)         {                y = data; reg_put8(y);                                                            addr = pc;              read = 1; write = 0; state_ = 0; }
+      }                              
+      else if (OP_ROW == 6) {        
+        if      (state == 0)         { pc = addr + 1; x = reg_get8();                                                                   addr = hl; data = x;    read = 0; write = 1; state_ = 1; }
+        else if (state == 1)         {                                                                                                  addr = pc;              read = 1; write = 0; state_ = 0; }
+      }                              
+      else {                         
+        if      (state == 0)         { pc = addr + 1; y = reg_get8(); reg_put8(y);                                                      addr = pc;              read = 1; write = 0; state_ = 0; }
       }
     }
 
-    //----------------------------------------
+    //----------
     // QUAD 2
 
     else if (OP_QUAD == 2) {
@@ -643,7 +504,7 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
       }
     }
 
-    //----------------------------------------
+    //----------
     // QUAD 3
 
     else if (OP_QUAD == 3) {

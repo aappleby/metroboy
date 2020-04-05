@@ -42,7 +42,6 @@ private:
   uint8_t alu_o;
   uint8_t alu_f;
 
-  AluOut   alu_out;
   uint8_t  int_ack;
 
 #pragma warning(push)

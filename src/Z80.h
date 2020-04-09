@@ -33,7 +33,7 @@ private:
   bool     interrupt;
 
   int      state, state_;
-  uint8_t  data;
+  uint8_t  data_in, data_out;
   bool     read;
   bool     write;
 

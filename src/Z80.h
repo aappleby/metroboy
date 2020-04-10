@@ -30,7 +30,6 @@ private:
   uint8_t  op;
   uint8_t  cb;
   bool     ime, ime_delay;
-  bool     interrupt;
 
   int      state, state_;
   uint8_t  data_in, data_out;

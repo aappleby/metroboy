@@ -123,6 +123,9 @@
 #define ALU_A_D8      ((OP_QUAD == 3) && (OP_COL == 6))
 #define RST_NN        ((OP_QUAD == 3) && (OP_COL == 7))
 
+// fake opcode to indicate interrupt handling
+#define INT           (op == 0xF4)
+
 uint8_t  sxt(uint8_t x) { return x & 0x80 ? 0xFF : 0x00; }
 
 // STM_A8_A 0xE0 0b11100000
@@ -139,7 +142,6 @@ void Z80::reset(uint16_t new_pc) {
   if (new_pc == 0x100) {
     unhalt = 0;
     ime = ime_delay = 0;
-    interrupt = 0;
 
     state = 0;
              
@@ -164,7 +166,6 @@ void Z80::reset(uint16_t new_pc) {
   else {
     unhalt = 0;
     ime = ime_delay = 0;
-    interrupt = 0;
 
     state = 0;
              
@@ -241,12 +242,12 @@ void Z80::tock_t30(const uint8_t imask, const uint8_t intf) {
   if (state == 0) {
     op = data_in;
     int_ack = 0;
-    interrupt = (imask & intf) && ime;
+    if ((imask & intf) && ime) op = 0xF4; // fake opcode
   }
    
   if (PREFIX_CB && state == 1) cb = data_in;
 
-  if (state == 0 && interrupt) {
+  if (state == 0 && INT) {
     ime = false; ime_delay = false;
   }
 
@@ -296,7 +297,7 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
   // state 0
 
   if (state == 0) {
-    if (interrupt)               /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = sp; write = 0;  /**/ state_ = 1; }
+    if (INT)                     /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = sp; write = 0;  /**/ state_ = 1; }
     else if (PREFIX_CB)          /**/ { pc = addr + 1;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 1; }
     else {                       /**/                                                /**/                                                            /**/                                                 /**/                  
       if (OP_QUAD == 0) {        /**/                                                /**/                                                            /**/                                                 /**/                  
@@ -401,7 +402,7 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
   // state 1
 
   else if (state == 1) {
-    if (interrupt)               /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pch;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 2; }
+    if (INT)                     /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pch;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 2; }
     else if (PREFIX_CB) {        /**/                                                /**/                                                            /**/                                                 /**/                  
       if (OP_CB_R  )             /**/ { pc = addr + 1;   alu_x = reg_get8(CB_COL);   /**/ alu_y = 0;          alu_f = f;     alu_op = cb; alu_cb();  /**/ reg_put8(CB_COL, alu_o); addr = pc; write = 0;  /**/ state_ = 0; update_flags();  }
       if (OP_CB_HL )             /**/ { pc = addr + 1;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = hl; write = 0;  /**/ state_ = 2; }
@@ -498,7 +499,7 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
   // state 2
 
   else if (state == 2) {
-    if (interrupt)               /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 3; }
+    if (INT)                     /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 3; }
     else if (PREFIX_CB)          /**/ { hl = addr + 0;   alu_x = data_in;            /**/ alu_y = 0;          alu_f = f;     alu_op = cb; alu_cb();  /**/ data_out = alu_o;        addr = hl; write = 1;  /**/ state_ = 3; update_flags(); }
     else {                       /**/                                                /**/                                                            /**/                                                 /**/                  
       if (OP_QUAD == 0) {        /**/                                                /**/                                                            /**/                                                 /**/                  
@@ -552,7 +553,7 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
   // state 3
 
   else if (state == 3) {
-    if (interrupt)               /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ x        = alu_o;        addr = xy; write = 0;  /**/ state_ = 4; }
+    if (INT)                     /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ x        = alu_o;        addr = xy; write = 0;  /**/ state_ = 4; }
     else if (PREFIX_CB)          /**/ { hl = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
     else {                       /**/                                                /**/                                                            /**/                                                 /**/                  
       if (OP_QUAD == 0)          /**/ { xy = addr + 1;   alu_x = 0;                  /**/ alu_y = s;          alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = xy; write = 1;  /**/ state_ = 4; }
@@ -581,31 +582,12 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
   // state 4
 
   else if (state == 4) {
-    if (interrupt) {
-           if (state == 4)       /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = int_addr;   alu_f = f;     alu_op = 0; alu();      /**/ y        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; int_ack = which_ack;  }
-    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
-    else if (PREFIX_CB) {        /**/                                                /**/                                                            /**/                                                 /**/                  
-    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
-    else {                       /**/                                                /**/                                                            /**/                                                 /**/                  
-      if (OP_QUAD == 0) {        /**/                                                /**/                                                            /**/                                                 /**/                  
-        if (OP_COL == 0) {       /**/                                                /**/                                                            /**/                                                 /**/                  
-               if (STM_A16_SP) { /**/                                                /**/                                                            /**/                                                 /**/                  
-                 if (state == 4) /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-          }                      /**/                                                /**/                                                            /**/                                                 /**/                  
-        }                        /**/                                                /**/                                                            /**/                                                 /**/                      
-      }                          /**/                                                /**/                                                            /**/                                                 /**/                  
-      else if (OP_QUAD == 3) {   /**/                                                /**/                                                            /**/                                                 /**/                  
-             if (RET_CC) {       /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 4)   /**/ { sp = addr + 1;   alu_x = data_in;            /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ x        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (CALL_CC_A16) {  /**/                                                /**/                                                            /**/                                                 /**/ 
-                 if (state == 4) /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 5; }
-        }
-        else if (CALL_A16) {     /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 4)   /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 5; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-      }
-    }
+         if (INT)                /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = int_addr;   alu_f = f;     alu_op = 0; alu();      /**/ y        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; int_ack = which_ack;  }
+    else if (PREFIX_CB)          /**/ {}                                             /**/                                                            /**/                                                 /**/                  
+    else if (STM_A16_SP)         /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+    else if (RET_CC)             /**/ { sp = addr + 1;   alu_x = data_in;            /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ x        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; }
+    else if (CALL_CC_A16)        /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 5; }
+    else if (CALL_A16)           /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 5; }
   }
 
   //--------------------------------------------------------------------------------
@@ -613,14 +595,8 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
 
   else if (state == 5) {
-    if (interrupt) {
-    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
-    else if (PREFIX_CB) {        /**/                                                /**/                                                            /**/                                                 /**/                  
-    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
-    else {                       /**/                                                /**/                                                            /**/                                                 /**/                  
-             if (CALL_CC_A16)    /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
-        else if (CALL_A16)       /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
-    }
+    if (CALL_CC_A16)        /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
+    if (CALL_A16)           /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
   }
 
 
@@ -923,7 +899,7 @@ void Z80::dump(std::string& o) {
 
   sprintf(o, "IME         %d\n", ime);
   sprintf(o, "IME_        %d\n", ime_delay);
-  sprintf(o, "interrupt   %d\n", interrupt);
+  sprintf(o, "interrupt   %d\n", INT);
   sprintf(o, "int_ack     0x%02x\n", int_ack);
 }
 

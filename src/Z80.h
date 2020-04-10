@@ -60,12 +60,7 @@ private:
 
 private:
 
-  uint8_t  reg_get8(int mux) const;
-  void     reg_put8(int mux, uint8_t reg);
-
-  uint8_t  reg_get8() const;
-  void     reg_put8(uint8_t reg);
-
+  uint8_t& reg(int mux);
   void     update_flags();
 
   void     alu_cb();

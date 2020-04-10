@@ -549,99 +549,77 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
   }
 
   //--------------------------------------------------------------------------------
-  // state N
+  // state 3
 
-
-  else {
-    //----------
-    // INTERRUPTS
-
-    if (interrupt) {
-           if (state == 3)       /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ x        = alu_o;        addr = xy; write = 0;  /**/ state_ = 4; }
-      else if (state == 4)       /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = int_addr;   alu_f = f;     alu_op = 0; alu();      /**/ y        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; int_ack = which_ack;  }
-    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
-                                 /**/                                                /**/                                                            /**/                                                 /**/                  
-    //----------                 /**/                                                /**/                                                            /**/                                                 /**/                  
-    // CB OPS                    /**/                                                /**/                                                            /**/                                                 /**/                  
-                                 /**/                                                /**/                                                            /**/                                                 /**/                  
-    else if (PREFIX_CB) {        /**/                                                /**/                                                            /**/                                                 /**/                  
-           if (state == 3)       /**/ { hl = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
-                                 /**/                                                /**/                                                            /**/                                                 /**/                  
-    //----------                 /**/                                                /**/                                                            /**/                                                 /**/                  
-    // REGULAR OPS               /**/                                                /**/                                                            /**/                                                 /**/                  
-                                 /**/                                                /**/                                                            /**/                                                 /**/                  
+  else if (state == 3) {
+    if (interrupt)               /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ x        = alu_o;        addr = xy; write = 0;  /**/ state_ = 4; }
+    else if (PREFIX_CB)          /**/ { hl = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
     else {                       /**/                                                /**/                                                            /**/                                                 /**/                  
-      //----------               /**/                                                /**/                                                            /**/                                                 /**/                  
-      // QUAD 0                  /**/                                                /**/                                                            /**/                                                 /**/                  
-                                 /**/                                                /**/                                                            /**/                                                 /**/                  
+      if (OP_QUAD == 0)          /**/ { xy = addr + 1;   alu_x = 0;                  /**/ alu_y = s;          alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = xy; write = 1;  /**/ state_ = 4; }
+      else if (OP_QUAD == 3) {   /**/                                                /**/                                                            /**/                                                 /**/                  
+             if (PUSH_BC)        /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (PUSH_DE)        /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (PUSH_HL)        /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (PUSH_AF)        /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (ADD_SP_R8)      /**/ { sp = addr;       alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (LD_HL_SP_R8)    /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (RET_CC)         /**/ { sp = addr + 1;   alu_x = data_in;            /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ y        = alu_o;        addr = sp; write = 0;  /**/ state_ = 4; }
+        else if (RET)            /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (RETI)           /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (JP_CC_A16)      /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
+        else if (STM_A16_A)      /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (LDM_A_A16)      /**/ { xy = addr + 0;   alu_x = data_in;            /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ a        = alu_o;        addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (JP_A16)         /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+        else if (CALL_CC_A16)    /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pch;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 4; }
+        else if (CALL_A16)       /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pch;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 4; }
+        else if (RST_NN)         /**/ { sp = addr + 0;   alu_x = op;                 /**/ alu_y = 0x38;       alu_f = f;     alu_op = 4; alu();      /**/ y        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; }
+      }
+    }
+  }
+
+  //--------------------------------------------------------------------------------
+  // state 4
+
+  else if (state == 4) {
+    if (interrupt) {
+           if (state == 4)       /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = int_addr;   alu_f = f;     alu_op = 0; alu();      /**/ y        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; int_ack = which_ack;  }
+    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
+    else if (PREFIX_CB) {        /**/                                                /**/                                                            /**/                                                 /**/                  
+    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
+    else {                       /**/                                                /**/                                                            /**/                                                 /**/                  
       if (OP_QUAD == 0) {        /**/                                                /**/                                                            /**/                                                 /**/                  
         if (OP_COL == 0) {       /**/                                                /**/                                                            /**/                                                 /**/                  
                if (STM_A16_SP) { /**/                                                /**/                                                            /**/                                                 /**/                  
-                 if (state == 3) /**/ { xy = addr + 1;   alu_x = 0;                  /**/ alu_y = s;          alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = xy; write = 1;  /**/ state_ = 4; }
-            else if (state == 4) /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+                 if (state == 4) /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
           }                      /**/                                                /**/                                                            /**/                                                 /**/                  
         }                        /**/                                                /**/                                                            /**/                                                 /**/                      
       }                          /**/                                                /**/                                                            /**/                                                 /**/                  
-                                 /**/                                                /**/                                                            /**/                                                 /**/                  
-      //----------               /**/                                                /**/                                                            /**/                                                 /**/                  
-      // QUAD 3                  /**/                                                /**/                                                            /**/                                                 /**/                  
-                                 /**/                                                /**/                                                            /**/                                                 /**/                  
       else if (OP_QUAD == 3) {   /**/                                                /**/                                                            /**/                                                 /**/                  
-             if (PUSH_BC) {      /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (PUSH_DE) {      /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (PUSH_HL) {      /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (PUSH_AF) {      /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/                  
-        else if (ADD_SP_R8) {    /**/                                                /**/                                                            /**/                                                 /**/                  
-               if (state == 3)   /**/ { sp = addr;       alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (LD_HL_SP_R8) {  /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (RET_CC) {       /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { sp = addr + 1;   alu_x = data_in;            /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ y        = alu_o;        addr = sp; write = 0;  /**/ state_ = 4; }
-          else if (state == 4)   /**/ { sp = addr + 1;   alu_x = data_in;            /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ x        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (RET) {          /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (RETI) {         /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (JP_CC_A16) {    /**/                                                /**/                                                            /**/                                                 /**/ 
-                 if (state == 3) /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (STM_A16_A) {    /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { xy = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (LDM_A_A16) {    /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { xy = addr + 0;   alu_x = data_in;            /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ a        = alu_o;        addr = pc; write = 0;  /**/ state_ = 0; }
-        }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (JP_A16) {       /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { pc = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = pc; write = 0;  /**/ state_ = 0; }
+             if (RET_CC) {       /**/                                                /**/                                                            /**/                                                 /**/ 
+               if (state == 4)   /**/ { sp = addr + 1;   alu_x = data_in;            /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/ x        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; }
         }                        /**/                                                /**/                                                            /**/                                                 /**/ 
         else if (CALL_CC_A16) {  /**/                                                /**/                                                            /**/                                                 /**/ 
-                 if (state == 3) /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pch;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 4; }
-            else if (state == 4) /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 5; }
-            else if (state == 5) /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
+                 if (state == 4) /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 5; }
         }
         else if (CALL_A16) {     /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pch;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 4; }
-          else if (state == 4)   /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 5; }
-          else if (state == 5)   /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
+               if (state == 4)   /**/ { sp = addr - 1;   alu_x = 0;                  /**/ alu_y = pcl;        alu_f = f;     alu_op = 0; alu();      /**/ data_out = alu_o;        addr = sp; write = 1;  /**/ state_ = 5; }
         }                        /**/                                                /**/                                                            /**/                                                 /**/ 
-        else if (RST_NN) {       /**/                                                /**/                                                            /**/                                                 /**/ 
-               if (state == 3)   /**/ { sp = addr + 0;   alu_x = op;                 /**/ alu_y = 0x38;       alu_f = f;     alu_op = 4; alu();      /**/ y        = alu_o;        addr = xy; write = 0;  /**/ state_ = 0; }
-        }
       }
+    }
+  }
+
+  //--------------------------------------------------------------------------------
+  // state N
+
+
+  else if (state == 5) {
+    if (interrupt) {
+    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
+    else if (PREFIX_CB) {        /**/                                                /**/                                                            /**/                                                 /**/                  
+    }                            /**/                                                /**/                                                            /**/                                                 /**/                  
+    else {                       /**/                                                /**/                                                            /**/                                                 /**/                  
+             if (CALL_CC_A16)    /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
+        else if (CALL_A16)       /**/ { sp = addr + 0;   alu_x = 0;                  /**/ alu_y = 0;          alu_f = f;     alu_op = 0; alu();      /**/                          addr = xy; write = 0;  /**/ state_ = 0; }
     }
   }
 

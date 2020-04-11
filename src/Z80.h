@@ -33,7 +33,6 @@ private:
 
   int      state, state_;
   uint8_t  data_in, data_out;
-  bool     read;
   bool     write;
 
   uint8_t alu_op;
@@ -62,8 +61,7 @@ private:
 
   uint8_t& reg(int mux);
 
-  void     update_flags();
-
+  void     update_flags(uint8_t mask);
   void     alu_cb();
   void     alu();
   void     rlu();

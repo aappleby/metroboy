@@ -321,10 +321,10 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
   uint16_t& rr = reg16();
 
+  alu_x = 0;
+  alu_y = 0;
   alu_op = 0;
   write = 0;
-
-  alu_y = 0;
 
   //--------------------------------------------------------------------------------
 
@@ -347,7 +347,6 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 3 && PREFIX_CB)                                  /**/ {                                              /**/                                                           alu(); /**/                          addr = pc;             /**/ state_ = 0; }
   }
   else {
-
     if (state == 0 && JP_HL)                                      /**/ { pc = addr + 1;   alu_x = 0;                  /**/                                                           alu(); /**/                          addr = rr;             /**/ state_ = 0; }
     if (state == 0 && NOP)                                        /**/ { pc = addr + 1;   alu_x = 0;                  /**/                                                           alu(); /**/                          addr = pc;             /**/ state_ = 0; }
     if (state == 0 && STOP)                                       /**/ { pc = addr + 1;   alu_x = 0;                  /**/                                                           alu(); /**/                          addr = pc;             /**/ state_ = 0; }

@@ -62,8 +62,6 @@ private:
 
   uint8_t& reg(int mux);
 
-  uint16_t& reg16();
-
   void     update_flags();
 
   void     alu_cb();

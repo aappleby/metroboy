@@ -6,14 +6,14 @@
 struct Z80 {
   void    reset(uint16_t new_pc);
 
-  uint8_t get_int_ack_t30() const { return int_ack; }
-  Req     get_bus_req_t30() const;
+  uint8_t get_int_ack() const { return int_ack; }
+  Req     get_bus_req() const;
   void    tock_t30(const uint8_t imask_, const uint8_t intf_);
   void    tock_t01(const uint8_t imask_, const uint8_t intf_);
   void    tock_t12(const uint8_t imask_, const uint8_t intf_);
   void    tock_t23(const uint8_t imask_, const uint8_t intf_);
 
-  void    on_bus_ack_t01(Ack ibus_ack_);
+  void    on_bus_ack(Ack ibus_ack_);
 
   void    dump(std::string& d);
 

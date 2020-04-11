@@ -118,7 +118,7 @@ void Gameboy::tock() {
   ibus_ack = {};
 
   if (tphase_new == 0) {
-    cpu_req = z80.get_bus_req_t30();
+    cpu_req = z80.get_bus_req();
   }
   int region = cpu_req.addr >> 13;
 
@@ -127,6 +127,9 @@ void Gameboy::tock() {
   bool cpu_has_obus_req = cpu_has_req && cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
   bool cpu_has_ibus_req = cpu_has_req && cpu_req.addr >= ADDR_IOBUS_BEGIN;
   bool cpu_has_ebus_req = cpu_has_req && !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
+
+  //-----------------------------------
+  // Internal bus mux
 
   if (cpu_has_ibus_req) {
     Req ibus_req = cpu_req;
@@ -141,10 +144,8 @@ void Gameboy::tock() {
     dma.   on_ibus_req(int(tcycle_new), ibus_req, ibus_ack);
     boot.  on_ibus_req(                 ibus_req, ibus_ack);
 
-    if (tphase_new == 0) {
-      cpu_ack = ibus_ack;
-      z80.on_bus_ack_t01(ibus_ack);
-    }
+    cpu_ack = ibus_ack;
+    z80.on_bus_ack(cpu_ack);
   }
 
   //-----------------------------------
@@ -163,12 +164,9 @@ void Gameboy::tock() {
     cart.on_ebus_req(ebus_req, ebus_ack);
     iram.on_ebus_req(ebus_req, ebus_ack);
 
-    if (tphase_new == 0) {
-      cpu_ack = ebus_ack;
-      z80.on_bus_ack_t01(ebus_ack);
-    }
+    cpu_ack = ebus_ack;
+    z80.on_bus_ack(cpu_ack);
   }
-
 
   //-----------------------------------
   // Vram bus mux
@@ -190,10 +188,8 @@ void Gameboy::tock() {
     vbus_ack = {};
     vram.on_vbus_req(vbus_req, vbus_ack);
 
-    if (tphase_new == 0) {
-      cpu_ack = vbus_ack;
-      z80.on_bus_ack_t01(vbus_ack);
-    }
+    cpu_ack = vbus_ack;
+    z80.on_bus_ack(cpu_ack);
   }
 
   //-----------------------------------
@@ -216,10 +212,8 @@ void Gameboy::tock() {
     obus_ack = {};
     oam.on_obus_req(obus_req, obus_ack);
 
-    if (tphase_new == 0) {
-      cpu_ack = obus_ack;
-      z80.on_bus_ack_t01(obus_ack);
-    }
+    cpu_ack = obus_ack;
+    z80.on_bus_ack(cpu_ack);
   }
 
   //-----------------------------------
@@ -231,8 +225,6 @@ void Gameboy::tock() {
   if (tphase_new == 0 || tphase_new == 2) {
     bool fire_int_timer1   = timer.get_interrupt();;
     bool fire_int_buttons1 = joypad.get() != 0xFF;
-    //bool fire_int_timer2 = timer_to_bus.overflow;
-    //bool fire_int_buttons2 = joy_to_bus.val != 0xFF;
 
     if (imask & 0x01) z80.unhalt |= ppu.vblank1;
     if (imask & 0x02) z80.unhalt |= ppu.stat2;
@@ -249,21 +241,13 @@ void Gameboy::tock() {
   // Z80 bus mux & tock
 
   switch (tphase_new) {
-    case 0:
-      intf_ &= ~z80.get_int_ack_t30();
-      z80.tock_t30(imask_, intf_);
-      break;
-    case 1:
-      z80.tock_t01(imask_, intf_);
-      break;
-    case 2:
-      z80.tock_t12(imask_, intf_);
-      break;
-    case 3:
-      z80.tock_t23(imask_, intf_);
-      break;
+    case 0: z80.tock_t30(imask_, intf_); break;
+    case 1: z80.tock_t01(imask_, intf_); break;
+    case 2: z80.tock_t12(imask_, intf_); break;
+    case 3: z80.tock_t23(imask_, intf_); break;
   }
 
+  intf_ &= ~z80.get_int_ack();
 
   //-----------------------------------
   // Peripheral bus mux & tocks
@@ -285,7 +269,7 @@ void Gameboy::tock() {
   gb_to_host.pix_oe  = ppu.pix_oe;
   gb_to_host.out_r   = spu.get_r();
   gb_to_host.out_l   = spu.get_l();
-  gb_to_host.trace   = 0; //vbus_req.addr;
+  gb_to_host.trace   = vbus_req.addr;
   gb_to_host.trace   = 0;
 }
 

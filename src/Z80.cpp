@@ -185,7 +185,7 @@ void Z80::reset(uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-Req Z80::get_bus_req_t30() const {
+Req Z80::get_bus_req() const {
   return {
     .addr  = addr,
     .data  = data_out,
@@ -194,7 +194,7 @@ Req Z80::get_bus_req_t30() const {
   };
 }
 
-void Z80::on_bus_ack_t01(Ack ibus_ack_) {
+void Z80::on_bus_ack(Ack ibus_ack_) {
   data_in = (uint8_t)ibus_ack_.data;
 }
 

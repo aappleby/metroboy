@@ -6,11 +6,13 @@
 struct ZRAM {
   void reset();
 
-  bool on_ibus_req(Req ibus_req, Ack& ibus_ack);
+  void ibus_req(Req ibus_req);
+  void ibus_ack(Ack& ibus_ack) const;
   void dump(std::string& d);
   uint8_t* get() { return ram; }
 
 private:
+  Ack ack;
   uint8_t  ram[128];
 };
 

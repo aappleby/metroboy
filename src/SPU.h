@@ -6,7 +6,8 @@
 struct SPU {
   void reset();
 
-  bool on_ibus_req(Req ibus_req, Ack& ibus_ack);
+  void ibus_req(Req ibus_req);
+  void ibus_ack(Ack& ibus_ack);
 
   sample_t get_l() const { return out_l; }
   sample_t get_r() const { return out_r; }
@@ -19,8 +20,9 @@ private:
 
   int tcycle;
 
-  bool bus_read (Req ibus_req, Ack& ibus_ack);
-  bool bus_write(Req ibus_req, Ack& ibus_ack);
+  void bus_read (Req ibus_req);
+  void bus_write(Req ibus_req);
+  Ack ack;
 
   //----------
 

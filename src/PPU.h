@@ -26,11 +26,11 @@ struct PPU {
 
   bool on_ibus_req(Req ibus_req, Ack& ibus_ack);
 
-  bool has_vbus_req(int tcycle);
-  bool has_obus_req(int tcycle);
+  bool has_vbus_req();
+  bool has_obus_req();
 
-  Req  get_vbus_req(int tcycle);
-  Req  get_obus_req(int tcycle);
+  Req  get_vbus_req();
+  Req  get_obus_req();
 
   void on_vbus_ack(Ack vbus_ack_);
   void on_obus_ack(Ack obus_ack_);

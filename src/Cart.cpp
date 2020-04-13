@@ -56,20 +56,21 @@ void Cart::reset() {
 
 //-----------------------------------------------------------------------------
 
-bool Cart::on_ebus_req(Req ebus_req, Ack& ebus_ack) {
-  if (!ebus_req.read && !ebus_req.write) return false;
+void Cart::on_ebus_req(Req ebus_req) {
+  ack = {0};
+  if (!ebus_req.read && !ebus_req.write) return;
 
   int region = ebus_req.addr >> 13;
-  if (region == 4) return false;  // vram not on ebus
-  if (region >= 6) return false;  // iram has its own handler
-
-  assert(!ebus_ack.read && !ebus_ack.write);
+  if (region == 4) return;  // vram not on ebus
+  if (region >= 6) return;  // iram has its own handler
 
   bool rom_hit = (region < 4);
   bool ram_hit = region == 5;
 
   uint16_t ram_addr = ebus_req.addr & 0x1FFF;
   uint16_t rom_addr = ebus_req.addr & 0x7FFF;
+
+  ack = {0};
 
   // should check what phase this happens on...
   if (ebus_req.write && (rom_hit || ram_hit)) {
@@ -93,16 +94,15 @@ bool Cart::on_ebus_req(Req ebus_req, Ack& ebus_ack) {
         ram_dirty = true;
       }
     }
-    ebus_ack = {
+    ack = {
       .addr  = ebus_req.addr,
       .data  = ebus_req.data,
       .read  = 0,
       .write = 1,
     };
-    return true;
   }
   else if (ebus_req.read && (rom_hit || ram_hit)) {
-    ebus_ack = {
+    ack = {
       .addr  = ebus_req.addr,
       .data  = 0,
       .read  = 1,
@@ -111,11 +111,11 @@ bool Cart::on_ebus_req(Req ebus_req, Ack& ebus_ack) {
 
     if (region == 0 || region == 1) {
       if (mode == 0) {
-        ebus_ack.data = rom_buf[rom_addr];
+        ack.data = rom_buf[rom_addr];
       }
       else {
         int rom_bank = rom_bank_count ? (bank_latch2 << 5) & (rom_bank_count - 1) : 0;
-        ebus_ack.data = rom_buf[(rom_addr & 0x3FFF) | (rom_bank << 14)];
+        ack.data = rom_buf[(rom_addr & 0x3FFF) | (rom_bank << 14)];
       }
     }
     else if (region == 2 || region == 3) {
@@ -126,7 +126,7 @@ bool Cart::on_ebus_req(Req ebus_req, Ack& ebus_ack) {
       }
       rom_bank &= (rom_bank_count - 1);
 
-      ebus_ack.data = rom_buf[(rom_addr & 0x3FFF) | (rom_bank << 14)];
+      ack.data = rom_buf[(rom_addr & 0x3FFF) | (rom_bank << 14)];
     }
     else if (region == 5) {
       if (ram_enable && ram_bank_count) {
@@ -134,15 +134,20 @@ bool Cart::on_ebus_req(Req ebus_req, Ack& ebus_ack) {
         ram_bank &= (ram_bank_count - 1);
         if (ram_bank_count == 0) ram_bank = 0;
 
-        ebus_ack.data = ram_buf[(rom_addr - 0xA000) | (ram_bank << 13)];
+        ack.data = ram_buf[(rom_addr - 0xA000) | (ram_bank << 13)];
       }
     }
-    return true;
   }
   else {
     assert(false);
-    return false;
   }
+}
+
+void Cart::get_ebus_ack(Ack& ebus_ack) {
+  ebus_ack.addr  += ack.addr;
+  ebus_ack.data  += ack.data;
+  ebus_ack.read  += ack.read;
+  ebus_ack.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

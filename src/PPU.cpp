@@ -174,11 +174,11 @@ PPU::Out PPU::tick(const int tcycle_) const {
 
 //-----------------------------------------------------------------------------
 
-bool PPU::has_vbus_req(int /*tcycle*/) {
+bool PPU::has_vbus_req() {
   return fetch_type != FETCH_NONE;
 }
 
-Req PPU::get_vbus_req(int /*tcycle*/) {
+Req PPU::get_vbus_req() {
   uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
   uint8_t map_y = ((scy + line) >> 3) & 31;
 
@@ -213,11 +213,11 @@ Req PPU::get_vbus_req(int /*tcycle*/) {
 
 //----------------------------------------
 
-bool PPU::has_obus_req(int /*tcycle*/) {
+bool PPU::has_obus_req() {
   return (counter < 80) || (fetch_type == FETCH_SPRITE);
 }
 
-Req PPU::get_obus_req(int /*tcycle*/) {
+Req PPU::get_obus_req() {
   uint16_t fetch_addr = 0;
 
   // must have 80 cycles for oam read otherwise we lose an eye in oh.gb

@@ -11,41 +11,44 @@ void OAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-bool OAM::on_obus_req(Req obus_req, Ack& obus_ack) {
+void OAM::obus_req(Req obus_req) {
   bool hit = (obus_req.addr >= ADDR_OAM_BEGIN) && (obus_req.addr <= ADDR_OAM_END);
-  if (!hit) return false;
 
-  assert(!obus_ack.read && !obus_ack.write);
-
-  if (hit && obus_req.write) {
+  if (!hit) {
+    ack = {0};
+  }
+  else if (obus_req.write) {
     uint16_t oam_addr = obus_req.addr & 0x00FF;
     uint16_t d = ram[oam_addr >> 1];
     if (oam_addr & 1) d = (d & 0x00FF) | (obus_req.data << 8);
     else              d = (d & 0xFF00) | (obus_req.data << 0);
     ram[oam_addr >> 1] = d;
 
-    obus_ack = {
+    ack = {
       .addr  = obus_req.addr,
       .data  = obus_req.data,
       .read  = 0,
       .write = 1,
     };
-    return true;
   }
-  else if (hit && obus_req.read) {
-    obus_ack = {
+  else if (obus_req.read) {
+    ack = {
       .addr  = obus_req.addr,
       .data  = ram[(obus_req.addr & 0x00FF) >> 1],
       .read  = 1,
       .write = 0,
     };
-    return true;
-  }
-  else {
-    assert(false);
-    return false;
   }
 }
+
+void OAM::obus_ack(Ack& obus_ack) const {
+  obus_ack.addr  += ack.addr;
+  obus_ack.data  += ack.data;
+  obus_ack.read  += ack.read;
+  obus_ack.write += ack.write;
+}
+
+//-----------------------------------------------------------------------------
 
 void OAM::dump(std::string& d) const {
   sprintf(d, "\002--------------OAM--------------\001\n");

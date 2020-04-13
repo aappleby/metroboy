@@ -122,7 +122,7 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
   metroboy.gb().ppu.wx   = buf[0xFF4B];
   metroboy.gb().ppu.update_palettes();
 
-  uint8_t* oam_flat = (uint8_t*)metroboy.gb().oam.ram;
+  uint8_t* oam_flat = (uint8_t*)metroboy.gb().oam.get();
 
   for (int i = 0; i < 256; i++) {
     oam_flat[i] = buf[ADDR_OAM_BEGIN + i];

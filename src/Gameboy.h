@@ -35,9 +35,10 @@ struct Gameboy {
   HostOut get_host_data() const { return gb_to_host; }
 
 
-  bool    on_ibus_req(Req ibus_req, Ack& ibus_ack);
+  void ibus_req2(Req ibus_req);
+  void ibus_ack2(Ack& ibus_ack) const;
 
-  void    tock();
+  void tock();
 
   void dump_cpu   (std::string& out);
   void dump_bus   (std::string& out);
@@ -121,6 +122,8 @@ struct Gameboy {
 
   uint8_t intf;
   uint8_t imask;
+
+  Ack ack;
 
   //----------
 

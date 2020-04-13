@@ -46,37 +46,44 @@ void Gameboy::reset(uint16_t new_pc) {
 //#pragma warning(push)
 #pragma warning(disable:4458)
 
-bool Gameboy::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
+void Gameboy::ibus_req2(Req ibus_req) {
+  ack = {0};
   bool hit = (ibus_req.addr == ADDR_IF) || (ibus_req.addr == ADDR_IE);
-  if (!hit) return {};
 
-  if (ibus_req.write) {
+  if (!hit) {
+    return;
+  }
+  else if (ibus_req.write) {
     if (ibus_req.addr == ADDR_IF) intf  = (uint8_t)ibus_req.data | 0b11100000;
     if (ibus_req.addr == ADDR_IE) imask = (uint8_t)ibus_req.data;
-    ibus_ack = {
+    ack = {
       .addr  = ibus_req.addr,
       .data  = ibus_req.data,
       .read  = 0,
       .write = 1,
     };
-    return true;
   }
   else if (ibus_req.read) {
     uint8_t data = 0;
     if (ibus_req.addr == ADDR_IF) data = 0b11100000 | intf;
     if (ibus_req.addr == ADDR_IE) data = imask;
-    ibus_ack = {
+    ack = {
       .addr = ibus_req.addr,
       .data  = data,
       .read  = 1,
       .write = 0,
     };
-    return true;
   }
   else {
     assert(false);
-    return false;
   }
+}
+
+void Gameboy::ibus_ack2(Ack& ibus_ack) const {
+  ibus_ack.addr  += ack.addr;
+  ibus_ack.data  += ack.data;
+  ibus_ack.read  += ack.read;
+  ibus_ack.write += ack.write;
 }
 
 //#pragma warning(pop)
@@ -115,11 +122,13 @@ void Gameboy::tock() {
   //-----------------------------------
   // Internal bus mux
 
+  ibus_req = {};
+  ebus_req = {};
+  vbus_req = {};
+  obus_req = {};
+
   if (cpu_has_ibus_req) {
     ibus_req = cpu_req;
-  }
-  else {
-    ibus_req = {};
   }
 
   if (dma.has_ebus_req()) {
@@ -128,59 +137,84 @@ void Gameboy::tock() {
   else if (cpu_has_ebus_req) {
     ebus_req = cpu_req;
   }
-  else {
-    ebus_req = {};
-  }
 
   if (dma.has_vbus_req()) {
     vbus_req = dma.get_vbus_req();
   }
-  else if (ppu.has_vbus_req(int(tcycle_new))) {
-    vbus_req = ppu.get_vbus_req(int(tcycle_new));
+  else if (ppu.has_vbus_req()) {
+    vbus_req = ppu.get_vbus_req();
   }
   else if (cpu_has_vbus_req) {
     vbus_req = cpu_req;
-  }
-  else {
-    vbus_req = {};
   }
 
   if (dma.has_obus_req()) {
     obus_req = dma.get_obus_req();
   }
-  else if (ppu.has_obus_req(int(tcycle_new))) {
-    obus_req = ppu.get_obus_req(int(tcycle_new));
+  else if (ppu.has_obus_req()) {
+    obus_req = ppu.get_obus_req();
   }
   else if (cpu_has_obus_req) {
     obus_req = cpu_req;
   }
-  else {
-    obus_req = {};
+
+  //-----------------------------------
+
+  ebus_ack = {0};
+  vbus_ack = {0};
+  obus_ack = {0};
+  ibus_ack = {0};
+
+  if (ibus_req.read || ibus_req.write) {
+    this->ibus_req2(ibus_req);
+    this->ibus_ack2(ibus_ack);
+
+    joypad.on_ibus_req(ibus_req, ibus_ack);
+    serial.on_ibus_req(ibus_req, ibus_ack);
+    ppu.   on_ibus_req(ibus_req, ibus_ack);
+
+    zram.  ibus_req(ibus_req);
+    timer. ibus_req(ibus_req);
+    spu.   ibus_req(ibus_req);
+    dma.   ibus_req(ibus_req);
+    boot.  ibus_req(ibus_req);
+
+    zram.  ibus_ack(ibus_ack);
+    timer. ibus_ack(ibus_ack);
+    spu.   ibus_ack(ibus_ack);
+    dma.   ibus_ack(ibus_ack);
+    boot.  ibus_ack(ibus_ack);
   }
 
+  if (ebus_req.read || ebus_req.write) {
+    cart.on_ebus_req(ebus_req);
+    cart.get_ebus_ack(ebus_ack);
+
+    iram.ebus_req(ebus_req);
+    iram.ebus_ack(ebus_ack);
+  }
+
+  if (vbus_req.read || vbus_req.write) {
+    vram.vbus_req(vbus_req);
+    vram.vbus_ack(vbus_ack);
+  }
+
+  if (obus_req.read || obus_req.write) {
+    oam.obus_req(obus_req);
+    oam.obus_ack(obus_ack);
+  }
+
+  if (ibus_ack.read  > 1) __debugbreak();
+  if (ibus_ack.write > 1) __debugbreak();
+  if (ebus_ack.read  > 1) __debugbreak();
+  if (ebus_ack.write > 1) __debugbreak();
+  if (vbus_ack.read  > 1) __debugbreak();
+  if (vbus_ack.write > 1) __debugbreak();
+  if (obus_ack.read  > 1) __debugbreak();
+  if (obus_ack.write > 1) __debugbreak();
+
   //-----------------------------------
 
-  ibus_ack = {};
-  ebus_ack = {};
-  vbus_ack = {};
-  obus_ack = {};
-
-  this-> on_ibus_req(ibus_req, ibus_ack);
-  timer. on_ibus_req(ibus_req, ibus_ack);
-  zram.  on_ibus_req(ibus_req, ibus_ack);
-  joypad.on_ibus_req(ibus_req, ibus_ack);
-  serial.on_ibus_req(ibus_req, ibus_ack);
-  ppu.   on_ibus_req(ibus_req, ibus_ack);
-  spu.   on_ibus_req(ibus_req, ibus_ack);
-  dma.   on_ibus_req(ibus_req, ibus_ack);
-  boot.  on_ibus_req(ibus_req, ibus_ack);
-
-  cart.on_ebus_req(ebus_req, ebus_ack);
-  iram.on_ebus_req(ebus_req, ebus_ack);
-  vram.on_vbus_req(vbus_req, vbus_ack);
-  oam.on_obus_req(obus_req, obus_ack);
-
-  //-----------------------------------
 
   if (cpu_has_ibus_req) {
     cpu_ack = ibus_ack;
@@ -196,7 +230,7 @@ void Gameboy::tock() {
   if (dma.has_vbus_req()) {
     dma.on_vbus_ack(vbus_ack);
   }
-  else if (ppu.has_vbus_req(int(tcycle_new))) {
+  else if (ppu.has_vbus_req()) {
     ppu.on_vbus_ack(vbus_ack);
   }
   else if (cpu_has_vbus_req) {
@@ -206,7 +240,7 @@ void Gameboy::tock() {
   if (dma.has_obus_req()) {
     dma.on_obus_ack(obus_ack);
   }
-  else if (ppu.has_obus_req(int(tcycle_new))) {
+  else if (ppu.has_obus_req()) {
     ppu.on_obus_ack(obus_ack);
   }
   else if (cpu_has_obus_req) {
@@ -282,29 +316,6 @@ void Gameboy::tock() {
   gb_to_host.trace   = vbus_req.addr;
   gb_to_host.trace   = 0;
 }
-
-//-----------------------------------------------------------------------------
-
-#if 0
-{
-//return z80.get_state() << 4;
-
-//return z80.get_op();
-
-//return z80.op_ == 0x76 ? 0xFFFFFFFF : 0; // moderately interesting
-//return z80.op_ == 0x00 ? 0xFFFFFFFF : 0; // moderately interesting
-//return z80.op_ == 0xcb ? 0xFFFFFFFF : 0; // moderately interesting
-//return (z80.get_op() & 0b11000000) == 0b10000000 ? 0xFFFFFFFF : 0; // moderately interesting
-
-//return (z80.mem_addr >= ADDR_SPU_BEGIN && z80.mem_addr < ADDR_SPU_END) ? -1 : 0; // sparse
-
-//return ppu.sprite_index << 4; // also pretty cool
-
-//return cpu_to_bus.addr;
-trace_val = ppu_out.vram_addr; // this one's pretty cool
-                                //return cpu_to_bus.write ? 0xFFFFFFFF : 0x00000000;
-}
-#endif
 
 //-----------------------------------------------------------------------------
 

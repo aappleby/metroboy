@@ -7,7 +7,9 @@ struct Cart {
   void reset(size_t new_rom_size);
   void reset();
 
-  bool on_ebus_req(Req ebus_req, Ack& ebus_ack);
+  void on_ebus_req(Req ebus_req);
+  void get_ebus_ack(Ack& ebus_ack);
+
   void dump(std::string& d);
 
   uint8_t* get_flat_ptr(uint16_t addr);
@@ -16,6 +18,7 @@ struct Cart {
   uint8_t* get_cram() { return ram_buf; }
 
 private:
+  Ack ack;
   size_t rom_size;
   int rom_bank_count;
   int ram_bank_count;

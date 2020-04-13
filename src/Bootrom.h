@@ -5,9 +5,12 @@
 
 struct Bootrom {
   void reset(uint16_t new_pc);
-  bool on_ibus_req(Req ibus_req, Ack& ibus_ack);
   void dump(std::string& d);
 
+  void ibus_req(Req ibus_req);
+  void ibus_ack(Ack& ack);
+
+  Ack  ack;
   bool disable_bootrom;
 };
 

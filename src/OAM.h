@@ -6,12 +6,16 @@
 struct OAM {
 
   void reset();
-  bool on_obus_req(Req obus_req, Ack& obus_ack);
+
+  void obus_req(Req obus_req);
+  void obus_ack(Ack& obus_ack) const;
+
   void dump(std::string& out) const;
 
   const uint8_t* get() const { return (uint8_t*)ram; }
 
-//private:
+private:
+  Ack ack;
   uint16_t ram[128];
 };
 

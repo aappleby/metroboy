@@ -69,45 +69,6 @@ Req DMA::get_obus_req() const {
   };
 }
 
-//-----------------------------------------------------------------------------
-
-bool DMA::on_ibus_req(const Req& ibus_req, Ack& ibus_ack) {
-  if (ibus_req.addr != ADDR_DMA) return false;
-
-  assert(!ibus_ack.read && !ibus_ack.write);
-
-  if (ibus_req.write) {
-    //printf("%08d DMA write 0x%02x\n", tcycle, ibus_req.data);
-
-    if (ibus_req.data <= 0x7F) mode_x = Mode::CART;
-    if (0x80 <= ibus_req.data && ibus_req.data <= 0x9F) mode_x = Mode::VRAM;
-    if (0xA0 <= ibus_req.data && ibus_req.data <= 0xBF) mode_x = Mode::CART;
-    if (0xC0 <= ibus_req.data && ibus_req.data <= 0xFD) mode_x = Mode::IRAM;
-    count_x = 0;
-    source_x = ibus_req.data;
-
-    ibus_ack = {
-      .addr  = ibus_req.addr,
-      .data  = ibus_req.data,
-      .read  = 0,
-      .write = 1,
-    };
-    return true;
-  }
-
-  if (ibus_req.read) {
-    ibus_ack = {
-      .addr  = ibus_req.addr,
-      .data  = source_x,
-      .read  = 1,
-      .write = 0,
-    };
-    return true;
-  }
-
-  return false;
-}
-
 //----------------------------------------
 
 void DMA::on_ebus_ack(const Ack& ebus_ack) {
@@ -130,6 +91,47 @@ void DMA::on_vbus_ack(const Ack& vbus_ack) {
 
 void DMA::on_obus_ack(const Ack& /*obus_ack*/) {
   // nothing to do here?
+}
+
+//-----------------------------------------------------------------------------
+
+void DMA::ibus_req(const Req& ibus_req) {
+  ack = {0};
+  if (ibus_req.addr != ADDR_DMA) return;
+
+  if (ibus_req.write) {
+    //printf("%08d DMA write 0x%02x\n", tcycle, ibus_req.data);
+
+    if (ibus_req.data <= 0x7F) mode_x = Mode::CART;
+    if (0x80 <= ibus_req.data && ibus_req.data <= 0x9F) mode_x = Mode::VRAM;
+    if (0xA0 <= ibus_req.data && ibus_req.data <= 0xBF) mode_x = Mode::CART;
+    if (0xC0 <= ibus_req.data && ibus_req.data <= 0xFD) mode_x = Mode::IRAM;
+    count_x = 0;
+    source_x = ibus_req.data;
+
+    ack = {
+      .addr  = ibus_req.addr,
+      .data  = ibus_req.data,
+      .read  = 0,
+      .write = 1,
+    };
+  }
+
+  if (ibus_req.read) {
+    ack = {
+      .addr  = ibus_req.addr,
+      .data  = source_x,
+      .read  = 1,
+      .write = 0,
+    };
+  }
+}
+
+void DMA::ibus_ack(Ack& ibus_ack) {
+  ibus_ack.addr  += ack.addr;
+  ibus_ack.data  += ack.data;
+  ibus_ack.read  += ack.read;
+  ibus_ack.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

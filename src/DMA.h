@@ -7,7 +7,8 @@ struct DMA {
 
   //----------
 
-  bool on_ibus_req(const Req& ibus_req, Ack& ibus_ack);
+  void ibus_req(const Req& ibus_req);
+  void ibus_ack(Ack& ibus_ack);
 
   bool has_ebus_req() const;
   bool has_vbus_req() const;
@@ -32,6 +33,8 @@ struct DMA {
     IRAM,
     CART
   };
+
+  Ack      ack;
 
   Mode     mode_x;
   uint8_t  count_x;

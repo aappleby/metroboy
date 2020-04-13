@@ -20,25 +20,25 @@ DMA::DMA() {
 
 //-----------------------------------------------------------------------------
 
-bool DMA::has_ebus_req(int /*tcycle*/) {
+bool DMA::has_ebus_req() const {
   return (mode_a != Mode::NONE) && ((source_a >> 5) != 4);
 }
 
 //----------------------------------------
 
-bool DMA::has_vbus_req(int /*tcycle*/) {
+bool DMA::has_vbus_req() const {
   return (mode_a != Mode::NONE) && ((source_a >> 5) == 4);
 }
 
 //----------------------------------------
 
-bool DMA::has_obus_req(int /*tcycle*/) {
+bool DMA::has_obus_req() const {
   return (mode_b != Mode::NONE);
 }
 
 //-----------------------------------------------------------------------------
 
-Req DMA::get_ebus_req(int /*tcycle*/) {
+Req DMA::get_ebus_req() const {
   return {
     .addr  = uint16_t((source_a << 8) | count_a),
     .data  = 0,
@@ -49,7 +49,7 @@ Req DMA::get_ebus_req(int /*tcycle*/) {
 
 //----------------------------------------
 
-Req DMA::get_vbus_req(int /*tcycle*/) {
+Req DMA::get_vbus_req() const {
   return {
     .addr  = uint16_t((source_a << 8) | count_a),
     .data  = 0,
@@ -60,7 +60,7 @@ Req DMA::get_vbus_req(int /*tcycle*/) {
 
 //----------------------------------------
 
-Req DMA::get_obus_req(int /*tcycle*/) {
+Req DMA::get_obus_req() const {
   return  {
     .addr  = uint16_t(ADDR_OAM_BEGIN + count_b),
     .data  = data_b,
@@ -71,13 +71,12 @@ Req DMA::get_obus_req(int /*tcycle*/) {
 
 //-----------------------------------------------------------------------------
 
-bool DMA::on_ibus_req(int tcycle, const Req& ibus_req, Ack& ibus_ack) {
-  int tphase = tcycle & 3;
+bool DMA::on_ibus_req(const Req& ibus_req, Ack& ibus_ack) {
   if (ibus_req.addr != ADDR_DMA) return false;
 
   assert(!ibus_ack.read && !ibus_ack.write);
 
-  if (tphase == 0 && ibus_req.write) {
+  if (ibus_req.write) {
     //printf("%08d DMA write 0x%02x\n", tcycle, ibus_req.data);
 
     if (ibus_req.data <= 0x7F) mode_x = Mode::CART;

@@ -4,8 +4,6 @@
 
 typedef int16_t sample_t;
 
-#define dumpit(a, b) sprintf(d, "%-14s " b "\n", #a, a);
-
 //-----------------------------------------------------------------------------
 
 struct Req {
@@ -22,16 +20,6 @@ struct Ack {
   uint16_t write;
 };
 
-const uint8_t F_CARRY = 0x10;
-const uint8_t F_HALF_CARRY = 0x20;
-const uint8_t F_NEGATIVE = 0x40;
-const uint8_t F_ZERO = 0x80;
-
-struct AluOut {
-  uint8_t x;
-  uint8_t f;
-};
-
 //-----------------------------------------------------------------------------
 
 template<typename ... Args>
@@ -43,9 +31,16 @@ void sprintf(std::string& out, const char* format, Args ... args)
 }
 
 inline void print_req(std::string& d, const char* name, const Req& req) {
-  sprintf(d, "%-16s %04x:%04x %s%s\n", name, req.addr, req.data,
-    req.read  ? "\003R \001" : "- ",
-    req.write ? "\002W \001" : "- ");
+  if (req.write)  {
+    sprintf(d, "%-16s %04x:%04x %s%s\n", name, req.addr, req.data,
+      req.read  ? "\003R \001" : "- ",
+      req.write ? "\002W \001" : "- ");
+  }
+  else {
+    sprintf(d, "%-16s %04x:---- %s%s\n", name, req.addr,
+      req.read  ? "\003R \001" : "- ",
+      req.write ? "\002W \001" : "- ");
+  }
 }
 
 inline void print_ack(std::string& d, const char* name, const Ack& ack) {

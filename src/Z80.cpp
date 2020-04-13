@@ -132,6 +132,11 @@
 
 uint8_t  sxt(uint8_t x) { return x & 0x80 ? 0xFF : 0x00; }
 
+const uint8_t F_CARRY = 0x10;
+const uint8_t F_HALF_CARRY = 0x20;
+const uint8_t F_NEGATIVE = 0x40;
+const uint8_t F_ZERO = 0x80;
+
 //-----------------------------------------------------------------------------
 
 void Z80::reset(uint16_t new_pc) {
@@ -188,7 +193,7 @@ void Z80::reset(uint16_t new_pc) {
 Req Z80::get_bus_req() const {
   return {
     .addr  = addr,
-    .data  = data_out,
+    .data  = uint16_t(write ? data_out : 0),
     .read  = (bool)!write,
     .write = (bool)write,
   };
@@ -205,6 +210,8 @@ void Z80::on_bus_ack(Ack ibus_ack_) {
 #pragma warning(disable:4189)
 
 void Z80::tock_t30(const uint8_t imask, const uint8_t intf) {
+  //printf("tock_t30\n");
+
   state = state_;
   ime = ime_delay;
 
@@ -716,7 +723,7 @@ void Z80::dump(std::string& o) {
   sprintf(o, "\n");
 
   sprintf(o, "addr        0x%04x\n", addr);
-  sprintf(o, "data_in        0x%02x\n", data_in);
+  sprintf(o, "data_in     0x%02x\n", data_in);
   sprintf(o, "write       %d\n",     write);
   sprintf(o, "\n");
 

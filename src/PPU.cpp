@@ -248,9 +248,7 @@ Req PPU::get_obus_req(int /*tcycle*/) {
 
 //-----------------------------------------------------------------------------
 
-bool PPU::on_ibus_req(int tcycle, Req ibus_req, Ack& ibus_ack) {
-  int tphase = tcycle & 3;
-
+bool PPU::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
   if (ibus_req.addr == ADDR_DMA) return false;
   bool hit = (ADDR_GPU_BEGIN <= ibus_req.addr && ibus_req.addr <= ADDR_GPU_END);
   if (!hit) return false;
@@ -259,7 +257,7 @@ bool PPU::on_ibus_req(int tcycle, Req ibus_req, Ack& ibus_ack) {
 
   uint8_t data = (uint8_t)ibus_req.data;
 
-  if (hit && ibus_req.read) {
+  if (ibus_req.read) {
     switch (ibus_req.addr) {
     case ADDR_LCDC: data = lcdc; break;
     case ADDR_STAT: data = stat; break;
@@ -285,7 +283,7 @@ bool PPU::on_ibus_req(int tcycle, Req ibus_req, Ack& ibus_ack) {
     return true;
   }
 
-  if (hit && ibus_req.write && tphase == 0) {
+  if (ibus_req.write) {
     switch (ibus_req.addr) {
     case ADDR_LCDC: lcdc = data; break;
     case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
@@ -1142,6 +1140,8 @@ void PPU::dump(std::string& d) const {
     pribus(d, "oam_to_ppu",  oam_to_ppu);
     sprintf(d, "\n");
     */
+
+#define dumpit(a, b) sprintf(d, "%-14s " b "\n", #a, a);
 
     dumpit(pix_count ,"%d");
     dumpit(line      ,"%d");

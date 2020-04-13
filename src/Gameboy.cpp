@@ -105,115 +105,112 @@ void Gameboy::tock() {
   tphase_old = tcycle_old & 3;
   tphase_new = tcycle_new & 3;
 
-  cpu_req = {};
-  cpu_ack = {};
-  ebus_req = {};
-  ebus_ack = {};
-  vbus_req = {};
-  vbus_ack = {};
-  vbus_ack = {};
-  obus_req = {};
-  obus_ack = {};
-  ibus_req = {};
-  ibus_ack = {};
-
-  if (tphase_new == 0) {
-    cpu_req = z80.get_bus_req();
-  }
   int region = cpu_req.addr >> 13;
 
-  bool cpu_has_req = cpu_req.read || cpu_req.write;
-  bool cpu_has_vbus_req = cpu_has_req && cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
-  bool cpu_has_obus_req = cpu_has_req && cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
-  bool cpu_has_ibus_req = cpu_has_req && cpu_req.addr >= ADDR_IOBUS_BEGIN;
-  bool cpu_has_ebus_req = cpu_has_req && !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
+  bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
+  bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
+  bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
+  bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
 
   //-----------------------------------
   // Internal bus mux
 
   if (cpu_has_ibus_req) {
-    Req ibus_req = cpu_req;
-    Ack ibus_ack = {};
-    this-> on_ibus_req(                 ibus_req, ibus_ack);
-    timer. on_ibus_req(                 ibus_req, ibus_ack);
-    zram.  on_ibus_req(                 ibus_req, ibus_ack);
-    joypad.on_ibus_req(                 ibus_req, ibus_ack);
-    serial.on_ibus_req(                 ibus_req, ibus_ack);
-    ppu.   on_ibus_req(int(tcycle_new), ibus_req, ibus_ack);
-    spu.   on_ibus_req(                 ibus_req, ibus_ack);
-    dma.   on_ibus_req(int(tcycle_new), ibus_req, ibus_ack);
-    boot.  on_ibus_req(                 ibus_req, ibus_ack);
-
-    cpu_ack = ibus_ack;
-    z80.on_bus_ack(cpu_ack);
+    ibus_req = cpu_req;
+  }
+  else {
+    ibus_req = {};
   }
 
-  //-----------------------------------
-  // External bus mux
-
-  if (dma.has_ebus_req(int(tcycle_new))) {
-    ebus_req = dma.get_ebus_req(int(tcycle_new));
-    ebus_ack = {};
-    cart.on_ebus_req(ebus_req, ebus_ack);
-    iram.on_ebus_req(ebus_req, ebus_ack);
-    dma.on_ebus_ack(ebus_ack);
+  if (dma.has_ebus_req()) {
+    ebus_req = dma.get_ebus_req();
   }
   else if (cpu_has_ebus_req) {
     ebus_req = cpu_req;
-    ebus_ack = {};
-    cart.on_ebus_req(ebus_req, ebus_ack);
-    iram.on_ebus_req(ebus_req, ebus_ack);
-
-    cpu_ack = ebus_ack;
-    z80.on_bus_ack(cpu_ack);
+  }
+  else {
+    ebus_req = {};
   }
 
-  //-----------------------------------
-  // Vram bus mux
-
-  if (dma.has_vbus_req(int(tcycle_new))) {
-    vbus_req = dma.get_vbus_req(int(tcycle_new));
-    vbus_ack = {};
-    vram.on_vbus_req(vbus_req, vbus_ack);
-    dma.on_vbus_ack(vbus_ack);
+  if (dma.has_vbus_req()) {
+    vbus_req = dma.get_vbus_req();
   }
   else if (ppu.has_vbus_req(int(tcycle_new))) {
     vbus_req = ppu.get_vbus_req(int(tcycle_new));
-    vbus_ack = {};
-    vram.on_vbus_req(vbus_req, vbus_ack);
-    ppu.on_vbus_ack(vbus_ack);
   }
   else if (cpu_has_vbus_req) {
     vbus_req = cpu_req;
-    vbus_ack = {};
-    vram.on_vbus_req(vbus_req, vbus_ack);
-
-    cpu_ack = vbus_ack;
-    z80.on_bus_ack(cpu_ack);
+  }
+  else {
+    vbus_req = {};
   }
 
-  //-----------------------------------
-  // OAM bus mux
-
-  if (dma.has_obus_req(int(tcycle_new))) {
-    obus_req = dma.get_obus_req(int(tcycle_new));
-    obus_ack = {};
-    oam.on_obus_req(obus_req, obus_ack);
-    dma.on_obus_ack(obus_ack);
+  if (dma.has_obus_req()) {
+    obus_req = dma.get_obus_req();
   }
   else if (ppu.has_obus_req(int(tcycle_new))) {
     obus_req = ppu.get_obus_req(int(tcycle_new));
-    obus_ack = {};
-    oam.on_obus_req(obus_req, obus_ack);
-    ppu.on_obus_ack(obus_ack);
   }
   else if (cpu_has_obus_req) {
     obus_req = cpu_req;
-    obus_ack = {};
-    oam.on_obus_req(obus_req, obus_ack);
+  }
+  else {
+    obus_req = {};
+  }
 
+  //-----------------------------------
+
+  ibus_ack = {};
+  ebus_ack = {};
+  vbus_ack = {};
+  obus_ack = {};
+
+  this-> on_ibus_req(ibus_req, ibus_ack);
+  timer. on_ibus_req(ibus_req, ibus_ack);
+  zram.  on_ibus_req(ibus_req, ibus_ack);
+  joypad.on_ibus_req(ibus_req, ibus_ack);
+  serial.on_ibus_req(ibus_req, ibus_ack);
+  ppu.   on_ibus_req(ibus_req, ibus_ack);
+  spu.   on_ibus_req(ibus_req, ibus_ack);
+  dma.   on_ibus_req(ibus_req, ibus_ack);
+  boot.  on_ibus_req(ibus_req, ibus_ack);
+
+  cart.on_ebus_req(ebus_req, ebus_ack);
+  iram.on_ebus_req(ebus_req, ebus_ack);
+  vram.on_vbus_req(vbus_req, vbus_ack);
+  oam.on_obus_req(obus_req, obus_ack);
+
+  //-----------------------------------
+
+  if (cpu_has_ibus_req) {
+    cpu_ack = ibus_ack;
+  }
+
+  if (dma.has_ebus_req()) {
+    dma.on_ebus_ack(ebus_ack);
+  }
+  else if (cpu_has_ebus_req) {
+    cpu_ack = ebus_ack;
+  }
+
+  if (dma.has_vbus_req()) {
+    dma.on_vbus_ack(vbus_ack);
+  }
+  else if (ppu.has_vbus_req(int(tcycle_new))) {
+    ppu.on_vbus_ack(vbus_ack);
+  }
+  else if (cpu_has_vbus_req) {
+    cpu_ack = vbus_ack;
+  }
+
+  if (dma.has_obus_req()) {
+    dma.on_obus_ack(obus_ack);
+  }
+  else if (ppu.has_obus_req(int(tcycle_new))) {
+    ppu.on_obus_ack(obus_ack);
+  }
+  else if (cpu_has_obus_req) {
     cpu_ack = obus_ack;
-    z80.on_bus_ack(cpu_ack);
   }
 
   //-----------------------------------
@@ -241,13 +238,26 @@ void Gameboy::tock() {
   // Z80 bus mux & tock
 
   switch (tphase_new) {
-    case 0: z80.tock_t30(imask_, intf_); break;
-    case 1: z80.tock_t01(imask_, intf_); break;
-    case 2: z80.tock_t12(imask_, intf_); break;
-    case 3: z80.tock_t23(imask_, intf_); break;
+    case 0: {
+      z80.on_bus_ack(cpu_ack);
+      z80.tock_t30(imask_, intf_);
+      break;
+    }
+    case 1: {
+      z80.tock_t01(imask_, intf_);
+      break;
+    }
+    case 2: {
+      z80.tock_t12(imask_, intf_);
+      cpu_req = z80.get_bus_req();
+      intf_ &= ~z80.get_int_ack();
+      break;
+    }
+    case 3: {
+      z80.tock_t23(imask_, intf_);
+      break;
+    }
   }
-
-  intf_ &= ~z80.get_int_ack();
 
   //-----------------------------------
   // Peripheral bus mux & tocks

@@ -12,27 +12,33 @@ void Serial::reset() {
 
 //-----------------------------------------------------------------------------
 
-bool Serial::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
-  if ((ibus_req.addr != ADDR_SB) && (ibus_req.addr != ADDR_SC)) return false;
-
-  assert(!ibus_ack.read && !ibus_ack.write);
-
-  ibus_ack.addr  = ibus_req.addr;
-  ibus_ack.data  = ibus_req.data;
-  ibus_ack.read  = ibus_req.read;
-  ibus_ack.write = ibus_req.write;
-
-  if (ibus_req.read) {
-    if (ibus_req.addr == ADDR_SB) ibus_ack.data = sb;
-    if (ibus_req.addr == ADDR_SC) ibus_ack.data = sc;
+void Serial::ibus_req(Req ibus_req) {
+  if ((ibus_req.addr != ADDR_SB) && (ibus_req.addr != ADDR_SC)) {
+    ack = {0};
   }
-
-  if (ibus_req.write) {
+  else if (ibus_req.write) {
+    ack.addr  = ibus_req.addr;
+    ack.data  = ibus_req.data;
+    ack.read  = 0;
+    ack.write = 1;
     if (ibus_req.addr == ADDR_SB) sb = (uint8_t)ibus_req.data;
     if (ibus_req.addr == ADDR_SC) sc = (uint8_t)ibus_req.data | 0b01111110;
   }
+  else if (ibus_req.read) {
+    ack.addr  = ibus_req.addr;
+    ack.data  = 0;
+    ack.read  = 1;
+    ack.write = 0;
+    if (ibus_req.addr == ADDR_SB) ack.data = sb;
+    if (ibus_req.addr == ADDR_SC) ack.data = sc;
+  }
+}
 
-  return true;
+void Serial::ibus_ack(Ack& ibus_ack) const {
+  ibus_ack.addr  += ack.addr;
+  ibus_ack.data  += ack.data;
+  ibus_ack.read  += ack.read;
+  ibus_ack.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

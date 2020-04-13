@@ -24,7 +24,8 @@ struct PPU {
 
   void reset(bool run_bootrom);
 
-  bool on_ibus_req(Req ibus_req, Ack& ibus_ack);
+  void ibus_req(Req ibus_req);
+  void ibus_ack(Ack& ibus_ack) const;
 
   bool has_vbus_req();
   bool has_obus_req();
@@ -49,6 +50,8 @@ struct PPU {
   void tock_lcdoff();
   void emit_pixel(int tphase);
   void merge_tile(int tphase);
+
+  Ack ack;
 
   //----------
   // Timers and states

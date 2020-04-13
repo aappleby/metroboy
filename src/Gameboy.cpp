@@ -167,18 +167,19 @@ void Gameboy::tock() {
 
   if (ibus_req.read || ibus_req.write) {
     this->ibus_req2(ibus_req);
-    this->ibus_ack2(ibus_ack);
-
-    joypad.on_ibus_req(ibus_req, ibus_ack);
-    serial.on_ibus_req(ibus_req, ibus_ack);
-    ppu.   on_ibus_req(ibus_req, ibus_ack);
-
+    ppu.   ibus_req(ibus_req);
+    serial.ibus_req(ibus_req);
+    joypad.ibus_req(ibus_req);
     zram.  ibus_req(ibus_req);
     timer. ibus_req(ibus_req);
     spu.   ibus_req(ibus_req);
     dma.   ibus_req(ibus_req);
     boot.  ibus_req(ibus_req);
 
+    this->ibus_ack2(ibus_ack);
+    ppu.   ibus_ack(ibus_ack);
+    serial.ibus_ack(ibus_ack);
+    joypad.ibus_ack(ibus_ack);
     zram.  ibus_ack(ibus_ack);
     timer. ibus_ack(ibus_ack);
     spu.   ibus_ack(ibus_ack);

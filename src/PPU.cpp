@@ -248,16 +248,41 @@ Req PPU::get_obus_req() {
 
 //-----------------------------------------------------------------------------
 
-bool PPU::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
-  if (ibus_req.addr == ADDR_DMA) return false;
+void PPU::ibus_req(Req ibus_req) {
   bool hit = (ADDR_GPU_BEGIN <= ibus_req.addr && ibus_req.addr <= ADDR_GPU_END);
-  if (!hit) return false;
+  if (ibus_req.addr == ADDR_DMA) hit = false;
 
-  assert(!ibus_ack.read && !ibus_ack.write);
+  if (!hit) {
+    ack = {0};
+  }
+  else if (ibus_req.write) {
+    uint8_t data = (uint8_t)ibus_req.data;
+    switch (ibus_req.addr) {
+    case ADDR_LCDC: lcdc = data; break;
+    case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
+    case ADDR_SCY:  scy = data;  break;
+    case ADDR_SCX:  scx = data;  break;
+    case ADDR_LY:   ly = data;   break;
+    case ADDR_LYC:  lyc = data;  break;
+      //case ADDR_DMA:  dma = data;  break;
+    case ADDR_BGP:  bgp = data;  break;
+    case ADDR_OBP0: obp0 = data; break;
+    case ADDR_OBP1: obp1 = data; break;
+    case ADDR_WY:   wy = data;   break;
+    case ADDR_WX:   wx = data;   break;
+    };
 
-  uint8_t data = (uint8_t)ibus_req.data;
+    update_palettes();
 
-  if (ibus_req.read) {
+    ack = {
+      .addr  = ibus_req.addr,
+      .data  = data,
+      .read  = 0,
+      .write = 1,
+    };
+  }
+  else if (ibus_req.read) {
+    uint8_t data = (uint8_t)ibus_req.data;
     switch (ibus_req.addr) {
     case ADDR_LCDC: data = lcdc; break;
     case ADDR_STAT: data = stat; break;
@@ -274,51 +299,28 @@ bool PPU::on_ibus_req(Req ibus_req, Ack& ibus_ack) {
     default:        data = 0; break;
     }
 
-    ibus_ack = {
+    ack = {
       .addr  = ibus_req.addr,
       .data  = data,
       .read  = 1,
       .write = 0,
     };
-    return true;
   }
+}
 
-  if (ibus_req.write) {
-    switch (ibus_req.addr) {
-    case ADDR_LCDC: lcdc = data; break;
-    case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
-    case ADDR_SCY:  scy = data;  break;
-    case ADDR_SCX:  scx = data;  break;
-    case ADDR_LY:   ly = data;   break;
-    case ADDR_LYC:  lyc = data;  break;
-    //case ADDR_DMA:  dma = data;  break;
-    case ADDR_BGP:  bgp = data;  break;
-    case ADDR_OBP0: obp0 = data; break;
-    case ADDR_OBP1: obp1 = data; break;
-    case ADDR_WY:   wy = data;   break;
-    case ADDR_WX:   wx = data;   break;
-    };
-
-    update_palettes();
-
-    ibus_ack = {
-      .addr  = ibus_req.addr,
-      .data  = data,
-      .read  = 0,
-      .write = 1,
-    };
-    return true;
-  }
-
-  return false;
+void PPU::ibus_ack(Ack& ibus_ack) const {
+  ibus_ack.addr  += ack.addr;
+  ibus_ack.data  += ack.data;
+  ibus_ack.read  += ack.read;
+  ibus_ack.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------
 
-void PPU::on_vbus_ack(Ack ack) {
-  uint8_t data = (uint8_t)ack.data;
+void PPU::on_vbus_ack(Ack vbus_ack) {
+  uint8_t data = (uint8_t)vbus_ack.data;
 
-  if (ack.read) {
+  if (vbus_ack.read) {
     if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
       if (fetch_state == FETCH_TILE_MAP) tile_map = data;
       if (fetch_state == FETCH_TILE_LO)  tile_lo = data;
@@ -333,12 +335,12 @@ void PPU::on_vbus_ack(Ack ack) {
 
 //----------------------------------------
 
-void PPU::on_obus_ack(Ack ack) {
-  uint8_t lo = uint8_t(ack.data >> 0);
-  uint8_t hi = uint8_t(ack.data >> 8);
+void PPU::on_obus_ack(Ack obus_ack) {
+  uint8_t lo = uint8_t(obus_ack.data >> 0);
+  uint8_t hi = uint8_t(obus_ack.data >> 8);
 
-  if (ack.read) {
-    if (ack.addr & 2) {
+  if (obus_ack.read) {
+    if (obus_ack.addr & 2) {
       this->spriteP = lo;
       this->spriteF = hi;
     }
@@ -351,7 +353,7 @@ void PPU::on_obus_ack(Ack ack) {
     // Build sprite table
 
     if (counter < 86 && sprite_count < 10) {
-      int si = (ack.addr - ADDR_OAM_BEGIN) >> 2;
+      int si = (obus_ack.addr - ADDR_OAM_BEGIN) >> 2;
       int sy = spriteY - 16;
       int sx = spriteX;
 

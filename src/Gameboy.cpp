@@ -33,6 +33,7 @@ void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
 
   intf = 0xE1;
   imask = 0x00;
+  ack = {0};
 
   sentinel = 0xDEADBEEF;
 }
@@ -175,7 +176,9 @@ void Gameboy::tock() {
     spu.   ibus_req(ibus_req);
     dma.   ibus_req(ibus_req);
     boot.  ibus_req(ibus_req);
+  }
 
+  if (ibus_req.read || ibus_req.write) {
     this->ibus_ack2(ibus_ack);
     ppu.   ibus_ack(ibus_ack);
     serial.ibus_ack(ibus_ack);

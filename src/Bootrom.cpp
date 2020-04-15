@@ -47,6 +47,7 @@ extern const uint8_t DMG_ROM_bin[] = {
 
 void Bootrom::reset(uint16_t new_pc) {
   disable_bootrom = new_pc != 0x0000;
+  ack = {0};
 }
 
 //-----------------------------------------------------------------------------

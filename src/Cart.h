@@ -7,8 +7,8 @@ struct Cart {
   void reset(size_t new_rom_size);
   void reset();
 
-  void on_ebus_req(Req ebus_req);
-  void get_ebus_ack(Ack& ebus_ack);
+  void ebus_req(Req ebus_req);
+  void ebus_ack(Ack& ebus_ack);
 
   void dump(std::string& d);
 

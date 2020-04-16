@@ -191,21 +191,29 @@ void Gameboy::tock() {
   }
 
   if (ebus_req.read || ebus_req.write) {
-    cart.on_ebus_req(ebus_req);
-    cart.get_ebus_ack(ebus_ack);
-
+    cart.ebus_req(ebus_req);
     iram.ebus_req(ebus_req);
+  }
+
+   if (ebus_req.read || ebus_req.write) {
+    cart.ebus_ack(ebus_ack);
     iram.ebus_ack(ebus_ack);
   }
 
   if (vbus_req.read || vbus_req.write) {
     vram.vbus_req(vbus_req);
-    vram.vbus_ack(vbus_ack);
+  }
+
+  if (vbus_req.read || vbus_req.write) {
+      vram.vbus_ack(vbus_ack);
   }
 
   if (obus_req.read || obus_req.write) {
     oam.obus_req(obus_req);
-    oam.obus_ack(obus_ack);
+  }
+
+  if (obus_req.read || obus_req.write) {
+      oam.obus_ack(obus_ack);
   }
 
   if (ibus_ack.read  > 1) __debugbreak();

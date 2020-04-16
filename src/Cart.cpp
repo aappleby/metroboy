@@ -56,7 +56,7 @@ void Cart::reset() {
 
 //-----------------------------------------------------------------------------
 
-void Cart::on_ebus_req(Req ebus_req) {
+void Cart::ebus_req(Req ebus_req) {
   ack = {0};
   if (!ebus_req.read && !ebus_req.write) return;
 
@@ -143,7 +143,7 @@ void Cart::on_ebus_req(Req ebus_req) {
   }
 }
 
-void Cart::get_ebus_ack(Ack& ebus_ack) {
+void Cart::ebus_ack(Ack& ebus_ack) {
   ebus_ack.addr  += ack.addr;
   ebus_ack.data  += ack.data;
   ebus_ack.read  += ack.read;

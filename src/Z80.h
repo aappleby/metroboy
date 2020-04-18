@@ -34,6 +34,7 @@ private:
   int      state, state_;
   uint8_t  data_in, data_out;
   bool     write;
+  uint8_t  bus;
 
   uint8_t alu_op;
   uint8_t alu_x;

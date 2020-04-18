@@ -317,9 +317,9 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
     //----------
 
-    if (state == 0 && JR_R8)                  /**/ { pc = addr + 1;                       /**/                                                                   addr = pc; write = 0; /**/ pc = addr + 1; bus = pcl;        /**/                                        state_ = 1; }
-    if (state == 1 && JR_R8)                  /**/ { alu_x = bus; bus = data_in;          /**/ alu_y = bus; alu_op = 0; alu(); bus = alu_o; alu_op = 1;                                /**/ y = bus; bus = pch;              /**/ alu_x = bus; bus = sxt(data_in);       state_ = 2; }                                                         
-    if (state == 2 && JR_R8)                  /**/ { alu_y = bus; alu(); bus = alu_o;     /**/ x = bus;                                                          addr = xy; write = 0; /**/                                  /**/                                        state_ = 0; }
+    if (state == 0 && JR_R8)                  /**/ { pc = addr + 1;                       /**/                                                                   addr = pc; write = 0; /**/ pc = addr + 1; bus = pcl;        /**/ alu_x = bus;                           state_ = 1; }
+    if (state == 1 && JR_R8)                  /**/ { bus = data_in;                       /**/ alu_y = bus; alu_op = 0; alu(); bus = alu_o;                                            /**/ y = bus; bus = pch;              /**/ alu_x = bus; bus = sxt(data_in);       state_ = 2; }                                                         
+    if (state == 2 && JR_R8)                  /**/ { alu_y = bus; alu_op = 1; alu(); bus = alu_o;     /**/ x = bus;                                                          addr = xy; write = 0; /**/                                  /**/                                        state_ = 0; }
 
     if (state == 0 && STM_A8_A)               /**/ { pc = addr + 1; bus = a;              /**/ data_out = bus;                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = 1; }
     if (state == 1 && STM_A8_A)               /**/ { pc = addr + 1; bus = data_in;        /**/ y = bus;                                                          addr = xy; write = 1; /**/                                  /**/                                        state_ = 2; }
@@ -328,12 +328,19 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 0 && LDM_A_A8)               /**/ { pc = addr + 1;                       /**/                                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = 1; }
     if (state == 1 && LDM_A_A8)               /**/ { pc = addr + 1; bus = data_in;        /**/ y = bus;                                                          addr = xy; write = 0; /**/                                  /**/                                        state_ = 2; }
     if (state == 2 && LDM_A_A8)               /**/ {                bus = data_in;        /**/ a = bus;                                                          addr = pc; write = 0; /**/                                  /**/                                        state_ = 0; }
-                                                                                                                                                                                                                                                  
-    if (state == 0 && JR_CC_R8)               /**/ { pc = addr + 1;                       /**/                                                                 /**/                                  /**/                                          addr = pc; write = 0; state_ = 1; }
-    if (state == 1 && JR_CC_R8 && branch)     /**/ { pc = addr + 1; bus = data_in;        /**/ alu_x = bus;                alu_op = 0;      bus = pcl;         /**/ alu_y = bus; alu(); bus = alu_o; /**/ y = bus;                                            write = 0; state_ = 2; }
-    if (state == 1 && JR_CC_R8 && !branch)    /**/ { pc = addr + 1; bus = data_in;        /**/ alu_x = bus;                alu_op = 0;      bus = pcl;         /**/ alu_y = bus; alu(); bus = alu_o; /**/ y = bus;                                 addr = pc; write = 0; state_ = 0; }
-    if (state == 2 && JR_CC_R8)               /**/ {                bus = sxt(data_in);   /**/ alu_x = bus;                alu_op = 1;      bus = pch;         /**/ alu_y = bus; alu(); bus = alu_o; /**/ x = bus;                                 addr = xy; write = 0; state_ = 0; }
-                                                                                                                                                                                                                                                  
+
+
+
+
+    if (state == 0 && JR_CC_R8)               /**/ { pc = addr + 1;                       /**/                                                                   addr = pc; write = 0; /**/ pc = addr + 1; bus = pcl;        /**/ alu_y = bus;                           state_ = 1; }
+    if (state == 1 && JR_CC_R8 && branch)     /**/ {                bus = data_in;        /**/ alu_x = bus; alu_op = 0;                                                     write = 0; /**/              alu(); bus = alu_o; /**/ y = bus;                               state_ = 2; }
+    if (state == 1 && JR_CC_R8 && !branch)    /**/ { pc = addr + 1; bus = data_in;        /**/ alu_x = bus; alu_op = 0; bus = pcl; alu_y = bus; alu(); bus = alu_o; /**/ y = bus;                                 addr = pc; write = 0; state_ = 0; }
+    if (state == 2 && JR_CC_R8)               /**/ {                bus = sxt(data_in);   /**/ alu_x = bus; alu_op = 1; bus = pch; alu_y = bus; alu(); bus = alu_o; /**/ x = bus;                                 addr = xy; write = 0; state_ = 0; }
+
+
+
+
+
     if (state == 0 && STM_A16_SP)             /**/ { pc = addr + 1; bus = p;              /**/ data_out = bus;                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = 1; }
     if (state == 1 && STM_A16_SP)             /**/ { pc = addr + 1; bus = data_in;        /**/ y = bus;                                                          addr = pc; write = 0; /**/                                  /**/                                        state_ = 2; }
     if (state == 2 && STM_A16_SP)             /**/ { pc = addr + 1; bus = data_in;        /**/ x = bus;                                                          addr = xy; write = 1; /**/                                  /**/                                        state_ = 3; }

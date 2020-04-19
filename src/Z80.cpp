@@ -287,9 +287,9 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     uint8_t mask = cb_flag_mask[CB_QUAD];                                                         
                                                                                                   
     if (state == 0 && PREFIX_CB)              /**/ { pc = addr + 1;                               /**/                                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = 1; }
-    if (state == 1 && OP_CB_R)                /**/ { pc = addr + 1;   alu_x = reg(CB_COL);        /**/ alu_cb(); reg(CB_COL) = bus;                                      addr = pc; write = 0; /**/                                  /**/ update_flags(mask);                    state_ = 0; }
+    if (state == 1 && OP_CB_R)                /**/ { pc = addr + 1;   alu_x = reg(CB_COL);        /**/ alu_cb(cb, f); reg(CB_COL) = bus;                                 addr = pc; write = 0; /**/                                  /**/ update_flags(mask);                    state_ = 0; }
     if (state == 1 && OP_CB_HL)               /**/ { pc = addr + 1;                               /**/                                                                   addr = hl; write = 0; /**/                                  /**/                                        state_ = 2; }
-    if (state == 2 && PREFIX_CB)              /**/ { alu_x = data_in;                             /**/ alu_cb(); data_out = bus;                                         addr = hl; write = 1; /**/                                  /**/ update_flags(mask);                    state_ = 3; }
+    if (state == 2 && PREFIX_CB)              /**/ { alu_x = data_in;                             /**/ alu_cb(cb, f); data_out = bus;                                    addr = hl; write = 1; /**/                                  /**/ update_flags(mask);                    state_ = 3; }
     if (state == 3 && PREFIX_CB)              /**/ {                                              /**/                                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = 0; }
   }                                                                                                                                                                                                          
   else {                                                                                                                                                                                                     
@@ -576,7 +576,8 @@ void Z80::update_flags(uint8_t mask) {
 //-----------------------------------------------------------------------------
 #pragma warning(disable : 4458)
 
-void Z80::alu(int op) {
+void Z80::alu(int op, uint8_t flags) {
+  alu_f = flags;
   const uint8_t x = alu_x;
   const uint8_t y = alu_y;
 
@@ -642,7 +643,8 @@ void Z80::daa(uint8_t x, uint8_t f) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::rlu(int op) {
+void Z80::rlu(int op, uint8_t flags) {
+  alu_f = flags;
   const uint8_t x = alu_x;
   const uint8_t f = alu_f;
 
@@ -693,13 +695,13 @@ void Z80::rlu(int op) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::alu_cb() {
+void Z80::alu_cb(int op, uint8_t flags) {
+  alu_f = flags;
   const uint8_t x = alu_x;
-  const uint8_t quad = CB_QUAD;
-  const uint8_t row = CB_ROW;
+  const uint8_t quad = ((op >> 6) & 3);
+  const uint8_t row = ((op >> 3) & 7);
   const bool bit_mux = (x >> row) & 1;
 
-  alu_f = f;
 
   switch (quad) {
   case 0:

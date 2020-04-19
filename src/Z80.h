@@ -62,14 +62,10 @@ private:
   uint8_t& reg(int mux);
 
   void     update_flags(uint8_t mask);
-  void     alu_cb();
+  void     alu_cb(int op, uint8_t flags);
   
-  void     alu(int op);
-  void     rlu(int op);
-
-  void alu(int op_, uint8_t flags) { alu_f = flags; alu(op_); }
-  void rlu(int op_, uint8_t flags) { alu_f = flags; rlu(op_); }
-
+  void     alu(int op, uint8_t flags);
+  void     rlu(int op, uint8_t flags);
   void     daa(uint8_t x, uint8_t f);
 };
 

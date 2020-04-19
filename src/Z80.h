@@ -36,7 +36,6 @@ private:
   bool     write;
   uint8_t  bus;
 
-  uint8_t alu_op;
   uint8_t alu_x;
   uint8_t alu_y;
   uint8_t alu_o;
@@ -64,8 +63,8 @@ private:
 
   void     update_flags(uint8_t mask);
   void     alu_cb();
-  void     alu();
-  void     rlu();
+  void     alu(int op);
+  void     rlu(int op);
   void     daa(uint8_t x, uint8_t f);
 };
 

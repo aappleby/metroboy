@@ -258,6 +258,8 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 #endif
 
   //--------------------------------------------------------------------------------
+  // For OP_CB_HL and INC/DEC_AT_HL, we have to do a read-modify-write in two cycles. The only way that can work is if the data input latch can be made to drive the bus directly without an extra cycle...
+  // so there can't be a register between the bus mux and the bus itself, which makes sense if the bus input is selected via OE or something
 
   if (INT) {
     uint8_t int_addr = 0;
@@ -269,33 +271,30 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     else if (imask & intf & INT_VBLANK_MASK) { int_addr = 0x40; int_ack = INT_VBLANK_MASK; }
     else                                     { int_addr = 0x00; int_ack = 0; }
 
-    if (state == 0 && INT)                    /**/ {                                              /**/                                                                   addr = sp; write = 0; /**/                                  /**/                                        state_ = 1; }
-    if (state == 1 && INT)                    /**/ { sp = addr - 1;   bus = pch;                  /**/ data_out = bus;                                                   addr = sp; write = 1; /**/                                  /**/                                        state_ = 2; }
-    if (state == 2 && INT)                    /**/ { sp = addr - 1;   bus = pcl;                  /**/ data_out = bus;                                                   addr = sp; write = 1; /**/                                  /**/                                        state_ = 3; }
-    if (state == 3 && INT)                    /**/ {                  bus = 0;                    /**/ x = bus;                                                          addr = xy; write = 0; /**/                                  /**/                                        state_ = 4; }
-    if (state == 4 && INT)                    /**/ {                  bus = int_addr;             /**/ y = bus;                                                          addr = xy; write = 0; /**/                                  /**/                                        state_ = 0; }
+    if (state == 0 && INT)                    /**/ {                                                   /**/                                                   addr = sp; write = 0; /**/                                  /**/                                        state_ = 1; }
+    if (state == 1 && INT)                    /**/ { bus = pch;         data_out = bus; sp = addr - 1; /**/                                                   addr = sp; write = 1; /**/                                  /**/                                        state_ = 2; }
+    if (state == 2 && INT)                    /**/ { bus = pcl;         data_out = bus; sp = addr - 1; /**/                                                   addr = sp; write = 1; /**/                                  /**/                                        state_ = 3; }
+    if (state == 3 && INT)                    /**/ { bus = 0;                  x = bus;                /**/                                                   addr = xy; write = 0; /**/                                  /**/                                        state_ = 4; }
+    if (state == 4 && INT)                    /**/ { bus = int_addr;           y = bus;                /**/                                                   addr = xy; write = 0; /**/                                  /**/                                        state_ = 0; }
   }                                                                                                                                                                                                           
   else if (HALT) {                                                                                                                                                                                            
     bool no_halt = ((imask & intf) && !ime);                                                      
     if (HALT && state == 0) unhalt = 0;                                                           
                                                                                                   
-    if (state == 0 && HALT)                   /**/ { pc = addr + 1;                               /**/                                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = !no_halt; }
-    if (state == 1 && HALT)                   /**/ {                                              /**/                                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = !unhalt; }
-  }                                                                                                                                                                                                           
-  else if (PREFIX_CB) {                                                                                                                                                                                       
-    if (state == 1) cb = data_in;                                                                 
-    uint8_t mask = cb_flag_mask[CB_QUAD];                                                         
-    
-    // For OP_CB_HL and INC/DEC_AT_HL, we have to do a read-modify-write in two cycles. The only way that can work is if the data input latch can be made to drive the bus directly without an extra cycle...
-    // so there can't be a register between the bus mux and the bus itself, which makes sense if the bus input is selected via OE or something
-
-    if (state == 0)                           /**/ { pc = addr + 1;                               /**/                                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = 1; }
-
-    if (state == 1 && OP_CB_R)                /**/ { pc = addr + 1; alu_x = reg(CB_COL);          /**/ alu_cb(cb, f);                                 reg(CB_COL) = bus; addr = pc; write = 0; /**/                                  /**/ update_flags(mask);                    state_ = 0; }
-
-    if (state == 1 && OP_CB_HL)               /**/ { pc = addr + 1;                               /**/                                                                   addr = hl; write = 0; /**/                                  /**/                                        state_ = 2; }
-    if (state == 2)                           /**/ { bus = data_in;                  alu_x = bus; /**/ alu_cb(cb, f);                                    data_out = bus; addr = hl; write = 1; /**/                                  /**/ update_flags(mask);                    state_ = 3; }
-    if (state == 3)                           /**/ {                                              /**/                                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = 0; }
+    if (state == 0 && HALT)                   /**/ {                                    pc = addr + 1; /**/                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = !no_halt; }
+    if (state == 1 && HALT)                   /**/ {                                                   /**/                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = !unhalt; }
+  }                                                                                                                                                                                                              
+  else if (PREFIX_CB) {                                                                                                                                                                                          
+    if (state == 1) cb = data_in;                                                                    
+    uint8_t mask = cb_flag_mask[CB_QUAD];                                                            
+                                                                                        
+    if (state == 0)                           /**/ {                                    pc = addr + 1; /**/                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = 1; }
+                                                                                        
+    if (state == 1 && OP_CB_R)                /**/ { bus = reg(CB_COL); alu_x = bus;    pc = addr + 1; /**/ alu_cb(cb, f);                 reg(CB_COL) = bus; addr = pc; write = 0; /**/                                  /**/ update_flags(mask);                    state_ = 0; }
+                                                                                        
+    if (state == 1 && OP_CB_HL)               /**/ {                                    pc = addr + 1; /**/                                                   addr = hl; write = 0; /**/                                  /**/                                        state_ = 2; }
+    if (state == 2)                           /**/ { bus = data_in;     alu_x = bus;                   /**/ alu_cb(cb, f);                    data_out = bus; addr = hl; write = 1; /**/                                  /**/ update_flags(mask);                    state_ = 3; }
+    if (state == 3)                           /**/ {                                                   /**/                                                   addr = pc; write = 0; /**/                                  /**/                                        state_ = 0; }
   }                                                                                                                                                                                                          
   else {                                                                                                                                                                                                     
     bool branch = false;

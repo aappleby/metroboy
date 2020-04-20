@@ -386,14 +386,6 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 2 && LDM_A_A16)              /**/ { bus = data_in;               x = bus; pc = addr + 1; /**/                                          addr = xy; write = 0;                /**/                                                              state_ = 3; }
     if (state == 3 && LDM_A_A16)              /**/ { bus = data_in;               a = bus;                /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
 
-    if (state == 0 && STM_A8_A)               /**/ {                                       pc = addr + 1; /**/bus = a;                  data_out = bus; addr = pc; write = 0;                /**/                                                              state_ = 1; }
-    if (state == 1 && STM_A8_A)               /**/ { bus = data_in;               y = bus; pc = addr + 1; /**/                                          addr = xy; write = 1;                /**/                                                              state_ = 2; }
-    if (state == 2 && STM_A8_A)               /**/ {                                                      /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
-
-    if (state == 0 && LDM_A_A8)               /**/ {                                       pc = addr + 1; /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 1; }
-    if (state == 1 && LDM_A_A8)               /**/ { bus = data_in;               y = bus; pc = addr + 1; /**/                                          addr = xy; write = 0;                /**/                                                              state_ = 2; }
-    if (state == 2 && LDM_A_A8)               /**/ { bus = data_in;               a = bus;                /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
-
     if (state == 0 && LD_R_D8)                /**/ {                                       pc = addr + 1; /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 1; }
     if (state == 1 && LD_R_D8)                /**/ { bus = data_in;     reg(OP_ROW) = bus; pc = addr + 1; /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
 
@@ -408,9 +400,6 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
     if (state == 0 && LDM_R_HL)               /**/ {                                       pc = addr + 1; /**/                                          addr = hl; write = 0;                /**/                                                              state_ = 1; }
     if (state == 1 && LDM_R_HL)               /**/ { bus = data_in;     reg(OP_ROW) = bus;                /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
-
-    if (state == 0 && LDM_A_C)                /**/ {                                       pc = addr + 1; /**/                                          addr = bc; write = 0;                /**/                                                              state_ = 1; }
-    if (state == 1 && LDM_A_C)                /**/ { bus = data_in;               a = bus;                /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
 
     if (state == 0 && LD_SP_HL)               /**/ {                                       pc = addr + 1; /**/                                          addr = hl; write = 0;                /**/                                                              state_ = 1; }
     if (state == 1 && LD_SP_HL)               /**/ {                                       sp = addr + 0; /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
@@ -436,8 +425,23 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 0 && STM_DE_A)               /**/ {                                       pc = addr + 1; /**/ bus = a;                 data_out = bus; addr = de; write = 1;                /**/                                                              state_ = 1; }
     if (state == 1 && STM_DE_A)               /**/ {                                                      /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
 
+    // zero-page load/store
+
+    if (state == 0 && LDM_A_A8)               /**/ {                                       pc = addr + 1; /**/                                          addr = pc; write = 0;                /**/ bus = 0xFF;                     x = bus;                     state_ = 1; }
+    if (state == 1 && LDM_A_A8)               /**/ { bus = data_in;               y = bus; pc = addr + 1; /**/                                          addr = xy; write = 0;                /**/                                                              state_ = 2; }
+    if (state == 2 && LDM_A_A8)               /**/ { bus = data_in;               a = bus;                /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
+
+    if (state == 0 && STM_A8_A)               /**/ {                                       pc = addr + 1; /**/ bus = a;                 data_out = bus; addr = pc; write = 0;                /**/ bus = 0xFF;                     x = bus;                     state_ = 1; }
+    if (state == 1 && STM_A8_A)               /**/ { bus = data_in;               y = bus; pc = addr + 1; /**/                                          addr = xy; write = 1;                /**/                                                              state_ = 2; }
+    if (state == 2 && STM_A8_A)               /**/ {                                                      /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
+
+    if (state == 0 && LDM_A_C)                /**/ {                                       pc = addr + 1; /**/                                          addr = bc; write = 0;                /**/                                                              state_ = 1; }
+    if (state == 1 && LDM_A_C)                /**/ { bus = data_in;               a = bus;                /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
+    if (LDM_A_C  && state == 0) { ah = 0xFF; }
+
     if (state == 0 && STM_C_A)                /**/ {                                       pc = addr + 1; /**/ bus = a;                 data_out = bus; addr = bc; write = 1;                /**/                                                              state_ = 1; }
     if (state == 1 && STM_C_A)                /**/ {                                                      /**/                                          addr = pc; write = 0;                /**/                                                              state_ = 0; }
+    if (STM_C_A  && state == 0) { ah = 0xFF; }
 
     // push / pop
 
@@ -558,17 +562,11 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
     if (state == 0 && RST_NN)                 /**/ { bus = 0x38;              alu_y = bus; pc = addr + 1; /**/                                          addr = sp; write = 0;                /**/                                                              state_ = 1; }
     if (state == 1 && RST_NN)                 /**/ {                                       sp = addr - 1; /**/ bus = pch;               data_out = bus; addr = sp; write = 1;                /**/                                                              state_ = 2; }
-    if (state == 2 && RST_NN)                 /**/ {                                       sp = addr - 1; /**/ bus = pcl;               data_out = bus; addr = sp; write = 1;                /**/                                                              state_ = 3; }
+    if (state == 2 && RST_NN)                 /**/ {                                       sp = addr - 1; /**/ bus = pcl;               data_out = bus; addr = sp; write = 1;                /**/ bus = 0x00;                     x = bus;                     state_ = 3; }
     if (state == 3 && RST_NN)                 /**/ { bus = op;                alu_x = bus;                /**/ bus = alu(4, f);                y = bus; addr = xy; write = 0;                /**/                                                              state_ = 0; }
   }
 
   f &= 0xF0;
-
-  if (STM_A8_A && state == 1) { ah = 0xFF; }
-  if (LDM_A_A8 && state == 1) { ah = 0xFF; }
-  if (STM_C_A  && state == 0) { ah = 0xFF; }
-  if (LDM_A_C  && state == 0) { ah = 0xFF; }
-  if (RST_NN   && state == 3) { ah = 0x00; }
 
   if (RETI && state_ == 0) {ime = true;       ime_delay = true;}
   if (DI)                  {ime = false;      ime_delay = false;}

@@ -32,7 +32,8 @@ private:
   bool     ime, ime_delay;
 
   int      state, state_;
-  uint8_t  data_in, data_out;
+  uint8_t  in;
+  uint8_t  out;
   bool     write;
   //uint8_t  bus;
 

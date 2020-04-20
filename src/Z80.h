@@ -53,8 +53,8 @@ private:
 
   union { uint16_t pc;   struct { uint8_t pcl; uint8_t pch; }; };
   union { uint16_t sp;   struct { uint8_t spl; uint8_t sph; }; };
-  union { uint16_t xy;   struct { uint8_t   y; uint8_t   x; }; };
-  union { uint16_t ad;   struct { uint8_t  al; uint8_t  ah; }; };
+  union { uint16_t xy;   struct { uint8_t xyl; uint8_t xyh; }; };
+  union { uint16_t ad;   struct { uint8_t adl; uint8_t adh; }; };
 
 #pragma warning(pop)
 

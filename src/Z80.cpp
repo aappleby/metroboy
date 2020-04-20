@@ -407,10 +407,10 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 1 && LDM_A_DE)               /**/ { bus = data_in;               a = bus;            /**/                                                     addr = pc; write = 0;                /**/                                                              state_ = 0; }
 
     if (state == 0 && LDM_A_HLP)              /**/ {                                       pcl = apl; /**/                                          pch = aph; addr = hl; write = 0;                /**/                                                              state_ = 1; }
-    if (state == 1 && LDM_A_HLP)              /**/ { bus = data_in;               a = bus; l   = apl; /**/                                          h   = aph; addr = pc; write = 0;                /**/                                                              state_ = 0; }
+    if (state == 1 && LDM_A_HLP)              /**/ { bus = data_in;               a = bus;            /**/ bus = apl; l = bus;                                 addr = pc; write = 0;                /**/ bus = aph; h = bus;                                          state_ = 0; }
 
     if (state == 0 && LDM_A_HLM)              /**/ {                                       pcl = apl; /**/                                          pch = aph; addr = hl; write = 0;                /**/                                                              state_ = 1; }
-    if (state == 1 && LDM_A_HLM)              /**/ { bus = data_in;               a = bus; l   = aml; /**/                                          h   = amh; addr = pc; write = 0;                /**/                                                              state_ = 0; }
+    if (state == 1 && LDM_A_HLM)              /**/ { bus = data_in;               a = bus;            /**/ bus = aml; l = bus;                                 addr = pc; write = 0;                /**/ bus = amh; h = bus;                                          state_ = 0; }
 
     if (state == 0 && LDM_R_HL)               /**/ {                                       pcl = apl; /**/                                          pch = aph; addr = hl; write = 0;                /**/                                                              state_ = 1; }
     if (state == 1 && LDM_R_HL)               /**/ { bus = data_in;     reg(OP_ROW) = bus;            /**/                                                     addr = pc; write = 0;                /**/                                                              state_ = 0; }
@@ -422,10 +422,10 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 1 && STM_HL_R)               /**/ {                                                  /**/                                                     addr = pc; write = 0;                /**/                                                              state_ = 0; }
 
     if (state == 0 && STM_HLP_A)              /**/ {                                       pcl = apl; /**/ bus = a;                 data_out = bus; pch = aph; addr = hl; write = 1;                /**/                                                              state_ = 1; }
-    if (state == 1 && STM_HLP_A)              /**/ {                                       l   = apl; /**/                                          h   = aph; addr = pc; write = 0;                /**/                                                              state_ = 0; }
+    if (state == 1 && STM_HLP_A)              /**/ { bus = apl;                   l = bus;            /**/ bus = aph;                      h = bus;            addr = pc; write = 0;                /**/                                                              state_ = 0; }
 
     if (state == 0 && STM_HLM_A)              /**/ {                                       pcl = apl; /**/ bus = a;                 data_out = bus; pch = aph; addr = hl; write = 1;                /**/                                                              state_ = 1; }
-    if (state == 1 && STM_HLM_A)              /**/ {                                       l   = aml; /**/                                          h   = amh; addr = pc; write = 0;                /**/                                                              state_ = 0; }
+    if (state == 1 && STM_HLM_A)              /**/ { bus = aml;                   l = bus;            /**/ bus = amh;                      h = bus;            addr = pc; write = 0;                /**/                                                              state_ = 0; }
 
     if (state == 0 && STM_HL_D8)              /**/ {                                       pcl = apl; /**/                                          pch = aph; addr = pc; write = 0;                /**/                                                              state_ = 1; }
     if (state == 1 && STM_HL_D8)              /**/ {                                       pcl = apl; /**/                                          pch = aph; addr = hl; write = 1;                /**/                                                              state_ = 2; }

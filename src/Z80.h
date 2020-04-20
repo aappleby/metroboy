@@ -68,7 +68,7 @@ private:
 
   uint8_t& reg(int mux);
 
-  void     update_flags(uint8_t mask);
+  void     set_f(uint8_t mask);
   uint8_t  alu_cb(int op, uint8_t flags);
   uint8_t  alu(int op, uint8_t flags);
   uint8_t  rlu(int op, uint8_t flags);

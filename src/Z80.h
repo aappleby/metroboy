@@ -56,6 +56,12 @@ private:
 
 #pragma warning(pop)
 
+  void set_addr(uint16_t new_addr);
+
+  uint8_t apl;
+  uint8_t aph;
+  uint8_t aml;
+  uint8_t amh;
 
 private:
 

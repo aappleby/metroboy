@@ -35,7 +35,8 @@ private:
   uint8_t  in;
   uint8_t  out;
   bool     write;
-  //uint8_t  bus;
+  
+  uint8_t data_out;
 
   uint8_t alu_x;
   uint8_t alu_y;

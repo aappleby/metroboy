@@ -380,10 +380,51 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
     if (state == 0 && INC_DE)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(de, 0); /**/                                  state_ = 1; }
     if (state == 0 && INC_HL)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(hl, 0); /**/                                  state_ = 1; }
-    if (state == 0 && INC_SP)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(sp, 0); /**/                                  state_ = 1; }
     if (state == 1 && INC_DE)                 /**/ {                   e = apl;   /**/                        d = aph;   set_addr(pc, 0); /**/                                  state_ = 0; }
     if (state == 1 && INC_HL)                 /**/ {                   l = apl;   /**/                        h = aph;   set_addr(pc, 0); /**/                                  state_ = 0; }
-    if (state == 1 && INC_SP)                 /**/ {                   spl = apl; /**/                        sph = aph; set_addr(pc, 0); /**/                                  state_ = 0; }
+    
+    if (state == 0 && INC_SP)                 /**/ { state_ = 1; }
+    if (state == 1 && INC_SP)                 /**/ {
+      uint8_t inc_x = 0;
+      uint8_t inc_o = 0;
+      uint8_t inc_c = 0;
+
+      inc_x = adl;
+      inc_o = inc_x + 1;
+      inc_c = (inc_o == 0);
+
+      pcl = inc_o;
+      /**/
+
+      inc_x = adh;
+      inc_o = inc_x + inc_c;
+      inc_c = inc_o == 0;
+
+      pch = inc_o;
+
+      adl = spl;
+      adh = sph;
+
+      set_addr(ad, 0);
+      /**/                                  
+
+      inc_x = adl;
+      inc_o = inc_x + 1;
+      inc_c = (inc_o == 0);
+
+      spl = inc_o;
+      /**/
+
+      inc_x = adh;
+      inc_o = inc_x + inc_c;
+      inc_c = (inc_o == 0);
+
+      sph = inc_o;
+
+      set_addr(pc, 0);
+      /**/
+      state_ = 0;
+    }
 
     if (state == 0 && DEC_BC)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(bc, 0); /**/                                  state_ = 1; }
     if (state == 0 && DEC_DE)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(de, 0); /**/                                  state_ = 1; }

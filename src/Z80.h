@@ -43,6 +43,31 @@ private:
   uint8_t alu_o;
   uint8_t alu_f;
 
+  uint8_t inc_x;
+  uint8_t inc_y;
+  uint8_t inc_o;
+  uint8_t inc_c;
+
+  uint8_t abus;
+  uint8_t dbus;
+  uint8_t qbus;
+
+  uint8_t inc(uint8_t ix, uint8_t iy) {
+    inc_x = ix;
+    inc_y = iy;
+    inc_o = inc_x + inc_y;
+    inc_c = (inc_o == 0x00);
+    return inc_o;
+  }
+
+  uint8_t dec(uint8_t ix, uint8_t iy) {
+    inc_x = ix;
+    inc_y = iy;
+    inc_o = inc_x - inc_y;
+    inc_c = (inc_o == 0xFF);
+    return inc_o;
+  }
+
   uint8_t  int_ack;
 
 #pragma warning(push)

@@ -383,46 +383,34 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 1 && INC_DE)                 /**/ {                   e = apl;   /**/                        d = aph;   set_addr(pc, 0); /**/                                  state_ = 0; }
     if (state == 1 && INC_HL)                 /**/ {                   l = apl;   /**/                        h = aph;   set_addr(pc, 0); /**/                                  state_ = 0; }
     
-    if (state == 0 && INC_SP)                 /**/ { state_ = 1; }
-    if (state == 1 && INC_SP)                 /**/ {
-      uint8_t inc_x = 0;
-      uint8_t inc_o = 0;
-      uint8_t inc_c = 0;
+    if (state == 0 && INC_SP)                 /**/ {
 
       inc_x = adl;
-      inc_o = inc_x + 1;
-      inc_c = (inc_o == 0);
+      inc_y = 1;
+      inc_o = inc_x + inc_y;
+      inc_c = (inc_o == 0x00);
 
-      pcl = inc_o;
-      /**/
+      pcl = adl = inc_o;
+
 
       inc_x = adh;
-      inc_o = inc_x + inc_c;
-      inc_c = inc_o == 0;
+      inc_y = inc_c;
+      inc_o = inc_x + inc_y;
+      inc_c = (inc_o == 0x00);
 
-      pch = inc_o;
-
-      adl = spl;
-      adh = sph;
+      pch = adh = inc_o;
 
       set_addr(ad, 0);
-      /**/                                  
 
-      inc_x = adl;
-      inc_o = inc_x + 1;
-      inc_c = (inc_o == 0);
+      state_ = 1;
+    }
+    if (state == 1 && INC_SP)                 /**/ {
+      abus = inc(spl, 1);
+      spl = abus;
 
-      spl = inc_o;
-      /**/
+      abus = inc(sph, inc_c);
+      sph = abus;
 
-      inc_x = adh;
-      inc_o = inc_x + inc_c;
-      inc_c = (inc_o == 0);
-
-      sph = inc_o;
-
-      set_addr(pc, 0);
-      /**/
       state_ = 0;
     }
 

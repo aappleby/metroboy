@@ -128,7 +128,7 @@ void Gameboy::tock() {
   vbus_req = {};
   obus_req = {};
 
-  if (cpu_has_ibus_req) {
+  if ((tphase_new == 0) && cpu_has_ibus_req) {
     ibus_req = cpu_req;
   }
 
@@ -164,9 +164,8 @@ void Gameboy::tock() {
   ebus_ack = {0};
   vbus_ack = {0};
   obus_ack = {0};
-  ibus_ack = {0};
 
-  if (ibus_req.read || ibus_req.write) {
+  if ((ibus_req.read || ibus_req.write) && tphase_new == 0) {
     this->ibus_req2(ibus_req);
     ppu.   ibus_req(ibus_req);
     serial.ibus_req(ibus_req);
@@ -178,7 +177,8 @@ void Gameboy::tock() {
     boot.  ibus_req(ibus_req);
   }
 
-  if (ibus_req.read || ibus_req.write) {
+  if ((ibus_req.read || ibus_req.write) && tphase_new == 0) {
+    ibus_ack = {0};
     this->ibus_ack2(ibus_ack);
     ppu.   ibus_ack(ibus_ack);
     serial.ibus_ack(ibus_ack);
@@ -309,7 +309,7 @@ void Gameboy::tock() {
   // Peripheral bus mux & tocks
 
   timer.tock(int(tcycle_new));
-  ppu  .tock(int(tcycle_new));
+  //ppu  .tock(int(tcycle_new));
   //spu  .tock(int(tcycle_new));
   //dma  .tock(int(tcycle_new));
 

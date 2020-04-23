@@ -406,14 +406,15 @@ void MetroBoyApp::render_frame() {
   //const int gb_screen_x = 32 * 32;
   //const int gb_screen_y = 32 * 11;
 
+  /*
   const int gb_screen_x = 960;
   const int gb_screen_y = 320;
   gb_blitter.blit_screen(view_snap, gb_screen_x, gb_screen_y, 2, metroboy.fb());
+  */
 
-  const int gb_map_x = screen_w - 256 - 32;
-  const int gb_map_y = 32;
-
-  gb_blitter.blit_map   (view_snap, gb_map_x, gb_map_y, metroboy.get_vram());
+  const int gb_map_x = 960;
+  const int gb_map_y = 128;
+  gb_blitter.blit_map  (view_snap, gb_map_x, gb_map_y, 2, metroboy.get_vram());
 
   const int gb_trace_x = 960;
   const int gb_trace_y = 320 + 320;

@@ -9,7 +9,8 @@ class GBBlitter {
 public:
   void init();
 
-  void blit_map   (Viewport view, int screen_x, int screen_y, const uint8_t* vram);
+  void blit_tiles (Viewport view, int screen_x, int screen_y, const uint8_t* vram);
+  void blit_map   (Viewport view, int screen_x, int screen_y, int scale, const uint8_t* vram);
   void blit_screen(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* framebuffer);
   void blit_trace (Viewport view, int screen_x, int screen_y, const uint32_t* trace);
 

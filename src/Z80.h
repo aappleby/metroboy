@@ -52,16 +52,16 @@ private:
   uint8_t dbus;
   uint8_t qbus;
 
-  uint8_t inc(uint8_t iy) {
-    inc_x = abus;
+  uint8_t inc(uint8_t ix, uint8_t iy) {
+    inc_x = ix;
     inc_y = iy;
     inc_o = inc_x + inc_y;
     inc_c = (inc_o == 0x00);
     return inc_o;
   }
 
-  uint8_t dec(uint8_t iy) {
-    inc_x = abus;
+  uint8_t dec(uint8_t ix, uint8_t iy) {
+    inc_x = ix;
     inc_y = iy;
     inc_o = inc_x - inc_y;
     inc_c = (inc_o == 0xFF);

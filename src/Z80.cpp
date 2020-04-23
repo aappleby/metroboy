@@ -208,6 +208,7 @@ void Z80::on_bus_ack(Ack ibus_ack_) {
 //-----------------------------------------------------------------------------
 // Do the meat of executing the instruction
 // pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
+// if it always takes a bus move to get something into the incrementer, we can't increment the address in time
 
 #pragma warning(disable:4189)
 
@@ -375,56 +376,17 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(in);             /**/ alu_y = sph;                      set_addr(pc, 0); /**/ h = alu(1, f);                   state_ = 3; }
     if (state == 3 && LD_HL_SP_R8)            /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(pc, 0); /**/                                  state_ = 0; }
 
-    if (state == 0 && INC_BC)                 /**/ { alu_x = 1; pcl = apl; adl = apl; /**/ alu_y = c; pch = aph; adh = aph; set_addr(ad, 0); /**/ c = alu(0, alu_f); state_ = 1; }
-    if (state == 1 && INC_BC)                 /**/ { alu_x = 0;                       /**/ alu_y = b;                       set_addr(ad, 0); /**/ b = alu(1, alu_f); state_ = 0; }
+    if (state == 0 && INC_BC)                 /**/ { alu_x = 1; pcl = adl = apl; /**/ alu_y = c; pch = adh = aph;        set_addr(ad, 0); /**/ c = alu(0, alu_f); state_ = 1; }
+    if (state == 1 && INC_BC)                 /**/ { alu_x = 0;                  /**/ alu_y = b;                         set_addr(ad, 0); /**/ b = alu(1, alu_f); state_ = 0; }
 
     if (state == 0 && INC_DE)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(de, 0); /**/                                  state_ = 1; }
-    if (state == 0 && INC_HL)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(hl, 0); /**/                                  state_ = 1; }
     if (state == 1 && INC_DE)                 /**/ {                   e = apl;   /**/                        d = aph;   set_addr(pc, 0); /**/                                  state_ = 0; }
-    if (state == 1 && INC_HL)                 /**/ {                   l = apl;   /**/                        h = aph;   set_addr(pc, 0); /**/                                  state_ = 0; }
+
+    if (state == 0 && INC_HL)                 /**/ { alu_x = 1; pcl = adl = apl; /**/ alu_y = l; pch = adh = aph;        set_addr(ad, 0); /**/ l = alu(0, alu_f);               state_ = 1; }
+    if (state == 1 && INC_HL)                 /**/ { alu_x = 0;                  /**/ alu_y = h;                         set_addr(ad, 0); /**/ h = alu(1, alu_f);               state_ = 0; }
     
-    if (state == 0 && INC_SP)                 /**/ {
-
-
-      abus = adl;
-      inc(1);
-
-      /**/
-
-      abus = inc_o;
-      pcl = adl = abus;
-
-      /**/
-
-      abus = adh;
-      inc(inc_c);
-
-      /**/
-
-      abus = inc_o;
-      pch = adh = abus;
-
-      set_addr(ad, 0);
-
-      state_ = 1;
-    }
-    if (state == 1 && INC_SP)                 /**/ {
-      abus = spl;
-      inc(1);
-
-      abus = inc_o;
-      spl = abus;
-
-
-      abus = sph;
-      inc(inc_c);
-      abus = inc_o;
-
-
-      sph = abus;
-
-      state_ = 0;
-    }
+    if (state == 0 && INC_SP)                 /**/ { inc(spl, 1);     abus = inc_o; spl = abus;       /**/ inc(sph, inc_c); abus = inc_o; sph = abus;       set_addr(ad, 0); /**/ state_ = 1; }
+    if (state == 1 && INC_SP)                 /**/ { inc(pcl, 1);     abus = inc_o; pcl = adl = abus; /**/ inc(pch, inc_c); abus = inc_o; pch = adh = abus; set_addr(ad, 0); /**/ state_ = 0; }
 
     if (state == 0 && DEC_BC)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(bc, 0); /**/                                  state_ = 1; }
     if (state == 0 && DEC_DE)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(de, 0); /**/                                  state_ = 1; }

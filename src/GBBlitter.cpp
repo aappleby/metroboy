@@ -330,13 +330,8 @@ static vec4 default_pal[4] = {
   {0.12, 0.12, 0.12, 1.0},
 };
 
-void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, const uint8_t* vram) {
-
-  //----------
-
+void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, const uint8_t* vram) {
   update_ubo(vram_ubo, 8192, vram);
-
-  //----------
 
   {
     GBBlitTileUniforms uniforms = {
@@ -345,10 +340,10 @@ void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, const uint8_
         (float)view.min.y,
         (float)view.max.x,
         (float)view.max.y,
-      },
-      .quad_pos = {},
-      .quad_tex = {},
-      .palette = {default_pal[0], default_pal[1], default_pal[2], default_pal[3]},
+    },
+    .quad_pos = {},
+    .quad_tex = {},
+    .palette = {default_pal[0], default_pal[1], default_pal[2], default_pal[3]},
     };
 
     bind_shader(blit_tile_prog);
@@ -374,8 +369,12 @@ void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, const uint8_
     update_ubo(blit_tile_ubo, sizeof(uniforms), &uniforms);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
+}
 
-  //----------
+//-----------------------------------------------------------------------------
+
+void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* vram) {
+  update_ubo(vram_ubo, 8192, vram);
 
   {
     GBBlitMapUniforms uniforms = {
@@ -385,39 +384,19 @@ void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, const uint8_
         (float)view.max.x,
         (float)view.max.y,
       },
-      .quad_pos = {},
-      .quad_tex = {},
+      .quad_pos = {screen_x, screen_y, screen_x + 256 * scale, screen_y + 256 * scale},
+      .quad_tex = {0, 0, 256, 256},
       .palette = {default_pal[0], default_pal[1], default_pal[2], default_pal[3]},
       .which_map = 0,
       .alt_map = 0,
     };
-
-    float x = float(screen_x);
-    float y = float(screen_y);
+    update_ubo(blit_map_ubo, sizeof(uniforms), &uniforms);
 
     bind_shader(blit_map_prog);
     bind_vao(quad_vao);
     bind_ubo(blit_map_prog, "BlitMapUniforms", 0, blit_map_ubo);
     bind_ubo(blit_map_prog, "vramBuffer", 1, vram_ubo);
 
-    y += 384 + 32;
-
-    uniforms.quad_pos = {x, y, x + 256, y + 256};
-    uniforms.quad_tex = {0, 0, 256, 256};
-    uniforms.which_map = 1;
-    uniforms.alt_map = 1;
-
-    update_ubo(blit_map_ubo, sizeof(uniforms), &uniforms);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    y += 256 + 32;
-
-    uniforms.quad_pos = {x, y, x + 256, y + 256};
-    uniforms.quad_tex = {0, 0, 256, 256};
-    uniforms.which_map = 0;
-    uniforms.alt_map = 1;
-
-    update_ubo(blit_map_ubo, sizeof(uniforms), &uniforms);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 }

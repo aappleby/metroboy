@@ -210,6 +210,11 @@ void Z80::on_bus_ack(Ack ibus_ack_) {
 // pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
 // if it always takes a bus move to get something into the incrementer, we can't increment the address in time
 
+#define DBUS_BUSY
+#define DBUS_IDLE
+#define ABUS_BUSY
+#define ABUS_IDLE
+
 #pragma warning(disable:4189)
 
 void Z80::tock_t30(const uint8_t imask, const uint8_t intf) {
@@ -397,35 +402,11 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
     // load/store
 
-    if (state == 0 && STM_A16_SP) {
-      pcl = adl = abus = inc(pcl, 1);
-      pch = adh = abus = inc(pch, inc_c);
-      set_addr(ad, 0); state_ = 1;
-    }
-    if (state == 1 && STM_A16_SP) {
-      pcl = adl = abus = inc(pcl, 1);
-      pch = adh = abus = inc(pch, inc_c);
-      set_addr(ad, 0); state_ = 2;
-      y = dbus = in;
-    }
-    if (state == 2 && STM_A16_SP) {
-      x = dbus = in;
-      out = dbus = abus = spl;
-      adl = y;
-      adh = x;
-      set_addr(ad, 1); state_ = 3;
-    }
-    if (state == 3 && STM_A16_SP) {
-      adl = abus = inc(adl, 1);
-      adh = abus = inc(adh, inc_c);
-      out = dbus = abus = sph;
-      set_addr(ad, 1); state_ = 4;
-    }
-    if (state == 4 && STM_A16_SP) {
-      pcl = adl = abus = inc(pcl, 1);
-      pch = adh = abus = inc(pch, inc_c);
-      set_addr(ad, 0); state_ = 0;
-    }
+    if (state == 0 && STM_A16_SP)             /**/ {            pcl = adl = inc(pcl, 1); /**/            pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/ out = spl;  ABUS_BUSY; state_ = 1; }
+    if (state == 1 && STM_A16_SP)             /**/ { y = in;    pcl = adl = inc(pcl, 1); /**/            pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/ x   = sph;  ABUS_BUSY; state_ = 2; }
+    if (state == 2 && STM_A16_SP)             /**/ { DBUS_BUSY; adl = y;                 /**/ DBUS_BUSY; adh = in;                    set_addr(ad, 1); /**/                        state_ = 3; }
+    if (state == 3 && STM_A16_SP)             /**/ { out = x;   adl = inc(adl, 1);       /**/            adh = inc(adh, inc_c);       set_addr(ad, 1); /**/                        state_ = 4; }
+    if (state == 4 && STM_A16_SP)             /**/ {            pcl = adl = inc(pcl, 1); /**/            pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                        state_ = 0; }
                                                                       
     if (state == 0 && STM_A16_A)              /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(pc, 0); /**/                                  state_ = 1; }
     if (state == 1 && STM_A16_A)              /**/ { y = in;           pcl = apl; /**/                        pch = aph; set_addr(pc, 0); /**/                                  state_ = 2; }

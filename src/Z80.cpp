@@ -376,11 +376,27 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(in);             /**/ alu_y = sph;                      set_addr(pc, 0); /**/ h = alu(1, f);                   state_ = 3; }
     if (state == 3 && LD_HL_SP_R8)            /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(pc, 0); /**/                                  state_ = 0; }
 
-    if (state == 0 && INC_BC)                 /**/ { alu_x = 1; pcl = adl = apl; /**/ alu_y = c; pch = adh = aph;        set_addr(ad, 0); /**/ c = alu(0, alu_f); state_ = 1; }
-    if (state == 1 && INC_BC)                 /**/ { alu_x = 0;                  /**/ alu_y = b;                         set_addr(ad, 0); /**/ b = alu(1, alu_f); state_ = 0; }
+    if (state == 0 && INC_BC) {
+      alu_x = 1;
+      pcl = adl = apl;
 
-    if (state == 0 && INC_DE)                 /**/ {                   pcl = apl; /**/                        pch = aph; set_addr(de, 0); /**/                                  state_ = 1; }
-    if (state == 1 && INC_DE)                 /**/ {                   e = apl;   /**/                        d = aph;   set_addr(pc, 0); /**/                                  state_ = 0; }
+      alu_y = c;
+      pch = adh = aph;
+      set_addr(ad, 0);
+
+      c = alu(0, alu_f);
+      state_ = 1;
+    }
+    if (state == 1 && INC_BC) {
+      alu_x = 0;
+      alu_y = b;
+      set_addr(ad, 0);
+      b = alu(1, alu_f);
+      state_ = 0;
+    }
+
+    if (state == 0 && INC_DE)                 /**/ { alu_x = 1; pcl = adl = apl; /**/ alu_y = e; pch = adh = aph;        set_addr(ad, 0); /**/ e = alu(0, alu_f);               state_ = 1; }
+    if (state == 1 && INC_DE)                 /**/ { alu_x = 0;                  /**/ alu_y = d;                         set_addr(ad, 0); /**/ d = alu(1, alu_f);               state_ = 0; }
 
     if (state == 0 && INC_HL)                 /**/ { alu_x = 1; pcl = adl = apl; /**/ alu_y = l; pch = adh = aph;        set_addr(ad, 0); /**/ l = alu(0, alu_f);               state_ = 1; }
     if (state == 1 && INC_HL)                 /**/ { alu_x = 0;                  /**/ alu_y = h;                         set_addr(ad, 0); /**/ h = alu(1, alu_f);               state_ = 0; }
@@ -607,6 +623,10 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
   if (RETI && state_ == 0) {ime = true;       ime_delay = true;}
   if (DI)                  {ime = false;      ime_delay = false;}
   if (EI)                  {ime = ime_delay;  ime_delay = true;}
+
+  if (state_ == 0) {
+    pc = ad;
+  }
 }
 
 //-----------------------------------------------------------------------------

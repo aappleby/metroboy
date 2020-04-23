@@ -385,30 +385,54 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     
     if (state == 0 && INC_SP)                 /**/ {
 
-      inc_x = adl;
+
+      abus = adl;
+      inc_x = abus;
       inc_y = 1;
       inc_o = inc_x + inc_y;
       inc_c = (inc_o == 0x00);
 
-      pcl = adl = inc_o;
+      /**/
 
+      abus = inc_o;
+      pcl = adl = abus;
 
-      inc_x = adh;
+      /**/
+
+      abus = adh;
+      inc_x = abus;
       inc_y = inc_c;
       inc_o = inc_x + inc_y;
       inc_c = (inc_o == 0x00);
 
-      pch = adh = inc_o;
+      /**/
+
+      abus = inc_o;
+      pch = adh = abus;
 
       set_addr(ad, 0);
 
       state_ = 1;
     }
     if (state == 1 && INC_SP)                 /**/ {
-      abus = inc(spl, 1);
+      abus = spl;
+      inc_x = abus;
+      inc_y = 1;
+      inc_o = inc_x + inc_y;
+      inc_c = (inc_o == 0x00);
+
+      abus = inc_o;
       spl = abus;
 
-      abus = inc(sph, inc_c);
+
+      abus = sph;
+      inc_x = abus;
+      inc_y = inc_c;
+      inc_o = inc_x + inc_y;
+      inc_c = (inc_o == 0x00);
+      abus = inc_o;
+
+
       sph = abus;
 
       state_ = 0;

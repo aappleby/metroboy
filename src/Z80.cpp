@@ -395,9 +395,9 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 1 && DEC_HL)                 /**/ { l = aml;                                    /**/ h = amh;                                  set_addr(pc, 0); /**/                                                  state_ = 0; }
 
     if (state == 0 && INC_SP)                 /**/ {                   pcl = adl = inc(pcl, 1);  /**/              pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 1; }
-    if (state == 0 && DEC_SP)                 /**/ {                   pcl = adl = inc(pcl, 1);  /**/              pch = adh = inc(pch, inc_c); set_addr(sp, 0); /**/                                                  state_ = 1; }
+    if (state == 0 && DEC_SP)                 /**/ {                   pcl = adl = inc(pcl, 1);  /**/              pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 1; }
     if (state == 1 && INC_SP)                 /**/ {                         spl = inc(spl, 1);  /**/                    sph = inc(sph, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
-    if (state == 1 && DEC_SP)                 /**/ {                         spl = dec(spl, 1);  /**/                    sph = dec(sph, inc_c); set_addr(pc, 0); /**/                                                  state_ = 0; }
+    if (state == 1 && DEC_SP)                 /**/ {                         spl = dec(spl, 1);  /**/                    sph = dec(sph, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
 
     // load/store
 

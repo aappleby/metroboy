@@ -409,15 +409,15 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
                                                                       
     if (state == 0 && STM_A16_A)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/              pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/ out = a;                                         state_ = 1; }
     if (state == 1 && STM_A16_A)              /**/ { y = in;           pcl = adl = inc(pcl, 1);  /**/              pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 2; }
-    if (state == 2 && STM_A16_A)              /**/ { x = in;                                     /**/                                           set_addr(xy, 1); /**/                                                  state_ = 3; }
+    if (state == 2 && STM_A16_A)              /**/ { DBUS_BUSY;              adl = y;            /**/ DBUS_BUSY;         adh = in;              set_addr(ad, 1); /**/                                                  state_ = 3; }
     if (state == 3 && STM_A16_A)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/              pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
 
     // so xy has to be on the left side?
 
-    if (state == 0 && LDM_A_A16)              /**/ {                   pcl = apl;                /**/              pch = aph;                   set_addr(pc, 0); /**/                                                  state_ = 1; }
-    if (state == 1 && LDM_A_A16)              /**/ { y = in;           pcl = apl;                /**/              pch = aph;                   set_addr(pc, 0); /**/                                                  state_ = 2; }
-    if (state == 2 && LDM_A_A16)              /**/ { x = in;           pcl = apl;                /**/              pch = aph;                   set_addr(xy, 0); /**/                                                  state_ = 3; }
-    if (state == 3 && LDM_A_A16)              /**/ { a = in;                                     /**/                                           set_addr(pc, 0); /**/                                                  state_ = 0; }
+    if (state == 0 && LDM_A_A16)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/              pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 1; }
+    if (state == 1 && LDM_A_A16)              /**/ { y = in;           pcl = adl = inc(pcl, 1);  /**/              pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 2; }
+    if (state == 2 && LDM_A_A16)              /**/ { DBUS_BUSY;              adl = y;            /**/ DBUS_BUSY;         adh = in;              set_addr(ad, 0); /**/                                                  state_ = 3; }
+    if (state == 3 && LDM_A_A16)              /**/ { a = in;           pcl = adl = inc(pcl, 1);  /**/              pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
 
     // indirect load/store
 

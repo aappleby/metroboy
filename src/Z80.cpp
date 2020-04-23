@@ -378,10 +378,10 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
     if (state == 0 && INC_BC) {
       alu_x = 1;
-      pcl = adl = apl;
+      inc(pcl, 1);     abus = inc_o; pcl = adl = abus; 
 
       alu_y = c;
-      pch = adh = aph;
+      inc(pch, inc_c); abus = inc_o; pch = adh = abus; 
       set_addr(ad, 0);
 
       c = alu(0, alu_f);
@@ -395,10 +395,10 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
       state_ = 0;
     }
 
-    if (state == 0 && INC_DE)                 /**/ { alu_x = 1; pcl = adl = apl; /**/ alu_y = e; pch = adh = aph;        set_addr(ad, 0); /**/ e = alu(0, alu_f);               state_ = 1; }
+    if (state == 0 && INC_DE)                 /**/ { alu_x = 1; inc(pcl, 1);     abus = inc_o; pcl = adl = abus; /**/ alu_y = e; inc(pch, inc_c); abus = inc_o; pch = adh = abus; set_addr(ad, 0); /**/ e = alu(0, alu_f);               state_ = 1; }
     if (state == 1 && INC_DE)                 /**/ { alu_x = 0;                  /**/ alu_y = d;                         set_addr(ad, 0); /**/ d = alu(1, alu_f);               state_ = 0; }
 
-    if (state == 0 && INC_HL)                 /**/ { alu_x = 1; pcl = adl = apl; /**/ alu_y = l; pch = adh = aph;        set_addr(ad, 0); /**/ l = alu(0, alu_f);               state_ = 1; }
+    if (state == 0 && INC_HL)                 /**/ { alu_x = 1; inc(pcl, 1);     abus = inc_o; pcl = adl = abus; /**/ alu_y = l; inc(pch, inc_c); abus = inc_o; pch = adh = abus;  set_addr(ad, 0); /**/ l = alu(0, alu_f);               state_ = 1; }
     if (state == 1 && INC_HL)                 /**/ { alu_x = 0;                  /**/ alu_y = h;                         set_addr(ad, 0); /**/ h = alu(1, alu_f);               state_ = 0; }
     
     if (state == 0 && INC_SP)                 /**/ { inc(spl, 1);     abus = inc_o; spl = abus;       /**/ inc(sph, inc_c); abus = inc_o; sph = abus;       set_addr(ad, 0); /**/ state_ = 1; }

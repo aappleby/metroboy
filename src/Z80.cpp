@@ -409,23 +409,21 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
       y = dbus = in;
     }
     if (state == 2 && STM_A16_SP) {
-      pcl = adl = abus = inc(pcl, 1);
-      pch = adh = abus = inc(pch, inc_c);
       x = dbus = in;
+      out = dbus = abus = spl;
       adl = y;
-      out = spl;
       adh = x;
       set_addr(ad, 1); state_ = 3;
     }
     if (state == 3 && STM_A16_SP) {
-      adl = apl;
-      out = sph;
-      adh = aph;
+      adl = abus = inc(adl, 1);
+      adh = abus = inc(adh, inc_c);
+      out = dbus = abus = sph;
       set_addr(ad, 1); state_ = 4;
     }
     if (state == 4 && STM_A16_SP) {
-      adl = pcl;
-      adh = pch;
+      pcl = adl = abus = inc(pcl, 1);
+      pch = adh = abus = inc(pch, inc_c);
       set_addr(ad, 0); state_ = 0;
     }
                                                                       

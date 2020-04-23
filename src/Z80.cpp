@@ -387,10 +387,7 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
 
       abus = adl;
-      inc_x = abus;
-      inc_y = 1;
-      inc_o = inc_x + inc_y;
-      inc_c = (inc_o == 0x00);
+      inc(1);
 
       /**/
 
@@ -400,10 +397,7 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
       /**/
 
       abus = adh;
-      inc_x = abus;
-      inc_y = inc_c;
-      inc_o = inc_x + inc_y;
-      inc_c = (inc_o == 0x00);
+      inc(inc_c);
 
       /**/
 
@@ -416,20 +410,14 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     }
     if (state == 1 && INC_SP)                 /**/ {
       abus = spl;
-      inc_x = abus;
-      inc_y = 1;
-      inc_o = inc_x + inc_y;
-      inc_c = (inc_o == 0x00);
+      inc(1);
 
       abus = inc_o;
       spl = abus;
 
 
       abus = sph;
-      inc_x = abus;
-      inc_y = inc_c;
-      inc_o = inc_x + inc_y;
-      inc_c = (inc_o == 0x00);
+      inc(inc_c);
       abus = inc_o;
 
 

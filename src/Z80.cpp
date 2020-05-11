@@ -188,6 +188,8 @@ void Z80::reset(uint16_t new_pc) {
   }
 
   set_addr(ad, 0);
+
+  in = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -205,10 +207,21 @@ void Z80::on_bus_ack(Ack ibus_ack_) {
   in = (uint8_t)ibus_ack_.data;
 }
 
-//-----------------------------------------------------------------------------
-// Do the meat of executing the instruction
-// pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
-// if it always takes a bus move to get something into the incrementer, we can't increment the address in time
+uint8_t lo(uint16_t x) { return uint8_t(x >> 0); }
+uint8_t hi(uint16_t x) { return uint8_t(x >> 8); }
+
+void Z80::set_addr(uint16_t new_addr, int new_write) {
+  ad = new_addr;
+  apl = lo(ad + 1);
+  aph = hi(ad + 1);
+  aml = lo(ad - 1);
+  amh = hi(ad - 1);
+  data_out = out;
+  write = new_write;
+}
+
+#define R_ROW reg(OP_ROW)
+#define R_COL reg(OP_COL)
 
 #define DBUS_BUSY
 #define DBUS_IDLE
@@ -217,9 +230,14 @@ void Z80::on_bus_ack(Ack ibus_ack_) {
 
 #pragma warning(disable:4189)
 
-void Z80::tock_t30(const uint8_t imask, const uint8_t intf) {
-  //printf("tock_t30\n");
+//-----------------------------------------------------------------------------
+// Do the meat of executing the instruction
+// pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
+// if it always takes a bus move to get something into the incrementer, we can't increment the address in time
 
+//-----------------------------------------------------------------------------
+
+void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
   state = state_;
   ime = ime_delay;
 
@@ -239,27 +257,6 @@ void Z80::tock_t30(const uint8_t imask, const uint8_t intf) {
 }
 
 //-----------------------------------------------------------------------------
-
-void Z80::tock_t01(const uint8_t /*imask*/, const uint8_t /*intf*/) {
-}
-
-//-----------------------------------------------------------------------------
-
-uint8_t lo(uint16_t x) { return uint8_t(x >> 0); }
-uint8_t hi(uint16_t x) { return uint8_t(x >> 8); }
-
-void Z80::set_addr(uint16_t new_addr, int new_write) {
-  ad = new_addr;
-  apl = lo(ad + 1);
-  aph = hi(ad + 1);
-  aml = lo(ad - 1);
-  amh = hi(ad - 1);
-  data_out = out;
-  write = new_write;
-}
-
-#define R_ROW reg(OP_ROW)
-#define R_COL reg(OP_COL)
 
 void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 #ifdef FUZZ_TEST
@@ -432,7 +429,7 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 1 && STM_DE_A)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
                                                                                                                                                                                                                           
     if (state == 0 && LDM_A_HLP)              /**/ {                   pcl = apl;                /**/                                    pch = aph; set_addr(hl, 0); /**/                                                  state_ = 1; }
-    if (state == 1 && LDM_A_HLP)              /**/ {                   l   = apl;                /**/                                    h   = aph; set_addr(pc, 0); /**/ a = in;                                          state_ = 0; }
+    if (state == 1 && LDM_A_HLP)              /**/ { a = in;           l   = apl;                /**/                                    h   = aph; set_addr(pc, 0); /**/                                                  state_ = 0; }
 
     // somewhat same thing here. how do we increment/decrement hl and get the result back to hl in time and also have time to increment pc?
     // maybe xy is on the right side?
@@ -474,8 +471,18 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
     if (state == 0 && LDM_R_HL)               /**/ {                   pcl = apl;                /**/                                    pch = aph; set_addr(hl, 0); /**/                                                  state_ = 1; }
     if (state == 1 && LDM_R_HL)               /**/ {                                             /**/                                               set_addr(pc, 0); /**/ reg(OP_ROW) = in;                                state_ = 0; }
 
-    if (state == 0 && STM_HL_R)               /**/ {                   pcl = apl;                /**/ out = reg(OP_COL);                 pch = aph; set_addr(hl, 1); /**/                                                  state_ = 1; }
-    if (state == 1 && STM_HL_R)               /**/ {                                             /**/                                               set_addr(pc, 0); /**/                                                  state_ = 0; }
+    if (state == 0 && STM_HL_R) {
+      ad = abus = dbus = hl;
+      out = dbl = reg(OP_COL);
+      set_addr(ad, 1);
+      state_ = 1;
+    }
+    if (state == 1 && STM_HL_R) {
+      pcl = adl = inc(pcl, 1);
+      pch = adh = inc(pch, inc_c);
+      set_addr(pc, 0);
+      state_ = 0;
+    }
                                                                                                                                                                                                                           
     if (state == 0 && STM_HL_D8)              /**/ {                   pcl = apl;                /**/                                    pch = aph; set_addr(pc, 0); /**/                                                  state_ = 1; }
     if (state == 1 && STM_HL_D8)              /**/ {                   pcl = apl;                /**/                                    pch = aph; set_addr(hl, 1); /**/                                                  state_ = 2; }
@@ -647,6 +654,11 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 //-----------------------------------------------------------------------------
 
 void Z80::tock_t23(const uint8_t /*imask*/, const uint8_t /*intf*/) {
+}
+
+//-----------------------------------------------------------------------------
+
+void Z80::tock_t30(const uint8_t /*imask*/, const uint8_t /*intf*/) {
 }
 
 //-----------------------------------------------------------------------------

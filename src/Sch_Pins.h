@@ -236,64 +236,70 @@ struct CpuPins {
 
   // ADDR_VALID and one of the other signals might be switched
 
-  PinIn  CLKREQ;       // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
-  PinIn  CPU_RAW_RD;   // top right port PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
-  PinIn  CPU_RAW_WR;   // top right port PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
-  PinIn  ADDR_VALIDn;   // top right port PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
-  PinIn  FROM_CPU5;    // PORTD_05: -> FROM_CPU5
-  PinIn  FROM_CPU6;    // top left port PORTD_00: -> P07.LEXY, doesn't do anything
+  PinIn  FROM_CPU6;     // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
+  
+  // Blue clock - decoders, alu, some reset stuff
+  PinOut BOWA_xBCDEFGH; // top left port PORTD_01: <- BOWA_xBCDEFGH
+  PinOut BEDO_Axxxxxxx; // top left port PORTD_02: <- BEDO_Axxxxxxx
 
-  PinIn  A00;          // bottom right port PORTB_00: -> A00
-  PinIn  A01;          // bottom right port PORTB_04: -> A01
-  PinIn  A02;          // bottom right port PORTB_08: -> A02
-  PinIn  A03;          // bottom right port PORTB_12: -> A03
-  PinIn  A04;          // bottom right port PORTB_16: -> A04
-  PinIn  A05;          // bottom right port PORTB_20: -> A05
-  PinIn  A06;          // bottom right port PORTB_24: -> A06
-  PinIn  A07;          // bottom right port PORTB_28: -> A07
-  PinIn  A08;          // bottom right port PORTB_02: -> A08
-  PinIn  A09;          // bottom right port PORTB_06: -> A09
-  PinIn  A10;          // bottom right port PORTB_10: -> A10
-  PinIn  A11;          // bottom right port PORTB_14: -> A11
-  PinIn  A12;          // bottom right port PORTB_18: -> A12
-  PinIn  A13;          // bottom right port PORTB_22: -> A13
-  PinIn  A14;          // bottom right port PORTB_26: -> A14
-  PinIn  A15;          // bottom right port PORTB_30: -> A15
+  PinOut BEKO_ABCDxxxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
+  PinOut BUDE_xxxxEFGH; // top left port PORTD_04: <- BUDE_xxxxEFGH + BEVA
+  
+  PinOut BOLO_ABCDEFxx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA?                                - test pad 2
+  PinIn  FROM_CPU5;     // top left port PORTD_06: -> ANUJ (FROM_CPU5)
+  PinOut BUKE_AxxxxxGH; // top left port PORTD_07: <- BUKE_AxxxxxGH
+  
+  PinOut BOMA_Axxxxxxx; // top left port PORTD_08: <- BOMA_Axxxxxxx (RESET_CLK)
+  PinOut BOGA_xBCDEFGH; // top left port PORTD_09: <- BOGA_xBCDEFGH                             - test pad 3
 
-  PinIn  ACK_VBLANK;   // bottom right port PORTB_01: -> P02.LETY, vblank int ack
-  PinIn  ACK_STAT;     // bottom right port PORTB_05: -> P02.LEJA, stat int ack
-  PinIn  ACK_TIMER;    // bottom right port PORTB_09: -> P02.LESA, timer int ack
-  PinIn  ACK_SERIAL;   // bottom right port PORTB_13: -> P02.LUFE, serial int ack
-  PinIn  ACK_JOYPAD;   // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
+  // BEKO_ABCDxxxx - test pad 1
+  // BOLO_ABCDEFxx - test pad 2
+  // BOGA_xBCDEFGH - test pad 3
 
-  //----------
+  PinIn  CLKREQ;        // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  PinOut AFER;          // top center port PORTC_01: <- P01.AFER , reset related reg
+  PinOut PIN_RESET;     // top center port PORTC_02: <- PIN_RESET directly connected to the pad
+  PinOut CLK_GOOD;      // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
+  PinOut CPU_RESET;     // top center port PORTC_04: <- P01.CPU_RESET
 
-  PinOut AFER;         // top center port PORTC_01: <- P01.AFER , reset related reg
-  PinOut PIN_RESET;    // top center port PORTC_02: <- PIN_RESET directly connected to the pad
-  PinOut CLK_GOOD;     // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  PinOut CPU_RESET;    // top center port PORTC_04: <- P01.CPU_RESET
-  PinOut T1nT2;        // top right port PORTA_02: <- P07.T1nT2
-  PinOut T1T2n;        // top right port PORTA_05: <- P07.T1T2n
+  PinOut TO_CPU2;       // top right wire by itself <- P02.AWOB
 
-  PinOut BOWA_xBCDEFGH; // top left port PORTD_01: <- P01.BOWA
-  PinOut BEDO_Axxxxxxx; // top left port PORTD_02: <- P01.BEDO
-  PinOut BEKO_ABCDxxxx; // top left port PORTD_03: <- P01.BEKO connection not indicated on P01
-  PinOut BUDE_xxxxEFGH; // top left port PORTD_04: <- P01.BUDE
-  PinOut BUKE_AxxxxxGH; //               PORTD_06: <- P01.BUKE
-  PinOut BOMA_Axxxxxxx; //               PORTD_07: <- P01.RESET_CLK
-  PinOut BOGA_xBCDEFGH; //               PORTD_08: <- P01.BOGA
-
-  PinOut TO_CPU2;      // top right wire by itself <- P02.AWOB
-  PinOut SYRO;         // top right port PORTA_03: <- P25.SYRO
-
+  PinIn  CPU_RAW_RD;    // top right port PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
+  PinIn  CPU_RAW_WR;    // top right port PORTA_01: -> P01.AREV, P08.LAGU.           This is almost definitely "raw write"
+  PinOut T1nT2;         // top right port PORTA_02: <- P07.T1nT2
+  PinOut SYRO;          // top right port PORTA_03: <- P25.SYRO
+  PinOut READ_BOOTROM;  // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  PinOut T1T2n;         // top right port PORTA_05: <- P07.T1T2n
+  PinIn  ADDR_VALIDn;   // top right port PORTA_06: -> P01.AGUT, P08.TEX0.           This is almost definitely "address valid"
+                        
+  PinIn  A00;           // bottom right port PORTB_00: -> A00
+  PinIn  ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
+  PinIn  A08;           // bottom right port PORTB_02: ->   A08
+  PinOut INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
+  PinIn  A01;           // bottom right port PORTB_04: -> A01
+  PinIn  ACK_STAT;      // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
+  PinIn  A09;           // bottom right port PORTB_06: ->   A09
+  PinOut INT_STAT;      // bottom right port PORTB_07: <-        P02.LALU, stat int
+  PinIn  A02;           // bottom right port PORTB_08: -> A02
+  PinIn  ACK_TIMER;     // bottom right port PORTB_09: ->        P02.LESA, timer int ack
+  PinIn  A10;           // bottom right port PORTB_10: ->   A10
+  PinOut INT_TIMER;     // bottom right port PORTB_11: <-        P02.NYBO, timer int
+  PinIn  A03;           // bottom right port PORTB_12: -> A03
+  PinIn  ACK_SERIAL;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
+  PinIn  A11;           // bottom right port PORTB_14: ->   A11
+  PinOut INT_SERIAL;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
+  PinIn  A04;           // bottom right port PORTB_16: -> A04
+  PinIn  ACK_JOYPAD;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
+  PinIn  A12;           // bottom right port PORTB_18: ->   A12
+  PinOut INT_JOYPAD;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
+  PinIn  A05;           // bottom right port PORTB_20: -> A05
+  PinIn  A13;           // bottom right port PORTB_22: ->   A13
+  PinIn  A06;           // bottom right port PORTB_24: -> A06
+  PinIn  A14;           // bottom right port PORTB_26: ->   A14
+  PinIn  A07;           // bottom right port PORTB_28: -> A07
+  PinIn  A15;           // bottom right port PORTB_30: ->   A15
+                        
   // TUTU-> ->YULA ->SOBY
-  PinOut READ_BOOTROM; // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-
-  PinOut INT_VBLANK;   // bottom right port PORTB_03: <- P02.LOPE, vblank int
-  PinOut INT_STAT;     // bottom right port PORTB_07: <- P02.LALU, stat int
-  PinOut INT_TIMER;    // bottom right port PORTB_11: <- P02.NYBO, timer int
-  PinOut INT_SERIAL;   // bottom right port PORTB_15: <- P02.UBUL, serial int
-  PinOut INT_JOYPAD;   // bottom right port PORTB_19: <- P02.ULAK, joypad int
 
   // FROM_CPU5 controls driving the external data pins onto the internal data
   // bus and other stuff. is this actually a clock, or like OE?

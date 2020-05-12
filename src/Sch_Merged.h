@@ -465,12 +465,12 @@ struct LcdRegisters {
   /*p21.MATO*/ Reg3 Y6;
   /*p21.LAFO*/ Reg3 Y7;
 
-  /*p21.RUTU*/ Reg3 RUTU_NEW_LINE_d0; // p909+8
-  /*p29.CATU*/ Reg3 VID_LINE_d4;  // p001+8
-  /*p21.NYPE*/ Reg3 NYPE_NEW_LINE_d4; // p001+8
-  /*p28.ANEL*/ Reg3 VID_LINE_d6;  // p003+8
+  /*p21.RUTU*/ Reg3 RUTU_NEW_LINE_d0;     // p909+8
+  /*p29.CATU*/ Reg3 VID_LINE_d4;          // p001+8
+  /*p21.NYPE*/ Reg3 NYPE_NEW_LINE_d4;     // p001+8
+  /*p28.ANEL*/ Reg3 VID_LINE_d6;          // p003+8
                                  
-  /*p21.MYTA*/ Reg3 LINE_153_d4;  // p153:001 - p000:001
+  /*p21.MYTA*/ Reg3 LINE_153_d4;          // p153:001 - p000:001
   /*p21.POPU*/ Reg3 POPU_IN_VBLANK_d4;    // p144:001 - p000:001
 
   /*p21.SYGU*/ Reg3 LINE_STROBE;

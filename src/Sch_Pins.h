@@ -221,14 +221,14 @@ struct CpuPins {
   */
 
   void set_data(bool oe, uint8_t data) {
-    D0.set(oe, data & 0x01);
-    D1.set(oe, data & 0x02);
-    D2.set(oe, data & 0x04);
-    D3.set(oe, data & 0x08);
-    D4.set(oe, data & 0x10);
-    D5.set(oe, data & 0x20);
-    D6.set(oe, data & 0x40);
-    D7.set(oe, data & 0x80);
+    D0.set_tribuf(oe, data & 0x01);
+    D1.set_tribuf(oe, data & 0x02);
+    D2.set_tribuf(oe, data & 0x04);
+    D3.set_tribuf(oe, data & 0x08);
+    D4.set_tribuf(oe, data & 0x10);
+    D5.set_tribuf(oe, data & 0x20);
+    D6.set_tribuf(oe, data & 0x40);
+    D7.set_tribuf(oe, data & 0x80);
   }
 
   //----------

@@ -211,7 +211,7 @@ struct PinOut : public SignalBase {
     b.error = 0;
   }
 
-  bool commit() {
+  bool commit_pinout() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
     bool changed = a != b;
@@ -230,7 +230,7 @@ struct Tribuf : public SignalBase {
     b = ERROR;
   }
 
-  void set(bool oe, bool val) {
+  void set_tribuf(bool oe, bool val) {
     if (!b.error && !b.hiz) {
       if (oe) __debugbreak();
       return;
@@ -246,7 +246,7 @@ struct Tribuf : public SignalBase {
     b.error = 0;
   }
 
-  bool commit() {
+  bool commit_tribuf() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
     bool changed = a.val != b.val || a.hiz != b.hiz;
@@ -271,6 +271,8 @@ struct Signal : public SignalBase {
 };
 
 //-----------------------------------------------------------------------------
+// set and reset must be async (see interrupts)
+// reset must take priority over set (see interrupts ALUR_RSTn)
 
 struct Reg3 : public SignalBase {
 
@@ -295,7 +297,25 @@ struct Reg3 : public SignalBase {
     b.error = 0;
   }
 
-  bool commit() {
+  void set_async(bool val) {
+    if (b.error) __debugbreak();
+    b.set = val;
+    b.rst = !val;
+  }
+
+  void set_async() {
+    if (b.error) __debugbreak();
+    b.set = 1;
+    b.rst = 0;
+  }
+
+  void rst_async() {
+    if (b.error) __debugbreak();
+    b.set = 0;
+    b.rst = 1;
+  }
+
+  bool commit_reg() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
@@ -324,7 +344,7 @@ struct Reg3 : public SignalBase {
 
 struct RegDuo : public SignalBase {
 
-  void set(bool clk, bool rstN, SignalState c) {
+  void set_duo(bool clk, bool rstN, SignalState c) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = c.val;
@@ -392,7 +412,7 @@ struct Latch3 : public SignalBase {
     b.error = 0;
   }
 
-  bool commit() {
+  bool commit_latch() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
@@ -447,7 +467,7 @@ struct Counter : public SignalBase {
     b.error = 0;
   }
 
-  bool commit() {
+  bool commit_counter() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 

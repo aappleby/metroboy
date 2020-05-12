@@ -203,10 +203,6 @@ Req Z80::get_bus_req() const {
   };
 }
 
-void Z80::on_bus_ack(Ack ibus_ack_) {
-  in = (uint8_t)ibus_ack_.data;
-}
-
 uint8_t lo(uint16_t x) { return uint8_t(x >> 0); }
 uint8_t hi(uint16_t x) { return uint8_t(x >> 8); }
 
@@ -237,9 +233,10 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tock_t01(const uint8_t imask, const uint8_t intf) {
+void Z80::tock_t01(const uint8_t imask, const uint8_t intf, const Ack ibus_ack_) {
   state = state_;
   ime = ime_delay;
+  in = (uint8_t)ibus_ack_.data;
 
   if (state == 0) {
     op_addr = ad;
@@ -274,20 +271,55 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
   //--------------------------------------------------------------------------------
 
   if (INT) {
-    uint8_t int_addr = 0;
 
-    if      (imask & intf & INT_JOYPAD_MASK) { int_addr = 0x60; int_ack = INT_JOYPAD_MASK; }
-    else if (imask & intf & INT_SERIAL_MASK) { int_addr = 0x58; int_ack = INT_SERIAL_MASK; }
-    else if (imask & intf & INT_TIMER_MASK)  { int_addr = 0x50; int_ack = INT_TIMER_MASK; }
-    else if (imask & intf & INT_STAT_MASK)   { int_addr = 0x48; int_ack = INT_STAT_MASK; }
-    else if (imask & intf & INT_VBLANK_MASK) { int_addr = 0x40; int_ack = INT_VBLANK_MASK; }
-    else                                     { int_addr = 0x00; int_ack = 0; }
+    if (state == 0) {
+      set_addr(sp, 0);
+      state_ = 1;
+    }
 
-    if (state == 0 && INT)                    /**/ {                                             /**/                                               set_addr(sp, 0); /**/                                                  state_ = 1; }
-    if (state == 1 && INT)                    /**/ {                   spl = aml;                /**/ out = pch;                         sph = amh; set_addr(sp, 1); /**/                                                  state_ = 2; }
-    if (state == 2 && INT)                    /**/ {                   spl = aml;                /**/ out = pcl;                         sph = amh; set_addr(sp, 1); /**/                                                  state_ = 3; }
-    if (state == 3 && INT)                    /**/ {                                             /**/ x = 0;                                        set_addr(xy, 0); /**/                                                  state_ = 4; }
-    if (state == 4 && INT)                    /**/ {                                             /**/ y = int_addr;                                 set_addr(xy, 0); /**/                                                  state_ = 0; }
+    if (state == 1) {
+      spl = aml;
+      out = pch;
+      sph = amh;
+      set_addr(sp, 1);
+      state_ = 2;
+    }
+    
+    if (state == 2) {
+      spl = aml;
+      out = pcl;
+      sph = amh;
+      set_addr(sp, 1);
+      state_ = 3;
+    }
+
+    if (state == 3) {
+      x = 0;
+      set_addr(xy, 0);
+      state_ = 4;
+    }
+
+    if (state == 4) {
+      if      (imask & intf & INT_JOYPAD_MASK) { int_ack = INT_JOYPAD_MASK; }
+      else if (imask & intf & INT_SERIAL_MASK) { int_ack = INT_SERIAL_MASK; }
+      else if (imask & intf & INT_TIMER_MASK)  { int_ack = INT_TIMER_MASK; }
+      else if (imask & intf & INT_STAT_MASK)   { int_ack = INT_STAT_MASK; }
+      else if (imask & intf & INT_VBLANK_MASK) { int_ack = INT_VBLANK_MASK; }
+      else                                     { int_ack = 0; }
+
+      uint8_t int_addr = 0;
+      if      (imask & intf & INT_JOYPAD_MASK) { int_addr = 0x60; }
+      else if (imask & intf & INT_SERIAL_MASK) { int_addr = 0x58; }
+      else if (imask & intf & INT_TIMER_MASK)  { int_addr = 0x50; }
+      else if (imask & intf & INT_STAT_MASK)   { int_addr = 0x48; }
+      else if (imask & intf & INT_VBLANK_MASK) { int_addr = 0x40; }
+      else                                     { int_addr = 0x00; }
+
+      y = int_addr;
+      set_addr(xy, 0);
+      state_ = 0;
+    }
+
   }                                                                                                                                                                                                                             
   else if (HALT) {                                                                                                                                                                                                              
     bool no_halt = ((imask & intf) && !ime);                                                                                                                                                                                    

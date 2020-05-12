@@ -38,7 +38,8 @@ struct Gameboy {
   void ibus_req2(Req ibus_req);
   void ibus_ack2(Ack& ibus_ack) const;
 
-  void tock();
+  void tick2();
+  void tock2();
 
   void dump_cpu   (std::string& out);
   void dump_bus   (std::string& out);
@@ -102,11 +103,20 @@ struct Gameboy {
   Req cpu_req;
   Ack cpu_ack;
 
-  Req dma_req;
-  Ack dma_ack;
+  Req dma_ebus_req;
+  Ack dma_ebus_ack;
 
-  Req ppu_req;
-  Ack ppu_ack;
+  Req dma_vbus_req;
+  Ack dma_vbus_ack;
+
+  Req dma_obus_req;
+  Ack dma_obus_ack;
+
+  Req ppu_vbus_req;
+  Ack ppu_vbus_ack;
+
+  Req ppu_obus_req;
+  Ack ppu_obus_ack;
 
   Req ibus_req;
   Ack ibus_ack;

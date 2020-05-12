@@ -9,7 +9,6 @@ extern const int op_sizes[];
 MetroBoy::MetroBoy()
 {
   gb_out = {};
-  cycles = 0;
   trace = true;
   memset(tracebuffer, 0, sizeof(tracebuffer));
 }
@@ -54,7 +53,8 @@ void MetroBoy::run_vsync(uint8_t buttons) {
   current->gb.set_joypad(~buttons);
 
   while(gb_out.y != 144) {
-    cycle();
+    halfcycle();
+    halfcycle();
   }
 
   audio_begin();
@@ -76,7 +76,8 @@ void MetroBoy::run_to(uint16_t breakpoint) {
   while (1) {
     uint16_t op_addr = current->gb.get_cpu().get_op_addr();
     if (op_addr == breakpoint) break;
-    cycle();
+    halfcycle();
+    halfcycle();
   }
 }
 
@@ -105,7 +106,8 @@ void MetroBoy::step_line() {
 
 void MetroBoy::step_cycle() {
   push_cycle();
-  cycle();
+  halfcycle();
+  halfcycle();
 }
 
 void MetroBoy::step_over() {
@@ -124,7 +126,8 @@ void MetroBoy::step_over() {
       // step succeeded
       return;
     }
-    cycle();
+    halfcycle();
+    halfcycle();
   }
 
   // step failed
@@ -134,36 +137,55 @@ void MetroBoy::step_over() {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::cycle() {
-  current->gb.tock();
-
-  gb_out = current->gb.get_host_data();
-
-  if (trace) {
-    tracebuffer[gb_out.y * 456 + gb_out.counter] = gb_out.trace;
+void MetroBoy::halfcycle() {
+  if ((phase & 1) == 0) {
+    current->gb.tick2();
+    phase++;
   }
+  else {
+    current->gb.tock2();
 
-  if (gb_out.pix_oe) {
-    int x = gb_out.x - 1;
-    int y = gb_out.y;
+    gb_out = current->gb.get_host_data();
 
-    if (x >= 0 && x < 160 && y >= 0 && y < 144) {
-      current->fb[x + y * 160] = gb_out.pix;
+    if (trace) {
+      tracebuffer[gb_out.y * 456 + gb_out.counter] = gb_out.trace;
     }
-  }
 
-  current->gb.check_sentinel();
-  cycles++;
+    if (gb_out.pix_oe) {
+      int x = gb_out.x - 1;
+      int y = gb_out.y;
+
+      if (x >= 0 && x < 160 && y >= 0 && y < 144) {
+        current->fb[x + y * 160] = gb_out.pix;
+      }
+    }
+
+    current->gb.check_sentinel();
+    phase++;
+  }
 }
 
 void MetroBoy::mcycle() {
-  cycle();
+  if (phase & 1) halfcycle();
+
+  do {
+    halfcycle();
+    halfcycle();
+  } while(current->gb.get_tcycle() & 3);
+
+  /*
+  halfcycle();
+  halfcycle();
   if ((current->gb.get_tcycle() & 3) == 0) return;
-  cycle();
+  halfcycle();
+  halfcycle();
   if ((current->gb.get_tcycle() & 3) == 0) return;
-  cycle();
+  halfcycle();
+  halfcycle();
   if ((current->gb.get_tcycle() & 3) == 0) return;
-  cycle();
+  halfcycle();
+  halfcycle();
+  */
 }
 
 //-----------------------------------------------------------------------------

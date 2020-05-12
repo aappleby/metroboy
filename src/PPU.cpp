@@ -174,11 +174,7 @@ PPU::Out PPU::tick(const int tcycle_) const {
 
 //-----------------------------------------------------------------------------
 
-bool PPU::has_vbus_req() {
-  return fetch_type != FETCH_NONE;
-}
-
-Req PPU::get_vbus_req() {
+void PPU::get_vbus_req(Req& r) const {
   uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
   uint8_t map_y = ((scy + line) >> 3) & 31;
 
@@ -203,31 +199,24 @@ Req PPU::get_vbus_req() {
     fetch_addr = 0;
   }
 
-  return {
-    .addr  = fetch_addr,
-    .data  = 0,
-    .read  = fetch_addr != 0,
-    .write = 0,
-  };
+  r.addr  = fetch_addr;
+  r.data  = 0;
+  r.read  = fetch_type != FETCH_NONE;
+  r.write = 0;
 }
 
 //----------------------------------------
 
-bool PPU::has_obus_req() {
-  return (counter < 80) || (fetch_type == FETCH_SPRITE);
-}
-
-Req PPU::get_obus_req() {
+void PPU::get_obus_req(Req& r) const {
   uint16_t fetch_addr = 0;
 
   // must have 80 cycles for oam read otherwise we lose an eye in oh.gb
   if (counter < 80 && ((counter & 1) == 0)) {
-    return {
-      .addr  = uint16_t(ADDR_OAM_BEGIN + ((counter << 1) & 0b11111100)),
-      .data  = 0,
-      .read  = 1,
-      .write = 0,
-    };
+    r.addr  = uint16_t(ADDR_OAM_BEGIN + ((counter << 1) & 0b11111100));
+    r.data  = 0;
+    r.read  = 1;
+    r.write = 0;
+    return;
   }
 
   if (fetch_type == FETCH_SPRITE && fetch_state == FETCH_SPRITE_MAP) {
@@ -238,12 +227,10 @@ Req PPU::get_obus_req() {
     fetch_addr = 0;
   }
 
-  return {
-    .addr  = fetch_addr,
-    .data  = 0,
-    .read  = fetch_addr != 0,
-    .write = 0,
-  };
+  r.addr  = fetch_addr;
+  r.data  = 0;
+  r.read  = fetch_addr != 0;
+  r.write = 0;
 }
 
 //-----------------------------------------------------------------------------

@@ -30,7 +30,7 @@ public:
   }
 
   int64_t total_tcycles() {
-    return cycles;
+    return phase / 2;
   }
 
   const uint32_t* get_trace() const { return tracebuffer; }
@@ -53,14 +53,14 @@ public:
   void step_cycle();
   void step_over();
 
-  void cycle();
+  void halfcycle();
   void mcycle();
 
   Gameboy::HostOut gb_out;
 
 private:
 
-  int64_t cycles;
+  int64_t phase;
   bool trace;
 
   uint32_t tracebuffer[456 * 154];

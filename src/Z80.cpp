@@ -194,13 +194,11 @@ void Z80::reset(uint16_t new_pc) {
 
 //-----------------------------------------------------------------------------
 
-Req Z80::get_bus_req() const {
-  return {
-    .addr  = ad,
-    .data  = uint16_t(write ? data_out : 0),
-    .read  = (bool)!write,
-    .write = (bool)write,
-  };
+void Z80::get_bus_req(Req& r) const {
+  r.addr  = ad;
+  r.data  = uint16_t(write ? data_out : 0);
+  r.read  = (bool)!write;
+  r.write = (bool)write;
 }
 
 uint8_t lo(uint16_t x) { return uint8_t(x >> 0); }

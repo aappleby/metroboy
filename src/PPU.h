@@ -27,11 +27,8 @@ struct PPU {
   void ibus_req(Req ibus_req);
   void ibus_ack(Ack& ibus_ack) const;
 
-  bool has_vbus_req();
-  bool has_obus_req();
-
-  Req  get_vbus_req();
-  Req  get_obus_req();
+  void get_vbus_req(Req& r) const;
+  void get_obus_req(Req& r) const;
 
   void on_vbus_ack(Ack vbus_ack_);
   void on_obus_ack(Ack obus_ack_);

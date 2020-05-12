@@ -10,7 +10,7 @@ struct Timer {
   void ibus_req(Req ibus_req);
   void ibus_ack(Ack& ibus_ack) const;
 
-  void tock(int tcycle);
+  void tock_t30();
 
   void dump(std::string& out);
 

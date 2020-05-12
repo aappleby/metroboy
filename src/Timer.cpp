@@ -59,12 +59,7 @@ void Timer::ibus_ack(Ack& ibus_ack) const {
 
 //-----------------------------------------------------------------------------
 
-void Timer::tock(int tcycle) {
-  const int tphase = tcycle & 3;
-  if (tphase != 0) return;
-
-  //----------------------------------------
-
+void Timer::tock_t30() {
   do_int = false;
   counter++;
 

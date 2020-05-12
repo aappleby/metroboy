@@ -40,35 +40,29 @@ bool DMA::has_obus_req() const {
 
 //-----------------------------------------------------------------------------
 
-Req DMA::get_ebus_req() const {
-  return {
-    .addr  = uint16_t((source_a << 8) | count_a),
-    .data  = 0,
-    .read  = 1,
-    .write = 0,
-  };
+void DMA::get_ebus_req(Req& r) const {
+  r.addr  = uint16_t((source_a << 8) | count_a);
+  r.data  = 0;
+  r.read  = has_ebus_req();
+  r.write = 0;
 }
 
 //----------------------------------------
 
-Req DMA::get_vbus_req() const {
-  return {
-    .addr  = uint16_t((source_a << 8) | count_a),
-    .data  = 0,
-    .read  = 1,
-    .write = 0,
-  };
+void DMA::get_vbus_req(Req& r) const {
+  r.addr  = uint16_t((source_a << 8) | count_a);
+  r.data  = 0;
+  r.read  = has_vbus_req();
+  r.write = 0;
 }
 
 //----------------------------------------
 
-Req DMA::get_obus_req() const {
-  return  {
-    .addr  = uint16_t(ADDR_OAM_BEGIN + count_b),
-    .data  = data_b,
-    .read  = 0,
-    .write = 1,
-  };
+void DMA::get_obus_req(Req& r) const {
+  r.addr  = uint16_t(ADDR_OAM_BEGIN + count_b);
+  r.data  = data_b;
+  r.read  = 0;
+  r.write = has_obus_req();
 }
 
 //----------------------------------------

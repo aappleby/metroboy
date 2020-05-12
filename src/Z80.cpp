@@ -210,8 +210,8 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
   ad = new_addr;
   apl = lo(ad + 1);
   aph = hi(ad + 1);
-  aml = lo(ad - 1);
-  amh = hi(ad - 1);
+  aml = ~lo(~ad + 1);
+  amh = ~hi(~ad + 1);
   data_out = out;
   write = new_write;
 }

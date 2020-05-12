@@ -9,6 +9,7 @@ extern const int op_sizes[];
 MetroBoy::MetroBoy()
 {
   gb_out = {};
+  phase = 0;
   trace = true;
   memset(tracebuffer, 0, sizeof(tracebuffer));
 }
@@ -107,7 +108,7 @@ void MetroBoy::step_line() {
 void MetroBoy::step_cycle() {
   push_cycle();
   halfcycle();
-  halfcycle();
+  //halfcycle();
 }
 
 void MetroBoy::step_over() {

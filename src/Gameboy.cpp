@@ -27,7 +27,7 @@ void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
   zram.reset();
   boot.reset(new_pc);
 
-  tcycle = -1;
+  phase = -2;
   trace_val = 0;
 
   intf = 0xE1;
@@ -104,6 +104,10 @@ void print_ack(std::string& d, const char* name, const Ack& ack) {
 //-----------------------------------------------------------------------------
 
 void Gameboy::tick2() {
+  int64_t tcycle_old = (phase / 2);
+  //int64_t tcycle_new = tcycle + 1;
+  int64_t tphase_old = tcycle_old & 3;
+
   //-----------------------------------
   // interrupts are partially asynchronous
 
@@ -117,13 +121,33 @@ void Gameboy::tick2() {
   if (ppu.stat1)               intf |= INT_STAT_MASK;
   if (timer.get_interrupt())   intf |= INT_TIMER_MASK;
   if (joypad.get() != 0xFF)    intf |= INT_JOYPAD_MASK;
+
+  if (tphase_old == 2) {
+    z80.get_bus_req(cpu_req);
+
+    bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
+    bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
+    bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
+    bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
+
+    ibus_req = {};
+    ebus_req = {};
+    vbus_req = {};
+    obus_req = {};
+
+    if (cpu_has_ibus_req) ibus_req = cpu_req;
+    if (cpu_has_ebus_req) ebus_req = cpu_req;
+    if (cpu_has_vbus_req) vbus_req = cpu_req;
+    if (cpu_has_obus_req) obus_req = cpu_req;
+  }
+
+  phase++;
 }
 
 //-----------------------------------------------------------------------------
 
 void Gameboy::tock2() {
-  int64_t tcycle_old = tcycle;
-  int64_t tcycle_new = tcycle + 1;
+  int64_t tcycle_old = (phase / 2);
   int64_t tphase_old = tcycle_old & 3;
 
   //-----------------------------------
@@ -230,22 +254,6 @@ void Gameboy::tock2() {
 
   if (tphase_old == 1) {
     z80.tock_t12(imask, intf);
-    z80.get_bus_req(cpu_req);
-
-    bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
-    bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
-    bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
-    bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
-
-    ibus_req = {};
-    ebus_req = {};
-    vbus_req = {};
-    obus_req = {};
-
-    if (cpu_has_ibus_req) ibus_req = cpu_req;
-    if (cpu_has_ebus_req) ebus_req = cpu_req;
-    if (cpu_has_vbus_req) vbus_req = cpu_req;
-    if (cpu_has_obus_req) obus_req = cpu_req;
   }
 
   //-----------------------------------
@@ -345,7 +353,7 @@ void Gameboy::tock2() {
   ppu.get_vbus_req(ppu_vbus_req);
   ppu.get_obus_req(ppu_obus_req);
 
-  tcycle = tcycle_new;
+  phase++;
 }
 
 //-----------------------------------------------------------------------------
@@ -357,9 +365,9 @@ void Gameboy::dump_cpu(std::string& d) {
 
 void Gameboy::dump_bus(std::string& d) {
   sprintf(d, "\002------------- BUS --------------\001\n");
-  sprintf(d, "tcycle %lld\n", tcycle);
-  sprintf(d, "tphase %lld\n", tcycle & 3);
-  sprintf(d, "bgb cycle      0x%08x\n", (tcycle * 8) + 0x00B2D5E6);
+  sprintf(d, "tcycle %lld\n", (phase / 2));
+  sprintf(d, "tphase %lld\n", (phase / 2) & 3);
+  sprintf(d, "bgb cycle      0x%08x\n", ((phase / 2) * 8) + 0x00B2D5E6);
   sprintf(d, "imask  %s\n", byte_to_bits(imask));
   sprintf(d, "intf   %s\n", byte_to_bits(intf));
   sprintf(d, "boot   %d\n", boot.disable_bootrom);

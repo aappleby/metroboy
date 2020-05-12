@@ -233,9 +233,16 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tock_t01(const uint8_t imask, const uint8_t intf, const Ack ibus_ack_) {
+void Z80::tock_t30(const uint8_t /*imask*/, const uint8_t /*intf*/) {
   state = state_;
   ime = ime_delay;
+}
+
+//-----------------------------------------------------------------------------
+
+void Z80::tock_t01(const uint8_t imask, const uint8_t intf, const Ack ibus_ack_) {
+  //printf("tock_t01\n");
+
   in = (uint8_t)ibus_ack_.data;
 
   if (state == 0) {
@@ -686,11 +693,6 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 //-----------------------------------------------------------------------------
 
 void Z80::tock_t23(const uint8_t /*imask*/, const uint8_t /*intf*/) {
-}
-
-//-----------------------------------------------------------------------------
-
-void Z80::tock_t30(const uint8_t /*imask*/, const uint8_t /*intf*/) {
 }
 
 //-----------------------------------------------------------------------------

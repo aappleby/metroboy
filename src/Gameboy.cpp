@@ -27,8 +27,7 @@ void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
   zram.reset();
   boot.reset(new_pc);
 
-  tcycle_old = -2;
-  tcycle_new = -1;
+  tcycle = -1;
   trace_val = 0;
 
   intf = 0xE1;
@@ -108,10 +107,10 @@ void print_ack(std::string& d, const char* name, const Ack& ack) {
 #pragma warning(disable:4189)
 
 void Gameboy::tock() {
-  tcycle_old = tcycle_new;
-  tcycle_new = tcycle_new + 1;
-  tphase_old = tcycle_old & 3;
-  tphase_new = tcycle_new & 3;
+  int64_t tcycle_old = tcycle;
+  int64_t tcycle_new = tcycle + 1;
+  int64_t tphase_old = tcycle_old & 3;
+  int64_t tphase_new = tcycle_new & 3;
 
   //-----------------------------------
   // interrupts are partially asynchronous
@@ -340,6 +339,8 @@ void Gameboy::tock() {
   gb_to_host.trace   = vbus_req.addr;
   gb_to_host.trace   = 0;
   */
+
+  tcycle = tcycle_new;
 }
 
 //-----------------------------------------------------------------------------
@@ -351,11 +352,9 @@ void Gameboy::dump_cpu(std::string& d) {
 
 void Gameboy::dump_bus(std::string& d) {
   sprintf(d, "\002------------- BUS --------------\001\n");
-  sprintf(d, "tcycle_old %lld\n", tcycle_old);
-  sprintf(d, "tcycle_new %lld\n", tcycle_new);
-  sprintf(d, "tphase_old %d\n", int(tcycle_old & 3));
-  sprintf(d, "tphase_new %d\n", int(tcycle_new & 3));
-  sprintf(d, "bgb cycle      0x%08x\n", (tcycle_new * 8) + 0x00B2D5E6);
+  sprintf(d, "tcycle %lld\n", tcycle);
+  sprintf(d, "tphase %lld\n", tcycle & 3);
+  sprintf(d, "bgb cycle      0x%08x\n", (tcycle * 8) + 0x00B2D5E6);
   sprintf(d, "imask  %s\n", byte_to_bits(imask));
   sprintf(d, "intf   %s\n", byte_to_bits(intf));
   sprintf(d, "boot   %d\n", boot.disable_bootrom);

@@ -54,7 +54,7 @@ struct Gameboy {
   const SPU& get_spu() const { return spu; }
   const PPU& get_ppu() const { return ppu; }
 
-  int64_t  get_tcycle() const { return tcycle_new; }
+  int64_t  get_tcycle() const { return tcycle; }
 
   // 0x0000 - rom
   // 0x2000 - rom
@@ -78,10 +78,7 @@ struct Gameboy {
 
 //private:
 
-  int64_t tcycle_old;
-  int64_t tcycle_new;
-  int tphase_old;
-  int tphase_new;
+  int64_t tcycle;
 
   Z80     z80;
   Timer   timer;
@@ -104,6 +101,12 @@ struct Gameboy {
 
   Req cpu_req;
   Ack cpu_ack;
+
+  Req dma_req;
+  Ack dma_ack;
+
+  Req ppu_req;
+  Ack ppu_ack;
 
   Req ibus_req;
   Ack ibus_ack;

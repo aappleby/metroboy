@@ -149,11 +149,11 @@ void Z80::reset(uint16_t new_pc) {
              
     int_ack = 0;
 
-    pc = 0xFF;
+    pc = 0x100;
     op_addr = pc;
     op = 0;
     cb = 0;
-    ad = 0xFF;
+    ad = pc;
     in = 0;
     state = 0;
 
@@ -231,20 +231,11 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tock_t30(const uint8_t /*imask*/, const uint8_t /*intf*/) {
-  state = state_;
-  ime = ime_delay;
-}
-
-//-----------------------------------------------------------------------------
-
-void Z80::tock_t01(const uint8_t imask, const uint8_t intf, const Ack ibus_ack_) {
-  //printf("tock_t01\n");
-
+void Z80::tick_t0(const uint8_t imask, const uint8_t intf, const Ack ibus_ack_) {
   in = (uint8_t)ibus_ack_.data;
 
   if (state == 0) {
-    op_addr = ad;
+    op_addr = ibus_ack_.addr;
     op = in;     
     int_ack = 0;
 
@@ -258,9 +249,15 @@ void Z80::tock_t01(const uint8_t imask, const uint8_t intf, const Ack ibus_ack_)
   }
 }
 
+void Z80::tock_t0(const uint8_t /*imask*/, const uint8_t /*intf*/) {
+}
+
 //-----------------------------------------------------------------------------
 
-void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
+void Z80::tick_t1() {
+}
+
+void Z80::tock_t1(const uint8_t imask, const uint8_t intf) {
 #ifdef FUZZ_TEST
   uint8_t z;
   {
@@ -690,7 +687,20 @@ void Z80::tock_t12(const uint8_t imask, const uint8_t intf) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tock_t23(const uint8_t /*imask*/, const uint8_t /*intf*/) {
+void Z80::tick_t2() {
+}
+
+void Z80::tock_t2(const uint8_t /*imask*/, const uint8_t /*intf*/) {
+}
+
+//-----------------------------------------------------------------------------
+
+void Z80::tick_t3() {
+}
+
+void Z80::tock_t3(const uint8_t /*imask*/, const uint8_t /*intf*/) {
+  state = state_;
+  ime = ime_delay;
 }
 
 //-----------------------------------------------------------------------------
@@ -916,7 +926,7 @@ void Z80::dump(std::string& o) {
   sprintf(o, "\n");
 
   sprintf(o, "op_addr     0x%04x\n", op_addr);
-  sprintf(o, "OP          0x%02x\n", op);
+  sprintf(o, "OP          0x%02x @ %d\n", op, state);
   sprintf(o, "CB          0x%02x\n", cb);
   sprintf(o, "\n");
 

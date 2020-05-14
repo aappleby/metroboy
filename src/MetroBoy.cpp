@@ -9,7 +9,6 @@ extern const int op_sizes[];
 MetroBoy::MetroBoy()
 {
   gb_out = {};
-  phase = 0;
   trace = true;
   memset(tracebuffer, 0, sizeof(tracebuffer));
 }
@@ -85,6 +84,7 @@ void MetroBoy::run_to(uint16_t breakpoint) {
 //-------------------------------------
 
 void MetroBoy::step_frame() {
+#if 0
   push_frame();
   
   do {
@@ -94,15 +94,18 @@ void MetroBoy::step_frame() {
   do {
     mcycle();
   } while (gb_out.y != 144);
+#endif
 }
 
 void MetroBoy::step_line() {
+#if 0
   push_line();
 
   int line = gb_out.y;
   do {
     mcycle();
   } while (gb_out.y == line);
+#endif
 }
 
 void MetroBoy::step_cycle() {
@@ -112,6 +115,7 @@ void MetroBoy::step_cycle() {
 }
 
 void MetroBoy::step_over() {
+#if 0
   push_cycle();
 
   int op_addr = current->gb.get_cpu().get_op_addr();
@@ -134,14 +138,14 @@ void MetroBoy::step_over() {
   // step failed
   pop_cycle();
   return;
+#endif
 }
 
 //-----------------------------------------------------------------------------
 
 void MetroBoy::halfcycle() {
-  if ((phase & 1) == 0) {
+  if ((current->gb.phase & 1) == 1) {
     current->gb.tick2();
-    phase++;
   }
   else {
     current->gb.tock2();
@@ -162,12 +166,11 @@ void MetroBoy::halfcycle() {
     }
 
     current->gb.check_sentinel();
-    phase++;
   }
 }
 
 void MetroBoy::mcycle() {
-  if (phase & 1) halfcycle();
+  if (current->gb.phase & 1) halfcycle();
 
   do {
     halfcycle();

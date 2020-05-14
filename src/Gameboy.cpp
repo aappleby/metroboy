@@ -35,6 +35,9 @@ void Gameboy::reset(size_t new_rom_size, uint16_t new_pc) {
   ack = {0};
 
   sentinel = 0xDEADBEEF;
+
+  z80.get_bus_req(cpu_req);
+  ebus_req = cpu_req;
 }
 
 void Gameboy::reset(uint16_t new_pc) {
@@ -104,8 +107,9 @@ void print_ack(std::string& d, const char* name, const Ack& ack) {
 //-----------------------------------------------------------------------------
 
 void Gameboy::tick2() {
-  int64_t tcycle_old = (phase / 2);
-  int64_t tphase_old = tcycle_old & 3;
+  phase++;
+  int64_t tcycle = (int64_t)floor(double(phase) / 2);
+  int64_t tphase = tcycle & 3;
 
   //-----------------------------------
   // interrupts are partially asynchronous
@@ -124,7 +128,7 @@ void Gameboy::tick2() {
   //-----------------------------------
   // gather reqs
 
-  if (tphase_old == 2) {
+  if (tphase == 2) {
     z80.get_bus_req(cpu_req);
   }
 
@@ -143,53 +147,57 @@ void Gameboy::tick2() {
   bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
   bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
 
-  ibus_req = {};
-  ebus_req = {};
-  vbus_req = {};
-  obus_req = {};
-
-  if (cpu_has_ibus_req) ibus_req = cpu_req;
-  if (cpu_has_ebus_req) ebus_req = cpu_req;
-  if (cpu_has_vbus_req) vbus_req = cpu_req;
-  if (cpu_has_obus_req) obus_req = cpu_req;
-
-  /*
-  if ((tphase_new == 0) && cpu_has_ibus_req) {
-  ibus_req = cpu_req;
+  // ibus
+  if (cpu_has_ibus_req) {
+    ibus_req = cpu_req;
+  }
+  else {
+    ibus_req = {};
   }
 
-  if (dma.has_ebus_req()) {
-  ebus_req = dma.get_ebus_req();
+  // ebus
+  if (dma_ebus_req.read) {
+    ebus_req = dma_ebus_req;
   }
   else if (cpu_has_ebus_req) {
-  ebus_req = cpu_req;
+    ebus_req = cpu_req;
+  }
+  else {
+    ebus_req = {};
   }
 
-  if (dma.has_vbus_req()) {
-  vbus_req = dma.get_vbus_req();
+  // vbus
+  if (dma_vbus_req.read) {
+    vbus_req = dma_vbus_req;
   }
-  else if (ppu.has_vbus_req()) {
-  vbus_req = ppu.get_vbus_req();
+  else if (ppu_vbus_req.read) {
+    vbus_req = ppu_vbus_req;
   }
   else if (cpu_has_vbus_req) {
-  vbus_req = cpu_req;
+    vbus_req = cpu_req;
+  }
+  else {
+    vbus_req = {};
   }
 
-  if (dma.has_obus_req()) {
-  obus_req = dma.get_obus_req();
+  // obus
+  if (dma_obus_req.write) {
+    obus_req = dma_obus_req;
   }
-  else if (ppu.has_obus_req()) {
-  obus_req = ppu.get_obus_req();
+  else if (ppu_obus_req.read) {
+    obus_req = ppu_obus_req;
   }
   else if (cpu_has_obus_req) {
-  obus_req = cpu_req;
+    obus_req = cpu_req;
   }
-  */
+  else {
+    obus_req = {};
+  }
 
   //-----------------------------------
   // gather acks
 
-  if (tphase_old == 0) {
+  if (tphase == 0) {
     ibus_ack = {0};
     ebus_ack = {0};
     vbus_ack = {0};
@@ -268,40 +276,52 @@ void Gameboy::tick2() {
   }
   */
 
-  //-----------------------------------
+  if (tphase == 0) {
+    z80.tick_t0(imask, intf, cpu_ack);
+  }
+  else if (tphase == 1) {
+    z80.tick_t1();
+  }
+  else if (tphase == 2) {
+    z80.tick_t2();
+  }
+  else if (tphase == 3) {
+    z80.tick_t3();
+  }
 
-  phase++;
+  //-----------------------------------
 }
 
 //-----------------------------------------------------------------------------
 
 void Gameboy::tock2() {
-  int64_t tcycle_old = (phase / 2);
-  int64_t tphase_old = tcycle_old & 3;
+  phase++;
+  int64_t tcycle = (int64_t)floor(double(phase) / 2);
+  int64_t tphase = tcycle & 3;
 
   //-----------------------------------
 
-  if (tphase_old == 3) {
-    z80.tock_t30(imask, intf);
+  if (tphase == 0) {
+    z80.tock_t0(imask, intf);
     timer.tock_t30();
   }
 
   //-----------------------------------
 
-  if (tphase_old == 0) {
-    z80.tock_t01(imask, intf, cpu_ack);
+  if (tphase == 1) {
+    z80.tock_t1(imask, intf);
   }
 
   //-----------------------------------
 
-  if (tphase_old == 1) {
-    z80.tock_t12(imask, intf);
+  if (tphase == 2) {
+    z80.tock_t2(imask, intf);
   }
 
   //-----------------------------------
   // dispatch reqs
 
-  if (tphase_old == 2) {
+  if (tphase == 3) {
     if (ibus_req.read || ibus_req.write) {
       this->ibus_req2(ibus_req);
       ppu.   ibus_req(ibus_req);
@@ -327,7 +347,7 @@ void Gameboy::tock2() {
       oam.obus_req(obus_req);
     }
 
-    z80.tock_t23(imask, intf);
+    z80.tock_t3(imask, intf);
   }
 
   //-----------------------------------
@@ -353,8 +373,6 @@ void Gameboy::tock2() {
   gb_to_host.trace   = vbus_req.addr;
   gb_to_host.trace   = 0;
   */
-
-  phase++;
 }
 
 //-----------------------------------------------------------------------------
@@ -366,18 +384,113 @@ void Gameboy::dump_cpu(std::string& d) {
 
 void Gameboy::dump_bus(std::string& d) {
   sprintf(d, "\002------------- BUS --------------\001\n");
-  sprintf(d, "tcycle %lld\n", (phase / 2));
-  sprintf(d, "tphase %lld\n", (phase / 2) & 3);
+
+  const char* phases[] = {
+    "A_______",
+    "_B______",
+    "__C_____",
+    "___D____",
+    "____E___",
+    "_____F__",
+    "______G_",
+    "_______H",
+  };
+
+  sprintf(d, "phase %s\n", phases[phase & 7]);
+  sprintf(d, "tphase %lld\n", phase);
+  sprintf(d, "tcycle %lld\n", (int64_t)floor(double(phase) / 2));
+  sprintf(d, "mcycle %lld\n", (int64_t)floor(double(phase) / 8));
   sprintf(d, "bgb cycle      0x%08x\n", ((phase / 2) * 8) + 0x00B2D5E6);
   sprintf(d, "imask  %s\n", byte_to_bits(imask));
   sprintf(d, "intf   %s\n", byte_to_bits(intf));
   sprintf(d, "boot   %d\n", boot.disable_bootrom);
   sprintf(d, "\n");
 
+  {
+    bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
+    bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
+    bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
+    bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
+
+    char cpu_dir = cpu_req.write ? 'W' : cpu_req.read ? 'R' : '?';
+
+    int cpu_to_ibus = cpu_has_ibus_req ? cpu_dir : ' ';
+    int cpu_to_ebus = cpu_has_ebus_req ? cpu_dir : ' ';
+    int cpu_to_vbus = cpu_has_vbus_req ? cpu_dir : ' ';
+    int cpu_to_obus = cpu_has_obus_req ? cpu_dir : ' ';
+
+    int dma_to_ebus = dma_ebus_req.read  ? 'R' : ' ';
+    int dma_to_vbus = dma_vbus_req.read  ? 'R' : ' ';
+    int dma_to_obus = dma_obus_req.write ? 'W' : ' ';
+
+    int ppu_to_vbus = ppu_vbus_req.read ? 'R' : ' ';
+    int ppu_to_obus = ppu_obus_req.read ? 'O' : ' ';
+
+    if (dma_ebus_req.read) {
+      cpu_to_ebus = tolower(cpu_to_ebus);
+    }
+
+    /*
+    if (dma_ebus_req.read) {
+    ebus_req = dma_ebus_req;
+    }
+    else if (cpu_has_ebus_req) {
+    ebus_req = cpu_req;
+    }
+
+    if (dma_vbus_req.read) {
+    vbus_req = dma_vbus_req;
+    }
+    else if (ppu_vbus_req.read) {
+    vbus_req = ppu_vbus_req;
+    }
+    else if (cpu_has_vbus_req) {
+    vbus_req = cpu_req;
+    }
+
+    if (dma_obus_req.write) {
+    obus_req = dma_obus_req;
+    }
+    else if (ppu_obus_req.read) {
+    obus_req = ppu_obus_req;
+    }
+    else if (cpu_has_obus_req) {
+    obus_req = cpu_req;
+    }
+    */
+
+    sprintf(d, "     |cpu|dma|ppu|\n");
+    sprintf(d, " ibus|  %c|  %c|  %c|\n", cpu_to_ibus, ' ', ' ');
+    sprintf(d, " ebus|  %c|  %c|  %c|\n", cpu_to_ebus, dma_to_ebus, ' ');
+    sprintf(d, " vbus|  %c|  %c|  %c|\n", cpu_to_vbus, dma_to_vbus, ppu_to_vbus);
+    sprintf(d, " obus|  %c|  %c|  %c|\n", cpu_to_obus, dma_to_obus, ppu_to_obus);
+    sprintf(d, "\n");
+  }
 
   sprintf(d,   "---CPU:\n");
   print_req(d, "cpu_req  ", cpu_req);
   print_ack(d, "cpu_ack  ", cpu_ack);
+
+  sprintf(d,   "---DMA to EBUS:\n");
+  print_req(d, "cpu_req  ", dma_ebus_req);
+  print_ack(d, "cpu_ack  ", dma_ebus_ack);
+
+  sprintf(d,   "---DMA to VBUS:\n");
+  print_req(d, "cpu_req  ", dma_vbus_req);
+  print_ack(d, "cpu_ack  ", dma_vbus_ack);
+
+  sprintf(d,   "---DMA to OBUS:\n");
+  print_req(d, "cpu_req  ", dma_obus_req);
+  print_ack(d, "cpu_ack  ", dma_obus_ack);
+
+  sprintf(d,   "---PPU to VBUS:\n");
+  print_req(d, "cpu_req  ", ppu_vbus_req);
+  print_ack(d, "cpu_ack  ", ppu_vbus_ack);
+
+  sprintf(d,   "---PPU to OBUS:\n");
+  print_req(d, "cpu_req  ", ppu_obus_req);
+  print_ack(d, "cpu_ack  ", ppu_obus_ack);
+
 
   sprintf(d,   "---IBUS:\n");
   print_req(d, "ibus_req ", ibus_req);

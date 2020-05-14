@@ -8,10 +8,18 @@ struct Z80 {
 
   uint8_t get_int_ack() const { return int_ack; }
   void    get_bus_req(Req& r) const;
-  void    tock_t30(const uint8_t imask_, const uint8_t intf_);
-  void    tock_t01(const uint8_t imask_, const uint8_t intf_, const Ack ibus_ack_);
-  void    tock_t12(const uint8_t imask_, const uint8_t intf_);
-  void    tock_t23(const uint8_t imask_, const uint8_t intf_);
+
+  void    tick_t0(const uint8_t imask_, const uint8_t intf_, const Ack ibus_ack_);
+  void    tock_t0(const uint8_t imask_, const uint8_t intf_);
+
+  void    tick_t1();
+  void    tock_t1(const uint8_t imask_, const uint8_t intf_);
+
+  void    tick_t2();
+  void    tock_t2(const uint8_t imask_, const uint8_t intf_);
+
+  void    tick_t3();
+  void    tock_t3(const uint8_t imask_, const uint8_t intf_);
 
   void    dump(std::string& d);
 

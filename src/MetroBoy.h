@@ -30,7 +30,7 @@ public:
   }
 
   int64_t total_tcycles() {
-    return phase / 2;
+    return (int)floor(double(current->gb.phase) / 2);
   }
 
   const uint32_t* get_trace() const { return tracebuffer; }
@@ -60,7 +60,6 @@ public:
 
 private:
 
-  int64_t phase;
   bool trace;
 
   uint32_t tracebuffer[456 * 154];

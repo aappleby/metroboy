@@ -11,6 +11,10 @@ struct Req {
   uint16_t data;
   uint16_t read;
   uint16_t write;
+
+  operator bool() const {
+    return read || write;
+  }
 };
 
 struct Ack {

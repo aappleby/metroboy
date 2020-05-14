@@ -156,7 +156,7 @@ void Gameboy::tick2() {
   }
 
   // ebus
-  if (dma_ebus_req.read) {
+  if (dma_ebus_req) {
     ebus_req = dma_ebus_req;
   }
   else if (cpu_has_ebus_req) {
@@ -167,10 +167,10 @@ void Gameboy::tick2() {
   }
 
   // vbus
-  if (dma_vbus_req.read) {
+  if (dma_vbus_req) {
     vbus_req = dma_vbus_req;
   }
-  else if (ppu_vbus_req.read) {
+  else if (ppu_vbus_req) {
     vbus_req = ppu_vbus_req;
   }
   else if (cpu_has_vbus_req) {
@@ -181,10 +181,10 @@ void Gameboy::tick2() {
   }
 
   // obus
-  if (dma_obus_req.write) {
+  if (dma_obus_req) {
     obus_req = dma_obus_req;
   }
-  else if (ppu_obus_req.read) {
+  else if (ppu_obus_req) {
     obus_req = ppu_obus_req;
   }
   else if (cpu_has_obus_req) {
@@ -243,38 +243,38 @@ void Gameboy::tick2() {
     if (cpu_has_obus_req) cpu_ack = obus_ack;
   }
 
-  /*
   if (cpu_has_ibus_req) {
   cpu_ack = ibus_ack;
   }
 
-  if (dma.has_ebus_req()) {
-  dma.on_ebus_ack(ebus_ack);
+  if (dma_ebus_req) {
+    dma.on_ebus_ack(ebus_ack);
   }
   else if (cpu_has_ebus_req) {
-  cpu_ack = ebus_ack;
+    cpu_ack = ebus_ack;
   }
 
-  if (dma.has_vbus_req()) {
-  dma.on_vbus_ack(vbus_ack);
+  if (dma_vbus_req) {
+    dma.on_vbus_ack(vbus_ack);
   }
-  else if (ppu.has_vbus_req()) {
-  ppu.on_vbus_ack(vbus_ack);
+  else if (ppu_vbus_req.read) {
+    ppu.on_vbus_ack(vbus_ack);
   }
   else if (cpu_has_vbus_req) {
-  cpu_ack = vbus_ack;
+    cpu_ack = vbus_ack;
   }
 
-  if (dma.has_obus_req()) {
-  dma.on_obus_ack(obus_ack);
+  if (dma_obus_req) {
+    dma.on_obus_ack(obus_ack);
   }
-  else if (ppu.has_obus_req()) {
-  ppu.on_obus_ack(obus_ack);
+  else if (ppu_obus_req) {
+    ppu.on_obus_ack(obus_ack);
   }
   else if (cpu_has_obus_req) {
-  cpu_ack = obus_ack;
+    cpu_ack = obus_ack;
   }
-  */
+
+  //-----------------------------------
 
   if (tphase == 0) {
     z80.tick_t0(imask, intf, cpu_ack);
@@ -288,8 +288,6 @@ void Gameboy::tick2() {
   else if (tphase == 3) {
     z80.tick_t3();
   }
-
-  //-----------------------------------
 }
 
 //-----------------------------------------------------------------------------
@@ -386,14 +384,14 @@ void Gameboy::dump_bus(std::string& d) {
   sprintf(d, "\002------------- BUS --------------\001\n");
 
   const char* phases[] = {
-    "A_______",
-    "_B______",
-    "__C_____",
-    "___D____",
-    "____E___",
-    "_____F__",
-    "______G_",
-    "_______H",
+    "\002A_______\001",
+    "\003_B______\001",
+    "\002__C_____\001",
+    "\003___D____\001",
+    "\002____E___\001",
+    "\003_____F__\001",
+    "\002______G_\001",
+    "\003_______H\001",
   };
 
   sprintf(d, "phase %s\n", phases[phase & 7]);

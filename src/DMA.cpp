@@ -22,6 +22,7 @@ DMA::DMA() {
 
 //-----------------------------------------------------------------------------
 
+/*
 bool DMA::has_ebus_req() const {
   return (mode_a != Mode::NONE) && ((source_a >> 5) != 4);
 }
@@ -37,13 +38,14 @@ bool DMA::has_vbus_req() const {
 bool DMA::has_obus_req() const {
   return (mode_b != Mode::NONE);
 }
+*/
 
 //-----------------------------------------------------------------------------
 
 void DMA::get_ebus_req(Req& r) const {
   r.addr  = uint16_t((source_a << 8) | count_a);
   r.data  = 0;
-  r.read  = has_ebus_req();
+  r.read  = (mode_a != Mode::NONE) && ((source_a >> 5) != 4);
   r.write = 0;
 }
 
@@ -52,7 +54,7 @@ void DMA::get_ebus_req(Req& r) const {
 void DMA::get_vbus_req(Req& r) const {
   r.addr  = uint16_t((source_a << 8) | count_a);
   r.data  = 0;
-  r.read  = has_vbus_req();
+  r.read  = (mode_a != Mode::NONE) && ((source_a >> 5) == 4);
   r.write = 0;
 }
 
@@ -62,7 +64,7 @@ void DMA::get_obus_req(Req& r) const {
   r.addr  = uint16_t(ADDR_OAM_BEGIN + count_b);
   r.data  = data_b;
   r.read  = 0;
-  r.write = has_obus_req();
+  r.write = (mode_b != Mode::NONE);
 }
 
 //----------------------------------------

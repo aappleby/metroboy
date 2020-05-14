@@ -10,9 +10,9 @@ struct DMA {
   void ibus_req(const Req& ibus_req);
   void ibus_ack(Ack& ibus_ack);
 
-  bool has_ebus_req() const;
-  bool has_vbus_req() const;
-  bool has_obus_req() const;
+  //bool has_ebus_req() const;
+  //bool has_vbus_req() const;
+  //bool has_obus_req() const;
 
   void get_ebus_req(Req& r) const;
   void get_vbus_req(Req& r) const;

@@ -6,7 +6,7 @@
 
 void Timer::reset() {
   *this = {};
-  counter = 10994 + 1;
+  counter = 10995; // only one value will pass poweron_004_div and poweron_005_div
 }
 
 //-----------------------------------------------------------------------------
@@ -17,32 +17,32 @@ bool Timer::get_interrupt() const {
 
 //-----------------------------------------------------------------------------
 
-void Timer::ibus_req(Req ibus_req) {
-  bool timer_hit = (ibus_req.addr & 0xFFFC) == 0xFF04;
+void Timer::tock_req(const Req& req) {
+  const bool timer_hit = (req.addr & 0xFFFC) == 0xFF04;
 
   if (!timer_hit) {
     ack = {0};
   }
-  else if (ibus_req.write) {
-    if (ibus_req.addr == ADDR_DIV)  { counter = 1; }
-    if (ibus_req.addr == ADDR_TIMA) { tima    = uint8_t(ibus_req.data); }
-    if (ibus_req.addr == ADDR_TMA)  { tma     = uint8_t(ibus_req.data); }
-    if (ibus_req.addr == ADDR_TAC)  { tac     = uint8_t(ibus_req.data) | 0b11111000; }
+  else if (req.write) {
+    if (req.addr == ADDR_DIV)  { counter = 1; }
+    if (req.addr == ADDR_TIMA) { tima    = uint8_t(req.data); }
+    if (req.addr == ADDR_TMA)  { tma     = uint8_t(req.data); }
+    if (req.addr == ADDR_TAC)  { tac     = uint8_t(req.data) | 0b11111000; }
     ack = {
-      .addr  = ibus_req.addr,
+      .addr  = req.addr,
       .data  = 0,
       .read  = 0,
       .write = 1,
     };
   }
-  else if (ibus_req.read) {
+  else if (req.read) {
     uint8_t data = 0;
-    if (ibus_req.addr == ADDR_DIV)  { data = uint8_t(counter >> 6); }
-    if (ibus_req.addr == ADDR_TIMA) { data = uint8_t(tima); }
-    if (ibus_req.addr == ADDR_TMA)  { data = tma; }
-    if (ibus_req.addr == ADDR_TAC)  { data = tac | 0b11111000; }
+    if (req.addr == ADDR_DIV)  { data = uint8_t(counter >> 6); }
+    if (req.addr == ADDR_TIMA) { data = uint8_t(tima); }
+    if (req.addr == ADDR_TMA)  { data = tma; }
+    if (req.addr == ADDR_TAC)  { data = tac | 0b11111000; }
     ack = {
-      .addr  = ibus_req.addr,
+      .addr  = req.addr,
       .data  = data,
       .read  = 1,
       .write = 0,
@@ -50,21 +50,21 @@ void Timer::ibus_req(Req ibus_req) {
   }
 }
 
-void Timer::ibus_ack(Ack& ibus_ack) const {
-  ibus_ack.addr  += ack.addr;
-  ibus_ack.data  += ack.data;
-  ibus_ack.read  += ack.read;
-  ibus_ack.write += ack.write;
+void Timer::tick_ack(Ack& ack_) const {
+  ack_.addr  += ack.addr;
+  ack_.data  += ack.data;
+  ack_.read  += ack.read;
+  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------
 
-void Timer::tock_t30() {
+void Timer::tock_t0() {
   do_int = false;
   counter++;
 
   static const uint16_t masks[] = { 0x80, 0x02, 0x08, 0x20 };
-  bool do_tick_ = (counter & masks[tac & 3]) && (tac & 4);
+  const bool do_tick_ = (counter & masks[tac & 3]) && (tac & 4);
 
   if (do_tick && !do_tick_) {
     tima++;

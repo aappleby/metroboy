@@ -490,7 +490,7 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
     return true;
   }
 
-  std::string filename = prefix + name + ".gb";
+  std::string filename = prefix + "/" + name + ".gb";
 
   FILE* rom_file = NULL;
   rom_file = fopen(filename.c_str(), "rb");
@@ -506,8 +506,12 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
   rom_size = fread(rom_buf, 1, rom_size, rom_file);
   fclose(rom_file);
 
-  Gameboy gameboy;
-  gameboy.reset(rom_size, 0x100);
+  //Gameboy* gameboy = new Gameboy();
+  Gameboy gb_local;
+  Gameboy* gameboy = &gb_local;
+
+  gameboy->set_rom(rom_buf, rom_size);
+  gameboy->reset(0x100);
 
   uint8_t result = 0xFF;
   int i = 0;
@@ -515,12 +519,12 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
   for (; i < ticks; i++) {
     //assert(!gameboy.ppu.vram_delay == !gameboy.ppu.fetch_delay);
 
-    gameboy.tick2();
-    gameboy.tock2();
+    gameboy->tick2();
+    gameboy->tock2();
     //assert(!gameboy.ppu.vram_delay == !gameboy.ppu.fetch_delay);
 
 
-    result = gameboy.get_vram()[0];
+    result = gameboy->get_vram()[0];
     if (result) break;
   }
 

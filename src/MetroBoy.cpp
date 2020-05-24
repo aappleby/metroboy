@@ -6,15 +6,6 @@ extern const int op_sizes[];
 
 //=============================================================================
 
-MetroBoy::MetroBoy()
-{
-  gb_out = {};
-  trace = true;
-  memset(tracebuffer, 0, sizeof(tracebuffer));
-}
-
-//-----------------------------------------------------------------------------
-
 void MetroBoy::load_rom(const char* filename, bool run_bootrom) {
   FILE* rom_file = nullptr;
   fopen_s(&rom_file, filename, "rb");
@@ -23,8 +14,9 @@ void MetroBoy::load_rom(const char* filename, bool run_bootrom) {
   fseek(rom_file, 0, SEEK_SET);
   rom_size = fread(rom_buf, 1, rom_size, rom_file);
   fclose(rom_file);
-
-  current->gb.reset(rom_size, run_bootrom ? 0x0000 : 0x0100);
+  
+  current->gb.set_rom(rom_buf, rom_size);
+  current->gb.reset(run_bootrom ? 0x0000 : 0x0100);
 }
 
 //-----------------------------------------------------------------------------
@@ -152,9 +144,10 @@ void MetroBoy::halfcycle() {
 
     gb_out = current->gb.get_host_data();
 
-    if (trace) {
-      tracebuffer[gb_out.y * 456 + gb_out.counter] = gb_out.trace;
-    }
+    //tracebuffer[gb_out.y * 456 + gb_out.counter] = gb_out.trace;
+
+    tracebuffer[tracecursor++] = gb_out.trace;
+    if (tracecursor == 456 * 154) tracecursor = 0;
 
     if (gb_out.pix_oe) {
       int x = gb_out.x - 1;

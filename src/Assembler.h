@@ -10,6 +10,8 @@ typedef std::vector<uint8_t> blob;
 
 
 struct Assembler {
+  Assembler() = default;
+
   template<typename ... Args>
   void assemble(const char* format, Args ... args);
   void disassemble_one(const uint8_t* code, std::string& out);
@@ -48,8 +50,8 @@ struct Assembler {
   std::vector<size_t> bookmarks;
   std::map<std::string, uint16_t> label_map;
   std::map<uint16_t, blob> block_map;
-  uint16_t block_addr;
-  blob* block_code;
+  uint16_t block_addr = 0;
+  blob* block_code = nullptr;
 
   void begin_label(std::string label);
   void begin_block(uint16_t addr);
@@ -57,6 +59,6 @@ struct Assembler {
   void emit(uint8_t a, uint8_t b);
   void emit(uint8_t a, uint8_t b, uint8_t c);
 
-  FILE* out_file;
+  FILE* out_file = nullptr;
 };
 

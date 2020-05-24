@@ -235,16 +235,15 @@ void PPU::get_obus_req(Req& r) const {
 
 //-----------------------------------------------------------------------------
 
-void PPU::ibus_req(Req ibus_req) {
-  bool hit = (ADDR_GPU_BEGIN <= ibus_req.addr && ibus_req.addr <= ADDR_GPU_END);
-  if (ibus_req.addr == ADDR_DMA) hit = false;
+void PPU::tock_req(const Req& req) {
+  ack = {0};
+  bool hit = req && (ADDR_GPU_BEGIN <= req.addr && req.addr <= ADDR_GPU_END);
+  if (req.addr == ADDR_DMA) hit = false;
+  if (!hit) return;
 
-  if (!hit) {
-    ack = {0};
-  }
-  else if (ibus_req.write) {
-    uint8_t data = (uint8_t)ibus_req.data;
-    switch (ibus_req.addr) {
+  if (req.write) {
+    uint8_t data = (uint8_t)req.data;
+    switch (req.addr) {
     case ADDR_LCDC: lcdc = data; break;
     case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
     case ADDR_SCY:  scy = data;  break;
@@ -262,15 +261,15 @@ void PPU::ibus_req(Req ibus_req) {
     update_palettes();
 
     ack = {
-      .addr  = ibus_req.addr,
+      .addr  = req.addr,
       .data  = data,
       .read  = 0,
       .write = 1,
     };
   }
-  else if (ibus_req.read) {
-    uint8_t data = (uint8_t)ibus_req.data;
-    switch (ibus_req.addr) {
+  else if (req.read) {
+    uint8_t data = (uint8_t)req.data;
+    switch (req.addr) {
     case ADDR_LCDC: data = lcdc; break;
     case ADDR_STAT: data = stat; break;
     case ADDR_SCY:  data = scy; break;
@@ -287,7 +286,7 @@ void PPU::ibus_req(Req ibus_req) {
     }
 
     ack = {
-      .addr  = ibus_req.addr,
+      .addr  = req.addr,
       .data  = data,
       .read  = 1,
       .write = 0,
@@ -295,16 +294,16 @@ void PPU::ibus_req(Req ibus_req) {
   }
 }
 
-void PPU::ibus_ack(Ack& ibus_ack) const {
-  ibus_ack.addr  += ack.addr;
-  ibus_ack.data  += ack.data;
-  ibus_ack.read  += ack.read;
-  ibus_ack.write += ack.write;
+void PPU::tick_ack(Ack& ack_) const {
+  ack_.addr  += ack.addr;
+  ack_.data  += ack.data;
+  ack_.read  += ack.read;
+  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------
 
-void PPU::on_vbus_ack(Ack vbus_ack) {
+void PPU::on_vbus_ack(const Ack& vbus_ack) {
   uint8_t data = (uint8_t)vbus_ack.data;
 
   if (vbus_ack.read) {
@@ -322,7 +321,7 @@ void PPU::on_vbus_ack(Ack vbus_ack) {
 
 //----------------------------------------
 
-void PPU::on_obus_ack(Ack obus_ack) {
+void PPU::on_obus_ack(const Ack& obus_ack) {
   uint8_t lo = uint8_t(obus_ack.data >> 0);
   uint8_t hi = uint8_t(obus_ack.data >> 8);
 

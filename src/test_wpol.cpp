@@ -2,12 +2,15 @@
 
 #include "Gameboy.h"
 
+#include <iostream>
+#include <memory>
+
 #pragma warning(disable : 4996)
 
 //---------
 // wpol generic
 
-static const std::string generic_tests[] = {
+static const char* generic_tests[] = {
   "add_sp_e_timing.gb",
   "boot_hwio-G.gb",    // X
   "boot_regs-dmg.gb",
@@ -47,7 +50,7 @@ static const std::string generic_tests[] = {
 //---------
 // wpol ppu
 
-static const std::string ppu_tests[] = {
+static const char* ppu_tests[] = {
   // dmg pass
 
   "hblank_ly_scx_timing-GS.gb",
@@ -124,7 +127,7 @@ static const std::string ppu_tests[] = {
 
 extern uint8_t rom_buf[1024 * 1024];
 
-void run_test(const std::string& prefix, const std::string& name) {
+void run_wpol_test(const std::string& prefix, const std::string& name) {
   std::string filename = prefix + name;
 
   FILE* rom_file = NULL;
@@ -132,21 +135,24 @@ void run_test(const std::string& prefix, const std::string& name) {
   fseek(rom_file, 0, SEEK_END);
   size_t rom_size = ftell(rom_file);
   fseek(rom_file, 0, SEEK_SET);
-  rom_size = fread(rom_buf, 1, rom_size, rom_file);
+  rom_size = fread_s(rom_buf, sizeof(rom_buf), 1, sizeof(rom_buf), rom_file);
   fclose(rom_file);
 
+  auto gb{std::make_unique<Gameboy>()};
+  if (gb) {
+    gb->set_rom(rom_buf, rom_size);
+    gb->reset(0x100);
+  }
 
-  Gameboy gameboy;
-  gameboy.reset(rom_size, 0x100);
 
   uint8_t result = 0xFF;
   int i = 0;
-  const int ticks = 25000000;
+  constexpr int ticks = 25000000;
   for (; i < ticks; i++) {
-    gameboy.tick2();
-    gameboy.tock2();
-    if (gameboy.get_cpu().get_op() == 0x40) {
-      result = gameboy.get_cpu().get_a();
+    gb->tick2();
+    gb->tock2();
+    if (gb->get_cpu().get_op() == 0x40) {
+      result = gb->get_cpu().get_a();
       break;
     }
   }
@@ -169,14 +175,14 @@ void run_wpol_acceptance() {
   printf("-----WPol Generic tests-----\n");
   for (auto name : generic_tests) {
     std::string prefix = "wpol-gb/tests/build/acceptance/";
-    run_test(prefix, name);
+    run_wpol_test(prefix, name);
   }
   printf("\n");
 
   printf("-----WPol PPU tests-----\n");
   for (auto name : ppu_tests) {
     std::string prefix = "wpol-gb/tests/build/acceptance/gpu/";
-    run_test(prefix, name);
+    run_wpol_test(prefix, name);
   }
   printf("\n");
 }

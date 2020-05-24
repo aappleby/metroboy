@@ -7,8 +7,8 @@ struct OAM {
 
   void reset();
 
-  void obus_req(Req obus_req);
-  void obus_ack(Ack& obus_ack) const;
+  void tock_req(const Req& obus_req);
+  void tick_ack(Ack& obus_ack) const;
 
   void dump(std::string& out) const;
 
@@ -16,7 +16,7 @@ struct OAM {
 
 private:
   Ack ack;
-  uint16_t ram[128];
+  uint16_t ram[128] = {};
 };
 
 //-----------------------------------------------------------------------------

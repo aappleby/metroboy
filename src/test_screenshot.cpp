@@ -104,8 +104,9 @@ int run_screenshot_test(const std::string& prefix, const std::string& name) {
   fclose(rom_file);
 
   Gameboy gameboy;
-  uint8_t fb[160*144];
-  gameboy.reset(rom_size, 0x100);
+  uint8_t fb[160*144] = {};
+  gameboy.set_rom(rom_buf, rom_size);
+  gameboy.reset(0x100);
 
   int i = 0;
   const int ticks = 400000;

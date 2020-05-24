@@ -19,10 +19,10 @@ public:
                  int sx, int sy, int sw, int sh,
                  int dx, int dy, int dw, int dh);
 
-  uint32_t blit_vao;
-  uint32_t blit_vbo;
-  uint32_t blit_ubo;
-  uint32_t blit_prog;
+  uint32_t blit_vao = 0;
+  uint32_t blit_vbo = 0;
+  uint32_t blit_ubo = 0;
+  uint32_t blit_prog = 0;
 };
 
 //-----------------------------------------------------------------------------

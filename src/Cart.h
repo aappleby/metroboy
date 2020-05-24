@@ -4,31 +4,33 @@
 //-----------------------------------------------------------------------------
 
 struct Cart {
-  void reset(size_t new_rom_size);
+  void set_rom(uint8_t* new_rom, size_t new_rom_size);
   void reset();
 
-  void ebus_req(Req ebus_req);
-  void ebus_ack(Ack& ebus_ack);
+  void tock_req(const Req& req);
+  void tick_ack(Ack& ebus_ack) const;
 
   void dump(std::string& d);
 
   uint8_t* get_flat_ptr(uint16_t addr);
+  
+  uint8_t* get_rom() const { return rom; }
   size_t get_rom_size() const { return rom_size; }
 
   uint8_t* get_cram() { return ram_buf; }
 
-private:
+//private:
   Ack ack;
-  size_t rom_size;
-  int rom_bank_count;
-  int ram_bank_count;
-  bool ram_enable;
-  bool ram_dirty;
-  int mode;
-  int bank_latch1;
-  int bank_latch2;
+  uint8_t* rom = 0;
+  size_t rom_size = 0;
+  int rom_bank_count = 0;
+  int ram_bank_count = 0;
+  bool ram_enable = 0;
+  int mode = 0;
+  int bank_latch1 = 0;
+  int bank_latch2 = 0;
 
-  uint8_t ram_buf[8 * 1024];
+  uint8_t ram_buf[8 * 1024] = {};
 };
 
 //-----------------------------------------------------------------------------

@@ -3,25 +3,25 @@
 #include <assert.h>
 
 void Joypad::reset() {
-  *this = {};
+  *this = Joypad();
   val = 0xFF;
-  p1 = 0xCF;
+  p1 = 0xCF; // FF00
 }
 
-void Joypad::ibus_req(Req ibus_req) {
-  if (ibus_req.addr != ADDR_P1) {
+void Joypad::tock_req(const Req& req) {
+  if (req.addr != ADDR_P1) {
     ack = {0};
   }
-  else if (ibus_req.read) {
+  else if (req.read) {
     ack = {
-      .addr  = ibus_req.addr,
+      .addr  = req.addr,
       .data  = p1,
       .read  = 1,
       .write = 0,
     };
   }
-  else if (ibus_req.write) {
-    p1 = (p1 & 0xCF) | (ibus_req.data & 0x30);
+  else if (req.write) {
+    p1 = (p1 & 0xCF) | (req.data & 0x30);
     switch (p1 & 0x30) {
     case 0x00: p1 = (p1 & 0xF0) | 0x0F; break;
     case 0x10: p1 = (p1 & 0xF0) | ((val >> 4) & 0xF); break;
@@ -29,19 +29,19 @@ void Joypad::ibus_req(Req ibus_req) {
     }
 
     ack = {
-      .addr  = ibus_req.addr,
-      .data  = ibus_req.data,
+      .addr  = req.addr,
+      .data  = req.data,
       .read  = 0,
       .write = 1,
     };
   }
 }
 
-void Joypad::ibus_ack(Ack& ibus_ack) const {
-  ibus_ack.addr  += ack.addr;
-  ibus_ack.data  += ack.data;
-  ibus_ack.read  += ack.read;
-  ibus_ack.write += ack.write;
+void Joypad::tick_ack(Ack& ack_) const {
+  ack_.addr  += ack.addr;
+  ack_.data  += ack.data;
+  ack_.read  += ack.read;
+  ack_.write += ack.write;
 }
 
 void Joypad::set(uint8_t new_val) {

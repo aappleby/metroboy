@@ -4,14 +4,14 @@
 #include <stdint.h>
 
 struct Rect {
-  float x;
-  float y;
-  float w;
-  float h;
+  float x = 0;
+  float y = 0;
+  float w = 0;
+  float h = 0;
 };
 
 struct GridUniforms {
-  Rect viewport;
+  Rect viewport = {};
 };
 
 class GridPainter {
@@ -31,9 +31,9 @@ private:
   double origin_x_smooth = 0;
   double origin_y_smooth = 0;
 
-  uint32_t grid_vao;
-  uint32_t grid_vbo;
-  uint32_t grid_prog;
-  uint32_t grid_ubo;
+  uint32_t grid_vao = 0;
+  uint32_t grid_vbo = 0;
+  uint32_t grid_prog = 0;
+  uint32_t grid_ubo = 0;
   GridUniforms grid_uniforms;
 };

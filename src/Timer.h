@@ -7,21 +7,21 @@ struct Timer {
   void reset();
   bool get_interrupt() const;
 
-  void ibus_req(Req ibus_req);
-  void ibus_ack(Ack& ibus_ack) const;
+  void tock_req(const Req& req);
+  void tick_ack(Ack& ack) const;
 
-  void tock_t30();
+  void tock_t0();
 
   void dump(std::string& out);
 
 private:
   Ack ack;
-  uint16_t counter;
-  uint16_t tima;
-  uint8_t  tma;
-  uint8_t  tac;
-  bool     do_int;
-  bool     do_tick;
+  uint16_t counter = 0;
+  uint16_t tima = 0;
+  uint8_t  tma = 0;
+  uint8_t  tac = 0;
+  bool     do_int = 0;
+  bool     do_tick = 0;
 };
 
 //-----------------------------------------------------------------------------

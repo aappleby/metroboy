@@ -4,24 +4,6 @@
 
 //-----------------------------------------------------------------------------
 
-DMA::DMA() {
-  ack = {0};
-
-  mode_x = Mode::NONE;
-  count_x = 0;
-  source_x = 0x000;
-
-  mode_a = Mode::NONE;
-  count_a = 0;
-  source_a = 0x000;
-
-  mode_b = Mode::NONE;
-  count_b = 0;
-  data_b = 0x00;
-}
-
-//-----------------------------------------------------------------------------
-
 /*
 bool DMA::has_ebus_req() const {
   return (mode_a != Mode::NONE) && ((source_a >> 5) != 4);
@@ -93,7 +75,7 @@ void DMA::on_obus_ack(const Ack& /*obus_ack*/) {
 
 //-----------------------------------------------------------------------------
 
-void DMA::ibus_req(const Req& ibus_req) {
+void DMA::tock_req(const Req& ibus_req) {
   ack = {0};
   if (ibus_req.addr != ADDR_DMA) return;
 
@@ -125,7 +107,7 @@ void DMA::ibus_req(const Req& ibus_req) {
   }
 }
 
-void DMA::ibus_ack(Ack& ibus_ack) {
+void DMA::tick_ack(Ack& ibus_ack) const {
   ibus_ack.addr  += ack.addr;
   ibus_ack.data  += ack.data;
   ibus_ack.read  += ack.read;

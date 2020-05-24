@@ -17,8 +17,9 @@
 
 class AppBase {
 public:
+  virtual ~AppBase() = default;
+
   int main(int argc, char** argv);
-  
   virtual void init() {};
   virtual void close() {};
   virtual void update(double /*delta*/) {}
@@ -38,12 +39,12 @@ public:
 
 protected:
 
-  uint64_t app_start;
-  uint64_t perf_freq;
+  uint64_t app_start = 0;
+  uint64_t perf_freq = 0;
 
   int frame_count = 0;
-  int screen_w;
-  int screen_h;
+  int screen_w = 0;
+  int screen_h = 0;
 
   Viewport view_snap;
   Blitter blitter;

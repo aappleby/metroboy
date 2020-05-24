@@ -62,11 +62,11 @@ Viewport Viewport::zoom(dvec2 screen_pos, double zoom) {
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::pan(dvec2 delta) {
-  Viewport& a = *this;
+  const Viewport& a = *this;
   Viewport b;
   b.screen_size = screen_size;
 
-  double scale = screen_size.x / (max.x - min.x);
+  const double scale = screen_size.x / (max.x - min.x);
   b.min.x = a.min.x + double(-delta.x) / scale;
   b.min.y = a.min.y + double(-delta.y) / scale;
   b.max.x = a.max.x + double(-delta.x) / scale;
@@ -78,12 +78,12 @@ Viewport Viewport::pan(dvec2 delta) {
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::snap() {
-  Viewport& a = *this;
+  const Viewport& a = *this;
   Viewport b;
   b.screen_size = a.screen_size;
 
-  double zoom  = round(a.get_zoom() * 4.0) / 4.0;
-  double scale = exp2(zoom);
+  const double zoom  = round(a.get_zoom() * 4.0) / 4.0;
+  const double scale = exp2(zoom);
 
   b.min.x = round(a.min.x * scale) / scale;
   b.min.y = round(a.min.y * scale) / scale;

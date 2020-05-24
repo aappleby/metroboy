@@ -7,10 +7,10 @@ typedef int16_t sample_t;
 //-----------------------------------------------------------------------------
 
 struct Req {
-  uint16_t addr;
-  uint16_t data;
-  uint16_t read;
-  uint16_t write;
+  uint16_t addr = 0;
+  uint16_t data = 0;
+  uint16_t read = 0;
+  uint16_t write = 0;
 
   operator bool() const {
     return read || write;
@@ -18,10 +18,10 @@ struct Req {
 };
 
 struct Ack {
-  uint16_t addr;
-  uint16_t data;
-  uint16_t read;
-  uint16_t write;
+  uint16_t addr = 0;
+  uint16_t data = 0;
+  uint16_t read = 0;
+  uint16_t write = 0;
 };
 
 //-----------------------------------------------------------------------------

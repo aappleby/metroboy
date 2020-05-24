@@ -4,9 +4,9 @@
 //-----------------------------------------------------------------------------
 // Audio config
 
-const int64_t input_hz = 154 * 114 * 60;
-const int64_t output_hz = 48000;
-const int samples_per_frame = output_hz / 60;
+constexpr int64_t input_hz = 154 * 114 * 60;
+constexpr int64_t output_hz = 48000;
+constexpr int samples_per_frame = output_hz / 60;
 
 //-----------------------------------------------------------------------------
 // Timing config
@@ -94,7 +94,7 @@ const int samples_per_frame = output_hz / 60;
 #define ADDR_IE     0xFFFF
 #define ADDR_IOBUS_END 0xFFFF
 
-inline bool in_range(uint16_t addr, uint16_t begin, uint16_t end) {
+constexpr bool in_range(uint16_t addr, uint16_t begin, uint16_t end) {
   return (begin <= addr) && (addr <= end);
 }
 

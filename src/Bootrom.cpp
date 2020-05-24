@@ -47,41 +47,41 @@ extern const uint8_t DMG_ROM_bin[] = {
 
 void Bootrom::reset(uint16_t new_pc) {
   disable_bootrom = new_pc != 0x0000;
-  ack = {0};
+  ack = {};
 }
 
 //-----------------------------------------------------------------------------
 
-void Bootrom::ibus_req(Req ibus_req) {
+void Bootrom::tock_req(const Req& req) {
   ack = {0};
-  bool hit = ((ibus_req.addr <= 0x00FF) || (ibus_req.addr == ADDR_DISABLE_BOOTROM));
+  const bool hit = ((req.addr <= 0x00FF) || (req.addr == ADDR_DISABLE_BOOTROM));
   if (disable_bootrom || !hit) return;
 
-  if (ibus_req.write && ibus_req.addr == ADDR_DISABLE_BOOTROM) {
-    disable_bootrom |= (ibus_req.data != 0);
+  if (req.write && req.addr == ADDR_DISABLE_BOOTROM) {
+    disable_bootrom |= (req.data != 0);
     ack = {
-      .addr = ibus_req.addr,
-      .data = ibus_req.data,
+      .addr = req.addr,
+      .data = req.data,
       .read = 0,
       .write = 1,
     };
   }
 
-  if (ibus_req.read && ibus_req.addr <= 0x00FF) {
+  if (req.read && req.addr <= 0x00FF) {
     ack = {
-      .addr = ibus_req.addr,
-      .data = DMG_ROM_bin[ibus_req.addr],
+      .addr = req.addr,
+      .data = DMG_ROM_bin[req.addr],
       .read = 1,
       .write = 0,
     };
   }
 }
 
-void Bootrom::ibus_ack(Ack& ibus_ack) {
-  ibus_ack.addr  += ack.addr;
-  ibus_ack.data  += ack.data;
-  ibus_ack.read  += ack.read;
-  ibus_ack.write += ack.write;
+void Bootrom::tick_ack(Ack& ack_) const {
+  ack_.addr  += ack.addr;
+  ack_.data  += ack.data;
+  ack_.read  += ack.read;
+  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

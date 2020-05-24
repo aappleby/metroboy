@@ -2,13 +2,8 @@
 #include "Types.h"
 
 struct DMA {
-
-  DMA();
-
-  //----------
-
-  void ibus_req(const Req& ibus_req);
-  void ibus_ack(Ack& ibus_ack);
+  void tock_req(const Req& ibus_req);
+  void tick_ack(Ack& ibus_ack) const;
 
   //bool has_ebus_req() const;
   //bool has_vbus_req() const;
@@ -28,7 +23,7 @@ struct DMA {
   //----------
 
   enum class Mode {
-    NONE,
+    NONE = 0,
     VRAM,
     IRAM,
     CART
@@ -36,15 +31,15 @@ struct DMA {
 
   Ack      ack;
 
-  Mode     mode_x;
-  uint8_t  count_x;
-  uint16_t source_x;
+  Mode     mode_x = Mode::NONE;
+  uint8_t  count_x = 0;
+  uint16_t source_x = 0;
 
-  Mode     mode_a;
-  uint8_t  count_a;
-  uint16_t source_a;
+  Mode     mode_a = Mode::NONE;
+  uint8_t  count_a = 0;
+  uint16_t source_a = 0;
 
-  Mode     mode_b;
-  uint8_t  count_b;
-  uint8_t  data_b;
+  Mode     mode_b = Mode::NONE;
+  uint8_t  count_b = 0;
+  uint8_t  data_b = 0;
 };

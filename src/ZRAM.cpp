@@ -10,25 +10,25 @@ void ZRAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-void ZRAM::ibus_req(Req ibus_req) {
-  bool zram_hit = ((ibus_req.addr & 0xFF80) == 0xFF80) && (ibus_req.addr != 0xFFFF);
+void ZRAM::tock_req(const Req& req) {
+  const bool zram_hit = ((req.addr & 0xFF80) == 0xFF80) && (req.addr != 0xFFFF);
 
   if (!zram_hit) {
     ack = {0};
   }
-  else if (ibus_req.write) {
-    ram[ibus_req.addr & 0x007F] = (uint8_t)ibus_req.data;
+  else if (req.write) {
+    ram[req.addr & 0x007F] = (uint8_t)req.data;
     ack = {
-      .addr  = ibus_req.addr,
+      .addr  = req.addr,
       .data  = 0,
       .read  = 0,
       .write = 1,
     };
   }
-  else if (ibus_req.read) {
+  else if (req.read) {
     ack = {
-      .addr  = ibus_req.addr,
-      .data  = ram[ibus_req.addr & 0x007F],
+      .addr  = req.addr,
+      .data  = ram[req.addr & 0x007F],
       .read  = 1,
       .write = 0,
     };
@@ -38,11 +38,11 @@ void ZRAM::ibus_req(Req ibus_req) {
   }
 }
 
-void ZRAM::ibus_ack(Ack& ibus_ack) const {
-  ibus_ack.addr  += ack.addr;
-  ibus_ack.data  += ack.data;
-  ibus_ack.read  += ack.read;
-  ibus_ack.write += ack.write;
+void ZRAM::tick_ack(Ack& ack_) const {
+  ack_.addr  += ack.addr;
+  ack_.data  += ack.data;
+  ack_.read  += ack.read;
+  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

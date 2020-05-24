@@ -610,7 +610,7 @@ void TestGB::tick_everything() {
     /*p01.SAWA*/ cpu_pins.D6.set_tribuf(FF04_RD, not(DIV_12n));
     /*p01.TATU*/ cpu_pins.D7.set_tribuf(FF04_RD, not(DIV_13n));
 
-    /*p01.TAPE*/   wire FF04_WR = and(TAPU_BUS_WR_ABCDxxxH, FF04_FF07, TOLA_A01n, TOVY_A00n);
+    /*p01.TAPE*/ wire FF04_WR = and(TAPU_BUS_WR_ABCDxxxH, FF04_FF07, TOLA_A01n, TOVY_A00n);
     /*p01.UFOL*/ wire DIV_RSTn = nor(UCOB_CLKBAD, sys_pins.RST, FF04_WR);
 
     /*p01.UKUP*/ tim_reg.DIV_00.set(BOGA_xBCDEFGH,   DIV_RSTn, !tim_reg.DIV_00);

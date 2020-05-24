@@ -73,11 +73,11 @@ public:
   GBBlitter gb_blitter;
   DumpPainter dump_painter;
 
-  uint32_t gb_tex;
-  uint32_t vram_ubo;
-  uint32_t trace_tex;
+  uint32_t gb_tex = 0;
+  uint32_t vram_ubo = 0;
+  uint32_t trace_tex = 0;
 
-  uint32_t ram_tex;
+  uint32_t ram_tex = 0;
 
   Viewport view;
   Viewport view_smooth;
@@ -86,11 +86,12 @@ public:
   // gb state
 
   MetroBoy metroboy;
-  int64_t cycles_begin, cycles_end;
+  int64_t cycles_begin = 0;
+  int64_t cycles_end = 0;
 
   //----------
   // debug
 
-  uint8_t golden[160 * 144];
+  uint8_t golden[160 * 144] = {};
   std::string text_buf;
 };

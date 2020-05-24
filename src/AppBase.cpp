@@ -124,8 +124,8 @@ int AppBase::main(int, char**) {
   static uint64_t now  = SDL_GetPerformanceCounter();
 
   while (!quit) {
-    uint64_t new_now = SDL_GetPerformanceCounter();
-    double delta = double(new_now - now) / double(perf_freq);
+    const uint64_t new_now = SDL_GetPerformanceCounter();
+    const double delta = double(new_now - now) / double(perf_freq);
     now = new_now;
 
     //----------------------------------------
@@ -133,9 +133,9 @@ int AppBase::main(int, char**) {
 
     SDL_Event events[64];
     SDL_PumpEvents();
-    int nevents = SDL_PeepEvents(events, 64, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+    const int nevents = SDL_PeepEvents(events, 64, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
     for(int i = 0; i < nevents; i++) {
-      SDL_Event* event = &events[i];
+      const SDL_Event* event = &events[i];
 
       switch (event->type)
       {
@@ -189,7 +189,7 @@ int AppBase::main(int, char**) {
     glViewport(0, 0, screen_w, screen_h);
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    Viewport view = get_viewport();
+    const Viewport view = get_viewport();
     text_painter.begin_frame(view);
     begin_frame();
     render_frame();
@@ -198,14 +198,14 @@ int AppBase::main(int, char**) {
     // Render UI
 
     int mx, my;
-    Uint32 mouse_buttons = SDL_GetMouseState(&mx, &my);
+    const Uint32 mouse_buttons = SDL_GetMouseState(&mx, &my);
 
     io.MouseDown[0] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
     io.MouseDown[1] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
     io.MouseDown[2] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
 
     //io.MousePos = ImVec2((float)mx, (float)my);
-    auto world_mouse = view.screenToWorld({mx, my});
+    const auto world_mouse = view.screenToWorld({mx, my});
     io.MousePos = {
       (float)world_mouse.x,
       (float)world_mouse.y
@@ -254,7 +254,7 @@ int AppBase::main(int, char**) {
 
     glEnable(GL_SCISSOR_TEST);
 
-    ImDrawData* draw_data = ImGui::GetDrawData();
+    const ImDrawData* draw_data = ImGui::GetDrawData();
     for (int n = 0; n < draw_data->CmdListsCount; n++) {
       const ImDrawList* l = draw_data->CmdLists[n];
 
@@ -264,13 +264,13 @@ int AppBase::main(int, char**) {
       for (int i = 0; i < l->CmdBuffer.Size; i++) {
         const ImDrawCmd* c = &l->CmdBuffer[i];
 
-        auto clip_min = view.worldToScreen({c->ClipRect.x, c->ClipRect.y});
-        auto clip_max = view.worldToScreen({c->ClipRect.z, c->ClipRect.w});
+        const auto clip_min = view.worldToScreen({c->ClipRect.x, c->ClipRect.y});
+        const auto clip_max = view.worldToScreen({c->ClipRect.z, c->ClipRect.w});
 
-        int clip_min_x = (int)clip_min.x;
-        int clip_min_y = (int)clip_min.y;
-        int clip_max_x = (int)clip_max.x;
-        int clip_max_y = (int)clip_max.y;
+        const int clip_min_x = (int)clip_min.x;
+        const int clip_min_y = (int)clip_min.y;
+        const int clip_max_x = (int)clip_max.x;
+        const int clip_max_y = (int)clip_max.y;
 
         glScissor(clip_min_x, screen_h - clip_max_y,
                   clip_max_x - clip_min_x, clip_max_y - clip_min_y);

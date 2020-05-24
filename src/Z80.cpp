@@ -132,14 +132,15 @@
 
 uint8_t  sxt(uint8_t x) { return x & 0x80 ? 0xFF : 0x00; }
 
-const uint8_t F_CARRY = 0x10;
-const uint8_t F_HALF_CARRY = 0x20;
-const uint8_t F_NEGATIVE = 0x40;
-const uint8_t F_ZERO = 0x80;
+constexpr uint8_t F_CARRY = 0x10;
+constexpr uint8_t F_HALF_CARRY = 0x20;
+constexpr uint8_t F_NEGATIVE = 0x40;
+constexpr uint8_t F_ZERO = 0x80;
 
 //-----------------------------------------------------------------------------
 
 void Z80::reset(uint16_t new_pc) {
+  *this = Z80();
 
   if (new_pc == 0x100) {
     unhalt = 0;
@@ -231,11 +232,10 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tick_t0(const uint8_t imask, const uint8_t intf, const Ack ibus_ack_) {
-  in = (uint8_t)ibus_ack_.data;
-
+void Z80::tick_t0(const uint8_t imask, const uint8_t intf, const Ack& ack) {
+  in = (uint8_t)ack.data;
   if (state == 0) {
-    op_addr = ibus_ack_.addr;
+    op_addr = ack.addr;
     op = in;     
     int_ack = 0;
 

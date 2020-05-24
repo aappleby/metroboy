@@ -11,41 +11,41 @@ void OAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-void OAM::obus_req(Req obus_req) {
-  bool hit = (obus_req.addr >= ADDR_OAM_BEGIN) && (obus_req.addr <= ADDR_OAM_END);
+void OAM::tock_req(const Req& req) {
+  ack = {0};
+  bool hit = (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END);
 
-  if (!hit) {
-    ack = {0};
-  }
-  else if (obus_req.write) {
-    uint16_t oam_addr = obus_req.addr & 0x00FF;
+  if (!hit) return;
+
+  if (req.write) {
+    uint16_t oam_addr = req.addr & 0x00FF;
     uint16_t d = ram[oam_addr >> 1];
-    if (oam_addr & 1) d = (d & 0x00FF) | (obus_req.data << 8);
-    else              d = (d & 0xFF00) | (obus_req.data << 0);
+    if (oam_addr & 1) d = (d & 0x00FF) | (req.data << 8);
+    else              d = (d & 0xFF00) | (req.data << 0);
     ram[oam_addr >> 1] = d;
 
     ack = {
-      .addr  = obus_req.addr,
-      .data  = obus_req.data,
+      .addr  = req.addr,
+      .data  = req.data,
       .read  = 0,
       .write = 1,
     };
   }
-  else if (obus_req.read) {
+  else if (req.read) {
     ack = {
-      .addr  = obus_req.addr,
-      .data  = ram[(obus_req.addr & 0x00FF) >> 1],
+      .addr  = req.addr,
+      .data  = ram[(req.addr & 0x00FF) >> 1],
       .read  = 1,
       .write = 0,
     };
   }
 }
 
-void OAM::obus_ack(Ack& obus_ack) const {
-  obus_ack.addr  += ack.addr;
-  obus_ack.data  += ack.data;
-  obus_ack.read  += ack.read;
-  obus_ack.write += ack.write;
+void OAM::tick_ack(Ack& ack_) const {
+  ack_.addr  += ack.addr;
+  ack_.data  += ack.data;
+  ack_.read  += ack.read;
+  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

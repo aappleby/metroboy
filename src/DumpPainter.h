@@ -15,15 +15,15 @@ public:
 
 private:
 
-  uint32_t dump_prog;
-  uint32_t dump_vao;
+  uint32_t dump_prog = 0;
+  uint32_t dump_vao = 0;
 
-  uint32_t dump_tab;
-  uint32_t atlas_tex;
-  uint32_t hexa_tex;
+  uint32_t dump_tab = 0;
+  uint32_t atlas_tex = 0;
+  uint32_t hexa_tex = 0;
 
-  uint32_t ruler_x_tab;
-  uint32_t ruler_y_tab;
+  uint32_t ruler_x_tab = 0;
+  uint32_t ruler_y_tab = 0;
 
   static const int tile_w = 16;
   static const int tile_h = 12;

@@ -9,7 +9,7 @@ struct MetroboyState {
   int cycle = 0;
 
   Gameboy gb;
-  uint8_t fb[160*144];
+  uint8_t fb[160*144] = {0};
 };
 
 //-----------------------------------------------------------------------------
@@ -17,7 +17,7 @@ struct MetroboyState {
 class MetroBoy : public StateManagerBase<MetroboyState> {
 public:
 
-  MetroBoy();
+  MetroBoy() = default;
   MetroBoy(const MetroBoy&) = delete;
   MetroBoy& operator=(const MetroBoy&) = delete;
 
@@ -60,9 +60,8 @@ public:
 
 private:
 
-  bool trace;
-
-  uint32_t tracebuffer[456 * 154];
+  uint32_t tracebuffer[456 * 154] = {};
+  int tracecursor = 0;
 };
 
 //-----------------------------------------------------------------------------

@@ -39,28 +39,28 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-void SPU::ibus_req(Req ibus_req) {
+void SPU::tock_req(const Req& req) {
   ack = {0};
 
-  if (ibus_req.addr < 0xFF10 || ibus_req.addr > 0xFF3F) {
+  if (req.addr < 0xFF10 || req.addr > 0xFF3F) {
     return;
   }
-  else if (ibus_req.read)  {
-    bus_read(ibus_req);
+  else if (req.read)  {
+    bus_read(req);
   }
-  else if (ibus_req.write) {
-    bus_write(ibus_req);
+  else if (req.write) {
+    bus_write(req);
   }
   else {
     assert(false);
   }
 }
 
-void SPU::ibus_ack(Ack& ibus_ack) {
-  ibus_ack.addr  += ack.addr;
-  ibus_ack.data  += ack.data;
-  ibus_ack.read  += ack.read;
-  ibus_ack.write += ack.write;
+void SPU::tick_ack(Ack& ack_) {
+  ack_.addr  += ack.addr;
+  ack_.data  += ack.data;
+  ack_.read  += ack.read;
+  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------
@@ -329,10 +329,10 @@ void SPU::tock(const int tcycle_) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_read(Req ibus_req) {
+void SPU::bus_read(const Req& req) {
 
   ack = {
-    .addr  = ibus_req.addr,
+    .addr  = req.addr,
     .data  = 0,
     .read  = 1,
     .write = 0,
@@ -341,12 +341,12 @@ void SPU::bus_read(Req ibus_req) {
   //----------
   // wavetable
 
-  if (ibus_req.addr >= 0xFF30 && ibus_req.addr <= 0xFF3F) {
-    ack.data = s3_wave[ibus_req.addr & 0xF];
+  if (req.addr >= 0xFF30 && req.addr <= 0xFF3F) {
+    ack.data = s3_wave[req.addr & 0xF];
     return;
   }
 
-  switch (ibus_req.addr) {
+  switch (req.addr) {
   case 0xFF10: ack.data = nr10 | 0x80; break;
   case 0xFF11: ack.data = nr11 | 0x3F; break;
   case 0xFF12: ack.data = nr12 | 0x00; break;
@@ -388,19 +388,19 @@ void SPU::bus_read(Req ibus_req) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_write(Req ibus_req) {
+void SPU::bus_write(const Req& req) {
   bool sound_on = (nr52 & 0x80);
 
   ack = {
-    .addr  = ibus_req.addr,
-    .data  = ibus_req.data,
+    .addr  = req.addr,
+    .data  = req.data,
     .read  = 0,
     .write = 1,
   };
 
   if (!sound_on) {
-    if (ibus_req.addr == 0xFF26) {
-      nr52 = (uint8_t)ibus_req.data | 0b01110000;
+    if (req.addr == 0xFF26) {
+      nr52 = (uint8_t)req.data | 0b01110000;
       if (nr52 & 0x80) reset();
     }
     return;
@@ -409,54 +409,54 @@ void SPU::bus_write(Req ibus_req) {
   //----------
   // wavetable
 
-  if (ibus_req.addr >= 0xFF30 && ibus_req.addr <= 0xFF3F) {
-    s3_wave[ibus_req.addr & 0xF] = (uint8_t)ibus_req.data;
+  if (req.addr >= 0xFF30 && req.addr <= 0xFF3F) {
+    s3_wave[req.addr & 0xF] = (uint8_t)req.data;
     return;
   }
 
   //----------
   // glitches n stuff
 
-  if (ibus_req.addr == 0xFF12) {
+  if (req.addr == 0xFF12) {
     if ((nr12 & 0x08) && s1_enable) s1_env_volume = (s1_env_volume + 1) & 15;
-    if ((ibus_req.data & 0xF8) == 0) s1_enable = false;
+    if ((req.data & 0xF8) == 0) s1_enable = false;
   }
 
-  if (ibus_req.addr == 0xFF17) {
+  if (req.addr == 0xFF17) {
     if ((nr22 & 0x08) && s2_enable) s2_env_volume = (s2_env_volume + 1) & 15;
-    if ((ibus_req.data & 0xF8) == 0) s2_enable = false;
+    if ((req.data & 0xF8) == 0) s2_enable = false;
   }
 
-  if (ibus_req.addr == 0xFF21) {
+  if (req.addr == 0xFF21) {
     if ((nr42 & 0x08) && s4_enable) s4_env_volume = (s4_env_volume + 1) & 15;
-    if ((ibus_req.data & 0xF8) == 0) s4_enable = false;
+    if ((req.data & 0xF8) == 0) s4_enable = false;
   }
 
   //----------
   // registers
 
-  switch (ibus_req.addr) {
-  case 0xFF10: nr10 = (uint8_t)ibus_req.data | 0b10000000; break;
-  case 0xFF11: nr11 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF12: nr12 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF13: nr13 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF14: nr14 = (uint8_t)ibus_req.data | 0b00111000; break;
-  case 0xFF16: nr21 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF17: nr22 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF18: nr23 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF19: nr24 = (uint8_t)ibus_req.data | 0b00111000; break;
-  case 0xFF1A: nr30 = (uint8_t)ibus_req.data | 0b01111111; break;
-  case 0xFF1B: nr31 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF1C: nr32 = (uint8_t)ibus_req.data | 0b10011111; break;
-  case 0xFF1D: nr33 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF1E: nr34 = (uint8_t)ibus_req.data | 0b00111000; break;
-  case 0xFF20: nr41 = (uint8_t)ibus_req.data | 0b11000000; break;
-  case 0xFF21: nr42 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF22: nr43 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF23: nr44 = (uint8_t)ibus_req.data | 0b00111111; break;
-  case 0xFF24: nr50 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF25: nr51 = (uint8_t)ibus_req.data | 0b00000000; break;
-  case 0xFF26: nr52 = (uint8_t)ibus_req.data | 0b01110000; break;
+  switch (req.addr) {
+  case 0xFF10: nr10 = (uint8_t)req.data | 0b10000000; break;
+  case 0xFF11: nr11 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF12: nr12 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF13: nr13 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF14: nr14 = (uint8_t)req.data | 0b00111000; break;
+  case 0xFF16: nr21 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF17: nr22 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF18: nr23 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF19: nr24 = (uint8_t)req.data | 0b00111000; break;
+  case 0xFF1A: nr30 = (uint8_t)req.data | 0b01111111; break;
+  case 0xFF1B: nr31 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF1C: nr32 = (uint8_t)req.data | 0b10011111; break;
+  case 0xFF1D: nr33 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF1E: nr34 = (uint8_t)req.data | 0b00111000; break;
+  case 0xFF20: nr41 = (uint8_t)req.data | 0b11000000; break;
+  case 0xFF21: nr42 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF22: nr43 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF23: nr44 = (uint8_t)req.data | 0b00111111; break;
+  case 0xFF24: nr50 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF25: nr51 = (uint8_t)req.data | 0b00000000; break;
+  case 0xFF26: nr52 = (uint8_t)req.data | 0b01110000; break;
   default: return;
   }
 
@@ -464,10 +464,10 @@ void SPU::bus_write(Req ibus_req) {
   // triggers
 
   {
-    bool s1_trigger_ = ibus_req.addr == 0xFF14 && (ibus_req.data & 0x80);
-    bool s2_trigger_ = ibus_req.addr == 0xFF19 && (ibus_req.data & 0x80);
-    bool s3_trigger_ = ibus_req.addr == 0xFF1E && (ibus_req.data & 0x80);
-    bool s4_trigger_ = ibus_req.addr == 0xFF23 && (ibus_req.data & 0x80);
+    bool s1_trigger_ = req.addr == 0xFF14 && (req.data & 0x80);
+    bool s2_trigger_ = req.addr == 0xFF19 && (req.data & 0x80);
+    bool s3_trigger_ = req.addr == 0xFF1E && (req.data & 0x80);
+    bool s4_trigger_ = req.addr == 0xFF23 && (req.data & 0x80);
 
     if (s1_trigger_) {
       uint8_t s1_sweep_period = (nr10 & 0b01110000) >> 4;

@@ -34,8 +34,8 @@ private:
 
   //----------
 
-  uint32_t gb_tex;
-  uint32_t viz_prog;
+  uint32_t gb_tex = 0;
+  uint32_t viz_prog = 0;
 
   //----------
   // AppBase::

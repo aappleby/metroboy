@@ -7,9 +7,9 @@ using namespace glm;
 double ease(double a, double b, double delta);
 
 struct Viewport {
-  dvec2 min;
-  dvec2 max;
-  dvec2 screen_size;
+  dvec2 min = {};
+  dvec2 max = {};
+  dvec2 screen_size = {};
 
   bool operator ==(const Viewport& b) const {
     return (min == b.min) && (max == b.max) && (screen_size == b.screen_size);

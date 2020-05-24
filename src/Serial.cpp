@@ -5,40 +5,39 @@
 //-----------------------------------------------------------------------------
 
 void Serial::reset() {
-  *this = {};
-  sb = 0x00;
-  sc = 0x7E;
+  sb = 0x00; // FF01
+  sc = 0x7E; // FF02
 }
 
 //-----------------------------------------------------------------------------
 
-void Serial::ibus_req(Req ibus_req) {
-  if ((ibus_req.addr != ADDR_SB) && (ibus_req.addr != ADDR_SC)) {
+void Serial::tock_req(const Req& req) {
+  if ((req.addr != ADDR_SB) && (req.addr != ADDR_SC)) {
     ack = {0};
   }
-  else if (ibus_req.write) {
-    ack.addr  = ibus_req.addr;
-    ack.data  = ibus_req.data;
+  else if (req.write) {
+    ack.addr  = req.addr;
+    ack.data  = req.data;
     ack.read  = 0;
     ack.write = 1;
-    if (ibus_req.addr == ADDR_SB) sb = (uint8_t)ibus_req.data;
-    if (ibus_req.addr == ADDR_SC) sc = (uint8_t)ibus_req.data | 0b01111110;
+    if (req.addr == ADDR_SB) sb = (uint8_t)req.data;
+    if (req.addr == ADDR_SC) sc = (uint8_t)req.data | 0b01111110;
   }
-  else if (ibus_req.read) {
-    ack.addr  = ibus_req.addr;
+  else if (req.read) {
+    ack.addr  = req.addr;
     ack.data  = 0;
     ack.read  = 1;
     ack.write = 0;
-    if (ibus_req.addr == ADDR_SB) ack.data = sb;
-    if (ibus_req.addr == ADDR_SC) ack.data = sc;
+    if (req.addr == ADDR_SB) ack.data = sb;
+    if (req.addr == ADDR_SC) ack.data = sc;
   }
 }
 
-void Serial::ibus_ack(Ack& ibus_ack) const {
-  ibus_ack.addr  += ack.addr;
-  ibus_ack.data  += ack.data;
-  ibus_ack.read  += ack.read;
-  ibus_ack.write += ack.write;
+void Serial::tick_ack(Ack& ack_) const {
+  ack_.addr  += ack.addr;
+  ack_.data  += ack.data;
+  ack_.read  += ack.read;
+  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

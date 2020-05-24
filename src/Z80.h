@@ -9,7 +9,7 @@ struct Z80 {
   uint8_t get_int_ack() const { return int_ack; }
   void    get_bus_req(Req& r) const;
 
-  void    tick_t0(const uint8_t imask_, const uint8_t intf_, const Ack ibus_ack_);
+  void    tick_t0(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
   void    tock_t0(const uint8_t imask_, const uint8_t intf_);
 
   void    tick_t1();
@@ -28,31 +28,30 @@ struct Z80 {
   uint8_t  get_op() const { return op; }
   int      get_state() const { return state; }
   
-  bool    unhalt;
 
 //private:
+  int      state = 0, state_ = 0;
+  uint16_t op_addr = 0;
+  bool     unhalt = 0;
+  uint8_t  op = 0;
+  uint8_t  cb = 0;
+  bool     ime = 0, ime_delay = 0;
 
-  uint16_t op_addr;
-  uint8_t  op;
-  uint8_t  cb;
-  bool     ime, ime_delay;
-
-  int      state, state_;
-  uint8_t  in;
-  uint8_t  out;
-  bool     write;
+  uint8_t  in = 0;
+  uint8_t  out = 0;
+  bool     write = 0;
   
-  uint8_t data_out;
+  uint8_t data_out = 0;
 
-  uint8_t alu_x;
-  uint8_t alu_y;
-  uint8_t alu_o;
-  uint8_t alu_f;
+  uint8_t alu_x = 0;
+  uint8_t alu_y = 0;
+  uint8_t alu_o = 0;
+  uint8_t alu_f = 0;
 
-  uint8_t inc_x;
-  uint8_t inc_y;
-  uint8_t inc_o;
-  uint8_t inc_c;
+  uint8_t inc_x = 0;
+  uint8_t inc_y = 0;
+  uint8_t inc_o = 0;
+  uint8_t inc_c = 0;
 
   uint8_t inc(uint8_t ix, uint8_t iy) {
     inc_x = ix;
@@ -70,36 +69,34 @@ struct Z80 {
     return inc_o;
   }
 
-  uint8_t  int_ack;
+  uint8_t  int_ack = 0;
 
 #pragma warning(push)
 #pragma warning(disable : 4201)
+#pragma warning(disable : 26495)
 
   // left "data" bus              low side     high side
-  union { uint16_t dbus;   struct { uint8_t dbl; uint8_t dbh; }; };
-  union { uint16_t bc;     struct { uint8_t   c; uint8_t   b; }; };
-  union { uint16_t de;     struct { uint8_t   e; uint8_t   d; }; };
-  union { uint16_t hl;     struct { uint8_t   l; uint8_t   h; }; };
-  union { uint16_t af;     struct { uint8_t   f; uint8_t   a; }; };
-  union { uint16_t xy;     struct { uint8_t   y; uint8_t   x; }; };
+  union { uint16_t dbus = 0;   struct { uint8_t dbl; uint8_t dbh; }; };
+  union { uint16_t bc = 0;     struct { uint8_t   c; uint8_t   b; }; };
+  union { uint16_t de = 0;     struct { uint8_t   e; uint8_t   d; }; };
+  union { uint16_t hl = 0;     struct { uint8_t   l; uint8_t   h; }; };
+  union { uint16_t af = 0;     struct { uint8_t   f; uint8_t   a; }; };
+  union { uint16_t xy = 0;     struct { uint8_t   y; uint8_t   x; }; };
                            
   // right "addr" bus      
-  union { uint16_t abus;   struct { uint8_t abl; uint8_t abh; }; };
-  union { uint16_t pc;     struct { uint8_t pcl; uint8_t pch; }; };
-  union { uint16_t sp;     struct { uint8_t spl; uint8_t sph; }; };
-  union { uint16_t ad;     struct { uint8_t adl; uint8_t adh; }; };
+  union { uint16_t abus = 0;   struct { uint8_t abl; uint8_t abh; }; };
+  union { uint16_t pc = 0;     struct { uint8_t pcl; uint8_t pch; }; };
+  union { uint16_t sp = 0;     struct { uint8_t spl; uint8_t sph; }; };
+  union { uint16_t ad = 0;     struct { uint8_t adl; uint8_t adh; }; };
 
 #pragma warning(pop)
 
+  uint8_t apl = 0;
+  uint8_t aph = 0;
+  uint8_t aml = 0;
+  uint8_t amh = 0;
+
   void set_addr(uint16_t new_addr, int new_write);
-
-  uint8_t apl;
-  uint8_t aph;
-  uint8_t aml;
-  uint8_t amh;
-
-private:
-
   uint8_t& reg(int mux);
 
   void     set_f(uint8_t mask);

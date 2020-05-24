@@ -16,27 +16,36 @@
 
 #include <assert.h>
 
+// 0x0000 - rom
+// 0x2000 - rom
+// 0x4000 - rom
+// 0x6000 - rom
+// 0x8000 - vram
+// 0xA000 - cram
+// 0xC000 - iram
+// 0xE000 - eram
+
 //-----------------------------------------------------------------------------
 
 struct Gameboy {
   struct HostOut {
-    int x;
-    int y;
-    int counter;
-    uint8_t pix;
-    bool pix_oe;
-    sample_t out_r;
-    sample_t out_l;
-    uint32_t trace;
+    int x = 0;
+    int y = 0;
+    int counter = 0;
+    uint8_t pix = 0;
+    bool pix_oe = 0;
+    sample_t out_r = 0;
+    sample_t out_l = 0;
+    uint32_t trace = 0;
   };
 
-  void    reset(size_t new_rom_size, uint16_t new_pc);
+  void    set_rom(uint8_t* new_rom, size_t new_rom_size);
   void    reset(uint16_t new_pc);
   HostOut get_host_data() const { return gb_to_host; }
 
 
-  void ibus_req2(Req ibus_req);
-  void ibus_ack2(Ack& ibus_ack) const;
+  void tock_req(const Req& ibus_req);
+  void tick_ack(Ack& ibus_ack) const;
 
   void tick2();
   void tock2();
@@ -57,15 +66,6 @@ struct Gameboy {
 
   int64_t  get_tcycle() const { return (phase / 2); }
 
-  // 0x0000 - rom
-  // 0x2000 - rom
-  // 0x4000 - rom
-  // 0x6000 - rom
-  // 0x8000 - vram
-  // 0xA000 - cram
-  // 0xC000 - iram
-  // 0xE000 - eram
-
   uint8_t* get_vram()   { return vram.get(); }
   uint8_t* get_cram()   { return cart.get_cram(); }
   uint8_t* get_iram()   { return iram.get(); }
@@ -79,7 +79,7 @@ struct Gameboy {
 
 //private:
 
-  int64_t phase;
+  //----------
 
   Z80     z80;
   Timer   timer;
@@ -95,28 +95,24 @@ struct Gameboy {
   DMA     dma;
   Bootrom boot;
 
+  //----------
+
+  int64_t phase = -3;
   HostOut gb_to_host;
-  uint32_t trace_val;
+  uint32_t trace_val = 0;
+
+  uint8_t intf = 0;
+  uint8_t imask = 0;
+  Ack ack;
 
   //----------
 
   Req cpu_req;
-  Ack cpu_ack;
-
   Req dma_ebus_req;
-  Ack dma_ebus_ack;
-
   Req dma_vbus_req;
-  Ack dma_vbus_ack;
-
   Req dma_obus_req;
-  Ack dma_obus_ack;
-
   Req ppu_vbus_req;
-  Ack ppu_vbus_ack;
-
   Req ppu_obus_req;
-  Ack ppu_obus_ack;
 
   Req ibus_req;
   Ack ibus_ack;
@@ -131,16 +127,8 @@ struct Gameboy {
   Ack vbus_ack;
 
   //----------
-  // interrupts
 
-  uint8_t intf;
-  uint8_t imask;
-
-  Ack ack;
-
-  //----------
-
-  uint32_t sentinel;
+  uint32_t sentinel = 0xDEADBEEF;
 };
 
 //-----------------------------------------------------------------------------

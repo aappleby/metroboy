@@ -19,13 +19,12 @@
 #include <imgui.h>
 #include <examples/imgui_impl_sdl.h>
 #include <vector>
+#include <typeinfo>
 
 extern const uint32_t gb_colors[];
 extern uint8_t rom_buf[];
 
-void run_test(const std::string& prefix, const std::string& name);
-
-std::string junk(65536, 0);
+void run_wpol_test(const std::string& prefix, const std::string& name);
 
 //-----------------------------------------------------------------------------
 
@@ -66,7 +65,23 @@ void MetroBoyApp::init() {
   //load("cpu_instrs");
   //load("instr_timing");
 
-  //load("microtests/build/dmg", "poweron_000_div");
+  //---------
+  // Div
+
+  printf("---------- POST begin ----------\n");
+  printf("Timer");
+  run_microtest("microtests/build/dmg", "div_inc_timing_a");
+  run_microtest("microtests/build/dmg", "div_inc_timing_b");
+  run_microtest("microtests/build/dmg", "poweron_000_div");
+  run_microtest("microtests/build/dmg", "poweron_004_div");
+  run_microtest("microtests/build/dmg", "poweron_005_div");
+  run_microtest("microtests/build/dmg", "timer_div_phase_c");
+  run_microtest("microtests/build/dmg", "timer_div_phase_d");
+  printf("\n");
+  printf("---------- POST done  ----------\n");
+
+  //---------
+
   //load("microtests/build/dmg", "minimal");
   //load("micro_cpu/build/dmg", "cpu_mov");
 
@@ -84,10 +99,13 @@ void MetroBoyApp::init() {
   //load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
   //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
 
+  //load("microtests/build/dmg", "div_inc_timing_a");
 
   //load_memdump("roms", "LinksAwakening_house");
+
+  //load("roms/mooneye-gb/tests/build/acceptance/timer/", "tim00");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;
@@ -133,6 +151,11 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
 
 void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   std::string gb_filename = prefix + "/" + name + ".gb";
+  printf("Loading rom %s\n", gb_filename.c_str());
+  memset(rom_buf, 0, 1024 * 1024);
+  metroboy.load_rom(gb_filename.c_str(), false);
+  rom_loaded = true;
+  runmode = STEP_CYCLE;
 
 #if 0
   std::string golden_filename = prefix + "/" + name + ".bmp";
@@ -180,12 +203,6 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
     overlay_mode = 1;
   }
 #endif
-
-  printf("Loading rom %s\n", gb_filename.c_str());
-  memset(rom_buf, 0, 1024 * 1024);
-  metroboy.load_rom(gb_filename.c_str(), false);
-  rom_loaded = true;
-  runmode = STEP_CYCLE;
 }
 
 //-----------------------------------------------------------------------------

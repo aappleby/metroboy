@@ -22,7 +22,6 @@
 #include <typeinfo>
 
 extern const uint32_t gb_colors[];
-extern uint8_t rom_buf[];
 
 void run_wpol_test(const std::string& prefix, const std::string& name);
 
@@ -99,7 +98,7 @@ void MetroBoyApp::init() {
   //load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
   //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
 
   //load("microtests/build/dmg", "div_inc_timing_a");
 
@@ -116,13 +115,8 @@ void MetroBoyApp::init() {
 
 void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& name) {
   std::string filename = prefix + "/" + name + ".dump";
-
-  FILE* file = nullptr;
-  fopen_s(&file, filename.c_str(), "rb");
-
-  std::vector<uint8_t> buf(65536, 0);
-  size_t size = fread(buf.data(), 1, 65536, file);
-  if(size != 65536) assert(false);
+  blob buf;
+  load_array(filename, buf);
 
   memcpy(metroboy.gb().get_vram(), &buf[0x8000], 8192);
 
@@ -152,7 +146,6 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
 void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   std::string gb_filename = prefix + "/" + name + ".gb";
   printf("Loading rom %s\n", gb_filename.c_str());
-  memset(rom_buf, 0, 1024 * 1024);
   metroboy.load_rom(gb_filename.c_str(), false);
   rom_loaded = true;
   runmode = STEP_CYCLE;
@@ -240,7 +233,7 @@ void MetroBoyApp::update(double delta) {
       case SDLK_o:      overlay_mode = (overlay_mode + 1) % 3; break;
       case SDLK_RIGHT:  {
         if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-          step_forward += 10;
+          step_forward += 8;
         } else {
           step_forward++;
         }
@@ -248,7 +241,7 @@ void MetroBoyApp::update(double delta) {
       }
       case SDLK_LEFT:   {
         if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-          step_backward += 10;
+          step_backward += 8;
         } else {
           step_backward++;
         }

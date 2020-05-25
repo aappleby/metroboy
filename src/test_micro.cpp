@@ -9,7 +9,6 @@
 #endif
 
 #pragma warning(disable : 4996)
-extern uint8_t rom_buf[];
 
 static const std::string micro_tests[] = {
   "poweron_000_div",
@@ -491,26 +490,13 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
   }
 
   std::string filename = prefix + "/" + name + ".gb";
+  blob rom;
+  load_array(filename, rom);
 
-  FILE* rom_file = NULL;
-  rom_file = fopen(filename.c_str(), "rb");
-
-  if (rom_file == NULL) {
-    printf("?");
-    return false;
-  }
-
-  fseek(rom_file, 0, SEEK_END);
-  size_t rom_size = ftell(rom_file);
-  fseek(rom_file, 0, SEEK_SET);
-  rom_size = fread(rom_buf, 1, rom_size, rom_file);
-  fclose(rom_file);
-
-  //Gameboy* gameboy = new Gameboy();
   Gameboy gb_local;
   Gameboy* gameboy = &gb_local;
 
-  gameboy->set_rom(rom_buf, rom_size);
+  gameboy->set_rom(rom.data(), rom.size());
   gameboy->reset(0x100);
 
   uint8_t result = 0xFF;

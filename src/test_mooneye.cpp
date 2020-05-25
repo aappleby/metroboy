@@ -135,21 +135,13 @@ static const char* misc_tests[] = {
 
 //-----------------------------------------------------------------------------
 
-extern uint8_t rom_buf[1024 * 1024];
-
 void run_mooneye_test(const std::string& prefix, const std::string& name) {
   std::string filename = prefix + name;
-
-  FILE* rom_file = NULL;
-  rom_file = fopen(filename.c_str(), "rb");
-  fseek(rom_file, 0, SEEK_END);
-  size_t rom_size = ftell(rom_file);
-  fseek(rom_file, 0, SEEK_SET);
-  rom_size = fread(rom_buf, 1, rom_size, rom_file);
-  fclose(rom_file);
+  blob rom;
+  load_array(filename, rom);
 
   Gameboy gameboy;
-  gameboy.set_rom(rom_buf, rom_size);
+  gameboy.set_rom(rom.data(), rom.size());
   gameboy.reset(0x100);
 
   uint8_t result = 0xFF;

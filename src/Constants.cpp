@@ -14,11 +14,6 @@ extern const uint32_t gb_colors[8] = {
 };
 
 //-----------------------------------------------------------------------------
-// The shared rom buffer.
-
-uint8_t rom_buf[1024 * 1024];
-
-//-----------------------------------------------------------------------------
 // the nintendo logo as it appears in vram
 
 uint8_t bootrom_logo[] = {

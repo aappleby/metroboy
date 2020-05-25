@@ -7,15 +7,8 @@ extern const int op_sizes[];
 //=============================================================================
 
 void MetroBoy::load_rom(const char* filename, bool run_bootrom) {
-  FILE* rom_file = nullptr;
-  fopen_s(&rom_file, filename, "rb");
-  fseek(rom_file, 0, SEEK_END);
-  size_t rom_size = ftell(rom_file);
-  fseek(rom_file, 0, SEEK_SET);
-  rom_size = fread(rom_buf, 1, rom_size, rom_file);
-  fclose(rom_file);
-  
-  current->gb.set_rom(rom_buf, rom_size);
+  load_array(filename, rom);
+  current->gb.set_rom(rom.data(), rom.size());
   current->gb.reset(run_bootrom ? 0x0000 : 0x0100);
 }
 

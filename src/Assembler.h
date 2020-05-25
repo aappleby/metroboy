@@ -1,13 +1,12 @@
 #pragma once
 
+#include "Types.h"
+
 #include <vector>
 #include <map>
 #include <string>
 
 extern const char* source_header;
-
-typedef std::vector<uint8_t> blob;
-
 
 struct Assembler {
   Assembler() = default;

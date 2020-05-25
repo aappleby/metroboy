@@ -7,7 +7,6 @@
 
 #pragma warning(disable : 4996)
 
-extern uint8_t rom_buf[];
 extern const char* op_strings[];
 extern const char* cb_strings[];
 extern const int op_sizes[];
@@ -70,6 +69,7 @@ uint8_t metadata[] = {
 };
 
 void Assembler::link() {
+  /*
   memset(rom_buf, 0, 1024*1024);
   memcpy(rom_buf + 0x100, metadata, sizeof(metadata));
   
@@ -81,15 +81,13 @@ void Assembler::link() {
 
     memcpy(rom_buf + addr, code.data(), code.size());
   }
+  */
 }
 
 void Assembler::write_source() {
   std::string source(source_header);
   disassemble(source);
-
-  FILE* out = fopen((name + ".s").c_str(), "wb");
-  fwrite(source.data(), 1, source.size(), out);
-  fclose(out);
+  save_array(name + ".s", source);
 }
 
 void Assembler::begin_label(std::string label) {

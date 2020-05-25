@@ -25,15 +25,11 @@ public:
 
   void load_dump() {
     clear_history();
-    FILE* dump_file = fopen("dump.gb", "rb");
-    fread(states.back(), 1, sizeof(T), dump_file);
-    fclose(dump_file);
+    load_obj("dump.gb", states.back());
   }
 
   void save_dump() {
-    FILE* dump_file = fopen("dump.gb", "wb");
-    fwrite(state(), 1, sizeof(T), dump_file);
-    fclose(dump_file);
+    save_obj("dump.gb", state());
   }
 
   void step() {

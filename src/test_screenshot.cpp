@@ -10,8 +10,6 @@
 
 #pragma warning(disable : 4996)
 
-extern uint8_t rom_buf[];
-
 static const char* mealybug_tests[] = {
   "m3_window_timing",
   "m3_bgp_change",
@@ -95,17 +93,12 @@ int run_screenshot_test(const std::string& prefix, const std::string& name) {
     return -1;
   }
 
-  FILE* rom_file = NULL;
-  rom_file = fopen(filename.c_str(), "rb");
-  fseek(rom_file, 0, SEEK_END);
-  size_t rom_size = ftell(rom_file);
-  fseek(rom_file, 0, SEEK_SET);
-  rom_size = fread(rom_buf, 1, rom_size, rom_file);
-  fclose(rom_file);
+  blob rom;
+  load_array(filename, rom);
 
   Gameboy gameboy;
   uint8_t fb[160*144] = {};
-  gameboy.set_rom(rom_buf, rom_size);
+  gameboy.set_rom(rom.data(), rom.size());
   gameboy.reset(0x100);
 
   int i = 0;

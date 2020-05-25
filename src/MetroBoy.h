@@ -60,7 +60,8 @@ public:
 
 private:
 
-  uint32_t tracebuffer[456 * 154] = {};
+  blob rom;
+  uint32_t tracebuffer[456 * 154] = {0};
   int tracecursor = 0;
 };
 

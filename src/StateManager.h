@@ -3,8 +3,6 @@
 
 #include <vector>
 
-extern uint8_t rom_buf[];
-
 //-----------------------------------------------------------------------------
 
 template<typename T>
@@ -16,21 +14,11 @@ public:
   }
 
   void StateManagerBase::load_dump() {
-    FILE* dump_file = nullptr;
-    fopen_s(&dump_file, "dump.MetroBoy", "rb");
-    size_t size = fread(current, 1, sizeof(T), dump_file);
-    assert(size == sizeof(Gameboy));
-    size = fread(rom_buf, 1, 1024 * 1024, dump_file);
-    assert(size == 1024 * 1024);
-    fclose(dump_file);
+    load_obj("dump.MetroBoy", *current);
   }
 
   void StateManagerBase::save_dump() {
-    FILE* dump_file = nullptr;
-    fopen_s(&dump_file, "dump.MetroBoy", "wb");
-    fwrite(current, 1, sizeof(T), dump_file);
-    fwrite(rom_buf, 1, 1024 * 1024, dump_file);
-    fclose(dump_file);
+    save_obj("dump.MetroBoy", *current);
   }
 
   //----------------------------------------

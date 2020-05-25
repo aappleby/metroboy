@@ -2,8 +2,8 @@
 
 #include "Gameboy.h"
 
-#include <iostream>
-#include <memory>
+#include <vector>
+#include <fstream>
 
 #pragma warning(disable : 4996)
 
@@ -125,25 +125,17 @@ static const char* ppu_tests[] = {
 
 //-----------------------------------------------------------------------------
 
-extern uint8_t rom_buf[1024 * 1024];
-
 void run_wpol_test(const std::string& prefix, const std::string& name) {
   std::string filename = prefix + name;
+  blob rom;
+  load_array(filename, rom);
 
-  FILE* rom_file = NULL;
-  rom_file = fopen(filename.c_str(), "rb");
-  fseek(rom_file, 0, SEEK_END);
-  size_t rom_size = ftell(rom_file);
-  fseek(rom_file, 0, SEEK_SET);
-  rom_size = fread_s(rom_buf, sizeof(rom_buf), 1, sizeof(rom_buf), rom_file);
-  fclose(rom_file);
-
-  auto gb{std::make_unique<Gameboy>()};
+  Gameboy gameboy;
+  Gameboy* gb = &gameboy;
   if (gb) {
-    gb->set_rom(rom_buf, rom_size);
+    gb->set_rom(rom.data(), rom.size());
     gb->reset(0x100);
   }
-
 
   uint8_t result = 0xFF;
   int i = 0;

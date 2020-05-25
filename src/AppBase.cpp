@@ -2,9 +2,13 @@
 
 #include "GLBase.h"
 
-#include <stdio.h>
-#include <include/SDL.h>
 #include <imgui.h>
+
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -57,27 +61,23 @@ void main() {
 
 //-----------------------------------------------------------------------------
 
-int AppBase::main(int, char**) {
+int AppBase::app_main(int, char**) {
 
   //----------------------------------------
   // Create window
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  //screen_w = 1856;
-  //screen_h = 1024;
+  int initial_screen_w = 1920;
+  int initial_screen_h = 1080;
 
-  screen_w = 1920;
-  screen_h = 1080;
-
-  window = SDL_CreateWindow("MetroBoy Game Boy Simulator",
+  window = SDL_CreateWindow(get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                            screen_w, screen_h,
+                            initial_screen_w, initial_screen_h,
                             SDL_WINDOW_OPENGL /*| SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI*/);
 
   keyboard_state = SDL_GetKeyboardState(nullptr);
   app_start = SDL_GetPerformanceCounter();
-  perf_freq = SDL_GetPerformanceFrequency();
 
   gl_context = (SDL_GLContext)init_gl(window);
 
@@ -112,24 +112,35 @@ int AppBase::main(int, char**) {
   //----------------------------------------
   // Initialize internal renderers
 
+  view_raw = view_raw.reset(initial_screen_w, initial_screen_h);
+  view_smooth = view_raw;
+  view_snap = view_raw;
+
   blitter.init();
+  grid_painter.init();
   text_painter.init();
-  {
-    init();
-  }
+
+  init();
 
   //----------------------------------------
   // Loop forever
 
-  static uint64_t now  = SDL_GetPerformanceCounter();
+  static uint64_t old_now = SDL_GetPerformanceCounter();
+  static uint64_t new_now = SDL_GetPerformanceCounter();
 
   while (!quit) {
-    const uint64_t new_now = SDL_GetPerformanceCounter();
-    const double delta = double(new_now - now) / double(perf_freq);
-    now = new_now;
+    old_now = new_now;
+    new_now = SDL_GetPerformanceCounter();
+    const double delta = double(new_now - old_now) / double(SDL_GetPerformanceFrequency());
 
     //----------------------------------------
     // Peek events and dispatch to ImGui
+
+    int screen_w = 0, screen_h = 0;
+    SDL_GL_GetDrawableSize((SDL_Window*)window, &screen_w, &screen_h);
+
+    int mouse_x = 0, mouse_y = 0;
+    uint32_t mouse_buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
 
     SDL_Event events[64];
     SDL_PumpEvents();
@@ -137,75 +148,62 @@ int AppBase::main(int, char**) {
     for(int i = 0; i < nevents; i++) {
       const SDL_Event* event = &events[i];
 
-      switch (event->type)
-      {
-      case SDL_MOUSEWHEEL:
-          {
-              if (event->wheel.x > 0) io.MouseWheelH += 1;
-              if (event->wheel.x < 0) io.MouseWheelH -= 1;
-              if (event->wheel.y > 0) io.MouseWheel += 1;
-              if (event->wheel.y < 0) io.MouseWheel -= 1;
-              break;
+      switch (event->type) {
+      case SDL_MOUSEWHEEL: {
+        if (io.WantCaptureMouse) {
+          if (event->wheel.x > 0) io.MouseWheelH += 1;
+          if (event->wheel.x < 0) io.MouseWheelH -= 1;
+          if (event->wheel.y > 0) io.MouseWheel += 1;
+          if (event->wheel.y < 0) io.MouseWheel -= 1;
+        }
+        else {
+          view_raw = view_raw.zoom({mouse_x, mouse_y}, double(event->wheel.y) * 0.25);
+        }
+        break;
+      }
+      case SDL_MOUSEMOTION: {
+        if (io.WantCaptureMouse) {
+        }
+        else {
+          if (event->motion.state & SDL_BUTTON_LMASK) {
+            view_raw = view_raw.pan({event->motion.xrel, event->motion.yrel});
           }
-      case SDL_TEXTINPUT:
-          {
-              io.AddInputCharactersUTF8(event->text.text);
-              break;
-          }
+        }
+        break;
+      }
+      case SDL_TEXTINPUT: {
+        io.AddInputCharactersUTF8(event->text_painter.text_painter);
+        break;
+      }
       case SDL_KEYDOWN:
-      case SDL_KEYUP:
-          {
-              int key = event->key.keysym.scancode;
-              IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
-              io.KeysDown[key] = (event->type == SDL_KEYDOWN);
-              io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
-              io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
-              io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
-              io.KeySuper = false;
-              break;
-          }
+      case SDL_KEYUP: {
+        int key = event->key.keysym.scancode;
+        IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
+        io.KeysDown[key] = (event->type == SDL_KEYDOWN);
+        io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
+        io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
+        io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
+        io.KeySuper = false;
+        break;
+      }
       }
 
-      if (event->type == SDL_QUIT) quit = true;
+      if (event->type == SDL_QUIT) {
+        quit = true;
+      }
+
       if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_ESCAPE) {
+        view_raw = view_raw.reset(screen_w, screen_h);
         if (keyboard_state[SDL_SCANCODE_LSHIFT]) quit = true;
       }
     }
-
-    update(delta);
-
-    /*
-    if (!redraw_count) {
-      SDL_GL_SwapWindow(window);
-      SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-      SDL_Delay(10);
-    }
-    */
-
-    //----------------------------------------
-    // Client app update
-
-    SDL_GL_GetDrawableSize(window, &screen_w, &screen_h);
-    glViewport(0, 0, screen_w, screen_h);
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    const Viewport view = get_viewport();
-    text_painter.begin_frame(view);
-    begin_frame();
-    render_frame();
-
-    //----------------------------------------
-    // Render UI
-
-    int mx, my;
-    const Uint32 mouse_buttons = SDL_GetMouseState(&mx, &my);
 
     io.MouseDown[0] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
     io.MouseDown[1] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
     io.MouseDown[2] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
 
     //io.MousePos = ImVec2((float)mx, (float)my);
-    const auto world_mouse = view.screenToWorld({mx, my});
+    const auto world_mouse = view_snap.screenToWorld({mouse_x, mouse_y});
     io.MousePos = {
       (float)world_mouse.x,
       (float)world_mouse.y
@@ -216,81 +214,89 @@ int AppBase::main(int, char**) {
     io.DisplaySize.y = float(screen_h);
     ImGui::NewFrame();
 
-    render_ui();
+    //----------------------------------------
+    // Client app update
 
-    /*
-    ImGui::ShowDemoWindow();
-    */
+    update(delta);
 
-    /*
-    ImGui::SetNextWindowPos({(float)screen_w,(float)screen_h}, 0, {1,1});
-    ImGui::SetNextWindowBgAlpha(0.2f);
-    ImGui::Begin("Status", nullptr,
-      ImGuiWindowFlags_NoMove |
-      ImGuiWindowFlags_NoDecoration |
-      ImGuiWindowFlags_AlwaysAutoResize |
-      ImGuiWindowFlags_NoSavedSettings |
-      ImGuiWindowFlags_NoFocusOnAppearing |
-      ImGuiWindowFlags_NoNav);
-    ImGui::Text("(%.1f FPS)", io.Framerate);
-    ImGui::End();
-    */
+    Viewport snapped = view_raw.snap();
+    view_smooth = view_smooth.ease(view_raw, delta);
+    view_snap = view_snap.ease(snapped, delta);
+
+    if (view_snap == snapped) {
+      view_raw = view_snap;
+      view_smooth = view_snap;
+    }
+
+    //----------------------------------------
+    // Client app render
+
+    glViewport(0, 0, screen_w, screen_h);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    text_painter.begin_frame(get_viewport());
+    grid_painter.set_viewport(get_viewport());
+    grid_painter.render();
+
+    render_frame(screen_w, screen_h);
+
+    render_ui(screen_w, screen_h);
+
+    //ImGui::ShowDemoWindow();
 
     //----------------------------------------
     // Render ImGui
 
     ImGui::Render();
-
-    glUseProgram(imgui_prog);
-
-    glUniform4f(glGetUniformLocation(imgui_prog, "viewport"),
-               (float)view.min.x, (float)view.min.y, (float)view.max.x, (float)view.max.y);
-    glUniform1i(glGetUniformLocation(imgui_prog, "tex"), 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, imgui_tex);
-    glBindVertexArray(imgui_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, imgui_vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, imgui_ibo);
-
-    glEnable(GL_SCISSOR_TEST);
-
     const ImDrawData* draw_data = ImGui::GetDrawData();
-    for (int n = 0; n < draw_data->CmdListsCount; n++) {
-      const ImDrawList* l = draw_data->CmdLists[n];
 
-      glBufferData(GL_ARRAY_BUFFER, l->VtxBuffer.Size * sizeof(ImDrawVert), l->VtxBuffer.Data, GL_STREAM_DRAW);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, l->IdxBuffer.Size * sizeof(ImDrawIdx), l->IdxBuffer.Data, GL_STREAM_DRAW);
+    if (draw_data->CmdListsCount) {
+      glUseProgram(imgui_prog);
 
-      for (int i = 0; i < l->CmdBuffer.Size; i++) {
-        const ImDrawCmd* c = &l->CmdBuffer[i];
+      glUniform4f(glGetUniformLocation(imgui_prog, "viewport"),
+                 (float)view_snap.min.x, (float)view_snap.min.y, (float)view_snap.max.x, (float)view_snap.max.y);
+      glUniform1i(glGetUniformLocation(imgui_prog, "tex"), 0);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, imgui_tex);
+      glBindVertexArray(imgui_vao);
+      glBindBuffer(GL_ARRAY_BUFFER, imgui_vbo);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, imgui_ibo);
 
-        const auto clip_min = view.worldToScreen({c->ClipRect.x, c->ClipRect.y});
-        const auto clip_max = view.worldToScreen({c->ClipRect.z, c->ClipRect.w});
+      glEnable(GL_SCISSOR_TEST);
 
-        const int clip_min_x = (int)clip_min.x;
-        const int clip_min_y = (int)clip_min.y;
-        const int clip_max_x = (int)clip_max.x;
-        const int clip_max_y = (int)clip_max.y;
+      for (int n = 0; n < draw_data->CmdListsCount; n++) {
+        const ImDrawList* l = draw_data->CmdLists[n];
 
-        glScissor(clip_min_x, screen_h - clip_max_y,
-                  clip_max_x - clip_min_x, clip_max_y - clip_min_y);
-        glDrawElements(GL_TRIANGLES, c->ElemCount, GL_UNSIGNED_SHORT,
-                        reinterpret_cast<void*>(intptr_t(c->IdxOffset * 2)));
+        glBufferData(GL_ARRAY_BUFFER, l->VtxBuffer.Size * sizeof(ImDrawVert), l->VtxBuffer.Data, GL_STREAM_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, l->IdxBuffer.Size * sizeof(ImDrawIdx), l->IdxBuffer.Data, GL_STREAM_DRAW);
+
+        for (int i = 0; i < l->CmdBuffer.Size; i++) {
+          const ImDrawCmd* c = &l->CmdBuffer[i];
+
+          const auto clip_min = view_snap.worldToScreen({c->ClipRect.x, c->ClipRect.y});
+          const auto clip_max = view_snap.worldToScreen({c->ClipRect.z, c->ClipRect.w});
+
+          const int clip_min_x = (int)clip_min.x;
+          const int clip_min_y = (int)clip_min.y;
+          const int clip_max_x = (int)clip_max.x;
+          const int clip_max_y = (int)clip_max.y;
+
+          glScissor(clip_min_x, screen_h - clip_max_y,
+                    clip_max_x - clip_min_x, clip_max_y - clip_min_y);
+          glDrawElements(GL_TRIANGLES, c->ElemCount, GL_UNSIGNED_SHORT,
+                          reinterpret_cast<void*>(intptr_t(c->IdxOffset * 2)));
+        }
       }
-    }
 
-    glDisable(GL_SCISSOR_TEST);
+      glDisable(GL_SCISSOR_TEST);
+    }
 
     //----------------------------------------
     // Client end frame
 
-    end_frame();
-
-    text_painter.end_frame();
-
     check_gl_error();
 
-    SDL_GL_SwapWindow(window);
+    SDL_GL_SwapWindow((SDL_Window*)window);
     SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
     frame_count++;
     if (redraw_count) redraw_count--;
@@ -303,7 +309,7 @@ int AppBase::main(int, char**) {
 
   ImGui::DestroyContext();
   SDL_GL_DeleteContext(gl_context);
-  SDL_DestroyWindow(window);
+  SDL_DestroyWindow((SDL_Window*)window);
   SDL_Quit();
 
   return 0;

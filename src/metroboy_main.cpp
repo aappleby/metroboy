@@ -17,7 +17,6 @@
 #endif
 
 #include <imgui.h>
-#include <examples/imgui_impl_sdl.h>
 #include <vector>
 #include <typeinfo>
 
@@ -28,7 +27,6 @@ void run_wpol_test(const std::string& prefix, const std::string& name);
 //-----------------------------------------------------------------------------
 
 void MetroBoyApp::init() {
-  AppBase::init();
   keyboard_state = SDL_GetKeyboardState(nullptr);
   audio_init();
 
@@ -37,12 +35,7 @@ void MetroBoyApp::init() {
   ram_tex = create_texture_u8(256, 256);
 
   gb_blitter.init();
-  grid_painter.init();
   dump_painter.init();
-
-  view = view.reset(screen_w, screen_h);
-  view_smooth = view;
-  view_snap = view;
 
   //run_microtests();
   //run_screenshot_tests();
@@ -98,17 +91,25 @@ void MetroBoyApp::init() {
   //load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
   //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
 
   //load("microtests/build/dmg", "div_inc_timing_a");
 
   //load_memdump("roms", "LinksAwakening_house");
 
-  //load("roms/mooneye-gb/tests/build/acceptance/timer/", "tim00");
+  load("roms/mooneye-gb/tests/build/acceptance/timer/", "tim00");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;
   //runmode = RUN_VSYNC;
+
+  gateboy.init();
+};
+
+//----------------------------------------
+
+void MetroBoyApp::close() {
+  audio_stop();
 };
 
 //-----------------------------------------------------------------------------
@@ -200,30 +201,11 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::close() {
-  audio_stop();
-  AppBase::close();
-};
-
-//-----------------------------------------------------------------------------
-
 void MetroBoyApp::update(double delta) {
-
-  int mouse_x = 0, mouse_y = 0;
-  SDL_GetMouseState(&mouse_x, &mouse_y);
+  ImGuiIO& io = ImGui::GetIO();
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
-    ImGuiIO& io = ImGui::GetIO();
-    if (!io.WantCaptureMouse) {
-      if (event.type == SDL_MOUSEWHEEL) {
-        view = view.zoom({mouse_x, mouse_y}, double(event.wheel.y) * 0.25);
-      }
-
-      if (event.type == SDL_MOUSEMOTION && (event.motion.state & SDL_BUTTON_LMASK)) {
-        view = view.pan({event.motion.xrel, event.motion.yrel});
-      }
-    }
 
     if (!io.WantCaptureKeyboard) {
       if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
@@ -253,10 +235,6 @@ void MetroBoyApp::update(double delta) {
       case SDLK_r:      reset = true; break;
       case SDLK_F1:     load_dump = true; break;
       case SDLK_F4:     save_dump = true; break;
-      case SDLK_ESCAPE: {
-        view = view.reset(screen_w, screen_h);
-        break;
-      }
       }
     }
 
@@ -326,7 +304,7 @@ void MetroBoyApp::update(double delta) {
     double end = double(SDL_GetPerformanceCounter() - app_start);
     int64 cycle_end = metroboy.total_tcycles();
     last_cycles = int(cycle_end - cycle_begin) / 4;
-    sim_time_msec = 1000.0 * double(end - begin) / double(perf_freq);
+    sim_time_msec = 1000.0 * double(end - begin) / double(SDL_GetPerformanceFrequency());
     
     //printf("run_fast %f\n", elapsed_ms);
     double new_cycles = fast_cycles * (sim_budget_msec / sim_time_msec);
@@ -343,7 +321,7 @@ void MetroBoyApp::update(double delta) {
     double end = double(SDL_GetPerformanceCounter() - app_start);
     int64 cycle_end = metroboy.total_tcycles();
     last_cycles = int(cycle_end - cycle_begin) / 4;
-    sim_time_msec = 1000.0 * double(end - begin) / double(perf_freq);
+    sim_time_msec = 1000.0 * double(end - begin) / double(SDL_GetPerformanceFrequency());
   }
   else if (runmode == STEP_CYCLE) {
     while (step_forward--) {
@@ -374,27 +352,12 @@ void MetroBoyApp::update(double delta) {
 
   cycles_end = metroboy.total_tcycles();
 
-  Viewport snapped = view.snap();
-  view_smooth = view_smooth.ease(view, delta);
-  view_snap = view_snap.ease(snapped, delta);
-
-  if (view_snap == snapped) {
-    view = view_snap;
-    view_smooth = view_snap;
-  }
+  gateboy.update(delta);
 }
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::begin_frame() {
-}
-
-//-----------------------------------------------------------------------------
-
-void MetroBoyApp::render_frame() {
-
-  grid_painter.set_viewport(view_snap);
-  grid_painter.render();
+void MetroBoyApp::render_frame(int screen_w, int screen_h) {
 
   //----------------------------------------
   // Wave thingy
@@ -424,11 +387,11 @@ void MetroBoyApp::render_frame() {
 
   const int gb_map_x = 960;
   const int gb_map_y = 128;
-  gb_blitter.blit_map  (view_snap, gb_map_x, gb_map_y, 2, metroboy.get_vram());
+  gb_blitter.blit_map  (get_viewport(), gb_map_x, gb_map_y, 2, metroboy.get_vram());
 
   const int gb_trace_x = 960;
   const int gb_trace_y = 320 + 320;
-  gb_blitter.blit_trace (view_snap, gb_trace_x, gb_trace_y, metroboy.get_trace());
+  gb_blitter.blit_trace (get_viewport(), gb_trace_x, gb_trace_y, metroboy.get_trace());
 
   /*
   update_texture_u8(ram_tex, 0, 0*32, 256, 128, rom_buf);
@@ -540,11 +503,13 @@ void MetroBoyApp::render_frame() {
   }
 
 #endif
+
+  gateboy.render_frame(screen_w, screen_h, text_painter);
 }
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::render_ui() {
+void MetroBoyApp::render_ui(int /*screen_w*/, int /*screen_h*/) {
 
   //----------------------------------------
   // Left column text
@@ -639,11 +604,6 @@ void MetroBoyApp::render_ui() {
   text_painter.render(text_buf, 0, 1024 - 48);
   text_buf.clear();
   */
-}
-
-//-----------------------------------------------------------------------------
-
-void MetroBoyApp::end_frame() {
 }
 
 //-----------------------------------------------------------------------------

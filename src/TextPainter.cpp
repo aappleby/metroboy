@@ -166,9 +166,6 @@ void TextPainter::begin_frame(Viewport view) {
   viewport = view;
 }
 
-void TextPainter::end_frame() {
-}
-
 //-----------------------------------------------------------------------------
 
 void TextPainter::add_char(const char c) {
@@ -193,20 +190,20 @@ void TextPainter::add_char(const char c, const char d) {
   add_char(d);
 }
 
-void TextPainter::add_text(const char* text) {
-  for(; *text; text++) {
-    add_char(*text);
+void TextPainter::add_text(const char* text_painter) {
+  for(; *text_painter; text_painter++) {
+    add_char(*text_painter);
   }
 }
 
-void TextPainter::add_text(const char* text, int len) {
+void TextPainter::add_text(const char* text_painter, int len) {
   for (int i = 0; i < len; i++) {
-    add_char(text[i]);
+    add_char(text_painter[i]);
   }
 }
 
-void TextPainter::add_string(const std::string& text) {
-  for (auto c : text) add_char(c);
+void TextPainter::add_string(const std::string& text_painter) {
+  for (auto c : text_painter) add_char(c);
 }
 
 void TextPainter::dprintf(const char* format, ...) {

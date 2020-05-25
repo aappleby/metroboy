@@ -40,12 +40,6 @@ layout(location = 0) in  vec2 world_pos;
 layout(location = 0) out vec4 frag_col;
 
 void main() {
-  /*
-  int p = (int(gl_FragCoord.x) ^ int(gl_FragCoord.y)) & 1;
-
-  frag_col = (p == 0) ? vec4(1.0, 1.0, 1.0, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
-  */
-
   bool bx = fract(world_pos.x * (1.0 / 64.0)) > 0.5;
   bool by = fract(world_pos.y * (1.0 / 64.0)) > 0.5;
   bool b = bx ^^ by;
@@ -80,7 +74,6 @@ void GridPainter::init() {
 
   grid_ubo = create_ubo(sizeof(GridUniforms));
 }
-
 
 //-----------------------------------------------------------------------------
 

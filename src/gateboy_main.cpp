@@ -1,27 +1,15 @@
 #include "gateboy_main.h"
 
-#include "GLBase.h"
-
-#include <stdio.h>
-#include <stdint.h>
-#include <memory.h>
-#include <string>
-#include <vector>
-#include <math.h>
-
-//#include <GL/gl3w.h>
-
+#ifdef _MSC_VER
 #include <include/SDL.h>
-#include <imgui.h>
-#include <examples/imgui_impl_sdl.h>
-#include <examples/imgui_impl_opengl3.h>
-
-using namespace Schematics;
+#else
+#include <SDL2/SDL.h>
+#endif
 
 //-----------------------------------------------------------------------------
 
 uint8_t GateboyMain::read_cycle(uint16_t addr) {
-  TestGB* gb = gbs.state();
+  Schematics::TestGB* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
     gb->phase_counter++;
@@ -53,7 +41,7 @@ uint8_t GateboyMain::read_cycle(uint16_t addr) {
 }
 
 void GateboyMain::write_cycle(uint16_t addr, uint8_t data) {
-  TestGB* gb = gbs.state();
+  Schematics::TestGB* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
     gb->phase_counter++;
@@ -84,7 +72,7 @@ void GateboyMain::write_cycle(uint16_t addr, uint8_t data) {
 }
 
 void GateboyMain::pass_cycle() {
-  TestGB* gb = gbs.state();
+  Schematics::TestGB* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
     gb->phase_counter++;
@@ -113,42 +101,10 @@ void GateboyMain::pass_cycle() {
   }
 }
 
-uint8_t GateboyMain::rw_cycle(uint16_t addr, uint8_t data) {
-  write_cycle(addr, data);
-  return read_cycle(addr);
-}
-
 //-----------------------------------------------------------------------------
 
-/*
-AF=$01B0
-BC=$0013
-DE=$00D8
-HL=$014D
-Stack Pointer=$FFFE
-[$FF05] = $00   ; TIMA
-[$FF06] = $00   ; TMA
-[$FF07] = $00   ; TAC
-[$FF40] = $91   ; LCDC
-[$FF42] = $00   ; SCY
-[$FF43] = $00   ; SCX
-[$FF45] = $00   ; LYC
-[$FF47] = $FC   ; BGP
-[$FF48] = $FF   ; OBP0
-[$FF49] = $FF   ; OBP1
-[$FF4A] = $00   ; WY
-[$FF4B] = $00   ; WX
-[$FFFF] = $00   ; IE
-*/
-
 void GateboyMain::init() {
-  base::init();
-
-  text.init();
-
-  gb_tex = create_texture_u32(64, 64);
-
-  TestGB* gb = gbs.state();
+  Schematics::TestGB* gb = state_manager.state();
   gb->sys_pins.RST.preset(true, 1);
   gb->sys_pins.CLK_GOOD.preset(true, 0);
   gb->sys_pins.T2.preset(true, 0);
@@ -209,7 +165,7 @@ void GateboyMain::init() {
   }
   */
 
-  auto gb_step = [this](TestGB* gb){
+  auto gb_step = [this](Schematics::TestGB* gb){
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
@@ -246,68 +202,43 @@ void GateboyMain::init() {
     }
   };
 
-  gbs.set_step(gb_step);
-}
-
-void GateboyMain::close() {
-  base::close();
+  state_manager.set_step(gb_step);
 }
 
 //-----------------------------------------------------------------------------
 
-int gateboy_main(int argc, char** argv)
-{
-  GateboyMain m;
-  return m.main(argc, argv);
-}
-
-//-----------------------------------------------------------------------------
-
-void GateboyMain::begin_frame() {
-  base::begin_frame();
-}
-
-//-----------------------------------------------------------------------------
-
-void GateboyMain::update(double delta) {
+void GateboyMain::update(double /*delta*/) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
     case SDLK_RIGHT:
-      gbs.step();
+      state_manager.step();
       break;
     case SDLK_LEFT:
-      gbs.unstep();
+      state_manager.unstep();
       break;
     case SDLK_UP:
-      for (int i = 0; i < 8; i++) gbs.step();
+      state_manager.step(8);
       break;
     case SDLK_DOWN:
-      for (int i = 0; i < 8; i++) gbs.unstep();
+      state_manager.unstep(8);
       break;
     }
   }
-  
-  base::update(delta);
 }
 
 //-----------------------------------------------------------------------------
 
-void GateboyMain::render_frame() {
-  base::render_frame();
+void GateboyMain::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text_painter) {
+  //uint64_t begin = SDL_GetPerformanceCounter();
 
-  uint64_t begin = SDL_GetPerformanceCounter();
+  text_painter.dprintf(" ----- SYS_REG -----\n");
+  text_painter.dprintf("PHASE    %08d\n", state_manager.state()->phase_counter);
 
-  Viewport view = {{0,0},{1920,1080},{1920,1080}};
-  text.begin_frame(view);
-  
-  text.dprintf(" ----- SYS_REG -----\n");
-  text.dprintf("PHASE    %08d\n", gbs.state()->phase_counter);
-
-  TestGB& gb = *gbs.state();
+  Schematics::TestGB& gb = *state_manager.state();
 
   int p = gb.phase_counter & 7;
-  text.dprintf("PHASE    %c%c%c%c%c%c%c%c\n",
+  text_painter.dprintf("PHASE    %c%c%c%c%c%c%c%c\n",
                p == 0 ? 'A' : '_',
                p == 1 ? 'B' : '_',
                p == 2 ? 'C' : '_',
@@ -320,79 +251,63 @@ void GateboyMain::render_frame() {
   float cx = 4;
   float cy = 4;
 
-  text.newline();
-  gb.sys_pins.dump_pins(text);
-  gb.rst_reg.dump_regs(text);
-  gb.clk_reg.dump_regs(text);
-  gb.cpu_pins.dump_pins(text);
-  gb.bus_reg.dump_regs(text);
-  gb.ext_pins.dump_pins(text);
-  text.render(cx, cy, 1.0);
+  text_painter.newline();
+  gb.sys_pins.dump_pins(text_painter);
+  gb.rst_reg.dump_regs(text_painter);
+  gb.clk_reg.dump_regs(text_painter);
+  gb.cpu_pins.dump_pins(text_painter);
+  gb.bus_reg.dump_regs(text_painter);
+  gb.ext_pins.dump_pins(text_painter);
+  text_painter.render(cx, cy, 1.0);
   cx += 192;
 
-  gb.joy_reg.dump_regs(text);
-  gb.dbg_reg.dump_regs(text);
-  gb.dma_reg.dump_regs(text);
-  gb.int_reg.dump_regs(text);
-  gb.ser_reg.dump_regs(text);
-  gb.joy_pins.dump_pins(text);
-  text.render(cx, cy, 1.0);
+  gb.joy_reg.dump_regs(text_painter);
+  gb.dbg_reg.dump_regs(text_painter);
+  gb.dma_reg.dump_regs(text_painter);
+  gb.int_reg.dump_regs(text_painter);
+  gb.ser_reg.dump_regs(text_painter);
+  gb.joy_pins.dump_pins(text_painter);
+  text_painter.render(cx, cy, 1.0);
   cx += 192;
 
-  gb.tim_reg.dump_regs(text);
-  text.render(cx, cy, 1.0);
+  gb.tim_reg.dump_regs(text_painter);
+  text_painter.render(cx, cy, 1.0);
   cx += 192;
 
-  gb.cfg_reg.dump_regs(text);
-  gb.lcd_reg.dump_regs(text);
-  gb.pxp_reg.dump_regs(text);
-  text.render(cx, cy, 1.0);
+  gb.cfg_reg.dump_regs(text_painter);
+  gb.lcd_reg.dump_regs(text_painter);
+  gb.pxp_reg.dump_regs(text_painter);
+  text_painter.render(cx, cy, 1.0);
   cx += 192;
 
-  gb.spr_reg.dump_regs(text);
-  gb.sst_reg.dump_regs(text);
-  gb.vid_reg.dump_regs(text);
-  gb.vclk_reg.dump_regs(text);
-  gb.oam_reg.dump_regs(text);
-  text.render(cx, cy, 1.0);
+  gb.spr_reg.dump_regs(text_painter);
+  gb.sst_reg.dump_regs(text_painter);
+  gb.vid_reg.dump_regs(text_painter);
+  gb.vclk_reg.dump_regs(text_painter);
+  gb.oam_reg.dump_regs(text_painter);
+  text_painter.render(cx, cy, 1.0);
   cx += 192;
 
-  gb.oam_pins.dump_pins(text);
-  gb.vram_pins.dump_pins(text);
-  text.render(cx, cy, 1.0);
+  gb.oam_pins.dump_pins(text_painter);
+  gb.vram_pins.dump_pins(text_painter);
+  text_painter.render(cx, cy, 1.0);
   cx += 192;
 
-  gb.lcd_pins.dump_pins(text);
-  gb.wave_pins.dump_pins(text);
-  gb.ser_pins.dump_pins(text);
-  text.render(cx, cy, 1.0);
+  gb.lcd_pins.dump_pins(text_painter);
+  gb.wave_pins.dump_pins(text_painter);
+  gb.ser_pins.dump_pins(text_painter);
+  text_painter.render(cx, cy, 1.0);
   cx += 192;
 
+  /*
   uint64_t end = SDL_GetPerformanceCounter();
   double delta = double(end - begin) / double(SDL_GetPerformanceFrequency());
   static double accum = 0;
   accum = accum * 0.99 + delta * 0.01;
-  text.dprintf("%f usec\n", accum * 1.0e6);
-  text.render(cx, cy, 1.0);
+  text_painter.dprintf("%f usec\n", accum * 1.0e6);
+  text_painter.render(cx, cy, 1.0);
   cx += 192;
-}
-
-//-----------------------------------------------------------------------------
-
-void GateboyMain::render_ui() {
-  ImGui::Begin("GB Sim Stats");
-  //ImGui::Text("now   %f\n", now);
-  ImGui::Text("phase %d\n", gbs.state()->phase_counter);
-  //ImGui::Text("freq  %f\n", gbs.state()->phase_counter / now);
-  ImGui::End();
-
-  base::render_ui();
-}
-
-//-----------------------------------------------------------------------------
-
-void GateboyMain::end_frame() {
-  base::end_frame();
+  */
 }
 
 //-----------------------------------------------------------------------------

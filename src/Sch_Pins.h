@@ -4,9 +4,9 @@
 namespace Schematics {
 
 struct WavePins {
-  void dump_pins(TextPainter& text) {
-    text.dprintf("----- WAVE_PINS -----\n");
-    text.dprintf("CLK_AxxxxxGH %d\n", BORY_AxxxxxGH.a.val);
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- WAVE_PINS -----\n");
+    text_painter.dprintf("CLK_AxxxxxGH %d\n", BORY_AxxxxxGH.a.val);
   }
 
   PinOut BORY_AxxxxxGH;
@@ -17,47 +17,47 @@ struct WavePins {
 
 struct OamPins {
 
-  void dump_pins(TextPainter& text) {
-    text.dprintf("----- OAM_PINS -----\n");
-    text.dprintf("CLK_A %d\n", CLK_A.a.val);
-    text.dprintf("OE    %d\n", OE.a.val);
-    text.dprintf("WR_A  %d\n", WR_A.a.val);
-    text.dprintf("WR_B  %d\n", WR_B.a.val);
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- OAM_PINS -----\n");
+    text_painter.dprintf("CLK_A %d\n", CLK_A.a.val);
+    text_painter.dprintf("OE    %d\n", OE.a.val);
+    text_painter.dprintf("WR_A  %d\n", WR_A.a.val);
+    text_painter.dprintf("WR_B  %d\n", WR_B.a.val);
 
-    text.add_text("Axx   ");
-    dump2(text, A7.a);
-    dump2(text, A6.a);
-    dump2(text, A5.a);
-    dump2(text, A4.a);
-    dump2(text, A3.a);
-    dump2(text, A2.a);
-    dump2(text, A1.a);
-    dump2(text, A0.a);
-    text.newline();
+    text_painter.add_text("Axx   ");
+    dump2(text_painter, A7.a);
+    dump2(text_painter, A6.a);
+    dump2(text_painter, A5.a);
+    dump2(text_painter, A4.a);
+    dump2(text_painter, A3.a);
+    dump2(text_painter, A2.a);
+    dump2(text_painter, A1.a);
+    dump2(text_painter, A0.a);
+    text_painter.newline();
 
-    text.add_text("A_Dx  ");
-    dump2(text, A_D7.a);
-    dump2(text, A_D6.a);
-    dump2(text, A_D5.a);
-    dump2(text, A_D4.a);
-    dump2(text, A_D3.a);
-    dump2(text, A_D2.a);
-    dump2(text, A_D1.a);
-    dump2(text, A_D0.a);
-    text.newline();
+    text_painter.add_text("A_Dx  ");
+    dump2(text_painter, A_D7.a);
+    dump2(text_painter, A_D6.a);
+    dump2(text_painter, A_D5.a);
+    dump2(text_painter, A_D4.a);
+    dump2(text_painter, A_D3.a);
+    dump2(text_painter, A_D2.a);
+    dump2(text_painter, A_D1.a);
+    dump2(text_painter, A_D0.a);
+    text_painter.newline();
 
-    text.add_text("B_Dx  ");
-    dump2(text, B_D7.a);
-    dump2(text, B_D6.a);
-    dump2(text, B_D5.a);
-    dump2(text, B_D4.a);
-    dump2(text, B_D3.a);
-    dump2(text, B_D2.a);
-    dump2(text, B_D1.a);
-    dump2(text, B_D0.a);
-    text.newline();
+    text_painter.add_text("B_Dx  ");
+    dump2(text_painter, B_D7.a);
+    dump2(text_painter, B_D6.a);
+    dump2(text_painter, B_D5.a);
+    dump2(text_painter, B_D4.a);
+    dump2(text_painter, B_D3.a);
+    dump2(text_painter, B_D2.a);
+    dump2(text_painter, B_D1.a);
+    dump2(text_painter, B_D0.a);
+    text_painter.newline();
 
-    text.newline();
+    text_painter.newline();
   }
 
   /*p25.COTA*/ PinOut CLK_A;
@@ -97,86 +97,86 @@ struct OamPins {
 
 struct CpuPins {
 
-  void dump_pins(TextPainter& text) {
-    text.dprintf("----- CPU DBG/RST -----\n");
-    text.dprintf("PIN_RESET     %d\n", PIN_RESET   .a.val);
-    text.dprintf("CPU_RESET     %d\n", CPU_RESET   .a.val);
-    text.dprintf("CLK_GOOD      %d\n", CLK_GOOD    .a.val);
-    text.dprintf("T1nT2         %d\n", T1nT2        .a.val);
-    text.dprintf("T1T2n         %d\n", T1T2n        .a.val);
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- CPU DBG/RST -----\n");
+    text_painter.dprintf("PIN_RESET     %d\n", PIN_RESET   .a.val);
+    text_painter.dprintf("CPU_RESET     %d\n", CPU_RESET   .a.val);
+    text_painter.dprintf("CLK_GOOD      %d\n", CLK_GOOD    .a.val);
+    text_painter.dprintf("T1nT2         %d\n", T1nT2        .a.val);
+    text_painter.dprintf("T1T2n         %d\n", T1T2n        .a.val);
 
-    text.dprintf("----- CPU CLOCKS -----\n");
-    text.dprintf("BOWA_xBCDEFGH %d\n", BOWA_xBCDEFGH.a.val);
-    text.dprintf("BEDO_Axxxxxxx %d\n", BEDO_Axxxxxxx.a.val);
-    text.dprintf("BEKO_ABCDxxxx %d\n", BEKO_ABCDxxxx.a.val);
-    text.dprintf("BUDE_xxxxEFGH %d\n", BUDE_xxxxEFGH.a.val);
-    text.dprintf("BUKE_AxxxxxGH %d\n", BUKE_AxxxxxGH.a.val);
-    text.dprintf("BOMA_Axxxxxxx %d\n", BOMA_Axxxxxxx.a.val);
-    text.dprintf("BOGA_xBCDEFGH %d\n", BOGA_xBCDEFGH.a.val);
+    text_painter.dprintf("----- CPU CLOCKS -----\n");
+    text_painter.dprintf("BOWA_xBCDEFGH %d\n", BOWA_xBCDEFGH.a.val);
+    text_painter.dprintf("BEDO_Axxxxxxx %d\n", BEDO_Axxxxxxx.a.val);
+    text_painter.dprintf("BEKO_ABCDxxxx %d\n", BEKO_ABCDxxxx.a.val);
+    text_painter.dprintf("BUDE_xxxxEFGH %d\n", BUDE_xxxxEFGH.a.val);
+    text_painter.dprintf("BUKE_AxxxxxGH %d\n", BUKE_AxxxxxGH.a.val);
+    text_painter.dprintf("BOMA_Axxxxxxx %d\n", BOMA_Axxxxxxx.a.val);
+    text_painter.dprintf("BOGA_xBCDEFGH %d\n", BOGA_xBCDEFGH.a.val);
 
-    text.dprintf("----- FROM CPU -----\n");
-    text.dprintf("CLKREQ        %d\n", CLKREQ      .a.val);
-    text.dprintf("FROM_CPU5     %d\n", FROM_CPU5   .a.val);
-    text.dprintf("FROM_CPU6     %d\n", FROM_CPU6   .a.val);
+    text_painter.dprintf("----- FROM CPU -----\n");
+    text_painter.dprintf("CLKREQ        %d\n", CLKREQ      .a.val);
+    text_painter.dprintf("FROM_CPU5     %d\n", FROM_CPU5   .a.val);
+    text_painter.dprintf("FROM_CPU6     %d\n", FROM_CPU6   .a.val);
 
-    text.dprintf("----- TO CPU -----\n");
-    text.dprintf("AFER          %d\n", AFER        .a.val);
-    text.dprintf("TO_CPU2       %d\n", TO_CPU2      .a.val);
-    text.dprintf("SYRO          %d\n", SYRO         .a.val);
-    text.dprintf("READ_BOOTROM  %d\n", READ_BOOTROM .a.val);
+    text_painter.dprintf("----- TO CPU -----\n");
+    text_painter.dprintf("AFER          %d\n", AFER        .a.val);
+    text_painter.dprintf("TO_CPU2       %d\n", TO_CPU2      .a.val);
+    text_painter.dprintf("SYRO          %d\n", SYRO         .a.val);
+    text_painter.dprintf("READ_BOOTROM  %d\n", READ_BOOTROM .a.val);
 
-    text.dprintf("----- CPU INT -----\n");
-    text.dprintf("INT_VBLANK    %d\n", INT_VBLANK .a.val);
-    text.dprintf("INT_STAT      %d\n", INT_STAT   .a.val);
-    text.dprintf("INT_TIMER     %d\n", INT_TIMER  .a.val);
-    text.dprintf("INT_SERIAL    %d\n", INT_SERIAL .a.val);
-    text.dprintf("INT_JOYPAD    %d\n", INT_JOYPAD .a.val);
-    text.dprintf("ACK_VBLANK    %d\n", ACK_VBLANK .a.val);
-    text.dprintf("ACK_STAT      %d\n", ACK_STAT   .a.val);
-    text.dprintf("ACK_TIMER     %d\n", ACK_TIMER  .a.val);
-    text.dprintf("ACK_SERIAL    %d\n", ACK_SERIAL .a.val);
-    text.dprintf("ACK_JOYPAD    %d\n", ACK_JOYPAD .a.val);
+    text_painter.dprintf("----- CPU INT -----\n");
+    text_painter.dprintf("INT_VBLANK    %d\n", INT_VBLANK .a.val);
+    text_painter.dprintf("INT_STAT      %d\n", INT_STAT   .a.val);
+    text_painter.dprintf("INT_TIMER     %d\n", INT_TIMER  .a.val);
+    text_painter.dprintf("INT_SERIAL    %d\n", INT_SERIAL .a.val);
+    text_painter.dprintf("INT_JOYPAD    %d\n", INT_JOYPAD .a.val);
+    text_painter.dprintf("ACK_VBLANK    %d\n", ACK_VBLANK .a.val);
+    text_painter.dprintf("ACK_STAT      %d\n", ACK_STAT   .a.val);
+    text_painter.dprintf("ACK_TIMER     %d\n", ACK_TIMER  .a.val);
+    text_painter.dprintf("ACK_SERIAL    %d\n", ACK_SERIAL .a.val);
+    text_painter.dprintf("ACK_JOYPAD    %d\n", ACK_JOYPAD .a.val);
 
-    text.dprintf("----- CPU BUS -----\n");
-    text.dprintf("CPU_RAW_RD    %d\n", CPU_RAW_RD  .a.val);
-    text.dprintf("CPU_RAW_WR    %d\n", CPU_RAW_WR  .a.val);
-    text.dprintf("ADDR_VALID    %d\n", ADDR_VALIDn  .a.val);
+    text_painter.dprintf("----- CPU BUS -----\n");
+    text_painter.dprintf("CPU_RAW_RD    %d\n", CPU_RAW_RD  .a.val);
+    text_painter.dprintf("CPU_RAW_WR    %d\n", CPU_RAW_WR  .a.val);
+    text_painter.dprintf("ADDR_VALID    %d\n", ADDR_VALIDn  .a.val);
     
-    text.add_text("Axx ");
-    dump2(text, A15.a);
-    dump2(text, A14.a);
-    dump2(text, A13.a);
-    dump2(text, A12.a);
-    text.add_char(':');
-    dump2(text, A11.a);
-    dump2(text, A10.a);
-    dump2(text, A09.a);
-    dump2(text, A08.a);
-    text.add_char(':');
-    dump2(text, A07.a);
-    dump2(text, A06.a);
-    dump2(text, A05.a);
-    dump2(text, A04.a);
-    text.add_char(':');
-    dump2(text, A03.a);
-    dump2(text, A02.a);
-    dump2(text, A01.a);
-    dump2(text, A00.a);
-    text.newline();
+    text_painter.add_text("Axx ");
+    dump2(text_painter, A15.a);
+    dump2(text_painter, A14.a);
+    dump2(text_painter, A13.a);
+    dump2(text_painter, A12.a);
+    text_painter.add_char(':');
+    dump2(text_painter, A11.a);
+    dump2(text_painter, A10.a);
+    dump2(text_painter, A09.a);
+    dump2(text_painter, A08.a);
+    text_painter.add_char(':');
+    dump2(text_painter, A07.a);
+    dump2(text_painter, A06.a);
+    dump2(text_painter, A05.a);
+    dump2(text_painter, A04.a);
+    text_painter.add_char(':');
+    dump2(text_painter, A03.a);
+    dump2(text_painter, A02.a);
+    dump2(text_painter, A01.a);
+    dump2(text_painter, A00.a);
+    text_painter.newline();
 
-    text.add_text("Dxx ");
-    dump2(text, D7.a);
-    dump2(text, D6.a);
-    dump2(text, D5.a);
-    dump2(text, D4.a);
-    text.add_char(':');
-    dump2(text, D3.a);
-    dump2(text, D2.a);
-    dump2(text, D1.a);
-    dump2(text, D0.a);
-    text.newline();
+    text_painter.add_text("Dxx ");
+    dump2(text_painter, D7.a);
+    dump2(text_painter, D6.a);
+    dump2(text_painter, D5.a);
+    dump2(text_painter, D4.a);
+    text_painter.add_char(':');
+    dump2(text_painter, D3.a);
+    dump2(text_painter, D2.a);
+    dump2(text_painter, D1.a);
+    dump2(text_painter, D0.a);
+    text_painter.newline();
 
-    text.newline();
+    text_painter.newline();
   }
 
   int get_addr() const {
@@ -324,14 +324,14 @@ struct CpuPins {
 
 struct SysPins {
 
-  void dump_pins(TextPainter& text) {
-    text.dprintf("----- SYS_PINS -----\n");
-    text.dprintf("RST      %d\n", RST.a.val);
-    text.dprintf("CLK_GOOD %d\n", CLK_GOOD.a.val);
-    text.dprintf("CLK_IN   %d\n", CLK_IN.a.val);
-    text.dprintf("T1       %d\n", T1.a.val);
-    text.dprintf("T2       %d\n", T2.a.val);
-    text.newline();
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- SYS_PINS -----\n");
+    text_painter.dprintf("RST      %d\n", RST.a.val);
+    text_painter.dprintf("CLK_GOOD %d\n", CLK_GOOD.a.val);
+    text_painter.dprintf("CLK_IN   %d\n", CLK_IN.a.val);
+    text_painter.dprintf("T1       %d\n", T1.a.val);
+    text_painter.dprintf("T2       %d\n", T2.a.val);
+    text_painter.newline();
   }
 
   /* PIN_71 */ PinIn RST;
@@ -345,19 +345,19 @@ struct SysPins {
 
 struct VramPins {
 
-  void dump_pins(TextPainter& text) {
-    text.dprintf("----- VRAM_PINS -----\n");
-    text.dprintf("MCS  %d:x:%d:%d\n", MCS_A.a.val, MCS_C.a.val, MCS_D.a.val);
-    text.dprintf("MOE  %d:x:%d:%d\n", MOE_A.a.val, MOE_C.a.val, MOE_D.a.val);
-    text.dprintf("MWR  %d:x:%d:%d\n", MWR_A.a.val, MWR_C.a.val, MWR_D.a.val);
-    text.dprintf("MAxx 0x%04x\n", pack(MA00_D, MA01_D, MA02_D, MA03_D, MA04_D, MA05_D, MA06_D,
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- VRAM_PINS -----\n");
+    text_painter.dprintf("MCS  %d:x:%d:%d\n", MCS_A.a.val, MCS_C.a.val, MCS_D.a.val);
+    text_painter.dprintf("MOE  %d:x:%d:%d\n", MOE_A.a.val, MOE_C.a.val, MOE_D.a.val);
+    text_painter.dprintf("MWR  %d:x:%d:%d\n", MWR_A.a.val, MWR_C.a.val, MWR_D.a.val);
+    text_painter.dprintf("MAxx 0x%04x\n", pack(MA00_D, MA01_D, MA02_D, MA03_D, MA04_D, MA05_D, MA06_D,
                                        MA07_D, MA08_D, MA09_D, MA10_D, MA11_D, MA12_D));
 
-    text.dprintf("MDx_A 0x%02x\n", pack(MD0_A, MD1_A, MD2_A, MD3_A, MD4_A, MD5_A, MD6_A, MD7_A));
-    text.dprintf("MDx_B 0x%02x\n", pack(MD0_B, MD1_B, MD2_B, MD3_B, MD4_B, MD5_B, MD6_B, MD7_B));
-    text.dprintf("MDx_C 0x%02x\n", pack(MD0_C, MD1_C, MD2_C, MD3_C, MD4_C, MD5_C, MD6_C, MD7_C));
-    text.dprintf("MDx_D 0x%02x\n", pack(MD0_D, MD1_D, MD2_D, MD3_D, MD4_D, MD5_D, MD6_D, MD7_D));
-    text.newline();
+    text_painter.dprintf("MDx_A 0x%02x\n", pack(MD0_A, MD1_A, MD2_A, MD3_A, MD4_A, MD5_A, MD6_A, MD7_A));
+    text_painter.dprintf("MDx_B 0x%02x\n", pack(MD0_B, MD1_B, MD2_B, MD3_B, MD4_B, MD5_B, MD6_B, MD7_B));
+    text_painter.dprintf("MDx_C 0x%02x\n", pack(MD0_C, MD1_C, MD2_C, MD3_C, MD4_C, MD5_C, MD6_C, MD7_C));
+    text_painter.dprintf("MDx_D 0x%02x\n", pack(MD0_D, MD1_D, MD2_D, MD3_D, MD4_D, MD5_D, MD6_D, MD7_D));
+    text_painter.newline();
   }
 
   //----------
@@ -435,12 +435,12 @@ struct VramPins {
 //-----------------------------------------------------------------------------
 
 struct SerialPins {
-  void dump_pins(TextPainter& text) {
-    text.dprintf("----- SER_PINS -----\n");
-    text.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.a.val, SCK_B.a.val, SCK_C.a.val, SCK_D.a.val);
-    text.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.a.val, SIN_B.a.val, SIN_C.a.val, SIN_D.a.val);
-    text.dprintf("SOUT %d\n", SOUT.a.val);
-    text.newline();
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- SER_PINS -----\n");
+    text_painter.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.a.val, SCK_B.a.val, SCK_C.a.val, SCK_D.a.val);
+    text_painter.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.a.val, SIN_B.a.val, SIN_C.a.val, SIN_D.a.val);
+    text_painter.dprintf("SOUT %d\n", SOUT.a.val);
+    text_painter.newline();
   }
 
   //----------
@@ -462,17 +462,17 @@ struct SerialPins {
 //-----------------------------------------------------------------------------
 
 struct LcdPins {
-  void dump_pins(TextPainter& text) {
-    text.dprintf("----- LCD_PINS -----\n");
-    LD1.dump(text, "LD1 ");
-    LD0.dump(text, "LD0 ");
-    CPG.dump(text, "CPG ");
-    CP .dump(text, "CP  ");
-    ST .dump(text, "ST  ");
-    CPL.dump(text, "CPL ");
-    FR .dump(text, "FR  ");
-    S  .dump(text, "S   ");
-    text.newline();
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- LCD_PINS -----\n");
+    LD1.dump(text_painter, "LD1 ");
+    LD0.dump(text_painter, "LD0 ");
+    CPG.dump(text_painter, "CPG ");
+    CP .dump(text_painter, "CP  ");
+    ST .dump(text_painter, "ST  ");
+    CPL.dump(text_painter, "CPL ");
+    FR .dump(text_painter, "FR  ");
+    S  .dump(text_painter, "S   ");
+    text_painter.newline();
   }
 
   /* PIN_50 */ PinOut LD1;
@@ -489,15 +489,15 @@ struct LcdPins {
 
 struct JoypadPins {
 
-  void dump_pins(TextPainter& text) {
-    text.dprintf("----- JOY_PINS -----\n");
-    text.dprintf("P10 %d:%d:%d:%d\n", P10_A.a.val, P10_B.a.val, P10_C.a.val, P10_D.a.val);
-    text.dprintf("P11 %d:%d:%d:%d\n", P11_A.a.val, P11_B.a.val, P11_C.a.val, P11_D.a.val);
-    text.dprintf("P12 %d:%d:%d:%d\n", P12_A.a.val, P12_B.a.val, P12_C.a.val, P12_D.a.val);
-    text.dprintf("P13 %d:%d:%d:%d\n", P13_A.a.val, P13_B.a.val, P13_C.a.val, P13_D.a.val);
-    text.dprintf("P14 %d:x:x:%d\n", P14_A.a.val, P14_D.a.val);
-    text.dprintf("P15 %d:x:x:%d\n", P15_A.a.val, P15_D.a.val);
-    text.newline();
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- JOY_PINS -----\n");
+    text_painter.dprintf("P10 %d:%d:%d:%d\n", P10_A.a.val, P10_B.a.val, P10_C.a.val, P10_D.a.val);
+    text_painter.dprintf("P11 %d:%d:%d:%d\n", P11_A.a.val, P11_B.a.val, P11_C.a.val, P11_D.a.val);
+    text_painter.dprintf("P12 %d:%d:%d:%d\n", P12_A.a.val, P12_B.a.val, P12_C.a.val, P12_D.a.val);
+    text_painter.dprintf("P13 %d:%d:%d:%d\n", P13_A.a.val, P13_B.a.val, P13_C.a.val, P13_D.a.val);
+    text_painter.dprintf("P14 %d:x:x:%d\n", P14_A.a.val, P14_D.a.val);
+    text_painter.dprintf("P15 %d:x:x:%d\n", P15_A.a.val, P15_D.a.val);
+    text_painter.newline();
   }
 
   // The B connections on the joypad pins are werid.
@@ -540,54 +540,54 @@ struct JoypadPins {
 
 struct ExtPins {
 
-  inline void dump_pins(TextPainter& text, const PinOut& a, const PinOut& d) {
-    dump_pin(text, a.a, d.a);
+  inline void dump_pins(TextPainter& text_painter, const PinOut& a, const PinOut& d) {
+    dump_pin(text_painter, a.a, d.a);
   }
 
-  inline void dump_pins(TextPainter& text, const PinOut& a, const PinOut& b, const PinIn& c, const PinOut& d) {
-    dump_pin(text, a.a, b.a, c.a, d.a);
+  inline void dump_pins(TextPainter& text_painter, const PinOut& a, const PinOut& b, const PinIn& c, const PinOut& d) {
+    dump_pin(text_painter, a.a, b.a, c.a, d.a);
   }
 
-  void dump_pins(TextPainter& text) {
-    text.dprintf("----- EXT_PINS -----\n");
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- EXT_PINS -----\n");
 
-    text.dprintf("PHI %d\n", PHI.a.val);
-    text.dprintf("WR  %d\n", WR_A.a.val);
-    text.dprintf("RD  %d\n", RD_A.a.val);
-    text.dprintf("CS  %d\n", CS_A.a.val);
+    text_painter.dprintf("PHI %d\n", PHI.a.val);
+    text_painter.dprintf("WR  %d\n", WR_A.a.val);
+    text_painter.dprintf("RD  %d\n", RD_A.a.val);
+    text_painter.dprintf("CS  %d\n", CS_A.a.val);
 
-    text.add_text("Axx ");
-    dump_pins(text, A15_A, A15_D);
-    dump_pins(text, A14_A, A14_D);
-    dump_pins(text, A13_A, A13_D);
-    dump_pins(text, A12_A, A12_D);
-    text.add_char(':');
-    dump_pins(text, A11_A, A11_D);
-    dump_pins(text, A10_A, A10_D);
-    dump_pins(text, A09_A, A09_D);
-    dump_pins(text, A08_A, A08_D);
-    text.add_char(':');
-    dump_pins(text, A07_A, A07_D);
-    dump_pins(text, A06_A, A06_D);
-    dump_pins(text, A05_A, A05_D);
-    dump_pins(text, A04_A, A04_D);
-    text.add_char(':');
-    dump_pins(text, A03_A, A03_D);
-    dump_pins(text, A02_A, A02_D);
-    dump_pins(text, A01_A, A01_D);
-    dump_pins(text, A00_A, A00_D);
-    text.newline();
+    text_painter.add_text("Axx ");
+    dump_pins(text_painter, A15_A, A15_D);
+    dump_pins(text_painter, A14_A, A14_D);
+    dump_pins(text_painter, A13_A, A13_D);
+    dump_pins(text_painter, A12_A, A12_D);
+    text_painter.add_char(':');
+    dump_pins(text_painter, A11_A, A11_D);
+    dump_pins(text_painter, A10_A, A10_D);
+    dump_pins(text_painter, A09_A, A09_D);
+    dump_pins(text_painter, A08_A, A08_D);
+    text_painter.add_char(':');
+    dump_pins(text_painter, A07_A, A07_D);
+    dump_pins(text_painter, A06_A, A06_D);
+    dump_pins(text_painter, A05_A, A05_D);
+    dump_pins(text_painter, A04_A, A04_D);
+    text_painter.add_char(':');
+    dump_pins(text_painter, A03_A, A03_D);
+    dump_pins(text_painter, A02_A, A02_D);
+    dump_pins(text_painter, A01_A, A01_D);
+    dump_pins(text_painter, A00_A, A00_D);
+    text_painter.newline();
 
-    text.add_text("Dxx ");
-    dump_pins(text, D7_A, D7_B, D7_C, D7_D);
-    dump_pins(text, D6_A, D6_B, D6_C, D6_D);
-    dump_pins(text, D5_A, D5_B, D5_C, D5_D);
-    dump_pins(text, D4_A, D4_B, D4_C, D4_D);
-    dump_pins(text, D3_A, D3_B, D3_C, D3_D);
-    dump_pins(text, D2_A, D2_B, D2_C, D2_D);
-    dump_pins(text, D1_A, D1_B, D1_C, D1_D);
-    dump_pins(text, D0_A, D0_B, D0_C, D0_D);
-    text.newline();
+    text_painter.add_text("Dxx ");
+    dump_pins(text_painter, D7_A, D7_B, D7_C, D7_D);
+    dump_pins(text_painter, D6_A, D6_B, D6_C, D6_D);
+    dump_pins(text_painter, D5_A, D5_B, D5_C, D5_D);
+    dump_pins(text_painter, D4_A, D4_B, D4_C, D4_D);
+    dump_pins(text_painter, D3_A, D3_B, D3_C, D3_D);
+    dump_pins(text_painter, D2_A, D2_B, D2_C, D2_D);
+    dump_pins(text_painter, D1_A, D1_B, D1_C, D1_D);
+    dump_pins(text_painter, D0_A, D0_B, D0_C, D0_D);
+    text_painter.newline();
   }
 
   //----------

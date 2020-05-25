@@ -18,9 +18,7 @@ class GridPainter {
 public:
 
   void init();
-  //void update(double delta, double zoom_level, double origin_x, double origin_y);
   void render();
-
   void set_viewport(Viewport vp) { viewport = vp; }
 
 private:

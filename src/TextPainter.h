@@ -16,13 +16,12 @@ public:
 
   void init();
   void begin_frame(Viewport view);
-  void end_frame();
 
   void add_char(const char c);
   void add_char(const char c, const char d);
-  void add_text(const char* text);
-  void add_text(const char* text, int len);
-  void add_string(const std::string& text);
+  void add_text(const char* text_painter);
+  void add_text(const char* text_painter, int len);
+  void add_string(const std::string& text_painter);
   void dprintf(const char* format, ...);
 
   void render(float x, float y, float scale = 1.0f);
@@ -30,13 +29,13 @@ public:
     render((float)x, (float)y, (float)scale);
   }
 
-  void render(const std::string& text, float x, float y, float scale = 1.0f) {
-    add_string(text);
+  void render(const std::string& text_painter, float x, float y, float scale = 1.0f) {
+    add_string(text_painter);
     render(x, y, scale);
   }
 
-  void render(const std::string& text, int x, int y) {
-    add_string(text);
+  void render(const std::string& text_painter, int x, int y) {
+    add_string(text_painter);
     render(x, y, 1);
   }
 

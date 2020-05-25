@@ -1,33 +1,12 @@
 #pragma once
+#include "Types.h"
 #include "Schematics.h"
 #include <stdint.h>
 #include <memory.h>
 #include <string>
 #include <assert.h>
 
-#include "../src/TextPainter.h"
-
-
-//-----------------------------------------------------------------------------
-
-using std::string;
-
-template<typename ... Args>
-void sprintf(std::string& out, const char* format, Args ... args)
-{
-  char source_buf[1024];
-  snprintf(source_buf, 1024, format, args ...);
-  out.append(source_buf);
-}
-
-
-template<typename ... Args>
-string errprintf(const char* format, Args ... args)
-{
-  char source_buf[1024];
-  snprintf(source_buf, 1024, format, args ...);
-  return source_buf;
-}
+#include "TextPainter.h"
 
 //-----------------------------------------------------------------------------
 
@@ -86,16 +65,16 @@ struct VidSignals2;
 union SignalState;
 struct SignalBase;
 
-void dump_long(TextPainter& text, const char* label, SignalState a);
-void dump2(TextPainter& text, SignalState a);
-void dump_pin(TextPainter& text, SignalState a, SignalState d);
-void dump_pin(TextPainter& text, SignalState a, SignalState b, SignalState c, SignalState d);
+void dump_long(TextPainter& text_painter, const char* label, SignalState a);
+void dump2(TextPainter& text_painter, SignalState a);
+void dump_pin(TextPainter& text_painter, SignalState a, SignalState d);
+void dump_pin(TextPainter& text_painter, SignalState a, SignalState b, SignalState c, SignalState d);
 
-void dump(TextPainter& text, const char* label,
+void dump(TextPainter& text_painter, const char* label,
           SignalBase a, SignalBase b, SignalBase c, SignalBase d,
           SignalBase e, SignalBase f, SignalBase g);
 
-void dump(TextPainter& text, const char* label,
+void dump(TextPainter& text_painter, const char* label,
           SignalBase a, SignalBase b, SignalBase c, SignalBase d,
           SignalBase e, SignalBase f, SignalBase g, SignalBase h);
 
@@ -145,8 +124,8 @@ union SignalState {
     return c;
   }
 
-  void dump(TextPainter& text, const char* label) {
-    dump_long(text, label, *this);
+  void dump(TextPainter& text_painter, const char* label) {
+    dump_long(text_painter, label, *this);
   }
 };
 
@@ -161,8 +140,8 @@ struct SignalBase {
     return a.val;
   }
 
-  void dump(TextPainter& text, const char* label) {
-    a.dump(text, label);
+  void dump(TextPainter& text_painter, const char* label) {
+    a.dump(text_painter, label);
   }
 
   SignalState a = SET_0;

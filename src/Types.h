@@ -84,6 +84,8 @@ void sprintf(std::string& out, const char* format, Args ... args)
   out.append(source_buf);
 }
 
+//-----------------------------------------------------------------------------
+
 inline void print_req(std::string& d, const char* name, const Req& req) {
   if (req.write)  {
     sprintf(d, "%-16s %04x:%04x %s%s\n", name, req.addr, req.data,

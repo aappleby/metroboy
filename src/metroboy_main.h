@@ -5,14 +5,9 @@
 #include "GridPainter.h"
 #include "GBBlitter.h"
 #include "DumpPainter.h"
+#include "gateboy_main.h"
 
 #include <string>
-
-#ifdef _MSC_VER
-#include <include/SDL.h>
-#else
-#include <SDL2/SDL.h>
-#endif
 
 class MetroBoyApp : public AppBase {
 public:
@@ -21,12 +16,9 @@ public:
 
   virtual void init();
   virtual void close();
-  virtual void begin_frame();
   virtual void update(double delta);
-  virtual void render_frame();
-  virtual void render_ui();
-  virtual void end_frame();
-  virtual Viewport get_viewport() { return view_snap; }
+  virtual void render_frame(int screen_w, int screen_h);
+  virtual void render_ui(int screen_w, int screen_h);
 
   void load(const std::string& prefix, const std::string& name);
   void load(const std::string& name) { load("./", name); }
@@ -69,7 +61,6 @@ public:
   //----------
   // viz
 
-  GridPainter grid_painter;
   GBBlitter gb_blitter;
   DumpPainter dump_painter;
 
@@ -79,15 +70,14 @@ public:
 
   uint32_t ram_tex = 0;
 
-  Viewport view;
-  Viewport view_smooth;
-
   //----------
   // gb state
 
   MetroBoy metroboy;
   int64_t cycles_begin = 0;
   int64_t cycles_end = 0;
+
+  GateboyMain gateboy;
 
   //----------
   // debug

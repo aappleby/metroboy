@@ -32,16 +32,20 @@ public:
     save_obj("dump.gb", state());
   }
 
-  void step() {
-    auto s = new T(*states.back());
-    states.push_back(s);
-    step_callback(s);
+  void step(int count = 1) {
+    for (int i = 0; i < count; i++) {
+      auto s = new T(*states.back());
+      states.push_back(s);
+      step_callback(s);
+    }
   }
 
-  void unstep() {
+  void unstep(int count = 1) {
     if (states.size() == 1) return;
-    delete states.back();
-    states.pop_back();
+    for (int i = 0; i < count; i++) {
+      delete states.back();
+      states.pop_back();
+    }
   }
 
   void clear_history() {

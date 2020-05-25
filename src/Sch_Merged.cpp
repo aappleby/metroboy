@@ -164,7 +164,7 @@ void TestGB::tick_everything() {
   /*p17.ABUR*/ wire ABUR_xBCDEFxx = not(BUKE_AxxxxxGH);
   /*p17.BORY*/ wire BORY_AxxxxxGH = not(ABUR_xBCDEFxx);
 
-  /*p01.AFUR*/ clk_reg.PHAZ_ABCDxxxx.set_duo(ATAL_AxCxExGx, UPOJ_MODE_PROD, !(clk_reg.PHAZ_xxxDEFGx.a));
+  /*p01.AFUR*/ clk_reg.PHAZ_ABCDxxxx.set_duo(ATAL_AxCxExGx, UPOJ_MODE_PROD, !clk_reg.PHAZ_xxxDEFGx.a);
   /*p01.ALEF*/ clk_reg.PHAZ_xBCDExxx.set_duo(ATAL_AxCxExGx, UPOJ_MODE_PROD,  clk_reg.PHAZ_ABCDxxxx.a);
   /*p01.APUK*/ clk_reg.PHAZ_xxCDEFxx.set_duo(ATAL_AxCxExGx, UPOJ_MODE_PROD,  clk_reg.PHAZ_xBCDExxx.a);
   /*p01.ADYK*/ clk_reg.PHAZ_xxxDEFGx.set_duo(ATAL_AxCxExGx, UPOJ_MODE_PROD,  clk_reg.PHAZ_xxCDEFxx.a);

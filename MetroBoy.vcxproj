@@ -121,6 +121,7 @@
     <ClInclude Include="src\GLBase.h" />
     <ClInclude Include="src\GridPainter.h" />
     <ClInclude Include="src\IRAM.h" />
+    <ClInclude Include="src\LCD.h" />
     <ClInclude Include="src\MetroBoy.h" />
     <ClInclude Include="src\Cart.h" />
     <ClInclude Include="src\OAM.h" />
@@ -176,6 +177,7 @@
     <ClCompile Include="src\GLBase.cpp" />
     <ClCompile Include="src\GridPainter.cpp" />
     <ClCompile Include="src\IRAM.cpp" />
+    <ClCompile Include="src\LCD.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MetroBoy.cpp" />
     <ClCompile Include="src\Cart.cpp" />

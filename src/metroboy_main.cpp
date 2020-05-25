@@ -201,7 +201,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::update(double delta) {
+void MetroBoyApp::update(double /*delta*/) {
   ImGuiIO& io = ImGui::GetIO();
 
   SDL_Event event;
@@ -330,10 +330,12 @@ void MetroBoyApp::update(double delta) {
       }
       else {
         metroboy.step_cycle();
+        gateboy.step(1);
       }
     }
     while (step_backward--) {
       metroboy.pop_cycle();
+      gateboy.unstep(1);
     }
   }
   else if (runmode == STEP_FRAME) {
@@ -351,8 +353,6 @@ void MetroBoyApp::update(double delta) {
   step_down = false;
 
   cycles_end = metroboy.total_tcycles();
-
-  gateboy.update(delta);
 }
 
 //-----------------------------------------------------------------------------
@@ -385,12 +385,12 @@ void MetroBoyApp::render_frame(int screen_w, int screen_h) {
   gb_blitter.blit_screen(view_snap, gb_screen_x, gb_screen_y, 2, metroboy.fb());
   */
 
-  const int gb_map_x = 960;
-  const int gb_map_y = 128;
+  const int gb_map_x = 1920 - 512 - 32;
+  const int gb_map_y = 32;
   gb_blitter.blit_map  (get_viewport(), gb_map_x, gb_map_y, 2, metroboy.get_vram());
 
-  const int gb_trace_x = 960;
-  const int gb_trace_y = 320 + 320;
+  const int gb_trace_x = 1920 - 512 - 32;
+  const int gb_trace_y = 32 + 512 + 32;
   gb_blitter.blit_trace (get_viewport(), gb_trace_x, gb_trace_y, metroboy.get_trace());
 
   /*
@@ -509,7 +509,7 @@ void MetroBoyApp::render_frame(int screen_w, int screen_h) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::render_ui(int /*screen_w*/, int /*screen_h*/) {
+void MetroBoyApp::render_ui(int screen_w, int screen_h) {
 
   //----------------------------------------
   // Left column text
@@ -571,12 +571,12 @@ void MetroBoyApp::render_ui(int /*screen_w*/, int /*screen_h*/) {
   column += 32 * 7;
 
   {
-    ImGuiIO& io = ImGui::GetIO();
+    //ImGuiIO& io = ImGui::GetIO();
 
     double sim_cycles_per_sec = double(last_cycles) * (1000.0 / sim_budget_msec);
     double rt_cycles_per_sec = (114*154*60);
 
-    double app_cycles_per_sec = fast_cycles * io.Framerate;
+    //double app_cycles_per_sec = fast_cycles * io.Framerate;
 
     const char* mode_names[] = {
         "RUN_FAST", "RUN_VSYNC", "STEP_FRAME", "STEP_LINE", "STEP_CYCLE",
@@ -588,9 +588,9 @@ void MetroBoyApp::render_ui(int /*screen_w*/, int /*screen_h*/) {
     //text_painter.dprintf("sim rate   %07d cycles/frame\n", int(fast_cycles));
     text_painter.dprintf("sim rate   %07d cycles/frame\n", last_cycles);
     text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_cycles_per_sec / rt_cycles_per_sec);
-    text_painter.dprintf("app speed  %1.2fx realtime (%.1f FPS)\n", app_cycles_per_sec / rt_cycles_per_sec, io.Framerate);
+    //text_painter.dprintf("app speed  %1.2fx realtime (%.1f FPS)\n", app_cycles_per_sec / rt_cycles_per_sec, io.Framerate);
     
-    text_painter.render(960, 800);
+    text_painter.render(screen_w - 300 + 96, screen_h - 64);
   }
 
   //----------------------------------------

@@ -207,7 +207,8 @@ void GateboyMain::init() {
 
 //-----------------------------------------------------------------------------
 
-void GateboyMain::update(double /*delta*/) {
+/*
+void GateboyMain::update(double delta) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
@@ -226,6 +227,7 @@ void GateboyMain::update(double /*delta*/) {
     }
   }
 }
+*/
 
 //-----------------------------------------------------------------------------
 
@@ -249,7 +251,7 @@ void GateboyMain::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& 
                p == 7 ? 'H' : '_');
 
   float cx = 4;
-  float cy = 4;
+  float cy = -800;
 
   text_painter.newline();
   gb.sys_pins.dump_pins(text_painter);

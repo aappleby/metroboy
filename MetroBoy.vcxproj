@@ -112,11 +112,11 @@
     <ClInclude Include="src\Bootrom.h" />
     <ClInclude Include="src\BusDump.h" />
     <ClInclude Include="src\DMA.h" />
+    <ClInclude Include="src\GateBoy.h" />
     <ClInclude Include="src\Joypad.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\DumpPainter.h" />
     <ClInclude Include="src\Gameboy.h" />
-    <ClInclude Include="src\gateboy_main.h" />
     <ClInclude Include="src\GBBlitter.h" />
     <ClInclude Include="src\GLBase.h" />
     <ClInclude Include="src\GridPainter.h" />
@@ -168,11 +168,11 @@
     <ClCompile Include="src\Bootrom.cpp" />
     <ClCompile Include="src\BusDump.cpp" />
     <ClCompile Include="src\DMA.cpp" />
+    <ClCompile Include="src\GateBoy.cpp" />
     <ClCompile Include="src\Joypad.cpp" />
     <ClCompile Include="src\Constants.cpp" />
     <ClCompile Include="src\DumpPainter.cpp" />
     <ClCompile Include="src\Gameboy.cpp" />
-    <ClCompile Include="src\gateboy_main.cpp" />
     <ClCompile Include="src\GBBlitter.cpp" />
     <ClCompile Include="src\GLBase.cpp" />
     <ClCompile Include="src\GridPainter.cpp" />

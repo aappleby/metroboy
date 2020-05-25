@@ -378,41 +378,23 @@ void Gameboy::dump_bus(std::string& d) {
     sprintf(d, "\n");
   }
 
-  sprintf(d,   "---CPU:\n");
-  print_req(d, "req  ", cpu_req);
+  sprintf(d, "---CPU:         "); print_req(d, cpu_req);
+  sprintf(d, "---DMA to EBUS: "); print_req(d, dma_ebus_req);
+  sprintf(d, "---DMA to VBUS: "); print_req(d, dma_vbus_req);
+  sprintf(d, "---DMA to OBUS: "); print_req(d, dma_obus_req);
+  sprintf(d, "---PPU to VBUS: "); print_req(d, ppu_vbus_req);
+  sprintf(d, "---PPU to OBUS: "); print_req(d, ppu_obus_req);
+  sprintf(d, "\n");
 
-  sprintf(d,   "---DMA to EBUS:\n");
-  print_req(d, "req  ", dma_ebus_req);
-
-  sprintf(d,   "---DMA to VBUS:\n");
-  print_req(d, "req  ", dma_vbus_req);
-
-  sprintf(d,   "---DMA to OBUS:\n");
-  print_req(d, "req  ", dma_obus_req);
-
-  sprintf(d,   "---PPU to VBUS:\n");
-  print_req(d, "req  ", ppu_vbus_req);
-
-  sprintf(d,   "---PPU to OBUS:\n");
-  print_req(d, "req  ", ppu_obus_req);
-
-
-  sprintf(d,   "---IBUS:\n");
-  print_req(d, "ibus_req ", ibus_req);
-  print_ack(d, "ibus_ack ", ibus_ack);
-
-  sprintf(d,   "---EBUS:\n");
-  print_req(d, "ebus_req ", ebus_req);
-  print_ack(d, "ebus_ack ", ebus_ack);
-
-  sprintf(d,   "---VBUS:\n");
-  print_req(d, "vbus_req ", vbus_req);
-  print_ack(d, "vbus_ack ", vbus_ack);
-
-  sprintf(d,   "---OBUS:\n");
-  print_req(d, "obus_req ", obus_req);
-  print_ack(d, "obus_ack ", obus_ack);
-  sprintf(d,   "\n");
+  sprintf(d, "---IBUS req:    "); print_req(d, ibus_req);
+  sprintf(d, "---IBUS ack:    "); print_ack(d, ibus_ack);
+  sprintf(d, "---EBUS req:    "); print_req(d, ebus_req);
+  sprintf(d, "---EBUS ack:    "); print_ack(d, ebus_ack);
+  sprintf(d, "---VBUS req:    "); print_req(d, vbus_req);
+  sprintf(d, "---VBUS ack:    "); print_ack(d, vbus_ack);
+  sprintf(d, "---OBUS req:    "); print_req(d, obus_req);
+  sprintf(d, "---OBUS ack:    "); print_ack(d, obus_ack);
+  sprintf(d, "\n");
 }
 
 void Gameboy::dump_zram(std::string& d) {

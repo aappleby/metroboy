@@ -4,7 +4,7 @@
 #include "TestGB.h"
 #include "StateManager2.h"
 
-class GateboyMain {
+class GateBoy {
 public:
 
   void init();

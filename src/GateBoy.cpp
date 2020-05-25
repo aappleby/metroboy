@@ -1,4 +1,4 @@
-#include "gateboy_main.h"
+#include "GateBoy.h"
 
 #ifdef _MSC_VER
 #include <include/SDL.h>
@@ -8,7 +8,7 @@
 
 //-----------------------------------------------------------------------------
 
-uint8_t GateboyMain::read_cycle(uint16_t addr) {
+uint8_t GateBoy::read_cycle(uint16_t addr) {
   Schematics::TestGB* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
@@ -40,7 +40,7 @@ uint8_t GateboyMain::read_cycle(uint16_t addr) {
   return (uint8_t)gb->cpu_pins.get_data();
 }
 
-void GateboyMain::write_cycle(uint16_t addr, uint8_t data) {
+void GateBoy::write_cycle(uint16_t addr, uint8_t data) {
   Schematics::TestGB* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
@@ -71,7 +71,7 @@ void GateboyMain::write_cycle(uint16_t addr, uint8_t data) {
   }
 }
 
-void GateboyMain::pass_cycle() {
+void GateBoy::pass_cycle() {
   Schematics::TestGB* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
@@ -103,7 +103,7 @@ void GateboyMain::pass_cycle() {
 
 //-----------------------------------------------------------------------------
 
-void GateboyMain::init() {
+void GateBoy::init() {
   Schematics::TestGB* gb = state_manager.state();
   gb->sys_pins.RST.preset(true, 1);
   gb->sys_pins.CLK_GOOD.preset(true, 0);
@@ -208,7 +208,7 @@ void GateboyMain::init() {
 //-----------------------------------------------------------------------------
 
 /*
-void GateboyMain::update(double delta) {
+void GateBoy::update(double delta) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_KEYDOWN) switch (event.key.keysym.sym) {
@@ -231,7 +231,7 @@ void GateboyMain::update(double delta) {
 
 //-----------------------------------------------------------------------------
 
-void GateboyMain::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text_painter) {
+void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text_painter) {
   //uint64_t begin = SDL_GetPerformanceCounter();
 
   text_painter.dprintf(" ----- SYS_REG -----\n");
@@ -250,8 +250,8 @@ void GateboyMain::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& 
                p == 6 ? 'G' : '_',
                p == 7 ? 'H' : '_');
 
-  float cx = 4;
-  float cy = -800;
+  float cx = 32 * 7;
+  float cy = 0;
 
   text_painter.newline();
   gb.sys_pins.dump_pins(text_painter);
@@ -261,7 +261,7 @@ void GateboyMain::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& 
   gb.bus_reg.dump_regs(text_painter);
   gb.ext_pins.dump_pins(text_painter);
   text_painter.render(cx, cy, 1.0);
-  cx += 192;
+  cx += 32 * 7;
 
   gb.joy_reg.dump_regs(text_painter);
   gb.dbg_reg.dump_regs(text_painter);
@@ -270,17 +270,17 @@ void GateboyMain::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& 
   gb.ser_reg.dump_regs(text_painter);
   gb.joy_pins.dump_pins(text_painter);
   text_painter.render(cx, cy, 1.0);
-  cx += 192;
+  cx += 32 * 7;
 
   gb.tim_reg.dump_regs(text_painter);
   text_painter.render(cx, cy, 1.0);
-  cx += 192;
+  cx += 32 * 7;
 
   gb.cfg_reg.dump_regs(text_painter);
   gb.lcd_reg.dump_regs(text_painter);
   gb.pxp_reg.dump_regs(text_painter);
   text_painter.render(cx, cy, 1.0);
-  cx += 192;
+  cx += 32 * 7;
 
   gb.spr_reg.dump_regs(text_painter);
   gb.sst_reg.dump_regs(text_painter);
@@ -288,18 +288,22 @@ void GateboyMain::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& 
   gb.vclk_reg.dump_regs(text_painter);
   gb.oam_reg.dump_regs(text_painter);
   text_painter.render(cx, cy, 1.0);
-  cx += 192;
+  cx += 32 * 7;
 
-  gb.oam_pins.dump_pins(text_painter);
-  gb.vram_pins.dump_pins(text_painter);
-  text_painter.render(cx, cy, 1.0);
-  cx += 192;
+  if (0) {
+    gb.oam_pins.dump_pins(text_painter);
+    gb.vram_pins.dump_pins(text_painter);
+    text_painter.render(cx, cy, 1.0);
+    cx += 32 * 7;
+  }
 
-  gb.lcd_pins.dump_pins(text_painter);
-  gb.wave_pins.dump_pins(text_painter);
-  gb.ser_pins.dump_pins(text_painter);
-  text_painter.render(cx, cy, 1.0);
-  cx += 192;
+  if (0) {
+    gb.lcd_pins.dump_pins(text_painter);
+    gb.wave_pins.dump_pins(text_painter);
+    gb.ser_pins.dump_pins(text_painter);
+    text_painter.render(cx, cy, 1.0);
+    cx += 32 * 7;
+  }
 
   /*
   uint64_t end = SDL_GetPerformanceCounter();

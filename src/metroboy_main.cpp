@@ -534,41 +534,47 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
   text_buf.clear();
   column += 32 * 7;
 
-  gameboy.dump_zram(text_buf);
-  sprintf(text_buf, "\n");
+  if (0) {
+    gameboy.dump_zram(text_buf);
+    sprintf(text_buf, "\n");
 
-  gameboy.dump_cart(text_buf);
-  sprintf(text_buf, "\n");
+    gameboy.dump_cart(text_buf);
+    sprintf(text_buf, "\n");
 
-  gameboy.dump_oam(text_buf);
-  sprintf(text_buf, "\n");
+    gameboy.dump_oam(text_buf);
+    sprintf(text_buf, "\n");
 
-  gameboy.dump_joypad(text_buf);
-  sprintf(text_buf, "\n");
+    gameboy.dump_joypad(text_buf);
+    sprintf(text_buf, "\n");
 
-  gameboy.dump_serial(text_buf);
-  sprintf(text_buf, "\n");
+    gameboy.dump_serial(text_buf);
+    sprintf(text_buf, "\n");
 
-  text_painter.render(text_buf, column, 0);
-  text_buf.clear();
-  column += 32 * 7;
+    text_painter.render(text_buf, column, 0);
+    text_buf.clear();
+    column += 32 * 7;
+  }
 
-  gameboy.get_ppu().dump(text_buf);
-  sprintf(text_buf, "\n");
+  if (0) {
+    gameboy.get_ppu().dump(text_buf);
+    sprintf(text_buf, "\n");
 
-  text_painter.render(text_buf, column, 0);
-  text_buf.clear();
-  column += 32 * 7;
+    text_painter.render(text_buf, column, 0);
+    text_buf.clear();
+    column += 32 * 7;
+  }
 
-  gameboy.dump_disasm(text_buf);
-  sprintf(text_buf, "\n");
+  if (0) {
+    gameboy.dump_disasm(text_buf);
+    sprintf(text_buf, "\n");
 
-  gameboy.get_spu().dump(text_buf);
-  sprintf(text_buf, "\n");
+    gameboy.get_spu().dump(text_buf);
+    sprintf(text_buf, "\n");
 
-  text_painter.render(text_buf, column, 0);
-  text_buf.clear();
-  column += 32 * 7;
+    text_painter.render(text_buf, column, 0);
+    text_buf.clear();
+    column += 32 * 7;
+  }
 
   {
     //ImGuiIO& io = ImGui::GetIO();

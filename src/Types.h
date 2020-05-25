@@ -86,21 +86,21 @@ void sprintf(std::string& out, const char* format, Args ... args)
 
 //-----------------------------------------------------------------------------
 
-inline void print_req(std::string& d, const char* name, const Req& req) {
+inline void print_req(std::string& d, const Req& req) {
   if (req.write)  {
-    sprintf(d, "%-16s %04x:%04x %s%s\n", name, req.addr, req.data,
+    sprintf(d, "%04x:%04x %s%s\n", req.addr, req.data,
       req.read  ? "\003R \001" : "- ",
       req.write ? "\002W \001" : "- ");
   }
   else {
-    sprintf(d, "%-16s %04x:---- %s%s\n", name, req.addr,
+    sprintf(d, "%04x:---- %s%s\n", req.addr,
       req.read  ? "\003R \001" : "- ",
       req.write ? "\002W \001" : "- ");
   }
 }
 
-inline void print_ack(std::string& d, const char* name, const Ack& ack) {
-  sprintf(d, "%-16s %04x:%04x %s%s\n", name, ack.addr, ack.data,
+inline void print_ack(std::string& d, const Ack& ack) {
+  sprintf(d, "%04x:%04x %s%s\n", ack.addr, ack.data,
     ack.read  ? "\003R \001" : "- ",
     ack.write ? "\002W \001" : "- ");
 }

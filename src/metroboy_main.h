@@ -5,7 +5,7 @@
 #include "GridPainter.h"
 #include "GBBlitter.h"
 #include "DumpPainter.h"
-#include "gateboy_main.h"
+#include "GateBoy.h"
 
 #include <string>
 
@@ -77,7 +77,7 @@ public:
   int64_t cycles_begin = 0;
   int64_t cycles_end = 0;
 
-  GateboyMain gateboy;
+  GateBoy gateboy;
 
   //----------
   // debug

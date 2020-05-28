@@ -15,6 +15,12 @@ public:
     states.push_back(new T());
   }
 
+  void reset() {
+    for (auto s : states) delete s;
+    states.clear();
+    states.push_back(new T());
+  }
+
   void set_step(step_func s) {
     step_callback = s;
   }

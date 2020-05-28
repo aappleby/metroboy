@@ -93,10 +93,10 @@ void TestGB::ext_preset() {
 bool TestGB::commit_everything() {
   bool changed = false;
 
-  /*p01.AFUR*/ changed |= clk_reg.PHAZ_ABCDxxxx.commit_duo();
-  /*p01.ALEF*/ changed |= clk_reg.PHAZ_xBCDExxx.commit_duo();
-  /*p01.APUK*/ changed |= clk_reg.PHAZ_xxCDEFxx.commit_duo();
-  /*p01.ADYK*/ changed |= clk_reg.PHAZ_xxxDEFGx.commit_duo();
+  /*p01.AFUR*/ changed |= clk_reg.PHAZ_xBCDExxx.commit_duo();
+  /*p01.ALEF*/ changed |= clk_reg.PHAZ_xxCDEFxx.commit_duo();
+  /*p01.APUK*/ changed |= clk_reg.PHAZ_xxxDEFGx.commit_duo();
+  /*p01.ADYK*/ changed |= clk_reg.PHAZ_xxxxEFGH.commit_duo();
 
   /*p23.VYXE*/ changed |= cfg_reg.LCDC_BGEN.commit_reg();
   /*p23.XYLO*/ changed |= cfg_reg.LCDC_SPEN.commit_reg();
@@ -796,14 +796,19 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.CLK_GOOD.commit_pinout();      // PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
   changed |= cpu_pins.CPU_RESET.commit_pinout();     // PORTC_04: <- P01.CPU_RESET
   changed |= cpu_pins.FROM_CPU6.clear_preset();      // PORTD_00: -> P07.LEXY, doesn't do anything
-  changed |= cpu_pins.BOWA_xBCDEFGH.commit_pinout(); // PORTD_01: <- P01.BOWA
-  changed |= cpu_pins.BEDO_Axxxxxxx.commit_pinout(); // PORTD_02: <- P01.BEDO _____fgh
-  changed |= cpu_pins.BEKO_ABCDxxxx.commit_pinout(); // PORTD_03: <- P01.BEKO ____efgh connection not indicated on P01
-  changed |= cpu_pins.BUDE_xxxxEFGH.commit_pinout(); // PORTD_04: <- P01.BUDE abcd____
+
+  changed |= cpu_pins.BOWA_AxCDEFGH.commit_pinout(); // PORTD_01: <- P01.BOWA
+  changed |= cpu_pins.BEDO_xBxxxxxx.commit_pinout(); // PORTD_02: <- P01.BEDO _____fgh
+
+  changed |= cpu_pins.BEKO_xBCDExxx.commit_pinout(); // PORTD_03: <- P01.BEKO ____efgh connection not indicated on P01
+  changed |= cpu_pins.BUDE_AxxxxFGH.commit_pinout(); // PORTD_04: <- P01.BUDE abcd____
+  
+  changed |= cpu_pins.BOLO_xBCDEFGx.commit_pinout(); // PORTD_05: <- BOLO_xBCDEFGx + BYDA?                                - test pad 2
   changed |= cpu_pins.FROM_CPU5.clear_preset();      // PORTD_05: -> FROM_CPU5
-  changed |= cpu_pins.BUKE_AxxxxxGH.commit_pinout(); // PORTD_06: <- P01.BUKE _____f__
-  changed |= cpu_pins.BOMA_Axxxxxxx.commit_pinout(); // PORTD_07: <- P01.RESET_CLK _____fgh
-  changed |= cpu_pins.BOGA_xBCDEFGH.commit_pinout(); // PORTD_08: <- P01.BOGA abcde___
+  changed |= cpu_pins.BUKE_ABxxxxxH.commit_pinout(); // PORTD_06: <- P01.BUKE _____f__
+
+  changed |= cpu_pins.BOMA_xBxxxxxx.commit_pinout(); // PORTD_07: <- P01.RESET_CLK _____fgh
+  changed |= cpu_pins.BOGA_AxCDEFGH.commit_pinout(); // PORTD_08: <- P01.BOGA abcde___
 
   changed |= cpu_pins.A00.clear_preset();
   changed |= cpu_pins.A01.clear_preset();
@@ -859,7 +864,7 @@ bool TestGB::commit_everything() {
   changed |= oam_pins.B_D6.commit_tribuf();
   changed |= oam_pins.B_D7.commit_tribuf();
 
-  changed |= wave_pins.BORY_AxxxxxGH.commit_pinout();
+  changed |= wave_pins.BORY_ABxxxxxH.commit_pinout();
 
   // Package pins
 

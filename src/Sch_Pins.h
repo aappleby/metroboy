@@ -6,10 +6,10 @@ namespace Schematics {
 struct WavePins {
   void dump_pins(TextPainter& text_painter) {
     text_painter.dprintf("----- WAVE_PINS -----\n");
-    text_painter.dprintf("CLK_AxxxxxGH %d\n", BORY_AxxxxxGH.a.val);
+    text_painter.dprintf("CLK_AxxxxxGH %d\n", BORY_ABxxxxxH.a.val);
   }
 
-  PinOut BORY_AxxxxxGH;
+  PinOut BORY_ABxxxxxH;
 };
 
 //-----------------------------------------------------------------------------
@@ -106,13 +106,15 @@ struct CpuPins {
     text_painter.dprintf("T1T2n         %d\n", T1T2n        .a.val);
 
     text_painter.dprintf("----- CPU CLOCKS -----\n");
-    text_painter.dprintf("BOWA_xBCDEFGH %d\n", BOWA_xBCDEFGH.a.val);
-    text_painter.dprintf("BEDO_Axxxxxxx %d\n", BEDO_Axxxxxxx.a.val);
-    text_painter.dprintf("BEKO_ABCDxxxx %d\n", BEKO_ABCDxxxx.a.val);
-    text_painter.dprintf("BUDE_xxxxEFGH %d\n", BUDE_xxxxEFGH.a.val);
-    text_painter.dprintf("BUKE_AxxxxxGH %d\n", BUKE_AxxxxxGH.a.val);
-    text_painter.dprintf("BOMA_Axxxxxxx %d\n", BOMA_Axxxxxxx.a.val);
-    text_painter.dprintf("BOGA_xBCDEFGH %d\n", BOGA_xBCDEFGH.a.val);
+
+    text_painter.dprintf("BOWA_AxCDEFGH %d\n", BOWA_AxCDEFGH.a.val);
+    text_painter.dprintf("BEDO_xBxxxxxx %d\n", BEDO_xBxxxxxx.a.val);
+    text_painter.dprintf("BEKO_xBCDExxx %d\n", BEKO_xBCDExxx.a.val);
+    text_painter.dprintf("BUDE_AxxxxFGH %d\n", BUDE_AxxxxFGH.a.val);
+    text_painter.dprintf("BOLO_xBCDEFGx %d\n", BOLO_xBCDEFGx.a.val);
+    text_painter.dprintf("BUKE_ABxxxxxH %d\n", BUKE_ABxxxxxH.a.val);
+    text_painter.dprintf("BOMA_xBxxxxxx %d\n", BOMA_xBxxxxxx.a.val);
+    text_painter.dprintf("BOGA_AxCDEFGH %d\n", BOGA_AxCDEFGH.a.val);
 
     text_painter.dprintf("----- FROM CPU -----\n");
     text_painter.dprintf("CLKREQ        %d\n", CLKREQ      .a.val);
@@ -239,22 +241,22 @@ struct CpuPins {
   PinIn  FROM_CPU6;     // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
   
   // Blue clock - decoders, alu, some reset stuff
-  PinOut BOWA_xBCDEFGH; // top left port PORTD_01: <- BOWA_xBCDEFGH
-  PinOut BEDO_Axxxxxxx; // top left port PORTD_02: <- BEDO_Axxxxxxx
+  PinOut BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH
+  PinOut BEDO_xBxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx
 
-  PinOut BEKO_ABCDxxxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
-  PinOut BUDE_xxxxEFGH; // top left port PORTD_04: <- BUDE_xxxxEFGH + BEVA
+  PinOut BEKO_xBCDExxx; // top left port PORTD_03: <- BEKO_ABCDxxxx + BAVY connection not indicated on P01 - test pad 1
+  PinOut BUDE_AxxxxFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
   
-  PinOut BOLO_ABCDEFxx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA?                                - test pad 2
+  PinOut BOLO_xBCDEFGx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA?                                - test pad 2
   PinIn  FROM_CPU5;     // top left port PORTD_06: -> ANUJ (FROM_CPU5)
-  PinOut BUKE_AxxxxxGH; // top left port PORTD_07: <- BUKE_AxxxxxGH
+  PinOut BUKE_ABxxxxxH; // top left port PORTD_07: <- BUKE_ABxxxxxH
   
-  PinOut BOMA_Axxxxxxx; // top left port PORTD_08: <- BOMA_Axxxxxxx (RESET_CLK)
-  PinOut BOGA_xBCDEFGH; // top left port PORTD_09: <- BOGA_xBCDEFGH                             - test pad 3
+  PinOut BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
+  PinOut BOGA_AxCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH                             - test pad 3
 
   // BEKO_ABCDxxxx - test pad 1
   // BOLO_ABCDEFxx - test pad 2
-  // BOGA_xBCDEFGH - test pad 3
+  // BOGA_AxCDEFGH - test pad 3
 
   PinIn  CLKREQ;        // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
   PinOut AFER;          // top center port PORTC_01: <- P01.AFER , reset related reg

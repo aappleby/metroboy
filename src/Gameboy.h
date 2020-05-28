@@ -43,6 +43,14 @@ struct Gameboy {
   void    reset(uint16_t new_pc);
   HostOut get_host_data() const { return gb_to_host; }
 
+  void halfcycle() {
+    if ((phase & 1) == 1) {
+      tick2();
+    }
+    else {
+      tock2();
+    }
+  }
 
   void tock_req(const Req& ibus_req);
   void tick_ack(Ack& ibus_ack) const;
@@ -97,7 +105,7 @@ struct Gameboy {
 
   //----------
 
-  int64_t phase = -3;
+  int64_t phase = 0;
   HostOut gb_to_host;
   uint32_t trace_val = 0;
 

@@ -324,7 +324,7 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p17.BOKE*/ wire CPU_RDa = not(CPU_RDn);
     /*p17.BENA*/ wire CPU_WAVE_RD  = nand(CPU_RDa, ADDR_FF3X);
     /*p17.CAZU*/ wire CPU_WAVE_RDn = not(CPU_WAVE_RD);
-    /*p17.BETA*/ wire BETA = or(WAVE_WR, CPU_WAVE_RDn, clk_sig.BORY_AxxxxxGH);
+    /*p17.BETA*/ wire BETA = or(WAVE_WR, CPU_WAVE_RDn, clk_sig.BORY_ABxxxxxH);
 
     /*p17.BOXO*/ wire BOXO = nor(b.ch3.SAMPLE_CLKn, b.ch3.AZET);
     /*p17.AZOR*/ wire AZOR = not(BETA);

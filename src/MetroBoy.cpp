@@ -130,10 +130,10 @@ void MetroBoy::step_over() {
 
 void MetroBoy::halfcycle() {
   if ((current->gb.phase & 1) == 1) {
-    current->gb.tick2();
+    current->gb.halfcycle();
   }
   else {
-    current->gb.tock2();
+    current->gb.halfcycle();
 
     gb_out = current->gb.get_host_data();
 

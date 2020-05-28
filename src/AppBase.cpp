@@ -68,8 +68,8 @@ int AppBase::app_main(int, char**) {
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  int initial_screen_w = 1920;
-  int initial_screen_h = 1080;
+  int initial_screen_w = 3200;
+  int initial_screen_h = 1600;
 
   window = SDL_CreateWindow(get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

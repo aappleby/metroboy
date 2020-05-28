@@ -8,6 +8,7 @@ class GateBoy {
 public:
 
   void init();
+  void reset(uint16_t new_pc);
   void render_frame(int screen_w, int screen_h, TextPainter& text_painter);
 
   void step(int count) {

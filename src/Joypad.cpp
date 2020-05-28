@@ -3,7 +3,7 @@
 #include <assert.h>
 
 void Joypad::reset() {
-  *this = Joypad();
+  ack = {0};
   val = 0xFF;
   p1 = 0xCF; // FF00
 }

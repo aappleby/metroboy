@@ -18,8 +18,6 @@ void Gameboy::reset(uint16_t new_pc) {
   uint8_t* old_rom = cart.rom;
   size_t old_rom_size = cart.rom_size;
 
-  //*this = {0};
-
   z80.reset(new_pc);
   cart.set_rom(old_rom, old_rom_size);
   cart.reset();
@@ -34,15 +32,16 @@ void Gameboy::reset(uint16_t new_pc) {
   zram.reset();
   boot.reset(new_pc);
 
-  phase = -3;
+  phase = 0;
   trace_val = 0;
 
   intf = 0xE1;
   imask = 0x00;
   ack = {0};
 
-  z80.get_bus_req(cpu_req);
-  ebus_req = cpu_req;
+  cpu_req  = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
+  ebus_req = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
+  ebus_ack = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
 
   sentinel = 0xDEADBEEF;
 }

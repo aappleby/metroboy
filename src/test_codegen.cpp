@@ -34,8 +34,8 @@ void test_preloaded(Gameboy& gameboy, const std::string& /*name*/) {
   int i = 0;
   const int ticks = 100000;  // bits_ram_en needs lots of tcycles
   for (; i < ticks; i++) {
-    gameboy.tick2();
-    gameboy.tock2();
+    gameboy.halfcycle();
+    gameboy.halfcycle();
     result = gameboy.get_vram()[0];
     if (result) break;
   }

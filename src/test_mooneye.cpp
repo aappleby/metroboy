@@ -148,8 +148,8 @@ void run_mooneye_test(const std::string& prefix, const std::string& name) {
   int i = 0;
   const int ticks = 25000000;  // bits_ram_en needs lots of tcycles
   for (; i < ticks; i++) {
-    gameboy.tick2();
-    gameboy.tock2();
+    gameboy.halfcycle();
+    gameboy.halfcycle();
     if (gameboy.get_cpu().get_op() == 0x40) {
       result = gameboy.get_cpu().get_a();
       break;

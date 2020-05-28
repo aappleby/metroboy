@@ -91,13 +91,11 @@ void MetroBoyApp::init() {
   //load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
   //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
-
-  //load("microtests/build/dmg", "div_inc_timing_a");
+  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
 
   //load_memdump("roms", "LinksAwakening_house");
 
-  load("roms/mooneye-gb/tests/build/acceptance/timer/", "tim00");
+  //load("roms/mooneye-gb/tests/build/acceptance/timer/", "tim00");
 
   runmode = STEP_CYCLE;
   //runmode = RUN_FAST;
@@ -268,6 +266,7 @@ void MetroBoyApp::update(double /*delta*/) {
 
   if (reset) {
     metroboy.reset(0x0100);
+    gateboy.reset(0x0100);
     reset = false;
   }
 
@@ -385,12 +384,12 @@ void MetroBoyApp::render_frame(int screen_w, int screen_h) {
   gb_blitter.blit_screen(view_snap, gb_screen_x, gb_screen_y, 2, metroboy.fb());
   */
 
-  const int gb_map_x = 1920 - 512 - 32;
-  const int gb_map_y = 32;
+  const int gb_map_x = screen_w - 32 * 17;
+  const int gb_map_y = screen_h - 32 * 24;
   gb_blitter.blit_map  (get_viewport(), gb_map_x, gb_map_y, 2, metroboy.get_vram());
 
-  const int gb_trace_x = 1920 - 512 - 32;
-  const int gb_trace_y = 32 + 512 + 32;
+  const int gb_trace_x = screen_w - 32 * 17;
+  const int gb_trace_y = screen_h - 32 * 7;
   gb_blitter.blit_trace (get_viewport(), gb_trace_x, gb_trace_y, metroboy.get_trace());
 
   /*
@@ -532,9 +531,9 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
 
   text_painter.render(text_buf, column, 0);
   text_buf.clear();
-  column += 32 * 7;
+  column += 32 * 8;
 
-  if (0) {
+  if (1) {
     gameboy.dump_zram(text_buf);
     sprintf(text_buf, "\n");
 
@@ -552,19 +551,19 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
 
     text_painter.render(text_buf, column, 0);
     text_buf.clear();
-    column += 32 * 7;
+    column += 32 * 8;
   }
 
-  if (0) {
+  if (1) {
     gameboy.get_ppu().dump(text_buf);
     sprintf(text_buf, "\n");
 
     text_painter.render(text_buf, column, 0);
     text_buf.clear();
-    column += 32 * 7;
+    column += 32 * 8;
   }
 
-  if (0) {
+  if (1) {
     gameboy.dump_disasm(text_buf);
     sprintf(text_buf, "\n");
 
@@ -573,7 +572,7 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
 
     text_painter.render(text_buf, column, 0);
     text_buf.clear();
-    column += 32 * 7;
+    column += 32 * 8;
   }
 
   {

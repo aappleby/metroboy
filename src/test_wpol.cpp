@@ -141,8 +141,8 @@ void run_wpol_test(const std::string& prefix, const std::string& name) {
   int i = 0;
   constexpr int ticks = 25000000;
   for (; i < ticks; i++) {
-    gb->tick2();
-    gb->tock2();
+    gb->halfcycle();
+    gb->halfcycle();
     if (gb->get_cpu().get_op() == 0x40) {
       result = gb->get_cpu().get_a();
       break;

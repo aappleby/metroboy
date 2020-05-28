@@ -505,8 +505,8 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
   for (; i < ticks; i++) {
     //assert(!gameboy.ppu.vram_delay == !gameboy.ppu.fetch_delay);
 
-    gameboy->tick2();
-    gameboy->tock2();
+    gameboy->halfcycle();
+    gameboy->halfcycle();
     //assert(!gameboy.ppu.vram_delay == !gameboy.ppu.fetch_delay);
 
 

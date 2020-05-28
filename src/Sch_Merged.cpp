@@ -146,26 +146,21 @@ void TestGB::tick_everything() {
 
 
   /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
-  /*p01.BELE*/ wire BELE_Axxxxxxx = not(BUTO_AxCDEFGH);
-  /*p01.BYJU*/ wire BYJU_xBCDEFGH = nor(BELE_Axxxxxxx, ATEZ_CLKBAD);
-  /*p01.BALY*/ wire BALY_Axxxxxxx = not(BYJU_xBCDEFGH);
-  /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_Axxxxxxx);
+  /*p01.BELE*/ wire BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
+  /*p01.BYJU*/ wire BYJU_AxCDEFGH = nor(BELE_xBxxxxxx, ATEZ_CLKBAD);
+  /*p01.BALY*/ wire BALY_xBxxxxxx = not(BYJU_AxCDEFGH);
+  /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
   /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(BOGA_AxCDEFGH);
 
   /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
-  /*p01.BUVU*/ wire BUVU_Axxxxxxx = and(BUTY_CLKREQ, BALY_Axxxxxxx);
-  /*p01.BYXO*/ wire BYXO_xBCDEFGH = not(BUVU_Axxxxxxx);
-  /*p01.BEDO*/ wire BEDO_xBxxxxxx = not(BYXO_xBCDEFGH);
+  /*p01.BUVU*/ wire BUVU_xBxxxxxx = and(BUTY_CLKREQ, BALY_xBxxxxxx);
+  /*p01.BYXO*/ wire BYXO_AxCDEFGH = not(BUVU_xBxxxxxx);
+  /*p01.BEDO*/ wire BEDO_xBxxxxxx = not(BYXO_AxCDEFGH);
   /*p01.BOWA*/ wire BOWA_AxCDEFGH = not(BEDO_xBxxxxxx);
 
   // wave ram write clock
-  /*p01.BUGO*/ wire BUGO_xBCDExxx = not(AFEP_ABxxxxGH);
-  /*p01.BATE*/ wire BATE_ABxxxxxH = nor(ABOL_CLKREQn, BUGO_xBCDExxx, AROV_xxxDEFGx);
-
-  printf("AFEP_ABxxxxGH %d\n", AFEP_ABxxxxGH);
-  printf("ATYP_xBCDExxx %d\n", ATYP_xBCDExxx);
-  printf("BATE_ABxxxxxH %d\n", BATE_ABxxxxxH);
-
+  /*p01.BUGO*/ wire BUGO_xxCDEFxx = not(AFEP_ABxxxxGH);
+  /*p01.BATE*/ wire BATE_ABxxxxxH = nor(ABOL_CLKREQn, BUGO_xxCDEFxx, AROV_xxxDEFGx);
   /*p01.BASU*/ wire BASU_xxCDEFGx = not(BATE_ABxxxxxH);
   /*p01.BUKE*/ wire BUKE_ABxxxxxH = not(BASU_xxCDEFGx);
   /*p17.ABUR*/ wire ABUR_xxCDEFGx = not(BUKE_ABxxxxxH);

@@ -172,7 +172,8 @@ int AppBase::app_main(int, char**) {
         break;
       }
       case SDL_TEXTINPUT: {
-        io.AddInputCharactersUTF8(event->text_painter.text_painter);
+
+        io.AddInputCharactersUTF8(event->text.text);
         break;
       }
       case SDL_KEYDOWN:

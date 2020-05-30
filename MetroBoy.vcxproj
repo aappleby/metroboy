@@ -40,16 +40,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)_debug</TargetName>
-    <IncludePath>$(SolutionDir);$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(SolutionDir)glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);$(SolutionDir)imgui;$(SolutionDir)SDL;$(SolutionDir)glm;$(IncludePath)</IncludePath>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <EnableClangTidyCodeAnalysis>false</EnableClangTidyCodeAnalysis>
     <CodeAnalysisRuleSet>MetroBoy.ruleset</CodeAnalysisRuleSet>
+    <LibraryPath>$(SolutionDir)SDL\VisualC\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir);$(SolutionDir)imgui;$(SolutionDir)SDL2;$(SolutionDir)SDL2\include;$(SolutionDir)gl3w\include;$(SolutionDir)glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);$(SolutionDir)imgui;$(SolutionDir)SDL;$(SolutionDir)glm;$(IncludePath)</IncludePath>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <EnableClangTidyCodeAnalysis>false</EnableClangTidyCodeAnalysis>
     <CodeAnalysisRuleSet>MetroBoy.ruleset</CodeAnalysisRuleSet>
+    <LibraryPath>$(SolutionDir)SDL\VisualC\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

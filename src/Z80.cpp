@@ -420,15 +420,15 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
                                                                                                                        
     // load/store                                                                                                      
                                                                                                                        
-    if (state == 0 && STM_A16_SP)             /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/ out = spl;                                       state_ = 1; }
-    if (state == 1 && STM_A16_SP)             /**/ { y = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/ x   = sph;                                       state_ = 2; }
-    if (state == 2 && STM_A16_SP)             /**/ {                         adl = y;            /**/                        adh = in;              set_addr(ad, 1); /**/                                                  state_ = 3; }
-    if (state == 3 && STM_A16_SP)             /**/ { out = x;                adl = inc(adl, 1);  /**/                        adh = inc(adh, inc_c); set_addr(ad, 1); /**/                                                  state_ = 4; }
+    if (state == 0 && STM_A16_SP)             /**/ { out = spl;        pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 1; }
+    if (state == 1 && STM_A16_SP)             /**/ { y = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 2; }
+    if (state == 2 && STM_A16_SP)             /**/ { x = in;                 adl = y;            /**/                        adh = x;               set_addr(ad, 1); /**/                                                  state_ = 3; }
+    if (state == 3 && STM_A16_SP)             /**/ { out = sph;              adl = inc(adl, 1);  /**/                        adh = inc(adh, inc_c); set_addr(ad, 1); /**/                                                  state_ = 4; }
     if (state == 4 && STM_A16_SP)             /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
                                                                                                                        
     if (state == 0 && STM_A16_A)              /**/ { out = a;          pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 1; }
     if (state == 1 && STM_A16_A)              /**/ { y = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 2; }
-    if (state == 2 && STM_A16_A)              /**/ {                         adl = y;            /**/                        adh = in;              set_addr(ad, 1); /**/                                                  state_ = 3; }
+    if (state == 2 && STM_A16_A)              /**/ { x = in;                 adl = y;            /**/                        adh = x;               set_addr(ad, 1); /**/                                                  state_ = 3; }
     if (state == 3 && STM_A16_A)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
                                                                                                                        
     // so xy has to be on the left side?

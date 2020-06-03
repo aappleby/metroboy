@@ -75,17 +75,17 @@ struct Z80 {
 #pragma warning(disable : 4201)
 #pragma warning(disable : 26495)
 
-  // left "data" bus              low side     high side
-  union { uint16_t bc = 0;     struct { uint8_t   c; uint8_t   b; }; };
-  union { uint16_t de = 0;     struct { uint8_t   e; uint8_t   d; }; };
-  union { uint16_t hl = 0;     struct { uint8_t   l; uint8_t   h; }; };
-  union { uint16_t af = 0;     struct { uint8_t   f; uint8_t   a; }; };
+  // left "data" bus                low side     high side
+  union { uint16_t bc = 0; struct { uint8_t   c; uint8_t   b; }; };
+  union { uint16_t de = 0; struct { uint8_t   e; uint8_t   d; }; };
+  union { uint16_t hl = 0; struct { uint8_t   l; uint8_t   h; }; };
+  union { uint16_t af = 0; struct { uint8_t   f; uint8_t   a; }; };
                            
   // right "addr" bus      
-  union { uint16_t xy = 0;     struct { uint8_t   y; uint8_t   x; }; };
-  union { uint16_t pc = 0;     struct { uint8_t pcl; uint8_t pch; }; };
-  union { uint16_t sp = 0;     struct { uint8_t spl; uint8_t sph; }; };
-  union { uint16_t ad = 0;     struct { uint8_t adl; uint8_t adh; }; };
+  union { uint16_t xy = 0; struct { uint8_t   y; uint8_t   x; }; };
+  union { uint16_t pc = 0; struct { uint8_t pcl; uint8_t pch; }; };
+  union { uint16_t sp = 0; struct { uint8_t spl; uint8_t sph; }; };
+  union { uint16_t ad = 0; struct { uint8_t adl; uint8_t adh; }; };
 
 #pragma warning(pop)
 

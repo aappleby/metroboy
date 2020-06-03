@@ -80,7 +80,7 @@ struct Z80 {
   union { uint16_t af = 0; struct { uint8_t   f; uint8_t   a; }; };
                            
   // right "addr" bus      
-  union { uint16_t xy = 0; struct { uint8_t   y; uint8_t   x; }; };
+  union { uint16_t xy = 0; struct { uint8_t xyl; uint8_t xyh; }; };
   union { uint16_t pc = 0; struct { uint8_t pcl; uint8_t pch; }; };
   union { uint16_t sp = 0; struct { uint8_t spl; uint8_t sph; }; };
 

@@ -205,7 +205,7 @@ uint8_t hi(uint16_t x) { return uint8_t(x >> 8); }
 void Z80::set_addr(uint16_t new_addr, int new_write) {
   ad = new_addr;
 
-  if (LDM_A_A8 && state == 1) { adh = 0xFF; }
+  //if (LDM_A_A8 && state == 1) { adh = 0xFF; }
   if (STM_A8_A && state == 1) { adh = 0xFF; }
   if (LDM_A_C  && state == 0) { adh = 0xFF; }
   if (STM_C_A  && state == 0) { adh = 0xFF; }
@@ -441,18 +441,18 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
 
     // indirect load/store
 
-    if (state == 0 && LDM_A_BC)               /**/ { DBUS_BUSY;        adl = c;                  /**/ DBUS_BUSY;       adh = b;                     set_addr(ad, 0); /**/                                                  state_ = 1; }
+    if (state == 0 && LDM_A_BC)               /**/ { DBUS_BUSY;              adl = c;            /**/ DBUS_BUSY;             adh = b;               set_addr(ad, 0); /**/                                                  state_ = 1; }
     if (state == 1 && LDM_A_BC)               /**/ { a = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
                                                                                                                                                                                                                           
-    if (state == 0 && LDM_A_DE)               /**/ { DBUS_BUSY;        adl = e;                  /**/ DBUS_BUSY;       adh = d;                     set_addr(ad, 0); /**/                                                  state_ = 1; }
+    if (state == 0 && LDM_A_DE)               /**/ { DBUS_BUSY;              adl = e;            /**/ DBUS_BUSY;             adh = d;               set_addr(ad, 0); /**/                                                  state_ = 1; }
     if (state == 1 && LDM_A_DE)               /**/ { a = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
     
     // hmmmmmmm ok this is problematic. we need two moves to get bc into ad, and one to get a into out? but we only have two cycles to do it... unless every instruction leaves out in a?
 
-    if (state == 0 && STM_BC_A)               /**/ { out = a;          adl = c;                  /**/ adh = b;                                      set_addr(ad, 1); /**/                                                  state_ = 1; }
+    if (state == 0 && STM_BC_A)               /**/ { out = a;                adl = c;            /**/                        adh = b;               set_addr(ad, 1); /**/                                                  state_ = 1; }
     if (state == 1 && STM_BC_A)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
                                                                                                                                                                                                                           
-    if (state == 0 && STM_DE_A)               /**/ { out = a;          adl = e;                  /**/ adh = d;                                      set_addr(ad, 1); /**/                                                  state_ = 1; }
+    if (state == 0 && STM_DE_A)               /**/ { out = a;                adl = e;            /**/                        adh = d;               set_addr(ad, 1); /**/                                                  state_ = 1; }
     if (state == 1 && STM_DE_A)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
                                                                                                                                                                                                                           
     if (state == 0 && LDM_A_HLP)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(hl, 0); /**/                                                  state_ = 1; }
@@ -462,8 +462,8 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     // maybe xy is on the right side?
 
     if (state == 0 && LDM_A_HLM) {
-      adl = y = l;
-      adh = x = h;
+      y = adl = l;
+      x = adh = h;
       set_addr(ad, 0);
       l = dec(y, 1);
       state_ = 1;
@@ -481,8 +481,8 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
                                                                                                                                                                                                                           
     if (state == 0 && STM_HLM_A) {
       out = a;
-      adl = y = l;
-      adh = x = h;
+      y = adl = l;
+      x = adh = h;
       set_addr(ad, 1);
       l = dec(y, 1);
       state_ = 1;
@@ -499,8 +499,8 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 1 && LDM_R_HL)               /**/ {                                             /**/                                              set_addr(pc, 0); /**/ reg(OP_ROW) = in;                                state_ = 0; }
 
     if (state == 0 && STM_HL_R) {
-      ad = abus = dbus = hl;
-      out = dbl = reg(OP_COL);
+      ad = hl;
+      out = reg(OP_COL);
       set_addr(ad, 1);
       state_ = 1;
     }
@@ -517,9 +517,9 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
                                                                                                                                                                                                                           
     // zero-page load/store                                                                                                                                                                                               
                                                                                                                                                                                                                           
-    if (state == 0 && LDM_A_A8)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(pc, 0); /**/                                                  state_ = 1; }
-    if (state == 1 && LDM_A_A8)               /**/ { y = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(xy, 0); /**/                                                  state_ = 2; }
-    if (state == 2 && LDM_A_A8)               /**/ { a = in;                                     /**/                                               set_addr(pc, 0); /**/                                                  state_ = 0; }
+    if (state == 0 && LDM_A_A8)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 1; }
+    if (state == 1 && LDM_A_A8)               /**/ { y = in;                 adl = y;             /**/                       adh = 0xFF;            set_addr(ad, 0); /**/                                                  state_ = 2; }
+    if (state == 2 && LDM_A_A8)               /**/ { a = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/                                                  state_ = 0; }
                                                                                                                                                                                                                           
     if (state == 0 && STM_A8_A)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(pc, 0); /**/                                                  state_ = 1; }
     if (state == 1 && STM_A8_A)               /**/ { y = in;           pcl = adl = inc(pcl, 1);  /**/ out = a;         pch = adh = inc(pch, inc_c); set_addr(xy, 1); /**/                                                  state_ = 2; }

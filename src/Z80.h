@@ -76,15 +76,13 @@ struct Z80 {
 #pragma warning(disable : 26495)
 
   // left "data" bus              low side     high side
-  union { uint16_t dbus = 0;   struct { uint8_t dbl; uint8_t dbh; }; };
   union { uint16_t bc = 0;     struct { uint8_t   c; uint8_t   b; }; };
   union { uint16_t de = 0;     struct { uint8_t   e; uint8_t   d; }; };
   union { uint16_t hl = 0;     struct { uint8_t   l; uint8_t   h; }; };
   union { uint16_t af = 0;     struct { uint8_t   f; uint8_t   a; }; };
-  union { uint16_t xy = 0;     struct { uint8_t   y; uint8_t   x; }; };
                            
   // right "addr" bus      
-  union { uint16_t abus = 0;   struct { uint8_t abl; uint8_t abh; }; };
+  union { uint16_t xy = 0;     struct { uint8_t   y; uint8_t   x; }; };
   union { uint16_t pc = 0;     struct { uint8_t pcl; uint8_t pch; }; };
   union { uint16_t sp = 0;     struct { uint8_t spl; uint8_t sph; }; };
   union { uint16_t ad = 0;     struct { uint8_t adl; uint8_t adh; }; };

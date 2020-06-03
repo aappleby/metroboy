@@ -458,14 +458,14 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && LDM_A_HLP)              /**/ {                   x = h;                    /**/ alu_x = l;       y = l;                       /**/ l = alu(1, F_CARRY);                             set_addr(xy, 0); state_ = 1; }
     if (state == 1 && LDM_A_HLP)              /**/ { a = in;                                     /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(1, alu_f);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
-    if (state == 0 && LDM_A_HLM)              /**/ {                   pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_HLM)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = dec(y, 1);               /**/ DBUS_BUSY;             h = dec(x, inc_c);        set_addr(pc, 0); state_ = 0; }
-
     if (state == 0 && STM_HLP_A)              /**/ { out = a;          x = h;                    /**/ alu_x = l;       y = l;                       /**/ l = alu(1, F_CARRY);                             set_addr(xy, 1); state_ = 1; }
     if (state == 1 && STM_HLP_A)              /**/ {                                             /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(1, alu_f);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
-    if (state == 0 && STM_HLM_A)              /**/ { out = a;          pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 1); state_ = 1; }
-    if (state == 1 && STM_HLM_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = dec(y, 1);               /**/ DBUS_BUSY;             h = dec(x, inc_c);        set_addr(pc, 0); state_ = 0; }
+    if (state == 0 && LDM_A_HLM)              /**/ {                   x = h;                    /**/ alu_x = l;       y = l;                       /**/ l = alu(3, F_CARRY);                             set_addr(xy, 0); state_ = 1; }
+    if (state == 1 && LDM_A_HLM)              /**/ { a = in;                                     /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(3, alu_f);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+
+    if (state == 0 && STM_HLM_A)              /**/ { out = a;          x = h;                    /**/ alu_x = l;       y = l;                       /**/ l = alu(3, F_CARRY);                             set_addr(xy, 1); state_ = 1; }
+    if (state == 1 && STM_HLM_A)              /**/ {                                             /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(3, alu_f);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
 
     // zero-page load/store                                                                                                                                                                                                

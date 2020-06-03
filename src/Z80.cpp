@@ -444,31 +444,23 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && LDM_A_DE)               /**/ {                         adl = e;            /**/                        adh = d;               /**/                                                  set_addr(ad, 0); state_ = 1; }
     if (state == 1 && LDM_A_DE)               /**/ { a = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(ad, 0); state_ = 0; }
 
-    // hmmmmmmm ok this is problematic. we need two moves to get bc into ad, and one to get a into out?
-    // but we only have two cycles to do it... unless every instruction leaves out in a?
-
-    if (state == 0 && STM_BC_A)               /**/ { out = a;                adl = c;            /**/                        adh = b;               /**/                                                  set_addr(ad, 1); state_ = 1; }
+    if (state == 0 && STM_BC_A)               /**/ { DBUS_BUSY;              adl = c;            /**/ DBUS_BUSY;             adh = b;               /**/ out = a;                                         set_addr(ad, 1); state_ = 1; }
     if (state == 1 && STM_BC_A)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(ad, 0); state_ = 0; }
 
-    if (state == 0 && STM_DE_A)               /**/ { out = a;                adl = e;            /**/                        adh = d;               /**/                                                  set_addr(ad, 1); state_ = 1; }
+    if (state == 0 && STM_DE_A)               /**/ { DBUS_BUSY;              adl = e;            /**/ DBUS_BUSY;             adh = d;               /**/ out = a;                                         set_addr(ad, 1); state_ = 1; }
     if (state == 1 && STM_DE_A)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(ad, 0); state_ = 0; }
 
     // this works and doesn't break any bus rules, but it requires ad to be a mux
-    if (state == 0 && LDM_A_HLP)              /**/ {                   y = l;                    /**/                  x = h;                       /**/ pcl = inc(pcl, 1);                               set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_HLP)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/                  l = inc(l, 1);               /**/ h = inc(h, inc_c);                               set_addr(pc, 0); state_ = 0; }
-    if (state == 0 && LDM_A_HLM)              /**/ {                   y = l;                    /**/                  x = h;                       /**/ pcl = inc(pcl, 1);                               set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_HLM)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/                  l = dec(l, 1);               /**/ h = dec(h, inc_c);                               set_addr(pc, 0); state_ = 0; }
-                                                                                                                                                                                                                          
-    //if (state == 0 && STM_HLP_A)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/ out = a;        pch = adh = inc(pch, inc_c); set_addr(hl, 1); /**/                                                  state_ = 1; }
-    //if (state == 1 && STM_HLP_A)              /**/ {                           l = inc(  l, 1);  /**/                         h = inc(  h, inc_c); set_addr(pc, 0); /**/                                                  state_ = 0; }
+    if (state == 0 && LDM_A_HLP)              /**/ { DBUS_BUSY;        y = l;                    /**/ DBUS_BUSY;       x = h;                       /**/                        pcl = inc(pcl, 1);        set_addr(xy, 0); state_ = 1; }
+    if (state == 1 && LDM_A_HLP)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/                  l = inc(l, 1);               /**/ DBUS_BUSY;             h = inc(h, inc_c);        set_addr(pc, 0); state_ = 0; }
+    if (state == 0 && LDM_A_HLM)              /**/ { DBUS_BUSY;        y = l;                    /**/ DBUS_BUSY;       x = h;                       /**/                        pcl = inc(pcl, 1);        set_addr(xy, 0); state_ = 1; }
+    if (state == 1 && LDM_A_HLM)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/                  l = dec(l, 1);               /**/ DBUS_BUSY;             h = dec(h, inc_c);        set_addr(pc, 0); state_ = 0; }
 
-    if (state == 0 && STM_HLP_A)              /**/ {                   y = l;                    /**/                  x = h;                       /**/ out = a;               pcl = inc(pcl, 1);        set_addr(xy, 1); state_ = 1; }
-    if (state == 1 && STM_HLP_A)              /**/ {                   pch = inc(pch, inc_c);    /**/                  l = inc(l, 1);               /**/                        h = inc(h, inc_c);        set_addr(pc, 0); state_ = 0; }
+    if (state == 0 && STM_HLP_A)              /**/ { DBUS_BUSY;        y = l;                    /**/ DBUS_BUSY;       x = h;                       /**/ out = a;               pcl = inc(pcl, 1);        set_addr(xy, 1); state_ = 1; }
+    if (state == 1 && STM_HLP_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = inc(l, 1);               /**/ DBUS_BUSY;             h = inc(h, inc_c);        set_addr(pc, 0); state_ = 0; }
+    if (state == 0 && STM_HLM_A)              /**/ { DBUS_BUSY;        y = l;                    /**/ DBUS_BUSY;       x = h;                       /**/ out = a;               pcl = inc(pcl, 1);        set_addr(xy, 1); state_ = 1; }
+    if (state == 1 && STM_HLM_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = dec(l, 1);               /**/ DBUS_BUSY;             h = dec(h, inc_c);        set_addr(pc, 0); state_ = 0; }
 
-    // this seems broken, but tests passing... aren't we clobbering inc_c?
-    if (state == 0 && STM_HLM_A)              /**/ {                     y = adl = l;            /**/ out = a;           x = adh = h;               set_addr(ad, 1); /**/ l = dec(y, 1);                                   state_ = 1; }
-    if (state == 1 && STM_HLM_A)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(ad, 0); /**/ h = dec(x, inc_c);                               state_ = 0; }
-                                                                                                                                                                                                                          
     if (state == 0 && LDM_R_HL)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); set_addr(hl, 0); /**/                                                  state_ = 1; }
     if (state == 1 && LDM_R_HL)               /**/ { reg(OP_ROW) = in;                           /**/                                               set_addr(pc, 0); /**/                                                  state_ = 0; }
 

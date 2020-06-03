@@ -201,11 +201,6 @@ uint8_t lo(uint16_t x) { return uint8_t(x >> 0); }
 uint8_t hi(uint16_t x) { return uint8_t(x >> 8); }
 
 void Z80::set_addr(uint16_t new_addr, int new_write) {
-  //if (LDM_A_A8 && state == 1) { new_addr |= 0xFF00; }
-  if (STM_A8_A && state == 1) { new_addr |= 0xFF00; }
-  if (LDM_A_C  && state == 0) { new_addr |= 0xFF00; }
-  if (STM_C_A  && state == 0) { new_addr |= 0xFF00; }
-
   bus_req.addr  = new_addr;
   bus_req.data  = uint16_t(new_write ? out : 0);
   bus_req.read  = (bool)!new_write;
@@ -467,17 +462,18 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     // zero-page load/store                                                                                                                                                                                                
 
     if (state == 0 && LDM_A_A8)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 0 && LDM_A_C)                /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(bc, 0); state_ = 1; }
-    if (state == 0 && STM_A8_A)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 0 && STM_C_A)                /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/ out = a;               pch = inc(pch, inc_c);    set_addr(bc, 1); state_ = 1; }
-
-    if (state == 1 && LDM_A_A8)               /**/ { DBUS_BUSY;        y = in;                   /**/ DBUS_BUSY;       x = 0xFF;                    /**/                                                  set_addr(xy, 0); state_ = 2; }
-    if (state == 1 && STM_A8_A)               /**/ { DBUS_BUSY;        y = in;                   /**/                  pcl = inc(pcl, 1);           /**/ out = a;               pch = inc(pch, inc_c);    set_addr(xy, 1); state_ = 2; }
-
+    if (state == 1 && LDM_A_A8)               /**/ {                                             /**/ DBUS_BUSY;       y = in;                      /**/ DBUS_BUSY;             x = 0xFF;                 set_addr(xy, 0); state_ = 2; }
     if (state == 2 && LDM_A_A8)               /**/ { a = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
-    if (state == 1 && LDM_A_C)                /**/ { a = in;                                     /**/                                               /**/                                                  set_addr(pc, 0); state_ = 0; }
-    if (state == 2 && STM_A8_A)               /**/ {                                             /**/                                               /**/                                                  set_addr(pc, 0); state_ = 0; }
-    if (state == 1 && STM_C_A)                /**/ {                                             /**/                                               /**/                                                  set_addr(pc, 0); state_ = 0; }
+
+    if (state == 0 && LDM_A_C)                /**/ {                                             /**/ DBUS_BUSY;       y = c;                       /**/ DBUS_BUSY;             x = 0xFF;                 set_addr(xy, 0); state_ = 1; }
+    if (state == 1 && LDM_A_C)                /**/ { a = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+
+    if (state == 0 && STM_A8_A)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
+    if (state == 1 && STM_A8_A)               /**/ { out = a;                                    /**/ DBUS_BUSY;       y = in;                      /**/ DBUS_BUSY;             x = 0xFF;                 set_addr(xy, 1); state_ = 2; }
+    if (state == 2 && STM_A8_A)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+
+    if (state == 0 && STM_C_A)                /**/ { out = a;                                    /**/ DBUS_BUSY;       y = c;                       /**/ DBUS_BUSY;             x = 0xFF;                 set_addr(xy, 1); state_ = 1; }
+    if (state == 1 && STM_C_A)                /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
 
 

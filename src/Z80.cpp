@@ -578,10 +578,10 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     // ok we need to latch out on set_addr                                                                                                                                                                                            
                                                                                                                                                                                 
     if (state == 0 && CALL_A16)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && CALL_A16)               /**/ { y = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && CALL_A16)               /**/ { x = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 3; }
-    if (state == 3 && CALL_A16)               /**/ { out = pch;                                  /**/                  spl = dec(spl, 1);           /**/                        sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 4; }
-    if (state == 4 && CALL_A16)               /**/ { out = pcl;                                  /**/                  spl = dec(spl, 1);           /**/                        sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 5; }
+    if (state == 1 && CALL_A16)               /**/ { DBUS_BUSY;        y = in;                   /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && CALL_A16)               /**/ { DBUS_BUSY;        x = in;                   /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 3; }
+    if (state == 3 && CALL_A16)               /**/ { DBUS_BUSY;        out = pch;                /**/                  spl = dec(spl, 1);           /**/                        sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 4; }
+    if (state == 4 && CALL_A16)               /**/ { DBUS_BUSY;        out = pcl;                /**/                  spl = dec(spl, 1);           /**/                        sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 5; }
     if (state == 5 && CALL_A16)               /**/ {                                             /**/                  pcl = y;                     /**/                        pch = x;                  set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                 
     if (state == 0 && RET_CC      && !branch) /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
@@ -590,8 +590,8 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && RET_CC      &&  branch) /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
     if (state == 1 && RET_CC      &&  branch) /**/ {                                             /**/                                               /**/                                                  set_addr(pc, 0); state_ = 2; }
     if (state == 2 && RET_CC      &&  branch) /**/ {                                             /**/                                               /**/                                                  set_addr(sp, 0); state_ = 3; }
-    if (state == 3 && RET_CC      &&  branch) /**/ { pcl = in;                                   /**/                  spl = inc(spl, 1);           /**/                        sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 4; }
-    if (state == 4 && RET_CC      &&  branch) /**/ { pch = in;                                   /**/                  spl = inc(spl, 1);           /**/                        sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 3 && RET_CC      &&  branch) /**/ { DBUS_BUSY;        pcl = in;                 /**/                  spl = inc(spl, 1);           /**/                        sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 4; }
+    if (state == 4 && RET_CC      &&  branch) /**/ { DBUS_BUSY;        pch = in;                 /**/                  spl = inc(spl, 1);           /**/                        sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                 
     if (state == 0 && RETI)                   /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 1; }
     if (state == 1 && RETI)                   /**/ { DBUS_BUSY;        pcl = in;                 /**/                  spl = inc(spl, 1);           /**/                        sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
@@ -607,10 +607,10 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
                                                                                                                                                                                 
     if (state == 0 && JP_HL)                  /**/ {                                             /**/ DBUS_BUSY;       pcl = l;                     /**/ DBUS_BUSY;             pch = h;                  set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                 
-    if (state == 0 && RST_NN)                 /**/ {                                             /**/ alu_y = 0x38;    pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 1; }
+    if (state == 0 && RST_NN)                 /**/ { alu_y = 0x38;                               /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 1; }
     if (state == 1 && RST_NN)                 /**/ { DBUS_BUSY;        out = pch;                /**/                  spl = dec(spl, 1);           /**/                        sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 2; }
     if (state == 2 && RST_NN)                 /**/ { DBUS_BUSY;        out = pcl;                /**/                  spl = dec(spl, 1);           /**/                        sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 3; }
-    if (state == 3 && RST_NN)                 /**/ { DBUS_BUSY;        pch = 0x00;               /**/ alu_x = op;                                   /**/ DBUS_BUSY;             pcl = alu(4, f);          set_addr(pc, 0); state_ = 0; }
+    if (state == 3 && RST_NN)                 /**/ { alu_x = op;                                 /**/ DBUS_BUSY;       pch = 0x00;                  /**/ DBUS_BUSY;             pcl = alu(4, f);          set_addr(pc, 0); state_ = 0; }
   }
 
   f &= 0xF0;

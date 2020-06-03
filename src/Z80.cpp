@@ -243,6 +243,11 @@ void Z80::tick_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
 }
 
 void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+  alu_x = 0;
+  alu_y = 0;
+  alu_o = 0;
+  //alu_f = 0;
+
 #ifdef FUZZ_TEST
   uint8_t z;
   {
@@ -452,17 +457,17 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 1 && STM_HL_D8)              /**/ { out = in;                                   /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(hl, 1); state_ = 2; }
     if (state == 2 && STM_HL_D8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
-    //if (state == 0 && LDM_A_HLP)              /**/ {                   pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 0); state_ = 1; }
-    //if (state == 1 && LDM_A_HLP)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = inc(y, 1);               /**/ DBUS_BUSY;             h = inc(x, inc_c);        set_addr(pc, 0); state_ = 0; }
-
     if (state == 0 && LDM_A_HLP)              /**/ { alu_y = 0;        x = h;                    /**/ alu_x = l;       y = l;                       /**/ l = alu(1, F_CARRY);                             set_addr(xy, 0); state_ = 1; }
     if (state == 1 && LDM_A_HLP)              /**/ { a = in;                                     /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(1, alu_f);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
     if (state == 0 && LDM_A_HLM)              /**/ {                   pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 0); state_ = 1; }
     if (state == 1 && LDM_A_HLM)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = dec(y, 1);               /**/ DBUS_BUSY;             h = dec(x, inc_c);        set_addr(pc, 0); state_ = 0; }
 
-    if (state == 0 && STM_HLP_A)              /**/ { out = a;          pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 1); state_ = 1; }
-    if (state == 1 && STM_HLP_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = inc(y, 1);               /**/ DBUS_BUSY;             h = inc(x, inc_c);        set_addr(pc, 0); state_ = 0; }
+    if (state == 0 && STM_HLP_A)              /**/ { out = a; alu_y = 0; x = h;                  /**/ alu_x = l;       y = l;                       /**/ l = alu(1, F_CARRY);                             set_addr(xy, 1); state_ = 1; }
+    if (state == 1 && STM_HLP_A)              /**/ {                                             /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(1, alu_f);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+
+    //if (state == 0 && STM_HLP_A)              /**/ { out = a;          pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 1); state_ = 1; }
+    //if (state == 1 && STM_HLP_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = inc(y, 1);               /**/ DBUS_BUSY;             h = inc(x, inc_c);        set_addr(pc, 0); state_ = 0; }
 
     if (state == 0 && STM_HLM_A)              /**/ { out = a;          pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 1); state_ = 1; }
     if (state == 1 && STM_HLM_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = dec(y, 1);               /**/ DBUS_BUSY;             h = dec(x, inc_c);        set_addr(pc, 0); state_ = 0; }

@@ -91,11 +91,6 @@ struct Z80 {
 
 #pragma warning(pop)
 
-  uint8_t apl = 0;
-  uint8_t aph = 0;
-  uint8_t aml = 0;
-  uint8_t amh = 0;
-
   void set_addr(uint16_t new_addr, int new_write);
   uint8_t& reg(int mux);
 

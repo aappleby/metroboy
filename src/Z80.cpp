@@ -436,36 +436,33 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     // indirect load/store
 
     if (state == 0 && LDM_A_BC)               /**/ {                   y = c;                    /**/                  x = b;                       /**/                                                  set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_BC)               /**/ { a = in;           pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 0; }
-
     if (state == 0 && LDM_A_DE)               /**/ {                   y = e;                    /**/                  x = d;                       /**/                                                  set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_DE)               /**/ { a = in;           pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 0; }
-
-    if (state == 0 && STM_BC_A)               /**/ { DBUS_BUSY;        y = c;                    /**/ DBUS_BUSY;       x = b;                       /**/ out = a;                                         set_addr(xy, 1); state_ = 1; }
-    if (state == 1 && STM_BC_A)               /**/ {                   pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 0; }
-
-    if (state == 0 && STM_DE_A)               /**/ { DBUS_BUSY;        y = e;                    /**/ DBUS_BUSY;       x = d;                       /**/ out = a;                                         set_addr(xy, 1); state_ = 1; }
-    if (state == 1 && STM_DE_A)               /**/ {                   pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 0; }
-
     if (state == 0 && LDM_A_HLP)              /**/ { DBUS_BUSY;        y = l;                    /**/ DBUS_BUSY;       x = h;                       /**/                        pcl = inc(pcl, 1);        set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_HLP)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = inc(y, 1);               /**/ DBUS_BUSY;             h = inc(x, inc_c);        set_addr(pc, 0); state_ = 0; }
     if (state == 0 && LDM_A_HLM)              /**/ { DBUS_BUSY;        y = l;                    /**/ DBUS_BUSY;       x = h;                       /**/                        pcl = inc(pcl, 1);        set_addr(xy, 0); state_ = 1; }
+
+    if (state == 1 && LDM_A_BC)               /**/ { a = in;           pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LDM_A_DE)               /**/ { a = in;           pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LDM_A_HLP)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = inc(y, 1);               /**/ DBUS_BUSY;             h = inc(x, inc_c);        set_addr(pc, 0); state_ = 0; }
     if (state == 1 && LDM_A_HLM)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = dec(y, 1);               /**/ DBUS_BUSY;             h = dec(x, inc_c);        set_addr(pc, 0); state_ = 0; }
 
+    if (state == 0 && STM_BC_A)               /**/ { DBUS_BUSY;        y = c;                    /**/ DBUS_BUSY;       x = b;                       /**/ out = a;                                         set_addr(xy, 1); state_ = 1; }
+    if (state == 0 && STM_DE_A)               /**/ { DBUS_BUSY;        y = e;                    /**/ DBUS_BUSY;       x = d;                       /**/ out = a;                                         set_addr(xy, 1); state_ = 1; }
     if (state == 0 && STM_HLP_A)              /**/ { DBUS_BUSY;        y = l;                    /**/ DBUS_BUSY;       x = h;                       /**/ out = a;               pcl = inc(pcl, 1);        set_addr(xy, 1); state_ = 1; }
-    if (state == 1 && STM_HLP_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = inc(y, 1);               /**/ DBUS_BUSY;             h = inc(x, inc_c);        set_addr(pc, 0); state_ = 0; }
     if (state == 0 && STM_HLM_A)              /**/ { DBUS_BUSY;        y = l;                    /**/ DBUS_BUSY;       x = h;                       /**/ out = a;               pcl = inc(pcl, 1);        set_addr(xy, 1); state_ = 1; }
+
+    if (state == 1 && STM_BC_A)               /**/ {                   pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && STM_DE_A)               /**/ {                   pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && STM_HLP_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = inc(y, 1);               /**/ DBUS_BUSY;             h = inc(x, inc_c);        set_addr(pc, 0); state_ = 0; }
     if (state == 1 && STM_HLM_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = dec(y, 1);               /**/ DBUS_BUSY;             h = dec(x, inc_c);        set_addr(pc, 0); state_ = 0; }
 
-    if (state == 0 && LDM_R_HL)               /**/ {                   pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(hl, 0); state_ = 1; }
-    if (state == 1 && LDM_R_HL)               /**/ { reg(OP_ROW) = in;                           /**/                                               /**/                                                  set_addr(pc, 0); state_ = 0; }
+    if (state == 0 && LDM_R_HL)               /**/ {                                             /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 0); state_ = 1; }
+    if (state == 0 && STM_HL_R)               /**/ { out = reg(OP_COL);                          /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 1); state_ = 1; }
+    if (state == 1 && LDM_R_HL)               /**/ { reg(OP_ROW) = in;                           /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && STM_HL_R)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
-    if (state == 0 && STM_HL_R)               /**/ { DBUS_BUSY;        y = l;                    /**/ DBUS_BUSY;       x = h;                       /**/ out = reg(OP_COL);                               set_addr(xy, 1); state_ = 1; }
-    if (state == 1 && STM_HL_R)               /**/ {                   pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 0; }
-
-    if (state == 0 && STM_HL_D8)              /**/ {                   pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && STM_HL_D8)              /**/ {                   pcl = inc(pcl, 1);        /**/                  pch = inc(pch, inc_c);       /**/                                                  set_addr(hl, 1); state_ = 2; }
-    if (state == 2 && STM_HL_D8)              /**/ {                                             /**/                                               /**/                                                  set_addr(pc, 0); state_ = 0; }
+    if (state == 0 && STM_HL_D8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
+    if (state == 1 && STM_HL_D8)              /**/ { out = in;                                   /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(hl, 1); state_ = 2; }
+    if (state == 2 && STM_HL_D8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
     // zero-page load/store                                                                                                                                                                                                
 

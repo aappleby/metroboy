@@ -9,17 +9,17 @@ struct Z80 {
   uint8_t get_int_ack() const { return int_ack; }
   void    get_bus_req(Req& r) const;
 
-  void    tick_a();
-  void    tock_b(const uint8_t imask_, const uint8_t intf_);
+  void    tick_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
+  void    tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
 
-  void    tick_c();
-  void    tock_d(const uint8_t imask_, const uint8_t intf_);
+  void    tick_c(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
+  void    tock_d(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
 
-  void    tick_e();
-  void    tock_f(const uint8_t imask_, const uint8_t intf_);
+  void    tick_e(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
+  void    tock_f(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
 
   void    tick_g(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
-  void    tock_h(const uint8_t imask_, const uint8_t intf_);
+  void    tock_h(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
 
   void    dump(std::string& d);
 
@@ -39,9 +39,9 @@ struct Z80 {
 
   uint8_t  in = 0;
   uint8_t  out = 0;
-  bool     write = 0;
-  
-  uint8_t data_out = 0;
+
+  Req      bus_req;
+  Ack      bus_ack;
 
   uint8_t alu_x = 0;
   uint8_t alu_y = 0;

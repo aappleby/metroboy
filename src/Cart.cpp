@@ -209,7 +209,12 @@ void Cart::dump(std::string& d) {
   sprintf(d, "bank_latch1    %d\n", bank_latch1);
   sprintf(d, "bank_latch2    %d\n", bank_latch2);
 
-  sprintf(d, "\n");
+  sprintf(d, "bank_latch2    %d\n", bank_latch2);
+  sprintf(d, "bank_latch2    %d\n", bank_latch2);
+  sprintf(d, "bank_latch2    %d\n", bank_latch2);
+  sprintf(d, "bank_latch2    %d\n", bank_latch2);
+
+  sprintf(d, "ack: "); print_ack(d, ack);
 }
 
 //-----------------------------------------------------------------------------

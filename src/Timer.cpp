@@ -6,7 +6,7 @@
 
 void Timer::reset() {
   ack = {0};
-  counter = 10995; // only one value will pass poweron_004_div and poweron_005_div
+  counter = 10996; // only one value will pass poweron_004_div and poweron_005_div
   tima = 0;
   tma = 0;
   tac = 0;

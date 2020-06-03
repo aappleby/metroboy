@@ -196,10 +196,7 @@ void Z80::reset(uint16_t new_pc) {
 //-----------------------------------------------------------------------------
 
 void Z80::get_bus_req(Req& r) const {
-  r.addr  = ad;
-  r.data  = uint16_t(write ? data_out : 0);
-  r.read  = (bool)!write;
-  r.write = (bool)write;
+  r = bus_req;
 }
 
 uint8_t lo(uint16_t x) { return uint8_t(x >> 0); }
@@ -211,8 +208,16 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
   aph = hi(ad + 1);
   aml = ~lo(~ad + 1);
   amh = ~hi(~ad + 1);
-  data_out = out;
-  write = new_write;
+
+  if (LDM_A_A8 && state == 1) { adh = 0xFF; }
+  if (STM_A8_A && state == 1) { adh = 0xFF; }
+  if (LDM_A_C  && state == 0) { adh = 0xFF; }
+  if (STM_C_A  && state == 0) { adh = 0xFF; }
+
+  bus_req.addr  = ad;
+  bus_req.data  = uint16_t(new_write ? out : 0);
+  bus_req.read  = (bool)!new_write;
+  bus_req.write = (bool)new_write;
 }
 
 #define R_ROW reg(OP_ROW)
@@ -232,10 +237,24 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tick_a() {
+void Z80::tick_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+  state = state_;
+  ime = ime_delay;
+
+  if (state == 0) {
+    op_addr = ack.addr;
+    op = in;     
+    int_ack = 0;
+
+    if ((imask_ & intf_) && ime) {
+      op = 0xF4; // fake opcode
+      ime = false;
+      ime_delay = false;
+    }
+  }
 }
 
-void Z80::tock_b(const uint8_t imask, const uint8_t intf) {
+void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
 #ifdef FUZZ_TEST
   uint8_t z;
   {
@@ -280,19 +299,19 @@ void Z80::tock_b(const uint8_t imask, const uint8_t intf) {
     }
 
     if (state == 4) {
-      if      (imask & intf & INT_JOYPAD_MASK) { int_ack = INT_JOYPAD_MASK; }
-      else if (imask & intf & INT_SERIAL_MASK) { int_ack = INT_SERIAL_MASK; }
-      else if (imask & intf & INT_TIMER_MASK)  { int_ack = INT_TIMER_MASK; }
-      else if (imask & intf & INT_STAT_MASK)   { int_ack = INT_STAT_MASK; }
-      else if (imask & intf & INT_VBLANK_MASK) { int_ack = INT_VBLANK_MASK; }
+      if      (imask_ & intf_ & INT_JOYPAD_MASK) { int_ack = INT_JOYPAD_MASK; }
+      else if (imask_ & intf_ & INT_SERIAL_MASK) { int_ack = INT_SERIAL_MASK; }
+      else if (imask_ & intf_ & INT_TIMER_MASK)  { int_ack = INT_TIMER_MASK; }
+      else if (imask_ & intf_ & INT_STAT_MASK)   { int_ack = INT_STAT_MASK; }
+      else if (imask_ & intf_ & INT_VBLANK_MASK) { int_ack = INT_VBLANK_MASK; }
       else                                     { int_ack = 0; }
 
       uint8_t int_addr = 0;
-      if      (imask & intf & INT_JOYPAD_MASK) { int_addr = 0x60; }
-      else if (imask & intf & INT_SERIAL_MASK) { int_addr = 0x58; }
-      else if (imask & intf & INT_TIMER_MASK)  { int_addr = 0x50; }
-      else if (imask & intf & INT_STAT_MASK)   { int_addr = 0x48; }
-      else if (imask & intf & INT_VBLANK_MASK) { int_addr = 0x40; }
+      if      (imask_ & intf_ & INT_JOYPAD_MASK) { int_addr = 0x60; }
+      else if (imask_ & intf_ & INT_SERIAL_MASK) { int_addr = 0x58; }
+      else if (imask_ & intf_ & INT_TIMER_MASK)  { int_addr = 0x50; }
+      else if (imask_ & intf_ & INT_STAT_MASK)   { int_addr = 0x48; }
+      else if (imask_ & intf_ & INT_VBLANK_MASK) { int_addr = 0x40; }
       else                                     { int_addr = 0x00; }
 
       y = int_addr;
@@ -302,7 +321,7 @@ void Z80::tock_b(const uint8_t imask, const uint8_t intf) {
 
   }                                                                                                                                                                                                                             
   else if (HALT) {                                                                                                                                                                                                              
-    bool no_halt = ((imask & intf) && !ime);                                                                                                                                                                                    
+    bool no_halt = ((imask_ & intf_) && !ime);                                                                                                                                                                                    
     if (HALT && state == 0) unhalt = 0;                                                                                                                                                                                         
 
     if (state == 0 && HALT)                   /**/ {                   pcl = apl;                /**/                                    pch = aph; set_addr(pc, 0); /**/                                                  state_ = !no_halt; }
@@ -647,11 +666,6 @@ void Z80::tock_b(const uint8_t imask, const uint8_t intf) {
     if (state == 3 && RST_NN)                 /**/ { alu_x = op;                                 /**/ y = alu(4, f);                                set_addr(xy, 0); /**/                                                  state_ = 0; out = a; }
   }
 
-  if (LDM_A_A8 && state == 1) { adh = 0xFF; }
-  if (STM_A8_A && state == 1) { adh = 0xFF; }
-  if (LDM_A_C  && state == 0) { adh = 0xFF; }
-  if (STM_C_A  && state == 0) { adh = 0xFF; }
-
   f &= 0xF0;
 
   if (RETI && state_ == 0) {ime = true;       ime_delay = true;}
@@ -665,42 +679,32 @@ void Z80::tock_b(const uint8_t imask, const uint8_t intf) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tick_c() {
+void Z80::tick_c(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+  // Z80 idle this cycle
 }
 
-void Z80::tock_d(const uint8_t /*imask*/, const uint8_t /*intf*/) {
-}
-
-//-----------------------------------------------------------------------------
-
-void Z80::tick_e() {
-}
-
-void Z80::tock_f(const uint8_t /*imask*/, const uint8_t /*intf*/) {
-  state = state_;
-  ime = ime_delay;
+void Z80::tock_d(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+  // Z80 idle this cycle
 }
 
 //-----------------------------------------------------------------------------
 
-void Z80::tick_g(const uint8_t imask, const uint8_t intf, const Ack& ack) {
+void Z80::tick_e(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+}
+
+void Z80::tock_f(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+  // "first" execution cycle
+  bus_ack = ack;
   in = (uint8_t)ack.data;
-  if (state == 0) {
-    op_addr = ack.addr;
-    op = in;     
-    int_ack = 0;
-
-    if ((imask & intf) && ime) {
-      op = 0xF4; // fake opcode
-      ime = false;
-      ime_delay = false;
-    }
-
-    // should do some decoding here to make the op table smaller...
-  }
 }
 
-void Z80::tock_h(const uint8_t /*imask*/, const uint8_t /*intf*/) {
+//-----------------------------------------------------------------------------
+
+void Z80::tick_g(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+}
+
+void Z80::tock_h(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+  // "second" execution cycle
 }
 
 //-----------------------------------------------------------------------------
@@ -930,6 +934,10 @@ void Z80::dump(std::string& o) {
   sprintf(o, "CB          0x%02x\n", cb);
   sprintf(o, "\n");
 
+  sprintf(o, "bus req     "); print_req(o, bus_req);
+  sprintf(o, "bus ack     "); print_ack(o, bus_ack);
+  sprintf(o, "\n");
+
   sprintf(o, "PC          0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
   sprintf(o, "SP          0x%04x 0x%02x 0x%02x\n", sp, sph, spl);
   sprintf(o, "XY          0x%04x 0x%02x 0x%02x\n", xy, x, y);
@@ -939,12 +947,6 @@ void Z80::dump(std::string& o) {
   sprintf(o, "AF          0x%04x 0x%02x 0x%02x\n", af, a, f);
   sprintf(o, "alu_o       0x%02x\n", alu_o);
   sprintf(o, "alu_f       0x%02x\n", alu_f);
-  sprintf(o, "\n");
-
-  sprintf(o, "addr        0x%04x\n", ad);
-  sprintf(o, "data in     0x%02x\n", in);
-  sprintf(o, "data out    0x%02x\n", out);
-  sprintf(o, "write       %d\n",     write);
   sprintf(o, "\n");
 
   sprintf(o, "IME         %d\n", ime);

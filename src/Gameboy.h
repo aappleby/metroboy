@@ -131,6 +131,8 @@ struct Gameboy {
   //----------
 
   Req cpu_req;
+  Ack cpu_ack;
+
   Req dma_ebus_req;
   Req dma_vbus_req;
   Req dma_obus_req;

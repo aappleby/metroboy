@@ -210,7 +210,7 @@ void Gameboy::tick2() {
   if (obus_ack.write > 1) __debugbreak();
   */
 
-  Ack cpu_ack = {};
+  cpu_ack = {};
 
   if (cpu_has_ibus_req) {
     cpu_ack = ibus_ack;
@@ -248,13 +248,13 @@ void Gameboy::tick2() {
   int64_t tphase2 = (phase & 7);
 
   if (tphase2 == 0) {
-    z80.tick_a();
+    z80.tick_a(imask, intf, cpu_ack);
   }
   else if (tphase2 == 2) {
-    z80.tick_c();
+    z80.tick_c(imask, intf, cpu_ack);
   }
   else if (tphase2 == 4) {
-    z80.tick_e();
+    z80.tick_e(imask, intf, cpu_ack);
   }
   else if (tphase2 == 6) {
     z80.tick_g(imask, intf, cpu_ack);
@@ -271,16 +271,16 @@ void Gameboy::tock2() {
   int64_t tphase2 = (phase & 7);
 
   if (tphase2 == 1) {
-    z80.tock_b(imask, intf);
+    z80.tock_b(imask, intf, cpu_ack);
   }
   else if (tphase2 == 3) {
-    z80.tock_d(imask, intf);
+    z80.tock_d(imask, intf, cpu_ack);
   }
   else if (tphase2 == 5) {
-    z80.tock_f(imask, intf);
+    z80.tock_f(imask, intf, cpu_ack);
   }
   else if (tphase2 == 7) {
-    z80.tock_h(imask, intf);
+    z80.tock_h(imask, intf, cpu_ack);
     timer.tock_t0();
   }
 

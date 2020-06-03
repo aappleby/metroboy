@@ -87,6 +87,8 @@ struct Z80 {
   union { uint16_t sp = 0; struct { uint8_t spl; uint8_t sph; }; };
   union { uint16_t ad = 0; struct { uint8_t adl; uint8_t adh; }; };
 
+  uint8_t t;
+
 #pragma warning(pop)
 
   void set_addr(uint16_t new_addr, int new_write);

@@ -245,8 +245,6 @@ void Z80::tick_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
 void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   alu_x = 0;
   alu_y = 0;
-  alu_o = 0;
-  //alu_f = 0;
 
 #ifdef FUZZ_TEST
   uint8_t z;
@@ -457,17 +455,14 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 1 && STM_HL_D8)              /**/ { out = in;                                   /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(hl, 1); state_ = 2; }
     if (state == 2 && STM_HL_D8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
-    if (state == 0 && LDM_A_HLP)              /**/ { alu_y = 0;        x = h;                    /**/ alu_x = l;       y = l;                       /**/ l = alu(1, F_CARRY);                             set_addr(xy, 0); state_ = 1; }
+    if (state == 0 && LDM_A_HLP)              /**/ {                   x = h;                    /**/ alu_x = l;       y = l;                       /**/ l = alu(1, F_CARRY);                             set_addr(xy, 0); state_ = 1; }
     if (state == 1 && LDM_A_HLP)              /**/ { a = in;                                     /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(1, alu_f);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
 
     if (state == 0 && LDM_A_HLM)              /**/ {                   pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 0); state_ = 1; }
     if (state == 1 && LDM_A_HLM)              /**/ { a = in;           pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = dec(y, 1);               /**/ DBUS_BUSY;             h = dec(x, inc_c);        set_addr(pc, 0); state_ = 0; }
 
-    if (state == 0 && STM_HLP_A)              /**/ { out = a; alu_y = 0; x = h;                  /**/ alu_x = l;       y = l;                       /**/ l = alu(1, F_CARRY);                             set_addr(xy, 1); state_ = 1; }
+    if (state == 0 && STM_HLP_A)              /**/ { out = a;          x = h;                    /**/ alu_x = l;       y = l;                       /**/ l = alu(1, F_CARRY);                             set_addr(xy, 1); state_ = 1; }
     if (state == 1 && STM_HLP_A)              /**/ {                                             /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(1, alu_f);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
-
-    //if (state == 0 && STM_HLP_A)              /**/ { out = a;          pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 1); state_ = 1; }
-    //if (state == 1 && STM_HLP_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = inc(y, 1);               /**/ DBUS_BUSY;             h = inc(x, inc_c);        set_addr(pc, 0); state_ = 0; }
 
     if (state == 0 && STM_HLM_A)              /**/ { out = a;          pcl = inc(pcl, 1);        /**/ DBUS_BUSY;       y = l;                       /**/ DBUS_BUSY;             x = h;                    set_addr(xy, 1); state_ = 1; }
     if (state == 1 && STM_HLM_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ DBUS_BUSY;       l = dec(y, 1);               /**/ DBUS_BUSY;             h = dec(x, inc_c);        set_addr(pc, 0); state_ = 0; }
@@ -705,7 +700,7 @@ uint8_t Z80::alu(int op, uint8_t flags) {
   case 7: d1 = (x & 0xF) - (y & 0xF);     d2 = x - y;     break;
   }
 
-  alu_o = (uint8_t)d2;
+  uint8_t alu_o = (uint8_t)d2;
   alu_f = (op == 2 || op == 3 || op == 7) ? F_NEGATIVE : 0;
 
   if (d1 & 0x010) alu_f |= F_HALF_CARRY;
@@ -744,7 +739,7 @@ uint8_t Z80::daa(uint8_t x, uint8_t f) {
   hi += d + (lo >> 4);
 
   // output
-  alu_o = uint8_t((hi << 4) | (lo & 0xF));
+  uint8_t alu_o = uint8_t((hi << 4) | (lo & 0xF));
   alu_f = 0;
   if (c) alu_f |= F_CARRY;
   if ((hi >> 4) && !n) alu_f |= F_CARRY;
@@ -758,6 +753,8 @@ uint8_t Z80::rlu(int op, uint8_t flags) {
   alu_f = flags;
   const uint8_t x = alu_x;
   const uint8_t f = alu_f;
+
+  uint8_t alu_o = 0;
 
   switch (op) {
   case 0:
@@ -781,7 +778,7 @@ uint8_t Z80::rlu(int op, uint8_t flags) {
     alu_f &= ~F_ZERO;
     break;
   case 4:
-    daa(x, f);
+    alu_o = daa(x, f);
     if (!alu_o) alu_f |= F_ZERO;
     break;
   case 5:
@@ -812,6 +809,8 @@ uint8_t Z80::alu_cb(int op, uint8_t flags) {
   const uint8_t quad = ((op >> 6) & 3);
   const uint8_t row = ((op >> 3) & 7);
   const bool bit_mux = (x >> row) & 1;
+
+  uint8_t alu_o = 0;
 
   switch (quad) {
   case 0:
@@ -896,7 +895,6 @@ void Z80::dump(std::string& o) {
   sprintf(o, "DE          0x%04x 0x%02x 0x%02x\n", de, d, e);
   sprintf(o, "HL          0x%04x 0x%02x 0x%02x\n", hl, h, l);
   sprintf(o, "AF          0x%04x 0x%02x 0x%02x\n", af, a, f);
-  sprintf(o, "alu_o       0x%02x\n", alu_o);
   sprintf(o, "alu_f       0x%02x\n", alu_f);
   sprintf(o, "\n");
 

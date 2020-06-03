@@ -546,22 +546,18 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
                                                                                                                                                                                                                           
     // conditional branches                                                                                                                                                                                               
                                                                                                                                                                                                                           
-    if (state == 0 && JR_CC_R8    &&  branch) /**/ {                   pcl = inc(pcl, 1);       /**/                         pch = inc(pch, inc_c); /**/ alu_x = pcl + 1;                                 set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && JR_CC_R8    &&  branch) /**/ { alu_y = in;                                /**/ y = alu(0, f);                                 /**/ alu_x = pch;                                     set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && JR_CC_R8    &&  branch) /**/ { alu_y = sxt(in);  pcl = inc(pcl, 1);       /**/ x = alu(1, alu_f);      pch = inc(pch, inc_c); /**/                                                  set_addr(xy, 0); state_ = 0; }
-                                                                                                                                                                                                                              
-    if (state == 0 && JR_CC_R8    && !branch) /**/ {                   pcl = inc(pcl, 1);       /**/                         pch = inc(pch, inc_c); /**/ alu_x = pcl + 1;                                 set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && JR_CC_R8    && !branch) /**/ {                   pcl = inc(pcl, 1);       /**/                         pch = inc(pch, inc_c); /**/                                                  set_addr(pc, 0); state_ = 0; }
-                                                                                                           
-
-
     if (state == 0 && JR_R8)                  /**/ {                   y = inc(pcl, 1);          /**/                  x = inc(pch, inc_c);         /**/ alu_x = y + 1;                                   set_addr(xy, 0); state_ = 1; }
     if (state == 1 && JR_R8)                  /**/ { alu_y = in;                                 /**/                  pcl = alu(0, f);             /**/ alu_x = x;                                       set_addr(xy, 0); state_ = 2; }                                                         
     if (state == 2 && JR_R8)                  /**/ { alu_y = sxt(in);                            /**/                  pch = alu(1, alu_f);         /**/                                                  set_addr(pc, 0); state_ = 0; }
-    
+
+    if (state == 0 && JR_CC_R8    &&  branch) /**/ {                   y = inc(pcl, 1);          /**/                  x = inc(pch, inc_c);         /**/ alu_x = y + 1;                                   set_addr(xy, 0); state_ = 1; }
+    if (state == 1 && JR_CC_R8    &&  branch) /**/ { alu_y = in;                                 /**/                  pcl = alu(0, f);             /**/ alu_x = x;                                       set_addr(xy, 0); state_ = 2; }                                                         
+    if (state == 2 && JR_CC_R8    &&  branch) /**/ { alu_y = sxt(in);                            /**/                  pch = alu(1, alu_f);         /**/                                                  set_addr(pc, 0); state_ = 0; }
+
+    if (state == 0 && JR_CC_R8    && !branch) /**/ {                   y = inc(pcl, 1);          /**/                  x = inc(pch, inc_c);         /**/ alu_x = y + 1;                                   set_addr(xy, 0); state_ = 1; }
+    if (state == 1 && JR_CC_R8    && !branch) /**/ {                   pcl = inc(y, 1);          /**/                  pch = inc(x, inc_c);         /**/                                                  set_addr(pc, 0); state_ = 0; }
 
 
-                                                                                                                                                                                                                          
     if (state == 0 && JP_CC_A16   &&  branch) /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(pc, 0); state_ = 1; }
     if (state == 0 && JP_CC_A16   && !branch) /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(pc, 0); state_ = 1; }
     if (state == 1 && JP_CC_A16   &&  branch) /**/ { y = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(pc, 0); state_ = 2; }

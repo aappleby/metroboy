@@ -11,10 +11,10 @@ struct ClkRegisters {
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- CLK_REG -----\n");
-    dump_long(text_painter, "PHAZ_ABCDxxxx ", PHAZ_xBCDExxx.a);
-    dump_long(text_painter, "PHAZ_xBCDExxx ", PHAZ_xxCDEFxx.a);
-    dump_long(text_painter, "PHAZ_xxCDEFxx ", PHAZ_xxxDEFGx.a);
-    dump_long(text_painter, "PHAZ_xxxDEFGx ", PHAZ_xxxxEFGH.a);
+    dump_long(text_painter, "PHAZ_xBCDExxx ", PHAZ_xBCDExxx.a);
+    dump_long(text_painter, "PHAZ_xxCDEFxx ", PHAZ_xxCDEFxx.a);
+    dump_long(text_painter, "PHAZ_xxxDEFGx ", PHAZ_xxxDEFGx.a);
+    dump_long(text_painter, "PHAZ_xxxxEFGH ", PHAZ_xxxxEFGH.a);
     text_painter.newline();
   }
 

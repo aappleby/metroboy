@@ -92,8 +92,6 @@ void Gameboy::tick_ack(Ack& ack_) const {
 
 void Gameboy::tick2() {
   phase++;
-  int64_t tcycle = phase >> 1;
-  int64_t tphase = tcycle & 3;
 
   //-----------------------------------
   // interrupts are partially asynchronous
@@ -201,6 +199,7 @@ void Gameboy::tick2() {
   vram.tick_ack(vbus_ack);
   oam.tick_ack(obus_ack);
 
+  /*
   if (ibus_ack.read  > 1) __debugbreak();
   if (ibus_ack.write > 1) __debugbreak();
   if (ebus_ack.read  > 1) __debugbreak();
@@ -209,6 +208,7 @@ void Gameboy::tick2() {
   if (vbus_ack.write > 1) __debugbreak();
   if (obus_ack.read  > 1) __debugbreak();
   if (obus_ack.write > 1) __debugbreak();
+  */
 
   Ack cpu_ack = {};
 
@@ -245,17 +245,19 @@ void Gameboy::tick2() {
 
   //-----------------------------------
 
-  if (tphase == 0) {
-    z80.tick_t0(imask, intf, cpu_ack);
+  int64_t tphase2 = (phase & 7);
+
+  if (tphase2 == 0) {
+    z80.tick_a();
   }
-  else if (tphase == 1) {
-    z80.tick_t1();
+  else if (tphase2 == 2) {
+    z80.tick_c();
   }
-  else if (tphase == 2) {
-    z80.tick_t2();
+  else if (tphase2 == 4) {
+    z80.tick_e();
   }
-  else if (tphase == 3) {
-    z80.tick_t3();
+  else if (tphase2 == 6) {
+    z80.tick_g(imask, intf, cpu_ack);
   }
 }
 
@@ -263,23 +265,23 @@ void Gameboy::tick2() {
 
 void Gameboy::tock2() {
   phase++;
-  int64_t tcycle = phase >> 1;
-  int64_t tphase = tcycle & 3;
 
   //-----------------------------------
 
-  if (tphase == 0) {
-    z80.tock_t0(imask, intf);
+  int64_t tphase2 = (phase & 7);
+
+  if (tphase2 == 1) {
+    z80.tock_b(imask, intf);
+  }
+  else if (tphase2 == 3) {
+    z80.tock_d(imask, intf);
+  }
+  else if (tphase2 == 5) {
+    z80.tock_f(imask, intf);
+  }
+  else if (tphase2 == 7) {
+    z80.tock_h(imask, intf);
     timer.tock_t0();
-  }
-  else if (tphase == 1) {
-    z80.tock_t1(imask, intf);
-  }
-  else if (tphase == 2) {
-    z80.tock_t2(imask, intf);
-  }
-  else if (tphase == 3) {
-    z80.tock_t3(imask, intf);
   }
 
   //-----------------------------------

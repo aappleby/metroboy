@@ -501,20 +501,14 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
 
   uint8_t result = 0xFF;
   int i = 0;
-  const int ticks = 100000;  // bits_ram_en needs lots of tcycles
-  for (; i < ticks; i++) {
-    //assert(!gameboy.ppu.vram_delay == !gameboy.ppu.fetch_delay);
-
-    gameboy->halfcycle();
-    gameboy->halfcycle();
-    //assert(!gameboy.ppu.vram_delay == !gameboy.ppu.fetch_delay);
-
-
+  const int mcycles = 100000;  // bits_ram_en needs lots of tcycles
+  for (; i < mcycles; i++) {
+    gameboy->mcycle();
     result = gameboy->get_vram()[0];
     if (result) break;
   }
 
-  if (i == ticks) {
+  if (i == mcycles) {
     printf("%-50s ", name.c_str());
     printf("? TIMEOUT @ %d\n", i);
     return false;

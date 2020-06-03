@@ -42,7 +42,7 @@ inline void load_array(const std::string& filename, T& data) {
 
 template<typename T>
 inline void save_array(const std::string& filename, T& data) {
-  save_blob(filename.c_str(), data.data(), data.size() * sizeof(T::value_type));
+  save_blob(filename.c_str(), (void*)data.data(), data.size() * sizeof(T::value_type));
 }
 
 template<typename T>

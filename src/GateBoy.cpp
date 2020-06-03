@@ -262,6 +262,7 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   gb.sys_pins.dump_pins(text_painter);
   gb.rst_reg.dump_regs(text_painter);
   gb.clk_reg.dump_regs(text_painter);
+  gb.vclk_reg.dump_regs(text_painter);
   gb.cpu_pins.dump_pins(text_painter);
   gb.bus_reg.dump_regs(text_painter);
   gb.ext_pins.dump_pins(text_painter);
@@ -290,7 +291,6 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   gb.spr_reg.dump_regs(text_painter);
   gb.sst_reg.dump_regs(text_painter);
   gb.vid_reg.dump_regs(text_painter);
-  gb.vclk_reg.dump_regs(text_painter);
   gb.oam_reg.dump_regs(text_painter);
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;

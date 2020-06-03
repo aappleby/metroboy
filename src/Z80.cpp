@@ -232,32 +232,10 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tick_t0(const uint8_t imask, const uint8_t intf, const Ack& ack) {
-  in = (uint8_t)ack.data;
-  if (state == 0) {
-    op_addr = ack.addr;
-    op = in;     
-    int_ack = 0;
-
-    if ((imask & intf) && ime) {
-      op = 0xF4; // fake opcode
-      ime = false;
-      ime_delay = false;
-    }
-
-    // should do some decoding here to make the op table smaller...
-  }
+void Z80::tick_a() {
 }
 
-void Z80::tock_t0(const uint8_t /*imask*/, const uint8_t /*intf*/) {
-}
-
-//-----------------------------------------------------------------------------
-
-void Z80::tick_t1() {
-}
-
-void Z80::tock_t1(const uint8_t imask, const uint8_t intf) {
+void Z80::tock_b(const uint8_t imask, const uint8_t intf) {
 #ifdef FUZZ_TEST
   uint8_t z;
   {
@@ -687,20 +665,42 @@ void Z80::tock_t1(const uint8_t imask, const uint8_t intf) {
 
 //-----------------------------------------------------------------------------
 
-void Z80::tick_t2() {
+void Z80::tick_c() {
 }
 
-void Z80::tock_t2(const uint8_t /*imask*/, const uint8_t /*intf*/) {
+void Z80::tock_d(const uint8_t /*imask*/, const uint8_t /*intf*/) {
 }
 
 //-----------------------------------------------------------------------------
 
-void Z80::tick_t3() {
+void Z80::tick_e() {
 }
 
-void Z80::tock_t3(const uint8_t /*imask*/, const uint8_t /*intf*/) {
+void Z80::tock_f(const uint8_t /*imask*/, const uint8_t /*intf*/) {
   state = state_;
   ime = ime_delay;
+}
+
+//-----------------------------------------------------------------------------
+
+void Z80::tick_g(const uint8_t imask, const uint8_t intf, const Ack& ack) {
+  in = (uint8_t)ack.data;
+  if (state == 0) {
+    op_addr = ack.addr;
+    op = in;     
+    int_ack = 0;
+
+    if ((imask & intf) && ime) {
+      op = 0xF4; // fake opcode
+      ime = false;
+      ime_delay = false;
+    }
+
+    // should do some decoding here to make the op table smaller...
+  }
+}
+
+void Z80::tock_h(const uint8_t /*imask*/, const uint8_t /*intf*/) {
 }
 
 //-----------------------------------------------------------------------------

@@ -95,10 +95,6 @@ void TestGB::tick_everything() {
   /*p08.TOVA*/ wire TOVA_MODE_DBG2n = not(UNOR_MODE_DBG2);
   /*p08.RYCA*/ wire RYCA_MODE_DBG2n = not(UNOR_MODE_DBG2);
 
-  cpu_pins.CLK_GOOD.set(sys_pins.CLK_GOOD);
-  cpu_pins.T1nT2.set(UNOR_MODE_DBG2);
-  cpu_pins.T1T2n.set(UMUT_MODE_DBG1);
-
   // FIXME I probably have references to these swapped somewhere
   /*p28.WEFE*/ wire WEFE_P10_Bn = not(joy_pins.P10_B);
   /*p27.VYPO*/ wire VYPO_P10_Bn = not(joy_pins.P10_B);
@@ -173,18 +169,6 @@ void TestGB::tick_everything() {
 
   wave_pins.BORY_ABxxxxxH.set(BORY_ABxxxxxH);
 
-  cpu_pins.BOWA_AxCDEFGH.set(BOWA_AxCDEFGH);
-  cpu_pins.BEDO_xBxxxxxx.set(BEDO_xBxxxxxx);
-
-  cpu_pins.BEKO_xBCDExxx.set(BEKO_xBCDExxx);
-  cpu_pins.BUDE_AxxxxFGH.set(BUDE_AxxxxFGH);
-
-  cpu_pins.BOLO_xBCDEFGx.set(BOLO_xBCDEFGx);
-  cpu_pins.BUKE_ABxxxxxH.set(BUKE_ABxxxxxH);
-
-  cpu_pins.BOGA_AxCDEFGH.set(BOGA_AxCDEFGH);
-  cpu_pins.BOMA_xBxxxxxx.set(BOMA_xBxxxxxx);
-
   //----------------------------------------
   // sch_resets
 
@@ -216,10 +200,6 @@ void TestGB::tick_everything() {
   /*p01.TUBO*/ rst_reg.WAITING_FOR_CLKREQ.sr_latch(!UPYF, !ABOL_CLKREQn);
   /*p01.AFER*/ rst_reg.RESET_REG.set(BOMA_xBxxxxxx, UPOJ_MODE_PROD, ASOL_RST);
 
-  cpu_pins.CPU_RESET.set(TABA_RST);
-  cpu_pins.AFER.set(rst_reg.RESET_REG);
-  cpu_pins.PIN_RESET.set(sys_pins.RST);
-
   //----------------------------------------
   // sch_clocks
 
@@ -237,6 +217,34 @@ void TestGB::tick_everything() {
   /*p29.WUVU*/ vclk_reg.WUVU_AxxDExxH.set( XOTA_xBxDxFxH, XAPO_VID_RSTn, !WUVU_AxxDExxH);
   /*p21.VENA*/ vclk_reg.VENA_xBCDExxx.set(!WUVU_AxxDExxH, XAPO_VID_RSTn, !VENA_xBCDExxx);
   /*p29.WOSU*/ vclk_reg.WOSU_xxCDxxGH.set( XYFY_AxCxExGx, XAPO_VID_RSTn, !WUVU_AxxDExxH);
+
+  //----------------------------------------
+  // CPU pins
+
+  cpu_pins.CLK_GOOD.set(sys_pins.CLK_GOOD);
+  cpu_pins.UMUT_MODE_DBG1.set(UMUT_MODE_DBG1);
+  cpu_pins.UNOR_MODE_DBG2.set(UNOR_MODE_DBG2);
+
+  cpu_pins.CPU_RESET.set(TABA_RST);
+  cpu_pins.AFER.set(rst_reg.RESET_REG);
+  cpu_pins.PIN_RESET.set(sys_pins.RST);
+
+  cpu_pins.UPOJ_MODE_PROD  = UPOJ_MODE_PROD;
+  cpu_pins.TOVA_MODE_DBG2n = TOVA_MODE_DBG2n;
+  cpu_pins.RYCA_MODE_DBG2n = RYCA_MODE_DBG2n;
+
+  // phases checked and ok
+  cpu_pins.BOWA_AxCDEFGH.set(BOWA_AxCDEFGH);
+  cpu_pins.BEDO_xBxxxxxx.set(BEDO_xBxxxxxx);
+
+  cpu_pins.BEKO_xBCDExxx.set(BEKO_xBCDExxx);
+  cpu_pins.BUDE_AxxxxFGH.set(BUDE_AxxxxFGH);
+
+  cpu_pins.BOLO_xBCDEFGx.set(BOLO_xBCDEFGx);
+  cpu_pins.BUKE_ABxxxxxH.set(BUKE_ABxxxxxH);
+
+  cpu_pins.BOGA_AxCDEFGH.set(BOGA_AxCDEFGH);
+  cpu_pins.BOMA_xBxxxxxx.set(BOMA_xBxxxxxx);
 
   //----------------------------------------
   // sch_decoder

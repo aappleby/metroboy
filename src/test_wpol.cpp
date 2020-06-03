@@ -139,17 +139,16 @@ void run_wpol_test(const std::string& prefix, const std::string& name) {
 
   uint8_t result = 0xFF;
   int i = 0;
-  constexpr int ticks = 25000000;
-  for (; i < ticks; i++) {
-    gb->halfcycle();
-    gb->halfcycle();
+  constexpr int mcycles = 25000000;
+  for (; i < mcycles; i++) {
+    gb->mcycle();
     if (gb->get_cpu().get_op() == 0x40) {
       result = gb->get_cpu().get_a();
       break;
     }
   }
 
-  if (i == ticks) {
+  if (i == mcycles) {
     printf("%-50s ", name.c_str());
     printf("? TIMEOUT @ %d\n", i);
   }

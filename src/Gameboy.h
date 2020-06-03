@@ -43,13 +43,29 @@ struct Gameboy {
   void    reset(uint16_t new_pc);
   HostOut get_host_data() const { return gb_to_host; }
 
+  void sync_to_mcycle() {
+    switch(phase & 7) {
+    case 0: return;
+    case 1: tick2();
+    case 2: tock2();
+    case 3: tick2();
+    case 4: tock2();
+    case 5: tick2();
+    case 6: tock2();
+    case 7: tick2();
+    }
+  }
+  
+  void mcycle() {
+    assert((phase & 7) == 0);
+    tock2(); tick2();
+    tock2(); tick2();
+    tock2(); tick2();
+    tock2(); tick2();
+  }
+
   void halfcycle() {
-    if ((phase & 1) == 1) {
-      tick2();
-    }
-    else {
-      tock2();
-    }
+    phase & 1 ? tick2() : tock2();
   }
 
   void tock_req(const Req& ibus_req);
@@ -71,8 +87,6 @@ struct Gameboy {
   const Z80& get_cpu() const { return z80; }
   const SPU& get_spu() const { return spu; }
   const PPU& get_ppu() const { return ppu; }
-
-  int64_t  get_tcycle() const { return (phase / 2); }
 
   uint8_t* get_vram()   { return vram.get(); }
   uint8_t* get_cram()   { return cart.get_cram(); }
@@ -106,6 +120,7 @@ struct Gameboy {
   //----------
 
   int64_t phase = 0;
+
   HostOut gb_to_host;
   uint32_t trace_val = 0;
 

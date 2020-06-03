@@ -102,10 +102,9 @@ int run_screenshot_test(const std::string& prefix, const std::string& name) {
   gameboy.reset(0x100);
 
   int i = 0;
-  const int ticks = 400000;
-  for (; i < ticks; i++) {
-    gameboy.halfcycle();
-    gameboy.halfcycle();
+  const int mcycles = 400000;
+  for (; i < mcycles; i++) {
+    gameboy.mcycle();
     Gameboy::HostOut gb_out = gameboy.get_host_data();
 
     if (gb_out.pix_oe) {

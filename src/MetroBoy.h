@@ -29,10 +29,6 @@ public:
     return current->fb;
   }
 
-  int64_t total_tcycles() {
-    return (int)floor(double(current->gb.phase) / 2);
-  }
-
   const uint32_t* get_trace() const { return tracebuffer; }
 
   uint8_t* get_vram() { return current->gb.get_vram(); }
@@ -44,17 +40,16 @@ public:
 
   void reset(uint16_t new_pc);
 
-  void run_fast(uint8_t buttons, int cycles);
+  void run_fast(uint8_t buttons, int mcycles);
   void run_vsync(uint8_t buttons);
   void run_to(uint16_t breakpoint);
 
+  void sync_to_vblank();
+
   void step_frame();
   void step_line();
-  void step_cycle();
+  void step_phase();
   void step_over();
-
-  void halfcycle();
-  void mcycle();
 
   Gameboy::HostOut gb_out;
 

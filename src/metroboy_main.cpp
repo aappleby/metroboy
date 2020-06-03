@@ -97,11 +97,13 @@ void MetroBoyApp::init() {
 
   //load("roms/mooneye-gb/tests/build/acceptance/timer/", "tim00");
 
-  runmode = STEP_CYCLE;
+  runmode = STEP_PHASE;
   //runmode = RUN_FAST;
   //runmode = RUN_VSYNC;
 
+#ifdef ENABLE_GATEBOY
   gateboy.init();
+#endif
 };
 
 //----------------------------------------
@@ -147,7 +149,7 @@ void MetroBoyApp::load(const std::string& prefix, const std::string& name) {
   printf("Loading rom %s\n", gb_filename.c_str());
   metroboy.load_rom(gb_filename.c_str(), false);
   rom_loaded = true;
-  runmode = STEP_CYCLE;
+  runmode = STEP_PHASE;
 
 #if 0
   std::string golden_filename = prefix + "/" + name + ".bmp";
@@ -266,7 +268,9 @@ void MetroBoyApp::update(double /*delta*/) {
 
   if (reset) {
     metroboy.reset(0x0100);
+#ifdef ENABLE_GATEBOY
     gateboy.reset(0x0100);
+#endif
     reset = false;
   }
 
@@ -282,59 +286,61 @@ void MetroBoyApp::update(double /*delta*/) {
   }
 
   if (step_up) {
-    if (runmode == STEP_CYCLE) runmode = STEP_LINE;
+    if (runmode == STEP_PHASE) runmode = STEP_LINE;
     else if (runmode == STEP_LINE) runmode = STEP_FRAME;
   }
 
   if (step_down) {
     if (runmode == STEP_FRAME) runmode = STEP_LINE;
-    else if (runmode == STEP_LINE) runmode = STEP_CYCLE;
+    else if (runmode == STEP_LINE) runmode = STEP_PHASE;
   }
 
   //----------------------------------------
   // Run simulation
 
-  cycles_begin = metroboy.total_tcycles();
-
   if (runmode == RUN_FAST) {
-    int64_t cycle_begin = metroboy.total_tcycles();
-    double begin = double(SDL_GetPerformanceCounter() - app_start);
-    metroboy.run_fast(buttons, (int)fast_cycles);
-    double end = double(SDL_GetPerformanceCounter() - app_start);
-    int64 cycle_end = metroboy.total_tcycles();
-    last_cycles = int(cycle_end - cycle_begin) / 4;
-    sim_time_msec = 1000.0 * double(end - begin) / double(SDL_GetPerformanceFrequency());
+    int64_t phase_begin = metroboy.gb().phase;
+    double time_begin = double(SDL_GetPerformanceCounter() - app_start);
+    metroboy.run_fast(buttons, (int)fast_mcycles);
+    double time_end = double(SDL_GetPerformanceCounter() - app_start);
+    int64 phase_end = metroboy.gb().phase;
+    last_mcycles = int(phase_end - phase_begin) / 8;
+    sim_time_msec = 1000.0 * double(time_end - time_begin) / double(SDL_GetPerformanceFrequency());
     
     //printf("run_fast %f\n", elapsed_ms);
-    double new_cycles = fast_cycles * (sim_budget_msec / sim_time_msec);
+    double new_mcycles = fast_mcycles * (sim_budget_msec / sim_time_msec);
     //printf("run_fast %f\n", new_cycles);
     
     double a = 0.95;
-    fast_cycles = fast_cycles * a + new_cycles * (1.0 - a);
+    fast_mcycles = fast_mcycles * a + new_mcycles * (1.0 - a);
   }
   else if (runmode == RUN_VSYNC) {
     //printf("%d --------\n", frame_count);
-    int64_t cycle_begin = metroboy.total_tcycles();
-    double begin = double(SDL_GetPerformanceCounter() - app_start);
+    int64_t phase_begin = metroboy.gb().phase;
+    double time_begin = double(SDL_GetPerformanceCounter() - app_start);
     metroboy.run_vsync(buttons);
-    double end = double(SDL_GetPerformanceCounter() - app_start);
-    int64 cycle_end = metroboy.total_tcycles();
-    last_cycles = int(cycle_end - cycle_begin) / 4;
-    sim_time_msec = 1000.0 * double(end - begin) / double(SDL_GetPerformanceFrequency());
+    double time_end = double(SDL_GetPerformanceCounter() - app_start);
+    int64 phase_end = metroboy.gb().phase;
+    last_mcycles = int(phase_end - phase_begin) / 4;
+    sim_time_msec = 1000.0 * double(time_end - time_begin) / double(SDL_GetPerformanceFrequency());
   }
-  else if (runmode == STEP_CYCLE) {
+  else if (runmode == STEP_PHASE) {
     while (step_forward--) {
       if (keyboard_state[SDL_SCANCODE_LSHIFT]) {
         metroboy.step_over();
       }
       else {
-        metroboy.step_cycle();
+        metroboy.step_phase();
+#ifdef ENABLE_GATEBOY
         gateboy.step(1);
+#endif
       }
     }
     while (step_backward--) {
       metroboy.pop_cycle();
+#ifdef ENABLE_GATEBOY
       gateboy.unstep(1);
+#endif
     }
   }
   else if (runmode == STEP_FRAME) {
@@ -350,8 +356,6 @@ void MetroBoyApp::update(double /*delta*/) {
   step_backward = 0;
   step_up = false;
   step_down = false;
-
-  cycles_end = metroboy.total_tcycles();
 }
 
 //-----------------------------------------------------------------------------
@@ -388,9 +392,11 @@ void MetroBoyApp::render_frame(int screen_w, int screen_h) {
   const int gb_map_y = screen_h - 32 * 24;
   gb_blitter.blit_map  (get_viewport(), gb_map_x, gb_map_y, 2, metroboy.get_vram());
 
+  /*
   const int gb_trace_x = screen_w - 32 * 17;
   const int gb_trace_y = screen_h - 32 * 7;
   gb_blitter.blit_trace (get_viewport(), gb_trace_x, gb_trace_y, metroboy.get_trace());
+  */
 
   /*
   update_texture_u8(ram_tex, 0, 0*32, 256, 128, rom_buf);
@@ -503,7 +509,9 @@ void MetroBoyApp::render_frame(int screen_w, int screen_h) {
 
 #endif
 
+#ifdef ENABLE_GATEBOY
   gateboy.render_frame(screen_w, screen_h, text_painter);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -578,8 +586,8 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
   {
     //ImGuiIO& io = ImGui::GetIO();
 
-    double sim_cycles_per_sec = double(last_cycles) * (1000.0 / sim_budget_msec);
-    double rt_cycles_per_sec = (114*154*60);
+    double sim_mcycles_per_sec = double(last_mcycles) * (1000.0 / sim_budget_msec);
+    double rt_mcycles_per_sec = (114*154*60);
 
     //double app_cycles_per_sec = fast_cycles * io.Framerate;
 
@@ -587,12 +595,12 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
         "RUN_FAST", "RUN_VSYNC", "STEP_FRAME", "STEP_LINE", "STEP_CYCLE",
     };
 
-    text_painter.dprintf("%s %d\n", mode_names[runmode], (int)(metroboy.gb().get_tcycle() & 3));
+    text_painter.dprintf("%s %d\n", mode_names[runmode], (int)(metroboy.gb().phase & 7));
     text_painter.dprintf("sim budget %2.2f msec/frame\n", sim_budget_msec);
     text_painter.dprintf("sim time   %02.2f msec/frame\n", sim_time_msec);
     //text_painter.dprintf("sim rate   %07d cycles/frame\n", int(fast_cycles));
-    text_painter.dprintf("sim rate   %07d cycles/frame\n", last_cycles);
-    text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_cycles_per_sec / rt_cycles_per_sec);
+    text_painter.dprintf("sim rate   %07d cycles/frame\n", last_mcycles);
+    text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_mcycles_per_sec / rt_mcycles_per_sec);
     //text_painter.dprintf("app speed  %1.2fx realtime (%.1f FPS)\n", app_cycles_per_sec / rt_cycles_per_sec, io.Framerate);
     
     text_painter.render(screen_w - 300 + 96, screen_h - 64);
@@ -605,7 +613,7 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
   sprintf(text_buf, "view        zoom %f view_x %f view_y %f\n", view.get_zoom(),        view.min.x, view.min.y);
   sprintf(text_buf, "view_smooth zoom %f view_x %f view_y %f\n", view_smooth.get_zoom(), view_smooth.min.x, view_smooth.min.y);
   sprintf(text_buf, "view_snap   zoom %f view_x %f view_y %f\n", view_snap.get_zoom(),   view_snap.min.x, view_snap.min.y);
-  //sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", last_frame_time_smooth, (int)(cycles_end - cycles_begin) / 4);
+  //sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", last_frame_time_smooth, (int)(phases_end - phases_begin) / 4);
   text_painter.render(text_buf, 0, 1024 - 48);
   text_buf.clear();
   */

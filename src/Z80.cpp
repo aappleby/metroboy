@@ -431,9 +431,6 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 2 && STM_A16_A)              /**/ { x = in;                 adl = y;            /**/                        adh = x;               /**/                                                  set_addr(ad, 1); state_ = 3; }
     if (state == 3 && STM_A16_A)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(ad, 0); state_ = 0; }
 
-    // so xy has to be on the left side?
-    // no i think it's on the right side w/ the new bus model
-
     if (state == 0 && LDM_A_A16)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(ad, 0); state_ = 1; }
     if (state == 1 && LDM_A_A16)              /**/ { y = in;           pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(ad, 0); state_ = 2; }
     if (state == 2 && LDM_A_A16)              /**/ {                         adl = y;            /**/                        adh = in;              /**/                                                  set_addr(ad, 0); state_ = 3; }
@@ -456,8 +453,11 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && STM_DE_A)               /**/ { out = a;                adl = e;            /**/                        adh = d;               /**/                                                  set_addr(ad, 1); state_ = 1; }
     if (state == 1 && STM_DE_A)               /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(ad, 0); state_ = 0; }
 
-    if (state == 0 && LDM_A_HLP)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(hl, 0); state_ = 1; }
-    if (state == 1 && LDM_A_HLP)              /**/ { a = in;                   l = inc(  l, 1);  /**/                          h = inc(  h, inc_c); /**/                                                  set_addr(pc, 0); state_ = 0; }
+    //if (state == 0 && LDM_A_HLP)              /**/ {                   pcl = adl = inc(pcl, 1);  /**/                  pch = adh = inc(pch, inc_c); /**/                                                  set_addr(hl, 0); state_ = 1; }
+    //if (state == 1 && LDM_A_HLP)              /**/ { a = in;                   l = inc(  l, 1);  /**/                          h = inc(  h, inc_c); /**/                                                  set_addr(pc, 0); state_ = 0; }
+
+    if (state == 0 && LDM_A_HLP)              /**/ {         alu_x = l;       adl = l;            /**/ alu_y = 1;             adh = h;               /**/ l = alu(0, alu_f);                               set_addr(ad, 0); state_ = 1; }
+    if (state == 1 && LDM_A_HLP)              /**/ { a = in; alu_x = h; pcl = adl = inc(pcl, 1);  /**/ alu_y = 0;       pch = adh = inc(pch, inc_c); /**/ h = alu(1, alu_f);                               set_addr(ad, 0); state_ = 0; }
 
     // somewhat same thing here. how do we increment/decrement hl and get the result back to hl in time and also have time to increment pc?
     // maybe xy is on the right side?

@@ -99,6 +99,8 @@ void MetroBoyApp::init() {
 
 
   load_memdump("roms", "LinksAwakening_house");
+  //load_memdump("roms", "LinksAwakening_dog");
+  //load_memdump("roms", "tetris");
 
   //load("roms/mooneye-gb/tests/build/acceptance/timer/", "tim00");
 

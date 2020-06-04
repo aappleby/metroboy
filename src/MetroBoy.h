@@ -9,7 +9,6 @@ struct MetroboyState {
   int cycle = 0;
 
   Gameboy gb;
-  uint8_t fb[160*144] = {0};
 };
 
 //-----------------------------------------------------------------------------
@@ -26,11 +25,12 @@ public:
   }
 
   uint8_t* fb() {
-    return current->fb;
+    return current->gb.fb;
   }
 
   const uint32_t* get_trace() const { return tracebuffer; }
 
+  uint8_t* get_rom()  { return current->gb.get_rom(); }
   uint8_t* get_vram() { return current->gb.get_vram(); }
   uint8_t* get_cram() { return current->gb.get_cram(); }
   uint8_t* get_iram() { return current->gb.get_iram(); }
@@ -50,8 +50,6 @@ public:
   void step_line();
   void step_phase();
   void step_over();
-
-  Gameboy::HostOut gb_out;
 
 private:
 

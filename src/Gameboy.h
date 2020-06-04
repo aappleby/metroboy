@@ -58,10 +58,14 @@ struct Gameboy {
   
   void mcycle() {
     assert((phase & 7) == 0);
-    tock2(); tick2();
-    tock2(); tick2();
-    tock2(); tick2();
-    tock2(); tick2();
+    tock2();
+    tick2();
+    tock2();
+    tick2();
+    tock2();
+    tick2();
+    tock2();
+    tick2();
   }
 
   void halfcycle() {
@@ -88,6 +92,7 @@ struct Gameboy {
   const SPU& get_spu() const { return spu; }
   const PPU& get_ppu() const { return ppu; }
 
+  uint8_t* get_rom()    { return cart.get_rom(); }
   uint8_t* get_vram()   { return vram.get(); }
   uint8_t* get_cram()   { return cart.get_cram(); }
   uint8_t* get_iram()   { return iram.get(); }
@@ -152,6 +157,8 @@ struct Gameboy {
   Ack vbus_ack;
 
   //----------
+
+  uint8_t fb[160*144] = {0};
 
   uint32_t sentinel = 0xDEADBEEF;
 };

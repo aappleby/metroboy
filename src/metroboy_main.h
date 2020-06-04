@@ -9,8 +9,6 @@
 
 #include <string>
 
-//#define ENABLE_GATEBOY
-
 class MetroBoyApp : public AppBase {
 public:
 
@@ -76,10 +74,6 @@ public:
   // gb state
 
   MetroBoy metroboy;
-
-#ifdef ENABLE_GATEBOY
-  GateBoy gateboy;
-#endif
 
   //----------
   // debug

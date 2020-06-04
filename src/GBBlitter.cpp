@@ -359,12 +359,12 @@ void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, const uint
     update_ubo(blit_tile_ubo, sizeof(uniforms), &uniforms);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    uniforms.quad_pos = {x, y + 128 + 8, x + 256, y + 256 + 8};
+    uniforms.quad_pos = {x, y + 128, x + 256, y + 256};
     uniforms.quad_tex = {0, 64, 128, 128};
     update_ubo(blit_tile_ubo, sizeof(uniforms), &uniforms);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    uniforms.quad_pos = {x, y + 256 + 16, x + 256, y + 384 + 16};
+    uniforms.quad_pos = {x, y + 256, x + 256, y + 384};
     uniforms.quad_tex = {0, 128, 128, 192};
     update_ubo(blit_tile_ubo, sizeof(uniforms), &uniforms);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -373,7 +373,7 @@ void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, const uint
 
 //-----------------------------------------------------------------------------
 
-void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* vram) {
+void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* vram, int which_map, int alt_map) {
   update_ubo(vram_ubo, 8192, vram);
 
   {
@@ -383,12 +383,12 @@ void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, int scale, c
         (float)view.min.y,
         (float)view.max.x,
         (float)view.max.y,
-      },
-      .quad_pos = {screen_x, screen_y, screen_x + 256 * scale, screen_y + 256 * scale},
-      .quad_tex = {0, 0, 256, 256},
-      .palette = {default_pal[0], default_pal[1], default_pal[2], default_pal[3]},
-      .which_map = 0,
-      .alt_map = 0,
+    },
+    .quad_pos = {screen_x, screen_y, screen_x + 256 * scale, screen_y + 256 * scale},
+    .quad_tex = {0, 0, 256, 256},
+    .palette = {default_pal[0], default_pal[1], default_pal[2], default_pal[3]},
+    .which_map = which_map,
+    .alt_map = alt_map,
     };
     update_ubo(blit_map_ubo, sizeof(uniforms), &uniforms);
 

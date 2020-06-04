@@ -308,11 +308,15 @@ void PPU::on_vbus_ack(const Ack& vbus_ack) {
 
   if (vbus_ack.read) {
     if (fetch_type == FETCH_BACKGROUND || fetch_type == FETCH_WINDOW) {
+      //printf("fetch background 0x%02x\n", data);
+
       if (fetch_state == FETCH_TILE_MAP) tile_map = data;
       if (fetch_state == FETCH_TILE_LO)  tile_lo = data;
       if (fetch_state == FETCH_TILE_HI)  tile_hi = data;
     }
     else if (fetch_type == FETCH_SPRITE) {
+      //printf("fetch sprite 0x%02x\n", data);
+
       if (fetch_state == FETCH_SPRITE_LO) sprite_lo = data;
       if (fetch_state == FETCH_SPRITE_HI) sprite_hi = data;
     }
@@ -326,6 +330,8 @@ void PPU::on_obus_ack(const Ack& obus_ack) {
   uint8_t hi = uint8_t(obus_ack.data >> 8);
 
   if (obus_ack.read) {
+    //printf("fetch oam 0x%04x\n", obus_ack.data);
+
     if (obus_ack.addr & 2) {
       this->spriteP = lo;
       this->spriteF = hi;

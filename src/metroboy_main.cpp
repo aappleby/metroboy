@@ -74,7 +74,6 @@ void MetroBoyApp::init() {
 
   //---------
 
-  //load("microtests/build/dmg", "minimal");
   //load("micro_cpu/build/dmg", "cpu_mov");
 
   //load("microtests/build/dmg", "400-dma");
@@ -91,19 +90,21 @@ void MetroBoyApp::init() {
   //load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
   //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  load("microtests/build/dmg", "minimal");
 
-  //load_memdump("roms", "LinksAwakening_house");
+  //load("roms/mooneye-gb/tests/build/acceptance/", "pop_timing");
+
+  //load("roms", "tetris");
+
+
+  load_memdump("roms", "LinksAwakening_house");
 
   //load("roms/mooneye-gb/tests/build/acceptance/timer/", "tim00");
 
   runmode = STEP_PHASE;
   //runmode = RUN_FAST;
   //runmode = RUN_VSYNC;
-
-#ifdef ENABLE_GATEBOY
-  gateboy.init();
-#endif
 };
 
 //----------------------------------------
@@ -268,9 +269,6 @@ void MetroBoyApp::update(double /*delta*/) {
 
   if (reset) {
     metroboy.reset(0x0100);
-#ifdef ENABLE_GATEBOY
-    gateboy.reset(0x0100);
-#endif
     reset = false;
   }
 
@@ -331,16 +329,10 @@ void MetroBoyApp::update(double /*delta*/) {
       }
       else {
         metroboy.step_phase();
-#ifdef ENABLE_GATEBOY
-        gateboy.step(1);
-#endif
       }
     }
     while (step_backward--) {
       metroboy.pop_cycle();
-#ifdef ENABLE_GATEBOY
-      gateboy.unstep(1);
-#endif
     }
   }
   else if (runmode == STEP_FRAME) {
@@ -362,6 +354,8 @@ void MetroBoyApp::update(double /*delta*/) {
 
 void MetroBoyApp::render_frame(int screen_w, int screen_h) {
 
+  auto view = get_viewport();
+
   //----------------------------------------
   // Wave thingy
 
@@ -379,18 +373,35 @@ void MetroBoyApp::render_frame(int screen_w, int screen_h) {
   //----------------------------------------
   // Gameboy screen
 
-  //const int gb_screen_x = 32 * 32;
-  //const int gb_screen_y = 32 * 11;
+  update_texture_u8(ram_tex, 0, 0*32, 256, 128, metroboy.get_rom());
+  update_texture_u8(ram_tex, 0, 4*32, 256,  32, metroboy.get_vram());
+  update_texture_u8(ram_tex, 0, 5*32, 256,  32, metroboy.get_cram());
+  update_texture_u8(ram_tex, 0, 6*32, 256,  32, metroboy.get_iram());
+  update_texture_u8(ram_tex, 0, 7*32, 256,  32, metroboy.get_iram());
+
+  gb_blitter.blit_screen(view, 32 * 32, 32 * 1, 2, metroboy.fb());
 
   /*
-  const int gb_screen_x = 960;
-  const int gb_screen_y = 320;
-  gb_blitter.blit_screen(view_snap, gb_screen_x, gb_screen_y, 2, metroboy.fb());
+  #define FLAG_BG_ON        0x01
+  #define FLAG_OBJ_ON       0x02
+  #define FLAG_TALL_SPRITES 0x04
+  #define FLAG_BG_MAP_1     0x08
+  #define FLAG_TILE_0       0x10
+  #define FLAG_WIN_ON       0x20
+  #define FLAG_WIN_MAP_1    0x40
+  #define FLAG_LCD_ON       0x80
   */
 
-  const int gb_map_x = screen_w - 32 * 17;
-  const int gb_map_y = screen_h - 32 * 24;
-  gb_blitter.blit_map  (get_viewport(), gb_map_x, gb_map_y, 2, metroboy.get_vram());
+  int bg_map  = (metroboy.gb().get_ppu().lcdc & FLAG_BG_MAP_1)  ? 1 : 0;
+  int win_map = (metroboy.gb().get_ppu().lcdc & FLAG_WIN_MAP_1) ? 1 : 0;
+  int alt_map = (metroboy.gb().get_ppu().lcdc & FLAG_TILE_0)    ? 0 : 1;
+
+  gb_blitter.blit_tiles (view, 32 * 43, 32 * 1,     metroboy.get_vram());
+  gb_blitter.blit_map   (view, 32 * 43, 32 * 14, 1, metroboy.get_vram(), bg_map, alt_map);
+  gb_blitter.blit_map   (view, 32 * 43, 32 * 23, 1, metroboy.get_vram(), win_map, alt_map);
+
+
+  blitter.blit_mono(view, ram_tex, 256, 256, 0, 0, 256, 256, 32 * 32, 32 * 11, 256, 256);
 
   /*
   const int gb_trace_x = screen_w - 32 * 17;
@@ -398,56 +409,9 @@ void MetroBoyApp::render_frame(int screen_w, int screen_h) {
   gb_blitter.blit_trace (get_viewport(), gb_trace_x, gb_trace_y, metroboy.get_trace());
   */
 
-  /*
-  update_texture_u8(ram_tex, 0, 0*32, 256, 128, rom_buf);
-  update_texture_u8(ram_tex, 0, 4*32, 256,  32, metroboy.get_vram());
-  update_texture_u8(ram_tex, 0, 5*32, 256,  32, metroboy.get_cram());
-  update_texture_u8(ram_tex, 0, 6*32, 256,  32, metroboy.get_iram());
-  update_texture_u8(ram_tex, 0, 7*32, 256,  32, metroboy.get_iram());
-  blitter.blit_mono(view_snap, ram_tex, 256, 256,
-                    0, 0, 256, 256,
-                    gb_screen_x, 32, 256, 256);
-  */
 
-
-  //dump_painter.render(view_snap, 900, 100, 16, 8, metroboy.gb().get_zram());
-  //dump_painter.render(view_snap, 900, 300, 64, 128, metroboy.gb().get_iram());
-
-  /*
-  if ((frame_count % 10) == 0) {
-    for (int i = 0; i < 65536; i++) {
-      static uint32_t c = 1;
-      c *= 0x1234567;
-      c ^= c >> 16;
-      junk[i] = uint8_t(c);
-    }
-
-    char* cursor = junk.data();
-    for (int i = 0; i < 200; i++) {
-      snprintf(cursor, 256, "line %03d hello world %05d\n", i, frame_count);
-      cursor += 256;
-    }
-  }
-
-  dump_painter.render(view_snap, 900, 100, 256, 256, (const uint8_t*)junk.data());
-  */
-
-
-#if 0
-  /*
-  if (overlay_mode == 0 || overlay_mode == 1) {
-    for (int y = 0; y < 144; y++) {
-      uint32_t* line1 = &framebuffer[(y * 2 + gb_screen_y + 0) * fb_width + gb_screen_x];
-      uint32_t* lineM2 = &framebuffer[(y * 2 + gb_screen_y + 1) * fb_width + gb_screen_x];
-      for (int x = 0; x < 160; x++) {
-        uint32_t c = gb_colors[fb.buf[x + (y * 160)] & 7];
-        *line1++ = c; *line1++ = c;
-        *lineM2++ = c; *lineM2++ = c;
-      }
-    }
-  }
-  */
-#endif
+  //dump_painter.render(view, 900, 100, 16, 8, metroboy.gb().get_zram());
+  //dump_painter.render(view, 900, 300, 64, 128, metroboy.gb().get_iram());
 
 #if 0
 
@@ -509,9 +473,6 @@ void MetroBoyApp::render_frame(int screen_w, int screen_h) {
 
 #endif
 
-#ifdef ENABLE_GATEBOY
-  gateboy.render_frame(screen_w, screen_h, text_painter);
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -525,21 +486,23 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
 
   Gameboy& gameboy = metroboy.gb();
 
-  gameboy.dump_bus(text_buf);
-  sprintf(text_buf, "\n");
+  if (1) {
+    gameboy.dump_bus(text_buf);
+    sprintf(text_buf, "\n");
 
-  gameboy.dump_cpu(text_buf);
-  sprintf(text_buf, "\n");
+    gameboy.dump_cpu(text_buf);
+    sprintf(text_buf, "\n");
 
-  gameboy.dump_timer(text_buf);
-  sprintf(text_buf, "\n");
+    gameboy.dump_timer(text_buf);
+    sprintf(text_buf, "\n");
 
-  gameboy.dma.dump(text_buf);
-  sprintf(text_buf, "\n");
+    gameboy.dma.dump(text_buf);
+    sprintf(text_buf, "\n");
 
-  text_painter.render(text_buf, column, 0);
-  text_buf.clear();
-  column += 32 * 8;
+    text_painter.render(text_buf, column, 0);
+    text_buf.clear();
+    column += 32 * 8;
+  }
 
   if (1) {
     gameboy.dump_zram(text_buf);
@@ -584,12 +547,8 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
   }
 
   {
-    //ImGuiIO& io = ImGui::GetIO();
-
     double sim_mcycles_per_sec = double(last_mcycles) * (1000.0 / sim_budget_msec);
-    double rt_mcycles_per_sec = (114*154*60);
-
-    //double app_cycles_per_sec = fast_cycles * io.Framerate;
+    double rt_mcycles_per_sec = 114.0 * 154.0 * 60.0;
 
     const char* mode_names[] = {
         "RUN_FAST", "RUN_VSYNC", "STEP_FRAME", "STEP_LINE", "STEP_CYCLE",
@@ -598,25 +557,11 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
     text_painter.dprintf("%s %d\n", mode_names[runmode], (int)(metroboy.gb().phase & 7));
     text_painter.dprintf("sim budget %2.2f msec/frame\n", sim_budget_msec);
     text_painter.dprintf("sim time   %02.2f msec/frame\n", sim_time_msec);
-    //text_painter.dprintf("sim rate   %07d cycles/frame\n", int(fast_cycles));
     text_painter.dprintf("sim rate   %07d cycles/frame\n", last_mcycles);
     text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_mcycles_per_sec / rt_mcycles_per_sec);
-    //text_painter.dprintf("app speed  %1.2fx realtime (%.1f FPS)\n", app_cycles_per_sec / rt_cycles_per_sec, io.Framerate);
     
     text_painter.render(screen_w - 300 + 96, screen_h - 64);
   }
-
-  //----------------------------------------
-  // Perf timer
-
-  /*
-  sprintf(text_buf, "view        zoom %f view_x %f view_y %f\n", view.get_zoom(),        view.min.x, view.min.y);
-  sprintf(text_buf, "view_smooth zoom %f view_x %f view_y %f\n", view_smooth.get_zoom(), view_smooth.min.x, view_smooth.min.y);
-  sprintf(text_buf, "view_snap   zoom %f view_x %f view_y %f\n", view_snap.get_zoom(),   view_snap.min.x, view_snap.min.y);
-  //sprintf(text_buf, "frame time %2.2f msec, %6d cyc/frame\n", last_frame_time_smooth, (int)(phases_end - phases_begin) / 4);
-  text_painter.render(text_buf, 0, 1024 - 48);
-  text_buf.clear();
-  */
 }
 
 //-----------------------------------------------------------------------------

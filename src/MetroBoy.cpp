@@ -17,16 +17,16 @@ void MetroBoy::load_rom(const char* filename, bool run_bootrom) {
 void MetroBoy::reset(uint16_t new_pc) {
   clear();
   memset(tracebuffer, 0, sizeof(tracebuffer));
+  current->gb.set_rom(rom.data(), rom.size());
   current->gb.reset(new_pc);
 }
 
 //-----------------------------------------------------------------------------
 
 void MetroBoy::run_fast(uint8_t buttons, int mcycles) {
-  clear();
-
   auto& gb = current->gb;
 
+  clear();
   gb.set_joypad(~buttons);
 
   gb.sync_to_mcycle();
@@ -38,14 +38,13 @@ void MetroBoy::run_fast(uint8_t buttons, int mcycles) {
 //-------------------------------------
 
 void MetroBoy::run_vsync(uint8_t buttons) {
+  auto& gb = current->gb;
+
   clear();
-
-#if 0
-  current->gb.set_joypad(~buttons);
-
+  gb.set_joypad(~buttons);
   gb.sync_to_mcycle();
 
-  while(gb_out.y != 144) {
+  while(gb.get_host_data().y != 144) {
     gb.mcycle();
   }
 
@@ -58,66 +57,77 @@ void MetroBoy::run_vsync(uint8_t buttons) {
   }
 
   audio_end();
-#endif
 }
 
 //-------------------------------------
 
 void MetroBoy::run_to(uint16_t breakpoint) {
-  clear();
+  auto& gb = current->gb;
 
-#if 0
+  clear();
   gb.sync_to_mcycle();
+
   while (1) {
     uint16_t op_addr = current->gb.get_cpu().get_op_addr();
     if (op_addr == breakpoint) break;
     gb.mcycle();
   }
-#endif
 }
 
 //-----------------------------------------------------------------------------
 
 void MetroBoy::step_frame() {
-#if 0
   push_frame();
-  
+
+  auto& gb = current->gb;
   gb.sync_to_mcycle();
 
-  do {
-    mcycle();
-  } while (gb_out.y == 144);
-
-  do {
-    mcycle();
-  } while (gb_out.y != 144);
-#endif
-}
-
-void MetroBoy::step_line() {
-#if 0
-  push_line();
-
-  gb.sync_to_mcycle();
-
-  int line = gb_out.y;
   do {
     gb.mcycle();
-  } while (gb_out.y == line);
-#endif
+  } while (gb.get_host_data().y == 144);
+
+  do {
+    gb.mcycle();
+  } while (gb.get_host_data().y != 144);
 }
+
+//----------------------------------------
+
+void MetroBoy::step_line() {
+  push_line();
+
+  auto& gb = current->gb;
+  gb.sync_to_mcycle();
+
+  int old_line = gb.get_host_data().y;
+
+  while(1) {
+    gb.mcycle();
+    int new_line = gb.get_host_data().y;
+    if (old_line != new_line) {
+      break;
+    }
+  }
+}
+
+//----------------------------------------
 
 void MetroBoy::step_phase() {
   push_cycle();
-  current->gb.halfcycle();
+
+  auto& gb = current->gb;
+  gb.halfcycle();
 }
 
+//----------------------------------------
+
 void MetroBoy::step_over() {
-#if 0
   push_cycle();
 
-  int op_addr = current->gb.get_cpu().get_op_addr();
-  int op = rom_buf[op_addr];
+  auto& gb = current->gb;
+
+  int op_addr = gb.get_cpu().get_op_addr();
+  int op = get_rom()[op_addr];
   int op_size = op_sizes[op];
   if (op == 0xcb) op_size = 2;
 
@@ -126,7 +136,7 @@ void MetroBoy::step_over() {
   gb.sync_to_mcycle();
   int i = 0;
   for (; i < 1000000; i++) {
-    if (current->gb.get_cpu().get_op_addr() == next_op_addr) {
+    if (gb.get_cpu().get_op_addr() == next_op_addr) {
       // step succeeded
       return;
     }
@@ -136,35 +146,6 @@ void MetroBoy::step_over() {
   // step failed
   pop_cycle();
   return;
-#endif
 }
-
-//-----------------------------------------------------------------------------
-
-/*
-void MetroBoy::halfcycle() {
-  if ((current->gb.phase1 & 1) == 1) {
-  }
-  else {
-    //gb_out = current->gb.get_host_data();
-
-    //tracebuffer[gb_out.y * 456 + gb_out.counter] = gb_out.trace;
-
-    tracebuffer[tracecursor++] = gb_out.trace;
-    if (tracecursor == 456 * 154) tracecursor = 0;
-
-    if (gb_out.pix_oe) {
-      int x = gb_out.x - 1;
-      int y = gb_out.y;
-
-      if (x >= 0 && x < 160 && y >= 0 && y < 144) {
-        current->fb[x + y * 160] = gb_out.pix;
-      }
-    }
-
-    current->gb.check_sentinel();
-  }
-}
-*/
 
 //-----------------------------------------------------------------------------

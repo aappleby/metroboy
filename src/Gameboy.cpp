@@ -6,12 +6,14 @@
 #include <assert.h>
 #include <imgui.h>
 
-extern const uint8_t DMG_ROM_bin[];
+#pragma warning(disable:4189)
 
 //-----------------------------------------------------------------------------
 
 void Gameboy::set_rom(uint8_t* new_rom, size_t new_rom_size) {
   cart.set_rom(new_rom, new_rom_size);
+
+  for (int i = 0; i < 160*144; i++) fb[i] = rand() & 3;
 }
 
 void Gameboy::reset(uint16_t new_pc) {
@@ -300,9 +302,9 @@ void Gameboy::tock2() {
   vram.  tock_req(vbus_req);
   oam.   tock_req(obus_req);
 
-  //ppu.tock(int(tcycle_new));
-  //spu.tock(int(tcycle_new));
-  //dma.tock(int(tcycle_new));
+  ppu.tock(int(phase / 2));
+  spu.tock(int(phase / 2));
+  dma.tock(int(phase / 2));
 
   //----------
 
@@ -314,6 +316,13 @@ void Gameboy::tock2() {
   gb_to_host.out_r   = spu.get_r();
   gb_to_host.out_l   = spu.get_l();
   gb_to_host.trace   = ebus_req.addr;
+
+  int pix_x = ppu.pix_count;
+  int pix_y = ppu.line;
+
+  if (pix_x >= 0 && pix_x < 160 && pix_y >= 0 && pix_y < 144) {
+    fb[gb_to_host.x + gb_to_host.y * 160] = ppu.pix_out;
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -450,5 +459,28 @@ void Gameboy::dump_disasm(std::string& d) {
     sprintf(d, "(bad pc)\n");
   }
 }
+
+/*
+void MetroBoy::cycle() {
+  current_gameboy->tick();
+  current_gameboy->tock();
+
+  if (trace) {
+  tracebuffer[current_gameboy->ppu.line * 456 + current_gameboy->ppu.counter] = current_gameboy->trace();
+  }
+
+  if (current_gameboy->get_pix_oe()) {
+  int x = current_gameboy->ppu.pix_count2 - 1;
+  int y = current_gameboy->ppu.line;
+
+  if (x >= 0 && x < 160 && y >= 0 && y < 144) {
+  current_gameboy->framebuffer[x + y * 160] = current_gameboy->get_pix_out();
+  }
+  }
+
+  current_gameboy->check_sentinel();
+  cycles++;
+}
+*/
 
 //-----------------------------------------------------------------------------

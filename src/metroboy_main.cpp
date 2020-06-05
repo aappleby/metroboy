@@ -77,7 +77,7 @@ void MetroBoyApp::init() {
   //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
   //load("roms", "tetris");
   //load("microtests/build/dmg", "timer_tima_write_c");
-  load("microtests/build/dmg", "timer_div_phase_d");
+  load("microtests/build/dmg", "timer_tima_write_e");
 
   //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");

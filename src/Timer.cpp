@@ -24,41 +24,6 @@ bool Timer::get_interrupt() const {
 
 //-----------------------------------------------------------------------------
 
-/*
-void Timer::tock_req(const Req& req) {
-  const bool timer_hit = (req.addr & 0xFFFC) == 0xFF04;
-
-  if (!timer_hit) {
-    ack = {0};
-  }
-  else if (req.write) {
-    if (req.addr == ADDR_DIV)  { counter = 1; }
-    if (req.addr == ADDR_TIMA) { tima    = uint8_t(req.data); }
-    if (req.addr == ADDR_TMA)  { tma     = uint8_t(req.data); }
-    if (req.addr == ADDR_TAC)  { tac     = uint8_t(req.data) | 0b11111000; }
-    ack = {
-      .addr  = req.addr,
-      .data  = 0,
-      .read  = 0,
-      .write = 1,
-    };
-  }
-  else if (req.read) {
-    uint8_t data = 0;
-    if (req.addr == ADDR_DIV)  { data = uint8_t(counter >> 6); }
-    if (req.addr == ADDR_TIMA) { data = uint8_t(tima); }
-    if (req.addr == ADDR_TMA)  { data = tma; }
-    if (req.addr == ADDR_TAC)  { data = tac | 0b11111000; }
-    ack = {
-      .addr  = req.addr,
-      .data  = data,
-      .read  = 1,
-      .write = 0,
-    };
-  }
-}
-*/
-
 void Timer::tick(const Req& req, Ack& ack) const {
   uint8_t data = 0;
 
@@ -78,33 +43,6 @@ void Timer::tick(const Req& req, Ack& ack) const {
 //-----------------------------------------------------------------------------
 
 void Timer::tock(int tphase, const Req& req) {
-#if 0
-  do_int = false;
-  counter++;
-
-  const bool do_tick_ = (counter & masks[tac & 3]) && (tac & 4);
-
-  if (do_tick && !do_tick_) {
-    tima++;
-    if (tima & 0x100) {
-      tima = tma;
-      do_int = true;
-    }
-  }
-  do_tick = do_tick_;
-#endif
-
-  /*
-  if (read) {
-    bus_out = 0x00;
-    bus_oe = false;
-    if (addr == ADDR_TAC)  { bus_oe = true; bus_out = tac | 0b11111000; }
-    if (addr == ADDR_TMA)  { bus_oe = true; bus_out = tma; }
-    if (addr == ADDR_DIV)  { bus_oe = true; bus_out = uint8_t(counter >> 6); }
-    if (addr == ADDR_TIMA) { bus_oe = true; bus_out = new_tima; }
-  }
-  */
-
   if (tphase == 0) {
     counter = counter + 1;
     old_tima = new_tima;
@@ -116,26 +54,17 @@ void Timer::tock(int tphase, const Req& req) {
   }
   do_tick = do_tick_;
 
-  if (tphase == 1) {
-    if (do_int) new_tima = tma;
-    do_int = (old_tima == 0xFF) && (new_tima == 0x00);
-  }
-
-
   if (req.write) switch(req.addr) {
   case ADDR_DIV:  counter = 0; break;
   case ADDR_TIMA: new_tima = uint8_t(req.data); break;
   case ADDR_TMA:  tma = uint8_t(req.data); break;
   case ADDR_TAC:  tac = uint8_t(req.data); break;
   }
-  /*
-  if (write) {
-    if (addr == ADDR_TIMA) new_tima = data;
-    if (addr == ADDR_DIV) counter = 0;
-    if (addr == ADDR_TAC) tac = data;
-    if (addr == ADDR_TMA) tma = data;
+
+  if (tphase == 1) {
+    if (do_int) new_tima = tma;
+    do_int = (old_tima == 0xFF) && (new_tima == 0x00);
   }
-  */
 }
 
 //-----------------------------------------------------------------------------

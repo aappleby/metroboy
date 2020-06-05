@@ -117,7 +117,7 @@ void Gameboy::tick2() {
   vbus_ack = {0};
   obus_ack = {0};
 
-  if (ibus_req) {
+  {
     this-> tick_ack(ibus_ack);
     ppu.   tick_ack(ibus_ack);
     serial.tick_ack(ibus_ack);

@@ -5,10 +5,11 @@
 #pragma warning(disable:4100)
 #pragma warning(disable:4189)
 
+void run_microtests();
+
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-  
   MetroBoyApp* app = new MetroBoyApp();
   int ret = app->app_main(argc, argv);
   delete app;

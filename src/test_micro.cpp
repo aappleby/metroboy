@@ -18,8 +18,6 @@ static const std::string micro_tests[] = {
   "timer_div_phase_c",
   "timer_div_phase_d",
 
-  "break",
-
   "timer_tima_write_a",
   "timer_tima_write_b",
   "timer_tima_write_c",
@@ -44,8 +42,6 @@ static const std::string micro_tests[] = {
   "timer_tima_phase_h",
   "timer_tima_phase_i",
   "timer_tima_phase_j",
-
-  //"break",
 
   "timer_int_inc_sled",
   "timer_int_inc_sled_a",
@@ -101,8 +97,6 @@ static const std::string micro_tests[] = {
   "poweron_183_vram",
   "poweron_184_vram",
 
-  //"break",
-
   "poweron_oam_read_a",
   "poweron_oam_read_b",
   "poweron_oam_read_c",
@@ -131,8 +125,6 @@ static const std::string micro_tests[] = {
   "lcdon_to_stat3_c",
   "lcdon_to_stat3_d",
 
-  "break",
-
   "lcdon_to_ly1_a",
   "lcdon_to_ly1_b",
   "lcdon_to_ly2_a",
@@ -140,19 +132,13 @@ static const std::string micro_tests[] = {
   "lcdon_to_ly3_a",
   "lcdon_to_ly3_b",
 
-  "break",
-
   "lcdon_to_lyc1_int",
   "lcdon_to_lyc2_int",
   "lcdon_to_lyc3_int",
 
-  "break",
-
   "lcdon_to_oam_int_l0",
   "lcdon_to_oam_int_l1",
   "lcdon_to_oam_int_l2",
-
-  "break",
 
   "-----",
   "lcdon_to_hblank_int_l0",
@@ -171,6 +157,8 @@ static const std::string micro_tests[] = {
   "lcdon_to_hblank_di_timing_b",
 
   "004-tima_boot_phase",
+
+  "break",
 
   //"ppu_sprite0_scx0_a", // where did this one go?
   "ppu_sprite0_scx0_b",
@@ -285,6 +273,9 @@ static const std::string micro_tests[] = {
   "vram_write_l1_b",
   "vram_write_l1_c",
   "vram_write_l1_d",
+
+  "break",
+
   "-----",
   "hblank_int_scx0_halt_a",
   "hblank_int_scx1_halt_a",
@@ -485,10 +476,6 @@ static const std::string micro_tests[] = {
 };
 
 bool run_microtest(const std::string& prefix, const std::string& name) {
-  if (name[0] == '-') {
-    return true;
-  }
-
   std::string filename = prefix + "/" + name + ".gb";
   blob rom;
   load_array(filename, rom);
@@ -509,8 +496,7 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
   }
 
   if (i == mcycles) {
-    printf("%-50s ", name.c_str());
-    printf("? TIMEOUT @ %d\n", i);
+    printf("\n%-50s ? TIMEOUT @ %d\n", name.c_str(), i);
     return false;
   }
   else if (result == 0x55) {
@@ -519,9 +505,7 @@ bool run_microtest(const std::string& prefix, const std::string& name) {
     //printf("  0x%02x PASS @ %d\n", result, i);
   }
   else {
-    printf("\n");
-    printf("%-50s ", name.c_str());
-    printf("X 0x%02x FAIL @ %d\n", result, i);
+    printf("\n%-50s X 0x%02x FAIL @ %d\n", name.c_str(), result, i);
     return false;
   }
 }
@@ -537,6 +521,7 @@ void run_microtests() {
   int fails = 0;
   for (auto name : micro_tests) {
     if (name == "break") break;
+    if (name[0] == '-') continue;
     bool pass = run_microtest(prefix, name);
     if (!pass) fails++;
   }

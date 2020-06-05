@@ -37,7 +37,7 @@ void MetroBoyApp::init() {
   gb_blitter.init();
   dump_painter.init();
 
-  //run_microtests();
+  run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
@@ -74,35 +74,14 @@ void MetroBoyApp::init() {
 
   //---------
 
-  //load("micro_cpu/build/dmg", "cpu_mov");
-
-  //load("microtests/build/dmg", "400-dma");
-
-  //load("roms/gb-test-roms/cpu_instrs/individual", "01-special");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "02-interrupts");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "03-op sp,hl");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "04-op r,imm");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "05-op rp");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "06-ld r,r");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "07-jr,jp,call,ret,rst");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "09-op r,r");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "10-bit ops");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
-
   //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
-  load("microtests/build/dmg", "minimal");
-
-  //load("roms/mooneye-gb/tests/build/acceptance/", "pop_timing");
-
   //load("roms", "tetris");
+  //load("microtests/build/dmg", "timer_tima_write_c");
+  load("microtests/build/dmg", "timer_div_phase_d");
 
-
-  load_memdump("roms", "LinksAwakening_house");
+  //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");
   //load_memdump("roms", "tetris");
-
-  //load("roms/mooneye-gb/tests/build/acceptance/timer/", "tim00");
 
   runmode = STEP_PHASE;
   //runmode = RUN_FAST;
@@ -118,6 +97,8 @@ void MetroBoyApp::close() {
 //-----------------------------------------------------------------------------
 
 void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& name) {
+  load("microtests/build/dmg", "minimal");
+
   std::string filename = prefix + "/" + name + ".dump";
   blob buf;
   load_array(filename, buf);

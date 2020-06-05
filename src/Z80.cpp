@@ -2,6 +2,10 @@
 #include "Constants.h"
 #include <assert.h>
 
+#pragma warning(disable:4189)
+#pragma warning(disable:4244)
+#pragma warning(disable:4458)
+
 //-----------------------------------------------------------------------------
 
 #define OP_QUAD       ((op >> 6) & 3)
@@ -154,7 +158,6 @@ void Z80::reset(uint16_t new_pc) {
     op_addr = pc;
     op = 0;
     cb = 0;
-    in = 0;
     state = 0;
 
     bc = 0x0013;
@@ -187,8 +190,6 @@ void Z80::reset(uint16_t new_pc) {
   }
 
   set_addr(pc, 0);
-
-  in = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -207,16 +208,17 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
   bus_req.write = (bool)new_write;
 }
 
-#define R_ROW reg(OP_ROW)
-#define R_COL reg(OP_COL)
-#define R_CB  reg(CB_COL)
+#define R_ROW reg(OP_ROW, ack)
+#define R_COL reg(OP_COL, ack)
+#define R_CB  reg(CB_COL, ack)
+
+#define GET_CB    get_reg(CB_COL, ack)
+#define SET_CB(A) set_reg(CB_COL, A)
 
 #define PIPE_BUSY
 #define DBUS_IDLE
 #define ABUS_BUSY
 #define ABUS_IDLE
-
-#pragma warning(disable:4189)
 
 //-----------------------------------------------------------------------------
 // Do the meat of executing the instruction
@@ -231,7 +233,7 @@ void Z80::tick_a(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
 
   if (state == 0) {
     op_addr = ack.addr;
-    op = in;     
+    op = ack.data;     
     int_ack = 0;
 
     if ((imask_ & intf_) && ime) {
@@ -319,13 +321,13 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 1 && HALT)                   /**/ {                                             /**/                                               /**/                                                        set_addr(pc, 0); state_ = !unhalt; }
   }                                                                                                                                                                                                                                          
   else if (PREFIX_CB) {                                                                                                                                                                                                                      
-    if (state == 1) cb = in;                                                                                                                                                                                                                 
+    if (state == 1) cb = ack.data;                                                                                                                                                                                                           
     uint8_t mask = cb_flag_mask[CB_QUAD];                                                                                                                                                                                                    
                                                                                                                                                                                                                 
     if (state == 0)                           /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && OP_CB_R)                /**/ { alu_x = R_CB;                               /**/                  pcl = inc(pcl, 1);           /**/ R_CB = alu_cb(cb, f);        pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(mask); }
+    if (state == 1 && OP_CB_R)                /**/ { alu_x = GET_CB;                             /**/                  pcl = inc(pcl, 1);           /**/ SET_CB(alu_cb(cb, f));       pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(mask); }
     if (state == 1 && OP_CB_HL)               /**/ {                                             /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 0); state_ = 2; }
-    if (state == 2)                           /**/ { alu_x = in;                                 /**/                                               /**/ out = alu_cb(cb, f);                                   set_addr(xy, 1); state_ = 3; set_f(mask); }
+    if (state == 2)                           /**/ { alu_x = ack.data;                           /**/                                               /**/ out = alu_cb(cb, f);                                   set_addr(xy, 1); state_ = 3; set_f(mask); }
     if (state == 3)                           /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
   }                                                                                                                                                                                                    
   else {                                                                                                                                                                                               
@@ -347,19 +349,19 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && STOP)                   /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
     if (state == 0 && DI)                     /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
     if (state == 0 && EI)                     /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
-    if (state == 0 && MV_R_R)                 /**/ { R_ROW = R_COL;                              /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 0 && MV_R_R)                 /**/ { set_reg(OP_ROW, get_reg(OP_COL, ack));      /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && LD_SP_HL)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
     if (state == 1 && LD_SP_HL)               /**/ {                                             /**/ PIPE_BUSY;       spl = l;                     /**/ PIPE_BUSY;                   sph = h;                  set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && LD_R_D8)                /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && LD_R_D8)                /**/ { R_ROW = in;                                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LD_R_D8)                /**/ { set_reg(OP_ROW, ack.data);                  /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     // 8-bit alu                                                                                                                                                                                                                 
                                                                                                                                                                                       
-    if (state == 0 && ALU_A_R)                /**/ { alu_y = R_COL;                              /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
-    if (state == 0 && INC_R)                  /**/ { alu_x = R_ROW;                              /**/                  pcl = inc(pcl, 1);           /**/ R_ROW = alu(1, F_CARRY);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xE0); }
-    if (state == 0 && DEC_R)                  /**/ { alu_x = R_ROW;                              /**/                  pcl = inc(pcl, 1);           /**/ R_ROW = alu(3, F_CARRY);     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xE0); }
+    if (state == 0 && ALU_A_R)                /**/ { alu_y = get_reg(OP_COL, ack);               /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
+    if (state == 0 && INC_R)                  /**/ { alu_x = get_reg(OP_ROW, ack);               /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(1, F_CARRY));     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xE0); }
+    if (state == 0 && DEC_R)                  /**/ { alu_x = get_reg(OP_ROW, ack);               /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(3, F_CARRY));     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xE0); }
     if (state == 0 && RLC_A)                  /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
     if (state == 0 && RRC_A)                  /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
     if (state == 0 && RL_A)                   /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
@@ -370,29 +372,29 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && CCF)                    /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0x70); }
                                                                                                                                                                                       
     if (state == 0 && ALU_A_D8)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && ALU_A_D8)               /**/ { alu_y = in;                                 /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
+    if (state == 1 && ALU_A_D8)               /**/ { alu_y = ack.data;                           /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
                                                                                                                                                                                       
     if (state == 0 && ALU_A_HL)               /**/ {                                             /**/ PIPE_BUSY;       xyl = l;                     /**/                              xyh = h;                  set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && ALU_A_HL)               /**/ { alu_y = in;                                 /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
+    if (state == 1 && ALU_A_HL)               /**/ { alu_y = ack.data;                           /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
                                                                                                                                                                                       
                                                                                                                                                                                       
     if (state == 0 && INC_AT_HL)              /**/ {                                             /**/ PIPE_BUSY;       xyl = l;                     /**/                              xyh = h;                  set_addr(xy, 0); state_ = 1; }
     if (state == 0 && DEC_AT_HL)              /**/ {                                             /**/ PIPE_BUSY;       xyl = l;                     /**/                              xyh = h;                  set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && INC_AT_HL)              /**/ { alu_x = in;                                 /**/                                               /**/ out = alu(1, F_CARRY);                                 set_addr(xy, 1); state_ = 2; set_f(0xE0); }
-    if (state == 1 && DEC_AT_HL)              /**/ { alu_x = in;                                 /**/                                               /**/ out = alu(3, F_CARRY);                                 set_addr(xy, 1); state_ = 2; set_f(0xE0); }
+    if (state == 1 && INC_AT_HL)              /**/ { alu_x = ack.data;                           /**/                                               /**/ out = alu(1, F_CARRY);                                 set_addr(xy, 1); state_ = 2; set_f(0xE0); }
+    if (state == 1 && DEC_AT_HL)              /**/ { alu_x = ack.data;                           /**/                                               /**/ out = alu(3, F_CARRY);                                 set_addr(xy, 1); state_ = 2; set_f(0xE0); }
     if (state == 2 && INC_AT_HL)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
     if (state == 2 && DEC_AT_HL)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     // 16-bit alu                                                                                                                                                                     
                                                                                                                                                                                       
     if (state == 0 && ADD_SP_R8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && ADD_SP_R8)              /**/ { alu_x = in;                                 /**/ alu_y = spl;     PIPE_BUSY;                   /**/ spl = alu(0, f);             PIPE_BUSY;                set_addr(pc, 0); state_ = 2; set_f(0xF0); }
-    if (state == 2 && ADD_SP_R8)              /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;     PIPE_BUSY;                   /**/ sph = alu(1, f);             PIPE_BUSY;                set_addr(pc, 0); state_ = 3; }
+    if (state == 1 && ADD_SP_R8)              /**/ { alu_x = ack.data;                           /**/ alu_y = spl;     PIPE_BUSY;                   /**/ spl = alu(0, f);             PIPE_BUSY;                set_addr(pc, 0); state_ = 2; set_f(0xF0); }
+    if (state == 2 && ADD_SP_R8)              /**/ { alu_x = sxt(ack.data);                      /**/ alu_y = sph;     PIPE_BUSY;                   /**/ sph = alu(1, f);             PIPE_BUSY;                set_addr(pc, 0); state_ = 3; }
     if (state == 3 && ADD_SP_R8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && LD_HL_SP_R8)            /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && LD_HL_SP_R8)            /**/ { alu_x = in;                                 /**/ alu_y = spl;     PIPE_BUSY;                   /**/ l = alu(0, f);                                         set_addr(pc, 0); state_ = 2; set_f(0xF0); }
-    if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(in);                            /**/ alu_y = sph;     PIPE_BUSY;                   /**/ h = alu(1, f);                                         set_addr(pc, 0); state_ = 3; }
+    if (state == 1 && LD_HL_SP_R8)            /**/ { alu_x = ack.data;                           /**/ alu_y = spl;     PIPE_BUSY;                   /**/ l = alu(0, f);                                         set_addr(pc, 0); state_ = 2; set_f(0xF0); }
+    if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(ack.data);                      /**/ alu_y = sph;     PIPE_BUSY;                   /**/ h = alu(1, f);                                         set_addr(pc, 0); state_ = 3; }
     if (state == 3 && LD_HL_SP_R8)            /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                 
     // FIXME
@@ -417,28 +419,28 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     // load/store                                                                                                                                                                     
                                                                                                                                                                                       
     if (state == 0 && STM_A16_SP)             /**/ { out = spl;        PIPE_BUSY;                /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && STM_A16_SP)             /**/ { PIPE_BUSY;        xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && STM_A16_SP)             /**/ { PIPE_BUSY;        xyh = in;                 /**/                                               /**/                                                        set_addr(xy, 1); state_ = 3; }
+    if (state == 1 && STM_A16_SP)             /**/ { PIPE_BUSY;        xyl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && STM_A16_SP)             /**/ { PIPE_BUSY;        xyh = ack.data;           /**/                                               /**/                                                        set_addr(xy, 1); state_ = 3; }
     if (state == 3 && STM_A16_SP)             /**/ { out = sph;        PIPE_BUSY;                /**/                  xyl = inc(xyl, 1);           /**/                              xyh = inc(xyh, inc_c);    set_addr(xy, 1); state_ = 4; }
     if (state == 4 && STM_A16_SP)             /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && STM_A16_A)              /**/ { out = a;                                    /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && STM_A16_A)              /**/ { PIPE_BUSY;        xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && STM_A16_A)              /**/ { PIPE_BUSY;        xyh = in;                 /**/                                               /**/                                                        set_addr(xy, 1); state_ = 3; }
+    if (state == 1 && STM_A16_A)              /**/ { PIPE_BUSY;        xyl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && STM_A16_A)              /**/ { PIPE_BUSY;        xyh = ack.data;           /**/                                               /**/                                                        set_addr(xy, 1); state_ = 3; }
     if (state == 3 && STM_A16_A)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && LDM_A_A16)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && LDM_A_A16)              /**/ { PIPE_BUSY;        xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && LDM_A_A16)              /**/ { PIPE_BUSY;        xyh = in;                 /**/                                               /**/                                                        set_addr(xy, 0); state_ = 3; }
-    if (state == 3 && LDM_A_A16)              /**/ { a = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LDM_A_A16)              /**/ { PIPE_BUSY;        xyl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && LDM_A_A16)              /**/ { PIPE_BUSY;        xyh = ack.data;           /**/                                               /**/                                                        set_addr(xy, 0); state_ = 3; }
+    if (state == 3 && LDM_A_A16)              /**/ { a = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     // indirect load/store                                                                                                                                                            
                                                                                                                                                                                       
     if (state == 0 && LDM_A_BC)               /**/ {                                             /**/ PIPE_BUSY;       xyl = c;                     /**/ PIPE_BUSY;                   xyh = b;                  set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_BC)               /**/ { a = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LDM_A_BC)               /**/ { a = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && LDM_A_DE)               /**/ {                                             /**/ PIPE_BUSY;       xyl = e;                     /**/ PIPE_BUSY;                   xyh = d;                  set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_DE)               /**/ { a = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LDM_A_DE)               /**/ { a = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && STM_BC_A)               /**/ { out = a;                                    /**/ PIPE_BUSY;       xyl = c;                     /**/ PIPE_BUSY;                   xyh = b;                  set_addr(xy, 1); state_ = 1; }
     if (state == 1 && STM_BC_A)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
@@ -447,18 +449,18 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 1 && STM_DE_A)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && LDM_R_HL)               /**/ {                                             /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_R_HL)               /**/ { reg(OP_ROW) = in;                           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LDM_R_HL)               /**/ { set_reg(OP_ROW, ack.data);                  /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
-    if (state == 0 && STM_HL_R)               /**/ { out = reg(OP_COL);                          /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 1); state_ = 1; }
+    if (state == 0 && STM_HL_R)               /**/ { out = get_reg(OP_COL, ack);                 /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 1); state_ = 1; }
     if (state == 1 && STM_HL_R)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && STM_HL_D8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && STM_HL_D8)              /**/ { out = in;                                   /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(hl, 1); state_ = 2; }
+    if (state == 1 && STM_HL_D8)              /**/ { out = ack.data;                             /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(hl, 1); state_ = 2; }
     if (state == 2 && STM_HL_D8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                     
     // FIXME
     if (state == 0 && LDM_A_HLP)              /**/ { PIPE_BUSY;        xyh = h;                  /**/ alu_x = l;       xyl = l;                     /**/ l = alu(1, F_CARRY);                                   set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_HLP)              /**/ { a = in;                                     /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(1, alu_f);           pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LDM_A_HLP)              /**/ { a = ack.data;                               /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(1, alu_f);           pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     // FIXME
     if (state == 0 && STM_HLP_A)              /**/ { out = a;                                    /**/ alu_x = l;       xyl = l;                     /**/ l = alu(1, F_CARRY);         xyh = h;                  set_addr(xy, 1); state_ = 1; }
@@ -466,7 +468,7 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
             
     // FIXME
     if (state == 0 && LDM_A_HLM)              /**/ {                                             /**/ alu_x = l;       xyl = l;                     /**/ l = alu(3, F_CARRY);         xyh = h;                  set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && LDM_A_HLM)              /**/ { a = in;                                     /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(3, alu_f);           pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LDM_A_HLM)              /**/ { a = ack.data;                               /**/ alu_x = h;       pcl = inc(pcl, 1);           /**/ h = alu(3, alu_f);           pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && STM_HLM_A)              /**/ { out = a;          pcl = inc(pcl, 1);        /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 1); state_ = 1; }
     if (state == 1 && STM_HLM_A)              /**/ {                   pch = inc(pch, inc_c);    /**/ PIPE_BUSY;       l = dec(xyl, 1);             /**/ PIPE_BUSY;                   h = dec(xyh, inc_c);      set_addr(pc, 0); state_ = 0; }
@@ -479,12 +481,12 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
                                                                                                                                                                                       
     if (state == 0 && LDM_A_C)                /**/ {                                             /**/ PIPE_BUSY;       xyl = c;                     /**/ PIPE_BUSY;                   xyh = 0xFF;               set_addr(xy, 0); state_ = 1; }
     if (state == 0 && STM_C_A)                /**/ { out = a;                                    /**/ PIPE_BUSY;       xyl = c;                     /**/ PIPE_BUSY;                   xyh = 0xFF;               set_addr(xy, 1); state_ = 1; }
-    if (state == 1 && LDM_A_A8)               /**/ {                                             /**/ PIPE_BUSY;       xyl = in;                    /**/ PIPE_BUSY;                   xyh = 0xFF;               set_addr(xy, 0); state_ = 2; }
-    if (state == 1 && STM_A8_A)               /**/ { out = a;                                    /**/ PIPE_BUSY;       xyl = in;                    /**/ PIPE_BUSY;                   xyh = 0xFF;               set_addr(xy, 1); state_ = 2; }
+    if (state == 1 && LDM_A_A8)               /**/ {                                             /**/ PIPE_BUSY;       xyl = ack.data;              /**/ PIPE_BUSY;                   xyh = 0xFF;               set_addr(xy, 0); state_ = 2; }
+    if (state == 1 && STM_A8_A)               /**/ { out = a;                                    /**/ PIPE_BUSY;       xyl = ack.data;              /**/ PIPE_BUSY;                   xyh = 0xFF;               set_addr(xy, 1); state_ = 2; }
                                                                                                                                                                                       
-    if (state == 1 && LDM_A_C)                /**/ { a = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LDM_A_C)                /**/ { a = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
     if (state == 1 && STM_C_A)                /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
-    if (state == 2 && LDM_A_A8)               /**/ { a = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 2 && LDM_A_A8)               /**/ { a = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
     if (state == 2 && STM_A8_A)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     // push / pop                                                                                                                                                                                                                
@@ -510,30 +512,30 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && POP_DE)                 /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 1; }
     if (state == 0 && POP_HL)                 /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 1; }
     if (state == 0 && POP_AF)                 /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 1; }
-    if (state == 1 && POP_BC)                 /**/ { c = in;                                     /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
-    if (state == 1 && POP_DE)                 /**/ { e = in;                                     /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
-    if (state == 1 && POP_HL)                 /**/ { l = in;                                     /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
-    if (state == 1 && POP_AF)                 /**/ { f = in;                                     /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
-    if (state == 2 && POP_BC)                 /**/ { b = in;                                     /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
-    if (state == 2 && POP_DE)                 /**/ { d = in;                                     /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
-    if (state == 2 && POP_HL)                 /**/ { h = in;                                     /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
-    if (state == 2 && POP_AF)                 /**/ { a = in;                                     /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && POP_BC)                 /**/ { c = ack.data;                               /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
+    if (state == 1 && POP_DE)                 /**/ { e = ack.data;                               /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
+    if (state == 1 && POP_HL)                 /**/ { l = ack.data;                               /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
+    if (state == 1 && POP_AF)                 /**/ { f = ack.data;                               /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
+    if (state == 2 && POP_BC)                 /**/ { b = ack.data;                               /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 2 && POP_DE)                 /**/ { d = ack.data;                               /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 2 && POP_HL)                 /**/ { h = ack.data;                               /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 2 && POP_AF)                 /**/ { a = ack.data;                               /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     // 16-bit stuff                                                                                                                                                                                                                          
                                                                                                                                                                                       
     if (state == 0 && LD_BC_D16)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
     if (state == 0 && LD_DE_D16)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
     if (state == 0 && LD_HL_D16)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && LD_BC_D16)              /**/ { c = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 1 && LD_DE_D16)              /**/ { e = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 1 && LD_HL_D16)              /**/ { l = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && LD_BC_D16)              /**/ { b = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
-    if (state == 2 && LD_DE_D16)              /**/ { d = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
-    if (state == 2 && LD_HL_D16)              /**/ { h = in;                                     /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LD_BC_D16)              /**/ { c = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 1 && LD_DE_D16)              /**/ { e = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 1 && LD_HL_D16)              /**/ { l = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && LD_BC_D16)              /**/ { b = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 2 && LD_DE_D16)              /**/ { d = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 2 && LD_HL_D16)              /**/ { h = ack.data;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && LD_SP_D16)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && LD_SP_D16)              /**/ { PIPE_BUSY;        spl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && LD_SP_D16)              /**/ { PIPE_BUSY;        sph = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LD_SP_D16)              /**/ { PIPE_BUSY;        spl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && LD_SP_D16)              /**/ { PIPE_BUSY;        sph = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && ADD_HL_BC)              /**/ { alu_x = c;                                  /**/ alu_y = l;       pcl = inc(pcl, 1);           /**/ l = alu(0, f);               pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
     if (state == 0 && ADD_HL_DE)              /**/ { alu_x = e;                                  /**/ alu_y = l;       pcl = inc(pcl, 1);           /**/ l = alu(0, f);               pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
@@ -547,12 +549,12 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     // conditional branches                                                                                                                                                                                                     
                                                                                                                                                                                                                                 
     if (state == 0 && JR_R8)                  /**/ {                                             /**/                  xyl = inc(pcl, 1);           /**/                              xyh = inc(pch, inc_c);    set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && JR_R8)                  /**/ { alu_x = xyl;      PIPE_BUSY;                /**/ alu_y = in;                                   /**/ pcl = alu(1, F_CARRY);       PIPE_BUSY;                set_addr(xy, 0); state_ = 2; }                                                         
-    if (state == 2 && JR_R8)                  /**/ { alu_x = xyh;      PIPE_BUSY;                /**/ alu_y = sxt(in);                              /**/ pch = alu(1, alu_f);         PIPE_BUSY;                set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && JR_R8)                  /**/ { alu_x = xyl;      PIPE_BUSY;                /**/ alu_y = ack.data;                             /**/ pcl = alu(1, F_CARRY);       PIPE_BUSY;                set_addr(xy, 0); state_ = 2; }                                                         
+    if (state == 2 && JR_R8)                  /**/ { alu_x = xyh;      PIPE_BUSY;                /**/ alu_y = sxt(ack.data);                        /**/ pch = alu(1, alu_f);         PIPE_BUSY;                set_addr(pc, 0); state_ = 0; }
 
     if (state == 0 && JR_CC_R8    &&  branch) /**/ {                                             /**/                  xyl = inc(pcl, 1);           /**/                              xyh = inc(pch, inc_c);    set_addr(xy, 0); state_ = 1; }
-    if (state == 1 && JR_CC_R8    &&  branch) /**/ { alu_x = xyl;      PIPE_BUSY;                /**/ alu_y = in;                                   /**/ pcl = alu(1, F_CARRY);       PIPE_BUSY;                set_addr(xy, 0); state_ = 2; }                                                         
-    if (state == 2 && JR_CC_R8    &&  branch) /**/ { alu_x = xyh;      PIPE_BUSY;                /**/ alu_y = sxt(in);                              /**/ pch = alu(1, alu_f);         PIPE_BUSY;                set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && JR_CC_R8    &&  branch) /**/ { alu_x = xyl;      PIPE_BUSY;                /**/ alu_y = ack.data;                             /**/ pcl = alu(1, F_CARRY);       PIPE_BUSY;                set_addr(xy, 0); state_ = 2; }                                                         
+    if (state == 2 && JR_CC_R8    &&  branch) /**/ { alu_x = xyh;      PIPE_BUSY;                /**/ alu_y = sxt(ack.data);                        /**/ pch = alu(1, alu_f);         PIPE_BUSY;                set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && JR_CC_R8    && !branch) /**/ {                                             /**/                  xyl = inc(pcl, 1);           /**/                              xyh = inc(pch, inc_c);    set_addr(xy, 0); state_ = 1; }
     if (state == 1 && JR_CC_R8    && !branch) /**/ {                                             /**/                  pcl = inc(xyl, 1);           /**/                              pch = inc(xyh, inc_c);    set_addr(pc, 0); state_ = 0; }
@@ -560,33 +562,33 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
                                                                                                                                                                                       
     if (state == 0 && JP_CC_A16   &&  branch) /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
     if (state == 0 && JP_CC_A16   && !branch) /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && JP_CC_A16   &&  branch) /**/ { PIPE_BUSY;        xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 1 && JP_CC_A16   && !branch) /**/ { PIPE_BUSY;        xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && JP_CC_A16   &&  branch) /**/ { PIPE_BUSY;        xyh = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 3; }
-    if (state == 2 && JP_CC_A16   && !branch) /**/ { PIPE_BUSY;        xyh = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && JP_CC_A16   &&  branch) /**/ { PIPE_BUSY;        xyl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 1 && JP_CC_A16   && !branch) /**/ { PIPE_BUSY;        xyl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && JP_CC_A16   &&  branch) /**/ { PIPE_BUSY;        xyh = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 3; }
+    if (state == 2 && JP_CC_A16   && !branch) /**/ { PIPE_BUSY;        xyh = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
     if (state == 3 && JP_CC_A16   &&  branch) /**/ {                                             /**/                  pcl = xyl;                   /**/                              pch = xyh;                set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && JP_A16)                 /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && JP_A16)                 /**/ { PIPE_BUSY;        xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && JP_A16)                 /**/ { PIPE_BUSY;        xyh = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 3; }
+    if (state == 1 && JP_A16)                 /**/ { PIPE_BUSY;        xyl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && JP_A16)                 /**/ { PIPE_BUSY;        xyh = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 3; }
     if (state == 3 && JP_A16)                 /**/ {                                             /**/                  pcl = xyl;                   /**/                              pch = xyh;                set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && CALL_CC_A16 &&  branch) /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && CALL_CC_A16 &&  branch) /**/ { PIPE_BUSY;        xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && CALL_CC_A16 &&  branch) /**/ { PIPE_BUSY;        xyh = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 3; }
+    if (state == 1 && CALL_CC_A16 &&  branch) /**/ { PIPE_BUSY;        xyl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && CALL_CC_A16 &&  branch) /**/ { PIPE_BUSY;        xyh = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 3; }
     if (state == 3 && CALL_CC_A16 &&  branch) /**/ { out = pch;        PIPE_BUSY;                /**/                  spl = dec(spl, 1);           /**/                              sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 4; }
     if (state == 4 && CALL_CC_A16 &&  branch) /**/ { out = pcl;        PIPE_BUSY;                /**/                  spl = dec(spl, 1);           /**/                              sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 5; }
     if (state == 5 && CALL_CC_A16 &&  branch) /**/ {                                             /**/                  pcl = xyl;                   /**/                              pch = xyh;                set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && CALL_CC_A16 && !branch) /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && CALL_CC_A16 && !branch) /**/ { PIPE_BUSY;        xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 1 && CALL_CC_A16 && !branch) /**/ { PIPE_BUSY;        xyl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
     if (state == 2 && CALL_CC_A16 && !branch) /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     // ok we need to latch out on set_addr                                                                                                                                                                                                  
                                                                                                                                                                                       
     if (state == 0 && CALL_A16)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && CALL_A16)               /**/ { PIPE_BUSY;        xyl = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
-    if (state == 2 && CALL_A16)               /**/ { PIPE_BUSY;        xyh = in;                 /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 3; }
+    if (state == 1 && CALL_A16)               /**/ { PIPE_BUSY;        xyl = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 2; }
+    if (state == 2 && CALL_A16)               /**/ { PIPE_BUSY;        xyh = ack.data;           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 3; }
     if (state == 3 && CALL_A16)               /**/ { out = pch;        PIPE_BUSY;                /**/                  spl = dec(spl, 1);           /**/                              sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 4; }
     if (state == 4 && CALL_A16)               /**/ { out = pcl;        PIPE_BUSY;                /**/                  spl = dec(spl, 1);           /**/                              sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 5; }
     if (state == 5 && CALL_A16)               /**/ {                                             /**/                  pcl = xyl;                   /**/                              pch = xyh;                set_addr(pc, 0); state_ = 0; }
@@ -597,17 +599,17 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && RET_CC      &&  branch) /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
     if (state == 1 && RET_CC      &&  branch) /**/ {                                             /**/                                               /**/                                                        set_addr(pc, 0); state_ = 2; }
     if (state == 2 && RET_CC      &&  branch) /**/ {                                             /**/                                               /**/                                                        set_addr(sp, 0); state_ = 3; }
-    if (state == 3 && RET_CC      &&  branch) /**/ { PIPE_BUSY;        pcl = in;                 /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 4; }
-    if (state == 4 && RET_CC      &&  branch) /**/ { PIPE_BUSY;        pch = in;                 /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 3 && RET_CC      &&  branch) /**/ { PIPE_BUSY;        pcl = ack.data;           /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 4; }
+    if (state == 4 && RET_CC      &&  branch) /**/ { PIPE_BUSY;        pch = ack.data;           /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && RETI)                   /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 1; }
-    if (state == 1 && RETI)                   /**/ { PIPE_BUSY;        pcl = in;                 /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
-    if (state == 2 && RETI)                   /**/ { PIPE_BUSY;        pch = in;                 /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 3; }
+    if (state == 1 && RETI)                   /**/ { PIPE_BUSY;        pcl = ack.data;           /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
+    if (state == 2 && RETI)                   /**/ { PIPE_BUSY;        pch = ack.data;           /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 3; }
     if (state == 3 && RETI)                   /**/ {                                             /**/                                               /**/                                                        set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && RET)                    /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 1; }
-    if (state == 1 && RET)                    /**/ { PIPE_BUSY;        pcl = in;                 /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
-    if (state == 2 && RET)                    /**/ { PIPE_BUSY;        pch = in;                 /**/                                               /**/                                                        set_addr(sp, 0); state_ = 3; }
+    if (state == 1 && RET)                    /**/ { PIPE_BUSY;        pcl = ack.data;           /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(sp, 0); state_ = 2; }
+    if (state == 2 && RET)                    /**/ { PIPE_BUSY;        pch = ack.data;           /**/                                               /**/                                                        set_addr(sp, 0); state_ = 3; }
     if (state == 3 && RET)                    /**/ {                                             /**/                  spl = inc(spl, 1);           /**/                              sph = inc(sph, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     // branches                                                                                                                                                                                                                              
@@ -644,8 +646,6 @@ void Z80::tick_e(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
 
 void Z80::tock_f(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   // "first" execution cycle
-  bus_ack = ack;
-  in = (uint8_t)ack.data;
 }
 
 //-----------------------------------------------------------------------------
@@ -659,7 +659,7 @@ void Z80::tock_h(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
 
 //-----------------------------------------------------------------------------
 
-uint8_t& Z80::reg(int mux) {
+uint8_t Z80::get_reg(int mux, const Ack& ack) {
   switch(mux) {
   case 0: return b;
   case 1: return c;
@@ -667,11 +667,23 @@ uint8_t& Z80::reg(int mux) {
   case 3: return e;
   case 4: return h;
   case 5: return l;
-  case 6: return in;     
+  case 6: return 0;
   case 7: return a;
   }
-  static uint8_t fail = 0;
-  return fail;
+  return 0;
+}
+
+void Z80::set_reg(int mux, uint8_t data) {
+  switch(mux) {
+  case 0: b = data; break;
+  case 1: c = data; break;
+  case 2: d = data; break;
+  case 3: e = data; break;
+  case 4: h = data; break;
+  case 5: l = data; break;
+  case 6: break;
+  case 7: a = data; break;
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -683,7 +695,6 @@ void Z80::set_f(uint8_t mask) {
 }
 
 //-----------------------------------------------------------------------------
-#pragma warning(disable : 4458)
 
 uint8_t Z80::alu(int op, uint8_t flags) {
   alu_f = flags;
@@ -877,15 +888,14 @@ uint8_t Z80::alu_cb(int op, uint8_t flags) {
 
 //-----------------------------------------------------------------------------
 
-#pragma warning(disable:4458)
-
-void Z80::dump(std::string& o) {
+void Z80::dump(std::string& o, const Ack& bus_ack) {
   sprintf(o, "state       %d\n", state);
   sprintf(o, "\n");
 
   sprintf(o, "op_addr     0x%04x\n", op_addr);
   sprintf(o, "OP          0x%02x @ %d\n", op, state);
   sprintf(o, "CB          0x%02x\n", cb);
+  sprintf(o, "out         0x%02x\n", out);
   sprintf(o, "\n");
 
   sprintf(o, "bus req     "); print_req(o, bus_req);

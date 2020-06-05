@@ -21,7 +21,7 @@ struct Z80 {
   void    tick_g(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
   void    tock_h(const uint8_t imask_, const uint8_t intf_, const Ack& ack);
 
-  void    dump(std::string& d);
+  void    dump(std::string& d, const Ack& bus_ack);
 
   uint16_t get_op_addr() const { return op_addr; }
   uint8_t  get_a()  const { return a; }
@@ -37,11 +37,9 @@ struct Z80 {
   uint8_t  cb = 0;
   bool     ime = 0, ime_delay = 0;
 
-  uint8_t  in = 0;
   uint8_t  out = 0;
 
   Req      bus_req;
-  Ack      bus_ack;
 
   uint8_t alu_x = 0;
   uint8_t alu_y = 0;
@@ -89,7 +87,9 @@ struct Z80 {
 #pragma warning(pop)
 
   void set_addr(uint16_t new_addr, int new_write);
-  uint8_t& reg(int mux);
+
+  uint8_t get_reg(int mux, const Ack& ack);
+  void set_reg(int mux, uint8_t data);
 
   void     set_f(uint8_t mask);
   uint8_t  alu_cb(int op, uint8_t flags);

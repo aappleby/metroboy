@@ -12,6 +12,10 @@ struct TestGB {
   void tick_everything();
   bool commit_everything();
 
+  void tick_timer(wire ALUR_RSTn, wire BOGA_AxCDEFGH);
+
+  void wtf_cpu_wr();
+
   //-----------------------------------------------------------------------------
 
 

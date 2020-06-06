@@ -7,6 +7,7 @@
 #include <imgui.h>
 
 #pragma warning(disable:4189)
+#pragma warning(disable:4244)
 
 //-----------------------------------------------------------------------------
 
@@ -92,8 +93,8 @@ void Gameboy::tick_ack(Ack& ack_) const {
 
 //-----------------------------------------------------------------------------
 
-void Gameboy::tick2() {
-  phase++;
+void Gameboy::tick1() {
+  int64_t tphase2 = (phase & 7);
 
   //-----------------------------------
   // interrupts are partially asynchronous
@@ -123,13 +124,12 @@ void Gameboy::tick2() {
     serial.tick_ack(ibus_ack);
     joypad.tick_ack(ibus_ack);
     zram.  tick_ack(ibus_ack);
-    
-    timer.tick(ibus_req, ibus_ack);
-    
     spu.   tick_ack(ibus_ack);
     dma.   tick_ack(ibus_ack);
     boot.  tick_ack(ibus_ack);
   }
+
+  timer.tick(tphase2, ibus_req, ibus_ack);
 
   cart.tick_ack(ebus_ack);
   iram.tick_ack(ebus_ack);
@@ -184,153 +184,134 @@ void Gameboy::tick2() {
   else if (cpu_has_obus_req) {
     cpu_ack = obus_ack;
   }
-
-  //-----------------------------------
-
-  int64_t tphase2 = (phase & 7);
-
-  if (tphase2 == 0) {
-    z80.tick_a(imask, intf, cpu_ack);
-  }
-  else if (tphase2 == 2) {
-    z80.tick_c(imask, intf, cpu_ack);
-  }
-  else if (tphase2 == 4) {
-    z80.tick_e(imask, intf, cpu_ack);
-  }
-  else if (tphase2 == 6) {
-    z80.tick_g(imask, intf, cpu_ack);
-  }
 }
 
 //-----------------------------------------------------------------------------
 
 void Gameboy::tock2() {
   phase++;
-
-  //-----------------------------------
-
   int64_t tphase2 = (phase & 7);
 
+  if (tphase2 == 0) z80.tock_a(imask, intf, cpu_ack);
+  
   if (tphase2 == 1) {
     z80.tock_b(imask, intf, cpu_ack);
-    timer.tock(1, ibus_req);
-  }
-  else if (tphase2 == 3) {
-    z80.tock_d(imask, intf, cpu_ack);
-  }
-  else if (tphase2 == 5) {
-    z80.tock_f(imask, intf, cpu_ack);
-  }
-  else if (tphase2 == 7) {
-    z80.tock_h(imask, intf, cpu_ack);
-    timer.tock(0, ibus_req);
   }
 
-  //-----------------------------------
+  if (tphase2 == 2) z80.tock_c(imask, intf, cpu_ack);
+  if (tphase2 == 3) z80.tock_d(imask, intf, cpu_ack);
+  if (tphase2 == 4) z80.tock_e(imask, intf, cpu_ack);
+  if (tphase2 == 5) z80.tock_f(imask, intf, cpu_ack);
+  if (tphase2 == 6) z80.tock_g(imask, intf, cpu_ack);
+  if (tphase2 == 7) z80.tock_h(imask, intf, cpu_ack);
 
-  this-> tock_req(ibus_req);
-  ppu.   tock_req(ibus_req);
-  serial.tock_req(ibus_req);
-  joypad.tock_req(ibus_req);
-  zram.  tock_req(ibus_req);
-  //timer. tock_req(ibus_req);
-  spu.   tock_req(ibus_req);
-  dma.   tock_req(ibus_req);
-  boot.  tock_req(ibus_req);
-  cart.  tock_req(ebus_req);
-  iram.  tock_req(ebus_req);
-  vram.  tock_req(vbus_req);
-  oam.   tock_req(obus_req);
+  timer.tock(tphase2, ibus_req);
 
-  ppu.tock(int(phase / 2));
-  spu.tock(int(phase / 2));
-  dma.tock(int(phase / 2));
+  if ((phase & 1) == 1) {
+    this-> tock_req(ibus_req);
+    ppu.   tock_req(ibus_req);
+    serial.tock_req(ibus_req);
+    joypad.tock_req(ibus_req);
+    zram.  tock_req(ibus_req);
+    spu.   tock_req(ibus_req);
+    dma.   tock_req(ibus_req);
+    boot.  tock_req(ibus_req);
+    cart.  tock_req(ebus_req);
+    iram.  tock_req(ebus_req);
+    vram.  tock_req(vbus_req);
+    oam.   tock_req(obus_req);
 
-  //----------
+    ppu.tock(int(phase / 2));
+    spu.tock(int(phase / 2));
+    dma.tock(int(phase / 2));
 
-  gb_to_host.x       = ppu.pix_count;
-  gb_to_host.y       = ppu.line;
-  gb_to_host.counter = ppu.counter;
-  gb_to_host.pix     = ppu.pix_out;
-  gb_to_host.pix_oe  = ppu.pix_oe;
-  gb_to_host.out_r   = spu.get_r();
-  gb_to_host.out_l   = spu.get_l();
-  gb_to_host.trace   = ebus_req.addr;
+    //----------
 
-  int pix_x = ppu.pix_count;
-  int pix_y = ppu.line;
+    gb_to_host.x       = ppu.pix_count;
+    gb_to_host.y       = ppu.line;
+    gb_to_host.counter = ppu.counter;
+    gb_to_host.pix     = ppu.pix_out;
+    gb_to_host.pix_oe  = ppu.pix_oe;
+    gb_to_host.out_r   = spu.get_r();
+    gb_to_host.out_l   = spu.get_l();
+    gb_to_host.trace   = ebus_req.addr;
 
-  if (pix_x >= 0 && pix_x < 160 && pix_y >= 0 && pix_y < 144) {
-    fb[gb_to_host.x + gb_to_host.y * 160] = ppu.pix_out;
+    int pix_x = ppu.pix_count;
+    int pix_y = ppu.line;
+
+    if (pix_x >= 0 && pix_x < 160 && pix_y >= 0 && pix_y < 144) {
+      fb[gb_to_host.x + gb_to_host.y * 160] = ppu.pix_out;
+    }
+
+    //-----------------------------------
+    // gather reqs
+
+    z80.get_bus_req(cpu_req);
+
+    dma.get_ebus_req(dma_ebus_req);
+    dma.get_vbus_req(dma_vbus_req);
+    dma.get_obus_req(dma_obus_req);
+
+    ppu.get_vbus_req(ppu_vbus_req);
+    ppu.get_obus_req(ppu_obus_req);
+
+    //-----------------------------------
+    // prioritize reqs
+
+    bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
+    bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
+    bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
+    bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
+
+    // ibus
+    if (cpu_has_ibus_req) {
+      ibus_req = cpu_req;
+    }
+    else {
+      ibus_req = {0};
+    }
+
+    // ebus
+    if (dma_ebus_req) {
+      ebus_req = dma_ebus_req;
+    }
+    else if (cpu_has_ebus_req) {
+      ebus_req = cpu_req;
+    }
+    else {
+      ebus_req = {0};
+    }
+
+    // vbus
+    if (dma_vbus_req) {
+      vbus_req = dma_vbus_req;
+    }
+    else if (ppu_vbus_req) {
+      vbus_req = ppu_vbus_req;
+    }
+    else if (cpu_has_vbus_req) {
+      vbus_req = cpu_req;
+    }
+    else {
+      vbus_req = {0};
+    }
+
+    // obus
+    if (dma_obus_req) {
+      obus_req = dma_obus_req;
+    }
+    else if (ppu_obus_req) {
+      obus_req = ppu_obus_req;
+    }
+    else if (cpu_has_obus_req) {
+      obus_req = cpu_req;
+    }
+    else {
+      obus_req = {0};
+    }
   }
 
-  //-----------------------------------
-  // gather reqs
-
-  z80.get_bus_req(cpu_req);
-
-  dma.get_ebus_req(dma_ebus_req);
-  dma.get_vbus_req(dma_vbus_req);
-  dma.get_obus_req(dma_obus_req);
-
-  ppu.get_vbus_req(ppu_vbus_req);
-  ppu.get_obus_req(ppu_obus_req);
-
-  //-----------------------------------
-  // prioritize reqs
-
-  bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
-  bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
-  bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
-  bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
-
-  // ibus
-  if (cpu_has_ibus_req) {
-    ibus_req = cpu_req;
-  }
-  else {
-    ibus_req = {0};
-  }
-
-  // ebus
-  if (dma_ebus_req) {
-    ebus_req = dma_ebus_req;
-  }
-  else if (cpu_has_ebus_req) {
-    ebus_req = cpu_req;
-  }
-  else {
-    ebus_req = {0};
-  }
-
-  // vbus
-  if (dma_vbus_req) {
-    vbus_req = dma_vbus_req;
-  }
-  else if (ppu_vbus_req) {
-    vbus_req = ppu_vbus_req;
-  }
-  else if (cpu_has_vbus_req) {
-    vbus_req = cpu_req;
-  }
-  else {
-    vbus_req = {0};
-  }
-
-  // obus
-  if (dma_obus_req) {
-    obus_req = dma_obus_req;
-  }
-  else if (ppu_obus_req) {
-    obus_req = ppu_obus_req;
-  }
-  else if (cpu_has_obus_req) {
-    obus_req = cpu_req;
-  }
-  else {
-    obus_req = {0};
-  }
+  //timer.reg_test();
 }
 
 //-----------------------------------------------------------------------------

@@ -6,9 +6,9 @@ main:
   ld a, $FC
   ldh (TIMA), a
   ld a, %00000101
-  ldh ($07), a
+  ldh (TAC), a
   xor a
-  ldh ($04), a
+  ldh (DIV), a
 
   nops 6
   ldh a, (TIMA)

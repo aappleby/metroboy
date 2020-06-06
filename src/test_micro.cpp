@@ -19,7 +19,9 @@ static const std::string micro_tests[] = {
   "timer_div_phase_d",
 
   "timer_tima_write_a",
+
   "timer_tima_write_b",
+
   "timer_tima_write_c",
   "timer_tima_write_d",
   "timer_tima_write_e",

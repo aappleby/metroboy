@@ -46,36 +46,44 @@ struct Gameboy {
   void sync_to_mcycle() {
     switch(phase & 7) {
     case 0: return;
-    case 1: tick2();
-    case 2: tock2();
-    case 3: tick2();
-    case 4: tock2();
-    case 5: tick2();
-    case 6: tock2();
-    case 7: tick2();
+    case 1: tick1(); tock2();
+    case 2: tick1(); tock2();
+    case 3: tick1(); tock2();
+    case 4: tick1(); tock2();
+    case 5: tick1(); tock2();
+    case 6: tick1(); tock2();
+    case 7: tick1(); tock2();
     }
   }
   
   void mcycle() {
     assert((phase & 7) == 0);
+    tick1();
     tock2();
-    tick2();
+    tick1();
     tock2();
-    tick2();
+    tick1();
     tock2();
-    tick2();
+    tick1();
     tock2();
-    tick2();
+    tick1();
+    tock2();
+    tick1();
+    tock2();
+    tick1();
+    tock2();
+    tick1();
+    tock2();
   }
 
   void halfcycle() {
-    phase & 1 ? tick2() : tock2();
+    tick1(); tock2();
   }
 
   void tock_req(const Req& ibus_req);
   void tick_ack(Ack& ibus_ack) const;
 
-  void tick2();
+  void tick1();
   void tock2();
 
   void dump_cpu   (std::string& out);

@@ -420,6 +420,9 @@ struct Latch3 : public SignalBase {
 // FIXME good chance that count's not right (polarity or something)
 // Does this really contain two bits of data just to track the carry bit?
 
+
+// FIXME ticks on the NEGATIVE EDGE of the clock (see timer.cpp)
+
 struct Counter : public SignalBase {
   void tima_count(bool clk, bool load, bool val) {
     if ( a.error)  __debugbreak();

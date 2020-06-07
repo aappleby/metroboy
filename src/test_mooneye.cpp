@@ -2,7 +2,11 @@
 
 #include "Gameboy.h"
 
-#pragma warning(disable : 4996)
+#ifdef _MSC_VER
+#include <include/SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
 
 //---------
 // mooneye generic
@@ -170,6 +174,12 @@ void run_mooneye_test(const std::string& prefix, const std::string& name) {
 }
 
 void run_mooneye_acceptance() {
+  double freq = (double)SDL_GetPerformanceFrequency();
+  double begin = (double)SDL_GetPerformanceCounter();
+
+  printf("\n");
+  printf("---------- Mooneye tests ----------\n");
+
   /*
   printf("-----Generic tests-----\n");
   for (auto name : generic_tests) {
@@ -179,7 +189,7 @@ void run_mooneye_acceptance() {
   printf("\n");
   */
 
-  printf("-----Timer tests-----\n");
+  printf("Timer");
   for (auto name : timer_tests) {
     std::string prefix = "roms/mooneye-gb/tests/build/acceptance/timer/";
     run_mooneye_test(prefix, name);
@@ -203,4 +213,7 @@ void run_mooneye_acceptance() {
   }
   printf("\n");
   */
+
+  double end = (double)SDL_GetPerformanceCounter();
+  printf("---------- Mooneye took %f seconds ----------\n", (end - begin) / freq);
 }

@@ -27,7 +27,7 @@ void Gameboy::reset(uint16_t new_pc) {
   ppu.reset(new_pc == 0);
   oam.reset();
   spu.reset();
-  timer.reset();
+  timer2.reset();
   vram.reset();
   iram.reset();
   joypad.reset();
@@ -99,16 +99,18 @@ void Gameboy::tick1() {
   //-----------------------------------
   // interrupts are partially asynchronous
 
+  bool timer_int = timer2.get_interrupt();
+
   intf &= ~z80.get_int_ack();
   if (imask & 0x01) z80.unhalt |= ppu.vblank1;
   if (imask & 0x02) z80.unhalt |= ppu.stat2;
-  if (imask & 0x04) z80.unhalt |= timer.get_interrupt();
+  if (imask & 0x04) z80.unhalt |= timer_int;
   if (imask & 0x10) z80.unhalt |= joypad.get() != 0xFF;
 
-  if (ppu.vblank1)             intf |= INT_VBLANK_MASK;
-  if (ppu.stat1)               intf |= INT_STAT_MASK;
-  if (timer.get_interrupt())   intf |= INT_TIMER_MASK;
-  if (joypad.get() != 0xFF)    intf |= INT_JOYPAD_MASK;
+  if (ppu.vblank1)          intf |= INT_VBLANK_MASK;
+  if (ppu.stat1)            intf |= INT_STAT_MASK;
+  if (timer_int)            intf |= INT_TIMER_MASK;
+  if (joypad.get() != 0xFF) intf |= INT_JOYPAD_MASK;
 
   //-----------------------------------
   // gather acks
@@ -129,7 +131,8 @@ void Gameboy::tick1() {
     boot.  tick_ack(ibus_ack);
   }
 
-  timer.tick(tphase2, ibus_req, ibus_ack);
+  Ack dummy_ack = {0};
+  timer2.tick(tphase2, ibus_req, ibus_ack);
 
   cart.tick_ack(ebus_ack);
   iram.tick_ack(ebus_ack);
@@ -205,7 +208,7 @@ void Gameboy::tock2() {
   if (tphase2 == 6) z80.tock_g(imask, intf, cpu_ack);
   if (tphase2 == 7) z80.tock_h(imask, intf, cpu_ack);
 
-  timer.tock(tphase2, ibus_req);
+  timer2.tock(tphase2, ibus_req);
 
   if ((phase & 1) == 1) {
     this-> tock_req(ibus_req);
@@ -310,9 +313,28 @@ void Gameboy::tock2() {
       obus_req = {0};
     }
   }
-
-  //timer.reg_test();
 }
+
+/*
+
+void Timer::reg_test() {
+if (new_timer.div  != div) {
+printf("div  mismatch: %d %d\n", new_timer.div,  div);
+}
+
+if (new_timer.tima != tima) {
+printf("tima mismatch: %d %d\n", new_timer.tima, tima);
+}
+
+if (new_timer.tima_clk != do_tick) {
+printf("tick mismatch: %d %d\n", new_timer.tima_clk, do_tick);
+}
+
+//if (new_timer.tma  != tma)      printf("tma  mismatch: %d %d\n", new_timer.tma,  tma);
+//if (new_timer.tac  != tac)      printf("tac  mismatch: %d %d\n", new_timer.tac,  tac);
+}
+
+*/
 
 //-----------------------------------------------------------------------------
 
@@ -401,7 +423,7 @@ void Gameboy::dump_zram(std::string& d) {
 }
 
 void Gameboy::dump_timer(std::string& d) {
-  timer.dump(d);
+  timer2.dump(d);
 }
 
 void Gameboy::dump_cart(std::string& d) {

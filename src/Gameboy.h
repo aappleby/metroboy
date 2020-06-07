@@ -117,7 +117,8 @@ struct Gameboy {
   //----------
 
   Z80     z80;
-  Timer   timer;
+  NewTimer timer2;
+
   Cart    cart;
   OAM     oam;
   VRAM    vram;

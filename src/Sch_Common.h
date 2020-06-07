@@ -421,18 +421,6 @@ struct Latch3 : public SignalBase {
 // Does this really contain two bits of data just to track the carry bit?
 
 struct Counter : public SignalBase {
-  const bool v() const {
-    if (a.error) __debugbreak();
-    if (a.hiz)   __debugbreak();
-    return a.val;
-  }
-
-  const bool c() const {
-    if (a.error) __debugbreak();
-    if (a.hiz)   __debugbreak();
-    return a.carry;
-  }
-
   void tima_count(bool clk, bool load, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();

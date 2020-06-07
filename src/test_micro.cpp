@@ -518,6 +518,7 @@ void run_microtests() {
 
   std::string prefix = "microtests/build/dmg/";
 
+  printf("\n");
   printf("---------- Microtests in %s: ----------\n", prefix.c_str());
 
   int fails = 0;

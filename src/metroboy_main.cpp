@@ -39,7 +39,7 @@ void MetroBoyApp::init() {
 
   run_microtests();
   //run_screenshot_tests();
-  //run_mooneye_acceptance();
+  run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
   //return 0;
@@ -60,6 +60,7 @@ void MetroBoyApp::init() {
   //---------
   // Div
 
+  printf("\n");
   printf("---------- POST begin ----------\n");
   printf("Timer");
   run_microtest("microtests/build/dmg", "div_inc_timing_a");
@@ -76,10 +77,12 @@ void MetroBoyApp::init() {
 
   //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
   //load("roms", "tetris");
-  //load("microtests/build/dmg", "timer_tima_write_c");
+  load("microtests/build/dmg", "timer_tima_write_a");
   //load("microtests/build/dmg", "timer_tma_load_c");
 
-  load_memdump("roms", "LinksAwakening_house");
+  //load("roms/mooneye-gb/tests/build/acceptance/timer/", "rapid_toggle");
+
+  //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");
   //load_memdump("roms", "tetris");
 

@@ -59,9 +59,9 @@ inline void save_obj(const std::string& filename, T& data) {
 
 struct Req {
   uint16_t addr = 0;
-  uint16_t data = 0;
-  uint16_t read = 0;
-  uint16_t write = 0;
+  uint8_t  data = 0;
+  uint8_t  read = 0;
+  uint8_t  write = 0;
 
   operator bool() const {
     return read || write;
@@ -71,8 +71,8 @@ struct Req {
 struct Ack {
   uint16_t addr = 0;
   uint16_t data = 0;
-  uint16_t read = 0;
-  uint16_t write = 0;
+  uint8_t  read = 0;
+  uint8_t  write = 0;
 };
 
 //-----------------------------------------------------------------------------

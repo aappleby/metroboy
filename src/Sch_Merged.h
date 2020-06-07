@@ -1042,7 +1042,7 @@ struct TimerRegisters {
   */
 
   int get_tima() const {
-    return pack(TIMA_0.v(), TIMA_1.v(), TIMA_2.v(), TIMA_3.v(), TIMA_4.v(), TIMA_5.v(), TIMA_6.v(), TIMA_7.v());
+    return pack(TIMA_0, TIMA_1, TIMA_2, TIMA_3, TIMA_4, TIMA_5, TIMA_6, TIMA_7);
   }
 
   /*

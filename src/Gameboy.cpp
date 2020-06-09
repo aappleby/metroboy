@@ -187,7 +187,6 @@ void Gameboy::tock_gb() {
   timer2.tock(phase, ibus_req);
 
   if (PHASE_B || PHASE_D || PHASE_F || PHASE_H) {
-    ppu.   tock_req(ibus_req);
     serial.tock(phase, ibus_req);
     joypad.tock_req(ibus_req);
     zram.  tock_req(ibus_req);
@@ -198,7 +197,7 @@ void Gameboy::tock_gb() {
     vram.  tock_req(vbus_req);
     oam.   tock_req(obus_req);
 
-    ppu .tock(phase);
+    ppu .tock(phase, ibus_req);
     spu .tock(phase);
     self.tock(phase, ibus_req);
     dma1.tock(phase, ibus_req);

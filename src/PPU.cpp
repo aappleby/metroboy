@@ -235,59 +235,6 @@ void PPU::get_obus_req(Req& r) const {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock_req(const Req& req) {
-  bool hit = req && (ADDR_GPU_BEGIN <= req.addr && req.addr <= ADDR_GPU_END);
-  if (req.addr == ADDR_DMA) hit = false;
-  if (!hit) return;
-
-  if (req.write) {
-    uint8_t data = (uint8_t)req.data;
-    switch (req.addr) {
-    case ADDR_LCDC: lcdc = data; break;
-    case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
-    case ADDR_SCY:  scy = data;  break;
-    case ADDR_SCX:  scx = data;  break;
-    case ADDR_LY:   ly = data;   break;
-    case ADDR_LYC:  lyc = data;  break;
-      //case ADDR_DMA:  dma = data;  break;
-    case ADDR_BGP:  bgp = data;  break;
-    case ADDR_OBP0: obp0 = data; break;
-    case ADDR_OBP1: obp1 = data; break;
-    case ADDR_WY:   wy = data;   break;
-    case ADDR_WX:   wx = data;   break;
-    };
-
-    update_palettes();
-  }
-}
-
-void PPU::tick(int phase, const Req& req, Ack& ack) const {
-  if (req.read && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END)) {
-    uint8_t data = (uint8_t)req.data;
-    switch (req.addr) {
-    case ADDR_LCDC: data = lcdc; break;
-    case ADDR_STAT: data = stat; break;
-    case ADDR_SCY:  data = scy; break;
-    case ADDR_SCX:  data = scx; break;
-    case ADDR_LY:   data = ly; break;
-    case ADDR_LYC:  data = lyc; break;
-    //case ADDR_DMA:  data = dma; break;
-    case ADDR_BGP:  data = bgp; break;
-    case ADDR_OBP0: data = obp0; break;
-    case ADDR_OBP1: data = obp1; break;
-    case ADDR_WY:   data = wy; break;
-    case ADDR_WX:   data = wx; break;
-    default:        data = 0; break;
-    }
-
-    ack.addr = req.addr;
-    ack.data = data;
-    ack.read++;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
 void PPU::on_vbus_ack(const Ack& vbus_ack) {
   uint8_t data = (uint8_t)vbus_ack.data;
 
@@ -347,8 +294,53 @@ void PPU::on_obus_ack(const Ack& obus_ack) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(const int phase) {
-  //from_int(tcycle, ibus);
+void PPU::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END) && (req.addr != ADDR_DMA)) {
+    uint8_t data = (uint8_t)req.data;
+    switch (req.addr) {
+    case ADDR_LCDC: data = lcdc; break;
+    case ADDR_STAT: data = stat; break;
+    case ADDR_SCY:  data = scy; break;
+    case ADDR_SCX:  data = scx; break;
+    case ADDR_LY:   data = ly; break;
+    case ADDR_LYC:  data = lyc; break;
+      //case ADDR_DMA:  data = dma; break;
+    case ADDR_BGP:  data = bgp; break;
+    case ADDR_OBP0: data = obp0; break;
+    case ADDR_OBP1: data = obp1; break;
+    case ADDR_WY:   data = wy; break;
+    case ADDR_WX:   data = wx; break;
+    default:        data = 0; break;
+    }
+
+    ack.addr = req.addr;
+    ack.data = data;
+    ack.read++;
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void PPU::tock(int phase, const Req& req) {
+  if (req.write && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END) && (req.addr != ADDR_DMA)) {
+    uint8_t data = (uint8_t)req.data;
+    switch (req.addr) {
+    case ADDR_LCDC: lcdc = data; break;
+    case ADDR_STAT: stat = (stat & 0x87) | (data & 0x78); break;
+    case ADDR_SCY:  scy = data;  break;
+    case ADDR_SCX:  scx = data;  break;
+    case ADDR_LY:   ly = data;   break;
+    case ADDR_LYC:  lyc = data;  break;
+      //case ADDR_DMA:  dma = data;  break;
+    case ADDR_BGP:  bgp = data;  break;
+    case ADDR_OBP0: obp0 = data; break;
+    case ADDR_OBP1: obp1 = data; break;
+    case ADDR_WY:   wy = data;   break;
+    case ADDR_WX:   wx = data;   break;
+    };
+
+    update_palettes();
+  }
 
   if ((lcdc & FLAG_LCD_ON) == 0) {
     tock_lcdoff();

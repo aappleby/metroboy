@@ -23,7 +23,6 @@ void Cart::set_rom(uint8_t* new_rom, size_t new_rom_size) {
 //-----------------------------------------------------------------------------
 
 void Cart::reset() {
-  ack = {};
   ram_enable = false;
   mode = 0;
   bank_latch1 = 0;
@@ -62,24 +61,13 @@ void Cart::reset() {
 
 //-----------------------------------------------------------------------------
 
-void Cart::tock_req(const Req& req) {
-  ack = {0};
-  if (!req) return;
-
+void Cart::tock(int phase, const Req& req) {
   const int region = req.addr >> 13;
-  if (region == 4) return;  // vram not on ebus
-  if (region >= 6) return;  // iram has its own handler
-
-  const bool rom_hit = (region < 4);
-  const bool ram_hit = region == 5;
-
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
 
-  ack = {0};
-
   // should check what phase this happens on...
-  if (req.write && (rom_hit || ram_hit)) {
+  if (req.write) {
     if (region == 0) {
       ram_enable = (req.data & 0x0F) == 0x0A;
     }
@@ -99,20 +87,18 @@ void Cart::tock_req(const Req& req) {
         ram_buf[(ram_addr - 0xA000) | (ram_bank << 13)] = static_cast<uint8_t>(req.data);
       }
     }
-    ack = {
-      .addr  = req.addr,
-      .data  = req.data,
-      .read  = 0,
-    };
   }
-  else if (req.read && (rom_hit || ram_hit)) {
-    ack = {
-      .addr  = req.addr,
-      .data  = 0,
-      .read  = 1,
-    };
+}
 
+void Cart::tick(int phase, const Req& req, Ack& ack) const {
+  const int region = req.addr >> 13;
+  const uint16_t ram_addr = req.addr & 0x1FFF;
+  const uint16_t rom_addr = req.addr & 0x7FFF;
+
+  if (req.read) {
     if (region == 0 || region == 1) {
+      ack.addr = req.addr;
+      ack.read++;
       if (mode == 0) {
         ack.data = rom[rom_addr];
       }
@@ -122,6 +108,8 @@ void Cart::tock_req(const Req& req) {
       }
     }
     else if (region == 2 || region == 3) {
+      ack.addr = req.addr;
+      ack.read++;
       // so one doc says this should ignore bank_latch2 if mode == 1, but that breaks the mooneye test...
       int rom_bank = ((bank_latch2 << 5) | bank_latch1);
       if (bank_latch1 == 0) {
@@ -132,6 +120,8 @@ void Cart::tock_req(const Req& req) {
       ack.data = rom[(rom_addr & 0x3FFF) | (rom_bank << 14)];
     }
     else if (region == 5) {
+      ack.addr = req.addr;
+      ack.read++;
       if (ram_enable && ram_bank_count) {
         int ram_bank = mode ? bank_latch2 : 0;
         ram_bank &= (ram_bank_count - 1);
@@ -141,15 +131,6 @@ void Cart::tock_req(const Req& req) {
       }
     }
   }
-  else {
-    assert(false);
-  }
-}
-
-void Cart::tick_ack(Ack& ack_) const {
-  ack_.addr  += ack.addr;
-  ack_.data  += ack.data;
-  ack_.read  += ack.read;
 }
 
 //-----------------------------------------------------------------------------
@@ -210,8 +191,6 @@ void Cart::dump(std::string& d) {
   sprintf(d, "bank_latch2    %d\n", bank_latch2);
   sprintf(d, "bank_latch2    %d\n", bank_latch2);
   sprintf(d, "bank_latch2    %d\n", bank_latch2);
-
-  sprintf(d, "ack: "); print_ack(d, ack);
 }
 
 //-----------------------------------------------------------------------------

@@ -7,8 +7,8 @@ struct Cart {
   void set_rom(uint8_t* new_rom, size_t new_rom_size);
   void reset();
 
-  void tock_req(const Req& req);
-  void tick_ack(Ack& ebus_ack) const;
+  void tock(int phase, const Req& req);
+  void tick(int phase, const Req& req, Ack& ebus_ack) const;
 
   void dump(std::string& d);
 
@@ -20,7 +20,6 @@ struct Cart {
   uint8_t* get_cram() { return ram_buf; }
 
 //private:
-  Ack ack;
   uint8_t* rom = 0;
   size_t rom_size = 0;
   int rom_bank_count = 0;

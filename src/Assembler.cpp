@@ -225,13 +225,13 @@ void Assembler::disassemble(
       sprintf(out, "%02x     ", op0);
       arg = 0;
     }
-    if (size == 2) {
+    else if (size == 2) {
       sprintf(out, "%02x", op0);
       uint8_t lo = code[code_cursor + 1];
       sprintf(out, "%02x   ", lo);
       arg = lo;
     }
-    if (size == 3) {
+    else if (size == 3) {
       sprintf(out, "%02x", op0);
       uint8_t lo = code[code_cursor + 1];
       sprintf(out, "%02x", lo);

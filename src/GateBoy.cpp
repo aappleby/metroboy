@@ -15,7 +15,7 @@ uint8_t GateBoy::read_cycle(uint16_t addr) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->sys_pins.CLK_IN.preset(true, (gb->phase_counter & 1));
+      gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       gb->cpu_pins.CPU_RAW_RD.preset(true, 1);
       gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
@@ -46,7 +46,7 @@ void GateBoy::write_cycle(uint16_t addr, uint8_t data) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->sys_pins.CLK_IN.preset(true, (gb->phase_counter & 1));
+      gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
       gb->cpu_pins.CPU_RAW_WR.preset(true, 1);
@@ -76,7 +76,7 @@ void GateBoy::pass_cycle() {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->sys_pins.CLK_IN.preset(true, (gb->phase_counter & 1));
+      gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
       gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
@@ -145,7 +145,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->sys_pins.CLK_IN.preset(true, (gb->phase_counter & 1));
+      gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       /*
       if (phase >= 32 && phase < 40) {

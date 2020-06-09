@@ -175,10 +175,10 @@ bool TestGB::commit_everything() {
   /*p07.AMUT*/ changed |= dbg_reg.FF60_1.commit_reg();
 
   /*p04.MAKA*/ changed |= dma_reg.FROM_CPU5_SYNC.commit_reg();
-  /*p04.MATU*/ changed |= dma_reg.REG_DMA_RUNNING.commit_reg(); // -> p25,p28
-  /*p04.MYTE*/ changed |= dma_reg.DMA_DONE_SYNC.commit_reg();
-  /*p04.LUVY*/ changed |= dma_reg.REG_DMA_EN_d0.commit_reg();
-  /*p04.LENE*/ changed |= dma_reg.REG_DMA_EN_d4.commit_reg();
+  /*p04.DMA_RUNNING*/ changed |= dma_reg.DMA_RUNNING.commit_reg(); // -> p25,p28
+  /*p04.MYTE*/ changed |= dma_reg.MYTE.commit_reg();
+  /*p04.LUVY*/ changed |= dma_reg.LUVY.commit_reg();
+  /*p04.LENE*/ changed |= dma_reg.LENE.commit_reg();
   /*p04.NAKY*/ changed |= dma_reg.DMA_A00.commit_reg();
   /*p04.PYRO*/ changed |= dma_reg.DMA_A01.commit_reg(); 
   /*p04.NEFY*/ changed |= dma_reg.DMA_A02.commit_reg(); 
@@ -195,8 +195,11 @@ bool TestGB::commit_everything() {
   /*p04.PULA*/ changed |= dma_reg.DMA_A13.commit_reg(); 
   /*p04.POKU*/ changed |= dma_reg.DMA_A14.commit_reg(); 
   /*p04.MARU*/ changed |= dma_reg.DMA_A15.commit_reg(); 
-  /*p04.LYXE*/ changed |= dma_reg.LATCH_DMA_ENn_d0.commit_latch();
-  /*p04.LOKY*/ changed |= dma_reg.LATCH_DMA_EN_d4.commit_latch(); // NAND latch
+  /*p04.LYXE*/ changed |= dma_reg.LYXE.commit_latch();
+
+  // NAND latch
+  /*p04.LARA*/ changed |= dma_reg.LARA.commit_gate();
+  /*p04.LOKY*/ changed |= dma_reg.LOKY.commit_gate();
 
   /*p02.LOPE*/ changed |= int_reg.FF0F_0.commit_reg();
   /*p02.UBUL*/ changed |= int_reg.FF0F_1.commit_reg();
@@ -662,7 +665,7 @@ bool TestGB::commit_everything() {
   /*p21.VENA*/ changed |= vclk_reg.VENA_xBCDExxx.commit_reg();
   /*p29.WOSU*/ changed |= vclk_reg.WOSU_xxCDxxGH.commit_reg();
 
-  /*p??.ROXY*/ changed |= vid_reg.FINE_MATCH_DUMP.commit_latch();
+  /*p??.ROXY*/ changed |= vid_reg.FINE_MATCH_LATCH.commit_latch();
   /*p??.PUXA*/ changed |= vid_reg.FINE_MATCH_SYNC1.commit_reg();
   /*p27.NYZE*/ changed |= vid_reg.FINE_MATCH_SYNC2.commit_reg();
   /*p27.RYKU*/ changed |= vid_reg.FINE_CNT0.commit_reg();
@@ -1048,7 +1051,7 @@ bool TestGB::commit_everything() {
   /* PIN_72 */ /*GND*/
   /* PIN_73 */ /*CLKOUT*/
   /* PIN_74 */ changed |= sys_pins.CLK_GOOD.clear_preset();
-  /* PIN_74 */ changed |= sys_pins.CLK_IN.clear_preset();
+  /* PIN_74 */ changed |= sys_pins.CLK_IN_xBxDxFxH.clear_preset();
   /* PIN_75 */ changed |= ext_pins.PHI.commit_pinout();     // <- P01.BUDE/BEVA
   /* PIN_76 */ changed |= sys_pins.T2.clear_preset();
   /* PIN_77 */ changed |= sys_pins.T1.clear_preset();

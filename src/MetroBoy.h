@@ -13,12 +13,16 @@ struct MetroboyState {
 
 //-----------------------------------------------------------------------------
 
-class MetroBoy : public StateManagerBase<MetroboyState> {
+class MetroBoy : private StateManagerBase<MetroboyState> {
 public:
 
   MetroBoy() = default;
   MetroBoy(const MetroBoy&) = delete;
   MetroBoy& operator=(const MetroBoy&) = delete;
+
+  using StateManagerBase<MetroboyState>::load_dump;
+  using StateManagerBase<MetroboyState>::save_dump;
+
 
   Gameboy& gb() {
     return current->gb;
@@ -46,10 +50,16 @@ public:
 
   void sync_to_vblank();
 
-  void step_frame();
-  void step_line();
-  void step_phase();
-  void step_over();
+  void step_phase(int count);
+  void unstep_phase();
+
+  void step_line(int count);
+  void unstep_line();
+
+  void step_frame(int count);
+  void unstep_frame();
+
+  //void step_over();
 
 private:
 

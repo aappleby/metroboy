@@ -2,25 +2,8 @@
 #include "Constants.h"
 #include <assert.h>
 
-//-----------------------------------------------------------------------------
-
-/*
-bool DMA::has_ebus_req() const {
-  return (mode_a != Mode::NONE) && ((source_a >> 5) != 4);
-}
-
-//----------------------------------------
-
-bool DMA::has_vbus_req() const {
-  return (mode_a != Mode::NONE) && ((source_a >> 5) == 4);
-}
-
-//----------------------------------------
-
-bool DMA::has_obus_req() const {
-  return (mode_b != Mode::NONE);
-}
-*/
+#include "Schematics.h"
+using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
@@ -154,3 +137,129 @@ void DMA::dump(std::string& d) {
 }
 
 //-----------------------------------------------------------------------------
+
+
+#if 0
+
+// LAVY00 << CUPA04
+// LAVY01 << XEDA02
+// LAVY02 nc
+// LAVY03 >> LORU00
+
+// LYXE00 << LAVY03
+// LYXE01 nc
+// LYXE02 >> LUPA01
+// LYXE03 >> nc
+// LYXE04 nc
+// LYXE05 << LOKO02
+
+// LAVY = and2(FF46, CUPA)
+// NAVO = nand6(dma addr)
+// NOLO = not(NAVO)
+// LOKO = nand2(CUNU, !LENE) // check neg output?
+// LUPA = nor2(LAVY, LYXE)
+// LUVY = reg
+// MATU = reg
+// LENE = reg
+// MYTE = reg
+// LYXE = latch(LOKO, LAVY)
+// LARA = nand3(LOKY, CUNU, !MYTE)
+// LOKY = nand2(LARA, !LENE)
+// META = and2(UVYT, LOKY)
+// LORU = not(LAVY)
+
+/*p28.AMAB*/ wire AMAB = and(ADDR_OAM, !DMA_RUNNING, !ACYL_OAM_ADDR_PARSE, OAM_ADDR_RENDER);
+/*p04.POWU*/ wire POWU = and(DMA_RUNNING, !FROM_CPU5_SYNC, !LUVY);
+/*p04.WYJA*/ wire WYJA    = or(and(AMAB, CUPA_BUS_WR_xxxxxFGH), POWU);
+/*p28.ZONE*/ ZONE.set(nand(WYJA,  oam_pins.A0));
+/*p28.ZOFE*/ ZOFE.set(nand(WYJA, !oam_pins.A0));
+/*p01.UVYT*/ UVYT = or(ABOL_CLKREQn, clk_reg.PHAZ_xBCDExxx);
+/*p04.MOPA*/ MOPA = !UVYT;
+/*p01.APOV*/ APOV = and(cpu_pins.CPU_RAW_WR, clk_reg.PHAZ_xxxxEFGH, !clk_reg.PHAZ_xBCDExxx);
+/*p07.CUPA*/ CUPA = mux2(ext_pins.WR_C, APOV, UNOR_MODE_DBG2);
+/*p22.XEDA*/ FF46 = cpu_pins.get_addr() == 0xFF46;
+
+//----------
+
+/*p04.LAVY*/ LAVY = and(FF46, CUPA);
+/*p04.NAVO*/ NAVO = nand(DMA_A00, DMA_A01, DMA_A02, DMA_A03, DMA_A04, DMA_A07);
+/*p04.NOLO*/ NOLO = not(NAVO);
+/*p04.LOKO*/ LOKO = nand(CUNU, !LENE);
+/*p04.LUPA*/ LUPA = nor(LAVY, LYXE);
+/*p04.LUVY*/ LUVY.set(UVYT, CUNU, LUPA);
+/*p04.MATU*/ MATU.set(UVYT, CUNU, LOKY);
+/*p04.LENE*/ LENE.set(MOPA, CUNU, LUVY);
+/*p04.MYTE*/ MYTE.set(MOPA, !LOKO,  NOLO);
+/*p04.LYXE*/ LYXE.sr_latch(LOKO, LAVY);
+/*p04.LARA*/ LARA = nand(LOKY, CUNU, !MYTE);
+/*p04.LOKY*/ LOKY = nand(LARA, !LENE);
+/*p04.META*/ META = and(UVYT, LOKY);
+/*p04.LORU*/ LORU = not(LAVY);
+
+if (PHASE_B) {
+  /*p04.NAKY*/ DMA_A00.set(META, !LOKO, !DMA_A00);
+  /*p04.PYRO*/ DMA_A01.set(!DMA_A00, !LOKO, !DMA_A01);
+  /*p04.NEFY*/ DMA_A02.set(!DMA_A01, !LOKO, !DMA_A02);
+  /*p04.MUTY*/ DMA_A03.set(!DMA_A02, !LOKO, !DMA_A03);
+  /*p04.NYKO*/ DMA_A04.set(!DMA_A03, !LOKO, !DMA_A04);
+  /*p04.PYLO*/ DMA_A05.set(!DMA_A04, !LOKO, !DMA_A05);
+  /*p04.NUTO*/ DMA_A06.set(!DMA_A05, !LOKO, !DMA_A06);
+  /*p04.MUGU*/ DMA_A07.set(!DMA_A06, !LOKO, !DMA_A07);
+}
+
+if (PHASE_F) {
+  // these look like dffs? 
+
+  /*p04.NAFA*/ DMA_A08.set(LORU, cpu_pins.D0);
+  /*p04.PYNE*/ DMA_A09.set(LORU, cpu_pins.D1);
+  /*p04.PARA*/ DMA_A10.set(LORU, cpu_pins.D2);
+  /*p04.NYDO*/ DMA_A11.set(LORU, cpu_pins.D3);
+  /*p04.NYGY*/ DMA_A12.set(LORU, cpu_pins.D4);
+  /*p04.PULA*/ DMA_A13.set(LORU, cpu_pins.D5);
+  /*p04.POKU*/ DMA_A14.set(LORU, cpu_pins.D6);
+  /*p04.MARU*/ DMA_A15.set(LORU, cpu_pins.D7);
+}
+
+#endif
+
+// LYXE00 << LAVY03
+// LYXE01 nc
+// LYXE02 >> LUPA01
+// LYXE03 >> nc
+// LYXE04 nc
+// LYXE05 << LOKO02
+
+
+
+void DMA2::tock(int phase, const Req& req) {
+
+  // reset signal
+  /*p01.CUNU*/ wire CUNU = 1;
+
+  wire UVYT = PHASE_B || PHASE_C || PHASE_D || PHASE_E;
+  wire MOPA = PHASE_A || PHASE_F || PHASE_G || PHASE_H;
+
+  /*p07.CUPA*/ CUPA = req.write && (PHASE_F || PHASE_G || PHASE_H);
+  /*p04.LAVY*/ LAVY = (req.addr == 0xFF46) && CUPA;
+  /*p04.NAVO*/ NAVO = (count != 159);
+  /*p04.NOLO*/ NOLO = !NAVO;
+  /*p04.LOKO*/ LOKO = nand(CUNU, !LENE);
+  /*p04.LUPA*/ LUPA = nor(LAVY, LYXE);
+  /*p04.LUVY*/ LUVY.set(UVYT, CUNU, LUPA);
+  /*p04.MATU*/ MATU.set(UVYT, CUNU, LOKY);
+  /*p04.LENE*/ LENE.set(MOPA, CUNU, LUVY);
+  /*p04.MYTE*/ MYTE.set(MOPA, !LOKO,  NOLO);
+
+  /*p04.LYXE*/ LYXE.sr_latch(LOKO, LAVY);
+
+  /*p04.LARA*/ LARA = nand(LOKY, CUNU, !MYTE);
+  /*p04.LOKY*/ LOKY = nand(LARA, !LENE);
+  /*p04.META*/ META = and(UVYT, LOKY);
+  /*p04.LORU*/ LORU = not(LAVY);
+
+}
+
+void DMA2::dump(std::string& d) {
+
+
+}

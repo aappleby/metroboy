@@ -331,6 +331,12 @@ void SPU::tock(const int tcycle_) {
 
 void SPU::bus_read(const Req& req) {
 
+  ack = {0};
+
+  if (req.addr < 0xFF10) return;
+  if (req.addr > 0xFF26 && req.addr < 0xFF30) return;
+  if (req.addr > 0xFF3F) return;
+  
   ack = {
     .addr  = req.addr,
     .data  = 0,

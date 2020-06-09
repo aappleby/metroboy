@@ -15,7 +15,7 @@ namespace Schematics {
 struct Bootrom;
 struct CpuPins;
 struct Debug;
-struct DMA;
+//struct DMA;
 struct HRAM;
 struct Interrupts;
 struct Joypad;
@@ -90,9 +90,8 @@ enum SignalFlags {
   CLK     = 0b00000100,
   SET     = 0b00001000,
   RST     = 0b00010000,
-  CARRY   = 0b00100000,
-  ERROR   = 0b01000000,
-  //CHANGED = 0b10000000,
+  ERROR   = 0b00100000,
+  //CHANGED = 0b01000000,
 };
 
 union SignalState {
@@ -103,7 +102,6 @@ union SignalState {
     bool clk     : 1;
     bool set     : 1;
     bool rst     : 1;
-    bool carry   : 1;
     bool error   : 1;
     //bool changed : 1;
   };
@@ -118,7 +116,6 @@ union SignalState {
     c.clk     = clk;
     c.set     = set;
     c.rst     = rst;
-    c.carry   = carry;
     //c.changed = changed;
     c.error   = error;
     return c;
@@ -185,7 +182,6 @@ struct PinOut : public SignalBase {
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
-    b.carry = 0;
     //b.changed = 0;
     b.error = 0;
   }
@@ -220,7 +216,6 @@ struct Tribuf : public SignalBase {
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
-    b.carry = 0;
     //b.changed = 0;
     b.error = 0;
   }
@@ -243,9 +238,35 @@ struct Signal : public SignalBase {
     a = ERROR;
   }
 
+  Signal(wire val) {
+    a = val ? SET_1 : SET_0;
+  }
+
   void operator = (wire val) {
     if (!a.error) __debugbreak();
     a = val ? SET_1 : SET_0;
+  }
+};
+
+//-----------------------------------------------------------------------------
+// Persistent gate, used for nand latches
+
+struct Gate : public SignalBase {
+
+  void operator = (wire val) {
+    if ( a.error) __debugbreak();
+    if (!b.error) __debugbreak();
+    b = val ? SET_1 : SET_0;
+  }
+
+  bool commit_gate() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
+
+    bool changed = a != b;
+    a = b;
+    b = ERROR;
+    return changed;
   }
 };
 
@@ -271,7 +292,29 @@ struct Reg3 : public SignalBase {
     b.clk = clk;
     b.set = !setN;
     b.rst = !rstN;
-    b.carry = 0;
+    //b.changed = 0;
+    b.error = 0;
+  }
+
+  void set_sync(bool val) {
+    set_sync(1, 1, val);
+  }
+
+  void set_sync(bool rstN, bool val) {
+    set_sync(1, rstN, val);
+  }
+
+  void set_sync(bool setN, bool rstN, bool val) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+
+    a.clk = 0;
+    b.clk = 1;
+
+    b.val = val;
+    b.hiz = 0;
+    b.set = !setN;
+    b.rst = !rstN;
     //b.changed = 0;
     b.error = 0;
   }
@@ -309,7 +352,6 @@ struct Reg3 : public SignalBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    a.carry = 0;
     //a.changed = 0;
     a.error = 0;
 
@@ -331,7 +373,6 @@ struct RegDuo : public SignalBase {
     b.clk = clk;
     b.set = 0;
     b.rst = !rstN;
-    b.carry = 0;
     //b.changed = 0;
     b.error = 0;
   }
@@ -351,7 +392,6 @@ struct RegDuo : public SignalBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    a.carry = 0;
     //a.changed = 0;
     a.error = 0;
 
@@ -365,6 +405,30 @@ struct RegDuo : public SignalBase {
 
 struct Latch3 : public SignalBase {
 
+  void nand_latch(bool setN, bool rstN) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = 0;
+    b.hiz = 0;
+    b.clk = 0;
+    b.set = !setN;
+    b.rst = !rstN;
+    //b.changed = 0;
+    b.error = 0;
+  }
+
+  void nor_latch(bool set, bool rst) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = 0;
+    b.hiz = 0;
+    b.clk = 0;
+    b.set = set;
+    b.rst = rst;
+    //b.changed = 0;
+    b.error = 0;
+  }
+
   void sr_latch(bool setN, bool rstN) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
@@ -373,7 +437,6 @@ struct Latch3 : public SignalBase {
     b.clk = 0;
     b.set = !setN;
     b.rst = !rstN;
-    b.carry = 0;
     //b.changed = 0;
     b.error = 0;
   }
@@ -386,7 +449,6 @@ struct Latch3 : public SignalBase {
     b.clk = 0;
     b.set = !latchN && val;
     b.rst = !latchN && !val;
-    b.carry = 0;
     //b.changed = 0;
     b.error = 0;
   }
@@ -406,7 +468,6 @@ struct Latch3 : public SignalBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    a.carry = 0;
     //a.changed = 0;
     a.error = 0;
 
@@ -424,7 +485,7 @@ struct Latch3 : public SignalBase {
 // FIXME ticks on the NEGATIVE EDGE of the clock (see timer.cpp)
 
 struct Counter : public SignalBase {
-  void tima_count(bool clk, bool load, bool val) {
+  void clk_n(bool clk, bool load, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
@@ -432,7 +493,6 @@ struct Counter : public SignalBase {
     b.clk = clk;
     b.set = load && val;
     b.rst = load && !val;
-    b.carry = 0;
     //b.changed = 0;
     b.error = 0;
   }
@@ -452,7 +512,6 @@ struct Counter : public SignalBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    a.carry = old_a && !new_a && !b.set && !b.rst;
     //a.changed = 0;
     a.error = 0;
 

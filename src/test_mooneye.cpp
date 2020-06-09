@@ -12,7 +12,7 @@
 // mooneye generic
 
 static const std::string generic_tests[] = {
-  "add_sp_e_timing.gb",
+
   //"boot_div-dmg0.gb",
   "boot_div-dmgABCmgb.gb",
   //"boot_div-S.gb",
@@ -25,6 +25,9 @@ static const std::string generic_tests[] = {
   //"boot_regs-mgb.gb",
   //"boot_regs-sgb.gb",
   //"boot_regs-sgb2.gb",
+
+  /*
+  "add_sp_e_timing.gb",
   "call_cc_timing.gb",
   "call_cc_timing2.gb",
   "call_timing.gb",
@@ -61,6 +64,7 @@ static const std::string generic_tests[] = {
   "instr/daa.gb",
 
   "interrupts/ie_push.gb",
+  */
 
   "oam_dma/basic.gb",
   "oam_dma/reg_read.gb",
@@ -180,14 +184,12 @@ void run_mooneye_acceptance() {
   printf("\n");
   printf("---------- Mooneye tests ----------\n");
 
-  /*
-  printf("-----Generic tests-----\n");
+  printf("Generic");
   for (auto name : generic_tests) {
-    std::string prefix = "mooneye-gb/tests/build/acceptance/";
+    std::string prefix = "roms/mooneye-gb/tests/build/acceptance/";
     run_mooneye_test(prefix, name);
   }
   printf("\n");
-  */
 
   printf("Timer");
   for (auto name : timer_tests) {
@@ -199,7 +201,7 @@ void run_mooneye_acceptance() {
   /*
   printf("-----MBC1 tests-----\n");
   for (auto name : mbc1_tests) {
-    std::string prefix = "mooneye-gb/tests/build/emulator-only/mbc1/";
+    std::string prefix = "roms/mooneye-gb/tests/build/emulator-only/mbc1/";
     run_mooneye_test(prefix, name);
   }
   printf("\n");
@@ -208,7 +210,7 @@ void run_mooneye_acceptance() {
   /*
   printf("-----PPU tests-----\n");
   for (auto name : ppu_tests) {
-    std::string prefix = "mooneye-gb/tests/build/acceptance/ppu/";
+    std::string prefix = "roms/mooneye-gb/tests/build/acceptance/ppu/";
     run_mooneye_test(prefix, name);
   }
   printf("\n");

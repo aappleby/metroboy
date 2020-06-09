@@ -7,6 +7,8 @@
 
 namespace Schematics {
 
+typedef const bool wire;
+
 //-----------------------------------------------------------------------------
 
 inline void r(int i, int y, const char* name, int v) {
@@ -109,8 +111,6 @@ inline bool weird2(bool a, bool b) {
 }
 
 //-----------------------------------------------------------------------------
-
-typedef const bool wire;
 
 inline wire add_c(wire a, wire b, wire c) {
   return (a + b + c) & 2;

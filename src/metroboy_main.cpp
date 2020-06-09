@@ -39,7 +39,7 @@ void MetroBoyApp::init() {
 
   run_microtests();
   //run_screenshot_tests();
-  run_mooneye_acceptance();
+  //run_mooneye_acceptance();
   //run_wpol_acceptance();
   //run_mealybug_tests();
   //return 0;
@@ -76,11 +76,8 @@ void MetroBoyApp::init() {
   //---------
 
   //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
-  //load("roms", "tetris");
-  load("microtests/build/dmg", "timer_tima_write_a");
-  //load("microtests/build/dmg", "timer_tma_load_c");
 
-  //load("roms/mooneye-gb/tests/build/acceptance/timer/", "rapid_toggle");
+  load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/basic");
 
   //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");
@@ -202,18 +199,16 @@ void MetroBoyApp::update(double /*delta*/) {
       case SDLK_o:      overlay_mode = (overlay_mode + 1) % 3; break;
       case SDLK_RIGHT:  {
         if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-          step_forward += 8;
+          step_forward = 8;
+        } else if (keyboard_state[SDL_SCANCODE_LALT]) {
+          step_forward = 1024;
         } else {
-          step_forward++;
+          step_forward = 1;
         }
         break;
       }
       case SDLK_LEFT:   {
-        if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-          step_backward += 8;
-        } else {
-          step_backward++;
-        }
+        step_backward = 1;
         break;
       }
       case SDLK_UP:     step_up = true; break;
@@ -309,25 +304,16 @@ void MetroBoyApp::update(double /*delta*/) {
     sim_time_msec = 1000.0 * double(time_end - time_begin) / double(SDL_GetPerformanceFrequency());
   }
   else if (runmode == STEP_PHASE) {
-    while (step_forward--) {
-      if (keyboard_state[SDL_SCANCODE_LSHIFT]) {
-        metroboy.step_over();
-      }
-      else {
-        metroboy.step_phase();
-      }
-    }
-    while (step_backward--) {
-      metroboy.pop_cycle();
-    }
+    if (step_forward)  metroboy.step_phase(step_forward);
+    if (step_backward) metroboy.unstep_phase();
   }
   else if (runmode == STEP_FRAME) {
-    while (step_forward--)  metroboy.step_frame();
-    while (step_backward--) metroboy.pop_frame();
+    if (step_forward)  metroboy.step_frame(step_forward);
+    if (step_backward) metroboy.unstep_frame();
   }
   else if (runmode == STEP_LINE) {
-    while (step_forward--)  metroboy.step_line();
-    while (step_backward--) metroboy.pop_line();
+    if (step_forward)  metroboy.step_line(step_forward);
+    if (step_backward) metroboy.unstep_line();
   }
 
   step_forward = 0;

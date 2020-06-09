@@ -279,12 +279,12 @@ struct DmaRegisters {
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- DMA REG -----\n");
     FROM_CPU5_SYNC   .dump(text_painter, "FROM_CPU5_SYNC   ");
-    REG_DMA_RUNNING  .dump(text_painter, "REG_DMA_RUNNING  ");
-    DMA_DONE_SYNC    .dump(text_painter, "DMA_DONE_SYNC    ");
-    REG_DMA_EN_d0    .dump(text_painter, "REG_DMA_EN_d0    ");  
-    REG_DMA_EN_d4    .dump(text_painter, "REG_DMA_EN_d4    ");
-    LATCH_DMA_ENn_d0 .dump(text_painter, "LATCH_DMA_ENn_d0 ");
-    LATCH_DMA_EN_d4  .dump(text_painter, "LATCH_DMA_EN_d4  ");
+    DMA_RUNNING  .dump(text_painter, "DMA_RUNNING  ");
+    MYTE    .dump(text_painter, "MYTE    ");
+    LUVY    .dump(text_painter, "LUVY    ");  
+    LENE    .dump(text_painter, "LENE    ");
+    LYXE .dump(text_painter, "LYXE ");
+    LOKY  .dump(text_painter, "LOKY  ");
     text_painter.dprintf("DMA ADDR LO      0x%02x\n", get_addr_lo());
     text_painter.dprintf("DMA ADDR HI      0x%02x\n", get_addr_hi());
     text_painter.newline();
@@ -292,10 +292,10 @@ struct DmaRegisters {
 
   /*p04.MAKA*/ Reg3 FROM_CPU5_SYNC;
 
-  /*p04.MATU*/ Reg3 REG_DMA_RUNNING; // -> p25,p28
-  /*p04.MYTE*/ Reg3 DMA_DONE_SYNC;
-  /*p04.LUVY*/ Reg3 REG_DMA_EN_d0;
-  /*p04.LENE*/ Reg3 REG_DMA_EN_d4;
+  /*p04.MATU*/ Reg3 DMA_RUNNING; // -> p25,p28
+  /*p04.MYTE*/ Reg3 MYTE;
+  /*p04.LUVY*/ Reg3 LUVY;
+  /*p04.LENE*/ Reg3 LENE;
 
   int get_addr_lo() {
     return pack(DMA_A00, DMA_A01, DMA_A02, DMA_A03, DMA_A04, DMA_A05, DMA_A06, DMA_A07);
@@ -321,8 +321,11 @@ struct DmaRegisters {
   /*p04.POKU*/ Reg3 DMA_A14; 
   /*p04.MARU*/ Reg3 DMA_A15; 
 
-  /*p04.LYXE*/ Latch3 LATCH_DMA_ENn_d0;
-  /*p04.LOKY*/ Latch3 LATCH_DMA_EN_d4; // NAND latch
+  /*p04.LYXE*/ Latch3 LYXE;
+
+  // NAND latch
+  /*p04.LARA*/ Gate LARA;
+  /*p04.LOKY*/ Gate LOKY;
 };
 
 //-----------------------------------------------------------------------------
@@ -1149,7 +1152,7 @@ struct VidRegisters {
     text_painter.dprintf("MAxx     0x%04x\n", pack(MA00, MA01, MA02, MA03, MA04, MA05, MA06, MA07, MA08, MA09, MA10, MA11, MA12));
     text_painter.dprintf("MDxx     0x%02x\n", pack(MD0, MD1, MD2, MD3, MD4, MD5, MD6, MD7));
 
-    FINE_MATCH_DUMP         .dump(text_painter, "FINE_MATCH_DUMP          ");
+    FINE_MATCH_LATCH         .dump(text_painter, "FINE_MATCH_LATCH          ");
     FINE_MATCH_SYNC1        .dump(text_painter, "FINE_MATCH_SYNC1         ");
     FINE_MATCH_SYNC2        .dump(text_painter, "FINE_MATCH_SYNC2         ");
     NOPA_WIN_MODE_SYNC      .dump(text_painter, "NOPA_WIN_MODE_SYNC       ");
@@ -1238,7 +1241,7 @@ struct VidRegisters {
   Tribuf MD6;
   Tribuf MD7;
 
-  /*p??.ROXY*/ Latch3 FINE_MATCH_DUMP;
+  /*p??.ROXY*/ Latch3 FINE_MATCH_LATCH;
   /*p??.PUXA*/ Reg3 FINE_MATCH_SYNC1;
   /*p27.NYZE*/ Reg3 FINE_MATCH_SYNC2;
 

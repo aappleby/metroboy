@@ -12,6 +12,8 @@ struct TestGB {
   void tick_everything();
   bool commit_everything();
 
+  void tick_dma(int phase, bool CUNU_RSTn, bool ABOL_CLKREQn, bool UNOR_MODE_DBG2);
+
   //-----------------------------------------------------------------------------
 
 

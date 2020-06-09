@@ -12,7 +12,6 @@ void dump_long(TextPainter& text_painter, const char* label, SignalState a) {
   text_painter.add_char(a.clk ? '^' : 'v');
   if (a.set)     text_painter.add_char(2, 'S');
   if (a.rst)     text_painter.add_char(3, 'R');
-  if (a.carry)   text_painter.add_char('+');
   //if (a.changed) text.add_char('D');
   if (a.error)   text_painter.add_char('E');
   text_painter.newline();
@@ -85,7 +84,6 @@ void dump(TextPainter& text_painter, const char* label,
   text_painter.add_char(1, a.a.clk ? '^' : 'v');
   if (a.a.set)     text_painter.add_char(2, 'S');
   if (a.a.rst)     text_painter.add_char(3, 'R');
-  if (a.a.carry)   text_painter.add_char(1, '+');
   if (a.a.error)   text_painter.add_char(1, 'E');
   text_painter.dprintf("\1 0x%02x", val);
   text_painter.newline();

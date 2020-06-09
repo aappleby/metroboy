@@ -342,7 +342,7 @@ struct SysPins {
     text_painter.dprintf("----- SYS_PINS -----\n");
     text_painter.dprintf("RST      %d\n", RST.a.val);
     text_painter.dprintf("CLK_GOOD %d\n", CLK_GOOD.a.val);
-    text_painter.dprintf("CLK_IN   %d\n", CLK_IN.a.val);
+    text_painter.dprintf("CLK_IN_xBxDxFxH   %d\n", CLK_IN_xBxDxFxH.a.val);
     text_painter.dprintf("T1       %d\n", T1.a.val);
     text_painter.dprintf("T2       %d\n", T2.a.val);
     text_painter.newline();
@@ -350,7 +350,7 @@ struct SysPins {
 
   /* PIN_71 */ PinIn RST;
   /* PIN_74 */ PinIn CLK_GOOD;
-  /* PIN_74 */ PinIn CLK_IN;
+  /* PIN_74 */ PinIn CLK_IN_xBxDxFxH;
   /* PIN_76 */ PinIn T2;
   /* PIN_77 */ PinIn T1;
 };

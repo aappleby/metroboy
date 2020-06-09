@@ -187,6 +187,10 @@ void Gameboy::tick1() {
   else if (cpu_has_obus_req) {
     cpu_ack = obus_ack;
   }
+
+  if (cpu_ack.read == 0 && cpu_ack.write == 0) {
+    cpu_ack.data = 0xFF;
+  }
 }
 
 //-----------------------------------------------------------------------------

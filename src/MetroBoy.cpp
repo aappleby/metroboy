@@ -76,51 +76,70 @@ void MetroBoy::run_to(uint16_t breakpoint) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::step_frame() {
-  push_frame();
+void MetroBoy::step_phase(int count) {
+  push_cycle();
 
   auto& gb = current->gb;
-  gb.sync_to_mcycle();
+  for (int i = 0; i < count; i++) {
+    gb.halfcycle();
+  }
+}
 
-  do {
-    gb.mcycle();
-  } while (gb.get_host_data().y == 144);
-
-  do {
-    gb.mcycle();
-  } while (gb.get_host_data().y != 144);
+void MetroBoy::unstep_phase() {
+  pop_cycle();
 }
 
 //----------------------------------------
 
-void MetroBoy::step_line() {
+void MetroBoy::step_line(int count) {
   push_line();
 
   auto& gb = current->gb;
   gb.sync_to_mcycle();
 
-  int old_line = gb.get_host_data().y;
+  for (int i = 0; i < count; i++) {
+    int old_line = gb.get_host_data().y;
 
-  while(1) {
-    gb.mcycle();
-    int new_line = gb.get_host_data().y;
-    if (old_line != new_line) {
-      break;
+    while(1) {
+      gb.mcycle();
+      int new_line = gb.get_host_data().y;
+      if (old_line != new_line) {
+        break;
+      }
     }
   }
 }
 
-//----------------------------------------
-
-void MetroBoy::step_phase() {
-  push_cycle();
-
-  auto& gb = current->gb;
-  gb.halfcycle();
+void MetroBoy::unstep_line() {
+  pop_line();
 }
 
 //----------------------------------------
 
+void MetroBoy::step_frame(int count) {
+  push_frame();
+
+  auto& gb = current->gb;
+  gb.sync_to_mcycle();
+
+  for (int i = 0; i < count; i++) {
+    do {
+      gb.mcycle();
+    } while (gb.get_host_data().y == 144);
+
+    do {
+      gb.mcycle();
+    } while (gb.get_host_data().y != 144);
+  }
+}
+
+void MetroBoy::unstep_frame() {
+  pop_frame();
+}
+
+//----------------------------------------
+
+/*
 void MetroBoy::step_over() {
   push_cycle();
 
@@ -147,5 +166,6 @@ void MetroBoy::step_over() {
   pop_cycle();
   return;
 }
+*/
 
 //-----------------------------------------------------------------------------

@@ -11,30 +11,19 @@ void Serial::reset() {
 
 //-----------------------------------------------------------------------------
 
-void Serial::tock_req(const Req& req) {
-  if ((req.addr != ADDR_SB) && (req.addr != ADDR_SC)) {
-    ack = {0};
-  }
-  else if (req.write) {
-    ack.addr  = req.addr;
-    ack.data  = req.data;
-    ack.read  = 0;
+void Serial::tock(int phase, const Req& req) {
+  if (req.write) {
     if (req.addr == ADDR_SB) sb = (uint8_t)req.data;
     if (req.addr == ADDR_SC) sc = (uint8_t)req.data | 0b01111110;
   }
-  else if (req.read) {
-    ack.addr  = req.addr;
-    ack.data  = 0;
-    ack.read  = 1;
-    if (req.addr == ADDR_SB) ack.data = sb;
-    if (req.addr == ADDR_SC) ack.data = sc;
-  }
 }
 
-void Serial::tick_ack(Ack& ack_) const {
-  ack_.addr  += ack.addr;
-  ack_.data  += ack.data;
-  ack_.read  += ack.read;
+void Serial::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read && ((req.addr == ADDR_SB) || (req.addr == ADDR_SC))) {
+    ack.addr = req.addr;
+    ack.data = req.addr == ADDR_SB ? sb : sc;
+    ack.read++;
+  }
 }
 
 //-----------------------------------------------------------------------------

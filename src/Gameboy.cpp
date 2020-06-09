@@ -98,8 +98,8 @@ void Gameboy::tick_gb() {
   vbus_ack = {0};
   obus_ack = {0};
 
-  ppu.   tick_ack(ibus_ack);
-  serial.tick_ack(ibus_ack);
+  ppu.   tick(phase, ibus_req, ibus_ack);
+  serial.tick(phase, ibus_req, ibus_ack);
   joypad.tick_ack(ibus_ack);
   zram.  tick_ack(ibus_ack);
   spu.   tick_ack(ibus_ack);
@@ -174,7 +174,6 @@ void Gameboy::tock_gb() {
   auto& self = *this;
 
   phase++;
-  int64_t tphase2 = (phase & 7);
 
   if (PHASE_A) z80.tock_a(imask, intf, cpu_ack);
   if (PHASE_B) z80.tock_b(imask, intf, cpu_ack);
@@ -185,11 +184,11 @@ void Gameboy::tock_gb() {
   if (PHASE_G) z80.tock_g(imask, intf, cpu_ack);
   if (PHASE_H) z80.tock_h(imask, intf, cpu_ack);
 
-  timer2.tock(tphase2, ibus_req);
+  timer2.tock(phase, ibus_req);
 
   if (PHASE_B || PHASE_D || PHASE_F || PHASE_H) {
     ppu.   tock_req(ibus_req);
-    serial.tock_req(ibus_req);
+    serial.tock(phase, ibus_req);
     joypad.tock_req(ibus_req);
     zram.  tock_req(ibus_req);
     spu.   tock_req(ibus_req);
@@ -199,8 +198,8 @@ void Gameboy::tock_gb() {
     vram.  tock_req(vbus_req);
     oam.   tock_req(obus_req);
 
-    ppu .tock(int(phase / 2));
-    spu .tock(int(phase / 2));
+    ppu .tock(phase);
+    spu .tock(phase);
     self.tock(phase, ibus_req);
     dma1.tock(phase, ibus_req);
     dma2.tock(phase, ibus_req);

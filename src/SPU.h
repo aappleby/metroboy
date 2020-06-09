@@ -11,7 +11,7 @@ struct SPU {
 
   sample_t get_l() const { return out_l; }
   sample_t get_r() const { return out_r; }
-  void tock(const int tcycle_);
+  void tock(const int phase);
 
   void  dump(std::string& out) const;
   const uint8_t* get_wave() const { return s3_wave; }

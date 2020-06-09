@@ -236,7 +236,6 @@ void PPU::get_obus_req(Req& r) const {
 //-----------------------------------------------------------------------------
 
 void PPU::tock_req(const Req& req) {
-  ack = {0};
   bool hit = req && (ADDR_GPU_BEGIN <= req.addr && req.addr <= ADDR_GPU_END);
   if (req.addr == ADDR_DMA) hit = false;
   if (!hit) return;
@@ -259,14 +258,11 @@ void PPU::tock_req(const Req& req) {
     };
 
     update_palettes();
-
-    ack = {
-      .addr  = req.addr,
-      .data  = data,
-      .read  = 0,
-    };
   }
-  else if (req.read) {
+}
+
+void PPU::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END)) {
     uint8_t data = (uint8_t)req.data;
     switch (req.addr) {
     case ADDR_LCDC: data = lcdc; break;
@@ -284,18 +280,10 @@ void PPU::tock_req(const Req& req) {
     default:        data = 0; break;
     }
 
-    ack = {
-      .addr  = req.addr,
-      .data  = data,
-      .read  = 1,
-    };
+    ack.addr = req.addr;
+    ack.data = data;
+    ack.read++;
   }
-}
-
-void PPU::tick_ack(Ack& ack_) const {
-  ack_.addr  += ack.addr;
-  ack_.data  += ack.data;
-  ack_.read  += ack.read;
 }
 
 //-----------------------------------------------------------------------------
@@ -359,7 +347,7 @@ void PPU::on_obus_ack(const Ack& obus_ack) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tock(const int tcycle) {
+void PPU::tock(const int phase) {
   //from_int(tcycle, ibus);
 
   if ((lcdc & FLAG_LCD_ON) == 0) {
@@ -370,7 +358,7 @@ void PPU::tock(const int tcycle) {
   //----------------------------------------
   // Update state machiney stuff
 
-  const int tphase = tcycle & 3;
+  const int tphase = (phase / 2) & 3;
 
   counter_delay3 = counter_delay2;
   counter_delay2 = counter_delay1;

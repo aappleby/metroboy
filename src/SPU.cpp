@@ -64,8 +64,8 @@ void SPU::tick_ack(Ack& ack_) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::tock(const int tcycle_) {
-  const int tphase = tcycle_ & 3;
+void SPU::tock(const int phase) {
+  const int tphase = (phase / 2) & 3;
   if (tphase != 0) return;
 
   bool sound_on = (nr52 & 0x80);

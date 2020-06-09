@@ -115,13 +115,9 @@ void Gameboy::tick_gb() {
 
   /*
   if (ibus_ack.read  > 1) __debugbreak();
-  if (ibus_ack.write > 1) __debugbreak();
   if (ebus_ack.read  > 1) __debugbreak();
-  if (ebus_ack.write > 1) __debugbreak();
   if (vbus_ack.read  > 1) __debugbreak();
-  if (vbus_ack.write > 1) __debugbreak();
   if (obus_ack.read  > 1) __debugbreak();
-  if (obus_ack.write > 1) __debugbreak();
   */
 
   bool cpu_has_ibus_req = ibus_req.addr >= ADDR_IOBUS_BEGIN;
@@ -211,17 +207,6 @@ void Gameboy::tock_gb() {
 
     //-----------------------------------
     // prioritize reqs
-
-    /*
-    bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
-    bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
-    bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
-    bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
-
-    bool dma_has_ebus_req = (PHASE_B || PHASE_D) && dma2.DMA_RUN && (dma2.addr >= ADDR_ROM_BEGIN  && dma2.addr <= ADDR_ROM_END);
-    bool dma_has_vbus_req = (PHASE_B || PHASE_D) && dma2.DMA_RUN && (dma2.addr >= ADDR_VRAM_BEGIN && dma2.addr <= ADDR_VRAM_END);
-    bool dma_has_obus_req = (PHASE_F || PHASE_H) && dma2.DMA_RUN;
-    */
 
     z80.get_bus_req(ibus_req);
 
@@ -332,28 +317,5 @@ void Gameboy::dump_disasm(std::string& d) {
     sprintf(d, "(bad pc)\n");
   }
 }
-
-/*
-void MetroBoy::cycle() {
-  current_gameboy->tick();
-  current_gameboy->tock();
-
-  if (trace) {
-  tracebuffer[current_gameboy->ppu.line * 456 + current_gameboy->ppu.counter] = current_gameboy->trace();
-  }
-
-  if (current_gameboy->get_pix_oe()) {
-  int x = current_gameboy->ppu.pix_count2 - 1;
-  int y = current_gameboy->ppu.line;
-
-  if (x >= 0 && x < 160 && y >= 0 && y < 144) {
-  current_gameboy->framebuffer[x + y * 160] = current_gameboy->get_pix_out();
-  }
-  }
-
-  current_gameboy->check_sentinel();
-  cycles++;
-}
-*/
 
 //-----------------------------------------------------------------------------

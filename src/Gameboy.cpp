@@ -103,7 +103,7 @@ void Gameboy::tick_gb() {
   joypad.tick(phase, ibus_req, ibus_ack);
   zram.  tick(phase, ibus_req, ibus_ack);
   spu.   tick(phase, ibus_req, ibus_ack);
-  boot.  tick_ack(ibus_ack);
+  boot.  tick(phase, ibus_req, ibus_ack);
 
   this-> tick(phase, ibus_req, ibus_ack);
   dma1.  tick(phase, ibus_req, ibus_ack);
@@ -191,7 +191,7 @@ void Gameboy::tock_gb() {
     joypad.tock(phase, ibus_req);
     zram.  tock(phase, ibus_req);
     spu.   tock(phase, ibus_req);
-    boot.  tock_req(ibus_req);
+    boot.  tock(phase, ibus_req);
     cart.  tock_req(ebus_req);
     iram.  tock(phase, ebus_req);
     vram.  tock_req(vbus_req);

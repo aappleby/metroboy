@@ -47,38 +47,22 @@ extern const uint8_t DMG_ROM_bin[] = {
 
 void Bootrom::reset(uint16_t new_pc) {
   disable_bootrom = new_pc != 0x0000;
-  ack = {};
 }
 
 //-----------------------------------------------------------------------------
 
-void Bootrom::tock_req(const Req& req) {
-  ack = {0};
-  const bool hit = ((req.addr <= 0x00FF) || (req.addr == ADDR_DISABLE_BOOTROM));
-  if (disable_bootrom || !hit) return;
-
+void Bootrom::tock(int phase, const Req& req) {
   if (req.write && req.addr == ADDR_DISABLE_BOOTROM) {
     disable_bootrom |= (req.data != 0);
-    ack = {
-      .addr = req.addr,
-      .data = req.data,
-      .read = 0,
-    };
-  }
-
-  if (req.read && req.addr <= 0x00FF) {
-    ack = {
-      .addr = req.addr,
-      .data = DMG_ROM_bin[req.addr],
-      .read = 1,
-    };
   }
 }
 
-void Bootrom::tick_ack(Ack& ack_) const {
-  ack_.addr  += ack.addr;
-  ack_.data  += ack.data;
-  ack_.read  += ack.read;
+void Bootrom::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read && req.addr <= 0x00FF && !disable_bootrom) {
+    ack.addr = req.addr;
+    ack.data = DMG_ROM_bin[req.addr];
+    ack.read++;
+  }
 }
 
 //-----------------------------------------------------------------------------

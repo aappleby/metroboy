@@ -63,7 +63,6 @@ void Bootrom::tock_req(const Req& req) {
       .addr = req.addr,
       .data = req.data,
       .read = 0,
-      .write = 1,
     };
   }
 
@@ -72,7 +71,6 @@ void Bootrom::tock_req(const Req& req) {
       .addr = req.addr,
       .data = DMG_ROM_bin[req.addr],
       .read = 1,
-      .write = 0,
     };
   }
 }
@@ -81,7 +79,6 @@ void Bootrom::tick_ack(Ack& ack_) const {
   ack_.addr  += ack.addr;
   ack_.data  += ack.data;
   ack_.read  += ack.read;
-  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

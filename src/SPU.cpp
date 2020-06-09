@@ -60,7 +60,6 @@ void SPU::tick_ack(Ack& ack_) {
   ack_.addr  += ack.addr;
   ack_.data  += ack.data;
   ack_.read  += ack.read;
-  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------
@@ -341,7 +340,6 @@ void SPU::bus_read(const Req& req) {
     .addr  = req.addr,
     .data  = 0,
     .read  = 1,
-    .write = 0,
   };
 
   //----------
@@ -401,7 +399,6 @@ void SPU::bus_write(const Req& req) {
     .addr  = req.addr,
     .data  = req.data,
     .read  = 0,
-    .write = 1,
   };
 
   if (!sound_on) {

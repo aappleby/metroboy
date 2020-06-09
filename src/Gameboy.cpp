@@ -43,7 +43,7 @@ void Gameboy::reset(uint16_t new_pc) {
 
   cpu_req  = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
   ebus_req = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
-  ebus_ack = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
+  ebus_ack = {.addr = new_pc, .data = 0x00, .read = 1 };
 
   sentinel = 0xDEADBEEF;
 }
@@ -163,7 +163,7 @@ void Gameboy::tick_gb() {
     cpu_ack = obus_ack;
   }
 
-  if (cpu_ack.read == 0 && cpu_ack.write == 0) {
+  if (cpu_ack.read == 0) {
     cpu_ack.data = 0xFF;
   }
 }

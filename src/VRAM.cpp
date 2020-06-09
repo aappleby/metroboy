@@ -57,7 +57,6 @@ void VRAM::tock_req(const Req& req) {
       .addr  = req.addr,
       .data  = req.data,
       .read  = 0,
-      .write = 1,
     };
   }
   else if (req.read) {
@@ -65,7 +64,6 @@ void VRAM::tock_req(const Req& req) {
       .addr  = req.addr,
       .data  = ram[req.addr & 0x1FFF],
       .read  = 1,
-      .write = 0,
     };
   }
 }
@@ -74,7 +72,6 @@ void VRAM::tick_ack(Ack& ack_) const {
   ack_.addr  += ack.addr;
   ack_.data  += ack.data;
   ack_.read  += ack.read;
-  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

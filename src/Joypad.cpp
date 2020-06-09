@@ -17,7 +17,6 @@ void Joypad::tock_req(const Req& req) {
       .addr  = req.addr,
       .data  = p1,
       .read  = 1,
-      .write = 0,
     };
   }
   else if (req.write) {
@@ -32,7 +31,6 @@ void Joypad::tock_req(const Req& req) {
       .addr  = req.addr,
       .data  = req.data,
       .read  = 0,
-      .write = 1,
     };
   }
 }
@@ -41,7 +39,6 @@ void Joypad::tick_ack(Ack& ack_) const {
   ack_.addr  += ack.addr;
   ack_.data  += ack.data;
   ack_.read  += ack.read;
-  ack_.write += ack.write;
 }
 
 void Joypad::set(uint8_t new_val) {

@@ -72,7 +72,6 @@ struct Ack {
   uint16_t addr = 0;
   uint16_t data = 0;
   uint8_t  read = 0;
-  uint8_t  write = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -103,7 +102,7 @@ inline void print_req(std::string& d, const Req& req) {
 inline void print_ack(std::string& d, const Ack& ack) {
   sprintf(d, "%04x:%04x %s%s\n", ack.addr, ack.data,
     ack.read  ? "\003R \001" : "- ",
-    ack.write ? "\002W \001" : "- ");
+    "- ");
 }
 
 //-----------------------------------------------------------------------------

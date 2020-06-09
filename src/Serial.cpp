@@ -19,7 +19,6 @@ void Serial::tock_req(const Req& req) {
     ack.addr  = req.addr;
     ack.data  = req.data;
     ack.read  = 0;
-    ack.write = 1;
     if (req.addr == ADDR_SB) sb = (uint8_t)req.data;
     if (req.addr == ADDR_SC) sc = (uint8_t)req.data | 0b01111110;
   }
@@ -27,7 +26,6 @@ void Serial::tock_req(const Req& req) {
     ack.addr  = req.addr;
     ack.data  = 0;
     ack.read  = 1;
-    ack.write = 0;
     if (req.addr == ADDR_SB) ack.data = sb;
     if (req.addr == ADDR_SC) ack.data = sc;
   }
@@ -37,7 +35,6 @@ void Serial::tick_ack(Ack& ack_) const {
   ack_.addr  += ack.addr;
   ack_.data  += ack.data;
   ack_.read  += ack.read;
-  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

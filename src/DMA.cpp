@@ -63,7 +63,6 @@ void DMA1::tick(int phase, const Req& req, Ack& ack) const {
     ack.addr  += req.addr;
     ack.data  += source_x;
     ack.read  += req.read;
-    ack.write += req.write;
   }
 }
 

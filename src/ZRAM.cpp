@@ -22,7 +22,6 @@ void ZRAM::tock_req(const Req& req) {
       .addr  = req.addr,
       .data  = 0,
       .read  = 0,
-      .write = 1,
     };
   }
   else if (req.read) {
@@ -30,7 +29,6 @@ void ZRAM::tock_req(const Req& req) {
       .addr  = req.addr,
       .data  = ram[req.addr & 0x007F],
       .read  = 1,
-      .write = 0,
     };
   }
   else {
@@ -42,7 +40,6 @@ void ZRAM::tick_ack(Ack& ack_) const {
   ack_.addr  += ack.addr;
   ack_.data  += ack.data;
   ack_.read  += ack.read;
-  ack_.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------

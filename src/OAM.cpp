@@ -6,44 +6,28 @@
 //-----------------------------------------------------------------------------
 
 void OAM::reset() {
-  ack = {0};
   memset(ram, 0, sizeof(ram));
 }
 
 //-----------------------------------------------------------------------------
 
-void OAM::tock_req(const Req& req) {
-  ack = {0};
-  bool hit = (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END);
-
-  if (!hit) return;
-
-  if (req.write) {
+void OAM::tock(int phase, const Req& req) {
+  if (req.write && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
     uint16_t oam_addr = req.addr & 0x00FF;
     uint16_t d = ram[oam_addr >> 1];
     if (oam_addr & 1) d = (d & 0x00FF) | (req.data << 8);
     else              d = (d & 0xFF00) | (req.data << 0);
     ram[oam_addr >> 1] = d;
-
-    ack = {
-      .addr  = req.addr,
-      .data  = req.data,
-      .read  = 0,
-    };
   }
-  else if (req.read) {
-    ack = {
-      .addr  = req.addr,
-      .data  = ram[(req.addr & 0x00FF) >> 1],
-      .read  = 1,
-    };
-  }
+  
 }
 
-void OAM::tick_ack(Ack& ack_) const {
-  ack_.addr  += ack.addr;
-  ack_.data  += ack.data;
-  ack_.read  += ack.read;
+void OAM::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
+    ack.addr = req.addr;
+    ack.data = ram[(req.addr & 0x00FF) >> 1];
+    ack.read++;
+  }
 }
 
 //-----------------------------------------------------------------------------

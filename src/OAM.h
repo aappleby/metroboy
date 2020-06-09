@@ -7,15 +7,14 @@ struct OAM {
 
   void reset();
 
-  void tock_req(const Req& obus_req);
-  void tick_ack(Ack& obus_ack) const;
+  void tock(int phase, const Req& req);
+  void tick(int phase, const Req& req, Ack& ack) const;
 
   void dump(std::string& out) const;
 
   const uint8_t* get() const { return (uint8_t*)ram; }
 
 private:
-  Ack ack;
   uint16_t ram[128] = {0};
 };
 

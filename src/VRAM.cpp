@@ -38,40 +38,24 @@ static const uint8_t bootrom_logo[] = {
 //-----------------------------------------------------------------------------
 
 void VRAM::reset() {
-  ack = {0};
   memset(ram, 0, sizeof(ram));
   memcpy(ram, bootrom_logo, 416);
 }
 
 //-----------------------------------------------------------------------------
 
-void VRAM::tock_req(const Req& req) {
-  const bool vram_hit = (req.addr & 0xE000) == 0x8000;
-  
-  if (!vram_hit) {
-    ack = {0};
-  }
-  else if (req.write) {
+void VRAM::tock(int phase, const Req& req) {
+  if (req.write && ((req.addr & 0xE000) == 0x8000)) {
     ram[req.addr & 0x1FFF] = uint8_t(req.data);
-    ack = {
-      .addr  = req.addr,
-      .data  = req.data,
-      .read  = 0,
-    };
-  }
-  else if (req.read) {
-    ack = {
-      .addr  = req.addr,
-      .data  = ram[req.addr & 0x1FFF],
-      .read  = 1,
-    };
-  }
+  } 
 }
 
-void VRAM::tick_ack(Ack& ack_) const {
-  ack_.addr  += ack.addr;
-  ack_.data  += ack.data;
-  ack_.read  += ack.read;
+void VRAM::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read && ((req.addr & 0xE000) == 0x8000)) {
+    ack.addr = req.addr;
+    ack.data = ram[req.addr & 0x1FFF];
+    ack.read++;
+  }
 }
 
 //-----------------------------------------------------------------------------

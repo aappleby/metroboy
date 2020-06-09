@@ -83,8 +83,8 @@ void MetroBoyApp::init() {
   //load_memdump("roms", "LinksAwakening_dog");
   //load_memdump("roms", "tetris");
 
-  runmode = STEP_PHASE;
-  //runmode = RUN_FAST;
+  //runmode = STEP_PHASE;
+  runmode = RUN_FAST;
   //runmode = RUN_VSYNC;
 };
 
@@ -532,7 +532,7 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
     text_painter.dprintf("%s %d\n", mode_names[runmode], (int)(metroboy.gb().phase & 7));
     text_painter.dprintf("sim budget %2.2f msec/frame\n", sim_budget_msec);
     text_painter.dprintf("sim time   %02.2f msec/frame\n", sim_time_msec);
-    text_painter.dprintf("sim rate   %07d cycles/frame\n", last_mcycles);
+    text_painter.dprintf("sim rate   %7d cycles/frame\n", last_mcycles);
     text_painter.dprintf("sim speed  %1.2fx realtime\n", sim_mcycles_per_sec / rt_mcycles_per_sec);
     
     text_painter.render(screen_w - 300 + 96, screen_h - 64);

@@ -12,7 +12,7 @@ void Serial::reset() {
 //-----------------------------------------------------------------------------
 
 void Serial::tock(int phase, const Req& req) {
-  if (req.write) {
+  if (PHASE_F && req.write) {
     if (req.addr == ADDR_SB) sb = (uint8_t)req.data;
     if (req.addr == ADDR_SC) sc = (uint8_t)req.data | 0b01111110;
   }

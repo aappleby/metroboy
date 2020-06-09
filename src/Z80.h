@@ -85,7 +85,7 @@ struct Z80 {
 
   void set_addr(uint16_t new_addr, int new_write);
 
-  uint8_t get_reg(int mux, const Ack& ack);
+  uint8_t get_reg(int mux);
   void set_reg(int mux, uint8_t data);
 
   void     set_f(uint8_t mask);

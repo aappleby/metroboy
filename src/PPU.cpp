@@ -77,102 +77,6 @@ void PPU::reset(bool run_bootrom) {
 }
 
 //-----------------------------------------------------------------------------
-// interrupt glitch - oam stat fires on vblank
-// interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
-
-#if 0
-PPU::Out PPU::tick(const int tcycle_) const {
-  (void)tcycle_;
-
-  //-----------------------------------
-  // OAM/VRAM address generator
-
-  /*
-  struct Out {
-  Bus to_cpu;
-  Bus to_vram;
-  Bus to_oam;
-
-  int x;
-  int y;
-  int counter;
-  uint8_t pix_out;
-  bool pix_oe;
-
-  bool stat1;
-  bool stat2;
-  bool vblank1;
-  bool vblank2;
-  };
-  */
-
-  Out out = {};
-
-  out.ppu_to_bus  = ppu_to_bus;
-  out.ppu_to_vram = ppu_to_vram;
-  out.ppu_to_oam  = ppu_to_oam;
-  out.x       = pix_count;
-  out.y       = line;
-  out.counter = counter;
-  out.pix_out = pix_out;
-  out.pix_oe  = pix_oe;
-
-  if (!(lcdc & FLAG_LCD_ON)) {
-    return out;
-  }
-  
-  uint16_t counter_ = counter;
-  uint8_t line_ = line;
-  int frame_count_ = frame_count;
-
-  counter_++;
-  if (counter_ == TCYCLES_LINE) {
-    counter_ = 0;
-    line_++;
-    if (line_ == 154) {
-      line_ = 0;
-      frame_count_++;
-    }
-  }
-
-  //if (frame_count_ == 0 && line_ == 0 && counter_ < 84) {
-  //  oam_addr_ = 0;
-  //}
-  //else
-
-  //----------------------------------------
-  // locking
-
-  const int oam_start = 0;
-  const int oam_end = 80;
-  const int render_start = 82;
-  const int render_start_l0 = 84;
-
-  bool in_blank = (hblank_delay2 < 8) || (line >= 144);
-
-  out.ppu_to_oam.lock = false;
-  out.ppu_to_vram.lock = false;
-
-  if (frame_count_ == 0 && line_ == 0) {
-    out.ppu_to_oam.lock  = (counter_ >= render_start_l0);
-    out.ppu_to_vram.lock = (counter_ >= render_start_l0);
-  }
-  else {
-    out.ppu_to_oam.lock  |= (oam_start <= counter_) && (counter_ < oam_end);
-    out.ppu_to_oam.lock  |= (render_start <= counter_);
-    out.ppu_to_vram.lock |= (render_start <= counter_);
-  }
-
-  if (in_blank) {
-    out.ppu_to_oam.lock = false;
-    out.ppu_to_vram.lock = false;
-  }
-
-  return out;
-}
-#endif
-
-//-----------------------------------------------------------------------------
 
 void PPU::get_vbus_req(Req& r) const {
   uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
@@ -260,6 +164,7 @@ void PPU::on_vbus_ack(const Ack& vbus_ack) {
 }
 
 //----------------------------------------
+// this is probably gonna break if cpu tries to read obus during rendering...
 
 void PPU::on_obus_ack(const Ack& obus_ack) {
   uint8_t lo = uint8_t(obus_ack.data >> 0);
@@ -326,6 +231,9 @@ void PPU::tick(int phase, const Req& req, Ack& ack) const {
 //-----------------------------------------------------------------------------
 
 void PPU::tock(int phase, const Req& req) {
+  // interrupt glitch - oam stat fires on vblank
+  // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
+
   if (req.write && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END) && (req.addr != ADDR_DMA)) {
     uint8_t data = (uint8_t)req.data;
     switch (req.addr) {
@@ -713,38 +621,6 @@ void PPU::tock(int phase, const Req& req) {
     old_stat_int2 = (stat_ & stat_int2_);
   }
 
-  /*
-  ppu_to_vram.addr = 0;
-  ppu_to_oam.addr = 0;
-
-  uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
-  uint8_t map_y = ((scy + line) >> 3) & 31;
-
-  if (fetch_type == FETCH_BACKGROUND) {
-    if      (fetch_state == FETCH_TILE_MAP) ppu_to_vram.addr = tile_map_address(lcdc, new_map_x, map_y);
-    else if (fetch_state == FETCH_TILE_LO)  ppu_to_vram.addr = tile_base_address(lcdc, scy, line, tile_map) + 0;
-    else if (fetch_state == FETCH_TILE_HI)  ppu_to_vram.addr = tile_base_address(lcdc, scy, line, tile_map) + 1;
-  }
-  else if (fetch_type == FETCH_WINDOW) {
-    if      (fetch_state == FETCH_TILE_MAP) ppu_to_vram.addr = win_map_address(lcdc, map_x, win_y_latch);
-    else if (fetch_state == FETCH_TILE_LO)  ppu_to_vram.addr = win_base_address(lcdc, win_y_latch, tile_map) + 0;
-    else if (fetch_state == FETCH_TILE_HI)  ppu_to_vram.addr = win_base_address(lcdc, win_y_latch, tile_map) + 1;
-  }
-  else if (fetch_type == FETCH_SPRITE) {
-    if      (fetch_state == FETCH_SPRITE_MAP) ppu_to_oam.addr = ADDR_OAM_BEGIN + (sprite_index << 2) + 2;
-    else if (fetch_state == FETCH_SPRITE_LO)  ppu_to_vram.addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 0;
-    else if (fetch_state == FETCH_SPRITE_HI)  ppu_to_vram.addr = sprite_base_address(lcdc, line, spriteY, spriteP, spriteF) + 1;
-  }
-
-  if (pix_count + pix_discard_pad == 168) {
-    ppu_to_oam.addr = 0;
-    ppu_to_vram.addr = 0;
-  }
-
-  if (ppu_to_vram.addr) ppu_to_vram.read = true;
-  if (ppu_to_oam.addr) ppu_to_oam.read = true;
-  */
-
 } // PPU::tock
 
 //-----------------------------------------------------------------------------
@@ -873,8 +749,6 @@ void PPU::emit_pixel(int /*tphase*/) {
 
   pipe_count--;
 
-  // move to tick()?
-
   pix_out = 0;
   pix_oe = false;
 
@@ -898,90 +772,6 @@ void PPU::emit_pixel(int /*tphase*/) {
     pix_count++;
   }
 }
-
-//-----------------------------------------------------------------------------
-
-#if 0
-void PPU::bus_write_early(uint16_t addr, uint8_t data) {
-  if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
-    switch (addr) {
-    case ADDR_LCDC: {
-      lcdc  = lcdc & 0b10000011;
-      lcdc |= data & 0b01111100;
-
-      // dmg glitch hack
-      if (pix_count == 0) {
-        if ((data & 2) == 0) {
-          lcdc &= ~2;
-        }
-      }
-
-      break;
-    }
-    case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
-    case ADDR_SCY:  scy = data;  break;
-    case ADDR_LY:   ly = data;   break;
-    case ADDR_LYC:  lyc = data;  break;
-    case ADDR_DMA:  dma = data;  break;
-    case ADDR_BGP:  bgp |= data; break;
-    case ADDR_OBP0: obp0 = data; break;
-    case ADDR_OBP1: obp1 = data; break;
-    };
-    update_palettes();
-  }
-}
-
-//----------------------------------------
-
-void PPU::bus_write_late(uint16_t addr, uint8_t data) {
-  if (ADDR_GPU_BEGIN <= addr && addr <= ADDR_GPU_END) {
-    switch (addr) {
-    case ADDR_LCDC: {
-      // obj_en _must_ be late
-      // tile_sel should probably be early?
-      lcdc  = lcdc & 0b01111100;
-      lcdc |= data & 0b10000011;
-
-      if (!(lcdc & FLAG_WIN_ON)) {
-        in_window_old = false;
-        in_window_new = false;
-        in_window_early = false;
-        win_retrig_old = false;
-        win_retrig_new = false;
-      }
-      break;
-    };
-    //case ADDR_STAT: stat = (stat & 0b10000111) | (data & 0b01111000); break;
-    //case ADDR_SCY:  scy = data;  break;
-
-    // scx write must be late
-    case ADDR_SCX: {
-      if (counter == 88) {
-        scx = data;
-      }
-      else if (counter == 92) {
-        scx = data;
-      }
-      else {
-        scx = data;
-      }
-      break;
-    }
-
-    //case ADDR_LY:   ly = data;   break;
-    //case ADDR_LYC:  lyc = data;  break;
-    //case ADDR_DMA:  dma = data;  break;
-    case ADDR_BGP: {
-      bgp = data;
-      break;
-    }
-    case ADDR_WY:   wy = data;   break;
-    case ADDR_WX:   wx = data;   break;
-    };
-    update_palettes();
-  }
-}
-#endif
 
 //-----------------------------------------------------------------------------
 

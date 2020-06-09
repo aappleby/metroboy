@@ -14,6 +14,10 @@ struct TestGB {
 
   void tick_dma(int phase, bool CUNU_RSTn, bool ABOL_CLKREQn, bool UNOR_MODE_DBG2);
 
+  void tick_busmux(int phase);
+
+  void tick_lcd(int phase, bool ALUR_RSTn, bool LCDC_EN);
+
   //-----------------------------------------------------------------------------
 
 

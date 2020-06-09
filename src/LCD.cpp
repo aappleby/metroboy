@@ -1,119 +1,144 @@
 #include "LCD.h"
+#include "Constants.h"
+
+#pragma warning(disable:4189)
+
+bool posedge(bool& old_v, bool new_v) {
+  bool ret = !old_v && new_v;
+  old_v = new_v;
+  return ret;
+}
+
+//-----------------------------------------------------------------------------
+
+void LCD::reset() {
+  X = 0;
+  Y = 0;
+  LINE_153_d4 = 0;
+  NEW_LINE_d0 = 0;
+  NEW_LINE_d4 = 0;
+  IN_VBLANK_d4 = 0;
+  VSYNC_OUTn = 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void LCD::tick(int phase, const Req& req, Ack& ack) {
+
+  if (req.read && req.addr == 0xFF44) {
+    ack.addr = req.addr;
+    ack.data = Y;
+    ack.read++;
+  }
+}
+
+//-----------------------------------------------------------------------------
 
 #if 0
+
+// PIN_S PIN_CPG PIN_ST, lcd regs
 {
-  //----------------------------------------
-  // sch_lcd
+  // lcd horizontal sync pin
+  /*p24.POFY*/ wire POFY = not(lcd_reg.RUJU);
+  /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY);
 
-  lcd_reg.LINE_153_d4.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, Y == 153);
-  lcd_reg.NYPE_NEW_LINE_d4.set(TALU_xBCDExxx, LYFE_VID_RSTn, lcd_reg.RUTU_NEW_LINE_d0);
-  lcd_reg.RUTU_NEW_LINE_d0.set(SONO_AxxxxFGH, LYFE_VID_RSTn, X == 113);
+  // lcd line strobe
+  /*p21.TOCU*/ wire C0n = not(lcd_reg.X0);
+  /*p21.VEPE*/ wire C1n = not(lcd_reg.X1);
+  /*p21.VUTY*/ wire C2n = not(lcd_reg.X2);
+  /*p21.VATE*/ wire C3n = not(lcd_reg.X3);
+  /*p21.TUDA*/ wire C4n = not(lcd_reg.X4);
+  /*p21.TAFY*/ wire C5n = not(lcd_reg.X5);
+  /*p21.TUJU*/ wire C6n = not(lcd_reg.X6);
 
-  if (posedge(TALU_xBCDExxx)) {
-    X++;
+  /*p21.VOKU*/ wire CNT_000= = X == 0;
+  /*p21.TOZU*/ wire CNT_007= = X == 7;
+  /*p21.TECE*/ wire CNT_045= = X == 45
+  /*p21.TEBO*/ wire CNT_083= = X == 83;
+
+
+  /*p24.MEDA*/ lcd_reg.VSYNC_OUTn.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, LINE_000n);
+
+  /*p21.SYGU*/ lcd_reg.LINE_STROBE.set(SONO_AxxxxFGH, LYFE_VID_RSTn, LINE_STROBE);
+  /*p21.MYTA*/ lcd_reg.LINE_153_d4.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, LINE_153);
+  /*p21.POPU*/ lcd_reg.POPU_IN_VBLANK_d4.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, IN_VBLANK);
+  /*p21.NYPE*/ lcd_reg.NYPE_NEW_LINE_d4.set(TALU_xBCDExxx, LYFE_VID_RSTn, lcd_reg.RUTU_NEW_LINE_d0);
+  /*p28.ANEL*/ lcd_reg.VID_LINE_d6.set(AWOH_AxxDExxH, ABEZ_VID_RSTn, lcd_reg.VID_LINE_d4);
+  /*p29.CATU*/ lcd_reg.VID_LINE_d4.set(XUPY_xBCxxFGx, ABEZ_VID_RSTn, VID_LINE_d0);
+
+
+  lcd_pins.S.set(not(VSYNC_OUTn));
+
+
+  lcd_pins.ST.set(RUZE_PIN_ST);
   }
 
-  if (posedge(lcd_reg.RUTU_NEW_LINE_d0)) {
-    Y++;
-  }
-
-  if (lcd_reg.RUTU_NEW_LINE_d0) X = 0;
-  if (lcd_reg.LINE_153_d4))     Y = 0;
-
-  if (LYHA_VID_RST) { X = 0; Y = 0; }
-
-
-  // ly match
-  [this, TALU_xBCDExxx, WESY_RST] {
-    /*p21.SYFU*/ wire LY_MATCH7 = xor(lcd_reg.Y7, cfg_reg.LYC7);
-    /*p21.TERY*/ wire LY_MATCH6 = xor(lcd_reg.Y6, cfg_reg.LYC6);
-    /*p21.TUCY*/ wire LY_MATCH5 = xor(lcd_reg.Y5, cfg_reg.LYC5);
-    /*p21.TYKU*/ wire LY_MATCH4 = xor(lcd_reg.Y4, cfg_reg.LYC4);
-    /*p21.RASY*/ wire LY_MATCH3 = xor(lcd_reg.Y3, cfg_reg.LYC3);
-    /*p21.REDA*/ wire LY_MATCH2 = xor(lcd_reg.Y2, cfg_reg.LYC2);
-    /*p21.TYDE*/ wire LY_MATCH1 = xor(lcd_reg.Y1, cfg_reg.LYC1);
-    /*p21.RYME*/ wire LY_MATCH0 = xor(lcd_reg.Y0, cfg_reg.LYC0);
-    /*p21.SOVU*/ wire LY_MATCHA = nor(LY_MATCH7, LY_MATCH6, LY_MATCH5, LY_MATCH4);
-    /*p21.SUBO*/ wire LY_MATCHB = nor(LY_MATCH3, LY_MATCH2, LY_MATCH1, LY_MATCH0);
-    /*p21.RAPE*/ wire LY_MATCHn = nand(LY_MATCHA, LY_MATCHB);
-    /*p21.PALY*/ wire LY_MATCHa = not(LY_MATCHn);
-    /*p21.ROPO*/ vid_reg.ROPO_LY_MATCH_SYNC.set(TALU_xBCDExxx, WESY_RST, LY_MATCHa);
-  }();
-
-  /*p21.RYJU*/ wire FF41_WRn = not(FF41_WR);
-  /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(WESY_RST, FF41_WRn);  // schematic wrong, this is NOR
-  /*p21.RUPO*/ vid_reg.RUPO_LATCH_LYC_MATCH.sr_latch(vid_reg.ROPO_LY_MATCH_SYNC, PAGO_LYC_MATCH_RST);
-
-  // stat read
-  [this, ASOT_BUS_RD_ABCDEFGH, CUPA_BUS_WR_ABCDxxxH, FF41n, WESY_RST, PARU_IN_VBLANK, ACYL_OAM_ADDR_PARSE] {
-    /*p22.VARY*/ wire FF41 = not(FF41n);
-    /*p21.SEPA*/ wire FF41_WR = and(CUPA_BUS_WR_ABCDxxxH, FF41);
-    /*p21.RYVE*/ wire RYVE_FF41_WRn = not(FF41_WR);
-
-    /*p21.ROXE*/ vid_reg.INT_HBL_EN.set(RYVE_FF41_WRn, WESY_RST, cpu_pins.D0);
-    /*p21.RUFO*/ vid_reg.INT_VBL_EN.set(RYVE_FF41_WRn, WESY_RST, cpu_pins.D1);
-    /*p21.REFE*/ vid_reg.INT_OAM_EN.set(RYVE_FF41_WRn, WESY_RST, cpu_pins.D2);
-    /*p21.RUGU*/ vid_reg.INT_LYC_EN.set(RYVE_FF41_WRn, WESY_RST, cpu_pins.D3);
-
-    // 11: hblank   - rendering 0, vbl 0, oam 0
-    // 10: vblank   - rendering 0, vbl 1, oam 0
-    // 01: oam scan - rendering 0, vbl 0, oam 1
-    // 00: render   - rendering 1, vbl 0, oam 0
-    // so one of these has the wrong polarity
-
-    /*p21.SADU*/ wire STAT_MODE0n = nor(vid_reg.XYMU_RENDERING_LATCH, PARU_IN_VBLANK);
-    /*p21.XATY*/ wire STAT_MODE1n = nor(vid_reg.XYMU_RENDERING_LATCH, ACYL_OAM_ADDR_PARSE);
-    /*p21.TOBE*/ wire FF41_RDa = and(ASOT_BUS_RD_ABCDEFGH, FF41);
-    /*p21.VAVE*/ wire FF41_RDb = FF41_RDa; // buffer, not inverter?. 
-
-    /*p21.TEBY*/ cpu_pins.D0.set_tribuf(FF41_RDa, not(STAT_MODE0n));
-    /*p21.WUGA*/ cpu_pins.D1.set_tribuf(FF41_RDa, not(STAT_MODE1n));
-    /*p21.SEGO*/ cpu_pins.D2.set_tribuf(FF41_RDa, not(vid_reg.RUPO_LATCH_LYC_MATCH));
-    /*p21.PUZO*/ cpu_pins.D3.set_tribuf(FF41_RDb, vid_reg.INT_HBL_EN);
-    /*p21.POFO*/ cpu_pins.D4.set_tribuf(FF41_RDb, vid_reg.INT_VBL_EN);
-    /*p21.SASY*/ cpu_pins.D5.set_tribuf(FF41_RDb, vid_reg.INT_OAM_EN);
-    /*p21.POTE*/ cpu_pins.D6.set_tribuf(FF41_RDb, vid_reg.INT_LYC_EN);
-
-    /*p21.RYJU*/ wire FF41_WRn = not(FF41_WR);
-    /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(WESY_RST, FF41_WRn);  // schematic wrong, this is NOR
-    /*p21.RUPO*/ vid_reg.RUPO_LATCH_LYC_MATCH.sr_latch(vid_reg.ROPO_LY_MATCH_SYNC, PAGO_LYC_MATCH_RST);
-  }();
-
-
-  {
-    // uhhhh probably not ack_serial here either? wtf did i do?
-    /*p21.TOLU*/ wire INT_VBLn = not(PARU_IN_VBLANK);
-    /*p02.LUFE*/ wire INT_STAT_ACK = not(cpu_pins.ACK_SERIAL);
-    /*p02.SULO*/ wire SULO = or(cpu_pins.D3, FF0F_WRn);
-    /*p02.TOME*/ wire FF0F_SET3 = nand(FF0F_WRa, INT_STAT_ACK, cpu_pins.D3);
-    /*p02.TUNY*/ wire FF0F_RST3 = and(SULO, INT_STAT_ACK, ALUR_RSTn);
-    /*p21.TAPA*/ wire TAPA_INT_OAM = and(INT_VBLn, SELA_NEW_LINE_d0);
-    /*p21.TARU*/ wire TARU_INT_HBL = and(INT_VBLn, WODU_RENDER_DONE);
-    /*p21.SUKO*/ wire INT_STATb = amux4(vid_reg.INT_LYC_EN, vid_reg.ROPO_LY_MATCH_SYNC,
-      vid_reg.INT_OAM_EN, TAPA_INT_OAM,
-      vid_reg.INT_VBL_EN, PARU_IN_VBLANK, // polarity?
-      vid_reg.INT_HBL_EN, TARU_INT_HBL);
-    /*p21.TUVA*/ wire TUVA_INT_STATn = not(INT_STATb);
-    /*p21.VOTY*/ wire VOTY_INT_STAT  = not(TUVA_INT_STATn);
-    /*p02.LALU*/ int_reg.FF0F_3.set(VOTY_INT_STAT,     FF0F_SET3, FF0F_RST3, FF0F_IN);
-  }
-}
 #endif
 
-//-----------------------------------------------------------------------------
+void LCD::tock(int phase, const Req& req, bool VID_RST) {
+  
+  if (PHASE_B) {
+    bool posedge_line_d4 = posedge(NEW_LINE_d4, NEW_LINE_d0);
 
-void LCD::tick() {
+    /*p21.MYTA*/ LINE_153_d4 = Y == 153;
+    /*p21.POPU*/ IN_VBLANK_d4 = Y >= 144;
+
+    X = NEW_LINE_d0 ? 0 : X + 1;
+
+    VSYNC_OUTn = Y != 0;
+  }
+
+  if (PHASE_F) {
+    /*p21.RUTU*/ NEW_LINE_d0 = X == 113;
+
+    if (NEW_LINE_d0) {
+      Y++;
+      if (LINE_153_d4) Y = 0;
+    }
+
+  }
+
+  /*p21.RYNO*/ bool CPGn = (X == 0) || (X == 7) || (X == 45) || (X == 83) || NEW_LINE_d0;
+  /*p21.POGU*/ PIN_CPG = !CPGn;
+
+#if 0
+  /*p21.SEMU*/ wire CPn  = or(and(CLKPIPE_AxCxExGx, lcd_reg.CPEN_LATCH), FINE_MATCH_TRIG);
+  lcd_pins.CP.set(not(CPn));
+#endif
+
+
+#if 0
+  lcd_pins.ST.set(RUZE_PIN_ST);
+  /*p24.POME*/ lcd_reg.POME.sr_latch(lcd_reg.X_8_SYNC || TOFU_VID_RST, AVAP_SCAN_DONE_d0_TRIG);   // Latch loop
+  /*p24.RUJU*/ lcd_reg.RUJU.sr_latch(lcd_reg.X_8_SYNC || TOFU_VID_RST, AVAP_SCAN_DONE_d0_TRIG);
+  /*p24.RUZE*/ wire RUZE_PIN_ST = lcd_reg.RUJU;
+  lcd_pins.ST.set(RUZE_PIN_ST);
+#endif
+
+  /*p24.KYMO*/ PIN_CPL = !NEW_LINE_d0;
+
+#if 0
+  {
+    // if LCDC_ENn, FR = 4k div clock. Otherwise FR = xor(LINE_EVEN,FRAME_EVEN)
+    /*p24.LUCA*/ LINE_EVEN .set(!NEW_LINE_d0, LYFE_VID_RSTn, !lcd_reg.LINE_EVEN);
+    /*p21.NAPO*/ FRAME_EVEN.set(IN_VBLANK_d4, LYFE_VID_RSTn, !lcd_reg.FRAME_EVEN);
+    /*p24.KEBO*/ wire KEBO = xor(FRAME_EVEN, LINE_EVEN);
+    /*p01.UREK*/ wire DIV_07n = not(tim_reg.DIV_07);
+    /*p24.KUPA*/ wire FRn  = amux2(LCDC_EN, KEBO, !LCDC_EN, DIV_07);
+    lcd_pins.FR.set(not(FRn));
+  }
+#endif
+
+  /*p24.MURE*/ PIN_S   = !VSYNC_OUTn;
+
+
+  if (VID_RST) reset();
 }
 
 //-----------------------------------------------------------------------------
 
-void LCD::tock() {
-}
-
-//-----------------------------------------------------------------------------
-
-void LCD::dump_regs(TextPainter& text_painter) {
-  text_painter.dprintf(" ----- LCD REG -----\n");
+void LCD::dump(std::string& d) {
+  //text_painter.dprintf(" ----- LCD REG -----\n");
 
   /*
   dump(text, "LCD X ", X0, X1, X2, X3, X4, X5, X6);
@@ -133,7 +158,7 @@ void LCD::dump_regs(TextPainter& text_painter) {
   dump_long(text, "LINE_EVEN         ", LINE_EVEN.a        );
   dump_long(text, "FRAME_EVEN        ", FRAME_EVEN.a       );
   */
-  text_painter.newline();
+  //text_painter.newline();
 }
 
 //-----------------------------------------------------------------------------

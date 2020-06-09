@@ -208,11 +208,7 @@ void Z80::set_addr(uint16_t new_addr, int new_write) {
   bus_req.write = (bool)new_write;
 }
 
-#define R_ROW reg(OP_ROW, ack)
-#define R_COL reg(OP_COL, ack)
-#define R_CB  reg(CB_COL, ack)
-
-#define GET_CB    get_reg(CB_COL, ack)
+#define GET_CB    get_reg(CB_COL)
 #define SET_CB(A) set_reg(CB_COL, A)
 
 #define PIPE_BUSY
@@ -349,7 +345,7 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && STOP)                   /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
     if (state == 0 && DI)                     /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
     if (state == 0 && EI)                     /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
-    if (state == 0 && MV_R_R)                 /**/ { set_reg(OP_ROW, get_reg(OP_COL, ack));      /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 0 && MV_R_R)                 /**/ { set_reg(OP_ROW, get_reg(OP_COL));           /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && LD_SP_HL)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
     if (state == 1 && LD_SP_HL)               /**/ {                                             /**/ PIPE_BUSY;       spl = l;                     /**/ PIPE_BUSY;                   sph = h;                  set_addr(pc, 0); state_ = 0; }
@@ -359,9 +355,9 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
                                                                                                                                                                                       
     // 8-bit alu                                                                                                                                                                                                                 
                                                                                                                                                                                       
-    if (state == 0 && ALU_A_R)                /**/ { alu_y = get_reg(OP_COL, ack);               /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
-    if (state == 0 && INC_R)                  /**/ { alu_x = get_reg(OP_ROW, ack);               /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(1, F_CARRY));     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xE0); }
-    if (state == 0 && DEC_R)                  /**/ { alu_x = get_reg(OP_ROW, ack);               /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(3, F_CARRY));     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xE0); }
+    if (state == 0 && ALU_A_R)                /**/ { alu_y = get_reg(OP_COL);                    /**/ alu_x = a;       pcl = inc(pcl, 1);           /**/ a = alu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
+    if (state == 0 && INC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(1, F_CARRY));     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xE0); }
+    if (state == 0 && DEC_R)                  /**/ { alu_x = get_reg(OP_ROW);                    /**/                  pcl = inc(pcl, 1);           /**/ set_reg(OP_ROW, alu(3, F_CARRY));     pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xE0); }
     if (state == 0 && RLC_A)                  /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
     if (state == 0 && RRC_A)                  /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
     if (state == 0 && RL_A)                   /**/ { alu_x = a;                                  /**/                  pcl = inc(pcl, 1);           /**/ a = rlu(OP_ROW, f);          pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(0xF0); }
@@ -451,7 +447,7 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && LDM_R_HL)               /**/ {                                             /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 0); state_ = 1; }
     if (state == 1 && LDM_R_HL)               /**/ { set_reg(OP_ROW, ack.data);                  /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
-    if (state == 0 && STM_HL_R)               /**/ { out = get_reg(OP_COL, ack);                 /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 1); state_ = 1; }
+    if (state == 0 && STM_HL_R)               /**/ { out = get_reg(OP_COL);                      /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 1); state_ = 1; }
     if (state == 1 && STM_HL_R)               /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && STM_HL_D8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
@@ -653,7 +649,7 @@ void Z80::tock_h(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
 
 //-----------------------------------------------------------------------------
 
-uint8_t Z80::get_reg(int mux, const Ack& ack) {
+uint8_t Z80::get_reg(int mux) {
   switch(mux) {
   case 0: return b;
   case 1: return c;

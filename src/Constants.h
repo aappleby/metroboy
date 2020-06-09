@@ -27,6 +27,9 @@ constexpr int samples_per_frame = output_hz / 60;
 #define PHASE_G ((phase & 7) == 6)
 #define PHASE_H ((phase & 7) == 7)
 
+#define PHASE_HI ((phase & 1) == 1)
+#define PHASE_LO ((phase & 1) == 0)
+
 //-----------------------------------------------------------------------------
 // Memory map
 

@@ -52,7 +52,7 @@ void Bootrom::reset(uint16_t new_pc) {
 //-----------------------------------------------------------------------------
 
 void Bootrom::tock(int phase, const Req& req) {
-  if (req.write && req.addr == ADDR_DISABLE_BOOTROM) {
+  if (PHASE_F && req.write && req.addr == ADDR_DISABLE_BOOTROM) {
     disable_bootrom |= (req.data != 0);
   }
 }

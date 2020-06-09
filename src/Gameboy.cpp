@@ -72,6 +72,8 @@ void Gameboy::tick(int phase_, const Req& req, Ack& ack) const {
 //-----------------------------------------------------------------------------
 
 void Gameboy::tick_gb() {
+  auto& self = *this;
+
   int64_t tphase2 = (phase & 7);
 
   //-----------------------------------
@@ -104,15 +106,13 @@ void Gameboy::tick_gb() {
   zram.  tick(phase, ibus_req, ibus_ack);
   spu.   tick(phase, ibus_req, ibus_ack);
   boot.  tick(phase, ibus_req, ibus_ack);
-
-  this-> tick(phase, ibus_req, ibus_ack);
+  self.  tick(phase, ibus_req, ibus_ack);
   dma1.  tick(phase, ibus_req, ibus_ack);
   timer2.tick(phase, ibus_req, ibus_ack);
-
-  cart.tick_ack(ebus_ack);
-  iram.tick(phase, ebus_req, ebus_ack);
-  vram.tick_ack(vbus_ack);
-  oam.tick_ack(obus_ack);
+  cart.  tick_ack(ebus_ack);
+  iram.  tick(phase, ebus_req, ebus_ack);
+  vram.  tick_ack(vbus_ack);
+  oam.   tick_ack(obus_ack);
 
   /*
   if (ibus_ack.read  > 1) __debugbreak();
@@ -196,12 +196,10 @@ void Gameboy::tock_gb() {
     iram.  tock(phase, ebus_req);
     vram.  tock_req(vbus_req);
     oam.   tock_req(obus_req);
-
-    ppu .tock(phase, ibus_req);
-    spu .tock(phase, ibus_req);
-    self.tock(phase, ibus_req);
-    dma1.tock(phase, ibus_req);
-    dma2.tock(phase, ibus_req);
+    ppu.   tock(phase, ibus_req);
+    self.  tock(phase, ibus_req);
+    dma1.  tock(phase, ibus_req);
+    dma2.  tock(phase, ibus_req);
 
     //----------
 

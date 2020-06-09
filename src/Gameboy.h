@@ -144,15 +144,6 @@ struct Gameboy {
 
   //----------
 
-  Req cpu_req;
-  Ack cpu_ack;
-
-  Req dma_ebus_req;
-  Req dma_vbus_req;
-  Req dma_obus_req;
-  Req ppu_vbus_req;
-  Req ppu_obus_req;
-
   Req ibus_req;
   Ack ibus_ack;
 
@@ -164,6 +155,8 @@ struct Gameboy {
 
   Req vbus_req;
   Ack vbus_ack;
+
+  Ack cpu_ack;
 
   //----------
 

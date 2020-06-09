@@ -199,10 +199,12 @@ void PPU::get_vbus_req(Req& r) const {
     fetch_addr = 0;
   }
 
-  r.addr  = fetch_addr;
-  r.data  = 0;
-  r.read  = fetch_type != FETCH_NONE;
-  r.write = 0;
+  if (fetch_type != FETCH_NONE) {
+    r.addr  = fetch_addr;
+    r.data  = 0;
+    r.read  = 1;
+    r.write = 0;
+  }
 }
 
 //----------------------------------------
@@ -227,10 +229,12 @@ void PPU::get_obus_req(Req& r) const {
     fetch_addr = 0;
   }
 
-  r.addr  = fetch_addr;
-  r.data  = 0;
-  r.read  = fetch_addr != 0;
-  r.write = 0;
+  if (fetch_addr != 0) {
+    r.addr  = fetch_addr;
+    r.data  = 0;
+    r.read  = 1;
+    r.write = 0;
+  }
 }
 
 //-----------------------------------------------------------------------------

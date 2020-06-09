@@ -13,9 +13,8 @@ struct DMA1 {
   void get_vbus_req(Req& r) const;
   void get_obus_req(Req& r) const;
 
-  void on_ebus_ack(const Ack& ibus_ack);
+  void on_ebus_ack(const Ack& ebus_ack);
   void on_vbus_ack(const Ack& vbus_ack);
-  void on_obus_ack(const Ack& obus_ack);
 
   void tick(int phase, const Req& ibus_req, Ack& ibus_ack) const;
   void tock(int phase, const Req& ibus_req);

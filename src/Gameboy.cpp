@@ -41,7 +41,6 @@ void Gameboy::reset(uint16_t new_pc) {
   intf = 0xE1;
   imask = 0x00;
 
-  cpu_req  = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
   ebus_req = {.addr = new_pc, .data = 0x00, .read = 1, .write = 0 };
   ebus_ack = {.addr = new_pc, .data = 0x00, .read = 1 };
 
@@ -125,39 +124,27 @@ void Gameboy::tick_gb() {
   if (obus_ack.write > 1) __debugbreak();
   */
 
-  bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
-  bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
-  bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
+  bool cpu_has_ibus_req = ibus_req.addr >= ADDR_IOBUS_BEGIN;
+  bool cpu_has_vbus_req = ibus_req.addr >= ADDR_VRAM_BEGIN && ibus_req.addr <= ADDR_VRAM_END;
+  bool cpu_has_obus_req = ibus_req.addr >= ADDR_OAM_BEGIN  && ibus_req.addr <= ADDR_OAM_END;
   bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
+
+  dma1.on_ebus_ack(ebus_ack);
+  dma1.on_vbus_ack(vbus_ack);
+
+  ppu.on_vbus_ack(vbus_ack);
+  ppu.on_obus_ack(obus_ack);
 
   cpu_ack = {};
 
   if (cpu_has_ibus_req) {
     cpu_ack = ibus_ack;
   }
-
-  if (dma_ebus_req) {
-    dma1.on_ebus_ack(ebus_ack);
-  }
   else if (cpu_has_ebus_req) {
     cpu_ack = ebus_ack;
   }
-
-  if (dma_vbus_req) {
-    dma1.on_vbus_ack(vbus_ack);
-  }
-  else if (ppu_vbus_req.read) {
-    ppu.on_vbus_ack(vbus_ack);
-  }
   else if (cpu_has_vbus_req) {
     cpu_ack = vbus_ack;
-  }
-
-  if (dma_obus_req) {
-    dma1.on_obus_ack(obus_ack);
-  }
-  else if (ppu_obus_req) {
-    ppu.on_obus_ack(obus_ack);
   }
   else if (cpu_has_obus_req) {
     cpu_ack = obus_ack;
@@ -187,19 +174,22 @@ void Gameboy::tock_gb() {
   timer2.tock(phase, ibus_req);
 
   if (PHASE_B || PHASE_D || PHASE_F || PHASE_H) {
+    self.  tock(phase, ibus_req);
     serial.tock(phase, ibus_req);
     joypad.tock(phase, ibus_req);
     zram.  tock(phase, ibus_req);
     spu.   tock(phase, ibus_req);
     boot.  tock(phase, ibus_req);
-    cart.  tock(phase, ebus_req);
-    iram.  tock(phase, ebus_req);
-    vram.  tock(phase, vbus_req);
-    oam.   tock(phase, obus_req);
     ppu.   tock(phase, ibus_req);
-    self.  tock(phase, ibus_req);
     dma1.  tock(phase, ibus_req);
     dma2.  tock(phase, ibus_req);
+
+    cart.  tock(phase, ebus_req);
+    iram.  tock(phase, ebus_req);
+
+    vram.  tock(phase, vbus_req);
+
+    oam.   tock(phase, obus_req);
 
     //----------
 
@@ -220,75 +210,31 @@ void Gameboy::tock_gb() {
     }
 
     //-----------------------------------
-    // gather reqs
-
-    z80.get_bus_req(cpu_req);
-
-    dma1.get_ebus_req(dma_ebus_req);
-    dma1.get_vbus_req(dma_vbus_req);
-    dma1.get_obus_req(dma_obus_req);
-
-    ppu.get_vbus_req(ppu_vbus_req);
-    ppu.get_obus_req(ppu_obus_req);
-
-    //-----------------------------------
     // prioritize reqs
 
+    /*
     bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
     bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
     bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
     bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
 
-    bool dma_has_vbus_req = (PHASE_B || PHASE_D) && dma2.DMA_RUN && (dma2.addr >= ADDR_VRAM_BEGIN && dma2.addr <= ADDR_VRAM_END);
     bool dma_has_ebus_req = (PHASE_B || PHASE_D) && dma2.DMA_RUN && (dma2.addr >= ADDR_ROM_BEGIN  && dma2.addr <= ADDR_ROM_END);
+    bool dma_has_vbus_req = (PHASE_B || PHASE_D) && dma2.DMA_RUN && (dma2.addr >= ADDR_VRAM_BEGIN && dma2.addr <= ADDR_VRAM_END);
     bool dma_has_obus_req = (PHASE_F || PHASE_H) && dma2.DMA_RUN;
+    */
 
-    // ibus
-    if (cpu_has_ibus_req) {
-      ibus_req = cpu_req;
-    }
-    else {
-      ibus_req = {0};
-    }
+    z80.get_bus_req(ibus_req);
 
-    // ebus
-    if (dma_has_ebus_req) {
-      ebus_req = dma_ebus_req;
-    }
-    else if (cpu_has_ebus_req) {
-      ebus_req = cpu_req;
-    }
-    else {
-      ebus_req = {0};
-    }
+    ebus_req = ibus_req;
+    dma1.get_ebus_req(ebus_req);
 
-    // vbus
-    if (dma_has_vbus_req) {
-      vbus_req = dma_vbus_req;
-    }
-    else if (ppu_vbus_req) {
-      vbus_req = ppu_vbus_req;
-    }
-    else if (cpu_has_vbus_req) {
-      vbus_req = cpu_req;
-    }
-    else {
-      vbus_req = {0};
-    }
+    vbus_req = ibus_req;
+    ppu.get_vbus_req(vbus_req);
+    dma1.get_vbus_req(vbus_req);
 
-    // obus
-    if (dma_has_obus_req) {
-      obus_req = dma_obus_req;
-    }
-    else if (ppu_obus_req) {
-      obus_req = ppu_obus_req;
-    }
-    else if (cpu_has_obus_req) {
-      obus_req = cpu_req;
-    }
-    else {
-      obus_req = {0};
-    }
+    obus_req = ibus_req;
+    ppu.get_obus_req(obus_req);
+    dma1.get_obus_req(obus_req);
   }
 }
 
@@ -323,47 +269,6 @@ void Gameboy::dump_bus(std::string& d) {
   sprintf(d, "boot   %d\n", boot.disable_bootrom);
   sprintf(d, "\n");
 
-  {
-    bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
-    bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
-    bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
-    bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
-
-    char cpu_dir = cpu_req.write ? 'W' : cpu_req.read ? 'R' : '?';
-
-    int cpu_to_ibus = cpu_has_ibus_req ? cpu_dir : ' ';
-    int cpu_to_ebus = cpu_has_ebus_req ? cpu_dir : ' ';
-    int cpu_to_vbus = cpu_has_vbus_req ? cpu_dir : ' ';
-    int cpu_to_obus = cpu_has_obus_req ? cpu_dir : ' ';
-
-    int dma_to_ebus = dma_ebus_req.read  ? 'R' : ' ';
-    int dma_to_vbus = dma_vbus_req.read  ? 'R' : ' ';
-    int dma_to_obus = dma_obus_req.write ? 'W' : ' ';
-
-    int ppu_to_vbus = ppu_vbus_req.read ? 'R' : ' ';
-    int ppu_to_obus = ppu_obus_req.read ? 'O' : ' ';
-
-    if (dma_ebus_req.read) {
-      cpu_to_ebus = tolower(cpu_to_ebus);
-    }
-
-    sprintf(d, "     |cpu|dma|ppu|\n");
-    sprintf(d, " ibus|  %c|  %c|  %c|\n", cpu_to_ibus, ' ', ' ');
-    sprintf(d, " ebus|  %c|  %c|  %c|\n", cpu_to_ebus, dma_to_ebus, ' ');
-    sprintf(d, " vbus|  %c|  %c|  %c|\n", cpu_to_vbus, dma_to_vbus, ppu_to_vbus);
-    sprintf(d, " obus|  %c|  %c|  %c|\n", cpu_to_obus, dma_to_obus, ppu_to_obus);
-    sprintf(d, "\n");
-  }
-
-  /*
-  sprintf(d, "---CPU:         "); print_req(d, cpu_req);
-  sprintf(d, "---DMA to EBUS: "); print_req(d, dma_ebus_req);
-  sprintf(d, "---DMA to VBUS: "); print_req(d, dma_vbus_req);
-  sprintf(d, "---DMA to OBUS: "); print_req(d, dma_obus_req);
-  sprintf(d, "---PPU to VBUS: "); print_req(d, ppu_vbus_req);
-  sprintf(d, "---PPU to OBUS: "); print_req(d, ppu_obus_req);
-  sprintf(d, "\n");
-
   sprintf(d, "---IBUS req:    "); print_req(d, ibus_req);
   sprintf(d, "---IBUS ack:    "); print_ack(d, ibus_ack);
   sprintf(d, "---EBUS req:    "); print_req(d, ebus_req);
@@ -372,7 +277,7 @@ void Gameboy::dump_bus(std::string& d) {
   sprintf(d, "---VBUS ack:    "); print_ack(d, vbus_ack);
   sprintf(d, "---OBUS req:    "); print_req(d, obus_req);
   sprintf(d, "---OBUS ack:    "); print_ack(d, obus_ack);
-  */
+  sprintf(d, "---CPU  ack:    "); print_ack(d, cpu_ack);
 }
 
 void Gameboy::dump_zram(std::string& d) {

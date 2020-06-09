@@ -8,28 +8,34 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 void DMA1::get_ebus_req(Req& r) const {
-  r.addr  = uint16_t((source_a << 8) | count_a);
-  r.data  = 0;
-  r.read  = (mode_a != Mode::NONE) && ((source_a >> 5) != 4);
-  r.write = 0;
+  if ((mode_a != Mode::NONE) && ((source_a >> 5) != 4)) {
+    r.addr  = uint16_t((source_a << 8) | count_a);
+    r.data  = 0;
+    r.read  = 1;
+    r.write = 0;
+  }
 }
 
 //----------------------------------------
 
 void DMA1::get_vbus_req(Req& r) const {
-  r.addr  = uint16_t((source_a << 8) | count_a);
-  r.data  = 0;
-  r.read  = (mode_a != Mode::NONE) && ((source_a >> 5) == 4);
-  r.write = 0;
+  if ((mode_a != Mode::NONE) && ((source_a >> 5) == 4)) {
+    r.addr  = uint16_t((source_a << 8) | count_a);
+    r.data  = 0;
+    r.read  = 1;
+    r.write = 0;
+  }
 }
 
 //----------------------------------------
 
 void DMA1::get_obus_req(Req& r) const {
-  r.addr  = uint16_t(ADDR_OAM_BEGIN + count_b);
-  r.data  = data_b;
-  r.read  = 0;
-  r.write = (mode_b != Mode::NONE);
+  if (mode_b != Mode::NONE) {
+    r.addr  = uint16_t(ADDR_OAM_BEGIN + count_b);
+    r.data  = data_b;
+    r.read  = 0;
+    r.write = 1;
+  }
 }
 
 //----------------------------------------
@@ -48,12 +54,6 @@ void DMA1::on_vbus_ack(const Ack& vbus_ack) {
   if (vbus_ack.read == 1 && vbus_ack.addr == src_addr) {
     data_b = uint8_t(vbus_ack.data);
   }
-}
-
-//----------------------------------------
-
-void DMA1::on_obus_ack(const Ack& /*obus_ack*/) {
-  // nothing to do here?
 }
 
 //-----------------------------------------------------------------------------

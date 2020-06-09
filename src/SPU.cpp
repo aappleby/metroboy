@@ -39,32 +39,17 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-void SPU::tock_req(const Req& req) {
-  ack = {0};
-
-  if (req.addr < 0xFF10 || req.addr > 0xFF3F) {
-    return;
-  }
-  else if (req.read)  {
-    bus_read(req);
-  }
-  else if (req.write) {
-    bus_write(req);
-  }
-  else {
-    assert(false);
-  }
-}
-
-void SPU::tick_ack(Ack& ack_) {
-  ack_.addr  += ack.addr;
-  ack_.data  += ack.data;
-  ack_.read  += ack.read;
+void SPU::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read) bus_read(req, ack);
 }
 
 //-----------------------------------------------------------------------------
 
-void SPU::tock(const int phase) {
+void SPU::tock(int phase, const Req& req) {
+  if (req.write) {
+    bus_write(req);
+  }
+
   const int tphase = (phase / 2) & 3;
   if (tphase != 0) return;
 
@@ -328,19 +313,14 @@ void SPU::tock(const int phase) {
 
 //-----------------------------------------------------------------------------
 
-void SPU::bus_read(const Req& req) {
-
-  ack = {0};
-
+void SPU::bus_read(const Req& req, Ack& ack) const {
   if (req.addr < 0xFF10) return;
   if (req.addr > 0xFF26 && req.addr < 0xFF30) return;
   if (req.addr > 0xFF3F) return;
-  
-  ack = {
-    .addr  = req.addr,
-    .data  = 0,
-    .read  = 1,
-  };
+
+  ack.addr = req.addr;
+  ack.data = 0;
+  ack.read++;
 
   //----------
   // wavetable
@@ -362,7 +342,7 @@ void SPU::bus_read(const Req& req) {
   case 0xFF17: ack.data = nr22 | 0x00; break;
   case 0xFF18: ack.data = nr23 | 0xFF; break;
   case 0xFF19: ack.data = nr24 | 0xBF; break;
-  
+
   case 0xFF1A: ack.data = nr30 | 0x7F; break;
   case 0xFF1B: ack.data = nr31 | 0xFF; break;
   case 0xFF1C: ack.data = nr32 | 0x9F; break;
@@ -394,12 +374,6 @@ void SPU::bus_read(const Req& req) {
 
 void SPU::bus_write(const Req& req) {
   bool sound_on = (nr52 & 0x80);
-
-  ack = {
-    .addr  = req.addr,
-    .data  = req.data,
-    .read  = 0,
-  };
 
   if (!sound_on) {
     if (req.addr == 0xFF26) {

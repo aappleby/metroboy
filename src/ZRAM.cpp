@@ -10,36 +10,18 @@ void ZRAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-void ZRAM::tock_req(const Req& req) {
-  const bool zram_hit = ((req.addr & 0xFF80) == 0xFF80) && (req.addr != 0xFFFF);
-
-  if (!zram_hit) {
-    ack = {0};
-  }
-  else if (req.write) {
+void ZRAM::tock(int phase, const Req& req) {
+  if (req.write && ((req.addr & 0xFF80) == 0xFF80) && (req.addr != 0xFFFF)) {
     ram[req.addr & 0x007F] = (uint8_t)req.data;
-    ack = {
-      .addr  = req.addr,
-      .data  = 0,
-      .read  = 0,
-    };
-  }
-  else if (req.read) {
-    ack = {
-      .addr  = req.addr,
-      .data  = ram[req.addr & 0x007F],
-      .read  = 1,
-    };
-  }
-  else {
-    __debugbreak();
   }
 }
 
-void ZRAM::tick_ack(Ack& ack_) const {
-  ack_.addr  += ack.addr;
-  ack_.data  += ack.data;
-  ack_.read  += ack.read;
+void ZRAM::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read && ((req.addr & 0xFF80) == 0xFF80) && (req.addr != 0xFFFF)) {
+    ack.addr = req.addr;
+    ack.data = ram[req.addr & 0x007F];
+    ack.read++;
+  }
 }
 
 //-----------------------------------------------------------------------------

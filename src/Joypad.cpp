@@ -3,42 +3,27 @@
 #include <assert.h>
 
 void Joypad::reset() {
-  ack = {0};
   val = 0xFF;
   p1 = 0xCF; // FF00
 }
 
-void Joypad::tock_req(const Req& req) {
-  if (req.addr != ADDR_P1) {
-    ack = {0};
-  }
-  else if (req.read) {
-    ack = {
-      .addr  = req.addr,
-      .data  = p1,
-      .read  = 1,
-    };
-  }
-  else if (req.write) {
+void Joypad::tock(int phase, const Req& req) {
+  if (req.write && req.addr == ADDR_P1) {
     p1 = (p1 & 0xCF) | (req.data & 0x30);
     switch (p1 & 0x30) {
     case 0x00: p1 = (p1 & 0xF0) | 0x0F; break;
     case 0x10: p1 = (p1 & 0xF0) | ((val >> 4) & 0xF); break;
     case 0x20: p1 = (p1 & 0xF0) | ((val >> 0) & 0xF); break;
     }
-
-    ack = {
-      .addr  = req.addr,
-      .data  = req.data,
-      .read  = 0,
-    };
   }
 }
 
-void Joypad::tick_ack(Ack& ack_) const {
-  ack_.addr  += ack.addr;
-  ack_.data  += ack.data;
-  ack_.read  += ack.read;
+void Joypad::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read && req.addr == ADDR_P1) {
+    ack.addr = req.addr;
+    ack.data = p1;
+    ack.read++;
+  }
 }
 
 void Joypad::set(uint8_t new_val) {

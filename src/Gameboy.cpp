@@ -100,9 +100,9 @@ void Gameboy::tick_gb() {
 
   ppu.   tick(phase, ibus_req, ibus_ack);
   serial.tick(phase, ibus_req, ibus_ack);
-  joypad.tick_ack(ibus_ack);
-  zram.  tick_ack(ibus_ack);
-  spu.   tick_ack(ibus_ack);
+  joypad.tick(phase, ibus_req, ibus_ack);
+  zram.  tick(phase, ibus_req, ibus_ack);
+  spu.   tick(phase, ibus_req, ibus_ack);
   boot.  tick_ack(ibus_ack);
 
   this-> tick(phase, ibus_req, ibus_ack);
@@ -188,9 +188,9 @@ void Gameboy::tock_gb() {
 
   if (PHASE_B || PHASE_D || PHASE_F || PHASE_H) {
     serial.tock(phase, ibus_req);
-    joypad.tock_req(ibus_req);
-    zram.  tock_req(ibus_req);
-    spu.   tock_req(ibus_req);
+    joypad.tock(phase, ibus_req);
+    zram.  tock(phase, ibus_req);
+    spu.   tock(phase, ibus_req);
     boot.  tock_req(ibus_req);
     cart.  tock_req(ebus_req);
     iram.  tock(phase, ebus_req);
@@ -198,7 +198,7 @@ void Gameboy::tock_gb() {
     oam.   tock_req(obus_req);
 
     ppu .tock(phase, ibus_req);
-    spu .tock(phase);
+    spu .tock(phase, ibus_req);
     self.tock(phase, ibus_req);
     dma1.tock(phase, ibus_req);
     dma2.tock(phase, ibus_req);

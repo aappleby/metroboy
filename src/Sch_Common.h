@@ -253,6 +253,12 @@ struct Signal : public SignalBase {
 
 struct Gate : public SignalBase {
 
+  void preset(bool val) {
+    if (!b.error) __debugbreak();
+    a = val ? SET_1 : SET_0;
+    b = ERROR;
+  }
+
   void operator = (wire val) {
     if ( a.error) __debugbreak();
     if (!b.error) __debugbreak();

@@ -7,7 +7,7 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-void DMA::get_ebus_req(Req& r) const {
+void DMA1::get_ebus_req(Req& r) const {
   r.addr  = uint16_t((source_a << 8) | count_a);
   r.data  = 0;
   r.read  = (mode_a != Mode::NONE) && ((source_a >> 5) != 4);
@@ -16,7 +16,7 @@ void DMA::get_ebus_req(Req& r) const {
 
 //----------------------------------------
 
-void DMA::get_vbus_req(Req& r) const {
+void DMA1::get_vbus_req(Req& r) const {
   r.addr  = uint16_t((source_a << 8) | count_a);
   r.data  = 0;
   r.read  = (mode_a != Mode::NONE) && ((source_a >> 5) == 4);
@@ -25,7 +25,7 @@ void DMA::get_vbus_req(Req& r) const {
 
 //----------------------------------------
 
-void DMA::get_obus_req(Req& r) const {
+void DMA1::get_obus_req(Req& r) const {
   r.addr  = uint16_t(ADDR_OAM_BEGIN + count_b);
   r.data  = data_b;
   r.read  = 0;
@@ -34,7 +34,7 @@ void DMA::get_obus_req(Req& r) const {
 
 //----------------------------------------
 
-void DMA::on_ebus_ack(const Ack& ebus_ack) {
+void DMA1::on_ebus_ack(const Ack& ebus_ack) {
   uint16_t src_addr = uint16_t((source_a << 8) | count_a);
   if (ebus_ack.read == 1 && ebus_ack.addr == src_addr) {
     data_b = uint8_t(ebus_ack.data);
@@ -43,7 +43,7 @@ void DMA::on_ebus_ack(const Ack& ebus_ack) {
 
 //----------------------------------------
 
-void DMA::on_vbus_ack(const Ack& vbus_ack) {
+void DMA1::on_vbus_ack(const Ack& vbus_ack) {
   uint16_t src_addr = uint16_t((source_a << 8) | count_a);
   if (vbus_ack.read == 1 && vbus_ack.addr == src_addr) {
     data_b = uint8_t(vbus_ack.data);
@@ -52,60 +52,26 @@ void DMA::on_vbus_ack(const Ack& vbus_ack) {
 
 //----------------------------------------
 
-void DMA::on_obus_ack(const Ack& /*obus_ack*/) {
+void DMA1::on_obus_ack(const Ack& /*obus_ack*/) {
   // nothing to do here?
 }
 
 //-----------------------------------------------------------------------------
 
-void DMA::tock_req(const Req& ibus_req) {
-  ack = {0};
-  if (ibus_req.addr != ADDR_DMA) return;
-
-  if (ibus_req.write) {
-    //printf("%08d DMA write 0x%02x\n", tcycle, ibus_req.data);
-
-    if (ibus_req.data <= 0x7F) mode_x = Mode::CART;
-    if (0x80 <= ibus_req.data && ibus_req.data <= 0x9F) mode_x = Mode::VRAM;
-    if (0xA0 <= ibus_req.data && ibus_req.data <= 0xBF) mode_x = Mode::CART;
-    if (0xC0 <= ibus_req.data && ibus_req.data <= 0xFD) mode_x = Mode::IRAM;
-    count_x = 0;
-    source_x = ibus_req.data;
-
-    ack = {
-      .addr  = ibus_req.addr,
-      .data  = ibus_req.data,
-      .read  = 0,
-      .write = 1,
-    };
+void DMA1::tick(int phase, const Req& req, Ack& ack) const {
+  if (req.read && req.addr == ADDR_DMA) {
+    ack.addr  += req.addr;
+    ack.data  += source_x;
+    ack.read  += req.read;
+    ack.write += req.write;
   }
-
-  if (ibus_req.read) {
-    ack = {
-      .addr  = ibus_req.addr,
-      .data  = source_x,
-      .read  = 1,
-      .write = 0,
-    };
-  }
-}
-
-void DMA::tick_ack(Ack& ibus_ack) const {
-  ibus_ack.addr  += ack.addr;
-  ibus_ack.data  += ack.data;
-  ibus_ack.read  += ack.read;
-  ibus_ack.write += ack.write;
 }
 
 //-----------------------------------------------------------------------------
 
-void DMA::tock(int tcycle) {
-  //if (mode_x != Mode::NONE) __debugbreak();
-  //if (mode_a != Mode::NONE) __debugbreak();
-  //if (mode_b != Mode::NONE) __debugbreak();
+void DMA1::tock(int phase, const Req& ibus_req) {
 
-  int tphase = tcycle & 3;
-  if (tphase == 0) {
+  if (PHASE_B) {
     mode_b = mode_a;
     count_b = count_a;
 
@@ -116,11 +82,22 @@ void DMA::tock(int tcycle) {
     if (mode_x != Mode::NONE) count_x++;
     if (count_x == 160) mode_x = Mode::NONE;
   }
+
+  if (PHASE_F && ibus_req.write && ibus_req.addr == ADDR_DMA) {
+    //printf("%08d DMA write 0x%02x\n", tcycle, ibus_req.data);
+
+    if (ibus_req.data <= 0x7F) mode_x = Mode::CART;
+    if (0x80 <= ibus_req.data && ibus_req.data <= 0x9F) mode_x = Mode::VRAM;
+    if (0xA0 <= ibus_req.data && ibus_req.data <= 0xBF) mode_x = Mode::CART;
+    if (0xC0 <= ibus_req.data && ibus_req.data <= 0xFD) mode_x = Mode::IRAM;
+    count_x = 0;
+    source_x = ibus_req.data;
+  }
 }
 
 //-----------------------------------------------------------------------------
 
-void DMA::dump(std::string& d) {
+void DMA1::dump(std::string& d) {
   sprintf(d, "\002--------------DMA--------------\001\n");
  
   sprintf(d, "mode_x      %d\n", mode_x);
@@ -168,8 +145,8 @@ void DMA::dump(std::string& d) {
 // META = and2(UVYT, LOKY)
 // LORU = not(LAVY)
 
-/*p28.AMAB*/ wire AMAB = and(ADDR_OAM, !DMA_RUNNING, !ACYL_OAM_ADDR_PARSE, OAM_ADDR_RENDER);
-/*p04.POWU*/ wire POWU = and(DMA_RUNNING, !FROM_CPU5_SYNC, !LUVY);
+/*p28.AMAB*/ wire AMAB = and(ADDR_OAM, !DMA_RUN, !ACYL_OAM_ADDR_PARSE, OAM_ADDR_RENDER);
+/*p04.POWU*/ wire POWU = and(DMA_RUN, !FROM_CPU5_SYNC, !LUVY);
 /*p04.WYJA*/ wire WYJA    = or(and(AMAB, CUPA_BUS_WR_xxxxxFGH), POWU);
 /*p28.ZONE*/ ZONE.set(nand(WYJA,  oam_pins.A0));
 /*p28.ZOFE*/ ZOFE.set(nand(WYJA, !oam_pins.A0));
@@ -229,37 +206,72 @@ if (PHASE_F) {
 // LYXE04 nc
 // LYXE05 << LOKO02
 
+// LUPA00 << LAVY
+// LUPA01 << LYXE
+// LUPA02 >> LUVY
 
+DMA2::DMA2() {
+}
 
 void DMA2::tock(int phase, const Req& req) {
 
-  // reset signal
-  /*p01.CUNU*/ wire CUNU = 1;
 
-  wire UVYT = PHASE_B || PHASE_C || PHASE_D || PHASE_E;
-  wire MOPA = PHASE_A || PHASE_F || PHASE_G || PHASE_H;
+  /*p04.LAVY*/ bool DMA_WR = (req.addr == 0xFF46) && req.write && (PHASE_F || PHASE_G || PHASE_H);
+  /*p04.LOKO*/ bool DMA_RST = DMA_RUN_TRIG_d4;
 
-  /*p07.CUPA*/ CUPA = req.write && (PHASE_F || PHASE_G || PHASE_H);
-  /*p04.LAVY*/ LAVY = (req.addr == 0xFF46) && CUPA;
-  /*p04.NAVO*/ NAVO = (count != 159);
-  /*p04.NOLO*/ NOLO = !NAVO;
-  /*p04.LOKO*/ LOKO = nand(CUNU, !LENE);
-  /*p04.LUPA*/ LUPA = nor(LAVY, LYXE);
-  /*p04.LUVY*/ LUVY.set(UVYT, CUNU, LUPA);
-  /*p04.MATU*/ MATU.set(UVYT, CUNU, LOKY);
-  /*p04.LENE*/ LENE.set(MOPA, CUNU, LUVY);
-  /*p04.MYTE*/ MYTE.set(MOPA, !LOKO,  NOLO);
+  if (PHASE_B) {
+    // something wrong here, inverting this until we figure it out.
+    ///*p04.LUPA*/ bool LUPA = nor(DMA_WR, DMA_WR_LATCH);
+    /*p04.LUPA*/ bool LUPA = or(DMA_WR, DMA_WR_LATCH);
+    /*p04.LUVY*/ DMA_RUN_TRIG_d0 = LUPA;
+    /*p04.MATU*/ DMA_RUN = DMA_RUN_LATCH;
+    if (DMA_RUN_LATCH) addr++;
+  }
 
-  /*p04.LYXE*/ LYXE.sr_latch(LOKO, LAVY);
+  if (PHASE_F) {
+    /*p04.LENE*/ DMA_RUN_TRIG_d4 = DMA_RUN_TRIG_d0;
+    /*p04.MYTE*/ DMA_DONE = (addr & 0xFF) == 159;
+    if (req.write && req.addr == 0xFF46) addr = (addr & 0xFF00) | (req.data << 8);
+  }
 
-  /*p04.LARA*/ LARA = nand(LOKY, CUNU, !MYTE);
-  /*p04.LOKY*/ LOKY = nand(LARA, !LENE);
-  /*p04.META*/ META = and(UVYT, LOKY);
-  /*p04.LORU*/ LORU = not(LAVY);
+  if (DMA_WR)  DMA_WR_LATCH = 1;
+  if (DMA_RST) DMA_WR_LATCH = 0;
 
+  if (DMA_RUN_TRIG_d4) DMA_RUN_LATCH = 1;
+  if (DMA_DONE)        DMA_RUN_LATCH = 0;
+
+  if (DMA_RST) {
+    DMA_DONE = 0;
+    addr = addr & 0xFF00;
+  }
+
+#if 0
+
+  // polarity of xymu seems wrong here
+  /*p28.AJUJ*/ wire OAM_BUSYn = and(!DMA_RUNNING, !ACYL_OAM_ADDR_PARSE, vid_reg.XYMU_RENDERING_LATCH);
+
+  /*p04.POWU*/ wire DMA_WRITE_OAM = and(dma_reg.DMA_RUNNING, !dma_reg.FROM_CPU5_SYNC, !DMA_RUN_TRIG_d0);
+  /*p04.WYJA*/ wire WYJA_OAM_WR = or(and(ADDR_OAM, OAM_BUSYn, CUPA_BUS_WR_xxxxxFGH), DMA_WRITE_OAM);
+
+  /*p28.ZONE*/ oam_pins.WR_A.set(nand(WYJA_OAM_WR, oam_pins.A0));
+  /*p28.ZOFE*/ oam_pins.WR_B.set(nand(WYJA_OAM_WR, not(oam_pins.A0)));
+#endif
+
+
+#if 0
+  /*p04.MUDA*/ wire DMA_VRAM  = and(!dma_reg.DMA_A13, !dma_reg.DMA_A14, dma_reg.DMA_A15);
+  /*p04.LUMA*/ wire LUMA_DMA_READ_CART = and(dma_reg.DMA_RUNNING, !DMA_VRAM);
+#endif
 }
 
 void DMA2::dump(std::string& d) {
+  sprintf(d, "\002--------------DMA2--------------\001\n");
 
-
+  sprintf(d, "DMA_WR_LATCH    %d\n", (bool)DMA_WR_LATCH);
+  sprintf(d, "DMA_RUN_TRIG_d0 %d\n", (bool)DMA_RUN_TRIG_d0);
+  sprintf(d, "DMA_RUN_TRIG_d4 %d\n", (bool)DMA_RUN_TRIG_d4);
+  sprintf(d, "DMA_RUN_LATCH   %d\n", (bool)DMA_RUN_LATCH);
+  sprintf(d, "DMA_RUN         %d\n", (bool)DMA_RUN);
+  sprintf(d, "DMA_DONE        %d\n", (bool)DMA_DONE);
+  sprintf(d, "addr            0x%04x\n", addr);
 }

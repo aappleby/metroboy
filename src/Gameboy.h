@@ -46,45 +46,45 @@ struct Gameboy {
   void sync_to_mcycle() {
     switch(phase & 7) {
     case 0: return;
-    case 1: tick1(); tock2();
-    case 2: tick1(); tock2();
-    case 3: tick1(); tock2();
-    case 4: tick1(); tock2();
-    case 5: tick1(); tock2();
-    case 6: tick1(); tock2();
-    case 7: tick1(); tock2();
+    case 1: tick_gb(); tock_gb();
+    case 2: tick_gb(); tock_gb();
+    case 3: tick_gb(); tock_gb();
+    case 4: tick_gb(); tock_gb();
+    case 5: tick_gb(); tock_gb();
+    case 6: tick_gb(); tock_gb();
+    case 7: tick_gb(); tock_gb();
     }
   }
   
   void mcycle() {
     assert((phase & 7) == 0);
-    tick1();
-    tock2();
-    tick1();
-    tock2();
-    tick1();
-    tock2();
-    tick1();
-    tock2();
-    tick1();
-    tock2();
-    tick1();
-    tock2();
-    tick1();
-    tock2();
-    tick1();
-    tock2();
+    tick_gb();
+    tock_gb();
+    tick_gb();
+    tock_gb();
+    tick_gb();
+    tock_gb();
+    tick_gb();
+    tock_gb();
+    tick_gb();
+    tock_gb();
+    tick_gb();
+    tock_gb();
+    tick_gb();
+    tock_gb();
+    tick_gb();
+    tock_gb();
   }
 
   void halfcycle() {
-    tick1(); tock2();
+    tick_gb(); tock_gb();
   }
 
-  void tock_req(const Req& ibus_req);
-  void tick_ack(Ack& ibus_ack) const;
+  void tick_gb();
+  void tock_gb();
 
-  void tick1();
-  void tock2();
+  void tock(int phase, const Req& req);
+  void tick(int phase, const Req& req, Ack& ibus_ack) const;
 
   void dump_cpu   (std::string& out);
   void dump_bus   (std::string& out);
@@ -128,7 +128,8 @@ struct Gameboy {
   Serial  serial;
   PPU     ppu;
   SPU     spu;
-  DMA     dma;
+  DMA1    dma1;
+  DMA2    dma2;
   Bootrom boot;
 
   //----------
@@ -140,7 +141,6 @@ struct Gameboy {
 
   uint8_t intf = 0;
   uint8_t imask = 0;
-  Ack ack;
 
   //----------
 

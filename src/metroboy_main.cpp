@@ -465,10 +465,13 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
     gameboy.dump_cpu(text_buf);
     sprintf(text_buf, "\n");
 
-    gameboy.dump_timer(text_buf);
+    //gameboy.dump_timer(text_buf);
+    //sprintf(text_buf, "\n");
+
+    gameboy.dma1.dump(text_buf);
     sprintf(text_buf, "\n");
 
-    gameboy.dma.dump(text_buf);
+    gameboy.dma2.dump(text_buf);
     sprintf(text_buf, "\n");
 
     text_painter.render(text_buf, column, 0);

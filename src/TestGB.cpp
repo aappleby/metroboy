@@ -175,7 +175,7 @@ bool TestGB::commit_everything() {
   /*p07.AMUT*/ changed |= dbg_reg.FF60_1.commit_reg();
 
   /*p04.MAKA*/ changed |= dma_reg.FROM_CPU5_SYNC.commit_reg();
-  /*p04.DMA_RUNNING*/ changed |= dma_reg.DMA_RUNNING.commit_reg(); // -> p25,p28
+  /*p04.MATU*/ changed |= dma_reg.DMA_RUNNING.commit_reg(); // -> p25,p28
   /*p04.MYTE*/ changed |= dma_reg.MYTE.commit_reg();
   /*p04.LUVY*/ changed |= dma_reg.LUVY.commit_reg();
   /*p04.LENE*/ changed |= dma_reg.LENE.commit_reg();

@@ -3357,6 +3357,7 @@ void TestGB::tick_everything() {
 
 #endif
 
+
   if (1) {
     // Cart responds to 0x0000 - 0x7FFF (rom)
     // Cart responds to 0xA000 - 0xBFFF (ram)
@@ -3607,12 +3608,11 @@ void TestGB::tick_everything() {
     /*p28.YZET*/ oam_pins.A7.set(not((A7n & !OAM_ADDR_CPUn) | (IDX_0n & !OAM_ADDR_RENDERn) | (SCAN5n & !OAM_ADDR_PARSEn) | (DMA_A07n & !OAM_ADDR_DMAn)));
   }
 
-
   {
     /*p29.TUVO*/ wire SPR_OAM_RDn = or(LOBY_RENDERINGn, spr_reg.TULY_SPR_SEQ1, spr_reg.VONU_SEQ_xxx34xn); // TUVO is low for the first 4 phases of a sprite fetch
     /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!WUVU_AxxDExxH, !WOSU_xxCDxxGH);
     /*p29.XYSO*/ wire XYSO_ABCxDEFx = not(WOJO_xxxDxxxH);  // oam
-    /*p25.AVER*/ wire AVER = and(ACYL_OAM_ADDR_PARSE, XYSO_ABCxDEFx);
+    /*p25.AVER*/ wire AVER = nand(ACYL_OAM_ADDR_PARSE, XYSO_ABCxDEFx); // schematic wrong, is nand
     /*p29.TYTU*/ wire SPR_SEQ0n = not(spr_reg.TOXE_SPR_SEQ0);
     /*p29.TACU*/ wire SPR_SEQ_5_TRIG = nand(spr_reg.TYFO_SEQ_B0d, SPR_SEQ0n);
     /*p25.VAPE*/ wire VAPE = and(SPR_OAM_RDn, SPR_SEQ_5_TRIG);
@@ -3671,15 +3671,15 @@ void TestGB::tick_everything() {
   }
 
   {
-    /*p28.BETE*/ wire OAM_ADDR_RENDERn    = not(OAM_ADDR_RENDER);
-    /*p28.AJUJ*/ wire OAM_BUSYn = nor(dma_reg.DMA_RUNNING, ACYL_OAM_ADDR_PARSE, OAM_ADDR_RENDERn);
-    /*p28.AMAB*/ wire OAM_LOCKn = and(ADDR_OAM, OAM_BUSYn);
-    /*p04.NAXY*/ wire NAXY = nor(dma_reg.FROM_CPU5_SYNC, dma_reg.LUVY);
-    /*p04.POWU*/ wire DMA_WRITE_OAM = and(dma_reg.DMA_RUNNING, NAXY);
+    /*p28.BETE*/ wire OAM_ADDR_RENDERn    = not(OAM_ADDR_RENDER); // def not
+    /*p28.AJUJ*/ wire OAM_BUSYn = nor(dma_reg.DMA_RUNNING, ACYL_OAM_ADDR_PARSE, OAM_ADDR_RENDERn); // def nor
+    /*p28.AMAB*/ wire OAM_LOCKn = and(ADDR_OAM, OAM_BUSYn); // def and
+    /*p04.NAXY*/ wire NAXY = nor(dma_reg.FROM_CPU5_SYNC, dma_reg.LUVY); // def nor
+    /*p04.POWU*/ wire DMA_WRITE_OAM = and(dma_reg.DMA_RUNNING, NAXY); // def and
     /*p04.WYJA*/ wire WYJA_OAM_WR    = or(and(OAM_LOCKn, CUPA_BUS_WR_xxxxxFGH), DMA_WRITE_OAM);
     /*p28.WAFO*/ wire WAFO_OAM_A0n   = not(oam_pins.A0);
-    /*p28.YNYC*/ wire YNYC_OAM_B_WRn = and(WYJA_OAM_WR, WAFO_OAM_A0n);
-    /*p28.YLYC*/ wire YLYC_OAM_A_WRn = and(WYJA_OAM_WR, oam_pins.A0);
+    /*p28.YNYC*/ wire YNYC_OAM_B_WRn = and(WYJA_OAM_WR, WAFO_OAM_A0n); // def and
+    /*p28.YLYC*/ wire YLYC_OAM_A_WRn = and(WYJA_OAM_WR, oam_pins.A0); // def and
     /*p28.ZONE*/ oam_pins.WR_A.set(not(YLYC_OAM_A_WRn));
     /*p28.ZOFE*/ oam_pins.WR_B.set(not(YNYC_OAM_B_WRn));
 
@@ -3984,7 +3984,6 @@ void TestGB::tick_dma(int phase, bool CUNU_RSTn, bool ABOL_CLKREQn, bool UNOR_MO
 
 
   if (PHASE_B) {
-
     /*p04.META*/ wire CLK_DMA_LO = and(UVYT_xBCDExxx, dma_reg.LOKY);
     /*p04.NAKY*/ dma_reg.DMA_A00.set(CLK_DMA_LO,       !LOKO, !dma_reg.DMA_A00);
     /*p04.PYRO*/ dma_reg.DMA_A01.set(!dma_reg.DMA_A00, !LOKO, !dma_reg.DMA_A01);

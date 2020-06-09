@@ -110,7 +110,7 @@ void Gameboy::tick_gb() {
   timer2.tick(phase, ibus_req, ibus_ack);
 
   cart.tick_ack(ebus_ack);
-  iram.tick_ack(ebus_ack);
+  iram.tick(phase, ebus_req, ebus_ack);
   vram.tick_ack(vbus_ack);
   oam.tick_ack(obus_ack);
 
@@ -195,7 +195,7 @@ void Gameboy::tock_gb() {
     spu.   tock_req(ibus_req);
     boot.  tock_req(ibus_req);
     cart.  tock_req(ebus_req);
-    iram.  tock_req(ebus_req);
+    iram.  tock(phase, ebus_req);
     vram.  tock_req(vbus_req);
     oam.   tock_req(obus_req);
 

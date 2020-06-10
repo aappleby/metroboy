@@ -18,6 +18,16 @@ struct TestGB {
 
   void tick_lcd(int phase, bool ALUR_RSTn, bool LCDC_EN);
 
+  wire TEDO_BUS_RD() const;
+
+  void tick_pipe      (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2,
+                       bool CLKPIPE_AxCxExGx, bool NYXU_BG_SEQ_RSTn, bool WUTY_SPRITE_DONE);
+  void tick_vbus      (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
+  void tick_ebus      (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
+  void tick_oam       (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2, bool ACYL_OAM_ADDR_PARSE);
+  void tick_bootrom   (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
+  void tick_interrupts(bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2, bool WODU_RENDER_DONE);
+
   //-----------------------------------------------------------------------------
 
 

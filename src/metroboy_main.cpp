@@ -75,8 +75,8 @@ void MetroBoyApp::init() {
 
   //---------
 
-  //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
-  load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
+  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
 
   //load("roms/tetris"); // tetris brokennnn
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/basic");

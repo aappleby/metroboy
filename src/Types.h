@@ -1,9 +1,11 @@
 #pragma once
 #include <stdint.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <string>
 #include <vector>
 
-//#pragma warning(disable:4100)
+#pragma warning(disable:4201) // nameless struct/union
 
 typedef int16_t sample_t;
 typedef std::vector<uint8_t> blob;

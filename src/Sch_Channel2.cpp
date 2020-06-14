@@ -1,7 +1,5 @@
 #include "Sch_Channel2.h"
 
-#pragma warning(disable:4100)
-
 namespace Schematics {
 
 #if 0

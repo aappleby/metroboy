@@ -75,8 +75,6 @@ void Gameboy::tick_gb() {
 
   auto& self = *this;
 
-  int64_t tphase2 = (phase & 7);
-
   //-----------------------------------
   // interrupts are partially asynchronous
 
@@ -118,81 +116,32 @@ void Gameboy::tick_gb() {
   {
     vbus_ack = { 0 };
     vram.tick(vbus_req, vbus_ack);
-    ppu.on_vbus_ack(vbus_ack);
   }
 
   {
     obus_ack = { 0 };
     oam.tick(obus_req, obus_ack);
-    ppu.on_obus_ack(obus_ack);
   }
 
   bool dma_src_vbus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
-  bool dma_src_obus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_OAM_BEGIN) && (dma2.addr <= ADDR_OAM_END);
-  bool dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus && !dma_src_obus;
+  bool dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus;
 
   if (dma_src_vbus) dma_data_latch = vbus_ack.data;
-  if (dma_src_obus) dma_data_latch = obus_ack.data;
   if (dma_src_ebus) dma_data_latch = ebus_ack.data;
   
-  //-----------------------------------
-  // prioritize reqs
-
-  if (PHASE_C) {
-    z80.get_bus_req(ibus_req);
-  }
-
-  bool cpu_has_ibus_req = ibus_req.addr >= ADDR_IOBUS_BEGIN;
-  bool cpu_has_vbus_req = ibus_req.addr >= ADDR_VRAM_BEGIN && ibus_req.addr <= ADDR_VRAM_END;
-  bool cpu_has_obus_req = ibus_req.addr >= ADDR_OAM_BEGIN && ibus_req.addr <= ADDR_OAM_END;
-  bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
-
-  ebus_req = ibus_req;
-  vbus_req = ibus_req;
-  obus_req = ibus_req;
-
-  ppu.get_vbus_req(vbus_req);
-  ppu.get_obus_req(obus_req);
-
-  if (dma2.DMA_RUN_READ && dma_src_vbus) {
-    vbus_req = {
-      .addr = dma2.addr,
-      .data = 0,
-      .read = 1,
-      .write = 0,
-    };
-  }
-
-  if (dma2.DMA_RUN_READ && dma_src_ebus) {
-    ebus_req = {
-      .addr = dma2.addr,
-      .data = 0,
-      .read = 1,
-      .write = 0,
-    };
-  }
-
-  if (dma2.DMA_RUN_WRITE) {
-    obus_req = {
-      .addr = uint16_t(0xFE00 | (dma2.addr & 0xFF)),
-      .data = dma_data_latch,
-      .read = 0,
-      .write = 1,
-    };
-  }
-
-  /*
   if (ibus_ack.read > 1) __debugbreak();
   if (ebus_ack.read > 1) __debugbreak();
   if (vbus_ack.read > 1) __debugbreak();
   if (obus_ack.read > 1) __debugbreak();
-  */
 }
 
 //-----------------------------------------------------------------------------
 
 void Gameboy::tock_gb() {
   auto& self = *this;
+
+  ppu.on_vbus_ack(vbus_ack);
+  ppu.on_obus_ack(obus_ack);
 
   if (PHASE_A || PHASE_B) {
     bool cpu_has_ibus_req = ibus_req.addr >= ADDR_IOBUS_BEGIN;
@@ -247,8 +196,6 @@ void Gameboy::tock_gb() {
     cart.  tock(ebus_req);
     iram.  tock(ebus_req);
     vram.  tock(vbus_req);
-
-
     oam.   tock(obus_req);
 
     //----------
@@ -268,6 +215,65 @@ void Gameboy::tock_gb() {
     if (pix_x >= 0 && pix_x < 160 && pix_y >= 0 && pix_y < 144) {
       fb[gb_to_host.x + gb_to_host.y * 160] = ppu.pix_out;
     }
+  }
+
+
+  //-----------------------------------
+  // prioritize reqs
+
+  if (PHASE_B) {
+    z80.get_bus_req(cpu_req);
+
+    if (cpu_req.addr >= 0xFF00 && cpu_req.addr <= 0xFFFF) {
+      ibus_req = cpu_req;
+    }
+    else if (cpu_req.addr >= 0xFE00 && cpu_req.addr <= 0xFEFF) {
+      obus_req = cpu_req;
+    }
+    else if (cpu_req.addr >= 0x8000 && cpu_req.addr <= 0x9FFF) {
+      vbus_req = cpu_req;
+    }
+    else {
+      ebus_req = cpu_req;
+    }
+
+    ibus_req = cpu_req;
+    ebus_req = cpu_req;
+    vbus_req = cpu_req;
+    obus_req = cpu_req;
+  }
+
+  ppu.get_vbus_req(vbus_req);
+  ppu.get_obus_req(obus_req);
+
+  bool dma_src_vbus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
+  bool dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus;
+
+  if (dma_src_vbus) {
+    vbus_req = {
+      .addr = dma2.addr,
+      .data = 0,
+      .read = 1,
+      .write = 0,
+    };
+  }
+
+  if (dma_src_ebus) {
+    ebus_req = {
+      .addr = dma2.addr,
+      .data = 0,
+      .read = 1,
+      .write = 0,
+    };
+  }
+
+  if (PHASE_F && dma2.DMA_RUN_WRITE) {
+    obus_req = {
+      .addr = uint16_t(0xFE00 | (dma2.addr & 0xFF)),
+      .data = dma_data_latch,
+      .read = 0,
+      .write = 1,
+    };
   }
 }
 

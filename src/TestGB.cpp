@@ -1,7 +1,5 @@
 #include "TestGB.h"
 
-#pragma warning(disable:4458)
-
 using namespace Schematics;
 
 //-----------------------------------------------------------------------------

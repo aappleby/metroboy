@@ -1,9 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <stdarg.h>
-#include <stdio.h>
-
-#pragma warning(disable:4201) // nameless struct/union
+#include "Types.h"
 
 namespace Schematics {
 

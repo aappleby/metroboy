@@ -143,19 +143,20 @@ struct Gameboy {
 
   //----------
 
-  Req ibus_req;
-  Ack ibus_ack;
+  Req cpu_req;
+  Ack cpu_ack;
 
-  Req ebus_req;
+  Req ebus_req; // 0x0000 - 0x7FFF, 0xA000 - 0xFFFF
   Ack ebus_ack;
 
-  Req obus_req;
-  Ack obus_ack;
-
-  Req vbus_req;
+  Req vbus_req; // 0x8000 - 0x9FFF
   Ack vbus_ack;
 
-  Ack cpu_ack;
+  Req obus_req; // 0xFE00 - 0xFEFF
+  Ack obus_ack;
+
+  Req ibus_req; // 0xFF00 - 0xFFFF
+  Ack ibus_ack;
 
   uint8_t dma_data_latch;
 

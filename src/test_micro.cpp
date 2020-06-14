@@ -8,8 +8,6 @@
 #include <SDL2/SDL.h>
 #endif
 
-#pragma warning(disable : 4996)
-
 static const std::string micro_tests[] = {
   "poweron_000_div",
   "poweron_004_div",

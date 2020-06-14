@@ -25,7 +25,7 @@ layout(std140) uniform GridUniforms
 #ifdef _VERTEX_
 
 layout(location = 0) in  vec2 vert_pos;
-layout(location = 0) out vec2 world_pos; // interpolating this is going to lose precision...
+out vec2 world_pos; // interpolating this is going to lose precision...
 
 void main() {
   world_pos.x = vert_pos.x * viewport.w + viewport.x;
@@ -36,8 +36,8 @@ void main() {
 
 #else
 
-layout(location = 0) in  vec2 world_pos;
-layout(location = 0) out vec4 frag_col;
+in  vec2 world_pos;
+out vec4 frag_col;
 
 void main() {
   bool bx = fract(world_pos.x * (1.0 / 64.0)) > 0.5;

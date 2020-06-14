@@ -49,8 +49,6 @@ static const std::string micro_tests[] = {
   "timer_int_inc_sled_a",
   "timer_int_inc_sled_b",
 
-  "break",
-
   "poweron_000_ly",
   "poweron_119_ly",
   "poweron_120_ly",
@@ -75,6 +73,8 @@ static const std::string micro_tests[] = {
   "poweron_234_stat",
   "poweron_235_stat",
 
+  // oam locking disabled
+  /*
   "poweron_000_oam",
   "poweron_005_oam",
   "poweron_006_oam",
@@ -89,6 +89,14 @@ static const std::string micro_tests[] = {
   "poweron_234_oam",
   "poweron_235_oam",
 
+  "poweron_oam_read_a",
+  "poweron_oam_read_b",
+  "poweron_oam_read_c",
+  "poweron_oam_read_d",
+  */
+
+  // vram locking disabled
+  /*
   "poweron_000_vram",
   "poweron_025_vram",
   "poweron_026_vram",
@@ -98,13 +106,7 @@ static const std::string micro_tests[] = {
   "poweron_140_vram",
   "poweron_183_vram",
   "poweron_184_vram",
-
-  "poweron_oam_read_a",
-  "poweron_oam_read_b",
-  "poweron_oam_read_c",
-  "poweron_oam_read_d",
-
-  "break",
+  */
 
   "lcdon_to_stat0_a",
   "lcdon_to_stat0_b",

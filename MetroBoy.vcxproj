@@ -659,6 +659,7 @@
     <None Include="microtests\win9_b.s" />
     <None Include="micro_cpu\cpu_mov.s" />
     <None Include="micro_cpu\cpu_nop.s" />
+    <None Include="micro_cpu\cpu_zeropage.s" />
     <None Include="micro_cpu\header.inc" />
     <None Include="micro_cpu\makefile" />
     <None Include="micro_cpu\temp.link" />

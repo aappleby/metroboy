@@ -18,11 +18,11 @@ float remap(float x, float a1, float a2, float b1, float b2) {
 #ifdef _VERTEX_
 
 layout(location = 0) in  vec2 vpos;
-layout(location = 0) out vec2 vtex;
+out vec2 ftex;
 
 void main() {
-  vtex.x = vpos.x;
-  vtex.y = vpos.y;
+  ftex.x = vpos.x;
+  ftex.y = vpos.y;
 
   float dst_x = remap(vpos.x, 0.0, 1.0, blit_dst_rect.x, blit_dst_rect.z);
   float dst_y = remap(vpos.y, 0.0, 1.0, blit_dst_rect.y, blit_dst_rect.w);
@@ -35,8 +35,8 @@ void main() {
 
 #else
 
-layout(location = 0) in  vec2 ftex;
-layout(location = 0) out vec4 frag;
+in  vec2 ftex;
+out vec4 frag;
 
 void main() {
   frag = texture(tex, ftex);
@@ -64,11 +64,11 @@ float remap(float x, float a1, float a2, float b1, float b2) {
 #ifdef _VERTEX_
 
 layout(location = 0) in  vec2 vpos;
-layout(location = 0) out vec2 vtex;
+out vec2 ftex;
 
 void main() {
-  vtex.x = vpos.x;
-  vtex.y = vpos.y;
+  ftex.x = vpos.x;
+  ftex.y = vpos.y;
 
   float dst_x = remap(vpos.x, 0.0, 1.0, blit_dst_rect.x, blit_dst_rect.z);
   float dst_y = remap(vpos.y, 0.0, 1.0, blit_dst_rect.y, blit_dst_rect.w);
@@ -81,8 +81,8 @@ void main() {
 
 #else
 
-layout(location = 0) in  vec2 ftex;
-layout(location = 0) out vec4 frag;
+in  vec2 ftex;
+out vec4 frag;
 
 void main() {
   int pal_index = int(round(texture(tex, ftex).r * 255.0));
@@ -150,7 +150,7 @@ int decode_tile2(int tile_index, int tile_x, int tile_y) {
 #ifdef _VERTEX_
 
 layout(location = 0) in  vec2 vpos;
-layout(location = 0) out vec2 vtex;
+out vec2 ftex;
 
 void main() {
 
@@ -162,8 +162,8 @@ void main() {
                      1.0,
                      1.0);
 
-  vtex.x = remap(vpos.x, 0.0, 1.0, quad_tex.x, quad_tex.z);
-  vtex.y = remap(vpos.y, 0.0, 1.0, quad_tex.y, quad_tex.w);
+  ftex.x = remap(vpos.x, 0.0, 1.0, quad_tex.x, quad_tex.z);
+  ftex.y = remap(vpos.y, 0.0, 1.0, quad_tex.y, quad_tex.w);
 }
 
 #endif
@@ -172,8 +172,8 @@ void main() {
 
 #ifdef _FRAGMENT_
 
-layout(location = 0) in  vec2 ftex;
-layout(location = 0) out vec4 frag;
+in  vec2 ftex;
+out vec4 frag;
 
 void main() {
   int pix_x = int(ftex.x) & 0xFF;
@@ -252,7 +252,7 @@ int decode_tile2(int tile_index, int tile_x, int tile_y) {
 #ifdef _VERTEX_
 
 layout(location = 0) in  vec2 vpos;
-layout(location = 0) out vec2 vtex;
+out vec2 ftex;
 
 void main() {
 
@@ -264,8 +264,8 @@ void main() {
                      1.0,
                      1.0);
 
-  vtex.x = remap(vpos.x, 0.0, 1.0, quad_tex.x, quad_tex.z);
-  vtex.y = remap(vpos.y, 0.0, 1.0, quad_tex.y, quad_tex.w);
+  ftex.x = remap(vpos.x, 0.0, 1.0, quad_tex.x, quad_tex.z);
+  ftex.y = remap(vpos.y, 0.0, 1.0, quad_tex.y, quad_tex.w);
 }
 
 #endif
@@ -274,8 +274,8 @@ void main() {
 
 #ifdef _FRAGMENT_
 
-layout(location = 0) in  vec2 ftex;
-layout(location = 0) out vec4 frag;
+in  vec2 ftex;
+out vec4 frag;
 
 void main() {
   int pix_x = int(ftex.x) & 0xFF;

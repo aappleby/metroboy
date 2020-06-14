@@ -134,6 +134,7 @@ void Gameboy::tick_gb() {
     dma1.on_ebus_ack(ebus_ack);
   }
 
+
   if (vbus_req.read) {
     vbus_ack = {0};
     vram.  tick(phase, vbus_req, vbus_ack);

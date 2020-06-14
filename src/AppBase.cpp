@@ -29,8 +29,8 @@ layout (location = 0) in vec2 vert_pos;
 layout (location = 1) in vec2 vert_tc;
 layout (location = 2) in vec4 vert_col;
 
-layout (location = 0) out vec2 frag_tc;
-layout (location = 1) out vec4 frag_col;
+out vec2 frag_tc;
+out vec4 frag_col;
 
 void main() {
   frag_tc = vert_tc;
@@ -47,10 +47,10 @@ void main() {
 
 #else
 
-layout (location = 0) in vec2 frag_tc;
-layout (location = 1) in vec4 frag_col;
+in vec2 frag_tc;
+in vec4 frag_col;
 
-layout (location = 0) out vec4 frag;
+out vec4 frag;
 
 void main() {
   frag = frag_col * texture(tex, frag_tc.st).rrrr;

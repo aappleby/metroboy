@@ -41,9 +41,9 @@ float remap(float x, float a1, float a2, float b1, float b2) {
 
 layout(location = 0) in uint glyph2;
 
-layout(location = 0) out vec2  tc_glyph;
-layout(location = 1) out vec4  fg_color;
-layout(location = 2) out vec4  bg_color;
+out vec2  tc_glyph;
+out vec4  fg_color;
+out vec4  bg_color;
 
 void main() {
   float corner_x = float((gl_VertexID >> 0) & 1);
@@ -79,9 +79,9 @@ void main() {
 
 #else
 
-layout(location = 0) in vec2 tc_glyph;
-layout(location = 1) in vec4 fg_color;
-layout(location = 2) in vec4 bg_color;
+in vec2 tc_glyph;
+in vec4 fg_color;
+in vec4 bg_color;
 
 out vec4 fs_out;
 

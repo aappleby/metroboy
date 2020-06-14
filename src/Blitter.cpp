@@ -42,15 +42,15 @@ float remap(float x, float a1, float a2, float b1, float b2) {
 #ifdef _VERTEX_
 
 layout(location = 0) in  vec2 vpos;
-layout(location = 0) out vec2 vtex;
+out vec2 ftex;
 
 void main() {
 
   float src_x = remap(vpos.x, 0.0, 1.0, blit_src_rect.x, blit_src_rect.z);
   float src_y = remap(vpos.y, 0.0, 1.0, blit_src_rect.y, blit_src_rect.w);
 
-  vtex.x = remap(src_x, blit_tex_size.x, blit_tex_size.z, 0.0, 1.0);
-  vtex.y = remap(src_y, blit_tex_size.y, blit_tex_size.w, 0.0, 1.0);
+  ftex.x = remap(src_x, blit_tex_size.x, blit_tex_size.z, 0.0, 1.0);
+  ftex.y = remap(src_y, blit_tex_size.y, blit_tex_size.w, 0.0, 1.0);
 
   float dst_x = remap(vpos.x, 0.0, 1.0, blit_dst_rect.x, blit_dst_rect.z);
   float dst_y = remap(vpos.y, 0.0, 1.0, blit_dst_rect.y, blit_dst_rect.w);
@@ -63,8 +63,8 @@ void main() {
 
 #else
 
-layout(location = 0) in  vec2 ftex;
-layout(location = 0) out vec4 frag;
+in  vec2 ftex;
+out vec4 frag;
 
 void main() {
   if (bool(solid)) {

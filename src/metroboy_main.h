@@ -45,7 +45,7 @@ public:
   bool save_dump = false;
   
   double mcycles_per_sec_1x = 114 * 154 * 60; // 1.05 mhz
-  double sim_speed = 2.0;
+  double sim_speed = 1.06;
   double sim_budget_msec = 60.0;
   double fast_mcycles = mcycles_per_sec_1x * sim_speed * sim_budget_msec / 1000.0;
   int last_mcycles = 0;

@@ -11,7 +11,7 @@ void OAM::reset() {
 
 //-----------------------------------------------------------------------------
 
-void OAM::tock(int phase, const Req& req) {
+void OAM::tock(const Req& req) {
   if (req.write && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
     uint16_t oam_addr = req.addr & 0x00FF;
     uint16_t d = ram[oam_addr >> 1];
@@ -22,7 +22,7 @@ void OAM::tock(int phase, const Req& req) {
   
 }
 
-void OAM::tick(int phase, const Req& req, Ack& ack) const {
+void OAM::tick(const Req& req, Ack& ack) const {
   if (req.read && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
     ack.addr = req.addr;
     if (req.addr & 1) {

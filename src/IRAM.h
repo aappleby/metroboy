@@ -3,8 +3,8 @@
 
 struct IRAM {
   void reset();
-  void tock(int phase, const Req& ebus_req);
-  void tick(int phase, const Req& ebus_req, Ack& ebus_ack) const;
+  void tock(const Req& ebus_req);
+  void tick(const Req& ebus_req, Ack& ebus_ack) const;
 
   uint8_t* get() { return ram; }
 

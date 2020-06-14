@@ -18,7 +18,7 @@ void Joypad::tock(int phase, const Req& req) {
   }
 }
 
-void Joypad::tick(int phase, const Req& req, Ack& ack) const {
+void Joypad::tick(const Req& req, Ack& ack) const {
   if (req.read && req.addr == ADDR_P1) {
     ack.addr = req.addr;
     ack.data = p1;

@@ -7,7 +7,7 @@ struct Serial {
   void reset();
   
   void tock(int phase, const Req& req);
-  void tick(int phase, const Req& req, Ack& ack) const;
+  void tick(const Req& req, Ack& ack) const;
 
   void dump(std::string& d);
 

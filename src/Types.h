@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#pragma warning(disable:4100)
+//#pragma warning(disable:4100)
 
 typedef int16_t sample_t;
 typedef std::vector<uint8_t> blob;

@@ -24,7 +24,7 @@ struct PPU {
 
   void reset(bool run_bootrom);
 
-  void tick(int phase, const Req& req, Ack& ibus_ack) const;
+  void tick(const Req& req, Ack& ibus_ack) const;
   void tock(int phase, const Req& ibus_req);
 
   void get_vbus_req(Req& r) const;

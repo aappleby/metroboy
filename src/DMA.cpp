@@ -136,6 +136,14 @@ if (PHASE_F) {
 // LUPA01 << LYXE
 // LUPA02 >> LUVY
 
+void DMA2::tick(const Req& req, Ack& ack) {
+  if (req.read && req.addr == 0xFF46) {
+    ack.addr = req.addr;
+    ack.data = uint8_t(addr >> 8);
+    ack.read++;
+  }
+}
+
 void DMA2::tock(int phase, const Req& req) {
 
 
@@ -155,7 +163,7 @@ void DMA2::tock(int phase, const Req& req) {
     /*p04.LENE*/ DMA_RUN_TRIG_d4 = DMA_RUN_TRIG_d0;
     /*p04.MYTE*/ DMA_DONE = (addr & 0xFF) == 159;
     if (req.write && req.addr == 0xFF46) {
-      addr = (addr & 0xFF00) | (req.data << 8);
+      addr = (req.data << 8);
     }
   }
 

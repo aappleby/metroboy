@@ -39,7 +39,7 @@ void SPU::reset() {
 
 //-----------------------------------------------------------------------------
 
-void SPU::tick(int phase, const Req& req, Ack& ack) const {
+void SPU::tick(const Req& req, Ack& ack) const {
   if (req.read) bus_read(req, ack);
 }
 

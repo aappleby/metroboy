@@ -5,7 +5,7 @@
 #include "TestGB.h"
 #include "Constants.h"
 
-#pragma warning(disable:4456)
+#pragma warning(disable:4100) // unreferenced formal parameter
 
 using namespace Schematics;
 

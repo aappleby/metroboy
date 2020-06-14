@@ -21,7 +21,7 @@ void NewTimer::reset() {
 
 //-----------------------------------------------------------------------------
 
-void NewTimer::tick(int phase, const Req& req, Ack& ack) {
+void NewTimer::tick(const Req& req, Ack& ack) {
   if (req.read) switch(req.addr) {
   case ADDR_DIV:  ack.read++; ack.data += uint8_t(div >> 6); break;
   case ADDR_TIMA: ack.read++; ack.data += tima;              break;

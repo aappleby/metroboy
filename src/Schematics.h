@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#pragma warning(disable:4201)
+#pragma warning(disable:4201) // nameless struct/union
 
 namespace Schematics {
 

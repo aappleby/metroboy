@@ -207,7 +207,7 @@ void PPU::on_obus_ack(const Ack& obus_ack) {
 
 //-----------------------------------------------------------------------------
 
-void PPU::tick(int phase, const Req& req, Ack& ack) const {
+void PPU::tick(const Req& req, Ack& ack) const {
   if (req.read && (ADDR_GPU_BEGIN <= req.addr) && (req.addr <= ADDR_GPU_END) && (req.addr != ADDR_DMA)) {
     uint8_t data = (uint8_t)req.data;
     switch (req.addr) {

@@ -7,8 +7,8 @@ struct OAM {
 
   void reset();
 
-  void tock(int phase, const Req& req);
-  void tick(int phase, const Req& req, Ack& ack) const;
+  void tock(const Req& req);
+  void tick(const Req& req, Ack& ack) const;
 
   void dump(std::string& out) const;
 

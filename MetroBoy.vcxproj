@@ -228,6 +228,9 @@
     <None Include="microtests\audio4.s" />
     <None Include="microtests\div_inc_timing_a.s" />
     <None Include="microtests\div_inc_timing_b.s" />
+    <None Include="microtests\dma_0xA000.s" />
+    <None Include="microtests\dma_0xE000.s" />
+    <None Include="microtests\dma_0xFE00.s" />
     <None Include="microtests\dma_basic.s" />
     <None Include="microtests\dma_timing_a.s" />
     <None Include="microtests\halt_op_dupe.s" />
@@ -313,6 +316,7 @@
     <None Include="microtests\hblank_scx3_if_d.s" />
     <None Include="microtests\hblank_scx3_int_a.s" />
     <None Include="microtests\hblank_scx3_int_b.s" />
+    <None Include="microtests\header.inc" />
     <None Include="microtests\is_if_set_during_ime0.s" />
     <None Include="microtests\just_timer.s" />
     <None Include="microtests\lcdon_halt_to_vblank_int_a.s" />

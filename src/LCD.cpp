@@ -23,7 +23,7 @@ void LCD::reset() {
 
 //-----------------------------------------------------------------------------
 
-void LCD::tick(int phase, const Req& req, Ack& ack) {
+void LCD::tick(const Req& req, Ack& ack) {
 
   if (req.read && req.addr == 0xFF44) {
     ack.addr = req.addr;
@@ -75,7 +75,7 @@ void LCD::tick(int phase, const Req& req, Ack& ack) {
 
 #endif
 
-void LCD::tock(int phase, const Req& req, bool VID_RST) {
+void LCD::tock(int phase, const Req& /*req*/, bool VID_RST) {
   
   if (PHASE_B) {
     bool posedge_line_d4 = posedge(NEW_LINE_d4, NEW_LINE_d0);
@@ -137,7 +137,7 @@ void LCD::tock(int phase, const Req& req, bool VID_RST) {
 
 //-----------------------------------------------------------------------------
 
-void LCD::dump(std::string& d) {
+void LCD::dump(std::string& /*d*/) {
   //text_painter.dprintf(" ----- LCD REG -----\n");
 
   /*

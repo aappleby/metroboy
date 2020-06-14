@@ -18,7 +18,7 @@ void Serial::tock(int phase, const Req& req) {
   }
 }
 
-void Serial::tick(int phase, const Req& req, Ack& ack) const {
+void Serial::tick(const Req& req, Ack& ack) const {
   if (req.read && ((req.addr == ADDR_SB) || (req.addr == ADDR_SC))) {
     ack.addr = req.addr;
     ack.data = req.addr == ADDR_SB ? sb : sc;

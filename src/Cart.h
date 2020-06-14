@@ -7,8 +7,8 @@ struct Cart {
   void set_rom(uint8_t* new_rom, size_t new_rom_size);
   void reset();
 
-  void tock(int phase, const Req& req);
-  void tick(int phase, const Req& req, Ack& ebus_ack) const;
+  void tock(const Req& req);
+  void tick(const Req& req, Ack& ebus_ack) const;
 
   void dump(std::string& d);
 
@@ -29,7 +29,7 @@ struct Cart {
   int bank_latch1 = 0;
   int bank_latch2 = 0;
 
-  uint8_t ram_buf[8 * 1024] = {};
+  uint8_t ram_buf[8192] = {};
 };
 
 //-----------------------------------------------------------------------------

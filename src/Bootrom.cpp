@@ -57,7 +57,7 @@ void Bootrom::tock(int phase, const Req& req) {
   }
 }
 
-void Bootrom::tick(int phase, const Req& req, Ack& ack) const {
+void Bootrom::tick(const Req& req, Ack& ack) const {
   if (req.read && req.addr <= 0x00FF && !disable_bootrom) {
     ack.addr = req.addr;
     ack.data = DMG_ROM_bin[req.addr];

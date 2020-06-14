@@ -84,7 +84,7 @@ struct Gameboy {
   void tock_gb();
 
   void tock(int phase, const Req& req);
-  void tick(int phase, const Req& req, Ack& ibus_ack) const;
+  void tick(const Req& req, Ack& ibus_ack) const;
 
   void dump_cpu   (std::string& out);
   void dump_bus   (std::string& out);

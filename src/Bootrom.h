@@ -10,7 +10,7 @@ struct Bootrom {
   void dump(std::string& d);
 
   void tock(int phase, const Req& req);
-  void tick(int phase, const Req& req, Ack& ack) const;
+  void tick(const Req& req, Ack& ack) const;
 
   int disable_bootrom = 0;
 };

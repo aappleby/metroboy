@@ -6,8 +6,8 @@ struct Joypad {
 
   void reset();
 
+  void tick(const Req& req, Ack& ack) const;
   void tock(int phase, const Req& req);
-  void tick(int phase, const Req& req, Ack& ack) const;
   void dump(std::string& d) const;
 
   uint8_t get() const { return val; }

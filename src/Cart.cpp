@@ -61,7 +61,7 @@ void Cart::reset() {
 
 //-----------------------------------------------------------------------------
 
-void Cart::tock(int phase, const Req& req) {
+void Cart::tock(const Req& req) {
   const int region = req.addr >> 13;
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
@@ -84,13 +84,13 @@ void Cart::tock(int phase, const Req& req) {
       if (ram_enable && ram_bank_count) {
         int ram_bank = mode ? bank_latch2 : 0;
         ram_bank &= (ram_bank_count - 1);
-        ram_buf[(ram_addr - 0xA000) | (ram_bank << 13)] = static_cast<uint8_t>(req.data);
+        ram_buf[(ram_bank << 13) | ram_addr] = static_cast<uint8_t>(req.data);
       }
     }
   }
 }
 
-void Cart::tick(int phase, const Req& req, Ack& ack) const {
+void Cart::tick(const Req& req, Ack& ack) const {
   const int region = req.addr >> 13;
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
@@ -126,8 +126,7 @@ void Cart::tick(int phase, const Req& req, Ack& ack) const {
         int ram_bank = mode ? bank_latch2 : 0;
         ram_bank &= (ram_bank_count - 1);
         if (ram_bank_count == 0) ram_bank = 0;
-
-        ack.data = ram_buf[(rom_addr - 0xA000) | (ram_bank << 13)];
+        ack.data = ram_buf[(ram_bank << 13) | ram_addr];
       }
     }
   }

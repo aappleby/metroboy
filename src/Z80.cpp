@@ -625,25 +625,25 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   if (EI)                  {ime = ime_delay;  ime_delay = true;}
 }
 
-void Z80::tock_c(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+void Z80::tock_c(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
   // Z80 idle this cycle
 }
 
-void Z80::tock_d(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+void Z80::tock_d(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
   // Z80 idle this cycle
 }
 
-void Z80::tock_e(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+void Z80::tock_e(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
 }
 
-void Z80::tock_f(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+void Z80::tock_f(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
   // "first" execution cycle
 }
 
-void Z80::tock_g(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+void Z80::tock_g(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
 }
 
-void Z80::tock_h(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
+void Z80::tock_h(const uint8_t /*imask_*/, const uint8_t /*intf_*/, const Ack& /*ack*/) {
   // "second" execution cycle
 }
 

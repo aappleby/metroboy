@@ -144,9 +144,9 @@ void Gameboy::tock_gb() {
   ppu.on_obus_ack(obus_ack);
 
   if (PHASE_A || PHASE_B) {
-    bool cpu_has_ibus_req = ibus_req.addr >= ADDR_IOBUS_BEGIN;
-    bool cpu_has_vbus_req = ibus_req.addr >= ADDR_VRAM_BEGIN && ibus_req.addr <= ADDR_VRAM_END;
-    bool cpu_has_obus_req = ibus_req.addr >= ADDR_OAM_BEGIN  && ibus_req.addr <= ADDR_OAM_END;
+    bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
+    bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
+    bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
     bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
 
     if (cpu_has_ibus_req) {
@@ -222,6 +222,11 @@ void Gameboy::tock_gb() {
   // prioritize reqs
 
   if (PHASE_B) {
+    ibus_req = {0};
+    ebus_req = {0};
+    vbus_req = {0};
+    obus_req = {0};
+
     z80.get_bus_req(cpu_req);
 
     if (cpu_req.addr >= 0xFF00 && cpu_req.addr <= 0xFFFF) {
@@ -236,11 +241,6 @@ void Gameboy::tock_gb() {
     else {
       ebus_req = cpu_req;
     }
-
-    ibus_req = cpu_req;
-    ebus_req = cpu_req;
-    vbus_req = cpu_req;
-    obus_req = cpu_req;
   }
 
   ppu.get_vbus_req(vbus_req);

@@ -103,7 +103,7 @@ void Gameboy::tick_gb() {
   bool cpu_has_obus_req = ibus_req.addr >= ADDR_OAM_BEGIN && ibus_req.addr <= ADDR_OAM_END;
   bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
 
-  if (cpu_has_ebus_req) ebus_req = ibus_req;
+  ebus_req = ibus_req;
   dma1.get_ebus_req(ebus_req);
 
   if (cpu_has_vbus_req) vbus_req = ibus_req;
@@ -131,7 +131,7 @@ void Gameboy::tick_gb() {
     if (ibus_ack.read  > 1) __debugbreak();
   }
 
-  if (ebus_req.read) {
+  {
     ebus_ack = {0};
     cart.  tick(phase, ebus_req, ebus_ack);
     iram.  tick(phase, ebus_req, ebus_ack);
@@ -140,7 +140,7 @@ void Gameboy::tick_gb() {
   }
 
 
-  if (vbus_req.read) {
+  {
     vbus_ack = {0};
     vram.  tick(phase, vbus_req, vbus_ack);
     if (vbus_ack.read  > 1) __debugbreak();
@@ -148,7 +148,7 @@ void Gameboy::tick_gb() {
     ppu.on_vbus_ack(vbus_ack);
   }
 
-  if (obus_req.read) {
+  {
     obus_ack = {0};
     oam.   tick(phase, obus_req, obus_ack);
     if (obus_ack.read  > 1) __debugbreak();
@@ -169,8 +169,6 @@ void Gameboy::tock_gb() {
     bool cpu_has_obus_req = ibus_req.addr >= ADDR_OAM_BEGIN  && ibus_req.addr <= ADDR_OAM_END;
     bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
 
-    cpu_ack = {};
-
     if (cpu_has_ibus_req) {
       cpu_ack = ibus_ack;
     }
@@ -182,6 +180,9 @@ void Gameboy::tock_gb() {
     }
     else if (cpu_has_obus_req) {
       cpu_ack = obus_ack;
+    }
+    else {
+      cpu_ack = { 0 };
     }
 
     if (cpu_ack.read == 0) {

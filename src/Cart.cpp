@@ -67,7 +67,7 @@ void Cart::tock(int phase, const Req& req) {
   const uint16_t rom_addr = req.addr & 0x7FFF;
 
   // should check what phase this happens on...
-  if (req.write) {
+  if (req.write && req.addr < 0xFF00) {
     if (region == 0) {
       ram_enable = (req.data & 0x0F) == 0x0A;
     }
@@ -95,7 +95,7 @@ void Cart::tick(int phase, const Req& req, Ack& ack) const {
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
 
-  if (req.read) {
+  if (req.read && req.addr < 0xFF00) {
     if (region == 0 || region == 1) {
       ack.addr = req.addr;
       ack.read++;

@@ -154,7 +154,9 @@ void DMA2::tock(int phase, const Req& req) {
   if (PHASE_F) {
     /*p04.LENE*/ DMA_RUN_TRIG_d4 = DMA_RUN_TRIG_d0;
     /*p04.MYTE*/ DMA_DONE = (addr & 0xFF) == 159;
-    if (req.write && req.addr == 0xFF46) addr = (addr & 0xFF00) | (req.data << 8);
+    if (req.write && req.addr == 0xFF46) {
+      addr = (addr & 0xFF00) | (req.data << 8);
+    }
   }
 
   if (DMA_WR)  DMA_WR_LATCH = 1;

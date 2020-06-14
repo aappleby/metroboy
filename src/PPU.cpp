@@ -79,6 +79,8 @@ void PPU::reset(bool run_bootrom) {
 //-----------------------------------------------------------------------------
 
 void PPU::get_vbus_req(Req& r) const {
+  if ((lcdc & FLAG_LCD_ON) == 0) return;
+
   uint8_t new_map_x = (map_x + (scx >> 3)) & 31;
   uint8_t map_y = ((scy + line) >> 3) & 31;
 
@@ -114,6 +116,8 @@ void PPU::get_vbus_req(Req& r) const {
 //----------------------------------------
 
 void PPU::get_obus_req(Req& r) const {
+  if ((lcdc & FLAG_LCD_ON) == 0) return;
+
   uint16_t fetch_addr = 0;
 
   // must have 80 cycles for oam read otherwise we lose an eye in oh.gb

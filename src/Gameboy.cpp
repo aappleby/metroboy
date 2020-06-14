@@ -124,11 +124,20 @@ void Gameboy::tick_gb() {
     ppu.on_obus_ack(obus_ack);
   }
 
+  bool dma_src_vram = (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
+  if (dma2.DMA_RUN_READ) {
+    dma_data_latch = dma_src_vram ? vbus_ack.data : ebus_ack.data;
+  }
+
   //-----------------------------------
   // prioritize reqs
 
   if (PHASE_C) {
     z80.get_bus_req(ibus_req);
+
+    if (ibus_req.addr >= 0xFE00 && ibus_req.addr <= 0xFEFF) {
+      int x = 1;
+    }
   }
 
   bool cpu_has_ibus_req = ibus_req.addr >= ADDR_IOBUS_BEGIN;
@@ -142,9 +151,6 @@ void Gameboy::tick_gb() {
   ppu.get_vbus_req(vbus_req);
 
   obus_req = ibus_req;
-  ppu.get_obus_req(obus_req);
-
-  bool dma_src_vram = (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
 
   if (dma2.DMA_RUN_READ && dma_src_vram) {
     vbus_req = {
@@ -165,13 +171,14 @@ void Gameboy::tick_gb() {
   }
 
   if (dma2.DMA_RUN_WRITE) {
-    uint8_t dma_src_data = dma_src_vram ? vbus_ack.data : ebus_ack.data;
     obus_req = {
       .addr = uint16_t(0xFE00 | (dma2.addr & 0xFF)),
-      .data = 0,
+      .data = dma_data_latch,
       .read = 0,
       .write = 1,
     };
+  } else {
+    ppu.get_obus_req(obus_req);
   }
 
   /*

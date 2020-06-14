@@ -25,7 +25,12 @@ void OAM::tock(int phase, const Req& req) {
 void OAM::tick(int phase, const Req& req, Ack& ack) const {
   if (req.read && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
     ack.addr = req.addr;
-    ack.data = ram[(req.addr & 0x00FF) >> 1];
+    if (req.addr & 1) {
+      ack.data = ram[(req.addr & 0x00FF) >> 1] >> 8;
+    }
+    else {
+      ack.data = ram[(req.addr & 0x00FF) >> 1];
+    }
     ack.read++;
   }
 }

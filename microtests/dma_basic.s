@@ -4,6 +4,7 @@ main:
 
   ld a, $FF
   ld ($8000), a
+  ld ($809F), a
 
   ld h, $FF
   ld l, $80

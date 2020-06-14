@@ -157,6 +157,8 @@ struct Gameboy {
 
   Ack cpu_ack;
 
+  uint8_t dma_data_latch;
+
   //----------
 
   uint8_t fb[160*144] = {0};

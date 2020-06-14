@@ -128,7 +128,6 @@ struct Gameboy {
   Serial  serial;
   PPU     ppu;
   SPU     spu;
-  DMA1    dma1;
   DMA2    dma2;
   Bootrom boot;
 

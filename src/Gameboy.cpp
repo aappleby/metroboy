@@ -92,6 +92,39 @@ void Gameboy::tick_gb() {
   if (joypad.get() != 0xFF) intf |= INT_JOYPAD_MASK;
 
   //-----------------------------------
+  // gather acks
+
+  if (ibus_req.read) {
+    ibus_ack = { 0 };
+    ppu.tick(phase, ibus_req, ibus_ack);
+    serial.tick(phase, ibus_req, ibus_ack);
+    joypad.tick(phase, ibus_req, ibus_ack);
+    zram.tick(phase, ibus_req, ibus_ack);
+    spu.tick(phase, ibus_req, ibus_ack);
+    boot.tick(phase, ibus_req, ibus_ack);
+    self.tick(phase, ibus_req, ibus_ack);
+    timer2.tick(phase, ibus_req, ibus_ack);
+  }
+
+  {
+    ebus_ack = { 0 };
+    cart.tick(phase, ebus_req, ebus_ack);
+    iram.tick(phase, ebus_req, ebus_ack);
+  }
+
+  {
+    vbus_ack = { 0 };
+    vram.tick(phase, vbus_req, vbus_ack);
+    ppu.on_vbus_ack(vbus_ack);
+  }
+
+  {
+    obus_ack = { 0 };
+    oam.tick(phase, obus_req, obus_ack);
+    ppu.on_obus_ack(obus_ack);
+  }
+
+  //-----------------------------------
   // prioritize reqs
 
   if (PHASE_C) {
@@ -104,56 +137,49 @@ void Gameboy::tick_gb() {
   bool cpu_has_ebus_req = !cpu_has_vbus_req && !cpu_has_obus_req && !cpu_has_ibus_req;
 
   ebus_req = ibus_req;
-  dma1.get_ebus_req(ebus_req);
 
-  if (cpu_has_vbus_req) vbus_req = ibus_req;
+  vbus_req = ibus_req;
   ppu.get_vbus_req(vbus_req);
-  dma1.get_vbus_req(vbus_req);
 
-  if (cpu_has_obus_req) obus_req = ibus_req;
+  obus_req = ibus_req;
   ppu.get_obus_req(obus_req);
-  dma1.get_obus_req(obus_req);
 
-  //-----------------------------------
-  // gather acks
+  bool dma_src_vram = (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
 
-  if (PHASE_A && ibus_req.read) {
-    ibus_ack = {0};
-    ppu.   tick(phase, ibus_req, ibus_ack);
-    serial.tick(phase, ibus_req, ibus_ack);
-    joypad.tick(phase, ibus_req, ibus_ack);
-    zram.  tick(phase, ibus_req, ibus_ack);
-    spu.   tick(phase, ibus_req, ibus_ack);
-    boot.  tick(phase, ibus_req, ibus_ack);
-    self.  tick(phase, ibus_req, ibus_ack);
-    dma1.  tick(phase, ibus_req, ibus_ack);
-    timer2.tick(phase, ibus_req, ibus_ack);
-    if (ibus_ack.read  > 1) __debugbreak();
+  if (dma2.DMA_RUN_READ && dma_src_vram) {
+    vbus_req = {
+      .addr = dma2.addr,
+      .data = 0,
+      .read = 1,
+      .write = 0,
+    };
   }
 
-  {
-    ebus_ack = {0};
-    cart.  tick(phase, ebus_req, ebus_ack);
-    iram.  tick(phase, ebus_req, ebus_ack);
-    if (ebus_ack.read  > 1) __debugbreak();
-    dma1.on_ebus_ack(ebus_ack);
+  if (dma2.DMA_RUN_READ && !dma_src_vram) {
+    ebus_req = {
+      .addr = dma2.addr,
+      .data = 0,
+      .read = 1,
+      .write = 0,
+    };
   }
 
-
-  {
-    vbus_ack = {0};
-    vram.  tick(phase, vbus_req, vbus_ack);
-    if (vbus_ack.read  > 1) __debugbreak();
-    dma1.on_vbus_ack(vbus_ack);
-    ppu.on_vbus_ack(vbus_ack);
+  if (dma2.DMA_RUN_WRITE) {
+    uint8_t dma_src_data = dma_src_vram ? vbus_ack.data : ebus_ack.data;
+    obus_req = {
+      .addr = uint16_t(0xFE00 | (dma2.addr & 0xFF)),
+      .data = 0,
+      .read = 0,
+      .write = 1,
+    };
   }
 
-  {
-    obus_ack = {0};
-    oam.   tick(phase, obus_req, obus_ack);
-    if (obus_ack.read  > 1) __debugbreak();
-    ppu.on_obus_ack(obus_ack);
-  }
+  /*
+  if (ibus_ack.read > 1) __debugbreak();
+  if (ebus_ack.read > 1) __debugbreak();
+  if (vbus_ack.read > 1) __debugbreak();
+  if (obus_ack.read > 1) __debugbreak();
+  */
 }
 
 //-----------------------------------------------------------------------------
@@ -208,18 +234,16 @@ void Gameboy::tock_gb() {
     boot.  tock(phase, ibus_req);
   }
 
-  if (PHASE_B || PHASE_F) {
-    dma2.tock(phase, ibus_req);
-  }
-
   if (PHASE_HI) {
     zram.  tock(phase, ibus_req);
     spu.   tock(phase, ibus_req);
     ppu.   tock(phase, ibus_req);
-    dma1.  tock(phase, ibus_req);
+    dma2.  tock(phase, ibus_req);
     cart.  tock(phase, ebus_req);
     iram.  tock(phase, ebus_req);
     vram.  tock(phase, vbus_req);
+
+
     oam.   tock(phase, obus_req);
 
     //----------

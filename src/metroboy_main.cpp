@@ -87,8 +87,10 @@ void MetroBoyApp::init() {
 
   //load("micro_cpu/build/dmg/cpu_zeropage");
 
-  //runmode = STEP_PHASE;
-  runmode = RUN_FAST;
+  //load("microtests/build/dmg", "dma_basic");
+
+  runmode = STEP_PHASE;
+  //runmode = RUN_FAST;
   //runmode = RUN_VSYNC;
 };
 
@@ -471,9 +473,6 @@ void MetroBoyApp::render_ui(int screen_w, int screen_h) {
 
     //gameboy.dump_timer(text_buf);
     //sprintf(text_buf, "\n");
-
-    gameboy.dma1.dump(text_buf);
-    sprintf(text_buf, "\n");
 
     gameboy.dma2.dump(text_buf);
     sprintf(text_buf, "\n");

@@ -5,6 +5,7 @@
 #include "Schematics.h"
 using namespace Schematics;
 
+#if 0
 //-----------------------------------------------------------------------------
 
 void DMA1::get_ebus_req(Req& r) const {
@@ -38,82 +39,8 @@ void DMA1::get_obus_req(Req& r) const {
   }
 }
 
-//----------------------------------------
-
-void DMA1::on_ebus_ack(const Ack& ebus_ack) {
-  uint16_t src_addr = uint16_t((source_a << 8) | count_a);
-  if (ebus_ack.read == 1 && ebus_ack.addr == src_addr) {
-    data_b = uint8_t(ebus_ack.data);
-  }
-}
-
-//----------------------------------------
-
-void DMA1::on_vbus_ack(const Ack& vbus_ack) {
-  uint16_t src_addr = uint16_t((source_a << 8) | count_a);
-  if (vbus_ack.read == 1 && vbus_ack.addr == src_addr) {
-    data_b = uint8_t(vbus_ack.data);
-  }
-}
-
 //-----------------------------------------------------------------------------
-
-void DMA1::tick(int phase, const Req& req, Ack& ack) const {
-  if (req.read && req.addr == ADDR_DMA) {
-    ack.addr  += req.addr;
-    ack.data  += source_x;
-    ack.read  += req.read;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void DMA1::tock(int phase, const Req& ibus_req) {
-
-  if (PHASE_B) {
-    mode_b = mode_a;
-    count_b = count_a;
-
-    mode_a = mode_x;
-    count_a = count_x;
-    source_a = source_x;
-
-    if (mode_x != Mode::NONE) count_x++;
-    if (count_x == 160) mode_x = Mode::NONE;
-  }
-
-  if (PHASE_F && ibus_req.write && ibus_req.addr == ADDR_DMA) {
-    //printf("%08d DMA write 0x%02x\n", tcycle, ibus_req.data);
-
-    if (ibus_req.data <= 0x7F) mode_x = Mode::CART;
-    if (0x80 <= ibus_req.data && ibus_req.data <= 0x9F) mode_x = Mode::VRAM;
-    if (0xA0 <= ibus_req.data && ibus_req.data <= 0xBF) mode_x = Mode::CART;
-    if (0xC0 <= ibus_req.data && ibus_req.data <= 0xFD) mode_x = Mode::IRAM;
-    count_x = 0;
-    source_x = ibus_req.data;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-void DMA1::dump(std::string& d) {
-  sprintf(d, "\002--------------DMA--------------\001\n");
- 
-  sprintf(d, "mode_x      %d\n", mode_x);
-  sprintf(d, "count_x     %d\n", count_x);
-  sprintf(d, "source_x    0x%04x\n", source_x);
-  sprintf(d, "\n");
-  sprintf(d, "mode_a      %d\n", mode_a);
-  sprintf(d, "count_a     %d\n", count_a);
-  sprintf(d, "source_a    0x%04x\n", source_a);
-  sprintf(d, "\n");
-  sprintf(d, "mode_b      %d\n", mode_b);
-  sprintf(d, "count_b     %d\n", count_b);
-  sprintf(d, "data_b      %d\n", data_b);
-}
-
-//-----------------------------------------------------------------------------
-
+#endif
 
 #if 0
 
@@ -209,9 +136,6 @@ if (PHASE_F) {
 // LUPA01 << LYXE
 // LUPA02 >> LUVY
 
-DMA2::DMA2() {
-}
-
 void DMA2::tock(int phase, const Req& req) {
 
 
@@ -223,8 +147,8 @@ void DMA2::tock(int phase, const Req& req) {
     ///*p04.LUPA*/ bool LUPA = nor(DMA_WR, DMA_WR_LATCH);
     /*p04.LUPA*/ bool LUPA = or(DMA_WR, DMA_WR_LATCH);
     /*p04.LUVY*/ DMA_RUN_TRIG_d0 = LUPA;
-    /*p04.MATU*/ DMA_RUN = DMA_RUN_LATCH;
-    if (DMA_RUN_LATCH) addr++;
+    /*p04.MATU*/ DMA_RUN_WRITE = DMA_RUN_READ;
+    if (DMA_RUN_READ) addr++;
   }
 
   if (PHASE_F) {
@@ -236,8 +160,8 @@ void DMA2::tock(int phase, const Req& req) {
   if (DMA_WR)  DMA_WR_LATCH = 1;
   if (DMA_RST) DMA_WR_LATCH = 0;
 
-  if (DMA_RUN_TRIG_d4) DMA_RUN_LATCH = 1;
-  if (DMA_DONE)        DMA_RUN_LATCH = 0;
+  if (DMA_RUN_TRIG_d4) DMA_RUN_READ = 1;
+  if (DMA_DONE)        DMA_RUN_READ = 0;
 
   if (DMA_RST) {
     DMA_DONE = 0;
@@ -269,8 +193,8 @@ void DMA2::dump(std::string& d) {
   sprintf(d, "DMA_WR_LATCH    %d\n", (bool)DMA_WR_LATCH);
   sprintf(d, "DMA_RUN_TRIG_d0 %d\n", (bool)DMA_RUN_TRIG_d0);
   sprintf(d, "DMA_RUN_TRIG_d4 %d\n", (bool)DMA_RUN_TRIG_d4);
-  sprintf(d, "DMA_RUN_LATCH   %d\n", (bool)DMA_RUN_LATCH);
-  sprintf(d, "DMA_RUN         %d\n", (bool)DMA_RUN);
+  sprintf(d, "DMA_RUN_READ    %d\n", (bool)DMA_RUN_READ);
+  sprintf(d, "DMA_RUN_WRITE   %d\n", (bool)DMA_RUN_WRITE);
   sprintf(d, "DMA_DONE        %d\n", (bool)DMA_DONE);
   sprintf(d, "addr            0x%04x\n", addr);
 }

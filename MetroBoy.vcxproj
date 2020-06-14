@@ -228,6 +228,7 @@
     <None Include="microtests\audio4.s" />
     <None Include="microtests\div_inc_timing_a.s" />
     <None Include="microtests\div_inc_timing_b.s" />
+    <None Include="microtests\dma_basic.s" />
     <None Include="microtests\dma_timing_a.s" />
     <None Include="microtests\halt_op_dupe.s" />
     <None Include="microtests\halt_op_dupe_delay.s" />

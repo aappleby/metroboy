@@ -18,8 +18,8 @@ void Gameboy::set_rom(uint8_t* new_rom, size_t new_rom_size) {
 }
 
 void Gameboy::reset(uint16_t new_pc) {
-  uint8_t* old_rom = cart.rom;
-  size_t old_rom_size = cart.rom_size;
+  uint8_t* old_rom = cart.cart_rom;
+  size_t old_rom_size = cart.cart_size;
 
   z80.reset(new_pc);
   cart.set_rom(old_rom, old_rom_size);
@@ -29,7 +29,6 @@ void Gameboy::reset(uint16_t new_pc) {
   spu.reset();
   timer2.reset();
   vram.reset();
-  iram.reset();
   joypad.reset();
   serial.reset();
   zram.reset();
@@ -107,38 +106,30 @@ void Gameboy::tick_gb() {
     dma2  .tick(ibus_req, ibus_ack);
   }
 
-  {
-    ebus_ack = { 0 };
-    cart.tick(ebus_req, ebus_ack);
-    iram.tick(ebus_req, ebus_ack);
-  }
+  ebus_ack = { 0 };
+  vbus_ack = { 0 };
+  obus_ack = { 0 };
 
-  {
-    vbus_ack = { 0 };
-    vram.tick(vbus_req, vbus_ack);
-  }
-
-  {
-    obus_ack = { 0 };
-    oam.tick(obus_req, obus_ack);
-  }
-
-  bool dma_src_vbus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
-  bool dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus;
-
-  if (dma_src_vbus) dma_data_latch = vbus_ack.data;
-  if (dma_src_ebus) dma_data_latch = ebus_ack.data;
-  
-  if (ibus_ack.read > 1) __debugbreak();
-  if (ebus_ack.read > 1) __debugbreak();
-  if (vbus_ack.read > 1) __debugbreak();
-  if (obus_ack.read > 1) __debugbreak();
+  cart.tick(ebus_req, ebus_ack);
+  vram.tick(vbus_req, vbus_ack);
+  oam .tick(obus_req, obus_ack);
 }
 
 //-----------------------------------------------------------------------------
 
 void Gameboy::tock_gb() {
   auto& self = *this;
+
+  bool dma_src_vbus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
+  bool dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus;
+
+  if (dma_src_vbus) dma_data_latch = vbus_ack.data;
+  if (dma_src_ebus) dma_data_latch = ebus_ack.data;
+
+  if (ibus_ack.read > 1) __debugbreak();
+  if (ebus_ack.read > 1) __debugbreak();
+  if (vbus_ack.read > 1) __debugbreak();
+  if (obus_ack.read > 1) __debugbreak();
 
   ppu.on_vbus_ack(vbus_ack);
   ppu.on_obus_ack(obus_ack);
@@ -194,7 +185,6 @@ void Gameboy::tock_gb() {
     ppu.   tock(phase, ibus_req);
     dma2.  tock(phase, ibus_req);
     cart.  tock(ebus_req);
-    iram.  tock(ebus_req);
     vram.  tock(vbus_req);
     oam.   tock(obus_req);
 
@@ -246,8 +236,8 @@ void Gameboy::tock_gb() {
   ppu.get_vbus_req(vbus_req);
   ppu.get_obus_req(obus_req);
 
-  bool dma_src_vbus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
-  bool dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus;
+  dma_src_vbus = dma2.DMA_RUN_READ && (dma2.addr >= ADDR_VRAM_BEGIN) && (dma2.addr <= ADDR_VRAM_END);
+  dma_src_ebus = dma2.DMA_RUN_READ && !dma_src_vbus;
 
   if (dma_src_vbus) {
     vbus_req = {
@@ -349,8 +339,8 @@ void Gameboy::dump_disasm(std::string& d) {
   uint16_t pc = z80.get_op_addr();
   const uint8_t* segment;
 
-  if (ADDR_IRAM_BEGIN <= pc && pc <= ADDR_IRAM_END) {
-    segment = iram.get() + (pc - ADDR_IRAM_BEGIN);
+  if (ADDR_MAIN_RAM_BEGIN <= pc && pc <= ADDR_MAIN_RAM_END) {
+    segment = cart.get_main_ram() + (pc - ADDR_MAIN_RAM_BEGIN);
   }
   else if (ADDR_ZEROPAGE_BEGIN <= pc && pc <= ADDR_ZEROPAGE_END) {
     segment = zram.get() + (pc - ADDR_ZEROPAGE_BEGIN);

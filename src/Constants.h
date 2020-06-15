@@ -33,34 +33,38 @@ constexpr int samples_per_frame = output_hz / 60;
 //-----------------------------------------------------------------------------
 // Memory map
 
-#define ADDR_BOOT_BEGIN  0x0000
-#define ADDR_BOOT_END    0x00FF
+#define ADDR_BOOT_ROM_BEGIN  0x0000
+#define ADDR_BOOT_ROM_END    0x00FF
 
-#define ADDR_ROM_BEGIN   0x0000
-#define ADDR_ROM_END     0x7FFF
+#define ADDR_CART_ROM_BEGIN  0x0000
+#define ADDR_CART_ROM_END    0x7FFF
 
-#define ADDR_VRAM_BEGIN  0x8000
+#define ADDR_VRAM_BEGIN      0x8000
+#define ADDR_VRAM_END        0x9FFF
+
+#define ADDR_CART_RAM_BEGIN  0xA000
+#define ADDR_CART_RAM_END    0xBFFF
+
+#define ADDR_MAIN_RAM_BEGIN  0xC000
+#define ADDR_MAIN_RAM_END    0xDFFF
+
+#define ADDR_ECHO_RAM_BEGIN  0xE000
+#define ADDR_ECHO_RAM_END    0xFDFF
+
+#define ADDR_OAM_BEGIN       0xFE00
+#define ADDR_OAM_END         0xFE9F
+
+#define ADDR_IOBUS_BEGIN     0xFF00
+#define ADDR_IOBUS_END       0xFFFF
+
+//----------
 
 #define ADDR_TILE0       0x8000
 #define ADDR_TILE1       0x8800
 #define ADDR_MAP0        0x9800
 #define ADDR_MAP1        0x9C00
 
-#define ADDR_VRAM_END    0x9FFF
-
-#define ADDR_CRAM_BEGIN  0xA000
-#define ADDR_CRAM_END    0xBFFF
-
-#define ADDR_IRAM_BEGIN  0xC000
-#define ADDR_IRAM_END    0xDFFF
-
-#define ADDR_ECHO_BEGIN  0xE000
-#define ADDR_ECHO_END    0xFDFF
-
-#define ADDR_OAM_BEGIN   0xFE00
-#define ADDR_OAM_END     0xFE9F
-
-#define ADDR_IOBUS_BEGIN 0xFF00
+//----------
 
 #define ADDR_IOREG_BEGIN 0xFF00
 #define ADDR_P1          0xFF00
@@ -95,16 +99,15 @@ constexpr int samples_per_frame = output_hz / 60;
 #define ADDR_WX          0xFF4B
 #define ADDR_GPU_END     0xFF4B
 
-#define ADDR_DISABLE_BOOTROM     0xFF50
+#define ADDR_DISABLE_BOOTROM 0xFF50
 
-#define ADDR_UNUSABLE_BEGIN 0xFF4C
-#define ADDR_UNUSABLE_END   0xFF47
+#define ADDR_UNUSABLE_BEGIN  0xFF4C
+#define ADDR_UNUSABLE_END    0xFF47
 
-#define ADDR_ZEROPAGE_BEGIN 0xFF80
-#define ADDR_ZEROPAGE_END   0xFFFE
+#define ADDR_ZEROPAGE_BEGIN  0xFF80
+#define ADDR_ZEROPAGE_END    0xFFFE
 
 #define ADDR_IE     0xFFFF
-#define ADDR_IOBUS_END 0xFFFF
 
 constexpr bool in_range(uint16_t addr, uint16_t begin, uint16_t end) {
   return (begin <= addr) && (addr <= end);

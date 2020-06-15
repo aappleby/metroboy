@@ -19,7 +19,6 @@ void OAM::tock(const Req& req) {
     else              d = (d & 0xFF00) | (req.data << 0);
     ram[oam_addr >> 1] = d;
   }
-  
 }
 
 void OAM::tick(const Req& req, Ack& ack) const {

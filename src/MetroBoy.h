@@ -34,11 +34,10 @@ public:
 
   const uint32_t* get_trace() const { return tracebuffer; }
 
-  uint8_t* get_rom()  { return current->gb.get_rom(); }
-  uint8_t* get_vram() { return current->gb.get_vram(); }
-  uint8_t* get_cram() { return current->gb.get_cram(); }
-  uint8_t* get_iram() { return current->gb.get_iram(); }
-  uint8_t* get_eram() { return current->gb.get_eram(); }
+  uint8_t* get_cart_rom() { return current->gb.get_cart_rom(); }
+  uint8_t* get_vram()     { return current->gb.get_vram(); }
+  uint8_t* get_cart_ram() { return current->gb.get_cart_ram(); }
+  uint8_t* get_main_ram() { return current->gb.get_main_ram(); }
 
   void load_rom(const char* filename, bool run_bootrom);
 

@@ -12,16 +12,15 @@ struct Cart {
 
   void dump(std::string& d);
 
-  uint8_t* get_flat_ptr(uint16_t addr);
-  
-  uint8_t* get_rom() const { return rom; }
-  size_t get_rom_size() const { return rom_size; }
+  uint8_t* get_cart_rom() { return cart_rom; }
+  uint8_t* get_main_ram() { return main_ram; }
+  uint8_t* get_cart_ram() { return cart_ram; }
 
-  uint8_t* get_cram() { return ram_buf; }
+  uint8_t* get_flat_ptr(uint16_t addr);
 
 //private:
-  uint8_t* rom = 0;
-  size_t rom_size = 0;
+  uint8_t* cart_rom = 0;
+  size_t   cart_size = 0;
   int rom_bank_count = 0;
   int ram_bank_count = 0;
   bool ram_enable = 0;
@@ -29,7 +28,8 @@ struct Cart {
   int bank_latch1 = 0;
   int bank_latch2 = 0;
 
-  uint8_t ram_buf[8192] = {};
+  uint8_t main_ram[8192] = {};
+  uint8_t cart_ram[8192] = {};
 };
 
 //-----------------------------------------------------------------------------

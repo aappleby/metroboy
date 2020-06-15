@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Joypad.h"
-#include "IRAM.h"
 #include "Cart.h"
 #include "DMA.h"
 #include "PPU.h"
@@ -100,13 +99,11 @@ struct Gameboy {
   const SPU& get_spu() const { return spu; }
   const PPU& get_ppu() const { return ppu; }
 
-  uint8_t* get_rom()    { return cart.get_rom(); }
-  uint8_t* get_vram()   { return vram.get(); }
-  uint8_t* get_cram()   { return cart.get_cram(); }
-  uint8_t* get_iram()   { return iram.get(); }
-  uint8_t* get_eram()   { return iram.get(); }
-
-  uint8_t* get_zram()   { return zram.get(); }
+  uint8_t* get_cart_rom() { return cart.get_cart_rom(); }
+  uint8_t* get_vram()     { return vram.get(); }
+  uint8_t* get_cart_ram() { return cart.get_cart_ram(); }
+  uint8_t* get_main_ram() { return cart.get_main_ram(); }
+  uint8_t* get_zram()     { return zram.get(); }
 
   void set_joypad(uint8_t v) { joypad.set(v); }
 
@@ -120,9 +117,8 @@ struct Gameboy {
   NewTimer timer2;
 
   Cart    cart;
-  OAM     oam;
   VRAM    vram;
-  IRAM    iram;
+  OAM     oam;
   ZRAM    zram;
   Joypad  joypad;
   Serial  serial;

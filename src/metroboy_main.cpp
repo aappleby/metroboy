@@ -357,11 +357,11 @@ void MetroBoyApp::render_frame(int /*screen_w*/, int /*screen_h*/) {
   //----------------------------------------
   // Gameboy screen
 
-  update_texture_u8(ram_tex, 0, 0*32, 256, 128, metroboy.get_rom());
+  update_texture_u8(ram_tex, 0, 0*32, 256, 128, metroboy.get_cart_rom());
   update_texture_u8(ram_tex, 0, 4*32, 256,  32, metroboy.get_vram());
-  update_texture_u8(ram_tex, 0, 5*32, 256,  32, metroboy.get_cram());
-  update_texture_u8(ram_tex, 0, 6*32, 256,  32, metroboy.get_iram());
-  update_texture_u8(ram_tex, 0, 7*32, 256,  32, metroboy.get_iram());
+  update_texture_u8(ram_tex, 0, 5*32, 256,  32, metroboy.get_cart_ram());
+  update_texture_u8(ram_tex, 0, 6*32, 256,  32, metroboy.get_main_ram());
+  update_texture_u8(ram_tex, 0, 7*32, 256,  32, metroboy.get_main_ram());
 
   gb_blitter.blit_screen(view, 32 * 32, 32 * 1, 2, metroboy.fb());
 

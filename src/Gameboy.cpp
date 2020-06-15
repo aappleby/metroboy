@@ -72,7 +72,7 @@ void Gameboy::tick(const Req& req, Ack& ack) const {
 void Gameboy::tick_gb() {
   phase++;
 
-  if (z80.pc == 0xFF80) printf("running from hiram at phase %lld\n", phase);
+  //if (z80.pc == 0xFF80) printf("running from hiram at phase %lld\n", phase);
 
   auto& self = *this;
 

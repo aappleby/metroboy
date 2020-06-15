@@ -26,32 +26,30 @@ static const std::string generic_tests[] = {
   //"boot_regs-sgb.gb",
   //"boot_regs-sgb2.gb",
 
-  /*
   "add_sp_e_timing.gb",
   "call_cc_timing.gb",
   "call_cc_timing2.gb",
   "call_timing.gb",
   "call_timing2.gb",
-  "di_timing-GS.gb",
+  "di_timing-GS.gb",              // hangs
   "div_timing.gb",
   "ei_sequence.gb",
   "ei_timing.gb",
-  "halt_ime0_ei.gb",
-  "halt_ime0_nointr_timing.gb",
+   "halt_ime0_ei.gb",             // hangs
+   "halt_ime0_nointr_timing.gb",  // hangs
   "halt_ime1_timing.gb",
-  "halt_ime1_timing2-GS.gb",
+  "halt_ime1_timing2-GS.gb",      // hangs
   "if_ie_registers.gb",
   "intr_timing.gb",
   "jp_cc_timing.gb",
   "jp_timing.gb",
   "ld_hl_sp_e_timing.gb",
-  */
-  //"oam_dma_restart.gb",
-  //"oam_dma_start.gb",
-  //"oam_dma_timing.gb",
-  /*
+  "oam_dma_restart.gb",
+  "oam_dma_start.gb",
+  "oam_dma_timing.gb",
   "pop_timing.gb",
   "push_timing.gb",
+  /*
   "rapid_di_ei.gb",
   "ret_cc_timing.gb",
   "ret_timing.gb",
@@ -156,16 +154,18 @@ void run_mooneye_test(const std::string& prefix, const std::string& name) {
 
   uint8_t result = 0xFF;
   int i = 0;
-  const int mcycles = 25000000;  // bits_ram_en needs lots of tcycles
+  const int mcycles = 1000000;  // bits_ram_en needs lots of tcycles
   for (; i < mcycles; i++) {
     gameboy.mcycle();
     if (gameboy.get_cpu().get_op() == 0x40) {
+      //printf("\ntest %s end @ %d\n", name.c_str(), i);
       result = gameboy.get_cpu().get_a();
       break;
     }
   }
 
   if (i == mcycles) {
+    printf("\n");
     printf("%-50s ", name.c_str());
     printf("? TIMEOUT @ %d\n", i);
   }

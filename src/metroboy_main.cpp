@@ -26,7 +26,45 @@ void run_wpol_test(const std::string& prefix, const std::string& name);
 
 //-----------------------------------------------------------------------------
 
+void MetroBoyApp::post() {
+  double freq = (double)SDL_GetPerformanceFrequency();
+  double begin = (double)SDL_GetPerformanceCounter();
+  bool pass = true;
+
+  printf("\n");
+  printf("---------- POST begin ----------\n");
+  printf("Timer");
+  pass &= run_microtest("microtests/build/dmg", "div_inc_timing_a");
+  pass &= run_microtest("microtests/build/dmg", "div_inc_timing_b");
+  pass &= run_microtest("microtests/build/dmg", "poweron_000_div");
+  pass &= run_microtest("microtests/build/dmg", "poweron_004_div");
+  pass &= run_microtest("microtests/build/dmg", "poweron_005_div");
+  pass &= run_microtest("microtests/build/dmg", "timer_div_phase_c");
+  pass &= run_microtest("microtests/build/dmg", "timer_div_phase_d");
+  printf("\n");
+
+  printf("RST");
+  pass &= run_microtest("micro_cpu/build/dmg", "rst_0x00");
+  pass &= run_microtest("micro_cpu/build/dmg", "rst_0x08");
+  pass &= run_microtest("micro_cpu/build/dmg", "rst_0x10");
+  pass &= run_microtest("micro_cpu/build/dmg", "rst_0x18");
+  pass &= run_microtest("micro_cpu/build/dmg", "rst_0x20");
+  pass &= run_microtest("micro_cpu/build/dmg", "rst_0x28");
+  pass &= run_microtest("micro_cpu/build/dmg", "rst_0x30");
+  pass &= run_microtest("micro_cpu/build/dmg", "rst_0x38");
+  printf("\n");
+
+  if (!pass) exit(1);
+
+  double end = (double)SDL_GetPerformanceCounter();
+  printf("---------- POST done in %f seconds ----------\n", (end - begin) / freq);
+  printf("\n");
+}
+
+//-----------------------------------------------------------------------------
+
 void MetroBoyApp::init() {
+
   keyboard_state = SDL_GetKeyboardState(nullptr);
   audio_init();
 
@@ -44,6 +82,8 @@ void MetroBoyApp::init() {
   //run_mealybug_tests();
   //return 0;
 
+  post();
+
   //---------
 
   //load("oh"); // broken eye
@@ -58,38 +98,13 @@ void MetroBoyApp::init() {
   //load("instr_timing");
 
   //---------
-  // Div
 
-  printf("\n");
-  printf("---------- POST begin ----------\n");
-  printf("Timer");
-  run_microtest("microtests/build/dmg", "div_inc_timing_a");
-  run_microtest("microtests/build/dmg", "div_inc_timing_b");
-  run_microtest("microtests/build/dmg", "poweron_000_div");
-  run_microtest("microtests/build/dmg", "poweron_004_div");
-  run_microtest("microtests/build/dmg", "poweron_005_div");
-  run_microtest("microtests/build/dmg", "timer_div_phase_c");
-  run_microtest("microtests/build/dmg", "timer_div_phase_d");
-  printf("\n");
-
-  printf("RST");
-  run_microtest("micro_cpu/build/dmg", "rst_0x00");
-  run_microtest("micro_cpu/build/dmg", "rst_0x08");
-  run_microtest("micro_cpu/build/dmg", "rst_0x10");
-  run_microtest("micro_cpu/build/dmg", "rst_0x18");
-  run_microtest("micro_cpu/build/dmg", "rst_0x20");
-  run_microtest("micro_cpu/build/dmg", "rst_0x28");
-  run_microtest("micro_cpu/build/dmg", "rst_0x30");
-  run_microtest("micro_cpu/build/dmg", "rst_0x38");
-  printf("\n");
-  printf("---------- POST done  ----------\n");
-
-  //---------
-
-  //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  
+  
   //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
 
-  load("roms/tetris"); // tetris brokennnn
+  //load("roms/tetris"); // tetris brokennnn
 
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/basic");
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/reg_read");

@@ -14,6 +14,7 @@ public:
 
   MetroBoyApp() {}
 
+  void post();
   virtual void init();
   virtual void close();
   virtual void update(double delta);

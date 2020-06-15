@@ -45,9 +45,11 @@ static const std::string generic_tests[] = {
   "jp_cc_timing.gb",
   "jp_timing.gb",
   "ld_hl_sp_e_timing.gb",
-  "oam_dma_restart.gb",
-  "oam_dma_start.gb",
-  "oam_dma_timing.gb",
+  */
+  //"oam_dma_restart.gb",
+  //"oam_dma_start.gb",
+  //"oam_dma_timing.gb",
+  /*
   "pop_timing.gb",
   "push_timing.gb",
   "rapid_di_ei.gb",
@@ -68,7 +70,7 @@ static const std::string generic_tests[] = {
 
   "oam_dma/basic.gb",
   "oam_dma/reg_read.gb",
-  //"oam_dma/sources-dmgABCmgbS.gb",
+  "oam_dma/sources-dmgABCmgbS.gb",
 };
 
 //---------

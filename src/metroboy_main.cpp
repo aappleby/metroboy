@@ -75,14 +75,16 @@ void MetroBoyApp::init() {
 
   //---------
 
-  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
   //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
 
   //load("roms/tetris"); // tetris brokennnn
 
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/basic");
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/reg_read");
-  load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/sources-dmgABCmgbS");
+  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/sources-dmgABCmgbS");
+
+  load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_timing");
 
   //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");
@@ -91,6 +93,7 @@ void MetroBoyApp::init() {
   //load("micro_cpu/build/dmg/cpu_zeropage");
 
   //load("microtests/build/dmg", "dma_basic");
+  //load("microtests/build/dmg", "dma_0x8000");
   //load("microtests/build/dmg", "dma_0xA000");
   //load("microtests/build/dmg", "dma_0xE000");
   //load("microtests/build/dmg", "dma_0xFF00");

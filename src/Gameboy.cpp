@@ -257,7 +257,7 @@ void Gameboy::tock_gb() {
     };
   }
 
-  if (PHASE_F && dma2.DMA_RUN_WRITE) {
+  if (PHASE_E && dma2.DMA_RUN_WRITE) {
     obus_req = {
       .addr = uint16_t(0xFE00 | (dma2.addr & 0xFF)),
       .data = dma_data_latch,

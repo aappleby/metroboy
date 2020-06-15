@@ -226,6 +226,7 @@
     <None Include="microtests\audio4.s" />
     <None Include="microtests\div_inc_timing_a.s" />
     <None Include="microtests\div_inc_timing_b.s" />
+    <None Include="microtests\dma_0x8000.s" />
     <None Include="microtests\dma_0xA000.s" />
     <None Include="microtests\dma_0xE000.s" />
     <None Include="microtests\dma_0xFE00.s" />

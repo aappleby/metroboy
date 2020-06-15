@@ -13,32 +13,23 @@
 
 static const std::string generic_tests[] = {
 
-  //"boot_div-dmg0.gb",
   "boot_div-dmgABCmgb.gb",
-  //"boot_div-S.gb",
-  //"boot_div2-S.gb",
-  //"boot_hwio-dmg0.gb",
   "boot_hwio-dmgABCmgb.gb",
-  //"boot_hwio-S.gb",
-  //"boot_regs-dmg0.gb",
   "boot_regs-dmgABC.gb",
-  //"boot_regs-mgb.gb",
-  //"boot_regs-sgb.gb",
-  //"boot_regs-sgb2.gb",
 
   "add_sp_e_timing.gb",
   "call_cc_timing.gb",
   "call_cc_timing2.gb",
   "call_timing.gb",
   "call_timing2.gb",
-  "di_timing-GS.gb",              // hangs
+  "di_timing-GS.gb",             // hangs
   "div_timing.gb",
   "ei_sequence.gb",
   "ei_timing.gb",
-   "halt_ime0_ei.gb",             // hangs
-   "halt_ime0_nointr_timing.gb",  // hangs
+  "halt_ime0_ei.gb",             // hangs
+  "halt_ime0_nointr_timing.gb",  // hangs
   "halt_ime1_timing.gb",
-  "halt_ime1_timing2-GS.gb",      // hangs
+  "halt_ime1_timing2-GS.gb",     // hangs
   "if_ie_registers.gb",
   "intr_timing.gb",
   "jp_cc_timing.gb",
@@ -49,7 +40,6 @@ static const std::string generic_tests[] = {
   "oam_dma_timing.gb",
   "pop_timing.gb",
   "push_timing.gb",
-  /*
   "rapid_di_ei.gb",
   "ret_cc_timing.gb",
   "ret_timing.gb",
@@ -64,7 +54,6 @@ static const std::string generic_tests[] = {
   "instr/daa.gb",
 
   "interrupts/ie_push.gb",
-  */
 
   "oam_dma/basic.gb",
   "oam_dma/reg_read.gb",
@@ -139,6 +128,16 @@ static const char* misc_tests[] = {
   "boot_hwio-C.gb",
   "boot_regs-A.gb",
   "boot_regs-cgb.gb",
+
+  //"boot_div-dmg0.gb",
+  //"boot_div-S.gb",
+  //"boot_div2-S.gb",
+  //"boot_hwio-dmg0.gb",
+  //"boot_hwio-S.gb",
+  //"boot_regs-dmg0.gb",
+  //"boot_regs-mgb.gb",
+  //"boot_regs-sgb.gb",
+  //"boot_regs-sgb2.gb",
 };
 
 //-----------------------------------------------------------------------------
@@ -154,7 +153,11 @@ void run_mooneye_test(const std::string& prefix, const std::string& name) {
 
   uint8_t result = 0xFF;
   int i = 0;
-  const int mcycles = 1000000;  // bits_ram_en needs lots of tcycles
+  int mcycles = 1000000;  
+
+  // bits_ram_en needs lots of tcycles
+  if (name == "bits_ram_en.gb") mcycles = 25000000;
+
   for (; i < mcycles; i++) {
     gameboy.mcycle();
     if (gameboy.get_cpu().get_op() == 0x40) {
@@ -200,14 +203,12 @@ void run_mooneye_acceptance() {
   }
   printf("\n");
 
-  /*
-  printf("-----MBC1 tests-----\n");
+  printf("MBC1");
   for (auto name : mbc1_tests) {
     std::string prefix = "roms/mooneye-gb/tests/build/emulator-only/mbc1/";
     run_mooneye_test(prefix, name);
   }
   printf("\n");
-  */
 
   /*
   printf("-----PPU tests-----\n");

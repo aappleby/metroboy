@@ -99,7 +99,8 @@ void MetroBoyApp::init() {
 
   //---------
 
-  load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
+  load("roms/gb-test-roms/cpu_instrs/cpu_instrs");
+  //load("roms/gb-test-roms/instr_timing/instr_timing");
   
   
   //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");

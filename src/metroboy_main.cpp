@@ -82,7 +82,7 @@ void MetroBoyApp::init() {
 
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/basic");
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/reg_read");
-  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/sources-dmgABCmgbS");
+  load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/sources-dmgABCmgbS");
 
   //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");
@@ -93,7 +93,7 @@ void MetroBoyApp::init() {
   //load("microtests/build/dmg", "dma_basic");
   //load("microtests/build/dmg", "dma_0xA000");
   //load("microtests/build/dmg", "dma_0xE000");
-  //load("microtests/build/dmg", "dma_0xFE00");
+  //load("microtests/build/dmg", "dma_0xFF00");
 
   runmode = STEP_PHASE;
   //runmode = RUN_FAST;

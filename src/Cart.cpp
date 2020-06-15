@@ -68,7 +68,7 @@ void Cart::tick(const Req& req, Ack& ack) const {
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
 
-  if (req.read && req.addr < 0xFF00) {
+  if (req.read) {
     if (region == 0 || region == 1) {
       // cart_rom
       ack.addr = req.addr;

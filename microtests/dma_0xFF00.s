@@ -1,8 +1,8 @@
 .include "header.inc"
 
 .define ST_A8_A  $E0
-.define DMA_SRC  $FE
-.define DMA_ECHO $DE
+.define DMA_SRC  $FF
+.define DMA_ECHO $DF
 .define JR_A8    $18
 .define NEG_2    $FE
 

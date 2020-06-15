@@ -71,6 +71,17 @@ void MetroBoyApp::init() {
   run_microtest("microtests/build/dmg", "timer_div_phase_c");
   run_microtest("microtests/build/dmg", "timer_div_phase_d");
   printf("\n");
+
+  printf("RST");
+  run_microtest("micro_cpu/build/dmg", "rst_0x00");
+  run_microtest("micro_cpu/build/dmg", "rst_0x08");
+  run_microtest("micro_cpu/build/dmg", "rst_0x10");
+  run_microtest("micro_cpu/build/dmg", "rst_0x18");
+  run_microtest("micro_cpu/build/dmg", "rst_0x20");
+  run_microtest("micro_cpu/build/dmg", "rst_0x28");
+  run_microtest("micro_cpu/build/dmg", "rst_0x30");
+  run_microtest("micro_cpu/build/dmg", "rst_0x38");
+  printf("\n");
   printf("---------- POST done  ----------\n");
 
   //---------
@@ -78,19 +89,22 @@ void MetroBoyApp::init() {
   //load("roms/gb-test-roms/cpu_instrs", "cpu_instrs");
   //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
 
-  //load("roms/tetris"); // tetris brokennnn
+  load("roms/tetris"); // tetris brokennnn
 
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/basic");
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/reg_read");
   //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/sources-dmgABCmgbS");
 
-  load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_timing");
+  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_restart");
+  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_start");
+  //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_timing");
 
   //load_memdump("roms", "LinksAwakening_house");
   //load_memdump("roms", "LinksAwakening_dog");
   //load_memdump("roms", "tetris");
 
-  //load("micro_cpu/build/dmg/cpu_zeropage");
+  //load("micro_cpu/build/dmg", "rst_0x38");
+  //load("micro_cpu/build/dmg", "cpu_zeropage");
 
   //load("microtests/build/dmg", "dma_basic");
   //load("microtests/build/dmg", "dma_0x8000");
@@ -98,7 +112,7 @@ void MetroBoyApp::init() {
   //load("microtests/build/dmg", "dma_0xE000");
   //load("microtests/build/dmg", "dma_0xFF00");
 
-  runmode = STEP_PHASE;
+  //runmode = STEP_PHASE;
   //runmode = RUN_FAST;
   //runmode = RUN_VSYNC;
 };

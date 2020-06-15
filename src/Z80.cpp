@@ -615,7 +615,12 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 0 && RST_NN)                 /**/ { alu_y = 0x38;                               /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(sp, 0); state_ = 1; }
     if (state == 1 && RST_NN)                 /**/ { out = pch;        PIPE_BUSY;                /**/                  spl = dec(spl, 1);           /**/                              sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 2; }
     if (state == 2 && RST_NN)                 /**/ { out = pcl;        PIPE_BUSY;                /**/                  spl = dec(spl, 1);           /**/                              sph = dec(sph, inc_c);    set_addr(sp, 1); state_ = 3; }
-    if (state == 3 && RST_NN)                 /**/ { alu_x = op;                                 /**/ PIPE_BUSY;       pch = 0x00;                  /**/ pcl = alu(4, f);             PIPE_BUSY;                set_addr(pc, 0); state_ = 0; }
+    //if (state == 3 && RST_NN)                 /**/ { alu_x = op;                                 /**/ PIPE_BUSY;       pch = 0x00;                  /**/ pcl = alu(4, f);             PIPE_BUSY;                set_addr(pc, 0); state_ = 0; }
+    if (state == 3 && RST_NN) {
+      pc = op - 0xC7;
+      set_addr(pc, 0);
+      state_ = 0;
+    }
   }
 
   f &= 0xF0;

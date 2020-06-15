@@ -667,6 +667,14 @@
     <None Include="micro_cpu\cpu_zeropage.s" />
     <None Include="micro_cpu\header.inc" />
     <None Include="micro_cpu\makefile" />
+    <None Include="micro_cpu\rst_0x00.s" />
+    <None Include="micro_cpu\rst_0x08.s" />
+    <None Include="micro_cpu\rst_0x10.s" />
+    <None Include="micro_cpu\rst_0x18.s" />
+    <None Include="micro_cpu\rst_0x20.s" />
+    <None Include="micro_cpu\rst_0x28.s" />
+    <None Include="micro_cpu\rst_0x30.s" />
+    <None Include="micro_cpu\rst_0x38.s" />
     <None Include="micro_cpu\temp.link" />
     <None Include="verilog\classtest.sv" />
     <None Include="verilog\Constants.sv" />

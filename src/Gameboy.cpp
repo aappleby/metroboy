@@ -72,6 +72,8 @@ void Gameboy::tick(const Req& req, Ack& ack) const {
 void Gameboy::tick_gb() {
   phase++;
 
+  if (z80.pc == 0xFF80) printf("running from hiram at phase %lld\n", phase);
+
   auto& self = *this;
 
   //-----------------------------------
@@ -157,6 +159,7 @@ void Gameboy::tock_gb() {
     }
 
     if (cpu_ack.read == 0) {
+      cpu_ack.addr = cpu_req.addr;
       cpu_ack.data = 0xFF;
     }
   }

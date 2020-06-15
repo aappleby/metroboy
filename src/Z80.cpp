@@ -319,12 +319,19 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
   else if (PREFIX_CB) {                                                                                                                                                                                                                      
     if (state == 1) cb = ack.data;                                                                                                                                                                                                           
     uint8_t mask = cb_flag_mask[CB_QUAD];                                                                                                                                                                                                    
-                                                                                                                                                                                                                
+
+    bool OP_CB_BIT = PREFIX_CB && (CB_QUAD == 1);
+
     if (state == 0)                           /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && OP_CB_R)                /**/ { alu_x = GET_CB;                             /**/                  pcl = inc(pcl, 1);           /**/ SET_CB(alu_cb(cb, f));       pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(mask); }
-    if (state == 1 && OP_CB_HL)               /**/ {                                             /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 0); state_ = 2; }
-    if (state == 2)                           /**/ { alu_x = ack.data;                           /**/                                               /**/ out = alu_cb(cb, f);                                   set_addr(xy, 1); state_ = 3; set_f(mask); }
-    if (state == 3)                           /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+
+    if (OP_CB_R) {
+      if (state == 1)                         /**/ { alu_x = GET_CB;                             /**/                  pcl = inc(pcl, 1);           /**/ SET_CB(alu_cb(cb, f));       pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; set_f(mask); }
+    }
+    else {
+      if (state == 1)                         /**/ {                                             /**/ PIPE_BUSY;       xyl = l;                     /**/ PIPE_BUSY;                   xyh = h;                  set_addr(xy, 0); state_ = 2; }
+      if (state == 2)                         /**/ { alu_x = ack.data;                           /**/                  pcl = inc(pcl, 1);           /**/ out = alu_cb(cb, f);         pch = inc(pch, inc_c);    set_addr(xy, 1); state_ = 3; set_f(mask); }
+      if (state == 3)                         /**/ {                                             /**/                                               /**/                                                        set_addr(pc, 0); state_ = 0; }
+    }
   }                                                                                                                                                                                                    
   else {                                                                                                                                                                                               
     bool branch = false;                                                                                                                                                                               
@@ -389,9 +396,8 @@ void Z80::tock_b(const uint8_t imask_, const uint8_t intf_, const Ack& ack) {
     if (state == 3 && ADD_SP_R8)              /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                                                                                                                                                                       
     if (state == 0 && LD_HL_SP_R8)            /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 1; }
-    if (state == 1 && LD_HL_SP_R8)            /**/ { alu_x = ack.data;                           /**/ alu_y = spl;     PIPE_BUSY;                   /**/ l = alu(0, f);                                         set_addr(pc, 0); state_ = 2; set_f(0xF0); }
-    if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(ack.data);                      /**/ alu_y = sph;     PIPE_BUSY;                   /**/ h = alu(1, f);                                         set_addr(pc, 0); state_ = 3; }
-    if (state == 3 && LD_HL_SP_R8)            /**/ {                                             /**/                  pcl = inc(pcl, 1);           /**/                              pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
+    if (state == 1 && LD_HL_SP_R8)            /**/ { alu_x = ack.data;                           /**/ alu_y = spl;     PIPE_BUSY;                   /**/ l = alu(0, f);               pcl = inc(pcl, 1);        set_addr(pc, 0); state_ = 2; set_f(0xF0); }
+    if (state == 2 && LD_HL_SP_R8)            /**/ { alu_x = sxt(ack.data);                      /**/ alu_y = sph;     PIPE_BUSY;                   /**/ h = alu(1, f);               pch = inc(pch, inc_c);    set_addr(pc, 0); state_ = 0; }
                                 
     // FIXME
     if (state == 0 && INC_BC)                 /**/ {                                             /**/ PIPE_BUSY;       c = inc(  c, 1);             /**/ PIPE_BUSY;                   b = inc(  b, inc_c);      set_addr(pc, 0); state_ = 1; }

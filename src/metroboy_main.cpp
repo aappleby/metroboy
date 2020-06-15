@@ -75,7 +75,7 @@ void MetroBoyApp::init() {
   gb_blitter.init();
   dump_painter.init();
 
-  run_microtests();
+  //run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
   //run_wpol_acceptance();
@@ -99,11 +99,10 @@ void MetroBoyApp::init() {
 
   //---------
 
-  load("roms/gb-test-roms/cpu_instrs/cpu_instrs");
-  //load("roms/gb-test-roms/instr_timing/instr_timing");
-  
-  
+  //load("roms/gb-test-roms/cpu_instrs/cpu_instrs");
+  load("roms/gb-test-roms/instr_timing/instr_timing");
   //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
+  //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
   //load("roms/tetris"); // tetris brokennnn
 

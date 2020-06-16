@@ -73,41 +73,26 @@ void LCD::tick(const Req& req, Ack& ack) {
 #endif
 
 void LCD::tock(int phase, const Req& /*req*/, bool LCDC_EN) {
-  /*p01.ATAR*/ bool ATAR_VID_RST = !LCDC_EN;
-  /*p21.NOKO*/ bool LINE_153 = (Y & 153) == 153;
-  /*p21.SANU*/ bool LINE_END = (X & 113) == 113;
-
-  bool old_rutu = NEW_LINE_d0;
-  bool old_nype = NEW_LINE_d4;
-
   if (PHASE_F) {
-    /*p21.RUTU*/ NEW_LINE_d0 = LINE_END;
+    if (X == 113 && !NEW_LINE_d0) Y++;
+    NEW_LINE_d0 = (X == 113);
   }
 
   if (PHASE_B) {
-    /*p21.NYPE*/ NEW_LINE_d4 = NEW_LINE_d0;
     X++;
-  }
-
-  bool new_rutu = NEW_LINE_d0;
-  bool new_nype = NEW_LINE_d4;
-
-  if (!old_nype && new_nype) {
-    /*p21.MYTA*/ LINE_153_d4 = LINE_153;
-  }
-
-  if (!old_rutu && new_rutu) {
-    Y++;
+    if (NEW_LINE_d0 && !NEW_LINE_d4) LINE_153_d4 = (Y == 153);
+    NEW_LINE_d4 = NEW_LINE_d0;
   }
 
   if (NEW_LINE_d0) X = 0;
   if (LINE_153_d4) Y = 0;
 
-  if (ATAR_VID_RST) {
+  if (!LCDC_EN) {
     X = 0;
     Y = 0;
     NEW_LINE_d0 = 0;
     NEW_LINE_d4 = 0;
+    LINE_153_d4 = 0;
   }
 }
 
@@ -118,9 +103,6 @@ void LCD::dump(std::string& d) {
 
   sprintf(d, "X            = %d\n", X);
   sprintf(d, "Y            = %d\n", Y);
-  sprintf(d, "LY           = %d\n", LY);
-  sprintf(d, "LYC          = %d\n", LYC);
-  sprintf(d, "STAT         = %d\n", STAT);
   sprintf(d, "NEW_LINE_d0  = %d\n", NEW_LINE_d0);
   sprintf(d, "NEW_LINE_d4  = %d\n", NEW_LINE_d4);
   sprintf(d, "LINE_153_d4  = %d\n", LINE_153_d4);

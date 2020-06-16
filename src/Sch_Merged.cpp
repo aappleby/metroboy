@@ -4086,107 +4086,51 @@ void TestGB::tick_busmux(int phase) {
 
 void TestGB::tick_lcd(int phase, bool ALUR_RSTn, bool LCDC_EN) {
 
-  /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(vclk_reg.WUVU_AxxDExxH);  // lcd, sprites
-  /*p28.AWOH*/ wire AWOH_AxxDExxH = not(XUPY_xBCxxFGx);  // lcd
+  /*p28.AWOH*/ wire AWOH_AxxDExxH =  vclk_reg.WUVU_AxxDExxH;
+  /*p29.XUPY*/ wire XUPY_xBCxxFGx = !vclk_reg.WUVU_AxxDExxH;
+
+  /*p21.TALU*/ wire TALU_xBCDExxx =  vclk_reg.VENA_xBCDExxx;
+  /*p21.SONO*/ wire SONO_AxxxxFGH = !vclk_reg.VENA_xBCDExxx;
 
   /*p01.ATAR*/ wire ATAR_VID_RST = or (!ALUR_RSTn, !cfg_reg.LCDC_EN);
-  /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RST);
 
-  /*p01.XODO*/ wire XODO_VID_RST = nand(ALUR_RSTn, cfg_reg.LCDC_EN);
-  /*p01.XAPO*/ wire XAPO_VID_RSTn = not(XODO_VID_RST);
-  /*p01.LYHA*/ wire LYHA_VID_RST = not(XAPO_VID_RSTn);
-  /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RST);
-  /*p01.TOFU*/ wire TOFU_VID_RST = not(XAPO_VID_RSTn);
+  int old_x = lcd_reg.x();
+  int old_y = lcd_reg.y();
+  int old_rutu = lcd_reg.RUTU_NEW_LINE_d0;
 
-  /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(lcd_reg.RUTU_NEW_LINE_d0);
-  /*p21.SELA*/ wire SELA_NEW_LINE_d0 = not(PURE_NEW_LINE_d0n);
-  /*p24.KASA*/ wire LINE_DONEb = not(PURE_NEW_LINE_d0n);
+  /*p24.NERU*/ wire LINE_000n  = old_y != 0;
+  /*p21.NOKO*/ wire LINE_153   = (old_y & 153) == 153;
+  /*p21.SANU*/ wire LINE_END   = (old_x & 113) == 113;
+  /*p21.XYVO*/ wire IN_VBLANK  = (old_y & 144) == 144;
+  /*p21.MUDE*/ wire X_RSTn     = nor(lcd_reg.RUTU_NEW_LINE_d0, ATAR_VID_RST);
+  /*p21.LAMA*/ wire FRAME_RSTn = nor(lcd_reg.LINE_153_d4, ATAR_VID_RST);
 
-  /*p28.ABAF*/   wire VID_LINE_d4n = not(lcd_reg.VID_LINE_d4);
-  /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.VID_LINE_d6, VID_LINE_d4n), ABEZ_VID_RSTn);
-  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4 = not(BYHA_VID_LINE_TRIG_d4n);
+  /*p24.MEDA*/ lcd_reg.VSYNC_OUTn.       set(lcd_reg.NYPE_NEW_LINE_d4, !ATAR_VID_RST, LINE_000n);
+  /*p21.MYTA*/ lcd_reg.LINE_153_d4.      set(lcd_reg.NYPE_NEW_LINE_d4, !ATAR_VID_RST, LINE_153);
+  /*p21.POPU*/ lcd_reg.POPU_IN_VBLANK_d4.set(lcd_reg.NYPE_NEW_LINE_d4, !ATAR_VID_RST, IN_VBLANK);
 
-  // Vertical sync
-  /*p24.NERU*/ wire LINE_000n = nor(lcd_reg.Y0, lcd_reg.Y1, lcd_reg.Y2, lcd_reg.Y3, lcd_reg.Y4, lcd_reg.Y5, lcd_reg.Y6, lcd_reg.Y7);
+  /*p21.RUTU*/ lcd_reg.RUTU_NEW_LINE_d0. set(SONO_AxxxxFGH, !ATAR_VID_RST, LINE_END);
+  /*p21.NYPE*/ lcd_reg.NYPE_NEW_LINE_d4. set(TALU_xBCDExxx, !ATAR_VID_RST, lcd_reg.RUTU_NEW_LINE_d0);
+  /*p29.CATU*/ lcd_reg.VID_LINE_d4.      set(XUPY_xBCxxFGx, !ATAR_VID_RST, and (lcd_reg.RUTU_NEW_LINE_d0, !IN_VBLANK));
+  /*p28.ANEL*/ lcd_reg.VID_LINE_d6.      set(AWOH_AxxDExxH, !ATAR_VID_RST, lcd_reg.VID_LINE_d4);
 
-  // so this is like a strobe that fires 4x per line
-
-  /*p21.MUDE*/ wire X_RSTn = nor(lcd_reg.RUTU_NEW_LINE_d0, LYHA_VID_RST);
-  /*p21.LAMA*/ wire FRAME_RSTn = nor(lcd_reg.LINE_153_d4, LYHA_VID_RST);
-
-  /*p21.SANU*/ wire LINE_END = and (lcd_reg.X6, lcd_reg.X5, lcd_reg.X4, lcd_reg.X0); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-  /*p21.NOKO*/ wire LINE_153 = and (lcd_reg.Y7, lcd_reg.Y4, lcd_reg.Y3, lcd_reg.Y0); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-  /*p21.XYVO*/ wire IN_VBLANK = and (lcd_reg.Y4, lcd_reg.Y7); // 128 + 16 = 144
-
-  /*p29.ALES*/   wire IN_VBLANKn = not(IN_VBLANK);
-  /*p29.ABOV*/ wire VID_LINE_d0 = and (SELA_NEW_LINE_d0, IN_VBLANKn);
-
-  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4, ATAR_VID_RST);
-  /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
-  /*p29.BEBU*/   wire SCAN_DONE_d0_TRIGn = or (BALU_SCAN_RST, spr_reg.SCAN_DONE_d5, !spr_reg.SCAN_DONE_d4);
-  /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIG = not(SCAN_DONE_d0_TRIGn);
-
-  /*p21.TALU*/ wire TALU_xBCDExxx = not(!vclk_reg.VENA_xBCDExxx); // this drives the LCD xy counter
-  /*p21.SONO*/ wire SONO_AxxxxFGH = not(TALU_xBCDExxx);  // lcd
-
-  // lcd horizontal sync pin
-  /*p24.POFY*/ wire POFY = not(lcd_reg.RUJU);
-  /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY);
-
-  // lcd line strobe
-  /*p21.TOCU*/ wire C0n = not(lcd_reg.X0);
-  /*p21.VEPE*/ wire C1n = not(lcd_reg.X1);
-  /*p21.VUTY*/ wire C2n = not(lcd_reg.X2);
-  /*p21.VATE*/ wire C3n = not(lcd_reg.X3);
-  /*p21.TUDA*/ wire C4n = not(lcd_reg.X4);
-  /*p21.TAFY*/ wire C5n = not(lcd_reg.X5);
-  /*p21.TUJU*/ wire C6n = not(lcd_reg.X6);
-
-  /*p21.VOKU*/ wire CNT_000n = nand(C6n, C5n, C4n, C3n, C2n, C1n, C0n); // 0000000 == 0
-  /*p21.TOZU*/ wire CNT_007n = nand(C6n, C5n, C4n, C3n, lcd_reg.X2, lcd_reg.X1, lcd_reg.X0); // 0000111 == 7
-  /*p21.TECE*/ wire CNT_045n = nand(C6n, lcd_reg.X5, C4n, lcd_reg.X3, lcd_reg.X2, C1n, lcd_reg.X0); // 0101101 == 45
-  /*p21.TEBO*/ wire CNT_083n = nand(lcd_reg.X6, C5n, lcd_reg.X4, C3n, C2n, lcd_reg.X1, lcd_reg.X0); // 1010011 == 83
-
-  /*p21.TEGY*/ wire LINE_STROBE = nand(CNT_000n, CNT_007n, CNT_045n, CNT_083n);
-  /*p21.RYNO*/ wire CPGn = or (lcd_reg.LINE_STROBE, lcd_reg.RUTU_NEW_LINE_d0);
-  /*p21.POGU*/ wire POGU_PIN_CPG = not(CPGn);
-
-  /*p24.MURE*/ wire MURE_PIN_S = not(lcd_reg.VSYNC_OUTn);
-
-  /*p24.MEDA*/ lcd_reg.VSYNC_OUTn.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, LINE_000n);
-
-  /*p21.SYGU*/ lcd_reg.LINE_STROBE.set(SONO_AxxxxFGH, LYFE_VID_RSTn, LINE_STROBE);
-  /*p21.MYTA*/ lcd_reg.LINE_153_d4.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, LINE_153);
-  /*p21.POPU*/ lcd_reg.POPU_IN_VBLANK_d4.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, IN_VBLANK);
-  /*p21.NYPE*/ lcd_reg.NYPE_NEW_LINE_d4.set(TALU_xBCDExxx, LYFE_VID_RSTn, lcd_reg.RUTU_NEW_LINE_d0);
-  /*p28.ANEL*/ lcd_reg.VID_LINE_d6.set(AWOH_AxxDExxH, ABEZ_VID_RSTn, lcd_reg.VID_LINE_d4);
-  /*p29.CATU*/ lcd_reg.VID_LINE_d4.set(XUPY_xBCxxFGx, ABEZ_VID_RSTn, VID_LINE_d0);
-
-  /*p24.POME*/ lcd_reg.POME.sr_latch(lcd_reg.X_8_SYNC || TOFU_VID_RST, AVAP_SCAN_DONE_d0_TRIG);   // Latch loop
-  /*p24.RUJU*/ lcd_reg.RUJU.sr_latch(lcd_reg.X_8_SYNC || TOFU_VID_RST, AVAP_SCAN_DONE_d0_TRIG);
-
-  /*p21.TYRY*/ lcd_reg.X6.set(!lcd_reg.X5, X_RSTn, !lcd_reg.X6);
-  /*p21.TAHA*/ lcd_reg.X5.set(!lcd_reg.X4, X_RSTn, !lcd_reg.X5);
-  /*p21.SUDE*/ lcd_reg.X4.set(!lcd_reg.X3, X_RSTn, !lcd_reg.X4);
-  /*p21.TELU*/ lcd_reg.X3.set(!lcd_reg.X2, X_RSTn, !lcd_reg.X3);
-  /*p21.VYZO*/ lcd_reg.X2.set(!lcd_reg.X1, X_RSTn, !lcd_reg.X2);
-  /*p21.TYPO*/ lcd_reg.X1.set(!lcd_reg.X0, X_RSTn, !lcd_reg.X1);
   /*p21.SAXO*/ lcd_reg.X0.set(TALU_xBCDExxx, X_RSTn, !lcd_reg.X0);
+  /*p21.TYPO*/ lcd_reg.X1.set(!lcd_reg.X0, X_RSTn, !lcd_reg.X1);
+  /*p21.VYZO*/ lcd_reg.X2.set(!lcd_reg.X1, X_RSTn, !lcd_reg.X2);
+  /*p21.TELU*/ lcd_reg.X3.set(!lcd_reg.X2, X_RSTn, !lcd_reg.X3);
+  /*p21.SUDE*/ lcd_reg.X4.set(!lcd_reg.X3, X_RSTn, !lcd_reg.X4);
+  /*p21.TAHA*/ lcd_reg.X5.set(!lcd_reg.X4, X_RSTn, !lcd_reg.X5);
+  /*p21.TYRY*/ lcd_reg.X6.set(!lcd_reg.X5, X_RSTn, !lcd_reg.X6);
 
-  /*p21.LAFO*/ lcd_reg.Y7.set(!lcd_reg.Y6, FRAME_RSTn, !lcd_reg.Y7);
-  /*p21.MATO*/ lcd_reg.Y6.set(!lcd_reg.Y5, FRAME_RSTn, !lcd_reg.Y6);
-  /*p21.LEMA*/ lcd_reg.Y5.set(!lcd_reg.Y4, FRAME_RSTn, !lcd_reg.Y5);
-  /*p21.LOVU*/ lcd_reg.Y4.set(!lcd_reg.Y3, FRAME_RSTn, !lcd_reg.Y4);
-  /*p21.LYDO*/ lcd_reg.Y3.set(!lcd_reg.Y2, FRAME_RSTn, !lcd_reg.Y3);
-  /*p21.LEXA*/ lcd_reg.Y2.set(!lcd_reg.Y1, FRAME_RSTn, !lcd_reg.Y2);
-  /*p21.MYRO*/ lcd_reg.Y1.set(!lcd_reg.Y0, FRAME_RSTn, !lcd_reg.Y1);
   /*p21.MUWY*/ lcd_reg.Y0.set(lcd_reg.RUTU_NEW_LINE_d0, FRAME_RSTn, !lcd_reg.Y0);
+  /*p21.MYRO*/ lcd_reg.Y1.set(!lcd_reg.Y0, FRAME_RSTn, !lcd_reg.Y1);
+  /*p21.LEXA*/ lcd_reg.Y2.set(!lcd_reg.Y1, FRAME_RSTn, !lcd_reg.Y2);
+  /*p21.LYDO*/ lcd_reg.Y3.set(!lcd_reg.Y2, FRAME_RSTn, !lcd_reg.Y3);
+  /*p21.LOVU*/ lcd_reg.Y4.set(!lcd_reg.Y3, FRAME_RSTn, !lcd_reg.Y4);
+  /*p21.LEMA*/ lcd_reg.Y5.set(!lcd_reg.Y4, FRAME_RSTn, !lcd_reg.Y5);
+  /*p21.MATO*/ lcd_reg.Y6.set(!lcd_reg.Y5, FRAME_RSTn, !lcd_reg.Y6);
+  /*p21.LAFO*/ lcd_reg.Y7.set(!lcd_reg.Y6, FRAME_RSTn, !lcd_reg.Y7);
 
-  /*p21.RUTU*/ lcd_reg.RUTU_NEW_LINE_d0.set(SONO_AxxxxFGH, LYFE_VID_RSTn, LINE_END);
-
-  lcd_pins.S.set(MURE_PIN_S);
-  lcd_pins.CPG.set(POGU_PIN_CPG);
-  lcd_pins.ST.set(RUZE_PIN_ST);
 }
 
 //-----------------------------------------------------------------------------

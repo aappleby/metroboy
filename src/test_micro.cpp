@@ -295,16 +295,16 @@ static const std::string all_microtests[] = {
   "poweron_005_div",
   "poweron_005_oam",
   "poweron_005_stat",
-  "poweron_006_oam",
+  "poweron_006_oam",   // x
   "poweron_006_stat",
   "poweron_007_stat",
   "poweron_025_vram",
   "poweron_026_stat",
-  "poweron_026_vram",
+  "poweron_026_vram",  // x
   "poweron_027_stat",
-  "poweron_069_oam",
+  "poweron_069_oam",   // x
   "poweron_069_stat",
-  "poweron_069_vram",
+  "poweron_069_vram",  // x
   "poweron_070_oam",
   "poweron_070_stat",
   "poweron_070_vram",
@@ -312,31 +312,31 @@ static const std::string all_microtests[] = {
   "poweron_119_oam",
   "poweron_119_stat",
   "poweron_120_ly",
-  "poweron_120_oam",
+  "poweron_120_oam",   // x
   "poweron_120_stat",
-  "poweron_121_oam",
+  "poweron_121_oam",   // x
   "poweron_121_stat",
   "poweron_139_vram",
   "poweron_140_stat",
-  "poweron_140_vram",
+  "poweron_140_vram",  // x
   "poweron_141_stat",
-  "poweron_183_oam",
+  "poweron_183_oam",   // x
   "poweron_183_stat",
-  "poweron_183_vram",
+  "poweron_183_vram",  // x
   "poweron_184_oam",
   "poweron_184_stat",
   "poweron_184_vram",
   "poweron_233_ly",
   "poweron_233_oam",
   "poweron_234_ly",
-  "poweron_234_oam",
+  "poweron_234_oam",   // x
   "poweron_234_stat",
-  "poweron_235_oam",
+  "poweron_235_oam",   // x
   "poweron_235_stat",
-  "poweron_oam_read_a",
+  "poweron_oam_read_a",  // x
   "poweron_oam_read_b",
   "poweron_oam_read_c",
-  "poweron_oam_read_d",
+  "poweron_oam_read_d",  // x
 #endif
 
 #if 0

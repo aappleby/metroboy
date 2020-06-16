@@ -28,6 +28,9 @@ struct TestGB {
   void tick_bootrom   (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
   void tick_interrupts(bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2, bool WODU_RENDER_DONE);
 
+  void tick_vram_lock(bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
+  void tick_oam_lock(bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
+
   //-----------------------------------------------------------------------------
 
 

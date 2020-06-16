@@ -33,6 +33,7 @@ void Gameboy::reset(uint16_t new_pc) {
   serial.reset();
   zram.reset();
   boot.reset(new_pc);
+  lcd.reset();
 
   phase = 0;
   trace_val = 0;
@@ -97,15 +98,16 @@ void Gameboy::tick_gb() {
 
   if (ibus_req.read) {
     ibus_ack = { 0 };
-    ppu   .tick(ibus_req, ibus_ack);
+    ppu.tick(ibus_req, ibus_ack);
     serial.tick(ibus_req, ibus_ack);
     joypad.tick(ibus_req, ibus_ack);
-    zram  .tick(ibus_req, ibus_ack);
-    spu   .tick(ibus_req, ibus_ack);
-    boot  .tick(ibus_req, ibus_ack);
-    self  .tick(ibus_req, ibus_ack);
+    zram.tick(ibus_req, ibus_ack);
+    spu.tick(ibus_req, ibus_ack);
+    boot.tick(ibus_req, ibus_ack);
+    self.tick(ibus_req, ibus_ack);
     timer2.tick(ibus_req, ibus_ack);
-    dma2  .tick(ibus_req, ibus_ack);
+    dma2.tick(ibus_req, ibus_ack);
+    lcd.tick(ibus_req, ibus_ack);
   }
 
   ebus_ack = { 0 };
@@ -182,6 +184,8 @@ void Gameboy::tock_gb() {
     boot.  tock(phase, ibus_req);
   }
 
+  bool LCDC_EN = ppu.lcdc & FLAG_LCD_ON;
+
   if (PHASE_HI) {
     zram.  tock(ibus_req);
     spu.   tock(phase, ibus_req);
@@ -190,6 +194,7 @@ void Gameboy::tock_gb() {
     cart.  tock(ebus_req);
     vram.  tock(vbus_req);
     oam.   tock(obus_req);
+    lcd.tock(phase, ibus_req, LCDC_EN);
 
     //----------
 
@@ -209,7 +214,6 @@ void Gameboy::tock_gb() {
       fb[gb_to_host.x + gb_to_host.y * 160] = ppu.pix_out;
     }
   }
-
 
   //-----------------------------------
   // prioritize reqs

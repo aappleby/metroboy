@@ -181,7 +181,7 @@ void DMA2::tock(int phase, const Req& req) {
 #if 0
 
   // polarity of xymu seems wrong here
-  /*p28.AJUJ*/ wire OAM_BUSYn = and(!DMA_RUNNING, !ACYL_OAM_ADDR_PARSE, vid_reg.XYMU_RENDERING_LATCH);
+  /*p28.AJUJ*/ wire OAM_BUSYn = and(!DMA_RUNNING, !ACYL_OAM_ADDR_PARSE, vid_reg.XYMU_RENDERING_LATCH_pol);
 
   /*p04.POWU*/ wire DMA_WRITE_OAM = and(dma_reg.DMA_RUNNING, !dma_reg.FROM_CPU5_SYNC, !DMA_RUN_TRIG_d0);
   /*p04.WYJA*/ wire WYJA_OAM_WR = or(and(ADDR_OAM, OAM_BUSYn, CUPA_BUS_WR_xxxxxFGH), DMA_WRITE_OAM);

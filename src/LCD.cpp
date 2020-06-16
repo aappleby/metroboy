@@ -12,8 +12,8 @@ bool posedge(bool& old_v, bool new_v) {
 //-----------------------------------------------------------------------------
 
 void LCD::reset() {
-  X = 0;
-  Y = 0;
+  X = 100;
+  Y = 153;
   LINE_153_d4 = 0;
   NEW_LINE_d0 = 0;
   NEW_LINE_d4 = 0;
@@ -23,59 +23,75 @@ void LCD::reset() {
 
 //-----------------------------------------------------------------------------
 
-void LCD::tick(const Req& req, Ack& ack) {
-
+void LCD::tick(const Req& /*req*/, Ack& /*ack*/) {
+  /*
   if (req.read && req.addr == 0xFF44) {
     ack.addr = req.addr;
     ack.data = Y;
     ack.read++;
   }
+  */
 }
 
 //-----------------------------------------------------------------------------
 
 #if 0
 
-// PIN_S PIN_CPG PIN_ST, lcd regs
+/*p01.UNUT*/ wire TIMEOUT  = and (rst_reg.WAITING_FOR_CLKREQ, tim_reg.DIV_15);
+/*p01.AVOR*/ wire AVOR_RST = or (rst_reg.RESET_REG, UNOR_MODE_DBG2, UMUT_MODE_DBG1, TIMEOUT, sys_pins.RST);
+/*p01.ALUR*/ wire ALUR_RSTn = not(AVOR_RST);   // this goes all over the place
+/*p01.LYFE*/ wire LYFE_VID_RSTn = and (ALUR_RSTn, cfg_reg.LCDC_EN);
+
+//----------------------------------------
+// sch_lcd
+
+/*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(lcd_reg.RUTU_NEW_LINE_d0);
+/*p21.SELA*/ wire SELA_NEW_LINE_d0 = not(PURE_NEW_LINE_d0n);
+/*p24.KASA*/ wire LINE_DONEb = not(PURE_NEW_LINE_d0n);
+
+/*p28.ABAF*/   wire VID_LINE_d4n = not(lcd_reg.VID_LINE_d4);
+/*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.VID_LINE_d6, VID_LINE_d4n), ABEZ_VID_RSTn);
+/*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4 = not(BYHA_VID_LINE_TRIG_d4n);
+
+// Vertical sync
+/*p24.NERU*/ wire LINE_000n = nor(lcd_reg.Y0, lcd_reg.Y1, lcd_reg.Y2, lcd_reg.Y3, lcd_reg.Y4, lcd_reg.Y5, lcd_reg.Y6, lcd_reg.Y7);
+
+// PIN_CPL
 {
-  // lcd horizontal sync pin
-  /*p24.POFY*/ wire POFY = not(lcd_reg.RUJU);
-  /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY);
+  /*p24.KEDY*/ wire LCDC_ENn = not(cfg_reg.LCDC_EN);
+  /*p01.UMEK*/ wire DIV_06n = not(tim_reg.DIV_06);
+  /*p24.UMOB*/ wire DIV_06 = not(DIV_06n);
+  /*p24.KAHE*/ wire CPLn = amux2(cfg_reg.LCDC_EN, LINE_DONEb, LCDC_ENn, DIV_06);
+  /*p24.KYMO*/ wire KYMO = not(CPLn);
+  lcd_pins.CPL.set(KYMO);
+}
 
-  // lcd line strobe
-  /*p21.TOCU*/ wire C0n = not(lcd_reg.X0);
-  /*p21.VEPE*/ wire C1n = not(lcd_reg.X1);
-  /*p21.VUTY*/ wire C2n = not(lcd_reg.X2);
-  /*p21.VATE*/ wire C3n = not(lcd_reg.X3);
-  /*p21.TUDA*/ wire C4n = not(lcd_reg.X4);
-  /*p21.TAFY*/ wire C5n = not(lcd_reg.X5);
-  /*p21.TUJU*/ wire C6n = not(lcd_reg.X6);
-
-  /*p21.VOKU*/ wire CNT_000= = X == 0;
-  /*p21.TOZU*/ wire CNT_007= = X == 7;
-  /*p21.TECE*/ wire CNT_045= = X == 45
-  /*p21.TEBO*/ wire CNT_083= = X == 83;
+// so this is like a strobe that fires 4x per line
 
 
-  /*p24.MEDA*/ lcd_reg.VSYNC_OUTn.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, LINE_000n);
+/*p21.MUDE*/ wire X_RSTn = nor(lcd_reg.RUTU_NEW_LINE_d0, LYHA_VID_RST);
+/*p21.LAMA*/ wire FRAME_RSTn = nor(lcd_reg.LINE_153_d4, LYHA_VID_RST);
 
-  /*p21.SYGU*/ lcd_reg.LINE_STROBE.set(SONO_AxxxxFGH, LYFE_VID_RSTn, LINE_STROBE);
-  /*p21.MYTA*/ lcd_reg.LINE_153_d4.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, LINE_153);
-  /*p21.POPU*/ lcd_reg.POPU_IN_VBLANK_d4.set(lcd_reg.NYPE_NEW_LINE_d4, LYFE_VID_RSTn, IN_VBLANK);
-  /*p21.NYPE*/ lcd_reg.NYPE_NEW_LINE_d4.set(TALU_xBCDExxx, LYFE_VID_RSTn, lcd_reg.RUTU_NEW_LINE_d0);
-  /*p28.ANEL*/ lcd_reg.VID_LINE_d6.set(AWOH_AxxDExxH, ABEZ_VID_RSTn, lcd_reg.VID_LINE_d4);
-  /*p29.CATU*/ lcd_reg.VID_LINE_d4.set(XUPY_xBCxxFGx, ABEZ_VID_RSTn, VID_LINE_d0);
+/*p21.SANU*/ wire LINE_END = and (lcd_reg.X6, lcd_reg.X5, lcd_reg.X4, lcd_reg.X0); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+/*p21.NOKO*/ wire LINE_153 = and (lcd_reg.Y7, lcd_reg.Y4, lcd_reg.Y3, lcd_reg.Y0); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
+/*p21.XYVO*/ wire IN_VBLANK = and (lcd_reg.Y4, lcd_reg.Y7); // 128 + 16 = 144
+
+/*p28.AWOH*/ wire AWOH_AxxDExxH = not(XUPY_xBCxxFGx);  // lcd
+
+/*p29.ALES*/   wire IN_VBLANKn = not(IN_VBLANK);
+/*p29.ABOV*/ wire VID_LINE_d0 = and (SELA_NEW_LINE_d0, IN_VBLANKn);
+
+/*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4, ATAR_VID_RST);
+/*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
+/*p29.BEBU*/   wire SCAN_DONE_d0_TRIGn = or (BALU_SCAN_RST, spr_reg.SCAN_DONE_d5, !spr_reg.SCAN_DONE_d4);
+/*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIG = not(SCAN_DONE_d0_TRIGn);
 
 
-  lcd_pins.S.set(not(VSYNC_OUTn));
 
-
-  lcd_pins.ST.set(RUZE_PIN_ST);
-  }
 
 #endif
 
-void LCD::tock(int phase, const Req& /*req*/, bool VID_RST) {
+void LCD::tock(int phase, const Req& /*req*/, bool LCDC_EN) {
   
   if (PHASE_B) {
     bool posedge_line_d4 = posedge(NEW_LINE_d4, NEW_LINE_d0);
@@ -98,67 +114,34 @@ void LCD::tock(int phase, const Req& /*req*/, bool VID_RST) {
 
   }
 
-  /*p21.RYNO*/ bool CPGn = (X == 0) || (X == 7) || (X == 45) || (X == 83) || NEW_LINE_d0;
-  /*p21.POGU*/ PIN_CPG = !CPGn;
-
-#if 0
-  /*p21.SEMU*/ wire CPn  = or(and(CLKPIPE_AxCxExGx, lcd_reg.CPEN_LATCH), FINE_MATCH_TRIG);
-  lcd_pins.CP.set(not(CPn));
-#endif
-
-
-#if 0
-  lcd_pins.ST.set(RUZE_PIN_ST);
-  /*p24.POME*/ lcd_reg.POME.sr_latch(lcd_reg.X_8_SYNC || TOFU_VID_RST, AVAP_SCAN_DONE_d0_TRIG);   // Latch loop
-  /*p24.RUJU*/ lcd_reg.RUJU.sr_latch(lcd_reg.X_8_SYNC || TOFU_VID_RST, AVAP_SCAN_DONE_d0_TRIG);
-  /*p24.RUZE*/ wire RUZE_PIN_ST = lcd_reg.RUJU;
-  lcd_pins.ST.set(RUZE_PIN_ST);
-#endif
-
-  /*p24.KYMO*/ PIN_CPL = !NEW_LINE_d0;
-
-#if 0
-  {
-    // if LCDC_ENn, FR = 4k div clock. Otherwise FR = xor(LINE_EVEN,FRAME_EVEN)
-    /*p24.LUCA*/ LINE_EVEN .set(!NEW_LINE_d0, LYFE_VID_RSTn, !lcd_reg.LINE_EVEN);
-    /*p21.NAPO*/ FRAME_EVEN.set(IN_VBLANK_d4, LYFE_VID_RSTn, !lcd_reg.FRAME_EVEN);
-    /*p24.KEBO*/ wire KEBO = xor(FRAME_EVEN, LINE_EVEN);
-    /*p01.UREK*/ wire DIV_07n = not(tim_reg.DIV_07);
-    /*p24.KUPA*/ wire FRn  = amux2(LCDC_EN, KEBO, !LCDC_EN, DIV_07);
-    lcd_pins.FR.set(not(FRn));
+  if (!LCDC_EN) {
+    X = 0;
+    Y = 0;
+    LINE_153_d4 = 0;
+    NEW_LINE_d0 = 0;
+    NEW_LINE_d4 = 0;
+    IN_VBLANK_d4 = 0;
+    VSYNC_OUTn = 0;
   }
-#endif
-
-  /*p24.MURE*/ PIN_S   = !VSYNC_OUTn;
-
-
-  if (VID_RST) reset();
 }
 
 //-----------------------------------------------------------------------------
 
-void LCD::dump(std::string& /*d*/) {
-  //text_painter.dprintf(" ----- LCD REG -----\n");
+void LCD::dump(std::string& d) {
+  sprintf(d, "\002--------------LCD--------------\001\n");
 
-  /*
-  dump(text, "LCD X ", X0, X1, X2, X3, X4, X5, X6);
-  dump(text, "LCD Y ", Y0, Y1, Y2, Y3, Y4, Y5, Y6, Y7);
-
-  dump_long(text, "RUTU_NEW_LINE_d0  ", RUTU_NEW_LINE_d0.a );
-  dump_long(text, "VID_LINE_d4       ", VID_LINE_d4.a      );
-  dump_long(text, "NYPE_NEW_LINE_d4  ", NYPE_NEW_LINE_d4.a );
-  dump_long(text, "VID_LINE_d6       ", VID_LINE_d6.a      );
-  dump_long(text, "LINE_153_d4       ", LINE_153_d4.a      );
-  dump_long(text, "POPU_IN_VBLANK_d4 ", POPU_IN_VBLANK_d4.a);
-  dump_long(text, "LINE_STROBE       ", LINE_STROBE.a      );
-  dump_long(text, "X_8_SYNC          ", X_8_SYNC.a         );
-  dump_long(text, "CPEN_LATCH        ", CPEN_LATCH.a       );
-  dump_long(text, "POME              ", POME.a             );
-  dump_long(text, "RUJU              ", RUJU.a             );
-  dump_long(text, "LINE_EVEN         ", LINE_EVEN.a        );
-  dump_long(text, "FRAME_EVEN        ", FRAME_EVEN.a       );
-  */
-  //text_painter.newline();
+  sprintf(d, "X            = %d\n", X);
+  sprintf(d, "Y            = %d\n", Y);
+  sprintf(d, "LY           = %d\n", LY);
+  sprintf(d, "LYC          = %d\n", LYC);
+  sprintf(d, "STAT         = %d\n", STAT);
+  sprintf(d, "NEW_LINE_d0  = %d\n", NEW_LINE_d0);
+  sprintf(d, "NEW_LINE_d4  = %d\n", NEW_LINE_d4);
+  sprintf(d, "LINE_153_d4  = %d\n", LINE_153_d4);
+  sprintf(d, "IN_VBLANK_d4 = %d\n", IN_VBLANK_d4);
+  sprintf(d, "VSYNC_OUTn   = %d\n", VSYNC_OUTn);
+  sprintf(d, "LINE_EVEN    = %d\n", LINE_EVEN);
+  sprintf(d, "FRAME_EVEN   = %d\n", FRAME_EVEN);
 }
 
 //-----------------------------------------------------------------------------

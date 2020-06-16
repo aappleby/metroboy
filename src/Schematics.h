@@ -33,6 +33,7 @@ inline bool and (bool a, bool b, bool c, bool d, bool e, bool f) { return  (a & 
 inline bool or  (bool a, bool b) { return a | b; }
 inline bool or  (bool a, bool b, bool c) { return  (a | b | c); }
 inline bool or  (bool a, bool b, bool c, bool d) { return  (a | b | c | d); }
+inline bool or  (bool a, bool b, bool c, bool d, bool e) { return  (a | b | c | d | e); }
 inline bool xor (bool a, bool b) { return a ^ b; }
 inline bool xnor(bool a, bool b) { return a == b; }
 inline bool nor (bool a, bool b) { return !(a | b); }

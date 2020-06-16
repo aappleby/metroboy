@@ -3,6 +3,7 @@
 #include "Joypad.h"
 #include "Cart.h"
 #include "DMA.h"
+#include "LCD.h"
 #include "PPU.h"
 #include "Serial.h"
 #include "SPU.h"
@@ -126,6 +127,7 @@ struct Gameboy {
   SPU     spu;
   DMA2    dma2;
   Bootrom boot;
+  LCD     lcd;
 
   //----------
 

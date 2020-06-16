@@ -679,7 +679,7 @@ bool TestGB::commit_everything() {
   /*p21.SYBE*/ changed |= vid_reg.X7.commit_reg();
   /*p27.NOPA*/ changed |= vid_reg.NOPA_WIN_MODE_SYNC.commit_reg();
   /*p27.SOVY*/ changed |= vid_reg.SOVY_WIN_MODE_SYNC.commit_reg();
-  /*p21.XYMU*/ changed |= vid_reg.XYMU_RENDERING_LATCH.commit_latch();
+  /*p21.XYMU*/ changed |= vid_reg.XYMU_RENDERING_LATCH_pol.commit_latch();
   /*p21.VOGA*/ changed |= vid_reg.RENDER_DONE_SYNC.commit_reg();
   /*p27.PYNU*/ changed |= vid_reg.PYNU_WIN_MODE_LATCH.commit_latch();
   /*p27.RYDY*/ changed |= vid_reg.RYDY_WIN_MODE_LATCH.commit_latch();

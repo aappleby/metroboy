@@ -6,7 +6,7 @@
 struct LCD {
   void reset();
   void tick(const Req& req, Ack& ack);
-  void tock(int phase, const Req& req, bool VID_RST);
+  void tock(int phase, const Req& req, bool LCDC_EN);
 
   void dump(std::string& d);
 

@@ -1157,7 +1157,7 @@ struct VidRegisters {
     FINE_MATCH_SYNC2        .dump(text_painter, "FINE_MATCH_SYNC2         ");
     NOPA_WIN_MODE_SYNC      .dump(text_painter, "NOPA_WIN_MODE_SYNC       ");
     SOVY_WIN_MODE_SYNC      .dump(text_painter, "SOVY_WIN_MODE_SYNC       ");
-    XYMU_RENDERING_LATCH    .dump(text_painter, "XYMU_RENDERING_LATCH     ");
+    XYMU_RENDERING_LATCH_pol    .dump(text_painter, "XYMU_RENDERING_LATCH_pol     ");
     RENDER_DONE_SYNC        .dump(text_painter, "RENDER_DONE_SYNC         ");
     PYNU_WIN_MODE_LATCH     .dump(text_painter, "PYNU_WIN_MODE_LATCH      ");
     RYDY_WIN_MODE_LATCH     .dump(text_painter, "RYDY_WIN_MODE_LATCH      ");
@@ -1248,7 +1248,7 @@ struct VidRegisters {
   /*p27.NOPA*/ Reg3 NOPA_WIN_MODE_SYNC;
   /*p27.SOVY*/ Reg3 SOVY_WIN_MODE_SYNC;
 
-  /*p21.XYMU*/ Latch3 XYMU_RENDERING_LATCH;
+  /*p21.XYMU*/ Latch3 XYMU_RENDERING_LATCH_pol;
 
   /*p21.VOGA*/ Reg3 RENDER_DONE_SYNC;
 

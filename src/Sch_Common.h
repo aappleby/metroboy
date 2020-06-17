@@ -238,9 +238,11 @@ struct Signal : public SignalBase {
     a = ERROR;
   }
 
+  /*
   Signal(wire val) {
     a = val ? SET_1 : SET_0;
   }
+  */
 
   void operator = (wire val) {
     if (!a.error) __debugbreak();

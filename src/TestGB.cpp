@@ -243,12 +243,12 @@ bool TestGB::commit_everything() {
   /*p21.LEMA*/ changed |= lcd_reg.Y5.commit_reg();
   /*p21.MATO*/ changed |= lcd_reg.Y6.commit_reg();
   /*p21.LAFO*/ changed |= lcd_reg.Y7.commit_reg();
-  /*p21.RUTU*/ changed |= lcd_reg.RUTU_NEW_LINE_d0.commit_reg(); // p909+8
+  /*p21.RUTU*/ changed |= lcd_reg.NEW_LINE_d0.commit_reg(); // p909+8
   /*p29.CATU*/ changed |= lcd_reg.VID_LINE_d4.commit_reg();  // p001+8
-  /*p21.NYPE*/ changed |= lcd_reg.NYPE_NEW_LINE_d4.commit_reg(); // p001+8
+  /*p21.NYPE*/ changed |= lcd_reg.NEW_LINE_d4.commit_reg(); // p001+8
   /*p28.ANEL*/ changed |= lcd_reg.VID_LINE_d6.commit_reg();  // p003+8
   /*p21.MYTA*/ changed |= lcd_reg.LINE_153_d4.commit_reg();  // p153:001 - p000:001
-  /*p21.POPU*/ changed |= lcd_reg.POPU_IN_VBLANK_d4.commit_reg();    // p144:001 - p000:001
+  /*p21.POPU*/ changed |= lcd_reg.IN_VBLANK_d4.commit_reg();    // p144:001 - p000:001
   /*p21.SYGU*/ changed |= lcd_reg.LINE_STROBE.commit_reg();
   /*p24.PAHO*/ changed |= lcd_reg.X_8_SYNC.commit_reg();
   /*p21.WUSA*/ changed |= lcd_reg.CPEN_LATCH.commit_latch();
@@ -679,7 +679,7 @@ bool TestGB::commit_everything() {
   /*p21.SYBE*/ changed |= vid_reg.X7.commit_reg();
   /*p27.NOPA*/ changed |= vid_reg.NOPA_WIN_MODE_SYNC.commit_reg();
   /*p27.SOVY*/ changed |= vid_reg.SOVY_WIN_MODE_SYNC.commit_reg();
-  /*p21.XYMU*/ changed |= vid_reg.XYMU_RENDERING_LATCH_pol.commit_latch();
+  /*p21.XYMU*/ changed |= vid_reg.RENDERING_LATCH.commit_latch();
   /*p21.VOGA*/ changed |= vid_reg.RENDER_DONE_SYNC.commit_reg();
   /*p27.PYNU*/ changed |= vid_reg.PYNU_WIN_MODE_LATCH.commit_latch();
   /*p27.RYDY*/ changed |= vid_reg.RYDY_WIN_MODE_LATCH.commit_latch();
@@ -687,8 +687,8 @@ bool TestGB::commit_everything() {
   /*p21.RUFO*/ changed |= vid_reg.INT_VBL_EN.commit_reg();
   /*p21.REFE*/ changed |= vid_reg.INT_OAM_EN.commit_reg();
   /*p21.RUGU*/ changed |= vid_reg.INT_LYC_EN.commit_reg();
-  /*p21.ROPO*/ changed |= vid_reg.ROPO_LY_MATCH_SYNC.commit_reg();
-  /*p21.RUPO*/ changed |= vid_reg.RUPO_LATCH_LYC_MATCH.commit_latch();
+  /*p21.ROPO*/ changed |= vid_reg.LY_MATCH_SYNC.commit_reg();
+  /*p21.RUPO*/ changed |= vid_reg.LYC_MATCH_LATCHn.commit_latch();
   /*p27.SARY*/ changed |= vid_reg.WY_MATCH_SYNC.commit_reg();
   /*p27.RYFA*/ changed |= vid_reg.WIN_MATCH_ONSCREEN_SYNC1.commit_reg();
   /*p27.RENE*/ changed |= vid_reg.WIN_MATCH_ONSCREEN_SYNC2.commit_reg();

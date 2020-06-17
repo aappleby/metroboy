@@ -428,12 +428,12 @@ struct LcdRegisters {
     dump(text_painter, "LCD X ", X0, X1, X2, X3, X4, X5, X6);
     dump(text_painter, "LCD Y ", Y0, Y1, Y2, Y3, Y4, Y5, Y6, Y7);
 
-    dump_long(text_painter, "RUTU_NEW_LINE_d0  ", RUTU_NEW_LINE_d0.a );
+    dump_long(text_painter, "NEW_LINE_d0  ", NEW_LINE_d0.a );
     dump_long(text_painter, "VID_LINE_d4       ", VID_LINE_d4.a      );
-    dump_long(text_painter, "NYPE_NEW_LINE_d4  ", NYPE_NEW_LINE_d4.a );
+    dump_long(text_painter, "NEW_LINE_d4  ", NEW_LINE_d4.a );
     dump_long(text_painter, "VID_LINE_d6       ", VID_LINE_d6.a      );
     dump_long(text_painter, "LINE_153_d4       ", LINE_153_d4.a      );
-    dump_long(text_painter, "POPU_IN_VBLANK_d4 ", POPU_IN_VBLANK_d4.a);
+    dump_long(text_painter, "IN_VBLANK_d4 ", IN_VBLANK_d4.a);
     dump_long(text_painter, "LINE_STROBE       ", LINE_STROBE.a      );
     dump_long(text_painter, "X_8_SYNC          ", X_8_SYNC.a         );
     dump_long(text_painter, "CPEN_LATCH        ", CPEN_LATCH.a       );
@@ -462,13 +462,13 @@ struct LcdRegisters {
   /*p21.MATO*/ Reg3 Y6;
   /*p21.LAFO*/ Reg3 Y7;
 
-  /*p21.RUTU*/ Reg3 RUTU_NEW_LINE_d0;     // p909+8
+  /*p21.RUTU*/ Reg3 NEW_LINE_d0;     // p909+8
   /*p29.CATU*/ Reg3 VID_LINE_d4;          // p001+8
-  /*p21.NYPE*/ Reg3 NYPE_NEW_LINE_d4;     // p001+8
+  /*p21.NYPE*/ Reg3 NEW_LINE_d4;     // p001+8
   /*p28.ANEL*/ Reg3 VID_LINE_d6;          // p003+8
                                  
   /*p21.MYTA*/ Reg3 LINE_153_d4;          // p153:001 - p000:001
-  /*p21.POPU*/ Reg3 POPU_IN_VBLANK_d4;    // p144:001 - p000:001
+  /*p21.POPU*/ Reg3 IN_VBLANK_d4;    // p144:001 - p000:001
 
   /*p21.SYGU*/ Reg3 LINE_STROBE;
   /*p24.PAHO*/ Reg3 X_8_SYNC;
@@ -1157,7 +1157,7 @@ struct VidRegisters {
     FINE_MATCH_SYNC2        .dump(text_painter, "FINE_MATCH_SYNC2         ");
     NOPA_WIN_MODE_SYNC      .dump(text_painter, "NOPA_WIN_MODE_SYNC       ");
     SOVY_WIN_MODE_SYNC      .dump(text_painter, "SOVY_WIN_MODE_SYNC       ");
-    XYMU_RENDERING_LATCH_pol    .dump(text_painter, "XYMU_RENDERING_LATCH_pol     ");
+    RENDERING_LATCH    .dump(text_painter, "RENDERING_LATCH     ");
     RENDER_DONE_SYNC        .dump(text_painter, "RENDER_DONE_SYNC         ");
     PYNU_WIN_MODE_LATCH     .dump(text_painter, "PYNU_WIN_MODE_LATCH      ");
     RYDY_WIN_MODE_LATCH     .dump(text_painter, "RYDY_WIN_MODE_LATCH      ");
@@ -1165,8 +1165,8 @@ struct VidRegisters {
     INT_VBL_EN              .dump(text_painter, "INT_VBL_EN               ");
     INT_OAM_EN              .dump(text_painter, "INT_OAM_EN               ");
     INT_LYC_EN              .dump(text_painter, "INT_LYC_EN               ");
-    ROPO_LY_MATCH_SYNC      .dump(text_painter, "ROPO_LY_MATCH_SYNC       ");
-    RUPO_LATCH_LYC_MATCH    .dump(text_painter, "RUPO_LATCH_LYC_MATCH     ");
+    LY_MATCH_SYNC      .dump(text_painter, "LY_MATCH_SYNC       ");
+    LYC_MATCH_LATCHn    .dump(text_painter, "LYC_MATCH_LATCHn     ");
     WY_MATCH_SYNC           .dump(text_painter, "WY_MATCH_SYNC            ");
     WIN_MATCH_ONSCREEN_SYNC1.dump(text_painter, "WIN_MATCH_ONSCREEN_SYNC1 ");
     WIN_MATCH_ONSCREEN_SYNC2.dump(text_painter, "WIN_MATCH_ONSCREEN_SYNC2 ");
@@ -1248,7 +1248,8 @@ struct VidRegisters {
   /*p27.NOPA*/ Reg3 NOPA_WIN_MODE_SYNC;
   /*p27.SOVY*/ Reg3 SOVY_WIN_MODE_SYNC;
 
-  /*p21.XYMU*/ Latch3 XYMU_RENDERING_LATCH_pol;
+  // this must be positive polarity, or stat read doesn't work
+  /*p21.XYMU*/ Latch3 RENDERING_LATCH;
 
   /*p21.VOGA*/ Reg3 RENDER_DONE_SYNC;
 
@@ -1260,8 +1261,8 @@ struct VidRegisters {
   /*p21.REFE*/ Reg3 INT_OAM_EN;
   /*p21.RUGU*/ Reg3 INT_LYC_EN;
 
-  /*p21.ROPO*/ Reg3 ROPO_LY_MATCH_SYNC;
-  /*p21.RUPO*/ Latch3 RUPO_LATCH_LYC_MATCH;
+  /*p21.ROPO*/ Reg3 LY_MATCH_SYNC;
+  /*p21.RUPO*/ Latch3 LYC_MATCH_LATCHn;
 
   /*p27.SARY*/ Reg3 WY_MATCH_SYNC;
   /*p27.RYFA*/ Reg3 WIN_MATCH_ONSCREEN_SYNC1;

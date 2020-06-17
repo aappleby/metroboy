@@ -20,16 +20,29 @@ struct TestGB {
 
   wire TEDO_BUS_RD() const;
 
-  void tick_pipe      (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2,
-                       bool CLKPIPE_AxCxExGx, bool NYXU_BG_SEQ_RSTn, bool WUTY_SPRITE_DONE);
+  void tick_pipe      (bool CLKPIPE_AxCxExGx, bool NYXU_BG_SEQ_RSTn, bool WUTY_SPRITE_DONE);
   void tick_vbus      (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
   void tick_ebus      (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
   void tick_oam       (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2, bool ACYL_OAM_ADDR_PARSE);
   void tick_bootrom   (bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
   void tick_interrupts(bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2, bool WODU_RENDER_DONE);
 
+  void tick_vram_pins();
+
   void tick_vram_lock(bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
   void tick_oam_lock(bool ALUR_RSTn, bool UMUT_MODE_DBG1, bool UNOR_MODE_DBG2);
+
+  void tick_lyc();
+
+  /*p22.WERO*/ wire FF4X() const {
+    /*p22.XALY*/ wire ADDR_0x00xxxx = nor(cpu_pins.A07, cpu_pins.A05, cpu_pins.A04);
+    /*p07.TUNA*/ wire TUNA_0000_FDFF = nand(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12, cpu_pins.A11, cpu_pins.A10, cpu_pins.A09);
+    /*p07.TONA*/ wire ADDR_08n = not(cpu_pins.A08);
+    /*p07.SYKE*/ wire ADDR_FFXX = nor(TUNA_0000_FDFF, ADDR_08n);
+    /*p22.WUTU*/ wire FF4Xn = nand(ADDR_FFXX, cpu_pins.A06, ADDR_0x00xxxx);
+    /*p22.WERO*/ wire FF4X = not(FF4Xn);
+    return FF4X;
+  }
 
   //-----------------------------------------------------------------------------
 

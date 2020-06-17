@@ -171,6 +171,14 @@ struct TestGB {
     return ATEJ_VID_LINE_TRIG_d4;
   }
 
+  wire AVAP_SCAN_DONE_d0_TRIG() const {
+    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4(), ATAR_VID_RST());
+    /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
+    /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or (BALU_SCAN_RST, spr_reg.SCAN_DONE_d5, !spr_reg.SCAN_DONE_d4);
+    /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIG = not(SCAN_DONE_d0_TRIGn);
+    return AVAP_SCAN_DONE_d0_TRIG;
+  }
+
   //----------------------------------------
 
   wire AREV_CPU_WRn_ABCDExxx() const {

@@ -657,6 +657,44 @@ struct SerialRegisters {
   /*p06.EDER*/ Reg3 SER_DATA7;
 
   /*p06.ELYS*/ Reg3 SER_OUT;
+
+  void dump_pins(TextPainter& text_painter) {
+    text_painter.dprintf("----- SER_PINS -----\n");
+    text_painter.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.a.val, SCK_B.a.val, SCK_C.a.val, SCK_D.a.val);
+    text_painter.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.a.val, SIN_B.a.val, SIN_C.a.val, SIN_D.a.val);
+    text_painter.dprintf("SOUT %d\n", SOUT.a.val);
+    text_painter.newline();
+  }
+
+  //----------
+  // Serial pins
+
+  /* PIN_68 */ PinOut SCK_A;   // <- P06.KEXU
+  /* PIN_68 */ PinOut SCK_B;   // <- P06.CULY
+  /* PIN_68 */ PinIn  SCK_C;   // -> P06.CAVE
+  /* PIN_68 */ PinOut SCK_D;   // <- P06.KUJO
+
+  /* PIN_69 */ PinOut SIN_A;   // nc?
+  /* PIN_69 */ PinOut SIN_B;   // nc?
+  /* PIN_69 */ PinIn  SIN_C;   // -> P06.CAGE
+  /* PIN_69 */ PinOut SIN_D;   // nc?
+
+  /* PIN_70 */ PinOut SOUT;    // <- P05.KENA
+
+  bool commit_pins() {
+    bool changed = false;
+    /* PIN_68 */ changed |= SCK_A.commit_pinout();   // <- P06.KEXU
+    /* PIN_68 */ changed |= SCK_B.commit_pinout();   // <- P06.CULY
+    /* PIN_68 */ changed |= SCK_C.clear_preset();   // -> P06.CAVE
+    /* PIN_68 */ changed |= SCK_D.commit_pinout();   // <- P06.KUJO
+    ///* PIN_69 */ changed |= SIN_A.commit();   // nc?
+    ///* PIN_69 */ changed |= SIN_B.commit();   // nc?
+    /* PIN_69 */ changed |= SIN_C.clear_preset();   // -> P06.CAGE
+    ///* PIN_69 */ changed |= SIN_D.commit();   // nc?
+    /* PIN_70 */ changed |= SOUT.commit_pinout();    // <- P05.KENA
+    return changed;
+  }
+
 };
 
 //-----------------------------------------------------------------------------

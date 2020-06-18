@@ -91,6 +91,18 @@ void TestGB::ext_preset() {
 bool TestGB::commit_everything() {
   bool changed = false;
 
+  /*p29.FEPO*/ FEPO_STORE_MATCH.reset();
+  /*p29.GUVA*/ SPRITE0_GET.reset();
+  /*p29.ENUT*/ SPRITE1_GET.reset();
+  /*p29.EMOL*/ SPRITE2_GET.reset();
+  /*p29.GYFY*/ SPRITE3_GET.reset();
+  /*p29.GONO*/ SPRITE4_GET.reset();
+  /*p29.GEGA*/ SPRITE5_GET.reset();
+  /*p29.XOJA*/ SPRITE6_GET.reset();
+  /*p29.GUTU*/ SPRITE7_GET.reset();
+  /*p29.FOXA*/ SPRITE8_GET.reset();
+  /*p29.GUZE*/ SPRITE9_GET.reset();
+
   /*p01.AFUR*/ changed |= clk_reg.PHAZ_xBCDExxx.commit_duo();
   /*p01.ALEF*/ changed |= clk_reg.PHAZ_xxCDEFxx.commit_duo();
   /*p01.APUK*/ changed |= clk_reg.PHAZ_xxxDEFGx.commit_duo();
@@ -1036,15 +1048,9 @@ bool TestGB::commit_everything() {
   /* PIN_67 */ changed |= joy_pins.P10_B.commit_pinout();   
   /* PIN_67 */ changed |= joy_pins.P10_C.clear_preset();   // -> P02.KERY, P05.KEVU
   /* PIN_67 */ changed |= joy_pins.P10_D.commit_pinout();   // <- P05.KYBU
-  /* PIN_68 */ changed |= ser_pins.SCK_A.commit_pinout();   // <- P06.KEXU
-  /* PIN_68 */ changed |= ser_pins.SCK_B.commit_pinout();   // <- P06.CULY
-  /* PIN_68 */ changed |= ser_pins.SCK_C.clear_preset();   // -> P06.CAVE
-  /* PIN_68 */ changed |= ser_pins.SCK_D.commit_pinout();   // <- P06.KUJO
-  ///* PIN_69 */ changed |= ser_pins.SIN_A.commit();   // nc?
-  ///* PIN_69 */ changed |= ser_pins.SIN_B.commit();   // nc?
-  /* PIN_69 */ changed |= ser_pins.SIN_C.clear_preset();   // -> P06.CAGE
-  ///* PIN_69 */ changed |= ser_pins.SIN_D.commit();   // nc?
-  /* PIN_70 */ changed |= ser_pins.SOUT.commit_pinout();    // <- P05.KENA
+
+  changed |= ser_reg.commit_pins();
+
   /* PIN_71 */ changed |= sys_pins.RST.clear_preset();
   /* PIN_72 */ /*GND*/
   /* PIN_73 */ /*CLKOUT*/

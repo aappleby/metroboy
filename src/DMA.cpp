@@ -56,7 +56,7 @@ void DMA1::get_obus_req(Req& r) const {
 // LYXE04 nc
 // LYXE05 << LOKO02
 
-// LAVY = and2(FF46, CUPA)
+// LAVY = and2(CPU_ADDR_FF46, CUPA)
 // NAVO = nand6(dma addr)
 // NOLO = not(NAVO)
 // LOKO = nand2(CUNU, !LENE) // check neg output?
@@ -80,11 +80,11 @@ void DMA1::get_obus_req(Req& r) const {
 /*p04.MOPA*/ MOPA = !UVYT;
 /*p01.APOV*/ APOV = and(cpu_pins.CPU_RAW_WR, clk_reg.PHAZ_xxxxEFGH, !clk_reg.PHAZ_xBCDExxx);
 /*p07.CUPA*/ CUPA = mux2(ext_pins.WR_C, APOV, UNOR_MODE_DBG2);
-/*p22.XEDA*/ FF46 = cpu_pins.get_addr() == 0xFF46;
+/*p22.XEDA*/ CPU_ADDR_FF46 = cpu_pins.get_addr() == 0xFF46;
 
 //----------
 
-/*p04.LAVY*/ LAVY = and(FF46, CUPA);
+/*p04.LAVY*/ LAVY = and(CPU_ADDR_FF46, CUPA);
 /*p04.NAVO*/ NAVO = nand(DMA_A00, DMA_A01, DMA_A02, DMA_A03, DMA_A04, DMA_A07);
 /*p04.NOLO*/ NOLO = not(NAVO);
 /*p04.LOKO*/ LOKO = nand(CUNU, !LENE);

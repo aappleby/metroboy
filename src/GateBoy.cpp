@@ -305,7 +305,7 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   if (1) {
     gb.lcd_pins.dump_pins(text_painter);
     gb.wave_pins.dump_pins(text_painter);
-    gb.ser_pins.dump_pins(text_painter);
+    gb.ser_reg.dump_pins(text_painter);
     text_painter.render(cx, cy, 1.0);
     cx += 32 * 8;
   }

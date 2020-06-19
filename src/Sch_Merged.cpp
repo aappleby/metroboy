@@ -35,6 +35,45 @@ TestGB gb;
 
 //-----------------------------------------------------------------------------
 
+#if 0
+
+//Die trace:
+ABOL = not(CLKREQ)
+ATEZ = not(xi.a)
+APOV = not(AREV) // 4 rung inverter
+AREV = nand(AFAS, CPU_RAW_WR)
+AFAS = nor(ADAR, ATYP)
+ABUZ = not(AWOD)
+AWOD = nor(UNOR, APAP)
+AGUT = ? ? ? (AROV, AJAX) - gate unused ?
+APAP = not(CPU_ADDR_VALID)
+AJAX = not(ATYP)
+ALUR = not(AVOR) // 3 rung inverter
+AVOR = or (AFER, ASOL)
+
+AFER = reg, gap above it or something.starting at the first connected rung
+
+AFER00 << UPOJ
+AFER01 << ASOL
+AFER02 nc
+AFER03 << BOGA
+AFER04 nc
+AFER05 nc
+AFER06 << BOMA
+AFER06 << UPOJ
+AFER07 nc
+AFER08 nc
+AFER09 nc
+AFER10 >> AVOR
+
+ASOL = nor_latch(<< AFAR, nc, >> AVOR, nc, nc, << PIN_RST) - output inverted
+
+AFAR = nor(PIN_RST, ALYP)
+ALYP = not(TABA)
+ADAR = not(ADYK)
+
+#endif
+
 void TestGB::tick_everything() {
   //----------------------------------------
   // sch_system

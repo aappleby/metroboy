@@ -43,7 +43,7 @@ void LCD::tick(const Req& req, Ack& ack) {
     LY_MATCH_SYNC = LY == LYC;
   }
 
-  /*p21.SEPA*/ wire FF41_WR = and (CUPA_BUS_WR_xxxxxFGH, req.addr == 0xFF41);
+  /*p21.SEPA*/ wire FF41_WR = and (CUPA_CPU_WR_xxxxxFGH, req.addr == 0xFF41);
 
 
   // PAGO00 << WESY

@@ -185,7 +185,7 @@ bool TestGB::commit_everything() {
   /*p07.AMUT*/ changed |= dbg_reg.FF60_1.commit_reg();
 
   /*p04.MAKA*/ changed |= dma_reg.FROM_CPU5_SYNC.commit_reg();
-  /*p04.MATU*/ changed |= dma_reg.DMA_RUNNING.commit_reg(); // -> p25,p28
+  /*p04.MATU*/ changed |= dma_reg.DMA_RUNNINGp.commit_reg(); // -> p25,p28
   /*p04.MYTE*/ changed |= dma_reg.MYTE.commit_reg();
   /*p04.LUVY*/ changed |= dma_reg.LUVY.commit_reg();
   /*p04.LENE*/ changed |= dma_reg.LENE.commit_reg();
@@ -384,8 +384,8 @@ bool TestGB::commit_everything() {
   /*p26.VUMO*/ changed |= pxp_reg.MASK_PIPE_6.commit_reg();
   /*p26.VAVA*/ changed |= pxp_reg.MASK_PIPE_7.commit_reg();
 
-  /*p01.TUBO*/ changed |= rst_reg.WAITING_FOR_CLKREQ.commit_latch();
-  /*p01.AFER*/ changed |= rst_reg.RESET_REG.commit_reg();
+  /*p01.TUBO*/ changed |= rst_reg.TUBO_CLKREQn_LATCH.commit_latch();
+  /*p01.AFER*/ changed |= rst_reg.RESET_REGp.commit_reg();
 
   /*p06.ETAF*/ changed |= ser_reg.XFER_START.commit_reg();
   /*p06.CULY*/ changed |= ser_reg.XFER_DIR.commit_reg();
@@ -706,7 +706,7 @@ bool TestGB::commit_everything() {
   /*p27.RENE*/ changed |= vid_reg.WIN_MATCH_ONSCREEN_SYNC2.commit_reg();
   /*p27.PYCO*/ changed |= vid_reg.WIN_MATCH_SYNC1.commit_reg();
   /*p27.NUNU*/ changed |= vid_reg.WIN_MATCH_SYNC2.commit_reg();
-  /*p27.LONY*/ changed |= vid_reg.BG_READ_VRAM_LATCHn.commit_latch();
+  /*p27.LONY*/ changed |= vid_reg.BG_READ_VRAM_LATCH.commit_latch();
   /*p27.LAXU*/ changed |= vid_reg.BG_SEQ_x1x3x5x7.commit_reg();
   /*p27.MESU*/ changed |= vid_reg.BG_SEQ_xx23xx67.commit_reg();
   /*p27.NYVA*/ changed |= vid_reg.BG_SEQ_xxxx4567.commit_reg();
@@ -758,29 +758,31 @@ bool TestGB::commit_everything() {
 
   /*p07.TEPU*/ changed |= bus_reg.BOOT_BIT.commit_reg();
   /*p25.SOTO*/ changed |= bus_reg.SOTO_DBG.commit_reg();
-  /*p08.ALOR*/ changed |= bus_reg.INT_ADDR_LATCH_00.commit_latch();
-  /*p08.APUR*/ changed |= bus_reg.INT_ADDR_LATCH_01.commit_latch();
-  /*p08.ALYR*/ changed |= bus_reg.INT_ADDR_LATCH_02.commit_latch();
-  /*p08.ARET*/ changed |= bus_reg.INT_ADDR_LATCH_03.commit_latch();
-  /*p08.AVYS*/ changed |= bus_reg.INT_ADDR_LATCH_04.commit_latch();
-  /*p08.ATEV*/ changed |= bus_reg.INT_ADDR_LATCH_05.commit_latch();
-  /*p08.AROS*/ changed |= bus_reg.INT_ADDR_LATCH_06.commit_latch();
-  /*p08.ARYM*/ changed |= bus_reg.INT_ADDR_LATCH_07.commit_latch();
-  /*p08.LUNO*/ changed |= bus_reg.INT_ADDR_LATCH_08.commit_latch();
-  /*p08.LYSA*/ changed |= bus_reg.INT_ADDR_LATCH_09.commit_latch();
-  /*p08.PATE*/ changed |= bus_reg.INT_ADDR_LATCH_10.commit_latch();
-  /*p08.LUMY*/ changed |= bus_reg.INT_ADDR_LATCH_11.commit_latch();
-  /*p08.LOBU*/ changed |= bus_reg.INT_ADDR_LATCH_12.commit_latch();
-  /*p08.LONU*/ changed |= bus_reg.INT_ADDR_LATCH_13.commit_latch();
-  /*p08.NYRE*/ changed |= bus_reg.INT_ADDR_LATCH_14.commit_latch();
-  /*p08.SOMA*/ changed |= bus_reg.EXT_DATA_LATCH_00.commit_latch();
-  /*p08.RONY*/ changed |= bus_reg.EXT_DATA_LATCH_01.commit_latch();
-  /*p08.RAXY*/ changed |= bus_reg.EXT_DATA_LATCH_02.commit_latch();
-  /*p08.SELO*/ changed |= bus_reg.EXT_DATA_LATCH_03.commit_latch();
-  /*p08.SODY*/ changed |= bus_reg.EXT_DATA_LATCH_04.commit_latch();
-  /*p08.SAGO*/ changed |= bus_reg.EXT_DATA_LATCH_05.commit_latch();
-  /*p08.RUPA*/ changed |= bus_reg.EXT_DATA_LATCH_06.commit_latch();
-  /*p08.SAZY*/ changed |= bus_reg.EXT_DATA_LATCH_07.commit_latch();
+
+  /*p08.ALOR*/ changed |= bus_reg.CPU_ADDR_LATCH_00.commit_latch();
+  /*p08.APUR*/ changed |= bus_reg.CPU_ADDR_LATCH_01.commit_latch();
+  /*p08.ALYR*/ changed |= bus_reg.CPU_ADDR_LATCH_02.commit_latch();
+  /*p08.ARET*/ changed |= bus_reg.CPU_ADDR_LATCH_03.commit_latch();
+  /*p08.AVYS*/ changed |= bus_reg.CPU_ADDR_LATCH_04.commit_latch();
+  /*p08.ATEV*/ changed |= bus_reg.CPU_ADDR_LATCH_05.commit_latch();
+  /*p08.AROS*/ changed |= bus_reg.CPU_ADDR_LATCH_06.commit_latch();
+  /*p08.ARYM*/ changed |= bus_reg.CPU_ADDR_LATCH_07.commit_latch();
+  /*p08.LUNO*/ changed |= bus_reg.CPU_ADDR_LATCH_08.commit_latch();
+  /*p08.LYSA*/ changed |= bus_reg.CPU_ADDR_LATCH_09.commit_latch();
+  /*p08.PATE*/ changed |= bus_reg.CPU_ADDR_LATCH_10.commit_latch();
+  /*p08.LUMY*/ changed |= bus_reg.CPU_ADDR_LATCH_11.commit_latch();
+  /*p08.LOBU*/ changed |= bus_reg.CPU_ADDR_LATCH_12.commit_latch();
+  /*p08.LONU*/ changed |= bus_reg.CPU_ADDR_LATCH_13.commit_latch();
+  /*p08.NYRE*/ changed |= bus_reg.CPU_ADDR_LATCH_14.commit_latch();
+
+  /*p08.SOMA*/ changed |= bus_reg.CART_DATA_LATCH_00.commit_latch();
+  /*p08.RONY*/ changed |= bus_reg.CART_DATA_LATCH_01.commit_latch();
+  /*p08.RAXY*/ changed |= bus_reg.CART_DATA_LATCH_02.commit_latch();
+  /*p08.SELO*/ changed |= bus_reg.CART_DATA_LATCH_03.commit_latch();
+  /*p08.SODY*/ changed |= bus_reg.CART_DATA_LATCH_04.commit_latch();
+  /*p08.SAGO*/ changed |= bus_reg.CART_DATA_LATCH_05.commit_latch();
+  /*p08.RUPA*/ changed |= bus_reg.CART_DATA_LATCH_06.commit_latch();
+  /*p08.SAZY*/ changed |= bus_reg.CART_DATA_LATCH_07.commit_latch();
 
   //----------------------------------------
   // PINS
@@ -792,7 +794,7 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.SYRO.commit_pinout();          // PORTA_03: <- P25.SYRO
   changed |= cpu_pins.READ_BOOTROM.commit_pinout();  // PORTA_04: <- P07.READ_BOOTROM
   changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
-  changed |= cpu_pins.ADDR_VALIDn.clear_preset();    // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
+  changed |= cpu_pins.ADDR_VALID.clear_preset();    // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
   changed |= cpu_pins.ACK_VBLANK.clear_preset();     // PORTB_01: -> P02.LETY, vblank int ack
   changed |= cpu_pins.INT_VBLANK.commit_pinout();    // PORTB_03: <- P02.LOPE, vblank int
   changed |= cpu_pins.ACK_STAT.clear_preset();       // PORTB_05: -> P02.LEJA, stat int ack

@@ -59,13 +59,13 @@ template<typename... Args> const bool nand(const bool first, Args... args) { ret
 
 // Six-rung mux cells are _non_inverting_
 // m = 1 selects input _ZERO_
-inline const bool mux2 (bool a, bool b, bool m) {
+inline const bool mux2_p(bool a, bool b, bool m) {
   return m ? a : b;
 }
 
 // Five-rung mux cells are _inverting_
 // m = 1 selects input _ZERO_
-inline const bool mux2n (bool a, bool b, bool m) {
+inline const bool mux2_n(bool a, bool b, bool m) {
   return m ? not(a) : not(b);
 }
 

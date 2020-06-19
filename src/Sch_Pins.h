@@ -104,7 +104,7 @@ struct CpuPins {
     text_painter.dprintf("CLK_GOOD        %d\n", CLK_GOOD    .a.val);
     text_painter.dprintf("UNOR_MODE_DBG2           %d\n", UNOR_MODE_DBG2        .a.val);
     text_painter.dprintf("UMUT_MODE_DBG1           %d\n", UMUT_MODE_DBG1        .a.val);
-    text_painter.dprintf("UPOJ_MODE_PROD  %d\n", UPOJ_MODE_PROD );
+    text_painter.dprintf("UPOJ_MODE_PRODn  %d\n", UPOJ_MODE_PRODn );
     text_painter.dprintf("UMUT_MODE_DBG1  %d\n", UMUT_MODE_DBG1 );
     text_painter.dprintf("UNOR_MODE_DBG2  %d\n", UNOR_MODE_DBG2 );
     text_painter.dprintf("TOVA_MODE_DBG2n %d\n", TOVA_MODE_DBG2n);
@@ -147,7 +147,7 @@ struct CpuPins {
     text_painter.dprintf("----- CPU BUS -----\n");
     text_painter.dprintf("CPU_RAW_RD    %d\n", CPU_RAW_RD  .a.val);
     text_painter.dprintf("CPU_RAW_WR    %d\n", CPU_RAW_WR  .a.val);
-    text_painter.dprintf("ADDR_VALID    %d\n", ADDR_VALIDn  .a.val);
+    text_painter.dprintf("ADDR_VALID    %d\n", ADDR_VALID  .a.val);
     
     text_painter.add_text("Axx ");
     dump2(text_painter, A15.a);
@@ -277,7 +277,7 @@ struct CpuPins {
   PinOut SYRO;          // top right port PORTA_03: <- P25.SYRO
   PinOut READ_BOOTROM;  // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   PinOut UMUT_MODE_DBG1;         // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
-  PinIn  ADDR_VALIDn;   // top right port PORTA_06: -> P01.AGUT, P08.TEX0.           This is almost definitely "address valid"
+  PinIn  ADDR_VALID;   // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid"
                         
   PinIn  A00;           // bottom right port PORTB_00: -> A00
   PinIn  ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
@@ -327,7 +327,7 @@ struct CpuPins {
 
   // Signals for debugging
 
-  /*p07.UPOJ*/ bool UPOJ_MODE_PROD = 0;
+  /*p07.UPOJ*/ bool UPOJ_MODE_PRODn = 0;
   /*p08.TOVA*/ bool TOVA_MODE_DBG2n = 0;
   /*p08.RYCA*/ bool RYCA_MODE_DBG2n = 0;
 

@@ -36,36 +36,36 @@ struct BusRegisters {
     dump_long(text_painter, "SOTO_DBG ", SOTO_DBG.a);
 
     text_painter.dprintf("ADDR_LATCH ");
-    dump2(text_painter, INT_ADDR_LATCH_14.a);
-    dump2(text_painter, INT_ADDR_LATCH_13.a);
-    dump2(text_painter, INT_ADDR_LATCH_12.a);
+    dump2(text_painter, CPU_ADDR_LATCH_14.a);
+    dump2(text_painter, CPU_ADDR_LATCH_13.a);
+    dump2(text_painter, CPU_ADDR_LATCH_12.a);
     text_painter.add_char(':');
-    dump2(text_painter, INT_ADDR_LATCH_11.a);
-    dump2(text_painter, INT_ADDR_LATCH_10.a);
-    dump2(text_painter, INT_ADDR_LATCH_09.a);
-    dump2(text_painter, INT_ADDR_LATCH_08.a);
+    dump2(text_painter, CPU_ADDR_LATCH_11.a);
+    dump2(text_painter, CPU_ADDR_LATCH_10.a);
+    dump2(text_painter, CPU_ADDR_LATCH_09.a);
+    dump2(text_painter, CPU_ADDR_LATCH_08.a);
     text_painter.add_char(':');
-    dump2(text_painter, INT_ADDR_LATCH_07.a);
-    dump2(text_painter, INT_ADDR_LATCH_06.a);
-    dump2(text_painter, INT_ADDR_LATCH_05.a);
-    dump2(text_painter, INT_ADDR_LATCH_04.a);
+    dump2(text_painter, CPU_ADDR_LATCH_07.a);
+    dump2(text_painter, CPU_ADDR_LATCH_06.a);
+    dump2(text_painter, CPU_ADDR_LATCH_05.a);
+    dump2(text_painter, CPU_ADDR_LATCH_04.a);
     text_painter.add_char(':');
-    dump2(text_painter, INT_ADDR_LATCH_03.a);
-    dump2(text_painter, INT_ADDR_LATCH_02.a);
-    dump2(text_painter, INT_ADDR_LATCH_01.a);
-    dump2(text_painter, INT_ADDR_LATCH_00.a);
+    dump2(text_painter, CPU_ADDR_LATCH_03.a);
+    dump2(text_painter, CPU_ADDR_LATCH_02.a);
+    dump2(text_painter, CPU_ADDR_LATCH_01.a);
+    dump2(text_painter, CPU_ADDR_LATCH_00.a);
     text_painter.newline();
 
     text_painter.dprintf("DATA_LATCH ");
-    dump2(text_painter, EXT_DATA_LATCH_07.a);
-    dump2(text_painter, EXT_DATA_LATCH_06.a);
-    dump2(text_painter, EXT_DATA_LATCH_05.a);
-    dump2(text_painter, EXT_DATA_LATCH_04.a);
+    dump2(text_painter, CART_DATA_LATCH_07.a);
+    dump2(text_painter, CART_DATA_LATCH_06.a);
+    dump2(text_painter, CART_DATA_LATCH_05.a);
+    dump2(text_painter, CART_DATA_LATCH_04.a);
     text_painter.add_char(':');
-    dump2(text_painter, EXT_DATA_LATCH_03.a);
-    dump2(text_painter, EXT_DATA_LATCH_02.a);
-    dump2(text_painter, EXT_DATA_LATCH_01.a);
-    dump2(text_painter, EXT_DATA_LATCH_00.a);
+    dump2(text_painter, CART_DATA_LATCH_03.a);
+    dump2(text_painter, CART_DATA_LATCH_02.a);
+    dump2(text_painter, CART_DATA_LATCH_01.a);
+    dump2(text_painter, CART_DATA_LATCH_00.a);
     text_painter.newline();
     text_painter.newline();
   }
@@ -73,30 +73,30 @@ struct BusRegisters {
   /*p07.TEPU*/ Reg3 BOOT_BIT;
   /*p25.SOTO*/ Reg3 SOTO_DBG;
 
-  /*p08.ALOR*/ Latch3 INT_ADDR_LATCH_00;
-  /*p08.APUR*/ Latch3 INT_ADDR_LATCH_01;
-  /*p08.ALYR*/ Latch3 INT_ADDR_LATCH_02;
-  /*p08.ARET*/ Latch3 INT_ADDR_LATCH_03;
-  /*p08.AVYS*/ Latch3 INT_ADDR_LATCH_04;
-  /*p08.ATEV*/ Latch3 INT_ADDR_LATCH_05;
-  /*p08.AROS*/ Latch3 INT_ADDR_LATCH_06;
-  /*p08.ARYM*/ Latch3 INT_ADDR_LATCH_07;
-  /*p08.LUNO*/ Latch3 INT_ADDR_LATCH_08;
-  /*p08.LYSA*/ Latch3 INT_ADDR_LATCH_09;
-  /*p08.PATE*/ Latch3 INT_ADDR_LATCH_10;
-  /*p08.LUMY*/ Latch3 INT_ADDR_LATCH_11;
-  /*p08.LOBU*/ Latch3 INT_ADDR_LATCH_12;
-  /*p08.LONU*/ Latch3 INT_ADDR_LATCH_13;
-  /*p08.NYRE*/ Latch3 INT_ADDR_LATCH_14;
+  /*p08.ALOR*/ Latch3 CPU_ADDR_LATCH_00;
+  /*p08.APUR*/ Latch3 CPU_ADDR_LATCH_01;
+  /*p08.ALYR*/ Latch3 CPU_ADDR_LATCH_02;
+  /*p08.ARET*/ Latch3 CPU_ADDR_LATCH_03;
+  /*p08.AVYS*/ Latch3 CPU_ADDR_LATCH_04;
+  /*p08.ATEV*/ Latch3 CPU_ADDR_LATCH_05;
+  /*p08.AROS*/ Latch3 CPU_ADDR_LATCH_06;
+  /*p08.ARYM*/ Latch3 CPU_ADDR_LATCH_07;
+  /*p08.LUNO*/ Latch3 CPU_ADDR_LATCH_08;
+  /*p08.LYSA*/ Latch3 CPU_ADDR_LATCH_09;
+  /*p08.PATE*/ Latch3 CPU_ADDR_LATCH_10;
+  /*p08.LUMY*/ Latch3 CPU_ADDR_LATCH_11;
+  /*p08.LOBU*/ Latch3 CPU_ADDR_LATCH_12;
+  /*p08.LONU*/ Latch3 CPU_ADDR_LATCH_13;
+  /*p08.NYRE*/ Latch3 CPU_ADDR_LATCH_14;
 
-  /*p08.SOMA*/ Latch3 EXT_DATA_LATCH_00;
-  /*p08.RONY*/ Latch3 EXT_DATA_LATCH_01;
-  /*p08.RAXY*/ Latch3 EXT_DATA_LATCH_02;
-  /*p08.SELO*/ Latch3 EXT_DATA_LATCH_03;
-  /*p08.SODY*/ Latch3 EXT_DATA_LATCH_04;
-  /*p08.SAGO*/ Latch3 EXT_DATA_LATCH_05;
-  /*p08.RUPA*/ Latch3 EXT_DATA_LATCH_06;
-  /*p08.SAZY*/ Latch3 EXT_DATA_LATCH_07;
+  /*p08.SOMA*/ Latch3 CART_DATA_LATCH_00;
+  /*p08.RONY*/ Latch3 CART_DATA_LATCH_01;
+  /*p08.RAXY*/ Latch3 CART_DATA_LATCH_02;
+  /*p08.SELO*/ Latch3 CART_DATA_LATCH_03;
+  /*p08.SODY*/ Latch3 CART_DATA_LATCH_04;
+  /*p08.SAGO*/ Latch3 CART_DATA_LATCH_05;
+  /*p08.RUPA*/ Latch3 CART_DATA_LATCH_06;
+  /*p08.SAZY*/ Latch3 CART_DATA_LATCH_07;
 };
 
 //-----------------------------------------------------------------------------
@@ -279,7 +279,7 @@ struct DmaRegisters {
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- DMA REG -----\n");
     FROM_CPU5_SYNC   .dump(text_painter, "FROM_CPU5_SYNC   ");
-    DMA_RUNNING  .dump(text_painter, "DMA_RUNNING  ");
+    DMA_RUNNINGp  .dump(text_painter, "DMA_RUNNINGp  ");
     MYTE    .dump(text_painter, "MYTE    ");
     LUVY    .dump(text_painter, "LUVY    ");  
     LENE    .dump(text_painter, "LENE    ");
@@ -292,7 +292,7 @@ struct DmaRegisters {
 
   /*p04.MAKA*/ Reg3 FROM_CPU5_SYNC;
 
-  /*p04.MATU*/ Reg3 DMA_RUNNING; // -> p25,p28
+  /*p04.MATU*/ Reg3 DMA_RUNNINGp; // -> p25,p28
   /*p04.MYTE*/ Reg3 MYTE;
   /*p04.LUVY*/ Reg3 LUVY;
   /*p04.LENE*/ Reg3 LENE;
@@ -610,13 +610,14 @@ struct RstRegisters {
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- RST_REG -----\n");
-    WAITING_FOR_CLKREQ.dump(text_painter, "WAITING_FOR_CLKREQ ");
-    RESET_REG         .dump(text_painter, "RESET_REG          ");
+    TUBO_CLKREQn_LATCH.dump(text_painter, "TUBO_CLKREQn_LATCH ");
+    RESET_REGp        .dump(text_painter, "RESET_REGp          ");
     text_painter.newline();
   }
 
-  /*p01.TUBO*/ Latch3 WAITING_FOR_CLKREQ;
-  /*p01.AFER*/ Reg3 RESET_REG;
+  /*p01.TUBO*/ Latch3 TUBO_CLKREQn_LATCH;
+  /*p01.ASOL*/ Latch3 ASOL_RST_LATCHp; // Schematic wrong, this is a latch.
+  /*p01.AFER*/ Reg3   RESET_REGp;
 };
 
 //-----------------------------------------------------------------------------
@@ -1210,7 +1211,7 @@ struct VidRegisters {
     WIN_MATCH_ONSCREEN_SYNC2.dump(text_painter, "WIN_MATCH_ONSCREEN_SYNC2 ");
     WIN_MATCH_SYNC1         .dump(text_painter, "WIN_MATCH_SYNC1          ");
     WIN_MATCH_SYNC2         .dump(text_painter, "WIN_MATCH_SYNC2          ");
-    BG_READ_VRAM_LATCHn     .dump(text_painter, "BG_READ_VRAM_LATCHn      ");
+    BG_READ_VRAM_LATCH     .dump(text_painter, "BG_READ_VRAM_LATCH      ");
     BG_SEQ_x1x3x5x7         .dump(text_painter, "BG_SEQ_x1x3x5x7          ");
     BG_SEQ_xx23xx67         .dump(text_painter, "BG_SEQ_xx23xx67          ");
     BG_SEQ_xxxx4567         .dump(text_painter, "BG_SEQ_xxxx4567          ");
@@ -1308,7 +1309,7 @@ struct VidRegisters {
   /*p27.PYCO*/ Reg3 WIN_MATCH_SYNC1;
   /*p27.NUNU*/ Reg3 WIN_MATCH_SYNC2;
 
-  /*p27.LONY*/ Latch3 BG_READ_VRAM_LATCHn;
+  /*p27.LONY*/ Latch3 BG_READ_VRAM_LATCH;
 
   /*p27.LAXU*/ Reg3 BG_SEQ_x1x3x5x7;
   /*p27.MESU*/ Reg3 BG_SEQ_xx23xx67;

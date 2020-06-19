@@ -39,12 +39,22 @@ TestGB gb;
 
 //Die trace:
 ABOL = not(CLKREQ)
-ATEZ = not(xi.a)
-APOV = not(AREV) // 4 rung inverter
-AREV = nand(AFAS, CPU_RAW_WR)
+ATEZ = not(CLKIN_A)
+
+ADAR = not(ADYK.qn)
+ATYP = not(AFUR.q);
+AROV = not(APUK.qn);
+AFEP = not(ALEF.qn);
+
 AFAS = nor(ADAR, ATYP)
-ABUZ = not(AWOD)
+AREV = nand(AFAS, CPU_RAW_WR)
+APOV = not(AREV) // 4 rung inverter
+
+
+APAP = not(CPU_ADDR_VALID)
 AWOD = nor(UNOR, APAP)
+ABUZ = not(AWOD)
+
 AGUT = ? ? ? (AROV, AJAX) - gate unused ?
 APAP = not(CPU_ADDR_VALID)
 AJAX = not(ATYP)
@@ -52,6 +62,9 @@ ALUR = not(AVOR) // 3 rung inverter
 AVOR = or (AFER, ASOL)
 
 AFER = reg, gap above it or something.starting at the first connected rung
+
+// Because this has BOGA and BOMA both as inputs and two UPOJ inputs, maybe
+// it's supposed to be a clock-crossing synchronizer?
 
 AFER00 << UPOJ
 AFER01 << ASOL
@@ -63,14 +76,32 @@ AFER06 << BOMA
 AFER06 << UPOJ
 AFER07 nc
 AFER08 nc
-AFER09 nc
-AFER10 >> AVOR
+AFER09 >> nc     // QN
+AFER10 >> AVOR   // Q
 
 ASOL = nor_latch(<< AFAR, nc, >> AVOR, nc, nc, << PIN_RST) - output inverted
 
 AFAR = nor(PIN_RST, ALYP)
 ALYP = not(TABA)
 ADAR = not(ADYK)
+
+
+// Hax
+
+/*p01.ADYK*/ clk_reg.PHAZ_xxxxEFGH
+/*p01.AFUR*/ clk_reg.PHAZ_xBCDExxx
+
+ABOL = not(CLKREQ)
+ATEZ = not(CLKIN_A)
+APOV = and(ADYK_xxxxEFGH, AFUR_xBCDExxx, CPU_RAW_WR) // cpu write is _only_ on E?
+
+ABUZ = or(UNOR, !CPU_ADDR_VALID)
+
+AGUT = ? ? ? (AROV, AJAX) - gate unused ?
+AJAX = AFUR
+ALUR = nor(AFER_RST, ASOL_RST_LATCH)
+
+
 
 #endif
 
@@ -102,6 +133,25 @@ void TestGB::tick_everything() {
     /*p01.APUK*/ clk_reg.PHAZ_xxxDEFGx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.PHAZ_xxCDEFxx.a);
     /*p01.ADYK*/ clk_reg.PHAZ_xxxxEFGH.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.PHAZ_xxxDEFGx.a);
   }
+
+#if 0
+  // if rung 6 of AFUR/ALEF/APUK/ADYK is QN and not Q...
+
+  ADYK = !APUK
+  APUK = !ALEF
+  ALEF = !AFUR
+  AFUR = ADYK
+
+  ADYK APUK ALEF AFUR
+  0    0    0    0
+  1    1    1    0
+  0    0    1    1
+  1    0    0    0
+  1    1    1    0
+
+  // yeah doesn't work or make sense.
+#endif
+
 
   {
     // wave ram write clock

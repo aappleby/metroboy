@@ -185,7 +185,7 @@ bool TestGB::commit_everything() {
   /*p07.AMUT*/ changed |= dbg_reg.FF60_1.commit_reg();
 
   /*p04.MAKA*/ changed |= dma_reg.FROM_CPU5_SYNC.commit_reg();
-  /*p04.MATU*/ changed |= dma_reg.DMA_RUNNINGp.commit_reg(); // -> p25,p28
+  /*p04.MATU*/ changed |= dma_reg.DMA_RUNNING.commit_reg(); // -> p25,p28
   /*p04.MYTE*/ changed |= dma_reg.MYTE.commit_reg();
   /*p04.LUVY*/ changed |= dma_reg.LUVY.commit_reg();
   /*p04.LENE*/ changed |= dma_reg.LENE.commit_reg();
@@ -794,7 +794,7 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.SYRO.commit_pinout();          // PORTA_03: <- P25.SYRO
   changed |= cpu_pins.READ_BOOTROM.commit_pinout();  // PORTA_04: <- P07.READ_BOOTROM
   changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
-  changed |= cpu_pins.ADDR_VALID.clear_preset();    // PORTA_06: -> P01.AGUT, P08.TEX0. This is almost definitely "address valid"
+  changed |= cpu_pins.ADDR_VALID.clear_preset();    // PORTA_06: -> APAP, TEXO. This is almost definitely "address valid"
   changed |= cpu_pins.ACK_VBLANK.clear_preset();     // PORTB_01: -> P02.LETY, vblank int ack
   changed |= cpu_pins.INT_VBLANK.commit_pinout();    // PORTB_03: <- P02.LOPE, vblank int
   changed |= cpu_pins.ACK_STAT.clear_preset();       // PORTB_05: -> P02.LEJA, stat int ack

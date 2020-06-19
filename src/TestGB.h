@@ -70,6 +70,31 @@ struct TestGB {
     return UPOJ_MODE_PRODn;
   }
 
+  // Not sure about polarity
+  // >> SEPY, TOZA, TUCA
+  wire ABUZ_ADDR_VALIDx() const {
+    // Die trace:
+    // APAP = not(CPU_ADDR_VALID)
+    // AWOD = nor(UNOR, APAP)
+    // ABUZ = not(AWOD)
+
+    wire APAP = not(cpu_pins.ADDR_VALID); // Missing from schematic
+    wire AWOD = nor(UNOR_MODE_DBG2(), APAP);
+    wire ABUZ = not(AWOD);
+
+#if 0
+    //if the ADDR_VALID pin is ADDR_VALID
+    wire ABUZ = or(UNOR_MODE_DBG2(), ADDR_VALIDp);
+#endif
+
+#if 0
+    // if the ADDR_VALID pin is ADDR_VALIDp
+    wire ABUZ = or(UNOR_MODE_DBG2(), !ADDR_VALIDp);
+#endif
+
+    return ABUZ;
+  }
+
   //----------------------------------------
   // Root 4 mhz clocks
 
@@ -100,17 +125,17 @@ struct TestGB {
 // Root 1 mhz clocks
 
   wire AFAS_xxxxxFGH() const {
-    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.PHAZ_xxxxEFGH);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.PHAZ_xBCDExxx);
+    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.PHAZ_xxxxEFGH.q());
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.PHAZ_xBCDExxx.qn());
     /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
     return AFAS_xxxxxFGH;
   }
 
   wire BUKE_ABxxxxxH() const {
-    /*p01.ABOL*/ wire ABOL_CLKREQn = not(cpu_pins.CLKREQ);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.PHAZ_xxCDEFxx);
+    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_pins.CLKREQ);
+    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.PHAZ_xxCDEFxx.q());
     /*p01.BUGO*/ wire BUGO_xxCDEFxx = not(AFEP_ABxxxxGH);
-    /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_reg.PHAZ_xxxDEFGx);
+    /*p01.AROV*/ wire AROV_xxxDEFGx = not(clk_reg.PHAZ_xxxDEFGx.qn());
     /*p01.BATE*/ wire BATE_ABxxxxxH = nor(ABOL_CLKREQn, BUGO_xxCDEFxx, AROV_xxxDEFGx);
     /*p01.BASU*/ wire BASU_xxCDEFGx = not(BATE_ABxxxxxH);
     /*p01.BUKE*/ wire BUKE_ABxxxxxH = not(BASU_xxCDEFGx);
@@ -118,7 +143,7 @@ struct TestGB {
   }
 
   wire BUDE_AxxxxFGH() const {
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.PHAZ_xBCDExxx);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.PHAZ_xBCDExxx.qn());
     /*p01.ABOL*/ wire ABOL_CLKREQn = not(cpu_pins.CLKREQ);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn, ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
@@ -127,9 +152,9 @@ struct TestGB {
   }
 
   wire BOLO_xBCDEFGx() const {
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.PHAZ_xBCDExxx);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.PHAZ_xBCDExxx.qn());
     /*p01.ABOL*/ wire ABOL_CLKREQn = not(cpu_pins.CLKREQ);
-    /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_reg.PHAZ_xxxDEFGx);
+    /*p01.AROV*/ wire AROV_xxxDEFGx = not(clk_reg.PHAZ_xxxDEFGx.qn());
     /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn, AROV_xxxDEFGx, ATYP_xBCDExxx);
     /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);
     /*p01.BUFA*/ wire BUFA_AxxxxxxH = not(BERU_xBCDEFGx);
@@ -143,8 +168,8 @@ struct TestGB {
     /*p01.BANE*/ wire BANE_xBCDExxx = not(BEJA_AxxxxFGH);
     /*p01.BELO*/ wire BELO_AxxxxFGH = not(BANE_xBCDExxx);
     /*p01.BAZE*/ wire BAZE_xBCDExxx = not(BELO_AxxxxFGH);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.PHAZ_xxCDEFxx);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.PHAZ_xBCDExxx);
+    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.PHAZ_xxCDEFxx.q());
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.PHAZ_xBCDExxx.qn());
     /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
     /*p01.BELE*/ wire BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
     /*p01.ATEZ*/ wire ATEZ_CLKBAD = not(sys_pins.CLK_GOOD);
@@ -162,7 +187,7 @@ struct TestGB {
   // Reset signals
 
   wire ALUR_RSTn() const {
-    /*p01.AVOR*/ wire AVOR_RSTp = or (rst_reg.RESET_REGp, rst_reg.ASOL_RST_LATCHp);
+    /*p01.AVOR*/ wire AVOR_RSTp = or (rst_reg.RESET_REGp.q(), rst_reg.ASOL_RST_LATCHp.q());
     /*p01.ALUR*/ wire ALUR_RSTn = not(AVOR_RSTp);   // this goes all over the place
     return ALUR_RSTn;
   }
@@ -176,7 +201,7 @@ struct TestGB {
   wire XAPO_VID_RSTn() const {
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn());
     /*p01.XEBE*/ wire XEBE_RSTn = not(XORE_RSTp);
-    /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, cfg_reg.LCDC_EN);
+    /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, cfg_reg.LCDC_EN.q());
     /*p01.XAPO*/ wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
     return XAPO_VID_RSTn;
   }
@@ -195,8 +220,8 @@ struct TestGB {
   // LCD & PPU events
 
   wire BYHA_VID_LINE_TRIG_d4n() const {
-    /*p28.ABAF*/ wire VID_LINE_d4n = not(lcd_reg.VID_LINE_d4);
-    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.VID_LINE_d6, VID_LINE_d4n), ABEZ_VID_RSTn());
+    /*p28.ABAF*/ wire VID_LINE_d4n = not(lcd_reg.VID_LINE_d4.q());
+    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.VID_LINE_d6.q(), VID_LINE_d4n), ABEZ_VID_RSTn());
     return BYHA_VID_LINE_TRIG_d4n;
   }
     
@@ -206,9 +231,9 @@ struct TestGB {
   }
 
   wire PPU_USE_OAM1() const {
-    /*p28.BOGE*/ wire DMA_RUNNINGn = not(dma_reg.DMA_RUNNINGp);
+    /*p28.BOGE*/ wire DMA_RUNNINGn = not(dma_reg.DMA_RUNNING.q());
     /*p28.ASEN*/ wire ASEN = or (ATAR_VID_RSTp(), AVAP_SCAN_DONE_d0_TRIG());
-    /*p28.BESU*/ wire BESU = or (lcd_reg.VID_LINE_d4, ASEN);
+    /*p28.BESU*/ wire BESU = or (lcd_reg.VID_LINE_d4.q(), ASEN);
     /*p28.ACYL*/ wire PPU_USE_OAM1 = and (DMA_RUNNINGn, BESU);
     return PPU_USE_OAM1;
   }
@@ -216,28 +241,28 @@ struct TestGB {
   wire AVAP_SCAN_DONE_d0_TRIG() const {
     /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4(), ATAR_VID_RSTp());
     /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
-    /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or (BALU_SCAN_RST, spr_reg.SCAN_DONE_d5, !spr_reg.SCAN_DONE_d4);
+    /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or (BALU_SCAN_RST, spr_reg.SCAN_DONE_d5.q(), !spr_reg.SCAN_DONE_d4.q());
     /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIG = not(SCAN_DONE_d0_TRIGn);
     return AVAP_SCAN_DONE_d0_TRIG;
   }
 
   wire TEXY_SPRITE_READn() const {
-    /*p29.SAKY*/ wire SAKY = nor(spr_reg.TULY_SPR_SEQ1, spr_reg.VONU_SEQ_xxx34xn);
-    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(vid_reg.RENDERING_LATCH);
+    /*p29.SAKY*/ wire SAKY = nor(spr_reg.TULY_SPR_SEQ1.q(), spr_reg.VONU_SEQ_xxx34xn.q());
+    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(vid_reg.RENDERING_LATCH.q());
     /*p29.TYSO*/ wire TYSO_SPRITE_READn = or (SAKY, TEPA_RENDERINGn); // seems wrong
     /*p29.TEXY*/ wire TEXY_SPRITE_READn = not(TYSO_SPRITE_READn);
     return TEXY_SPRITE_READn;
   }
 
   wire WUTY_SPRITE_DONE() const {
-    /*p29.TYNO*/ wire TYNO = nand(spr_reg.TOXE_SPR_SEQ0, spr_reg.SEBA_SEQ_xxxx45n, spr_reg.VONU_SEQ_xxx34xn);
-    /*p29.VUSA*/ wire VUSA = or (!spr_reg.TYFO_SEQ_B0d, TYNO);
+    /*p29.TYNO*/ wire TYNO = nand(spr_reg.TOXE_SPR_SEQ0.q(), spr_reg.SEBA_SEQ_xxxx45n.q(), spr_reg.VONU_SEQ_xxx34xn.q());
+    /*p29.VUSA*/ wire VUSA = or (!spr_reg.TYFO_SEQ_B0d.q(), TYNO);
     /*p29.WUTY*/ wire WUTY_SPRITE_DONE = not(VUSA);
     return WUTY_SPRITE_DONE;
   }
 
   wire WODU_RENDER_DONE() const {
-    /*p21.XUGU*/ wire XUGU_X_167n = nand(vid_reg.X0, vid_reg.X1, vid_reg.X2, vid_reg.X5, vid_reg.X7); // 128 + 32 + 4 + 2 + 1 = 167
+    /*p21.XUGU*/ wire XUGU_X_167n = nand(vid_reg.X0.q(), vid_reg.X1.q(), vid_reg.X2.q(), vid_reg.X5.q(), vid_reg.X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
     /*p21.XANO*/ wire XANO_X_167 = not(XUGU_X_167n);
     /*p21.XENA*/ wire XENA_STORE_MATCHn = not(FEPO_STORE_MATCH);
     /*p21.WODU*/ wire WODU_RENDER_DONE = and (XENA_STORE_MATCHn, XANO_X_167);
@@ -286,7 +311,7 @@ struct TestGB {
   // Window signals
 
   wire SYLO_WIN_MODEn() const {
-    /*p27.SYLO*/ wire SYLO_WIN_MODEn = not(vid_reg.RYDY_WIN_MODE_LATCH);
+    /*p27.SYLO*/ wire SYLO_WIN_MODEn = not(vid_reg.RYDY_WIN_MODE_LATCH.q());
     return SYLO_WIN_MODEn;
   }
 
@@ -303,7 +328,7 @@ struct TestGB {
   }
 
   wire PORE_WIN_MODE() const {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(vid_reg.PYNU_WIN_MODE_LATCH);
+    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(vid_reg.PYNU_WIN_MODE_LATCH.q());
     /*p27.PORE*/ wire PORE_WIN_MODE = not(NOCU_WIN_MODEn);
     return PORE_WIN_MODE;
   }
@@ -314,31 +339,53 @@ struct TestGB {
   }
 
   wire XOFO_WIN_RST() const {
-    /*p28.ABAF*/ wire VID_LINE_d4n = not(lcd_reg.VID_LINE_d4);
-    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.VID_LINE_d6, VID_LINE_d4n), ABEZ_VID_RSTn());
+    /*p28.ABAF*/ wire VID_LINE_d4n = not(lcd_reg.VID_LINE_d4.q());
+    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.VID_LINE_d6.q(), VID_LINE_d4n), ABEZ_VID_RSTn());
     /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4 = not(BYHA_VID_LINE_TRIG_d4n);
     /*p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4);
-    /*p27.XOFO*/ wire XOFO_WIN_RST = nand(cfg_reg.LCDC_WINEN, XAHY_VID_LINE_TRIG_d4n, XAPO_VID_RSTn());
+    /*p27.XOFO*/ wire XOFO_WIN_RST = nand(cfg_reg.LCDC_WINEN.q(), XAHY_VID_LINE_TRIG_d4n, XAPO_VID_RSTn());
     return XOFO_WIN_RST;
   }
 
   //----------------------------------------
   // DMA signals
 
-  wire DMA_ADDR_VRAM() const {
-    /*p04.LEBU*/ wire DMA_A15n = not(dma_reg.DMA_A15);
-    /*p04.MUDA*/ wire DMA_ADDR_VRAM = nor(dma_reg.DMA_A13, dma_reg.DMA_A14, DMA_A15n);
-    return DMA_ADDR_VRAM;
+  /*p04.MUDA*/ wire DMA_ADDR_VRAMp() const {
+    // Die trace:
+    // LEBU = not(MARU06)
+    // MUDA = nor(PULA06, POKU06, LEBU);
+
+#if 0
+    // if rung 6 of MARU/PULA/POKU was QN:
+    // MUDA = and(A13, A14, !A15);
+    // would select last quarter of ROM, which doesn't make sense
+    // so rung 6 of MARU must be Q.
+#endif
+
+    /*p04.LEBU*/ wire DMA_A15n = not(dma_reg.DMA_A15.q());
+    /*p04.MUDA*/ wire DMA_ADDR_VRAMp = nor(dma_reg.DMA_A13.q(), dma_reg.DMA_A14.q(), DMA_A15n);
+    return DMA_ADDR_VRAMp;
   }
 
   //----------------------------------------
   // Address decoders
 
   wire TEXO_ADDR_VALID_AND_NOT_VRAM() const {
+
+    // TEVY box color wrong on die trace, but schematic correct.
+
+    // Die trace:
+    // SORE = not(A15)
+    // TEVY = or(A13, A13, SORE) // A13 line not fully drawn
+    // TEXO = and(ADDR_VALID?, TEVY)
+
     /*p08.SORE*/ wire SORE_ADDR_0000_7FFF = not(cpu_pins.A15);
     /*p08.TEVY*/ wire TEVY_ADDR_NOT_VRAM = or (cpu_pins.A13, cpu_pins.A14, SORE_ADDR_0000_7FFF);
-    /*p08.TEXO*/ wire TEXO_ADDR_VALID_AND_NOT_VRAM = and (cpu_pins.ADDR_VALID, TEVY_ADDR_NOT_VRAM);
-    return TEXO_ADDR_VALID_AND_NOT_VRAM;
+    
+    // The polarity of ADDR_VALID may be wrong
+    /*p08.TEXO*/ wire TEXO = and (cpu_pins.ADDR_VALID, TEVY_ADDR_NOT_VRAM);
+
+    return TEXO;
   }
 
   wire TUNA_0000_FDFF() const {

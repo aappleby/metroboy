@@ -277,7 +277,7 @@ struct CpuPins {
   PinOut SYRO;          // top right port PORTA_03: <- P25.SYRO
   PinOut READ_BOOTROM;  // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   PinOut UMUT_MODE_DBG1;         // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
-  PinIn  ADDR_VALID;   // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid"
+  PinIn  ADDR_VALID;   // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
                         
   PinIn  A00;           // bottom right port PORTB_00: -> A00
   PinIn  ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack

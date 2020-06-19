@@ -130,12 +130,16 @@ static_assert(sizeof(SignalState) == 1, "SignalState size != 1");
 
 struct SignalBase {
 
+  // FIXME remove this so regs need explicit q/qn
   operator const bool() const {
     if (a.error) __debugbreak();
     //if (a.hiz)   __debugbreak();
     if (a.hiz) return 1;
     return a.val;
   }
+
+  bool q()  const { return  bool(); }
+  bool qn() const { return !bool(); }
 
   void dump(TextPainter& text_painter, const char* label) {
     a.dump(text_painter, label);
@@ -371,6 +375,11 @@ struct Reg3 : public SignalBase {
 
     return old_a != new_a;
   }
+
+  /*
+private:
+  operator const bool() const;
+  */
 };
 
 //-----------------------------------------------------------------------------
@@ -411,6 +420,11 @@ struct RegDuo : public SignalBase {
 
     return old_a != new_a;
   }
+
+  /*
+private:
+  operator const bool() const;
+  */
 };
 
 //-----------------------------------------------------------------------------
@@ -499,6 +513,11 @@ struct Latch3 : public SignalBase {
 
     return old_a != new_a;
   }
+
+  /*
+private:
+  operator const bool() const;
+  */
 };
 
 //-----------------------------------------------------------------------------
@@ -509,6 +528,7 @@ struct Latch3 : public SignalBase {
 // FIXME ticks on the NEGATIVE EDGE of the clock (see timer.cpp)
 
 struct Counter : public SignalBase {
+
   void clk_n(bool clk, bool load, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
@@ -543,6 +563,11 @@ struct Counter : public SignalBase {
 
     return old_a != new_a;
   }
+
+  /*
+private:
+  operator const bool() const;
+  */
 };
 
 //-----------------------------------------------------------------------------

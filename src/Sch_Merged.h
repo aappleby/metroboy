@@ -70,7 +70,7 @@ struct BusRegisters {
     text_painter.newline();
   }
 
-  /*p07.TEPU*/ Reg3 BOOT_BIT;
+  /*p07.TEPU*/ Reg3 BOOT_BIT; // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.
   /*p25.SOTO*/ Reg3 SOTO_DBG;
 
   /*p08.ALOR*/ Latch3 CPU_ADDR_LATCH_00;
@@ -131,24 +131,24 @@ struct ConfigRegisters {
   }
 
   int get_lcdc() const {
-    return pack(LCDC_BGEN,
-                LCDC_SPEN,
-                LCDC_SPSIZE,
-                LCDC_BGMAP,
-                LCDC_BGTILE,
-                LCDC_WINEN,
-                LCDC_WINMAP,
-                LCDC_EN);
+    return pack(LCDC_BGEN.q(),
+                LCDC_SPEN.q(),
+                LCDC_SPSIZE.q(),
+                LCDC_BGMAP.q(),
+                LCDC_BGTILE.q(),
+                LCDC_WINEN.q(),
+                LCDC_WINMAP.q(),
+                LCDC_EN.q());
   }
 
-  int get_scy()  const { return pack(SCY0,  SCY1,  SCY2,  SCY3,  SCY4,  SCY5,  SCY6,  SCY7); }
-  int get_scx()  const { return pack(SCX0,  SCX1,  SCX2,  SCX3,  SCX4,  SCX5,  SCX6,  SCX7); }
-  int get_lyc()  const { return pack(LYC0,  LYC1,  LYC2,  LYC3,  LYC4,  LYC5,  LYC6,  LYC7); }
-  int get_bgp()  const { return pack(BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7); }
-  int get_obp0() const { return pack(OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07); }
-  int get_obp1() const { return pack(OBP10, OBP11, OBP12, OBP13, OBP14, OBP15, OBP16, OBP17); }
-  int get_wy()   const { return pack(WY0,   WY1,   WY2,   WY3,   WY4,   WY5,   WY6,   WY7); }
-  int get_wx()   const { return pack(WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7); }
+  int get_scy()  const { return pack(SCY0.q(),  SCY1.q(),  SCY2.q(),  SCY3.q(),  SCY4.q(),  SCY5.q(),  SCY6.q(),  SCY7.q()); }
+  int get_scx()  const { return pack(SCX0.q(),  SCX1.q(),  SCX2.q(),  SCX3.q(),  SCX4.q(),  SCX5.q(),  SCX6.q(),  SCX7.q()); }
+  int get_lyc()  const { return pack(LYC0.q(),  LYC1.q(),  LYC2.q(),  LYC3.q(),  LYC4.q(),  LYC5.q(),  LYC6.q(),  LYC7.q()); }
+  int get_bgp()  const { return pack(BGP0.q(),  BGP1.q(),  BGP2.q(),  BGP3.q(),  BGP4.q(),  BGP5.q(),  BGP6.q(),  BGP7.q()); }
+  int get_obp0() const { return pack(OBP00.q(), OBP01.q(), OBP02.q(), OBP03.q(), OBP04.q(), OBP05.q(), OBP06.q(), OBP07.q()); }
+  int get_obp1() const { return pack(OBP10.q(), OBP11.q(), OBP12.q(), OBP13.q(), OBP14.q(), OBP15.q(), OBP16.q(), OBP17.q()); }
+  int get_wy()   const { return pack(WY0.q(),   WY1.q(),   WY2.q(),   WY3.q(),   WY4.q(),   WY5.q(),   WY6.q(),   WY7.q()); }
+  int get_wx()   const { return pack(WX0.q(),   WX1.q(),   WX2.q(),   WX3.q(),   WX4.q(),   WX5.q(),   WX6.q(),   WX7.q()); }
 
   /*
   void set_lcdc(uint8_t x) {
@@ -279,7 +279,7 @@ struct DmaRegisters {
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- DMA REG -----\n");
     FROM_CPU5_SYNC   .dump(text_painter, "FROM_CPU5_SYNC   ");
-    DMA_RUNNINGp  .dump(text_painter, "DMA_RUNNINGp  ");
+    DMA_RUNNING  .dump(text_painter, "DMA_RUNNING  ");
     MYTE    .dump(text_painter, "MYTE    ");
     LUVY    .dump(text_painter, "LUVY    ");  
     LENE    .dump(text_painter, "LENE    ");
@@ -292,16 +292,16 @@ struct DmaRegisters {
 
   /*p04.MAKA*/ Reg3 FROM_CPU5_SYNC;
 
-  /*p04.MATU*/ Reg3 DMA_RUNNINGp; // -> p25,p28
+  /*p04.MATU*/ Reg3 DMA_RUNNING; // -> p25,p28
   /*p04.MYTE*/ Reg3 MYTE;
   /*p04.LUVY*/ Reg3 LUVY;
   /*p04.LENE*/ Reg3 LENE;
 
   int get_addr_lo() {
-    return pack(DMA_A00, DMA_A01, DMA_A02, DMA_A03, DMA_A04, DMA_A05, DMA_A06, DMA_A07);
+    return pack(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A05.q(), DMA_A06.q(), DMA_A07.q());
   }
   int get_addr_hi() {
-    return pack(DMA_A08, DMA_A09, DMA_A10, DMA_A11, DMA_A12, DMA_A13, DMA_A14, DMA_A15);
+    return pack(DMA_A08.q(), DMA_A09.q(), DMA_A10.q(), DMA_A11.q(), DMA_A12.q(), DMA_A13.q(), DMA_A14.q(), DMA_A15.q());
   }
 
   /*p04.NAKY*/ Reg3 DMA_A00;
@@ -415,11 +415,11 @@ struct JoypadRegisters {
 struct LcdRegisters {
 
   uint32_t x() const {
-    return (X0 << 0) | (X1 << 1) | (X2 << 2) | (X3 << 3) | (X4 << 4) | (X5 << 5) | (X6 << 6);
+    return (X0.q() << 0) | (X1.q() << 1) | (X2.q() << 2) | (X3.q() << 3) | (X4.q() << 4) | (X5.q() << 5) | (X6.q() << 6);
   }
 
   uint32_t y() const {
-    return (Y0 << 0) | (Y1 << 1) | (Y2 << 2) | (Y3 << 3) | (Y4 << 4) | (Y5 << 5) | (Y6 << 6) | (Y7 << 7);
+    return (Y0.q() << 0) | (Y1.q() << 1) | (Y2.q() << 2) | (Y3.q() << 3) | (Y4.q() << 4) | (Y5.q() << 5) | (Y6.q() << 6) | (Y7.q() << 7);
   }
 
   void dump_regs(TextPainter& text_painter) {
@@ -445,14 +445,16 @@ struct LcdRegisters {
     text_painter.newline();
   }
 
+  // 17-rung regs. Output order QN/Q
   /*p21.SAXO*/ Reg3 X0; // increments at phase 1, reset to 0 at p909.
   /*p21.TYPO*/ Reg3 X1;
-  /*p21.VYZO*/ Reg3 X2;
+  /*p21.VYZO*/ Reg3 X2; 
   /*p21.TELU*/ Reg3 X3;
   /*p21.SUDE*/ Reg3 X4;
   /*p21.TAHA*/ Reg3 X5;
   /*p21.TYRY*/ Reg3 X6;
 
+  // 17-rung regs. Output order QN/Q
   /*p21.MUWY*/ Reg3 Y0; // increments at p909, reset to 0 at p153:001
   /*p21.MYRO*/ Reg3 Y1;
   /*p21.LEXA*/ Reg3 Y2;
@@ -502,16 +504,16 @@ struct PixelPipeRegisters {
     text_painter.newline();
   }
 
-  uint8_t bg_pix_a()   { return (uint8_t)pack(BG_PIX_A0,   BG_PIX_A1,   BG_PIX_A2,   BG_PIX_A3,   BG_PIX_A4,   BG_PIX_A5,   BG_PIX_A6,   BG_PIX_A7);   }
-  uint8_t bg_pix_b()   { return (uint8_t)pack(BG_PIX_B0,   BG_PIX_B1,   BG_PIX_B2,   BG_PIX_B3,   BG_PIX_B4,   BG_PIX_B5,   BG_PIX_B6,   BG_PIX_B7);   }
-  uint8_t spr_pix_a()  { return (uint8_t)pack(SPR_PIX_A0,  SPR_PIX_A1,  SPR_PIX_A2,  SPR_PIX_A3,  SPR_PIX_A4,  SPR_PIX_A5,  SPR_PIX_A6,  SPR_PIX_A7);  }
-  uint8_t spr_pix_b()  { return (uint8_t)pack(SPR_PIX_B0,  SPR_PIX_B1,  SPR_PIX_B2,  SPR_PIX_B3,  SPR_PIX_B4,  SPR_PIX_B5,  SPR_PIX_B6,  SPR_PIX_B7);  }
-  uint8_t bg_pipe_a()  { return (uint8_t)pack(BG_PIPE_A0,  BG_PIPE_A1,  BG_PIPE_A2,  BG_PIPE_A3,  BG_PIPE_A4,  BG_PIPE_A5,  BG_PIPE_A6,  BG_PIPE_A7);  }
-  uint8_t bg_pipe_b()  { return (uint8_t)pack(BG_PIPE_B0,  BG_PIPE_B1,  BG_PIPE_B2,  BG_PIPE_B3,  BG_PIPE_B4,  BG_PIPE_B5,  BG_PIPE_B6,  BG_PIPE_B7);  }
-  uint8_t spr_pipe_a() { return (uint8_t)pack(SPR_PIPE_A0, SPR_PIPE_A1, SPR_PIPE_A2, SPR_PIPE_A3, SPR_PIPE_A4, SPR_PIPE_A5, SPR_PIPE_A6, SPR_PIPE_A7); }
-  uint8_t spr_pipe_b() { return (uint8_t)pack(SPR_PIPE_B0, SPR_PIPE_B1, SPR_PIPE_B2, SPR_PIPE_B3, SPR_PIPE_B4, SPR_PIPE_B5, SPR_PIPE_B6, SPR_PIPE_B7); }
-  uint8_t pal_pipe()   { return (uint8_t)pack(PAL_PIPE_0,  PAL_PIPE_1,  PAL_PIPE_2,  PAL_PIPE_3,  PAL_PIPE_4,  PAL_PIPE_5,  PAL_PIPE_6,  PAL_PIPE_7);  }
-  uint8_t mask_pipe()  { return (uint8_t)pack(MASK_PIPE_0, MASK_PIPE_1, MASK_PIPE_2, MASK_PIPE_3, MASK_PIPE_4, MASK_PIPE_5, MASK_PIPE_6, MASK_PIPE_7); }
+  uint8_t bg_pix_a()   { return (uint8_t)pack(BG_PIX_A0.q(),   BG_PIX_A1.q(),   BG_PIX_A2.q(),   BG_PIX_A3.q(),   BG_PIX_A4.q(),   BG_PIX_A5.q(),   BG_PIX_A6.q(),   BG_PIX_A7.q());   }
+  uint8_t bg_pix_b()   { return (uint8_t)pack(BG_PIX_B0.q(),   BG_PIX_B1.q(),   BG_PIX_B2.q(),   BG_PIX_B3.q(),   BG_PIX_B4.q(),   BG_PIX_B5.q(),   BG_PIX_B6.q(),   BG_PIX_B7.q());   }
+  uint8_t spr_pix_a()  { return (uint8_t)pack(SPR_PIX_A0.q(),  SPR_PIX_A1.q(),  SPR_PIX_A2.q(),  SPR_PIX_A3.q(),  SPR_PIX_A4.q(),  SPR_PIX_A5.q(),  SPR_PIX_A6.q(),  SPR_PIX_A7.q());  }
+  uint8_t spr_pix_b()  { return (uint8_t)pack(SPR_PIX_B0.q(),  SPR_PIX_B1.q(),  SPR_PIX_B2.q(),  SPR_PIX_B3.q(),  SPR_PIX_B4.q(),  SPR_PIX_B5.q(),  SPR_PIX_B6.q(),  SPR_PIX_B7.q());  }
+  uint8_t bg_pipe_a()  { return (uint8_t)pack(BG_PIPE_A0.q(),  BG_PIPE_A1.q(),  BG_PIPE_A2.q(),  BG_PIPE_A3.q(),  BG_PIPE_A4.q(),  BG_PIPE_A5.q(),  BG_PIPE_A6.q(),  BG_PIPE_A7.q());  }
+  uint8_t bg_pipe_b()  { return (uint8_t)pack(BG_PIPE_B0.q(),  BG_PIPE_B1.q(),  BG_PIPE_B2.q(),  BG_PIPE_B3.q(),  BG_PIPE_B4.q(),  BG_PIPE_B5.q(),  BG_PIPE_B6.q(),  BG_PIPE_B7.q());  }
+  uint8_t spr_pipe_a() { return (uint8_t)pack(SPR_PIPE_A0.q(), SPR_PIPE_A1.q(), SPR_PIPE_A2.q(), SPR_PIPE_A3.q(), SPR_PIPE_A4.q(), SPR_PIPE_A5.q(), SPR_PIPE_A6.q(), SPR_PIPE_A7.q()); }
+  uint8_t spr_pipe_b() { return (uint8_t)pack(SPR_PIPE_B0.q(), SPR_PIPE_B1.q(), SPR_PIPE_B2.q(), SPR_PIPE_B3.q(), SPR_PIPE_B4.q(), SPR_PIPE_B5.q(), SPR_PIPE_B6.q(), SPR_PIPE_B7.q()); }
+  uint8_t pal_pipe()   { return (uint8_t)pack(PAL_PIPE_0.q(),  PAL_PIPE_1.q(),  PAL_PIPE_2.q(),  PAL_PIPE_3.q(),  PAL_PIPE_4.q(),  PAL_PIPE_5.q(),  PAL_PIPE_6.q(),  PAL_PIPE_7.q());  }
+  uint8_t mask_pipe()  { return (uint8_t)pack(MASK_PIPE_0.q(), MASK_PIPE_1.q(), MASK_PIPE_2.q(), MASK_PIPE_3.q(), MASK_PIPE_4.q(), MASK_PIPE_5.q(), MASK_PIPE_6.q(), MASK_PIPE_7.q()); }
 
   /*p32.LEGU*/ Latch3 BG_PIX_A0;
   /*p32.NUDU*/ Latch3 BG_PIX_A1;
@@ -635,8 +637,8 @@ struct SerialRegisters {
     text_painter.newline();
   }
 
-  uint8_t ser_cnt()  { return (uint8_t)pack(SER_CNT0,SER_CNT1,SER_CNT2,SER_CNT3); }
-  uint8_t ser_data() { return (uint8_t)pack(SER_DATA0,SER_DATA1,SER_DATA2,SER_DATA3,SER_DATA4,SER_DATA5,SER_DATA6,SER_DATA7); }
+  uint8_t ser_cnt()  { return (uint8_t)pack(SER_CNT0.q(),SER_CNT1.q(),SER_CNT2.q(),SER_CNT3.q()); }
+  uint8_t ser_data() { return (uint8_t)pack(SER_DATA0.q(),SER_DATA1.q(),SER_DATA2.q(),SER_DATA3.q(),SER_DATA4.q(),SER_DATA5.q(),SER_DATA6.q(),SER_DATA7.q()); }
 
   /*p06.ETAF*/ Reg3 XFER_START;
   /*p06.CULY*/ Reg3 XFER_DIR;
@@ -724,8 +726,8 @@ struct SpriteRegisters {
     text_painter.newline();
   }
 
-  int scan()    { return pack(SCAN0, SCAN1, SCAN2, SCAN3, SCAN4); }
-  int spr_idx() { return pack(SPRITE_IDX0,SPRITE_IDX1,SPRITE_IDX2,SPRITE_IDX3,SPRITE_IDX4,SPRITE_IDX5); }
+  int scan()    { return pack(SCAN0.q(), SCAN1.q(), SCAN2.q(), SCAN3.q(), SCAN4.q()); }
+  int spr_idx() { return pack(SPRITE_IDX0.q(),SPRITE_IDX1.q(),SPRITE_IDX2.q(),SPRITE_IDX3.q(),SPRITE_IDX4.q(),SPRITE_IDX5.q()); }
   int ts_idx()  { return pack(TS_IDX_0,TS_IDX_1,TS_IDX_2,TS_IDX_3,TS_IDX_4,TS_IDX_5); }
   int ts_line() { return pack(TS_LINE_0,TS_LINE_1,TS_LINE_2,TS_LINE_3); }
 
@@ -775,8 +777,9 @@ struct SpriteStoreRegisters {
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- SPR_STORE -----\n");
-    text_painter.dprintf("SPRITE_COUNT %d\n", pack(SPRITE_COUNT0, SPRITE_COUNT1, SPRITE_COUNT2, SPRITE_COUNT3));
+    text_painter.dprintf("SPRITE_COUNT %d\n", pack(SPRITE_COUNT0.q(), SPRITE_COUNT1.q(), SPRITE_COUNT2.q(), SPRITE_COUNT3.q()));
 
+    /*
     text_painter.dprintf("STORE0 %d %d %d %d\n",
                  SPRITE0_GET_SYNC.a.val,
                  pack(STORE0_X0,    STORE0_X1,    STORE0_X2,    STORE0_X3,   STORE0_X4,   STORE0_X5, STORE0_X6, STORE0_X7),
@@ -795,6 +798,7 @@ struct SpriteStoreRegisters {
                  pack(STORE2_IDX0,  STORE2_IDX1,  STORE2_IDX2,  STORE2_IDX3, STORE2_IDX4, STORE2_IDX5),
                  pack(STORE2_LINE0, STORE2_LINE1, STORE2_LINE2, STORE2_LINE3));
     text_painter.dprintf("...\n");
+    */
     text_painter.newline();
   }
 
@@ -1070,8 +1074,8 @@ struct TimerRegisters {
   }
 
   int get_div() const {
-    return pack(DIV_00, DIV_01, DIV_02, DIV_03, DIV_04, DIV_05, DIV_06, DIV_07,
-                DIV_08, DIV_09, DIV_10, DIV_11, DIV_12, DIV_13, DIV_14, DIV_15);
+    return pack(DIV_00.q(), DIV_01.q(), DIV_02.q(), DIV_03.q(), DIV_04.q(), DIV_05.q(), DIV_06.q(), DIV_07.q(),
+                DIV_08.q(), DIV_09.q(), DIV_10.q(), DIV_11.q(), DIV_12.q(), DIV_13.q(), DIV_14.q(), DIV_15.q());
   }
 
   /*
@@ -1084,7 +1088,7 @@ struct TimerRegisters {
   */
 
   int get_tima() const {
-    return pack(TIMA_0, TIMA_1, TIMA_2, TIMA_3, TIMA_4, TIMA_5, TIMA_6, TIMA_7);
+    return pack(TIMA_0.q(), TIMA_1.q(), TIMA_2.q(), TIMA_3.q(), TIMA_4.q(), TIMA_5.q(), TIMA_6.q(), TIMA_7.q());
   }
 
   /*
@@ -1094,11 +1098,11 @@ struct TimerRegisters {
   }
   */
 
-  wire get_tima_max()  { return TIMA_MAX; }
-  wire get_int_timer() { return INT_TIMER; }
+  wire get_tima_max()  { return TIMA_MAX.q(); }
+  wire get_int_timer() { return INT_TIMER.q(); }
 
   int get_tma() const {
-    return pack(TMA_0, TMA_1, TMA_2, TMA_3, TMA_4, TMA_5, TMA_6, TMA_7);
+    return pack(TMA_0.q(), TMA_1.q(), TMA_2.q(), TMA_3.q(), TMA_4.q(), TMA_5.q(), TMA_6.q(), TMA_7.q());
   }
 
   /*
@@ -1109,7 +1113,7 @@ struct TimerRegisters {
   */
 
   int get_tac() const {
-    return pack(TAC_0, TAC_1, TAC_2);
+    return pack(TAC_0.q(), TAC_1.q(), TAC_2.q());
   }
 
   /*
@@ -1182,14 +1186,14 @@ struct VidRegisters {
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- VID_REG -----\n");
 
-    text_painter.dprintf("PIX X    %d\n", pack(X0, X1, X2, X3, X4, X5, X6, X7));
-    text_painter.dprintf("MAP X    %d\n", pack(MAP_X0, MAP_X1, MAP_X2, MAP_X3, MAP_X4));
-    text_painter.dprintf("MAP Y    %d\n", pack(MAP_Y0, MAP_Y1, MAP_Y2, MAP_Y3, MAP_Y4));
-    text_painter.dprintf("TILE Y   %d\n", pack(TILE_Y0, TILE_Y1, TILE_Y2));
-    text_painter.dprintf("FINE_CNT %d\n", pack(FINE_CNT0, FINE_CNT1, FINE_CNT2));
+    text_painter.dprintf("PIX X    %d\n", pack(X0.q(), X1.q(), X2.q(), X3.q(), X4.q(), X5.q(), X6.q(), X7.q()));
+    text_painter.dprintf("MAP X    %d\n", pack(MAP_X0.q(), MAP_X1.q(), MAP_X2.q(), MAP_X3.q(), MAP_X4.q()));
+    text_painter.dprintf("MAP Y    %d\n", pack(MAP_Y0.q(), MAP_Y1.q(), MAP_Y2.q(), MAP_Y3.q(), MAP_Y4.q()));
+    text_painter.dprintf("TILE Y   %d\n", pack(TILE_Y0.q(), TILE_Y1.q(), TILE_Y2.q()));
+    text_painter.dprintf("FINE_CNT %d\n", pack(FINE_CNT0.q(), FINE_CNT1.q(), FINE_CNT2.q()));
 
-    text_painter.dprintf("MAxx     0x%04x\n", pack(MA00, MA01, MA02, MA03, MA04, MA05, MA06, MA07, MA08, MA09, MA10, MA11, MA12));
-    text_painter.dprintf("MDxx     0x%02x\n", pack(MD0, MD1, MD2, MD3, MD4, MD5, MD6, MD7));
+    text_painter.dprintf("MAxx     0x%04x\n", pack(MA00.q(), MA01.q(), MA02.q(), MA03.q(), MA04.q(), MA05.q(), MA06.q(), MA07.q(), MA08.q(), MA09.q(), MA10.q(), MA11.q(), MA12.q()));
+    text_painter.dprintf("MDxx     0x%02x\n", pack(MD0.q(), MD1.q(), MD2.q(), MD3.q(), MD4.q(), MD5.q(), MD6.q(), MD7.q()));
 
     FINE_MATCH_LATCH         .dump(text_painter, "FINE_MATCH_LATCH          ");
     FINE_MATCH_SYNC1        .dump(text_painter, "FINE_MATCH_SYNC1         ");
@@ -1358,10 +1362,10 @@ struct OamRegisters {
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- OAM_REG -----\n");
-    text_painter.dprintf("LATCH_A 0x%02x\n", pack(LATCH_OAM_A0,LATCH_OAM_A1,LATCH_OAM_A2,LATCH_OAM_A3,LATCH_OAM_A4,LATCH_OAM_A5,LATCH_OAM_A6,LATCH_OAM_A7));
-    text_painter.dprintf("LATCH_B 0x%02x\n", pack(LATCH_OAM_B0,LATCH_OAM_B1,LATCH_OAM_B2,LATCH_OAM_B3,LATCH_OAM_B4,LATCH_OAM_B5,LATCH_OAM_B6,LATCH_OAM_B7));
-    text_painter.dprintf("REG_A   0x%02x\n", pack(REG_OAM_A0,REG_OAM_A1,REG_OAM_A2,REG_OAM_A3,REG_OAM_A4,REG_OAM_A5,REG_OAM_A6,REG_OAM_A7));
-    text_painter.dprintf("REG_B   0x%02x\n", pack(REG_OAM_B0,REG_OAM_B1,REG_OAM_B2,REG_OAM_B3,REG_OAM_B4,REG_OAM_B5,REG_OAM_B6,REG_OAM_B7));
+    text_painter.dprintf("LATCH_A 0x%02x\n", pack(LATCH_OAM_A0.q(),LATCH_OAM_A1.q(),LATCH_OAM_A2.q(),LATCH_OAM_A3.q(),LATCH_OAM_A4.q(),LATCH_OAM_A5.q(),LATCH_OAM_A6.q(),LATCH_OAM_A7.q()));
+    text_painter.dprintf("LATCH_B 0x%02x\n", pack(LATCH_OAM_B0.q(),LATCH_OAM_B1.q(),LATCH_OAM_B2.q(),LATCH_OAM_B3.q(),LATCH_OAM_B4.q(),LATCH_OAM_B5.q(),LATCH_OAM_B6.q(),LATCH_OAM_B7.q()));
+    text_painter.dprintf("REG_A   0x%02x\n", pack(REG_OAM_A0.q(),REG_OAM_A1.q(),REG_OAM_A2.q(),REG_OAM_A3.q(),REG_OAM_A4.q(),REG_OAM_A5.q(),REG_OAM_A6.q(),REG_OAM_A7.q()));
+    text_painter.dprintf("REG_B   0x%02x\n", pack(REG_OAM_B0.q(),REG_OAM_B1.q(),REG_OAM_B2.q(),REG_OAM_B3.q(),REG_OAM_B4.q(),REG_OAM_B5.q(),REG_OAM_B6.q(),REG_OAM_B7.q()));
     text_painter.newline();
   }
 

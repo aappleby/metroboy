@@ -97,9 +97,9 @@ struct TestGB {
     return ALET_xBxDxFxH;
   }
 
-  wire MYVO_xBxDxFxH() const {
-    /*p27.MYVO*/ wire MYVO_xBxDxFxH = not(ALET_xBxDxFxH());
-    return MYVO_xBxDxFxH;
+  wire MYVO_AxCxExGx() const {
+    /*p27.MYVO*/ wire MYVO = not(ALET_xBxDxFxH());
+    return MYVO;
   }
 
   //----------------------------------------
@@ -212,10 +212,13 @@ struct TestGB {
   }
 
   wire PPU_USE_OAM1() const {
-    /*p28.BOGE*/ wire DMA_RUNNINGn = not(dma_reg.MATU_DMA_WRITE.q());
+    /*p28.BOGE*/ wire DMA_RUNNINGn = not(dma_reg.MATU_DMA_WRITEp.q());
     /*p28.ASEN*/ wire ASEN = or (ATAR_VID_RSTp(), AVAP_SCAN_DONE_d0_TRIG());
-    /*p28.BESU*/ wire BESU = or (lcd_reg.VID_LINE_d4.q(), ASEN);
-    /*p28.ACYL*/ wire PPU_USE_OAM1 = and (DMA_RUNNINGn, BESU);
+
+    // FIXME this is a LATCH
+    /*p28.BESU*/ wire SPRITE_SCAN_LATCH = or (lcd_reg.VID_LINE_d4.q(), ASEN);
+
+    /*p28.ACYL*/ wire PPU_USE_OAM1 = and (DMA_RUNNINGn, SPRITE_SCAN_LATCH);
     return PPU_USE_OAM1;
   }
 
@@ -235,7 +238,7 @@ struct TestGB {
     // TYSO = or(SAKY, TEPA)
     // TEXY = not(TYSO)
 
-    /*p29.SAKY*/ wire SAKY = nor(spr_reg.TULY_SPR_SEQ1.q(), spr_reg.VONU_SEQ_xxx34xn.q());
+    /*p29.SAKY*/ wire SAKY = nor(spr_reg.SFETCH_S1.q(), spr_reg.VONU_SEQ_xxx34xn.q());
     /*p29.TEPA*/ wire TEPA_RENDERINGn = not(vid_reg.RENDERING_LATCHp);
     /*p29.TYSO*/ wire TYSO_SPRITE_READn = or (SAKY, TEPA_RENDERINGn);
     /*p29.TEXY*/ wire TEXY_SPRITE_READ = not(TYSO_SPRITE_READn);
@@ -243,7 +246,7 @@ struct TestGB {
     // So we only read a sprite if both those regs are... low? what is rung 17's polarity?
 #if 0
     if (RENDERING_LATCH) {
-      /*p29.TEXY*/ wire TEXY_SPRITE_READ = or(spr_reg.TULY_SPR_SEQ1.q(), spr_reg.VONU_SEQ_xxx34xn.q());;
+      /*p29.TEXY*/ wire TEXY_SPRITE_READ = or(spr_reg.SFETCH_S1.q(), spr_reg.VONU_SEQ_xxx34xn.q());;
     }
     else {
       /*p29.TEXY*/ wire TEXY_SPRITE_READ = 1;
@@ -254,8 +257,8 @@ struct TestGB {
   }
 
   wire WUTY_SPRITE_DONE() const {
-    /*p29.TYNO*/ wire TYNO = nand(spr_reg.TOXE_SPR_SEQ0.q(), spr_reg.SEBA_SEQ_xxxx45n.q(), spr_reg.VONU_SEQ_xxx34xn.q());
-    /*p29.VUSA*/ wire VUSA = or (!spr_reg.TYFO_SEQ_B0d.q(), TYNO);
+    /*p29.TYNO*/ wire TYNO = nand(spr_reg.SFETCH_S0.q(), spr_reg.SEBA_SEQ_xxxx45n.q(), spr_reg.VONU_SEQ_xxx34xn.q());
+    /*p29.VUSA*/ wire VUSA = or (!spr_reg.SFETCH_S0_DELAY.q(), TYNO);
     /*p29.WUTY*/ wire WUTY_SPRITE_DONE = not(VUSA);
     return WUTY_SPRITE_DONE;
   }

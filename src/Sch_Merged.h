@@ -279,7 +279,7 @@ struct DmaRegisters {
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- DMA REG -----\n");
     FROM_CPU5_SYNC   .dump(text_painter, "FROM_CPU5_SYNC   ");
-    MATU_DMA_WRITE  .dump(text_painter, "DMA_RUNNING  ");
+    MATU_DMA_WRITEp  .dump(text_painter, "DMA_RUNNING  ");
     MYTE_DMA_DONE    .dump(text_painter, "MYTE_DMA_DONE    ");
     LUVY_DMA_TRIG_d0    .dump(text_painter, "LUVY    ");  
     LENE_DMA_TRIG_d4    .dump(text_painter, "LENE    ");
@@ -292,7 +292,7 @@ struct DmaRegisters {
 
   /*p04.LYXE*/ Latch3 LYXE_DMA_LATCH;
   /*p04.MAKA*/ Reg3 FROM_CPU5_SYNC;
-  /*p04.MATU*/ Reg3 MATU_DMA_WRITE; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
+  /*p04.MATU*/ Reg3 MATU_DMA_WRITEp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
   /*p04.MYTE*/ Reg3 MYTE_DMA_DONE;
   /*p04.LUVY*/ Reg3 LUVY_DMA_TRIG_d0;
   /*p04.LENE*/ Reg3 LENE_DMA_TRIG_d4;
@@ -705,13 +705,13 @@ struct SpriteRegisters {
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- SPR_REG -----\n");
 
-    TOXE_SPR_SEQ0    .dump(text_painter, "TOXE_SPR_SEQ0    ");
-    TULY_SPR_SEQ1    .dump(text_painter, "TULY_SPR_SEQ1    ");
-    TESE_SPR_SEQ2    .dump(text_painter, "TESE_SPR_SEQ2    ");
+    SFETCH_S0    .dump(text_painter, "SFETCH_S0    ");
+    SFETCH_S1    .dump(text_painter, "SFETCH_S1    ");
+    SFETCH_S2    .dump(text_painter, "SFETCH_S2    ");
     TOBU_SEQ_xx23xx  .dump(text_painter, "TOBU_SEQ_xx23xx  ");
     VONU_SEQ_xxx34xn .dump(text_painter, "VONU_SEQ_xxx34xn ");
     SEBA_SEQ_xxxx45n .dump(text_painter, "SEBA_SEQ_xxxx45n ");
-    TYFO_SEQ_B0d     .dump(text_painter, "TYFO_SEQ_B0d     ");
+    SFETCH_S0_DELAY     .dump(text_painter, "SFETCH_S0_DELAY     ");
     STORE_SPRITE_IDXn.dump(text_painter, "STORE_SPRITE_IDXn");
 
     text_painter.dprintf("SCAN    %d\n", scan());
@@ -729,14 +729,14 @@ struct SpriteRegisters {
   int ts_idx()  { return pack(TS_IDX_0,TS_IDX_1,TS_IDX_2,TS_IDX_3,TS_IDX_4,TS_IDX_5); }
   int ts_line() { return pack(TS_LINE_0,TS_LINE_1,TS_LINE_2,TS_LINE_3); }
 
-  /*p29.TOXE*/ Reg3 TOXE_SPR_SEQ0;
-  /*p29.TULY*/ Reg3 TULY_SPR_SEQ1;
-  /*p29.TESE*/ Reg3 TESE_SPR_SEQ2;
+  /*p29.TOXE*/ Reg3 SFETCH_S0;
+  /*p29.TULY*/ Reg3 SFETCH_S1;
+  /*p29.TESE*/ Reg3 SFETCH_S2;
   
   /*p29.TOBU*/ Reg3 TOBU_SEQ_xx23xx;
   /*p29.VONU*/ Reg3 VONU_SEQ_xxx34xn;
   /*p29.SEBA*/ Reg3 SEBA_SEQ_xxxx45n;
-  /*p29.TYFO*/ Reg3 TYFO_SEQ_B0d;
+  /*p29.TYFO*/ Reg3 SFETCH_S0_DELAY;
 
   /*p29.CENO*/ Reg3 STORE_SPRITE_IDXn;
 
@@ -1185,9 +1185,9 @@ struct VidRegisters {
     text_painter.dprintf("----- VID_REG -----\n");
 
     text_painter.dprintf("PIX X    %d\n", pack(X0.q(), X1.q(), X2.q(), X3.q(), X4.q(), X5.q(), X6.q(), X7.q()));
-    text_painter.dprintf("MAP X    %d\n", pack(WIN_MAP_X0.q(), WIN_MAP_X1.q(), WIN_MAP_X2.q(), WIN_MAP_X3.q(), WIN_MAP_X4.q()));
-    text_painter.dprintf("MAP Y    %d\n", pack(WIN_MAP_Y0.q(), WIN_MAP_Y1.q(), WIN_MAP_Y2.q(), WIN_MAP_Y3.q(), WIN_MAP_Y4.q()));
-    text_painter.dprintf("TILE Y   %d\n", pack(WIN_TILE_Y0.q(), WIN_TILE_Y1.q(), WIN_TILE_Y2.q()));
+    text_painter.dprintf("MAP X    %d\n", pack(WIN_X3.q(), WIN_X4.q(), WIN_X5.q(), WIN_X6.q(), WIN_X7.q()));
+    text_painter.dprintf("MAP Y    %d\n", pack(WIN_Y3.q(), WIN_Y4.q(), WIN_Y5.q(), WIN_Y6.q(), WIN_Y7.q()));
+    text_painter.dprintf("TILE Y   %d\n", pack(WIN_Y0.q(), WIN_Y1.q(), WIN_Y2.q()));
     text_painter.dprintf("FINE_CNT %d\n", pack(FINE_CNT0.q(), FINE_CNT1.q(), FINE_CNT2.q()));
 
     text_painter.dprintf("MAxx     0x%04x\n", pack(MA00.q(), MA01.q(), MA02.q(), MA03.q(), MA04.q(), MA05.q(), MA06.q(), MA07.q(), MA08.q(), MA09.q(), MA10.q(), MA11.q(), MA12.q()));
@@ -1214,19 +1214,19 @@ struct VidRegisters {
     WIN_MATCH_SYNC1         .dump(text_painter, "WIN_MATCH_SYNC1          ");
     WIN_MATCH_SYNC2         .dump(text_painter, "WIN_MATCH_SYNC2          ");
     BG_READ_VRAM_LATCHp     .dump(text_painter, "BG_READ_VRAM_LATCH      ");
-    BG_SEQ_x1x3x5x7         .dump(text_painter, "BG_SEQ_x1x3x5x7          ");
-    BG_SEQ_xx23xx67         .dump(text_painter, "BG_SEQ_xx23xx67          ");
-    BG_SEQ_xxxx4567         .dump(text_painter, "BG_SEQ_xxxx4567          ");
+    FETCH_S0         .dump(text_painter, "FETCH_S0          ");
+    FETCH_S1         .dump(text_painter, "FETCH_S1          ");
+    FETCH_S2         .dump(text_painter, "FETCH_S2          ");
     LOVY_BG_SEQ5_SYNC            .dump(text_painter, "BG_SEQ5_SYNC             ");
-    BG_SEQ_6                .dump(text_painter, "BG_SEQ_6                 ");
-    BG_SEQ_7                .dump(text_painter, "BG_SEQ_7                 ");
-    BG_SEQ_x1x3x5x7_DELAY   .dump(text_painter, "BG_SEQ_x1x3x5x7_DELAY    ");
+    FETCH_STOP_SYNC                .dump(text_painter, "FETCH_STOP_SYNC                 ");
+    FETCH_STOP_SYNC_DELAY                .dump(text_painter, "FETCH_STOP_SYNC_DELAY                 ");
+    FETCH_S0_DELAY   .dump(text_painter, "FETCH_S0_DELAY    ");
     PYGO_TILE_DONE          .dump(text_painter, "PYGO_TILE_DONE           ");
     POKY_FRONT_PORCH_LATCH .dump(text_painter, "POKY_FRONT_PORCH_LATCH  ");
     WY_MATCH_LATCH          .dump(text_painter, "WY_MATCH_LATCH           ");
-    _SPRITE_FETCH_LATCH     .dump(text_painter, "_SPRITE_FETCH_LATCH      ");
-    _SPRITE_FETCH_SYNC1     .dump(text_painter, "_SPRITE_FETCH_SYNC1      ");
-    _SPRITE_FETCH_SYNC2     .dump(text_painter, "_SPRITE_FETCH_SYNC2      ");
+    TAKA_SPRITE_FETCH_LATCH     .dump(text_painter, "TAKA_SPRITE_FETCH_LATCH      ");
+    SOBU_SPRITE_FETCH_SYNC1     .dump(text_painter, "SOBU_SPRITE_FETCH_SYNC1      ");
+    SUDA_SPRITE_FETCH_SYNC2     .dump(text_painter, "SUDA_SPRITE_FETCH_SYNC2      ");
     text_painter.newline();
   }
 
@@ -1239,21 +1239,21 @@ struct VidRegisters {
   /*p21.TAKO*/ Reg3 X6;
   /*p21.SYBE*/ Reg3 X7;
 
-  /*p27.WYKA*/ Reg3 WIN_MAP_X0;
-  /*p27.WODY*/ Reg3 WIN_MAP_X1;
-  /*p27.WOBO*/ Reg3 WIN_MAP_X2;
-  /*p27.WYKO*/ Reg3 WIN_MAP_X3;
-  /*p27.XOLO*/ Reg3 WIN_MAP_X4;
+  /*p27.WYKA*/ Reg3 WIN_X3;
+  /*p27.WODY*/ Reg3 WIN_X4;
+  /*p27.WOBO*/ Reg3 WIN_X5;
+  /*p27.WYKO*/ Reg3 WIN_X6;
+  /*p27.XOLO*/ Reg3 WIN_X7;
 
-  /*p27.TUFU*/ Reg3 WIN_MAP_Y0;
-  /*p27.TAXA*/ Reg3 WIN_MAP_Y1;
-  /*p27.TOZO*/ Reg3 WIN_MAP_Y2;
-  /*p27.TATE*/ Reg3 WIN_MAP_Y3;
-  /*p27.TEKE*/ Reg3 WIN_MAP_Y4;
+  /*p27.TUFU*/ Reg3 WIN_Y3;
+  /*p27.TAXA*/ Reg3 WIN_Y4;
+  /*p27.TOZO*/ Reg3 WIN_Y5;
+  /*p27.TATE*/ Reg3 WIN_Y6;
+  /*p27.TEKE*/ Reg3 WIN_Y7;
 
-  /*p27.VYNO*/ Reg3 WIN_TILE_Y0;
-  /*p27.VUJO*/ Reg3 WIN_TILE_Y1;
-  /*p27.VYMU*/ Reg3 WIN_TILE_Y2;
+  /*p27.VYNO*/ Reg3 WIN_Y0;
+  /*p27.VUJO*/ Reg3 WIN_Y1;
+  /*p27.VYMU*/ Reg3 WIN_Y2;
 
   /*p27.RYKU*/ Reg3 FINE_CNT0;
   /*p27.ROGA*/ Reg3 FINE_CNT1;
@@ -1312,24 +1312,24 @@ struct VidRegisters {
 
   /*p27.LONY*/ Latch3 BG_READ_VRAM_LATCHp; // LONY has "arms" on the VCC side
 
-  /*p27.LAXU*/ Reg3 BG_SEQ_x1x3x5x7;
-  /*p27.MESU*/ Reg3 BG_SEQ_xx23xx67;
-  /*p27.NYVA*/ Reg3 BG_SEQ_xxxx4567;
+  /*p27.LAXU*/ Reg3 FETCH_S0;
+  /*p27.MESU*/ Reg3 FETCH_S1;
+  /*p27.NYVA*/ Reg3 FETCH_S2;
 
   /*p27.LOVY*/ Reg3 LOVY_BG_SEQ5_SYNC;
 
-  /*p24.NYKA*/ Reg3 BG_SEQ_6;
-  /*p24.PORY*/ Reg3 BG_SEQ_7;
-  /*p27.LYZU*/ Reg3 BG_SEQ_x1x3x5x7_DELAY;
+  /*p24.NYKA*/ Reg3 FETCH_STOP_SYNC;
+  /*p24.PORY*/ Reg3 FETCH_STOP_SYNC_DELAY;
+  /*p27.LYZU*/ Reg3 FETCH_S0_DELAY;
 
   /*p24.PYGO*/ Reg3 PYGO_TILE_DONE;
   /*p24.POKY*/ Latch3 POKY_FRONT_PORCH_LATCH;
 
   /*p27.REJO*/ Latch3 WY_MATCH_LATCH;
 
-  /*p27.TAKA*/ Latch3 _SPRITE_FETCH_LATCH;
-  /*p27.SOBU*/ Reg3 _SPRITE_FETCH_SYNC1;
-  /*p27.SUDA*/ Reg3 _SPRITE_FETCH_SYNC2;
+  /*p27.TAKA*/ Latch3 TAKA_SPRITE_FETCH_LATCH;
+  /*p27.SOBU*/ Reg3 SOBU_SPRITE_FETCH_SYNC1;
+  /*p27.SUDA*/ Reg3 SUDA_SPRITE_FETCH_SYNC2;
 
 
 

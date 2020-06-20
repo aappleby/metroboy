@@ -52,10 +52,16 @@ struct TestGB {
     return UMUT_MODE_DBG1;
   }
 
-  wire UNOR_MODE_DBG2() const {
+  // must be N otherwise vram debug control doesn't work
+  wire UNOR_MODE_DBG2n() const {
     /*p07.UBET*/ wire UBET_T1n = not(sys_pins.T1);
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and (sys_pins.T2, UBET_T1n);
-    return UNOR_MODE_DBG2;
+    /*p07.UNOR*/ wire UNOR_MODE_DBG2n = and (sys_pins.T2, UBET_T1n);
+    return UNOR_MODE_DBG2n;
+  }
+
+  wire TOVA_MODE_DBG2p() const {
+    /*p08.TOVA*/ wire TOVA_MODE_DBG2p = not(UNOR_MODE_DBG2n());
+    return TOVA_MODE_DBG2p;
   }
 
   wire UPOJ_MODE_PRODn() const {
@@ -68,31 +74,6 @@ struct TestGB {
     /*p07.UBET*/ wire UBET_T1n = not(sys_pins.T1);
     /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, sys_pins.RST);
     return UPOJ_MODE_PRODn;
-  }
-
-  // Not sure about polarity
-  // >> SEPY, TOZA, TUCA
-  wire ABUZ_ADDR_VALIDx() const {
-    // Die trace:
-    // APAP = not(CPU_ADDR_VALID)
-    // AWOD = nor(UNOR, APAP)
-    // ABUZ = not(AWOD)
-
-    wire APAP = not(cpu_pins.ADDR_VALID); // Missing from schematic
-    wire AWOD = nor(UNOR_MODE_DBG2(), APAP);
-    wire ABUZ = not(AWOD);
-
-#if 0
-    //if the ADDR_VALID pin is ADDR_VALID
-    wire ABUZ = or(UNOR_MODE_DBG2(), ADDR_VALIDp);
-#endif
-
-#if 0
-    // if the ADDR_VALID pin is ADDR_VALIDp
-    wire ABUZ = or(UNOR_MODE_DBG2(), !ADDR_VALIDp);
-#endif
-
-    return ABUZ;
   }
 
   //----------------------------------------
@@ -231,7 +212,7 @@ struct TestGB {
   }
 
   wire PPU_USE_OAM1() const {
-    /*p28.BOGE*/ wire DMA_RUNNINGn = not(dma_reg.DMA_RUNNING.q());
+    /*p28.BOGE*/ wire DMA_RUNNINGn = not(dma_reg.MATU_DMA_WRITE.q());
     /*p28.ASEN*/ wire ASEN = or (ATAR_VID_RSTp(), AVAP_SCAN_DONE_d0_TRIG());
     /*p28.BESU*/ wire BESU = or (lcd_reg.VID_LINE_d4.q(), ASEN);
     /*p28.ACYL*/ wire PPU_USE_OAM1 = and (DMA_RUNNINGn, BESU);
@@ -246,12 +227,30 @@ struct TestGB {
     return AVAP_SCAN_DONE_d0_TRIG;
   }
 
-  wire TEXY_SPRITE_READn() const {
+  // Polarity?
+  wire TEXY_SPRITE_READ() const {
+    // Die trace:
+    // SAKY = nor(TULY17, VONU17)
+    // TEPA = not(XYMU)
+    // TYSO = or(SAKY, TEPA)
+    // TEXY = not(TYSO)
+
     /*p29.SAKY*/ wire SAKY = nor(spr_reg.TULY_SPR_SEQ1.q(), spr_reg.VONU_SEQ_xxx34xn.q());
-    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(vid_reg.RENDERING_LATCH.q());
-    /*p29.TYSO*/ wire TYSO_SPRITE_READn = or (SAKY, TEPA_RENDERINGn); // seems wrong
-    /*p29.TEXY*/ wire TEXY_SPRITE_READn = not(TYSO_SPRITE_READn);
-    return TEXY_SPRITE_READn;
+    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(vid_reg.RENDERING_LATCHp);
+    /*p29.TYSO*/ wire TYSO_SPRITE_READn = or (SAKY, TEPA_RENDERINGn);
+    /*p29.TEXY*/ wire TEXY_SPRITE_READ = not(TYSO_SPRITE_READn);
+
+    // So we only read a sprite if both those regs are... low? what is rung 17's polarity?
+#if 0
+    if (RENDERING_LATCH) {
+      /*p29.TEXY*/ wire TEXY_SPRITE_READ = or(spr_reg.TULY_SPR_SEQ1.q(), spr_reg.VONU_SEQ_xxx34xn.q());;
+    }
+    else {
+      /*p29.TEXY*/ wire TEXY_SPRITE_READ = 1;
+    }
+#endif
+
+    return TEXY_SPRITE_READ;
   }
 
   wire WUTY_SPRITE_DONE() const {
@@ -272,7 +271,19 @@ struct TestGB {
   //----------------------------------------
   // CPU read/write signals
 
+  // Polarity of this seems inconsistent...
   wire TEDO_CPU_RD() const {
+#if 0
+    /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and (sys_pins.T2, not(sys_pins.T1));
+    if (UNOR_MODE_DBG2) {
+      TEDO = not(ext_pins.RD_C);
+    }
+    else {
+      TEDO = not(cpu_pins.CPU_RAW_RD);
+    }
+
+#endif
+
     /*p07.UBET*/ wire UBET_T1n = not(sys_pins.T1);
     /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and (sys_pins.T2, UBET_T1n);
     /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, UNOR_MODE_DBG2);
@@ -297,7 +308,7 @@ struct TestGB {
   }
 
   wire TAPU_CPU_WR_xxxxxFGH() const {
-    /*p07.UBAL*/ wire UBAL_BUS_WR_ABCDExxx = mux2_n(ext_pins.WR_C, APOV_CPU_WR_xxxxxFGH(), UNOR_MODE_DBG2());
+    /*p07.UBAL*/ wire UBAL_BUS_WR_ABCDExxx = mux2_n(ext_pins.WR_C, APOV_CPU_WR_xxxxxFGH(), UNOR_MODE_DBG2n());
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(UBAL_BUS_WR_ABCDExxx);
     return TAPU_CPU_WR_xxxxxFGH;
   }
@@ -310,21 +321,21 @@ struct TestGB {
   //----------------------------------------
   // Window signals
 
-  wire SYLO_WIN_MODEn() const {
-    /*p27.SYLO*/ wire SYLO_WIN_MODEn = not(vid_reg.RYDY_WIN_MODE_LATCH.q());
-    return SYLO_WIN_MODEn;
+  wire SYLO_WIN_HITn() const {
+    /*p27.SYLO*/ wire SYLO_WIN_HITn = not(vid_reg.RYDY_WIN_HIT_LATCH.q());
+    return SYLO_WIN_HITn;
   }
 
-  wire SOCY_WIN_MODEn() const {
-    /*p24.TOMU*/ wire TOMU_WIN_MODE = not(SYLO_WIN_MODEn());
-    /*p24.SOCY*/ wire SOCY_WIN_MODEn = not(TOMU_WIN_MODE);
-    return SOCY_WIN_MODEn;
+  wire SOCY_WIN_HITn() const {
+    /*p24.TOMU*/ wire TOMU_WIN_HIT = not(SYLO_WIN_HITn());
+    /*p24.SOCY*/ wire SOCY_WIN_HITn = not(TOMU_WIN_HIT);
+    return SOCY_WIN_HITn;
   }
 
-  wire TUKU_WIN_MODEn() const {
-    /*p24.TOMU*/ wire TOMU_WIN_MODE = not(SYLO_WIN_MODEn());
-    /*p27.TUKU*/ wire TUKU_WIN_MODEn = not(TOMU_WIN_MODE);
-    return TUKU_WIN_MODEn;
+  wire TUKU_WIN_HITn() const {
+    /*p24.TOMU*/ wire TOMU_WIN_HIT = not(SYLO_WIN_HITn());
+    /*p27.TUKU*/ wire TUKU_WIN_HITn = not(TOMU_WIN_HIT);
+    return TUKU_WIN_HITn;
   }
 
   wire PORE_WIN_MODE() const {
@@ -350,7 +361,7 @@ struct TestGB {
   //----------------------------------------
   // DMA signals
 
-  /*p04.MUDA*/ wire DMA_ADDR_VRAMp() const {
+  /*p04.MUDA*/ wire DMA_ADDR_VRAMp() const { // def p
     // Die trace:
     // LEBU = not(MARU06)
     // MUDA = nor(PULA06, POKU06, LEBU);
@@ -370,6 +381,24 @@ struct TestGB {
   //----------------------------------------
   // Address decoders
 
+#if 0
+  // Not sure about polarity
+  // >> SEPY, TOZA, TUCA
+  wire ABUZ_ADDR_VALIDx() const {
+    // Die trace:
+    // APAP = not(CPU_ADDR_VALID)
+    // AWOD = nor(UNOR, APAP)
+    // ABUZ = not(AWOD)
+
+    /*p??.APAP*/ wire APAP = not(cpu_pins.ADDR_VALIDx); // Missing from schematic
+    /*p01.ABUZ*/ wire AWOD = nor(UNOR_MODE_DBG2n(), APAP);
+    /*p01.ABUZ*/ wire ABUZ = not(AWOD);
+    return ABUZ;
+  }
+#endif
+
+#if 0
+  // This one is really weird.
   wire TEXO_ADDR_VALID_AND_NOT_VRAM() const {
 
     // TEVY box color wrong on die trace, but schematic correct.
@@ -377,16 +406,16 @@ struct TestGB {
     // Die trace:
     // SORE = not(A15)
     // TEVY = or(A13, A13, SORE) // A13 line not fully drawn
-    // TEXO = and(ADDR_VALID?, TEVY)
+    // TEXO = and(ADDR_VALIDx?, TEVY)
 
-    /*p08.SORE*/ wire SORE_ADDR_0000_7FFF = not(cpu_pins.A15);
-    /*p08.TEVY*/ wire TEVY_ADDR_NOT_VRAM = or (cpu_pins.A13, cpu_pins.A14, SORE_ADDR_0000_7FFF);
-    
-    // The polarity of ADDR_VALID may be wrong
-    /*p08.TEXO*/ wire TEXO = and (cpu_pins.ADDR_VALID, TEVY_ADDR_NOT_VRAM);
+    // The polarity of ADDR_VALIDx may be wrong
 
+    /*p08.SORE*/ wire SORE = not(cpu_pins.A15);
+    /*p08.TEVY*/ wire TEVY = or (cpu_pins.A13, cpu_pins.A14, SORE);
+    /*p08.TEXO*/ wire TEXO = and (cpu_pins.ADDR_VALIDx, TEVY);
     return TEXO;
   }
+#endif
 
   wire TUNA_0000_FDFF() const {
     /*p07.TUNA*/ wire TUNA_0000_FDFF = nand(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12, cpu_pins.A11, cpu_pins.A10, cpu_pins.A09);

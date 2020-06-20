@@ -29,7 +29,9 @@ inline bool not (bool a) { return !a; }
 inline bool and (bool a, bool b) { return a & b; }
 inline bool and (bool a, bool b, bool c) { return  (a & b & c); }
 inline bool and (bool a, bool b, bool c, bool d) { return  (a & b & c & d); }
+inline bool and (bool a, bool b, bool c, bool d, bool e) { return  (a & b & c & d & e); }
 inline bool and (bool a, bool b, bool c, bool d, bool e, bool f) { return  (a & b & c & d & e & f); }
+inline bool and (bool a, bool b, bool c, bool d, bool e, bool f, bool g) { return  (a & b & c & d & e & f & g); }
 inline bool or  (bool a, bool b) { return a | b; }
 inline bool or  (bool a, bool b, bool c) { return  (a | b | c); }
 inline bool or  (bool a, bool b, bool c, bool d) { return  (a | b | c | d); }

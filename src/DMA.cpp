@@ -64,9 +64,9 @@ void DMA1::get_obus_req(Req& r) const {
 // LUVY = reg
 // MATU = reg
 // LENE = reg
-// MYTE = reg
+// MYTE_DMA_DONE = reg
 // LYXE = latch(LOKO, LAVY)
-// LARA = nand3(LOKY, CUNU, !MYTE)
+// LARA = nand3(LOKY, CUNU, !MYTE_DMA_DONE)
 // LOKY = nand2(LARA, !LENE)
 // META = and2(UVYT, LOKY)
 // LORU = not(LAVY)
@@ -129,9 +129,9 @@ void DMA2::tock(int phase, const Req& req) {
 #if 0
 
   // polarity of xymu seems wrong here
-  /*p28.AJUJ*/ wire OAM_BUSYn = and(!DMA_RUNNING, !ACYL_OAM_ADDR_PARSE, vid_reg.RENDERING_LATCH);
+  /*p28.AJUJ*/ wire OAM_BUSYn = and(!MATU_DMA_WRITE, !ACYL_OAM_ADDR_PARSE, vid_reg.RENDERING_LATCHp);
 
-  /*p04.POWU*/ wire DMA_WRITE_OAM = and(dma_reg.DMA_RUNNING.q(), !dma_reg.FROM_CPU5_SYNC, !DMA_RUN_TRIG_d0);
+  /*p04.POWU*/ wire DMA_WRITE_OAM = and(dma_reg.MATU_DMA_WRITE.q(), !dma_reg.FROM_CPU5_SYNC, !DMA_RUN_TRIG_d0);
   /*p04.WYJA*/ wire WYJA_OAM_WR = or(and(ADDR_OAM, OAM_BUSYn, CUPA_CPU_WR_xxxxxFGH), DMA_WRITE_OAM);
 
   /*p28.ZONE*/ oam_pins.WR_A.set(nand(WYJA_OAM_WR, oam_pins.A0));
@@ -141,7 +141,7 @@ void DMA2::tock(int phase, const Req& req) {
 
 #if 0
   /*p04.MUDA*/ wire DMA_VRAM  = and(!dma_reg.DMA_A13, !dma_reg.DMA_A14, dma_reg.DMA_A15);
-  /*p04.LUMA*/ wire LUMA_DMA_READ_CART = and(dma_reg.DMA_RUNNING.q(), !DMA_VRAM);
+  /*p04.LUMA*/ wire LUMA_DMA_READ_CART = and(dma_reg.MATU_DMA_WRITE.q(), !DMA_VRAM);
 #endif
 }
 

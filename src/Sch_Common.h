@@ -467,6 +467,30 @@ struct Latch3 : public SignalBase {
     b.error = 0;
   }
 
+  void latch_set_rst_outn(bool set, bool rst) {
+    if (a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = 0;
+    b.hiz = 0;
+    b.clk = 0;
+    b.set = rst;
+    b.rst = set;
+    //b.changed = 0;
+    b.error = 0;
+  }
+
+  void latch_set_rst_out(bool set, bool rst) {
+    if (a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = 0;
+    b.hiz = 0;
+    b.clk = 0;
+    b.set = set;
+    b.rst = rst;
+    //b.changed = 0;
+    b.error = 0;
+  }
+
   void latch_setn_rstn_out(bool setN, bool rstN) {
     if (a.error)  __debugbreak();
     if (!b.error) __debugbreak();

@@ -71,7 +71,7 @@ struct BusRegisters {
   }
 
   /*p07.TEPU*/ Reg3 BOOT_BIT; // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.
-  /*p25.SOTO*/ Reg3 SOTO_DBG;
+  /*p25.SOTO*/ Reg3 SOTO_DBG; // 17-rung
 
   /*p08.ALOR*/ Latch3 CPU_ADDR_LATCH_00;
   /*p08.APUR*/ Latch3 CPU_ADDR_LATCH_01;
@@ -229,7 +229,7 @@ struct ConfigRegisters {
   // FF49 - OBP1
   /*p36.MOXY*/ Reg3 OBP10;
   /*p36.LAWO*/ Reg3 OBP11;
-  /*p36.MOSA*/ Reg3 OBP12;
+  /*p36.MOSA*/ Reg3 OBP12; // 9-rung, bottom rung is passthrough?
   /*p36.LOSE*/ Reg3 OBP13;
   /*p36.LUNE*/ Reg3 OBP14;
   /*p36.LUGU*/ Reg3 OBP15;
@@ -279,23 +279,23 @@ struct DmaRegisters {
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- DMA REG -----\n");
     FROM_CPU5_SYNC   .dump(text_painter, "FROM_CPU5_SYNC   ");
-    DMA_RUNNING  .dump(text_painter, "DMA_RUNNING  ");
-    MYTE    .dump(text_painter, "MYTE    ");
-    LUVY    .dump(text_painter, "LUVY    ");  
-    LENE    .dump(text_painter, "LENE    ");
-    LYXE .dump(text_painter, "LYXE ");
-    LOKY  .dump(text_painter, "LOKY  ");
+    MATU_DMA_WRITE  .dump(text_painter, "DMA_RUNNING  ");
+    MYTE_DMA_DONE    .dump(text_painter, "MYTE_DMA_DONE    ");
+    LUVY_DMA_TRIG_d0    .dump(text_painter, "LUVY    ");  
+    LENE_DMA_TRIG_d4    .dump(text_painter, "LENE    ");
+    LYXE_DMA_LATCH .dump(text_painter, "LYXE ");
+    LOKY_DMA_READ  .dump(text_painter, "LOKY  ");
     text_painter.dprintf("DMA ADDR LO      0x%02x\n", get_addr_lo());
     text_painter.dprintf("DMA ADDR HI      0x%02x\n", get_addr_hi());
     text_painter.newline();
   }
 
+  /*p04.LYXE*/ Latch3 LYXE_DMA_LATCH;
   /*p04.MAKA*/ Reg3 FROM_CPU5_SYNC;
-
-  /*p04.MATU*/ Reg3 DMA_RUNNING; // -> p25,p28
-  /*p04.MYTE*/ Reg3 MYTE;
-  /*p04.LUVY*/ Reg3 LUVY;
-  /*p04.LENE*/ Reg3 LENE;
+  /*p04.MATU*/ Reg3 MATU_DMA_WRITE; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
+  /*p04.MYTE*/ Reg3 MYTE_DMA_DONE;
+  /*p04.LUVY*/ Reg3 LUVY_DMA_TRIG_d0;
+  /*p04.LENE*/ Reg3 LENE_DMA_TRIG_d4;
 
   int get_addr_lo() {
     return pack(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A05.q(), DMA_A06.q(), DMA_A07.q());
@@ -304,28 +304,26 @@ struct DmaRegisters {
     return pack(DMA_A08.q(), DMA_A09.q(), DMA_A10.q(), DMA_A11.q(), DMA_A12.q(), DMA_A13.q(), DMA_A14.q(), DMA_A15.q());
   }
 
-  /*p04.NAKY*/ Reg3 DMA_A00;
-  /*p04.PYRO*/ Reg3 DMA_A01; 
-  /*p04.NEFY*/ Reg3 DMA_A02; 
-  /*p04.MUTY*/ Reg3 DMA_A03; 
-  /*p04.NYKO*/ Reg3 DMA_A04; 
-  /*p04.PYLO*/ Reg3 DMA_A05; 
-  /*p04.NUTO*/ Reg3 DMA_A06; 
-  /*p04.MUGU*/ Reg3 DMA_A07; 
-  /*p04.NAFA*/ Reg3 DMA_A08; 
-  /*p04.PYNE*/ Reg3 DMA_A09; 
-  /*p04.PARA*/ Reg3 DMA_A10; 
-  /*p04.NYDO*/ Reg3 DMA_A11; 
-  /*p04.NYGY*/ Reg3 DMA_A12; 
-  /*p04.PULA*/ Reg3 DMA_A13; 
-  /*p04.POKU*/ Reg3 DMA_A14; 
-  /*p04.MARU*/ Reg3 DMA_A15; 
-
-  /*p04.LYXE*/ Latch3 LYXE;
+  /*p04.NAKY*/ Reg3 DMA_A00; // 17-rung
+  /*p04.PYRO*/ Reg3 DMA_A01;
+  /*p04.NEFY*/ Reg3 DMA_A02;
+  /*p04.MUTY*/ Reg3 DMA_A03;
+  /*p04.NYKO*/ Reg3 DMA_A04;
+  /*p04.PYLO*/ Reg3 DMA_A05;
+  /*p04.NUTO*/ Reg3 DMA_A06;
+  /*p04.MUGU*/ Reg3 DMA_A07; // 17-rung
+  /*p04.NAFA*/ Reg3 DMA_A08; // 9-rung, bottom rung missing?
+  /*p04.PYNE*/ Reg3 DMA_A09; // 9-rung, bottom rung missing?
+  /*p04.PARA*/ Reg3 DMA_A10; // 9-rung, bottom rung missing?
+  /*p04.NYDO*/ Reg3 DMA_A11; // 9-rung 
+  /*p04.NYGY*/ Reg3 DMA_A12; // 9-rung 
+  /*p04.PULA*/ Reg3 DMA_A13; // 9-rung 
+  /*p04.POKU*/ Reg3 DMA_A14; // 9-rung 
+  /*p04.MARU*/ Reg3 DMA_A15; // 9-rung 
 
   // NAND latch
   /*p04.LARA*/ Gate LARA;
-  /*p04.LOKY*/ Gate LOKY;
+  /*p04.LOKY*/ Gate LOKY_DMA_READ;
 };
 
 //-----------------------------------------------------------------------------
@@ -1187,9 +1185,9 @@ struct VidRegisters {
     text_painter.dprintf("----- VID_REG -----\n");
 
     text_painter.dprintf("PIX X    %d\n", pack(X0.q(), X1.q(), X2.q(), X3.q(), X4.q(), X5.q(), X6.q(), X7.q()));
-    text_painter.dprintf("MAP X    %d\n", pack(MAP_X0.q(), MAP_X1.q(), MAP_X2.q(), MAP_X3.q(), MAP_X4.q()));
-    text_painter.dprintf("MAP Y    %d\n", pack(MAP_Y0.q(), MAP_Y1.q(), MAP_Y2.q(), MAP_Y3.q(), MAP_Y4.q()));
-    text_painter.dprintf("TILE Y   %d\n", pack(TILE_Y0.q(), TILE_Y1.q(), TILE_Y2.q()));
+    text_painter.dprintf("MAP X    %d\n", pack(WIN_MAP_X0.q(), WIN_MAP_X1.q(), WIN_MAP_X2.q(), WIN_MAP_X3.q(), WIN_MAP_X4.q()));
+    text_painter.dprintf("MAP Y    %d\n", pack(WIN_MAP_Y0.q(), WIN_MAP_Y1.q(), WIN_MAP_Y2.q(), WIN_MAP_Y3.q(), WIN_MAP_Y4.q()));
+    text_painter.dprintf("TILE Y   %d\n", pack(WIN_TILE_Y0.q(), WIN_TILE_Y1.q(), WIN_TILE_Y2.q()));
     text_painter.dprintf("FINE_CNT %d\n", pack(FINE_CNT0.q(), FINE_CNT1.q(), FINE_CNT2.q()));
 
     text_painter.dprintf("MAxx     0x%04x\n", pack(MA00.q(), MA01.q(), MA02.q(), MA03.q(), MA04.q(), MA05.q(), MA06.q(), MA07.q(), MA08.q(), MA09.q(), MA10.q(), MA11.q(), MA12.q()));
@@ -1199,11 +1197,11 @@ struct VidRegisters {
     FINE_MATCH_SYNC1        .dump(text_painter, "FINE_MATCH_SYNC1         ");
     FINE_MATCH_SYNC2        .dump(text_painter, "FINE_MATCH_SYNC2         ");
     NOPA_WIN_MODE_SYNC      .dump(text_painter, "NOPA_WIN_MODE_SYNC       ");
-    SOVY_WIN_MODE_SYNC      .dump(text_painter, "SOVY_WIN_MODE_SYNC       ");
-    RENDERING_LATCH    .dump(text_painter, "RENDERING_LATCH     ");
+    SOVY_WIN_HIT_SYNC      .dump(text_painter, "SOVY_WIN_HIT_SYNC       ");
+    RENDERING_LATCHp    .dump(text_painter, "RENDERING_LATCH     ");
     RENDER_DONE_SYNC        .dump(text_painter, "RENDER_DONE_SYNC         ");
     PYNU_WIN_MODE_LATCH     .dump(text_painter, "PYNU_WIN_MODE_LATCH      ");
-    RYDY_WIN_MODE_LATCH     .dump(text_painter, "RYDY_WIN_MODE_LATCH      ");
+    RYDY_WIN_HIT_LATCH     .dump(text_painter, "RYDY_WIN_HIT_LATCH      ");
     INT_HBL_EN              .dump(text_painter, "INT_HBL_EN               ");
     INT_VBL_EN              .dump(text_painter, "INT_VBL_EN               ");
     INT_OAM_EN              .dump(text_painter, "INT_OAM_EN               ");
@@ -1215,16 +1213,16 @@ struct VidRegisters {
     WIN_MATCH_ONSCREEN_SYNC2.dump(text_painter, "WIN_MATCH_ONSCREEN_SYNC2 ");
     WIN_MATCH_SYNC1         .dump(text_painter, "WIN_MATCH_SYNC1          ");
     WIN_MATCH_SYNC2         .dump(text_painter, "WIN_MATCH_SYNC2          ");
-    BG_READ_VRAM_LATCH     .dump(text_painter, "BG_READ_VRAM_LATCH      ");
+    BG_READ_VRAM_LATCHp     .dump(text_painter, "BG_READ_VRAM_LATCH      ");
     BG_SEQ_x1x3x5x7         .dump(text_painter, "BG_SEQ_x1x3x5x7          ");
     BG_SEQ_xx23xx67         .dump(text_painter, "BG_SEQ_xx23xx67          ");
     BG_SEQ_xxxx4567         .dump(text_painter, "BG_SEQ_xxxx4567          ");
-    BG_SEQ5_SYNC            .dump(text_painter, "BG_SEQ5_SYNC             ");
+    LOVY_BG_SEQ5_SYNC            .dump(text_painter, "BG_SEQ5_SYNC             ");
     BG_SEQ_6                .dump(text_painter, "BG_SEQ_6                 ");
     BG_SEQ_7                .dump(text_painter, "BG_SEQ_7                 ");
     BG_SEQ_x1x3x5x7_DELAY   .dump(text_painter, "BG_SEQ_x1x3x5x7_DELAY    ");
     PYGO_TILE_DONE          .dump(text_painter, "PYGO_TILE_DONE           ");
-    POKY_FRONT_PORCH_LATCHn .dump(text_painter, "POKY_FRONT_PORCH_LATCHn  ");
+    POKY_FRONT_PORCH_LATCH .dump(text_painter, "POKY_FRONT_PORCH_LATCH  ");
     WY_MATCH_LATCH          .dump(text_painter, "WY_MATCH_LATCH           ");
     _SPRITE_FETCH_LATCH     .dump(text_painter, "_SPRITE_FETCH_LATCH      ");
     _SPRITE_FETCH_SYNC1     .dump(text_painter, "_SPRITE_FETCH_SYNC1      ");
@@ -1241,21 +1239,21 @@ struct VidRegisters {
   /*p21.TAKO*/ Reg3 X6;
   /*p21.SYBE*/ Reg3 X7;
 
-  /*p27.WYKA*/ Reg3 MAP_X0;
-  /*p27.WODY*/ Reg3 MAP_X1;
-  /*p27.WOBO*/ Reg3 MAP_X2;
-  /*p27.WYKO*/ Reg3 MAP_X3;
-  /*p27.XOLO*/ Reg3 MAP_X4;
+  /*p27.WYKA*/ Reg3 WIN_MAP_X0;
+  /*p27.WODY*/ Reg3 WIN_MAP_X1;
+  /*p27.WOBO*/ Reg3 WIN_MAP_X2;
+  /*p27.WYKO*/ Reg3 WIN_MAP_X3;
+  /*p27.XOLO*/ Reg3 WIN_MAP_X4;
 
-  /*p27.TUFU*/ Reg3 MAP_Y0;
-  /*p27.TAXA*/ Reg3 MAP_Y1;
-  /*p27.TOZO*/ Reg3 MAP_Y2;
-  /*p27.TATE*/ Reg3 MAP_Y3;
-  /*p27.TEKE*/ Reg3 MAP_Y4;
+  /*p27.TUFU*/ Reg3 WIN_MAP_Y0;
+  /*p27.TAXA*/ Reg3 WIN_MAP_Y1;
+  /*p27.TOZO*/ Reg3 WIN_MAP_Y2;
+  /*p27.TATE*/ Reg3 WIN_MAP_Y3;
+  /*p27.TEKE*/ Reg3 WIN_MAP_Y4;
 
-  /*p27.VYNO*/ Reg3 TILE_Y0;
-  /*p27.VUJO*/ Reg3 TILE_Y1;
-  /*p27.VYMU*/ Reg3 TILE_Y2;
+  /*p27.VYNO*/ Reg3 WIN_TILE_Y0;
+  /*p27.VUJO*/ Reg3 WIN_TILE_Y1;
+  /*p27.VYMU*/ Reg3 WIN_TILE_Y2;
 
   /*p27.RYKU*/ Reg3 FINE_CNT0;
   /*p27.ROGA*/ Reg3 FINE_CNT1;
@@ -1289,15 +1287,14 @@ struct VidRegisters {
   /*p27.NYZE*/ Reg3 FINE_MATCH_SYNC2;
 
   /*p27.NOPA*/ Reg3 NOPA_WIN_MODE_SYNC;
-  /*p27.SOVY*/ Reg3 SOVY_WIN_MODE_SYNC;
+  /*p27.SOVY*/ Reg3 SOVY_WIN_HIT_SYNC;
 
-  // this must be positive polarity, or stat read doesn't work
-  /*p21.XYMU*/ Latch3 RENDERING_LATCH;
+  /*p21.XYMU*/ Latch3 RENDERING_LATCHp; // this must be positive polarity, or stat read doesn't work
 
   /*p21.VOGA*/ Reg3 RENDER_DONE_SYNC;
 
   /*p27.PYNU*/ Latch3 PYNU_WIN_MODE_LATCH;
-  /*p27.RYDY*/ Latch3 RYDY_WIN_MODE_LATCH;
+  /*p27.RYDY*/ Latch3 RYDY_WIN_HIT_LATCH;
 
   /*p21.ROXE*/ Reg3 INT_HBL_EN;
   /*p21.RUFO*/ Reg3 INT_VBL_EN;
@@ -1313,20 +1310,20 @@ struct VidRegisters {
   /*p27.PYCO*/ Reg3 WIN_MATCH_SYNC1;
   /*p27.NUNU*/ Reg3 WIN_MATCH_SYNC2;
 
-  /*p27.LONY*/ Latch3 BG_READ_VRAM_LATCH;
+  /*p27.LONY*/ Latch3 BG_READ_VRAM_LATCHp; // LONY has "arms" on the VCC side
 
   /*p27.LAXU*/ Reg3 BG_SEQ_x1x3x5x7;
   /*p27.MESU*/ Reg3 BG_SEQ_xx23xx67;
   /*p27.NYVA*/ Reg3 BG_SEQ_xxxx4567;
 
-  /*p27.LOVY*/ Reg3 BG_SEQ5_SYNC;
+  /*p27.LOVY*/ Reg3 LOVY_BG_SEQ5_SYNC;
 
   /*p24.NYKA*/ Reg3 BG_SEQ_6;
   /*p24.PORY*/ Reg3 BG_SEQ_7;
   /*p27.LYZU*/ Reg3 BG_SEQ_x1x3x5x7_DELAY;
 
   /*p24.PYGO*/ Reg3 PYGO_TILE_DONE;
-  /*p24.POKY*/ Latch3 POKY_FRONT_PORCH_LATCHn;
+  /*p24.POKY*/ Latch3 POKY_FRONT_PORCH_LATCH;
 
   /*p27.REJO*/ Latch3 WY_MATCH_LATCH;
 

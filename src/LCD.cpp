@@ -65,7 +65,6 @@ void LCD::tick(const Req& req, Ack& ack) {
   // LONY05 << NYXU03
 
   // RUPO has "arms" on the ground side
-  // LONY has "arms" on the VCC side
   // XYMU has "arms" on the ground side
   // WUSA has "arms" on the ground side
 

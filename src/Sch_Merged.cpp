@@ -113,7 +113,7 @@ void TestGB::tick_everything() {
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
   /*p01.UNUT*/ wire TIMEOUT = and (rst_reg.TUBO_CLKREQn_LATCH, tim_reg.DIV_15);
-  /*p01.TABA*/ wire TABA_RST = or (UNOR_MODE_DBG2(), UMUT_MODE_DBG1(), TIMEOUT);
+  /*p01.TABA*/ wire TABA_RST = or (UNOR_MODE_DBG2n(), UMUT_MODE_DBG1(), TIMEOUT);
   /*p01.ALYP*/ wire ALYP_RSTn = not(TABA_RST);
   /*p01.AFAR*/ wire AFAR_RST = nor(ALYP_RSTn, sys_pins.RST);
 

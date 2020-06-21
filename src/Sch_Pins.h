@@ -364,8 +364,8 @@ struct VramPins {
     text_painter.dprintf("MCS  %d:x:%d:%d\n", MCSn_A.a.val, MCS_C.a.val, MCSn_D.a.val);
     text_painter.dprintf("MOE  %d:x:%d:%d\n", MOEn_A.a.val, MOE_C.a.val, MOEn_D.a.val);
     text_painter.dprintf("MWR  %d:x:%d:%d\n", MWRn_A.a.val, MWR_C.a.val, MWRn_D.a.val);
-    text_painter.dprintf("MAxx 0x%04x\n", pack(MA00_D, MA01_D, MA02_D, MA03_D, MA04_D, MA05_D, MA06_D,
-                                       MA07_D, MA08_D, MA09_D, MA10_D, MA11_D, MA12_D));
+    text_painter.dprintf("MAxx 0x%04x\n", pack(MA00_AD, MA01_AD, MA02_AD, MA03_AD, MA04_AD, MA05_AD, MA06_AD,
+                                       MA07_AD, MA08_AD, MA09_AD, MA10_AD, MA11_AD, MA12_AD));
 
     text_painter.dprintf("MDx_A 0x%02x\n", pack(MD0_A, MD1_A, MD2_A, MD3_A, MD4_A, MD5_A, MD6_A, MD7_A));
     text_painter.dprintf("MDx_B 0x%02x\n", pack(MD0_B, MD1_B, MD2_B, MD3_B, MD4_B, MD5_B, MD6_B, MD7_B));
@@ -392,19 +392,19 @@ struct VramPins {
   //----------
   // VRAM address pins
 
-  /* PIN_34 */ PinOut MA00_D;  // <- P04.ECAL
-  /* PIN_35 */ PinOut MA01_D;  // <- P04.EGEZ
-  /* PIN_36 */ PinOut MA02_D;  // <- P04.FUHE
-  /* PIN_37 */ PinOut MA03_D;  // <- P04.FYZY
-  /* PIN_38 */ PinOut MA04_D;  // <- P04.DAMU
-  /* PIN_39 */ PinOut MA05_D;  // <- P04.DAVA
-  /* PIN_40 */ PinOut MA06_D;  // <- P04.ETEG
-  /* PIN_41 */ PinOut MA07_D;  // <- P04.EREW
-  /* PIN_42 */ PinOut MA12_D;  // <- P04.EXYF
-  /* PIN_44 */ PinOut MA10_D;  // <- P04.ERAF
-  /* PIN_46 */ PinOut MA11_D;  // <- P04.FUSY
-  /* PIN_47 */ PinOut MA09_D;  // <- P04.DUVE
-  /* PIN_48 */ PinOut MA08_D;  // <- P04.EVAX
+  /* PIN_34 */ PinOut MA00_AD;  // <- P04.ECAL
+  /* PIN_35 */ PinOut MA01_AD;  // <- P04.EGEZ
+  /* PIN_36 */ PinOut MA02_AD;  // <- P04.FUHE
+  /* PIN_37 */ PinOut MA03_AD;  // <- P04.FYZY
+  /* PIN_38 */ PinOut MA04_AD;  // <- P04.DAMU
+  /* PIN_39 */ PinOut MA05_AD;  // <- P04.DAVA
+  /* PIN_40 */ PinOut MA06_AD;  // <- P04.ETEG
+  /* PIN_41 */ PinOut MA07_AD;  // <- P04.EREW
+  /* PIN_42 */ PinOut MA12_AD;  // <- P04.EXYF
+  /* PIN_44 */ PinOut MA10_AD;  // <- P04.ERAF
+  /* PIN_46 */ PinOut MA11_AD;  // <- P04.FUSY
+  /* PIN_47 */ PinOut MA09_AD;  // <- P04.DUVE
+  /* PIN_48 */ PinOut MA08_AD;  // <- P04.EVAX
 
   //----------
   // VRAM data pins

@@ -134,6 +134,16 @@ void TestGB::tick_everything() {
     /*p01.ADYK*/ clk_reg.PHAZ_xxxxEFGH.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.PHAZ_xxxDEFGx.a);
   }
 
+  {
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(gb.ANOS_AxCxExGx());
+    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH); // dma, sprite store
+    wire FROM_CPU5 = gb.cpu_pins.FROM_CPU5;
+    /*p04.MAKA*/ FROM_CPU5_SYNC.set(ZEME_AxCxExGx, CUNU_RSTn(), FROM_CPU5);
+  }
+
+
 #if 0
   // if rung 6 of AFUR/ALEF/APUK/ADYK is QN and not Q...
 
@@ -210,7 +220,7 @@ void TestGB::tick_everything() {
 
   //----------------------------------------
 
-  tick_dma();
+  dma_reg.tick(*this);
   tick_timer();
   tick_serial(cpu_pins);
   tick_joypad();

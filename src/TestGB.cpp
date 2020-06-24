@@ -91,7 +91,7 @@ void TestGB::ext_preset() {
 bool TestGB::commit_everything() {
   bool changed = false;
 
-  /*p29.FEPO*/ sst_reg.FEPO_STORE_MATCHp.reset();
+  /*p04.MAKA*/ changed |= FROM_CPU5_SYNC.commit_reg();
 
   /*p01.AFUR*/ changed |= clk_reg.PHAZ_xBCDExxx.commit_duo();
   /*p01.ALEF*/ changed |= clk_reg.PHAZ_xxCDEFxx.commit_duo();
@@ -166,7 +166,6 @@ bool TestGB::commit_everything() {
   /*p07.BURO*/ changed |= dbg_reg.FF60_0.commit_reg();
   /*p07.AMUT*/ changed |= dbg_reg.FF60_1.commit_reg();
 
-  /*p04.MAKA*/ changed |= dma_reg.FROM_CPU5_SYNC.commit_reg();
   /*p04.MATU*/ changed |= dma_reg.MATU_DMA_OAM_WRp.commit_reg(); // -> p25,p28
   /*p04.MYTE*/ changed |= dma_reg.MYTE_DMA_DONE.commit_reg();
   /*p04.LUVY*/ changed |= dma_reg.LUVY_DMA_TRIG_d0.commit_reg();
@@ -187,11 +186,11 @@ bool TestGB::commit_everything() {
   /*p04.PULA*/ changed |= dma_reg.DMA_A13.commit_reg(); 
   /*p04.POKU*/ changed |= dma_reg.DMA_A14.commit_reg(); 
   /*p04.MARU*/ changed |= dma_reg.DMA_A15.commit_reg(); 
-  /*p04.LYXE*/ changed |= dma_reg.LYXE_DMA_LATCH.commit_latch();
+  /*p04.LYXE*/ changed |= dma_reg.LYXE_DMA_LATCHn.commit_latch();
 
   // NAND latch
-  /*p04.LARA*/ changed |= dma_reg.LARA.commit_gate();
-  /*p04.LOKY*/ changed |= dma_reg.LOKY_DMA_READ.commit_gate();
+  /*p04.LARA*/ changed |= dma_reg.LARA_DMA_LATCHn.commit_gate();
+  /*p04.LOKY*/ changed |= dma_reg.LOKY_DMA_LATCHp.commit_gate();
 
   /*p02.LOPE*/ changed |= int_reg.FF0F_0.commit_reg();
   /*p02.UBUL*/ changed |= int_reg.FF0F_1.commit_reg();

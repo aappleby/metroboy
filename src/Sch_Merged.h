@@ -28,6 +28,24 @@ struct ClkRegisters {
 };
 
 //-----------------------------------------------------------------------------
+// Video clocks
+
+struct VclkRegisters {
+
+  void dump_regs(TextPainter& text_painter) {
+    text_painter.dprintf("----- VCLK_REG -----\n");
+    WUVU_AxxDExxH.dump(text_painter, "WUVU_AxxDExxH ");
+    VENA_xBCDExxx.dump(text_painter, "VENA_xBCDExxx ");
+    WOSU_xxCDxxGH.dump(text_painter, "WOSU_xxCDxxGH ");
+    text_painter.newline();
+  }
+
+  /*p29.WUVU*/ Reg3 WUVU_AxxDExxH;
+  /*p21.VENA*/ Reg3 VENA_xBCDExxx;
+  /*p29.WOSU*/ Reg3 WOSU_xxCDxxGH;
+};
+
+//-----------------------------------------------------------------------------
 
 struct BusRegisters {
 
@@ -262,60 +280,6 @@ struct DebugRegisters {
 
   /*p07.BURO*/ Reg3 FF60_0;
   /*p07.AMUT*/ Reg3 FF60_1;
-};
-
-//-----------------------------------------------------------------------------
-
-struct DmaRegisters {
-
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf(" ----- DMA REG -----\n");
-    FROM_CPU5_SYNC   .dump(text_painter, "FROM_CPU5_SYNC   ");
-    MATU_DMA_OAM_WRp  .dump(text_painter, "DMA_RUNNING  ");
-    MYTE_DMA_DONE    .dump(text_painter, "MYTE_DMA_DONE    ");
-    LUVY_DMA_TRIG_d0    .dump(text_painter, "LUVY    ");  
-    LENE_DMA_TRIG_d4    .dump(text_painter, "LENE    ");
-    LYXE_DMA_LATCH .dump(text_painter, "LYXE ");
-    LOKY_DMA_READ  .dump(text_painter, "LOKY  ");
-    text_painter.dprintf("DMA ADDR LO      0x%02x\n", get_addr_lo());
-    text_painter.dprintf("DMA ADDR HI      0x%02x\n", get_addr_hi());
-    text_painter.newline();
-  }
-
-  /*p04.LYXE*/ Latch3 LYXE_DMA_LATCH;
-  /*p04.MAKA*/ Reg3 FROM_CPU5_SYNC;
-  /*p04.MATU*/ Reg3 MATU_DMA_OAM_WRp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
-  /*p04.MYTE*/ Reg3 MYTE_DMA_DONE;
-  /*p04.LUVY*/ Reg3 LUVY_DMA_TRIG_d0;
-  /*p04.LENE*/ Reg3 LENE_DMA_TRIG_d4;
-
-  int get_addr_lo() {
-    return pack(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A05.q(), DMA_A06.q(), DMA_A07.q());
-  }
-  int get_addr_hi() {
-    return pack(DMA_A08.q(), DMA_A09.q(), DMA_A10.q(), DMA_A11.q(), DMA_A12.q(), DMA_A13.q(), DMA_A14.q(), DMA_A15.q());
-  }
-
-  /*p04.NAKY*/ Reg3 DMA_A00; // 17-rung
-  /*p04.PYRO*/ Reg3 DMA_A01;
-  /*p04.NEFY*/ Reg3 DMA_A02;
-  /*p04.MUTY*/ Reg3 DMA_A03;
-  /*p04.NYKO*/ Reg3 DMA_A04;
-  /*p04.PYLO*/ Reg3 DMA_A05;
-  /*p04.NUTO*/ Reg3 DMA_A06;
-  /*p04.MUGU*/ Reg3 DMA_A07; // 17-rung
-  /*p04.NAFA*/ Reg3 DMA_A08; // 9-rung, bottom rung missing?
-  /*p04.PYNE*/ Reg3 DMA_A09; // 9-rung, bottom rung missing?
-  /*p04.PARA*/ Reg3 DMA_A10; // 9-rung, bottom rung missing?
-  /*p04.NYDO*/ Reg3 DMA_A11; // 9-rung 
-  /*p04.NYGY*/ Reg3 DMA_A12; // 9-rung 
-  /*p04.PULA*/ Reg3 DMA_A13; // 9-rung 
-  /*p04.POKU*/ Reg3 DMA_A14; // 9-rung 
-  /*p04.MARU*/ Reg3 DMA_A15; // 9-rung 
-
-  // NAND latch
-  /*p04.LARA*/ Gate LARA;
-  /*p04.LOKY*/ Gate LOKY_DMA_READ;
 };
 
 //-----------------------------------------------------------------------------
@@ -1154,24 +1118,6 @@ struct VidRegisters {
 
 
 
-};
-
-//-----------------------------------------------------------------------------
-// Video clocks
-
-struct VclkRegisters {
-
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf("----- VCLK_REG -----\n");
-    WUVU_AxxDExxH.dump(text_painter, "WUVU_AxxDExxH ");
-    VENA_xBCDExxx.dump(text_painter, "VENA_xBCDExxx ");
-    WOSU_xxCDxxGH.dump(text_painter, "WOSU_xxCDxxGH ");
-    text_painter.newline();
-  }
-
-  /*p29.WUVU*/ Reg3 WUVU_AxxDExxH;
-  /*p21.VENA*/ Reg3 VENA_xBCDExxx;
-  /*p29.WOSU*/ Reg3 WOSU_xxCDxxGH;
 };
 
 //-----------------------------------------------------------------------------

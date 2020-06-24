@@ -1,6 +1,7 @@
 #include "Sch_Merged.h"
 #include "Sch_Pins.h"
 
+#include "Sch_DMA.h"
 #include "Sch_SpriteStore.h"
 
 namespace Schematics {
@@ -35,8 +36,6 @@ struct TestGB {
   void tick_cart_pins();
 
   void tick_oam();
-
-  void tick_dma();
 
   void tick_ppu();
 
@@ -488,6 +487,8 @@ struct TestGB {
   ExtPins ext_pins; // dumped
   OamPins oam_pins; // dumped
   WavePins wave_pins;
+
+  /*p04.MAKA*/ Reg3 FROM_CPU5_SYNC;
 
   Signal NYXU_BG_SEQ_RSTn;
 

@@ -127,6 +127,7 @@
     <ClInclude Include="src\Sch_Channel3.h" />
     <ClInclude Include="src\Sch_Channel4.h" />
     <ClInclude Include="src\Sch_Common.h" />
+    <ClInclude Include="src\Sch_DMA.h" />
     <ClInclude Include="src\Sch_Merged.h" />
     <ClInclude Include="src\Sch_Pins.h" />
     <ClInclude Include="src\Sch_SpriteStore.h" />

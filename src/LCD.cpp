@@ -14,14 +14,14 @@ bool posedge(bool& old_v, bool new_v) {
 void LCD::reset() {
   X = 99;
   Y = 0;
-  NEW_LINE_d0 = 0;
-  NEW_LINE_d4 = 0;
-  VID_LINE_d4 = 0;
-  VID_LINE_d6 = 0;
-  LINE_153_d4 = 1;
-  VSYNC_OUTn = 0;
-  IN_VBLANK_d4 = 0;
-  X_8_SYNC = 0;
+  RUTU_NEW_LINE_d0 = 0;
+  NYPE_NEW_LINE_d4 = 0;
+  CATU_VID_LINE_d4 = 0;
+  ANEL_VID_LINE_d6 = 0;
+  MYTA_LINE_153_d4 = 1;
+  MEDA_VSYNC_OUTn = 0;
+  POPU_IN_VBLANK_d4 = 0;
+  PAHO_X_8_SYNC = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -43,7 +43,7 @@ void LCD::tick(const Req& req, Ack& ack) {
     LY_MATCH_SYNC = LY == LYC;
   }
 
-  /*p21.SEPA*/ wire FF41_WR = and (CUPA_CPU_WR_xxxxxFGH, req.addr == 0xFF41);
+  /*p21.SEPA*/ wire FF41_WR = and(CUPA_CPU_WR_xxxxxFGH, req.addr == 0xFF41);
 
 
   // PAGO00 << WESY
@@ -81,51 +81,51 @@ void LCD::tick(const Req& req, Ack& ack) {
 }
 #endif
 
-void LCD::tock(int phase, const Req& /*req*/, bool LCDC_EN) {
+void LCD::tock(int phase, const Req& /*req*/, bool XONA_LCDC_EN) {
   /*p21.XYVO*/ bool IN_VBLANK = (Y & 144) == 144;
-  /*p29.ABOV*/ bool VID_LINE_d0 = NEW_LINE_d0 && !IN_VBLANK;
+  /*p29.ABOV*/ bool VID_LINE_d0 = RUTU_NEW_LINE_d0 && !IN_VBLANK;
   /*p24.NERU*/ bool LINE_000n = Y != 0;
   /*p21.NOKO*/ bool LINE_153 = (Y & 153) == 153;
   /*p21.SANU*/ bool LINE_END = (X & 113) == 113;
 
   if (PHASE_B) {
     X++;
-    if (NEW_LINE_d0 && !NEW_LINE_d4) {
-      LINE_153_d4 = LINE_153;
-      VSYNC_OUTn = LINE_000n;
-      IN_VBLANK_d4 = IN_VBLANK;
+    if (RUTU_NEW_LINE_d0 && !NYPE_NEW_LINE_d4) {
+      MYTA_LINE_153_d4 = LINE_153;
+      MEDA_VSYNC_OUTn = LINE_000n;
+      POPU_IN_VBLANK_d4 = IN_VBLANK;
     }
-    NEW_LINE_d4 = NEW_LINE_d0;
+    NYPE_NEW_LINE_d4 = RUTU_NEW_LINE_d0;
   }
 
   if (PHASE_F) {
-    if (LINE_END && !NEW_LINE_d0) Y++;
-    NEW_LINE_d0 = LINE_END;
+    if (LINE_END && !RUTU_NEW_LINE_d0) Y++;
+    RUTU_NEW_LINE_d0 = LINE_END;
   }
 
   if (PHASE_B || PHASE_F) {
-    VID_LINE_d4 = VID_LINE_d0;
+    CATU_VID_LINE_d4 = VID_LINE_d0;
   }
 
   if (PHASE_D || PHASE_H) {
-    VID_LINE_d6 = VID_LINE_d4;
+    ANEL_VID_LINE_d6 = CATU_VID_LINE_d4;
   }
 
-  if (NEW_LINE_d0) X = 0;
-  if (LINE_153_d4) Y = 0;
+  if (RUTU_NEW_LINE_d0) X = 0;
+  if (MYTA_LINE_153_d4) Y = 0;
 
-  if (!LCDC_EN) {
+  if (!XONA_LCDC_EN) {
     X = 0;
     Y = 0;
-    NEW_LINE_d0 = 0;
-    NEW_LINE_d4 = 0;
-    LINE_153_d4 = 0;
-    VSYNC_OUTn = 0;
-    IN_VBLANK_d4 = 0;
+    RUTU_NEW_LINE_d0 = 0;
+    NYPE_NEW_LINE_d4 = 0;
+    MYTA_LINE_153_d4 = 0;
+    MEDA_VSYNC_OUTn = 0;
+    POPU_IN_VBLANK_d4 = 0;
   }
 
   // the !LCDC_EN here seems weird
-  VID_LINE_TRIG_d4 = (VID_LINE_d4 && !VID_LINE_d6) || !LCDC_EN;
+  VID_LINE_TRIG_d4 = (CATU_VID_LINE_d4 && !ANEL_VID_LINE_d6) || !XONA_LCDC_EN;
 }
 
 //-----------------------------------------------------------------------------
@@ -135,13 +135,13 @@ void LCD::dump(std::string& d) {
 
   sprintf(d, "X            = %d\n", X);
   sprintf(d, "Y            = %d\n", Y);
-  sprintf(d, "NEW_LINE_d0  = %d\n", NEW_LINE_d0);
-  sprintf(d, "NEW_LINE_d4  = %d\n", NEW_LINE_d4);
-  sprintf(d, "VID_LINE_d4  = %d\n", VID_LINE_d4);
-  sprintf(d, "VID_LINE_d6  = %d\n", VID_LINE_d6);
-  sprintf(d, "LINE_153_d4  = %d\n", LINE_153_d4);
-  sprintf(d, "VSYNC_OUTn   = %d\n", VSYNC_OUTn);
-  sprintf(d, "IN_VBLANK_d4 = %d\n", IN_VBLANK_d4);
+  sprintf(d, "RUTU_NEW_LINE_d0  = %d\n", RUTU_NEW_LINE_d0);
+  sprintf(d, "NYPE_NEW_LINE_d4  = %d\n", NYPE_NEW_LINE_d4);
+  sprintf(d, "CATU_VID_LINE_d4  = %d\n", CATU_VID_LINE_d4);
+  sprintf(d, "ANEL_VID_LINE_d6  = %d\n", ANEL_VID_LINE_d6);
+  sprintf(d, "MYTA_LINE_153_d4  = %d\n", MYTA_LINE_153_d4);
+  sprintf(d, "MEDA_VSYNC_OUTn   = %d\n", MEDA_VSYNC_OUTn);
+  sprintf(d, "POPU_IN_VBLANK_d4 = %d\n", POPU_IN_VBLANK_d4);
 }
 
 //-----------------------------------------------------------------------------

@@ -23,10 +23,10 @@ uint8_t GateBoy::read_cycle(uint16_t addr) {
       gb->cpu_pins.preset_addr(true, addr);
 
       // FIXME still don't know who drives these, so we always set them to 0.
-      gb->joy_pins.P10_B.set(0);
-      gb->joy_pins.P11_B.set(0);
-      gb->joy_pins.P12_B.set(0);
-      gb->joy_pins.P13_B.set(0);
+      gb->joy_pin.P10_B.set(0);
+      gb->joy_pin.P11_B.set(0);
+      gb->joy_pin.P12_B.set(0);
+      gb->joy_pin.P13_B.set(0);
 
       gb->tick_everything();
       bool changed = gb->commit_everything();
@@ -55,10 +55,10 @@ void GateBoy::write_cycle(uint16_t addr, uint8_t data) {
       gb->cpu_pins.set_data(true, data);
 
       // FIXME still don't know who drives these, so we always set them to 0.
-      gb->joy_pins.P10_B.set(0);
-      gb->joy_pins.P11_B.set(0);
-      gb->joy_pins.P12_B.set(0);
-      gb->joy_pins.P13_B.set(0);
+      gb->joy_pin.P10_B.set(0);
+      gb->joy_pin.P11_B.set(0);
+      gb->joy_pin.P12_B.set(0);
+      gb->joy_pin.P13_B.set(0);
 
       gb->tick_everything();
       bool changed = gb->commit_everything();
@@ -84,10 +84,10 @@ void GateBoy::pass_cycle() {
       gb->cpu_pins.preset_addr(true, 0x0000);
 
       // FIXME still don't know who drives these, so we always set them to 0.
-      gb->joy_pins.P10_B.set(0);
-      gb->joy_pins.P11_B.set(0);
-      gb->joy_pins.P12_B.set(0);
-      gb->joy_pins.P13_B.set(0);
+      gb->joy_pin.P10_B.set(0);
+      gb->joy_pin.P11_B.set(0);
+      gb->joy_pin.P12_B.set(0);
+      gb->joy_pin.P13_B.set(0);
 
       gb->tick_everything();
       bool changed = gb->commit_everything();
@@ -164,10 +164,10 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
       */
 
       // FIXME still don't know who drives these, so we always set them to 0.
-      gb->joy_pins.P10_B.set(0);
-      gb->joy_pins.P11_B.set(0);
-      gb->joy_pins.P12_B.set(0);
-      gb->joy_pins.P13_B.set(0);
+      gb->joy_pin.P10_B.set(0);
+      gb->joy_pin.P11_B.set(0);
+      gb->joy_pin.P12_B.set(0);
+      gb->joy_pin.P13_B.set(0);
 
       gb->tick_everything();
       bool changed = gb->commit_everything();
@@ -262,7 +262,7 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   gb.sys_pins.dump_pins(text_painter);
   gb.rst_reg.dump_regs(text_painter);
   gb.clk_reg.dump_regs(text_painter);
-  gb.vclk_reg.dump_regs(text_painter);
+  gb.vck_reg.dump_regs(text_painter);
   gb.cpu_pins.dump_pins(text_painter);
   gb.bus_reg.dump_regs(text_painter);
   gb.ext_pins.dump_pins(text_painter);
@@ -274,7 +274,7 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   gb.dma_reg.dump_regs(text_painter);
   gb.int_reg.dump_regs(text_painter);
   gb.ser_reg.dump_regs(text_painter);
-  gb.joy_pins.dump_pins(text_painter);
+  gb.joy_pin.dump_pins(text_painter);
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;
 
@@ -303,7 +303,7 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   }
 
   if (1) {
-    gb.lcd_pins.dump_pins(text_painter);
+    gb.lcd_reg.dump_pins(text_painter);
     gb.wave_pins.dump_pins(text_painter);
     gb.ser_reg.dump_pins(text_painter);
     text_painter.render(cx, cy, 1.0);

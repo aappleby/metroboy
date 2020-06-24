@@ -26,24 +26,33 @@ inline void print_at(int x, int y, const char *format, ...)
 }
 
 inline bool not (bool a) { return !a; }
-inline bool and (bool a, bool b) { return a & b; }
-inline bool and (bool a, bool b, bool c) { return  (a & b & c); }
-inline bool and (bool a, bool b, bool c, bool d) { return  (a & b & c & d); }
-inline bool and (bool a, bool b, bool c, bool d, bool e) { return  (a & b & c & d & e); }
-inline bool and (bool a, bool b, bool c, bool d, bool e, bool f) { return  (a & b & c & d & e & f); }
-inline bool and (bool a, bool b, bool c, bool d, bool e, bool f, bool g) { return  (a & b & c & d & e & f & g); }
+
+inline bool and(bool a) { return a; }
+inline bool and(bool a, bool b) { return a & b; }
+inline bool and(bool a, bool b, bool c) { return  (a & b & c); }
+inline bool and(bool a, bool b, bool c, bool d) { return  (a & b & c & d); }
+inline bool and(bool a, bool b, bool c, bool d, bool e) { return  (a & b & c & d & e); }
+inline bool and(bool a, bool b, bool c, bool d, bool e, bool f) { return  (a & b & c & d & e & f); }
+inline bool and(bool a, bool b, bool c, bool d, bool e, bool f, bool g) { return  (a & b & c & d & e & f & g); }
+
+inline bool or  (bool a) { return a; }
 inline bool or  (bool a, bool b) { return a | b; }
 inline bool or  (bool a, bool b, bool c) { return  (a | b | c); }
 inline bool or  (bool a, bool b, bool c, bool d) { return  (a | b | c | d); }
 inline bool or  (bool a, bool b, bool c, bool d, bool e) { return  (a | b | c | d | e); }
+
 inline bool xor (bool a, bool b) { return a ^ b; }
 inline bool xnor(bool a, bool b) { return a == b; }
+
+inline bool nor (bool a) { return !a; }
 inline bool nor (bool a, bool b) { return !(a | b); }
 inline bool nor (bool a, bool b, bool c) { return !(a | b | c); }
 inline bool nor (bool a, bool b, bool c, bool d) { return !(a | b | c | d); }
 inline bool nor (bool a, bool b, bool c, bool d, bool e) { return !(a | b | c | d | e); }
 inline bool nor (bool a, bool b, bool c, bool d, bool e, bool f) { return !(a | b | c | d | e | f); }
 inline bool nor (bool a, bool b, bool c, bool d, bool e, bool f, bool g, bool h) { return !(a | b | c | d | e | f | g | h); }
+
+inline bool nand(bool a) { return !a; }
 inline bool nand(bool a, bool b) { return !(a & b); }
 inline bool nand(bool a, bool b, bool c) { return !(a & b & c); }
 inline bool nand(bool a, bool b, bool c, bool d) { return !(a & b & c & d); }
@@ -52,7 +61,7 @@ inline bool nand(bool a, bool b, bool c, bool d, bool e, bool f) { return !(a & 
 inline bool nand(bool a, bool b, bool c, bool d, bool e, bool f, bool g) { return !(a & b & c & d & e & f & g); }
 
 /*
-template<typename... Args> const bool and (const bool first, Args... args) { return first & and(args...); }
+template<typename... Args> const bool and(const bool first, Args... args) { return first & and(args...); }
 template<typename... Args> const bool or  (const bool first, Args... args) { return first | or(args...); }
 template<typename... Args> const bool xor (const bool first, Args... args) { return first ^ xor(args...); }
 template<typename... Args> const bool nor (const bool first, Args... args) { return !or(first, args...); }

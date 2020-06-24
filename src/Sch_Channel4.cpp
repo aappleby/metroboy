@@ -88,7 +88,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p19.KOKU*/ wire FF22n = not(FF22a);
     /*p19.GUGO*/ wire FF22o = not(FF22a);
 
-    /*p19.HUMO*/ wire FF22_WRa = and (FF22a, b.apu.APU_WR);
+    /*p19.HUMO*/ wire FF22_WRa = and(FF22a, b.apu.APU_WR);
     /*p19.GETU*/ wire FF22_WRn = nand(FF22a, b.apu.APU_WR);
     
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
@@ -394,7 +394,7 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     /*p20.GAME*/ wire LFSR_OUT     = nand(b.ch4.CH4_ACTIVE,  b.ch4.LFSR_15);
     /*p20.EZUL*/ wire CH4_BIT_MUX  = mux2(b.ch4.LFSR_CLKa, LFSR_OUT, b.ch4.DBG_CH4);
     /*p20.CEPY*/ wire NR44_STOPn = not(b.ch4.NR44_STOP);
-    /*p20.COTE*/ wire DBG_CH4_MUTE = and (NR44_STOPn,  b.apu.NR52_DBG_APU);
+    /*p20.COTE*/ wire DBG_CH4_MUTE = and(NR44_STOPn,  b.apu.NR52_DBG_APU);
     /*p20.DATO*/ wire CH4_RAW_BIT  = or  (CH4_BIT_MUX, DBG_CH4_MUTE);
 
     /*p20.GEVY*/ next.ch4.CH4_AMP_ENn = nor(b.ch4.NR42_ENV_DIR, b.ch4.NR42_ENV_VOL0, b.ch4.NR42_ENV_VOL1, b.ch4.NR42_ENV_VOL2, b.ch4.NR42_ENV_VOL3);

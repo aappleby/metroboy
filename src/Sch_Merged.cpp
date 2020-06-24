@@ -112,7 +112,7 @@ void TestGB::tick_everything() {
   ///*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
-  /*p01.UNUT*/ wire TIMEOUT = and (rst_reg.TUBO_CLKREQn_LATCH, tim_reg.DIV_15);
+  /*p01.UNUT*/ wire TIMEOUT = and(rst_reg.TUBO_CLKREQn_LATCH, tim_reg.UPOF_DIV_15);
   /*p01.TABA*/ wire TABA_RST = or (UNOR_MODE_DBG2n(), UMUT_MODE_DBG1(), TIMEOUT);
   /*p01.ALYP*/ wire ALYP_RSTn = not(TABA_RST);
   /*p01.AFAR*/ wire AFAR_RST = nor(ALYP_RSTn, sys_pins.RST);
@@ -196,9 +196,9 @@ void TestGB::tick_everything() {
     /*p29.XYVA*/ wire XYVA_AxCxExGx = not(ZEME_AxCxExGx);
     /*p29.XOTA*/ wire XOTA_xBxDxFxH = not(XYVA_AxCxExGx);
     /*p29.XYFY*/ wire XYFY_AxCxExGx = not(XOTA_xBxDxFxH);
-    /*p29.WUVU*/ vclk_reg.WUVU_AxxDExxH.set(XOTA_xBxDxFxH, XAPO_VID_RSTn(), !vclk_reg.WUVU_AxxDExxH);
-    /*p21.VENA*/ vclk_reg.VENA_xBCDExxx.set(!vclk_reg.WUVU_AxxDExxH, XAPO_VID_RSTn(), !vclk_reg.VENA_xBCDExxx);
-    /*p29.WOSU*/ vclk_reg.WOSU_xxCDxxGH.set(XYFY_AxCxExGx, XAPO_VID_RSTn(), !vclk_reg.WUVU_AxxDExxH);
+    /*p29.WUVU*/ vck_reg.WUVU_AxxDExxH.set(XOTA_xBxDxFxH, XAPO_VID_RSTn(), !vck_reg.WUVU_AxxDExxH);
+    /*p21.VENA*/ vck_reg.VENA_xBCDExxx.set(!vck_reg.WUVU_AxxDExxH, XAPO_VID_RSTn(), !vck_reg.VENA_xBCDExxx);
+    /*p29.WOSU*/ vck_reg.WOSU_xxCDxxGH.set(XYFY_AxCxExGx, XAPO_VID_RSTn(), !vck_reg.WUVU_AxxDExxH);
   }
 
   {
@@ -215,7 +215,7 @@ void TestGB::tick_everything() {
   tick_serial(cpu_pins);
   tick_joypad();
   tick_ppu();
-  tick_sprite_store();
+  sst_reg.tick(*this);
   tick_lcd();
 
   tick_pixpipe();
@@ -229,9 +229,7 @@ void TestGB::tick_everything() {
   tick_cart_data();
   tick_cart_pins();
 
-  tick_oam_addr();
-  tick_oam_data();
-  tick_oam_pins();
+  tick_oam();
 }
 
 //-----------------------------------------------------------------------------

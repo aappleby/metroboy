@@ -6,7 +6,7 @@
 struct LCD {
   void reset();
   void tick(const Req& req, Ack& ack);
-  void tock(int phase, const Req& req, bool LCDC_EN);
+  void tock(int phase, const Req& req, bool XONA_LCDC_EN);
 
   void dump(std::string& d);
 
@@ -15,14 +15,14 @@ struct LCD {
 
   // states
 
-  /*p21.RUTU*/ bool NEW_LINE_d0  = 0;
-  /*p21.NYPE*/ bool NEW_LINE_d4  = 0;
-  /*p29.CATU*/ bool VID_LINE_d4  = 0;
-  /*p28.ANEL*/ bool VID_LINE_d6  = 0;
-  /*p21.MYTA*/ bool LINE_153_d4  = 0;
-  /*p24.MEDA*/ bool VSYNC_OUTn   = 0;
-  /*p24.MEDA*/ bool IN_VBLANK_d4 = 0;
-  /*p24.PAHO*/ bool X_8_SYNC     = 0;
+  /*p21.RUTU*/ bool RUTU_NEW_LINE_d0  = 0;
+  /*p21.NYPE*/ bool NYPE_NEW_LINE_d4  = 0;
+  /*p29.CATU*/ bool CATU_VID_LINE_d4  = 0;
+  /*p28.ANEL*/ bool ANEL_VID_LINE_d6  = 0;
+  /*p21.MYTA*/ bool MYTA_LINE_153_d4  = 0;
+  /*p24.MEDA*/ bool MEDA_VSYNC_OUTn   = 0;
+  /*p24.MEDA*/ bool POPU_IN_VBLANK_d4 = 0;
+  /*p24.PAHO*/ bool PAHO_X_8_SYNC     = 0;
 
   // signals
 

@@ -19,8 +19,8 @@ struct OamPins {
 
   void dump_pins(TextPainter& text_painter) {
     text_painter.dprintf("----- OAM_PINS -----\n");
-    text_painter.dprintf("CLK_A %d\n", CLK_A.a.val);
-    text_painter.dprintf("OE    %d\n", OE.a.val);
+    text_painter.dprintf("COTA_CLK %d\n", COTA_CLK.a.val);
+    text_painter.dprintf("ZODO_OE    %d\n", ZODO_OE.a.val);
     text_painter.dprintf("WR_A  %d\n", WR_A.a.val);
     text_painter.dprintf("WR_B  %d\n", WR_B.a.val);
 
@@ -60,8 +60,8 @@ struct OamPins {
     text_painter.newline();
   }
 
-  /*p25.COTA*/ PinOut CLK_A;
-  /*p28.ZODO*/ PinOut OE;
+  /*p25.COTA*/ PinOut COTA_CLK;
+  /*p28.ZODO*/ PinOut ZODO_OE;
   /*p28.ZONE*/ PinOut WR_A; // definitely write
   /*p28.ZOFE*/ PinOut WR_B; // definitely write
 
@@ -444,32 +444,6 @@ struct VramPins {
   /* PIN_27 */ PinOut MD5_D;   // <- P25.RUMU
   /* PIN_26 */ PinOut MD6_D;   // <- P25.RYTY
   /* PIN_25 */ PinOut MD7_D;   // <- P25.RADY
-};
-
-//-----------------------------------------------------------------------------
-
-struct LcdPins {
-  void dump_pins(TextPainter& text_painter) {
-    text_painter.dprintf("----- LCD_PINS -----\n");
-    LD1.dump(text_painter, "LD1 ");
-    LD0.dump(text_painter, "LD0 ");
-    CPG.dump(text_painter, "CPG ");
-    CP .dump(text_painter, "CP  ");
-    ST .dump(text_painter, "ST  ");
-    CPL.dump(text_painter, "CPL ");
-    FR .dump(text_painter, "FR  ");
-    S  .dump(text_painter, "S   ");
-    text_painter.newline();
-  }
-
-  /* PIN_50 */ PinOut LD1;
-  /* PIN_51 */ PinOut LD0;
-  /* PIN_52 */ PinOut CPG;
-  /* PIN_53 */ PinOut CP;
-  /* PIN_54 */ PinOut ST;
-  /* PIN_55 */ PinOut CPL;
-  /* PIN_56 */ PinOut FR;
-  /* PIN_57 */ PinOut S;
 };
 
 //-----------------------------------------------------------------------------

@@ -32,30 +32,26 @@ struct TestGB {
   void tick_cart_data();
   void tick_cart_pins();
 
-  void tick_oam_addr();
-  void tick_oam_data();
+  void tick_oam();
 
   void tick_dma();
-  void tick_oam_pins();
 
   void tick_ppu();
 
   void tick_pixpipe();
 
-  void tick_sprite_store();
-
   //----------------------------------------
 
   wire UMUT_MODE_DBG1() const {
     /*p07.UVAR*/ wire UVAR_T2n = not(sys_pins.T2);
-    /*p07.UMUT*/ wire UMUT_MODE_DBG1 = and (sys_pins.T1, UVAR_T2n);
+    /*p07.UMUT*/ wire UMUT_MODE_DBG1 = and(sys_pins.T1, UVAR_T2n);
     return UMUT_MODE_DBG1;
   }
 
   // must be N otherwise vram debug control doesn't work
   wire UNOR_MODE_DBG2n() const {
     /*p07.UBET*/ wire UBET_T1n = not(sys_pins.T1);
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2n = and (sys_pins.T2, UBET_T1n);
+    /*p07.UNOR*/ wire UNOR_MODE_DBG2n = and(sys_pins.T2, UBET_T1n);
     return UNOR_MODE_DBG2n;
   }
 
@@ -182,7 +178,7 @@ struct TestGB {
   wire XAPO_VID_RSTn() const {
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn());
     /*p01.XEBE*/ wire XEBE_RSTn = not(XORE_RSTp);
-    /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, cfg_reg.LCDC_EN.q());
+    /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, cfg_reg.XONA_LCDC_EN.q());
     /*p01.XAPO*/ wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
     return XAPO_VID_RSTn;
   }
@@ -201,33 +197,28 @@ struct TestGB {
   // LCD & PPU events
 
   wire BYHA_VID_LINE_TRIG_d4n() const {
-    /*p28.ABAF*/ wire VID_LINE_d4n = not(lcd_reg.VID_LINE_d4.q());
-    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.VID_LINE_d6.q(), VID_LINE_d4n), ABEZ_VID_RSTn());
+    /*p28.ABAF*/ wire VID_LINE_d4n = not(lcd_reg.CATU_VID_LINE_d4.q());
+    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and(or (lcd_reg.ANEL_VID_LINE_d6.q(), VID_LINE_d4n), ABEZ_VID_RSTn());
     return BYHA_VID_LINE_TRIG_d4n;
   }
     
-  wire ATEJ_VID_LINE_TRIG_d4() const {
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4 = not(BYHA_VID_LINE_TRIG_d4n());
-    return ATEJ_VID_LINE_TRIG_d4;
+  wire ATEJ_VID_LINE_TRIG_d4p() const {
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(BYHA_VID_LINE_TRIG_d4n());
+    return ATEJ_VID_LINE_TRIG_d4p;
   }
 
-  wire PPU_USE_OAM1() const {
-    /*p28.BOGE*/ wire DMA_RUNNINGn = not(dma_reg.MATU_DMA_WRITEp.q());
-    /*p28.ASEN*/ wire ASEN = or (ATAR_VID_RSTp(), AVAP_SCAN_DONE_d0_TRIG());
-
-    // FIXME this is a LATCH
-    /*p28.BESU*/ wire SPRITE_SCAN_LATCH = or (lcd_reg.VID_LINE_d4.q(), ASEN);
-
-    /*p28.ACYL*/ wire PPU_USE_OAM1 = and (DMA_RUNNINGn, SPRITE_SCAN_LATCH);
-    return PPU_USE_OAM1;
+  wire ACYL_PPU_USE_OAM1p() const {
+    /*p28.BOGE*/ wire DMA_RUNNINGn = not(dma_reg.MATU_DMA_OAM_WRp.q());
+    /*p28.ACYL*/ wire ACYL_PPU_USE_OAM1p = and(DMA_RUNNINGn, sst_reg.BESU_SCANNINGp);
+    return ACYL_PPU_USE_OAM1p;
   }
 
-  wire AVAP_SCAN_DONE_d0_TRIG() const {
-    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4(), ATAR_VID_RSTp());
+  wire AVAP_SCAN_DONE_d0_TRIGp() const {
+    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p(), ATAR_VID_RSTp());
     /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
-    /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or (BALU_SCAN_RST, spr_reg.SCAN_DONE_d5.q(), !spr_reg.SCAN_DONE_d4.q());
-    /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIG = not(SCAN_DONE_d0_TRIGn);
-    return AVAP_SCAN_DONE_d0_TRIG;
+    /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or (BALU_SCAN_RST, sst_reg.SCAN_DONE_d5.q(), !sst_reg.SCAN_DONE_d4.q());
+    /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIGp = not(SCAN_DONE_d0_TRIGn);
+    return AVAP_SCAN_DONE_d0_TRIGp;
   }
 
   // Polarity?
@@ -238,15 +229,15 @@ struct TestGB {
     // TYSO = or(SAKY, TEPA)
     // TEXY = not(TYSO)
 
-    /*p29.SAKY*/ wire SAKY = nor(spr_reg.SFETCH_S1.q(), spr_reg.VONU_SEQ_xxx34xn.q());
-    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(vid_reg.RENDERING_LATCHp);
+    /*p29.SAKY*/ wire SAKY = nor(spr_reg.TULY_SFETCH_S1.q(), spr_reg.VONU_SFETCH_S1_D4.q());
+    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(vid_reg.XYMU_RENDERINGp);
     /*p29.TYSO*/ wire TYSO_SPRITE_READn = or (SAKY, TEPA_RENDERINGn);
     /*p29.TEXY*/ wire TEXY_SPRITE_READ = not(TYSO_SPRITE_READn);
 
     // So we only read a sprite if both those regs are... low? what is rung 17's polarity?
 #if 0
     if (RENDERING_LATCH) {
-      /*p29.TEXY*/ wire TEXY_SPRITE_READ = or(spr_reg.SFETCH_S1.q(), spr_reg.VONU_SEQ_xxx34xn.q());;
+      /*p29.TEXY*/ wire TEXY_SPRITE_READ = or(spr_reg.TULY_SFETCH_S1.q(), spr_reg.VONU_SFETCH_S1_D4.q());;
     }
     else {
       /*p29.TEXY*/ wire TEXY_SPRITE_READ = 1;
@@ -257,8 +248,8 @@ struct TestGB {
   }
 
   wire WUTY_SPRITE_DONE() const {
-    /*p29.TYNO*/ wire TYNO = nand(spr_reg.SFETCH_S0.q(), spr_reg.SEBA_SEQ_xxxx45n.q(), spr_reg.VONU_SEQ_xxx34xn.q());
-    /*p29.VUSA*/ wire VUSA = or (!spr_reg.SFETCH_S0_DELAY.q(), TYNO);
+    /*p29.TYNO*/ wire TYNO = nand(spr_reg.TOXE_SFETCH_S0_D0.q(), spr_reg.SEBA_SFETCH_S1_D5.q(), spr_reg.VONU_SFETCH_S1_D4.q());
+    /*p29.VUSA*/ wire VUSA = or (!spr_reg.TYFO_SFETCH_S0_D1.q(), TYNO);
     /*p29.WUTY*/ wire WUTY_SPRITE_DONE = not(VUSA);
     return WUTY_SPRITE_DONE;
   }
@@ -266,8 +257,8 @@ struct TestGB {
   wire WODU_RENDER_DONE() const {
     /*p21.XUGU*/ wire XUGU_X_167n = nand(vid_reg.X0.q(), vid_reg.X1.q(), vid_reg.X2.q(), vid_reg.X5.q(), vid_reg.X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
     /*p21.XANO*/ wire XANO_X_167 = not(XUGU_X_167n);
-    /*p21.XENA*/ wire XENA_STORE_MATCHn = not(FEPO_STORE_MATCH);
-    /*p21.WODU*/ wire WODU_RENDER_DONE = and (XENA_STORE_MATCHn, XANO_X_167);
+    /*p21.XENA*/ wire XENA_STORE_MATCHn = not(sst_reg.FEPO_STORE_MATCHp);
+    /*p21.WODU*/ wire WODU_RENDER_DONE = and(XENA_STORE_MATCHn, XANO_X_167);
     return WODU_RENDER_DONE;
   }
 
@@ -277,7 +268,7 @@ struct TestGB {
   // Polarity of this seems inconsistent...
   wire TEDO_CPU_RD() const {
 #if 0
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and (sys_pins.T2, not(sys_pins.T1));
+    /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and(sys_pins.T2, not(sys_pins.T1));
     if (UNOR_MODE_DBG2) {
       TEDO = not(ext_pins.RD_C);
     }
@@ -288,7 +279,7 @@ struct TestGB {
 #endif
 
     /*p07.UBET*/ wire UBET_T1n = not(sys_pins.T1);
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and (sys_pins.T2, UBET_T1n);
+    /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and(sys_pins.T2, UBET_T1n);
     /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, UNOR_MODE_DBG2);
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
     return TEDO_CPU_RD;
@@ -353,10 +344,10 @@ struct TestGB {
   }
 
   wire XOFO_WIN_RST() const {
-    /*p28.ABAF*/ wire VID_LINE_d4n = not(lcd_reg.VID_LINE_d4.q());
-    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.VID_LINE_d6.q(), VID_LINE_d4n), ABEZ_VID_RSTn());
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4 = not(BYHA_VID_LINE_TRIG_d4n);
-    /*p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4);
+    /*p28.ABAF*/ wire ABAF_VID_LINE_d4n = not(lcd_reg.CATU_VID_LINE_d4.q());
+    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and(or (lcd_reg.ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), ABEZ_VID_RSTn());
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(BYHA_VID_LINE_TRIG_d4n);
+    /*p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4p);
     /*p27.XOFO*/ wire XOFO_WIN_RST = nand(cfg_reg.LCDC_WINEN.q(), XAHY_VID_LINE_TRIG_d4n, XAPO_VID_RSTn());
     return XOFO_WIN_RST;
   }
@@ -364,7 +355,7 @@ struct TestGB {
   //----------------------------------------
   // DMA signals
 
-  /*p04.MUDA*/ wire DMA_ADDR_VRAMp() const { // def p
+  /*p04.MUDA*/ wire MUDA_DMA_ADDR_VRAMp() const { // def p
     // Die trace:
     // LEBU = not(MARU06)
     // MUDA = nor(PULA06, POKU06, LEBU);
@@ -376,9 +367,9 @@ struct TestGB {
     // so rung 6 of MARU must be Q.
 #endif
 
-    /*p04.LEBU*/ wire DMA_A15n = not(dma_reg.DMA_A15.q());
-    /*p04.MUDA*/ wire DMA_ADDR_VRAMp = nor(dma_reg.DMA_A13.q(), dma_reg.DMA_A14.q(), DMA_A15n);
-    return DMA_ADDR_VRAMp;
+    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n = not(dma_reg.DMA_A15.q());
+    /*p04.MUDA*/ wire MUDA_DMA_ADDR_VRAMp = nor(dma_reg.DMA_A13.q(), dma_reg.DMA_A14.q(), LEBU_DMA_ADDR_A15n);
+    return MUDA_DMA_ADDR_VRAMp;
   }
 
   //----------------------------------------
@@ -415,45 +406,46 @@ struct TestGB {
 
     /*p08.SORE*/ wire SORE = not(cpu_pins.A15);
     /*p08.TEVY*/ wire TEVY = or (cpu_pins.A13, cpu_pins.A14, SORE);
-    /*p08.TEXO*/ wire TEXO = and (cpu_pins.ADDR_VALIDx, TEVY);
+    /*p08.TEXO*/ wire TEXO = and(cpu_pins.ADDR_VALIDx, TEVY);
     return TEXO;
   }
 #endif
 
-  wire TUNA_0000_FDFF() const {
-    /*p07.TUNA*/ wire TUNA_0000_FDFF = nand(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12, cpu_pins.A11, cpu_pins.A10, cpu_pins.A09);
-    return TUNA_0000_FDFF;
+  wire TUNA_CPU_ADDR_0000_FDFF() const {
+    /*p07.TUNA*/ wire TUNA_CPU_ADDR_0000_FDFF = nand(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12, cpu_pins.A11, cpu_pins.A10, cpu_pins.A09);
+    return TUNA_CPU_ADDR_0000_FDFF;
   }
 
-  wire SYRO_FE00_FFFF() const {
-    /*p25.SYRO*/ wire SYRO_FE00_FFFF = not(TUNA_0000_FDFF());
-    return SYRO_FE00_FFFF;
+  wire SYRO_CPU_ADDR_FE00_FFFFp() const {
+    /*p25.SYRO*/ wire SYRO_CPU_ADDR_FE00_FFFFp = not(TUNA_CPU_ADDR_0000_FDFF());
+    return SYRO_CPU_ADDR_FE00_FFFFp;
   }
 
-  wire FFXX() const {
-    /*p07.TUNA*/ wire TUNA_0000_FDFF = nand(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12, cpu_pins.A11, cpu_pins.A10, cpu_pins.A09);
-    /*p07.TONA*/ wire ADDR_08n = not(cpu_pins.A08);
-    /*p07.SYKE*/ wire FFXX = nor(TUNA_0000_FDFF, ADDR_08n);
-    return FFXX;
+  wire SYKE_CPU_ADDR_FFXXp() const {
+    /*p07.TONA*/ wire TONA_ADDR_08n = not(cpu_pins.A08);
+    /*p07.SYKE*/ wire SYKE_CPU_ADDR_FFXXp = nor(TUNA_CPU_ADDR_0000_FDFF(), TONA_ADDR_08n);
+    return SYKE_CPU_ADDR_FFXXp;
   }
 
-  wire FF4X() const {
-    /*p22.XALY*/ wire ADDR_0x00xxxx = nor(cpu_pins.A07, cpu_pins.A05, cpu_pins.A04);
-    /*p22.WUTU*/ wire FF4Xn = nand(FFXX(), cpu_pins.A06, ADDR_0x00xxxx);
-    /*p22.WERO*/ wire FF4X = not(FF4Xn);
-    return FF4X;
+  wire WERO_CPU_ADDR_FF4Xp() const {
+    /*p22.XALY*/ wire XALY_ADDR_0x00xxxx = nor(cpu_pins.A07, cpu_pins.A05, cpu_pins.A04);
+    /*p22.WUTU*/ wire WUTU_FF4Xn = nand(SYKE_CPU_ADDR_FFXXp(), cpu_pins.A06, XALY_ADDR_0x00xxxx);
+    /*p22.WERO*/ wire WERO_CPU_ADDR_FF4Xp = not(WUTU_FF4Xn);
+    return WERO_CPU_ADDR_FF4Xp;
   }
 
-  wire FF46() const {
-    /*p22.XUSY*/ wire A02n = not(cpu_pins.A02);
-    /*p22.WALO*/ wire WALO_A02 = not(A02n);
-    /*p22.XENO*/ wire A01n = not(cpu_pins.A01);
-    /*p22.WESA*/ wire WESA_A01 = not(A01n);
-    /*p22.XERA*/ wire A03n = not(cpu_pins.A03);
-    /*p22.XOLA*/ wire A00n = not(cpu_pins.A00);
-    /*p22.WATE*/ wire FF46n = nand(FF4X(), A00n, WESA_A01, WALO_A02, A03n);
-    /*p22.XEDA*/ wire FF46 = not(FF46n);
-    return FF46;
+  wire XEDA_CPU_ADDR_FF46p() const {
+    /*p22.XOLA*/ wire XOLA_A00n = not(cpu_pins.A00);
+    /*p22.XENO*/ wire XENO_A01n = not(cpu_pins.A01);
+    /*p22.XUSY*/ wire XUSY_A02n = not(cpu_pins.A02);
+    /*p22.XERA*/ wire XERA_A03n = not(cpu_pins.A03);
+
+    /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
+    /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
+
+    /*p22.WATE*/ wire WATE_FF46n = nand(WERO_CPU_ADDR_FF4Xp(), XOLA_A00n, WESA_A01p, WALO_A02p, XERA_A03n);
+    /*p22.XEDA*/ wire XEDA_CPU_ADDR_FF46p = not(WATE_FF46n);
+    return XEDA_CPU_ADDR_FF46p;
   }
 
   //-----------------------------------------------------------------------------
@@ -483,44 +475,28 @@ struct TestGB {
   SpriteRegisters spr_reg;// dumped
   SpriteStoreRegisters sst_reg;// dumped
   TimerRegisters tim_reg;// dumped
-  VclkRegisters vclk_reg;// dumped
+  VclkRegisters vck_reg;// dumped
   VidRegisters vid_reg;// dumped
   OamRegisters oam_reg;// dumped
 
   SysPins sys_pins; // dumped
   VramPins vram_pins; // dumped
-  JoypadPins joy_pins; // dumped
+  JoypadPins joy_pin; // dumped
   CpuPins cpu_pins; // dumped
   ExtPins ext_pins; // dumped
   OamPins oam_pins; // dumped
-  LcdPins lcd_pins; // dumped
   WavePins wave_pins;
-
-  /*p29.FEPO*/ Signal FEPO_STORE_MATCH;
-  /*p29.GUVA*/ Signal SPRITE0_GET;
-  /*p29.ENUT*/ Signal SPRITE1_GET;
-  /*p29.EMOL*/ Signal SPRITE2_GET;
-  /*p29.GYFY*/ Signal SPRITE3_GET;
-  /*p29.GONO*/ Signal SPRITE4_GET;
-  /*p29.GEGA*/ Signal SPRITE5_GET;
-  /*p29.XOJA*/ Signal SPRITE6_GET;
-  /*p29.GUTU*/ Signal SPRITE7_GET;
-  /*p29.FOXA*/ Signal SPRITE8_GET;
-  /*p29.GUZE*/ Signal SPRITE9_GET;
 
   Signal NYXU_BG_SEQ_RSTn;
 
-  Signal YDIFF0, YDIFF1, YDIFF2, YDIFF3, YDIFF4, YDIFF5, YDIFF6, YDIFF7, YDIFF_C7;
-  Signal STORE_EN;
-  Signal MATCH_EN;
   /*p27.TEVO*/ Signal TEVO_CLK_STOPn;
-  /*p27.NUKO*/ Signal WIN_MATCH;
+  /*p27.NUKO*/ Signal NUKO_WIN_MATCH;
 
-  /*p35.PATY*/ Signal PIX_OUT_LO;
-  /*p35.PERO*/ Signal PIX_OUT_HI;
+  /*p35.PATY*/ Signal PATY_PIX_OUT_LO;
+  /*p35.PERO*/ Signal PERO_PIX_OUT_HI;
 
-  /*p21.XATY*/ Signal STAT_MODE1n;
-  /*p21.SADU*/ Signal STAT_MODE0n;
+  /*p21.XATY*/ Signal XATY_STAT_MODE1n;
+  /*p21.SADU*/ Signal SADU_STAT_MODE0n;
 
 };
 

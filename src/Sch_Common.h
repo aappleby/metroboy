@@ -353,6 +353,16 @@ struct Reg3 : public SignalBase {
     b.rst = 1;
   }
 
+  void rst_sync(bool clk) {
+    if (a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+
+    b.clk = clk;
+    b.set = 0;
+    b.rst = 1;
+    b.error = 0;
+  }
+
   bool commit_reg() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();

@@ -1,6 +1,8 @@
 #include "Sch_Merged.h"
 #include "Sch_Pins.h"
 
+#include "Sch_SpriteStore.h"
+
 namespace Schematics {
 
 //-----------------------------------------------------------------------------

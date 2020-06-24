@@ -129,6 +129,7 @@
     <ClInclude Include="src\Sch_Common.h" />
     <ClInclude Include="src\Sch_Merged.h" />
     <ClInclude Include="src\Sch_Pins.h" />
+    <ClInclude Include="src\Sch_SpriteStore.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\SPU.h" />
     <ClInclude Include="src\StateManager.h" />

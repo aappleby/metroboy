@@ -202,10 +202,8 @@ struct TestGB {
   }
 
   wire AREV_CPU_WRn_ABCDExxx() const {
-    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.ADYK_PHAZ_xxxxEFGH.q());
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
-    /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_pins.CPU_RAW_WR, AFAS_xxxxxFGH);
+    auto clk_sig = ClockSignals::get(*this);
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_pins.CPU_RAW_WR, clk_sig.AFAS_xxxxxFGH);
     return AREV_CPU_WRn_ABCDExxx;
   }
 

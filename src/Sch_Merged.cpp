@@ -209,24 +209,9 @@ void TestGB::tick_everything() {
   //----------------------------------------
   // sch_clocks
 
-  ///*p01.ATAG*/ wire ATAG_xBxDxFxH = not(AZOF_AxCxExGx);
-  ///*p01.AMUK*/ wire AMUK_AxCxExGx = not(ATAG_xBxDxFxH); // apu master 4m clock, but apu isn't hooked up yet
-  ///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
-
   {
-    /*p01.AFUR*/ clk_reg.AFUR_PHAZ_xBCDExxx.set_duo(clk_sig.ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), !clk_reg.ADYK_PHAZ_xxxxEFGH.a);
-    /*p01.ALEF*/ clk_reg.ALEF_PHAZ_xxCDEFxx.set_duo(clk_sig.ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), clk_reg.AFUR_PHAZ_xBCDExxx.a);
-    /*p01.APUK*/ clk_reg.APUK_PHAZ_xxxDEFGx.set_duo(clk_sig.ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), clk_reg.ALEF_PHAZ_xxCDEFxx.a);
-    /*p01.ADYK*/ clk_reg.ADYK_PHAZ_xxxxEFGH.set_duo(clk_sig.ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), clk_reg.APUK_PHAZ_xxxDEFGx.a);
-  }
-
-  {
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH); // dma, sprite store
     wire FROM_CPU5 = gb.cpu_pins.FROM_CPU5;
-    /*p04.MAKA*/ FROM_CPU5_SYNC.set(ZEME_AxCxExGx, CUNU_RSTn(), FROM_CPU5);
+    /*p04.MAKA*/ FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, CUNU_RSTn(), FROM_CPU5);
   }
 
 
@@ -251,9 +236,7 @@ void TestGB::tick_everything() {
 
   {
     // wave ram write clock
-    /*p17.ABUR*/ wire ABUR_xxCDEFGx = not(clk_sig.BUKE_ABxxxxxH);
-    /*p17.BORY*/ wire BORY_ABxxxxxH = not(ABUR_xxCDEFGx);
-    wave_pins.BORY_ABxxxxxH.set(BORY_ABxxxxxH);
+    wave_pins.BORY_ABxxxxxH.set(clk_sig.BORY_ABxxxxxH);
   }
 
   //----------------------------------------
@@ -261,10 +244,8 @@ void TestGB::tick_everything() {
 
   {
 
-    /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(clk_sig.BOGA_AxCDEFGH);
-
     /*p01.ASOL*/ wire ASOL_RST = or (AFAR_RST, sys_pins.RST);
-    /*p01.AFER*/ rst_reg.RESET_REGp.set(BOMA_xBxxxxxx, UPOJ_MODE_PRODn(), ASOL_RST);
+    /*p01.AFER*/ rst_reg.RESET_REGp.set(clk_sig.BOMA_xBxxxxxx, UPOJ_MODE_PRODn(), ASOL_RST);
   }
 
 
@@ -299,6 +280,7 @@ void TestGB::tick_everything() {
 
   //----------------------------------------
 
+  clk_reg.tick(*this);
   dma_reg.tick(*this);
   tick_timer();
   ser_reg.tick(*this);

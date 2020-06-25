@@ -1,0 +1,216 @@
+#include "Sch_Merged.h"
+
+#include "Sch_Common.h"
+#include "Sch_Pins.h"
+#include "TestGB.h"
+#include "Constants.h"
+
+using namespace Schematics;
+
+// Die trace:
+
+// ROXY = NOR latch
+// ROXY00 << PAHA
+// ROXY01 nc
+// ROXY02 >> nc
+// ROXY03 >> RONE00
+// ROXY04 nc
+// ROXY05 << POVA
+
+// If PAHA goes high, ROXY03 goes high.
+// If POVA goes high, ROXY03 goes low
+
+// REJO00 << SARY
+// REJO01 nc
+// REJO02 >> nc
+// REJO03 >> PUKY
+// REJO04 nc
+// REJO05 << REPU
+
+// SARY high -> REJO high
+// REPU high -> REJO low
+
+// PARU02 = not(POPU16)
+// PYRY02 = not(XAPO03)
+
+// REPU04 = nor(PARU02, PYRY02)
+
+
+void WindowRegisters::tick(TestGB& gb) {
+  auto rst_sig = ResetSignals::get(gb);
+  auto clk_sig = gb.clk_reg.sig(gb);
+
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(gb.sst_reg.FEPO_STORE_MATCHp, gb.WODU_RENDER_DONE(), clk_sig.MYVO_AxCxExGx);
+  /*p24.TYFA*/ wire TYFA_AxCxExGx = and(gb.SOCY_WIN_HITn(), gb.ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
+  /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
+  /*p27.ROCO*/ wire ROCO_AxCxExGx = not(SEGU_xBxDxFxH);
+
+  /*p28.ABAF*/ wire ABAF_VID_LINE_d4n = not(gb.lcd_reg.CATU_VID_LINE_d4.q());
+  /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (gb.lcd_reg.ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), rst_sig.ABEZ_VID_RSTn);
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(BYHA_VID_LINE_TRIG_d4n);
+  /*p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4p);
+
+  /*p21.PARU*/ wire PARU_IN_VBLANK = not(!gb.lcd_reg.POPU_IN_VBLANK_d4);
+  /*p27.REPU*/ wire REPU_IN_FRAME_Y = nor(PARU_IN_VBLANK, rst_sig.PYRY_VID_RSTp);   // schematic wrong, this is NOR
+
+  /*p27.XOFO*/ wire XOFO_WIN_RSTp = nand(gb.cfg_reg.LCDC_WINEN.q(), XAHY_VID_LINE_TRIG_d4n, rst_sig.XAPO_VID_RSTn);
+  /*p27.SYLO*/ wire SYLO_WIN_HITn = not(RYDY_WIN_HIT_LATCH.q());
+  /*p27.TUXY*/ wire TUXY = nand(SOVY_WIN_HIT_SYNC, SYLO_WIN_HITn);
+  /*p27.SUZU*/ wire SUZU = not(TUXY);
+  /*p27.SEKO*/ wire SEKO_WIN_TRIGGER = nor(RENE_WIN_MATCH_ONSCREEN_SYNC2, !RYFA_WIN_MATCH_ONSCREEN_SYNC1);
+  /*p27.ROMO*/ wire FRONT_PORCH = not(gb.ppu_reg.POKY_FRONT_PORCH_LATCH);
+  /*p27.SUVU*/ wire SUVU = nand(gb.ppu_reg.XYMU_RENDERINGp, FRONT_PORCH, gb.ppu_reg.NYKA_BFETCH_DONE_SYNC, gb.ppu_reg.PORY_BFETCH_DONE_SYNC_DELAY);
+  /*p27.TAVE*/ wire TAVE = not(SUVU);
+  /*p27.TEVO*/ wire TEVO = nor(SEKO_WIN_TRIGGER, SUZU, TAVE);
+  /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(PYNU_WIN_MODE_LATCH.q());
+  /*p27.PORE*/ wire PORE_WIN_MODE = not(NOCU_WIN_MODEn);
+  /*p27.NUNY*/ wire NUNY_WIN_MODE_TRIG = and (PYNU_WIN_MODE_LATCH, !NOPA_WIN_MODE_SYNC);
+  /*p27.ROZE*/ wire FINE_COUNT_STOPn = nand(gb.ppu_reg.RYKU_FINE_CNT0, gb.ppu_reg.ROGA_FINE_CNT1, gb.ppu_reg.RUBU_FINE_CNT2);
+
+  //----------------------------------------
+
+  /*p27.NAZE*/ wire _WY_MATCH0 = xnor(gb.lcd_reg.MUWY_Y0, gb.cfg_reg.WY0);
+  /*p27.PEBO*/ wire _WY_MATCH1 = xnor(gb.lcd_reg.MYRO_Y1, gb.cfg_reg.WY1);
+  /*p27.POMO*/ wire _WY_MATCH2 = xnor(gb.lcd_reg.LEXA_Y2, gb.cfg_reg.WY2);
+  /*p27.NEVU*/ wire _WY_MATCH3 = xnor(gb.lcd_reg.LYDO_Y3, gb.cfg_reg.WY3);
+  /*p27.NOJO*/ wire _WY_MATCH4 = xnor(gb.lcd_reg.LOVU_Y4, gb.cfg_reg.WY4);
+  /*p27.PAGA*/ wire _WY_MATCH5 = xnor(gb.lcd_reg.LEMA_Y5, gb.cfg_reg.WY5);
+  /*p27.PEZO*/ wire _WY_MATCH6 = xnor(gb.lcd_reg.MATO_Y6, gb.cfg_reg.WY6);
+  /*p27.NUPA*/ wire _WY_MATCH7 = xnor(gb.lcd_reg.LAFO_Y7, gb.cfg_reg.WY7);
+
+  /*p27.PALO*/ wire _WY_MATCH_HIn = nand(gb.cfg_reg.LCDC_WINEN, _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
+  /*p27.NELE*/ wire _WY_MATCH_HI = not(_WY_MATCH_HIn);
+  /*p27.PAFU*/ wire _WY_MATCHn = nand(_WY_MATCH_HI, _WY_MATCH0, _WY_MATCH1, _WY_MATCH2, _WY_MATCH3);
+  /*p27.ROGE*/ wire _WY_MATCHp = not(_WY_MATCHn);
+
+  /*p27.MYLO*/ wire _WX_MATCH0 = xnor(gb.ppu_reg.SAXO_X0, gb.cfg_reg.WX0);
+  /*p27.PUWU*/ wire _WX_MATCH1 = xnor(gb.ppu_reg.TYPO_X1, gb.cfg_reg.WX1);
+  /*p27.PUHO*/ wire _WX_MATCH2 = xnor(gb.ppu_reg.VYZO_X2, gb.cfg_reg.WX2);
+  /*p27.NYTU*/ wire _WX_MATCH3 = xnor(gb.ppu_reg.TELU_X3, gb.cfg_reg.WX3);
+  /*p27.NEZO*/ wire _WX_MATCH4 = xnor(gb.ppu_reg.SUDE_X4, gb.cfg_reg.WX4);
+  /*p27.NORY*/ wire _WX_MATCH5 = xnor(gb.ppu_reg.TAHA_X5, gb.cfg_reg.WX5);
+  /*p27.NONO*/ wire _WX_MATCH6 = xnor(gb.ppu_reg.TYRY_X6, gb.cfg_reg.WX6);
+  /*p27.PASE*/ wire _WX_MATCH7 = xnor(gb.ppu_reg.SYBE_X7, gb.cfg_reg.WX7);
+
+  /*p27.PUKY*/ wire _WX_MATCH_HIn = nand(REJO_WY_MATCH_LATCH, _WX_MATCH4, _WX_MATCH5, _WX_MATCH6, _WX_MATCH7);
+  /*p27.NUFA*/ wire _WX_MATCH_HI = not (_WX_MATCH_HIn);
+  /*p27.NOGY*/ wire _WX_MATCHn = nand(_WX_MATCH_HI, _WX_MATCH0, _WX_MATCH1, _WX_MATCH2, _WX_MATCH3);
+  /*p27.NUKO*/ wire _WX_MATCHp = not(_WX_MATCHn);
+
+  /*p27.SARY*/ SARY_WIN_MATCH_Y_SYNC.set(clk_sig.TALU_xBCDExxx, rst_sig.XAPO_VID_RSTn, _WY_MATCHp);
+  /*p27.REJO*/ REJO_WY_MATCH_LATCH.nor_latch(SARY_WIN_MATCH_Y_SYNC, REPU_IN_FRAME_Y);
+
+  /*p27.PANY*/ wire _WIN_MATCH_ONSCREEN = nor(_WX_MATCHp, FINE_COUNT_STOPn);
+
+  /*p27.RYFA*/ RYFA_WIN_MATCH_ONSCREEN_SYNC1.set(SEGU_xBxDxFxH, gb.ppu_reg.XYMU_RENDERINGp, _WIN_MATCH_ONSCREEN);
+  /*p27.RENE*/ RENE_WIN_MATCH_ONSCREEN_SYNC2.set(clk_sig.ALET_xBxDxFxH, gb.ppu_reg.XYMU_RENDERINGp, RYFA_WIN_MATCH_ONSCREEN_SYNC1);
+
+  /*p27.PYCO*/ PYCO_WIN_MATCH_SYNC1.set(ROCO_AxCxExGx, rst_sig.XAPO_VID_RSTn, _WX_MATCHp);
+  /*p27.NUNU*/ NUNU_WIN_MATCH_SYNC2.set(clk_sig.MEHE_AxCxExGx, rst_sig.XAPO_VID_RSTn, PYCO_WIN_MATCH_SYNC1);
+
+  // PYNU has "arms" on the ground side - nor latch
+  // PYNU00 << NUNU16
+  // PYNU01 nc
+  // PYNU02 >> nc
+  // PYNU03 >> NOCU00, NUNY00, NOPA06
+  // PYNU04 nc
+  // PYNU05 << XOFO03
+
+  // NUNU high -> PYNU high
+  // XOFO high -> PYNU low
+
+  /*p27.PYNU*/ PYNU_WIN_MODE_LATCH.nor_latch(NUNU_WIN_MATCH_SYNC2, gb.XOFO_WIN_RST());
+  /*p27.NOPA*/ NOPA_WIN_MODE_SYNC.set(clk_sig.ALET_xBxDxFxH, rst_sig.XAPO_VID_RSTn, PYNU_WIN_MODE_LATCH);
+
+  // PUKU/RYDY form a NOR latch. WIN_MODE_TRIG is SET, (VID_RESET | BFETCH_DONE_SYNC_DELAY) is RESET.
+  ///*p27.PUKU*/ PUKU = nor(RYDY, WIN_MODE_TRIG);
+  ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
+    
+  /*p27.RYDY*/ RYDY_WIN_HIT_LATCH.nor_latch(NUNY_WIN_MODE_TRIG, rst_sig.PYRY_VID_RSTp || gb.ppu_reg.PORY_BFETCH_DONE_SYNC_DELAY);
+
+  /*p27.SOVY*/ SOVY_WIN_HIT_SYNC.set(clk_sig.ALET_xBxDxFxH, rst_sig.XAPO_VID_RSTn, RYDY_WIN_HIT_LATCH);
+
+  // window x coordinate
+  {
+    // something weird here, this doesn't look like a clock
+
+    // Die trace:
+    // VETU = and(TEVO, PORE);
+    // XACO = not(XOFO)
+    // WYKA =
+
+    // WYKA01 <> WYKA12
+    // WYKA02 << VETU
+    // WYKA03 <> WYKA09
+    // WYKA04 nc
+    // WYKA05 nc
+    // WYKA06 << XACO
+    // WYKA07 << WYKA16
+    // WYKA08 nc
+    // WYKA09 <> WYKA03
+    // WYKA10 nc
+    // WYKA11 nc
+    // WYKA12 <> WYKA01
+    // WYKA13 << XACO
+    // WYKA14 nc
+    // WYKA15 nc
+    // WYKA16 >> WYKA07, WODY02
+    // WYKA17 >> XEJA
+
+    /*p27.VETU*/ wire _VETU_X_CLK = and (TEVO, PORE_WIN_MODE);
+    /*p27.XACO*/ wire _XACO_WIN_RSTn = not(XOFO_WIN_RSTp);
+
+    /*p27.WYKA*/ WIN_X3.set(_VETU_X_CLK, _XACO_WIN_RSTn, WIN_X3.qn());
+    /*p27.WODY*/ WIN_X4.set( WIN_X3.qn(), _XACO_WIN_RSTn, !WIN_X4);
+    /*p27.WOBO*/ WIN_X5.set(!WIN_X4,      _XACO_WIN_RSTn, !WIN_X5);
+    /*p27.WYKO*/ WIN_X6.set(!WIN_X5,      _XACO_WIN_RSTn, !WIN_X6);
+    /*p27.XOLO*/ WIN_X7.set(!WIN_X6,      _XACO_WIN_RSTn, !WIN_X7);
+  }
+
+  // window y coordinate
+  // every time we leave win mode we increment win_y
+  {
+    /*p27.SYNY*/ wire _SYNY_IN_FRAME_Yn = not(REPU_IN_FRAME_Y);
+    /*p27.WAZY*/ wire _WAZY_WIN_Y_CLK = not(PORE_WIN_MODE);
+    /*p27.VYNO*/ WIN_Y0.set(_WAZY_WIN_Y_CLK, _SYNY_IN_FRAME_Yn, !WIN_Y0);
+    /*p27.VUJO*/ WIN_Y1.set(!WIN_Y0, _SYNY_IN_FRAME_Yn, !WIN_Y1);
+    /*p27.VYMU*/ WIN_Y2.set(!WIN_Y1, _SYNY_IN_FRAME_Yn, !WIN_Y2);
+    /*p27.TUFU*/ WIN_Y3.set(!WIN_Y2, _SYNY_IN_FRAME_Yn, !WIN_Y3);
+    /*p27.TAXA*/ WIN_Y4.set(!WIN_Y3, _SYNY_IN_FRAME_Yn, !WIN_Y4);
+    /*p27.TOZO*/ WIN_Y5.set(!WIN_Y4, _SYNY_IN_FRAME_Yn, !WIN_Y5);
+    /*p27.TATE*/ WIN_Y6.set(!WIN_Y5, _SYNY_IN_FRAME_Yn, !WIN_Y6);
+    /*p27.TEKE*/ WIN_Y7.set(!WIN_Y6, _SYNY_IN_FRAME_Yn, !WIN_Y7);
+  }
+
+}
+
+
+bool WindowRegisters::commit() {
+  bool changed = false;
+  /*p27.SARY*/ changed |= SARY_WIN_MATCH_Y_SYNC.commit_reg();
+  /*p27.RYFA*/ changed |= RYFA_WIN_MATCH_ONSCREEN_SYNC1.commit_reg();
+  /*p27.RENE*/ changed |= RENE_WIN_MATCH_ONSCREEN_SYNC2.commit_reg();
+  /*p27.PYCO*/ changed |= PYCO_WIN_MATCH_SYNC1.commit_reg();
+  /*p27.NUNU*/ changed |= NUNU_WIN_MATCH_SYNC2.commit_reg();
+  /*p27.REJO*/ changed |= REJO_WY_MATCH_LATCH.commit_latch();
+  /*p27.NOPA*/ changed |= NOPA_WIN_MODE_SYNC.commit_reg();
+  /*p27.SOVY*/ changed |= SOVY_WIN_HIT_SYNC.commit_reg();
+  /*p27.PYNU*/ changed |= PYNU_WIN_MODE_LATCH.commit_latch();
+  /*p27.RYDY*/ changed |= RYDY_WIN_HIT_LATCH.commit_latch();
+
+  /*p27.WYKA*/ changed |= WIN_X3.commit_reg();
+  /*p27.WODY*/ changed |= WIN_X4.commit_reg();
+  /*p27.WOBO*/ changed |= WIN_X5.commit_reg();
+  /*p27.WYKO*/ changed |= WIN_X6.commit_reg();
+  /*p27.XOLO*/ changed |= WIN_X7.commit_reg();
+  /*p27.VYNO*/ changed |= WIN_Y0.commit_reg();
+  /*p27.VUJO*/ changed |= WIN_Y1.commit_reg();
+  /*p27.VYMU*/ changed |= WIN_Y2.commit_reg();
+  /*p27.TUFU*/ changed |= WIN_Y3.commit_reg();
+  /*p27.TAXA*/ changed |= WIN_Y4.commit_reg();
+  /*p27.TOZO*/ changed |= WIN_Y5.commit_reg();
+  /*p27.TATE*/ changed |= WIN_Y6.commit_reg();
+  /*p27.TEKE*/ changed |= WIN_Y7.commit_reg();
+
+  return changed;
+}

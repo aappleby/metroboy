@@ -30,10 +30,8 @@ struct TestGB {
   void tick_window();
 
   void tick_vram_addr();
-  void tick_vram_data();
-  void tick_vram_pins();
 
-  void tick_cart_addr();
+  void tick_bootrom();
   void tick_cart_data();
   void tick_cart_pins();
 
@@ -387,7 +385,7 @@ struct TestGB {
     // AWOD = nor(UNOR, APAP)
     // ABUZ = not(AWOD)
 
-    /*p??.APAP*/ wire APAP = not(cpu_pins.ADDR_VALIDx); // Missing from schematic
+    /*p??.APAP*/ wire APAP = not(cpu_pins.ADDR_VALID); // Missing from schematic
     /*p01.ABUZ*/ wire AWOD = nor(UNOR_MODE_DBG2n(), APAP);
     /*p01.ABUZ*/ wire ABUZ = not(AWOD);
     return ABUZ;
@@ -409,7 +407,7 @@ struct TestGB {
 
     /*p08.SORE*/ wire SORE = not(cpu_pins.A15);
     /*p08.TEVY*/ wire TEVY = or (cpu_pins.A13, cpu_pins.A14, SORE);
-    /*p08.TEXO*/ wire TEXO = and(cpu_pins.ADDR_VALIDx, TEVY);
+    /*p08.TEXO*/ wire TEXO = and(cpu_pins.ADDR_VALID, TEVY);
     return TEXO;
   }
 #endif

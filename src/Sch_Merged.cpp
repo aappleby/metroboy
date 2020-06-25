@@ -232,10 +232,8 @@ void TestGB::tick_everything() {
   tick_cpu_interrupts();
 
   tick_vram_addr();
-  tick_vram_data();
-  tick_vram_pins();
 
-  tick_cart_addr();
+  tick_bootrom();
   tick_cart_data();
   tick_cart_pins();
 

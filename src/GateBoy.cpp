@@ -19,7 +19,7 @@ uint8_t GateBoy::read_cycle(uint16_t addr) {
 
       gb->cpu_pins.CPU_RAW_RD.preset(true, 1);
       gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-      gb->cpu_pins.ADDR_VALIDx.preset(true, 1);
+      gb->cpu_pins.ADDR_VALID.preset(true, 1);
       gb->cpu_pins.preset_addr(true, addr);
 
       // FIXME still don't know who drives these, so we always set them to 0.
@@ -50,7 +50,7 @@ void GateBoy::write_cycle(uint16_t addr, uint8_t data) {
 
       gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
       gb->cpu_pins.CPU_RAW_WR.preset(true, 1);
-      gb->cpu_pins.ADDR_VALIDx.preset(true, 1);
+      gb->cpu_pins.ADDR_VALID.preset(true, 1);
       gb->cpu_pins.preset_addr(true, addr);
       gb->cpu_pins.set_data(true, data);
 
@@ -80,7 +80,7 @@ void GateBoy::pass_cycle() {
 
       gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
       gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-      gb->cpu_pins.ADDR_VALIDx.preset(true, 0);
+      gb->cpu_pins.ADDR_VALID.preset(true, 0);
       gb->cpu_pins.preset_addr(true, 0x0000);
 
       // FIXME still don't know who drives these, so we always set them to 0.
@@ -189,7 +189,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   gb->cpu_pins.CLKREQ.preset(true, 0);
   gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
   gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-  gb->cpu_pins.ADDR_VALIDx.preset(true, 1);
+  gb->cpu_pins.ADDR_VALID.preset(true, 1);
 
   gb->cpu_pins.FROM_CPU5.preset(true, 0);
   gb->cpu_pins.FROM_CPU6.preset(true, 0);

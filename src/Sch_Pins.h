@@ -147,7 +147,7 @@ struct CpuPins {
     text_painter.dprintf("----- CPU BUS -----\n");
     text_painter.dprintf("CPU_RAW_RD    %d\n", CPU_RAW_RD  .a.val);
     text_painter.dprintf("CPU_RAW_WR    %d\n", CPU_RAW_WR  .a.val);
-    text_painter.dprintf("ADDR_VALIDx    %d\n", ADDR_VALIDx  .a.val);
+    text_painter.dprintf("ADDR_VALID    %d\n", ADDR_VALID  .a.val);
     
     text_painter.add_text("Axx ");
     dump2(text_painter, A15.a);
@@ -277,7 +277,7 @@ struct CpuPins {
   PinOut SYRO;          // top right port PORTA_03: <- P25.SYRO
   PinOut READ_BOOTROM;  // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   PinOut UMUT_MODE_DBG1;         // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
-  PinIn  ADDR_VALIDx;   // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
+  PinIn  ADDR_VALID;   // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
                         
   PinIn  A00;           // bottom right port PORTB_00: -> A00
   PinIn  ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack

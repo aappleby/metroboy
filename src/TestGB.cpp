@@ -93,10 +93,10 @@ bool TestGB::commit_everything() {
 
   /*p04.MAKA*/ changed |= FROM_CPU5_SYNC.commit_reg();
 
-  /*p01.AFUR*/ changed |= clk_reg.PHAZ_xBCDExxx.commit_duo();
-  /*p01.ALEF*/ changed |= clk_reg.PHAZ_xxCDEFxx.commit_duo();
-  /*p01.APUK*/ changed |= clk_reg.PHAZ_xxxDEFGx.commit_duo();
-  /*p01.ADYK*/ changed |= clk_reg.PHAZ_xxxxEFGH.commit_duo();
+  /*p01.AFUR*/ changed |= clk_reg.AFUR_PHAZ_xBCDExxx.commit_duo();
+  /*p01.ALEF*/ changed |= clk_reg.ALEF_PHAZ_xxCDEFxx.commit_duo();
+  /*p01.APUK*/ changed |= clk_reg.APUK_PHAZ_xxxDEFGx.commit_duo();
+  /*p01.ADYK*/ changed |= clk_reg.ADYK_PHAZ_xxxxEFGH.commit_duo();
 
   /*p23.VYXE*/ changed |= cfg_reg.LCDC_BGEN.commit_reg();
   /*p23.XYLO*/ changed |= cfg_reg.LCDC_SPEN.commit_reg();
@@ -423,21 +423,15 @@ bool TestGB::commit_everything() {
   /*p21.TUKY*/ changed |= ppu_reg.TAHA_X5.commit_reg();
   /*p21.TAKO*/ changed |= ppu_reg.TYRY_X6.commit_reg();
   /*p21.SYBE*/ changed |= ppu_reg.SYBE_X7.commit_reg();
-  /*p27.NOPA*/ changed |= ppu_reg.NOPA_WIN_MODE_SYNC.commit_reg();
-  /*p27.SOVY*/ changed |= ppu_reg.SOVY_WIN_HIT_SYNC.commit_reg();
   /*p21.XYMU*/ changed |= ppu_reg.XYMU_RENDERINGp.commit_latch();
   /*p21.VOGA*/ changed |= ppu_reg.VOGA_RENDER_DONE_SYNC.commit_reg();
-  /*p27.PYNU*/ changed |= ppu_reg.PYNU_WIN_MODE_LATCH.commit_latch();
-  /*p27.RYDY*/ changed |= ppu_reg.RYDY_WIN_HIT_LATCH.commit_latch();
   /*p21.ROXE*/ changed |= ppu_reg.ROXE_INT_HBL_EN.commit_reg();
   /*p21.RUFO*/ changed |= ppu_reg.RUFO_INT_VBL_EN.commit_reg();
   /*p21.REFE*/ changed |= ppu_reg.REFE_INT_OAM_EN.commit_reg();
   /*p21.RUGU*/ changed |= ppu_reg.RUGU_INT_LYC_EN.commit_reg();
-  /*p27.SARY*/ changed |= ppu_reg.SARY_WIN_MATCH_Y_SYNC.commit_reg();
-  /*p27.RYFA*/ changed |= ppu_reg.RYFA_WIN_MATCH_ONSCREEN_SYNC1.commit_reg();
-  /*p27.RENE*/ changed |= ppu_reg.RENE_WIN_MATCH_ONSCREEN_SYNC2.commit_reg();
-  /*p27.PYCO*/ changed |= ppu_reg.PYCO_WIN_MATCH_SYNC1.commit_reg();
-  /*p27.NUNU*/ changed |= ppu_reg.NUNU_WIN_MATCH_SYNC2.commit_reg();
+
+  changed |= win_reg.commit();
+
   /*p27.LONY*/ changed |= ppu_reg.LONY_BG_READ_VRAM_LATCHp.commit_latch();
   /*p27.LAXU*/ changed |= ppu_reg.LAXU_BFETCH_S0.commit_reg();
   /*p27.MESU*/ changed |= ppu_reg.MESU_BFETCH_S1.commit_reg();
@@ -446,22 +440,8 @@ bool TestGB::commit_everything() {
   /*p24.NYKA*/ changed |= ppu_reg.NYKA_BFETCH_DONE_SYNC.commit_reg();
   /*p24.PORY*/ changed |= ppu_reg.PORY_BFETCH_DONE_SYNC_DELAY.commit_reg();
   /*p27.LYZU*/ changed |= ppu_reg.LYZU_BFETCH_S0_DELAY.commit_reg();
-  /*p27.WYKA*/ changed |= ppu_reg.WIN_X3.commit_reg();
-  /*p27.WODY*/ changed |= ppu_reg.WIN_X4.commit_reg();
-  /*p27.WOBO*/ changed |= ppu_reg.WIN_X5.commit_reg();
-  /*p27.WYKO*/ changed |= ppu_reg.WIN_X6.commit_reg();
-  /*p27.XOLO*/ changed |= ppu_reg.WIN_X7.commit_reg();
-  /*p27.VYNO*/ changed |= ppu_reg.WIN_Y0.commit_reg();
-  /*p27.VUJO*/ changed |= ppu_reg.WIN_Y1.commit_reg();
-  /*p27.VYMU*/ changed |= ppu_reg.WIN_Y2.commit_reg();
-  /*p27.TUFU*/ changed |= ppu_reg.WIN_Y3.commit_reg();
-  /*p27.TAXA*/ changed |= ppu_reg.WIN_Y4.commit_reg();
-  /*p27.TOZO*/ changed |= ppu_reg.WIN_Y5.commit_reg();
-  /*p27.TATE*/ changed |= ppu_reg.WIN_Y6.commit_reg();
-  /*p27.TEKE*/ changed |= ppu_reg.WIN_Y7.commit_reg();
   /*p24.PYGO*/ changed |= ppu_reg.PYGO_TILE_DONE.commit_reg();
   /*p24.POKY*/ changed |= ppu_reg.POKY_FRONT_PORCH_LATCH.commit_latch();
-  /*p27.REJO*/ changed |= ppu_reg.REJO_WY_MATCH_LATCH.commit_latch();
 
   /*p27.TAKA*/ changed |= ppu_reg.TAKA_SFETCH_RUN_LATCH.commit_latch();
   /*p27.SOBU*/ changed |= ppu_reg.SOBU_SPRITE_FETCH_SYNC1.commit_reg();

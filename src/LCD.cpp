@@ -43,7 +43,7 @@ void LCD::tick(const Req& req, Ack& ack) {
     ROPO_LY_MATCH_SYNC = LY == LYC;
   }
 
-  /*p21.SEPA*/ wire FF41_WR = and(CUPA_CPU_WR_xxxxxFGH, req.addr == 0xFF41);
+  wire FF41_WR = and(CUPA_CPU_WR_xxxxxFGH, req.addr == 0xFF41);
 
 
   // PAGO00 << WESY
@@ -53,9 +53,9 @@ void LCD::tick(const Req& req, Ack& ack) {
 
   // WESY polarity wrong? nope.
 
-  /*p21.ROPO*/ ppu_reg.ROPO_LY_MATCH_SYNC.set(TALU_xBCDExxx, WESY_RSTn, LY_MATCHa);
+  ppu_reg.ROPO_LY_MATCH_SYNC.set(TALU_xBCDExxx, WESY_RSTn, LY_MATCHa);
 
-  /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(WESY_RSTn, !FF41_WR);
+  wire PAGO_LYC_MATCH_RST = nor(WESY_RSTn, !FF41_WR);
 
   // LONY00 << LURY03
   // LONY01 nc
@@ -75,18 +75,17 @@ void LCD::tick(const Req& req, Ack& ack) {
   // RUPO04 nc
   // RUPO05 << PAGO03
 
-
-  /*p21.RUPO*/ LYC_MATCH_LATCHn.sr_latch(ROPO_LY_MATCH_SYNC, PAGO_LYC_MATCH_RST);
+  LYC_MATCH_LATCHn.sr_latch(ROPO_LY_MATCH_SYNC, PAGO_LYC_MATCH_RST);
 
 }
 #endif
 
 void LCD::tock(int phase, const Req& /*req*/, bool XONA_LCDC_EN) {
-  /*p21.XYVO*/ bool IN_VBLANK = (Y & 144) == 144;
-  /*p29.ABOV*/ bool VID_LINE_d0 = RUTU_NEW_LINE_d0 && !IN_VBLANK;
-  /*p24.NERU*/ bool LINE_000n = Y != 0;
-  /*p21.NOKO*/ bool LINE_153 = (Y & 153) == 153;
-  /*p21.SANU*/ bool LINE_END = (X & 113) == 113;
+  bool IN_VBLANK = (Y & 144) == 144;
+  bool VID_LINE_d0 = RUTU_NEW_LINE_d0 && !IN_VBLANK;
+  bool LINE_000n = Y != 0;
+  bool LINE_153 = (Y & 153) == 153;
+  bool LINE_END = (X & 113) == 113;
 
   if (PHASE_B) {
     X++;

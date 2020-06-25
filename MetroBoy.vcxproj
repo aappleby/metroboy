@@ -133,6 +133,7 @@
     <ClInclude Include="src\Sch_Pins.h" />
     <ClInclude Include="src\Sch_PPU.h" />
     <ClInclude Include="src\Sch_SpriteStore.h" />
+    <ClInclude Include="src\Sch_Timer.h" />
     <ClInclude Include="src\Sch_Window.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\SPU.h" />

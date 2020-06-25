@@ -33,6 +33,112 @@ using namespace Schematics;
 
 TestGB gb;
 
+ClockSignals ClockSignals::get(TestGB& test_gb) {
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(test_gb.sys_pins.CLK_IN_xBxDxFxH);
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
+  /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+  /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+  /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+  /*p27.MEHE*/ wire MEHE_AxCxExGx = not(ALET_xBxDxFxH);
+  /*p27.MYVO*/ wire MYVO_AxCxExGx = not(ALET_xBxDxFxH);
+
+  return {
+    .ANOS_AxCxExGx = ANOS_AxCxExGx,
+    .ATAL_xBxDxFxH = ATAL_xBxDxFxH,
+    .AZOF_AxCxExGx = AZOF_AxCxExGx,
+    .ZAXY_xBxDxFxH = ZAXY_xBxDxFxH,
+    .ZEME_AxCxExGx = ZEME_AxCxExGx,
+    .ALET_xBxDxFxH = ALET_xBxDxFxH,
+    .MEHE_AxCxExGx = MEHE_AxCxExGx,
+    .MYVO_AxCxExGx = MYVO_AxCxExGx,
+  };
+}
+
+//-----------------------------------------------------------------------------
+
+ResetSignals ResetSignals::get(TestGB& test_gb) {
+  /*p01.AVOR*/ wire AVOR_RSTp = or (test_gb.rst_reg.RESET_REGp.q(), test_gb.rst_reg.ASOL_RST_LATCHp.q());
+  /*p23.XONA*/ wire XONA_LCDC_EN = test_gb.cfg_reg.XONA_LCDC_EN.q();
+
+  /*p01.ALUR*/ wire ALUR_RSTn = not(AVOR_RSTp);   // this goes all over the place
+  /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+  /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
+  /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
+  /*p01.XEBE*/ wire XEBE_RSTn = not(XORE_RSTp);
+  /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
+
+  /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, XONA_LCDC_EN);
+  /*p01.XAPO*/ wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
+  /*p01.PYRY*/ wire PYRY_VID_RSTp = not(XAPO_VID_RSTn);
+  /*p01.TOFU*/ wire TOFU_VID_RSTp = not(XAPO_VID_RSTn);
+  /*p01.LYHA*/ wire LYHA_VID_RSTp = not(XAPO_VID_RSTn);
+  /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(XAPO_VID_RSTn);
+  /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
+
+  return {
+    .ALUR_RSTn = ALUR_RSTn,
+    .DULA_RSTp = DULA_RSTp,
+    .CUNU_RSTn = CUNU_RSTn,
+    .XORE_RSTp = XORE_RSTp,
+    .XEBE_RSTn = XEBE_RSTn,
+    .WESY_RSTn = WESY_RSTn,
+
+    .XODO_VID_RSTp = XODO_VID_RSTp,
+    .XAPO_VID_RSTn = XAPO_VID_RSTn,
+    .PYRY_VID_RSTp = PYRY_VID_RSTp,
+    .TOFU_VID_RSTp = TOFU_VID_RSTp,
+    .LYHA_VID_RSTp = LYHA_VID_RSTp,
+    .LYFE_VID_RSTn = LYFE_VID_RSTn,
+    .ATAR_VID_RSTp = ATAR_VID_RSTp,
+    .ABEZ_VID_RSTn = ABEZ_VID_RSTn,
+  };
+}
+
+//-----------------------------------------------------------------------------
+
+AddressSignals AddressSignals::get(CpuPins& cpu_pins) {
+  /*p03.TOVY*/ wire TOVY_A00n = not(cpu_pins.A00);
+  /*p08.TOLA*/ wire TOLA_A01n = not(cpu_pins.A01);
+  /*p06.SEFY*/ wire SEFY_A02n = not(cpu_pins.A02);
+  /*p07.TONA*/ wire TONA_A08n = not(cpu_pins.A08);
+  /*p07.TUNA*/ wire TUNA_CPU_ADDR_0000_FDFF = nand(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12, cpu_pins.A11, cpu_pins.A10, cpu_pins.A09);
+  /*p06.SARE*/ wire SARE_XX00_XX07p = nor(cpu_pins.A07, cpu_pins.A06, cpu_pins.A05, cpu_pins.A04, cpu_pins.A03);
+  /*p07.SYKE*/ wire SYKE_FFXXp = nor(TUNA_CPU_ADDR_0000_FDFF, TONA_A08n);
+
+  return {
+    /*p03.TOVY*/ .TOVY_A00n               = TOVY_A00n,
+    /*p08.TOLA*/ .TOLA_A01n               = TOLA_A01n,
+    /*p06.SEFY*/ .SEFY_A02n               = SEFY_A02n,
+    /*p07.TONA*/ .TONA_A08n               = TONA_A08n,
+    /*p07.TUNA*/ .TUNA_CPU_ADDR_0000_FDFF = TUNA_CPU_ADDR_0000_FDFF,
+    /*p06.SARE*/ .SARE_XX00_XX07p         = SARE_XX00_XX07p, 
+    /*p07.SYKE*/ .SYKE_FFXXp              = SYKE_FFXXp,         
+
+  };
+}
+
+//-----------------------------------------------------------------------------
+
+DebugSignals DebugSignals::get(TestGB& test_gb) {
+  /*p07.UBET*/ wire UBET_T1n = not(test_gb.sys_pins.T1);
+  /*p07.UVAR*/ wire UVAR_T2n = not(test_gb.sys_pins.T2);
+  /*p07.UMUT*/ wire UMUT_MODE_DBG1 = and (test_gb.sys_pins.T1, UVAR_T2n);
+  /*p07.UNOR*/ wire UNOR_MODE_DBG2n = and (test_gb.sys_pins.T2, UBET_T1n);
+  /*p08.TOVA*/ wire TOVA_MODE_DBG2p = not(UNOR_MODE_DBG2n);
+  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, test_gb.sys_pins.RST);
+
+  return {
+    UBET_T1n,
+    UVAR_T2n,
+    UMUT_MODE_DBG1,
+    UNOR_MODE_DBG2n,
+    TOVA_MODE_DBG2p,
+    UPOJ_MODE_PRODn,
+  };
+}
+
 //-----------------------------------------------------------------------------
 
 #if 0
@@ -88,8 +194,8 @@ ADAR = not(ADYK)
 
 // Hax
 
-/*p01.ADYK*/ clk_reg.PHAZ_xxxxEFGH
-/*p01.AFUR*/ clk_reg.PHAZ_xBCDExxx
+/*p01.ADYK*/ clk_reg.ADYK_PHAZ_xxxxEFGH
+/*p01.AFUR*/ clk_reg.AFUR_PHAZ_xBCDExxx
 
 ABOL = not(CLKREQ)
 ATEZ = not(CLKIN_A)
@@ -128,10 +234,10 @@ void TestGB::tick_everything() {
   ///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
 
   {
-    /*p01.AFUR*/ clk_reg.PHAZ_xBCDExxx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), !clk_reg.PHAZ_xxxxEFGH.a);
-    /*p01.ALEF*/ clk_reg.PHAZ_xxCDEFxx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.PHAZ_xBCDExxx.a);
-    /*p01.APUK*/ clk_reg.PHAZ_xxxDEFGx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.PHAZ_xxCDEFxx.a);
-    /*p01.ADYK*/ clk_reg.PHAZ_xxxxEFGH.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.PHAZ_xxxDEFGx.a);
+    /*p01.AFUR*/ clk_reg.AFUR_PHAZ_xBCDExxx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), !clk_reg.ADYK_PHAZ_xxxxEFGH.a);
+    /*p01.ALEF*/ clk_reg.ALEF_PHAZ_xxCDEFxx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.AFUR_PHAZ_xBCDExxx.a);
+    /*p01.APUK*/ clk_reg.APUK_PHAZ_xxxDEFGx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.ALEF_PHAZ_xxCDEFxx.a);
+    /*p01.ADYK*/ clk_reg.ADYK_PHAZ_xxxxEFGH.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.APUK_PHAZ_xxxDEFGx.a);
   }
 
   {
@@ -179,7 +285,6 @@ void TestGB::tick_everything() {
 
     /*p01.ASOL*/ wire ASOL_RST = or (AFAR_RST, sys_pins.RST);
     /*p01.AFER*/ rst_reg.RESET_REGp.set(BOMA_xBxxxxxx, UPOJ_MODE_PRODn(), ASOL_RST);
-    ///*p01.AVOR*/ wire AVOR_RST = or (rst_reg.RESET_REGp, ASOL_RST);
   }
 
 
@@ -222,15 +327,14 @@ void TestGB::tick_everything() {
 
   dma_reg.tick(*this);
   tick_timer();
-  tick_serial(cpu_pins);
+  ser_reg.tick(*this);
   tick_joypad();
   tick_ppu();
   sst_reg.tick(*this);
   tick_lcd();
 
   tick_pixpipe();
-  tick_cpu_interrupts();
-
+  tick_cpu();
   tick_vram_addr();
 
   tick_bootrom();

@@ -5,6 +5,7 @@
 #include "Sch_SpriteStore.h"
 #include "Sch_OAM.h"
 #include "Sch_PPU.h"
+#include "Sch_Window.h"
 
 namespace Schematics {
 
@@ -17,13 +18,8 @@ struct TestGB {
   void tick_everything();
   bool commit_everything();
 
-  void tick_cpu_addr();
-  void tick_cpu_read();
-  void tick_cpu_write();
-  void tick_cpu_pins();
-  void tick_cpu_interrupts();
+  void tick_cpu();
 
-  void tick_serial(CpuPins& cpu_pins);
   void tick_timer();
   void tick_joypad();
   void tick_lcd();
@@ -103,17 +99,17 @@ struct TestGB {
 // Root 1 mhz clocks
 
   wire AFAS_xxxxxFGH() const {
-    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.PHAZ_xxxxEFGH.q());
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.PHAZ_xBCDExxx.qn());
+    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.ADYK_PHAZ_xxxxEFGH.q());
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
     /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
     return AFAS_xxxxxFGH;
   }
 
   wire BUKE_ABxxxxxH() const {
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_pins.CLKREQ);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.PHAZ_xxCDEFxx.q());
+    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.ALEF_PHAZ_xxCDEFxx.q());
     /*p01.BUGO*/ wire BUGO_xxCDEFxx = not(AFEP_ABxxxxGH);
-    /*p01.AROV*/ wire AROV_xxxDEFGx = not(clk_reg.PHAZ_xxxDEFGx.qn());
+    /*p01.AROV*/ wire AROV_xxxDEFGx = not(clk_reg.APUK_PHAZ_xxxDEFGx.qn());
     /*p01.BATE*/ wire BATE_ABxxxxxH = nor(ABOL_CLKREQn, BUGO_xxCDEFxx, AROV_xxxDEFGx);
     /*p01.BASU*/ wire BASU_xxCDEFGx = not(BATE_ABxxxxxH);
     /*p01.BUKE*/ wire BUKE_ABxxxxxH = not(BASU_xxCDEFGx);
@@ -121,7 +117,7 @@ struct TestGB {
   }
 
   wire BUDE_AxxxxFGH() const {
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.PHAZ_xBCDExxx.qn());
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
     /*p01.ABOL*/ wire ABOL_CLKREQn = not(cpu_pins.CLKREQ);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn, ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
@@ -130,9 +126,9 @@ struct TestGB {
   }
 
   wire BOLO_xBCDEFGx() const {
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.PHAZ_xBCDExxx.qn());
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
     /*p01.ABOL*/ wire ABOL_CLKREQn = not(cpu_pins.CLKREQ);
-    /*p01.AROV*/ wire AROV_xxxDEFGx = not(clk_reg.PHAZ_xxxDEFGx.qn());
+    /*p01.AROV*/ wire AROV_xxxDEFGx = not(clk_reg.APUK_PHAZ_xxxDEFGx.qn());
     /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn, AROV_xxxDEFGx, ATYP_xBCDExxx);
     /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);
     /*p01.BUFA*/ wire BUFA_AxxxxxxH = not(BERU_xBCDEFGx);
@@ -146,8 +142,8 @@ struct TestGB {
     /*p01.BANE*/ wire BANE_xBCDExxx = not(BEJA_AxxxxFGH);
     /*p01.BELO*/ wire BELO_AxxxxFGH = not(BANE_xBCDExxx);
     /*p01.BAZE*/ wire BAZE_xBCDExxx = not(BELO_AxxxxFGH);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.PHAZ_xxCDEFxx.q());
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.PHAZ_xBCDExxx.qn());
+    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.ALEF_PHAZ_xxCDEFxx.q());
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
     /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
     /*p01.BELE*/ wire BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
     /*p01.ATEZ*/ wire ATEZ_CLKBAD = not(sys_pins.CLK_GOOD);
@@ -317,7 +313,7 @@ struct TestGB {
   // Window signals
 
   wire SYLO_WIN_HITn() const {
-    /*p27.SYLO*/ wire SYLO_WIN_HITn = not(ppu_reg.RYDY_WIN_HIT_LATCH.q());
+    /*p27.SYLO*/ wire SYLO_WIN_HITn = not(win_reg.RYDY_WIN_HIT_LATCH.q());
     return SYLO_WIN_HITn;
   }
 
@@ -334,14 +330,9 @@ struct TestGB {
   }
 
   wire PORE_WIN_MODE() const {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(ppu_reg.PYNU_WIN_MODE_LATCH.q());
+    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(win_reg.PYNU_WIN_MODE_LATCH.q());
     /*p27.PORE*/ wire PORE_WIN_MODE = not(NOCU_WIN_MODEn);
     return PORE_WIN_MODE;
-  }
-
-  wire AXAD_WIN_MODEn() const {
-    /*p26.AXAD*/ wire AXAD_WIN_MODEn = not(PORE_WIN_MODE());
-    return AXAD_WIN_MODEn;
   }
 
   wire XOFO_WIN_RST() const {
@@ -422,15 +413,15 @@ struct TestGB {
     return SYRO_CPU_ADDR_FE00_FFFFp;
   }
 
-  wire SYKE_CPU_ADDR_FFXXp() const {
-    /*p07.TONA*/ wire TONA_ADDR_08n = not(cpu_pins.A08);
-    /*p07.SYKE*/ wire SYKE_CPU_ADDR_FFXXp = nor(TUNA_CPU_ADDR_0000_FDFF(), TONA_ADDR_08n);
-    return SYKE_CPU_ADDR_FFXXp;
+  wire SYKE_FFXXp() const {
+    /*p07.TONA*/ wire TONA_A08n = not(cpu_pins.A08);
+    /*p07.SYKE*/ wire SYKE_FFXXp = nor(TUNA_CPU_ADDR_0000_FDFF(), TONA_A08n);
+    return SYKE_FFXXp;
   }
 
   wire WERO_CPU_ADDR_FF4Xp() const {
     /*p22.XALY*/ wire XALY_ADDR_0x00xxxx = nor(cpu_pins.A07, cpu_pins.A05, cpu_pins.A04);
-    /*p22.WUTU*/ wire WUTU_FF4Xn = nand(SYKE_CPU_ADDR_FFXXp(), cpu_pins.A06, XALY_ADDR_0x00xxxx);
+    /*p22.WUTU*/ wire WUTU_FF4Xn = nand(SYKE_FFXXp(), cpu_pins.A06, XALY_ADDR_0x00xxxx);
     /*p22.WERO*/ wire WERO_CPU_ADDR_FF4Xp = not(WUTU_FF4Xn);
     return WERO_CPU_ADDR_FF4Xp;
   }
@@ -478,6 +469,7 @@ struct TestGB {
   VclkRegisters vck_reg;// dumped
   PpuRegisters ppu_reg;// dumped
   OamRegisters oam_reg;// dumped
+  WindowRegisters win_reg;
 
   SysPins sys_pins; // dumped
   VramPins vram_pins; // dumped

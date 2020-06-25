@@ -9,22 +9,87 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
+struct ClockSignals {
+  static ClockSignals get(TestGB& gb);
+
+  /*p01.ANOS*/ wire ANOS_AxCxExGx;
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH;
+  /*p01.AZOF*/ wire AZOF_AxCxExGx;
+  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH;
+  /*p01.ZEME*/ wire ZEME_AxCxExGx;
+  /*p01.ALET*/ wire ALET_xBxDxFxH;
+  /*p27.MEHE*/ wire MEHE_AxCxExGx;
+  /*p27.MYVO*/ wire MYVO_AxCxExGx;
+};
+
+//-----------------------------------------------------------------------------
+
+struct ResetSignals {
+  static ResetSignals get(TestGB& gb);
+
+  /*p01.ALUR*/ wire ALUR_RSTn;
+  /*p01.DULA*/ wire DULA_RSTp;
+  /*p01.CUNU*/ wire CUNU_RSTn;
+  /*p01.XORE*/ wire XORE_RSTp;
+  /*p01.XEBE*/ wire XEBE_RSTn;
+  /*p01.WESY*/ wire WESY_RSTn;
+
+  /*p01.XODO*/ wire XODO_VID_RSTp;
+  /*p01.XAPO*/ wire XAPO_VID_RSTn;
+  /*p01.PYRY*/ wire PYRY_VID_RSTp;
+  /*p01.TOFU*/ wire TOFU_VID_RSTp;
+  /*p01.LYHA*/ wire LYHA_VID_RSTp;
+  /*p01.LYFE*/ wire LYFE_VID_RSTn;
+  /*p01.ATAR*/ wire ATAR_VID_RSTp;
+  /*p01.ABEZ*/ wire ABEZ_VID_RSTn;
+};
+
+//-----------------------------------------------------------------------------
+
+struct AddressSignals {
+  static AddressSignals get(CpuPins& cpu_pins);
+
+  /*p03.TOVY*/ wire TOVY_A00n;
+  /*p08.TOLA*/ wire TOLA_A01n;
+  /*p06.SEFY*/ wire SEFY_A02n;
+  /*p07.TONA*/ wire TONA_A08n;
+  /*p07.TUNA*/ wire TUNA_CPU_ADDR_0000_FDFF;
+  /*p06.SARE*/ wire SARE_XX00_XX07p;
+  /*p07.SYKE*/ wire SYKE_FFXXp;
+};
+
+
+//-----------------------------------------------------------------------------
+
+struct DebugSignals {
+  static DebugSignals get(TestGB& gb);
+
+  /*p07.UBET*/ wire UBET_T1n;
+  /*p07.UVAR*/ wire UVAR_T2n;
+  /*p07.UMUT*/ wire UMUT_MODE_DBG1;
+  /*p07.UNOR*/ wire UNOR_MODE_DBG2n;
+  /*p08.TOVA*/ wire TOVA_MODE_DBG2p;
+  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn;
+};
+
+//-----------------------------------------------------------------------------
+
 struct ClkRegisters {
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- CLK_REG -----\n");
-    dump_long(text_painter, "PHAZ_xBCDExxx ", PHAZ_xBCDExxx.a);
-    dump_long(text_painter, "PHAZ_xxCDEFxx ", PHAZ_xxCDEFxx.a);
-    dump_long(text_painter, "PHAZ_xxxDEFGx ", PHAZ_xxxDEFGx.a);
-    dump_long(text_painter, "PHAZ_xxxxEFGH ", PHAZ_xxxxEFGH.a);
+    dump_long(text_painter, "AFUR_PHAZ_xBCDExxx ", AFUR_PHAZ_xBCDExxx.a);
+    dump_long(text_painter, "ALEF_PHAZ_xxCDEFxx ", ALEF_PHAZ_xxCDEFxx.a);
+    dump_long(text_painter, "APUK_PHAZ_xxxDEFGx ", APUK_PHAZ_xxxDEFGx.a);
+    dump_long(text_painter, "ADYK_PHAZ_xxxxEFGH ", ADYK_PHAZ_xxxxEFGH.a);
     text_painter.newline();
   }
 
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ RegDuo PHAZ_xBCDExxx;
-  /*p01.ALEF*/ RegDuo PHAZ_xxCDEFxx;
-  /*p01.APUK*/ RegDuo PHAZ_xxxDEFGx;
-  /*p01.ADYK*/ RegDuo PHAZ_xxxxEFGH;
+  /*p01.AFUR*/ RegDuo AFUR_PHAZ_xBCDExxx;
+  /*p01.ALEF*/ RegDuo ALEF_PHAZ_xxCDEFxx;
+  /*p01.APUK*/ RegDuo APUK_PHAZ_xxxDEFGx;
+  /*p01.ADYK*/ RegDuo ADYK_PHAZ_xxxxEFGH;
 };
 
 //-----------------------------------------------------------------------------
@@ -376,17 +441,7 @@ struct LcdRegisters {
     return (MUWY_Y0.q() << 0) | (MYRO_Y1.q() << 1) | (LEXA_Y2.q() << 2) | (LYDO_Y3.q() << 3) | (LOVU_Y4.q() << 4) | (LEMA_Y5.q() << 5) | (MATO_Y6.q() << 6) | (LAFO_Y7.q() << 7);
   }
 
-  void tick(
-    bool CUNU_RSTn,
-    bool VENA_xBCDExxx,
-    bool WUVU_AxxDExxH,
-    bool UGOT_DIV_06,
-    bool TULU_DIV_07,
-    bool XONA_LCDC_EN,
-    bool RYPO_LCD_CP,
-    bool PATY_PIX_OUT_LO,
-    bool PERO_PIX_OUT_HI,
-    bool SEPA_FF41_WR);
+  void tick(TestGB& gb);
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- LCD REG -----\n");
@@ -683,6 +738,8 @@ struct RstRegisters {
 //-----------------------------------------------------------------------------
 
 struct SerialRegisters {
+
+  void tick(TestGB& gb);
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- SER_REG -----\n");

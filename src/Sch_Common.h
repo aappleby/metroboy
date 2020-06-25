@@ -253,9 +253,11 @@ struct Signal : public SignalBase {
     a = val ? SET_1 : SET_0;
   }
 
+  /*
   void reset() {
     a = ERROR;
   }
+  */
 };
 
 //-----------------------------------------------------------------------------

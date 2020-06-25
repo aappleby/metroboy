@@ -195,17 +195,6 @@ void TestGB::tick_everything() {
   //----------------------------------------
   // sch_system
 
-  ///*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
-  ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
-
-  /*p01.UNUT*/ wire TIMEOUT = and(rst_reg.TUBO_CLKREQn_LATCH, tim_reg.UPOF_DIV_15);
-  /*p01.TABA*/ wire TABA_RST = or (UNOR_MODE_DBG2n(), UMUT_MODE_DBG1(), TIMEOUT);
-  /*p01.ALYP*/ wire ALYP_RSTn = not(TABA_RST);
-  /*p01.AFAR*/ wire AFAR_RST = nor(ALYP_RSTn, sys_pins.RST);
-
-  // ASOL has arms on the ground side, output on the top rung - nor latch with inverted output
-  /*p01.ASOL*/ rst_reg.ASOL_RST_LATCHp.nor_latch(AFAR_RST, sys_pins.RST); // Schematic wrong, this is a latch.
-
   //----------------------------------------
   // sch_clocks
 
@@ -244,8 +233,6 @@ void TestGB::tick_everything() {
 
   {
 
-    /*p01.ASOL*/ wire ASOL_RST = or (AFAR_RST, sys_pins.RST);
-    /*p01.AFER*/ rst_reg.RESET_REGp.set(clk_sig.BOMA_xBxxxxxx, UPOJ_MODE_PRODn(), ASOL_RST);
   }
 
 
@@ -266,9 +253,6 @@ void TestGB::tick_everything() {
   // sch_clocks
 
   {
-    /*p29.WUVU*/ clk_reg.WUVU_AxxDExxH.set( clk_sig.XOTA_xBxDxFxH, XAPO_VID_RSTn(), !clk_reg.WUVU_AxxDExxH);
-    /*p21.VENA*/ clk_reg.VENA_xBCDExxx.set(!clk_reg.WUVU_AxxDExxH, XAPO_VID_RSTn(), !clk_reg.VENA_xBCDExxx);
-    /*p29.WOSU*/ clk_reg.WOSU_xxCDxxGH.set( clk_sig.XYFY_AxCxExGx, XAPO_VID_RSTn(), !clk_reg.WUVU_AxxDExxH);
   }
 
   {

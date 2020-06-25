@@ -133,6 +133,7 @@
     <ClInclude Include="src\Sch_OAM.h" />
     <ClInclude Include="src\Sch_Pins.h" />
     <ClInclude Include="src\Sch_PPU.h" />
+    <ClInclude Include="src\Sch_Resets.h" />
     <ClInclude Include="src\Sch_SpriteStore.h" />
     <ClInclude Include="src\Sch_Timer.h" />
     <ClInclude Include="src\Sch_Window.h" />
@@ -199,6 +200,7 @@
     <ClCompile Include="src\Sch_OAM.cpp" />
     <ClCompile Include="src\Sch_PixPipe.cpp" />
     <ClCompile Include="src\Sch_PPU.cpp" />
+    <ClCompile Include="src\Sch_Resets.cpp" />
     <ClCompile Include="src\Sch_Serial.cpp" />
     <ClCompile Include="src\Sch_SpriteStore.cpp" />
     <ClCompile Include="src\Sch_Timer.cpp" />

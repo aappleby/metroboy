@@ -9,28 +9,6 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
-struct ResetSignals {
-  static ResetSignals get(const TestGB& gb);
-
-  /*p01.ALUR*/ wire ALUR_RSTn;
-  /*p01.DULA*/ wire DULA_RSTp;
-  /*p01.CUNU*/ wire CUNU_RSTn;
-  /*p01.XORE*/ wire XORE_RSTp;
-  /*p01.XEBE*/ wire XEBE_RSTn;
-  /*p01.WESY*/ wire WESY_RSTn;
-
-  /*p01.XODO*/ wire XODO_VID_RSTp;
-  /*p01.XAPO*/ wire XAPO_VID_RSTn;
-  /*p01.PYRY*/ wire PYRY_VID_RSTp;
-  /*p01.TOFU*/ wire TOFU_VID_RSTp;
-  /*p01.LYHA*/ wire LYHA_VID_RSTp;
-  /*p01.LYFE*/ wire LYFE_VID_RSTn;
-  /*p01.ATAR*/ wire ATAR_VID_RSTp;
-  /*p01.ABEZ*/ wire ABEZ_VID_RSTn;
-};
-
-//-----------------------------------------------------------------------------
-
 struct AddressSignals {
   static AddressSignals get(const CpuPins& cpu_pins);
 
@@ -664,22 +642,6 @@ struct PixelPipeRegisters {
   /*p26.WODA*/ Reg MASK_PIPE_5;
   /*p26.VUMO*/ Reg MASK_PIPE_6;
   /*p26.VAVA*/ Reg MASK_PIPE_7;
-};
-
-//-----------------------------------------------------------------------------
-
-struct RstRegisters {
-
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf("----- RST_REG -----\n");
-    TUBO_CLKREQn_LATCH.dump(text_painter, "TUBO_CLKREQn_LATCH ");
-    RESET_REGp        .dump(text_painter, "RESET_REGp          ");
-    text_painter.newline();
-  }
-
-  /*p01.TUBO*/ NorLatch TUBO_CLKREQn_LATCH;
-  /*p01.ASOL*/ NorLatch ASOL_RST_LATCHp; // Schematic wrong, this is a latch.
-  /*p01.AFER*/ Reg   RESET_REGp;
 };
 
 //-----------------------------------------------------------------------------

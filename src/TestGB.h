@@ -7,6 +7,7 @@
 #include "Sch_PPU.h"
 #include "Sch_Window.h"
 #include "Sch_Clocks.h"
+#include "Sch_Resets.h"
 
 namespace Schematics {
 
@@ -376,7 +377,7 @@ struct TestGB {
 
   LcdRegisters lcd_reg;// dumped
   PixelPipeRegisters pxp_reg;// dumped
-  RstRegisters rst_reg;// dumped
+  ResetRegisters rst_reg;// dumped
   SerialRegisters ser_reg;// dumped
   SpriteStoreRegisters sst_reg;// dumped
   TimerRegisters tim_reg;// dumped

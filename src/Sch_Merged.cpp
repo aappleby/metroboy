@@ -106,6 +106,8 @@ DebugSignals DebugSignals::get(const TestGB& test_gb) {
   /*p07.UNOR*/ wire UNOR_MODE_DBG2n = and (test_gb.sys_pins.T2, UBET_T1n);
   /*p08.TOVA*/ wire TOVA_MODE_DBG2p = not(UNOR_MODE_DBG2n);
   /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, test_gb.sys_pins.RST);
+  /*p08.RYCA*/ wire RYCA_MODE_DBG2p = not(UNOR_MODE_DBG2n);
+
 
   return {
     UBET_T1n,
@@ -114,6 +116,7 @@ DebugSignals DebugSignals::get(const TestGB& test_gb) {
     UNOR_MODE_DBG2n,
     TOVA_MODE_DBG2p,
     UPOJ_MODE_PRODn,
+    RYCA_MODE_DBG2p,
   };
 }
 

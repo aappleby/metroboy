@@ -33,6 +33,8 @@ struct DebugSignals {
   /*p07.UNOR*/ wire UNOR_MODE_DBG2n;
   /*p08.TOVA*/ wire TOVA_MODE_DBG2p;
   /*p07.UPOJ*/ wire UPOJ_MODE_PRODn;
+  /*p08.RYCA*/ wire RYCA_MODE_DBG2p;
+
 };
 
 //-----------------------------------------------------------------------------

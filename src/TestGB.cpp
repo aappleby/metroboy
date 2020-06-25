@@ -405,9 +405,9 @@ bool TestGB::commit_everything() {
   /*p03.SAMY*/ changed |= tim_reg.TAC_1.commit_reg();
   /*p03.SABO*/ changed |= tim_reg.TAC_2.commit_reg();
 
-  /*p29.WUVU*/ changed |= vck_reg.WUVU_AxxDExxH.commit_reg();
-  /*p21.VENA*/ changed |= vck_reg.VENA_xBCDExxx.commit_reg();
-  /*p29.WOSU*/ changed |= vck_reg.WOSU_xxCDxxGH.commit_reg();
+  /*p29.WUVU*/ changed |= clk_reg.WUVU_AxxDExxH.commit_reg();
+  /*p21.VENA*/ changed |= clk_reg.VENA_xBCDExxx.commit_reg();
+  /*p29.WOSU*/ changed |= clk_reg.WOSU_xxCDxxGH.commit_reg();
 
   /*p??.ROXY*/ changed |= ppu_reg.ROXY_FINE_MATCH_LATCHn.commit_latch();
   /*p??.PUXA*/ changed |= ppu_reg.PUXA_FINE_MATCH_SYNC1.commit_reg();

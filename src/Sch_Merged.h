@@ -9,23 +9,8 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
-struct ClockSignals {
-  static ClockSignals get(TestGB& gb);
-
-  /*p01.ANOS*/ wire ANOS_AxCxExGx;
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH;
-  /*p01.AZOF*/ wire AZOF_AxCxExGx;
-  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH;
-  /*p01.ZEME*/ wire ZEME_AxCxExGx;
-  /*p01.ALET*/ wire ALET_xBxDxFxH;
-  /*p27.MEHE*/ wire MEHE_AxCxExGx;
-  /*p27.MYVO*/ wire MYVO_AxCxExGx;
-};
-
-//-----------------------------------------------------------------------------
-
 struct ResetSignals {
-  static ResetSignals get(TestGB& gb);
+  static ResetSignals get(const TestGB& gb);
 
   /*p01.ALUR*/ wire ALUR_RSTn;
   /*p01.DULA*/ wire DULA_RSTp;
@@ -47,7 +32,7 @@ struct ResetSignals {
 //-----------------------------------------------------------------------------
 
 struct AddressSignals {
-  static AddressSignals get(CpuPins& cpu_pins);
+  static AddressSignals get(const CpuPins& cpu_pins);
 
   /*p03.TOVY*/ wire TOVY_A00n;
   /*p08.TOLA*/ wire TOLA_A01n;
@@ -62,7 +47,7 @@ struct AddressSignals {
 //-----------------------------------------------------------------------------
 
 struct DebugSignals {
-  static DebugSignals get(TestGB& gb);
+  static DebugSignals get(const TestGB& gb);
 
   /*p07.UBET*/ wire UBET_T1n;
   /*p07.UVAR*/ wire UVAR_T2n;
@@ -70,44 +55,6 @@ struct DebugSignals {
   /*p07.UNOR*/ wire UNOR_MODE_DBG2n;
   /*p08.TOVA*/ wire TOVA_MODE_DBG2p;
   /*p07.UPOJ*/ wire UPOJ_MODE_PRODn;
-};
-
-//-----------------------------------------------------------------------------
-
-struct ClkRegisters {
-
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf(" ----- CLK_REG -----\n");
-    dump_long(text_painter, "AFUR_PHAZ_xBCDExxx ", AFUR_PHAZ_xBCDExxx.a);
-    dump_long(text_painter, "ALEF_PHAZ_xxCDEFxx ", ALEF_PHAZ_xxCDEFxx.a);
-    dump_long(text_painter, "APUK_PHAZ_xxxDEFGx ", APUK_PHAZ_xxxDEFGx.a);
-    dump_long(text_painter, "ADYK_PHAZ_xxxxEFGH ", ADYK_PHAZ_xxxxEFGH.a);
-    text_painter.newline();
-  }
-
-  // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ RegDuo AFUR_PHAZ_xBCDExxx;
-  /*p01.ALEF*/ RegDuo ALEF_PHAZ_xxCDEFxx;
-  /*p01.APUK*/ RegDuo APUK_PHAZ_xxxDEFGx;
-  /*p01.ADYK*/ RegDuo ADYK_PHAZ_xxxxEFGH;
-};
-
-//-----------------------------------------------------------------------------
-// Video clocks
-
-struct VclkRegisters {
-
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf("----- VCLK_REG -----\n");
-    WUVU_AxxDExxH.dump(text_painter, "WUVU_AxxDExxH ");
-    VENA_xBCDExxx.dump(text_painter, "VENA_xBCDExxx ");
-    WOSU_xxCDxxGH.dump(text_painter, "WOSU_xxCDxxGH ");
-    text_painter.newline();
-  }
-
-  /*p29.WUVU*/ Reg WUVU_AxxDExxH;
-  /*p21.VENA*/ Reg VENA_xBCDExxx;
-  /*p29.WOSU*/ Reg WOSU_xxCDxxGH;
 };
 
 //-----------------------------------------------------------------------------

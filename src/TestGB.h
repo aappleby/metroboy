@@ -6,6 +6,7 @@
 #include "Sch_OAM.h"
 #include "Sch_PPU.h"
 #include "Sch_Window.h"
+#include "Sch_Clocks.h"
 
 namespace Schematics {
 
@@ -67,94 +68,6 @@ struct TestGB {
     /*p07.UBET*/ wire UBET_T1n = not(sys_pins.T1);
     /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, sys_pins.RST);
     return UPOJ_MODE_PRODn;
-  }
-
-  //----------------------------------------
-  // Root 4 mhz clocks
-
-  wire ANOS_AxCxExGx() const {
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(sys_pins.CLK_IN_xBxDxFxH);
-    return ANOS_AxCxExGx;
-  }
-
-  wire ATAL_xBxDxFxH() const {
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx());
-    return ATAL_xBxDxFxH;
-  }
-
-  wire ALET_xBxDxFxH() const {
-    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH());
-    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-    /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
-    return ALET_xBxDxFxH;
-  }
-
-  wire MYVO_AxCxExGx() const {
-    /*p27.MYVO*/ wire MYVO = not(ALET_xBxDxFxH());
-    return MYVO;
-  }
-
-  //----------------------------------------
-// Root 1 mhz clocks
-
-  wire AFAS_xxxxxFGH() const {
-    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.ADYK_PHAZ_xxxxEFGH.q());
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
-    /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
-    return AFAS_xxxxxFGH;
-  }
-
-  wire BUKE_ABxxxxxH() const {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_pins.CLKREQ);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.ALEF_PHAZ_xxCDEFxx.q());
-    /*p01.BUGO*/ wire BUGO_xxCDEFxx = not(AFEP_ABxxxxGH);
-    /*p01.AROV*/ wire AROV_xxxDEFGx = not(clk_reg.APUK_PHAZ_xxxDEFGx.qn());
-    /*p01.BATE*/ wire BATE_ABxxxxxH = nor(ABOL_CLKREQn, BUGO_xxCDEFxx, AROV_xxxDEFGx);
-    /*p01.BASU*/ wire BASU_xxCDEFGx = not(BATE_ABxxxxxH);
-    /*p01.BUKE*/ wire BUKE_ABxxxxxH = not(BASU_xxCDEFGx);
-    return BUKE_ABxxxxxH;
-  }
-
-  wire BUDE_AxxxxFGH() const {
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
-    /*p01.ABOL*/ wire ABOL_CLKREQn = not(cpu_pins.CLKREQ);
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn, ATYP_xBCDExxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    return BUDE_AxxxxFGH;
-  }
-
-  wire BOLO_xBCDEFGx() const {
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
-    /*p01.ABOL*/ wire ABOL_CLKREQn = not(cpu_pins.CLKREQ);
-    /*p01.AROV*/ wire AROV_xxxDEFGx = not(clk_reg.APUK_PHAZ_xxxDEFGx.qn());
-    /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn, AROV_xxxDEFGx, ATYP_xBCDExxx);
-    /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);
-    /*p01.BUFA*/ wire BUFA_AxxxxxxH = not(BERU_xBCDEFGx);
-    /*p01.BOLO*/ wire BOLO_xBCDEFGx = not(BUFA_AxxxxxxH);
-    return BOLO_xBCDEFGx;
-  }
-
-  wire BALY_xBxxxxxx() const {
-    /*p01.BEKO*/ wire BEKO_xBCDExxx = not(BUDE_AxxxxFGH());
-    /*p01.BEJA*/ wire BEJA_AxxxxFGH = nand(BOLO_xBCDEFGx(), BEKO_xBCDExxx);
-    /*p01.BANE*/ wire BANE_xBCDExxx = not(BEJA_AxxxxFGH);
-    /*p01.BELO*/ wire BELO_AxxxxFGH = not(BANE_xBCDExxx);
-    /*p01.BAZE*/ wire BAZE_xBCDExxx = not(BELO_AxxxxFGH);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.ALEF_PHAZ_xxCDEFxx.q());
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
-    /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
-    /*p01.BELE*/ wire BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
-    /*p01.ATEZ*/ wire ATEZ_CLKBAD = not(sys_pins.CLK_GOOD);
-    /*p01.BYJU*/ wire BYJU_AxCDEFGH = nor(BELE_xBxxxxxx, ATEZ_CLKBAD);
-    /*p01.BALY*/ wire BALY_xBxxxxxx = not(BYJU_AxCDEFGH);
-    return BALY_xBxxxxxx;
-  }
-
-  wire BOGA_AxCDEFGH() const {
-    /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx());
-    return BOGA_AxCDEFGH;
   }
 
   //----------------------------------------
@@ -289,7 +202,10 @@ struct TestGB {
   }
 
   wire AREV_CPU_WRn_ABCDExxx() const {
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_pins.CPU_RAW_WR, AFAS_xxxxxFGH());
+    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.ADYK_PHAZ_xxxxEFGH.q());
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
+    /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_pins.CPU_RAW_WR, AFAS_xxxxxFGH);
     return AREV_CPU_WRn_ABCDExxx;
   }
 
@@ -452,7 +368,7 @@ struct TestGB {
   uint8_t hiram[128];
   */
 
-  ClkRegisters clk_reg; // dumped
+  ClockRegisters clk_reg; // dumped
   BusRegisters bus_reg;// dumped
   ConfigRegisters cfg_reg;// dumped
   DebugRegisters dbg_reg;// dumped
@@ -466,7 +382,6 @@ struct TestGB {
   SerialRegisters ser_reg;// dumped
   SpriteStoreRegisters sst_reg;// dumped
   TimerRegisters tim_reg;// dumped
-  VclkRegisters vck_reg;// dumped
   PpuRegisters ppu_reg;// dumped
   OamRegisters oam_reg;// dumped
   WindowRegisters win_reg;

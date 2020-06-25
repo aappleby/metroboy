@@ -126,6 +126,7 @@
     <ClInclude Include="src\Sch_Channel2.h" />
     <ClInclude Include="src\Sch_Channel3.h" />
     <ClInclude Include="src\Sch_Channel4.h" />
+    <ClInclude Include="src\Sch_Clocks.h" />
     <ClInclude Include="src\Sch_Common.h" />
     <ClInclude Include="src\Sch_DMA.h" />
     <ClInclude Include="src\Sch_Merged.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="src\Sch_Channel2.cpp" />
     <ClCompile Include="src\Sch_Channel3.cpp" />
     <ClCompile Include="src\Sch_Channel4.cpp" />
+    <ClCompile Include="src\Sch_Clocks.cpp" />
     <ClCompile Include="src\Sch_Common.cpp" />
     <ClCompile Include="src\Sch_CPU.cpp" />
     <ClCompile Include="src\Sch_DMA.cpp" />

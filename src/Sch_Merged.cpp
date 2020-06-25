@@ -33,31 +33,9 @@ using namespace Schematics;
 
 TestGB gb;
 
-ClockSignals ClockSignals::get(TestGB& test_gb) {
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(test_gb.sys_pins.CLK_IN_xBxDxFxH);
-  /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-  /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-  /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-  /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
-  /*p27.MEHE*/ wire MEHE_AxCxExGx = not(ALET_xBxDxFxH);
-  /*p27.MYVO*/ wire MYVO_AxCxExGx = not(ALET_xBxDxFxH);
-
-  return {
-    .ANOS_AxCxExGx = ANOS_AxCxExGx,
-    .ATAL_xBxDxFxH = ATAL_xBxDxFxH,
-    .AZOF_AxCxExGx = AZOF_AxCxExGx,
-    .ZAXY_xBxDxFxH = ZAXY_xBxDxFxH,
-    .ZEME_AxCxExGx = ZEME_AxCxExGx,
-    .ALET_xBxDxFxH = ALET_xBxDxFxH,
-    .MEHE_AxCxExGx = MEHE_AxCxExGx,
-    .MYVO_AxCxExGx = MYVO_AxCxExGx,
-  };
-}
-
 //-----------------------------------------------------------------------------
 
-ResetSignals ResetSignals::get(TestGB& test_gb) {
+ResetSignals ResetSignals::get(const TestGB& test_gb) {
   /*p01.AVOR*/ wire AVOR_RSTp = or (test_gb.rst_reg.RESET_REGp.q(), test_gb.rst_reg.ASOL_RST_LATCHp.q());
   /*p23.XONA*/ wire XONA_LCDC_EN = test_gb.cfg_reg.XONA_LCDC_EN.q();
 
@@ -98,7 +76,7 @@ ResetSignals ResetSignals::get(TestGB& test_gb) {
 
 //-----------------------------------------------------------------------------
 
-AddressSignals AddressSignals::get(CpuPins& cpu_pins) {
+AddressSignals AddressSignals::get(const CpuPins& cpu_pins) {
   /*p03.TOVY*/ wire TOVY_A00n = not(cpu_pins.A00);
   /*p08.TOLA*/ wire TOLA_A01n = not(cpu_pins.A01);
   /*p06.SEFY*/ wire SEFY_A02n = not(cpu_pins.A02);
@@ -121,7 +99,7 @@ AddressSignals AddressSignals::get(CpuPins& cpu_pins) {
 
 //-----------------------------------------------------------------------------
 
-DebugSignals DebugSignals::get(TestGB& test_gb) {
+DebugSignals DebugSignals::get(const TestGB& test_gb) {
   /*p07.UBET*/ wire UBET_T1n = not(test_gb.sys_pins.T1);
   /*p07.UVAR*/ wire UVAR_T2n = not(test_gb.sys_pins.T2);
   /*p07.UMUT*/ wire UMUT_MODE_DBG1 = and (test_gb.sys_pins.T1, UVAR_T2n);
@@ -212,6 +190,8 @@ ALUR = nor(AFER_RST, ASOL_RST_LATCH)
 #endif
 
 void TestGB::tick_everything() {
+  auto clk_sig = ClockSignals::get(*this);
+
   //----------------------------------------
   // sch_system
 
@@ -234,14 +214,14 @@ void TestGB::tick_everything() {
   ///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
 
   {
-    /*p01.AFUR*/ clk_reg.AFUR_PHAZ_xBCDExxx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), !clk_reg.ADYK_PHAZ_xxxxEFGH.a);
-    /*p01.ALEF*/ clk_reg.ALEF_PHAZ_xxCDEFxx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.AFUR_PHAZ_xBCDExxx.a);
-    /*p01.APUK*/ clk_reg.APUK_PHAZ_xxxDEFGx.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.ALEF_PHAZ_xxCDEFxx.a);
-    /*p01.ADYK*/ clk_reg.ADYK_PHAZ_xxxxEFGH.set_duo(ATAL_xBxDxFxH(), UPOJ_MODE_PRODn(), clk_reg.APUK_PHAZ_xxxDEFGx.a);
+    /*p01.AFUR*/ clk_reg.AFUR_PHAZ_xBCDExxx.set_duo(clk_sig.ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), !clk_reg.ADYK_PHAZ_xxxxEFGH.a);
+    /*p01.ALEF*/ clk_reg.ALEF_PHAZ_xxCDEFxx.set_duo(clk_sig.ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), clk_reg.AFUR_PHAZ_xBCDExxx.a);
+    /*p01.APUK*/ clk_reg.APUK_PHAZ_xxxDEFGx.set_duo(clk_sig.ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), clk_reg.ALEF_PHAZ_xxCDEFxx.a);
+    /*p01.ADYK*/ clk_reg.ADYK_PHAZ_xxxxEFGH.set_duo(clk_sig.ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), clk_reg.APUK_PHAZ_xxxDEFGx.a);
   }
 
   {
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(gb.ANOS_AxCxExGx());
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
     /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH); // dma, sprite store
@@ -271,7 +251,7 @@ void TestGB::tick_everything() {
 
   {
     // wave ram write clock
-    /*p17.ABUR*/ wire ABUR_xxCDEFGx = not(BUKE_ABxxxxxH());
+    /*p17.ABUR*/ wire ABUR_xxCDEFGx = not(clk_sig.BUKE_ABxxxxxH);
     /*p17.BORY*/ wire BORY_ABxxxxxH = not(ABUR_xxCDEFGx);
     wave_pins.BORY_ABxxxxxH.set(BORY_ABxxxxxH);
   }
@@ -281,7 +261,7 @@ void TestGB::tick_everything() {
 
   {
 
-    /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(BOGA_AxCDEFGH());
+    /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(clk_sig.BOGA_AxCDEFGH);
 
     /*p01.ASOL*/ wire ASOL_RST = or (AFAR_RST, sys_pins.RST);
     /*p01.AFER*/ rst_reg.RESET_REGp.set(BOMA_xBxxxxxx, UPOJ_MODE_PRODn(), ASOL_RST);
@@ -305,15 +285,9 @@ void TestGB::tick_everything() {
   // sch_clocks
 
   {
-    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH());
-    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH); // dma, sprite store
-    /*p29.XYVA*/ wire XYVA_AxCxExGx = not(ZEME_AxCxExGx);
-    /*p29.XOTA*/ wire XOTA_xBxDxFxH = not(XYVA_AxCxExGx);
-    /*p29.XYFY*/ wire XYFY_AxCxExGx = not(XOTA_xBxDxFxH);
-    /*p29.WUVU*/ vck_reg.WUVU_AxxDExxH.set(XOTA_xBxDxFxH, XAPO_VID_RSTn(), !vck_reg.WUVU_AxxDExxH);
-    /*p21.VENA*/ vck_reg.VENA_xBCDExxx.set(!vck_reg.WUVU_AxxDExxH, XAPO_VID_RSTn(), !vck_reg.VENA_xBCDExxx);
-    /*p29.WOSU*/ vck_reg.WOSU_xxCDxxGH.set(XYFY_AxCxExGx, XAPO_VID_RSTn(), !vck_reg.WUVU_AxxDExxH);
+    /*p29.WUVU*/ clk_reg.WUVU_AxxDExxH.set( clk_sig.XOTA_xBxDxFxH, XAPO_VID_RSTn(), !clk_reg.WUVU_AxxDExxH);
+    /*p21.VENA*/ clk_reg.VENA_xBCDExxx.set(!clk_reg.WUVU_AxxDExxH, XAPO_VID_RSTn(), !clk_reg.VENA_xBCDExxx);
+    /*p29.WOSU*/ clk_reg.WOSU_xxCDxxGH.set( clk_sig.XYFY_AxCxExGx, XAPO_VID_RSTn(), !clk_reg.WUVU_AxxDExxH);
   }
 
   {

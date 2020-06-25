@@ -41,7 +41,7 @@ inline bool or  (bool a, bool b, bool c) { return  (a | b | c); }
 inline bool or  (bool a, bool b, bool c, bool d) { return  (a | b | c | d); }
 inline bool or  (bool a, bool b, bool c, bool d, bool e) { return  (a | b | c | d | e); }
 
-inline bool xor (bool a, bool b) { return a ^ b; }
+inline bool xor(bool a, bool b) { return a ^ b; }
 inline bool xnor(bool a, bool b) { return a == b; }
 
 inline bool nor (bool a) { return !a; }
@@ -63,7 +63,7 @@ inline bool nand(bool a, bool b, bool c, bool d, bool e, bool f, bool g) { retur
 /*
 template<typename... Args> const bool and(const bool first, Args... args) { return first & and(args...); }
 template<typename... Args> const bool or  (const bool first, Args... args) { return first | or(args...); }
-template<typename... Args> const bool xor (const bool first, Args... args) { return first ^ xor(args...); }
+template<typename... Args> const bool xor(const bool first, Args... args) { return first ^ xor(args...); }
 template<typename... Args> const bool nor (const bool first, Args... args) { return !or(first, args...); }
 template<typename... Args> const bool nand(const bool first, Args... args) { return !and(first, args...); }
 */

@@ -40,7 +40,7 @@ void LCD::tick(const Req& req, Ack& ack) {
 // ly match
 {
   if (PHASE_B) {
-    LY_MATCH_SYNC = LY == LYC;
+    ROPO_LY_MATCH_SYNC = LY == LYC;
   }
 
   /*p21.SEPA*/ wire FF41_WR = and(CUPA_CPU_WR_xxxxxFGH, req.addr == 0xFF41);
@@ -53,7 +53,7 @@ void LCD::tick(const Req& req, Ack& ack) {
 
   // WESY polarity wrong? nope.
 
-  /*p21.ROPO*/ vid_reg.LY_MATCH_SYNC.set(TALU_xBCDExxx, WESY_RSTn, LY_MATCHa);
+  /*p21.ROPO*/ ppu_reg.ROPO_LY_MATCH_SYNC.set(TALU_xBCDExxx, WESY_RSTn, LY_MATCHa);
 
   /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(WESY_RSTn, !FF41_WR);
 
@@ -76,7 +76,7 @@ void LCD::tick(const Req& req, Ack& ack) {
   // RUPO05 << PAGO03
 
 
-  /*p21.RUPO*/ LYC_MATCH_LATCHn.sr_latch(LY_MATCH_SYNC, PAGO_LYC_MATCH_RST);
+  /*p21.RUPO*/ LYC_MATCH_LATCHn.sr_latch(ROPO_LY_MATCH_SYNC, PAGO_LYC_MATCH_RST);
 
 }
 #endif

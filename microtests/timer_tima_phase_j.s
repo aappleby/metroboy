@@ -29,7 +29,7 @@ main:
   nops DELAY
 
   ldh a, (TIMA)
-  xor ($55 ~ RESULT)
+  xor($55 ~ RESULT)
 end:
   ld ($8000), a
   jr end

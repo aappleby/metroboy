@@ -39,7 +39,7 @@ extern const char* op_strings[256] = {
   "sub b",              "sub c",          "sub d",          "sub e",       "sub h",          "sub l",        "sub (hl)",      "sub a",
   "sbc b",              "sbc c",          "sbc d",          "sbc e",       "sbc h",          "sbc l",        "sbc (hl)",      "sbc a",
   "and b",              "and c",          "and d",          "and e",       "and h",          "and l",        "and(hl)",      "and a",
-  "xor b",              "xor c",          "xor d",          "xor e",       "xor h",          "xor l",        "xor (hl)",      "xor a",
+  "xor b",              "xor c",          "xor d",          "xor e",       "xor h",          "xor l",        "xor(hl)",      "xor a",
   "or b",               "or c",           "or d",           "or e",        "or h",           "or l",         "or (hl)",       "or a",
   "cp b",               "cp c",           "cp d",           "cp e",        "cp h",           "cp l",         "cp (hl)",       "cp a",
                                           

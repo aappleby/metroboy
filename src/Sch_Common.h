@@ -42,7 +42,7 @@ struct ClkRegisters;
 struct LcdRegisters;
 struct RstRegisters;
 struct VclkRegisters;
-struct VidRegisters;
+struct PpuRegisters;
 struct ConfigRegisters;
 
 struct BusSignals;
@@ -290,7 +290,7 @@ struct Gate : public SignalBase {
 // set and reset must be async (see interrupts)
 // reset must take priority over set (see interrupts ALUR_RSTn)
 
-struct Reg3 : public SignalBase {
+struct Reg : public SignalBase {
 
   void set(bool clk, bool val) {
     set(clk, 1, 1, val);
@@ -312,46 +312,6 @@ struct Reg3 : public SignalBase {
     b.error = 0;
   }
 
-  void set_sync(bool val) {
-    set_sync(1, 1, val);
-  }
-
-  void set_sync(bool rstN, bool val) {
-    set_sync(1, rstN, val);
-  }
-
-  void set_sync(bool setN, bool rstN, bool val) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-
-    a.clk = 0;
-    b.clk = 1;
-
-    b.val = val;
-    b.hiz = 0;
-    b.set = !setN;
-    b.rst = !rstN;
-    //b.changed = 0;
-    b.error = 0;
-  }
-
-  void set_async(bool val) {
-    if (b.error) __debugbreak();
-    b.set = val;
-    b.rst = !val;
-  }
-
-  void set_async() {
-    if (b.error) __debugbreak();
-    b.set = 1;
-    b.rst = 0;
-  }
-
-  void rst_async() {
-    if (b.error) __debugbreak();
-    b.set = 0;
-    b.rst = 1;
-  }
 
   void rst_sync(bool clk) {
     if (a.error)  __debugbreak();
@@ -438,20 +398,9 @@ private:
 };
 
 //-----------------------------------------------------------------------------
+// 6-rung cell, "arms" on ground side
 
-struct Latch3 : public SignalBase {
-
-  void nand_latch(bool setN, bool rstN) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = 0;
-    b.hiz = 0;
-    b.clk = 0;
-    b.set = !setN;
-    b.rst = !rstN;
-    //b.changed = 0;
-    b.error = 0;
-  }
+struct NorLatch : public SignalBase {
 
   void nor_latch(bool set, bool rst) {
     if ( a.error)  __debugbreak();
@@ -465,43 +414,36 @@ struct Latch3 : public SignalBase {
     b.error = 0;
   }
 
-  void sr_latch(bool setN, bool rstN) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = 0;
-    b.hiz = 0;
-    b.clk = 0;
-    b.set = !setN;
-    b.rst = !rstN;
-    //b.changed = 0;
-    b.error = 0;
-  }
+  bool commit_latch() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
 
-  void latch_set_rst_outn(bool set, bool rst) {
-    if (a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = 0;
-    b.hiz = 0;
-    b.clk = 0;
-    b.set = rst;
-    b.rst = set;
-    //b.changed = 0;
-    b.error = 0;
-  }
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
-  void latch_set_rst_out(bool set, bool rst) {
-    if (a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = 0;
-    b.hiz = 0;
-    b.clk = 0;
-    b.set = set;
-    b.rst = rst;
-    //b.changed = 0;
-    b.error = 0;
-  }
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
 
-  void latch_setn_rstn_out(bool setN, bool rstN) {
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    //a.changed = 0;
+    a.error = 0;
+
+    b = ERROR;
+
+    return old_a != new_a;
+  }
+};
+
+//-----------------------------------------------------------------------------
+// 6-rung cell, "arms" on VCC side
+
+struct NandLatch : public SignalBase {
+
+  void nand_latch(bool setN, bool rstN) {
     if (a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = 0;
@@ -512,9 +454,38 @@ struct Latch3 : public SignalBase {
     //b.changed = 0;
     b.error = 0;
   }
+
+  bool commit_latch() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
+
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    //a.changed = 0;
+    a.error = 0;
+
+    b = ERROR;
+
+    return old_a != new_a;
+  }
+};
+
+//-----------------------------------------------------------------------------
+// Yellow 10-rung cells on die
+
+struct TpLatch : public SignalBase {
 
   void tp_latch(bool latchN, bool val) {
-    if ( a.error)  __debugbreak();
+    if (a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = 0;
     b.hiz = 0;
@@ -547,12 +518,8 @@ struct Latch3 : public SignalBase {
 
     return old_a != new_a;
   }
-
-  /*
-private:
-  operator const bool() const;
-  */
 };
+
 
 //-----------------------------------------------------------------------------
 // FIXME good chance that count's not right (polarity or something)

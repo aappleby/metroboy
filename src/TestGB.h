@@ -3,6 +3,8 @@
 
 #include "Sch_DMA.h"
 #include "Sch_SpriteStore.h"
+#include "Sch_OAM.h"
+#include "Sch_PPU.h"
 
 namespace Schematics {
 
@@ -230,15 +232,15 @@ struct TestGB {
     // TYSO = or(SAKY, TEPA)
     // TEXY = not(TYSO)
 
-    /*p29.SAKY*/ wire SAKY = nor(spr_reg.TULY_SFETCH_S1.q(), spr_reg.VONU_SFETCH_S1_D4.q());
-    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(vid_reg.XYMU_RENDERINGp);
+    /*p29.SAKY*/ wire SAKY = nor(ppu_reg.TULY_SFETCH_S1.q(), ppu_reg.VONU_SFETCH_S1_D4.q());
+    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(ppu_reg.XYMU_RENDERINGp);
     /*p29.TYSO*/ wire TYSO_SPRITE_READn = or (SAKY, TEPA_RENDERINGn);
     /*p29.TEXY*/ wire TEXY_SPRITE_READ = not(TYSO_SPRITE_READn);
 
     // So we only read a sprite if both those regs are... low? what is rung 17's polarity?
 #if 0
     if (RENDERING_LATCH) {
-      /*p29.TEXY*/ wire TEXY_SPRITE_READ = or(spr_reg.TULY_SFETCH_S1.q(), spr_reg.VONU_SFETCH_S1_D4.q());;
+      /*p29.TEXY*/ wire TEXY_SPRITE_READ = or(ppu_reg.TULY_SFETCH_S1.q(), ppu_reg.VONU_SFETCH_S1_D4.q());;
     }
     else {
       /*p29.TEXY*/ wire TEXY_SPRITE_READ = 1;
@@ -249,14 +251,14 @@ struct TestGB {
   }
 
   wire WUTY_SPRITE_DONE() const {
-    /*p29.TYNO*/ wire TYNO = nand(spr_reg.TOXE_SFETCH_S0_D0.q(), spr_reg.SEBA_SFETCH_S1_D5.q(), spr_reg.VONU_SFETCH_S1_D4.q());
-    /*p29.VUSA*/ wire VUSA = or (!spr_reg.TYFO_SFETCH_S0_D1.q(), TYNO);
+    /*p29.TYNO*/ wire TYNO = nand(ppu_reg.TOXE_SFETCH_S0_D0.q(), ppu_reg.SEBA_SFETCH_S1_D5.q(), ppu_reg.VONU_SFETCH_S1_D4.q());
+    /*p29.VUSA*/ wire VUSA = or (!ppu_reg.TYFO_SFETCH_S0_D1.q(), TYNO);
     /*p29.WUTY*/ wire WUTY_SPRITE_DONE = not(VUSA);
     return WUTY_SPRITE_DONE;
   }
 
   wire WODU_RENDER_DONE() const {
-    /*p21.XUGU*/ wire XUGU_X_167n = nand(vid_reg.X0.q(), vid_reg.X1.q(), vid_reg.X2.q(), vid_reg.X5.q(), vid_reg.X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
+    /*p21.XUGU*/ wire XUGU_X_167n = nand(ppu_reg.SAXO_X0.q(), ppu_reg.TYPO_X1.q(), ppu_reg.VYZO_X2.q(), ppu_reg.TAHA_X5.q(), ppu_reg.SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
     /*p21.XANO*/ wire XANO_X_167 = not(XUGU_X_167n);
     /*p21.XENA*/ wire XENA_STORE_MATCHn = not(sst_reg.FEPO_STORE_MATCHp);
     /*p21.WODU*/ wire WODU_RENDER_DONE = and(XENA_STORE_MATCHn, XANO_X_167);
@@ -317,7 +319,7 @@ struct TestGB {
   // Window signals
 
   wire SYLO_WIN_HITn() const {
-    /*p27.SYLO*/ wire SYLO_WIN_HITn = not(vid_reg.RYDY_WIN_HIT_LATCH.q());
+    /*p27.SYLO*/ wire SYLO_WIN_HITn = not(ppu_reg.RYDY_WIN_HIT_LATCH.q());
     return SYLO_WIN_HITn;
   }
 
@@ -334,7 +336,7 @@ struct TestGB {
   }
 
   wire PORE_WIN_MODE() const {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(vid_reg.PYNU_WIN_MODE_LATCH.q());
+    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(ppu_reg.PYNU_WIN_MODE_LATCH.q());
     /*p27.PORE*/ wire PORE_WIN_MODE = not(NOCU_WIN_MODEn);
     return PORE_WIN_MODE;
   }
@@ -473,11 +475,10 @@ struct TestGB {
   PixelPipeRegisters pxp_reg;// dumped
   RstRegisters rst_reg;// dumped
   SerialRegisters ser_reg;// dumped
-  SpriteRegisters spr_reg;// dumped
   SpriteStoreRegisters sst_reg;// dumped
   TimerRegisters tim_reg;// dumped
   VclkRegisters vck_reg;// dumped
-  VidRegisters vid_reg;// dumped
+  PpuRegisters ppu_reg;// dumped
   OamRegisters oam_reg;// dumped
 
   SysPins sys_pins; // dumped
@@ -488,19 +489,14 @@ struct TestGB {
   OamPins oam_pins; // dumped
   WavePins wave_pins;
 
-  /*p04.MAKA*/ Reg3 FROM_CPU5_SYNC;
+  /*p04.MAKA*/ Reg FROM_CPU5_SYNC;
 
   Signal NYXU_BG_SEQ_RSTn;
 
   /*p27.TEVO*/ Signal TEVO_CLK_STOPn;
-  /*p27.NUKO*/ Signal NUKO_WIN_MATCH;
 
   /*p35.PATY*/ Signal PATY_PIX_OUT_LO;
   /*p35.PERO*/ Signal PERO_PIX_OUT_HI;
-
-  /*p21.XATY*/ Signal XATY_STAT_MODE1n;
-  /*p21.SADU*/ Signal SADU_STAT_MODE0n;
-
 };
 
 //-----------------------------------------------------------------------------

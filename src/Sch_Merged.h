@@ -9,43 +9,13 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
-struct AddressSignals {
-  static AddressSignals get(const CpuPins& cpu_pins);
-
-  /*p03.TOVY*/ wire TOVY_A00n;
-  /*p08.TOLA*/ wire TOLA_A01n;
-  /*p06.SEFY*/ wire SEFY_A02n;
-  /*p07.TONA*/ wire TONA_A08n;
-  /*p07.TUNA*/ wire TUNA_CPU_ADDR_0000_FDFF;
-  /*p06.SARE*/ wire SARE_XX00_XX07p;
-  /*p07.SYKE*/ wire SYKE_FFXXp;
-};
-
-
-//-----------------------------------------------------------------------------
-
-struct DebugSignals {
-  static DebugSignals get(const TestGB& gb);
-
-  /*p07.UBET*/ wire UBET_T1n;
-  /*p07.UVAR*/ wire UVAR_T2n;
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1;
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2n;
-  /*p08.TOVA*/ wire TOVA_MODE_DBG2p;
-  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn;
-  /*p08.RYCA*/ wire RYCA_MODE_DBG2p;
-
-};
-
-//-----------------------------------------------------------------------------
-
 struct BusRegisters {
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- BUS_REG -----\n");
     
     dump_long(text_painter, "BOOT_BIT ", BOOT_BIT.a);
-    dump_long(text_painter, "SOTO_DBG ", SOTO_DBG.a);
+    //dump_long(text_painter, "SOTO_DBG ", SOTO_DBG.a);
 
     text_painter.dprintf("ADDR_LATCH ");
     dump2(text_painter, CPU_ADDR_LATCH_14.a);
@@ -83,7 +53,6 @@ struct BusRegisters {
   }
 
   /*p07.TEPU*/ Reg BOOT_BIT; // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.
-  /*p25.SOTO*/ Reg SOTO_DBG; // 17-rung
 
   /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
   /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
@@ -257,21 +226,6 @@ struct ConfigRegisters {
   /*p23.MYCE*/ Reg WX5;
   /*p23.MUVO*/ Reg WX6;
   /*p23.NUKU*/ Reg WX7;
-};
-
-//-----------------------------------------------------------------------------
-
-struct DebugRegisters {
-
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf(" ----- DBG REG ----- \n");
-    FF60_0.dump(text_painter, "FF60_0 ");
-    FF60_1.dump(text_painter, "FF60_1 ");
-    text_painter.newline();
-  }
-
-  /*p07.BURO*/ Reg FF60_0;
-  /*p07.AMUT*/ Reg FF60_1;
 };
 
 //-----------------------------------------------------------------------------

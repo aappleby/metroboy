@@ -91,13 +91,6 @@ void TestGB::ext_preset() {
 bool TestGB::commit_everything() {
   bool changed = false;
 
-  /*p04.MAKA*/ changed |= FROM_CPU5_SYNC.commit_reg();
-
-  /*p01.AFUR*/ changed |= clk_reg.AFUR_PHAZ_xBCDExxx.commit_duo();
-  /*p01.ALEF*/ changed |= clk_reg.ALEF_PHAZ_xxCDEFxx.commit_duo();
-  /*p01.APUK*/ changed |= clk_reg.APUK_PHAZ_xxxDEFGx.commit_duo();
-  /*p01.ADYK*/ changed |= clk_reg.ADYK_PHAZ_xxxxEFGH.commit_duo();
-
   /*p23.VYXE*/ changed |= cfg_reg.LCDC_BGEN.commit_reg();
   /*p23.XYLO*/ changed |= cfg_reg.LCDC_SPEN.commit_reg();
   /*p23.XYMO*/ changed |= cfg_reg.LCDC_SPSIZE.commit_reg();
@@ -337,9 +330,6 @@ bool TestGB::commit_everything() {
   /*p26.VUMO*/ changed |= pxp_reg.MASK_PIPE_6.commit_reg();
   /*p26.VAVA*/ changed |= pxp_reg.MASK_PIPE_7.commit_reg();
 
-  /*p01.TUBO*/ changed |= rst_reg.TUBO_CLKREQn_LATCH.commit_latch();
-  /*p01.AFER*/ changed |= rst_reg.RESET_REGp.commit_reg();
-
   /*p06.ETAF*/ changed |= ser_reg.XFER_START.commit_reg();
   /*p06.CULY*/ changed |= ser_reg.XFER_DIR.commit_reg();
   /*p06.COTY*/ changed |= ser_reg.SER_CLK.commit_reg();
@@ -405,10 +395,6 @@ bool TestGB::commit_everything() {
   /*p03.SAMY*/ changed |= tim_reg.TAC_1.commit_reg();
   /*p03.SABO*/ changed |= tim_reg.TAC_2.commit_reg();
 
-  /*p29.WUVU*/ changed |= clk_reg.WUVU_AxxDExxH.commit_reg();
-  /*p21.VENA*/ changed |= clk_reg.VENA_xBCDExxx.commit_reg();
-  /*p29.WOSU*/ changed |= clk_reg.WOSU_xxCDxxGH.commit_reg();
-
   /*p??.ROXY*/ changed |= ppu_reg.ROXY_FINE_MATCH_LATCHn.commit_latch();
   /*p??.PUXA*/ changed |= ppu_reg.PUXA_FINE_MATCH_SYNC1.commit_reg();
   /*p27.NYZE*/ changed |= ppu_reg.NYZE_FINE_MATCH_SYNC2.commit_reg();
@@ -469,7 +455,6 @@ bool TestGB::commit_everything() {
   changed |= ppu_reg.MD7.commit_tribuf();
 
   /*p07.TEPU*/ changed |= bus_reg.BOOT_BIT.commit_reg();
-  /*p25.SOTO*/ changed |= bus_reg.SOTO_DBG.commit_reg();
 
   /*p08.ALOR*/ changed |= bus_reg.CPU_ADDR_LATCH_00.commit_latch();
   /*p08.APUR*/ changed |= bus_reg.CPU_ADDR_LATCH_01.commit_latch();
@@ -503,7 +488,6 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.CPU_RAW_RD.clear_preset();     // PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
   changed |= cpu_pins.CPU_RAW_WR.clear_preset();     // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
   changed |= cpu_pins.UNOR_MODE_DBG2.commit_pinout();         // PORTA_02: <- P07.UNOR_MODE_DBG2
-  changed |= cpu_pins.SYRO.commit_pinout();          // PORTA_03: <- P25.SYRO
   changed |= cpu_pins.READ_BOOTROM.commit_pinout();  // PORTA_04: <- P07.READ_BOOTROM
   changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
   changed |= cpu_pins.ADDR_VALID.clear_preset();    // PORTA_06: -> APAP, TEXO. This is almost definitely "address valid"

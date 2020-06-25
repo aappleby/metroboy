@@ -8,6 +8,8 @@
 #include "Sch_Window.h"
 #include "Sch_Clocks.h"
 #include "Sch_Resets.h"
+#include "Sch_Debug.h"
+#include "Sch_Address.h"
 
 namespace Schematics {
 
@@ -40,76 +42,12 @@ struct TestGB {
   void tick_pixpipe();
 
   //----------------------------------------
-
-  wire UMUT_MODE_DBG1() const {
-    /*p07.UVAR*/ wire UVAR_T2n = not(sys_pins.T2);
-    /*p07.UMUT*/ wire UMUT_MODE_DBG1 = and(sys_pins.T1, UVAR_T2n);
-    return UMUT_MODE_DBG1;
-  }
-
-  // must be N otherwise vram debug control doesn't work
-  wire UNOR_MODE_DBG2n() const {
-    /*p07.UBET*/ wire UBET_T1n = not(sys_pins.T1);
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2n = and(sys_pins.T2, UBET_T1n);
-    return UNOR_MODE_DBG2n;
-  }
-
-  wire TOVA_MODE_DBG2p() const {
-    /*p08.TOVA*/ wire TOVA_MODE_DBG2p = not(UNOR_MODE_DBG2n());
-    return TOVA_MODE_DBG2p;
-  }
-
-  wire UPOJ_MODE_PRODn() const {
-    // Die trace:
-    // UVAR = not(T2)
-    // UBET = not(T1)
-    // UPOJ = nand(UBET, UVAR, RST);
-
-    /*p07.UVAR*/ wire UVAR_T2n = not(sys_pins.T2);
-    /*p07.UBET*/ wire UBET_T1n = not(sys_pins.T1);
-    /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, sys_pins.RST);
-    return UPOJ_MODE_PRODn;
-  }
-
-  //----------------------------------------
-  // Reset signals
-
-  wire ALUR_RSTn() const {
-    /*p01.AVOR*/ wire AVOR_RSTp = or (rst_reg.RESET_REGp.q(), rst_reg.ASOL_RST_LATCHp.q());
-    /*p01.ALUR*/ wire ALUR_RSTn = not(AVOR_RSTp);   // this goes all over the place
-    return ALUR_RSTn;
-  }
-
-  wire CUNU_RSTn() const {
-    /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn());
-    /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-    return CUNU_RSTn;
-  }
-
-  wire XAPO_VID_RSTn() const {
-    /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn());
-    /*p01.XEBE*/ wire XEBE_RSTn = not(XORE_RSTp);
-    /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, cfg_reg.XONA_LCDC_EN.q());
-    /*p01.XAPO*/ wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
-    return XAPO_VID_RSTn;
-  }
-
-  wire ATAR_VID_RSTp() const {
-    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(XAPO_VID_RSTn());
-    return ATAR_VID_RSTp;
-  }
-
-  wire ABEZ_VID_RSTn() const {
-    /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp());
-    return ABEZ_VID_RSTn;
-  }
-
-  //----------------------------------------
   // LCD & PPU events
 
   wire BYHA_VID_LINE_TRIG_d4n() const {
+    auto rst_sig = ResetSignals::get(*this);
     /*p28.ABAF*/ wire VID_LINE_d4n = not(lcd_reg.CATU_VID_LINE_d4.q());
-    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and(or (lcd_reg.ANEL_VID_LINE_d6.q(), VID_LINE_d4n), ABEZ_VID_RSTn());
+    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and(or (lcd_reg.ANEL_VID_LINE_d6.q(), VID_LINE_d4n), rst_sig.ABEZ_VID_RSTn);
     return BYHA_VID_LINE_TRIG_d4n;
   }
     
@@ -125,7 +63,8 @@ struct TestGB {
   }
 
   wire AVAP_SCAN_DONE_d0_TRIGp() const {
-    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p(), ATAR_VID_RSTp());
+    auto rst_sig = ResetSignals::get(*this);
+    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p(), rst_sig.ATAR_VID_RSTp);
     /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
     /*p29.BEBU*/ wire SCAN_DONE_d0_TRIGn = or (BALU_SCAN_RST, sst_reg.SCAN_DONE_d5.q(), !sst_reg.SCAN_DONE_d4.q());
     /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIGp = not(SCAN_DONE_d0_TRIGn);
@@ -203,7 +142,7 @@ struct TestGB {
   }
 
   wire AREV_CPU_WRn_ABCDExxx() const {
-    auto clk_sig = ClockSignals::get(*this);
+    auto clk_sig = clk_reg.sig(*this);
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_pins.CPU_RAW_WR, clk_sig.AFAS_xxxxxFGH);
     return AREV_CPU_WRn_ABCDExxx;
   }
@@ -214,7 +153,8 @@ struct TestGB {
   }
 
   wire TAPU_CPU_WR_xxxxxFGH() const {
-    /*p07.UBAL*/ wire UBAL_BUS_WR_ABCDExxx = mux2_n(ext_pins.WR_C, APOV_CPU_WR_xxxxxFGH(), UNOR_MODE_DBG2n());
+    auto dbg_sig = dbg_reg.sig(*this);
+    /*p07.UBAL*/ wire UBAL_BUS_WR_ABCDExxx = mux2_n(ext_pins.WR_C, APOV_CPU_WR_xxxxxFGH(), dbg_sig.UNOR_MODE_DBG2n);
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(UBAL_BUS_WR_ABCDExxx);
     return TAPU_CPU_WR_xxxxxFGH;
   }
@@ -251,11 +191,12 @@ struct TestGB {
   }
 
   wire XOFO_WIN_RST() const {
+    auto rst_sig = ResetSignals::get(*this);
     /*p28.ABAF*/ wire ABAF_VID_LINE_d4n = not(lcd_reg.CATU_VID_LINE_d4.q());
-    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and(or (lcd_reg.ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), ABEZ_VID_RSTn());
+    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and(or (lcd_reg.ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), rst_sig.ABEZ_VID_RSTn);
     /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(BYHA_VID_LINE_TRIG_d4n);
     /*p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4p);
-    /*p27.XOFO*/ wire XOFO_WIN_RST = nand(cfg_reg.LCDC_WINEN.q(), XAHY_VID_LINE_TRIG_d4n, XAPO_VID_RSTn());
+    /*p27.XOFO*/ wire XOFO_WIN_RST = nand(cfg_reg.LCDC_WINEN.q(), XAHY_VID_LINE_TRIG_d4n, rst_sig.XAPO_VID_RSTn);
     return XOFO_WIN_RST;
   }
 
@@ -283,22 +224,6 @@ struct TestGB {
   // Address decoders
 
 #if 0
-  // Not sure about polarity
-  // >> SEPY, TOZA, TUCA
-  wire ABUZ_ADDR_VALIDx() const {
-    // Die trace:
-    // APAP = not(CPU_ADDR_VALID)
-    // AWOD = nor(UNOR, APAP)
-    // ABUZ = not(AWOD)
-
-    /*p??.APAP*/ wire APAP = not(cpu_pins.ADDR_VALID); // Missing from schematic
-    /*p01.ABUZ*/ wire AWOD = nor(UNOR_MODE_DBG2n(), APAP);
-    /*p01.ABUZ*/ wire ABUZ = not(AWOD);
-    return ABUZ;
-  }
-#endif
-
-#if 0
   // This one is really weird.
   wire TEXO_ADDR_VALID_AND_NOT_VRAM() const {
 
@@ -318,42 +243,6 @@ struct TestGB {
   }
 #endif
 
-  wire TUNA_CPU_ADDR_0000_FDFF() const {
-    /*p07.TUNA*/ wire TUNA_CPU_ADDR_0000_FDFF = nand(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12, cpu_pins.A11, cpu_pins.A10, cpu_pins.A09);
-    return TUNA_CPU_ADDR_0000_FDFF;
-  }
-
-  wire SYRO_CPU_ADDR_FE00_FFFFp() const {
-    /*p25.SYRO*/ wire SYRO_CPU_ADDR_FE00_FFFFp = not(TUNA_CPU_ADDR_0000_FDFF());
-    return SYRO_CPU_ADDR_FE00_FFFFp;
-  }
-
-  wire SYKE_FFXXp() const {
-    /*p07.TONA*/ wire TONA_A08n = not(cpu_pins.A08);
-    /*p07.SYKE*/ wire SYKE_FFXXp = nor(TUNA_CPU_ADDR_0000_FDFF(), TONA_A08n);
-    return SYKE_FFXXp;
-  }
-
-  wire WERO_CPU_ADDR_FF4Xp() const {
-    /*p22.XALY*/ wire XALY_ADDR_0x00xxxx = nor(cpu_pins.A07, cpu_pins.A05, cpu_pins.A04);
-    /*p22.WUTU*/ wire WUTU_FF4Xn = nand(SYKE_FFXXp(), cpu_pins.A06, XALY_ADDR_0x00xxxx);
-    /*p22.WERO*/ wire WERO_CPU_ADDR_FF4Xp = not(WUTU_FF4Xn);
-    return WERO_CPU_ADDR_FF4Xp;
-  }
-
-  wire XEDA_CPU_ADDR_FF46p() const {
-    /*p22.XOLA*/ wire XOLA_A00n = not(cpu_pins.A00);
-    /*p22.XENO*/ wire XENO_A01n = not(cpu_pins.A01);
-    /*p22.XUSY*/ wire XUSY_A02n = not(cpu_pins.A02);
-    /*p22.XERA*/ wire XERA_A03n = not(cpu_pins.A03);
-
-    /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
-    /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
-
-    /*p22.WATE*/ wire WATE_FF46n = nand(WERO_CPU_ADDR_FF4Xp(), XOLA_A00n, WESA_A01p, WALO_A02p, XERA_A03n);
-    /*p22.XEDA*/ wire XEDA_CPU_ADDR_FF46p = not(WATE_FF46n);
-    return XEDA_CPU_ADDR_FF46p;
-  }
 
   //-----------------------------------------------------------------------------
 
@@ -384,6 +273,7 @@ struct TestGB {
   PpuRegisters ppu_reg;// dumped
   OamRegisters oam_reg;// dumped
   WindowRegisters win_reg;
+  AddressRegisters adr_reg;
 
   SysPins sys_pins; // dumped
   VramPins vram_pins; // dumped
@@ -392,8 +282,6 @@ struct TestGB {
   ExtPins ext_pins; // dumped
   OamPins oam_pins; // dumped
   WavePins wave_pins;
-
-  /*p04.MAKA*/ Reg FROM_CPU5_SYNC;
 
   Signal NYXU_BG_SEQ_RSTn;
 

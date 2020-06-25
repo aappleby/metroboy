@@ -121,6 +121,7 @@
     <ClInclude Include="src\Opcodes.h" />
     <ClInclude Include="src\PPU.h" />
     <ClInclude Include="src\Schematics.h" />
+    <ClInclude Include="src\Sch_Address.h" />
     <ClInclude Include="src\Sch_ApuControl.h" />
     <ClInclude Include="src\Sch_Channel1.h" />
     <ClInclude Include="src\Sch_Channel2.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="src\Sch_Channel4.h" />
     <ClInclude Include="src\Sch_Clocks.h" />
     <ClInclude Include="src\Sch_Common.h" />
+    <ClInclude Include="src\Sch_Debug.h" />
     <ClInclude Include="src\Sch_DMA.h" />
     <ClInclude Include="src\Sch_Merged.h" />
     <ClInclude Include="src\Sch_OAM.h" />
@@ -184,6 +186,7 @@
     <ClCompile Include="src\OAM.cpp" />
     <ClCompile Include="src\PPU.cpp" />
     <ClCompile Include="src\Schematics.cpp" />
+    <ClCompile Include="src\Sch_Address.cpp" />
     <ClCompile Include="src\Sch_ApuControl.cpp" />
     <ClCompile Include="src\Sch_Cart.cpp" />
     <ClCompile Include="src\Sch_Channel1.cpp" />
@@ -193,6 +196,7 @@
     <ClCompile Include="src\Sch_Clocks.cpp" />
     <ClCompile Include="src\Sch_Common.cpp" />
     <ClCompile Include="src\Sch_CPU.cpp" />
+    <ClCompile Include="src\Sch_Debug.cpp" />
     <ClCompile Include="src\Sch_DMA.cpp" />
     <ClCompile Include="src\Sch_Joypad.cpp" />
     <ClCompile Include="src\Sch_LCD.cpp" />

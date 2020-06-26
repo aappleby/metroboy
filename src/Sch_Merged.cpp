@@ -53,7 +53,7 @@ APOV = not(AREV) // 4 rung inverter
 AGUT = ? ? ? (AROV, AJAX) - gate unused ?
 AJAX = not(ATYP)
 ALUR = not(AVOR) // 3 rung inverter
-AVOR = or (AFER, ASOL)
+AVOR = or(AFER, ASOL)
 
 AFER = reg, gap above it or something.starting at the first connected rung
 
@@ -109,20 +109,17 @@ void TestGB::tick_everything() {
   dma_reg.tick(*this, cpu_pins);
   tim_reg.tick(*this);
   ser_reg.tick(*this);
-  tick_joypad();
+  joy_reg.tick(*this);
   ppu_reg.tick(*this);
   sst_reg.tick(*this);
-  tick_lcd();
+  lcd_reg.tick(*this);
+  pxp_reg.tick(*this);
+  cpu_reg.tick(*this);
+  vram_reg.tick(*this);
 
-  tick_pixpipe();
-  tick_cpu();
-  tick_vram_addr();
+  cart_reg.tick(*this);
 
-  tick_bootrom();
-  tick_cart_data();
-  tick_cart_pins();
-
-  tick_oam();
+  oam_reg.tick(*this);
 }
 
 //-----------------------------------------------------------------------------

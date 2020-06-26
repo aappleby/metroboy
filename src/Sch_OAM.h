@@ -20,8 +20,8 @@ struct OamRegisters {
     text_painter.dprintf("----- OAM_REG -----\n");
     text_painter.dprintf("LATCH_A 0x%02x\n", pack(LATCH_OAM_A0.q(), LATCH_OAM_A1.q(), LATCH_OAM_A2.q(), LATCH_OAM_A3.q(), LATCH_OAM_A4.q(), LATCH_OAM_A5.q(), LATCH_OAM_A6.q(), LATCH_OAM_A7.q()));
     text_painter.dprintf("LATCH_B 0x%02x\n", pack(LATCH_OAM_B0.q(), LATCH_OAM_B1.q(), LATCH_OAM_B2.q(), LATCH_OAM_B3.q(), LATCH_OAM_B4.q(), LATCH_OAM_B5.q(), LATCH_OAM_B6.q(), LATCH_OAM_B7.q()));
-    text_painter.dprintf("REG_A   0x%02x\n", pack(REG_OAM_A0.q(), REG_OAM_A1.q(), REG_OAM_A2.q(), REG_OAM_A3.q(), REG_OAM_A4.q(), REG_OAM_A5.q(), REG_OAM_A6.q(), REG_OAM_A7.q()));
-    text_painter.dprintf("REG_B   0x%02x\n", pack(REG_OAM_B0.q(), REG_OAM_B1.q(), REG_OAM_B2.q(), REG_OAM_B3.q(), REG_OAM_B4.q(), REG_OAM_B5.q(), REG_OAM_B6.q(), REG_OAM_B7.q()));
+    text_painter.dprintf("REG_A   0x%02x\n", pack(YLOR_SPRITE_X0.q(), ZYTY_SPRITE_X1.q(), ZYVE_SPRITE_X2.q(), ZEZY_SPRITE_X3.q(), GOMO_SPRITE_X4.q(), BAXO_SPRITE_X5.q(), YZOS_SPRITE_X6.q(), DEPO_SPRITE_X7.q()));
+    text_painter.dprintf("REG_B   0x%02x\n", pack(XUSO_SPRITE_Y0.q(), XEGU_SPRITE_Y1.q(), YJEX_SPRITE_Y2.q(), XYJU_SPRITE_Y3.q(), YBOG_SPRITE_Y4.q(), WYSO_SPRITE_Y5.q(), XOTE_SPRITE_Y6.q(), YZAB_SPRITE_Y7.q()));
     text_painter.newline();
   }
 
@@ -43,23 +43,23 @@ struct OamRegisters {
   /*p29.YSES*/ TpLatch LATCH_OAM_B6;
   /*p29.ZECA*/ TpLatch LATCH_OAM_B7;
 
-  /*p31.YLOR*/ Reg REG_OAM_A0;
-  /*p31.ZYTY*/ Reg REG_OAM_A1;
-  /*p31.ZYVE*/ Reg REG_OAM_A2;
-  /*p31.ZEZY*/ Reg REG_OAM_A3;
-  /*p31.GOMO*/ Reg REG_OAM_A4;
-  /*p31.BAXO*/ Reg REG_OAM_A5;
-  /*p31.YZOS*/ Reg REG_OAM_A6;
-  /*p31.DEPO*/ Reg REG_OAM_A7;
+  /*p31.YLOR*/ Reg YLOR_SPRITE_X0;
+  /*p31.ZYTY*/ Reg ZYTY_SPRITE_X1;
+  /*p31.ZYVE*/ Reg ZYVE_SPRITE_X2;
+  /*p31.ZEZY*/ Reg ZEZY_SPRITE_X3;
+  /*p31.GOMO*/ Reg GOMO_SPRITE_X4;
+  /*p31.BAXO*/ Reg BAXO_SPRITE_X5;
+  /*p31.YZOS*/ Reg YZOS_SPRITE_X6;
+  /*p31.DEPO*/ Reg DEPO_SPRITE_X7;
 
-  /*p29.XUSO*/ Reg REG_OAM_B0;
-  /*p29.XEGU*/ Reg REG_OAM_B1;
-  /*p29.YJEX*/ Reg REG_OAM_B2;
-  /*p29.XYJU*/ Reg REG_OAM_B3;
-  /*p29.YBOG*/ Reg REG_OAM_B4;
-  /*p29.WYSO*/ Reg REG_OAM_B5;
-  /*p29.XOTE*/ Reg REG_OAM_B6;
-  /*p29.YZAB*/ Reg REG_OAM_B7;
+  /*p29.XUSO*/ Reg XUSO_SPRITE_Y0;
+  /*p29.XEGU*/ Reg XEGU_SPRITE_Y1;
+  /*p29.YJEX*/ Reg YJEX_SPRITE_Y2;
+  /*p29.XYJU*/ Reg XYJU_SPRITE_Y3;
+  /*p29.YBOG*/ Reg YBOG_SPRITE_Y4;
+  /*p29.WYSO*/ Reg WYSO_SPRITE_Y5;
+  /*p29.XOTE*/ Reg XOTE_SPRITE_Y6;
+  /*p29.YZAB*/ Reg YZAB_SPRITE_Y7;
 };
 
 //-----------------------------------------------------------------------------

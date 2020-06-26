@@ -16,11 +16,21 @@ struct PpuSignals {
   /*p28.ACYL*/ wire ACYL_PPU_USE_OAM1p;
 
   /*p24.POKY*/ wire POKY_FRONT_PORCH_LATCH;
+  /*p27.TAVE*/ wire TAVE;
   /*p21.XYMU*/ wire XYMU_RENDERINGp;
+  /*p29.TEPA*/ wire TEPA_RENDERINGn;
+  /*p24.LOBY*/ wire LOBY_RENDERINGn;
+  /*p25.ROPY*/ wire ROPY_RENDERINGn;
   /*p24.SEGU*/ wire SEGU_xBxDxFxH;
   /*p24.ROXO*/ wire ROXO_AxCxExGx;
   /*p27.ROCO*/ wire ROCO_AxCxExGx;
+  /*p25.SERE*/ wire SERE_VRAM_RD;
   /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx;
+  /*p27.ROZE*/ wire ROZE_FINE_COUNT_STOPn;
+  /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n;
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG;
+  /*p27.NAKO*/ wire NAKO_FETCH_S1n;
+  /*p27.NOFU*/ wire NOFU_FETCH_S2n;
 };
 
 //-----------------------------------------------------------------------------
@@ -34,7 +44,7 @@ struct PpuRegisters {
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- VID_REG -----\n");
 
-    text_painter.dprintf("PIX X      %d\n", pack(SAXO_X0.q(), TYPO_X1.q(), VYZO_X2.q(), TELU_X3.q(), SUDE_X4.q(), TAHA_X5.q(), TYRY_X6.q(), SYBE_X7.q()));
+    text_painter.dprintf("PIX X      %d\n", pack(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), XYDO_X3.q(), TUHU_X4.q(), TUKY_X5.q(), TAKO_X6.q(), SYBE_X7.q()));
     //text_painter.dprintf("WIN MAP X  %d\n", pack(WIN_X3.q(), WIN_X4.q(), WIN_X5.q(), WIN_X6.q(), WIN_X7.q()));
     //text_painter.dprintf("WIN MAP Y  %d\n", pack(WIN_Y3.q(), WIN_Y4.q(), WIN_Y5.q(), WIN_Y6.q(), WIN_Y7.q()));
     //text_painter.dprintf("WIN TILE Y %d\n", pack(WIN_Y0.q(), WIN_Y1.q(), WIN_Y2.q()));
@@ -69,13 +79,13 @@ struct PpuRegisters {
   }
 
   // how the fck did i break all of these?
-  /*p21.XEHO*/ Reg SAXO_X0;
-  /*p21.SAVY*/ Reg TYPO_X1;
-  /*p21.XODU*/ Reg VYZO_X2;
-  /*p21.XYDO*/ Reg TELU_X3;
-  /*p21.TUHU*/ Reg SUDE_X4;
-  /*p21.TUKY*/ Reg TAHA_X5;
-  /*p21.TAKO*/ Reg TYRY_X6;
+  /*p21.XEHO*/ Reg XEHO_X0;
+  /*p21.SAVY*/ Reg SAVY_X1;
+  /*p21.XODU*/ Reg XODU_X2;
+  /*p21.XYDO*/ Reg XYDO_X3;
+  /*p21.TUHU*/ Reg TUHU_X4;
+  /*p21.TUKY*/ Reg TUKY_X5;
+  /*p21.TAKO*/ Reg TAKO_X6;
   /*p21.SYBE*/ Reg SYBE_X7;
 
   /*p27.RYKU*/ Reg RYKU_FINE_CNT0;
@@ -85,6 +95,8 @@ struct PpuRegisters {
   /*p24.PAHO*/ Reg PAHO_X_8_SYNC;
   /*p24.RUJU*/ NorLatch POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
   /* PIN_54 */ PinOut ST;
+  /*p21.WUSA*/ NorLatch WUSA_CPEN_LATCH;
+  /* PIN_53 */ PinOut CP;
 
   Tribuf MA00;
   Tribuf MA01;

@@ -14,6 +14,8 @@ using namespace Schematics;
 // SEGU = not(TYFA05) // 5 rung inverter, because fanout?
 // ROXO = not(SEGU05)
 
+//------------------------------------------------------------------------------
+
 LcdSignals LcdRegisters::sig(const TestGB& gb) const {
   auto rst_sig = gb.rst_reg.sig(gb);
 
@@ -25,14 +27,23 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
   /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(RUTU_NEW_LINE_d0);
   /*p21.SELA*/ wire SELA_NEW_LINE_d0p = not(PURE_NEW_LINE_d0n);
 
+  /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4p = or (ATEJ_VID_LINE_TRIG_d4p, rst_sig.AMYG_VID_RSTp);
+  /*p28.BYVA*/ wire BYVA_VID_LINE_TRIG_d4n = not(ABAK_VID_LINE_TRIG_d4p);
+  /*p29.DYBA*/ wire DYBA_VID_LINE_TRIG_d4p = not(BYVA_VID_LINE_TRIG_d4n);
+
   return {
+    .CATU_VID_LINE_d4 = CATU_VID_LINE_d4,
     .BYHA_VID_LINE_TRIG_d4n = BYHA_VID_LINE_TRIG_d4n,
     .ATEJ_VID_LINE_TRIG_d4p = ATEJ_VID_LINE_TRIG_d4p,
     .XAHY_VID_LINE_TRIG_d4n = XAHY_VID_LINE_TRIG_d4n,
+    .BYVA_VID_LINE_TRIG_d4n = BYVA_VID_LINE_TRIG_d4n,
+    .DYBA_VID_LINE_TRIG_d4p = DYBA_VID_LINE_TRIG_d4p,
     .PURE_NEW_LINE_d0n = PURE_NEW_LINE_d0n,
     .SELA_NEW_LINE_d0p = SELA_NEW_LINE_d0p,
   };
 }
+
+//------------------------------------------------------------------------------
 
 void LcdRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
@@ -50,13 +61,13 @@ void LcdRegisters::tick(TestGB& gb) {
   // LCD main timer
   {
     /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(RUTU_NEW_LINE_d0.q(), rst_sig.LYHA_VID_RSTp);
-    /*p21.SAXO*/ SAXO_X0.set(clk_sig.TALU_xBCDExxx, _MUDE_X_RSTn, !SAXO_X0.q());
-    /*p21.TYPO*/ TYPO_X1.set(!SAXO_X0.q(),  _MUDE_X_RSTn, !TYPO_X1.q());
-    /*p21.VYZO*/ VYZO_X2.set(!TYPO_X1.q(),  _MUDE_X_RSTn, !VYZO_X2.q());
-    /*p21.TELU*/ TELU_X3.set(!VYZO_X2.q(),  _MUDE_X_RSTn, !TELU_X3.q());
-    /*p21.SUDE*/ SUDE_X4.set(!TELU_X3.q(),  _MUDE_X_RSTn, !SUDE_X4.q());
-    /*p21.TAHA*/ TAHA_X5.set(!SUDE_X4.q(),  _MUDE_X_RSTn, !TAHA_X5.q());
-    /*p21.TYRY*/ TYRY_X6.set(!TAHA_X5.q(),  _MUDE_X_RSTn, !TYRY_X6.q());
+    /*p21.SAXO*/ XEHO_X0.set(clk_sig.TALU_xBCDExxx, _MUDE_X_RSTn, !XEHO_X0.q());
+    /*p21.TYPO*/ SAVY_X1.set(!XEHO_X0.q(),  _MUDE_X_RSTn, !SAVY_X1.q());
+    /*p21.VYZO*/ XODU_X2.set(!SAVY_X1.q(),  _MUDE_X_RSTn, !XODU_X2.q());
+    /*p21.TELU*/ XYDO_X3.set(!XODU_X2.q(),  _MUDE_X_RSTn, !XYDO_X3.q());
+    /*p21.SUDE*/ TUHU_X4.set(!XYDO_X3.q(),  _MUDE_X_RSTn, !TUHU_X4.q());
+    /*p21.TAHA*/ TUKY_X5.set(!TUHU_X4.q(),  _MUDE_X_RSTn, !TUKY_X5.q());
+    /*p21.TYRY*/ TAKO_X6.set(!TUKY_X5.q(),  _MUDE_X_RSTn, !TAKO_X6.q());
   }
 
   {
@@ -72,7 +83,7 @@ void LcdRegisters::tick(TestGB& gb) {
   }
 
   {
-    /*p21.SANU*/ wire _SANU_LINE_END = and(TYRY_X6.q(), TAHA_X5.q(), SUDE_X4.q(), SAXO_X0.q()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+    /*p21.SANU*/ wire _SANU_LINE_END = and(TAKO_X6.q(), TUKY_X5.q(), TUHU_X4.q(), XEHO_X0.q()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
     /*p21.RUTU*/ RUTU_NEW_LINE_d0.set(clk_sig.SONO_AxxxxFGH, rst_sig.LYFE_VID_RSTn, _SANU_LINE_END);
     /*p21.NYPE*/ NYPE_NEW_LINE_d4.set(clk_sig.TALU_xBCDExxx, rst_sig.LYFE_VID_RSTn, RUTU_NEW_LINE_d0.q());
 
@@ -104,22 +115,22 @@ void LcdRegisters::tick(TestGB& gb) {
 
   // LCD line strobe
   {
-    /*p21.TOCU*/ wire _C0n = not(SAXO_X0.q());
-    /*p21.VEPE*/ wire _C1n = not(TYPO_X1.q());
-    /*p21.VUTY*/ wire _C2n = not(VYZO_X2.q());
-    /*p21.VATE*/ wire _C3n = not(TELU_X3.q());
-    /*p21.TUDA*/ wire _C4n = not(SUDE_X4.q());
-    /*p21.TAFY*/ wire _C5n = not(TAHA_X5.q());
-    /*p21.TUJU*/ wire _C6n = not(TYRY_X6.q());
+    /*p21.TOCU*/ wire _C0n = not(XEHO_X0.q());
+    /*p21.VEPE*/ wire _C1n = not(SAVY_X1.q());
+    /*p21.VUTY*/ wire _C2n = not(XODU_X2.q());
+    /*p21.VATE*/ wire _C3n = not(XYDO_X3.q());
+    /*p21.TUDA*/ wire _C4n = not(TUHU_X4.q());
+    /*p21.TAFY*/ wire _C5n = not(TUKY_X5.q());
+    /*p21.TUJU*/ wire _C6n = not(TAKO_X6.q());
 
     /*p21.VOKU*/ wire _VOKU_000n = nand(_C6n, _C5n, _C4n, _C3n, _C2n, _C1n, _C0n); // 0000000 == 0
-    /*p21.TOZU*/ wire _TOZU_007n = nand(_C6n, _C5n, _C4n, _C3n,  VYZO_X2,  TYPO_X1,  SAXO_X0); // 0000111 == 7
-    /*p21.TECE*/ wire _TECE_045n = nand(_C6n,  TAHA_X5, _C4n,  TELU_X3,  VYZO_X2, _C1n,  SAXO_X0); // 0101101 == 45
-    /*p21.TEBO*/ wire _TEBO_083n = nand( TYRY_X6, _C5n,  SUDE_X4, _C3n, _C2n,  TYPO_X1,  SAXO_X0); // 1010011 == 83
+    /*p21.TOZU*/ wire _TOZU_007n = nand(_C6n, _C5n, _C4n, _C3n,  XODU_X2,  SAVY_X1,  XEHO_X0); // 0000111 == 7
+    /*p21.TECE*/ wire _TECE_045n = nand(_C6n,  TUKY_X5, _C4n,  XYDO_X3,  XODU_X2, _C1n,  XEHO_X0); // 0101101 == 45
+    /*p21.TEBO*/ wire _TEBO_083n = nand( TAKO_X6, _C5n,  TUHU_X4, _C3n, _C2n,  SAVY_X1,  XEHO_X0); // 1010011 == 83
 
     /*p21.TEGY*/ wire _TEGY_LINE_STROBE = nand(_VOKU_000n, _TOZU_007n, _TECE_045n, _TEBO_083n);
     /*p21.SYGU*/ SYGU_LINE_STROBE.set(clk_sig.SONO_AxxxxFGH, rst_sig.LYFE_VID_RSTn, _TEGY_LINE_STROBE);
-    /*p21.RYNO*/ wire _RYNO = or (_TEGY_LINE_STROBE, RUTU_NEW_LINE_d0);
+    /*p21.RYNO*/ wire _RYNO = or(_TEGY_LINE_STROBE, RUTU_NEW_LINE_d0);
     /*p21.POGU*/ wire _POGU = not(_RYNO);
     CPG.set(_POGU);
   }
@@ -152,20 +163,22 @@ void LcdRegisters::tick(TestGB& gb) {
 
     // TERY has an arm on the VCC side
 
-    /*p21.SYFU*/ wire _SYFU_LY_MATCH7n = xor(LAFO_Y7, RAHA_LYC7.qn());
-    /*p21.TERY*/ wire _TERY_LY_MATCH6n = xor(MATO_Y6, VEVO_LYC6.qn());
-    /*p21.TUCY*/ wire _TUCY_LY_MATCH5n = xor(LEMA_Y5, VAFA_LYC5.qn());
-    /*p21.TYKU*/ wire _TYKU_LY_MATCH4n = xor(LOVU_Y4, SOTA_LYC4.qn());
-    /*p21.RASY*/ wire _RASY_LY_MATCH3n = xor(LYDO_Y3, SALO_LYC3.qn());
-    /*p21.REDA*/ wire _REDA_LY_MATCH2n = xor(LEXA_Y2, SEDY_LYC2.qn());
-    /*p21.TYDE*/ wire _TYDE_LY_MATCH1n = xor(MYRO_Y1, VUCE_LYC1.qn());
-    /*p21.RYME*/ wire _RYME_LY_MATCH0n = xor(MUWY_Y0, SYRY_LYC0.qn());
+    /*p21.SYFU*/ wire _SYFU_LY_MATCH7n = xor (LAFO_Y7, RAHA_LYC7.qn());
+    /*p21.TERY*/ wire _TERY_LY_MATCH6n = xor (MATO_Y6, VEVO_LYC6.qn());
+    /*p21.TUCY*/ wire _TUCY_LY_MATCH5n = xor (LEMA_Y5, VAFA_LYC5.qn());
+    /*p21.TYKU*/ wire _TYKU_LY_MATCH4n = xor (LOVU_Y4, SOTA_LYC4.qn());
+    /*p21.RASY*/ wire _RASY_LY_MATCH3n = xor (LYDO_Y3, SALO_LYC3.qn());
+    /*p21.REDA*/ wire _REDA_LY_MATCH2n = xor (LEXA_Y2, SEDY_LYC2.qn());
+    /*p21.TYDE*/ wire _TYDE_LY_MATCH1n = xor (MYRO_Y1, VUCE_LYC1.qn());
+    /*p21.RYME*/ wire _RYME_LY_MATCH0n = xor (MUWY_Y0, SYRY_LYC0.qn());
     /*p21.SOVU*/ wire _SOVU_LY_MATCHA = nor(_SYFU_LY_MATCH7n, _TERY_LY_MATCH6n, _TUCY_LY_MATCH5n, _TYKU_LY_MATCH4n); // def nor
     /*p21.SUBO*/ wire _SUBO_LY_MATCHB = nor(_RASY_LY_MATCH3n, _REDA_LY_MATCH2n, _TYDE_LY_MATCH1n, _RYME_LY_MATCH0n); // def nor
     /*p21.RAPE*/ wire _RAPE_LY_MATCHn = nand(_SOVU_LY_MATCHA, _SUBO_LY_MATCHB); // def nand
     /*p21.PALY*/ wire _PALY_LY_MATCHa = not(_RAPE_LY_MATCHn); // def not
     /*p21.ROPO*/ ROPO_LY_MATCH_SYNC.set(clk_sig.TALU_xBCDExxx, rst_sig.WESY_RSTn, _PALY_LY_MATCHa);
+  }
 
+  {
     // RUPO arms on ground side, nor latch
     // RUPO00 << ROPO16
     // RUPO01 nc
@@ -184,32 +197,19 @@ void LcdRegisters::tick(TestGB& gb) {
     /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor(rst_sig.WESY_RSTn, _RYJU_FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST, ROPO_LY_MATCH_SYNC);
   }
-
-  {
-    /*p35.REMY*/ wire _REMY_LD0n = not(gb.PATY_PIX_OUT_LO);
-    /*p35.RAVO*/ wire _RAVO_LD1n = not(gb.PERO_PIX_OUT_HI);
-
-    LD0.set(not(_REMY_LD0n));
-    LD1.set(not(_RAVO_LD1n));
-  }
 }
 
 //------------------------------------------------------------------------------
 
-void TestGB::tick_lcd() {
-  lcd_reg.tick(*this);
-}
-
-
 bool LcdRegisters::commit() {
   bool changed = false;
-  /*p21.SAXO*/ changed |= SAXO_X0.commit_reg(); // increments at phase 1, reset to 0 at p909.
-  /*p21.TYPO*/ changed |= TYPO_X1.commit_reg();
-  /*p21.VYZO*/ changed |= VYZO_X2.commit_reg();
-  /*p21.TELU*/ changed |= TELU_X3.commit_reg();
-  /*p21.SUDE*/ changed |= SUDE_X4.commit_reg();
-  /*p21.TAHA*/ changed |= TAHA_X5.commit_reg();
-  /*p21.TYRY*/ changed |= TYRY_X6.commit_reg();
+  /*p21.SAXO*/ changed |= XEHO_X0.commit_reg(); // increments at phase 1, reset to 0 at p909.
+  /*p21.TYPO*/ changed |= SAVY_X1.commit_reg();
+  /*p21.VYZO*/ changed |= XODU_X2.commit_reg();
+  /*p21.TELU*/ changed |= XYDO_X3.commit_reg();
+  /*p21.SUDE*/ changed |= TUHU_X4.commit_reg();
+  /*p21.TAHA*/ changed |= TUKY_X5.commit_reg();
+  /*p21.TYRY*/ changed |= TAKO_X6.commit_reg();
   /*p21.MUWY*/ changed |= MUWY_Y0.commit_reg(); // increments at p909, reset to 0 at p153:001
   /*p21.MYRO*/ changed |= MYRO_Y1.commit_reg();
   /*p21.LEXA*/ changed |= LEXA_Y2.commit_reg();
@@ -225,9 +225,6 @@ bool LcdRegisters::commit() {
   /*p21.MYTA*/ changed |= MYTA_LINE_153_d4.commit_reg();  // p153:001 - p000:001
   /*p21.POPU*/ changed |= POPU_IN_VBLANK_d4.commit_reg();    // p144:001 - p000:001
   /*p21.SYGU*/ changed |= SYGU_LINE_STROBE.commit_reg();
-  /*p24.PAHO*/ changed |= PAHO_X_8_SYNC.commit_reg();
-  /*p21.WUSA*/ changed |= WUSA_CPEN_LATCH.commit_latch();
-  /*p24.RUJU*/ changed |= POFY_ST_LATCH.commit_latch(); // nor latch with p24.RUJU, p24.POME
   /*p24.MEDA*/ changed |= MEDA_VSYNC_OUTn.commit_reg();
   /*p24.LUCA*/ changed |= LUCA_LINE_EVEN.commit_reg();
   /*p21.NAPO*/ changed |= NAPO_FRAME_EVEN.commit_reg();

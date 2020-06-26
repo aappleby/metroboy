@@ -18,7 +18,7 @@ struct TimerSignals {
 struct TimerRegisters {
 
   TimerSignals sig(const TestGB& gb) const;
-  void tick(const TestGB& gb);
+  void tick(TestGB& gb);
   bool commit();
 
   void dump_regs(TextPainter& text_painter) {

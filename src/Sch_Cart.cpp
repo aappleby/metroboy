@@ -1,4 +1,4 @@
-#include "Sch_Merged.h"
+#include "Sch_Cart.h"
 
 #include "Sch_Common.h"
 #include "Sch_Pins.h"
@@ -72,16 +72,24 @@ static const uint8_t DMG_ROM_bin[] = {
 
 //------------------------------------------------------------------------------
 
-void TestGB::tick_bootrom() {
-  auto dbg_sig = dbg_reg.sig(*this);
-  auto dma_sig = dma_reg.sig(*this);
-  auto cpu_sig = cpu_reg.sig(*this);
+void CartRegisters::tick(TestGB& gb) {
+  auto dbg_sig = gb.dbg_reg.sig(gb);
+  auto dma_sig = gb.dma_reg.sig(gb);
+  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto clk_sig = gb.clk_reg.sig(gb);
+
+  auto& bus_reg = gb.bus_reg;
+  auto& cpu_pins = gb.cpu_pins;
+  auto& ext_pins = gb.ext_pins;
+  auto& dma_reg = gb.dma_reg;
+
+  auto adr_sig = gb.adr_reg.sig(cpu_pins);
 
   //----------------------------------------
 
-  /*p07.TERA*/ wire _TERA_BOOT_BITn = not(bus_reg.BOOT_BIT.q());
+  /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(bus_reg.BOOT_BITn.q());
   /*p07.TULO*/ wire _TULO_ADDR_00XXp = nor(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12, cpu_pins.A11, cpu_pins.A10, cpu_pins.A09, cpu_pins.A08);
-  /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITn, _TULO_ADDR_00XXp);
+  /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
 
   cpu_pins.READ_BOOTROM.set(_TUTU_ADDR_BOOTp);
 
@@ -89,8 +97,8 @@ void TestGB::tick_bootrom() {
   /*p08.SOBY*/ wire _SOBY = nor(cpu_pins.A15, _TUTU_ADDR_BOOTp);
   /*p08.SEPY*/ wire _SEPY = nand(dbg_sig.ABUZ, _SOBY);
   /*p08.TAZY*/ wire _TAZY = mux2_p(dma_reg.DMA_A15.q(), _SEPY, dma_sig.LUMA_DMA_READ_CARTp);
-  /*p08.SUZE*/ ext_pins.A15_A.set(nand(_TAZY, dbg_sig.RYCA_MODE_DBG2p));
-  /*p08.RULO*/ ext_pins.A15_D.set(nor (_TAZY, dbg_sig.UNOR_MODE_DBG2n));
+  /*p08.SUZE*/ ext_pins.A15_A.set(nand(_TAZY, dbg_sig.RYCA_MODE_DBG2n));
+  /*p08.RULO*/ ext_pins.A15_D.set(nor (_TAZY, dbg_sig.UNOR_MODE_DBG2p));
 
   // Bootrom -> CPU
   ///*p07.ZORO*/ wire ADDR_0XXX = nor(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12);
@@ -121,8 +129,8 @@ void TestGB::tick_bootrom() {
   ///*p07.ZAGE*/ wire BOOTROM_A6n    = not(cpu_pins.A06);
   ///*p07.ZYRA*/ wire BOOTROM_A7n    = not(cpu_pins.A07);
 
-  /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1);
-  /*p07.YULA*/ wire _YULA_BOOT_RD = and (cpu_sig.TEDO_CPU_RD, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp);
+  /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1); // suggests UMUTp
+  /*p07.YULA*/ wire _YULA_BOOT_RD = and (cpu_sig.TEDO_CPU_RD, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
 
   // this is kind of a hack
   uint16_t addr = (uint16_t)cpu_pins.get_addr();
@@ -136,20 +144,11 @@ void TestGB::tick_bootrom() {
   cpu_pins.D5.set_tribuf(_YULA_BOOT_RD, data & 0x20);
   cpu_pins.D6.set_tribuf(_YULA_BOOT_RD, data & 0x40);
   cpu_pins.D7.set_tribuf(_YULA_BOOT_RD, data & 0x80);
-}
-
-//------------------------------------------------------------------------------
-
-void TestGB::tick_cart_data() {
-  auto dbg_sig = dbg_reg.sig(*this);
-  auto adr_sig = adr_reg.sig(cpu_pins);
-  auto cpu_sig = cpu_reg.sig(*this);
 
   // internal data bus to external data bus
   {
-    // original
-    /*p08.REDU*/ wire _REDU_CPU_RDo = not(cpu_sig.TEDO_CPU_RD);
-    /*p08.RORU*/ wire _RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RDo, cpu_sig.MOTY_CPU_EXT_RDp, dbg_sig.UNOR_MODE_DBG2n);
+    /*p08.REDU*/ wire _REDU_CPU_RD = not(cpu_sig.TEDO_CPU_RD);
+    /*p08.RORU*/ wire _RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RD, cpu_sig.MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
     /*p08.LULA*/ wire _LULA_IBUS_TO_EBUSp = not(_RORU_IBUS_TO_EBUSn);
 
     ext_pins.D0_B.set(_LULA_IBUS_TO_EBUSp);
@@ -180,15 +179,6 @@ void TestGB::tick_cart_data() {
     /*p08.RYDA*/ ext_pins.D7_D.set(nor(cpu_pins.D7, _RORU_IBUS_TO_EBUSn));
   }
 
-}
-
-void TestGB::tick_cart_pins() {
-  auto clk_sig = clk_reg.sig(*this);
-  auto dbg_sig = dbg_reg.sig(*this);
-  auto adr_sig = adr_reg.sig(cpu_pins);
-  auto dma_sig = dma_reg.sig(*this);
-  auto cpu_sig = cpu_reg.sig(*this);
-
   //----------------------------------------
 
   {
@@ -196,24 +186,23 @@ void TestGB::tick_cart_pins() {
   }
 
   {
-    /*p08.TYMU*/ wire _TYMU_RD_OUTn = nor(dma_sig.LUMA_DMA_READ_CARTp, cpu_sig.MOTY_CPU_EXT_RDp);
-    /*p08.UGAC*/ wire _UGAC_RDn_A = nand(_TYMU_RD_OUTn, dbg_sig.TOVA_MODE_DBG2p);
-    /*p08.URUN*/ wire _URUN_RDn_D = nor(_TYMU_RD_OUTn, dbg_sig.UNOR_MODE_DBG2n);
+    /*p08.TYMU*/ wire _TYMU_RD_OUTn = nor(dma_sig.LUMA_DMA_READ_CARTp, cpu_sig.MOTY_CPU_EXT_RD);
 
-    /* PIN_79 */ ext_pins.RD_A.set(_UGAC_RDn_A);
-    /* PIN_79 */ ext_pins.RD_D.set(_URUN_RDn_D);
+    /*p08.UGAC*/ wire _UGAC_RDp_A = nand(_TYMU_RD_OUTn, dbg_sig.TOVA_MODE_DBG2n);
+    /*p08.URUN*/ wire _URUN_RDp_D = nor (_TYMU_RD_OUTn, dbg_sig.UNOR_MODE_DBG2p);
+    /* PIN_79 */ ext_pins.RD_A.set(_UGAC_RDp_A);
+    /* PIN_79 */ ext_pins.RD_D.set(_URUN_RDp_D);
   }
 
   {
-
     /*p08.MEXO*/ wire _MEXO_ABCDExxx = not(cpu_sig.APOV_CPU_WR_xxxxxFGH);
-    /*p08.NEVY*/ wire _NEVY = or (_MEXO_ABCDExxx, cpu_sig.MOCA_DBG_EXT_RDn);
-    /*p08.PUVA*/ wire _PUVA_WR_OUTn = or (_NEVY, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.UVER*/ wire _UVER_WRn_A = nand(_PUVA_WR_OUTn, dbg_sig.TOVA_MODE_DBG2p);
-    /*p08.USUF*/ wire _USUF_WRn_D = nor(_PUVA_WR_OUTn, dbg_sig.UNOR_MODE_DBG2n);
+    /*p08.NEVY*/ wire _NEVY = or(_MEXO_ABCDExxx, cpu_sig.MOCA_DBG_EXT_RD);
+    /*p08.PUVA*/ wire _PUVA_WR_OUTn = or(_NEVY, dma_sig.LUMA_DMA_READ_CARTp);
 
-    /* PIN_78 */ ext_pins.WR_A.set(_UVER_WRn_A);
-    /* PIN_78 */ ext_pins.WR_D.set(_USUF_WRn_D);
+    /*p08.UVER*/ wire _UVER_WRp_A = nand(_PUVA_WR_OUTn, dbg_sig.TOVA_MODE_DBG2n);
+    /*p08.USUF*/ wire _USUF_WRp_D = nor (_PUVA_WR_OUTn, dbg_sig.UNOR_MODE_DBG2p);
+    /* PIN_78 */ ext_pins.WR_A.set(_UVER_WRp_A);
+    /* PIN_78 */ ext_pins.WR_D.set(_USUF_WRp_D);
   }
 
   {
@@ -229,7 +218,13 @@ void TestGB::tick_cart_pins() {
 
     /*p08.SOGY*/ wire _SOGY_A14n = not(cpu_pins.A14);
     /*p08.TUMA*/ wire _TUMA_CART_RAM = and(cpu_pins.A13, _SOGY_A14n, cpu_pins.A15);
-    /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or (and(cpu_pins.A15, cpu_pins.A14), _TUMA_CART_RAM);
+
+    // TYNU 5-rung
+    // TYNU01
+
+    /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or(and(cpu_pins.A15, cpu_pins.A14), _TUMA_CART_RAM);
+
+
     /*p08.TOZA*/ wire _TOZA = and(dbg_sig.ABUZ, _TYNU_ADDR_RAM, adr_sig.TUNA_0000_FDFFp); // suggests ABUZp
     /*p08.TYHO*/ wire _TYHO_CS_A = mux2_p(dma_reg.DMA_A15.q(), _TOZA, dma_sig.LUMA_DMA_READ_CARTp); // ABxxxxxx
 

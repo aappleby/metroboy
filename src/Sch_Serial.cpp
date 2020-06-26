@@ -1,13 +1,11 @@
-#include "Sch_Merged.h"
+#include "Sch_Serial.h"
 
-#include "Sch_Common.h"
-#include "Sch_Pins.h"
 #include "TestGB.h"
-#include "Constants.h"
 #include "Sch_Timer.h"
 
 using namespace Schematics;
 
+//------------------------------------------------------------------------------
 
 void SerialRegisters::tick(TestGB& gb) {
 
@@ -36,8 +34,18 @@ void SerialRegisters::tick(TestGB& gb) {
 
   /*p06.COTY*/ SER_CLK.set(tim_sig.UVYN_DIV_05n, _FF02_WRn_xxxxxFGH, !SER_CLK.q());
 
+  // XFER_DIR 0 = ext clk
+  // XFER DIR 1 = int clk
+
+  // CAVE01 << CULY17 (xfer dir)
+  // CAVE02 << COTY17 (mux 1 = int clk)
+  // CAVE03 << SCK_C  (mux 0 = ext clk)
+  // CAVE04 nc
+  // CAVE05 >> DAWA01
+
   /*p06.CAVE*/ wire _SER_CLK_MUXn = mux2_n(SER_CLK.q(), SCK_C.q(), XFER_DIR.q());
-  /*p06.DAWA*/ wire _DAWA_SER_CLK = or (_SER_CLK_MUXn, !XFER_START.q()); // this must stop the clock or something when the transmit's done
+
+  /*p06.DAWA*/ wire _DAWA_SER_CLK = or(_SER_CLK_MUXn, !XFER_START.q()); // this must stop the clock or something when the transmit's done
   /*p06.EDYL*/ wire _EDYL_SER_CLK = not(_DAWA_SER_CLK);
   /*p06.EPYT*/ wire _EPYT_SER_CLK = not(_EDYL_SER_CLK);
   /*p06.DEHO*/ wire _DEHO_SER_CLK = not(_EPYT_SER_CLK);
@@ -58,14 +66,23 @@ void SerialRegisters::tick(TestGB& gb) {
   /*p06.EDEL*/ wire _SER_DATA6_SETn = nand(cpu_pins2.D6, _FF01_WR_xxxxxFGHp);
   /*p06.EFEF*/ wire _SER_DATA7_SETn = nand(cpu_pins2.D7, _FF01_WR_xxxxxFGHp);
 
-  /*p06.COHY*/ wire _SER_DATA0_RSTn = or (and (_FF01_WR_xxxxxFGHn, cpu_pins2.D0), rst_sig.ALUR_RSTn);
-  /*p06.DUMO*/ wire _SER_DATA1_RSTn = or (and (_FF01_WR_xxxxxFGHn, cpu_pins2.D1), rst_sig.ALUR_RSTn);
-  /*p06.DYBO*/ wire _SER_DATA2_RSTn = or (and (_FF01_WR_xxxxxFGHn, cpu_pins2.D2), rst_sig.ALUR_RSTn);
-  /*p06.DAJU*/ wire _SER_DATA3_RSTn = or (and (_FF01_WR_xxxxxFGHn, cpu_pins2.D3), rst_sig.ALUR_RSTn);
-  /*p06.DYLY*/ wire _SER_DATA4_RSTn = or (and (_FF01_WR_xxxxxFGHn, cpu_pins2.D4), rst_sig.ALUR_RSTn);
-  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = or (and (_FF01_WR_xxxxxFGHn, cpu_pins2.D5), rst_sig.ALUR_RSTn);
-  /*p06.EFAK*/ wire _SER_DATA6_RSTn = or (and (_FF01_WR_xxxxxFGHn, cpu_pins2.D6), rst_sig.ALUR_RSTn);
-  /*p06.EGUV*/ wire _SER_DATA7_RSTn = or (and (_FF01_WR_xxxxxFGHn, cpu_pins2.D7), rst_sig.ALUR_RSTn);
+  // COHY 5-rung
+  // DUMO 5-rung
+  // DYBO 5-rung
+  // DAJU 5-rung
+  // DYLY 5-rung
+  // EHUJ 5-rung
+  // EFAK 5-rung
+  // EGUV 5-rung
+
+  /*p06.COHY*/ wire _SER_DATA0_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_pins2.D0), rst_sig.ALUR_RSTn);
+  /*p06.DUMO*/ wire _SER_DATA1_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_pins2.D1), rst_sig.ALUR_RSTn);
+  /*p06.DYBO*/ wire _SER_DATA2_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_pins2.D2), rst_sig.ALUR_RSTn);
+  /*p06.DAJU*/ wire _SER_DATA3_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_pins2.D3), rst_sig.ALUR_RSTn);
+  /*p06.DYLY*/ wire _SER_DATA4_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_pins2.D4), rst_sig.ALUR_RSTn);
+  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_pins2.D5), rst_sig.ALUR_RSTn);
+  /*p06.EFAK*/ wire _SER_DATA6_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_pins2.D6), rst_sig.ALUR_RSTn);
+  /*p06.EGUV*/ wire _SER_DATA7_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_pins2.D7), rst_sig.ALUR_RSTn);
 
   /*p06.CAGE*/ wire _SIN_Cn = not(SIN_C);
   /*p06.CUBA*/ SER_DATA0.set(_DAWE_SER_CLK, _SER_DATA0_SETn, _SER_DATA0_RSTn, _SIN_Cn);
@@ -96,3 +113,60 @@ void SerialRegisters::tick(TestGB& gb) {
   /*p06.CORE*/ cpu_pins2.D0.set_tribuf(_FF02_RD, XFER_DIR.q());
   /*p06.ELUV*/ cpu_pins2.D1.set_tribuf(_FF02_RD, XFER_START.q());
 }
+
+//------------------------------------------------------------------------------
+
+bool SerialRegisters::commit() {
+  bool changed = false;
+
+  /*p06.ETAF*/ changed |= XFER_START.commit_reg();
+  /*p06.CULY*/ changed |= XFER_DIR.commit_reg();
+  /*p06.COTY*/ changed |= SER_CLK.commit_reg();
+  /*p06.CAFA*/ changed |= SER_CNT0.commit_reg();
+  /*p06.CYLO*/ changed |= SER_CNT1.commit_reg();
+  /*p06.CYDE*/ changed |= SER_CNT2.commit_reg();
+  /*p06.CALY*/ changed |= SER_CNT3.commit_reg();
+  /*p06.CUBA*/ changed |= SER_DATA0.commit_reg();
+  /*p06.DEGU*/ changed |= SER_DATA1.commit_reg();
+  /*p06.DYRA*/ changed |= SER_DATA2.commit_reg();
+  /*p06.DOJO*/ changed |= SER_DATA3.commit_reg();
+  /*p06.DOVU*/ changed |= SER_DATA4.commit_reg();
+  /*p06.EJAB*/ changed |= SER_DATA5.commit_reg();
+  /*p06.EROD*/ changed |= SER_DATA6.commit_reg();
+  /*p06.EDER*/ changed |= SER_DATA7.commit_reg();
+  /*p06.ELYS*/ changed |= SER_OUT.commit_reg();
+
+  /* PIN_68 */ changed |= SCK_A.commit_pinout();   // <- P06.KEXU
+  /* PIN_68 */ changed |= SCK_B.commit_pinout();   // <- P06.CULY
+  /* PIN_68 */ changed |= SCK_C.clear_preset();   // -> P06.CAVE
+  /* PIN_68 */ changed |= SCK_D.commit_pinout();   // <- P06.KUJO
+  ///* PIN_69 */ changed |= SIN_A.commit();   // nc?
+  ///* PIN_69 */ changed |= SIN_B.commit();   // nc?
+  /* PIN_69 */ changed |= SIN_C.clear_preset();   // -> P06.CAGE
+  ///* PIN_69 */ changed |= SIN_D.commit();   // nc?
+  /* PIN_70 */ changed |= SOUT.commit_pinout();    // <- P05.KENA
+  return changed;
+}
+
+//------------------------------------------------------------------------------
+
+void SerialRegisters::dump_regs(TextPainter& text_painter) {
+  text_painter.dprintf("----- SER_REG -----\n");
+  text_painter.dprintf("SER_CLK    %d\n", SER_CLK.a.val);
+  text_painter.dprintf("XFER_START %d\n", XFER_START.a.val);
+  text_painter.dprintf("XFER_DIR   %d\n", XFER_DIR.a.val);
+  text_painter.dprintf("SER_OUT    %d\n", SER_OUT.a.val);
+  text_painter.dprintf("SER_CNT    %d\n", ser_cnt());
+  text_painter.dprintf("SER_DATA   %d\n", ser_data());
+  text_painter.newline();
+}
+
+void SerialRegisters::dump_pins(TextPainter& text_painter) {
+  text_painter.dprintf("----- SER_PINS -----\n");
+  text_painter.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.a.val, SCK_B.a.val, SCK_C.a.val, SCK_D.a.val);
+  text_painter.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.a.val, SIN_B.a.val, SIN_C.a.val, SIN_D.a.val);
+  text_painter.dprintf("SOUT %d\n", SOUT.a.val);
+  text_painter.newline();
+}
+
+//------------------------------------------------------------------------------

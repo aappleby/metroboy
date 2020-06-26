@@ -21,15 +21,15 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
 
   /*p07.UBET*/ wire _UBET_T1n = not(sys_pins.T1);
   /*p07.UVAR*/ wire _UVAR_T2n = not(sys_pins.T2);
-  /*p07.UMUT*/ wire _UMUT_MODE_DBG1 = and (sys_pins.T1, _UVAR_T2n);
-  /*p07.UNOR*/ wire _UNOR_MODE_DBG2n = and (sys_pins.T2, _UBET_T1n);
-  /*p08.TOVA*/ wire _TOVA_MODE_DBG2p = not(_UNOR_MODE_DBG2n);
-  /*p07.UPOJ*/ wire _UPOJ_MODE_PRODn = nand(_UBET_T1n, _UVAR_T2n, sys_pins.RST);
-  /*p08.RYCA*/ wire _RYCA_MODE_DBG2p = not(_UNOR_MODE_DBG2n);
-  /*p25.TUTO*/ wire _TUTO_DBG_VRAM = and (_UNOR_MODE_DBG2n, !SOTO_DBG);
+  /*p07.UMUT*/ wire _UMUT_MODE_DBG1  = and (sys_pins.T1, _UVAR_T2n);
+  /*p07.UNOR*/ wire _UNOR_MODE_DBG2p = and (sys_pins.T2, _UBET_T1n); // Must be UNORp, see UJYV/UBAL
+  /*p08.TOVA*/ wire _TOVA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
+  /*p07.UPOJ*/ wire _UPOJ_MODE_PROD = nand(_UBET_T1n, _UVAR_T2n, sys_pins.RST);
+  /*p08.RYCA*/ wire _RYCA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
+  /*p25.TUTO*/ wire _TUTO_DBG_VRAM = and (_UNOR_MODE_DBG2p, !SOTO_DBG);
 
   /*p??.APAP*/ wire _APAP = not(cpu_pins.ADDR_VALID); // Missing from schematic
-  /*p01.AWOD*/ wire _AWOD = nor(_UNOR_MODE_DBG2n, _APAP);
+  /*p01.AWOD*/ wire _AWOD = nor(_UNOR_MODE_DBG2p, _APAP);
   /*p01.ABUZ*/ wire _ABUZ = not(_AWOD);
 
   // what is this for exactly?
@@ -45,10 +45,10 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
     .UBET_T1n = _UBET_T1n,
     .UVAR_T2n = _UVAR_T2n,
     .UMUT_MODE_DBG1 = _UMUT_MODE_DBG1,
-    .UNOR_MODE_DBG2n = _UNOR_MODE_DBG2n,
-    .TOVA_MODE_DBG2p = _TOVA_MODE_DBG2p,
-    .UPOJ_MODE_PRODn = _UPOJ_MODE_PRODn,
-    .RYCA_MODE_DBG2p = _RYCA_MODE_DBG2p,
+    .UNOR_MODE_DBG2p = _UNOR_MODE_DBG2p,
+    .TOVA_MODE_DBG2n = _TOVA_MODE_DBG2n,
+    .UPOJ_MODE_PROD = _UPOJ_MODE_PROD,
+    .RYCA_MODE_DBG2n = _RYCA_MODE_DBG2n,
     .TUTO_DBG_VRAM = _TUTO_DBG_VRAM,
     .ABUZ = _ABUZ,
   };
@@ -61,7 +61,7 @@ void DebugRegisters::tick(const TestGB& gb) {
   auto dbg_sig = sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
 
-  /*p25.SYCY*/ wire SYCY_DBG_CLOCKp = not(dbg_sig.UNOR_MODE_DBG2n);
+  /*p25.SYCY*/ wire SYCY_DBG_CLOCKp = not(dbg_sig.UNOR_MODE_DBG2p);
   /*p25.SOTO*/ SOTO_DBG.set(SYCY_DBG_CLOCKp, rst_sig.CUNU_RSTn, !SOTO_DBG);
 
   //cpu_pins.UMUT_MODE_DBG1.set(dbg_sig.UMUT_MODE_DBG1);

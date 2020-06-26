@@ -62,7 +62,7 @@ AddressSignals AddressRegisters::sig(const CpuPins& cpu_pins) const {
   // TEXO = and(ADDR_VALIDx?, TEVY)
 
   /*p08.SORE*/ wire _SORE_0000_7FFFp = not(cpu_pins.A15);
-  /*p08.TEVY*/ wire _TEVY_8000_9FFFn = or (cpu_pins.A13, cpu_pins.A14, _SORE_0000_7FFFp);
+  /*p08.TEVY*/ wire _TEVY_8000_9FFFn = or(cpu_pins.A13, cpu_pins.A14, _SORE_0000_7FFFp);
   /*p08.TEXO*/ wire _TEXO_8000_9FFFn = and (cpu_pins.ADDR_VALID, _TEVY_8000_9FFFn);
   /*p08.LEVO*/ wire _LEVO_8000_9FFFp = not(_TEXO_8000_9FFFn);
 

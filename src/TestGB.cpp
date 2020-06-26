@@ -232,22 +232,22 @@ bool TestGB::commit_everything() {
   /*p29.XAFU*/ changed |= oam_reg.LATCH_OAM_B5.commit_latch();
   /*p29.YSES*/ changed |= oam_reg.LATCH_OAM_B6.commit_latch();
   /*p29.ZECA*/ changed |= oam_reg.LATCH_OAM_B7.commit_latch();
-  /*p31.YLOR*/ changed |= oam_reg.REG_OAM_A0.commit_reg();
-  /*p31.ZYTY*/ changed |= oam_reg.REG_OAM_A1.commit_reg();
-  /*p31.ZYVE*/ changed |= oam_reg.REG_OAM_A2.commit_reg();
-  /*p31.ZEZY*/ changed |= oam_reg.REG_OAM_A3.commit_reg();
-  /*p31.GOMO*/ changed |= oam_reg.REG_OAM_A4.commit_reg();
-  /*p31.BAXO*/ changed |= oam_reg.REG_OAM_A5.commit_reg();
-  /*p31.YZOS*/ changed |= oam_reg.REG_OAM_A6.commit_reg();
-  /*p31.DEPO*/ changed |= oam_reg.REG_OAM_A7.commit_reg();
-  /*p29.XUSO*/ changed |= oam_reg.REG_OAM_B0.commit_reg();
-  /*p29.XEGU*/ changed |= oam_reg.REG_OAM_B1.commit_reg();
-  /*p29.YJEX*/ changed |= oam_reg.REG_OAM_B2.commit_reg();
-  /*p29.XYJU*/ changed |= oam_reg.REG_OAM_B3.commit_reg();
-  /*p29.YBOG*/ changed |= oam_reg.REG_OAM_B4.commit_reg();
-  /*p29.WYSO*/ changed |= oam_reg.REG_OAM_B5.commit_reg();
-  /*p29.XOTE*/ changed |= oam_reg.REG_OAM_B6.commit_reg();
-  /*p29.YZAB*/ changed |= oam_reg.REG_OAM_B7.commit_reg();
+  /*p31.YLOR*/ changed |= oam_reg.YLOR_SPRITE_X0.commit_reg();
+  /*p31.ZYTY*/ changed |= oam_reg.ZYTY_SPRITE_X1.commit_reg();
+  /*p31.ZYVE*/ changed |= oam_reg.ZYVE_SPRITE_X2.commit_reg();
+  /*p31.ZEZY*/ changed |= oam_reg.ZEZY_SPRITE_X3.commit_reg();
+  /*p31.GOMO*/ changed |= oam_reg.GOMO_SPRITE_X4.commit_reg();
+  /*p31.BAXO*/ changed |= oam_reg.BAXO_SPRITE_X5.commit_reg();
+  /*p31.YZOS*/ changed |= oam_reg.YZOS_SPRITE_X6.commit_reg();
+  /*p31.DEPO*/ changed |= oam_reg.DEPO_SPRITE_X7.commit_reg();
+  /*p29.XUSO*/ changed |= oam_reg.XUSO_SPRITE_Y0.commit_reg();
+  /*p29.XEGU*/ changed |= oam_reg.XEGU_SPRITE_Y1.commit_reg();
+  /*p29.YJEX*/ changed |= oam_reg.YJEX_SPRITE_Y2.commit_reg();
+  /*p29.XYJU*/ changed |= oam_reg.XYJU_SPRITE_Y3.commit_reg();
+  /*p29.YBOG*/ changed |= oam_reg.YBOG_SPRITE_Y4.commit_reg();
+  /*p29.WYSO*/ changed |= oam_reg.WYSO_SPRITE_Y5.commit_reg();
+  /*p29.XOTE*/ changed |= oam_reg.XOTE_SPRITE_Y6.commit_reg();
+  /*p29.YZAB*/ changed |= oam_reg.YZAB_SPRITE_Y7.commit_reg();
 
   /*p32.LEGU*/ changed |= pxp_reg.BG_PIX_A0.commit_reg();
   /*p32.NUDU*/ changed |= pxp_reg.BG_PIX_A1.commit_reg();
@@ -330,23 +330,6 @@ bool TestGB::commit_everything() {
   /*p26.VUMO*/ changed |= pxp_reg.MASK_PIPE_6.commit_reg();
   /*p26.VAVA*/ changed |= pxp_reg.MASK_PIPE_7.commit_reg();
 
-  /*p06.ETAF*/ changed |= ser_reg.XFER_START.commit_reg();
-  /*p06.CULY*/ changed |= ser_reg.XFER_DIR.commit_reg();
-  /*p06.COTY*/ changed |= ser_reg.SER_CLK.commit_reg();
-  /*p06.CAFA*/ changed |= ser_reg.SER_CNT0.commit_reg();
-  /*p06.CYLO*/ changed |= ser_reg.SER_CNT1.commit_reg();
-  /*p06.CYDE*/ changed |= ser_reg.SER_CNT2.commit_reg();
-  /*p06.CALY*/ changed |= ser_reg.SER_CNT3.commit_reg();
-  /*p06.CUBA*/ changed |= ser_reg.SER_DATA0.commit_reg();
-  /*p06.DEGU*/ changed |= ser_reg.SER_DATA1.commit_reg();
-  /*p06.DYRA*/ changed |= ser_reg.SER_DATA2.commit_reg();
-  /*p06.DOJO*/ changed |= ser_reg.SER_DATA3.commit_reg();
-  /*p06.DOVU*/ changed |= ser_reg.SER_DATA4.commit_reg();
-  /*p06.EJAB*/ changed |= ser_reg.SER_DATA5.commit_reg();
-  /*p06.EROD*/ changed |= ser_reg.SER_DATA6.commit_reg();
-  /*p06.EDER*/ changed |= ser_reg.SER_DATA7.commit_reg();
-  /*p06.ELYS*/ changed |= ser_reg.SER_OUT.commit_reg();
-
   /*p29.TOXE*/ changed |= ppu_reg.TOXE_SFETCH_S0_D0.commit_reg();
   /*p29.TULY*/ changed |= ppu_reg.TULY_SFETCH_S1.commit_reg();
   /*p29.TESE*/ changed |= ppu_reg.TESE_SFETCH_S2.commit_reg();
@@ -395,43 +378,10 @@ bool TestGB::commit_everything() {
   /*p03.SAMY*/ changed |= tim_reg.TAC_1.commit_reg();
   /*p03.SABO*/ changed |= tim_reg.TAC_2.commit_reg();
 
-  /*p??.ROXY*/ changed |= ppu_reg.ROXY_FINE_MATCH_LATCHn.commit_latch();
-  /*p??.PUXA*/ changed |= ppu_reg.PUXA_FINE_MATCH_SYNC1.commit_reg();
-  /*p27.NYZE*/ changed |= ppu_reg.NYZE_FINE_MATCH_SYNC2.commit_reg();
-  /*p27.RYKU*/ changed |= ppu_reg.RYKU_FINE_CNT0.commit_reg();
-  /*p27.ROGA*/ changed |= ppu_reg.ROGA_FINE_CNT1.commit_reg();
-  /*p27.RUBU*/ changed |= ppu_reg.RUBU_FINE_CNT2.commit_reg();
-  /*p21.XEHO*/ changed |= ppu_reg.SAXO_X0.commit_reg();
-  /*p21.SAVY*/ changed |= ppu_reg.TYPO_X1.commit_reg();
-  /*p21.XODU*/ changed |= ppu_reg.VYZO_X2.commit_reg();
-  /*p21.XYDO*/ changed |= ppu_reg.TELU_X3.commit_reg();
-  /*p21.TUHU*/ changed |= ppu_reg.SUDE_X4.commit_reg();
-  /*p21.TUKY*/ changed |= ppu_reg.TAHA_X5.commit_reg();
-  /*p21.TAKO*/ changed |= ppu_reg.TYRY_X6.commit_reg();
-  /*p21.SYBE*/ changed |= ppu_reg.SYBE_X7.commit_reg();
-  /*p21.XYMU*/ changed |= ppu_reg.XYMU_RENDERINGp.commit_latch();
-  /*p21.VOGA*/ changed |= ppu_reg.VOGA_RENDER_DONE_SYNC.commit_reg();
-  /*p21.ROXE*/ changed |= ppu_reg.ROXE_INT_HBL_EN.commit_reg();
-  /*p21.RUFO*/ changed |= ppu_reg.RUFO_INT_VBL_EN.commit_reg();
-  /*p21.REFE*/ changed |= ppu_reg.REFE_INT_OAM_EN.commit_reg();
-  /*p21.RUGU*/ changed |= ppu_reg.RUGU_INT_LYC_EN.commit_reg();
+  changed |= ppu_reg.commit();
 
   changed |= win_reg.commit();
 
-  /*p27.LONY*/ changed |= ppu_reg.LONY_BG_READ_VRAM_LATCHp.commit_latch();
-  /*p27.LAXU*/ changed |= ppu_reg.LAXU_BFETCH_S0.commit_reg();
-  /*p27.MESU*/ changed |= ppu_reg.MESU_BFETCH_S1.commit_reg();
-  /*p27.NYVA*/ changed |= ppu_reg.NYVA_BFETCH_S2.commit_reg();
-  /*p27.LOVY*/ changed |= ppu_reg.LOVY_BG_SEQ5_SYNC.commit_reg();
-  /*p24.NYKA*/ changed |= ppu_reg.NYKA_BFETCH_DONE_SYNC.commit_reg();
-  /*p24.PORY*/ changed |= ppu_reg.PORY_BFETCH_DONE_SYNC_DELAY.commit_reg();
-  /*p27.LYZU*/ changed |= ppu_reg.LYZU_BFETCH_S0_DELAY.commit_reg();
-  /*p24.PYGO*/ changed |= ppu_reg.PYGO_TILE_DONE.commit_reg();
-  /*p24.POKY*/ changed |= ppu_reg.POKY_FRONT_PORCH_LATCH.commit_latch();
-
-  /*p27.TAKA*/ changed |= ppu_reg.TAKA_SFETCH_RUN_LATCH.commit_latch();
-  /*p27.SOBU*/ changed |= ppu_reg.SOBU_SPRITE_FETCH_SYNC1.commit_reg();
-  /*p27.SUDA*/ changed |= ppu_reg.SUDA_SPRITE_FETCH_SYNC2.commit_reg();
   changed |= ppu_reg.MA00.commit_tribuf();
   changed |= ppu_reg.MA01.commit_tribuf();
   changed |= ppu_reg.MA02.commit_tribuf();
@@ -454,7 +404,7 @@ bool TestGB::commit_everything() {
   changed |= ppu_reg.MD6.commit_tribuf();
   changed |= ppu_reg.MD7.commit_tribuf();
 
-  /*p07.TEPU*/ changed |= bus_reg.BOOT_BIT.commit_reg();
+  /*p07.TEPU*/ changed |= bus_reg.BOOT_BITn.commit_reg();
 
   /*p08.ALOR*/ changed |= bus_reg.CPU_ADDR_LATCH_00.commit_latch();
   /*p08.APUR*/ changed |= bus_reg.CPU_ADDR_LATCH_01.commit_latch();
@@ -740,7 +690,7 @@ bool TestGB::commit_everything() {
   /* PIN_67 */ changed |= joy_pin.P10_C.clear_preset();    // -> KERY, KEVU
   /* PIN_67 */ changed |= joy_pin.P10_D.commit_pinout();   // <- KYBU
 
-  changed |= ser_reg.commit_pins();
+  changed |= ser_reg.commit();
 
   /* PIN_71 */ changed |= sys_pins.RST.clear_preset();
   /* PIN_72 */ /*GND*/

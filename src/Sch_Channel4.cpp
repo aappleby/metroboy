@@ -176,10 +176,10 @@ void Channel4_tick(const Gameboy& a, const Gameboy& b, Gameboy& next) {
     ///*p20.GYSU*/ next.ch4.CH4_START   = tock_pos(a.clk.DOVA_ABCDxxxx, b.clk.DOVA_ABCDxxxx, RSTu, b.ch4.CH4_START, b.ch4.NR44_START);
 
     /*p20.EFOT*/ wire CH4_STOP    = and(b.ch4.NR44_STOP,   b.ch4.LEN_STOP);
-    /*p20.FEGY*/ wire CH4_OFF     = or (b.ch4.CH4_AMP_ENn, CH4_STOP, RSTa);
+    /*p20.FEGY*/ wire CH4_OFF     = or(b.ch4.CH4_AMP_ENn, CH4_STOP, RSTa);
 
     // weird latch?
-    /*p20.GENA*/ next.ch4.CH4_ACTIVE  = or (b.ch4.RESTART1, CH4_OFF);
+    /*p20.GENA*/ next.ch4.CH4_ACTIVE  = or(b.ch4.RESTART1, CH4_OFF);
 
     /*p20.FALE*/ wire RESTART_RSTn = nor(b.ch4.RESTART2, RSTa);
     /*p20.HELU*/ wire RESTART_RST  = not(RESTART_RSTn);

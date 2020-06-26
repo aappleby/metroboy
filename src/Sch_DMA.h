@@ -8,6 +8,8 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct DmaSignals {
+  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn;
+
   // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
   /*p04.MORY*/ wire MORY_DMA_READ_CARTn;
   /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp;

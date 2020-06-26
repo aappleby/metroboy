@@ -17,10 +17,13 @@ struct DebugSignals {
   /*p07.UBET*/ wire UBET_T1n;
   /*p07.UVAR*/ wire UVAR_T2n;
   /*p07.UMUT*/ wire UMUT_MODE_DBG1;
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2n;
-  /*p08.TOVA*/ wire TOVA_MODE_DBG2p;
-  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn;
-  /*p08.RYCA*/ wire RYCA_MODE_DBG2p;
+
+  // Must be UNORp, see UJYV/UBAL
+  /*p07.UNOR*/ wire UNOR_MODE_DBG2p;
+
+  /*p08.TOVA*/ wire TOVA_MODE_DBG2n;
+  /*p07.UPOJ*/ wire UPOJ_MODE_PROD;
+  /*p08.RYCA*/ wire RYCA_MODE_DBG2n;
   /*p25.TUCA*/ wire TUCA_CPU_VRAM_RD;
   /*p25.TUTO*/ wire TUTO_DBG_VRAM;
   /*p01.ABUZ*/ wire ABUZ;

@@ -13,6 +13,11 @@
 #include "Sch_Resets.h"
 #include "Sch_Debug.h"
 #include "Sch_Address.h"
+#include "Sch_PixPipe.h"
+#include "Sch_Joypad.h"
+#include "Sch_Serial.h"
+#include "Sch_Cart.h"
+#include "Sch_VRAM.h"
 
 namespace Schematics {
 
@@ -24,21 +29,6 @@ struct TestGB {
 
   void tick_everything();
   bool commit_everything();
-
-  void tick_cpu();
-
-  void tick_joypad();
-  void tick_lcd();
-
-  void tick_vram_addr();
-
-  void tick_bootrom();
-  void tick_cart_data();
-  void tick_cart_pins();
-
-  void tick_oam();
-
-  void tick_pixpipe();
 
   //-----------------------------------------------------------------------------
 
@@ -71,6 +61,8 @@ struct TestGB {
   OamRegisters oam_reg;// dumped
   WindowRegisters win_reg;
   AddressRegisters adr_reg;
+  CartRegisters cart_reg;
+  VramRegisters vram_reg;
 
   SysPins sys_pins; // dumped
   VramPins vram_pins; // dumped
@@ -79,9 +71,6 @@ struct TestGB {
   ExtPins ext_pins; // dumped
   OamPins oam_pins; // dumped
   WavePins wave_pins;
-
-  /*p35.PATY*/ Signal PATY_PIX_OUT_LO;
-  /*p35.PERO*/ Signal PERO_PIX_OUT_HI;
 };
 
 //-----------------------------------------------------------------------------

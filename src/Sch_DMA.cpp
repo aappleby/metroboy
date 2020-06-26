@@ -74,8 +74,10 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
   /*p04.MORY*/ wire _MORY_DMA_READ_CARTn = nand(MATU_DMA_OAM_WRp.q(), _LOGO_DMA_VRAMn); // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
   /*p04.LUMA*/ wire _LUMA_DMA_READ_CARTp = not(_MORY_DMA_READ_CARTn);
   /*p04.LUFA*/ wire _LUFA_DMA_READ_VRAMp = not(_MUHO_DMA_VRAM_RDn);
+  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn    = not(MATU_DMA_OAM_WRp.q());
 
   return {
+    .BOGE_DMA_RUNNINGn = BOGE_DMA_RUNNINGn,
     .MORY_DMA_READ_CARTn = _MORY_DMA_READ_CARTn,
     .LUMA_DMA_READ_CARTp = _LUMA_DMA_READ_CARTp,
     .LUFA_DMA_READ_VRAMp = _LUFA_DMA_READ_VRAMp,

@@ -15,7 +15,7 @@ TimerSignals TimerRegisters::sig(const TestGB& /*gb*/) const {
   };
 }
 
-void TimerRegisters::tick(const TestGB& gb) {
+void TimerRegisters::tick(TestGB& gb) {
   auto& cpu_pins = gb.cpu_pins;
 
   auto clk_sig = gb.clk_reg.sig(gb);
@@ -55,7 +55,7 @@ void TimerRegisters::tick(const TestGB& gb) {
   }
 
   /*p03.TOPE*/ wire _FF05_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, cpu_pins.A00);
-  /*p03.MUZU*/ wire _MUZU = or (cpu_pins.FROM_CPU5.q(), _FF05_WRn);
+  /*p03.MUZU*/ wire _MUZU = or(cpu_pins.FROM_CPU5.q(), _FF05_WRn);
   /*p03.MEKE*/ wire _INT_TIMERn = not(INT_TIMER.q());
   /*p03.MEXU*/ wire _TIMA_LOAD = nand(_MUZU, rst_sig.ALUR_RSTn, _INT_TIMERn);
 
@@ -125,6 +125,61 @@ void TimerRegisters::tick(const TestGB& gb) {
     /*p03.SOPU*/ TAC_0.set(_SARA_FF07_WRn, rst_sig.ALUR_RSTn, cpu_pins.D0);
     /*p03.SAMY*/ TAC_1.set(_SARA_FF07_WRn, rst_sig.ALUR_RSTn, cpu_pins.D1);
     /*p03.SABO*/ TAC_2.set(_SARA_FF07_WRn, rst_sig.ALUR_RSTn, cpu_pins.D2);
+  }
+
+
+  // FF04 DIV
+  {
+    /*p01.TAGY*/ wire FF04_RD = and (cpu_sig.TEDO_CPU_RD, adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, adr_sig.TOVY_A00n);
+
+    /*p01.UTOK*/ wire DIV_08n = not(TUGO_DIV_08.q());
+    /*p01.SAPY*/ wire DIV_09n = not(TOFE_DIV_09.q());
+    /*p01.UMER*/ wire DIV_10n = not(TERU_DIV_10.q());
+    /*p01.RAVE*/ wire DIV_11n = not(SOLA_DIV_11.q());
+    /*p01.RYSO*/ wire DIV_12n = not(SUBU_DIV_12.q());
+    /*p01.UDOR*/ wire DIV_13n = not(TEKA_DIV_13.q());
+    /*p01.TAWU*/ cpu_pins.D0.set_tribuf(FF04_RD, not(tim_sig.UMEK_DIV_06n));
+    /*p01.TAKU*/ cpu_pins.D1.set_tribuf(FF04_RD, not(tim_sig.UREK_DIV_07n));
+    /*p01.TEMU*/ cpu_pins.D2.set_tribuf(FF04_RD, not(DIV_08n));
+    /*p01.TUSE*/ cpu_pins.D3.set_tribuf(FF04_RD, not(DIV_09n));
+    /*p01.UPUG*/ cpu_pins.D4.set_tribuf(FF04_RD, not(DIV_10n));
+    /*p01.SEPU*/ cpu_pins.D5.set_tribuf(FF04_RD, not(DIV_11n));
+    /*p01.SAWA*/ cpu_pins.D6.set_tribuf(FF04_RD, not(DIV_12n));
+    /*p01.TATU*/ cpu_pins.D7.set_tribuf(FF04_RD, not(DIV_13n));
+  }
+
+  // FF05 TIMA
+  {
+    /*p03.TEDA*/ wire FF05_RD = and (cpu_sig.TEDO_CPU_RD, adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, cpu_pins.A00);
+    /*p03.SOKU*/ cpu_pins.D0.set_tribuf(FF05_RD, TIMA_0.q());
+    /*p03.RACY*/ cpu_pins.D1.set_tribuf(FF05_RD, TIMA_1.q());
+    /*p03.RAVY*/ cpu_pins.D2.set_tribuf(FF05_RD, TIMA_2.q());
+    /*p03.SOSY*/ cpu_pins.D3.set_tribuf(FF05_RD, TIMA_3.q());
+    /*p03.SOMU*/ cpu_pins.D4.set_tribuf(FF05_RD, TIMA_4.q());
+    /*p03.SURO*/ cpu_pins.D5.set_tribuf(FF05_RD, TIMA_5.q());
+    /*p03.ROWU*/ cpu_pins.D6.set_tribuf(FF05_RD, TIMA_6.q());
+    /*p03.PUSO*/ cpu_pins.D7.set_tribuf(FF05_RD, TIMA_7.q());
+  }
+
+  // FF06 TMA
+  {
+    /*p03.TUBY*/ wire FF06_RD = and (cpu_sig.TEDO_CPU_RD, adr_sig.RYFO_FF04_FF07p, cpu_pins.A01, adr_sig.TOVY_A00n);
+    /*p03.SETE*/ cpu_pins.D0.set_tribuf(FF06_RD, TMA_0.q());
+    /*p03.PYRE*/ cpu_pins.D1.set_tribuf(FF06_RD, TMA_1.q());
+    /*p03.NOLA*/ cpu_pins.D2.set_tribuf(FF06_RD, TMA_2.q());
+    /*p03.SALU*/ cpu_pins.D3.set_tribuf(FF06_RD, TMA_3.q());
+    /*p03.SUPO*/ cpu_pins.D4.set_tribuf(FF06_RD, TMA_4.q());
+    /*p03.SOTU*/ cpu_pins.D5.set_tribuf(FF06_RD, TMA_5.q());
+    /*p03.REVA*/ cpu_pins.D6.set_tribuf(FF06_RD, TMA_6.q());
+    /*p03.SAPU*/ cpu_pins.D7.set_tribuf(FF06_RD, TMA_7.q());
+  }
+
+  // FF07 TAC
+  {
+    /*p03.SORA*/ wire FF07_RD = and (cpu_sig.TEDO_CPU_RD, adr_sig.RYFO_FF04_FF07p, cpu_pins.A00, cpu_pins.A01);
+    /*p03.RYLA*/ cpu_pins.D0.set_tribuf(FF07_RD, TAC_0.q());
+    /*p03.ROTE*/ cpu_pins.D1.set_tribuf(FF07_RD, TAC_1.q());
+    /*p03.SUPE*/ cpu_pins.D2.set_tribuf(FF07_RD, TAC_2.q());
   }
 
 

@@ -162,10 +162,10 @@ void ClockRegisters::tick(const TestGB& gb) {
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
 
-  /*p01.AFUR*/ AFUR_PHAZ_xBCDExxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PRODn, !ADYK_PHAZ_xxxxEFGH.a);
-  /*p01.ALEF*/ ALEF_PHAZ_xxCDEFxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PRODn,  AFUR_PHAZ_xBCDExxx.a);
-  /*p01.APUK*/ APUK_PHAZ_xxxDEFGx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PRODn,  ALEF_PHAZ_xxCDEFxx.a);
-  /*p01.ADYK*/ ADYK_PHAZ_xxxxEFGH.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PRODn,  APUK_PHAZ_xxxDEFGx.a);
+  /*p01.AFUR*/ AFUR_PHAZ_xBCDExxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD, !ADYK_PHAZ_xxxxEFGH.a);
+  /*p01.ALEF*/ ALEF_PHAZ_xxCDEFxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  AFUR_PHAZ_xBCDExxx.a);
+  /*p01.APUK*/ APUK_PHAZ_xxxDEFGx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  ALEF_PHAZ_xxCDEFxx.a);
+  /*p01.ADYK*/ ADYK_PHAZ_xxxxEFGH.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  APUK_PHAZ_xxxDEFGx.a);
 
   /*p29.WUVU*/ WUVU_AxxDExxH.set(clk_sig.XOTA_xBxDxFxH, rst_sig.XAPO_VID_RSTn, !WUVU_AxxDExxH);
   /*p21.VENA*/ VENA_xBCDExxx.set(!WUVU_AxxDExxH, rst_sig.XAPO_VID_RSTn, !VENA_xBCDExxx);

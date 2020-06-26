@@ -38,32 +38,11 @@ void LcdRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
-  auto win_sig = gb.win_reg.sig(gb);
   auto cpu_sig = gb.cpu_reg.sig(gb);
   auto tim_sig = gb.tim_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb);
   auto lcd_sig = sig(gb);
 
-  wire XEHO_X0 = gb.ppu_reg.SAXO_X0;
-  wire XYDO_X3 = gb.ppu_reg.TELU_X3;
-
-  wire MYVO_AxCxExGx = clk_sig.MYVO_AxCxExGx;
-
-  wire POKY_FRONT_PORCH_LATCH = gb.ppu_reg.POKY_FRONT_PORCH_LATCH;
-  wire VOGA_RENDER_DONE_SYNC = gb.ppu_reg.VOGA_RENDER_DONE_SYNC;
-  wire ROXY_FINE_MATCH_LATCHn = gb.ppu_reg.ROXY_FINE_MATCH_LATCHn;
-  wire PUXA_FINE_MATCH_SYNC1 = gb.ppu_reg.PUXA_FINE_MATCH_SYNC1;
-  wire NYZE_FINE_MATCH_SYNC2 = gb.ppu_reg.NYZE_FINE_MATCH_SYNC2;
-
   wire XONA_LCDC_EN = gb.cfg_reg.XONA_LCDC_EN.q();
-
-
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, MYVO_AxCxExGx);
-  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
-  /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
-
-  /*p21.WEGO*/ wire WEGO_RST_LATCH = or (rst_sig.TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC);
   /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(XONA_LCDC_EN);
 
   //----------------------------------------
@@ -162,14 +141,6 @@ void LcdRegisters::tick(TestGB& gb) {
     S.set(_MURE_PIN_S);
   }
 
-  Signal SEPA_FF41_WR;
-  {
-    /*p22.WOFA*/ wire FF41n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.XERA_A03n);
-    /*p22.VARY*/ wire FF41 = not(FF41n);
-    /*p21.SEPA*/ SEPA_FF41_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF41);
-  }
-
-
   // ly match
   {
     // SYFU01 >> SOVU01 (output on top rung?)
@@ -206,34 +177,12 @@ void LcdRegisters::tick(TestGB& gb) {
     // when PAGO03 goes high, RUPO02 goes high
     // when ROPO16 goes high, RUPO02 goes low.
 
+    /*p22.WOFA*/ wire FF41n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.XERA_A03n);
+    /*p22.VARY*/ wire FF41 = not(FF41n);
+    /*p21.SEPA*/ wire SEPA_FF41_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF41);
     /*p21.RYJU*/ wire _RYJU_FF41_WRn = not(SEPA_FF41_WR);
     /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor(rst_sig.WESY_RSTn, _RYJU_FF41_WRn);  // schematic wrong, this is NOR
     /*p21.RUPO*/ LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST, ROPO_LY_MATCH_SYNC);
-  }
-
-  {
-    // WUSA arms on the ground side, nor latch
-    // WUSA00 << XAJO03
-    // WUSA01 nc
-    // WUSA02 >> nc
-    // WUSA03 >> TOBA00
-    // WUSA04 nc 
-    // WUSA05 << WEGO03
-
-    // When XAJO03 goes high, WUSA03 goes high.
-    // When WEGO03 goes high, WUSA03 goes low.
-
-    /*p21.XAJO*/ wire XAJO_X_009 = and (XEHO_X0, XYDO_X3);
-    /*p21.WUSA*/ WUSA_CPEN_LATCH.nor_latch(XAJO_X_009, WEGO_RST_LATCH);
-
-
-    /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx = nor(SEGU_xBxDxFxH, ROXY_FINE_MATCH_LATCHn);
-    /*p21.TOBA*/ wire TOBA = and (SACU_CLKPIPE_AxCxExGx, gb.lcd_reg.WUSA_CPEN_LATCH);
-    /*p27.POVA*/ wire POVA_FINE_MATCH_TRIG = and (PUXA_FINE_MATCH_SYNC1, !NYZE_FINE_MATCH_SYNC2);
-    /*p21.SEMU*/ wire SEMU_LCD_CPn = or (TOBA, POVA_FINE_MATCH_TRIG);
-    /*p21.RYPO_LCD_CP*/ wire RYPO_LCD_CP = not(SEMU_LCD_CPn);
-
-    CP.set(RYPO_LCD_CP);
   }
 
   {
@@ -248,35 +197,6 @@ void LcdRegisters::tick(TestGB& gb) {
 //------------------------------------------------------------------------------
 
 void TestGB::tick_lcd() {
-  auto clk_sig = clk_reg.sig(*this);
-  auto rst_sig = rst_reg.sig(*this);
-  auto win_sig = win_reg.sig(*this);
-  auto lcd_sig = lcd_reg.sig(*this);
-  auto sst_sig = sst_reg.sig(*this);
-  auto ppu_sig = ppu_reg.sig(*this);
-
-  wire XYDO_X3 = ppu_reg.TELU_X3;
-
-  wire POKY_FRONT_PORCH_LATCH = ppu_reg.POKY_FRONT_PORCH_LATCH;
-  wire XYMU_RENDERINGp  = ppu_reg.XYMU_RENDERINGp;
-
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
-  /*p24.TYFA*/ wire TYFA_AxCxExGx = and(win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
-  /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
-  /*p24.ROXO*/ wire ROXO_AxCxExGx = not(SEGU_xBxDxFxH);
-
-  // LCD horizontal sync pin latch
-
-
-  /*p24.PAHO*/ lcd_reg.PAHO_X_8_SYNC.set(ROXO_AxCxExGx, XYMU_RENDERINGp, XYDO_X3);
-
-  // if AVAP goes high, POFY goes high.
-  // if PAHO or TOFU go high, POFY goes low.
-  /*p24.RUJU*/ lcd_reg.POFY_ST_LATCH.nor_latch(sst_sig.AVAP_SCAN_DONE_d0_TRIGp, lcd_reg.PAHO_X_8_SYNC || rst_sig.TOFU_VID_RSTp);
-
-  /*p24.RUZE*/ wire RUZE_PIN_ST = not(lcd_reg.POFY_ST_LATCH);
-  lcd_reg.ST.set(RUZE_PIN_ST);
-
   lcd_reg.tick(*this);
 }
 

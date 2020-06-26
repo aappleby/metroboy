@@ -46,6 +46,8 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   auto& sst_reg = gb.sst_reg;
   auto sst_sig = sst_reg.sig(gb);
   auto& dma_reg = gb.dma_reg;
+  auto clk_sig = gb.clk_reg.sig(gb);
+  auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p21.XUGU*/ wire XUGU_X_167n = nand(SAXO_X0.q(), TYPO_X1.q(), VYZO_X2.q(), TAHA_X5.q(), SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167 = not(XUGU_X_167n);
@@ -74,6 +76,13 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   /*p29.VUSA*/ wire VUSA = or (!TYFO_SFETCH_S0_D1.q(), TYNO);
   /*p29.WUTY*/ wire WUTY_SPRITE_DONE = not(VUSA);
 
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
+  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
+  /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
+  /*p24.ROXO*/ wire ROXO_AxCxExGx = not(SEGU_xBxDxFxH);
+  /*p27.ROCO*/ wire ROCO_AxCxExGx = not(SEGU_xBxDxFxH);
+  /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx = nor(SEGU_xBxDxFxH, ROXY_FINE_MATCH_LATCHn);
+
   return {
     .TEVO_CLK_STOPn = TEVO_CLK_STOPn,
     .WODU_RENDER_DONE = WODU_RENDER_DONE,
@@ -81,6 +90,12 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
     .TEXY_SPRITE_READ = TEXY_SPRITE_READ,
     .WUTY_SPRITE_DONE = WUTY_SPRITE_DONE,
     .ACYL_PPU_USE_OAM1p = ACYL_PPU_USE_OAM1p,
+    .POKY_FRONT_PORCH_LATCH = POKY_FRONT_PORCH_LATCH,
+    .XYMU_RENDERINGp = XYMU_RENDERINGp,
+    .SEGU_xBxDxFxH = SEGU_xBxDxFxH,
+    .ROXO_AxCxExGx = ROXO_AxCxExGx,
+    .ROCO_AxCxExGx = ROCO_AxCxExGx,
+    .SACU_CLKPIPE_AxCxExGx = SACU_CLKPIPE_AxCxExGx,
   };
 }
 
@@ -108,12 +123,6 @@ void PpuRegisters::tick(const TestGB& gb) {
   /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp);
   /*p27.MOXE*/ wire _MOXE_AxCxExGx = not(clk_sig.ALET_xBxDxFxH);
 
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
-
-  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
-  /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
-  /*p24.ROXO*/ wire ROXO_AxCxExGx = not(SEGU_xBxDxFxH);
-
   /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, ppu_sig.NYXU_BFETCH_RSTn);
   /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
 
@@ -138,7 +147,7 @@ void PpuRegisters::tick(const TestGB& gb) {
 
   {
     /*p27.ROZE*/ wire FINE_COUNT_STOPn = nand(RYKU_FINE_CNT0, ROGA_FINE_CNT1, RUBU_FINE_CNT2);
-    /*p27.PECU*/ wire FINE_CLK = nand(ROXO_AxCxExGx, FINE_COUNT_STOPn);
+    /*p27.PECU*/ wire FINE_CLK = nand(ppu_sig.ROXO_AxCxExGx, FINE_COUNT_STOPn);
     /*p27.PASO*/ wire FINE_RST = nor(ppu_sig.TEVO_CLK_STOPn, ROPY_RENDERINGn);
     /*p27.RYKU*/ RYKU_FINE_CNT0.set(FINE_CLK, FINE_RST, !RYKU_FINE_CNT0);
     /*p27.ROGA*/ ROGA_FINE_CNT1.set(!RYKU_FINE_CNT0, FINE_RST, !ROGA_FINE_CNT1);
@@ -152,7 +161,7 @@ void PpuRegisters::tick(const TestGB& gb) {
     /*p27.RONE*/ wire RONE_FINE_MATCHn = nand(ROXY_FINE_MATCH_LATCHn, SUHA_FINE_MATCH0, SYBY_FINE_MATCH1, SOZU_FINE_MATCH2);
     /*p27.POHU*/ wire POHU_FINE_MATCH = not(RONE_FINE_MATCHn);
 
-    /*p27.PUXA*/ PUXA_FINE_MATCH_SYNC1.set(ROXO_AxCxExGx, XYMU_RENDERINGp, POHU_FINE_MATCH);
+    /*p27.PUXA*/ PUXA_FINE_MATCH_SYNC1.set(ppu_sig.ROXO_AxCxExGx, XYMU_RENDERINGp, POHU_FINE_MATCH);
 
     /*p27.NYZE*/ NYZE_FINE_MATCH_SYNC2.set(_MOXE_AxCxExGx, XYMU_RENDERINGp, PUXA_FINE_MATCH_SYNC1);
 
@@ -306,15 +315,82 @@ void PpuRegisters::tick(const TestGB& gb) {
 
   /*p21.TADY*/ wire TADY_X_RSTn = nor(lcd_sig.BYHA_VID_LINE_TRIG_d4n, rst_sig.TOFU_VID_RSTp);
 
-  /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx = nor(SEGU_xBxDxFxH, ROXY_FINE_MATCH_LATCHn);
   /*p24.TOCA*/ wire TOCA_CLKPIPE_HI = not(TELU_X3);
 
-  /*p21.XEHO*/ SAXO_X0.set(SACU_CLKPIPE_AxCxExGx, TADY_X_RSTn, !SAXO_X0);
-  /*p21.SAVY*/ TYPO_X1.set(SACU_CLKPIPE_AxCxExGx, TADY_X_RSTn, RYBO);
-  /*p21.XODU*/ VYZO_X2.set(SACU_CLKPIPE_AxCxExGx, TADY_X_RSTn, XEGY);
-  /*p21.XYDO*/ TELU_X3.set(SACU_CLKPIPE_AxCxExGx, TADY_X_RSTn, XORA);
+  // My labels are all wrong here, wtf?
+
+  /*p21.XEHO*/ SAXO_X0.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, TADY_X_RSTn, !SAXO_X0);
+  /*p21.SAVY*/ TYPO_X1.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, TADY_X_RSTn, RYBO);
+  /*p21.XODU*/ VYZO_X2.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, TADY_X_RSTn, XEGY);
+  /*p21.XYDO*/ TELU_X3.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, TADY_X_RSTn, XORA);
   /*p21.TUHU*/ SUDE_X4.set(TOCA_CLKPIPE_HI, TADY_X_RSTn, !SUDE_X4);
   /*p21.TUKY*/ TAHA_X5.set(TOCA_CLKPIPE_HI, TADY_X_RSTn, SAKE);
   /*p21.TAKO*/ TYRY_X6.set(TOCA_CLKPIPE_HI, TADY_X_RSTn, TYGE);
   /*p21.SYBE*/ SYBE_X7.set(TOCA_CLKPIPE_HI, TADY_X_RSTn, ROKU);
+
+
+
+  wire XYDO_X3 = TELU_X3;
+
+  // LCD horizontal sync pin latch
+
+
+  /*p24.PAHO*/ PAHO_X_8_SYNC.set(ppu_sig.ROXO_AxCxExGx, ppu_sig.XYMU_RENDERINGp, XYDO_X3);
+
+  // if AVAP goes high, POFY goes high.
+  // if PAHO or TOFU go high, POFY goes low.
+  /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(sst_sig.AVAP_SCAN_DONE_d0_TRIGp, ppu_reg.PAHO_X_8_SYNC || rst_sig.TOFU_VID_RSTp);
+
+  /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY_ST_LATCH);
+  ST.set(RUZE_PIN_ST);
+
+  // FIXME
+#if 0
+  // WUSA arms on the ground side, nor latch
+  // WUSA00 << XAJO03
+  // WUSA01 nc
+  // WUSA02 >> nc
+  // WUSA03 >> TOBA00
+  // WUSA04 nc 
+  // WUSA05 << WEGO03
+
+  // When XAJO03 goes high, WUSA03 goes high.
+  // When WEGO03 goes high, WUSA03 goes low.
+
+  // XEHO01 <> XEHO12
+  // XEHO02 << SACU04
+  // XEHO03 <> XEHO09
+  // XEHO04 nc
+  // XEHO05 nc
+  // XEHO06 << XYMU03
+  // XEHO07 << XEHO16 // so it's a counter
+  // XEHO08 nc
+  // XEHO09 <> XEHO03
+  // XEHO10 nc
+  // XEHO11 ?? RUMA01
+  // XEHO12 <> XEHO01
+  // XEHO13 << XYMU03
+  // XEHO14 nc
+  // XEHO15 nc
+  // XEHO16
+  // XEHO17 >> XAJO01
+
+
+  wire XEHO_X0 = gb.ppu_reg.SAXO_X0;
+  wire XYDO_X3 = gb.ppu_reg.TELU_X3;
+  /*p21.WEGO*/ wire WEGO_RST_LATCH = or (rst_sig.TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC);
+
+  // XAJO04 = and(XEHO17, XYDO17);
+
+  /*p21.XAJO*/ wire XAJO_X_009 = and (XEHO.q(), XYDO.q());
+  /*p21.WUSA*/ WUSA_CPEN_LATCH.nor_latch(XAJO_X_009, WEGO_RST_LATCH);
+
+
+  /*p21.TOBA*/ wire TOBA = and (ppu_sig.SACU_CLKPIPE_AxCxExGx, gb.lcd_reg.WUSA_CPEN_LATCH);
+  /*p27.POVA*/ wire POVA_FINE_MATCH_TRIG = and (PUXA_FINE_MATCH_SYNC1, !NYZE_FINE_MATCH_SYNC2);
+  /*p21.SEMU*/ wire SEMU_LCD_CPn = or (TOBA, POVA_FINE_MATCH_TRIG);
+  /*p21.RYPO_LCD_CP*/ wire RYPO_LCD_CP = not(SEMU_LCD_CPn);
+
+  CP.set(RYPO_LCD_CP);
+#endif
 }

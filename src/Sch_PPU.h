@@ -14,6 +14,13 @@ struct PpuSignals {
   /*p29.TEXY*/ wire TEXY_SPRITE_READ;
   /*p29.WUTY*/ wire WUTY_SPRITE_DONE;
   /*p28.ACYL*/ wire ACYL_PPU_USE_OAM1p;
+
+  /*p24.POKY*/ wire POKY_FRONT_PORCH_LATCH;
+  /*p21.XYMU*/ wire XYMU_RENDERINGp;
+  /*p24.SEGU*/ wire SEGU_xBxDxFxH;
+  /*p24.ROXO*/ wire ROXO_AxCxExGx;
+  /*p27.ROCO*/ wire ROCO_AxCxExGx;
+  /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx;
 };
 
 //-----------------------------------------------------------------------------
@@ -61,6 +68,7 @@ struct PpuRegisters {
     text_painter.newline();
   }
 
+  // how the fck did i break all of these?
   /*p21.XEHO*/ Reg SAXO_X0;
   /*p21.SAVY*/ Reg TYPO_X1;
   /*p21.XODU*/ Reg VYZO_X2;
@@ -73,6 +81,10 @@ struct PpuRegisters {
   /*p27.RYKU*/ Reg RYKU_FINE_CNT0;
   /*p27.ROGA*/ Reg ROGA_FINE_CNT1;
   /*p27.RUBU*/ Reg RUBU_FINE_CNT2;
+
+  /*p24.PAHO*/ Reg PAHO_X_8_SYNC;
+  /*p24.RUJU*/ NorLatch POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
+  /* PIN_54 */ PinOut ST;
 
   Tribuf MA00;
   Tribuf MA01;

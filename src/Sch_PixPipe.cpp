@@ -15,10 +15,6 @@ void TestGB::tick_pixpipe() {
   auto sst_sig = sst_reg.sig(*this);
 
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not(ppu_reg.XYMU_RENDERINGp.q());
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
-  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
-  /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
-  /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx = nor(SEGU_xBxDxFxH, ppu_reg.ROXY_FINE_MATCH_LATCHn);
 
   /*p27.NOFU*/ wire NOFU_FETCH_S2n = not(ppu_reg.NYVA_BFETCH_S2.q());
   /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(ppu_reg.TOXE_SFETCH_S0_D0);
@@ -176,14 +172,14 @@ void TestGB::tick_pixpipe() {
     /*p32.NYHA*/ wire _BG_PIPE_A_RST6 = nand(_LOZE_PIPE_A_LOAD, _BG_PIX_A6n);
     /*p32.NADY*/ wire _BG_PIPE_A_RST7 = nand(_LOZE_PIPE_A_LOAD, _BG_PIX_A7n);
 
-    /*p32.MYDE*/ pxp_reg.BG_PIPE_A0.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET0, _BG_PIPE_A_RST0, joy_pin.P10_B);
-    /*p32.NOZO*/ pxp_reg.BG_PIPE_A1.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET1, _BG_PIPE_A_RST1, pxp_reg.BG_PIPE_A0);
-    /*p32.MOJU*/ pxp_reg.BG_PIPE_A2.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET2, _BG_PIPE_A_RST2, pxp_reg.BG_PIPE_A1);
-    /*p32.MACU*/ pxp_reg.BG_PIPE_A3.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET3, _BG_PIPE_A_RST3, pxp_reg.BG_PIPE_A2);
-    /*p32.NEPO*/ pxp_reg.BG_PIPE_A4.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET4, _BG_PIPE_A_RST4, pxp_reg.BG_PIPE_A3);
-    /*p32.MODU*/ pxp_reg.BG_PIPE_A5.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET5, _BG_PIPE_A_RST5, pxp_reg.BG_PIPE_A4);
-    /*p32.NEDA*/ pxp_reg.BG_PIPE_A6.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET6, _BG_PIPE_A_RST6, pxp_reg.BG_PIPE_A5);
-    /*p32.PYBO*/ pxp_reg.BG_PIPE_A7.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET7, _BG_PIPE_A_RST7, pxp_reg.BG_PIPE_A6);
+    /*p32.MYDE*/ pxp_reg.BG_PIPE_A0.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET0, _BG_PIPE_A_RST0, joy_pin.P10_B);
+    /*p32.NOZO*/ pxp_reg.BG_PIPE_A1.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET1, _BG_PIPE_A_RST1, pxp_reg.BG_PIPE_A0);
+    /*p32.MOJU*/ pxp_reg.BG_PIPE_A2.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET2, _BG_PIPE_A_RST2, pxp_reg.BG_PIPE_A1);
+    /*p32.MACU*/ pxp_reg.BG_PIPE_A3.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET3, _BG_PIPE_A_RST3, pxp_reg.BG_PIPE_A2);
+    /*p32.NEPO*/ pxp_reg.BG_PIPE_A4.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET4, _BG_PIPE_A_RST4, pxp_reg.BG_PIPE_A3);
+    /*p32.MODU*/ pxp_reg.BG_PIPE_A5.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET5, _BG_PIPE_A_RST5, pxp_reg.BG_PIPE_A4);
+    /*p32.NEDA*/ pxp_reg.BG_PIPE_A6.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET6, _BG_PIPE_A_RST6, pxp_reg.BG_PIPE_A5);
+    /*p32.PYBO*/ pxp_reg.BG_PIPE_A7.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_A_SET7, _BG_PIPE_A_RST7, pxp_reg.BG_PIPE_A6);
   }
 
   // Background pipe B
@@ -207,14 +203,14 @@ void TestGB::tick_pixpipe() {
     /*p32.SUPU*/ wire _BG_PIPE_B_RST6 = nand(_LUXA_PIPE_B_LOAD, /*p32.RAPU*/ not(!pxp_reg.BG_PIX_B6));
     /*p32.RYJY*/ wire _BG_PIPE_B_RST7 = nand(_LUXA_PIPE_B_LOAD, /*p32.SOJA*/ not(!pxp_reg.BG_PIX_B7));
 
-    /*p32.TOMY*/ pxp_reg.BG_PIPE_B0.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET0, _BG_PIPE_B_RST0, joy_pin.P10_B);
-    /*p32.TACA*/ pxp_reg.BG_PIPE_B1.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET1, _BG_PIPE_B_RST1, pxp_reg.BG_PIPE_B0);
-    /*p32.SADY*/ pxp_reg.BG_PIPE_B2.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET2, _BG_PIPE_B_RST2, pxp_reg.BG_PIPE_B1);
-    /*p32.RYSA*/ pxp_reg.BG_PIPE_B3.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET3, _BG_PIPE_B_RST3, pxp_reg.BG_PIPE_B2);
-    /*p32.SOBO*/ pxp_reg.BG_PIPE_B4.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET4, _BG_PIPE_B_RST4, pxp_reg.BG_PIPE_B3);
-    /*p32.SETU*/ pxp_reg.BG_PIPE_B5.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET5, _BG_PIPE_B_RST5, pxp_reg.BG_PIPE_B4);
-    /*p32.RALU*/ pxp_reg.BG_PIPE_B6.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET6, _BG_PIPE_B_RST6, pxp_reg.BG_PIPE_B5);
-    /*p32.SOHU*/ pxp_reg.BG_PIPE_B7.set(SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET7, _BG_PIPE_B_RST7, pxp_reg.BG_PIPE_B6);
+    /*p32.TOMY*/ pxp_reg.BG_PIPE_B0.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET0, _BG_PIPE_B_RST0, joy_pin.P10_B);
+    /*p32.TACA*/ pxp_reg.BG_PIPE_B1.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET1, _BG_PIPE_B_RST1, pxp_reg.BG_PIPE_B0);
+    /*p32.SADY*/ pxp_reg.BG_PIPE_B2.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET2, _BG_PIPE_B_RST2, pxp_reg.BG_PIPE_B1);
+    /*p32.RYSA*/ pxp_reg.BG_PIPE_B3.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET3, _BG_PIPE_B_RST3, pxp_reg.BG_PIPE_B2);
+    /*p32.SOBO*/ pxp_reg.BG_PIPE_B4.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET4, _BG_PIPE_B_RST4, pxp_reg.BG_PIPE_B3);
+    /*p32.SETU*/ pxp_reg.BG_PIPE_B5.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET5, _BG_PIPE_B_RST5, pxp_reg.BG_PIPE_B4);
+    /*p32.RALU*/ pxp_reg.BG_PIPE_B6.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET6, _BG_PIPE_B_RST6, pxp_reg.BG_PIPE_B5);
+    /*p32.SOHU*/ pxp_reg.BG_PIPE_B7.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _BG_PIPE_B_SET7, _BG_PIPE_B_RST7, pxp_reg.BG_PIPE_B6);
   }
 
   {
@@ -257,14 +253,14 @@ void TestGB::tick_pixpipe() {
       /*p33.TABY*/ wire _SPR_PIX_A_RST6 = nand(_SPRITE_MASK6n, /*p33.SERY*/ not(pxp_reg.SPR_PIX_A6));
       /*p33.TULA*/ wire _SPR_PIX_A_RST7 = nand(_SPRITE_MASK7n, /*p33.SELU*/ not(pxp_reg.SPR_PIX_A7));
 
-      /*p33.NYLU*/ pxp_reg.SPR_PIPE_A0.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET0, _SPR_PIX_A_RST0, joy_pin.P10_B);
-      /*p33.PEFU*/ pxp_reg.SPR_PIPE_A1.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET1, _SPR_PIX_A_RST1, pxp_reg.SPR_PIPE_A0);
-      /*p33.NATY*/ pxp_reg.SPR_PIPE_A2.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET2, _SPR_PIX_A_RST2, pxp_reg.SPR_PIPE_A1);
-      /*p33.PYJO*/ pxp_reg.SPR_PIPE_A3.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET3, _SPR_PIX_A_RST3, pxp_reg.SPR_PIPE_A2);
-      /*p33.VARE*/ pxp_reg.SPR_PIPE_A4.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET4, _SPR_PIX_A_RST4, pxp_reg.SPR_PIPE_A3);
-      /*p33.WEBA*/ pxp_reg.SPR_PIPE_A5.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET5, _SPR_PIX_A_RST5, pxp_reg.SPR_PIPE_A4);
-      /*p33.VANU*/ pxp_reg.SPR_PIPE_A6.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET6, _SPR_PIX_A_RST6, pxp_reg.SPR_PIPE_A5);
-      /*p33.VUPY*/ pxp_reg.SPR_PIPE_A7.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET7, _SPR_PIX_A_RST7, pxp_reg.SPR_PIPE_A6);
+      /*p33.NYLU*/ pxp_reg.SPR_PIPE_A0.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET0, _SPR_PIX_A_RST0, joy_pin.P10_B);
+      /*p33.PEFU*/ pxp_reg.SPR_PIPE_A1.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET1, _SPR_PIX_A_RST1, pxp_reg.SPR_PIPE_A0);
+      /*p33.NATY*/ pxp_reg.SPR_PIPE_A2.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET2, _SPR_PIX_A_RST2, pxp_reg.SPR_PIPE_A1);
+      /*p33.PYJO*/ pxp_reg.SPR_PIPE_A3.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET3, _SPR_PIX_A_RST3, pxp_reg.SPR_PIPE_A2);
+      /*p33.VARE*/ pxp_reg.SPR_PIPE_A4.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET4, _SPR_PIX_A_RST4, pxp_reg.SPR_PIPE_A3);
+      /*p33.WEBA*/ pxp_reg.SPR_PIPE_A5.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET5, _SPR_PIX_A_RST5, pxp_reg.SPR_PIPE_A4);
+      /*p33.VANU*/ pxp_reg.SPR_PIPE_A6.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET6, _SPR_PIX_A_RST6, pxp_reg.SPR_PIPE_A5);
+      /*p33.VUPY*/ pxp_reg.SPR_PIPE_A7.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_A_SET7, _SPR_PIX_A_RST7, pxp_reg.SPR_PIPE_A6);
     }
 
     // Sprite pipe B
@@ -287,14 +283,14 @@ void TestGB::tick_pixpipe() {
       /*p33.TUPE*/ wire _SPR_PIX_B_RST6 = nand(_SPRITE_MASK6n, /*p33.SULU*/ not(pxp_reg.SPR_PIX_B6));
       /*p33.XYVE*/ wire _SPR_PIX_B_RST7 = nand(_SPRITE_MASK7n, /*p33.WAMY*/ not(pxp_reg.SPR_PIX_B7));
 
-      /*p33.NURO*/ pxp_reg.SPR_PIPE_B0.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET0, _SPR_PIX_B_RST0, joy_pin.P10_B);
-      /*p33.MASO*/ pxp_reg.SPR_PIPE_B1.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET1, _SPR_PIX_B_RST1, pxp_reg.SPR_PIPE_B0);
-      /*p33.LEFE*/ pxp_reg.SPR_PIPE_B2.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET2, _SPR_PIX_B_RST2, pxp_reg.SPR_PIPE_B1);
-      /*p33.LESU*/ pxp_reg.SPR_PIPE_B3.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET3, _SPR_PIX_B_RST3, pxp_reg.SPR_PIPE_B2);
-      /*p33.WYHO*/ pxp_reg.SPR_PIPE_B4.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET4, _SPR_PIX_B_RST4, pxp_reg.SPR_PIPE_B3);
-      /*p33.WORA*/ pxp_reg.SPR_PIPE_B5.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET5, _SPR_PIX_B_RST5, pxp_reg.SPR_PIPE_B4);
-      /*p33.VAFO*/ pxp_reg.SPR_PIPE_B6.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET6, _SPR_PIX_B_RST6, pxp_reg.SPR_PIPE_B5);
-      /*p33.WUFY*/ pxp_reg.SPR_PIPE_B7.set(SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET7, _SPR_PIX_B_RST7, pxp_reg.SPR_PIPE_B6);
+      /*p33.NURO*/ pxp_reg.SPR_PIPE_B0.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET0, _SPR_PIX_B_RST0, joy_pin.P10_B);
+      /*p33.MASO*/ pxp_reg.SPR_PIPE_B1.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET1, _SPR_PIX_B_RST1, pxp_reg.SPR_PIPE_B0);
+      /*p33.LEFE*/ pxp_reg.SPR_PIPE_B2.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET2, _SPR_PIX_B_RST2, pxp_reg.SPR_PIPE_B1);
+      /*p33.LESU*/ pxp_reg.SPR_PIPE_B3.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET3, _SPR_PIX_B_RST3, pxp_reg.SPR_PIPE_B2);
+      /*p33.WYHO*/ pxp_reg.SPR_PIPE_B4.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET4, _SPR_PIX_B_RST4, pxp_reg.SPR_PIPE_B3);
+      /*p33.WORA*/ pxp_reg.SPR_PIPE_B5.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET5, _SPR_PIX_B_RST5, pxp_reg.SPR_PIPE_B4);
+      /*p33.VAFO*/ pxp_reg.SPR_PIPE_B6.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET6, _SPR_PIX_B_RST6, pxp_reg.SPR_PIPE_B5);
+      /*p33.WUFY*/ pxp_reg.SPR_PIPE_B7.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPR_PIX_B_SET7, _SPR_PIX_B_RST7, pxp_reg.SPR_PIPE_B6);
     }
 
     // Palette pipe
@@ -317,14 +313,14 @@ void TestGB::tick_pixpipe() {
       /*p34.LOWA*/ wire _SPRITE_PAL_PIPE_RST6n = nand(_SPRITE_MASK6n, /*p34.LADY*/ not(oam_reg.REG_OAM_A4));
       /*p34.LUNU*/ wire _SPRITE_PAL_PIPE_RST7n = nand(_SPRITE_MASK7n, /*p34.LAFY*/ not(oam_reg.REG_OAM_A4));
 
-      /*p34.RUGO*/ pxp_reg.PAL_PIPE_0.set(SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET0n, _SPRITE_PAL_PIPE_RST0n, joy_pin.P10_B);
-      /*p34.SATA*/ pxp_reg.PAL_PIPE_1.set(SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET1n, _SPRITE_PAL_PIPE_RST1n, pxp_reg.PAL_PIPE_0);
-      /*p34.ROSA*/ pxp_reg.PAL_PIPE_2.set(SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET2n, _SPRITE_PAL_PIPE_RST2n, pxp_reg.PAL_PIPE_1);
-      /*p34.SOMY*/ pxp_reg.PAL_PIPE_3.set(SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET3n, _SPRITE_PAL_PIPE_RST3n, pxp_reg.PAL_PIPE_2);
-      /*p34.PALU*/ pxp_reg.PAL_PIPE_4.set(SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET4n, _SPRITE_PAL_PIPE_RST4n, pxp_reg.PAL_PIPE_3);
-      /*p34.NUKE*/ pxp_reg.PAL_PIPE_5.set(SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET5n, _SPRITE_PAL_PIPE_RST5n, pxp_reg.PAL_PIPE_4);
-      /*p34.MODA*/ pxp_reg.PAL_PIPE_6.set(SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET6n, _SPRITE_PAL_PIPE_RST6n, pxp_reg.PAL_PIPE_5);
-      /*p34.LYME*/ pxp_reg.PAL_PIPE_7.set(SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET7n, _SPRITE_PAL_PIPE_RST7n, pxp_reg.PAL_PIPE_6);
+      /*p34.RUGO*/ pxp_reg.PAL_PIPE_0.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET0n, _SPRITE_PAL_PIPE_RST0n, joy_pin.P10_B);
+      /*p34.SATA*/ pxp_reg.PAL_PIPE_1.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET1n, _SPRITE_PAL_PIPE_RST1n, pxp_reg.PAL_PIPE_0);
+      /*p34.ROSA*/ pxp_reg.PAL_PIPE_2.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET2n, _SPRITE_PAL_PIPE_RST2n, pxp_reg.PAL_PIPE_1);
+      /*p34.SOMY*/ pxp_reg.PAL_PIPE_3.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET3n, _SPRITE_PAL_PIPE_RST3n, pxp_reg.PAL_PIPE_2);
+      /*p34.PALU*/ pxp_reg.PAL_PIPE_4.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET4n, _SPRITE_PAL_PIPE_RST4n, pxp_reg.PAL_PIPE_3);
+      /*p34.NUKE*/ pxp_reg.PAL_PIPE_5.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET5n, _SPRITE_PAL_PIPE_RST5n, pxp_reg.PAL_PIPE_4);
+      /*p34.MODA*/ pxp_reg.PAL_PIPE_6.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET6n, _SPRITE_PAL_PIPE_RST6n, pxp_reg.PAL_PIPE_5);
+      /*p34.LYME*/ pxp_reg.PAL_PIPE_7.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET7n, _SPRITE_PAL_PIPE_RST7n, pxp_reg.PAL_PIPE_6);
     }
 
     // Background mask pipe
@@ -347,14 +343,14 @@ void TestGB::tick_pixpipe() {
       /*p26.TENA*/ wire _MASK_PIPE_RST6 = nand(_SPRITE_MASK6n, /*p26.TAFU*/ not(oam_reg.REG_OAM_A7));
       /*p26.WUBU*/ wire _MASK_PIPE_RST7 = nand(_SPRITE_MASK7n, /*p26.XUHO*/ not(oam_reg.REG_OAM_A7));
 
-      /*p26.VEZO*/ pxp_reg.MASK_PIPE_0.set(SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET0, _MASK_PIPE_RST0, joy_pin.P10_B);
-      /*p26.WURU*/ pxp_reg.MASK_PIPE_1.set(SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET1, _MASK_PIPE_RST1, pxp_reg.MASK_PIPE_0);
-      /*p26.VOSA*/ pxp_reg.MASK_PIPE_2.set(SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET2, _MASK_PIPE_RST2, pxp_reg.MASK_PIPE_1);
-      /*p26.WYFU*/ pxp_reg.MASK_PIPE_3.set(SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET3, _MASK_PIPE_RST3, pxp_reg.MASK_PIPE_2);
-      /*p26.XETE*/ pxp_reg.MASK_PIPE_4.set(SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET4, _MASK_PIPE_RST4, pxp_reg.MASK_PIPE_3);
-      /*p26.WODA*/ pxp_reg.MASK_PIPE_5.set(SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET5, _MASK_PIPE_RST5, pxp_reg.MASK_PIPE_4);
-      /*p26.VUMO*/ pxp_reg.MASK_PIPE_6.set(SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET6, _MASK_PIPE_RST6, pxp_reg.MASK_PIPE_5);
-      /*p26.VAVA*/ pxp_reg.MASK_PIPE_7.set(SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET7, _MASK_PIPE_RST7, pxp_reg.MASK_PIPE_6);
+      /*p26.VEZO*/ pxp_reg.MASK_PIPE_0.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET0, _MASK_PIPE_RST0, joy_pin.P10_B);
+      /*p26.WURU*/ pxp_reg.MASK_PIPE_1.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET1, _MASK_PIPE_RST1, pxp_reg.MASK_PIPE_0);
+      /*p26.VOSA*/ pxp_reg.MASK_PIPE_2.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET2, _MASK_PIPE_RST2, pxp_reg.MASK_PIPE_1);
+      /*p26.WYFU*/ pxp_reg.MASK_PIPE_3.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET3, _MASK_PIPE_RST3, pxp_reg.MASK_PIPE_2);
+      /*p26.XETE*/ pxp_reg.MASK_PIPE_4.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET4, _MASK_PIPE_RST4, pxp_reg.MASK_PIPE_3);
+      /*p26.WODA*/ pxp_reg.MASK_PIPE_5.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET5, _MASK_PIPE_RST5, pxp_reg.MASK_PIPE_4);
+      /*p26.VUMO*/ pxp_reg.MASK_PIPE_6.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET6, _MASK_PIPE_RST6, pxp_reg.MASK_PIPE_5);
+      /*p26.VAVA*/ pxp_reg.MASK_PIPE_7.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET7, _MASK_PIPE_RST7, pxp_reg.MASK_PIPE_6);
     }
   }
 

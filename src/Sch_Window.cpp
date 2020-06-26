@@ -90,11 +90,6 @@ void WindowRegisters::tick(TestGB& gb) {
   auto win_sig = sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
 
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
-  /*p24.TYFA*/ wire TYFA_AxCxExGx = and(win_sig.SOCY_WIN_HITn, gb.ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
-  /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
-  /*p27.ROCO*/ wire ROCO_AxCxExGx = not(SEGU_xBxDxFxH);
-
   /*p21.PARU*/ wire PARU_IN_VBLANK = not(!gb.lcd_reg.POPU_IN_VBLANK_d4);
   /*p27.REPU*/ wire REPU_IN_FRAME_Y = nor(PARU_IN_VBLANK, rst_sig.PYRY_VID_RSTp);   // schematic wrong, this is NOR
 
@@ -142,10 +137,10 @@ void WindowRegisters::tick(TestGB& gb) {
 
   /*p27.PANY*/ wire _WIN_MATCH_ONSCREEN = nor(_WX_MATCHp, FINE_COUNT_STOPn);
 
-  /*p27.RYFA*/ RYFA_WIN_MATCH_ONSCREEN_SYNC1.set(SEGU_xBxDxFxH, gb.ppu_reg.XYMU_RENDERINGp, _WIN_MATCH_ONSCREEN);
+  /*p27.RYFA*/ RYFA_WIN_MATCH_ONSCREEN_SYNC1.set(ppu_sig.SEGU_xBxDxFxH, gb.ppu_reg.XYMU_RENDERINGp, _WIN_MATCH_ONSCREEN);
   /*p27.RENE*/ RENE_WIN_MATCH_ONSCREEN_SYNC2.set(clk_sig.ALET_xBxDxFxH, gb.ppu_reg.XYMU_RENDERINGp, RYFA_WIN_MATCH_ONSCREEN_SYNC1);
 
-  /*p27.PYCO*/ PYCO_WIN_MATCH_SYNC1.set(ROCO_AxCxExGx, rst_sig.XAPO_VID_RSTn, _WX_MATCHp);
+  /*p27.PYCO*/ PYCO_WIN_MATCH_SYNC1.set(ppu_sig.ROCO_AxCxExGx, rst_sig.XAPO_VID_RSTn, _WX_MATCHp);
   /*p27.NUNU*/ NUNU_WIN_MATCH_SYNC2.set(clk_sig.MEHE_AxCxExGx, rst_sig.XAPO_VID_RSTn, PYCO_WIN_MATCH_SYNC1);
 
   // PYNU has "arms" on the ground side - nor latch

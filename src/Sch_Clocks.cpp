@@ -160,7 +160,7 @@ ClockSignals ClockRegisters::sig(const TestGB& test_gb) const {
 void ClockRegisters::tick(const TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto rst_sig = ResetSignals::get(gb);
+  auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p01.AFUR*/ AFUR_PHAZ_xBCDExxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PRODn, !ADYK_PHAZ_xxxxEFGH.a);
   /*p01.ALEF*/ ALEF_PHAZ_xxCDEFxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PRODn,  AFUR_PHAZ_xBCDExxx.a);

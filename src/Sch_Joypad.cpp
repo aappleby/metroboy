@@ -11,7 +11,7 @@ using namespace Schematics;
 void TestGB::tick_joypad() {
   auto clk_sig = clk_reg.sig(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
-  auto rst_sig = ResetSignals::get(*this);
+  auto rst_sig = rst_reg.sig(*this);
   auto cpu_sig = cpu_reg.sig(*this);
 
   /*p02.KERY*/ wire _ANY_BUTTON = or (joy_pin.P13_C, joy_pin.P12_C, joy_pin.P11_C, joy_pin.P10_C);

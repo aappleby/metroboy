@@ -7,7 +7,14 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
+struct OamSignals {
+};
+
 struct OamRegisters {
+
+  OamSignals sig(const TestGB& gb) const;
+  void tick(TestGB& gb);
+  bool commit();
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- OAM_REG -----\n");

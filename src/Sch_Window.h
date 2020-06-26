@@ -19,7 +19,15 @@ struct WindowSignals {
   /*p24.SOCY*/ wire SOCY_WIN_HITn;
   /*p27.TUKU*/ wire TUKU_WIN_HITn;
   /*p27.XOFO*/ wire XOFO_WIN_RSTp;
+
+  /*p27.SEKO*/ wire SEKO_WIN_TRIGGER;
+
+  /*p27.TUXY*/ wire TUXY;
+  /*p27.SUZU*/ wire SUZU;
+
 };
+
+//-----------------------------------------------------------------------------
 
 struct WindowRegisters {
 

@@ -5,9 +5,12 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-ResetSignals ResetSignals::get(const TestGB& test_gb) {
-  /*p01.AVOR*/ wire AVOR_RSTp = or (test_gb.rst_reg.RESET_REGp.q(), test_gb.rst_reg.ASOL_RST_LATCHp.q());
-  /*p23.XONA*/ wire XONA_LCDC_EN = test_gb.cfg_reg.XONA_LCDC_EN.q();
+ResetSignals ResetRegisters::sig(const TestGB& gb) const {
+  /*p01.UCOB*/ wire UCOB_CLKBAD = not(gb.sys_pins.CLK_GOOD);
+
+  /*p23.XONA*/ wire XONA_LCDC_EN = gb.cfg_reg.XONA_LCDC_EN.q();
+
+  /*p01.AVOR*/ wire AVOR_RSTp = or (RESET_REGp.q(), ASOL_RST_LATCHp.q());
 
   /*p01.ALUR*/ wire ALUR_RSTn = not(AVOR_RSTp);   // this goes all over the place
   /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
@@ -28,6 +31,8 @@ ResetSignals ResetSignals::get(const TestGB& test_gb) {
   /*p01.ROSY*/ wire ROSY_VID_RSTp = not(XAPO_VID_RSTn);
 
   return {
+    .UCOB_CLKBAD = UCOB_CLKBAD,
+
     .ALUR_RSTn = ALUR_RSTn,
     .DULA_RSTp = DULA_RSTp,
     .CUNU_RSTn = CUNU_RSTn,
@@ -53,6 +58,7 @@ ResetSignals ResetSignals::get(const TestGB& test_gb) {
 void ResetRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
+  auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p01.UNUT*/ wire TIMEOUT = and (TUBO_CLKREQn_LATCH, gb.tim_reg.UPOF_DIV_15);
   /*p01.TABA*/ wire TABA_RST = or (dbg_sig.UNOR_MODE_DBG2n, dbg_sig.UMUT_MODE_DBG1, TIMEOUT);
@@ -76,8 +82,7 @@ void ResetRegisters::tick(TestGB& gb) {
   // TUBO03 == nc
   // TUBO04 nc
   // TUBO05 << UPYF
-  /*p01.UCOB*/ wire UCOB_CLKBAD = not(gb.sys_pins.CLK_GOOD);
-  /*p01.UPYF*/ wire UPYF = or (gb.sys_pins.RST, UCOB_CLKBAD);
+  /*p01.UPYF*/ wire UPYF = or (gb.sys_pins.RST, rst_sig.UCOB_CLKBAD);
   /*p01.TUBO*/ TUBO_CLKREQn_LATCH.nor_latch(gb.cpu_pins.CLKREQ, UPYF);
 }
 

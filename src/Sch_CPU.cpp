@@ -10,6 +10,9 @@ using namespace Schematics;
 CpuSignals CpuRegisters::sig(const TestGB& gb) const {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
+  auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
+
+  auto& cpu_pins = gb.cpu_pins;
 
   /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(gb.ext_pins.RD_C, gb.cpu_pins.CPU_RAW_RD, dbg_sig.UNOR_MODE_DBG2n);
   /*p07.TEDO*/ wire TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
@@ -22,9 +25,17 @@ CpuSignals CpuRegisters::sig(const TestGB& gb) const {
   /*p07.DYKY*/ wire DYKY_BUS_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
   /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_BUS_WR_ABCDExxx);
 
+  /*p08.LAGU*/ wire LAGU = or (and (cpu_pins.CPU_RAW_RD, adr_sig.LEVO_8000_9FFFp), cpu_pins.CPU_RAW_WR);
+  /*p08.LYWE*/ wire LYWE = not(LAGU);
+  /*p08.MOCA*/ wire MOCA_DBG_EXT_RDn = nor(adr_sig.TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1);
+  /*p08.MOTY*/ wire MOTY_CPU_EXT_RDp = or (MOCA_DBG_EXT_RDn, LYWE);
+
+
   return {
     .TEDO_CPU_RD = TEDO_CPU_RD,
     .ASOT_CPU_RD = ASOT_CPU_RD,
+    .MOCA_DBG_EXT_RDn = MOCA_DBG_EXT_RDn,
+    .MOTY_CPU_EXT_RDp = MOTY_CPU_EXT_RDp,
     .TAPU_CPU_WR_xxxxxFGH = TAPU_CPU_WR_xxxxxFGH,
     .CUPA_CPU_WR_xxxxxFGH = CUPA_CPU_WR_xxxxxFGH,
     .APOV_CPU_WR_xxxxxFGH = APOV_CPU_WR_xxxxxFGH,
@@ -37,9 +48,12 @@ void TestGB::tick_cpu() {
   auto clk_sig = clk_reg.sig(*this);
   auto dbg_sig = dbg_reg.sig(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
-  auto rst_sig = ResetSignals::get(*this);
+  auto rst_sig = rst_reg.sig(*this);
   auto dma_sig = dma_reg.sig(*this);
   auto cpu_sig = cpu_reg.sig(*this);
+  auto lcd_sig = lcd_reg.sig(*this);
+  auto tim_sig = tim_reg.sig(*this);
+  auto ppu_sig = ppu_reg.sig(*this);
 
   /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_pins.FROM_CPU5);
   /*p04.CATY*/ wire CATY_FROM_CPU5 = not(DECY_FROM_CPU5n);
@@ -55,7 +69,7 @@ void TestGB::tick_cpu() {
 
   /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_reg.MATU_DMA_OAM_WRp.q());
   /*p28.AJON*/ wire AJON_PPU_USE_OAM2 = and (BOGE_DMA_RUNNINGn, ppu_reg.XYMU_RENDERINGp.q()); // def AND. ppu can read oam when there's rendering but no dma
-  /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(dma_reg.MATU_DMA_OAM_WRp.q(), ACYL_PPU_USE_OAM1p(), AJON_PPU_USE_OAM2); // def nor
+  /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(dma_reg.MATU_DMA_OAM_WRp.q(), ppu_sig.ACYL_PPU_USE_OAM1p, AJON_PPU_USE_OAM2); // def nor
 
   /*p28.WAFO*/ wire WAFO_OAM_A0n = not(oam_pins.A0); // def not
   /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (adr_sig.SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
@@ -224,16 +238,14 @@ void TestGB::tick_cpu() {
   {
     /*p01.TAGY*/ wire FF04_RD = and(cpu_sig.TEDO_CPU_RD, adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, adr_sig.TOVY_A00n);
 
-    /*p01.UMEK*/ wire DIV_06n = not(tim_reg.UGOT_DIV_06.q());
-    /*p01.UREK*/ wire UREK_DIV_07n = not(tim_reg.TULU_DIV_07.q());
     /*p01.UTOK*/ wire DIV_08n = not(tim_reg.TUGO_DIV_08.q());
     /*p01.SAPY*/ wire DIV_09n = not(tim_reg.TOFE_DIV_09.q());
     /*p01.UMER*/ wire DIV_10n = not(tim_reg.TERU_DIV_10.q());
     /*p01.RAVE*/ wire DIV_11n = not(tim_reg.SOLA_DIV_11.q());
     /*p01.RYSO*/ wire DIV_12n = not(tim_reg.SUBU_DIV_12.q());
     /*p01.UDOR*/ wire DIV_13n = not(tim_reg.TEKA_DIV_13.q());
-    /*p01.TAWU*/ cpu_pins.D0.set_tribuf(FF04_RD, not(DIV_06n));
-    /*p01.TAKU*/ cpu_pins.D1.set_tribuf(FF04_RD, not(UREK_DIV_07n));
+    /*p01.TAWU*/ cpu_pins.D0.set_tribuf(FF04_RD, not(tim_sig.UMEK_DIV_06n));
+    /*p01.TAKU*/ cpu_pins.D1.set_tribuf(FF04_RD, not(tim_sig.UREK_DIV_07n));
     /*p01.TEMU*/ cpu_pins.D2.set_tribuf(FF04_RD, not(DIV_08n));
     /*p01.TUSE*/ cpu_pins.D3.set_tribuf(FF04_RD, not(DIV_09n));
     /*p01.UPUG*/ cpu_pins.D4.set_tribuf(FF04_RD, not(DIV_10n));
@@ -342,7 +354,7 @@ void TestGB::tick_cpu() {
   // render  = stat 3 = 11
 
     /*p21.PARU*/ wire PARU_IN_VBLANK = not(!lcd_reg.POPU_IN_VBLANK_d4);
-    /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(ppu_reg.XYMU_RENDERINGp, ACYL_PPU_USE_OAM1p()); // die NOR
+    /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(ppu_reg.XYMU_RENDERINGp, ppu_sig.ACYL_PPU_USE_OAM1p); // die NOR
     /*p21.SADU*/ wire SADU_STAT_MODE0n = nor(ppu_reg.XYMU_RENDERINGp, PARU_IN_VBLANK); // die NOR
 
     // OK, these tribufs are _slightly_ different - compare SEGO and SASY, second rung.
@@ -570,7 +582,7 @@ void TestGB::tick_cpu() {
   /*p25.TUSO*/ wire TUSO = nor(MODE_DBG2, clk.BOGA_AxCDEFGH);
   /*p25.SOLE*/ wire SOLE = not(TUSO);
 
-  if (VYPO_P10_Bn) bus_out.set_data(
+  if (dbg_sig.VYPO_P10_Bn) bus_out.set_data(
     /*p25.TOVU*/ SOLE,
     /*p25.SOSA*/ SOLE,
     /*p25.SEDU*/ SOLE,
@@ -825,9 +837,6 @@ void TestGB::tick_cpu() {
   }
 
   {
-    /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(lcd_reg.RUTU_NEW_LINE_d0);
-    /*p21.SELA*/ wire SELA_NEW_LINE_d0 = not(PURE_NEW_LINE_d0n);
-
     // uhhhh probably not ack_serial here either? wtf did i do?
     /*p21.PARU*/ wire PARU_IN_VBLANK = not(!lcd_reg.POPU_IN_VBLANK_d4);
     /*p21.TOLU*/ wire INT_VBLn = not(PARU_IN_VBLANK);
@@ -835,8 +844,8 @@ void TestGB::tick_cpu() {
     /*p02.SULO*/ wire SULO = or (cpu_pins.D3, FF0F_WRn_xxxxxFGH);
     /*p02.TOME*/ wire FF0F_SET3 = nand(FF0F_WRa_xxxxxFGH, INT_STAT_ACK, cpu_pins.D3);
     /*p02.TUNY*/ wire FF0F_RST3 = and(SULO, INT_STAT_ACK, rst_sig.ALUR_RSTn);
-    /*p21.TAPA*/ wire TAPA_INT_OAM = and(INT_VBLn, SELA_NEW_LINE_d0);
-    /*p21.TARU*/ wire TARU_INT_HBL = and(INT_VBLn, WODU_RENDER_DONE());
+    /*p21.TAPA*/ wire TAPA_INT_OAM = and(INT_VBLn, lcd_sig.SELA_NEW_LINE_d0p);
+    /*p21.TARU*/ wire TARU_INT_HBL = and(INT_VBLn, ppu_sig.WODU_RENDER_DONE);
     /*p21.SUKO*/ wire INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN, lcd_reg.ROPO_LY_MATCH_SYNC,
       ppu_reg.REFE_INT_OAM_EN, TAPA_INT_OAM,
       ppu_reg.RUFO_INT_VBL_EN, PARU_IN_VBLANK, // polarity?

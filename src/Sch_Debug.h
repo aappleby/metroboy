@@ -8,7 +8,12 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct DebugSignals {
-
+  /*p27.VYPO*/ wire VYPO_P10_Bn;
+  /*p28.WEFE*/ wire WEFE_P10_Bn;
+  /*p28.WUWE*/ wire WUWE_P10_Bn;
+  /*p28.GEFY*/ wire GEFY_P10_Bn;
+  /*p28.GECA*/ wire GECA_P10_Bp;
+  /*p28.WYDU*/ wire WYDU_P10_Bp;
   /*p07.UBET*/ wire UBET_T1n;
   /*p07.UVAR*/ wire UVAR_T2n;
   /*p07.UMUT*/ wire UMUT_MODE_DBG1;

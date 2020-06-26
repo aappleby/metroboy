@@ -10,10 +10,11 @@ using namespace Schematics;
 void TestGB::tick_pixpipe() {
   auto clk_sig = clk_reg.sig(*this);
   auto win_sig = win_reg.sig(*this);
+  auto dbg_sig = dbg_reg.sig(*this);
+  auto ppu_sig = ppu_reg.sig(*this);
 
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not(ppu_reg.XYMU_RENDERINGp.q());
-  /*p27.VYPO*/ wire VYPO_P10_Bn = not(joy_pin.P10_B);
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, WODU_RENDER_DONE(), clk_sig.MYVO_AxCxExGx);
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
   /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
   /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx = nor(SEGU_xBxDxFxH, ppu_reg.ROXY_FINE_MATCH_LATCHn);
@@ -46,14 +47,14 @@ void TestGB::tick_pixpipe() {
     /*p32.AJAR*/ wire _AJAR_CLKn = not(_LESO_CLKp);
     /*p32.LABU*/ wire _LABU_CLKp = not(_AJAR_CLKn);
 
-    /*p32.RAWU*/ pxp_reg.BG_PIX_B0.set(_LABU_CLKp, VYPO_P10_Bn, ppu_reg.MD0);
-    /*p32.POZO*/ pxp_reg.BG_PIX_B1.set(_LABU_CLKp, VYPO_P10_Bn, ppu_reg.MD1);
-    /*p32.PYZO*/ pxp_reg.BG_PIX_B2.set(_LABU_CLKp, VYPO_P10_Bn, ppu_reg.MD2);
-    /*p32.POXA*/ pxp_reg.BG_PIX_B3.set(_LABU_CLKp, VYPO_P10_Bn, ppu_reg.MD3);
-    /*p32.PULO*/ pxp_reg.BG_PIX_B4.set(_LABU_CLKp, VYPO_P10_Bn, ppu_reg.MD4);
-    /*p32.POJU*/ pxp_reg.BG_PIX_B5.set(_LABU_CLKp, VYPO_P10_Bn, ppu_reg.MD5);
-    /*p32.POWY*/ pxp_reg.BG_PIX_B6.set(_LABU_CLKp, VYPO_P10_Bn, ppu_reg.MD6);
-    /*p32.PYJU*/ pxp_reg.BG_PIX_B7.set(_LABU_CLKp, VYPO_P10_Bn, ppu_reg.MD7);
+    /*p32.RAWU*/ pxp_reg.BG_PIX_B0.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD0);
+    /*p32.POZO*/ pxp_reg.BG_PIX_B1.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD1);
+    /*p32.PYZO*/ pxp_reg.BG_PIX_B2.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD2);
+    /*p32.POXA*/ pxp_reg.BG_PIX_B3.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD3);
+    /*p32.PULO*/ pxp_reg.BG_PIX_B4.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD4);
+    /*p32.POJU*/ pxp_reg.BG_PIX_B5.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD5);
+    /*p32.POWY*/ pxp_reg.BG_PIX_B6.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD6);
+    /*p32.PYJU*/ pxp_reg.BG_PIX_B7.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD7);
   }
 
   // Sprite tile read handler
@@ -71,7 +72,7 @@ void TestGB::tick_pixpipe() {
     /*p29.TOPU*/ wire _TOPU_SPRITE_PIX_LATCH_A = and (ppu_reg.TULY_SFETCH_S1, _SYCU);
     /*p29.RACA*/ wire _RACA_SPRITE_PIX_LATCH_B = and (ppu_reg.VONU_SFETCH_S1_D4, _SYCU);
 
-    /*p29.XONO*/ wire _XONO_FLIP_X = and (oam_reg.REG_OAM_A5, TEXY_SPRITE_READ());
+    /*p29.XONO*/ wire _XONO_FLIP_X = and (oam_reg.REG_OAM_A5, ppu_sig.TEXY_SPRITE_READ);
     /*p33.POBE*/ wire _SPR_PIX_FLIP0 = mux2_p(ppu_reg.MD7, ppu_reg.MD0, _XONO_FLIP_X);
     /*p33.PACY*/ wire _SPR_PIX_FLIP1 = mux2_p(ppu_reg.MD6, ppu_reg.MD1, _XONO_FLIP_X);
     /*p33.PONO*/ wire _SPR_PIX_FLIP2 = mux2_p(ppu_reg.MD5, ppu_reg.MD2, _XONO_FLIP_X);
@@ -145,7 +146,7 @@ void TestGB::tick_pixpipe() {
     /*p32.NASA*/ pxp_reg.BG_PIX_A6.set(_LOMA_BG_LATCHn, ppu_reg.MD6);
     /*p32.NEFO*/ pxp_reg.BG_PIX_A7.set(_LOMA_BG_LATCHn, ppu_reg.MD7);
 
-    /*p32.LOZE*/ wire _LOZE_PIPE_A_LOAD = not(NYXU_BG_SEQ_RSTn);
+    /*p32.LOZE*/ wire _LOZE_PIPE_A_LOAD = not(ppu_sig.NYXU_BFETCH_RSTn);
 
     /*p32.LAKY*/ wire _BG_PIPE_A_SET0 = nand(_LOZE_PIPE_A_LOAD, pxp_reg.BG_PIX_A0);
     /*p32.NYXO*/ wire _BG_PIPE_A_SET1 = nand(_LOZE_PIPE_A_LOAD, pxp_reg.BG_PIX_A1);
@@ -186,7 +187,7 @@ void TestGB::tick_pixpipe() {
 
   // Background pipe B
   {
-    /*p32.LUXA*/ wire _LUXA_PIPE_B_LOAD = not(NYXU_BG_SEQ_RSTn);
+    /*p32.LUXA*/ wire _LUXA_PIPE_B_LOAD = not(ppu_sig.NYXU_BFETCH_RSTn);
     /*p32.TUXE*/ wire _BG_PIPE_B_SET0 = nand(_LUXA_PIPE_B_LOAD, !pxp_reg.BG_PIX_B0);
     /*p32.SOLY*/ wire _BG_PIPE_B_SET1 = nand(_LUXA_PIPE_B_LOAD, !pxp_reg.BG_PIX_B1);
     /*p32.RUCE*/ wire _BG_PIPE_B_SET2 = nand(_LUXA_PIPE_B_LOAD, !pxp_reg.BG_PIX_B2);
@@ -216,7 +217,7 @@ void TestGB::tick_pixpipe() {
   }
 
   {
-    /*p29.XEFY*/ wire _XEPY_SPRITE_DONEn = not(WUTY_SPRITE_DONE());
+    /*p29.XEFY*/ wire _XEPY_SPRITE_DONEn = not(ppu_sig.WUTY_SPRITE_DONE);
     /*p34.MEFU*/ wire _SPRITE_MASK0 = or (_XEPY_SPRITE_DONEn, pxp_reg.SPR_PIPE_A0, pxp_reg.SPR_PIPE_B0);
     /*p34.MEVE*/ wire _SPRITE_MASK1 = or (_XEPY_SPRITE_DONEn, pxp_reg.SPR_PIPE_A1, pxp_reg.SPR_PIPE_B1);
     /*p34.MYZO*/ wire _SPRITE_MASK2 = or (_XEPY_SPRITE_DONEn, pxp_reg.SPR_PIPE_A2, pxp_reg.SPR_PIPE_B2);

@@ -145,17 +145,11 @@ void TestGB::tick_cart_data() {
   auto adr_sig = adr_reg.sig(cpu_pins);
   auto cpu_sig = cpu_reg.sig(*this);
 
-  /*p08.LAGU*/ wire LAGU = or (and (cpu_pins.CPU_RAW_RD, adr_sig.LEVO_8000_9FFFp), cpu_pins.CPU_RAW_WR);
-  /*p08.LYWE*/ wire LYWE = not(LAGU);
-
-  /*p08.MOCA*/ wire MOCA_DBG_EXT_RDn = nor(adr_sig.TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1);
-  /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or (MOCA_DBG_EXT_RDn, LYWE);
-
   // internal data bus to external data bus
   {
     // original
     /*p08.REDU*/ wire _REDU_CPU_RDo = not(cpu_sig.TEDO_CPU_RD);
-    /*p08.RORU*/ wire _RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RDo, MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2n);
+    /*p08.RORU*/ wire _RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RDo, cpu_sig.MOTY_CPU_EXT_RDp, dbg_sig.UNOR_MODE_DBG2n);
     /*p08.LULA*/ wire _LULA_IBUS_TO_EBUSp = not(_RORU_IBUS_TO_EBUSn);
 
     ext_pins.D0_B.set(_LULA_IBUS_TO_EBUSp);
@@ -195,12 +189,6 @@ void TestGB::tick_cart_pins() {
   auto dma_sig = dma_reg.sig(*this);
   auto cpu_sig = cpu_reg.sig(*this);
 
-  /*p08.MOCA*/ wire MOCA_DBG_EXT_RDn = nor(adr_sig.TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1);
-
-  /*p08.LAGU*/ wire LAGU = or (and (cpu_pins.CPU_RAW_RD, adr_sig.LEVO_8000_9FFFp), cpu_pins.CPU_RAW_WR);
-  /*p08.LYWE*/ wire LYWE = not(LAGU);
-  /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or (MOCA_DBG_EXT_RDn, LYWE);
-
   //----------------------------------------
 
   {
@@ -208,7 +196,7 @@ void TestGB::tick_cart_pins() {
   }
 
   {
-    /*p08.TYMU*/ wire _TYMU_RD_OUTn = nor(dma_sig.LUMA_DMA_READ_CARTp, MOTY_CPU_EXT_RD);
+    /*p08.TYMU*/ wire _TYMU_RD_OUTn = nor(dma_sig.LUMA_DMA_READ_CARTp, cpu_sig.MOTY_CPU_EXT_RDp);
     /*p08.UGAC*/ wire _UGAC_RDn_A = nand(_TYMU_RD_OUTn, dbg_sig.TOVA_MODE_DBG2p);
     /*p08.URUN*/ wire _URUN_RDn_D = nor(_TYMU_RD_OUTn, dbg_sig.UNOR_MODE_DBG2n);
 
@@ -219,7 +207,7 @@ void TestGB::tick_cart_pins() {
   {
 
     /*p08.MEXO*/ wire _MEXO_ABCDExxx = not(cpu_sig.APOV_CPU_WR_xxxxxFGH);
-    /*p08.NEVY*/ wire _NEVY = or (_MEXO_ABCDExxx, MOCA_DBG_EXT_RDn);
+    /*p08.NEVY*/ wire _NEVY = or (_MEXO_ABCDExxx, cpu_sig.MOCA_DBG_EXT_RDn);
     /*p08.PUVA*/ wire _PUVA_WR_OUTn = or (_NEVY, dma_sig.LUMA_DMA_READ_CARTp);
     /*p08.UVER*/ wire _UVER_WRn_A = nand(_PUVA_WR_OUTn, dbg_sig.TOVA_MODE_DBG2p);
     /*p08.USUF*/ wire _USUF_WRn_D = nor(_PUVA_WR_OUTn, dbg_sig.UNOR_MODE_DBG2n);

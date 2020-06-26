@@ -7,7 +7,22 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
+struct PpuSignals {
+  /*p27.TEVO*/ wire TEVO_CLK_STOPn;
+  /*p21.WODU*/ wire WODU_RENDER_DONE;
+  /*p27.NYXU*/ wire NYXU_BFETCH_RSTn;
+  /*p29.TEXY*/ wire TEXY_SPRITE_READ;
+  /*p29.WUTY*/ wire WUTY_SPRITE_DONE;
+  /*p28.ACYL*/ wire ACYL_PPU_USE_OAM1p;
+};
+
+//-----------------------------------------------------------------------------
+
 struct PpuRegisters {
+
+  PpuSignals sig(const TestGB& gb) const;
+  void tick(const TestGB& gb);
+  bool commit();
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- VID_REG -----\n");

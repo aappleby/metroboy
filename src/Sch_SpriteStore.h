@@ -7,8 +7,15 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
+struct SpriteStoreSignals {
+  /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIGp;
+};
+
+//-----------------------------------------------------------------------------
+
 struct SpriteStoreRegisters {
 
+  SpriteStoreSignals sig(const TestGB& gb) const;
   void tick(const TestGB& gb);
   bool commit();
 

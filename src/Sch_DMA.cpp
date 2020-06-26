@@ -86,7 +86,7 @@ void DmaRegisters::tick(const TestGB& gb, CpuPins& cpu_pins) {
   auto cpu_sig = gb.cpu_reg.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
-  auto rst_sig = ResetSignals::get(gb);
+  auto rst_sig = gb.rst_reg.sig(gb);
 
   // schematic incorrect.
   // lyxe - weird gate - lavy, loko

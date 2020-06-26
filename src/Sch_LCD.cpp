@@ -4,18 +4,44 @@
 #include "Sch_Pins.h"
 #include "TestGB.h"
 #include "Constants.h"
+#include "Sch_Timer.h"
 
 using namespace Schematics;
 
+LcdSignals LcdRegisters::sig(const TestGB& gb) const {
+  auto rst_sig = gb.rst_reg.sig(gb);
+
+  /*p28.ABAF*/ wire ABAF_VID_LINE_d4n = not(CATU_VID_LINE_d4.q());
+  /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), rst_sig.ABEZ_VID_RSTn);
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(BYHA_VID_LINE_TRIG_d4n);
+  /*p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4p);
+
+  /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(RUTU_NEW_LINE_d0);
+  /*p21.SELA*/ wire SELA_NEW_LINE_d0p = not(PURE_NEW_LINE_d0n);
+
+  return {
+    .BYHA_VID_LINE_TRIG_d4n = BYHA_VID_LINE_TRIG_d4n,
+    .ATEJ_VID_LINE_TRIG_d4p = ATEJ_VID_LINE_TRIG_d4p,
+    .XAHY_VID_LINE_TRIG_d4n = XAHY_VID_LINE_TRIG_d4n,
+    .PURE_NEW_LINE_d0n = PURE_NEW_LINE_d0n,
+    .SELA_NEW_LINE_d0p = SELA_NEW_LINE_d0p,
+  };
+}
+
 void LcdRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
-  auto rst_sig = ResetSignals::get(gb);
+  auto rst_sig = gb.rst_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
   auto win_sig = gb.win_reg.sig(gb);
   auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto tim_sig = gb.tim_reg.sig(gb);
+  auto ppu_sig = gb.ppu_reg.sig(gb);
+  auto lcd_sig = sig(gb);
 
   wire XEHO_X0 = gb.ppu_reg.SAXO_X0;
   wire XYDO_X3 = gb.ppu_reg.TELU_X3;
+
+  wire MYVO_AxCxExGx = clk_sig.MYVO_AxCxExGx;
 
   wire POKY_FRONT_PORCH_LATCH = gb.ppu_reg.POKY_FRONT_PORCH_LATCH;
   wire VOGA_RENDER_DONE_SYNC = gb.ppu_reg.VOGA_RENDER_DONE_SYNC;
@@ -23,26 +49,17 @@ void LcdRegisters::tick(TestGB& gb) {
   wire PUXA_FINE_MATCH_SYNC1 = gb.ppu_reg.PUXA_FINE_MATCH_SYNC1;
   wire NYZE_FINE_MATCH_SYNC2 = gb.ppu_reg.NYZE_FINE_MATCH_SYNC2;
 
-  wire WODU_RENDER_DONE = gb.WODU_RENDER_DONE();
-
-  wire MYVO_AxCxExGx = clk_sig.MYVO_AxCxExGx;
-
   wire XONA_LCDC_EN = gb.cfg_reg.XONA_LCDC_EN.q();
 
 
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(gb.sst_reg.FEPO_STORE_MATCHp, WODU_RENDER_DONE, MYVO_AxCxExGx);
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(gb.sst_reg.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, MYVO_AxCxExGx);
   /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
 
   /*p21.WEGO*/ wire WEGO_RST_LATCH = or (rst_sig.TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC);
-
-  /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(RUTU_NEW_LINE_d0.q());
-  /*p21.SELA*/ wire SELA_NEW_LINE_d0 = not(PURE_NEW_LINE_d0n);
-
   /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(XONA_LCDC_EN);
 
-  /*p01.UREK*/ wire UREK_DIV_07n = not(gb.tim_reg.TULU_DIV_07);
-  /*p01.UMEK*/ wire UMEK_DIV_06n = not(gb.tim_reg.UGOT_DIV_06);
+  //----------------------------------------
 
   // LCD main timer
   {
@@ -75,7 +92,7 @@ void LcdRegisters::tick(TestGB& gb) {
 
     /*p21.XYVO*/ wire _XYVO_IN_VBLANK    = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
     /*p29.ALES*/ wire _ALES_IN_VBLANKn   = not(_XYVO_IN_VBLANK);
-    /*p29.ABOV*/ wire _ABOV_VID_LINE_d0  = and(SELA_NEW_LINE_d0, _ALES_IN_VBLANKn);
+    /*p29.ABOV*/ wire _ABOV_VID_LINE_d0  = and(lcd_sig.SELA_NEW_LINE_d0p, _ALES_IN_VBLANKn);
 
     /*p21.POPU*/ POPU_IN_VBLANK_d4.set(NYPE_NEW_LINE_d4.q(), rst_sig.LYFE_VID_RSTn, _XYVO_IN_VBLANK);
     /*p29.CATU*/ CATU_VID_LINE_d4.set (clk_sig.XUPY_xBCxxFGx,   rst_sig.ABEZ_VID_RSTn, _ABOV_VID_LINE_d0);
@@ -93,7 +110,7 @@ void LcdRegisters::tick(TestGB& gb) {
     /*p24.MAGU*/ wire _MAGU = xor(NAPO_FRAME_EVEN, LUCA_LINE_EVEN.q());
     /*p24.MECO*/ wire _MECO = not(_MAGU);
     /*p24.KEBO*/ wire _KEBO = not(_MECO);
-    /*p24.USEC*/ wire _USEC = not(UREK_DIV_07n);
+    /*p24.USEC*/ wire _USEC = not(tim_sig.UREK_DIV_07n);
     /*p24.KUPA*/ wire _KUPA = amux2(XONA_LCDC_EN, _KEBO, KEDY_LCDC_ENn, _USEC);
     /*p24.KOFO*/ wire _KOFO = not(_KUPA);
     FR.set(_KOFO);
@@ -123,8 +140,8 @@ void LcdRegisters::tick(TestGB& gb) {
 
   // LCD CPL pin
   {
-    /*p24.KASA*/ wire _KASA_LINE_DONE = not(PURE_NEW_LINE_d0n);
-    /*p24.UMOB*/ wire _UMOB_DIV_06p = not(UMEK_DIV_06n);
+    /*p24.KASA*/ wire _KASA_LINE_DONE = not(lcd_sig.PURE_NEW_LINE_d0n);
+    /*p24.UMOB*/ wire _UMOB_DIV_06p = not(tim_sig.UMEK_DIV_06n);
     /*p24.KAHE*/ wire _KAHE = amux2(XONA_LCDC_EN, _KASA_LINE_DONE, KEDY_LCDC_ENn, _UMOB_DIV_06p);
     /*p24.KYMO*/ wire _KYMO = not(_KAHE);
     CPL.set(_KYMO);
@@ -225,8 +242,11 @@ void LcdRegisters::tick(TestGB& gb) {
 
 void TestGB::tick_lcd() {
   auto clk_sig = clk_reg.sig(*this);
-  auto rst_sig = ResetSignals::get(*this);
+  auto rst_sig = rst_reg.sig(*this);
   auto win_sig = win_reg.sig(*this);
+  auto lcd_sig = lcd_reg.sig(*this);
+  auto sst_sig = sst_reg.sig(*this);
+  auto ppu_sig = ppu_reg.sig(*this);
 
   wire XONA_LCDC_EN = cfg_reg.XONA_LCDC_EN.q();
 
@@ -239,12 +259,7 @@ void TestGB::tick_lcd() {
   wire POKY_FRONT_PORCH_LATCH = ppu_reg.POKY_FRONT_PORCH_LATCH;
   wire XYMU_RENDERINGp  = ppu_reg.XYMU_RENDERINGp;
 
-  wire WODU_RENDER_DONE = this->WODU_RENDER_DONE();
-
-  wire AVAP_SCAN_DONE_d0_TRIGp = this->AVAP_SCAN_DONE_d0_TRIGp();
-
-
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
   /*p24.TYFA*/ wire TYFA_AxCxExGx = and(win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
   /*p24.ROXO*/ wire ROXO_AxCxExGx = not(SEGU_xBxDxFxH);
@@ -263,11 +278,58 @@ void TestGB::tick_lcd() {
 
     // if AVAP goes high, POFY goes high.
     // if PAHO or TOFU go high, POFY goes low.
-    /*p24.RUJU*/ lcd_reg.POFY_ST_LATCH.nor_latch(AVAP_SCAN_DONE_d0_TRIGp, lcd_reg.PAHO_X_8_SYNC || TOFU_VID_RST);
+    /*p24.RUJU*/ lcd_reg.POFY_ST_LATCH.nor_latch(sst_sig.AVAP_SCAN_DONE_d0_TRIGp, lcd_reg.PAHO_X_8_SYNC || TOFU_VID_RST);
 
     /*p24.RUZE*/ wire RUZE_PIN_ST = not(lcd_reg.POFY_ST_LATCH);
     lcd_reg.ST.set(RUZE_PIN_ST);
   }
 
   lcd_reg.tick(*this);
+}
+
+
+bool LcdRegisters::commit() {
+  bool changed = false;
+  /*p21.SAXO*/ changed |= SAXO_X0.commit_reg(); // increments at phase 1, reset to 0 at p909.
+  /*p21.TYPO*/ changed |= TYPO_X1.commit_reg();
+  /*p21.VYZO*/ changed |= VYZO_X2.commit_reg();
+  /*p21.TELU*/ changed |= TELU_X3.commit_reg();
+  /*p21.SUDE*/ changed |= SUDE_X4.commit_reg();
+  /*p21.TAHA*/ changed |= TAHA_X5.commit_reg();
+  /*p21.TYRY*/ changed |= TYRY_X6.commit_reg();
+  /*p21.MUWY*/ changed |= MUWY_Y0.commit_reg(); // increments at p909, reset to 0 at p153:001
+  /*p21.MYRO*/ changed |= MYRO_Y1.commit_reg();
+  /*p21.LEXA*/ changed |= LEXA_Y2.commit_reg();
+  /*p21.LYDO*/ changed |= LYDO_Y3.commit_reg();
+  /*p21.LOVU*/ changed |= LOVU_Y4.commit_reg();
+  /*p21.LEMA*/ changed |= LEMA_Y5.commit_reg();
+  /*p21.MATO*/ changed |= MATO_Y6.commit_reg();
+  /*p21.LAFO*/ changed |= LAFO_Y7.commit_reg();
+  /*p21.RUTU*/ changed |= RUTU_NEW_LINE_d0.commit_reg(); // p909+8
+  /*p29.CATU*/ changed |= CATU_VID_LINE_d4.commit_reg();  // p001+8
+  /*p21.NYPE*/ changed |= NYPE_NEW_LINE_d4.commit_reg(); // p001+8
+  /*p28.ANEL*/ changed |= ANEL_VID_LINE_d6.commit_reg();  // p003+8
+  /*p21.MYTA*/ changed |= MYTA_LINE_153_d4.commit_reg();  // p153:001 - p000:001
+  /*p21.POPU*/ changed |= POPU_IN_VBLANK_d4.commit_reg();    // p144:001 - p000:001
+  /*p21.SYGU*/ changed |= SYGU_LINE_STROBE.commit_reg();
+  /*p24.PAHO*/ changed |= PAHO_X_8_SYNC.commit_reg();
+  /*p21.WUSA*/ changed |= WUSA_CPEN_LATCH.commit_latch();
+  /*p24.RUJU*/ changed |= POFY_ST_LATCH.commit_latch(); // nor latch with p24.RUJU, p24.POME
+  /*p24.MEDA*/ changed |= MEDA_VSYNC_OUTn.commit_reg();
+  /*p24.LUCA*/ changed |= LUCA_LINE_EVEN.commit_reg();
+  /*p21.NAPO*/ changed |= NAPO_FRAME_EVEN.commit_reg();
+
+  /*p23.SYRY*/ changed |= SYRY_LYC0.commit_reg();
+  /*p23.VUCE*/ changed |= VUCE_LYC1.commit_reg();
+  /*p23.SEDY*/ changed |= SEDY_LYC2.commit_reg();
+  /*p23.SALO*/ changed |= SALO_LYC3.commit_reg();
+  /*p23.SOTA*/ changed |= SOTA_LYC4.commit_reg();
+  /*p23.VAFA*/ changed |= VAFA_LYC5.commit_reg();
+  /*p23.VEVO*/ changed |= VEVO_LYC6.commit_reg();
+  /*p23.RAHA*/ changed |= RAHA_LYC7.commit_reg();
+
+  /*p21.ROPO*/ changed |= ROPO_LY_MATCH_SYNC.commit_reg();
+  /*p21.RUPO*/ changed |= LYC_MATCH_LATCHn.commit_latch();
+
+  return changed;
 }

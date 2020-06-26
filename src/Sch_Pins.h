@@ -455,7 +455,7 @@ struct JoypadPins {
   // BEKU
 
   /* PIN_67 */ PinOut P10_A;   // <- P05.KOLE
-  /* PIN_67 */ PinOut P10_B;   
+  /* PIN_67 */ PinOut P10_B;   // -> BENU BEDA ATAJ ASUZ AJEC AKAJ ANOC ARAR
   /* PIN_67 */ PinIn  P10_C;   // -> P02.KERY, P05.KEVU
   /* PIN_67 */ PinOut P10_D;   // <- P05.KYBU
 

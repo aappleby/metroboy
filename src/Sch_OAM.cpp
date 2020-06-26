@@ -14,12 +14,7 @@ void TestGB::tick_oam() {
   auto adr_sig = adr_reg.sig(cpu_pins);
   auto dma_sig = dma_reg.sig(*this);
   auto cpu_sig = cpu_reg.sig(*this);
-
-  /*p28.WEFE*/ wire WEFE_P10_Bn = not(joy_pin.P10_B);
-  /*p28.WUWE*/ wire WUWE_P10_Bn = not(joy_pin.P10_B);
-  /*p28.GEFY*/ wire GEFY_P10_Bn = not(joy_pin.P10_B);
-  /*p28.GECA*/ wire GECA_P10_B = not(WEFE_P10_Bn);
-  /*p28.WYDU*/ wire WYDU_P10_B = not(WEFE_P10_Bn);
+  auto dbg_sig = dbg_reg.sig(*this);
 
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not(ppu_reg.XYMU_RENDERINGp.q());
 
@@ -77,8 +72,8 @@ void TestGB::tick_oam() {
     /*p28.APAR*/ wire APAR_PPU_OAM_RDn = not(ACYL_PPU_OAM_RDp);
     /*p04.DUGA*/ wire DUGA_DMA_OAM_RDn = not(dma_reg.MATU_DMA_OAM_WRp.q()); // so if dma happens during oam parse, both drive the address line - bus conflict?
 
-    /*p28.GEKA*/ wire GEKA_OAM_A0p = not((GARO_A0n & !ASAM_CPU_OAM_RDn) | (GECA_P10_B  & !BETE_PPU_OAM_RDn) | (GEFY_P10_Bn & !APAR_PPU_OAM_RDn) | (FODO_DMA_A00n & !DUGA_DMA_OAM_RDn));
-    /*p28.ZYFO*/ wire ZYFO_OAM_A1p = not((WACU_A1n & !ASAM_CPU_OAM_RDn) | (WYDU_P10_B  & !BETE_PPU_OAM_RDn) | (WUWE_P10_Bn & !APAR_PPU_OAM_RDn) | (FESA_DMA_A01n & !DUGA_DMA_OAM_RDn));
+    /*p28.GEKA*/ wire GEKA_OAM_A0p = not((GARO_A0n & !ASAM_CPU_OAM_RDn) | (dbg_sig.GECA_P10_Bp  & !BETE_PPU_OAM_RDn) | (dbg_sig.GEFY_P10_Bn & !APAR_PPU_OAM_RDn) | (FODO_DMA_A00n & !DUGA_DMA_OAM_RDn));
+    /*p28.ZYFO*/ wire ZYFO_OAM_A1p = not((WACU_A1n & !ASAM_CPU_OAM_RDn) | (dbg_sig.WYDU_P10_Bp  & !BETE_PPU_OAM_RDn) | (dbg_sig.WUWE_P10_Bn & !APAR_PPU_OAM_RDn) | (FESA_DMA_A01n & !DUGA_DMA_OAM_RDn));
     /*p28.YFOT*/ wire YFOT_OAM_A2p = not((GOSE_A2n & !ASAM_CPU_OAM_RDn) | (GYBU_IDX_0n & !BETE_PPU_OAM_RDn) | (GUSE_SCAN0n & !APAR_PPU_OAM_RDn) | (FAGO_DMA_A02n & !DUGA_DMA_OAM_RDn));
     /*p28.YFOC*/ wire YFOC_OAM_A3p = not((WAPE_A3n & !ASAM_CPU_OAM_RDn) | (GYKA_IDX_1n & !BETE_PPU_OAM_RDn) | (GEMA_SCAN1n & !APAR_PPU_OAM_RDn) | (FYKY_DMA_A03n & !DUGA_DMA_OAM_RDn));
     /*p28.YVOM*/ wire YVOM_OAM_A4p = not((FEVU_A4n & !ASAM_CPU_OAM_RDn) | (FABY_IDX_2n & !BETE_PPU_OAM_RDn) | (FUTO_SCAN2n & !APAR_PPU_OAM_RDn) | (ELUG_DMA_A04n & !DUGA_DMA_OAM_RDn));

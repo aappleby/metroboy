@@ -10,6 +10,15 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
   const auto& sys_pins = gb.sys_pins;
   const auto& cpu_pins = gb.cpu_pins;
 
+  /*p27.VYPO*/ wire _VYPO_P10_Bn = not(gb.joy_pin.P10_B);
+  /*p28.WEFE*/ wire _WEFE_P10_Bn = not(gb.joy_pin.P10_B);
+  /*p28.WUWE*/ wire _WUWE_P10_Bn = not(gb.joy_pin.P10_B);
+  /*p28.GEFY*/ wire _GEFY_P10_Bn = not(gb.joy_pin.P10_B);
+  /*p28.GECA*/ wire _GECA_P10_Bp = not(_WEFE_P10_Bn);
+  /*p28.WYDU*/ wire _WYDU_P10_Bp = not(_WEFE_P10_Bn);
+
+
+
   /*p07.UBET*/ wire _UBET_T1n = not(sys_pins.T1);
   /*p07.UVAR*/ wire _UVAR_T2n = not(sys_pins.T2);
   /*p07.UMUT*/ wire _UMUT_MODE_DBG1 = and (sys_pins.T1, _UVAR_T2n);
@@ -27,6 +36,12 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
   // wire ABUZ = or(UNOR_MODE_DBG2n, !gb.cpu_pins.ADDR_VALID);
 
   return {
+    .VYPO_P10_Bn = _VYPO_P10_Bn,
+    .WEFE_P10_Bn = _WEFE_P10_Bn,
+    .WUWE_P10_Bn = _WUWE_P10_Bn,
+    .GEFY_P10_Bn = _GEFY_P10_Bn,
+    .GECA_P10_Bp = _GECA_P10_Bp,
+    .WYDU_P10_Bp = _WYDU_P10_Bp,
     .UBET_T1n = _UBET_T1n,
     .UVAR_T2n = _UVAR_T2n,
     .UMUT_MODE_DBG1 = _UMUT_MODE_DBG1,
@@ -44,7 +59,7 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
 void DebugRegisters::tick(const TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto dbg_sig = sig(gb);
-  auto rst_sig = ResetSignals::get(gb);
+  auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p25.SYCY*/ wire SYCY_DBG_CLOCKp = not(dbg_sig.UNOR_MODE_DBG2n);
   /*p25.SOTO*/ SOTO_DBG.set(SYCY_DBG_CLOCKp, rst_sig.CUNU_RSTn, !SOTO_DBG);

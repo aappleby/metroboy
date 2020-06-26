@@ -123,6 +123,7 @@
     <ClInclude Include="src\Schematics.h" />
     <ClInclude Include="src\Sch_Address.h" />
     <ClInclude Include="src\Sch_ApuControl.h" />
+    <ClInclude Include="src\Sch_Cart.h" />
     <ClInclude Include="src\Sch_Channel1.h" />
     <ClInclude Include="src\Sch_Channel2.h" />
     <ClInclude Include="src\Sch_Channel3.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="src\Sch_CPU.h" />
     <ClInclude Include="src\Sch_Debug.h" />
     <ClInclude Include="src\Sch_DMA.h" />
+    <ClInclude Include="src\Sch_LCD.h" />
     <ClInclude Include="src\Sch_Merged.h" />
     <ClInclude Include="src\Sch_OAM.h" />
     <ClInclude Include="src\Sch_Pins.h" />

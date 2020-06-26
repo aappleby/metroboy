@@ -37,8 +37,8 @@ void TestGB::tick_vram_addr() {
   auto adr_sig = adr_reg.sig(cpu_pins);
   auto dma_sig = dma_reg.sig(*this);
   auto win_sig = win_reg.sig(*this);
-
-  /*p27.VYPO*/ wire VYPO_P10_Bn = not(joy_pin.P10_B);
+  auto cpu_sig = cpu_reg.sig(*this);
+  auto ppu_sig = ppu_reg.sig(*this);
 
   /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor(dma_sig.LUFA_DMA_READ_VRAMp, ppu_reg.XYMU_RENDERINGp.q()); // def nor
   
@@ -51,9 +51,6 @@ void TestGB::tick_vram_addr() {
 
   /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(ppu_reg.TOXE_SFETCH_S0_D0.q());
   /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(ppu_reg.TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0_D0n);
-
-  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_pins.CPU_RAW_WR, clk_sig.AFAS_xxxxxFGH);
-  /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
 
   /*p27.NAKO*/ wire NAKO_FETCH_S1n = not(ppu_reg.MESU_BFETCH_S1.q());
   /*p27.NOFU*/ wire NOFU_FETCH_S2n = not(ppu_reg.NYVA_BFETCH_S2.q());
@@ -180,8 +177,8 @@ void TestGB::tick_vram_addr() {
       /*p26.CETA*/ ppu_reg.MA08.set_tribuf(_BAFY_BG_MAP_READn, _MAP_Y3S);
       /*p26.DAFE*/ ppu_reg.MA09.set_tribuf(_BAFY_BG_MAP_READn, _MAP_Y4S);
       /*p26.AMUV*/ ppu_reg.MA10.set_tribuf(_BAFY_BG_MAP_READn, cfg_reg.LCDC_BGMAP.q());
-      /*p26.COVE*/ ppu_reg.MA11.set_tribuf(_BAFY_BG_MAP_READn, VYPO_P10_Bn);
-      /*p26.COXO*/ ppu_reg.MA12.set_tribuf(_BAFY_BG_MAP_READn, VYPO_P10_Bn);
+      /*p26.COVE*/ ppu_reg.MA11.set_tribuf(_BAFY_BG_MAP_READn, dbg_sig.VYPO_P10_Bn);
+      /*p26.COXO*/ ppu_reg.MA12.set_tribuf(_BAFY_BG_MAP_READn, dbg_sig.VYPO_P10_Bn);
     }
 
     {
@@ -199,8 +196,8 @@ void TestGB::tick_vram_addr() {
       /*p27.VOVO*/ ppu_reg.MA08.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y6.q());
       /*p27.VULO*/ ppu_reg.MA09.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y7.q());
       /*p27.VEVY*/ ppu_reg.MA10.set_tribuf(_WUKO_WIN_MAP_READn, cfg_reg.LCDC_WINMAP.q());
-      /*p27.VEZA*/ ppu_reg.MA11.set_tribuf(_WUKO_WIN_MAP_READn, VYPO_P10_Bn);
-      /*p27.VOGU*/ ppu_reg.MA12.set_tribuf(_WUKO_WIN_MAP_READn, VYPO_P10_Bn);
+      /*p27.VEZA*/ ppu_reg.MA11.set_tribuf(_WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
+      /*p27.VOGU*/ ppu_reg.MA12.set_tribuf(_WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
     }
 
     /*p27.XUHA*/ wire _XUHA_FETCH_S2 = not(NOFU_FETCH_S2n);
@@ -241,7 +238,7 @@ void TestGB::tick_vram_addr() {
   }
 
 
-  /*p29.ABON*/ wire _ABON_SPR_VRAM_RDp1 = not(TEXY_SPRITE_READ());
+  /*p29.ABON*/ wire _ABON_SPR_VRAM_RDp1 = not(ppu_sig.TEXY_SPRITE_READ);
 
   {
     // TS_LINE_* out of order
@@ -366,7 +363,7 @@ void TestGB::tick_vram_addr() {
 
   // original
   {
-    /*p25.TUJA*/ wire _TUJA_CPU_VRAM_WR = and(adr_sig.SOSE_8000_9FFFp, APOV_CPU_WR_xxxxxFGH);
+    /*p25.TUJA*/ wire _TUJA_CPU_VRAM_WR = and(adr_sig.SOSE_8000_9FFFp, cpu_sig.APOV_CPU_WR_xxxxxFGH);
     /*p25.SUDO*/ wire _SUDO_MWR_Cn = not(vram_pins.MWR_C);
     /*p25.TYJY*/ wire _TYJY_DBG_VRAM_WR = mux2_p(_SUDO_MWR_Cn, _TUJA_CPU_VRAM_WR, dbg_sig.TUTO_DBG_VRAM);
     /*p25.SOHY*/ wire _SOHY_MWR = nand(_TYJY_DBG_VRAM_WR, SERE_VRAM_RD);

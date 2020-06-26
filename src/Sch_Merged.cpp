@@ -101,7 +101,7 @@ ALUR = nor(AFER_RST, ASOL_RST_LATCH)
 
 void TestGB::tick_everything() {
   auto clk_sig = clk_reg.sig(*this);
-  auto rst_sig = ResetSignals::get(*this);
+  auto rst_sig = rst_reg.sig(*this);
 
   //----------------------------------------
   // sch_system
@@ -131,10 +131,10 @@ void TestGB::tick_everything() {
 
   clk_reg.tick(*this);
   dma_reg.tick(*this, cpu_pins);
-  tick_timer();
+  tim_reg.tick(*this);
   ser_reg.tick(*this);
   tick_joypad();
-  tick_ppu();
+  ppu_reg.tick(*this);
   sst_reg.tick(*this);
   tick_lcd();
 

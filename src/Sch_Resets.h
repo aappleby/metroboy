@@ -8,7 +8,7 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct ResetSignals {
-  static ResetSignals get(const TestGB& gb);
+  /*p01.UCOB*/ wire UCOB_CLKBAD;
 
   /*p01.ALUR*/ wire ALUR_RSTn;
   /*p01.DULA*/ wire DULA_RSTp;
@@ -34,6 +34,7 @@ struct ResetSignals {
 
 struct ResetRegisters {
 
+  ResetSignals sig(const TestGB& gb) const;
   void tick(TestGB& gb);
   bool commit();
 

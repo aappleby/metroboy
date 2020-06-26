@@ -12,8 +12,8 @@ using namespace Schematics;
 void SerialRegisters::tick(TestGB& gb) {
 
   auto cpu_sig = gb.cpu_reg.sig(gb);
-  auto rst_sig = ResetSignals::get(gb);
-  auto tim_sig = TimerSignals::get(gb);
+  auto rst_sig = gb.rst_reg.sig(gb);
+  auto tim_sig = gb.tim_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
   auto& cpu_pins2 = gb.cpu_pins;
 

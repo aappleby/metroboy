@@ -189,8 +189,7 @@ void TestGB::tick_oam() {
     /*p28.WEFY*/ wire WEFY = and(TUVO_PPU_OAM_RDn, ppu_reg.TYFO_SFETCH_S0_D1.q());
     /*p28.AJEP*/ wire AJEP = nand(ACYL_PPU_OAM_RDp, clk_sig.XOCE_ABxxEFxx); // schematic wrong, is def nand
     /*p28.XUJA*/ wire XUJA = not(WEFY);
-    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_pins.FROM_CPU5);
-    /*p28.BOTA*/ wire BOTA_CPU_RD_OAMn = nand(DECY_FROM_CPU5n, adr_sig.SARO_FE00_FEFFp, cpu_sig.ASOT_CPU_RD); // Schematic wrong, this is NAND
+    /*p28.BOTA*/ wire BOTA_CPU_RD_OAMn = nand(cpu_sig.DECY_FROM_CPU5n, adr_sig.SARO_FE00_FEFFp, cpu_sig.ASOT_CPU_RD); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire ASYT_OAM_LATCHn = and(AJEP, XUJA, BOTA_CPU_RD_OAMn);
     /*p28.BODE*/ wire BODE_OAM_LATCH = not(ASYT_OAM_LATCHn); // to the tribus receiver below
 

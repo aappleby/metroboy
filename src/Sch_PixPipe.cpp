@@ -12,9 +12,10 @@ void TestGB::tick_pixpipe() {
   auto win_sig = win_reg.sig(*this);
   auto dbg_sig = dbg_reg.sig(*this);
   auto ppu_sig = ppu_reg.sig(*this);
+  auto sst_sig = sst_reg.sig(*this);
 
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not(ppu_reg.XYMU_RENDERINGp.q());
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
   /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
   /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx = nor(SEGU_xBxDxFxH, ppu_reg.ROXY_FINE_MATCH_LATCHn);

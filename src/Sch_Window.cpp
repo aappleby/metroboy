@@ -86,10 +86,11 @@ void WindowRegisters::tick(TestGB& gb) {
   auto rst_sig = gb.rst_reg.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
+  auto sst_sig = gb.sst_reg.sig(gb);
   auto win_sig = sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
 
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(gb.sst_reg.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
   /*p24.TYFA*/ wire TYFA_AxCxExGx = and(win_sig.SOCY_WIN_HITn, gb.ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
   /*p27.ROCO*/ wire ROCO_AxCxExGx = not(SEGU_xBxDxFxH);

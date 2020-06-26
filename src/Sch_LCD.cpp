@@ -8,6 +8,12 @@
 
 using namespace Schematics;
 
+// Die trace:
+// VYBO = nor(FEPO04, WODU04, MYVO02)
+// TYFA = and(SOCY02, POKY04, VYBO04)
+// SEGU = not(TYFA05) // 5 rung inverter, because fanout?
+// ROXO = not(SEGU05)
+
 LcdSignals LcdRegisters::sig(const TestGB& gb) const {
   auto rst_sig = gb.rst_reg.sig(gb);
 
@@ -36,6 +42,7 @@ void LcdRegisters::tick(TestGB& gb) {
   auto cpu_sig = gb.cpu_reg.sig(gb);
   auto tim_sig = gb.tim_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
+  auto sst_sig = gb.sst_reg.sig(gb);
   auto lcd_sig = sig(gb);
 
   wire XEHO_X0 = gb.ppu_reg.SAXO_X0;
@@ -52,7 +59,7 @@ void LcdRegisters::tick(TestGB& gb) {
   wire XONA_LCDC_EN = gb.cfg_reg.XONA_LCDC_EN.q();
 
 
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(gb.sst_reg.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, MYVO_AxCxExGx);
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, MYVO_AxCxExGx);
   /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
 
@@ -248,41 +255,27 @@ void TestGB::tick_lcd() {
   auto sst_sig = sst_reg.sig(*this);
   auto ppu_sig = ppu_reg.sig(*this);
 
-  wire XONA_LCDC_EN = cfg_reg.XONA_LCDC_EN.q();
-
-  /*p01.XODO*/ wire XODO_VID_RSTp = nand(rst_sig.XEBE_RSTn, XONA_LCDC_EN);
-  /*p01.XAPO*/ wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
-  /*p01.TOFU*/ wire TOFU_VID_RST = not(XAPO_VID_RSTn);
-
   wire XYDO_X3 = ppu_reg.TELU_X3;
 
   wire POKY_FRONT_PORCH_LATCH = ppu_reg.POKY_FRONT_PORCH_LATCH;
   wire XYMU_RENDERINGp  = ppu_reg.XYMU_RENDERINGp;
 
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
   /*p24.TYFA*/ wire TYFA_AxCxExGx = and(win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
   /*p24.ROXO*/ wire ROXO_AxCxExGx = not(SEGU_xBxDxFxH);
 
-
   // LCD horizontal sync pin latch
-  {
 
-    // Die trace:
-    // VYBO = nor(FEPO04, WODU04, MYVO02)
-    // TYFA = and(SOCY02, POKY04, VYBO04)
-    // SEGU = not(TYFA05) // 5 rung inverter, because fanout?
-    // ROXO = not(SEGU05)
 
-    /*p24.PAHO*/ lcd_reg.PAHO_X_8_SYNC.set(ROXO_AxCxExGx, XYMU_RENDERINGp, XYDO_X3);
+  /*p24.PAHO*/ lcd_reg.PAHO_X_8_SYNC.set(ROXO_AxCxExGx, XYMU_RENDERINGp, XYDO_X3);
 
-    // if AVAP goes high, POFY goes high.
-    // if PAHO or TOFU go high, POFY goes low.
-    /*p24.RUJU*/ lcd_reg.POFY_ST_LATCH.nor_latch(sst_sig.AVAP_SCAN_DONE_d0_TRIGp, lcd_reg.PAHO_X_8_SYNC || TOFU_VID_RST);
+  // if AVAP goes high, POFY goes high.
+  // if PAHO or TOFU go high, POFY goes low.
+  /*p24.RUJU*/ lcd_reg.POFY_ST_LATCH.nor_latch(sst_sig.AVAP_SCAN_DONE_d0_TRIGp, lcd_reg.PAHO_X_8_SYNC || rst_sig.TOFU_VID_RSTp);
 
-    /*p24.RUZE*/ wire RUZE_PIN_ST = not(lcd_reg.POFY_ST_LATCH);
-    lcd_reg.ST.set(RUZE_PIN_ST);
-  }
+  /*p24.RUZE*/ wire RUZE_PIN_ST = not(lcd_reg.POFY_ST_LATCH);
+  lcd_reg.ST.set(RUZE_PIN_ST);
 
   lcd_reg.tick(*this);
 }

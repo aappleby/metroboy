@@ -30,6 +30,7 @@ CpuSignals CpuRegisters::sig(const TestGB& gb) const {
   /*p08.MOCA*/ wire MOCA_DBG_EXT_RDn = nor(adr_sig.TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1);
   /*p08.MOTY*/ wire MOTY_CPU_EXT_RDp = or (MOCA_DBG_EXT_RDn, LYWE);
 
+  /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_pins.FROM_CPU5);
 
   return {
     .TEDO_CPU_RD = TEDO_CPU_RD,
@@ -39,6 +40,7 @@ CpuSignals CpuRegisters::sig(const TestGB& gb) const {
     .TAPU_CPU_WR_xxxxxFGH = TAPU_CPU_WR_xxxxxFGH,
     .CUPA_CPU_WR_xxxxxFGH = CUPA_CPU_WR_xxxxxFGH,
     .APOV_CPU_WR_xxxxxFGH = APOV_CPU_WR_xxxxxFGH,
+    .DECY_FROM_CPU5n = DECY_FROM_CPU5n,
   };
 }
 
@@ -55,8 +57,7 @@ void TestGB::tick_cpu() {
   auto tim_sig = tim_reg.sig(*this);
   auto ppu_sig = ppu_reg.sig(*this);
 
-  /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_pins.FROM_CPU5);
-  /*p04.CATY*/ wire CATY_FROM_CPU5 = not(DECY_FROM_CPU5n);
+  /*p04.CATY*/ wire CATY_FROM_CPU5 = not(cpu_sig.DECY_FROM_CPU5n);
   /*p28.MYNU*/ wire MYNU_CPU_READ_MYSTERYn = nand(cpu_sig.ASOT_CPU_RD, CATY_FROM_CPU5);
   /*p28.LEKO*/ wire LEKO_CPU_READ_MYSTERY = not(MYNU_CPU_READ_MYSTERYn);
 
@@ -73,8 +74,6 @@ void TestGB::tick_cpu() {
 
   /*p28.WAFO*/ wire WAFO_OAM_A0n = not(oam_pins.A0); // def not
   /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (adr_sig.SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
-
-  /*p01.XORE*/ wire XORE_RST = not(rst_sig.CUNU_RSTn);
 
   //----------------------------------------
 
@@ -328,7 +327,7 @@ void TestGB::tick_cpu() {
     /*p23.WARU*/ wire _WARU_FF40_WR = and (FF40, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
     /*p23.XUBO*/ wire _XUBO_FF40_WRn = not(_WARU_FF40_WR);
 
-    /*p01.XARE*/ wire _XARE_RESET = not(XORE_RST);
+    /*p01.XARE*/ wire _XARE_RESET = not(rst_sig.XORE_RSTp);
     /*p23.VYXE*/ cfg_reg.LCDC_BGEN.set(_XUBO_FF40_WRn, _XARE_RESET, cpu_pins.D0);
     /*p23.XYLO*/ cfg_reg.LCDC_SPEN.set(_XUBO_FF40_WRn, _XARE_RESET, cpu_pins.D1);
     /*p23.XYMO*/ cfg_reg.LCDC_SPSIZE.set(_XUBO_FF40_WRn, _XARE_RESET, cpu_pins.D2);
@@ -610,8 +609,8 @@ void TestGB::tick_cpu() {
   /*p08.ROPA*/ if (!DBG_D_RDn) cpu_pins.D7 = not(/*p08.RYBA*/ not(pins.D7_C));
 #endif
 
-  /*p01.WESY*/ wire WESY_RSTn = not(XORE_RST);
-  /*p01.WALU*/ wire WALU_RESET = not(XORE_RST);
+  /*p01.WESY*/ wire WESY_RSTn = not(rst_sig.XORE_RSTp);
+  /*p01.WALU*/ wire WALU_RESET = not(rst_sig.XORE_RSTp);
 
   // FF41
   {

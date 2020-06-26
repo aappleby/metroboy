@@ -8,6 +8,19 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct SpriteStoreSignals {
+  /*p29.FEPO*/ wire FEPO_STORE_MATCHp;
+
+  /*p29.YDUG*/ wire STORE0_MATCHn;
+  /*p29.DYDU*/ wire STORE1_MATCHn;
+  /*p29.DEGO*/ wire STORE2_MATCHn;
+  /*p29.YLOZ*/ wire STORE3_MATCHn;
+  /*p29.XAGE*/ wire STORE4_MATCHn;
+  /*p29.EGOM*/ wire STORE5_MATCHn;
+  /*p29.YBEZ*/ wire STORE6_MATCHn;
+  /*p29.DYKA*/ wire STORE7_MATCHn;
+  /*p29.EFYL*/ wire STORE8_MATCHn;
+  /*p29.YGEM*/ wire STORE9_MATCHn;
+
   /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIGp;
 };
 
@@ -45,8 +58,6 @@ struct SpriteStoreRegisters {
     */
     text_painter.newline();
   }
-
-  /*p29.FEPO*/ Signal FEPO_STORE_MATCHp;
 
   /*p28.BESU*/ NorLatch BESU_SCANNINGp;
   /*p29.CENO*/ Reg   CENO_SCANNINGp;

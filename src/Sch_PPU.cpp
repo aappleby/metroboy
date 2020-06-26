@@ -49,7 +49,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   /*p21.XUGU*/ wire XUGU_X_167n = nand(SAXO_X0.q(), TYPO_X1.q(), VYZO_X2.q(), TAHA_X5.q(), SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire XANO_X_167 = not(XUGU_X_167n);
-  /*p21.XENA*/ wire XENA_STORE_MATCHn = not(sst_reg.FEPO_STORE_MATCHp);
+  /*p21.XENA*/ wire XENA_STORE_MATCHn = not(sst_sig.FEPO_STORE_MATCHp);
   /*p21.WODU*/ wire WODU_RENDER_DONE = and (XENA_STORE_MATCHn, XANO_X_167);
 
   /*p27.ROMO*/ wire FRONT_PORCH = not(POKY_FRONT_PORCH_LATCH);
@@ -92,6 +92,7 @@ void PpuRegisters::tick(const TestGB& gb) {
   auto win_sig = gb.win_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
+  auto sst_sig = gb.sst_reg.sig(gb);
   auto ppu_sig = sig(gb);
 
   auto& cfg_reg = gb.cfg_reg;
@@ -107,7 +108,7 @@ void PpuRegisters::tick(const TestGB& gb) {
   /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp);
   /*p27.MOXE*/ wire _MOXE_AxCxExGx = not(clk_sig.ALET_xBxDxFxH);
 
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
 
   /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
@@ -237,7 +238,7 @@ void PpuRegisters::tick(const TestGB& gb) {
       /*p27.TAKA*/ TAKA_SFETCH_RUN_LATCH.nand_latch(SECA_SFETCH_SETn, VEKU_SFETCH_RSTn);
       /*p27.SOWO*/ wire SOWO_SPRITE_FETCH_LATCHn = not(TAKA_SFETCH_RUN_LATCH);
 
-      /*p27.TEKY*/ wire TEKY_SPRITE_FETCH = and(sst_reg.FEPO_STORE_MATCHp, win_sig.TUKU_WIN_HITn, LYRY_BFETCH_DONEp, SOWO_SPRITE_FETCH_LATCHn);
+      /*p27.TEKY*/ wire TEKY_SPRITE_FETCH = and(sst_sig.FEPO_STORE_MATCHp, win_sig.TUKU_WIN_HITn, LYRY_BFETCH_DONEp, SOWO_SPRITE_FETCH_LATCHn);
 
       /*p27.SOBU*/ SOBU_SPRITE_FETCH_SYNC1.set(clk_sig.TAVA_xBxDxFxH, dbg_sig.VYPO_P10_Bn, TEKY_SPRITE_FETCH);
       /*p27.SUDA*/ SUDA_SPRITE_FETCH_SYNC2.set(clk_sig.LAPE_AxCxExGx, dbg_sig.VYPO_P10_Bn, SOBU_SPRITE_FETCH_SYNC1);

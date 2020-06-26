@@ -101,33 +101,9 @@ ALUR = nor(AFER_RST, ASOL_RST_LATCH)
 
 void TestGB::tick_everything() {
   auto clk_sig = clk_reg.sig(*this);
-  auto rst_sig = rst_reg.sig(*this);
 
-  //----------------------------------------
-  // sch_system
-
-  //----------------------------------------
-  // sch_clocks
-
-  {
-  }
-
-
-
-  {
-    // wave ram write clock
-    wave_pins.BORY_ABxxxxxH.set(clk_sig.BORY_ABxxxxxH);
-  }
-
-  //----------------------------------------
-  // sch_resets
-
-  {
-
-  }
-
-
-  //----------------------------------------
+  // wave ram write clock
+  wave_pins.BORY_ABxxxxxH.set(clk_sig.BORY_ABxxxxxH);
 
   clk_reg.tick(*this);
   dma_reg.tick(*this, cpu_pins);

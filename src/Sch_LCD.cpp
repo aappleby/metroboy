@@ -12,6 +12,7 @@ void LcdRegisters::tick(TestGB& gb) {
   auto rst_sig = ResetSignals::get(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
   auto win_sig = gb.win_reg.sig(gb);
+  auto cpu_sig = gb.cpu_reg.sig(gb);
 
   wire XEHO_X0 = gb.ppu_reg.SAXO_X0;
   wire XYDO_X3 = gb.ppu_reg.TELU_X3;
@@ -141,7 +142,7 @@ void LcdRegisters::tick(TestGB& gb) {
   {
     /*p22.WOFA*/ wire FF41n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.XERA_A03n);
     /*p22.VARY*/ wire FF41 = not(FF41n);
-    /*p21.SEPA*/ SEPA_FF41_WR = and (gb.CUPA_CPU_WR_xxxxxFGH(), FF41);
+    /*p21.SEPA*/ SEPA_FF41_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF41);
   }
 
 

@@ -1,6 +1,7 @@
 #include "Sch_Merged.h"
 #include "Sch_Pins.h"
 
+#include "Sch_CPU.h"
 #include "Sch_DMA.h"
 #include "Sch_SpriteStore.h"
 #include "Sch_OAM.h"
@@ -112,46 +113,6 @@ struct TestGB {
     return WODU_RENDER_DONE;
   }
 
-  //----------------------------------------
-  // CPU read/write signals
-
-  // Polarity of this seems inconsistent...
-  wire TEDO_CPU_RD() const {
-    auto dbg_sig = dbg_reg.sig(*this);
-    /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, dbg_sig.UNOR_MODE_DBG2n);
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
-    return TEDO_CPU_RD;
-  }
-
-  wire ASOT_CPU_RD() const {
-    /*p07.AJAS*/ wire AJAS_BUS_RDn = not(TEDO_CPU_RD());
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RDn);
-    return ASOT_CPU_RD;
-  }
-
-  wire AREV_CPU_WRn_ABCDExxx() const {
-    auto clk_sig = clk_reg.sig(*this);
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_pins.CPU_RAW_WR, clk_sig.AFAS_xxxxxFGH);
-    return AREV_CPU_WRn_ABCDExxx;
-  }
-
-  wire APOV_CPU_WR_xxxxxFGH() const {
-    /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx());
-    return APOV_CPU_WR_xxxxxFGH;
-  }
-
-  wire TAPU_CPU_WR_xxxxxFGH() const {
-    auto dbg_sig = dbg_reg.sig(*this);
-    /*p07.UBAL*/ wire UBAL_BUS_WR_ABCDExxx = mux2_n(ext_pins.WR_C, APOV_CPU_WR_xxxxxFGH(), dbg_sig.UNOR_MODE_DBG2n);
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(UBAL_BUS_WR_ABCDExxx);
-    return TAPU_CPU_WR_xxxxxFGH;
-  }
-  wire CUPA_CPU_WR_xxxxxFGH() const {
-    /*p07.DYKY*/ wire DYKY_BUS_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH());
-    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_BUS_WR_ABCDExxx);
-    return CUPA_CPU_WR_xxxxxFGH;
-  }
-
   //-----------------------------------------------------------------------------
 
 
@@ -164,6 +125,7 @@ struct TestGB {
   uint8_t hiram[128];
   */
 
+  CpuRegisters cpu_reg;
   ClockRegisters clk_reg; // dumped
   BusRegisters bus_reg;// dumped
   ConfigRegisters cfg_reg;// dumped

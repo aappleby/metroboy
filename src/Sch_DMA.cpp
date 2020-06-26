@@ -83,6 +83,7 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
 }
 
 void DmaRegisters::tick(const TestGB& gb, CpuPins& cpu_pins) {
+  auto cpu_sig = gb.cpu_reg.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
   auto rst_sig = ResetSignals::get(gb);
@@ -91,9 +92,8 @@ void DmaRegisters::tick(const TestGB& gb, CpuPins& cpu_pins) {
   // lyxe - weird gate - lavy, loko
   // lupa - nor - lavy, lyxe
 
-  /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = gb.CUPA_CPU_WR_xxxxxFGH();
-
-  wire ASOT_CPU_RD = gb.ASOT_CPU_RD();
+  wire CUPA_CPU_WR_xxxxxFGH = cpu_sig.CUPA_CPU_WR_xxxxxFGH;
+  wire ASOT_CPU_RD = cpu_sig.ASOT_CPU_RD;
 
   //----------------------------------------
 

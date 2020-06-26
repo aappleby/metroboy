@@ -42,23 +42,18 @@ void TestGB::tick_vram_addr() {
 
   /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor(dma_sig.LUFA_DMA_READ_VRAMp, ppu_reg.XYMU_RENDERINGp.q()); // def nor
   
-
   /*p25.TUCA*/ wire TUCA_CPU_VRAM_RD = and (adr_sig.SOSE_8000_9FFFp, dbg_sig.ABUZ);
   /*p25.TEFY*/ wire TEFY_MCS_Cn = not(vram_pins.MCS_C);
-  /*p25.TOLE*/ wire TOLE_DBG_VRAM_RD = mux2_p(TEFY_MCS_Cn, TUCA_CPU_VRAM_RD, dbg_sig.TUTO_DBG_VRAM);
-
-  /*p25.SERE*/ wire SERE_VRAM_RD3 = and (TOLE_DBG_VRAM_RD, XANE_VRAM_LOCKn);
-  /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(ppu_reg.TOXE_SFETCH_S0_D0.q());
-  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(ppu_reg.TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0_D0n);
-  /*p25.SERE*/ wire SERE_CPU_VRAM_RDa = and (TOLE_DBG_VRAM_RD, XANE_VRAM_LOCKn);
-
-  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_pins.CPU_RAW_WR, clk_sig.AFAS_xxxxxFGH);
-  /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
-
   /*p25.TOLE*/ wire TOLE_VRAM_RD = mux2_p(TEFY_MCS_Cn, TUCA_CPU_VRAM_RD, dbg_sig.TUTO_DBG_VRAM);
 
   /*p25.ROPY*/ wire ROPY_RENDERINGn = not(ppu_reg.XYMU_RENDERINGp.q());
   /*p25.SERE*/ wire SERE_VRAM_RD = and (TOLE_VRAM_RD, ROPY_RENDERINGn);
+
+  /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(ppu_reg.TOXE_SFETCH_S0_D0.q());
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(ppu_reg.TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0_D0n);
+
+  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_pins.CPU_RAW_WR, clk_sig.AFAS_xxxxxFGH);
+  /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
 
   /*p27.NAKO*/ wire NAKO_FETCH_S1n = not(ppu_reg.MESU_BFETCH_S1.q());
   /*p27.NOFU*/ wire NOFU_FETCH_S2n = not(ppu_reg.NYVA_BFETCH_S2.q());
@@ -374,7 +369,7 @@ void TestGB::tick_vram_addr() {
     /*p25.TUJA*/ wire _TUJA_CPU_VRAM_WR = and(adr_sig.SOSE_8000_9FFFp, APOV_CPU_WR_xxxxxFGH);
     /*p25.SUDO*/ wire _SUDO_MWR_Cn = not(vram_pins.MWR_C);
     /*p25.TYJY*/ wire _TYJY_DBG_VRAM_WR = mux2_p(_SUDO_MWR_Cn, _TUJA_CPU_VRAM_WR, dbg_sig.TUTO_DBG_VRAM);
-    /*p25.SOHY*/ wire _SOHY_MWR = nand(_TYJY_DBG_VRAM_WR, SERE_VRAM_RD3);
+    /*p25.SOHY*/ wire _SOHY_MWR = nand(_TYJY_DBG_VRAM_WR, SERE_VRAM_RD);
     /*p25.RACO*/ wire _RACO_DBG_VRAMn = not(dbg_sig.TUTO_DBG_VRAM);
     /*p25.TAXY*/ wire _TAXY_MWR_An = and(_SOHY_MWR, _RACO_DBG_VRAMn);
     /*p25.SOFY*/ wire _SOFY_MWR_Dn = or (_SOHY_MWR, dbg_sig.TUTO_DBG_VRAM);
@@ -384,7 +379,7 @@ void TestGB::tick_vram_addr() {
     /*p25.APAM*/ wire _APAM_DMA_VRAM_RDn2 = not(dma_sig.LUFA_DMA_READ_VRAMp);
     /*p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not(ppu_reg.LONY_BG_READ_VRAM_LATCHp.q()); // this should be correct
     /*p25.RACU*/ wire _RACU_MOEn = and(_RYLU_DBG_VRAM_RDn, _RAWA_SPR_VRAM_RDn1, _MYMA_BGW_VRAM_RDn, _APAM_DMA_VRAM_RDn2); // def and
-    /*p25.SUTU*/ wire _SUTU_READ_VRAMn = nor(_LENA_BGW_VRAM_RD, dma_sig.LUFA_DMA_READ_VRAMp, _ABON_SPR_VRAM_RDp1, SERE_CPU_VRAM_RDa);
+    /*p25.SUTU*/ wire _SUTU_READ_VRAMn = nor(_LENA_BGW_VRAM_RD, dma_sig.LUFA_DMA_READ_VRAMp, _ABON_SPR_VRAM_RDp1, SERE_VRAM_RD);
     /*p25.SEMA*/ wire _SEMA_MOE_An = and (_RACU_MOEn, _RACO_DBG_VRAMn);
     /*p25.RUTE*/ wire _RUTE_MOE_Dn = or (dbg_sig.TUTO_DBG_VRAM, _RACU_MOEn); // schematic wrong, second input is RACU
     /*p25.TODE*/ wire _TODE_MCS_An = and(_SUTU_READ_VRAMn, _RACO_DBG_VRAMn);

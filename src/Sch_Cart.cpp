@@ -75,9 +75,7 @@ static const uint8_t DMG_ROM_bin[] = {
 void TestGB::tick_bootrom() {
   auto dbg_sig = dbg_reg.sig(*this);
   auto dma_sig = dma_reg.sig(*this);
-
-  /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, dbg_sig.UNOR_MODE_DBG2n);
-  /*p07.TEDO*/ wire TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
+  auto cpu_sig = cpu_reg.sig(*this);
 
   //----------------------------------------
 
@@ -124,7 +122,7 @@ void TestGB::tick_bootrom() {
   ///*p07.ZYRA*/ wire BOOTROM_A7n    = not(cpu_pins.A07);
 
   /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1);
-  /*p07.YULA*/ wire _YULA_BOOT_RD = and (TEDO_CPU_RD, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp);
+  /*p07.YULA*/ wire _YULA_BOOT_RD = and (cpu_sig.TEDO_CPU_RD, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp);
 
   // this is kind of a hack
   uint16_t addr = (uint16_t)cpu_pins.get_addr();
@@ -145,11 +143,7 @@ void TestGB::tick_bootrom() {
 void TestGB::tick_cart_data() {
   auto dbg_sig = dbg_reg.sig(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
-
-  /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, dbg_sig.UNOR_MODE_DBG2n);
-  /*p07.TEDO*/ wire TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
-
-
+  auto cpu_sig = cpu_reg.sig(*this);
 
   /*p08.LAGU*/ wire LAGU = or (and (cpu_pins.CPU_RAW_RD, adr_sig.LEVO_8000_9FFFp), cpu_pins.CPU_RAW_WR);
   /*p08.LYWE*/ wire LYWE = not(LAGU);
@@ -160,7 +154,7 @@ void TestGB::tick_cart_data() {
   // internal data bus to external data bus
   {
     // original
-    /*p08.REDU*/ wire _REDU_CPU_RDo = not(TEDO_CPU_RD);
+    /*p08.REDU*/ wire _REDU_CPU_RDo = not(cpu_sig.TEDO_CPU_RD);
     /*p08.RORU*/ wire _RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RDo, MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2n);
     /*p08.LULA*/ wire _LULA_IBUS_TO_EBUSp = not(_RORU_IBUS_TO_EBUSn);
 
@@ -199,6 +193,7 @@ void TestGB::tick_cart_pins() {
   auto dbg_sig = dbg_reg.sig(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
   auto dma_sig = dma_reg.sig(*this);
+  auto cpu_sig = cpu_reg.sig(*this);
 
   /*p08.MOCA*/ wire MOCA_DBG_EXT_RDn = nor(adr_sig.TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1);
 
@@ -223,7 +218,7 @@ void TestGB::tick_cart_pins() {
 
   {
 
-    /*p08.MEXO*/ wire _MEXO_ABCDExxx = not(APOV_CPU_WR_xxxxxFGH());
+    /*p08.MEXO*/ wire _MEXO_ABCDExxx = not(cpu_sig.APOV_CPU_WR_xxxxxFGH);
     /*p08.NEVY*/ wire _NEVY = or (_MEXO_ABCDExxx, MOCA_DBG_EXT_RDn);
     /*p08.PUVA*/ wire _PUVA_WR_OUTn = or (_NEVY, dma_sig.LUMA_DMA_READ_CARTp);
     /*p08.UVER*/ wire _UVER_WRn_A = nand(_PUVA_WR_OUTn, dbg_sig.TOVA_MODE_DBG2p);

@@ -13,6 +13,7 @@ void TestGB::tick_oam() {
   auto clk_sig = clk_reg.sig(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
   auto dma_sig = dma_reg.sig(*this);
+  auto cpu_sig = cpu_reg.sig(*this);
 
   /*p28.WEFE*/ wire WEFE_P10_Bn = not(joy_pin.P10_B);
   /*p28.WUWE*/ wire WUWE_P10_Bn = not(joy_pin.P10_B);
@@ -96,7 +97,7 @@ void TestGB::tick_oam() {
 
     /*p04.NAXY*/ wire NAXY_DMA_OAM_WENp = nor(dbg_reg.FROM_CPU5_SYNC.q(), dma_reg.LUVY_DMA_TRIG_d0.q()); // def nor
     /*p04.POWU*/ wire POWU_DMA_OAM_WRp  = and(dma_reg.MATU_DMA_OAM_WRp.q(), NAXY_DMA_OAM_WENp); // def and
-    /*p04.WYJA*/ wire WYJA_OAM_WRp      = or (and(AMAB_OAM_LOCKn, CUPA_CPU_WR_xxxxxFGH()), POWU_DMA_OAM_WRp);
+    /*p04.WYJA*/ wire WYJA_OAM_WRp      = or (and(AMAB_OAM_LOCKn, cpu_sig.CUPA_CPU_WR_xxxxxFGH), POWU_DMA_OAM_WRp);
 
     /*p28.WAFO*/ wire WAFO_OAM_A0n      = not(GEKA_OAM_A0p); // def not
     /*p28.YNYC*/ wire YNYC_OAM_B_WRn    = and(WYJA_OAM_WRp, WAFO_OAM_A0n); // def and
@@ -111,7 +112,7 @@ void TestGB::tick_oam() {
   }
 
   {
-    /*p28.XUTO*/ wire XUTO_CPU_OAM_WR = and(adr_sig.SARO_FE00_FEFFp, CUPA_CPU_WR_xxxxxFGH());
+    /*p28.XUTO*/ wire XUTO_CPU_OAM_WR = and(adr_sig.SARO_FE00_FEFFp, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
     /*p28.WUJE*/ wire WUJE_CPU_OAM_WR = or (clk_sig.XYNY_xBCDExxx, XUTO_CPU_OAM_WR);
     /*p28.XUPA*/ wire XUPA_CPU_OAM_WR = not(WUJE_CPU_OAM_WR);
     /*p28.ADAH*/ wire ADAH_ADDR_OAMn  = not(adr_sig.SARO_FE00_FEFFp);
@@ -194,7 +195,7 @@ void TestGB::tick_oam() {
     /*p28.AJEP*/ wire AJEP = nand(ACYL_PPU_OAM_RDp, clk_sig.XOCE_ABxxEFxx); // schematic wrong, is def nand
     /*p28.XUJA*/ wire XUJA = not(WEFY);
     /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_pins.FROM_CPU5);
-    /*p28.BOTA*/ wire BOTA_CPU_RD_OAMn = nand(DECY_FROM_CPU5n, adr_sig.SARO_FE00_FEFFp, ASOT_CPU_RD()); // Schematic wrong, this is NAND
+    /*p28.BOTA*/ wire BOTA_CPU_RD_OAMn = nand(DECY_FROM_CPU5n, adr_sig.SARO_FE00_FEFFp, cpu_sig.ASOT_CPU_RD); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire ASYT_OAM_LATCHn = and(AJEP, XUJA, BOTA_CPU_RD_OAMn);
     /*p28.BODE*/ wire BODE_OAM_LATCH = not(ASYT_OAM_LATCHn); // to the tribus receiver below
 

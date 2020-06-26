@@ -12,15 +12,16 @@ void TestGB::tick_joypad() {
   auto clk_sig = clk_reg.sig(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
   auto rst_sig = ResetSignals::get(*this);
+  auto cpu_sig = cpu_reg.sig(*this);
 
   /*p02.KERY*/ wire _ANY_BUTTON = or (joy_pin.P13_C, joy_pin.P12_C, joy_pin.P11_C, joy_pin.P10_C);
 
   /*p10.AMUS*/ wire _AMUS_0xx00000 = nor(cpu_pins.A00, cpu_pins.A01, cpu_pins.A02, cpu_pins.A03, cpu_pins.A04, cpu_pins.A07);
   /*p10.ANAP*/ wire _ANAP_0xx00000 = and (_AMUS_0xx00000, adr_sig.SYKE_FF00_FFFFp);
 
-  /*p10.ACAT*/ wire _ACAT_FF00_RD = and (TEDO_CPU_RD(), _ANAP_0xx00000, adr_sig.AKUG_A06n, adr_sig.BYKO_A05n);
+  /*p10.ACAT*/ wire _ACAT_FF00_RD = and (cpu_sig.TEDO_CPU_RD, _ANAP_0xx00000, adr_sig.AKUG_A06n, adr_sig.BYKO_A05n);
   /*p05.BYZO*/ wire _BYZO_FF00_RDn = not(_ACAT_FF00_RD);
-  /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(TAPU_CPU_WR_xxxxxFGH(), _ANAP_0xx00000, adr_sig.AKUG_A06n, adr_sig.BYKO_A05n);
+  /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, adr_sig.AKUG_A06n, adr_sig.BYKO_A05n);
 
   /*p02.AWOB*/ joy_reg.WAKE_CPU.set(clk_sig.BOGA_AxCDEFGH, _ANY_BUTTON);
   // cpu_pins.TO_CPU2.set(joy_reg.WAKE_CPU.q());

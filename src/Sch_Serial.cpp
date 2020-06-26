@@ -11,13 +11,14 @@ using namespace Schematics;
 
 void SerialRegisters::tick(TestGB& gb) {
 
-  wire TAPU_CPU_WR_xxxxxFGH = gb.TAPU_CPU_WR_xxxxxFGH();
-  wire TEDO_CPU_RD = gb.TEDO_CPU_RD();
-
+  auto cpu_sig = gb.cpu_reg.sig(gb);
   auto rst_sig = ResetSignals::get(gb);
   auto tim_sig = TimerSignals::get(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
   auto& cpu_pins2 = gb.cpu_pins;
+
+  wire TAPU_CPU_WR_xxxxxFGH = cpu_sig.TAPU_CPU_WR_xxxxxFGH;
+  wire TEDO_CPU_RD = cpu_sig.TEDO_CPU_RD;
 
   //----------------------------------------
 

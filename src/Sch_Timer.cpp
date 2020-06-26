@@ -20,12 +20,13 @@ void TestGB::tick_timer() {
   auto tim_sig = TimerSignals::get(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
   auto rst_sig = ResetSignals::get(*this);
+  auto cpu_sig = cpu_reg.sig(*this);
 
   /*p01.UCOB*/ wire UCOB_CLKBAD = not(sys_pins.CLK_GOOD);
 
   // div
   {
-    /*p01.TAPE*/ wire _FF04_WR = and(TAPU_CPU_WR_xxxxxFGH(), adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, adr_sig.TOVY_A00n);
+    /*p01.TAPE*/ wire _FF04_WR = and(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, adr_sig.TOVY_A00n);
     /*p01.UFOL*/ wire _DIV_RSTn = nor(UCOB_CLKBAD, sys_pins.RST, _FF04_WR);
 
     /*p01.UKUP*/ tim_reg.UKUP_DIV_00.set(clk_sig.BOGA_AxCDEFGH, _DIV_RSTn, !tim_reg.UKUP_DIV_00.q());
@@ -53,7 +54,7 @@ void TestGB::tick_timer() {
     /*p01.UPOF*/ tim_reg.UPOF_DIV_15.set(!tim_reg.UKET_DIV_14.q(), _DIV_RSTn, !tim_reg.UPOF_DIV_15.q());
   }
 
-  /*p03.TOPE*/ wire _FF05_WRn = nand(TAPU_CPU_WR_xxxxxFGH(), adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, cpu_pins.A00);
+  /*p03.TOPE*/ wire _FF05_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, cpu_pins.A00);
   /*p03.MUZU*/ wire _MUZU = or (cpu_pins.FROM_CPU5.q(), _FF05_WRn);
   /*p03.MEKE*/ wire _INT_TIMERn = not(tim_reg.INT_TIMER.q());
   /*p03.MEXU*/ wire _TIMA_LOAD = nand(_MUZU, rst_sig.ALUR_RSTn, _INT_TIMERn);
@@ -107,7 +108,7 @@ void TestGB::tick_timer() {
 
   // FF06 TMA
   {
-    /*p03.TYJU*/ wire _TYJU_FF06_WRn = nand(TAPU_CPU_WR_xxxxxFGH(), adr_sig.RYFO_FF04_FF07p, adr_sig.TOVY_A00n, cpu_pins.A01);
+    /*p03.TYJU*/ wire _TYJU_FF06_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.RYFO_FF04_FF07p, adr_sig.TOVY_A00n, cpu_pins.A01);
     /*p03.SABU*/ tim_reg.TMA_0.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_pins.D0);
     /*p03.NYKE*/ tim_reg.TMA_1.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_pins.D1);
     /*p03.MURU*/ tim_reg.TMA_2.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_pins.D2);
@@ -120,7 +121,7 @@ void TestGB::tick_timer() {
 
   // FF07 TAC
   {
-    /*p03.SARA*/ wire _SARA_FF07_WRn = nand(TAPU_CPU_WR_xxxxxFGH(), adr_sig.RYFO_FF04_FF07p, cpu_pins.A00, cpu_pins.A01);
+    /*p03.SARA*/ wire _SARA_FF07_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.RYFO_FF04_FF07p, cpu_pins.A00, cpu_pins.A01);
     /*p03.SOPU*/ tim_reg.TAC_0.set(_SARA_FF07_WRn, rst_sig.ALUR_RSTn, cpu_pins.D0);
     /*p03.SAMY*/ tim_reg.TAC_1.set(_SARA_FF07_WRn, rst_sig.ALUR_RSTn, cpu_pins.D1);
     /*p03.SABO*/ tim_reg.TAC_2.set(_SARA_FF07_WRn, rst_sig.ALUR_RSTn, cpu_pins.D2);

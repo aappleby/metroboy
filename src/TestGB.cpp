@@ -487,9 +487,7 @@ bool TestGB::commit_everything() {
   changed |= cpu_pins.TO_CPU2.commit_pinout();       // <- P02.AWOB
   changed |= cpu_pins.CPU_RAW_RD.clear_preset();     // PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
   changed |= cpu_pins.CPU_RAW_WR.clear_preset();     // PORTA_01: -> P01.AREV, P08.LAGU. This is almost definitely "raw write"
-  changed |= cpu_pins.UNOR_MODE_DBG2.commit_pinout();         // PORTA_02: <- P07.UNOR_MODE_DBG2
   changed |= cpu_pins.READ_BOOTROM.commit_pinout();  // PORTA_04: <- P07.READ_BOOTROM
-  changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
   changed |= cpu_pins.ADDR_VALID.clear_preset();    // PORTA_06: -> APAP, TEXO. This is almost definitely "address valid"
   changed |= cpu_pins.ACK_VBLANK.clear_preset();     // PORTB_01: -> P02.LETY, vblank int ack
   changed |= cpu_pins.INT_VBLANK.commit_pinout();    // PORTB_03: <- P02.LOPE, vblank int

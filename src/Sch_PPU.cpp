@@ -17,10 +17,7 @@ void TestGB::tick_ppu() {
 
   auto clk_sig = clk_reg.sig(*this);
   auto rst_sig = ResetSignals::get(*this);
-
-  /*p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp = and(win_reg.PYNU_WIN_MODE_LATCH, !win_reg.NOPA_WIN_MODE_SYNC);
-  /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(NUNY_WIN_MODE_TRIGp);
-  /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
+  auto win_sig = win_reg.sig(*this);
 
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not(ppu_reg.XYMU_RENDERINGp);
 
@@ -38,7 +35,7 @@ void TestGB::tick_ppu() {
 
   /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, WODU_RENDER_DONE(), clk_sig.MYVO_AxCxExGx);
 
-  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (SOCY_WIN_HITn(), ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
+  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
   /*p24.ROXO*/ wire ROXO_AxCxExGx = not(SEGU_xBxDxFxH);
 
@@ -61,7 +58,7 @@ void TestGB::tick_ppu() {
   }
 
   {
-    /*p27.TUXY*/ wire TUXY = nand(win_reg.SOVY_WIN_HIT_SYNC, SYLO_WIN_HITn());
+    /*p27.TUXY*/ wire TUXY = nand(win_reg.SOVY_WIN_HIT_SYNC, win_sig.SYLO_WIN_HITn);
     /*p27.SUZU*/ wire SUZU = not(TUXY);
     /*p27.SEKO*/ wire SEKO_WIN_TRIGGER = nor(win_reg.RENE_WIN_MATCH_ONSCREEN_SYNC2, !win_reg.RYFA_WIN_MATCH_ONSCREEN_SYNC1);
     /*p27.ROMO*/ wire FRONT_PORCH = not(ppu_reg.POKY_FRONT_PORCH_LATCH);
@@ -124,31 +121,9 @@ void TestGB::tick_ppu() {
 
       // Hax
 
-#if HAX
-      bool WIN_MODE_TRIG  = ppu_reg.PYNU_WIN_MODE_LATCH && !ppu_reg.NOPA_WIN_MODE_SYNC;
-      bool SCAN_DONE_TRIG = ppu_reg.SCAN_DONE_d4.q() && !ppu_reg.SCAN_DONE_d5.q();
-      bool NEW_LINE_TRIG  = lcd_reg.CATU_VID_LINE_d4.q() && !lcd_reg.ANEL_VID_LINE_d6.q();
-
-      if (WIN_MODE_TRIG) {
-        /*p27.NYXU*/ NYXU_BFETCH_RSTn = 0;
-      }
-      else if (TEVO_CLK_STOPn) {
-        /*p27.NYXU*/ NYXU_BFETCH_RSTn = 0;
-      }
-      else if (!SCAN_DONE_TRIG) {
-        /*p27.NYXU*/ NYXU_BFETCH_RSTn = 1;
-      }
-      else if (NEW_LINE_TRIG) {
-        /*p27.NYXU*/ NYXU_BFETCH_RSTn = 1;
-      }
-      else {
-        /*p27.NYXU*/ NYXU_BFETCH_RSTn = nand(rst_sig.ABEZ_VID_RSTn(), !ATAR_VID_RSTp());
-      }
-#else
       // Original
       // wait why is TEVO_CLK_STOPn here? Polarity?
-      /*p27.NYXU*/ NYXU_BFETCH_RSTn             = nor(AVAP_SCAN_DONE_d0_TRIGp, MOSU_WIN_MODE_TRIGp, TEVO_CLK_STOPn);
-#endif
+      /*p27.NYXU*/ NYXU_BFETCH_RSTn             = nor(AVAP_SCAN_DONE_d0_TRIGp, win_sig.MOSU_WIN_MODE_TRIGp, TEVO_CLK_STOPn);
     }
 
     /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(ppu_reg.LAXU_BFETCH_S0, ppu_reg.NYVA_BFETCH_S2, NYXU_BFETCH_RSTn);
@@ -201,7 +176,7 @@ void TestGB::tick_ppu() {
     }
 
     {
-      /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
+      /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(win_sig.MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
 
       /*p27.LYZU*/ ppu_reg.LYZU_BFETCH_S0_DELAY.set       (clk_sig.ALET_xBxDxFxH, ppu_reg.XYMU_RENDERINGp,         ppu_reg.LAXU_BFETCH_S0);
       /*p24.NYKA*/ ppu_reg.NYKA_BFETCH_DONE_SYNC.set      (clk_sig.ALET_xBxDxFxH, NAFY_RENDERING_AND_NOT_WIN_TRIG, LYRY_BFETCH_DONEp);
@@ -223,34 +198,6 @@ void TestGB::tick_ppu() {
     // Maybe we should annotate phase starting with the phase 0 = FEPO_MATCH_SYNC goes high?
 
     {
-#if HAX
-
-      wire TUKU_WIN_HITn = !ppu_reg.RYDY_WIN_HIT_LATCH.q();
-      wire BFETCH_STOP = and(ppu_reg.LAXU_BFETCH_S0, ppu_reg.NYVA_BFETCH_S2, NYXU_BFETCH_RSTn);
-
-
-      wire TEKY_SPRITE_FETCH = and(sst_reg.FEPO_STORE_MATCHp,
-                                    TUKU_WIN_HITn,
-                                    BFETCH_STOP,
-                                    !ppu_reg.TAKA_SFETCH_RUN_LATCH);
-
-      ppu_reg.SOBU_SPRITE_FETCH_SYNC1.set(TAVA_xBxDxFxH, VYPO_P10_Bn, TEKY_SPRITE_FETCH);
-      ppu_reg.SUDA_SPRITE_FETCH_SYNC2.set(LAPE_AxCxExGx, VYPO_P10_Bn, ppu_reg.SOBU_SPRITE_FETCH_SYNC1);
-
-      wire RYCE_SPRITE_FETCH_TRIG = and(ppu_reg.SOBU_SPRITE_FETCH_SYNC1, !ppu_reg.SUDA_SPRITE_FETCH_SYNC2);
-      wire SECA_SFETCH_SETn = nor(RYCE_SPRITE_FETCH_TRIG, not(XAPO_VID_RSTn()), BYHA_VID_LINE_TRIG_d4n()); // def nor
-
-      wire FRONT_PORCH = not(ppu_reg.POKY_FRONT_PORCH_LATCH);
-      wire SUVU = nand(ppu_reg.XYMU_RENDERINGp, FRONT_PORCH, ppu_reg.NYKA_BFETCH_DONE_SYNC, ppu_reg.PORY_BFETCH_DONE_SYNC_DELAY);
-      wire TYNO = nand(ppu_reg.TOXE_SFETCH_S0_D0.q(), ppu_reg.SEBA_SFETCH_S1_D5.q(), ppu_reg.VONU_SFETCH_S1_D4.q());
-      wire VUSA = or (!ppu_reg.TYFO_SFETCH_S0_D1.q(), TYNO);
-      wire WUTY_SPRITE_DONE = not(VUSA);
-
-      wire VEKU_SFETCH_RSTn = nor(WUTY_SPRITE_DONE, not(SUVU)); // def nor
-
-      ppu_reg.TAKA_SFETCH_RUN_LATCH.nand_latch(SECA_SFETCH_SETn, VEKU_SFETCH_RSTn);
-
-#else
       /*p27.ROMO*/ wire FRONT_PORCH = not(ppu_reg.POKY_FRONT_PORCH_LATCH);
       /*p27.SUVU*/ wire SUVU = nand(ppu_reg.XYMU_RENDERINGp, FRONT_PORCH, ppu_reg.NYKA_BFETCH_DONE_SYNC, ppu_reg.PORY_BFETCH_DONE_SYNC_DELAY);
       /*p27.TAVE*/ wire TAVE = not(SUVU);
@@ -262,11 +209,10 @@ void TestGB::tick_ppu() {
       /*p27.TAKA*/ ppu_reg.TAKA_SFETCH_RUN_LATCH.nand_latch(SECA_SFETCH_SETn, VEKU_SFETCH_RSTn);
       /*p27.SOWO*/ wire SOWO_SPRITE_FETCH_LATCHn = not(ppu_reg.TAKA_SFETCH_RUN_LATCH);
 
-      /*p27.TEKY*/ wire TEKY_SPRITE_FETCH = and(sst_reg.FEPO_STORE_MATCHp, TUKU_WIN_HITn(), LYRY_BFETCH_DONEp, SOWO_SPRITE_FETCH_LATCHn);
+      /*p27.TEKY*/ wire TEKY_SPRITE_FETCH = and(sst_reg.FEPO_STORE_MATCHp, win_sig.TUKU_WIN_HITn, LYRY_BFETCH_DONEp, SOWO_SPRITE_FETCH_LATCHn);
 
       /*p27.SOBU*/ ppu_reg.SOBU_SPRITE_FETCH_SYNC1.set(clk_sig.TAVA_xBxDxFxH, VYPO_P10_Bn, TEKY_SPRITE_FETCH);
       /*p27.SUDA*/ ppu_reg.SUDA_SPRITE_FETCH_SYNC2.set(clk_sig.LAPE_AxCxExGx, VYPO_P10_Bn, ppu_reg.SOBU_SPRITE_FETCH_SYNC1);
-#endif
     }
     {
       /*p27.RYCE*/ wire RYCE_SPRITE_FETCH_TRIG = and(ppu_reg.SOBU_SPRITE_FETCH_SYNC1, !ppu_reg.SUDA_SPRITE_FETCH_SYNC2);
@@ -316,39 +262,6 @@ void TestGB::tick_ppu() {
 
   // vid x position, has carry lookahead because this increments every tcycle
 
-#if HAX
-  wire X_167 = and(ppu_reg.SAXO_X0.q(), ppu_reg.TYPO_X1.q(), ppu_reg.VYZO_X2.q(), ppu_reg.TAHA_X5.q(), ppu_reg.SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
-
-  wire TYFA_AxCxExGx = nand(!ppu_reg.RYDY_WIN_HIT_LATCH.q(),
-                              ppu_reg.POKY_FRONT_PORCH_LATCH,
-                              !sst_reg.FEPO_STORE_MATCHp,
-                              !and(X_167, !sst_reg.FEPO_STORE_MATCHp),
-                              !MYVO_AxCxExGx());
-  wire SACU_CLKPIPE_AxCxExGx = nor(TYFA_AxCxExGx, ppu_reg.ROXY_FINE_MATCH_LATCHn);
-  wire TOCA_CLKPIPE_HI = not(ppu_reg.TELU_X3);
-
-  if (BYHA_VID_LINE_TRIG_d4n() || !XAPO_VID_RSTn()) {
-    ppu_reg.SAXO_X0.rst_sync(SACU_CLKPIPE_AxCxExGx);
-    ppu_reg.TYPO_X1.rst_sync(SACU_CLKPIPE_AxCxExGx);
-    ppu_reg.VYZO_X2.rst_sync(SACU_CLKPIPE_AxCxExGx);
-    ppu_reg.TELU_X3.rst_sync(SACU_CLKPIPE_AxCxExGx);
-    ppu_reg.SUDE_X4.rst_sync(TOCA_CLKPIPE_HI);
-    ppu_reg.TAHA_X5.rst_sync(TOCA_CLKPIPE_HI);
-    ppu_reg.TYRY_X6.rst_sync(TOCA_CLKPIPE_HI);
-    ppu_reg.SYBE_X7.rst_sync(TOCA_CLKPIPE_HI);
-  }
-  else {
-    ppu_reg.SAXO_X0.set(SACU_CLKPIPE_AxCxExGx, !ppu_reg.SAXO_X0);
-    ppu_reg.TYPO_X1.set(SACU_CLKPIPE_AxCxExGx, xor(ppu_reg.TYPO_X1, and(ppu_reg.SAXO_X0)));
-    ppu_reg.VYZO_X2.set(SACU_CLKPIPE_AxCxExGx, xor(ppu_reg.VYZO_X2, and(ppu_reg.SAXO_X0, ppu_reg.TYPO_X1)));
-    ppu_reg.TELU_X3.set(SACU_CLKPIPE_AxCxExGx, xor(ppu_reg.TELU_X3, and(ppu_reg.SAXO_X0, ppu_reg.TYPO_X1, ppu_reg.VYZO_X2)));
-    ppu_reg.SUDE_X4.set(TOCA_CLKPIPE_HI, !ppu_reg.SUDE_X4);
-    ppu_reg.TAHA_X5.set(TOCA_CLKPIPE_HI, xor(ppu_reg.SUDE_X4, and(ppu_reg.TAHA_X5)));
-    ppu_reg.TYRY_X6.set(TOCA_CLKPIPE_HI, xor(ppu_reg.TYRY_X6, and(ppu_reg.SUDE_X4, ppu_reg.TAHA_X5)));
-    ppu_reg.SYBE_X7.set(TOCA_CLKPIPE_HI, xor(ppu_reg.SYBE_X7, and(ppu_reg.SUDE_X4, ppu_reg.TAHA_X5, ppu_reg.TYRY_X6)));
-  }
-#else
-
   /*p21.RYBO*/ wire RYBO = xor(ppu_reg.SAXO_X0, ppu_reg.TYPO_X1);
   /*p21.XUKE*/ wire XUKE = and(ppu_reg.SAXO_X0, ppu_reg.TYPO_X1);
 
@@ -375,5 +288,4 @@ void TestGB::tick_ppu() {
   /*p21.TUKY*/ ppu_reg.TAHA_X5.set(TOCA_CLKPIPE_HI, TADY_X_RSTn, SAKE);
   /*p21.TAKO*/ ppu_reg.TYRY_X6.set(TOCA_CLKPIPE_HI, TADY_X_RSTn, TYGE);
   /*p21.SYBE*/ ppu_reg.SYBE_X7.set(TOCA_CLKPIPE_HI, TADY_X_RSTn, ROKU);
-#endif
 }

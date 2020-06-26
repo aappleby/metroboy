@@ -14,6 +14,7 @@ void TestGB::tick_cpu() {
   auto dbg_sig = dbg_reg.sig(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
   auto rst_sig = ResetSignals::get(*this);
+  auto dma_sig = dma_reg.sig(*this);
 
   /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_pins.FROM_CPU5);
   /*p04.CATY*/ wire CATY_FROM_CPU5 = not(DECY_FROM_CPU5n);
@@ -35,10 +36,6 @@ void TestGB::tick_cpu() {
   /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (adr_sig.SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
 
   /*p01.XORE*/ wire XORE_RST = not(rst_sig.CUNU_RSTn);
-
-  /*p04.LOGO*/ wire LOGO_DMA_ADDR_VRAMn = not(MUDA_DMA_ADDR_VRAMp());
-  /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_reg.MATU_DMA_OAM_WRp.q(), LOGO_DMA_ADDR_VRAMn);
-  /*p04.LUMA*/ wire LUMA_DMA_READ_CART = not(MORY_DMA_READ_CARTn);
 
   //----------------------------------------
 
@@ -72,21 +69,21 @@ void TestGB::tick_cpu() {
     /*p08.LONU*/ bus_reg.CPU_ADDR_LATCH_13.tp_latch(_MATE_LATCH_INT_ADDR, cpu_pins.A13);
     /*p08.NYRE*/ bus_reg.CPU_ADDR_LATCH_14.tp_latch(_MATE_LATCH_INT_ADDR, cpu_pins.A14);
 
-    /*p08.AMET*/ wire EXT_ADDR_00 = mux2_p(dma_reg.DMA_A00.q(), bus_reg.CPU_ADDR_LATCH_00, LUMA_DMA_READ_CART);
-    /*p08.ATOL*/ wire EXT_ADDR_01 = mux2_p(dma_reg.DMA_A01.q(), bus_reg.CPU_ADDR_LATCH_01, LUMA_DMA_READ_CART);
-    /*p08.APOK*/ wire EXT_ADDR_02 = mux2_p(dma_reg.DMA_A02.q(), bus_reg.CPU_ADDR_LATCH_02, LUMA_DMA_READ_CART);
-    /*p08.AMER*/ wire EXT_ADDR_03 = mux2_p(dma_reg.DMA_A03.q(), bus_reg.CPU_ADDR_LATCH_03, LUMA_DMA_READ_CART);
-    /*p08.ATEM*/ wire EXT_ADDR_04 = mux2_p(dma_reg.DMA_A04.q(), bus_reg.CPU_ADDR_LATCH_04, LUMA_DMA_READ_CART);
-    /*p08.ATOV*/ wire EXT_ADDR_05 = mux2_p(dma_reg.DMA_A05.q(), bus_reg.CPU_ADDR_LATCH_05, LUMA_DMA_READ_CART);
-    /*p08.ATYR*/ wire EXT_ADDR_06 = mux2_p(dma_reg.DMA_A06.q(), bus_reg.CPU_ADDR_LATCH_06, LUMA_DMA_READ_CART);
-    /*p08.ASUR*/ wire EXT_ADDR_07 = mux2_p(dma_reg.DMA_A07.q(), bus_reg.CPU_ADDR_LATCH_07, LUMA_DMA_READ_CART);
-    /*p08.MANO*/ wire EXT_ADDR_08 = mux2_p(dma_reg.DMA_A08.q(), bus_reg.CPU_ADDR_LATCH_08, LUMA_DMA_READ_CART);
-    /*p08.MASU*/ wire EXT_ADDR_09 = mux2_p(dma_reg.DMA_A09.q(), bus_reg.CPU_ADDR_LATCH_09, LUMA_DMA_READ_CART);
-    /*p08.PAMY*/ wire EXT_ADDR_10 = mux2_p(dma_reg.DMA_A10.q(), bus_reg.CPU_ADDR_LATCH_10, LUMA_DMA_READ_CART);
-    /*p08.MALE*/ wire EXT_ADDR_11 = mux2_p(dma_reg.DMA_A11.q(), bus_reg.CPU_ADDR_LATCH_11, LUMA_DMA_READ_CART);
-    /*p08.MOJY*/ wire EXT_ADDR_12 = mux2_p(dma_reg.DMA_A12.q(), bus_reg.CPU_ADDR_LATCH_12, LUMA_DMA_READ_CART);
-    /*p08.MUCE*/ wire EXT_ADDR_13 = mux2_p(dma_reg.DMA_A13.q(), bus_reg.CPU_ADDR_LATCH_13, LUMA_DMA_READ_CART);
-    /*p08.PEGE*/ wire EXT_ADDR_14 = mux2_p(dma_reg.DMA_A14.q(), bus_reg.CPU_ADDR_LATCH_14, LUMA_DMA_READ_CART);
+    /*p08.AMET*/ wire EXT_ADDR_00 = mux2_p(dma_reg.DMA_A00.q(), bus_reg.CPU_ADDR_LATCH_00, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.ATOL*/ wire EXT_ADDR_01 = mux2_p(dma_reg.DMA_A01.q(), bus_reg.CPU_ADDR_LATCH_01, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.APOK*/ wire EXT_ADDR_02 = mux2_p(dma_reg.DMA_A02.q(), bus_reg.CPU_ADDR_LATCH_02, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.AMER*/ wire EXT_ADDR_03 = mux2_p(dma_reg.DMA_A03.q(), bus_reg.CPU_ADDR_LATCH_03, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.ATEM*/ wire EXT_ADDR_04 = mux2_p(dma_reg.DMA_A04.q(), bus_reg.CPU_ADDR_LATCH_04, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.ATOV*/ wire EXT_ADDR_05 = mux2_p(dma_reg.DMA_A05.q(), bus_reg.CPU_ADDR_LATCH_05, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.ATYR*/ wire EXT_ADDR_06 = mux2_p(dma_reg.DMA_A06.q(), bus_reg.CPU_ADDR_LATCH_06, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.ASUR*/ wire EXT_ADDR_07 = mux2_p(dma_reg.DMA_A07.q(), bus_reg.CPU_ADDR_LATCH_07, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.MANO*/ wire EXT_ADDR_08 = mux2_p(dma_reg.DMA_A08.q(), bus_reg.CPU_ADDR_LATCH_08, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.MASU*/ wire EXT_ADDR_09 = mux2_p(dma_reg.DMA_A09.q(), bus_reg.CPU_ADDR_LATCH_09, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.PAMY*/ wire EXT_ADDR_10 = mux2_p(dma_reg.DMA_A10.q(), bus_reg.CPU_ADDR_LATCH_10, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.MALE*/ wire EXT_ADDR_11 = mux2_p(dma_reg.DMA_A11.q(), bus_reg.CPU_ADDR_LATCH_11, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.MOJY*/ wire EXT_ADDR_12 = mux2_p(dma_reg.DMA_A12.q(), bus_reg.CPU_ADDR_LATCH_12, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.MUCE*/ wire EXT_ADDR_13 = mux2_p(dma_reg.DMA_A13.q(), bus_reg.CPU_ADDR_LATCH_13, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p08.PEGE*/ wire EXT_ADDR_14 = mux2_p(dma_reg.DMA_A14.q(), bus_reg.CPU_ADDR_LATCH_14, dma_sig.LUMA_DMA_READ_CARTp);
 
     /*p08.KUPO*/ ext_pins.A00_A.set(nand(EXT_ADDR_00, dbg_sig.TOVA_MODE_DBG2p));
     /*p08.CABA*/ ext_pins.A01_A.set(nand(EXT_ADDR_01, dbg_sig.TOVA_MODE_DBG2p));

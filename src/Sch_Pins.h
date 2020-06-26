@@ -102,13 +102,6 @@ struct CpuPins {
     text_painter.dprintf("PIN_RESET       %d\n", PIN_RESET   .a.val);
     text_painter.dprintf("CPU_RESET       %d\n", CPU_RESET   .a.val);
     text_painter.dprintf("CLK_GOOD        %d\n", CLK_GOOD    .a.val);
-    text_painter.dprintf("UNOR_MODE_DBG2           %d\n", UNOR_MODE_DBG2        .a.val);
-    text_painter.dprintf("UMUT_MODE_DBG1           %d\n", UMUT_MODE_DBG1        .a.val);
-    //text_painter.dprintf("UPOJ_MODE_PRODn  %d\n", UPOJ_MODE_PRODn );
-    text_painter.dprintf("UMUT_MODE_DBG1  %d\n", UMUT_MODE_DBG1 );
-    text_painter.dprintf("UNOR_MODE_DBG2  %d\n", UNOR_MODE_DBG2 );
-    //text_painter.dprintf("TOVA_MODE_DBG2n %d\n", TOVA_MODE_DBG2n);
-    //text_painter.dprintf("RYCA_MODE_DBG2n %d\n", RYCA_MODE_DBG2n);
 
     text_painter.dprintf("----- CPU CLOCKS -----\n");
 
@@ -273,10 +266,8 @@ struct CpuPins {
 
   PinIn  CPU_RAW_RD;    // top right port PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
   PinIn  CPU_RAW_WR;    // top right port PORTA_01: -> P01.AREV, P08.LAGU.           This is almost definitely "raw write"
-  PinOut UNOR_MODE_DBG2;         // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
   PinOut SYRO;          // top right port PORTA_03: <- P25.SYRO
   PinOut READ_BOOTROM;  // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  PinOut UMUT_MODE_DBG1;         // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
   PinIn  ADDR_VALID;   // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
                         
   PinIn  A00;           // bottom right port PORTB_00: -> A00
@@ -324,13 +315,6 @@ struct CpuPins {
   Tribuf D5;
   Tribuf D6;
   Tribuf D7;
-
-  // Signals for debugging
-
-  ///*p07.UPOJ*/ bool UPOJ_MODE_PRODn = 0;
-  ///*p08.TOVA*/ bool TOVA_MODE_DBG2n = 0;
-  ///*p08.RYCA*/ bool RYCA_MODE_DBG2n = 0;
-
 };
 
 //-----------------------------------------------------------------------------

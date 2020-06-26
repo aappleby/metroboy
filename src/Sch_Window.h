@@ -7,8 +7,23 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
+struct WindowSignals {
+  /*p27.NOCU*/ wire NOCU_WIN_MODEn;
+  /*p27.PORE*/ wire PORE_WIN_MODE;
+  /*p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp;
+  /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn;
+  /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp;
+
+  /*p27.SYLO*/ wire SYLO_WIN_HITn;
+  /*p24.TOMU*/ wire TOMU_WIN_HITp;
+  /*p24.SOCY*/ wire SOCY_WIN_HITn;
+  /*p27.TUKU*/ wire TUKU_WIN_HITn;
+  /*p27.XOFO*/ wire XOFO_WIN_RSTp;
+};
+
 struct WindowRegisters {
 
+  WindowSignals sig(const TestGB& gb) const;
   void tick(TestGB& gb);
   bool commit();
 

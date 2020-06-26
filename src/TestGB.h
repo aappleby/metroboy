@@ -117,20 +117,8 @@ struct TestGB {
 
   // Polarity of this seems inconsistent...
   wire TEDO_CPU_RD() const {
-#if 0
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and(sys_pins.T2, not(sys_pins.T1));
-    if (UNOR_MODE_DBG2) {
-      TEDO = not(ext_pins.RD_C);
-    }
-    else {
-      TEDO = not(cpu_pins.CPU_RAW_RD);
-    }
-
-#endif
-
-    /*p07.UBET*/ wire UBET_T1n = not(sys_pins.T1);
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2 = and(sys_pins.T2, UBET_T1n);
-    /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, UNOR_MODE_DBG2);
+    auto dbg_sig = dbg_reg.sig(*this);
+    /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, dbg_sig.UNOR_MODE_DBG2n);
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
     return TEDO_CPU_RD;
   }
@@ -163,86 +151,6 @@ struct TestGB {
     /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_BUS_WR_ABCDExxx);
     return CUPA_CPU_WR_xxxxxFGH;
   }
-
-  //----------------------------------------
-  // Window signals
-
-  wire SYLO_WIN_HITn() const {
-    /*p27.SYLO*/ wire SYLO_WIN_HITn = not(win_reg.RYDY_WIN_HIT_LATCH.q());
-    return SYLO_WIN_HITn;
-  }
-
-  wire SOCY_WIN_HITn() const {
-    /*p24.TOMU*/ wire TOMU_WIN_HIT = not(SYLO_WIN_HITn());
-    /*p24.SOCY*/ wire SOCY_WIN_HITn = not(TOMU_WIN_HIT);
-    return SOCY_WIN_HITn;
-  }
-
-  wire TUKU_WIN_HITn() const {
-    /*p24.TOMU*/ wire TOMU_WIN_HIT = not(SYLO_WIN_HITn());
-    /*p27.TUKU*/ wire TUKU_WIN_HITn = not(TOMU_WIN_HIT);
-    return TUKU_WIN_HITn;
-  }
-
-  wire PORE_WIN_MODE() const {
-    /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(win_reg.PYNU_WIN_MODE_LATCH.q());
-    /*p27.PORE*/ wire PORE_WIN_MODE = not(NOCU_WIN_MODEn);
-    return PORE_WIN_MODE;
-  }
-
-  wire XOFO_WIN_RST() const {
-    auto rst_sig = ResetSignals::get(*this);
-    /*p28.ABAF*/ wire ABAF_VID_LINE_d4n = not(lcd_reg.CATU_VID_LINE_d4.q());
-    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and(or (lcd_reg.ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), rst_sig.ABEZ_VID_RSTn);
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(BYHA_VID_LINE_TRIG_d4n);
-    /*p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4p);
-    /*p27.XOFO*/ wire XOFO_WIN_RST = nand(cfg_reg.LCDC_WINEN.q(), XAHY_VID_LINE_TRIG_d4n, rst_sig.XAPO_VID_RSTn);
-    return XOFO_WIN_RST;
-  }
-
-  //----------------------------------------
-  // DMA signals
-
-  /*p04.MUDA*/ wire MUDA_DMA_ADDR_VRAMp() const { // def p
-    // Die trace:
-    // LEBU = not(MARU06)
-    // MUDA = nor(PULA06, POKU06, LEBU);
-
-#if 0
-    // if rung 6 of MARU/PULA/POKU was QN:
-    // MUDA = and(A13, A14, !A15);
-    // would select last quarter of ROM, which doesn't make sense
-    // so rung 6 of MARU must be Q.
-#endif
-
-    /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n = not(dma_reg.DMA_A15.q());
-    /*p04.MUDA*/ wire MUDA_DMA_ADDR_VRAMp = nor(dma_reg.DMA_A13.q(), dma_reg.DMA_A14.q(), LEBU_DMA_ADDR_A15n);
-    return MUDA_DMA_ADDR_VRAMp;
-  }
-
-  //----------------------------------------
-  // Address decoders
-
-#if 0
-  // This one is really weird.
-  wire TEXO_ADDR_VALID_AND_NOT_VRAM() const {
-
-    // TEVY box color wrong on die trace, but schematic correct.
-
-    // Die trace:
-    // SORE = not(A15)
-    // TEVY = or(A13, A13, SORE) // A13 line not fully drawn
-    // TEXO = and(ADDR_VALIDx?, TEVY)
-
-    // The polarity of ADDR_VALIDx may be wrong
-
-    /*p08.SORE*/ wire SORE = not(cpu_pins.A15);
-    /*p08.TEVY*/ wire TEVY = or (cpu_pins.A13, cpu_pins.A14, SORE);
-    /*p08.TEXO*/ wire TEXO = and(cpu_pins.ADDR_VALID, TEVY);
-    return TEXO;
-  }
-#endif
-
 
   //-----------------------------------------------------------------------------
 

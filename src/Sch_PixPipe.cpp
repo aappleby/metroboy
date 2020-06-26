@@ -9,11 +9,12 @@ using namespace Schematics;
 
 void TestGB::tick_pixpipe() {
   auto clk_sig = clk_reg.sig(*this);
+  auto win_sig = win_reg.sig(*this);
 
   /*p24.LOBY*/ wire LOBY_RENDERINGn = not(ppu_reg.XYMU_RENDERINGp.q());
   /*p27.VYPO*/ wire VYPO_P10_Bn = not(joy_pin.P10_B);
   /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, WODU_RENDER_DONE(), clk_sig.MYVO_AxCxExGx);
-  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (SOCY_WIN_HITn(), ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
+  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, ppu_reg.POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
   /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx = nor(SEGU_xBxDxFxH, ppu_reg.ROXY_FINE_MATCH_LATCHn);
 

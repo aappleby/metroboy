@@ -7,30 +7,35 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 DebugSignals DebugRegisters::sig(const TestGB& gb) const {
-  /*p07.UBET*/ wire UBET_T1n = not(gb.sys_pins.T1);
-  /*p07.UVAR*/ wire UVAR_T2n = not(gb.sys_pins.T2);
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1 = and (gb.sys_pins.T1, UVAR_T2n);
-  /*p07.UNOR*/ wire UNOR_MODE_DBG2n = and (gb.sys_pins.T2, UBET_T1n);
-  /*p08.TOVA*/ wire TOVA_MODE_DBG2p = not(UNOR_MODE_DBG2n);
-  /*p07.UPOJ*/ wire UPOJ_MODE_PRODn = nand(UBET_T1n, UVAR_T2n, gb.sys_pins.RST);
-  /*p08.RYCA*/ wire RYCA_MODE_DBG2p = not(UNOR_MODE_DBG2n);
-  /*p25.TUTO*/ wire TUTO_DBG_VRAM = and (UNOR_MODE_DBG2n, !SOTO_DBG);
+  const auto& sys_pins = gb.sys_pins;
+  const auto& cpu_pins = gb.cpu_pins;
 
-  /*p??.APAP*/ wire APAP = not(gb.cpu_pins.ADDR_VALID); // Missing from schematic
-  /*p01.ABUZ*/ wire AWOD = nor(UNOR_MODE_DBG2n, APAP);
-  /*p01.ABUZ*/ wire ABUZ = not(AWOD);
+  /*p07.UBET*/ wire _UBET_T1n = not(sys_pins.T1);
+  /*p07.UVAR*/ wire _UVAR_T2n = not(sys_pins.T2);
+  /*p07.UMUT*/ wire _UMUT_MODE_DBG1 = and (sys_pins.T1, _UVAR_T2n);
+  /*p07.UNOR*/ wire _UNOR_MODE_DBG2n = and (sys_pins.T2, _UBET_T1n);
+  /*p08.TOVA*/ wire _TOVA_MODE_DBG2p = not(_UNOR_MODE_DBG2n);
+  /*p07.UPOJ*/ wire _UPOJ_MODE_PRODn = nand(_UBET_T1n, _UVAR_T2n, sys_pins.RST);
+  /*p08.RYCA*/ wire _RYCA_MODE_DBG2p = not(_UNOR_MODE_DBG2n);
+  /*p25.TUTO*/ wire _TUTO_DBG_VRAM = and (_UNOR_MODE_DBG2n, !SOTO_DBG);
 
+  /*p??.APAP*/ wire _APAP = not(cpu_pins.ADDR_VALID); // Missing from schematic
+  /*p01.AWOD*/ wire _AWOD = nor(_UNOR_MODE_DBG2n, _APAP);
+  /*p01.ABUZ*/ wire _ABUZ = not(_AWOD);
+
+  // what is this for exactly?
+  // wire ABUZ = or(UNOR_MODE_DBG2n, !gb.cpu_pins.ADDR_VALID);
 
   return {
-    .UBET_T1n = UBET_T1n,
-    .UVAR_T2n = UVAR_T2n,
-    .UMUT_MODE_DBG1 = UMUT_MODE_DBG1,
-    .UNOR_MODE_DBG2n = UNOR_MODE_DBG2n,
-    .TOVA_MODE_DBG2p = TOVA_MODE_DBG2p,
-    .UPOJ_MODE_PRODn = UPOJ_MODE_PRODn,
-    .RYCA_MODE_DBG2p = RYCA_MODE_DBG2p,
-    .TUTO_DBG_VRAM = TUTO_DBG_VRAM,
-    .ABUZ = ABUZ,
+    .UBET_T1n = _UBET_T1n,
+    .UVAR_T2n = _UVAR_T2n,
+    .UMUT_MODE_DBG1 = _UMUT_MODE_DBG1,
+    .UNOR_MODE_DBG2n = _UNOR_MODE_DBG2n,
+    .TOVA_MODE_DBG2p = _TOVA_MODE_DBG2p,
+    .UPOJ_MODE_PRODn = _UPOJ_MODE_PRODn,
+    .RYCA_MODE_DBG2p = _RYCA_MODE_DBG2p,
+    .TUTO_DBG_VRAM = _TUTO_DBG_VRAM,
+    .ABUZ = _ABUZ,
   };
 }
 
@@ -60,7 +65,17 @@ bool DebugRegisters::commit() {
   bool changed = false;
   /*p25.SOTO*/ changed |= SOTO_DBG.commit_reg();
   /*p04.MAKA*/ changed |= FROM_CPU5_SYNC.commit_reg();
+  //changed |= cpu_pins.UNOR_MODE_DBG2.commit_pinout();         // PORTA_02: <- P07.UNOR_MODE_DBG2
+  //changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
   return changed;
 }
 
 //-----------------------------------------------------------------------------
+
+    //text_painter.dprintf("UNOR_MODE_DBG2           %d\n", UNOR_MODE_DBG2        .a.val);
+    //text_painter.dprintf("UMUT_MODE_DBG1           %d\n", UMUT_MODE_DBG1        .a.val);
+    //text_painter.dprintf("UPOJ_MODE_PRODn  %d\n", UPOJ_MODE_PRODn );
+    //text_painter.dprintf("UMUT_MODE_DBG1  %d\n", UMUT_MODE_DBG1 );
+    //text_painter.dprintf("UNOR_MODE_DBG2  %d\n", UNOR_MODE_DBG2 );
+    //text_painter.dprintf("TOVA_MODE_DBG2n %d\n", TOVA_MODE_DBG2n);
+    //text_painter.dprintf("RYCA_MODE_DBG2n %d\n", RYCA_MODE_DBG2n);

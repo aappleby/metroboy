@@ -47,8 +47,40 @@ using namespace Schematics;
 // LUPA01 << LYXE
 // LUPA02 >> LUVY
 
+// LOGO = not(MUDA);
+// MORY = nand(MATU17, LOGO) MATU17 must be Q
+// LUMA = not(MORY);
+
 #endif
 
+
+DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
+
+  // Die trace:
+  // LEBU = not(MARU06)
+  // MUDA = nor(PULA06, POKU06, LEBU);
+
+#if 0
+    // if rung 6 of MARU/PULA/POKU was QN:
+    // MUDA = and(A13, A14, !A15);
+    // would select last quarter of ROM, which doesn't make sense
+    // so rung 6 of MARU must be Q.
+#endif
+
+  /*p04.LEBU*/ wire _LEBU_DMA_ADDR_A15n  = not(DMA_A15.q());
+  /*p04.MUDA*/ wire _MUDA_DMA_ADDR_VRAMp = nor(DMA_A13.q(), DMA_A14.q(), _LEBU_DMA_ADDR_A15n);
+  /*p04.MUHO*/ wire _MUHO_DMA_VRAM_RDn   = nand(MATU_DMA_OAM_WRp.q(), _MUDA_DMA_ADDR_VRAMp);
+  /*p04.LOGO*/ wire _LOGO_DMA_VRAMn      = not(_MUDA_DMA_ADDR_VRAMp);
+  /*p04.MORY*/ wire _MORY_DMA_READ_CARTn = nand(MATU_DMA_OAM_WRp.q(), _LOGO_DMA_VRAMn); // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
+  /*p04.LUMA*/ wire _LUMA_DMA_READ_CARTp = not(_MORY_DMA_READ_CARTn);
+  /*p04.LUFA*/ wire _LUFA_DMA_READ_VRAMp = not(_MUHO_DMA_VRAM_RDn);
+
+  return {
+    .MORY_DMA_READ_CARTn = _MORY_DMA_READ_CARTn,
+    .LUMA_DMA_READ_CARTp = _LUMA_DMA_READ_CARTp,
+    .LUFA_DMA_READ_VRAMp = _LUFA_DMA_READ_VRAMp,
+  };
+}
 
 void DmaRegisters::tick(const TestGB& gb, CpuPins& cpu_pins) {
   auto clk_sig = gb.clk_reg.sig(gb);
@@ -133,4 +165,9 @@ void DmaRegisters::tick(const TestGB& gb, CpuPins& cpu_pins) {
   // instead of QN and Q...
 
   /*p04.NUVY*/ cpu_pins.D7.set_tribuf(!FF46_RDn2, DMA_A15.q());
+}
+
+bool DmaRegisters::commit() {
+  bool changed = false;
+  return changed;
 }

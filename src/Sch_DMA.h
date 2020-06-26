@@ -7,9 +7,18 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
+struct DmaSignals {
+  // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
+  /*p04.MORY*/ wire MORY_DMA_READ_CARTn;
+  /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp;
+  /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp;
+};
+
 struct DmaRegisters {
 
+  DmaSignals sig(const TestGB& gb) const;
   void tick(const TestGB& gb, CpuPins& cpu_pins);
+  bool commit();
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- DMA REG -----\n");

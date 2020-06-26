@@ -12,9 +12,6 @@ using namespace Schematics;
 // TEBA = not(TEPU17) - TEPU17 must be Q
 // TULO = nor(........)
 // TUTU = and(TERA, TULO);
-// LOGO = not(MUDA);
-// MORY = nand(MATU17, LOGO) MATU17 must be Q
-// LUMA = not(MORY);
 
 // SOBY = nor(A15, TUTU);
 // SEPY = nand(ABUZ, SOBY);
@@ -77,12 +74,7 @@ static const uint8_t DMG_ROM_bin[] = {
 
 void TestGB::tick_bootrom() {
   auto dbg_sig = dbg_reg.sig(*this);
-
-  /*p04.LOGO*/ wire LOGO_DMA_VRAMn = not(MUDA_DMA_ADDR_VRAMp());
-
-  // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
-  /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_reg.MATU_DMA_OAM_WRp.q(), LOGO_DMA_VRAMn);
-  /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
+  auto dma_sig = dma_reg.sig(*this);
 
   /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(ext_pins.RD_C, cpu_pins.CPU_RAW_RD, dbg_sig.UNOR_MODE_DBG2n);
   /*p07.TEDO*/ wire TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
@@ -98,7 +90,7 @@ void TestGB::tick_bootrom() {
   // Something weird here
   /*p08.SOBY*/ wire _SOBY = nor(cpu_pins.A15, _TUTU_ADDR_BOOTp);
   /*p08.SEPY*/ wire _SEPY = nand(dbg_sig.ABUZ, _SOBY);
-  /*p08.TAZY*/ wire _TAZY = mux2_p(dma_reg.DMA_A15.q(), _SEPY, LUMA_DMA_READ_CARTp);
+  /*p08.TAZY*/ wire _TAZY = mux2_p(dma_reg.DMA_A15.q(), _SEPY, dma_sig.LUMA_DMA_READ_CARTp);
   /*p08.SUZE*/ ext_pins.A15_A.set(nand(_TAZY, dbg_sig.RYCA_MODE_DBG2p));
   /*p08.RULO*/ ext_pins.A15_D.set(nor (_TAZY, dbg_sig.UNOR_MODE_DBG2n));
 
@@ -206,18 +198,11 @@ void TestGB::tick_cart_pins() {
   auto clk_sig = clk_reg.sig(*this);
   auto dbg_sig = dbg_reg.sig(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
+  auto dma_sig = dma_reg.sig(*this);
 
-  /*p08.SORE*/ wire SORE = not(cpu_pins.A15);
-  /*p08.TEVY*/ wire TEVY = or (cpu_pins.A13, cpu_pins.A14, SORE);
-  /*p08.TEXO*/ wire TEXO = and (cpu_pins.ADDR_VALID, TEVY);
-  /*p08.MOCA*/ wire MOCA_DBG_EXT_RDn = nor(TEXO, dbg_sig.UMUT_MODE_DBG1);
+  /*p08.MOCA*/ wire MOCA_DBG_EXT_RDn = nor(adr_sig.TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1);
 
-  /*p04.LOGO*/ wire LOGO_DMA_VRAMn = not(MUDA_DMA_ADDR_VRAMp());
-  /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_reg.MATU_DMA_OAM_WRp.q(), LOGO_DMA_VRAMn);
-  /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
-
-  /*p08.LEVO*/ wire LEVO = not(TEXO);
-  /*p08.LAGU*/ wire LAGU = or (and (cpu_pins.CPU_RAW_RD, LEVO), cpu_pins.CPU_RAW_WR);
+  /*p08.LAGU*/ wire LAGU = or (and (cpu_pins.CPU_RAW_RD, adr_sig.LEVO_8000_9FFFp), cpu_pins.CPU_RAW_WR);
   /*p08.LYWE*/ wire LYWE = not(LAGU);
   /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or (MOCA_DBG_EXT_RDn, LYWE);
 
@@ -228,7 +213,7 @@ void TestGB::tick_cart_pins() {
   }
 
   {
-    /*p08.TYMU*/ wire _TYMU_RD_OUTn = nor(LUMA_DMA_READ_CARTp, MOTY_CPU_EXT_RD);
+    /*p08.TYMU*/ wire _TYMU_RD_OUTn = nor(dma_sig.LUMA_DMA_READ_CARTp, MOTY_CPU_EXT_RD);
     /*p08.UGAC*/ wire _UGAC_RDn_A = nand(_TYMU_RD_OUTn, dbg_sig.TOVA_MODE_DBG2p);
     /*p08.URUN*/ wire _URUN_RDn_D = nor(_TYMU_RD_OUTn, dbg_sig.UNOR_MODE_DBG2n);
 
@@ -240,7 +225,7 @@ void TestGB::tick_cart_pins() {
 
     /*p08.MEXO*/ wire _MEXO_ABCDExxx = not(APOV_CPU_WR_xxxxxFGH());
     /*p08.NEVY*/ wire _NEVY = or (_MEXO_ABCDExxx, MOCA_DBG_EXT_RDn);
-    /*p08.PUVA*/ wire _PUVA_WR_OUTn = or (_NEVY, LUMA_DMA_READ_CARTp);
+    /*p08.PUVA*/ wire _PUVA_WR_OUTn = or (_NEVY, dma_sig.LUMA_DMA_READ_CARTp);
     /*p08.UVER*/ wire _UVER_WRn_A = nand(_PUVA_WR_OUTn, dbg_sig.TOVA_MODE_DBG2p);
     /*p08.USUF*/ wire _USUF_WRn_D = nor(_PUVA_WR_OUTn, dbg_sig.UNOR_MODE_DBG2n);
 
@@ -263,7 +248,7 @@ void TestGB::tick_cart_pins() {
     /*p08.TUMA*/ wire _TUMA_CART_RAM = and(cpu_pins.A13, _SOGY_A14n, cpu_pins.A15);
     /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or (and(cpu_pins.A15, cpu_pins.A14), _TUMA_CART_RAM);
     /*p08.TOZA*/ wire _TOZA = and(dbg_sig.ABUZ, _TYNU_ADDR_RAM, adr_sig.TUNA_0000_FDFFp); // suggests ABUZp
-    /*p08.TYHO*/ wire _TYHO_CS_A = mux2_p(dma_reg.DMA_A15.q(), _TOZA, LUMA_DMA_READ_CARTp); // ABxxxxxx
+    /*p08.TYHO*/ wire _TYHO_CS_A = mux2_p(dma_reg.DMA_A15.q(), _TOZA, dma_sig.LUMA_DMA_READ_CARTp); // ABxxxxxx
 
     /* PIN_80 */ ext_pins.CS_A.set(_TYHO_CS_A);
   }

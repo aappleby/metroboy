@@ -12,6 +12,7 @@ using namespace Schematics;
 void TestGB::tick_oam() {
   auto clk_sig = clk_reg.sig(*this);
   auto adr_sig = adr_reg.sig(cpu_pins);
+  auto dma_sig = dma_reg.sig(*this);
 
   /*p28.WEFE*/ wire WEFE_P10_Bn = not(joy_pin.P10_B);
   /*p28.WUWE*/ wire WUWE_P10_Bn = not(joy_pin.P10_B);
@@ -30,15 +31,6 @@ void TestGB::tick_oam() {
   /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(ppu_reg.TOXE_SFETCH_S0_D0.q());
   /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(TYTU_SFETCH_S0_D0n, ppu_reg.TYFO_SFETCH_S0_D1.q());
 
-  /*p04.MUDA*/ wire MUDA_DMA_ADDR_VRAMp = this->MUDA_DMA_ADDR_VRAMp();
-  /*p04.MATU*/ wire MATU_DMA_OAM_WRp    = dma_reg.MATU_DMA_OAM_WRp.q();
-
-
-  /*p04.MUHO*/ wire MUHO_DMA_READ_VRAMn = nand(MATU_DMA_OAM_WRp, MUDA_DMA_ADDR_VRAMp);
-  /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);
-
-  /*p04.LOGO*/ wire LOGO_DMA_ADDR_VRAMn = not(MUDA_DMA_ADDR_VRAMp);
-  /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(MATU_DMA_OAM_WRp, LOGO_DMA_ADDR_VRAMn);
 
 
   {
@@ -146,7 +138,7 @@ void TestGB::tick_oam() {
   }
 
   {
-    /*p28.AZAR*/ wire AZAR_DMA_READ_VRAMn = not(LUFA_DMA_READ_VRAMp);
+    /*p28.AZAR*/ wire AZAR_DMA_READ_VRAMn = not(dma_sig.LUFA_DMA_READ_VRAMp);
     /*p28.WUZU*/ oam_pins.A_D0.set_tribuf(!AZAR_DMA_READ_VRAMn, ppu_reg.MD0);
     /*p28.AXER*/ oam_pins.A_D1.set_tribuf(!AZAR_DMA_READ_VRAMn, ppu_reg.MD1);
     /*p28.ASOX*/ oam_pins.A_D2.set_tribuf(!AZAR_DMA_READ_VRAMn, ppu_reg.MD2);
@@ -167,23 +159,23 @@ void TestGB::tick_oam() {
   }
 
   {
-    /*p25.WEJO*/ oam_pins.A_D0.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.RALO*/ not(ext_pins.D0_C)));
-    /*p25.BUBO*/ oam_pins.A_D1.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.TUNE*/ not(ext_pins.D1_C)));
-    /*p25.BETU*/ oam_pins.A_D2.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.SERA*/ not(ext_pins.D2_C)));
-    /*p25.CYME*/ oam_pins.A_D3.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.TENU*/ not(ext_pins.D3_C)));
-    /*p25.BAXU*/ oam_pins.A_D4.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.SYSA*/ not(ext_pins.D4_C)));
-    /*p25.BUHU*/ oam_pins.A_D5.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.SUGY*/ not(ext_pins.D5_C)));
-    /*p25.BYNY*/ oam_pins.A_D6.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.TUBE*/ not(ext_pins.D6_C)));
-    /*p25.BYPY*/ oam_pins.A_D7.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.SYZO*/ not(ext_pins.D7_C)));
+    /*p25.WEJO*/ oam_pins.A_D0.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.RALO*/ not(ext_pins.D0_C)));
+    /*p25.BUBO*/ oam_pins.A_D1.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TUNE*/ not(ext_pins.D1_C)));
+    /*p25.BETU*/ oam_pins.A_D2.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SERA*/ not(ext_pins.D2_C)));
+    /*p25.CYME*/ oam_pins.A_D3.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TENU*/ not(ext_pins.D3_C)));
+    /*p25.BAXU*/ oam_pins.A_D4.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SYSA*/ not(ext_pins.D4_C)));
+    /*p25.BUHU*/ oam_pins.A_D5.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SUGY*/ not(ext_pins.D5_C)));
+    /*p25.BYNY*/ oam_pins.A_D6.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TUBE*/ not(ext_pins.D6_C)));
+    /*p25.BYPY*/ oam_pins.A_D7.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SYZO*/ not(ext_pins.D7_C)));
 
-    /*p25.WASA*/ oam_pins.B_D0.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.RALO*/ not(ext_pins.D0_C)));
-    /*p25.BOMO*/ oam_pins.B_D1.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.TUNE*/ not(ext_pins.D1_C)));
-    /*p25.BASA*/ oam_pins.B_D2.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.SERA*/ not(ext_pins.D2_C)));
-    /*p25.CAKO*/ oam_pins.B_D3.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.TENU*/ not(ext_pins.D3_C)));
-    /*p25.BUMA*/ oam_pins.B_D4.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.SYSA*/ not(ext_pins.D4_C)));
-    /*p25.BUPY*/ oam_pins.B_D5.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.SUGY*/ not(ext_pins.D5_C)));
-    /*p25.BASY*/ oam_pins.B_D6.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.TUBE*/ not(ext_pins.D6_C)));
-    /*p25.BAPE*/ oam_pins.B_D7.set_tribuf(!MORY_DMA_READ_CARTn, not(/*p25.SYZO*/ not(ext_pins.D7_C)));
+    /*p25.WASA*/ oam_pins.B_D0.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.RALO*/ not(ext_pins.D0_C)));
+    /*p25.BOMO*/ oam_pins.B_D1.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TUNE*/ not(ext_pins.D1_C)));
+    /*p25.BASA*/ oam_pins.B_D2.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SERA*/ not(ext_pins.D2_C)));
+    /*p25.CAKO*/ oam_pins.B_D3.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TENU*/ not(ext_pins.D3_C)));
+    /*p25.BUMA*/ oam_pins.B_D4.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SYSA*/ not(ext_pins.D4_C)));
+    /*p25.BUPY*/ oam_pins.B_D5.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SUGY*/ not(ext_pins.D5_C)));
+    /*p25.BASY*/ oam_pins.B_D6.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TUBE*/ not(ext_pins.D6_C)));
+    /*p25.BAPE*/ oam_pins.B_D7.set_tribuf(!dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SYZO*/ not(ext_pins.D7_C)));
   }
 
   {

@@ -11,6 +11,7 @@ void LcdRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = ResetSignals::get(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
+  auto win_sig = gb.win_reg.sig(gb);
 
   wire XEHO_X0 = gb.ppu_reg.SAXO_X0;
   wire XYDO_X3 = gb.ppu_reg.TELU_X3;
@@ -25,12 +26,11 @@ void LcdRegisters::tick(TestGB& gb) {
 
   wire MYVO_AxCxExGx = clk_sig.MYVO_AxCxExGx;
 
-  wire SOCY_WIN_HITn = gb.SOCY_WIN_HITn();
   wire XONA_LCDC_EN = gb.cfg_reg.XONA_LCDC_EN.q();
 
 
   /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(gb.sst_reg.FEPO_STORE_MATCHp, WODU_RENDER_DONE, MYVO_AxCxExGx);
-  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
+  /*p24.TYFA*/ wire TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
 
   /*p21.WEGO*/ wire WEGO_RST_LATCH = or (rst_sig.TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC);
@@ -225,6 +225,7 @@ void LcdRegisters::tick(TestGB& gb) {
 void TestGB::tick_lcd() {
   auto clk_sig = clk_reg.sig(*this);
   auto rst_sig = ResetSignals::get(*this);
+  auto win_sig = win_reg.sig(*this);
 
   wire XONA_LCDC_EN = cfg_reg.XONA_LCDC_EN.q();
 
@@ -239,13 +240,11 @@ void TestGB::tick_lcd() {
 
   wire WODU_RENDER_DONE = this->WODU_RENDER_DONE();
 
-  wire SOCY_WIN_HITn = this->SOCY_WIN_HITn();
-
   wire AVAP_SCAN_DONE_d0_TRIGp = this->AVAP_SCAN_DONE_d0_TRIGp();
 
 
   /*p24.VYBO*/ wire VYBO_PIX_CLK_AxCxExGx = nor(sst_reg.FEPO_STORE_MATCHp, WODU_RENDER_DONE, clk_sig.MYVO_AxCxExGx);
-  /*p24.TYFA*/ wire TYFA_AxCxExGx = and(SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
+  /*p24.TYFA*/ wire TYFA_AxCxExGx = and(win_sig.SOCY_WIN_HITn, POKY_FRONT_PORCH_LATCH, VYBO_PIX_CLK_AxCxExGx);
   /*p24.SEGU*/ wire SEGU_xBxDxFxH = not(TYFA_AxCxExGx);
   /*p24.ROXO*/ wire ROXO_AxCxExGx = not(SEGU_xBxDxFxH);
 

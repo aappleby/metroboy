@@ -54,16 +54,21 @@ AddressSignals AddressRegisters::sig(const CpuPins& cpu_pins) const {
   /*p07.ROPE*/ wire _ROPE_FE00_FEFFn = nand(_RYCU_FE00_FFFFp, _SOHA_FF00_FFFFn);
   /*p07.SARO*/ wire _SARO_FE00_FEFFp = not(_ROPE_FE00_FEFFn);
 
-  /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_pins.A15);
-  /*p08.TEVY*/ wire TEVY_8000_9FFFn = or (cpu_pins.A13, cpu_pins.A14, SORE_0000_7FFFp);
-  /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_pins.ADDR_VALID, TEVY_8000_9FFFn);
+  // TEVY box color wrong on die trace, but schematic correct.
 
+  // Die trace:
+  // SORE = not(A15)
+  // TEVY = or(A13, A13, SORE) // A13 line not fully drawn
+  // TEXO = and(ADDR_VALIDx?, TEVY)
 
-  /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
+  /*p08.SORE*/ wire _SORE_0000_7FFFp = not(cpu_pins.A15);
+  /*p08.TEVY*/ wire _TEVY_8000_9FFFn = or (cpu_pins.A13, cpu_pins.A14, _SORE_0000_7FFFp);
+  /*p08.TEXO*/ wire _TEXO_8000_9FFFn = and (cpu_pins.ADDR_VALID, _TEVY_8000_9FFFn);
+  /*p08.LEVO*/ wire _LEVO_8000_9FFFp = not(_TEXO_8000_9FFFn);
 
-  /*p25.TEFA*/ wire _TEFA_8000_9FFFp = nor(_SYRO_FE00_FFFFp, TEXO_8000_9FFFn);
+  // the logic here is kinda weird, still seems to select vram.
+  /*p25.TEFA*/ wire _TEFA_8000_9FFFp = nor(_SYRO_FE00_FFFFp, _TEXO_8000_9FFFn);
   /*p25.SOSE*/ wire _SOSE_8000_9FFFp = and (cpu_pins.A15, _TEFA_8000_9FFFp);
-
 
   return {
     .TOVY_A00n = _TOVY_A00n,
@@ -91,8 +96,8 @@ AddressSignals AddressRegisters::sig(const CpuPins& cpu_pins) const {
     .SARO_FE00_FEFFp = _SARO_FE00_FEFFp,
     .WERO_FF40_FF4Fp = _WERO_FF40_FF4Fp,
     .SOSE_8000_9FFFp = _SOSE_8000_9FFFp,
-    .TEXO_8000_9FFFn = TEXO_8000_9FFFn,
-    .LEVO_8000_9FFFp = LEVO_8000_9FFFp,
+    .TEXO_8000_9FFFn = _TEXO_8000_9FFFn,
+    .LEVO_8000_9FFFp = _LEVO_8000_9FFFp,
 
     .XEDA_FF46p = _XEDA_FF46p,
   };

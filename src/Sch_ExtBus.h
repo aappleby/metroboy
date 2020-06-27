@@ -104,6 +104,18 @@ struct ExtBus {
     text_painter.newline();
   }
 
+  /*
+  void dump_pins(TextPainter& text_painter) {
+  text_painter.dprintf("----- SYS_PINS -----\n");
+  text_painter.dprintf("PIN_RST      %d\n", PIN_RST.a.val);
+  text_painter.dprintf("PIN_CLK_GOOD %d\n", PIN_CLK_GOOD.a.val);
+  text_painter.dprintf("PIN_CLK_IN_xBxDxFxH   %d\n", PIN_CLK_IN_xBxDxFxH.a.val);
+  text_painter.dprintf("PIN_T1       %d\n", PIN_T1.a.val);
+  text_painter.dprintf("PIN_T2       %d\n", PIN_T2.a.val);
+  text_painter.newline();
+  }
+  */
+
   /*p08.ALOR*/ TpLatch EXT_ADDR_LATCH_00;
   /*p08.APUR*/ TpLatch EXT_ADDR_LATCH_01;
   /*p08.ALYR*/ TpLatch EXT_ADDR_LATCH_02;
@@ -128,6 +140,15 @@ struct ExtBus {
   /*p08.SAGO*/ TpLatch EXT_DATA_LATCH_05;
   /*p08.RUPA*/ TpLatch EXT_DATA_LATCH_06;
   /*p08.SAZY*/ TpLatch EXT_DATA_LATCH_07;
+
+  //----------
+  // Sys pins
+
+  /* PIN_71 */ PinIn PIN_RST;
+  /* PIN_74 */ PinIn PIN_CLK_GOOD;
+  /* PIN_74 */ PinIn PIN_CLK_IN_xBxDxFxH;
+  /* PIN_76 */ PinIn PIN_T2;
+  /* PIN_77 */ PinIn PIN_T1;
 
   //----------
   // Cart pins

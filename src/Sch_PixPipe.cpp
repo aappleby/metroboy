@@ -70,7 +70,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
     /*p29.TOPU*/ wire _TOPU_SPRITE_PIX_LATCH_A = and (ppu_reg.TULY_SFETCH_S1, _SYCU);
     /*p29.RACA*/ wire _RACA_SPRITE_PIX_LATCH_B = and (ppu_reg.VONU_SFETCH_S1_D4, _SYCU);
 
-    /*p29.XONO*/ wire _XONO_FLIP_X = and (oam_reg.BAXO_SPRITE_X5, ppu_sig.TEXY_SPRITE_READ);
+    /*p29.XONO*/ wire _XONO_FLIP_X = and (oam_reg.BAXO_SPRITE_X5, ppu_sig.TEXY_SPRITE_READp);
     /*p33.POBE*/ wire _SPR_PIX_FLIP0 = mux2_p(vram_bus.TS_MD7, vram_bus.TS_MD0, _XONO_FLIP_X);
     /*p33.PACY*/ wire _SPR_PIX_FLIP1 = mux2_p(vram_bus.TS_MD6, vram_bus.TS_MD1, _XONO_FLIP_X);
     /*p33.PONO*/ wire _SPR_PIX_FLIP2 = mux2_p(vram_bus.TS_MD5, vram_bus.TS_MD2, _XONO_FLIP_X);

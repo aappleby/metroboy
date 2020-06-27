@@ -80,9 +80,7 @@ struct TestGB {
 
   BusMux bus_mux;
 
-  SysPins sys_pins;
   JoypadPins joy_pin;
-  WavePins wave_pins;
 };
 
 //-----------------------------------------------------------------------------

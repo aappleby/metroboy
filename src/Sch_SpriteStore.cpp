@@ -195,10 +195,25 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
   /*p29.FOVE*/ wire FOVE = nand(STORE9_MATCHn, STORE8_MATCHn, STORE7_MATCHn, STORE6_MATCHn, STORE5_MATCHn);
   /*p29.FEPO*/ wire FEPO_STORE_MATCHp = or(FEFY, FOVE);
 
+  /*p28.GYBU*/ wire _GYBU_IDX_0n = not(WUZY_TS_IDX_0);
+  /*p28.GYKA*/ wire _GYKA_IDX_1n = not(WYSE_TS_IDX_1);
+  /*p28.FABY*/ wire _FABY_IDX_2n = not(ZYSU_TS_IDX_2);
+  /*p28.FACO*/ wire _FACO_IDX_3n = not(WYDA_TS_IDX_3);
+  /*p28.FUGU*/ wire _FUGU_IDX_4n = not(WUCO_TS_IDX_4);
+  /*p28.FYKE*/ wire _FYKE_IDX_5n = not(WEZA_TS_IDX_5);
+
+  /*p28.GUSE*/ wire _GUSE_SCAN0n = not(SCAN0.q());
+  /*p28.GEMA*/ wire _GEMA_SCAN1n = not(SCAN1.q());
+  /*p28.FUTO*/ wire _FUTO_SCAN2n = not(SCAN2.q());
+  /*p28.FAKU*/ wire _FAKU_SCAN3n = not(SCAN3.q());
+  /*p28.GAMA*/ wire _GAMA_SCAN4n = not(SCAN4.q());
+  /*p28.GOBY*/ wire _GOBY_SCAN5n = not(SCAN5.q());
+
   return {
     .BESU_SCANNINGp = BESU_SCANNINGp.q(),
     .CEHA_SCANNINGp = CEHA_SCANNINGp,
     .FEPO_STORE_MATCHp = FEPO_STORE_MATCHp,
+    .AVAP_SCAN_DONE_d0_TRIGp = AVAP_SCAN_DONE_d0_TRIGp,
 
     .STORE0_MATCHn = STORE0_MATCHn,
     .STORE1_MATCHn = STORE1_MATCHn,
@@ -211,7 +226,19 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
     .STORE8_MATCHn = STORE8_MATCHn,
     .STORE9_MATCHn = STORE9_MATCHn,
 
-    .AVAP_SCAN_DONE_d0_TRIGp = AVAP_SCAN_DONE_d0_TRIGp,
+    .GYBU_IDX_0n = _GYBU_IDX_0n,
+    .GYKA_IDX_1n = _GYKA_IDX_1n,
+    .FABY_IDX_2n = _FABY_IDX_2n,
+    .FACO_IDX_3n = _FACO_IDX_3n,
+    .FUGU_IDX_4n = _FUGU_IDX_4n,
+    .FYKE_IDX_5n = _FYKE_IDX_5n,
+
+    .GUSE_SCAN0n = _GUSE_SCAN0n,
+    .GEMA_SCAN1n = _GEMA_SCAN1n,
+    .FUTO_SCAN2n = _FUTO_SCAN2n,
+    .FAKU_SCAN3n = _FAKU_SCAN3n,
+    .GAMA_SCAN4n = _GAMA_SCAN4n,
+    .GOBY_SCAN5n = _GOBY_SCAN5n,
   };
 }
 

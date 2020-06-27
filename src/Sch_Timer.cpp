@@ -9,14 +9,16 @@ using namespace Schematics;
 
 TimerSignals TimerRegisters::sig(const TestGB& /*gb*/) const {
   return {
-    /*p01.UVYN*/ .UVYN_DIV_05n = not(TAMA_DIV_05),
-    /*p01.UMEK*/ .UMEK_DIV_06n = not(UGOT_DIV_06),
-    /*p01.UREK*/ .UREK_DIV_07n = not(TULU_DIV_07),
+    .UVYN_DIV_05n = not(TAMA_DIV_05),
+    .UMEK_DIV_06n = not(UGOT_DIV_06),
+    .UREK_DIV_07n = not(TULU_DIV_07),
+    .MOBA_INT_TIMERp = MOBA_INT_TIMERp,
   };
 }
 
 void TimerRegisters::tick(TestGB& gb) {
   auto& cpu_bus = gb.cpu_bus;
+  auto& ext_bus = gb.ext_bus;
 
   auto clk_sig = gb.clk_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(cpu_bus);
@@ -27,7 +29,7 @@ void TimerRegisters::tick(TestGB& gb) {
   // div
   {
     /*p01.TAPE*/ wire _FF04_WR = and(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, adr_sig.TOVY_A00n);
-    /*p01.UFOL*/ wire _DIV_RSTn = nor(rst_sig.UCOB_CLKBAD, gb.sys_pins.RST, _FF04_WR);
+    /*p01.UFOL*/ wire _DIV_RSTn = nor(rst_sig.UCOB_CLKBAD, ext_bus.PIN_RST, _FF04_WR);
 
     /*p01.UKUP*/ UKUP_DIV_00.set(clk_sig.PIN_BOGA_AxCDEFGH, _DIV_RSTn, !UKUP_DIV_00.q());
     /*p01.UFOR*/ UFOR_DIV_01.set(!UKUP_DIV_00.q(), _DIV_RSTn, !UFOR_DIV_01.q());
@@ -56,7 +58,7 @@ void TimerRegisters::tick(TestGB& gb) {
 
   /*p03.TOPE*/ wire _FF05_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.RYFO_FF04_FF07p, adr_sig.TOLA_A01n, cpu_bus.PIN_A00);
   /*p03.MUZU*/ wire _MUZU = or(cpu_bus.PIN_FROM_CPU5p.q(), _FF05_WRn);
-  /*p03.MEKE*/ wire _INT_TIMERn = not(MOBA_INT_TIMER.q());
+  /*p03.MEKE*/ wire _INT_TIMERn = not(MOBA_INT_TIMERp.q());
   /*p03.MEXU*/ wire _TIMA_LOAD = nand(_MUZU, rst_sig.ALUR_RSTn, _INT_TIMERn);
 
   // sch_timer.tick_tima
@@ -103,7 +105,7 @@ void TimerRegisters::tick(TestGB& gb) {
 
   {
     /*p03.MERY*/ wire _INT_TIMER_IN = nor(!TIMA_MAX.q(), TIMA_7.q());
-    /*p03.MOBA*/ MOBA_INT_TIMER.set(clk_sig.PIN_BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, _INT_TIMER_IN);
+    /*p03.MOBA*/ MOBA_INT_TIMERp.set(clk_sig.PIN_BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, _INT_TIMER_IN);
   }
 
   // FF06 TMA

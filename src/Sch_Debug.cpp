@@ -7,7 +7,7 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 DebugSignals DebugRegisters::sig(const TestGB& gb) const {
-  const auto& sys_pins = gb.sys_pins;
+  const auto& ext_bus = gb.ext_bus;
   const auto& cpu_bus = gb.cpu_bus;
 
   /*p27.VYPO*/ wire _VYPO_P10_Bn = not(gb.joy_pin.P10_B);
@@ -19,12 +19,12 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
 
 
 
-  /*p07.UBET*/ wire _UBET_T1n = not(sys_pins.T1);
-  /*p07.UVAR*/ wire _UVAR_T2n = not(sys_pins.T2);
-  /*p07.UMUT*/ wire _UMUT_MODE_DBG1p  = and (sys_pins.T1, _UVAR_T2n);
-  /*p07.UNOR*/ wire _UNOR_MODE_DBG2p = and (sys_pins.T2, _UBET_T1n); // Must be UNORp, see UJYV/UBAL
+  /*p07.UBET*/ wire _UBET_T1n = not(ext_bus.PIN_T1);
+  /*p07.UVAR*/ wire _UVAR_T2n = not(ext_bus.PIN_T2);
+  /*p07.UMUT*/ wire _UMUT_MODE_DBG1p = and (ext_bus.PIN_T1, _UVAR_T2n);
+  /*p07.UNOR*/ wire _UNOR_MODE_DBG2p = and (ext_bus.PIN_T2, _UBET_T1n); // Must be UNORp, see UJYV/UBAL
   /*p08.TOVA*/ wire _TOVA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
-  /*p07.UPOJ*/ wire _UPOJ_MODE_PROD = nand(_UBET_T1n, _UVAR_T2n, sys_pins.RST);
+  /*p07.UPOJ*/ wire _UPOJ_MODE_PROD = nand(_UBET_T1n, _UVAR_T2n, ext_bus.PIN_RST);
   /*p08.RYCA*/ wire _RYCA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
   /*p25.TUTO*/ wire _TUTO_DBG_VRAM = and (_UNOR_MODE_DBG2p, !SOTO_DBG);
 
@@ -71,7 +71,7 @@ void DebugRegisters::tick(const TestGB& gb) {
   //cpu_pins.RYCA_MODE_DBG2n = RYCA_MODE_DBG2n;
 
   wire PIN_FROM_CPU5p = gb.cpu_bus.PIN_FROM_CPU5p;
-  /*p04.MAKA*/ FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, PIN_FROM_CPU5p);
+  /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, PIN_FROM_CPU5p);
 }
 
 //-----------------------------------------------------------------------------
@@ -79,7 +79,7 @@ void DebugRegisters::tick(const TestGB& gb) {
 bool DebugRegisters::commit() {
   bool changed = false;
   /*p25.SOTO*/ changed |= SOTO_DBG.commit_reg();
-  /*p04.MAKA*/ changed |= FROM_CPU5_SYNC.commit_reg();
+  /*p04.MAKA*/ changed |= MAKA_FROM_CPU5_SYNC.commit_reg();
   //changed |= cpu_pins.UNOR_MODE_DBG2.commit_pinout();         // PORTA_02: <- P07.UNOR_MODE_DBG2
   //changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
   return changed;

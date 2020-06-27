@@ -6,7 +6,7 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 ResetSignals ResetRegisters::sig(const TestGB& gb) const {
-  /*p01.UCOB*/ wire UCOB_CLKBAD = not(gb.sys_pins.PIN_CLK_GOOD);
+  /*p01.UCOB*/ wire UCOB_CLKBAD = not(gb.ext_bus.PIN_CLK_GOOD);
 
   /*p23.XONA*/ wire XONA_LCDC_EN = gb.cfg_reg.XONA_LCDC_EN.q();
 
@@ -58,24 +58,29 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
 //-----------------------------------------------------------------------------
 
 void ResetRegisters::tick(TestGB& gb) {
+  auto& tim_reg = gb.tim_reg;
+
+  auto& cpu_bus = gb.cpu_bus;
+  auto& ext_bus = gb.ext_bus;
+
   auto clk_sig = gb.clk_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
 
-  /*p01.UNUT*/ wire TIMEOUT = and (TUBO_CLKREQn_LATCH, gb.tim_reg.UPOF_DIV_15);
+  /*p01.UNUT*/ wire TIMEOUT = and (TUBO_CLKREQn_LATCH, tim_reg.UPOF_DIV_15);
   /*p01.TABA*/ wire TABA_RST = or(dbg_sig.UNOR_MODE_DBG2p, dbg_sig.UMUT_MODE_DBG1p, TIMEOUT);
   /*p01.ALYP*/ wire ALYP_RSTn = not(TABA_RST);
-  /*p01.AFAR*/ wire AFAR_RST = nor(ALYP_RSTn, gb.sys_pins.RST);
+  /*p01.AFAR*/ wire AFAR_RST = nor(ALYP_RSTn, ext_bus.PIN_RST);
 
   // ASOL has arms on the ground side, output on the top rung - nor latch with inverted output
-  /*p01.ASOL*/ ASOL_RST_LATCHp.nor_latch(AFAR_RST, gb.sys_pins.RST); // Schematic wrong, this is a latch.
+  /*p01.ASOL*/ ASOL_RST_LATCHp.nor_latch(AFAR_RST, ext_bus.PIN_RST); // Schematic wrong, this is a latch.
 
   /*p01.AFER*/ RESET_REGp.set(clk_sig.PIN_BOMA_xBxxxxxx, dbg_sig.UPOJ_MODE_PROD, ASOL_RST_LATCHp);
 
-  gb.cpu_bus.PIN_CPU_RESET.set(TABA_RST);
-  gb.cpu_bus.PIN_AFER.set(RESET_REGp.q());
+  cpu_bus.PIN_CPU_RESET.set(TABA_RST);
+  cpu_bus.PIN_AFER.set(RESET_REGp.q());
 
-  //gb.cpu_pins.PIN_RESET.set(sys_pins.RST);
+  //cpu_pins.PIN_RESET.set(sys_pins.RST);
 
   // Latch w/ arms on the ground side, output on the top rung - nor latch with inverted output
   // TUBO00 << cpu_pins.CLKREQ
@@ -84,8 +89,8 @@ void ResetRegisters::tick(TestGB& gb) {
   // TUBO03 == nc
   // TUBO04 nc
   // TUBO05 << UPYF
-  /*p01.UPYF*/ wire UPYF = or(gb.sys_pins.RST, rst_sig.UCOB_CLKBAD);
-  /*p01.TUBO*/ TUBO_CLKREQn_LATCH.nor_latch(gb.cpu_bus.PIN_CLKREQ, UPYF);
+  /*p01.UPYF*/ wire UPYF = or(ext_bus.PIN_RST, rst_sig.UCOB_CLKBAD);
+  /*p01.TUBO*/ TUBO_CLKREQn_LATCH.nor_latch(cpu_bus.PIN_CLKREQ, UPYF);
 }
 
 //-----------------------------------------------------------------------------

@@ -15,7 +15,7 @@ uint8_t GateBoy::read_cycle(uint16_t addr) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 1);
       gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
@@ -46,7 +46,7 @@ void GateBoy::write_cycle(uint16_t addr, uint8_t data) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
       gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 1);
@@ -76,7 +76,7 @@ void GateBoy::pass_cycle() {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
       gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
@@ -145,7 +145,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       /*
       if (phase >= 32 && phase < 40) {
@@ -181,18 +181,18 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
 
   Schematics::TestGB* gb = state_manager.state();
 
-  gb->sys_pins.RST.preset(true, 1);
-  gb->sys_pins.PIN_CLK_GOOD.preset(true, 0);
-  gb->sys_pins.T2.preset(true, 0);
-  gb->sys_pins.T1.preset(true, 0);
+  gb->ext_bus.PIN_RST.preset(true, 1);
+  gb->ext_bus.PIN_CLK_GOOD.preset(true, 0);
+  gb->ext_bus.PIN_T2.preset(true, 0);
+  gb->ext_bus.PIN_T1.preset(true, 0);
 
   gb->cpu_bus.PIN_CLKREQ.preset(true, 0);
   gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
   gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
   gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
-
   gb->cpu_bus.PIN_FROM_CPU5p.preset(true, 0);
   gb->cpu_bus.PIN_FROM_CPU6.preset(true, 0);
+
   gb->int_reg.PIN_ACK_SERIAL.preset(true, 0);
   gb->int_reg.PIN_ACK_STAT.preset(true, 0);
   gb->int_reg.PIN_ACK_VBLANK.preset(true, 0);
@@ -202,9 +202,9 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   gb->ext_preset();
 
   pass_cycle();
-  gb->sys_pins.RST.preset(true, 0);
+  gb->ext_bus.PIN_RST.preset(true, 0);
   pass_cycle();
-  gb->sys_pins.PIN_CLK_GOOD.preset(true, 1);
+  gb->ext_bus.PIN_CLK_GOOD.preset(true, 1);
   pass_cycle();
   gb->cpu_bus.PIN_CLKREQ.preset(true, 1);
   pass_cycle();
@@ -259,7 +259,7 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   float cy = 0;
 
   text_painter.newline();
-  gb.sys_pins.dump_pins(text_painter);
+  gb.ext_bus.dump_pins(text_painter);
   gb.rst_reg.dump_regs(text_painter);
   //gb.clk_reg.dump_regs(text_painter);
   //gb.vck_reg.dump_regs(text_painter);
@@ -304,7 +304,6 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
 
   if (1) {
     gb.lcd_reg.dump_pins(text_painter);
-    gb.wave_pins.dump_pins(text_painter);
     gb.ser_reg.dump_pins(text_painter);
     text_painter.render(cx, cy, 1.0);
     cx += 32 * 8;

@@ -167,15 +167,15 @@ void CpuRegisters::tick(TestGB& gb) {
     /*p07.APET*/ wire APET_MODE_DBG = or(sys_sig.MODE_DBG1, sys_sig.MODE_DBG2);
     /*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, cpu_bus.PIN_A05, cpu_bus.PIN_A06, bus_sig.TAPU_CPUWR, dec_sig.ADDR_111111110xx00000);
 
-    /*p05.KURA*/ wire FF60_0n = not(FF60_0);
-    /*p05.JEVA*/ wire FF60_0o = not(FF60_0);
-    /*p07.BURO*/ FF60_0.set(FF60_WRn, rst_sig.SYS_RESETn, cpu_bus.TS_D0);
-    /*p07.AMUT*/ FF60_1.set(FF60_WRn, rst_sig.SYS_RESETn, cpu_bus.TS_D1);
+    /*p05.KURA*/ wire FF60_0n = not(BURO_FF60_0);
+    /*p05.JEVA*/ wire FF60_0o = not(BURO_FF60_0);
+    /*p07.BURO*/ BURO_FF60_0.set(FF60_WRn, rst_sig.SYS_RESETn, cpu_bus.TS_D0);
+    /*p07.AMUT*/ AMUT_FF60_1.set(FF60_WRn, rst_sig.SYS_RESETn, cpu_bus.TS_D1);
 
     ///*p05.KURA*/ wire FF60_0n = not(FF60);
     ///*p05.JEVA*/ wire FF60_0o = not(FF60);
-    /*p07.BURO*/ dbg_reg.FF60_0.set(1, rst_sig.ALUR_RSTn, cpu_bus.TS_D0);
-    /*p07.AMUT*/ dbg_reg.FF60_1.set(1, rst_sig.ALUR_RSTn, cpu_bus.TS_D1);
+    /*p07.BURO*/ dbg_reg.BURO_FF60_0.set(1, rst_sig.ALUR_RSTn, cpu_bus.TS_D0);
+    /*p07.AMUT*/ dbg_reg.AMUT_FF60_1.set(1, rst_sig.ALUR_RSTn, cpu_bus.TS_D1);
   }
 #endif
 

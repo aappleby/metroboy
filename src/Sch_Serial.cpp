@@ -7,6 +7,12 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
+SerialSignals SerialRegisters::sig(const TestGB& /*gb*/) const {
+  return {
+    .CALY_INT_SERIALp = CALY_INT_SERIALp,
+  };
+}
+
 void SerialRegisters::tick(TestGB& gb) {
 
   auto cpu_sig = gb.cpu_reg.sig(gb);
@@ -27,7 +33,7 @@ void SerialRegisters::tick(TestGB& gb) {
   /*p06.UFEG*/ wire _FF01_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_pins2.PIN_A00, adr_sig.TOLA_A01n);
   /*p06.UCOM*/ wire _FF02_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_pins2.PIN_A01, adr_sig.TOVY_A00n);
 
-  /*p06.COBA*/ wire _SER_CNT3n = not(CALY_INT_SERIAL.q());
+  /*p06.COBA*/ wire _SER_CNT3n = not(CALY_INT_SERIALp.q());
   /*p06.CABY*/ wire _XFER_RESET = and (_SER_CNT3n, rst_sig.ALUR_RSTn);
   /*p06.ETAF*/ XFER_START.set(_FF02_WRn_xxxxxFGH, _XFER_RESET, cpu_pins2.TS_D0);
   /*p06.CULY*/ XFER_DIR.set(_FF02_WRn_xxxxxFGH, rst_sig.ALUR_RSTn, cpu_pins2.TS_D1);
@@ -55,7 +61,7 @@ void SerialRegisters::tick(TestGB& gb) {
   /*p06.CAFA*/ SER_CNT0.set(_DAWA_SER_CLK, _SER_RST, !SER_CNT0.q());
   /*p06.CYLO*/ SER_CNT1.set(!SER_CNT0.q(), _SER_RST, !SER_CNT1.q());
   /*p06.CYDE*/ SER_CNT2.set(!SER_CNT1.q(), _SER_RST, !SER_CNT2.q());
-  /*p06.CALY*/ CALY_INT_SERIAL.set(!SER_CNT2.q(), _SER_RST, !CALY_INT_SERIAL.q());
+  /*p06.CALY*/ CALY_INT_SERIALp.set(!SER_CNT2.q(), _SER_RST, !CALY_INT_SERIALp.q());
 
   /*p06.CUFU*/ wire _SER_DATA0_SETn = nand(cpu_pins2.TS_D0, _FF01_WR_xxxxxFGHp);
   /*p06.DOCU*/ wire _SER_DATA1_SETn = nand(cpu_pins2.TS_D1, _FF01_WR_xxxxxFGHp);
@@ -125,7 +131,7 @@ bool SerialRegisters::commit() {
   /*p06.CAFA*/ changed |= SER_CNT0.commit_reg();
   /*p06.CYLO*/ changed |= SER_CNT1.commit_reg();
   /*p06.CYDE*/ changed |= SER_CNT2.commit_reg();
-  /*p06.CALY*/ changed |= CALY_INT_SERIAL.commit_reg();
+  /*p06.CALY*/ changed |= CALY_INT_SERIALp.commit_reg();
   /*p06.CUBA*/ changed |= SER_DATA0.commit_reg();
   /*p06.DEGU*/ changed |= SER_DATA1.commit_reg();
   /*p06.DYRA*/ changed |= SER_DATA2.commit_reg();

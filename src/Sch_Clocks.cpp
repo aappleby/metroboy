@@ -22,19 +22,24 @@ ADYK APUK ALEF AFUR
 #endif
 
 
-ClockSignals ClockRegisters::sig(const TestGB& test_gb) const {
+ClockSignals ClockRegisters::sig(const TestGB& gb) const {
+  auto& cpu_bus = gb.cpu_bus;
+  auto& clk_reg = gb.clk_reg;
+
+  auto& ext_bus = gb.ext_bus;
+
   ///*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
-  /*p01.ANOS*/ wire _ANOS_AxCxExGx = not(test_gb.sys_pins.CLK_IN_xBxDxFxH);
-  /*p01.ATEZ*/ wire _ATEZ_CLKBAD = not(test_gb.sys_pins.PIN_CLK_GOOD);
-  /*p01.ABOL*/ wire _ABOL_CLKREQn = not(test_gb.cpu_bus.PIN_CLKREQ);
-  /*p01.BUTY*/ wire _BUTY_CLKREQ = not(_ABOL_CLKREQn);
+  /*p01.ANOS*/ wire _ANOS_AxCxExGx = not(ext_bus.PIN_CLK_IN_xBxDxFxH);
+  /*p01.ATEZ*/ wire _ATEZ_CLKBAD   = not(ext_bus.PIN_CLK_GOOD);
+  /*p01.ABOL*/ wire _ABOL_CLKREQn  = not(cpu_bus.PIN_CLKREQ);
+  /*p01.BUTY*/ wire _BUTY_CLKREQ   = not(_ABOL_CLKREQn);
 
-  /*p01.ATYP*/ wire _ATYP_xBCDExxx = not(test_gb.clk_reg.AFUR_PHAZ_xBCDExxx.qn());
-  /*p01.AFEP*/ wire _AFEP_ABxxxxGH = not(test_gb.clk_reg.ALEF_PHAZ_xxCDEFxx.q());
-  /*p01.AROV*/ wire _AROV_xxxDEFGx = not(test_gb.clk_reg.APUK_PHAZ_xxxDEFGx.qn());
-  /*p01.ADAR*/ wire _ADAR_ABCDxxxx = not(test_gb.clk_reg.ADYK_PHAZ_xxxxEFGH.q());
+  /*p01.ATYP*/ wire _ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
+  /*p01.AFEP*/ wire _AFEP_ABxxxxGH = not(clk_reg.ALEF_PHAZ_xxCDEFxx.q());
+  /*p01.AROV*/ wire _AROV_xxxDEFGx = not(clk_reg.APUK_PHAZ_xxxDEFGx.qn());
+  /*p01.ADAR*/ wire _ADAR_ABCDxxxx = not(clk_reg.ADYK_PHAZ_xxxxEFGH.q());
 
   /*p01.ATAL*/ wire _ATAL_xBxDxFxH = not(_ANOS_AxCxExGx);
   /*p01.AZOF*/ wire _AZOF_AxCxExGx = not(_ATAL_xBxDxFxH);
@@ -53,8 +58,8 @@ ClockSignals ClockRegisters::sig(const TestGB& test_gb) const {
   ///*p01.AMUK*/ wire AMUK_AxCxExGx = not(ATAG_xBxDxFxH); // apu master 4m clock, but apu isn't hooked up yet
   ///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
 
-  /*p29.XUPY*/ wire _XUPY_xBCxxFGx = not(test_gb.clk_reg.WUVU_AxxDExxH);
-  /*p29.XOCE*/ wire _XOCE_ABxxEFxx = not(test_gb.clk_reg.WOSU_xxCDxxGH);
+  /*p29.XUPY*/ wire _XUPY_xBCxxFGx = not(clk_reg.WUVU_AxxDExxH);
+  /*p29.XOCE*/ wire _XOCE_ABxxEFxx = not(clk_reg.WOSU_xxCDxxGH);
   /*p30.CYKE*/ wire _CYKE_AxxDExxH = not(_XUPY_xBCxxFGx);
   /*p30.WUDA*/ wire _WUDA_xBCxxFGx = not(_CYKE_AxxDExxH);
   /*p01.NULE*/ wire _NULE_AxxxxFGH = nor(_ABOL_CLKREQn, _ATYP_xBCDExxx);
@@ -82,7 +87,7 @@ ClockSignals ClockRegisters::sig(const TestGB& test_gb) const {
   /*p01.BALY*/ wire _BALY_xBxxxxxx = not(_BYJU_AxCDEFGH);
   /*p01.BOGA*/ wire _BOGA_AxCDEFGH = not(_BALY_xBxxxxxx);
 
-  /*p21.TALU*/ wire _TALU_xBCDExxx = not(!test_gb.clk_reg.VENA_xBCDExxx);
+  /*p21.TALU*/ wire _TALU_xBCDExxx = not(!clk_reg.VENA_xBCDExxx);
   /*p21.SONO*/ wire _SONO_AxxxxFGH = not(_TALU_xBCDExxx);
   /*p28.AWOH*/ wire _AWOH_AxxDExxH = not(_XUPY_xBCxxFGx);
   /*p28.XYNY*/ wire _XYNY_xBCDExxx = not(_MOPA_AxxxxFGH);
@@ -90,7 +95,7 @@ ClockSignals ClockRegisters::sig(const TestGB& test_gb) const {
   /*p01.BYXO*/ wire _BYXO_AxCDEFGH = not(_BUVU_xBxxxxxx);
   /*p01.BEDO*/ wire _BEDO_xBxxxxxx = not(_BYXO_AxCDEFGH);
 
-  /*p29.WOJO*/ wire _WOJO_xxxDxxxH = nor(!test_gb.clk_reg.WUVU_AxxDExxH, !test_gb.clk_reg.WOSU_xxCDxxGH);
+  /*p29.WOJO*/ wire _WOJO_xxxDxxxH = nor(!clk_reg.WUVU_AxxDExxH, !clk_reg.WOSU_xxCDxxGH);
   /*p29.XYSO*/ wire _XYSO_ABCxDEFx = not(_WOJO_xxxDxxxH);
 
   /*p17.ABUR*/ wire _ABUR_xxCDEFGx = not(_BUKE_ABxxxxxH);

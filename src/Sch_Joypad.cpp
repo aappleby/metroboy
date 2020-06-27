@@ -4,6 +4,13 @@
 
 using namespace Schematics;
 
+JoypadSignals JoypadRegisters::sig(const TestGB& /*gb*/) const {
+  /*p02.ASOK*/ wire ASOK_INT_JPp = and (JP_GLITCH3, JP_GLITCH0);
+
+  return {
+    .ASOK_INT_JPp = ASOK_INT_JPp,
+  };
+}
 
 void JoypadRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
@@ -57,16 +64,16 @@ void JoypadRegisters::tick(TestGB& gb) {
   /*p05.KERU*/ DBG_FF00_D7.set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TS_D7);
 
   // FIXME
-  wire FF60_0 = 0;
+  wire BURO_FF60_0 = 0;
   wire FF60_0n = 1;
 
-  /*p05.KOLE*/ joy_pin.P10_A.set(nand(JOYP_RA.q(), FF60_0));
+  /*p05.KOLE*/ joy_pin.P10_A.set(nand(JOYP_RA.q(), BURO_FF60_0));
   /*p05.KYBU*/ joy_pin.P10_D.set(nor(JOYP_RA.q(), FF60_0n));
-  /*p05.KYTO*/ joy_pin.P11_A.set(nand(JOYP_LB.q(), FF60_0));
+  /*p05.KYTO*/ joy_pin.P11_A.set(nand(JOYP_LB.q(), BURO_FF60_0));
   /*p05.KABU*/ joy_pin.P11_D.set(nor(JOYP_LB.q(), FF60_0n));
-  /*p05.KYHU*/ joy_pin.P12_A.set(nand(JOYP_UC.q(), FF60_0));
+  /*p05.KYHU*/ joy_pin.P12_A.set(nand(JOYP_UC.q(), BURO_FF60_0));
   /*p05.KASY*/ joy_pin.P12_D.set(nor(JOYP_UC.q(), FF60_0n)); // schematic wrong
-  /*p05.KORY*/ joy_pin.P13_A.set(nand(JOYP_DS.q(), FF60_0));
+  /*p05.KORY*/ joy_pin.P13_A.set(nand(JOYP_DS.q(), BURO_FF60_0));
   /*p05.KALE*/ joy_pin.P13_D.set(nor(JOYP_DS.q(), FF60_0n));
   /*p05.KARU*/ joy_pin.P14_A.set(or (!JOYP_UDLR.q(), FF60_0n));
   /*p05.KARU*/ joy_pin.P14_D.set(JOYP_UDLR.q());

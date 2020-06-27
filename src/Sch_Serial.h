@@ -7,12 +7,17 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
+struct SerialSignals {
+  /*p06.CALY*/ wire CALY_INT_SERIALp;
+};
+
 struct SerialRegisters {
 
+  SerialSignals sig(const TestGB& gb) const;
   void tick(TestGB& gb);
   bool commit();
 
-  uint8_t ser_cnt() { return (uint8_t)pack(SER_CNT0.q(), SER_CNT1.q(), SER_CNT2.q(), CALY_INT_SERIAL.q()); }
+  uint8_t ser_cnt() { return (uint8_t)pack(SER_CNT0.q(), SER_CNT1.q(), SER_CNT2.q(), CALY_INT_SERIALp.q()); }
   uint8_t ser_data() { return (uint8_t)pack(SER_DATA0.q(), SER_DATA1.q(), SER_DATA2.q(), SER_DATA3.q(), SER_DATA4.q(), SER_DATA5.q(), SER_DATA6.q(), SER_DATA7.q()); }
 
   void dump_regs(TextPainter& text_painter);
@@ -26,7 +31,7 @@ struct SerialRegisters {
   /*p06.CAFA*/ Reg SER_CNT0;
   /*p06.CYLO*/ Reg SER_CNT1;
   /*p06.CYDE*/ Reg SER_CNT2;
-  /*p06.CALY*/ Reg CALY_INT_SERIAL;
+  /*p06.CALY*/ Reg CALY_INT_SERIALp;
 
   /*p06.CUBA*/ Reg SER_DATA0;
   /*p06.DEGU*/ Reg SER_DATA1;

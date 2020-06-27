@@ -11,6 +11,7 @@ struct SpriteStoreSignals {
   /*p28.BESU*/ wire BESU_SCANNINGp;
   /*p29.CEHA*/ wire CEHA_SCANNINGp;
   /*p29.FEPO*/ wire FEPO_STORE_MATCHp;
+  /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIGp;
 
   /*p29.YDUG*/ wire STORE0_MATCHn;
   /*p29.DYDU*/ wire STORE1_MATCHn;
@@ -23,7 +24,21 @@ struct SpriteStoreSignals {
   /*p29.EFYL*/ wire STORE8_MATCHn;
   /*p29.YGEM*/ wire STORE9_MATCHn;
 
-  /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIGp;
+  /*p28.GYBU*/ wire GYBU_IDX_0n;
+  /*p28.GYKA*/ wire GYKA_IDX_1n;
+  /*p28.FABY*/ wire FABY_IDX_2n;
+  /*p28.FACO*/ wire FACO_IDX_3n;
+  /*p28.FUGU*/ wire FUGU_IDX_4n;
+  /*p28.FYKE*/ wire FYKE_IDX_5n;
+
+  /*p28.GUSE*/ wire GUSE_SCAN0n;
+  /*p28.GEMA*/ wire GEMA_SCAN1n;
+  /*p28.FUTO*/ wire FUTO_SCAN2n;
+  /*p28.FAKU*/ wire FAKU_SCAN3n;
+  /*p28.GAMA*/ wire GAMA_SCAN4n;
+  /*p28.GOBY*/ wire GOBY_SCAN5n;
+
+
 };
 
 //-----------------------------------------------------------------------------

@@ -11,6 +11,7 @@ struct TimerSignals {
   /*p01.UVYN*/ wire UVYN_DIV_05n;
   /*p01.UMEK*/ wire UMEK_DIV_06n;
   /*p01.UREK*/ wire UREK_DIV_07n;
+  /*p03.MOBA*/ wire MOBA_INT_TIMERp;
 };
 
 //-----------------------------------------------------------------------------
@@ -72,7 +73,7 @@ struct TimerRegisters {
     text_painter.newline();
 
     TIMA_MAX.dump(text_painter, "TIMA_MAX  ");
-    MOBA_INT_TIMER.dump(text_painter, "MOBA_INT_TIMER ");
+    MOBA_INT_TIMERp.dump(text_painter, "MOBA_INT_TIMERp ");
     text_painter.newline();
   }
 
@@ -102,7 +103,7 @@ struct TimerRegisters {
   */
 
   wire get_tima_max() { return TIMA_MAX.q(); }
-  wire get_int_timer() { return MOBA_INT_TIMER.q(); }
+  wire get_int_timer() { return MOBA_INT_TIMERp.q(); }
 
   int get_tma() const {
     return pack(TMA_0.q(), TMA_1.q(), TMA_2.q(), TMA_3.q(), TMA_4.q(), TMA_5.q(), TMA_6.q(), TMA_7.q());
@@ -160,7 +161,7 @@ struct TimerRegisters {
   /*p03.NUGA*/ Counter TIMA_7;
 
   /*p03.NYDU*/ Reg TIMA_MAX;
-  /*p03.MOBA*/ Reg MOBA_INT_TIMER;
+  /*p03.MOBA*/ Reg MOBA_INT_TIMERp;
 
   //----------
   // FF06 TMA

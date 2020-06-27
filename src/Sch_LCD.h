@@ -16,6 +16,11 @@ struct LcdSignals {
   /*p29.DYBA*/ wire DYBA_VID_LINE_TRIG_d4p;
   /*p21.PURE*/ wire PURE_NEW_LINE_d0n;
   /*p21.SELA*/ wire SELA_NEW_LINE_d0p;
+  /*p21.POPU*/ wire POPU_VBLANK_d4;
+  /*p21.PARU*/ wire PARU_VBLANKp;
+  /*p21.TOLU*/ wire TOLU_VBLANKn;
+  /*p21.VYPU*/ wire VYPU_VBLANKp;
+  /*p21.ROPO*/ wire ROPO_LY_MATCH_SYNCp;
 };
 
 //-----------------------------------------------------------------------------

@@ -40,15 +40,15 @@ struct DebugRegisters {
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- DBG REG ----- \n");
-    FF60_0.dump(text_painter, "FF60_0 ");
-    FF60_1.dump(text_painter, "FF60_1 ");
+    BURO_FF60_0.dump(text_painter, "BURO_FF60_0 ");
+    AMUT_FF60_1.dump(text_painter, "AMUT_FF60_1 ");
     text_painter.newline();
   }
 
-  /*p07.BURO*/ Reg FF60_0;
-  /*p07.AMUT*/ Reg FF60_1;
+  /*p07.BURO*/ Reg BURO_FF60_0;
+  /*p07.AMUT*/ Reg AMUT_FF60_1;
   /*p25.SOTO*/ Reg SOTO_DBG; // 17-rung
-  /*p04.MAKA*/ Reg FROM_CPU5_SYNC;
+  /*p04.MAKA*/ Reg MAKA_FROM_CPU5_SYNC;
 
   //PinOut UNOR_MODE_DBG2;         // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
   //PinOut UMUT_MODE_DBG1;         // top right port PORTA_05: <- P07.UMUT_MODE_DBG1

@@ -11,7 +11,7 @@ struct PpuSignals {
   /*p27.TEVO*/ wire TEVO_CLK_STOPn;
   /*p21.WODU*/ wire WODU_RENDER_DONEp;
   /*p27.NYXU*/ wire NYXU_BFETCH_RSTn;
-  /*p29.TEXY*/ wire TEXY_SPRITE_READ;
+  /*p29.TEXY*/ wire TEXY_SPRITE_READp;
   /*p29.WUTY*/ wire WUTY_SPRITE_DONE;
   /*p28.ACYL*/ wire ACYL_PPU_USE_OAM1p;
 
@@ -31,6 +31,7 @@ struct PpuSignals {
   /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG;
   /*p27.NAKO*/ wire NAKO_FETCH_S1n;
   /*p27.NOFU*/ wire NOFU_FETCH_S2n;
+  /*p21.VOTY*/ wire VOTY_INT_STATp;
 };
 
 //-----------------------------------------------------------------------------

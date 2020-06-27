@@ -62,23 +62,23 @@ void OamRegisters::tick(TestGB& gb) {
       oam_bus.PIN_OE.set(_ZODO_OAM_OE);
     }
 
-    /*p31.XYKY*/ oam_reg.LATCH_OAM_A0.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA0);
-    /*p31.YRUM*/ oam_reg.LATCH_OAM_A1.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA1);
-    /*p31.YSEX*/ oam_reg.LATCH_OAM_A2.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA2);
-    /*p31.YVEL*/ oam_reg.LATCH_OAM_A3.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA3);
-    /*p31.WYNO*/ oam_reg.LATCH_OAM_A4.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA4);
-    /*p31.CYRA*/ oam_reg.LATCH_OAM_A5.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA5);
-    /*p31.ZUVE*/ oam_reg.LATCH_OAM_A6.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA6);
-    /*p31.ECED*/ oam_reg.LATCH_OAM_A7.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA7);
+    /*p31.XYKY*/ oam_reg.XYKY_LATCH_OAM_A0.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA0);
+    /*p31.YRUM*/ oam_reg.YRUM_LATCH_OAM_A1.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA1);
+    /*p31.YSEX*/ oam_reg.YSEX_LATCH_OAM_A2.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA2);
+    /*p31.YVEL*/ oam_reg.YVEL_LATCH_OAM_A3.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA3);
+    /*p31.WYNO*/ oam_reg.WYNO_LATCH_OAM_A4.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA4);
+    /*p31.CYRA*/ oam_reg.CYRA_LATCH_OAM_A5.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA5);
+    /*p31.ZUVE*/ oam_reg.ZUVE_LATCH_OAM_A6.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA6);
+    /*p31.ECED*/ oam_reg.ECED_LATCH_OAM_A7.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DA7);
 
-    /*p29.YDYV*/ oam_reg.LATCH_OAM_B0.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB0);
-    /*p29.YCEB*/ oam_reg.LATCH_OAM_B1.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB1);
-    /*p29.ZUCA*/ oam_reg.LATCH_OAM_B2.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB2);
-    /*p29.WONE*/ oam_reg.LATCH_OAM_B3.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB3);
-    /*p29.ZAXE*/ oam_reg.LATCH_OAM_B4.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB4);
-    /*p29.XAFU*/ oam_reg.LATCH_OAM_B5.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB5);
-    /*p29.YSES*/ oam_reg.LATCH_OAM_B6.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB6);
-    /*p29.ZECA*/ oam_reg.LATCH_OAM_B7.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB7);
+    /*p29.YDYV*/ oam_reg.YDYV_LATCH_OAM_B0.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB0);
+    /*p29.YCEB*/ oam_reg.YCEB_LATCH_OAM_B1.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB1);
+    /*p29.ZUCA*/ oam_reg.ZUCA_LATCH_OAM_B2.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB2);
+    /*p29.WONE*/ oam_reg.WONE_LATCH_OAM_B3.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB3);
+    /*p29.ZAXE*/ oam_reg.ZAXE_LATCH_OAM_B4.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB4);
+    /*p29.XAFU*/ oam_reg.XAFU_LATCH_OAM_B5.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB5);
+    /*p29.YSES*/ oam_reg.YSES_LATCH_OAM_B6.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB6);
+    /*p29.ZECA*/ oam_reg.ZECA_LATCH_OAM_B7.tp_latch(_BODE_OAM_LATCH, oam_bus.PIN_DB7);
 
     // Schematic wrong, AVER is def nand
     // AVER01 << ACYL03
@@ -111,23 +111,23 @@ void OamRegisters::tick(TestGB& gb) {
     oam_bus.PIN_CLK.set(_COTA_OAM_CLK);
 
     /*p31.XEGA*/ wire XEGA_OAM_CLKn = not(_COTA_OAM_CLK);
-    /*p31.YLOR*/ oam_reg.YLOR_SPRITE_X0.set(XEGA_OAM_CLKn, oam_reg.LATCH_OAM_A0);
-    /*p31.ZYTY*/ oam_reg.ZYTY_SPRITE_X1.set(XEGA_OAM_CLKn, oam_reg.LATCH_OAM_A1);
-    /*p31.ZYVE*/ oam_reg.ZYVE_SPRITE_X2.set(XEGA_OAM_CLKn, oam_reg.LATCH_OAM_A2);
-    /*p31.ZEZY*/ oam_reg.ZEZY_SPRITE_X3.set(XEGA_OAM_CLKn, oam_reg.LATCH_OAM_A3);
-    /*p31.GOMO*/ oam_reg.GOMO_SPRITE_X4.set(XEGA_OAM_CLKn, oam_reg.LATCH_OAM_A4);
-    /*p31.BAXO*/ oam_reg.BAXO_SPRITE_X5.set(XEGA_OAM_CLKn, oam_reg.LATCH_OAM_A5);
-    /*p31.YZOS*/ oam_reg.YZOS_SPRITE_X6.set(XEGA_OAM_CLKn, oam_reg.LATCH_OAM_A6);
-    /*p31.DEPO*/ oam_reg.DEPO_SPRITE_X7.set(XEGA_OAM_CLKn, oam_reg.LATCH_OAM_A7);
+    /*p31.YLOR*/ oam_reg.YLOR_SPRITE_X0.set(XEGA_OAM_CLKn, oam_reg.XYKY_LATCH_OAM_A0);
+    /*p31.ZYTY*/ oam_reg.ZYTY_SPRITE_X1.set(XEGA_OAM_CLKn, oam_reg.YRUM_LATCH_OAM_A1);
+    /*p31.ZYVE*/ oam_reg.ZYVE_SPRITE_X2.set(XEGA_OAM_CLKn, oam_reg.YSEX_LATCH_OAM_A2);
+    /*p31.ZEZY*/ oam_reg.ZEZY_SPRITE_X3.set(XEGA_OAM_CLKn, oam_reg.YVEL_LATCH_OAM_A3);
+    /*p31.GOMO*/ oam_reg.GOMO_SPRITE_X4.set(XEGA_OAM_CLKn, oam_reg.WYNO_LATCH_OAM_A4);
+    /*p31.BAXO*/ oam_reg.BAXO_SPRITE_X5.set(XEGA_OAM_CLKn, oam_reg.CYRA_LATCH_OAM_A5);
+    /*p31.YZOS*/ oam_reg.YZOS_SPRITE_X6.set(XEGA_OAM_CLKn, oam_reg.ZUVE_LATCH_OAM_A6);
+    /*p31.DEPO*/ oam_reg.DEPO_SPRITE_X7.set(XEGA_OAM_CLKn, oam_reg.ECED_LATCH_OAM_A7);
 
     /*p29.YWOK*/ wire YWOK_OAM_CLKn = not(_COTA_OAM_CLK);
-    /*p29.XUSO*/ oam_reg.XUSO_SPRITE_Y0.set(YWOK_OAM_CLKn, oam_reg.LATCH_OAM_B0);
-    /*p29.XEGU*/ oam_reg.XEGU_SPRITE_Y1.set(YWOK_OAM_CLKn, oam_reg.LATCH_OAM_B1);
-    /*p29.YJEX*/ oam_reg.YJEX_SPRITE_Y2.set(YWOK_OAM_CLKn, oam_reg.LATCH_OAM_B2);
-    /*p29.XYJU*/ oam_reg.XYJU_SPRITE_Y3.set(YWOK_OAM_CLKn, oam_reg.LATCH_OAM_B3);
-    /*p29.YBOG*/ oam_reg.YBOG_SPRITE_Y4.set(YWOK_OAM_CLKn, oam_reg.LATCH_OAM_B4);
-    /*p29.WYSO*/ oam_reg.WYSO_SPRITE_Y5.set(YWOK_OAM_CLKn, oam_reg.LATCH_OAM_B5);
-    /*p29.XOTE*/ oam_reg.XOTE_SPRITE_Y6.set(YWOK_OAM_CLKn, oam_reg.LATCH_OAM_B6);
-    /*p29.YZAB*/ oam_reg.YZAB_SPRITE_Y7.set(YWOK_OAM_CLKn, oam_reg.LATCH_OAM_B7);
+    /*p29.XUSO*/ oam_reg.XUSO_SPRITE_Y0.set(YWOK_OAM_CLKn, oam_reg.YDYV_LATCH_OAM_B0);
+    /*p29.XEGU*/ oam_reg.XEGU_SPRITE_Y1.set(YWOK_OAM_CLKn, oam_reg.YCEB_LATCH_OAM_B1);
+    /*p29.YJEX*/ oam_reg.YJEX_SPRITE_Y2.set(YWOK_OAM_CLKn, oam_reg.ZUCA_LATCH_OAM_B2);
+    /*p29.XYJU*/ oam_reg.XYJU_SPRITE_Y3.set(YWOK_OAM_CLKn, oam_reg.WONE_LATCH_OAM_B3);
+    /*p29.YBOG*/ oam_reg.YBOG_SPRITE_Y4.set(YWOK_OAM_CLKn, oam_reg.ZAXE_LATCH_OAM_B4);
+    /*p29.WYSO*/ oam_reg.WYSO_SPRITE_Y5.set(YWOK_OAM_CLKn, oam_reg.XAFU_LATCH_OAM_B5);
+    /*p29.XOTE*/ oam_reg.XOTE_SPRITE_Y6.set(YWOK_OAM_CLKn, oam_reg.YSES_LATCH_OAM_B6);
+    /*p29.YZAB*/ oam_reg.YZAB_SPRITE_Y7.set(YWOK_OAM_CLKn, oam_reg.ZECA_LATCH_OAM_B7);
   }
 }

@@ -14,6 +14,25 @@ struct DmaSignals {
   /*p04.MORY*/ wire MORY_DMA_READ_CARTn;
   /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp;
   /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp;
+
+  /*p04.MATU*/ wire MATU_DMA_OAM_WRp;
+
+  /*p04.NAKY*/ wire DMA_A00;
+  /*p04.PYRO*/ wire DMA_A01;
+  /*p04.NEFY*/ wire DMA_A02;
+  /*p04.MUTY*/ wire DMA_A03;
+  /*p04.NYKO*/ wire DMA_A04;
+  /*p04.PYLO*/ wire DMA_A05;
+  /*p04.NUTO*/ wire DMA_A06;
+  /*p04.MUGU*/ wire DMA_A07;
+  /*p04.NAFA*/ wire DMA_A08;
+  /*p04.PYNE*/ wire DMA_A09;
+  /*p04.PARA*/ wire DMA_A10;
+  /*p04.NYDO*/ wire DMA_A11;
+  /*p04.NYGY*/ wire DMA_A12;
+  /*p04.PULA*/ wire DMA_A13;
+  /*p04.POKU*/ wire DMA_A14;
+  /*p04.MARU*/ wire DMA_A15;
 };
 
 struct DmaRegisters {

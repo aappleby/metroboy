@@ -81,6 +81,25 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
     .MORY_DMA_READ_CARTn = _MORY_DMA_READ_CARTn,
     .LUMA_DMA_READ_CARTp = _LUMA_DMA_READ_CARTp,
     .LUFA_DMA_READ_VRAMp = _LUFA_DMA_READ_VRAMp,
+
+    .MATU_DMA_OAM_WRp = MATU_DMA_OAM_WRp,
+
+    .DMA_A00 = DMA_A00,
+    .DMA_A01 = DMA_A01,
+    .DMA_A02 = DMA_A02,
+    .DMA_A03 = DMA_A03,
+    .DMA_A04 = DMA_A04,
+    .DMA_A05 = DMA_A05,
+    .DMA_A06 = DMA_A06,
+    .DMA_A07 = DMA_A07,
+    .DMA_A08 = DMA_A08,
+    .DMA_A09 = DMA_A09,
+    .DMA_A10 = DMA_A10,
+    .DMA_A11 = DMA_A11,
+    .DMA_A12 = DMA_A12,
+    .DMA_A13 = DMA_A13,
+    .DMA_A14 = DMA_A14,
+    .DMA_A15 = DMA_A15,
   };
 }
 

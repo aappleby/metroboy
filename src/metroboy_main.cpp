@@ -43,7 +43,7 @@ void MetroBoyApp::post() {
   pass &= run_microtest("microtests/build/dmg", "timer_div_phase_d");
   printf("\n");
 
-  printf("RST");
+  printf("PIN_RST");
   pass &= run_microtest("micro_cpu/build/dmg", "rst_0x00");
   pass &= run_microtest("micro_cpu/build/dmg", "rst_0x08");
   pass &= run_microtest("micro_cpu/build/dmg", "rst_0x10");

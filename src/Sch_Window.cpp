@@ -85,8 +85,7 @@ void WindowRegisters::tick(TestGB& gb) {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
 
-  /*p21.PARU*/ wire PARU_IN_VBLANK = not(!gb.lcd_reg.POPU_VBLANK_d4);
-  /*p27.REPU*/ wire REPU_IN_FRAME_Y = nor(PARU_IN_VBLANK, rst_sig.PYRY_VID_RSTp);   // schematic wrong, this is NOR
+  /*p27.REPU*/ wire REPU_IN_FRAME_Y = nor(lcd_sig.PARU_VBLANKp, rst_sig.PYRY_VID_RSTp);   // schematic wrong, this is NOR
 
   //----------------------------------------
 

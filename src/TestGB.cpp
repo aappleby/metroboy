@@ -156,8 +156,8 @@ bool TestGB::commit_everything() {
   /*p23.MUVO*/ changed |= cfg_reg.WX6.commit_reg();
   /*p23.NUKU*/ changed |= cfg_reg.WX7.commit_reg();
 
-  /*p07.BURO*/ changed |= dbg_reg.FF60_0.commit_reg();
-  /*p07.AMUT*/ changed |= dbg_reg.FF60_1.commit_reg();
+  /*p07.BURO*/ changed |= dbg_reg.BURO_FF60_0.commit_reg();
+  /*p07.AMUT*/ changed |= dbg_reg.AMUT_FF60_1.commit_reg();
 
   /*p04.MATU*/ changed |= dma_reg.MATU_DMA_OAM_WRp.commit_reg(); // -> p25,p28
   /*p04.MYTE*/ changed |= dma_reg.MYTE_DMA_DONE.commit_reg();
@@ -216,22 +216,22 @@ bool TestGB::commit_everything() {
 
   changed |= lcd_reg.commit();
 
-  /*p31.XYKY*/ changed |= oam_reg.LATCH_OAM_A0.commit_latch();
-  /*p31.YRUM*/ changed |= oam_reg.LATCH_OAM_A1.commit_latch();
-  /*p31.YSEX*/ changed |= oam_reg.LATCH_OAM_A2.commit_latch();
-  /*p31.YVEL*/ changed |= oam_reg.LATCH_OAM_A3.commit_latch();
-  /*p31.WYNO*/ changed |= oam_reg.LATCH_OAM_A4.commit_latch();
-  /*p31.CYRA*/ changed |= oam_reg.LATCH_OAM_A5.commit_latch();
-  /*p31.ZUVE*/ changed |= oam_reg.LATCH_OAM_A6.commit_latch();
-  /*p31.ECED*/ changed |= oam_reg.LATCH_OAM_A7.commit_latch();
-  /*p29.YDYV*/ changed |= oam_reg.LATCH_OAM_B0.commit_latch();
-  /*p29.YCEB*/ changed |= oam_reg.LATCH_OAM_B1.commit_latch();
-  /*p29.ZUCA*/ changed |= oam_reg.LATCH_OAM_B2.commit_latch();
-  /*p29.WONE*/ changed |= oam_reg.LATCH_OAM_B3.commit_latch();
-  /*p29.ZAXE*/ changed |= oam_reg.LATCH_OAM_B4.commit_latch();
-  /*p29.XAFU*/ changed |= oam_reg.LATCH_OAM_B5.commit_latch();
-  /*p29.YSES*/ changed |= oam_reg.LATCH_OAM_B6.commit_latch();
-  /*p29.ZECA*/ changed |= oam_reg.LATCH_OAM_B7.commit_latch();
+  /*p31.XYKY*/ changed |= oam_reg.XYKY_LATCH_OAM_A0.commit_latch();
+  /*p31.YRUM*/ changed |= oam_reg.YRUM_LATCH_OAM_A1.commit_latch();
+  /*p31.YSEX*/ changed |= oam_reg.YSEX_LATCH_OAM_A2.commit_latch();
+  /*p31.YVEL*/ changed |= oam_reg.YVEL_LATCH_OAM_A3.commit_latch();
+  /*p31.WYNO*/ changed |= oam_reg.WYNO_LATCH_OAM_A4.commit_latch();
+  /*p31.CYRA*/ changed |= oam_reg.CYRA_LATCH_OAM_A5.commit_latch();
+  /*p31.ZUVE*/ changed |= oam_reg.ZUVE_LATCH_OAM_A6.commit_latch();
+  /*p31.ECED*/ changed |= oam_reg.ECED_LATCH_OAM_A7.commit_latch();
+  /*p29.YDYV*/ changed |= oam_reg.YDYV_LATCH_OAM_B0.commit_latch();
+  /*p29.YCEB*/ changed |= oam_reg.YCEB_LATCH_OAM_B1.commit_latch();
+  /*p29.ZUCA*/ changed |= oam_reg.ZUCA_LATCH_OAM_B2.commit_latch();
+  /*p29.WONE*/ changed |= oam_reg.WONE_LATCH_OAM_B3.commit_latch();
+  /*p29.ZAXE*/ changed |= oam_reg.ZAXE_LATCH_OAM_B4.commit_latch();
+  /*p29.XAFU*/ changed |= oam_reg.XAFU_LATCH_OAM_B5.commit_latch();
+  /*p29.YSES*/ changed |= oam_reg.YSES_LATCH_OAM_B6.commit_latch();
+  /*p29.ZECA*/ changed |= oam_reg.ZECA_LATCH_OAM_B7.commit_latch();
   /*p31.YLOR*/ changed |= oam_reg.YLOR_SPRITE_X0.commit_reg();
   /*p31.ZYTY*/ changed |= oam_reg.ZYTY_SPRITE_X1.commit_reg();
   /*p31.ZYVE*/ changed |= oam_reg.ZYVE_SPRITE_X2.commit_reg();
@@ -365,7 +365,7 @@ bool TestGB::commit_everything() {
   /*p03.PEDA*/ changed |= tim_reg.TIMA_6.commit_counter();
   /*p03.NUGA*/ changed |= tim_reg.TIMA_7.commit_counter();
   /*p03.NYDU*/ changed |= tim_reg.TIMA_MAX.commit_reg();
-  /*p03.MOBA*/ changed |= tim_reg.MOBA_INT_TIMER.commit_reg();
+  /*p03.MOBA*/ changed |= tim_reg.MOBA_INT_TIMERp.commit_reg();
   /*p03.SABU*/ changed |= tim_reg.TMA_0.commit_reg();
   /*p03.NYKE*/ changed |= tim_reg.TMA_1.commit_reg();
   /*p03.MURU*/ changed |= tim_reg.TMA_2.commit_reg();
@@ -522,8 +522,6 @@ bool TestGB::commit_everything() {
   changed |= oam_bus.PIN_DB5.commit_tribuf();
   changed |= oam_bus.PIN_DB6.commit_tribuf();
   changed |= oam_bus.PIN_DB7.commit_tribuf();
-
-  changed |= wave_pins.BORY_ABxxxxxH.commit_pinout();
 
   // Package pins
 
@@ -692,14 +690,14 @@ bool TestGB::commit_everything() {
 
   changed |= ser_reg.commit();
 
-  /* PIN_71 */ changed |= sys_pins.RST.clear_preset();
+  /* PIN_71 */ changed |= ext_bus.PIN_RST.clear_preset();
   /* PIN_72 */ /*GND*/
   /* PIN_73 */ /*CLKOUT*/
-  /* PIN_74 */ changed |= sys_pins.PIN_CLK_GOOD.clear_preset();
-  /* PIN_74 */ changed |= sys_pins.CLK_IN_xBxDxFxH.clear_preset();
+  /* PIN_74 */ changed |= ext_bus.PIN_CLK_GOOD.clear_preset();
+  /* PIN_74 */ changed |= ext_bus.PIN_CLK_IN_xBxDxFxH.clear_preset();
   /* PIN_75 */ changed |= ext_bus.PIN_PHI.commit_pinout();     // <- BUDE/BEVA
-  /* PIN_76 */ changed |= sys_pins.T2.clear_preset();
-  /* PIN_77 */ changed |= sys_pins.T1.clear_preset();
+  /* PIN_76 */ changed |= ext_bus.PIN_T2.clear_preset();
+  /* PIN_77 */ changed |= ext_bus.PIN_T1.clear_preset();
   /* PIN_78 */ changed |= ext_bus.PIN_WR_A.commit_pinout();    // <- UVER
   /* PIN_78 */ changed |= ext_bus.PIN_WR_C.clear_preset();     // -> UBAL
   /* PIN_78 */ changed |= ext_bus.PIN_WR_D.commit_pinout();    // <- USUF

@@ -5,22 +5,16 @@
 using namespace Schematics;
 
 void InterruptRegisters::tick(TestGB& gb) {
-  auto& ppu_reg = gb.ppu_reg;
   auto& cpu_bus = gb.cpu_bus;
-  auto& tim_reg = gb.tim_reg;
-  auto& lcd_reg = gb.lcd_reg;
   auto& joy_pin = gb.joy_pin;
-  auto& joy_reg = gb.joy_reg;
-  auto& ser_reg = gb.ser_reg;
 
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
+  auto tim_sig = gb.tim_reg.sig(gb);
+  auto ser_sig = gb.ser_reg.sig(gb);
+  auto joy_sig = gb.joy_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto dma_sig = gb.dma_reg.sig(gb);
   auto cpu_sig = gb.cpu_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto tim_sig = gb.tim_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
 
   /*p07.SEMY*/ wire SEMY_ADDR_XX0X = nor(cpu_bus.PIN_A07, cpu_bus.PIN_A06, cpu_bus.PIN_A05, cpu_bus.PIN_A04);
@@ -48,29 +42,18 @@ void InterruptRegisters::tick(TestGB& gb) {
   }
 
   // int 0 source
-  /*p21.PARU*/ wire PARU_INT_VBLANKp = not(lcd_reg.POPU_VBLANK_d4.qn());
-  /*p21.TOLU*/ wire TOLU_INT_VBLANKn = not(PARU_INT_VBLANKp);
-  /*p21.VYPU*/ wire VYPU_INT_VBLANKp = not(TOLU_INT_VBLANKn);
-
+  wire VYPU_VBLANKp = lcd_sig.VYPU_VBLANKp;
   // int 1 source
-  /*p21.TAPA*/ wire TAPA_INT_OAM = and (TOLU_INT_VBLANKn, lcd_sig.SELA_NEW_LINE_d0p);
-  /*p21.TARU*/ wire TARU_INT_HBL = and (TOLU_INT_VBLANKn, ppu_sig.WODU_RENDER_DONEp);
-  /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN, lcd_reg.ROPO_LY_MATCH_SYNCp,
-                                           ppu_reg.REFE_INT_OAM_EN, TAPA_INT_OAM,
-                                           ppu_reg.RUFO_INT_VBL_EN, PARU_INT_VBLANKp, // polarity?
-                                           ppu_reg.ROXE_INT_HBL_EN, TARU_INT_HBL);
-  /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
-  /*p21.VOTY*/ wire VOTY_INT_STATp = not(TUVA_INT_STATn);
+  wire VOTY_INT_STATp = ppu_sig.VOTY_INT_STATp;
 
   // int 2 source
-  wire MOBA_INT_TIMERp = tim_reg.MOBA_INT_TIMER;
+  wire MOBA_INT_TIMERp = tim_sig.MOBA_INT_TIMERp;
 
   // int 3 source
-  wire CALY_INT_SERIALp = ser_reg.CALY_INT_SERIAL;
+  wire CALY_INT_SERIALp = ser_sig.CALY_INT_SERIALp;
 
   // int 4 source
-  /*p02.ASOK*/ wire ASOK_INT_JPp = and (joy_reg.JP_GLITCH3, joy_reg.JP_GLITCH0);
-
+  wire ASOK_INT_JPp = joy_sig.ASOK_INT_JPp;
 
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
@@ -124,7 +107,7 @@ void InterruptRegisters::tick(TestGB& gb) {
   }
 #endif
 
-  /*p02.LOPE*/ LOPE_FF0F_0.set(VYPU_INT_VBLANKp, MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, PESU_FF0F_INp);
+  /*p02.LOPE*/ LOPE_FF0F_0.set(VYPU_VBLANKp, MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, PESU_FF0F_INp);
   /*p02.LALU*/ LALU_FF0F_1.set(VOTY_INT_STATp,   MODY_FF0F_SET1n, MOVU_FF0F_RST1n, PESU_FF0F_INp);
   /*p02.NYBO*/ NYBO_FF0F_2.set(MOBA_INT_TIMERp,  PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, PESU_FF0F_INp);
   /*p02.UBUL*/ UBUL_FF0F_3.set(CALY_INT_SERIALp, TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_FF0F_INp);

@@ -13,7 +13,7 @@ struct CpuBus {
   bool commit();
 
   void dump_pins(TextPainter& text_painter) {
-    text_painter.dprintf("----- CPU DBG/RST -----\n");
+    text_painter.dprintf("----- CPU DBG/PIN_RST -----\n");
     text_painter.dprintf("PIN_RESET       %d\n", PIN_RESET.a.val);
     text_painter.dprintf("PIN_CPU_RESET       %d\n", PIN_CPU_RESET.a.val);
     text_painter.dprintf("PIN_CLK_GOOD        %d\n", PIN_CLK_GOOD.a.val);

@@ -70,8 +70,8 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
     /*p29.BYJO*/ wire BYJO_SCANNINGn = not(sig.CEHA_SCANNINGp);
     /*p21.XYMU*/ wire XYMU_RENDERINGp = gb.ppu_reg.XYMU_RENDERINGp;
     /*p29.AZEM*/ wire AZEM_RENDERINGp = and (BYJO_SCANNINGn, XYMU_RENDERINGp);
-    /*p23.XYLO*/ wire LCDC_SPEN = gb.cfg_reg.LCDC_SPEN.q();
-    /*p29.AROR*/ sig.AROR_MATCH_ENp = and (AZEM_RENDERINGp, LCDC_SPEN);
+    /*p23.XYLO*/ wire XYLO_LCDC_SPEN = gb.cfg_reg.XYLO_LCDC_SPEN.q();
+    /*p29.AROR*/ sig.AROR_MATCH_ENp = and (AZEM_RENDERINGp, XYLO_LCDC_SPEN);
   }
 
   {
@@ -117,8 +117,8 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
     /*p29.GYDA*/ wire SPRITE_DELTA6 = not(YDIFF_S6);
     /*p29.GEWY*/ wire SPRITE_DELTA7 = not(YDIFF_S7);
 
-    /*p23.XYMO*/ wire LCDC_SPSIZE  = cfg_reg.LCDC_SPSIZE.q();
-    /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, LCDC_SPSIZE);
+    /*p23.XYMO*/ wire XYMO_LCDC_SPSIZE  = cfg_reg.XYMO_LCDC_SPSIZE.q();
+    /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, XYMO_LCDC_SPSIZE);
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(SPRITE_DELTA4, SPRITE_DELTA5, SPRITE_DELTA6, SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
     /*p29.CARE*/ wire CARE_STORE_ENp_ABxxEFxx = and (clk_sig.XOCE_ABxxEFxx, sig.CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.

@@ -26,6 +26,7 @@
 #include "Sch_OamBus.h"
 #include "Sch_BusMux.h"
 #include "Sch_Interrupts.h"
+#include "Sch_Scroll.h"
 
 namespace Schematics {
 
@@ -69,7 +70,7 @@ struct TestGB {
   WindowRegisters win_reg;
   AddressRegisters adr_reg;
   CartRegisters cart_reg;
-  
+  ScrollRegisters scr_reg;
   VramPins vram_pins;
 
   CpuBus cpu_bus;

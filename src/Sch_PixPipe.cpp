@@ -359,11 +359,11 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   // Pixel merge, this is _all_ combi logic. :/
   
   {
-    /*p35.RAJY*/ wire _PIX_BG0  = and(cfg_reg.LCDC_BGEN, BG_PIPE_A7);
-    /*p35.TADE*/ wire _PIX_BG1  = and(cfg_reg.LCDC_BGEN, BG_PIPE_B7);
+    /*p35.RAJY*/ wire _PIX_BG0  = and(cfg_reg.VYXE_LCDC_BGEN, BG_PIPE_A7);
+    /*p35.TADE*/ wire _PIX_BG1  = and(cfg_reg.VYXE_LCDC_BGEN, BG_PIPE_B7);
 
-    /*p35.WOXA*/ wire _PIX_SP0  = and(cfg_reg.LCDC_SPEN, SPR_PIPE_A7);
-    /*p35.XULA*/ wire _PIX_SP1  = and(cfg_reg.LCDC_SPEN, SPR_PIPE_B7);
+    /*p35.WOXA*/ wire _PIX_SP0  = and(cfg_reg.XYLO_LCDC_SPEN, SPR_PIPE_A7);
+    /*p35.XULA*/ wire _PIX_SP1  = and(cfg_reg.XYLO_LCDC_SPEN, SPR_PIPE_B7);
 
     /*p35.NULY*/ wire _PIX_SPn  = nor(_PIX_SP0, _PIX_SP1);
 

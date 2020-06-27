@@ -8,32 +8,40 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct PpuSignals {
-  /*p27.TEVO*/ wire TEVO_CLK_STOPn;
-  /*p21.WODU*/ wire WODU_RENDER_DONEp;
-  /*p27.NYXU*/ wire NYXU_BFETCH_RSTn;
-  /*p29.TEXY*/ wire TEXY_SPRITE_READp;
-  /*p29.WUTY*/ wire WUTY_SPRITE_DONE;
-  /*p28.ACYL*/ wire ACYL_PPU_USE_OAM1p;
+  /*p27.TEVO*/ bool TEVO_CLK_STOPn;
+  /*p21.WODU*/ bool WODU_RENDER_DONEp;
+  /*p27.NYXU*/ bool NYXU_BFETCH_RSTn;
+  /*p29.TEXY*/ bool TEXY_SPRITE_READp;
+  /*p29.WUTY*/ bool WUTY_SPRITE_DONE;
+  /*p28.ACYL*/ bool ACYL_PPU_USE_OAM1p;
 
-  /*p24.POKY*/ wire POKY_AFTER_PORCH_LATCHp;
-  /*p27.TAVE*/ wire TAVE_PORCH_ENDp;
-  /*p21.XYMU*/ wire XYMU_RENDERINGp;
-  /*p29.TEPA*/ wire TEPA_RENDERINGn;
-  /*p24.LOBY*/ wire LOBY_RENDERINGn;
-  /*p25.ROPY*/ wire ROPY_RENDERINGn;
-  /*p24.SEGU*/ wire SEGU_xBxDxFxH;
-  /*p24.ROXO*/ wire ROXO_AxCxExGx;
-  /*p27.ROCO*/ wire ROCO_AxCxExGx;
-  /*p25.SERE*/ wire SERE_VRAM_RD;
-  /*p24.SACU*/ wire SACU_CLKPIPE_AxCxExGx;
-  /*p27.ROZE*/ wire ROZE_FINE_COUNT_STOPn;
-  /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n;
-  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG;
-  /*p27.NAKO*/ wire NAKO_FETCH_S1n;
-  /*p27.NOFU*/ wire NOFU_FETCH_S2n;
-  /*p21.VOTY*/ wire VOTY_INT_STATp;
-  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp;
+  /*p24.POKY*/ bool POKY_AFTER_PORCH_LATCHp;
+  /*p27.TAVE*/ bool TAVE_PORCH_ENDp;
+  /*p21.XYMU*/ bool XYMU_RENDERINGp;
+  /*p29.TEPA*/ bool TEPA_RENDERINGn;
+  /*p24.LOBY*/ bool LOBY_RENDERINGn;
+  /*p25.ROPY*/ bool ROPY_RENDERINGn;
+  /*p24.SEGU*/ bool SEGU_xBxDxFxH;
+  /*p24.ROXO*/ bool ROXO_AxCxExGx;
+  /*p27.ROCO*/ bool ROCO_AxCxExGx;
+  /*p25.SERE*/ bool SERE_VRAM_RD;
+  /*p24.SACU*/ bool SACU_CLKPIPE_AxCxExGx;
+  /*p27.ROZE*/ bool ROZE_FINE_COUNT_STOPn;
+  /*p29.TYTU*/ bool TYTU_SFETCH_S0_D0n;
+  /*p29.TACU*/ bool TACU_SPR_SEQ_5_TRIG;
+  /*p27.NAKO*/ bool NAKO_FETCH_S1n;
+  /*p27.NOFU*/ bool NOFU_FETCH_S2n;
+  /*p21.VOTY*/ bool VOTY_INT_STATp;
+  /*p29.TUVO*/ bool TUVO_PPU_OAM_RDp;
 
+  /*p21.XEHO*/ bool XEHO_X0;
+  /*p21.SAVY*/ bool SAVY_X1;
+  /*p21.XODU*/ bool XODU_X2;
+  /*p21.XYDO*/ bool XYDO_X3;
+  /*p21.TUHU*/ bool TUHU_X4;
+  /*p21.TUKY*/ bool TUKY_X5;
+  /*p21.TAKO*/ bool TAKO_X6;
+  /*p21.SYBE*/ bool SYBE_X7;
 };
 
 //-----------------------------------------------------------------------------
@@ -78,7 +86,6 @@ struct PpuRegisters {
     text_painter.newline();
   }
 
-  // how the fck did i break all of these?
   /*p21.XEHO*/ Reg XEHO_X0;
   /*p21.SAVY*/ Reg SAVY_X1;
   /*p21.XODU*/ Reg XODU_X2;

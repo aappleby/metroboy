@@ -24,23 +24,17 @@ struct BusRegisters {
 
 struct ConfigRegisters {
 
-  ConfigRegisters() {
-    SCX0.a.val = SCX0.b.val = 1;
-  }
-
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- PPU CFG -----\n");
-    dump_long(text_painter, "LCDC_BGEN   ", LCDC_BGEN.a  );
-    dump_long(text_painter, "LCDC_SPEN   ", LCDC_SPEN.a  );   
-    dump_long(text_painter, "LCDC_SPSIZE ", LCDC_SPSIZE.a);
-    dump_long(text_painter, "LCDC_BGMAP  ", LCDC_BGMAP.a );
-    dump_long(text_painter, "LCDC_BGTILE ", LCDC_BGTILE.a);
-    dump_long(text_painter, "LCDC_WINEN  ", LCDC_WINEN.a );
-    dump_long(text_painter, "LCDC_WINMAP ", LCDC_WINMAP.a);
+    dump_long(text_painter, "VYXE_LCDC_BGEN   ", VYXE_LCDC_BGEN.a  );
+    dump_long(text_painter, "XYLO_LCDC_SPEN   ", XYLO_LCDC_SPEN.a  );   
+    dump_long(text_painter, "XYMO_LCDC_SPSIZE ", XYMO_LCDC_SPSIZE.a);
+    dump_long(text_painter, "XAFO_LCDC_BGMAP  ", XAFO_LCDC_BGMAP.a );
+    dump_long(text_painter, "WEXU_LCDC_BGTILE ", WEXU_LCDC_BGTILE.a);
+    dump_long(text_painter, "WYMO_LCDC_WINEN  ", WYMO_LCDC_WINEN.a );
+    dump_long(text_painter, "WOKY_LCDC_WINMAP ", WOKY_LCDC_WINMAP.a);
     dump_long(text_painter, "XONA_LCDC_EN     ", XONA_LCDC_EN.a    );
 
-    dump(text_painter,      "SCY         ", SCY0,  SCY1,  SCY2,  SCY3,  SCY4,  SCY5,  SCY6,  SCY7);
-    dump(text_painter,      "SCX         ", SCX0,  SCX1,  SCX2,  SCX3,  SCX4,  SCX5,  SCX6,  SCX7);
     //dump(text_painter,      "LYC         ", LYC0,  LYC1,  LYC2,  LYC3,  LYC4,  LYC5,  LYC6,  LYC7);
     dump(text_painter,      "BGP         ", BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7);
     dump(text_painter,      "OBP0        ", OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07);
@@ -50,18 +44,16 @@ struct ConfigRegisters {
   }
 
   int get_lcdc() const {
-    return pack(LCDC_BGEN.q(),
-                LCDC_SPEN.q(),
-                LCDC_SPSIZE.q(),
-                LCDC_BGMAP.q(),
-                LCDC_BGTILE.q(),
-                LCDC_WINEN.q(),
-                LCDC_WINMAP.q(),
+    return pack(VYXE_LCDC_BGEN.q(),
+                XYLO_LCDC_SPEN.q(),
+                XYMO_LCDC_SPSIZE.q(),
+                XAFO_LCDC_BGMAP.q(),
+                WEXU_LCDC_BGTILE.q(),
+                WYMO_LCDC_WINEN.q(),
+                WOKY_LCDC_WINMAP.q(),
                 XONA_LCDC_EN.q());
   }
 
-  int get_scy()  const { return pack(SCY0.q(),  SCY1.q(),  SCY2.q(),  SCY3.q(),  SCY4.q(),  SCY5.q(),  SCY6.q(),  SCY7.q()); }
-  int get_scx()  const { return pack(SCX0.q(),  SCX1.q(),  SCX2.q(),  SCX3.q(),  SCX4.q(),  SCX5.q(),  SCX6.q(),  SCX7.q()); }
   //int get_lyc()  const { return pack(LYC0.q(),  LYC1.q(),  LYC2.q(),  LYC3.q(),  LYC4.q(),  LYC5.q(),  LYC6.q(),  LYC7.q()); }
   int get_bgp()  const { return pack(BGP0.q(),  BGP1.q(),  BGP2.q(),  BGP3.q(),  BGP4.q(),  BGP5.q(),  BGP6.q(),  BGP7.q()); }
   int get_obp0() const { return pack(OBP00.q(), OBP01.q(), OBP02.q(), OBP03.q(), OBP04.q(), OBP05.q(), OBP06.q(), OBP07.q()); }
@@ -84,34 +76,14 @@ struct ConfigRegisters {
   */
 
   // FF40 - LCDC
-  /*p23.VYXE*/ Reg LCDC_BGEN;
-  /*p23.XYLO*/ Reg LCDC_SPEN;
-  /*p23.XYMO*/ Reg LCDC_SPSIZE;
-  /*p23.XAFO*/ Reg LCDC_BGMAP;
-  /*p23.WEXU*/ Reg LCDC_BGTILE;
-  /*p23.WYMO*/ Reg LCDC_WINEN;
-  /*p23.WOKY*/ Reg LCDC_WINMAP;
+  /*p23.VYXE*/ Reg VYXE_LCDC_BGEN;
+  /*p23.XYLO*/ Reg XYLO_LCDC_SPEN;
+  /*p23.XYMO*/ Reg XYMO_LCDC_SPSIZE;
+  /*p23.XAFO*/ Reg XAFO_LCDC_BGMAP;
+  /*p23.WEXU*/ Reg WEXU_LCDC_BGTILE;
+  /*p23.WYMO*/ Reg WYMO_LCDC_WINEN;
+  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAP;
   /*p23.XONA*/ Reg XONA_LCDC_EN;
-
-  // FF42 - SCY
-  /*p23.GAVE*/ Reg SCY0;
-  /*p23.FYMO*/ Reg SCY1;
-  /*p23.FEZU*/ Reg SCY2;
-  /*p23.FUJO*/ Reg SCY3;
-  /*p23.DEDE*/ Reg SCY4;
-  /*p23.FOTY*/ Reg SCY5;
-  /*p23.FOHA*/ Reg SCY6;
-  /*p23.FUNY*/ Reg SCY7;
-
-  // FF43 - SCX
-  /*p23.DATY*/ Reg SCX0;
-  /*p23.DUZU*/ Reg SCX1;
-  /*p23.CYXU*/ Reg SCX2;
-  /*p23.GUBO*/ Reg SCX3;
-  /*p23.BEMY*/ Reg SCX4;
-  /*p23.CUZY*/ Reg SCX5;
-  /*p23.CABU*/ Reg SCX6;
-  /*p23.BAKE*/ Reg SCX7;
 
   // FF47 - BGP
   /*p36.PAVO*/ Reg BGP0;

@@ -39,7 +39,6 @@ struct WindowSignals {
   /*p27.TOZO*/ bool WIN_Y5;
   /*p27.TATE*/ bool WIN_Y6;
   /*p27.TEKE*/ bool WIN_Y7;
-
 };
 
 //-----------------------------------------------------------------------------
@@ -82,7 +81,6 @@ private:
   /*p27.RENE*/ Reg RENE_WIN_MATCH_ONSCREEN_SYNC2;
   /*p27.PYCO*/ Reg PYCO_WIN_MATCH_SYNC1;
   /*p27.NUNU*/ Reg NUNU_WIN_MATCH_SYNC2;
-
 
   // FF4A - WY
   /*p23.NESO*/ Reg WY0;

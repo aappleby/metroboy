@@ -35,21 +35,32 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
   /*p21.TOLU*/ wire TOLU_VBLANKn = not(PARU_VBLANKp);
   /*p21.VYPU*/ wire VYPU_VBLANKp = not(TOLU_VBLANKn);
 
-  return {
-    .CATU_VID_LINE_d4 = CATU_VID_LINE_d4,
-    .BYHA_VID_LINE_TRIG_d4n = BYHA_VID_LINE_TRIG_d4n,
-    .ATEJ_VID_LINE_TRIG_d4p = ATEJ_VID_LINE_TRIG_d4p,
-    .XAHY_VID_LINE_TRIG_d4n = XAHY_VID_LINE_TRIG_d4n,
-    .BYVA_VID_LINE_TRIG_d4n = BYVA_VID_LINE_TRIG_d4n,
-    .DYBA_VID_LINE_TRIG_d4p = DYBA_VID_LINE_TRIG_d4p,
-    .PURE_NEW_LINE_d0n = PURE_NEW_LINE_d0n,
-    .SELA_NEW_LINE_d0p = SELA_NEW_LINE_d0p,
-    .POPU_VBLANK_d4 = POPU_VBLANK_d4,
-    .PARU_VBLANKp = PARU_VBLANKp,
-    .TOLU_VBLANKn = TOLU_VBLANKn,
-    .VYPU_VBLANKp = VYPU_VBLANKp,
-    .ROPO_LY_MATCH_SYNCp = ROPO_LY_MATCH_SYNCp,
-  };
+  LcdSignals sig;
+
+  sig.CATU_VID_LINE_d4 = CATU_VID_LINE_d4;
+  sig.BYHA_VID_LINE_TRIG_d4n = BYHA_VID_LINE_TRIG_d4n;
+  sig.ATEJ_VID_LINE_TRIG_d4p = ATEJ_VID_LINE_TRIG_d4p;
+  sig.XAHY_VID_LINE_TRIG_d4n = XAHY_VID_LINE_TRIG_d4n;
+  sig.BYVA_VID_LINE_TRIG_d4n = BYVA_VID_LINE_TRIG_d4n;
+  sig.DYBA_VID_LINE_TRIG_d4p = DYBA_VID_LINE_TRIG_d4p;
+  sig.PURE_NEW_LINE_d0n = PURE_NEW_LINE_d0n;
+  sig.SELA_NEW_LINE_d0p = SELA_NEW_LINE_d0p;
+  sig.POPU_VBLANK_d4 = POPU_VBLANK_d4;
+  sig.PARU_VBLANKp = PARU_VBLANKp;
+  sig.TOLU_VBLANKn = TOLU_VBLANKn;
+  sig.VYPU_VBLANKp = VYPU_VBLANKp;
+  sig.ROPO_LY_MATCH_SYNCp = ROPO_LY_MATCH_SYNCp;
+
+  sig.MUWY_Y0 = MUWY_Y0;
+  sig.MYRO_Y1 = MYRO_Y1;
+  sig.LEXA_Y2 = LEXA_Y2;
+  sig.LYDO_Y3 = LYDO_Y3;
+  sig.LOVU_Y4 = LOVU_Y4;
+  sig.LEMA_Y5 = LEMA_Y5;
+  sig.MATO_Y6 = MATO_Y6;
+  sig.LAFO_Y7 = LAFO_Y7;
+
+  return sig;
 }
 
 //------------------------------------------------------------------------------

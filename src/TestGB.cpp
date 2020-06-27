@@ -43,30 +43,14 @@ void TestGB::ext_preset() {
 bool TestGB::commit_everything() {
   bool changed = false;
 
-  /*p23.VYXE*/ changed |= cfg_reg.LCDC_BGEN.commit_reg();
-  /*p23.XYLO*/ changed |= cfg_reg.LCDC_SPEN.commit_reg();
-  /*p23.XYMO*/ changed |= cfg_reg.LCDC_SPSIZE.commit_reg();
-  /*p23.XAFO*/ changed |= cfg_reg.LCDC_BGMAP.commit_reg();
-  /*p23.WEXU*/ changed |= cfg_reg.LCDC_BGTILE.commit_reg();
-  /*p23.WYMO*/ changed |= cfg_reg.LCDC_WINEN.commit_reg();
-  /*p23.WOKY*/ changed |= cfg_reg.LCDC_WINMAP.commit_reg();
+  /*p23.VYXE*/ changed |= cfg_reg.VYXE_LCDC_BGEN.commit_reg();
+  /*p23.XYLO*/ changed |= cfg_reg.XYLO_LCDC_SPEN.commit_reg();
+  /*p23.XYMO*/ changed |= cfg_reg.XYMO_LCDC_SPSIZE.commit_reg();
+  /*p23.XAFO*/ changed |= cfg_reg.XAFO_LCDC_BGMAP.commit_reg();
+  /*p23.WEXU*/ changed |= cfg_reg.WEXU_LCDC_BGTILE.commit_reg();
+  /*p23.WYMO*/ changed |= cfg_reg.WYMO_LCDC_WINEN.commit_reg();
+  /*p23.WOKY*/ changed |= cfg_reg.WOKY_LCDC_WINMAP.commit_reg();
   /*p23.XONA*/ changed |= cfg_reg.XONA_LCDC_EN.commit_reg();
-  /*p23.GAVE*/ changed |= cfg_reg.SCY0.commit_reg();
-  /*p23.FYMO*/ changed |= cfg_reg.SCY1.commit_reg();
-  /*p23.FEZU*/ changed |= cfg_reg.SCY2.commit_reg();
-  /*p23.FUJO*/ changed |= cfg_reg.SCY3.commit_reg();
-  /*p23.DEDE*/ changed |= cfg_reg.SCY4.commit_reg();
-  /*p23.FOTY*/ changed |= cfg_reg.SCY5.commit_reg();
-  /*p23.FOHA*/ changed |= cfg_reg.SCY6.commit_reg();
-  /*p23.FUNY*/ changed |= cfg_reg.SCY7.commit_reg();
-  /*p23.DATY*/ changed |= cfg_reg.SCX0.commit_reg();
-  /*p23.DUZU*/ changed |= cfg_reg.SCX1.commit_reg();
-  /*p23.CYXU*/ changed |= cfg_reg.SCX2.commit_reg();
-  /*p23.GUBO*/ changed |= cfg_reg.SCX3.commit_reg();
-  /*p23.BEMY*/ changed |= cfg_reg.SCX4.commit_reg();
-  /*p23.CUZY*/ changed |= cfg_reg.SCX5.commit_reg();
-  /*p23.CABU*/ changed |= cfg_reg.SCX6.commit_reg();
-  /*p23.BAKE*/ changed |= cfg_reg.SCX7.commit_reg();
   /*p36.PAVO*/ changed |= cfg_reg.BGP0.commit_reg();
   /*p36.NUSY*/ changed |= cfg_reg.BGP1.commit_reg();
   /*p36.PYLU*/ changed |= cfg_reg.BGP2.commit_reg();

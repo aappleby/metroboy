@@ -16,7 +16,7 @@ struct DebugSignals {
   /*p28.WYDU*/ wire WYDU_P10_Bp;
   /*p07.UBET*/ wire UBET_T1n;
   /*p07.UVAR*/ wire UVAR_T2n;
-  /*p07.UMUT*/ wire UMUT_MODE_DBG1;
+  /*p07.UMUT*/ wire UMUT_MODE_DBG1p;
 
   // Must be UNORp, see UJYV/UBAL
   /*p07.UNOR*/ wire UNOR_MODE_DBG2p;

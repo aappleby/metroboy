@@ -17,10 +17,10 @@ uint8_t GateBoy::read_cycle(uint16_t addr) {
     for (int pass = 0; pass < 256; pass++) {
       gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
-      gb->cpu_pins.CPU_RAW_RD.preset(true, 1);
-      gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-      gb->cpu_pins.ADDR_VALID.preset(true, 1);
-      gb->cpu_pins.preset_addr(true, addr);
+      gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 1);
+      gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
+      gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
+      gb->cpu_bus.preset_addr(true, addr);
 
       // FIXME still don't know who drives these, so we always set them to 0.
       gb->joy_pin.P10_B.set(0);
@@ -36,7 +36,7 @@ uint8_t GateBoy::read_cycle(uint16_t addr) {
     }
   }
 
-  return (uint8_t)gb->cpu_pins.get_data();
+  return (uint8_t)gb->cpu_bus.get_data();
 }
 
 void GateBoy::write_cycle(uint16_t addr, uint8_t data) {
@@ -48,11 +48,11 @@ void GateBoy::write_cycle(uint16_t addr, uint8_t data) {
     for (int pass = 0; pass < 256; pass++) {
       gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
-      gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
-      gb->cpu_pins.CPU_RAW_WR.preset(true, 1);
-      gb->cpu_pins.ADDR_VALID.preset(true, 1);
-      gb->cpu_pins.preset_addr(true, addr);
-      gb->cpu_pins.set_data(true, data);
+      gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
+      gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 1);
+      gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
+      gb->cpu_bus.preset_addr(true, addr);
+      gb->cpu_bus.set_data(true, data);
 
       // FIXME still don't know who drives these, so we always set them to 0.
       gb->joy_pin.P10_B.set(0);
@@ -78,10 +78,10 @@ void GateBoy::pass_cycle() {
     for (int pass = 0; pass < 256; pass++) {
       gb->sys_pins.CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
-      gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
-      gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-      gb->cpu_pins.ADDR_VALID.preset(true, 0);
-      gb->cpu_pins.preset_addr(true, 0x0000);
+      gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
+      gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
+      gb->cpu_bus.PIN_ADDR_VALID.preset(true, 0);
+      gb->cpu_bus.preset_addr(true, 0x0000);
 
       // FIXME still don't know who drives these, so we always set them to 0.
       gb->joy_pin.P10_B.set(0);
@@ -182,31 +182,31 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   Schematics::TestGB* gb = state_manager.state();
 
   gb->sys_pins.RST.preset(true, 1);
-  gb->sys_pins.CLK_GOOD.preset(true, 0);
+  gb->sys_pins.PIN_CLK_GOOD.preset(true, 0);
   gb->sys_pins.T2.preset(true, 0);
   gb->sys_pins.T1.preset(true, 0);
 
-  gb->cpu_pins.CLKREQ.preset(true, 0);
-  gb->cpu_pins.CPU_RAW_RD.preset(true, 0);
-  gb->cpu_pins.CPU_RAW_WR.preset(true, 0);
-  gb->cpu_pins.ADDR_VALID.preset(true, 1);
+  gb->cpu_bus.PIN_CLKREQ.preset(true, 0);
+  gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
+  gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
+  gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
 
-  gb->cpu_pins.FROM_CPU5.preset(true, 0);
-  gb->cpu_pins.FROM_CPU6.preset(true, 0);
-  gb->cpu_pins.ACK_SERIAL.preset(true, 0);
-  gb->cpu_pins.ACK_STAT.preset(true, 0);
-  gb->cpu_pins.ACK_VBLANK.preset(true, 0);
-  gb->cpu_pins.ACK_TIMER.preset(true, 0);
-  gb->cpu_pins.ACK_JOYPAD.preset(true, 0);
+  gb->cpu_bus.PIN_FROM_CPU5p.preset(true, 0);
+  gb->cpu_bus.PIN_FROM_CPU6.preset(true, 0);
+  gb->cpu_bus.PIN_ACK_SERIAL.preset(true, 0);
+  gb->cpu_bus.PIN_ACK_STAT.preset(true, 0);
+  gb->cpu_bus.PIN_ACK_VBLANK.preset(true, 0);
+  gb->cpu_bus.PIN_ACK_TIMER.preset(true, 0);
+  gb->cpu_bus.PIN_ACK_JOYPAD.preset(true, 0);
 
   gb->ext_preset();
 
   pass_cycle();
   gb->sys_pins.RST.preset(true, 0);
   pass_cycle();
-  gb->sys_pins.CLK_GOOD.preset(true, 1);
+  gb->sys_pins.PIN_CLK_GOOD.preset(true, 1);
   pass_cycle();
-  gb->cpu_pins.CLKREQ.preset(true, 1);
+  gb->cpu_bus.PIN_CLKREQ.preset(true, 1);
   pass_cycle();
 }
 
@@ -263,9 +263,9 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   gb.rst_reg.dump_regs(text_painter);
   //gb.clk_reg.dump_regs(text_painter);
   //gb.vck_reg.dump_regs(text_painter);
-  gb.cpu_pins.dump_pins(text_painter);
+  gb.cpu_bus.dump_pins(text_painter);
   gb.bus_reg.dump_regs(text_painter);
-  gb.ext_pins.dump_pins(text_painter);
+  gb.ext_bus.dump_pins(text_painter);
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;
 
@@ -296,8 +296,8 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   cx += 32 * 8;
 
   if (1) {
-    gb.oam_pins.dump_pins(text_painter);
-    gb.vram_pins.dump_pins(text_painter);
+    gb.oam_bus.dump_pins(text_painter);
+    gb.vram_bus.dump_pins(text_painter);
     text_painter.render(cx, cy, 1.0);
     cx += 32 * 8;
   }

@@ -1,9 +1,6 @@
-#include "Sch_Merged.h"
+#include "Sch_PPU.h"
 
-#include "Sch_Common.h"
-#include "Sch_Pins.h"
 #include "TestGB.h"
-#include "Constants.h"
 
 using namespace Schematics;
 
@@ -122,6 +119,84 @@ using namespace Schematics;
 // if SECA03 goes low, TAKA04 goes high
 // if VEKU02 goes low, TAKA04 goes low
 
+//---------------------------------------------------------------------------
+
+struct ScrollSignals {
+  /*p26.FAFO*/ wire _TILE_Y0S;
+  /*p26.EMUX*/ wire _TILE_Y1S;
+  /*p26.ECAB*/ wire _TILE_Y2S;
+  /*p26.ETAM*/ wire _MAP_Y0S;
+  /*p26.DOTO*/ wire _MAP_Y1S;
+  /*p26.DABA*/ wire _MAP_Y2S;
+  /*p26.EFYK*/ wire _MAP_Y3S;
+  /*p26.EJOK*/ wire _MAP_Y4S;
+
+  /*p26.BABE*/ wire _MAP_X0S;
+  /*p26.ABOD*/ wire _MAP_X1S;
+  /*p26.BEWY*/ wire _MAP_X2S;
+  /*p26.BYCA*/ wire _MAP_X3S;
+  /*p26.ACUL*/ wire _MAP_X4S;
+
+  static ScrollSignals get(const LcdRegisters& lcd_reg, const PpuRegisters& ppu_reg, const ConfigRegisters& cfg_reg) {
+    /*p26.FAFO*/ wire _TILE_Y0S = add_s(lcd_reg.MUWY_Y0.q(), cfg_reg.SCY0.q(), 0);
+    /*p26.FAFO*/ wire _TILE_Y0C = add_c(lcd_reg.MUWY_Y0.q(), cfg_reg.SCY0.q(), 0);
+    /*p26.EMUX*/ wire _TILE_Y1S = add_s(lcd_reg.MYRO_Y1.q(), cfg_reg.SCY1.q(), _TILE_Y0C);
+    /*p26.EMUX*/ wire _TILE_Y1C = add_c(lcd_reg.MYRO_Y1.q(), cfg_reg.SCY1.q(), _TILE_Y0C);
+    /*p26.ECAB*/ wire _TILE_Y2S = add_s(lcd_reg.LEXA_Y2.q(), cfg_reg.SCY2.q(), _TILE_Y1C);
+    /*p26.ECAB*/ wire _TILE_Y2C = add_c(lcd_reg.LEXA_Y2.q(), cfg_reg.SCY2.q(), _TILE_Y1C);
+    /*p26.ETAM*/ wire _MAP_Y0S = add_s(lcd_reg.LYDO_Y3.q(), cfg_reg.SCY3.q(), _TILE_Y2C);
+    /*p26.ETAM*/ wire _MAP_Y0C = add_c(lcd_reg.LYDO_Y3.q(), cfg_reg.SCY3.q(), _TILE_Y2C);
+    /*p26.DOTO*/ wire _MAP_Y1S = add_s(lcd_reg.LOVU_Y4.q(), cfg_reg.SCY4.q(), _MAP_Y0C);
+    /*p26.DOTO*/ wire _MAP_Y1C = add_c(lcd_reg.LOVU_Y4.q(), cfg_reg.SCY4.q(), _MAP_Y0C);
+    /*p26.DABA*/ wire _MAP_Y2S = add_s(lcd_reg.LEMA_Y5.q(), cfg_reg.SCY5.q(), _MAP_Y1C);
+    /*p26.DABA*/ wire _MAP_Y2C = add_c(lcd_reg.LEMA_Y5.q(), cfg_reg.SCY5.q(), _MAP_Y1C);
+    /*p26.EFYK*/ wire _MAP_Y3S = add_s(lcd_reg.MATO_Y6.q(), cfg_reg.SCY6.q(), _MAP_Y2C);
+    /*p26.EFYK*/ wire _MAP_Y3C = add_c(lcd_reg.MATO_Y6.q(), cfg_reg.SCY6.q(), _MAP_Y2C);
+    /*p26.EJOK*/ wire _MAP_Y4S = add_s(lcd_reg.LAFO_Y7.q(), cfg_reg.SCY7.q(), _MAP_Y3C);
+    /*p26.EJOK*/ wire _MAP_Y4C = add_c(lcd_reg.LAFO_Y7.q(), cfg_reg.SCY7.q(), _MAP_Y3C);
+
+    (void)_MAP_Y4C;
+
+    /*p26.ATAD*/ wire _TILE_X0S = add_s(ppu_reg.XEHO_X0.q(), cfg_reg.SCX0.q(), 0); // unused
+    /*p26.ATAD*/ wire _TILE_X0C = add_c(ppu_reg.XEHO_X0.q(), cfg_reg.SCX0.q(), 0);
+    /*p26.BEHU*/ wire _TILE_X1S = add_s(ppu_reg.SAVY_X1.q(), cfg_reg.SCX1.q(), _TILE_X0C); // unused
+    /*p26.BEHU*/ wire _TILE_X1C = add_c(ppu_reg.SAVY_X1.q(), cfg_reg.SCX1.q(), _TILE_X0C);
+    /*p26.APYH*/ wire _TILE_X2S = add_s(ppu_reg.XODU_X2.q(), cfg_reg.SCX2.q(), _TILE_X1C); // unused
+    /*p26.APYH*/ wire _TILE_X2C = add_c(ppu_reg.XODU_X2.q(), cfg_reg.SCX2.q(), _TILE_X1C);
+    /*p26.BABE*/ wire _MAP_X0S = add_s(ppu_reg.XYDO_X3.q(), cfg_reg.SCX3.q(), _TILE_X2C);
+    /*p26.BABE*/ wire _MAP_X0C = add_c(ppu_reg.XYDO_X3.q(), cfg_reg.SCX3.q(), _TILE_X2C);
+    /*p26.ABOD*/ wire _MAP_X1S = add_s(ppu_reg.TUHU_X4.q(), cfg_reg.SCX4.q(), _MAP_X0C);
+    /*p26.ABOD*/ wire _MAP_X1C = add_c(ppu_reg.TUHU_X4.q(), cfg_reg.SCX4.q(), _MAP_X0C);
+    /*p26.BEWY*/ wire _MAP_X2S = add_s(ppu_reg.TUKY_X5.q(), cfg_reg.SCX5.q(), _MAP_X1C);
+    /*p26.BEWY*/ wire _MAP_X2C = add_c(ppu_reg.TUKY_X5.q(), cfg_reg.SCX5.q(), _MAP_X1C);
+    /*p26.BYCA*/ wire _MAP_X3S = add_s(ppu_reg.TAKO_X6.q(), cfg_reg.SCX6.q(), _MAP_X2C);
+    /*p26.BYCA*/ wire _MAP_X3C = add_c(ppu_reg.TAKO_X6.q(), cfg_reg.SCX6.q(), _MAP_X2C);
+    /*p26.ACUL*/ wire _MAP_X4S = add_s(ppu_reg.SYBE_X7.q(), cfg_reg.SCX7.q(), _MAP_X3C);
+    /*p26.ACUL*/ wire _MAP_X4C = add_c(ppu_reg.SYBE_X7.q(), cfg_reg.SCX7.q(), _MAP_X3C);
+
+    (void)_TILE_X0S;
+    (void)_TILE_X1S;
+    (void)_TILE_X2S;
+    (void)_MAP_X4C;
+
+    return {
+      ._TILE_Y0S = _TILE_Y0S,
+      ._TILE_Y1S = _TILE_Y1S,
+      ._TILE_Y2S = _TILE_Y2S,
+      ._MAP_Y0S = _MAP_Y0S,
+      ._MAP_Y1S = _MAP_Y1S,
+      ._MAP_Y2S = _MAP_Y2S,
+      ._MAP_Y3S = _MAP_Y3S,
+      ._MAP_Y4S = _MAP_Y4S,
+      ._MAP_X0S = _MAP_X0S,
+      ._MAP_X1S = _MAP_X1S,
+      ._MAP_X2S = _MAP_X2S,
+      ._MAP_X3S = _MAP_X3S,
+      ._MAP_X4S = _MAP_X4S,
+    };
+  }
+};
+
 //------------------------------------------------------------------------------
 
 PpuSignals PpuRegisters::sig(const TestGB& gb) const {
@@ -132,9 +207,9 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto dma_sig = gb.dma_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
+  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
 
-  auto& vram_pins = gb.vram_pins;
+  auto& vram_bus = gb.vram_bus;
   auto dbg_sig = gb.dbg_reg.sig(gb);
 
   //----------
@@ -152,7 +227,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   /*p27.NYXU*/ wire _NYXU_BFETCH_RSTn = nor(sst_sig.AVAP_SCAN_DONE_d0_TRIGp, win_sig.MOSU_WIN_MODE_TRIGp, _TEVO_CLK_STOPn);
 
-  /*p28.ACYL*/ wire _ACYL_PPU_USE_OAM1p = and (dma_sig.BOGE_DMA_RUNNINGn, sst_reg.BESU_SCANNINGp);
+  /*p28.ACYL*/ wire _ACYL_PPU_USE_OAM1p = and (dma_sig.BOGE_DMA_RUNNINGn, sst_sig.BESU_SCANNINGp);
 
   // So we only read a sprite if both those regs are... low? what is rung 17's polarity?
 
@@ -178,7 +253,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   /*p27.ROZE*/ wire _ROZE_FINE_COUNT_STOPn = nand(RYKU_FINE_CNT0, ROGA_FINE_CNT1, RUBU_FINE_CNT2);
 
   /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RD = and (adr_sig.SOSE_8000_9FFFp, dbg_sig.ABUZ);
-  /*p25.TEFY*/ wire _TEFY_MCS_Cn = not(vram_pins.MCS_C);
+  /*p25.TEFY*/ wire _TEFY_MCS_Cn = not(vram_bus.PIN_MCSn_C);
   /*p25.TOLE*/ wire _TOLE_VRAM_RD = mux2_p(_TEFY_MCS_Cn, _TUCA_CPU_VRAM_RD, dbg_sig.TUTO_DBG_VRAM);
   /*p25.SERE*/ wire _SERE_VRAM_RD = and (_TOLE_VRAM_RD, _ROPY_RENDERINGn);
   /*p29.TYTU*/ wire _TYTU_SFETCH_S0_D0n = not(TOXE_SFETCH_S0_D0.q());
@@ -215,7 +290,15 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
-void PpuRegisters::tick(const TestGB& gb) {
+void PpuRegisters::tick(TestGB& gb) {
+  auto& ppu_reg = *this;
+  auto& lcd_reg = gb.lcd_reg;
+  auto& cfg_reg = gb.cfg_reg;
+  auto& win_reg = gb.win_reg;
+  auto& pxp_reg = gb.pxp_reg;
+  auto& oam_reg = gb.oam_reg;
+  auto& sst_reg = gb.sst_reg;
+
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto win_sig = gb.win_reg.sig(gb);
@@ -223,8 +306,9 @@ void PpuRegisters::tick(const TestGB& gb) {
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto sst_sig = gb.sst_reg.sig(gb);
   auto ppu_sig = sig(gb);
+  auto scr_sig = ScrollSignals::get(lcd_reg, ppu_reg, cfg_reg);
 
-  auto& cfg_reg = gb.cfg_reg;
+  auto& vram_bus = gb.vram_bus;
 
   //----------
 
@@ -395,6 +479,117 @@ void PpuRegisters::tick(const TestGB& gb) {
     /*p24.RUZE*/ wire _RUZE_PIN_ST = not(POFY_ST_LATCH);
     ST.set(_RUZE_PIN_ST);
   }
+
+  /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(LONY_BG_READ_VRAM_LATCHp.q());
+  /*p27.LENA*/ wire LENA_BGW_VRAM_RD = not(LUSU_BGW_VRAM_RDn);
+
+  {
+    /*p27.NOGU*/ wire _NOGU_FETCH_01p = nand(ppu_sig.NAKO_FETCH_S1n, ppu_sig.NOFU_FETCH_S2n);
+    /*p27.NENY*/ wire _NENY_FETCH_01n = not(_NOGU_FETCH_01p);
+    /*p26.AXAD*/ wire _AXAD_WIN_MODEn = not(win_sig.PORE_WIN_MODE);
+
+    {
+      /*p27.POTU*/ wire _POTU_BGW_FETCH_01 = and (LENA_BGW_VRAM_RD, _NENY_FETCH_01n);
+
+      // Background map read
+      /*p26.ACEN*/ wire _ACEN_BG_MAP_READp = and (_POTU_BGW_FETCH_01, _AXAD_WIN_MODEn);
+      /*p26.BAFY*/ wire _BAFY_BG_MAP_READn = not(_ACEN_BG_MAP_READp);
+      /*p26.AXEP*/ vram_bus.TS_MA00.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_X0S);
+      /*p26.AFEB*/ vram_bus.TS_MA01.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_X1S);
+      /*p26.ALEL*/ vram_bus.TS_MA02.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_X2S);
+      /*p26.COLY*/ vram_bus.TS_MA03.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_X3S);
+      /*p26.AJAN*/ vram_bus.TS_MA04.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_X4S);
+      /*p26.DUHO*/ vram_bus.TS_MA05.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_Y0S);
+      /*p26.CASE*/ vram_bus.TS_MA06.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_Y1S);
+      /*p26.CYPO*/ vram_bus.TS_MA07.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_Y2S);
+      /*p26.CETA*/ vram_bus.TS_MA08.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_Y3S);
+      /*p26.DAFE*/ vram_bus.TS_MA09.set_tribuf(_BAFY_BG_MAP_READn, scr_sig._MAP_Y4S);
+      /*p26.AMUV*/ vram_bus.TS_MA10.set_tribuf(_BAFY_BG_MAP_READn, cfg_reg.LCDC_BGMAP.q());
+      /*p26.COVE*/ vram_bus.TS_MA11.set_tribuf(_BAFY_BG_MAP_READn, dbg_sig.VYPO_P10_Bn);
+      /*p26.COXO*/ vram_bus.TS_MA12.set_tribuf(_BAFY_BG_MAP_READn, dbg_sig.VYPO_P10_Bn);
+
+      // Window map read
+      /*p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and (_POTU_BGW_FETCH_01, win_sig.PORE_WIN_MODE);
+      /*p25.WUKO*/ wire _WUKO_WIN_MAP_READn = not(_XEZE_WIN_MAP_READp);
+      /*p27.XEJA*/ vram_bus.TS_MA00.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X3.q());
+      /*p27.XAMO*/ vram_bus.TS_MA01.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X4.q());
+      /*p27.XAHE*/ vram_bus.TS_MA02.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X5.q());
+      /*p27.XULO*/ vram_bus.TS_MA03.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X6.q());
+      /*p27.WUJU*/ vram_bus.TS_MA04.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X7.q());
+      /*p27.VYTO*/ vram_bus.TS_MA05.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y3.q());
+      /*p27.VEHA*/ vram_bus.TS_MA06.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y4.q());
+      /*p27.VACE*/ vram_bus.TS_MA07.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y5.q());
+      /*p27.VOVO*/ vram_bus.TS_MA08.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y6.q());
+      /*p27.VULO*/ vram_bus.TS_MA09.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y7.q());
+      /*p27.VEVY*/ vram_bus.TS_MA10.set_tribuf(_WUKO_WIN_MAP_READn, cfg_reg.LCDC_WINMAP.q());
+      /*p27.VEZA*/ vram_bus.TS_MA11.set_tribuf(_WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
+      /*p27.VOGU*/ vram_bus.TS_MA12.set_tribuf(_WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
+    }
+
+    {
+      // Background/window tile read
+      /*p27.XUHA*/ wire _XUHA_FETCH_S2p = not(ppu_sig.NOFU_FETCH_S2n);
+      /*p27.NETA*/ wire _NETA_TILE_READn = and (LENA_BGW_VRAM_RD, _NENY_FETCH_01n);
+      /*p26.ASUL*/ wire _ASUL_TILE_READp = and (_NETA_TILE_READn, _AXAD_WIN_MODEn);
+      /*p26.BEJE*/ wire _BEJE_TILE_READn = not(_ASUL_TILE_READp);
+      /*p25.XUCY*/ wire _XUCY_TILE_READn = nand(_NETA_TILE_READn, win_sig.PORE_WIN_MODE);
+      /*p25.VUZA*/ wire _VUZA_TILE_BANKp = nor(cfg_reg.LCDC_BGTILE.q(), pxp_reg.BG_PIX_B7.q()); // register reused
+
+      /*p26.ASUM*/ vram_bus.TS_MA00.set_tribuf(_BEJE_TILE_READn, _XUHA_FETCH_S2p);
+      /*p26.EVAD*/ vram_bus.TS_MA01.set_tribuf(_BEJE_TILE_READn, scr_sig._TILE_Y0S);
+      /*p26.DAHU*/ vram_bus.TS_MA02.set_tribuf(_BEJE_TILE_READn, scr_sig._TILE_Y1S);
+      /*p26.DODE*/ vram_bus.TS_MA03.set_tribuf(_BEJE_TILE_READn, scr_sig._TILE_Y2S);
+
+      /*p25.XONU*/ vram_bus.TS_MA00.set_tribuf(_XUCY_TILE_READn, _XUHA_FETCH_S2p);
+      /*p25.WUDO*/ vram_bus.TS_MA01.set_tribuf(_XUCY_TILE_READn, win_reg.WIN_Y0.q());
+      /*p25.WAWE*/ vram_bus.TS_MA02.set_tribuf(_XUCY_TILE_READn, win_reg.WIN_Y1.q());
+      /*p25.WOLU*/ vram_bus.TS_MA03.set_tribuf(_XUCY_TILE_READn, win_reg.WIN_Y2.q());
+
+      /*p25.VAPY*/ vram_bus.TS_MA04.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B0.q()); // register reused
+      /*p25.SEZU*/ vram_bus.TS_MA05.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B1.q());
+      /*p25.VEJY*/ vram_bus.TS_MA06.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B2.q());
+      /*p25.RUSA*/ vram_bus.TS_MA07.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B3.q());
+      /*p25.ROHA*/ vram_bus.TS_MA08.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B4.q());
+      /*p25.RESO*/ vram_bus.TS_MA09.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B5.q());
+      /*p25.SUVO*/ vram_bus.TS_MA10.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B6.q());
+      /*p25.TOBO*/ vram_bus.TS_MA11.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B7.q());
+      /*p25.VURY*/ vram_bus.TS_MA12.set_tribuf(_NETA_TILE_READn, _VUZA_TILE_BANKp);
+    }
+  }
+
+  /*p29.ABON*/ wire ABON_SPR_VRAM_RDp1 = not(ppu_sig.TEXY_SPRITE_READ);
+
+  {
+    // TS_LINE_* out of order
+    // why is there a ! on REG_OAM_B0?
+
+    /*p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not(cfg_reg.LCDC_SPSIZE.q());
+    /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(oam_reg.YZOS_SPRITE_X6.q());
+
+    /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, sst_reg.WENU_TS_LINE_0);
+    /*p29.GEJY*/ wire _GEJY_SPRITE_Y3 = amux2(_FUFO_LCDC_SPSIZEn, !oam_reg.XUSO_SPRITE_Y0.q(), cfg_reg.LCDC_SPSIZE.q(), _WAGO);
+    /*p29.XUQU*/ wire _XUQU_SPRITE_AB = not(!ppu_reg.VONU_SFETCH_S1_D4.q());
+    /*p29.CYVU*/ wire _CYVU_SPRITE_Y0 = xor (_WUKY_FLIP_Y, sst_reg.CUCU_TS_LINE_1);
+    /*p29.BORE*/ wire _BORE_SPRITE_Y1 = xor (_WUKY_FLIP_Y, sst_reg.CUCA_TS_LINE_2);
+    /*p29.BUVY*/ wire _BUVY_SPRITE_Y2 = xor (_WUKY_FLIP_Y, sst_reg.CEGA_TS_LINE_3);
+
+
+    /*p29.ABEM*/ vram_bus.TS_MA00.set_tribuf(!ABON_SPR_VRAM_RDp1, _XUQU_SPRITE_AB);
+    /*p29.BAXE*/ vram_bus.TS_MA01.set_tribuf(!ABON_SPR_VRAM_RDp1, _CYVU_SPRITE_Y0);
+    /*p29.ARAS*/ vram_bus.TS_MA02.set_tribuf(!ABON_SPR_VRAM_RDp1, _BORE_SPRITE_Y1);
+    /*p29.AGAG*/ vram_bus.TS_MA03.set_tribuf(!ABON_SPR_VRAM_RDp1, _BUVY_SPRITE_Y2);
+    /*p29.FAMU*/ vram_bus.TS_MA04.set_tribuf(!ABON_SPR_VRAM_RDp1, _GEJY_SPRITE_Y3);
+    /*p29.FUGY*/ vram_bus.TS_MA05.set_tribuf(!ABON_SPR_VRAM_RDp1, oam_reg.XEGU_SPRITE_Y1.q());
+    /*p29.GAVO*/ vram_bus.TS_MA06.set_tribuf(!ABON_SPR_VRAM_RDp1, oam_reg.YJEX_SPRITE_Y2.q());
+    /*p29.WYGA*/ vram_bus.TS_MA07.set_tribuf(!ABON_SPR_VRAM_RDp1, oam_reg.XYJU_SPRITE_Y3.q());
+    /*p29.WUNE*/ vram_bus.TS_MA08.set_tribuf(!ABON_SPR_VRAM_RDp1, oam_reg.YBOG_SPRITE_Y4.q());
+    /*p29.GOTU*/ vram_bus.TS_MA09.set_tribuf(!ABON_SPR_VRAM_RDp1, oam_reg.WYSO_SPRITE_Y5.q());
+    /*p29.GEGU*/ vram_bus.TS_MA10.set_tribuf(!ABON_SPR_VRAM_RDp1, oam_reg.XOTE_SPRITE_Y6.q());
+    /*p29.XEHE*/ vram_bus.TS_MA11.set_tribuf(!ABON_SPR_VRAM_RDp1, oam_reg.YZAB_SPRITE_Y7.q());
+    /*p29.DYSO*/ vram_bus.TS_MA12.set_tribuf(!ABON_SPR_VRAM_RDp1, joy_pin.P10_B);   // sprites always in low half of tile store
+  }
+
+
 }
 
 //------------------------------------------------------------------------------

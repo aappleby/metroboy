@@ -12,8 +12,8 @@ void SerialRegisters::tick(TestGB& gb) {
   auto cpu_sig = gb.cpu_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto tim_sig = gb.tim_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
-  auto& cpu_pins2 = gb.cpu_pins;
+  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
+  auto& cpu_pins2 = gb.cpu_bus;
 
   wire TAPU_CPU_WR_xxxxxFGH = cpu_sig.TAPU_CPU_WR_xxxxxFGH;
   wire TEDO_CPU_RD = cpu_sig.TEDO_CPU_RD;

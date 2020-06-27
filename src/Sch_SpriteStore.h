@@ -8,6 +8,8 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct SpriteStoreSignals {
+  /*p28.BESU*/ wire BESU_SCANNINGp;
+  /*p29.CEHA*/ wire CEHA_SCANNINGp;
   /*p29.FEPO*/ wire FEPO_STORE_MATCHp;
 
   /*p29.YDUG*/ wire STORE0_MATCHn;
@@ -92,7 +94,7 @@ struct SpriteStoreRegisters {
 
 private:
 
-  /*p29.DEZY*/ Reg DEZY_CLKp;
+  /*p29.DEZY*/ Reg DEZY_STORE_ENn_SYNC;
   /*p29.BESE*/ Reg SPRITE_COUNT0;
   /*p29.CUXY*/ Reg SPRITE_COUNT1;
   /*p29.BEGO*/ Reg SPRITE_COUNT2;

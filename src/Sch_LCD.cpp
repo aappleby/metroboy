@@ -48,7 +48,7 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
 void LcdRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_pins);
+  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto cpu_sig = gb.cpu_reg.sig(gb);
   auto tim_sig = gb.tim_reg.sig(gb);
   auto lcd_sig = sig(gb);

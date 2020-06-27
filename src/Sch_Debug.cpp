@@ -8,7 +8,7 @@ using namespace Schematics;
 
 DebugSignals DebugRegisters::sig(const TestGB& gb) const {
   const auto& sys_pins = gb.sys_pins;
-  const auto& cpu_pins = gb.cpu_pins;
+  const auto& cpu_bus = gb.cpu_bus;
 
   /*p27.VYPO*/ wire _VYPO_P10_Bn = not(gb.joy_pin.P10_B);
   /*p28.WEFE*/ wire _WEFE_P10_Bn = not(gb.joy_pin.P10_B);
@@ -28,7 +28,7 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
   /*p08.RYCA*/ wire _RYCA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
   /*p25.TUTO*/ wire _TUTO_DBG_VRAM = and (_UNOR_MODE_DBG2p, !SOTO_DBG);
 
-  /*p??.APAP*/ wire _APAP = not(cpu_pins.ADDR_VALID); // Missing from schematic
+  /*p??.APAP*/ wire _APAP = not(cpu_bus.PIN_ADDR_VALID); // Missing from schematic
   /*p01.AWOD*/ wire _AWOD = nor(_UNOR_MODE_DBG2p, _APAP);
   /*p01.ABUZ*/ wire _ABUZ = not(_AWOD);
 
@@ -44,7 +44,7 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
     .WYDU_P10_Bp = _WYDU_P10_Bp,
     .UBET_T1n = _UBET_T1n,
     .UVAR_T2n = _UVAR_T2n,
-    .UMUT_MODE_DBG1 = _UMUT_MODE_DBG1,
+    .UMUT_MODE_DBG1p = _UMUT_MODE_DBG1,
     .UNOR_MODE_DBG2p = _UNOR_MODE_DBG2p,
     .TOVA_MODE_DBG2n = _TOVA_MODE_DBG2n,
     .UPOJ_MODE_PROD = _UPOJ_MODE_PROD,
@@ -70,8 +70,8 @@ void DebugRegisters::tick(const TestGB& gb) {
   //cpu_pins.TOVA_MODE_DBG2n = TOVA_MODE_DBG2n;
   //cpu_pins.RYCA_MODE_DBG2n = RYCA_MODE_DBG2n;
 
-  wire FROM_CPU5 = gb.cpu_pins.FROM_CPU5;
-  /*p04.MAKA*/ FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, FROM_CPU5);
+  wire PIN_FROM_CPU5p = gb.cpu_bus.PIN_FROM_CPU5p;
+  /*p04.MAKA*/ FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, PIN_FROM_CPU5p);
 }
 
 //-----------------------------------------------------------------------------

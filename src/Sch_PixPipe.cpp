@@ -16,6 +16,8 @@ void PixelPipeRegisters::tick(const TestGB& gb) {
   auto& joy_pin = gb.joy_pin;
   auto& cfg_reg = gb.cfg_reg;
 
+  auto& vram_bus = gb.vram_bus;
+
   //----------------------------------------
 
   /*p27.LAXE*/ wire _LAXE_FETCH_S0n = not(ppu_reg.LAXU_BFETCH_S0.q());
@@ -40,14 +42,14 @@ void PixelPipeRegisters::tick(const TestGB& gb) {
     /*p32.AJAR*/ wire _AJAR_CLKn = not(_LESO_CLKp);
     /*p32.LABU*/ wire _LABU_CLKp = not(_AJAR_CLKn);
 
-    /*p32.RAWU*/ BG_PIX_B0.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD0);
-    /*p32.POZO*/ BG_PIX_B1.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD1);
-    /*p32.PYZO*/ BG_PIX_B2.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD2);
-    /*p32.POXA*/ BG_PIX_B3.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD3);
-    /*p32.PULO*/ BG_PIX_B4.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD4);
-    /*p32.POJU*/ BG_PIX_B5.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD5);
-    /*p32.POWY*/ BG_PIX_B6.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD6);
-    /*p32.PYJU*/ BG_PIX_B7.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, ppu_reg.MD7);
+    /*p32.RAWU*/ BG_PIX_B0.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, vram_bus.TS_MD0);
+    /*p32.POZO*/ BG_PIX_B1.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, vram_bus.TS_MD1);
+    /*p32.PYZO*/ BG_PIX_B2.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, vram_bus.TS_MD2);
+    /*p32.POXA*/ BG_PIX_B3.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, vram_bus.TS_MD3);
+    /*p32.PULO*/ BG_PIX_B4.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, vram_bus.TS_MD4);
+    /*p32.POJU*/ BG_PIX_B5.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, vram_bus.TS_MD5);
+    /*p32.POWY*/ BG_PIX_B6.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, vram_bus.TS_MD6);
+    /*p32.PYJU*/ BG_PIX_B7.set(_LABU_CLKp, dbg_sig.VYPO_P10_Bn, vram_bus.TS_MD7);
   }
 
   // Sprite tile read handler
@@ -66,14 +68,14 @@ void PixelPipeRegisters::tick(const TestGB& gb) {
     /*p29.RACA*/ wire _RACA_SPRITE_PIX_LATCH_B = and (ppu_reg.VONU_SFETCH_S1_D4, _SYCU);
 
     /*p29.XONO*/ wire _XONO_FLIP_X = and (oam_reg.BAXO_SPRITE_X5, ppu_sig.TEXY_SPRITE_READ);
-    /*p33.POBE*/ wire _SPR_PIX_FLIP0 = mux2_p(ppu_reg.MD7, ppu_reg.MD0, _XONO_FLIP_X);
-    /*p33.PACY*/ wire _SPR_PIX_FLIP1 = mux2_p(ppu_reg.MD6, ppu_reg.MD1, _XONO_FLIP_X);
-    /*p33.PONO*/ wire _SPR_PIX_FLIP2 = mux2_p(ppu_reg.MD5, ppu_reg.MD2, _XONO_FLIP_X);
-    /*p33.PUGU*/ wire _SPR_PIX_FLIP3 = mux2_p(ppu_reg.MD4, ppu_reg.MD3, _XONO_FLIP_X);
-    /*p33.PUTE*/ wire _SPR_PIX_FLIP4 = mux2_p(ppu_reg.MD3, ppu_reg.MD4, _XONO_FLIP_X);
-    /*p33.PULY*/ wire _SPR_PIX_FLIP5 = mux2_p(ppu_reg.MD2, ppu_reg.MD5, _XONO_FLIP_X);
-    /*p33.PELO*/ wire _SPR_PIX_FLIP6 = mux2_p(ppu_reg.MD1, ppu_reg.MD6, _XONO_FLIP_X);
-    /*p33.PAWE*/ wire _SPR_PIX_FLIP7 = mux2_p(ppu_reg.MD0, ppu_reg.MD7, _XONO_FLIP_X);
+    /*p33.POBE*/ wire _SPR_PIX_FLIP0 = mux2_p(vram_bus.TS_MD7, vram_bus.TS_MD0, _XONO_FLIP_X);
+    /*p33.PACY*/ wire _SPR_PIX_FLIP1 = mux2_p(vram_bus.TS_MD6, vram_bus.TS_MD1, _XONO_FLIP_X);
+    /*p33.PONO*/ wire _SPR_PIX_FLIP2 = mux2_p(vram_bus.TS_MD5, vram_bus.TS_MD2, _XONO_FLIP_X);
+    /*p33.PUGU*/ wire _SPR_PIX_FLIP3 = mux2_p(vram_bus.TS_MD4, vram_bus.TS_MD3, _XONO_FLIP_X);
+    /*p33.PUTE*/ wire _SPR_PIX_FLIP4 = mux2_p(vram_bus.TS_MD3, vram_bus.TS_MD4, _XONO_FLIP_X);
+    /*p33.PULY*/ wire _SPR_PIX_FLIP5 = mux2_p(vram_bus.TS_MD2, vram_bus.TS_MD5, _XONO_FLIP_X);
+    /*p33.PELO*/ wire _SPR_PIX_FLIP6 = mux2_p(vram_bus.TS_MD1, vram_bus.TS_MD6, _XONO_FLIP_X);
+    /*p33.PAWE*/ wire _SPR_PIX_FLIP7 = mux2_p(vram_bus.TS_MD0, vram_bus.TS_MD7, _XONO_FLIP_X);
 
     /*p29.VYWA*/ wire _VYWA_CLKp = not(_TOPU_SPRITE_PIX_LATCH_A);
     /*p29.WENY*/ wire _WENY_CLKn = not(_VYWA_CLKp);
@@ -130,14 +132,14 @@ void PixelPipeRegisters::tick(const TestGB& gb) {
 
     // "comp clock" == not(LOMA02) - so it's just an inverted clock signal
 
-    /*p32.LEGU*/ BG_PIX_A0.set(_LOMA_BG_LATCHn, ppu_reg.MD0);
-    /*p32.NUDU*/ BG_PIX_A1.set(_LOMA_BG_LATCHn, ppu_reg.MD1);
-    /*p32.MUKU*/ BG_PIX_A2.set(_LOMA_BG_LATCHn, ppu_reg.MD2);
-    /*p32.LUZO*/ BG_PIX_A3.set(_LOMA_BG_LATCHn, ppu_reg.MD3);
-    /*p32.MEGU*/ BG_PIX_A4.set(_LOMA_BG_LATCHn, ppu_reg.MD4);
-    /*p32.MYJY*/ BG_PIX_A5.set(_LOMA_BG_LATCHn, ppu_reg.MD5);
-    /*p32.NASA*/ BG_PIX_A6.set(_LOMA_BG_LATCHn, ppu_reg.MD6);
-    /*p32.NEFO*/ BG_PIX_A7.set(_LOMA_BG_LATCHn, ppu_reg.MD7);
+    /*p32.LEGU*/ BG_PIX_A0.set(_LOMA_BG_LATCHn, vram_bus.TS_MD0);
+    /*p32.NUDU*/ BG_PIX_A1.set(_LOMA_BG_LATCHn, vram_bus.TS_MD1);
+    /*p32.MUKU*/ BG_PIX_A2.set(_LOMA_BG_LATCHn, vram_bus.TS_MD2);
+    /*p32.LUZO*/ BG_PIX_A3.set(_LOMA_BG_LATCHn, vram_bus.TS_MD3);
+    /*p32.MEGU*/ BG_PIX_A4.set(_LOMA_BG_LATCHn, vram_bus.TS_MD4);
+    /*p32.MYJY*/ BG_PIX_A5.set(_LOMA_BG_LATCHn, vram_bus.TS_MD5);
+    /*p32.NASA*/ BG_PIX_A6.set(_LOMA_BG_LATCHn, vram_bus.TS_MD6);
+    /*p32.NEFO*/ BG_PIX_A7.set(_LOMA_BG_LATCHn, vram_bus.TS_MD7);
 
     /*p32.LOZE*/ wire _LOZE_PIPE_A_LOAD = not(ppu_sig.NYXU_BFETCH_RSTn);
 

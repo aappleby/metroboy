@@ -18,6 +18,11 @@
 #include "Sch_Serial.h"
 #include "Sch_Cart.h"
 #include "Sch_VRAM.h"
+#include "Sch_VramBus.h"
+#include "Sch_ExtBus.h"
+#include "Sch_CpuBus.h"
+#include "Sch_OamBus.h"
+#include "Sch_BusMux.h"
 
 namespace Schematics {
 
@@ -43,33 +48,37 @@ struct TestGB {
   */
 
   CpuRegisters cpu_reg;
-  ClockRegisters clk_reg; // dumped
-  BusRegisters bus_reg;// dumped
-  ConfigRegisters cfg_reg;// dumped
-  DebugRegisters dbg_reg;// dumped
-  DmaRegisters dma_reg;// dumped
-  InterruptRegisters int_reg;// dumped
-  JoypadRegisters joy_reg;// dumped
+  ClockRegisters clk_reg;
+  BusRegisters bus_reg;
+  ConfigRegisters cfg_reg;
+  DebugRegisters dbg_reg;
+  DmaRegisters dma_reg;
+  InterruptRegisters int_reg;
+  JoypadRegisters joy_reg;
 
-  LcdRegisters lcd_reg;// dumped
-  PixelPipeRegisters pxp_reg;// dumped
-  ResetRegisters rst_reg;// dumped
-  SerialRegisters ser_reg;// dumped
-  SpriteStoreRegisters sst_reg;// dumped
-  TimerRegisters tim_reg;// dumped
-  PpuRegisters ppu_reg;// dumped
-  OamRegisters oam_reg;// dumped
+  LcdRegisters lcd_reg;
+  PixelPipeRegisters pxp_reg;
+  ResetRegisters rst_reg;
+  SerialRegisters ser_reg;
+  SpriteStoreRegisters sst_reg;
+  TimerRegisters tim_reg;
+  PpuRegisters ppu_reg;
+  OamRegisters oam_reg;
   WindowRegisters win_reg;
   AddressRegisters adr_reg;
   CartRegisters cart_reg;
-  VramRegisters vram_reg;
+  
+  VramPins vram_pins;
 
-  SysPins sys_pins; // dumped
-  VramPins vram_pins; // dumped
-  JoypadPins joy_pin; // dumped
-  CpuPins cpu_pins; // dumped
-  ExtPins ext_pins; // dumped
-  OamPins oam_pins; // dumped
+  CpuBus cpu_bus;
+  ExtBus ext_bus;
+  OamBus oam_bus;
+  VramBus vram_bus;
+
+  BusMux bus_mux;
+
+  SysPins sys_pins;
+  JoypadPins joy_pin;
   WavePins wave_pins;
 };
 

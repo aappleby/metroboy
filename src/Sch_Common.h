@@ -13,7 +13,7 @@
 namespace Schematics {
 
 struct Bootrom;
-struct CpuPins;
+struct CpuBus;
 struct Debug;
 //struct DMA;
 struct HRAM;
@@ -32,11 +32,11 @@ struct BusTristates;
 struct SpriteTristate;
 
 struct AudioPins;
-struct ExtPins;
+struct ExtBus;
 struct JoypadPins;
 struct LcdPins;
 struct SerialPins;
-struct VramPins;
+struct VramBus;
 
 struct ClkRegisters;
 struct LcdRegisters;

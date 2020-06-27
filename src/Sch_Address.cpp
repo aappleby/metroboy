@@ -17,37 +17,37 @@ bool AddressRegisters::commit() {
 
 //-----------------------------------------------------------------------------
 
-AddressSignals AddressRegisters::sig(const CpuPins& cpu_pins) const {
+AddressSignals AddressRegisters::sig(const CpuBus& cpu_bus) const {
 
-  /*p03.TOVY*/ wire _TOVY_A00n = not(cpu_pins.A00);
-  /*p08.TOLA*/ wire _TOLA_A01n = not(cpu_pins.A01);
-  /*p06.SEFY*/ wire _SEFY_A02n = not(cpu_pins.A02);
-  /*p07.TONA*/ wire _TONA_A08n = not(cpu_pins.A08);
+  /*p03.TOVY*/ wire _TOVY_A00n = not(cpu_bus.A00);
+  /*p08.TOLA*/ wire _TOLA_A01n = not(cpu_bus.A01);
+  /*p06.SEFY*/ wire _SEFY_A02n = not(cpu_bus.A02);
+  /*p07.TONA*/ wire _TONA_A08n = not(cpu_bus.A08);
 
-  /*p22.XOLA*/ wire _XOLA_A00n = not(cpu_pins.A00);
-  /*p22.XENO*/ wire _XENO_A01n = not(cpu_pins.A01);
-  /*p22.XUSY*/ wire _XUSY_A02n = not(cpu_pins.A02);
-  /*p22.XERA*/ wire _XERA_A03n = not(cpu_pins.A03);
-  /*p10.BYKO*/ wire _BYKO_A05n = not(cpu_pins.A05);
-  /*p10.AKUG*/ wire _AKUG_A06n = not(cpu_pins.A06);
+  /*p22.XOLA*/ wire _XOLA_A00n = not(cpu_bus.A00);
+  /*p22.XENO*/ wire _XENO_A01n = not(cpu_bus.A01);
+  /*p22.XUSY*/ wire _XUSY_A02n = not(cpu_bus.A02);
+  /*p22.XERA*/ wire _XERA_A03n = not(cpu_bus.A03);
+  /*p10.BYKO*/ wire _BYKO_A05n = not(cpu_bus.A05);
+  /*p10.AKUG*/ wire _AKUG_A06n = not(cpu_bus.A06);
 
   /*p22.WADO*/ wire _WADO_A00 = not(_XOLA_A00n);
   /*p22.WESA*/ wire _WESA_A01p = not(_XENO_A01n);
   /*p22.WALO*/ wire _WALO_A02p = not(_XUSY_A02n);
   /*p22.WEPO*/ wire _WEPO_A03p = not(_XERA_A03n);
 
-  /*p07.TUNA*/ wire _TUNA_0000_FDFFp = nand(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12, cpu_pins.A11, cpu_pins.A10, cpu_pins.A09);
-  /*p06.SARE*/ wire _SARE_XX00_XX07p = nor(cpu_pins.A07, cpu_pins.A06, cpu_pins.A05, cpu_pins.A04, cpu_pins.A03);
+  /*p07.TUNA*/ wire _TUNA_0000_FDFFp = nand(cpu_bus.A15, cpu_bus.A14, cpu_bus.A13, cpu_bus.A12, cpu_bus.A11, cpu_bus.A10, cpu_bus.A09);
+  /*p06.SARE*/ wire _SARE_XX00_XX07p = nor(cpu_bus.A07, cpu_bus.A06, cpu_bus.A05, cpu_bus.A04, cpu_bus.A03);
   /*p07.SYKE*/ wire _SYKE_FF00_FFFFp = nor(_TUNA_0000_FDFFp, _TONA_A08n);
   /*p25.SYRO*/ wire _SYRO_FE00_FFFFp = not(_TUNA_0000_FDFFp);
 
-  /*p22.XALY*/ wire _XALY_0x00xxxxp = nor(cpu_pins.A07, cpu_pins.A05, cpu_pins.A04);
-  /*p22.WUTU*/ wire _WUTU_FF40_FF4Fn = nand(_SYKE_FF00_FFFFp, cpu_pins.A06, _XALY_0x00xxxxp);
+  /*p22.XALY*/ wire _XALY_0x00xxxxp = nor(cpu_bus.A07, cpu_bus.A05, cpu_bus.A04);
+  /*p22.WUTU*/ wire _WUTU_FF40_FF4Fn = nand(_SYKE_FF00_FFFFp, cpu_bus.A06, _XALY_0x00xxxxp);
   /*p22.WERO*/ wire _WERO_FF40_FF4Fp = not(_WUTU_FF40_FF4Fn);
 
   /*p22.WATE*/ wire _WATE_FF46n = nand(_WERO_FF40_FF4Fp, _XOLA_A00n, _WESA_A01p, _WALO_A02p, _XERA_A03n);
   /*p22.XEDA*/ wire _XEDA_FF46p = not(_WATE_FF46n);
-  /*p03.RYFO*/ wire _RYFO_FF04_FF07p = and (cpu_pins.A02, _SARE_XX00_XX07p, _SYKE_FF00_FFFFp);
+  /*p03.RYFO*/ wire _RYFO_FF04_FF07p = and (cpu_bus.A02, _SARE_XX00_XX07p, _SYKE_FF00_FFFFp);
 
   /*p07.RYCU*/ wire _RYCU_FE00_FFFFp = not(_TUNA_0000_FDFFp);
   /*p07.SOHA*/ wire _SOHA_FF00_FFFFn = not(_SYKE_FF00_FFFFp);
@@ -61,14 +61,14 @@ AddressSignals AddressRegisters::sig(const CpuPins& cpu_pins) const {
   // TEVY = or(A13, A13, SORE) // A13 line not fully drawn
   // TEXO = and(ADDR_VALIDx?, TEVY)
 
-  /*p08.SORE*/ wire _SORE_0000_7FFFp = not(cpu_pins.A15);
-  /*p08.TEVY*/ wire _TEVY_8000_9FFFn = or(cpu_pins.A13, cpu_pins.A14, _SORE_0000_7FFFp);
-  /*p08.TEXO*/ wire _TEXO_8000_9FFFn = and (cpu_pins.ADDR_VALID, _TEVY_8000_9FFFn);
+  /*p08.SORE*/ wire _SORE_0000_7FFFp = not(cpu_bus.A15);
+  /*p08.TEVY*/ wire _TEVY_8000_9FFFn = or(cpu_bus.A13, cpu_bus.A14, _SORE_0000_7FFFp);
+  /*p08.TEXO*/ wire _TEXO_8000_9FFFn = and (cpu_bus.PIN_ADDR_VALID, _TEVY_8000_9FFFn);
   /*p08.LEVO*/ wire _LEVO_8000_9FFFp = not(_TEXO_8000_9FFFn);
 
   // the logic here is kinda weird, still seems to select vram.
   /*p25.TEFA*/ wire _TEFA_8000_9FFFp = nor(_SYRO_FE00_FFFFp, _TEXO_8000_9FFFn);
-  /*p25.SOSE*/ wire _SOSE_8000_9FFFp = and (cpu_pins.A15, _TEFA_8000_9FFFp);
+  /*p25.SOSE*/ wire _SOSE_8000_9FFFp = and (cpu_bus.A15, _TEFA_8000_9FFFp);
 
   return {
     .TOVY_A00n = _TOVY_A00n,

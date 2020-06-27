@@ -19,7 +19,7 @@ struct DmaSignals {
 struct DmaRegisters {
 
   DmaSignals sig(const TestGB& gb) const;
-  void tick(const TestGB& gb, CpuPins& cpu_pins);
+  void tick(TestGB& gb);
   bool commit();
 
   void dump_regs(TextPainter& text_painter) {

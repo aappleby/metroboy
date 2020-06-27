@@ -72,7 +72,7 @@ struct TimerRegisters {
     text_painter.newline();
 
     TIMA_MAX.dump(text_painter, "TIMA_MAX  ");
-    INT_TIMER.dump(text_painter, "INT_TIMER ");
+    PIN_INT_TIMER.dump(text_painter, "PIN_INT_TIMER ");
     text_painter.newline();
   }
 
@@ -102,7 +102,7 @@ struct TimerRegisters {
   */
 
   wire get_tima_max() { return TIMA_MAX.q(); }
-  wire get_int_timer() { return INT_TIMER.q(); }
+  wire get_int_timer() { return PIN_INT_TIMER.q(); }
 
   int get_tma() const {
     return pack(TMA_0.q(), TMA_1.q(), TMA_2.q(), TMA_3.q(), TMA_4.q(), TMA_5.q(), TMA_6.q(), TMA_7.q());
@@ -160,7 +160,7 @@ struct TimerRegisters {
   /*p03.NUGA*/ Counter TIMA_7;
 
   /*p03.NYDU*/ Reg TIMA_MAX;
-  /*p03.MOBA*/ Reg INT_TIMER;
+  /*p03.MOBA*/ Reg PIN_INT_TIMER;
 
   //----------
   // FF06 TMA

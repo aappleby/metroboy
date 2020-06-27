@@ -38,7 +38,7 @@ struct PpuSignals {
 struct PpuRegisters {
 
   PpuSignals sig(const TestGB& gb) const;
-  void tick(const TestGB& gb);
+  void tick(TestGB& gb);
   bool commit();
 
   void dump_regs(TextPainter& text_painter) {
@@ -49,9 +49,6 @@ struct PpuRegisters {
     //text_painter.dprintf("WIN MAP Y  %d\n", pack(WIN_Y3.q(), WIN_Y4.q(), WIN_Y5.q(), WIN_Y6.q(), WIN_Y7.q()));
     //text_painter.dprintf("WIN TILE Y %d\n", pack(WIN_Y0.q(), WIN_Y1.q(), WIN_Y2.q()));
     text_painter.dprintf("FINE_CNT   %d\n", pack(RYKU_FINE_CNT0.q(), ROGA_FINE_CNT1.q(), RUBU_FINE_CNT2.q()));
-
-    text_painter.dprintf("MAxx     0x%04x\n", pack(MA00.q(), MA01.q(), MA02.q(), MA03.q(), MA04.q(), MA05.q(), MA06.q(), MA07.q(), MA08.q(), MA09.q(), MA10.q(), MA11.q(), MA12.q()));
-    text_painter.dprintf("MDxx     0x%02x\n", pack(MD0.q(), MD1.q(), MD2.q(), MD3.q(), MD4.q(), MD5.q(), MD6.q(), MD7.q()));
 
     ROXY_FINE_MATCH_LATCHn.dump(text_painter, "ROXY_FINE_MATCH_LATCHn          ");
     PUXA_FINE_MATCH_SYNC1.dump(text_painter, "PUXA_FINE_MATCH_SYNC1         ");
@@ -97,29 +94,6 @@ struct PpuRegisters {
   /* PIN_54 */ PinOut ST;
   /*p21.WUSA*/ NorLatch WUSA_CPEN_LATCH;
   /* PIN_53 */ PinOut CP;
-
-  Tribuf MA00;
-  Tribuf MA01;
-  Tribuf MA02;
-  Tribuf MA03;
-  Tribuf MA04;
-  Tribuf MA05;
-  Tribuf MA06;
-  Tribuf MA07;
-  Tribuf MA08;
-  Tribuf MA09;
-  Tribuf MA10;
-  Tribuf MA11;
-  Tribuf MA12;
-
-  Tribuf MD0;
-  Tribuf MD1;
-  Tribuf MD2;
-  Tribuf MD3;
-  Tribuf MD4;
-  Tribuf MD5;
-  Tribuf MD6;
-  Tribuf MD7;
 
   /*p??.ROXY*/ NorLatch ROXY_FINE_MATCH_LATCHn;
   /*p??.PUXA*/ Reg   PUXA_FINE_MATCH_SYNC1;

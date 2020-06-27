@@ -5,69 +5,69 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 void TestGB::ext_preset() {
-  ext_pins.WR_C.preset(true, 0);   // -> P07.UBAL
-  ext_pins.RD_C.preset(true, 0);   // -> P07.UJYV
-  ext_pins.A00_C.preset(true, 0);   // -> P08.KOVA
-  ext_pins.A01_C.preset(true, 0);   // -> P08.CAMU
-  ext_pins.A02_C.preset(true, 0);   // -> P08.BUXU
-  ext_pins.A03_C.preset(true, 0);   // -> P08.BASE
-  ext_pins.A04_C.preset(true, 0);   // -> P08.AFEC
-  ext_pins.A05_C.preset(true, 0);   // -> P08.ABUP
-  ext_pins.A06_C.preset(true, 0);   // -> P08.CYGU
-  ext_pins.A07_C.preset(true, 0);   // -> P08.COGO
-  ext_pins.A08_C.preset(true, 0);   // -> P08.MUJY
-  ext_pins.A09_C.preset(true, 0);   // -> P08.NENA
-  ext_pins.A10_C.preset(true, 0);   // -> P08.SURA
-  ext_pins.A11_C.preset(true, 0);   // -> P08.MADY
-  ext_pins.A12_C.preset(true, 0);   // -> P08.LAHE
-  ext_pins.A13_C.preset(true, 0);   // -> P08.LURA
-  ext_pins.A14_C.preset(true, 0);   // -> P08.PEVO
-  ext_pins.A15_C.preset(true, 0);   // -> P08.RAZA
+  ext_bus.WR_C.preset(true, 0);   // -> P07.UBAL
+  ext_bus.RD_C.preset(true, 0);   // -> P07.UJYV
+  ext_bus.A00_C.preset(true, 0);   // -> P08.KOVA
+  ext_bus.A01_C.preset(true, 0);   // -> P08.CAMU
+  ext_bus.A02_C.preset(true, 0);   // -> P08.BUXU
+  ext_bus.A03_C.preset(true, 0);   // -> P08.BASE
+  ext_bus.A04_C.preset(true, 0);   // -> P08.AFEC
+  ext_bus.A05_C.preset(true, 0);   // -> P08.ABUP
+  ext_bus.A06_C.preset(true, 0);   // -> P08.CYGU
+  ext_bus.A07_C.preset(true, 0);   // -> P08.COGO
+  ext_bus.A08_C.preset(true, 0);   // -> P08.MUJY
+  ext_bus.A09_C.preset(true, 0);   // -> P08.NENA
+  ext_bus.A10_C.preset(true, 0);   // -> P08.SURA
+  ext_bus.A11_C.preset(true, 0);   // -> P08.MADY
+  ext_bus.A12_C.preset(true, 0);   // -> P08.LAHE
+  ext_bus.A13_C.preset(true, 0);   // -> P08.LURA
+  ext_bus.A14_C.preset(true, 0);   // -> P08.PEVO
+  ext_bus.A15_C.preset(true, 0);   // -> P08.RAZA
 
-  if (!ext_pins.RD_A && !ext_pins.CS_A) {
-    uint16_t ext_addr = (uint16_t)pack(ext_pins.A00_A, ext_pins.A01_A, ext_pins.A02_A, ext_pins.A03_A,
-                                       ext_pins.A04_A, ext_pins.A05_A, ext_pins.A06_A, ext_pins.A07_A,
-                                       ext_pins.A08_A, ext_pins.A09_A, ext_pins.A10_A, ext_pins.A11_A,
-                                       ext_pins.A12_A, ext_pins.A13_A, ext_pins.A14_A, ext_pins.A15_A);
+  if (!ext_bus.RD_A && !ext_bus.CS_A) {
+    uint16_t ext_addr = (uint16_t)pack(ext_bus.A00_A, ext_bus.A01_A, ext_bus.A02_A, ext_bus.A03_A,
+                                       ext_bus.A04_A, ext_bus.A05_A, ext_bus.A06_A, ext_bus.A07_A,
+                                       ext_bus.A08_A, ext_bus.A09_A, ext_bus.A10_A, ext_bus.A11_A,
+                                       ext_bus.A12_A, ext_bus.A13_A, ext_bus.A14_A, ext_bus.A15_A);
 
     if (0x0000 <= ext_addr && ext_addr <= 0x7FFF) {
       // Cart rom
       //uint8_t d = rom[ext_addr];
       uint8_t d = 0;
-      ext_pins.D0_C.preset(true, d & 0x01);
-      ext_pins.D1_C.preset(true, d & 0x02);
-      ext_pins.D2_C.preset(true, d & 0x04);
-      ext_pins.D3_C.preset(true, d & 0x08);
-      ext_pins.D4_C.preset(true, d & 0x10);
-      ext_pins.D5_C.preset(true, d & 0x20);
-      ext_pins.D6_C.preset(true, d & 0x40);
-      ext_pins.D7_C.preset(true, d & 0x80);
+      ext_bus.D0_C.preset(true, d & 0x01);
+      ext_bus.D1_C.preset(true, d & 0x02);
+      ext_bus.D2_C.preset(true, d & 0x04);
+      ext_bus.D3_C.preset(true, d & 0x08);
+      ext_bus.D4_C.preset(true, d & 0x10);
+      ext_bus.D5_C.preset(true, d & 0x20);
+      ext_bus.D6_C.preset(true, d & 0x40);
+      ext_bus.D7_C.preset(true, d & 0x80);
     }
     else if (0xC000 <= ext_addr && ext_addr <= 0xDFFF) {
       // Main ram
       //uint8_t d = ram[ext_addr - 0xC000];
       uint8_t d = 0;
-      ext_pins.D0_C.preset(true, d & 0x01);
-      ext_pins.D1_C.preset(true, d & 0x02);
-      ext_pins.D2_C.preset(true, d & 0x04);
-      ext_pins.D3_C.preset(true, d & 0x08);
-      ext_pins.D4_C.preset(true, d & 0x10);
-      ext_pins.D5_C.preset(true, d & 0x20);
-      ext_pins.D6_C.preset(true, d & 0x40);
-      ext_pins.D7_C.preset(true, d & 0x80);
+      ext_bus.D0_C.preset(true, d & 0x01);
+      ext_bus.D1_C.preset(true, d & 0x02);
+      ext_bus.D2_C.preset(true, d & 0x04);
+      ext_bus.D3_C.preset(true, d & 0x08);
+      ext_bus.D4_C.preset(true, d & 0x10);
+      ext_bus.D5_C.preset(true, d & 0x20);
+      ext_bus.D6_C.preset(true, d & 0x40);
+      ext_bus.D7_C.preset(true, d & 0x80);
     }
     else if (0xE000 <= ext_addr && ext_addr <= 0xFFFF) {
       // Echo ram
       //uint8_t d = ram[ext_addr - 0xE000];
       uint8_t d = 0;
-      ext_pins.D0_C.preset(true, d & 0x01);
-      ext_pins.D1_C.preset(true, d & 0x02);
-      ext_pins.D2_C.preset(true, d & 0x04);
-      ext_pins.D3_C.preset(true, d & 0x08);
-      ext_pins.D4_C.preset(true, d & 0x10);
-      ext_pins.D5_C.preset(true, d & 0x20);
-      ext_pins.D6_C.preset(true, d & 0x40);
-      ext_pins.D7_C.preset(true, d & 0x80);
+      ext_bus.D0_C.preset(true, d & 0x01);
+      ext_bus.D1_C.preset(true, d & 0x02);
+      ext_bus.D2_C.preset(true, d & 0x04);
+      ext_bus.D3_C.preset(true, d & 0x08);
+      ext_bus.D4_C.preset(true, d & 0x10);
+      ext_bus.D5_C.preset(true, d & 0x20);
+      ext_bus.D6_C.preset(true, d & 0x40);
+      ext_bus.D7_C.preset(true, d & 0x80);
     }
     else {
       printf("Bad address?\n");
@@ -75,14 +75,14 @@ void TestGB::ext_preset() {
     }
   }
   else {
-    ext_pins.D0_C.preset(false, 0);
-    ext_pins.D1_C.preset(false, 0);
-    ext_pins.D2_C.preset(false, 0);
-    ext_pins.D3_C.preset(false, 0);
-    ext_pins.D4_C.preset(false, 0);
-    ext_pins.D5_C.preset(false, 0);
-    ext_pins.D6_C.preset(false, 0);
-    ext_pins.D7_C.preset(false, 0);
+    ext_bus.D0_C.preset(false, 0);
+    ext_bus.D1_C.preset(false, 0);
+    ext_bus.D2_C.preset(false, 0);
+    ext_bus.D3_C.preset(false, 0);
+    ext_bus.D4_C.preset(false, 0);
+    ext_bus.D5_C.preset(false, 0);
+    ext_bus.D6_C.preset(false, 0);
+    ext_bus.D7_C.preset(false, 0);
   }
 }
 
@@ -365,7 +365,7 @@ bool TestGB::commit_everything() {
   /*p03.PEDA*/ changed |= tim_reg.TIMA_6.commit_counter();
   /*p03.NUGA*/ changed |= tim_reg.TIMA_7.commit_counter();
   /*p03.NYDU*/ changed |= tim_reg.TIMA_MAX.commit_reg();
-  /*p03.MOBA*/ changed |= tim_reg.INT_TIMER.commit_reg();
+  /*p03.MOBA*/ changed |= tim_reg.PIN_INT_TIMER.commit_reg();
   /*p03.SABU*/ changed |= tim_reg.TMA_0.commit_reg();
   /*p03.NYKE*/ changed |= tim_reg.TMA_1.commit_reg();
   /*p03.MURU*/ changed |= tim_reg.TMA_2.commit_reg();
@@ -382,286 +382,286 @@ bool TestGB::commit_everything() {
 
   changed |= win_reg.commit();
 
-  changed |= ppu_reg.MA00.commit_tribuf();
-  changed |= ppu_reg.MA01.commit_tribuf();
-  changed |= ppu_reg.MA02.commit_tribuf();
-  changed |= ppu_reg.MA03.commit_tribuf();
-  changed |= ppu_reg.MA04.commit_tribuf();
-  changed |= ppu_reg.MA05.commit_tribuf();
-  changed |= ppu_reg.MA06.commit_tribuf();
-  changed |= ppu_reg.MA07.commit_tribuf();
-  changed |= ppu_reg.MA08.commit_tribuf();
-  changed |= ppu_reg.MA09.commit_tribuf();
-  changed |= ppu_reg.MA10.commit_tribuf();
-  changed |= ppu_reg.MA11.commit_tribuf();
-  changed |= ppu_reg.MA12.commit_tribuf();
-  changed |= ppu_reg.MD0.commit_tribuf();
-  changed |= ppu_reg.MD1.commit_tribuf();
-  changed |= ppu_reg.MD2.commit_tribuf();
-  changed |= ppu_reg.MD3.commit_tribuf();
-  changed |= ppu_reg.MD4.commit_tribuf();
-  changed |= ppu_reg.MD5.commit_tribuf();
-  changed |= ppu_reg.MD6.commit_tribuf();
-  changed |= ppu_reg.MD7.commit_tribuf();
+  changed |= vram_bus.TS_MA00.commit_tribuf();
+  changed |= vram_bus.TS_MA01.commit_tribuf();
+  changed |= vram_bus.TS_MA02.commit_tribuf();
+  changed |= vram_bus.TS_MA03.commit_tribuf();
+  changed |= vram_bus.TS_MA04.commit_tribuf();
+  changed |= vram_bus.TS_MA05.commit_tribuf();
+  changed |= vram_bus.TS_MA06.commit_tribuf();
+  changed |= vram_bus.TS_MA07.commit_tribuf();
+  changed |= vram_bus.TS_MA08.commit_tribuf();
+  changed |= vram_bus.TS_MA09.commit_tribuf();
+  changed |= vram_bus.TS_MA10.commit_tribuf();
+  changed |= vram_bus.TS_MA11.commit_tribuf();
+  changed |= vram_bus.TS_MA12.commit_tribuf();
+  changed |= vram_bus.TS_MD0.commit_tribuf();
+  changed |= vram_bus.TS_MD1.commit_tribuf();
+  changed |= vram_bus.TS_MD2.commit_tribuf();
+  changed |= vram_bus.TS_MD3.commit_tribuf();
+  changed |= vram_bus.TS_MD4.commit_tribuf();
+  changed |= vram_bus.TS_MD5.commit_tribuf();
+  changed |= vram_bus.TS_MD6.commit_tribuf();
+  changed |= vram_bus.TS_MD7.commit_tribuf();
 
   /*p07.TEPU*/ changed |= bus_reg.BOOT_BITn.commit_reg();
 
-  /*p08.ALOR*/ changed |= bus_reg.CPU_ADDR_LATCH_00.commit_latch();
-  /*p08.APUR*/ changed |= bus_reg.CPU_ADDR_LATCH_01.commit_latch();
-  /*p08.ALYR*/ changed |= bus_reg.CPU_ADDR_LATCH_02.commit_latch();
-  /*p08.ARET*/ changed |= bus_reg.CPU_ADDR_LATCH_03.commit_latch();
-  /*p08.AVYS*/ changed |= bus_reg.CPU_ADDR_LATCH_04.commit_latch();
-  /*p08.ATEV*/ changed |= bus_reg.CPU_ADDR_LATCH_05.commit_latch();
-  /*p08.AROS*/ changed |= bus_reg.CPU_ADDR_LATCH_06.commit_latch();
-  /*p08.ARYM*/ changed |= bus_reg.CPU_ADDR_LATCH_07.commit_latch();
-  /*p08.LUNO*/ changed |= bus_reg.CPU_ADDR_LATCH_08.commit_latch();
-  /*p08.LYSA*/ changed |= bus_reg.CPU_ADDR_LATCH_09.commit_latch();
-  /*p08.PATE*/ changed |= bus_reg.CPU_ADDR_LATCH_10.commit_latch();
-  /*p08.LUMY*/ changed |= bus_reg.CPU_ADDR_LATCH_11.commit_latch();
-  /*p08.LOBU*/ changed |= bus_reg.CPU_ADDR_LATCH_12.commit_latch();
-  /*p08.LONU*/ changed |= bus_reg.CPU_ADDR_LATCH_13.commit_latch();
-  /*p08.NYRE*/ changed |= bus_reg.CPU_ADDR_LATCH_14.commit_latch();
+  /*p08.ALOR*/ changed |= ext_bus.EXT_ADDR_LATCH_00.commit_latch();
+  /*p08.APUR*/ changed |= ext_bus.EXT_ADDR_LATCH_01.commit_latch();
+  /*p08.ALYR*/ changed |= ext_bus.EXT_ADDR_LATCH_02.commit_latch();
+  /*p08.ARET*/ changed |= ext_bus.EXT_ADDR_LATCH_03.commit_latch();
+  /*p08.AVYS*/ changed |= ext_bus.EXT_ADDR_LATCH_04.commit_latch();
+  /*p08.ATEV*/ changed |= ext_bus.EXT_ADDR_LATCH_05.commit_latch();
+  /*p08.AROS*/ changed |= ext_bus.EXT_ADDR_LATCH_06.commit_latch();
+  /*p08.ARYM*/ changed |= ext_bus.EXT_ADDR_LATCH_07.commit_latch();
+  /*p08.LUNO*/ changed |= ext_bus.EXT_ADDR_LATCH_08.commit_latch();
+  /*p08.LYSA*/ changed |= ext_bus.EXT_ADDR_LATCH_09.commit_latch();
+  /*p08.PATE*/ changed |= ext_bus.EXT_ADDR_LATCH_10.commit_latch();
+  /*p08.LUMY*/ changed |= ext_bus.EXT_ADDR_LATCH_11.commit_latch();
+  /*p08.LOBU*/ changed |= ext_bus.EXT_ADDR_LATCH_12.commit_latch();
+  /*p08.LONU*/ changed |= ext_bus.EXT_ADDR_LATCH_13.commit_latch();
+  /*p08.NYRE*/ changed |= ext_bus.EXT_ADDR_LATCH_14.commit_latch();
 
-  /*p08.SOMA*/ changed |= bus_reg.CART_DATA_LATCH_00.commit_latch();
-  /*p08.RONY*/ changed |= bus_reg.CART_DATA_LATCH_01.commit_latch();
-  /*p08.RAXY*/ changed |= bus_reg.CART_DATA_LATCH_02.commit_latch();
-  /*p08.SELO*/ changed |= bus_reg.CART_DATA_LATCH_03.commit_latch();
-  /*p08.SODY*/ changed |= bus_reg.CART_DATA_LATCH_04.commit_latch();
-  /*p08.SAGO*/ changed |= bus_reg.CART_DATA_LATCH_05.commit_latch();
-  /*p08.RUPA*/ changed |= bus_reg.CART_DATA_LATCH_06.commit_latch();
-  /*p08.SAZY*/ changed |= bus_reg.CART_DATA_LATCH_07.commit_latch();
+  /*p08.SOMA*/ changed |= ext_bus.EXT_DATA_LATCH_00.commit_latch();
+  /*p08.RONY*/ changed |= ext_bus.EXT_DATA_LATCH_01.commit_latch();
+  /*p08.RAXY*/ changed |= ext_bus.EXT_DATA_LATCH_02.commit_latch();
+  /*p08.SELO*/ changed |= ext_bus.EXT_DATA_LATCH_03.commit_latch();
+  /*p08.SODY*/ changed |= ext_bus.EXT_DATA_LATCH_04.commit_latch();
+  /*p08.SAGO*/ changed |= ext_bus.EXT_DATA_LATCH_05.commit_latch();
+  /*p08.RUPA*/ changed |= ext_bus.EXT_DATA_LATCH_06.commit_latch();
+  /*p08.SAZY*/ changed |= ext_bus.EXT_DATA_LATCH_07.commit_latch();
 
   //----------------------------------------
   // PINS
 
-  changed |= cpu_pins.TO_CPU2.commit_pinout();       // <- P02.AWOB
-  changed |= cpu_pins.CPU_RAW_RD.clear_preset();     // PORTA_00: -> UJYV, LAGU, LAVO
-  changed |= cpu_pins.CPU_RAW_WR.clear_preset();     // PORTA_01: -> AREV, LAGU.
-  changed |= cpu_pins.READ_BOOTROM.commit_pinout();  // PORTA_04: <- TUTU
-  changed |= cpu_pins.ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
-  changed |= cpu_pins.ACK_VBLANK.clear_preset();     // PORTB_01: -> LETY, vblank int ack
-  changed |= cpu_pins.INT_VBLANK.commit_pinout();    // PORTB_03: <- LOPE, vblank int
-  changed |= cpu_pins.ACK_STAT.clear_preset();       // PORTB_05: -> LEJA, stat int ack
-  changed |= cpu_pins.INT_STAT.commit_pinout();      // PORTB_07: <- LALU, stat int
-  changed |= cpu_pins.ACK_TIMER.clear_preset();      // PORTB_09: -> LESA, timer int ack
-  changed |= cpu_pins.INT_TIMER.commit_pinout();     // PORTB_11: <- NYBO, timer int
-  changed |= cpu_pins.ACK_SERIAL.clear_preset();     // PORTB_13: -> LUFE, serial int ack
-  changed |= cpu_pins.INT_SERIAL.commit_pinout();    // PORTB_15: <- UBUL, serial int
-  changed |= cpu_pins.ACK_JOYPAD.clear_preset();     // PORTB_17: -> LAMO, joypad int ack
-  changed |= cpu_pins.INT_JOYPAD.commit_pinout();    // PORTB_19: <- ULAK, joypad int
-  changed |= cpu_pins.CLKREQ.clear_preset();         // PORTC_00: -> ABOL
-  changed |= cpu_pins.AFER.commit_pinout();          // PORTC_01: <- AFER
-  changed |= cpu_pins.PIN_RESET.commit_pinout();     // PORTC_02: <- PIN_RESET directly connected to the pad
-  changed |= cpu_pins.CLK_GOOD.commit_pinout();      // PORTC_03: <- CLKIN_A
-  changed |= cpu_pins.CPU_RESET.commit_pinout();     // PORTC_04: <- TABA
-  changed |= cpu_pins.FROM_CPU6.clear_preset();      // PORTD_00: -> LEXY, doesn't do anything
+  changed |= cpu_bus.PIN_TO_CPU2.commit_pinout();       // <- P02.AWOB
+  changed |= cpu_bus.PIN_CPU_RAW_RD.clear_preset();     // PORTA_00: -> UJYV, LAGU, LAVO
+  changed |= cpu_bus.PIN_CPU_RAW_WR.clear_preset();     // PORTA_01: -> AREV, LAGU.
+  changed |= cpu_bus.PIN_READ_BOOTROM.commit_pinout();  // PORTA_04: <- TUTU
+  changed |= cpu_bus.PIN_ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
+  changed |= cpu_bus.PIN_ACK_VBLANK.clear_preset();     // PORTB_01: -> LETY, vblank int ack
+  changed |= cpu_bus.PIN_INT_VBLANK.commit_pinout();    // PORTB_03: <- LOPE, vblank int
+  changed |= cpu_bus.PIN_ACK_STAT.clear_preset();       // PORTB_05: -> LEJA, stat int ack
+  changed |= cpu_bus.PIN_INT_STAT.commit_pinout();      // PORTB_07: <- LALU, stat int
+  changed |= cpu_bus.PIN_ACK_TIMER.clear_preset();      // PORTB_09: -> LESA, timer int ack
+  changed |= cpu_bus.PIN_INT_TIMER.commit_pinout();     // PORTB_11: <- NYBO, timer int
+  changed |= cpu_bus.PIN_ACK_SERIAL.clear_preset();     // PORTB_13: -> LUFE, serial int ack
+  changed |= cpu_bus.PIN_INT_SERIAL.commit_pinout();    // PORTB_15: <- UBUL, serial int
+  changed |= cpu_bus.PIN_ACK_JOYPAD.clear_preset();     // PORTB_17: -> LAMO, joypad int ack
+  changed |= cpu_bus.PIN_INT_JOYPAD.commit_pinout();    // PORTB_19: <- ULAK, joypad int
+  changed |= cpu_bus.PIN_CLKREQ.clear_preset();         // PORTC_00: -> ABOL
+  changed |= cpu_bus.PIN_AFER.commit_pinout();          // PORTC_01: <- AFER
+  changed |= cpu_bus.PIN_RESET.commit_pinout();     // PORTC_02: <- PIN_RESET directly connected to the pad
+  changed |= cpu_bus.PIN_CLK_GOOD.commit_pinout();      // PORTC_03: <- CLKIN_A
+  changed |= cpu_bus.PIN_CPU_RESET.commit_pinout();     // PORTC_04: <- TABA
+  changed |= cpu_bus.PIN_FROM_CPU6.clear_preset();      // PORTD_00: -> LEXY, doesn't do anything
 
-  changed |= cpu_pins.BOWA_AxCDEFGH.commit_pinout(); // PORTD_01: <- BOWA
-  changed |= cpu_pins.BEDO_xBxxxxxx.commit_pinout(); // PORTD_02: <- BEDO _____fgh
+  changed |= cpu_bus.PIN_BOWA_AxCDEFGH.commit_pinout(); // PORTD_01: <- BOWA
+  changed |= cpu_bus.PIN_BEDO_xBxxxxxx.commit_pinout(); // PORTD_02: <- BEDO _____fgh
 
-  changed |= cpu_pins.BEKO_xBCDExxx.commit_pinout(); // PORTD_03: <- BEKO ____efgh connection not indicated on P01
-  changed |= cpu_pins.BUDE_AxxxxFGH.commit_pinout(); // PORTD_04: <- BUDE abcd____
+  changed |= cpu_bus.PIN_BEKO_xBCDExxx.commit_pinout(); // PORTD_03: <- BEKO ____efgh connection not indicated on P01
+  changed |= cpu_bus.PIN_BUDE_AxxxxFGH.commit_pinout(); // PORTD_04: <- BUDE abcd____
   
-  changed |= cpu_pins.BOLO_xBCDEFGx.commit_pinout(); // PORTD_05: <- BOLO
-  changed |= cpu_pins.FROM_CPU5.clear_preset();      // PORTD_05: -> FROM_CPU5
-  changed |= cpu_pins.BUKE_ABxxxxxH.commit_pinout(); // PORTD_06: <- BUKE _____f__
+  changed |= cpu_bus.PIN_BOLO_xBCDEFGx.commit_pinout(); // PORTD_05: <- BOLO
+  changed |= cpu_bus.PIN_FROM_CPU5p.clear_preset();      // PORTD_05: -> FROM_CPU5
+  changed |= cpu_bus.PIN_BUKE_ABxxxxxH.commit_pinout(); // PORTD_06: <- BUKE _____f__
 
-  changed |= cpu_pins.BOMA_xBxxxxxx.commit_pinout(); // PORTD_07: <- BOMA _____fgh
-  changed |= cpu_pins.BOGA_AxCDEFGH.commit_pinout(); // PORTD_08: <- BOGA abcde___
+  changed |= cpu_bus.PIN_BOMA_xBxxxxxx.commit_pinout(); // PORTD_07: <- BOMA _____fgh
+  changed |= cpu_bus.PIN_BOGA_AxCDEFGH.commit_pinout(); // PORTD_08: <- BOGA abcde___
 
-  changed |= cpu_pins.A00.clear_preset();
-  changed |= cpu_pins.A01.clear_preset();
-  changed |= cpu_pins.A02.clear_preset();
-  changed |= cpu_pins.A03.clear_preset();
-  changed |= cpu_pins.A04.clear_preset();
-  changed |= cpu_pins.A05.clear_preset();
-  changed |= cpu_pins.A06.clear_preset();
-  changed |= cpu_pins.A07.clear_preset();
-  changed |= cpu_pins.A08.clear_preset();
-  changed |= cpu_pins.A09.clear_preset();
-  changed |= cpu_pins.A10.clear_preset();
-  changed |= cpu_pins.A11.clear_preset();
-  changed |= cpu_pins.A12.clear_preset();
-  changed |= cpu_pins.A13.clear_preset();
-  changed |= cpu_pins.A14.clear_preset();
-  changed |= cpu_pins.A15.clear_preset();
-  changed |= cpu_pins.D0.commit_tribuf();
-  changed |= cpu_pins.D1.commit_tribuf();
-  changed |= cpu_pins.D2.commit_tribuf();
-  changed |= cpu_pins.D3.commit_tribuf();
-  changed |= cpu_pins.D4.commit_tribuf();
-  changed |= cpu_pins.D5.commit_tribuf();
-  changed |= cpu_pins.D6.commit_tribuf();
-  changed |= cpu_pins.D7.commit_tribuf();
+  changed |= cpu_bus.A00.clear_preset();
+  changed |= cpu_bus.A01.clear_preset();
+  changed |= cpu_bus.A02.clear_preset();
+  changed |= cpu_bus.A03.clear_preset();
+  changed |= cpu_bus.A04.clear_preset();
+  changed |= cpu_bus.A05.clear_preset();
+  changed |= cpu_bus.A06.clear_preset();
+  changed |= cpu_bus.A07.clear_preset();
+  changed |= cpu_bus.A08.clear_preset();
+  changed |= cpu_bus.A09.clear_preset();
+  changed |= cpu_bus.A10.clear_preset();
+  changed |= cpu_bus.A11.clear_preset();
+  changed |= cpu_bus.A12.clear_preset();
+  changed |= cpu_bus.A13.clear_preset();
+  changed |= cpu_bus.A14.clear_preset();
+  changed |= cpu_bus.A15.clear_preset();
+  changed |= cpu_bus.D0.commit_tribuf();
+  changed |= cpu_bus.D1.commit_tribuf();
+  changed |= cpu_bus.D2.commit_tribuf();
+  changed |= cpu_bus.D3.commit_tribuf();
+  changed |= cpu_bus.D4.commit_tribuf();
+  changed |= cpu_bus.D5.commit_tribuf();
+  changed |= cpu_bus.D6.commit_tribuf();
+  changed |= cpu_bus.D7.commit_tribuf();
 
-  changed |= oam_pins.COTA_CLK.commit_pinout();
-  changed |= oam_pins.ZODO_OE.commit_pinout();
-  changed |= oam_pins.WR_A.commit_pinout(); // definitely write
-  changed |= oam_pins.WR_B.commit_pinout(); // definitely write
-  changed |= oam_pins.A0.commit_pinout();
-  changed |= oam_pins.A1.commit_pinout();
-  changed |= oam_pins.A2.commit_pinout();
-  changed |= oam_pins.A3.commit_pinout();
-  changed |= oam_pins.A4.commit_pinout();
-  changed |= oam_pins.A5.commit_pinout();
-  changed |= oam_pins.A6.commit_pinout();
-  changed |= oam_pins.A7.commit_pinout();
-  changed |= oam_pins.A_D0.commit_tribuf();
-  changed |= oam_pins.A_D1.commit_tribuf();
-  changed |= oam_pins.A_D2.commit_tribuf();
-  changed |= oam_pins.A_D3.commit_tribuf();
-  changed |= oam_pins.A_D4.commit_tribuf();
-  changed |= oam_pins.A_D5.commit_tribuf();
-  changed |= oam_pins.A_D6.commit_tribuf();
-  changed |= oam_pins.A_D7.commit_tribuf();
-  changed |= oam_pins.B_D0.commit_tribuf();
-  changed |= oam_pins.B_D1.commit_tribuf();
-  changed |= oam_pins.B_D2.commit_tribuf();
-  changed |= oam_pins.B_D3.commit_tribuf();
-  changed |= oam_pins.B_D4.commit_tribuf();
-  changed |= oam_pins.B_D5.commit_tribuf();
-  changed |= oam_pins.B_D6.commit_tribuf();
-  changed |= oam_pins.B_D7.commit_tribuf();
+  changed |= oam_bus.COTA_CLK.commit_pinout();
+  changed |= oam_bus.ZODO_OE.commit_pinout();
+  changed |= oam_bus.WR_A.commit_pinout(); // definitely write
+  changed |= oam_bus.WR_B.commit_pinout(); // definitely write
+  changed |= oam_bus.A0.commit_pinout();
+  changed |= oam_bus.A1.commit_pinout();
+  changed |= oam_bus.A2.commit_pinout();
+  changed |= oam_bus.A3.commit_pinout();
+  changed |= oam_bus.A4.commit_pinout();
+  changed |= oam_bus.A5.commit_pinout();
+  changed |= oam_bus.A6.commit_pinout();
+  changed |= oam_bus.A7.commit_pinout();
+  changed |= oam_bus.DA0.commit_tribuf();
+  changed |= oam_bus.DA1.commit_tribuf();
+  changed |= oam_bus.DA2.commit_tribuf();
+  changed |= oam_bus.DA3.commit_tribuf();
+  changed |= oam_bus.DA4.commit_tribuf();
+  changed |= oam_bus.DA5.commit_tribuf();
+  changed |= oam_bus.DA6.commit_tribuf();
+  changed |= oam_bus.DA7.commit_tribuf();
+  changed |= oam_bus.DB0.commit_tribuf();
+  changed |= oam_bus.DB1.commit_tribuf();
+  changed |= oam_bus.DB2.commit_tribuf();
+  changed |= oam_bus.DB3.commit_tribuf();
+  changed |= oam_bus.DB4.commit_tribuf();
+  changed |= oam_bus.DB5.commit_tribuf();
+  changed |= oam_bus.DB6.commit_tribuf();
+  changed |= oam_bus.DB7.commit_tribuf();
 
   changed |= wave_pins.BORY_ABxxxxxH.commit_pinout();
 
   // Package pins
 
-  /* PIN_01 */ changed |= ext_pins.A00_A.commit_pinout();     // <- KUPO
-  /* PIN_01 */ changed |= ext_pins.A00_C.clear_preset();      // -> KOVA
-  /* PIN_01 */ changed |= ext_pins.A00_D.commit_pinout();     // <- KOTY
-  /* PIN_02 */ changed |= ext_pins.A01_A.commit_pinout();     // <- CABA
-  /* PIN_02 */ changed |= ext_pins.A01_C.clear_preset();      // -> CAMU
-  /* PIN_02 */ changed |= ext_pins.A01_D.commit_pinout();     // <- COTU
-  /* PIN_03 */ changed |= ext_pins.A02_A.commit_pinout();     // <- BOKU
-  /* PIN_03 */ changed |= ext_pins.A02_C.clear_preset();      // -> BUXU
-  /* PIN_03 */ changed |= ext_pins.A02_D.commit_pinout();     // <- BAJO
-  /* PIN_04 */ changed |= ext_pins.A03_A.commit_pinout();     // <- BOTY
-  /* PIN_04 */ changed |= ext_pins.A03_C.clear_preset();      // -> BASE
-  /* PIN_04 */ changed |= ext_pins.A03_D.commit_pinout();     // <- BOLA
-  /* PIN_05 */ changed |= ext_pins.A04_A.commit_pinout();     // <- BYLA
-  /* PIN_05 */ changed |= ext_pins.A04_C.clear_preset();      // -> AFEC
-  /* PIN_05 */ changed |= ext_pins.A04_D.commit_pinout();     // <- BEVO
-  /* PIN_06 */ changed |= ext_pins.A05_A.commit_pinout();     // <- BADU
-  /* PIN_06 */ changed |= ext_pins.A05_C.clear_preset();      // -> ABUP
-  /* PIN_06 */ changed |= ext_pins.A05_D.commit_pinout();     // <- AJAV
-  /* PIN_07 */ changed |= ext_pins.A06_A.commit_pinout();     // <- CEPU
-  /* PIN_07 */ changed |= ext_pins.A06_C.clear_preset();      // -> CYGU
-  /* PIN_07 */ changed |= ext_pins.A06_D.commit_pinout();     // <- CYKA
-  /* PIN_08 */ changed |= ext_pins.A07_A.commit_pinout();     // <- DEFY
-  /* PIN_08 */ changed |= ext_pins.A07_C.clear_preset();      // -> COGO
-  /* PIN_08 */ changed |= ext_pins.A07_D.commit_pinout();     // <- COLO
-  /* PIN_09 */ changed |= ext_pins.A08_A.commit_pinout();     // <- MYNY
-  /* PIN_09 */ changed |= ext_pins.A08_C.clear_preset();      // -> MUJY
-  /* PIN_09 */ changed |= ext_pins.A08_D.commit_pinout();     // <- MEGO
-  /* PIN_10 */ changed |= ext_pins.A09_A.commit_pinout();     // <- MUNE
-  /* PIN_10 */ changed |= ext_pins.A09_C.clear_preset();      // -> NENA
-  /* PIN_10 */ changed |= ext_pins.A09_D.commit_pinout();     // <- MENY
-  /* PIN_11 */ changed |= ext_pins.A10_A.commit_pinout();     // <- ROXU
-  /* PIN_11 */ changed |= ext_pins.A10_C.clear_preset();      // -> SURA
-  /* PIN_11 */ changed |= ext_pins.A10_D.commit_pinout();     // <- RORE
-  /* PIN_12 */ changed |= ext_pins.A11_A.commit_pinout();     // <- LEPY
-  /* PIN_12 */ changed |= ext_pins.A11_C.clear_preset();      // -> MADY
-  /* PIN_12 */ changed |= ext_pins.A11_D.commit_pinout();     // <- LYNY
-  /* PIN_13 */ changed |= ext_pins.A12_A.commit_pinout();     // <- LUCE
-  /* PIN_13 */ changed |= ext_pins.A12_C.clear_preset();      // -> LAHE
-  /* PIN_13 */ changed |= ext_pins.A12_D.commit_pinout();     // <- LOSO
-  /* PIN_14 */ changed |= ext_pins.A13_A.commit_pinout();     // <- LABE
-  /* PIN_14 */ changed |= ext_pins.A13_C.clear_preset();      // -> LURA
-  /* PIN_14 */ changed |= ext_pins.A13_D.commit_pinout();     // <- LEVA
-  /* PIN_15 */ changed |= ext_pins.A14_A.commit_pinout();     // <- PUHE
-  /* PIN_15 */ changed |= ext_pins.A14_C.clear_preset();      // -> PEVO
-  /* PIN_15 */ changed |= ext_pins.A14_D.commit_pinout();     // <- PAHY
-  /* PIN_16 */ changed |= ext_pins.A15_A.commit_pinout();     // <- SUZE
-  /* PIN_16 */ changed |= ext_pins.A15_C.clear_preset();      // -> RAZA
-  /* PIN_16 */ changed |= ext_pins.A15_D.commit_pinout();     // <- RULO
-  /* PIN_17 */ changed |= ext_pins.D0_A.commit_pinout();      // <- RUXA
-  /* PIN_17 */ changed |= ext_pins.D0_B.commit_pinout();      // <- LULA
-  /* PIN_17 */ changed |= ext_pins.D0_C.clear_preset();       // -> TOVO,SOMA
-  /* PIN_17 */ changed |= ext_pins.D0_D.commit_pinout();      // <- RUNE
-  /* PIN_18 */ changed |= ext_pins.D1_A.commit_pinout();      // <- RUJA
-  /* PIN_18 */ changed |= ext_pins.D1_B.commit_pinout();      // <- LULA
-  /* PIN_18 */ changed |= ext_pins.D1_C.clear_preset();       // -> RUZY,RONY
-  /* PIN_18 */ changed |= ext_pins.D1_D.commit_pinout();      // <- RYPU
-  /* PIN_19 */ changed |= ext_pins.D2_A.commit_pinout();      // <- RABY
-  /* PIN_19 */ changed |= ext_pins.D2_B.commit_pinout();      // <- LULA
-  /* PIN_19 */ changed |= ext_pins.D2_C.clear_preset();       // -> ROME,RAXY
-  /* PIN_19 */ changed |= ext_pins.D2_D.commit_pinout();      // <- SULY
-  /* PIN_20 */ changed |= ext_pins.D3_A.commit_pinout();      // <- RERA
-  /* PIN_20 */ changed |= ext_pins.D3_B.commit_pinout();      // <- LULA
-  /* PIN_20 */ changed |= ext_pins.D3_C.clear_preset();       // -> SAZA,SELO
-  /* PIN_20 */ changed |= ext_pins.D3_D.commit_pinout();      // <- SEZE
-  /* PIN_21 */ changed |= ext_pins.D4_A.commit_pinout();      // <- RORY
-  /* PIN_21 */ changed |= ext_pins.D4_B.commit_pinout();      // <- LULA
-  /* PIN_21 */ changed |= ext_pins.D4_C.clear_preset();       // -> TEHE,SODY
-  /* PIN_21 */ changed |= ext_pins.D4_D.commit_pinout();      // <- RESY
-  /* PIN_22 */ changed |= ext_pins.D5_A.commit_pinout();      // <- RYVO
-  /* PIN_22 */ changed |= ext_pins.D5_B.commit_pinout();      // <- LULA
-  /* PIN_22 */ changed |= ext_pins.D5_C.clear_preset();       // -> RATU,SAGO
-  /* PIN_22 */ changed |= ext_pins.D5_D.commit_pinout();      // <- TAMU
-  /* PIN_23 */ changed |= ext_pins.D6_A.commit_pinout();      // <- RAFY
-  /* PIN_23 */ changed |= ext_pins.D6_B.commit_pinout();      // <- LULA
-  /* PIN_23 */ changed |= ext_pins.D6_C.clear_preset();       // -> SOCA,RUPA
-  /* PIN_23 */ changed |= ext_pins.D6_D.commit_pinout();      // <- ROGY
-  /* PIN_24 */ changed |= ext_pins.D7_A.commit_pinout();      // <- RAVU
-  /* PIN_24 */ changed |= ext_pins.D7_B.commit_pinout();      // <- LULA
-  /* PIN_24 */ changed |= ext_pins.D7_C.clear_preset();       // -> RYBA,SAZY
-  /* PIN_24 */ changed |= ext_pins.D7_D.commit_pinout();      // <- RYDA
-  /* PIN_25 */ changed |= vram_pins.MD7_A.commit_pinout();    // <- RYZE
-  /* PIN_25 */ changed |= vram_pins.MD7_B.commit_pinout();    // <- ROFA
-  /* PIN_25 */ changed |= vram_pins.MD7_C.clear_preset();     // -> RAKU
-  /* PIN_25 */ changed |= vram_pins.MD7_D.commit_pinout();    // <- RADY
-  /* PIN_26 */ changed |= vram_pins.MD6_A.commit_pinout();    // <- REKU
-  /* PIN_26 */ changed |= vram_pins.MD6_B.commit_pinout();    // <- ROFA
-  /* PIN_26 */ changed |= vram_pins.MD6_C.clear_preset();     // -> RETA
-  /* PIN_26 */ changed |= vram_pins.MD6_D.commit_pinout();    // <- RYTY
-  /* PIN_27 */ changed |= vram_pins.MD5_A.commit_pinout();    // <- REVU
-  /* PIN_27 */ changed |= vram_pins.MD5_B.commit_pinout();    // <- ROFA
-  /* PIN_27 */ changed |= vram_pins.MD5_C.clear_preset();     // -> ROPU
-  /* PIN_27 */ changed |= vram_pins.MD5_D.commit_pinout();    // <- RUMU
-  /* PIN_28 */ changed |= vram_pins.MD4_A.commit_pinout();    // <- RYRO
-  /* PIN_28 */ changed |= vram_pins.MD4_B.commit_pinout();    // <- ROFA
-  /* PIN_28 */ changed |= vram_pins.MD4_C.clear_preset();     // -> ROCE
-  /* PIN_28 */ changed |= vram_pins.MD4_D.commit_pinout();    // <- RUBE
-  /* PIN_29 */ changed |= vram_pins.MD3_A.commit_pinout();    // <- RADA
-  /* PIN_29 */ changed |= vram_pins.MD3_B.commit_pinout();    // <- ROFA
-  /* PIN_29 */ changed |= vram_pins.MD3_C.clear_preset();     // -> REMO
-  /* PIN_29 */ changed |= vram_pins.MD3_D.commit_pinout();    // <- RODU
-  /* PIN_30 */ changed |= vram_pins.MD2_A.commit_pinout();    // <- RAZO
-  /* PIN_30 */ changed |= vram_pins.MD2_B.commit_pinout();    // <- ROFA
-  /* PIN_30 */ changed |= vram_pins.MD2_C.clear_preset();     // -> RYDO
-  /* PIN_30 */ changed |= vram_pins.MD2_D.commit_pinout();    // <- RARE
-  /* PIN_31 */ changed |= vram_pins.MD1_A.commit_pinout();    // <- RYKY
-  /* PIN_31 */ changed |= vram_pins.MD1_B.commit_pinout();    // <- ROFA
-  /* PIN_31 */ changed |= vram_pins.MD1_C.clear_preset();     // -> REBA
-  /* PIN_31 */ changed |= vram_pins.MD1_D.commit_pinout();    // <- RULY
+  /* PIN_01 */ changed |= ext_bus.A00_A.commit_pinout();     // <- KUPO
+  /* PIN_01 */ changed |= ext_bus.A00_C.clear_preset();      // -> KOVA
+  /* PIN_01 */ changed |= ext_bus.A00_D.commit_pinout();     // <- KOTY
+  /* PIN_02 */ changed |= ext_bus.A01_A.commit_pinout();     // <- CABA
+  /* PIN_02 */ changed |= ext_bus.A01_C.clear_preset();      // -> CAMU
+  /* PIN_02 */ changed |= ext_bus.A01_D.commit_pinout();     // <- COTU
+  /* PIN_03 */ changed |= ext_bus.A02_A.commit_pinout();     // <- BOKU
+  /* PIN_03 */ changed |= ext_bus.A02_C.clear_preset();      // -> BUXU
+  /* PIN_03 */ changed |= ext_bus.A02_D.commit_pinout();     // <- BAJO
+  /* PIN_04 */ changed |= ext_bus.A03_A.commit_pinout();     // <- BOTY
+  /* PIN_04 */ changed |= ext_bus.A03_C.clear_preset();      // -> BASE
+  /* PIN_04 */ changed |= ext_bus.A03_D.commit_pinout();     // <- BOLA
+  /* PIN_05 */ changed |= ext_bus.A04_A.commit_pinout();     // <- BYLA
+  /* PIN_05 */ changed |= ext_bus.A04_C.clear_preset();      // -> AFEC
+  /* PIN_05 */ changed |= ext_bus.A04_D.commit_pinout();     // <- BEVO
+  /* PIN_06 */ changed |= ext_bus.A05_A.commit_pinout();     // <- BADU
+  /* PIN_06 */ changed |= ext_bus.A05_C.clear_preset();      // -> ABUP
+  /* PIN_06 */ changed |= ext_bus.A05_D.commit_pinout();     // <- AJAV
+  /* PIN_07 */ changed |= ext_bus.A06_A.commit_pinout();     // <- CEPU
+  /* PIN_07 */ changed |= ext_bus.A06_C.clear_preset();      // -> CYGU
+  /* PIN_07 */ changed |= ext_bus.A06_D.commit_pinout();     // <- CYKA
+  /* PIN_08 */ changed |= ext_bus.A07_A.commit_pinout();     // <- DEFY
+  /* PIN_08 */ changed |= ext_bus.A07_C.clear_preset();      // -> COGO
+  /* PIN_08 */ changed |= ext_bus.A07_D.commit_pinout();     // <- COLO
+  /* PIN_09 */ changed |= ext_bus.A08_A.commit_pinout();     // <- MYNY
+  /* PIN_09 */ changed |= ext_bus.A08_C.clear_preset();      // -> MUJY
+  /* PIN_09 */ changed |= ext_bus.A08_D.commit_pinout();     // <- MEGO
+  /* PIN_10 */ changed |= ext_bus.A09_A.commit_pinout();     // <- MUNE
+  /* PIN_10 */ changed |= ext_bus.A09_C.clear_preset();      // -> NENA
+  /* PIN_10 */ changed |= ext_bus.A09_D.commit_pinout();     // <- MENY
+  /* PIN_11 */ changed |= ext_bus.A10_A.commit_pinout();     // <- ROXU
+  /* PIN_11 */ changed |= ext_bus.A10_C.clear_preset();      // -> SURA
+  /* PIN_11 */ changed |= ext_bus.A10_D.commit_pinout();     // <- RORE
+  /* PIN_12 */ changed |= ext_bus.A11_A.commit_pinout();     // <- LEPY
+  /* PIN_12 */ changed |= ext_bus.A11_C.clear_preset();      // -> MADY
+  /* PIN_12 */ changed |= ext_bus.A11_D.commit_pinout();     // <- LYNY
+  /* PIN_13 */ changed |= ext_bus.A12_A.commit_pinout();     // <- LUCE
+  /* PIN_13 */ changed |= ext_bus.A12_C.clear_preset();      // -> LAHE
+  /* PIN_13 */ changed |= ext_bus.A12_D.commit_pinout();     // <- LOSO
+  /* PIN_14 */ changed |= ext_bus.A13_A.commit_pinout();     // <- LABE
+  /* PIN_14 */ changed |= ext_bus.A13_C.clear_preset();      // -> LURA
+  /* PIN_14 */ changed |= ext_bus.A13_D.commit_pinout();     // <- LEVA
+  /* PIN_15 */ changed |= ext_bus.A14_A.commit_pinout();     // <- PUHE
+  /* PIN_15 */ changed |= ext_bus.A14_C.clear_preset();      // -> PEVO
+  /* PIN_15 */ changed |= ext_bus.A14_D.commit_pinout();     // <- PAHY
+  /* PIN_16 */ changed |= ext_bus.A15_A.commit_pinout();     // <- SUZE
+  /* PIN_16 */ changed |= ext_bus.A15_C.clear_preset();      // -> RAZA
+  /* PIN_16 */ changed |= ext_bus.A15_D.commit_pinout();     // <- RULO
+  /* PIN_17 */ changed |= ext_bus.D0_A.commit_pinout();      // <- RUXA
+  /* PIN_17 */ changed |= ext_bus.D0_B.commit_pinout();      // <- LULA
+  /* PIN_17 */ changed |= ext_bus.D0_C.clear_preset();       // -> TOVO,SOMA
+  /* PIN_17 */ changed |= ext_bus.D0_D.commit_pinout();      // <- RUNE
+  /* PIN_18 */ changed |= ext_bus.D1_A.commit_pinout();      // <- RUJA
+  /* PIN_18 */ changed |= ext_bus.D1_B.commit_pinout();      // <- LULA
+  /* PIN_18 */ changed |= ext_bus.D1_C.clear_preset();       // -> RUZY,RONY
+  /* PIN_18 */ changed |= ext_bus.D1_D.commit_pinout();      // <- RYPU
+  /* PIN_19 */ changed |= ext_bus.D2_A.commit_pinout();      // <- RABY
+  /* PIN_19 */ changed |= ext_bus.D2_B.commit_pinout();      // <- LULA
+  /* PIN_19 */ changed |= ext_bus.D2_C.clear_preset();       // -> ROME,RAXY
+  /* PIN_19 */ changed |= ext_bus.D2_D.commit_pinout();      // <- SULY
+  /* PIN_20 */ changed |= ext_bus.D3_A.commit_pinout();      // <- RERA
+  /* PIN_20 */ changed |= ext_bus.D3_B.commit_pinout();      // <- LULA
+  /* PIN_20 */ changed |= ext_bus.D3_C.clear_preset();       // -> SAZA,SELO
+  /* PIN_20 */ changed |= ext_bus.D3_D.commit_pinout();      // <- SEZE
+  /* PIN_21 */ changed |= ext_bus.D4_A.commit_pinout();      // <- RORY
+  /* PIN_21 */ changed |= ext_bus.D4_B.commit_pinout();      // <- LULA
+  /* PIN_21 */ changed |= ext_bus.D4_C.clear_preset();       // -> TEHE,SODY
+  /* PIN_21 */ changed |= ext_bus.D4_D.commit_pinout();      // <- RESY
+  /* PIN_22 */ changed |= ext_bus.D5_A.commit_pinout();      // <- RYVO
+  /* PIN_22 */ changed |= ext_bus.D5_B.commit_pinout();      // <- LULA
+  /* PIN_22 */ changed |= ext_bus.D5_C.clear_preset();       // -> RATU,SAGO
+  /* PIN_22 */ changed |= ext_bus.D5_D.commit_pinout();      // <- TAMU
+  /* PIN_23 */ changed |= ext_bus.D6_A.commit_pinout();      // <- RAFY
+  /* PIN_23 */ changed |= ext_bus.D6_B.commit_pinout();      // <- LULA
+  /* PIN_23 */ changed |= ext_bus.D6_C.clear_preset();       // -> SOCA,RUPA
+  /* PIN_23 */ changed |= ext_bus.D6_D.commit_pinout();      // <- ROGY
+  /* PIN_24 */ changed |= ext_bus.D7_A.commit_pinout();      // <- RAVU
+  /* PIN_24 */ changed |= ext_bus.D7_B.commit_pinout();      // <- LULA
+  /* PIN_24 */ changed |= ext_bus.D7_C.clear_preset();       // -> RYBA,SAZY
+  /* PIN_24 */ changed |= ext_bus.D7_D.commit_pinout();      // <- RYDA
+  /* PIN_25 */ changed |= vram_bus.PIN_MD7_A.commit_pinout();    // <- RYZE
+  /* PIN_25 */ changed |= vram_bus.PIN_MD7_B.commit_pinout();    // <- ROFA
+  /* PIN_25 */ changed |= vram_bus.PIN_MD7_C.clear_preset();     // -> RAKU
+  /* PIN_25 */ changed |= vram_bus.PIN_MD7_D.commit_pinout();    // <- RADY
+  /* PIN_26 */ changed |= vram_bus.PIN_MD6_A.commit_pinout();    // <- REKU
+  /* PIN_26 */ changed |= vram_bus.PIN_MD6_B.commit_pinout();    // <- ROFA
+  /* PIN_26 */ changed |= vram_bus.PIN_MD6_C.clear_preset();     // -> RETA
+  /* PIN_26 */ changed |= vram_bus.PIN_MD6_D.commit_pinout();    // <- RYTY
+  /* PIN_27 */ changed |= vram_bus.PIN_MD5_A.commit_pinout();    // <- REVU
+  /* PIN_27 */ changed |= vram_bus.PIN_MD5_B.commit_pinout();    // <- ROFA
+  /* PIN_27 */ changed |= vram_bus.PIN_MD5_C.clear_preset();     // -> ROPU
+  /* PIN_27 */ changed |= vram_bus.PIN_MD5_D.commit_pinout();    // <- RUMU
+  /* PIN_28 */ changed |= vram_bus.PIN_MD4_A.commit_pinout();    // <- RYRO
+  /* PIN_28 */ changed |= vram_bus.PIN_MD4_B.commit_pinout();    // <- ROFA
+  /* PIN_28 */ changed |= vram_bus.PIN_MD4_C.clear_preset();     // -> ROCE
+  /* PIN_28 */ changed |= vram_bus.PIN_MD4_D.commit_pinout();    // <- RUBE
+  /* PIN_29 */ changed |= vram_bus.PIN_MD3_A.commit_pinout();    // <- RADA
+  /* PIN_29 */ changed |= vram_bus.PIN_MD3_B.commit_pinout();    // <- ROFA
+  /* PIN_29 */ changed |= vram_bus.PIN_MD3_C.clear_preset();     // -> REMO
+  /* PIN_29 */ changed |= vram_bus.PIN_MD3_D.commit_pinout();    // <- RODU
+  /* PIN_30 */ changed |= vram_bus.PIN_MD2_A.commit_pinout();    // <- RAZO
+  /* PIN_30 */ changed |= vram_bus.PIN_MD2_B.commit_pinout();    // <- ROFA
+  /* PIN_30 */ changed |= vram_bus.PIN_MD2_C.clear_preset();     // -> RYDO
+  /* PIN_30 */ changed |= vram_bus.PIN_MD2_D.commit_pinout();    // <- RARE
+  /* PIN_31 */ changed |= vram_bus.PIN_MD1_A.commit_pinout();    // <- RYKY
+  /* PIN_31 */ changed |= vram_bus.PIN_MD1_B.commit_pinout();    // <- ROFA
+  /* PIN_31 */ changed |= vram_bus.PIN_MD1_C.clear_preset();     // -> REBA
+  /* PIN_31 */ changed |= vram_bus.PIN_MD1_D.commit_pinout();    // <- RULY
   /* PIN_32 */ /*GND*/
-  /* PIN_33 */ changed |= vram_pins.MD0_A.commit_pinout();    // <- REGE
-  /* PIN_33 */ changed |= vram_pins.MD0_B.commit_pinout();    // <- ROFA
-  /* PIN_33 */ changed |= vram_pins.MD0_C.clear_preset();     // -> RODY
-  /* PIN_33 */ changed |= vram_pins.MD0_D.commit_pinout();    // <- RURA
-  /* PIN_34 */ changed |= vram_pins.MA00_AD.commit_pinout();  // <- ECAL
-  /* PIN_35 */ changed |= vram_pins.MA01_AD.commit_pinout();  // <- EGEZ
-  /* PIN_36 */ changed |= vram_pins.MA02_AD.commit_pinout();  // <- FUHE
-  /* PIN_37 */ changed |= vram_pins.MA03_AD.commit_pinout();  // <- FYZY
-  /* PIN_38 */ changed |= vram_pins.MA04_AD.commit_pinout();  // <- DAMU
-  /* PIN_39 */ changed |= vram_pins.MA05_AD.commit_pinout();  // <- DAVA
-  /* PIN_40 */ changed |= vram_pins.MA06_AD.commit_pinout();  // <- ETEG
-  /* PIN_41 */ changed |= vram_pins.MA07_AD.commit_pinout();  // <- EREW
-  /* PIN_42 */ changed |= vram_pins.MA12_AD.commit_pinout();  // <- EXYF
-  /* PIN_43 */ changed |= vram_pins.MCSn_A.commit_pinout();   // <- SOKY
-  /* PIN_43 */ changed |= vram_pins.MCS_C.clear_preset();     // -> TEFY
-  /* PIN_43 */ changed |= vram_pins.MCSn_D.commit_pinout();   // <- SETY
-  /* PIN_44 */ changed |= vram_pins.MA10_AD.commit_pinout();  // <- ERAF
-  /* PIN_45 */ changed |= vram_pins.MOEn_A.commit_pinout();   // <- REFO
-  /* PIN_45 */ changed |= vram_pins.MOE_C.clear_preset();     // -> TAVY
-  /* PIN_45 */ changed |= vram_pins.MOEn_D.commit_pinout();   // <- SAHA
-  /* PIN_46 */ changed |= vram_pins.MA11_AD.commit_pinout();  // <- FUSY
-  /* PIN_47 */ changed |= vram_pins.MA09_AD.commit_pinout();  // <- DUVE
-  /* PIN_48 */ changed |= vram_pins.MA08_AD.commit_pinout();  // <- EVAX
-  /* PIN_49 */ changed |= vram_pins.MWRn_A.commit_pinout();   // <- SYSY
-  /* PIN_49 */ changed |= vram_pins.MWR_C.clear_preset();     // -> SUDO
-  /* PIN_49 */ changed |= vram_pins.MWRn_D.commit_pinout();   // <- RAGU
+  /* PIN_33 */ changed |= vram_bus.PIN_MD0_A.commit_pinout();    // <- REGE
+  /* PIN_33 */ changed |= vram_bus.PIN_MD0_B.commit_pinout();    // <- ROFA
+  /* PIN_33 */ changed |= vram_bus.PIN_MD0_C.clear_preset();     // -> RODY
+  /* PIN_33 */ changed |= vram_bus.PIN_MD0_D.commit_pinout();    // <- RURA
+  /* PIN_34 */ changed |= vram_bus.PIN_MA00_AD.commit_pinout();  // <- ECAL
+  /* PIN_35 */ changed |= vram_bus.PIN_MA01_AD.commit_pinout();  // <- EGEZ
+  /* PIN_36 */ changed |= vram_bus.PIN_MA02_AD.commit_pinout();  // <- FUHE
+  /* PIN_37 */ changed |= vram_bus.PIN_MA03_AD.commit_pinout();  // <- FYZY
+  /* PIN_38 */ changed |= vram_bus.PIN_MA04_AD.commit_pinout();  // <- DAMU
+  /* PIN_39 */ changed |= vram_bus.PIN_MA05_AD.commit_pinout();  // <- DAVA
+  /* PIN_40 */ changed |= vram_bus.PIN_MA06_AD.commit_pinout();  // <- ETEG
+  /* PIN_41 */ changed |= vram_bus.PIN_MA07_AD.commit_pinout();  // <- EREW
+  /* PIN_42 */ changed |= vram_bus.PIN_MA12_AD.commit_pinout();  // <- EXYF
+  /* PIN_43 */ changed |= vram_bus.PIN_MCSn_A.commit_pinout();   // <- SOKY
+  /* PIN_43 */ changed |= vram_bus.PIN_MCSn_C.clear_preset();     // -> TEFY
+  /* PIN_43 */ changed |= vram_bus.PIN_MCSn_D.commit_pinout();   // <- SETY
+  /* PIN_44 */ changed |= vram_bus.PIN_MA10_AD.commit_pinout();  // <- ERAF
+  /* PIN_45 */ changed |= vram_bus.PIN_MOEn_A.commit_pinout();   // <- REFO
+  /* PIN_45 */ changed |= vram_bus.PIN_MOEn_C.clear_preset();     // -> TAVY
+  /* PIN_45 */ changed |= vram_bus.PIN_MOEn_D.commit_pinout();   // <- SAHA
+  /* PIN_46 */ changed |= vram_bus.PIN_MA11_AD.commit_pinout();  // <- FUSY
+  /* PIN_47 */ changed |= vram_bus.PIN_MA09_AD.commit_pinout();  // <- DUVE
+  /* PIN_48 */ changed |= vram_bus.PIN_MA08_AD.commit_pinout();  // <- EVAX
+  /* PIN_49 */ changed |= vram_bus.PIN_MWRn_A.commit_pinout();   // <- SYSY
+  /* PIN_49 */ changed |= vram_bus.PIN_MWRn_C.clear_preset();     // -> SUDO
+  /* PIN_49 */ changed |= vram_bus.PIN_MWRn_D.commit_pinout();   // <- RAGU
   
   changed |= lcd_reg.commit_pins();
   
@@ -695,18 +695,18 @@ bool TestGB::commit_everything() {
   /* PIN_71 */ changed |= sys_pins.RST.clear_preset();
   /* PIN_72 */ /*GND*/
   /* PIN_73 */ /*CLKOUT*/
-  /* PIN_74 */ changed |= sys_pins.CLK_GOOD.clear_preset();
+  /* PIN_74 */ changed |= sys_pins.PIN_CLK_GOOD.clear_preset();
   /* PIN_74 */ changed |= sys_pins.CLK_IN_xBxDxFxH.clear_preset();
-  /* PIN_75 */ changed |= ext_pins.PHI.commit_pinout();     // <- BUDE/BEVA
+  /* PIN_75 */ changed |= ext_bus.PHI.commit_pinout();     // <- BUDE/BEVA
   /* PIN_76 */ changed |= sys_pins.T2.clear_preset();
   /* PIN_77 */ changed |= sys_pins.T1.clear_preset();
-  /* PIN_78 */ changed |= ext_pins.WR_A.commit_pinout();    // <- UVER
-  /* PIN_78 */ changed |= ext_pins.WR_C.clear_preset();     // -> UBAL
-  /* PIN_78 */ changed |= ext_pins.WR_D.commit_pinout();    // <- USUF
-  /* PIN_79 */ changed |= ext_pins.RD_A.commit_pinout();    // <- UGAC
-  /* PIN_79 */ changed |= ext_pins.RD_C.clear_preset();     // -> UJYV
-  /* PIN_79 */ changed |= ext_pins.RD_D.commit_pinout();    // <- URUN
-  /* PIN_80 */ changed |= ext_pins.CS_A.commit_pinout();    // <- TYHO
+  /* PIN_78 */ changed |= ext_bus.WR_A.commit_pinout();    // <- UVER
+  /* PIN_78 */ changed |= ext_bus.WR_C.clear_preset();     // -> UBAL
+  /* PIN_78 */ changed |= ext_bus.WR_D.commit_pinout();    // <- USUF
+  /* PIN_79 */ changed |= ext_bus.RD_A.commit_pinout();    // <- UGAC
+  /* PIN_79 */ changed |= ext_bus.RD_C.clear_preset();     // -> UJYV
+  /* PIN_79 */ changed |= ext_bus.RD_D.commit_pinout();    // <- URUN
+  /* PIN_80 */ changed |= ext_bus.CS_A.commit_pinout();    // <- TYHO
 
   return changed;
 }

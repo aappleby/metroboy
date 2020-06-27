@@ -38,7 +38,7 @@ TestGB gb;
 #if 0
 
 //Die trace:
-ABOL = not(CLKREQ)
+ABOL = not(PIN_CLKREQ)
 ATEZ = not(CLKIN_A)
 
 ADAR = not(ADYK.qn)
@@ -47,15 +47,15 @@ AROV = not(APUK.qn);
 AFEP = not(ALEF.qn);
 
 AFAS = nor(ADAR, ATYP)
-AREV = nand(AFAS, CPU_RAW_WR)
+AREV = nand(AFAS, PIN_CPU_RAW_WR)
 APOV = not(AREV) // 4 rung inverter
 
 AGUT = ? ? ? (AROV, AJAX) - gate unused ?
 AJAX = not(ATYP)
 ALUR = not(AVOR) // 3 rung inverter
-AVOR = or(AFER, ASOL)
+AVOR = or(PIN_AFER, ASOL)
 
-AFER = reg, gap above it or something.starting at the first connected rung
+PIN_AFER = reg, gap above it or something.starting at the first connected rung
 
 // Because this has BOGA and BOMA both as inputs and two UPOJ inputs, maybe
 // it's supposed to be a clock-crossing synchronizer?
@@ -85,9 +85,9 @@ ADAR = not(ADYK)
 /*p01.ADYK*/ clk_reg.ADYK_PHAZ_xxxxEFGH
 /*p01.AFUR*/ clk_reg.AFUR_PHAZ_xBCDExxx
 
-ABOL = not(CLKREQ)
+ABOL = not(PIN_CLKREQ)
 ATEZ = not(CLKIN_A)
-APOV = and(ADYK_xxxxEFGH, AFUR_xBCDExxx, CPU_RAW_WR) // cpu write is _only_ on E?
+APOV = and(ADYK_xxxxEFGH, AFUR_xBCDExxx, PIN_CPU_RAW_WR) // cpu write is _only_ on E?
 
 ABUZ = or(UNOR, !CPU_ADDR_VALID)
 
@@ -106,7 +106,7 @@ void TestGB::tick_everything() {
   wave_pins.BORY_ABxxxxxH.set(clk_sig.BORY_ABxxxxxH);
 
   clk_reg.tick(*this);
-  dma_reg.tick(*this, cpu_pins);
+  dma_reg.tick(*this);
   tim_reg.tick(*this);
   ser_reg.tick(*this);
   joy_reg.tick(*this);
@@ -115,7 +115,7 @@ void TestGB::tick_everything() {
   lcd_reg.tick(*this);
   pxp_reg.tick(*this);
   cpu_reg.tick(*this);
-  vram_reg.tick(*this);
+  vram_pins.tick(*this);
 
   cart_reg.tick(*this);
 

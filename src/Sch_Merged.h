@@ -13,71 +13,11 @@ struct BusRegisters {
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- BUS_REG -----\n");
-    
     dump_long(text_painter, "BOOT_BITn ", BOOT_BITn.a);
-    //dump_long(text_painter, "SOTO_DBG ", SOTO_DBG.a);
-
-    text_painter.dprintf("ADDR_LATCH ");
-    dump2(text_painter, CPU_ADDR_LATCH_14.a);
-    dump2(text_painter, CPU_ADDR_LATCH_13.a);
-    dump2(text_painter, CPU_ADDR_LATCH_12.a);
-    text_painter.add_char(':');
-    dump2(text_painter, CPU_ADDR_LATCH_11.a);
-    dump2(text_painter, CPU_ADDR_LATCH_10.a);
-    dump2(text_painter, CPU_ADDR_LATCH_09.a);
-    dump2(text_painter, CPU_ADDR_LATCH_08.a);
-    text_painter.add_char(':');
-    dump2(text_painter, CPU_ADDR_LATCH_07.a);
-    dump2(text_painter, CPU_ADDR_LATCH_06.a);
-    dump2(text_painter, CPU_ADDR_LATCH_05.a);
-    dump2(text_painter, CPU_ADDR_LATCH_04.a);
-    text_painter.add_char(':');
-    dump2(text_painter, CPU_ADDR_LATCH_03.a);
-    dump2(text_painter, CPU_ADDR_LATCH_02.a);
-    dump2(text_painter, CPU_ADDR_LATCH_01.a);
-    dump2(text_painter, CPU_ADDR_LATCH_00.a);
-    text_painter.newline();
-
-    text_painter.dprintf("DATA_LATCH ");
-    dump2(text_painter, CART_DATA_LATCH_07.a);
-    dump2(text_painter, CART_DATA_LATCH_06.a);
-    dump2(text_painter, CART_DATA_LATCH_05.a);
-    dump2(text_painter, CART_DATA_LATCH_04.a);
-    text_painter.add_char(':');
-    dump2(text_painter, CART_DATA_LATCH_03.a);
-    dump2(text_painter, CART_DATA_LATCH_02.a);
-    dump2(text_painter, CART_DATA_LATCH_01.a);
-    dump2(text_painter, CART_DATA_LATCH_00.a);
-    text_painter.newline();
     text_painter.newline();
   }
 
   /*p07.TEPU*/ Reg BOOT_BITn; // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.
-
-  /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
-  /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
-  /*p08.ALYR*/ TpLatch CPU_ADDR_LATCH_02;
-  /*p08.ARET*/ TpLatch CPU_ADDR_LATCH_03;
-  /*p08.AVYS*/ TpLatch CPU_ADDR_LATCH_04;
-  /*p08.ATEV*/ TpLatch CPU_ADDR_LATCH_05;
-  /*p08.AROS*/ TpLatch CPU_ADDR_LATCH_06;
-  /*p08.ARYM*/ TpLatch CPU_ADDR_LATCH_07;
-  /*p08.LUNO*/ TpLatch CPU_ADDR_LATCH_08;
-  /*p08.LYSA*/ TpLatch CPU_ADDR_LATCH_09;
-  /*p08.PATE*/ TpLatch CPU_ADDR_LATCH_10;
-  /*p08.LUMY*/ TpLatch CPU_ADDR_LATCH_11;
-  /*p08.LOBU*/ TpLatch CPU_ADDR_LATCH_12;
-  /*p08.LONU*/ TpLatch CPU_ADDR_LATCH_13;
-  /*p08.NYRE*/ TpLatch CPU_ADDR_LATCH_14;
-
-  /*p08.SOMA*/ TpLatch CART_DATA_LATCH_00;
-  /*p08.RONY*/ TpLatch CART_DATA_LATCH_01;
-  /*p08.RAXY*/ TpLatch CART_DATA_LATCH_02;
-  /*p08.SELO*/ TpLatch CART_DATA_LATCH_03;
-  /*p08.SODY*/ TpLatch CART_DATA_LATCH_04;
-  /*p08.SAGO*/ TpLatch CART_DATA_LATCH_05;
-  /*p08.RUPA*/ TpLatch CART_DATA_LATCH_06;
-  /*p08.SAZY*/ TpLatch CART_DATA_LATCH_07;
 };
 
 //-----------------------------------------------------------------------------

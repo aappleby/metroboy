@@ -27,8 +27,8 @@ ClockSignals ClockRegisters::sig(const TestGB& test_gb) const {
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
   /*p01.ANOS*/ wire _ANOS_AxCxExGx = not(test_gb.sys_pins.CLK_IN_xBxDxFxH);
-  /*p01.ATEZ*/ wire _ATEZ_CLKBAD = not(test_gb.sys_pins.CLK_GOOD);
-  /*p01.ABOL*/ wire _ABOL_CLKREQn = not(test_gb.cpu_pins.CLKREQ);
+  /*p01.ATEZ*/ wire _ATEZ_CLKBAD = not(test_gb.sys_pins.PIN_CLK_GOOD);
+  /*p01.ABOL*/ wire _ABOL_CLKREQn = not(test_gb.cpu_bus.PIN_CLKREQ);
   /*p01.BUTY*/ wire _BUTY_CLKREQ = not(_ABOL_CLKREQn);
 
   /*p01.ATYP*/ wire _ATYP_xBCDExxx = not(test_gb.clk_reg.AFUR_PHAZ_xBCDExxx.qn());
@@ -118,19 +118,19 @@ ClockSignals ClockRegisters::sig(const TestGB& test_gb) const {
     .WUDA_xBCxxFGx = _WUDA_xBCxxFGx,
     .NULE_AxxxxFGH = _NULE_AxxxxFGH,
     .BYRY_xBCDExxx = _BYRY_xBCDExxx,
-    .BUDE_AxxxxFGH = _BUDE_AxxxxFGH,
+    .PIN_BUDE_AxxxxFGH = _BUDE_AxxxxFGH,
     .UVYT_xBCDExxx = _UVYT_xBCDExxx,
     .MOPA_AxxxxFGH = _MOPA_AxxxxFGH,
     .AFAS_xxxxxFGH = _AFAS_xxxxxFGH,
     .BUGO_xxCDEFxx = _BUGO_xxCDEFxx,
     .BATE_ABxxxxxH = _BATE_ABxxxxxH,
     .BASU_xxCDEFGx = _BASU_xxCDEFGx,
-    .BUKE_ABxxxxxH = _BUKE_ABxxxxxH,
+    .PIN_BUKE_ABxxxxxH = _BUKE_ABxxxxxH,
     .BAPY_AxxxxxxH = _BAPY_AxxxxxxH,
     .BERU_xBCDEFGx = _BERU_xBCDEFGx,
     .BUFA_AxxxxxxH = _BUFA_AxxxxxxH,
-    .BOLO_xBCDEFGx = _BOLO_xBCDEFGx,
-    .BEKO_xBCDExxx = _BEKO_xBCDExxx,
+    .PIN_BOLO_xBCDEFGx = _BOLO_xBCDEFGx,
+    .PIN_BEKO_xBCDExxx = _BEKO_xBCDExxx,
     .BEJA_AxxxxFGH = _BEJA_AxxxxFGH,
     .BANE_xBCDExxx = _BANE_xBCDExxx,
     .BELO_AxxxxFGH = _BELO_AxxxxFGH,
@@ -139,20 +139,20 @@ ClockSignals ClockRegisters::sig(const TestGB& test_gb) const {
     .BELE_xBxxxxxx = _BELE_xBxxxxxx,
     .BYJU_AxCDEFGH = _BYJU_AxCDEFGH,
     .BALY_xBxxxxxx = _BALY_xBxxxxxx,
-    .BOGA_AxCDEFGH = _BOGA_AxCDEFGH,
+    .PIN_BOGA_AxCDEFGH = _BOGA_AxCDEFGH,
     .TALU_xBCDExxx = _TALU_xBCDExxx,
     .SONO_AxxxxFGH = _SONO_AxxxxFGH,
     .AWOH_AxxDExxH = _AWOH_AxxDExxH,
     .XYNY_xBCDExxx = _XYNY_xBCDExxx,
     .BUVU_xBxxxxxx = _BUVU_xBxxxxxx,
     .BYXO_AxCDEFGH = _BYXO_AxCDEFGH,
-    .BEDO_xBxxxxxx = _BEDO_xBxxxxxx,
+    .PIN_BEDO_xBxxxxxx = _BEDO_xBxxxxxx,
     .WOJO_xxxDxxxH = _WOJO_xxxDxxxH,
     .XYSO_ABCxDEFx = _XYSO_ABCxDEFx,
     .ABUR_xxCDEFGx = _ABUR_xxCDEFGx,
     .BORY_ABxxxxxH = _BORY_ABxxxxxH,
-    .BOMA_xBxxxxxx = _BOMA_xBxxxxxx,
-    .BOWA_AxCDEFGH = _BOWA_AxCDEFGH,
+    .PIN_BOMA_xBxxxxxx = _BOMA_xBxxxxxx,
+    .PIN_BOWA_AxCDEFGH = _BOWA_AxCDEFGH,
   };
 }
 

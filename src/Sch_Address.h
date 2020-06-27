@@ -42,7 +42,7 @@ struct AddressSignals {
 
 struct AddressRegisters {
   void tick(const TestGB& gb);
-  AddressSignals sig(const CpuPins& cpu_pins) const;
+  AddressSignals sig(const CpuBus& cpu_bus) const;
   bool commit();
 };
 

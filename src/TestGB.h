@@ -17,12 +17,15 @@
 #include "Sch_Joypad.h"
 #include "Sch_Serial.h"
 #include "Sch_Cart.h"
-#include "Sch_VRAM.h"
+
+#include "Sch_VramPins.h"
 #include "Sch_VramBus.h"
+
 #include "Sch_ExtBus.h"
 #include "Sch_CpuBus.h"
 #include "Sch_OamBus.h"
 #include "Sch_BusMux.h"
+#include "Sch_Interrupts.h"
 
 namespace Schematics {
 

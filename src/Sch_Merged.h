@@ -169,42 +169,5 @@ struct ConfigRegisters {
 };
 
 //-----------------------------------------------------------------------------
-// Bit 0: V-Blank  Interrupt Request (INT 40h)  (1=Request)
-// Bit 1: LCD STAT Interrupt Request (INT 48h)  (1=Request)
-// Bit 2: Timer    Interrupt Request (INT 50h)  (1=Request)
-// Bit 3: Serial   Interrupt Request (INT 58h)  (1=Request)
-// Bit 4: Joypad   Interrupt Request (INT 60h)  (1=Request)
-
-struct InterruptRegisters {
-
-  void dump_regs(TextPainter& text_painter) {
-  text_painter.dprintf(" ----- INT REG -----\n");
-    FF0F_0 .dump(text_painter, "FF0F_0  ");
-    FF0F_1 .dump(text_painter, "FF0F_1  ");
-    FF0F_2 .dump(text_painter, "FF0F_2  ");
-    FF0F_3 .dump(text_painter, "FF0F_3  ");
-    FF0F_4 .dump(text_painter, "FF0F_4  ");
-    FF0F_L0.dump(text_painter, "FF0F_L0 ");
-    FF0F_L1.dump(text_painter, "FF0F_L1 ");
-    FF0F_L2.dump(text_painter, "FF0F_L2 ");
-    FF0F_L3.dump(text_painter, "FF0F_L3 ");
-    FF0F_L4.dump(text_painter, "FF0F_L4 ");
-    text_painter.newline();
-  }
-
-  /*p02.LOPE*/ Reg FF0F_0;
-  /*p02.UBUL*/ Reg FF0F_1;
-  /*p02.ULAK*/ Reg FF0F_2;
-  /*p02.LALU*/ Reg FF0F_3;
-  /*p02.NYBO*/ Reg FF0F_4;
-
-  /*p02.MATY*/ TpLatch FF0F_L0;
-  /*p02.NEJY*/ TpLatch FF0F_L1;
-  /*p02.NUTY*/ TpLatch FF0F_L2;
-  /*p02.MOPO*/ TpLatch FF0F_L3;
-  /*p02.PAVY*/ TpLatch FF0F_L4;
-};
-
-//-----------------------------------------------------------------------------
 
 };

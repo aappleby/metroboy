@@ -21,7 +21,7 @@ struct LCD {
   /*p28.ANEL*/ bool ANEL_VID_LINE_d6  = 0;
   /*p21.MYTA*/ bool MYTA_LINE_153_d4  = 0;
   /*p24.MEDA*/ bool MEDA_VSYNC_OUTn   = 0;
-  /*p24.MEDA*/ bool POPU_IN_VBLANK_d4 = 0;
+  /*p24.MEDA*/ bool POPU_VBLANK_d4 = 0;
   /*p24.PAHO*/ bool PAHO_X_8_SYNC     = 0;
 
   // signals

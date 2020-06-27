@@ -9,7 +9,7 @@ struct TestGB;
 
 struct PpuSignals {
   /*p27.TEVO*/ wire TEVO_CLK_STOPn;
-  /*p21.WODU*/ wire WODU_RENDER_DONE;
+  /*p21.WODU*/ wire WODU_RENDER_DONEp;
   /*p27.NYXU*/ wire NYXU_BFETCH_RSTn;
   /*p29.TEXY*/ wire TEXY_SPRITE_READ;
   /*p29.WUTY*/ wire WUTY_SPRITE_DONE;
@@ -126,6 +126,8 @@ struct PpuRegisters {
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUN_LATCH;
   /*p27.SOBU*/ Reg SOBU_SPRITE_FETCH_SYNC1;
   /*p27.SUDA*/ Reg SUDA_SPRITE_FETCH_SYNC2;
+
+  /*p21.RUPO*/ NorLatch RUPO_LYC_MATCH_LATCHn;
 
 #if 0
   void dump_regs(TextPainter& text_painter) {

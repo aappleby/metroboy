@@ -40,6 +40,7 @@ struct CpuBus {
     text_painter.dprintf("PIN_SYRO          %d\n", PIN_SYRO.a.val);
     text_painter.dprintf("PIN_READ_BOOTROM  %d\n", PIN_READ_BOOTROM.a.val);
 
+    /*
     text_painter.dprintf("----- CPU INT -----\n");
     text_painter.dprintf("PIN_INT_VBLANK    %d\n", PIN_INT_VBLANK.a.val);
     text_painter.dprintf("PIN_INT_STAT      %d\n", PIN_INT_STAT.a.val);
@@ -51,6 +52,7 @@ struct CpuBus {
     text_painter.dprintf("PIN_ACK_TIMER     %d\n", PIN_ACK_TIMER.a.val);
     text_painter.dprintf("PIN_ACK_SERIAL    %d\n", PIN_ACK_SERIAL.a.val);
     text_painter.dprintf("PIN_ACK_JOYPAD    %d\n", PIN_ACK_JOYPAD.a.val);
+    */
 
     text_painter.dprintf("----- CPU BUS -----\n");
     text_painter.dprintf("PIN_CPU_RAW_RD    %d\n", PIN_CPU_RAW_RD.a.val);
@@ -58,68 +60,68 @@ struct CpuBus {
     text_painter.dprintf("PIN_ADDR_VALID    %d\n", PIN_ADDR_VALID.a.val);
 
     text_painter.add_text("Axx ");
-    dump2(text_painter, A15.a);
-    dump2(text_painter, A14.a);
-    dump2(text_painter, A13.a);
-    dump2(text_painter, A12.a);
+    dump2(text_painter, PIN_A15.a);
+    dump2(text_painter, PIN_A14.a);
+    dump2(text_painter, PIN_A13.a);
+    dump2(text_painter, PIN_A12.a);
     text_painter.add_char(':');
-    dump2(text_painter, A11.a);
-    dump2(text_painter, A10.a);
-    dump2(text_painter, A09.a);
-    dump2(text_painter, A08.a);
+    dump2(text_painter, PIN_A11.a);
+    dump2(text_painter, PIN_A10.a);
+    dump2(text_painter, PIN_A09.a);
+    dump2(text_painter, PIN_A08.a);
     text_painter.add_char(':');
-    dump2(text_painter, A07.a);
-    dump2(text_painter, A06.a);
-    dump2(text_painter, A05.a);
-    dump2(text_painter, A04.a);
+    dump2(text_painter, PIN_A07.a);
+    dump2(text_painter, PIN_A06.a);
+    dump2(text_painter, PIN_A05.a);
+    dump2(text_painter, PIN_A04.a);
     text_painter.add_char(':');
-    dump2(text_painter, A03.a);
-    dump2(text_painter, A02.a);
-    dump2(text_painter, A01.a);
-    dump2(text_painter, A00.a);
+    dump2(text_painter, PIN_A03.a);
+    dump2(text_painter, PIN_A02.a);
+    dump2(text_painter, PIN_A01.a);
+    dump2(text_painter, PIN_A00.a);
     text_painter.newline();
 
     text_painter.add_text("Dxx ");
-    dump2(text_painter, D7.a);
-    dump2(text_painter, D6.a);
-    dump2(text_painter, D5.a);
-    dump2(text_painter, D4.a);
+    dump2(text_painter, TS_D7.a);
+    dump2(text_painter, TS_D6.a);
+    dump2(text_painter, TS_D5.a);
+    dump2(text_painter, TS_D4.a);
     text_painter.add_char(':');
-    dump2(text_painter, D3.a);
-    dump2(text_painter, D2.a);
-    dump2(text_painter, D1.a);
-    dump2(text_painter, D0.a);
+    dump2(text_painter, TS_D3.a);
+    dump2(text_painter, TS_D2.a);
+    dump2(text_painter, TS_D1.a);
+    dump2(text_painter, TS_D0.a);
     text_painter.newline();
 
     text_painter.newline();
   }
 
   int get_addr() const {
-    return pack(A00, A01, A02, A03, A04, A05, A06, A07,
-      A08, A09, A10, A11, A12, A13, A14, A15);
+    return pack(PIN_A00, PIN_A01, PIN_A02, PIN_A03, PIN_A04, PIN_A05, PIN_A06, PIN_A07,
+      PIN_A08, PIN_A09, PIN_A10, PIN_A11, PIN_A12, PIN_A13, PIN_A14, PIN_A15);
   }
 
   int get_data() const {
-    return pack(D0, D1, D2, D3, D4, D5, D6, D7);
+    return pack(TS_D0, TS_D1, TS_D2, TS_D3, TS_D4, TS_D5, TS_D6, TS_D7);
   }
 
   void preset_addr(bool oe, uint16_t addr) {
-    A00.preset(oe, addr & 0x0001);
-    A01.preset(oe, addr & 0x0002);
-    A02.preset(oe, addr & 0x0004);
-    A03.preset(oe, addr & 0x0008);
-    A04.preset(oe, addr & 0x0010);
-    A05.preset(oe, addr & 0x0020);
-    A06.preset(oe, addr & 0x0040);
-    A07.preset(oe, addr & 0x0080);
-    A08.preset(oe, addr & 0x0100);
-    A09.preset(oe, addr & 0x0200);
-    A10.preset(oe, addr & 0x0400);
-    A11.preset(oe, addr & 0x0800);
-    A12.preset(oe, addr & 0x1000);
-    A13.preset(oe, addr & 0x2000);
-    A14.preset(oe, addr & 0x4000);
-    A15.preset(oe, addr & 0x8000);
+    PIN_A00.preset(oe, addr & 0x0001);
+    PIN_A01.preset(oe, addr & 0x0002);
+    PIN_A02.preset(oe, addr & 0x0004);
+    PIN_A03.preset(oe, addr & 0x0008);
+    PIN_A04.preset(oe, addr & 0x0010);
+    PIN_A05.preset(oe, addr & 0x0020);
+    PIN_A06.preset(oe, addr & 0x0040);
+    PIN_A07.preset(oe, addr & 0x0080);
+    PIN_A08.preset(oe, addr & 0x0100);
+    PIN_A09.preset(oe, addr & 0x0200);
+    PIN_A10.preset(oe, addr & 0x0400);
+    PIN_A11.preset(oe, addr & 0x0800);
+    PIN_A12.preset(oe, addr & 0x1000);
+    PIN_A13.preset(oe, addr & 0x2000);
+    PIN_A14.preset(oe, addr & 0x4000);
+    PIN_A15.preset(oe, addr & 0x8000);
   }
 
   /*
@@ -136,14 +138,14 @@ struct CpuBus {
   */
 
   void set_data(bool oe, uint8_t data) {
-    D0.set_tribuf(oe, data & 0x01);
-    D1.set_tribuf(oe, data & 0x02);
-    D2.set_tribuf(oe, data & 0x04);
-    D3.set_tribuf(oe, data & 0x08);
-    D4.set_tribuf(oe, data & 0x10);
-    D5.set_tribuf(oe, data & 0x20);
-    D6.set_tribuf(oe, data & 0x40);
-    D7.set_tribuf(oe, data & 0x80);
+    TS_D0.set_tribuf(oe, data & 0x01);
+    TS_D1.set_tribuf(oe, data & 0x02);
+    TS_D2.set_tribuf(oe, data & 0x04);
+    TS_D3.set_tribuf(oe, data & 0x08);
+    TS_D4.set_tribuf(oe, data & 0x10);
+    TS_D5.set_tribuf(oe, data & 0x20);
+    TS_D6.set_tribuf(oe, data & 0x40);
+    TS_D7.set_tribuf(oe, data & 0x80);
   }
 
   //----------
@@ -177,46 +179,34 @@ struct CpuBus {
   PinOut PIN_READ_BOOTROM;  // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   PinIn  PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
-  PinOut PIN_INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
-  PinOut PIN_INT_STAT;      // bottom right port PORTB_07: <-        P02.LALU, stat int
-  PinOut PIN_INT_TIMER;     // bottom right port PORTB_11: <-        P02.NYBO, timer int
-  PinOut PIN_INT_SERIAL;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
-  PinOut PIN_INT_JOYPAD;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
-
-  PinIn  PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
-  PinIn  PIN_ACK_STAT;      // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
-  PinIn  PIN_ACK_TIMER;     // bottom right port PORTB_09: ->        P02.LESA, timer int ack
-  PinIn  PIN_ACK_SERIAL;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
-  PinIn  PIN_ACK_JOYPAD;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
-
-  PinIn  A00; // bottom right port PORTB_00: -> A00
-  PinIn  A01; // bottom right port PORTB_04: -> A01
-  PinIn  A02; // bottom right port PORTB_08: -> A02
-  PinIn  A03; // bottom right port PORTB_12: -> A03
-  PinIn  A04; // bottom right port PORTB_16: -> A04
-  PinIn  A05; // bottom right port PORTB_20: -> A05
-  PinIn  A06; // bottom right port PORTB_24: -> A06
-  PinIn  A07; // bottom right port PORTB_28: -> A07
-  PinIn  A08; // bottom right port PORTB_02: -> A08
-  PinIn  A09; // bottom right port PORTB_06: -> A09
-  PinIn  A10; // bottom right port PORTB_10: -> A10
-  PinIn  A11; // bottom right port PORTB_14: -> A11
-  PinIn  A12; // bottom right port PORTB_18: -> A12
-  PinIn  A13; // bottom right port PORTB_22: -> A13
-  PinIn  A14; // bottom right port PORTB_26: -> A14
-  PinIn  A15; // bottom right port PORTB_30: -> A15
+  PinIn  PIN_A00; // bottom right port PORTB_00: -> A00
+  PinIn  PIN_A01; // bottom right port PORTB_04: -> A01
+  PinIn  PIN_A02; // bottom right port PORTB_08: -> A02
+  PinIn  PIN_A03; // bottom right port PORTB_12: -> A03
+  PinIn  PIN_A04; // bottom right port PORTB_16: -> A04
+  PinIn  PIN_A05; // bottom right port PORTB_20: -> A05
+  PinIn  PIN_A06; // bottom right port PORTB_24: -> A06
+  PinIn  PIN_A07; // bottom right port PORTB_28: -> A07
+  PinIn  PIN_A08; // bottom right port PORTB_02: -> A08
+  PinIn  PIN_A09; // bottom right port PORTB_06: -> A09
+  PinIn  PIN_A10; // bottom right port PORTB_10: -> A10
+  PinIn  PIN_A11; // bottom right port PORTB_14: -> A11
+  PinIn  PIN_A12; // bottom right port PORTB_18: -> A12
+  PinIn  PIN_A13; // bottom right port PORTB_22: -> A13
+  PinIn  PIN_A14; // bottom right port PORTB_26: -> A14
+  PinIn  PIN_A15; // bottom right port PORTB_30: -> A15
 
   //----------
   // bottom left port, tristate data bus
 
-  Tribuf D0;
-  Tribuf D1;
-  Tribuf D2;
-  Tribuf D3;
-  Tribuf D4;
-  Tribuf D5;
-  Tribuf D6;
-  Tribuf D7;
+  Tribuf TS_D0;
+  Tribuf TS_D1;
+  Tribuf TS_D2;
+  Tribuf TS_D3;
+  Tribuf TS_D4;
+  Tribuf TS_D5;
+  Tribuf TS_D6;
+  Tribuf TS_D7;
 };
 
 

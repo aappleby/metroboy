@@ -42,8 +42,8 @@ void P14_Ch2Regs_tick(const Gameboy& a,
 
     {
       /*p09.AFAT*/ wire APU_RESETn = not(b.apu.APU_RESET1);
-      /*p14.BERA*/ next.ch2.NR21_DUTY0 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, APU_RESETn, b.ch2.NR21_DUTY0, b.bus.D0());
-      /*p14.BAMY*/ next.ch2.NR21_DUTY1 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, APU_RESETn, b.ch2.NR21_DUTY1, b.bus.D1());
+      /*p14.BERA*/ next.ch2.NR21_DUTY0 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, APU_RESETn, b.ch2.NR21_DUTY0, b.bus.TS_D0());
+      /*p14.BAMY*/ next.ch2.NR21_DUTY1 = tock_pos(a.ch2.BUDU, b.ch2.BUDU, APU_RESETn, b.ch2.NR21_DUTY1, b.bus.TS_D1());
     }
 
     if (b.ch2.CORO) next.bus.set_data(
@@ -68,14 +68,14 @@ void P14_Ch2Regs_tick(const Gameboy& a,
     /*p14.GERE*/ next.ch2.GERE = and(b.apu.APU_WR, ADDR_FF17);
     /*p14.JEDE*/ next.ch2.JEDE = not(b.ch2.GERE);
 
-    /*p14.HYFU*/ next.ch2.NR22_ENV_TIMER0 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER0, b.bus.D0());
-    /*p14.HAVA*/ next.ch2.NR22_ENV_TIMER1 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER1, b.bus.D1());
-    /*p14.HORE*/ next.ch2.NR22_ENV_TIMER2 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER2, b.bus.D2());
-    /*p14.FORE*/ next.ch2.FF17_D3 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D3, b.bus.D3());
-    /*p14.GATA*/ next.ch2.FF17_D4 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D4, b.bus.D4());
-    /*p14.GUFE*/ next.ch2.FF17_D5 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D5, b.bus.D5());
-    /*p14.GURA*/ next.ch2.FF17_D6 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D6, b.bus.D6());
-    /*p14.GAGE*/ next.ch2.FF17_D7 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D7, b.bus.D7());
+    /*p14.HYFU*/ next.ch2.NR22_ENV_TIMER0 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER0, b.bus.TS_D0());
+    /*p14.HAVA*/ next.ch2.NR22_ENV_TIMER1 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER1, b.bus.TS_D1());
+    /*p14.HORE*/ next.ch2.NR22_ENV_TIMER2 = tock_pos(a.ch2.JEDE, b.ch2.JEDE, b.ch2.JYBU, b.ch2.NR22_ENV_TIMER2, b.bus.TS_D2());
+    /*p14.FORE*/ next.ch2.FF17_D3 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D3, b.bus.TS_D3());
+    /*p14.GATA*/ next.ch2.FF17_D4 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D4, b.bus.TS_D4());
+    /*p14.GUFE*/ next.ch2.FF17_D5 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D5, b.bus.TS_D5());
+    /*p14.GURA*/ next.ch2.FF17_D6 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D6, b.bus.TS_D6());
+    /*p14.GAGE*/ next.ch2.FF17_D7 = tock_pos(a.ch2.ENUF, b.ch2.ENUF, b.ch2.JYBU, b.ch2.FF17_D7, b.bus.TS_D7());
 
 #if 0
     /*p14.HUVU*/ if (b.ch2.GEXA) next.\1() = b.ch2.NR22_ENV_TIMER0;
@@ -128,14 +128,14 @@ void P14_Ch2Regs_tick(const Gameboy& a,
     /*p14.GUZA*/ next.ch2.GUZA = nor(b.ch2.FERY, b.ch2.FAPE);
     /*p14.FUTY*/ next.ch2.FUTY = not(b.ch2.GUZA);
 
-    /*p14.FOFE*/ next.ch2.NR23_FREQ0 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ0, b.bus.D0());
-    /*p14.FOVA*/ next.ch2.NR23_FREQ1 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ1, b.bus.D1());
-    /*p14.FEDY*/ next.ch2.NR23_FREQ2 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ2, b.bus.D2());
-    /*p14.FOME*/ next.ch2.NR23_FREQ3 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ3, b.bus.D3());
-    /*p14.FORA*/ next.ch2.NR23_FREQ4 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ4, b.bus.D4());
-    /*p14.GODA*/ next.ch2.NR23_FREQ5 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ5, b.bus.D5());
-    /*p14.GUMY*/ next.ch2.NR23_FREQ6 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ6, b.bus.D6());
-    /*p14.GUPU*/ next.ch2.NR23_FREQ7 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ7, b.bus.D7());
+    /*p14.FOFE*/ next.ch2.NR23_FREQ0 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ0, b.bus.TS_D0());
+    /*p14.FOVA*/ next.ch2.NR23_FREQ1 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ1, b.bus.TS_D1());
+    /*p14.FEDY*/ next.ch2.NR23_FREQ2 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ2, b.bus.TS_D2());
+    /*p14.FOME*/ next.ch2.NR23_FREQ3 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ3, b.bus.TS_D3());
+    /*p14.FORA*/ next.ch2.NR23_FREQ4 = tock_pos(a.ch2.NR23_WRn1, b.ch2.NR23_WRn1, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ4, b.bus.TS_D4());
+    /*p14.GODA*/ next.ch2.NR23_FREQ5 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ5, b.bus.TS_D5());
+    /*p14.GUMY*/ next.ch2.NR23_FREQ6 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ6, b.bus.TS_D6());
+    /*p14.GUPU*/ next.ch2.NR23_FREQ7 = tock_pos(a.ch2.NR23_WRn2, b.ch2.NR23_WRn2, b.ch2.APU_RESETn1, b.ch2.NR23_FREQ7, b.bus.TS_D7());
 
     if (b.ch2.FUTY) next.bus.set_data(
       /*p14.FAVA*/ b.ch2.CH2_FREQ_00,
@@ -158,11 +158,11 @@ void P14_Ch2Regs_tick(const Gameboy& a,
 
     next.ch2.JENU = and(ADDR_FF19, b.apu.APU_WR);
     next.ch2.KYSA = not(b.ch2.JENU);
-    next.ch2.NR24_FREQ8  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ8,  b.bus.D0());
-    next.ch2.NR24_FREQ9  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ9,  b.bus.D1());
-    next.ch2.NR24_FREQ10 = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ10, b.bus.D2());
-    next.ch2.NR24_STOP   = tock_pos(a.ch2.EVYF, b.ch2.EVYF, b.ch2.FAZO, b.ch2.NR24_STOP,   b.bus.D3());
-    next.ch2.NR24_START  = tock_pos(a.ch2.DETA, b.ch2.DETA, b.ch2.DERA, b.ch2.NR24_START,  b.bus.D4());
+    next.ch2.NR24_FREQ8  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ8,  b.bus.TS_D0());
+    next.ch2.NR24_FREQ9  = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ9,  b.bus.TS_D1());
+    next.ch2.NR24_FREQ10 = tock_pos(a.ch2.KYSA, b.ch2.KYSA, b.ch2.KYPU, b.ch2.NR24_FREQ10, b.bus.TS_D2());
+    next.ch2.NR24_STOP   = tock_pos(a.ch2.EVYF, b.ch2.EVYF, b.ch2.FAZO, b.ch2.NR24_STOP,   b.bus.TS_D3());
+    next.ch2.NR24_START  = tock_pos(a.ch2.DETA, b.ch2.DETA, b.ch2.DERA, b.ch2.NR24_START,  b.bus.TS_D4());
 
     next.ch2.DETA = nand(b.apu.APU_WR, ADDR_FF19);
 
@@ -277,13 +277,13 @@ void P14_Ch2Regs_tick(const Gameboy& a,
   /*p15.AGET*/ next.ch2.AGET = not(b.ch2.FF16_WR);
   
   
-  /*p15.ERYC*/ next.ch2.ERYC_00 = count_pos(a.ch2.DYRO,     b.ch2.DYRO,     b.ch2.BYMO, b.ch2.ERYC_00, b.bus.D0());
-  /*p15.CERA*/ next.ch2.CERA_01 = count_pos(a.ch2.ERYC_00,  b.ch2.ERYC_00,  b.ch2.BYMO, b.ch2.CERA_01, b.bus.D1());
-  /*p15.CONU*/ next.ch2.CONU_02 = count_pos(a.ch2.CERA_01,  b.ch2.CERA_01,  b.ch2.BYMO, b.ch2.CONU_02, b.bus.D2());
-  /*p15.CAME*/ next.ch2.CAME_03 = count_pos(a.ch2.CONU_02,  b.ch2.CONU_02,  b.ch2.BYMO, b.ch2.CAME_03, b.bus.D3());
+  /*p15.ERYC*/ next.ch2.ERYC_00 = count_pos(a.ch2.DYRO,     b.ch2.DYRO,     b.ch2.BYMO, b.ch2.ERYC_00, b.bus.TS_D0());
+  /*p15.CERA*/ next.ch2.CERA_01 = count_pos(a.ch2.ERYC_00,  b.ch2.ERYC_00,  b.ch2.BYMO, b.ch2.CERA_01, b.bus.TS_D1());
+  /*p15.CONU*/ next.ch2.CONU_02 = count_pos(a.ch2.CERA_01,  b.ch2.CERA_01,  b.ch2.BYMO, b.ch2.CONU_02, b.bus.TS_D2());
+  /*p15.CAME*/ next.ch2.CAME_03 = count_pos(a.ch2.CONU_02,  b.ch2.CONU_02,  b.ch2.BYMO, b.ch2.CAME_03, b.bus.TS_D3());
   /*p15.BUKO*/ next.ch2.BUKO    = not(!b.ch2.CAME_03);
-  /*p15.BUVA*/ next.ch2.BUVA_04 = count_pos(a.ch2.BUKO,     b.ch2.BUKO,     b.ch2.AGET, b.ch2.BUVA_04, b.bus.D4());
-  /*p15.AKYD*/ next.ch2.AKYD_05 = count_pos(a.ch2.BUVA_04,  b.ch2.BUVA_04,  b.ch2.AGET, b.ch2.AKYD_05, b.bus.D5());
+  /*p15.BUVA*/ next.ch2.BUVA_04 = count_pos(a.ch2.BUKO,     b.ch2.BUKO,     b.ch2.AGET, b.ch2.BUVA_04, b.bus.TS_D4());
+  /*p15.AKYD*/ next.ch2.AKYD_05 = count_pos(a.ch2.BUVA_04,  b.ch2.BUVA_04,  b.ch2.AGET, b.ch2.AKYD_05, b.bus.TS_D5());
   /*p15.CYRE*/ next.ch2.CYRE    = tock_pos(!a.ch2.AKYD_05,  !b.ch2.AKYD_05, b.ch2.BENY, b.ch2.CYRE,    !b.ch2.CYRE);
 
   /*p15.GADE*/ next.ch2.GADE = not(b.ch2.JOPA);

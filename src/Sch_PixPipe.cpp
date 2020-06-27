@@ -4,19 +4,22 @@
 
 using namespace Schematics;
 
-void PixelPipeRegisters::tick(const TestGB& gb) {
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto win_sig = gb.win_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb);
-
+void PixelPipeRegisters::tick(TestGB& gb) {
   auto& ppu_reg = gb.ppu_reg;
   auto& oam_reg = gb.oam_reg;
   auto& joy_pin = gb.joy_pin;
   auto& cfg_reg = gb.cfg_reg;
 
   auto& vram_bus = gb.vram_bus;
+  auto& cpu_bus = gb.cpu_bus;
+
+  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
+  auto clk_sig = gb.clk_reg.sig(gb);
+  auto win_sig = gb.win_reg.sig(gb);
+  auto dbg_sig = gb.dbg_reg.sig(gb);
+  auto ppu_sig = gb.ppu_reg.sig(gb);
+  auto sst_sig = gb.sst_reg.sig(gb);
 
   //----------------------------------------
 
@@ -458,6 +461,109 @@ void PixelPipeRegisters::tick(const TestGB& gb) {
     LD0.set(not(_REMY_LD0n));
     LD1.set(not(_RAVO_LD1n));
   }
+
+  // FF47
+  {
+    /*p22.WYBO*/ wire FF47n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.WESA_A01, adr_sig.WALO_A02, adr_sig.XERA_A03n);
+    /*p22.WERA*/ wire FF47 = not(FF47n);
+    /*p36.VELY*/ wire FF47_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF47);
+    /*p36.TEPO*/ wire FF47_WRn = not(FF47_WR);
+
+    /*p36.PAVO*/ cfg_reg.BGP0.set(FF47_WRn, 1, cpu_bus.TS_D0);
+    /*p36.NUSY*/ cfg_reg.BGP1.set(FF47_WRn, 1, cpu_bus.TS_D1);
+    /*p36.PYLU*/ cfg_reg.BGP2.set(FF47_WRn, 1, cpu_bus.TS_D2);
+    /*p36.MAXY*/ cfg_reg.BGP3.set(FF47_WRn, 1, cpu_bus.TS_D3);
+    /*p36.MUKE*/ cfg_reg.BGP4.set(FF47_WRn, 1, cpu_bus.TS_D4);
+    /*p36.MORU*/ cfg_reg.BGP5.set(FF47_WRn, 1, cpu_bus.TS_D5);
+    /*p36.MOGY*/ cfg_reg.BGP6.set(FF47_WRn, 1, cpu_bus.TS_D6);
+    /*p36.MENA*/ cfg_reg.BGP7.set(FF47_WRn, 1, cpu_bus.TS_D7);
+  }
+
+  // FF48
+  {
+    /*p22.WETA*/ wire FF48n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.XAYO*/ wire FF48 = not(FF48n);
+    /*p36.XOMA*/ wire FF48_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF48);
+    /*p36.XELO*/ wire FF48_WRn = not(FF48_WR);
+
+    /*p36.XUFU*/ cfg_reg.OBP00.set(FF48_WRn, 1, cpu_bus.TS_D0);
+    /*p36.XUKY*/ cfg_reg.OBP01.set(FF48_WRn, 1, cpu_bus.TS_D1);
+    /*p36.XOVA*/ cfg_reg.OBP02.set(FF48_WRn, 1, cpu_bus.TS_D2);
+    /*p36.XALO*/ cfg_reg.OBP03.set(FF48_WRn, 1, cpu_bus.TS_D3);
+    /*p36.XERU*/ cfg_reg.OBP04.set(FF48_WRn, 1, cpu_bus.TS_D4);
+    /*p36.XYZE*/ cfg_reg.OBP05.set(FF48_WRn, 1, cpu_bus.TS_D5);
+    /*p36.XUPO*/ cfg_reg.OBP06.set(FF48_WRn, 1, cpu_bus.TS_D6);
+    /*p36.XANA*/ cfg_reg.OBP07.set(FF48_WRn, 1, cpu_bus.TS_D7);
+  }
+
+  // FF49
+  {
+    /*p22.VAMA*/ wire FF49n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.TEGO*/ wire FF49 = not(FF49n);
+    /*p36.MYXE*/ wire FF49_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF49);
+    /*p36.LEHO*/ wire FF49_WRn = not(FF49_WR);
+
+    /*p36.MOXY*/ cfg_reg.OBP10.set(FF49_WRn, 1, cpu_bus.TS_D0);
+    /*p36.LAWO*/ cfg_reg.OBP11.set(FF49_WRn, 1, cpu_bus.TS_D1);
+    /*p36.MOSA*/ cfg_reg.OBP12.set(FF49_WRn, 1, cpu_bus.TS_D2);
+    /*p36.LOSE*/ cfg_reg.OBP13.set(FF49_WRn, 1, cpu_bus.TS_D3);
+    /*p36.LUNE*/ cfg_reg.OBP14.set(FF49_WRn, 1, cpu_bus.TS_D4);
+    /*p36.LUGU*/ cfg_reg.OBP15.set(FF49_WRn, 1, cpu_bus.TS_D5);
+    /*p36.LEPU*/ cfg_reg.OBP16.set(FF49_WRn, 1, cpu_bus.TS_D6);
+    /*p36.LUXO*/ cfg_reg.OBP17.set(FF49_WRn, 1, cpu_bus.TS_D7);
+  }
+
+  // FF47
+  {
+    /*p22.WYBO*/ wire FF47n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.WESA_A01, adr_sig.WALO_A02, adr_sig.XERA_A03n);
+    /*p22.WERA*/ wire FF47 = not(FF47n);
+    /*p36.VUSO*/ wire FF47_RD = and (cpu_sig.ASOT_CPU_RD, FF47);
+    /*p36.TEPY*/ wire FF47_RDn = not(FF47_RD);
+
+    /*p36.RARO*/ cpu_bus.TS_D0.set_tribuf(!FF47_RDn, cfg_reg.BGP0.q());
+    /*p36.PABA*/ cpu_bus.TS_D1.set_tribuf(!FF47_RDn, cfg_reg.BGP1.q());
+    /*p36.REDO*/ cpu_bus.TS_D2.set_tribuf(!FF47_RDn, cfg_reg.BGP2.q());
+    /*p36.LOBE*/ cpu_bus.TS_D3.set_tribuf(!FF47_RDn, cfg_reg.BGP3.q());
+    /*p36.LACE*/ cpu_bus.TS_D4.set_tribuf(!FF47_RDn, cfg_reg.BGP4.q());
+    /*p36.LYKA*/ cpu_bus.TS_D5.set_tribuf(!FF47_RDn, cfg_reg.BGP5.q());
+    /*p36.LODY*/ cpu_bus.TS_D6.set_tribuf(!FF47_RDn, cfg_reg.BGP6.q());
+    /*p36.LARY*/ cpu_bus.TS_D7.set_tribuf(!FF47_RDn, cfg_reg.BGP7.q());
+  }
+
+  // FF48
+  {
+    /*p22.WETA*/ wire FF48n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.XAYO*/ wire FF48 = not(FF48n);
+    /*p36.XUFY*/ wire FF48_RD = and (cpu_sig.ASOT_CPU_RD, FF48);
+    /*p36.XOZY*/ wire FF48_RDn = not(FF48_RD);
+
+    /*p36.XARY*/ cpu_bus.TS_D0.set_tribuf(!FF48_RDn, cfg_reg.OBP00.q());
+    /*p36.XOKE*/ cpu_bus.TS_D1.set_tribuf(!FF48_RDn, cfg_reg.OBP01.q());
+    /*p36.XUNO*/ cpu_bus.TS_D2.set_tribuf(!FF48_RDn, cfg_reg.OBP02.q());
+    /*p36.XUBY*/ cpu_bus.TS_D3.set_tribuf(!FF48_RDn, cfg_reg.OBP03.q());
+    /*p36.XAJU*/ cpu_bus.TS_D4.set_tribuf(!FF48_RDn, cfg_reg.OBP04.q());
+    /*p36.XOBO*/ cpu_bus.TS_D5.set_tribuf(!FF48_RDn, cfg_reg.OBP05.q());
+    /*p36.XAXA*/ cpu_bus.TS_D6.set_tribuf(!FF48_RDn, cfg_reg.OBP06.q());
+    /*p36.XAWO*/ cpu_bus.TS_D7.set_tribuf(!FF48_RDn, cfg_reg.OBP07.q());
+  }
+
+  // FF49
+  {
+    /*p22.VAMA*/ wire FF49n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.TEGO*/ wire FF49 = not(FF49n);
+    /*p36.MUMY*/ wire FF49_RD = and (cpu_sig.ASOT_CPU_RD, FF49);
+    /*p36.LOTE*/ wire FF49_RDn = not(FF49_RD); // where does this go?
+
+    /*p36.LAJU*/ cpu_bus.TS_D0.set_tribuf(!FF49_RDn, cfg_reg.OBP10.q());
+    /*p36.LEPA*/ cpu_bus.TS_D1.set_tribuf(!FF49_RDn, cfg_reg.OBP11.q());
+    /*p36.LODE*/ cpu_bus.TS_D2.set_tribuf(!FF49_RDn, cfg_reg.OBP12.q());
+    /*p36.LYZA*/ cpu_bus.TS_D3.set_tribuf(!FF49_RDn, cfg_reg.OBP13.q());
+    /*p36.LUKY*/ cpu_bus.TS_D4.set_tribuf(!FF49_RDn, cfg_reg.OBP14.q());
+    /*p36.LUGA*/ cpu_bus.TS_D5.set_tribuf(!FF49_RDn, cfg_reg.OBP15.q());
+    /*p36.LEBA*/ cpu_bus.TS_D6.set_tribuf(!FF49_RDn, cfg_reg.OBP16.q());
+    /*p36.LELU*/ cpu_bus.TS_D7.set_tribuf(!FF49_RDn, cfg_reg.OBP17.q());
+  }
+
 }
 
 bool PixelPipeRegisters::commit() {

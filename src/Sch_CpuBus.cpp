@@ -4,5 +4,5 @@
 
 using namespace Schematics;
 
-void CpuBus::tick(TestGB& gb) {
+void CpuBus::tick(TestGB& /*gb*/) {
 }

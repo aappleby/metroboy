@@ -16,6 +16,7 @@ struct ResetSignals {
   /*p01.XORE*/ wire XORE_RSTp;
   /*p01.XEBE*/ wire XEBE_RSTn;
   /*p01.WESY*/ wire WESY_RSTn;
+  /*p01.WALU*/ wire WALU_RSTn;
 
   /*p01.XODO*/ wire XODO_VID_RSTp;
   /*p01.XAPO*/ wire XAPO_VID_RSTn;

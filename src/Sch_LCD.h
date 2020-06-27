@@ -46,7 +46,7 @@ struct LcdRegisters {
     dump_long(text_painter, "NYPE_NEW_LINE_d4   ", NYPE_NEW_LINE_d4.a);
     dump_long(text_painter, "ANEL_VID_LINE_d6   ", ANEL_VID_LINE_d6.a);
     dump_long(text_painter, "MYTA_LINE_153_d4   ", MYTA_LINE_153_d4.a);
-    dump_long(text_painter, "POPU_IN_VBLANK_d4  ", POPU_IN_VBLANK_d4.a);
+    dump_long(text_painter, "POPU_VBLANK_d4     ", POPU_VBLANK_d4.a);
     dump_long(text_painter, "SYGU_LINE_STROBE   ", SYGU_LINE_STROBE.a);
     dump_long(text_painter, "MEDA_VSYNC_OUTn    ", MEDA_VSYNC_OUTn.a);
     dump_long(text_painter, "LUCA_LINE_EVEN     ", LUCA_LINE_EVEN.a);
@@ -79,7 +79,7 @@ struct LcdRegisters {
   /*p28.ANEL*/ Reg ANEL_VID_LINE_d6; // p003+8
 
   /*p21.MYTA*/ Reg MYTA_LINE_153_d4;  // p153:001 - p000:001
-  /*p21.POPU*/ Reg POPU_IN_VBLANK_d4; // p144:001 - p000:001
+  /*p21.POPU*/ Reg POPU_VBLANK_d4; // p144:001 - p000:001
 
   /*p21.SYGU*/ Reg SYGU_LINE_STROBE;
 
@@ -97,8 +97,7 @@ struct LcdRegisters {
   /*p23.VEVO*/ Reg VEVO_LYC6;
   /*p23.RAHA*/ Reg RAHA_LYC7;
 
-  /*p21.ROPO*/ Reg ROPO_LY_MATCH_SYNC;
-  /*p21.RUPO*/ NorLatch LYC_MATCH_LATCHn;
+  /*p21.ROPO*/ Reg ROPO_LY_MATCH_SYNCp;
 
 
   void dump_pins(TextPainter& text_painter) {

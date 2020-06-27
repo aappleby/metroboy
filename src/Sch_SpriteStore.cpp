@@ -351,12 +351,12 @@ void SpriteStoreRegisters::tick(const TestGB& gb) {
     // polarity seems wrong or something
     /*p29.BUZA*/ wire BUZA_STORE_SPRITE_IDX = and (CENO_SCANNINGp.qn(), XYMU_RENDERINGp);
 
-    /*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.A2);
-    /*p30.XEDY*/ XEDY_SPRITE_IDX1.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.A3);
-    /*p30.ZUZE*/ ZUZE_SPRITE_IDX2.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.A4);
-    /*p30.XOBE*/ XOBE_SPRITE_IDX3.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.A5);
-    /*p30.YDUF*/ YDUF_SPRITE_IDX4.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.A6);
-    /*p30.XECU*/ XECU_SPRITE_IDX5.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.A7);
+    /*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.PIN_A2);
+    /*p30.XEDY*/ XEDY_SPRITE_IDX1.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.PIN_A3);
+    /*p30.ZUZE*/ ZUZE_SPRITE_IDX2.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.PIN_A4);
+    /*p30.XOBE*/ XOBE_SPRITE_IDX3.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.PIN_A5);
+    /*p30.YDUF*/ YDUF_SPRITE_IDX4.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.PIN_A6);
+    /*p30.XECU*/ XECU_SPRITE_IDX5.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, gb.oam_bus.PIN_A7);
 
     /*p30.WUZY*/ WUZY_TS_IDX_0.set_tribuf(BUZA_STORE_SPRITE_IDX, XADU_SPRITE_IDX0);
     /*p30.WYSE*/ WYSE_TS_IDX_1.set_tribuf(BUZA_STORE_SPRITE_IDX, XEDY_SPRITE_IDX1);

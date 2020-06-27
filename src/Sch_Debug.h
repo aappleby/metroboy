@@ -25,7 +25,7 @@ struct DebugSignals {
   /*p07.UPOJ*/ wire UPOJ_MODE_PROD;
   /*p08.RYCA*/ wire RYCA_MODE_DBG2n;
   /*p25.TUCA*/ wire TUCA_CPU_VRAM_RD;
-  /*p25.TUTO*/ wire TUTO_DBG_VRAM;
+  /*p25.TUTO*/ wire TUTO_DBG_VRAMp;
   /*p01.ABUZ*/ wire ABUZ;
 };
 

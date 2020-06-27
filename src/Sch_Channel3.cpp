@@ -21,7 +21,7 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p16.GOVE*/ wire APU_RESETo = not(b.apu.APU_RESET1);
     /*p16.GEJO*/ wire FF1A_WR = and(b.apu.APU_WR, ADDR_FF1A);
     /*p16.GUCY*/ next.ch3.FF1A_WRn = not(FF1A_WR);
-    /*p16.GUXE*/ next.ch3.CH3_AMP_ENna = tock_pos(a.ch3.FF1A_WRn, b.ch3.FF1A_WRn, APU_RESETo, b.ch3.CH3_AMP_ENna, b.bus.D0());
+    /*p16.GUXE*/ next.ch3.CH3_AMP_ENna = tock_pos(a.ch3.FF1A_WRn, b.ch3.FF1A_WRn, APU_RESETo, b.ch3.CH3_AMP_ENna, b.bus.TS_D0());
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p09.GAXO*/ wire CPU_RDd = not(CPU_RDn);
@@ -48,14 +48,14 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p16.EMUT*/ wire EMUT = not(FF1B_WR);
     /*p16.GAJY*/ wire GAJY = not(FF1B_WR);
 
-    /*p18.GEVO*/ next.ch3.CH3_LEN0 = count_pos(a.ch3.GENU_CLK, b.ch3.GENU_CLK, GAJY, b.ch3.CH3_LEN0, b.bus.D0());
-    /*p18.FORY*/ next.ch3.CH3_LEN1 = count_pos(a.ch3.CH3_LEN0, b.ch3.CH3_LEN0, GAJY, b.ch3.CH3_LEN1, b.bus.D1());
-    /*p18.GATU*/ next.ch3.CH3_LEN2 = count_pos(a.ch3.CH3_LEN1, b.ch3.CH3_LEN1, GAJY, b.ch3.CH3_LEN2, b.bus.D2());
-    /*p18.GAPO*/ next.ch3.CH3_LEN3 = count_pos(a.ch3.CH3_LEN2, b.ch3.CH3_LEN2, GAJY, b.ch3.CH3_LEN3, b.bus.D3());
-    /*p18.GEMO*/ next.ch3.CH3_LEN4 = count_pos(a.ch3.FALU_CLK, b.ch3.FALU_CLK, EMUT, b.ch3.CH3_LEN4, b.bus.D4());
-    /*p18.FORO*/ next.ch3.CH3_LEN5 = count_pos(a.ch3.CH3_LEN4, b.ch3.CH3_LEN4, EMUT, b.ch3.CH3_LEN5, b.bus.D5());
-    /*p18.FAVE*/ next.ch3.CH3_LEN6 = count_pos(a.ch3.CH3_LEN5, b.ch3.CH3_LEN5, EMUT, b.ch3.CH3_LEN6, b.bus.D6());
-    /*p18.FYRU*/ next.ch3.CH3_LEN7 = count_pos(a.ch3.CH3_LEN6, b.ch3.CH3_LEN6, EMUT, b.ch3.CH3_LEN7, b.bus.D7());
+    /*p18.GEVO*/ next.ch3.CH3_LEN0 = count_pos(a.ch3.GENU_CLK, b.ch3.GENU_CLK, GAJY, b.ch3.CH3_LEN0, b.bus.TS_D0());
+    /*p18.FORY*/ next.ch3.CH3_LEN1 = count_pos(a.ch3.CH3_LEN0, b.ch3.CH3_LEN0, GAJY, b.ch3.CH3_LEN1, b.bus.TS_D1());
+    /*p18.GATU*/ next.ch3.CH3_LEN2 = count_pos(a.ch3.CH3_LEN1, b.ch3.CH3_LEN1, GAJY, b.ch3.CH3_LEN2, b.bus.TS_D2());
+    /*p18.GAPO*/ next.ch3.CH3_LEN3 = count_pos(a.ch3.CH3_LEN2, b.ch3.CH3_LEN2, GAJY, b.ch3.CH3_LEN3, b.bus.TS_D3());
+    /*p18.GEMO*/ next.ch3.CH3_LEN4 = count_pos(a.ch3.FALU_CLK, b.ch3.FALU_CLK, EMUT, b.ch3.CH3_LEN4, b.bus.TS_D4());
+    /*p18.FORO*/ next.ch3.CH3_LEN5 = count_pos(a.ch3.CH3_LEN4, b.ch3.CH3_LEN4, EMUT, b.ch3.CH3_LEN5, b.bus.TS_D5());
+    /*p18.FAVE*/ next.ch3.CH3_LEN6 = count_pos(a.ch3.CH3_LEN5, b.ch3.CH3_LEN5, EMUT, b.ch3.CH3_LEN6, b.bus.TS_D6());
+    /*p18.FYRU*/ next.ch3.CH3_LEN7 = count_pos(a.ch3.CH3_LEN6, b.ch3.CH3_LEN6, EMUT, b.ch3.CH3_LEN7, b.bus.TS_D7());
 
     /*p16.GETO*/ wire GETO = not(FF1B_WR);
     /*p18.GUDA*/ wire GUDA = nor(GETO, b.apu.APU_RESET1, b.ch3.GARA);
@@ -74,8 +74,8 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p16.HAGA*/ wire FF1C_WR = and(b.apu.APU_WR, ADDR_FF1C);
 
     /*p16.GUZU*/ next.ch3.FF1C_WRn = not(FF1C_WR);
-    /*p16.HUKY*/ next.ch3.NR32_VOL0 = tock_pos(a.ch3.FF1C_WRn, b.ch3.FF1C_WRn, APU_RESETn, b.ch3.NR32_VOL0, b.bus.D0());
-    /*p16.HODY*/ next.ch3.NR32_VOL1 = tock_pos(a.ch3.FF1C_WRn, b.ch3.FF1C_WRn, APU_RESETn, b.ch3.NR32_VOL1, b.bus.D1());
+    /*p16.HUKY*/ next.ch3.NR32_VOL0 = tock_pos(a.ch3.FF1C_WRn, b.ch3.FF1C_WRn, APU_RESETn, b.ch3.NR32_VOL0, b.bus.TS_D0());
+    /*p16.HODY*/ next.ch3.NR32_VOL1 = tock_pos(a.ch3.FF1C_WRn, b.ch3.FF1C_WRn, APU_RESETn, b.ch3.NR32_VOL1, b.bus.TS_D1());
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p16.JOTU*/ wire CPU_RDb = not(CPU_RDn);
@@ -121,14 +121,14 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p16.KULY*/ next.ch3.FF1D_WRb = not(FF1D_WRo);
     /*p16.KUHA*/ next.ch3.APU_RESETq = not(b.apu.APU_RESET1);
 
-    /*p16.KOGA*/ next.ch3.NR33_FREQ0 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ0, b.bus.D0());
-    /*p16.JOVY*/ next.ch3.NR33_FREQ1 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ1, b.bus.D1());
-    /*p16.JAXA*/ next.ch3.NR33_FREQ2 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ2, b.bus.D2());
-    /*p16.JEFE*/ next.ch3.NR33_FREQ3 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ3, b.bus.D3());
-    /*p16.JYPO*/ next.ch3.NR33_FREQ4 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ4, b.bus.D4());
-    /*p16.JOVE*/ next.ch3.NR33_FREQ5 = tock_pos(a.ch3.FF1D_WRa, b.ch3.FF1D_WRa, b.ch3.APU_RESETq, b.ch3.NR33_FREQ5, b.bus.D5());
-    /*p16.KANA*/ next.ch3.NR33_FREQ6 = tock_pos(a.ch3.FF1D_WRa, b.ch3.FF1D_WRa, b.ch3.APU_RESETq, b.ch3.NR33_FREQ6, b.bus.D6());
-    /*p16.KOGU*/ next.ch3.NR33_FREQ7 = tock_pos(a.ch3.FF1D_WRa, b.ch3.FF1D_WRa, b.ch3.APU_RESETq, b.ch3.NR33_FREQ7, b.bus.D7());
+    /*p16.KOGA*/ next.ch3.NR33_FREQ0 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ0, b.bus.TS_D0());
+    /*p16.JOVY*/ next.ch3.NR33_FREQ1 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ1, b.bus.TS_D1());
+    /*p16.JAXA*/ next.ch3.NR33_FREQ2 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ2, b.bus.TS_D2());
+    /*p16.JEFE*/ next.ch3.NR33_FREQ3 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ3, b.bus.TS_D3());
+    /*p16.JYPO*/ next.ch3.NR33_FREQ4 = tock_pos(a.ch3.FF1D_WRb, b.ch3.FF1D_WRb, b.ch3.APU_RESETq, b.ch3.NR33_FREQ4, b.bus.TS_D4());
+    /*p16.JOVE*/ next.ch3.NR33_FREQ5 = tock_pos(a.ch3.FF1D_WRa, b.ch3.FF1D_WRa, b.ch3.APU_RESETq, b.ch3.NR33_FREQ5, b.bus.TS_D5());
+    /*p16.KANA*/ next.ch3.NR33_FREQ6 = tock_pos(a.ch3.FF1D_WRa, b.ch3.FF1D_WRa, b.ch3.APU_RESETq, b.ch3.NR33_FREQ6, b.bus.TS_D6());
+    /*p16.KOGU*/ next.ch3.NR33_FREQ7 = tock_pos(a.ch3.FF1D_WRa, b.ch3.FF1D_WRa, b.ch3.APU_RESETq, b.ch3.NR33_FREQ7, b.bus.TS_D7());
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p16.DOVO*/ wire ASOT_CPURD = not(CPU_RDn);
@@ -166,11 +166,11 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p16.FOVO*/ next.ch3.FF1E_WRo = nand(CPU_WR_WEIRD, ADDR_FF1E);
     /*p16.EPYX*/ next.ch3.FF1E_WRp = nor(b.apu.APU_WR, ADDR_FF1E); // polarity?
 
-    /*p16.JEMO*/ next.ch3.NR34_FREQ8  = tock_pos(a.ch3.FF1E_WR,  b.ch3.FF1E_WR,  APU_RESETs,  b.ch3.NR34_FREQ8,  b.bus.D0());
-    /*p16.JETY*/ next.ch3.NR34_FREQ9  = tock_pos(a.ch3.FF1E_WR,  b.ch3.FF1E_WR,  APU_RESETs,  b.ch3.NR34_FREQ9,  b.bus.D1());
-    /*p16.JACY*/ next.ch3.NR34_FREQ10 = tock_pos(a.ch3.FF1E_WR,  b.ch3.FF1E_WR,  APU_RESETs,  b.ch3.NR34_FREQ10, b.bus.D2());
-    /*p16.HOTO*/ next.ch3.NR34_STOP   = tock_pos(a.ch3.FF1E_WRo, b.ch3.FF1E_WRo, APU_RESETr,  b.ch3.NR34_STOP,   b.bus.D3());
-    /*p16.GAVU*/ next.ch3.NR34_START  = tock_pos(a.ch3.FF1E_WRp, b.ch3.FF1E_WRp, RESTART_RST, b.ch3.NR34_START,  b.bus.D4());
+    /*p16.JEMO*/ next.ch3.NR34_FREQ8  = tock_pos(a.ch3.FF1E_WR,  b.ch3.FF1E_WR,  APU_RESETs,  b.ch3.NR34_FREQ8,  b.bus.TS_D0());
+    /*p16.JETY*/ next.ch3.NR34_FREQ9  = tock_pos(a.ch3.FF1E_WR,  b.ch3.FF1E_WR,  APU_RESETs,  b.ch3.NR34_FREQ9,  b.bus.TS_D1());
+    /*p16.JACY*/ next.ch3.NR34_FREQ10 = tock_pos(a.ch3.FF1E_WR,  b.ch3.FF1E_WR,  APU_RESETs,  b.ch3.NR34_FREQ10, b.bus.TS_D2());
+    /*p16.HOTO*/ next.ch3.NR34_STOP   = tock_pos(a.ch3.FF1E_WRo, b.ch3.FF1E_WRo, APU_RESETr,  b.ch3.NR34_STOP,   b.bus.TS_D3());
+    /*p16.GAVU*/ next.ch3.NR34_START  = tock_pos(a.ch3.FF1E_WRp, b.ch3.FF1E_WRp, RESTART_RST, b.ch3.NR34_START,  b.bus.TS_D4());
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
     /*p16.DOVO*/ wire ASOT_CPURD = not(CPU_RDn);
@@ -312,9 +312,9 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
 
   {
 
-    /*p10.ASAD*/ wire A06n = not(b.bus.A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.A07());
-    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.A05(), b.bus.A04());
+    /*p10.ASAD*/ wire A06n = not(b.bus.PIN_A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.PIN_A07());
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.PIN_A05(), b.bus.PIN_A04());
 
     /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
 
@@ -338,9 +338,9 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
   }
 
   {
-    /*p10.ASAD*/ wire A06n = not(b.bus.A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.A07());
-    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.A05(), b.bus.A04());
+    /*p10.ASAD*/ wire A06n = not(b.bus.PIN_A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.PIN_A07());
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.PIN_A05(), b.bus.PIN_A04());
 
     /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
     /*p17.BUTU*/ wire SAMPLE_CLK = not(b.ch3.SAMPLE_CLKn);
@@ -356,9 +356,9 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
   }
 
   {
-    /*p10.ASAD*/ wire A06n = not(b.bus.A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.A07());
-    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.A05(), b.bus.A04());
+    /*p10.ASAD*/ wire A06n = not(b.bus.PIN_A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.PIN_A07());
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.PIN_A05(), b.bus.PIN_A04());
 
     /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
     /*p17.BYZA*/ wire WAVE_WR = and(b.apu.APU_WR, ADDR_FF3X);
@@ -403,9 +403,9 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p17.CUTO*/ wire WAVE_D6n = not(b.ch3.WAVE_D6);
     /*p17.AKAF*/ wire WAVE_D7n = not(b.ch3.WAVE_D7);
 
-    /*p10.ASAD*/ wire A06n = not(b.bus.A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.A07());
-    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.A05(), b.bus.A04());
+    /*p10.ASAD*/ wire A06n = not(b.bus.PIN_A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.PIN_A07());
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.PIN_A05(), b.bus.PIN_A04());
     /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
@@ -450,10 +450,10 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p18.BOPA*/ next.ch3.WAVE_DAC2 = and(CH3_ACTIVE, WAVE_OUT2);
     /*p18.BELY*/ next.ch3.WAVE_DAC3 = and(CH3_ACTIVE, WAVE_OUT3);
 
-    /*p18.BOLE*/ next.ch3.WAVE_A0 = mux2(b.ch3.WAVE_IDX1, b.bus.A00(), CH3_ACTIVE);
-    /*p18.AGYL*/ next.ch3.WAVE_A1 = mux2(b.ch3.WAVE_IDX2, b.bus.A01(), CH3_ACTIVE);
-    /*p18.AFUM*/ next.ch3.WAVE_A2 = mux2(b.ch3.WAVE_IDX3, b.bus.A02(), CH3_ACTIVE);
-    /*p18.AXOL*/ next.ch3.WAVE_A3 = mux2(b.ch3.WAVE_IDX4, b.bus.A03(), CH3_ACTIVE);
+    /*p18.BOLE*/ next.ch3.WAVE_A0 = mux2(b.ch3.WAVE_IDX1, b.bus.PIN_A00(), CH3_ACTIVE);
+    /*p18.AGYL*/ next.ch3.WAVE_A1 = mux2(b.ch3.WAVE_IDX2, b.bus.PIN_A01(), CH3_ACTIVE);
+    /*p18.AFUM*/ next.ch3.WAVE_A2 = mux2(b.ch3.WAVE_IDX3, b.bus.PIN_A02(), CH3_ACTIVE);
+    /*p18.AXOL*/ next.ch3.WAVE_A3 = mux2(b.ch3.WAVE_IDX4, b.bus.PIN_A03(), CH3_ACTIVE);
   }
 }
 

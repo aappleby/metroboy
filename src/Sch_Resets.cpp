@@ -18,6 +18,7 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
   /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
   /*p01.XEBE*/ wire XEBE_RSTn = not(XORE_RSTp);
   /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
+  /*p01.WALU*/ wire WALU_RSTn = not(XORE_RSTp);
 
   /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, XONA_LCDC_EN);
   /*p01.XAPO*/ wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
@@ -39,6 +40,7 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
     .XORE_RSTp = XORE_RSTp,
     .XEBE_RSTn = XEBE_RSTn,
     .WESY_RSTn = WESY_RSTn,
+    .WALU_RSTn = WALU_RSTn,
 
     .XODO_VID_RSTp = XODO_VID_RSTp,
     .XAPO_VID_RSTn = XAPO_VID_RSTn,

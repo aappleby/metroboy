@@ -72,14 +72,20 @@ WindowSignals WindowRegisters::sig(const TestGB& gb) const {
 //------------------------------------------------------------------------------
 
 void WindowRegisters::tick(TestGB& gb) {
+  auto& cfg_reg = gb.cfg_reg;
+
+  auto& cpu_bus = gb.cpu_bus;
+
+  auto cpu_sig = gb.cpu_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto sst_sig = gb.sst_reg.sig(gb);
   auto win_sig = sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
+  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
 
-  /*p21.PARU*/ wire PARU_IN_VBLANK = not(!gb.lcd_reg.POPU_IN_VBLANK_d4);
+  /*p21.PARU*/ wire PARU_IN_VBLANK = not(!gb.lcd_reg.POPU_VBLANK_d4);
   /*p27.REPU*/ wire REPU_IN_FRAME_Y = nor(PARU_IN_VBLANK, rst_sig.PYRY_VID_RSTp);   // schematic wrong, this is NOR
 
   //----------------------------------------
@@ -197,6 +203,73 @@ void WindowRegisters::tick(TestGB& gb) {
     /*p27.TEKE*/ WIN_Y7.set(!WIN_Y6, _SYNY_IN_FRAME_Yn, !WIN_Y7);
   }
 
+  // FF4A
+  {
+    /*p22.WYVO*/ wire FF4An = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.VYGA*/ wire FF4A = not(FF4An);
+    /*p23.WEKO*/ wire FF4A_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4A);
+    /*p23.VEFU*/ wire FF4A_WRn = not(FF4A_WR);
+
+    /*p23.NESO*/ cfg_reg.WY0.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D0);
+    /*p23.NYRO*/ cfg_reg.WY1.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D1);
+    /*p23.NAGA*/ cfg_reg.WY2.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D2);
+    /*p23.MELA*/ cfg_reg.WY3.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D3);
+    /*p23.NULO*/ cfg_reg.WY4.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D4);
+    /*p23.NENE*/ cfg_reg.WY5.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D5);
+    /*p23.NUKA*/ cfg_reg.WY6.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D6);
+    /*p23.NAFU*/ cfg_reg.WY7.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D7);
+  }
+
+  // FF4B
+  {
+    /*p22.WAGE*/ wire FF4Bn = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.VUMY*/ wire FF4B = not(FF4Bn);
+    /*p23.WUZA*/ wire FF4B_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4B);
+    /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
+
+    /*p23.MYPA*/ cfg_reg.WX0.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D0);
+    /*p23.NOFE*/ cfg_reg.WX1.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D1);
+    /*p23.NOKE*/ cfg_reg.WX2.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D2);
+    /*p23.MEBY*/ cfg_reg.WX3.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D3);
+    /*p23.MYPU*/ cfg_reg.WX4.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D4);
+    /*p23.MYCE*/ cfg_reg.WX5.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D5);
+    /*p23.MUVO*/ cfg_reg.WX6.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D6);
+    /*p23.NUKU*/ cfg_reg.WX7.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D7);
+  }
+
+  // FF4A
+  {
+    /*p22.WYVO*/ wire FF4An = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.VYGA*/ wire FF4A = not(FF4An);
+    /*p23.WAXU*/ wire FF4A_RD = and (cpu_sig.ASOT_CPU_RD, FF4A);
+    /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
+
+    /*p23.PUNU*/ cpu_bus.TS_D0.set_tribuf(!FF4A_RDn, cfg_reg.WY0.q());
+    /*p23.PODA*/ cpu_bus.TS_D1.set_tribuf(!FF4A_RDn, cfg_reg.WY1.q());
+    /*p23.PYGU*/ cpu_bus.TS_D2.set_tribuf(!FF4A_RDn, cfg_reg.WY2.q());
+    /*p23.LOKA*/ cpu_bus.TS_D3.set_tribuf(!FF4A_RDn, cfg_reg.WY3.q());
+    /*p23.MEGA*/ cpu_bus.TS_D4.set_tribuf(!FF4A_RDn, cfg_reg.WY4.q());
+    /*p23.PELA*/ cpu_bus.TS_D5.set_tribuf(!FF4A_RDn, cfg_reg.WY5.q());
+    /*p23.POLO*/ cpu_bus.TS_D6.set_tribuf(!FF4A_RDn, cfg_reg.WY6.q());
+    /*p23.MERA*/ cpu_bus.TS_D7.set_tribuf(!FF4A_RDn, cfg_reg.WY7.q());
+  }
+
+  // FF4B
+  {
+    /*p22.WAGE*/ wire FF4Bn = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.VUMY*/ wire FF4B = not(FF4Bn);
+    /*p23.WYZE*/ wire FF4B_RD = and (cpu_sig.ASOT_CPU_RD, FF4B);
+    /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);
+
+    /*p23.LOVA*/ cpu_bus.TS_D0.set_tribuf(!FF4B_RDn, cfg_reg.WX0.q());
+    /*p23.MUKA*/ cpu_bus.TS_D1.set_tribuf(!FF4B_RDn, cfg_reg.WX1.q());
+    /*p23.MOKO*/ cpu_bus.TS_D2.set_tribuf(!FF4B_RDn, cfg_reg.WX2.q());
+    /*p23.LOLE*/ cpu_bus.TS_D3.set_tribuf(!FF4B_RDn, cfg_reg.WX3.q());
+    /*p23.MELE*/ cpu_bus.TS_D4.set_tribuf(!FF4B_RDn, cfg_reg.WX4.q());
+    /*p23.MUFE*/ cpu_bus.TS_D5.set_tribuf(!FF4B_RDn, cfg_reg.WX5.q());
+    /*p23.MULY*/ cpu_bus.TS_D6.set_tribuf(!FF4B_RDn, cfg_reg.WX6.q());
+    /*p23.MARA*/ cpu_bus.TS_D7.set_tribuf(!FF4B_RDn, cfg_reg.WX7.q());
+  }
 }
 
 //------------------------------------------------------------------------------

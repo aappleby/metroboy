@@ -21,7 +21,7 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
 
   /*p07.UBET*/ wire _UBET_T1n = not(sys_pins.T1);
   /*p07.UVAR*/ wire _UVAR_T2n = not(sys_pins.T2);
-  /*p07.UMUT*/ wire _UMUT_MODE_DBG1  = and (sys_pins.T1, _UVAR_T2n);
+  /*p07.UMUT*/ wire _UMUT_MODE_DBG1p  = and (sys_pins.T1, _UVAR_T2n);
   /*p07.UNOR*/ wire _UNOR_MODE_DBG2p = and (sys_pins.T2, _UBET_T1n); // Must be UNORp, see UJYV/UBAL
   /*p08.TOVA*/ wire _TOVA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
   /*p07.UPOJ*/ wire _UPOJ_MODE_PROD = nand(_UBET_T1n, _UVAR_T2n, sys_pins.RST);
@@ -44,12 +44,12 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
     .WYDU_P10_Bp = _WYDU_P10_Bp,
     .UBET_T1n = _UBET_T1n,
     .UVAR_T2n = _UVAR_T2n,
-    .UMUT_MODE_DBG1p = _UMUT_MODE_DBG1,
+    .UMUT_MODE_DBG1p = _UMUT_MODE_DBG1p,
     .UNOR_MODE_DBG2p = _UNOR_MODE_DBG2p,
     .TOVA_MODE_DBG2n = _TOVA_MODE_DBG2n,
     .UPOJ_MODE_PROD = _UPOJ_MODE_PROD,
     .RYCA_MODE_DBG2n = _RYCA_MODE_DBG2n,
-    .TUTO_DBG_VRAM = _TUTO_DBG_VRAM,
+    .TUTO_DBG_VRAMp = _TUTO_DBG_VRAM,
     .ABUZ = _ABUZ,
   };
 }

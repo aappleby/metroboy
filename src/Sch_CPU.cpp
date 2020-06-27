@@ -50,6 +50,19 @@ CpuSignals CpuRegisters::sig(const TestGB& gb) const {
 
   /*p04.DECY*/ wire _DECY_FROM_CPU5n = not(cpu_bus.PIN_FROM_CPU5p);
 
+  /*p04.CATY*/ wire _CATY_FROM_CPU5p = not(_DECY_FROM_CPU5n);
+  /*p28.MYNU*/ wire _MYNU_CPU_RDn = nand(ASOT_CPU_RD, _CATY_FROM_CPU5p);
+  /*p28.LEKO*/ wire _LEKO_CPU_RDp = not(_MYNU_CPU_RDn);
+
+  /*p08.MULE*/ wire _MULE_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1p);
+  /*p08.LOXO*/ wire _LOXO_LATCH_CPU_ADDRp = or (and (_MULE_MODE_DBG1n, adr_sig.TEXO_8000_9FFFn), dbg_sig.UMUT_MODE_DBG1p);
+  /*p08.LASY*/ wire _LASY_LATCH_CPU_ADDRn = not(_LOXO_LATCH_CPU_ADDRp);
+  /*p08.MATE*/ wire _MATE_LATCH_CPU_ADDRp = not(_LASY_LATCH_CPU_ADDRn);
+  /*p08.LAVO*/ wire _LAVO_LATCH_CPU_DATAp = nand(cpu_bus.PIN_CPU_RAW_RD, adr_sig.TEXO_8000_9FFFn, cpu_bus.PIN_FROM_CPU5p);
+
+  /*p08.REDU*/ wire _REDU_CPU_RD = not(TEDO_CPU_RD);
+  /*p08.RORU*/ wire _RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RD, _MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
+
   return {
     .TEDO_CPU_RD = TEDO_CPU_RD,
     .ASOT_CPU_RD = ASOT_CPU_RD,
@@ -58,7 +71,12 @@ CpuSignals CpuRegisters::sig(const TestGB& gb) const {
     .TAPU_CPU_WR_xxxxxFGH = TAPU_CPU_WR_xxxxxFGH,
     .CUPA_CPU_WR_xxxxxFGH = CUPA_CPU_WR_xxxxxFGH,
     .APOV_CPU_WR_xxxxxFGH = APOV_CPU_WR_xxxxxFGH,
+    .MAKA_FROM_CPU5_SYNC = MAKA_FROM_CPU5_SYNC,
     .DECY_FROM_CPU5n = _DECY_FROM_CPU5n,
+    .LEKO_CPU_RDp = _LEKO_CPU_RDp,
+    .MATE_LATCH_CPU_ADDRp = _MATE_LATCH_CPU_ADDRp,
+    .LAVO_LATCH_CPU_DATAp = _LAVO_LATCH_CPU_DATAp,
+    .RORU_IBUS_TO_EBUSn = _RORU_IBUS_TO_EBUSn,
   };
 }
 
@@ -71,6 +89,12 @@ void CpuRegisters::tick(TestGB& gb) {
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto clk_sig = gb.clk_reg.sig(gb);
+
+  {
+    wire PIN_FROM_CPU5p = cpu_bus.PIN_FROM_CPU5p;
+    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, PIN_FROM_CPU5p);
+  }
 
   // FF50
   {
@@ -186,46 +210,11 @@ void CpuRegisters::tick(TestGB& gb) {
 
 //-----------------------------------------------------------------------------
 
-#if 0
-  // so the address bus is technically a tribuf, but we're going to ignore
-  // this debug circuit for now.
-  {
-  // If we're in debug mode 2, drive external address bus onto internal address
-  // these may be backwards, probably don't want to drive external address onto bus normally...
+bool CpuRegisters::commit() {
+  bool changed = false;
+  /*p04.MAKA*/ changed |= MAKA_FROM_CPU5_SYNC.commit_reg();
+  return changed;
+}
 
-  /*p08.KOVA*/ wire A00_Cn = not(ext_bus.PIN_A00_C);
-  /*p08.CAMU*/ wire A01_Cn = not(ext_bus.PIN_A01_C);
-  /*p08.BUXU*/ wire A02_Cn = not(ext_bus.PIN_A02_C);
-  /*p08.BASE*/ wire A03_Cn = not(ext_bus.PIN_A03_C);
-  /*p08.AFEC*/ wire A04_Cn = not(ext_bus.PIN_A04_C);
-  /*p08.ABUP*/ wire A05_Cn = not(ext_bus.PIN_A05_C);
-  /*p08.CYGU*/ wire A06_Cn = not(ext_bus.PIN_A06_C);
-  /*p08.COGO*/ wire A07_Cn = not(ext_bus.PIN_A07_C);
-  /*p08.MUJY*/ wire A08_Cn = not(ext_bus.PIN_A08_C);
-  /*p08.NENA*/ wire A09_Cn = not(ext_bus.PIN_A09_C);
-  /*p08.SURA*/ wire A10_Cn = not(ext_bus.PIN_A10_C);
-  /*p08.MADY*/ wire A11_Cn = not(ext_bus.PIN_A11_C);
-  /*p08.LAHE*/ wire A12_Cn = not(ext_bus.PIN_A12_C);
-  /*p08.LURA*/ wire A13_Cn = not(ext_bus.PIN_A13_C);
-  /*p08.PEVO*/ wire A14_Cn = not(ext_bus.PIN_A14_C);
-  /*p08.RAZA*/ wire A15_Cn = not(ext_bus.PIN_A15_C);
-
-  /*p08.KEJO*/ cpu_bus.PIN_A00.set(!TOVA_MODE_DBG2n, not(A00_Cn));
-  /*p08.BYXE*/ cpu_bus.PIN_A01.set(!TOVA_MODE_DBG2n, not(A01_Cn));
-  /*p08.AKAN*/ cpu_bus.PIN_A02.set(!TOVA_MODE_DBG2n, not(A02_Cn));
-  /*p08.ANAR*/ cpu_bus.PIN_A03.set(!TOVA_MODE_DBG2n, not(A03_Cn));
-  /*p08.AZUV*/ cpu_bus.PIN_A04.set(!TOVA_MODE_DBG2n, not(A04_Cn));
-  /*p08.AJOV*/ cpu_bus.PIN_A05.set(!TOVA_MODE_DBG2n, not(A05_Cn));
-  /*p08.BYNE*/ cpu_bus.PIN_A06.set(!TOVA_MODE_DBG2n, not(A06_Cn));
-  /*p08.BYNA*/ cpu_bus.PIN_A07.set(!TOVA_MODE_DBG2n, not(A07_Cn));
-  /*p08.LOFA*/ cpu_bus.PIN_A08.set(!TOVA_MODE_DBG2n, not(A08_Cn));
-  /*p08.MAPU*/ cpu_bus.PIN_A09.set(!TOVA_MODE_DBG2n, not(A09_Cn));
-  /*p08.RALA*/ cpu_bus.PIN_A10.set(!TOVA_MODE_DBG2n, not(A10_Cn));
-  /*p08.LORA*/ cpu_bus.PIN_A11.set(!TOVA_MODE_DBG2n, not(A11_Cn));
-  /*p08.LYNA*/ cpu_bus.PIN_A12.set(!TOVA_MODE_DBG2n, not(A12_Cn));
-  /*p08.LEFY*/ cpu_bus.PIN_A13.set(!TOVA_MODE_DBG2n, not(A13_Cn));
-  /*p08.NEFE*/ cpu_bus.PIN_A14.set(!TOVA_MODE_DBG2n, not(A14_Cn));
-  /*p08.SYZU*/ cpu_bus.PIN_A15.set(!TOVA_MODE_DBG2n, not(A15_Cn));
-  }
-#endif
+//-----------------------------------------------------------------------------
 

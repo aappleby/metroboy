@@ -6,17 +6,6 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-void AddressRegisters::tick(const TestGB& /*gb*/) {
-  //changed |= cpu_pins.SYRO.commit_pinout();          // PORTA_03: <- P25.SYRO
-}
-
-bool AddressRegisters::commit() {
-  bool changed = false;
-  return changed;
-}
-
-//-----------------------------------------------------------------------------
-
 AddressSignals AddressRegisters::sig(const CpuBus& cpu_bus) const {
 
   /*p03.TOVY*/ wire _TOVY_A00n = not(cpu_bus.PIN_A00);
@@ -101,6 +90,19 @@ AddressSignals AddressRegisters::sig(const CpuBus& cpu_bus) const {
 
     .XEDA_FF46p = _XEDA_FF46p,
   };
+}
+
+//-----------------------------------------------------------------------------
+
+void AddressRegisters::tick(const TestGB& /*gb*/) {
+}
+
+//-----------------------------------------------------------------------------
+
+bool AddressRegisters::commit() {
+  bool changed = false;
+  //changed |= cpu_pins.SYRO.commit_pinout();          // PORTA_03: <- P25.SYRO
+  return changed;
 }
 
 //-----------------------------------------------------------------------------

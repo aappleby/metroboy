@@ -93,13 +93,6 @@ void CartRegisters::tick(TestGB& gb) {
 
   cpu_bus.PIN_READ_BOOTROM.set(_TUTU_ADDR_BOOTp);
 
-  // Something weird here
-  /*p08.SOBY*/ wire _SOBY = nor(cpu_bus.PIN_A15, _TUTU_ADDR_BOOTp);
-  /*p08.SEPY*/ wire _SEPY = nand(dbg_sig.ABUZ, _SOBY);
-  /*p08.TAZY*/ wire _TAZY = mux2_p(dma_reg.DMA_A15.q(), _SEPY, dma_sig.LUMA_DMA_READ_CARTp);
-  /*p08.SUZE*/ ext_bus.PIN_A15_A.set(nand(_TAZY, dbg_sig.RYCA_MODE_DBG2n));
-  /*p08.RULO*/ ext_bus.PIN_A15_D.set(nor (_TAZY, dbg_sig.UNOR_MODE_DBG2p));
-
   // Bootrom -> CPU
   ///*p07.ZORO*/ wire ADDR_0XXX = nor(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12);
   ///*p07.ZADU*/ wire ADDR_X0XX = nor(cpu_pins.A11, cpu_pins.A10, cpu_pins.A09, cpu_pins.A08);
@@ -144,40 +137,6 @@ void CartRegisters::tick(TestGB& gb) {
   cpu_bus.TS_D5.set_tribuf(_YULA_BOOT_RD, data & 0x20);
   cpu_bus.TS_D6.set_tribuf(_YULA_BOOT_RD, data & 0x40);
   cpu_bus.TS_D7.set_tribuf(_YULA_BOOT_RD, data & 0x80);
-
-  // internal data bus to external data bus
-  {
-    /*p08.REDU*/ wire _REDU_CPU_RD = not(cpu_sig.TEDO_CPU_RD);
-    /*p08.RORU*/ wire _RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RD, cpu_sig.MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
-    /*p08.LULA*/ wire _LULA_IBUS_TO_EBUSp = not(_RORU_IBUS_TO_EBUSn);
-
-    ext_bus.PIN_D0_B.set(_LULA_IBUS_TO_EBUSp);
-    ext_bus.PIN_D1_B.set(_LULA_IBUS_TO_EBUSp);
-    ext_bus.PIN_D2_B.set(_LULA_IBUS_TO_EBUSp);
-    ext_bus.PIN_D3_B.set(_LULA_IBUS_TO_EBUSp);
-    ext_bus.PIN_D4_B.set(_LULA_IBUS_TO_EBUSp);
-    ext_bus.PIN_D5_B.set(_LULA_IBUS_TO_EBUSp);
-    ext_bus.PIN_D6_B.set(_LULA_IBUS_TO_EBUSp);
-    ext_bus.PIN_D7_B.set(_LULA_IBUS_TO_EBUSp);
-
-    /*p25.RUXA*/ ext_bus.PIN_D0_A.set(nand(cpu_bus.TS_D0, _LULA_IBUS_TO_EBUSp));
-    /*p25.RUJA*/ ext_bus.PIN_D1_A.set(nand(cpu_bus.TS_D1, _LULA_IBUS_TO_EBUSp));
-    /*p25.RABY*/ ext_bus.PIN_D2_A.set(nand(cpu_bus.TS_D2, _LULA_IBUS_TO_EBUSp));
-    /*p25.RERA*/ ext_bus.PIN_D3_A.set(nand(cpu_bus.TS_D3, _LULA_IBUS_TO_EBUSp));
-    /*p25.RORY*/ ext_bus.PIN_D4_A.set(nand(cpu_bus.TS_D4, _LULA_IBUS_TO_EBUSp));
-    /*p25.RYVO*/ ext_bus.PIN_D5_A.set(nand(cpu_bus.TS_D5, _LULA_IBUS_TO_EBUSp));
-    /*p25.RAFY*/ ext_bus.PIN_D6_A.set(nand(cpu_bus.TS_D6, _LULA_IBUS_TO_EBUSp));
-    /*p25.RAVU*/ ext_bus.PIN_D7_A.set(nand(cpu_bus.TS_D7, _LULA_IBUS_TO_EBUSp));
-
-    /*p08.RUNE*/ ext_bus.PIN_D0_D.set(nor(cpu_bus.TS_D0, _RORU_IBUS_TO_EBUSn));
-    /*p08.RYPU*/ ext_bus.PIN_D1_D.set(nor(cpu_bus.TS_D1, _RORU_IBUS_TO_EBUSn));
-    /*p08.SULY*/ ext_bus.PIN_D2_D.set(nor(cpu_bus.TS_D2, _RORU_IBUS_TO_EBUSn));
-    /*p08.SEZE*/ ext_bus.PIN_D3_D.set(nor(cpu_bus.TS_D3, _RORU_IBUS_TO_EBUSn));
-    /*p08.RESY*/ ext_bus.PIN_D4_D.set(nor(cpu_bus.TS_D4, _RORU_IBUS_TO_EBUSn));
-    /*p08.TAMU*/ ext_bus.PIN_D5_D.set(nor(cpu_bus.TS_D5, _RORU_IBUS_TO_EBUSn));
-    /*p08.ROGY*/ ext_bus.PIN_D6_D.set(nor(cpu_bus.TS_D6, _RORU_IBUS_TO_EBUSn));
-    /*p08.RYDA*/ ext_bus.PIN_D7_D.set(nor(cpu_bus.TS_D7, _RORU_IBUS_TO_EBUSn));
-  }
 
   //----------------------------------------
 

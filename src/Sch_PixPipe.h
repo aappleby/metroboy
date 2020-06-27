@@ -41,6 +41,17 @@ struct PixelPipeRegisters {
   /* PIN_50 */ PinOut LD1;
   /* PIN_51 */ PinOut LD0;
 
+  /*p32.RAWU*/ Reg BG_PIX_B0; // also holds tile index during fetch
+  /*p32.POZO*/ Reg BG_PIX_B1;
+  /*p32.PYZO*/ Reg BG_PIX_B2;
+  /*p32.POXA*/ Reg BG_PIX_B3;
+  /*p32.PULO*/ Reg BG_PIX_B4;
+  /*p32.POJU*/ Reg BG_PIX_B5;
+  /*p32.POWY*/ Reg BG_PIX_B6;
+  /*p32.PYJU*/ Reg BG_PIX_B7;
+
+private:
+
   /*p32.LEGU*/ Reg BG_PIX_A0;
   /*p32.NUDU*/ Reg BG_PIX_A1;
   /*p32.MUKU*/ Reg BG_PIX_A2;
@@ -49,15 +60,6 @@ struct PixelPipeRegisters {
   /*p32.MYJY*/ Reg BG_PIX_A5;
   /*p32.NASA*/ Reg BG_PIX_A6;
   /*p32.NEFO*/ Reg BG_PIX_A7;
-
-  /*p32.RAWU*/ Reg BG_PIX_B0;
-  /*p32.POZO*/ Reg BG_PIX_B1;
-  /*p32.PYZO*/ Reg BG_PIX_B2;
-  /*p32.POXA*/ Reg BG_PIX_B3;
-  /*p32.PULO*/ Reg BG_PIX_B4;
-  /*p32.POJU*/ Reg BG_PIX_B5;
-  /*p32.POWY*/ Reg BG_PIX_B6;
-  /*p32.PYJU*/ Reg BG_PIX_B7;
 
   /*p33.PEFO*/ Reg SPR_PIX_A0;
   /*p33.ROKA*/ Reg SPR_PIX_A1;

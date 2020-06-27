@@ -58,16 +58,15 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
 //-----------------------------------------------------------------------------
 
 void ResetRegisters::tick(TestGB& gb) {
-  auto& tim_reg = gb.tim_reg;
-
   auto& cpu_bus = gb.cpu_bus;
   auto& ext_bus = gb.ext_bus;
 
+  auto tim_sig = gb.tim_reg.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
 
-  /*p01.UNUT*/ wire TIMEOUT = and (TUBO_CLKREQn_LATCH, tim_reg.UPOF_DIV_15);
+  /*p01.UNUT*/ wire TIMEOUT = and (TUBO_CLKREQn_LATCH, tim_sig.UPOF_DIV_15);
   /*p01.TABA*/ wire TABA_RST = or(dbg_sig.UNOR_MODE_DBG2p, dbg_sig.UMUT_MODE_DBG1p, TIMEOUT);
   /*p01.ALYP*/ wire ALYP_RSTn = not(TABA_RST);
   /*p01.AFAR*/ wire AFAR_RST = nor(ALYP_RSTn, ext_bus.PIN_RST);

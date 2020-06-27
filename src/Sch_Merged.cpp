@@ -111,10 +111,7 @@ void TestGB::tick_everything() {
   pxp_reg.tick(*this);
   cpu_reg.tick(*this);
   vram_pins.tick(*this);
-
   cart_reg.tick(*this);
-
-  oam_reg.tick(*this);
 }
 
 //-----------------------------------------------------------------------------

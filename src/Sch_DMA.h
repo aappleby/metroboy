@@ -13,6 +13,7 @@ struct DmaSignals {
   // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
   /*p04.MORY*/ wire MORY_DMA_READ_CARTn;
   /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp;
+  /*p25.CEDE*/ wire CEDE_DMA_READ_CARTn;
   /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp;
 
   /*p04.MATU*/ wire MATU_DMA_OAM_WRp;

@@ -7,8 +7,20 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
+struct ExtBusSignals {
+  /* PIN_17 */ wire  PIN_D0_C;    // -> P08.TOVO,SOMA
+  /* PIN_18 */ wire  PIN_D1_C;    // -> P08.RUZY,RONY
+  /* PIN_19 */ wire  PIN_D2_C;    // -> P08.ROME,RAXY
+  /* PIN_20 */ wire  PIN_D3_C;    // -> P08.SAZA,SELO
+  /* PIN_21 */ wire  PIN_D4_C;    // -> P08.TEHE,SODY
+  /* PIN_22 */ wire  PIN_D5_C;    // -> P08.RATU,SAGO
+  /* PIN_23 */ wire  PIN_D6_C;    // -> P08.SOCA,RUPA
+  /* PIN_24 */ wire  PIN_D7_C;    // -> P08.RYBA,SAZY
+};
+
 struct ExtBus {
 
+  ExtBusSignals sig(const TestGB& gb) const;
   void tick(TestGB& gb);
   bool commit();
 
@@ -104,6 +116,48 @@ struct ExtBus {
     text_painter.newline();
   }
 
+  void preset() {
+    PIN_WR_C.preset(true, 0);   // -> P07.UBAL
+    PIN_RD_C.preset(true, 0);   // -> P07.UJYV
+    PIN_A00_C.preset(true, 0);   // -> P08.KOVA
+    PIN_A01_C.preset(true, 0);   // -> P08.CAMU
+    PIN_A02_C.preset(true, 0);   // -> P08.BUXU
+    PIN_A03_C.preset(true, 0);   // -> P08.BASE
+    PIN_A04_C.preset(true, 0);   // -> P08.AFEC
+    PIN_A05_C.preset(true, 0);   // -> P08.ABUP
+    PIN_A06_C.preset(true, 0);   // -> P08.CYGU
+    PIN_A07_C.preset(true, 0);   // -> P08.COGO
+    PIN_A08_C.preset(true, 0);   // -> P08.MUJY
+    PIN_A09_C.preset(true, 0);   // -> P08.NENA
+    PIN_A10_C.preset(true, 0);   // -> P08.SURA
+    PIN_A11_C.preset(true, 0);   // -> P08.MADY
+    PIN_A12_C.preset(true, 0);   // -> P08.LAHE
+    PIN_A13_C.preset(true, 0);   // -> P08.LURA
+    PIN_A14_C.preset(true, 0);   // -> P08.PEVO
+    PIN_A15_C.preset(true, 0);   // -> P08.RAZA
+  }
+
+  void preset_d(bool oe, uint8_t d) {
+    PIN_D0_C.preset(oe, d & 0x01);
+    PIN_D1_C.preset(oe, d & 0x02);
+    PIN_D2_C.preset(oe, d & 0x04);
+    PIN_D3_C.preset(oe, d & 0x08);
+    PIN_D4_C.preset(oe, d & 0x10);
+    PIN_D5_C.preset(oe, d & 0x20);
+    PIN_D6_C.preset(oe, d & 0x40);
+    PIN_D7_C.preset(oe, d & 0x80);
+  }
+
+  uint16_t get_addr() const {
+    uint16_t ext_addr = (uint16_t)pack(
+      PIN_A00_A, PIN_A01_A, PIN_A02_A, PIN_A03_A,
+      PIN_A04_A, PIN_A05_A, PIN_A06_A, PIN_A07_A,
+      PIN_A08_A, PIN_A09_A, PIN_A10_A, PIN_A11_A,
+      PIN_A12_A, PIN_A13_A, PIN_A14_A, PIN_A15_A);
+    
+    return ext_addr;
+  }
+
   /*
   void dump_pins(TextPainter& text_painter) {
   text_painter.dprintf("----- SYS_PINS -----\n");
@@ -116,30 +170,30 @@ struct ExtBus {
   }
   */
 
-  /*p08.ALOR*/ TpLatch EXT_ADDR_LATCH_00;
-  /*p08.APUR*/ TpLatch EXT_ADDR_LATCH_01;
-  /*p08.ALYR*/ TpLatch EXT_ADDR_LATCH_02;
-  /*p08.ARET*/ TpLatch EXT_ADDR_LATCH_03;
-  /*p08.AVYS*/ TpLatch EXT_ADDR_LATCH_04;
-  /*p08.ATEV*/ TpLatch EXT_ADDR_LATCH_05;
-  /*p08.AROS*/ TpLatch EXT_ADDR_LATCH_06;
-  /*p08.ARYM*/ TpLatch EXT_ADDR_LATCH_07;
-  /*p08.LUNO*/ TpLatch EXT_ADDR_LATCH_08;
-  /*p08.LYSA*/ TpLatch EXT_ADDR_LATCH_09;
-  /*p08.PATE*/ TpLatch EXT_ADDR_LATCH_10;
-  /*p08.LUMY*/ TpLatch EXT_ADDR_LATCH_11;
-  /*p08.LOBU*/ TpLatch EXT_ADDR_LATCH_12;
-  /*p08.LONU*/ TpLatch EXT_ADDR_LATCH_13;
-  /*p08.NYRE*/ TpLatch EXT_ADDR_LATCH_14;
+  /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
+  /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
+  /*p08.ALYR*/ TpLatch CPU_ADDR_LATCH_02;
+  /*p08.ARET*/ TpLatch CPU_ADDR_LATCH_03;
+  /*p08.AVYS*/ TpLatch CPU_ADDR_LATCH_04;
+  /*p08.ATEV*/ TpLatch CPU_ADDR_LATCH_05;
+  /*p08.AROS*/ TpLatch CPU_ADDR_LATCH_06;
+  /*p08.ARYM*/ TpLatch CPU_ADDR_LATCH_07;
+  /*p08.LUNO*/ TpLatch CPU_ADDR_LATCH_08;
+  /*p08.LYSA*/ TpLatch CPU_ADDR_LATCH_09;
+  /*p08.PATE*/ TpLatch CPU_ADDR_LATCH_10;
+  /*p08.LUMY*/ TpLatch CPU_ADDR_LATCH_11;
+  /*p08.LOBU*/ TpLatch CPU_ADDR_LATCH_12;
+  /*p08.LONU*/ TpLatch CPU_ADDR_LATCH_13;
+  /*p08.NYRE*/ TpLatch CPU_ADDR_LATCH_14;
 
-  /*p08.SOMA*/ TpLatch EXT_DATA_LATCH_00;
-  /*p08.RONY*/ TpLatch EXT_DATA_LATCH_01;
-  /*p08.RAXY*/ TpLatch EXT_DATA_LATCH_02;
-  /*p08.SELO*/ TpLatch EXT_DATA_LATCH_03;
-  /*p08.SODY*/ TpLatch EXT_DATA_LATCH_04;
-  /*p08.SAGO*/ TpLatch EXT_DATA_LATCH_05;
-  /*p08.RUPA*/ TpLatch EXT_DATA_LATCH_06;
-  /*p08.SAZY*/ TpLatch EXT_DATA_LATCH_07;
+  /*p08.SOMA*/ TpLatch CPU_DATA_LATCH_00;
+  /*p08.RONY*/ TpLatch CPU_DATA_LATCH_01;
+  /*p08.RAXY*/ TpLatch CPU_DATA_LATCH_02;
+  /*p08.SELO*/ TpLatch CPU_DATA_LATCH_03;
+  /*p08.SODY*/ TpLatch CPU_DATA_LATCH_04;
+  /*p08.SAGO*/ TpLatch CPU_DATA_LATCH_05;
+  /*p08.RUPA*/ TpLatch CPU_DATA_LATCH_06;
+  /*p08.SAZY*/ TpLatch CPU_DATA_LATCH_07;
 
   //----------
   // Sys pins
@@ -164,6 +218,8 @@ struct ExtBus {
   /* PIN_79 */ PinOut PIN_RD_D;   // <- P08.URUN
 
   /* PIN_80 */ PinOut PIN_CS_A;   // <- P08.TYHO
+
+private:
 
   //----------
   // Address pins

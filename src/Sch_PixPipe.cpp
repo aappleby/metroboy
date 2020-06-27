@@ -6,12 +6,12 @@ using namespace Schematics;
 
 void PixelPipeRegisters::tick(TestGB& gb) {
   auto& ppu_reg = gb.ppu_reg;
-  auto& oam_reg = gb.oam_reg;
   auto& joy_pin = gb.joy_pin;
   auto& cfg_reg = gb.cfg_reg;
 
   auto& vram_bus = gb.vram_bus;
   auto& cpu_bus = gb.cpu_bus;
+  auto& oam_bus = gb.oam_bus;
 
   auto cpu_sig = gb.cpu_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
@@ -70,7 +70,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
     /*p29.TOPU*/ wire _TOPU_SPRITE_PIX_LATCH_A = and (ppu_reg.TULY_SFETCH_S1, _SYCU);
     /*p29.RACA*/ wire _RACA_SPRITE_PIX_LATCH_B = and (ppu_reg.VONU_SFETCH_S1_D4, _SYCU);
 
-    /*p29.XONO*/ wire _XONO_FLIP_X = and (oam_reg.BAXO_SPRITE_X5, ppu_sig.TEXY_SPRITE_READp);
+    /*p29.XONO*/ wire _XONO_FLIP_X = and (oam_bus.BAXO_SPRITE_X5, ppu_sig.TEXY_SPRITE_READp);
     /*p33.POBE*/ wire _SPR_PIX_FLIP0 = mux2_p(vram_bus.TS_MD7, vram_bus.TS_MD0, _XONO_FLIP_X);
     /*p33.PACY*/ wire _SPR_PIX_FLIP1 = mux2_p(vram_bus.TS_MD6, vram_bus.TS_MD1, _XONO_FLIP_X);
     /*p33.PONO*/ wire _SPR_PIX_FLIP2 = mux2_p(vram_bus.TS_MD5, vram_bus.TS_MD2, _XONO_FLIP_X);
@@ -296,23 +296,23 @@ void PixelPipeRegisters::tick(TestGB& gb) {
 
     // Palette pipe
     {
-      /*p34.PUME*/ wire _SPRITE_PAL_PIPE_SET0n = nand(_SPRITE_MASK0n, oam_reg.GOMO_SPRITE_X4);
-      /*p34.SORO*/ wire _SPRITE_PAL_PIPE_SET1n = nand(_SPRITE_MASK1n, oam_reg.GOMO_SPRITE_X4);
-      /*p34.PAMO*/ wire _SPRITE_PAL_PIPE_SET2n = nand(_SPRITE_MASK2n, oam_reg.GOMO_SPRITE_X4);
-      /*p34.SUKY*/ wire _SPRITE_PAL_PIPE_SET3n = nand(_SPRITE_MASK3n, oam_reg.GOMO_SPRITE_X4);
-      /*p34.RORA*/ wire _SPRITE_PAL_PIPE_SET4n = nand(_SPRITE_MASK4n, oam_reg.GOMO_SPRITE_X4);
-      /*p34.MENE*/ wire _SPRITE_PAL_PIPE_SET5n = nand(_SPRITE_MASK5n, oam_reg.GOMO_SPRITE_X4);
-      /*p34.LUKE*/ wire _SPRITE_PAL_PIPE_SET6n = nand(_SPRITE_MASK6n, oam_reg.GOMO_SPRITE_X4);
-      /*p34.LAMY*/ wire _SPRITE_PAL_PIPE_SET7n = nand(_SPRITE_MASK7n, oam_reg.GOMO_SPRITE_X4);
+      /*p34.PUME*/ wire _SPRITE_PAL_PIPE_SET0n = nand(_SPRITE_MASK0n, oam_bus.GOMO_SPRITE_X4);
+      /*p34.SORO*/ wire _SPRITE_PAL_PIPE_SET1n = nand(_SPRITE_MASK1n, oam_bus.GOMO_SPRITE_X4);
+      /*p34.PAMO*/ wire _SPRITE_PAL_PIPE_SET2n = nand(_SPRITE_MASK2n, oam_bus.GOMO_SPRITE_X4);
+      /*p34.SUKY*/ wire _SPRITE_PAL_PIPE_SET3n = nand(_SPRITE_MASK3n, oam_bus.GOMO_SPRITE_X4);
+      /*p34.RORA*/ wire _SPRITE_PAL_PIPE_SET4n = nand(_SPRITE_MASK4n, oam_bus.GOMO_SPRITE_X4);
+      /*p34.MENE*/ wire _SPRITE_PAL_PIPE_SET5n = nand(_SPRITE_MASK5n, oam_bus.GOMO_SPRITE_X4);
+      /*p34.LUKE*/ wire _SPRITE_PAL_PIPE_SET6n = nand(_SPRITE_MASK6n, oam_bus.GOMO_SPRITE_X4);
+      /*p34.LAMY*/ wire _SPRITE_PAL_PIPE_SET7n = nand(_SPRITE_MASK7n, oam_bus.GOMO_SPRITE_X4);
 
-      /*p34.SUCO*/ wire _SPRITE_PAL_PIPE_RST0n = nand(_SPRITE_MASK0n, /*p34.SYPY*/ not(oam_reg.GOMO_SPRITE_X4));
-      /*p34.TAFA*/ wire _SPRITE_PAL_PIPE_RST1n = nand(_SPRITE_MASK1n, /*p34.TOTU*/ not(oam_reg.GOMO_SPRITE_X4));
-      /*p34.PYZY*/ wire _SPRITE_PAL_PIPE_RST2n = nand(_SPRITE_MASK2n, /*p34.NARO*/ not(oam_reg.GOMO_SPRITE_X4));
-      /*p34.TOWA*/ wire _SPRITE_PAL_PIPE_RST3n = nand(_SPRITE_MASK3n, /*p34.WEXY*/ not(oam_reg.GOMO_SPRITE_X4));
-      /*p34.RUDU*/ wire _SPRITE_PAL_PIPE_RST4n = nand(_SPRITE_MASK4n, /*p34.RYZY*/ not(oam_reg.GOMO_SPRITE_X4));
-      /*p34.PAZO*/ wire _SPRITE_PAL_PIPE_RST5n = nand(_SPRITE_MASK5n, /*p34.RYFE*/ not(oam_reg.GOMO_SPRITE_X4));
-      /*p34.LOWA*/ wire _SPRITE_PAL_PIPE_RST6n = nand(_SPRITE_MASK6n, /*p34.LADY*/ not(oam_reg.GOMO_SPRITE_X4));
-      /*p34.LUNU*/ wire _SPRITE_PAL_PIPE_RST7n = nand(_SPRITE_MASK7n, /*p34.LAFY*/ not(oam_reg.GOMO_SPRITE_X4));
+      /*p34.SUCO*/ wire _SPRITE_PAL_PIPE_RST0n = nand(_SPRITE_MASK0n, /*p34.SYPY*/ not(oam_bus.GOMO_SPRITE_X4));
+      /*p34.TAFA*/ wire _SPRITE_PAL_PIPE_RST1n = nand(_SPRITE_MASK1n, /*p34.TOTU*/ not(oam_bus.GOMO_SPRITE_X4));
+      /*p34.PYZY*/ wire _SPRITE_PAL_PIPE_RST2n = nand(_SPRITE_MASK2n, /*p34.NARO*/ not(oam_bus.GOMO_SPRITE_X4));
+      /*p34.TOWA*/ wire _SPRITE_PAL_PIPE_RST3n = nand(_SPRITE_MASK3n, /*p34.WEXY*/ not(oam_bus.GOMO_SPRITE_X4));
+      /*p34.RUDU*/ wire _SPRITE_PAL_PIPE_RST4n = nand(_SPRITE_MASK4n, /*p34.RYZY*/ not(oam_bus.GOMO_SPRITE_X4));
+      /*p34.PAZO*/ wire _SPRITE_PAL_PIPE_RST5n = nand(_SPRITE_MASK5n, /*p34.RYFE*/ not(oam_bus.GOMO_SPRITE_X4));
+      /*p34.LOWA*/ wire _SPRITE_PAL_PIPE_RST6n = nand(_SPRITE_MASK6n, /*p34.LADY*/ not(oam_bus.GOMO_SPRITE_X4));
+      /*p34.LUNU*/ wire _SPRITE_PAL_PIPE_RST7n = nand(_SPRITE_MASK7n, /*p34.LAFY*/ not(oam_bus.GOMO_SPRITE_X4));
 
       /*p34.RUGO*/ PAL_PIPE_0.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET0n, _SPRITE_PAL_PIPE_RST0n, joy_pin.P10_B);
       /*p34.SATA*/ PAL_PIPE_1.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _SPRITE_PAL_PIPE_SET1n, _SPRITE_PAL_PIPE_RST1n, PAL_PIPE_0);
@@ -326,23 +326,23 @@ void PixelPipeRegisters::tick(TestGB& gb) {
 
     // Background mask pipe
     {
-      /*p26.TEDE*/ wire _MASK_PIPE_SET0 = nand(_SPRITE_MASK0n, oam_reg.DEPO_SPRITE_X7);
-      /*p26.XALA*/ wire _MASK_PIPE_SET1 = nand(_SPRITE_MASK1n, oam_reg.DEPO_SPRITE_X7);
-      /*p26.TYRA*/ wire _MASK_PIPE_SET2 = nand(_SPRITE_MASK2n, oam_reg.DEPO_SPRITE_X7);
-      /*p26.XYRU*/ wire _MASK_PIPE_SET3 = nand(_SPRITE_MASK3n, oam_reg.DEPO_SPRITE_X7);
-      /*p26.XUKU*/ wire _MASK_PIPE_SET4 = nand(_SPRITE_MASK4n, oam_reg.DEPO_SPRITE_X7);
-      /*p26.XELY*/ wire _MASK_PIPE_SET5 = nand(_SPRITE_MASK5n, oam_reg.DEPO_SPRITE_X7);
-      /*p26.TYKO*/ wire _MASK_PIPE_SET6 = nand(_SPRITE_MASK6n, oam_reg.DEPO_SPRITE_X7);
-      /*p26.TUWU*/ wire _MASK_PIPE_SET7 = nand(_SPRITE_MASK7n, oam_reg.DEPO_SPRITE_X7);
+      /*p26.TEDE*/ wire _MASK_PIPE_SET0 = nand(_SPRITE_MASK0n, oam_bus.DEPO_SPRITE_X7);
+      /*p26.XALA*/ wire _MASK_PIPE_SET1 = nand(_SPRITE_MASK1n, oam_bus.DEPO_SPRITE_X7);
+      /*p26.TYRA*/ wire _MASK_PIPE_SET2 = nand(_SPRITE_MASK2n, oam_bus.DEPO_SPRITE_X7);
+      /*p26.XYRU*/ wire _MASK_PIPE_SET3 = nand(_SPRITE_MASK3n, oam_bus.DEPO_SPRITE_X7);
+      /*p26.XUKU*/ wire _MASK_PIPE_SET4 = nand(_SPRITE_MASK4n, oam_bus.DEPO_SPRITE_X7);
+      /*p26.XELY*/ wire _MASK_PIPE_SET5 = nand(_SPRITE_MASK5n, oam_bus.DEPO_SPRITE_X7);
+      /*p26.TYKO*/ wire _MASK_PIPE_SET6 = nand(_SPRITE_MASK6n, oam_bus.DEPO_SPRITE_X7);
+      /*p26.TUWU*/ wire _MASK_PIPE_SET7 = nand(_SPRITE_MASK7n, oam_bus.DEPO_SPRITE_X7);
 
-      /*p26.WOKA*/ wire _MASK_PIPE_RST0 = nand(_SPRITE_MASK0n, /*p26.XOGA*/ not(oam_reg.DEPO_SPRITE_X7));
-      /*p26.WEDE*/ wire _MASK_PIPE_RST1 = nand(_SPRITE_MASK1n, /*p26.XURA*/ not(oam_reg.DEPO_SPRITE_X7));
-      /*p26.TUFO*/ wire _MASK_PIPE_RST2 = nand(_SPRITE_MASK2n, /*p26.TAJO*/ not(oam_reg.DEPO_SPRITE_X7));
-      /*p26.WEVO*/ wire _MASK_PIPE_RST3 = nand(_SPRITE_MASK3n, /*p26.XENU*/ not(oam_reg.DEPO_SPRITE_X7));
-      /*p26.WEDY*/ wire _MASK_PIPE_RST4 = nand(_SPRITE_MASK4n, /*p26.XYKE*/ not(oam_reg.DEPO_SPRITE_X7));
-      /*p26.WUJA*/ wire _MASK_PIPE_RST5 = nand(_SPRITE_MASK5n, /*p26.XABA*/ not(oam_reg.DEPO_SPRITE_X7));
-      /*p26.TENA*/ wire _MASK_PIPE_RST6 = nand(_SPRITE_MASK6n, /*p26.TAFU*/ not(oam_reg.DEPO_SPRITE_X7));
-      /*p26.WUBU*/ wire _MASK_PIPE_RST7 = nand(_SPRITE_MASK7n, /*p26.XUHO*/ not(oam_reg.DEPO_SPRITE_X7));
+      /*p26.WOKA*/ wire _MASK_PIPE_RST0 = nand(_SPRITE_MASK0n, /*p26.XOGA*/ not(oam_bus.DEPO_SPRITE_X7));
+      /*p26.WEDE*/ wire _MASK_PIPE_RST1 = nand(_SPRITE_MASK1n, /*p26.XURA*/ not(oam_bus.DEPO_SPRITE_X7));
+      /*p26.TUFO*/ wire _MASK_PIPE_RST2 = nand(_SPRITE_MASK2n, /*p26.TAJO*/ not(oam_bus.DEPO_SPRITE_X7));
+      /*p26.WEVO*/ wire _MASK_PIPE_RST3 = nand(_SPRITE_MASK3n, /*p26.XENU*/ not(oam_bus.DEPO_SPRITE_X7));
+      /*p26.WEDY*/ wire _MASK_PIPE_RST4 = nand(_SPRITE_MASK4n, /*p26.XYKE*/ not(oam_bus.DEPO_SPRITE_X7));
+      /*p26.WUJA*/ wire _MASK_PIPE_RST5 = nand(_SPRITE_MASK5n, /*p26.XABA*/ not(oam_bus.DEPO_SPRITE_X7));
+      /*p26.TENA*/ wire _MASK_PIPE_RST6 = nand(_SPRITE_MASK6n, /*p26.TAFU*/ not(oam_bus.DEPO_SPRITE_X7));
+      /*p26.WUBU*/ wire _MASK_PIPE_RST7 = nand(_SPRITE_MASK7n, /*p26.XUHO*/ not(oam_bus.DEPO_SPRITE_X7));
 
       /*p26.VEZO*/ MASK_PIPE_0.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET0, _MASK_PIPE_RST0, joy_pin.P10_B);
       /*p26.WURU*/ MASK_PIPE_1.set(ppu_sig.SACU_CLKPIPE_AxCxExGx, _MASK_PIPE_SET1, _MASK_PIPE_RST1, MASK_PIPE_0);
@@ -570,5 +570,87 @@ bool PixelPipeRegisters::commit() {
   bool changed = false;
   /* PIN_50 */ changed |= LD1.commit_pinout();
   /* PIN_51 */ changed |= LD0.commit_pinout();
+
+  /*p32.LEGU*/ changed |= BG_PIX_A0.commit_reg();
+  /*p32.NUDU*/ changed |= BG_PIX_A1.commit_reg();
+  /*p32.MUKU*/ changed |= BG_PIX_A2.commit_reg();
+  /*p32.LUZO*/ changed |= BG_PIX_A3.commit_reg();
+  /*p32.MEGU*/ changed |= BG_PIX_A4.commit_reg();
+  /*p32.MYJY*/ changed |= BG_PIX_A5.commit_reg();
+  /*p32.NASA*/ changed |= BG_PIX_A6.commit_reg();
+  /*p32.NEFO*/ changed |= BG_PIX_A7.commit_reg();
+  /*p32.RAWU*/ changed |= BG_PIX_B0.commit_reg();
+  /*p32.POZO*/ changed |= BG_PIX_B1.commit_reg();
+  /*p32.PYZO*/ changed |= BG_PIX_B2.commit_reg();
+  /*p32.POXA*/ changed |= BG_PIX_B3.commit_reg();
+  /*p32.PULO*/ changed |= BG_PIX_B4.commit_reg();
+  /*p32.POJU*/ changed |= BG_PIX_B5.commit_reg();
+  /*p32.POWY*/ changed |= BG_PIX_B6.commit_reg();
+  /*p32.PYJU*/ changed |= BG_PIX_B7.commit_reg();
+  /*p33.PEFO*/ changed |= SPR_PIX_A0.commit_reg();
+  /*p33.ROKA*/ changed |= SPR_PIX_A1.commit_reg();
+  /*p33.MYTU*/ changed |= SPR_PIX_A2.commit_reg();
+  /*p33.RAMU*/ changed |= SPR_PIX_A3.commit_reg();
+  /*p33.SELE*/ changed |= SPR_PIX_A4.commit_reg();
+  /*p33.SUTO*/ changed |= SPR_PIX_A5.commit_reg();
+  /*p33.RAMA*/ changed |= SPR_PIX_A6.commit_reg();
+  /*p33.RYDU*/ changed |= SPR_PIX_A7.commit_reg();
+  /*p33.REWO*/ changed |= SPR_PIX_B0.commit_reg();
+  /*p33.PEBA*/ changed |= SPR_PIX_B1.commit_reg();
+  /*p33.MOFO*/ changed |= SPR_PIX_B2.commit_reg();
+  /*p33.PUDU*/ changed |= SPR_PIX_B3.commit_reg();
+  /*p33.SAJA*/ changed |= SPR_PIX_B4.commit_reg();
+  /*p33.SUNY*/ changed |= SPR_PIX_B5.commit_reg();
+  /*p33.SEMO*/ changed |= SPR_PIX_B6.commit_reg();
+  /*p33.SEGA*/ changed |= SPR_PIX_B7.commit_reg();
+  /*p32.MYDE*/ changed |= BG_PIPE_A0.commit_reg();
+  /*p32.NOZO*/ changed |= BG_PIPE_A1.commit_reg();
+  /*p32.MOJU*/ changed |= BG_PIPE_A2.commit_reg();
+  /*p32.MACU*/ changed |= BG_PIPE_A3.commit_reg();
+  /*p32.NEPO*/ changed |= BG_PIPE_A4.commit_reg();
+  /*p32.MODU*/ changed |= BG_PIPE_A5.commit_reg();
+  /*p32.NEDA*/ changed |= BG_PIPE_A6.commit_reg();
+  /*p32.PYBO*/ changed |= BG_PIPE_A7.commit_reg();
+  /*p32.TOMY*/ changed |= BG_PIPE_B0.commit_reg();
+  /*p32.TACA*/ changed |= BG_PIPE_B1.commit_reg();
+  /*p32.SADY*/ changed |= BG_PIPE_B2.commit_reg();
+  /*p32.RYSA*/ changed |= BG_PIPE_B3.commit_reg();
+  /*p32.SOBO*/ changed |= BG_PIPE_B4.commit_reg();
+  /*p32.SETU*/ changed |= BG_PIPE_B5.commit_reg();
+  /*p32.RALU*/ changed |= BG_PIPE_B6.commit_reg();
+  /*p32.SOHU*/ changed |= BG_PIPE_B7.commit_reg();
+  /*p33.NURO*/ changed |= SPR_PIPE_B0.commit_reg();
+  /*p33.MASO*/ changed |= SPR_PIPE_B1.commit_reg();
+  /*p33.LEFE*/ changed |= SPR_PIPE_B2.commit_reg();
+  /*p33.LESU*/ changed |= SPR_PIPE_B3.commit_reg();
+  /*p33.WYHO*/ changed |= SPR_PIPE_B4.commit_reg();
+  /*p33.WORA*/ changed |= SPR_PIPE_B5.commit_reg();
+  /*p33.VAFO*/ changed |= SPR_PIPE_B6.commit_reg();
+  /*p33.WUFY*/ changed |= SPR_PIPE_B7.commit_reg();
+  /*p33.NYLU*/ changed |= SPR_PIPE_A0.commit_reg();
+  /*p33.PEFU*/ changed |= SPR_PIPE_A1.commit_reg();
+  /*p33.NATY*/ changed |= SPR_PIPE_A2.commit_reg();
+  /*p33.PYJO*/ changed |= SPR_PIPE_A3.commit_reg();
+  /*p33.VARE*/ changed |= SPR_PIPE_A4.commit_reg();
+  /*p33.WEBA*/ changed |= SPR_PIPE_A5.commit_reg();
+  /*p33.VANU*/ changed |= SPR_PIPE_A6.commit_reg();
+  /*p33.VUPY*/ changed |= SPR_PIPE_A7.commit_reg();
+  /*p34.RUGO*/ changed |= PAL_PIPE_0.commit_reg();
+  /*p34.SATA*/ changed |= PAL_PIPE_1.commit_reg();
+  /*p34.ROSA*/ changed |= PAL_PIPE_2.commit_reg();
+  /*p34.SOMY*/ changed |= PAL_PIPE_3.commit_reg();
+  /*p34.PALU*/ changed |= PAL_PIPE_4.commit_reg();
+  /*p34.NUKE*/ changed |= PAL_PIPE_5.commit_reg();
+  /*p34.MODA*/ changed |= PAL_PIPE_6.commit_reg();
+  /*p34.LYME*/ changed |= PAL_PIPE_7.commit_reg();
+  /*p26.VEZO*/ changed |= MASK_PIPE_0.commit_reg();
+  /*p26.WURU*/ changed |= MASK_PIPE_1.commit_reg();
+  /*p26.VOSA*/ changed |= MASK_PIPE_2.commit_reg();
+  /*p26.WYFU*/ changed |= MASK_PIPE_3.commit_reg();
+  /*p26.XETE*/ changed |= MASK_PIPE_4.commit_reg();
+  /*p26.WODA*/ changed |= MASK_PIPE_5.commit_reg();
+  /*p26.VUMO*/ changed |= MASK_PIPE_6.commit_reg();
+  /*p26.VAVA*/ changed |= MASK_PIPE_7.commit_reg();
+
   return changed;
 }

@@ -15,8 +15,8 @@ struct PpuSignals {
   /*p29.WUTY*/ wire WUTY_SPRITE_DONE;
   /*p28.ACYL*/ wire ACYL_PPU_USE_OAM1p;
 
-  /*p24.POKY*/ wire POKY_FRONT_PORCH_LATCH;
-  /*p27.TAVE*/ wire TAVE;
+  /*p24.POKY*/ wire POKY_AFTER_PORCH_LATCHp;
+  /*p27.TAVE*/ wire TAVE_PORCH_ENDp;
   /*p21.XYMU*/ wire XYMU_RENDERINGp;
   /*p29.TEPA*/ wire TEPA_RENDERINGn;
   /*p24.LOBY*/ wire LOBY_RENDERINGn;
@@ -32,6 +32,8 @@ struct PpuSignals {
   /*p27.NAKO*/ wire NAKO_FETCH_S1n;
   /*p27.NOFU*/ wire NOFU_FETCH_S2n;
   /*p21.VOTY*/ wire VOTY_INT_STATp;
+  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp;
+
 };
 
 //-----------------------------------------------------------------------------
@@ -69,7 +71,7 @@ struct PpuRegisters {
     PORY_BFETCH_DONE_SYNC_DELAY.dump(text_painter, "PORY_BFETCH_DONE_SYNC_DELAY                 ");
     LYZU_BFETCH_S0_DELAY.dump(text_painter, "LYZU_BFETCH_S0_DELAY    ");
     PYGO_TILE_DONE.dump(text_painter, "PYGO_TILE_DONE           ");
-    POKY_FRONT_PORCH_LATCH.dump(text_painter, "POKY_FRONT_PORCH_LATCH  ");
+    POKY_AFTER_PORCH_LATCHp.dump(text_painter, "POKY_AFTER_PORCH_LATCHp  ");
     TAKA_SFETCH_RUN_LATCH.dump(text_painter, "TAKA_SFETCH_RUN_LATCH      ");
     SOBU_SPRITE_FETCH_SYNC1.dump(text_painter, "SOBU_SPRITE_FETCH_SYNC1      ");
     SUDA_SPRITE_FETCH_SYNC2.dump(text_painter, "SUDA_SPRITE_FETCH_SYNC2      ");
@@ -122,7 +124,7 @@ struct PpuRegisters {
   /*p27.LYZU*/ Reg LYZU_BFETCH_S0_DELAY;
 
   /*p24.PYGO*/ Reg PYGO_TILE_DONE;
-  /*p24.POKY*/ NorLatch POKY_FRONT_PORCH_LATCH;
+  /*p24.POKY*/ NorLatch POKY_AFTER_PORCH_LATCHp;
 
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUN_LATCH;
   /*p27.SOBU*/ Reg SOBU_SPRITE_FETCH_SYNC1;
@@ -134,7 +136,7 @@ struct PpuRegisters {
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- SPR_REG -----\n");
 
-    TOXE_SFETCH_S0_D0.dump(text_painter, "TOXE_SFETCH_S0_D0    ");
+    TOXE_SFETCH_S0.dump(text_painter, "TOXE_SFETCH_S0    ");
     TULY_SFETCH_S1.dump(text_painter, "TULY_SFETCH_S1    ");
     TESE_SFETCH_S2.dump(text_painter, "TESE_SFETCH_S2    ");
     TOBU_SFETCH_S1_D2.dump(text_painter, "TOBU_SFETCH_S1_D2  ");
@@ -154,7 +156,7 @@ struct PpuRegisters {
   }
 #endif
 
-  /*p29.TOXE*/ Reg TOXE_SFETCH_S0_D0;
+  /*p29.TOXE*/ Reg TOXE_SFETCH_S0;
   /*p29.TULY*/ Reg TULY_SFETCH_S1;
   /*p29.TESE*/ Reg TESE_SFETCH_S2;
 

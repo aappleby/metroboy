@@ -69,9 +69,6 @@ void DebugRegisters::tick(const TestGB& gb) {
   //cpu_pins.UPOJ_MODE_PRODn = UPOJ_MODE_PRODn;
   //cpu_pins.TOVA_MODE_DBG2n = TOVA_MODE_DBG2n;
   //cpu_pins.RYCA_MODE_DBG2n = RYCA_MODE_DBG2n;
-
-  wire PIN_FROM_CPU5p = gb.cpu_bus.PIN_FROM_CPU5p;
-  /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, PIN_FROM_CPU5p);
 }
 
 //-----------------------------------------------------------------------------
@@ -79,7 +76,6 @@ void DebugRegisters::tick(const TestGB& gb) {
 bool DebugRegisters::commit() {
   bool changed = false;
   /*p25.SOTO*/ changed |= SOTO_DBG.commit_reg();
-  /*p04.MAKA*/ changed |= MAKA_FROM_CPU5_SYNC.commit_reg();
   //changed |= cpu_pins.UNOR_MODE_DBG2.commit_pinout();         // PORTA_02: <- P07.UNOR_MODE_DBG2
   //changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
   return changed;

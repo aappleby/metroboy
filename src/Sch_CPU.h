@@ -18,13 +18,22 @@ struct CpuSignals {
   /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH;
   /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH;
 
+  /*p04.MAKA*/ wire MAKA_FROM_CPU5_SYNC;
   /*p04.DECY*/ wire DECY_FROM_CPU5n;
+  /*p28.LEKO*/ wire LEKO_CPU_RDp;
+
+  /*p08.MATE*/ wire MATE_LATCH_CPU_ADDRp;
+  /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAp;
+
+  /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn;
 };
 
 struct CpuRegisters {
   CpuSignals sig(const TestGB& gb) const;
   void tick(TestGB& gb);
   bool commit();
+
+  /*p04.MAKA*/ Reg MAKA_FROM_CPU5_SYNC;
 };
 
 //-----------------------------------------------------------------------------

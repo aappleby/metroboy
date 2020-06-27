@@ -5,69 +5,28 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 void TestGB::ext_preset() {
-  ext_bus.PIN_WR_C.preset(true, 0);   // -> P07.UBAL
-  ext_bus.PIN_RD_C.preset(true, 0);   // -> P07.UJYV
-  ext_bus.PIN_A00_C.preset(true, 0);   // -> P08.KOVA
-  ext_bus.PIN_A01_C.preset(true, 0);   // -> P08.CAMU
-  ext_bus.PIN_A02_C.preset(true, 0);   // -> P08.BUXU
-  ext_bus.PIN_A03_C.preset(true, 0);   // -> P08.BASE
-  ext_bus.PIN_A04_C.preset(true, 0);   // -> P08.AFEC
-  ext_bus.PIN_A05_C.preset(true, 0);   // -> P08.ABUP
-  ext_bus.PIN_A06_C.preset(true, 0);   // -> P08.CYGU
-  ext_bus.PIN_A07_C.preset(true, 0);   // -> P08.COGO
-  ext_bus.PIN_A08_C.preset(true, 0);   // -> P08.MUJY
-  ext_bus.PIN_A09_C.preset(true, 0);   // -> P08.NENA
-  ext_bus.PIN_A10_C.preset(true, 0);   // -> P08.SURA
-  ext_bus.PIN_A11_C.preset(true, 0);   // -> P08.MADY
-  ext_bus.PIN_A12_C.preset(true, 0);   // -> P08.LAHE
-  ext_bus.PIN_A13_C.preset(true, 0);   // -> P08.LURA
-  ext_bus.PIN_A14_C.preset(true, 0);   // -> P08.PEVO
-  ext_bus.PIN_A15_C.preset(true, 0);   // -> P08.RAZA
+  ext_bus.preset();
 
   if (!ext_bus.PIN_RD_A && !ext_bus.PIN_CS_A) {
-    uint16_t ext_addr = (uint16_t)pack(ext_bus.PIN_A00_A, ext_bus.PIN_A01_A, ext_bus.PIN_A02_A, ext_bus.PIN_A03_A,
-                                       ext_bus.PIN_A04_A, ext_bus.PIN_A05_A, ext_bus.PIN_A06_A, ext_bus.PIN_A07_A,
-                                       ext_bus.PIN_A08_A, ext_bus.PIN_A09_A, ext_bus.PIN_A10_A, ext_bus.PIN_A11_A,
-                                       ext_bus.PIN_A12_A, ext_bus.PIN_A13_A, ext_bus.PIN_A14_A, ext_bus.PIN_A15_A);
+    uint16_t ext_addr = ext_bus.get_addr();
 
     if (0x0000 <= ext_addr && ext_addr <= 0x7FFF) {
       // Cart rom
       //uint8_t d = rom[ext_addr];
       uint8_t d = 0;
-      ext_bus.PIN_D0_C.preset(true, d & 0x01);
-      ext_bus.PIN_D1_C.preset(true, d & 0x02);
-      ext_bus.PIN_D2_C.preset(true, d & 0x04);
-      ext_bus.PIN_D3_C.preset(true, d & 0x08);
-      ext_bus.PIN_D4_C.preset(true, d & 0x10);
-      ext_bus.PIN_D5_C.preset(true, d & 0x20);
-      ext_bus.PIN_D6_C.preset(true, d & 0x40);
-      ext_bus.PIN_D7_C.preset(true, d & 0x80);
+      ext_bus.preset_d(true, d);
     }
     else if (0xC000 <= ext_addr && ext_addr <= 0xDFFF) {
       // Main ram
       //uint8_t d = ram[ext_addr - 0xC000];
       uint8_t d = 0;
-      ext_bus.PIN_D0_C.preset(true, d & 0x01);
-      ext_bus.PIN_D1_C.preset(true, d & 0x02);
-      ext_bus.PIN_D2_C.preset(true, d & 0x04);
-      ext_bus.PIN_D3_C.preset(true, d & 0x08);
-      ext_bus.PIN_D4_C.preset(true, d & 0x10);
-      ext_bus.PIN_D5_C.preset(true, d & 0x20);
-      ext_bus.PIN_D6_C.preset(true, d & 0x40);
-      ext_bus.PIN_D7_C.preset(true, d & 0x80);
+      ext_bus.preset_d(true, d);
     }
     else if (0xE000 <= ext_addr && ext_addr <= 0xFFFF) {
       // Echo ram
       //uint8_t d = ram[ext_addr - 0xE000];
       uint8_t d = 0;
-      ext_bus.PIN_D0_C.preset(true, d & 0x01);
-      ext_bus.PIN_D1_C.preset(true, d & 0x02);
-      ext_bus.PIN_D2_C.preset(true, d & 0x04);
-      ext_bus.PIN_D3_C.preset(true, d & 0x08);
-      ext_bus.PIN_D4_C.preset(true, d & 0x10);
-      ext_bus.PIN_D5_C.preset(true, d & 0x20);
-      ext_bus.PIN_D6_C.preset(true, d & 0x40);
-      ext_bus.PIN_D7_C.preset(true, d & 0x80);
+      ext_bus.preset_d(true, d);
     }
     else {
       printf("Bad address?\n");
@@ -75,14 +34,7 @@ void TestGB::ext_preset() {
     }
   }
   else {
-    ext_bus.PIN_D0_C.preset(false, 0);
-    ext_bus.PIN_D1_C.preset(false, 0);
-    ext_bus.PIN_D2_C.preset(false, 0);
-    ext_bus.PIN_D3_C.preset(false, 0);
-    ext_bus.PIN_D4_C.preset(false, 0);
-    ext_bus.PIN_D5_C.preset(false, 0);
-    ext_bus.PIN_D6_C.preset(false, 0);
-    ext_bus.PIN_D7_C.preset(false, 0);
+    ext_bus.preset_d(false, 0);
   }
 }
 
@@ -216,121 +168,9 @@ bool TestGB::commit_everything() {
 
   changed |= lcd_reg.commit();
 
-  /*p31.XYKY*/ changed |= oam_reg.XYKY_LATCH_OAM_A0.commit_latch();
-  /*p31.YRUM*/ changed |= oam_reg.YRUM_LATCH_OAM_A1.commit_latch();
-  /*p31.YSEX*/ changed |= oam_reg.YSEX_LATCH_OAM_A2.commit_latch();
-  /*p31.YVEL*/ changed |= oam_reg.YVEL_LATCH_OAM_A3.commit_latch();
-  /*p31.WYNO*/ changed |= oam_reg.WYNO_LATCH_OAM_A4.commit_latch();
-  /*p31.CYRA*/ changed |= oam_reg.CYRA_LATCH_OAM_A5.commit_latch();
-  /*p31.ZUVE*/ changed |= oam_reg.ZUVE_LATCH_OAM_A6.commit_latch();
-  /*p31.ECED*/ changed |= oam_reg.ECED_LATCH_OAM_A7.commit_latch();
-  /*p29.YDYV*/ changed |= oam_reg.YDYV_LATCH_OAM_B0.commit_latch();
-  /*p29.YCEB*/ changed |= oam_reg.YCEB_LATCH_OAM_B1.commit_latch();
-  /*p29.ZUCA*/ changed |= oam_reg.ZUCA_LATCH_OAM_B2.commit_latch();
-  /*p29.WONE*/ changed |= oam_reg.WONE_LATCH_OAM_B3.commit_latch();
-  /*p29.ZAXE*/ changed |= oam_reg.ZAXE_LATCH_OAM_B4.commit_latch();
-  /*p29.XAFU*/ changed |= oam_reg.XAFU_LATCH_OAM_B5.commit_latch();
-  /*p29.YSES*/ changed |= oam_reg.YSES_LATCH_OAM_B6.commit_latch();
-  /*p29.ZECA*/ changed |= oam_reg.ZECA_LATCH_OAM_B7.commit_latch();
-  /*p31.YLOR*/ changed |= oam_reg.YLOR_SPRITE_X0.commit_reg();
-  /*p31.ZYTY*/ changed |= oam_reg.ZYTY_SPRITE_X1.commit_reg();
-  /*p31.ZYVE*/ changed |= oam_reg.ZYVE_SPRITE_X2.commit_reg();
-  /*p31.ZEZY*/ changed |= oam_reg.ZEZY_SPRITE_X3.commit_reg();
-  /*p31.GOMO*/ changed |= oam_reg.GOMO_SPRITE_X4.commit_reg();
-  /*p31.BAXO*/ changed |= oam_reg.BAXO_SPRITE_X5.commit_reg();
-  /*p31.YZOS*/ changed |= oam_reg.YZOS_SPRITE_X6.commit_reg();
-  /*p31.DEPO*/ changed |= oam_reg.DEPO_SPRITE_X7.commit_reg();
-  /*p29.XUSO*/ changed |= oam_reg.XUSO_SPRITE_Y0.commit_reg();
-  /*p29.XEGU*/ changed |= oam_reg.XEGU_SPRITE_Y1.commit_reg();
-  /*p29.YJEX*/ changed |= oam_reg.YJEX_SPRITE_Y2.commit_reg();
-  /*p29.XYJU*/ changed |= oam_reg.XYJU_SPRITE_Y3.commit_reg();
-  /*p29.YBOG*/ changed |= oam_reg.YBOG_SPRITE_Y4.commit_reg();
-  /*p29.WYSO*/ changed |= oam_reg.WYSO_SPRITE_Y5.commit_reg();
-  /*p29.XOTE*/ changed |= oam_reg.XOTE_SPRITE_Y6.commit_reg();
-  /*p29.YZAB*/ changed |= oam_reg.YZAB_SPRITE_Y7.commit_reg();
+  changed |= pxp_reg.commit();
 
-  /*p32.LEGU*/ changed |= pxp_reg.BG_PIX_A0.commit_reg();
-  /*p32.NUDU*/ changed |= pxp_reg.BG_PIX_A1.commit_reg();
-  /*p32.MUKU*/ changed |= pxp_reg.BG_PIX_A2.commit_reg();
-  /*p32.LUZO*/ changed |= pxp_reg.BG_PIX_A3.commit_reg();
-  /*p32.MEGU*/ changed |= pxp_reg.BG_PIX_A4.commit_reg();
-  /*p32.MYJY*/ changed |= pxp_reg.BG_PIX_A5.commit_reg();
-  /*p32.NASA*/ changed |= pxp_reg.BG_PIX_A6.commit_reg();
-  /*p32.NEFO*/ changed |= pxp_reg.BG_PIX_A7.commit_reg();
-  /*p32.RAWU*/ changed |= pxp_reg.BG_PIX_B0.commit_reg();
-  /*p32.POZO*/ changed |= pxp_reg.BG_PIX_B1.commit_reg();
-  /*p32.PYZO*/ changed |= pxp_reg.BG_PIX_B2.commit_reg();
-  /*p32.POXA*/ changed |= pxp_reg.BG_PIX_B3.commit_reg();
-  /*p32.PULO*/ changed |= pxp_reg.BG_PIX_B4.commit_reg();
-  /*p32.POJU*/ changed |= pxp_reg.BG_PIX_B5.commit_reg();
-  /*p32.POWY*/ changed |= pxp_reg.BG_PIX_B6.commit_reg();
-  /*p32.PYJU*/ changed |= pxp_reg.BG_PIX_B7.commit_reg();
-  /*p33.PEFO*/ changed |= pxp_reg.SPR_PIX_A0.commit_reg();
-  /*p33.ROKA*/ changed |= pxp_reg.SPR_PIX_A1.commit_reg();
-  /*p33.MYTU*/ changed |= pxp_reg.SPR_PIX_A2.commit_reg();
-  /*p33.RAMU*/ changed |= pxp_reg.SPR_PIX_A3.commit_reg();
-  /*p33.SELE*/ changed |= pxp_reg.SPR_PIX_A4.commit_reg();
-  /*p33.SUTO*/ changed |= pxp_reg.SPR_PIX_A5.commit_reg();
-  /*p33.RAMA*/ changed |= pxp_reg.SPR_PIX_A6.commit_reg();
-  /*p33.RYDU*/ changed |= pxp_reg.SPR_PIX_A7.commit_reg();
-  /*p33.REWO*/ changed |= pxp_reg.SPR_PIX_B0.commit_reg();
-  /*p33.PEBA*/ changed |= pxp_reg.SPR_PIX_B1.commit_reg();
-  /*p33.MOFO*/ changed |= pxp_reg.SPR_PIX_B2.commit_reg();
-  /*p33.PUDU*/ changed |= pxp_reg.SPR_PIX_B3.commit_reg();
-  /*p33.SAJA*/ changed |= pxp_reg.SPR_PIX_B4.commit_reg();
-  /*p33.SUNY*/ changed |= pxp_reg.SPR_PIX_B5.commit_reg();
-  /*p33.SEMO*/ changed |= pxp_reg.SPR_PIX_B6.commit_reg();
-  /*p33.SEGA*/ changed |= pxp_reg.SPR_PIX_B7.commit_reg();
-  /*p32.MYDE*/ changed |= pxp_reg.BG_PIPE_A0.commit_reg();
-  /*p32.NOZO*/ changed |= pxp_reg.BG_PIPE_A1.commit_reg();
-  /*p32.MOJU*/ changed |= pxp_reg.BG_PIPE_A2.commit_reg();
-  /*p32.MACU*/ changed |= pxp_reg.BG_PIPE_A3.commit_reg();
-  /*p32.NEPO*/ changed |= pxp_reg.BG_PIPE_A4.commit_reg();
-  /*p32.MODU*/ changed |= pxp_reg.BG_PIPE_A5.commit_reg();
-  /*p32.NEDA*/ changed |= pxp_reg.BG_PIPE_A6.commit_reg();
-  /*p32.PYBO*/ changed |= pxp_reg.BG_PIPE_A7.commit_reg();
-  /*p32.TOMY*/ changed |= pxp_reg.BG_PIPE_B0.commit_reg();
-  /*p32.TACA*/ changed |= pxp_reg.BG_PIPE_B1.commit_reg();
-  /*p32.SADY*/ changed |= pxp_reg.BG_PIPE_B2.commit_reg();
-  /*p32.RYSA*/ changed |= pxp_reg.BG_PIPE_B3.commit_reg();
-  /*p32.SOBO*/ changed |= pxp_reg.BG_PIPE_B4.commit_reg();
-  /*p32.SETU*/ changed |= pxp_reg.BG_PIPE_B5.commit_reg();
-  /*p32.RALU*/ changed |= pxp_reg.BG_PIPE_B6.commit_reg();
-  /*p32.SOHU*/ changed |= pxp_reg.BG_PIPE_B7.commit_reg();
-  /*p33.NURO*/ changed |= pxp_reg.SPR_PIPE_B0.commit_reg();
-  /*p33.MASO*/ changed |= pxp_reg.SPR_PIPE_B1.commit_reg();
-  /*p33.LEFE*/ changed |= pxp_reg.SPR_PIPE_B2.commit_reg();
-  /*p33.LESU*/ changed |= pxp_reg.SPR_PIPE_B3.commit_reg();
-  /*p33.WYHO*/ changed |= pxp_reg.SPR_PIPE_B4.commit_reg();
-  /*p33.WORA*/ changed |= pxp_reg.SPR_PIPE_B5.commit_reg();
-  /*p33.VAFO*/ changed |= pxp_reg.SPR_PIPE_B6.commit_reg();
-  /*p33.WUFY*/ changed |= pxp_reg.SPR_PIPE_B7.commit_reg();
-  /*p33.NYLU*/ changed |= pxp_reg.SPR_PIPE_A0.commit_reg();
-  /*p33.PEFU*/ changed |= pxp_reg.SPR_PIPE_A1.commit_reg();
-  /*p33.NATY*/ changed |= pxp_reg.SPR_PIPE_A2.commit_reg();
-  /*p33.PYJO*/ changed |= pxp_reg.SPR_PIPE_A3.commit_reg();
-  /*p33.VARE*/ changed |= pxp_reg.SPR_PIPE_A4.commit_reg();
-  /*p33.WEBA*/ changed |= pxp_reg.SPR_PIPE_A5.commit_reg();
-  /*p33.VANU*/ changed |= pxp_reg.SPR_PIPE_A6.commit_reg();
-  /*p33.VUPY*/ changed |= pxp_reg.SPR_PIPE_A7.commit_reg();
-  /*p34.RUGO*/ changed |= pxp_reg.PAL_PIPE_0.commit_reg();
-  /*p34.SATA*/ changed |= pxp_reg.PAL_PIPE_1.commit_reg();
-  /*p34.ROSA*/ changed |= pxp_reg.PAL_PIPE_2.commit_reg();
-  /*p34.SOMY*/ changed |= pxp_reg.PAL_PIPE_3.commit_reg();
-  /*p34.PALU*/ changed |= pxp_reg.PAL_PIPE_4.commit_reg();
-  /*p34.NUKE*/ changed |= pxp_reg.PAL_PIPE_5.commit_reg();
-  /*p34.MODA*/ changed |= pxp_reg.PAL_PIPE_6.commit_reg();
-  /*p34.LYME*/ changed |= pxp_reg.PAL_PIPE_7.commit_reg();
-  /*p26.VEZO*/ changed |= pxp_reg.MASK_PIPE_0.commit_reg();
-  /*p26.WURU*/ changed |= pxp_reg.MASK_PIPE_1.commit_reg();
-  /*p26.VOSA*/ changed |= pxp_reg.MASK_PIPE_2.commit_reg();
-  /*p26.WYFU*/ changed |= pxp_reg.MASK_PIPE_3.commit_reg();
-  /*p26.XETE*/ changed |= pxp_reg.MASK_PIPE_4.commit_reg();
-  /*p26.WODA*/ changed |= pxp_reg.MASK_PIPE_5.commit_reg();
-  /*p26.VUMO*/ changed |= pxp_reg.MASK_PIPE_6.commit_reg();
-  /*p26.VAVA*/ changed |= pxp_reg.MASK_PIPE_7.commit_reg();
-
-  /*p29.TOXE*/ changed |= ppu_reg.TOXE_SFETCH_S0_D0.commit_reg();
+  /*p29.TOXE*/ changed |= ppu_reg.TOXE_SFETCH_S0.commit_reg();
   /*p29.TULY*/ changed |= ppu_reg.TULY_SFETCH_S1.commit_reg();
   /*p29.TESE*/ changed |= ppu_reg.TESE_SFETCH_S2.commit_reg();
   /*p29.TOBU*/ changed |= ppu_reg.TOBU_SFETCH_S1_D2.commit_reg();
@@ -340,43 +180,7 @@ bool TestGB::commit_everything() {
 
   changed |= sst_reg.commit();
 
-  /*p01.UKUP*/ changed |= tim_reg.UKUP_DIV_00.commit_reg();
-  /*p01.UFOR*/ changed |= tim_reg.UFOR_DIV_01.commit_reg();
-  /*p01.UNER*/ changed |= tim_reg.UNER_DIV_02.commit_reg();
-  /*p01.TERO*/ changed |= tim_reg.TERO_DIV_03.commit_reg();
-  /*p01.UNYK*/ changed |= tim_reg.UNYK_DIV_04.commit_reg();
-  /*p01.TAMA*/ changed |= tim_reg.TAMA_DIV_05.commit_reg();
-  /*p01.UGOT*/ changed |= tim_reg.UGOT_DIV_06.commit_reg();
-  /*p01.TULU*/ changed |= tim_reg.TULU_DIV_07.commit_reg();
-  /*p01.TUGO*/ changed |= tim_reg.TUGO_DIV_08.commit_reg();
-  /*p01.TOFE*/ changed |= tim_reg.TOFE_DIV_09.commit_reg();
-  /*p01.TERU*/ changed |= tim_reg.TERU_DIV_10.commit_reg();
-  /*p01.SOLA*/ changed |= tim_reg.SOLA_DIV_11.commit_reg();
-  /*p01.SUBU*/ changed |= tim_reg.SUBU_DIV_12.commit_reg();
-  /*p01.TEKA*/ changed |= tim_reg.TEKA_DIV_13.commit_reg();
-  /*p01.UKET*/ changed |= tim_reg.UKET_DIV_14.commit_reg();
-  /*p01.UPOF*/ changed |= tim_reg.UPOF_DIV_15.commit_reg();
-  /*p03.REGA*/ changed |= tim_reg.TIMA_0.commit_counter();
-  /*p03.POVY*/ changed |= tim_reg.TIMA_1.commit_counter();
-  /*p03.PERU*/ changed |= tim_reg.TIMA_2.commit_counter();
-  /*p03.RATE*/ changed |= tim_reg.TIMA_3.commit_counter();
-  /*p03.RUBY*/ changed |= tim_reg.TIMA_4.commit_counter();
-  /*p03.RAGE*/ changed |= tim_reg.TIMA_5.commit_counter();
-  /*p03.PEDA*/ changed |= tim_reg.TIMA_6.commit_counter();
-  /*p03.NUGA*/ changed |= tim_reg.TIMA_7.commit_counter();
-  /*p03.NYDU*/ changed |= tim_reg.TIMA_MAX.commit_reg();
-  /*p03.MOBA*/ changed |= tim_reg.MOBA_INT_TIMERp.commit_reg();
-  /*p03.SABU*/ changed |= tim_reg.TMA_0.commit_reg();
-  /*p03.NYKE*/ changed |= tim_reg.TMA_1.commit_reg();
-  /*p03.MURU*/ changed |= tim_reg.TMA_2.commit_reg();
-  /*p03.TYVA*/ changed |= tim_reg.TMA_3.commit_reg();
-  /*p03.TYRU*/ changed |= tim_reg.TMA_4.commit_reg();
-  /*p03.SUFY*/ changed |= tim_reg.TMA_5.commit_reg();
-  /*p03.PETO*/ changed |= tim_reg.TMA_6.commit_reg();
-  /*p03.SETA*/ changed |= tim_reg.TMA_7.commit_reg();
-  /*p03.SOPU*/ changed |= tim_reg.TAC_0.commit_reg();
-  /*p03.SAMY*/ changed |= tim_reg.TAC_1.commit_reg();
-  /*p03.SABO*/ changed |= tim_reg.TAC_2.commit_reg();
+  changed |= tim_reg.commit();
 
   changed |= ppu_reg.commit();
 
@@ -406,31 +210,7 @@ bool TestGB::commit_everything() {
 
   /*p07.TEPU*/ changed |= bus_reg.BOOT_BITn.commit_reg();
 
-  /*p08.ALOR*/ changed |= ext_bus.EXT_ADDR_LATCH_00.commit_latch();
-  /*p08.APUR*/ changed |= ext_bus.EXT_ADDR_LATCH_01.commit_latch();
-  /*p08.ALYR*/ changed |= ext_bus.EXT_ADDR_LATCH_02.commit_latch();
-  /*p08.ARET*/ changed |= ext_bus.EXT_ADDR_LATCH_03.commit_latch();
-  /*p08.AVYS*/ changed |= ext_bus.EXT_ADDR_LATCH_04.commit_latch();
-  /*p08.ATEV*/ changed |= ext_bus.EXT_ADDR_LATCH_05.commit_latch();
-  /*p08.AROS*/ changed |= ext_bus.EXT_ADDR_LATCH_06.commit_latch();
-  /*p08.ARYM*/ changed |= ext_bus.EXT_ADDR_LATCH_07.commit_latch();
-  /*p08.LUNO*/ changed |= ext_bus.EXT_ADDR_LATCH_08.commit_latch();
-  /*p08.LYSA*/ changed |= ext_bus.EXT_ADDR_LATCH_09.commit_latch();
-  /*p08.PATE*/ changed |= ext_bus.EXT_ADDR_LATCH_10.commit_latch();
-  /*p08.LUMY*/ changed |= ext_bus.EXT_ADDR_LATCH_11.commit_latch();
-  /*p08.LOBU*/ changed |= ext_bus.EXT_ADDR_LATCH_12.commit_latch();
-  /*p08.LONU*/ changed |= ext_bus.EXT_ADDR_LATCH_13.commit_latch();
-  /*p08.NYRE*/ changed |= ext_bus.EXT_ADDR_LATCH_14.commit_latch();
-
-  /*p08.SOMA*/ changed |= ext_bus.EXT_DATA_LATCH_00.commit_latch();
-  /*p08.RONY*/ changed |= ext_bus.EXT_DATA_LATCH_01.commit_latch();
-  /*p08.RAXY*/ changed |= ext_bus.EXT_DATA_LATCH_02.commit_latch();
-  /*p08.SELO*/ changed |= ext_bus.EXT_DATA_LATCH_03.commit_latch();
-  /*p08.SODY*/ changed |= ext_bus.EXT_DATA_LATCH_04.commit_latch();
-  /*p08.SAGO*/ changed |= ext_bus.EXT_DATA_LATCH_05.commit_latch();
-  /*p08.RUPA*/ changed |= ext_bus.EXT_DATA_LATCH_06.commit_latch();
-  /*p08.SAZY*/ changed |= ext_bus.EXT_DATA_LATCH_07.commit_latch();
-
+  changed |= ext_bus.commit();
   //----------------------------------------
   // PINS
 
@@ -494,117 +274,8 @@ bool TestGB::commit_everything() {
   changed |= cpu_bus.TS_D6.commit_tribuf();
   changed |= cpu_bus.TS_D7.commit_tribuf();
 
-  changed |= oam_bus.PIN_CLK.commit_pinout();
-  changed |= oam_bus.PIN_OE.commit_pinout();
-  changed |= oam_bus.PIN_WR_A.commit_pinout(); // definitely write
-  changed |= oam_bus.PIN_WR_B.commit_pinout(); // definitely write
-  changed |= oam_bus.PIN_A0.commit_pinout();
-  changed |= oam_bus.PIN_A1.commit_pinout();
-  changed |= oam_bus.PIN_A2.commit_pinout();
-  changed |= oam_bus.PIN_A3.commit_pinout();
-  changed |= oam_bus.PIN_A4.commit_pinout();
-  changed |= oam_bus.PIN_A5.commit_pinout();
-  changed |= oam_bus.PIN_A6.commit_pinout();
-  changed |= oam_bus.PIN_A7.commit_pinout();
-  changed |= oam_bus.PIN_DA0.commit_tribuf();
-  changed |= oam_bus.PIN_DA1.commit_tribuf();
-  changed |= oam_bus.PIN_DA2.commit_tribuf();
-  changed |= oam_bus.PIN_DA3.commit_tribuf();
-  changed |= oam_bus.PIN_DA4.commit_tribuf();
-  changed |= oam_bus.PIN_DA5.commit_tribuf();
-  changed |= oam_bus.PIN_DA6.commit_tribuf();
-  changed |= oam_bus.PIN_DA7.commit_tribuf();
-  changed |= oam_bus.PIN_DB0.commit_tribuf();
-  changed |= oam_bus.PIN_DB1.commit_tribuf();
-  changed |= oam_bus.PIN_DB2.commit_tribuf();
-  changed |= oam_bus.PIN_DB3.commit_tribuf();
-  changed |= oam_bus.PIN_DB4.commit_tribuf();
-  changed |= oam_bus.PIN_DB5.commit_tribuf();
-  changed |= oam_bus.PIN_DB6.commit_tribuf();
-  changed |= oam_bus.PIN_DB7.commit_tribuf();
-
   // Package pins
 
-  /* PIN_01 */ changed |= ext_bus.PIN_A00_A.commit_pinout();     // <- KUPO
-  /* PIN_01 */ changed |= ext_bus.PIN_A00_C.clear_preset();      // -> KOVA
-  /* PIN_01 */ changed |= ext_bus.PIN_A00_D.commit_pinout();     // <- KOTY
-  /* PIN_02 */ changed |= ext_bus.PIN_A01_A.commit_pinout();     // <- CABA
-  /* PIN_02 */ changed |= ext_bus.PIN_A01_C.clear_preset();      // -> CAMU
-  /* PIN_02 */ changed |= ext_bus.PIN_A01_D.commit_pinout();     // <- COTU
-  /* PIN_03 */ changed |= ext_bus.PIN_A02_A.commit_pinout();     // <- BOKU
-  /* PIN_03 */ changed |= ext_bus.PIN_A02_C.clear_preset();      // -> BUXU
-  /* PIN_03 */ changed |= ext_bus.PIN_A02_D.commit_pinout();     // <- BAJO
-  /* PIN_04 */ changed |= ext_bus.PIN_A03_A.commit_pinout();     // <- BOTY
-  /* PIN_04 */ changed |= ext_bus.PIN_A03_C.clear_preset();      // -> BASE
-  /* PIN_04 */ changed |= ext_bus.PIN_A03_D.commit_pinout();     // <- BOLA
-  /* PIN_05 */ changed |= ext_bus.PIN_A04_A.commit_pinout();     // <- BYLA
-  /* PIN_05 */ changed |= ext_bus.PIN_A04_C.clear_preset();      // -> AFEC
-  /* PIN_05 */ changed |= ext_bus.PIN_A04_D.commit_pinout();     // <- BEVO
-  /* PIN_06 */ changed |= ext_bus.PIN_A05_A.commit_pinout();     // <- BADU
-  /* PIN_06 */ changed |= ext_bus.PIN_A05_C.clear_preset();      // -> ABUP
-  /* PIN_06 */ changed |= ext_bus.PIN_A05_D.commit_pinout();     // <- AJAV
-  /* PIN_07 */ changed |= ext_bus.PIN_A06_A.commit_pinout();     // <- CEPU
-  /* PIN_07 */ changed |= ext_bus.PIN_A06_C.clear_preset();      // -> CYGU
-  /* PIN_07 */ changed |= ext_bus.PIN_A06_D.commit_pinout();     // <- CYKA
-  /* PIN_08 */ changed |= ext_bus.PIN_A07_A.commit_pinout();     // <- DEFY
-  /* PIN_08 */ changed |= ext_bus.PIN_A07_C.clear_preset();      // -> COGO
-  /* PIN_08 */ changed |= ext_bus.PIN_A07_D.commit_pinout();     // <- COLO
-  /* PIN_09 */ changed |= ext_bus.PIN_A08_A.commit_pinout();     // <- MYNY
-  /* PIN_09 */ changed |= ext_bus.PIN_A08_C.clear_preset();      // -> MUJY
-  /* PIN_09 */ changed |= ext_bus.PIN_A08_D.commit_pinout();     // <- MEGO
-  /* PIN_10 */ changed |= ext_bus.PIN_A09_A.commit_pinout();     // <- MUNE
-  /* PIN_10 */ changed |= ext_bus.PIN_A09_C.clear_preset();      // -> NENA
-  /* PIN_10 */ changed |= ext_bus.PIN_A09_D.commit_pinout();     // <- MENY
-  /* PIN_11 */ changed |= ext_bus.PIN_A10_A.commit_pinout();     // <- ROXU
-  /* PIN_11 */ changed |= ext_bus.PIN_A10_C.clear_preset();      // -> SURA
-  /* PIN_11 */ changed |= ext_bus.PIN_A10_D.commit_pinout();     // <- RORE
-  /* PIN_12 */ changed |= ext_bus.PIN_A11_A.commit_pinout();     // <- LEPY
-  /* PIN_12 */ changed |= ext_bus.PIN_A11_C.clear_preset();      // -> MADY
-  /* PIN_12 */ changed |= ext_bus.PIN_A11_D.commit_pinout();     // <- LYNY
-  /* PIN_13 */ changed |= ext_bus.PIN_A12_A.commit_pinout();     // <- LUCE
-  /* PIN_13 */ changed |= ext_bus.PIN_A12_C.clear_preset();      // -> LAHE
-  /* PIN_13 */ changed |= ext_bus.PIN_A12_D.commit_pinout();     // <- LOSO
-  /* PIN_14 */ changed |= ext_bus.PIN_A13_A.commit_pinout();     // <- LABE
-  /* PIN_14 */ changed |= ext_bus.PIN_A13_C.clear_preset();      // -> LURA
-  /* PIN_14 */ changed |= ext_bus.PIN_A13_D.commit_pinout();     // <- LEVA
-  /* PIN_15 */ changed |= ext_bus.PIN_A14_A.commit_pinout();     // <- PUHE
-  /* PIN_15 */ changed |= ext_bus.PIN_A14_C.clear_preset();      // -> PEVO
-  /* PIN_15 */ changed |= ext_bus.PIN_A14_D.commit_pinout();     // <- PAHY
-  /* PIN_16 */ changed |= ext_bus.PIN_A15_A.commit_pinout();     // <- SUZE
-  /* PIN_16 */ changed |= ext_bus.PIN_A15_C.clear_preset();      // -> RAZA
-  /* PIN_16 */ changed |= ext_bus.PIN_A15_D.commit_pinout();     // <- RULO
-  /* PIN_17 */ changed |= ext_bus.PIN_D0_A.commit_pinout();      // <- RUXA
-  /* PIN_17 */ changed |= ext_bus.PIN_D0_B.commit_pinout();      // <- LULA
-  /* PIN_17 */ changed |= ext_bus.PIN_D0_C.clear_preset();       // -> TOVO,SOMA
-  /* PIN_17 */ changed |= ext_bus.PIN_D0_D.commit_pinout();      // <- RUNE
-  /* PIN_18 */ changed |= ext_bus.PIN_D1_A.commit_pinout();      // <- RUJA
-  /* PIN_18 */ changed |= ext_bus.PIN_D1_B.commit_pinout();      // <- LULA
-  /* PIN_18 */ changed |= ext_bus.PIN_D1_C.clear_preset();       // -> RUZY,RONY
-  /* PIN_18 */ changed |= ext_bus.PIN_D1_D.commit_pinout();      // <- RYPU
-  /* PIN_19 */ changed |= ext_bus.PIN_D2_A.commit_pinout();      // <- RABY
-  /* PIN_19 */ changed |= ext_bus.PIN_D2_B.commit_pinout();      // <- LULA
-  /* PIN_19 */ changed |= ext_bus.PIN_D2_C.clear_preset();       // -> ROME,RAXY
-  /* PIN_19 */ changed |= ext_bus.PIN_D2_D.commit_pinout();      // <- SULY
-  /* PIN_20 */ changed |= ext_bus.PIN_D3_A.commit_pinout();      // <- RERA
-  /* PIN_20 */ changed |= ext_bus.PIN_D3_B.commit_pinout();      // <- LULA
-  /* PIN_20 */ changed |= ext_bus.PIN_D3_C.clear_preset();       // -> SAZA,SELO
-  /* PIN_20 */ changed |= ext_bus.PIN_D3_D.commit_pinout();      // <- SEZE
-  /* PIN_21 */ changed |= ext_bus.PIN_D4_A.commit_pinout();      // <- RORY
-  /* PIN_21 */ changed |= ext_bus.PIN_D4_B.commit_pinout();      // <- LULA
-  /* PIN_21 */ changed |= ext_bus.PIN_D4_C.clear_preset();       // -> TEHE,SODY
-  /* PIN_21 */ changed |= ext_bus.PIN_D4_D.commit_pinout();      // <- RESY
-  /* PIN_22 */ changed |= ext_bus.PIN_D5_A.commit_pinout();      // <- RYVO
-  /* PIN_22 */ changed |= ext_bus.PIN_D5_B.commit_pinout();      // <- LULA
-  /* PIN_22 */ changed |= ext_bus.PIN_D5_C.clear_preset();       // -> RATU,SAGO
-  /* PIN_22 */ changed |= ext_bus.PIN_D5_D.commit_pinout();      // <- TAMU
-  /* PIN_23 */ changed |= ext_bus.PIN_D6_A.commit_pinout();      // <- RAFY
-  /* PIN_23 */ changed |= ext_bus.PIN_D6_B.commit_pinout();      // <- LULA
-  /* PIN_23 */ changed |= ext_bus.PIN_D6_C.clear_preset();       // -> SOCA,RUPA
-  /* PIN_23 */ changed |= ext_bus.PIN_D6_D.commit_pinout();      // <- ROGY
-  /* PIN_24 */ changed |= ext_bus.PIN_D7_A.commit_pinout();      // <- RAVU
-  /* PIN_24 */ changed |= ext_bus.PIN_D7_B.commit_pinout();      // <- LULA
-  /* PIN_24 */ changed |= ext_bus.PIN_D7_C.clear_preset();       // -> RYBA,SAZY
-  /* PIN_24 */ changed |= ext_bus.PIN_D7_D.commit_pinout();      // <- RYDA
   /* PIN_25 */ changed |= vram_pins.PIN_MD7_A.commit_pinout();    // <- RYZE
   /* PIN_25 */ changed |= vram_pins.PIN_MD7_B.commit_pinout();    // <- ROFA
   /* PIN_25 */ changed |= vram_pins.PIN_MD7_C.clear_preset();     // -> RAKU

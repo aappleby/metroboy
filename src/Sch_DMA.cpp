@@ -53,6 +53,7 @@ using namespace Schematics;
 
 #endif
 
+//------------------------------------------------------------------------------
 
 DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
 
@@ -73,6 +74,7 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
   /*p04.LOGO*/ wire _LOGO_DMA_VRAMn      = not(_MUDA_DMA_ADDR_VRAMp);
   /*p04.MORY*/ wire _MORY_DMA_READ_CARTn = nand(MATU_DMA_OAM_WRp.q(), _LOGO_DMA_VRAMn); // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
   /*p04.LUMA*/ wire _LUMA_DMA_READ_CARTp = not(_MORY_DMA_READ_CARTn);
+  /*p25.CEDE*/ wire _CEDE_DMA_READ_CARTn = not(_LUMA_DMA_READ_CARTp);
   /*p04.LUFA*/ wire _LUFA_DMA_READ_VRAMp = not(_MUHO_DMA_VRAM_RDn);
   /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn    = not(MATU_DMA_OAM_WRp.q());
 
@@ -80,6 +82,7 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
     .BOGE_DMA_RUNNINGn = BOGE_DMA_RUNNINGn,
     .MORY_DMA_READ_CARTn = _MORY_DMA_READ_CARTn,
     .LUMA_DMA_READ_CARTp = _LUMA_DMA_READ_CARTp,
+    .CEDE_DMA_READ_CARTn = _CEDE_DMA_READ_CARTn,
     .LUFA_DMA_READ_VRAMp = _LUFA_DMA_READ_VRAMp,
 
     .MATU_DMA_OAM_WRp = MATU_DMA_OAM_WRp,
@@ -102,6 +105,8 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
     .DMA_A15 = DMA_A15,
   };
 }
+
+//------------------------------------------------------------------------------
 
 void DmaRegisters::tick(TestGB& gb) {
   auto cpu_sig = gb.cpu_reg.sig(gb);
@@ -196,49 +201,23 @@ void DmaRegisters::tick(TestGB& gb) {
 
   {
     auto dma_sig = sig(gb);
-    auto& ext_bus = gb.ext_bus;
-    auto& oam_bus = gb.oam_bus;
-
-    /*p25.WEJO*/ oam_bus.PIN_DA0.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.RALO*/ not(ext_bus.PIN_D0_C)));
-    /*p25.BUBO*/ oam_bus.PIN_DA1.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TUNE*/ not(ext_bus.PIN_D1_C)));
-    /*p25.BETU*/ oam_bus.PIN_DA2.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SERA*/ not(ext_bus.PIN_D2_C)));
-    /*p25.CYME*/ oam_bus.PIN_DA3.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TENU*/ not(ext_bus.PIN_D3_C)));
-    /*p25.BAXU*/ oam_bus.PIN_DA4.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SYSA*/ not(ext_bus.PIN_D4_C)));
-    /*p25.BUHU*/ oam_bus.PIN_DA5.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SUGY*/ not(ext_bus.PIN_D5_C)));
-    /*p25.BYNY*/ oam_bus.PIN_DA6.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TUBE*/ not(ext_bus.PIN_D6_C)));
-    /*p25.BYPY*/ oam_bus.PIN_DA7.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SYZO*/ not(ext_bus.PIN_D7_C)));
-    /*p25.WASA*/ oam_bus.PIN_DB0.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.RALO*/ not(ext_bus.PIN_D0_C)));
-    /*p25.BOMO*/ oam_bus.PIN_DB1.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TUNE*/ not(ext_bus.PIN_D1_C)));
-    /*p25.BASA*/ oam_bus.PIN_DB2.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SERA*/ not(ext_bus.PIN_D2_C)));
-    /*p25.CAKO*/ oam_bus.PIN_DB3.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TENU*/ not(ext_bus.PIN_D3_C)));
-    /*p25.BUMA*/ oam_bus.PIN_DB4.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SYSA*/ not(ext_bus.PIN_D4_C)));
-    /*p25.BUPY*/ oam_bus.PIN_DB5.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SUGY*/ not(ext_bus.PIN_D5_C)));
-    /*p25.BASY*/ oam_bus.PIN_DB6.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.TUBE*/ not(ext_bus.PIN_D6_C)));
-    /*p25.BAPE*/ oam_bus.PIN_DB7.set_tribuf(dma_sig.MORY_DMA_READ_CARTn, not(/*p25.SYZO*/ not(ext_bus.PIN_D7_C)));
-  }
-
-  {
-    auto dma_sig = sig(gb);
     auto& vram_bus = gb.vram_bus;
-    auto& oam_bus = gb.oam_bus;
+    auto bus_sig = gb.bus_mux.sig(gb);
 
-    /*p28.AZAR*/ wire _AZAR_DMA_READ_VRAMn = not(dma_sig.LUFA_DMA_READ_VRAMp);
-    /*p28.WUZU*/ oam_bus.PIN_DA0.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD0);
-    /*p28.AXER*/ oam_bus.PIN_DA1.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD1);
-    /*p28.ASOX*/ oam_bus.PIN_DA2.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD2);
-    /*p28.CETU*/ oam_bus.PIN_DA3.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD3);
-    /*p28.ARYN*/ oam_bus.PIN_DA4.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD4);
-    /*p28.ACOT*/ oam_bus.PIN_DA5.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD5);
-    /*p28.CUJE*/ oam_bus.PIN_DA6.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD6);
-    /*p28.ATER*/ oam_bus.PIN_DA7.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD7);
-    /*p28.WOWA*/ oam_bus.PIN_DB0.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD0);
-    /*p28.AVEB*/ oam_bus.PIN_DB1.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD1);
-    /*p28.AMUH*/ oam_bus.PIN_DB2.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD2);
-    /*p28.COFO*/ oam_bus.PIN_DB3.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD3);
-    /*p28.AZOZ*/ oam_bus.PIN_DB4.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD4);
-    /*p28.AGYK*/ oam_bus.PIN_DB5.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD5);
-    /*p28.BUSE*/ oam_bus.PIN_DB6.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD6);
-    /*p28.ANUM*/ oam_bus.PIN_DB7.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD7);
+    // DMA vram read
+    /*p04.ECAL*/ vram_bus.TS_MA00.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A00);
+    /*p04.EGEZ*/ vram_bus.TS_MA01.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A01);
+    /*p04.FUHE*/ vram_bus.TS_MA02.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A02);
+    /*p04.FYZY*/ vram_bus.TS_MA03.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A03);
+    /*p04.DAMU*/ vram_bus.TS_MA04.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A04);
+    /*p04.DAVA*/ vram_bus.TS_MA05.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A05);
+    /*p04.ETEG*/ vram_bus.TS_MA06.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A06);
+    /*p04.EREW*/ vram_bus.TS_MA07.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A07);
+    /*p04.EVAX*/ vram_bus.TS_MA08.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A08);
+    /*p04.DUVE*/ vram_bus.TS_MA09.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A09);
+    /*p04.ERAF*/ vram_bus.TS_MA10.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A10);
+    /*p04.FUSY*/ vram_bus.TS_MA11.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A11);
+    /*p04.EXYF*/ vram_bus.TS_MA12.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A12);
   }
 }
 

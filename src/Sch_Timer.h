@@ -11,6 +11,7 @@ struct TimerSignals {
   /*p01.UVYN*/ wire UVYN_DIV_05n;
   /*p01.UMEK*/ wire UMEK_DIV_06n;
   /*p01.UREK*/ wire UREK_DIV_07n;
+  /*p01.UPOF*/ wire UPOF_DIV_15;
   /*p03.MOBA*/ wire MOBA_INT_TIMERp;
 };
 
@@ -127,6 +128,8 @@ struct TimerRegisters {
     TAC_2.set2(x & 4);
   }
   */
+
+private:
 
   //----------
   // FF04 DIV

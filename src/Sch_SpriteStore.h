@@ -8,36 +8,52 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct SpriteStoreSignals {
-  /*p28.BESU*/ wire BESU_SCANNINGp;
-  /*p29.CEHA*/ wire CEHA_SCANNINGp;
-  /*p29.FEPO*/ wire FEPO_STORE_MATCHp;
-  /*p29.AVAP*/ wire AVAP_SCAN_DONE_d0_TRIGp;
+  // to ppu
+  /*p28.BESU*/ bool BESU_SCANNINGp; 
+  /*p29.FEPO*/ bool FEPO_STORE_MATCHp;
+  /*p29.AVAP*/ bool AVAP_SCAN_DONE_d0_TRIGp;
 
-  /*p29.YDUG*/ wire STORE0_MATCHn;
-  /*p29.DYDU*/ wire STORE1_MATCHn;
-  /*p29.DEGO*/ wire STORE2_MATCHn;
-  /*p29.YLOZ*/ wire STORE3_MATCHn;
-  /*p29.XAGE*/ wire STORE4_MATCHn;
-  /*p29.EGOM*/ wire STORE5_MATCHn;
-  /*p29.YBEZ*/ wire STORE6_MATCHn;
-  /*p29.DYKA*/ wire STORE7_MATCHn;
-  /*p29.EFYL*/ wire STORE8_MATCHn;
-  /*p29.YGEM*/ wire STORE9_MATCHn;
+  // to oam bus mux
+  /*p28.GYBU*/ bool GYBU_IDX_0n; 
+  /*p28.GYKA*/ bool GYKA_IDX_1n;
+  /*p28.FABY*/ bool FABY_IDX_2n;
+  /*p28.FACO*/ bool FACO_IDX_3n;
+  /*p28.FUGU*/ bool FUGU_IDX_4n;
+  /*p28.FYKE*/ bool FYKE_IDX_5n;
 
-  /*p28.GYBU*/ wire GYBU_IDX_0n;
-  /*p28.GYKA*/ wire GYKA_IDX_1n;
-  /*p28.FABY*/ wire FABY_IDX_2n;
-  /*p28.FACO*/ wire FACO_IDX_3n;
-  /*p28.FUGU*/ wire FUGU_IDX_4n;
-  /*p28.FYKE*/ wire FYKE_IDX_5n;
+  /*p28.GUSE*/ bool GUSE_SCAN0n;
+  /*p28.GEMA*/ bool GEMA_SCAN1n;
+  /*p28.FUTO*/ bool FUTO_SCAN2n;
+  /*p28.FAKU*/ bool FAKU_SCAN3n;
+  /*p28.GAMA*/ bool GAMA_SCAN4n;
+  /*p28.GOBY*/ bool GOBY_SCAN5n;
 
-  /*p28.GUSE*/ wire GUSE_SCAN0n;
-  /*p28.GEMA*/ wire GEMA_SCAN1n;
-  /*p28.FUTO*/ wire FUTO_SCAN2n;
-  /*p28.FAKU*/ wire FAKU_SCAN3n;
-  /*p28.GAMA*/ wire GAMA_SCAN4n;
-  /*p28.GOBY*/ wire GOBY_SCAN5n;
+  // to ppu fetcher
+  /*p30.WENU*/ bool WENU_TS_LINE_0; 
+  /*p30.CUCU*/ bool CUCU_TS_LINE_1;
+  /*p30.CUCA*/ bool CUCA_TS_LINE_2;
+  /*p30.CEGA*/ bool CEGA_TS_LINE_3;
 
+  // to sst.tick
+  /*p29.CEHA*/ bool CEHA_SCANNINGp; 
+  /*p29.AROR*/ bool AROR_MATCH_ENp;
+  /*p29.DYTY*/ bool DYTY_STORE_ENn_xxCDxxGH;
+
+  /*p29.YDUG*/ bool STORE0_MATCHn;
+  /*p29.DYDU*/ bool STORE1_MATCHn;
+  /*p29.DEGO*/ bool STORE2_MATCHn;
+  /*p29.YLOZ*/ bool STORE3_MATCHn;
+  /*p29.XAGE*/ bool STORE4_MATCHn;
+  /*p29.EGOM*/ bool STORE5_MATCHn;
+  /*p29.YBEZ*/ bool STORE6_MATCHn;
+  /*p29.DYKA*/ bool STORE7_MATCHn;
+  /*p29.EFYL*/ bool STORE8_MATCHn;
+  /*p29.YGEM*/ bool STORE9_MATCHn;
+
+  /*p29.DEGE*/ bool SPRITE_DELTA0;
+  /*p29.DABY*/ bool SPRITE_DELTA1;
+  /*p29.DABU*/ bool SPRITE_DELTA2;
+  /*p29.GYSA*/ bool SPRITE_DELTA3;
 
 };
 
@@ -76,6 +92,8 @@ struct SpriteStoreRegisters {
     text_painter.newline();
   }
 
+private:
+
   /*p28.BESU*/ NorLatch BESU_SCANNINGp;
   /*p29.CENO*/ Reg   CENO_SCANNINGp;
 
@@ -106,8 +124,6 @@ struct SpriteStoreRegisters {
   /*p30.CUCU*/ Tribuf CUCU_TS_LINE_1;
   /*p30.CUCA*/ Tribuf CUCA_TS_LINE_2;
   /*p30.CEGA*/ Tribuf CEGA_TS_LINE_3;
-
-private:
 
   /*p29.DEZY*/ Reg DEZY_STORE_ENn_SYNC;
   /*p29.BESE*/ Reg SPRITE_COUNT0;

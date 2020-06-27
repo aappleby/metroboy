@@ -66,7 +66,6 @@ struct TestGB {
   SpriteStoreRegisters sst_reg;
   TimerRegisters tim_reg;
   PpuRegisters ppu_reg;
-  OamRegisters oam_reg;
   WindowRegisters win_reg;
   AddressRegisters adr_reg;
   CartRegisters cart_reg;

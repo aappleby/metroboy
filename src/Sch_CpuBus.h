@@ -159,7 +159,7 @@ struct CpuBus {
   PinOut PIN_BUDE_AxxxxFGH; // top left port PORTD_04: <- BUDE_AxxxxFGH + BEVA
 
   PinOut PIN_BOLO_xBCDEFGx; // top left port PORTD_05: <- BOLO_ABCDEFxx + BYDA? - test pad 2
-  PinIn  PIN_FROM_CPU5p;     // top left port PORTD_06: -> ANUJ (FROM_CPU5)
+  PinIn  PIN_FROM_CPU5p;    // top left port PORTD_06: -> ANUJ (FROM_CPU5). Maybe this means "latch the bus"?
   PinOut PIN_BUKE_ABxxxxxH; // top left port PORTD_07: <- BUKE_ABxxxxxH
 
   PinOut PIN_BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)

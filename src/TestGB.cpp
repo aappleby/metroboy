@@ -91,23 +91,6 @@ bool TestGB::commit_everything() {
   /*p36.LUGU*/ changed |= cfg_reg.OBP15.commit_reg();
   /*p36.LEPU*/ changed |= cfg_reg.OBP16.commit_reg();
   /*p36.LUXO*/ changed |= cfg_reg.OBP17.commit_reg();
-  /*p23.NESO*/ changed |= cfg_reg.WY0.commit_reg();
-  /*p23.NYRO*/ changed |= cfg_reg.WY1.commit_reg();
-  /*p23.NAGA*/ changed |= cfg_reg.WY2.commit_reg();
-  /*p23.MELA*/ changed |= cfg_reg.WY3.commit_reg();
-  /*p23.NULO*/ changed |= cfg_reg.WY4.commit_reg();
-  /*p23.NENE*/ changed |= cfg_reg.WY5.commit_reg();
-  /*p23.NUKA*/ changed |= cfg_reg.WY6.commit_reg();
-  /*p23.NAFU*/ changed |= cfg_reg.WY7.commit_reg();
-  /*p23.MYPA*/ changed |= cfg_reg.WX0.commit_reg();
-  /*p23.NOFE*/ changed |= cfg_reg.WX1.commit_reg();
-  /*p23.NOKE*/ changed |= cfg_reg.WX2.commit_reg();
-  /*p23.MEBY*/ changed |= cfg_reg.WX3.commit_reg();
-  /*p23.MYPU*/ changed |= cfg_reg.WX4.commit_reg();
-  /*p23.MYCE*/ changed |= cfg_reg.WX5.commit_reg();
-  /*p23.MUVO*/ changed |= cfg_reg.WX6.commit_reg();
-  /*p23.NUKU*/ changed |= cfg_reg.WX7.commit_reg();
-
   /*p07.BURO*/ changed |= dbg_reg.BURO_FF60_0.commit_reg();
   /*p07.AMUT*/ changed |= dbg_reg.AMUT_FF60_1.commit_reg();
 

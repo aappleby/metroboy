@@ -311,7 +311,6 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 void PpuRegisters::tick(TestGB& gb) {
   auto& lcd_reg = gb.lcd_reg;
   auto& cfg_reg = gb.cfg_reg;
-  auto& win_reg = gb.win_reg;
   auto& pxp_reg = gb.pxp_reg;
 
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
@@ -532,16 +531,16 @@ void PpuRegisters::tick(TestGB& gb) {
       // Window map read
       /*p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and (_POTU_BGW_FETCH_01, win_sig.PORE_WIN_MODE);
       /*p25.WUKO*/ wire _WUKO_WIN_MAP_READn = not(_XEZE_WIN_MAP_READp);
-      /*p27.XEJA*/ vram_bus.TS_MA00.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X3.q());
-      /*p27.XAMO*/ vram_bus.TS_MA01.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X4.q());
-      /*p27.XAHE*/ vram_bus.TS_MA02.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X5.q());
-      /*p27.XULO*/ vram_bus.TS_MA03.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X6.q());
-      /*p27.WUJU*/ vram_bus.TS_MA04.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_X7.q());
-      /*p27.VYTO*/ vram_bus.TS_MA05.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y3.q());
-      /*p27.VEHA*/ vram_bus.TS_MA06.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y4.q());
-      /*p27.VACE*/ vram_bus.TS_MA07.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y5.q());
-      /*p27.VOVO*/ vram_bus.TS_MA08.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y6.q());
-      /*p27.VULO*/ vram_bus.TS_MA09.set_tribuf(_WUKO_WIN_MAP_READn, win_reg.WIN_Y7.q());
+      /*p27.XEJA*/ vram_bus.TS_MA00.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_X3);
+      /*p27.XAMO*/ vram_bus.TS_MA01.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_X4);
+      /*p27.XAHE*/ vram_bus.TS_MA02.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_X5);
+      /*p27.XULO*/ vram_bus.TS_MA03.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_X6);
+      /*p27.WUJU*/ vram_bus.TS_MA04.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_X7);
+      /*p27.VYTO*/ vram_bus.TS_MA05.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_Y3);
+      /*p27.VEHA*/ vram_bus.TS_MA06.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_Y4);
+      /*p27.VACE*/ vram_bus.TS_MA07.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_Y5);
+      /*p27.VOVO*/ vram_bus.TS_MA08.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_Y6);
+      /*p27.VULO*/ vram_bus.TS_MA09.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_Y7);
       /*p27.VEVY*/ vram_bus.TS_MA10.set_tribuf(_WUKO_WIN_MAP_READn, cfg_reg.LCDC_WINMAP.q());
       /*p27.VEZA*/ vram_bus.TS_MA11.set_tribuf(_WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
       /*p27.VOGU*/ vram_bus.TS_MA12.set_tribuf(_WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
@@ -561,9 +560,9 @@ void PpuRegisters::tick(TestGB& gb) {
       /*p26.DODE*/ vram_bus.TS_MA03.set_tribuf(_BEJE_TILE_READn, scr_sig._TILE_Y2S);
 
       /*p25.XONU*/ vram_bus.TS_MA00.set_tribuf(_XUCY_TILE_READn, _XUHA_FETCH_S2p);
-      /*p25.WUDO*/ vram_bus.TS_MA01.set_tribuf(_XUCY_TILE_READn, win_reg.WIN_Y0.q());
-      /*p25.WAWE*/ vram_bus.TS_MA02.set_tribuf(_XUCY_TILE_READn, win_reg.WIN_Y1.q());
-      /*p25.WOLU*/ vram_bus.TS_MA03.set_tribuf(_XUCY_TILE_READn, win_reg.WIN_Y2.q());
+      /*p25.WUDO*/ vram_bus.TS_MA01.set_tribuf(_XUCY_TILE_READn, win_sig.WIN_Y0);
+      /*p25.WAWE*/ vram_bus.TS_MA02.set_tribuf(_XUCY_TILE_READn, win_sig.WIN_Y1);
+      /*p25.WOLU*/ vram_bus.TS_MA03.set_tribuf(_XUCY_TILE_READn, win_sig.WIN_Y2);
 
       /*p25.VAPY*/ vram_bus.TS_MA04.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B0.q()); // register reused
       /*p25.SEZU*/ vram_bus.TS_MA05.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B1.q());

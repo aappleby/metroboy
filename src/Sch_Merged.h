@@ -45,8 +45,6 @@ struct ConfigRegisters {
     dump(text_painter,      "BGP         ", BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7);
     dump(text_painter,      "OBP0        ", OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07);
     dump(text_painter,      "OBP1        ", OBP10, OBP11, OBP12, OBP13, OBP14, OBP15, OBP16, OBP17);
-    dump(text_painter,      "WY          ", WY0,   WY1,   WY2,   WY3,   WY4,   WY5,   WY6,   WY7);
-    dump(text_painter,      "WX          ", WX0,   WX1,   WX2,   WX3,   WX4,   WX5,   WX6,   WX7);
 
     text_painter.newline();
   }
@@ -68,8 +66,6 @@ struct ConfigRegisters {
   int get_bgp()  const { return pack(BGP0.q(),  BGP1.q(),  BGP2.q(),  BGP3.q(),  BGP4.q(),  BGP5.q(),  BGP6.q(),  BGP7.q()); }
   int get_obp0() const { return pack(OBP00.q(), OBP01.q(), OBP02.q(), OBP03.q(), OBP04.q(), OBP05.q(), OBP06.q(), OBP07.q()); }
   int get_obp1() const { return pack(OBP10.q(), OBP11.q(), OBP12.q(), OBP13.q(), OBP14.q(), OBP15.q(), OBP16.q(), OBP17.q()); }
-  int get_wy()   const { return pack(WY0.q(),   WY1.q(),   WY2.q(),   WY3.q(),   WY4.q(),   WY5.q(),   WY6.q(),   WY7.q()); }
-  int get_wx()   const { return pack(WX0.q(),   WX1.q(),   WX2.q(),   WX3.q(),   WX4.q(),   WX5.q(),   WX6.q(),   WX7.q()); }
 
   /*
   void set_lcdc(uint8_t x) {
@@ -146,26 +142,6 @@ struct ConfigRegisters {
   /*p36.LUGU*/ Reg OBP15;
   /*p36.LEPU*/ Reg OBP16;
   /*p36.LUXO*/ Reg OBP17;
-
-  // FF4A - WY
-  /*p23.NESO*/ Reg WY0;
-  /*p23.NYRO*/ Reg WY1;
-  /*p23.NAGA*/ Reg WY2;
-  /*p23.MELA*/ Reg WY3;
-  /*p23.NULO*/ Reg WY4;
-  /*p23.NENE*/ Reg WY5;
-  /*p23.NUKA*/ Reg WY6;
-  /*p23.NAFU*/ Reg WY7;
-
-  // FF4B - WX
-  /*p23.MYPA*/ Reg WX0;
-  /*p23.NOFE*/ Reg WX1;
-  /*p23.NOKE*/ Reg WX2;
-  /*p23.MEBY*/ Reg WX3;
-  /*p23.MYPU*/ Reg WX4;
-  /*p23.MYCE*/ Reg WX5;
-  /*p23.MUVO*/ Reg WX6;
-  /*p23.NUKU*/ Reg WX7;
 };
 
 //-----------------------------------------------------------------------------

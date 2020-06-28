@@ -10,10 +10,12 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
   const auto& ext_bus = gb.ext_bus;
   const auto& cpu_bus = gb.cpu_bus;
 
-  /*p27.VYPO*/ wire _VYPO_P10_Bn = not(gb.joy_pin.P10_B);
-  /*p28.WEFE*/ wire _WEFE_P10_Bn = not(gb.joy_pin.P10_B);
-  /*p28.WUWE*/ wire _WUWE_P10_Bn = not(gb.joy_pin.P10_B);
-  /*p28.GEFY*/ wire _GEFY_P10_Bn = not(gb.joy_pin.P10_B);
+  wire P10_B = 0;
+
+  /*p27.VYPO*/ wire _VYPO_P10_Bn = not(P10_B);
+  /*p28.WEFE*/ wire _WEFE_P10_Bn = not(P10_B);
+  /*p28.WUWE*/ wire _WUWE_P10_Bn = not(P10_B);
+  /*p28.GEFY*/ wire _GEFY_P10_Bn = not(P10_B);
   /*p28.GECA*/ wire _GECA_P10_Bp = not(_WEFE_P10_Bn);
   /*p28.WYDU*/ wire _WYDU_P10_Bp = not(_WEFE_P10_Bn);
 
@@ -78,6 +80,9 @@ bool DebugRegisters::commit() {
   /*p25.SOTO*/ changed |= SOTO_DBG.commit_reg();
   //changed |= cpu_pins.UNOR_MODE_DBG2.commit_pinout();         // PORTA_02: <- P07.UNOR_MODE_DBG2
   //changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
+  /*p07.BURO*/ changed |= BURO_FF60_0.commit_reg();
+  /*p07.AMUT*/ changed |= AMUT_FF60_1.commit_reg();
+
   return changed;
 }
 

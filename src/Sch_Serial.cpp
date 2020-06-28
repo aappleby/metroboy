@@ -15,7 +15,7 @@ SerialSignals SerialRegisters::sig(const TestGB& /*gb*/) const {
 
 void SerialRegisters::tick(TestGB& gb) {
 
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto tim_sig = gb.tim_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);

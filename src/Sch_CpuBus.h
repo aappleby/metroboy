@@ -7,8 +7,32 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
+struct CpuSignals {
+  /*p07.TEDO*/ wire TEDO_CPU_RD;
+  /*p07.ASOT*/ wire ASOT_CPU_RD;
+
+  /*p08.MOCA*/ wire MOCA_DBG_EXT_RD;
+  /*p08.MOTY*/ wire MOTY_CPU_EXT_RD;
+
+  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH;
+  /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH;
+  /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH;
+
+  /*p04.MAKA*/ wire MAKA_FROM_CPU5_SYNC;
+  /*p04.DECY*/ wire DECY_FROM_CPU5n;
+  /*p28.LEKO*/ wire LEKO_CPU_RDp;
+
+  /*p08.MATE*/ wire MATE_LATCH_CPU_ADDRp;
+  /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAp;
+
+  /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn;
+};
+
+//-----------------------------------------------------------------------------
+
 struct CpuBus {
 
+  CpuSignals sig(const TestGB& gb) const;
   void tick(TestGB& gb);
   bool commit();
 
@@ -150,6 +174,8 @@ struct CpuBus {
 
   //----------
 
+  /*p04.MAKA*/ Reg MAKA_FROM_CPU5_SYNC;
+
   PinIn  PIN_FROM_CPU6;     // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
 
   PinOut PIN_BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
@@ -208,7 +234,6 @@ struct CpuBus {
   Tribuf TS_D6;
   Tribuf TS_D7;
 };
-
 
 //-----------------------------------------------------------------------------
 

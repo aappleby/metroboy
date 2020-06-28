@@ -50,6 +50,7 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb, wire XYMO_LCDC_SP
   auto ppu_sig = gb.ppu_reg.sig(gb);
 
   auto& oam_bus = gb.oam_bus;
+  wire P10_B = 0;
 
   SpriteStoreSignals sig;
 
@@ -89,8 +90,8 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb, wire XYMO_LCDC_SP
     /*p29.FEMO*/ wire Y6n = not(lcd_sig.MATO_Y6);
     /*p29.GUSU*/ wire Y7n = not(lcd_sig.LAFO_Y7);
 
-    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, oam_bus.XUSO_SPRITE_Y0, gb.joy_pin.P10_B); // are these really connected directly to the pin?
-    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, oam_bus.XUSO_SPRITE_Y0, gb.joy_pin.P10_B);
+    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, oam_bus.XUSO_SPRITE_Y0, P10_B); // are these really connected directly to the pin?
+    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, oam_bus.XUSO_SPRITE_Y0, P10_B);
     /*p29.ENEF*/ wire YDIFF_S1 = add_s(Y1n, oam_bus.XEGU_SPRITE_Y1, YDIFF_C0);
     /*p29.ENEF*/ wire YDIFF_C1 = add_c(Y1n, oam_bus.XEGU_SPRITE_Y1, YDIFF_C0);
     /*p29.FECO*/ wire YDIFF_S2 = add_s(Y2n, oam_bus.YJEX_SPRITE_Y2, YDIFF_C1);
@@ -297,8 +298,7 @@ void SpriteStoreRegisters::tick(const TestGB& gb) {
   auto bus_sig = gb.bus_mux.sig(gb);
 
   auto& oam_bus = gb.oam_bus;
-
-  /*p21.XYMU*/ wire XYMU_RENDERINGp = gb.ppu_reg.XYMU_RENDERINGp;
+  wire P10_B = 0;
 
   //----------------------------------------
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
@@ -377,7 +377,7 @@ void SpriteStoreRegisters::tick(const TestGB& gb) {
     // BUZA04 >> WUZY01, WYSE01, ZYSU01, WYDA01, WUCO01, WEZA01
 
     // polarity seems wrong or something
-    /*p29.BUZA*/ wire BUZA_STORE_SPRITE_IDX = and (CENO_SCANNINGp.qn(), XYMU_RENDERINGp);
+    /*p29.BUZA*/ wire BUZA_STORE_SPRITE_IDX = and (CENO_SCANNINGp.qn(), ppu_sig.XYMU_RENDERINGp);
 
 
     // XADU01 nc
@@ -428,7 +428,7 @@ void SpriteStoreRegisters::tick(const TestGB& gb) {
 
     // Priority encoder so we fetch the first sprite that matches
 
-    /*p29.GEZE*/ wire STORE0_MATCH_OUT = or(STORE0_MATCH, gb.joy_pin.P10_B);
+    /*p29.GEZE*/ wire STORE0_MATCH_OUT = or(STORE0_MATCH, P10_B);
     /*p29.FUMA*/ wire STORE1_MATCH_OUT = or(STORE1_MATCH, STORE0_MATCH_OUT);
     /*p29.GEDE*/ wire STORE2_MATCH_OUT = or(STORE2_MATCH, STORE1_MATCH_OUT);
     /*p29.WUTO*/ wire STORE3_MATCH_OUT = or(STORE3_MATCH, STORE2_MATCH_OUT);
@@ -438,7 +438,7 @@ void SpriteStoreRegisters::tick(const TestGB& gb) {
     /*p29.FAVO*/ wire STORE7_MATCH_OUT = or(STORE7_MATCH, STORE6_MATCH_OUT);
     /*p29.GYGA*/ wire STORE8_MATCH_OUT = or(STORE8_MATCH, STORE7_MATCH_OUT);
 
-    /*p29.GUVA*/ wire GUVA_SPRITE0_GETp = nor(sst_sig.STORE0_MATCHn, gb.joy_pin.P10_B);
+    /*p29.GUVA*/ wire GUVA_SPRITE0_GETp = nor(sst_sig.STORE0_MATCHn, P10_B);
     /*p29.ENUT*/ wire ENUT_SPRITE1_GETp = nor(sst_sig.STORE1_MATCHn, STORE0_MATCH_OUT);
     /*p29.EMOL*/ wire EMOL_SPRITE2_GETp = nor(sst_sig.STORE2_MATCHn, STORE1_MATCH_OUT);
     /*p29.GYFY*/ wire GYFY_SPRITE3_GETp = nor(sst_sig.STORE3_MATCHn, STORE2_MATCH_OUT);

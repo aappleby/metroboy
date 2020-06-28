@@ -57,7 +57,7 @@ void OamBus::tick(TestGB& gb) {
   auto& vram_bus = gb.vram_bus;
 
   auto bus_sig = gb.bus_mux.sig(gb);
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto dma_sig = gb.dma_reg.sig(gb);
   auto ext_sig = gb.ext_bus.sig(gb);
 

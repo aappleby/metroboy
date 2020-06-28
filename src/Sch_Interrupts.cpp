@@ -4,18 +4,20 @@
 
 using namespace Schematics;
 
+//------------------------------------------------------------------------------
+
 void InterruptRegisters::tick(TestGB& gb) {
   auto& cpu_bus = gb.cpu_bus;
-  auto& joy_pin = gb.joy_pin;
 
   auto tim_sig = gb.tim_reg.sig(gb);
   auto ser_sig = gb.ser_reg.sig(gb);
-  auto joy_sig = gb.joy_reg.sig(gb);
+  auto joy_sig = gb.joy_reg.sig();
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
+  wire P10_B = 0;
 
   /*p07.SEMY*/ wire SEMY_ADDR_XX0X = nor(cpu_bus.PIN_A07, cpu_bus.PIN_A06, cpu_bus.PIN_A05, cpu_bus.PIN_A04);
   /*p07.SAPA*/ wire SAPA_ADDR_XXXF = and (cpu_bus.PIN_A00, cpu_bus.PIN_A01, cpu_bus.PIN_A02, cpu_bus.PIN_A03);
@@ -61,7 +63,7 @@ void InterruptRegisters::tick(TestGB& gb) {
   // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
   // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
-  /*p02.PESU*/ wire PESU_FF0F_INp = not(joy_pin.P10_B);
+  /*p02.PESU*/ wire PESU_FF0F_INp = not(P10_B);
 
   /*p02.LETY*/ wire LETY_INT_VBL_ACKn  = not(PIN_ACK_VBLANK);
   /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (cpu_bus.TS_D0, REFA_FF0F_WRn);
@@ -119,3 +121,34 @@ void InterruptRegisters::tick(TestGB& gb) {
   PIN_INT_SERIAL.set(UBUL_FF0F_3);
   PIN_INT_JOYPAD.set(ULAK_FF0F_4);
 }
+
+//------------------------------------------------------------------------------
+
+bool InterruptRegisters::commit() {
+  bool changed = false;
+
+  changed |= PIN_ACK_VBLANK.clear_preset();     // PORTB_01: -> LETY, vblank int ack
+  changed |= PIN_INT_VBLANK.commit_pinout();    // PORTB_03: <- LOPE, vblank int
+  changed |= PIN_ACK_STAT.clear_preset();       // PORTB_05: -> LEJA, stat int ack
+  changed |= PIN_INT_STAT.commit_pinout();      // PORTB_07: <- LALU, stat int
+  changed |= PIN_ACK_TIMER.clear_preset();      // PORTB_09: -> LESA, timer int ack
+  changed |= PIN_INT_TIMER.commit_pinout();     // PORTB_11: <- NYBO, timer int
+  changed |= PIN_ACK_SERIAL.clear_preset();     // PORTB_13: -> LUFE, serial int ack
+  changed |= PIN_INT_SERIAL.commit_pinout();    // PORTB_15: <- UBUL, serial int
+  changed |= PIN_ACK_JOYPAD.clear_preset();     // PORTB_17: -> LAMO, joypad int ack
+  changed |= PIN_INT_JOYPAD.commit_pinout();    // PORTB_19: <- ULAK, joypad int
+
+  /*p02.LOPE*/ changed |= LOPE_FF0F_0.commit_reg();
+  /*p02.UBUL*/ changed |= UBUL_FF0F_3.commit_reg();
+  /*p02.ULAK*/ changed |= ULAK_FF0F_4.commit_reg();
+  /*p02.LALU*/ changed |= LALU_FF0F_1.commit_reg();
+  /*p02.NYBO*/ changed |= NYBO_FF0F_2.commit_reg();
+  /*p02.MATY*/ changed |= FF0F_L0.commit_latch();
+  /*p02.NEJY*/ changed |= FF0F_L1.commit_latch();
+  /*p02.NUTY*/ changed |= FF0F_L2.commit_latch();
+  /*p02.MOPO*/ changed |= FF0F_L3.commit_latch();
+  /*p02.PAVY*/ changed |= FF0F_L4.commit_latch();
+  return changed;
+}
+
+//------------------------------------------------------------------------------

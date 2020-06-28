@@ -269,7 +269,7 @@ void PpuRegisters::tick(TestGB& gb) {
   auto& pxp_reg = gb.pxp_reg;
 
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto win_sig = gb.win_reg.sig(gb);
@@ -282,8 +282,7 @@ void PpuRegisters::tick(TestGB& gb) {
   auto& oam_bus = gb.oam_bus;
   auto& cpu_bus = gb.cpu_bus;
   auto& vram_bus = gb.vram_bus;
-
-  auto& joy_pin = gb.joy_pin;
+  wire P10_B = 0;
 
   //----------
 
@@ -559,7 +558,7 @@ void PpuRegisters::tick(TestGB& gb) {
     /*p29.GOTU*/ vram_bus.TS_MA09.set_tribuf(ABON_SPRITE_READn, oam_bus.WYSO_SPRITE_Y5.q());
     /*p29.GEGU*/ vram_bus.TS_MA10.set_tribuf(ABON_SPRITE_READn, oam_bus.XOTE_SPRITE_Y6.q());
     /*p29.XEHE*/ vram_bus.TS_MA11.set_tribuf(ABON_SPRITE_READn, oam_bus.YZAB_SPRITE_Y7.q());
-    /*p29.DYSO*/ vram_bus.TS_MA12.set_tribuf(ABON_SPRITE_READn, joy_pin.P10_B);   // sprites always in low half of tile store
+    /*p29.DYSO*/ vram_bus.TS_MA12.set_tribuf(ABON_SPRITE_READn, P10_B);   // sprites always in low half of tile store
   }
 
   //----------------------------------------
@@ -653,6 +652,14 @@ void PpuRegisters::tick(TestGB& gb) {
 
 bool PpuRegisters::commit() {
   bool changed = false;
+  /*p29.TOXE*/ changed |= TOXE_SFETCH_S0.commit_reg();
+  /*p29.TULY*/ changed |= TULY_SFETCH_S1.commit_reg();
+  /*p29.TESE*/ changed |= TESE_SFETCH_S2.commit_reg();
+  /*p29.TOBU*/ changed |= TOBU_SFETCH_S1_D2.commit_reg();
+  /*p29.VONU*/ changed |= VONU_SFETCH_S1_D4.commit_reg();
+  /*p29.SEBA*/ changed |= SEBA_SFETCH_S1_D5.commit_reg();
+  /*p29.TYFO*/ changed |= TYFO_SFETCH_S0_D1.commit_reg();
+
   /*p??.ROXY*/ changed |= ROXY_FINE_MATCH_LATCHn.commit_latch();
   /*p??.PUXA*/ changed |= PUXA_FINE_MATCH_SYNC1.commit_reg();
   /*p27.NYZE*/ changed |= NYZE_FINE_MATCH_SYNC2.commit_reg();

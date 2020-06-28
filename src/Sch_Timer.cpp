@@ -24,7 +24,7 @@ void TimerRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto tim_sig = sig(gb);
 
   // FF04 DIV

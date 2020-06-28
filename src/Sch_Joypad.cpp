@@ -4,7 +4,9 @@
 
 using namespace Schematics;
 
-JoypadSignals JoypadRegisters::sig(const TestGB& /*gb*/) const {
+//------------------------------------------------------------------------------
+
+JoypadSignals JoypadRegisters::sig() const {
   /*p02.ASOK*/ wire ASOK_INT_JPp = and (JP_GLITCH3, JP_GLITCH0);
 
   return {
@@ -12,16 +14,11 @@ JoypadSignals JoypadRegisters::sig(const TestGB& /*gb*/) const {
   };
 }
 
-void JoypadRegisters::tick(TestGB& gb) {
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+//------------------------------------------------------------------------------
 
-  auto& joy_pin = gb.joy_pin;
-  auto& cpu_bus = gb.cpu_bus;
+void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, AddressSignals& adr_sig, CpuSignals& cpu_sig, CpuBus& cpu_bus) {
 
-  /*p02.KERY*/ wire _ANY_BUTTON = or(joy_pin.P13_C, joy_pin.P12_C, joy_pin.P11_C, joy_pin.P10_C);
+  /*p02.KERY*/ wire _ANY_BUTTON = or(P13_C, P12_C, P11_C, P10_C);
 
   /*p10.AMUS*/ wire _AMUS_0xx00000 = nor(cpu_bus.PIN_A00, cpu_bus.PIN_A01, cpu_bus.PIN_A02, cpu_bus.PIN_A03, cpu_bus.PIN_A04, cpu_bus.PIN_A07);
   /*p10.ANAP*/ wire _ANAP_0xx00000 = and (_AMUS_0xx00000, adr_sig.SYKE_FF00_FFFFp);
@@ -40,10 +37,10 @@ void JoypadRegisters::tick(TestGB& gb) {
 
   ///*p02.ASOK*/ wire INT_JP = and (JP_GLITCH3, JP_GLITCH0);
 
-  /*p05.KEVU*/ JOYP_L0.set(_BYZO_FF00_RDn, joy_pin.P10_C);
-  /*p05.KAPA*/ JOYP_L1.set(_BYZO_FF00_RDn, joy_pin.P11_C);
-  /*p05.KEJA*/ JOYP_L2.set(_BYZO_FF00_RDn, joy_pin.P12_C);
-  /*p05.KOLO*/ JOYP_L3.set(_BYZO_FF00_RDn, joy_pin.P13_C);
+  /*p05.KEVU*/ JOYP_L0.set(_BYZO_FF00_RDn, P10_C);
+  /*p05.KAPA*/ JOYP_L1.set(_BYZO_FF00_RDn, P11_C);
+  /*p05.KEJA*/ JOYP_L2.set(_BYZO_FF00_RDn, P12_C);
+  /*p05.KOLO*/ JOYP_L3.set(_BYZO_FF00_RDn, P13_C);
 
   /*p05.KEMA*/ cpu_bus.TS_D0.set_tribuf(!_BYZO_FF00_RDn, JOYP_L0.q());
   /*p05.KURO*/ cpu_bus.TS_D1.set_tribuf(!_BYZO_FF00_RDn, JOYP_L1.q());
@@ -67,16 +64,69 @@ void JoypadRegisters::tick(TestGB& gb) {
   wire BURO_FF60_0 = 0;
   wire FF60_0n = 1;
 
-  /*p05.KOLE*/ joy_pin.P10_A.set(nand(JOYP_RA.q(), BURO_FF60_0));
-  /*p05.KYBU*/ joy_pin.P10_D.set(nor(JOYP_RA.q(), FF60_0n));
-  /*p05.KYTO*/ joy_pin.P11_A.set(nand(JOYP_LB.q(), BURO_FF60_0));
-  /*p05.KABU*/ joy_pin.P11_D.set(nor(JOYP_LB.q(), FF60_0n));
-  /*p05.KYHU*/ joy_pin.P12_A.set(nand(JOYP_UC.q(), BURO_FF60_0));
-  /*p05.KASY*/ joy_pin.P12_D.set(nor(JOYP_UC.q(), FF60_0n)); // schematic wrong
-  /*p05.KORY*/ joy_pin.P13_A.set(nand(JOYP_DS.q(), BURO_FF60_0));
-  /*p05.KALE*/ joy_pin.P13_D.set(nor(JOYP_DS.q(), FF60_0n));
-  /*p05.KARU*/ joy_pin.P14_A.set(or (!JOYP_UDLR.q(), FF60_0n));
-  /*p05.KARU*/ joy_pin.P14_D.set(JOYP_UDLR.q());
-  /*p05.CELA*/ joy_pin.P15_A.set(or (!JOYP_ABCS.q(), FF60_0n));
-  /*p05.CELA*/ joy_pin.P15_D.set(!JOYP_ABCS.q()); // double check these
+  /*p05.KOLE*/ P10_A.set(nand(JOYP_RA.q(), BURO_FF60_0));
+  /*p05.KYBU*/ P10_D.set(nor(JOYP_RA.q(), FF60_0n));
+  /*p05.KYTO*/ P11_A.set(nand(JOYP_LB.q(), BURO_FF60_0));
+  /*p05.KABU*/ P11_D.set(nor(JOYP_LB.q(), FF60_0n));
+  /*p05.KYHU*/ P12_A.set(nand(JOYP_UC.q(), BURO_FF60_0));
+  /*p05.KASY*/ P12_D.set(nor(JOYP_UC.q(), FF60_0n)); // schematic wrong
+  /*p05.KORY*/ P13_A.set(nand(JOYP_DS.q(), BURO_FF60_0));
+  /*p05.KALE*/ P13_D.set(nor(JOYP_DS.q(), FF60_0n));
+  /*p05.KARU*/ P14_A.set(or (!JOYP_UDLR.q(), FF60_0n));
+  /*p05.KARU*/ P14_D.set(JOYP_UDLR.q());
+  /*p05.CELA*/ P15_A.set(or (!JOYP_ABCS.q(), FF60_0n));
+  /*p05.CELA*/ P15_D.set(!JOYP_ABCS.q()); // double check these
 }
+
+//------------------------------------------------------------------------------
+
+bool JoypadRegisters::commit() {
+  bool changed = false;
+  /*p02.BATU*/ changed |= JP_GLITCH0.commit_reg();
+  /*p02.ACEF*/ changed |= JP_GLITCH1.commit_reg();
+  /*p02.AGEM*/ changed |= JP_GLITCH2.commit_reg();
+  /*p02.APUG*/ changed |= JP_GLITCH3.commit_reg();
+  /*p05.JUTE*/ changed |= JOYP_RA.commit_reg();
+  /*p05.KECY*/ changed |= JOYP_LB.commit_reg();
+  /*p05.JALE*/ changed |= JOYP_UC.commit_reg();
+  /*p05.KYME*/ changed |= JOYP_DS.commit_reg();
+  /*p05.KELY*/ changed |= JOYP_UDLR.commit_reg();
+  /*p05.COFY*/ changed |= JOYP_ABCS.commit_reg();
+  /*p05.KUKO*/ changed |= DBG_FF00_D6.commit_reg();
+  /*p05.KERU*/ changed |= DBG_FF00_D7.commit_reg();
+  /*p05.KEVU*/ changed |= JOYP_L0.commit_reg();
+  /*p05.KAPA*/ changed |= JOYP_L1.commit_reg();
+  /*p05.KEJA*/ changed |= JOYP_L2.commit_reg();
+  /*p05.KOLO*/ changed |= JOYP_L3.commit_reg();
+  /*p02.AWOB*/ changed |= WAKE_CPU.commit_reg();
+
+  /* PIN_58 */ /*VCC*/
+  /* PIN_59 */ /*ROUT*/
+  /* PIN_60 */ /*LOUT*/
+  /* PIN_61 */ /*VIN*/
+
+  /* PIN_62 */ changed |= P15_A.commit_pinout();   // <- CELA
+  /* PIN_62 */ changed |= P15_D.commit_pinout();   // <- COFY
+  /* PIN_63 */ changed |= P14_A.commit_pinout();   // <- KARU
+  /* PIN_63 */ changed |= P14_D.commit_pinout();   // <- KELY
+  /* PIN_64 */ changed |= P13_A.commit_pinout();   // <- KORY
+  /* PIN_64 */ changed |= P13_B.commit_pinout();   
+  /* PIN_64 */ changed |= P13_C.clear_preset();    // -> KERY, P05.KOLO
+  /* PIN_64 */ changed |= P13_D.commit_pinout();   // <- KALE
+  /* PIN_65 */ changed |= P12_A.commit_pinout();   // <- KYHU
+  /* PIN_65 */ changed |= P12_B.commit_pinout();   
+  /* PIN_65 */ changed |= P12_C.clear_preset();    // -> KERY, P05.KEJA
+  /* PIN_65 */ changed |= P12_D.commit_pinout();   // <- KASY
+  /* PIN_66 */ changed |= P11_A.commit_pinout();   // <- KYTO
+  /* PIN_66 */ changed |= P11_B.commit_pinout();   
+  /* PIN_66 */ changed |= P11_C.clear_preset();    // -> KERY, P05.KAPA
+  /* PIN_66 */ changed |= P11_D.commit_pinout();   // <- KABU
+  /* PIN_67 */ changed |= P10_A.commit_pinout();   // <- KOLE
+  /* PIN_67 */ changed |= P10_B.commit_pinout();   
+  /* PIN_67 */ changed |= P10_C.clear_preset();    // -> KERY, KEVU
+  /* PIN_67 */ changed |= P10_D.commit_pinout();   // <- KYBU
+
+  return changed;
+}
+
+//------------------------------------------------------------------------------

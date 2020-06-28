@@ -109,7 +109,7 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
 //------------------------------------------------------------------------------
 
 void DmaRegisters::tick(TestGB& gb) {
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
@@ -223,5 +223,31 @@ void DmaRegisters::tick(TestGB& gb) {
 
 bool DmaRegisters::commit() {
   bool changed = false;
+  /*p04.MATU*/ changed |= MATU_DMA_OAM_WRp.commit_reg(); // -> p25,p28
+  /*p04.MYTE*/ changed |= MYTE_DMA_DONE.commit_reg();
+  /*p04.LUVY*/ changed |= LUVY_DMA_TRIG_d0.commit_reg();
+  /*p04.LENE*/ changed |= LENE_DMA_TRIG_d4.commit_reg();
+  /*p04.NAKY*/ changed |= DMA_A00.commit_reg();
+  /*p04.PYRO*/ changed |= DMA_A01.commit_reg(); 
+  /*p04.NEFY*/ changed |= DMA_A02.commit_reg(); 
+  /*p04.MUTY*/ changed |= DMA_A03.commit_reg(); 
+  /*p04.NYKO*/ changed |= DMA_A04.commit_reg(); 
+  /*p04.PYLO*/ changed |= DMA_A05.commit_reg(); 
+  /*p04.NUTO*/ changed |= DMA_A06.commit_reg(); 
+  /*p04.MUGU*/ changed |= DMA_A07.commit_reg(); 
+  /*p04.NAFA*/ changed |= DMA_A08.commit_reg(); 
+  /*p04.PYNE*/ changed |= DMA_A09.commit_reg(); 
+  /*p04.PARA*/ changed |= DMA_A10.commit_reg(); 
+  /*p04.NYDO*/ changed |= DMA_A11.commit_reg(); 
+  /*p04.NYGY*/ changed |= DMA_A12.commit_reg(); 
+  /*p04.PULA*/ changed |= DMA_A13.commit_reg(); 
+  /*p04.POKU*/ changed |= DMA_A14.commit_reg(); 
+  /*p04.MARU*/ changed |= DMA_A15.commit_reg(); 
+  /*p04.LYXE*/ changed |= LYXE_DMA_LATCHn.commit_latch();
+
+  // NAND latch
+  /*p04.LARA*/ changed |= LARA_DMA_LATCHn.commit_gate();
+  /*p04.LOKY*/ changed |= LOKY_DMA_LATCHp.commit_gate();
+
   return changed;
 }

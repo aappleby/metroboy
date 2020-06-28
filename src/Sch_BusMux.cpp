@@ -4,13 +4,31 @@
 
 using namespace Schematics;
 
+/*
+0b000xxxxx_xxxxxxxx - 0x0000 to 0x1FFF (cart rom)
+0b001xxxxx_xxxxxxxx - 0x2000 to 0x3FFF (cart rom)
+0b010xxxxx_xxxxxxxx - 0x4000 to 0x5FFF (cart rom banked)
+0b011xxxxx_xxxxxxxx - 0x6000 to 0x7FFF (cart rom banked)
+0b100xxxxx_xxxxxxxx - 0x8000 to 0x9FFF (vram)
+0b101xxxxx_xxxxxxxx - 0xA000 to 0xBFFF (cart ram)
+0b110xxxxx_xxxxxxxx - 0xC000 to 0xDFFF (internal ram)
+0b111xxxxx_xxxxxxxx - 0xE000 to 0xFFFF (echo ram, oam, high ram, io)
+0b11111110_00000000 - 0xFE00 - OAM begin
+0b11111110_10011111 - 0xFE9F - OAM end
+0b11111111_00000000 - 0xFF00 - IO begin
+0b11111111_01111111 - 0xFF7F - IO end
+0b11111111_10000000 - 0xFF80 - Zeropage begin
+0b11111111_11111110 - 0xFFFE - Zeropage end
+0b11111111_11111111 - 0xFFFF - Interrupt enable
+*/
+
 //------------------------------------------------------------------------------
 
 BusMuxSignals BusMux::sig(const TestGB& gb) const {
   auto& ppu_reg = gb.ppu_reg;
   auto& dma_reg = gb.dma_reg;
 
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto dma_sig = gb.dma_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
@@ -138,7 +156,7 @@ void BusMux::tick(TestGB& gb) {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto bus_sig = gb.bus_mux.sig(gb);
 
   auto& cpu_bus = gb.cpu_bus;

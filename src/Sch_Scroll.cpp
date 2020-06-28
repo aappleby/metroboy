@@ -82,7 +82,7 @@ ScrollSignals ScrollRegisters::sig(const TestGB& gb) const {
 
 void ScrollRegisters::tick(TestGB& gb) {
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
 
   auto& cpu_bus = gb.cpu_bus;

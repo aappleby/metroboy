@@ -1,9 +1,5 @@
-#include "Sch_Merged.h"
-
-#include "Sch_Common.h"
-#include "Sch_Pins.h"
+#include "Sch_Window.h"
 #include "TestGB.h"
-#include "Constants.h"
 
 using namespace Schematics;
 
@@ -73,7 +69,7 @@ WindowSignals WindowRegisters::sig(const TestGB& gb) const {
 void WindowRegisters::tick(TestGB& gb) {
   auto& cpu_bus = gb.cpu_bus;
 
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);

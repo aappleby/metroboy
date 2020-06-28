@@ -49,7 +49,7 @@ void VramPins::tick(TestGB& gb) {
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto dma_sig = gb.dma_reg.sig(gb);
   auto win_sig = gb.win_reg.sig(gb);
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
 
   auto& ppu_reg = gb.ppu_reg;
@@ -222,4 +222,66 @@ void VramPins::tick(TestGB& gb) {
       /*p25.SETY*/ PIN_MCSn_D.set(not(_SEWO_MCS_Dn));
     }
   }
+}
+
+
+bool VramPins::commit() {
+  bool changed = false;
+  /* PIN_25 */ changed |= PIN_MD7_A.commit_pinout();    // <- RYZE
+  /* PIN_25 */ changed |= PIN_MD7_B.commit_pinout();    // <- ROFA
+  /* PIN_25 */ changed |= PIN_MD7_C.clear_preset();     // -> RAKU
+  /* PIN_25 */ changed |= PIN_MD7_D.commit_pinout();    // <- RADY
+  /* PIN_26 */ changed |= PIN_MD6_A.commit_pinout();    // <- REKU
+  /* PIN_26 */ changed |= PIN_MD6_B.commit_pinout();    // <- ROFA
+  /* PIN_26 */ changed |= PIN_MD6_C.clear_preset();     // -> RETA
+  /* PIN_26 */ changed |= PIN_MD6_D.commit_pinout();    // <- RYTY
+  /* PIN_27 */ changed |= PIN_MD5_A.commit_pinout();    // <- REVU
+  /* PIN_27 */ changed |= PIN_MD5_B.commit_pinout();    // <- ROFA
+  /* PIN_27 */ changed |= PIN_MD5_C.clear_preset();     // -> ROPU
+  /* PIN_27 */ changed |= PIN_MD5_D.commit_pinout();    // <- RUMU
+  /* PIN_28 */ changed |= PIN_MD4_A.commit_pinout();    // <- RYRO
+  /* PIN_28 */ changed |= PIN_MD4_B.commit_pinout();    // <- ROFA
+  /* PIN_28 */ changed |= PIN_MD4_C.clear_preset();     // -> ROCE
+  /* PIN_28 */ changed |= PIN_MD4_D.commit_pinout();    // <- RUBE
+  /* PIN_29 */ changed |= PIN_MD3_A.commit_pinout();    // <- RADA
+  /* PIN_29 */ changed |= PIN_MD3_B.commit_pinout();    // <- ROFA
+  /* PIN_29 */ changed |= PIN_MD3_C.clear_preset();     // -> REMO
+  /* PIN_29 */ changed |= PIN_MD3_D.commit_pinout();    // <- RODU
+  /* PIN_30 */ changed |= PIN_MD2_A.commit_pinout();    // <- RAZO
+  /* PIN_30 */ changed |= PIN_MD2_B.commit_pinout();    // <- ROFA
+  /* PIN_30 */ changed |= PIN_MD2_C.clear_preset();     // -> RYDO
+  /* PIN_30 */ changed |= PIN_MD2_D.commit_pinout();    // <- RARE
+  /* PIN_31 */ changed |= PIN_MD1_A.commit_pinout();    // <- RYKY
+  /* PIN_31 */ changed |= PIN_MD1_B.commit_pinout();    // <- ROFA
+  /* PIN_31 */ changed |= PIN_MD1_C.clear_preset();     // -> REBA
+  /* PIN_31 */ changed |= PIN_MD1_D.commit_pinout();    // <- RULY
+                                                        /* PIN_32 */ /*GND*/
+  /* PIN_33 */ changed |= PIN_MD0_A.commit_pinout();    // <- REGE
+  /* PIN_33 */ changed |= PIN_MD0_B.commit_pinout();    // <- ROFA
+  /* PIN_33 */ changed |= PIN_MD0_C.clear_preset();     // -> RODY
+  /* PIN_33 */ changed |= PIN_MD0_D.commit_pinout();    // <- RURA
+  /* PIN_34 */ changed |= PIN_MA00_AD.commit_pinout();  // <- ECAL
+  /* PIN_35 */ changed |= PIN_MA01_AD.commit_pinout();  // <- EGEZ
+  /* PIN_36 */ changed |= PIN_MA02_AD.commit_pinout();  // <- FUHE
+  /* PIN_37 */ changed |= PIN_MA03_AD.commit_pinout();  // <- FYZY
+  /* PIN_38 */ changed |= PIN_MA04_AD.commit_pinout();  // <- DAMU
+  /* PIN_39 */ changed |= PIN_MA05_AD.commit_pinout();  // <- DAVA
+  /* PIN_40 */ changed |= PIN_MA06_AD.commit_pinout();  // <- ETEG
+  /* PIN_41 */ changed |= PIN_MA07_AD.commit_pinout();  // <- EREW
+  /* PIN_42 */ changed |= PIN_MA12_AD.commit_pinout();  // <- EXYF
+  /* PIN_43 */ changed |= PIN_MCSn_A.commit_pinout();   // <- SOKY
+  /* PIN_43 */ changed |= PIN_MCSn_C.clear_preset();     // -> TEFY
+  /* PIN_43 */ changed |= PIN_MCSn_D.commit_pinout();   // <- SETY
+  /* PIN_44 */ changed |= PIN_MA10_AD.commit_pinout();  // <- ERAF
+  /* PIN_45 */ changed |= PIN_MOEn_A.commit_pinout();   // <- REFO
+  /* PIN_45 */ changed |= PIN_MOEn_C.clear_preset();     // -> TAVY
+  /* PIN_45 */ changed |= PIN_MOEn_D.commit_pinout();   // <- SAHA
+  /* PIN_46 */ changed |= PIN_MA11_AD.commit_pinout();  // <- FUSY
+  /* PIN_47 */ changed |= PIN_MA09_AD.commit_pinout();  // <- DUVE
+  /* PIN_48 */ changed |= PIN_MA08_AD.commit_pinout();  // <- EVAX
+  /* PIN_49 */ changed |= PIN_MWRn_A.commit_pinout();   // <- SYSY
+  /* PIN_49 */ changed |= PIN_MWRn_C.clear_preset();     // -> SUDO
+  /* PIN_49 */ changed |= PIN_MWRn_D.commit_pinout();   // <- RAGU
+
+  return changed;
 }

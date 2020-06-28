@@ -24,10 +24,11 @@ ExtBusSignals ExtBus::sig(const TestGB& /*gb*/) const {
 void ExtBus::tick(TestGB& gb) {
   auto dma_sig = gb.dma_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto cpu_sig = gb.cpu_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
+  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
+  auto clk_sig = gb.clk_reg.sig(gb);
 
   auto& cpu_bus = gb.cpu_bus;
-  auto& cpu_reg = gb.cpu_reg;
   auto& dma_reg = gb.dma_reg;
 
   //----------------------------------------
@@ -183,7 +184,7 @@ void ExtBus::tick(TestGB& gb) {
   }
 
   // Something weird here
-  /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(cpu_reg.BOOT_BITn.q());
+  /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(gb.bootrom.BOOT_BITn);
   /*p07.TULO*/ wire _TULO_ADDR_00XXp = nor(cpu_bus.PIN_A15, cpu_bus.PIN_A14, cpu_bus.PIN_A13, cpu_bus.PIN_A12, cpu_bus.PIN_A11, cpu_bus.PIN_A10, cpu_bus.PIN_A09, cpu_bus.PIN_A08);
   /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
   /*p08.SOBY*/ wire _SOBY = nor(cpu_bus.PIN_A15, _TUTU_ADDR_BOOTp);
@@ -192,12 +193,80 @@ void ExtBus::tick(TestGB& gb) {
   /*p08.SUZE*/ PIN_A15_A.set(nand(_TAZY, dbg_sig.RYCA_MODE_DBG2n));
   /*p08.RULO*/ PIN_A15_D.set(nor (_TAZY, dbg_sig.UNOR_MODE_DBG2p));
 
+  {
+    /* PIN_75 */ PIN_PHI.set(clk_sig.PIN_BUDE_AxxxxFGH);
+  }
+
+  {
+    /*p08.TYMU*/ wire _TYMU_RD_OUTn = nor(dma_sig.LUMA_DMA_READ_CARTp, cpu_sig.MOTY_CPU_EXT_RD);
+
+    /*p08.UGAC*/ wire _UGAC_RDp_A = nand(_TYMU_RD_OUTn, dbg_sig.TOVA_MODE_DBG2n);
+    /*p08.URUN*/ wire _URUN_RDp_D = nor (_TYMU_RD_OUTn, dbg_sig.UNOR_MODE_DBG2p);
+    /* PIN_79 */ PIN_RD_A.set(_UGAC_RDp_A);
+    /* PIN_79 */ PIN_RD_D.set(_URUN_RDp_D);
+  }
+
+  {
+    /*p08.MEXO*/ wire _MEXO_ABCDExxx = not(cpu_sig.APOV_CPU_WR_xxxxxFGH);
+    /*p08.NEVY*/ wire _NEVY = or(_MEXO_ABCDExxx, cpu_sig.MOCA_DBG_EXT_RD);
+    /*p08.PUVA*/ wire _PUVA_WR_OUTn = or(_NEVY, dma_sig.LUMA_DMA_READ_CARTp);
+
+    /*p08.UVER*/ wire _UVER_WRp_A = nand(_PUVA_WR_OUTn, dbg_sig.TOVA_MODE_DBG2n);
+    /*p08.USUF*/ wire _USUF_WRp_D = nor (_PUVA_WR_OUTn, dbg_sig.UNOR_MODE_DBG2p);
+    /* PIN_78 */ PIN_WR_A.set(_UVER_WRp_A);
+    /* PIN_78 */ PIN_WR_D.set(_USUF_WRp_D);
+  }
+
+  {
+    // if TYNU is and(or()) things don't make sense.
+    ///*p08.TYNU*/ wire TYNU_ADDR_RAM = and(ADDR >= 0x4000, TUMA_CART_RAM);
+
+    // Die trace:
+    // TOZA = and(TYNU, ABUZ, TUNA);
+    // TYHO = mux2_p(LUMA, MARU.QN?, TOZA);
+
+    // TOZA = address valid, address ram, address not highmem
+    // The A15 in the other half of the mux is weird.
+
+    /*p08.SOGY*/ wire _SOGY_A14n = not(cpu_bus.PIN_A14);
+    /*p08.TUMA*/ wire _TUMA_CART_RAM = and(cpu_bus.PIN_A13, _SOGY_A14n, cpu_bus.PIN_A15);
+
+    // TYNU 5-rung
+    // TYNU01
+
+    /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or(and(cpu_bus.PIN_A15, cpu_bus.PIN_A14), _TUMA_CART_RAM);
+
+
+    /*p08.TOZA*/ wire _TOZA = and(dbg_sig.ABUZ, _TYNU_ADDR_RAM, adr_sig.TUNA_0000_FDFFp); // suggests ABUZp
+    /*p08.TYHO*/ wire _TYHO_CS_A = mux2_p(dma_reg.DMA_A15.q(), _TOZA, dma_sig.LUMA_DMA_READ_CARTp); // ABxxxxxx
+
+    /* PIN_80 */ PIN_CS_A.set(_TYHO_CS_A);
+  }
+
 }
 
 //------------------------------------------------------------------------------
 
 bool ExtBus::commit() {
   bool changed = false;
+
+  /* PIN_71 */ changed |= PIN_RST.clear_preset();
+  /* PIN_72 */ /*GND*/
+  /* PIN_73 */ /*CLKOUT*/
+  /* PIN_74 */ changed |= PIN_CLK_GOOD.clear_preset();
+  /* PIN_74 */ changed |= PIN_CLK_IN_xBxDxFxH.clear_preset();
+  /* PIN_75 */ changed |= PIN_PHI.commit_pinout();     // <- BUDE/BEVA
+  /* PIN_76 */ changed |= PIN_T2.clear_preset();
+  /* PIN_77 */ changed |= PIN_T1.clear_preset();
+  /* PIN_78 */ changed |= PIN_WR_A.commit_pinout();    // <- UVER
+  /* PIN_78 */ changed |= PIN_WR_C.clear_preset();     // -> UBAL
+  /* PIN_78 */ changed |= PIN_WR_D.commit_pinout();    // <- USUF
+  /* PIN_79 */ changed |= PIN_RD_A.commit_pinout();    // <- UGAC
+  /* PIN_79 */ changed |= PIN_RD_C.clear_preset();     // -> UJYV
+  /* PIN_79 */ changed |= PIN_RD_D.commit_pinout();    // <- URUN
+  /* PIN_80 */ changed |= PIN_CS_A.commit_pinout();    // <- TYHO
+
+
   /*p08.ALOR*/ changed |= CPU_ADDR_LATCH_00.commit_latch();
   /*p08.APUR*/ changed |= CPU_ADDR_LATCH_01.commit_latch();
   /*p08.ALYR*/ changed |= CPU_ADDR_LATCH_02.commit_latch();

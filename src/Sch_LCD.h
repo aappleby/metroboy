@@ -21,6 +21,7 @@ struct LcdSignals {
   /*p21.TOLU*/ bool TOLU_VBLANKn;
   /*p21.VYPU*/ bool VYPU_VBLANKp;
   /*p21.ROPO*/ bool ROPO_LY_MATCH_SYNCp;
+  /*p21.PALY*/ wire PALY_LY_MATCHa;
 
   /*p21.MUWY*/ bool MUWY_Y0;
   /*p21.MYRO*/ bool MYRO_Y1;

@@ -53,8 +53,6 @@ struct TestGB {
 
   CpuRegisters cpu_reg;
   ClockRegisters clk_reg;
-  BusRegisters bus_reg;
-  ConfigRegisters cfg_reg;
   DebugRegisters dbg_reg;
   DmaRegisters dma_reg;
   InterruptRegisters int_reg;

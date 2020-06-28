@@ -43,13 +43,12 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
+SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb, wire XYMO_LCDC_SPSIZE) const {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
+  auto ppu_sig = gb.ppu_reg.sig(gb);
 
-  auto& lcd_reg = gb.lcd_reg;
-  auto& cfg_reg = gb.cfg_reg;
   auto& oam_bus = gb.oam_bus;
 
   SpriteStoreSignals sig;
@@ -68,10 +67,9 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
 
   {
     /*p29.BYJO*/ wire BYJO_SCANNINGn = not(sig.CEHA_SCANNINGp);
-    /*p21.XYMU*/ wire XYMU_RENDERINGp = gb.ppu_reg.XYMU_RENDERINGp;
+    /*p21.XYMU*/ wire XYMU_RENDERINGp = ppu_sig.XYMU_RENDERINGp;
     /*p29.AZEM*/ wire AZEM_RENDERINGp = and (BYJO_SCANNINGn, XYMU_RENDERINGp);
-    /*p23.XYLO*/ wire XYLO_LCDC_SPEN = gb.cfg_reg.XYLO_LCDC_SPEN.q();
-    /*p29.AROR*/ sig.AROR_MATCH_ENp = and (AZEM_RENDERINGp, XYLO_LCDC_SPEN);
+    /*p29.AROR*/ sig.AROR_MATCH_ENp = and (AZEM_RENDERINGp, ppu_sig.XYLO_LCDC_SPEN);
   }
 
   {
@@ -82,14 +80,14 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
   }
 
   {
-    /*p29.EBOS*/ wire Y0n = not(lcd_reg.MUWY_Y0);
-    /*p29.DASA*/ wire Y1n = not(lcd_reg.MYRO_Y1);
-    /*p29.FUKY*/ wire Y2n = not(lcd_reg.LEXA_Y2);
-    /*p29.FUVE*/ wire Y3n = not(lcd_reg.LYDO_Y3);
-    /*p29.FEPU*/ wire Y4n = not(lcd_reg.LOVU_Y4);
-    /*p29.FOFA*/ wire Y5n = not(lcd_reg.LEMA_Y5);
-    /*p29.FEMO*/ wire Y6n = not(lcd_reg.MATO_Y6);
-    /*p29.GUSU*/ wire Y7n = not(lcd_reg.LAFO_Y7);
+    /*p29.EBOS*/ wire Y0n = not(lcd_sig.MUWY_Y0);
+    /*p29.DASA*/ wire Y1n = not(lcd_sig.MYRO_Y1);
+    /*p29.FUKY*/ wire Y2n = not(lcd_sig.LEXA_Y2);
+    /*p29.FUVE*/ wire Y3n = not(lcd_sig.LYDO_Y3);
+    /*p29.FEPU*/ wire Y4n = not(lcd_sig.LOVU_Y4);
+    /*p29.FOFA*/ wire Y5n = not(lcd_sig.LEMA_Y5);
+    /*p29.FEMO*/ wire Y6n = not(lcd_sig.MATO_Y6);
+    /*p29.GUSU*/ wire Y7n = not(lcd_sig.LAFO_Y7);
 
     /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, oam_bus.XUSO_SPRITE_Y0, gb.joy_pin.P10_B); // are these really connected directly to the pin?
     /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, oam_bus.XUSO_SPRITE_Y0, gb.joy_pin.P10_B);
@@ -117,7 +115,6 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
     /*p29.GYDA*/ wire SPRITE_DELTA6 = not(YDIFF_S6);
     /*p29.GEWY*/ wire SPRITE_DELTA7 = not(YDIFF_S7);
 
-    /*p23.XYMO*/ wire XYMO_LCDC_SPSIZE  = cfg_reg.XYMO_LCDC_SPSIZE.q();
     /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, XYMO_LCDC_SPSIZE);
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(SPRITE_DELTA4, SPRITE_DELTA5, SPRITE_DELTA6, SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
@@ -296,7 +293,7 @@ void SpriteStoreRegisters::tick(const TestGB& gb) {
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto sst_sig = sig(gb);
+  auto sst_sig = sig(gb, ppu_sig.XYMO_LCDC_SPSIZE);
   auto bus_sig = gb.bus_mux.sig(gb);
 
   auto& oam_bus = gb.oam_bus;

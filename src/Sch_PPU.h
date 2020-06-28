@@ -34,6 +34,12 @@ struct PpuSignals {
   /*p21.VOTY*/ bool VOTY_INT_STATp;
   /*p29.TUVO*/ bool TUVO_PPU_OAM_RDp;
 
+  /*p27.MOFU*/ bool MOFU_LATCH_BGPIXB;
+  /*p27.NYDY*/ bool NYDY_LATCH_BGPIXA;
+  /*p29.TOPU*/ bool TOPU_LATCH_SPPIXA;
+  /*p29.RACA*/ bool RACA_LATCH_SPPIXB;
+  /*p29.XONO*/ bool XONO_FLIP_X;
+
   /*p21.XEHO*/ bool XEHO_X0;
   /*p21.SAVY*/ bool SAVY_X1;
   /*p21.XODU*/ bool XODU_X2;
@@ -42,6 +48,15 @@ struct PpuSignals {
   /*p21.TUKY*/ bool TUKY_X5;
   /*p21.TAKO*/ bool TAKO_X6;
   /*p21.SYBE*/ bool SYBE_X7;
+
+  /*p23.VYXE*/ bool VYXE_LCDC_BGEN;
+  /*p23.XYLO*/ bool XYLO_LCDC_SPEN;
+  /*p23.XYMO*/ bool XYMO_LCDC_SPSIZE;
+  /*p23.XAFO*/ bool XAFO_LCDC_BGMAP;
+  /*p23.WEXU*/ bool WEXU_LCDC_BGTILE;
+  /*p23.WYMO*/ bool WYMO_LCDC_WINEN;
+  /*p23.WOKY*/ bool WOKY_LCDC_WINMAP;
+  /*p23.XONA*/ bool XONA_LCDC_EN;
 };
 
 //-----------------------------------------------------------------------------
@@ -113,11 +128,6 @@ struct PpuRegisters {
 
   /*p21.VOGA*/ Reg VOGA_RENDER_DONE_SYNC;
 
-  /*p21.ROXE*/ Reg ROXE_INT_HBL_EN;
-  /*p21.RUFO*/ Reg RUFO_INT_VBL_EN;
-  /*p21.REFE*/ Reg REFE_INT_OAM_EN;
-  /*p21.RUGU*/ Reg RUGU_INT_LYC_EN;
-
   /*p27.LONY*/ NandLatch LONY_BG_READ_VRAM_LATCHp;
 
   /*p27.LAXU*/ Reg LAXU_BFETCH_S0;
@@ -171,6 +181,54 @@ struct PpuRegisters {
   /*p29.VONU*/ Reg VONU_SFETCH_S1_D4;
   /*p29.SEBA*/ Reg SEBA_SFETCH_S1_D5;
   /*p29.TYFO*/ Reg TYFO_SFETCH_S0_D1;
+
+  /*
+  void dump_regs(TextPainter& text_painter) {
+    text_painter.dprintf(" ----- PPU CFG -----\n");
+    dump_long(text_painter, "VYXE_LCDC_BGEN   ", VYXE_LCDC_BGEN.a  );
+    dump_long(text_painter, "XYLO_LCDC_SPEN   ", XYLO_LCDC_SPEN.a  );   
+    dump_long(text_painter, "XYMO_LCDC_SPSIZE ", XYMO_LCDC_SPSIZE.a);
+    dump_long(text_painter, "XAFO_LCDC_BGMAP  ", XAFO_LCDC_BGMAP.a );
+    dump_long(text_painter, "WEXU_LCDC_BGTILE ", WEXU_LCDC_BGTILE.a);
+    dump_long(text_painter, "WYMO_LCDC_WINEN  ", WYMO_LCDC_WINEN.a );
+    dump_long(text_painter, "WOKY_LCDC_WINMAP ", WOKY_LCDC_WINMAP.a);
+    dump_long(text_painter, "XONA_LCDC_EN     ", XONA_LCDC_EN.a    );
+
+    //dump(text_painter,      "LYC         ", LYC0,  LYC1,  LYC2,  LYC3,  LYC4,  LYC5,  LYC6,  LYC7);
+    //dump(text_painter,      "BGP         ", BGP0,  BGP1,  BGP2,  BGP3,  BGP4,  BGP5,  BGP6,  BGP7);
+    //dump(text_painter,      "OBP0        ", OBP00, OBP01, OBP02, OBP03, OBP04, OBP05, OBP06, OBP07);
+    //dump(text_painter,      "OBP1        ", OBP10, OBP11, OBP12, OBP13, OBP14, OBP15, OBP16, OBP17);
+
+    text_painter.newline();
+  }
+
+  int get_lcdc() const {
+    return pack(VYXE_LCDC_BGEN.q(),
+      XYLO_LCDC_SPEN.q(),
+      XYMO_LCDC_SPSIZE.q(),
+      XAFO_LCDC_BGMAP.q(),
+      WEXU_LCDC_BGTILE.q(),
+      WYMO_LCDC_WINEN.q(),
+      WOKY_LCDC_WINMAP.q(),
+      XONA_LCDC_EN.q());
+  }
+  */
+
+  // FF40 - LCDC
+  /*p23.VYXE*/ Reg VYXE_LCDC_BGEN;
+  /*p23.XYLO*/ Reg XYLO_LCDC_SPEN;
+  /*p23.XYMO*/ Reg XYMO_LCDC_SPSIZE;
+  /*p23.XAFO*/ Reg XAFO_LCDC_BGMAP;
+  /*p23.WEXU*/ Reg WEXU_LCDC_BGTILE;
+  /*p23.WYMO*/ Reg WYMO_LCDC_WINEN;
+  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAP;
+  /*p23.XONA*/ Reg XONA_LCDC_EN;
+
+  // FF41 - STAT
+  /*p21.ROXE*/ Reg ROXE_INT_HBL_EN;
+  /*p21.RUFO*/ Reg RUFO_INT_VBL_EN;
+  /*p21.REFE*/ Reg REFE_INT_OAM_EN;
+  /*p21.RUGU*/ Reg RUGU_INT_LYC_EN;
 };
 
 //-----------------------------------------------------------------------------

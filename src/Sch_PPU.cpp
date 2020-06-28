@@ -122,11 +122,11 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 PpuSignals PpuRegisters::sig(const TestGB& gb) const {
+  PpuSignals sig;
+
   auto win_sig = gb.win_reg.sig(gb);
 
-  auto& lcd_reg = gb.lcd_reg;
-
-  auto sst_sig = gb.sst_reg.sig(gb);
+  auto sst_sig = gb.sst_reg.sig(gb, XYMO_LCDC_SPSIZE);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto dma_sig = gb.dma_reg.sig(gb);
@@ -135,6 +135,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto& vram_pins = gb.vram_pins;
+  auto& oam_bus = gb.oam_bus;
 
   //----------
 
@@ -162,7 +163,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   /*p29.SAKY*/ wire _SAKY = nor(TULY_SFETCH_S1.q(), VONU_SFETCH_S1_D4.q());
   /*p29.TEPA*/ wire _TEPA_RENDERINGn = not(XYMU_RENDERINGp);
   /*p29.TYSO*/ wire _TYSO_SPRITE_READn = or(_SAKY, _TEPA_RENDERINGn);
-  /*p29.TEXY*/ wire _TEXY_SPRITE_READ = not(_TYSO_SPRITE_READn);
+  /*p29.TEXY*/ wire _TEXY_SPRITE_READp = not(_TYSO_SPRITE_READn);
 
   /*p29.TYNO*/ wire _TYNO = nand(TOXE_SFETCH_S0.q(), SEBA_SFETCH_S1_D5.q(), VONU_SFETCH_S1_D4.q());
   /*p29.VUSA*/ wire _VUSA = or(!TYFO_SFETCH_S0_D1.q(), _TYNO);
@@ -191,7 +192,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   /*p21.TAPA*/ wire TAPA_INT_OAM = and (lcd_sig.TOLU_VBLANKn, lcd_sig.SELA_NEW_LINE_d0p);
   /*p21.TARU*/ wire TARU_INT_HBL = and (lcd_sig.TOLU_VBLANKn, _WODU_RENDER_DONEp);
-  /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(RUGU_INT_LYC_EN, lcd_reg.ROPO_LY_MATCH_SYNCp,
+  /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(RUGU_INT_LYC_EN, lcd_sig.ROPO_LY_MATCH_SYNCp,
                                            REFE_INT_OAM_EN, TAPA_INT_OAM,
                                            RUFO_INT_VBL_EN, lcd_sig.PARU_VBLANKp, // polarity?
                                            ROXE_INT_HBL_EN, TARU_INT_HBL);
@@ -200,11 +201,35 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   /*p29.TUVO*/ wire _TUVO_PPU_OAM_RDp = nor(_TEPA_RENDERINGn, TULY_SFETCH_S1.q(), TESE_SFETCH_S2.q());
 
-  PpuSignals sig;
+  {
+    /*p27.LAXE*/ wire LAXE_FETCH_S0n = not(LAXU_BFETCH_S0.q());
+    /*p27.MYSO*/ wire MYSO_BG_TRIGn = nor(_LOBY_RENDERINGn, LAXE_FETCH_S0n, LYZU_BFETCH_S0_DELAY.q());
+    /*p27.MOFU*/ sig.MOFU_LATCH_BGPIXB = and (MYSO_BG_TRIGn, _NAKO_FETCH_S1n);
+    /*p27.NYDY*/ sig.NYDY_LATCH_BGPIXA = nand(MYSO_BG_TRIGn, MESU_BFETCH_S1.q(), _NOFU_FETCH_S2n);
+  }
+
+  {
+    /*p29.SYCU*/ wire SYCU = nor(_TYTU_SFETCH_S0_D0n, _LOBY_RENDERINGn, TYFO_SFETCH_S0_D1);
+    /*p29.TOPU*/ sig.TOPU_LATCH_SPPIXA = and (TULY_SFETCH_S1, SYCU);
+    /*p29.RACA*/ sig.RACA_LATCH_SPPIXB = and (VONU_SFETCH_S1_D4, SYCU);
+    /*p29.XONO*/ sig.XONO_FLIP_X = and (oam_bus.BAXO_SPRITE_X5, _TEXY_SPRITE_READp);
+  }
+
+  {
+    /*p23.VYXE*/ sig.VYXE_LCDC_BGEN    = VYXE_LCDC_BGEN;
+    /*p23.XYLO*/ sig.XYLO_LCDC_SPEN    = XYLO_LCDC_SPEN;
+    /*p23.XYMO*/ sig.XYMO_LCDC_SPSIZE  = XYMO_LCDC_SPSIZE;
+    /*p23.XAFO*/ sig.XAFO_LCDC_BGMAP   = XAFO_LCDC_BGMAP;
+    /*p23.WEXU*/ sig.WEXU_LCDC_BGTILE  = WEXU_LCDC_BGTILE;
+    /*p23.WYMO*/ sig.WYMO_LCDC_WINEN   = WYMO_LCDC_WINEN;
+    /*p23.WOKY*/ sig.WOKY_LCDC_WINMAP  = WOKY_LCDC_WINMAP;
+    /*p23.XONA*/ sig.XONA_LCDC_EN      = XONA_LCDC_EN;
+  }
+
   sig.TEVO_CLK_STOPn = _TEVO_CLK_STOPn;
   sig.WODU_RENDER_DONEp = _WODU_RENDER_DONEp;
   sig.NYXU_BFETCH_RSTn = _NYXU_BFETCH_RSTn;
-  sig.TEXY_SPRITE_READp = _TEXY_SPRITE_READ;
+  sig.TEXY_SPRITE_READp = _TEXY_SPRITE_READp;
   sig.WUTY_SPRITE_DONE = _WUTY_SPRITE_DONE;
   sig.ACYL_PPU_USE_OAM1p = _ACYL_PPU_USE_OAM1p;
   sig.POKY_AFTER_PORCH_LATCHp = POKY_AFTER_PORCH_LATCHp;
@@ -241,7 +266,6 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 //------------------------------------------------------------------------------
 
 void PpuRegisters::tick(TestGB& gb) {
-  auto& cfg_reg = gb.cfg_reg;
   auto& pxp_reg = gb.pxp_reg;
 
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
@@ -251,7 +275,7 @@ void PpuRegisters::tick(TestGB& gb) {
   auto win_sig = gb.win_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb);
+  auto sst_sig = gb.sst_reg.sig(gb, XYMO_LCDC_SPSIZE);
   auto ppu_sig = sig(gb);
   auto scr_sig = gb.scr_reg.sig(gb);
 
@@ -455,7 +479,7 @@ void PpuRegisters::tick(TestGB& gb) {
       /*p26.CYPO*/ vram_bus.TS_MA07.set_tribuf(_BAFY_BG_MAP_READn, scr_sig.DABA_MAP_Y2S);
       /*p26.CETA*/ vram_bus.TS_MA08.set_tribuf(_BAFY_BG_MAP_READn, scr_sig.EFYK_MAP_Y3S);
       /*p26.DAFE*/ vram_bus.TS_MA09.set_tribuf(_BAFY_BG_MAP_READn, scr_sig.EJOK_MAP_Y4S);
-      /*p26.AMUV*/ vram_bus.TS_MA10.set_tribuf(_BAFY_BG_MAP_READn, cfg_reg.XAFO_LCDC_BGMAP.q());
+      /*p26.AMUV*/ vram_bus.TS_MA10.set_tribuf(_BAFY_BG_MAP_READn, XAFO_LCDC_BGMAP);
       /*p26.COVE*/ vram_bus.TS_MA11.set_tribuf(_BAFY_BG_MAP_READn, dbg_sig.VYPO_P10_Bn);
       /*p26.COXO*/ vram_bus.TS_MA12.set_tribuf(_BAFY_BG_MAP_READn, dbg_sig.VYPO_P10_Bn);
 
@@ -472,7 +496,7 @@ void PpuRegisters::tick(TestGB& gb) {
       /*p27.VACE*/ vram_bus.TS_MA07.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_Y5);
       /*p27.VOVO*/ vram_bus.TS_MA08.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_Y6);
       /*p27.VULO*/ vram_bus.TS_MA09.set_tribuf(_WUKO_WIN_MAP_READn, win_sig.WIN_Y7);
-      /*p27.VEVY*/ vram_bus.TS_MA10.set_tribuf(_WUKO_WIN_MAP_READn, cfg_reg.WOKY_LCDC_WINMAP.q());
+      /*p27.VEVY*/ vram_bus.TS_MA10.set_tribuf(_WUKO_WIN_MAP_READn, WOKY_LCDC_WINMAP);
       /*p27.VEZA*/ vram_bus.TS_MA11.set_tribuf(_WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
       /*p27.VOGU*/ vram_bus.TS_MA12.set_tribuf(_WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
     }
@@ -504,16 +528,13 @@ void PpuRegisters::tick(TestGB& gb) {
       /*p25.SUVO*/ vram_bus.TS_MA10.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B6.q());
       /*p25.TOBO*/ vram_bus.TS_MA11.set_tribuf(_NETA_TILE_READn, pxp_reg.BG_PIX_B7.q());
 
-      /*p25.VUZA*/ wire _VUZA_TILE_BANKp = nor(cfg_reg.WEXU_LCDC_BGTILE.q(), pxp_reg.BG_PIX_B7.q()); // register reused
+      /*p25.VUZA*/ wire _VUZA_TILE_BANKp = nor(WEXU_LCDC_BGTILE, pxp_reg.BG_PIX_B7.q()); // register reused
       /*p25.VURY*/ vram_bus.TS_MA12.set_tribuf(_NETA_TILE_READn, _VUZA_TILE_BANKp);
     }
   }
 
   {
-    // TS_LINE_* out of order
-    // why is there a ! on REG_OAM_B0?
-
-    /*p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not(cfg_reg.XYMO_LCDC_SPSIZE.q());
+    /*p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not(ppu_sig.XYMO_LCDC_SPSIZE);
     /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(oam_bus.YZOS_SPRITE_X6.q());
 
     /*p29.XUQU*/ wire _XUQU_SPRITE_AB = not(!VONU_SFETCH_S1_D4.q());
@@ -522,7 +543,7 @@ void PpuRegisters::tick(TestGB& gb) {
     /*p29.BUVY*/ wire _BUVY_SPRITE_Y2 = xor (_WUKY_FLIP_Y, sst_sig.CEGA_TS_LINE_3);
 
     /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, sst_sig.WENU_TS_LINE_0);
-    /*p29.GEJY*/ wire _GEJY_SPRITE_Y3 = amux2(_FUFO_LCDC_SPSIZEn, !oam_bus.XUSO_SPRITE_Y0.q(), cfg_reg.XYMO_LCDC_SPSIZE.q(), _WAGO);
+    /*p29.GEJY*/ wire _GEJY_SPRITE_Y3 = amux2(_FUFO_LCDC_SPSIZEn, !oam_bus.XUSO_SPRITE_Y0.q(), ppu_sig.XYMO_LCDC_SPSIZE, _WAGO);
 
     /*p29.ABON*/ wire ABON_SPRITE_READn = not(ppu_sig.TEXY_SPRITE_READp);
 
@@ -555,24 +576,24 @@ void PpuRegisters::tick(TestGB& gb) {
     /*p23.WARU*/ wire _WARU_FF40_WRp = and (_VOCA_FF40p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
     /*p23.XUBO*/ wire _XUBO_FF40_WRn = not(_WARU_FF40_WRp);
 
-    /*p23.WYPO*/ cpu_bus.TS_D0.set_tribuf(!_WYCE_FF40_RDn, cfg_reg.VYXE_LCDC_BGEN.q());
-    /*p23.XERO*/ cpu_bus.TS_D1.set_tribuf(!_WYCE_FF40_RDn, cfg_reg.XYLO_LCDC_SPEN.q());
-    /*p23.WYJU*/ cpu_bus.TS_D2.set_tribuf(!_WYCE_FF40_RDn, cfg_reg.XYMO_LCDC_SPSIZE.q());
-    /*p23.WUKA*/ cpu_bus.TS_D3.set_tribuf(!_WYCE_FF40_RDn, cfg_reg.XAFO_LCDC_BGMAP.q());
-    /*p23.VOKE*/ cpu_bus.TS_D4.set_tribuf(!_WYCE_FF40_RDn, cfg_reg.WEXU_LCDC_BGTILE.q());
-    /*p23.VATO*/ cpu_bus.TS_D5.set_tribuf(!_WYCE_FF40_RDn, cfg_reg.WYMO_LCDC_WINEN.q());
-    /*p23.VAHA*/ cpu_bus.TS_D6.set_tribuf(!_WYCE_FF40_RDn, cfg_reg.WOKY_LCDC_WINMAP.q());
-    /*p23.XEBU*/ cpu_bus.TS_D7.set_tribuf(!_WYCE_FF40_RDn, cfg_reg.XONA_LCDC_EN.q());
+    /*p23.WYPO*/ cpu_bus.TS_D0.set_tribuf(!_WYCE_FF40_RDn, VYXE_LCDC_BGEN);
+    /*p23.XERO*/ cpu_bus.TS_D1.set_tribuf(!_WYCE_FF40_RDn, XYLO_LCDC_SPEN);
+    /*p23.WYJU*/ cpu_bus.TS_D2.set_tribuf(!_WYCE_FF40_RDn, XYMO_LCDC_SPSIZE);
+    /*p23.WUKA*/ cpu_bus.TS_D3.set_tribuf(!_WYCE_FF40_RDn, XAFO_LCDC_BGMAP);
+    /*p23.VOKE*/ cpu_bus.TS_D4.set_tribuf(!_WYCE_FF40_RDn, WEXU_LCDC_BGTILE);
+    /*p23.VATO*/ cpu_bus.TS_D5.set_tribuf(!_WYCE_FF40_RDn, WYMO_LCDC_WINEN);
+    /*p23.VAHA*/ cpu_bus.TS_D6.set_tribuf(!_WYCE_FF40_RDn, WOKY_LCDC_WINMAP);
+    /*p23.XEBU*/ cpu_bus.TS_D7.set_tribuf(!_WYCE_FF40_RDn, XONA_LCDC_EN);
 
     /*p01.XARE*/ wire _XARE_RESETn = not(rst_sig.XORE_RSTp);
-    /*p23.VYXE*/ cfg_reg.VYXE_LCDC_BGEN   .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D0);
-    /*p23.XYLO*/ cfg_reg.XYLO_LCDC_SPEN   .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D1);
-    /*p23.XYMO*/ cfg_reg.XYMO_LCDC_SPSIZE .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D2);
-    /*p23.XAFO*/ cfg_reg.XAFO_LCDC_BGMAP  .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D3);
-    /*p23.WEXU*/ cfg_reg.WEXU_LCDC_BGTILE .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D4);
-    /*p23.WYMO*/ cfg_reg.WYMO_LCDC_WINEN  .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D5);
-    /*p23.WOKY*/ cfg_reg.WOKY_LCDC_WINMAP .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D6);
-    /*p23.XONA*/ cfg_reg.XONA_LCDC_EN.set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D7);
+    /*p23.VYXE*/ VYXE_LCDC_BGEN   .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D0);
+    /*p23.XYLO*/ XYLO_LCDC_SPEN   .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D1);
+    /*p23.XYMO*/ XYMO_LCDC_SPSIZE .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D2);
+    /*p23.XAFO*/ XAFO_LCDC_BGMAP  .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D3);
+    /*p23.WEXU*/ WEXU_LCDC_BGTILE .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D4);
+    /*p23.WYMO*/ WYMO_LCDC_WINEN  .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D5);
+    /*p23.WOKY*/ WOKY_LCDC_WINMAP .set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D6);
+    /*p23.XONA*/ XONA_LCDC_EN.set(_XUBO_FF40_WRn, _XARE_RESETn, cpu_bus.TS_D7);
   }
 
 
@@ -604,9 +625,9 @@ void PpuRegisters::tick(TestGB& gb) {
     /*p21.SEPA*/ wire SEPA_FF41_WRp = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, VARY_FF41p);
     /*p21.RYVE*/ wire RYVE_FF41_WRn = not(SEPA_FF41_WRp);
 
-    /*p21.RYJU*/ wire _RYJU_FF41_WRn = not(SEPA_FF41_WRp);
-    /*p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = nor(rst_sig.WESY_RSTn, _RYJU_FF41_WRn);  // schematic wrong, this is NOR
-    /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(_PAGO_LYC_MATCH_RST, lcd_sig.ROPO_LY_MATCH_SYNCp);
+    /*p21.RYJU*/ wire RYJU_FF41_WRn = not(SEPA_FF41_WRp);
+    /*p21.PAGO*/ wire PAGO_LYC_MATCH_RST = nor(rst_sig.WESY_RSTn, RYJU_FF41_WRn);  // schematic wrong, this is NOR
+    /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(PAGO_LYC_MATCH_RST, lcd_sig.ROPO_LY_MATCH_SYNCp);
 
     /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, rst_sig.WESY_RSTn, cpu_bus.TS_D0);
     /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, rst_sig.WESY_RSTn, cpu_bus.TS_D1);
@@ -648,10 +669,6 @@ bool PpuRegisters::commit() {
   /*p21.SYBE*/ changed |= SYBE_X7.commit_reg();
   /*p21.XYMU*/ changed |= XYMU_RENDERINGp.commit_latch();
   /*p21.VOGA*/ changed |= VOGA_RENDER_DONE_SYNC.commit_reg();
-  /*p21.ROXE*/ changed |= ROXE_INT_HBL_EN.commit_reg();
-  /*p21.RUFO*/ changed |= RUFO_INT_VBL_EN.commit_reg();
-  /*p21.REFE*/ changed |= REFE_INT_OAM_EN.commit_reg();
-  /*p21.RUGU*/ changed |= RUGU_INT_LYC_EN.commit_reg();
   /*p27.LONY*/ changed |= LONY_BG_READ_VRAM_LATCHp.commit_latch();
   /*p27.LAXU*/ changed |= LAXU_BFETCH_S0.commit_reg();
   /*p27.MESU*/ changed |= MESU_BFETCH_S1.commit_reg();
@@ -674,6 +691,23 @@ bool PpuRegisters::commit() {
   /*p21.WUSA*/ changed |= WUSA_CPEN_LATCH.commit_latch();
   /* PIN_53 */ changed |= CP.commit_pinout();
   /* PIN_54 */ changed |= ST.commit_pinout();
+
+  // FF40 - LCDC
+  /*p23.VYXE*/ changed |= VYXE_LCDC_BGEN.commit_reg();
+  /*p23.XYLO*/ changed |= XYLO_LCDC_SPEN.commit_reg();
+  /*p23.XYMO*/ changed |= XYMO_LCDC_SPSIZE.commit_reg();
+  /*p23.XAFO*/ changed |= XAFO_LCDC_BGMAP.commit_reg();
+  /*p23.WEXU*/ changed |= WEXU_LCDC_BGTILE.commit_reg();
+  /*p23.WYMO*/ changed |= WYMO_LCDC_WINEN.commit_reg();
+  /*p23.WOKY*/ changed |= WOKY_LCDC_WINMAP.commit_reg();
+  /*p23.XONA*/ changed |= XONA_LCDC_EN.commit_reg();
+
+  // FF41 - STAT
+  /*p21.ROXE*/ changed |= ROXE_INT_HBL_EN.commit_reg();
+  /*p21.RUFO*/ changed |= RUFO_INT_VBL_EN.commit_reg();
+  /*p21.REFE*/ changed |= REFE_INT_OAM_EN.commit_reg();
+  /*p21.RUGU*/ changed |= RUGU_INT_LYC_EN.commit_reg();
+
   return changed;
 }
 

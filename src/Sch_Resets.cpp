@@ -6,9 +6,9 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 ResetSignals ResetRegisters::sig(const TestGB& gb) const {
-  /*p01.UCOB*/ wire UCOB_CLKBAD = not(gb.ext_bus.PIN_CLK_GOOD);
+  auto ppu_sig = gb.ppu_reg.sig(gb);
 
-  /*p23.XONA*/ wire XONA_LCDC_EN = gb.cfg_reg.XONA_LCDC_EN.q();
+  /*p01.UCOB*/ wire UCOB_CLKBAD = not(gb.ext_bus.PIN_CLK_GOOD);
 
   /*p01.AVOR*/ wire AVOR_RSTp = or(RESET_REGp.q(), ASOL_RST_LATCHp.q());
 
@@ -20,7 +20,7 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
   /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
   /*p01.WALU*/ wire WALU_RSTn = not(XORE_RSTp);
 
-  /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, XONA_LCDC_EN);
+  /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, ppu_sig.XONA_LCDC_EN);
   /*p01.XAPO*/ wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
   /*p01.PYRY*/ wire PYRY_VID_RSTp = not(XAPO_VID_RSTn);
   /*p01.TOFU*/ wire TOFU_VID_RSTp = not(XAPO_VID_RSTn);

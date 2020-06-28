@@ -41,18 +41,18 @@ struct PixelPipeRegisters {
   /* PIN_50 */ PinOut LD1;
   /* PIN_51 */ PinOut LD0;
 
-  /*p32.RAWU*/ Reg BG_PIX_B0; // also holds tile index during fetch
-  /*p32.POZO*/ Reg BG_PIX_B1;
-  /*p32.PYZO*/ Reg BG_PIX_B2;
-  /*p32.POXA*/ Reg BG_PIX_B3;
-  /*p32.PULO*/ Reg BG_PIX_B4;
-  /*p32.POJU*/ Reg BG_PIX_B5;
-  /*p32.POWY*/ Reg BG_PIX_B6;
-  /*p32.PYJU*/ Reg BG_PIX_B7;
+  /*p32.RAWU*/ Reg BG_PIX_B0; // 11-rung, also holds tile index during fetch
+  /*p32.POZO*/ Reg BG_PIX_B1; // 11-rung
+  /*p32.PYZO*/ Reg BG_PIX_B2; 
+  /*p32.POXA*/ Reg BG_PIX_B3; 
+  /*p32.PULO*/ Reg BG_PIX_B4; 
+  /*p32.POJU*/ Reg BG_PIX_B5; 
+  /*p32.POWY*/ Reg BG_PIX_B6; 
+  /*p32.PYJU*/ Reg BG_PIX_B7; 
 
 private:
 
-  /*p32.LEGU*/ Reg BG_PIX_A0;
+  /*p32.LEGU*/ Reg BG_PIX_A0; // 8-rung
   /*p32.NUDU*/ Reg BG_PIX_A1;
   /*p32.MUKU*/ Reg BG_PIX_A2;
   /*p32.LUZO*/ Reg BG_PIX_A3;
@@ -132,6 +132,36 @@ private:
   /*p26.WODA*/ Reg MASK_PIPE_5;
   /*p26.VUMO*/ Reg MASK_PIPE_6;
   /*p26.VAVA*/ Reg MASK_PIPE_7;
+
+  // FF47 - BGP
+  /*p36.PAVO*/ Reg BGP0;
+  /*p36.NUSY*/ Reg BGP1;
+  /*p36.PYLU*/ Reg BGP2;
+  /*p36.MAXY*/ Reg BGP3;
+  /*p36.MUKE*/ Reg BGP4;
+  /*p36.MORU*/ Reg BGP5;
+  /*p36.MOGY*/ Reg BGP6;
+  /*p36.MENA*/ Reg BGP7;
+
+  // FF48 - OBP0
+  /*p36.XUFU*/ Reg OBP00;
+  /*p36.XUKY*/ Reg OBP01;
+  /*p36.XOVA*/ Reg OBP02;
+  /*p36.XALO*/ Reg OBP03;
+  /*p36.XERU*/ Reg OBP04;
+  /*p36.XYZE*/ Reg OBP05;
+  /*p36.XUPO*/ Reg OBP06;
+  /*p36.XANA*/ Reg OBP07;
+
+  // FF49 - OBP1
+  /*p36.MOXY*/ Reg OBP10;
+  /*p36.LAWO*/ Reg OBP11;
+  /*p36.MOSA*/ Reg OBP12; // 9-rung, bottom rung is passthrough?
+  /*p36.LOSE*/ Reg OBP13;
+  /*p36.LUNE*/ Reg OBP14;
+  /*p36.LUGU*/ Reg OBP15;
+  /*p36.LEPU*/ Reg OBP16;
+  /*p36.LUXO*/ Reg OBP17;
 };
 
 //-----------------------------------------------------------------------------

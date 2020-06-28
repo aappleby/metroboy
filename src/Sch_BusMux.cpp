@@ -14,7 +14,7 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   auto dma_sig = gb.dma_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb);
+  auto sst_sig = gb.sst_reg.sig(gb, ppu_sig.XYMO_LCDC_SPSIZE);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto clk_sig = gb.clk_reg.sig(gb);
 

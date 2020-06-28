@@ -34,6 +34,7 @@ struct CpuRegisters {
   bool commit();
 
   /*p04.MAKA*/ Reg MAKA_FROM_CPU5_SYNC;
+  /*p07.TEPU*/ Reg BOOT_BITn; // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.
 };
 
 //-----------------------------------------------------------------------------

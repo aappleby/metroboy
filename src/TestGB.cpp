@@ -43,38 +43,6 @@ void TestGB::ext_preset() {
 bool TestGB::commit_everything() {
   bool changed = false;
 
-  /*p23.VYXE*/ changed |= cfg_reg.VYXE_LCDC_BGEN.commit_reg();
-  /*p23.XYLO*/ changed |= cfg_reg.XYLO_LCDC_SPEN.commit_reg();
-  /*p23.XYMO*/ changed |= cfg_reg.XYMO_LCDC_SPSIZE.commit_reg();
-  /*p23.XAFO*/ changed |= cfg_reg.XAFO_LCDC_BGMAP.commit_reg();
-  /*p23.WEXU*/ changed |= cfg_reg.WEXU_LCDC_BGTILE.commit_reg();
-  /*p23.WYMO*/ changed |= cfg_reg.WYMO_LCDC_WINEN.commit_reg();
-  /*p23.WOKY*/ changed |= cfg_reg.WOKY_LCDC_WINMAP.commit_reg();
-  /*p23.XONA*/ changed |= cfg_reg.XONA_LCDC_EN.commit_reg();
-  /*p36.PAVO*/ changed |= cfg_reg.BGP0.commit_reg();
-  /*p36.NUSY*/ changed |= cfg_reg.BGP1.commit_reg();
-  /*p36.PYLU*/ changed |= cfg_reg.BGP2.commit_reg();
-  /*p36.MAXY*/ changed |= cfg_reg.BGP3.commit_reg();
-  /*p36.MUKE*/ changed |= cfg_reg.BGP4.commit_reg();
-  /*p36.MORU*/ changed |= cfg_reg.BGP5.commit_reg();
-  /*p36.MOGY*/ changed |= cfg_reg.BGP6.commit_reg();
-  /*p36.MENA*/ changed |= cfg_reg.BGP7.commit_reg();
-  /*p36.XUFU*/ changed |= cfg_reg.OBP00.commit_reg();
-  /*p36.XUKY*/ changed |= cfg_reg.OBP01.commit_reg();
-  /*p36.XOVA*/ changed |= cfg_reg.OBP02.commit_reg();
-  /*p36.XALO*/ changed |= cfg_reg.OBP03.commit_reg();
-  /*p36.XERU*/ changed |= cfg_reg.OBP04.commit_reg();
-  /*p36.XYZE*/ changed |= cfg_reg.OBP05.commit_reg();
-  /*p36.XUPO*/ changed |= cfg_reg.OBP06.commit_reg();
-  /*p36.XANA*/ changed |= cfg_reg.OBP07.commit_reg();
-  /*p36.MOXY*/ changed |= cfg_reg.OBP10.commit_reg();
-  /*p36.LAWO*/ changed |= cfg_reg.OBP11.commit_reg();
-  /*p36.MOSA*/ changed |= cfg_reg.OBP12.commit_reg();
-  /*p36.LOSE*/ changed |= cfg_reg.OBP13.commit_reg();
-  /*p36.LUNE*/ changed |= cfg_reg.OBP14.commit_reg();
-  /*p36.LUGU*/ changed |= cfg_reg.OBP15.commit_reg();
-  /*p36.LEPU*/ changed |= cfg_reg.OBP16.commit_reg();
-  /*p36.LUXO*/ changed |= cfg_reg.OBP17.commit_reg();
   /*p07.BURO*/ changed |= dbg_reg.BURO_FF60_0.commit_reg();
   /*p07.AMUT*/ changed |= dbg_reg.AMUT_FF60_1.commit_reg();
 
@@ -174,8 +142,6 @@ bool TestGB::commit_everything() {
   changed |= vram_bus.TS_MD5.commit_tribuf();
   changed |= vram_bus.TS_MD6.commit_tribuf();
   changed |= vram_bus.TS_MD7.commit_tribuf();
-
-  /*p07.TEPU*/ changed |= bus_reg.BOOT_BITn.commit_reg();
 
   changed |= ext_bus.commit();
   //----------------------------------------

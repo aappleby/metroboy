@@ -61,7 +61,7 @@ struct SpriteStoreSignals {
 
 struct SpriteStoreRegisters {
 
-  SpriteStoreSignals sig(const TestGB& gb) const;
+  SpriteStoreSignals sig(const TestGB& gb, wire XYMO_LCD_SPSIZE) const;
   void tick(const TestGB& gb);
   bool commit();
 

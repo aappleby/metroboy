@@ -83,7 +83,6 @@ CpuSignals CpuRegisters::sig(const TestGB& gb) const {
 //-----------------------------------------------------------------------------
 
 void CpuRegisters::tick(TestGB& gb) {
-  auto& bus_reg = gb.bus_reg;
   auto& cpu_bus = gb.cpu_bus;
 
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
@@ -102,12 +101,12 @@ void CpuRegisters::tick(TestGB& gb) {
     /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(cpu_bus.PIN_A04, cpu_bus.PIN_A06);
 
     /*p07.TEXE*/ wire FF50_RDp = and(cpu_sig.TEDO_CPU_RD, adr_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
-    /*p07.SYPU*/ cpu_bus.TS_D0.set_tribuf(FF50_RDp, bus_reg.BOOT_BITn.q()); // does the rung of the tribuf control polarity?
+    /*p07.SYPU*/ cpu_bus.TS_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
 
     /*p07.TUGE*/ wire FF50_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.TS_D0, bus_reg.BOOT_BITn.q());
+    /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.TS_D0, BOOT_BITn);
 
-    /*p07.TEPU*/ bus_reg.BOOT_BITn.set(FF50_WRn, rst_sig.ALUR_RSTn, BOOT_BIT_IN);
+    /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, rst_sig.ALUR_RSTn, BOOT_BIT_IN);
   }
 
 
@@ -213,6 +212,7 @@ void CpuRegisters::tick(TestGB& gb) {
 bool CpuRegisters::commit() {
   bool changed = false;
   /*p04.MAKA*/ changed |= MAKA_FROM_CPU5_SYNC.commit_reg();
+  /*p07.TEPU*/ changed |= BOOT_BITn.commit_reg();
   return changed;
 }
 

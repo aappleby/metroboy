@@ -78,7 +78,7 @@ void CartRegisters::tick(TestGB& gb) {
   auto cpu_sig = gb.cpu_reg.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
 
-  auto& bus_reg = gb.bus_reg;
+  auto& cpu_reg = gb.cpu_reg;
   auto& cpu_bus = gb.cpu_bus;
   auto& ext_bus = gb.ext_bus;
   auto& dma_reg = gb.dma_reg;
@@ -87,7 +87,7 @@ void CartRegisters::tick(TestGB& gb) {
 
   //----------------------------------------
 
-  /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(bus_reg.BOOT_BITn.q());
+  /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(cpu_reg.BOOT_BITn.q());
   /*p07.TULO*/ wire _TULO_ADDR_00XXp = nor(cpu_bus.PIN_A15, cpu_bus.PIN_A14, cpu_bus.PIN_A13, cpu_bus.PIN_A12, cpu_bus.PIN_A11, cpu_bus.PIN_A10, cpu_bus.PIN_A09, cpu_bus.PIN_A08);
   /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
 

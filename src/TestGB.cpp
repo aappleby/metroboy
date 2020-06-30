@@ -9,7 +9,6 @@ TestGB gb;
 void TestGB::tick_everything() {
   auto rst_sig = rst_reg.sig(*this);
   auto clk_sig = clk_reg.sig(*this);
-  auto adr_sig = adr_reg.sig(cpu_bus);
   auto cpu_sig = cpu_bus.sig(*this);
 
   clk_reg.tick(*this);
@@ -18,13 +17,13 @@ void TestGB::tick_everything() {
   ser_reg.tick(*this);
 
 
-  joy_reg.tick(rst_sig, clk_sig, adr_sig, cpu_bus, cpu_sig);
+  joy_reg.tick(rst_sig, clk_sig, cpu_bus, cpu_sig);
 
   ppu_reg.tick(*this);
   sst_reg.tick(*this);
   lcd_reg.tick(*this);
   pxp_reg.tick(*this);
-  //cpu_bus.tick(*this);
+  //cpu_sig.tick(*this);
   cpu_pins_out.tick(*this);
   vram_pins.tick(*this);
 }

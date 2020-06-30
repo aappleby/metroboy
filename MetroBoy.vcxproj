@@ -121,7 +121,6 @@
     <ClInclude Include="src\Opcodes.h" />
     <ClInclude Include="src\PPU.h" />
     <ClInclude Include="src\Schematics.h" />
-    <ClInclude Include="src\Sch_Address.h" />
     <ClInclude Include="src\Sch_ApuControl.h" />
     <ClInclude Include="src\Sch_Bootrom.h" />
     <ClInclude Include="src\Sch_BusMux.h" />
@@ -198,7 +197,6 @@
     <ClCompile Include="src\OAM.cpp" />
     <ClCompile Include="src\PPU.cpp" />
     <ClCompile Include="src\Schematics.cpp" />
-    <ClCompile Include="src\Sch_Address.cpp" />
     <ClCompile Include="src\Sch_ApuControl.cpp" />
     <ClCompile Include="src\Sch_Bootrom.cpp" />
     <ClCompile Include="src\Sch_BusMux.cpp" />

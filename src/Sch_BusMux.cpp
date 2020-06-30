@@ -49,7 +49,6 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto sst_sig = gb.sst_reg.sig(gb, ppu_sig.XYMO_LCDC_SPSIZE);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto boot_sig = gb.bootrom.sig(gb);
 
@@ -98,11 +97,11 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   /*p28.YZET*/ wire _YZET_OAM_A7p = not((_FOBY_A7n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FYKE_IDX_5n & !_BETE_PPU_OAM_RDn) | (sst_sig.GOBY_SCAN5n & !_APAR_PPU_OAM_RDn) | (_FETU_DMA_A07n & !_DUGA_DMA_OAM_RDn));
 
   /*p28.AJUJ*/ wire _AJUJ_OAM_BUSYn = nor(dma_sig.MATU_DMA_OAM_WRp, ppu_sig.ACYL_PPU_USE_OAM1p, _AJON_PPU_USE_OAM2); // def nor
-  /*p28.AMAB*/ wire _AMAB_OAM_LOCKn = and (adr_sig.SARO_FE00_FEFFp, _AJUJ_OAM_BUSYn); // def and
-  /*p28.XUTO*/ wire _XUTO_CPU_OAM_WR = and (adr_sig.SARO_FE00_FEFFp, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
+  /*p28.AMAB*/ wire _AMAB_OAM_LOCKn = and (cpu_sig.SARO_FE00_FEFFp, _AJUJ_OAM_BUSYn); // def and
+  /*p28.XUTO*/ wire _XUTO_CPU_OAM_WR = and (cpu_sig.SARO_FE00_FEFFp, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
   /*p28.WUJE*/ wire _WUJE_CPU_OAM_WR = or (clk_sig.XYNY_xBCDExxx, _XUTO_CPU_OAM_WR);
   /*p28.XUPA*/ wire _XUPA_CPU_OAM_WR = not(_WUJE_CPU_OAM_WR);
-  /*p28.ADAH*/ wire _ADAH_ADDR_OAM = not(adr_sig.SARO_FE00_FEFFp);
+  /*p28.ADAH*/ wire _ADAH_ADDR_OAM = not(cpu_sig.SARO_FE00_FEFFp);
   /*p28.APAG*/ wire _APAG_D_TO_OAMD = amux2(_XUPA_CPU_OAM_WR, _AMAB_OAM_LOCKn, _AJUJ_OAM_BUSYn, _ADAH_ADDR_OAM);
   /*p28.AZUL*/ wire AZUL_D_TO_OAMD = not(_APAG_D_TO_OAMD);
 
@@ -111,7 +110,7 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   /*p04.AHOC*/ wire AHOC_DMA_VRAM_RDn = not(dma_sig.LUFA_DMA_READ_VRAMp);
 
   /*p25.TAVY*/ wire TAVY_MOE_Cn = not(vram_pins.PIN_MOEn_C);
-  /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(adr_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
+  /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
   /*p25.SALE*/ wire SALE_DBG_VRAM_RDb = mux2_p(TAVY_MOE_Cn, TEGU_CPU_VRAM_WRn, dbg_sig.TUTO_DBG_VRAMp);
   /*p25.RUVY*/ wire RUVY_VRAM_WR = not(SALE_DBG_VRAM_RDb);
   /*p25.SAZO*/ wire SAZO_VRAM_RD = and (RUVY_VRAM_WR, ppu_sig.SERE_VRAM_RD);
@@ -134,14 +133,14 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   /*p25.AVER*/ wire _AVER = nand(ppu_sig.ACYL_PPU_USE_OAM1p, clk_sig.XYSO_ABCxDEFx); 
   /*p25.VAPE*/ wire _VAPE = and (ppu_sig.TUVO_PPU_OAM_RDp, ppu_sig.TACU_SPR_SEQ_5_TRIG);
   /*p25.XUJY*/ wire _XUJY = not(_VAPE);
-  /*p25.CUFE*/ wire _CUFE_OAM_WR = and (or (adr_sig.SARO_FE00_FEFFp, dma_reg.MATU_DMA_OAM_WRp.q()), clk_sig.MOPA_AxxxxFGH);
+  /*p25.CUFE*/ wire _CUFE_OAM_WR = and (or (cpu_sig.SARO_FE00_FEFFp, dma_reg.MATU_DMA_OAM_WRp.q()), clk_sig.MOPA_AxxxxFGH);
   /*p25.BYCU*/ wire _BYCU_OAM_CLK = nand(_AVER, _XUJY, _CUFE_OAM_WR); // schematic wrong, this is NAND... but that doesn't make sense?
   /*p25.COTA*/ wire _COTA_OAM_CLK = not(_BYCU_OAM_CLK);
 
   /*p28.WEFY*/ wire _WEFY_SPR_READp = and(ppu_sig.TUVO_PPU_OAM_RDp, ppu_reg.TYFO_SFETCH_S0_D1.q());
   /*p28.AJEP*/ wire _AJEP = nand(ppu_sig.ACYL_PPU_USE_OAM1p, clk_sig.XOCE_ABxxEFxx); // schematic wrong, is def nand
   /*p28.XUJA*/ wire _XUJA_SPR_READn = not(_WEFY_SPR_READp);
-  /*p28.BOTA*/ wire _BOTA_CPU_RD_OAMn = nand(cpu_sig.DECY_FROM_CPU5n, adr_sig.SARO_FE00_FEFFp, cpu_sig.ASOT_CPU_RD); // Schematic wrong, this is NAND
+  /*p28.BOTA*/ wire _BOTA_CPU_RD_OAMn = nand(cpu_sig.DECY_FROM_CPU5n, cpu_sig.SARO_FE00_FEFFp, cpu_sig.ASOT_CPU_RD); // Schematic wrong, this is NAND
   /*p28.ASYT*/ wire _ASYT_OAM_LATCH = and(_AJEP, _XUJA_SPR_READn, _BOTA_CPU_RD_OAMn);
   /*p28.BODE*/ wire _BODE_OAM_LATCH = not(_ASYT_OAM_LATCH); // to the tribus receiver below
 
@@ -176,7 +175,7 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
     // TYNU01
 
     /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or(and(cpu_bus.PIN_A15, cpu_bus.PIN_A14), _TUMA_CART_RAM);
-    /*p08.TOZA*/ wire _TOZA = and(dbg_sig.ABUZ, _TYNU_ADDR_RAM, adr_sig.TUNA_0000_FDFFp); // suggests ABUZp
+    /*p08.TOZA*/ wire _TOZA = and(dbg_sig.ABUZ, _TYNU_ADDR_RAM, cpu_sig.TUNA_0000_FDFFp); // suggests ABUZp
     /*p08.TYHO*/ sig.TYHO_CS_A = mux2_p(dma_reg.DMA_A15.q(), _TOZA, dma_sig.LUMA_DMA_READ_CARTp); // ABxxxxxx
   }
 

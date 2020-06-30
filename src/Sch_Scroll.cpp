@@ -83,13 +83,12 @@ ScrollSignals ScrollRegisters::sig(const TestGB& gb) const {
 void ScrollRegisters::tick(TestGB& gb) {
   auto rst_sig = gb.rst_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
 
   auto& cpu_bus = gb.cpu_bus;
 
   // FF42 SCY
   {
-    /*p22.WEBU*/ wire WEBU_FF42n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.XERA_A03n);
+    /*p22.WEBU*/ wire WEBU_FF42n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
     /*p22.XARO*/ wire XARO_FF42p = not(WEBU_FF42n);
 
     /*p23.ANYP*/ wire ANYP_FF42_RDp = and(XARO_FF42p, cpu_sig.ASOT_CPU_RD);
@@ -120,7 +119,7 @@ void ScrollRegisters::tick(TestGB& gb) {
 
   // FF43 SCX
   {
-    /*p22.WAVU*/ wire WAVU_FF43n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.XERA_A03n);
+    /*p22.WAVU*/ wire WAVU_FF43n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
     /*p22.XAVY*/ wire XAVY_FF43p = not(WAVU_FF43n);
 
     /*p23.AVOG*/ wire AVOG_FF43_RDp = and (XAVY_FF43p, cpu_sig.ASOT_CPU_RD);

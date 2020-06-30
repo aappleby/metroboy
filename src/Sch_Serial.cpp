@@ -18,7 +18,6 @@ void SerialRegisters::tick(TestGB& gb) {
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto tim_sig = gb.tim_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto& cpu_bus = gb.cpu_bus;
 
   wire TAPU_CPU_WR_xxxxxFGH = cpu_sig.TAPU_CPU_WR_xxxxxFGH;
@@ -26,12 +25,12 @@ void SerialRegisters::tick(TestGB& gb) {
 
   //----------------------------------------
 
-  /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (adr_sig.SARE_XX00_XX07p, adr_sig.SEFY_A02n, adr_sig.SYKE_FF00_FFFFp);
-  /*p06.URYS*/ wire _FF01_WR_xxxxxFGHn = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, cpu_bus.PIN_A00, adr_sig.TOLA_A01n);
+  /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (cpu_sig.SARE_XX00_XX07p, cpu_sig.SEFY_A02n, cpu_sig.SYKE_FF00_FFFFp);
+  /*p06.URYS*/ wire _FF01_WR_xxxxxFGHn = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, cpu_bus.PIN_A00, cpu_sig.TOLA_A01n);
   /*p06.DAKU*/ wire _FF01_WR_xxxxxFGHp = not (_FF01_WR_xxxxxFGHn);
-  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, cpu_bus.PIN_A01, adr_sig.TOVY_A00n);
-  /*p06.UFEG*/ wire _FF01_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_bus.PIN_A00, adr_sig.TOLA_A01n);
-  /*p06.UCOM*/ wire _FF02_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_bus.PIN_A01, adr_sig.TOVY_A00n);
+  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, cpu_bus.PIN_A01, cpu_sig.TOVY_A00n);
+  /*p06.UFEG*/ wire _FF01_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_bus.PIN_A00, cpu_sig.TOLA_A01n);
+  /*p06.UCOM*/ wire _FF02_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_bus.PIN_A01, cpu_sig.TOVY_A00n);
 
   /*p06.COBA*/ wire _SER_CNT3n = not(CALY_INT_SERIALp.q());
   /*p06.CABY*/ wire _XFER_RESET = and (_SER_CNT3n, rst_sig.ALUR_RSTn);

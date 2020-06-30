@@ -9,7 +9,6 @@
 #include "Sch_Clocks.h"
 #include "Sch_Resets.h"
 #include "Sch_Debug.h"
-#include "Sch_Address.h"
 #include "Sch_PixPipe.h"
 #include "Sch_Joypad.h"
 #include "Sch_Serial.h"
@@ -58,7 +57,6 @@ struct TestGB {
   TimerRegisters tim_reg;
   PpuRegisters ppu_reg;
   WindowRegisters win_reg;
-  AddressRegisters adr_reg;
 
   ScrollRegisters scr_reg;
   VramPins vram_pins;

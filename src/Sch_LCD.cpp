@@ -80,7 +80,6 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
 void LcdRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto tim_sig = gb.tim_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
@@ -208,7 +207,7 @@ void LcdRegisters::tick(TestGB& gb) {
 
   // FF44 LY
   {
-    /*p22.WYLE*/ wire FF44n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.XENO_A01n, adr_sig.WALO_A02, adr_sig.XERA_A03n);
+    /*p22.WYLE*/ wire FF44n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
     /*p22.XOGY*/ wire FF44 = not(FF44n);
     /*p23.WAFU*/ wire FF44_RD = and (cpu_sig.ASOT_CPU_RD, FF44);
     /*p23.VARO*/ wire FF44_RDn = not(FF44_RD);
@@ -234,7 +233,7 @@ void LcdRegisters::tick(TestGB& gb) {
 
   // FF45 LYC
   {
-    /*p22.WETY*/ wire FF45n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.XENO_A01n, adr_sig.WALO_A02, adr_sig.XERA_A03n);
+    /*p22.WETY*/ wire FF45n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
     /*p22.XAYU*/ wire FF45 = not(FF45n);
 
     /*p23.XYLY*/ wire FF45_RD = and (cpu_sig.ASOT_CPU_RD, FF45);

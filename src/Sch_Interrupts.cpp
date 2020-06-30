@@ -12,7 +12,6 @@ void InterruptRegisters::tick(TestGB& gb) {
   auto tim_sig = gb.tim_reg.sig(gb);
   auto ser_sig = gb.ser_reg.sig(gb);
   auto joy_sig = gb.joy_reg.sig();
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
@@ -21,10 +20,10 @@ void InterruptRegisters::tick(TestGB& gb) {
 
   /*p07.SEMY*/ wire SEMY_ADDR_XX0X = nor(cpu_bus.PIN_A07, cpu_bus.PIN_A06, cpu_bus.PIN_A05, cpu_bus.PIN_A04);
   /*p07.SAPA*/ wire SAPA_ADDR_XXXF = and (cpu_bus.PIN_A00, cpu_bus.PIN_A01, cpu_bus.PIN_A02, cpu_bus.PIN_A03);
-  /*p07.ROLO*/ wire ROLO_FF0F_RDn  = nand(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, adr_sig.SYKE_FF00_FFFFp, cpu_sig.TEDO_CPU_RD); // schematic wrong, is NAND
+  /*p07.ROLO*/ wire ROLO_FF0F_RDn  = nand(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, cpu_sig.SYKE_FF00_FFFFp, cpu_sig.TEDO_CPU_RD); // schematic wrong, is NAND
   /*p02.POLA*/ wire POLA_FF0F_RDa  = not(ROLO_FF0F_RDn);
 
-  /*p07.REFA*/ wire REFA_FF0F_WRn = nand(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, adr_sig.SYKE_FF00_FFFFp, cpu_sig.TAPU_CPU_WR_xxxxxFGH); // schematic wrong, is NAND
+  /*p07.REFA*/ wire REFA_FF0F_WRn = nand(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, cpu_sig.SYKE_FF00_FFFFp, cpu_sig.TAPU_CPU_WR_xxxxxFGH); // schematic wrong, is NAND
   /*p02.ROTU*/ wire ROTU_FF0F_WRp = not(REFA_FF0F_WRn);
 
   // FF0F INT

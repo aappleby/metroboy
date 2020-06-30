@@ -76,7 +76,6 @@ void WindowRegisters::tick(TestGB& gb) {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto sst_sig = gb.sst_reg.sig(gb, ppu_sig.XYMO_LCDC_SPSIZE);
   auto win_sig = sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
 
   /*p27.REPU*/ wire REPU_IN_FRAME_Y = nor(lcd_sig.PARU_VBLANKp, rst_sig.PYRY_VID_RSTp);   // schematic wrong, this is NOR
 
@@ -197,7 +196,7 @@ void WindowRegisters::tick(TestGB& gb) {
 
   // FF4A
   {
-    /*p22.WYVO*/ wire FF4An = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.WYVO*/ wire FF4An = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.VYGA*/ wire FF4A = not(FF4An);
     /*p23.WEKO*/ wire FF4A_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4A);
     /*p23.VEFU*/ wire FF4A_WRn = not(FF4A_WR);
@@ -214,7 +213,7 @@ void WindowRegisters::tick(TestGB& gb) {
 
   // FF4B
   {
-    /*p22.WAGE*/ wire FF4Bn = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.WAGE*/ wire FF4Bn = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.VUMY*/ wire FF4B = not(FF4Bn);
     /*p23.WUZA*/ wire FF4B_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4B);
     /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
@@ -231,7 +230,7 @@ void WindowRegisters::tick(TestGB& gb) {
 
   // FF4A
   {
-    /*p22.WYVO*/ wire FF4An = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.WYVO*/ wire FF4An = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.VYGA*/ wire FF4A = not(FF4An);
     /*p23.WAXU*/ wire FF4A_RD = and (cpu_sig.ASOT_CPU_RD, FF4A);
     /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
@@ -248,7 +247,7 @@ void WindowRegisters::tick(TestGB& gb) {
 
   // FF4B
   {
-    /*p22.WAGE*/ wire FF4Bn = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.WESA_A01, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.WAGE*/ wire FF4Bn = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.VUMY*/ wire FF4B = not(FF4Bn);
     /*p23.WYZE*/ wire FF4B_RD = and (cpu_sig.ASOT_CPU_RD, FF4B);
     /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);

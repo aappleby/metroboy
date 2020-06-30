@@ -111,7 +111,6 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
 void DmaRegisters::tick(TestGB& gb) {
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto bus_sig = gb.bus_mux.sig(gb);
 
@@ -138,8 +137,11 @@ void DmaRegisters::tick(TestGB& gb) {
 
   /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(rst_sig.CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
 
-  /*p04.MOLU*/ wire MOLU_FF46_RDn = nand(adr_sig.XEDA_FF46p, cpu_sig.ASOT_CPU_RD);
-  /*p04.LAVY*/ wire LAVY_FF46_WRp = and (adr_sig.XEDA_FF46p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
+  /*p22.WATE*/ wire WATE_FF46n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
+  /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
+
+  /*p04.MOLU*/ wire MOLU_FF46_RDn = nand(XEDA_FF46p, cpu_sig.ASOT_CPU_RD);
+  /*p04.LAVY*/ wire LAVY_FF46_WRp = and (XEDA_FF46p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
 
   {
     /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, LAVY_FF46_WRp);

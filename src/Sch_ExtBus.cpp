@@ -106,7 +106,6 @@ void ExtPinsOut::tick(TestGB& gb) {
   auto dma_sig = gb.dma_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto bus_sig = gb.bus_mux.sig(gb);
 

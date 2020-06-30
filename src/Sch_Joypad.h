@@ -7,7 +7,6 @@ struct TestGB;
 
 struct ResetSignals;
 struct ClockSignals;
-struct AddressSignals;
 struct CpuBus;
 struct CpuBusSignals;
 
@@ -22,7 +21,7 @@ struct JoypadSignals {
 struct JoypadRegisters {
 
   JoypadSignals sig() const;
-  void tick(ResetSignals& rst_sig, ClockSignals& clk_sig, AddressSignals& adr_sig, CpuBus& cpu_bus, CpuBusSignals& cpu_sig);
+  void tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus& cpu_bus, CpuBusSignals& cpu_sig);
   bool commit();
 
   void dump_regs(TextPainter& text_painter) {

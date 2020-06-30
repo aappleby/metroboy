@@ -25,6 +25,34 @@ struct CpuBusSignals {
   /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAp;
 
   /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn;
+
+  /*p03.TOVY*/ bool TOVY_A00n;
+  /*p08.TOLA*/ bool TOLA_A01n;
+  /*p06.SEFY*/ bool SEFY_A02n;
+  /*p07.TONA*/ bool TONA_A08n;
+
+  /*p22.XOLA*/ bool XOLA_A00n;
+  /*p22.XENO*/ bool XENO_A01n;
+  /*p22.XUSY*/ bool XUSY_A02n;
+  /*p22.XERA*/ bool XERA_A03n;
+  /*p10.BYKO*/ bool BYKO_A05n;
+  /*p10.AKUG*/ bool AKUG_A06n;
+
+  /*p22.WADO*/ bool WADO_A00p;
+  /*p22.WESA*/ bool WESA_A01p;
+  /*p22.WALO*/ bool WALO_A02p;
+  /*p22.WEPO*/ bool WEPO_A03p;
+
+  /*p07.TUNA*/ bool TUNA_0000_FDFFp;
+  /*p06.SARE*/ bool SARE_XX00_XX07p;
+  /*p07.SYKE*/ bool SYKE_FF00_FFFFp;
+  /*p25.SYRO*/ bool SYRO_FE00_FFFFp;
+  /*p03.RYFO*/ bool RYFO_FF04_FF07p;
+  /*p07.SARO*/ bool SARO_FE00_FEFFp;
+  /*p22.WERO*/ bool WERO_FF40_FF4Fp;
+  /*p25.SOSE*/ bool SOSE_8000_9FFFp;
+  /*p08.TEXO*/ bool TEXO_8000_9FFFn;
+  /*p08.LEVO*/ bool LEVO_8000_9FFFp;
 };
 
 //-----------------------------------------------------------------------------

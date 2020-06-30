@@ -45,7 +45,6 @@ using namespace Schematics;
 
 void VramPins::tick(TestGB& gb) {
   auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto dma_sig = gb.dma_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
@@ -57,7 +56,7 @@ void VramPins::tick(TestGB& gb) {
   //---------------------------------------------------------------------------
 
   /*p25.TAVY*/ wire TAVY_MOE_Cn = not(PIN_MOEn_C);
-  /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(adr_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
+  /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
   /*p25.SALE*/ wire SALE_VRAM_WRn = mux2_p(TAVY_MOE_Cn, TEGU_CPU_VRAM_WRn, dbg_sig.TUTO_DBG_VRAMp);
 
   //----------
@@ -179,7 +178,7 @@ void VramPins::tick(TestGB& gb) {
     /*p25.RACO*/ wire _RACO_DBG_VRAMn = not(dbg_sig.TUTO_DBG_VRAMp);
     /*p29.ABON*/ wire ABON_SPR_VRAM_RDp1 = not(ppu_sig.TEXY_SPRITE_READp);
 
-    /*p25.TUJA*/ wire _TUJA_CPU_VRAM_WR = and(adr_sig.SOSE_8000_9FFFp, cpu_sig.APOV_CPU_WR_xxxxxFGH);
+    /*p25.TUJA*/ wire _TUJA_CPU_VRAM_WR = and(cpu_sig.SOSE_8000_9FFFp, cpu_sig.APOV_CPU_WR_xxxxxFGH);
     /*p25.SUDO*/ wire _SUDO_MWR_Cn = not(PIN_MWRn_C);
     /*p25.TYJY*/ wire _TYJY_DBG_VRAM_WR = mux2_p(_SUDO_MWR_Cn, _TUJA_CPU_VRAM_WR, dbg_sig.TUTO_DBG_VRAMp);
     /*p25.SOHY*/ wire _SOHY_MWR    = nand(_TYJY_DBG_VRAM_WR, ppu_sig.SERE_VRAM_RD);

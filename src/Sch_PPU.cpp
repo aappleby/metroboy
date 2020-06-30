@@ -130,8 +130,8 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto dma_sig = gb.dma_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto lcd_sig = gb.lcd_reg.sig(gb);
+  auto cpu_sig = gb.cpu_bus.sig(gb);
 
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto& vram_pins = gb.vram_pins;
@@ -181,7 +181,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   /*p27.ROZE*/ wire _ROZE_FINE_COUNT_STOPn = nand(RYKU_FINE_CNT0, ROGA_FINE_CNT1, RUBU_FINE_CNT2);
 
-  /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RD = and (adr_sig.SOSE_8000_9FFFp, dbg_sig.ABUZ);
+  /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RD = and (cpu_sig.SOSE_8000_9FFFp, dbg_sig.ABUZ);
   /*p25.TEFY*/ wire _TEFY_MCSn_Cn = not(vram_pins.PIN_MCSn_C);
   /*p25.TOLE*/ wire _TOLE_VRAM_RD = mux2_p(_TEFY_MCSn_Cn, _TUCA_CPU_VRAM_RD, dbg_sig.TUTO_DBG_VRAMp);
   /*p25.SERE*/ wire _SERE_VRAM_RD = and (_TOLE_VRAM_RD, _ROPY_RENDERINGn);
@@ -268,7 +268,6 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 void PpuRegisters::tick(TestGB& gb) {
   auto& pxp_reg = gb.pxp_reg;
 
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
@@ -566,7 +565,7 @@ void PpuRegisters::tick(TestGB& gb) {
 
   // FF40 LCDC
   {
-    /*p22.WORU*/ wire _WORU_FF40n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.XERA_A03n);
+    /*p22.WORU*/ wire _WORU_FF40n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
     /*p22.VOCA*/ wire _VOCA_FF40p = not(_WORU_FF40n);
 
     /*p23.VYRE*/ wire _VYRE_FF40_RDp = and (_VOCA_FF40p, cpu_sig.ASOT_CPU_RD);
@@ -615,7 +614,7 @@ void PpuRegisters::tick(TestGB& gb) {
     // when PAGO03 goes high, RUPO02 goes high
     // when ROPO16 goes high, RUPO02 goes low.
 
-    /*p22.WOFA*/ wire WOFA_FF41n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.XERA_A03n);
+    /*p22.WOFA*/ wire WOFA_FF41n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
     /*p22.VARY*/ wire VARY_FF41p = not(WOFA_FF41n);
 
     /*p21.TOBE*/ wire TOBE_FF41_RDa = and (cpu_sig.ASOT_CPU_RD, VARY_FF41p); // die AND

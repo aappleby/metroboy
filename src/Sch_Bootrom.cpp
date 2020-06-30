@@ -54,7 +54,6 @@ void Bootrom::tick(TestGB& gb) {
   auto cpu_sig = gb.cpu_bus.sig(gb);
 
   auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
 
   //----------------------------------------
@@ -64,10 +63,10 @@ void Bootrom::tick(TestGB& gb) {
     /*p07.TYRO*/ wire ADDR_0x0x0000p = nor(cpu_bus.PIN_A07, cpu_bus.PIN_A05, cpu_bus.PIN_A03, cpu_bus.PIN_A02, cpu_bus.PIN_A01, cpu_bus.PIN_A00);
     /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(cpu_bus.PIN_A04, cpu_bus.PIN_A06);
 
-    /*p07.TEXE*/ wire FF50_RDp = and(cpu_sig.TEDO_CPU_RD, adr_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
+    /*p07.TEXE*/ wire FF50_RDp = and(cpu_sig.TEDO_CPU_RD, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SYPU*/ cpu_bus.TRI_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
 
-    /*p07.TUGE*/ wire FF50_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
+    /*p07.TUGE*/ wire FF50_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.TRI_D0, BOOT_BITn);
 
     /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, rst_sig.ALUR_RSTn, BOOT_BIT_IN);

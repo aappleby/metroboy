@@ -12,7 +12,6 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   auto& oam_bus = gb.oam_bus;
 
   auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto win_sig = gb.win_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
@@ -454,7 +453,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
 
   // FF47 BGP
   {
-    /*p22.WYBO*/ wire FF47n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.WESA_A01, adr_sig.WALO_A02, adr_sig.XERA_A03n);
+    /*p22.WYBO*/ wire FF47n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
     /*p22.WERA*/ wire FF47 = not(FF47n);
     /*p36.VELY*/ wire FF47_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF47);
     /*p36.TEPO*/ wire FF47_WRn = not(FF47_WR);
@@ -483,7 +482,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
 
   // FF48 OBP0
   {
-    /*p22.WETA*/ wire FF48n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.XOLA_A00n, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.WETA*/ wire FF48n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.XAYO*/ wire FF48 = not(FF48n);
     /*p36.XOMA*/ wire FF48_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF48);
     /*p36.XELO*/ wire FF48_WRn = not(FF48_WR);
@@ -512,7 +511,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
 
   // FF49 OBP1
   {
-    /*p22.VAMA*/ wire FF49n = nand(adr_sig.WERO_FF40_FF4Fp, adr_sig.WADO_A00, adr_sig.XENO_A01n, adr_sig.XUSY_A02n, adr_sig.WEPO_A03);
+    /*p22.VAMA*/ wire FF49n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.TEGO*/ wire FF49 = not(FF49n);
     /*p36.MYXE*/ wire FF49_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF49);
     /*p36.LEHO*/ wire FF49_WRn = not(FF49_WR);

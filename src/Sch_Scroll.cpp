@@ -98,24 +98,24 @@ void ScrollRegisters::tick(TestGB& gb) {
     /*p23.BEDY*/ wire BEDY_FF42_WRp = and(XARO_FF42p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
     /*p23.CAVO*/ wire CAVO_FF42_WRn = not(BEDY_FF42_WRp);
 
-    /*p23.GAVE*/ GAVE_SCY0.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D0);
-    /*p23.FYMO*/ FYMO_SCY1.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D1);
-    /*p23.FEZU*/ FEZU_SCY2.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D2);
-    /*p23.FUJO*/ FUJO_SCY3.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D3);
-    /*p23.DEDE*/ DEDE_SCY4.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D4);
-    /*p23.FOTY*/ FOTY_SCY5.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D5);
-    /*p23.FOHA*/ FOHA_SCY6.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D6);
-    /*p23.FUNY*/ FUNY_SCY7.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D7);
+    /*p23.GAVE*/ GAVE_SCY0.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D0);
+    /*p23.FYMO*/ FYMO_SCY1.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D1);
+    /*p23.FEZU*/ FEZU_SCY2.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D2);
+    /*p23.FUJO*/ FUJO_SCY3.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D3);
+    /*p23.DEDE*/ DEDE_SCY4.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D4);
+    /*p23.FOTY*/ FOTY_SCY5.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D5);
+    /*p23.FOHA*/ FOHA_SCY6.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D6);
+    /*p23.FUNY*/ FUNY_SCY7.set(CAVO_FF42_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D7);
 
 
-    /*p23.WARE*/ cpu_bus.TS_D0.set_tribuf(BUWY_FF42_RDn, GAVE_SCY0.q());
-    /*p23.GOBA*/ cpu_bus.TS_D1.set_tribuf(BUWY_FF42_RDn, FYMO_SCY1.q());
-    /*p23.GONU*/ cpu_bus.TS_D2.set_tribuf(BUWY_FF42_RDn, FEZU_SCY2.q());
-    /*p23.GODO*/ cpu_bus.TS_D3.set_tribuf(BUWY_FF42_RDn, FUJO_SCY3.q());
-    /*p23.CUSA*/ cpu_bus.TS_D4.set_tribuf(BUWY_FF42_RDn, DEDE_SCY4.q());
-    /*p23.GYZO*/ cpu_bus.TS_D5.set_tribuf(BUWY_FF42_RDn, FOTY_SCY5.q());
-    /*p23.GUNE*/ cpu_bus.TS_D6.set_tribuf(BUWY_FF42_RDn, FOHA_SCY6.q());
-    /*p23.GYZA*/ cpu_bus.TS_D7.set_tribuf(BUWY_FF42_RDn, FUNY_SCY7.q());
+    /*p23.WARE*/ cpu_bus.TRI_D0.set_tribuf(BUWY_FF42_RDn, GAVE_SCY0.q());
+    /*p23.GOBA*/ cpu_bus.TRI_D1.set_tribuf(BUWY_FF42_RDn, FYMO_SCY1.q());
+    /*p23.GONU*/ cpu_bus.TRI_D2.set_tribuf(BUWY_FF42_RDn, FEZU_SCY2.q());
+    /*p23.GODO*/ cpu_bus.TRI_D3.set_tribuf(BUWY_FF42_RDn, FUJO_SCY3.q());
+    /*p23.CUSA*/ cpu_bus.TRI_D4.set_tribuf(BUWY_FF42_RDn, DEDE_SCY4.q());
+    /*p23.GYZO*/ cpu_bus.TRI_D5.set_tribuf(BUWY_FF42_RDn, FOTY_SCY5.q());
+    /*p23.GUNE*/ cpu_bus.TRI_D6.set_tribuf(BUWY_FF42_RDn, FOHA_SCY6.q());
+    /*p23.GYZA*/ cpu_bus.TRI_D7.set_tribuf(BUWY_FF42_RDn, FUNY_SCY7.q());
   }
 
   // FF43 SCX
@@ -129,23 +129,23 @@ void ScrollRegisters::tick(TestGB& gb) {
     /*p23.ARUR*/ wire ARUR_FF43_WRp = and (XAVY_FF43p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
     /*p23.AMUN*/ wire AMUN_FF43_WRn = not(ARUR_FF43_WRp);
 
-    /*p23.DATY*/ DATY_SCX0.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D0);
-    /*p23.DUZU*/ DUZU_SCX1.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D1);
-    /*p23.CYXU*/ CYXU_SCX2.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D2);
-    /*p23.GUBO*/ GUBO_SCX3.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D3);
-    /*p23.BEMY*/ BEMY_SCX4.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D4);
-    /*p23.CUZY*/ CUZY_SCX5.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D5);
-    /*p23.CABU*/ CABU_SCX6.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D6);
-    /*p23.BAKE*/ BAKE_SCX7.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TS_D7);
+    /*p23.DATY*/ DATY_SCX0.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D0);
+    /*p23.DUZU*/ DUZU_SCX1.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D1);
+    /*p23.CYXU*/ CYXU_SCX2.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D2);
+    /*p23.GUBO*/ GUBO_SCX3.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D3);
+    /*p23.BEMY*/ BEMY_SCX4.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D4);
+    /*p23.CUZY*/ CUZY_SCX5.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D5);
+    /*p23.CABU*/ CABU_SCX6.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D6);
+    /*p23.BAKE*/ BAKE_SCX7.set(AMUN_FF43_WRn, rst_sig.CUNU_RSTn, cpu_bus.TRI_D7);
 
-    /*p23.EDOS*/ cpu_bus.TS_D0.set_tribuf(!BEBA_FF43_RDn, DATY_SCX0.q());
-    /*p23.EKOB*/ cpu_bus.TS_D1.set_tribuf(!BEBA_FF43_RDn, DUZU_SCX1.q());
-    /*p23.CUGA*/ cpu_bus.TS_D2.set_tribuf(!BEBA_FF43_RDn, CYXU_SCX2.q());
-    /*p23.WONY*/ cpu_bus.TS_D3.set_tribuf(!BEBA_FF43_RDn, GUBO_SCX3.q());
-    /*p23.CEDU*/ cpu_bus.TS_D4.set_tribuf(!BEBA_FF43_RDn, BEMY_SCX4.q());
-    /*p23.CATA*/ cpu_bus.TS_D5.set_tribuf(!BEBA_FF43_RDn, CUZY_SCX5.q());
-    /*p23.DOXE*/ cpu_bus.TS_D6.set_tribuf(!BEBA_FF43_RDn, CABU_SCX6.q());
-    /*p23.CASY*/ cpu_bus.TS_D7.set_tribuf(!BEBA_FF43_RDn, BAKE_SCX7.q());
+    /*p23.EDOS*/ cpu_bus.TRI_D0.set_tribuf(!BEBA_FF43_RDn, DATY_SCX0.q());
+    /*p23.EKOB*/ cpu_bus.TRI_D1.set_tribuf(!BEBA_FF43_RDn, DUZU_SCX1.q());
+    /*p23.CUGA*/ cpu_bus.TRI_D2.set_tribuf(!BEBA_FF43_RDn, CYXU_SCX2.q());
+    /*p23.WONY*/ cpu_bus.TRI_D3.set_tribuf(!BEBA_FF43_RDn, GUBO_SCX3.q());
+    /*p23.CEDU*/ cpu_bus.TRI_D4.set_tribuf(!BEBA_FF43_RDn, BEMY_SCX4.q());
+    /*p23.CATA*/ cpu_bus.TRI_D5.set_tribuf(!BEBA_FF43_RDn, CUZY_SCX5.q());
+    /*p23.DOXE*/ cpu_bus.TRI_D6.set_tribuf(!BEBA_FF43_RDn, CABU_SCX6.q());
+    /*p23.CASY*/ cpu_bus.TRI_D7.set_tribuf(!BEBA_FF43_RDn, BAKE_SCX7.q());
   }
 }
 

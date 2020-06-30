@@ -8,7 +8,8 @@ struct TestGB;
 struct ResetSignals;
 struct ClockSignals;
 struct AddressSignals;
-struct CpuSignals;
+struct CpuBus;
+struct CpuBusSignals;
 
 //-----------------------------------------------------------------------------
 
@@ -21,7 +22,7 @@ struct JoypadSignals {
 struct JoypadRegisters {
 
   JoypadSignals sig() const;
-  void tick(ResetSignals& rst_sig, ClockSignals& clk_sig, AddressSignals& adr_sig, CpuSignals& cpu_sig, CpuBus& cpu_bus);
+  void tick(ResetSignals& rst_sig, ClockSignals& clk_sig, AddressSignals& adr_sig, CpuBus& cpu_bus, CpuBusSignals& cpu_sig);
   bool commit();
 
   void dump_regs(TextPainter& text_painter) {
@@ -42,7 +43,7 @@ struct JoypadRegisters {
     JOYP_L1.dump(text_painter, "JOYP_L1     ");
     JOYP_L2.dump(text_painter, "JOYP_L2     ");
     JOYP_L3.dump(text_painter, "JOYP_L3     ");
-    WAKE_CPU.dump(text_painter, "WAKE_CPU    ");
+    AWOB_WAKE_CPU.dump(text_painter, "AWOB_WAKE_CPU    ");
     text_painter.newline();
     text_painter.dprintf("----- JOY_PINS -----\n");
     text_painter.dprintf("P10 %d:%d:%d:%d\n", P10_A.a.val, P10_B.a.val, P10_C.a.val, P10_D.a.val);
@@ -80,7 +81,7 @@ private:
   /*p05.KAPA*/ Reg JOYP_L1;
   /*p05.KEJA*/ Reg JOYP_L2;
   /*p05.KOLO*/ Reg JOYP_L3;
-  /*p02.AWOB*/ Reg WAKE_CPU;
+  /*p02.AWOB*/ Reg AWOB_WAKE_CPU;
 
   // The B connections on the joypad pins are werid.
   // They seem to be used as an input, or at least I can't find the driver

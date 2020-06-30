@@ -9,26 +9,27 @@ void VramBus::tick(TestGB& /*gb*/) {
 
 bool VramBus::commit() {
   bool changed = false;
-  changed |= TS_MA00.commit_tribuf();
-  changed |= TS_MA01.commit_tribuf();
-  changed |= TS_MA02.commit_tribuf();
-  changed |= TS_MA03.commit_tribuf();
-  changed |= TS_MA04.commit_tribuf();
-  changed |= TS_MA05.commit_tribuf();
-  changed |= TS_MA06.commit_tribuf();
-  changed |= TS_MA07.commit_tribuf();
-  changed |= TS_MA08.commit_tribuf();
-  changed |= TS_MA09.commit_tribuf();
-  changed |= TS_MA10.commit_tribuf();
-  changed |= TS_MA11.commit_tribuf();
-  changed |= TS_MA12.commit_tribuf();
-  changed |= TS_MD0.commit_tribuf();
-  changed |= TS_MD1.commit_tribuf();
-  changed |= TS_MD2.commit_tribuf();
-  changed |= TS_MD3.commit_tribuf();
-  changed |= TS_MD4.commit_tribuf();
-  changed |= TS_MD5.commit_tribuf();
-  changed |= TS_MD6.commit_tribuf();
-  changed |= TS_MD7.commit_tribuf();
+  changed |= TRI_A00.commit_tribuf();
+  changed |= TRI_A01.commit_tribuf();
+  changed |= TRI_A02.commit_tribuf();
+  changed |= TRI_A03.commit_tribuf();
+  changed |= TRI_A04.commit_tribuf();
+  changed |= TRI_A05.commit_tribuf();
+  changed |= TRI_A06.commit_tribuf();
+  changed |= TRI_A07.commit_tribuf();
+  changed |= TRI_A08.commit_tribuf();
+  changed |= TRI_A09.commit_tribuf();
+  changed |= TRI_A10.commit_tribuf();
+  changed |= TRI_A11.commit_tribuf();
+  changed |= TRI_A12.commit_tribuf();
+
+  changed |= TRI_D0.commit_tribuf();
+  changed |= TRI_D1.commit_tribuf();
+  changed |= TRI_D2.commit_tribuf();
+  changed |= TRI_D3.commit_tribuf();
+  changed |= TRI_D4.commit_tribuf();
+  changed |= TRI_D5.commit_tribuf();
+  changed |= TRI_D6.commit_tribuf();
+  changed |= TRI_D7.commit_tribuf();
   return changed;
 }

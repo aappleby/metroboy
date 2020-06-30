@@ -4,6 +4,7 @@
 namespace Schematics {
 
 struct TestGB;
+struct CpuBus;
 
 //-----------------------------------------------------------------------------
 

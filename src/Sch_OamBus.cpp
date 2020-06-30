@@ -55,12 +55,11 @@ struct OamBusSignals {
 void OamBus::tick(TestGB& gb) {
   auto& cpu_bus = gb.cpu_bus;
   auto& vram_bus = gb.vram_bus;
+  auto& ext_pins_in = gb.ext_pins_in;
 
   auto bus_sig = gb.bus_mux.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto dma_sig = gb.dma_reg.sig(gb);
-  auto ext_sig = gb.ext_bus.sig(gb);
-
 
   PIN_A0.set(bus_sig.GEKA_OAM_A0p);
   PIN_A1.set(bus_sig.ZYFO_OAM_A1p);
@@ -92,63 +91,63 @@ void OamBus::tick(TestGB& gb) {
   PIN_CLK.set(bus_sig.COTA_OAM_CLK);
 
   {
-    /*p28.ZAXA*/ PIN_DA0.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D0);
-    /*p28.ZAKY*/ PIN_DA1.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D1);
-    /*p28.WULE*/ PIN_DA2.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D2);
-    /*p28.ZOZO*/ PIN_DA3.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D3);
-    /*p28.ZUFO*/ PIN_DA4.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D4);
-    /*p28.ZATO*/ PIN_DA5.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D5);
-    /*p28.YVUC*/ PIN_DA6.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D6);
-    /*p28.ZUFE*/ PIN_DA7.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D7);
+    /*p28.ZAXA*/ PIN_DA0.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D0);
+    /*p28.ZAKY*/ PIN_DA1.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D1);
+    /*p28.WULE*/ PIN_DA2.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D2);
+    /*p28.ZOZO*/ PIN_DA3.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D3);
+    /*p28.ZUFO*/ PIN_DA4.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D4);
+    /*p28.ZATO*/ PIN_DA5.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D5);
+    /*p28.YVUC*/ PIN_DA6.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D6);
+    /*p28.ZUFE*/ PIN_DA7.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D7);
 
-    /*p28.ZAMY*/ PIN_DB0.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D0); // small tri
-    /*p28.ZOPU*/ PIN_DB1.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D1);
-    /*p28.WYKY*/ PIN_DB2.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D2);
-    /*p28.ZAJA*/ PIN_DB3.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D3);
-    /*p28.ZUGA*/ PIN_DB4.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D4);
-    /*p28.ZUMO*/ PIN_DB5.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D5);
-    /*p28.XYTO*/ PIN_DB6.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D6);
-    /*p28.ZYFA*/ PIN_DB7.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TS_D7);
+    /*p28.ZAMY*/ PIN_DB0.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D0); // small tri
+    /*p28.ZOPU*/ PIN_DB1.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D1);
+    /*p28.WYKY*/ PIN_DB2.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D2);
+    /*p28.ZAJA*/ PIN_DB3.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D3);
+    /*p28.ZUGA*/ PIN_DB4.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D4);
+    /*p28.ZUMO*/ PIN_DB5.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D5);
+    /*p28.XYTO*/ PIN_DB6.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D6);
+    /*p28.ZYFA*/ PIN_DB7.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D7);
   }
 
   {
 
-    /*p25.WEJO*/ PIN_DA0.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.RALO*/ not(ext_sig.PIN_D0_C));
-    /*p25.BUBO*/ PIN_DA1.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TUNE*/ not(ext_sig.PIN_D1_C));
-    /*p25.BETU*/ PIN_DA2.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SERA*/ not(ext_sig.PIN_D2_C));
-    /*p25.CYME*/ PIN_DA3.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TENU*/ not(ext_sig.PIN_D3_C));
-    /*p25.BAXU*/ PIN_DA4.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SYSA*/ not(ext_sig.PIN_D4_C));
-    /*p25.BUHU*/ PIN_DA5.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SUGY*/ not(ext_sig.PIN_D5_C));
-    /*p25.BYNY*/ PIN_DA6.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TUBE*/ not(ext_sig.PIN_D6_C));
-    /*p25.BYPY*/ PIN_DA7.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SYZO*/ not(ext_sig.PIN_D7_C));
-    /*p25.WASA*/ PIN_DB0.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.RALO*/ not(ext_sig.PIN_D0_C));
-    /*p25.BOMO*/ PIN_DB1.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TUNE*/ not(ext_sig.PIN_D1_C));
-    /*p25.BASA*/ PIN_DB2.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SERA*/ not(ext_sig.PIN_D2_C));
-    /*p25.CAKO*/ PIN_DB3.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TENU*/ not(ext_sig.PIN_D3_C));
-    /*p25.BUMA*/ PIN_DB4.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SYSA*/ not(ext_sig.PIN_D4_C));
-    /*p25.BUPY*/ PIN_DB5.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SUGY*/ not(ext_sig.PIN_D5_C));
-    /*p25.BASY*/ PIN_DB6.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TUBE*/ not(ext_sig.PIN_D6_C));
-    /*p25.BAPE*/ PIN_DB7.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SYZO*/ not(ext_sig.PIN_D7_C));
+    /*p25.WEJO*/ PIN_DA0.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.RALO*/ not(ext_pins_in.PIN_D0_C));
+    /*p25.BUBO*/ PIN_DA1.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TUNE*/ not(ext_pins_in.PIN_D1_C));
+    /*p25.BETU*/ PIN_DA2.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SERA*/ not(ext_pins_in.PIN_D2_C));
+    /*p25.CYME*/ PIN_DA3.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TENU*/ not(ext_pins_in.PIN_D3_C));
+    /*p25.BAXU*/ PIN_DA4.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SYSA*/ not(ext_pins_in.PIN_D4_C));
+    /*p25.BUHU*/ PIN_DA5.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SUGY*/ not(ext_pins_in.PIN_D5_C));
+    /*p25.BYNY*/ PIN_DA6.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TUBE*/ not(ext_pins_in.PIN_D6_C));
+    /*p25.BYPY*/ PIN_DA7.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SYZO*/ not(ext_pins_in.PIN_D7_C));
+    /*p25.WASA*/ PIN_DB0.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.RALO*/ not(ext_pins_in.PIN_D0_C));
+    /*p25.BOMO*/ PIN_DB1.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TUNE*/ not(ext_pins_in.PIN_D1_C));
+    /*p25.BASA*/ PIN_DB2.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SERA*/ not(ext_pins_in.PIN_D2_C));
+    /*p25.CAKO*/ PIN_DB3.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TENU*/ not(ext_pins_in.PIN_D3_C));
+    /*p25.BUMA*/ PIN_DB4.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SYSA*/ not(ext_pins_in.PIN_D4_C));
+    /*p25.BUPY*/ PIN_DB5.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SUGY*/ not(ext_pins_in.PIN_D5_C));
+    /*p25.BASY*/ PIN_DB6.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TUBE*/ not(ext_pins_in.PIN_D6_C));
+    /*p25.BAPE*/ PIN_DB7.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SYZO*/ not(ext_pins_in.PIN_D7_C));
   }
 
   {
     /*p28.AZAR*/ wire _AZAR_DMA_READ_VRAMn = not(dma_sig.LUFA_DMA_READ_VRAMp);
-    /*p28.WUZU*/ PIN_DA0.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD0);
-    /*p28.AXER*/ PIN_DA1.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD1);
-    /*p28.ASOX*/ PIN_DA2.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD2);
-    /*p28.CETU*/ PIN_DA3.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD3);
-    /*p28.ARYN*/ PIN_DA4.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD4);
-    /*p28.ACOT*/ PIN_DA5.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD5);
-    /*p28.CUJE*/ PIN_DA6.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD6);
-    /*p28.ATER*/ PIN_DA7.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD7);
-    /*p28.WOWA*/ PIN_DB0.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD0);
-    /*p28.AVEB*/ PIN_DB1.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD1);
-    /*p28.AMUH*/ PIN_DB2.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD2);
-    /*p28.COFO*/ PIN_DB3.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD3);
-    /*p28.AZOZ*/ PIN_DB4.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD4);
-    /*p28.AGYK*/ PIN_DB5.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD5);
-    /*p28.BUSE*/ PIN_DB6.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD6);
-    /*p28.ANUM*/ PIN_DB7.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TS_MD7);
+    /*p28.WUZU*/ PIN_DA0.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D0);
+    /*p28.AXER*/ PIN_DA1.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D1);
+    /*p28.ASOX*/ PIN_DA2.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D2);
+    /*p28.CETU*/ PIN_DA3.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D3);
+    /*p28.ARYN*/ PIN_DA4.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D4);
+    /*p28.ACOT*/ PIN_DA5.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D5);
+    /*p28.CUJE*/ PIN_DA6.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D6);
+    /*p28.ATER*/ PIN_DA7.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D7);
+    /*p28.WOWA*/ PIN_DB0.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D0);
+    /*p28.AVEB*/ PIN_DB1.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D1);
+    /*p28.AMUH*/ PIN_DB2.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D2);
+    /*p28.COFO*/ PIN_DB3.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D3);
+    /*p28.AZOZ*/ PIN_DB4.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D4);
+    /*p28.AGYK*/ PIN_DB5.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D5);
+    /*p28.BUSE*/ PIN_DB6.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D6);
+    /*p28.ANUM*/ PIN_DB7.set_tribuf(_AZAR_DMA_READ_VRAMn, vram_bus.TRI_D7);
   }
 
   {
@@ -198,23 +197,23 @@ void OamBus::tick(TestGB& gb) {
     /*p28.WEWU*/ wire _WEWU_OAM_A_CPU_RDn = not(_WUKU_OAM_A_CPU_RD);
     /*p28.WUME*/ wire _WUME_OAM_B_CPU_RDn = not(_GUKO_OAM_B_CPU_RD);
 
-    /*p31.XACA*/ cpu_bus.TS_D0.set_tribuf(_WEWU_OAM_A_CPU_RDn, XYKY_LATCH_OAM_A0);
-    /*p31.XAGU*/ cpu_bus.TS_D1.set_tribuf(_WEWU_OAM_A_CPU_RDn, YRUM_LATCH_OAM_A1);
-    /*p31.XEPU*/ cpu_bus.TS_D2.set_tribuf(_WEWU_OAM_A_CPU_RDn, YSEX_LATCH_OAM_A2);
-    /*p31.XYGU*/ cpu_bus.TS_D3.set_tribuf(_WEWU_OAM_A_CPU_RDn, YVEL_LATCH_OAM_A3);
-    /*p31.XUNA*/ cpu_bus.TS_D4.set_tribuf(_WEWU_OAM_A_CPU_RDn, WYNO_LATCH_OAM_A4);
-    /*p31.DEVE*/ cpu_bus.TS_D5.set_tribuf(_WEWU_OAM_A_CPU_RDn, CYRA_LATCH_OAM_A5);
-    /*p31.ZEHA*/ cpu_bus.TS_D6.set_tribuf(_WEWU_OAM_A_CPU_RDn, ZUVE_LATCH_OAM_A6);
-    /*p31.FYRA*/ cpu_bus.TS_D7.set_tribuf(_WEWU_OAM_A_CPU_RDn, ECED_LATCH_OAM_A7);
+    /*p31.XACA*/ cpu_bus.TRI_D0.set_tribuf(_WEWU_OAM_A_CPU_RDn, XYKY_LATCH_OAM_A0);
+    /*p31.XAGU*/ cpu_bus.TRI_D1.set_tribuf(_WEWU_OAM_A_CPU_RDn, YRUM_LATCH_OAM_A1);
+    /*p31.XEPU*/ cpu_bus.TRI_D2.set_tribuf(_WEWU_OAM_A_CPU_RDn, YSEX_LATCH_OAM_A2);
+    /*p31.XYGU*/ cpu_bus.TRI_D3.set_tribuf(_WEWU_OAM_A_CPU_RDn, YVEL_LATCH_OAM_A3);
+    /*p31.XUNA*/ cpu_bus.TRI_D4.set_tribuf(_WEWU_OAM_A_CPU_RDn, WYNO_LATCH_OAM_A4);
+    /*p31.DEVE*/ cpu_bus.TRI_D5.set_tribuf(_WEWU_OAM_A_CPU_RDn, CYRA_LATCH_OAM_A5);
+    /*p31.ZEHA*/ cpu_bus.TRI_D6.set_tribuf(_WEWU_OAM_A_CPU_RDn, ZUVE_LATCH_OAM_A6);
+    /*p31.FYRA*/ cpu_bus.TRI_D7.set_tribuf(_WEWU_OAM_A_CPU_RDn, ECED_LATCH_OAM_A7);
 
-    /*p29.YFAP*/ cpu_bus.TS_D0.set_tribuf(_WUME_OAM_B_CPU_RDn, YDYV_LATCH_OAM_B0); // big tri
-    /*p29.XELE*/ cpu_bus.TS_D1.set_tribuf(_WUME_OAM_B_CPU_RDn, YCEB_LATCH_OAM_B1);
-    /*p29.YPON*/ cpu_bus.TS_D2.set_tribuf(_WUME_OAM_B_CPU_RDn, ZUCA_LATCH_OAM_B2);
-    /*p29.XUVO*/ cpu_bus.TS_D3.set_tribuf(_WUME_OAM_B_CPU_RDn, WONE_LATCH_OAM_B3);
-    /*p29.ZYSA*/ cpu_bus.TS_D4.set_tribuf(_WUME_OAM_B_CPU_RDn, ZAXE_LATCH_OAM_B4);
-    /*p29.YWEG*/ cpu_bus.TS_D5.set_tribuf(_WUME_OAM_B_CPU_RDn, XAFU_LATCH_OAM_B5);
-    /*p29.XABU*/ cpu_bus.TS_D6.set_tribuf(_WUME_OAM_B_CPU_RDn, YSES_LATCH_OAM_B6);
-    /*p29.YTUX*/ cpu_bus.TS_D7.set_tribuf(_WUME_OAM_B_CPU_RDn, ZECA_LATCH_OAM_B7);
+    /*p29.YFAP*/ cpu_bus.TRI_D0.set_tribuf(_WUME_OAM_B_CPU_RDn, YDYV_LATCH_OAM_B0); // big tri
+    /*p29.XELE*/ cpu_bus.TRI_D1.set_tribuf(_WUME_OAM_B_CPU_RDn, YCEB_LATCH_OAM_B1);
+    /*p29.YPON*/ cpu_bus.TRI_D2.set_tribuf(_WUME_OAM_B_CPU_RDn, ZUCA_LATCH_OAM_B2);
+    /*p29.XUVO*/ cpu_bus.TRI_D3.set_tribuf(_WUME_OAM_B_CPU_RDn, WONE_LATCH_OAM_B3);
+    /*p29.ZYSA*/ cpu_bus.TRI_D4.set_tribuf(_WUME_OAM_B_CPU_RDn, ZAXE_LATCH_OAM_B4);
+    /*p29.YWEG*/ cpu_bus.TRI_D5.set_tribuf(_WUME_OAM_B_CPU_RDn, XAFU_LATCH_OAM_B5);
+    /*p29.XABU*/ cpu_bus.TRI_D6.set_tribuf(_WUME_OAM_B_CPU_RDn, YSES_LATCH_OAM_B6);
+    /*p29.YTUX*/ cpu_bus.TRI_D7.set_tribuf(_WUME_OAM_B_CPU_RDn, ZECA_LATCH_OAM_B7);
   }
 }
 

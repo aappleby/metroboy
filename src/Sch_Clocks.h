@@ -26,19 +26,19 @@ struct ClockSignals {
   /*p30.WUDA*/ wire WUDA_xBCxxFGx;
   /*p01.NULE*/ wire NULE_AxxxxFGH;
   /*p01.BYRY*/ wire BYRY_xBCDExxx;
-  /*p01.BUDE*/ wire PIN_BUDE_AxxxxFGH;
+  /*p01.BUDE*/ wire BUDE_AxxxxFGH;
   /*p01.UVYT*/ wire UVYT_xBCDExxx;
   /*p04.MOPA*/ wire MOPA_AxxxxFGH;
   /*p01.AFAS*/ wire AFAS_xxxxxFGH;
   /*p01.BUGO*/ wire BUGO_xxCDEFxx;
   /*p01.BATE*/ wire BATE_ABxxxxxH;
   /*p01.BASU*/ wire BASU_xxCDEFGx;
-  /*p01.BUKE*/ wire PIN_BUKE_ABxxxxxH;
+  /*p01.BUKE*/ wire BUKE_ABxxxxxH;
   /*p01.BAPY*/ wire BAPY_AxxxxxxH;
   /*p01.BERU*/ wire BERU_xBCDEFGx;
   /*p01.BUFA*/ wire BUFA_AxxxxxxH;
-  /*p01.BOLO*/ wire PIN_BOLO_xBCDEFGx;
-  /*p01.BEKO*/ wire PIN_BEKO_xBCDExxx;
+  /*p01.BOLO*/ wire BOLO_xBCDEFGx;
+  /*p01.BEKO*/ wire BEKO_xBCDExxx;
   /*p01.BEJA*/ wire BEJA_AxxxxFGH;
   /*p01.BANE*/ wire BANE_xBCDExxx;
   /*p01.BELO*/ wire BELO_AxxxxFGH;
@@ -47,20 +47,20 @@ struct ClockSignals {
   /*p01.BELE*/ wire BELE_xBxxxxxx;
   /*p01.BYJU*/ wire BYJU_AxCDEFGH;
   /*p01.BALY*/ wire BALY_xBxxxxxx;
-  /*p01.BOGA*/ wire PIN_BOGA_AxCDEFGH;
+  /*p01.BOGA*/ wire BOGA_AxCDEFGH;
   /*p21.TALU*/ wire TALU_xBCDExxx;
   /*p21.SONO*/ wire SONO_AxxxxFGH;
   /*p28.AWOH*/ wire AWOH_AxxDExxH;
   /*p28.XYNY*/ wire XYNY_xBCDExxx;
   /*p01.BUVU*/ wire BUVU_xBxxxxxx;
   /*p01.BYXO*/ wire BYXO_AxCDEFGH;
-  /*p01.BEDO*/ wire PIN_BEDO_xBxxxxxx;
+  /*p01.BEDO*/ wire BEDO_xBxxxxxx;
   /*p29.WOJO*/ wire WOJO_xxxDxxxH;
   /*p29.XYSO*/ wire XYSO_ABCxDEFx;
   /*p17.ABUR*/ wire ABUR_xxCDEFGx;
   /*p17.BORY*/ wire BORY_ABxxxxxH;
-  /*p01.BOMA*/ wire PIN_BOMA_xBxxxxxx;
-  /*p01.BOWA*/ wire PIN_BOWA_AxCDEFGH;
+  /*p01.BOMA*/ wire BOMA_xBxxxxxx;
+  /*p01.BOWA*/ wire BOWA_AxCDEFGH;
 };
 
 struct ClockRegisters {

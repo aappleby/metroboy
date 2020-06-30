@@ -13,7 +13,7 @@
 namespace Schematics {
 
 struct Bootrom;
-struct CpuBus;
+struct CpuPins;
 struct Debug;
 //struct DMA;
 struct HRAM;
@@ -89,7 +89,7 @@ enum SignalFlags {
   HIZ     = 0b00000010,
   CLK     = 0b00000100,
   SET     = 0b00001000,
-  PIN_RST     = 0b00010000,
+  RST     = 0b00010000,
   ERROR   = 0b00100000,
   //CHANGED = 0b01000000,
 };
@@ -133,6 +133,7 @@ struct SignalBase {
   // FIXME remove this so regs need explicit q/qn
   operator const bool() const {
     if (a.error) __debugbreak();
+    if (!b.error) __debugbreak();
     //if (a.hiz)   __debugbreak();
     if (a.hiz) return 1;
     return a.val;

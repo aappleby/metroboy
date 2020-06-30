@@ -27,19 +27,31 @@ struct VramPins {
     text_painter.newline();
   }
 
+  /* PIN_43 */ PinIn  PIN_MCSn_C;  // -> P25.TEFY
+  /* PIN_45 */ PinIn  PIN_MOEn_C;  // -> P25.TAVY
+  /* PIN_49 */ PinIn  PIN_MWRn_C;  // -> P25.SUDO
+
+  /* PIN_33 */ PinIn  PIN_MD0_C;   // -> P25.RODY
+  /* PIN_31 */ PinIn  PIN_MD1_C;   // -> P25.REBA
+  /* PIN_30 */ PinIn  PIN_MD2_C;   // -> P25.RYDO
+  /* PIN_29 */ PinIn  PIN_MD3_C;   // -> P25.REMO
+  /* PIN_28 */ PinIn  PIN_MD4_C;   // -> P25.ROCE
+  /* PIN_27 */ PinIn  PIN_MD5_C;   // -> P25.ROPU
+  /* PIN_26 */ PinIn  PIN_MD6_C;   // -> P25.RETA
+  /* PIN_25 */ PinIn  PIN_MD7_C;   // -> P25.RAKU
+
+private:
+
   //----------
   // VRAM control pins
 
   /* PIN_43 */ PinOut PIN_MCSn_A;   // <- P25.SOKY
-  /* PIN_43 */ PinIn  PIN_MCSn_C;   // -> P25.TEFY
   /* PIN_43 */ PinOut PIN_MCSn_D;   // <- P25.SETY
 
   /* PIN_45 */ PinOut PIN_MOEn_A;   // <- P25.REFO
-  /* PIN_45 */ PinIn  PIN_MOEn_C;   // -> P25.TAVY
   /* PIN_45 */ PinOut PIN_MOEn_D;   // <- P25.SAHA
 
   /* PIN_49 */ PinOut PIN_MWRn_A;   // <- P25.SYSY
-  /* PIN_49 */ PinIn  PIN_MWRn_C;   // -> P25.SUDO
   /* PIN_49 */ PinOut PIN_MWRn_D;   // <- P25.RAGU
 
   //----------
@@ -79,15 +91,6 @@ struct VramPins {
   /* PIN_27 */ PinOut PIN_MD5_B;   // <- P25.ROFA
   /* PIN_26 */ PinOut PIN_MD6_B;   // <- P25.ROFA
   /* PIN_25 */ PinOut PIN_MD7_B;   // <- P25.ROFA
-
-  /* PIN_33 */ PinIn  PIN_MD0_C;   // -> P25.RODY
-  /* PIN_31 */ PinIn  PIN_MD1_C;   // -> P25.REBA
-  /* PIN_30 */ PinIn  PIN_MD2_C;   // -> P25.RYDO
-  /* PIN_29 */ PinIn  PIN_MD3_C;   // -> P25.REMO
-  /* PIN_28 */ PinIn  PIN_MD4_C;   // -> P25.ROCE
-  /* PIN_27 */ PinIn  PIN_MD5_C;   // -> P25.ROPU
-  /* PIN_26 */ PinIn  PIN_MD6_C;   // -> P25.RETA
-  /* PIN_25 */ PinIn  PIN_MD7_C;   // -> P25.RAKU
 
   /* PIN_33 */ PinOut PIN_MD0_D;   // <- P25.RURA
   /* PIN_31 */ PinOut PIN_MD1_D;   // <- P25.RULY

@@ -8,19 +8,19 @@
 
 //-----------------------------------------------------------------------------
 
-uint8_t GateBoy::read_cycle(uint16_t addr) {
+uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
   Schematics::TestGB* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      //gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
-      gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 1);
-      gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
-      gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
-      gb->cpu_bus.preset_addr(true, addr);
+      //gb->cpu_pins.preset_rd(1);
+      //gb->cpu_pins.preset_wr(0);
+      //gb->cpu_pins.preset_addr_valid(1);
+      //gb->cpu_bus.preset_addr(true, addr);
 
       gb->joy_reg.clear_dir();
 
@@ -35,20 +35,20 @@ uint8_t GateBoy::read_cycle(uint16_t addr) {
   return (uint8_t)gb->cpu_bus.get_data();
 }
 
-void GateBoy::write_cycle(uint16_t addr, uint8_t data) {
+void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
   Schematics::TestGB* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      //gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
-      gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
-      gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 1);
-      gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
-      gb->cpu_bus.preset_addr(true, addr);
-      gb->cpu_bus.set_data(true, data);
+      //gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
+      //gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 1);
+      //gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
+      //gb->cpu_bus.preset_addr(true, addr);
+      //gb->cpu_bus.set_data(true, data);
 
       gb->joy_reg.clear_dir();
 
@@ -68,7 +68,7 @@ void GateBoy::pass_cycle() {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      //gb->ext_pins_in.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
       gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
@@ -133,7 +133,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      gb->ext_pins_in.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       /*
       if (phase >= 32 && phase < 40) {
@@ -165,10 +165,10 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
 
   Schematics::TestGB* gb = state_manager.state();
 
-  gb->ext_bus.PIN_RST.preset(true, 1);
-  gb->ext_bus.PIN_CLK_GOOD.preset(true, 0);
-  gb->ext_bus.PIN_T2.preset(true, 0);
-  gb->ext_bus.PIN_T1.preset(true, 0);
+  gb->ext_pins_in.PIN_RST.preset(true, 1);
+  gb->ext_pins_in.PIN_CLK_GOOD.preset(true, 0);
+  gb->ext_pins_in.PIN_T2.preset(true, 0);
+  gb->ext_pins_in.PIN_T1.preset(true, 0);
 
   gb->cpu_bus.PIN_CLKREQ.preset(true, 0);
   gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
@@ -183,12 +183,12 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   gb->int_reg.PIN_ACK_TIMER.preset(true, 0);
   gb->int_reg.PIN_ACK_JOYPAD.preset(true, 0);
 
-  gb->ext_bus.preset();
+  //gb->ext_pins_in.preset();
 
   pass_cycle();
-  gb->ext_bus.PIN_RST.preset(true, 0);
+  gb->ext_pins_in.PIN_RST.preset(true, 0);
   pass_cycle();
-  gb->ext_bus.PIN_CLK_GOOD.preset(true, 1);
+  gb->ext_pins_in.PIN_CLK_GOOD.preset(true, 1);
   pass_cycle();
   gb->cpu_bus.PIN_CLKREQ.preset(true, 1);
   pass_cycle();
@@ -243,12 +243,12 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   float cy = 0;
 
   text_painter.newline();
-  gb.ext_bus.dump_pins(text_painter);
+  //gb.ext_bus.dump_pins(text_painter);
   gb.rst_reg.dump_regs(text_painter);
   //gb.clk_reg.dump_regs(text_painter);
   //gb.vck_reg.dump_regs(text_painter);
-  gb.cpu_bus.dump_pins(text_painter);
-  gb.ext_bus.dump_pins(text_painter);
+  //gb.cpu_bus.dump_pins(text_painter);
+  //gb.ext_bus.dump_pins(text_painter);
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;
 

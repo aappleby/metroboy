@@ -7,8 +7,8 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 DebugSignals DebugRegisters::sig(const TestGB& gb) const {
-  const auto& ext_bus = gb.ext_bus;
-  const auto& cpu_bus = gb.cpu_bus;
+  auto& ext_pins_in = gb.ext_pins_in;
+  auto& cpu_bus = gb.cpu_bus;
 
   wire P10_B = 0;
 
@@ -21,12 +21,12 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
 
 
 
-  /*p07.UBET*/ wire _UBET_T1n = not(ext_bus.PIN_T1);
-  /*p07.UVAR*/ wire _UVAR_T2n = not(ext_bus.PIN_T2);
-  /*p07.UMUT*/ wire _UMUT_MODE_DBG1p = and (ext_bus.PIN_T1, _UVAR_T2n);
-  /*p07.UNOR*/ wire _UNOR_MODE_DBG2p = and (ext_bus.PIN_T2, _UBET_T1n); // Must be UNORp, see UJYV/UBAL
+  /*p07.UBET*/ wire _UBET_T1n = not(ext_pins_in.PIN_T1);
+  /*p07.UVAR*/ wire _UVAR_T2n = not(ext_pins_in.PIN_T2);
+  /*p07.UMUT*/ wire _UMUT_MODE_DBG1p = and (ext_pins_in.PIN_T1, _UVAR_T2n);
+  /*p07.UNOR*/ wire _UNOR_MODE_DBG2p = and (ext_pins_in.PIN_T2, _UBET_T1n); // Must be UNORp, see UJYV/UBAL
   /*p08.TOVA*/ wire _TOVA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
-  /*p07.UPOJ*/ wire _UPOJ_MODE_PROD = nand(_UBET_T1n, _UVAR_T2n, ext_bus.PIN_RST);
+  /*p07.UPOJ*/ wire _UPOJ_MODE_PROD = nand(_UBET_T1n, _UVAR_T2n, ext_pins_in.PIN_RST);
   /*p08.RYCA*/ wire _RYCA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
   /*p25.TUTO*/ wire _TUTO_DBG_VRAM = and (_UNOR_MODE_DBG2p, !SOTO_DBG);
 

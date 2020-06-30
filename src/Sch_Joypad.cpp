@@ -16,7 +16,7 @@ JoypadSignals JoypadRegisters::sig() const {
 
 //------------------------------------------------------------------------------
 
-void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, AddressSignals& adr_sig, CpuSignals& cpu_sig, CpuBus& cpu_bus) {
+void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, AddressSignals& adr_sig, CpuBus& cpu_bus, CpuBusSignals& cpu_sig) {
 
   /*p02.KERY*/ wire _ANY_BUTTON = or(P13_C, P12_C, P11_C, P10_C);
 
@@ -27,13 +27,13 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, Address
   /*p05.BYZO*/ wire _BYZO_FF00_RDn = not(_ACAT_FF00_RD);
   /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, adr_sig.AKUG_A06n, adr_sig.BYKO_A05n);
 
-  /*p02.AWOB*/ WAKE_CPU.set(clk_sig.PIN_BOGA_AxCDEFGH, _ANY_BUTTON);
+  /*p02.AWOB*/ AWOB_WAKE_CPU.set(clk_sig.BOGA_AxCDEFGH, _ANY_BUTTON);
   // cpu_pins.TO_CPU2.set(WAKE_CPU.q());
 
-  /*p02.BATU*/ JP_GLITCH0.set(clk_sig.PIN_BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, _ANY_BUTTON);
-  /*p02.ACEF*/ JP_GLITCH1.set(clk_sig.PIN_BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, JP_GLITCH0.q());
-  /*p02.AGEM*/ JP_GLITCH2.set(clk_sig.PIN_BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, JP_GLITCH1.q());
-  /*p02.APUG*/ JP_GLITCH3.set(clk_sig.PIN_BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, JP_GLITCH2.q());
+  /*p02.BATU*/ JP_GLITCH0.set(clk_sig.BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, _ANY_BUTTON);
+  /*p02.ACEF*/ JP_GLITCH1.set(clk_sig.BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, JP_GLITCH0.q());
+  /*p02.AGEM*/ JP_GLITCH2.set(clk_sig.BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, JP_GLITCH1.q());
+  /*p02.APUG*/ JP_GLITCH3.set(clk_sig.BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, JP_GLITCH2.q());
 
   ///*p02.ASOK*/ wire INT_JP = and (JP_GLITCH3, JP_GLITCH0);
 
@@ -42,23 +42,23 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, Address
   /*p05.KEJA*/ JOYP_L2.set(_BYZO_FF00_RDn, P12_C);
   /*p05.KOLO*/ JOYP_L3.set(_BYZO_FF00_RDn, P13_C);
 
-  /*p05.KEMA*/ cpu_bus.TS_D0.set_tribuf(!_BYZO_FF00_RDn, JOYP_L0.q());
-  /*p05.KURO*/ cpu_bus.TS_D1.set_tribuf(!_BYZO_FF00_RDn, JOYP_L1.q());
-  /*p05.KUVE*/ cpu_bus.TS_D2.set_tribuf(!_BYZO_FF00_RDn, JOYP_L2.q());
-  /*p05.JEKU*/ cpu_bus.TS_D3.set_tribuf(!_BYZO_FF00_RDn, JOYP_L3.q());
-  /*p05.KOCE*/ cpu_bus.TS_D4.set_tribuf(!_BYZO_FF00_RDn, JOYP_UDLR.q());
-  /*p05.CUDY*/ cpu_bus.TS_D5.set_tribuf(!_BYZO_FF00_RDn, JOYP_ABCS.q());
-  /*p??.????*/ cpu_bus.TS_D6.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D6.q());
-  /*p??.????*/ cpu_bus.TS_D7.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D7.q());
+  /*p05.KEMA*/ cpu_bus.TRI_D0.set_tribuf(!_BYZO_FF00_RDn, JOYP_L0.q());
+  /*p05.KURO*/ cpu_bus.TRI_D1.set_tribuf(!_BYZO_FF00_RDn, JOYP_L1.q());
+  /*p05.KUVE*/ cpu_bus.TRI_D2.set_tribuf(!_BYZO_FF00_RDn, JOYP_L2.q());
+  /*p05.JEKU*/ cpu_bus.TRI_D3.set_tribuf(!_BYZO_FF00_RDn, JOYP_L3.q());
+  /*p05.KOCE*/ cpu_bus.TRI_D4.set_tribuf(!_BYZO_FF00_RDn, JOYP_UDLR.q());
+  /*p05.CUDY*/ cpu_bus.TRI_D5.set_tribuf(!_BYZO_FF00_RDn, JOYP_ABCS.q());
+  /*p??.????*/ cpu_bus.TRI_D6.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D6.q());
+  /*p??.????*/ cpu_bus.TRI_D7.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D7.q());
 
-  /*p05.JUTE*/ JOYP_RA    .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TS_D0);
-  /*p05.KECY*/ JOYP_LB    .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TS_D1);
-  /*p05.JALE*/ JOYP_UC    .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TS_D2);
-  /*p05.KYME*/ JOYP_DS    .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TS_D3);
-  /*p05.KELY*/ JOYP_UDLR  .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TS_D4);
-  /*p05.COFY*/ JOYP_ABCS  .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TS_D5);
-  /*p05.KUKO*/ DBG_FF00_D6.set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TS_D6);
-  /*p05.KERU*/ DBG_FF00_D7.set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TS_D7);
+  /*p05.JUTE*/ JOYP_RA    .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D0);
+  /*p05.KECY*/ JOYP_LB    .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D1);
+  /*p05.JALE*/ JOYP_UC    .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D2);
+  /*p05.KYME*/ JOYP_DS    .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D3);
+  /*p05.KELY*/ JOYP_UDLR  .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D4);
+  /*p05.COFY*/ JOYP_ABCS  .set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D5);
+  /*p05.KUKO*/ DBG_FF00_D6.set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D6);
+  /*p05.KERU*/ DBG_FF00_D7.set(_ATOZ_FF00_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D7);
 
   // FIXME
   wire BURO_FF60_0 = 0;
@@ -98,7 +98,7 @@ bool JoypadRegisters::commit() {
   /*p05.KAPA*/ changed |= JOYP_L1.commit_reg();
   /*p05.KEJA*/ changed |= JOYP_L2.commit_reg();
   /*p05.KOLO*/ changed |= JOYP_L3.commit_reg();
-  /*p02.AWOB*/ changed |= WAKE_CPU.commit_reg();
+  /*p02.AWOB*/ changed |= AWOB_WAKE_CPU.commit_reg();
 
   /* PIN_58 */ /*VCC*/
   /* PIN_59 */ /*ROUT*/

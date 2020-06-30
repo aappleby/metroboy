@@ -113,6 +113,11 @@ void DmaRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
+  auto bus_sig = gb.bus_mux.sig(gb);
+
+  auto& cpu_bus = gb.cpu_bus;
+  auto& vram_bus = gb.vram_bus;
+
 
   // schematic incorrect.
   // lyxe - weird gate - lavy, loko
@@ -132,23 +137,15 @@ void DmaRegisters::tick(TestGB& gb) {
   // if LAVY03 goes high, LYXE02 goes low.
 
   /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(rst_sig.CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
-  /*p04.LAPA*/ wire LAPA_DMA_RSTn = not(LOKO_DMA_RSTp);
 
+  /*p04.MOLU*/ wire MOLU_FF46_RDn = nand(adr_sig.XEDA_FF46p, cpu_sig.ASOT_CPU_RD);
   /*p04.LAVY*/ wire LAVY_FF46_WRp = and (adr_sig.XEDA_FF46p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
+
   {
     /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, LAVY_FF46_WRp);
-  }
-
-  {
     /*p04.LUPA*/ wire LUPA_DMA_TRIG = nor(LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
     /*p04.LUVY*/ LUVY_DMA_TRIG_d0.set(clk_sig.UVYT_xBCDExxx, rst_sig.CUNU_RSTn, LUPA_DMA_TRIG);
     /*p04.LENE*/ LENE_DMA_TRIG_d4.set(clk_sig.MOPA_AxxxxFGH, rst_sig.CUNU_RSTn, LUVY_DMA_TRIG_d0.q());
-  }
-
-  {
-    /*p04.NAVO*/ wire NAVO_DMA_DONEn = nand(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A07.q()); // 128+16+8+4+2+1 = 159, this must be "dma done"
-    /*p04.NOLO*/ wire NOLO_DMA_DONEp = not(NAVO_DMA_DONEn);
-    /*p04.MYTE*/ MYTE_DMA_DONE.set(clk_sig.MOPA_AxxxxFGH, LAPA_DMA_RSTn, NOLO_DMA_DONEp);
   }
 
   // NAND latch
@@ -157,8 +154,12 @@ void DmaRegisters::tick(TestGB& gb) {
   /*p04.MATU*/ MATU_DMA_OAM_WRp.set(clk_sig.UVYT_xBCDExxx, rst_sig.CUNU_RSTn, LOKY_DMA_LATCHp);
 
   {
-    /*p04.META*/ wire META_DMA_CLKp = and(clk_sig.UVYT_xBCDExxx, LOKY_DMA_LATCHp);
+    /*p04.LAPA*/ wire LAPA_DMA_RSTn = not(LOKO_DMA_RSTp);
+    /*p04.NAVO*/ wire NAVO_DMA_DONEn = nand(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A07.q()); // 128+16+8+4+2+1 = 159, this must be "dma done"
+    /*p04.NOLO*/ wire NOLO_DMA_DONEp = not(NAVO_DMA_DONEn);
+    /*p04.MYTE*/ MYTE_DMA_DONE.set(clk_sig.MOPA_AxxxxFGH, LAPA_DMA_RSTn, NOLO_DMA_DONEp);
 
+    /*p04.META*/ wire META_DMA_CLKp = and(clk_sig.UVYT_xBCDExxx, LOKY_DMA_LATCHp);
     /*p04.NAKY*/ DMA_A00.set(META_DMA_CLKp, LAPA_DMA_RSTn, !DMA_A00.q());
     /*p04.PYRO*/ DMA_A01.set(DMA_A00.qn(),  LAPA_DMA_RSTn, DMA_A01.qn());
     /*p04.NEFY*/ DMA_A02.set(DMA_A01.qn(),  LAPA_DMA_RSTn, DMA_A02.qn());
@@ -170,54 +171,46 @@ void DmaRegisters::tick(TestGB& gb) {
   }
 
   {
-    auto& cpu_bus = gb.cpu_bus;
-    /*p04.LAVY*/ wire FF46_WR = and (adr_sig.XEDA_FF46p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
-    /*p04.LORU*/ wire FF46_WRn = not(FF46_WR);
-    /*p04.NAFA*/ DMA_A08.set(FF46_WRn, cpu_bus.TS_D0);
-    /*p04.PYNE*/ DMA_A09.set(FF46_WRn, cpu_bus.TS_D1);
-    /*p04.PARA*/ DMA_A10.set(FF46_WRn, cpu_bus.TS_D2);
-    /*p04.NYDO*/ DMA_A11.set(FF46_WRn, cpu_bus.TS_D3);
-    /*p04.NYGY*/ DMA_A12.set(FF46_WRn, cpu_bus.TS_D4);
-    /*p04.PULA*/ DMA_A13.set(FF46_WRn, cpu_bus.TS_D5);
-    /*p04.POKU*/ DMA_A14.set(FF46_WRn, cpu_bus.TS_D6);
-    /*p04.MARU*/ DMA_A15.set(FF46_WRn, cpu_bus.TS_D7);
+    /*p04.LORU*/ wire LORU_FF46_WRn = not(LAVY_FF46_WRp);
+    /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn, cpu_bus.TRI_D0);
+    /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn, cpu_bus.TRI_D1);
+    /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn, cpu_bus.TRI_D2);
+    /*p04.NYDO*/ DMA_A11.set(LORU_FF46_WRn, cpu_bus.TRI_D3);
+    /*p04.NYGY*/ DMA_A12.set(LORU_FF46_WRn, cpu_bus.TRI_D4);
+    /*p04.PULA*/ DMA_A13.set(LORU_FF46_WRn, cpu_bus.TRI_D5);
+    /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn, cpu_bus.TRI_D6);
+    /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn, cpu_bus.TRI_D7);
   }
 
 
   {
-    auto& cpu_bus = gb.cpu_bus;
-    /*p04.MOLU*/ wire FF46_RDn1 = nand(adr_sig.XEDA_FF46p, cpu_sig.ASOT_CPU_RD);
-    /*p04.NYGO*/ wire FF46_RD = not(FF46_RDn1);
-    /*p04.PUSY*/ wire FF46_RDn2 = not(FF46_RD);
-    /*p04.POLY*/ cpu_bus.TS_D0.set_tribuf(!FF46_RDn2, DMA_A08.q());
-    /*p04.ROFO*/ cpu_bus.TS_D1.set_tribuf(!FF46_RDn2, DMA_A09.q());
-    /*p04.REMA*/ cpu_bus.TS_D2.set_tribuf(!FF46_RDn2, DMA_A10.q());
-    /*p04.PANE*/ cpu_bus.TS_D3.set_tribuf(!FF46_RDn2, DMA_A11.q());
-    /*p04.PARE*/ cpu_bus.TS_D4.set_tribuf(!FF46_RDn2, DMA_A12.q());
-    /*p04.RALY*/ cpu_bus.TS_D5.set_tribuf(!FF46_RDn2, DMA_A13.q());
-    /*p04.RESU*/ cpu_bus.TS_D6.set_tribuf(!FF46_RDn2, DMA_A14.q());
-    /*p04.NUVY*/ cpu_bus.TS_D7.set_tribuf(!FF46_RDn2, DMA_A15.q());
+    /*p04.NYGO*/ wire NYGO_FF46_RDp = not(MOLU_FF46_RDn);
+    /*p04.PUSY*/ wire PUSY_FF46_RDn = not(NYGO_FF46_RDp);
+    /*p04.POLY*/ cpu_bus.TRI_D0.set_tribuf(!PUSY_FF46_RDn, DMA_A08.q());
+    /*p04.ROFO*/ cpu_bus.TRI_D1.set_tribuf(!PUSY_FF46_RDn, DMA_A09.q());
+    /*p04.REMA*/ cpu_bus.TRI_D2.set_tribuf(!PUSY_FF46_RDn, DMA_A10.q());
+    /*p04.PANE*/ cpu_bus.TRI_D3.set_tribuf(!PUSY_FF46_RDn, DMA_A11.q());
+    /*p04.PARE*/ cpu_bus.TRI_D4.set_tribuf(!PUSY_FF46_RDn, DMA_A12.q());
+    /*p04.RALY*/ cpu_bus.TRI_D5.set_tribuf(!PUSY_FF46_RDn, DMA_A13.q());
+    /*p04.RESU*/ cpu_bus.TRI_D6.set_tribuf(!PUSY_FF46_RDn, DMA_A14.q());
+    /*p04.NUVY*/ cpu_bus.TRI_D7.set_tribuf(!PUSY_FF46_RDn, DMA_A15.q());
   }
 
   {
-    auto dma_sig = sig(gb);
-    auto& vram_bus = gb.vram_bus;
-    auto bus_sig = gb.bus_mux.sig(gb);
-
     // DMA vram read
-    /*p04.ECAL*/ vram_bus.TS_MA00.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A00);
-    /*p04.EGEZ*/ vram_bus.TS_MA01.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A01);
-    /*p04.FUHE*/ vram_bus.TS_MA02.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A02);
-    /*p04.FYZY*/ vram_bus.TS_MA03.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A03);
-    /*p04.DAMU*/ vram_bus.TS_MA04.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A04);
-    /*p04.DAVA*/ vram_bus.TS_MA05.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A05);
-    /*p04.ETEG*/ vram_bus.TS_MA06.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A06);
-    /*p04.EREW*/ vram_bus.TS_MA07.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A07);
-    /*p04.EVAX*/ vram_bus.TS_MA08.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A08);
-    /*p04.DUVE*/ vram_bus.TS_MA09.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A09);
-    /*p04.ERAF*/ vram_bus.TS_MA10.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A10);
-    /*p04.FUSY*/ vram_bus.TS_MA11.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A11);
-    /*p04.EXYF*/ vram_bus.TS_MA12.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A12);
+    /*p04.ECAL*/ vram_bus.TRI_A00.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A00);
+    /*p04.EGEZ*/ vram_bus.TRI_A01.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A01);
+    /*p04.FUHE*/ vram_bus.TRI_A02.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A02);
+    /*p04.FYZY*/ vram_bus.TRI_A03.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A03);
+    /*p04.DAMU*/ vram_bus.TRI_A04.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A04);
+    /*p04.DAVA*/ vram_bus.TRI_A05.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A05);
+    /*p04.ETEG*/ vram_bus.TRI_A06.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A06);
+    /*p04.EREW*/ vram_bus.TRI_A07.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A07);
+    /*p04.EVAX*/ vram_bus.TRI_A08.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A08);
+    /*p04.DUVE*/ vram_bus.TRI_A09.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A09);
+    /*p04.ERAF*/ vram_bus.TRI_A10.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A10);
+    /*p04.FUSY*/ vram_bus.TRI_A11.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A11);
+    /*p04.EXYF*/ vram_bus.TRI_A12.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A12);
   }
 }
 

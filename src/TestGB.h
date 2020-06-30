@@ -63,8 +63,12 @@ struct TestGB {
   ScrollRegisters scr_reg;
   VramPins vram_pins;
 
-  CpuBus cpu_bus;
-  ExtBus ext_bus;
+  CpuBus  cpu_bus;
+  CpuPinsOut cpu_pins_out;
+
+  ExtPinsIn  ext_pins_in;
+  ExtPinsOut ext_pins_out;
+
   OamBus oam_bus;
   VramBus vram_bus;
 

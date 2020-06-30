@@ -43,14 +43,19 @@ static const uint8_t DMG_ROM_bin[] = {
 };
 
 
+BootSignals Bootrom::sig(const TestGB& /*gb*/) const {
+  BootSignals sig;
+  sig.BOOT_BITn = BOOT_BITn;
+  return sig;
+}
 
 void Bootrom::tick(TestGB& gb) {
-  auto dbg_sig = gb.dbg_reg.sig(gb);
+  auto& cpu_bus = gb.cpu_bus;
   auto cpu_sig = gb.cpu_bus.sig(gb);
+
+  auto dbg_sig = gb.dbg_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto rst_sig = gb.rst_reg.sig(gb);
-
-  auto& cpu_bus = gb.cpu_bus;
 
   //----------------------------------------
 
@@ -60,10 +65,10 @@ void Bootrom::tick(TestGB& gb) {
     /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(cpu_bus.PIN_A04, cpu_bus.PIN_A06);
 
     /*p07.TEXE*/ wire FF50_RDp = and(cpu_sig.TEDO_CPU_RD, adr_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
-    /*p07.SYPU*/ cpu_bus.TS_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
+    /*p07.SYPU*/ cpu_bus.TRI_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
 
     /*p07.TUGE*/ wire FF50_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, adr_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.TS_D0, BOOT_BITn);
+    /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.TRI_D0, BOOT_BITn);
 
     /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, rst_sig.ALUR_RSTn, BOOT_BIT_IN);
   }
@@ -105,19 +110,17 @@ void Bootrom::tick(TestGB& gb) {
     /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1p); // suggests UMUTp
     /*p07.YULA*/ wire _YULA_BOOT_RD = and (cpu_sig.TEDO_CPU_RD, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
 
-    cpu_bus.PIN_READ_BOOTROM.set(_TUTU_ADDR_BOOTp);
-
     // this is kind of a hack
     uint16_t addr = (uint16_t)cpu_bus.get_addr();
     uint8_t data = DMG_ROM_bin[addr & 0xFF];
 
-    cpu_bus.TS_D0.set_tribuf(_YULA_BOOT_RD, data & 0x01);
-    cpu_bus.TS_D1.set_tribuf(_YULA_BOOT_RD, data & 0x02);
-    cpu_bus.TS_D2.set_tribuf(_YULA_BOOT_RD, data & 0x04);
-    cpu_bus.TS_D3.set_tribuf(_YULA_BOOT_RD, data & 0x08);
-    cpu_bus.TS_D4.set_tribuf(_YULA_BOOT_RD, data & 0x10);
-    cpu_bus.TS_D5.set_tribuf(_YULA_BOOT_RD, data & 0x20);
-    cpu_bus.TS_D6.set_tribuf(_YULA_BOOT_RD, data & 0x40);
-    cpu_bus.TS_D7.set_tribuf(_YULA_BOOT_RD, data & 0x80);
+    cpu_bus.TRI_D0.set_tribuf(_YULA_BOOT_RD, data & 0x01);
+    cpu_bus.TRI_D1.set_tribuf(_YULA_BOOT_RD, data & 0x02);
+    cpu_bus.TRI_D2.set_tribuf(_YULA_BOOT_RD, data & 0x04);
+    cpu_bus.TRI_D3.set_tribuf(_YULA_BOOT_RD, data & 0x08);
+    cpu_bus.TRI_D4.set_tribuf(_YULA_BOOT_RD, data & 0x10);
+    cpu_bus.TRI_D5.set_tribuf(_YULA_BOOT_RD, data & 0x20);
+    cpu_bus.TRI_D6.set_tribuf(_YULA_BOOT_RD, data & 0x40);
+    cpu_bus.TRI_D7.set_tribuf(_YULA_BOOT_RD, data & 0x80);
   }
 }

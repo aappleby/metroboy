@@ -44,43 +44,38 @@ using namespace Schematics;
 //---------------------------------------------------------------------------
 
 void VramPins::tick(TestGB& gb) {
-  auto clk_sig = gb.clk_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
   auto dma_sig = gb.dma_reg.sig(gb);
-  auto win_sig = gb.win_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
 
   auto& ppu_reg = gb.ppu_reg;
-
-  auto& vram_bus = gb.vram_bus;
-
   auto& cpu_bus = gb.cpu_bus;
-  auto& vram_pins = gb.vram_pins;
+  auto& vram_bus = gb.vram_bus;
 
   //---------------------------------------------------------------------------
 
-  /*p25.TAVY*/ wire TAVY_MOE_Cn = not(vram_pins.PIN_MOEn_C);
+  /*p25.TAVY*/ wire TAVY_MOE_Cn = not(PIN_MOEn_C);
   /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(adr_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
   /*p25.SALE*/ wire SALE_VRAM_WRn = mux2_p(TAVY_MOE_Cn, TEGU_CPU_VRAM_WRn, dbg_sig.TUTO_DBG_VRAMp);
 
   //----------
 
   {
-    /*p25.LEXE*/ vram_pins.PIN_MA00_AD.set(not(/*p25.MYFU*/ not(vram_bus.TS_MA00)));
-    /*p25.LOZU*/ vram_pins.PIN_MA01_AD.set(not(/*p25.MASA*/ not(vram_bus.TS_MA01)));
-    /*p25.LACA*/ vram_pins.PIN_MA02_AD.set(not(/*p25.MYRE*/ not(vram_bus.TS_MA02)));
-    /*p25.LUVO*/ vram_pins.PIN_MA03_AD.set(not(/*p25.MAVU*/ not(vram_bus.TS_MA03)));
-    /*p25.LOLY*/ vram_pins.PIN_MA04_AD.set(not(/*p25.MEPA*/ not(vram_bus.TS_MA04)));
-    /*p25.LALO*/ vram_pins.PIN_MA05_AD.set(not(/*p25.MYSA*/ not(vram_bus.TS_MA05)));
-    /*p25.LEFA*/ vram_pins.PIN_MA06_AD.set(not(/*p25.MEWY*/ not(vram_bus.TS_MA06)));
-    /*p25.LUBY*/ vram_pins.PIN_MA07_AD.set(not(/*p25.MUME*/ not(vram_bus.TS_MA07)));
-    /*p25.TUJY*/ vram_pins.PIN_MA08_AD.set(not(/*p25.VOVA*/ not(vram_bus.TS_MA08)));
-    /*p25.TAGO*/ vram_pins.PIN_MA09_AD.set(not(/*p25.VODE*/ not(vram_bus.TS_MA09)));
-    /*p25.NUVA*/ vram_pins.PIN_MA10_AD.set(not(/*p25.RUKY*/ not(vram_bus.TS_MA10)));
-    /*p25.PEDU*/ vram_pins.PIN_MA11_AD.set(not(/*p25.RUMA*/ not(vram_bus.TS_MA11)));
-    /*p25.PONY*/ vram_pins.PIN_MA12_AD.set(not(/*p25.REHO*/ not(vram_bus.TS_MA12)));
+    /*p25.LEXE*/ PIN_MA00_AD.set(not(/*p25.MYFU*/ not(vram_bus.TRI_A00)));
+    /*p25.LOZU*/ PIN_MA01_AD.set(not(/*p25.MASA*/ not(vram_bus.TRI_A01)));
+    /*p25.LACA*/ PIN_MA02_AD.set(not(/*p25.MYRE*/ not(vram_bus.TRI_A02)));
+    /*p25.LUVO*/ PIN_MA03_AD.set(not(/*p25.MAVU*/ not(vram_bus.TRI_A03)));
+    /*p25.LOLY*/ PIN_MA04_AD.set(not(/*p25.MEPA*/ not(vram_bus.TRI_A04)));
+    /*p25.LALO*/ PIN_MA05_AD.set(not(/*p25.MYSA*/ not(vram_bus.TRI_A05)));
+    /*p25.LEFA*/ PIN_MA06_AD.set(not(/*p25.MEWY*/ not(vram_bus.TRI_A06)));
+    /*p25.LUBY*/ PIN_MA07_AD.set(not(/*p25.MUME*/ not(vram_bus.TRI_A07)));
+    /*p25.TUJY*/ PIN_MA08_AD.set(not(/*p25.VOVA*/ not(vram_bus.TRI_A08)));
+    /*p25.TAGO*/ PIN_MA09_AD.set(not(/*p25.VODE*/ not(vram_bus.TRI_A09)));
+    /*p25.NUVA*/ PIN_MA10_AD.set(not(/*p25.RUKY*/ not(vram_bus.TRI_A10)));
+    /*p25.PEDU*/ PIN_MA11_AD.set(not(/*p25.RUMA*/ not(vram_bus.TRI_A11)));
+    /*p25.PONY*/ PIN_MA12_AD.set(not(/*p25.REHO*/ not(vram_bus.TRI_A12)));
   }
 
   {
@@ -95,23 +90,23 @@ void VramPins::tick(TestGB& gb) {
       /*p25.RAHU*/ wire RAHU_VBUS_TRISTATEp = not(ROCY_VBUS_TRISTATEn);
       /*p25.ROVE*/ wire ROVE_VBUS_TRISTATEn = not(RAHU_VBUS_TRISTATEp);
 
-      /*p25.SEFA*/ wire SEFA = and (vram_bus.TS_MD0, ROVE_VBUS_TRISTATEn);
-      /*p25.SOGO*/ wire SOGO = and (vram_bus.TS_MD1, ROVE_VBUS_TRISTATEn);
-      /*p25.SEFU*/ wire SEFU = and (vram_bus.TS_MD2, ROVE_VBUS_TRISTATEn);
-      /*p25.SUNA*/ wire SUNA = and (vram_bus.TS_MD3, ROVE_VBUS_TRISTATEn);
-      /*p25.SUMO*/ wire SUMO = and (vram_bus.TS_MD4, ROVE_VBUS_TRISTATEn);
-      /*p25.SAZU*/ wire SAZU = and (vram_bus.TS_MD5, ROVE_VBUS_TRISTATEn);
-      /*p25.SAMO*/ wire SAMO = and (vram_bus.TS_MD6, ROVE_VBUS_TRISTATEn);
-      /*p25.SUKE*/ wire SUKE = and (vram_bus.TS_MD7, ROVE_VBUS_TRISTATEn);
+      /*p25.SEFA*/ wire SEFA = and (vram_bus.TRI_D0, ROVE_VBUS_TRISTATEn);
+      /*p25.SOGO*/ wire SOGO = and (vram_bus.TRI_D1, ROVE_VBUS_TRISTATEn);
+      /*p25.SEFU*/ wire SEFU = and (vram_bus.TRI_D2, ROVE_VBUS_TRISTATEn);
+      /*p25.SUNA*/ wire SUNA = and (vram_bus.TRI_D3, ROVE_VBUS_TRISTATEn);
+      /*p25.SUMO*/ wire SUMO = and (vram_bus.TRI_D4, ROVE_VBUS_TRISTATEn);
+      /*p25.SAZU*/ wire SAZU = and (vram_bus.TRI_D5, ROVE_VBUS_TRISTATEn);
+      /*p25.SAMO*/ wire SAMO = and (vram_bus.TRI_D6, ROVE_VBUS_TRISTATEn);
+      /*p25.SUKE*/ wire SUKE = and (vram_bus.TRI_D7, ROVE_VBUS_TRISTATEn);
 
-      /*p25.SYNU*/ wire SYNU = or (vram_bus.TS_MD0, RAHU_VBUS_TRISTATEp);
-      /*p25.SYMA*/ wire SYMA = or (vram_bus.TS_MD1, RAHU_VBUS_TRISTATEp);
-      /*p25.ROKO*/ wire ROKO = or (vram_bus.TS_MD2, RAHU_VBUS_TRISTATEp);
-      /*p25.SYBU*/ wire SYBU = or (vram_bus.TS_MD3, RAHU_VBUS_TRISTATEp);
-      /*p25.SAKO*/ wire SAKO = or (vram_bus.TS_MD4, RAHU_VBUS_TRISTATEp);
-      /*p25.SEJY*/ wire SEJY = or (vram_bus.TS_MD5, RAHU_VBUS_TRISTATEp);
-      /*p25.SEDO*/ wire SEDO = or (vram_bus.TS_MD6, RAHU_VBUS_TRISTATEp);
-      /*p25.SAWU*/ wire SAWU = or (vram_bus.TS_MD7, RAHU_VBUS_TRISTATEp);
+      /*p25.SYNU*/ wire SYNU = or (vram_bus.TRI_D0, RAHU_VBUS_TRISTATEp);
+      /*p25.SYMA*/ wire SYMA = or (vram_bus.TRI_D1, RAHU_VBUS_TRISTATEp);
+      /*p25.ROKO*/ wire ROKO = or (vram_bus.TRI_D2, RAHU_VBUS_TRISTATEp);
+      /*p25.SYBU*/ wire SYBU = or (vram_bus.TRI_D3, RAHU_VBUS_TRISTATEp);
+      /*p25.SAKO*/ wire SAKO = or (vram_bus.TRI_D4, RAHU_VBUS_TRISTATEp);
+      /*p25.SEJY*/ wire SEJY = or (vram_bus.TRI_D5, RAHU_VBUS_TRISTATEp);
+      /*p25.SEDO*/ wire SEDO = or (vram_bus.TRI_D6, RAHU_VBUS_TRISTATEp);
+      /*p25.SAWU*/ wire SAWU = or (vram_bus.TRI_D7, RAHU_VBUS_TRISTATEp);
 
       /*p25.REGE*/ wire REGE = not(SEFA);
       /*p25.RYKY*/ wire RYKY = not(SOGO);
@@ -164,14 +159,14 @@ void VramPins::tick(TestGB& gb) {
       /*p25.ROFA*/ PIN_MD6_B.set(ROFA_MD_OEp);
       /*p25.ROFA*/ PIN_MD7_B.set(ROFA_MD_OEp);
 
-      /*p25.RODY*/ vram_bus.TS_MD0.set_tribuf(RENA_MD_OEn, PIN_MD0_C);
-      /*p25.REBA*/ vram_bus.TS_MD1.set_tribuf(RENA_MD_OEn, PIN_MD1_C);
-      /*p25.RYDO*/ vram_bus.TS_MD2.set_tribuf(RENA_MD_OEn, PIN_MD2_C);
-      /*p25.REMO*/ vram_bus.TS_MD3.set_tribuf(RENA_MD_OEn, PIN_MD3_C);
-      /*p25.ROCE*/ vram_bus.TS_MD4.set_tribuf(RENA_MD_OEn, PIN_MD4_C);
-      /*p25.ROPU*/ vram_bus.TS_MD5.set_tribuf(RENA_MD_OEn, PIN_MD5_C);
-      /*p25.RETA*/ vram_bus.TS_MD6.set_tribuf(RENA_MD_OEn, PIN_MD6_C);
-      /*p25.RAKU*/ vram_bus.TS_MD7.set_tribuf(RENA_MD_OEn, PIN_MD7_C);
+      /*p25.RODY*/ vram_bus.TRI_D0.set_tribuf(RENA_MD_OEn, PIN_MD0_C);
+      /*p25.REBA*/ vram_bus.TRI_D1.set_tribuf(RENA_MD_OEn, PIN_MD1_C);
+      /*p25.RYDO*/ vram_bus.TRI_D2.set_tribuf(RENA_MD_OEn, PIN_MD2_C);
+      /*p25.REMO*/ vram_bus.TRI_D3.set_tribuf(RENA_MD_OEn, PIN_MD3_C);
+      /*p25.ROCE*/ vram_bus.TRI_D4.set_tribuf(RENA_MD_OEn, PIN_MD4_C);
+      /*p25.ROPU*/ vram_bus.TRI_D5.set_tribuf(RENA_MD_OEn, PIN_MD5_C);
+      /*p25.RETA*/ vram_bus.TRI_D6.set_tribuf(RENA_MD_OEn, PIN_MD6_C);
+      /*p25.RAKU*/ vram_bus.TRI_D7.set_tribuf(RENA_MD_OEn, PIN_MD7_C);
     }
   }
 

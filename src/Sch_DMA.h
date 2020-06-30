@@ -36,6 +36,8 @@ struct DmaSignals {
   /*p04.MARU*/ wire DMA_A15;
 };
 
+//-----------------------------------------------------------------------------
+
 struct DmaRegisters {
 
   DmaSignals sig(const TestGB& gb) const;

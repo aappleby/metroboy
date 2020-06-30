@@ -202,14 +202,14 @@ void WindowRegisters::tick(TestGB& gb) {
     /*p23.WEKO*/ wire FF4A_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4A);
     /*p23.VEFU*/ wire FF4A_WRn = not(FF4A_WR);
 
-    /*p23.NESO*/ WY0.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D0);
-    /*p23.NYRO*/ WY1.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D1);
-    /*p23.NAGA*/ WY2.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D2);
-    /*p23.MELA*/ WY3.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D3);
-    /*p23.NULO*/ WY4.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D4);
-    /*p23.NENE*/ WY5.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D5);
-    /*p23.NUKA*/ WY6.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D6);
-    /*p23.NAFU*/ WY7.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D7);
+    /*p23.NESO*/ WY0.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D0);
+    /*p23.NYRO*/ WY1.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D1);
+    /*p23.NAGA*/ WY2.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D2);
+    /*p23.MELA*/ WY3.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D3);
+    /*p23.NULO*/ WY4.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D4);
+    /*p23.NENE*/ WY5.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D5);
+    /*p23.NUKA*/ WY6.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D6);
+    /*p23.NAFU*/ WY7.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D7);
   }
 
   // FF4B
@@ -219,14 +219,14 @@ void WindowRegisters::tick(TestGB& gb) {
     /*p23.WUZA*/ wire FF4B_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4B);
     /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
 
-    /*p23.MYPA*/ WX0.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D0);
-    /*p23.NOFE*/ WX1.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D1);
-    /*p23.NOKE*/ WX2.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D2);
-    /*p23.MEBY*/ WX3.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D3);
-    /*p23.MYPU*/ WX4.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D4);
-    /*p23.MYCE*/ WX5.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D5);
-    /*p23.MUVO*/ WX6.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D6);
-    /*p23.NUKU*/ WX7.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TS_D7);
+    /*p23.MYPA*/ WX0.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D0);
+    /*p23.NOFE*/ WX1.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D1);
+    /*p23.NOKE*/ WX2.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D2);
+    /*p23.MEBY*/ WX3.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D3);
+    /*p23.MYPU*/ WX4.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D4);
+    /*p23.MYCE*/ WX5.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D5);
+    /*p23.MUVO*/ WX6.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D6);
+    /*p23.NUKU*/ WX7.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D7);
   }
 
   // FF4A
@@ -236,14 +236,14 @@ void WindowRegisters::tick(TestGB& gb) {
     /*p23.WAXU*/ wire FF4A_RD = and (cpu_sig.ASOT_CPU_RD, FF4A);
     /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
 
-    /*p23.PUNU*/ cpu_bus.TS_D0.set_tribuf(!FF4A_RDn, WY0.q());
-    /*p23.PODA*/ cpu_bus.TS_D1.set_tribuf(!FF4A_RDn, WY1.q());
-    /*p23.PYGU*/ cpu_bus.TS_D2.set_tribuf(!FF4A_RDn, WY2.q());
-    /*p23.LOKA*/ cpu_bus.TS_D3.set_tribuf(!FF4A_RDn, WY3.q());
-    /*p23.MEGA*/ cpu_bus.TS_D4.set_tribuf(!FF4A_RDn, WY4.q());
-    /*p23.PELA*/ cpu_bus.TS_D5.set_tribuf(!FF4A_RDn, WY5.q());
-    /*p23.POLO*/ cpu_bus.TS_D6.set_tribuf(!FF4A_RDn, WY6.q());
-    /*p23.MERA*/ cpu_bus.TS_D7.set_tribuf(!FF4A_RDn, WY7.q());
+    /*p23.PUNU*/ cpu_bus.TRI_D0.set_tribuf(!FF4A_RDn, WY0.q());
+    /*p23.PODA*/ cpu_bus.TRI_D1.set_tribuf(!FF4A_RDn, WY1.q());
+    /*p23.PYGU*/ cpu_bus.TRI_D2.set_tribuf(!FF4A_RDn, WY2.q());
+    /*p23.LOKA*/ cpu_bus.TRI_D3.set_tribuf(!FF4A_RDn, WY3.q());
+    /*p23.MEGA*/ cpu_bus.TRI_D4.set_tribuf(!FF4A_RDn, WY4.q());
+    /*p23.PELA*/ cpu_bus.TRI_D5.set_tribuf(!FF4A_RDn, WY5.q());
+    /*p23.POLO*/ cpu_bus.TRI_D6.set_tribuf(!FF4A_RDn, WY6.q());
+    /*p23.MERA*/ cpu_bus.TRI_D7.set_tribuf(!FF4A_RDn, WY7.q());
   }
 
   // FF4B
@@ -253,14 +253,14 @@ void WindowRegisters::tick(TestGB& gb) {
     /*p23.WYZE*/ wire FF4B_RD = and (cpu_sig.ASOT_CPU_RD, FF4B);
     /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);
 
-    /*p23.LOVA*/ cpu_bus.TS_D0.set_tribuf(!FF4B_RDn, WX0.q());
-    /*p23.MUKA*/ cpu_bus.TS_D1.set_tribuf(!FF4B_RDn, WX1.q());
-    /*p23.MOKO*/ cpu_bus.TS_D2.set_tribuf(!FF4B_RDn, WX2.q());
-    /*p23.LOLE*/ cpu_bus.TS_D3.set_tribuf(!FF4B_RDn, WX3.q());
-    /*p23.MELE*/ cpu_bus.TS_D4.set_tribuf(!FF4B_RDn, WX4.q());
-    /*p23.MUFE*/ cpu_bus.TS_D5.set_tribuf(!FF4B_RDn, WX5.q());
-    /*p23.MULY*/ cpu_bus.TS_D6.set_tribuf(!FF4B_RDn, WX6.q());
-    /*p23.MARA*/ cpu_bus.TS_D7.set_tribuf(!FF4B_RDn, WX7.q());
+    /*p23.LOVA*/ cpu_bus.TRI_D0.set_tribuf(!FF4B_RDn, WX0.q());
+    /*p23.MUKA*/ cpu_bus.TRI_D1.set_tribuf(!FF4B_RDn, WX1.q());
+    /*p23.MOKO*/ cpu_bus.TRI_D2.set_tribuf(!FF4B_RDn, WX2.q());
+    /*p23.LOLE*/ cpu_bus.TRI_D3.set_tribuf(!FF4B_RDn, WX3.q());
+    /*p23.MELE*/ cpu_bus.TRI_D4.set_tribuf(!FF4B_RDn, WX4.q());
+    /*p23.MUFE*/ cpu_bus.TRI_D5.set_tribuf(!FF4B_RDn, WX5.q());
+    /*p23.MULY*/ cpu_bus.TRI_D6.set_tribuf(!FF4B_RDn, WX6.q());
+    /*p23.MARA*/ cpu_bus.TRI_D7.set_tribuf(!FF4B_RDn, WX7.q());
   }
 }
 

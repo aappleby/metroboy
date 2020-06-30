@@ -18,13 +18,14 @@ void TestGB::tick_everything() {
   ser_reg.tick(*this);
 
 
-  joy_reg.tick(rst_sig, clk_sig, adr_sig, cpu_sig, cpu_bus);
+  joy_reg.tick(rst_sig, clk_sig, adr_sig, cpu_bus, cpu_sig);
 
   ppu_reg.tick(*this);
   sst_reg.tick(*this);
   lcd_reg.tick(*this);
   pxp_reg.tick(*this);
-  cpu_bus.tick(*this);
+  //cpu_bus.tick(*this);
+  cpu_pins_out.tick(*this);
   vram_pins.tick(*this);
 }
 
@@ -39,7 +40,7 @@ bool TestGB::commit_everything() {
   changed |= tim_reg.commit();
   changed |= ppu_reg.commit();
   changed |= win_reg.commit();
-  changed |= ext_bus.commit();
+  changed |= ext_pins_out.commit();
   changed |= lcd_reg.commit_pins();
   changed |= ser_reg.commit();
 

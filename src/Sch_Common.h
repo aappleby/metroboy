@@ -128,6 +128,28 @@ union SignalState {
 
 static_assert(sizeof(SignalState) == 1, "SignalState size != 1");
 
+//-----------------------------------------------------------------------------
+
+struct Signal {
+
+  Signal() : a(ERROR) {}
+
+  operator const bool() const {
+    if (a.error) __debugbreak();
+    return a.val;
+  }
+
+  void operator = (wire val) {
+    if (!a.error) __debugbreak();
+    a = val ? SET_1 : SET_0;
+  }
+
+private:
+  SignalState a;
+};
+
+//-----------------------------------------------------------------------------
+
 struct SignalBase {
 
   // FIXME remove this so regs need explicit q/qn
@@ -233,32 +255,6 @@ struct Tribuf : public SignalBase {
     b = ERROR;
     return changed;
   }
-};
-
-//-----------------------------------------------------------------------------
-
-struct Signal : public SignalBase {
-
-  Signal() {
-    a = ERROR;
-  }
-
-  /*
-  Signal(wire val) {
-    a = val ? SET_1 : SET_0;
-  }
-  */
-
-  void operator = (wire val) {
-    if (!a.error) __debugbreak();
-    a = val ? SET_1 : SET_0;
-  }
-
-  /*
-  void reset() {
-    a = ERROR;
-  }
-  */
 };
 
 //-----------------------------------------------------------------------------

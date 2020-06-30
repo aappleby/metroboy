@@ -30,7 +30,6 @@ namespace Schematics {
 
 struct TestGB {
 
-  void ext_preset();
   void tick_everything();
   bool commit_everything();
 

@@ -183,7 +183,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   gb->int_reg.PIN_ACK_TIMER.preset(true, 0);
   gb->int_reg.PIN_ACK_JOYPAD.preset(true, 0);
 
-  gb->ext_preset();
+  gb->ext_bus.preset();
 
   pass_cycle();
   gb->ext_bus.PIN_RST.preset(true, 0);

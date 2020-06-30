@@ -24,7 +24,7 @@ struct PpuSignals {
   /*p24.SEGU*/ bool SEGU_xBxDxFxH;
   /*p24.ROXO*/ bool ROXO_AxCxExGx;
   /*p27.ROCO*/ bool ROCO_AxCxExGx;
-  /*p25.SERE*/ bool SERE_VRAM_RD;
+  /*p25.SERE*/ bool SERE_VRAM_RD; // this signal shouldn't be in the ppu
   /*p24.SACU*/ bool SACU_CLKPIPE_AxCxExGx;
   /*p27.ROZE*/ bool ROZE_FINE_COUNT_STOPn;
   /*p29.TYTU*/ bool TYTU_SFETCH_S0_D0n;

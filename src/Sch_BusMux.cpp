@@ -25,6 +25,8 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 BusMuxSignals BusMux::sig(const TestGB& gb) const {
+  BusMuxSignals sig;
+
   auto& ppu_reg = gb.ppu_reg;
   auto& dma_reg = gb.dma_reg;
 
@@ -128,39 +130,35 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   /*p28.ASYT*/ wire _ASYT_OAM_LATCH = and(_AJEP, _XUJA_SPR_READn, _BOTA_CPU_RD_OAMn);
   /*p28.BODE*/ wire _BODE_OAM_LATCH = not(_ASYT_OAM_LATCH); // to the tribus receiver below
 
-  return {
-    .GEKA_OAM_A0p = _GEKA_OAM_A0p,
-    .ZYFO_OAM_A1p = _ZYFO_OAM_A1p,
-    .YFOT_OAM_A2p = _YFOT_OAM_A2p,
-    .YFOC_OAM_A3p = _YFOC_OAM_A3p,
-    .YVOM_OAM_A4p = _YVOM_OAM_A4p,
-    .YMEV_OAM_A5p = _YMEV_OAM_A5p,
-    .XEMU_OAM_A6p = _XEMU_OAM_A6p,
-    .YZET_OAM_A7p = _YZET_OAM_A7p,
-    .AZUL_D_TO_OAMD = AZUL_D_TO_OAMD,
-    .XEDU_VRAM_LOCK = XEDU_VRAM_LOCK,
-    .AHOC_DMA_VRAM_RDn = AHOC_DMA_VRAM_RDn,
-    .RAHU_VBUS_TRISTATEp = RAHU_VBUS_TRISTATEp,
-    .WYJA_OAM_WRp = _WYJA_OAM_WRp,
-    .AMAB_OAM_LOCKn = _AMAB_OAM_LOCKn,
-    .COTA_OAM_CLK = _COTA_OAM_CLK,
-    .BODE_OAM_LATCH = _BODE_OAM_LATCH,
-  };
+  /*p25.TYVY*/ wire TYVY_MD_TO_D = nand(ppu_sig.SERE_VRAM_RD, cpu_sig.LEKO_CPU_RDp);
+  /*p25.SEBY*/ sig.SEBY_MD_TO_D = not(TYVY_MD_TO_D);
+
+  sig.GEKA_OAM_A0p = _GEKA_OAM_A0p;
+  sig.ZYFO_OAM_A1p = _ZYFO_OAM_A1p;
+  sig.YFOT_OAM_A2p = _YFOT_OAM_A2p;
+  sig.YFOC_OAM_A3p = _YFOC_OAM_A3p;
+  sig.YVOM_OAM_A4p = _YVOM_OAM_A4p;
+  sig.YMEV_OAM_A5p = _YMEV_OAM_A5p;
+  sig.XEMU_OAM_A6p = _XEMU_OAM_A6p;
+  sig.YZET_OAM_A7p = _YZET_OAM_A7p;
+  sig.AZUL_D_TO_OAMD = AZUL_D_TO_OAMD;
+  sig.XEDU_VRAM_LOCK = XEDU_VRAM_LOCK;
+  sig.AHOC_DMA_VRAM_RDn = AHOC_DMA_VRAM_RDn;
+  sig.RAHU_VBUS_TRISTATEp = RAHU_VBUS_TRISTATEp;
+  sig.WYJA_OAM_WRp = _WYJA_OAM_WRp;
+  sig.AMAB_OAM_LOCKn = _AMAB_OAM_LOCKn;
+  sig.COTA_OAM_CLK = _COTA_OAM_CLK;
+  sig.BODE_OAM_LATCH = _BODE_OAM_LATCH;
+
+  return sig;
 }
 
 //------------------------------------------------------------------------------
 
 void BusMux::tick(TestGB& gb) {
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto dma_sig = gb.dma_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto adr_sig = gb.adr_reg.sig(gb.cpu_bus);
-  auto cpu_sig = gb.cpu_bus.sig(gb);
   auto bus_sig = gb.bus_mux.sig(gb);
 
   auto& cpu_bus = gb.cpu_bus;
-  //auto& ext_bus = gb.ext_bus;
   auto& vram_bus = gb.vram_bus;
 
   {
@@ -192,21 +190,23 @@ void BusMux::tick(TestGB& gb) {
   }
 
   {
+    /*p25.RERY*/ wire RERY = !not(vram_bus.TS_MD0);
+    /*p25.RUNA*/ wire RUNA = !not(vram_bus.TS_MD1);
+    /*p25.RONA*/ wire RONA = !not(vram_bus.TS_MD2);
+    /*p25.RUNO*/ wire RUNO = !not(vram_bus.TS_MD3);
+    /*p25.SANA*/ wire SANA = !not(vram_bus.TS_MD4);
+    /*p25.RORO*/ wire RORO = !not(vram_bus.TS_MD5);
+    /*p25.RABO*/ wire RABO = !not(vram_bus.TS_MD6);
+    /*p25.SAME*/ wire SAME = !not(vram_bus.TS_MD7);
 
-
-
-    {
-      /*p25.TYVY*/ wire _TYVY_MD_TO_D = nand(ppu_sig.SERE_VRAM_RD, cpu_sig.LEKO_CPU_RDp);
-      /*p25.SEBY*/ wire _SEBY_MD_TO_D = not(_TYVY_MD_TO_D);
-      /*p25.RUGA*/ /*p25.RERY*/ cpu_bus.TS_D0.set_tribuf(_SEBY_MD_TO_D, !not(vram_bus.TS_MD0));
-      /*p25.ROTA*/ /*p25.RUNA*/ cpu_bus.TS_D1.set_tribuf(_SEBY_MD_TO_D, !not(vram_bus.TS_MD1));
-      /*p25.RYBU*/ /*p25.RONA*/ cpu_bus.TS_D2.set_tribuf(_SEBY_MD_TO_D, !not(vram_bus.TS_MD2));
-      /*p25.RAJU*/ /*p25.RUNO*/ cpu_bus.TS_D3.set_tribuf(_SEBY_MD_TO_D, !not(vram_bus.TS_MD3));
-      /*p25.TYJA*/ /*p25.SANA*/ cpu_bus.TS_D4.set_tribuf(_SEBY_MD_TO_D, !not(vram_bus.TS_MD4));
-      /*p25.REXU*/ /*p25.RORO*/ cpu_bus.TS_D5.set_tribuf(_SEBY_MD_TO_D, !not(vram_bus.TS_MD5));
-      /*p25.RUPY*/ /*p25.RABO*/ cpu_bus.TS_D6.set_tribuf(_SEBY_MD_TO_D, !not(vram_bus.TS_MD6));
-      /*p25.TOKU*/ /*p25.SAME*/ cpu_bus.TS_D7.set_tribuf(_SEBY_MD_TO_D, !not(vram_bus.TS_MD7));
-    }
+    /*p25.RUGA*/ cpu_bus.TS_D0.set_tribuf(bus_sig.SEBY_MD_TO_D, RERY);
+    /*p25.ROTA*/ cpu_bus.TS_D1.set_tribuf(bus_sig.SEBY_MD_TO_D, RUNA);
+    /*p25.RYBU*/ cpu_bus.TS_D2.set_tribuf(bus_sig.SEBY_MD_TO_D, RONA);
+    /*p25.RAJU*/ cpu_bus.TS_D3.set_tribuf(bus_sig.SEBY_MD_TO_D, RUNO);
+    /*p25.TYJA*/ cpu_bus.TS_D4.set_tribuf(bus_sig.SEBY_MD_TO_D, SANA);
+    /*p25.REXU*/ cpu_bus.TS_D5.set_tribuf(bus_sig.SEBY_MD_TO_D, RORO);
+    /*p25.RUPY*/ cpu_bus.TS_D6.set_tribuf(bus_sig.SEBY_MD_TO_D, RABO);
+    /*p25.TOKU*/ cpu_bus.TS_D7.set_tribuf(bus_sig.SEBY_MD_TO_D, SAME);
   }
 }
 

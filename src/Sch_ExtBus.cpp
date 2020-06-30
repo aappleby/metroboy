@@ -6,6 +6,59 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
+void ExtBus::preset() {
+  PIN_WR_C.preset(true, 0);   // -> P07.UBAL
+  PIN_RD_C.preset(true, 0);   // -> P07.UJYV
+  PIN_A00_C.preset(true, 0);   // -> P08.KOVA
+  PIN_A01_C.preset(true, 0);   // -> P08.CAMU
+  PIN_A02_C.preset(true, 0);   // -> P08.BUXU
+  PIN_A03_C.preset(true, 0);   // -> P08.BASE
+  PIN_A04_C.preset(true, 0);   // -> P08.AFEC
+  PIN_A05_C.preset(true, 0);   // -> P08.ABUP
+  PIN_A06_C.preset(true, 0);   // -> P08.CYGU
+  PIN_A07_C.preset(true, 0);   // -> P08.COGO
+  PIN_A08_C.preset(true, 0);   // -> P08.MUJY
+  PIN_A09_C.preset(true, 0);   // -> P08.NENA
+  PIN_A10_C.preset(true, 0);   // -> P08.SURA
+  PIN_A11_C.preset(true, 0);   // -> P08.MADY
+  PIN_A12_C.preset(true, 0);   // -> P08.LAHE
+  PIN_A13_C.preset(true, 0);   // -> P08.LURA
+  PIN_A14_C.preset(true, 0);   // -> P08.PEVO
+  PIN_A15_C.preset(true, 0);   // -> P08.RAZA
+
+  if (!PIN_RD_A && !PIN_CS_A) {
+    uint16_t ext_addr = get_addr();
+
+    if (0x0000 <= ext_addr && ext_addr <= 0x7FFF) {
+      // Cart rom
+      //uint8_t d = rom[ext_addr];
+      uint8_t d = 0;
+      preset_d(true, d);
+    }
+    else if (0xC000 <= ext_addr && ext_addr <= 0xDFFF) {
+      // Main ram
+      //uint8_t d = ram[ext_addr - 0xC000];
+      uint8_t d = 0;
+      preset_d(true, d);
+    }
+    else if (0xE000 <= ext_addr && ext_addr <= 0xFFFF) {
+      // Echo ram
+      //uint8_t d = ram[ext_addr - 0xE000];
+      uint8_t d = 0;
+      preset_d(true, d);
+    }
+    else {
+      printf("Bad address?\n");
+      __debugbreak();
+    }
+  }
+  else {
+    preset_d(false, 0);
+  }
+}
+
+//------------------------------------------------------------------------------
+
 ExtBusSignals ExtBus::sig(const TestGB& /*gb*/) const {
   return {
     .PIN_D0_C = PIN_D0_C,
@@ -139,7 +192,10 @@ void ExtBus::tick(TestGB& gb) {
     /*p08.SAGO*/ CPU_DATA_LATCH_05.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, PIN_D5_C);
     /*p08.RUPA*/ CPU_DATA_LATCH_06.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, PIN_D6_C);
     /*p08.SAZY*/ CPU_DATA_LATCH_07.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, PIN_D7_C);
+  }
 
+
+  {
     // RYMA 6-rung green tribuf
 
     /*p08.RYMA*/ cpu_bus.TS_D0.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, CPU_DATA_LATCH_00);
@@ -154,6 +210,9 @@ void ExtBus::tick(TestGB& gb) {
 
   // internal data bus to external data bus
   {
+    // So does this mean that if the CPU writes to the external bus during dma, that data
+    // will actually end up in oam?
+
     /*p08.LULA*/ wire _LULA_IBUS_TO_EBUSp = not(cpu_sig.RORU_IBUS_TO_EBUSn);
     PIN_D0_B.set(_LULA_IBUS_TO_EBUSp);
     PIN_D1_B.set(_LULA_IBUS_TO_EBUSp);

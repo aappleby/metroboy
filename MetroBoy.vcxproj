@@ -143,7 +143,9 @@
     <ClInclude Include="src\Sch_Resets.h" />
     <ClInclude Include="src\Sch_Scroll.h" />
     <ClInclude Include="src\Sch_Serial.h" />
+    <ClInclude Include="src\Sch_SpriteFetcher.h" />
     <ClInclude Include="src\Sch_SpriteStore.h" />
+    <ClInclude Include="src\Sch_TileFetcher.h" />
     <ClInclude Include="src\Sch_Timer.h" />
     <ClInclude Include="src\Sch_VramPins.h" />
     <ClInclude Include="src\Sch_VramBus.h" />
@@ -217,7 +219,9 @@
     <ClCompile Include="src\Sch_Resets.cpp" />
     <ClCompile Include="src\Sch_Scroll.cpp" />
     <ClCompile Include="src\Sch_Serial.cpp" />
+    <ClCompile Include="src\Sch_SpriteFetcher.cpp" />
     <ClCompile Include="src\Sch_SpriteStore.cpp" />
+    <ClCompile Include="src\Sch_TileFetcher.cpp" />
     <ClCompile Include="src\Sch_Timer.cpp" />
     <ClCompile Include="src\Sch_VramPins.cpp" />
     <ClCompile Include="src\Sch_VramBus.cpp" />

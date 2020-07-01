@@ -45,8 +45,8 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb, wire XYMO_LCDC_SP
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
+  auto oam_sig = gb.oam_bus.sig();
 
-  auto& oam_bus = gb.oam_bus;
   wire P10_B = 0;
 
   SpriteStoreSignals sig;
@@ -87,22 +87,22 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb, wire XYMO_LCDC_SP
     /*p29.FEMO*/ wire Y6n = not(lcd_sig.MATO_Y6);
     /*p29.GUSU*/ wire Y7n = not(lcd_sig.LAFO_Y7);
 
-    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, oam_bus.XUSO_SPRITE_Y0, P10_B); // are these really connected directly to the pin?
-    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, oam_bus.XUSO_SPRITE_Y0, P10_B);
-    /*p29.ENEF*/ wire YDIFF_S1 = add_s(Y1n, oam_bus.XEGU_SPRITE_Y1, YDIFF_C0);
-    /*p29.ENEF*/ wire YDIFF_C1 = add_c(Y1n, oam_bus.XEGU_SPRITE_Y1, YDIFF_C0);
-    /*p29.FECO*/ wire YDIFF_S2 = add_s(Y2n, oam_bus.YJEX_SPRITE_Y2, YDIFF_C1);
-    /*p29.FECO*/ wire YDIFF_C2 = add_c(Y2n, oam_bus.YJEX_SPRITE_Y2, YDIFF_C1);
-    /*p29.GYKY*/ wire YDIFF_S3 = add_s(Y3n, oam_bus.XYJU_SPRITE_Y3, YDIFF_C2);
-    /*p29.GYKY*/ wire YDIFF_C3 = add_c(Y3n, oam_bus.XYJU_SPRITE_Y3, YDIFF_C2);
-    /*p29.GOPU*/ wire YDIFF_S4 = add_s(Y4n, oam_bus.YBOG_SPRITE_Y4, YDIFF_C3);
-    /*p29.GOPU*/ wire YDIFF_C4 = add_c(Y4n, oam_bus.YBOG_SPRITE_Y4, YDIFF_C3);
-    /*p29.FUWA*/ wire YDIFF_S5 = add_s(Y5n, oam_bus.WYSO_SPRITE_Y5, YDIFF_C4);
-    /*p29.FUWA*/ wire YDIFF_C5 = add_c(Y5n, oam_bus.WYSO_SPRITE_Y5, YDIFF_C4);
-    /*p29.GOJU*/ wire YDIFF_S6 = add_s(Y6n, oam_bus.XOTE_SPRITE_Y6, YDIFF_C5);
-    /*p29.GOJU*/ wire YDIFF_C6 = add_c(Y6n, oam_bus.XOTE_SPRITE_Y6, YDIFF_C5);
-    /*p29.WUHU*/ wire YDIFF_S7 = add_s(Y7n, oam_bus.YZAB_SPRITE_Y7, YDIFF_C6);
-    /*p29.WUHU*/ wire YDIFF_C7 = add_c(Y7n, oam_bus.YZAB_SPRITE_Y7, YDIFF_C6);
+    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, oam_sig.XUSO_SPRITE_Y0, P10_B); // are these really connected directly to the pin?
+    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, oam_sig.XUSO_SPRITE_Y0, P10_B);
+    /*p29.ENEF*/ wire YDIFF_S1 = add_s(Y1n, oam_sig.XEGU_SPRITE_Y1, YDIFF_C0);
+    /*p29.ENEF*/ wire YDIFF_C1 = add_c(Y1n, oam_sig.XEGU_SPRITE_Y1, YDIFF_C0);
+    /*p29.FECO*/ wire YDIFF_S2 = add_s(Y2n, oam_sig.YJEX_SPRITE_Y2, YDIFF_C1);
+    /*p29.FECO*/ wire YDIFF_C2 = add_c(Y2n, oam_sig.YJEX_SPRITE_Y2, YDIFF_C1);
+    /*p29.GYKY*/ wire YDIFF_S3 = add_s(Y3n, oam_sig.XYJU_SPRITE_Y3, YDIFF_C2);
+    /*p29.GYKY*/ wire YDIFF_C3 = add_c(Y3n, oam_sig.XYJU_SPRITE_Y3, YDIFF_C2);
+    /*p29.GOPU*/ wire YDIFF_S4 = add_s(Y4n, oam_sig.YBOG_SPRITE_Y4, YDIFF_C3);
+    /*p29.GOPU*/ wire YDIFF_C4 = add_c(Y4n, oam_sig.YBOG_SPRITE_Y4, YDIFF_C3);
+    /*p29.FUWA*/ wire YDIFF_S5 = add_s(Y5n, oam_sig.WYSO_SPRITE_Y5, YDIFF_C4);
+    /*p29.FUWA*/ wire YDIFF_C5 = add_c(Y5n, oam_sig.WYSO_SPRITE_Y5, YDIFF_C4);
+    /*p29.GOJU*/ wire YDIFF_S6 = add_s(Y6n, oam_sig.XOTE_SPRITE_Y6, YDIFF_C5);
+    /*p29.GOJU*/ wire YDIFF_C6 = add_c(Y6n, oam_sig.XOTE_SPRITE_Y6, YDIFF_C5);
+    /*p29.WUHU*/ wire YDIFF_S7 = add_s(Y7n, oam_sig.YZAB_SPRITE_Y7, YDIFF_C6);
+    /*p29.WUHU*/ wire YDIFF_C7 = add_c(Y7n, oam_sig.YZAB_SPRITE_Y7, YDIFF_C6);
 
     /*p29.DEGE*/ sig.SPRITE_DELTA0 = not(YDIFF_S0);
     /*p29.DABY*/ sig.SPRITE_DELTA1 = not(YDIFF_S1);
@@ -293,8 +293,8 @@ void SpriteStoreRegisters::tick(const TestGB& gb) {
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto sst_sig = sig(gb, ppu_sig.XYMO_LCDC_SPSIZE);
   auto bus_sig = gb.bus_mux.sig(gb);
+  auto oam_sig = gb.oam_bus.sig();
 
-  auto& oam_bus = gb.oam_bus;
   wire P10_B = 0;
 
   //----------------------------------------
@@ -652,14 +652,14 @@ void SpriteStoreRegisters::tick(const TestGB& gb) {
 
     // 10 sprite stores
 
-    /*p31.ZAGO*/ wire ZAGO_SPRITE_X0 = not(!oam_bus.YLOR_SPRITE_X0);
-    /*p31.ZOCY*/ wire ZOCY_SPRITE_X1 = not(!oam_bus.ZYTY_SPRITE_X1);
-    /*p31.YPUR*/ wire YPUR_SPRITE_X2 = not(!oam_bus.ZYVE_SPRITE_X2);
-    /*p31.YVOK*/ wire YVOK_SPRITE_X3 = not(!oam_bus.ZEZY_SPRITE_X3);
-    /*p31.COSE*/ wire COSE_SPRITE_X4 = not(!oam_bus.GOMO_SPRITE_X4);
-    /*p31.AROP*/ wire AROP_SPRITE_X5 = not(!oam_bus.BAXO_SPRITE_X5);
-    /*p31.XATU*/ wire XATU_SPRITE_X6 = not(!oam_bus.YZOS_SPRITE_X6);
-    /*p31.BADY*/ wire BADY_SPRITE_X7 = not(!oam_bus.DEPO_SPRITE_X7);
+    /*p31.ZAGO*/ wire ZAGO_SPRITE_X0 = not(!oam_sig.YLOR_SPRITE_X0);
+    /*p31.ZOCY*/ wire ZOCY_SPRITE_X1 = not(!oam_sig.ZYTY_SPRITE_X1);
+    /*p31.YPUR*/ wire YPUR_SPRITE_X2 = not(!oam_sig.ZYVE_SPRITE_X2);
+    /*p31.YVOK*/ wire YVOK_SPRITE_X3 = not(!oam_sig.ZEZY_SPRITE_X3);
+    /*p31.COSE*/ wire COSE_SPRITE_X4 = not(!oam_sig.GOMO_SPRITE_X4);
+    /*p31.AROP*/ wire AROP_SPRITE_X5 = not(!oam_sig.BAXO_SPRITE_X5);
+    /*p31.XATU*/ wire XATU_SPRITE_X6 = not(!oam_sig.YZOS_SPRITE_X6);
+    /*p31.BADY*/ wire BADY_SPRITE_X7 = not(!oam_sig.DEPO_SPRITE_X7);
 
     /*p29.GENY*/ wire GENY_STORE0_CLKp = not(DYHU_STORE0_CLKn);
     /*p29.ENOB*/ wire ENOB_STORE0_CLKp = not(DYHU_STORE0_CLKn);

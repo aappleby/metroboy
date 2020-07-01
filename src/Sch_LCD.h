@@ -88,6 +88,8 @@ private:
 
   /*p21.ROPO*/ Reg ROPO_LY_MATCH_SYNCp;
 
+  /* PIN_50 */ PinOut LD1;
+  /* PIN_51 */ PinOut LD0;
   /* PIN_52 */ PinOut CPG;
   /* PIN_55 */ PinOut CPL;
   /* PIN_56 */ PinOut FR;

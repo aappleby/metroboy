@@ -73,6 +73,7 @@ void LcdRegisters::tick(TestGB& gb) {
   auto tim_sig = gb.tim_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto lcd_sig = sig(gb);
+  auto pxp_sig = gb.pxp_reg.sig(gb);
 
   auto& cpu_bus = gb.cpu_bus;
 
@@ -125,6 +126,11 @@ void LcdRegisters::tick(TestGB& gb) {
   {
     /*p21.NOKO*/ wire _NOKO_LINE_153 = and(LAFO_Y7.q(), LOVU_Y4.q(), LYDO_Y3.q(), MUWY_Y0.q()); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
     /*p21.MYTA*/ MYTA_LINE_153_d4.set(NYPE_NEW_LINE_d4.q(), rst_sig.LYFE_VID_RSTn, _NOKO_LINE_153);
+  }
+
+  {
+    LD0.set(not(pxp_sig.REMY_LD0n));
+    LD1.set(not(pxp_sig.RAVO_LD1n));
   }
 
   {
@@ -292,6 +298,8 @@ bool LcdRegisters::commit() {
 
   /*p21.ROPO*/ changed |= ROPO_LY_MATCH_SYNCp.commit_reg();
 
+  /* PIN_50 */ changed |= LD1.commit_pinout();
+  /* PIN_51 */ changed |= LD0.commit_pinout();
   /* PIN_52 */ changed |= CPG.commit_pinout();
   /* PIN_55 */ changed |= CPL.commit_pinout();
   /* PIN_56 */ changed |= FR.commit_pinout();

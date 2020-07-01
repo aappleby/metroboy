@@ -6,64 +6,36 @@ namespace Schematics {
 struct TestGB;
 
 //-----------------------------------------------------------------------------
+
+struct OamBusSignals {
+  /*p31.YLOR*/ Signal YLOR_SPRITE_X0;
+  /*p31.ZYTY*/ Signal ZYTY_SPRITE_X1;
+  /*p31.ZYVE*/ Signal ZYVE_SPRITE_X2;
+  /*p31.ZEZY*/ Signal ZEZY_SPRITE_X3;
+  /*p31.GOMO*/ Signal GOMO_SPRITE_X4;
+  /*p31.BAXO*/ Signal BAXO_SPRITE_X5;
+  /*p31.YZOS*/ Signal YZOS_SPRITE_X6;
+  /*p31.DEPO*/ Signal DEPO_SPRITE_X7;
+
+  /*p29.XUSO*/ Signal XUSO_SPRITE_Y0;
+  /*p29.XEGU*/ Signal XEGU_SPRITE_Y1;
+  /*p29.YJEX*/ Signal YJEX_SPRITE_Y2;
+  /*p29.XYJU*/ Signal XYJU_SPRITE_Y3;
+  /*p29.YBOG*/ Signal YBOG_SPRITE_Y4;
+  /*p29.WYSO*/ Signal WYSO_SPRITE_Y5;
+  /*p29.XOTE*/ Signal XOTE_SPRITE_Y6;
+  /*p29.YZAB*/ Signal YZAB_SPRITE_Y7;
+};
+
+//-----------------------------------------------------------------------------
 // These signals connect directly to OAM
 
 struct OamBus {
-
+  OamBusSignals sig() const;
   void tick(TestGB& gb);
   bool commit();
 
-  void dump_pins(TextPainter& text_painter) {
-    text_painter.dprintf("----- OAM_PINS -----\n");
-    text_painter.dprintf("PIN_CLK %d\n", PIN_CLK.a.val);
-    text_painter.dprintf("PIN_OE    %d\n", PIN_OE.a.val);
-    text_painter.dprintf("PIN_WR_A  %d\n", PIN_WR_A.a.val);
-    text_painter.dprintf("PIN_WR_B  %d\n", PIN_WR_B.a.val);
-
-    text_painter.add_text("Axx   ");
-    dump2(text_painter, PIN_A7.a);
-    dump2(text_painter, PIN_A6.a);
-    dump2(text_painter, PIN_A5.a);
-    dump2(text_painter, PIN_A4.a);
-    dump2(text_painter, PIN_A3.a);
-    dump2(text_painter, PIN_A2.a);
-    dump2(text_painter, PIN_A1.a);
-    dump2(text_painter, PIN_A0.a);
-    text_painter.newline();
-
-    text_painter.add_text("A_Dx  ");
-    dump2(text_painter, PIN_DA7.a);
-    dump2(text_painter, PIN_DA6.a);
-    dump2(text_painter, PIN_DA5.a);
-    dump2(text_painter, PIN_DA4.a);
-    dump2(text_painter, PIN_DA3.a);
-    dump2(text_painter, PIN_DA2.a);
-    dump2(text_painter, PIN_DA1.a);
-    dump2(text_painter, PIN_DA0.a);
-    text_painter.newline();
-
-    text_painter.add_text("B_Dx  ");
-    dump2(text_painter, PIN_DB7.a);
-    dump2(text_painter, PIN_DB6.a);
-    dump2(text_painter, PIN_DB5.a);
-    dump2(text_painter, PIN_DB4.a);
-    dump2(text_painter, PIN_DB3.a);
-    dump2(text_painter, PIN_DB2.a);
-    dump2(text_painter, PIN_DB1.a);
-    dump2(text_painter, PIN_DB0.a);
-    text_painter.newline();
-
-    text_painter.newline();
-  }
-
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf("----- OAM_REG -----\n");
-    text_painter.dprintf("LATCH_A 0x%02x\n", pack(XYKY_LATCH_OAM_A0.q(), YRUM_LATCH_OAM_A1.q(), YSEX_LATCH_OAM_A2.q(), YVEL_LATCH_OAM_A3.q(), WYNO_LATCH_OAM_A4.q(), CYRA_LATCH_OAM_A5.q(), ZUVE_LATCH_OAM_A6.q(), ECED_LATCH_OAM_A7.q()));
-    text_painter.dprintf("LATCH_B 0x%02x\n", pack(YDYV_LATCH_OAM_B0.q(), YCEB_LATCH_OAM_B1.q(), ZUCA_LATCH_OAM_B2.q(), WONE_LATCH_OAM_B3.q(), ZAXE_LATCH_OAM_B4.q(), XAFU_LATCH_OAM_B5.q(), YSES_LATCH_OAM_B6.q(), ZECA_LATCH_OAM_B7.q()));
-    text_painter.dprintf("REG_A   0x%02x\n", pack(YLOR_SPRITE_X0.q(), ZYTY_SPRITE_X1.q(), ZYVE_SPRITE_X2.q(), ZEZY_SPRITE_X3.q(), GOMO_SPRITE_X4.q(), BAXO_SPRITE_X5.q(), YZOS_SPRITE_X6.q(), DEPO_SPRITE_X7.q()));
-    text_painter.dprintf("REG_B   0x%02x\n", pack(XUSO_SPRITE_Y0.q(), XEGU_SPRITE_Y1.q(), YJEX_SPRITE_Y2.q(), XYJU_SPRITE_Y3.q(), YBOG_SPRITE_Y4.q(), WYSO_SPRITE_Y5.q(), XOTE_SPRITE_Y6.q(), YZAB_SPRITE_Y7.q()));
-    text_painter.newline();
-  }
+private:
 
   /*p31.YLOR*/ Reg YLOR_SPRITE_X0;
   /*p31.ZYTY*/ Reg ZYTY_SPRITE_X1;
@@ -82,8 +54,6 @@ struct OamBus {
   /*p29.WYSO*/ Reg WYSO_SPRITE_Y5;
   /*p29.XOTE*/ Reg XOTE_SPRITE_Y6;
   /*p29.YZAB*/ Reg YZAB_SPRITE_Y7;
-
-private:
 
   PinOut PIN_CLK;
   PinOut PIN_OE;

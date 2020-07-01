@@ -22,6 +22,8 @@
 #include "Sch_Interrupts.h"
 #include "Sch_Scroll.h"
 #include "Sch_Bootrom.h"
+#include "Sch_SpriteFetcher.h"
+#include "Sch_TileFetcher.h"
 
 namespace Schematics {
 
@@ -69,6 +71,9 @@ struct TestGB {
 
   OamBus oam_bus;
   VramBus vram_bus;
+
+  TileFetcher tile_fetcher;
+  SpriteFetcher sprite_fetcher;
 
   BusMux bus_mux;
 

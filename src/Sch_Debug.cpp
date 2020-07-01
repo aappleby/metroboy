@@ -4,56 +4,50 @@
 
 using namespace Schematics;
 
+//text_painter.dprintf("UNOR_MODE_DBG2           %d\n", UNOR_MODE_DBG2        .a.val);
+//text_painter.dprintf("UMUT_MODE_DBG1           %d\n", UMUT_MODE_DBG1        .a.val);
+//text_painter.dprintf("UPOJ_MODE_PRODn  %d\n", UPOJ_MODE_PRODn );
+//text_painter.dprintf("UMUT_MODE_DBG1  %d\n", UMUT_MODE_DBG1 );
+//text_painter.dprintf("UNOR_MODE_DBG2  %d\n", UNOR_MODE_DBG2 );
+//text_painter.dprintf("TOVA_MODE_DBG2n %d\n", TOVA_MODE_DBG2n);
+//text_painter.dprintf("RYCA_MODE_DBG2n %d\n", RYCA_MODE_DBG2n);
+
 //-----------------------------------------------------------------------------
 
 DebugSignals DebugRegisters::sig(const TestGB& gb) const {
+  DebugSignals sig;
+
   auto& ext_pins_in = gb.ext_pins_in;
   auto& cpu_bus = gb.cpu_bus;
 
   wire P10_B = 0;
 
-  /*p27.VYPO*/ wire _VYPO_P10_Bn = not(P10_B);
-  /*p28.WEFE*/ wire _WEFE_P10_Bn = not(P10_B);
-  /*p28.WUWE*/ wire _WUWE_P10_Bn = not(P10_B);
-  /*p28.GEFY*/ wire _GEFY_P10_Bn = not(P10_B);
-  /*p28.GECA*/ wire _GECA_P10_Bp = not(_WEFE_P10_Bn);
-  /*p28.WYDU*/ wire _WYDU_P10_Bp = not(_WEFE_P10_Bn);
+  /*p27.VYPO*/ sig.VYPO_P10_Bn = not(P10_B);
+  /*p28.WEFE*/ sig.WEFE_P10_Bn = not(P10_B);
+  /*p28.WUWE*/ sig.WUWE_P10_Bn = not(P10_B);
+  /*p28.GEFY*/ sig.GEFY_P10_Bn = not(P10_B);
+  /*p28.GECA*/ sig.GECA_P10_Bp = not(sig.WEFE_P10_Bn);
+  /*p28.WYDU*/ sig.WYDU_P10_Bp = not(sig.WEFE_P10_Bn);
 
 
 
-  /*p07.UBET*/ wire _UBET_T1n = not(ext_pins_in.PIN_T1);
-  /*p07.UVAR*/ wire _UVAR_T2n = not(ext_pins_in.PIN_T2);
-  /*p07.UMUT*/ wire _UMUT_MODE_DBG1p = and (ext_pins_in.PIN_T1, _UVAR_T2n);
-  /*p07.UNOR*/ wire _UNOR_MODE_DBG2p = and (ext_pins_in.PIN_T2, _UBET_T1n); // Must be UNORp, see UJYV/UBAL
-  /*p08.TOVA*/ wire _TOVA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
-  /*p07.UPOJ*/ wire _UPOJ_MODE_PROD = nand(_UBET_T1n, _UVAR_T2n, ext_pins_in.PIN_RST);
-  /*p08.RYCA*/ wire _RYCA_MODE_DBG2n = not(_UNOR_MODE_DBG2p);
-  /*p25.TUTO*/ wire _TUTO_DBG_VRAM = and (_UNOR_MODE_DBG2p, !SOTO_DBG);
+  /*p07.UBET*/ sig.UBET_T1n = not(ext_pins_in.PIN_T1);
+  /*p07.UVAR*/ sig.UVAR_T2n = not(ext_pins_in.PIN_T2);
+  /*p07.UMUT*/ sig.UMUT_MODE_DBG1p = and (ext_pins_in.PIN_T1, sig.UVAR_T2n);
+  /*p07.UNOR*/ sig.UNOR_MODE_DBG2p = and (ext_pins_in.PIN_T2, sig.UBET_T1n); // Must be UNORp, see UJYV/UBAL
+  /*p08.TOVA*/ sig.TOVA_MODE_DBG2n = not(sig.UNOR_MODE_DBG2p);
+  /*p07.UPOJ*/ sig.UPOJ_MODE_PROD = nand(sig.UBET_T1n, sig.UVAR_T2n, ext_pins_in.PIN_RST);
+  /*p08.RYCA*/ sig.RYCA_MODE_DBG2n = not(sig.UNOR_MODE_DBG2p);
+  /*p25.TUTO*/ sig.TUTO_DBG_VRAMp = and (sig.UNOR_MODE_DBG2p, !SOTO_DBG);
 
   /*p??.APAP*/ wire _APAP = not(cpu_bus.PIN_ADDR_VALID); // Missing from schematic
-  /*p01.AWOD*/ wire _AWOD = nor(_UNOR_MODE_DBG2p, _APAP);
-  /*p01.ABUZ*/ wire _ABUZ = not(_AWOD);
+  /*p01.AWOD*/ wire _AWOD = nor(sig.UNOR_MODE_DBG2p, _APAP);
+  /*p01.ABUZ*/ sig.ABUZ = not(_AWOD);
 
   // what is this for exactly?
   // wire ABUZ = or(UNOR_MODE_DBG2n, !gb.cpu_pins.ADDR_VALID);
 
-  return {
-    .VYPO_P10_Bn = _VYPO_P10_Bn,
-    .WEFE_P10_Bn = _WEFE_P10_Bn,
-    .WUWE_P10_Bn = _WUWE_P10_Bn,
-    .GEFY_P10_Bn = _GEFY_P10_Bn,
-    .GECA_P10_Bp = _GECA_P10_Bp,
-    .WYDU_P10_Bp = _WYDU_P10_Bp,
-    .UBET_T1n = _UBET_T1n,
-    .UVAR_T2n = _UVAR_T2n,
-    .UMUT_MODE_DBG1p = _UMUT_MODE_DBG1p,
-    .UNOR_MODE_DBG2p = _UNOR_MODE_DBG2p,
-    .TOVA_MODE_DBG2n = _TOVA_MODE_DBG2n,
-    .UPOJ_MODE_PROD = _UPOJ_MODE_PROD,
-    .RYCA_MODE_DBG2n = _RYCA_MODE_DBG2n,
-    .TUTO_DBG_VRAMp = _TUTO_DBG_VRAM,
-    .ABUZ = _ABUZ,
-  };
+  return sig;
 }
 
 //-----------------------------------------------------------------------------
@@ -87,11 +81,3 @@ bool DebugRegisters::commit() {
 }
 
 //-----------------------------------------------------------------------------
-
-    //text_painter.dprintf("UNOR_MODE_DBG2           %d\n", UNOR_MODE_DBG2        .a.val);
-    //text_painter.dprintf("UMUT_MODE_DBG1           %d\n", UMUT_MODE_DBG1        .a.val);
-    //text_painter.dprintf("UPOJ_MODE_PRODn  %d\n", UPOJ_MODE_PRODn );
-    //text_painter.dprintf("UMUT_MODE_DBG1  %d\n", UMUT_MODE_DBG1 );
-    //text_painter.dprintf("UNOR_MODE_DBG2  %d\n", UNOR_MODE_DBG2 );
-    //text_painter.dprintf("TOVA_MODE_DBG2n %d\n", TOVA_MODE_DBG2n);
-    //text_painter.dprintf("RYCA_MODE_DBG2n %d\n", RYCA_MODE_DBG2n);

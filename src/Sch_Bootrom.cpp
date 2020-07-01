@@ -4,6 +4,8 @@
 
 using namespace Schematics;
 
+//-----------------------------------------------------------------------------
+
 static const uint8_t DMG_ROM_bin[] = {
   0x31, 0xfe, 0xff, 0xaf, 0x21, 0xff, 0x9f, 0x32,
   0xcb, 0x7c, 0x20, 0xfb, 0x21, 0x26, 0xff, 0x0e,
@@ -42,12 +44,15 @@ static const uint8_t DMG_ROM_bin[] = {
   0xfb, 0x86, 0x20, 0xfe, 0x3e, 0x01, 0xe0, 0x50
 };
 
+//-----------------------------------------------------------------------------
 
 BootSignals Bootrom::sig(const TestGB& /*gb*/) const {
   BootSignals sig;
   sig.BOOT_BITn = BOOT_BITn;
   return sig;
 }
+
+//-----------------------------------------------------------------------------
 
 void Bootrom::tick(TestGB& gb) {
   auto& cpu_bus = gb.cpu_bus;
@@ -123,3 +128,5 @@ void Bootrom::tick(TestGB& gb) {
     cpu_bus.TRI_D7.set_tribuf(_YULA_BOOT_RD, data & 0x80);
   }
 }
+
+//-----------------------------------------------------------------------------

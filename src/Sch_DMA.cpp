@@ -57,6 +57,8 @@ using namespace Schematics;
 
 DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
 
+  DmaSignals sig;
+
   // Die trace:
   // LEBU = not(MARU06)
   // MUDA = nor(PULA06, POKU06, LEBU);
@@ -72,38 +74,32 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
   /*p04.MUDA*/ wire _MUDA_DMA_ADDR_VRAMp = nor(DMA_A13.q(), DMA_A14.q(), _LEBU_DMA_ADDR_A15n);
   /*p04.MUHO*/ wire _MUHO_DMA_VRAM_RDn   = nand(MATU_DMA_OAM_WRp.q(), _MUDA_DMA_ADDR_VRAMp);
   /*p04.LOGO*/ wire _LOGO_DMA_VRAMn      = not(_MUDA_DMA_ADDR_VRAMp);
-  /*p04.MORY*/ wire _MORY_DMA_READ_CARTn = nand(MATU_DMA_OAM_WRp.q(), _LOGO_DMA_VRAMn); // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
-  /*p04.LUMA*/ wire _LUMA_DMA_READ_CARTp = not(_MORY_DMA_READ_CARTn);
-  /*p25.CEDE*/ wire _CEDE_DMA_READ_CARTn = not(_LUMA_DMA_READ_CARTp);
-  /*p04.LUFA*/ wire _LUFA_DMA_READ_VRAMp = not(_MUHO_DMA_VRAM_RDn);
-  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn    = not(MATU_DMA_OAM_WRp.q());
+  /*p04.MORY*/ sig.MORY_DMA_READ_CARTn = nand(MATU_DMA_OAM_WRp.q(), _LOGO_DMA_VRAMn); // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
+  /*p04.LUMA*/ sig.LUMA_DMA_READ_CARTp = not(sig.MORY_DMA_READ_CARTn);
+  /*p25.CEDE*/ sig.CEDE_DMA_READ_CARTn = not(sig.LUMA_DMA_READ_CARTp);
+  /*p04.LUFA*/ sig.LUFA_DMA_READ_VRAMp = not(_MUHO_DMA_VRAM_RDn);
+  /*p28.BOGE*/ sig.BOGE_DMA_RUNNINGn    = not(MATU_DMA_OAM_WRp.q());
 
-  return {
-    .BOGE_DMA_RUNNINGn = BOGE_DMA_RUNNINGn,
-    .MORY_DMA_READ_CARTn = _MORY_DMA_READ_CARTn,
-    .LUMA_DMA_READ_CARTp = _LUMA_DMA_READ_CARTp,
-    .CEDE_DMA_READ_CARTn = _CEDE_DMA_READ_CARTn,
-    .LUFA_DMA_READ_VRAMp = _LUFA_DMA_READ_VRAMp,
+  sig.MATU_DMA_OAM_WRp = MATU_DMA_OAM_WRp;
 
-    .MATU_DMA_OAM_WRp = MATU_DMA_OAM_WRp,
+  sig.DMA_A00 = DMA_A00;
+  sig.DMA_A01 = DMA_A01;
+  sig.DMA_A02 = DMA_A02;
+  sig.DMA_A03 = DMA_A03;
+  sig.DMA_A04 = DMA_A04;
+  sig.DMA_A05 = DMA_A05;
+  sig.DMA_A06 = DMA_A06;
+  sig.DMA_A07 = DMA_A07;
+  sig.DMA_A08 = DMA_A08;
+  sig.DMA_A09 = DMA_A09;
+  sig.DMA_A10 = DMA_A10;
+  sig.DMA_A11 = DMA_A11;
+  sig.DMA_A12 = DMA_A12;
+  sig.DMA_A13 = DMA_A13;
+  sig.DMA_A14 = DMA_A14;
+  sig.DMA_A15 = DMA_A15;
 
-    .DMA_A00 = DMA_A00,
-    .DMA_A01 = DMA_A01,
-    .DMA_A02 = DMA_A02,
-    .DMA_A03 = DMA_A03,
-    .DMA_A04 = DMA_A04,
-    .DMA_A05 = DMA_A05,
-    .DMA_A06 = DMA_A06,
-    .DMA_A07 = DMA_A07,
-    .DMA_A08 = DMA_A08,
-    .DMA_A09 = DMA_A09,
-    .DMA_A10 = DMA_A10,
-    .DMA_A11 = DMA_A11,
-    .DMA_A12 = DMA_A12,
-    .DMA_A13 = DMA_A13,
-    .DMA_A14 = DMA_A14,
-    .DMA_A15 = DMA_A15,
-  };
+  return sig;
 }
 
 //------------------------------------------------------------------------------
@@ -216,6 +212,8 @@ void DmaRegisters::tick(TestGB& gb) {
   }
 }
 
+//-----------------------------------------------------------------------------
+
 bool DmaRegisters::commit() {
   bool changed = false;
   /*p04.MATU*/ changed |= MATU_DMA_OAM_WRp.commit_reg(); // -> p25,p28
@@ -246,3 +244,5 @@ bool DmaRegisters::commit() {
 
   return changed;
 }
+
+//-----------------------------------------------------------------------------

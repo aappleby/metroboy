@@ -53,8 +53,8 @@ void dump_pin(TextPainter& text_painter, SignalState a, SignalState b, SignalSta
 }
 
 void dump(TextPainter& text_painter, const char* label,
-          SignalBase a, SignalBase b, SignalBase c, SignalBase d,
-          SignalBase e, SignalBase f, SignalBase g) {
+          RegisterBase a, RegisterBase b, RegisterBase c, RegisterBase d,
+          RegisterBase e, RegisterBase f, RegisterBase g) {
   text_painter.add_text(label);
   dump2(text_painter, g.a);
   dump2(text_painter, f.a);
@@ -69,8 +69,8 @@ void dump(TextPainter& text_painter, const char* label,
 }
 
 void dump(TextPainter& text_painter, const char* label,
-          SignalBase a, SignalBase b, SignalBase c, SignalBase d,
-          SignalBase e, SignalBase f, SignalBase g, SignalBase h) {
+          RegisterBase a, RegisterBase b, RegisterBase c, RegisterBase d,
+          RegisterBase e, RegisterBase f, RegisterBase g, RegisterBase h) {
   text_painter.add_text(label);
   dump2(text_painter, h.a);
   dump2(text_painter, g.a);

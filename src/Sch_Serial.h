@@ -23,6 +23,8 @@ struct SerialRegisters {
   void dump_regs(TextPainter& text_painter);
   void dump_pins(TextPainter& text_painter);
 
+private:
+
   /*p06.ETAF*/ Reg XFER_START;
   /*p06.CULY*/ Reg XFER_DIR;
 

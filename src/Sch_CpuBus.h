@@ -8,51 +8,51 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct CpuBusSignals {
-  /*p07.TEDO*/ wire TEDO_CPU_RD;
-  /*p07.ASOT*/ wire ASOT_CPU_RD;
+  /*p07.TEDO*/ Signal TEDO_CPU_RD;
+  /*p07.ASOT*/ Signal ASOT_CPU_RD;
 
-  /*p08.MOCA*/ wire MOCA_DBG_EXT_RD;
-  /*p08.MOTY*/ wire MOTY_CPU_EXT_RD;
+  /*p08.MOCA*/ Signal MOCA_DBG_EXT_RD;
+  /*p08.MOTY*/ Signal MOTY_CPU_EXT_RD;
 
-  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH;
-  /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH;
-  /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH;
+  /*p07.TAPU*/ Signal TAPU_CPU_WR_xxxxxFGH;
+  /*p07.CUPA*/ Signal CUPA_CPU_WR_xxxxxFGH;
+  /*p01.APOV*/ Signal APOV_CPU_WR_xxxxxFGH;
 
-  /*p04.DECY*/ wire DECY_FROM_CPU5n;
-  /*p28.LEKO*/ wire LEKO_CPU_RDp;
+  /*p04.DECY*/ Signal DECY_FROM_CPU5n;
+  /*p28.LEKO*/ Signal LEKO_CPU_RDp;
 
-  /*p08.MATE*/ wire MATE_LATCH_CPU_ADDRp;
-  /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAp;
+  /*p08.MATE*/ Signal MATE_LATCH_CPU_ADDRp;
+  /*p08.LAVO*/ Signal LAVO_LATCH_CPU_DATAp;
 
-  /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn;
+  /*p08.RORU*/ Signal RORU_IBUS_TO_EBUSn;
 
-  /*p03.TOVY*/ bool TOVY_A00n;
-  /*p08.TOLA*/ bool TOLA_A01n;
-  /*p06.SEFY*/ bool SEFY_A02n;
-  /*p07.TONA*/ bool TONA_A08n;
+  /*p03.TOVY*/ Signal TOVY_A00n;
+  /*p08.TOLA*/ Signal TOLA_A01n;
+  /*p06.SEFY*/ Signal SEFY_A02n;
+  /*p07.TONA*/ Signal TONA_A08n;
 
-  /*p22.XOLA*/ bool XOLA_A00n;
-  /*p22.XENO*/ bool XENO_A01n;
-  /*p22.XUSY*/ bool XUSY_A02n;
-  /*p22.XERA*/ bool XERA_A03n;
-  /*p10.BYKO*/ bool BYKO_A05n;
-  /*p10.AKUG*/ bool AKUG_A06n;
+  /*p22.XOLA*/ Signal XOLA_A00n;
+  /*p22.XENO*/ Signal XENO_A01n;
+  /*p22.XUSY*/ Signal XUSY_A02n;
+  /*p22.XERA*/ Signal XERA_A03n;
+  /*p10.BYKO*/ Signal BYKO_A05n;
+  /*p10.AKUG*/ Signal AKUG_A06n;
 
-  /*p22.WADO*/ bool WADO_A00p;
-  /*p22.WESA*/ bool WESA_A01p;
-  /*p22.WALO*/ bool WALO_A02p;
-  /*p22.WEPO*/ bool WEPO_A03p;
+  /*p22.WADO*/ Signal WADO_A00p;
+  /*p22.WESA*/ Signal WESA_A01p;
+  /*p22.WALO*/ Signal WALO_A02p;
+  /*p22.WEPO*/ Signal WEPO_A03p;
 
-  /*p07.TUNA*/ bool TUNA_0000_FDFFp;
-  /*p06.SARE*/ bool SARE_XX00_XX07p;
-  /*p07.SYKE*/ bool SYKE_FF00_FFFFp;
-  /*p25.SYRO*/ bool SYRO_FE00_FFFFp;
-  /*p03.RYFO*/ bool RYFO_FF04_FF07p;
-  /*p07.SARO*/ bool SARO_FE00_FEFFp;
-  /*p22.WERO*/ bool WERO_FF40_FF4Fp;
-  /*p25.SOSE*/ bool SOSE_8000_9FFFp;
-  /*p08.TEXO*/ bool TEXO_8000_9FFFn;
-  /*p08.LEVO*/ bool LEVO_8000_9FFFp;
+  /*p07.TUNA*/ Signal TUNA_0000_FDFFp;
+  /*p06.SARE*/ Signal SARE_XX00_XX07p;
+  /*p07.SYKE*/ Signal SYKE_FF00_FFFFp;
+  /*p25.SYRO*/ Signal SYRO_FE00_FFFFp;
+  /*p03.RYFO*/ Signal RYFO_FF04_FF07p;
+  /*p07.SARO*/ Signal SARO_FE00_FEFFp;
+  /*p22.WERO*/ Signal WERO_FF40_FF4Fp;
+  /*p25.SOSE*/ Signal SOSE_8000_9FFFp;
+  /*p08.TEXO*/ Signal TEXO_8000_9FFFn;
+  /*p08.LEVO*/ Signal LEVO_8000_9FFFp;
 };
 
 //-----------------------------------------------------------------------------
@@ -261,6 +261,9 @@ struct CpuPinsOut {
   //----------
 
 private:
+
+  //PinOut UNOR_MODE_DBG2;         // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  //PinOut UMUT_MODE_DBG1;         // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
 
   PinOut PIN_BOWA_AxCDEFGH; // top left port PORTD_01: <- BOWA_AxCDEFGH // Blue clock - decoders, alu, some reset stuff
   PinOut PIN_BEDO_xBxxxxxx; // top left port PORTD_02: <- BEDO_xBxxxxxx

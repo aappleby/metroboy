@@ -8,29 +8,29 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct LcdSignals {
-  /*p29.CATU*/ bool CATU_VID_LINE_d4;
-  /*p28.BYHA*/ bool BYHA_VID_LINE_TRIG_d4n;
-  /*p28.ATEJ*/ bool ATEJ_VID_LINE_TRIG_d4p;
-  /*p27.XAHY*/ bool XAHY_VID_LINE_TRIG_d4n;
-  /*p28.BYVA*/ bool BYVA_VID_LINE_TRIG_d4n;
-  /*p29.DYBA*/ bool DYBA_VID_LINE_TRIG_d4p;
-  /*p21.PURE*/ bool PURE_NEW_LINE_d0n;
-  /*p21.SELA*/ bool SELA_NEW_LINE_d0p;
-  /*p21.POPU*/ bool POPU_VBLANK_d4;
-  /*p21.PARU*/ bool PARU_VBLANKp;
-  /*p21.TOLU*/ bool TOLU_VBLANKn;
-  /*p21.VYPU*/ bool VYPU_VBLANKp;
-  /*p21.ROPO*/ bool ROPO_LY_MATCH_SYNCp;
-  /*p21.PALY*/ wire PALY_LY_MATCHa;
+  /*p29.CATU*/ Signal CATU_VID_LINE_d4;
+  /*p28.BYHA*/ Signal BYHA_VID_LINE_TRIG_d4n;
+  /*p28.ATEJ*/ Signal ATEJ_VID_LINE_TRIG_d4p;
+  /*p27.XAHY*/ Signal XAHY_VID_LINE_TRIG_d4n;
+  /*p28.BYVA*/ Signal BYVA_VID_LINE_TRIG_d4n;
+  /*p29.DYBA*/ Signal DYBA_VID_LINE_TRIG_d4p;
+  /*p21.PURE*/ Signal PURE_NEW_LINE_d0n;
+  /*p21.SELA*/ Signal SELA_NEW_LINE_d0p;
+  /*p21.POPU*/ Signal POPU_VBLANK_d4;
+  /*p21.PARU*/ Signal PARU_VBLANKp;
+  /*p21.TOLU*/ Signal TOLU_VBLANKn;
+  /*p21.VYPU*/ Signal VYPU_VBLANKp;
+  /*p21.ROPO*/ Signal ROPO_LY_MATCH_SYNCp;
+  /*p21.PALY*/ Signal PALY_LY_MATCHa;
 
-  /*p21.MUWY*/ bool MUWY_Y0;
-  /*p21.MYRO*/ bool MYRO_Y1;
-  /*p21.LEXA*/ bool LEXA_Y2;
-  /*p21.LYDO*/ bool LYDO_Y3;
-  /*p21.LOVU*/ bool LOVU_Y4;
-  /*p21.LEMA*/ bool LEMA_Y5;
-  /*p21.MATO*/ bool MATO_Y6;
-  /*p21.LAFO*/ bool LAFO_Y7;
+  /*p21.MUWY*/ Signal MUWY_Y0;
+  /*p21.MYRO*/ Signal MYRO_Y1;
+  /*p21.LEXA*/ Signal LEXA_Y2;
+  /*p21.LYDO*/ Signal LYDO_Y3;
+  /*p21.LOVU*/ Signal LOVU_Y4;
+  /*p21.LEMA*/ Signal LEMA_Y5;
+  /*p21.MATO*/ Signal MATO_Y6;
+  /*p21.LAFO*/ Signal LAFO_Y7;
 };
 
 //-----------------------------------------------------------------------------

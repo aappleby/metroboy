@@ -260,6 +260,8 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   sig.TAKO_X6 = TAKO_X6;
   sig.SYBE_X7 = SYBE_X7;
 
+  sig.TYFO_SFETCH_S0_D1 = TYFO_SFETCH_S0_D1;
+
   return sig;
 }
 

@@ -8,32 +8,32 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct DmaSignals {
-  /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn;
+  /*p28.BOGE*/ Signal BOGE_DMA_RUNNINGn;
 
   // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
-  /*p04.MORY*/ wire MORY_DMA_READ_CARTn;
-  /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp;
-  /*p25.CEDE*/ wire CEDE_DMA_READ_CARTn;
-  /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp;
+  /*p04.MORY*/ Signal MORY_DMA_READ_CARTn;
+  /*p04.LUMA*/ Signal LUMA_DMA_READ_CARTp;
+  /*p25.CEDE*/ Signal CEDE_DMA_READ_CARTn;
+  /*p04.LUFA*/ Signal LUFA_DMA_READ_VRAMp;
 
-  /*p04.MATU*/ wire MATU_DMA_OAM_WRp;
+  /*p04.MATU*/ Signal MATU_DMA_OAM_WRp;
 
-  /*p04.NAKY*/ wire DMA_A00;
-  /*p04.PYRO*/ wire DMA_A01;
-  /*p04.NEFY*/ wire DMA_A02;
-  /*p04.MUTY*/ wire DMA_A03;
-  /*p04.NYKO*/ wire DMA_A04;
-  /*p04.PYLO*/ wire DMA_A05;
-  /*p04.NUTO*/ wire DMA_A06;
-  /*p04.MUGU*/ wire DMA_A07;
-  /*p04.NAFA*/ wire DMA_A08;
-  /*p04.PYNE*/ wire DMA_A09;
-  /*p04.PARA*/ wire DMA_A10;
-  /*p04.NYDO*/ wire DMA_A11;
-  /*p04.NYGY*/ wire DMA_A12;
-  /*p04.PULA*/ wire DMA_A13;
-  /*p04.POKU*/ wire DMA_A14;
-  /*p04.MARU*/ wire DMA_A15;
+  /*p04.NAKY*/ Signal DMA_A00;
+  /*p04.PYRO*/ Signal DMA_A01;
+  /*p04.NEFY*/ Signal DMA_A02;
+  /*p04.MUTY*/ Signal DMA_A03;
+  /*p04.NYKO*/ Signal DMA_A04;
+  /*p04.PYLO*/ Signal DMA_A05;
+  /*p04.NUTO*/ Signal DMA_A06;
+  /*p04.MUGU*/ Signal DMA_A07;
+  /*p04.NAFA*/ Signal DMA_A08;
+  /*p04.PYNE*/ Signal DMA_A09;
+  /*p04.PARA*/ Signal DMA_A10;
+  /*p04.NYDO*/ Signal DMA_A11;
+  /*p04.NYGY*/ Signal DMA_A12;
+  /*p04.PULA*/ Signal DMA_A13;
+  /*p04.POKU*/ Signal DMA_A14;
+  /*p04.MARU*/ Signal DMA_A15;
 };
 
 //-----------------------------------------------------------------------------
@@ -58,18 +58,20 @@ struct DmaRegisters {
     text_painter.newline();
   }
 
-  /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;
-  /*p04.MATU*/ Reg MATU_DMA_OAM_WRp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
-  /*p04.MYTE*/ Reg MYTE_DMA_DONE;
-  /*p04.LUVY*/ Reg LUVY_DMA_TRIG_d0;
-  /*p04.LENE*/ Reg LENE_DMA_TRIG_d4;
-
   int get_addr_lo() {
     return pack(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A05.q(), DMA_A06.q(), DMA_A07.q());
   }
   int get_addr_hi() {
     return pack(DMA_A08.q(), DMA_A09.q(), DMA_A10.q(), DMA_A11.q(), DMA_A12.q(), DMA_A13.q(), DMA_A14.q(), DMA_A15.q());
   }
+
+private:
+
+  /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;
+  /*p04.MATU*/ Reg MATU_DMA_OAM_WRp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
+  /*p04.MYTE*/ Reg MYTE_DMA_DONE;
+  /*p04.LUVY*/ Reg LUVY_DMA_TRIG_d0;
+  /*p04.LENE*/ Reg LENE_DMA_TRIG_d4;
 
   /*p04.NAKY*/ Reg DMA_A00; // 17-rung
   /*p04.PYRO*/ Reg DMA_A01;

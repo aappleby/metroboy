@@ -1,69 +1,13 @@
 #pragma once
-#include "Types.h"
 #include "Schematics.h"
-#include <stdint.h>
-#include <memory.h>
-#include <string>
-#include <assert.h>
-
 #include "TextPainter.h"
 
-//-----------------------------------------------------------------------------
-
 namespace Schematics {
-
-struct Bootrom;
-struct CpuPins;
-struct Debug;
-//struct DMA;
-struct HRAM;
-struct Interrupts;
-struct Joypad;
-struct OAM;
-struct Pins;
-struct PixelPipe;
-struct Serial;
-struct Sprites;
-struct TimerRegisters;
-struct Video;
-struct VRAM;
-
-struct BusTristates;
-struct SpriteTristate;
-
-struct AudioPins;
-struct ExtBus;
-struct JoypadPins;
-struct LcdPins;
-struct SerialPins;
-struct VramBus;
-
-struct ClkRegisters;
-struct LcdRegisters;
-struct RstRegisters;
-struct VclkRegisters;
-struct PpuRegisters;
-struct ConfigRegisters;
-
-struct BusSignals;
-struct ClkSignals;
-struct DebugSignals;
-struct DecoderSignals;
-struct DmaSignals;
-struct LcdSignals;
-struct RstSignals;
-struct SerialSignals;
-struct SpriteSignals;
-struct SpriteStoreSignals;
-struct SysSignals;
-struct VclkSignals;
-struct VidSignals;
-struct VidSignals2;
 
 //-----------------------------------------------------------------------------
 
 union SignalState;
-struct SignalBase;
+struct RegisterBase;
 
 void dump_long(TextPainter& text_painter, const char* label, SignalState a);
 void dump2(TextPainter& text_painter, SignalState a);
@@ -71,12 +15,12 @@ void dump_pin(TextPainter& text_painter, SignalState a, SignalState d);
 void dump_pin(TextPainter& text_painter, SignalState a, SignalState b, SignalState c, SignalState d);
 
 void dump(TextPainter& text_painter, const char* label,
-          SignalBase a, SignalBase b, SignalBase c, SignalBase d,
-          SignalBase e, SignalBase f, SignalBase g);
+          RegisterBase a, RegisterBase b, RegisterBase c, RegisterBase d,
+          RegisterBase e, RegisterBase f, RegisterBase g);
 
 void dump(TextPainter& text_painter, const char* label,
-          SignalBase a, SignalBase b, SignalBase c, SignalBase d,
-          SignalBase e, SignalBase f, SignalBase g, SignalBase h);
+          RegisterBase a, RegisterBase b, RegisterBase c, RegisterBase d,
+          RegisterBase e, RegisterBase f, RegisterBase g, RegisterBase h);
 
 
 //-----------------------------------------------------------------------------
@@ -150,7 +94,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-struct SignalBase {
+struct RegisterBase {
 
   // FIXME remove this so regs need explicit q/qn
   operator const bool() const {
@@ -172,13 +116,13 @@ struct SignalBase {
   SignalState b = ERROR;
 };
 
-static_assert(sizeof(SignalBase) == 2, "SignalBase size != 2");
+static_assert(sizeof(RegisterBase) == 2, "RegisterBase size != 2");
 
 //-----------------------------------------------------------------------------
 // I think that reading a Z pin can't be an error; D0_C goes directly to RALO.
 // Not sure how that doesn't break in harware, but whatev.
 
-struct PinIn : public SignalBase {
+struct PinIn : public RegisterBase {
 
   void preset(bool oe, bool val) {
     a = oe ? (val ? SET_1 : SET_0) : HIZ;
@@ -200,7 +144,7 @@ struct PinIn : public SignalBase {
 
 //-----------------------------------------------------------------------------
 
-struct PinOut : public SignalBase {
+struct PinOut : public RegisterBase {
 
   void set(wire val) {
     if (!b.error) __debugbreak();
@@ -225,7 +169,7 @@ struct PinOut : public SignalBase {
 
 //-----------------------------------------------------------------------------
 
-struct Tribuf : public SignalBase {
+struct Tribuf : public RegisterBase {
 
   Tribuf() {
     a = HIZ;
@@ -260,7 +204,7 @@ struct Tribuf : public SignalBase {
 //-----------------------------------------------------------------------------
 // Persistent gate, used for nand latches
 
-struct Gate : public SignalBase {
+struct Gate : public RegisterBase {
 
   void preset(bool val) {
     if (!b.error) __debugbreak();
@@ -289,7 +233,7 @@ struct Gate : public SignalBase {
 // set and reset must be async (see interrupts)
 // reset must take priority over set (see interrupts ALUR_RSTn)
 
-struct Reg : public SignalBase {
+struct Reg : public RegisterBase {
 
   void set(bool clk, bool val) {
     set(clk, 1, 1, val);
@@ -353,7 +297,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-struct RegDuo : public SignalBase {
+struct RegDuo : public RegisterBase {
 
   void set_duo(bool clk, bool rstN, SignalState c) {
     if ( a.error)  __debugbreak();
@@ -399,7 +343,7 @@ private:
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
 
-struct NorLatch : public SignalBase {
+struct NorLatch : public RegisterBase {
 
   void nor_latch(bool set, bool rst) {
     if ( a.error)  __debugbreak();
@@ -440,7 +384,7 @@ struct NorLatch : public SignalBase {
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on VCC side
 
-struct NandLatch : public SignalBase {
+struct NandLatch : public RegisterBase {
 
   void nand_latch(bool setN, bool rstN) {
     if (a.error)  __debugbreak();
@@ -481,7 +425,7 @@ struct NandLatch : public SignalBase {
 //-----------------------------------------------------------------------------
 // Yellow 10-rung cells on die
 
-struct TpLatch : public SignalBase {
+struct TpLatch : public RegisterBase {
 
   void tp_latch(bool latchN, bool val) {
     if (a.error)  __debugbreak();
@@ -527,7 +471,7 @@ struct TpLatch : public SignalBase {
 
 // FIXME ticks on the NEGATIVE EDGE of the clock (see timer.cpp)
 
-struct Counter : public SignalBase {
+struct Counter : public RegisterBase {
 
   void clk_n(bool clk, bool load, bool val) {
     if ( a.error)  __debugbreak();

@@ -8,55 +8,57 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct PpuSignals {
-  /*p27.TEVO*/ bool TEVO_CLK_STOPn;
-  /*p21.WODU*/ bool WODU_RENDER_DONEp;
-  /*p27.NYXU*/ bool NYXU_BFETCH_RSTn;
-  /*p29.TEXY*/ bool TEXY_SPRITE_READp;
-  /*p29.WUTY*/ bool WUTY_SPRITE_DONE;
-  /*p28.ACYL*/ bool ACYL_PPU_USE_OAM1p;
+  /*p27.TEVO*/ Signal TEVO_CLK_STOPn;
+  /*p21.WODU*/ Signal WODU_RENDER_DONEp;
+  /*p27.NYXU*/ Signal NYXU_BFETCH_RSTn;
+  /*p29.TEXY*/ Signal TEXY_SPRITE_READp;
+  /*p29.WUTY*/ Signal WUTY_SPRITE_DONE;
+  /*p28.ACYL*/ Signal ACYL_PPU_USE_OAM1p;
 
-  /*p24.POKY*/ bool POKY_AFTER_PORCH_LATCHp;
-  /*p27.TAVE*/ bool TAVE_PORCH_ENDp;
-  /*p21.XYMU*/ bool XYMU_RENDERINGp;
-  /*p29.TEPA*/ bool TEPA_RENDERINGn;
-  /*p24.LOBY*/ bool LOBY_RENDERINGn;
-  /*p25.ROPY*/ bool ROPY_RENDERINGn;
-  /*p24.SEGU*/ bool SEGU_xBxDxFxH;
-  /*p24.ROXO*/ bool ROXO_AxCxExGx;
-  /*p27.ROCO*/ bool ROCO_AxCxExGx;
-  /*p25.SERE*/ bool SERE_VRAM_RD; // this signal shouldn't be in the ppu
-  /*p24.SACU*/ bool SACU_CLKPIPE_AxCxExGx;
-  /*p27.ROZE*/ bool ROZE_FINE_COUNT_STOPn;
-  /*p29.TYTU*/ bool TYTU_SFETCH_S0_D0n;
-  /*p29.TACU*/ bool TACU_SPR_SEQ_5_TRIG;
-  /*p27.NAKO*/ bool NAKO_FETCH_S1n;
-  /*p27.NOFU*/ bool NOFU_FETCH_S2n;
-  /*p21.VOTY*/ bool VOTY_INT_STATp;
-  /*p29.TUVO*/ bool TUVO_PPU_OAM_RDp;
+  /*p24.POKY*/ Signal POKY_AFTER_PORCH_LATCHp;
+  /*p27.TAVE*/ Signal TAVE_PORCH_ENDp;
+  /*p21.XYMU*/ Signal XYMU_RENDERINGp;
+  /*p29.TEPA*/ Signal TEPA_RENDERINGn;
+  /*p24.LOBY*/ Signal LOBY_RENDERINGn;
+  /*p25.ROPY*/ Signal ROPY_RENDERINGn;
+  /*p24.SEGU*/ Signal SEGU_xBxDxFxH;
+  /*p24.ROXO*/ Signal ROXO_AxCxExGx;
+  /*p27.ROCO*/ Signal ROCO_AxCxExGx;
+  /*p25.SERE*/ Signal SERE_VRAM_RD; // this signal shouldn't be in the ppu
+  /*p24.SACU*/ Signal SACU_CLKPIPE_AxCxExGx;
+  /*p27.ROZE*/ Signal ROZE_FINE_COUNT_STOPn;
+  /*p29.TYTU*/ Signal TYTU_SFETCH_S0_D0n;
+  /*p29.TACU*/ Signal TACU_SPR_SEQ_5_TRIG;
+  /*p27.NAKO*/ Signal NAKO_FETCH_S1n;
+  /*p27.NOFU*/ Signal NOFU_FETCH_S2n;
+  /*p21.VOTY*/ Signal VOTY_INT_STATp;
+  /*p29.TUVO*/ Signal TUVO_PPU_OAM_RDp;
 
-  /*p27.MOFU*/ bool MOFU_LATCH_BGPIXB;
-  /*p27.NYDY*/ bool NYDY_LATCH_BGPIXA;
-  /*p29.TOPU*/ bool TOPU_LATCH_SPPIXA;
-  /*p29.RACA*/ bool RACA_LATCH_SPPIXB;
-  /*p29.XONO*/ bool XONO_FLIP_X;
+  /*p27.MOFU*/ Signal MOFU_LATCH_BGPIXB;
+  /*p27.NYDY*/ Signal NYDY_LATCH_BGPIXA;
+  /*p29.TOPU*/ Signal TOPU_LATCH_SPPIXA;
+  /*p29.RACA*/ Signal RACA_LATCH_SPPIXB;
+  /*p29.XONO*/ Signal XONO_FLIP_X;
 
-  /*p21.XEHO*/ bool XEHO_X0;
-  /*p21.SAVY*/ bool SAVY_X1;
-  /*p21.XODU*/ bool XODU_X2;
-  /*p21.XYDO*/ bool XYDO_X3;
-  /*p21.TUHU*/ bool TUHU_X4;
-  /*p21.TUKY*/ bool TUKY_X5;
-  /*p21.TAKO*/ bool TAKO_X6;
-  /*p21.SYBE*/ bool SYBE_X7;
+  /*p21.XEHO*/ Signal XEHO_X0;
+  /*p21.SAVY*/ Signal SAVY_X1;
+  /*p21.XODU*/ Signal XODU_X2;
+  /*p21.XYDO*/ Signal XYDO_X3;
+  /*p21.TUHU*/ Signal TUHU_X4;
+  /*p21.TUKY*/ Signal TUKY_X5;
+  /*p21.TAKO*/ Signal TAKO_X6;
+  /*p21.SYBE*/ Signal SYBE_X7;
 
-  /*p23.VYXE*/ bool VYXE_LCDC_BGEN;
-  /*p23.XYLO*/ bool XYLO_LCDC_SPEN;
-  /*p23.XYMO*/ bool XYMO_LCDC_SPSIZE;
-  /*p23.XAFO*/ bool XAFO_LCDC_BGMAP;
-  /*p23.WEXU*/ bool WEXU_LCDC_BGTILE;
-  /*p23.WYMO*/ bool WYMO_LCDC_WINEN;
-  /*p23.WOKY*/ bool WOKY_LCDC_WINMAP;
-  /*p23.XONA*/ bool XONA_LCDC_EN;
+  /*p23.VYXE*/ Signal VYXE_LCDC_BGEN;
+  /*p23.XYLO*/ Signal XYLO_LCDC_SPEN;
+  /*p23.XYMO*/ Signal XYMO_LCDC_SPSIZE;
+  /*p23.XAFO*/ Signal XAFO_LCDC_BGMAP;
+  /*p23.WEXU*/ Signal WEXU_LCDC_BGTILE;
+  /*p23.WYMO*/ Signal WYMO_LCDC_WINEN;
+  /*p23.WOKY*/ Signal WOKY_LCDC_WINMAP;
+  /*p23.XONA*/ Signal XONA_LCDC_EN;
+
+  /*p29.TYFO*/ Signal TYFO_SFETCH_S0_D1;
 };
 
 //-----------------------------------------------------------------------------

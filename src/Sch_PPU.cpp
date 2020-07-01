@@ -154,16 +154,20 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   sig.LONY_BG_READ_VRAM_LATCHp = LONY_BG_READ_VRAM_LATCHp;
   sig.PORY_BFETCH_DONE_SYNC_DELAY = PORY_BFETCH_DONE_SYNC_DELAY;
 
-  /*p21.XUGU*/ wire _XUGU_X_167n = nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
-  /*p21.XANO*/ wire _XANO_X_167 = not(_XUGU_X_167n);
-  /*p21.XENA*/ wire _XENA_STORE_MATCHn = not(sst_sig.FEPO_STORE_MATCHp);
-  /*p21.WODU*/ sig.WODU_RENDER_DONEp = and (_XENA_STORE_MATCHn, _XANO_X_167);
+  {
+    /*p21.XUGU*/ wire _XUGU_X_167n = nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
+    /*p21.XANO*/ wire _XANO_X_167 = not(_XUGU_X_167n);
+    /*p21.XENA*/ wire _XENA_STORE_MATCHn = not(sst_sig.FEPO_STORE_MATCHp);
+    /*p21.WODU*/ sig.WODU_RENDER_DONEp = and (_XENA_STORE_MATCHn, _XANO_X_167);
+  }
 
-  /*p27.ROMO*/ wire _ROMO_AFTER_PORCHn = not(POKY_AFTER_PORCH_LATCHp);
-  /*p27.SUVU*/ wire _SUVU_PORCH_ENDn = nand(XYMU_RENDERINGp, _ROMO_AFTER_PORCHn, NYKA_BFETCH_DONE_SYNC, PORY_BFETCH_DONE_SYNC_DELAY);
-  /*p27.TAVE*/ sig.TAVE_PORCH_ENDp = not(_SUVU_PORCH_ENDn);
+  {
+    /*p27.ROMO*/ wire _ROMO_AFTER_PORCHn = not(POKY_AFTER_PORCH_LATCHp);
+    /*p27.SUVU*/ wire _SUVU_PORCH_ENDn = nand(XYMU_RENDERINGp, _ROMO_AFTER_PORCHn, NYKA_BFETCH_DONE_SYNC, PORY_BFETCH_DONE_SYNC_DELAY);
+    /*p27.TAVE*/ sig.TAVE_PORCH_ENDp = not(_SUVU_PORCH_ENDn);
+  }
 
-#if 0
+#if HAX
   /*p27.TAVE*/ wire _TAVE_PORCH_ENDp = and(XYMU_RENDERINGp, !POKY_AFTER_PORCH_LATCHp, NYKA_BFETCH_DONE_SYNC, PORY_BFETCH_DONE_SYNC_DELAY;
 #endif
 
@@ -175,44 +179,57 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   // So we only read a sprite if both those regs are... low? what is rung 17's polarity?
 
-  /*p29.SAKY*/ wire _SAKY = nor(TULY_SFETCH_S1.q(), VONU_SFETCH_S1_D4.q());
-  /*p29.TEPA*/ sig.TEPA_RENDERINGn = not(XYMU_RENDERINGp);
-  /*p29.TYSO*/ wire _TYSO_SPRITE_READn = or(_SAKY, sig.TEPA_RENDERINGn);
-  /*p29.TEXY*/ sig.TEXY_SPRITE_READp = not(_TYSO_SPRITE_READn);
+  {
+    /*p29.SAKY*/ wire _SAKY = nor(TULY_SFETCH_S1.q(), VONU_SFETCH_S1_D4.q());
+    /*p29.TEPA*/ sig.TEPA_RENDERINGn = not(XYMU_RENDERINGp);
+    /*p29.TYSO*/ wire _TYSO_SPRITE_READn = or(_SAKY, sig.TEPA_RENDERINGn);
+    /*p29.TEXY*/ sig.TEXY_SPRITE_READp = not(_TYSO_SPRITE_READn);
+  }
 
-  /*p29.TYNO*/ wire _TYNO = nand(TOXE_SFETCH_S0.q(), SEBA_SFETCH_S1_D5.q(), VONU_SFETCH_S1_D4.q());
-  /*p29.VUSA*/ wire _VUSA = or(!TYFO_SFETCH_S0_D1.q(), _TYNO);
-  /*p29.WUTY*/ sig.WUTY_SPRITE_DONE = not(_VUSA);
+  {
+    /*p29.TYNO*/ wire _TYNO = nand(TOXE_SFETCH_S0.q(), SEBA_SFETCH_S1_D5.q(), VONU_SFETCH_S1_D4.q());
+    /*p29.VUSA*/ wire _VUSA = or(!TYFO_SFETCH_S0_D1.q(), _TYNO);
+    /*p29.WUTY*/ sig.WUTY_SPRITE_DONE = not(_VUSA);
+  }
 
-  /*p24.VYBO*/ wire _VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, sig.WODU_RENDER_DONEp, clk_sig.MYVO_AxCxExGx);
-  /*p24.TYFA*/ wire _TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_AFTER_PORCH_LATCHp, _VYBO_PIX_CLK_AxCxExGx);
-  /*p24.SEGU*/ sig.SEGU_xBxDxFxH = not(_TYFA_AxCxExGx);
-  /*p24.ROXO*/ sig.ROXO_AxCxExGx = not(sig.SEGU_xBxDxFxH);
-  /*p27.ROCO*/ sig.ROCO_AxCxExGx = not(sig.SEGU_xBxDxFxH);
-  /*p24.SACU*/ sig.SACU_CLKPIPE_AxCxExGx = nor(sig.SEGU_xBxDxFxH, ROXY_FINE_MATCH_LATCHn);
+  {
+    /*p24.VYBO*/ wire _VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, sig.WODU_RENDER_DONEp, clk_sig.MYVO_AxCxExGx);
+    /*p24.TYFA*/ wire _TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_AFTER_PORCH_LATCHp, _VYBO_PIX_CLK_AxCxExGx);
+    /*p24.SEGU*/ sig.SEGU_xBxDxFxH = not(_TYFA_AxCxExGx);
+    /*p24.ROXO*/ sig.ROXO_AxCxExGx = not(sig.SEGU_xBxDxFxH);
+    /*p27.ROCO*/ sig.ROCO_AxCxExGx = not(sig.SEGU_xBxDxFxH);
+    /*p24.SACU*/ sig.SACU_CLKPIPE_AxCxExGx = nor(sig.SEGU_xBxDxFxH, ROXY_FINE_MATCH_LATCHn);
+  }
 
   /*p24.LOBY*/ sig.LOBY_RENDERINGn = not(XYMU_RENDERINGp.q());
   /*p25.ROPY*/ sig.ROPY_RENDERINGn = not(XYMU_RENDERINGp.q());
 
   /*p27.ROZE*/ sig.ROZE_FINE_COUNT_STOPn = nand(RYKU_FINE_CNT0, ROGA_FINE_CNT1, RUBU_FINE_CNT2);
 
-  /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RD = and (cpu_sig.SOSE_8000_9FFFp, dbg_sig.ABUZ);
-  /*p25.TEFY*/ wire _TEFY_MCSn_Cn = not(vram_pins.PIN_MCSn_C);
-  /*p25.TOLE*/ wire _TOLE_VRAM_RD = mux2_p(_TEFY_MCSn_Cn, _TUCA_CPU_VRAM_RD, dbg_sig.TUTO_DBG_VRAMp);
-  /*p25.SERE*/ sig.SERE_VRAM_RD = and (_TOLE_VRAM_RD, sig.ROPY_RENDERINGn);
-  /*p29.TYTU*/ sig.TYTU_SFETCH_S0_D0n = not(TOXE_SFETCH_S0.q());
-  /*p29.TACU*/ sig.TACU_SPR_SEQ_5_TRIG = nand(TYFO_SFETCH_S0_D1.q(), sig.TYTU_SFETCH_S0_D0n);
-  /*p27.NAKO*/ sig.NAKO_FETCH_S1n = not(MESU_BFETCH_S1.q());
-  /*p27.NOFU*/ sig.NOFU_FETCH_S2n = not(NYVA_BFETCH_S2.q());
+  {
+    /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RD = and (cpu_sig.SOSE_8000_9FFFp, dbg_sig.ABUZ);
+    /*p25.TEFY*/ wire _TEFY_MCSn_Cn = not(vram_pins.PIN_MCSn_C);
+    /*p25.TOLE*/ wire _TOLE_VRAM_RD = mux2_p(_TEFY_MCSn_Cn, _TUCA_CPU_VRAM_RD, dbg_sig.TUTO_DBG_VRAMp);
+    /*p25.SERE*/ sig.SERE_VRAM_RD = and (_TOLE_VRAM_RD, sig.ROPY_RENDERINGn);
+  }
 
-  /*p21.TAPA*/ wire TAPA_INT_OAM = and (lcd_sig.TOLU_VBLANKn, lcd_sig.SELA_NEW_LINE_d0p);
-  /*p21.TARU*/ wire TARU_INT_HBL = and (lcd_sig.TOLU_VBLANKn, sig.WODU_RENDER_DONEp);
-  /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(RUGU_INT_LYC_EN, lcd_sig.ROPO_LY_MATCH_SYNCp,
-                                           REFE_INT_OAM_EN, TAPA_INT_OAM,
-                                           RUFO_INT_VBL_EN, lcd_sig.PARU_VBLANKp, // polarity?
-                                           ROXE_INT_HBL_EN, TARU_INT_HBL);
-  /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
-  /*p21.VOTY*/ sig.VOTY_INT_STATp = not(TUVA_INT_STATn);
+  {
+    /*p29.TYTU*/ sig.TYTU_SFETCH_S0_D0n = not(TOXE_SFETCH_S0.q());
+    /*p29.TACU*/ sig.TACU_SPR_SEQ_5_TRIG = nand(TYFO_SFETCH_S0_D1.q(), sig.TYTU_SFETCH_S0_D0n);
+    /*p27.NAKO*/ sig.NAKO_FETCH_S1n = not(MESU_BFETCH_S1.q());
+    /*p27.NOFU*/ sig.NOFU_FETCH_S2n = not(NYVA_BFETCH_S2.q());
+  }
+
+  {
+    /*p21.TAPA*/ wire TAPA_INT_OAM = and (lcd_sig.TOLU_VBLANKn, lcd_sig.SELA_NEW_LINE_d0p);
+    /*p21.TARU*/ wire TARU_INT_HBL = and (lcd_sig.TOLU_VBLANKn, sig.WODU_RENDER_DONEp);
+    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(RUGU_INT_LYC_EN, lcd_sig.ROPO_LY_MATCH_SYNCp,
+                                             REFE_INT_OAM_EN, TAPA_INT_OAM,
+                                             RUFO_INT_VBL_EN, lcd_sig.PARU_VBLANKp, // polarity?
+                                             ROXE_INT_HBL_EN, TARU_INT_HBL);
+    /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
+    /*p21.VOTY*/ sig.VOTY_INT_STATp = not(TUVA_INT_STATn);
+  }
 
   /*p29.TUVO*/ sig.TUVO_PPU_OAM_RDp = nor(sig.TEPA_RENDERINGn, TULY_SFETCH_S1.q(), TESE_SFETCH_S2.q());
 

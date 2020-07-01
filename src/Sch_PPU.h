@@ -17,7 +17,6 @@ struct PpuSignals {
   /*p27.VEKU*/ Signal VEKU_SFETCH_RSTn;
 
   /*p21.XYMU*/ Signal XYMU_RENDERINGp;
-  /*p29.TEPA*/ Signal TEPA_RENDERINGn;
   /*p24.LOBY*/ Signal LOBY_RENDERINGn;
   /*p25.ROPY*/ Signal ROPY_RENDERINGn;
   /*p24.SEGU*/ Signal SEGU_xBxDxFxH;

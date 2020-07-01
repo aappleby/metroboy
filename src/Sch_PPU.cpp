@@ -173,12 +173,6 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   // So we only read a sprite if both those regs are... low? what is rung 17's polarity?
 
   {
-    /*p29.TEPA*/ ppu_sig.TEPA_RENDERINGn = not(XYMU_RENDERINGp);
-    /*p29.TYSO*/ wire _TYSO_SPRITE_READn = or(sprite_fetcher_sig.SAKY, ppu_sig.TEPA_RENDERINGn);
-    /*p29.TEXY*/ ppu_sig.TEXY_SPRITE_READp = not(_TYSO_SPRITE_READn);
-  }
-
-  {
     /*p24.VYBO*/ wire _VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONEp, clk_sig.MYVO_AxCxExGx);
     /*p24.TYFA*/ wire _TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, tile_fetcher_sig.POKY_AFTER_PORCH_LATCHp, _VYBO_PIX_CLK_AxCxExGx);
     /*p24.SEGU*/ ppu_sig.SEGU_xBxDxFxH = not(_TYFA_AxCxExGx);
@@ -256,9 +250,6 @@ void PpuRegisters::tick(TestGB& gb) {
   auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
 
   auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
-
-  auto& sprite_fetcher = gb.sprite_fetcher;
-  auto sprite_fetcher_sig = sprite_fetcher.sig(gb);
 
   wire P10_B = 0;
 

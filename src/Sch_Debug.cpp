@@ -44,6 +44,9 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
   /*p01.AWOD*/ wire _AWOD = nor(sig.UNOR_MODE_DBG2p, _APAP);
   /*p01.ABUZ*/ sig.ABUZ = not(_AWOD);
 
+  /*p25.RACO*/ sig.RACO_DBG_VRAMn = not(sig.TUTO_DBG_VRAMp);
+
+
   // what is this for exactly?
   // wire ABUZ = or(UNOR_MODE_DBG2n, !gb.cpu_pins.ADDR_VALID);
 

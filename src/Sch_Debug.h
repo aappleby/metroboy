@@ -26,6 +26,7 @@ struct DebugSignals {
   /*p08.RYCA*/ Signal RYCA_MODE_DBG2n;
   /*p25.TUCA*/ Signal TUCA_CPU_VRAM_RD;
   /*p25.TUTO*/ Signal TUTO_DBG_VRAMp;
+  /*p25.RACO*/ Signal RACO_DBG_VRAMn;
   /*p01.ABUZ*/ Signal ABUZ;
 };
 

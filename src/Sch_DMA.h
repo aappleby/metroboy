@@ -44,27 +44,6 @@ struct DmaRegisters {
   void tick(TestGB& gb);
   bool commit();
 
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf(" ----- DMA REG -----\n");
-    //FROM_CPU5_SYNC.dump(text_painter, "FROM_CPU5_SYNC   ");
-    MATU_DMA_OAM_WRp.dump(text_painter, "DMA_RUNNING  ");
-    MYTE_DMA_DONE.dump(text_painter, "MYTE_DMA_DONE    ");
-    LUVY_DMA_TRIG_d0.dump(text_painter, "LUVY    ");
-    LENE_DMA_TRIG_d4.dump(text_painter, "LENE    ");
-    LYXE_DMA_LATCHn.dump(text_painter, "LYXE ");
-    LOKY_DMA_LATCHp.dump(text_painter, "LOKY  ");
-    text_painter.dprintf("DMA ADDR LO      0x%02x\n", get_addr_lo());
-    text_painter.dprintf("DMA ADDR HI      0x%02x\n", get_addr_hi());
-    text_painter.newline();
-  }
-
-  int get_addr_lo() {
-    return pack(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A05.q(), DMA_A06.q(), DMA_A07.q());
-  }
-  int get_addr_hi() {
-    return pack(DMA_A08.q(), DMA_A09.q(), DMA_A10.q(), DMA_A11.q(), DMA_A12.q(), DMA_A13.q(), DMA_A14.q(), DMA_A15.q());
-  }
-
 private:
 
   /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;

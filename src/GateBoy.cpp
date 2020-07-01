@@ -244,7 +244,7 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
 
   text_painter.newline();
   //gb.ext_bus.dump_pins(text_painter);
-  gb.rst_reg.dump_regs(text_painter);
+  //gb.rst_reg.dump_regs(text_painter);
   //gb.clk_reg.dump_regs(text_painter);
   //gb.vck_reg.dump_regs(text_painter);
   //gb.cpu_bus.dump_pins(text_painter);
@@ -252,41 +252,41 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;
 
-  gb.joy_reg.dump_regs(text_painter);
-  gb.dbg_reg.dump_regs(text_painter);
-  gb.dma_reg.dump_regs(text_painter);
-  gb.int_reg.dump_regs(text_painter);
-  gb.ser_reg.dump_regs(text_painter);
+  //gb.joy_reg.dump_regs(text_painter);
+  //gb.dbg_reg.dump_regs(text_painter);
+  //gb.dma_reg.dump_regs(text_painter);
+  //gb.int_reg.dump_regs(text_painter);
+  //gb.ser_reg.dump_regs(text_painter);
   //gb.joy_reg.dump_pins(text_painter);
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;
 
-  gb.tim_reg.dump_regs(text_painter);
+  //gb.tim_reg.dump_regs(text_painter);
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;
 
-  gb.lcd_reg.dump_regs(text_painter);
-  gb.pxp_reg.dump_regs(text_painter);
+  //gb.lcd_reg.dump_regs(text_painter);
+  //gb.pxp_reg.dump_regs(text_painter);
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;
 
-  gb.ppu_reg.dump_regs(text_painter);
-  gb.sst_reg.dump_regs(text_painter);
-  gb.ppu_reg.dump_regs(text_painter);
+  //gb.ppu_reg.dump_regs(text_painter);
+  //gb.sst_reg.dump_regs(text_painter);
+  //gb.ppu_reg.dump_regs(text_painter);
   //gb.oam_reg.dump_regs(text_painter);
   text_painter.render(cx, cy, 1.0);
   cx += 32 * 8;
 
   if (1) {
-    gb.oam_bus.dump_pins(text_painter);
-    gb.vram_bus.dump_pins(text_painter);
+    //gb.oam_bus.dump_pins(text_painter);
+    //gb.vram_bus.dump_pins(text_painter);
     text_painter.render(cx, cy, 1.0);
     cx += 32 * 8;
   }
 
   if (1) {
-    gb.lcd_reg.dump_pins(text_painter);
-    gb.ser_reg.dump_pins(text_painter);
+    //gb.lcd_reg.dump_pins(text_painter);
+    //gb.ser_reg.dump_pins(text_painter);
     text_painter.render(cx, cy, 1.0);
     cx += 32 * 8;
   }

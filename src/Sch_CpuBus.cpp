@@ -302,3 +302,109 @@ bool CpuPinsOut::commit() {
 }
 
 //------------------------------------------------------------------------------
+
+#if 0
+void dump_pins(TextPainter& text_painter) {
+  text_painter.dprintf("----- CPU DBG/PIN_RST -----\n");
+  text_painter.dprintf("PIN_EXT_RESET     %d\n", PIN_EXT_RESET.a.val);
+  text_painter.dprintf("PIN_TABA_RSTp     %d\n", PIN_TABA_RSTp.a.val);
+  text_painter.dprintf("PIN_EXT_CLKGOOD   %d\n", PIN_EXT_CLKGOOD.a.val);
+
+  text_painter.dprintf("----- CPU CLOCKS -----\n");
+
+  text_painter.dprintf("PIN_BOWA_AxCDEFGH %d\n", PIN_BOWA_AxCDEFGH.a.val);
+  text_painter.dprintf("PIN_BEDO_xBxxxxxx %d\n", PIN_BEDO_xBxxxxxx.a.val);
+  text_painter.dprintf("PIN_BEKO_xBCDExxx %d\n", PIN_BEKO_xBCDExxx.a.val);
+  text_painter.dprintf("PIN_BUDE_AxxxxFGH %d\n", PIN_BUDE_AxxxxFGH.a.val);
+  text_painter.dprintf("PIN_BOLO_xBCDEFGx %d\n", PIN_BOLO_xBCDEFGx.a.val);
+  text_painter.dprintf("PIN_BUKE_ABxxxxxH %d\n", PIN_BUKE_ABxxxxxH.a.val);
+  text_painter.dprintf("PIN_BOMA_xBxxxxxx %d\n", PIN_BOMA_xBxxxxxx.a.val);
+  text_painter.dprintf("PIN_BOGA_AxCDEFGH %d\n", PIN_BOGA_AxCDEFGH.a.val);
+
+  text_painter.dprintf("----- FROM CPU -----\n");
+  //text_painter.dprintf("PIN_CLKREQ        %d\n", PIN_CLKREQ.a.val);
+  //text_painter.dprintf("PIN_FROM_CPU5p     %d\n", PIN_FROM_CPU5p.a.val);
+  //text_painter.dprintf("PIN_FROM_CPU6     %d\n", PIN_FROM_CPU6.a.val);
+
+  text_painter.dprintf("----- TO CPU -----\n");
+  text_painter.dprintf("PIN_AFER_RSTp     %d\n", PIN_AFER_RSTp.a.val);
+  text_painter.dprintf("PIN_AWOB          %d\n", PIN_AWOB.a.val);
+  text_painter.dprintf("PIN_SYRO          %d\n", PIN_SYRO.a.val);
+  text_painter.dprintf("PIN_TUTU_BOOTp    %d\n", PIN_TUTU_BOOTp.a.val);
+
+  /*
+  text_painter.dprintf("----- CPU INT -----\n");
+  text_painter.dprintf("PIN_INT_VBLANK    %d\n", PIN_INT_VBLANK.a.val);
+  text_painter.dprintf("PIN_INT_STAT      %d\n", PIN_INT_STAT.a.val);
+  text_painter.dprintf("PIN_INT_TIMER     %d\n", PIN_INT_TIMER.a.val);
+  text_painter.dprintf("PIN_INT_SERIAL    %d\n", PIN_INT_SERIAL.a.val);
+  text_painter.dprintf("PIN_INT_JOYPAD    %d\n", PIN_INT_JOYPAD.a.val);
+  text_painter.dprintf("PIN_ACK_VBLANK    %d\n", PIN_ACK_VBLANK.a.val);
+  text_painter.dprintf("PIN_ACK_STAT      %d\n", PIN_ACK_STAT.a.val);
+  text_painter.dprintf("PIN_ACK_TIMER     %d\n", PIN_ACK_TIMER.a.val);
+  text_painter.dprintf("PIN_ACK_SERIAL    %d\n", PIN_ACK_SERIAL.a.val);
+  text_painter.dprintf("PIN_ACK_JOYPAD    %d\n", PIN_ACK_JOYPAD.a.val);
+  */
+
+  /*
+  text_painter.dprintf("----- CPU BUS -----\n");
+  text_painter.dprintf("PIN_CPU_RAW_RD    %d\n", PIN_CPU_RAW_RD.a.val);
+  text_painter.dprintf("PIN_CPU_RAW_WR    %d\n", PIN_CPU_RAW_WR.a.val);
+  text_painter.dprintf("PIN_ADDR_VALID    %d\n", PIN_ADDR_VALID.a.val);
+  */
+
+  /*
+  text_painter.add_text("Axx ");
+  dump2(text_painter, PIN_A15.a);
+  dump2(text_painter, PIN_A14.a);
+  dump2(text_painter, PIN_A13.a);
+  dump2(text_painter, PIN_A12.a);
+  text_painter.add_char(':');
+  dump2(text_painter, PIN_A11.a);
+  dump2(text_painter, PIN_A10.a);
+  dump2(text_painter, PIN_A09.a);
+  dump2(text_painter, PIN_A08.a);
+  text_painter.add_char(':');
+  dump2(text_painter, PIN_A07.a);
+  dump2(text_painter, PIN_A06.a);
+  dump2(text_painter, PIN_A05.a);
+  dump2(text_painter, PIN_A04.a);
+  text_painter.add_char(':');
+  dump2(text_painter, PIN_A03.a);
+  dump2(text_painter, PIN_A02.a);
+  dump2(text_painter, PIN_A01.a);
+  dump2(text_painter, PIN_A00.a);
+  text_painter.newline();
+  */
+
+  /*
+  text_painter.add_text("Dxx ");
+  dump2(text_painter, BUS_CPU_D7.a);
+  dump2(text_painter, BUS_CPU_D6.a);
+  dump2(text_painter, BUS_CPU_D5.a);
+  dump2(text_painter, BUS_CPU_D4.a);
+  text_painter.add_char(':');
+  dump2(text_painter, BUS_CPU_D3.a);
+  dump2(text_painter, BUS_CPU_D2.a);
+  dump2(text_painter, BUS_CPU_D1.a);
+  dump2(text_painter, BUS_CPU_D0.a);
+  text_painter.newline();
+  */
+
+  text_painter.newline();
+}
+
+/*
+void preset_data(bool oe, uint8_t data) {
+D0.preset(oe, data & 0x01);
+D1.preset(oe, data & 0x02);
+D2.preset(oe, data & 0x04);
+D3.preset(oe, data & 0x08);
+D4.preset(oe, data & 0x10);
+D5.preset(oe, data & 0x20);
+D6.preset(oe, data & 0x40);
+D7.preset(oe, data & 0x80);
+}
+*/
+
+#endif

@@ -63,12 +63,10 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
   // LEBU = not(MARU06)
   // MUDA = nor(PULA06, POKU06, LEBU);
 
-#if 0
-    // if rung 6 of MARU/PULA/POKU was QN:
-    // MUDA = and(A13, A14, !A15);
-    // would select last quarter of ROM, which doesn't make sense
-    // so rung 6 of MARU must be Q.
-#endif
+  // if rung 6 of MARU/PULA/POKU was QN:
+  // MUDA = and(A13, A14, !A15);
+  // would select last quarter of ROM, which doesn't make sense
+  // so rung 6 of MARU must be Q.
 
   /*p04.LEBU*/ wire _LEBU_DMA_ADDR_A15n  = not(DMA_A15.q());
   /*p04.MUDA*/ wire _MUDA_DMA_ADDR_VRAMp = nor(DMA_A13.q(), DMA_A14.q(), _LEBU_DMA_ADDR_A15n);
@@ -146,10 +144,12 @@ void DmaRegisters::tick(TestGB& gb) {
     /*p04.LENE*/ LENE_DMA_TRIG_d4.set(clk_sig.MOPA_AxxxxFGH, rst_sig.CUNU_RSTn, LUVY_DMA_TRIG_d0.q());
   }
 
-  // NAND latch
-  /*p04.LOKY*/ LOKY_DMA_LATCHp = nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q());
-  /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp, rst_sig.CUNU_RSTn, !MYTE_DMA_DONE.q());
-  /*p04.MATU*/ MATU_DMA_OAM_WRp.set(clk_sig.UVYT_xBCDExxx, rst_sig.CUNU_RSTn, LOKY_DMA_LATCHp);
+  {
+    // NAND latch
+    /*p04.LOKY*/ LOKY_DMA_LATCHp = nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q());
+    /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp, rst_sig.CUNU_RSTn, !MYTE_DMA_DONE.q());
+    /*p04.MATU*/ MATU_DMA_OAM_WRp.set(clk_sig.UVYT_xBCDExxx, rst_sig.CUNU_RSTn, LOKY_DMA_LATCHp);
+  }
 
   {
     /*p04.LAPA*/ wire LAPA_DMA_RSTn = not(LOKO_DMA_RSTp);
@@ -246,3 +246,28 @@ bool DmaRegisters::commit() {
 }
 
 //-----------------------------------------------------------------------------
+
+
+#if 0
+void dump_regs(TextPainter& text_painter) {
+  text_painter.dprintf(" ----- DMA REG -----\n");
+  //FROM_CPU5_SYNC.dump(text_painter, "FROM_CPU5_SYNC   ");
+  MATU_DMA_OAM_WRp.dump(text_painter, "DMA_RUNNING  ");
+  MYTE_DMA_DONE.dump(text_painter, "MYTE_DMA_DONE    ");
+  LUVY_DMA_TRIG_d0.dump(text_painter, "LUVY    ");
+  LENE_DMA_TRIG_d4.dump(text_painter, "LENE    ");
+  LYXE_DMA_LATCHn.dump(text_painter, "LYXE ");
+  LOKY_DMA_LATCHp.dump(text_painter, "LOKY  ");
+  text_painter.dprintf("DMA ADDR LO      0x%02x\n", get_addr_lo());
+  text_painter.dprintf("DMA ADDR HI      0x%02x\n", get_addr_hi());
+  text_painter.newline();
+}
+
+int get_addr_lo() {
+  return pack(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A05.q(), DMA_A06.q(), DMA_A07.q());
+}
+int get_addr_hi() {
+  return pack(DMA_A08.q(), DMA_A09.q(), DMA_A10.q(), DMA_A11.q(), DMA_A12.q(), DMA_A13.q(), DMA_A14.q(), DMA_A15.q());
+}
+
+#endif

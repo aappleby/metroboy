@@ -12,8 +12,9 @@ struct PpuSignals {
   /*p21.WODU*/ Signal WODU_RENDER_DONEp;
   /*p27.NYXU*/ Signal NYXU_BFETCH_RSTn;
   /*p29.TEXY*/ Signal TEXY_SPRITE_READp;
-  /*p29.WUTY*/ Signal WUTY_SPRITE_DONEp;
   /*p28.ACYL*/ Signal ACYL_PPU_USE_OAM1p;
+  /*p27.TEKY*/ Signal TEKY_SPRITE_FETCH;
+  /*p27.VEKU*/ Signal VEKU_SFETCH_RSTn;
 
   /*p21.XYMU*/ Signal XYMU_RENDERINGp;
   /*p29.TEPA*/ Signal TEPA_RENDERINGn;
@@ -25,10 +26,7 @@ struct PpuSignals {
   /*p25.SERE*/ Signal SERE_VRAM_RD; // this signal shouldn't be in the ppu
   /*p24.SACU*/ Signal SACU_CLKPIPE_AxCxExGx;
   /*p27.ROZE*/ Signal ROZE_FINE_COUNT_STOPn;
-  /*p29.TYTU*/ Signal TYTU_SFETCH_S0_D0n;
-  /*p29.TACU*/ Signal TACU_SPR_SEQ_5_TRIG;
   /*p21.VOTY*/ Signal VOTY_INT_STATp;
-  /*p29.TUVO*/ Signal TUVO_PPU_OAM_RDp;
 
   /*p29.TOPU*/ Signal TOPU_LATCH_SPPIXA;
   /*p29.RACA*/ Signal RACA_LATCH_SPPIXB;
@@ -51,8 +49,6 @@ struct PpuSignals {
   /*p23.WYMO*/ Signal WYMO_LCDC_WINEN;
   /*p23.WOKY*/ Signal WOKY_LCDC_WINMAP;
   /*p23.XONA*/ Signal XONA_LCDC_EN;
-
-  /*p29.TYFO*/ Signal TYFO_SFETCH_S0_D1;
 };
 
 //-----------------------------------------------------------------------------
@@ -92,20 +88,7 @@ private:
 
   /*p21.VOGA*/ Reg VOGA_RENDER_DONE_SYNC;
 
-  /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUN_LATCH;
-  /*p27.SOBU*/ Reg SOBU_SPRITE_FETCH_SYNC1;
-  /*p27.SUDA*/ Reg SUDA_SPRITE_FETCH_SYNC2;
-
   /*p21.RUPO*/ NorLatch RUPO_LYC_MATCH_LATCHn;
-
-  /*p29.TOXE*/ Reg TOXE_SFETCH_S0;
-  /*p29.TULY*/ Reg TULY_SFETCH_S1;
-  /*p29.TESE*/ Reg TESE_SFETCH_S2;
-
-  /*p29.TOBU*/ Reg TOBU_SFETCH_S1_D2;
-  /*p29.VONU*/ Reg VONU_SFETCH_S1_D4;
-  /*p29.SEBA*/ Reg SEBA_SFETCH_S1_D5;
-  /*p29.TYFO*/ Reg TYFO_SFETCH_S0_D1;
 
   // FF40 - LCDC
   /*p23.VYXE*/ Reg VYXE_LCDC_BGEN;

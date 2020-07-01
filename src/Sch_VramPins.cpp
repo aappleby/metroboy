@@ -48,6 +48,7 @@ void VramPins::tick(TestGB& gb) {
   auto dma_sig = gb.dma_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
+  auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
   auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
 
   auto& cpu_bus = gb.cpu_bus;
@@ -184,7 +185,7 @@ void VramPins::tick(TestGB& gb) {
     /*p25.SOHY*/ wire _SOHY_MWR    = nand(_TYJY_DBG_VRAM_WR, ppu_sig.SERE_VRAM_RD);
 
     /*p25.XANE*/ wire _XANE_VRAM_LOCKn = nor(dma_sig.LUFA_DMA_READ_VRAMp, ppu_sig.XYMU_RENDERINGp); // def nor
-    /*p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and (ppu_sig.TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRAM_RDp1);
+    /*p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and (sprite_fetcher_sig.TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRAM_RDp1);
     /*p25.RYLU*/ wire _RYLU_DBG_VRAM_RDn = nand(SALE_VRAM_WRn, _XANE_VRAM_LOCKn);
     /*p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not(_SOHO_SPR_VRAM_RDp);
     /*p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not(tile_fetcher_sig.LONY_BG_READ_VRAM_LATCHp); // this should be correct

@@ -45,9 +45,10 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   auto dma_sig = gb.dma_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb, ppu_sig.XYMO_LCDC_SPSIZE);
+  auto sst_sig = gb.sst_reg.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto boot_sig = gb.bootrom.sig(gb);
+  auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
 
   auto& cpu_bus = gb.cpu_bus;
   auto& vram_pins = gb.vram_pins;
@@ -138,19 +139,15 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
 
   {
     /*p25.AVER*/ wire _AVER = nand(ppu_sig.ACYL_PPU_USE_OAM1p, clk_sig.XYSO_ABCxDEFx); 
-    /*p25.VAPE*/ wire _VAPE = and (ppu_sig.TUVO_PPU_OAM_RDp, ppu_sig.TACU_SPR_SEQ_5_TRIG);
-    /*p25.XUJY*/ wire _XUJY = not(_VAPE);
     /*p25.CUFE*/ wire _CUFE_OAM_WR = and (or (cpu_sig.SARO_FE00_FEFFp, dma_sig.MATU_DMA_OAM_WRp), clk_sig.MOPA_AxxxxFGH);
-    /*p25.BYCU*/ wire _BYCU_OAM_CLK = nand(_AVER, _XUJY, _CUFE_OAM_WR); // schematic wrong, this is NAND... but that doesn't make sense?
+    /*p25.BYCU*/ wire _BYCU_OAM_CLK = nand(_AVER, sprite_fetcher_sig.XUJY, _CUFE_OAM_WR); // schematic wrong, this is NAND... but that doesn't make sense?
     /*p25.COTA*/ sig.COTA_OAM_CLK = not(_BYCU_OAM_CLK);
   }
 
   {
-    /*p28.WEFY*/ wire _WEFY_SPR_READp = and(ppu_sig.TUVO_PPU_OAM_RDp, ppu_sig.TYFO_SFETCH_S0_D1);
     /*p28.AJEP*/ wire _AJEP = nand(ppu_sig.ACYL_PPU_USE_OAM1p, clk_sig.XOCE_ABxxEFxx); // schematic wrong, is def nand
-    /*p28.XUJA*/ wire _XUJA_SPR_READn = not(_WEFY_SPR_READp);
     /*p28.BOTA*/ wire _BOTA_CPU_RD_OAMn = nand(cpu_sig.DECY_FROM_CPU5n, cpu_sig.SARO_FE00_FEFFp, cpu_sig.ASOT_CPU_RD); // Schematic wrong, this is NAND
-    /*p28.ASYT*/ wire _ASYT_OAM_LATCH = and(_AJEP, _XUJA_SPR_READn, _BOTA_CPU_RD_OAMn);
+    /*p28.ASYT*/ wire _ASYT_OAM_LATCH = and(_AJEP, sprite_fetcher_sig.XUJA_SPR_READn, _BOTA_CPU_RD_OAMn);
     /*p28.BODE*/ sig.BODE_OAM_LATCH = not(_ASYT_OAM_LATCH); // to the tribus receiver below
   }
 

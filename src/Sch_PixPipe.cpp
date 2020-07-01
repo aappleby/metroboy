@@ -13,7 +13,7 @@ PixelPipeSignals PixelPipeRegisters::sig(const TestGB& gb) const {
   auto win_sig = gb.win_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb, ppu_sig.XYMO_LCDC_SPSIZE);
+  auto sst_sig = gb.sst_reg.sig(gb);
 
   wire P10_B = 0;
 
@@ -108,7 +108,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   auto win_sig = gb.win_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb, ppu_sig.XYMO_LCDC_SPSIZE);
+  auto sst_sig = gb.sst_reg.sig(gb);
   auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
   auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
 
@@ -196,7 +196,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   }
 
   {
-    /*p29.XEFY*/ wire XEPY_SPRITE_DONEn = not(ppu_sig.WUTY_SPRITE_DONEp);
+    /*p29.XEFY*/ wire XEPY_SPRITE_DONEn = not(sprite_fetcher_sig.WUTY_SPRITE_DONEp);
     /*p34.MEFU*/ wire SPRITE_MASK0 = or(XEPY_SPRITE_DONEn, SPR_PIPE_A0, SPR_PIPE_B0);
     /*p34.MEVE*/ wire SPRITE_MASK1 = or(XEPY_SPRITE_DONEn, SPR_PIPE_A1, SPR_PIPE_B1);
     /*p34.MYZO*/ wire SPRITE_MASK2 = or(XEPY_SPRITE_DONEn, SPR_PIPE_A2, SPR_PIPE_B2);

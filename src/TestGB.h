@@ -24,6 +24,7 @@
 #include "Sch_Bootrom.h"
 #include "Sch_SpriteFetcher.h"
 #include "Sch_TileFetcher.h"
+#include "Sch_SpriteScanner.h"
 
 namespace Schematics {
 
@@ -74,6 +75,7 @@ struct TestGB {
 
   TileFetcher tile_fetcher;
   SpriteFetcher sprite_fetcher;
+  SpriteScanner sprite_scanner;
 
   BusMux bus_mux;
 

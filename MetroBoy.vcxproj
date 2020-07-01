@@ -144,6 +144,7 @@
     <ClInclude Include="src\Sch_Scroll.h" />
     <ClInclude Include="src\Sch_Serial.h" />
     <ClInclude Include="src\Sch_SpriteFetcher.h" />
+    <ClInclude Include="src\Sch_SpriteScanner.h" />
     <ClInclude Include="src\Sch_SpriteStore.h" />
     <ClInclude Include="src\Sch_TileFetcher.h" />
     <ClInclude Include="src\Sch_Timer.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="src\Sch_Scroll.cpp" />
     <ClCompile Include="src\Sch_Serial.cpp" />
     <ClCompile Include="src\Sch_SpriteFetcher.cpp" />
+    <ClCompile Include="src\Sch_SpriteScanner.cpp" />
     <ClCompile Include="src\Sch_SpriteStore.cpp" />
     <ClCompile Include="src\Sch_TileFetcher.cpp" />
     <ClCompile Include="src\Sch_Timer.cpp" />

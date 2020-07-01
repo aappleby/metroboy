@@ -48,6 +48,9 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
     /*p21.RAPE*/ wire RAPE_LY_MATCHn  = nand(SOVU_LY_MATCHA,  SUBO_LY_MATCHB); // def nand
     /*p21.PALY*/ sig.PALY_LY_MATCHa  = not (RAPE_LY_MATCHn); // def not
   }
+  
+  /*p28.ANOM*/ sig.ANOM_SCAN_RSTn = nor(sig.ATEJ_VID_LINE_TRIG_d4p, rst_sig.ATAR_VID_RSTp);
+
 
   sig.POPU_VBLANK_d4 = POPU_VBLANK_d4;
   sig.ROPO_LY_MATCH_SYNCp = ROPO_LY_MATCH_SYNCp;
@@ -61,6 +64,7 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
   sig.MATO_Y6 = MATO_Y6;
   sig.LAFO_Y7 = LAFO_Y7;
 
+  
   return sig;
 }
 

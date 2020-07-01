@@ -8,10 +8,7 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct SpriteStoreSignals {
-  // to ppu
-  /*p28.BESU*/ bool BESU_SCANNINGp; 
   /*p29.FEPO*/ bool FEPO_STORE_MATCHp;
-  /*p29.AVAP*/ bool AVAP_SCAN_DONE_d0_TRIGp;
 
   // to oam bus mux
   /*p28.GYBU*/ bool GYBU_IDX_0n; 
@@ -35,7 +32,6 @@ struct SpriteStoreSignals {
   /*p30.CEGA*/ bool CEGA_TS_LINE_3;
 
   // to sst.tick
-  /*p29.CEHA*/ bool CEHA_SCANNINGp; 
   /*p29.AROR*/ bool AROR_MATCH_ENp;
   /*p29.DYTY*/ bool DYTY_STORE_ENn_xxCDxxGH;
 
@@ -61,8 +57,8 @@ struct SpriteStoreSignals {
 
 struct SpriteStoreRegisters {
 
-  SpriteStoreSignals sig(const TestGB& gb, wire XYMO_LCD_SPSIZE) const;
-  void tick(const TestGB& gb);
+  SpriteStoreSignals sig(const TestGB& gb) const;
+  void tick(TestGB& gb);
   bool commit();
 
   void dump_regs(TextPainter& text_painter) {
@@ -93,18 +89,6 @@ struct SpriteStoreRegisters {
   }
 
 private:
-
-  /*p28.BESU*/ NorLatch BESU_SCANNINGp;
-  /*p29.CENO*/ Reg   CENO_SCANNINGp;
-
-  /*p28.YFEL*/ Reg SCAN0;
-  /*p28.WEWY*/ Reg SCAN1;
-  /*p28.GOSO*/ Reg SCAN2;
-  /*p28.ELYN*/ Reg SCAN3;
-  /*p28.FAHA*/ Reg SCAN4;
-  /*p28.FONY*/ Reg SCAN5;
-  /*p29.BYBA*/ Reg SCAN_DONE_d4;
-  /*p29.DOBA*/ Reg SCAN_DONE_d5;
 
   /*p30.XADU*/ Reg XADU_SPRITE_IDX0;
   /*p30.XEDY*/ Reg XEDY_SPRITE_IDX1;

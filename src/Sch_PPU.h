@@ -12,11 +12,9 @@ struct PpuSignals {
   /*p21.WODU*/ Signal WODU_RENDER_DONEp;
   /*p27.NYXU*/ Signal NYXU_BFETCH_RSTn;
   /*p29.TEXY*/ Signal TEXY_SPRITE_READp;
-  /*p29.WUTY*/ Signal WUTY_SPRITE_DONE;
+  /*p29.WUTY*/ Signal WUTY_SPRITE_DONEp;
   /*p28.ACYL*/ Signal ACYL_PPU_USE_OAM1p;
 
-  /*p24.POKY*/ Signal POKY_AFTER_PORCH_LATCHp;
-  /*p27.TAVE*/ Signal TAVE_PORCH_ENDp;
   /*p21.XYMU*/ Signal XYMU_RENDERINGp;
   /*p29.TEPA*/ Signal TEPA_RENDERINGn;
   /*p24.LOBY*/ Signal LOBY_RENDERINGn;
@@ -83,8 +81,8 @@ private:
   /*p24.PAHO*/ Reg PAHO_X_8_SYNC;
   /*p24.RUJU*/ NorLatch POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
   /* PIN_54 */ PinOut ST;
-  /*p21.WUSA*/ NorLatch WUSA_CPEN_LATCH;
   /* PIN_53 */ PinOut CP;
+  /*p21.WUSA*/ NorLatch WUSA_CPEN_LATCH;
 
   /*p??.ROXY*/ NorLatch ROXY_FINE_MATCH_LATCHn;
   /*p??.PUXA*/ Reg PUXA_FINE_MATCH_SYNC1;

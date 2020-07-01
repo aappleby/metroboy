@@ -196,7 +196,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   }
 
   {
-    /*p29.XEFY*/ wire XEPY_SPRITE_DONEn = not(ppu_sig.WUTY_SPRITE_DONE);
+    /*p29.XEFY*/ wire XEPY_SPRITE_DONEn = not(ppu_sig.WUTY_SPRITE_DONEp);
     /*p34.MEFU*/ wire SPRITE_MASK0 = or(XEPY_SPRITE_DONEn, SPR_PIPE_A0, SPR_PIPE_B0);
     /*p34.MEVE*/ wire SPRITE_MASK1 = or(XEPY_SPRITE_DONEn, SPR_PIPE_A1, SPR_PIPE_B1);
     /*p34.MYZO*/ wire SPRITE_MASK2 = or(XEPY_SPRITE_DONEn, SPR_PIPE_A2, SPR_PIPE_B2);

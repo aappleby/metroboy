@@ -161,17 +161,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
     /*p21.WODU*/ ppu_sig.WODU_RENDER_DONEp = and (_XENA_STORE_MATCHn, _XANO_X_167);
   }
 
-  {
-    /*p27.ROMO*/ wire _ROMO_AFTER_PORCHn = not(tile_fetcher_sig.POKY_AFTER_PORCH_LATCHp);
-    /*p27.SUVU*/ wire _SUVU_PORCH_ENDn = nand(XYMU_RENDERINGp, _ROMO_AFTER_PORCHn, tile_fetcher.NYKA_BFETCH_DONE_SYNC, tile_fetcher.PORY_BFETCH_DONE_SYNC_DELAY);
-    /*p27.TAVE*/ ppu_sig.TAVE_PORCH_ENDp = not(_SUVU_PORCH_ENDn);
-  }
-
-#if HAX
-  /*p27.TAVE*/ wire _TAVE_PORCH_ENDp = and(XYMU_RENDERINGp, !POKY_AFTER_PORCH_LATCHp, NYKA_BFETCH_DONE_SYNC, PORY_BFETCH_DONE_SYNC_DELAY;
-#endif
-
-  /*p27.TEVO*/ ppu_sig.TEVO_CLK_STOPn = nor(win_sig.SEKO_WIN_TRIGGER, win_sig.SUZU, ppu_sig.TAVE_PORCH_ENDp);
+  /*p27.TEVO*/ ppu_sig.TEVO_CLK_STOPn = nor(win_sig.SEKO_WIN_TRIGGER, win_sig.SUZU, tile_fetcher_sig.TAVE_PORCH_ENDp);
 
   /*p27.NYXU*/ ppu_sig.NYXU_BFETCH_RSTn = nor(sst_sig.AVAP_SCAN_DONE_d0_TRIGp, win_sig.MOSU_WIN_MODE_TRIGp, ppu_sig.TEVO_CLK_STOPn);
 
@@ -189,7 +179,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   {
     /*p29.TYNO*/ wire _TYNO = nand(TOXE_SFETCH_S0.q(), SEBA_SFETCH_S1_D5.q(), VONU_SFETCH_S1_D4.q());
     /*p29.VUSA*/ wire _VUSA = or(!TYFO_SFETCH_S0_D1.q(), _TYNO);
-    /*p29.WUTY*/ ppu_sig.WUTY_SPRITE_DONE = not(_VUSA);
+    /*p29.WUTY*/ ppu_sig.WUTY_SPRITE_DONEp = not(_VUSA);
   }
 
   {
@@ -328,10 +318,8 @@ void PpuRegisters::tick(TestGB& gb) {
   // Maybe we should annotate phase starting with the phase 0 = FEPO_MATCH_SYNC goes high?
 
   {
-    /*p27.MOCE*/ wire _MOCE_BFETCH_DONEn = nand(tile_fetcher.LAXU_BFETCH_S0, tile_fetcher.NYVA_BFETCH_S2, ppu_sig.NYXU_BFETCH_RSTn);
-    /*p27.LYRY*/ wire _LYRY_BFETCH_DONEp = not(_MOCE_BFETCH_DONEn);
     /*p27.SOWO*/ wire _SOWO_SPRITE_FETCH_LATCHn = not(TAKA_SFETCH_RUN_LATCH);
-    /*p27.TEKY*/ wire _TEKY_SPRITE_FETCH = and (sst_sig.FEPO_STORE_MATCHp, win_sig.TUKU_WIN_HITn, _LYRY_BFETCH_DONEp, _SOWO_SPRITE_FETCH_LATCHn);
+    /*p27.TEKY*/ wire _TEKY_SPRITE_FETCH = and (sst_sig.FEPO_STORE_MATCHp, win_sig.TUKU_WIN_HITn, tile_fetcher_sig.LYRY_BFETCH_DONEp, _SOWO_SPRITE_FETCH_LATCHn);
     /*p27.SOBU*/ SOBU_SPRITE_FETCH_SYNC1.set(clk_sig.TAVA_xBxDxFxH, dbg_sig.VYPO_P10_Bn, _TEKY_SPRITE_FETCH);
     /*p27.SUDA*/ SUDA_SPRITE_FETCH_SYNC2.set(clk_sig.LAPE_AxCxExGx, dbg_sig.VYPO_P10_Bn, SOBU_SPRITE_FETCH_SYNC1);
 
@@ -340,7 +328,7 @@ void PpuRegisters::tick(TestGB& gb) {
     // byha here seems wrong polarity
     /*p27.SECA*/ wire _SECA_SFETCH_SETn = nor(_RYCE_SPRITE_FETCH_TRIG, rst_sig.ROSY_VID_RSTp, lcd_sig.BYHA_VID_LINE_TRIG_d4n); // def nor
 
-    /*p27.VEKU*/ wire _VEKU_SFETCH_RSTn = nor(ppu_sig.WUTY_SPRITE_DONE, ppu_sig.TAVE_PORCH_ENDp); // def nor
+    /*p27.VEKU*/ wire _VEKU_SFETCH_RSTn = nor(ppu_sig.WUTY_SPRITE_DONEp, tile_fetcher_sig.TAVE_PORCH_ENDp); // def nor
 
     /*p29.TAME*/ wire _TAME_SFETCH_101n = nand(TESE_SFETCH_S2, TOXE_SFETCH_S0);
     /*p29.TOMA*/ wire _TOMA_xBxDxFxH = nand(clk_sig.LAPE_AxCxExGx, _TAME_SFETCH_101n);

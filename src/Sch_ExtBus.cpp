@@ -10,7 +10,7 @@ bool ExtPinsIn::commit() {
   bool changed = false;
   /* PIN_71 */ changed |= PIN_RST.clear_preset();
   /* PIN_72 */ /*GND*/
-               /* PIN_73 */ /*CLKOUT*/
+  /* PIN_73 */ /*CLKOUT*/
   /* PIN_74 */ changed |= PIN_CLK_GOOD.clear_preset();
   /* PIN_74 */ changed |= PIN_CLK_IN_xBxDxFxH.clear_preset();
 

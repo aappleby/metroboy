@@ -177,11 +177,13 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   gb->cpu_bus.PIN_FROM_CPU5p.preset(true, 0);
   gb->cpu_bus.PIN_FROM_CPU6.preset(true, 0);
 
+  /*
   gb->int_reg.PIN_ACK_SERIAL.preset(true, 0);
   gb->int_reg.PIN_ACK_STAT.preset(true, 0);
   gb->int_reg.PIN_ACK_VBLANK.preset(true, 0);
   gb->int_reg.PIN_ACK_TIMER.preset(true, 0);
   gb->int_reg.PIN_ACK_JOYPAD.preset(true, 0);
+  */
 
   //gb->ext_pins_in.preset();
 

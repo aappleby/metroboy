@@ -16,20 +16,7 @@ struct InterruptRegisters {
   void tick(TestGB& gb);
   bool commit();
 
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf(" ----- INT REG -----\n");
-    LOPE_FF0F_0.dump(text_painter, "LOPE_FF0F_0  ");
-    UBUL_FF0F_3.dump(text_painter, "UBUL_FF0F_3  ");
-    ULAK_FF0F_4.dump(text_painter, "ULAK_FF0F_4  ");
-    LALU_FF0F_1.dump(text_painter, "LALU_FF0F_1  ");
-    NYBO_FF0F_2.dump(text_painter, "NYBO_FF0F_2  ");
-    FF0F_L0.dump(text_painter, "FF0F_L0 ");
-    FF0F_L1.dump(text_painter, "FF0F_L1 ");
-    FF0F_L2.dump(text_painter, "FF0F_L2 ");
-    FF0F_L3.dump(text_painter, "FF0F_L3 ");
-    FF0F_L4.dump(text_painter, "FF0F_L4 ");
-    text_painter.newline();
-  }
+private:
 
   /*p02.LOPE*/ Reg LOPE_FF0F_0;
   /*p02.UBUL*/ Reg UBUL_FF0F_3;   // 22-rung?

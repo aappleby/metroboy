@@ -5,7 +5,8 @@
 
 namespace Schematics {
 
-typedef const bool wire;
+//typedef const bool wire;
+  typedef bool wire;
 
 //-----------------------------------------------------------------------------
 

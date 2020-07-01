@@ -52,8 +52,6 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
 
   auto& ppu_config = gb.ppu_config;
 
-  wire P10_B = 0;
-
   SpriteStoreSignals sig;
 
 

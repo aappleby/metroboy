@@ -177,11 +177,11 @@ void WindowRegisters::tick(TestGB& gb) {
     /*p27.VETU*/ wire _VETU_X_CLK = and (ppu_sig.TEVO_CLK_STOPn, win_sig.PORE_WIN_MODE);
     /*p27.XACO*/ wire _XACO_WIN_RSTn = not(win_sig.XOFO_WIN_RSTp);
 
-    /*p27.WYKA*/ WIN_X3.set(_VETU_X_CLK, _XACO_WIN_RSTn,  WIN_X3.qn());
-    /*p27.WODY*/ WIN_X4.set( WIN_X3.qn(), _XACO_WIN_RSTn, WIN_X4.qn());
-    /*p27.WOBO*/ WIN_X5.set(!WIN_X4,      _XACO_WIN_RSTn, WIN_X5.qn());
-    /*p27.WYKO*/ WIN_X6.set(!WIN_X5,      _XACO_WIN_RSTn, WIN_X6.qn());
-    /*p27.XOLO*/ WIN_X7.set(!WIN_X6,      _XACO_WIN_RSTn, WIN_X7.qn());
+    /*p27.WYKA*/ WIN_X3.set(_VETU_X_CLK, _XACO_WIN_RSTn, !WIN_X3);
+    /*p27.WODY*/ WIN_X4.set(!WIN_X3,     _XACO_WIN_RSTn, !WIN_X4);
+    /*p27.WOBO*/ WIN_X5.set(!WIN_X4,     _XACO_WIN_RSTn, !WIN_X5);
+    /*p27.WYKO*/ WIN_X6.set(!WIN_X5,     _XACO_WIN_RSTn, !WIN_X6);
+    /*p27.XOLO*/ WIN_X7.set(!WIN_X6,     _XACO_WIN_RSTn, !WIN_X7);
   }
 
   // window y coordinate

@@ -240,8 +240,6 @@ void PpuRegisters::tick(TestGB& gb) {
 
   auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
 
-  wire P10_B = 0;
-
   //----------
 
   {
@@ -460,7 +458,7 @@ void dump_regs(TextPainter& text_painter) {
   LONY_BG_READ_VRAM_LATCHp.dump(text_painter, "BG_READ_VRAM_LATCH      ");
   LAXU_BFETCH_S0.dump(text_painter, "LAXU_BFETCH_S0          ");
   MESU_BFETCH_S1.dump(text_painter, "MESU_BFETCH_S1          ");
-  NYVA_BFETCH_S2.dump(text_painter, "NYVA_BFETCH_S2          ");
+  NYVA_FETCH_TILE_AB.dump(text_painter, "NYVA_FETCH_TILE_AB          ");
   LOVY_BG_SEQ5_SYNC.dump(text_painter, "BG_SEQ5_SYNC             ");
   NYKA_BFETCH_DONE_SYNC.dump(text_painter, "NYKA_BFETCH_DONE_SYNC                 ");
   PORY_BFETCH_DONE_SYNC_DELAY.dump(text_painter, "PORY_BFETCH_DONE_SYNC_DELAY                 ");

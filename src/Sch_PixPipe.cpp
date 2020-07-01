@@ -17,8 +17,6 @@ PixelPipeSignals PixelPipeRegisters::sig(const TestGB& gb) const {
 
   auto& ppu_config = gb.ppu_config;
 
-  wire P10_B = 0;
-
   /*p35.RAJY*/ wire _PIX_BG0  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_A7);
   /*p35.TADE*/ wire _PIX_BG1  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_B7);
 

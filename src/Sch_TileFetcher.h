@@ -16,9 +16,6 @@ struct TileFetcherSignals {
 
   /*p27.LONY*/ Signal LONY_BG_READ_VRAM_LATCHp;
 
-  /*p27.NAKO*/ Signal NAKO_FETCH_S1n;
-  /*p27.NOFU*/ Signal NOFU_FETCH_S2n;
-
   /*p32.LEGU*/ Signal BG_PIX_A0; // 8-rung
   /*p32.NUDU*/ Signal BG_PIX_A1;
   /*p32.MUKU*/ Signal BG_PIX_A2;
@@ -45,9 +42,11 @@ struct TileFetcher {
   void tick(TestGB& gb);
   bool commit();
 
+private:
+
   /*p27.LAXU*/ Reg LAXU_BFETCH_S0;
   /*p27.MESU*/ Reg MESU_BFETCH_S1;
-  /*p27.NYVA*/ Reg NYVA_BFETCH_S2;
+  /*p27.NYVA*/ Reg NYVA_FETCH_TILE_AB;
 
   /*p27.LOVY*/ Reg LOVY_BG_SEQ5_SYNC;
 
@@ -58,8 +57,6 @@ struct TileFetcher {
   /*p24.PYGO*/ Reg PYGO_TILE_DONE;
   /*p24.POKY*/ NorLatch POKY_AFTER_PORCH_LATCHp;
   /*p27.LONY*/ NandLatch LONY_BG_READ_VRAM_LATCHp;
-
-private:
 
   /*p32.LEGU*/ Reg BG_PIX_A0; // 8-rung
   /*p32.NUDU*/ Reg BG_PIX_A1;

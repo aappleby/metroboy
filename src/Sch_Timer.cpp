@@ -4,15 +4,21 @@
 
 using namespace Schematics;
 
+//------------------------------------------------------------------------------
+
 TimerSignals TimerRegisters::sig(const TestGB& /*gb*/) const {
-  return {
-    .UVYN_DIV_05n = not(TAMA_DIV_05),
-    .UMEK_DIV_06n = not(UGOT_DIV_06),
-    .UREK_DIV_07n = not(TULU_DIV_07),
-    .UPOF_DIV_15 = UPOF_DIV_15,
-    .MOBA_INT_TIMERp = MOBA_INT_TIMERp,
-  };
+  TimerSignals sig;
+
+  sig.UVYN_DIV_05n    = not(TAMA_DIV_05);
+  sig.UMEK_DIV_06n    = not(UGOT_DIV_06);
+  sig.UREK_DIV_07n    = not(TULU_DIV_07);
+  sig.UPOF_DIV_15     = UPOF_DIV_15;
+  sig.MOBA_INT_TIMERp = MOBA_INT_TIMERp;
+
+  return sig;
 }
+
+//------------------------------------------------------------------------------
 
 void TimerRegisters::tick(TestGB& gb) {
   auto& cpu_bus = gb.cpu_bus;
@@ -167,6 +173,8 @@ void TimerRegisters::tick(TestGB& gb) {
   }
 }
 
+//------------------------------------------------------------------------------
+
 bool TimerRegisters::commit() {
   bool changed = false;
   /*p01.UKUP*/ changed |= UKUP_DIV_00.commit_reg();
@@ -208,3 +216,114 @@ bool TimerRegisters::commit() {
   /*p03.SABO*/ changed |= TAC_2.commit_reg();
   return changed;
 }
+
+//------------------------------------------------------------------------------
+
+#if 0
+void dump_regs(TextPainter& text_painter) {
+  text_painter.dprintf("----- TIM_REG -----\n");
+  text_painter.dprintf("DIV       %d\n", get_div());
+  text_painter.dprintf("TIMA      %d\n", get_tima());
+  text_painter.dprintf("TMA       %d\n", get_tma());
+  text_painter.newline();
+
+  UKUP_DIV_00.dump(text_painter, "UKUP_DIV_00    ");
+  UFOR_DIV_01.dump(text_painter, "UFOR_DIV_01    ");
+  UNER_DIV_02.dump(text_painter, "UNER_DIV_02    ");
+  TERO_DIV_03.dump(text_painter, "TERO_DIV_03    ");
+  UNYK_DIV_04.dump(text_painter, "UNYK_DIV_04    ");
+  TAMA_DIV_05.dump(text_painter, "TAMA_DIV_05    ");
+  UGOT_DIV_06.dump(text_painter, "UGOT_DIV_06    ");
+  TULU_DIV_07.dump(text_painter, "TULU_DIV_07    ");
+  TUGO_DIV_08.dump(text_painter, "TUGO_DIV_08    ");
+  TOFE_DIV_09.dump(text_painter, "TOFE_DIV_09    ");
+  TERU_DIV_10.dump(text_painter, "TERU_DIV_10    ");
+  SOLA_DIV_11.dump(text_painter, "SOLA_DIV_11    ");
+  SUBU_DIV_12.dump(text_painter, "SUBU_DIV_12    ");
+  TEKA_DIV_13.dump(text_painter, "TEKA_DIV_13    ");
+  UKET_DIV_14.dump(text_painter, "UKET_DIV_14    ");
+  UPOF_DIV_15.dump(text_painter, "UPOF_DIV_15    ");
+  text_painter.newline();
+
+  TIMA_0.dump(text_painter, "TIMA_0    ");
+  TIMA_1.dump(text_painter, "TIMA_1    ");
+  TIMA_2.dump(text_painter, "TIMA_2    ");
+  TIMA_3.dump(text_painter, "TIMA_3    ");
+  TIMA_4.dump(text_painter, "TIMA_4    ");
+  TIMA_5.dump(text_painter, "TIMA_5    ");
+  TIMA_6.dump(text_painter, "TIMA_6    ");
+  TIMA_7.dump(text_painter, "TIMA_7    ");
+  text_painter.newline();
+
+  TMA_0.dump(text_painter, "TMA_0     ");
+  TMA_1.dump(text_painter, "TMA_1     ");
+  TMA_2.dump(text_painter, "TMA_2     ");
+  TMA_3.dump(text_painter, "TMA_3     ");
+  TMA_4.dump(text_painter, "TMA_4     ");
+  TMA_5.dump(text_painter, "TMA_5     ");
+  TMA_6.dump(text_painter, "TMA_6     ");
+  TMA_7.dump(text_painter, "TMA_7     ");
+  text_painter.newline();
+
+  TAC_0.dump(text_painter, "TAC_0     ");
+  TAC_1.dump(text_painter, "TAC_1     ");
+  TAC_2.dump(text_painter, "TAC_2     ");
+  text_painter.newline();
+
+  TIMA_MAX.dump(text_painter, "TIMA_MAX  ");
+  MOBA_INT_TIMERp.dump(text_painter, "MOBA_INT_TIMERp ");
+  text_painter.newline();
+}
+
+int get_div() const {
+  return pack(UKUP_DIV_00.q(), UFOR_DIV_01.q(), UNER_DIV_02.q(), TERO_DIV_03.q(), UNYK_DIV_04.q(), TAMA_DIV_05.q(), UGOT_DIV_06.q(), TULU_DIV_07.q(),
+    TUGO_DIV_08.q(), TOFE_DIV_09.q(), TERU_DIV_10.q(), SOLA_DIV_11.q(), SUBU_DIV_12.q(), TEKA_DIV_13.q(), UKET_DIV_14.q(), UPOF_DIV_15.q());
+}
+
+/*
+void set_div(uint16_t x) {
+DIV_00.set2(x & 0x0001); DIV_01.set2(x & 0x0002); DIV_02.set2(x & 0x0004); DIV_03.set2(x & 0x0008);
+DIV_04.set2(x & 0x0010); DIV_05.set2(x & 0x0020); DIV_06.set2(x & 0x0040); DIV_07.set2(x & 0x0080);
+DIV_08.set2(x & 0x0100); DIV_09.set2(x & 0x0200); DIV_10.set2(x & 0x0400); DIV_11.set2(x & 0x0800);
+DIV_12.set2(x & 0x1000); DIV_13.set2(x & 0x2000); DIV_14.set2(x & 0x4000); DIV_15.set2(x & 0x8000);
+}
+*/
+
+int get_tima() const {
+  return pack(TIMA_0.q(), TIMA_1.q(), TIMA_2.q(), TIMA_3.q(), TIMA_4.q(), TIMA_5.q(), TIMA_6.q(), TIMA_7.q());
+}
+
+/*
+void set_tima(uint8_t x) {
+TIMA_0.set2(x & 0x01); TIMA_1.set2(x & 0x02); TIMA_2.set2(x & 0x04); TIMA_3.set2(x & 0x08);
+TIMA_4.set2(x & 0x10); TIMA_5.set2(x & 0x20); TIMA_6.set2(x & 0x40); TIMA_7.set2(x & 0x80);
+}
+*/
+
+wire get_tima_max() { return TIMA_MAX.q(); }
+wire get_int_timer() { return MOBA_INT_TIMERp.q(); }
+
+int get_tma() const {
+  return pack(TMA_0.q(), TMA_1.q(), TMA_2.q(), TMA_3.q(), TMA_4.q(), TMA_5.q(), TMA_6.q(), TMA_7.q());
+}
+
+/*
+void set_tma(uint8_t x) {
+TMA_0.set2(x & 0x01); TMA_1.set2(x & 0x02); TMA_2.set2(x & 0x04); TMA_3.set2(x & 0x08);
+TMA_4.set2(x & 0x10); TMA_5.set2(x & 0x20); TMA_6.set2(x & 0x40); TMA_7.set2(x & 0x80);
+}
+*/
+
+int get_tac() const {
+  return pack(TAC_0.q(), TAC_1.q(), TAC_2.q());
+}
+
+/*
+void set_tac(uint8_t x) {
+TAC_0.set2(x & 1);
+TAC_1.set2(x & 2);
+TAC_2.set2(x & 4);
+}
+*/
+
+#endif

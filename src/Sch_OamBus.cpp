@@ -13,7 +13,6 @@ using namespace Schematics;
 // VAPE01 << TACU03
 // VAPE02 << TUVO04
 // VAPE03 nc
-// VAPE04 >> XUJY01
 
 
 // Possible schematic error - CUFE doesn't make sense as or(and()), only as and(or())

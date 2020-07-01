@@ -256,7 +256,7 @@ void BusMux::tick(TestGB& gb) {
     /*p25.SEKE*/ vram_bus.TRI_D4.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D4);
     /*p25.RUJO*/ vram_bus.TRI_D5.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D5);
     /*p25.TOFA*/ vram_bus.TRI_D6.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D6);
-    /*p25.SUZA*/ vram_bus.TRI_D7.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D7);
+    /*p25.SUZA*/ vram_bus.TRI_D7.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D7); // 10-rung
   }
 
   {

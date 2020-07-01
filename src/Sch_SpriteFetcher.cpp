@@ -3,6 +3,12 @@
 
 using namespace Schematics;
 
+// VAPE04 >> XUJY01
+// SAKY = nor(TULY17, VONU17)
+// TEPA = not(XYMU)
+// TYSO = or(SAKY, TEPA)
+// TEXY = not(TYSO)
+
 //------------------------------------------------------------------------------
 
 SpriteFetcherSignals SpriteFetcher::sig(const TestGB& gb) const {
@@ -30,38 +36,36 @@ SpriteFetcherSignals SpriteFetcher::sig(const TestGB& gb) const {
 
   /*p29.TEPA*/ wire TEPA_RENDERINGn = not(ppu_sig.XYMU_RENDERINGp);
 
-  {
-    sig.TYFO_SFETCH_S0_D1 = TYFO_SFETCH_S0_D1;
-    /*p29.TYTU*/ sig.TYTU_SFETCH_S0_D0n = not(TOXE_SFETCH_S0.q());
-    /*p29.TACU*/ sig.TACU_SPR_SEQ_5_TRIG = nand(TYFO_SFETCH_S0_D1.q(), sig.TYTU_SFETCH_S0_D0n);
-    /*p29.SYCU*/ wire SYCU = nor(sig.TYTU_SFETCH_S0_D0n, ppu_sig.LOBY_RENDERINGn, sig.TYFO_SFETCH_S0_D1);
-    /*p29.TOPU*/ sig.TOPU_LATCH_SPPIXA = and (TULY_SFETCH_S1, SYCU);
-    /*p29.RACA*/ sig.RACA_LATCH_SPPIXB = and (VONU_SFETCH_S1_D4, SYCU);
-  }
+  /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(TOXE_SFETCH_S0.q());
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0_D0n);
 
-  /*p29.TUVO*/ sig.TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, TULY_SFETCH_S1.q(), TESE_SFETCH_S2.q());
+  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, TULY_SFETCH_S1.q(), TESE_SFETCH_S2.q());
 
-  /*p28.WEFY*/ wire _WEFY_SPR_READp = and(sig.TUVO_PPU_OAM_RDp, sig.TYFO_SFETCH_S0_D1);
+  /*p28.WEFY*/ wire _WEFY_SPR_READp = and(TUVO_PPU_OAM_RDp, TYFO_SFETCH_S0_D1);
   /*p28.XUJA*/ sig.XUJA_SPR_READn = not(_WEFY_SPR_READp);
 
-  /*p25.VAPE*/ wire _VAPE = and (sig.TUVO_PPU_OAM_RDp, sig.TACU_SPR_SEQ_5_TRIG);
+  /*p25.VAPE*/ wire _VAPE = and (TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
   /*p25.XUJY*/ sig.XUJY = not(_VAPE);
 
-  /*p29.SAKY*/ sig.SAKY = nor(TULY_SFETCH_S1.q(), VONU_SFETCH_S1_D4.q());
 
   {
     /*p29.TYNO*/ wire _TYNO = nand(TOXE_SFETCH_S0.q(), SEBA_SFETCH_S1_D5.q(), VONU_SFETCH_S1_D4.q());
     /*p29.VUSA*/ wire _VUSA = or(!TYFO_SFETCH_S0_D1.q(), _TYNO);
     /*p29.WUTY*/ sig.WUTY_SPRITE_DONEp = not(_VUSA);
+    /*p29.XEFY*/ sig.XEPY_SPRITE_DONEn = not(sig.WUTY_SPRITE_DONEp);
+
   }
 
   /*p27.SOWO*/ sig.SOWO_SPRITE_FETCH_LATCHn = not(TAKA_SFETCH_RUN_LATCH);
 
   {
-    /*p29.TYSO*/ wire _TYSO_SPRITE_READn = or(sig.SAKY, TEPA_RENDERINGn);
+    /*p29.SAKY*/ wire SAKY = nor(TULY_SFETCH_S1.q(), VONU_SFETCH_S1_D4.q());
+    /*p29.TYSO*/ wire _TYSO_SPRITE_READn = or(SAKY, TEPA_RENDERINGn);
     /*p29.TEXY*/ sig.TEXY_SPRITE_READp = not(_TYSO_SPRITE_READn);
   }
 
+  /*p29.ABON*/ wire ABON_SPR_VRAM_RDp1 = not(sig.TEXY_SPRITE_READp);
+  /*p25.SOHO*/ sig.SOHO_SPR_VRAM_RDp = and (TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRAM_RDp1);
 
   return sig;
 }
@@ -80,6 +84,8 @@ void SpriteFetcher::tick(TestGB& gb) {
 
   auto& ppu_config = gb.ppu_config;
 
+  auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
+
   wire P10_B = 0;
 
   {
@@ -92,7 +98,7 @@ void SpriteFetcher::tick(TestGB& gb) {
     // SFETCH_110
     // SFETCH_111
 
-    /*p29.XONO*/ wire XONO_FLIP_X = and (oam_sig.BAXO_SPRITE_X5, ppu_sig.TEXY_SPRITE_READp);
+    /*p29.XONO*/ wire XONO_FLIP_X = and (oam_sig.BAXO_SPRITE_X5, sprite_fetcher_sig.TEXY_SPRITE_READp);
     /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2_p(vram_bus.TRI_D7, vram_bus.TRI_D0, XONO_FLIP_X);
     /*p33.PACY*/ wire SPR_PIX_FLIP1 = mux2_p(vram_bus.TRI_D6, vram_bus.TRI_D1, XONO_FLIP_X);
     /*p33.PONO*/ wire SPR_PIX_FLIP2 = mux2_p(vram_bus.TRI_D5, vram_bus.TRI_D2, XONO_FLIP_X);
@@ -102,7 +108,11 @@ void SpriteFetcher::tick(TestGB& gb) {
     /*p33.PELO*/ wire SPR_PIX_FLIP6 = mux2_p(vram_bus.TRI_D1, vram_bus.TRI_D6, XONO_FLIP_X);
     /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2_p(vram_bus.TRI_D0, vram_bus.TRI_D7, XONO_FLIP_X);
 
-    /*p29.VYWA*/ wire VYWA_CLKp = not(ppu_sig.TOPU_LATCH_SPPIXA);
+    /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(TOXE_SFETCH_S0.q());
+    /*p29.SYCU*/ wire SYCU = nor(TYTU_SFETCH_S0_D0n, ppu_sig.LOBY_RENDERINGn, TYFO_SFETCH_S0_D1);
+
+    /*p29.TOPU*/ wire TOPU_LATCH_SPPIXA = and (TULY_SFETCH_S1, SYCU);
+    /*p29.VYWA*/ wire VYWA_CLKp = not(TOPU_LATCH_SPPIXA);
     /*p29.WENY*/ wire WENY_CLKn = not(VYWA_CLKp);
     /*p29.XADO*/ wire XADO_CLKp = not(WENY_CLKn);
     /*p33.PEFO*/ SPR_PIX_A0.set(XADO_CLKp, SPR_PIX_FLIP0);
@@ -114,7 +124,8 @@ void SpriteFetcher::tick(TestGB& gb) {
     /*p33.RAMA*/ SPR_PIX_A6.set(XADO_CLKp, SPR_PIX_FLIP6);
     /*p33.RYDU*/ SPR_PIX_A7.set(XADO_CLKp, SPR_PIX_FLIP7);
 
-    /*p29.PEBY*/ wire PEBY_CLKp = not(ppu_sig.RACA_LATCH_SPPIXB);
+    /*p29.RACA*/ wire RACA_LATCH_SPPIXB = and (VONU_SFETCH_S1_D4, SYCU);
+    /*p29.PEBY*/ wire PEBY_CLKp = not(RACA_LATCH_SPPIXB);
     /*p29.NYBE*/ wire NYBE_CLKn = not(PEBY_CLKp);
     /*p29.PUCO*/ wire PUCO_CLKb = not(NYBE_CLKn);
     /*p33.REWO*/ SPR_PIX_B0.set(PUCO_CLKb, SPR_PIX_FLIP0);
@@ -139,7 +150,7 @@ void SpriteFetcher::tick(TestGB& gb) {
     /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, sst_sig.WENU_TS_LINE_0);
     /*p29.GEJY*/ wire _GEJY_SPRITE_Y3 = amux2(_FUFO_LCDC_SPSIZEn, !oam_sig.XUSO_SPRITE_Y0, ppu_config.XYMO_LCDC_SPSIZE, _WAGO);
 
-    /*p29.ABON*/ wire ABON_SPRITE_READn = not(ppu_sig.TEXY_SPRITE_READp);
+    /*p29.ABON*/ wire ABON_SPRITE_READn = not(sprite_fetcher_sig.TEXY_SPRITE_READp);
 
     /*p29.ABEM*/ vram_bus.TRI_A00.set_tribuf(ABON_SPRITE_READn, _XUQU_SPRITE_AB);
     /*p29.BAXE*/ vram_bus.TRI_A01.set_tribuf(ABON_SPRITE_READn, _CYVU_SPRITE_Y0);
@@ -225,3 +236,32 @@ bool SpriteFetcher::commit() {
 
 
 //------------------------------------------------------------------------------
+
+
+#if 0
+
+void dump_regs(TextPainter& text_painter) {
+  text_painter.dprintf("----- SPR_REG -----\n");
+
+  TOXE_SFETCH_S0.dump(text_painter, "TOXE_SFETCH_S0    ");
+  TULY_SFETCH_S1.dump(text_painter, "TULY_SFETCH_S1    ");
+  TESE_SFETCH_S2.dump(text_painter, "TESE_SFETCH_S2    ");
+  TOBU_SFETCH_S1_D2.dump(text_painter, "TOBU_SFETCH_S1_D2  ");
+  VONU_SFETCH_S1_D4.dump(text_painter, "VONU_SFETCH_S1_D4 ");
+  SEBA_SFETCH_S1_D5.dump(text_painter, "SEBA_SFETCH_S1_D5 ");
+  TYFO_SFETCH_S0_D1.dump(text_painter, "TYFO_SFETCH_S0_D1     ");
+  //CENO_SCANNINGp.dump(text_painter, "CENO_SCANNINGp");
+
+  //text_painter.dprintf("SCAN    %d\n", scan());
+  //SCAN_DONE_d4.dump(text_painter, "SCAN_DONE_d4 ");
+  //SCAN_DONE_d5.dump(text_painter, "SCAN_DONE_d5 ");
+
+  //text_painter.dprintf("SPR_IDX %d\n", spr_idx());
+  //text_painter.dprintf("TS_IDX  %d\n", ts_idx());
+  //text_painter.dprintf("TS_LINE %d\n", ts_line());
+  text_painter.newline();
+}
+
+
+
+#endif

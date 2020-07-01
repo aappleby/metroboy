@@ -188,11 +188,9 @@ void VramPins::tick(TestGB& gb) {
     }
 
     {
-      /*p29.ABON*/ wire ABON_SPR_VRAM_RDp1 = not(sprite_fetcher_sig.TEXY_SPRITE_READp);
-      /*p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and (sprite_fetcher_sig.TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRAM_RDp1);
       /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor(dma_sig.LUFA_DMA_READ_VRAMp, ppu_sig.XYMU_RENDERINGp); // def nor
       /*p25.RYLU*/ wire RYLU_DBG_VRAM_RDn = nand(SALE_VRAM_WRn, XANE_VRAM_LOCKn);
-      /*p25.RAWA*/ wire RAWA_SPR_VRAM_RDn = not(SOHO_SPR_VRAM_RDp);
+      /*p25.RAWA*/ wire RAWA_SPR_VRAM_RDn = not(sprite_fetcher_sig.SOHO_SPR_VRAM_RDp);
       /*p27.MYMA*/ wire MYMA_BGW_VRAM_RDn = not(tile_fetcher_sig.LONY_BG_READ_VRAM_LATCHp); // this should be correct
       /*p25.APAM*/ wire APAM_DMA_VRAM_RDn = not(dma_sig.LUFA_DMA_READ_VRAMp);
       /*p25.RACU*/ wire RACU_MOEn   = and (RYLU_DBG_VRAM_RDn, RAWA_SPR_VRAM_RDn, MYMA_BGW_VRAM_RDn, APAM_DMA_VRAM_RDn); // def and

@@ -27,7 +27,7 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus&
   /*p05.BYZO*/ wire _BYZO_FF00_RDn = not(_ACAT_FF00_RD);
   /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, cpu_sig.AKUG_A06n, cpu_sig.BYKO_A05n);
 
-  /*p02.AWOB*/ AWOB_WAKE_CPU.set(clk_sig.BOGA_AxCDEFGH, _ANY_BUTTON);
+  /*p02.AWOB*/ AWOB_WAKE_CPU.setx(clk_sig.BOGA_AxCDEFGH, _ANY_BUTTON);
   // cpu_pins.TO_CPU2.set(WAKE_CPU.q());
 
   /*p02.BATU*/ JP_GLITCH0.set(clk_sig.BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, _ANY_BUTTON);
@@ -37,10 +37,10 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus&
 
   ///*p02.ASOK*/ wire INT_JP = and (JP_GLITCH3, JP_GLITCH0);
 
-  /*p05.KEVU*/ JOYP_L0.set(_BYZO_FF00_RDn, P10_C);
-  /*p05.KAPA*/ JOYP_L1.set(_BYZO_FF00_RDn, P11_C);
-  /*p05.KEJA*/ JOYP_L2.set(_BYZO_FF00_RDn, P12_C);
-  /*p05.KOLO*/ JOYP_L3.set(_BYZO_FF00_RDn, P13_C);
+  /*p05.KEVU*/ JOYP_L0.setx(_BYZO_FF00_RDn, P10_C);
+  /*p05.KAPA*/ JOYP_L1.setx(_BYZO_FF00_RDn, P11_C);
+  /*p05.KEJA*/ JOYP_L2.setx(_BYZO_FF00_RDn, P12_C);
+  /*p05.KOLO*/ JOYP_L3.setx(_BYZO_FF00_RDn, P13_C);
 
   /*p05.KEMA*/ cpu_bus.TRI_D0.set_tribuf(!_BYZO_FF00_RDn, JOYP_L0.q());
   /*p05.KURO*/ cpu_bus.TRI_D1.set_tribuf(!_BYZO_FF00_RDn, JOYP_L1.q());

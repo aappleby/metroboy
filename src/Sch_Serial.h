@@ -35,14 +35,14 @@ private:
   /*p06.CYDE*/ Reg SER_CNT2;
   /*p06.CALY*/ Reg CALY_INT_SERIALp;
 
-  /*p06.CUBA*/ Reg SER_DATA0;
-  /*p06.DEGU*/ Reg SER_DATA1;
-  /*p06.DYRA*/ Reg SER_DATA2;
-  /*p06.DOJO*/ Reg SER_DATA3;
-  /*p06.DOVU*/ Reg SER_DATA4;
-  /*p06.EJAB*/ Reg SER_DATA5;
-  /*p06.EROD*/ Reg SER_DATA6;
-  /*p06.EDER*/ Reg SER_DATA7;
+  /*p06.CUBA*/ Reg22 SER_DATA0;
+  /*p06.DEGU*/ Reg22 SER_DATA1;
+  /*p06.DYRA*/ Reg22 SER_DATA2;
+  /*p06.DOJO*/ Reg22 SER_DATA3;
+  /*p06.DOVU*/ Reg22 SER_DATA4;
+  /*p06.EJAB*/ Reg22 SER_DATA5;
+  /*p06.EROD*/ Reg22 SER_DATA6;
+  /*p06.EDER*/ Reg22 SER_DATA7;
 
   /*p06.ELYS*/ Reg SER_OUT;
 

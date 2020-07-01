@@ -8,30 +8,26 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct PpuSignals {
-  /*p27.TEVO*/ Signal TEVO_CLK_STOPn;
-  /*p21.WODU*/ Signal WODU_RENDER_DONEp;
-  /*p27.NYXU*/ Signal NYXU_BFETCH_RSTn;
-  /*p29.TEXY*/ Signal TEXY_SPRITE_READp;
-  /*p28.ACYL*/ Signal ACYL_PPU_USE_OAM1p;
-  /*p27.TEKY*/ Signal TEKY_SPRITE_FETCH;
-  /*p27.VEKU*/ Signal VEKU_SFETCH_RSTn;
+  /*p27.TEVO*/ Signal TEVO_FINE_RSTp;
+  /*p21.WODU*/ Signal WODU_RENDER_DONEp;         // to ppu.tick
+  /*p27.NYXU*/ Signal NYXU_TILE_FETCHER_RSTn;    // to tile fetcher
+  /*p28.ACYL*/ Signal ACYL_PPU_USE_OAM1p;        // to bus mux
+  /*p27.TEKY*/ Signal TEKY_SPRITE_FETCH;         // to sprite fetcher
+  /*p27.VEKU*/ Signal VEKU_SFETCH_RSTn;          // to sprite fetcher
 
-  /*p21.XYMU*/ Signal XYMU_RENDERINGp;
-  /*p24.LOBY*/ Signal LOBY_RENDERINGn;
-  /*p25.ROPY*/ Signal ROPY_RENDERINGn;
-  /*p24.SEGU*/ Signal SEGU_xBxDxFxH;
-  /*p24.ROXO*/ Signal ROXO_AxCxExGx;
-  /*p27.ROCO*/ Signal ROCO_AxCxExGx;
-  /*p25.SERE*/ Signal SERE_VRAM_RD; // this signal shouldn't be in the ppu
-  /*p24.SACU*/ Signal SACU_CLKPIPE_AxCxExGx;
-  /*p27.ROZE*/ Signal ROZE_FINE_COUNT_STOPn;
-  /*p21.VOTY*/ Signal VOTY_INT_STATp;
+  /*p21.XYMU*/ Signal XYMU_RENDERINGp;           // to a bunch of stuff
 
-  /*p29.TOPU*/ Signal TOPU_LATCH_SPPIXA;
-  /*p29.RACA*/ Signal RACA_LATCH_SPPIXB;
-  /*p29.XONO*/ Signal XONO_FLIP_X;
+  /*p24.LOBY*/ Signal LOBY_RENDERINGn;           // to sprite fetcher, tile fetcher. should move.
+  /*p25.ROPY*/ Signal ROPY_RENDERINGn;           // remove me
+  /*p25.SERE*/ Signal SERE_VRAM_RD;              // this signal shouldn't be in the ppu. controls vbus data tristate
 
-  /*p21.XEHO*/ Signal XEHO_X0;
+  /*p24.SEGU*/ Signal SEGU_CLKPIPEn;             // ppu.tick, window matcher. can prob move matcher into ppu now
+  /*p24.SACU*/ Signal SACU_CLKPIPEp;             // pixel pipe clock, xBxDxFxH, includes fine match discard
+
+  /*p27.ROZE*/ Signal ROZE_FINE_COUNT_STOPn;     // to ppu.tick, window
+  /*p21.VOTY*/ Signal VOTY_INT_STATp;            // to interrupts
+
+  /*p21.XEHO*/ Signal XEHO_X0;                   // to a bunch of stuff
   /*p21.SAVY*/ Signal SAVY_X1;
   /*p21.XODU*/ Signal XODU_X2;
   /*p21.XYDO*/ Signal XYDO_X3;
@@ -51,18 +47,18 @@ struct PpuRegisters {
 
 private:
 
-  /*p21.XEHO*/ Reg XEHO_X0;
-  /*p21.SAVY*/ Reg SAVY_X1;
-  /*p21.XODU*/ Reg XODU_X2;
-  /*p21.XYDO*/ Reg XYDO_X3;
-  /*p21.TUHU*/ Reg TUHU_X4;
-  /*p21.TUKY*/ Reg TUKY_X5;
-  /*p21.TAKO*/ Reg TAKO_X6;
-  /*p21.SYBE*/ Reg SYBE_X7;
+  /*p21.XEHO*/ Reg17 XEHO_X0;
+  /*p21.SAVY*/ Reg17 SAVY_X1;
+  /*p21.XODU*/ Reg17 XODU_X2;
+  /*p21.XYDO*/ Reg17 XYDO_X3;
+  /*p21.TUHU*/ Reg17 TUHU_X4;
+  /*p21.TUKY*/ Reg17 TUKY_X5;
+  /*p21.TAKO*/ Reg17 TAKO_X6;
+  /*p21.SYBE*/ Reg17 SYBE_X7;
 
-  /*p27.RYKU*/ Reg RYKU_FINE_CNT0;
-  /*p27.ROGA*/ Reg ROGA_FINE_CNT1;
-  /*p27.RUBU*/ Reg RUBU_FINE_CNT2;
+  /*p27.RYKU*/ Reg17 RYKU_FINE_CNT0;
+  /*p27.ROGA*/ Reg17 ROGA_FINE_CNT1;
+  /*p27.RUBU*/ Reg17 RUBU_FINE_CNT2;
 
   /*p24.PAHO*/ Reg PAHO_X_8_SYNC;
   /*p24.RUJU*/ NorLatch POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
@@ -71,8 +67,8 @@ private:
   /*p21.WUSA*/ NorLatch WUSA_CPEN_LATCH;
 
   /*p??.ROXY*/ NorLatch ROXY_FINE_MATCH_LATCHn;
-  /*p??.PUXA*/ Reg PUXA_FINE_MATCH_SYNC1;
-  /*p27.NYZE*/ Reg NYZE_FINE_MATCH_SYNC2;
+  /*p??.PUXA*/ Reg PUXA_FINE_MATCH_Ap;
+  /*p27.NYZE*/ Reg NYZE_FINE_MATCH_Bp;
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
 

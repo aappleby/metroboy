@@ -8,26 +8,25 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct SpriteScannerSignals {
-  /*p28.BESU*/ Signal BESU_SCANNINGp; 
-  /*p29.AVAP*/ Signal AVAP_SCAN_DONE_TRIGp;
+  /*p28.BESU*/ Signal BESU_SCANNINGp;          // main "oam scanning" signal
+  /*p29.AVAP*/ Signal AVAP_SCAN_DONE_TRIGp;    // to ppu, resets tile fetcher, sets XYMU_RENDERING, sets lcd hsync
+                                               
+  /*p29.CENO*/ Signal CENO_SCANNINGp;          // to sprite store, controls driving sprite index onto sprite store ts bus
+  /*p29.BYJO*/ Signal BYJO_SCANNINGn;          // to sprite store, controls AROR_MATCH_ENp
+                                               
+  /*p29.DEGE*/ Signal DEGE_SPRITE_DELTA0;           // to sprite store
+  /*p29.DABY*/ Signal DABY_SPRITE_DELTA1;           // to sprite store
+  /*p29.DABU*/ Signal DABU_SPRITE_DELTA2;           // to sprite store
+  /*p29.GYSA*/ Signal GYSA_SPRITE_DELTA3;           // to sprite store
 
-  /*p29.CENO*/ Signal CENO_SCANNINGp;
-  /*p29.CEHA*/ Signal CEHA_SCANNINGp; 
-  /*p29.BYJO*/ Signal BYJO_SCANNINGn;
+  /*p29.DYTY*/ Signal DYTY_STORE_ENn_xxCDxxGH; // to sprite store
 
-  /*p29.DEGE*/ Signal SPRITE_DELTA0;
-  /*p29.DABY*/ Signal SPRITE_DELTA1;
-  /*p29.DABU*/ Signal SPRITE_DELTA2;
-  /*p29.GYSA*/ Signal SPRITE_DELTA3;
-
-  /*p29.DYTY*/ Signal DYTY_STORE_ENn_xxCDxxGH;
-
-  /*p28.GUSE*/ Signal GUSE_SCAN0n;
-  /*p28.GEMA*/ Signal GEMA_SCAN1n;
-  /*p28.FUTO*/ Signal FUTO_SCAN2n;
-  /*p28.FAKU*/ Signal FAKU_SCAN3n;
-  /*p28.GAMA*/ Signal GAMA_SCAN4n;
-  /*p28.GOBY*/ Signal GOBY_SCAN5n;
+  /*p28.GUSE*/ Signal GUSE_SCAN0n;             // to bus mux
+  /*p28.GEMA*/ Signal GEMA_SCAN1n;             // to bus mux
+  /*p28.FUTO*/ Signal FUTO_SCAN2n;             // to bus mux
+  /*p28.FAKU*/ Signal FAKU_SCAN3n;             // to bus mux
+  /*p28.GAMA*/ Signal GAMA_SCAN4n;             // to bus mux
+  /*p28.GOBY*/ Signal GOBY_SCAN5n;             // to bus mux
 
 };
 
@@ -37,6 +36,8 @@ struct SpriteScanner {
   SpriteScannerSignals sig(const TestGB& gb) const;
   void tick(TestGB& gb);
   bool commit();
+
+private:
 
   /*p28.BESU*/ NorLatch BESU_SCANNINGp;
   /*p29.CENO*/ Reg      CENO_SCANNINGp;

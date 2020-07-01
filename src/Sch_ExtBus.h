@@ -60,14 +60,14 @@ private:
   //----------
   // Ext-to-cpu "latch" - looks more like a pass gate really
 
-  /*p08.SOMA*/ TpLatch CPU_DATA_LATCH_00;
-  /*p08.RONY*/ TpLatch CPU_DATA_LATCH_01;
-  /*p08.RAXY*/ TpLatch CPU_DATA_LATCH_02;
-  /*p08.SELO*/ TpLatch CPU_DATA_LATCH_03;
-  /*p08.SODY*/ TpLatch CPU_DATA_LATCH_04;
-  /*p08.SAGO*/ TpLatch CPU_DATA_LATCH_05;
-  /*p08.RUPA*/ TpLatch CPU_DATA_LATCH_06;
-  /*p08.SAZY*/ TpLatch CPU_DATA_LATCH_07;
+  /*p08.SOMA*/ TpLatch SOMA_CPU_DATA_LATCH_00;
+  /*p08.RONY*/ TpLatch RONY_CPU_DATA_LATCH_01;
+  /*p08.RAXY*/ TpLatch RAXY_CPU_DATA_LATCH_02;
+  /*p08.SELO*/ TpLatch SELO_CPU_DATA_LATCH_03;
+  /*p08.SODY*/ TpLatch SODY_CPU_DATA_LATCH_04;
+  /*p08.SAGO*/ TpLatch SAGO_CPU_DATA_LATCH_05;
+  /*p08.RUPA*/ TpLatch RUPA_CPU_DATA_LATCH_06;
+  /*p08.SAZY*/ TpLatch SAZY_CPU_DATA_LATCH_07;
 
   //----------
   // Cart pins

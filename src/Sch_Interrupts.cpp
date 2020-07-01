@@ -30,11 +30,11 @@ void InterruptRegisters::tick(TestGB& gb) {
   {
     // pass gates? does look like a transparent latch here...
     // order wrong?
-    /*p02.MATY*/ FF0F_L0.tp_latch(ROLO_FF0F_RDn, LOPE_FF0F_0);
-    /*p02.NEJY*/ FF0F_L1.tp_latch(ROLO_FF0F_RDn, UBUL_FF0F_3);
-    /*p02.NUTY*/ FF0F_L2.tp_latch(ROLO_FF0F_RDn, ULAK_FF0F_4);
-    /*p02.MOPO*/ FF0F_L3.tp_latch(ROLO_FF0F_RDn, LALU_FF0F_1);
-    /*p02.PAVY*/ FF0F_L4.tp_latch(ROLO_FF0F_RDn, NYBO_FF0F_2);
+    /*p02.MATY*/ FF0F_L0.tp_latch(ROLO_FF0F_RDn, LOPE_FF0F_0); // OUTPUT ON RUNG 10
+    /*p02.NEJY*/ FF0F_L1.tp_latch(ROLO_FF0F_RDn, UBUL_FF0F_3); // OUTPUT ON RUNG 10
+    /*p02.NUTY*/ FF0F_L2.tp_latch(ROLO_FF0F_RDn, ULAK_FF0F_4); // OUTPUT ON RUNG 10
+    /*p02.MOPO*/ FF0F_L3.tp_latch(ROLO_FF0F_RDn, LALU_FF0F_1); // OUTPUT ON RUNG 10
+    /*p02.PAVY*/ FF0F_L4.tp_latch(ROLO_FF0F_RDn, NYBO_FF0F_2); // OUTPUT ON RUNG 10
 
     /*p02.NELA*/ cpu_bus.TRI_D0.set_tribuf(POLA_FF0F_RDa, FF0F_L0); // small tri
     /*p02.NABO*/ cpu_bus.TRI_D1.set_tribuf(POLA_FF0F_RDa, FF0F_L1); // small tri

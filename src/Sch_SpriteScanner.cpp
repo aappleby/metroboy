@@ -26,11 +26,12 @@ SpriteScannerSignals SpriteScanner::sig(const TestGB& gb) const {
     /*p29.AVAP*/ sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp = not(BEBU_SCAN_DONE_TRIGn);
   }
 
+  /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
+
   {
     /*p28.BESU*/ sprite_scanner_sig.BESU_SCANNINGp = BESU_SCANNINGp;
     /*p29.CENO*/ sprite_scanner_sig.CENO_SCANNINGp = CENO_SCANNINGp;
-    /*p29.CEHA*/ sprite_scanner_sig.CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
-    /*p29.BYJO*/ sprite_scanner_sig.BYJO_SCANNINGn = not(sprite_scanner_sig.CEHA_SCANNINGp);
+    /*p29.BYJO*/ sprite_scanner_sig.BYJO_SCANNINGn = not(CEHA_SCANNINGp);
   }
 
   {
@@ -60,19 +61,19 @@ SpriteScannerSignals SpriteScanner::sig(const TestGB& gb) const {
     /*p29.WUHU*/ wire YDIFF_S7 = add_s(Y7n, oam_sig.YZAB_SPRITE_Y7, YDIFF_C6);
     /*p29.WUHU*/ wire YDIFF_C7 = add_c(Y7n, oam_sig.YZAB_SPRITE_Y7, YDIFF_C6);
 
-    /*p29.DEGE*/ sprite_scanner_sig.SPRITE_DELTA0 = not(YDIFF_S0);
-    /*p29.DABY*/ sprite_scanner_sig.SPRITE_DELTA1 = not(YDIFF_S1);
-    /*p29.DABU*/ sprite_scanner_sig.SPRITE_DELTA2 = not(YDIFF_S2);
-    /*p29.GYSA*/ sprite_scanner_sig.SPRITE_DELTA3 = not(YDIFF_S3);
-    /*p29.GACE*/ wire SPRITE_DELTA4 = not(YDIFF_S4);
-    /*p29.GUVU*/ wire SPRITE_DELTA5 = not(YDIFF_S5);
-    /*p29.GYDA*/ wire SPRITE_DELTA6 = not(YDIFF_S6);
-    /*p29.GEWY*/ wire SPRITE_DELTA7 = not(YDIFF_S7);
+    /*p29.DEGE*/ sprite_scanner_sig.DEGE_SPRITE_DELTA0 = not(YDIFF_S0);
+    /*p29.DABY*/ sprite_scanner_sig.DABY_SPRITE_DELTA1 = not(YDIFF_S1);
+    /*p29.DABU*/ sprite_scanner_sig.DABU_SPRITE_DELTA2 = not(YDIFF_S2);
+    /*p29.GYSA*/ sprite_scanner_sig.GYSA_SPRITE_DELTA3 = not(YDIFF_S3);
+    /*p29.GACE*/ wire GACE_SPRITE_DELTA4 = not(YDIFF_S4);
+    /*p29.GUVU*/ wire GUVU_SPRITE_DELTA5 = not(YDIFF_S5);
+    /*p29.GYDA*/ wire GYDA_SPRITE_DELTA6 = not(YDIFF_S6);
+    /*p29.GEWY*/ wire GEWY_SPRITE_DELTA7 = not(YDIFF_S7);
 
     /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, ppu_config.XYMO_LCDC_SPSIZE);
-    /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(SPRITE_DELTA4, SPRITE_DELTA5, SPRITE_DELTA6, SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
+    /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
-    /*p29.CARE*/ wire CARE_STORE_ENp_ABxxEFxx = and (clk_sig.XOCE_ABxxEFxx, sprite_scanner_sig.CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
+    /*p29.CARE*/ wire CARE_STORE_ENp_ABxxEFxx = and (clk_sig.XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /*p29.DYTY*/ sprite_scanner_sig.DYTY_STORE_ENn_xxCDxxGH = not(CARE_STORE_ENp_ABxxEFxx);
   }
 

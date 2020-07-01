@@ -169,6 +169,15 @@ struct PinOut : public RegisterBase {
 
 //-----------------------------------------------------------------------------
 
+// RYMA 6-rung green tribuf
+
+// TRIBUF_01
+// TRIBUF_02 NC
+// TRIBUF_03 NC
+// TRIBUF_04
+// TRIBUF_05 NC
+// TRIBUF_06
+
 struct Tribuf : public RegisterBase {
 
   Tribuf() {
@@ -235,34 +244,25 @@ struct Gate : public RegisterBase {
 
 struct Reg : public RegisterBase {
 
-  void set(bool clk, bool val) {
-    set(clk, 1, 1, val);
-  }
-
-  void set(bool clk, bool rstN, bool val) {
-    set(clk, 1, rstN, val);
-  }
-
-  void set(bool clk, bool setN, bool rstN, bool val) {
+  void setx(bool clk, bool val) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
     b.val = val;
     b.hiz = 0;
     b.clk = clk;
-    b.set = !setN;
-    b.rst = !rstN;
-    //b.changed = 0;
+    b.set = 0;
+    b.rst = 0;
     b.error = 0;
   }
 
-
-  void rst_sync(bool clk) {
-    if (a.error)  __debugbreak();
+  void set(bool clk, bool rstN, bool val) {
+    if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-
+    b.val = val;
+    b.hiz = 0;
     b.clk = clk;
     b.set = 0;
-    b.rst = 1;
+    b.rst = !rstN;
     b.error = 0;
   }
 
@@ -297,7 +297,375 @@ private:
 
 //-----------------------------------------------------------------------------
 
-struct RegDuo : public RegisterBase {
+///*p32.NEFO*/ BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D7);
+
+// NEFO_01 << LOMA_02    (clk)
+// NEFO_02 << TRI_D7     (d)
+// NEFO_03 nc
+// NEFO_04 << COMP_CLOCK (clkn)
+// NEFO_05 nc
+// NEFO_06 nc
+// NEFO_07 >> NAJA_02    (Q)
+// NEFO_08 nc
+
+// Three vias in center column
+
+// |o------O | CLK
+///|====O====| D
+// |  -----  |
+// |O-------o| CLKN
+// |  -----  |
+// |==     ==|
+// |xxx-O-xxx| Q
+// |xxx-O-xxx| Qn or this rung can be empty
+
+struct Reg8 : public RegisterBase {
+
+  void set(bool clk, bool val) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = clk;
+    b.set = 0;
+    b.rst = 0;
+    b.error = 0;
+  }
+
+  bool commit_reg() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
+
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    //a.changed = 0;
+    a.error = 0;
+
+    b = ERROR;
+
+    return old_a != new_a;
+  }
+
+  /*
+  private:
+  operator const bool() const;
+  */
+};
+
+//-----------------------------------------------------------------------------
+// set and reset must be async (see interrupts)
+// reset must take priority over set (see interrupts ALUR_RSTn)
+
+// Four vias in center column
+
+// | O===--o | 
+// |==--O====| CLK
+// | ------- | D
+// |o-------O| CLKn
+// |  -----  | 
+// |--xxOxx--| RSTn
+// |o-------o| 
+// |xxx-O-xxx| Q
+// |xxx-O-xxx| Qn?
+
+///*p31.XEPE*/ STORE0_X0   .set(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_SPRITE_X0);
+
+// XEPE_01 nc
+// XEPE_02 << FUXU_02  (clk)
+// XEPE_03 << ZAGO_02  (d)
+// XEPE_04 << COMP_CLK (clkn)
+// XEPE_05 nc
+// XEPE_06 << DYNA02   (rst)
+// XEPE_07 nc
+// XEPE_08 >> ZOGY_02  (q)
+// XEPE_09 >> nc
+
+struct Reg9 : public RegisterBase {
+
+  void set(bool clk, bool rstN, bool val) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = clk;
+    b.set = 0;
+    b.rst = !rstN;
+    b.error = 0;
+  }
+
+  bool commit_reg() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
+
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    //a.changed = 0;
+    a.error = 0;
+
+    b = ERROR;
+
+    return old_a != new_a;
+  }
+
+  /*
+  private:
+  operator const bool() const;
+  */
+};
+
+//-----------------------------------------------------------------------------
+// set and reset must be async (see interrupts)
+// reset must take priority over set (see interrupts ALUR_RSTn)
+
+///*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YFOT_OAM_A2p);
+
+// XADU_01 nc
+// XADU_02 << WEFE_02 (rstn)
+// XADU_03 << YFOT_02 (d)
+// XADU_04 nc
+// XADU_05 << WUDA_03 (clk)
+// XADU_06 nc
+// XADU_07 nc
+// XADU_08 << CYKE_02 (clkn?)
+// XADU_09 << WEFE_02 (rstn)
+// XADU_10 nc
+// XADU_11 nc
+// XADU_12 >> WUZY_04 (Q)    // might have these switched, but there's not many of these regs
+// XADU_13 >> nc      (QN)
+
+struct Reg13 : public RegisterBase {
+
+  void set(bool clk, bool rstN, bool val) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = clk;
+    b.set = 0;
+    b.rst = !rstN;
+    b.error = 0;
+  }
+
+  bool commit_reg() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
+
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    //a.changed = 0;
+    a.error = 0;
+
+    b = ERROR;
+
+    return old_a != new_a;
+  }
+
+  /*
+  private:
+  operator const bool() const;
+  */
+};
+
+
+//-----------------------------------------------------------------------------
+// set and reset must be async (see interrupts)
+// reset must take priority over set (see interrupts ALUR_RSTn)
+
+// This reg is really 3 pieces - clock edge detector, latch, and output buffer.
+
+// REG17_01 == REG17_12
+// REG17_02 << CLKp
+// REG17_03 == REG17_09
+// REG17_04 NC
+// REG17_05 NC
+// REG17_06 << RSTn
+// REG17_07 << D
+// REG17_08 NC
+// REG17_09 == REG17_03
+// REG17_10 NC
+// REG17_11 NC
+// REG17_12 == REG17_01
+// REG17_13 << RSTn
+// REG17_14 NC
+// REG17_15 NC
+// REG17_16 >> QN
+// REG17_17 >> Q
+
+struct Reg17 : public RegisterBase {
+
+  void set(bool clk, bool rstN, bool val) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = clk;
+    b.set = 0;
+    b.rst = !rstN;
+    //b.changed = 0;
+    b.error = 0;
+  }
+
+  bool commit_reg() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
+
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    //a.changed = 0;
+    a.error = 0;
+
+    b = ERROR;
+
+    return old_a != new_a;
+  }
+};
+
+//-----------------------------------------------------------------------------
+
+// REG22_01
+// REG22_02 NC
+// REG22_03 NC
+// REG22_04 NC
+// REG22_05
+// REG22_06
+// REG22_07
+// REG22_08 NC
+// REG22_09
+// REG22_10 NC
+// REG22_11
+// REG22_12 NC
+// REG22_13 NC
+// REG22_14
+// REG22_15
+// REG22_16
+// REG22_17
+// REG22_18 NC
+// REG22_19
+// REG22_20
+// REG22_21
+// REG22_22
+
+// /*p02.UBUL*/ UBUL_FF0F_3.set(CALY_INT_SERIALp, TOME_FF0F_SET3n, TUNY_FF0F_RST3n, PESU_FF0F_INp);
+
+// UBUL_01 == UBUL_14
+// UBUL_02 NC
+// UBUL_03 NC
+// UBUL_04 NC
+// UBUL_05 == UBUL_11 == UBUL_19
+// UBUL_06 == UBUL_21
+// UBUL_07 << PESU_FF0F_INp
+// UBUL_08 NC
+// UBUL_09 == UBUL_20
+// UBUL_10 NC
+// UBUL_11 == UBUL_05 == UBUL_19
+// UBUL_12 NC
+// UBUL_13 NC
+// UBUL_14 << TOME_FF0F_SET3n, >> UBUL_01
+// UBUL_15 >> NC
+// UBUL_16 >> PIN_INT_SERIAL
+// UBUL_17 << TUNY_FF0F_RST3n
+// UBUL_18 NC
+// UBUL_19 == UBUL_05 == UBUL_11
+// UBUL_20 == UBUL_09
+// UBUL_21 == UBUL_06
+// UBUL_22 << CALY_INT_SERIALp
+
+struct Reg22 : public RegisterBase {
+
+  void set(bool clk, bool setN, bool rstN, bool val) {
+    if ( a.error)  __debugbreak();
+    if (!b.error) __debugbreak();
+    b.val = val;
+    b.hiz = 0;
+    b.clk = clk;
+    b.set = !setN;
+    b.rst = !rstN;
+    //b.changed = 0;
+    b.error = 0;
+  }
+
+  bool commit_reg() {
+    if (a.error) __debugbreak();
+    if (b.error) __debugbreak();
+
+    bool old_a = a.val;
+    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
+
+    if (b.set) new_a = 1;
+    if (b.rst) new_a = 0;
+
+    a.val = new_a;
+    a.hiz = 0;
+    a.clk = b.clk;
+    a.set = b.set;
+    a.rst = b.rst;
+    //a.changed = 0;
+    a.error = 0;
+
+    b = ERROR;
+
+    return old_a != new_a;
+  }
+};
+
+//-----------------------------------------------------------------------------
+
+// REG9_01 NC
+// REG9_02 << CLK1
+// REG9_03 << D
+// REG9_04 << CLK2
+// REG9_05 NC
+// REG9_06 << RSTn
+// REG9_07 NC
+// REG9_08 >> Q
+// REG9_09 >> QN
+
+// PYNE_01
+// PYNE_02
+// PYNE_03 nc
+// PYNE_04
+// PYNE_05
+// PYNE_06 nc
+// PYNE_07
+// PYNE_08
+
+struct Reg9_Duo : public RegisterBase {
 
   void set_duo(bool clk, bool rstN, SignalState c) {
     if ( a.error)  __debugbreak();
@@ -343,6 +711,13 @@ private:
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
 
+// NORLATCH_01 << SET
+// NORLATCH_01 NC
+// NORLATCH_01 >> QN
+// NORLATCH_01 >> Q
+// NORLATCH_01 NC
+// NORLATCH_01 << RST
+
 struct NorLatch : public RegisterBase {
 
   void nor_latch(bool set, bool rst) {
@@ -384,6 +759,13 @@ struct NorLatch : public RegisterBase {
 //-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on VCC side
 
+// NANDLATCH_01 << SETn
+// NANDLATCH_01 NC
+// NANDLATCH_01 >> Q
+// NANDLATCH_01 >> QN
+// NANDLATCH_01 NC
+// NANDLATCH_01 << RSTn
+
 struct NandLatch : public RegisterBase {
 
   void nand_latch(bool setN, bool rstN) {
@@ -424,6 +806,29 @@ struct NandLatch : public RegisterBase {
 
 //-----------------------------------------------------------------------------
 // Yellow 10-rung cells on die
+
+// TPLATCH_01
+// TPLATCH_02 NC
+// TPLATCH_03
+// TPLATCH_04 NC
+// TPLATCH_05 NC
+// TPLATCH_06 NC
+// TPLATCH_07 NC
+// TPLATCH_08
+// TPLATCH_09 NC
+// TPLATCH_10
+
+
+// RUPA_01 << LAVO
+// RUPA_02 NC
+// RUPA_03 << D6_C
+// RUPA_04 NC
+// RUPA_05 NC
+// RUPA_06 NC
+// RUPA_07 NC
+// RUPA_08 >> SEVU
+// RUPA_09 NC
+// RUPA_10
 
 struct TpLatch : public RegisterBase {
 

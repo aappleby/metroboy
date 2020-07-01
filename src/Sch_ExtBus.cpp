@@ -75,25 +75,25 @@ void ExtPinsOut::tick(TestGB& gb) {
 
     // Is this actually like a pass gate? We already know the latch cells, and this is bigger than those.
 
-    /*p08.SOMA*/ CPU_DATA_LATCH_00.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D0_C);
-    /*p08.RONY*/ CPU_DATA_LATCH_01.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D1_C);
-    /*p08.RAXY*/ CPU_DATA_LATCH_02.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D2_C);
-    /*p08.SELO*/ CPU_DATA_LATCH_03.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D3_C);
-    /*p08.SODY*/ CPU_DATA_LATCH_04.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D4_C);
-    /*p08.SAGO*/ CPU_DATA_LATCH_05.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D5_C);
-    /*p08.RUPA*/ CPU_DATA_LATCH_06.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D6_C);
-    /*p08.SAZY*/ CPU_DATA_LATCH_07.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D7_C);
+    /*p08.SOMA*/ SOMA_CPU_DATA_LATCH_00.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D0_C);
+    /*p08.RONY*/ RONY_CPU_DATA_LATCH_01.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D1_C);
+    /*p08.RAXY*/ RAXY_CPU_DATA_LATCH_02.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D2_C);
+    /*p08.SELO*/ SELO_CPU_DATA_LATCH_03.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D3_C);
+    /*p08.SODY*/ SODY_CPU_DATA_LATCH_04.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D4_C);
+    /*p08.SAGO*/ SAGO_CPU_DATA_LATCH_05.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D5_C);
+    /*p08.RUPA*/ RUPA_CPU_DATA_LATCH_06.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D6_C);
+    /*p08.SAZY*/ SAZY_CPU_DATA_LATCH_07.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, ext_pins_in.PIN_D7_C);
 
     // RYMA 6-rung green tribuf
 
-    /*p08.RYMA*/ cpu_bus.TRI_D0.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, CPU_DATA_LATCH_00);
-    /*p08.RUVO*/ cpu_bus.TRI_D1.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, CPU_DATA_LATCH_01);
-    /*p08.RYKO*/ cpu_bus.TRI_D2.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, CPU_DATA_LATCH_02);
-    /*p08.TAVO*/ cpu_bus.TRI_D3.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, CPU_DATA_LATCH_03);
-    /*p08.TEPE*/ cpu_bus.TRI_D4.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, CPU_DATA_LATCH_04);
-    /*p08.SAFO*/ cpu_bus.TRI_D5.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, CPU_DATA_LATCH_05);
-    /*p08.SEVU*/ cpu_bus.TRI_D6.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, CPU_DATA_LATCH_06);
-    /*p08.TAJU*/ cpu_bus.TRI_D7.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, CPU_DATA_LATCH_07);
+    /*p08.RYMA*/ cpu_bus.TRI_D0.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SOMA_CPU_DATA_LATCH_00);
+    /*p08.RUVO*/ cpu_bus.TRI_D1.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RONY_CPU_DATA_LATCH_01);
+    /*p08.RYKO*/ cpu_bus.TRI_D2.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RAXY_CPU_DATA_LATCH_02);
+    /*p08.TAVO*/ cpu_bus.TRI_D3.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SELO_CPU_DATA_LATCH_03);
+    /*p08.TEPE*/ cpu_bus.TRI_D4.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SODY_CPU_DATA_LATCH_04);
+    /*p08.SAFO*/ cpu_bus.TRI_D5.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAGO_CPU_DATA_LATCH_05);
+    /*p08.SEVU*/ cpu_bus.TRI_D6.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RUPA_CPU_DATA_LATCH_06);
+    /*p08.TAJU*/ cpu_bus.TRI_D7.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAZY_CPU_DATA_LATCH_07);
   }
 
   {
@@ -201,14 +201,14 @@ bool ExtPinsOut::commit() {
   /* PIN_79 */ changed |= PIN_RD_D.commit_pinout();    // <- URUN
   /* PIN_80 */ changed |= PIN_CS_A.commit_pinout();    // <- TYHO
 
-  /*p08.SOMA*/ changed |= CPU_DATA_LATCH_00.commit_latch();
-  /*p08.RONY*/ changed |= CPU_DATA_LATCH_01.commit_latch();
-  /*p08.RAXY*/ changed |= CPU_DATA_LATCH_02.commit_latch();
-  /*p08.SELO*/ changed |= CPU_DATA_LATCH_03.commit_latch();
-  /*p08.SODY*/ changed |= CPU_DATA_LATCH_04.commit_latch();
-  /*p08.SAGO*/ changed |= CPU_DATA_LATCH_05.commit_latch();
-  /*p08.RUPA*/ changed |= CPU_DATA_LATCH_06.commit_latch();
-  /*p08.SAZY*/ changed |= CPU_DATA_LATCH_07.commit_latch();
+  /*p08.SOMA*/ changed |= SOMA_CPU_DATA_LATCH_00.commit_latch();
+  /*p08.RONY*/ changed |= RONY_CPU_DATA_LATCH_01.commit_latch();
+  /*p08.RAXY*/ changed |= RAXY_CPU_DATA_LATCH_02.commit_latch();
+  /*p08.SELO*/ changed |= SELO_CPU_DATA_LATCH_03.commit_latch();
+  /*p08.SODY*/ changed |= SODY_CPU_DATA_LATCH_04.commit_latch();
+  /*p08.SAGO*/ changed |= SAGO_CPU_DATA_LATCH_05.commit_latch();
+  /*p08.RUPA*/ changed |= RUPA_CPU_DATA_LATCH_06.commit_latch();
+  /*p08.SAZY*/ changed |= SAZY_CPU_DATA_LATCH_07.commit_latch();
 
   /* PIN_01 */ changed |= PIN_A00_A.commit_pinout();     // <- KUPO
   /* PIN_01 */ changed |= PIN_A00_D.commit_pinout();     // <- KOTY

@@ -91,10 +91,10 @@ struct ClockRegisters {
 private:
 
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
-  /*p01.AFUR*/ RegDuo AFUR_PHAZ_xBCDExxx;
-  /*p01.ALEF*/ RegDuo ALEF_PHAZ_xxCDEFxx;
-  /*p01.APUK*/ RegDuo APUK_PHAZ_xxxDEFGx;
-  /*p01.ADYK*/ RegDuo ADYK_PHAZ_xxxxEFGH;
+  /*p01.AFUR*/ Reg9_Duo AFUR_PHAZ_xBCDExxx;
+  /*p01.ALEF*/ Reg9_Duo ALEF_PHAZ_xxCDEFxx;
+  /*p01.APUK*/ Reg9_Duo APUK_PHAZ_xxxDEFGx;
+  /*p01.ADYK*/ Reg9_Duo ADYK_PHAZ_xxxxEFGH;
 
   /*p29.WUVU*/ Reg WUVU_AxxDExxH;
   /*p21.VENA*/ Reg VENA_xBCDExxx;

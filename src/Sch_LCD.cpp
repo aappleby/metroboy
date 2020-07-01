@@ -1,8 +1,5 @@
-#include "Sch_Common.h"
-#include "Sch_Pins.h"
+#include "Sch_LCD.h"
 #include "TestGB.h"
-#include "Constants.h"
-#include "Sch_Timer.h"
 
 using namespace Schematics;
 

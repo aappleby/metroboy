@@ -1,7 +1,6 @@
 #include "Sch_Serial.h"
 
 #include "TestGB.h"
-#include "Sch_Timer.h"
 
 using namespace Schematics;
 

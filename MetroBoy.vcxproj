@@ -137,9 +137,7 @@
     <ClInclude Include="src\Sch_Interrupts.h" />
     <ClInclude Include="src\Sch_Joypad.h" />
     <ClInclude Include="src\Sch_LCD.h" />
-    <ClInclude Include="src\Sch_OAM.h" />
     <ClInclude Include="src\Sch_OamBus.h" />
-    <ClInclude Include="src\Sch_Pins.h" />
     <ClInclude Include="src\Sch_PixPipe.h" />
     <ClInclude Include="src\Sch_PPU.h" />
     <ClInclude Include="src\Sch_Resets.h" />
@@ -213,7 +211,6 @@
     <ClCompile Include="src\Sch_Interrupts.cpp" />
     <ClCompile Include="src\Sch_Joypad.cpp" />
     <ClCompile Include="src\Sch_LCD.cpp" />
-    <ClCompile Include="src\Sch_OAM.cpp" />
     <ClCompile Include="src\Sch_OamBus.cpp" />
     <ClCompile Include="src\Sch_PixPipe.cpp" />
     <ClCompile Include="src\Sch_PPU.cpp" />

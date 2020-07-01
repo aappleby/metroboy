@@ -1,9 +1,9 @@
-#include "Sch_Pins.h"
+#pragma once
+
 #include "Sch_Timer.h"
 #include "Sch_LCD.h"
 #include "Sch_DMA.h"
 #include "Sch_SpriteStore.h"
-#include "Sch_OAM.h"
 #include "Sch_PPU.h"
 #include "Sch_Window.h"
 #include "Sch_Clocks.h"

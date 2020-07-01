@@ -1,11 +1,5 @@
 #include "GateBoy.h"
 
-#ifdef _MSC_VER
-#include <include/SDL.h>
-#else
-#include <SDL2/SDL.h>
-#endif
-
 //-----------------------------------------------------------------------------
 
 uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
@@ -22,7 +16,7 @@ uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
       //gb->cpu_pins.preset_addr_valid(1);
       //gb->cpu_bus.preset_addr(true, addr);
 
-      gb->joy_reg.clear_dir();
+      //gb->joy_reg.clear_dir();
 
       gb->tick_everything();
       bool changed = gb->commit_everything();
@@ -34,6 +28,8 @@ uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
 
   return (uint8_t)gb->cpu_bus.get_data();
 }
+
+//-----------------------------------------------------------------------------
 
 void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
   Schematics::TestGB* gb = state_manager.state();
@@ -50,7 +46,7 @@ void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
       //gb->cpu_bus.preset_addr(true, addr);
       //gb->cpu_bus.set_data(true, data);
 
-      gb->joy_reg.clear_dir();
+      //gb->joy_reg.clear_dir();
 
       gb->tick_everything();
       bool changed = gb->commit_everything();
@@ -60,6 +56,8 @@ void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
     }
   }
 }
+
+//-----------------------------------------------------------------------------
 
 void GateBoy::pass_cycle() {
   Schematics::TestGB* gb = state_manager.state();
@@ -75,7 +73,7 @@ void GateBoy::pass_cycle() {
       gb->cpu_bus.PIN_ADDR_VALID.preset(true, 0);
       gb->cpu_bus.preset_addr(true, 0x0000);
 
-      gb->joy_reg.clear_dir();
+      //gb->joy_reg.clear_dir();
 
       gb->tick_everything();
       bool changed = gb->commit_everything();
@@ -151,7 +149,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
       }
       */
 
-      gb->joy_reg.clear_dir();
+      //gb->joy_reg.clear_dir();
 
       gb->tick_everything();
       bool changed = gb->commit_everything();

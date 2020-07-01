@@ -7,11 +7,11 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 JoypadSignals JoypadRegisters::sig() const {
-  /*p02.ASOK*/ wire ASOK_INT_JPp = and (JP_GLITCH3, JP_GLITCH0);
+  JoypadSignals sig;
 
-  return {
-    .ASOK_INT_JPp = ASOK_INT_JPp,
-  };
+  /*p02.ASOK*/ sig.ASOK_INT_JPp = and (JP_GLITCH3, JP_GLITCH0);
+
+  return sig;
 }
 
 //------------------------------------------------------------------------------
@@ -130,3 +130,43 @@ bool JoypadRegisters::commit() {
 }
 
 //------------------------------------------------------------------------------
+
+#if 0
+void dump_regs(TextPainter& text_painter) {
+  text_painter.dprintf(" ----- JOY REG -----\n");
+  JP_GLITCH0.dump(text_painter, "JP_GLITCH0  ");
+  JP_GLITCH1.dump(text_painter, "JP_GLITCH1  ");
+  JP_GLITCH2.dump(text_painter, "JP_GLITCH2  ");
+  JP_GLITCH3.dump(text_painter, "JP_GLITCH3  ");
+  JOYP_RA.dump(text_painter, "JOYP_RA     ");
+  JOYP_LB.dump(text_painter, "JOYP_LB     ");
+  JOYP_UC.dump(text_painter, "JOYP_UC     ");
+  JOYP_DS.dump(text_painter, "JOYP_DS     ");
+  JOYP_UDLR.dump(text_painter, "JOYP_UDLR   ");
+  JOYP_ABCS.dump(text_painter, "JOYP_ABCS   ");
+  DBG_FF00_D6.dump(text_painter, "DBG_FF00_D6 ");
+  DBG_FF00_D7.dump(text_painter, "DBG_FF00_D7 ");
+  JOYP_L0.dump(text_painter, "JOYP_L0     ");
+  JOYP_L1.dump(text_painter, "JOYP_L1     ");
+  JOYP_L2.dump(text_painter, "JOYP_L2     ");
+  JOYP_L3.dump(text_painter, "JOYP_L3     ");
+  AWOB_WAKE_CPU.dump(text_painter, "AWOB_WAKE_CPU    ");
+  text_painter.newline();
+  text_painter.dprintf("----- JOY_PINS -----\n");
+  text_painter.dprintf("P10 %d:%d:%d:%d\n", P10_A.a.val, P10_B.a.val, P10_C.a.val, P10_D.a.val);
+  text_painter.dprintf("P11 %d:%d:%d:%d\n", P11_A.a.val, P11_B.a.val, P11_C.a.val, P11_D.a.val);
+  text_painter.dprintf("P12 %d:%d:%d:%d\n", P12_A.a.val, P12_B.a.val, P12_C.a.val, P12_D.a.val);
+  text_painter.dprintf("P13 %d:%d:%d:%d\n", P13_A.a.val, P13_B.a.val, P13_C.a.val, P13_D.a.val);
+  text_painter.dprintf("P14 %d:x:x:%d\n", P14_A.a.val, P14_D.a.val);
+  text_painter.dprintf("P15 %d:x:x:%d\n", P15_A.a.val, P15_D.a.val);
+  text_painter.newline();
+}
+
+void clear_dir() {
+  // FIXME still don't know who drives these, so we always set them to 0.
+  P10_B.set(0);
+  P11_B.set(0);
+  P12_B.set(0);
+  P13_B.set(0);
+}
+#endif

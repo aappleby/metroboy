@@ -8,37 +8,37 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct WindowSignals {
-  /*p27.NOCU*/ bool NOCU_WIN_MODEn;
-  /*p27.PORE*/ bool PORE_WIN_MODE;
-  /*p27.NUNY*/ bool NUNY_WIN_MODE_TRIGp;
-  /*p27.NYFO*/ bool NYFO_WIN_MODE_TRIGn;
-  /*p27.MOSU*/ bool MOSU_WIN_MODE_TRIGp;
+  /*p27.NOCU*/ Signal NOCU_WIN_MODEn;
+  /*p27.PORE*/ Signal PORE_WIN_MODE;
+  /*p27.NUNY*/ Signal NUNY_WIN_MODE_TRIGp;
+  /*p27.NYFO*/ Signal NYFO_WIN_MODE_TRIGn;
+  /*p27.MOSU*/ Signal MOSU_WIN_MODE_TRIGp;
 
-  /*p27.SYLO*/ bool SYLO_WIN_HITn;
-  /*p24.TOMU*/ bool TOMU_WIN_HITp;
-  /*p24.SOCY*/ bool SOCY_WIN_HITn;
-  /*p27.TUKU*/ bool TUKU_WIN_HITn;
-  /*p27.XOFO*/ bool XOFO_WIN_RSTp;
+  /*p27.SYLO*/ Signal SYLO_WIN_HITn;
+  /*p24.TOMU*/ Signal TOMU_WIN_HITp;
+  /*p24.SOCY*/ Signal SOCY_WIN_HITn;
+  /*p27.TUKU*/ Signal TUKU_WIN_HITn;
+  /*p27.XOFO*/ Signal XOFO_WIN_RSTp;
 
-  /*p27.SEKO*/ bool SEKO_WIN_TRIGGER;
+  /*p27.SEKO*/ Signal SEKO_WIN_TRIGGER;
 
-  /*p27.TUXY*/ bool TUXY;
-  /*p27.SUZU*/ bool SUZU;
+  /*p27.TUXY*/ Signal TUXY;
+  /*p27.SUZU*/ Signal SUZU;
 
-  /*p27.WYKA*/ bool WIN_X3;
-  /*p27.WODY*/ bool WIN_X4;
-  /*p27.WOBO*/ bool WIN_X5;
-  /*p27.WYKO*/ bool WIN_X6;
-  /*p27.XOLO*/ bool WIN_X7;
+  /*p27.WYKA*/ Signal WIN_X3;
+  /*p27.WODY*/ Signal WIN_X4;
+  /*p27.WOBO*/ Signal WIN_X5;
+  /*p27.WYKO*/ Signal WIN_X6;
+  /*p27.XOLO*/ Signal WIN_X7;
 
-  /*p27.VYNO*/ bool WIN_Y0;
-  /*p27.VUJO*/ bool WIN_Y1;
-  /*p27.VYMU*/ bool WIN_Y2;
-  /*p27.TUFU*/ bool WIN_Y3;
-  /*p27.TAXA*/ bool WIN_Y4;
-  /*p27.TOZO*/ bool WIN_Y5;
-  /*p27.TATE*/ bool WIN_Y6;
-  /*p27.TEKE*/ bool WIN_Y7;
+  /*p27.VYNO*/ Signal WIN_Y0;
+  /*p27.VUJO*/ Signal WIN_Y1;
+  /*p27.VYMU*/ Signal WIN_Y2;
+  /*p27.TUFU*/ Signal WIN_Y3;
+  /*p27.TAXA*/ Signal WIN_Y4;
+  /*p27.TOZO*/ Signal WIN_Y5;
+  /*p27.TATE*/ Signal WIN_Y6;
+  /*p27.TEKE*/ Signal WIN_Y7;
 };
 
 //-----------------------------------------------------------------------------

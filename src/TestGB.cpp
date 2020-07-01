@@ -40,7 +40,7 @@ bool TestGB::commit_everything() {
   changed |= ppu_reg.commit();
   changed |= win_reg.commit();
   changed |= ext_pins_out.commit();
-  changed |= lcd_reg.commit_pins();
+  changed |= lcd_reg.commit();
   changed |= ser_reg.commit();
 
   return changed;

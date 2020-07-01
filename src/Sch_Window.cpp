@@ -23,7 +23,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 WindowSignals WindowRegisters::sig(const TestGB& gb) const {
-  WindowSignals sig = {0};
+  WindowSignals sig;
 
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
@@ -74,51 +74,52 @@ void WindowRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb, ppu_sig.XYMO_LCDC_SPSIZE);
   auto win_sig = sig(gb);
 
   /*p27.REPU*/ wire REPU_IN_FRAME_Y = nor(lcd_sig.PARU_VBLANKp, rst_sig.PYRY_VID_RSTp);   // schematic wrong, this is NOR
 
   //----------------------------------------
 
-  /*p27.NAZE*/ wire _WY_MATCH0 = xnor(gb.lcd_reg.MUWY_Y0, WY0);
-  /*p27.PEBO*/ wire _WY_MATCH1 = xnor(gb.lcd_reg.MYRO_Y1, WY1);
-  /*p27.POMO*/ wire _WY_MATCH2 = xnor(gb.lcd_reg.LEXA_Y2, WY2);
-  /*p27.NEVU*/ wire _WY_MATCH3 = xnor(gb.lcd_reg.LYDO_Y3, WY3);
-  /*p27.NOJO*/ wire _WY_MATCH4 = xnor(gb.lcd_reg.LOVU_Y4, WY4);
-  /*p27.PAGA*/ wire _WY_MATCH5 = xnor(gb.lcd_reg.LEMA_Y5, WY5);
-  /*p27.PEZO*/ wire _WY_MATCH6 = xnor(gb.lcd_reg.MATO_Y6, WY6);
-  /*p27.NUPA*/ wire _WY_MATCH7 = xnor(gb.lcd_reg.LAFO_Y7, WY7);
+  {
+    /*p27.NAZE*/ wire _WY_MATCH0 = xnor(lcd_sig.MUWY_Y0, WY0);
+    /*p27.PEBO*/ wire _WY_MATCH1 = xnor(lcd_sig.MYRO_Y1, WY1);
+    /*p27.POMO*/ wire _WY_MATCH2 = xnor(lcd_sig.LEXA_Y2, WY2);
+    /*p27.NEVU*/ wire _WY_MATCH3 = xnor(lcd_sig.LYDO_Y3, WY3);
+    /*p27.NOJO*/ wire _WY_MATCH4 = xnor(lcd_sig.LOVU_Y4, WY4);
+    /*p27.PAGA*/ wire _WY_MATCH5 = xnor(lcd_sig.LEMA_Y5, WY5);
+    /*p27.PEZO*/ wire _WY_MATCH6 = xnor(lcd_sig.MATO_Y6, WY6);
+    /*p27.NUPA*/ wire _WY_MATCH7 = xnor(lcd_sig.LAFO_Y7, WY7);
 
-  /*p27.PALO*/ wire _WY_MATCH_HIn = nand(ppu_sig.WYMO_LCDC_WINEN, _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
-  /*p27.NELE*/ wire _WY_MATCH_HI = not(_WY_MATCH_HIn);
-  /*p27.PAFU*/ wire _WY_MATCHn = nand(_WY_MATCH_HI, _WY_MATCH0, _WY_MATCH1, _WY_MATCH2, _WY_MATCH3);
-  /*p27.ROGE*/ wire _WY_MATCHp = not(_WY_MATCHn);
+    /*p27.PALO*/ wire _WY_MATCH_HIn = nand(ppu_sig.WYMO_LCDC_WINEN, _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
+    /*p27.NELE*/ wire _WY_MATCH_HI = not(_WY_MATCH_HIn);
+    /*p27.PAFU*/ wire _WY_MATCHn = nand(_WY_MATCH_HI, _WY_MATCH0, _WY_MATCH1, _WY_MATCH2, _WY_MATCH3);
+    /*p27.ROGE*/ wire _WY_MATCHp = not(_WY_MATCHn);
 
-  /*p27.MYLO*/ wire _WX_MATCH0 = xnor(gb.ppu_reg.XEHO_X0, WX0);
-  /*p27.PUWU*/ wire _WX_MATCH1 = xnor(gb.ppu_reg.SAVY_X1, WX1);
-  /*p27.PUHO*/ wire _WX_MATCH2 = xnor(gb.ppu_reg.XODU_X2, WX2);
-  /*p27.NYTU*/ wire _WX_MATCH3 = xnor(gb.ppu_reg.XYDO_X3, WX3);
-  /*p27.NEZO*/ wire _WX_MATCH4 = xnor(gb.ppu_reg.TUHU_X4, WX4);
-  /*p27.NORY*/ wire _WX_MATCH5 = xnor(gb.ppu_reg.TUKY_X5, WX5);
-  /*p27.NONO*/ wire _WX_MATCH6 = xnor(gb.ppu_reg.TAKO_X6, WX6);
-  /*p27.PASE*/ wire _WX_MATCH7 = xnor(gb.ppu_reg.SYBE_X7, WX7);
+    /*p27.SARY*/ SARY_WIN_MATCH_Y_SYNC.set(clk_sig.TALU_xBCDExxx, rst_sig.XAPO_VID_RSTn, _WY_MATCHp);
 
-  /*p27.PUKY*/ wire _WX_MATCH_HIn = nand(REJO_WY_MATCH_LATCH, _WX_MATCH4, _WX_MATCH5, _WX_MATCH6, _WX_MATCH7);
-  /*p27.NUFA*/ wire _WX_MATCH_HI = not (_WX_MATCH_HIn);
-  /*p27.NOGY*/ wire _WX_MATCHn = nand(_WX_MATCH_HI, _WX_MATCH0, _WX_MATCH1, _WX_MATCH2, _WX_MATCH3);
-  /*p27.NUKO*/ wire _WX_MATCHp = not(_WX_MATCHn);
+    /*p27.MYLO*/ wire _WX_MATCH0 = xnor(ppu_sig.XEHO_X0, WX0);
+    /*p27.PUWU*/ wire _WX_MATCH1 = xnor(ppu_sig.SAVY_X1, WX1);
+    /*p27.PUHO*/ wire _WX_MATCH2 = xnor(ppu_sig.XODU_X2, WX2);
+    /*p27.NYTU*/ wire _WX_MATCH3 = xnor(ppu_sig.XYDO_X3, WX3);
+    /*p27.NEZO*/ wire _WX_MATCH4 = xnor(ppu_sig.TUHU_X4, WX4);
+    /*p27.NORY*/ wire _WX_MATCH5 = xnor(ppu_sig.TUKY_X5, WX5);
+    /*p27.NONO*/ wire _WX_MATCH6 = xnor(ppu_sig.TAKO_X6, WX6);
+    /*p27.PASE*/ wire _WX_MATCH7 = xnor(ppu_sig.SYBE_X7, WX7);
 
-  /*p27.SARY*/ SARY_WIN_MATCH_Y_SYNC.set(clk_sig.TALU_xBCDExxx, rst_sig.XAPO_VID_RSTn, _WY_MATCHp);
+    /*p27.PUKY*/ wire _WX_MATCH_HIn = nand(REJO_WY_MATCH_LATCH, _WX_MATCH4, _WX_MATCH5, _WX_MATCH6, _WX_MATCH7);
+    /*p27.NUFA*/ wire _WX_MATCH_HI = not (_WX_MATCH_HIn);
+    /*p27.NOGY*/ wire _WX_MATCHn = nand(_WX_MATCH_HI, _WX_MATCH0, _WX_MATCH1, _WX_MATCH2, _WX_MATCH3);
+    /*p27.NUKO*/ wire _WX_MATCHp = not(_WX_MATCHn);
+
+    /*p27.PYCO*/ PYCO_WIN_MATCH_SYNC1.set(ppu_sig.ROCO_AxCxExGx, rst_sig.XAPO_VID_RSTn, _WX_MATCHp);
+    /*p27.NUNU*/ NUNU_WIN_MATCH_SYNC2.set(clk_sig.MEHE_AxCxExGx, rst_sig.XAPO_VID_RSTn, PYCO_WIN_MATCH_SYNC1);
+
+    /*p27.PANY*/ wire _WIN_MATCH_ONSCREEN = nor(_WX_MATCHp, ppu_sig.ROZE_FINE_COUNT_STOPn);
+    /*p27.RYFA*/ RYFA_WIN_MATCH_ONSCREEN_SYNC1.set(ppu_sig.SEGU_xBxDxFxH, gb.ppu_reg.XYMU_RENDERINGp, _WIN_MATCH_ONSCREEN);
+    /*p27.RENE*/ RENE_WIN_MATCH_ONSCREEN_SYNC2.set(clk_sig.ALET_xBxDxFxH, gb.ppu_reg.XYMU_RENDERINGp, RYFA_WIN_MATCH_ONSCREEN_SYNC1);
+  }
+
   /*p27.REJO*/ REJO_WY_MATCH_LATCH.nor_latch(SARY_WIN_MATCH_Y_SYNC, REPU_IN_FRAME_Y);
-
-  /*p27.PANY*/ wire _WIN_MATCH_ONSCREEN = nor(_WX_MATCHp, ppu_sig.ROZE_FINE_COUNT_STOPn);
-
-  /*p27.RYFA*/ RYFA_WIN_MATCH_ONSCREEN_SYNC1.set(ppu_sig.SEGU_xBxDxFxH, gb.ppu_reg.XYMU_RENDERINGp, _WIN_MATCH_ONSCREEN);
-  /*p27.RENE*/ RENE_WIN_MATCH_ONSCREEN_SYNC2.set(clk_sig.ALET_xBxDxFxH, gb.ppu_reg.XYMU_RENDERINGp, RYFA_WIN_MATCH_ONSCREEN_SYNC1);
-
-  /*p27.PYCO*/ PYCO_WIN_MATCH_SYNC1.set(ppu_sig.ROCO_AxCxExGx, rst_sig.XAPO_VID_RSTn, _WX_MATCHp);
-  /*p27.NUNU*/ NUNU_WIN_MATCH_SYNC2.set(clk_sig.MEHE_AxCxExGx, rst_sig.XAPO_VID_RSTn, PYCO_WIN_MATCH_SYNC1);
 
   // PYNU has "arms" on the ground side - nor latch
   // PYNU00 << NUNU16
@@ -198,6 +199,10 @@ void WindowRegisters::tick(TestGB& gb) {
   {
     /*p22.WYVO*/ wire FF4An = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.VYGA*/ wire FF4A = not(FF4An);
+
+    /*p23.WAXU*/ wire FF4A_RD = and (cpu_sig.ASOT_CPU_RD, FF4A);
+    /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
+
     /*p23.WEKO*/ wire FF4A_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4A);
     /*p23.VEFU*/ wire FF4A_WRn = not(FF4A_WR);
 
@@ -209,31 +214,7 @@ void WindowRegisters::tick(TestGB& gb) {
     /*p23.NENE*/ WY5.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D5);
     /*p23.NUKA*/ WY6.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D6);
     /*p23.NAFU*/ WY7.set(FF4A_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D7);
-  }
 
-  // FF4B
-  {
-    /*p22.WAGE*/ wire FF4Bn = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
-    /*p22.VUMY*/ wire FF4B = not(FF4Bn);
-    /*p23.WUZA*/ wire FF4B_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4B);
-    /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
-
-    /*p23.MYPA*/ WX0.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D0);
-    /*p23.NOFE*/ WX1.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D1);
-    /*p23.NOKE*/ WX2.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D2);
-    /*p23.MEBY*/ WX3.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D3);
-    /*p23.MYPU*/ WX4.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D4);
-    /*p23.MYCE*/ WX5.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D5);
-    /*p23.MUVO*/ WX6.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D6);
-    /*p23.NUKU*/ WX7.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D7);
-  }
-
-  // FF4A
-  {
-    /*p22.WYVO*/ wire FF4An = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
-    /*p22.VYGA*/ wire FF4A = not(FF4An);
-    /*p23.WAXU*/ wire FF4A_RD = and (cpu_sig.ASOT_CPU_RD, FF4A);
-    /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
 
     /*p23.PUNU*/ cpu_bus.TRI_D0.set_tribuf(!FF4A_RDn, WY0.q());
     /*p23.PODA*/ cpu_bus.TRI_D1.set_tribuf(!FF4A_RDn, WY1.q());
@@ -249,8 +230,22 @@ void WindowRegisters::tick(TestGB& gb) {
   {
     /*p22.WAGE*/ wire FF4Bn = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.VUMY*/ wire FF4B = not(FF4Bn);
+
     /*p23.WYZE*/ wire FF4B_RD = and (cpu_sig.ASOT_CPU_RD, FF4B);
     /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);
+
+    /*p23.WUZA*/ wire FF4B_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4B);
+    /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
+
+    /*p23.MYPA*/ WX0.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D0);
+    /*p23.NOFE*/ WX1.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D1);
+    /*p23.NOKE*/ WX2.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D2);
+    /*p23.MEBY*/ WX3.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D3);
+    /*p23.MYPU*/ WX4.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D4);
+    /*p23.MYCE*/ WX5.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D5);
+    /*p23.MUVO*/ WX6.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D6);
+    /*p23.NUKU*/ WX7.set(FF4B_WRn, rst_sig.WALU_RSTn, cpu_bus.TRI_D7);
+
 
     /*p23.LOVA*/ cpu_bus.TRI_D0.set_tribuf(!FF4B_RDn, WX0.q());
     /*p23.MUKA*/ cpu_bus.TRI_D1.set_tribuf(!FF4B_RDn, WX1.q());

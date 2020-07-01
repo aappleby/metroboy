@@ -29,13 +29,9 @@ struct PpuSignals {
   /*p27.ROZE*/ Signal ROZE_FINE_COUNT_STOPn;
   /*p29.TYTU*/ Signal TYTU_SFETCH_S0_D0n;
   /*p29.TACU*/ Signal TACU_SPR_SEQ_5_TRIG;
-  /*p27.NAKO*/ Signal NAKO_FETCH_S1n;
-  /*p27.NOFU*/ Signal NOFU_FETCH_S2n;
   /*p21.VOTY*/ Signal VOTY_INT_STATp;
   /*p29.TUVO*/ Signal TUVO_PPU_OAM_RDp;
 
-  /*p27.MOFU*/ Signal MOFU_LATCH_BGPIXB;
-  /*p27.NYDY*/ Signal NYDY_LATCH_BGPIXA;
   /*p29.TOPU*/ Signal TOPU_LATCH_SPPIXA;
   /*p29.RACA*/ Signal RACA_LATCH_SPPIXB;
   /*p29.XONO*/ Signal XONO_FLIP_X;
@@ -102,15 +98,7 @@ private:
 
   /*p27.LONY*/ NandLatch LONY_BG_READ_VRAM_LATCHp;
 
-  /*p27.LAXU*/ Reg LAXU_BFETCH_S0;
-  /*p27.MESU*/ Reg MESU_BFETCH_S1;
-  /*p27.NYVA*/ Reg NYVA_BFETCH_S2;
-
   /*p27.LOVY*/ Reg LOVY_BG_SEQ5_SYNC;
-
-  /*p24.NYKA*/ Reg NYKA_BFETCH_DONE_SYNC;
-  /*p24.PORY*/ Reg PORY_BFETCH_DONE_SYNC_DELAY;
-  /*p27.LYZU*/ Reg LYZU_BFETCH_S0_DELAY;
 
   /*p24.PYGO*/ Reg PYGO_TILE_DONE;
   /*p24.POKY*/ NorLatch POKY_AFTER_PORCH_LATCHp;

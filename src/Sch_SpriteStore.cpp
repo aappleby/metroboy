@@ -50,16 +50,16 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
   auto& sprite_scanner = gb.sprite_scanner;
   auto sprite_scanner_sig = sprite_scanner.sig(gb);
 
+  auto& ppu_config = gb.ppu_config;
+
   wire P10_B = 0;
 
   SpriteStoreSignals sig;
 
 
   {
-    /*p29.BYJO*/ wire BYJO_SCANNINGn = not(sprite_scanner_sig.CEHA_SCANNINGp);
-    /*p21.XYMU*/ wire XYMU_RENDERINGp = ppu_sig.XYMU_RENDERINGp;
-    /*p29.AZEM*/ wire AZEM_RENDERINGp = and (BYJO_SCANNINGn, XYMU_RENDERINGp);
-    /*p29.AROR*/ sig.AROR_MATCH_ENp = and (AZEM_RENDERINGp, ppu_sig.XYLO_LCDC_SPEN);
+    /*p29.AZEM*/ wire AZEM_RENDERINGp = and (sprite_scanner_sig.BYJO_SCANNINGn, ppu_sig.XYMU_RENDERINGp);
+    /*p29.AROR*/ sig.AROR_MATCH_ENp = and (AZEM_RENDERINGp, ppu_config.XYLO_LCDC_SPEN);
   }
 
   {
@@ -215,15 +215,6 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
     /*p28.FYKE*/ sig.FYKE_IDX_5n = not(WEZA_TS_IDX_5);
   }
 
-  {
-    /*p28.GUSE*/ sig.GUSE_SCAN0n = not(sprite_scanner.SCAN0.q());
-    /*p28.GEMA*/ sig.GEMA_SCAN1n = not(sprite_scanner.SCAN1.q());
-    /*p28.FUTO*/ sig.FUTO_SCAN2n = not(sprite_scanner.SCAN2.q());
-    /*p28.FAKU*/ sig.FAKU_SCAN3n = not(sprite_scanner.SCAN3.q());
-    /*p28.GAMA*/ sig.GAMA_SCAN4n = not(sprite_scanner.SCAN4.q());
-    /*p28.GOBY*/ sig.GOBY_SCAN5n = not(sprite_scanner.SCAN5.q());
-  }
-
   return sig;
 }
 
@@ -240,6 +231,7 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
   auto oam_sig = gb.oam_bus.sig();
 
   auto& sprite_scanner = gb.sprite_scanner;
+  auto sprite_scanner_sig = sprite_scanner.sig(gb);
 
   auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
 
@@ -287,7 +279,7 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
     // BUZA04 >> WUZY01, WYSE01, ZYSU01, WYDA01, WUCO01, WEZA01
 
     // polarity seems wrong or something
-    /*p29.BUZA*/ wire BUZA_STORE_SPRITE_IDX = and (sprite_scanner.CENO_SCANNINGp.qn(), ppu_sig.XYMU_RENDERINGp);
+    /*p29.BUZA*/ wire BUZA_STORE_SPRITE_IDX = and (sprite_scanner_sig.CENO_SCANNINGp, ppu_sig.XYMU_RENDERINGp);
 
 
     // XADU01 nc

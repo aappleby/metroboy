@@ -39,15 +39,6 @@ struct PpuSignals {
   /*p21.TUKY*/ Signal TUKY_X5;
   /*p21.TAKO*/ Signal TAKO_X6;
   /*p21.SYBE*/ Signal SYBE_X7;
-
-  /*p23.VYXE*/ Signal VYXE_LCDC_BGEN;
-  /*p23.XYLO*/ Signal XYLO_LCDC_SPEN;
-  /*p23.XYMO*/ Signal XYMO_LCDC_SPSIZE;
-  /*p23.XAFO*/ Signal XAFO_LCDC_BGMAP;
-  /*p23.WEXU*/ Signal WEXU_LCDC_BGTILE;
-  /*p23.WYMO*/ Signal WYMO_LCDC_WINEN;
-  /*p23.WOKY*/ Signal WOKY_LCDC_WINMAP;
-  /*p23.XONA*/ Signal XONA_LCDC_EN;
 };
 
 //-----------------------------------------------------------------------------
@@ -88,16 +79,6 @@ private:
   /*p21.VOGA*/ Reg VOGA_RENDER_DONE_SYNC;
 
   /*p21.RUPO*/ NorLatch RUPO_LYC_MATCH_LATCHn;
-
-  // FF40 - LCDC
-  /*p23.VYXE*/ Reg VYXE_LCDC_BGEN;
-  /*p23.XYLO*/ Reg XYLO_LCDC_SPEN;
-  /*p23.XYMO*/ Reg XYMO_LCDC_SPSIZE;
-  /*p23.XAFO*/ Reg XAFO_LCDC_BGMAP;
-  /*p23.WEXU*/ Reg WEXU_LCDC_BGTILE;
-  /*p23.WYMO*/ Reg WYMO_LCDC_WINEN;
-  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAP;
-  /*p23.XONA*/ Reg XONA_LCDC_EN;
 
   // FF41 - STAT
   /*p21.ROXE*/ Reg ROXE_INT_HBL_EN;

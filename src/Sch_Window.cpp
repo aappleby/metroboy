@@ -28,6 +28,7 @@ WindowSignals WindowRegisters::sig(const TestGB& gb) const {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
+  auto& ppu_config = gb.ppu_config;
 
   /*p27.NOCU*/ sig.NOCU_WIN_MODEn = not(PYNU_WIN_MODE_LATCH.q());
   /*p27.PORE*/ sig.PORE_WIN_MODE = not(sig.NOCU_WIN_MODEn);
@@ -39,7 +40,7 @@ WindowSignals WindowRegisters::sig(const TestGB& gb) const {
   /*p24.TOMU*/ sig.TOMU_WIN_HITp = not(sig.SYLO_WIN_HITn);
   /*p24.SOCY*/ sig.SOCY_WIN_HITn = not(sig.TOMU_WIN_HITp);
   /*p27.TUKU*/ sig.TUKU_WIN_HITn = not(sig.TOMU_WIN_HITp);
-  /*p27.XOFO*/ sig.XOFO_WIN_RSTp = nand(ppu_sig.WYMO_LCDC_WINEN, lcd_sig.XAHY_VID_LINE_TRIG_d4n, rst_sig.XAPO_VID_RSTn);
+  /*p27.XOFO*/ sig.XOFO_WIN_RSTp = nand(ppu_config.WYMO_LCDC_WINEN, lcd_sig.XAHY_VID_LINE_TRIG_d4n, rst_sig.XAPO_VID_RSTn);
 
   /*p27.SEKO*/ sig.SEKO_WIN_TRIGGER = nor(RENE_WIN_MATCH_ONSCREEN_SYNC2, !RYFA_WIN_MATCH_ONSCREEN_SYNC1);
 
@@ -77,6 +78,8 @@ void WindowRegisters::tick(TestGB& gb) {
   auto win_sig = sig(gb);
   auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
 
+  auto& ppu_config = gb.ppu_config;
+
   /*p27.REPU*/ wire REPU_IN_FRAME_Y = nor(lcd_sig.PARU_VBLANKp, rst_sig.PYRY_VID_RSTp);   // schematic wrong, this is NOR
 
   //----------------------------------------
@@ -91,7 +94,7 @@ void WindowRegisters::tick(TestGB& gb) {
     /*p27.PEZO*/ wire _WY_MATCH6 = xnor(lcd_sig.MATO_Y6, WY6);
     /*p27.NUPA*/ wire _WY_MATCH7 = xnor(lcd_sig.LAFO_Y7, WY7);
 
-    /*p27.PALO*/ wire _WY_MATCH_HIn = nand(ppu_sig.WYMO_LCDC_WINEN, _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
+    /*p27.PALO*/ wire _WY_MATCH_HIn = nand(ppu_config.WYMO_LCDC_WINEN, _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
     /*p27.NELE*/ wire _WY_MATCH_HI = not(_WY_MATCH_HIn);
     /*p27.PAFU*/ wire _WY_MATCHn = nand(_WY_MATCH_HI, _WY_MATCH0, _WY_MATCH1, _WY_MATCH2, _WY_MATCH3);
     /*p27.ROGE*/ wire _WY_MATCHp = not(_WY_MATCHn);

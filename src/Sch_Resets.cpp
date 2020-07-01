@@ -13,6 +13,7 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
   auto tim_sig = gb.tim_reg.sig(gb);
 
   auto& ext_pins_in = gb.ext_pins_in;
+  auto& ppu_config = gb.ppu_config;
 
   {
     /*p01.UCOB*/ sig.UCOB_CLKBAD = not(ext_pins_in.PIN_CLK_GOOD);
@@ -36,12 +37,10 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
   }
 
   {
-    /*p01.XODO*/ sig.XODO_VID_RSTp = nand(sig.XEBE_RSTn, ppu_sig.XONA_LCDC_EN);
+    /*p01.XODO*/ sig.XODO_VID_RSTp = nand(sig.XEBE_RSTn, ppu_config.XONA_LCDC_EN);
     /*p01.XAPO*/ sig.XAPO_VID_RSTn = not(sig.XODO_VID_RSTp);
     /*p01.PYRY*/ sig.PYRY_VID_RSTp = not(sig.XAPO_VID_RSTn);
     /*p01.TOFU*/ sig.TOFU_VID_RSTp = not(sig.XAPO_VID_RSTn);
-    /*p01.LYHA*/ sig.LYHA_VID_RSTp = not(sig.XAPO_VID_RSTn);
-    /*p01.LYFE*/ sig.LYFE_VID_RSTn = not(sig.LYHA_VID_RSTp);
     /*p01.ATAR*/ sig.ATAR_VID_RSTp = not(sig.XAPO_VID_RSTn);
     /*p01.ABEZ*/ sig.ABEZ_VID_RSTn = not(sig.ATAR_VID_RSTp);
     /*p01.AMYG*/ sig.AMYG_VID_RSTp = not(sig.XAPO_VID_RSTn);

@@ -49,6 +49,7 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto boot_sig = gb.bootrom.sig(gb);
   auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
+  auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
 
   auto& cpu_bus = gb.cpu_bus;
   auto& vram_pins = gb.vram_pins;
@@ -84,14 +85,14 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
     /*p28.APAR*/ wire _APAR_PPU_OAM_RDn = not(ppu_sig.ACYL_PPU_USE_OAM1p);
     /*p04.DUGA*/ wire _DUGA_DMA_OAM_RDn = not(dma_sig.MATU_DMA_OAM_WRp); // so if dma happens during oam parse, both drive the address line - bus conflict?
 
-    /*p28.GEKA*/ sig.GEKA_OAM_A0p = not((_GARO_A0n & !_ASAM_CPU_OAM_RDn) | (dbg_sig.GECA_P10_Bp & !_BETE_PPU_OAM_RDn) | (dbg_sig.GEFY_P10_Bn & !_APAR_PPU_OAM_RDn) | (_FODO_DMA_A00n & !_DUGA_DMA_OAM_RDn));
-    /*p28.ZYFO*/ sig.ZYFO_OAM_A1p = not((_WACU_A1n & !_ASAM_CPU_OAM_RDn) | (dbg_sig.WYDU_P10_Bp & !_BETE_PPU_OAM_RDn) | (dbg_sig.WUWE_P10_Bn & !_APAR_PPU_OAM_RDn) | (_FESA_DMA_A01n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YFOT*/ sig.YFOT_OAM_A2p = not((_GOSE_A2n & !_ASAM_CPU_OAM_RDn) | (sst_sig.GYBU_IDX_0n & !_BETE_PPU_OAM_RDn) | (sst_sig.GUSE_SCAN0n & !_APAR_PPU_OAM_RDn) | (_FAGO_DMA_A02n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YFOC*/ sig.YFOC_OAM_A3p = not((_WAPE_A3n & !_ASAM_CPU_OAM_RDn) | (sst_sig.GYKA_IDX_1n & !_BETE_PPU_OAM_RDn) | (sst_sig.GEMA_SCAN1n & !_APAR_PPU_OAM_RDn) | (_FYKY_DMA_A03n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YVOM*/ sig.YVOM_OAM_A4p = not((_FEVU_A4n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FABY_IDX_2n & !_BETE_PPU_OAM_RDn) | (sst_sig.FUTO_SCAN2n & !_APAR_PPU_OAM_RDn) | (_ELUG_DMA_A04n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YMEV*/ sig.YMEV_OAM_A5p = not((_GERA_A5n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FACO_IDX_3n & !_BETE_PPU_OAM_RDn) | (sst_sig.FAKU_SCAN3n & !_APAR_PPU_OAM_RDn) | (_EDOL_DMA_A05n & !_DUGA_DMA_OAM_RDn));
-    /*p28.XEMU*/ sig.XEMU_OAM_A6p = not((_WAXA_A6n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FUGU_IDX_4n & !_BETE_PPU_OAM_RDn) | (sst_sig.GAMA_SCAN4n & !_APAR_PPU_OAM_RDn) | (_FYDU_DMA_A06n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YZET*/ sig.YZET_OAM_A7p = not((_FOBY_A7n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FYKE_IDX_5n & !_BETE_PPU_OAM_RDn) | (sst_sig.GOBY_SCAN5n & !_APAR_PPU_OAM_RDn) | (_FETU_DMA_A07n & !_DUGA_DMA_OAM_RDn));
+    /*p28.GEKA*/ sig.GEKA_OAM_A0p = not((_GARO_A0n & !_ASAM_CPU_OAM_RDn) | (dbg_sig.GECA_P10_Bp & !_BETE_PPU_OAM_RDn) | (dbg_sig.GEFY_P10_Bn            & !_APAR_PPU_OAM_RDn) | (_FODO_DMA_A00n & !_DUGA_DMA_OAM_RDn));
+    /*p28.ZYFO*/ sig.ZYFO_OAM_A1p = not((_WACU_A1n & !_ASAM_CPU_OAM_RDn) | (dbg_sig.WYDU_P10_Bp & !_BETE_PPU_OAM_RDn) | (dbg_sig.WUWE_P10_Bn            & !_APAR_PPU_OAM_RDn) | (_FESA_DMA_A01n & !_DUGA_DMA_OAM_RDn));
+    /*p28.YFOT*/ sig.YFOT_OAM_A2p = not((_GOSE_A2n & !_ASAM_CPU_OAM_RDn) | (sst_sig.GYBU_IDX_0n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GUSE_SCAN0n & !_APAR_PPU_OAM_RDn) | (_FAGO_DMA_A02n & !_DUGA_DMA_OAM_RDn));
+    /*p28.YFOC*/ sig.YFOC_OAM_A3p = not((_WAPE_A3n & !_ASAM_CPU_OAM_RDn) | (sst_sig.GYKA_IDX_1n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GEMA_SCAN1n & !_APAR_PPU_OAM_RDn) | (_FYKY_DMA_A03n & !_DUGA_DMA_OAM_RDn));
+    /*p28.YVOM*/ sig.YVOM_OAM_A4p = not((_FEVU_A4n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FABY_IDX_2n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.FUTO_SCAN2n & !_APAR_PPU_OAM_RDn) | (_ELUG_DMA_A04n & !_DUGA_DMA_OAM_RDn));
+    /*p28.YMEV*/ sig.YMEV_OAM_A5p = not((_GERA_A5n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FACO_IDX_3n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.FAKU_SCAN3n & !_APAR_PPU_OAM_RDn) | (_EDOL_DMA_A05n & !_DUGA_DMA_OAM_RDn));
+    /*p28.XEMU*/ sig.XEMU_OAM_A6p = not((_WAXA_A6n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FUGU_IDX_4n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GAMA_SCAN4n & !_APAR_PPU_OAM_RDn) | (_FYDU_DMA_A06n & !_DUGA_DMA_OAM_RDn));
+    /*p28.YZET*/ sig.YZET_OAM_A7p = not((_FOBY_A7n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FYKE_IDX_5n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GOBY_SCAN5n & !_APAR_PPU_OAM_RDn) | (_FETU_DMA_A07n & !_DUGA_DMA_OAM_RDn));
   }
 
   {

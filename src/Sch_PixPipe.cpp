@@ -15,13 +15,15 @@ PixelPipeSignals PixelPipeRegisters::sig(const TestGB& gb) const {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto sst_sig = gb.sst_reg.sig(gb);
 
+  auto& ppu_config = gb.ppu_config;
+
   wire P10_B = 0;
 
-  /*p35.RAJY*/ wire _PIX_BG0  = and(ppu_sig.VYXE_LCDC_BGEN, BG_PIPE_A7);
-  /*p35.TADE*/ wire _PIX_BG1  = and(ppu_sig.VYXE_LCDC_BGEN, BG_PIPE_B7);
+  /*p35.RAJY*/ wire _PIX_BG0  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_A7);
+  /*p35.TADE*/ wire _PIX_BG1  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_B7);
 
-  /*p35.WOXA*/ wire _PIX_SP0  = and(ppu_sig.XYLO_LCDC_SPEN, SPR_PIPE_A7);
-  /*p35.XULA*/ wire _PIX_SP1  = and(ppu_sig.XYLO_LCDC_SPEN, SPR_PIPE_B7);
+  /*p35.WOXA*/ wire _PIX_SP0  = and(ppu_config.XYLO_LCDC_SPEN, SPR_PIPE_A7);
+  /*p35.XULA*/ wire _PIX_SP1  = and(ppu_config.XYLO_LCDC_SPEN, SPR_PIPE_B7);
 
   /*p35.NULY*/ wire _PIX_SPn  = nor(_PIX_SP0, _PIX_SP1);
 

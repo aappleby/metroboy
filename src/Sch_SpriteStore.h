@@ -18,13 +18,6 @@ struct SpriteStoreSignals {
   /*p28.FUGU*/ bool FUGU_IDX_4n;
   /*p28.FYKE*/ bool FYKE_IDX_5n;
 
-  /*p28.GUSE*/ bool GUSE_SCAN0n;
-  /*p28.GEMA*/ bool GEMA_SCAN1n;
-  /*p28.FUTO*/ bool FUTO_SCAN2n;
-  /*p28.FAKU*/ bool FAKU_SCAN3n;
-  /*p28.GAMA*/ bool GAMA_SCAN4n;
-  /*p28.GOBY*/ bool GOBY_SCAN5n;
-
   // to ppu fetcher
   /*p30.WENU*/ bool WENU_TS_LINE_0; 
   /*p30.CUCU*/ bool CUCU_TS_LINE_1;

@@ -22,7 +22,6 @@ struct LcdSignals {
   /*p21.VYPU*/ Signal VYPU_VBLANKp;
   /*p21.ROPO*/ Signal ROPO_LY_MATCH_SYNCp;
   /*p21.PALY*/ Signal PALY_LY_MATCHa;
-  /*p28.ANOM*/ Signal ANOM_SCAN_RSTn;
 
 
   /*p21.MUWY*/ Signal MUWY_Y0;

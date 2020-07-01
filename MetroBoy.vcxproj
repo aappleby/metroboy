@@ -140,8 +140,8 @@
     <ClInclude Include="src\Sch_OamBus.h" />
     <ClInclude Include="src\Sch_PixPipe.h" />
     <ClInclude Include="src\Sch_PPU.h" />
+    <ClInclude Include="src\Sch_PpuConfig.h" />
     <ClInclude Include="src\Sch_Resets.h" />
-    <ClInclude Include="src\Sch_Scroll.h" />
     <ClInclude Include="src\Sch_Serial.h" />
     <ClInclude Include="src\Sch_SpriteFetcher.h" />
     <ClInclude Include="src\Sch_SpriteScanner.h" />
@@ -217,8 +217,8 @@
     <ClCompile Include="src\Sch_OamBus.cpp" />
     <ClCompile Include="src\Sch_PixPipe.cpp" />
     <ClCompile Include="src\Sch_PPU.cpp" />
+    <ClCompile Include="src\Sch_PpuConfig.cpp" />
     <ClCompile Include="src\Sch_Resets.cpp" />
-    <ClCompile Include="src\Sch_Scroll.cpp" />
     <ClCompile Include="src\Sch_Serial.cpp" />
     <ClCompile Include="src\Sch_SpriteFetcher.cpp" />
     <ClCompile Include="src\Sch_SpriteScanner.cpp" />

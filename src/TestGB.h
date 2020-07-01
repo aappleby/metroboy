@@ -20,11 +20,11 @@
 #include "Sch_OamBus.h"
 #include "Sch_BusMux.h"
 #include "Sch_Interrupts.h"
-#include "Sch_Scroll.h"
 #include "Sch_Bootrom.h"
 #include "Sch_SpriteFetcher.h"
 #include "Sch_TileFetcher.h"
 #include "Sch_SpriteScanner.h"
+#include "Sch_PpuConfig.h"
 
 namespace Schematics {
 
@@ -61,7 +61,6 @@ struct TestGB {
   PpuRegisters ppu_reg;
   WindowRegisters win_reg;
 
-  ScrollRegisters scr_reg;
   VramPins vram_pins;
 
   CpuBus  cpu_bus;
@@ -76,6 +75,7 @@ struct TestGB {
   TileFetcher tile_fetcher;
   SpriteFetcher sprite_fetcher;
   SpriteScanner sprite_scanner;
+  PpuConfig ppu_config;
 
   BusMux bus_mux;
 

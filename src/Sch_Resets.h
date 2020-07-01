@@ -26,8 +26,6 @@ struct ResetSignals {
   /*p01.XAPO*/ bool XAPO_VID_RSTn;
   /*p01.PYRY*/ bool PYRY_VID_RSTp;
   /*p01.TOFU*/ bool TOFU_VID_RSTp;
-  /*p01.LYHA*/ bool LYHA_VID_RSTp;
-  /*p01.LYFE*/ bool LYFE_VID_RSTn;
   /*p01.ATAR*/ bool ATAR_VID_RSTp;
   /*p01.ABEZ*/ bool ABEZ_VID_RSTn;
   /*p01.AMYG*/ bool AMYG_VID_RSTp;

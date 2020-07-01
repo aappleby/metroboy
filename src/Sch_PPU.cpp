@@ -142,7 +142,6 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   //----------
 
-  ppu_sig.POKY_AFTER_PORCH_LATCHp = POKY_AFTER_PORCH_LATCHp;
   ppu_sig.XYMU_RENDERINGp = XYMU_RENDERINGp;
   ppu_sig.XEHO_X0 = XEHO_X0;
   ppu_sig.SAVY_X1 = SAVY_X1;
@@ -154,8 +153,6 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   ppu_sig.SYBE_X7 = SYBE_X7;
 
   ppu_sig.TYFO_SFETCH_S0_D1 = TYFO_SFETCH_S0_D1;
-  ppu_sig.LONY_BG_READ_VRAM_LATCHp = LONY_BG_READ_VRAM_LATCHp;
-  ppu_sig.PORY_BFETCH_DONE_SYNC_DELAY = tile_fetcher.PORY_BFETCH_DONE_SYNC_DELAY;
 
   {
     /*p21.XUGU*/ wire _XUGU_X_167n = nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
@@ -165,7 +162,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   }
 
   {
-    /*p27.ROMO*/ wire _ROMO_AFTER_PORCHn = not(POKY_AFTER_PORCH_LATCHp);
+    /*p27.ROMO*/ wire _ROMO_AFTER_PORCHn = not(tile_fetcher_sig.POKY_AFTER_PORCH_LATCHp);
     /*p27.SUVU*/ wire _SUVU_PORCH_ENDn = nand(XYMU_RENDERINGp, _ROMO_AFTER_PORCHn, tile_fetcher.NYKA_BFETCH_DONE_SYNC, tile_fetcher.PORY_BFETCH_DONE_SYNC_DELAY);
     /*p27.TAVE*/ ppu_sig.TAVE_PORCH_ENDp = not(_SUVU_PORCH_ENDn);
   }
@@ -197,7 +194,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   {
     /*p24.VYBO*/ wire _VYBO_PIX_CLK_AxCxExGx = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONEp, clk_sig.MYVO_AxCxExGx);
-    /*p24.TYFA*/ wire _TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, POKY_AFTER_PORCH_LATCHp, _VYBO_PIX_CLK_AxCxExGx);
+    /*p24.TYFA*/ wire _TYFA_AxCxExGx = and (win_sig.SOCY_WIN_HITn, tile_fetcher_sig.POKY_AFTER_PORCH_LATCHp, _VYBO_PIX_CLK_AxCxExGx);
     /*p24.SEGU*/ ppu_sig.SEGU_xBxDxFxH = not(_TYFA_AxCxExGx);
     /*p24.ROXO*/ ppu_sig.ROXO_AxCxExGx = not(ppu_sig.SEGU_xBxDxFxH);
     /*p27.ROCO*/ ppu_sig.ROCO_AxCxExGx = not(ppu_sig.SEGU_xBxDxFxH);
@@ -280,17 +277,6 @@ void PpuRegisters::tick(TestGB& gb) {
 
   //----------
 
-  // The first tile generated is thrown away. I'm calling that section of rendering the front porch.
-
-  {
-    /*p24.PYGO*/ PYGO_TILE_DONE.set(clk_sig.ALET_xBxDxFxH, XYMU_RENDERINGp, tile_fetcher.PORY_BFETCH_DONE_SYNC_DELAY);
-  }
-
-  {
-    /*p24.POKY*/ POKY_AFTER_PORCH_LATCHp.nor_latch(PYGO_TILE_DONE, ppu_sig.LOBY_RENDERINGn);
-  }
-
-
   {
     /*p21.WEGO*/ wire _WEGO_RST_LATCH = or(rst_sig.TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC);
     /*p27.POVA*/ wire _POVA_FINE_MATCH_SETp = and (PUXA_FINE_MATCH_SYNC1, !NYZE_FINE_MATCH_SYNC2);
@@ -334,28 +320,6 @@ void PpuRegisters::tick(TestGB& gb) {
   }
 
   //----------
-
-
-  {
-    // this seems reasonable. BG_READ_VRAM_LATCHp is bracketed by BFETCH_RSTn (start) and
-    // vid_reg.LOVY_BG_SEQ5_SYNC (stop).
-
-    /*p27.LURY*/ wire _LURY_BG_READ_VRAM_LATCH_RSTn = and(!LOVY_BG_SEQ5_SYNC, XYMU_RENDERINGp);
-    /*p27.LONY*/ LONY_BG_READ_VRAM_LATCHp.nand_latch(ppu_sig.NYXU_BFETCH_RSTn, _LURY_BG_READ_VRAM_LATCH_RSTn);
-  }
-
-
-  {
-    /*p27.MOCE*/ wire _MOCE_BFETCH_DONEn = nand(tile_fetcher.LAXU_BFETCH_S0, tile_fetcher.NYVA_BFETCH_S2, ppu_sig.NYXU_BFETCH_RSTn);
-    /*p27.LYRY*/ wire _LYRY_BFETCH_DONEp = not(_MOCE_BFETCH_DONEn);
-    /*p27.LOVY*/ LOVY_BG_SEQ5_SYNC.set(clk_sig.MYVO_AxCxExGx, ppu_sig.NYXU_BFETCH_RSTn, _LYRY_BFETCH_DONEp);
-
-    /*p24.NAFY*/ wire _NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(win_sig.MOSU_WIN_MODE_TRIGp, ppu_sig.LOBY_RENDERINGn);
-
-    /*p27.LYZU*/ tile_fetcher.LYZU_BFETCH_S0_DELAY.set       (clk_sig.ALET_xBxDxFxH, ppu_sig.XYMU_RENDERINGp,          tile_fetcher.LAXU_BFETCH_S0);
-    /*p24.NYKA*/ tile_fetcher.NYKA_BFETCH_DONE_SYNC.set      (clk_sig.ALET_xBxDxFxH, _NAFY_RENDERING_AND_NOT_WIN_TRIG, _LYRY_BFETCH_DONEp);
-    /*p24.PORY*/ tile_fetcher.PORY_BFETCH_DONE_SYNC_DELAY.set(clk_sig.MYVO_AxCxExGx, _NAFY_RENDERING_AND_NOT_WIN_TRIG, tile_fetcher.NYKA_BFETCH_DONE_SYNC);
-  }
 
 
   //----------------------------------------
@@ -442,7 +406,7 @@ void PpuRegisters::tick(TestGB& gb) {
     ST.set(_RUZE_PIN_ST);
   }
 
-  /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(LONY_BG_READ_VRAM_LATCHp.q());
+  /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(tile_fetcher_sig.LONY_BG_READ_VRAM_LATCHp);
   /*p27.LENA*/ wire LENA_BGW_VRAM_RD = not(LUSU_BGW_VRAM_RDn);
 
   {
@@ -664,10 +628,6 @@ bool PpuRegisters::commit() {
   /*p21.SYBE*/ changed |= SYBE_X7.commit_reg();
   /*p21.XYMU*/ changed |= XYMU_RENDERINGp.commit_latch();
   /*p21.VOGA*/ changed |= VOGA_RENDER_DONE_SYNC.commit_reg();
-  /*p27.LONY*/ changed |= LONY_BG_READ_VRAM_LATCHp.commit_latch();
-  /*p27.LOVY*/ changed |= LOVY_BG_SEQ5_SYNC.commit_reg();
-  /*p24.PYGO*/ changed |= PYGO_TILE_DONE.commit_reg();
-  /*p24.POKY*/ changed |= POKY_AFTER_PORCH_LATCHp.commit_latch();
 
   /*p27.TAKA*/ changed |= TAKA_SFETCH_RUN_LATCH.commit_latch();
   /*p27.SOBU*/ changed |= SOBU_SPRITE_FETCH_SYNC1.commit_reg();

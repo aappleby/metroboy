@@ -75,6 +75,7 @@ void WindowRegisters::tick(TestGB& gb) {
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto win_sig = sig(gb);
+  auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
 
   /*p27.REPU*/ wire REPU_IN_FRAME_Y = nor(lcd_sig.PARU_VBLANKp, rst_sig.PYRY_VID_RSTp);   // schematic wrong, this is NOR
 
@@ -139,7 +140,7 @@ void WindowRegisters::tick(TestGB& gb) {
   ///*p27.PUKU*/ PUKU = nor(RYDY, WIN_MODE_TRIG);
   ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
     
-  /*p27.RYDY*/ RYDY_WIN_HIT_LATCH.nor_latch(win_sig.NUNY_WIN_MODE_TRIGp, rst_sig.PYRY_VID_RSTp || ppu_sig.PORY_BFETCH_DONE_SYNC_DELAY);
+  /*p27.RYDY*/ RYDY_WIN_HIT_LATCH.nor_latch(win_sig.NUNY_WIN_MODE_TRIGp, rst_sig.PYRY_VID_RSTp || tile_fetcher_sig.PORY_BFETCH_DONE_SYNC_DELAY);
 
   /*p27.SOVY*/ SOVY_WIN_HIT_SYNC.set(clk_sig.ALET_xBxDxFxH, rst_sig.XAPO_VID_RSTn, RYDY_WIN_HIT_LATCH);
 

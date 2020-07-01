@@ -55,8 +55,6 @@ struct PpuSignals {
   /*p23.XONA*/ Signal XONA_LCDC_EN;
 
   /*p29.TYFO*/ Signal TYFO_SFETCH_S0_D1;
-  /*p27.LONY*/ Signal LONY_BG_READ_VRAM_LATCHp;
-  /*p24.PORY*/ Signal PORY_BFETCH_DONE_SYNC_DELAY;
 };
 
 //-----------------------------------------------------------------------------
@@ -95,13 +93,6 @@ private:
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
 
   /*p21.VOGA*/ Reg VOGA_RENDER_DONE_SYNC;
-
-  /*p27.LONY*/ NandLatch LONY_BG_READ_VRAM_LATCHp;
-
-  /*p27.LOVY*/ Reg LOVY_BG_SEQ5_SYNC;
-
-  /*p24.PYGO*/ Reg PYGO_TILE_DONE;
-  /*p24.POKY*/ NorLatch POKY_AFTER_PORCH_LATCHp;
 
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUN_LATCH;
   /*p27.SOBU*/ Reg SOBU_SPRITE_FETCH_SYNC1;

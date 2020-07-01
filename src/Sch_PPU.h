@@ -59,6 +59,8 @@ struct PpuSignals {
   /*p23.XONA*/ Signal XONA_LCDC_EN;
 
   /*p29.TYFO*/ Signal TYFO_SFETCH_S0_D1;
+  /*p27.LONY*/ Signal LONY_BG_READ_VRAM_LATCHp;
+  /*p24.PORY*/ Signal PORY_BFETCH_DONE_SYNC_DELAY;
 };
 
 //-----------------------------------------------------------------------------
@@ -68,6 +70,8 @@ struct PpuRegisters {
   PpuSignals sig(const TestGB& gb) const;
   void tick(TestGB& gb);
   bool commit();
+
+private:
 
   /*p21.XEHO*/ Reg XEHO_X0;
   /*p21.SAVY*/ Reg SAVY_X1;

@@ -151,6 +151,8 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   sig.SYBE_X7 = SYBE_X7;
 
   sig.TYFO_SFETCH_S0_D1 = TYFO_SFETCH_S0_D1;
+  sig.LONY_BG_READ_VRAM_LATCHp = LONY_BG_READ_VRAM_LATCHp;
+  sig.PORY_BFETCH_DONE_SYNC_DELAY = PORY_BFETCH_DONE_SYNC_DELAY;
 
   /*p21.XUGU*/ wire _XUGU_X_167n = nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
   /*p21.XANO*/ wire _XANO_X_167 = not(_XUGU_X_167n);

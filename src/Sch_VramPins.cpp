@@ -49,7 +49,6 @@ void VramPins::tick(TestGB& gb) {
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
 
-  auto& ppu_reg = gb.ppu_reg;
   auto& cpu_bus = gb.cpu_bus;
   auto& vram_bus = gb.vram_bus;
 
@@ -187,11 +186,11 @@ void VramPins::tick(TestGB& gb) {
     /*p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and (ppu_sig.TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRAM_RDp1);
     /*p25.RYLU*/ wire _RYLU_DBG_VRAM_RDn = nand(SALE_VRAM_WRn, _XANE_VRAM_LOCKn);
     /*p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not(_SOHO_SPR_VRAM_RDp);
-    /*p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not(ppu_reg.LONY_BG_READ_VRAM_LATCHp.q()); // this should be correct
+    /*p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not(ppu_sig.LONY_BG_READ_VRAM_LATCHp); // this should be correct
     /*p25.APAM*/ wire _APAM_DMA_VRAM_RDn = not(dma_sig.LUFA_DMA_READ_VRAMp);
     /*p25.RACU*/ wire _RACU_MOEn   = and (_RYLU_DBG_VRAM_RDn, _RAWA_SPR_VRAM_RDn, _MYMA_BGW_VRAM_RDn, _APAM_DMA_VRAM_RDn); // def and
 
-    /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(ppu_reg.LONY_BG_READ_VRAM_LATCHp.q());
+    /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(ppu_sig.LONY_BG_READ_VRAM_LATCHp);
     /*p27.LENA*/ wire LENA_BGW_VRAM_RD = not(LUSU_BGW_VRAM_RDn);
     /*p25.SUTU*/ wire _SUTU_MCSn = nor(LENA_BGW_VRAM_RD, dma_sig.LUFA_DMA_READ_VRAMp, ABON_SPR_VRAM_RDp1, ppu_sig.SERE_VRAM_RD);
 

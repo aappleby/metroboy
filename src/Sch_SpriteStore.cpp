@@ -126,14 +126,14 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb, wire XYMO_LCDC_SP
 
 
   {
-    /*p21.ACAM*/ wire X0n = not(gb.ppu_reg.XEHO_X0);
-    /*p21.AZUB*/ wire X1n = not(gb.ppu_reg.SAVY_X1);
-    /*p21.AMEL*/ wire X2n = not(gb.ppu_reg.XODU_X2);
-    /*p21.AHAL*/ wire X3n = not(gb.ppu_reg.XYDO_X3);
-    /*p21.APUX*/ wire X4n = not(gb.ppu_reg.TUHU_X4);
-    /*p21.ABEF*/ wire X5n = not(gb.ppu_reg.TUKY_X5);
-    /*p21.ADAZ*/ wire X6n = not(gb.ppu_reg.TAKO_X6);
-    /*p21.ASAH*/ wire X7n = not(gb.ppu_reg.SYBE_X7);
+    /*p21.ACAM*/ wire X0n = not(ppu_sig.XEHO_X0);
+    /*p21.AZUB*/ wire X1n = not(ppu_sig.SAVY_X1);
+    /*p21.AMEL*/ wire X2n = not(ppu_sig.XODU_X2);
+    /*p21.AHAL*/ wire X3n = not(ppu_sig.XYDO_X3);
+    /*p21.APUX*/ wire X4n = not(ppu_sig.TUHU_X4);
+    /*p21.ABEF*/ wire X5n = not(ppu_sig.TUKY_X5);
+    /*p21.ADAZ*/ wire X6n = not(ppu_sig.TAKO_X6);
+    /*p21.ASAH*/ wire X7n = not(ppu_sig.SYBE_X7);
 
     /*p31.ZOGY*/ wire STORE0_MATCH0n = xor (STORE0_X0, X0n);
     /*p31.ZEBA*/ wire STORE0_MATCH1n = xor (STORE0_X1, X1n);

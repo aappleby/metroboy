@@ -7,19 +7,14 @@ struct TestGB;
 
 //-----------------------------------------------------------------------------
 
-struct PixelPipeSignals {
-  /*p35.REMY*/ Signal REMY_LD0n;
-  /*p35.RAVO*/ Signal RAVO_LD1n;
-};
-
-//-----------------------------------------------------------------------------
-
 struct PixelPipeRegisters {
-  PixelPipeSignals sig(const TestGB& gb) const;
   void tick(TestGB& gb);
   bool commit();
 
 private:
+
+  /* PIN_50 */ PinOut LD1;
+  /* PIN_51 */ PinOut LD0;
 
   /*p32.MYDE*/ Reg22 BG_PIPE_A0;
   /*p32.NOZO*/ Reg22 BG_PIPE_A1;

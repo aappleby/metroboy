@@ -4,117 +4,100 @@
 
 using namespace Schematics;
 
-//----------
-
-PixelPipeSignals PixelPipeRegisters::sig(const TestGB& gb) const {
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto win_sig = gb.win_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb);
-
-  auto& ppu_config = gb.ppu_config;
-
-  /*p35.RAJY*/ wire _PIX_BG0  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_A7);
-  /*p35.TADE*/ wire _PIX_BG1  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_B7);
-
-  /*p35.WOXA*/ wire _PIX_SP0  = and(ppu_config.XYLO_LCDC_SPEN, SPR_PIPE_A7);
-  /*p35.XULA*/ wire _PIX_SP1  = and(ppu_config.XYLO_LCDC_SPEN, SPR_PIPE_B7);
-
-  /*p35.NULY*/ wire _PIX_SPn  = nor(_PIX_SP0, _PIX_SP1);
-
-  /*p35.RYFU*/ wire _MASK_BG0 = and(_PIX_BG0, MASK_PIPE_7);
-  /*p35.RUTA*/ wire _MASK_BG1 = and(_PIX_BG1, MASK_PIPE_7);
-  /*p35.POKA*/ wire _BGPIXELn = nor(_PIX_SPn, _MASK_BG0, _MASK_BG1);
-
-  /*p34.LOME*/ wire _SPRITE_PAL_PIPE_7n = not(PAL_PIPE_7);
-  /*p34.LAFU*/ wire _OBP0PIXELn = nand(_SPRITE_PAL_PIPE_7n, _BGPIXELn);
-  /*p34.LEKA*/ wire _OBP1PIXELn = nand(_SPRITE_PAL_PIPE_7n, _BGPIXELn);
-
-  //----------
-  // Sprite palette 0 lookup
-
-  /*p35.VUMU*/ wire _PIX_SP0n = not(_PIX_SP0);
-  /*p35.WYRU*/ wire _PIX_SP0a = not(_PIX_SP0n);
-  /*p35.WELE*/ wire _PIX_SP1n = not(_PIX_SP1);
-  /*p35.WOLO*/ wire _PIX_SP1a = not(_PIX_SP1n);
-
-  /*p35.LAVA*/ wire _MASK_OPB0  = not(_OBP0PIXELn);
-  /*p35.VYRO*/ wire _PAL_OBP0D = and(_PIX_SP0a, _PIX_SP1a, _MASK_OPB0);
-  /*p35.VATA*/ wire _PAL_OBP0C = and(_PIX_SP0a, _PIX_SP1n, _MASK_OPB0);
-  /*p35.VOLO*/ wire _PAL_OBP0B = and(_PIX_SP0n, _PIX_SP1a, _MASK_OPB0);
-  /*p35.VUGO*/ wire _PAL_OBP0A = and(_PIX_SP0n, _PIX_SP1n, _MASK_OPB0);
-
-  /*p35.WUFU*/ wire _COL_OBP00 = amux4(OBP07, _PAL_OBP0D, OBP05, _PAL_OBP0C, OBP03, _PAL_OBP0B, OBP01, _PAL_OBP0A);
-  /*p35.WALY*/ wire _COL_OBP01 = amux4(OBP06, _PAL_OBP0D, OBP04, _PAL_OBP0C, OBP02, _PAL_OBP0B, OBP00, _PAL_OBP0A);
-
-  //----------
-  // Sprite palette 1 lookup
-
-  /*p35.MEXA*/ wire _PIX_SP0o = not(_PIX_SP0);
-  /*p35.LOZO*/ wire _PIX_SP0b = not(_PIX_SP0o);
-  /*p35.MABY*/ wire _PIX_SP1o = not(_PIX_SP1);
-  /*p35.LYLE*/ wire _PIX_SP1b = not(_PIX_SP1o);
-
-  /*p35.LUKU*/ wire _MASK_OBP1  = not(_OBP1PIXELn);
-  /*p35.LEDO*/ wire _PAL_OBP1D = and(_PIX_SP1b, _PIX_SP0b, _MASK_OBP1);
-  /*p35.LYKY*/ wire _PAL_OBP1C = and(_PIX_SP1b, _PIX_SP0o, _MASK_OBP1);
-  /*p35.LARU*/ wire _PAL_OBP1B = and(_PIX_SP1o, _PIX_SP0b, _MASK_OBP1);
-  /*p35.LOPU*/ wire _PAL_OBP1A = and(_PIX_SP1o, _PIX_SP0o, _MASK_OBP1);
-
-  /*p35.MOKA*/ wire _COL_OBP10 = amux4(OBP17, _PAL_OBP1D, OBP15, _PAL_OBP1C, OBP13, _PAL_OBP1B, OBP11, _PAL_OBP1A);
-  /*p35.MUFA*/ wire _COL_OBP11 = amux4(OBP16, _PAL_OBP1D, OBP14, _PAL_OBP1C, OBP12, _PAL_OBP1B, OBP10, _PAL_OBP1A);
-
-  //----------
-  // Background/window palette lookup
-
-  /*p35.SOBA*/ wire _PIX_BG0n = not(_PIX_BG0);
-  /*p35.VYCO*/ wire _PIX_BG1n = not(_PIX_BG1);
-  /*p35.NUPO*/ wire _PIX_BG0a = not(_PIX_BG0n);
-  /*p35.NALE*/ wire _PIX_BG1a = not(_PIX_BG1n);
-
-  /*p35.MUVE*/ wire _MASK_BGP = not(_BGPIXELn);
-  /*p35.POBU*/ wire _PAL_BGPA = and(_PIX_BG1n, _PIX_BG0n, _MASK_BGP);
-  /*p35.NUMA*/ wire _PAL_BGPB = and(_PIX_BG1a, _PIX_BG0n, _MASK_BGP);
-  /*p35.NUXO*/ wire _PAL_BGPC = and(_PIX_BG1n, _PIX_BG0a, _MASK_BGP);
-  /*p35.NYPO*/ wire _PAL_BGPD = and(_PIX_BG1a, _PIX_BG0a, _MASK_BGP);
-
-  /*p35.NURA*/ wire _COL_BGP1 = amux4(BGP7, _PAL_BGPD, BGP5, _PAL_BGPC, BGP3, _PAL_BGPB, BGP1, _PAL_BGPA);
-  /*p35.NELO*/ wire _COL_BGP0 = amux4(BGP6, _PAL_BGPD, BGP4, _PAL_BGPC, BGP2, _PAL_BGPB, BGP0, _PAL_BGPA);
-
-  //----------
-  // Pixel merge and send
-
-  // bits 0 and 1 swapped somewhere...
-
-  /*p35.PATY*/ wire PATY_PIX_OUT_LO = or(_COL_BGP1, _COL_OBP00, _COL_OBP10);
-  /*p35.PERO*/ wire PERO_PIX_OUT_HI = or(_COL_BGP0, _COL_OBP01, _COL_OBP11);
-
-  PixelPipeSignals sig;
-  /*p35.REMY*/ sig.REMY_LD0n = not(PATY_PIX_OUT_LO);
-  /*p35.RAVO*/ sig.RAVO_LD1n = not(PERO_PIX_OUT_HI);
-
-  return sig;
-}
-
 //------------------------------------------------------------------------------
 
 void PixelPipeRegisters::tick(TestGB& gb) {
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto win_sig = gb.win_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb);
-  auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
-  auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
-
-  wire P10_B = 0;
 
   //----------------------------------------
 
   {
+    auto& ppu_config = gb.ppu_config;
+
+    /*p35.RAJY*/ wire _PIX_BG0  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_A7);
+    /*p35.TADE*/ wire _PIX_BG1  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_B7);
+
+    /*p35.WOXA*/ wire _PIX_SP0  = and(ppu_config.XYLO_LCDC_SPEN, SPR_PIPE_A7);
+    /*p35.XULA*/ wire _PIX_SP1  = and(ppu_config.XYLO_LCDC_SPEN, SPR_PIPE_B7);
+
+    /*p35.NULY*/ wire _PIX_SPn  = nor(_PIX_SP0, _PIX_SP1);
+
+    /*p35.RYFU*/ wire _MASK_BG0 = and(_PIX_BG0, MASK_PIPE_7);
+    /*p35.RUTA*/ wire _MASK_BG1 = and(_PIX_BG1, MASK_PIPE_7);
+    /*p35.POKA*/ wire _BGPIXELn = nor(_PIX_SPn, _MASK_BG0, _MASK_BG1);
+
+    /*p34.LOME*/ wire _SPRITE_PAL_PIPE_7n = not(PAL_PIPE_7);
+    /*p34.LAFU*/ wire _OBP0PIXELn = nand(_SPRITE_PAL_PIPE_7n, _BGPIXELn);
+    /*p34.LEKA*/ wire _OBP1PIXELn = nand(_SPRITE_PAL_PIPE_7n, _BGPIXELn);
+
+    //----------
+    // Sprite palette 0 lookup
+
+    /*p35.VUMU*/ wire _PIX_SP0n = not(_PIX_SP0);
+    /*p35.WYRU*/ wire _PIX_SP0a = not(_PIX_SP0n);
+    /*p35.WELE*/ wire _PIX_SP1n = not(_PIX_SP1);
+    /*p35.WOLO*/ wire _PIX_SP1a = not(_PIX_SP1n);
+
+    /*p35.LAVA*/ wire _MASK_OPB0  = not(_OBP0PIXELn);
+    /*p35.VYRO*/ wire _PAL_OBP0D = and(_PIX_SP0a, _PIX_SP1a, _MASK_OPB0);
+    /*p35.VATA*/ wire _PAL_OBP0C = and(_PIX_SP0a, _PIX_SP1n, _MASK_OPB0);
+    /*p35.VOLO*/ wire _PAL_OBP0B = and(_PIX_SP0n, _PIX_SP1a, _MASK_OPB0);
+    /*p35.VUGO*/ wire _PAL_OBP0A = and(_PIX_SP0n, _PIX_SP1n, _MASK_OPB0);
+
+    /*p35.WUFU*/ wire _COL_OBP00 = amux4(OBP07, _PAL_OBP0D, OBP05, _PAL_OBP0C, OBP03, _PAL_OBP0B, OBP01, _PAL_OBP0A);
+    /*p35.WALY*/ wire _COL_OBP01 = amux4(OBP06, _PAL_OBP0D, OBP04, _PAL_OBP0C, OBP02, _PAL_OBP0B, OBP00, _PAL_OBP0A);
+
+    //----------
+    // Sprite palette 1 lookup
+
+    /*p35.MEXA*/ wire _PIX_SP0o = not(_PIX_SP0);
+    /*p35.LOZO*/ wire _PIX_SP0b = not(_PIX_SP0o);
+    /*p35.MABY*/ wire _PIX_SP1o = not(_PIX_SP1);
+    /*p35.LYLE*/ wire _PIX_SP1b = not(_PIX_SP1o);
+
+    /*p35.LUKU*/ wire _MASK_OBP1  = not(_OBP1PIXELn);
+    /*p35.LEDO*/ wire _PAL_OBP1D = and(_PIX_SP1b, _PIX_SP0b, _MASK_OBP1);
+    /*p35.LYKY*/ wire _PAL_OBP1C = and(_PIX_SP1b, _PIX_SP0o, _MASK_OBP1);
+    /*p35.LARU*/ wire _PAL_OBP1B = and(_PIX_SP1o, _PIX_SP0b, _MASK_OBP1);
+    /*p35.LOPU*/ wire _PAL_OBP1A = and(_PIX_SP1o, _PIX_SP0o, _MASK_OBP1);
+
+    /*p35.MOKA*/ wire _COL_OBP10 = amux4(OBP17, _PAL_OBP1D, OBP15, _PAL_OBP1C, OBP13, _PAL_OBP1B, OBP11, _PAL_OBP1A);
+    /*p35.MUFA*/ wire _COL_OBP11 = amux4(OBP16, _PAL_OBP1D, OBP14, _PAL_OBP1C, OBP12, _PAL_OBP1B, OBP10, _PAL_OBP1A);
+
+    //----------
+    // Background/window palette lookup
+
+    /*p35.SOBA*/ wire _PIX_BG0n = not(_PIX_BG0);
+    /*p35.VYCO*/ wire _PIX_BG1n = not(_PIX_BG1);
+    /*p35.NUPO*/ wire _PIX_BG0a = not(_PIX_BG0n);
+    /*p35.NALE*/ wire _PIX_BG1a = not(_PIX_BG1n);
+
+    /*p35.MUVE*/ wire _MASK_BGP = not(_BGPIXELn);
+    /*p35.POBU*/ wire _PAL_BGPA = and(_PIX_BG1n, _PIX_BG0n, _MASK_BGP);
+    /*p35.NUMA*/ wire _PAL_BGPB = and(_PIX_BG1a, _PIX_BG0n, _MASK_BGP);
+    /*p35.NUXO*/ wire _PAL_BGPC = and(_PIX_BG1n, _PIX_BG0a, _MASK_BGP);
+    /*p35.NYPO*/ wire _PAL_BGPD = and(_PIX_BG1a, _PIX_BG0a, _MASK_BGP);
+
+    /*p35.NURA*/ wire _COL_BGP1 = amux4(BGP7, _PAL_BGPD, BGP5, _PAL_BGPC, BGP3, _PAL_BGPB, BGP1, _PAL_BGPA);
+    /*p35.NELO*/ wire _COL_BGP0 = amux4(BGP6, _PAL_BGPD, BGP4, _PAL_BGPC, BGP2, _PAL_BGPB, BGP0, _PAL_BGPA);
+
+    //----------
+    // Pixel merge and send
+
+    // bits 0 and 1 swapped somewhere...
+
+    /*p35.PATY*/ wire PATY_PIX_OUT_LO = or(_COL_BGP1, _COL_OBP00, _COL_OBP10);
+    /*p35.PERO*/ wire PERO_PIX_OUT_HI = or(_COL_BGP0, _COL_OBP01, _COL_OBP11);
+
+    /*p35.REMY*/ wire REMY_LD0n = not(PATY_PIX_OUT_LO);
+    /*p35.RAVO*/ wire RAVO_LD1n = not(PERO_PIX_OUT_HI);
+    LD0.set(not(REMY_LD0n));
+    LD1.set(not(RAVO_LD1n));
+  }
+
+  {
+    wire P10_B = 0;
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
 
     /*p32.LUHE*/ wire BG_PIX_A0n = not(tile_fetcher_sig.BG_PIX_A0);
     /*p32.NOLY*/ wire BG_PIX_A1n = not(tile_fetcher_sig.BG_PIX_A1);
@@ -154,6 +137,10 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   }
 
   {
+    wire P10_B = 0;
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
+
     /*p32.TOSA*/ wire BG_PIX_B0n = not(tile_fetcher_sig.BG_PIX_B0);
     /*p32.RUCO*/ wire BG_PIX_B1n = not(tile_fetcher_sig.BG_PIX_B1);
     /*p32.TYCE*/ wire BG_PIX_B2n = not(tile_fetcher_sig.BG_PIX_B2);
@@ -192,6 +179,10 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   }
 
   {
+    wire P10_B = 0;
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
+
     /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(sprite_fetcher_sig.VUSA_PIPE_LOAD_SPRITEn);
     /*p29.XEFY*/ wire XEPY_PIPE_LOAD_SPRITEn = not(WUTY_PIPE_LOAD_SPRITEp);
 
@@ -386,7 +377,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   // FF47 BGP
   {
     auto& cpu_bus = gb.cpu_bus;
-
+    auto cpu_sig = gb.cpu_bus.sig(gb);
     /*p22.WYBO*/ wire FF47n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
     /*p22.WERA*/ wire FF47 = not(FF47n);
     /*p36.VELY*/ wire FF47_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF47);
@@ -417,6 +408,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   // FF48 OBP0
   {
     auto& cpu_bus = gb.cpu_bus;
+    auto cpu_sig = gb.cpu_bus.sig(gb);
 
     /*p22.WETA*/ wire FF48n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.XAYO*/ wire FF48 = not(FF48n);
@@ -448,6 +440,7 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   // FF49 OBP1
   {
     auto& cpu_bus = gb.cpu_bus;
+    auto cpu_sig = gb.cpu_bus.sig(gb);
 
     /*p22.VAMA*/ wire FF49n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.TEGO*/ wire FF49 = not(FF49n);
@@ -481,6 +474,9 @@ void PixelPipeRegisters::tick(TestGB& gb) {
 
 bool PixelPipeRegisters::commit() {
   bool changed = false;
+
+  /* PIN_50 */ changed |= LD1.commit_pinout();
+  /* PIN_51 */ changed |= LD0.commit_pinout();
 
   /*p32.MYDE*/ changed |= BG_PIPE_A0.commit_reg();
   /*p32.NOZO*/ changed |= BG_PIPE_A1.commit_reg();

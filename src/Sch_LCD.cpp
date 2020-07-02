@@ -71,27 +71,15 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
 //------------------------------------------------------------------------------
 
 void LcdRegisters::tick(TestGB& gb) {
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto tim_sig = gb.tim_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto lcd_sig = sig(gb);
-  auto pxp_sig = gb.pxp_reg.sig(gb);
-
-  auto& cpu_bus = gb.cpu_bus;
-  auto& ppu_config = gb.ppu_config;
-
-  /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(ppu_config.XONA_LCDC_EN);
-
-  /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
-  /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
 
   //----------------------------------------
 
   // LCD main timer
   {
+    auto rst_sig = gb.rst_reg.sig(gb);
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
     /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(RUTU_NEW_LINE_d0.q(), LYHA_VID_RSTp);
+    auto clk_sig = gb.clk_reg.sig(gb);
     /*p21.SAXO*/ XEHO_X0.set(clk_sig.TALU_xBCDExxx, _MUDE_X_RSTn, !XEHO_X0.q());
     /*p21.TYPO*/ SAVY_X1.set(!XEHO_X0.q(),  _MUDE_X_RSTn, !SAVY_X1.q());
     /*p21.VYZO*/ XODU_X2.set(!SAVY_X1.q(),  _MUDE_X_RSTn, !XODU_X2.q());
@@ -102,6 +90,8 @@ void LcdRegisters::tick(TestGB& gb) {
   }
 
   {
+    auto rst_sig = gb.rst_reg.sig(gb);
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
     /*p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor(MYTA_LINE_153_d4.q(), LYHA_VID_RSTp);
     /*p21.MUWY*/ MUWY_Y0.set(RUTU_NEW_LINE_d0.q(), _LAMA_FRAME_RSTn, !MUWY_Y0.q());
     /*p21.MYRO*/ MYRO_Y1.set(!MUWY_Y0.q(),         _LAMA_FRAME_RSTn, !MYRO_Y1.q());
@@ -113,45 +103,60 @@ void LcdRegisters::tick(TestGB& gb) {
     /*p21.LAFO*/ LAFO_Y7.set(!MATO_Y6.q(),         _LAMA_FRAME_RSTn, !LAFO_Y7.q());
   }
 
-  /*p21.XYVO*/ wire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
   {
+    auto rst_sig = gb.rst_reg.sig(gb);
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
+    /*p21.XYVO*/ wire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
     /*p21.POPU*/ POPU_VBLANK_d4.set(NYPE_NEW_LINE_d4.q(), LYFE_VID_RSTn, _XYVO_IN_VBLANKp);
   }
 
   {
+    auto rst_sig = gb.rst_reg.sig(gb);
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p21.SANU*/ wire _SANU_LINE_END = and(TAKO_X6.q(), TUKY_X5.q(), TUHU_X4.q(), XEHO_X0.q()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+    auto clk_sig = gb.clk_reg.sig(gb);
     /*p21.RUTU*/ RUTU_NEW_LINE_d0.set(clk_sig.SONO_AxxxxFGH, LYFE_VID_RSTn, _SANU_LINE_END);
     /*p21.NYPE*/ NYPE_NEW_LINE_d4.set(clk_sig.TALU_xBCDExxx, LYFE_VID_RSTn, RUTU_NEW_LINE_d0.q());
   }
 
   {
+    auto rst_sig = gb.rst_reg.sig(gb);
+    /*p21.XYVO*/ wire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
     /*p29.ALES*/ wire _ALES_IN_VBLANKn = not(_XYVO_IN_VBLANKp);
+    auto lcd_sig = sig(gb);
     /*p29.ABOV*/ wire _ABOV_VID_LINE_d0  = and(lcd_sig.SELA_NEW_LINE_d0p, _ALES_IN_VBLANKn);
     /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
     /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
+    auto clk_sig = gb.clk_reg.sig(gb);
     /*p29.CATU*/ CATU_VID_LINE_d4.set (clk_sig.XUPY_xBCxxFGx, ABEZ_VID_RSTn, _ABOV_VID_LINE_d0);
     /*p28.ANEL*/ ANEL_VID_LINE_d6.set (clk_sig.AWOH_AxxDExxH, ABEZ_VID_RSTn, CATU_VID_LINE_d4.q());
   }
 
   {
+    auto rst_sig = gb.rst_reg.sig(gb);
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p21.NOKO*/ wire _NOKO_LINE_153 = and(LAFO_Y7.q(), LOVU_Y4.q(), LYDO_Y3.q(), MUWY_Y0.q()); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
     /*p21.MYTA*/ MYTA_LINE_153_d4.set(NYPE_NEW_LINE_d4.q(), LYFE_VID_RSTn, _NOKO_LINE_153);
   }
 
   {
-    LD0.set(not(pxp_sig.REMY_LD0n));
-    LD1.set(not(pxp_sig.RAVO_LD1n));
-  }
-
-  {
     // if LCDC_ENn, FR = 4k div clock. Otherwise FR = xor(LINE_EVEN,FRAME_EVEN)
+    auto rst_sig = gb.rst_reg.sig(gb);
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p24.LOFU*/ wire _LOFU_CLKn = not(RUTU_NEW_LINE_d0);
     /*p24.LUCA*/ LUCA_LINE_EVEN.set(_LOFU_CLKn, LYFE_VID_RSTn, !LUCA_LINE_EVEN.q());
     /*p21.NAPO*/ NAPO_FRAME_EVEN.set(POPU_VBLANK_d4.q(), LYFE_VID_RSTn, !NAPO_FRAME_EVEN.q());
     /*p24.MAGU*/ wire _MAGU = xor(NAPO_FRAME_EVEN, LUCA_LINE_EVEN.q());
     /*p24.MECO*/ wire _MECO = not(_MAGU);
     /*p24.KEBO*/ wire _KEBO = not(_MECO);
+    auto tim_sig = gb.tim_reg.sig(gb);
     /*p24.USEC*/ wire _USEC = not(tim_sig.UREK_DIV_07n);
+    auto& ppu_config = gb.ppu_config;
+    /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(ppu_config.XONA_LCDC_EN);
     /*p24.KUPA*/ wire _KUPA = amux2(ppu_config.XONA_LCDC_EN, _KEBO, KEDY_LCDC_ENn, _USEC);
     /*p24.KOFO*/ wire _KOFO = not(_KUPA);
     FR.set(_KOFO);
@@ -173,6 +178,10 @@ void LcdRegisters::tick(TestGB& gb) {
     /*p21.TEBO*/ wire _TEBO_083n = nand( TAKO_X6, _C5n,  TUHU_X4, _C3n, _C2n,  SAVY_X1,  XEHO_X0); // 1010011 == 83
 
     /*p21.TEGY*/ wire _TEGY_LINE_STROBE = nand(_VOKU_000n, _TOZU_007n, _TECE_045n, _TEBO_083n);
+    auto rst_sig = gb.rst_reg.sig(gb);
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
+    auto clk_sig = gb.clk_reg.sig(gb);
     /*p21.SYGU*/ SYGU_LINE_STROBE.set(clk_sig.SONO_AxxxxFGH, LYFE_VID_RSTn, _TEGY_LINE_STROBE);
     /*p21.RYNO*/ wire _RYNO = or(_TEGY_LINE_STROBE, RUTU_NEW_LINE_d0);
     /*p21.POGU*/ wire _POGU = not(_RYNO);
@@ -181,8 +190,12 @@ void LcdRegisters::tick(TestGB& gb) {
 
   // LCD CPL pin
   {
+    auto lcd_sig = sig(gb);
     /*p24.KASA*/ wire _KASA_LINE_DONE = not(lcd_sig.PURE_NEW_LINE_d0n);
+    auto tim_sig = gb.tim_reg.sig(gb);
     /*p24.UMOB*/ wire _UMOB_DIV_06p = not(tim_sig.UMEK_DIV_06n);
+    auto& ppu_config = gb.ppu_config;
+    /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(ppu_config.XONA_LCDC_EN);
     /*p24.KAHE*/ wire _KAHE = amux2(ppu_config.XONA_LCDC_EN, _KASA_LINE_DONE, KEDY_LCDC_ENn, _UMOB_DIV_06p);
     /*p24.KYMO*/ wire _KYMO = not(_KAHE);
     CPL.set(_KYMO);
@@ -191,6 +204,9 @@ void LcdRegisters::tick(TestGB& gb) {
   // LCD vertical sync pin
   {
     /*p24.NERU*/ wire _LINE_000n = nor(MUWY_Y0, MYRO_Y1, LEXA_Y2, LYDO_Y3, LOVU_Y4, LEMA_Y5, MATO_Y6, LAFO_Y7);
+    auto rst_sig = gb.rst_reg.sig(gb);
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p24.MEDA*/ MEDA_VSYNC_OUTn.set(NYPE_NEW_LINE_d4, LYFE_VID_RSTn, _LINE_000n);
     /*p24.MURE*/ wire _MURE_PIN_S = not(MEDA_VSYNC_OUTn);
     S.set(_MURE_PIN_S);
@@ -207,16 +223,22 @@ void LcdRegisters::tick(TestGB& gb) {
 
     // TERY has an arm on the VCC side
 
+    auto rst_sig = gb.rst_reg.sig(gb);
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
     /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
+    auto lcd_sig = sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb);
     /*p21.ROPO*/ ROPO_LY_MATCH_SYNCp.set(clk_sig.TALU_xBCDExxx, WESY_RSTn, lcd_sig.PALY_LY_MATCHa);
   }
 
   // FF44 LY
   {
+    auto& cpu_bus = gb.cpu_bus;
+
+    auto cpu_sig = gb.cpu_bus.sig(gb);
     /*p22.WYLE*/ wire FF44n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
     /*p22.XOGY*/ wire FF44 = not(FF44n);
     /*p23.WAFU*/ wire FF44_RD = and (cpu_sig.ASOT_CPU_RD, FF44);
@@ -243,6 +265,9 @@ void LcdRegisters::tick(TestGB& gb) {
 
   // FF45 LYC
   {
+    auto& cpu_bus = gb.cpu_bus;
+
+    auto cpu_sig = gb.cpu_bus.sig(gb);
     /*p22.WETY*/ wire FF45n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
     /*p22.XAYU*/ wire FF45 = not(FF45n);
     /*p23.XYLY*/ wire FF45_RD = and (cpu_sig.ASOT_CPU_RD, FF45);
@@ -259,6 +284,7 @@ void LcdRegisters::tick(TestGB& gb) {
     /*p23.VAFE*/ cpu_bus.TRI_D6.set_tribuf(!FF45_RDn, VEVO_LYC6.q());
     /*p23.PUFY*/ cpu_bus.TRI_D7.set_tribuf(!FF45_RDn, RAHA_LYC7.q());
 
+    auto rst_sig = gb.rst_reg.sig(gb);
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
@@ -316,8 +342,6 @@ bool LcdRegisters::commit() {
 
   /*p21.ROPO*/ changed |= ROPO_LY_MATCH_SYNCp.commit_reg();
 
-  /* PIN_50 */ changed |= LD1.commit_pinout();
-  /* PIN_51 */ changed |= LD0.commit_pinout();
   /* PIN_52 */ changed |= CPG.commit_pinout();
   /* PIN_55 */ changed |= CPL.commit_pinout();
   /* PIN_56 */ changed |= FR.commit_pinout();

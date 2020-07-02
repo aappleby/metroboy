@@ -1,5 +1,5 @@
 #include "Sch_LCD.h"
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -11,7 +11,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-LcdSignals LcdRegisters::sig(const TestGB& gb) const {
+LcdSignals LcdRegisters::sig(const SchematicTop& gb) const {
   LcdSignals sig;
 
   auto rst_sig = gb.rst_reg.sig(gb);
@@ -70,7 +70,7 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
-void LcdRegisters::tick(TestGB& gb) {
+void LcdRegisters::tick(SchematicTop& gb) {
 
   //----------------------------------------
 
@@ -303,51 +303,50 @@ void LcdRegisters::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool LcdRegisters::commit() {
-  bool changed = false;
-  /*p21.SAXO*/ changed |= XEHO_X0.commit_reg(); // increments at phase 1, reset to 0 at p909.
-  /*p21.TYPO*/ changed |= SAVY_X1.commit_reg();
-  /*p21.VYZO*/ changed |= XODU_X2.commit_reg();
-  /*p21.TELU*/ changed |= XYDO_X3.commit_reg();
-  /*p21.SUDE*/ changed |= TUHU_X4.commit_reg();
-  /*p21.TAHA*/ changed |= TUKY_X5.commit_reg();
-  /*p21.TYRY*/ changed |= TAKO_X6.commit_reg();
-  /*p21.MUWY*/ changed |= MUWY_Y0.commit_reg(); // increments at p909, reset to 0 at p153:001
-  /*p21.MYRO*/ changed |= MYRO_Y1.commit_reg();
-  /*p21.LEXA*/ changed |= LEXA_Y2.commit_reg();
-  /*p21.LYDO*/ changed |= LYDO_Y3.commit_reg();
-  /*p21.LOVU*/ changed |= LOVU_Y4.commit_reg();
-  /*p21.LEMA*/ changed |= LEMA_Y5.commit_reg();
-  /*p21.MATO*/ changed |= MATO_Y6.commit_reg();
-  /*p21.LAFO*/ changed |= LAFO_Y7.commit_reg();
-  /*p21.RUTU*/ changed |= RUTU_NEW_LINE_d0.commit_reg(); // p909+8
-  /*p29.CATU*/ changed |= CATU_VID_LINE_d4.commit_reg();  // p001+8
-  /*p21.NYPE*/ changed |= NYPE_NEW_LINE_d4.commit_reg(); // p001+8
-  /*p28.ANEL*/ changed |= ANEL_VID_LINE_d6.commit_reg();  // p003+8
-  /*p21.MYTA*/ changed |= MYTA_LINE_153_d4.commit_reg();  // p153:001 - p000:001
-  /*p21.POPU*/ changed |= POPU_VBLANK_d4.commit_reg();    // p144:001 - p000:001
-  /*p21.SYGU*/ changed |= SYGU_LINE_STROBE.commit_reg();
-  /*p24.MEDA*/ changed |= MEDA_VSYNC_OUTn.commit_reg();
-  /*p24.LUCA*/ changed |= LUCA_LINE_EVEN.commit_reg();
-  /*p21.NAPO*/ changed |= NAPO_FRAME_EVEN.commit_reg();
+SignalHash LcdRegisters::commit() {
+  SignalHash hash;
+  /*p21.SAXO*/ hash << XEHO_X0.commit_reg(); // increments at phase 1, reset to 0 at p909.
+  /*p21.TYPO*/ hash << SAVY_X1.commit_reg();
+  /*p21.VYZO*/ hash << XODU_X2.commit_reg();
+  /*p21.TELU*/ hash << XYDO_X3.commit_reg();
+  /*p21.SUDE*/ hash << TUHU_X4.commit_reg();
+  /*p21.TAHA*/ hash << TUKY_X5.commit_reg();
+  /*p21.TYRY*/ hash << TAKO_X6.commit_reg();
+  /*p21.MUWY*/ hash << MUWY_Y0.commit_reg(); // increments at p909, reset to 0 at p153:001
+  /*p21.MYRO*/ hash << MYRO_Y1.commit_reg();
+  /*p21.LEXA*/ hash << LEXA_Y2.commit_reg();
+  /*p21.LYDO*/ hash << LYDO_Y3.commit_reg();
+  /*p21.LOVU*/ hash << LOVU_Y4.commit_reg();
+  /*p21.LEMA*/ hash << LEMA_Y5.commit_reg();
+  /*p21.MATO*/ hash << MATO_Y6.commit_reg();
+  /*p21.LAFO*/ hash << LAFO_Y7.commit_reg();
+  /*p21.RUTU*/ hash << RUTU_NEW_LINE_d0.commit_reg(); // p909+8
+  /*p29.CATU*/ hash << CATU_VID_LINE_d4.commit_reg();  // p001+8
+  /*p21.NYPE*/ hash << NYPE_NEW_LINE_d4.commit_reg(); // p001+8
+  /*p28.ANEL*/ hash << ANEL_VID_LINE_d6.commit_reg();  // p003+8
+  /*p21.MYTA*/ hash << MYTA_LINE_153_d4.commit_reg();  // p153:001 - p000:001
+  /*p21.POPU*/ hash << POPU_VBLANK_d4.commit_reg();    // p144:001 - p000:001
+  /*p21.SYGU*/ hash << SYGU_LINE_STROBE.commit_reg();
+  /*p24.MEDA*/ hash << MEDA_VSYNC_OUTn.commit_reg();
+  /*p24.LUCA*/ hash << LUCA_LINE_EVEN.commit_reg();
+  /*p21.NAPO*/ hash << NAPO_FRAME_EVEN.commit_reg();
 
-  /*p23.SYRY*/ changed |= SYRY_LYC0.commit_reg();
-  /*p23.VUCE*/ changed |= VUCE_LYC1.commit_reg();
-  /*p23.SEDY*/ changed |= SEDY_LYC2.commit_reg();
-  /*p23.SALO*/ changed |= SALO_LYC3.commit_reg();
-  /*p23.SOTA*/ changed |= SOTA_LYC4.commit_reg();
-  /*p23.VAFA*/ changed |= VAFA_LYC5.commit_reg();
-  /*p23.VEVO*/ changed |= VEVO_LYC6.commit_reg();
-  /*p23.RAHA*/ changed |= RAHA_LYC7.commit_reg();
+  /*p23.SYRY*/ hash << SYRY_LYC0.commit_reg();
+  /*p23.VUCE*/ hash << VUCE_LYC1.commit_reg();
+  /*p23.SEDY*/ hash << SEDY_LYC2.commit_reg();
+  /*p23.SALO*/ hash << SALO_LYC3.commit_reg();
+  /*p23.SOTA*/ hash << SOTA_LYC4.commit_reg();
+  /*p23.VAFA*/ hash << VAFA_LYC5.commit_reg();
+  /*p23.VEVO*/ hash << VEVO_LYC6.commit_reg();
+  /*p23.RAHA*/ hash << RAHA_LYC7.commit_reg();
 
-  /*p21.ROPO*/ changed |= ROPO_LY_MATCH_SYNCp.commit_reg();
+  /*p21.ROPO*/ hash << ROPO_LY_MATCH_SYNCp.commit_reg();
 
-  /* PIN_52 */ changed |= CPG.commit_pinout();
-  /* PIN_55 */ changed |= CPL.commit_pinout();
-  /* PIN_56 */ changed |= FR.commit_pinout();
-  /* PIN_57 */ changed |= S.commit_pinout();
-
-  return changed;
+  /* PIN_52 */ hash << CPG.commit_pinout();
+  /* PIN_55 */ hash << CPL.commit_pinout();
+  /* PIN_56 */ hash << FR.commit_pinout();
+  /* PIN_57 */ hash << S.commit_pinout();
+  return hash;
 }
 
 //------------------------------------------------------------------------------

@@ -1,12 +1,12 @@
 #include "Sch_Timer.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-TimerSignals TimerRegisters::sig(const TestGB& /*gb*/) const {
+TimerSignals TimerRegisters::sig(const SchematicTop& /*gb*/) const {
   TimerSignals sig;
 
   sig.UVYN_DIV_05n    = not(TAMA_DIV_05);
@@ -20,7 +20,7 @@ TimerSignals TimerRegisters::sig(const TestGB& /*gb*/) const {
 
 //------------------------------------------------------------------------------
 
-void TimerRegisters::tick(TestGB& gb) {
+void TimerRegisters::tick(SchematicTop& gb) {
   auto& cpu_bus = gb.cpu_bus;
 
   auto clk_sig = gb.clk_reg.sig(gb);
@@ -177,46 +177,46 @@ void TimerRegisters::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool TimerRegisters::commit() {
-  bool changed = false;
-  /*p01.UKUP*/ changed |= UKUP_DIV_00.commit_reg();
-  /*p01.UFOR*/ changed |= UFOR_DIV_01.commit_reg();
-  /*p01.UNER*/ changed |= UNER_DIV_02.commit_reg();
-  /*p01.TERO*/ changed |= TERO_DIV_03.commit_reg();
-  /*p01.UNYK*/ changed |= UNYK_DIV_04.commit_reg();
-  /*p01.TAMA*/ changed |= TAMA_DIV_05.commit_reg();
-  /*p01.UGOT*/ changed |= UGOT_DIV_06.commit_reg();
-  /*p01.TULU*/ changed |= TULU_DIV_07.commit_reg();
-  /*p01.TUGO*/ changed |= TUGO_DIV_08.commit_reg();
-  /*p01.TOFE*/ changed |= TOFE_DIV_09.commit_reg();
-  /*p01.TERU*/ changed |= TERU_DIV_10.commit_reg();
-  /*p01.SOLA*/ changed |= SOLA_DIV_11.commit_reg();
-  /*p01.SUBU*/ changed |= SUBU_DIV_12.commit_reg();
-  /*p01.TEKA*/ changed |= TEKA_DIV_13.commit_reg();
-  /*p01.UKET*/ changed |= UKET_DIV_14.commit_reg();
-  /*p01.UPOF*/ changed |= UPOF_DIV_15.commit_reg();
-  /*p03.REGA*/ changed |= TIMA_0.commit_counter();
-  /*p03.POVY*/ changed |= TIMA_1.commit_counter();
-  /*p03.PERU*/ changed |= TIMA_2.commit_counter();
-  /*p03.RATE*/ changed |= TIMA_3.commit_counter();
-  /*p03.RUBY*/ changed |= TIMA_4.commit_counter();
-  /*p03.RAGE*/ changed |= TIMA_5.commit_counter();
-  /*p03.PEDA*/ changed |= TIMA_6.commit_counter();
-  /*p03.NUGA*/ changed |= TIMA_7.commit_counter();
-  /*p03.NYDU*/ changed |= TIMA_MAX.commit_reg();
-  /*p03.MOBA*/ changed |= MOBA_INT_TIMERp.commit_reg();
-  /*p03.SABU*/ changed |= TMA_0.commit_reg();
-  /*p03.NYKE*/ changed |= TMA_1.commit_reg();
-  /*p03.MURU*/ changed |= TMA_2.commit_reg();
-  /*p03.TYVA*/ changed |= TMA_3.commit_reg();
-  /*p03.TYRU*/ changed |= TMA_4.commit_reg();
-  /*p03.SUFY*/ changed |= TMA_5.commit_reg();
-  /*p03.PETO*/ changed |= TMA_6.commit_reg();
-  /*p03.SETA*/ changed |= TMA_7.commit_reg();
-  /*p03.SOPU*/ changed |= TAC_0.commit_reg();
-  /*p03.SAMY*/ changed |= TAC_1.commit_reg();
-  /*p03.SABO*/ changed |= TAC_2.commit_reg();
-  return changed;
+SignalHash TimerRegisters::commit() {
+  SignalHash hash;
+  /*p01.UKUP*/ hash << UKUP_DIV_00.commit_reg();
+  /*p01.UFOR*/ hash << UFOR_DIV_01.commit_reg();
+  /*p01.UNER*/ hash << UNER_DIV_02.commit_reg();
+  /*p01.TERO*/ hash << TERO_DIV_03.commit_reg();
+  /*p01.UNYK*/ hash << UNYK_DIV_04.commit_reg();
+  /*p01.TAMA*/ hash << TAMA_DIV_05.commit_reg();
+  /*p01.UGOT*/ hash << UGOT_DIV_06.commit_reg();
+  /*p01.TULU*/ hash << TULU_DIV_07.commit_reg();
+  /*p01.TUGO*/ hash << TUGO_DIV_08.commit_reg();
+  /*p01.TOFE*/ hash << TOFE_DIV_09.commit_reg();
+  /*p01.TERU*/ hash << TERU_DIV_10.commit_reg();
+  /*p01.SOLA*/ hash << SOLA_DIV_11.commit_reg();
+  /*p01.SUBU*/ hash << SUBU_DIV_12.commit_reg();
+  /*p01.TEKA*/ hash << TEKA_DIV_13.commit_reg();
+  /*p01.UKET*/ hash << UKET_DIV_14.commit_reg();
+  /*p01.UPOF*/ hash << UPOF_DIV_15.commit_reg();
+  /*p03.REGA*/ hash << TIMA_0.commit_counter();
+  /*p03.POVY*/ hash << TIMA_1.commit_counter();
+  /*p03.PERU*/ hash << TIMA_2.commit_counter();
+  /*p03.RATE*/ hash << TIMA_3.commit_counter();
+  /*p03.RUBY*/ hash << TIMA_4.commit_counter();
+  /*p03.RAGE*/ hash << TIMA_5.commit_counter();
+  /*p03.PEDA*/ hash << TIMA_6.commit_counter();
+  /*p03.NUGA*/ hash << TIMA_7.commit_counter();
+  /*p03.NYDU*/ hash << TIMA_MAX.commit_reg();
+  /*p03.MOBA*/ hash << MOBA_INT_TIMERp.commit_reg();
+  /*p03.SABU*/ hash << TMA_0.commit_reg();
+  /*p03.NYKE*/ hash << TMA_1.commit_reg();
+  /*p03.MURU*/ hash << TMA_2.commit_reg();
+  /*p03.TYVA*/ hash << TMA_3.commit_reg();
+  /*p03.TYRU*/ hash << TMA_4.commit_reg();
+  /*p03.SUFY*/ hash << TMA_5.commit_reg();
+  /*p03.PETO*/ hash << TMA_6.commit_reg();
+  /*p03.SETA*/ hash << TMA_7.commit_reg();
+  /*p03.SOPU*/ hash << TAC_0.commit_reg();
+  /*p03.SAMY*/ hash << TAC_1.commit_reg();
+  /*p03.SABO*/ hash << TAC_2.commit_reg();
+  return hash;
 }
 
 //------------------------------------------------------------------------------

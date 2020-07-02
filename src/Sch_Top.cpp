@@ -1,12 +1,12 @@
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
-TestGB gb;
+SchematicTop gb;
 
 //-----------------------------------------------------------------------------
 
-void TestGB::tick_everything() {
+void SchematicTop::tick_everything() {
   auto rst_sig = rst_reg.sig(*this);
   auto clk_sig = clk_reg.sig(*this);
   auto cpu_sig = cpu_bus.sig(*this);
@@ -30,33 +30,31 @@ void TestGB::tick_everything() {
 
 //-----------------------------------------------------------------------------
 
-bool TestGB::commit_everything() {
-  bool changed = false;
+SignalHash SchematicTop::commit_everything() {
+  SignalHash hash;
+  hash << lcd_reg.commit();
+  hash << pxp_reg.commit();
+  hash << sst_reg.commit();
+  hash << tim_reg.commit();
+  hash << ppu_reg.commit();
+  hash << win_reg.commit();
+  hash << lcd_reg.commit();
+  hash << ser_reg.commit();
 
-  changed |= lcd_reg.commit();
-  changed |= pxp_reg.commit();
-  changed |= sst_reg.commit();
-  changed |= tim_reg.commit();
-  changed |= ppu_reg.commit();
-  changed |= win_reg.commit();
-  changed |= lcd_reg.commit();
-  changed |= ser_reg.commit();
-
-  /* PIN_71 */ changed |= EXT_PIN_RST.clear_preset();
+  /* PIN_71 */ hash << EXT_PIN_RST.clear_preset();
   /* PIN_72 */ /*GND*/
                /* PIN_73 */ /*CLKOUT*/
-  /* PIN_74 */ changed |= EXT_PIN_CLK_GOOD.clear_preset();
+  /* PIN_74 */ hash << EXT_PIN_CLK_GOOD.clear_preset();
 
-  /* PIN_17 */ changed |= EXT_PIN_D0_C.clear_preset();       // -> TOVO,SOMA
-  /* PIN_18 */ changed |= EXT_PIN_D1_C.clear_preset();       // -> RUZY,RONY
-  /* PIN_19 */ changed |= EXT_PIN_D2_C.clear_preset();       // -> ROME,RAXY
-  /* PIN_20 */ changed |= EXT_PIN_D3_C.clear_preset();       // -> SAZA,SELO
-  /* PIN_21 */ changed |= EXT_PIN_D4_C.clear_preset();       // -> TEHE,SODY
-  /* PIN_22 */ changed |= EXT_PIN_D5_C.clear_preset();       // -> RATU,SAGO
-  /* PIN_23 */ changed |= EXT_PIN_D6_C.clear_preset();       // -> SOCA,RUPA
-  /* PIN_24 */ changed |= EXT_PIN_D7_C.clear_preset();       // -> RYBA,SAZY
-
-  return changed;
+  /* PIN_17 */ hash << EXT_PIN_D0_C.clear_preset();       // -> TOVO,SOMA
+  /* PIN_18 */ hash << EXT_PIN_D1_C.clear_preset();       // -> RUZY,RONY
+  /* PIN_19 */ hash << EXT_PIN_D2_C.clear_preset();       // -> ROME,RAXY
+  /* PIN_20 */ hash << EXT_PIN_D3_C.clear_preset();       // -> SAZA,SELO
+  /* PIN_21 */ hash << EXT_PIN_D4_C.clear_preset();       // -> TEHE,SODY
+  /* PIN_22 */ hash << EXT_PIN_D5_C.clear_preset();       // -> RATU,SAGO
+  /* PIN_23 */ hash << EXT_PIN_D6_C.clear_preset();       // -> SOCA,RUPA
+  /* PIN_24 */ hash << EXT_PIN_D7_C.clear_preset();       // -> RYBA,SAZY
+  return hash;
 }
 
 //-----------------------------------------------------------------------------

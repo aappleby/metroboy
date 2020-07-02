@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -33,9 +33,9 @@ struct DmaSignals {
 
 struct DmaRegisters {
 
-  DmaSignals sig(const TestGB& gb) const;
-  void tick(TestGB& gb);
-  bool commit();
+  DmaSignals sig(const SchematicTop& gb) const;
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
 private:
 

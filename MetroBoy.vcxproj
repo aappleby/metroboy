@@ -133,7 +133,6 @@
     <ClInclude Include="src\Sch_CpuBus.h" />
     <ClInclude Include="src\Sch_Debug.h" />
     <ClInclude Include="src\Sch_DMA.h" />
-    <ClInclude Include="src\Sch_ExtBus.h" />
     <ClInclude Include="src\Sch_Interrupts.h" />
     <ClInclude Include="src\Sch_Joypad.h" />
     <ClInclude Include="src\Sch_LCD.h" />
@@ -147,6 +146,7 @@
     <ClInclude Include="src\Sch_SpriteStore.h" />
     <ClInclude Include="src\Sch_TileFetcher.h" />
     <ClInclude Include="src\Sch_Timer.h" />
+    <ClInclude Include="src\Sch_Top.h" />
     <ClInclude Include="src\Sch_VramPins.h" />
     <ClInclude Include="src\Sch_VramBus.h" />
     <ClInclude Include="src\Sch_Window.h" />
@@ -154,7 +154,6 @@
     <ClInclude Include="src\SPU.h" />
     <ClInclude Include="src\StateManager.h" />
     <ClInclude Include="src\StateManager2.h" />
-    <ClInclude Include="src\TestGB.h" />
     <ClInclude Include="src\test_codegen.h" />
     <ClInclude Include="src\test_micro.h" />
     <ClInclude Include="src\test_mooneye.h" />
@@ -209,7 +208,6 @@
     <ClCompile Include="src\Sch_CpuBus.cpp" />
     <ClCompile Include="src\Sch_Debug.cpp" />
     <ClCompile Include="src\Sch_DMA.cpp" />
-    <ClCompile Include="src\Sch_ExtBus.cpp" />
     <ClCompile Include="src\Sch_Interrupts.cpp" />
     <ClCompile Include="src\Sch_Joypad.cpp" />
     <ClCompile Include="src\Sch_LCD.cpp" />
@@ -223,6 +221,7 @@
     <ClCompile Include="src\Sch_SpriteStore.cpp" />
     <ClCompile Include="src\Sch_TileFetcher.cpp" />
     <ClCompile Include="src\Sch_Timer.cpp" />
+    <ClCompile Include="src\Sch_Top.cpp" />
     <ClCompile Include="src\Sch_VramPins.cpp" />
     <ClCompile Include="src\Sch_VramBus.cpp" />
     <ClCompile Include="src\Sch_Window.cpp" />
@@ -231,7 +230,6 @@
     <ClCompile Include="src\StateManager.cpp" />
     <ClCompile Include="src\StateManager2.cpp" />
     <ClCompile Include="src\Terminus.cpp" />
-    <ClCompile Include="src\TestGB.cpp" />
     <ClCompile Include="src\test_codegen.cpp" />
     <ClCompile Include="src\test_micro.cpp" />
     <ClCompile Include="src\test_mooneye.cpp" />

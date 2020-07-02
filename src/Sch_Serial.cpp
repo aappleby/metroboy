@@ -1,18 +1,18 @@
 #include "Sch_Serial.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-SerialSignals SerialRegisters::sig(const TestGB& /*gb*/) const {
+SerialSignals SerialRegisters::sig(const SchematicTop& /*gb*/) const {
   return {
     .CALY_INT_SERIALp = CALY_INT_SERIALp,
   };
 }
 
-void SerialRegisters::tick(TestGB& gb) {
+void SerialRegisters::tick(SchematicTop& gb) {
 
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
@@ -121,46 +121,46 @@ void SerialRegisters::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool SerialRegisters::commit() {
-  bool changed = false;
+SignalHash SerialRegisters::commit() {
+  SignalHash hash;
 
-  /*p06.ETAF*/ changed |= XFER_START.commit_reg();
-  /*p06.CULY*/ changed |= XFER_DIR.commit_reg();
-  /*p06.COTY*/ changed |= SER_CLK.commit_reg();
-  /*p06.CAFA*/ changed |= SER_CNT0.commit_reg();
-  /*p06.CYLO*/ changed |= SER_CNT1.commit_reg();
-  /*p06.CYDE*/ changed |= SER_CNT2.commit_reg();
-  /*p06.CALY*/ changed |= CALY_INT_SERIALp.commit_reg();
-  /*p06.CUBA*/ changed |= SER_DATA0.commit_reg();
-  /*p06.DEGU*/ changed |= SER_DATA1.commit_reg();
-  /*p06.DYRA*/ changed |= SER_DATA2.commit_reg();
-  /*p06.DOJO*/ changed |= SER_DATA3.commit_reg();
-  /*p06.DOVU*/ changed |= SER_DATA4.commit_reg();
-  /*p06.EJAB*/ changed |= SER_DATA5.commit_reg();
-  /*p06.EROD*/ changed |= SER_DATA6.commit_reg();
-  /*p06.EDER*/ changed |= SER_DATA7.commit_reg();
-  /*p06.ELYS*/ changed |= SER_OUT.commit_reg();
+  /*p06.ETAF*/ hash << XFER_START.commit_reg();
+  /*p06.CULY*/ hash << XFER_DIR.commit_reg();
+  /*p06.COTY*/ hash << SER_CLK.commit_reg();
+  /*p06.CAFA*/ hash << SER_CNT0.commit_reg();
+  /*p06.CYLO*/ hash << SER_CNT1.commit_reg();
+  /*p06.CYDE*/ hash << SER_CNT2.commit_reg();
+  /*p06.CALY*/ hash << CALY_INT_SERIALp.commit_reg();
+  /*p06.CUBA*/ hash << SER_DATA0.commit_reg();
+  /*p06.DEGU*/ hash << SER_DATA1.commit_reg();
+  /*p06.DYRA*/ hash << SER_DATA2.commit_reg();
+  /*p06.DOJO*/ hash << SER_DATA3.commit_reg();
+  /*p06.DOVU*/ hash << SER_DATA4.commit_reg();
+  /*p06.EJAB*/ hash << SER_DATA5.commit_reg();
+  /*p06.EROD*/ hash << SER_DATA6.commit_reg();
+  /*p06.EDER*/ hash << SER_DATA7.commit_reg();
+  /*p06.ELYS*/ hash << SER_OUT.commit_reg();
 
-  /* PIN_68 */ changed |= SCK_A.commit_pinout();   // <- P06.KEXU
-  /* PIN_68 */ changed |= SCK_B.commit_pinout();   // <- P06.CULY
-  /* PIN_68 */ changed |= SCK_C.clear_preset();   // -> P06.CAVE
-  /* PIN_68 */ changed |= SCK_D.commit_pinout();   // <- P06.KUJO
-  ///* PIN_69 */ changed |= SIN_A.commit();   // nc?
-  ///* PIN_69 */ changed |= SIN_B.commit();   // nc?
-  /* PIN_69 */ changed |= SIN_C.clear_preset();   // -> P06.CAGE
-  ///* PIN_69 */ changed |= SIN_D.commit();   // nc?
-  /* PIN_70 */ changed |= SOUT.commit_pinout();    // <- P05.KENA
-  return changed;
+  /* PIN_68 */ hash << SCK_A.commit_pinout();   // <- P06.KEXU
+  /* PIN_68 */ hash << SCK_B.commit_pinout();   // <- P06.CULY
+  /* PIN_68 */ hash << SCK_C.clear_preset();   // -> P06.CAVE
+  /* PIN_68 */ hash << SCK_D.commit_pinout();   // <- P06.KUJO
+  ///* PIN_69 */ hash << SIN_A.commit();   // nc?
+  ///* PIN_69 */ hash << SIN_B.commit();   // nc?
+  /* PIN_69 */ hash << SIN_C.clear_preset();   // -> P06.CAGE
+  ///* PIN_69 */ hash << SIN_D.commit();   // nc?
+  /* PIN_70 */ hash << SOUT.commit_pinout();    // <- P05.KENA
+  return hash;
 }
 
 //------------------------------------------------------------------------------
 
 void SerialRegisters::dump_regs(TextPainter& text_painter) {
   text_painter.dprintf("----- SER_REG -----\n");
-  text_painter.dprintf("SER_CLK    %d\n", SER_CLK.a.val);
-  text_painter.dprintf("XFER_START %d\n", XFER_START.a.val);
-  text_painter.dprintf("XFER_DIR   %d\n", XFER_DIR.a.val);
-  text_painter.dprintf("SER_OUT    %d\n", SER_OUT.a.val);
+  text_painter.dprintf("SER_CLK    %d\n", SER_CLK.prev().val);
+  text_painter.dprintf("XFER_START %d\n", XFER_START.prev().val);
+  text_painter.dprintf("XFER_DIR   %d\n", XFER_DIR.prev().val);
+  text_painter.dprintf("SER_OUT    %d\n", SER_OUT.prev().val);
   text_painter.dprintf("SER_CNT    %d\n", ser_cnt());
   text_painter.dprintf("SER_DATA   %d\n", ser_data());
   text_painter.newline();
@@ -168,9 +168,9 @@ void SerialRegisters::dump_regs(TextPainter& text_painter) {
 
 void SerialRegisters::dump_pins(TextPainter& text_painter) {
   text_painter.dprintf("----- SER_PINS -----\n");
-  text_painter.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.a.val, SCK_B.a.val, SCK_C.a.val, SCK_D.a.val);
-  text_painter.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.a.val, SIN_B.a.val, SIN_C.a.val, SIN_D.a.val);
-  text_painter.dprintf("SOUT %d\n", SOUT.a.val);
+  text_painter.dprintf("SCK  %d:%d:%d:%d\n", SCK_A.prev().val, SCK_B.prev().val, SCK_C.prev().val, SCK_D.prev().val);
+  text_painter.dprintf("SIN  %d:%d:%d:%d\n", SIN_A.prev().val, SIN_B.prev().val, SIN_C.prev().val, SIN_D.prev().val);
+  text_painter.dprintf("SOUT %d\n", SOUT.prev().val);
   text_painter.newline();
 }
 

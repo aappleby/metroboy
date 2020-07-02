@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -39,9 +39,9 @@ struct PpuSignals {
 
 struct PpuRegisters {
 
-  PpuSignals sig(const TestGB& gb) const;
-  void tick(TestGB& gb);
-  bool commit();
+  PpuSignals sig(const SchematicTop& gb) const;
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
 private:
 

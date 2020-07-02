@@ -2,12 +2,22 @@
 
 //-----------------------------------------------------------------------------
 
+int GateBoy::main(int /*argc*/, char** /*argv*/) {
+  printf("GateBoy sim starting\n");
+  GateBoy gb;
+
+  return 0;
+}
+
+//-----------------------------------------------------------------------------
+
 uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
-  Schematics::TestGB* gb = state_manager.state();
+  Schematics::SchematicTop* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
     gb->phase_counter++;
 
+    Schematics::SignalHash old_hash;
     for (int pass = 0; pass < 256; pass++) {
       //gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
@@ -19,8 +29,8 @@ uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
       //gb->joy_reg.clear_dir();
 
       gb->tick_everything();
-      bool changed = gb->commit_everything();
-      if (!changed) break;
+      Schematics::SignalHash hash = gb->commit_everything();
+      if (hash == old_hash) break;
       if (pass == 199) printf("stuck!\n");
       if (pass == 200) __debugbreak();
     }
@@ -32,7 +42,7 @@ uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
-  Schematics::TestGB* gb = state_manager.state();
+  Schematics::SchematicTop* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
     gb->phase_counter++;
@@ -60,7 +70,7 @@ void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::pass_cycle() {
-  Schematics::TestGB* gb = state_manager.state();
+  Schematics::SchematicTop* gb = state_manager.state();
 
   for (int pass_phase = 0; pass_phase < 8; pass_phase++) {
     gb->phase_counter++;
@@ -127,7 +137,7 @@ void GateBoy::init() {
 void GateBoy::reset(uint16_t /*new_pc*/) {
   state_manager.reset();
 
-  auto gb_step = [this](Schematics::TestGB* gb){
+  auto gb_step = [this](Schematics::SchematicTop* gb){
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
@@ -161,7 +171,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
 
   state_manager.set_step(gb_step);
 
-  Schematics::TestGB* gb = state_manager.state();
+  Schematics::SchematicTop* gb = state_manager.state();
 
   gb->EXT_PIN_RST.preset(true, 1);
   gb->EXT_PIN_CLK_GOOD.preset(true, 0);
@@ -222,7 +232,7 @@ void GateBoy::update(double delta) {
 void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text_painter) {
   //uint64_t begin = SDL_GetPerformanceCounter();
 
-  Schematics::TestGB& gb = *state_manager.state();
+  Schematics::SchematicTop& gb = *state_manager.state();
 
   text_painter.dprintf(" ----- SYS_REG -----\n");
   text_painter.dprintf("PHASE    %08d\n", gb.phase_counter);

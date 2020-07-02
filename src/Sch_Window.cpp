@@ -1,5 +1,5 @@
 #include "Sch_Window.h"
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -33,7 +33,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-WindowSignals WindowRegisters::sig(const TestGB& gb) const {
+WindowSignals WindowRegisters::sig(const SchematicTop& gb) const {
   WindowSignals sig;
 
   auto ppu_sig = gb.ppu_reg.sig(gb);
@@ -68,7 +68,7 @@ WindowSignals WindowRegisters::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
-void WindowRegisters::tick(TestGB& gb) {
+void WindowRegisters::tick(SchematicTop& gb) {
   auto& cpu_bus = gb.cpu_bus;
 
   auto cpu_sig = gb.cpu_bus.sig(gb);
@@ -293,54 +293,54 @@ void WindowRegisters::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool WindowRegisters::commit() {
-  bool changed = false;
-  /*p27.SARY*/ changed |= SARY_WIN_MATCH_Y_SYNC.commit_reg();
-  /*p27.RYFA*/ changed |= RYFA_WIN_MATCH_TRIGA.commit_reg();
-  /*p27.RENE*/ changed |= RENE_WIN_MATCH_TRIGB.commit_reg();
-  /*p27.PYCO*/ changed |= PYCO_WIN_MATCH_SYNC1.commit_reg();
-  /*p27.NUNU*/ changed |= NUNU_WIN_MATCH_SYNC2.commit_reg();
-  /*p27.REJO*/ changed |= REJO_WY_MATCH_LATCH.commit_latch();
-  /*p27.NOPA*/ changed |= NOPA_WIN_MODE_TRIGB.commit_reg();
-  /*p27.SOVY*/ changed |= SOVY_WIN_HIT_SYNC.commit_reg();
-  /*p27.PYNU*/ changed |= PYNU_WIN_MODE_TRIGA.commit_latch();
-  /*p27.RYDY*/ changed |= RYDY_WIN_HIT_LATCHp.commit_latch();
+SignalHash WindowRegisters::commit() {
+  SignalHash hash;
+  /*p27.SARY*/ hash << SARY_WIN_MATCH_Y_SYNC.commit_reg();
+  /*p27.RYFA*/ hash << RYFA_WIN_MATCH_TRIGA.commit_reg();
+  /*p27.RENE*/ hash << RENE_WIN_MATCH_TRIGB.commit_reg();
+  /*p27.PYCO*/ hash << PYCO_WIN_MATCH_SYNC1.commit_reg();
+  /*p27.NUNU*/ hash << NUNU_WIN_MATCH_SYNC2.commit_reg();
+  /*p27.REJO*/ hash << REJO_WY_MATCH_LATCH.commit_latch();
+  /*p27.NOPA*/ hash << NOPA_WIN_MODE_TRIGB.commit_reg();
+  /*p27.SOVY*/ hash << SOVY_WIN_HIT_SYNC.commit_reg();
+  /*p27.PYNU*/ hash << PYNU_WIN_MODE_TRIGA.commit_latch();
+  /*p27.RYDY*/ hash << RYDY_WIN_HIT_LATCHp.commit_latch();
 
-  /*p27.WYKA*/ changed |= WIN_X3.commit_reg();
-  /*p27.WODY*/ changed |= WIN_X4.commit_reg();
-  /*p27.WOBO*/ changed |= WIN_X5.commit_reg();
-  /*p27.WYKO*/ changed |= WIN_X6.commit_reg();
-  /*p27.XOLO*/ changed |= WIN_X7.commit_reg();
-  /*p27.VYNO*/ changed |= WIN_Y0.commit_reg();
-  /*p27.VUJO*/ changed |= WIN_Y1.commit_reg();
-  /*p27.VYMU*/ changed |= WIN_Y2.commit_reg();
-  /*p27.TUFU*/ changed |= WIN_Y3.commit_reg();
-  /*p27.TAXA*/ changed |= WIN_Y4.commit_reg();
-  /*p27.TOZO*/ changed |= WIN_Y5.commit_reg();
-  /*p27.TATE*/ changed |= WIN_Y6.commit_reg();
-  /*p27.TEKE*/ changed |= WIN_Y7.commit_reg();
+  /*p27.WYKA*/ hash << WIN_X3.commit_reg();
+  /*p27.WODY*/ hash << WIN_X4.commit_reg();
+  /*p27.WOBO*/ hash << WIN_X5.commit_reg();
+  /*p27.WYKO*/ hash << WIN_X6.commit_reg();
+  /*p27.XOLO*/ hash << WIN_X7.commit_reg();
+  /*p27.VYNO*/ hash << WIN_Y0.commit_reg();
+  /*p27.VUJO*/ hash << WIN_Y1.commit_reg();
+  /*p27.VYMU*/ hash << WIN_Y2.commit_reg();
+  /*p27.TUFU*/ hash << WIN_Y3.commit_reg();
+  /*p27.TAXA*/ hash << WIN_Y4.commit_reg();
+  /*p27.TOZO*/ hash << WIN_Y5.commit_reg();
+  /*p27.TATE*/ hash << WIN_Y6.commit_reg();
+  /*p27.TEKE*/ hash << WIN_Y7.commit_reg();
 
-  /*p23.MYPA*/ changed |= WX0.commit_reg();
-  /*p23.NOFE*/ changed |= WX1.commit_reg();
-  /*p23.NOKE*/ changed |= WX2.commit_reg();
-  /*p23.MEBY*/ changed |= WX3.commit_reg();
-  /*p23.MYPU*/ changed |= WX4.commit_reg();
-  /*p23.MYCE*/ changed |= WX5.commit_reg();
-  /*p23.MUVO*/ changed |= WX6.commit_reg();
-  /*p23.NUKU*/ changed |= WX7.commit_reg();
+  /*p23.MYPA*/ hash << WX0.commit_reg();
+  /*p23.NOFE*/ hash << WX1.commit_reg();
+  /*p23.NOKE*/ hash << WX2.commit_reg();
+  /*p23.MEBY*/ hash << WX3.commit_reg();
+  /*p23.MYPU*/ hash << WX4.commit_reg();
+  /*p23.MYCE*/ hash << WX5.commit_reg();
+  /*p23.MUVO*/ hash << WX6.commit_reg();
+  /*p23.NUKU*/ hash << WX7.commit_reg();
 
-  /*p23.NESO*/ changed |= WY0.commit_reg();
-  /*p23.NYRO*/ changed |= WY1.commit_reg();
-  /*p23.NAGA*/ changed |= WY2.commit_reg();
-  /*p23.MELA*/ changed |= WY3.commit_reg();
-  /*p23.NULO*/ changed |= WY4.commit_reg();
-  /*p23.NENE*/ changed |= WY5.commit_reg();
-  /*p23.NUKA*/ changed |= WY6.commit_reg();
-  /*p23.NAFU*/ changed |= WY7.commit_reg();
+  /*p23.NESO*/ hash << WY0.commit_reg();
+  /*p23.NYRO*/ hash << WY1.commit_reg();
+  /*p23.NAGA*/ hash << WY2.commit_reg();
+  /*p23.MELA*/ hash << WY3.commit_reg();
+  /*p23.NULO*/ hash << WY4.commit_reg();
+  /*p23.NENE*/ hash << WY5.commit_reg();
+  /*p23.NUKA*/ hash << WY6.commit_reg();
+  /*p23.NAFU*/ hash << WY7.commit_reg();
 
 
 
-  return changed;
+  return hash;
 }
 
 //------------------------------------------------------------------------------

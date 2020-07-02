@@ -1,5 +1,5 @@
 #include "BusDump.h"
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -7,7 +7,7 @@ using namespace Schematics;
 
 void test_bus_dump(BusDump* dump_log, int len) {
 
-  TestGB gb;
+  SchematicTop gb;
   //gb.reset();
 
   // Preload the rom reads into the gameboy.

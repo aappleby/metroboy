@@ -1,12 +1,12 @@
 #include "Sch_Interrupts.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void InterruptRegisters::tick(TestGB& gb) {
+void InterruptRegisters::tick(SchematicTop& gb) {
   auto& cpu_bus = gb.cpu_bus;
 
   auto tim_sig = gb.tim_reg.sig(gb);
@@ -126,31 +126,31 @@ void InterruptRegisters::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool InterruptRegisters::commit() {
-  bool changed = false;
+SignalHash InterruptRegisters::commit() {
+  SignalHash hash;
+  hash << PIN_ACK_VBLANK.clear_preset();     // PORTB_01: -> LETY, vblank int ack
+  hash << PIN_ACK_STAT.clear_preset();       // PORTB_05: -> LEJA, stat int ack
+  hash << PIN_ACK_TIMER.clear_preset();      // PORTB_09: -> LESA, timer int ack
+  hash << PIN_ACK_SERIAL.clear_preset();     // PORTB_13: -> LUFE, serial int ack
+  hash << PIN_ACK_JOYPAD.clear_preset();     // PORTB_17: -> LAMO, joypad int ack
 
-  changed |= PIN_ACK_VBLANK.clear_preset();     // PORTB_01: -> LETY, vblank int ack
-  changed |= PIN_INT_VBLANK.commit_pinout();    // PORTB_03: <- LOPE, vblank int
-  changed |= PIN_ACK_STAT.clear_preset();       // PORTB_05: -> LEJA, stat int ack
-  changed |= PIN_INT_STAT.commit_pinout();      // PORTB_07: <- LALU, stat int
-  changed |= PIN_ACK_TIMER.clear_preset();      // PORTB_09: -> LESA, timer int ack
-  changed |= PIN_INT_TIMER.commit_pinout();     // PORTB_11: <- NYBO, timer int
-  changed |= PIN_ACK_SERIAL.clear_preset();     // PORTB_13: -> LUFE, serial int ack
-  changed |= PIN_INT_SERIAL.commit_pinout();    // PORTB_15: <- UBUL, serial int
-  changed |= PIN_ACK_JOYPAD.clear_preset();     // PORTB_17: -> LAMO, joypad int ack
-  changed |= PIN_INT_JOYPAD.commit_pinout();    // PORTB_19: <- ULAK, joypad int
+  hash << PIN_INT_VBLANK.commit_pinout();    // PORTB_03: <- LOPE, vblank int
+  hash << PIN_INT_STAT.commit_pinout();      // PORTB_07: <- LALU, stat int
+  hash << PIN_INT_TIMER.commit_pinout();     // PORTB_11: <- NYBO, timer int
+  hash << PIN_INT_SERIAL.commit_pinout();    // PORTB_15: <- UBUL, serial int
+  hash << PIN_INT_JOYPAD.commit_pinout();    // PORTB_19: <- ULAK, joypad int
 
-  /*p02.LOPE*/ changed |= LOPE_FF0F_0.commit_reg();
-  /*p02.UBUL*/ changed |= UBUL_FF0F_3.commit_reg();
-  /*p02.ULAK*/ changed |= ULAK_FF0F_4.commit_reg();
-  /*p02.LALU*/ changed |= LALU_FF0F_1.commit_reg();
-  /*p02.NYBO*/ changed |= NYBO_FF0F_2.commit_reg();
-  /*p02.MATY*/ changed |= FF0F_L0.commit_latch();
-  /*p02.NEJY*/ changed |= FF0F_L1.commit_latch();
-  /*p02.NUTY*/ changed |= FF0F_L2.commit_latch();
-  /*p02.MOPO*/ changed |= FF0F_L3.commit_latch();
-  /*p02.PAVY*/ changed |= FF0F_L4.commit_latch();
-  return changed;
+  hash << LOPE_FF0F_0.commit_reg();
+  hash << UBUL_FF0F_3.commit_reg();
+  hash << ULAK_FF0F_4.commit_reg();
+  hash << LALU_FF0F_1.commit_reg();
+  hash << NYBO_FF0F_2.commit_reg();
+  hash << FF0F_L0.commit_latch();
+  hash << FF0F_L1.commit_latch();
+  hash << FF0F_L2.commit_latch();
+  hash << FF0F_L3.commit_latch();
+  hash << FF0F_L4.commit_latch();
+  return hash;
 }
 
 //------------------------------------------------------------------------------

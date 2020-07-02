@@ -1,11 +1,11 @@
 #include "Sch_Resets.h"
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-ResetSignals ResetRegisters::sig(const TestGB& gb) const {
+ResetSignals ResetRegisters::sig(const SchematicTop& gb) const {
   ResetSignals sig;
 
   {
@@ -37,7 +37,7 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
 
 //-----------------------------------------------------------------------------
 
-void ResetRegisters::tick(TestGB& gb) {
+void ResetRegisters::tick(SchematicTop& gb) {
   auto& cpu_bus = gb.cpu_bus;
 
   auto clk_sig = gb.clk_reg.sig(gb);
@@ -66,12 +66,12 @@ void ResetRegisters::tick(TestGB& gb) {
 
 //-----------------------------------------------------------------------------
 
-bool ResetRegisters::commit() {
-  bool changed = false;
-  /*p01.TUBO*/ changed |= TUBO_CLKREQn_LATCH.commit_latch();
-  /*p01.ASOL*/ changed |= ASOL_RST_LATCHp.commit_latch(); // Schematic wrong, this is a latch.
-  /*p01.AFER*/ changed |= AFER_RSTp.commit_reg();
-  return changed;
+SignalHash ResetRegisters::commit() {
+  SignalHash hash;
+  /*p01.TUBO*/ hash << TUBO_CLKREQn_LATCH.commit_latch();
+  /*p01.ASOL*/ hash << ASOL_RST_LATCHp.commit_latch(); // Schematic wrong, this is a latch.
+  /*p01.AFER*/ hash << AFER_RSTp.commit_reg();
+  return hash;
 }
 
 //-----------------------------------------------------------------------------

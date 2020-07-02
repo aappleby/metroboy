@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -67,9 +67,9 @@ struct ClockSignals {
 
 struct ClockRegisters {
 
-  void tick(const TestGB& gb);
-  bool commit();
-  ClockSignals sig(const TestGB& test_gb) const;
+  ClockSignals sig(const SchematicTop& test_gb) const;
+  void tick(const SchematicTop& gb);
+  SignalHash commit();
   /*
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- CLK_REG -----\n");

@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -15,9 +15,9 @@ struct BootSignals {
 //-----------------------------------------------------------------------------
 
 struct Bootrom {
-  BootSignals sig(const TestGB& gb) const;
-  void tick(TestGB& gb);
-  bool commit();
+  BootSignals sig(const SchematicTop& gb) const;
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
 private:
   /*p07.TEPU*/ Reg BOOT_BITn; // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.

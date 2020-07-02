@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -40,9 +40,9 @@ struct BusMuxSignals {
 //-----------------------------------------------------------------------------
 
 struct BusMux {
-  BusMuxSignals sig(const TestGB& gb) const;
-  void tick(TestGB& gb);
-  bool commit(void);
+  BusMuxSignals sig(const SchematicTop& gb) const;
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
 private:
 

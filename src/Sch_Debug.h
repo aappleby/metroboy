@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -34,9 +34,9 @@ struct DebugSignals {
 
 struct DebugRegisters {
 
-  DebugSignals sig(const TestGB& gb) const;
-  void tick(const TestGB& gb);
-  bool commit();
+  DebugSignals sig(const SchematicTop& gb) const;
+  void tick(const SchematicTop& gb);
+  SignalHash commit();
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf(" ----- DBG REG ----- \n");

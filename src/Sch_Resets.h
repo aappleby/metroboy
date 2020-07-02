@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -21,9 +21,9 @@ struct ResetSignals {
 
 struct ResetRegisters {
 
-  ResetSignals sig(const TestGB& gb) const;
-  void tick(TestGB& gb);
-  bool commit();
+  ResetSignals sig(const SchematicTop& gb) const;
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- RST_REG -----\n");

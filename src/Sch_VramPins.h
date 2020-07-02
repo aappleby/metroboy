@@ -3,20 +3,20 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
 struct VramPins {
-  void tick(TestGB& gb);
-  bool commit();
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
   void dump(TextPainter& text_painter) {
     text_painter.dprintf("----- VRAM_PINS -----\n");
 
-    text_painter.dprintf("MCS  %d:x:%d:%d\n", PIN_MCSn_A.a.val, PIN_MCSn_C.a.val, PIN_MCSn_D.a.val);
-    text_painter.dprintf("MOE  %d:x:%d:%d\n", PIN_MOEn_A.a.val, PIN_MOEn_C.a.val, PIN_MOEn_D.a.val);
-    text_painter.dprintf("MWR  %d:x:%d:%d\n", PIN_MWRn_A.a.val, PIN_MWRn_C.a.val, PIN_MWRn_D.a.val);
+    text_painter.dprintf("MCS  %d:x:%d:%d\n", PIN_MCSn_A.prev().val, PIN_MCSn_C.prev().val, PIN_MCSn_D.prev().val);
+    text_painter.dprintf("MOE  %d:x:%d:%d\n", PIN_MOEn_A.prev().val, PIN_MOEn_C.prev().val, PIN_MOEn_D.prev().val);
+    text_painter.dprintf("MWR  %d:x:%d:%d\n", PIN_MWRn_A.prev().val, PIN_MWRn_C.prev().val, PIN_MWRn_D.prev().val);
     text_painter.dprintf("MAxx 0x%04x\n", pack(PIN_MA00_AD, PIN_MA01_AD, PIN_MA02_AD, PIN_MA03_AD, PIN_MA04_AD, PIN_MA05_AD, PIN_MA06_AD,
                                                PIN_MA07_AD, PIN_MA08_AD, PIN_MA09_AD, PIN_MA10_AD, PIN_MA11_AD, PIN_MA12_AD));
 

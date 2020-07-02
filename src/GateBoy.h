@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 #include "StateManager2.h"
 
 class GateBoy {
@@ -22,5 +22,7 @@ public:
   void    write_cycle(uint16_t addr, uint8_t data);
   void    pass_cycle ();
 
-  StateManager2<Schematics::TestGB> state_manager;
+  StateManager2<Schematics::SchematicTop> state_manager;
+
+  static int main(int argc, char** argv);
 };

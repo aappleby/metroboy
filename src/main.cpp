@@ -10,8 +10,11 @@ void run_microtests();
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+  int ret = 0;
+  /*
   MetroBoyApp* app = new MetroBoyApp();
-  int ret = app->app_main(argc, argv);
+  ret = app->app_main(argc, argv);
   delete app;
+  */
   return ret;
 }

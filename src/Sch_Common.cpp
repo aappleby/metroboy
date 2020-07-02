@@ -22,6 +22,11 @@ void dump2(TextPainter& text_painter, SignalState a) {
   text_painter.add_char(a.val ? '1' : '0');
 }
 
+void dump2(TextPainter& text_painter, const RegisterBase& r) {
+  text_painter.add_char(r.prev().error ? 6 : r.prev().hiz ? 3 : 2);
+  text_painter.add_char(r.prev().val ? '1' : '0');
+}
+
 void dump_pin(TextPainter& text_painter, SignalState a, SignalState d) {
   if (a.error || a.hiz) { text_painter.add_char(6, 'X'); return; }
   if (d.error || d.hiz) { text_painter.add_char(6, 'X'); return; }
@@ -56,13 +61,13 @@ void dump(TextPainter& text_painter, const char* label,
           RegisterBase a, RegisterBase b, RegisterBase c, RegisterBase d,
           RegisterBase e, RegisterBase f, RegisterBase g) {
   text_painter.add_text(label);
-  dump2(text_painter, g.a);
-  dump2(text_painter, f.a);
-  dump2(text_painter, e.a);
-  dump2(text_painter, d.a);
-  dump2(text_painter, c.a);
-  dump2(text_painter, b.a);
-  dump2(text_painter, a.a);
+  dump2(text_painter, g);
+  dump2(text_painter, f);
+  dump2(text_painter, e);
+  dump2(text_painter, d);
+  dump2(text_painter, c);
+  dump2(text_painter, b);
+  dump2(text_painter, a);
   uint8_t val = (uint8_t)pack(a, b, c, d, e, f, g);
   text_painter.dprintf("\1 0x%02x", val);
   text_painter.newline();
@@ -72,19 +77,19 @@ void dump(TextPainter& text_painter, const char* label,
           RegisterBase a, RegisterBase b, RegisterBase c, RegisterBase d,
           RegisterBase e, RegisterBase f, RegisterBase g, RegisterBase h) {
   text_painter.add_text(label);
-  dump2(text_painter, h.a);
-  dump2(text_painter, g.a);
-  dump2(text_painter, f.a);
-  dump2(text_painter, e.a);
-  dump2(text_painter, d.a);
-  dump2(text_painter, c.a);
-  dump2(text_painter, b.a);
-  dump2(text_painter, a.a);
+  dump2(text_painter, h);
+  dump2(text_painter, g);
+  dump2(text_painter, f);
+  dump2(text_painter, e);
+  dump2(text_painter, d);
+  dump2(text_painter, c);
+  dump2(text_painter, b);
+  dump2(text_painter, a);
   uint8_t val = (uint8_t)pack(a, b, c, d, e, f, g, h);
-  text_painter.add_char(1, a.a.clk ? '^' : 'v');
-  if (a.a.set)     text_painter.add_char(2, 'S');
-  if (a.a.rst)     text_painter.add_char(3, 'R');
-  if (a.a.error)   text_painter.add_char(1, 'E');
+  text_painter.add_char(1, a.prev().clk ? '^' : 'v');
+  if (a.prev().set)     text_painter.add_char(2, 'S');
+  if (a.prev().rst)     text_painter.add_char(3, 'R');
+  if (a.prev().error)   text_painter.add_char(1, 'E');
   text_painter.dprintf("\1 0x%02x", val);
   text_painter.newline();
 }

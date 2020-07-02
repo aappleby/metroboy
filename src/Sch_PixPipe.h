@@ -3,13 +3,13 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
 struct PixelPipeRegisters {
-  void tick(TestGB& gb);
-  bool commit();
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
 private:
 

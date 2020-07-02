@@ -1,11 +1,11 @@
 #include "Sch_SpriteScanner.h"
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-SpriteScannerSignals SpriteScanner::sig(const TestGB& gb) const {
+SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
   SpriteScannerSignals sprite_scanner_sig;
 
   auto lcd_sig = gb.lcd_reg.sig(gb);
@@ -95,7 +95,7 @@ SpriteScannerSignals SpriteScanner::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
-void SpriteScanner::tick(TestGB& gb) {
+void SpriteScanner::tick(SchematicTop& gb) {
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
@@ -141,21 +141,21 @@ void SpriteScanner::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool SpriteScanner::commit() {
-  bool changed = false;
+SignalHash SpriteScanner::commit() {
+  SignalHash hash;
 
-  /*p28.BESU*/ changed |= BESU_SCANNINGp.commit_latch();
-  /*p29.CENO*/ changed |= CENO_SCANNINGp.commit_reg();
-  /*p28.YFEL*/ changed |= SCAN0.commit_reg();
-  /*p28.WEWY*/ changed |= SCAN1.commit_reg();
-  /*p28.GOSO*/ changed |= SCAN2.commit_reg();
-  /*p28.ELYN*/ changed |= SCAN3.commit_reg();
-  /*p28.FAHA*/ changed |= SCAN4.commit_reg();
-  /*p28.FONY*/ changed |= SCAN5.commit_reg();
-  /*p29.BYBA*/ changed |= SCAN_DONE_TRIG_A.commit_reg();
-  /*p29.DOBA*/ changed |= SCAN_DONE_TRIG_B.commit_reg();
+  /*p28.BESU*/ hash << BESU_SCANNINGp.commit_latch();
+  /*p29.CENO*/ hash << CENO_SCANNINGp.commit_reg();
+  /*p28.YFEL*/ hash << SCAN0.commit_reg();
+  /*p28.WEWY*/ hash << SCAN1.commit_reg();
+  /*p28.GOSO*/ hash << SCAN2.commit_reg();
+  /*p28.ELYN*/ hash << SCAN3.commit_reg();
+  /*p28.FAHA*/ hash << SCAN4.commit_reg();
+  /*p28.FONY*/ hash << SCAN5.commit_reg();
+  /*p29.BYBA*/ hash << SCAN_DONE_TRIG_A.commit_reg();
+  /*p29.DOBA*/ hash << SCAN_DONE_TRIG_B.commit_reg();
 
-  return changed;
+  return hash;
 }
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 #include "Sch_PPU.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -106,7 +106,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-PpuSignals PpuRegisters::sig(const TestGB& gb) const {
+PpuSignals PpuRegisters::sig(const SchematicTop& gb) const {
   PpuSignals ppu_sig;
 
   //----------
@@ -230,7 +230,7 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
-void PpuRegisters::tick(TestGB& gb) {
+void PpuRegisters::tick(SchematicTop& gb) {
 
   {
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
@@ -416,41 +416,41 @@ void PpuRegisters::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool PpuRegisters::commit() {
-  bool changed = false;
-  /*p??.ROXY*/ changed |= ROXY_FINE_MATCH_LATCHn.commit_latch();
-  /*p??.PUXA*/ changed |= PUXA_FINE_MATCH_Ap.commit_reg();
-  /*p27.NYZE*/ changed |= NYZE_FINE_MATCH_Bp.commit_reg();
-  /*p27.RYKU*/ changed |= RYKU_FINE_CNT0.commit_reg();
-  /*p27.ROGA*/ changed |= ROGA_FINE_CNT1.commit_reg();
-  /*p27.RUBU*/ changed |= RUBU_FINE_CNT2.commit_reg();
-  /*p21.XEHO*/ changed |= XEHO_X0.commit_reg();
-  /*p21.SAVY*/ changed |= SAVY_X1.commit_reg();
-  /*p21.XODU*/ changed |= XODU_X2.commit_reg();
-  /*p21.XYDO*/ changed |= XYDO_X3.commit_reg();
-  /*p21.TUHU*/ changed |= TUHU_X4.commit_reg();
-  /*p21.TUKY*/ changed |= TUKY_X5.commit_reg();
-  /*p21.TAKO*/ changed |= TAKO_X6.commit_reg();
-  /*p21.SYBE*/ changed |= SYBE_X7.commit_reg();
-  /*p21.XYMU*/ changed |= XYMU_RENDERINGp.commit_latch();
-  /*p21.VOGA*/ changed |= VOGA_RENDER_DONE_SYNC.commit_reg();
+SignalHash PpuRegisters::commit() {
+  SignalHash hash;
+  /*p??.ROXY*/ hash << ROXY_FINE_MATCH_LATCHn.commit_latch();
+  /*p??.PUXA*/ hash << PUXA_FINE_MATCH_Ap.commit_reg();
+  /*p27.NYZE*/ hash << NYZE_FINE_MATCH_Bp.commit_reg();
+  /*p27.RYKU*/ hash << RYKU_FINE_CNT0.commit_reg();
+  /*p27.ROGA*/ hash << ROGA_FINE_CNT1.commit_reg();
+  /*p27.RUBU*/ hash << RUBU_FINE_CNT2.commit_reg();
+  /*p21.XEHO*/ hash << XEHO_X0.commit_reg();
+  /*p21.SAVY*/ hash << SAVY_X1.commit_reg();
+  /*p21.XODU*/ hash << XODU_X2.commit_reg();
+  /*p21.XYDO*/ hash << XYDO_X3.commit_reg();
+  /*p21.TUHU*/ hash << TUHU_X4.commit_reg();
+  /*p21.TUKY*/ hash << TUKY_X5.commit_reg();
+  /*p21.TAKO*/ hash << TAKO_X6.commit_reg();
+  /*p21.SYBE*/ hash << SYBE_X7.commit_reg();
+  /*p21.XYMU*/ hash << XYMU_RENDERINGp.commit_latch();
+  /*p21.VOGA*/ hash << VOGA_RENDER_DONE_SYNC.commit_reg();
 
-  /*p21.RUPO*/ changed |= RUPO_LYC_MATCH_LATCHn.commit_latch();
+  /*p21.RUPO*/ hash << RUPO_LYC_MATCH_LATCHn.commit_latch();
 
 
-  /*p24.PAHO*/ changed |= PAHO_X_8_SYNC.commit_reg();
-  /*p24.RUJU*/ changed |= POFY_ST_LATCH.commit_latch(); // nor latch with p24.RUJU, p24.POME
-  /*p21.WUSA*/ changed |= WUSA_CPEN_LATCH.commit_latch();
-  /* PIN_53 */ changed |= CP.commit_pinout();
-  /* PIN_54 */ changed |= ST.commit_pinout();
+  /*p24.PAHO*/ hash << PAHO_X_8_SYNC.commit_reg();
+  /*p24.RUJU*/ hash << POFY_ST_LATCH.commit_latch(); // nor latch with p24.RUJU, p24.POME
+  /*p21.WUSA*/ hash << WUSA_CPEN_LATCH.commit_latch();
+  /* PIN_53 */ hash << CP.commit_pinout();
+  /* PIN_54 */ hash << ST.commit_pinout();
 
   // FF41 - STAT
-  /*p21.ROXE*/ changed |= ROXE_INT_HBL_EN.commit_reg();
-  /*p21.RUFO*/ changed |= RUFO_INT_VBL_EN.commit_reg();
-  /*p21.REFE*/ changed |= REFE_INT_OAM_EN.commit_reg();
-  /*p21.RUGU*/ changed |= RUGU_INT_LYC_EN.commit_reg();
+  /*p21.ROXE*/ hash << ROXE_INT_HBL_EN.commit_reg();
+  /*p21.RUFO*/ hash << RUFO_INT_VBL_EN.commit_reg();
+  /*p21.REFE*/ hash << REFE_INT_OAM_EN.commit_reg();
+  /*p21.RUGU*/ hash << RUGU_INT_LYC_EN.commit_reg();
 
-  return changed;
+  return hash;
 }
 
 //------------------------------------------------------------------------------

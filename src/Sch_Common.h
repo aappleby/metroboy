@@ -70,6 +70,25 @@ union SignalState {
   }
 };
 
+//-----------------------------------------------------------------------------
+
+struct SignalHash {
+  operator uint64_t() const { return h; }
+  void operator << (SignalState s) { h ^= s.state; mix(); }
+  void operator << (SignalHash h2) { h ^= h2.h;    mix(); }
+  bool operator == (SignalHash h2) { return h = h2.h; }
+
+  void mix() {
+    h ^= h >> 33;
+    h *= 0xff51afd7ed558ccd;
+    h ^= h >> 33;
+    h *= 0xc4ceb9fe1a85ec53;
+    h ^= h >> 33;
+  }
+
+  uint64_t h = 0x12345678;
+};
+
 static_assert(sizeof(SignalState) == 1, "SignalState size != 1");
 
 //-----------------------------------------------------------------------------
@@ -105,6 +124,8 @@ struct RegisterBase {
     return a.val;
   }
 
+  SignalState prev() const { return a; }
+  
   bool q()  const { return  bool(); }
   bool qn() const { return !bool(); }
 
@@ -112,6 +133,7 @@ struct RegisterBase {
     a.dump(text_painter, label);
   }
 
+protected:
   SignalState a = SET_0;
   SignalState b = ERROR;
 };
@@ -132,13 +154,14 @@ struct PinIn : public RegisterBase {
     a = c;
   }
 
-  bool clear_preset() {
+  SignalState clear_preset() {
+    SignalState old_a = a;
     /*
     if ( a.err) __debugbreak();
     if (!b.err) __debugbreak();
     a = ERR;
     */
-    return false;
+    return old_a;
   }
 };
 
@@ -157,13 +180,12 @@ struct PinOut : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_pinout() {
+  SignalState commit_pinout() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
-    bool changed = a != b;
     a = b;
     b = ERROR;
-    return changed;
+    return a;
   }
 };
 
@@ -200,13 +222,12 @@ struct Tribuf : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_tribuf() {
+  SignalState commit_tribuf() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
-    bool changed = a.val != b.val || a.hiz != b.hiz;
     a = b;
     b = ERROR;
-    return changed;
+    return a;
   }
 };
 
@@ -227,14 +248,12 @@ struct Gate : public RegisterBase {
     b = val ? SET_1 : SET_0;
   }
 
-  bool commit_gate() {
+  SignalState commit_gate() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
-
-    bool changed = a != b;
     a = b;
     b = ERROR;
-    return changed;
+    return a;
   }
 };
 
@@ -266,11 +285,10 @@ struct Reg : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_reg() {
+  SignalState commit_reg() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -286,7 +304,7 @@ struct Reg : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 
   /*
@@ -332,11 +350,10 @@ struct Reg8 : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_reg() {
+  SignalState commit_reg() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -352,7 +369,7 @@ struct Reg8 : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 
   /*
@@ -402,11 +419,10 @@ struct Reg9 : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_reg() {
+  SignalState commit_reg() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -417,12 +433,11 @@ struct Reg9 : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 
   /*
@@ -464,11 +479,10 @@ struct Reg13 : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_reg() {
+  SignalState commit_reg() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -484,7 +498,7 @@ struct Reg13 : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 
   /*
@@ -532,11 +546,10 @@ struct Reg17 : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_reg() {
+  SignalState commit_reg() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -552,7 +565,7 @@ struct Reg17 : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 };
 
@@ -620,11 +633,10 @@ struct Reg22 : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_reg() {
+  SignalState commit_reg() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -640,7 +652,7 @@ struct Reg22 : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 };
 
@@ -658,10 +670,10 @@ struct Reg22 : public RegisterBase {
 
 struct Reg9_Duo : public RegisterBase {
 
-  void set_duo(bool clk, bool rstN, SignalState c) {
+  void set_duo(bool clk, bool rstN, bool c) {
     if ( a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    b.val = c.val;
+    b.val = c;
     b.hiz = 0;
     b.clk = clk;
     b.set = 0;
@@ -670,11 +682,10 @@ struct Reg9_Duo : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_duo() {
+  SignalState commit_duo() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
     
-    bool old_a = a.val;
     bool new_a = (a.clk != b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -690,7 +701,7 @@ struct Reg9_Duo : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 
   /*
@@ -723,11 +734,10 @@ struct NorLatch : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_latch() {
+  SignalState commit_latch() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -743,7 +753,7 @@ struct NorLatch : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 };
 
@@ -771,11 +781,10 @@ struct NandLatch : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_latch() {
+  SignalState commit_latch() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -791,7 +800,7 @@ struct NandLatch : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 };
 
@@ -835,11 +844,10 @@ struct TpLatch : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_latch() {
+  SignalState commit_latch() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -855,7 +863,7 @@ struct TpLatch : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 };
 
@@ -881,11 +889,10 @@ struct Counter : public RegisterBase {
     b.error = 0;
   }
 
-  bool commit_counter() {
+  SignalState commit_counter() {
     if (a.error) __debugbreak();
     if (b.error) __debugbreak();
 
-    bool old_a = a.val;
     bool new_a = (!a.clk && b.clk) ? b.val : a.val;
 
     if (b.set) new_a = 1;
@@ -901,7 +908,7 @@ struct Counter : public RegisterBase {
 
     b = ERROR;
 
-    return old_a != new_a;
+    return a;
   }
 
   /*

@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 // Bit 0: V-Blank  Interrupt Request (INT 40h)  (1=Request)
@@ -13,8 +13,8 @@ struct TestGB;
 // Bit 4: Joypad   Interrupt Request (INT 60h)  (1=Request)
 
 struct InterruptRegisters {
-  void tick(TestGB& gb);
-  bool commit();
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
 private:
 

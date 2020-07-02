@@ -3,14 +3,14 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
 struct PpuConfig {
 
-  void tick(TestGB& gb);
-  bool commit();
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
   // FF40 - LCDC
   /*p23.VYXE*/ Reg VYXE_LCDC_BGEN;

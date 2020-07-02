@@ -1,12 +1,12 @@
 #include "Sch_PixPipe.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void PixelPipeRegisters::tick(TestGB& gb) {
+void PixelPipeRegisters::tick(SchematicTop& gb) {
 
   //----------------------------------------
 
@@ -472,87 +472,87 @@ void PixelPipeRegisters::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool PixelPipeRegisters::commit() {
-  bool changed = false;
+SignalHash PixelPipeRegisters::commit() {
+  SignalHash hash;
 
-  /* PIN_50 */ changed |= LD1.commit_pinout();
-  /* PIN_51 */ changed |= LD0.commit_pinout();
+  /* PIN_50 */ hash << LD1.commit_pinout();
+  /* PIN_51 */ hash << LD0.commit_pinout();
 
-  /*p32.MYDE*/ changed |= BG_PIPE_A0.commit_reg();
-  /*p32.NOZO*/ changed |= BG_PIPE_A1.commit_reg();
-  /*p32.MOJU*/ changed |= BG_PIPE_A2.commit_reg();
-  /*p32.MACU*/ changed |= BG_PIPE_A3.commit_reg();
-  /*p32.NEPO*/ changed |= BG_PIPE_A4.commit_reg();
-  /*p32.MODU*/ changed |= BG_PIPE_A5.commit_reg();
-  /*p32.NEDA*/ changed |= BG_PIPE_A6.commit_reg();
-  /*p32.PYBO*/ changed |= BG_PIPE_A7.commit_reg();
-  /*p32.TOMY*/ changed |= BG_PIPE_B0.commit_reg();
-  /*p32.TACA*/ changed |= BG_PIPE_B1.commit_reg();
-  /*p32.SADY*/ changed |= BG_PIPE_B2.commit_reg();
-  /*p32.RYSA*/ changed |= BG_PIPE_B3.commit_reg();
-  /*p32.SOBO*/ changed |= BG_PIPE_B4.commit_reg();
-  /*p32.SETU*/ changed |= BG_PIPE_B5.commit_reg();
-  /*p32.RALU*/ changed |= BG_PIPE_B6.commit_reg();
-  /*p32.SOHU*/ changed |= BG_PIPE_B7.commit_reg();
-  /*p33.NURO*/ changed |= SPR_PIPE_B0.commit_reg();
-  /*p33.MASO*/ changed |= SPR_PIPE_B1.commit_reg();
-  /*p33.LEFE*/ changed |= SPR_PIPE_B2.commit_reg();
-  /*p33.LESU*/ changed |= SPR_PIPE_B3.commit_reg();
-  /*p33.WYHO*/ changed |= SPR_PIPE_B4.commit_reg();
-  /*p33.WORA*/ changed |= SPR_PIPE_B5.commit_reg();
-  /*p33.VAFO*/ changed |= SPR_PIPE_B6.commit_reg();
-  /*p33.WUFY*/ changed |= SPR_PIPE_B7.commit_reg();
-  /*p33.NYLU*/ changed |= SPR_PIPE_A0.commit_reg();
-  /*p33.PEFU*/ changed |= SPR_PIPE_A1.commit_reg();
-  /*p33.NATY*/ changed |= SPR_PIPE_A2.commit_reg();
-  /*p33.PYJO*/ changed |= SPR_PIPE_A3.commit_reg();
-  /*p33.VARE*/ changed |= SPR_PIPE_A4.commit_reg();
-  /*p33.WEBA*/ changed |= SPR_PIPE_A5.commit_reg();
-  /*p33.VANU*/ changed |= SPR_PIPE_A6.commit_reg();
-  /*p33.VUPY*/ changed |= SPR_PIPE_A7.commit_reg();
-  /*p34.RUGO*/ changed |= PAL_PIPE_0.commit_reg();
-  /*p34.SATA*/ changed |= PAL_PIPE_1.commit_reg();
-  /*p34.ROSA*/ changed |= PAL_PIPE_2.commit_reg();
-  /*p34.SOMY*/ changed |= PAL_PIPE_3.commit_reg();
-  /*p34.PALU*/ changed |= PAL_PIPE_4.commit_reg();
-  /*p34.NUKE*/ changed |= PAL_PIPE_5.commit_reg();
-  /*p34.MODA*/ changed |= PAL_PIPE_6.commit_reg();
-  /*p34.LYME*/ changed |= PAL_PIPE_7.commit_reg();
-  /*p26.VEZO*/ changed |= MASK_PIPE_0.commit_reg();
-  /*p26.WURU*/ changed |= MASK_PIPE_1.commit_reg();
-  /*p26.VOSA*/ changed |= MASK_PIPE_2.commit_reg();
-  /*p26.WYFU*/ changed |= MASK_PIPE_3.commit_reg();
-  /*p26.XETE*/ changed |= MASK_PIPE_4.commit_reg();
-  /*p26.WODA*/ changed |= MASK_PIPE_5.commit_reg();
-  /*p26.VUMO*/ changed |= MASK_PIPE_6.commit_reg();
-  /*p26.VAVA*/ changed |= MASK_PIPE_7.commit_reg();
+  /*p32.MYDE*/ hash << BG_PIPE_A0.commit_reg();
+  /*p32.NOZO*/ hash << BG_PIPE_A1.commit_reg();
+  /*p32.MOJU*/ hash << BG_PIPE_A2.commit_reg();
+  /*p32.MACU*/ hash << BG_PIPE_A3.commit_reg();
+  /*p32.NEPO*/ hash << BG_PIPE_A4.commit_reg();
+  /*p32.MODU*/ hash << BG_PIPE_A5.commit_reg();
+  /*p32.NEDA*/ hash << BG_PIPE_A6.commit_reg();
+  /*p32.PYBO*/ hash << BG_PIPE_A7.commit_reg();
+  /*p32.TOMY*/ hash << BG_PIPE_B0.commit_reg();
+  /*p32.TACA*/ hash << BG_PIPE_B1.commit_reg();
+  /*p32.SADY*/ hash << BG_PIPE_B2.commit_reg();
+  /*p32.RYSA*/ hash << BG_PIPE_B3.commit_reg();
+  /*p32.SOBO*/ hash << BG_PIPE_B4.commit_reg();
+  /*p32.SETU*/ hash << BG_PIPE_B5.commit_reg();
+  /*p32.RALU*/ hash << BG_PIPE_B6.commit_reg();
+  /*p32.SOHU*/ hash << BG_PIPE_B7.commit_reg();
+  /*p33.NURO*/ hash << SPR_PIPE_B0.commit_reg();
+  /*p33.MASO*/ hash << SPR_PIPE_B1.commit_reg();
+  /*p33.LEFE*/ hash << SPR_PIPE_B2.commit_reg();
+  /*p33.LESU*/ hash << SPR_PIPE_B3.commit_reg();
+  /*p33.WYHO*/ hash << SPR_PIPE_B4.commit_reg();
+  /*p33.WORA*/ hash << SPR_PIPE_B5.commit_reg();
+  /*p33.VAFO*/ hash << SPR_PIPE_B6.commit_reg();
+  /*p33.WUFY*/ hash << SPR_PIPE_B7.commit_reg();
+  /*p33.NYLU*/ hash << SPR_PIPE_A0.commit_reg();
+  /*p33.PEFU*/ hash << SPR_PIPE_A1.commit_reg();
+  /*p33.NATY*/ hash << SPR_PIPE_A2.commit_reg();
+  /*p33.PYJO*/ hash << SPR_PIPE_A3.commit_reg();
+  /*p33.VARE*/ hash << SPR_PIPE_A4.commit_reg();
+  /*p33.WEBA*/ hash << SPR_PIPE_A5.commit_reg();
+  /*p33.VANU*/ hash << SPR_PIPE_A6.commit_reg();
+  /*p33.VUPY*/ hash << SPR_PIPE_A7.commit_reg();
+  /*p34.RUGO*/ hash << PAL_PIPE_0.commit_reg();
+  /*p34.SATA*/ hash << PAL_PIPE_1.commit_reg();
+  /*p34.ROSA*/ hash << PAL_PIPE_2.commit_reg();
+  /*p34.SOMY*/ hash << PAL_PIPE_3.commit_reg();
+  /*p34.PALU*/ hash << PAL_PIPE_4.commit_reg();
+  /*p34.NUKE*/ hash << PAL_PIPE_5.commit_reg();
+  /*p34.MODA*/ hash << PAL_PIPE_6.commit_reg();
+  /*p34.LYME*/ hash << PAL_PIPE_7.commit_reg();
+  /*p26.VEZO*/ hash << MASK_PIPE_0.commit_reg();
+  /*p26.WURU*/ hash << MASK_PIPE_1.commit_reg();
+  /*p26.VOSA*/ hash << MASK_PIPE_2.commit_reg();
+  /*p26.WYFU*/ hash << MASK_PIPE_3.commit_reg();
+  /*p26.XETE*/ hash << MASK_PIPE_4.commit_reg();
+  /*p26.WODA*/ hash << MASK_PIPE_5.commit_reg();
+  /*p26.VUMO*/ hash << MASK_PIPE_6.commit_reg();
+  /*p26.VAVA*/ hash << MASK_PIPE_7.commit_reg();
 
-  /*p36.PAVO*/ changed |= BGP0.commit_reg();
-  /*p36.NUSY*/ changed |= BGP1.commit_reg();
-  /*p36.PYLU*/ changed |= BGP2.commit_reg();
-  /*p36.MAXY*/ changed |= BGP3.commit_reg();
-  /*p36.MUKE*/ changed |= BGP4.commit_reg();
-  /*p36.MORU*/ changed |= BGP5.commit_reg();
-  /*p36.MOGY*/ changed |= BGP6.commit_reg();
-  /*p36.MENA*/ changed |= BGP7.commit_reg();
-  /*p36.XUFU*/ changed |= OBP00.commit_reg();
-  /*p36.XUKY*/ changed |= OBP01.commit_reg();
-  /*p36.XOVA*/ changed |= OBP02.commit_reg();
-  /*p36.XALO*/ changed |= OBP03.commit_reg();
-  /*p36.XERU*/ changed |= OBP04.commit_reg();
-  /*p36.XYZE*/ changed |= OBP05.commit_reg();
-  /*p36.XUPO*/ changed |= OBP06.commit_reg();
-  /*p36.XANA*/ changed |= OBP07.commit_reg();
-  /*p36.MOXY*/ changed |= OBP10.commit_reg();
-  /*p36.LAWO*/ changed |= OBP11.commit_reg();
-  /*p36.MOSA*/ changed |= OBP12.commit_reg();
-  /*p36.LOSE*/ changed |= OBP13.commit_reg();
-  /*p36.LUNE*/ changed |= OBP14.commit_reg();
-  /*p36.LUGU*/ changed |= OBP15.commit_reg();
-  /*p36.LEPU*/ changed |= OBP16.commit_reg();
-  /*p36.LUXO*/ changed |= OBP17.commit_reg();
+  /*p36.PAVO*/ hash << BGP0.commit_reg();
+  /*p36.NUSY*/ hash << BGP1.commit_reg();
+  /*p36.PYLU*/ hash << BGP2.commit_reg();
+  /*p36.MAXY*/ hash << BGP3.commit_reg();
+  /*p36.MUKE*/ hash << BGP4.commit_reg();
+  /*p36.MORU*/ hash << BGP5.commit_reg();
+  /*p36.MOGY*/ hash << BGP6.commit_reg();
+  /*p36.MENA*/ hash << BGP7.commit_reg();
+  /*p36.XUFU*/ hash << OBP00.commit_reg();
+  /*p36.XUKY*/ hash << OBP01.commit_reg();
+  /*p36.XOVA*/ hash << OBP02.commit_reg();
+  /*p36.XALO*/ hash << OBP03.commit_reg();
+  /*p36.XERU*/ hash << OBP04.commit_reg();
+  /*p36.XYZE*/ hash << OBP05.commit_reg();
+  /*p36.XUPO*/ hash << OBP06.commit_reg();
+  /*p36.XANA*/ hash << OBP07.commit_reg();
+  /*p36.MOXY*/ hash << OBP10.commit_reg();
+  /*p36.LAWO*/ hash << OBP11.commit_reg();
+  /*p36.MOSA*/ hash << OBP12.commit_reg();
+  /*p36.LOSE*/ hash << OBP13.commit_reg();
+  /*p36.LUNE*/ hash << OBP14.commit_reg();
+  /*p36.LUGU*/ hash << OBP15.commit_reg();
+  /*p36.LEPU*/ hash << OBP16.commit_reg();
+  /*p36.LUXO*/ hash << OBP17.commit_reg();
 
-  return changed;
+  return hash;
 }
 
 //------------------------------------------------------------------------------

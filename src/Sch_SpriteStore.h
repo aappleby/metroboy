@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -44,9 +44,9 @@ struct SpriteStoreSignals {
 
 struct SpriteStoreRegisters {
 
-  SpriteStoreSignals sig(const TestGB& gb) const;
-  void tick(TestGB& gb);
-  bool commit();
+  SpriteStoreSignals sig(const SchematicTop& gb) const;
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
   void dump_regs(TextPainter& text_painter) {
     text_painter.dprintf("----- SPR_STORE -----\n");

@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -59,9 +59,9 @@ struct CpuBusSignals {
 
 struct CpuBus {
 
-  CpuBusSignals sig(const TestGB& gb) const;
-  void tick(TestGB& gb);
-  bool commit();
+  CpuBusSignals sig(const SchematicTop& gb) const;
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
   int get_data() const {
     return pack(TRI_D0, TRI_D1, TRI_D2, TRI_D3, TRI_D4, TRI_D5, TRI_D6, TRI_D7);
@@ -227,8 +227,8 @@ private:
 
 struct CpuPinsOut {
 
-  void tick(TestGB& gb);
-  bool commit();
+  void tick(SchematicTop& gb);
+  void commit(SignalHash& hash);
 
   //----------
 

@@ -1,6 +1,6 @@
 #include "Sch_Bootrom.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -46,7 +46,7 @@ static const uint8_t DMG_ROM_bin[] = {
 
 //-----------------------------------------------------------------------------
 
-BootSignals Bootrom::sig(const TestGB& /*gb*/) const {
+BootSignals Bootrom::sig(const SchematicTop& /*gb*/) const {
   BootSignals sig;
   sig.BOOT_BITn = BOOT_BITn;
   return sig;
@@ -54,7 +54,7 @@ BootSignals Bootrom::sig(const TestGB& /*gb*/) const {
 
 //-----------------------------------------------------------------------------
 
-void Bootrom::tick(TestGB& gb) {
+void Bootrom::tick(SchematicTop& gb) {
 
   // FF50
   {
@@ -129,6 +129,14 @@ void Bootrom::tick(TestGB& gb) {
     cpu_bus.TRI_D6.set_tribuf(_YULA_BOOT_RD, data & 0x40);
     cpu_bus.TRI_D7.set_tribuf(_YULA_BOOT_RD, data & 0x80);
   }
+}
+
+//-----------------------------------------------------------------------------
+
+SignalHash Bootrom::commit() {
+  SignalHash hash;
+  hash << BOOT_BITn.commit_reg();
+  return hash;
 }
 
 //-----------------------------------------------------------------------------

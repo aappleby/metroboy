@@ -3,14 +3,14 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
 struct VramBus {
 
-  void tick(TestGB& gb);
-  bool commit();
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
   //----------
   // VRAM bus

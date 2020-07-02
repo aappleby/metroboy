@@ -1,6 +1,6 @@
 #include "Sch_DMA.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -52,7 +52,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
+DmaSignals DmaRegisters::sig(const SchematicTop& /*gb*/) const {
 
   DmaSignals sig;
 
@@ -92,7 +92,7 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
 
 //------------------------------------------------------------------------------
 
-void DmaRegisters::tick(TestGB& gb) {
+void DmaRegisters::tick(SchematicTop& gb) {
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
@@ -209,35 +209,35 @@ void DmaRegisters::tick(TestGB& gb) {
 
 //-----------------------------------------------------------------------------
 
-bool DmaRegisters::commit() {
-  bool changed = false;
-  /*p04.MATU*/ changed |= MATU_DMA_RUNNINGp.commit_reg(); // -> p25,p28
-  /*p04.MYTE*/ changed |= MYTE_DMA_DONE.commit_reg();
-  /*p04.LUVY*/ changed |= LUVY_DMA_TRIG_d0.commit_reg();
-  /*p04.LENE*/ changed |= LENE_DMA_TRIG_d4.commit_reg();
-  /*p04.NAKY*/ changed |= DMA_A00.commit_reg();
-  /*p04.PYRO*/ changed |= DMA_A01.commit_reg(); 
-  /*p04.NEFY*/ changed |= DMA_A02.commit_reg(); 
-  /*p04.MUTY*/ changed |= DMA_A03.commit_reg(); 
-  /*p04.NYKO*/ changed |= DMA_A04.commit_reg(); 
-  /*p04.PYLO*/ changed |= DMA_A05.commit_reg(); 
-  /*p04.NUTO*/ changed |= DMA_A06.commit_reg(); 
-  /*p04.MUGU*/ changed |= DMA_A07.commit_reg(); 
-  /*p04.NAFA*/ changed |= DMA_A08.commit_reg(); 
-  /*p04.PYNE*/ changed |= DMA_A09.commit_reg(); 
-  /*p04.PARA*/ changed |= DMA_A10.commit_reg(); 
-  /*p04.NYDO*/ changed |= DMA_A11.commit_reg(); 
-  /*p04.NYGY*/ changed |= DMA_A12.commit_reg(); 
-  /*p04.PULA*/ changed |= DMA_A13.commit_reg(); 
-  /*p04.POKU*/ changed |= DMA_A14.commit_reg(); 
-  /*p04.MARU*/ changed |= DMA_A15.commit_reg(); 
-  /*p04.LYXE*/ changed |= LYXE_DMA_LATCHn.commit_latch();
+SignalHash DmaRegisters::commit() {
+  SignalHash hash;
+  /*p04.MATU*/ hash << MATU_DMA_RUNNINGp.commit_reg(); // -> p25,p28
+  /*p04.MYTE*/ hash << MYTE_DMA_DONE.commit_reg();
+  /*p04.LUVY*/ hash << LUVY_DMA_TRIG_d0.commit_reg();
+  /*p04.LENE*/ hash << LENE_DMA_TRIG_d4.commit_reg();
+  /*p04.NAKY*/ hash << DMA_A00.commit_reg();
+  /*p04.PYRO*/ hash << DMA_A01.commit_reg(); 
+  /*p04.NEFY*/ hash << DMA_A02.commit_reg(); 
+  /*p04.MUTY*/ hash << DMA_A03.commit_reg(); 
+  /*p04.NYKO*/ hash << DMA_A04.commit_reg(); 
+  /*p04.PYLO*/ hash << DMA_A05.commit_reg(); 
+  /*p04.NUTO*/ hash << DMA_A06.commit_reg(); 
+  /*p04.MUGU*/ hash << DMA_A07.commit_reg(); 
+  /*p04.NAFA*/ hash << DMA_A08.commit_reg(); 
+  /*p04.PYNE*/ hash << DMA_A09.commit_reg(); 
+  /*p04.PARA*/ hash << DMA_A10.commit_reg(); 
+  /*p04.NYDO*/ hash << DMA_A11.commit_reg(); 
+  /*p04.NYGY*/ hash << DMA_A12.commit_reg(); 
+  /*p04.PULA*/ hash << DMA_A13.commit_reg(); 
+  /*p04.POKU*/ hash << DMA_A14.commit_reg(); 
+  /*p04.MARU*/ hash << DMA_A15.commit_reg(); 
+  /*p04.LYXE*/ hash << LYXE_DMA_LATCHn.commit_latch();
 
   // NAND latch
-  /*p04.LARA*/ changed |= LARA_DMA_LATCHn.commit_gate();
-  /*p04.LOKY*/ changed |= LOKY_DMA_LATCHp.commit_gate();
+  /*p04.LARA*/ hash << LARA_DMA_LATCHn.commit_gate();
+  /*p04.LOKY*/ hash << LOKY_DMA_LATCHp.commit_gate();
 
-  return changed;
+  return hash;
 }
 
 //-----------------------------------------------------------------------------

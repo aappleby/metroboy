@@ -15,7 +15,6 @@
 
 #include "Sch_VramPins.h"
 #include "Sch_VramBus.h"
-#include "Sch_ExtBus.h"
 #include "Sch_CpuBus.h"
 #include "Sch_BusMux.h"
 #include "Sch_Interrupts.h"
@@ -29,10 +28,10 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct TestGB {
+struct SchematicTop {
 
   void tick_everything();
-  bool commit_everything();
+  SignalHash commit_everything();
 
   //-----------------------------------------------------------------------------
 

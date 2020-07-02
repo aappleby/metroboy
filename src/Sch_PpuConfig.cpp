@@ -1,12 +1,12 @@
 #include "Sch_PpuConfig.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void PpuConfig::tick(TestGB& gb) {
+void PpuConfig::tick(SchematicTop& gb) {
   auto rst_sig = gb.rst_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
 
@@ -116,38 +116,38 @@ void PpuConfig::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool PpuConfig::commit() {
-  bool changed = false;
+SignalHash PpuConfig::commit() {
+  SignalHash hash;
 
-  changed |= VYXE_LCDC_BGEN.commit_reg();
-  changed |= XYLO_LCDC_SPEN.commit_reg();
-  changed |= XYMO_LCDC_SPSIZE.commit_reg();
-  changed |= XAFO_LCDC_BGMAP.commit_reg();
-  changed |= WEXU_LCDC_BGTILE.commit_reg();
-  changed |= WYMO_LCDC_WINEN.commit_reg();
-  changed |= WOKY_LCDC_WINMAP.commit_reg();
-  changed |= XONA_LCDC_EN.commit_reg();
+  hash << VYXE_LCDC_BGEN.commit_reg();
+  hash << XYLO_LCDC_SPEN.commit_reg();
+  hash << XYMO_LCDC_SPSIZE.commit_reg();
+  hash << XAFO_LCDC_BGMAP.commit_reg();
+  hash << WEXU_LCDC_BGTILE.commit_reg();
+  hash << WYMO_LCDC_WINEN.commit_reg();
+  hash << WOKY_LCDC_WINMAP.commit_reg();
+  hash << XONA_LCDC_EN.commit_reg();
 
-  changed |= GAVE_SCY0.commit_reg();
-  changed |= FYMO_SCY1.commit_reg();
-  changed |= FEZU_SCY2.commit_reg();
-  changed |= FUJO_SCY3.commit_reg();
-  changed |= DEDE_SCY4.commit_reg();
-  changed |= FOTY_SCY5.commit_reg();
-  changed |= FOHA_SCY6.commit_reg();
-  changed |= FUNY_SCY7.commit_reg();
+  hash << GAVE_SCY0.commit_reg();
+  hash << FYMO_SCY1.commit_reg();
+  hash << FEZU_SCY2.commit_reg();
+  hash << FUJO_SCY3.commit_reg();
+  hash << DEDE_SCY4.commit_reg();
+  hash << FOTY_SCY5.commit_reg();
+  hash << FOHA_SCY6.commit_reg();
+  hash << FUNY_SCY7.commit_reg();
 
-  changed |= DATY_SCX0.commit_reg();
-  changed |= DUZU_SCX1.commit_reg();
-  changed |= CYXU_SCX2.commit_reg();
-  changed |= GUBO_SCX3.commit_reg();
-  changed |= BEMY_SCX4.commit_reg();
-  changed |= CUZY_SCX5.commit_reg();
-  changed |= CABU_SCX6.commit_reg();
-  changed |= BAKE_SCX7.commit_reg();
+  hash << DATY_SCX0.commit_reg();
+  hash << DUZU_SCX1.commit_reg();
+  hash << CYXU_SCX2.commit_reg();
+  hash << GUBO_SCX3.commit_reg();
+  hash << BEMY_SCX4.commit_reg();
+  hash << CUZY_SCX5.commit_reg();
+  hash << CABU_SCX6.commit_reg();
+  hash << BAKE_SCX7.commit_reg();
 
 
-  return changed;
+  return hash;
 }
 
 

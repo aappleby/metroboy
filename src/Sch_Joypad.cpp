@@ -1,6 +1,6 @@
 #include "Sch_Joypad.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -81,53 +81,53 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus&
 
 //------------------------------------------------------------------------------
 
-bool JoypadRegisters::commit() {
-  bool changed = false;
-  /*p02.BATU*/ changed |= JP_GLITCH0.commit_reg();
-  /*p02.ACEF*/ changed |= JP_GLITCH1.commit_reg();
-  /*p02.AGEM*/ changed |= JP_GLITCH2.commit_reg();
-  /*p02.APUG*/ changed |= JP_GLITCH3.commit_reg();
-  /*p05.JUTE*/ changed |= JOYP_RA.commit_reg();
-  /*p05.KECY*/ changed |= JOYP_LB.commit_reg();
-  /*p05.JALE*/ changed |= JOYP_UC.commit_reg();
-  /*p05.KYME*/ changed |= JOYP_DS.commit_reg();
-  /*p05.KELY*/ changed |= JOYP_UDLR.commit_reg();
-  /*p05.COFY*/ changed |= JOYP_ABCS.commit_reg();
-  /*p05.KUKO*/ changed |= DBG_FF00_D6.commit_reg();
-  /*p05.KERU*/ changed |= DBG_FF00_D7.commit_reg();
-  /*p05.KEVU*/ changed |= JOYP_L0.commit_reg();
-  /*p05.KAPA*/ changed |= JOYP_L1.commit_reg();
-  /*p05.KEJA*/ changed |= JOYP_L2.commit_reg();
-  /*p05.KOLO*/ changed |= JOYP_L3.commit_reg();
-  /*p02.AWOB*/ changed |= AWOB_WAKE_CPU.commit_reg();
+SignalHash JoypadRegisters::commit() {
+  SignalHash hash;
+  /*p02.BATU*/ hash << JP_GLITCH0.commit_reg();
+  /*p02.ACEF*/ hash << JP_GLITCH1.commit_reg();
+  /*p02.AGEM*/ hash << JP_GLITCH2.commit_reg();
+  /*p02.APUG*/ hash << JP_GLITCH3.commit_reg();
+  /*p05.JUTE*/ hash << JOYP_RA.commit_reg();
+  /*p05.KECY*/ hash << JOYP_LB.commit_reg();
+  /*p05.JALE*/ hash << JOYP_UC.commit_reg();
+  /*p05.KYME*/ hash << JOYP_DS.commit_reg();
+  /*p05.KELY*/ hash << JOYP_UDLR.commit_reg();
+  /*p05.COFY*/ hash << JOYP_ABCS.commit_reg();
+  /*p05.KUKO*/ hash << DBG_FF00_D6.commit_reg();
+  /*p05.KERU*/ hash << DBG_FF00_D7.commit_reg();
+  /*p05.KEVU*/ hash << JOYP_L0.commit_reg();
+  /*p05.KAPA*/ hash << JOYP_L1.commit_reg();
+  /*p05.KEJA*/ hash << JOYP_L2.commit_reg();
+  /*p05.KOLO*/ hash << JOYP_L3.commit_reg();
+  /*p02.AWOB*/ hash << AWOB_WAKE_CPU.commit_reg();
 
   /* PIN_58 */ /*VCC*/
   /* PIN_59 */ /*ROUT*/
   /* PIN_60 */ /*LOUT*/
   /* PIN_61 */ /*VIN*/
 
-  /* PIN_62 */ changed |= P15_A.commit_pinout();   // <- CELA
-  /* PIN_62 */ changed |= P15_D.commit_pinout();   // <- COFY
-  /* PIN_63 */ changed |= P14_A.commit_pinout();   // <- KARU
-  /* PIN_63 */ changed |= P14_D.commit_pinout();   // <- KELY
-  /* PIN_64 */ changed |= P13_A.commit_pinout();   // <- KORY
-  /* PIN_64 */ changed |= P13_B.commit_pinout();   
-  /* PIN_64 */ changed |= P13_C.clear_preset();    // -> KERY, P05.KOLO
-  /* PIN_64 */ changed |= P13_D.commit_pinout();   // <- KALE
-  /* PIN_65 */ changed |= P12_A.commit_pinout();   // <- KYHU
-  /* PIN_65 */ changed |= P12_B.commit_pinout();   
-  /* PIN_65 */ changed |= P12_C.clear_preset();    // -> KERY, P05.KEJA
-  /* PIN_65 */ changed |= P12_D.commit_pinout();   // <- KASY
-  /* PIN_66 */ changed |= P11_A.commit_pinout();   // <- KYTO
-  /* PIN_66 */ changed |= P11_B.commit_pinout();   
-  /* PIN_66 */ changed |= P11_C.clear_preset();    // -> KERY, P05.KAPA
-  /* PIN_66 */ changed |= P11_D.commit_pinout();   // <- KABU
-  /* PIN_67 */ changed |= P10_A.commit_pinout();   // <- KOLE
-  /* PIN_67 */ changed |= P10_B.commit_pinout();   
-  /* PIN_67 */ changed |= P10_C.clear_preset();    // -> KERY, KEVU
-  /* PIN_67 */ changed |= P10_D.commit_pinout();   // <- KYBU
+  /* PIN_62 */ hash << P15_A.commit_pinout();   // <- CELA
+  /* PIN_62 */ hash << P15_D.commit_pinout();   // <- COFY
+  /* PIN_63 */ hash << P14_A.commit_pinout();   // <- KARU
+  /* PIN_63 */ hash << P14_D.commit_pinout();   // <- KELY
+  /* PIN_64 */ hash << P13_A.commit_pinout();   // <- KORY
+  /* PIN_64 */ hash << P13_B.commit_pinout();   
+  /* PIN_64 */ hash << P13_C.clear_preset();    // -> KERY, P05.KOLO
+  /* PIN_64 */ hash << P13_D.commit_pinout();   // <- KALE
+  /* PIN_65 */ hash << P12_A.commit_pinout();   // <- KYHU
+  /* PIN_65 */ hash << P12_B.commit_pinout();   
+  /* PIN_65 */ hash << P12_C.clear_preset();    // -> KERY, P05.KEJA
+  /* PIN_65 */ hash << P12_D.commit_pinout();   // <- KASY
+  /* PIN_66 */ hash << P11_A.commit_pinout();   // <- KYTO
+  /* PIN_66 */ hash << P11_B.commit_pinout();   
+  /* PIN_66 */ hash << P11_C.clear_preset();    // -> KERY, P05.KAPA
+  /* PIN_66 */ hash << P11_D.commit_pinout();   // <- KABU
+  /* PIN_67 */ hash << P10_A.commit_pinout();   // <- KOLE
+  /* PIN_67 */ hash << P10_B.commit_pinout();   
+  /* PIN_67 */ hash << P10_C.clear_preset();    // -> KERY, KEVU
+  /* PIN_67 */ hash << P10_D.commit_pinout();   // <- KYBU
 
-  return changed;
+  return hash;
 }
 
 //------------------------------------------------------------------------------

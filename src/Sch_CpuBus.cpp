@@ -1,12 +1,12 @@
 #include "Sch_CpuBus.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-CpuBusSignals CpuBus::sig(const TestGB& gb) const {
+CpuBusSignals CpuBus::sig(const SchematicTop& gb) const {
   CpuBusSignals sig;
 
   auto clk_sig = gb.clk_reg.sig(gb);
@@ -115,7 +115,7 @@ CpuBusSignals CpuBus::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
-void CpuBus::tick(TestGB& gb) {
+void CpuBus::tick(SchematicTop& gb) {
   {
     auto clk_sig = gb.clk_reg.sig(gb);
     auto rst_sig = gb.rst_reg.sig(gb);
@@ -219,121 +219,120 @@ void CpuBus::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool CpuBus::commit() {
-  bool changed = false;
+SignalHash CpuBus::commit() {
+  SignalHash hash;
+  /* PIN_78 */ hash << EXT_PIN_WR_C.clear_preset();     // -> UBAL
+  /* PIN_79 */ hash << EXT_PIN_RD_C.clear_preset();     // -> UJYV
 
-  /* PIN_78 */ changed |= EXT_PIN_WR_C.clear_preset();     // -> UBAL
-  /* PIN_79 */ changed |= EXT_PIN_RD_C.clear_preset();     // -> UJYV
+  hash << SOMA_CPU_DATA_LATCH_00.commit_latch();
+  hash << RONY_CPU_DATA_LATCH_01.commit_latch();
+  hash << RAXY_CPU_DATA_LATCH_02.commit_latch();
+  hash << SELO_CPU_DATA_LATCH_03.commit_latch();
+  hash << SODY_CPU_DATA_LATCH_04.commit_latch();
+  hash << SAGO_CPU_DATA_LATCH_05.commit_latch();
+  hash << RUPA_CPU_DATA_LATCH_06.commit_latch();
+  hash << SAZY_CPU_DATA_LATCH_07.commit_latch();
 
-  changed |= SOMA_CPU_DATA_LATCH_00.commit_latch();
-  changed |= RONY_CPU_DATA_LATCH_01.commit_latch();
-  changed |= RAXY_CPU_DATA_LATCH_02.commit_latch();
-  changed |= SELO_CPU_DATA_LATCH_03.commit_latch();
-  changed |= SODY_CPU_DATA_LATCH_04.commit_latch();
-  changed |= SAGO_CPU_DATA_LATCH_05.commit_latch();
-  changed |= RUPA_CPU_DATA_LATCH_06.commit_latch();
-  changed |= SAZY_CPU_DATA_LATCH_07.commit_latch();
+  hash << CPU_ADDR_LATCH_00.commit_latch();
+  hash << CPU_ADDR_LATCH_01.commit_latch();
+  hash << CPU_ADDR_LATCH_02.commit_latch();
+  hash << CPU_ADDR_LATCH_03.commit_latch();
+  hash << CPU_ADDR_LATCH_04.commit_latch();
+  hash << CPU_ADDR_LATCH_05.commit_latch();
+  hash << CPU_ADDR_LATCH_06.commit_latch();
+  hash << CPU_ADDR_LATCH_07.commit_latch();
+  hash << CPU_ADDR_LATCH_08.commit_latch();
+  hash << CPU_ADDR_LATCH_09.commit_latch();
+  hash << CPU_ADDR_LATCH_10.commit_latch();
+  hash << CPU_ADDR_LATCH_11.commit_latch();
+  hash << CPU_ADDR_LATCH_12.commit_latch();
+  hash << CPU_ADDR_LATCH_13.commit_latch();
+  hash << CPU_ADDR_LATCH_14.commit_latch();
 
-  changed |= CPU_ADDR_LATCH_00.commit_latch();
-  changed |= CPU_ADDR_LATCH_01.commit_latch();
-  changed |= CPU_ADDR_LATCH_02.commit_latch();
-  changed |= CPU_ADDR_LATCH_03.commit_latch();
-  changed |= CPU_ADDR_LATCH_04.commit_latch();
-  changed |= CPU_ADDR_LATCH_05.commit_latch();
-  changed |= CPU_ADDR_LATCH_06.commit_latch();
-  changed |= CPU_ADDR_LATCH_07.commit_latch();
-  changed |= CPU_ADDR_LATCH_08.commit_latch();
-  changed |= CPU_ADDR_LATCH_09.commit_latch();
-  changed |= CPU_ADDR_LATCH_10.commit_latch();
-  changed |= CPU_ADDR_LATCH_11.commit_latch();
-  changed |= CPU_ADDR_LATCH_12.commit_latch();
-  changed |= CPU_ADDR_LATCH_13.commit_latch();
-  changed |= CPU_ADDR_LATCH_14.commit_latch();
+  hash << MAKA_FROM_CPU5_SYNC.commit_reg();
 
-  changed |= MAKA_FROM_CPU5_SYNC.commit_reg();
+  hash << TRI_D0.commit_tribuf();
+  hash << TRI_D1.commit_tribuf();
+  hash << TRI_D2.commit_tribuf();
+  hash << TRI_D3.commit_tribuf();
+  hash << TRI_D4.commit_tribuf();
+  hash << TRI_D5.commit_tribuf();
+  hash << TRI_D6.commit_tribuf();
+  hash << TRI_D7.commit_tribuf();
 
-  changed |= TRI_D0.commit_tribuf();
-  changed |= TRI_D1.commit_tribuf();
-  changed |= TRI_D2.commit_tribuf();
-  changed |= TRI_D3.commit_tribuf();
-  changed |= TRI_D4.commit_tribuf();
-  changed |= TRI_D5.commit_tribuf();
-  changed |= TRI_D6.commit_tribuf();
-  changed |= TRI_D7.commit_tribuf();
+  hash << PIN_CPU_RAW_RD.clear_preset();     // PORTA_00: -> UJYV, LAGU, LAVO
+  hash << PIN_CPU_RAW_WR.clear_preset();     // PORTA_01: -> AREV, LAGU.
+  hash << PIN_ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
+  hash << PIN_FROM_CPU5p.clear_preset();     // PORTD_05: -> FROM_CPU5
+  hash << PIN_FROM_CPU6.clear_preset();      // PORTD_00: -> LEXY, doesn't do anything
+  hash << PIN_CLKREQ.clear_preset();         // PORTC_00: -> ABOL
 
-  changed |= PIN_CPU_RAW_RD.clear_preset();     // PORTA_00: -> UJYV, LAGU, LAVO
-  changed |= PIN_CPU_RAW_WR.clear_preset();     // PORTA_01: -> AREV, LAGU.
-  changed |= PIN_ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
-  changed |= PIN_FROM_CPU5p.clear_preset();     // PORTD_05: -> FROM_CPU5
-  changed |= PIN_FROM_CPU6.clear_preset();      // PORTD_00: -> LEXY, doesn't do anything
-  changed |= PIN_CLKREQ.clear_preset();         // PORTC_00: -> ABOL
+  hash << PIN_A00.clear_preset();
+  hash << PIN_A01.clear_preset();
+  hash << PIN_A02.clear_preset();
+  hash << PIN_A03.clear_preset();
+  hash << PIN_A04.clear_preset();
+  hash << PIN_A05.clear_preset();
+  hash << PIN_A06.clear_preset();
+  hash << PIN_A07.clear_preset();
+  hash << PIN_A08.clear_preset();
+  hash << PIN_A09.clear_preset();
+  hash << PIN_A10.clear_preset();
+  hash << PIN_A11.clear_preset();
+  hash << PIN_A12.clear_preset();
+  hash << PIN_A13.clear_preset();
+  hash << PIN_A14.clear_preset();
+  hash << PIN_A15.clear_preset();
 
-  changed |= PIN_A00.clear_preset();
-  changed |= PIN_A01.clear_preset();
-  changed |= PIN_A02.clear_preset();
-  changed |= PIN_A03.clear_preset();
-  changed |= PIN_A04.clear_preset();
-  changed |= PIN_A05.clear_preset();
-  changed |= PIN_A06.clear_preset();
-  changed |= PIN_A07.clear_preset();
-  changed |= PIN_A08.clear_preset();
-  changed |= PIN_A09.clear_preset();
-  changed |= PIN_A10.clear_preset();
-  changed |= PIN_A11.clear_preset();
-  changed |= PIN_A12.clear_preset();
-  changed |= PIN_A13.clear_preset();
-  changed |= PIN_A14.clear_preset();
-  changed |= PIN_A15.clear_preset();
-
-  /* PIN_01 */ changed |= EXT_PIN_A00_C.clear_preset();      // -> KOVA
-  /* PIN_02 */ changed |= EXT_PIN_A01_C.clear_preset();      // -> CAMU
-  /* PIN_03 */ changed |= EXT_PIN_A02_C.clear_preset();      // -> BUXU
-  /* PIN_04 */ changed |= EXT_PIN_A03_C.clear_preset();      // -> BASE
-  /* PIN_05 */ changed |= EXT_PIN_A04_C.clear_preset();      // -> AFEC
-  /* PIN_06 */ changed |= EXT_PIN_A05_C.clear_preset();      // -> ABUP
-  /* PIN_07 */ changed |= EXT_PIN_A06_C.clear_preset();      // -> CYGU
-  /* PIN_08 */ changed |= EXT_PIN_A07_C.clear_preset();      // -> COGO
-  /* PIN_09 */ changed |= EXT_PIN_A08_C.clear_preset();      // -> MUJY
-  /* PIN_10 */ changed |= EXT_PIN_A09_C.clear_preset();      // -> NENA
-  /* PIN_11 */ changed |= EXT_PIN_A10_C.clear_preset();      // -> SURA
-  /* PIN_12 */ changed |= EXT_PIN_A11_C.clear_preset();      // -> MADY
-  /* PIN_13 */ changed |= EXT_PIN_A12_C.clear_preset();      // -> LAHE
-  /* PIN_14 */ changed |= EXT_PIN_A13_C.clear_preset();      // -> LURA
-  /* PIN_15 */ changed |= EXT_PIN_A14_C.clear_preset();      // -> PEVO
-  /* PIN_16 */ changed |= EXT_PIN_A15_C.clear_preset();      // -> RAZA
+  /* PIN_01 */ hash << EXT_PIN_A00_C.clear_preset();      // -> KOVA
+  /* PIN_02 */ hash << EXT_PIN_A01_C.clear_preset();      // -> CAMU
+  /* PIN_03 */ hash << EXT_PIN_A02_C.clear_preset();      // -> BUXU
+  /* PIN_04 */ hash << EXT_PIN_A03_C.clear_preset();      // -> BASE
+  /* PIN_05 */ hash << EXT_PIN_A04_C.clear_preset();      // -> AFEC
+  /* PIN_06 */ hash << EXT_PIN_A05_C.clear_preset();      // -> ABUP
+  /* PIN_07 */ hash << EXT_PIN_A06_C.clear_preset();      // -> CYGU
+  /* PIN_08 */ hash << EXT_PIN_A07_C.clear_preset();      // -> COGO
+  /* PIN_09 */ hash << EXT_PIN_A08_C.clear_preset();      // -> MUJY
+  /* PIN_10 */ hash << EXT_PIN_A09_C.clear_preset();      // -> NENA
+  /* PIN_11 */ hash << EXT_PIN_A10_C.clear_preset();      // -> SURA
+  /* PIN_12 */ hash << EXT_PIN_A11_C.clear_preset();      // -> MADY
+  /* PIN_13 */ hash << EXT_PIN_A12_C.clear_preset();      // -> LAHE
+  /* PIN_14 */ hash << EXT_PIN_A13_C.clear_preset();      // -> LURA
+  /* PIN_15 */ hash << EXT_PIN_A14_C.clear_preset();      // -> PEVO
+  /* PIN_16 */ hash << EXT_PIN_A15_C.clear_preset();      // -> RAZA
 
 
-  /* PIN_17 */ changed |= PIN_D0_A.commit_pinout();      // <- RUXA
-  /* PIN_17 */ changed |= PIN_D0_B.commit_pinout();      // <- LULA
-  /* PIN_17 */ changed |= PIN_D0_D.commit_pinout();      // <- RUNE
-  /* PIN_18 */ changed |= PIN_D1_A.commit_pinout();      // <- RUJA
-  /* PIN_18 */ changed |= PIN_D1_B.commit_pinout();      // <- LULA
-  /* PIN_18 */ changed |= PIN_D1_D.commit_pinout();      // <- RYPU
-  /* PIN_19 */ changed |= PIN_D2_A.commit_pinout();      // <- RABY
-  /* PIN_19 */ changed |= PIN_D2_B.commit_pinout();      // <- LULA
-  /* PIN_19 */ changed |= PIN_D2_D.commit_pinout();      // <- SULY
-  /* PIN_20 */ changed |= PIN_D3_A.commit_pinout();      // <- RERA
-  /* PIN_20 */ changed |= PIN_D3_B.commit_pinout();      // <- LULA
-  /* PIN_20 */ changed |= PIN_D3_D.commit_pinout();      // <- SEZE
-  /* PIN_21 */ changed |= PIN_D4_A.commit_pinout();      // <- RORY
-  /* PIN_21 */ changed |= PIN_D4_B.commit_pinout();      // <- LULA
-  /* PIN_21 */ changed |= PIN_D4_D.commit_pinout();      // <- RESY
-  /* PIN_22 */ changed |= PIN_D5_A.commit_pinout();      // <- RYVO
-  /* PIN_22 */ changed |= PIN_D5_B.commit_pinout();      // <- LULA
-  /* PIN_22 */ changed |= PIN_D5_D.commit_pinout();      // <- TAMU
-  /* PIN_23 */ changed |= PIN_D6_A.commit_pinout();      // <- RAFY
-  /* PIN_23 */ changed |= PIN_D6_B.commit_pinout();      // <- LULA
-  /* PIN_23 */ changed |= PIN_D6_D.commit_pinout();      // <- ROGY
-  /* PIN_24 */ changed |= PIN_D7_A.commit_pinout();      // <- RAVU
-  /* PIN_24 */ changed |= PIN_D7_B.commit_pinout();      // <- LULA
-  /* PIN_24 */ changed |= PIN_D7_D.commit_pinout();      // <- RYDA
+  /* PIN_17 */ hash << PIN_D0_A.commit_pinout();      // <- RUXA
+  /* PIN_17 */ hash << PIN_D0_B.commit_pinout();      // <- LULA
+  /* PIN_17 */ hash << PIN_D0_D.commit_pinout();      // <- RUNE
+  /* PIN_18 */ hash << PIN_D1_A.commit_pinout();      // <- RUJA
+  /* PIN_18 */ hash << PIN_D1_B.commit_pinout();      // <- LULA
+  /* PIN_18 */ hash << PIN_D1_D.commit_pinout();      // <- RYPU
+  /* PIN_19 */ hash << PIN_D2_A.commit_pinout();      // <- RABY
+  /* PIN_19 */ hash << PIN_D2_B.commit_pinout();      // <- LULA
+  /* PIN_19 */ hash << PIN_D2_D.commit_pinout();      // <- SULY
+  /* PIN_20 */ hash << PIN_D3_A.commit_pinout();      // <- RERA
+  /* PIN_20 */ hash << PIN_D3_B.commit_pinout();      // <- LULA
+  /* PIN_20 */ hash << PIN_D3_D.commit_pinout();      // <- SEZE
+  /* PIN_21 */ hash << PIN_D4_A.commit_pinout();      // <- RORY
+  /* PIN_21 */ hash << PIN_D4_B.commit_pinout();      // <- LULA
+  /* PIN_21 */ hash << PIN_D4_D.commit_pinout();      // <- RESY
+  /* PIN_22 */ hash << PIN_D5_A.commit_pinout();      // <- RYVO
+  /* PIN_22 */ hash << PIN_D5_B.commit_pinout();      // <- LULA
+  /* PIN_22 */ hash << PIN_D5_D.commit_pinout();      // <- TAMU
+  /* PIN_23 */ hash << PIN_D6_A.commit_pinout();      // <- RAFY
+  /* PIN_23 */ hash << PIN_D6_B.commit_pinout();      // <- LULA
+  /* PIN_23 */ hash << PIN_D6_D.commit_pinout();      // <- ROGY
+  /* PIN_24 */ hash << PIN_D7_A.commit_pinout();      // <- RAVU
+  /* PIN_24 */ hash << PIN_D7_B.commit_pinout();      // <- LULA
+  /* PIN_24 */ hash << PIN_D7_D.commit_pinout();      // <- RYDA
 
-  return changed;
+  return hash;
 }
 
 //------------------------------------------------------------------------------
 
-void CpuPinsOut::tick(TestGB& gb) {
+void CpuPinsOut::tick(SchematicTop& gb) {
   auto rst_sig = gb.rst_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
@@ -449,29 +448,21 @@ void CpuPinsOut::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool CpuPinsOut::commit() {
-  bool changed = false;
-
-  changed |= PIN_AWOB.commit_pinout();       // <- P02.AWOB
-  changed |= PIN_TUTU_BOOTp.commit_pinout();  // PORTA_04: <- TUTU
-  changed |= PIN_AFER_RSTp.commit_pinout();          // PORTC_01: <- AFER
-  changed |= PIN_EXT_RESET.commit_pinout();         // PORTC_02: <- PIN_RESET directly connected to the pad
-  changed |= PIN_EXT_CLKGOOD.commit_pinout();      // PORTC_03: <- CLKIN_A
-  changed |= PIN_TABA_RSTp.commit_pinout();     // PORTC_04: <- TABA
-
-  changed |= PIN_BOWA_AxCDEFGH.commit_pinout(); // PORTD_01: <- BOWA
-  changed |= PIN_BEDO_xBxxxxxx.commit_pinout(); // PORTD_02: <- BEDO _____fgh
-
-  changed |= PIN_BEKO_xBCDExxx.commit_pinout(); // PORTD_03: <- BEKO ____efgh connection not indicated on P01
-  changed |= PIN_BUDE_AxxxxFGH.commit_pinout(); // PORTD_04: <- BUDE abcd____
-
-  changed |= PIN_BOLO_xBCDEFGx.commit_pinout(); // PORTD_05: <- BOLO
-  changed |= PIN_BUKE_ABxxxxxH.commit_pinout(); // PORTD_06: <- BUKE _____f__
-
-  changed |= PIN_BOMA_xBxxxxxx.commit_pinout(); // PORTD_07: <- BOMA _____fgh
-  changed |= PIN_BOGA_AxCDEFGH.commit_pinout(); // PORTD_08: <- BOGA abcde___
-
-  return changed;
+void CpuPinsOut::commit(SignalHash& hash) {
+  hash << PIN_AWOB.commit_pinout();       // <- P02.AWOB
+  hash << PIN_TUTU_BOOTp.commit_pinout();  // PORTA_04: <- TUTU
+  hash << PIN_AFER_RSTp.commit_pinout();          // PORTC_01: <- AFER
+  hash << PIN_EXT_RESET.commit_pinout();         // PORTC_02: <- PIN_RESET directly connected to the pad
+  hash << PIN_EXT_CLKGOOD.commit_pinout();      // PORTC_03: <- CLKIN_A
+  hash << PIN_TABA_RSTp.commit_pinout();     // PORTC_04: <- TABA
+  hash << PIN_BOWA_AxCDEFGH.commit_pinout(); // PORTD_01: <- BOWA
+  hash << PIN_BEDO_xBxxxxxx.commit_pinout(); // PORTD_02: <- BEDO _____fgh
+  hash << PIN_BEKO_xBCDExxx.commit_pinout(); // PORTD_03: <- BEKO ____efgh connection not indicated on P01
+  hash << PIN_BUDE_AxxxxFGH.commit_pinout(); // PORTD_04: <- BUDE abcd____
+  hash << PIN_BOLO_xBCDEFGx.commit_pinout(); // PORTD_05: <- BOLO
+  hash << PIN_BUKE_ABxxxxxH.commit_pinout(); // PORTD_06: <- BUKE _____f__
+  hash << PIN_BOMA_xBxxxxxx.commit_pinout(); // PORTD_07: <- BOMA _____fgh
+  hash << PIN_BOGA_AxCDEFGH.commit_pinout(); // PORTD_08: <- BOGA abcde___
 }
 
 //------------------------------------------------------------------------------

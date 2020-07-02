@@ -1,5 +1,5 @@
 #include "Sch_TileFetcher.h"
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -15,7 +15,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-TileFetcherSignals TileFetcher::sig(const TestGB& gb) const {
+TileFetcherSignals TileFetcher::sig(const SchematicTop& gb) const {
   TileFetcherSignals tile_fetcher_sig;
 
   auto ppu_sig = gb.ppu_reg.sig(gb);
@@ -67,7 +67,7 @@ TileFetcherSignals TileFetcher::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
-void TileFetcher::tick(TestGB& gb) {
+void TileFetcher::tick(SchematicTop& gb) {
   auto& vram_bus = gb.vram_bus;
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
@@ -298,42 +298,42 @@ void TileFetcher::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool TileFetcher::commit() {
-  bool changed = false;
+SignalHash TileFetcher::commit() {
+  SignalHash hash;
 
-  changed |= PYGO_FETCH_DONE_Cp.commit_reg();
-  changed |= POKY_PORCH_DONEp.commit_latch();
+  hash << PYGO_FETCH_DONE_Cp.commit_reg();
+  hash << POKY_PORCH_DONEp.commit_latch();
 
-  changed |= LAXU_BFETCH_S0.commit_reg();
-  changed |= MESU_BFETCH_S1.commit_reg();
-  changed |= NYVA_BFETCH_S2.commit_reg();
+  hash << LAXU_BFETCH_S0.commit_reg();
+  hash << MESU_BFETCH_S1.commit_reg();
+  hash << NYVA_BFETCH_S2.commit_reg();
 
-  changed |= LOVY_FETCH_DONEp.commit_reg();
-  changed |= LONY_BG_READ_VRAM_LATCHp.commit_latch();
+  hash << LOVY_FETCH_DONEp.commit_reg();
+  hash << LONY_BG_READ_VRAM_LATCHp.commit_latch();
 
-  changed |= NYKA_FETCH_DONE_Ap.commit_reg();
-  changed |= PORY_FETCH_DONE_Bp.commit_reg();
-  changed |= LYZU_BFETCH_S0_DELAY.commit_reg();
+  hash << NYKA_FETCH_DONE_Ap.commit_reg();
+  hash << PORY_FETCH_DONE_Bp.commit_reg();
+  hash << LYZU_BFETCH_S0_DELAY.commit_reg();
 
-  changed |= BG_PIX_A0.commit_reg();
-  changed |= BG_PIX_A1.commit_reg();
-  changed |= BG_PIX_A2.commit_reg();
-  changed |= BG_PIX_A3.commit_reg();
-  changed |= BG_PIX_A4.commit_reg();
-  changed |= BG_PIX_A5.commit_reg();
-  changed |= BG_PIX_A6.commit_reg();
-  changed |= BG_PIX_A7.commit_reg();
+  hash << BG_PIX_A0.commit_reg();
+  hash << BG_PIX_A1.commit_reg();
+  hash << BG_PIX_A2.commit_reg();
+  hash << BG_PIX_A3.commit_reg();
+  hash << BG_PIX_A4.commit_reg();
+  hash << BG_PIX_A5.commit_reg();
+  hash << BG_PIX_A6.commit_reg();
+  hash << BG_PIX_A7.commit_reg();
 
-  changed |= BG_PIX_B0.commit_reg();
-  changed |= BG_PIX_B1.commit_reg();
-  changed |= BG_PIX_B2.commit_reg(); 
-  changed |= BG_PIX_B3.commit_reg(); 
-  changed |= BG_PIX_B4.commit_reg(); 
-  changed |= BG_PIX_B5.commit_reg(); 
-  changed |= BG_PIX_B6.commit_reg(); 
-  changed |= BG_PIX_B7.commit_reg();
+  hash << BG_PIX_B0.commit_reg();
+  hash << BG_PIX_B1.commit_reg();
+  hash << BG_PIX_B2.commit_reg(); 
+  hash << BG_PIX_B3.commit_reg(); 
+  hash << BG_PIX_B4.commit_reg(); 
+  hash << BG_PIX_B5.commit_reg(); 
+  hash << BG_PIX_B6.commit_reg(); 
+  hash << BG_PIX_B7.commit_reg();
 
-  return changed;
+  return hash;
 }
 
 //------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 #include "Sch_Clocks.h"
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -23,7 +23,7 @@ ADYK APUK ALEF AFUR
 
 //-----------------------------------------------------------------------------
 
-ClockSignals ClockRegisters::sig(const TestGB& gb) const {
+ClockSignals ClockRegisters::sig(const SchematicTop& gb) const {
   ClockSignals sig;
 
   auto& cpu_bus = gb.cpu_bus;
@@ -109,15 +109,15 @@ ClockSignals ClockRegisters::sig(const TestGB& gb) const {
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tick(const TestGB& gb) {
+void ClockRegisters::tick(const SchematicTop& gb) {
   {
     auto clk_sig = gb.clk_reg.sig(gb);
     auto dbg_sig = gb.dbg_reg.sig(gb);
 
-    /*p01.AFUR*/ AFUR_PHAZ_xBCDExxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD, !ADYK_PHAZ_xxxxEFGH.a);
-    /*p01.ALEF*/ ALEF_PHAZ_xxCDEFxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  AFUR_PHAZ_xBCDExxx.a);
-    /*p01.APUK*/ APUK_PHAZ_xxxDEFGx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  ALEF_PHAZ_xxCDEFxx.a);
-    /*p01.ADYK*/ ADYK_PHAZ_xxxxEFGH.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  APUK_PHAZ_xxxDEFGx.a);
+    /*p01.AFUR*/ AFUR_PHAZ_xBCDExxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD, !ADYK_PHAZ_xxxxEFGH);
+    /*p01.ALEF*/ ALEF_PHAZ_xxCDEFxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  AFUR_PHAZ_xBCDExxx);
+    /*p01.APUK*/ APUK_PHAZ_xxxDEFGx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  ALEF_PHAZ_xxCDEFxx);
+    /*p01.ADYK*/ ADYK_PHAZ_xxxxEFGH.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  APUK_PHAZ_xxxDEFGx);
   }
 
   {
@@ -148,23 +148,22 @@ void ClockRegisters::tick(const TestGB& gb) {
 
 }
 
-bool ClockRegisters::commit() {
-  bool changed = false;
+//-----------------------------------------------------------------------------
 
-  /* PIN_74 */ changed |= PIN_CLK_IN_xBxDxFxH.clear_preset();
-  /* PIN_75 */ changed |= PIN_PHI.commit_pinout();     // <- BUDE/BEVA
+SignalHash ClockRegisters::commit() {
+  SignalHash hash;
+  /* PIN_74 */ hash << PIN_CLK_IN_xBxDxFxH.clear_preset();
+  /* PIN_75 */ hash << PIN_PHI.commit_pinout(); // <- BUDE/BEVA
 
-  /*p01.AFUR*/ changed |= AFUR_PHAZ_xBCDExxx.commit_duo();
-  /*p01.ALEF*/ changed |= ALEF_PHAZ_xxCDEFxx.commit_duo();
-  /*p01.APUK*/ changed |= APUK_PHAZ_xxxDEFGx.commit_duo();
-  /*p01.ADYK*/ changed |= ADYK_PHAZ_xxxxEFGH.commit_duo();
+  hash << AFUR_PHAZ_xBCDExxx.commit_duo();
+  hash << ALEF_PHAZ_xxCDEFxx.commit_duo();
+  hash << APUK_PHAZ_xxxDEFGx.commit_duo();
+  hash << ADYK_PHAZ_xxxxEFGH.commit_duo();
 
-  /*p29.WUVU*/ changed |= WUVU_AxxDExxH.commit_reg();
-  /*p21.VENA*/ changed |= VENA_xBCDExxx.commit_reg();
-  /*p29.WOSU*/ changed |= WOSU_xxCDxxGH.commit_reg();
-
-
-  return changed;
+  hash << WUVU_AxxDExxH.commit_reg();
+  hash << VENA_xBCDExxx.commit_reg();
+  hash << WOSU_xxCDxxGH.commit_reg();
+  return hash;
 }
 
 //-----------------------------------------------------------------------------

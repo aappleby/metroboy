@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -33,9 +33,9 @@ struct SpriteScannerSignals {
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
-  SpriteScannerSignals sig(const TestGB& gb) const;
-  void tick(TestGB& gb);
-  bool commit();
+  SpriteScannerSignals sig(const SchematicTop& gb) const;
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
 private:
 

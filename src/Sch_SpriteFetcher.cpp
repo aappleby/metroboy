@@ -1,5 +1,5 @@
 #include "Sch_SpriteFetcher.h"
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -11,7 +11,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-SpriteFetcherSignals SpriteFetcher::sig(const TestGB& gb) const {
+SpriteFetcherSignals SpriteFetcher::sig(const SchematicTop& gb) const {
   SpriteFetcherSignals sig;
 
   auto ppu_sig = gb.ppu_reg.sig(gb);
@@ -95,7 +95,7 @@ SpriteFetcherSignals SpriteFetcher::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
-void SpriteFetcher::tick(TestGB& gb) {
+void SpriteFetcher::tick(SchematicTop& gb) {
   auto& vram_bus = gb.vram_bus;
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
@@ -233,39 +233,39 @@ void SpriteFetcher::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool SpriteFetcher::commit() {
-  bool changed = false;
+SignalHash SpriteFetcher::commit() {
+  SignalHash hash;
 
-  /*p27.TAKA*/ changed |= TAKA_SFETCH_RUNNINGp.commit_latch();
-  /*p27.SOBU*/ changed |= SOBU_SPRITE_FETCH_TRIG_A.commit_reg();
-  /*p27.SUDA*/ changed |= SUDA_SPRITE_FETCH_TRIG_B.commit_reg();
+  /*p27.TAKA*/ hash << TAKA_SFETCH_RUNNINGp.commit_latch();
+  /*p27.SOBU*/ hash << SOBU_SPRITE_FETCH_TRIG_A.commit_reg();
+  /*p27.SUDA*/ hash << SUDA_SPRITE_FETCH_TRIG_B.commit_reg();
 
-  /*p29.TOXE*/ changed |= TOXE_SFETCH_S0_D0.commit_reg();
-  /*p29.TULY*/ changed |= TULY_SFETCH_S1.commit_reg();
-  /*p29.TESE*/ changed |= TESE_SFETCH_S2.commit_reg();
-  /*p29.TOBU*/ changed |= TOBU_SFETCH_S1_D2.commit_reg();
-  /*p29.VONU*/ changed |= VONU_SFETCH_S1_D4.commit_reg();
-  /*p29.SEBA*/ changed |= SEBA_SFETCH_S1_D5.commit_reg();
-  /*p29.TYFO*/ changed |= TYFO_SFETCH_S0_D1.commit_reg();
+  /*p29.TOXE*/ hash << TOXE_SFETCH_S0_D0.commit_reg();
+  /*p29.TULY*/ hash << TULY_SFETCH_S1.commit_reg();
+  /*p29.TESE*/ hash << TESE_SFETCH_S2.commit_reg();
+  /*p29.TOBU*/ hash << TOBU_SFETCH_S1_D2.commit_reg();
+  /*p29.VONU*/ hash << VONU_SFETCH_S1_D4.commit_reg();
+  /*p29.SEBA*/ hash << SEBA_SFETCH_S1_D5.commit_reg();
+  /*p29.TYFO*/ hash << TYFO_SFETCH_S0_D1.commit_reg();
 
-  /*p33.PEFO*/ changed |= SPR_PIX_A0.commit_reg();
-  /*p33.ROKA*/ changed |= SPR_PIX_A1.commit_reg();
-  /*p33.MYTU*/ changed |= SPR_PIX_A2.commit_reg();
-  /*p33.RAMU*/ changed |= SPR_PIX_A3.commit_reg();
-  /*p33.SELE*/ changed |= SPR_PIX_A4.commit_reg();
-  /*p33.SUTO*/ changed |= SPR_PIX_A5.commit_reg();
-  /*p33.RAMA*/ changed |= SPR_PIX_A6.commit_reg();
-  /*p33.RYDU*/ changed |= SPR_PIX_A7.commit_reg();
-  /*p33.REWO*/ changed |= SPR_PIX_B0.commit_reg();
-  /*p33.PEBA*/ changed |= SPR_PIX_B1.commit_reg();
-  /*p33.MOFO*/ changed |= SPR_PIX_B2.commit_reg();
-  /*p33.PUDU*/ changed |= SPR_PIX_B3.commit_reg();
-  /*p33.SAJA*/ changed |= SPR_PIX_B4.commit_reg();
-  /*p33.SUNY*/ changed |= SPR_PIX_B5.commit_reg();
-  /*p33.SEMO*/ changed |= SPR_PIX_B6.commit_reg();
-  /*p33.SEGA*/ changed |= SPR_PIX_B7.commit_reg();
+  /*p33.PEFO*/ hash << SPR_PIX_A0.commit_reg();
+  /*p33.ROKA*/ hash << SPR_PIX_A1.commit_reg();
+  /*p33.MYTU*/ hash << SPR_PIX_A2.commit_reg();
+  /*p33.RAMU*/ hash << SPR_PIX_A3.commit_reg();
+  /*p33.SELE*/ hash << SPR_PIX_A4.commit_reg();
+  /*p33.SUTO*/ hash << SPR_PIX_A5.commit_reg();
+  /*p33.RAMA*/ hash << SPR_PIX_A6.commit_reg();
+  /*p33.RYDU*/ hash << SPR_PIX_A7.commit_reg();
+  /*p33.REWO*/ hash << SPR_PIX_B0.commit_reg();
+  /*p33.PEBA*/ hash << SPR_PIX_B1.commit_reg();
+  /*p33.MOFO*/ hash << SPR_PIX_B2.commit_reg();
+  /*p33.PUDU*/ hash << SPR_PIX_B3.commit_reg();
+  /*p33.SAJA*/ hash << SPR_PIX_B4.commit_reg();
+  /*p33.SUNY*/ hash << SPR_PIX_B5.commit_reg();
+  /*p33.SEMO*/ hash << SPR_PIX_B6.commit_reg();
+  /*p33.SEGA*/ hash << SPR_PIX_B7.commit_reg();
 
-  return changed;
+  return hash;
 }
 
 

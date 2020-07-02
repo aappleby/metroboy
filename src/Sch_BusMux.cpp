@@ -1,6 +1,6 @@
 #include "Sch_BusMux.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -76,7 +76,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-BusMuxSignals BusMux::sig(const TestGB& gb) const {
+BusMuxSignals BusMux::sig(const SchematicTop& gb) const {
   BusMuxSignals sig;
 
   // cpu can read oam when there's no parsing, rendering, or dma
@@ -160,7 +160,7 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
-void BusMux::tick(TestGB& gb) {
+void BusMux::tick(SchematicTop& gb) {
 
   {
     auto& cpu_bus = gb.cpu_bus;
@@ -593,113 +593,110 @@ void BusMux::tick(TestGB& gb) {
 
 //------------------------------------------------------------------------------
 
-bool BusMux::commit() {
-  bool changed = false;
+SignalHash BusMux::commit() {
+  SignalHash hash;
+  hash << OAM_PIN_CLK.commit_pinout();
+  hash << XYKY_LATCH_OAM_A0.commit_latch();
+  hash << YRUM_LATCH_OAM_A1.commit_latch();
+  hash << YSEX_LATCH_OAM_A2.commit_latch();
+  hash << YVEL_LATCH_OAM_A3.commit_latch();
+  hash << WYNO_LATCH_OAM_A4.commit_latch();
+  hash << CYRA_LATCH_OAM_A5.commit_latch();
+  hash << ZUVE_LATCH_OAM_A6.commit_latch();
+  hash << ECED_LATCH_OAM_A7.commit_latch();
+  hash << YDYV_LATCH_OAM_B0.commit_latch();
+  hash << YCEB_LATCH_OAM_B1.commit_latch();
+  hash << ZUCA_LATCH_OAM_B2.commit_latch();
+  hash << WONE_LATCH_OAM_B3.commit_latch();
+  hash << ZAXE_LATCH_OAM_B4.commit_latch();
+  hash << XAFU_LATCH_OAM_B5.commit_latch();
+  hash << YSES_LATCH_OAM_B6.commit_latch();
+  hash << ZECA_LATCH_OAM_B7.commit_latch();
+  hash << YLOR_SPRITE_X0.commit_reg();
+  hash << ZYTY_SPRITE_X1.commit_reg();
+  hash << ZYVE_SPRITE_X2.commit_reg();
+  hash << ZEZY_SPRITE_X3.commit_reg();
+  hash << GOMO_SPRITE_X4.commit_reg();
+  hash << BAXO_SPRITE_X5.commit_reg();
+  hash << YZOS_SPRITE_X6.commit_reg();
+  hash << DEPO_SPRITE_X7.commit_reg();
+  hash << XUSO_SPRITE_Y0.commit_reg();
+  hash << XEGU_SPRITE_Y1.commit_reg();
+  hash << YJEX_SPRITE_Y2.commit_reg();
+  hash << XYJU_SPRITE_Y3.commit_reg();
+  hash << YBOG_SPRITE_Y4.commit_reg();
+  hash << WYSO_SPRITE_Y5.commit_reg();
+  hash << XOTE_SPRITE_Y6.commit_reg();
+  hash << YZAB_SPRITE_Y7.commit_reg();
 
-  changed |= OAM_PIN_CLK.commit_pinout();
-  changed |= XYKY_LATCH_OAM_A0.commit_latch();
-  changed |= YRUM_LATCH_OAM_A1.commit_latch();
-  changed |= YSEX_LATCH_OAM_A2.commit_latch();
-  changed |= YVEL_LATCH_OAM_A3.commit_latch();
-  changed |= WYNO_LATCH_OAM_A4.commit_latch();
-  changed |= CYRA_LATCH_OAM_A5.commit_latch();
-  changed |= ZUVE_LATCH_OAM_A6.commit_latch();
-  changed |= ECED_LATCH_OAM_A7.commit_latch();
-  changed |= YDYV_LATCH_OAM_B0.commit_latch();
-  changed |= YCEB_LATCH_OAM_B1.commit_latch();
-  changed |= ZUCA_LATCH_OAM_B2.commit_latch();
-  changed |= WONE_LATCH_OAM_B3.commit_latch();
-  changed |= ZAXE_LATCH_OAM_B4.commit_latch();
-  changed |= XAFU_LATCH_OAM_B5.commit_latch();
-  changed |= YSES_LATCH_OAM_B6.commit_latch();
-  changed |= ZECA_LATCH_OAM_B7.commit_latch();
-  changed |= YLOR_SPRITE_X0.commit_reg();
-  changed |= ZYTY_SPRITE_X1.commit_reg();
-  changed |= ZYVE_SPRITE_X2.commit_reg();
-  changed |= ZEZY_SPRITE_X3.commit_reg();
-  changed |= GOMO_SPRITE_X4.commit_reg();
-  changed |= BAXO_SPRITE_X5.commit_reg();
-  changed |= YZOS_SPRITE_X6.commit_reg();
-  changed |= DEPO_SPRITE_X7.commit_reg();
-  changed |= XUSO_SPRITE_Y0.commit_reg();
-  changed |= XEGU_SPRITE_Y1.commit_reg();
-  changed |= YJEX_SPRITE_Y2.commit_reg();
-  changed |= XYJU_SPRITE_Y3.commit_reg();
-  changed |= YBOG_SPRITE_Y4.commit_reg();
-  changed |= WYSO_SPRITE_Y5.commit_reg();
-  changed |= XOTE_SPRITE_Y6.commit_reg();
-  changed |= YZAB_SPRITE_Y7.commit_reg();
-
-  changed |= OAM_PIN_OE.commit_pinout();
-  changed |= OAM_PIN_WR_A.commit_pinout(); // definitely write
-  changed |= OAM_PIN_WR_B.commit_pinout(); // definitely write
-  changed |= OAM_PIN_A0.commit_pinout();
-  changed |= OAM_PIN_A1.commit_pinout();
-  changed |= OAM_PIN_A2.commit_pinout();
-  changed |= OAM_PIN_A3.commit_pinout();
-  changed |= OAM_PIN_A4.commit_pinout();
-  changed |= OAM_PIN_A5.commit_pinout();
-  changed |= OAM_PIN_A6.commit_pinout();
-  changed |= OAM_PIN_A7.commit_pinout();
-  changed |= OAM_PIN_DA0.commit_tribuf();
-  changed |= OAM_PIN_DA1.commit_tribuf();
-  changed |= OAM_PIN_DA2.commit_tribuf();
-  changed |= OAM_PIN_DA3.commit_tribuf();
-  changed |= OAM_PIN_DA4.commit_tribuf();
-  changed |= OAM_PIN_DA5.commit_tribuf();
-  changed |= OAM_PIN_DA6.commit_tribuf();
-  changed |= OAM_PIN_DA7.commit_tribuf();
-  changed |= OAM_PIN_DB0.commit_tribuf();
-  changed |= OAM_PIN_DB1.commit_tribuf();
-  changed |= OAM_PIN_DB2.commit_tribuf();
-  changed |= OAM_PIN_DB3.commit_tribuf();
-  changed |= OAM_PIN_DB4.commit_tribuf();
-  changed |= OAM_PIN_DB5.commit_tribuf();
-  changed |= OAM_PIN_DB6.commit_tribuf();
-  changed |= OAM_PIN_DB7.commit_tribuf();
-
-
-  /* PIN_78 */ changed |= EXT_PIN_WR_A.commit_pinout();    // <- UVER
-  /* PIN_78 */ changed |= EXT_PIN_WR_D.commit_pinout();    // <- USUF
-  /* PIN_79 */ changed |= EXT_PIN_RD_A.commit_pinout();    // <- UGAC
-  /* PIN_79 */ changed |= EXT_PIN_RD_D.commit_pinout();    // <- URUN
-  /* PIN_80 */ changed |= EXT_PIN_CS_A.commit_pinout();    // <- TYHO
-
-  /* PIN_01 */ changed |= EXT_PIN_A00_A.commit_pinout();     // <- KUPO
-  /* PIN_01 */ changed |= EXT_PIN_A00_D.commit_pinout();     // <- KOTY
-  /* PIN_02 */ changed |= EXT_PIN_A01_A.commit_pinout();     // <- CABA
-  /* PIN_02 */ changed |= EXT_PIN_A01_D.commit_pinout();     // <- COTU
-  /* PIN_03 */ changed |= EXT_PIN_A02_A.commit_pinout();     // <- BOKU
-  /* PIN_03 */ changed |= EXT_PIN_A02_D.commit_pinout();     // <- BAJO
-  /* PIN_04 */ changed |= EXT_PIN_A03_A.commit_pinout();     // <- BOTY
-  /* PIN_04 */ changed |= EXT_PIN_A03_D.commit_pinout();     // <- BOLA
-  /* PIN_05 */ changed |= EXT_PIN_A04_A.commit_pinout();     // <- BYLA
-  /* PIN_05 */ changed |= EXT_PIN_A04_D.commit_pinout();     // <- BEVO
-  /* PIN_06 */ changed |= EXT_PIN_A05_A.commit_pinout();     // <- BADU
-  /* PIN_06 */ changed |= EXT_PIN_A05_D.commit_pinout();     // <- AJAV
-  /* PIN_07 */ changed |= EXT_PIN_A06_A.commit_pinout();     // <- CEPU
-  /* PIN_07 */ changed |= EXT_PIN_A06_D.commit_pinout();     // <- CYKA
-  /* PIN_08 */ changed |= EXT_PIN_A07_A.commit_pinout();     // <- DEFY
-  /* PIN_08 */ changed |= EXT_PIN_A07_D.commit_pinout();     // <- COLO
-  /* PIN_09 */ changed |= EXT_PIN_A08_A.commit_pinout();     // <- MYNY
-  /* PIN_09 */ changed |= EXT_PIN_A08_D.commit_pinout();     // <- MEGO
-  /* PIN_10 */ changed |= EXT_PIN_A09_A.commit_pinout();     // <- MUNE
-  /* PIN_10 */ changed |= EXT_PIN_A09_D.commit_pinout();     // <- MENY
-  /* PIN_11 */ changed |= EXT_PIN_A10_A.commit_pinout();     // <- ROXU
-  /* PIN_11 */ changed |= EXT_PIN_A10_D.commit_pinout();     // <- RORE
-  /* PIN_12 */ changed |= EXT_PIN_A11_A.commit_pinout();     // <- LEPY
-  /* PIN_12 */ changed |= EXT_PIN_A11_D.commit_pinout();     // <- LYNY
-  /* PIN_13 */ changed |= EXT_PIN_A12_A.commit_pinout();     // <- LUCE
-  /* PIN_13 */ changed |= EXT_PIN_A12_D.commit_pinout();     // <- LOSO
-  /* PIN_14 */ changed |= EXT_PIN_A13_A.commit_pinout();     // <- LABE
-  /* PIN_14 */ changed |= EXT_PIN_A13_D.commit_pinout();     // <- LEVA
-  /* PIN_15 */ changed |= EXT_PIN_A14_A.commit_pinout();     // <- PUHE
-  /* PIN_15 */ changed |= EXT_PIN_A14_D.commit_pinout();     // <- PAHY
-  /* PIN_16 */ changed |= EXT_PIN_A15_A.commit_pinout();     // <- SUZE
-  /* PIN_16 */ changed |= EXT_PIN_A15_D.commit_pinout();     // <- RULO
+  hash << OAM_PIN_OE.commit_pinout();
+  hash << OAM_PIN_WR_A.commit_pinout(); // definitely write
+  hash << OAM_PIN_WR_B.commit_pinout(); // definitely write
+  hash << OAM_PIN_A0.commit_pinout();
+  hash << OAM_PIN_A1.commit_pinout();
+  hash << OAM_PIN_A2.commit_pinout();
+  hash << OAM_PIN_A3.commit_pinout();
+  hash << OAM_PIN_A4.commit_pinout();
+  hash << OAM_PIN_A5.commit_pinout();
+  hash << OAM_PIN_A6.commit_pinout();
+  hash << OAM_PIN_A7.commit_pinout();
+  hash << OAM_PIN_DA0.commit_tribuf();
+  hash << OAM_PIN_DA1.commit_tribuf();
+  hash << OAM_PIN_DA2.commit_tribuf();
+  hash << OAM_PIN_DA3.commit_tribuf();
+  hash << OAM_PIN_DA4.commit_tribuf();
+  hash << OAM_PIN_DA5.commit_tribuf();
+  hash << OAM_PIN_DA6.commit_tribuf();
+  hash << OAM_PIN_DA7.commit_tribuf();
+  hash << OAM_PIN_DB0.commit_tribuf();
+  hash << OAM_PIN_DB1.commit_tribuf();
+  hash << OAM_PIN_DB2.commit_tribuf();
+  hash << OAM_PIN_DB3.commit_tribuf();
+  hash << OAM_PIN_DB4.commit_tribuf();
+  hash << OAM_PIN_DB5.commit_tribuf();
+  hash << OAM_PIN_DB6.commit_tribuf();
+  hash << OAM_PIN_DB7.commit_tribuf();
 
 
-  return changed;
+  /* PIN_78 */ hash << EXT_PIN_WR_A.commit_pinout();    // <- UVER
+  /* PIN_78 */ hash << EXT_PIN_WR_D.commit_pinout();    // <- USUF
+  /* PIN_79 */ hash << EXT_PIN_RD_A.commit_pinout();    // <- UGAC
+  /* PIN_79 */ hash << EXT_PIN_RD_D.commit_pinout();    // <- URUN
+  /* PIN_80 */ hash << EXT_PIN_CS_A.commit_pinout();    // <- TYHO
+
+  /* PIN_01 */ hash << EXT_PIN_A00_A.commit_pinout();     // <- KUPO
+  /* PIN_01 */ hash << EXT_PIN_A00_D.commit_pinout();     // <- KOTY
+  /* PIN_02 */ hash << EXT_PIN_A01_A.commit_pinout();     // <- CABA
+  /* PIN_02 */ hash << EXT_PIN_A01_D.commit_pinout();     // <- COTU
+  /* PIN_03 */ hash << EXT_PIN_A02_A.commit_pinout();     // <- BOKU
+  /* PIN_03 */ hash << EXT_PIN_A02_D.commit_pinout();     // <- BAJO
+  /* PIN_04 */ hash << EXT_PIN_A03_A.commit_pinout();     // <- BOTY
+  /* PIN_04 */ hash << EXT_PIN_A03_D.commit_pinout();     // <- BOLA
+  /* PIN_05 */ hash << EXT_PIN_A04_A.commit_pinout();     // <- BYLA
+  /* PIN_05 */ hash << EXT_PIN_A04_D.commit_pinout();     // <- BEVO
+  /* PIN_06 */ hash << EXT_PIN_A05_A.commit_pinout();     // <- BADU
+  /* PIN_06 */ hash << EXT_PIN_A05_D.commit_pinout();     // <- AJAV
+  /* PIN_07 */ hash << EXT_PIN_A06_A.commit_pinout();     // <- CEPU
+  /* PIN_07 */ hash << EXT_PIN_A06_D.commit_pinout();     // <- CYKA
+  /* PIN_08 */ hash << EXT_PIN_A07_A.commit_pinout();     // <- DEFY
+  /* PIN_08 */ hash << EXT_PIN_A07_D.commit_pinout();     // <- COLO
+  /* PIN_09 */ hash << EXT_PIN_A08_A.commit_pinout();     // <- MYNY
+  /* PIN_09 */ hash << EXT_PIN_A08_D.commit_pinout();     // <- MEGO
+  /* PIN_10 */ hash << EXT_PIN_A09_A.commit_pinout();     // <- MUNE
+  /* PIN_10 */ hash << EXT_PIN_A09_D.commit_pinout();     // <- MENY
+  /* PIN_11 */ hash << EXT_PIN_A10_A.commit_pinout();     // <- ROXU
+  /* PIN_11 */ hash << EXT_PIN_A10_D.commit_pinout();     // <- RORE
+  /* PIN_12 */ hash << EXT_PIN_A11_A.commit_pinout();     // <- LEPY
+  /* PIN_12 */ hash << EXT_PIN_A11_D.commit_pinout();     // <- LYNY
+  /* PIN_13 */ hash << EXT_PIN_A12_A.commit_pinout();     // <- LUCE
+  /* PIN_13 */ hash << EXT_PIN_A12_D.commit_pinout();     // <- LOSO
+  /* PIN_14 */ hash << EXT_PIN_A13_A.commit_pinout();     // <- LABE
+  /* PIN_14 */ hash << EXT_PIN_A13_D.commit_pinout();     // <- LEVA
+  /* PIN_15 */ hash << EXT_PIN_A14_A.commit_pinout();     // <- PUHE
+  /* PIN_15 */ hash << EXT_PIN_A14_D.commit_pinout();     // <- PAHY
+  /* PIN_16 */ hash << EXT_PIN_A15_A.commit_pinout();     // <- SUZE
+  /* PIN_16 */ hash << EXT_PIN_A15_D.commit_pinout();     // <- RULO
+  return hash;
 }
 
 //------------------------------------------------------------------------------

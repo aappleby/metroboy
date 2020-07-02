@@ -20,7 +20,7 @@ struct JoypadRegisters {
 
   JoypadSignals sig() const;
   void tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus& cpu_bus, CpuBusSignals& cpu_sig);
-  bool commit();
+  SignalHash commit();
 
 private:
 

@@ -3,7 +3,7 @@
 
 namespace Schematics {
 
-struct TestGB;
+struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
@@ -19,9 +19,9 @@ struct TimerSignals {
 
 struct TimerRegisters {
 
-  TimerSignals sig(const TestGB& gb) const;
-  void tick(TestGB& gb);
-  bool commit();
+  TimerSignals sig(const SchematicTop& gb) const;
+  void tick(SchematicTop& gb);
+  SignalHash commit();
 
 private:
 

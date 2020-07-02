@@ -1,6 +1,6 @@
 #include "Sch_Debug.h"
 
-#include "TestGB.h"
+#include "Sch_Top.h"
 
 using namespace Schematics;
 
@@ -14,7 +14,7 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-DebugSignals DebugRegisters::sig(const TestGB& gb) const {
+DebugSignals DebugRegisters::sig(const SchematicTop& gb) const {
   DebugSignals sig;
 
   auto& cpu_bus = gb.cpu_bus;
@@ -54,7 +54,7 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
 
 //-----------------------------------------------------------------------------
 
-void DebugRegisters::tick(const TestGB& gb) {
+void DebugRegisters::tick(const SchematicTop& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto dbg_sig = sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
@@ -74,19 +74,17 @@ void DebugRegisters::tick(const TestGB& gb) {
 
 //-----------------------------------------------------------------------------
 
-bool DebugRegisters::commit() {
-  bool changed = false;
+SignalHash DebugRegisters::commit() {
+  SignalHash hash;
+  /* PIN_76 */ hash << PIN_T2.clear_preset();
+  /* PIN_77 */ hash << PIN_T1.clear_preset();
 
-  /* PIN_76 */ changed |= PIN_T2.clear_preset();
-  /* PIN_77 */ changed |= PIN_T1.clear_preset();
-
-  /*p25.SOTO*/ changed |= SOTO_DBG.commit_reg();
+  /*p25.SOTO*/ hash << SOTO_DBG.commit_reg();
   //changed |= cpu_pins.UNOR_MODE_DBG2.commit_pinout();         // PORTA_02: <- P07.UNOR_MODE_DBG2
   //changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
-  /*p07.BURO*/ changed |= BURO_FF60_0.commit_reg();
-  /*p07.AMUT*/ changed |= AMUT_FF60_1.commit_reg();
-
-  return changed;
+  /*p07.BURO*/ hash << BURO_FF60_0.commit_reg();
+  /*p07.AMUT*/ hash << AMUT_FF60_1.commit_reg();
+  return hash;
 }
 
 //-----------------------------------------------------------------------------

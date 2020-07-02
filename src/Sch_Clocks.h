@@ -88,7 +88,13 @@ struct ClockRegisters {
   }
   */
 
+  void preset_clk(bool clk) {
+    PIN_CLK_IN_xBxDxFxH.preset(true, clk);
+  }
+
 private:
+
+  /* PIN_74 */ PinIn PIN_CLK_IN_xBxDxFxH;
 
   /* PIN_75 */ PinOut PIN_PHI;    // <- P01.BUDE/BEVA
 

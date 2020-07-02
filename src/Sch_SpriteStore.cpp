@@ -45,7 +45,6 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto oam_sig = gb.oam_bus.sig();
 
   auto& sprite_scanner = gb.sprite_scanner;
   auto sprite_scanner_sig = sprite_scanner.sig(gb);
@@ -225,8 +224,6 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto sst_sig = sig(gb);
-  auto bus_sig = gb.bus_mux.sig(gb);
-  auto oam_sig = gb.oam_bus.sig();
 
   auto& sprite_scanner = gb.sprite_scanner;
   auto sprite_scanner_sig = sprite_scanner.sig(gb);
@@ -270,6 +267,8 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
 
 
   {
+    auto bus_sig = gb.bus_mux.sig(gb);
+
     // BUZA def AND
     // BUZA01 << CENO16
     // BUZA02 << XYMU03
@@ -487,6 +486,8 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
   // Sprite store setter
 
   {
+    auto bus_sig = gb.bus_mux.sig(gb);
+  
     /*p29.DYWE*/ wire DYWE_STORE0_RSTp = or(lcd_sig.DYBA_VID_LINE_TRIG_d4p, EBOJ_STORE0_RSTp);
     /*p29.EFEV*/ wire EFEV_STORE1_RSTp = or(lcd_sig.DYBA_VID_LINE_TRIG_d4p, CEDY_STORE1_RSTp);
     /*p29.FOKO*/ wire FOKO_STORE2_RSTp = or(lcd_sig.DYBA_VID_LINE_TRIG_d4p, EGAV_STORE2_RSTp);
@@ -555,14 +556,14 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
 
     // 10 sprite stores
 
-    /*p31.ZAGO*/ wire ZAGO_SPRITE_X0 = not(!oam_sig.YLOR_SPRITE_X0);
-    /*p31.ZOCY*/ wire ZOCY_SPRITE_X1 = not(!oam_sig.ZYTY_SPRITE_X1);
-    /*p31.YPUR*/ wire YPUR_SPRITE_X2 = not(!oam_sig.ZYVE_SPRITE_X2);
-    /*p31.YVOK*/ wire YVOK_SPRITE_X3 = not(!oam_sig.ZEZY_SPRITE_X3);
-    /*p31.COSE*/ wire COSE_SPRITE_X4 = not(!oam_sig.GOMO_SPRITE_X4);
-    /*p31.AROP*/ wire AROP_SPRITE_X5 = not(!oam_sig.BAXO_SPRITE_X5);
-    /*p31.XATU*/ wire XATU_SPRITE_X6 = not(!oam_sig.YZOS_SPRITE_X6);
-    /*p31.BADY*/ wire BADY_SPRITE_X7 = not(!oam_sig.DEPO_SPRITE_X7);
+    /*p31.ZAGO*/ wire ZAGO_SPRITE_X0 = not(!bus_sig.YLOR_SPRITE_X0);
+    /*p31.ZOCY*/ wire ZOCY_SPRITE_X1 = not(!bus_sig.ZYTY_SPRITE_X1);
+    /*p31.YPUR*/ wire YPUR_SPRITE_X2 = not(!bus_sig.ZYVE_SPRITE_X2);
+    /*p31.YVOK*/ wire YVOK_SPRITE_X3 = not(!bus_sig.ZEZY_SPRITE_X3);
+    /*p31.COSE*/ wire COSE_SPRITE_X4 = not(!bus_sig.GOMO_SPRITE_X4);
+    /*p31.AROP*/ wire AROP_SPRITE_X5 = not(!bus_sig.BAXO_SPRITE_X5);
+    /*p31.XATU*/ wire XATU_SPRITE_X6 = not(!bus_sig.YZOS_SPRITE_X6);
+    /*p31.BADY*/ wire BADY_SPRITE_X7 = not(!bus_sig.DEPO_SPRITE_X7);
 
     /*p29.GENY*/ wire GENY_STORE0_CLKp = not(DYHU_STORE0_CLKn);
     /*p29.ENOB*/ wire ENOB_STORE0_CLKp = not(DYHU_STORE0_CLKn);

@@ -22,7 +22,6 @@ TimerSignals TimerRegisters::sig(const TestGB& /*gb*/) const {
 
 void TimerRegisters::tick(TestGB& gb) {
   auto& cpu_bus = gb.cpu_bus;
-  auto& ext_pins_in = gb.ext_pins_in;
 
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
@@ -32,7 +31,7 @@ void TimerRegisters::tick(TestGB& gb) {
   // FF04 DIV
   {
     /*p01.TAPE*/ wire _FF04_WR = and(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_sig.TOVY_A00n);
-    /*p01.UFOL*/ wire _DIV_RSTn = nor(rst_sig.UCOB_CLKBAD, ext_pins_in.PIN_RST, _FF04_WR);
+    /*p01.UFOL*/ wire _DIV_RSTn = nor(rst_sig.UCOB_CLKBAD, gb.EXT_PIN_RST, _FF04_WR);
 
     /*p01.UKUP*/ UKUP_DIV_00.set(clk_sig.BOGA_AxCDEFGH, _DIV_RSTn, !UKUP_DIV_00.q());
     /*p01.UFOR*/ UFOR_DIV_01.set(!UKUP_DIV_00.q(), _DIV_RSTn, !UFOR_DIV_01.q());

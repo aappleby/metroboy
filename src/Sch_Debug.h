@@ -45,7 +45,15 @@ struct DebugRegisters {
     text_painter.newline();
   }
 
+  void preset_t1t2(bool t1, bool t2) {
+    PIN_T1.preset(true, t1);
+    PIN_T2.preset(true, t2);
+  }
+
 private:
+
+  /* PIN_76 */ PinIn PIN_T2;
+  /* PIN_77 */ PinIn PIN_T1;
 
   /*p07.BURO*/ Reg BURO_FF60_0;
   /*p07.AMUT*/ Reg AMUT_FF60_1;

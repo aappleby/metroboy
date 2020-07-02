@@ -17,7 +17,6 @@
 #include "Sch_VramBus.h"
 #include "Sch_ExtBus.h"
 #include "Sch_CpuBus.h"
-#include "Sch_OamBus.h"
 #include "Sch_BusMux.h"
 #include "Sch_Interrupts.h"
 #include "Sch_Bootrom.h"
@@ -66,10 +65,6 @@ struct TestGB {
   CpuBus  cpu_bus;
   CpuPinsOut cpu_pins_out;
 
-  ExtPinsIn  ext_pins_in;
-  ExtPinsOut ext_pins_out;
-
-  OamBus oam_bus;
   VramBus vram_bus;
 
   TileFetcher tile_fetcher;
@@ -80,6 +75,18 @@ struct TestGB {
   BusMux bus_mux;
 
   Bootrom bootrom;
+
+  /* PIN_71 */ PinIn EXT_PIN_RST;
+  /* PIN_74 */ PinIn EXT_PIN_CLK_GOOD;
+
+  /* PIN_17 */ PinIn EXT_PIN_D0_C;    // -> P08.TOVO,SOMA
+  /* PIN_18 */ PinIn EXT_PIN_D1_C;    // -> P08.RUZY,RONY
+  /* PIN_19 */ PinIn EXT_PIN_D2_C;    // -> P08.ROME,RAXY
+  /* PIN_20 */ PinIn EXT_PIN_D3_C;    // -> P08.SAZA,SELO
+  /* PIN_21 */ PinIn EXT_PIN_D4_C;    // -> P08.TEHE,SODY
+  /* PIN_22 */ PinIn EXT_PIN_D5_C;    // -> P08.RATU,SAGO
+  /* PIN_23 */ PinIn EXT_PIN_D6_C;    // -> P08.SOCA,RUPA
+  /* PIN_24 */ PinIn EXT_PIN_D7_C;    // -> P08.RYBA,SAZY
 };
 
 //-----------------------------------------------------------------------------

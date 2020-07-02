@@ -7,7 +7,6 @@ using namespace Schematics;
 //----------
 
 PixelPipeSignals PixelPipeRegisters::sig(const TestGB& gb) const {
-  auto oam_sig = gb.oam_bus.sig();
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto win_sig = gb.win_reg.sig(gb);
@@ -102,7 +101,6 @@ PixelPipeSignals PixelPipeRegisters::sig(const TestGB& gb) const {
 //------------------------------------------------------------------------------
 
 void PixelPipeRegisters::tick(TestGB& gb) {
-  auto oam_sig = gb.oam_bus.sig();
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto win_sig = gb.win_reg.sig(gb);
@@ -301,23 +299,25 @@ void PixelPipeRegisters::tick(TestGB& gb) {
 
     // Palette pipe
     {
-      /*p34.SYPY*/ wire SYPY = not(oam_sig.GOMO_SPRITE_X4);
-      /*p34.TOTU*/ wire TOTU = not(oam_sig.GOMO_SPRITE_X4);
-      /*p34.NARO*/ wire NARO = not(oam_sig.GOMO_SPRITE_X4);
-      /*p34.WEXY*/ wire WEXY = not(oam_sig.GOMO_SPRITE_X4);
-      /*p34.RYZY*/ wire RYZY = not(oam_sig.GOMO_SPRITE_X4);
-      /*p34.RYFE*/ wire RYFE = not(oam_sig.GOMO_SPRITE_X4);
-      /*p34.LADY*/ wire LADY = not(oam_sig.GOMO_SPRITE_X4);
-      /*p34.LAFY*/ wire LAFY = not(oam_sig.GOMO_SPRITE_X4);
+      auto bus_sig = gb.bus_mux.sig(gb);
 
-      /*p34.PUME*/ wire SPRITE_PAL_PIPE_SET0n = nand(SPRITE_MASK0n, oam_sig.GOMO_SPRITE_X4);
-      /*p34.SORO*/ wire SPRITE_PAL_PIPE_SET1n = nand(SPRITE_MASK1n, oam_sig.GOMO_SPRITE_X4);
-      /*p34.PAMO*/ wire SPRITE_PAL_PIPE_SET2n = nand(SPRITE_MASK2n, oam_sig.GOMO_SPRITE_X4);
-      /*p34.SUKY*/ wire SPRITE_PAL_PIPE_SET3n = nand(SPRITE_MASK3n, oam_sig.GOMO_SPRITE_X4);
-      /*p34.RORA*/ wire SPRITE_PAL_PIPE_SET4n = nand(SPRITE_MASK4n, oam_sig.GOMO_SPRITE_X4);
-      /*p34.MENE*/ wire SPRITE_PAL_PIPE_SET5n = nand(SPRITE_MASK5n, oam_sig.GOMO_SPRITE_X4);
-      /*p34.LUKE*/ wire SPRITE_PAL_PIPE_SET6n = nand(SPRITE_MASK6n, oam_sig.GOMO_SPRITE_X4);
-      /*p34.LAMY*/ wire SPRITE_PAL_PIPE_SET7n = nand(SPRITE_MASK7n, oam_sig.GOMO_SPRITE_X4);
+      /*p34.SYPY*/ wire SYPY = not(bus_sig.GOMO_SPRITE_X4);
+      /*p34.TOTU*/ wire TOTU = not(bus_sig.GOMO_SPRITE_X4);
+      /*p34.NARO*/ wire NARO = not(bus_sig.GOMO_SPRITE_X4);
+      /*p34.WEXY*/ wire WEXY = not(bus_sig.GOMO_SPRITE_X4);
+      /*p34.RYZY*/ wire RYZY = not(bus_sig.GOMO_SPRITE_X4);
+      /*p34.RYFE*/ wire RYFE = not(bus_sig.GOMO_SPRITE_X4);
+      /*p34.LADY*/ wire LADY = not(bus_sig.GOMO_SPRITE_X4);
+      /*p34.LAFY*/ wire LAFY = not(bus_sig.GOMO_SPRITE_X4);
+
+      /*p34.PUME*/ wire SPRITE_PAL_PIPE_SET0n = nand(SPRITE_MASK0n, bus_sig.GOMO_SPRITE_X4);
+      /*p34.SORO*/ wire SPRITE_PAL_PIPE_SET1n = nand(SPRITE_MASK1n, bus_sig.GOMO_SPRITE_X4);
+      /*p34.PAMO*/ wire SPRITE_PAL_PIPE_SET2n = nand(SPRITE_MASK2n, bus_sig.GOMO_SPRITE_X4);
+      /*p34.SUKY*/ wire SPRITE_PAL_PIPE_SET3n = nand(SPRITE_MASK3n, bus_sig.GOMO_SPRITE_X4);
+      /*p34.RORA*/ wire SPRITE_PAL_PIPE_SET4n = nand(SPRITE_MASK4n, bus_sig.GOMO_SPRITE_X4);
+      /*p34.MENE*/ wire SPRITE_PAL_PIPE_SET5n = nand(SPRITE_MASK5n, bus_sig.GOMO_SPRITE_X4);
+      /*p34.LUKE*/ wire SPRITE_PAL_PIPE_SET6n = nand(SPRITE_MASK6n, bus_sig.GOMO_SPRITE_X4);
+      /*p34.LAMY*/ wire SPRITE_PAL_PIPE_SET7n = nand(SPRITE_MASK7n, bus_sig.GOMO_SPRITE_X4);
 
       /*p34.SUCO*/ wire SPRITE_PAL_PIPE_RST0n = nand(SPRITE_MASK0n, SYPY);
       /*p34.TAFA*/ wire SPRITE_PAL_PIPE_RST1n = nand(SPRITE_MASK1n, TOTU);
@@ -340,23 +340,25 @@ void PixelPipeRegisters::tick(TestGB& gb) {
 
     // Background mask pipe
     {
-      /*p26.XOGA*/ wire XOGA = not(oam_sig.DEPO_SPRITE_X7);
-      /*p26.XURA*/ wire XURA = not(oam_sig.DEPO_SPRITE_X7);
-      /*p26.TAJO*/ wire TAJO = not(oam_sig.DEPO_SPRITE_X7);
-      /*p26.XENU*/ wire XENU = not(oam_sig.DEPO_SPRITE_X7);
-      /*p26.XYKE*/ wire XYKE = not(oam_sig.DEPO_SPRITE_X7);
-      /*p26.XABA*/ wire XABA = not(oam_sig.DEPO_SPRITE_X7);
-      /*p26.TAFU*/ wire TAFU = not(oam_sig.DEPO_SPRITE_X7);
-      /*p26.XUHO*/ wire XUHO = not(oam_sig.DEPO_SPRITE_X7);
+      auto bus_sig = gb.bus_mux.sig(gb);
 
-      /*p26.TEDE*/ wire MASK_PIPE_SET0 = nand(SPRITE_MASK0n, oam_sig.DEPO_SPRITE_X7);
-      /*p26.XALA*/ wire MASK_PIPE_SET1 = nand(SPRITE_MASK1n, oam_sig.DEPO_SPRITE_X7);
-      /*p26.TYRA*/ wire MASK_PIPE_SET2 = nand(SPRITE_MASK2n, oam_sig.DEPO_SPRITE_X7);
-      /*p26.XYRU*/ wire MASK_PIPE_SET3 = nand(SPRITE_MASK3n, oam_sig.DEPO_SPRITE_X7);
-      /*p26.XUKU*/ wire MASK_PIPE_SET4 = nand(SPRITE_MASK4n, oam_sig.DEPO_SPRITE_X7);
-      /*p26.XELY*/ wire MASK_PIPE_SET5 = nand(SPRITE_MASK5n, oam_sig.DEPO_SPRITE_X7);
-      /*p26.TYKO*/ wire MASK_PIPE_SET6 = nand(SPRITE_MASK6n, oam_sig.DEPO_SPRITE_X7);
-      /*p26.TUWU*/ wire MASK_PIPE_SET7 = nand(SPRITE_MASK7n, oam_sig.DEPO_SPRITE_X7);
+      /*p26.XOGA*/ wire XOGA = not(bus_sig.DEPO_SPRITE_X7);
+      /*p26.XURA*/ wire XURA = not(bus_sig.DEPO_SPRITE_X7);
+      /*p26.TAJO*/ wire TAJO = not(bus_sig.DEPO_SPRITE_X7);
+      /*p26.XENU*/ wire XENU = not(bus_sig.DEPO_SPRITE_X7);
+      /*p26.XYKE*/ wire XYKE = not(bus_sig.DEPO_SPRITE_X7);
+      /*p26.XABA*/ wire XABA = not(bus_sig.DEPO_SPRITE_X7);
+      /*p26.TAFU*/ wire TAFU = not(bus_sig.DEPO_SPRITE_X7);
+      /*p26.XUHO*/ wire XUHO = not(bus_sig.DEPO_SPRITE_X7);
+
+      /*p26.TEDE*/ wire MASK_PIPE_SET0 = nand(SPRITE_MASK0n, bus_sig.DEPO_SPRITE_X7);
+      /*p26.XALA*/ wire MASK_PIPE_SET1 = nand(SPRITE_MASK1n, bus_sig.DEPO_SPRITE_X7);
+      /*p26.TYRA*/ wire MASK_PIPE_SET2 = nand(SPRITE_MASK2n, bus_sig.DEPO_SPRITE_X7);
+      /*p26.XYRU*/ wire MASK_PIPE_SET3 = nand(SPRITE_MASK3n, bus_sig.DEPO_SPRITE_X7);
+      /*p26.XUKU*/ wire MASK_PIPE_SET4 = nand(SPRITE_MASK4n, bus_sig.DEPO_SPRITE_X7);
+      /*p26.XELY*/ wire MASK_PIPE_SET5 = nand(SPRITE_MASK5n, bus_sig.DEPO_SPRITE_X7);
+      /*p26.TYKO*/ wire MASK_PIPE_SET6 = nand(SPRITE_MASK6n, bus_sig.DEPO_SPRITE_X7);
+      /*p26.TUWU*/ wire MASK_PIPE_SET7 = nand(SPRITE_MASK7n, bus_sig.DEPO_SPRITE_X7);
 
       /*p26.WOKA*/ wire MASK_PIPE_RST0 = nand(SPRITE_MASK0n, XOGA);
       /*p26.WEDE*/ wire MASK_PIPE_RST1 = nand(SPRITE_MASK1n, XURA);

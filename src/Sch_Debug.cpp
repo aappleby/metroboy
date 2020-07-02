@@ -17,7 +17,6 @@ using namespace Schematics;
 DebugSignals DebugRegisters::sig(const TestGB& gb) const {
   DebugSignals sig;
 
-  auto& ext_pins_in = gb.ext_pins_in;
   auto& cpu_bus = gb.cpu_bus;
 
   wire P10_B = 0;
@@ -31,12 +30,12 @@ DebugSignals DebugRegisters::sig(const TestGB& gb) const {
 
 
 
-  /*p07.UBET*/ sig.UBET_T1n = not(ext_pins_in.PIN_T1);
-  /*p07.UVAR*/ sig.UVAR_T2n = not(ext_pins_in.PIN_T2);
-  /*p07.UMUT*/ sig.UMUT_MODE_DBG1p = and (ext_pins_in.PIN_T1, sig.UVAR_T2n);
-  /*p07.UNOR*/ sig.UNOR_MODE_DBG2p = and (ext_pins_in.PIN_T2, sig.UBET_T1n); // Must be UNORp, see UJYV/UBAL
+  /*p07.UBET*/ sig.UBET_T1n = not(PIN_T1);
+  /*p07.UVAR*/ sig.UVAR_T2n = not(PIN_T2);
+  /*p07.UMUT*/ sig.UMUT_MODE_DBG1p = and (PIN_T1, sig.UVAR_T2n);
+  /*p07.UNOR*/ sig.UNOR_MODE_DBG2p = and (PIN_T2, sig.UBET_T1n); // Must be UNORp, see UJYV/UBAL
   /*p08.TOVA*/ sig.TOVA_MODE_DBG2n = not(sig.UNOR_MODE_DBG2p);
-  /*p07.UPOJ*/ sig.UPOJ_MODE_PROD = nand(sig.UBET_T1n, sig.UVAR_T2n, ext_pins_in.PIN_RST);
+  /*p07.UPOJ*/ sig.UPOJ_MODE_PROD = nand(sig.UBET_T1n, sig.UVAR_T2n, gb.EXT_PIN_RST);
   /*p08.RYCA*/ sig.RYCA_MODE_DBG2n = not(sig.UNOR_MODE_DBG2p);
   /*p25.TUTO*/ sig.TUTO_DBG_VRAMp = and (sig.UNOR_MODE_DBG2p, !SOTO_DBG);
 
@@ -74,6 +73,10 @@ void DebugRegisters::tick(const TestGB& gb) {
 
 bool DebugRegisters::commit() {
   bool changed = false;
+
+  /* PIN_76 */ changed |= PIN_T2.clear_preset();
+  /* PIN_77 */ changed |= PIN_T1.clear_preset();
+
   /*p25.SOTO*/ changed |= SOTO_DBG.commit_reg();
   //changed |= cpu_pins.UNOR_MODE_DBG2.commit_pinout();         // PORTA_02: <- P07.UNOR_MODE_DBG2
   //changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1

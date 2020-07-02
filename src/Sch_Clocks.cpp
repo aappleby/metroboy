@@ -28,13 +28,12 @@ ClockSignals ClockRegisters::sig(const TestGB& gb) const {
 
   auto& cpu_bus = gb.cpu_bus;
   auto& clk_reg = gb.clk_reg;
-  auto& ext_pins_in = gb.ext_pins_in;
 
   ///*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(ext_pins_in.PIN_CLK_IN_xBxDxFxH);
-  /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(ext_pins_in.PIN_CLK_GOOD);
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(PIN_CLK_IN_xBxDxFxH);
+  /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(gb.EXT_PIN_CLK_GOOD);
   /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.PIN_CLKREQ);
   /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
 
@@ -152,6 +151,7 @@ void ClockRegisters::tick(const TestGB& gb) {
 bool ClockRegisters::commit() {
   bool changed = false;
 
+  /* PIN_74 */ changed |= PIN_CLK_IN_xBxDxFxH.clear_preset();
   /* PIN_75 */ changed |= PIN_PHI.commit_pinout();     // <- BUDE/BEVA
 
   /*p01.AFUR*/ changed |= AFUR_PHAZ_xBCDExxx.commit_duo();

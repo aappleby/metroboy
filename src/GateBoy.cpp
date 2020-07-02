@@ -131,7 +131,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->ext_pins_in.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      gb->clk_reg.preset_clk(gb->phase_counter & 1);
 
       /*
       if (phase >= 32 && phase < 40) {
@@ -163,10 +163,9 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
 
   Schematics::TestGB* gb = state_manager.state();
 
-  gb->ext_pins_in.PIN_RST.preset(true, 1);
-  gb->ext_pins_in.PIN_CLK_GOOD.preset(true, 0);
-  gb->ext_pins_in.PIN_T2.preset(true, 0);
-  gb->ext_pins_in.PIN_T1.preset(true, 0);
+  gb->EXT_PIN_RST.preset(true, 1);
+  gb->EXT_PIN_CLK_GOOD.preset(true, 0);
+  gb->dbg_reg.preset_t1t2(0,0);
 
   gb->cpu_bus.PIN_CLKREQ.preset(true, 0);
   gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
@@ -186,9 +185,9 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   //gb->ext_pins_in.preset();
 
   pass_cycle();
-  gb->ext_pins_in.PIN_RST.preset(true, 0);
+  gb->EXT_PIN_RST.preset(true, 0);
   pass_cycle();
-  gb->ext_pins_in.PIN_CLK_GOOD.preset(true, 1);
+  gb->EXT_PIN_CLK_GOOD.preset(true, 1);
   pass_cycle();
   gb->cpu_bus.PIN_CLKREQ.preset(true, 1);
   pass_cycle();

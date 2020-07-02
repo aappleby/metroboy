@@ -117,7 +117,6 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
   auto dma_sig = gb.dma_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto oam_sig = gb.oam_bus.sig();
 
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto& vram_pins = gb.vram_pins;
@@ -234,7 +233,6 @@ void PpuRegisters::tick(TestGB& gb) {
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto sst_sig = gb.sst_reg.sig(gb);
   auto ppu_sig = sig(gb);
-  auto oam_sig = gb.oam_bus.sig();
 
   auto& cpu_bus = gb.cpu_bus;
   auto& ppu_config = gb.ppu_config;

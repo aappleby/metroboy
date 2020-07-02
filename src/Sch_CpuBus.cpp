@@ -12,8 +12,6 @@ CpuBusSignals CpuBus::sig(const TestGB& gb) const {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
 
-  auto& ext_pins_in = gb.ext_pins_in;
-
   /*p03.TOVY*/ sig.TOVY_A00n = not(PIN_A00);
   /*p08.TOLA*/ sig.TOLA_A01n = not(PIN_A01);
   /*p06.SEFY*/ sig.SEFY_A02n = not(PIN_A02);
@@ -75,14 +73,14 @@ CpuBusSignals CpuBus::sig(const TestGB& gb) const {
   // UBAL4 nc
   // UBAL5 >>
 
-  /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(ext_pins_in.PIN_RD_C, PIN_CPU_RAW_RD, dbg_sig.UNOR_MODE_DBG2p);
+  /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(EXT_PIN_RD_C, PIN_CPU_RAW_RD, dbg_sig.UNOR_MODE_DBG2p);
   /*p07.TEDO*/ sig.TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
   /*p07.AJAS*/ wire AJAS_BUS_RD = not(sig.TEDO_CPU_RD);
   /*p07.ASOT*/ sig.ASOT_CPU_RD = not(AJAS_BUS_RD);
 
   /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(PIN_CPU_RAW_WR, clk_sig.AFAS_xxxxxFGH);
   /*p01.APOV*/ sig.APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
-  /*p07.UBAL*/ wire UBAL_CPU_WR_ABCDExxx = mux2_n(ext_pins_in.PIN_WR_C, sig.APOV_CPU_WR_xxxxxFGH, dbg_sig.UNOR_MODE_DBG2p);
+  /*p07.UBAL*/ wire UBAL_CPU_WR_ABCDExxx = mux2_n(EXT_PIN_WR_C, sig.APOV_CPU_WR_xxxxxFGH, dbg_sig.UNOR_MODE_DBG2p);
   /*p07.TAPU*/ sig.TAPU_CPU_WR_xxxxxFGH = not(UBAL_CPU_WR_ABCDExxx);
   /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(sig.TAPU_CPU_WR_xxxxxFGH);
   /*p07.CUPA*/ sig.CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
@@ -121,33 +119,30 @@ void CpuBus::tick(TestGB& gb) {
   {
     auto clk_sig = gb.clk_reg.sig(gb);
     auto rst_sig = gb.rst_reg.sig(gb);
-    auto& cpu_bus = gb.cpu_bus;
-    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, cpu_bus.PIN_FROM_CPU5p);
+    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, PIN_FROM_CPU5p);
   }
 
   {
     auto cpu_sig = gb.cpu_bus.sig(gb);
-    auto& cpu_bus = gb.cpu_bus;
 
-    /*p08.ALOR*/ CPU_ADDR_LATCH_00.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A00);
-    /*p08.APUR*/ CPU_ADDR_LATCH_01.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A01);
-    /*p08.ALYR*/ CPU_ADDR_LATCH_02.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A02);
-    /*p08.ARET*/ CPU_ADDR_LATCH_03.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A03);
-    /*p08.AVYS*/ CPU_ADDR_LATCH_04.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A04);
-    /*p08.ATEV*/ CPU_ADDR_LATCH_05.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A05);
-    /*p08.AROS*/ CPU_ADDR_LATCH_06.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A06);
-    /*p08.ARYM*/ CPU_ADDR_LATCH_07.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A07);
-    /*p08.LUNO*/ CPU_ADDR_LATCH_08.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A08);
-    /*p08.LYSA*/ CPU_ADDR_LATCH_09.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A09);
-    /*p08.PATE*/ CPU_ADDR_LATCH_10.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A10);
-    /*p08.LUMY*/ CPU_ADDR_LATCH_11.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A11);
-    /*p08.LOBU*/ CPU_ADDR_LATCH_12.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A12);
-    /*p08.LONU*/ CPU_ADDR_LATCH_13.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A13);
-    /*p08.NYRE*/ CPU_ADDR_LATCH_14.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A14);
+    /*p08.ALOR*/ CPU_ADDR_LATCH_00.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A00);
+    /*p08.APUR*/ CPU_ADDR_LATCH_01.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A01);
+    /*p08.ALYR*/ CPU_ADDR_LATCH_02.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A02);
+    /*p08.ARET*/ CPU_ADDR_LATCH_03.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A03);
+    /*p08.AVYS*/ CPU_ADDR_LATCH_04.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A04);
+    /*p08.ATEV*/ CPU_ADDR_LATCH_05.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A05);
+    /*p08.AROS*/ CPU_ADDR_LATCH_06.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A06);
+    /*p08.ARYM*/ CPU_ADDR_LATCH_07.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A07);
+    /*p08.LUNO*/ CPU_ADDR_LATCH_08.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A08);
+    /*p08.LYSA*/ CPU_ADDR_LATCH_09.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A09);
+    /*p08.PATE*/ CPU_ADDR_LATCH_10.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A10);
+    /*p08.LUMY*/ CPU_ADDR_LATCH_11.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A11);
+    /*p08.LOBU*/ CPU_ADDR_LATCH_12.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A12);
+    /*p08.LONU*/ CPU_ADDR_LATCH_13.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A13);
+    /*p08.NYRE*/ CPU_ADDR_LATCH_14.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, PIN_A14);
   }
 
   {
-    auto& cpu_bus = gb.cpu_bus;
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
     // So does this mean that if the CPU writes to the external bus during dma, that data
@@ -163,30 +158,78 @@ void CpuBus::tick(TestGB& gb) {
     PIN_D6_B.set(LULA_IBUS_TO_EBUSp);
     PIN_D7_B.set(LULA_IBUS_TO_EBUSp);
 
-    /*p25.RUXA*/ PIN_D0_A.set(nand(cpu_bus.TRI_D0, LULA_IBUS_TO_EBUSp));
-    /*p25.RUJA*/ PIN_D1_A.set(nand(cpu_bus.TRI_D1, LULA_IBUS_TO_EBUSp));
-    /*p25.RABY*/ PIN_D2_A.set(nand(cpu_bus.TRI_D2, LULA_IBUS_TO_EBUSp));
-    /*p25.RERA*/ PIN_D3_A.set(nand(cpu_bus.TRI_D3, LULA_IBUS_TO_EBUSp));
-    /*p25.RORY*/ PIN_D4_A.set(nand(cpu_bus.TRI_D4, LULA_IBUS_TO_EBUSp));
-    /*p25.RYVO*/ PIN_D5_A.set(nand(cpu_bus.TRI_D5, LULA_IBUS_TO_EBUSp));
-    /*p25.RAFY*/ PIN_D6_A.set(nand(cpu_bus.TRI_D6, LULA_IBUS_TO_EBUSp));
-    /*p25.RAVU*/ PIN_D7_A.set(nand(cpu_bus.TRI_D7, LULA_IBUS_TO_EBUSp));
+    /*p25.RUXA*/ PIN_D0_A.set(nand(TRI_D0, LULA_IBUS_TO_EBUSp));
+    /*p25.RUJA*/ PIN_D1_A.set(nand(TRI_D1, LULA_IBUS_TO_EBUSp));
+    /*p25.RABY*/ PIN_D2_A.set(nand(TRI_D2, LULA_IBUS_TO_EBUSp));
+    /*p25.RERA*/ PIN_D3_A.set(nand(TRI_D3, LULA_IBUS_TO_EBUSp));
+    /*p25.RORY*/ PIN_D4_A.set(nand(TRI_D4, LULA_IBUS_TO_EBUSp));
+    /*p25.RYVO*/ PIN_D5_A.set(nand(TRI_D5, LULA_IBUS_TO_EBUSp));
+    /*p25.RAFY*/ PIN_D6_A.set(nand(TRI_D6, LULA_IBUS_TO_EBUSp));
+    /*p25.RAVU*/ PIN_D7_A.set(nand(TRI_D7, LULA_IBUS_TO_EBUSp));
 
-    /*p08.RUNE*/ PIN_D0_D.set(nor(cpu_bus.TRI_D0, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.RYPU*/ PIN_D1_D.set(nor(cpu_bus.TRI_D1, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.SULY*/ PIN_D2_D.set(nor(cpu_bus.TRI_D2, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.SEZE*/ PIN_D3_D.set(nor(cpu_bus.TRI_D3, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.RESY*/ PIN_D4_D.set(nor(cpu_bus.TRI_D4, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.TAMU*/ PIN_D5_D.set(nor(cpu_bus.TRI_D5, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.ROGY*/ PIN_D6_D.set(nor(cpu_bus.TRI_D6, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.RYDA*/ PIN_D7_D.set(nor(cpu_bus.TRI_D7, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RUNE*/ PIN_D0_D.set(nor(TRI_D0, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RYPU*/ PIN_D1_D.set(nor(TRI_D1, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.SULY*/ PIN_D2_D.set(nor(TRI_D2, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.SEZE*/ PIN_D3_D.set(nor(TRI_D3, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RESY*/ PIN_D4_D.set(nor(TRI_D4, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.TAMU*/ PIN_D5_D.set(nor(TRI_D5, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.ROGY*/ PIN_D6_D.set(nor(TRI_D6, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RYDA*/ PIN_D7_D.set(nor(TRI_D7, cpu_sig.RORU_IBUS_TO_EBUSn));
   }
-}
+
+  {
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+
+    // External data bus to internal data bus
+    // SOMA01 << LAVO04
+    // SOMA02 nc
+    // SOMA03 << D0_C
+    // SOMA04 nc
+    // SOMA05 nc
+    // SOMA06 nc
+    // SOMA07 >> RYMA04
+    // SOMA08 nc
+    // SOMA09 == nc
+
+    // Is this actually like a pass gate? We already know the latch cells, and this is bigger than those.
+
+    /*p08.SOMA*/ SOMA_CPU_DATA_LATCH_00.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D0_C);
+    /*p08.RONY*/ RONY_CPU_DATA_LATCH_01.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D1_C);
+    /*p08.RAXY*/ RAXY_CPU_DATA_LATCH_02.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D2_C);
+    /*p08.SELO*/ SELO_CPU_DATA_LATCH_03.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D3_C);
+    /*p08.SODY*/ SODY_CPU_DATA_LATCH_04.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D4_C);
+    /*p08.SAGO*/ SAGO_CPU_DATA_LATCH_05.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D5_C);
+    /*p08.RUPA*/ RUPA_CPU_DATA_LATCH_06.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D6_C);
+    /*p08.SAZY*/ SAZY_CPU_DATA_LATCH_07.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D7_C);
+
+    // RYMA 6-rung green tribuf
+
+    /*p08.RYMA*/ TRI_D0.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SOMA_CPU_DATA_LATCH_00);
+    /*p08.RUVO*/ TRI_D1.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RONY_CPU_DATA_LATCH_01);
+    /*p08.RYKO*/ TRI_D2.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RAXY_CPU_DATA_LATCH_02);
+    /*p08.TAVO*/ TRI_D3.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SELO_CPU_DATA_LATCH_03);
+    /*p08.TEPE*/ TRI_D4.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SODY_CPU_DATA_LATCH_04);
+    /*p08.SAFO*/ TRI_D5.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAGO_CPU_DATA_LATCH_05);
+    /*p08.SEVU*/ TRI_D6.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RUPA_CPU_DATA_LATCH_06);
+    /*p08.TAJU*/ TRI_D7.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAZY_CPU_DATA_LATCH_07);
+  }}
 
 //------------------------------------------------------------------------------
 
 bool CpuBus::commit() {
   bool changed = false;
+
+  /* PIN_78 */ changed |= EXT_PIN_WR_C.clear_preset();     // -> UBAL
+  /* PIN_79 */ changed |= EXT_PIN_RD_C.clear_preset();     // -> UJYV
+
+  changed |= SOMA_CPU_DATA_LATCH_00.commit_latch();
+  changed |= RONY_CPU_DATA_LATCH_01.commit_latch();
+  changed |= RAXY_CPU_DATA_LATCH_02.commit_latch();
+  changed |= SELO_CPU_DATA_LATCH_03.commit_latch();
+  changed |= SODY_CPU_DATA_LATCH_04.commit_latch();
+  changed |= SAGO_CPU_DATA_LATCH_05.commit_latch();
+  changed |= RUPA_CPU_DATA_LATCH_06.commit_latch();
+  changed |= SAZY_CPU_DATA_LATCH_07.commit_latch();
 
   changed |= CPU_ADDR_LATCH_00.commit_latch();
   changed |= CPU_ADDR_LATCH_01.commit_latch();
@@ -239,6 +282,24 @@ bool CpuBus::commit() {
   changed |= PIN_A14.clear_preset();
   changed |= PIN_A15.clear_preset();
 
+  /* PIN_01 */ changed |= EXT_PIN_A00_C.clear_preset();      // -> KOVA
+  /* PIN_02 */ changed |= EXT_PIN_A01_C.clear_preset();      // -> CAMU
+  /* PIN_03 */ changed |= EXT_PIN_A02_C.clear_preset();      // -> BUXU
+  /* PIN_04 */ changed |= EXT_PIN_A03_C.clear_preset();      // -> BASE
+  /* PIN_05 */ changed |= EXT_PIN_A04_C.clear_preset();      // -> AFEC
+  /* PIN_06 */ changed |= EXT_PIN_A05_C.clear_preset();      // -> ABUP
+  /* PIN_07 */ changed |= EXT_PIN_A06_C.clear_preset();      // -> CYGU
+  /* PIN_08 */ changed |= EXT_PIN_A07_C.clear_preset();      // -> COGO
+  /* PIN_09 */ changed |= EXT_PIN_A08_C.clear_preset();      // -> MUJY
+  /* PIN_10 */ changed |= EXT_PIN_A09_C.clear_preset();      // -> NENA
+  /* PIN_11 */ changed |= EXT_PIN_A10_C.clear_preset();      // -> SURA
+  /* PIN_12 */ changed |= EXT_PIN_A11_C.clear_preset();      // -> MADY
+  /* PIN_13 */ changed |= EXT_PIN_A12_C.clear_preset();      // -> LAHE
+  /* PIN_14 */ changed |= EXT_PIN_A13_C.clear_preset();      // -> LURA
+  /* PIN_15 */ changed |= EXT_PIN_A14_C.clear_preset();      // -> PEVO
+  /* PIN_16 */ changed |= EXT_PIN_A15_C.clear_preset();      // -> RAZA
+
+
   /* PIN_17 */ changed |= PIN_D0_A.commit_pinout();      // <- RUXA
   /* PIN_17 */ changed |= PIN_D0_B.commit_pinout();      // <- LULA
   /* PIN_17 */ changed |= PIN_D0_D.commit_pinout();      // <- RUNE
@@ -274,8 +335,6 @@ void CpuPinsOut::tick(TestGB& gb) {
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb);
   auto boot_sig = gb.bootrom.sig(gb);
-
-  auto& ext_pins_in = gb.ext_pins_in;
 
 #if 0
   // Debug stuff I disabled
@@ -377,8 +436,8 @@ void CpuPinsOut::tick(TestGB& gb) {
   PIN_BOGA_AxCDEFGH.set(clk_sig.BOGA_AxCDEFGH);
   
   PIN_AFER_RSTp.set(rst_sig.AFER_RSTp);
-  PIN_EXT_RESET.set(ext_pins_in.PIN_RST);
-  PIN_EXT_CLKGOOD.set(ext_pins_in.PIN_CLK_GOOD);
+  PIN_EXT_RESET.set(gb.EXT_PIN_RST);
+  PIN_EXT_CLKGOOD.set(gb.EXT_PIN_CLK_GOOD);
   PIN_TABA_RSTp.set(rst_sig.TABA_RSTp);
 
   PIN_SYRO.set(cpu_sig.SYRO_FE00_FFFFp);
@@ -518,4 +577,48 @@ D7.preset(oe, data & 0x80);
 }
 */
 
+#endif
+
+
+#if 0
+// so the address bus is technically a tribuf, but we're going to ignore
+// this debug circuit for now.
+{
+// If we're in debug mode 2, drive external address bus onto internal address
+// these may be backwards, probably don't want to drive external address onto bus normally...
+
+/*p08.KOVA*/ wire A00_Cn = not(EXT_PIN_A00_C);
+/*p08.CAMU*/ wire A01_Cn = not(EXT_PIN_A01_C);
+/*p08.BUXU*/ wire A02_Cn = not(EXT_PIN_A02_C);
+/*p08.BASE*/ wire A03_Cn = not(EXT_PIN_A03_C);
+/*p08.AFEC*/ wire A04_Cn = not(EXT_PIN_A04_C);
+/*p08.ABUP*/ wire A05_Cn = not(EXT_PIN_A05_C);
+/*p08.CYGU*/ wire A06_Cn = not(EXT_PIN_A06_C);
+/*p08.COGO*/ wire A07_Cn = not(EXT_PIN_A07_C);
+/*p08.MUJY*/ wire A08_Cn = not(EXT_PIN_A08_C);
+/*p08.NENA*/ wire A09_Cn = not(EXT_PIN_A09_C);
+/*p08.SURA*/ wire A10_Cn = not(EXT_PIN_A10_C);
+/*p08.MADY*/ wire A11_Cn = not(EXT_PIN_A11_C);
+/*p08.LAHE*/ wire A12_Cn = not(EXT_PIN_A12_C);
+/*p08.LURA*/ wire A13_Cn = not(EXT_PIN_A13_C);
+/*p08.PEVO*/ wire A14_Cn = not(EXT_PIN_A14_C);
+/*p08.RAZA*/ wire A15_Cn = not(EXT_PIN_A15_C);
+
+/*p08.KEJO*/ cpu_bus.PIN_A00.set(!TOVA_MODE_DBG2n, not(A00_Cn));
+/*p08.BYXE*/ cpu_bus.PIN_A01.set(!TOVA_MODE_DBG2n, not(A01_Cn));
+/*p08.AKAN*/ cpu_bus.PIN_A02.set(!TOVA_MODE_DBG2n, not(A02_Cn));
+/*p08.ANAR*/ cpu_bus.PIN_A03.set(!TOVA_MODE_DBG2n, not(A03_Cn));
+/*p08.AZUV*/ cpu_bus.PIN_A04.set(!TOVA_MODE_DBG2n, not(A04_Cn));
+/*p08.AJOV*/ cpu_bus.PIN_A05.set(!TOVA_MODE_DBG2n, not(A05_Cn));
+/*p08.BYNE*/ cpu_bus.PIN_A06.set(!TOVA_MODE_DBG2n, not(A06_Cn));
+/*p08.BYNA*/ cpu_bus.PIN_A07.set(!TOVA_MODE_DBG2n, not(A07_Cn));
+/*p08.LOFA*/ cpu_bus.PIN_A08.set(!TOVA_MODE_DBG2n, not(A08_Cn));
+/*p08.MAPU*/ cpu_bus.PIN_A09.set(!TOVA_MODE_DBG2n, not(A09_Cn));
+/*p08.RALA*/ cpu_bus.PIN_A10.set(!TOVA_MODE_DBG2n, not(A10_Cn));
+/*p08.LORA*/ cpu_bus.PIN_A11.set(!TOVA_MODE_DBG2n, not(A11_Cn));
+/*p08.LYNA*/ cpu_bus.PIN_A12.set(!TOVA_MODE_DBG2n, not(A12_Cn));
+/*p08.LEFY*/ cpu_bus.PIN_A13.set(!TOVA_MODE_DBG2n, not(A13_Cn));
+/*p08.NEFE*/ cpu_bus.PIN_A14.set(!TOVA_MODE_DBG2n, not(A14_Cn));
+/*p08.SYZU*/ cpu_bus.PIN_A15.set(!TOVA_MODE_DBG2n, not(A15_Cn));
+}
 #endif

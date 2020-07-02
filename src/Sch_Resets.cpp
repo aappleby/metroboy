@@ -12,11 +12,10 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto tim_sig = gb.tim_reg.sig(gb);
 
-  auto& ext_pins_in = gb.ext_pins_in;
   auto& ppu_config = gb.ppu_config;
 
   {
-    /*p01.UCOB*/ sig.UCOB_CLKBAD = not(ext_pins_in.PIN_CLK_GOOD);
+    /*p01.UCOB*/ sig.UCOB_CLKBAD = not(gb.EXT_PIN_CLK_GOOD);
   }
 
   {
@@ -53,7 +52,6 @@ ResetSignals ResetRegisters::sig(const TestGB& gb) const {
 //-----------------------------------------------------------------------------
 
 void ResetRegisters::tick(TestGB& gb) {
-  auto& ext_pins_in = gb.ext_pins_in;
   auto& cpu_bus = gb.cpu_bus;
 
   auto clk_sig = gb.clk_reg.sig(gb);
@@ -61,10 +59,10 @@ void ResetRegisters::tick(TestGB& gb) {
   auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p01.ALYP*/ wire ALYP_RSTn = not(rst_sig.TABA_RSTp);
-  /*p01.AFAR*/ wire AFAR_RST  = nor(ALYP_RSTn, ext_pins_in.PIN_RST);
+  /*p01.AFAR*/ wire AFAR_RST  = nor(ALYP_RSTn, gb.EXT_PIN_RST);
 
   // ASOL has arms on the ground side, output on the top rung - nor latch with inverted output
-  /*p01.ASOL*/ ASOL_RST_LATCHp.nor_latch(AFAR_RST, ext_pins_in.PIN_RST); // Schematic wrong, this is a latch.
+  /*p01.ASOL*/ ASOL_RST_LATCHp.nor_latch(AFAR_RST, gb.EXT_PIN_RST); // Schematic wrong, this is a latch.
 
   /*p01.AFER*/ AFER_RSTp.set(clk_sig.BOMA_xBxxxxxx, dbg_sig.UPOJ_MODE_PROD, ASOL_RST_LATCHp);
 
@@ -75,7 +73,7 @@ void ResetRegisters::tick(TestGB& gb) {
   // TUBO03 == nc
   // TUBO04 nc
   // TUBO05 << UPYF
-  /*p01.UPYF*/ wire UPYF = or(ext_pins_in.PIN_RST, rst_sig.UCOB_CLKBAD);
+  /*p01.UPYF*/ wire UPYF = or(gb.EXT_PIN_RST, rst_sig.UCOB_CLKBAD);
   /*p01.TUBO*/ TUBO_CLKREQn_LATCH.nor_latch(cpu_bus.PIN_CLKREQ, UPYF);
 }
 

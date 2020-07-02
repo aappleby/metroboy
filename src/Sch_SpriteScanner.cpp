@@ -10,7 +10,6 @@ SpriteScannerSignals SpriteScanner::sig(const TestGB& gb) const {
 
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto oam_sig = gb.oam_bus.sig();
   auto clk_sig = gb.clk_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
 
@@ -35,6 +34,8 @@ SpriteScannerSignals SpriteScanner::sig(const TestGB& gb) const {
   }
 
   {
+    auto bus_sig = gb.bus_mux.sig(gb);
+
     /*p29.EBOS*/ wire Y0n = not(lcd_sig.MUWY_Y0);
     /*p29.DASA*/ wire Y1n = not(lcd_sig.MYRO_Y1);
     /*p29.FUKY*/ wire Y2n = not(lcd_sig.LEXA_Y2);
@@ -44,22 +45,22 @@ SpriteScannerSignals SpriteScanner::sig(const TestGB& gb) const {
     /*p29.FEMO*/ wire Y6n = not(lcd_sig.MATO_Y6);
     /*p29.GUSU*/ wire Y7n = not(lcd_sig.LAFO_Y7);
 
-    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, oam_sig.XUSO_SPRITE_Y0, P10_B); // are these really connected directly to the pin?
-    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, oam_sig.XUSO_SPRITE_Y0, P10_B);
-    /*p29.ENEF*/ wire YDIFF_S1 = add_s(Y1n, oam_sig.XEGU_SPRITE_Y1, YDIFF_C0);
-    /*p29.ENEF*/ wire YDIFF_C1 = add_c(Y1n, oam_sig.XEGU_SPRITE_Y1, YDIFF_C0);
-    /*p29.FECO*/ wire YDIFF_S2 = add_s(Y2n, oam_sig.YJEX_SPRITE_Y2, YDIFF_C1);
-    /*p29.FECO*/ wire YDIFF_C2 = add_c(Y2n, oam_sig.YJEX_SPRITE_Y2, YDIFF_C1);
-    /*p29.GYKY*/ wire YDIFF_S3 = add_s(Y3n, oam_sig.XYJU_SPRITE_Y3, YDIFF_C2);
-    /*p29.GYKY*/ wire YDIFF_C3 = add_c(Y3n, oam_sig.XYJU_SPRITE_Y3, YDIFF_C2);
-    /*p29.GOPU*/ wire YDIFF_S4 = add_s(Y4n, oam_sig.YBOG_SPRITE_Y4, YDIFF_C3);
-    /*p29.GOPU*/ wire YDIFF_C4 = add_c(Y4n, oam_sig.YBOG_SPRITE_Y4, YDIFF_C3);
-    /*p29.FUWA*/ wire YDIFF_S5 = add_s(Y5n, oam_sig.WYSO_SPRITE_Y5, YDIFF_C4);
-    /*p29.FUWA*/ wire YDIFF_C5 = add_c(Y5n, oam_sig.WYSO_SPRITE_Y5, YDIFF_C4);
-    /*p29.GOJU*/ wire YDIFF_S6 = add_s(Y6n, oam_sig.XOTE_SPRITE_Y6, YDIFF_C5);
-    /*p29.GOJU*/ wire YDIFF_C6 = add_c(Y6n, oam_sig.XOTE_SPRITE_Y6, YDIFF_C5);
-    /*p29.WUHU*/ wire YDIFF_S7 = add_s(Y7n, oam_sig.YZAB_SPRITE_Y7, YDIFF_C6);
-    /*p29.WUHU*/ wire YDIFF_C7 = add_c(Y7n, oam_sig.YZAB_SPRITE_Y7, YDIFF_C6);
+    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, bus_sig.XUSO_SPRITE_Y0, P10_B); // are these really connected directly to the pin?
+    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, bus_sig.XUSO_SPRITE_Y0, P10_B);
+    /*p29.ENEF*/ wire YDIFF_S1 = add_s(Y1n, bus_sig.XEGU_SPRITE_Y1, YDIFF_C0);
+    /*p29.ENEF*/ wire YDIFF_C1 = add_c(Y1n, bus_sig.XEGU_SPRITE_Y1, YDIFF_C0);
+    /*p29.FECO*/ wire YDIFF_S2 = add_s(Y2n, bus_sig.YJEX_SPRITE_Y2, YDIFF_C1);
+    /*p29.FECO*/ wire YDIFF_C2 = add_c(Y2n, bus_sig.YJEX_SPRITE_Y2, YDIFF_C1);
+    /*p29.GYKY*/ wire YDIFF_S3 = add_s(Y3n, bus_sig.XYJU_SPRITE_Y3, YDIFF_C2);
+    /*p29.GYKY*/ wire YDIFF_C3 = add_c(Y3n, bus_sig.XYJU_SPRITE_Y3, YDIFF_C2);
+    /*p29.GOPU*/ wire YDIFF_S4 = add_s(Y4n, bus_sig.YBOG_SPRITE_Y4, YDIFF_C3);
+    /*p29.GOPU*/ wire YDIFF_C4 = add_c(Y4n, bus_sig.YBOG_SPRITE_Y4, YDIFF_C3);
+    /*p29.FUWA*/ wire YDIFF_S5 = add_s(Y5n, bus_sig.WYSO_SPRITE_Y5, YDIFF_C4);
+    /*p29.FUWA*/ wire YDIFF_C5 = add_c(Y5n, bus_sig.WYSO_SPRITE_Y5, YDIFF_C4);
+    /*p29.GOJU*/ wire YDIFF_S6 = add_s(Y6n, bus_sig.XOTE_SPRITE_Y6, YDIFF_C5);
+    /*p29.GOJU*/ wire YDIFF_C6 = add_c(Y6n, bus_sig.XOTE_SPRITE_Y6, YDIFF_C5);
+    /*p29.WUHU*/ wire YDIFF_S7 = add_s(Y7n, bus_sig.YZAB_SPRITE_Y7, YDIFF_C6);
+    /*p29.WUHU*/ wire YDIFF_C7 = add_c(Y7n, bus_sig.YZAB_SPRITE_Y7, YDIFF_C6);
 
     /*p29.DEGE*/ sprite_scanner_sig.DEGE_SPRITE_DELTA0 = not(YDIFF_S0);
     /*p29.DABY*/ sprite_scanner_sig.DABY_SPRITE_DELTA1 = not(YDIFF_S1);

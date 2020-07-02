@@ -75,8 +75,7 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
     /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, ppu_config.XYMO_LCDC_SPSIZE);
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
-    /*p29.CARE*/ wire CARE_STORE_ENp_ABxxEFxx = and (clk_sig.XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
-    /*p29.DYTY*/ sprite_scanner_sig.DYTY_STORE_ENn_xxCDxxGH = not(CARE_STORE_ENp_ABxxEFxx);
+    /*p29.CARE*/ sprite_scanner_sig.CARE_STORE_ENp_ABxxEFxx = and (clk_sig.XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
 
   {

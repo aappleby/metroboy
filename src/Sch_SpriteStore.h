@@ -25,7 +25,6 @@ struct SpriteStoreSignals {
   /*p30.CEGA*/ bool CEGA_TS_LINE_3;
 
   // to sst.tick
-  /*p29.AROR*/ bool AROR_MATCH_ENp;
   /*p29.DYTY*/ bool DYTY_STORE_ENn_xxCDxxGH;
 
   /*p29.YDUG*/ bool STORE0_MATCHn;

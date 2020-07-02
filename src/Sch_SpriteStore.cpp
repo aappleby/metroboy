@@ -41,23 +41,8 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 SpriteStoreSignals SpriteStoreRegisters::sig(const SchematicTop& gb) const {
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-
-  auto& sprite_scanner = gb.sprite_scanner;
-  auto sprite_scanner_sig = sprite_scanner.sig(gb);
-
-  auto& ppu_config = gb.ppu_config;
-
   SpriteStoreSignals sig;
 
-
-  {
-    /*p29.AZEM*/ wire AZEM_RENDERINGp = and (sprite_scanner_sig.BYJO_SCANNINGn, ppu_sig.XYMU_RENDERINGp);
-    /*p29.AROR*/ sig.AROR_MATCH_ENp = and (AZEM_RENDERINGp, ppu_config.XYLO_LCDC_SPEN);
-  }
 
   {
     sig.WENU_TS_LINE_0 = WENU_TS_LINE_0;
@@ -67,6 +52,10 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const SchematicTop& gb) const {
   }
 
   {
+    auto& ppu_config = gb.ppu_config;
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
+
     /*p21.ACAM*/ wire X0n = not(ppu_sig.XEHO_X0);
     /*p21.AZUB*/ wire X1n = not(ppu_sig.SAVY_X1);
     /*p21.AMEL*/ wire X2n = not(ppu_sig.XODU_X2);
@@ -187,16 +176,19 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const SchematicTop& gb) const {
     /*p31.YLEV*/ wire STORE9_MATCHA = nor(STORE9_MATCH0n, STORE9_MATCH1n, STORE9_MATCH2n, STORE9_MATCH3n);
     /*p31.YTUB*/ wire STORE9_MATCHB = nor(STORE9_MATCH4n, STORE9_MATCH5n, STORE9_MATCH6n, STORE9_MATCH7n);
 
-    /*p29.YDUG*/ sig.STORE0_MATCHn = nand(sig.AROR_MATCH_ENp, STORE0_MATCHB, STORE0_MATCHA);
-    /*p29.DYDU*/ sig.STORE1_MATCHn = nand(sig.AROR_MATCH_ENp, STORE1_MATCHA, STORE1_MATCHB);
-    /*p29.DEGO*/ sig.STORE2_MATCHn = nand(sig.AROR_MATCH_ENp, STORE2_MATCHB, STORE2_MATCHA);
-    /*p29.YLOZ*/ sig.STORE3_MATCHn = nand(sig.AROR_MATCH_ENp, STORE3_MATCHA, STORE3_MATCHB);
-    /*p29.XAGE*/ sig.STORE4_MATCHn = nand(sig.AROR_MATCH_ENp, STORE4_MATCHB, STORE4_MATCHA);
-    /*p29.EGOM*/ sig.STORE5_MATCHn = nand(sig.AROR_MATCH_ENp, STORE5_MATCHB, STORE5_MATCHA);
-    /*p29.YBEZ*/ sig.STORE6_MATCHn = nand(sig.AROR_MATCH_ENp, STORE6_MATCHB, STORE6_MATCHA);
-    /*p29.DYKA*/ sig.STORE7_MATCHn = nand(sig.AROR_MATCH_ENp, STORE7_MATCHA, STORE7_MATCHB);
-    /*p29.EFYL*/ sig.STORE8_MATCHn = nand(sig.AROR_MATCH_ENp, STORE8_MATCHB, STORE8_MATCHA);
-    /*p29.YGEM*/ sig.STORE9_MATCHn = nand(sig.AROR_MATCH_ENp, STORE9_MATCHA, STORE9_MATCHB);
+    /*p29.AZEM*/ wire AZEM_RENDERINGp = and (sprite_scanner_sig.BYJO_SCANNINGn, ppu_sig.XYMU_RENDERINGp);
+    /*p29.AROR*/ wire AROR_MATCH_ENp = and (AZEM_RENDERINGp, ppu_config.XYLO_LCDC_SPEN);
+
+    /*p29.YDUG*/ sig.STORE0_MATCHn = nand(AROR_MATCH_ENp, STORE0_MATCHB, STORE0_MATCHA);
+    /*p29.DYDU*/ sig.STORE1_MATCHn = nand(AROR_MATCH_ENp, STORE1_MATCHA, STORE1_MATCHB);
+    /*p29.DEGO*/ sig.STORE2_MATCHn = nand(AROR_MATCH_ENp, STORE2_MATCHB, STORE2_MATCHA);
+    /*p29.YLOZ*/ sig.STORE3_MATCHn = nand(AROR_MATCH_ENp, STORE3_MATCHA, STORE3_MATCHB);
+    /*p29.XAGE*/ sig.STORE4_MATCHn = nand(AROR_MATCH_ENp, STORE4_MATCHB, STORE4_MATCHA);
+    /*p29.EGOM*/ sig.STORE5_MATCHn = nand(AROR_MATCH_ENp, STORE5_MATCHB, STORE5_MATCHA);
+    /*p29.YBEZ*/ sig.STORE6_MATCHn = nand(AROR_MATCH_ENp, STORE6_MATCHB, STORE6_MATCHA);
+    /*p29.DYKA*/ sig.STORE7_MATCHn = nand(AROR_MATCH_ENp, STORE7_MATCHA, STORE7_MATCHB);
+    /*p29.EFYL*/ sig.STORE8_MATCHn = nand(AROR_MATCH_ENp, STORE8_MATCHB, STORE8_MATCHA);
+    /*p29.YGEM*/ sig.STORE9_MATCHn = nand(AROR_MATCH_ENp, STORE9_MATCHA, STORE9_MATCHB);
 
     /*p29.FEFY*/ wire FEFY = nand(sig.STORE4_MATCHn, sig.STORE3_MATCHn, sig.STORE2_MATCHn, sig.STORE1_MATCHn, sig.STORE0_MATCHn);
     /*p29.FOVE*/ wire FOVE = nand(sig.STORE9_MATCHn, sig.STORE8_MATCHn, sig.STORE7_MATCHn, sig.STORE6_MATCHn, sig.STORE5_MATCHn);
@@ -538,16 +530,18 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     /*p29.DOGU*/ wire DOGU_STORE9_SELn = nand(FYCU_SPRITE_COUNT0p, CYPY_SPRITE_COUNT1n, CAPE_SPRITE_COUNT2n, ELYG_SPRITE_COUNT3p);
 
     // Sprite stores latch their input when their SELn signal goes _high_
-    /*p29.CEMY*/ wire CEMY_STORE0_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, DEZO_STORE0_SELn);
-    /*p29.BYBY*/ wire BYBY_STORE1_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, CUVA_STORE1_SELn);
-    /*p29.WYXO*/ wire WYXO_STORE2_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, GEBU_STORE2_SELn);
-    /*p29.GUVE*/ wire GUVE_STORE3_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, FOCO_STORE3_SELn);
-    /*p29.CECU*/ wire CECU_STORE4_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, CUPE_STORE4_SELn);
-    /*p29.CADO*/ wire CADO_STORE5_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, CUGU_STORE5_SELn);
-    /*p29.XUJO*/ wire XUJO_STORE6_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, WOMU_STORE6_SELn);
-    /*p29.GAPE*/ wire GAPE_STORE7_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, GUNA_STORE7_SELn);
-    /*p29.CAHO*/ wire CAHO_STORE8_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, DEWY_STORE8_SELn);
-    /*p29.CATO*/ wire CATO_STORE9_CLKp = or(sst_sig.DYTY_STORE_ENn_xxCDxxGH, DOGU_STORE9_SELn);
+    auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
+    /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not(sprite_scanner_sig.CARE_STORE_ENp_ABxxEFxx);
+    /*p29.CEMY*/ wire CEMY_STORE0_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, DEZO_STORE0_SELn);
+    /*p29.BYBY*/ wire BYBY_STORE1_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, CUVA_STORE1_SELn);
+    /*p29.WYXO*/ wire WYXO_STORE2_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, GEBU_STORE2_SELn);
+    /*p29.GUVE*/ wire GUVE_STORE3_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, FOCO_STORE3_SELn);
+    /*p29.CECU*/ wire CECU_STORE4_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, CUPE_STORE4_SELn);
+    /*p29.CADO*/ wire CADO_STORE5_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, CUGU_STORE5_SELn);
+    /*p29.XUJO*/ wire XUJO_STORE6_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, WOMU_STORE6_SELn);
+    /*p29.GAPE*/ wire GAPE_STORE7_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, GUNA_STORE7_SELn);
+    /*p29.CAHO*/ wire CAHO_STORE8_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, DEWY_STORE8_SELn);
+    /*p29.CATO*/ wire CATO_STORE9_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, DOGU_STORE9_SELn);
 
     /*p29.DYHU*/ wire DYHU_STORE0_CLKn = not(CEMY_STORE0_CLKp);
     /*p29.BUCO*/ wire BUCO_STORE1_CLKn = not(BYBY_STORE1_CLKp);

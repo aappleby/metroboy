@@ -19,7 +19,7 @@ struct SpriteScannerSignals {
   /*p29.DABU*/ Signal DABU_SPRITE_DELTA2;           // to sprite store
   /*p29.GYSA*/ Signal GYSA_SPRITE_DELTA3;           // to sprite store
 
-  /*p29.DYTY*/ Signal DYTY_STORE_ENn_xxCDxxGH; // to sprite store
+  /*p29.CARE*/ Signal CARE_STORE_ENp_ABxxEFxx; // to sprite store
 
   /*p28.GUSE*/ Signal GUSE_SCAN0n;             // to bus mux
   /*p28.GEMA*/ Signal GEMA_SCAN1n;             // to bus mux

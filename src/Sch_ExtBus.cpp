@@ -88,42 +88,12 @@ void ExtPinsOut::tick(TestGB& gb) {
     /*p08.SEVU*/ cpu_bus.TRI_D6.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RUPA_CPU_DATA_LATCH_06);
     /*p08.TAJU*/ cpu_bus.TRI_D7.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAZY_CPU_DATA_LATCH_07);
   }
-
-  {
-    auto bus_sig = gb.bus_mux.sig(gb);
-    auto dbg_sig = gb.dbg_reg.sig(gb);
-    /*p08.UGAC*/ wire _UGAC_RDp_A = nand(bus_sig.TYMU_RD_OUTn, dbg_sig.TOVA_MODE_DBG2n);
-    /*p08.URUN*/ wire _URUN_RDp_D = nor (bus_sig.TYMU_RD_OUTn, dbg_sig.UNOR_MODE_DBG2p);
-    /* PIN_79 */ PIN_RD_A.set(_UGAC_RDp_A);
-    /* PIN_79 */ PIN_RD_D.set(_URUN_RDp_D);
-  }
-
-  {
-    auto bus_sig = gb.bus_mux.sig(gb);
-    auto dbg_sig = gb.dbg_reg.sig(gb);
-    /*p08.UVER*/ wire _UVER_WRp_A = nand(bus_sig.PUVA_WR_OUTn, dbg_sig.TOVA_MODE_DBG2n);
-    /*p08.USUF*/ wire _USUF_WRp_D = nor (bus_sig.PUVA_WR_OUTn, dbg_sig.UNOR_MODE_DBG2p);
-    /* PIN_78 */ PIN_WR_A.set(_UVER_WRp_A);
-    /* PIN_78 */ PIN_WR_D.set(_USUF_WRp_D);
-  }
-
-  {
-    auto bus_sig = gb.bus_mux.sig(gb);
-    /* PIN_80 */ PIN_CS_A.set(bus_sig.TYHO_CS_A);
-  }
-
 }
 
 //------------------------------------------------------------------------------
 
 bool ExtPinsOut::commit() {
   bool changed = false;
-
-  /* PIN_78 */ changed |= PIN_WR_A.commit_pinout();    // <- UVER
-  /* PIN_78 */ changed |= PIN_WR_D.commit_pinout();    // <- USUF
-  /* PIN_79 */ changed |= PIN_RD_A.commit_pinout();    // <- UGAC
-  /* PIN_79 */ changed |= PIN_RD_D.commit_pinout();    // <- URUN
-  /* PIN_80 */ changed |= PIN_CS_A.commit_pinout();    // <- TYHO
 
   /*p08.SOMA*/ changed |= SOMA_CPU_DATA_LATCH_00.commit_latch();
   /*p08.RONY*/ changed |= RONY_CPU_DATA_LATCH_01.commit_latch();

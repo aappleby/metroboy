@@ -68,15 +68,6 @@ private:
   /*p08.SAGO*/ TpLatch SAGO_CPU_DATA_LATCH_05;
   /*p08.RUPA*/ TpLatch RUPA_CPU_DATA_LATCH_06;
   /*p08.SAZY*/ TpLatch SAZY_CPU_DATA_LATCH_07;
-
-  //----------
-  // Cart pins
-
-  /* PIN_79 */ PinOut PIN_RD_A;   // <- P08.UGAC
-  /* PIN_79 */ PinOut PIN_RD_D;   // <- P08.URUN
-  /* PIN_78 */ PinOut PIN_WR_A;   // <- P08.UVER
-  /* PIN_78 */ PinOut PIN_WR_D;   // <- P08.USUF
-  /* PIN_80 */ PinOut PIN_CS_A;   // <- P08.TYHO
 };
 
 //-----------------------------------------------------------------------------

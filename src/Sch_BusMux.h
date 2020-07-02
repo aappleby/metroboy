@@ -25,27 +25,10 @@ struct BusMuxSignals {
   /*p28.ASYT*/ Signal ASYT_OAM_LATCH;      // to oam, controls PIN_OE and OAMD to OAML
   /*p25.TYVY*/ Signal TYVY_VRAMD_TO_CPUDp; // to busmux.tick, controls VRAMD to CPUD
 
-  /*p08.TAZY*/ Signal TAZY_A15;
   /*p08.TYHO*/ Signal TYHO_CS_A;
 
   /*p08.TYMU*/ Signal TYMU_RD_OUTn;
   /*p08.PUVA*/ Signal PUVA_WR_OUTn;
-
-  /*p08.AMET*/ Signal EXT_ADDR_00;
-  /*p08.ATOL*/ Signal EXT_ADDR_01;
-  /*p08.APOK*/ Signal EXT_ADDR_02;
-  /*p08.AMER*/ Signal EXT_ADDR_03;
-  /*p08.ATEM*/ Signal EXT_ADDR_04;
-  /*p08.ATOV*/ Signal EXT_ADDR_05;
-  /*p08.ATYR*/ Signal EXT_ADDR_06;
-  /*p08.ASUR*/ Signal EXT_ADDR_07;
-  /*p08.MANO*/ Signal EXT_ADDR_08;
-  /*p08.MASU*/ Signal EXT_ADDR_09;
-  /*p08.PAMY*/ Signal EXT_ADDR_10;
-  /*p08.MALE*/ Signal EXT_ADDR_11;
-  /*p08.MOJY*/ Signal EXT_ADDR_12;
-  /*p08.MUCE*/ Signal EXT_ADDR_13;
-  /*p08.PEGE*/ Signal EXT_ADDR_14;
 };
 
 //-----------------------------------------------------------------------------
@@ -57,6 +40,15 @@ struct BusMux {
 
 private:
 
+  //----------
+  // Cart pins
+
+  /* PIN_79 */ PinOut PIN_RD_A;   // <- P08.UGAC
+  /* PIN_79 */ PinOut PIN_RD_D;   // <- P08.URUN
+  /* PIN_78 */ PinOut PIN_WR_A;   // <- P08.UVER
+  /* PIN_78 */ PinOut PIN_WR_D;   // <- P08.USUF
+  /* PIN_80 */ PinOut PIN_CS_A;   // <- P08.TYHO
+                                  
   //----------
   // Address pins
 

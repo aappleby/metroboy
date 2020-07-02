@@ -190,26 +190,6 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   }
 
   {
-    auto& cpu_bus = gb.cpu_bus;
-    auto boot_sig = gb.bootrom.sig(gb);
-    auto dbg_sig = gb.dbg_reg.sig(gb);
-    auto dma_sig = gb.dma_reg.sig(gb);
-
-    // Something weird here
-    /*p07.TERA*/ wire TERA_BOOT_BITp  = not(boot_sig.BOOT_BITn);
-    /*p07.TULO*/ wire TULO_ADDR_00XXp = nor(cpu_bus.PIN_A15, cpu_bus.PIN_A14, cpu_bus.PIN_A13, cpu_bus.PIN_A12, cpu_bus.PIN_A11, cpu_bus.PIN_A10, cpu_bus.PIN_A09, cpu_bus.PIN_A08);
-    /*p07.TUTU*/ wire TUTU_ADDR_BOOTp = and (TERA_BOOT_BITp, TULO_ADDR_00XXp);
-    /*p08.SOBY*/ wire SOBY = nor(cpu_bus.PIN_A15, TUTU_ADDR_BOOTp);
-    /*p08.SEPY*/ wire SEPY = nand(dbg_sig.ABUZ, SOBY);
-
-    /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(dma_sig.MUDA_DMA_SRC_VRAMp);
-    /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
-    /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
-
-    /*p08.TAZY*/ sig.TAZY_A15 = mux2_p(dma_sig.DMA_A15, SEPY, LUMA_DMA_READ_CARTp);
-  }
-
-  {
     // if TYNU is and(or()) things don't make sense.
     ///*p08.TYNU*/ wire TYNU_ADDR_RAM = and(ADDR >= 0x4000, TUMA_CART_RAM);
 
@@ -252,31 +232,6 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
     /*p08.NEVY*/ wire NEVY = or(MEXO_ABCDExxx, cpu_sig.MOCA_DBG_EXT_RD);
     /*p08.TYMU*/ sig.TYMU_RD_OUTn = nor(LUMA_DMA_READ_CARTp, cpu_sig.MOTY_CPU_EXT_RD);
     /*p08.PUVA*/ sig.PUVA_WR_OUTn = or(NEVY, LUMA_DMA_READ_CARTp);
-  }
-
-  {
-    auto& cpu_bus = gb.cpu_bus;
-    auto dma_sig = gb.dma_reg.sig(gb);
-
-    /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(dma_sig.MUDA_DMA_SRC_VRAMp);
-    /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
-    /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
-
-    /*p08.AMET*/ sig.EXT_ADDR_00 = mux2_p(dma_sig.DMA_A00, cpu_bus.CPU_ADDR_LATCH_00, LUMA_DMA_READ_CARTp);
-    /*p08.ATOL*/ sig.EXT_ADDR_01 = mux2_p(dma_sig.DMA_A01, cpu_bus.CPU_ADDR_LATCH_01, LUMA_DMA_READ_CARTp);
-    /*p08.APOK*/ sig.EXT_ADDR_02 = mux2_p(dma_sig.DMA_A02, cpu_bus.CPU_ADDR_LATCH_02, LUMA_DMA_READ_CARTp);
-    /*p08.AMER*/ sig.EXT_ADDR_03 = mux2_p(dma_sig.DMA_A03, cpu_bus.CPU_ADDR_LATCH_03, LUMA_DMA_READ_CARTp);
-    /*p08.ATEM*/ sig.EXT_ADDR_04 = mux2_p(dma_sig.DMA_A04, cpu_bus.CPU_ADDR_LATCH_04, LUMA_DMA_READ_CARTp);
-    /*p08.ATOV*/ sig.EXT_ADDR_05 = mux2_p(dma_sig.DMA_A05, cpu_bus.CPU_ADDR_LATCH_05, LUMA_DMA_READ_CARTp);
-    /*p08.ATYR*/ sig.EXT_ADDR_06 = mux2_p(dma_sig.DMA_A06, cpu_bus.CPU_ADDR_LATCH_06, LUMA_DMA_READ_CARTp);
-    /*p08.ASUR*/ sig.EXT_ADDR_07 = mux2_p(dma_sig.DMA_A07, cpu_bus.CPU_ADDR_LATCH_07, LUMA_DMA_READ_CARTp);
-    /*p08.MANO*/ sig.EXT_ADDR_08 = mux2_p(dma_sig.DMA_A08, cpu_bus.CPU_ADDR_LATCH_08, LUMA_DMA_READ_CARTp);
-    /*p08.MASU*/ sig.EXT_ADDR_09 = mux2_p(dma_sig.DMA_A09, cpu_bus.CPU_ADDR_LATCH_09, LUMA_DMA_READ_CARTp);
-    /*p08.PAMY*/ sig.EXT_ADDR_10 = mux2_p(dma_sig.DMA_A10, cpu_bus.CPU_ADDR_LATCH_10, LUMA_DMA_READ_CARTp);
-    /*p08.MALE*/ sig.EXT_ADDR_11 = mux2_p(dma_sig.DMA_A11, cpu_bus.CPU_ADDR_LATCH_11, LUMA_DMA_READ_CARTp);
-    /*p08.MOJY*/ sig.EXT_ADDR_12 = mux2_p(dma_sig.DMA_A12, cpu_bus.CPU_ADDR_LATCH_12, LUMA_DMA_READ_CARTp);
-    /*p08.MUCE*/ sig.EXT_ADDR_13 = mux2_p(dma_sig.DMA_A13, cpu_bus.CPU_ADDR_LATCH_13, LUMA_DMA_READ_CARTp);
-    /*p08.PEGE*/ sig.EXT_ADDR_14 = mux2_p(dma_sig.DMA_A14, cpu_bus.CPU_ADDR_LATCH_14, LUMA_DMA_READ_CARTp);
   }
 
   return sig;
@@ -337,43 +292,110 @@ void BusMux::tick(TestGB& gb) {
   }
 
   {
-    auto bus_sig = gb.bus_mux.sig(gb);
+    auto& cpu_bus = gb.cpu_bus;
+    auto dma_sig = gb.dma_reg.sig(gb);
     auto dbg_sig = gb.dbg_reg.sig(gb);
+    auto bus_sig = gb.bus_mux.sig(gb);
+
+    /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(dma_sig.MUDA_DMA_SRC_VRAMp);
+    /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
+    /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
+
+    /*p08.AMET*/ wire EXT_ADDR_00 = mux2_p(dma_sig.DMA_A00, cpu_bus.CPU_ADDR_LATCH_00, LUMA_DMA_READ_CARTp);
+    /*p08.ATOL*/ wire EXT_ADDR_01 = mux2_p(dma_sig.DMA_A01, cpu_bus.CPU_ADDR_LATCH_01, LUMA_DMA_READ_CARTp);
+    /*p08.APOK*/ wire EXT_ADDR_02 = mux2_p(dma_sig.DMA_A02, cpu_bus.CPU_ADDR_LATCH_02, LUMA_DMA_READ_CARTp);
+    /*p08.AMER*/ wire EXT_ADDR_03 = mux2_p(dma_sig.DMA_A03, cpu_bus.CPU_ADDR_LATCH_03, LUMA_DMA_READ_CARTp);
+    /*p08.ATEM*/ wire EXT_ADDR_04 = mux2_p(dma_sig.DMA_A04, cpu_bus.CPU_ADDR_LATCH_04, LUMA_DMA_READ_CARTp);
+    /*p08.ATOV*/ wire EXT_ADDR_05 = mux2_p(dma_sig.DMA_A05, cpu_bus.CPU_ADDR_LATCH_05, LUMA_DMA_READ_CARTp);
+    /*p08.ATYR*/ wire EXT_ADDR_06 = mux2_p(dma_sig.DMA_A06, cpu_bus.CPU_ADDR_LATCH_06, LUMA_DMA_READ_CARTp);
+    /*p08.ASUR*/ wire EXT_ADDR_07 = mux2_p(dma_sig.DMA_A07, cpu_bus.CPU_ADDR_LATCH_07, LUMA_DMA_READ_CARTp);
+    /*p08.MANO*/ wire EXT_ADDR_08 = mux2_p(dma_sig.DMA_A08, cpu_bus.CPU_ADDR_LATCH_08, LUMA_DMA_READ_CARTp);
+    /*p08.MASU*/ wire EXT_ADDR_09 = mux2_p(dma_sig.DMA_A09, cpu_bus.CPU_ADDR_LATCH_09, LUMA_DMA_READ_CARTp);
+    /*p08.PAMY*/ wire EXT_ADDR_10 = mux2_p(dma_sig.DMA_A10, cpu_bus.CPU_ADDR_LATCH_10, LUMA_DMA_READ_CARTp);
+    /*p08.MALE*/ wire EXT_ADDR_11 = mux2_p(dma_sig.DMA_A11, cpu_bus.CPU_ADDR_LATCH_11, LUMA_DMA_READ_CARTp);
+    /*p08.MOJY*/ wire EXT_ADDR_12 = mux2_p(dma_sig.DMA_A12, cpu_bus.CPU_ADDR_LATCH_12, LUMA_DMA_READ_CARTp);
+    /*p08.MUCE*/ wire EXT_ADDR_13 = mux2_p(dma_sig.DMA_A13, cpu_bus.CPU_ADDR_LATCH_13, LUMA_DMA_READ_CARTp);
+    /*p08.PEGE*/ wire EXT_ADDR_14 = mux2_p(dma_sig.DMA_A14, cpu_bus.CPU_ADDR_LATCH_14, LUMA_DMA_READ_CARTp);
+
 
     // Pass gate?
-    /*p08.KUPO*/ PIN_A00_A.set(nand(bus_sig.EXT_ADDR_00, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.CABA*/ PIN_A01_A.set(nand(bus_sig.EXT_ADDR_01, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.BOKU*/ PIN_A02_A.set(nand(bus_sig.EXT_ADDR_02, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.BOTY*/ PIN_A03_A.set(nand(bus_sig.EXT_ADDR_03, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.BYLA*/ PIN_A04_A.set(nand(bus_sig.EXT_ADDR_04, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.BADU*/ PIN_A05_A.set(nand(bus_sig.EXT_ADDR_05, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.CEPU*/ PIN_A06_A.set(nand(bus_sig.EXT_ADDR_06, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.DEFY*/ PIN_A07_A.set(nand(bus_sig.EXT_ADDR_07, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.MYNY*/ PIN_A08_A.set(nand(bus_sig.EXT_ADDR_08, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.MUNE*/ PIN_A09_A.set(nand(bus_sig.EXT_ADDR_09, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.ROXU*/ PIN_A10_A.set(nand(bus_sig.EXT_ADDR_10, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.LEPY*/ PIN_A11_A.set(nand(bus_sig.EXT_ADDR_11, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.LUCE*/ PIN_A12_A.set(nand(bus_sig.EXT_ADDR_12, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.LABE*/ PIN_A13_A.set(nand(bus_sig.EXT_ADDR_13, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.PUHE*/ PIN_A14_A.set(nand(bus_sig.EXT_ADDR_14, dbg_sig.TOVA_MODE_DBG2n));
-    /*p08.SUZE*/ PIN_A15_A.set(nand(bus_sig.TAZY_A15,    dbg_sig.RYCA_MODE_DBG2n));
+    /*p08.KUPO*/ PIN_A00_A.set(nand(EXT_ADDR_00, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.CABA*/ PIN_A01_A.set(nand(EXT_ADDR_01, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.BOKU*/ PIN_A02_A.set(nand(EXT_ADDR_02, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.BOTY*/ PIN_A03_A.set(nand(EXT_ADDR_03, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.BYLA*/ PIN_A04_A.set(nand(EXT_ADDR_04, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.BADU*/ PIN_A05_A.set(nand(EXT_ADDR_05, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.CEPU*/ PIN_A06_A.set(nand(EXT_ADDR_06, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.DEFY*/ PIN_A07_A.set(nand(EXT_ADDR_07, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.MYNY*/ PIN_A08_A.set(nand(EXT_ADDR_08, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.MUNE*/ PIN_A09_A.set(nand(EXT_ADDR_09, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.ROXU*/ PIN_A10_A.set(nand(EXT_ADDR_10, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.LEPY*/ PIN_A11_A.set(nand(EXT_ADDR_11, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.LUCE*/ PIN_A12_A.set(nand(EXT_ADDR_12, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.LABE*/ PIN_A13_A.set(nand(EXT_ADDR_13, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.PUHE*/ PIN_A14_A.set(nand(EXT_ADDR_14, dbg_sig.TOVA_MODE_DBG2n));
 
-    /*p08.KOTY*/ PIN_A00_D.set(nor (bus_sig.EXT_ADDR_00, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.COTU*/ PIN_A01_D.set(nor (bus_sig.EXT_ADDR_01, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.BAJO*/ PIN_A02_D.set(nor (bus_sig.EXT_ADDR_02, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.BOLA*/ PIN_A03_D.set(nor (bus_sig.EXT_ADDR_03, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.BEVO*/ PIN_A04_D.set(nor (bus_sig.EXT_ADDR_04, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.AJAV*/ PIN_A05_D.set(nor (bus_sig.EXT_ADDR_05, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.CYKA*/ PIN_A06_D.set(nor (bus_sig.EXT_ADDR_06, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.COLO*/ PIN_A07_D.set(nor (bus_sig.EXT_ADDR_07, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.MEGO*/ PIN_A08_D.set(nor (bus_sig.EXT_ADDR_08, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.MENY*/ PIN_A09_D.set(nor (bus_sig.EXT_ADDR_09, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.RORE*/ PIN_A10_D.set(nor (bus_sig.EXT_ADDR_10, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.LYNY*/ PIN_A11_D.set(nor (bus_sig.EXT_ADDR_11, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.LOSO*/ PIN_A12_D.set(nor (bus_sig.EXT_ADDR_12, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.LEVA*/ PIN_A13_D.set(nor (bus_sig.EXT_ADDR_13, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.PAHY*/ PIN_A14_D.set(nor (bus_sig.EXT_ADDR_14, dbg_sig.UNOR_MODE_DBG2p));
-    /*p08.RULO*/ PIN_A15_D.set(nor (bus_sig.TAZY_A15,    dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.KOTY*/ PIN_A00_D.set(nor (EXT_ADDR_00, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.COTU*/ PIN_A01_D.set(nor (EXT_ADDR_01, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.BAJO*/ PIN_A02_D.set(nor (EXT_ADDR_02, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.BOLA*/ PIN_A03_D.set(nor (EXT_ADDR_03, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.BEVO*/ PIN_A04_D.set(nor (EXT_ADDR_04, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.AJAV*/ PIN_A05_D.set(nor (EXT_ADDR_05, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.CYKA*/ PIN_A06_D.set(nor (EXT_ADDR_06, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.COLO*/ PIN_A07_D.set(nor (EXT_ADDR_07, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.MEGO*/ PIN_A08_D.set(nor (EXT_ADDR_08, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.MENY*/ PIN_A09_D.set(nor (EXT_ADDR_09, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.RORE*/ PIN_A10_D.set(nor (EXT_ADDR_10, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.LYNY*/ PIN_A11_D.set(nor (EXT_ADDR_11, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.LOSO*/ PIN_A12_D.set(nor (EXT_ADDR_12, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.LEVA*/ PIN_A13_D.set(nor (EXT_ADDR_13, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.PAHY*/ PIN_A14_D.set(nor (EXT_ADDR_14, dbg_sig.UNOR_MODE_DBG2p));
+  }
+
+  {
+    auto& cpu_bus = gb.cpu_bus;
+    auto boot_sig = gb.bootrom.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
+
+    // Something weird here
+    /*p07.TERA*/ wire TERA_BOOT_BITp  = not(boot_sig.BOOT_BITn);
+    /*p07.TULO*/ wire TULO_ADDR_00XXp = nor(cpu_bus.PIN_A15, cpu_bus.PIN_A14, cpu_bus.PIN_A13, cpu_bus.PIN_A12, cpu_bus.PIN_A11, cpu_bus.PIN_A10, cpu_bus.PIN_A09, cpu_bus.PIN_A08);
+    /*p07.TUTU*/ wire TUTU_ADDR_BOOTp = and (TERA_BOOT_BITp, TULO_ADDR_00XXp);
+    /*p08.SOBY*/ wire SOBY = nor(cpu_bus.PIN_A15, TUTU_ADDR_BOOTp);
+    /*p08.SEPY*/ wire SEPY = nand(dbg_sig.ABUZ, SOBY);
+
+    /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(dma_sig.MUDA_DMA_SRC_VRAMp);
+    /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
+    /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
+
+    /*p08.TAZY*/ wire TAZY_A15 = mux2_p(dma_sig.DMA_A15, SEPY, LUMA_DMA_READ_CARTp);
+
+    /*p08.SUZE*/ PIN_A15_A.set(nand(TAZY_A15, dbg_sig.RYCA_MODE_DBG2n));
+    /*p08.RULO*/ PIN_A15_D.set(nor (TAZY_A15, dbg_sig.UNOR_MODE_DBG2p));
+  }
+
+  {
+    auto bus_sig = gb.bus_mux.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+    /*p08.UGAC*/ wire _UGAC_RDp_A = nand(bus_sig.TYMU_RD_OUTn, dbg_sig.TOVA_MODE_DBG2n);
+    /*p08.URUN*/ wire _URUN_RDp_D = nor (bus_sig.TYMU_RD_OUTn, dbg_sig.UNOR_MODE_DBG2p);
+    /* PIN_79 */ PIN_RD_A.set(_UGAC_RDp_A);
+    /* PIN_79 */ PIN_RD_D.set(_URUN_RDp_D);
+  }
+
+  {
+    auto bus_sig = gb.bus_mux.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+    /*p08.UVER*/ wire _UVER_WRp_A = nand(bus_sig.PUVA_WR_OUTn, dbg_sig.TOVA_MODE_DBG2n);
+    /*p08.USUF*/ wire _USUF_WRp_D = nor (bus_sig.PUVA_WR_OUTn, dbg_sig.UNOR_MODE_DBG2p);
+    /* PIN_78 */ PIN_WR_A.set(_UVER_WRp_A);
+    /* PIN_78 */ PIN_WR_D.set(_USUF_WRp_D);
+  }
+
+  {
+    auto bus_sig = gb.bus_mux.sig(gb);
+    /* PIN_80 */ PIN_CS_A.set(bus_sig.TYHO_CS_A);
   }
 }
 
@@ -381,6 +403,12 @@ void BusMux::tick(TestGB& gb) {
 
 bool BusMux::commit() {
   bool changed = false;
+
+  /* PIN_78 */ changed |= PIN_WR_A.commit_pinout();    // <- UVER
+  /* PIN_78 */ changed |= PIN_WR_D.commit_pinout();    // <- USUF
+  /* PIN_79 */ changed |= PIN_RD_A.commit_pinout();    // <- UGAC
+  /* PIN_79 */ changed |= PIN_RD_D.commit_pinout();    // <- URUN
+  /* PIN_80 */ changed |= PIN_CS_A.commit_pinout();    // <- TYHO
 
   /* PIN_01 */ changed |= PIN_A00_A.commit_pinout();     // <- KUPO
   /* PIN_01 */ changed |= PIN_A00_D.commit_pinout();     // <- KOTY

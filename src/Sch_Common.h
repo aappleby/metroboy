@@ -656,15 +656,6 @@ struct Reg22 : public RegisterBase {
 // REG9_08 >> Q
 // REG9_09 >> QN
 
-// PYNE_01
-// PYNE_02
-// PYNE_03 nc
-// PYNE_04
-// PYNE_05
-// PYNE_06 nc
-// PYNE_07
-// PYNE_08
-
 struct Reg9_Duo : public RegisterBase {
 
   void set_duo(bool clk, bool rstN, SignalState c) {

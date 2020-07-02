@@ -245,7 +245,7 @@ void BusMux::tick(TestGB& gb) {
     /*p25.RESE*/ vram_bus.TRI_A09.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A09);
     /*p25.RUSE*/ vram_bus.TRI_A10.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A10);
     /*p25.RYNA*/ vram_bus.TRI_A11.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A11);
-    /*p25.RUMO*/ vram_bus.TRI_A12.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A12);
+    /*p25.RUMO*/ vram_bus.TRI_A12.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A12); // 6-rung
   }
 
   {

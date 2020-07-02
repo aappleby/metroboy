@@ -94,7 +94,7 @@ DmaSignals DmaRegisters::sig(const SchematicTop& /*gb*/) const {
 
 void DmaRegisters::tick(SchematicTop& gb) {
   auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
+  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto bus_sig = gb.bus_mux.sig(gb);
   auto dma_sig = gb.dma_reg.sig(gb);

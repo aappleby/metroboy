@@ -19,8 +19,17 @@ struct TimerSignals {
 
 struct TimerRegisters {
 
-  TimerSignals sig(const SchematicTop& gb) const;
+  TimerSignals sig() const;
+
   void tick(SchematicTop& gb);
+  void tick(
+    const ClockSignals& clk_sig,
+    const ResetSignals& rst_sig,
+    const CpuBusSignals& cpu_sig,
+    CpuBus& cpu_bus,
+    bool EXT_PIN_CLK_GOOD,
+    bool EXT_PIN_RST);
+  
   SignalHash commit();
 
 private:

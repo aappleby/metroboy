@@ -8,11 +8,12 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct SpriteScannerSignals {
-  /*p28.BESU*/ Signal BESU_SCANNINGp;          // main "oam scanning" signal
+  /*p28.BESU*/ Signal BESU_SCANNINGp;          // main "oam scanning" signal, to PPU
+  /*p29.CENO*/ Signal CENO_SCANNINGp;          // to sprite store, controls driving sprite index onto sprite store ts bus
+  /*p29.CEHA*/ Signal CEHA_SCANNINGp;          // to sprite store, enables matcher
+
   /*p29.AVAP*/ Signal AVAP_SCAN_DONE_TRIGp;    // to ppu, resets tile fetcher, sets XYMU_RENDERING, sets lcd hsync
                                                
-  /*p29.CENO*/ Signal CENO_SCANNINGp;          // to sprite store, controls driving sprite index onto sprite store ts bus
-  /*p29.BYJO*/ Signal BYJO_SCANNINGn;          // to sprite store, controls AROR_MATCH_ENp
                                                
   /*p29.DEGE*/ Signal DEGE_SPRITE_DELTA0;           // to sprite store
   /*p29.DABY*/ Signal DABY_SPRITE_DELTA1;           // to sprite store

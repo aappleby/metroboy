@@ -176,7 +176,8 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const SchematicTop& gb) const {
     /*p31.YLEV*/ wire STORE9_MATCHA = nor(STORE9_MATCH0n, STORE9_MATCH1n, STORE9_MATCH2n, STORE9_MATCH3n);
     /*p31.YTUB*/ wire STORE9_MATCHB = nor(STORE9_MATCH4n, STORE9_MATCH5n, STORE9_MATCH6n, STORE9_MATCH7n);
 
-    /*p29.AZEM*/ wire AZEM_RENDERINGp = and (sprite_scanner_sig.BYJO_SCANNINGn, ppu_sig.XYMU_RENDERINGp);
+    /*p29.BYJO*/ wire BYJO_SCANNINGn = not(sprite_scanner_sig.CEHA_SCANNINGp);
+    /*p29.AZEM*/ wire AZEM_RENDERINGp = and (BYJO_SCANNINGn, ppu_sig.XYMU_RENDERINGp);
     /*p29.AROR*/ wire AROR_MATCH_ENp = and (AZEM_RENDERINGp, ppu_config.XYLO_LCDC_SPEN);
 
     /*p29.YDUG*/ sig.STORE0_MATCHn = nand(AROR_MATCH_ENp, STORE0_MATCHB, STORE0_MATCHA);
@@ -218,7 +219,7 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     auto sst_sig = sig(gb);
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
     auto rst_sig = gb.rst_reg.sig(gb);
-    auto clk_sig = gb.clk_reg.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
 
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
     /*p30.WENU*/ WENU_TS_LINE_0.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DEGE_SPRITE_DELTA0);
@@ -257,7 +258,7 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
     auto ppu_sig = gb.ppu_reg.sig(gb);
     auto dbg_sig = gb.dbg_reg.sig(gb);
-    auto clk_sig = gb.clk_reg.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
 
     // BUZA def AND
     // BUZA01 << CENO16

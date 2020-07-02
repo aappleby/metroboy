@@ -100,7 +100,7 @@ void SpriteFetcher::tick(SchematicTop& gb) {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto sst_sig = gb.sst_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
+  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
 

@@ -6,7 +6,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-TimerSignals TimerRegisters::sig(const SchematicTop& /*gb*/) const {
+TimerSignals TimerRegisters::sig() const {
   TimerSignals sig;
 
   sig.UVYN_DIV_05n    = not(TAMA_DIV_05);
@@ -20,19 +20,31 @@ TimerSignals TimerRegisters::sig(const SchematicTop& /*gb*/) const {
 
 //------------------------------------------------------------------------------
 
-void TimerRegisters::tick(SchematicTop& gb) {
-  auto& cpu_bus = gb.cpu_bus;
+void TimerRegisters::tick(SchematicTop& gb){
+  tick(
+    gb.clk_reg.sig(gb),
+    gb.rst_reg.sig(gb),
+    gb.cpu_bus.sig(gb),
+    gb.cpu_bus,
+    gb.EXT_PIN_CLK_GOOD,
+    gb.EXT_PIN_RST);
 
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto tim_sig = sig(gb);
+}
+
+void TimerRegisters::tick(
+  const ClockSignals& clk_sig,
+  const ResetSignals& rst_sig,
+  const CpuBusSignals& cpu_sig,
+  CpuBus& cpu_bus,
+  bool EXT_PIN_CLK_GOOD,
+  bool EXT_PIN_RST) {
+  auto tim_sig = sig();
 
   // FF04 DIV
   {
     /*p01.TAPE*/ wire FF04_WR = and(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_sig.TOVY_A00n);
-    /*p01.UCOB*/ wire UCOB_CLKBAD = not(gb.EXT_PIN_CLK_GOOD);
-    /*p01.UFOL*/ wire DIV_RSTn = nor(UCOB_CLKBAD, gb.EXT_PIN_RST, FF04_WR);
+    /*p01.UCOB*/ wire UCOB_CLKBAD = not(EXT_PIN_CLK_GOOD);
+    /*p01.UFOL*/ wire DIV_RSTn = nor(UCOB_CLKBAD, EXT_PIN_RST, FF04_WR);
 
     /*p01.UKUP*/ UKUP_DIV_00.set(clk_sig.BOGA_AxCDEFGH, DIV_RSTn, !UKUP_DIV_00.q());
     /*p01.UFOR*/ UFOR_DIV_01.set(!UKUP_DIV_00.q(), DIV_RSTn, !UFOR_DIV_01.q());

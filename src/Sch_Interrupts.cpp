@@ -9,7 +9,7 @@ using namespace Schematics;
 void InterruptRegisters::tick(SchematicTop& gb) {
   auto& cpu_bus = gb.cpu_bus;
 
-  auto tim_sig = gb.tim_reg.sig(gb);
+  auto tim_sig = gb.tim_reg.sig();
   auto ser_sig = gb.ser_reg.sig(gb);
   auto joy_sig = gb.joy_reg.sig();
   auto rst_sig = gb.rst_reg.sig(gb);

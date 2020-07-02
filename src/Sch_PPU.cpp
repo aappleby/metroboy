@@ -157,7 +157,7 @@ PpuSignals PpuRegisters::sig(const SchematicTop& gb) const {
 
   {
     auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
-    auto clk_sig = gb.clk_reg.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
     auto sst_sig = gb.sst_reg.sig(gb);
     auto win_sig = gb.win_reg.sig(gb);
 
@@ -270,7 +270,7 @@ void PpuRegisters::tick(SchematicTop& gb) {
   {
     auto ppu_sig = sig(gb);
     /*p24.ROXO*/ wire ROXO_CLKPIPEp = not(ppu_sig.SEGU_CLKPIPEn);
-    auto clk_sig = gb.clk_reg.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
     /*p27.MOXE*/ wire MOXE_AxCxExGx = not(clk_sig.ALET_xBxDxFxH);
 
     auto& ppu_config = gb.ppu_config;
@@ -345,7 +345,7 @@ void PpuRegisters::tick(SchematicTop& gb) {
     /*p21.TADY*/ wire TADY_X_RST = nor(lcd_sig.BYHA_VID_LINE_TRIG_d4n, TOFU_VID_RSTp);
     // having this reset connected to both RENDER_DONE_SYNC and x seems odd
     auto ppu_sig = sig(gb);
-    auto clk_sig = gb.clk_reg.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
     /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(clk_sig.ALET_xBxDxFxH, TADY_X_RST, ppu_sig.WODU_RENDER_DONEp);
   }
 

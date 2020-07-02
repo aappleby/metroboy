@@ -73,7 +73,7 @@ void WindowRegisters::tick(SchematicTop& gb) {
 
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
+  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto win_sig = gb.win_reg.sig(gb);

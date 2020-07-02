@@ -2,20 +2,20 @@
 
 using namespace Schematics;
 
-SchematicTop gb;
-
 //-----------------------------------------------------------------------------
 
 void SchematicTop::tick_everything() {
+  auto clk_sig = clk_reg.sig(cpu_bus, EXT_PIN_CLK_GOOD);
   auto rst_sig = rst_reg.sig(*this);
-  auto clk_sig = clk_reg.sig(*this);
+  auto dbg_sig = dbg_reg.sig(*this);
   auto cpu_sig = cpu_bus.sig(*this);
 
-  clk_reg.tick(*this);
+  clk_reg.tick(clk_sig, rst_sig, dbg_sig);
+
+  /*
   dma_reg.tick(*this);
   tim_reg.tick(*this);
   ser_reg.tick(*this);
-
 
   joy_reg.tick(rst_sig, clk_sig, cpu_bus, cpu_sig);
 
@@ -26,6 +26,7 @@ void SchematicTop::tick_everything() {
   //cpu_sig.tick(*this);
   cpu_pins_out.tick(*this);
   vram_pins.tick(*this);
+  */
 }
 
 //-----------------------------------------------------------------------------

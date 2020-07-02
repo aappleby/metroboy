@@ -16,7 +16,7 @@ void SerialRegisters::tick(SchematicTop& gb) {
 
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto tim_sig = gb.tim_reg.sig(gb);
+  auto tim_sig = gb.tim_reg.sig();
   auto& cpu_bus = gb.cpu_bus;
 
   wire TAPU_CPU_WR_xxxxxFGH = cpu_sig.TAPU_CPU_WR_xxxxxFGH;

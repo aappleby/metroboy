@@ -55,7 +55,7 @@ DebugSignals DebugRegisters::sig(const SchematicTop& gb) const {
 //-----------------------------------------------------------------------------
 
 void DebugRegisters::tick(const SchematicTop& gb) {
-  auto clk_sig = gb.clk_reg.sig(gb);
+  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
   auto dbg_sig = sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
 

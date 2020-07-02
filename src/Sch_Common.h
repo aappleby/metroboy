@@ -4,6 +4,14 @@
 
 namespace Schematics {
 
+struct SchematicTop;
+struct ClockSignals;
+struct DebugSignals;
+struct ResetSignals;
+struct CpuBusSignals;
+
+struct CpuBus;
+
 //-----------------------------------------------------------------------------
 
 union SignalState;

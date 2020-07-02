@@ -7,10 +7,11 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 CpuBusSignals CpuBus::sig(const SchematicTop& gb) const {
-  CpuBusSignals sig;
+  return sig(gb.clk_reg.sig(gb), gb.dbg_reg.sig(gb));
+}
 
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
+CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_sig) const {
+  CpuBusSignals sig;
 
   /*p03.TOVY*/ sig.TOVY_A00n = not(PIN_A00);
   /*p08.TOLA*/ sig.TOLA_A01n = not(PIN_A01);
@@ -117,7 +118,7 @@ CpuBusSignals CpuBus::sig(const SchematicTop& gb) const {
 
 void CpuBus::tick(SchematicTop& gb) {
   {
-    auto clk_sig = gb.clk_reg.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
     auto rst_sig = gb.rst_reg.sig(gb);
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
@@ -335,7 +336,7 @@ SignalHash CpuBus::commit() {
 void CpuPinsOut::tick(SchematicTop& gb) {
   auto rst_sig = gb.rst_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
+  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
   auto boot_sig = gb.bootrom.sig(gb);
 
 #if 0

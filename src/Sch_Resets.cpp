@@ -6,12 +6,15 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 ResetSignals ResetRegisters::sig(const SchematicTop& gb) const {
+  return sig(gb.tim_reg.sig(),
+             gb.dbg_reg.sig(gb),
+             gb.ppu_config);
+}
+
+ResetSignals ResetRegisters::sig(const TimerSignals& tim_sig, const DebugSignals& dbg_sig, const PpuConfig& ppu_config) const {
   ResetSignals sig;
 
   {
-    auto tim_sig = gb.tim_reg.sig(gb);
-    auto dbg_sig = gb.dbg_reg.sig(gb);
-
     /*p01.UNUT*/ wire UNUT_TIMEOUT  = and (TUBO_CLKREQn_LATCH, tim_sig.UPOF_DIV_15);
     /*p01.AFER*/ sig.AFER_RSTp = AFER_RSTp;
     /*p01.TABA*/ sig.TABA_RSTp = or(dbg_sig.UNOR_MODE_DBG2p, dbg_sig.UMUT_MODE_DBG1p, UNUT_TIMEOUT);
@@ -22,7 +25,6 @@ ResetSignals ResetRegisters::sig(const SchematicTop& gb) const {
   }
 
   {
-    auto& ppu_config = gb.ppu_config;
     /*p01.ALUR*/ wire ALUR_RSTn = not(sig.AVOR_RSTp);   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
@@ -38,17 +40,27 @@ ResetSignals ResetRegisters::sig(const SchematicTop& gb) const {
 //-----------------------------------------------------------------------------
 
 void ResetRegisters::tick(SchematicTop& gb) {
-  auto& cpu_bus = gb.cpu_bus;
+  tick(gb.clk_reg.sig(gb),
+       gb.dbg_reg.sig(gb),
+       gb.rst_reg.sig(gb),
+       gb.cpu_bus,
+       gb.EXT_PIN_RST,
+       gb.EXT_PIN_CLK_GOOD);
+}
 
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
+void ResetRegisters::tick(
+  const ClockSignals& clk_sig,
+  const DebugSignals& dbg_sig,
+  const ResetSignals& rst_sig,
+  const CpuBus& cpu_bus,
+  wire EXT_PIN_RST,
+  wire EXT_PIN_CLK_GOOD) {
 
   /*p01.ALYP*/ wire ALYP_RSTn = not(rst_sig.TABA_RSTp);
-  /*p01.AFAR*/ wire AFAR_RST  = nor(ALYP_RSTn, gb.EXT_PIN_RST);
+  /*p01.AFAR*/ wire AFAR_RST  = nor(ALYP_RSTn, EXT_PIN_RST);
 
   // ASOL has arms on the ground side, output on the top rung - nor latch with inverted output
-  /*p01.ASOL*/ ASOL_RST_LATCHp.nor_latch(AFAR_RST, gb.EXT_PIN_RST); // Schematic wrong, this is a latch.
+  /*p01.ASOL*/ ASOL_RST_LATCHp.nor_latch(AFAR_RST, EXT_PIN_RST); // Schematic wrong, this is a latch.
 
   /*p01.AFER*/ AFER_RSTp.set(clk_sig.BOMA_xBxxxxxx, dbg_sig.UPOJ_MODE_PROD, ASOL_RST_LATCHp);
 
@@ -59,8 +71,8 @@ void ResetRegisters::tick(SchematicTop& gb) {
   // TUBO03 == nc
   // TUBO04 nc
   // TUBO05 << UPYF
-  /*p01.UCOB*/ wire UCOB_CLKBAD = not(gb.EXT_PIN_CLK_GOOD);
-  /*p01.UPYF*/ wire UPYF = or(gb.EXT_PIN_RST, UCOB_CLKBAD);
+  /*p01.UCOB*/ wire UCOB_CLKBAD = not(EXT_PIN_CLK_GOOD);
+  /*p01.UPYF*/ wire UPYF = or(EXT_PIN_RST, UCOB_CLKBAD);
   /*p01.TUBO*/ TUBO_CLKREQn_LATCH.nor_latch(cpu_bus.PIN_CLKREQ, UPYF);
 }
 

@@ -3,8 +3,6 @@
 
 namespace Schematics {
 
-struct SchematicTop;
-
 //-----------------------------------------------------------------------------
 
 struct ClockSignals {
@@ -67,8 +65,12 @@ struct ClockSignals {
 
 struct ClockRegisters {
 
-  ClockSignals sig(const SchematicTop& test_gb) const;
+  ClockSignals sig(const SchematicTop& gb) const;
+  ClockSignals sig(const CpuBus& cpu_bus, wire EXT_PIN_CLK_GOOD) const;
+
   void tick(const SchematicTop& gb);
+  void tick(const ClockSignals& clk_sig, const ResetSignals& rst_sig, const DebugSignals& dbg_sig);
+
   SignalHash commit();
   /*
   void dump_regs(TextPainter& text_painter) {

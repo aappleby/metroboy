@@ -3,8 +3,6 @@
 
 namespace Schematics {
 
-struct SchematicTop;
-
 //-----------------------------------------------------------------------------
 
 struct CpuBusSignals {
@@ -60,7 +58,10 @@ struct CpuBusSignals {
 struct CpuBus {
 
   CpuBusSignals sig(const SchematicTop& gb) const;
+  CpuBusSignals sig(const ClockSignals& clk_sig, const DebugSignals& dbg_sig) const;
+
   void tick(SchematicTop& gb);
+  
   SignalHash commit();
 
   int get_data() const {

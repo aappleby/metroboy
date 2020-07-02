@@ -24,23 +24,24 @@ ADYK APUK ALEF AFUR
 //-----------------------------------------------------------------------------
 
 ClockSignals ClockRegisters::sig(const SchematicTop& gb) const {
-  ClockSignals sig;
+  return sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
+}
 
-  auto& cpu_bus = gb.cpu_bus;
-  auto& clk_reg = gb.clk_reg;
+ClockSignals ClockRegisters::sig(const CpuBus& cpu_bus, wire EXT_PIN_CLK_GOOD) const {
+  ClockSignals sig;
 
   ///*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
   /*p01.ANOS*/ wire ANOS_AxCxExGx = not(PIN_CLK_IN_xBxDxFxH);
-  /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(gb.EXT_PIN_CLK_GOOD);
+  /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(EXT_PIN_CLK_GOOD);
   /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.PIN_CLKREQ);
   /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
 
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(clk_reg.AFUR_PHAZ_xBCDExxx.qn());
-  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.ALEF_PHAZ_xxCDEFxx.q());
-  /*p01.AROV*/ wire AROV_xxxDEFGx = not(clk_reg.APUK_PHAZ_xxxDEFGx.qn());
-  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.ADYK_PHAZ_xxxxEFGH.q());
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(AFUR_PHAZ_xBCDExxx.qn());
+  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(ALEF_PHAZ_xxCDEFxx.q());
+  /*p01.AROV*/ wire AROV_xxxDEFGx = not(APUK_PHAZ_xxxDEFGx.qn());
+  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(ADYK_PHAZ_xxxxEFGH.q());
 
   /*p01.ATAL*/ sig.ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
   /*p01.AZOF*/ sig.AZOF_AxCxExGx = not(sig.ATAL_xBxDxFxH);
@@ -59,8 +60,8 @@ ClockSignals ClockRegisters::sig(const SchematicTop& gb) const {
   ///*p01.AMUK*/ wire AMUK_AxCxExGx = not(ATAG_xBxDxFxH); // apu master 4m clock, but apu isn't hooked up yet
   ///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
 
-  /*p29.XUPY*/ sig.XUPY_xBCxxFGx = not(clk_reg.WUVU_AxxDExxH);
-  /*p29.XOCE*/ sig.XOCE_ABxxEFxx = not(clk_reg.WOSU_xxCDxxGH);
+  /*p29.XUPY*/ sig.XUPY_xBCxxFGx = not(WUVU_AxxDExxH);
+  /*p29.XOCE*/ sig.XOCE_ABxxEFxx = not(WOSU_xxCDxxGH);
   /*p30.CYKE*/ sig.CYKE_AxxDExxH = not(sig.XUPY_xBCxxFGx);
   /*p30.WUDA*/ sig.WUDA_xBCxxFGx = not(sig.CYKE_AxxDExxH);
   /*p01.NULE*/ sig.NULE_AxxxxFGH = nor(ABOL_CLKREQn, ATYP_xBCDExxx);
@@ -88,7 +89,7 @@ ClockSignals ClockRegisters::sig(const SchematicTop& gb) const {
   /*p01.BALY*/ sig.BALY_xBxxxxxx = not(sig.BYJU_AxCDEFGH);
   /*p01.BOGA*/ sig.BOGA_AxCDEFGH = not(sig.BALY_xBxxxxxx);
 
-  /*p21.TALU*/ sig.TALU_xBCDExxx = not(!clk_reg.VENA_xBCDExxx);
+  /*p21.TALU*/ sig.TALU_xBCDExxx = not(VENA_xBCDExxx.qn());
   /*p21.SONO*/ sig.SONO_AxxxxFGH = not(sig.TALU_xBCDExxx);
   /*p28.AWOH*/ sig.AWOH_AxxDExxH = not(sig.XUPY_xBCxxFGx);
   /*p28.XYNY*/ sig.XYNY_xBCDExxx = not(sig.MOPA_AxxxxFGH);
@@ -96,7 +97,7 @@ ClockSignals ClockRegisters::sig(const SchematicTop& gb) const {
   /*p01.BYXO*/ sig.BYXO_AxCDEFGH = not(sig.BUVU_xBxxxxxx);
   /*p01.BEDO*/ sig.BEDO_xBxxxxxx = not(sig.BYXO_AxCDEFGH);
 
-  /*p29.WOJO*/ sig.WOJO_xxxDxxxH = nor(!clk_reg.WUVU_AxxDExxH, !clk_reg.WOSU_xxCDxxGH);
+  /*p29.WOJO*/ sig.WOJO_xxxDxxxH = nor(WUVU_AxxDExxH.qn(), WOSU_xxCDxxGH.qn());
   /*p29.XYSO*/ sig.XYSO_ABCxDEFx = not(sig.WOJO_xxxDxxxH);
 
   /*p17.ABUR*/ sig.ABUR_xxCDEFGx = not(sig.BUKE_ABxxxxxH);
@@ -110,10 +111,11 @@ ClockSignals ClockRegisters::sig(const SchematicTop& gb) const {
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tick(const SchematicTop& gb) {
-  {
-    auto clk_sig = gb.clk_reg.sig(gb);
-    auto dbg_sig = gb.dbg_reg.sig(gb);
+  tick(sig(gb), gb.rst_reg.sig(gb), gb.dbg_reg.sig(gb));
+}
 
+void ClockRegisters::tick(const ClockSignals& clk_sig, const ResetSignals& rst_sig, const DebugSignals& dbg_sig) {
+  {
     /*p01.AFUR*/ AFUR_PHAZ_xBCDExxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD, !ADYK_PHAZ_xxxxEFGH);
     /*p01.ALEF*/ ALEF_PHAZ_xxCDEFxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  AFUR_PHAZ_xBCDExxx);
     /*p01.APUK*/ APUK_PHAZ_xxxDEFGx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  ALEF_PHAZ_xxCDEFxx);
@@ -121,9 +123,6 @@ void ClockRegisters::tick(const SchematicTop& gb) {
   }
 
   {
-    auto clk_sig = gb.clk_reg.sig(gb);
-    auto rst_sig = gb.rst_reg.sig(gb);
-
     /*p29.WUVU*/ WUVU_AxxDExxH.set(clk_sig.XOTA_xBxDxFxH, rst_sig.XAPO_VID_RSTn, !WUVU_AxxDExxH);
     /*p21.VENA*/ VENA_xBCDExxx.set(!WUVU_AxxDExxH, rst_sig.XAPO_VID_RSTn, !VENA_xBCDExxx);
     /*p29.WOSU*/ WOSU_xxCDxxGH.set(clk_sig.XYFY_AxCxExGx, rst_sig.XAPO_VID_RSTn, !WUVU_AxxDExxH);
@@ -142,10 +141,8 @@ void ClockRegisters::tick(const SchematicTop& gb) {
   // cpu_pins.BOMA_xBxxxxxx.set(clk_sig.BOMA_xBxxxxxx);
 
   {
-    auto clk_sig = gb.clk_reg.sig(gb);
     /* PIN_75 */ PIN_PHI.set(clk_sig.BUDE_AxxxxFGH);
   }
-
 }
 
 //-----------------------------------------------------------------------------

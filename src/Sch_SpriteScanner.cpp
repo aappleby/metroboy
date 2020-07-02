@@ -8,34 +8,29 @@ using namespace Schematics;
 SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
   SpriteScannerSignals sprite_scanner_sig;
 
-  auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-
-  auto& ppu_config = gb.ppu_config;
-
-  wire P10_B = 0;
-
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
-  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
-
   {
+    auto rst_sig = gb.rst_reg.sig(gb);
+    auto lcd_sig = gb.lcd_reg.sig(gb);
+
+    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
     /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
     /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or(BALU_SCAN_RST, SCAN_DONE_TRIG_B.q(), !SCAN_DONE_TRIG_A.q());
     /*p29.AVAP*/ sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp = not(BEBU_SCAN_DONE_TRIGn);
   }
 
-  /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
-
   {
+    /*p29.CEHA*/ sprite_scanner_sig.CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
     /*p28.BESU*/ sprite_scanner_sig.BESU_SCANNINGp = BESU_SCANNINGp;
     /*p29.CENO*/ sprite_scanner_sig.CENO_SCANNINGp = CENO_SCANNINGp;
-    /*p29.BYJO*/ sprite_scanner_sig.BYJO_SCANNINGn = not(CEHA_SCANNINGp);
   }
 
   {
     auto bus_sig = gb.bus_mux.sig(gb);
+    auto& ppu_config = gb.ppu_config;
+    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
+    auto lcd_sig = gb.lcd_reg.sig(gb);
+    wire P10_B = 0;
 
     /*p29.EBOS*/ wire Y0n = not(lcd_sig.MUWY_Y0);
     /*p29.DASA*/ wire Y1n = not(lcd_sig.MYRO_Y1);
@@ -75,6 +70,7 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
     /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, ppu_config.XYMO_LCDC_SPSIZE);
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
+    /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
     /*p29.CARE*/ sprite_scanner_sig.CARE_STORE_ENp_ABxxEFxx = and (clk_sig.XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
 
@@ -87,8 +83,6 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
     /*p28.GOBY*/ sprite_scanner_sig.GOBY_SCAN5n = not(SCAN5.q());
   }
 
-
-
   return sprite_scanner_sig;
 }
 
@@ -96,7 +90,7 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
 
 void SpriteScanner::tick(SchematicTop& gb) {
   auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
+  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
   auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);

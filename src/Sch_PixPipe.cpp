@@ -192,14 +192,17 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   }
 
   {
-    /*p34.MEFU*/ wire SPRITE_MASK0p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A0, SPR_PIPE_B0); // def or
-    /*p34.MEVE*/ wire SPRITE_MASK1p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A1, SPR_PIPE_B1);
-    /*p34.MYZO*/ wire SPRITE_MASK2p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A2, SPR_PIPE_B2);
-    /*p34.RUDA*/ wire SPRITE_MASK3p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A3, SPR_PIPE_B3);
-    /*p34.VOTO*/ wire SPRITE_MASK4p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A4, SPR_PIPE_B4);
-    /*p34.VYSA*/ wire SPRITE_MASK5p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A5, SPR_PIPE_B5);
-    /*p34.TORY*/ wire SPRITE_MASK6p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A6, SPR_PIPE_B6);
-    /*p34.WOPE*/ wire SPRITE_MASK7p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A7, SPR_PIPE_B7);
+    /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(sprite_fetcher_sig.VUSA_PIPE_LOAD_SPRITEn);
+    /*p29.XEFY*/ wire XEPY_PIPE_LOAD_SPRITEn = not(WUTY_PIPE_LOAD_SPRITEp);
+
+    /*p34.MEFU*/ wire SPRITE_MASK0p = or(XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A0, SPR_PIPE_B0); // def or
+    /*p34.MEVE*/ wire SPRITE_MASK1p = or(XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A1, SPR_PIPE_B1);
+    /*p34.MYZO*/ wire SPRITE_MASK2p = or(XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A2, SPR_PIPE_B2);
+    /*p34.RUDA*/ wire SPRITE_MASK3p = or(XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A3, SPR_PIPE_B3);
+    /*p34.VOTO*/ wire SPRITE_MASK4p = or(XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A4, SPR_PIPE_B4);
+    /*p34.VYSA*/ wire SPRITE_MASK5p = or(XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A5, SPR_PIPE_B5);
+    /*p34.TORY*/ wire SPRITE_MASK6p = or(XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A6, SPR_PIPE_B6);
+    /*p34.WOPE*/ wire SPRITE_MASK7p = or(XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A7, SPR_PIPE_B7);
 
     /*p34.LESY*/ wire SPRITE_MASK0n = not(SPRITE_MASK0p);
     /*p34.LOTA*/ wire SPRITE_MASK1n = not(SPRITE_MASK1p);

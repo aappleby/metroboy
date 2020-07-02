@@ -17,7 +17,8 @@ SpriteScannerSignals SpriteScanner::sig(const TestGB& gb) const {
 
   wire P10_B = 0;
 
-  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, rst_sig.ATAR_VID_RSTp);
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
 
   {
     /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
@@ -99,7 +100,8 @@ void SpriteScanner::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
 
-  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, rst_sig.ATAR_VID_RSTp);
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
 
   //----------------------------------------
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
@@ -114,10 +116,11 @@ void SpriteScanner::tick(TestGB& gb) {
 
     /*p29.BEBU*/ wire BEBU_SCAN_RSTn = or (BALU_SCAN_RSTp, SCAN_DONE_TRIG_B.q(), !SCAN_DONE_TRIG_A.q());
     /*p29.AVAP*/ wire AVAP_SCAN_RSTp = not(BEBU_SCAN_RSTn);
-    /*p28.ASEN*/ wire ASEN_SCAN_RSTp = or (rst_sig.ATAR_VID_RSTp, AVAP_SCAN_RSTp);
+    /*p28.ASEN*/ wire ASEN_SCAN_RSTp = or (ATAR_VID_RSTp, AVAP_SCAN_RSTp);
 
     /*p28.BESU*/ BESU_SCANNINGp.nor_latch(lcd_sig.CATU_VID_LINE_d4, ASEN_SCAN_RSTp);
-    /*p29.CENO*/ CENO_SCANNINGp.set(clk_sig.XUPY_xBCxxFGx, rst_sig.ABEZ_VID_RSTn, BESU_SCANNINGp);
+    /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
+    /*p29.CENO*/ CENO_SCANNINGp.set(clk_sig.XUPY_xBCxxFGx, ABEZ_VID_RSTn, BESU_SCANNINGp);
   }
 
   //----------------------------------------

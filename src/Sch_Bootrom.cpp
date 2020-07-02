@@ -71,7 +71,8 @@ void Bootrom::tick(TestGB& gb) {
     /*p07.TUGE*/ wire FF50_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.TRI_D0, BOOT_BITn);
 
-    /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, rst_sig.ALUR_RSTn, BOOT_BIT_IN);
+    /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+    /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, ALUR_RSTn, BOOT_BIT_IN);
   }
 
   {

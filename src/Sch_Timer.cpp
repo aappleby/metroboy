@@ -30,32 +30,33 @@ void TimerRegisters::tick(TestGB& gb) {
 
   // FF04 DIV
   {
-    /*p01.TAPE*/ wire _FF04_WR = and(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_sig.TOVY_A00n);
-    /*p01.UFOL*/ wire _DIV_RSTn = nor(rst_sig.UCOB_CLKBAD, gb.EXT_PIN_RST, _FF04_WR);
+    /*p01.TAPE*/ wire FF04_WR = and(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_sig.TOVY_A00n);
+    /*p01.UCOB*/ wire UCOB_CLKBAD = not(gb.EXT_PIN_CLK_GOOD);
+    /*p01.UFOL*/ wire DIV_RSTn = nor(UCOB_CLKBAD, gb.EXT_PIN_RST, FF04_WR);
 
-    /*p01.UKUP*/ UKUP_DIV_00.set(clk_sig.BOGA_AxCDEFGH, _DIV_RSTn, !UKUP_DIV_00.q());
-    /*p01.UFOR*/ UFOR_DIV_01.set(!UKUP_DIV_00.q(), _DIV_RSTn, !UFOR_DIV_01.q());
-    /*p01.UNER*/ UNER_DIV_02.set(!UFOR_DIV_01.q(), _DIV_RSTn, !UNER_DIV_02.q());
+    /*p01.UKUP*/ UKUP_DIV_00.set(clk_sig.BOGA_AxCDEFGH, DIV_RSTn, !UKUP_DIV_00.q());
+    /*p01.UFOR*/ UFOR_DIV_01.set(!UKUP_DIV_00.q(), DIV_RSTn, !UFOR_DIV_01.q());
+    /*p01.UNER*/ UNER_DIV_02.set(!UFOR_DIV_01.q(), DIV_RSTn, !UNER_DIV_02.q());
     
     // TERO second from bottom rung - feedback, so this is QN
     // TERO bottom rung             - UVYR, so this is Q
     
-    /*p01.TERO*/ TERO_DIV_03.set(!UNER_DIV_02.q(), _DIV_RSTn, !TERO_DIV_03.q());
-    /*p01.UNYK*/ UNYK_DIV_04.set(!TERO_DIV_03.q(), _DIV_RSTn, !UNYK_DIV_04.q());
-    /*p01.TAMA*/ TAMA_DIV_05.set(!UNYK_DIV_04.q(), _DIV_RSTn, !TAMA_DIV_05.q());
+    /*p01.TERO*/ TERO_DIV_03.set(!UNER_DIV_02.q(), DIV_RSTn, !TERO_DIV_03.q());
+    /*p01.UNYK*/ UNYK_DIV_04.set(!TERO_DIV_03.q(), DIV_RSTn, !UNYK_DIV_04.q());
+    /*p01.TAMA*/ TAMA_DIV_05.set(!UNYK_DIV_04.q(), DIV_RSTn, !TAMA_DIV_05.q());
 
     ///*p01.ULUR*/ wire DIV_06_CLK = mux2(BOGA_AxCDEFGH, DIV_05, FF60_1);
     /*p01.ULUR*/ wire _DIV_06_CLK = TAMA_DIV_05.q();
-    /*p01.UGOT*/ UGOT_DIV_06.set(!_DIV_06_CLK, _DIV_RSTn, !UGOT_DIV_06.q());
-    /*p01.TULU*/ TULU_DIV_07.set(!UGOT_DIV_06.q(), _DIV_RSTn, !TULU_DIV_07.q());
-    /*p01.TUGO*/ TUGO_DIV_08.set(!TULU_DIV_07.q(), _DIV_RSTn, !TUGO_DIV_08.q());
-    /*p01.TOFE*/ TOFE_DIV_09.set(!TUGO_DIV_08.q(), _DIV_RSTn, !TOFE_DIV_09.q());
-    /*p01.TERU*/ TERU_DIV_10.set(!TOFE_DIV_09.q(), _DIV_RSTn, !TERU_DIV_10.q());
-    /*p01.SOLA*/ SOLA_DIV_11.set(!TERU_DIV_10.q(), _DIV_RSTn, !SOLA_DIV_11.q());
-    /*p01.SUBU*/ SUBU_DIV_12.set(!SOLA_DIV_11.q(), _DIV_RSTn, !SUBU_DIV_12.q());
-    /*p01.TEKA*/ TEKA_DIV_13.set(!SUBU_DIV_12.q(), _DIV_RSTn, !TEKA_DIV_13.q());
-    /*p01.UKET*/ UKET_DIV_14.set(!TEKA_DIV_13.q(), _DIV_RSTn, !UKET_DIV_14.q());
-    /*p01.UPOF*/ UPOF_DIV_15.set(!UKET_DIV_14.q(), _DIV_RSTn, !UPOF_DIV_15.q());
+    /*p01.UGOT*/ UGOT_DIV_06.set(!_DIV_06_CLK, DIV_RSTn, !UGOT_DIV_06.q());
+    /*p01.TULU*/ TULU_DIV_07.set(!UGOT_DIV_06.q(), DIV_RSTn, !TULU_DIV_07.q());
+    /*p01.TUGO*/ TUGO_DIV_08.set(!TULU_DIV_07.q(), DIV_RSTn, !TUGO_DIV_08.q());
+    /*p01.TOFE*/ TOFE_DIV_09.set(!TUGO_DIV_08.q(), DIV_RSTn, !TOFE_DIV_09.q());
+    /*p01.TERU*/ TERU_DIV_10.set(!TOFE_DIV_09.q(), DIV_RSTn, !TERU_DIV_10.q());
+    /*p01.SOLA*/ SOLA_DIV_11.set(!TERU_DIV_10.q(), DIV_RSTn, !SOLA_DIV_11.q());
+    /*p01.SUBU*/ SUBU_DIV_12.set(!SOLA_DIV_11.q(), DIV_RSTn, !SUBU_DIV_12.q());
+    /*p01.TEKA*/ TEKA_DIV_13.set(!SUBU_DIV_12.q(), DIV_RSTn, !TEKA_DIV_13.q());
+    /*p01.UKET*/ UKET_DIV_14.set(!TEKA_DIV_13.q(), DIV_RSTn, !UKET_DIV_14.q());
+    /*p01.UPOF*/ UPOF_DIV_15.set(!UKET_DIV_14.q(), DIV_RSTn, !UPOF_DIV_15.q());
 
     /*p01.TAGY*/ wire FF04_RD = and (cpu_sig.TEDO_CPU_RD, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_sig.TOVY_A00n);
 
@@ -75,10 +76,12 @@ void TimerRegisters::tick(TestGB& gb) {
     /*p01.TATU*/ cpu_bus.TRI_D7.set_tribuf(FF04_RD, not(DIV_13n));
   }
 
-  /*p03.TOPE*/ wire _TOPE_FF05_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_bus.PIN_A00);
-  /*p03.MUZU*/ wire _MUZU = or(cpu_bus.PIN_FROM_CPU5p.q(), _TOPE_FF05_WRn);
-  /*p03.MEKE*/ wire _MEKE_INT_TIMERn = not(MOBA_INT_TIMERp.q());
-  /*p03.MEXU*/ wire _MEXU_TIMA_LOAD = nand(_MUZU, rst_sig.ALUR_RSTn, _MEKE_INT_TIMERn);
+  /*p03.TOPE*/ wire TOPE_FF05_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_bus.PIN_A00);
+  /*p03.MUZU*/ wire MUZU = or(cpu_bus.PIN_FROM_CPU5p.q(), TOPE_FF05_WRn);
+  /*p03.MEKE*/ wire MEKE_INT_TIMERn = not(MOBA_INT_TIMERp.q());
+
+  /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+  /*p03.MEXU*/ wire MEXU_TIMA_LOAD = nand(MUZU, ALUR_RSTn, MEKE_INT_TIMERn);
 
   // FF05 TIMA
   {
@@ -90,15 +93,15 @@ void TimerRegisters::tick(TestGB& gb) {
     /*p03.TECY*/ wire _CLK_MUXc = mux2_n(_CLK_MUXa, _CLK_MUXb, TAC_1.q());
 
     /*p03.SOGU*/ wire _TIMA_CLK = nor(_CLK_MUXc, TAC_2.qn());
-    /*p03.MULO*/ wire _TIMA_RST = not(rst_sig.ALUR_RSTn);
-    /*p03.ROKE*/ wire _TIMA_MUX_0 = mux2_n(TMA_0.q(), cpu_bus.TRI_D0, _TOPE_FF05_WRn);
-    /*p03.PETU*/ wire _TIMA_MUX_1 = mux2_n(TMA_1.q(), cpu_bus.TRI_D1, _TOPE_FF05_WRn);
-    /*p03.NYKU*/ wire _TIMA_MUX_2 = mux2_n(TMA_2.q(), cpu_bus.TRI_D2, _TOPE_FF05_WRn); // die annotation box wrong, this is a 5-rung
-    /*p03.SOCE*/ wire _TIMA_MUX_3 = mux2_n(TMA_3.q(), cpu_bus.TRI_D3, _TOPE_FF05_WRn);
-    /*p03.SALA*/ wire _TIMA_MUX_4 = mux2_n(TMA_4.q(), cpu_bus.TRI_D4, _TOPE_FF05_WRn);
-    /*p03.SYRU*/ wire _TIMA_MUX_5 = mux2_n(TMA_5.q(), cpu_bus.TRI_D5, _TOPE_FF05_WRn);
-    /*p03.REFU*/ wire _TIMA_MUX_6 = mux2_n(TMA_6.q(), cpu_bus.TRI_D6, _TOPE_FF05_WRn);
-    /*p03.RATO*/ wire _TIMA_MUX_7 = mux2_n(TMA_7.q(), cpu_bus.TRI_D7, _TOPE_FF05_WRn);
+    /*p03.MULO*/ wire _TIMA_RST = not(ALUR_RSTn);
+    /*p03.ROKE*/ wire _TIMA_MUX_0 = mux2_n(TMA_0.q(), cpu_bus.TRI_D0, TOPE_FF05_WRn);
+    /*p03.PETU*/ wire _TIMA_MUX_1 = mux2_n(TMA_1.q(), cpu_bus.TRI_D1, TOPE_FF05_WRn);
+    /*p03.NYKU*/ wire _TIMA_MUX_2 = mux2_n(TMA_2.q(), cpu_bus.TRI_D2, TOPE_FF05_WRn); // die annotation box wrong, this is a 5-rung
+    /*p03.SOCE*/ wire _TIMA_MUX_3 = mux2_n(TMA_3.q(), cpu_bus.TRI_D3, TOPE_FF05_WRn);
+    /*p03.SALA*/ wire _TIMA_MUX_4 = mux2_n(TMA_4.q(), cpu_bus.TRI_D4, TOPE_FF05_WRn);
+    /*p03.SYRU*/ wire _TIMA_MUX_5 = mux2_n(TMA_5.q(), cpu_bus.TRI_D5, TOPE_FF05_WRn);
+    /*p03.REFU*/ wire _TIMA_MUX_6 = mux2_n(TMA_6.q(), cpu_bus.TRI_D6, TOPE_FF05_WRn);
+    /*p03.RATO*/ wire _TIMA_MUX_7 = mux2_n(TMA_7.q(), cpu_bus.TRI_D7, TOPE_FF05_WRn);
     /*p03.PUXY*/ wire _TIMA_LD_0 = nor(_TIMA_RST, _TIMA_MUX_0);
     /*p03.NERO*/ wire _TIMA_LD_1 = nor(_TIMA_RST, _TIMA_MUX_1);
     /*p03.NADA*/ wire _TIMA_LD_2 = nor(_TIMA_RST, _TIMA_MUX_2);
@@ -107,14 +110,14 @@ void TimerRegisters::tick(TestGB& gb) {
     /*p03.RUGY*/ wire _TIMA_LD_5 = nor(_TIMA_RST, _TIMA_MUX_5);
     /*p03.PYMA*/ wire _TIMA_LD_6 = nor(_TIMA_RST, _TIMA_MUX_6);
     /*p03.PAGU*/ wire _TIMA_LD_7 = nor(_TIMA_RST, _TIMA_MUX_7);
-    /*p03.REGA*/ TIMA_0.clk_n(_TIMA_CLK,  _MEXU_TIMA_LOAD, _TIMA_LD_0);
-    /*p03.POVY*/ TIMA_1.clk_n(TIMA_0.q(), _MEXU_TIMA_LOAD, _TIMA_LD_1);
-    /*p03.PERU*/ TIMA_2.clk_n(TIMA_1.q(), _MEXU_TIMA_LOAD, _TIMA_LD_2);
-    /*p03.RATE*/ TIMA_3.clk_n(TIMA_2.q(), _MEXU_TIMA_LOAD, _TIMA_LD_3);
-    /*p03.RUBY*/ TIMA_4.clk_n(TIMA_3.q(), _MEXU_TIMA_LOAD, _TIMA_LD_4);
-    /*p03.RAGE*/ TIMA_5.clk_n(TIMA_4.q(), _MEXU_TIMA_LOAD, _TIMA_LD_5);
-    /*p03.PEDA*/ TIMA_6.clk_n(TIMA_5.q(), _MEXU_TIMA_LOAD, _TIMA_LD_6);
-    /*p03.NUGA*/ TIMA_7.clk_n(TIMA_6.q(), _MEXU_TIMA_LOAD, _TIMA_LD_7);
+    /*p03.REGA*/ TIMA_0.clk_n(_TIMA_CLK,  MEXU_TIMA_LOAD, _TIMA_LD_0);
+    /*p03.POVY*/ TIMA_1.clk_n(TIMA_0.q(), MEXU_TIMA_LOAD, _TIMA_LD_1);
+    /*p03.PERU*/ TIMA_2.clk_n(TIMA_1.q(), MEXU_TIMA_LOAD, _TIMA_LD_2);
+    /*p03.RATE*/ TIMA_3.clk_n(TIMA_2.q(), MEXU_TIMA_LOAD, _TIMA_LD_3);
+    /*p03.RUBY*/ TIMA_4.clk_n(TIMA_3.q(), MEXU_TIMA_LOAD, _TIMA_LD_4);
+    /*p03.RAGE*/ TIMA_5.clk_n(TIMA_4.q(), MEXU_TIMA_LOAD, _TIMA_LD_5);
+    /*p03.PEDA*/ TIMA_6.clk_n(TIMA_5.q(), MEXU_TIMA_LOAD, _TIMA_LD_6);
+    /*p03.NUGA*/ TIMA_7.clk_n(TIMA_6.q(), MEXU_TIMA_LOAD, _TIMA_LD_7);
 
     /*p03.TEDA*/ wire _TEDA_FF05_RD = and (cpu_sig.TEDO_CPU_RD, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_bus.PIN_A00);
     /*p03.SOKU*/ cpu_bus.TRI_D0.set_tribuf(_TEDA_FF05_RD, TIMA_0.q());
@@ -128,26 +131,26 @@ void TimerRegisters::tick(TestGB& gb) {
   }
 
   {
-    /*p03.MUGY*/ wire _TIMA_LOADn = not(_MEXU_TIMA_LOAD);
+    /*p03.MUGY*/ wire _TIMA_LOADn = not(MEXU_TIMA_LOAD);
     /*p03.NYDU*/ TIMA_MAX.set(clk_sig.BOGA_AxCDEFGH, _TIMA_LOADn, TIMA_7.q());
   }
 
   {
     /*p03.MERY*/ wire _MERY_INT_TIMER_IN = nor(!TIMA_MAX.q(), TIMA_7.q());
-    /*p03.MOBA*/ MOBA_INT_TIMERp.set(clk_sig.BOGA_AxCDEFGH, rst_sig.ALUR_RSTn, _MERY_INT_TIMER_IN);
+    /*p03.MOBA*/ MOBA_INT_TIMERp.set(clk_sig.BOGA_AxCDEFGH, ALUR_RSTn, _MERY_INT_TIMER_IN);
   }
 
   // FF06 TMA
   {
     /*p03.TYJU*/ wire _TYJU_FF06_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOVY_A00n, cpu_bus.PIN_A01);
-    /*p03.SABU*/ TMA_0.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D0);
-    /*p03.NYKE*/ TMA_1.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D1);
-    /*p03.MURU*/ TMA_2.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D2);
-    /*p03.TYVA*/ TMA_3.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D3);
-    /*p03.TYRU*/ TMA_4.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D4);
-    /*p03.SUFY*/ TMA_5.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D5);
-    /*p03.PETO*/ TMA_6.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D6);
-    /*p03.SETA*/ TMA_7.set(_TYJU_FF06_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D7);
+    /*p03.SABU*/ TMA_0.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D0);
+    /*p03.NYKE*/ TMA_1.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D1);
+    /*p03.MURU*/ TMA_2.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D2);
+    /*p03.TYVA*/ TMA_3.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D3);
+    /*p03.TYRU*/ TMA_4.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D4);
+    /*p03.SUFY*/ TMA_5.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D5);
+    /*p03.PETO*/ TMA_6.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D6);
+    /*p03.SETA*/ TMA_7.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D7);
     /*p03.TUBY*/ wire FF06_RD = and (cpu_sig.TEDO_CPU_RD, cpu_sig.RYFO_FF04_FF07p, cpu_bus.PIN_A01, cpu_sig.TOVY_A00n);
     /*p03.SETE*/ cpu_bus.TRI_D0.set_tribuf(FF06_RD, TMA_0.q());
     /*p03.PYRE*/ cpu_bus.TRI_D1.set_tribuf(FF06_RD, TMA_1.q());
@@ -162,9 +165,9 @@ void TimerRegisters::tick(TestGB& gb) {
   // FF07 TAC
   {
     /*p03.SARA*/ wire _SARA_FF07_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_bus.PIN_A00, cpu_bus.PIN_A01);
-    /*p03.SOPU*/ TAC_0.set(_SARA_FF07_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D0);
-    /*p03.SAMY*/ TAC_1.set(_SARA_FF07_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D1);
-    /*p03.SABO*/ TAC_2.set(_SARA_FF07_WRn, rst_sig.ALUR_RSTn, cpu_bus.TRI_D2);
+    /*p03.SOPU*/ TAC_0.set(_SARA_FF07_WRn, ALUR_RSTn, cpu_bus.TRI_D0);
+    /*p03.SAMY*/ TAC_1.set(_SARA_FF07_WRn, ALUR_RSTn, cpu_bus.TRI_D1);
+    /*p03.SABO*/ TAC_2.set(_SARA_FF07_WRn, ALUR_RSTn, cpu_bus.TRI_D2);
     /*p03.SORA*/ wire FF07_RD = and (cpu_sig.TEDO_CPU_RD, cpu_sig.RYFO_FF04_FF07p, cpu_bus.PIN_A00, cpu_bus.PIN_A01);
     /*p03.RYLA*/ cpu_bus.TRI_D0.set_tribuf(FF07_RD, TAC_0.q());
     /*p03.ROTE*/ cpu_bus.TRI_D1.set_tribuf(FF07_RD, TAC_1.q());

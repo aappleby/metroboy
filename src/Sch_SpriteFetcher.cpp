@@ -71,10 +71,7 @@ SpriteFetcherSignals SpriteFetcher::sig(const TestGB& gb) const {
 #endif
 
     /*p29.TYNO*/ wire TYNO = nand(TOXE_SFETCH_S0_D0.q(), SEBA_SFETCH_S1_D5.q(), VONU_SFETCH_S1_D4.q());
-    /*p29.VUSA*/ wire VUSA_PIPE_LOAD_SPRITEn = or(TYFO_SFETCH_S0_D1.qn(), TYNO);
-    /*p29.WUTY*/ sig.WUTY_PIPE_LOAD_SPRITEp = not(VUSA_PIPE_LOAD_SPRITEn);
-    /*p29.XEFY*/ sig.XEPY_PIPE_LOAD_SPRITEn = not(sig.WUTY_PIPE_LOAD_SPRITEp);
-
+    /*p29.VUSA*/ sig.VUSA_PIPE_LOAD_SPRITEn = or(TYFO_SFETCH_S0_D1.qn(), TYNO);
   }
 
   /*p27.SOWO*/ sig.SOWO_SFETCH_RUNNINGn = not(TAKA_SFETCH_RUNNINGp);
@@ -123,7 +120,8 @@ void SpriteFetcher::tick(TestGB& gb) {
     /*p27.SUDA*/ SUDA_SPRITE_FETCH_TRIG_B.set(clk_sig.LAPE_AxCxExGx, dbg_sig.VYPO_P10_Bn, SOBU_SPRITE_FETCH_TRIG_A);
     /*p27.RYCE*/ wire RYCE_SPRITE_FETCH_TRIG = and (SOBU_SPRITE_FETCH_TRIG_A, !SUDA_SPRITE_FETCH_TRIG_B);
 
-    /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCH_TRIG, rst_sig.ROSY_VID_RSTp, lcd_sig.BYHA_VID_LINE_TRIG_d4n); // def nor
+    /*p01.ROSY*/ wire ROSY_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCH_TRIG, ROSY_VID_RSTp, lcd_sig.BYHA_VID_LINE_TRIG_d4n); // def nor
     /*p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_RUNNING_SETn, ppu_sig.VEKU_SFETCH_RUNNING_RSTn);
 
     /*p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand(TESE_SFETCH_S2, TOXE_SFETCH_S0_D0);

@@ -8,8 +8,6 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcherSignals {
-  /*p29.XEFY*/ Signal XEPY_PIPE_LOAD_SPRITEn; // to pix pipe
-
   /*p33.PEFO*/ Signal SPR_PIX_A0;
   /*p33.ROKA*/ Signal SPR_PIX_A1;
   /*p33.MYTU*/ Signal SPR_PIX_A2;
@@ -28,12 +26,11 @@ struct SpriteFetcherSignals {
   /*p33.SEMO*/ Signal SPR_PIX_B6;
   /*p33.SEGA*/ Signal SPR_PIX_B7;
 
-  /*p28.WEFY*/ Signal WEFY_SPR_READp;
-  /*p28.XUJA*/ Signal XUJA_SPR_READn;         // to bus_mux, controls BODE_OAM_LATCH
+  /*p28.WEFY*/ Signal WEFY_SPR_READp;         // to bus mux, controls oam data latch
 
-  /*p25.VAPE*/ Signal VAPE_FETCH_OAM_CLK;                   // to bus mux, controls COTA_OAM_CLK
-  
-  /*p29.WUTY*/ Signal WUTY_PIPE_LOAD_SPRITEp;      // to ppu, sprite store
+  /*p25.VAPE*/ Signal VAPE_FETCH_OAM_CLK;     // to bus mux, controls OAM_PIN_CLK
+
+  /*p29.VUSA*/ Signal VUSA_PIPE_LOAD_SPRITEn; // to pix pipe / ppu / sprite fetcher / sprite store
 
   /*p27.SOWO*/ Signal SOWO_SFETCH_RUNNINGn;   // to ppu to stop overlapping sprite fetches
 

@@ -119,7 +119,10 @@ void DmaRegisters::tick(TestGB& gb) {
   // if LOKO02 goes high, LYXE02 goes high.
   // if LAVY03 goes high, LYXE02 goes low.
 
-  /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(rst_sig.CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
+  /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+  /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+  /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
+  /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
 
   /*p22.WATE*/ wire WATE_FF46n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
   /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
@@ -129,15 +132,15 @@ void DmaRegisters::tick(TestGB& gb) {
   {
     /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, LAVY_FF46_WRp);
     /*p04.LUPA*/ wire LUPA_DMA_TRIG = nor(LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
-    /*p04.LUVY*/ LUVY_DMA_TRIG_d0.set(clk_sig.UVYT_xBCDExxx, rst_sig.CUNU_RSTn, LUPA_DMA_TRIG);
-    /*p04.LENE*/ LENE_DMA_TRIG_d4.set(clk_sig.MOPA_AxxxxFGH, rst_sig.CUNU_RSTn, LUVY_DMA_TRIG_d0.q());
+    /*p04.LUVY*/ LUVY_DMA_TRIG_d0.set(clk_sig.UVYT_xBCDExxx, CUNU_RSTn, LUPA_DMA_TRIG);
+    /*p04.LENE*/ LENE_DMA_TRIG_d4.set(clk_sig.MOPA_AxxxxFGH, CUNU_RSTn, LUVY_DMA_TRIG_d0.q());
   }
 
   {
     // NAND latch
     /*p04.LOKY*/ LOKY_DMA_LATCHp = nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q());
-    /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp, rst_sig.CUNU_RSTn, !MYTE_DMA_DONE.q());
-    /*p04.MATU*/ MATU_DMA_RUNNINGp.set(clk_sig.UVYT_xBCDExxx, rst_sig.CUNU_RSTn, LOKY_DMA_LATCHp);
+    /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp, CUNU_RSTn, !MYTE_DMA_DONE.q());
+    /*p04.MATU*/ MATU_DMA_RUNNINGp.set(clk_sig.UVYT_xBCDExxx, CUNU_RSTn, LOKY_DMA_LATCHp);
   }
 
   {

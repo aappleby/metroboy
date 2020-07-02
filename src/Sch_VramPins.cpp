@@ -44,22 +44,9 @@ using namespace Schematics;
 //---------------------------------------------------------------------------
 
 void VramPins::tick(TestGB& gb) {
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto dma_sig = gb.dma_reg.sig(gb);
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto bus_sig = gb.bus_mux.sig(gb);
-  auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
-  auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
-
-  auto& cpu_bus = gb.cpu_bus;
-  auto& vram_bus = gb.vram_bus;
-
-  //---------------------------------------------------------------------------
-
-  //----------
 
   {
+    auto& vram_bus = gb.vram_bus;
     /*p25.LEXE*/ PIN_MA00_AD.set(not(/*p25.MYFU*/ not(vram_bus.TRI_A00)));
     /*p25.LOZU*/ PIN_MA01_AD.set(not(/*p25.MASA*/ not(vram_bus.TRI_A01)));
     /*p25.LACA*/ PIN_MA02_AD.set(not(/*p25.MYRE*/ not(vram_bus.TRI_A02)));
@@ -76,15 +63,22 @@ void VramPins::tick(TestGB& gb) {
   }
 
   {
-    ///*p25.TAVY*/ wire TAVY_MOE_Cn = not(PIN_MOEn_C);
-    ///*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
-    ///*p25.SALE*/ wire SALE_VRAM_WRn = mux2_p(TAVY_MOE_Cn, TEGU_CPU_VRAM_WRn, dbg_sig.TUTO_DBG_VRAMp);
-    ///*p25.RUVY*/ wire RUVY_VRAM_WRp = not(SALE_VRAM_WRn);
-    ///*p25.SAZO*/ wire SAZO_VRAM_RD  = and (RUVY_VRAM_WRp, ppu_sig.SERE_VRAM_RD);
+    auto& cpu_bus = gb.cpu_bus;
+    auto& vram_bus = gb.vram_bus;
+    auto& vram_pins = gb.vram_pins;
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
 
-    /*p25.RYJE*/ wire RYJE_VRAM_RDn = not(bus_sig.SAZO_VRAM_RD);
+    /*p25.TAVY*/ wire TAVY_MOE_Cn = not(vram_pins.PIN_MOEn_C);
+    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
+    /*p25.SALE*/ wire SALE_DBG_VRAM_RDb = mux2_p(TAVY_MOE_Cn, TEGU_CPU_VRAM_WRn, dbg_sig.TUTO_DBG_VRAMp);
+    /*p25.RUVY*/ wire RUVY_VRAM_WR = not(SALE_DBG_VRAM_RDb);
+    /*p25.SAZO*/ wire SAZO_VRAM_RD = and (RUVY_VRAM_WR, ppu_sig.SERE_VRAM_RD);
+
+    /*p25.RYJE*/ wire RYJE_VRAM_RDn = not(SAZO_VRAM_RD);
     /*p25.REVO*/ wire REVO_VRAM_RDp = not(RYJE_VRAM_RDn);
-    /*p25.ROCY*/ wire ROCY_VBUS_TRISTATEn = and (REVO_VRAM_RDp, bus_sig.SAZO_VRAM_RD);
+    /*p25.ROCY*/ wire ROCY_VBUS_TRISTATEn = and (REVO_VRAM_RDp, SAZO_VRAM_RD);
 
     /*p25.RAHU*/ wire RAHU_VBUS_TRISTATEp = not(ROCY_VBUS_TRISTATEn);
     /*p25.SYNU*/ wire SYNU = or (vram_bus.TRI_D0, RAHU_VBUS_TRISTATEp);
@@ -151,7 +145,7 @@ void VramPins::tick(TestGB& gb) {
     /*p25.TOFA*/ vram_bus.TRI_D6.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D6);
     /*p25.SUZA*/ vram_bus.TRI_D7.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D7); // 10-rung
 
-    /*p25.RELA*/ wire RELA_MD_OEp = or (REVO_VRAM_RDp, bus_sig.SAZO_VRAM_RD);
+    /*p25.RELA*/ wire RELA_MD_OEp = or (REVO_VRAM_RDp, SAZO_VRAM_RD);
     /*p25.RENA*/ wire RENA_MD_OEn = not(RELA_MD_OEp);
     /*p25.ROFA*/ wire ROFA_MD_OEp = not(RENA_MD_OEn);
 
@@ -180,6 +174,10 @@ void VramPins::tick(TestGB& gb) {
   // RACU = and(RYLU, RAWA, MYMA, APAM);
 
   {
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+
     /*p25.TUJA*/ wire TUJA_CPU_VRAM_WR = and(cpu_sig.SOSE_8000_9FFFp, cpu_sig.APOV_CPU_WR_xxxxxFGH);
     /*p25.SUDO*/ wire SUDO_MWR_Cn = not(PIN_MWRn_C);
     /*p25.TYJY*/ wire TYJY_DBG_VRAM_WR = mux2_p(SUDO_MWR_Cn, TUJA_CPU_VRAM_WR, dbg_sig.TUTO_DBG_VRAMp);
@@ -191,6 +189,14 @@ void VramPins::tick(TestGB& gb) {
   }
 
   {
+    auto& cpu_bus = gb.cpu_bus;
+    auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
+    auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+
     /*p25.TAVY*/ wire TAVY_MOE_Cn = not(PIN_MOEn_C);
     /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
     /*p25.SALE*/ wire SALE_VRAM_WRn = mux2_p(TAVY_MOE_Cn, TEGU_CPU_VRAM_WRn, dbg_sig.TUTO_DBG_VRAMp);
@@ -208,6 +214,12 @@ void VramPins::tick(TestGB& gb) {
   }
 
   {
+    auto tile_fetcher_sig = gb.tile_fetcher.sig(gb);
+    auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+
     /*p04.MUHO*/ wire MUHO_DMA_READ_VRAMn   = nand(dma_sig.MATU_DMA_RUNNINGp, dma_sig.MUDA_DMA_SRC_VRAMp);
     /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);      /*p29.ABON*/ wire ABON_SPR_VRAM_RDp1 = not(sprite_fetcher_sig.TEXY_SPRITE_READp);
     /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(tile_fetcher_sig.LONY_BG_READ_VRAM_LATCHp);

@@ -60,7 +60,10 @@ void DebugRegisters::tick(const TestGB& gb) {
   auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p25.SYCY*/ wire SYCY_DBG_CLOCKp = not(dbg_sig.UNOR_MODE_DBG2p);
-  /*p25.SOTO*/ SOTO_DBG.set(SYCY_DBG_CLOCKp, rst_sig.CUNU_RSTn, !SOTO_DBG);
+  /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+  /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+  /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
+  /*p25.SOTO*/ SOTO_DBG.set(SYCY_DBG_CLOCKp, CUNU_RSTn, !SOTO_DBG);
 
   //cpu_pins.UMUT_MODE_DBG1.set(dbg_sig.UMUT_MODE_DBG1);
   //cpu_pins.UNOR_MODE_DBG2.set(dbg_sig.UNOR_MODE_DBG2n);

@@ -27,8 +27,11 @@ struct VramPins {
     text_painter.newline();
   }
 
-  /* PIN_43 */ PinIn  PIN_MCSn_C;  // -> P25.TEFY
   /* PIN_45 */ PinIn  PIN_MOEn_C;  // -> P25.TAVY
+  /* PIN_43 */ PinIn  PIN_MCSn_C;  // -> P25.TEFY
+
+private:
+
   /* PIN_49 */ PinIn  PIN_MWRn_C;  // -> P25.SUDO
 
   /* PIN_33 */ PinIn  PIN_MD0_C;   // -> P25.RODY
@@ -39,8 +42,6 @@ struct VramPins {
   /* PIN_27 */ PinIn  PIN_MD5_C;   // -> P25.ROPU
   /* PIN_26 */ PinIn  PIN_MD6_C;   // -> P25.RETA
   /* PIN_25 */ PinIn  PIN_MD7_C;   // -> P25.RAKU
-
-private:
 
   //----------
   // VRAM control pins

@@ -218,24 +218,16 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const TestGB& gb) const {
 //------------------------------------------------------------------------------
 
 void SpriteStoreRegisters::tick(TestGB& gb) {
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto sst_sig = sig(gb);
-
-  auto& sprite_scanner = gb.sprite_scanner;
-  auto sprite_scanner_sig = sprite_scanner.sig(gb);
-
-  auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
-
-  wire P10_B = 0;
 
   //----------------------------------------
   // Sprite scan Y matcher
 
   {
+    auto sst_sig = sig(gb);
+    auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
+    auto rst_sig = gb.rst_reg.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb);
+
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
     /*p30.WENU*/ WENU_TS_LINE_0.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DEGE_SPRITE_DELTA0);
     /*p30.CUCU*/ CUCU_TS_LINE_1.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DABY_SPRITE_DELTA1);
@@ -246,6 +238,8 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
   }
 
   {
+    auto lcd_sig = gb.lcd_reg.sig(gb);
+
     // Sprite store counter.
     // The sprite count clock stops ticking once we have 10 sprites.
 
@@ -268,6 +262,10 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
 
   {
     auto bus_sig = gb.bus_mux.sig(gb);
+    auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb);
 
     // BUZA def AND
     // BUZA01 << CENO16
@@ -315,6 +313,11 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
   // Sprite store getter
 
   {
+    auto sst_sig = sig(gb);
+    auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
+    auto lcd_sig = gb.lcd_reg.sig(gb);
+    wire P10_B = 0;
+
     /*p29.WEFU*/ wire STORE0_MATCH = not(sst_sig.STORE0_MATCHn);
     /*p29.GAJA*/ wire STORE1_MATCH = not(sst_sig.STORE1_MATCHn);
     /*p29.GUPO*/ wire STORE2_MATCH = not(sst_sig.STORE2_MATCHn);
@@ -349,16 +352,17 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
     /*p29.GUZE*/ wire GUZE_SPRITE9_GETp = nor(sst_sig.STORE9_MATCHn, STORE8_MATCH_OUT);
 
     // Delayed reset signal for the selected store
-    /*p29.EBOJ*/ EBOJ_STORE0_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUVA_SPRITE0_GETp);
-    /*p29.CEDY*/ CEDY_STORE1_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, ENUT_SPRITE1_GETp);
-    /*p29.EGAV*/ EGAV_STORE2_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, EMOL_SPRITE2_GETp);
-    /*p29.GOTA*/ GOTA_STORE3_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GYFY_SPRITE3_GETp);
-    /*p29.XUDY*/ XUDY_STORE4_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GONO_SPRITE4_GETp);
-    /*p29.WAFY*/ WAFY_STORE5_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GEGA_SPRITE5_GETp);
-    /*p29.WOMY*/ WOMY_STORE6_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, XOJA_SPRITE6_GETp);
-    /*p29.WAPO*/ WAPO_STORE7_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUTU_SPRITE7_GETp);
-    /*p29.EXUQ*/ EXUQ_STORE8_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, FOXA_SPRITE8_GETp);
-    /*p29.FONO*/ FONO_STORE9_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUZE_SPRITE9_GETp);
+    /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(sprite_fetcher_sig.VUSA_PIPE_LOAD_SPRITEn);
+    /*p29.EBOJ*/ EBOJ_STORE0_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUVA_SPRITE0_GETp);
+    /*p29.CEDY*/ CEDY_STORE1_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, ENUT_SPRITE1_GETp);
+    /*p29.EGAV*/ EGAV_STORE2_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, EMOL_SPRITE2_GETp);
+    /*p29.GOTA*/ GOTA_STORE3_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GYFY_SPRITE3_GETp);
+    /*p29.XUDY*/ XUDY_STORE4_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GONO_SPRITE4_GETp);
+    /*p29.WAFY*/ WAFY_STORE5_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GEGA_SPRITE5_GETp);
+    /*p29.WOMY*/ WOMY_STORE6_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, XOJA_SPRITE6_GETp);
+    /*p29.WAPO*/ WAPO_STORE7_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUTU_SPRITE7_GETp);
+    /*p29.EXUQ*/ EXUQ_STORE8_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, FOXA_SPRITE8_GETp);
+    /*p29.FONO*/ FONO_STORE9_RSTp.set(WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUZE_SPRITE9_GETp);
 
     /*p29.FURO*/ wire FURO_SPRITE0_GETn = not(GUVA_SPRITE0_GETp);
     /*p29.DYDO*/ wire DYDO_SPRITE1_GETn = not(ENUT_SPRITE1_GETp);
@@ -487,7 +491,9 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
 
   {
     auto bus_sig = gb.bus_mux.sig(gb);
-  
+    auto lcd_sig = gb.lcd_reg.sig(gb);
+    auto sst_sig = sig(gb);
+
     /*p29.DYWE*/ wire DYWE_STORE0_RSTp = or(lcd_sig.DYBA_VID_LINE_TRIG_d4p, EBOJ_STORE0_RSTp);
     /*p29.EFEV*/ wire EFEV_STORE1_RSTp = or(lcd_sig.DYBA_VID_LINE_TRIG_d4p, CEDY_STORE1_RSTp);
     /*p29.FOKO*/ wire FOKO_STORE2_RSTp = or(lcd_sig.DYBA_VID_LINE_TRIG_d4p, EGAV_STORE2_RSTp);

@@ -17,7 +17,9 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
   auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p28.ABAF*/ wire ABAF_VID_LINE_d4n = not(CATU_VID_LINE_d4.q());
-  /*p28.BYHA*/ sig.BYHA_VID_LINE_TRIG_d4n = and (or (ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), rst_sig.ABEZ_VID_RSTn);
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+  /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
+  /*p28.BYHA*/ sig.BYHA_VID_LINE_TRIG_d4n = and (or (ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), ABEZ_VID_RSTn);
   /*p28.ATEJ*/ sig.ATEJ_VID_LINE_TRIG_d4p = not(sig.BYHA_VID_LINE_TRIG_d4n);
   /*p27.XAHY*/ sig.XAHY_VID_LINE_TRIG_d4n = not(sig.ATEJ_VID_LINE_TRIG_d4p);
 
@@ -26,7 +28,8 @@ LcdSignals LcdRegisters::sig(const TestGB& gb) const {
 
   sig.CATU_VID_LINE_d4 = CATU_VID_LINE_d4;
 
-  /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4p = or (sig.ATEJ_VID_LINE_TRIG_d4p, rst_sig.AMYG_VID_RSTp);
+  /*p01.AMYG*/ wire AMYG_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+  /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4p = or (sig.ATEJ_VID_LINE_TRIG_d4p, AMYG_VID_RSTp);
   /*p28.BYVA*/ sig.BYVA_VID_LINE_TRIG_d4n = not(ABAK_VID_LINE_TRIG_d4p);
   /*p29.DYBA*/ sig.DYBA_VID_LINE_TRIG_d4p = not(sig.BYVA_VID_LINE_TRIG_d4n);
 
@@ -124,8 +127,10 @@ void LcdRegisters::tick(TestGB& gb) {
   {
     /*p29.ALES*/ wire _ALES_IN_VBLANKn = not(_XYVO_IN_VBLANKp);
     /*p29.ABOV*/ wire _ABOV_VID_LINE_d0  = and(lcd_sig.SELA_NEW_LINE_d0p, _ALES_IN_VBLANKn);
-    /*p29.CATU*/ CATU_VID_LINE_d4.set (clk_sig.XUPY_xBCxxFGx,   rst_sig.ABEZ_VID_RSTn, _ABOV_VID_LINE_d0);
-    /*p28.ANEL*/ ANEL_VID_LINE_d6.set (clk_sig.AWOH_AxxDExxH,   rst_sig.ABEZ_VID_RSTn, CATU_VID_LINE_d4.q());
+    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
+    /*p29.CATU*/ CATU_VID_LINE_d4.set (clk_sig.XUPY_xBCxxFGx, ABEZ_VID_RSTn, _ABOV_VID_LINE_d0);
+    /*p28.ANEL*/ ANEL_VID_LINE_d6.set (clk_sig.AWOH_AxxDExxH, ABEZ_VID_RSTn, CATU_VID_LINE_d4.q());
   }
 
   {
@@ -202,7 +207,12 @@ void LcdRegisters::tick(TestGB& gb) {
 
     // TERY has an arm on the VCC side
 
-    /*p21.ROPO*/ ROPO_LY_MATCH_SYNCp.set(clk_sig.TALU_xBCDExxx, rst_sig.WESY_RSTn, lcd_sig.PALY_LY_MATCHa);
+    /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+    /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+    /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
+    /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
+    /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
+    /*p21.ROPO*/ ROPO_LY_MATCH_SYNCp.set(clk_sig.TALU_xBCDExxx, WESY_RSTn, lcd_sig.PALY_LY_MATCHa);
   }
 
   // FF44 LY
@@ -249,14 +259,19 @@ void LcdRegisters::tick(TestGB& gb) {
     /*p23.VAFE*/ cpu_bus.TRI_D6.set_tribuf(!FF45_RDn, VEVO_LYC6.q());
     /*p23.PUFY*/ cpu_bus.TRI_D7.set_tribuf(!FF45_RDn, RAHA_LYC7.q());
 
-    /*p23.SYRY*/ SYRY_LYC0.set(FF45_WRn, rst_sig.WESY_RSTn, cpu_bus.TRI_D0);
-    /*p23.VUCE*/ VUCE_LYC1.set(FF45_WRn, rst_sig.WESY_RSTn, cpu_bus.TRI_D1);
-    /*p23.SEDY*/ SEDY_LYC2.set(FF45_WRn, rst_sig.WESY_RSTn, cpu_bus.TRI_D2);
-    /*p23.SALO*/ SALO_LYC3.set(FF45_WRn, rst_sig.WESY_RSTn, cpu_bus.TRI_D3);
-    /*p23.SOTA*/ SOTA_LYC4.set(FF45_WRn, rst_sig.WESY_RSTn, cpu_bus.TRI_D4);
-    /*p23.VAFA*/ VAFA_LYC5.set(FF45_WRn, rst_sig.WESY_RSTn, cpu_bus.TRI_D5);
-    /*p23.VEVO*/ VEVO_LYC6.set(FF45_WRn, rst_sig.WESY_RSTn, cpu_bus.TRI_D6);
-    /*p23.RAHA*/ RAHA_LYC7.set(FF45_WRn, rst_sig.WESY_RSTn, cpu_bus.TRI_D7);
+    /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+    /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+    /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
+    /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
+    /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
+    /*p23.SYRY*/ SYRY_LYC0.set(FF45_WRn, WESY_RSTn, cpu_bus.TRI_D0);
+    /*p23.VUCE*/ VUCE_LYC1.set(FF45_WRn, WESY_RSTn, cpu_bus.TRI_D1);
+    /*p23.SEDY*/ SEDY_LYC2.set(FF45_WRn, WESY_RSTn, cpu_bus.TRI_D2);
+    /*p23.SALO*/ SALO_LYC3.set(FF45_WRn, WESY_RSTn, cpu_bus.TRI_D3);
+    /*p23.SOTA*/ SOTA_LYC4.set(FF45_WRn, WESY_RSTn, cpu_bus.TRI_D4);
+    /*p23.VAFA*/ VAFA_LYC5.set(FF45_WRn, WESY_RSTn, cpu_bus.TRI_D5);
+    /*p23.VEVO*/ VEVO_LYC6.set(FF45_WRn, WESY_RSTn, cpu_bus.TRI_D6);
+    /*p23.RAHA*/ RAHA_LYC7.set(FF45_WRn, WESY_RSTn, cpu_bus.TRI_D7);
   }
 }
 

@@ -119,7 +119,10 @@ void CpuBus::tick(TestGB& gb) {
   {
     auto clk_sig = gb.clk_reg.sig(gb);
     auto rst_sig = gb.rst_reg.sig(gb);
-    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, PIN_FROM_CPU5p);
+    /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+    /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+    /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
+    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, CUNU_RSTn, PIN_FROM_CPU5p);
   }
 
   {

@@ -8,22 +8,11 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct WindowSignals {
-  /*p27.NOCU*/ Signal NOCU_WIN_MODEn;
-  /*p27.PORE*/ Signal PORE_WIN_MODE;
-  /*p27.NUNY*/ Signal NUNY_WIN_MODE_TRIGp;
-  /*p27.NYFO*/ Signal NYFO_WIN_MODE_TRIGn;
-  /*p27.MOSU*/ Signal MOSU_WIN_MODE_TRIGp;
-
-  /*p27.SYLO*/ Signal SYLO_WIN_HITn;
-  /*p24.TOMU*/ Signal TOMU_WIN_HITp;
-  /*p24.SOCY*/ Signal SOCY_WIN_HITn;
-  /*p27.TUKU*/ Signal TUKU_WIN_HITn;
-  /*p27.XOFO*/ Signal XOFO_WIN_RSTp;
-
-  /*p27.SEKO*/ Signal SEKO_WIN_MATCH_TRIGp;
-
-  /*p27.TUXY*/ Signal TUXY;
-  /*p27.SUZU*/ Signal SUZU;
+  /*p27.NOCU*/ Signal NOCU_WIN_MODEn;       // to tilefetcher map read, 
+  /*p27.NUNY*/ Signal NUNY_WIN_MODE_TRIGp;  // to NYXU_TILE_FETCHER_RSTn
+  /*p27.SYLO*/ Signal SYLO_WIN_HITn;        // to ppu.TYFA_CLKPIPEp_xBxDxFxH, ppu.TEKY_SPRITE_FETCH
+  /*p27.SEKO*/ Signal SEKO_WIN_MATCH_TRIGp; // to TEVO_FINE_RSTp, which I don't completely understand
+  /*p27.SUZU*/ Signal SUZU;                 // to TEVO_FINE_RSTp
 
   /*p27.WYKA*/ Signal WIN_X3;
   /*p27.WODY*/ Signal WIN_X4;
@@ -55,7 +44,7 @@ struct WindowRegisters {
 private:
 
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_TRIGA;
-  /*p27.RYDY*/ NorLatch RYDY_WIN_HIT_LATCH;
+  /*p27.RYDY*/ NorLatch RYDY_WIN_HIT_LATCHp;
 
   /*p27.WYKA*/ Reg17 WIN_X3;
   /*p27.WODY*/ Reg17 WIN_X4;

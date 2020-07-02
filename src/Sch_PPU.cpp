@@ -151,14 +151,21 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   /*p27.TEVO*/ ppu_sig.TEVO_FINE_RSTp = nor(win_sig.SEKO_WIN_MATCH_TRIGp, win_sig.SUZU, tile_fetcher_sig.TAVE_PORCH_DONE_TRIGp);
 
-  /*p27.NYXU*/ ppu_sig.NYXU_TILE_FETCHER_RSTn = nor(sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp, win_sig.MOSU_WIN_MODE_TRIGp, ppu_sig.TEVO_FINE_RSTp);
+  {
+    /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(win_sig.NUNY_WIN_MODE_TRIGp);
+    /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
+    /*p27.NYXU*/ ppu_sig.NYXU_TILE_FETCHER_RSTn = nor(sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp, MOSU_WIN_MODE_TRIGp, ppu_sig.TEVO_FINE_RSTp);
+  }
 
   // so dma stops oam scan?
-  /*p28.ACYL*/ ppu_sig.ACYL_SCANNINGp = and (dma_sig.BOGE_DMA_RUNNINGn, sprite_scanner_sig.BESU_SCANNINGp);
+  {
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_sig.MATU_DMA_RUNNINGp);
+    /*p28.ACYL*/ ppu_sig.ACYL_SCANNINGp = and (BOGE_DMA_RUNNINGn, sprite_scanner_sig.BESU_SCANNINGp);
+  }
 
   {
 #if 0
-    /*p24.TYFA*/ wire TYFA_CLKPIPEp = and (win_sig.SOCY_WIN_HITn,
+    /*p24.TYFA*/ wire TYFA_CLKPIPEp = and (win_sig.SYLO_WIN_HITn,
                                            tile_fetcher_sig.POKY_PORCH_DONEp,
                                            !sst_sig.FEPO_STORE_MATCHp,
                                            !ppu_sig.WODU_RENDER_DONEp,
@@ -166,7 +173,10 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 #endif
 
     /*p24.VYBO*/ wire VYBO_PIX_CLK_xBxDxFxH = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONEp, clk_sig.MYVO_AxCxExGx);
-    /*p24.TYFA*/ wire TYFA_CLKPIPEp_xBxDxFxH = and (win_sig.SOCY_WIN_HITn, tile_fetcher_sig.POKY_PORCH_DONEp, VYBO_PIX_CLK_xBxDxFxH);
+    /*p24.TOMU*/ wire TOMU_WIN_HITp = not(win_sig.SYLO_WIN_HITn);
+    /*p24.SOCY*/ wire SOCY_WIN_HITn = not(TOMU_WIN_HITp);
+    /*p24.TYFA*/ wire TYFA_CLKPIPEp_xBxDxFxH = and (SOCY_WIN_HITn, tile_fetcher_sig.POKY_PORCH_DONEp, VYBO_PIX_CLK_xBxDxFxH);
+
     /*p24.SEGU*/ ppu_sig.SEGU_CLKPIPEn = not(TYFA_CLKPIPEp_xBxDxFxH);
     /*p24.SACU*/ ppu_sig.SACU_CLKPIPEp = nor(ppu_sig.SEGU_CLKPIPEn, ROXY_FINE_MATCH_LATCHn);
   }
@@ -197,8 +207,10 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   {
     // This is the topmost "trigger sprite fetch" signal.
+    /*p24.TOMU*/ wire TOMU_WIN_HITp = not(win_sig.SYLO_WIN_HITn);
+    /*p27.TUKU*/ wire TUKU_WIN_HITn = not(TOMU_WIN_HITp);
     /*p27.TEKY*/ ppu_sig.TEKY_SPRITE_FETCH = and (sst_sig.FEPO_STORE_MATCHp,
-                                                  win_sig.TUKU_WIN_HITn,
+                                                  TUKU_WIN_HITn,
                                                   tile_fetcher_sig.LYRY_BFETCH_DONEp,
                                                   sprite_fetcher_sig.SOWO_SFETCH_RUNNINGn);
 

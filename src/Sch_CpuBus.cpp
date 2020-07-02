@@ -117,8 +117,94 @@ CpuBusSignals CpuBus::sig(const TestGB& gb) const {
 
 //------------------------------------------------------------------------------
 
+void CpuBus::tick(TestGB& gb) {
+  {
+    auto clk_sig = gb.clk_reg.sig(gb);
+    auto rst_sig = gb.rst_reg.sig(gb);
+    auto& cpu_bus = gb.cpu_bus;
+    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, cpu_bus.PIN_FROM_CPU5p);
+  }
+
+  {
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+    auto& cpu_bus = gb.cpu_bus;
+
+    /*p08.ALOR*/ CPU_ADDR_LATCH_00.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A00);
+    /*p08.APUR*/ CPU_ADDR_LATCH_01.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A01);
+    /*p08.ALYR*/ CPU_ADDR_LATCH_02.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A02);
+    /*p08.ARET*/ CPU_ADDR_LATCH_03.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A03);
+    /*p08.AVYS*/ CPU_ADDR_LATCH_04.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A04);
+    /*p08.ATEV*/ CPU_ADDR_LATCH_05.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A05);
+    /*p08.AROS*/ CPU_ADDR_LATCH_06.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A06);
+    /*p08.ARYM*/ CPU_ADDR_LATCH_07.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A07);
+    /*p08.LUNO*/ CPU_ADDR_LATCH_08.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A08);
+    /*p08.LYSA*/ CPU_ADDR_LATCH_09.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A09);
+    /*p08.PATE*/ CPU_ADDR_LATCH_10.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A10);
+    /*p08.LUMY*/ CPU_ADDR_LATCH_11.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A11);
+    /*p08.LOBU*/ CPU_ADDR_LATCH_12.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A12);
+    /*p08.LONU*/ CPU_ADDR_LATCH_13.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A13);
+    /*p08.NYRE*/ CPU_ADDR_LATCH_14.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A14);
+  }
+
+  {
+    auto& cpu_bus = gb.cpu_bus;
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+
+    // So does this mean that if the CPU writes to the external bus during dma, that data
+    // will actually end up in oam?
+
+    /*p08.LULA*/ wire LULA_IBUS_TO_EBUSp = not(cpu_sig.RORU_IBUS_TO_EBUSn);
+    PIN_D0_B.set(LULA_IBUS_TO_EBUSp);
+    PIN_D1_B.set(LULA_IBUS_TO_EBUSp);
+    PIN_D2_B.set(LULA_IBUS_TO_EBUSp);
+    PIN_D3_B.set(LULA_IBUS_TO_EBUSp);
+    PIN_D4_B.set(LULA_IBUS_TO_EBUSp);
+    PIN_D5_B.set(LULA_IBUS_TO_EBUSp);
+    PIN_D6_B.set(LULA_IBUS_TO_EBUSp);
+    PIN_D7_B.set(LULA_IBUS_TO_EBUSp);
+
+    /*p25.RUXA*/ PIN_D0_A.set(nand(cpu_bus.TRI_D0, LULA_IBUS_TO_EBUSp));
+    /*p25.RUJA*/ PIN_D1_A.set(nand(cpu_bus.TRI_D1, LULA_IBUS_TO_EBUSp));
+    /*p25.RABY*/ PIN_D2_A.set(nand(cpu_bus.TRI_D2, LULA_IBUS_TO_EBUSp));
+    /*p25.RERA*/ PIN_D3_A.set(nand(cpu_bus.TRI_D3, LULA_IBUS_TO_EBUSp));
+    /*p25.RORY*/ PIN_D4_A.set(nand(cpu_bus.TRI_D4, LULA_IBUS_TO_EBUSp));
+    /*p25.RYVO*/ PIN_D5_A.set(nand(cpu_bus.TRI_D5, LULA_IBUS_TO_EBUSp));
+    /*p25.RAFY*/ PIN_D6_A.set(nand(cpu_bus.TRI_D6, LULA_IBUS_TO_EBUSp));
+    /*p25.RAVU*/ PIN_D7_A.set(nand(cpu_bus.TRI_D7, LULA_IBUS_TO_EBUSp));
+
+    /*p08.RUNE*/ PIN_D0_D.set(nor(cpu_bus.TRI_D0, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RYPU*/ PIN_D1_D.set(nor(cpu_bus.TRI_D1, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.SULY*/ PIN_D2_D.set(nor(cpu_bus.TRI_D2, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.SEZE*/ PIN_D3_D.set(nor(cpu_bus.TRI_D3, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RESY*/ PIN_D4_D.set(nor(cpu_bus.TRI_D4, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.TAMU*/ PIN_D5_D.set(nor(cpu_bus.TRI_D5, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.ROGY*/ PIN_D6_D.set(nor(cpu_bus.TRI_D6, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RYDA*/ PIN_D7_D.set(nor(cpu_bus.TRI_D7, cpu_sig.RORU_IBUS_TO_EBUSn));
+  }
+}
+
+//------------------------------------------------------------------------------
+
 bool CpuBus::commit() {
   bool changed = false;
+
+  changed |= CPU_ADDR_LATCH_00.commit_latch();
+  changed |= CPU_ADDR_LATCH_01.commit_latch();
+  changed |= CPU_ADDR_LATCH_02.commit_latch();
+  changed |= CPU_ADDR_LATCH_03.commit_latch();
+  changed |= CPU_ADDR_LATCH_04.commit_latch();
+  changed |= CPU_ADDR_LATCH_05.commit_latch();
+  changed |= CPU_ADDR_LATCH_06.commit_latch();
+  changed |= CPU_ADDR_LATCH_07.commit_latch();
+  changed |= CPU_ADDR_LATCH_08.commit_latch();
+  changed |= CPU_ADDR_LATCH_09.commit_latch();
+  changed |= CPU_ADDR_LATCH_10.commit_latch();
+  changed |= CPU_ADDR_LATCH_11.commit_latch();
+  changed |= CPU_ADDR_LATCH_12.commit_latch();
+  changed |= CPU_ADDR_LATCH_13.commit_latch();
+  changed |= CPU_ADDR_LATCH_14.commit_latch();
+
+  changed |= MAKA_FROM_CPU5_SYNC.commit_reg();
 
   changed |= TRI_D0.commit_tribuf();
   changed |= TRI_D1.commit_tribuf();
@@ -152,6 +238,31 @@ bool CpuBus::commit() {
   changed |= PIN_A13.clear_preset();
   changed |= PIN_A14.clear_preset();
   changed |= PIN_A15.clear_preset();
+
+  /* PIN_17 */ changed |= PIN_D0_A.commit_pinout();      // <- RUXA
+  /* PIN_17 */ changed |= PIN_D0_B.commit_pinout();      // <- LULA
+  /* PIN_17 */ changed |= PIN_D0_D.commit_pinout();      // <- RUNE
+  /* PIN_18 */ changed |= PIN_D1_A.commit_pinout();      // <- RUJA
+  /* PIN_18 */ changed |= PIN_D1_B.commit_pinout();      // <- LULA
+  /* PIN_18 */ changed |= PIN_D1_D.commit_pinout();      // <- RYPU
+  /* PIN_19 */ changed |= PIN_D2_A.commit_pinout();      // <- RABY
+  /* PIN_19 */ changed |= PIN_D2_B.commit_pinout();      // <- LULA
+  /* PIN_19 */ changed |= PIN_D2_D.commit_pinout();      // <- SULY
+  /* PIN_20 */ changed |= PIN_D3_A.commit_pinout();      // <- RERA
+  /* PIN_20 */ changed |= PIN_D3_B.commit_pinout();      // <- LULA
+  /* PIN_20 */ changed |= PIN_D3_D.commit_pinout();      // <- SEZE
+  /* PIN_21 */ changed |= PIN_D4_A.commit_pinout();      // <- RORY
+  /* PIN_21 */ changed |= PIN_D4_B.commit_pinout();      // <- LULA
+  /* PIN_21 */ changed |= PIN_D4_D.commit_pinout();      // <- RESY
+  /* PIN_22 */ changed |= PIN_D5_A.commit_pinout();      // <- RYVO
+  /* PIN_22 */ changed |= PIN_D5_B.commit_pinout();      // <- LULA
+  /* PIN_22 */ changed |= PIN_D5_D.commit_pinout();      // <- TAMU
+  /* PIN_23 */ changed |= PIN_D6_A.commit_pinout();      // <- RAFY
+  /* PIN_23 */ changed |= PIN_D6_B.commit_pinout();      // <- LULA
+  /* PIN_23 */ changed |= PIN_D6_D.commit_pinout();      // <- ROGY
+  /* PIN_24 */ changed |= PIN_D7_A.commit_pinout();      // <- RAVU
+  /* PIN_24 */ changed |= PIN_D7_B.commit_pinout();      // <- LULA
+  /* PIN_24 */ changed |= PIN_D7_D.commit_pinout();      // <- RYDA
 
   return changed;
 }

@@ -17,16 +17,13 @@ struct BusMuxSignals {
   /*p28.XEMU*/ Signal XEMU_OAM_A6p;
   /*p28.YZET*/ Signal YZET_OAM_A7p;
 
-  /*p28.AZUL*/ Signal AZUL_CPUD_TO_OAMD;   // to oam bus, drives cpu bus data onto oam bus data
-  /*p25.XEDU*/ Signal XEDU_VRAM_LOCK;
-  /*p04.AHOC*/ Signal AHOC_DMA_VRAM_RDn;
-  /*p25.RAHU*/ Signal RAHU_VBUS_TRISTATEp; // to bus mux, controls CPUD to VRAMD. also
-
+  /*p28.APAG*/ Signal APAG_CPUD_TO_OAMDp;  // to oam bus, drives cpu bus data onto oam bus data
+  /*p25.SAZO*/ Signal SAZO_VRAM_RD;        // to vram pins
   /*p04.WYJA*/ Signal WYJA_OAM_WRp;        // to oam, controls PIN_OAM_WR*
   /*p28.AMAB*/ Signal AMAB_OAM_LOCKn;      // to oam, controls driving OAMD to CPUD
   /*p25.COTA*/ Signal COTA_OAM_CLK;        // to oam, controls PIN_CLK
-  /*p28.BODE*/ Signal BODE_OAM_LATCH;      // to oam, controls PIN_OE and OAMD to OAML
-  /*p25.SEBY*/ Signal SEBY_VRAMD_TO_CPUDn; // to busmux.tick, controls VRAMD to CPUD
+  /*p28.ASYT*/ Signal ASYT_OAM_LATCH;      // to oam, controls PIN_OE and OAMD to OAML
+  /*p25.TYVY*/ Signal TYVY_VRAMD_TO_CPUDp; // to busmux.tick, controls VRAMD to CPUD
 
   /*p08.TAZY*/ Signal TAZY_A15;
   /*p08.TYHO*/ Signal TYHO_CS_A;
@@ -60,23 +57,41 @@ struct BusMux {
 
 private:
 
-  /*p04.MAKA*/ Reg MAKA_FROM_CPU5_SYNC;
+  //----------
+  // Address pins
 
-  /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
-  /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
-  /*p08.ALYR*/ TpLatch CPU_ADDR_LATCH_02;
-  /*p08.ARET*/ TpLatch CPU_ADDR_LATCH_03;
-  /*p08.AVYS*/ TpLatch CPU_ADDR_LATCH_04;
-  /*p08.ATEV*/ TpLatch CPU_ADDR_LATCH_05;
-  /*p08.AROS*/ TpLatch CPU_ADDR_LATCH_06;
-  /*p08.ARYM*/ TpLatch CPU_ADDR_LATCH_07;
-  /*p08.LUNO*/ TpLatch CPU_ADDR_LATCH_08;
-  /*p08.LYSA*/ TpLatch CPU_ADDR_LATCH_09;
-  /*p08.PATE*/ TpLatch CPU_ADDR_LATCH_10;
-  /*p08.LUMY*/ TpLatch CPU_ADDR_LATCH_11;
-  /*p08.LOBU*/ TpLatch CPU_ADDR_LATCH_12;
-  /*p08.LONU*/ TpLatch CPU_ADDR_LATCH_13;
-  /*p08.NYRE*/ TpLatch CPU_ADDR_LATCH_14;
+  /* PIN_01 */ PinOut PIN_A00_A;   // <- P08.KUPO
+  /* PIN_01 */ PinOut PIN_A00_D;   // <- P08.KOTY
+  /* PIN_02 */ PinOut PIN_A01_A;   // <- P08.CABA
+  /* PIN_02 */ PinOut PIN_A01_D;   // <- P08.COTU
+  /* PIN_03 */ PinOut PIN_A02_A;   // <- P08.BOKU
+  /* PIN_03 */ PinOut PIN_A02_D;   // <- P08.BAJO
+  /* PIN_04 */ PinOut PIN_A03_A;   // <- P08.BOTY
+  /* PIN_04 */ PinOut PIN_A03_D;   // <- P08.BOLA
+  /* PIN_05 */ PinOut PIN_A04_A;   // <- P08.BYLA
+  /* PIN_05 */ PinOut PIN_A04_D;   // <- P08.BEVO
+  /* PIN_06 */ PinOut PIN_A05_A;   // <- P08.BADU
+  /* PIN_06 */ PinOut PIN_A05_D;   // <- P08.AJAV
+  /* PIN_07 */ PinOut PIN_A06_A;   // <- P08.CEPU
+  /* PIN_07 */ PinOut PIN_A06_D;   // <- P08.CYKA
+  /* PIN_08 */ PinOut PIN_A07_A;   // <- P08.DEFY
+  /* PIN_08 */ PinOut PIN_A07_D;   // <- P08.COLO
+  /* PIN_09 */ PinOut PIN_A08_A;   // <- P08.MYNY
+  /* PIN_09 */ PinOut PIN_A08_D;   // <- P08.MEGO
+  /* PIN_10 */ PinOut PIN_A09_A;   // <- P08.MUNE
+  /* PIN_10 */ PinOut PIN_A09_D;   // <- P08.MENY
+  /* PIN_11 */ PinOut PIN_A10_A;   // <- P08.ROXU
+  /* PIN_11 */ PinOut PIN_A10_D;   // <- P08.RORE
+  /* PIN_12 */ PinOut PIN_A11_A;   // <- P08.LEPY
+  /* PIN_12 */ PinOut PIN_A11_D;   // <- P08.LYNY
+  /* PIN_13 */ PinOut PIN_A12_A;   // <- P08.LUCE
+  /* PIN_13 */ PinOut PIN_A12_D;   // <- P08.LOSO
+  /* PIN_14 */ PinOut PIN_A13_A;   // <- P08.LABE
+  /* PIN_14 */ PinOut PIN_A13_D;   // <- P08.LEVA
+  /* PIN_15 */ PinOut PIN_A14_A;   // <- P08.PUHE
+  /* PIN_15 */ PinOut PIN_A14_D;   // <- P08.PAHY
+  /* PIN_16 */ PinOut PIN_A15_A;   // <- P08.SUZE
+  /* PIN_16 */ PinOut PIN_A15_D;   // <- P08.RULO
 };
 
 //-----------------------------------------------------------------------------

@@ -36,7 +36,7 @@ SpriteFetcherSignals SpriteFetcher::sig(const TestGB& gb) const {
 
   {
     /*p29.TEPA*/ wire TEPA_RENDERINGn = not(ppu_sig.XYMU_RENDERINGp);
-    /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, TULY_SFETCH_S1.q(), TESE_SFETCH_S2.q());
+    /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, TULY_SFETCH_S1, TESE_SFETCH_S2);
     /*p28.WEFY*/ sig.WEFY_SPR_READp = and(TUVO_PPU_OAM_RDp, TYFO_SFETCH_S0_D1);
   }
 
@@ -46,9 +46,9 @@ SpriteFetcherSignals SpriteFetcher::sig(const TestGB& gb) const {
     /*p25.VAPE*/ wire VAPE_FETCH_OAM_CLK = and (RENDERING, !TULY_SFETCH_S1, !TESE_SFETCH_S2, TACU_SPR_SEQ_5_TRIG);
 #endif
     /*p29.TEPA*/ wire TEPA_RENDERINGn = not(ppu_sig.XYMU_RENDERINGp);
-    /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, TULY_SFETCH_S1.q(), TESE_SFETCH_S2.q());
-    /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(TOXE_SFETCH_S0_D0.q());
-    /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0_D0n);
+    /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, TULY_SFETCH_S1, TESE_SFETCH_S2);
+    /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(TOXE_SFETCH_S0_D0);
+    /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(TYFO_SFETCH_S0_D1, TYTU_SFETCH_S0_D0n);
     /*p25.VAPE*/ sig.VAPE_FETCH_OAM_CLK = and (TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
   }
 

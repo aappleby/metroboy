@@ -8,7 +8,7 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct PpuSignals {
-  /*p27.TEVO*/ Signal TEVO_FINE_RSTp;
+  /*p27.TEVO*/ Signal TEVO_FINE_RSTp;            // this interacts with window somehow... and also NYXU_TILE_FETCHER_RSTn
   /*p21.WODU*/ Signal WODU_RENDER_DONEp;         // to ppu.tick
   /*p27.NYXU*/ Signal NYXU_TILE_FETCHER_RSTn;    // to tile fetcher
   /*p28.ACYL*/ Signal ACYL_SCANNINGp;            // to bus mux

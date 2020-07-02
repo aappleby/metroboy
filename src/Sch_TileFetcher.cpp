@@ -101,7 +101,9 @@ void TileFetcher::tick(TestGB& gb) {
 
   {
     /*p24.LOBY*/ wire LOBY_RENDERINGn = not(ppu_sig.XYMU_RENDERINGp);
-    /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(win_sig.MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
+    /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(win_sig.NUNY_WIN_MODE_TRIGp);
+    /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
+    /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
     /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, ppu_sig.NYXU_TILE_FETCHER_RSTn);
     /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
 
@@ -166,14 +168,15 @@ void TileFetcher::tick(TestGB& gb) {
     /*p27.NENY*/ wire NENY_FETCH_01n = not(NOGU_FETCH_01p);
     /*p27.POTU*/ wire POTU_BG_MAP_READp = and (LENA_BGW_VRAM_RD, NENY_FETCH_01n);
     
-    /*p26.AXAD*/ wire AXAD_WIN_MODEn = not(win_sig.PORE_WIN_MODE);
+    /*p27.PORE*/ wire PORE_WIN_MODE = not(win_sig.NOCU_WIN_MODEn);
+    /*p26.AXAD*/ wire AXAD_WIN_MODEn = not(PORE_WIN_MODE);
     /*p26.ACEN*/ wire ACEN_BG_MAP_READp = and (POTU_BG_MAP_READp, AXAD_WIN_MODEn);
-    /*p25.XEZE*/ wire XEZE_WIN_MAP_READp = and (POTU_BG_MAP_READp, win_sig.PORE_WIN_MODE);
+    /*p25.XEZE*/ wire XEZE_WIN_MAP_READp = and (POTU_BG_MAP_READp, PORE_WIN_MODE);
 
     /*p27.NETA*/ wire NETA_TILE_READn = and (LENA_BGW_VRAM_RD, NOGU_FETCH_01p);
     /*p26.ASUL*/ wire ASUL_TILE_READp = and (NETA_TILE_READn, AXAD_WIN_MODEn);
     /*p26.BEJE*/ wire BEJE_TILE_READn = not (ASUL_TILE_READp);
-    /*p25.XUCY*/ wire XUCY_TILE_READn = nand(NETA_TILE_READn, win_sig.PORE_WIN_MODE);
+    /*p25.XUCY*/ wire XUCY_TILE_READn = nand(NETA_TILE_READn, PORE_WIN_MODE);
 
     /*p26.BAFY*/ wire BAFY_BG_MAP_READn = not(ACEN_BG_MAP_READp);
     /*p26.AXEP*/ vram_bus.TRI_A00.set_tribuf(BAFY_BG_MAP_READn, BABE_MAP_X0S);

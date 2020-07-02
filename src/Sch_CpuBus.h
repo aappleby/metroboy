@@ -60,6 +60,7 @@ struct CpuBusSignals {
 struct CpuBus {
 
   CpuBusSignals sig(const TestGB& gb) const;
+  void tick(TestGB& gb);
   bool commit();
 
   int get_data() const {
@@ -139,6 +140,54 @@ struct CpuBus {
   PinIn  PIN_A13; // bottom right port PORTB_22: -> A13
   PinIn  PIN_A14; // bottom right port PORTB_26: -> A14
   PinIn  PIN_A15; // bottom right port PORTB_30: -> A15
+
+  /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
+  /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
+  /*p08.ALYR*/ TpLatch CPU_ADDR_LATCH_02;
+  /*p08.ARET*/ TpLatch CPU_ADDR_LATCH_03;
+  /*p08.AVYS*/ TpLatch CPU_ADDR_LATCH_04;
+  /*p08.ATEV*/ TpLatch CPU_ADDR_LATCH_05;
+  /*p08.AROS*/ TpLatch CPU_ADDR_LATCH_06;
+  /*p08.ARYM*/ TpLatch CPU_ADDR_LATCH_07;
+  /*p08.LUNO*/ TpLatch CPU_ADDR_LATCH_08;
+  /*p08.LYSA*/ TpLatch CPU_ADDR_LATCH_09;
+  /*p08.PATE*/ TpLatch CPU_ADDR_LATCH_10;
+  /*p08.LUMY*/ TpLatch CPU_ADDR_LATCH_11;
+  /*p08.LOBU*/ TpLatch CPU_ADDR_LATCH_12;
+  /*p08.LONU*/ TpLatch CPU_ADDR_LATCH_13;
+  /*p08.NYRE*/ TpLatch CPU_ADDR_LATCH_14;
+
+  /*p04.MAKA*/ Reg MAKA_FROM_CPU5_SYNC;
+
+private:
+
+  //----------
+  // Data pins
+
+  /* PIN_17 */ PinOut PIN_D0_A;    // <- P08.RUXA
+  /* PIN_17 */ PinOut PIN_D0_B;    // <- P08.LULA
+  /* PIN_17 */ PinOut PIN_D0_D;    // <- P08.RUNE
+  /* PIN_18 */ PinOut PIN_D1_A;    // <- P08.RUJA
+  /* PIN_18 */ PinOut PIN_D1_B;    // <- P08.LULA
+  /* PIN_18 */ PinOut PIN_D1_D;    // <- P08.RYPU
+  /* PIN_19 */ PinOut PIN_D2_A;    // <- P08.RABY
+  /* PIN_19 */ PinOut PIN_D2_B;    // <- P08.LULA
+  /* PIN_19 */ PinOut PIN_D2_D;    // <- P08.SULY
+  /* PIN_20 */ PinOut PIN_D3_A;    // <- P08.RERA
+  /* PIN_20 */ PinOut PIN_D3_B;    // <- P08.LULA
+  /* PIN_20 */ PinOut PIN_D3_D;    // <- P08.SEZE
+  /* PIN_21 */ PinOut PIN_D4_A;    // <- P08.RORY
+  /* PIN_21 */ PinOut PIN_D4_B;    // <- P08.LULA
+  /* PIN_21 */ PinOut PIN_D4_D;    // <- P08.RESY
+  /* PIN_22 */ PinOut PIN_D5_A;    // <- P08.RYVO
+  /* PIN_22 */ PinOut PIN_D5_B;    // <- P08.LULA
+  /* PIN_22 */ PinOut PIN_D5_D;    // <- P08.TAMU
+  /* PIN_23 */ PinOut PIN_D6_A;    // <- P08.RAFY
+  /* PIN_23 */ PinOut PIN_D6_B;    // <- P08.LULA
+  /* PIN_23 */ PinOut PIN_D6_D;    // <- P08.ROGY
+  /* PIN_24 */ PinOut PIN_D7_A;    // <- P08.RAVU
+  /* PIN_24 */ PinOut PIN_D7_B;    // <- P08.LULA
+  /* PIN_24 */ PinOut PIN_D7_D;    // <- P08.RYDA
 };
 
 //-----------------------------------------------------------------------------

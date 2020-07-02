@@ -8,15 +8,8 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct DmaSignals {
-  /*p28.BOGE*/ Signal BOGE_DMA_RUNNINGn;
-
-  // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
-  /*p04.MORY*/ Signal MORY_DMA_READ_CARTn;
-  /*p04.LUMA*/ Signal LUMA_DMA_READ_CARTp;
-  /*p25.CEDE*/ Signal CEDE_DMA_READ_CARTn;
-  /*p04.LUFA*/ Signal LUFA_DMA_READ_VRAMp;
-
-  /*p04.MATU*/ Signal MATU_DMA_OAM_WRp;
+  /*p04.MATU*/ Signal MATU_DMA_RUNNINGp; // to bus mux
+  /*p04.MUDA*/ Signal MUDA_DMA_SRC_VRAMp;
 
   /*p04.NAKY*/ Signal DMA_A00;
   /*p04.PYRO*/ Signal DMA_A01;
@@ -47,7 +40,7 @@ struct DmaRegisters {
 private:
 
   /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;
-  /*p04.MATU*/ Reg17 MATU_DMA_OAM_WRp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
+  /*p04.MATU*/ Reg17 MATU_DMA_RUNNINGp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
   /*p04.MYTE*/ Reg MYTE_DMA_DONE;
   /*p04.LUVY*/ Reg LUVY_DMA_TRIG_d0;
   /*p04.LENE*/ Reg LENE_DMA_TRIG_d4;

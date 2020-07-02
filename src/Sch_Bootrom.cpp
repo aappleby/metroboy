@@ -55,16 +55,13 @@ BootSignals Bootrom::sig(const TestGB& /*gb*/) const {
 //-----------------------------------------------------------------------------
 
 void Bootrom::tick(TestGB& gb) {
-  auto& cpu_bus = gb.cpu_bus;
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
-
-  //----------------------------------------
 
   // FF50
   {
+    auto& cpu_bus = gb.cpu_bus;
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+    auto rst_sig = gb.rst_reg.sig(gb);
+
     /*p07.TYRO*/ wire ADDR_0x0x0000p = nor(cpu_bus.PIN_A07, cpu_bus.PIN_A05, cpu_bus.PIN_A03, cpu_bus.PIN_A02, cpu_bus.PIN_A01, cpu_bus.PIN_A00);
     /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(cpu_bus.PIN_A04, cpu_bus.PIN_A06);
 
@@ -78,6 +75,10 @@ void Bootrom::tick(TestGB& gb) {
   }
 
   {
+    auto& cpu_bus = gb.cpu_bus;
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+
     // Bootrom -> CPU
     ///*p07.ZORO*/ wire ADDR_0XXX = nor(cpu_pins.A15, cpu_pins.A14, cpu_pins.A13, cpu_pins.A12);
     ///*p07.ZADU*/ wire ADDR_X0XX = nor(cpu_pins.A11, cpu_pins.A10, cpu_pins.A09, cpu_pins.A08);

@@ -41,101 +41,97 @@ using namespace Schematics;
 BusMuxSignals BusMux::sig(const TestGB& gb) const {
   BusMuxSignals sig;
 
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto dma_sig = gb.dma_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto sst_sig = gb.sst_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto boot_sig = gb.bootrom.sig(gb);
-  auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
-  auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
-
-  auto& cpu_bus = gb.cpu_bus;
-  auto& vram_pins = gb.vram_pins;
-
-
   // cpu can read oam when there's no parsing, rendering, or dma
   // so byte 0 is the palette number? something wrong here...
   // this is 8 sets of 4 tribuffers feeding into an inverter, which we'll model as an amux4n
   // except the inputs are negated or something?
 
   {
-    /*p28.GARO*/ wire _GARO_A0n = not(cpu_bus.PIN_A00);
-    /*p28.WACU*/ wire _WACU_A1n = not(cpu_bus.PIN_A01);
-    /*p28.GOSE*/ wire _GOSE_A2n = not(cpu_bus.PIN_A02);
-    /*p28.WAPE*/ wire _WAPE_A3n = not(cpu_bus.PIN_A03);
-    /*p28.FEVU*/ wire _FEVU_A4n = not(cpu_bus.PIN_A04);
-    /*p28.GERA*/ wire _GERA_A5n = not(cpu_bus.PIN_A05);
-    /*p28.WAXA*/ wire _WAXA_A6n = not(cpu_bus.PIN_A06);
-    /*p28.FOBY*/ wire _FOBY_A7n = not(cpu_bus.PIN_A07);
+    auto& cpu_bus = gb.cpu_bus;
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
 
-    /*p28.FODO*/ wire _FODO_DMA_A00n = not(dma_sig.DMA_A00);
-    /*p28.FESA*/ wire _FESA_DMA_A01n = not(dma_sig.DMA_A01);
-    /*p28.FAGO*/ wire _FAGO_DMA_A02n = not(dma_sig.DMA_A02);
-    /*p28.FYKY*/ wire _FYKY_DMA_A03n = not(dma_sig.DMA_A03);
-    /*p28.ELUG*/ wire _ELUG_DMA_A04n = not(dma_sig.DMA_A04);
-    /*p28.EDOL*/ wire _EDOL_DMA_A05n = not(dma_sig.DMA_A05);
-    /*p28.FYDU*/ wire _FYDU_DMA_A06n = not(dma_sig.DMA_A06);
-    /*p28.FETU*/ wire _FETU_DMA_A07n = not(dma_sig.DMA_A07);
+    /*p28.GARO*/ wire GARO_A0n = not(cpu_bus.PIN_A00);
+    /*p28.WACU*/ wire WACU_A1n = not(cpu_bus.PIN_A01);
+    /*p28.GOSE*/ wire GOSE_A2n = not(cpu_bus.PIN_A02);
+    /*p28.WAPE*/ wire WAPE_A3n = not(cpu_bus.PIN_A03);
+    /*p28.FEVU*/ wire FEVU_A4n = not(cpu_bus.PIN_A04);
+    /*p28.GERA*/ wire GERA_A5n = not(cpu_bus.PIN_A05);
+    /*p28.WAXA*/ wire WAXA_A6n = not(cpu_bus.PIN_A06);
+    /*p28.FOBY*/ wire FOBY_A7n = not(cpu_bus.PIN_A07);
 
-    /*p28.AJON*/ wire AJON_PPU_USE_OAM2 = and (dma_sig.BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
-    /*p28.ASAM*/ wire _ASAM_CPU_OAM_RDn = or (ppu_sig.ACYL_SCANNINGp, ppu_sig.XYMU_RENDERINGp, dma_sig.MATU_DMA_OAM_WRp);
-    /*p28.BETE*/ wire _BETE_PPU_OAM_RDn = not(AJON_PPU_USE_OAM2);
-    /*p28.APAR*/ wire _APAR_PPU_OAM_RDn = not(ppu_sig.ACYL_SCANNINGp);
-    /*p04.DUGA*/ wire _DUGA_DMA_OAM_RDn = not(dma_sig.MATU_DMA_OAM_WRp); // so if dma happens during oam parse, both drive the address line - bus conflict?
+    /*p28.FODO*/ wire FODO_DMA_A00n = not(dma_sig.DMA_A00);
+    /*p28.FESA*/ wire FESA_DMA_A01n = not(dma_sig.DMA_A01);
+    /*p28.FAGO*/ wire FAGO_DMA_A02n = not(dma_sig.DMA_A02);
+    /*p28.FYKY*/ wire FYKY_DMA_A03n = not(dma_sig.DMA_A03);
+    /*p28.ELUG*/ wire ELUG_DMA_A04n = not(dma_sig.DMA_A04);
+    /*p28.EDOL*/ wire EDOL_DMA_A05n = not(dma_sig.DMA_A05);
+    /*p28.FYDU*/ wire FYDU_DMA_A06n = not(dma_sig.DMA_A06);
+    /*p28.FETU*/ wire FETU_DMA_A07n = not(dma_sig.DMA_A07);
 
-    /*p28.GEKA*/ sig.GEKA_OAM_A0p = not((_GARO_A0n & !_ASAM_CPU_OAM_RDn) | (dbg_sig.GECA_P10_Bp & !_BETE_PPU_OAM_RDn) | (dbg_sig.GEFY_P10_Bn            & !_APAR_PPU_OAM_RDn) | (_FODO_DMA_A00n & !_DUGA_DMA_OAM_RDn));
-    /*p28.ZYFO*/ sig.ZYFO_OAM_A1p = not((_WACU_A1n & !_ASAM_CPU_OAM_RDn) | (dbg_sig.WYDU_P10_Bp & !_BETE_PPU_OAM_RDn) | (dbg_sig.WUWE_P10_Bn            & !_APAR_PPU_OAM_RDn) | (_FESA_DMA_A01n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YFOT*/ sig.YFOT_OAM_A2p = not((_GOSE_A2n & !_ASAM_CPU_OAM_RDn) | (sst_sig.GYBU_IDX_0n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GUSE_SCAN0n & !_APAR_PPU_OAM_RDn) | (_FAGO_DMA_A02n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YFOC*/ sig.YFOC_OAM_A3p = not((_WAPE_A3n & !_ASAM_CPU_OAM_RDn) | (sst_sig.GYKA_IDX_1n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GEMA_SCAN1n & !_APAR_PPU_OAM_RDn) | (_FYKY_DMA_A03n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YVOM*/ sig.YVOM_OAM_A4p = not((_FEVU_A4n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FABY_IDX_2n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.FUTO_SCAN2n & !_APAR_PPU_OAM_RDn) | (_ELUG_DMA_A04n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YMEV*/ sig.YMEV_OAM_A5p = not((_GERA_A5n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FACO_IDX_3n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.FAKU_SCAN3n & !_APAR_PPU_OAM_RDn) | (_EDOL_DMA_A05n & !_DUGA_DMA_OAM_RDn));
-    /*p28.XEMU*/ sig.XEMU_OAM_A6p = not((_WAXA_A6n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FUGU_IDX_4n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GAMA_SCAN4n & !_APAR_PPU_OAM_RDn) | (_FYDU_DMA_A06n & !_DUGA_DMA_OAM_RDn));
-    /*p28.YZET*/ sig.YZET_OAM_A7p = not((_FOBY_A7n & !_ASAM_CPU_OAM_RDn) | (sst_sig.FYKE_IDX_5n & !_BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GOBY_SCAN5n & !_APAR_PPU_OAM_RDn) | (_FETU_DMA_A07n & !_DUGA_DMA_OAM_RDn));
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_sig.MATU_DMA_RUNNINGp);
+    /*p28.AJON*/ wire AJON_PPU_USE_OAM2 = and (BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
+    /*p28.ASAM*/ wire ASAM_CPU_OAM_RDn = or (ppu_sig.ACYL_SCANNINGp, ppu_sig.XYMU_RENDERINGp, dma_sig.MATU_DMA_RUNNINGp);
+    /*p28.BETE*/ wire BETE_PPU_OAM_RDn = not(AJON_PPU_USE_OAM2);
+    /*p28.APAR*/ wire APAR_PPU_OAM_RDn = not(ppu_sig.ACYL_SCANNINGp);
+    /*p04.DUGA*/ wire DUGA_DMA_OAM_RDn = not(dma_sig.MATU_DMA_RUNNINGp); // so if dma happens during oam parse, both drive the address line - bus conflict?
+
+    auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
+    auto sst_sig = gb.sst_reg.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+
+    /*p28.GEKA*/ sig.GEKA_OAM_A0p = not((GARO_A0n & !ASAM_CPU_OAM_RDn) | (dbg_sig.GECA_P10_Bp & !BETE_PPU_OAM_RDn) | (dbg_sig.GEFY_P10_Bn            & !APAR_PPU_OAM_RDn) | (FODO_DMA_A00n & !DUGA_DMA_OAM_RDn));
+    /*p28.ZYFO*/ sig.ZYFO_OAM_A1p = not((WACU_A1n & !ASAM_CPU_OAM_RDn) | (dbg_sig.WYDU_P10_Bp & !BETE_PPU_OAM_RDn) | (dbg_sig.WUWE_P10_Bn            & !APAR_PPU_OAM_RDn) | (FESA_DMA_A01n & !DUGA_DMA_OAM_RDn));
+    /*p28.YFOT*/ sig.YFOT_OAM_A2p = not((GOSE_A2n & !ASAM_CPU_OAM_RDn) | (sst_sig.GYBU_IDX_0n & !BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GUSE_SCAN0n & !APAR_PPU_OAM_RDn) | (FAGO_DMA_A02n & !DUGA_DMA_OAM_RDn));
+    /*p28.YFOC*/ sig.YFOC_OAM_A3p = not((WAPE_A3n & !ASAM_CPU_OAM_RDn) | (sst_sig.GYKA_IDX_1n & !BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GEMA_SCAN1n & !APAR_PPU_OAM_RDn) | (FYKY_DMA_A03n & !DUGA_DMA_OAM_RDn));
+    /*p28.YVOM*/ sig.YVOM_OAM_A4p = not((FEVU_A4n & !ASAM_CPU_OAM_RDn) | (sst_sig.FABY_IDX_2n & !BETE_PPU_OAM_RDn) | (sprite_scanner_sig.FUTO_SCAN2n & !APAR_PPU_OAM_RDn) | (ELUG_DMA_A04n & !DUGA_DMA_OAM_RDn));
+    /*p28.YMEV*/ sig.YMEV_OAM_A5p = not((GERA_A5n & !ASAM_CPU_OAM_RDn) | (sst_sig.FACO_IDX_3n & !BETE_PPU_OAM_RDn) | (sprite_scanner_sig.FAKU_SCAN3n & !APAR_PPU_OAM_RDn) | (EDOL_DMA_A05n & !DUGA_DMA_OAM_RDn));
+    /*p28.XEMU*/ sig.XEMU_OAM_A6p = not((WAXA_A6n & !ASAM_CPU_OAM_RDn) | (sst_sig.FUGU_IDX_4n & !BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GAMA_SCAN4n & !APAR_PPU_OAM_RDn) | (FYDU_DMA_A06n & !DUGA_DMA_OAM_RDn));
+    /*p28.YZET*/ sig.YZET_OAM_A7p = not((FOBY_A7n & !ASAM_CPU_OAM_RDn) | (sst_sig.FYKE_IDX_5n & !BETE_PPU_OAM_RDn) | (sprite_scanner_sig.GOBY_SCAN5n & !APAR_PPU_OAM_RDn) | (FETU_DMA_A07n & !DUGA_DMA_OAM_RDn));
   }
 
   {
-#if 0
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
 
-    OAM_LOCKp = or(!cpu_sig.SARO_FE00_FEFFp,
-                   dma_sig.MATU_DMA_OAM_WRp,
-                   pu_sig.ACYL_SCANNINGp,
-                   and(BOGE_DMA_RUNNINGn, XYMU_RENDERINGp));
-
-#endif
-    /*p28.AJON*/ wire AJON_OAM_BUSY = and (dma_sig.BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
-    /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(dma_sig.MATU_DMA_OAM_WRp, ppu_sig.ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_sig.MATU_DMA_RUNNINGp);
+    /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
+    /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(dma_sig.MATU_DMA_RUNNINGp, ppu_sig.ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor
     /*p28.AMAB*/ sig.AMAB_OAM_LOCKn = and (cpu_sig.SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
   }
 
   {
-    /*p28.AJON*/ wire AJON_OAM_BUSY = and (dma_sig.BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
-    /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(dma_sig.MATU_DMA_OAM_WRp, ppu_sig.ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor
+    auto clk_sig = gb.clk_reg.sig(gb);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+
+
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_sig.MATU_DMA_RUNNINGp);
+    /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
+    /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(dma_sig.MATU_DMA_RUNNINGp, ppu_sig.ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor
     /*p28.XUTO*/ wire XUTO_CPU_OAM_WR = and (cpu_sig.SARO_FE00_FEFFp, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
     /*p28.WUJE*/ wire WUJE_CPU_OAM_WR = or (clk_sig.XYNY_xBCDExxx, XUTO_CPU_OAM_WR);
     /*p28.XUPA*/ wire XUPA_CPU_OAM_WR = not(WUJE_CPU_OAM_WR);
     /*p28.ADAH*/ wire ADAH_ADDR_OAM = not(cpu_sig.SARO_FE00_FEFFp);
-    /*p28.APAG*/ wire APAG_CPUD_TO_OAMD = amux2(XUPA_CPU_OAM_WR, sig.AMAB_OAM_LOCKn, AJUJ_OAM_BUSYn, ADAH_ADDR_OAM);
-    /*p28.AZUL*/ sig.AZUL_CPUD_TO_OAMD = not(APAG_CPUD_TO_OAMD);
+    /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (cpu_sig.SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
+    /*p28.APAG*/ sig.APAG_CPUD_TO_OAMDp = amux2(XUPA_CPU_OAM_WR, AMAB_OAM_LOCKn, AJUJ_OAM_BUSYn, ADAH_ADDR_OAM);
   }
 
   {
-    /*p25.XANE*/ wire _XANE_VRAM_LOCKn = nor(dma_sig.LUFA_DMA_READ_VRAMp, ppu_sig.XYMU_RENDERINGp); // def nor
-    /*p25.XEDU*/ sig.XEDU_VRAM_LOCK = not(_XANE_VRAM_LOCKn);
-    /*p04.AHOC*/ sig.AHOC_DMA_VRAM_RDn = not(dma_sig.LUFA_DMA_READ_VRAMp);
-  }
+    auto& cpu_bus = gb.cpu_bus;
+    auto& vram_pins = gb.vram_pins;
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
 
-  {
+
     /*p25.TAVY*/ wire TAVY_MOE_Cn = not(vram_pins.PIN_MOEn_C);
     /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
     /*p25.SALE*/ wire SALE_DBG_VRAM_RDb = mux2_p(TAVY_MOE_Cn, TEGU_CPU_VRAM_WRn, dbg_sig.TUTO_DBG_VRAMp);
     /*p25.RUVY*/ wire RUVY_VRAM_WR = not(SALE_DBG_VRAM_RDb);
-    /*p25.SAZO*/ wire SAZO_VRAM_RD = and (RUVY_VRAM_WR, ppu_sig.SERE_VRAM_RD);
-    /*p25.RYJE*/ wire RYJE_VRAM_RDn = not(SAZO_VRAM_RD);
-    /*p25.REVO*/ wire REVO_VRAM_RDp = not(RYJE_VRAM_RDn);
-    /*p25.ROCY*/ wire ROCY_VBUS_TRISTATEn = and (REVO_VRAM_RDp, SAZO_VRAM_RD);
-    /*p25.RAHU*/ sig.RAHU_VBUS_TRISTATEp = not(ROCY_VBUS_TRISTATEn);
+    /*p25.SAZO*/ sig.SAZO_VRAM_RD = and (RUVY_VRAM_WR, ppu_sig.SERE_VRAM_RD);
   }
 
   // NAXY01 << UVYT02
@@ -146,40 +142,71 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
   // naxy = nor(uvyt, maka)
 
   {
-    /*p04.NAXY*/ wire _NAXY_DMA_OAM_WENp = nor(clk_sig.UVYT_xBCDExxx, MAKA_FROM_CPU5_SYNC); // def nor
-    /*p04.POWU*/ wire _POWU_DMA_OAM_WRp = and (dma_sig.MATU_DMA_OAM_WRp, _NAXY_DMA_OAM_WENp); // def and
-    /*p04.WYJA*/ sig.WYJA_OAM_WRp = or (and (sig.AMAB_OAM_LOCKn, cpu_sig.CUPA_CPU_WR_xxxxxFGH), _POWU_DMA_OAM_WRp);
+    auto& cpu_bus = gb.cpu_bus;
+    auto clk_sig = gb.clk_reg.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_sig.MATU_DMA_RUNNINGp);
+    /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
+    /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(dma_sig.MATU_DMA_RUNNINGp, ppu_sig.ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor
+    /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (cpu_sig.SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
+    /*p04.NAXY*/ wire NAXY_DMA_OAM_WENp = nor(clk_sig.UVYT_xBCDExxx, cpu_bus.MAKA_FROM_CPU5_SYNC); // def nor
+    /*p04.POWU*/ wire POWU_DMA_OAM_WRp = and (dma_sig.MATU_DMA_RUNNINGp, NAXY_DMA_OAM_WENp); // def and
+    /*p04.WYJA*/ sig.WYJA_OAM_WRp = or (and (AMAB_OAM_LOCKn, cpu_sig.CUPA_CPU_WR_xxxxxFGH), POWU_DMA_OAM_WRp);
   }
 
   {
+    auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+
     /*p25.AVER*/ wire AVER_SCAN_OAM_CLK  = nand(ppu_sig.ACYL_SCANNINGp, clk_sig.XYSO_ABCxDEFx); 
     /*p25.XUJY*/ wire XUJY_FETCH_OAM_CLK = not(sprite_fetcher_sig.VAPE_FETCH_OAM_CLK);
-    /*p25.CUFE*/ wire CUFE_WRITE_OAM_CLK = and (or (cpu_sig.SARO_FE00_FEFFp, dma_sig.MATU_DMA_OAM_WRp), clk_sig.MOPA_AxxxxFGH);
+    /*p25.CUFE*/ wire CUFE_WRITE_OAM_CLK = and (or (cpu_sig.SARO_FE00_FEFFp, dma_sig.MATU_DMA_RUNNINGp), clk_sig.MOPA_AxxxxFGH);
     /*p25.BYCU*/ wire BYCU_OAM_CLK = nand(AVER_SCAN_OAM_CLK, XUJY_FETCH_OAM_CLK, CUFE_WRITE_OAM_CLK);
     /*p25.COTA*/ sig.COTA_OAM_CLK = not(BYCU_OAM_CLK);
   }
 
   {
+    auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
+    auto clk_sig = gb.clk_reg.sig(gb);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+
     /*p28.AJEP*/ wire AJEP_SCAN_OAM_LATCH  = nand(ppu_sig.ACYL_SCANNINGp, clk_sig.XOCE_ABxxEFxx); // schematic wrong, is def nand
     /*p28.XUJA*/ wire XUJA_FETCH_OAM_LATCH = not(sprite_fetcher_sig.WEFY_SPR_READp);
     /*p28.BOTA*/ wire BOTA_CPU_OAM_LATCH   = nand(cpu_sig.DECY_FROM_CPU5n, cpu_sig.SARO_FE00_FEFFp, cpu_sig.ASOT_CPU_RD); // Schematic wrong, this is NAND
-    /*p28.ASYT*/ wire ASYT_OAM_LATCH = and(AJEP_SCAN_OAM_LATCH, XUJA_FETCH_OAM_LATCH, BOTA_CPU_OAM_LATCH);
-    /*p28.BODE*/ sig.BODE_OAM_LATCH = not(ASYT_OAM_LATCH); // to the tribus receiver below
+    /*p28.ASYT*/ sig.ASYT_OAM_LATCH = and(AJEP_SCAN_OAM_LATCH, XUJA_FETCH_OAM_LATCH, BOTA_CPU_OAM_LATCH);
   }
 
   {
-    /*p25.TYVY*/ wire TYVY_MD_TO_D = nand(ppu_sig.SERE_VRAM_RD, cpu_sig.LEKO_CPU_RDp);
-    /*p25.SEBY*/ sig.SEBY_VRAMD_TO_CPUDn = not(TYVY_MD_TO_D);
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+    /*p25.TYVY*/ sig.TYVY_VRAMD_TO_CPUDp = nand(ppu_sig.SERE_VRAM_RD, cpu_sig.LEKO_CPU_RDp);
   }
 
   {
+    auto& cpu_bus = gb.cpu_bus;
+    auto boot_sig = gb.bootrom.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
+
     // Something weird here
-    /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(boot_sig.BOOT_BITn);
-    /*p07.TULO*/ wire _TULO_ADDR_00XXp = nor(cpu_bus.PIN_A15, cpu_bus.PIN_A14, cpu_bus.PIN_A13, cpu_bus.PIN_A12, cpu_bus.PIN_A11, cpu_bus.PIN_A10, cpu_bus.PIN_A09, cpu_bus.PIN_A08);
-    /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
-    /*p08.SOBY*/ wire _SOBY = nor(cpu_bus.PIN_A15, _TUTU_ADDR_BOOTp);
-    /*p08.SEPY*/ wire _SEPY = nand(dbg_sig.ABUZ, _SOBY);
-    /*p08.TAZY*/ sig.TAZY_A15 = mux2_p(dma_sig.DMA_A15, _SEPY, dma_sig.LUMA_DMA_READ_CARTp);
+    /*p07.TERA*/ wire TERA_BOOT_BITp  = not(boot_sig.BOOT_BITn);
+    /*p07.TULO*/ wire TULO_ADDR_00XXp = nor(cpu_bus.PIN_A15, cpu_bus.PIN_A14, cpu_bus.PIN_A13, cpu_bus.PIN_A12, cpu_bus.PIN_A11, cpu_bus.PIN_A10, cpu_bus.PIN_A09, cpu_bus.PIN_A08);
+    /*p07.TUTU*/ wire TUTU_ADDR_BOOTp = and (TERA_BOOT_BITp, TULO_ADDR_00XXp);
+    /*p08.SOBY*/ wire SOBY = nor(cpu_bus.PIN_A15, TUTU_ADDR_BOOTp);
+    /*p08.SEPY*/ wire SEPY = nand(dbg_sig.ABUZ, SOBY);
+
+    /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(dma_sig.MUDA_DMA_SRC_VRAMp);
+    /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
+    /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
+
+    /*p08.TAZY*/ sig.TAZY_A15 = mux2_p(dma_sig.DMA_A15, SEPY, LUMA_DMA_READ_CARTp);
   }
 
   {
@@ -193,6 +220,11 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
     // TOZA = address valid, address ram, address not highmem
     // The A15 in the other half of the mux is weird.
 
+    auto& cpu_bus = gb.cpu_bus;
+    auto dbg_sig = gb.dbg_reg.sig(gb);
+    auto dma_sig = gb.dma_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+
     /*p08.SOGY*/ wire _SOGY_A14n = not(cpu_bus.PIN_A14);
     /*p08.TUMA*/ wire _TUMA_CART_RAM = and(cpu_bus.PIN_A13, _SOGY_A14n, cpu_bus.PIN_A15);
 
@@ -201,32 +233,50 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
 
     /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or(and(cpu_bus.PIN_A15, cpu_bus.PIN_A14), _TUMA_CART_RAM);
     /*p08.TOZA*/ wire _TOZA = and(dbg_sig.ABUZ, _TYNU_ADDR_RAM, cpu_sig.TUNA_0000_FDFFp); // suggests ABUZp
-    /*p08.TYHO*/ sig.TYHO_CS_A = mux2_p(dma_sig.DMA_A15, _TOZA, dma_sig.LUMA_DMA_READ_CARTp); // ABxxxxxx
+
+    /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(dma_sig.MUDA_DMA_SRC_VRAMp);
+    /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
+    /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
+    /*p08.TYHO*/ sig.TYHO_CS_A = mux2_p(dma_sig.DMA_A15, _TOZA, LUMA_DMA_READ_CARTp); // ABxxxxxx
   }
 
   {
-    /*p08.MEXO*/ wire _MEXO_ABCDExxx = not(cpu_sig.APOV_CPU_WR_xxxxxFGH);
-    /*p08.NEVY*/ wire _NEVY = or(_MEXO_ABCDExxx, cpu_sig.MOCA_DBG_EXT_RD);
-    /*p08.TYMU*/ sig.TYMU_RD_OUTn = nor(dma_sig.LUMA_DMA_READ_CARTp, cpu_sig.MOTY_CPU_EXT_RD);
-    /*p08.PUVA*/ sig.PUVA_WR_OUTn = or(_NEVY, dma_sig.LUMA_DMA_READ_CARTp);
+    auto dma_sig = gb.dma_reg.sig(gb);
+    auto cpu_sig = gb.cpu_bus.sig(gb);
+
+    /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(dma_sig.MUDA_DMA_SRC_VRAMp);
+    /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
+    /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
+
+    /*p08.MEXO*/ wire MEXO_ABCDExxx = not(cpu_sig.APOV_CPU_WR_xxxxxFGH);
+    /*p08.NEVY*/ wire NEVY = or(MEXO_ABCDExxx, cpu_sig.MOCA_DBG_EXT_RD);
+    /*p08.TYMU*/ sig.TYMU_RD_OUTn = nor(LUMA_DMA_READ_CARTp, cpu_sig.MOTY_CPU_EXT_RD);
+    /*p08.PUVA*/ sig.PUVA_WR_OUTn = or(NEVY, LUMA_DMA_READ_CARTp);
   }
 
   {
-    /*p08.AMET*/ sig.EXT_ADDR_00 = mux2_p(dma_sig.DMA_A00, CPU_ADDR_LATCH_00, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.ATOL*/ sig.EXT_ADDR_01 = mux2_p(dma_sig.DMA_A01, CPU_ADDR_LATCH_01, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.APOK*/ sig.EXT_ADDR_02 = mux2_p(dma_sig.DMA_A02, CPU_ADDR_LATCH_02, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.AMER*/ sig.EXT_ADDR_03 = mux2_p(dma_sig.DMA_A03, CPU_ADDR_LATCH_03, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.ATEM*/ sig.EXT_ADDR_04 = mux2_p(dma_sig.DMA_A04, CPU_ADDR_LATCH_04, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.ATOV*/ sig.EXT_ADDR_05 = mux2_p(dma_sig.DMA_A05, CPU_ADDR_LATCH_05, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.ATYR*/ sig.EXT_ADDR_06 = mux2_p(dma_sig.DMA_A06, CPU_ADDR_LATCH_06, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.ASUR*/ sig.EXT_ADDR_07 = mux2_p(dma_sig.DMA_A07, CPU_ADDR_LATCH_07, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.MANO*/ sig.EXT_ADDR_08 = mux2_p(dma_sig.DMA_A08, CPU_ADDR_LATCH_08, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.MASU*/ sig.EXT_ADDR_09 = mux2_p(dma_sig.DMA_A09, CPU_ADDR_LATCH_09, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.PAMY*/ sig.EXT_ADDR_10 = mux2_p(dma_sig.DMA_A10, CPU_ADDR_LATCH_10, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.MALE*/ sig.EXT_ADDR_11 = mux2_p(dma_sig.DMA_A11, CPU_ADDR_LATCH_11, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.MOJY*/ sig.EXT_ADDR_12 = mux2_p(dma_sig.DMA_A12, CPU_ADDR_LATCH_12, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.MUCE*/ sig.EXT_ADDR_13 = mux2_p(dma_sig.DMA_A13, CPU_ADDR_LATCH_13, dma_sig.LUMA_DMA_READ_CARTp);
-    /*p08.PEGE*/ sig.EXT_ADDR_14 = mux2_p(dma_sig.DMA_A14, CPU_ADDR_LATCH_14, dma_sig.LUMA_DMA_READ_CARTp);
+    auto& cpu_bus = gb.cpu_bus;
+    auto dma_sig = gb.dma_reg.sig(gb);
+
+    /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(dma_sig.MUDA_DMA_SRC_VRAMp);
+    /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
+    /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
+
+    /*p08.AMET*/ sig.EXT_ADDR_00 = mux2_p(dma_sig.DMA_A00, cpu_bus.CPU_ADDR_LATCH_00, LUMA_DMA_READ_CARTp);
+    /*p08.ATOL*/ sig.EXT_ADDR_01 = mux2_p(dma_sig.DMA_A01, cpu_bus.CPU_ADDR_LATCH_01, LUMA_DMA_READ_CARTp);
+    /*p08.APOK*/ sig.EXT_ADDR_02 = mux2_p(dma_sig.DMA_A02, cpu_bus.CPU_ADDR_LATCH_02, LUMA_DMA_READ_CARTp);
+    /*p08.AMER*/ sig.EXT_ADDR_03 = mux2_p(dma_sig.DMA_A03, cpu_bus.CPU_ADDR_LATCH_03, LUMA_DMA_READ_CARTp);
+    /*p08.ATEM*/ sig.EXT_ADDR_04 = mux2_p(dma_sig.DMA_A04, cpu_bus.CPU_ADDR_LATCH_04, LUMA_DMA_READ_CARTp);
+    /*p08.ATOV*/ sig.EXT_ADDR_05 = mux2_p(dma_sig.DMA_A05, cpu_bus.CPU_ADDR_LATCH_05, LUMA_DMA_READ_CARTp);
+    /*p08.ATYR*/ sig.EXT_ADDR_06 = mux2_p(dma_sig.DMA_A06, cpu_bus.CPU_ADDR_LATCH_06, LUMA_DMA_READ_CARTp);
+    /*p08.ASUR*/ sig.EXT_ADDR_07 = mux2_p(dma_sig.DMA_A07, cpu_bus.CPU_ADDR_LATCH_07, LUMA_DMA_READ_CARTp);
+    /*p08.MANO*/ sig.EXT_ADDR_08 = mux2_p(dma_sig.DMA_A08, cpu_bus.CPU_ADDR_LATCH_08, LUMA_DMA_READ_CARTp);
+    /*p08.MASU*/ sig.EXT_ADDR_09 = mux2_p(dma_sig.DMA_A09, cpu_bus.CPU_ADDR_LATCH_09, LUMA_DMA_READ_CARTp);
+    /*p08.PAMY*/ sig.EXT_ADDR_10 = mux2_p(dma_sig.DMA_A10, cpu_bus.CPU_ADDR_LATCH_10, LUMA_DMA_READ_CARTp);
+    /*p08.MALE*/ sig.EXT_ADDR_11 = mux2_p(dma_sig.DMA_A11, cpu_bus.CPU_ADDR_LATCH_11, LUMA_DMA_READ_CARTp);
+    /*p08.MOJY*/ sig.EXT_ADDR_12 = mux2_p(dma_sig.DMA_A12, cpu_bus.CPU_ADDR_LATCH_12, LUMA_DMA_READ_CARTp);
+    /*p08.MUCE*/ sig.EXT_ADDR_13 = mux2_p(dma_sig.DMA_A13, cpu_bus.CPU_ADDR_LATCH_13, LUMA_DMA_READ_CARTp);
+    /*p08.PEGE*/ sig.EXT_ADDR_14 = mux2_p(dma_sig.DMA_A14, cpu_bus.CPU_ADDR_LATCH_14, LUMA_DMA_READ_CARTp);
   }
 
   return sig;
@@ -235,47 +285,37 @@ BusMuxSignals BusMux::sig(const TestGB& gb) const {
 //------------------------------------------------------------------------------
 
 void BusMux::tick(TestGB& gb) {
-  auto bus_sig = gb.bus_mux.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto dma_sig = gb.dma_reg.sig(gb);
-
-  auto& cpu_bus = gb.cpu_bus;
-  auto& vram_bus = gb.vram_bus;
-
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-
-  /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, rst_sig.CUNU_RSTn, cpu_bus.PIN_FROM_CPU5p);
-
   {
-    // CPU vram read
-    /*p25.XAKY*/ vram_bus.TRI_A00.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A00);
-    /*p25.XUXU*/ vram_bus.TRI_A01.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A01);
-    /*p25.XYNE*/ vram_bus.TRI_A02.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A02);
-    /*p25.XODY*/ vram_bus.TRI_A03.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A03);
-    /*p25.XECA*/ vram_bus.TRI_A04.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A04);
-    /*p25.XOBA*/ vram_bus.TRI_A05.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A05);
-    /*p25.XOPO*/ vram_bus.TRI_A06.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A06);
-    /*p25.XYBO*/ vram_bus.TRI_A07.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A07);
-    /*p25.RYSU*/ vram_bus.TRI_A08.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A08);
-    /*p25.RESE*/ vram_bus.TRI_A09.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A09);
-    /*p25.RUSE*/ vram_bus.TRI_A10.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A10);
-    /*p25.RYNA*/ vram_bus.TRI_A11.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A11);
-    /*p25.RUMO*/ vram_bus.TRI_A12.set_tribuf(bus_sig.XEDU_VRAM_LOCK, cpu_bus.PIN_A12); // 6-rung
+    auto dma_sig = gb.dma_reg.sig(gb);
+    /*p04.MUHO*/ wire MUHO_DMA_READ_VRAMn = nand(dma_sig.MATU_DMA_RUNNINGp, dma_sig.MUDA_DMA_SRC_VRAMp);
+    /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);
+
+    auto ppu_sig = gb.ppu_reg.sig(gb);
+    /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor(LUFA_DMA_READ_VRAMp, ppu_sig.XYMU_RENDERINGp); // def nor
+    /*p25.XEDU*/ wire XEDU_VRAM_LOCK = not(XANE_VRAM_LOCKn);
+
+    auto& vram_bus = gb.vram_bus;
+    auto& cpu_bus = gb.cpu_bus;
+    /*p25.XAKY*/ vram_bus.TRI_A00.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A00);
+    /*p25.XUXU*/ vram_bus.TRI_A01.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A01);
+    /*p25.XYNE*/ vram_bus.TRI_A02.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A02);
+    /*p25.XODY*/ vram_bus.TRI_A03.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A03);
+    /*p25.XECA*/ vram_bus.TRI_A04.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A04);
+    /*p25.XOBA*/ vram_bus.TRI_A05.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A05);
+    /*p25.XOPO*/ vram_bus.TRI_A06.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A06);
+    /*p25.XYBO*/ vram_bus.TRI_A07.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A07);
+    /*p25.RYSU*/ vram_bus.TRI_A08.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A08);
+    /*p25.RESE*/ vram_bus.TRI_A09.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A09);
+    /*p25.RUSE*/ vram_bus.TRI_A10.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A10);
+    /*p25.RYNA*/ vram_bus.TRI_A11.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A11);
+    /*p25.RUMO*/ vram_bus.TRI_A12.set_tribuf(XEDU_VRAM_LOCK, cpu_bus.PIN_A12); // 6-rung
   }
 
   {
-    /*p25.TEME*/ vram_bus.TRI_D0.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D0);
-    /*p25.TEWU*/ vram_bus.TRI_D1.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D1);
-    /*p25.TYGO*/ vram_bus.TRI_D2.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D2);
-    /*p25.SOTE*/ vram_bus.TRI_D3.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D3);
-    /*p25.SEKE*/ vram_bus.TRI_D4.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D4);
-    /*p25.RUJO*/ vram_bus.TRI_D5.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D5);
-    /*p25.TOFA*/ vram_bus.TRI_D6.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D6);
-    /*p25.SUZA*/ vram_bus.TRI_D7.set_tribuf(bus_sig.RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D7); // 10-rung
-  }
+    auto bus_sig = gb.bus_mux.sig(gb);
+    /*p25.SEBY*/ wire SEBY_VRAMD_TO_CPUDn = not(bus_sig.TYVY_VRAMD_TO_CPUDp);
 
-  {
+    auto& vram_bus = gb.vram_bus;
     /*p25.RERY*/ wire RERY = !not(vram_bus.TRI_D0);
     /*p25.RUNA*/ wire RUNA = !not(vram_bus.TRI_D1);
     /*p25.RONA*/ wire RONA = !not(vram_bus.TRI_D2);
@@ -285,49 +325,55 @@ void BusMux::tick(TestGB& gb) {
     /*p25.RABO*/ wire RABO = !not(vram_bus.TRI_D6);
     /*p25.SAME*/ wire SAME = !not(vram_bus.TRI_D7);
 
-    /*p25.RUGA*/ cpu_bus.TRI_D0.set_tribuf(bus_sig.SEBY_VRAMD_TO_CPUDn, RERY);
-    /*p25.ROTA*/ cpu_bus.TRI_D1.set_tribuf(bus_sig.SEBY_VRAMD_TO_CPUDn, RUNA);
-    /*p25.RYBU*/ cpu_bus.TRI_D2.set_tribuf(bus_sig.SEBY_VRAMD_TO_CPUDn, RONA);
-    /*p25.RAJU*/ cpu_bus.TRI_D3.set_tribuf(bus_sig.SEBY_VRAMD_TO_CPUDn, RUNO);
-    /*p25.TYJA*/ cpu_bus.TRI_D4.set_tribuf(bus_sig.SEBY_VRAMD_TO_CPUDn, SANA);
-    /*p25.REXU*/ cpu_bus.TRI_D5.set_tribuf(bus_sig.SEBY_VRAMD_TO_CPUDn, RORO);
-    /*p25.RUPY*/ cpu_bus.TRI_D6.set_tribuf(bus_sig.SEBY_VRAMD_TO_CPUDn, RABO);
-    /*p25.TOKU*/ cpu_bus.TRI_D7.set_tribuf(bus_sig.SEBY_VRAMD_TO_CPUDn, SAME);
+    auto& cpu_bus = gb.cpu_bus;
+    /*p25.RUGA*/ cpu_bus.TRI_D0.set_tribuf(SEBY_VRAMD_TO_CPUDn, RERY);
+    /*p25.ROTA*/ cpu_bus.TRI_D1.set_tribuf(SEBY_VRAMD_TO_CPUDn, RUNA);
+    /*p25.RYBU*/ cpu_bus.TRI_D2.set_tribuf(SEBY_VRAMD_TO_CPUDn, RONA);
+    /*p25.RAJU*/ cpu_bus.TRI_D3.set_tribuf(SEBY_VRAMD_TO_CPUDn, RUNO);
+    /*p25.TYJA*/ cpu_bus.TRI_D4.set_tribuf(SEBY_VRAMD_TO_CPUDn, SANA);
+    /*p25.REXU*/ cpu_bus.TRI_D5.set_tribuf(SEBY_VRAMD_TO_CPUDn, RORO);
+    /*p25.RUPY*/ cpu_bus.TRI_D6.set_tribuf(SEBY_VRAMD_TO_CPUDn, RABO);
+    /*p25.TOKU*/ cpu_bus.TRI_D7.set_tribuf(SEBY_VRAMD_TO_CPUDn, SAME);
   }
 
   {
-    /*p08.ALOR*/ CPU_ADDR_LATCH_00.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A00);
-    /*p08.APUR*/ CPU_ADDR_LATCH_01.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A01);
-    /*p08.ALYR*/ CPU_ADDR_LATCH_02.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A02);
-    /*p08.ARET*/ CPU_ADDR_LATCH_03.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A03);
-    /*p08.AVYS*/ CPU_ADDR_LATCH_04.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A04);
-    /*p08.ATEV*/ CPU_ADDR_LATCH_05.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A05);
-    /*p08.AROS*/ CPU_ADDR_LATCH_06.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A06);
-    /*p08.ARYM*/ CPU_ADDR_LATCH_07.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A07);
-    /*p08.LUNO*/ CPU_ADDR_LATCH_08.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A08);
-    /*p08.LYSA*/ CPU_ADDR_LATCH_09.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A09);
-    /*p08.PATE*/ CPU_ADDR_LATCH_10.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A10);
-    /*p08.LUMY*/ CPU_ADDR_LATCH_11.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A11);
-    /*p08.LOBU*/ CPU_ADDR_LATCH_12.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A12);
-    /*p08.LONU*/ CPU_ADDR_LATCH_13.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A13);
-    /*p08.NYRE*/ CPU_ADDR_LATCH_14.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, cpu_bus.PIN_A14);
-  }
+    auto bus_sig = gb.bus_mux.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
 
-  {
-    // DMA vram read
-    /*p04.ECAL*/ vram_bus.TRI_A00.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A00);
-    /*p04.EGEZ*/ vram_bus.TRI_A01.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A01);
-    /*p04.FUHE*/ vram_bus.TRI_A02.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A02);
-    /*p04.FYZY*/ vram_bus.TRI_A03.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A03);
-    /*p04.DAMU*/ vram_bus.TRI_A04.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A04);
-    /*p04.DAVA*/ vram_bus.TRI_A05.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A05);
-    /*p04.ETEG*/ vram_bus.TRI_A06.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A06);
-    /*p04.EREW*/ vram_bus.TRI_A07.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A07);
-    /*p04.EVAX*/ vram_bus.TRI_A08.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A08);
-    /*p04.DUVE*/ vram_bus.TRI_A09.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A09);
-    /*p04.ERAF*/ vram_bus.TRI_A10.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A10);
-    /*p04.FUSY*/ vram_bus.TRI_A11.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A11);
-    /*p04.EXYF*/ vram_bus.TRI_A12.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, dma_sig.DMA_A12);
+    // Pass gate?
+    /*p08.KUPO*/ PIN_A00_A.set(nand(bus_sig.EXT_ADDR_00, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.CABA*/ PIN_A01_A.set(nand(bus_sig.EXT_ADDR_01, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.BOKU*/ PIN_A02_A.set(nand(bus_sig.EXT_ADDR_02, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.BOTY*/ PIN_A03_A.set(nand(bus_sig.EXT_ADDR_03, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.BYLA*/ PIN_A04_A.set(nand(bus_sig.EXT_ADDR_04, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.BADU*/ PIN_A05_A.set(nand(bus_sig.EXT_ADDR_05, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.CEPU*/ PIN_A06_A.set(nand(bus_sig.EXT_ADDR_06, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.DEFY*/ PIN_A07_A.set(nand(bus_sig.EXT_ADDR_07, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.MYNY*/ PIN_A08_A.set(nand(bus_sig.EXT_ADDR_08, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.MUNE*/ PIN_A09_A.set(nand(bus_sig.EXT_ADDR_09, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.ROXU*/ PIN_A10_A.set(nand(bus_sig.EXT_ADDR_10, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.LEPY*/ PIN_A11_A.set(nand(bus_sig.EXT_ADDR_11, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.LUCE*/ PIN_A12_A.set(nand(bus_sig.EXT_ADDR_12, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.LABE*/ PIN_A13_A.set(nand(bus_sig.EXT_ADDR_13, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.PUHE*/ PIN_A14_A.set(nand(bus_sig.EXT_ADDR_14, dbg_sig.TOVA_MODE_DBG2n));
+    /*p08.SUZE*/ PIN_A15_A.set(nand(bus_sig.TAZY_A15,    dbg_sig.RYCA_MODE_DBG2n));
+
+    /*p08.KOTY*/ PIN_A00_D.set(nor (bus_sig.EXT_ADDR_00, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.COTU*/ PIN_A01_D.set(nor (bus_sig.EXT_ADDR_01, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.BAJO*/ PIN_A02_D.set(nor (bus_sig.EXT_ADDR_02, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.BOLA*/ PIN_A03_D.set(nor (bus_sig.EXT_ADDR_03, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.BEVO*/ PIN_A04_D.set(nor (bus_sig.EXT_ADDR_04, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.AJAV*/ PIN_A05_D.set(nor (bus_sig.EXT_ADDR_05, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.CYKA*/ PIN_A06_D.set(nor (bus_sig.EXT_ADDR_06, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.COLO*/ PIN_A07_D.set(nor (bus_sig.EXT_ADDR_07, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.MEGO*/ PIN_A08_D.set(nor (bus_sig.EXT_ADDR_08, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.MENY*/ PIN_A09_D.set(nor (bus_sig.EXT_ADDR_09, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.RORE*/ PIN_A10_D.set(nor (bus_sig.EXT_ADDR_10, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.LYNY*/ PIN_A11_D.set(nor (bus_sig.EXT_ADDR_11, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.LOSO*/ PIN_A12_D.set(nor (bus_sig.EXT_ADDR_12, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.LEVA*/ PIN_A13_D.set(nor (bus_sig.EXT_ADDR_13, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.PAHY*/ PIN_A14_D.set(nor (bus_sig.EXT_ADDR_14, dbg_sig.UNOR_MODE_DBG2p));
+    /*p08.RULO*/ PIN_A15_D.set(nor (bus_sig.TAZY_A15,    dbg_sig.UNOR_MODE_DBG2p));
   }
 }
 
@@ -336,23 +382,40 @@ void BusMux::tick(TestGB& gb) {
 bool BusMux::commit() {
   bool changed = false;
 
-  /*p04.MAKA*/ changed |= MAKA_FROM_CPU5_SYNC.commit_reg();
+  /* PIN_01 */ changed |= PIN_A00_A.commit_pinout();     // <- KUPO
+  /* PIN_01 */ changed |= PIN_A00_D.commit_pinout();     // <- KOTY
+  /* PIN_02 */ changed |= PIN_A01_A.commit_pinout();     // <- CABA
+  /* PIN_02 */ changed |= PIN_A01_D.commit_pinout();     // <- COTU
+  /* PIN_03 */ changed |= PIN_A02_A.commit_pinout();     // <- BOKU
+  /* PIN_03 */ changed |= PIN_A02_D.commit_pinout();     // <- BAJO
+  /* PIN_04 */ changed |= PIN_A03_A.commit_pinout();     // <- BOTY
+  /* PIN_04 */ changed |= PIN_A03_D.commit_pinout();     // <- BOLA
+  /* PIN_05 */ changed |= PIN_A04_A.commit_pinout();     // <- BYLA
+  /* PIN_05 */ changed |= PIN_A04_D.commit_pinout();     // <- BEVO
+  /* PIN_06 */ changed |= PIN_A05_A.commit_pinout();     // <- BADU
+  /* PIN_06 */ changed |= PIN_A05_D.commit_pinout();     // <- AJAV
+  /* PIN_07 */ changed |= PIN_A06_A.commit_pinout();     // <- CEPU
+  /* PIN_07 */ changed |= PIN_A06_D.commit_pinout();     // <- CYKA
+  /* PIN_08 */ changed |= PIN_A07_A.commit_pinout();     // <- DEFY
+  /* PIN_08 */ changed |= PIN_A07_D.commit_pinout();     // <- COLO
+  /* PIN_09 */ changed |= PIN_A08_A.commit_pinout();     // <- MYNY
+  /* PIN_09 */ changed |= PIN_A08_D.commit_pinout();     // <- MEGO
+  /* PIN_10 */ changed |= PIN_A09_A.commit_pinout();     // <- MUNE
+  /* PIN_10 */ changed |= PIN_A09_D.commit_pinout();     // <- MENY
+  /* PIN_11 */ changed |= PIN_A10_A.commit_pinout();     // <- ROXU
+  /* PIN_11 */ changed |= PIN_A10_D.commit_pinout();     // <- RORE
+  /* PIN_12 */ changed |= PIN_A11_A.commit_pinout();     // <- LEPY
+  /* PIN_12 */ changed |= PIN_A11_D.commit_pinout();     // <- LYNY
+  /* PIN_13 */ changed |= PIN_A12_A.commit_pinout();     // <- LUCE
+  /* PIN_13 */ changed |= PIN_A12_D.commit_pinout();     // <- LOSO
+  /* PIN_14 */ changed |= PIN_A13_A.commit_pinout();     // <- LABE
+  /* PIN_14 */ changed |= PIN_A13_D.commit_pinout();     // <- LEVA
+  /* PIN_15 */ changed |= PIN_A14_A.commit_pinout();     // <- PUHE
+  /* PIN_15 */ changed |= PIN_A14_D.commit_pinout();     // <- PAHY
+  /* PIN_16 */ changed |= PIN_A15_A.commit_pinout();     // <- SUZE
+  /* PIN_16 */ changed |= PIN_A15_D.commit_pinout();     // <- RULO
 
-  /*p08.ALOR*/ changed |= CPU_ADDR_LATCH_00.commit_latch();
-  /*p08.APUR*/ changed |= CPU_ADDR_LATCH_01.commit_latch();
-  /*p08.ALYR*/ changed |= CPU_ADDR_LATCH_02.commit_latch();
-  /*p08.ARET*/ changed |= CPU_ADDR_LATCH_03.commit_latch();
-  /*p08.AVYS*/ changed |= CPU_ADDR_LATCH_04.commit_latch();
-  /*p08.ATEV*/ changed |= CPU_ADDR_LATCH_05.commit_latch();
-  /*p08.AROS*/ changed |= CPU_ADDR_LATCH_06.commit_latch();
-  /*p08.ARYM*/ changed |= CPU_ADDR_LATCH_07.commit_latch();
-  /*p08.LUNO*/ changed |= CPU_ADDR_LATCH_08.commit_latch();
-  /*p08.LYSA*/ changed |= CPU_ADDR_LATCH_09.commit_latch();
-  /*p08.PATE*/ changed |= CPU_ADDR_LATCH_10.commit_latch();
-  /*p08.LUMY*/ changed |= CPU_ADDR_LATCH_11.commit_latch();
-  /*p08.LOBU*/ changed |= CPU_ADDR_LATCH_12.commit_latch();
-  /*p08.LONU*/ changed |= CPU_ADDR_LATCH_13.commit_latch();
-  /*p08.NYRE*/ changed |= CPU_ADDR_LATCH_14.commit_latch();
+
   return changed;
 }
 

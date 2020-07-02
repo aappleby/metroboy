@@ -90,6 +90,8 @@ struct ClockRegisters {
 
 private:
 
+  /* PIN_75 */ PinOut PIN_PHI;    // <- P01.BUDE/BEVA
+
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
   /*p01.AFUR*/ Reg9_Duo AFUR_PHAZ_xBCDExxx;
   /*p01.ALEF*/ Reg9_Duo ALEF_PHAZ_xxCDEFxx;

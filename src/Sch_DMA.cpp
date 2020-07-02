@@ -65,17 +65,10 @@ DmaSignals DmaRegisters::sig(const TestGB& /*gb*/) const {
   // would select last quarter of ROM, which doesn't make sense
   // so rung 6 of MARU must be Q.
 
-  /*p04.LEBU*/ wire _LEBU_DMA_ADDR_A15n  = not(DMA_A15.q());
-  /*p04.MUDA*/ wire _MUDA_DMA_ADDR_VRAMp = nor(DMA_A13.q(), DMA_A14.q(), _LEBU_DMA_ADDR_A15n);
-  /*p04.MUHO*/ wire _MUHO_DMA_VRAM_RDn   = nand(MATU_DMA_OAM_WRp.q(), _MUDA_DMA_ADDR_VRAMp);
-  /*p04.LOGO*/ wire _LOGO_DMA_VRAMn      = not(_MUDA_DMA_ADDR_VRAMp);
-  /*p04.MORY*/ sig.MORY_DMA_READ_CARTn = nand(MATU_DMA_OAM_WRp.q(), _LOGO_DMA_VRAMn); // This seems wrong, like it should be DMA_READ_CART = and(DMA_RUNNING, !DMA_VRAM);
-  /*p04.LUMA*/ sig.LUMA_DMA_READ_CARTp = not(sig.MORY_DMA_READ_CARTn);
-  /*p25.CEDE*/ sig.CEDE_DMA_READ_CARTn = not(sig.LUMA_DMA_READ_CARTp);
-  /*p04.LUFA*/ sig.LUFA_DMA_READ_VRAMp = not(_MUHO_DMA_VRAM_RDn);
-  /*p28.BOGE*/ sig.BOGE_DMA_RUNNINGn    = not(MATU_DMA_OAM_WRp.q());
+  /*p04.MATU*/ sig.MATU_DMA_RUNNINGp = MATU_DMA_RUNNINGp;
 
-  sig.MATU_DMA_OAM_WRp = MATU_DMA_OAM_WRp;
+  /*p04.LEBU*/ wire LEBU_DMA_ADDR_A15n  = not(DMA_A15.q());
+  /*p04.MUDA*/ sig.MUDA_DMA_SRC_VRAMp = nor(DMA_A13.q(), DMA_A14.q(), LEBU_DMA_ADDR_A15n);
 
   sig.DMA_A00 = DMA_A00;
   sig.DMA_A01 = DMA_A01;
@@ -107,6 +100,7 @@ void DmaRegisters::tick(TestGB& gb) {
   auto dma_sig = gb.dma_reg.sig(gb);
 
   auto& cpu_bus = gb.cpu_bus;
+  auto& vram_bus = gb.vram_bus;
 
   // schematic incorrect.
   // lyxe - weird gate - lavy, loko
@@ -129,7 +123,6 @@ void DmaRegisters::tick(TestGB& gb) {
 
   /*p22.WATE*/ wire WATE_FF46n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
   /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
-
   /*p04.MOLU*/ wire MOLU_FF46_RDn = nand(XEDA_FF46p, cpu_sig.ASOT_CPU_RD);
   /*p04.LAVY*/ wire LAVY_FF46_WRp = and (XEDA_FF46p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
 
@@ -144,7 +137,7 @@ void DmaRegisters::tick(TestGB& gb) {
     // NAND latch
     /*p04.LOKY*/ LOKY_DMA_LATCHp = nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q());
     /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp, rst_sig.CUNU_RSTn, !MYTE_DMA_DONE.q());
-    /*p04.MATU*/ MATU_DMA_OAM_WRp.set(clk_sig.UVYT_xBCDExxx, rst_sig.CUNU_RSTn, LOKY_DMA_LATCHp);
+    /*p04.MATU*/ MATU_DMA_RUNNINGp.set(clk_sig.UVYT_xBCDExxx, rst_sig.CUNU_RSTn, LOKY_DMA_LATCHp);
   }
 
   {
@@ -165,7 +158,41 @@ void DmaRegisters::tick(TestGB& gb) {
   }
 
   {
+    // DMA vram read
+    /*p04.MUHO*/ wire MUHO_DMA_READ_VRAMn   = nand(dma_sig.MATU_DMA_RUNNINGp, dma_sig.MUDA_DMA_SRC_VRAMp);
+    /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);
+    /*p04.AHOC*/ wire AHOC_DMA_VRAM_RDn = not(LUFA_DMA_READ_VRAMp);
+
+    /*p04.ECAL*/ vram_bus.TRI_A00.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A00);
+    /*p04.EGEZ*/ vram_bus.TRI_A01.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A01);
+    /*p04.FUHE*/ vram_bus.TRI_A02.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A02);
+    /*p04.FYZY*/ vram_bus.TRI_A03.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A03);
+    /*p04.DAMU*/ vram_bus.TRI_A04.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A04);
+    /*p04.DAVA*/ vram_bus.TRI_A05.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A05);
+    /*p04.ETEG*/ vram_bus.TRI_A06.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A06);
+    /*p04.EREW*/ vram_bus.TRI_A07.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A07);
+    /*p04.EVAX*/ vram_bus.TRI_A08.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A08);
+    /*p04.DUVE*/ vram_bus.TRI_A09.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A09);
+    /*p04.ERAF*/ vram_bus.TRI_A10.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A10);
+    /*p04.FUSY*/ vram_bus.TRI_A11.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A11);
+    /*p04.EXYF*/ vram_bus.TRI_A12.set_tribuf(AHOC_DMA_VRAM_RDn, dma_sig.DMA_A12);
+  }
+
+  // FF46 DMA
+  {
     /*p04.LORU*/ wire LORU_FF46_WRn = not(LAVY_FF46_WRp);
+    /*p04.NYGO*/ wire NYGO_FF46_RDp = not(MOLU_FF46_RDn);
+    /*p04.PUSY*/ wire PUSY_FF46_RDn = not(NYGO_FF46_RDp);
+
+    /*p04.POLY*/ cpu_bus.TRI_D0.set_tribuf(!PUSY_FF46_RDn, DMA_A08);
+    /*p04.ROFO*/ cpu_bus.TRI_D1.set_tribuf(!PUSY_FF46_RDn, DMA_A09);
+    /*p04.REMA*/ cpu_bus.TRI_D2.set_tribuf(!PUSY_FF46_RDn, DMA_A10);
+    /*p04.PANE*/ cpu_bus.TRI_D3.set_tribuf(!PUSY_FF46_RDn, DMA_A11);
+    /*p04.PARE*/ cpu_bus.TRI_D4.set_tribuf(!PUSY_FF46_RDn, DMA_A12);
+    /*p04.RALY*/ cpu_bus.TRI_D5.set_tribuf(!PUSY_FF46_RDn, DMA_A13);
+    /*p04.RESU*/ cpu_bus.TRI_D6.set_tribuf(!PUSY_FF46_RDn, DMA_A14);
+    /*p04.NUVY*/ cpu_bus.TRI_D7.set_tribuf(!PUSY_FF46_RDn, DMA_A15);
+
     /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn, cpu_bus.TRI_D0);
     /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn, cpu_bus.TRI_D1);
     /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn, cpu_bus.TRI_D2);
@@ -175,27 +202,13 @@ void DmaRegisters::tick(TestGB& gb) {
     /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn, cpu_bus.TRI_D6);
     /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn, cpu_bus.TRI_D7);
   }
-
-
-  {
-    /*p04.NYGO*/ wire NYGO_FF46_RDp = not(MOLU_FF46_RDn);
-    /*p04.PUSY*/ wire PUSY_FF46_RDn = not(NYGO_FF46_RDp);
-    /*p04.POLY*/ cpu_bus.TRI_D0.set_tribuf(!PUSY_FF46_RDn, DMA_A08);
-    /*p04.ROFO*/ cpu_bus.TRI_D1.set_tribuf(!PUSY_FF46_RDn, DMA_A09);
-    /*p04.REMA*/ cpu_bus.TRI_D2.set_tribuf(!PUSY_FF46_RDn, DMA_A10);
-    /*p04.PANE*/ cpu_bus.TRI_D3.set_tribuf(!PUSY_FF46_RDn, DMA_A11);
-    /*p04.PARE*/ cpu_bus.TRI_D4.set_tribuf(!PUSY_FF46_RDn, DMA_A12);
-    /*p04.RALY*/ cpu_bus.TRI_D5.set_tribuf(!PUSY_FF46_RDn, DMA_A13);
-    /*p04.RESU*/ cpu_bus.TRI_D6.set_tribuf(!PUSY_FF46_RDn, DMA_A14);
-    /*p04.NUVY*/ cpu_bus.TRI_D7.set_tribuf(!PUSY_FF46_RDn, DMA_A15);
-  }
 }
 
 //-----------------------------------------------------------------------------
 
 bool DmaRegisters::commit() {
   bool changed = false;
-  /*p04.MATU*/ changed |= MATU_DMA_OAM_WRp.commit_reg(); // -> p25,p28
+  /*p04.MATU*/ changed |= MATU_DMA_RUNNINGp.commit_reg(); // -> p25,p28
   /*p04.MYTE*/ changed |= MYTE_DMA_DONE.commit_reg();
   /*p04.LUVY*/ changed |= LUVY_DMA_TRIG_d0.commit_reg();
   /*p04.LENE*/ changed |= LENE_DMA_TRIG_d4.commit_reg();
@@ -231,7 +244,7 @@ bool DmaRegisters::commit() {
 void dump_regs(TextPainter& text_painter) {
   text_painter.dprintf(" ----- DMA REG -----\n");
   //FROM_CPU5_SYNC.dump(text_painter, "FROM_CPU5_SYNC   ");
-  MATU_DMA_OAM_WRp.dump(text_painter, "DMA_RUNNING  ");
+  MATU_DMA_RUNNINGp.dump(text_painter, "DMA_RUNNING  ");
   MYTE_DMA_DONE.dump(text_painter, "MYTE_DMA_DONE    ");
   LUVY_DMA_TRIG_d0.dump(text_painter, "LUVY    ");
   LENE_DMA_TRIG_d4.dump(text_painter, "LENE    ");

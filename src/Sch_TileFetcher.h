@@ -12,7 +12,7 @@ struct TileFetcherSignals {
 
   /*p27.TAVE*/ Signal TAVE_PORCH_DONE_TRIGp;               // to ppu TEVO
   /*p24.POKY*/ Signal POKY_PORCH_DONEp;       // to TYFA_CLKPIPEp_xBxDxFxH
-  /*p24.PORY*/ Signal PORY_FETCH_DONE_Bp;   // to RYDY_WIN_HIT_LATCH? that doesn't seem right
+  /*p24.PORY*/ Signal PORY_FETCH_DONE_Bp;   // to RYDY_WIN_HIT_LATCHp? that doesn't seem right
 
   /*p27.NYXU*/ Signal NYXU_TILE_FETCHER_RSTn;
 

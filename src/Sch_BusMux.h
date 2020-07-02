@@ -17,15 +17,16 @@ struct BusMuxSignals {
   /*p28.XEMU*/ Signal XEMU_OAM_A6p;
   /*p28.YZET*/ Signal YZET_OAM_A7p;
 
-  /*p28.AZUL*/ Signal AZUL_D_TO_OAMD;
+  /*p28.AZUL*/ Signal AZUL_CPUD_TO_OAMD;   // to oam bus, drives cpu bus data onto oam bus data
   /*p25.XEDU*/ Signal XEDU_VRAM_LOCK;
   /*p04.AHOC*/ Signal AHOC_DMA_VRAM_RDn;
-  /*p25.RAHU*/ Signal RAHU_VBUS_TRISTATEp;
-  /*p04.WYJA*/ Signal WYJA_OAM_WRp;
-  /*p28.AMAB*/ Signal AMAB_OAM_LOCKn;
-  /*p25.COTA*/ Signal COTA_OAM_CLK;
-  /*p28.BODE*/ Signal BODE_OAM_LATCH;
-  /*p25.SEBY*/ Signal SEBY_MD_TO_D;
+  /*p25.RAHU*/ Signal RAHU_VBUS_TRISTATEp; // to bus mux, controls CPUD to VRAMD. also
+
+  /*p04.WYJA*/ Signal WYJA_OAM_WRp;        // to oam, controls PIN_OAM_WR*
+  /*p28.AMAB*/ Signal AMAB_OAM_LOCKn;      // to oam, controls driving OAMD to CPUD
+  /*p25.COTA*/ Signal COTA_OAM_CLK;        // to oam, controls PIN_CLK
+  /*p28.BODE*/ Signal BODE_OAM_LATCH;      // to oam, controls PIN_OE and OAMD to OAML
+  /*p25.SEBY*/ Signal SEBY_VRAMD_TO_CPUDn; // to busmux.tick, controls VRAMD to CPUD
 
   /*p08.TAZY*/ Signal TAZY_A15;
   /*p08.TYHO*/ Signal TYHO_CS_A;

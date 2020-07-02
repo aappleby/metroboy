@@ -8,6 +8,8 @@ struct TestGB;
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcherSignals {
+  /*p29.XEFY*/ Signal XEPY_PIPE_LOAD_SPRITEn; // to pix pipe
+
   /*p33.PEFO*/ Signal SPR_PIX_A0;
   /*p33.ROKA*/ Signal SPR_PIX_A1;
   /*p33.MYTU*/ Signal SPR_PIX_A2;
@@ -26,16 +28,17 @@ struct SpriteFetcherSignals {
   /*p33.SEMO*/ Signal SPR_PIX_B6;
   /*p33.SEGA*/ Signal SPR_PIX_B7;
 
-  /*p28.XUJA*/ Signal XUJA_SPR_READn;           // to bus_mux, controls BODE_OAM_LATCH
-  /*p25.XUJY*/ Signal XUJY;                     // to bus mux, controls COTA_OAM_CLK
+  /*p28.WEFY*/ Signal WEFY_SPR_READp;
+  /*p28.XUJA*/ Signal XUJA_SPR_READn;         // to bus_mux, controls BODE_OAM_LATCH
+
+  /*p25.VAPE*/ Signal VAPE_FETCH_OAM_CLK;                   // to bus mux, controls COTA_OAM_CLK
   
-  /*p29.WUTY*/ Signal WUTY_SPRITE_DONEp;        // to ppu, sprite store
-  /*p29.XEFY*/ Signal XEPY_SPRITE_DONEn;        // to pix pipe
+  /*p29.WUTY*/ Signal WUTY_PIPE_LOAD_SPRITEp;      // to ppu, sprite store
 
-  /*p27.SOWO*/ Signal SOWO_SPRITE_FETCH_LATCHn; // to ppu to stop overlapping sprite fetches
+  /*p27.SOWO*/ Signal SOWO_SFETCH_RUNNINGn;   // to ppu to stop overlapping sprite fetches
 
-  /*p25.SOHO*/ Signal SOHO_SPR_VRAM_RDp;        // to vram, controls PIN_MOEn
-  /*p29.TEXY*/ Signal TEXY_SPRITE_READp;        // to vram, controls PIN_MCSn
+  /*p25.SOHO*/ Signal SOHO_SPR_VRAM_RDp;      // to vram, controls PIN_MOEn
+  /*p29.TEXY*/ Signal TEXY_SPRITE_READp;      // to vram, controls PIN_MCSn
 
 
 };
@@ -49,18 +52,18 @@ struct SpriteFetcher {
 
 private:
 
-  /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUN_LATCH;
-  /*p27.SOBU*/ Reg SOBU_SPRITE_FETCH_SYNC1;
-  /*p27.SUDA*/ Reg SUDA_SPRITE_FETCH_SYNC2;
+  /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp;
+  /*p27.SOBU*/ Reg17 SOBU_SPRITE_FETCH_TRIG_A;
+  /*p27.SUDA*/ Reg17 SUDA_SPRITE_FETCH_TRIG_B;
 
-  /*p29.TOXE*/ Reg TOXE_SFETCH_S0;
-  /*p29.TULY*/ Reg TULY_SFETCH_S1;
-  /*p29.TESE*/ Reg TESE_SFETCH_S2;
+  /*p29.TOXE*/ Reg17 TOXE_SFETCH_S0_D0;
+  /*p29.TYFO*/ Reg17 TYFO_SFETCH_S0_D1;
+  /*p29.TULY*/ Reg17 TULY_SFETCH_S1;
+  /*p29.TESE*/ Reg17 TESE_SFETCH_S2;
 
-  /*p29.TOBU*/ Reg TOBU_SFETCH_S1_D2;
-  /*p29.VONU*/ Reg VONU_SFETCH_S1_D4;
-  /*p29.SEBA*/ Reg SEBA_SFETCH_S1_D5;
-  /*p29.TYFO*/ Reg TYFO_SFETCH_S0_D1;
+  /*p29.TOBU*/ Reg17 TOBU_SFETCH_S1_D2;
+  /*p29.VONU*/ Reg17 VONU_SFETCH_S1_D4;
+  /*p29.SEBA*/ Reg17 SEBA_SFETCH_S1_D5;
 
   /*p33.PEFO*/ Reg8 SPR_PIX_A0;
   /*p33.ROKA*/ Reg8 SPR_PIX_A1;

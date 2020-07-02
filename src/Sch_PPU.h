@@ -11,14 +11,12 @@ struct PpuSignals {
   /*p27.TEVO*/ Signal TEVO_FINE_RSTp;
   /*p21.WODU*/ Signal WODU_RENDER_DONEp;         // to ppu.tick
   /*p27.NYXU*/ Signal NYXU_TILE_FETCHER_RSTn;    // to tile fetcher
-  /*p28.ACYL*/ Signal ACYL_PPU_USE_OAM1p;        // to bus mux
+  /*p28.ACYL*/ Signal ACYL_SCANNINGp;            // to bus mux
   /*p27.TEKY*/ Signal TEKY_SPRITE_FETCH;         // to sprite fetcher
-  /*p27.VEKU*/ Signal VEKU_SFETCH_RSTn;          // to sprite fetcher
+  /*p27.VEKU*/ Signal VEKU_SFETCH_RUNNING_RSTn;  // to sprite fetcher
 
   /*p21.XYMU*/ Signal XYMU_RENDERINGp;           // to a bunch of stuff
 
-  /*p24.LOBY*/ Signal LOBY_RENDERINGn;           // to sprite fetcher, tile fetcher. should move.
-  /*p25.ROPY*/ Signal ROPY_RENDERINGn;           // remove me
   /*p25.SERE*/ Signal SERE_VRAM_RD;              // this signal shouldn't be in the ppu. controls vbus data tristate
 
   /*p24.SEGU*/ Signal SEGU_CLKPIPEn;             // ppu.tick, window matcher. can prob move matcher into ppu now

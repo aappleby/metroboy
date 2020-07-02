@@ -194,26 +194,35 @@ void PixelPipeRegisters::tick(TestGB& gb) {
   }
 
   {
-    /*p34.MEFU*/ wire SPRITE_MASK0 = or(sprite_fetcher_sig.XEPY_SPRITE_DONEn, SPR_PIPE_A0, SPR_PIPE_B0);
-    /*p34.MEVE*/ wire SPRITE_MASK1 = or(sprite_fetcher_sig.XEPY_SPRITE_DONEn, SPR_PIPE_A1, SPR_PIPE_B1);
-    /*p34.MYZO*/ wire SPRITE_MASK2 = or(sprite_fetcher_sig.XEPY_SPRITE_DONEn, SPR_PIPE_A2, SPR_PIPE_B2);
-    /*p34.RUDA*/ wire SPRITE_MASK3 = or(sprite_fetcher_sig.XEPY_SPRITE_DONEn, SPR_PIPE_A3, SPR_PIPE_B3);
-    /*p34.VOTO*/ wire SPRITE_MASK4 = or(sprite_fetcher_sig.XEPY_SPRITE_DONEn, SPR_PIPE_A4, SPR_PIPE_B4);
-    /*p34.VYSA*/ wire SPRITE_MASK5 = or(sprite_fetcher_sig.XEPY_SPRITE_DONEn, SPR_PIPE_A5, SPR_PIPE_B5);
-    /*p34.TORY*/ wire SPRITE_MASK6 = or(sprite_fetcher_sig.XEPY_SPRITE_DONEn, SPR_PIPE_A6, SPR_PIPE_B6);
-    /*p34.WOPE*/ wire SPRITE_MASK7 = or(sprite_fetcher_sig.XEPY_SPRITE_DONEn, SPR_PIPE_A7, SPR_PIPE_B7);
+    /*p34.MEFU*/ wire SPRITE_MASK0p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A0, SPR_PIPE_B0); // def or
+    /*p34.MEVE*/ wire SPRITE_MASK1p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A1, SPR_PIPE_B1);
+    /*p34.MYZO*/ wire SPRITE_MASK2p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A2, SPR_PIPE_B2);
+    /*p34.RUDA*/ wire SPRITE_MASK3p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A3, SPR_PIPE_B3);
+    /*p34.VOTO*/ wire SPRITE_MASK4p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A4, SPR_PIPE_B4);
+    /*p34.VYSA*/ wire SPRITE_MASK5p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A5, SPR_PIPE_B5);
+    /*p34.TORY*/ wire SPRITE_MASK6p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A6, SPR_PIPE_B6);
+    /*p34.WOPE*/ wire SPRITE_MASK7p = or(sprite_fetcher_sig.XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A7, SPR_PIPE_B7);
 
-    /*p34.LESY*/ wire SPRITE_MASK0n = not(SPRITE_MASK0);
-    /*p34.LOTA*/ wire SPRITE_MASK1n = not(SPRITE_MASK1);
-    /*p34.LYKU*/ wire SPRITE_MASK2n = not(SPRITE_MASK2);
-    /*p34.ROBY*/ wire SPRITE_MASK3n = not(SPRITE_MASK3);
-    /*p34.TYTA*/ wire SPRITE_MASK4n = not(SPRITE_MASK4);
-    /*p34.TYCO*/ wire SPRITE_MASK5n = not(SPRITE_MASK5);
-    /*p34.SOKA*/ wire SPRITE_MASK6n = not(SPRITE_MASK6);
-    /*p34.XOVU*/ wire SPRITE_MASK7n = not(SPRITE_MASK7);
+    /*p34.LESY*/ wire SPRITE_MASK0n = not(SPRITE_MASK0p);
+    /*p34.LOTA*/ wire SPRITE_MASK1n = not(SPRITE_MASK1p);
+    /*p34.LYKU*/ wire SPRITE_MASK2n = not(SPRITE_MASK2p);
+    /*p34.ROBY*/ wire SPRITE_MASK3n = not(SPRITE_MASK3p);
+    /*p34.TYTA*/ wire SPRITE_MASK4n = not(SPRITE_MASK4p);
+    /*p34.TYCO*/ wire SPRITE_MASK5n = not(SPRITE_MASK5p);
+    /*p34.SOKA*/ wire SPRITE_MASK6n = not(SPRITE_MASK6p);
+    /*p34.XOVU*/ wire SPRITE_MASK7n = not(SPRITE_MASK7p);
 
     // Sprite pipe A
     {
+#if 0
+      if (!XEPY_PIPE_LOAD_SPRITEn && !SPR_PIPE_A0 && !SPR_PIPE_B0) {
+        /*p33.NYLU*/ SPR_PIPE_A0 = SPR_PIX_A0;
+      }
+      else {
+        /*p33.NYLU*/ SPR_PIPE_A0.set(ppu_sig.SACU_CLKPIPEp, 1, 1, P10_B);
+      }
+#endif
+
       /*p33.LOZA*/ wire SPR_PIX_A0n = not(sprite_fetcher_sig.SPR_PIX_A0);
       /*p33.SYBO*/ wire SPR_PIX_A1n = not(sprite_fetcher_sig.SPR_PIX_A1);
       /*p33.LUMO*/ wire SPR_PIX_A2n = not(sprite_fetcher_sig.SPR_PIX_A2);

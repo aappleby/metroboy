@@ -153,7 +153,8 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
 
   /*p27.NYXU*/ ppu_sig.NYXU_TILE_FETCHER_RSTn = nor(sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp, win_sig.MOSU_WIN_MODE_TRIGp, ppu_sig.TEVO_FINE_RSTp);
 
-  /*p28.ACYL*/ ppu_sig.ACYL_PPU_USE_OAM1p = and (dma_sig.BOGE_DMA_RUNNINGn, sprite_scanner_sig.BESU_SCANNINGp);
+  // so dma stops oam scan?
+  /*p28.ACYL*/ ppu_sig.ACYL_SCANNINGp = and (dma_sig.BOGE_DMA_RUNNINGn, sprite_scanner_sig.BESU_SCANNINGp);
 
   {
 #if 0
@@ -170,8 +171,8 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
     /*p24.SACU*/ ppu_sig.SACU_CLKPIPEp = nor(ppu_sig.SEGU_CLKPIPEn, ROXY_FINE_MATCH_LATCHn);
   }
 
-  /*p24.LOBY*/ ppu_sig.LOBY_RENDERINGn = not(XYMU_RENDERINGp.q());
-  /*p25.ROPY*/ ppu_sig.ROPY_RENDERINGn = not(XYMU_RENDERINGp.q());
+  ///*p24.LOBY*/ ppu_sig.LOBY_RENDERINGn = not(XYMU_RENDERINGp.q());
+  ///*p25.ROPY*/ ppu_sig.ROPY_RENDERINGn = not(XYMU_RENDERINGp.q());
 
   /*p27.ROZE*/ ppu_sig.ROZE_FINE_COUNT_STOPn = nand(RYKU_FINE_CNT0, ROGA_FINE_CNT1, RUBU_FINE_CNT2);
 
@@ -179,7 +180,8 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
     /*p25.TUCA*/ wire _TUCA_CPU_VRAM_RD = and (cpu_sig.SOSE_8000_9FFFp, dbg_sig.ABUZ);
     /*p25.TEFY*/ wire _TEFY_MCSn_Cn = not(vram_pins.PIN_MCSn_C);
     /*p25.TOLE*/ wire _TOLE_VRAM_RD = mux2_p(_TEFY_MCSn_Cn, _TUCA_CPU_VRAM_RD, dbg_sig.TUTO_DBG_VRAMp);
-    /*p25.SERE*/ ppu_sig.SERE_VRAM_RD = and (_TOLE_VRAM_RD, ppu_sig.ROPY_RENDERINGn);
+    /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp);
+    /*p25.SERE*/ ppu_sig.SERE_VRAM_RD = and (_TOLE_VRAM_RD, ROPY_RENDERINGn);
   }
 
   {
@@ -198,11 +200,11 @@ PpuSignals PpuRegisters::sig(const TestGB& gb) const {
     /*p27.TEKY*/ ppu_sig.TEKY_SPRITE_FETCH = and (sst_sig.FEPO_STORE_MATCHp,
                                                   win_sig.TUKU_WIN_HITn,
                                                   tile_fetcher_sig.LYRY_BFETCH_DONEp,
-                                                  sprite_fetcher_sig.SOWO_SPRITE_FETCH_LATCHn);
+                                                  sprite_fetcher_sig.SOWO_SFETCH_RUNNINGn);
 
     // And this is the topmost "reset sprite fetcher" signal
-    /*p27.VEKU*/ ppu_sig.VEKU_SFETCH_RSTn = nor(sprite_fetcher_sig.WUTY_SPRITE_DONEp,
-                                                tile_fetcher_sig.TAVE_PORCH_DONE_TRIGp); // def nor
+    /*p27.VEKU*/ ppu_sig.VEKU_SFETCH_RUNNING_RSTn = nor(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp,
+                                                        tile_fetcher_sig.TAVE_PORCH_DONE_TRIGp); // def nor
   }
 
 
@@ -250,7 +252,8 @@ void PpuRegisters::tick(TestGB& gb) {
     {
       /*p24.ROXO*/ wire ROXO_CLKPIPEp = not(ppu_sig.SEGU_CLKPIPEn);
       /*p27.PECU*/ wire PECU_FINE_CLK = nand(ROXO_CLKPIPEp, ppu_sig.ROZE_FINE_COUNT_STOPn);
-      /*p27.PASO*/ wire PASO_FINE_RST = nor(ppu_sig.TEVO_FINE_RSTp, ppu_sig.ROPY_RENDERINGn);
+      /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp);
+      /*p27.PASO*/ wire PASO_FINE_RST = nor(ppu_sig.TEVO_FINE_RSTp, ROPY_RENDERINGn);
       /*p27.RYKU*/ RYKU_FINE_CNT0.set(PECU_FINE_CLK,   PASO_FINE_RST, !RYKU_FINE_CNT0);
       /*p27.ROGA*/ ROGA_FINE_CNT1.set(!RYKU_FINE_CNT0, PASO_FINE_RST, !ROGA_FINE_CNT1);
       /*p27.RUBU*/ RUBU_FINE_CNT2.set(!ROGA_FINE_CNT1, PASO_FINE_RST, !RUBU_FINE_CNT2);
@@ -363,7 +366,7 @@ void PpuRegisters::tick(TestGB& gb) {
     /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, rst_sig.WESY_RSTn, cpu_bus.TRI_D3);
 
     /*p21.PARU*/ wire PARU_IN_VBLANK = not(!lcd_sig.POPU_VBLANK_d4);
-    /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(XYMU_RENDERINGp, ppu_sig.ACYL_PPU_USE_OAM1p); // die NOR
+    /*p21.XATY*/ wire XATY_STAT_MODE1n = nor(XYMU_RENDERINGp, ppu_sig.ACYL_SCANNINGp); // die NOR
     /*p21.SADU*/ wire SADU_STAT_MODE0n = nor(XYMU_RENDERINGp, PARU_IN_VBLANK); // die NOR
 
     // OK, these tribufs are _slightly_ different - compare SEGO and SASY, second rung.

@@ -350,16 +350,16 @@ void SpriteStoreRegisters::tick(TestGB& gb) {
     /*p29.GUZE*/ wire GUZE_SPRITE9_GETp = nor(sst_sig.STORE9_MATCHn, STORE8_MATCH_OUT);
 
     // Delayed reset signal for the selected store
-    /*p29.EBOJ*/ EBOJ_STORE0_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUVA_SPRITE0_GETp);
-    /*p29.CEDY*/ CEDY_STORE1_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, ENUT_SPRITE1_GETp);
-    /*p29.EGAV*/ EGAV_STORE2_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, EMOL_SPRITE2_GETp);
-    /*p29.GOTA*/ GOTA_STORE3_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GYFY_SPRITE3_GETp);
-    /*p29.XUDY*/ XUDY_STORE4_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GONO_SPRITE4_GETp);
-    /*p29.WAFY*/ WAFY_STORE5_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GEGA_SPRITE5_GETp);
-    /*p29.WOMY*/ WOMY_STORE6_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, XOJA_SPRITE6_GETp);
-    /*p29.WAPO*/ WAPO_STORE7_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUTU_SPRITE7_GETp);
-    /*p29.EXUQ*/ EXUQ_STORE8_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, FOXA_SPRITE8_GETp);
-    /*p29.FONO*/ FONO_STORE9_RSTp.set(sprite_fetcher_sig.WUTY_SPRITE_DONEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUZE_SPRITE9_GETp);
+    /*p29.EBOJ*/ EBOJ_STORE0_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUVA_SPRITE0_GETp);
+    /*p29.CEDY*/ CEDY_STORE1_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, ENUT_SPRITE1_GETp);
+    /*p29.EGAV*/ EGAV_STORE2_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, EMOL_SPRITE2_GETp);
+    /*p29.GOTA*/ GOTA_STORE3_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GYFY_SPRITE3_GETp);
+    /*p29.XUDY*/ XUDY_STORE4_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GONO_SPRITE4_GETp);
+    /*p29.WAFY*/ WAFY_STORE5_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GEGA_SPRITE5_GETp);
+    /*p29.WOMY*/ WOMY_STORE6_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, XOJA_SPRITE6_GETp);
+    /*p29.WAPO*/ WAPO_STORE7_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUTU_SPRITE7_GETp);
+    /*p29.EXUQ*/ EXUQ_STORE8_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, FOXA_SPRITE8_GETp);
+    /*p29.FONO*/ FONO_STORE9_RSTp.set(sprite_fetcher_sig.WUTY_PIPE_LOAD_SPRITEp, lcd_sig.BYVA_VID_LINE_TRIG_d4n, GUZE_SPRITE9_GETp);
 
     /*p29.FURO*/ wire FURO_SPRITE0_GETn = not(GUVA_SPRITE0_GETp);
     /*p29.DYDO*/ wire DYDO_SPRITE1_GETn = not(ENUT_SPRITE1_GETp);

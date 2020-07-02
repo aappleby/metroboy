@@ -104,10 +104,9 @@ void DmaRegisters::tick(TestGB& gb) {
   auto clk_sig = gb.clk_reg.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
   auto bus_sig = gb.bus_mux.sig(gb);
+  auto dma_sig = gb.dma_reg.sig(gb);
 
   auto& cpu_bus = gb.cpu_bus;
-  auto& vram_bus = gb.vram_bus;
-
 
   // schematic incorrect.
   // lyxe - weird gate - lavy, loko
@@ -181,31 +180,14 @@ void DmaRegisters::tick(TestGB& gb) {
   {
     /*p04.NYGO*/ wire NYGO_FF46_RDp = not(MOLU_FF46_RDn);
     /*p04.PUSY*/ wire PUSY_FF46_RDn = not(NYGO_FF46_RDp);
-    /*p04.POLY*/ cpu_bus.TRI_D0.set_tribuf(!PUSY_FF46_RDn, DMA_A08.q());
-    /*p04.ROFO*/ cpu_bus.TRI_D1.set_tribuf(!PUSY_FF46_RDn, DMA_A09.q());
-    /*p04.REMA*/ cpu_bus.TRI_D2.set_tribuf(!PUSY_FF46_RDn, DMA_A10.q());
-    /*p04.PANE*/ cpu_bus.TRI_D3.set_tribuf(!PUSY_FF46_RDn, DMA_A11.q());
-    /*p04.PARE*/ cpu_bus.TRI_D4.set_tribuf(!PUSY_FF46_RDn, DMA_A12.q());
-    /*p04.RALY*/ cpu_bus.TRI_D5.set_tribuf(!PUSY_FF46_RDn, DMA_A13.q());
-    /*p04.RESU*/ cpu_bus.TRI_D6.set_tribuf(!PUSY_FF46_RDn, DMA_A14.q());
-    /*p04.NUVY*/ cpu_bus.TRI_D7.set_tribuf(!PUSY_FF46_RDn, DMA_A15.q());
-  }
-
-  {
-    // DMA vram read
-    /*p04.ECAL*/ vram_bus.TRI_A00.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A00);
-    /*p04.EGEZ*/ vram_bus.TRI_A01.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A01);
-    /*p04.FUHE*/ vram_bus.TRI_A02.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A02);
-    /*p04.FYZY*/ vram_bus.TRI_A03.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A03);
-    /*p04.DAMU*/ vram_bus.TRI_A04.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A04);
-    /*p04.DAVA*/ vram_bus.TRI_A05.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A05);
-    /*p04.ETEG*/ vram_bus.TRI_A06.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A06);
-    /*p04.EREW*/ vram_bus.TRI_A07.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A07);
-    /*p04.EVAX*/ vram_bus.TRI_A08.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A08);
-    /*p04.DUVE*/ vram_bus.TRI_A09.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A09);
-    /*p04.ERAF*/ vram_bus.TRI_A10.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A10);
-    /*p04.FUSY*/ vram_bus.TRI_A11.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A11);
-    /*p04.EXYF*/ vram_bus.TRI_A12.set_tribuf(bus_sig.AHOC_DMA_VRAM_RDn, DMA_A12);
+    /*p04.POLY*/ cpu_bus.TRI_D0.set_tribuf(!PUSY_FF46_RDn, DMA_A08);
+    /*p04.ROFO*/ cpu_bus.TRI_D1.set_tribuf(!PUSY_FF46_RDn, DMA_A09);
+    /*p04.REMA*/ cpu_bus.TRI_D2.set_tribuf(!PUSY_FF46_RDn, DMA_A10);
+    /*p04.PANE*/ cpu_bus.TRI_D3.set_tribuf(!PUSY_FF46_RDn, DMA_A11);
+    /*p04.PARE*/ cpu_bus.TRI_D4.set_tribuf(!PUSY_FF46_RDn, DMA_A12);
+    /*p04.RALY*/ cpu_bus.TRI_D5.set_tribuf(!PUSY_FF46_RDn, DMA_A13);
+    /*p04.RESU*/ cpu_bus.TRI_D6.set_tribuf(!PUSY_FF46_RDn, DMA_A14);
+    /*p04.NUVY*/ cpu_bus.TRI_D7.set_tribuf(!PUSY_FF46_RDn, DMA_A15);
   }
 }
 

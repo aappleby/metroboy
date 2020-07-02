@@ -100,7 +100,8 @@ void TileFetcher::tick(TestGB& gb) {
   }
 
   {
-    /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(win_sig.MOSU_WIN_MODE_TRIGp, ppu_sig.LOBY_RENDERINGn);
+    /*p24.LOBY*/ wire LOBY_RENDERINGn = not(ppu_sig.XYMU_RENDERINGp);
+    /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(win_sig.MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
     /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, ppu_sig.NYXU_TILE_FETCHER_RSTn);
     /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
 
@@ -108,7 +109,7 @@ void TileFetcher::tick(TestGB& gb) {
     /*p24.PORY*/ PORY_FETCH_DONE_Bp.set(clk_sig.MYVO_AxCxExGx, NAFY_RENDERING_AND_NOT_WIN_TRIG, NYKA_FETCH_DONE_Ap);
     /*p24.PYGO*/ PYGO_FETCH_DONE_Cp.set(clk_sig.ALET_xBxDxFxH, ppu_sig.XYMU_RENDERINGp,         PORY_FETCH_DONE_Bp);
 
-    /*p24.POKY*/ POKY_PORCH_DONEp.nor_latch(PYGO_FETCH_DONE_Cp, ppu_sig.LOBY_RENDERINGn);
+    /*p24.POKY*/ POKY_PORCH_DONEp.nor_latch(PYGO_FETCH_DONE_Cp, LOBY_RENDERINGn);
   }
 
   //----------------------------------------
@@ -242,10 +243,11 @@ void TileFetcher::tick(TestGB& gb) {
 
 #endif
 
+    /*p24.LOBY*/ wire LOBY_RENDERINGn      = not(ppu_sig.XYMU_RENDERINGp);
     /*p27.LAXE*/ wire LAXE_BFETCH_S0n      = not(LAXU_BFETCH_S0.q());
     /*p27.NAKO*/ wire NAKO_BFETCH_S1n      = not(MESU_BFETCH_S1.q());
     /*p27.NOFU*/ wire NOFU_BFETCH_S2n      = not(NYVA_BFETCH_S2.q());
-    /*p27.MYSO*/ wire MYSO_BG_TRIGp        = nor(ppu_sig.LOBY_RENDERINGn, LAXE_BFETCH_S0n, LYZU_BFETCH_S0_DELAY.q());
+    /*p27.MYSO*/ wire MYSO_BG_TRIGp        = nor(LOBY_RENDERINGn, LAXE_BFETCH_S0n, LYZU_BFETCH_S0_DELAY.q());
     /*p27.NYDY*/ wire NYDY_LATCH_BG_PIX_Ap = nand(MYSO_BG_TRIGp, MESU_BFETCH_S1.q(), NOFU_BFETCH_S2n);
     /*p27.MOFU*/ wire MOFU_LATCH_BG_PIX_Bn = and (MYSO_BG_TRIGp, NAKO_BFETCH_S1n);
 

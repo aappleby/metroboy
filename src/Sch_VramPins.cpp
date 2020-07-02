@@ -79,13 +79,12 @@ void VramPins::tick(TestGB& gb) {
   }
 
   {
-    /*p25.RUVY*/ wire RUVY_VRAM_WRp = not(SALE_VRAM_WRn);
-    /*p25.SAZO*/ wire SAZO_VRAM_RD  = and (RUVY_VRAM_WRp, ppu_sig.SERE_VRAM_RD);
-
-    /*p25.RYJE*/ wire RYJE_VRAM_RDn = not(SAZO_VRAM_RD);
-    /*p25.REVO*/ wire REVO_VRAM_RDp = not(RYJE_VRAM_RDn);
 
     {
+      /*p25.RUVY*/ wire RUVY_VRAM_WRp = not(SALE_VRAM_WRn);
+      /*p25.SAZO*/ wire SAZO_VRAM_RD  = and (RUVY_VRAM_WRp, ppu_sig.SERE_VRAM_RD);
+      /*p25.RYJE*/ wire RYJE_VRAM_RDn = not(SAZO_VRAM_RD);
+      /*p25.REVO*/ wire REVO_VRAM_RDp = not(RYJE_VRAM_RDn);
       /*p25.ROCY*/ wire ROCY_VBUS_TRISTATEn = and (REVO_VRAM_RDp, SAZO_VRAM_RD);
       /*p25.RAHU*/ wire RAHU_VBUS_TRISTATEp = not(ROCY_VBUS_TRISTATEn);
       /*p25.ROVE*/ wire ROVE_VBUS_TRISTATEn = not(RAHU_VBUS_TRISTATEp);
@@ -146,6 +145,10 @@ void VramPins::tick(TestGB& gb) {
     }
 
     {
+      /*p25.RUVY*/ wire RUVY_VRAM_WRp = not(SALE_VRAM_WRn);
+      /*p25.SAZO*/ wire SAZO_VRAM_RD  = and (RUVY_VRAM_WRp, ppu_sig.SERE_VRAM_RD);
+      /*p25.RYJE*/ wire RYJE_VRAM_RDn = not(SAZO_VRAM_RD);
+      /*p25.REVO*/ wire REVO_VRAM_RDp = not(RYJE_VRAM_RDn);
       /*p25.RELA*/ wire RELA_MD_OEp = or (REVO_VRAM_RDp, SAZO_VRAM_RD);
       /*p25.RENA*/ wire RENA_MD_OEn = not(RELA_MD_OEp);
       /*p25.ROFA*/ wire ROFA_MD_OEp = not(RENA_MD_OEn);

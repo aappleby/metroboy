@@ -83,12 +83,16 @@ void OamBus::tick(TestGB& gb) {
 
   {
     PIN_CLK.set(bus_sig.COTA_OAM_CLK);
+  }
 
+  {
     /*p28.YVAL*/ wire _YVAL_OAM_LATCHo = not(bus_sig.BODE_OAM_LATCH);
     /*p28.YRYV*/ wire _YRYU_OAM_LATCHb = not(_YVAL_OAM_LATCHo);
     /*p28.ZODO*/ wire _ZODO_OAM_OE = not(_YRYU_OAM_LATCHb);
     PIN_OE.set(_ZODO_OAM_OE);
+  }
 
+  {
     /*p28.WAFO*/ wire _WAFO_OAM_A0n = not(bus_sig.GEKA_OAM_A0p); // def not
     /*p28.YNYC*/ wire _YNYC_OAM_B_WRn = and (bus_sig.WYJA_OAM_WRp, _WAFO_OAM_A0n); // def and
     /*p28.YLYC*/ wire _YLYC_OAM_A_WRn = and (bus_sig.WYJA_OAM_WRp, bus_sig.GEKA_OAM_A0p); // def and
@@ -144,23 +148,23 @@ void OamBus::tick(TestGB& gb) {
     /*p25.BASY*/ PIN_DB6.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.TUBE*/ not(ext_pins_in.PIN_D6_C));
     /*p25.BAPE*/ PIN_DB7.set_tribuf(dma_sig.CEDE_DMA_READ_CARTn, /*p25.SYZO*/ not(ext_pins_in.PIN_D7_C));
 
-    /*p28.ZAXA*/ PIN_DA0.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D0);
-    /*p28.ZAKY*/ PIN_DA1.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D1);
-    /*p28.WULE*/ PIN_DA2.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D2);
-    /*p28.ZOZO*/ PIN_DA3.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D3);
-    /*p28.ZUFO*/ PIN_DA4.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D4);
-    /*p28.ZATO*/ PIN_DA5.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D5);
-    /*p28.YVUC*/ PIN_DA6.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D6);
-    /*p28.ZUFE*/ PIN_DA7.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D7);
+    /*p28.ZAXA*/ PIN_DA0.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D0);
+    /*p28.ZAKY*/ PIN_DA1.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D1);
+    /*p28.WULE*/ PIN_DA2.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D2);
+    /*p28.ZOZO*/ PIN_DA3.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D3);
+    /*p28.ZUFO*/ PIN_DA4.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D4);
+    /*p28.ZATO*/ PIN_DA5.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D5);
+    /*p28.YVUC*/ PIN_DA6.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D6);
+    /*p28.ZUFE*/ PIN_DA7.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D7);
 
-    /*p28.ZAMY*/ PIN_DB0.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D0); // small tri
-    /*p28.ZOPU*/ PIN_DB1.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D1);
-    /*p28.WYKY*/ PIN_DB2.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D2);
-    /*p28.ZAJA*/ PIN_DB3.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D3);
-    /*p28.ZUGA*/ PIN_DB4.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D4);
-    /*p28.ZUMO*/ PIN_DB5.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D5);
-    /*p28.XYTO*/ PIN_DB6.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D6);
-    /*p28.ZYFA*/ PIN_DB7.set_tribuf(bus_sig.AZUL_D_TO_OAMD, cpu_bus.TRI_D7);
+    /*p28.ZAMY*/ PIN_DB0.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D0); // small tri
+    /*p28.ZOPU*/ PIN_DB1.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D1);
+    /*p28.WYKY*/ PIN_DB2.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D2);
+    /*p28.ZAJA*/ PIN_DB3.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D3);
+    /*p28.ZUGA*/ PIN_DB4.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D4);
+    /*p28.ZUMO*/ PIN_DB5.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D5);
+    /*p28.XYTO*/ PIN_DB6.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D6);
+    /*p28.ZYFA*/ PIN_DB7.set_tribuf(bus_sig.AZUL_CPUD_TO_OAMD, cpu_bus.TRI_D7);
   }
 
 

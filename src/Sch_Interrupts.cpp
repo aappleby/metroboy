@@ -7,27 +7,21 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void InterruptRegisters::tick(SchematicTop& top) {
-  auto& cpu_bus = top.cpu_bus;
-
-  auto tim_sig = top.tim_reg.sig();
   auto ser_sig = top.ser_reg.sig(top);
-  auto joy_sig = top.joy_reg.sig();
   
-  auto cpu_sig = top.cpu_bus.sig(top);
-  auto lcd_sig = top.lcd_reg.sig(top);
   auto ppu_sig = top.ppu_reg.sig(top);
   wire P10_B = 0;
 
   /*p07.SEMY*/ wire SEMY_ADDR_XX0X = nor(top.CPU_PIN_A07, top.CPU_PIN_A06, top.CPU_PIN_A05, top.CPU_PIN_A04);
   /*p07.SAPA*/ wire SAPA_ADDR_XXXF = and (top.CPU_PIN_A00, top.CPU_PIN_A01, top.CPU_PIN_A02, top.CPU_PIN_A03);
-  /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+  /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
   /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
   /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
   /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
   /*p07.ROLO*/ wire ROLO_FF0F_RDn  = nand(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, SYKE_FF00_FFFFp, TEDO_CPU_RD); // schematic wrong, is NAND
   /*p02.POLA*/ wire POLA_FF0F_RDa  = not(ROLO_FF0F_RDn);
 
-  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
+  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
   /*p07.REFA*/ wire REFA_FF0F_WRn = nand(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, SYKE_FF00_FFFFp, TAPU_CPU_WR_xxxxxFGH); // schematic wrong, is NAND
   /*p02.ROTU*/ wire ROTU_FF0F_WRp = not(REFA_FF0F_WRn);
 
@@ -41,26 +35,29 @@ void InterruptRegisters::tick(SchematicTop& top) {
     /*p02.MOPO*/ FF0F_L3.tp_latch(ROLO_FF0F_RDn, LALU_FF0F_1); // OUTPUT ON RUNG 10
     /*p02.PAVY*/ FF0F_L4.tp_latch(ROLO_FF0F_RDn, NYBO_FF0F_2); // OUTPUT ON RUNG 10
 
-    /*p02.NELA*/ cpu_bus.CPU_TRI_D0.set_tribuf(POLA_FF0F_RDa, FF0F_L0); // small tri
-    /*p02.NABO*/ cpu_bus.CPU_TRI_D1.set_tribuf(POLA_FF0F_RDa, FF0F_L1); // small tri
-    /*p02.ROVA*/ cpu_bus.CPU_TRI_D2.set_tribuf(POLA_FF0F_RDa, FF0F_L2);
-    /*p02.PADO*/ cpu_bus.CPU_TRI_D3.set_tribuf(POLA_FF0F_RDa, FF0F_L3);
-    /*p02.PEGY*/ cpu_bus.CPU_TRI_D4.set_tribuf(POLA_FF0F_RDa, FF0F_L4);
+    /*p02.NELA*/ top.CPU_TRI_D0.set_tribuf(POLA_FF0F_RDa, FF0F_L0); // small tri
+    /*p02.NABO*/ top.CPU_TRI_D1.set_tribuf(POLA_FF0F_RDa, FF0F_L1); // small tri
+    /*p02.ROVA*/ top.CPU_TRI_D2.set_tribuf(POLA_FF0F_RDa, FF0F_L2);
+    /*p02.PADO*/ top.CPU_TRI_D3.set_tribuf(POLA_FF0F_RDa, FF0F_L3);
+    /*p02.PEGY*/ top.CPU_TRI_D4.set_tribuf(POLA_FF0F_RDa, FF0F_L4);
   }
 
   // int 0 source
-  wire VYPU_VBLANKp = lcd_sig.VYPU_VBLANKp;
+  /*p21.PARU*/ wire PARU_VBLANKp = not(!top.POPU_VBLANK_d4());
+  /*p21.TOLU*/ wire TOLU_VBLANKn = not(PARU_VBLANKp);
+  /*p21.VYPU*/ wire VYPU_VBLANKp = not(TOLU_VBLANKn);
+
   // int 1 source
   wire VOTY_INT_STATp = ppu_sig.VOTY_INT_STATp;
 
   // int 2 source
-  wire MOBA_INT_TIMERp = tim_sig.MOBA_INT_TIMERp;
+  wire MOBA_INT_TIMERp = top.MOBA_INT_TIMERp();
 
   // int 3 source
   wire CALY_INT_SERIALp = ser_sig.CALY_INT_SERIALp;
 
   // int 4 source
-  wire ASOK_INT_JPp = joy_sig.ASOK_INT_JPp;
+  wire ASOK_INT_JPp = top.ASOK_INT_JPp();
 
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
@@ -73,28 +70,28 @@ void InterruptRegisters::tick(SchematicTop& top) {
   /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
 
   /*p02.LETY*/ wire LETY_INT_VBL_ACKn  = not(PIN_ACK_VBLANK);
-  /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (cpu_bus.CPU_TRI_D0, REFA_FF0F_WRn);
-  /*p02.MYZU*/ wire MYZU_FF0F_SET0n    = nand(ROTU_FF0F_WRp, LETY_INT_VBL_ACKn, cpu_bus.CPU_TRI_D0);
+  /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (top.CPU_TRI_D0, REFA_FF0F_WRn);
+  /*p02.MYZU*/ wire MYZU_FF0F_SET0n    = nand(ROTU_FF0F_WRp, LETY_INT_VBL_ACKn, top.CPU_TRI_D0);
   /*p02.LYTA*/ wire LYTA_FF0F_RST0n    = and (MUXE_INT0_WRn, LETY_INT_VBL_ACKn, ALUR_RSTn);
                                        
   /*p02.LEJA*/ wire LEJA_INT_STAT_ACKn = not(PIN_ACK_STAT);
-  /*p02.NABE*/ wire NABE               = or (cpu_bus.CPU_TRI_D1, REFA_FF0F_WRn);
-  /*p02.MODY*/ wire MODY_FF0F_SET1n    = nand(ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, cpu_bus.CPU_TRI_D1);
+  /*p02.NABE*/ wire NABE               = or (top.CPU_TRI_D1, REFA_FF0F_WRn);
+  /*p02.MODY*/ wire MODY_FF0F_SET1n    = nand(ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, top.CPU_TRI_D1);
   /*p02.MOVU*/ wire MOVU_FF0F_RST1n    = and (NABE,          LEJA_INT_STAT_ACKn, ALUR_RSTn);
                                        
   /*p02.LESA*/ wire LESA_INT_TIM_ACKn  = not(PIN_ACK_TIMER);
-  /*p02.RAKE*/ wire RAKE               = or (cpu_bus.CPU_TRI_D2, REFA_FF0F_WRn);
-  /*p02.PYHU*/ wire PYHU_FF0F_SET2n    = nand(ROTU_FF0F_WRp, LESA_INT_TIM_ACKn, cpu_bus.CPU_TRI_D2);
+  /*p02.RAKE*/ wire RAKE               = or (top.CPU_TRI_D2, REFA_FF0F_WRn);
+  /*p02.PYHU*/ wire PYHU_FF0F_SET2n    = nand(ROTU_FF0F_WRp, LESA_INT_TIM_ACKn, top.CPU_TRI_D2);
   /*p02.PYGA*/ wire PYGA_FF0F_RST2n    = and (RAKE,          LESA_INT_TIM_ACKn, ALUR_RSTn);
                                        
   /*p02.LUFE*/ wire LUFE_INT_SER_ACKn  = not(PIN_ACK_SERIAL);
-  /*p02.SULO*/ wire SULO               = or (cpu_bus.CPU_TRI_D3, REFA_FF0F_WRn);
-  /*p02.TOME*/ wire TOME_FF0F_SET3n    = nand(ROTU_FF0F_WRp, LUFE_INT_SER_ACKn, cpu_bus.CPU_TRI_D3);
+  /*p02.SULO*/ wire SULO               = or (top.CPU_TRI_D3, REFA_FF0F_WRn);
+  /*p02.TOME*/ wire TOME_FF0F_SET3n    = nand(ROTU_FF0F_WRp, LUFE_INT_SER_ACKn, top.CPU_TRI_D3);
   /*p02.TUNY*/ wire TUNY_FF0F_RST3n    = and (SULO,          LUFE_INT_SER_ACKn, ALUR_RSTn);
                                        
   /*p02.LAMO*/ wire LAMO_INT_JOY_ACKn  = not(PIN_ACK_JOYPAD);
-  /*p02.SEME*/ wire SEME               = or (cpu_bus.CPU_TRI_D4, REFA_FF0F_WRn);
-  /*p02.TOGA*/ wire TOGA_FF0F_SET4n    = nand(ROTU_FF0F_WRp, LAMO_INT_JOY_ACKn, cpu_bus.CPU_TRI_D4);
+  /*p02.SEME*/ wire SEME               = or (top.CPU_TRI_D4, REFA_FF0F_WRn);
+  /*p02.TOGA*/ wire TOGA_FF0F_SET4n    = nand(ROTU_FF0F_WRp, LAMO_INT_JOY_ACKn, top.CPU_TRI_D4);
   /*p02.TYME*/ wire TYME_FF0F_RST4n    = and (SEME,          LAMO_INT_JOY_ACKn, ALUR_RSTn);
 
 #if 0
@@ -111,8 +108,8 @@ void InterruptRegisters::tick(SchematicTop& top) {
     wire TYME_FF0F_RST4n = 1;
   }
   else {
-    wire TOGA_FF0F_SET4n = !cpu_bus.CPU_TRI_D4;
-    wire TYME_FF0F_RST4n =  cpu_bus.CPU_TRI_D4;
+    wire TOGA_FF0F_SET4n = !top.CPU_TRI_D4;
+    wire TYME_FF0F_RST4n =  top.CPU_TRI_D4;
   }
 #endif
 

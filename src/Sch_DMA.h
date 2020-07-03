@@ -7,37 +7,13 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct DmaSignals {
-  /*p04.MATU*/ Signal MATU_DMA_RUNNINGp; // to bus mux
-  /*p04.MUDA*/ Signal MUDA_DMA_SRC_VRAMp;
-
-  /*p04.NAKY*/ Signal DMA_A00;
-  /*p04.PYRO*/ Signal DMA_A01;
-  /*p04.NEFY*/ Signal DMA_A02;
-  /*p04.MUTY*/ Signal DMA_A03;
-  /*p04.NYKO*/ Signal DMA_A04;
-  /*p04.PYLO*/ Signal DMA_A05;
-  /*p04.NUTO*/ Signal DMA_A06;
-  /*p04.MUGU*/ Signal DMA_A07;
-  /*p04.NAFA*/ Signal DMA_A08;
-  /*p04.PYNE*/ Signal DMA_A09;
-  /*p04.PARA*/ Signal DMA_A10;
-  /*p04.NYDO*/ Signal DMA_A11;
-  /*p04.NYGY*/ Signal DMA_A12;
-  /*p04.PULA*/ Signal DMA_A13;
-  /*p04.POKU*/ Signal DMA_A14;
-  /*p04.MARU*/ Signal DMA_A15;
-};
-
-//-----------------------------------------------------------------------------
-
 struct DmaRegisters {
 
-  DmaSignals sig(const SchematicTop& gb) const;
   void tick(SchematicTop& gb);
   SignalHash commit();
 
 private:
+  friend struct SchematicTop;
 
   /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;
   /*p04.MATU*/ Reg17 MATU_DMA_RUNNINGp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.

@@ -4,21 +4,16 @@
 namespace Schematics {
 
 struct SchematicTop;
-struct TimerSignals;
-struct DebugSignals;
-struct PpuConfig;
-struct ClockSignals;
-struct ResetSignals;
-struct CpuBus;
-struct ClockRegisters;
 
 //-----------------------------------------------------------------------------
 
 struct ResetRegisters {
 
   void tick(SchematicTop& gb);
-  
   SignalHash commit();
+
+private:
+  friend SchematicTop;
 
   /*p01.TUBO*/ NorLatch TUBO_CLKREQn_LATCH;
   /*p01.ASOL*/ NorLatch ASOL_RST_LATCHp; // Schematic wrong, this is a latch.

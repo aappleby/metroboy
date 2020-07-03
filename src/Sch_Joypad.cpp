@@ -6,20 +6,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-JoypadSignals JoypadRegisters::sig() const {
-  JoypadSignals sig;
-
-  /*p02.ASOK*/ sig.ASOK_INT_JPp = and (JP_GLITCH3, JP_GLITCH0);
-
-  return sig;
-}
-
-//------------------------------------------------------------------------------
-
 void JoypadRegisters::tick(SchematicTop& top) {
-  ClockRegisters& clk_reg = top.clk_reg;
-  CpuBus& cpu_bus = top.cpu_bus;
-  CpuBusSignals cpu_sig = top.cpu_bus.sig(top);
   wire EXT_PIN_CLK_GOOD = top.EXT_PIN_CLK_GOOD;
 
   /*p10.BYKO*/ wire BYKO_A05n = not(top.CPU_PIN_A05);
@@ -36,18 +23,18 @@ void JoypadRegisters::tick(SchematicTop& top) {
 
   /*p10.ANAP*/ wire _ANAP_0xx00000 = and (_AMUS_0xx00000, SYKE_FF00_FFFFp);
 
-  /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+  /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
   /*p10.ACAT*/ wire _ACAT_FF00_RD = and (TEDO_CPU_RD, _ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
   /*p05.BYZO*/ wire _BYZO_FF00_RDn = not(_ACAT_FF00_RD);
-  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
+  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
   /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
 
   /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
   /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_reg.APUK_xxxDEFGx);
+  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!top.APUK_xxxDEFGx());
   /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
-  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.ALEF_xxCDEFxx);
+  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(top.ALEF_xxCDEFxx());
   /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
   /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
   /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);
@@ -81,23 +68,23 @@ void JoypadRegisters::tick(SchematicTop& top) {
   /*p05.KEJA*/ JOYP_L2.setx(_BYZO_FF00_RDn, P12_C);
   /*p05.KOLO*/ JOYP_L3.setx(_BYZO_FF00_RDn, P13_C);
 
-  /*p05.KEMA*/ cpu_bus.CPU_TRI_D0.set_tribuf(!_BYZO_FF00_RDn, JOYP_L0.q());
-  /*p05.KURO*/ cpu_bus.CPU_TRI_D1.set_tribuf(!_BYZO_FF00_RDn, JOYP_L1.q());
-  /*p05.KUVE*/ cpu_bus.CPU_TRI_D2.set_tribuf(!_BYZO_FF00_RDn, JOYP_L2.q());
-  /*p05.JEKU*/ cpu_bus.CPU_TRI_D3.set_tribuf(!_BYZO_FF00_RDn, JOYP_L3.q());
-  /*p05.KOCE*/ cpu_bus.CPU_TRI_D4.set_tribuf(!_BYZO_FF00_RDn, JOYP_UDLR.q());
-  /*p05.CUDY*/ cpu_bus.CPU_TRI_D5.set_tribuf(!_BYZO_FF00_RDn, JOYP_ABCS.q());
-  /*p??.????*/ cpu_bus.CPU_TRI_D6.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D6.q());
-  /*p??.????*/ cpu_bus.CPU_TRI_D7.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D7.q());
+  /*p05.KEMA*/ top.CPU_TRI_D0.set_tribuf(!_BYZO_FF00_RDn, JOYP_L0.q());
+  /*p05.KURO*/ top.CPU_TRI_D1.set_tribuf(!_BYZO_FF00_RDn, JOYP_L1.q());
+  /*p05.KUVE*/ top.CPU_TRI_D2.set_tribuf(!_BYZO_FF00_RDn, JOYP_L2.q());
+  /*p05.JEKU*/ top.CPU_TRI_D3.set_tribuf(!_BYZO_FF00_RDn, JOYP_L3.q());
+  /*p05.KOCE*/ top.CPU_TRI_D4.set_tribuf(!_BYZO_FF00_RDn, JOYP_UDLR.q());
+  /*p05.CUDY*/ top.CPU_TRI_D5.set_tribuf(!_BYZO_FF00_RDn, JOYP_ABCS.q());
+  /*p??.????*/ top.CPU_TRI_D6.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D6.q());
+  /*p??.????*/ top.CPU_TRI_D7.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D7.q());
 
-  /*p05.JUTE*/ JOYP_RA    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D0);
-  /*p05.KECY*/ JOYP_LB    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D1);
-  /*p05.JALE*/ JOYP_UC    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D2);
-  /*p05.KYME*/ JOYP_DS    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D3);
-  /*p05.KELY*/ JOYP_UDLR  .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D4);
-  /*p05.COFY*/ JOYP_ABCS  .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D5);
-  /*p05.KUKO*/ DBG_FF00_D6.set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D6);
-  /*p05.KERU*/ DBG_FF00_D7.set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D7);
+  /*p05.JUTE*/ JOYP_RA    .set(_ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D0);
+  /*p05.KECY*/ JOYP_LB    .set(_ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D1);
+  /*p05.JALE*/ JOYP_UC    .set(_ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D2);
+  /*p05.KYME*/ JOYP_DS    .set(_ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D3);
+  /*p05.KELY*/ JOYP_UDLR  .set(_ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D4);
+  /*p05.COFY*/ JOYP_ABCS  .set(_ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D5);
+  /*p05.KUKO*/ DBG_FF00_D6.set(_ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D6);
+  /*p05.KERU*/ DBG_FF00_D7.set(_ATOZ_FF00_WRn, ALUR_RSTn, top.CPU_TRI_D7);
 
   // FIXME
   wire BURO_FF60_0 = 0;

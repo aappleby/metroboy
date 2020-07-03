@@ -14,7 +14,6 @@
 #include "Sch_Serial.h"
 
 #include "Sch_VramPins.h"
-#include "Sch_VramBus.h"
 #include "Sch_CpuBus.h"
 #include "Sch_BusMux.h"
 #include "Sch_Interrupts.h"
@@ -33,131 +32,128 @@ struct SchematicTop {
   void tick_everything();
   SignalHash commit_everything();
 
-  void preset_t1t2(bool t1, bool t2) {
-    PIN_T1.preset(true, t1);
-    PIN_T2.preset(true, t2);
-  }
+  //-----------------------------------------------------------------------------
+  // Debug signals
 
-  void preset_rd(bool rd)            { CPU_PIN_RD.preset(true, rd); }
-  bool preset_wr(bool wr)            { CPU_PIN_WR.preset(true, wr); }
-  bool preset_addr_valid(bool valid) { CPU_PIN_ADDR_VALID.preset(true, valid); }
+  wire UMUT_MODE_DBG1p() const;
+  wire UNOR_MODE_DBG2p() const;
+  wire UPOJ_MODE_PROD() const;
+  wire TOVA_MODE_DBG2n() const;
+  wire TUTO_DBG_VRAMp() const;
+  wire ABUZ() const;
+  void preset_t1t2(bool t1, bool t2);
 
   //-----------------------------------------------------------------------------
+  // Clock signals
 
-  wire TUTO_DBG_VRAMp() const {
-    /*p07.UBET*/ wire UBET_T1n = not(PIN_T1);
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2p = and (PIN_T2, UBET_T1n); // Must be UNORp, see UJYV/UBAL
-    /*p25.TUTO*/ wire TUTO_DBG_VRAMp = and (UNOR_MODE_DBG2p, !dbg_reg.SOTO_DBG);
-    return TUTO_DBG_VRAMp;
-  }
-
-  wire UPOJ_MODE_PROD() const {
-    /*p07.UBET*/ wire UBET_T1n = not(PIN_T1);
-    /*p07.UVAR*/ wire UVAR_T2n = not(PIN_T2);
-    /*p07.UPOJ*/ wire UPOJ_MODE_PROD = nand(UBET_T1n, UVAR_T2n, EXT_PIN_RST);
-    return UPOJ_MODE_PROD;
-  }
-
-  wire UMUT_MODE_DBG1p() const {
-    /*p07.UVAR*/ wire UVAR_T2n = not(PIN_T2);
-    /*p07.UMUT*/ wire UMUT_MODE_DBG1p = and (PIN_T1, UVAR_T2n);
-    return UMUT_MODE_DBG1p;
-  }
-
-  wire UNOR_MODE_DBG2p() const {
-    /*p07.UBET*/ wire UBET_T1n = not(PIN_T1);
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2p = and (PIN_T2, UBET_T1n); // Must be UNORp, see UJYV/UBAL
-    return UNOR_MODE_DBG2p;
-  }
-
-  wire TOVA_MODE_DBG2n() const {
-    /*p07.UBET*/ wire UBET_T1n = not(PIN_T1);
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2p = and (PIN_T2, UBET_T1n); // Must be UNORp, see UJYV/UBAL
-    /*p08.TOVA*/ wire TOVA_MODE_DBG2n = not(UNOR_MODE_DBG2p);
-    return TOVA_MODE_DBG2n;
-  }
-
-  // still not sure what this is...
-  wire ABUZ() const {
-    /*p07.UBET*/ wire UBET_T1n = not(PIN_T1);
-    /*p07.UNOR*/ wire UNOR_MODE_DBG2p = and (PIN_T2, UBET_T1n); // Must be UNORp, see UJYV/UBAL
-    /*p??.APAP*/ wire APAP = not(CPU_PIN_ADDR_VALID); // Missing from schematic
-    /*p01.AWOD*/ wire AWOD = nor(UNOR_MODE_DBG2p, APAP);
-    /*p01.ABUZ*/ wire ABUZ = not(AWOD);
-    return ABUZ;
-  }
+  wire AFUR_xBCDExxx() const;
+  wire ALEF_xxCDEFxx() const;
+  wire APUK_xxxDEFGx() const;
+  wire ADYK_xxxxEFGH() const;
+  wire WUVU_AxxDExxH() const;
+  wire VENA_xBCDExxx() const;
+  wire WOSU_xxCDxxGH() const;
+  wire BYJU_AxCDEFGH() const;
 
   //-----------------------------------------------------------------------------
+  // Timer signals
 
-  wire BOGA_AxCDEFGH() const {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-    /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_reg.APUK_xxxDEFGx);
-    /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.ALEF_xxCDEFxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);
-    /*p01.BUFA*/ wire BUFA_AxxxxxxH = not(BERU_xBCDEFGx);
-    /*p01.BOLO*/ wire BOLO_xBCDEFGx = not(BUFA_AxxxxxxH);
-    /*p01.BEKO*/ wire BEKO_xBCDExxx = not(BUDE_AxxxxFGH);
-    /*p01.BEJA*/ wire BEJA_AxxxxFGH = nand(BOLO_xBCDEFGx, BEKO_xBCDExxx);
-    /*p01.BANE*/ wire BANE_xBCDExxx = not(BEJA_AxxxxFGH);
-    /*p01.BELO*/ wire BELO_AxxxxFGH = not(BANE_xBCDExxx);
-    /*p01.BAZE*/ wire BAZE_xBCDExxx = not(BELO_AxxxxFGH);
-    /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
-    /*p01.BELE*/ wire BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
-    /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(EXT_PIN_CLK_GOOD);
-    /*p01.BYJU*/ wire BYJU_AxCDEFGH = nor(BELE_xBxxxxxx, ATEZ_CLKBAD);
-    /*p01.BALY*/ wire BALY_xBxxxxxx = not(BYJU_AxCDEFGH);
-    /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
-    return BOGA_AxCDEFGH;
-  }
+  wire UVYN_DIV_05n() const;
+  wire UMEK_DIV_06n() const;
+  wire UREK_DIV_07n() const;
+  wire UPOF_DIV_15() const;
+  wire MOBA_INT_TIMERp() const;
 
   //-----------------------------------------------------------------------------
+  // Reset signals
 
-  wire AVOR_RSTp() const {
-    /*p01.AVOR*/ wire AVOR_RSTp = or(rst_reg.AFER_RSTp.q(), rst_reg.ASOL_RST_LATCHp.q());   
-    return AVOR_RSTp;
-  }
-
-  wire XAPO_VID_RSTn() const {
-    /*p01.AVOR*/ wire AVOR_RSTp = or(rst_reg.AFER_RSTp.q(), rst_reg.ASOL_RST_LATCHp.q());   
-    /*p01.ALUR*/ wire ALUR_RSTn = not(AVOR_RSTp);   // this goes all over the place
-    /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
-    /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-    /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
-    /*p01.XEBE*/ wire XEBE_RSTn = not(XORE_RSTp);
-    /*p01.XODO*/ wire XODO_VID_RSTp = nand(XEBE_RSTn, ppu_config.XONA_LCDC_EN);
-    /*p01.XAPO*/ wire XAPO_VID_RSTn = not(XODO_VID_RSTp);
-    return XAPO_VID_RSTn;
-  }
+  wire AVOR_RSTp() const;
+  wire XAPO_VID_RSTn() const;
 
   //-----------------------------------------------------------------------------
+  // CPU signals
 
-  int get_addr() const {
-    return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03, CPU_PIN_A04, CPU_PIN_A05, CPU_PIN_A06, CPU_PIN_A07,
-      CPU_PIN_A08, CPU_PIN_A09, CPU_PIN_A10, CPU_PIN_A11, CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
+  wire UJYV_CPU_RD() const;
+  wire UBAL_CPU_WRp_ABCDExxx() const;
+
+  int get_addr() const;
+  void preset_addr(bool oe, uint16_t addr);
+  int get_data() const;
+  void set_data(bool oe, uint8_t data);
+  void preset_rd(bool rd);
+  void preset_wr(bool wr);
+  void preset_addr_valid(bool valid);
+
+  //-----------------------------------------------------------------------------
+  // Bootrom signals
+
+  wire BOOT_BITn() const;
+  wire TUTU_BOOTp() const;
+
+  //-----------------------------------------------------------------------------
+  // DMA signals
+
+  /*p04.MATU*/ wire MATU_DMA_RUNNINGp() const;
+  /*p04.MUDA*/ wire MUDA_DMA_SRC_VRAMp() const;
+
+  /*p04.NAKY*/ wire DMA_A00() const;
+  /*p04.PYRO*/ wire DMA_A01() const;
+  /*p04.NEFY*/ wire DMA_A02() const;
+  /*p04.MUTY*/ wire DMA_A03() const;
+  /*p04.NYKO*/ wire DMA_A04() const;
+  /*p04.PYLO*/ wire DMA_A05() const;
+  /*p04.NUTO*/ wire DMA_A06() const;
+  /*p04.MUGU*/ wire DMA_A07() const;
+  /*p04.NAFA*/ wire DMA_A08() const;
+  /*p04.PYNE*/ wire DMA_A09() const;
+  /*p04.PARA*/ wire DMA_A10() const;
+  /*p04.NYDO*/ wire DMA_A11() const;
+  /*p04.NYGY*/ wire DMA_A12() const;
+  /*p04.PULA*/ wire DMA_A13() const;
+  /*p04.POKU*/ wire DMA_A14() const;
+  /*p04.MARU*/ wire DMA_A15() const;
+
+  //------------------------------------------------------------------------------
+  // Joypad signals
+
+  wire ASOK_INT_JPp() const;
+
+  //-----------------------------------------------------------------------------
+  // LCD signals
+
+
+  wire BYHA_VID_LINE_TRIG_d4n() const {
+    /*p28.ABAF*/ wire ABAF_VID_LINE_d4n = not(lcd_reg.CATU_VID_LINE_d4.q());
+    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(XAPO_VID_RSTn());
+    /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
+    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), ABEZ_VID_RSTn);
+    return BYHA_VID_LINE_TRIG_d4n;
   }
 
-  void preset_addr(bool oe, uint16_t addr) {
-    CPU_PIN_A00.preset(oe, addr & 0x0001);
-    CPU_PIN_A01.preset(oe, addr & 0x0002);
-    CPU_PIN_A02.preset(oe, addr & 0x0004);
-    CPU_PIN_A03.preset(oe, addr & 0x0008);
-    CPU_PIN_A04.preset(oe, addr & 0x0010);
-    CPU_PIN_A05.preset(oe, addr & 0x0020);
-    CPU_PIN_A06.preset(oe, addr & 0x0040);
-    CPU_PIN_A07.preset(oe, addr & 0x0080);
-    CPU_PIN_A08.preset(oe, addr & 0x0100);
-    CPU_PIN_A09.preset(oe, addr & 0x0200);
-    CPU_PIN_A10.preset(oe, addr & 0x0400);
-    CPU_PIN_A11.preset(oe, addr & 0x0800);
-    CPU_PIN_A12.preset(oe, addr & 0x1000);
-    CPU_PIN_A13.preset(oe, addr & 0x2000);
-    CPU_PIN_A14.preset(oe, addr & 0x4000);
-    CPU_PIN_A15.preset(oe, addr & 0x8000);
+  wire RUTU_NEW_LINE_d0() const { return lcd_reg.RUTU_NEW_LINE_d0; }
+  wire CATU_VID_LINE_d4() const { return lcd_reg.CATU_VID_LINE_d4; }
+  wire POPU_VBLANK_d4() const { return lcd_reg.POPU_VBLANK_d4; }
+  wire ROPO_LY_MATCH_SYNCp() const { return lcd_reg.ROPO_LY_MATCH_SYNCp; }
+  wire MUWY_Y0() const { return lcd_reg.MUWY_Y0; }
+  wire MYRO_Y1() const { return lcd_reg.MYRO_Y1; }
+  wire LEXA_Y2() const { return lcd_reg.LEXA_Y2; }
+  wire LYDO_Y3() const { return lcd_reg.LYDO_Y3; }
+  wire LOVU_Y4() const { return lcd_reg.LOVU_Y4; }
+  wire LEMA_Y5() const { return lcd_reg.LEMA_Y5; }
+  wire MATO_Y6() const { return lcd_reg.MATO_Y6; }
+  wire LAFO_Y7() const { return lcd_reg.LAFO_Y7; }
+
+  //-----------------------------------------------------------------------------
+  // Address decoder signals
+
+  wire WERO_FF40_FF4Fp() const {
+    /*p07.TONA*/ wire TONA_A08n = not(CPU_PIN_A08);
+    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09);
+    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(CPU_PIN_A07, CPU_PIN_A05, CPU_PIN_A04);
+    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
+    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, CPU_PIN_A06, XALY_0x00xxxxp);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
+    return WERO_FF40_FF4Fp;
   }
 
   //-----------------------------------------------------------------------------
@@ -171,9 +167,6 @@ struct SchematicTop {
   uint8_t hiram[128];
   */
 
-  /* PIN_74 */ PinIn PIN_CLK_IN_xBxDxFxH;
-  /* PIN_76 */ PinIn PIN_T2;
-  /* PIN_77 */ PinIn PIN_T1;
 
   //----------
 
@@ -201,6 +194,68 @@ struct SchematicTop {
   PinIn  CPU_PIN_A14; // bottom right port PORTB_26: -> A14
   PinIn  CPU_PIN_A15; // bottom right port PORTB_30: -> A15
 
+  Tribuf CPU_TRI_D0;
+  Tribuf CPU_TRI_D1;
+  Tribuf CPU_TRI_D2;
+  Tribuf CPU_TRI_D3;
+  Tribuf CPU_TRI_D4;
+  Tribuf CPU_TRI_D5;
+  Tribuf CPU_TRI_D6;
+  Tribuf CPU_TRI_D7;
+
+  PinOut CPU_PIN_BOOTp;    // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+
+  //----------
+  // ext bus
+
+  /* PIN_01 */ PinIn EXT_PIN_A00_C;   // -> P08.KOVA
+  /* PIN_02 */ PinIn EXT_PIN_A01_C;   // -> P08.CAMU
+  /* PIN_03 */ PinIn EXT_PIN_A02_C;   // -> P08.BUXU
+  /* PIN_04 */ PinIn EXT_PIN_A03_C;   // -> P08.BASE
+  /* PIN_05 */ PinIn EXT_PIN_A04_C;   // -> P08.AFEC
+  /* PIN_06 */ PinIn EXT_PIN_A05_C;   // -> P08.ABUP
+  /* PIN_07 */ PinIn EXT_PIN_A06_C;   // -> P08.CYGU
+  /* PIN_08 */ PinIn EXT_PIN_A07_C;   // -> P08.COGO
+  /* PIN_09 */ PinIn EXT_PIN_A08_C;   // -> P08.MUJY
+  /* PIN_10 */ PinIn EXT_PIN_A09_C;   // -> P08.NENA
+  /* PIN_11 */ PinIn EXT_PIN_A10_C;   // -> P08.SURA
+  /* PIN_12 */ PinIn EXT_PIN_A11_C;   // -> P08.MADY
+  /* PIN_13 */ PinIn EXT_PIN_A12_C;   // -> P08.LAHE
+  /* PIN_14 */ PinIn EXT_PIN_A13_C;   // -> P08.LURA
+  /* PIN_15 */ PinIn EXT_PIN_A14_C;   // -> P08.PEVO
+  /* PIN_16 */ PinIn EXT_PIN_A15_C;   // -> P08.RAZA
+  /* PIN_74 */ PinIn PIN_CLK_IN_xBxDxFxH;
+  /* PIN_76 */ PinIn EXT_PIN_T2;
+  /* PIN_77 */ PinIn EXT_PIN_T1;
+  /* PIN_78 */ PinIn EXT_PIN_WRn_C;   // -> P07.UBAL
+  /* PIN_79 */ PinIn EXT_PIN_RD_C;   // -> P07.UJYV
+
+  //----------
+  // VRAM bus
+
+  Tribuf VRM_TRI_A00;
+  Tribuf VRM_TRI_A01;
+  Tribuf VRM_TRI_A02;
+  Tribuf VRM_TRI_A03;
+  Tribuf VRM_TRI_A04;
+  Tribuf VRM_TRI_A05;
+  Tribuf VRM_TRI_A06;
+  Tribuf VRM_TRI_A07;
+  Tribuf VRM_TRI_A08;
+  Tribuf VRM_TRI_A09;
+  Tribuf VRM_TRI_A10;
+  Tribuf VRM_TRI_A11;
+  Tribuf VRM_TRI_A12;
+
+  Tribuf VRM_TRI_D0;
+  Tribuf VRM_TRI_D1;
+  Tribuf VRM_TRI_D2;
+  Tribuf VRM_TRI_D3;
+  Tribuf VRM_TRI_D4;
+  Tribuf VRM_TRI_D5;
+  Tribuf VRM_TRI_D6;
+  Tribuf VRM_TRI_D7;
+
   //----------
 
   ClockRegisters clk_reg;
@@ -222,8 +277,6 @@ struct SchematicTop {
 
   CpuBus  cpu_bus;
   CpuPinsOut cpu_pins_out;
-
-  VramBus vram_bus;
 
   TileFetcher tile_fetcher;
   SpriteFetcher sprite_fetcher;

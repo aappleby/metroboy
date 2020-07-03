@@ -5,69 +5,15 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct CpuBusSignals {
-  /*p07.UJYV*/ Signal UJYV_CPU_RD; // main read
-  /*p07.UBAL*/ Signal UBAL_CPU_WRp_ABCDExxx; // write with debug mux, goes everywhere
-};
-
-//-----------------------------------------------------------------------------
-
 struct CpuBus {
 
-  CpuBusSignals sig(const SchematicTop& gb) const;
   void tick(SchematicTop& gb);
-  
   SignalHash commit();
-
-  int get_data() const {
-    return pack(CPU_TRI_D0, CPU_TRI_D1, CPU_TRI_D2, CPU_TRI_D3, CPU_TRI_D4, CPU_TRI_D5, CPU_TRI_D6, CPU_TRI_D7);
-  }
-
-  void set_data(bool oe, uint8_t data) {
-    CPU_TRI_D0.set_tribuf(oe, data & 0x01);
-    CPU_TRI_D1.set_tribuf(oe, data & 0x02);
-    CPU_TRI_D2.set_tribuf(oe, data & 0x04);
-    CPU_TRI_D3.set_tribuf(oe, data & 0x08);
-    CPU_TRI_D4.set_tribuf(oe, data & 0x10);
-    CPU_TRI_D5.set_tribuf(oe, data & 0x20);
-    CPU_TRI_D6.set_tribuf(oe, data & 0x40);
-    CPU_TRI_D7.set_tribuf(oe, data & 0x80);
-  }
 
   //----------
   // bottom left port, tristate data bus
 
-  Tribuf CPU_TRI_D0;
-  Tribuf CPU_TRI_D1;
-  Tribuf CPU_TRI_D2;
-  Tribuf CPU_TRI_D3;
-  Tribuf CPU_TRI_D4;
-  Tribuf CPU_TRI_D5;
-  Tribuf CPU_TRI_D6;
-  Tribuf CPU_TRI_D7;
-
 private:
-
-  /* PIN_01 */ PinIn EXT_PIN_A00_C;   // -> P08.KOVA
-  /* PIN_02 */ PinIn EXT_PIN_A01_C;   // -> P08.CAMU
-  /* PIN_03 */ PinIn EXT_PIN_A02_C;   // -> P08.BUXU
-  /* PIN_04 */ PinIn EXT_PIN_A03_C;   // -> P08.BASE
-  /* PIN_05 */ PinIn EXT_PIN_A04_C;   // -> P08.AFEC
-  /* PIN_06 */ PinIn EXT_PIN_A05_C;   // -> P08.ABUP
-  /* PIN_07 */ PinIn EXT_PIN_A06_C;   // -> P08.CYGU
-  /* PIN_08 */ PinIn EXT_PIN_A07_C;   // -> P08.COGO
-  /* PIN_09 */ PinIn EXT_PIN_A08_C;   // -> P08.MUJY
-  /* PIN_10 */ PinIn EXT_PIN_A09_C;   // -> P08.NENA
-  /* PIN_11 */ PinIn EXT_PIN_A10_C;   // -> P08.SURA
-  /* PIN_12 */ PinIn EXT_PIN_A11_C;   // -> P08.MADY
-  /* PIN_13 */ PinIn EXT_PIN_A12_C;   // -> P08.LAHE
-  /* PIN_14 */ PinIn EXT_PIN_A13_C;   // -> P08.LURA
-  /* PIN_15 */ PinIn EXT_PIN_A14_C;   // -> P08.PEVO
-  /* PIN_16 */ PinIn EXT_PIN_A15_C;   // -> P08.RAZA
-
-
-  /* PIN_79 */ PinIn EXT_PIN_RD_C;   // -> P07.UJYV
-  /* PIN_78 */ PinIn EXT_PIN_WRn_C;   // -> P07.UBAL
 
   //----------
   // Ext-to-cpu "latch" - looks more like a pass gate really
@@ -142,8 +88,6 @@ private:
   PinOut PIN_AWOB;          // top right wire by itself <- P02.AWOB
 
   PinOut PIN_SYRO;          // top right port PORTA_03: <- P25.SYRO
-  PinOut PIN_TUTU_BOOTp;    // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-
 };
 
 //-----------------------------------------------------------------------------

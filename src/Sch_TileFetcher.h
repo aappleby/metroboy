@@ -48,6 +48,7 @@ struct TileFetcher {
   SignalHash commit();
 
 private:
+  friend SchematicTop;
 
   /*p27.LAXU*/ Reg LAXU_BFETCH_S0;
   /*p27.MESU*/ Reg MESU_BFETCH_S1;

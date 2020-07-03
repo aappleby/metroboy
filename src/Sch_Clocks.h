@@ -3,12 +3,17 @@
 
 namespace Schematics {
 
+struct SchematicTop;
+
 //-----------------------------------------------------------------------------
 
 struct ClockRegisters {
 
   void tick(const SchematicTop& top);
   SignalHash commit();
+
+private:
+  friend SchematicTop;
 
   /* PIN_75 */ PinOut PIN_PHI;    // <- P01.BUDE/BEVA
 

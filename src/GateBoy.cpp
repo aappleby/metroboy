@@ -36,7 +36,7 @@ uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
     }
   }
 
-  return (uint8_t)gb->cpu_bus.get_data();
+  return (uint8_t)gb->get_data();
 }
 
 //-----------------------------------------------------------------------------

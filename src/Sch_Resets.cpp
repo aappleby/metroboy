@@ -8,7 +8,7 @@ using namespace Schematics;
 void ResetRegisters::tick(SchematicTop& top) {
 
   {
-    wire UPOF_DIV_15 = top.tim_reg.sig().UPOF_DIV_15;
+    wire UPOF_DIV_15 = top.UPOF_DIV_15();
     /*p01.UNUT*/ wire UNUT_TIMEOUT  = and (TUBO_CLKREQn_LATCH, UPOF_DIV_15);
     /*p01.TABA*/ wire TABA_RSTp = or(top.UNOR_MODE_DBG2p(), top.UMUT_MODE_DBG1p(), UNUT_TIMEOUT);
     /*p01.ALYP*/ wire ALYP_RSTn = not(TABA_RSTp);
@@ -17,7 +17,9 @@ void ResetRegisters::tick(SchematicTop& top) {
     // ASOL has arms on the ground side, output on the top rung - nor latch with inverted output
     /*p01.ASOL*/ ASOL_RST_LATCHp.nor_latch(AFAR_RST, top.EXT_PIN_RST); // Schematic wrong, this is a latch.
 
-    /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(top.BOGA_AxCDEFGH());
+    /*p01.BALY*/ wire BALY_xBxxxxxx = not(top.BYJU_AxCDEFGH());
+    /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
+    /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(BOGA_AxCDEFGH);
     /*p01.AFER*/ AFER_RSTp.set(BOMA_xBxxxxxx, top.UPOJ_MODE_PROD(), ASOL_RST_LATCHp);
     PIN_TABA_RSTp.set(TABA_RSTp);
     PIN_AFER_RSTp.set(AFER_RSTp);

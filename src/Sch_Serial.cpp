@@ -14,12 +14,7 @@ SerialSignals SerialRegisters::sig(const SchematicTop& /*top*/) const {
 
 void SerialRegisters::tick(SchematicTop& top) {
 
-  auto cpu_sig = top.cpu_bus.sig(top);
-  
-  auto tim_sig = top.tim_reg.sig();
-  auto& cpu_bus = top.cpu_bus;
-
-  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
+  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
 
   //----------------------------------------
   /*p03.TOVY*/ wire TOVY_A00n = not(top.CPU_PIN_A00);
@@ -35,17 +30,17 @@ void SerialRegisters::tick(SchematicTop& top) {
   /*p06.URYS*/ wire _FF01_WR_xxxxxFGHn = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, top.CPU_PIN_A00, TOLA_A01n);
   /*p06.DAKU*/ wire _FF01_WR_xxxxxFGHp = not (_FF01_WR_xxxxxFGHn);
   /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, top.CPU_PIN_A01, TOVY_A00n);
-  /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+  /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
   /*p06.UFEG*/ wire _FF01_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, top.CPU_PIN_A00, TOLA_A01n);
   /*p06.UCOM*/ wire _FF02_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, top.CPU_PIN_A01, TOVY_A00n);
 
   /*p06.COBA*/ wire _SER_CNT3n = not(CALY_INT_SERIALp.q());
   /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
   /*p06.CABY*/ wire _XFER_RESET = and (_SER_CNT3n, ALUR_RSTn);
-  /*p06.ETAF*/ XFER_START.set(_FF02_WRn_xxxxxFGH, _XFER_RESET, cpu_bus.CPU_TRI_D0);
-  /*p06.CULY*/ XFER_DIR.set(_FF02_WRn_xxxxxFGH, ALUR_RSTn, cpu_bus.CPU_TRI_D1);
+  /*p06.ETAF*/ XFER_START.set(_FF02_WRn_xxxxxFGH, _XFER_RESET, top.CPU_TRI_D0);
+  /*p06.CULY*/ XFER_DIR.set(_FF02_WRn_xxxxxFGH, ALUR_RSTn, top.CPU_TRI_D1);
 
-  /*p06.COTY*/ SER_CLK.set(tim_sig.UVYN_DIV_05n, _FF02_WRn_xxxxxFGH, !SER_CLK.q());
+  /*p06.COTY*/ SER_CLK.set(top.UVYN_DIV_05n(), _FF02_WRn_xxxxxFGH, !SER_CLK.q());
 
   // XFER_DIR 0 = ext clk
   // XFER DIR 1 = int clk
@@ -70,14 +65,14 @@ void SerialRegisters::tick(SchematicTop& top) {
   /*p06.CYDE*/ SER_CNT2.set(!SER_CNT1.q(), _SER_RST, !SER_CNT2.q());
   /*p06.CALY*/ CALY_INT_SERIALp.set(!SER_CNT2.q(), _SER_RST, !CALY_INT_SERIALp.q());
 
-  /*p06.CUFU*/ wire _SER_DATA0_SETn = nand(cpu_bus.CPU_TRI_D0, _FF01_WR_xxxxxFGHp);
-  /*p06.DOCU*/ wire _SER_DATA1_SETn = nand(cpu_bus.CPU_TRI_D1, _FF01_WR_xxxxxFGHp);
-  /*p06.DELA*/ wire _SER_DATA2_SETn = nand(cpu_bus.CPU_TRI_D2, _FF01_WR_xxxxxFGHp);
-  /*p06.DYGE*/ wire _SER_DATA3_SETn = nand(cpu_bus.CPU_TRI_D3, _FF01_WR_xxxxxFGHp);
-  /*p06.DOLA*/ wire _SER_DATA4_SETn = nand(cpu_bus.CPU_TRI_D4, _FF01_WR_xxxxxFGHp);
-  /*p06.ELOK*/ wire _SER_DATA5_SETn = nand(cpu_bus.CPU_TRI_D5, _FF01_WR_xxxxxFGHp);
-  /*p06.EDEL*/ wire _SER_DATA6_SETn = nand(cpu_bus.CPU_TRI_D6, _FF01_WR_xxxxxFGHp);
-  /*p06.EFEF*/ wire _SER_DATA7_SETn = nand(cpu_bus.CPU_TRI_D7, _FF01_WR_xxxxxFGHp);
+  /*p06.CUFU*/ wire _SER_DATA0_SETn = nand(top.CPU_TRI_D0, _FF01_WR_xxxxxFGHp);
+  /*p06.DOCU*/ wire _SER_DATA1_SETn = nand(top.CPU_TRI_D1, _FF01_WR_xxxxxFGHp);
+  /*p06.DELA*/ wire _SER_DATA2_SETn = nand(top.CPU_TRI_D2, _FF01_WR_xxxxxFGHp);
+  /*p06.DYGE*/ wire _SER_DATA3_SETn = nand(top.CPU_TRI_D3, _FF01_WR_xxxxxFGHp);
+  /*p06.DOLA*/ wire _SER_DATA4_SETn = nand(top.CPU_TRI_D4, _FF01_WR_xxxxxFGHp);
+  /*p06.ELOK*/ wire _SER_DATA5_SETn = nand(top.CPU_TRI_D5, _FF01_WR_xxxxxFGHp);
+  /*p06.EDEL*/ wire _SER_DATA6_SETn = nand(top.CPU_TRI_D6, _FF01_WR_xxxxxFGHp);
+  /*p06.EFEF*/ wire _SER_DATA7_SETn = nand(top.CPU_TRI_D7, _FF01_WR_xxxxxFGHp);
 
   // COHY 5-rung
   // DUMO 5-rung
@@ -88,14 +83,14 @@ void SerialRegisters::tick(SchematicTop& top) {
   // EFAK 5-rung
   // EGUV 5-rung
 
-  /*p06.COHY*/ wire _SER_DATA0_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_bus.CPU_TRI_D0), ALUR_RSTn);
-  /*p06.DUMO*/ wire _SER_DATA1_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_bus.CPU_TRI_D1), ALUR_RSTn);
-  /*p06.DYBO*/ wire _SER_DATA2_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_bus.CPU_TRI_D2), ALUR_RSTn);
-  /*p06.DAJU*/ wire _SER_DATA3_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_bus.CPU_TRI_D3), ALUR_RSTn);
-  /*p06.DYLY*/ wire _SER_DATA4_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_bus.CPU_TRI_D4), ALUR_RSTn);
-  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_bus.CPU_TRI_D5), ALUR_RSTn);
-  /*p06.EFAK*/ wire _SER_DATA6_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_bus.CPU_TRI_D6), ALUR_RSTn);
-  /*p06.EGUV*/ wire _SER_DATA7_RSTn = or(and(_FF01_WR_xxxxxFGHn, cpu_bus.CPU_TRI_D7), ALUR_RSTn);
+  /*p06.COHY*/ wire _SER_DATA0_RSTn = or(and(_FF01_WR_xxxxxFGHn, top.CPU_TRI_D0), ALUR_RSTn);
+  /*p06.DUMO*/ wire _SER_DATA1_RSTn = or(and(_FF01_WR_xxxxxFGHn, top.CPU_TRI_D1), ALUR_RSTn);
+  /*p06.DYBO*/ wire _SER_DATA2_RSTn = or(and(_FF01_WR_xxxxxFGHn, top.CPU_TRI_D2), ALUR_RSTn);
+  /*p06.DAJU*/ wire _SER_DATA3_RSTn = or(and(_FF01_WR_xxxxxFGHn, top.CPU_TRI_D3), ALUR_RSTn);
+  /*p06.DYLY*/ wire _SER_DATA4_RSTn = or(and(_FF01_WR_xxxxxFGHn, top.CPU_TRI_D4), ALUR_RSTn);
+  /*p06.EHUJ*/ wire _SER_DATA5_RSTn = or(and(_FF01_WR_xxxxxFGHn, top.CPU_TRI_D5), ALUR_RSTn);
+  /*p06.EFAK*/ wire _SER_DATA6_RSTn = or(and(_FF01_WR_xxxxxFGHn, top.CPU_TRI_D6), ALUR_RSTn);
+  /*p06.EGUV*/ wire _SER_DATA7_RSTn = or(and(_FF01_WR_xxxxxFGHn, top.CPU_TRI_D7), ALUR_RSTn);
 
   /*p06.CAGE*/ wire _SIN_Cn = not(SIN_C);
   /*p06.CUBA*/ SER_DATA0.set(_DAWE_SER_CLK, _SER_DATA0_SETn, _SER_DATA0_RSTn, _SIN_Cn);
@@ -114,17 +109,17 @@ void SerialRegisters::tick(SchematicTop& top) {
   SCK_B.set(XFER_DIR.q());
   /*p06.KUJO*/ SCK_D.set(nor(SER_CLK.q(), /*p06.JAGO*/ not(XFER_DIR.q())));
 
-  /*p06.CUGY*/ cpu_bus.CPU_TRI_D0.set_tribuf(_FF01_RD, SER_DATA0.q());
-  /*p06.DUDE*/ cpu_bus.CPU_TRI_D1.set_tribuf(_FF01_RD, SER_DATA1.q());
-  /*p06.DETU*/ cpu_bus.CPU_TRI_D2.set_tribuf(_FF01_RD, SER_DATA2.q());
-  /*p06.DASO*/ cpu_bus.CPU_TRI_D3.set_tribuf(_FF01_RD, SER_DATA3.q());
-  /*p06.DAME*/ cpu_bus.CPU_TRI_D4.set_tribuf(_FF01_RD, SER_DATA4.q());
-  /*p06.EVOK*/ cpu_bus.CPU_TRI_D5.set_tribuf(_FF01_RD, SER_DATA5.q());
-  /*p06.EFAB*/ cpu_bus.CPU_TRI_D6.set_tribuf(_FF01_RD, SER_DATA6.q());
-  /*p06.ETAK*/ cpu_bus.CPU_TRI_D7.set_tribuf(_FF01_RD, SER_DATA7.q());
+  /*p06.CUGY*/ top.CPU_TRI_D0.set_tribuf(_FF01_RD, SER_DATA0.q());
+  /*p06.DUDE*/ top.CPU_TRI_D1.set_tribuf(_FF01_RD, SER_DATA1.q());
+  /*p06.DETU*/ top.CPU_TRI_D2.set_tribuf(_FF01_RD, SER_DATA2.q());
+  /*p06.DASO*/ top.CPU_TRI_D3.set_tribuf(_FF01_RD, SER_DATA3.q());
+  /*p06.DAME*/ top.CPU_TRI_D4.set_tribuf(_FF01_RD, SER_DATA4.q());
+  /*p06.EVOK*/ top.CPU_TRI_D5.set_tribuf(_FF01_RD, SER_DATA5.q());
+  /*p06.EFAB*/ top.CPU_TRI_D6.set_tribuf(_FF01_RD, SER_DATA6.q());
+  /*p06.ETAK*/ top.CPU_TRI_D7.set_tribuf(_FF01_RD, SER_DATA7.q());
 
-  /*p06.CORE*/ cpu_bus.CPU_TRI_D0.set_tribuf(_FF02_RD, XFER_DIR.q());
-  /*p06.ELUV*/ cpu_bus.CPU_TRI_D1.set_tribuf(_FF02_RD, XFER_START.q());
+  /*p06.CORE*/ top.CPU_TRI_D0.set_tribuf(_FF02_RD, XFER_DIR.q());
+  /*p06.ELUV*/ top.CPU_TRI_D1.set_tribuf(_FF02_RD, XFER_START.q());
 }
 
 //------------------------------------------------------------------------------

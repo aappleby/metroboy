@@ -11,6 +11,10 @@ struct DebugRegisters {
 
   void tick(const SchematicTop& top);
   SignalHash commit();
+
+private:
+  friend SchematicTop;
+
   /*p25.SOTO*/ Reg SOTO_DBG; // 17-rung
 };
 

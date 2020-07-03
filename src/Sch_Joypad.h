@@ -10,19 +10,13 @@ struct CpuBusSignals;
 
 //-----------------------------------------------------------------------------
 
-struct JoypadSignals {
-  /*p02.ASOK*/ Signal ASOK_INT_JPp;
-};
-
-//-----------------------------------------------------------------------------
-
 struct JoypadRegisters {
 
-  JoypadSignals sig() const;
   void tick(SchematicTop& gb);
   SignalHash commit();
 
 private:
+  friend struct SchematicTop;
 
   /*p02.BATU*/ Reg17 JP_GLITCH0;
   /*p02.ACEF*/ Reg17 JP_GLITCH1;

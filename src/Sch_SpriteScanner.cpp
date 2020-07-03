@@ -5,15 +5,14 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
+SpriteScannerSignals SpriteScanner::sig(const SchematicTop& top) const {
   SpriteScannerSignals sprite_scanner_sig;
 
   {
     
-    auto lcd_sig = gb.lcd_reg.sig(gb);
-
-    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(gb.XAPO_VID_RSTn());
-    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
+    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
+    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
     /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
     /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or(BALU_SCAN_RST, SCAN_DONE_TRIG_B.q(), !SCAN_DONE_TRIG_A.q());
     /*p29.AVAP*/ sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp = not(BEBU_SCAN_DONE_TRIGn);
@@ -26,20 +25,18 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
   }
 
   {
-    auto bus_sig = gb.bus_mux.sig(gb);
-    auto& ppu_config = gb.ppu_config;
-    auto& clk_reg = gb.clk_reg;
-    auto lcd_sig = gb.lcd_reg.sig(gb);
+    auto bus_sig = top.bus_mux.sig(top);
+    auto& ppu_config = top.ppu_config;
     wire P10_B = 0;
 
-    /*p29.EBOS*/ wire Y0n = not(lcd_sig.MUWY_Y0);
-    /*p29.DASA*/ wire Y1n = not(lcd_sig.MYRO_Y1);
-    /*p29.FUKY*/ wire Y2n = not(lcd_sig.LEXA_Y2);
-    /*p29.FUVE*/ wire Y3n = not(lcd_sig.LYDO_Y3);
-    /*p29.FEPU*/ wire Y4n = not(lcd_sig.LOVU_Y4);
-    /*p29.FOFA*/ wire Y5n = not(lcd_sig.LEMA_Y5);
-    /*p29.FEMO*/ wire Y6n = not(lcd_sig.MATO_Y6);
-    /*p29.GUSU*/ wire Y7n = not(lcd_sig.LAFO_Y7);
+    /*p29.EBOS*/ wire Y0n = not(top.MUWY_Y0());
+    /*p29.DASA*/ wire Y1n = not(top.MYRO_Y1());
+    /*p29.FUKY*/ wire Y2n = not(top.LEXA_Y2());
+    /*p29.FUVE*/ wire Y3n = not(top.LYDO_Y3());
+    /*p29.FEPU*/ wire Y4n = not(top.LOVU_Y4());
+    /*p29.FOFA*/ wire Y5n = not(top.LEMA_Y5());
+    /*p29.FEMO*/ wire Y6n = not(top.MATO_Y6());
+    /*p29.GUSU*/ wire Y7n = not(top.LAFO_Y7());
 
     /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, bus_sig.XUSO_SPRITE_Y0, P10_B); // are these really connected directly to the pin?
     /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, bus_sig.XUSO_SPRITE_Y0, P10_B);
@@ -71,7 +68,7 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
     /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
-    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(clk_reg.WOSU_xxCDxxGH);
+    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_xxCDxxGH());
     /*p29.CARE*/ sprite_scanner_sig.CARE_STORE_ENp_ABxxEFxx = and (XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
 
@@ -89,13 +86,11 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
 
 //------------------------------------------------------------------------------
 
-void SpriteScanner::tick(SchematicTop& gb) {
-  auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto& clk_reg = gb.clk_reg;
-  
+void SpriteScanner::tick(SchematicTop& top) {
 
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(gb.XAPO_VID_RSTn());
-  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
+  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
 
   //----------------------------------------
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
@@ -105,9 +100,9 @@ void SpriteScanner::tick(SchematicTop& gb) {
     /*p29.BAGY*/ wire BAGY_SCAN_RSTn = not(BALU_SCAN_RSTp);
 
     /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
-    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_reg.WUVU_AxxDExxH);
+    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
     /*p29.BYBA*/ SCAN_DONE_TRIG_A.set(XUPY_xBCxxFGx, BAGY_SCAN_RSTn, FETO_SCAN_DONE_d0);
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(gb.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -119,7 +114,7 @@ void SpriteScanner::tick(SchematicTop& gb) {
     /*p29.AVAP*/ wire AVAP_SCAN_RSTp = not(BEBU_SCAN_RSTn);
     /*p28.ASEN*/ wire ASEN_SCAN_RSTp = or (ATAR_VID_RSTp, AVAP_SCAN_RSTp);
 
-    /*p28.BESU*/ BESU_SCANNINGp.nor_latch(lcd_sig.CATU_VID_LINE_d4, ASEN_SCAN_RSTp);
+    /*p28.BESU*/ BESU_SCANNINGp.nor_latch(top.CATU_VID_LINE_d4(), ASEN_SCAN_RSTp);
     /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
     /*p29.CENO*/ CENO_SCANNINGp.set(XUPY_xBCxxFGx, ABEZ_VID_RSTn, BESU_SCANNINGp);
   }
@@ -130,7 +125,7 @@ void SpriteScanner::tick(SchematicTop& gb) {
 
   {
     /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
-    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_reg.WUVU_AxxDExxH);
+    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
     /*p28.GAVA*/ wire SCAN_CLK = or(FETO_SCAN_DONE_d0, XUPY_xBCxxFGx);
     /*p28.YFEL*/ SCAN0.set(SCAN_CLK, ANOM_SCAN_RSTn, !SCAN0);
     /*p28.WEWY*/ SCAN1.set(!SCAN0,   ANOM_SCAN_RSTn, !SCAN1);

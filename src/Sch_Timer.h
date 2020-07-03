@@ -7,25 +7,13 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct TimerSignals {
-  /*p01.UVYN*/ Signal UVYN_DIV_05n;
-  /*p01.UMEK*/ Signal UMEK_DIV_06n;
-  /*p01.UREK*/ Signal UREK_DIV_07n;
-  /*p01.UPOF*/ Signal UPOF_DIV_15;
-  /*p03.MOBA*/ Signal MOBA_INT_TIMERp;
-};
-
-//-----------------------------------------------------------------------------
-
 struct TimerRegisters {
 
-  TimerSignals sig() const;
-
   void tick(SchematicTop& gb);
-  
   SignalHash commit();
 
 private:
+  friend SchematicTop;
 
   //----------
   // FF04 DIV

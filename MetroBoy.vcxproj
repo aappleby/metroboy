@@ -148,7 +148,6 @@
     <ClInclude Include="src\Sch_Timer.h" />
     <ClInclude Include="src\Sch_Top.h" />
     <ClInclude Include="src\Sch_VramPins.h" />
-    <ClInclude Include="src\Sch_VramBus.h" />
     <ClInclude Include="src\Sch_Window.h" />
     <ClInclude Include="src\Serial.h" />
     <ClInclude Include="src\SPU.h" />
@@ -223,7 +222,6 @@
     <ClCompile Include="src\Sch_Timer.cpp" />
     <ClCompile Include="src\Sch_Top.cpp" />
     <ClCompile Include="src\Sch_VramPins.cpp" />
-    <ClCompile Include="src\Sch_VramBus.cpp" />
     <ClCompile Include="src\Sch_Window.cpp" />
     <ClCompile Include="src\Serial.cpp" />
     <ClCompile Include="src\SPU.cpp" />

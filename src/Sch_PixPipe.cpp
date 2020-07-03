@@ -10,7 +10,6 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
 
   //----------------------------------------
 
-  auto& cpu_bus = top.cpu_bus;
   /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
   /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
   /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
@@ -387,130 +386,107 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
 
   // FF47 BGP
   {
-    auto cpu_sig = top.cpu_bus.sig(top);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A04);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, top.CPU_PIN_A06, XALY_0x00xxxxp);
-    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
-    /*p22.WYBO*/ wire FF47n = nand(WERO_FF40_FF4Fp, WADO_A00p, WESA_A01p, WALO_A02p, XERA_A03n);
+    /*p22.WYBO*/ wire FF47n = nand(top.WERO_FF40_FF4Fp(), WADO_A00p, WESA_A01p, WALO_A02p, XERA_A03n);
     /*p22.WERA*/ wire FF47 = not(FF47n);
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
     /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
     /*p36.VELY*/ wire FF47_WR = and (CUPA_CPU_WR_xxxxxFGH, FF47);
     /*p36.TEPO*/ wire FF47_WRn = not(FF47_WR);
 
-    /*p36.PAVO*/ BGP0.set(FF47_WRn, 1, cpu_bus.CPU_TRI_D0);
-    /*p36.NUSY*/ BGP1.set(FF47_WRn, 1, cpu_bus.CPU_TRI_D1);
-    /*p36.PYLU*/ BGP2.set(FF47_WRn, 1, cpu_bus.CPU_TRI_D2);
-    /*p36.MAXY*/ BGP3.set(FF47_WRn, 1, cpu_bus.CPU_TRI_D3);
-    /*p36.MUKE*/ BGP4.set(FF47_WRn, 1, cpu_bus.CPU_TRI_D4);
-    /*p36.MORU*/ BGP5.set(FF47_WRn, 1, cpu_bus.CPU_TRI_D5);
-    /*p36.MOGY*/ BGP6.set(FF47_WRn, 1, cpu_bus.CPU_TRI_D6);
-    /*p36.MENA*/ BGP7.set(FF47_WRn, 1, cpu_bus.CPU_TRI_D7);
+    /*p36.PAVO*/ BGP0.set(FF47_WRn, 1, top.CPU_TRI_D0);
+    /*p36.NUSY*/ BGP1.set(FF47_WRn, 1, top.CPU_TRI_D1);
+    /*p36.PYLU*/ BGP2.set(FF47_WRn, 1, top.CPU_TRI_D2);
+    /*p36.MAXY*/ BGP3.set(FF47_WRn, 1, top.CPU_TRI_D3);
+    /*p36.MUKE*/ BGP4.set(FF47_WRn, 1, top.CPU_TRI_D4);
+    /*p36.MORU*/ BGP5.set(FF47_WRn, 1, top.CPU_TRI_D5);
+    /*p36.MOGY*/ BGP6.set(FF47_WRn, 1, top.CPU_TRI_D6);
+    /*p36.MENA*/ BGP7.set(FF47_WRn, 1, top.CPU_TRI_D7);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
     /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
     /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
     /*p36.VUSO*/ wire FF47_RD = and (ASOT_CPU_RD, FF47);
     /*p36.TEPY*/ wire FF47_RDn = not(FF47_RD);
 
-    /*p36.RARO*/ cpu_bus.CPU_TRI_D0.set_tribuf(!FF47_RDn, BGP0.q());
-    /*p36.PABA*/ cpu_bus.CPU_TRI_D1.set_tribuf(!FF47_RDn, BGP1.q());
-    /*p36.REDO*/ cpu_bus.CPU_TRI_D2.set_tribuf(!FF47_RDn, BGP2.q());
-    /*p36.LOBE*/ cpu_bus.CPU_TRI_D3.set_tribuf(!FF47_RDn, BGP3.q());
-    /*p36.LACE*/ cpu_bus.CPU_TRI_D4.set_tribuf(!FF47_RDn, BGP4.q());
-    /*p36.LYKA*/ cpu_bus.CPU_TRI_D5.set_tribuf(!FF47_RDn, BGP5.q());
-    /*p36.LODY*/ cpu_bus.CPU_TRI_D6.set_tribuf(!FF47_RDn, BGP6.q());
-    /*p36.LARY*/ cpu_bus.CPU_TRI_D7.set_tribuf(!FF47_RDn, BGP7.q());
+    /*p36.RARO*/ top.CPU_TRI_D0.set_tribuf(!FF47_RDn, BGP0.q());
+    /*p36.PABA*/ top.CPU_TRI_D1.set_tribuf(!FF47_RDn, BGP1.q());
+    /*p36.REDO*/ top.CPU_TRI_D2.set_tribuf(!FF47_RDn, BGP2.q());
+    /*p36.LOBE*/ top.CPU_TRI_D3.set_tribuf(!FF47_RDn, BGP3.q());
+    /*p36.LACE*/ top.CPU_TRI_D4.set_tribuf(!FF47_RDn, BGP4.q());
+    /*p36.LYKA*/ top.CPU_TRI_D5.set_tribuf(!FF47_RDn, BGP5.q());
+    /*p36.LODY*/ top.CPU_TRI_D6.set_tribuf(!FF47_RDn, BGP6.q());
+    /*p36.LARY*/ top.CPU_TRI_D7.set_tribuf(!FF47_RDn, BGP7.q());
   }
 
   // FF48 OBP0
   {
-    auto cpu_sig = top.cpu_bus.sig(top);
-
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A04);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, top.CPU_PIN_A06, XALY_0x00xxxxp);
-    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
-    /*p22.WETA*/ wire FF48n = nand(WERO_FF40_FF4Fp, XOLA_A00n, XENO_A01n, XUSY_A02n, WEPO_A03p);
+    /*p22.WETA*/ wire FF48n = nand(top.WERO_FF40_FF4Fp(), XOLA_A00n, XENO_A01n, XUSY_A02n, WEPO_A03p);
     /*p22.XAYO*/ wire FF48 = not(FF48n);
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
     /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
     /*p36.XOMA*/ wire FF48_WR = and (CUPA_CPU_WR_xxxxxFGH, FF48);
     /*p36.XELO*/ wire FF48_WRn = not(FF48_WR);
 
-    /*p36.XUFU*/ OBP00.set(FF48_WRn, 1, cpu_bus.CPU_TRI_D0);
-    /*p36.XUKY*/ OBP01.set(FF48_WRn, 1, cpu_bus.CPU_TRI_D1);
-    /*p36.XOVA*/ OBP02.set(FF48_WRn, 1, cpu_bus.CPU_TRI_D2);
-    /*p36.XALO*/ OBP03.set(FF48_WRn, 1, cpu_bus.CPU_TRI_D3);
-    /*p36.XERU*/ OBP04.set(FF48_WRn, 1, cpu_bus.CPU_TRI_D4);
-    /*p36.XYZE*/ OBP05.set(FF48_WRn, 1, cpu_bus.CPU_TRI_D5);
-    /*p36.XUPO*/ OBP06.set(FF48_WRn, 1, cpu_bus.CPU_TRI_D6);
-    /*p36.XANA*/ OBP07.set(FF48_WRn, 1, cpu_bus.CPU_TRI_D7);
+    /*p36.XUFU*/ OBP00.set(FF48_WRn, 1, top.CPU_TRI_D0);
+    /*p36.XUKY*/ OBP01.set(FF48_WRn, 1, top.CPU_TRI_D1);
+    /*p36.XOVA*/ OBP02.set(FF48_WRn, 1, top.CPU_TRI_D2);
+    /*p36.XALO*/ OBP03.set(FF48_WRn, 1, top.CPU_TRI_D3);
+    /*p36.XERU*/ OBP04.set(FF48_WRn, 1, top.CPU_TRI_D4);
+    /*p36.XYZE*/ OBP05.set(FF48_WRn, 1, top.CPU_TRI_D5);
+    /*p36.XUPO*/ OBP06.set(FF48_WRn, 1, top.CPU_TRI_D6);
+    /*p36.XANA*/ OBP07.set(FF48_WRn, 1, top.CPU_TRI_D7);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
     /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
     /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
     /*p36.XUFY*/ wire FF48_RD = and (ASOT_CPU_RD, FF48);
     /*p36.XOZY*/ wire FF48_RDn = not(FF48_RD);
 
-    /*p36.XARY*/ cpu_bus.CPU_TRI_D0.set_tribuf(!FF48_RDn, OBP00.q());
-    /*p36.XOKE*/ cpu_bus.CPU_TRI_D1.set_tribuf(!FF48_RDn, OBP01.q());
-    /*p36.XUNO*/ cpu_bus.CPU_TRI_D2.set_tribuf(!FF48_RDn, OBP02.q());
-    /*p36.XUBY*/ cpu_bus.CPU_TRI_D3.set_tribuf(!FF48_RDn, OBP03.q());
-    /*p36.XAJU*/ cpu_bus.CPU_TRI_D4.set_tribuf(!FF48_RDn, OBP04.q());
-    /*p36.XOBO*/ cpu_bus.CPU_TRI_D5.set_tribuf(!FF48_RDn, OBP05.q());
-    /*p36.XAXA*/ cpu_bus.CPU_TRI_D6.set_tribuf(!FF48_RDn, OBP06.q());
-    /*p36.XAWO*/ cpu_bus.CPU_TRI_D7.set_tribuf(!FF48_RDn, OBP07.q());
+    /*p36.XARY*/ top.CPU_TRI_D0.set_tribuf(!FF48_RDn, OBP00.q());
+    /*p36.XOKE*/ top.CPU_TRI_D1.set_tribuf(!FF48_RDn, OBP01.q());
+    /*p36.XUNO*/ top.CPU_TRI_D2.set_tribuf(!FF48_RDn, OBP02.q());
+    /*p36.XUBY*/ top.CPU_TRI_D3.set_tribuf(!FF48_RDn, OBP03.q());
+    /*p36.XAJU*/ top.CPU_TRI_D4.set_tribuf(!FF48_RDn, OBP04.q());
+    /*p36.XOBO*/ top.CPU_TRI_D5.set_tribuf(!FF48_RDn, OBP05.q());
+    /*p36.XAXA*/ top.CPU_TRI_D6.set_tribuf(!FF48_RDn, OBP06.q());
+    /*p36.XAWO*/ top.CPU_TRI_D7.set_tribuf(!FF48_RDn, OBP07.q());
   }
 
   // FF49 OBP1
   {
-    auto cpu_sig = top.cpu_bus.sig(top);
-
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A04);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, top.CPU_PIN_A06, XALY_0x00xxxxp);
-    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
-    /*p22.VAMA*/ wire FF49n = nand(WERO_FF40_FF4Fp, WADO_A00p, XENO_A01n, XUSY_A02n, WEPO_A03p);
+    /*p22.VAMA*/ wire FF49n = nand(top.WERO_FF40_FF4Fp(), WADO_A00p, XENO_A01n, XUSY_A02n, WEPO_A03p);
     /*p22.TEGO*/ wire FF49 = not(FF49n);
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
     /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
     /*p36.MYXE*/ wire FF49_WR = and (CUPA_CPU_WR_xxxxxFGH, FF49);
     /*p36.LEHO*/ wire FF49_WRn = not(FF49_WR);
 
-    /*p36.MOXY*/ OBP10.set(FF49_WRn, 1, cpu_bus.CPU_TRI_D0);
-    /*p36.LAWO*/ OBP11.set(FF49_WRn, 1, cpu_bus.CPU_TRI_D1);
-    /*p36.MOSA*/ OBP12.set(FF49_WRn, 1, cpu_bus.CPU_TRI_D2);
-    /*p36.LOSE*/ OBP13.set(FF49_WRn, 1, cpu_bus.CPU_TRI_D3);
-    /*p36.LUNE*/ OBP14.set(FF49_WRn, 1, cpu_bus.CPU_TRI_D4);
-    /*p36.LUGU*/ OBP15.set(FF49_WRn, 1, cpu_bus.CPU_TRI_D5);
-    /*p36.LEPU*/ OBP16.set(FF49_WRn, 1, cpu_bus.CPU_TRI_D6);
-    /*p36.LUXO*/ OBP17.set(FF49_WRn, 1, cpu_bus.CPU_TRI_D7);
+    /*p36.MOXY*/ OBP10.set(FF49_WRn, 1, top.CPU_TRI_D0);
+    /*p36.LAWO*/ OBP11.set(FF49_WRn, 1, top.CPU_TRI_D1);
+    /*p36.MOSA*/ OBP12.set(FF49_WRn, 1, top.CPU_TRI_D2);
+    /*p36.LOSE*/ OBP13.set(FF49_WRn, 1, top.CPU_TRI_D3);
+    /*p36.LUNE*/ OBP14.set(FF49_WRn, 1, top.CPU_TRI_D4);
+    /*p36.LUGU*/ OBP15.set(FF49_WRn, 1, top.CPU_TRI_D5);
+    /*p36.LEPU*/ OBP16.set(FF49_WRn, 1, top.CPU_TRI_D6);
+    /*p36.LUXO*/ OBP17.set(FF49_WRn, 1, top.CPU_TRI_D7);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
     /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
     /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
     /*p36.MUMY*/ wire FF49_RD = and (ASOT_CPU_RD, FF49);
     /*p36.LOTE*/ wire FF49_RDn = not(FF49_RD); // where does this go?
 
-    /*p36.LAJU*/ cpu_bus.CPU_TRI_D0.set_tribuf(!FF49_RDn, OBP10.q());
-    /*p36.LEPA*/ cpu_bus.CPU_TRI_D1.set_tribuf(!FF49_RDn, OBP11.q());
-    /*p36.LODE*/ cpu_bus.CPU_TRI_D2.set_tribuf(!FF49_RDn, OBP12.q());
-    /*p36.LYZA*/ cpu_bus.CPU_TRI_D3.set_tribuf(!FF49_RDn, OBP13.q());
-    /*p36.LUKY*/ cpu_bus.CPU_TRI_D4.set_tribuf(!FF49_RDn, OBP14.q());
-    /*p36.LUGA*/ cpu_bus.CPU_TRI_D5.set_tribuf(!FF49_RDn, OBP15.q());
-    /*p36.LEBA*/ cpu_bus.CPU_TRI_D6.set_tribuf(!FF49_RDn, OBP16.q());
-    /*p36.LELU*/ cpu_bus.CPU_TRI_D7.set_tribuf(!FF49_RDn, OBP17.q());
+    /*p36.LAJU*/ top.CPU_TRI_D0.set_tribuf(!FF49_RDn, OBP10.q());
+    /*p36.LEPA*/ top.CPU_TRI_D1.set_tribuf(!FF49_RDn, OBP11.q());
+    /*p36.LODE*/ top.CPU_TRI_D2.set_tribuf(!FF49_RDn, OBP12.q());
+    /*p36.LYZA*/ top.CPU_TRI_D3.set_tribuf(!FF49_RDn, OBP13.q());
+    /*p36.LUKY*/ top.CPU_TRI_D4.set_tribuf(!FF49_RDn, OBP14.q());
+    /*p36.LUGA*/ top.CPU_TRI_D5.set_tribuf(!FF49_RDn, OBP15.q());
+    /*p36.LEBA*/ top.CPU_TRI_D6.set_tribuf(!FF49_RDn, OBP16.q());
+    /*p36.LELU*/ top.CPU_TRI_D7.set_tribuf(!FF49_RDn, OBP17.q());
   }
 }
 

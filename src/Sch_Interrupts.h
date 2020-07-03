@@ -17,6 +17,7 @@ struct InterruptRegisters {
   SignalHash commit();
 
 private:
+  friend SchematicTop;
 
   /*p02.LOPE*/ Reg22 LOPE_FF0F_0;
   /*p02.UBUL*/ Reg22 UBUL_FF0F_3;   // 22-rung?

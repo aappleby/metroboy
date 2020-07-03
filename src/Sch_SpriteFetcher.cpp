@@ -95,17 +95,14 @@ SpriteFetcherSignals SpriteFetcher::sig(const SchematicTop& gb) const {
 
 //------------------------------------------------------------------------------
 
-void SpriteFetcher::tick(SchematicTop& gb) {
-  auto& vram_bus = gb.vram_bus;
-  auto ppu_sig = gb.ppu_reg.sig(gb);
+void SpriteFetcher::tick(SchematicTop& top) {
+  auto ppu_sig = top.ppu_reg.sig(top);
   
-  auto sst_sig = gb.sst_reg.sig(gb);
+  auto sst_sig = top.sst_reg.sig(top);
   
-  auto lcd_sig = gb.lcd_reg.sig(gb);
+  auto& ppu_config = top.ppu_config;
 
-  auto& ppu_config = gb.ppu_config;
-
-  auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
+  auto sprite_fetcher_sig = top.sprite_fetcher.sig(top);
 
   wire P10_B = 0;
 
@@ -117,7 +114,7 @@ void SpriteFetcher::tick(SchematicTop& gb) {
   {
     /*p27.VYPO*/ wire VYPO_P10_Bn = not(P10_B);
 
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(gb.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -129,8 +126,8 @@ void SpriteFetcher::tick(SchematicTop& gb) {
     /*p27.SUDA*/ SUDA_SPRITE_FETCH_TRIG_B.set(LAPE_AxCxExGx, VYPO_P10_Bn, SOBU_SPRITE_FETCH_TRIG_A);
     /*p27.RYCE*/ wire RYCE_SPRITE_FETCH_TRIG = and (SOBU_SPRITE_FETCH_TRIG_A, !SUDA_SPRITE_FETCH_TRIG_B);
 
-    /*p01.ROSY*/ wire ROSY_VID_RSTp = not(gb.XAPO_VID_RSTn());
-    /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCH_TRIG, ROSY_VID_RSTp, lcd_sig.BYHA_VID_LINE_TRIG_d4n); // def nor
+    /*p01.ROSY*/ wire ROSY_VID_RSTp = not(top.XAPO_VID_RSTn());
+    /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCH_TRIG, ROSY_VID_RSTp, top.BYHA_VID_LINE_TRIG_d4n()); // def nor
     /*p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_RUNNING_SETn, ppu_sig.VEKU_SFETCH_RUNNING_RSTn);
 
     /*p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand(TESE_SFETCH_S2, TOXE_SFETCH_S0_D0);
@@ -147,7 +144,7 @@ void SpriteFetcher::tick(SchematicTop& gb) {
   }
 
   {
-    auto bus_sig = gb.bus_mux.sig(gb);
+    auto bus_sig = top.bus_mux.sig(top);
 
     // SFETCH_000 - TOPU_SPRITE_PIX_LATCH_A = 0, 
     // SFETCH_001
@@ -159,14 +156,14 @@ void SpriteFetcher::tick(SchematicTop& gb) {
     // SFETCH_111
 
     /*p29.XONO*/ wire XONO_FLIP_X = and (bus_sig.BAXO_SPRITE_X5, sprite_fetcher_sig.TEXY_SPRITE_READp);
-    /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2_p(vram_bus.CPU_TRI_D7, vram_bus.CPU_TRI_D0, XONO_FLIP_X);
-    /*p33.PACY*/ wire SPR_PIX_FLIP1 = mux2_p(vram_bus.CPU_TRI_D6, vram_bus.CPU_TRI_D1, XONO_FLIP_X);
-    /*p33.PONO*/ wire SPR_PIX_FLIP2 = mux2_p(vram_bus.CPU_TRI_D5, vram_bus.CPU_TRI_D2, XONO_FLIP_X);
-    /*p33.PUGU*/ wire SPR_PIX_FLIP3 = mux2_p(vram_bus.CPU_TRI_D4, vram_bus.CPU_TRI_D3, XONO_FLIP_X);
-    /*p33.PUTE*/ wire SPR_PIX_FLIP4 = mux2_p(vram_bus.CPU_TRI_D3, vram_bus.CPU_TRI_D4, XONO_FLIP_X);
-    /*p33.PULY*/ wire SPR_PIX_FLIP5 = mux2_p(vram_bus.CPU_TRI_D2, vram_bus.CPU_TRI_D5, XONO_FLIP_X);
-    /*p33.PELO*/ wire SPR_PIX_FLIP6 = mux2_p(vram_bus.CPU_TRI_D1, vram_bus.CPU_TRI_D6, XONO_FLIP_X);
-    /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2_p(vram_bus.CPU_TRI_D0, vram_bus.CPU_TRI_D7, XONO_FLIP_X);
+    /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2_p(top.VRM_TRI_D7, top.VRM_TRI_D0, XONO_FLIP_X);
+    /*p33.PACY*/ wire SPR_PIX_FLIP1 = mux2_p(top.VRM_TRI_D6, top.VRM_TRI_D1, XONO_FLIP_X);
+    /*p33.PONO*/ wire SPR_PIX_FLIP2 = mux2_p(top.VRM_TRI_D5, top.VRM_TRI_D2, XONO_FLIP_X);
+    /*p33.PUGU*/ wire SPR_PIX_FLIP3 = mux2_p(top.VRM_TRI_D4, top.VRM_TRI_D3, XONO_FLIP_X);
+    /*p33.PUTE*/ wire SPR_PIX_FLIP4 = mux2_p(top.VRM_TRI_D3, top.VRM_TRI_D4, XONO_FLIP_X);
+    /*p33.PULY*/ wire SPR_PIX_FLIP5 = mux2_p(top.VRM_TRI_D2, top.VRM_TRI_D5, XONO_FLIP_X);
+    /*p33.PELO*/ wire SPR_PIX_FLIP6 = mux2_p(top.VRM_TRI_D1, top.VRM_TRI_D6, XONO_FLIP_X);
+    /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2_p(top.VRM_TRI_D0, top.VRM_TRI_D7, XONO_FLIP_X);
 
 #if 0
     wire LATCH_SPPIXA = and (RENDERING, TOXE_SFETCH_S0_D0, !TYFO_SFETCH_S0_D1, TULY_SFETCH_S1);
@@ -205,7 +202,7 @@ void SpriteFetcher::tick(SchematicTop& gb) {
   }
 
   {
-    auto bus_sig = gb.bus_mux.sig(gb);
+    auto bus_sig = top.bus_mux.sig(top);
 
 #if 0
     wire SPRITE_READ = RENDERING && (TULY_SFETCH_S1 || VONU_SFETCH_S1_D4);
@@ -224,19 +221,19 @@ void SpriteFetcher::tick(SchematicTop& gb) {
 
     /*p29.ABON*/ wire ABON_SPRITE_READn = not(sprite_fetcher_sig.TEXY_SPRITE_READp);
 
-    /*p29.ABEM*/ vram_bus.TRI_A00.set_tribuf(ABON_SPRITE_READn, _XUQU_SPRITE_AB);
-    /*p29.BAXE*/ vram_bus.TRI_A01.set_tribuf(ABON_SPRITE_READn, _CYVU_SPRITE_Y0);
-    /*p29.ARAS*/ vram_bus.TRI_A02.set_tribuf(ABON_SPRITE_READn, _BORE_SPRITE_Y1);
-    /*p29.AGAG*/ vram_bus.TRI_A03.set_tribuf(ABON_SPRITE_READn, _BUVY_SPRITE_Y2);
-    /*p29.FAMU*/ vram_bus.TRI_A04.set_tribuf(ABON_SPRITE_READn, _GEJY_SPRITE_Y3);
-    /*p29.FUGY*/ vram_bus.TRI_A05.set_tribuf(ABON_SPRITE_READn, bus_sig.XEGU_SPRITE_Y1);
-    /*p29.GAVO*/ vram_bus.TRI_A06.set_tribuf(ABON_SPRITE_READn, bus_sig.YJEX_SPRITE_Y2);
-    /*p29.WYGA*/ vram_bus.TRI_A07.set_tribuf(ABON_SPRITE_READn, bus_sig.XYJU_SPRITE_Y3);
-    /*p29.WUNE*/ vram_bus.TRI_A08.set_tribuf(ABON_SPRITE_READn, bus_sig.YBOG_SPRITE_Y4);
-    /*p29.GOTU*/ vram_bus.TRI_A09.set_tribuf(ABON_SPRITE_READn, bus_sig.WYSO_SPRITE_Y5);
-    /*p29.GEGU*/ vram_bus.TRI_A10.set_tribuf(ABON_SPRITE_READn, bus_sig.XOTE_SPRITE_Y6);
-    /*p29.XEHE*/ vram_bus.TRI_A11.set_tribuf(ABON_SPRITE_READn, bus_sig.YZAB_SPRITE_Y7);
-    /*p29.DYSO*/ vram_bus.TRI_A12.set_tribuf(ABON_SPRITE_READn, P10_B);   // sprites always in low half of tile store
+    /*p29.ABEM*/ top.VRM_TRI_A00.set_tribuf(ABON_SPRITE_READn, _XUQU_SPRITE_AB);
+    /*p29.BAXE*/ top.VRM_TRI_A01.set_tribuf(ABON_SPRITE_READn, _CYVU_SPRITE_Y0);
+    /*p29.ARAS*/ top.VRM_TRI_A02.set_tribuf(ABON_SPRITE_READn, _BORE_SPRITE_Y1);
+    /*p29.AGAG*/ top.VRM_TRI_A03.set_tribuf(ABON_SPRITE_READn, _BUVY_SPRITE_Y2);
+    /*p29.FAMU*/ top.VRM_TRI_A04.set_tribuf(ABON_SPRITE_READn, _GEJY_SPRITE_Y3);
+    /*p29.FUGY*/ top.VRM_TRI_A05.set_tribuf(ABON_SPRITE_READn, bus_sig.XEGU_SPRITE_Y1);
+    /*p29.GAVO*/ top.VRM_TRI_A06.set_tribuf(ABON_SPRITE_READn, bus_sig.YJEX_SPRITE_Y2);
+    /*p29.WYGA*/ top.VRM_TRI_A07.set_tribuf(ABON_SPRITE_READn, bus_sig.XYJU_SPRITE_Y3);
+    /*p29.WUNE*/ top.VRM_TRI_A08.set_tribuf(ABON_SPRITE_READn, bus_sig.YBOG_SPRITE_Y4);
+    /*p29.GOTU*/ top.VRM_TRI_A09.set_tribuf(ABON_SPRITE_READn, bus_sig.WYSO_SPRITE_Y5);
+    /*p29.GEGU*/ top.VRM_TRI_A10.set_tribuf(ABON_SPRITE_READn, bus_sig.XOTE_SPRITE_Y6);
+    /*p29.XEHE*/ top.VRM_TRI_A11.set_tribuf(ABON_SPRITE_READn, bus_sig.YZAB_SPRITE_Y7);
+    /*p29.DYSO*/ top.VRM_TRI_A12.set_tribuf(ABON_SPRITE_READn, P10_B);   // sprites always in low half of tile store
   }
 }
 

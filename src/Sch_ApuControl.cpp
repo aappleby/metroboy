@@ -85,22 +85,22 @@ void P09_ApuControl_tick(const Gameboy& a,
   {
     /*p07.BAKO*/ next.apu.ADDR_FFXXn1 = not(b.dec_sig.ADDR_FFXX);
 
-    /*p10.ATUP*/ wire A04n = not(b.bus.PIN_A04());
-    /*p10.BOXY*/ wire A05n = not(b.bus.PIN_A05());
-    /*p10.ASAD*/ wire A06n = not(b.bus.PIN_A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.PIN_A07());
+    /*p10.ATUP*/ wire A04n = not(b.bus.CPU_PIN_A04());
+    /*p10.BOXY*/ wire A05n = not(b.bus.CPU_PIN_A05());
+    /*p10.ASAD*/ wire A06n = not(b.bus.CPU_PIN_A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.CPU_PIN_A07());
 
-    /*p10.ATEG*/ wire ADDR_XX1Xn = or(b.bus.PIN_A07(), b.bus.PIN_A06(), b.bus.PIN_A05(),  A04n);
-    /*p10.AWET*/ wire ADDR_XX2Xn = or(b.bus.PIN_A07(), b.bus.PIN_A06(),  A05n, b.bus.PIN_A04());
+    /*p10.ATEG*/ wire ADDR_XX1Xn = or(b.bus.CPU_PIN_A07(), b.bus.CPU_PIN_A06(), b.bus.CPU_PIN_A05(),  A04n);
+    /*p10.AWET*/ wire ADDR_XX2Xn = or(b.bus.CPU_PIN_A07(), b.bus.CPU_PIN_A06(),  A05n, b.bus.CPU_PIN_A04());
 
     /*p10.BUNO*/ wire ADDR_FF1X  = nor(b.apu.ADDR_FFXXn1, ADDR_XX1Xn);
     /*p10.BANU*/ next.apu.ADDR_FF1Xn = not(ADDR_FF1X);
     /*p10.BEZY*/ next.apu.ADDR_FF2Xn = or(ADDR_XX2Xn, b.apu.ADDR_FFXXn1);
 
-    /*p10.DYTE*/ next.apu.ADDR_xxx0  = not(b.bus.PIN_A00());
-    /*p10.AFOB*/ next.apu.ADDR_xx0x  = not(b.bus.PIN_A01());
-    /*p10.ABUB*/ next.apu.ADDR_x0xx  = not(b.bus.PIN_A02());
-    /*p10.ACOL*/ next.apu.ADDR_0xxx  = not(b.bus.PIN_A03());
+    /*p10.DYTE*/ next.apu.ADDR_xxx0  = not(b.bus.CPU_PIN_A00());
+    /*p10.AFOB*/ next.apu.ADDR_xx0x  = not(b.bus.CPU_PIN_A01());
+    /*p10.ABUB*/ next.apu.ADDR_x0xx  = not(b.bus.CPU_PIN_A02());
+    /*p10.ACOL*/ next.apu.ADDR_0xxx  = not(b.bus.CPU_PIN_A03());
 
     /*p10.DOSO*/ next.apu.ADDR_xxx1  = not(b.apu.ADDR_xxx0);
     /*p10.DUPA*/ next.apu.ADDR_xx1x  = not(b.apu.ADDR_xx0x);

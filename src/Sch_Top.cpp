@@ -236,14 +236,14 @@ void dump_pins(TextPainter& /*text_painter*/) {
   text_painter.newline();
 
   text_painter.add_text("Dxx ");
-  dump_pins(text_painter, PIN_D7_A, PIN_D7_B, PIN_D7_C, PIN_D7_D);
-  dump_pins(text_painter, PIN_D6_A, PIN_D6_B, PIN_D6_C, PIN_D6_D);
-  dump_pins(text_painter, PIN_D5_A, PIN_D5_B, PIN_D5_C, PIN_D5_D);
-  dump_pins(text_painter, PIN_D4_A, PIN_D4_B, PIN_D4_C, PIN_D4_D);
-  dump_pins(text_painter, PIN_D3_A, PIN_D3_B, PIN_D3_C, PIN_D3_D);
-  dump_pins(text_painter, PIN_D2_A, PIN_D2_B, PIN_D2_C, PIN_D2_D);
-  dump_pins(text_painter, PIN_D1_A, PIN_D1_B, PIN_D1_C, PIN_D1_D);
-  dump_pins(text_painter, PIN_D0_A, PIN_D0_B, PIN_D0_C, PIN_D0_D);
+  dump_pins(text_painter, EXT_PIN_D7_A, EXT_PIN_D7_B, PIN_D7_C, EXT_PIN_D7_D);
+  dump_pins(text_painter, EXT_PIN_D6_A, EXT_PIN_D6_B, PIN_D6_C, EXT_PIN_D6_D);
+  dump_pins(text_painter, EXT_PIN_D5_A, EXT_PIN_D5_B, PIN_D5_C, EXT_PIN_D5_D);
+  dump_pins(text_painter, EXT_PIN_D4_A, EXT_PIN_D4_B, PIN_D4_C, EXT_PIN_D4_D);
+  dump_pins(text_painter, EXT_PIN_D3_A, EXT_PIN_D3_B, PIN_D3_C, EXT_PIN_D3_D);
+  dump_pins(text_painter, EXT_PIN_D2_A, EXT_PIN_D2_B, PIN_D2_C, EXT_PIN_D2_D);
+  dump_pins(text_painter, EXT_PIN_D1_A, EXT_PIN_D1_B, PIN_D1_C, EXT_PIN_D1_D);
+  dump_pins(text_painter, EXT_PIN_D0_A, EXT_PIN_D0_B, PIN_D0_C, EXT_PIN_D0_D);
   text_painter.newline();
   */
 }

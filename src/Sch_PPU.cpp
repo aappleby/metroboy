@@ -388,13 +388,17 @@ void PpuRegisters::tick(SchematicTop& gb) {
     // when ROPO16 goes high, RUPO02 goes low.
 
     auto cpu_sig = gb.cpu_bus.sig(gb);
-    /*p22.WOFA*/ wire WOFA_FF41n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p22.WOFA*/ wire WOFA_FF41n = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
     /*p22.VARY*/ wire VARY_FF41p = not(WOFA_FF41n);
 
     /*p21.TOBE*/ wire TOBE_FF41_RDa = and (cpu_sig.ASOT_CPU_RD, VARY_FF41p); // die AND
     /*p21.VAVE*/ wire VAVE_FF41_RDb = not(TOBE_FF41_RDa); // die INV
 
-    /*p21.SEPA*/ wire SEPA_FF41_WRp = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, VARY_FF41p);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+    /*p21.SEPA*/ wire SEPA_FF41_WRp = and (CUPA_CPU_WR_xxxxxFGH, VARY_FF41p);
     /*p21.RYVE*/ wire RYVE_FF41_WRn = not(SEPA_FF41_WRp);
 
     /*p21.RYJU*/ wire RYJU_FF41_WRn = not(SEPA_FF41_WRp);

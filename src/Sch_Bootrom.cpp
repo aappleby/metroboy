@@ -62,13 +62,14 @@ void Bootrom::tick(SchematicTop& gb) {
     auto cpu_sig = gb.cpu_bus.sig(gb);
     auto rst_sig = gb.rst_reg.sig(gb);
 
-    /*p07.TYRO*/ wire ADDR_0x0x0000p = nor(cpu_bus.PIN_A07, cpu_bus.PIN_A05, cpu_bus.PIN_A03, cpu_bus.PIN_A02, cpu_bus.PIN_A01, cpu_bus.PIN_A00);
-    /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(cpu_bus.PIN_A04, cpu_bus.PIN_A06);
+    /*p07.TYRO*/ wire ADDR_0x0x0000p = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A03, cpu_bus.CPU_PIN_A02, cpu_bus.CPU_PIN_A01, cpu_bus.CPU_PIN_A00);
+    /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(cpu_bus.CPU_PIN_A04, cpu_bus.CPU_PIN_A06);
 
     /*p07.TEXE*/ wire FF50_RDp = and(cpu_sig.TEDO_CPU_RD, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SYPU*/ cpu_bus.CPU_TRI_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
 
-    /*p07.TUGE*/ wire FF50_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.TUGE*/ wire FF50_WRn = nand(TAPU_CPU_WR_xxxxxFGH, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.CPU_TRI_D0, BOOT_BITn);
 
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
@@ -110,7 +111,7 @@ void Bootrom::tick(SchematicTop& gb) {
     ///*p07.ZYRA*/ wire BOOTROM_A7n    = not(cpu_pins.A07);
 
     /*p07.TERA*/ wire _TERA_BOOT_BITp  = not(BOOT_BITn.q());
-    /*p07.TULO*/ wire _TULO_ADDR_00XXp = nor(cpu_bus.PIN_A15, cpu_bus.PIN_A14, cpu_bus.PIN_A13, cpu_bus.PIN_A12, cpu_bus.PIN_A11, cpu_bus.PIN_A10, cpu_bus.PIN_A09, cpu_bus.PIN_A08);
+    /*p07.TULO*/ wire _TULO_ADDR_00XXp = nor(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09, cpu_bus.CPU_PIN_A08);
     /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
 
     /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1p); // suggests UMUTp

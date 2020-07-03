@@ -12,10 +12,9 @@ struct CpuBusSignals {
   /*p08.MOCA*/ Signal MOCA_DBG_EXT_RD;
   /*p08.MOTY*/ Signal MOTY_CPU_EXT_RD;
 
-  /*p07.TAPU*/ Signal TAPU_CPU_WR_xxxxxFGH;
-  /*p07.CUPA*/ Signal CUPA_CPU_WR_xxxxxFGH;
-  /*p01.APOV*/ Signal APOV_CPU_WR_xxxxxFGH;
-
+  /*p07.UBAL*/ Signal UBAL_CPU_WR_ABCDExxx;
+  /*p01.AREV*/ Signal AREV_CPU_WRn_ABCDExxx;
+  
   /*p04.DECY*/ Signal DECY_FROM_CPU5n;
   /*p28.LEKO*/ Signal LEKO_CPU_RDp;
 
@@ -44,13 +43,12 @@ struct CpuBusSignals {
   /*p07.TUNA*/ Signal TUNA_0000_FDFFp;
   /*p06.SARE*/ Signal SARE_XX00_XX07p;
   /*p07.SYKE*/ Signal SYKE_FF00_FFFFp;
-  /*p25.SYRO*/ Signal SYRO_FE00_FFFFp;
   /*p03.RYFO*/ Signal RYFO_FF04_FF07p;
   /*p07.SARO*/ Signal SARO_FE00_FEFFp;
-  /*p22.WERO*/ Signal WERO_FF40_FF4Fp;
+
+  /*p22.WUTU*/ Signal WUTU_FF40_FF4Fn;
   /*p25.SOSE*/ Signal SOSE_8000_9FFFp;
   /*p08.TEXO*/ Signal TEXO_8000_9FFFn;
-  /*p08.LEVO*/ Signal LEVO_8000_9FFFp;
 };
 
 //-----------------------------------------------------------------------------
@@ -80,30 +78,30 @@ struct CpuBus {
   }
 
   int get_addr() const {
-    return pack(PIN_A00, PIN_A01, PIN_A02, PIN_A03, PIN_A04, PIN_A05, PIN_A06, PIN_A07,
-      PIN_A08, PIN_A09, PIN_A10, PIN_A11, PIN_A12, PIN_A13, PIN_A14, PIN_A15);
+    return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03, CPU_PIN_A04, CPU_PIN_A05, CPU_PIN_A06, CPU_PIN_A07,
+      CPU_PIN_A08, CPU_PIN_A09, CPU_PIN_A10, CPU_PIN_A11, CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
   }
 
   void preset_rd(bool rd)            { CPU_PIN_RD.preset(true, rd); }
   bool preset_wr(bool wr)            { CPU_PIN_WR.preset(true, wr); }
   bool preset_addr_valid(bool valid) { CPU_PIN_ADDR_VALID.preset(true, valid); }
   void preset_addr(bool oe, uint16_t addr) {
-    PIN_A00.preset(oe, addr & 0x0001);
-    PIN_A01.preset(oe, addr & 0x0002);
-    PIN_A02.preset(oe, addr & 0x0004);
-    PIN_A03.preset(oe, addr & 0x0008);
-    PIN_A04.preset(oe, addr & 0x0010);
-    PIN_A05.preset(oe, addr & 0x0020);
-    PIN_A06.preset(oe, addr & 0x0040);
-    PIN_A07.preset(oe, addr & 0x0080);
-    PIN_A08.preset(oe, addr & 0x0100);
-    PIN_A09.preset(oe, addr & 0x0200);
-    PIN_A10.preset(oe, addr & 0x0400);
-    PIN_A11.preset(oe, addr & 0x0800);
-    PIN_A12.preset(oe, addr & 0x1000);
-    PIN_A13.preset(oe, addr & 0x2000);
-    PIN_A14.preset(oe, addr & 0x4000);
-    PIN_A15.preset(oe, addr & 0x8000);
+    CPU_PIN_A00.preset(oe, addr & 0x0001);
+    CPU_PIN_A01.preset(oe, addr & 0x0002);
+    CPU_PIN_A02.preset(oe, addr & 0x0004);
+    CPU_PIN_A03.preset(oe, addr & 0x0008);
+    CPU_PIN_A04.preset(oe, addr & 0x0010);
+    CPU_PIN_A05.preset(oe, addr & 0x0020);
+    CPU_PIN_A06.preset(oe, addr & 0x0040);
+    CPU_PIN_A07.preset(oe, addr & 0x0080);
+    CPU_PIN_A08.preset(oe, addr & 0x0100);
+    CPU_PIN_A09.preset(oe, addr & 0x0200);
+    CPU_PIN_A10.preset(oe, addr & 0x0400);
+    CPU_PIN_A11.preset(oe, addr & 0x0800);
+    CPU_PIN_A12.preset(oe, addr & 0x1000);
+    CPU_PIN_A13.preset(oe, addr & 0x2000);
+    CPU_PIN_A14.preset(oe, addr & 0x4000);
+    CPU_PIN_A15.preset(oe, addr & 0x8000);
   }
 
   //----------
@@ -125,22 +123,22 @@ struct CpuBus {
   PinIn  CPU_PIN6;  // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
   PinIn  CPU_PIN_CLKREQ;     // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
 
-  PinIn  PIN_A00; // bottom right port PORTB_00: -> A00
-  PinIn  PIN_A01; // bottom right port PORTB_04: -> A01
-  PinIn  PIN_A02; // bottom right port PORTB_08: -> A02
-  PinIn  PIN_A03; // bottom right port PORTB_12: -> A03
-  PinIn  PIN_A04; // bottom right port PORTB_16: -> A04
-  PinIn  PIN_A05; // bottom right port PORTB_20: -> A05
-  PinIn  PIN_A06; // bottom right port PORTB_24: -> A06
-  PinIn  PIN_A07; // bottom right port PORTB_28: -> A07
-  PinIn  PIN_A08; // bottom right port PORTB_02: -> A08
-  PinIn  PIN_A09; // bottom right port PORTB_06: -> A09
-  PinIn  PIN_A10; // bottom right port PORTB_10: -> A10
-  PinIn  PIN_A11; // bottom right port PORTB_14: -> A11
-  PinIn  PIN_A12; // bottom right port PORTB_18: -> A12
-  PinIn  PIN_A13; // bottom right port PORTB_22: -> A13
-  PinIn  PIN_A14; // bottom right port PORTB_26: -> A14
-  PinIn  PIN_A15; // bottom right port PORTB_30: -> A15
+  PinIn  CPU_PIN_A00; // bottom right port PORTB_00: -> A00
+  PinIn  CPU_PIN_A01; // bottom right port PORTB_04: -> A01
+  PinIn  CPU_PIN_A02; // bottom right port PORTB_08: -> A02
+  PinIn  CPU_PIN_A03; // bottom right port PORTB_12: -> A03
+  PinIn  CPU_PIN_A04; // bottom right port PORTB_16: -> A04
+  PinIn  CPU_PIN_A05; // bottom right port PORTB_20: -> A05
+  PinIn  CPU_PIN_A06; // bottom right port PORTB_24: -> A06
+  PinIn  CPU_PIN_A07; // bottom right port PORTB_28: -> A07
+  PinIn  CPU_PIN_A08; // bottom right port PORTB_02: -> A08
+  PinIn  CPU_PIN_A09; // bottom right port PORTB_06: -> A09
+  PinIn  CPU_PIN_A10; // bottom right port PORTB_10: -> A10
+  PinIn  CPU_PIN_A11; // bottom right port PORTB_14: -> A11
+  PinIn  CPU_PIN_A12; // bottom right port PORTB_18: -> A12
+  PinIn  CPU_PIN_A13; // bottom right port PORTB_22: -> A13
+  PinIn  CPU_PIN_A14; // bottom right port PORTB_26: -> A14
+  PinIn  CPU_PIN_A15; // bottom right port PORTB_30: -> A15
 
   /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
   /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
@@ -198,30 +196,30 @@ private:
   //----------
   // Data pins
 
-  /* PIN_17 */ PinOut PIN_D0_A;    // <- P08.RUXA
-  /* PIN_17 */ PinOut PIN_D0_B;    // <- P08.LULA
-  /* PIN_17 */ PinOut PIN_D0_D;    // <- P08.RUNE
-  /* PIN_18 */ PinOut PIN_D1_A;    // <- P08.RUJA
-  /* PIN_18 */ PinOut PIN_D1_B;    // <- P08.LULA
-  /* PIN_18 */ PinOut PIN_D1_D;    // <- P08.RYPU
-  /* PIN_19 */ PinOut PIN_D2_A;    // <- P08.RABY
-  /* PIN_19 */ PinOut PIN_D2_B;    // <- P08.LULA
-  /* PIN_19 */ PinOut PIN_D2_D;    // <- P08.SULY
-  /* PIN_20 */ PinOut PIN_D3_A;    // <- P08.RERA
-  /* PIN_20 */ PinOut PIN_D3_B;    // <- P08.LULA
-  /* PIN_20 */ PinOut PIN_D3_D;    // <- P08.SEZE
-  /* PIN_21 */ PinOut PIN_D4_A;    // <- P08.RORY
-  /* PIN_21 */ PinOut PIN_D4_B;    // <- P08.LULA
-  /* PIN_21 */ PinOut PIN_D4_D;    // <- P08.RESY
-  /* PIN_22 */ PinOut PIN_D5_A;    // <- P08.RYVO
-  /* PIN_22 */ PinOut PIN_D5_B;    // <- P08.LULA
-  /* PIN_22 */ PinOut PIN_D5_D;    // <- P08.TAMU
-  /* PIN_23 */ PinOut PIN_D6_A;    // <- P08.RAFY
-  /* PIN_23 */ PinOut PIN_D6_B;    // <- P08.LULA
-  /* PIN_23 */ PinOut PIN_D6_D;    // <- P08.ROGY
-  /* PIN_24 */ PinOut PIN_D7_A;    // <- P08.RAVU
-  /* PIN_24 */ PinOut PIN_D7_B;    // <- P08.LULA
-  /* PIN_24 */ PinOut PIN_D7_D;    // <- P08.RYDA
+  /* PIN_17 */ PinOut EXT_PIN_D0_A;    // <- P08.RUXA
+  /* PIN_17 */ PinOut EXT_PIN_D0_B;    // <- P08.LULA
+  /* PIN_17 */ PinOut EXT_PIN_D0_D;    // <- P08.RUNE
+  /* PIN_18 */ PinOut EXT_PIN_D1_A;    // <- P08.RUJA
+  /* PIN_18 */ PinOut EXT_PIN_D1_B;    // <- P08.LULA
+  /* PIN_18 */ PinOut EXT_PIN_D1_D;    // <- P08.RYPU
+  /* PIN_19 */ PinOut EXT_PIN_D2_A;    // <- P08.RABY
+  /* PIN_19 */ PinOut EXT_PIN_D2_B;    // <- P08.LULA
+  /* PIN_19 */ PinOut EXT_PIN_D2_D;    // <- P08.SULY
+  /* PIN_20 */ PinOut EXT_PIN_D3_A;    // <- P08.RERA
+  /* PIN_20 */ PinOut EXT_PIN_D3_B;    // <- P08.LULA
+  /* PIN_20 */ PinOut EXT_PIN_D3_D;    // <- P08.SEZE
+  /* PIN_21 */ PinOut EXT_PIN_D4_A;    // <- P08.RORY
+  /* PIN_21 */ PinOut EXT_PIN_D4_B;    // <- P08.LULA
+  /* PIN_21 */ PinOut EXT_PIN_D4_D;    // <- P08.RESY
+  /* PIN_22 */ PinOut EXT_PIN_D5_A;    // <- P08.RYVO
+  /* PIN_22 */ PinOut EXT_PIN_D5_B;    // <- P08.LULA
+  /* PIN_22 */ PinOut EXT_PIN_D5_D;    // <- P08.TAMU
+  /* PIN_23 */ PinOut EXT_PIN_D6_A;    // <- P08.RAFY
+  /* PIN_23 */ PinOut EXT_PIN_D6_B;    // <- P08.LULA
+  /* PIN_23 */ PinOut EXT_PIN_D6_D;    // <- P08.ROGY
+  /* PIN_24 */ PinOut EXT_PIN_D7_A;    // <- P08.RAVU
+  /* PIN_24 */ PinOut EXT_PIN_D7_B;    // <- P08.LULA
+  /* PIN_24 */ PinOut EXT_PIN_D7_D;    // <- P08.RYDA
 };
 
 //-----------------------------------------------------------------------------

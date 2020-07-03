@@ -178,7 +178,8 @@ void VramPins::tick(SchematicTop& gb) {
     auto cpu_sig = gb.cpu_bus.sig(gb);
     auto dbg_sig = gb.dbg_reg.sig(gb);
 
-    /*p25.TUJA*/ wire TUJA_CPU_VRAM_WR = and(cpu_sig.SOSE_8000_9FFFp, cpu_sig.APOV_CPU_WR_xxxxxFGH);
+    /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(cpu_sig.AREV_CPU_WRn_ABCDExxx);
+    /*p25.TUJA*/ wire TUJA_CPU_VRAM_WR = and(cpu_sig.SOSE_8000_9FFFp, APOV_CPU_WR_xxxxxFGH);
     /*p25.SUDO*/ wire SUDO_MWR_Cn = not(PIN_MWRn_C);
     /*p25.TYJY*/ wire TYJY_DBG_VRAM_WR = mux2_p(SUDO_MWR_Cn, TUJA_CPU_VRAM_WR, dbg_sig.TUTO_DBG_VRAMp);
     /*p25.SOHY*/ wire SOHY_MWR    = nand(TYJY_DBG_VRAM_WR, ppu_sig.SERE_VRAM_RD);

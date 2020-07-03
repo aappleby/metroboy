@@ -232,13 +232,17 @@ void WindowRegisters::tick(SchematicTop& gb) {
 
   // FF4A
   {
-    /*p22.WYVO*/ wire FF4An = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p22.WYVO*/ wire FF4An = nand(WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.VYGA*/ wire FF4A = not(FF4An);
 
     /*p23.WAXU*/ wire FF4A_RD = and (cpu_sig.ASOT_CPU_RD, FF4A);
     /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
 
-    /*p23.WEKO*/ wire FF4A_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4A);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+    /*p23.WEKO*/ wire FF4A_WR = and (CUPA_CPU_WR_xxxxxFGH, FF4A);
     /*p23.VEFU*/ wire FF4A_WRn = not(FF4A_WR);
 
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
@@ -268,13 +272,17 @@ void WindowRegisters::tick(SchematicTop& gb) {
 
   // FF4B
   {
-    /*p22.WAGE*/ wire FF4Bn = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p22.WAGE*/ wire FF4Bn = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.VUMY*/ wire FF4B = not(FF4Bn);
 
     /*p23.WYZE*/ wire FF4B_RD = and (cpu_sig.ASOT_CPU_RD, FF4B);
     /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);
 
-    /*p23.WUZA*/ wire FF4B_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF4B);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+    /*p23.WUZA*/ wire FF4B_WR = and (CUPA_CPU_WR_xxxxxFGH, FF4B);
     /*p23.VOXU*/ wire FF4B_WRn = not(FF4B_WR);
 
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place

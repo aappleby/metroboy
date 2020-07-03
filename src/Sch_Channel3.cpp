@@ -312,9 +312,9 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
 
   {
 
-    /*p10.ASAD*/ wire A06n = not(b.bus.PIN_A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.PIN_A07());
-    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.PIN_A05(), b.bus.PIN_A04());
+    /*p10.ASAD*/ wire A06n = not(b.bus.CPU_PIN_A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.CPU_PIN_A07());
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.CPU_PIN_A05(), b.bus.CPU_PIN_A04());
 
     /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
 
@@ -341,9 +341,9 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
   }
 
   {
-    /*p10.ASAD*/ wire A06n = not(b.bus.PIN_A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.PIN_A07());
-    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.PIN_A05(), b.bus.PIN_A04());
+    /*p10.ASAD*/ wire A06n = not(b.bus.CPU_PIN_A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.CPU_PIN_A07());
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.CPU_PIN_A05(), b.bus.CPU_PIN_A04());
 
     /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
     /*p17.BUTU*/ wire SAMPLE_CLK = not(b.ch3.SAMPLE_CLKn);
@@ -359,9 +359,9 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
   }
 
   {
-    /*p10.ASAD*/ wire A06n = not(b.bus.PIN_A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.PIN_A07());
-    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.PIN_A05(), b.bus.PIN_A04());
+    /*p10.ASAD*/ wire A06n = not(b.bus.CPU_PIN_A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.CPU_PIN_A07());
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.CPU_PIN_A05(), b.bus.CPU_PIN_A04());
 
     /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
     /*p17.BYZA*/ wire WAVE_WR = and(b.apu.APU_WR, ADDR_FF3X);
@@ -406,9 +406,9 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p17.CUTO*/ wire WAVE_D6n = not(b.ch3.WAVE_D6);
     /*p17.AKAF*/ wire WAVE_D7n = not(b.ch3.WAVE_D7);
 
-    /*p10.ASAD*/ wire A06n = not(b.bus.PIN_A06());
-    /*p10.AVUN*/ wire A07n = not(b.bus.PIN_A07());
-    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.PIN_A05(), b.bus.PIN_A04());
+    /*p10.ASAD*/ wire A06n = not(b.bus.CPU_PIN_A06());
+    /*p10.AVUN*/ wire A07n = not(b.bus.CPU_PIN_A07());
+    /*p10.ACOM*/ wire ADDR_XX3Xn = nand(A07n, A06n, b.bus.CPU_PIN_A05(), b.bus.CPU_PIN_A04());
     /*p10.BARO*/ wire ADDR_FF3X  = nor(ADDR_XX3Xn, b.apu.ADDR_FFXXn1);
 
     /*p09.AGUZ*/ wire CPU_RDn = not(b.ctl.TEDO_CPURD);
@@ -453,10 +453,10 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p18.BOPA*/ next.ch3.WAVE_DAC2 = and(CH3_ACTIVE, WAVE_OUT2);
     /*p18.BELY*/ next.ch3.WAVE_DAC3 = and(CH3_ACTIVE, WAVE_OUT3);
 
-    /*p18.BOLE*/ next.ch3.WAVE_A0 = mux2(b.ch3.WAVE_IDX1, b.bus.PIN_A00(), CH3_ACTIVE);
-    /*p18.AGYL*/ next.ch3.WAVE_A1 = mux2(b.ch3.WAVE_IDX2, b.bus.PIN_A01(), CH3_ACTIVE);
-    /*p18.AFUM*/ next.ch3.WAVE_A2 = mux2(b.ch3.WAVE_IDX3, b.bus.PIN_A02(), CH3_ACTIVE);
-    /*p18.AXOL*/ next.ch3.WAVE_A3 = mux2(b.ch3.WAVE_IDX4, b.bus.PIN_A03(), CH3_ACTIVE);
+    /*p18.BOLE*/ next.ch3.WAVE_A0 = mux2(b.ch3.WAVE_IDX1, b.bus.CPU_PIN_A00(), CH3_ACTIVE);
+    /*p18.AGYL*/ next.ch3.WAVE_A1 = mux2(b.ch3.WAVE_IDX2, b.bus.CPU_PIN_A01(), CH3_ACTIVE);
+    /*p18.AFUM*/ next.ch3.WAVE_A2 = mux2(b.ch3.WAVE_IDX3, b.bus.CPU_PIN_A02(), CH3_ACTIVE);
+    /*p18.AXOL*/ next.ch3.WAVE_A3 = mux2(b.ch3.WAVE_IDX4, b.bus.CPU_PIN_A03(), CH3_ACTIVE);
   }
 }
 

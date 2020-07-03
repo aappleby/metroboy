@@ -124,10 +124,14 @@ void DmaRegisters::tick(SchematicTop& gb) {
   /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
   /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
 
-  /*p22.WATE*/ wire WATE_FF46n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
+  /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+  /*p22.WATE*/ wire WATE_FF46n = nand(WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
   /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
   /*p04.MOLU*/ wire MOLU_FF46_RDn = nand(XEDA_FF46p, cpu_sig.ASOT_CPU_RD);
-  /*p04.LAVY*/ wire LAVY_FF46_WRp = and (XEDA_FF46p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
+  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+  /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+  /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+  /*p04.LAVY*/ wire LAVY_FF46_WRp = and (XEDA_FF46p, CUPA_CPU_WR_xxxxxFGH);
 
   {
     /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, LAVY_FF46_WRp);

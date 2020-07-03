@@ -378,9 +378,13 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
   {
     auto& cpu_bus = gb.cpu_bus;
     auto cpu_sig = gb.cpu_bus.sig(gb);
-    /*p22.WYBO*/ wire FF47n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p22.WYBO*/ wire FF47n = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
     /*p22.WERA*/ wire FF47 = not(FF47n);
-    /*p36.VELY*/ wire FF47_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF47);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+    /*p36.VELY*/ wire FF47_WR = and (CUPA_CPU_WR_xxxxxFGH, FF47);
     /*p36.TEPO*/ wire FF47_WRn = not(FF47_WR);
 
     /*p36.PAVO*/ BGP0.set(FF47_WRn, 1, cpu_bus.CPU_TRI_D0);
@@ -410,9 +414,13 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
     auto& cpu_bus = gb.cpu_bus;
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
-    /*p22.WETA*/ wire FF48n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p22.WETA*/ wire FF48n = nand(WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.XAYO*/ wire FF48 = not(FF48n);
-    /*p36.XOMA*/ wire FF48_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF48);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+    /*p36.XOMA*/ wire FF48_WR = and (CUPA_CPU_WR_xxxxxFGH, FF48);
     /*p36.XELO*/ wire FF48_WRn = not(FF48_WR);
 
     /*p36.XUFU*/ OBP00.set(FF48_WRn, 1, cpu_bus.CPU_TRI_D0);
@@ -442,9 +450,13 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
     auto& cpu_bus = gb.cpu_bus;
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
-    /*p22.VAMA*/ wire FF49n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p22.VAMA*/ wire FF49n = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
     /*p22.TEGO*/ wire FF49 = not(FF49n);
-    /*p36.MYXE*/ wire FF49_WR = and (cpu_sig.CUPA_CPU_WR_xxxxxFGH, FF49);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+    /*p36.MYXE*/ wire FF49_WR = and (CUPA_CPU_WR_xxxxxFGH, FF49);
     /*p36.LEHO*/ wire FF49_WRn = not(FF49_WR);
 
     /*p36.MOXY*/ OBP10.set(FF49_WRn, 1, cpu_bus.CPU_TRI_D0);

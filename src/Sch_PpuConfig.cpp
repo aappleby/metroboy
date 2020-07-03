@@ -14,13 +14,17 @@ void PpuConfig::tick(SchematicTop& gb) {
 
   // FF40 LCDC
   {
-    /*p22.WORU*/ wire WORU_FF40n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p22.WORU*/ wire WORU_FF40n = nand(WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
     /*p22.VOCA*/ wire VOCA_FF40p = not(WORU_FF40n);
 
     /*p23.VYRE*/ wire VYRE_FF40_RDp = and (VOCA_FF40p, cpu_sig.ASOT_CPU_RD);
     /*p23.WYCE*/ wire WYCE_FF40_RDn = not(VYRE_FF40_RDp);
 
-    /*p23.WARU*/ wire WARU_FF40_WRp = and (VOCA_FF40p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+    /*p23.WARU*/ wire WARU_FF40_WRp = and (VOCA_FF40p, CUPA_CPU_WR_xxxxxFGH);
     /*p23.XUBO*/ wire XUBO_FF40_WRn = not(WARU_FF40_WRp);
 
     /*p23.WYPO*/ cpu_bus.CPU_TRI_D0.set_tribuf(WYCE_FF40_RDn, VYXE_LCDC_BGEN);
@@ -49,13 +53,17 @@ void PpuConfig::tick(SchematicTop& gb) {
 
   // FF42 SCY
   {
-    /*p22.WEBU*/ wire WEBU_FF42n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p22.WEBU*/ wire WEBU_FF42n = nand(WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
     /*p22.XARO*/ wire XARO_FF42p = not(WEBU_FF42n);
 
     /*p23.ANYP*/ wire ANYP_FF42_RDp = and(XARO_FF42p, cpu_sig.ASOT_CPU_RD);
     /*p23.BUWY*/ wire BUWY_FF42_RDn = not(ANYP_FF42_RDp);
 
-    /*p23.BEDY*/ wire BEDY_FF42_WRp = and(XARO_FF42p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+    /*p23.BEDY*/ wire BEDY_FF42_WRp = and(XARO_FF42p, CUPA_CPU_WR_xxxxxFGH);
     /*p23.CAVO*/ wire CAVO_FF42_WRn = not(BEDY_FF42_WRp);
 
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
@@ -82,13 +90,17 @@ void PpuConfig::tick(SchematicTop& gb) {
 
   // FF43 SCX
   {
-    /*p22.WAVU*/ wire WAVU_FF43n = nand(cpu_sig.WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p22.WAVU*/ wire WAVU_FF43n = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
     /*p22.XAVY*/ wire XAVY_FF43p = not(WAVU_FF43n);
 
     /*p23.AVOG*/ wire AVOG_FF43_RDp = and (XAVY_FF43p, cpu_sig.ASOT_CPU_RD);
     /*p23.BEBA*/ wire BEBA_FF43_RDn = not(AVOG_FF43_RDp);
 
-    /*p23.ARUR*/ wire ARUR_FF43_WRp = and (XAVY_FF43p, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+    /*p23.ARUR*/ wire ARUR_FF43_WRp = and (XAVY_FF43p, CUPA_CPU_WR_xxxxxFGH);
     /*p23.AMUN*/ wire AMUN_FF43_WRn = not(ARUR_FF43_WRp);
 
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place

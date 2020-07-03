@@ -5,36 +5,13 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 void SchematicTop::tick_everything() {
-  auto& gb = *this;
-
-  auto dbg_sig = dbg_reg.sig(cpu_bus.CPU_PIN_ADDR_VALID, EXT_PIN_RST);
   auto tim_sig = tim_reg.sig();
+  auto cpu_sig = cpu_bus.sig(*this);
 
-  auto cpu_sig = cpu_bus.sig(clk_reg, dbg_sig);
-  
-  auto rst_sig = rst_reg.sig(
-    tim_sig.UPOF_DIV_15,
-    dbg_sig.UMUT_MODE_DBG1p,
-    dbg_sig.UNOR_MODE_DBG2p,
-    ppu_config.XONA_LCDC_EN);
-
-  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-
-  clk_reg.tick(ABOL_CLKREQn, rst_sig.XAPO_VID_RSTn, dbg_sig.UPOJ_MODE_PROD, PIN_CLK_IN_xBxDxFxH);
-
-  dbg_reg.tick(dbg_sig, rst_sig);
-
-
-  rst_reg.tick(clk_reg,
-               dbg_reg.sig(gb).UPOJ_MODE_PROD,
-               rst_reg.sig(gb).TABA_RSTp,
-               cpu_bus.CPU_PIN_CLKREQ,
-               EXT_PIN_RST,
-               EXT_PIN_CLK_GOOD);
-
-
-
-  tim_reg.tick(clk_reg, rst_sig, cpu_sig, cpu_bus, EXT_PIN_RST, EXT_PIN_CLK_GOOD);
+  clk_reg.tick(*this);
+  dbg_reg.tick(*this);
+  rst_reg.tick(*this);
+  tim_reg.tick(*this);
 
 
   /*
@@ -61,6 +38,32 @@ SignalHash SchematicTop::commit_everything() {
 
   /* PIN_71 */ hash << EXT_PIN_RST.clear_preset();
   /* PIN_74 */ hash << EXT_PIN_CLK_GOOD.clear_preset();
+  /* PIN_76 */ hash << PIN_T2.clear_preset();
+  /* PIN_77 */ hash << PIN_T1.clear_preset();
+
+  hash << CPU_PIN_RD.clear_preset();     // PORTA_00: -> UJYV, LAGU, LAVO
+  hash << CPU_PIN_WR.clear_preset();     // PORTA_01: -> AREV, LAGU.
+  hash << CPU_PIN_ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
+  hash << CPU_PIN5.clear_preset();     // PORTD_05: -> FROM_CPU5
+  hash << CPU_PIN6.clear_preset();      // PORTD_00: -> LEXY, doesn't do anything
+  hash << CPU_PIN_CLKREQ.clear_preset();         // PORTC_00: -> ABOL
+
+  hash << CPU_PIN_A00.clear_preset();
+  hash << CPU_PIN_A01.clear_preset();
+  hash << CPU_PIN_A02.clear_preset();
+  hash << CPU_PIN_A03.clear_preset();
+  hash << CPU_PIN_A04.clear_preset();
+  hash << CPU_PIN_A05.clear_preset();
+  hash << CPU_PIN_A06.clear_preset();
+  hash << CPU_PIN_A07.clear_preset();
+  hash << CPU_PIN_A08.clear_preset();
+  hash << CPU_PIN_A09.clear_preset();
+  hash << CPU_PIN_A10.clear_preset();
+  hash << CPU_PIN_A11.clear_preset();
+  hash << CPU_PIN_A12.clear_preset();
+  hash << CPU_PIN_A13.clear_preset();
+  hash << CPU_PIN_A14.clear_preset();
+  hash << CPU_PIN_A15.clear_preset();
 
   hash << clk_reg.commit();
   hash << dbg_reg.commit();

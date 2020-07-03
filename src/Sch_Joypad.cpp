@@ -16,18 +16,22 @@ JoypadSignals JoypadRegisters::sig() const {
 
 //------------------------------------------------------------------------------
 
-void JoypadRegisters::tick(ResetSignals& rst_sig, ClockRegisters& clk_reg, CpuBus& cpu_bus, CpuBusSignals& cpu_sig, wire EXT_PIN_CLK_GOOD) {
+void JoypadRegisters::tick(SchematicTop& top) {
+  ClockRegisters& clk_reg = top.clk_reg;
+  CpuBus& cpu_bus = top.cpu_bus;
+  CpuBusSignals cpu_sig = top.cpu_bus.sig(top);
+  wire EXT_PIN_CLK_GOOD = top.EXT_PIN_CLK_GOOD;
 
-  /*p10.BYKO*/ wire BYKO_A05n = not(cpu_bus.CPU_PIN_A05);
-  /*p10.AKUG*/ wire AKUG_A06n = not(cpu_bus.CPU_PIN_A06);
+  /*p10.BYKO*/ wire BYKO_A05n = not(top.CPU_PIN_A05);
+  /*p10.AKUG*/ wire AKUG_A06n = not(top.CPU_PIN_A06);
 
 
   /*p02.KERY*/ wire _ANY_BUTTON = or(P13_C, P12_C, P11_C, P10_C);
 
-  /*p10.AMUS*/ wire _AMUS_0xx00000 = nor(cpu_bus.CPU_PIN_A00, cpu_bus.CPU_PIN_A01, cpu_bus.CPU_PIN_A02, cpu_bus.CPU_PIN_A03, cpu_bus.CPU_PIN_A04, cpu_bus.CPU_PIN_A07);
+  /*p10.AMUS*/ wire _AMUS_0xx00000 = nor(top.CPU_PIN_A00, top.CPU_PIN_A01, top.CPU_PIN_A02, top.CPU_PIN_A03, top.CPU_PIN_A04, top.CPU_PIN_A07);
 
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
-  /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
+  /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
   /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
 
   /*p10.ANAP*/ wire _ANAP_0xx00000 = and (_AMUS_0xx00000, SYKE_FF00_FFFFp);
@@ -38,7 +42,7 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockRegisters& clk_reg, CpuBu
   /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
   /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
 
-  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
   /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
   /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
   /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_reg.APUK_xxxDEFGx);
@@ -64,7 +68,7 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockRegisters& clk_reg, CpuBu
   /*p02.AWOB*/ AWOB_WAKE_CPU.setx(BOGA_AxCDEFGH, _ANY_BUTTON);
   // cpu_pins.TO_CPU2.set(WAKE_CPU.q());
 
-  /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
   /*p02.BATU*/ JP_GLITCH0.set(BOGA_AxCDEFGH, ALUR_RSTn, _ANY_BUTTON);
   /*p02.ACEF*/ JP_GLITCH1.set(BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH0.q());
   /*p02.AGEM*/ JP_GLITCH2.set(BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH1.q());

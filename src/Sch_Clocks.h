@@ -7,11 +7,7 @@ namespace Schematics {
 
 struct ClockRegisters {
 
-  ClockSignals sig() const;
-
-  void tick(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD, wire PIN_CLK_IN_xBxDxFxH);
-  void tick2(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD, wire PIN_CLK_IN_xBxDxFxH);
-
+  void tick(const SchematicTop& top);
   SignalHash commit();
 
   /* PIN_75 */ PinOut PIN_PHI;    // <- P01.BUDE/BEVA

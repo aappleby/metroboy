@@ -26,24 +26,20 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 CpuBusSignals CpuBus::sig(const SchematicTop& gb) const {
-  return sig(gb.clk_reg, gb.dbg_reg.sig(gb));
-}
-
-CpuBusSignals CpuBus::sig(const ClockRegisters& clk_reg, const DebugSignals& dbg_sig) const {
-  auto& cpu_bus = *this;
+  const ClockRegisters& clk_reg = gb.clk_reg;
   CpuBusSignals cpu_sig;
 
   {
-    /*p07.UJYV*/ cpu_sig.UJYV_CPU_RD = mux2_n(EXT_PIN_RD_C, cpu_bus.CPU_PIN_RD, dbg_sig.UNOR_MODE_DBG2p);
+    /*p07.UJYV*/ cpu_sig.UJYV_CPU_RD = mux2_n(EXT_PIN_RD_C, gb.CPU_PIN_RD, gb.UNOR_MODE_DBG2p());
   }
 
   {
     /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
     /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.ADYK_xxxxEFGH);
     /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_bus.CPU_PIN_WR, AFAS_xxxxxFGH);
+    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(gb.CPU_PIN_WR, AFAS_xxxxxFGH);
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxxFGH    = not(AREV_CPU_WRn_ABCDExxx);
-    /*p07.UBAL*/ cpu_sig.UBAL_CPU_WRp_ABCDExxx = mux2_n(EXT_PIN_WRn_C, APOV_CPU_WRp_xxxxxFGH, dbg_sig.UNOR_MODE_DBG2p);
+    /*p07.UBAL*/ cpu_sig.UBAL_CPU_WRp_ABCDExxx = mux2_n(EXT_PIN_WRn_C, APOV_CPU_WRp_xxxxxFGH, gb.UNOR_MODE_DBG2p());
   }
 
   return cpu_sig;
@@ -51,28 +47,27 @@ CpuBusSignals CpuBus::sig(const ClockRegisters& clk_reg, const DebugSignals& dbg
 
 //------------------------------------------------------------------------------
 
-void CpuBus::tick(SchematicTop& gb) {
+void CpuBus::tick(SchematicTop& top) {
   {
-    auto& cpu_bus = gb.cpu_bus;
-    auto cpu_sig = gb.cpu_bus.sig(gb);
-    auto dbg_sig = gb.dbg_reg.sig(gb);
+    auto cpu_sig = top.cpu_bus.sig(top);
+    
 
     // So does this mean that if the CPU writes to the external bus during dma, that data
     // will actually end up in oam?
 
 
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
     /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
-    /*p08.LAGU*/ wire LAGU = or(and(cpu_bus.CPU_PIN_RD, LEVO_8000_9FFFp), cpu_bus.CPU_PIN_WR);
+    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WR);
     /*p08.LYWE*/ wire LYWE = not(LAGU);
-    /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1p);
+    /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p());
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RD, LYWE);
 
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
     /*p08.REDU*/ wire REDU_CPU_RD = not(TEDO_CPU_RD);
-    /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn = mux2_p(REDU_CPU_RD, MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
+    /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn = mux2_p(REDU_CPU_RD, MOTY_CPU_EXT_RD, top.UNOR_MODE_DBG2p());
 
     /*p08.LULA*/ wire LULA_IBUS_TO_EBUSp = not(RORU_IBUS_TO_EBUSn);
     EXT_PIN_D0_B.set(LULA_IBUS_TO_EBUSp);
@@ -104,8 +99,6 @@ void CpuBus::tick(SchematicTop& gb) {
   }
 
   {
-    auto& cpu_bus = gb.cpu_bus;
-
     // External data bus to internal data bus
     // SOMA01 << LAVO04
     // SOMA02 nc
@@ -119,19 +112,19 @@ void CpuBus::tick(SchematicTop& gb) {
 
     // Is this actually like a pass gate? We already know the latch cells, and this is bigger than those.
 
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
-    /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAp = nand(cpu_bus.CPU_PIN_RD, TEXO_8000_9FFFn, cpu_bus.CPU_PIN5);
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAp = nand(top.CPU_PIN_RD, TEXO_8000_9FFFn, top.CPU_PIN5);
 
-    /*p08.SOMA*/ SOMA_EXT_DATA_LATCH_00.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D0_C);
-    /*p08.RONY*/ RONY_EXT_DATA_LATCH_01.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D1_C);
-    /*p08.RAXY*/ RAXY_EXT_DATA_LATCH_02.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D2_C);
-    /*p08.SELO*/ SELO_EXT_DATA_LATCH_03.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D3_C);
-    /*p08.SODY*/ SODY_EXT_DATA_LATCH_04.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D4_C);
-    /*p08.SAGO*/ SAGO_EXT_DATA_LATCH_05.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D5_C);
-    /*p08.RUPA*/ RUPA_EXT_DATA_LATCH_06.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D6_C);
-    /*p08.SAZY*/ SAZY_EXT_DATA_LATCH_07.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D7_C);
+    /*p08.SOMA*/ SOMA_EXT_DATA_LATCH_00.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D0_C);
+    /*p08.RONY*/ RONY_EXT_DATA_LATCH_01.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D1_C);
+    /*p08.RAXY*/ RAXY_EXT_DATA_LATCH_02.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D2_C);
+    /*p08.SELO*/ SELO_EXT_DATA_LATCH_03.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D3_C);
+    /*p08.SODY*/ SODY_EXT_DATA_LATCH_04.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D4_C);
+    /*p08.SAGO*/ SAGO_EXT_DATA_LATCH_05.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D5_C);
+    /*p08.RUPA*/ RUPA_EXT_DATA_LATCH_06.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D6_C);
+    /*p08.SAZY*/ SAZY_EXT_DATA_LATCH_07.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D7_C);
 
     // RYMA 6-rung green tribuf
 
@@ -169,30 +162,6 @@ SignalHash CpuBus::commit() {
   hash << CPU_TRI_D5.commit_tribuf();
   hash << CPU_TRI_D6.commit_tribuf();
   hash << CPU_TRI_D7.commit_tribuf();
-
-  hash << CPU_PIN_RD.clear_preset();     // PORTA_00: -> UJYV, LAGU, LAVO
-  hash << CPU_PIN_WR.clear_preset();     // PORTA_01: -> AREV, LAGU.
-  hash << CPU_PIN_ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
-  hash << CPU_PIN5.clear_preset();     // PORTD_05: -> FROM_CPU5
-  hash << CPU_PIN6.clear_preset();      // PORTD_00: -> LEXY, doesn't do anything
-  hash << CPU_PIN_CLKREQ.clear_preset();         // PORTC_00: -> ABOL
-
-  hash << CPU_PIN_A00.clear_preset();
-  hash << CPU_PIN_A01.clear_preset();
-  hash << CPU_PIN_A02.clear_preset();
-  hash << CPU_PIN_A03.clear_preset();
-  hash << CPU_PIN_A04.clear_preset();
-  hash << CPU_PIN_A05.clear_preset();
-  hash << CPU_PIN_A06.clear_preset();
-  hash << CPU_PIN_A07.clear_preset();
-  hash << CPU_PIN_A08.clear_preset();
-  hash << CPU_PIN_A09.clear_preset();
-  hash << CPU_PIN_A10.clear_preset();
-  hash << CPU_PIN_A11.clear_preset();
-  hash << CPU_PIN_A12.clear_preset();
-  hash << CPU_PIN_A13.clear_preset();
-  hash << CPU_PIN_A14.clear_preset();
-  hash << CPU_PIN_A15.clear_preset();
 
   /* PIN_01 */ hash << EXT_PIN_A00_C.clear_preset();      // -> KOVA
   /* PIN_02 */ hash << EXT_PIN_A01_C.clear_preset();      // -> CAMU
@@ -242,18 +211,15 @@ SignalHash CpuBus::commit() {
 
 //------------------------------------------------------------------------------
 
-void CpuPinsOut::tick(SchematicTop& gb) {
-  auto& cpu_bus = gb.cpu_bus;
-
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto boot_sig = gb.bootrom.sig(gb);
-  auto& clk_reg = gb.clk_reg;
+void CpuPinsOut::tick(SchematicTop& top) {
+  auto cpu_sig = top.cpu_bus.sig(top);
+  auto boot_sig = top.bootrom.sig(top);
+  auto& clk_reg = top.clk_reg;
 
 #if 0
   // Debug stuff I disabled
 
-  /*p07.APET*/ wire APET_MODE_DBG = or(dbg_sig.UMUT_MODE_DBG1p, UNOR_MODE_DBG2p); // suggests UMUTp
+  /*p07.APET*/ wire APET_MODE_DBG = or(top.UMUT_MODE_DBG1p(), UNOR_MODE_DBG2p); // suggests UMUTp
   /*p07.APER*/ wire FF60_WRn = nand(APET_MODE_DBG, CPU_PIN_A05, CPU_PIN_A06, TAPU_CPUWR, ADDR_111111110xx00000);
 
   //----------
@@ -341,8 +307,8 @@ void CpuPinsOut::tick(SchematicTop& gb) {
 #endif
 
 
-  /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(gb.EXT_PIN_CLK_GOOD);
-  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+  /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(top.EXT_PIN_CLK_GOOD);
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
   /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
 
   /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
@@ -369,11 +335,12 @@ void CpuPinsOut::tick(SchematicTop& gb) {
   /*p01.BEDO*/ wire BEDO_xBxxxxxx = not(BYXO_AxCDEFGH);
   /*p01.BOWA*/ wire BOWA_AxCDEFGH = not(BEDO_xBxxxxxx);
   /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
-  /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(BOGA_AxCDEFGH);
   /*p01.BUGO*/ wire BUGO_xxCDEFxx = not(AFEP_ABxxxxGH);
   /*p01.BATE*/ wire BATE_ABxxxxxH = nor(ABOL_CLKREQn,  BUGO_xxCDEFxx, AROV_xxxDEFGx);
   /*p01.BASU*/ wire BASU_xxCDEFGx = not(BATE_ABxxxxxH);
   /*p01.BUKE*/ wire BUKE_ABxxxxxH = not(BASU_xxCDEFGx);
+
+  /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(top.BOGA_AxCDEFGH());
 
   PIN_BOWA_AxCDEFGH.set(BOWA_AxCDEFGH);
   PIN_BEDO_xBxxxxxx.set(BEDO_xBxxxxxx);
@@ -384,12 +351,10 @@ void CpuPinsOut::tick(SchematicTop& gb) {
   PIN_BOMA_xBxxxxxx.set(BOMA_xBxxxxxx);
   PIN_BOGA_AxCDEFGH.set(BOGA_AxCDEFGH);
   
-  PIN_AFER_RSTp.set(rst_sig.AFER_RSTp);
-  PIN_EXT_RESET.set(gb.EXT_PIN_RST);
-  PIN_EXT_CLKGOOD.set(gb.EXT_PIN_CLK_GOOD);
-  PIN_TABA_RSTp.set(rst_sig.TABA_RSTp);
+  PIN_EXT_RESET.set(top.EXT_PIN_RST);
+  PIN_EXT_CLKGOOD.set(top.EXT_PIN_CLK_GOOD);
 
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
+  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
   /*p25.SYRO*/ wire SYRO_FE00_FFFFp = not(TUNA_0000_FDFFp);
   PIN_SYRO.set(SYRO_FE00_FFFFp);
   PIN_TUTU_BOOTp.set(boot_sig.TUTU_BOOTp);
@@ -400,10 +365,8 @@ void CpuPinsOut::tick(SchematicTop& gb) {
 void CpuPinsOut::commit(SignalHash& hash) {
   hash << PIN_AWOB.commit_pinout();       // <- P02.AWOB
   hash << PIN_TUTU_BOOTp.commit_pinout();  // PORTA_04: <- TUTU
-  hash << PIN_AFER_RSTp.commit_pinout();          // PORTC_01: <- AFER
   hash << PIN_EXT_RESET.commit_pinout();         // PORTC_02: <- PIN_RESET directly connected to the pad
   hash << PIN_EXT_CLKGOOD.commit_pinout();      // PORTC_03: <- CLKIN_A
-  hash << PIN_TABA_RSTp.commit_pinout();     // PORTC_04: <- TABA
   hash << PIN_BOWA_AxCDEFGH.commit_pinout(); // PORTD_01: <- BOWA
   hash << PIN_BEDO_xBxxxxxx.commit_pinout(); // PORTD_02: <- BEDO _____fgh
   hash << PIN_BEKO_xBCDExxx.commit_pinout(); // PORTD_03: <- BEKO ____efgh connection not indicated on P01
@@ -547,21 +510,21 @@ D7.preset(oe, data & 0x80);
 /*p08.PEVO*/ wire A14_Cn = not(EXT_PIN_A14_C);
 /*p08.RAZA*/ wire A15_Cn = not(EXT_PIN_A15_C);
 
-/*p08.KEJO*/ cpu_bus.CPU_PIN_A00.set(!TOVA_MODE_DBG2n, not(A00_Cn));
-/*p08.BYXE*/ cpu_bus.CPU_PIN_A01.set(!TOVA_MODE_DBG2n, not(A01_Cn));
-/*p08.AKAN*/ cpu_bus.CPU_PIN_A02.set(!TOVA_MODE_DBG2n, not(A02_Cn));
-/*p08.ANAR*/ cpu_bus.CPU_PIN_A03.set(!TOVA_MODE_DBG2n, not(A03_Cn));
-/*p08.AZUV*/ cpu_bus.CPU_PIN_A04.set(!TOVA_MODE_DBG2n, not(A04_Cn));
-/*p08.AJOV*/ cpu_bus.CPU_PIN_A05.set(!TOVA_MODE_DBG2n, not(A05_Cn));
-/*p08.BYNE*/ cpu_bus.CPU_PIN_A06.set(!TOVA_MODE_DBG2n, not(A06_Cn));
-/*p08.BYNA*/ cpu_bus.CPU_PIN_A07.set(!TOVA_MODE_DBG2n, not(A07_Cn));
-/*p08.LOFA*/ cpu_bus.CPU_PIN_A08.set(!TOVA_MODE_DBG2n, not(A08_Cn));
-/*p08.MAPU*/ cpu_bus.CPU_PIN_A09.set(!TOVA_MODE_DBG2n, not(A09_Cn));
-/*p08.RALA*/ cpu_bus.CPU_PIN_A10.set(!TOVA_MODE_DBG2n, not(A10_Cn));
-/*p08.LORA*/ cpu_bus.CPU_PIN_A11.set(!TOVA_MODE_DBG2n, not(A11_Cn));
-/*p08.LYNA*/ cpu_bus.CPU_PIN_A12.set(!TOVA_MODE_DBG2n, not(A12_Cn));
-/*p08.LEFY*/ cpu_bus.CPU_PIN_A13.set(!TOVA_MODE_DBG2n, not(A13_Cn));
-/*p08.NEFE*/ cpu_bus.CPU_PIN_A14.set(!TOVA_MODE_DBG2n, not(A14_Cn));
-/*p08.SYZU*/ cpu_bus.CPU_PIN_A15.set(!TOVA_MODE_DBG2n, not(A15_Cn));
+/*p08.KEJO*/ top.CPU_PIN_A00.set(!TOVA_MODE_DBG2n, not(A00_Cn));
+/*p08.BYXE*/ top.CPU_PIN_A01.set(!TOVA_MODE_DBG2n, not(A01_Cn));
+/*p08.AKAN*/ top.CPU_PIN_A02.set(!TOVA_MODE_DBG2n, not(A02_Cn));
+/*p08.ANAR*/ top.CPU_PIN_A03.set(!TOVA_MODE_DBG2n, not(A03_Cn));
+/*p08.AZUV*/ top.CPU_PIN_A04.set(!TOVA_MODE_DBG2n, not(A04_Cn));
+/*p08.AJOV*/ top.CPU_PIN_A05.set(!TOVA_MODE_DBG2n, not(A05_Cn));
+/*p08.BYNE*/ top.CPU_PIN_A06.set(!TOVA_MODE_DBG2n, not(A06_Cn));
+/*p08.BYNA*/ top.CPU_PIN_A07.set(!TOVA_MODE_DBG2n, not(A07_Cn));
+/*p08.LOFA*/ top.CPU_PIN_A08.set(!TOVA_MODE_DBG2n, not(A08_Cn));
+/*p08.MAPU*/ top.CPU_PIN_A09.set(!TOVA_MODE_DBG2n, not(A09_Cn));
+/*p08.RALA*/ top.CPU_PIN_A10.set(!TOVA_MODE_DBG2n, not(A10_Cn));
+/*p08.LORA*/ top.CPU_PIN_A11.set(!TOVA_MODE_DBG2n, not(A11_Cn));
+/*p08.LYNA*/ top.CPU_PIN_A12.set(!TOVA_MODE_DBG2n, not(A12_Cn));
+/*p08.LEFY*/ top.CPU_PIN_A13.set(!TOVA_MODE_DBG2n, not(A13_Cn));
+/*p08.NEFE*/ top.CPU_PIN_A14.set(!TOVA_MODE_DBG2n, not(A14_Cn));
+/*p08.SYZU*/ top.CPU_PIN_A15.set(!TOVA_MODE_DBG2n, not(A15_Cn));
 }
 #endif

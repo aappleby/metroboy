@@ -22,13 +22,6 @@ struct TimerRegisters {
   TimerSignals sig() const;
 
   void tick(SchematicTop& gb);
-  void tick(
-    const ClockRegisters& clk_reg,
-    const ResetSignals& rst_sig,
-    const CpuBusSignals& cpu_sig,
-    CpuBus& cpu_bus,
-    bool EXT_PIN_RST,
-    bool EXT_PIN_CLK_GOOD);
   
   SignalHash commit();
 

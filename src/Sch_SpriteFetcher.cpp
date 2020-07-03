@@ -98,9 +98,9 @@ SpriteFetcherSignals SpriteFetcher::sig(const SchematicTop& gb) const {
 void SpriteFetcher::tick(SchematicTop& gb) {
   auto& vram_bus = gb.vram_bus;
   auto ppu_sig = gb.ppu_reg.sig(gb);
-  auto dbg_sig = gb.dbg_reg.sig(gb);
+  
   auto sst_sig = gb.sst_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
+  
   auto lcd_sig = gb.lcd_reg.sig(gb);
 
   auto& ppu_config = gb.ppu_config;
@@ -129,7 +129,7 @@ void SpriteFetcher::tick(SchematicTop& gb) {
     /*p27.SUDA*/ SUDA_SPRITE_FETCH_TRIG_B.set(LAPE_AxCxExGx, VYPO_P10_Bn, SOBU_SPRITE_FETCH_TRIG_A);
     /*p27.RYCE*/ wire RYCE_SPRITE_FETCH_TRIG = and (SOBU_SPRITE_FETCH_TRIG_A, !SUDA_SPRITE_FETCH_TRIG_B);
 
-    /*p01.ROSY*/ wire ROSY_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.ROSY*/ wire ROSY_VID_RSTp = not(gb.XAPO_VID_RSTn());
     /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCH_TRIG, ROSY_VID_RSTp, lcd_sig.BYHA_VID_LINE_TRIG_d4n); // def nor
     /*p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_RUNNING_SETn, ppu_sig.VEKU_SFETCH_RUNNING_RSTn);
 

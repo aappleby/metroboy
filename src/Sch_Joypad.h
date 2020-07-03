@@ -19,7 +19,7 @@ struct JoypadSignals {
 struct JoypadRegisters {
 
   JoypadSignals sig() const;
-  void tick(ResetSignals& rst_sig, ClockRegisters& clk_reg, CpuBus& cpu_bus, CpuBusSignals& cpu_sig, wire EXT_PIN_CLK_GOOD);
+  void tick(SchematicTop& gb);
   SignalHash commit();
 
 private:

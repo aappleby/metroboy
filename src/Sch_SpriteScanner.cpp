@@ -9,10 +9,10 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
   SpriteScannerSignals sprite_scanner_sig;
 
   {
-    auto rst_sig = gb.rst_reg.sig(gb);
+    
     auto lcd_sig = gb.lcd_reg.sig(gb);
 
-    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(gb.XAPO_VID_RSTn());
     /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
     /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
     /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or(BALU_SCAN_RST, SCAN_DONE_TRIG_B.q(), !SCAN_DONE_TRIG_A.q());
@@ -92,9 +92,9 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
 void SpriteScanner::tick(SchematicTop& gb) {
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto& clk_reg = gb.clk_reg;
-  auto rst_sig = gb.rst_reg.sig(gb);
+  
 
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(gb.XAPO_VID_RSTn());
   /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(lcd_sig.ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
 
   //----------------------------------------

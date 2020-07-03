@@ -52,7 +52,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-DmaSignals DmaRegisters::sig(const SchematicTop& /*gb*/) const {
+DmaSignals DmaRegisters::sig(const SchematicTop& /*top*/) const {
 
   DmaSignals sig;
 
@@ -92,15 +92,15 @@ DmaSignals DmaRegisters::sig(const SchematicTop& /*gb*/) const {
 
 //------------------------------------------------------------------------------
 
-void DmaRegisters::tick(SchematicTop& gb) {
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto& clk_reg = gb.clk_reg;
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto bus_sig = gb.bus_mux.sig(gb);
-  auto dma_sig = gb.dma_reg.sig(gb);
+void DmaRegisters::tick(SchematicTop& top) {
+  auto cpu_sig = top.cpu_bus.sig(top);
+  auto& clk_reg = top.clk_reg;
+  
+  auto bus_sig = top.bus_mux.sig(top);
+  auto dma_sig = top.dma_reg.sig(top);
 
-  auto& cpu_bus = gb.cpu_bus;
-  auto& vram_bus = gb.vram_bus;
+  auto& cpu_bus = top.cpu_bus;
+  auto& vram_bus = top.vram_bus;
 
   // schematic incorrect.
   // lyxe - weird gate - lavy, loko
@@ -108,12 +108,12 @@ void DmaRegisters::tick(SchematicTop& gb) {
 
   //----------------------------------------
 
-  /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+  /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
 
-  /*p22.XOLA*/ wire XOLA_A00n = not(cpu_bus.CPU_PIN_A00);
-  /*p22.XENO*/ wire XENO_A01n = not(cpu_bus.CPU_PIN_A01);
-  /*p22.XUSY*/ wire XUSY_A02n = not(cpu_bus.CPU_PIN_A02);
-  /*p22.XERA*/ wire XERA_A03n = not(cpu_bus.CPU_PIN_A03);
+  /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
+  /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
+  /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
+  /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
 
   /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
   /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
@@ -129,15 +129,15 @@ void DmaRegisters::tick(SchematicTop& gb) {
   // if LOKO02 goes high, LYXE02 goes high.
   // if LAVY03 goes high, LYXE02 goes low.
 
-  /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
   /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
   /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
   /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
 
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
-  /*p22.XALY*/ wire XALY_0x00xxxxp = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
+  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
+  /*p22.XALY*/ wire XALY_0x00xxxxp = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A04);
   /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-  /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
+  /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, top.CPU_PIN_A06, XALY_0x00xxxxp);
   /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
   /*p22.WATE*/ wire WATE_FF46n = nand(WERO_FF40_FF4Fp, XOLA_A00n, WESA_A01p, WALO_A02p, XERA_A03n);
   /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
@@ -154,7 +154,7 @@ void DmaRegisters::tick(SchematicTop& gb) {
     /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, LAVY_FF46_WRp);
     /*p04.LUPA*/ wire LUPA_DMA_TRIG = nor(LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
 
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
     /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
@@ -167,7 +167,7 @@ void DmaRegisters::tick(SchematicTop& gb) {
   }
 
   {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
     /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
@@ -185,7 +185,7 @@ void DmaRegisters::tick(SchematicTop& gb) {
     /*p04.NAVO*/ wire NAVO_DMA_DONEn = nand(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A07.q()); // 128+16+8+4+2+1 = 159, this must be "dma done"
     /*p04.NOLO*/ wire NOLO_DMA_DONEp = not(NAVO_DMA_DONEn);
 
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
     /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);

@@ -218,7 +218,7 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
   {
     auto sst_sig = sig(gb);
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
-    auto rst_sig = gb.rst_reg.sig(gb);
+    
 
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
     /*p30.WENU*/ WENU_TS_LINE_0.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DEGE_SPRITE_DELTA0);
@@ -231,7 +231,7 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
     /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(ZEME_AxCxExGx, rst_sig.XAPO_VID_RSTn, sst_sig.DYTY_STORE_ENn_xxCDxxGH);
+    /*p29.DEZY*/ DEZY_STORE_ENn_SYNC.set(ZEME_AxCxExGx, gb.XAPO_VID_RSTn(), sst_sig.DYTY_STORE_ENn_xxCDxxGH);
   }
 
   {
@@ -261,7 +261,7 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     auto bus_sig = gb.bus_mux.sig(gb);
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
     auto ppu_sig = gb.ppu_reg.sig(gb);
-    auto dbg_sig = gb.dbg_reg.sig(gb);
+    
     auto& clk_reg = gb.clk_reg;
 
     // BUZA def AND

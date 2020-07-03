@@ -15,8 +15,6 @@ struct CpuBusSignals {
 struct CpuBus {
 
   CpuBusSignals sig(const SchematicTop& gb) const;
-  CpuBusSignals sig(const ClockRegisters& clk_reg, const DebugSignals& dbg_sig) const;
-
   void tick(SchematicTop& gb);
   
   SignalHash commit();
@@ -36,59 +34,8 @@ struct CpuBus {
     CPU_TRI_D7.set_tribuf(oe, data & 0x80);
   }
 
-  int get_addr() const {
-    return pack(CPU_PIN_A00, CPU_PIN_A01, CPU_PIN_A02, CPU_PIN_A03, CPU_PIN_A04, CPU_PIN_A05, CPU_PIN_A06, CPU_PIN_A07,
-      CPU_PIN_A08, CPU_PIN_A09, CPU_PIN_A10, CPU_PIN_A11, CPU_PIN_A12, CPU_PIN_A13, CPU_PIN_A14, CPU_PIN_A15);
-  }
-
-  void preset_rd(bool rd)            { CPU_PIN_RD.preset(true, rd); }
-  bool preset_wr(bool wr)            { CPU_PIN_WR.preset(true, wr); }
-  bool preset_addr_valid(bool valid) { CPU_PIN_ADDR_VALID.preset(true, valid); }
-  void preset_addr(bool oe, uint16_t addr) {
-    CPU_PIN_A00.preset(oe, addr & 0x0001);
-    CPU_PIN_A01.preset(oe, addr & 0x0002);
-    CPU_PIN_A02.preset(oe, addr & 0x0004);
-    CPU_PIN_A03.preset(oe, addr & 0x0008);
-    CPU_PIN_A04.preset(oe, addr & 0x0010);
-    CPU_PIN_A05.preset(oe, addr & 0x0020);
-    CPU_PIN_A06.preset(oe, addr & 0x0040);
-    CPU_PIN_A07.preset(oe, addr & 0x0080);
-    CPU_PIN_A08.preset(oe, addr & 0x0100);
-    CPU_PIN_A09.preset(oe, addr & 0x0200);
-    CPU_PIN_A10.preset(oe, addr & 0x0400);
-    CPU_PIN_A11.preset(oe, addr & 0x0800);
-    CPU_PIN_A12.preset(oe, addr & 0x1000);
-    CPU_PIN_A13.preset(oe, addr & 0x2000);
-    CPU_PIN_A14.preset(oe, addr & 0x4000);
-    CPU_PIN_A15.preset(oe, addr & 0x8000);
-  }
-
   //----------
   // bottom left port, tristate data bus
-
-  PinIn  CPU_PIN_RD;         // top right port PORTA_00
-  PinIn  CPU_PIN_WR;         // top right port PORTA_01
-  PinIn  CPU_PIN_ADDR_VALID; // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
-  PinIn  CPU_PIN5;           // top left port PORTD_06: -> ANUJ (FROM_CPU5). Maybe this means "latch the bus"?
-  PinIn  CPU_PIN6;           // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
-  PinIn  CPU_PIN_CLKREQ;     // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
-
-  PinIn  CPU_PIN_A00; // bottom right port PORTB_00: -> A00
-  PinIn  CPU_PIN_A01; // bottom right port PORTB_04: -> A01
-  PinIn  CPU_PIN_A02; // bottom right port PORTB_08: -> A02
-  PinIn  CPU_PIN_A03; // bottom right port PORTB_12: -> A03
-  PinIn  CPU_PIN_A04; // bottom right port PORTB_16: -> A04
-  PinIn  CPU_PIN_A05; // bottom right port PORTB_20: -> A05
-  PinIn  CPU_PIN_A06; // bottom right port PORTB_24: -> A06
-  PinIn  CPU_PIN_A07; // bottom right port PORTB_28: -> A07
-  PinIn  CPU_PIN_A08; // bottom right port PORTB_02: -> A08
-  PinIn  CPU_PIN_A09; // bottom right port PORTB_06: -> A09
-  PinIn  CPU_PIN_A10; // bottom right port PORTB_10: -> A10
-  PinIn  CPU_PIN_A11; // bottom right port PORTB_14: -> A11
-  PinIn  CPU_PIN_A12; // bottom right port PORTB_18: -> A12
-  PinIn  CPU_PIN_A13; // bottom right port PORTB_22: -> A13
-  PinIn  CPU_PIN_A14; // bottom right port PORTB_26: -> A14
-  PinIn  CPU_PIN_A15; // bottom right port PORTB_30: -> A15
 
   Tribuf CPU_TRI_D0;
   Tribuf CPU_TRI_D1;
@@ -189,10 +136,8 @@ private:
   PinOut PIN_BOMA_xBxxxxxx; // top left port PORTD_08: <- BOMA_xBxxxxxx (RESET_CLK)
   PinOut PIN_BOGA_AxCDEFGH; // top left port PORTD_09: <- BOGA_AxCDEFGH - test pad 3
 
-  PinOut PIN_AFER_RSTp;     // top center port PORTC_01: <- P01.AFER , reset related reg
   PinOut PIN_EXT_RESET;     // top center port PORTC_02: <- PIN_RESET directly connected to the pad
   PinOut PIN_EXT_CLKGOOD;   // top center port PORTC_03: <- chip.CLKIN_A top wire on PAD_XI,
-  PinOut PIN_TABA_RSTp;     // top center port PORTC_04: <- P01.CPU_RESET
 
   PinOut PIN_AWOB;          // top right wire by itself <- P02.AWOB
 

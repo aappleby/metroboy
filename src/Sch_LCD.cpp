@@ -14,10 +14,10 @@ using namespace Schematics;
 LcdSignals LcdRegisters::sig(const SchematicTop& gb) const {
   LcdSignals sig;
 
-  auto rst_sig = gb.rst_reg.sig(gb);
+  
 
   /*p28.ABAF*/ wire ABAF_VID_LINE_d4n = not(CATU_VID_LINE_d4.q());
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(gb.XAPO_VID_RSTn());
   /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
   /*p28.BYHA*/ sig.BYHA_VID_LINE_TRIG_d4n = and (or (ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), ABEZ_VID_RSTn);
   /*p28.ATEJ*/ sig.ATEJ_VID_LINE_TRIG_d4p = not(sig.BYHA_VID_LINE_TRIG_d4n);
@@ -28,7 +28,7 @@ LcdSignals LcdRegisters::sig(const SchematicTop& gb) const {
 
   sig.CATU_VID_LINE_d4 = CATU_VID_LINE_d4;
 
-  /*p01.AMYG*/ wire AMYG_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+  /*p01.AMYG*/ wire AMYG_VID_RSTp = not(gb.XAPO_VID_RSTn());
   /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4p = or (sig.ATEJ_VID_LINE_TRIG_d4p, AMYG_VID_RSTp);
   /*p28.BYVA*/ sig.BYVA_VID_LINE_TRIG_d4n = not(ABAK_VID_LINE_TRIG_d4p);
   /*p29.DYBA*/ sig.DYBA_VID_LINE_TRIG_d4p = not(sig.BYVA_VID_LINE_TRIG_d4n);
@@ -70,15 +70,15 @@ LcdSignals LcdRegisters::sig(const SchematicTop& gb) const {
 
 //------------------------------------------------------------------------------
 
-void LcdRegisters::tick(SchematicTop& gb) {
-  auto& cpu_bus = gb.cpu_bus;
+void LcdRegisters::tick(SchematicTop& top) {
+  auto& cpu_bus = top.cpu_bus;
 
-  /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+  /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
 
-  /*p22.XOLA*/ wire XOLA_A00n = not(cpu_bus.CPU_PIN_A00);
-  /*p22.XENO*/ wire XENO_A01n = not(cpu_bus.CPU_PIN_A01);
-  /*p22.XUSY*/ wire XUSY_A02n = not(cpu_bus.CPU_PIN_A02);
-  /*p22.XERA*/ wire XERA_A03n = not(cpu_bus.CPU_PIN_A03);
+  /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
+  /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
+  /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
+  /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
 
   /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
   /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
@@ -87,10 +87,10 @@ void LcdRegisters::tick(SchematicTop& gb) {
 
   // LCD main timer
   {
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p21.MUDE*/ wire _MUDE_X_RSTn = nor(RUTU_NEW_LINE_d0.q(), LYHA_VID_RSTp);
-    auto& clk_reg = gb.clk_reg;
+    auto& clk_reg = top.clk_reg;
     /*p21.TALU*/ wire TALU_xBCDExxx = not(clk_reg.VENA_xBCDExxx);
     /*p21.SAXO*/ XEHO_X0.set(TALU_xBCDExxx, _MUDE_X_RSTn, !XEHO_X0.q());
     /*p21.TYPO*/ SAVY_X1.set(!XEHO_X0.q(),  _MUDE_X_RSTn, !SAVY_X1.q());
@@ -102,8 +102,8 @@ void LcdRegisters::tick(SchematicTop& gb) {
   }
 
   {
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p21.LAMA*/ wire _LAMA_FRAME_RSTn = nor(MYTA_LINE_153_d4.q(), LYHA_VID_RSTp);
     /*p21.MUWY*/ MUWY_Y0.set(RUTU_NEW_LINE_d0.q(), _LAMA_FRAME_RSTn, !MUWY_Y0.q());
     /*p21.MYRO*/ MYRO_Y1.set(!MUWY_Y0.q(),         _LAMA_FRAME_RSTn, !MYRO_Y1.q());
@@ -116,19 +116,19 @@ void LcdRegisters::tick(SchematicTop& gb) {
   }
 
   {
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p21.XYVO*/ wire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
     /*p21.POPU*/ POPU_VBLANK_d4.set(NYPE_NEW_LINE_d4.q(), LYFE_VID_RSTn, _XYVO_IN_VBLANKp);
   }
 
   {
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p21.SANU*/ wire _SANU_LINE_END = and(TAKO_X6.q(), TUKY_X5.q(), TUHU_X4.q(), XEHO_X0.q()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-    auto& clk_reg = gb.clk_reg;
+    auto& clk_reg = top.clk_reg;
     /*p21.TALU*/ wire TALU_xBCDExxx = not(clk_reg.VENA_xBCDExxx);
     /*p21.SONO*/ wire SONO_AxxxxFGH = not(TALU_xBCDExxx);
     /*p21.RUTU*/ RUTU_NEW_LINE_d0.set(SONO_AxxxxFGH, LYFE_VID_RSTn, _SANU_LINE_END);
@@ -136,14 +136,14 @@ void LcdRegisters::tick(SchematicTop& gb) {
   }
 
   {
-    auto rst_sig = gb.rst_reg.sig(gb);
+    
     /*p21.XYVO*/ wire _XYVO_IN_VBLANKp = and(LOVU_Y4.q(), LAFO_Y7.q()); // 128 + 16 = 144
     /*p29.ALES*/ wire _ALES_IN_VBLANKn = not(_XYVO_IN_VBLANKp);
-    auto lcd_sig = sig(gb);
+    auto lcd_sig = sig(top);
     /*p29.ABOV*/ wire _ABOV_VID_LINE_d0  = and(lcd_sig.SELA_NEW_LINE_d0p, _ALES_IN_VBLANKn);
-    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
-    auto& clk_reg = gb.clk_reg;
+    auto& clk_reg = top.clk_reg;
     /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_reg.WUVU_AxxDExxH);
     /*p29.CATU*/ CATU_VID_LINE_d4.set (XUPY_xBCxxFGx, ABEZ_VID_RSTn, _ABOV_VID_LINE_d0);
     /*p28.AWOH*/ wire AWOH_AxxDExxH = not(XUPY_xBCxxFGx);
@@ -151,8 +151,8 @@ void LcdRegisters::tick(SchematicTop& gb) {
   }
 
   {
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p21.NOKO*/ wire _NOKO_LINE_153 = and(LAFO_Y7.q(), LOVU_Y4.q(), LYDO_Y3.q(), MUWY_Y0.q()); // Schematic wrong: NOKO = and(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
     /*p21.MYTA*/ MYTA_LINE_153_d4.set(NYPE_NEW_LINE_d4.q(), LYFE_VID_RSTn, _NOKO_LINE_153);
@@ -160,8 +160,8 @@ void LcdRegisters::tick(SchematicTop& gb) {
 
   {
     // if LCDC_ENn, FR = 4k div clock. Otherwise FR = xor(LINE_EVEN,FRAME_EVEN)
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p24.LOFU*/ wire _LOFU_CLKn = not(RUTU_NEW_LINE_d0);
     /*p24.LUCA*/ LUCA_LINE_EVEN.set(_LOFU_CLKn, LYFE_VID_RSTn, !LUCA_LINE_EVEN.q());
@@ -169,9 +169,9 @@ void LcdRegisters::tick(SchematicTop& gb) {
     /*p24.MAGU*/ wire _MAGU = xor(NAPO_FRAME_EVEN, LUCA_LINE_EVEN.q());
     /*p24.MECO*/ wire _MECO = not(_MAGU);
     /*p24.KEBO*/ wire _KEBO = not(_MECO);
-    auto tim_sig = gb.tim_reg.sig();
+    auto tim_sig = top.tim_reg.sig();
     /*p24.USEC*/ wire _USEC = not(tim_sig.UREK_DIV_07n);
-    auto& ppu_config = gb.ppu_config;
+    auto& ppu_config = top.ppu_config;
     /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(ppu_config.XONA_LCDC_EN);
     /*p24.KUPA*/ wire _KUPA = amux2(ppu_config.XONA_LCDC_EN, _KEBO, KEDY_LCDC_ENn, _USEC);
     /*p24.KOFO*/ wire _KOFO = not(_KUPA);
@@ -194,10 +194,10 @@ void LcdRegisters::tick(SchematicTop& gb) {
     /*p21.TEBO*/ wire _TEBO_083n = nand( TAKO_X6, _C5n,  TUHU_X4, _C3n, _C2n,  SAVY_X1,  XEHO_X0); // 1010011 == 83
 
     /*p21.TEGY*/ wire _TEGY_LINE_STROBE = nand(_VOKU_000n, _TOZU_007n, _TECE_045n, _TEBO_083n);
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
-    auto& clk_reg = gb.clk_reg;
+    auto& clk_reg = top.clk_reg;
     /*p21.TALU*/ wire TALU_xBCDExxx = not(clk_reg.VENA_xBCDExxx);
     /*p21.SONO*/ wire SONO_AxxxxFGH = not(TALU_xBCDExxx);
     /*p21.SYGU*/ SYGU_LINE_STROBE.set(SONO_AxxxxFGH, LYFE_VID_RSTn, _TEGY_LINE_STROBE);
@@ -208,11 +208,11 @@ void LcdRegisters::tick(SchematicTop& gb) {
 
   // LCD CPL pin
   {
-    auto lcd_sig = sig(gb);
+    auto lcd_sig = sig(top);
     /*p24.KASA*/ wire _KASA_LINE_DONE = not(lcd_sig.PURE_NEW_LINE_d0n);
-    auto tim_sig = gb.tim_reg.sig();
+    auto tim_sig = top.tim_reg.sig();
     /*p24.UMOB*/ wire _UMOB_DIV_06p = not(tim_sig.UMEK_DIV_06n);
-    auto& ppu_config = gb.ppu_config;
+    auto& ppu_config = top.ppu_config;
     /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(ppu_config.XONA_LCDC_EN);
     /*p24.KAHE*/ wire _KAHE = amux2(ppu_config.XONA_LCDC_EN, _KASA_LINE_DONE, KEDY_LCDC_ENn, _UMOB_DIV_06p);
     /*p24.KYMO*/ wire _KYMO = not(_KAHE);
@@ -222,8 +222,8 @@ void LcdRegisters::tick(SchematicTop& gb) {
   // LCD vertical sync pin
   {
     /*p24.NERU*/ wire _LINE_000n = nor(MUWY_Y0, MYRO_Y1, LEXA_Y2, LYDO_Y3, LOVU_Y4, LEMA_Y5, MATO_Y6, LAFO_Y7);
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
+    
+    /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p24.MEDA*/ MEDA_VSYNC_OUTn.set(NYPE_NEW_LINE_d4, LYFE_VID_RSTn, _LINE_000n);
     /*p24.MURE*/ wire _MURE_PIN_S = not(MEDA_VSYNC_OUTn);
@@ -241,25 +241,25 @@ void LcdRegisters::tick(SchematicTop& gb) {
 
     // TERY has an arm on the VCC side
 
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+    
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
     /*p01.WESY*/ wire WESY_RSTn = not(XORE_RSTp);
-    auto lcd_sig = sig(gb);
-    auto& clk_reg = gb.clk_reg;
+    auto lcd_sig = sig(top);
+    auto& clk_reg = top.clk_reg;
     /*p21.TALU*/ wire TALU_xBCDExxx = not(clk_reg.VENA_xBCDExxx);
     /*p21.ROPO*/ ROPO_LY_MATCH_SYNCp.set(TALU_xBCDExxx, WESY_RSTn, lcd_sig.PALY_LY_MATCHa);
   }
 
   // FF44 LY
   {
-    auto cpu_sig = gb.cpu_bus.sig(gb);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
-    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
+    auto cpu_sig = top.cpu_bus.sig(top);
+    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
+    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A04);
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
+    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, top.CPU_PIN_A06, XALY_0x00xxxxp);
     /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
     /*p22.WYLE*/ wire FF44n = nand(WERO_FF40_FF4Fp, XOLA_A00n, XENO_A01n, WALO_A02p, XERA_A03n);
     /*p22.XOGY*/ wire FF44 = not(FF44n);
@@ -291,11 +291,11 @@ void LcdRegisters::tick(SchematicTop& gb) {
   // FF45 LYC
   {
 
-    auto cpu_sig = gb.cpu_bus.sig(gb);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
-    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
+    auto cpu_sig = top.cpu_bus.sig(top);
+    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
+    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A04);
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
+    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, top.CPU_PIN_A06, XALY_0x00xxxxp);
     /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
     /*p22.WETY*/ wire FF45n = nand(WERO_FF40_FF4Fp, WADO_A00p, XENO_A01n, WALO_A02p, XERA_A03n);
     /*p22.XAYU*/ wire FF45 = not(FF45n);
@@ -319,8 +319,8 @@ void LcdRegisters::tick(SchematicTop& gb) {
     /*p23.VAFE*/ cpu_bus.CPU_TRI_D6.set_tribuf(!FF45_RDn, VEVO_LYC6.q());
     /*p23.PUFY*/ cpu_bus.CPU_TRI_D7.set_tribuf(!FF45_RDn, RAHA_LYC7.q());
 
-    auto rst_sig = gb.rst_reg.sig(gb);
-    /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+    
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);

@@ -50,9 +50,9 @@ void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
     for (int pass = 0; pass < 256; pass++) {
       //gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
-      //gb->cpu_bus.CPU_PIN_RD.preset(true, 0);
-      //gb->cpu_bus.CPU_PIN_WR.preset(true, 1);
-      //gb->cpu_bus.CPU_PIN_ADDR_VALID.preset(true, 1);
+      //gb->gb.CPU_PIN_RD.preset(true, 0);
+      //gb->gb.CPU_PIN_WR.preset(true, 1);
+      //gb->gb.CPU_PIN_ADDR_VALID.preset(true, 1);
       //gb->cpu_bus.preset_addr(true, addr);
       //gb->cpu_bus.set_data(true, data);
 
@@ -78,10 +78,10 @@ void GateBoy::pass_cycle() {
     for (int pass = 0; pass < 256; pass++) {
       //gb->ext_pins_in.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
-      gb->cpu_bus.CPU_PIN_RD.preset(true, 0);
-      gb->cpu_bus.CPU_PIN_WR.preset(true, 0);
-      gb->cpu_bus.CPU_PIN_ADDR_VALID.preset(true, 0);
-      gb->cpu_bus.preset_addr(true, 0x0000);
+      gb->CPU_PIN_RD.preset(true, 0);
+      gb->CPU_PIN_WR.preset(true, 0);
+      gb->CPU_PIN_ADDR_VALID.preset(true, 0);
+      gb->preset_addr(true, 0x0000);
 
       //gb->joy_reg.clear_dir();
 
@@ -175,14 +175,14 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
 
   gb->EXT_PIN_RST.preset(true, 1);
   gb->EXT_PIN_CLK_GOOD.preset(true, 0);
-  gb->dbg_reg.preset_t1t2(0,0);
+  gb->preset_t1t2(0,0);
 
-  gb->cpu_bus.CPU_PIN_CLKREQ.preset(true, 0);
-  gb->cpu_bus.CPU_PIN_RD.preset(true, 0);
-  gb->cpu_bus.CPU_PIN_WR.preset(true, 0);
-  gb->cpu_bus.CPU_PIN_ADDR_VALID.preset(true, 1);
-  gb->cpu_bus.CPU_PIN5.preset(true, 0);
-  gb->cpu_bus.CPU_PIN6.preset(true, 0);
+  gb->CPU_PIN_CLKREQ.preset(true, 0);
+  gb->CPU_PIN_RD.preset(true, 0);
+  gb->CPU_PIN_WR.preset(true, 0);
+  gb->CPU_PIN_ADDR_VALID.preset(true, 1);
+  gb->CPU_PIN5.preset(true, 0);
+  gb->CPU_PIN6.preset(true, 0);
 
   /*
   gb->int_reg.PIN_ACK_SERIAL.preset(true, 0);
@@ -199,7 +199,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   pass_cycle();
   gb->EXT_PIN_CLK_GOOD.preset(true, 1);
   pass_cycle();
-  gb->cpu_bus.CPU_PIN_CLKREQ.preset(true, 1);
+  gb->CPU_PIN_CLKREQ.preset(true, 1);
   pass_cycle();
 }
 

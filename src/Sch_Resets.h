@@ -14,50 +14,17 @@ struct ClockRegisters;
 
 //-----------------------------------------------------------------------------
 
-struct ResetSignals {
-  /*p01.AFER*/ bool AFER_RSTp;
-  /*p01.TABA*/ bool TABA_RSTp;
-
-  /*p01.AVOR*/ bool AVOR_RSTp;
-
-  /*p01.XAPO*/ bool XAPO_VID_RSTn; // to everything
-};
-
-
-//-----------------------------------------------------------------------------
-
 struct ResetRegisters {
 
-  ResetSignals sig(const SchematicTop& top) const;
-  ResetSignals sig(
-    wire UPOF_DIV_15,
-    wire UMUT_MODE_DBG1p,
-    wire UNOR_MODE_DBG2p,
-    wire XONA_LCDC_EN) const;
-  
   void tick(SchematicTop& gb);
-  void tick(const ClockRegisters& clk_reg,
-            wire UPOJ_MODE_PROD,
-            wire TABA_RSTp,
-            wire CPU_PIN_CLKREQ,
-            wire EXT_PIN_RST,
-            wire EXT_PIN_CLK_GOOD);
-
   
   SignalHash commit();
-
-  void dump_regs(TextPainter& text_painter) {
-    text_painter.dprintf("----- RST_REG -----\n");
-    TUBO_CLKREQn_LATCH.dump(text_painter, "TUBO_CLKREQn_LATCH ");
-    AFER_RSTp.dump(text_painter, "AFER_RSTp          ");
-    text_painter.newline();
-  }
-
-private:
 
   /*p01.TUBO*/ NorLatch TUBO_CLKREQn_LATCH;
   /*p01.ASOL*/ NorLatch ASOL_RST_LATCHp; // Schematic wrong, this is a latch.
   /*p01.AFER*/ Reg      AFER_RSTp;
+  PinOut PIN_AFER_RSTp;          // top center port PORTC_01: <- P01.AFER , reset related reg
+  PinOut PIN_TABA_RSTp;     // top center port PORTC_04: <- P01.CPU_RESET
 };
 
 

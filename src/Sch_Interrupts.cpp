@@ -6,23 +6,23 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void InterruptRegisters::tick(SchematicTop& gb) {
-  auto& cpu_bus = gb.cpu_bus;
+void InterruptRegisters::tick(SchematicTop& top) {
+  auto& cpu_bus = top.cpu_bus;
 
-  auto tim_sig = gb.tim_reg.sig();
-  auto ser_sig = gb.ser_reg.sig(gb);
-  auto joy_sig = gb.joy_reg.sig();
-  auto rst_sig = gb.rst_reg.sig(gb);
-  auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto ppu_sig = gb.ppu_reg.sig(gb);
+  auto tim_sig = top.tim_reg.sig();
+  auto ser_sig = top.ser_reg.sig(top);
+  auto joy_sig = top.joy_reg.sig();
+  
+  auto cpu_sig = top.cpu_bus.sig(top);
+  auto lcd_sig = top.lcd_reg.sig(top);
+  auto ppu_sig = top.ppu_reg.sig(top);
   wire P10_B = 0;
 
-  /*p07.SEMY*/ wire SEMY_ADDR_XX0X = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A06, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
-  /*p07.SAPA*/ wire SAPA_ADDR_XXXF = and (cpu_bus.CPU_PIN_A00, cpu_bus.CPU_PIN_A01, cpu_bus.CPU_PIN_A02, cpu_bus.CPU_PIN_A03);
+  /*p07.SEMY*/ wire SEMY_ADDR_XX0X = nor(top.CPU_PIN_A07, top.CPU_PIN_A06, top.CPU_PIN_A05, top.CPU_PIN_A04);
+  /*p07.SAPA*/ wire SAPA_ADDR_XXXF = and (top.CPU_PIN_A00, top.CPU_PIN_A01, top.CPU_PIN_A02, top.CPU_PIN_A03);
   /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
-  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
-  /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
+  /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
   /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
   /*p07.ROLO*/ wire ROLO_FF0F_RDn  = nand(SEMY_ADDR_XX0X, SAPA_ADDR_XXXF, SYKE_FF00_FFFFp, TEDO_CPU_RD); // schematic wrong, is NAND
   /*p02.POLA*/ wire POLA_FF0F_RDa  = not(ROLO_FF0F_RDn);
@@ -70,7 +70,7 @@ void InterruptRegisters::tick(SchematicTop& gb) {
 
   /*p02.PESU*/ wire PESU_FF0F_INp = not(P10_B);
 
-  /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
+  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
 
   /*p02.LETY*/ wire LETY_INT_VBL_ACKn  = not(PIN_ACK_VBLANK);
   /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (cpu_bus.CPU_TRI_D0, REFA_FF0F_WRn);

@@ -141,7 +141,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->clk_reg.preset_clk(gb->phase_counter & 1);
+      gb->PIN_CLK_IN_xBxDxFxH.preset(true, gb->phase_counter & 1);
 
       /*
       if (phase >= 32 && phase < 40) {

@@ -7,8 +7,6 @@ namespace Schematics {
 
 struct CpuBusSignals {
   /*p07.UJYV*/ Signal UJYV_CPU_RD; // main read
-
-  /*p01.AREV*/ Signal AREV_CPU_WRn_ABCDExxx; // write w/o debug mux
   /*p07.UBAL*/ Signal UBAL_CPU_WRp_ABCDExxx; // write with debug mux, goes everywhere
 };
 
@@ -68,20 +66,11 @@ struct CpuBus {
   //----------
   // bottom left port, tristate data bus
 
-  Tribuf CPU_TRI_D0;
-  Tribuf CPU_TRI_D1;
-  Tribuf CPU_TRI_D2;
-  Tribuf CPU_TRI_D3;
-  Tribuf CPU_TRI_D4;
-  Tribuf CPU_TRI_D5;
-  Tribuf CPU_TRI_D6;
-  Tribuf CPU_TRI_D7;
-
-  PinIn  CPU_PIN_RD; // top right port PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
-  PinIn  CPU_PIN_WR; // top right port PORTA_01: -> P01.AREV, P08.LAGU.           This is almost definitely "raw write"
+  PinIn  CPU_PIN_RD;         // top right port PORTA_00
+  PinIn  CPU_PIN_WR;         // top right port PORTA_01
   PinIn  CPU_PIN_ADDR_VALID; // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
-  PinIn  CPU_PIN5; // top left port PORTD_06: -> ANUJ (FROM_CPU5). Maybe this means "latch the bus"?
-  PinIn  CPU_PIN6;  // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
+  PinIn  CPU_PIN5;           // top left port PORTD_06: -> ANUJ (FROM_CPU5). Maybe this means "latch the bus"?
+  PinIn  CPU_PIN6;           // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
   PinIn  CPU_PIN_CLKREQ;     // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
 
   PinIn  CPU_PIN_A00; // bottom right port PORTB_00: -> A00
@@ -101,23 +90,14 @@ struct CpuBus {
   PinIn  CPU_PIN_A14; // bottom right port PORTB_26: -> A14
   PinIn  CPU_PIN_A15; // bottom right port PORTB_30: -> A15
 
-  /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
-  /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
-  /*p08.ALYR*/ TpLatch CPU_ADDR_LATCH_02;
-  /*p08.ARET*/ TpLatch CPU_ADDR_LATCH_03;
-  /*p08.AVYS*/ TpLatch CPU_ADDR_LATCH_04;
-  /*p08.ATEV*/ TpLatch CPU_ADDR_LATCH_05;
-  /*p08.AROS*/ TpLatch CPU_ADDR_LATCH_06;
-  /*p08.ARYM*/ TpLatch CPU_ADDR_LATCH_07;
-  /*p08.LUNO*/ TpLatch CPU_ADDR_LATCH_08;
-  /*p08.LYSA*/ TpLatch CPU_ADDR_LATCH_09;
-  /*p08.PATE*/ TpLatch CPU_ADDR_LATCH_10;
-  /*p08.LUMY*/ TpLatch CPU_ADDR_LATCH_11;
-  /*p08.LOBU*/ TpLatch CPU_ADDR_LATCH_12;
-  /*p08.LONU*/ TpLatch CPU_ADDR_LATCH_13;
-  /*p08.NYRE*/ TpLatch CPU_ADDR_LATCH_14;
-
-  /*p04.MAKA*/ Reg MAKA_FROM_CPU5_SYNC;
+  Tribuf CPU_TRI_D0;
+  Tribuf CPU_TRI_D1;
+  Tribuf CPU_TRI_D2;
+  Tribuf CPU_TRI_D3;
+  Tribuf CPU_TRI_D4;
+  Tribuf CPU_TRI_D5;
+  Tribuf CPU_TRI_D6;
+  Tribuf CPU_TRI_D7;
 
 private:
 
@@ -145,14 +125,14 @@ private:
   //----------
   // Ext-to-cpu "latch" - looks more like a pass gate really
 
-  /*p08.SOMA*/ TpLatch SOMA_CPU_DATA_LATCH_00;
-  /*p08.RONY*/ TpLatch RONY_CPU_DATA_LATCH_01;
-  /*p08.RAXY*/ TpLatch RAXY_CPU_DATA_LATCH_02;
-  /*p08.SELO*/ TpLatch SELO_CPU_DATA_LATCH_03;
-  /*p08.SODY*/ TpLatch SODY_CPU_DATA_LATCH_04;
-  /*p08.SAGO*/ TpLatch SAGO_CPU_DATA_LATCH_05;
-  /*p08.RUPA*/ TpLatch RUPA_CPU_DATA_LATCH_06;
-  /*p08.SAZY*/ TpLatch SAZY_CPU_DATA_LATCH_07;
+  /*p08.SOMA*/ TpLatch SOMA_EXT_DATA_LATCH_00;
+  /*p08.RONY*/ TpLatch RONY_EXT_DATA_LATCH_01;
+  /*p08.RAXY*/ TpLatch RAXY_EXT_DATA_LATCH_02;
+  /*p08.SELO*/ TpLatch SELO_EXT_DATA_LATCH_03;
+  /*p08.SODY*/ TpLatch SODY_EXT_DATA_LATCH_04;
+  /*p08.SAGO*/ TpLatch SAGO_EXT_DATA_LATCH_05;
+  /*p08.RUPA*/ TpLatch RUPA_EXT_DATA_LATCH_06;
+  /*p08.SAZY*/ TpLatch SAZY_EXT_DATA_LATCH_07;
 
   //----------
   // Data pins

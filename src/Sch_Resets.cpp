@@ -43,7 +43,7 @@ ResetSignals ResetRegisters::sig(wire UPOF_DIV_15, wire UMUT_MODE_DBG1p, wire UN
 //-----------------------------------------------------------------------------
 
 void ResetRegisters::tick(SchematicTop& gb) {
-  tick(gb.clk_reg.sig(gb),
+  tick(gb.clk_reg.sig(),
        gb.dbg_reg.sig(gb),
        gb.rst_reg.sig(gb),
        gb.cpu_bus,
@@ -65,7 +65,28 @@ void ResetRegisters::tick(
   // ASOL has arms on the ground side, output on the top rung - nor latch with inverted output
   /*p01.ASOL*/ ASOL_RST_LATCHp.nor_latch(AFAR_RST, EXT_PIN_RST); // Schematic wrong, this is a latch.
 
-  /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+  /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
+  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_sig.APUK_xxxDEFGx);
+  /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
+  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_sig.ALEF_xxCDEFxx);
+  /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
+  /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+  /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);
+  /*p01.BUFA*/ wire BUFA_AxxxxxxH = not(BERU_xBCDEFGx);
+  /*p01.BOLO*/ wire BOLO_xBCDEFGx = not(BUFA_AxxxxxxH);
+  /*p01.BEKO*/ wire BEKO_xBCDExxx = not(BUDE_AxxxxFGH);
+  /*p01.BEJA*/ wire BEJA_AxxxxFGH = nand(BOLO_xBCDEFGx, BEKO_xBCDExxx);
+  /*p01.BANE*/ wire BANE_xBCDExxx = not(BEJA_AxxxxFGH);
+  /*p01.BELO*/ wire BELO_AxxxxFGH = not(BANE_xBCDExxx);
+  /*p01.BAZE*/ wire BAZE_xBCDExxx = not(BELO_AxxxxFGH);
+  /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
+  /*p01.BELE*/ wire BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
+  /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(EXT_PIN_CLK_GOOD);
+  /*p01.BYJU*/ wire BYJU_AxCDEFGH = nor(BELE_xBxxxxxx, ATEZ_CLKBAD);
+
+  /*p01.BALY*/ wire BALY_xBxxxxxx = not(BYJU_AxCDEFGH);
   /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
   /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(BOGA_AxCDEFGH);
   /*p01.AFER*/ AFER_RSTp.set(BOMA_xBxxxxxx, dbg_sig.UPOJ_MODE_PROD, ASOL_RST_LATCHp);

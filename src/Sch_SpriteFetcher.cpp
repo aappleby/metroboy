@@ -100,7 +100,7 @@ void SpriteFetcher::tick(SchematicTop& gb) {
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
   auto sst_sig = gb.sst_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
+  auto clk_sig = gb.clk_reg.sig();
   auto rst_sig = gb.rst_reg.sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
 
@@ -116,7 +116,8 @@ void SpriteFetcher::tick(SchematicTop& gb) {
   // Maybe we should annotate phase starting with the phase 0 = FEPO_MATCH_SYNC goes high?
 
   {
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(gb.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
     /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);

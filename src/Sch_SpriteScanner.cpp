@@ -28,7 +28,7 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
   {
     auto bus_sig = gb.bus_mux.sig(gb);
     auto& ppu_config = gb.ppu_config;
-    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
+    auto clk_sig = gb.clk_reg.sig();
     auto lcd_sig = gb.lcd_reg.sig(gb);
     wire P10_B = 0;
 
@@ -91,7 +91,7 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
 
 void SpriteScanner::tick(SchematicTop& gb) {
   auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
+  auto clk_sig = gb.clk_reg.sig();
   auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
@@ -107,7 +107,8 @@ void SpriteScanner::tick(SchematicTop& gb) {
     /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
     /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_sig.WUVU_AxxDExxH);
     /*p29.BYBA*/ SCAN_DONE_TRIG_A.set(XUPY_xBCxxFGx, BAGY_SCAN_RSTn, FETO_SCAN_DONE_d0);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(gb.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
     /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);

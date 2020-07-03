@@ -16,7 +16,7 @@ JoypadSignals JoypadRegisters::sig() const {
 
 //------------------------------------------------------------------------------
 
-void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus& cpu_bus, CpuBusSignals& cpu_sig) {
+void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus& cpu_bus, CpuBusSignals& cpu_sig, wire EXT_PIN_CLK_GOOD) {
 
   /*p10.BYKO*/ wire BYKO_A05n = not(cpu_bus.CPU_PIN_A05);
   /*p10.AKUG*/ wire AKUG_A06n = not(cpu_bus.CPU_PIN_A06);
@@ -38,7 +38,28 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus&
   /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
   /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
 
-  /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+  /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
+  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_sig.APUK_xxxDEFGx);
+  /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
+  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_sig.ALEF_xxCDEFxx);
+  /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
+  /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+  /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);
+  /*p01.BUFA*/ wire BUFA_AxxxxxxH = not(BERU_xBCDEFGx);
+  /*p01.BOLO*/ wire BOLO_xBCDEFGx = not(BUFA_AxxxxxxH);
+  /*p01.BEKO*/ wire BEKO_xBCDExxx = not(BUDE_AxxxxFGH);
+  /*p01.BEJA*/ wire BEJA_AxxxxFGH = nand(BOLO_xBCDEFGx, BEKO_xBCDExxx);
+  /*p01.BANE*/ wire BANE_xBCDExxx = not(BEJA_AxxxxFGH);
+  /*p01.BELO*/ wire BELO_AxxxxFGH = not(BANE_xBCDExxx);
+  /*p01.BAZE*/ wire BAZE_xBCDExxx = not(BELO_AxxxxFGH);
+  /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
+  /*p01.BELE*/ wire BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
+  /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(EXT_PIN_CLK_GOOD);
+  /*p01.BYJU*/ wire BYJU_AxCDEFGH = nor(BELE_xBxxxxxx, ATEZ_CLKBAD);
+
+  /*p01.BALY*/ wire BALY_xBxxxxxx = not(BYJU_AxCDEFGH);
   /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
   /*p02.AWOB*/ AWOB_WAKE_CPU.setx(BOGA_AxCDEFGH, _ANY_BUTTON);
   // cpu_pins.TO_CPU2.set(WAKE_CPU.q());

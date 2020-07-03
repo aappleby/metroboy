@@ -71,7 +71,7 @@ void TileFetcher::tick(SchematicTop& gb) {
   auto& vram_bus = gb.vram_bus;
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
+  auto clk_sig = gb.clk_reg.sig();
   auto win_sig = gb.win_reg.sig(gb);
   auto tile_fetcher_sig = sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);
@@ -88,7 +88,8 @@ void TileFetcher::tick(SchematicTop& gb) {
   {
     /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, ppu_sig.NYXU_TILE_FETCHER_RSTn);
     /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(gb.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
     /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
@@ -112,7 +113,8 @@ void TileFetcher::tick(SchematicTop& gb) {
     /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
     /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, ppu_sig.NYXU_TILE_FETCHER_RSTn);
     /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(gb.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
     /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);

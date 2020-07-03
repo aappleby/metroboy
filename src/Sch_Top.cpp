@@ -5,7 +5,7 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 void SchematicTop::tick_everything() {
-  auto clk_sig = clk_reg.sig(cpu_bus, EXT_PIN_CLK_GOOD);
+  auto clk_sig = clk_reg.sig();
   auto dbg_sig = dbg_reg.sig(cpu_bus, EXT_PIN_RST);
   auto tim_sig = tim_reg.sig();
 
@@ -19,7 +19,7 @@ void SchematicTop::tick_everything() {
 
   /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
 
-  clk_reg.tick(ABOL_CLKREQn, rst_sig.XAPO_VID_RSTn, dbg_sig.UPOJ_MODE_PROD);
+  clk_reg.tick(ABOL_CLKREQn, rst_sig.XAPO_VID_RSTn, dbg_sig.UPOJ_MODE_PROD, PIN_CLK_IN_xBxDxFxH);
 
   dbg_reg.tick(dbg_sig, rst_sig);
   rst_reg.tick(clk_sig, dbg_sig, rst_sig, cpu_bus, EXT_PIN_RST, EXT_PIN_CLK_GOOD);

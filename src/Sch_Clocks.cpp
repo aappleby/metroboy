@@ -23,18 +23,18 @@ ADYK APUK ALEF AFUR
 
 //-----------------------------------------------------------------------------
 
-ClockSignals ClockRegisters::sig(const SchematicTop& gb) const {
-  return sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
-}
-
-ClockSignals ClockRegisters::sig(const CpuBus& cpu_bus, wire EXT_PIN_CLK_GOOD) const {
+ClockSignals ClockRegisters::sig() const {
   ClockSignals clk_sig;
 
   ///*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
   {
-    /*p01.ANOS*/ clk_sig.ANOS_AxCxExGx = not(PIN_CLK_IN_xBxDxFxH);
+    /*p01.AFUR*/ clk_sig.AFUR_xBCDExxx = AFUR_xBCDExxx;
+    /*p01.ALEF*/ clk_sig.ALEF_xxCDEFxx = ALEF_xxCDEFxx;
+    /*p01.APUK*/ clk_sig.APUK_xxxDEFGx = APUK_xxxDEFGx;
+    /*p01.ADYK*/ clk_sig.ADYK_xxxxEFGH = ADYK_xxxxEFGH;
+
     /*p29.WUVU*/ clk_sig.WUVU_AxxDExxH = WUVU_AxxDExxH;
     /*p21.VENA*/ clk_sig.VENA_xBCDExxx = VENA_xBCDExxx;
     /*p29.WOSU*/ clk_sig.WOSU_xxCDxxGH = WOSU_xxCDxxGH;
@@ -44,47 +44,11 @@ ClockSignals ClockRegisters::sig(const CpuBus& cpu_bus, wire EXT_PIN_CLK_GOOD) c
   ///*p01.AMUK*/ wire AMUK_AxCxExGx = not(ATAG_xBxDxFxH); // apu master 4m clock, but apu isn't hooked up yet
   ///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
 
-  {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_xBCDExxx);
-    /*p01.AROV*/ wire AROV_xxxDEFGx = not(!APUK_xxxDEFGx);
-    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(ADYK_xxxxEFGH);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(ALEF_xxCDEFxx);
-    /*p01.BUGO*/ wire BUGO_xxCDEFxx = not(AFEP_ABxxxxGH);
-    /*p01.NULE*/ clk_sig.NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-    /*p01.AFAS*/ clk_sig.AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
-    /*p01.BATE*/ clk_sig.BATE_ABxxxxxH = nor(ABOL_CLKREQn,  BUGO_xxCDEFxx, AROV_xxxDEFGx);
-    /*p01.BAPY*/ clk_sig.BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
-  }
-
-
-
-  {
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_xBCDExxx);
-    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(ALEF_xxCDEFxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(clk_sig.NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /*p01.BERU*/ wire BERU_xBCDEFGx = not(clk_sig.BAPY_AxxxxxxH);
-    /*p01.BUFA*/ wire BUFA_AxxxxxxH = not(BERU_xBCDEFGx);
-    /*p01.BOLO*/ wire BOLO_xBCDEFGx = not(BUFA_AxxxxxxH);
-    /*p01.BEKO*/ wire BEKO_xBCDExxx = not(BUDE_AxxxxFGH);
-    /*p01.BEJA*/ wire BEJA_AxxxxFGH = nand(BOLO_xBCDEFGx, BEKO_xBCDExxx);
-    /*p01.BANE*/ wire BANE_xBCDExxx = not(BEJA_AxxxxFGH);
-    /*p01.BELO*/ wire BELO_AxxxxFGH = not(BANE_xBCDExxx);
-    /*p01.BAZE*/ wire BAZE_xBCDExxx = not(BELO_AxxxxFGH);
-    /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
-    /*p01.BELE*/ wire BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
-    /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(EXT_PIN_CLK_GOOD);
-    /*p01.BYJU*/ clk_sig.BYJU_AxCDEFGH = nor(BELE_xBxxxxxx, ATEZ_CLKBAD);
-  }
-
-
-  {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-    /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
-    /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
-    /*p01.BUVU*/ clk_sig.BUVU_xBxxxxxx = and(BUTY_CLKREQ, BALY_xBxxxxxx);
-  }
+#if 0
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+  /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
+#endif
 
   return clk_sig;
 }
@@ -96,10 +60,10 @@ void ClockRegisters::tick(const SchematicTop& gb) {
   auto rst_sig = gb.rst_reg.sig(gb);
   /*p01.ABOL*/ wire ABOL_CLKREQn  = not(gb.cpu_bus.CPU_PIN_CLKREQ);
 
-  tick(ABOL_CLKREQn, rst_sig.XAPO_VID_RSTn, dbg_sig.UPOJ_MODE_PROD);
+  tick(ABOL_CLKREQn, rst_sig.XAPO_VID_RSTn, dbg_sig.UPOJ_MODE_PROD, gb.PIN_CLK_IN_xBxDxFxH);
 }
 
-void ClockRegisters::tick(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD) {
+void ClockRegisters::tick(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD, wire PIN_CLK_IN_xBxDxFxH) {
   {
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(PIN_CLK_IN_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
@@ -147,9 +111,28 @@ void ClockRegisters::tick(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_
 
 //-----------------------------------------------------------------------------
 
+void ClockRegisters::tick2(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD, wire PIN_CLK_IN_xBxDxFxH) {
+  /*p01.AFUR*/ AFUR_xBCDExxx.set_duo(PIN_CLK_IN_xBxDxFxH, UPOJ_MODE_PROD, !ADYK_xxxxEFGH);
+  /*p01.ALEF*/ ALEF_xxCDEFxx.set_duo(PIN_CLK_IN_xBxDxFxH, UPOJ_MODE_PROD,  AFUR_xBCDExxx);
+  /*p01.APUK*/ APUK_xxxDEFGx.set_duo(PIN_CLK_IN_xBxDxFxH, UPOJ_MODE_PROD,  ALEF_xxCDEFxx);
+  /*p01.ADYK*/ ADYK_xxxxEFGH.set_duo(PIN_CLK_IN_xBxDxFxH, UPOJ_MODE_PROD,  APUK_xxxDEFGx);
+
+  /*p29.WUVU*/ WUVU_AxxDExxH.set(!PIN_CLK_IN_xBxDxFxH,  XAPO_VID_RSTn, !WUVU_AxxDExxH);
+  /*p21.VENA*/ VENA_xBCDExxx.set(!WUVU_AxxDExxH,        XAPO_VID_RSTn, !VENA_xBCDExxx);
+  /*p29.WOSU*/ WOSU_xxCDxxGH.set(PIN_CLK_IN_xBxDxFxH,   XAPO_VID_RSTn, !WUVU_AxxDExxH);
+
+  if (ABOL_CLKREQn) {
+    /* PIN_75 */ PIN_PHI.set(0);
+  }
+  else {
+    /* PIN_75 */ PIN_PHI.set(!AFUR_xBCDExxx);
+  }
+}
+
+//-----------------------------------------------------------------------------
+
 SignalHash ClockRegisters::commit() {
   SignalHash hash;
-  /* PIN_74 */ hash << PIN_CLK_IN_xBxDxFxH.clear_preset();
   /* PIN_75 */ hash << PIN_PHI.commit_pinout(); // <- BUDE/BEVA
 
   hash << AFUR_xBCDExxx.commit_duo();

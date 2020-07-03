@@ -44,6 +44,8 @@ struct SchematicTop {
   uint8_t hiram[128];
   */
 
+  /* PIN_74 */ PinIn PIN_CLK_IN_xBxDxFxH;
+
   ClockRegisters clk_reg;
   DebugRegisters dbg_reg;
   DmaRegisters dma_reg;

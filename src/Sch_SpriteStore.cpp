@@ -219,7 +219,7 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     auto sst_sig = sig(gb);
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
     auto rst_sig = gb.rst_reg.sig(gb);
-    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
+    auto clk_sig = gb.clk_reg.sig();
 
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
     /*p30.WENU*/ WENU_TS_LINE_0.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DEGE_SPRITE_DELTA0);
@@ -227,7 +227,8 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     /*p30.CUCA*/ CUCA_TS_LINE_2.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DABU_SPRITE_DELTA2);
     /*p30.CEGA*/ CEGA_TS_LINE_3.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.GYSA_SPRITE_DELTA3);
 
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(gb.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
     /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
@@ -262,7 +263,7 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
     auto ppu_sig = gb.ppu_reg.sig(gb);
     auto dbg_sig = gb.dbg_reg.sig(gb);
-    auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
+    auto clk_sig = gb.clk_reg.sig();
 
     // BUZA def AND
     // BUZA01 << CENO16

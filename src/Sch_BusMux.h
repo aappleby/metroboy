@@ -46,6 +46,24 @@ struct BusMux {
 
 private:
 
+  /*p04.MAKA*/ Reg MAKA_FROM_CPU5_SYNC;
+
+  /*p08.ALOR*/ TpLatch CPU_ADDR_LATCH_00;
+  /*p08.APUR*/ TpLatch CPU_ADDR_LATCH_01;
+  /*p08.ALYR*/ TpLatch CPU_ADDR_LATCH_02;
+  /*p08.ARET*/ TpLatch CPU_ADDR_LATCH_03;
+  /*p08.AVYS*/ TpLatch CPU_ADDR_LATCH_04;
+  /*p08.ATEV*/ TpLatch CPU_ADDR_LATCH_05;
+  /*p08.AROS*/ TpLatch CPU_ADDR_LATCH_06;
+  /*p08.ARYM*/ TpLatch CPU_ADDR_LATCH_07;
+  /*p08.LUNO*/ TpLatch CPU_ADDR_LATCH_08;
+  /*p08.LYSA*/ TpLatch CPU_ADDR_LATCH_09;
+  /*p08.PATE*/ TpLatch CPU_ADDR_LATCH_10;
+  /*p08.LUMY*/ TpLatch CPU_ADDR_LATCH_11;
+  /*p08.LOBU*/ TpLatch CPU_ADDR_LATCH_12;
+  /*p08.LONU*/ TpLatch CPU_ADDR_LATCH_13;
+  /*p08.NYRE*/ TpLatch CPU_ADDR_LATCH_14;
+
   // these sets of regs should probably move to sprite fetcher/scanner
 
   /*p31.YLOR*/ Reg8 YLOR_SPRITE_X0;

@@ -116,6 +116,8 @@ void SpriteFetcher::tick(SchematicTop& gb) {
   // Maybe we should annotate phase starting with the phase 0 = FEPO_MATCH_SYNC goes high?
 
   {
+    /*p27.VYPO*/ wire VYPO_P10_Bn = not(P10_B);
+
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(gb.PIN_CLK_IN_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
@@ -124,8 +126,8 @@ void SpriteFetcher::tick(SchematicTop& gb) {
     /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
     /*p01.LAPE*/ wire LAPE_AxCxExGx = not(ALET_xBxDxFxH);
     /*p27.TAVA*/ wire TAVA_xBxDxFxH = not(LAPE_AxCxExGx);
-    /*p27.SOBU*/ SOBU_SPRITE_FETCH_TRIG_A.set(TAVA_xBxDxFxH, dbg_sig.VYPO_P10_Bn, ppu_sig.TEKY_SPRITE_FETCH);
-    /*p27.SUDA*/ SUDA_SPRITE_FETCH_TRIG_B.set(LAPE_AxCxExGx, dbg_sig.VYPO_P10_Bn, SOBU_SPRITE_FETCH_TRIG_A);
+    /*p27.SOBU*/ SOBU_SPRITE_FETCH_TRIG_A.set(TAVA_xBxDxFxH, VYPO_P10_Bn, ppu_sig.TEKY_SPRITE_FETCH);
+    /*p27.SUDA*/ SUDA_SPRITE_FETCH_TRIG_B.set(LAPE_AxCxExGx, VYPO_P10_Bn, SOBU_SPRITE_FETCH_TRIG_A);
     /*p27.RYCE*/ wire RYCE_SPRITE_FETCH_TRIG = and (SOBU_SPRITE_FETCH_TRIG_A, !SUDA_SPRITE_FETCH_TRIG_B);
 
     /*p01.ROSY*/ wire ROSY_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
@@ -135,10 +137,10 @@ void SpriteFetcher::tick(SchematicTop& gb) {
     /*p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand(TESE_SFETCH_S2, TOXE_SFETCH_S0_D0);
     /*p29.TOMA*/ wire TOMA_SFETCH_CLK = nand(LAPE_AxCxExGx, TAME_SFETCH_CLK_GATE);
 
-    /*p29.TOXE*/ TOXE_SFETCH_S0_D0.set(TOMA_SFETCH_CLK,         SECA_SFETCH_RUNNING_SETn,        !TOXE_SFETCH_S0_D0);
-    /*p29.TYFO*/ TYFO_SFETCH_S0_D1.set(LAPE_AxCxExGx, dbg_sig.VYPO_P10_Bn,     TOXE_SFETCH_S0_D0);
-    /*p29.TULY*/ TULY_SFETCH_S1.set(!TOXE_SFETCH_S0_D0,       SECA_SFETCH_RUNNING_SETn,        !TULY_SFETCH_S1);
-    /*p29.TESE*/ TESE_SFETCH_S2.set(!TULY_SFETCH_S1,          SECA_SFETCH_RUNNING_SETn,        !TESE_SFETCH_S2);
+    /*p29.TOXE*/ TOXE_SFETCH_S0_D0.set(TOMA_SFETCH_CLK, SECA_SFETCH_RUNNING_SETn, !TOXE_SFETCH_S0_D0);
+    /*p29.TYFO*/ TYFO_SFETCH_S0_D1.set(LAPE_AxCxExGx,   VYPO_P10_Bn,              TOXE_SFETCH_S0_D0);
+    /*p29.TULY*/ TULY_SFETCH_S1.set(!TOXE_SFETCH_S0_D0, SECA_SFETCH_RUNNING_SETn, !TULY_SFETCH_S1);
+    /*p29.TESE*/ TESE_SFETCH_S2.set(!TULY_SFETCH_S1,    SECA_SFETCH_RUNNING_SETn, !TESE_SFETCH_S2);
 
     /*p29.TOBU*/ TOBU_SFETCH_S1_D2.set(TAVA_xBxDxFxH, ppu_sig.XYMU_RENDERINGp, TULY_SFETCH_S1);    // note input is seq 1 not 2
     /*p29.VONU*/ VONU_SFETCH_S1_D4.set(TAVA_xBxDxFxH, ppu_sig.XYMU_RENDERINGp, TOBU_SFETCH_S1_D2);

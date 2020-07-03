@@ -292,15 +292,18 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     ///*p30.CYKE*/ wire _CYKE_AxxDExxH = not(_XUPY_xBCxxFGx); // inverted clock
     ///*p30.WUDA*/ wire _WUDA_xBCxxFGx = not(_CYKE_AxxDExxH);
 
+    wire P10_B = 0;
+    /*p28.WEFE*/ wire WEFE_P10_Bn = not(P10_B);
+
     /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_sig.WUVU_AxxDExxH);
     /*p30.CYKE*/ wire CYKE_AxxDExxH = not(XUPY_xBCxxFGx);
     /*p30.WUDA*/ wire WUDA_xBCxxFGx = not(CYKE_AxxDExxH);
-    /*p30.XADU*/ XADU_SPRITE_IDX0.set(WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YFOT_OAM_A2p);
-    /*p30.XEDY*/ XEDY_SPRITE_IDX1.set(WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YFOC_OAM_A3p);
-    /*p30.ZUZE*/ ZUZE_SPRITE_IDX2.set(WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YVOM_OAM_A4p);
-    /*p30.XOBE*/ XOBE_SPRITE_IDX3.set(WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YMEV_OAM_A5p);
-    /*p30.YDUF*/ YDUF_SPRITE_IDX4.set(WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.XEMU_OAM_A6p);
-    /*p30.XECU*/ XECU_SPRITE_IDX5.set(WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YZET_OAM_A7p);
+    /*p30.XADU*/ XADU_SPRITE_IDX0.set(WUDA_xBCxxFGx, WEFE_P10_Bn, bus_sig.YFOT_OAM_A2p);
+    /*p30.XEDY*/ XEDY_SPRITE_IDX1.set(WUDA_xBCxxFGx, WEFE_P10_Bn, bus_sig.YFOC_OAM_A3p);
+    /*p30.ZUZE*/ ZUZE_SPRITE_IDX2.set(WUDA_xBCxxFGx, WEFE_P10_Bn, bus_sig.YVOM_OAM_A4p);
+    /*p30.XOBE*/ XOBE_SPRITE_IDX3.set(WUDA_xBCxxFGx, WEFE_P10_Bn, bus_sig.YMEV_OAM_A5p);
+    /*p30.YDUF*/ YDUF_SPRITE_IDX4.set(WUDA_xBCxxFGx, WEFE_P10_Bn, bus_sig.XEMU_OAM_A6p);
+    /*p30.XECU*/ XECU_SPRITE_IDX5.set(WUDA_xBCxxFGx, WEFE_P10_Bn, bus_sig.YZET_OAM_A7p);
 
     /*p30.WUZY*/ WUZY_TS_IDX_0.set_tribuf(BUZA_STORE_SPRITE_IDX, XADU_SPRITE_IDX0);
     /*p30.WYSE*/ WYSE_TS_IDX_1.set_tribuf(BUZA_STORE_SPRITE_IDX, XEDY_SPRITE_IDX1);

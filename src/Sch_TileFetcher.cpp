@@ -174,6 +174,9 @@ void TileFetcher::tick(SchematicTop& gb) {
 
     // Background map read
 
+    wire P10_B = 0;
+    /*p27.VYPO*/ wire VYPO_P10_Bn = not(P10_B);
+
     /*p27.NAKO*/ wire NAKO_FETCH_S1n = not(MESU_BFETCH_S1.q());
     /*p27.NOFU*/ wire NOFU_FETCH_TILE_AB = not(NYVA_BFETCH_S2.q());
     /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(LONY_BG_READ_VRAM_LATCHp);
@@ -204,8 +207,8 @@ void TileFetcher::tick(SchematicTop& gb) {
     /*p26.CETA*/ vram_bus.TRI_A08.set_tribuf(BAFY_BG_MAP_READn, EFYK_MAP_Y3S);
     /*p26.DAFE*/ vram_bus.TRI_A09.set_tribuf(BAFY_BG_MAP_READn, EJOK_MAP_Y4S);
     /*p26.AMUV*/ vram_bus.TRI_A10.set_tribuf(BAFY_BG_MAP_READn, ppu_config.XAFO_LCDC_BGMAP);
-    /*p26.COVE*/ vram_bus.TRI_A11.set_tribuf(BAFY_BG_MAP_READn, dbg_sig.VYPO_P10_Bn);
-    /*p26.COXO*/ vram_bus.TRI_A12.set_tribuf(BAFY_BG_MAP_READn, dbg_sig.VYPO_P10_Bn);
+    /*p26.COVE*/ vram_bus.TRI_A11.set_tribuf(BAFY_BG_MAP_READn, VYPO_P10_Bn);
+    /*p26.COXO*/ vram_bus.TRI_A12.set_tribuf(BAFY_BG_MAP_READn, VYPO_P10_Bn);
 
     // Window map read
     /*p25.WUKO*/ wire WUKO_WIN_MAP_READn = not(XEZE_WIN_MAP_READp);
@@ -220,8 +223,8 @@ void TileFetcher::tick(SchematicTop& gb) {
     /*p27.VOVO*/ vram_bus.TRI_A08.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_Y6);
     /*p27.VULO*/ vram_bus.TRI_A09.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_Y7);
     /*p27.VEVY*/ vram_bus.TRI_A10.set_tribuf(WUKO_WIN_MAP_READn, ppu_config.WOKY_LCDC_WINMAP);
-    /*p27.VEZA*/ vram_bus.TRI_A11.set_tribuf(WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
-    /*p27.VOGU*/ vram_bus.TRI_A12.set_tribuf(WUKO_WIN_MAP_READn, dbg_sig.VYPO_P10_Bn);
+    /*p27.VEZA*/ vram_bus.TRI_A11.set_tribuf(WUKO_WIN_MAP_READn, VYPO_P10_Bn);
+    /*p27.VOGU*/ vram_bus.TRI_A12.set_tribuf(WUKO_WIN_MAP_READn, VYPO_P10_Bn);
 
     // Background/window tile read
 
@@ -299,14 +302,17 @@ void TileFetcher::tick(SchematicTop& gb) {
     /*p32.NASA*/ BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D6);
     /*p32.NEFO*/ BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D7);
 
-    /*p32.RAWU*/ BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D0);
-    /*p32.POZO*/ BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D1);
-    /*p32.PYZO*/ BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D2);
-    /*p32.POXA*/ BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D3);
-    /*p32.PULO*/ BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D4);
-    /*p32.POJU*/ BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D5);
-    /*p32.POWY*/ BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D6);
-    /*p32.PYJU*/ BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D7);
+    wire P10_B = 0;
+    /*p27.VYPO*/ wire VYPO_P10_Bn = not(P10_B);
+
+    /*p32.RAWU*/ BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, vram_bus.CPU_TRI_D0);
+    /*p32.POZO*/ BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, vram_bus.CPU_TRI_D1);
+    /*p32.PYZO*/ BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, vram_bus.CPU_TRI_D2);
+    /*p32.POXA*/ BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, vram_bus.CPU_TRI_D3);
+    /*p32.PULO*/ BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, vram_bus.CPU_TRI_D4);
+    /*p32.POJU*/ BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, vram_bus.CPU_TRI_D5);
+    /*p32.POWY*/ BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, vram_bus.CPU_TRI_D6);
+    /*p32.PYJU*/ BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, vram_bus.CPU_TRI_D7);
   }
 }
 

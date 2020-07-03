@@ -21,14 +21,16 @@ DebugSignals DebugRegisters::sig(const SchematicTop& gb) const {
 DebugSignals DebugRegisters::sig(const CpuBus& cpu_bus, wire EXT_PIN_RST) const {
   DebugSignals sig;
 
-  wire P10_B = 0;
 
-  /*p27.VYPO*/ sig.VYPO_P10_Bn = not(P10_B);
-  /*p28.WEFE*/ sig.WEFE_P10_Bn = not(P10_B);
-  /*p28.WUWE*/ sig.WUWE_P10_Bn = not(P10_B);
-  /*p28.GEFY*/ sig.GEFY_P10_Bn = not(P10_B);
-  /*p28.GECA*/ sig.GECA_P10_Bp = not(sig.WEFE_P10_Bn);
-  /*p28.WYDU*/ sig.WYDU_P10_Bp = not(sig.WEFE_P10_Bn);
+#if 0
+  wire P10_B = 0;
+  /*p27.VYPO*/ wire VYPO_P10_Bn = not(P10_B);
+  /*p28.WEFE*/ wire WEFE_P10_Bn = not(P10_B);
+  /*p28.WUWE*/ wire WUWE_P10_Bn = not(P10_B);
+  /*p28.GEFY*/ wire GEFY_P10_Bn = not(P10_B);
+  /*p28.GECA*/ wire GECA_P10_Bp = not(WEFE_P10_Bn);
+  /*p28.WYDU*/ wire WYDU_P10_Bp = not(WEFE_P10_Bn);
+#endif
 
 
 

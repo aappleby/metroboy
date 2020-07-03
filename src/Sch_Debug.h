@@ -8,12 +8,6 @@ struct SchematicTop;
 //-----------------------------------------------------------------------------
 
 struct DebugSignals {
-  /*p27.VYPO*/ Signal VYPO_P10_Bn;
-  /*p28.WEFE*/ Signal WEFE_P10_Bn;
-  /*p28.WUWE*/ Signal WUWE_P10_Bn;
-  /*p28.GEFY*/ Signal GEFY_P10_Bn;
-  /*p28.GECA*/ Signal GECA_P10_Bp;
-  /*p28.WYDU*/ Signal WYDU_P10_Bp;
   /*p07.UBET*/ Signal UBET_T1n;
   /*p07.UVAR*/ Signal UVAR_T2n;
   /*p07.UMUT*/ Signal UMUT_MODE_DBG1p;

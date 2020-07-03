@@ -28,8 +28,6 @@ struct ClockRegisters {
 
   SignalHash commit();
 
-private:
-
   /* PIN_75 */ PinOut PIN_PHI;    // <- P01.BUDE/BEVA
 
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.

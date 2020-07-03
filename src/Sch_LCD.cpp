@@ -106,9 +106,8 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p24.MECO*/ wire _MECO = not(_MAGU);
     /*p24.KEBO*/ wire _KEBO = not(_MECO);
     /*p24.USEC*/ wire _USEC = not(top.UREK_DIV_07n());
-    auto& ppu_config = top.ppu_config;
-    /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(ppu_config.XONA_LCDC_EN);
-    /*p24.KUPA*/ wire _KUPA = amux2(ppu_config.XONA_LCDC_EN, _KEBO, KEDY_LCDC_ENn, _USEC);
+    /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(top.XONA_LCDC_EN);
+    /*p24.KUPA*/ wire _KUPA = amux2(top.XONA_LCDC_EN, _KEBO, KEDY_LCDC_ENn, _USEC);
     /*p24.KOFO*/ wire _KOFO = not(_KUPA);
     FR.set(_KOFO);
   }
@@ -145,9 +144,8 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(top.RUTU_NEW_LINE_d0());
     /*p24.KASA*/ wire _KASA_LINE_DONE = not(PURE_NEW_LINE_d0n);
     /*p24.UMOB*/ wire _UMOB_DIV_06p = not(top.UMEK_DIV_06n());
-    auto& ppu_config = top.ppu_config;
-    /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(ppu_config.XONA_LCDC_EN);
-    /*p24.KAHE*/ wire _KAHE = amux2(ppu_config.XONA_LCDC_EN, _KASA_LINE_DONE, KEDY_LCDC_ENn, _UMOB_DIV_06p);
+    /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(top.XONA_LCDC_EN);
+    /*p24.KAHE*/ wire _KAHE = amux2(top.XONA_LCDC_EN, _KASA_LINE_DONE, KEDY_LCDC_ENn, _UMOB_DIV_06p);
     /*p24.KYMO*/ wire _KYMO = not(_KAHE);
     CPL.set(_KYMO);
   }

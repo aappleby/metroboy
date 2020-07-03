@@ -112,18 +112,6 @@ PpuSignals PpuRegisters::sig(const SchematicTop& top) const {
   //----------
 
   {
-    ppu_sig.XYMU_RENDERINGp = XYMU_RENDERINGp;
-    ppu_sig.XEHO_X0 = XEHO_X0;
-    ppu_sig.SAVY_X1 = SAVY_X1;
-    ppu_sig.XODU_X2 = XODU_X2;
-    ppu_sig.XYDO_X3 = XYDO_X3;
-    ppu_sig.TUHU_X4 = TUHU_X4;
-    ppu_sig.TUKY_X5 = TUKY_X5;
-    ppu_sig.TAKO_X6 = TAKO_X6;
-    ppu_sig.SYBE_X7 = SYBE_X7;
-  }
-
-  {
     auto sst_sig = top.sst_reg.sig(top);
 
     /*p21.XUGU*/ wire _XUGU_X_167n = nand(XEHO_X0.q(), SAVY_X1.q(), XODU_X2.q(), TUKY_X5.q(), SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
@@ -139,19 +127,16 @@ PpuSignals PpuRegisters::sig(const SchematicTop& top) const {
   }
 
   {
-    auto sprite_scanner_sig = top.sprite_scanner.sig(top);
     auto win_sig = top.win_reg.sig(top);
     /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(win_sig.NUNY_WIN_MODE_TRIGp);
     /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
-    /*p27.NYXU*/ ppu_sig.NYXU_TILE_FETCHER_RSTn = nor(sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp, MOSU_WIN_MODE_TRIGp, ppu_sig.TEVO_FINE_RSTp);
+    /*p27.NYXU*/ ppu_sig.NYXU_TILE_FETCHER_RSTn = nor(top.AVAP_SCAN_DONE_TRIGp(), MOSU_WIN_MODE_TRIGp, ppu_sig.TEVO_FINE_RSTp);
   }
 
   // so dma stops oam scan?
   {
-    auto sprite_scanner_sig = top.sprite_scanner.sig(top);
-
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(top.MATU_DMA_RUNNINGp());
-    /*p28.ACYL*/ ppu_sig.ACYL_SCANNINGp = and (BOGE_DMA_RUNNINGn, sprite_scanner_sig.BESU_SCANNINGp);
+    /*p28.ACYL*/ ppu_sig.ACYL_SCANNINGp = and (BOGE_DMA_RUNNINGn, top.BESU_SCANNINGp());
   }
 
   {
@@ -181,24 +166,6 @@ PpuSignals PpuRegisters::sig(const SchematicTop& top) const {
   /*p27.ROZE*/ ppu_sig.ROZE_FINE_COUNT_STOPn = nand(RYKU_FINE_CNT0, ROGA_FINE_CNT1, RUBU_FINE_CNT2);
 
   {
-    auto& vram_pins = top.vram_pins;
-    
-    // the logic here is kinda weird, still seems to select vram.
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p25.SYRO*/ wire SYRO_FE00_FFFFp = not(TUNA_0000_FDFFp);
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
-    /*p25.TEFA*/ wire TEFA_8000_9FFFp = nor(SYRO_FE00_FFFFp, TEXO_8000_9FFFn);
-    /*p25.SOSE*/ wire SOSE_8000_9FFFp = and (top.CPU_PIN_A15, TEFA_8000_9FFFp);
-    /*p25.TUCA*/ wire TUCA_CPU_VRAM_RD = and (SOSE_8000_9FFFp, top.ABUZ());
-    /*p25.TEFY*/ wire TEFY_MCSn_Cn = not(vram_pins.EXT_PIN_MCSn_C);
-    /*p25.TOLE*/ wire TOLE_VRAM_RD = mux2_p(TEFY_MCSn_Cn, TUCA_CPU_VRAM_RD, top.TUTO_DBG_VRAMp());
-    /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp);
-    /*p25.SERE*/ ppu_sig.SERE_VRAM_RD = and (TOLE_VRAM_RD, ROPY_RENDERINGn);
-  }
-
-  {
     /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(top.RUTU_NEW_LINE_d0());
     /*p21.SELA*/ wire SELA_NEW_LINE_d0p = not(PURE_NEW_LINE_d0n);
     /*p21.PARU*/ wire PARU_VBLANKp = not(!top.POPU_VBLANK_d4());
@@ -215,7 +182,6 @@ PpuSignals PpuRegisters::sig(const SchematicTop& top) const {
 
   {
     auto tile_fetcher_sig = top.tile_fetcher.sig(top);
-    auto sprite_fetcher_sig = top.sprite_fetcher.sig(top);
     auto sst_sig = top.sst_reg.sig(top);
     auto win_sig = top.win_reg.sig(top);
 
@@ -225,15 +191,14 @@ PpuSignals PpuRegisters::sig(const SchematicTop& top) const {
     /*p27.TEKY*/ ppu_sig.TEKY_SPRITE_FETCH = and (sst_sig.FEPO_STORE_MATCHp,
                                                   TUKU_WIN_HITn,
                                                   tile_fetcher_sig.LYRY_BFETCH_DONEp,
-                                                  sprite_fetcher_sig.SOWO_SFETCH_RUNNINGn);
+                                                  top.SOWO_SFETCH_RUNNINGn());
   }
 
   {
     auto tile_fetcher_sig = top.tile_fetcher.sig(top);
-    auto sprite_fetcher_sig = top.sprite_fetcher.sig(top);
 
     // And this is the topmost "reset sprite fetcher" signal
-    /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(sprite_fetcher_sig.VUSA_PIPE_LOAD_SPRITEn);
+    /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(top.VUSA_PIPE_LOAD_SPRITEn());
     /*p27.VEKU*/ ppu_sig.VEKU_SFETCH_RUNNING_RSTn = nor(WUTY_PIPE_LOAD_SPRITEp,
                                                         tile_fetcher_sig.TAVE_PORCH_DONE_TRIGp); // def nor
   }
@@ -254,11 +219,9 @@ void PpuRegisters::tick(SchematicTop& top) {
   /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
 
   {
-    auto sprite_scanner_sig = top.sprite_scanner.sig(top);
-    
     /*p01.TOFU*/ wire TOFU_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p21.WEGO*/ wire _WEGO_RST_LATCH = or(TOFU_VID_RSTp, VOGA_RENDER_DONE_SYNC);
-    /*p21.XYMU*/ XYMU_RENDERINGp.nor_latch(sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp, _WEGO_RST_LATCH);
+    /*p21.XYMU*/ XYMU_RENDERINGp.nor_latch(top.AVAP_SCAN_DONE_TRIGp(), _WEGO_RST_LATCH);
   }
 
 
@@ -299,10 +262,9 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
     /*p27.MOXE*/ wire MOXE_AxCxExGx = not(ALET_xBxDxFxH);
 
-    auto& ppu_config = top.ppu_config;
-    /*p27.SUHA*/ wire SUHA_FINE_MATCH0p = xnor(ppu_config.DATY_SCX0, RYKU_FINE_CNT0); // Arms on the ground side, XNOR
-    /*p27.SYBY*/ wire SYBY_FINE_MATCH1p = xnor(ppu_config.DUZU_SCX1, ROGA_FINE_CNT1);
-    /*p27.SOZU*/ wire SOZU_FINE_MATCH2p = xnor(ppu_config.CYXU_SCX2, RUBU_FINE_CNT2);
+    /*p27.SUHA*/ wire SUHA_FINE_MATCH0p = xnor(top.DATY_SCX0(), RYKU_FINE_CNT0); // Arms on the ground side, XNOR
+    /*p27.SYBY*/ wire SYBY_FINE_MATCH1p = xnor(top.DUZU_SCX1(), ROGA_FINE_CNT1);
+    /*p27.SOZU*/ wire SOZU_FINE_MATCH2p = xnor(top.CYXU_SCX2(), RUBU_FINE_CNT2);
     /*p27.RONE*/ wire RONE_FINE_MATCHn = nand(ROXY_FINE_MATCH_LATCHn, SUHA_FINE_MATCH0p, SYBY_FINE_MATCH1p, SOZU_FINE_MATCH2p);
     /*p27.POHU*/ wire POHU_FINE_MATCHp = not(RONE_FINE_MATCHn);
     /*p27.PUXA*/ PUXA_FINE_MATCH_Ap.set(ROXO_CLKPIPEp, XYMU_RENDERINGp, POHU_FINE_MATCHp);
@@ -317,14 +279,12 @@ void PpuRegisters::tick(SchematicTop& top) {
     // if AVAP goes high, POFY goes high.
     // if PAHO or TOFU go high, POFY goes low.
 
-    auto sprite_scanner_sig = top.sprite_scanner.sig(top);
-    
     /*p01.TOFU*/ wire TOFU_VID_RSTp = not(top.XAPO_VID_RSTn());
 
     auto ppu_sig = sig(top);
     /*p24.ROXO*/ wire ROXO_CLKPIPEp = not(ppu_sig.SEGU_CLKPIPEn);
-    /*p24.PAHO*/ PAHO_X_8_SYNC.set(ROXO_CLKPIPEp, ppu_sig.XYMU_RENDERINGp, XYDO_X3);
-    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp, PAHO_X_8_SYNC || TOFU_VID_RSTp);
+    /*p24.PAHO*/ PAHO_X_8_SYNC.set(ROXO_CLKPIPEp, top.XYMU_RENDERINGp(), XYDO_X3);
+    /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_SCAN_DONE_TRIGp(), PAHO_X_8_SYNC || TOFU_VID_RSTp);
     /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY_ST_LATCH);
     ST.set(RUZE_PIN_ST);
   }

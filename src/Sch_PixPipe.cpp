@@ -21,13 +21,11 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   /*p22.WEPO*/ wire WEPO_A03p = not(XERA_A03n);
 
   {
-    auto& ppu_config = top.ppu_config;
+    /*p35.RAJY*/ wire _PIX_BG0  = and(top.VYXE_LCDC_BGEN, BG_PIPE_A7);
+    /*p35.TADE*/ wire _PIX_BG1  = and(top.VYXE_LCDC_BGEN, BG_PIPE_B7);
 
-    /*p35.RAJY*/ wire _PIX_BG0  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_A7);
-    /*p35.TADE*/ wire _PIX_BG1  = and(ppu_config.VYXE_LCDC_BGEN, BG_PIPE_B7);
-
-    /*p35.WOXA*/ wire _PIX_SP0  = and(ppu_config.XYLO_LCDC_SPEN, SPR_PIPE_A7);
-    /*p35.XULA*/ wire _PIX_SP1  = and(ppu_config.XYLO_LCDC_SPEN, SPR_PIPE_B7);
+    /*p35.WOXA*/ wire _PIX_SP0  = and(top.XYLO_LCDC_SPEN, SPR_PIPE_A7);
+    /*p35.XULA*/ wire _PIX_SP1  = and(top.XYLO_LCDC_SPEN, SPR_PIPE_B7);
 
     /*p35.NULY*/ wire _PIX_SPn  = nor(_PIX_SP0, _PIX_SP1);
 
@@ -191,9 +189,8 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   {
     wire P10_B = 0;
     auto ppu_sig = top.ppu_reg.sig(top);
-    auto sprite_fetcher_sig = top.sprite_fetcher.sig(top);
 
-    /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(sprite_fetcher_sig.VUSA_PIPE_LOAD_SPRITEn);
+    /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(top.VUSA_PIPE_LOAD_SPRITEn());
     /*p29.XEFY*/ wire XEPY_PIPE_LOAD_SPRITEn = not(WUTY_PIPE_LOAD_SPRITEp);
 
     /*p34.MEFU*/ wire SPRITE_MASK0p = or(XEPY_PIPE_LOAD_SPRITEn, SPR_PIPE_A0, SPR_PIPE_B0); // def or
@@ -225,23 +222,23 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
       }
 #endif
 
-      /*p33.LOZA*/ wire SPR_PIX_A0n = not(sprite_fetcher_sig.SPR_PIX_A0);
-      /*p33.SYBO*/ wire SPR_PIX_A1n = not(sprite_fetcher_sig.SPR_PIX_A1);
-      /*p33.LUMO*/ wire SPR_PIX_A2n = not(sprite_fetcher_sig.SPR_PIX_A2);
-      /*p33.SOLO*/ wire SPR_PIX_A3n = not(sprite_fetcher_sig.SPR_PIX_A3);
-      /*p33.VOBY*/ wire SPR_PIX_A4n = not(sprite_fetcher_sig.SPR_PIX_A4);
-      /*p33.WYCO*/ wire SPR_PIX_A5n = not(sprite_fetcher_sig.SPR_PIX_A5);
-      /*p33.SERY*/ wire SPR_PIX_A6n = not(sprite_fetcher_sig.SPR_PIX_A6);
-      /*p33.SELU*/ wire SPR_PIX_A7n = not(sprite_fetcher_sig.SPR_PIX_A7);
+      /*p33.LOZA*/ wire SPR_PIX_A0n = not(top.SPR_PIX_A0());
+      /*p33.SYBO*/ wire SPR_PIX_A1n = not(top.SPR_PIX_A1());
+      /*p33.LUMO*/ wire SPR_PIX_A2n = not(top.SPR_PIX_A2());
+      /*p33.SOLO*/ wire SPR_PIX_A3n = not(top.SPR_PIX_A3());
+      /*p33.VOBY*/ wire SPR_PIX_A4n = not(top.SPR_PIX_A4());
+      /*p33.WYCO*/ wire SPR_PIX_A5n = not(top.SPR_PIX_A5());
+      /*p33.SERY*/ wire SPR_PIX_A6n = not(top.SPR_PIX_A6());
+      /*p33.SELU*/ wire SPR_PIX_A7n = not(top.SPR_PIX_A7());
 
-      /*p33.MEZU*/ wire SPR_PIX_A_SET0 = nand(SPRITE_MASK0n, sprite_fetcher_sig.SPR_PIX_A0);
-      /*p33.RUSY*/ wire SPR_PIX_A_SET1 = nand(SPRITE_MASK1n, sprite_fetcher_sig.SPR_PIX_A1);
-      /*p33.MYXA*/ wire SPR_PIX_A_SET2 = nand(SPRITE_MASK2n, sprite_fetcher_sig.SPR_PIX_A2);
-      /*p33.RANO*/ wire SPR_PIX_A_SET3 = nand(SPRITE_MASK3n, sprite_fetcher_sig.SPR_PIX_A3);
-      /*p33.TYGA*/ wire SPR_PIX_A_SET4 = nand(SPRITE_MASK4n, sprite_fetcher_sig.SPR_PIX_A4);
-      /*p33.VUME*/ wire SPR_PIX_A_SET5 = nand(SPRITE_MASK5n, sprite_fetcher_sig.SPR_PIX_A5);
-      /*p33.TAPO*/ wire SPR_PIX_A_SET6 = nand(SPRITE_MASK6n, sprite_fetcher_sig.SPR_PIX_A6);
-      /*p33.TESO*/ wire SPR_PIX_A_SET7 = nand(SPRITE_MASK7n, sprite_fetcher_sig.SPR_PIX_A7);
+      /*p33.MEZU*/ wire SPR_PIX_A_SET0 = nand(SPRITE_MASK0n, top.SPR_PIX_A0());
+      /*p33.RUSY*/ wire SPR_PIX_A_SET1 = nand(SPRITE_MASK1n, top.SPR_PIX_A1());
+      /*p33.MYXA*/ wire SPR_PIX_A_SET2 = nand(SPRITE_MASK2n, top.SPR_PIX_A2());
+      /*p33.RANO*/ wire SPR_PIX_A_SET3 = nand(SPRITE_MASK3n, top.SPR_PIX_A3());
+      /*p33.TYGA*/ wire SPR_PIX_A_SET4 = nand(SPRITE_MASK4n, top.SPR_PIX_A4());
+      /*p33.VUME*/ wire SPR_PIX_A_SET5 = nand(SPRITE_MASK5n, top.SPR_PIX_A5());
+      /*p33.TAPO*/ wire SPR_PIX_A_SET6 = nand(SPRITE_MASK6n, top.SPR_PIX_A6());
+      /*p33.TESO*/ wire SPR_PIX_A_SET7 = nand(SPRITE_MASK7n, top.SPR_PIX_A7());
 
       /*p33.MOFY*/ wire SPR_PIX_A_RST0 = nand(SPRITE_MASK0n, SPR_PIX_A0n);
       /*p33.RUCA*/ wire SPR_PIX_A_RST1 = nand(SPRITE_MASK1n, SPR_PIX_A1n);
@@ -264,23 +261,23 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
 
     // Sprite pipe B
     {
-      /*p33.RATA*/ wire SPR_PIX_B0n = not(sprite_fetcher_sig.SPR_PIX_B0);
-      /*p33.NUCA*/ wire SPR_PIX_B1n = not(sprite_fetcher_sig.SPR_PIX_B1);
-      /*p33.LASE*/ wire SPR_PIX_B2n = not(sprite_fetcher_sig.SPR_PIX_B2);
-      /*p33.LUBO*/ wire SPR_PIX_B3n = not(sprite_fetcher_sig.SPR_PIX_B3);
-      /*p33.WERY*/ wire SPR_PIX_B4n = not(sprite_fetcher_sig.SPR_PIX_B4);
-      /*p33.WURA*/ wire SPR_PIX_B5n = not(sprite_fetcher_sig.SPR_PIX_B5);
-      /*p33.SULU*/ wire SPR_PIX_B6n = not(sprite_fetcher_sig.SPR_PIX_B6);
-      /*p33.WAMY*/ wire SPR_PIX_B7n = not(sprite_fetcher_sig.SPR_PIX_B7);
+      /*p33.RATA*/ wire SPR_PIX_B0n = not(top.SPR_PIX_B0());
+      /*p33.NUCA*/ wire SPR_PIX_B1n = not(top.SPR_PIX_B1());
+      /*p33.LASE*/ wire SPR_PIX_B2n = not(top.SPR_PIX_B2());
+      /*p33.LUBO*/ wire SPR_PIX_B3n = not(top.SPR_PIX_B3());
+      /*p33.WERY*/ wire SPR_PIX_B4n = not(top.SPR_PIX_B4());
+      /*p33.WURA*/ wire SPR_PIX_B5n = not(top.SPR_PIX_B5());
+      /*p33.SULU*/ wire SPR_PIX_B6n = not(top.SPR_PIX_B6());
+      /*p33.WAMY*/ wire SPR_PIX_B7n = not(top.SPR_PIX_B7());
 
-      /*p33.PABE*/ wire SPR_PIX_B_SET0 = nand(SPRITE_MASK0n, sprite_fetcher_sig.SPR_PIX_B0);
-      /*p33.MYTO*/ wire SPR_PIX_B_SET1 = nand(SPRITE_MASK1n, sprite_fetcher_sig.SPR_PIX_B1);
-      /*p33.LELA*/ wire SPR_PIX_B_SET2 = nand(SPRITE_MASK2n, sprite_fetcher_sig.SPR_PIX_B2);
-      /*p33.MAME*/ wire SPR_PIX_B_SET3 = nand(SPRITE_MASK3n, sprite_fetcher_sig.SPR_PIX_B3);
-      /*p33.VEXU*/ wire SPR_PIX_B_SET4 = nand(SPRITE_MASK4n, sprite_fetcher_sig.SPR_PIX_B4);
-      /*p33.VABY*/ wire SPR_PIX_B_SET5 = nand(SPRITE_MASK5n, sprite_fetcher_sig.SPR_PIX_B5);
-      /*p33.TUXA*/ wire SPR_PIX_B_SET6 = nand(SPRITE_MASK6n, sprite_fetcher_sig.SPR_PIX_B6);
-      /*p33.VUNE*/ wire SPR_PIX_B_SET7 = nand(SPRITE_MASK7n, sprite_fetcher_sig.SPR_PIX_B7);
+      /*p33.PABE*/ wire SPR_PIX_B_SET0 = nand(SPRITE_MASK0n, top.SPR_PIX_B0());
+      /*p33.MYTO*/ wire SPR_PIX_B_SET1 = nand(SPRITE_MASK1n, top.SPR_PIX_B1());
+      /*p33.LELA*/ wire SPR_PIX_B_SET2 = nand(SPRITE_MASK2n, top.SPR_PIX_B2());
+      /*p33.MAME*/ wire SPR_PIX_B_SET3 = nand(SPRITE_MASK3n, top.SPR_PIX_B3());
+      /*p33.VEXU*/ wire SPR_PIX_B_SET4 = nand(SPRITE_MASK4n, top.SPR_PIX_B4());
+      /*p33.VABY*/ wire SPR_PIX_B_SET5 = nand(SPRITE_MASK5n, top.SPR_PIX_B5());
+      /*p33.TUXA*/ wire SPR_PIX_B_SET6 = nand(SPRITE_MASK6n, top.SPR_PIX_B6());
+      /*p33.VUNE*/ wire SPR_PIX_B_SET7 = nand(SPRITE_MASK7n, top.SPR_PIX_B7());
 
       /*p33.PYZU*/ wire SPR_PIX_B_RST0 = nand(SPRITE_MASK0n, SPR_PIX_B0n);
       /*p33.MADA*/ wire SPR_PIX_B_RST1 = nand(SPRITE_MASK1n, SPR_PIX_B1n);

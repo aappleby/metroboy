@@ -117,6 +117,12 @@ struct Signal {
     a = val ? SET_1 : SET_0;
   }
 
+  SignalState reset() {
+    auto old_a = a;
+    a = ERROR;
+    return old_a;
+  }
+
 private:
   SignalState a;
 };

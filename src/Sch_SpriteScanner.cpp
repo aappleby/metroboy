@@ -5,28 +5,15 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-SpriteScannerSignals SpriteScanner::sig(const SchematicTop& top) const {
-  SpriteScannerSignals sprite_scanner_sig;
+void SpriteScanner::tick(SchematicTop& top) {
 
-  {
-    
-    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
-    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
-    /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
-    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or(BALU_SCAN_RST, SCAN_DONE_TRIG_B.q(), !SCAN_DONE_TRIG_A.q());
-    /*p29.AVAP*/ sprite_scanner_sig.AVAP_SCAN_DONE_TRIGp = not(BEBU_SCAN_DONE_TRIGn);
-  }
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
+  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
 
-  {
-    /*p29.CEHA*/ sprite_scanner_sig.CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
-    /*p28.BESU*/ sprite_scanner_sig.BESU_SCANNINGp = BESU_SCANNINGp;
-    /*p29.CENO*/ sprite_scanner_sig.CENO_SCANNINGp = CENO_SCANNINGp;
-  }
-
+  //----------------------------------------
   {
     auto bus_sig = top.bus_mux.sig(top);
-    auto& ppu_config = top.ppu_config;
     wire P10_B = 0;
 
     /*p29.EBOS*/ wire Y0n = not(top.MUWY_Y0());
@@ -55,42 +42,22 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& top) const {
     /*p29.WUHU*/ wire YDIFF_S7 = add_s(Y7n, bus_sig.YZAB_SPRITE_Y7, YDIFF_C6);
     /*p29.WUHU*/ wire YDIFF_C7 = add_c(Y7n, bus_sig.YZAB_SPRITE_Y7, YDIFF_C6);
 
-    /*p29.DEGE*/ sprite_scanner_sig.DEGE_SPRITE_DELTA0 = not(YDIFF_S0);
-    /*p29.DABY*/ sprite_scanner_sig.DABY_SPRITE_DELTA1 = not(YDIFF_S1);
-    /*p29.DABU*/ sprite_scanner_sig.DABU_SPRITE_DELTA2 = not(YDIFF_S2);
-    /*p29.GYSA*/ sprite_scanner_sig.GYSA_SPRITE_DELTA3 = not(YDIFF_S3);
+    /*p29.DEGE*/ DEGE_SPRITE_DELTA0 = not(YDIFF_S0);
+    /*p29.DABY*/ DABY_SPRITE_DELTA1 = not(YDIFF_S1);
+    /*p29.DABU*/ DABU_SPRITE_DELTA2 = not(YDIFF_S2);
+    /*p29.GYSA*/ GYSA_SPRITE_DELTA3 = not(YDIFF_S3);
     /*p29.GACE*/ wire GACE_SPRITE_DELTA4 = not(YDIFF_S4);
     /*p29.GUVU*/ wire GUVU_SPRITE_DELTA5 = not(YDIFF_S5);
     /*p29.GYDA*/ wire GYDA_SPRITE_DELTA6 = not(YDIFF_S6);
     /*p29.GEWY*/ wire GEWY_SPRITE_DELTA7 = not(YDIFF_S7);
 
-    /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, ppu_config.XYMO_LCDC_SPSIZE);
+    /*p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or (YDIFF_S3, top.XYMO_LCDC_SPSIZE);
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
     /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
     /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_xxCDxxGH());
-    /*p29.CARE*/ sprite_scanner_sig.CARE_STORE_ENp_ABxxEFxx = and (XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
+    /*p29.CARE*/ CARE_STORE_ENp_ABxxEFxx = and (XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
-
-  {
-    /*p28.GUSE*/ sprite_scanner_sig.GUSE_SCAN0n = not(SCAN0.q());
-    /*p28.GEMA*/ sprite_scanner_sig.GEMA_SCAN1n = not(SCAN1.q());
-    /*p28.FUTO*/ sprite_scanner_sig.FUTO_SCAN2n = not(SCAN2.q());
-    /*p28.FAKU*/ sprite_scanner_sig.FAKU_SCAN3n = not(SCAN3.q());
-    /*p28.GAMA*/ sprite_scanner_sig.GAMA_SCAN4n = not(SCAN4.q());
-    /*p28.GOBY*/ sprite_scanner_sig.GOBY_SCAN5n = not(SCAN5.q());
-  }
-
-  return sprite_scanner_sig;
-}
-
-//------------------------------------------------------------------------------
-
-void SpriteScanner::tick(SchematicTop& top) {
-
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
-  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
 
   //----------------------------------------
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
@@ -143,6 +110,13 @@ SignalHash SpriteScanner::commit() {
 
   /*p28.BESU*/ hash << BESU_SCANNINGp.commit_latch();
   /*p29.CENO*/ hash << CENO_SCANNINGp.commit_reg();
+
+  /*p29.DEGE*/ hash << DEGE_SPRITE_DELTA0.reset();
+  /*p29.DABY*/ hash << DABY_SPRITE_DELTA1.reset();
+  /*p29.DABU*/ hash << DABU_SPRITE_DELTA2.reset();
+  /*p29.GYSA*/ hash << GYSA_SPRITE_DELTA3.reset();
+  /*p29.CARE*/ hash << CARE_STORE_ENp_ABxxEFxx.reset();
+
   /*p28.YFEL*/ hash << SCAN0.commit_reg();
   /*p28.WEWY*/ hash << SCAN1.commit_reg();
   /*p28.GOSO*/ hash << SCAN2.commit_reg();

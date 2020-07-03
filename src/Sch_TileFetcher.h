@@ -81,6 +81,26 @@ private:
   /*p32.POJU*/ Reg BG_PIX_B5; 
   /*p32.POWY*/ Reg BG_PIX_B6; 
   /*p32.PYJU*/ Reg BG_PIX_B7;
+
+  // FF42 - SCY
+  /*p23.GAVE*/ Reg GAVE_SCY0;
+  /*p23.FYMO*/ Reg FYMO_SCY1;
+  /*p23.FEZU*/ Reg FEZU_SCY2;
+  /*p23.FUJO*/ Reg FUJO_SCY3;
+  /*p23.DEDE*/ Reg DEDE_SCY4;
+  /*p23.FOTY*/ Reg FOTY_SCY5;
+  /*p23.FOHA*/ Reg FOHA_SCY6;
+  /*p23.FUNY*/ Reg FUNY_SCY7;
+
+  // FF43 - SCX
+  /*p23.DATY*/ Reg DATY_SCX0;
+  /*p23.DUZU*/ Reg DUZU_SCX1;
+  /*p23.CYXU*/ Reg CYXU_SCX2;
+  /*p23.GUBO*/ Reg GUBO_SCX3;
+  /*p23.BEMY*/ Reg BEMY_SCX4;
+  /*p23.CUZY*/ Reg CUZY_SCX5;
+  /*p23.CABU*/ Reg CABU_SCX6;
+  /*p23.BAKE*/ Reg BAKE_SCX7;
 };
 
 //-----------------------------------------------------------------------------

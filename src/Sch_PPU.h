@@ -15,24 +15,11 @@ struct PpuSignals {
   /*p27.TEKY*/ Signal TEKY_SPRITE_FETCH;         // to sprite fetcher
   /*p27.VEKU*/ Signal VEKU_SFETCH_RUNNING_RSTn;  // to sprite fetcher
 
-  /*p21.XYMU*/ Signal XYMU_RENDERINGp;           // to a bunch of stuff
-
-  /*p25.SERE*/ Signal SERE_VRAM_RD;              // this signal shouldn't be in the ppu. controls vbus data tristate
-
   /*p24.SEGU*/ Signal SEGU_CLKPIPEn;             // ppu.tick, window matcher. can prob move matcher into ppu now
   /*p24.SACU*/ Signal SACU_CLKPIPEp;             // pixel pipe clock, xBxDxFxH, includes fine match discard
 
   /*p27.ROZE*/ Signal ROZE_FINE_COUNT_STOPn;     // to ppu.tick, window
   /*p21.VOTY*/ Signal VOTY_INT_STATp;            // to interrupts
-
-  /*p21.XEHO*/ Signal XEHO_X0;                   // to a bunch of stuff
-  /*p21.SAVY*/ Signal SAVY_X1;
-  /*p21.XODU*/ Signal XODU_X2;
-  /*p21.XYDO*/ Signal XYDO_X3;
-  /*p21.TUHU*/ Signal TUHU_X4;
-  /*p21.TUKY*/ Signal TUKY_X5;
-  /*p21.TAKO*/ Signal TAKO_X6;
-  /*p21.SYBE*/ Signal SYBE_X7;
 };
 
 //-----------------------------------------------------------------------------
@@ -44,6 +31,7 @@ struct PpuRegisters {
   SignalHash commit();
 
 private:
+  friend struct SchematicTop;
 
   /*p21.XEHO*/ Reg17 XEHO_X0;
   /*p21.SAVY*/ Reg17 SAVY_X1;

@@ -72,8 +72,6 @@ void WindowRegisters::tick(SchematicTop& top) {
   auto win_sig = top.win_reg.sig(top);
   auto tile_fetcher_sig = top.tile_fetcher.sig(top);
 
-  auto& ppu_config = top.ppu_config;
-
   /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(PYNU_WIN_MODE_TRIGA.q());
   /*p27.PORE*/ wire PORE_WIN_MODEp = not(NOCU_WIN_MODEn);
 
@@ -83,7 +81,7 @@ void WindowRegisters::tick(SchematicTop& top) {
 
   /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
   /*p27.XAHY*/ wire XAHY_VID_LINE_TRIG_d4n = not(ATEJ_VID_LINE_TRIG_d4p);
-  /*p27.XOFO*/ wire XOFO_WIN_RSTp = nand(ppu_config.WYMO_LCDC_WINEN, XAHY_VID_LINE_TRIG_d4n, top.XAPO_VID_RSTn());
+  /*p27.XOFO*/ wire XOFO_WIN_RSTp = nand(top.WYMO_LCDC_WINEN, XAHY_VID_LINE_TRIG_d4n, top.XAPO_VID_RSTn());
   
   //----------------------------------------
 
@@ -106,7 +104,7 @@ void WindowRegisters::tick(SchematicTop& top) {
     /*p27.PEZO*/ wire _WY_MATCH6 = xnor(top.MATO_Y6(), WY6);
     /*p27.NUPA*/ wire _WY_MATCH7 = xnor(top.LAFO_Y7(), WY7);
 
-    /*p27.PALO*/ wire _WY_MATCH_HIn = nand(ppu_config.WYMO_LCDC_WINEN, _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
+    /*p27.PALO*/ wire _WY_MATCH_HIn = nand(top.WYMO_LCDC_WINEN, _WY_MATCH4, _WY_MATCH5, _WY_MATCH6, _WY_MATCH7);
     /*p27.NELE*/ wire _WY_MATCH_HI  = not(_WY_MATCH_HIn);
     /*p27.PAFU*/ wire _WY_MATCHn    = nand(_WY_MATCH_HI, _WY_MATCH0, _WY_MATCH1, _WY_MATCH2, _WY_MATCH3);
     /*p27.ROGE*/ wire _WY_MATCHp    = not(_WY_MATCHn);
@@ -114,14 +112,14 @@ void WindowRegisters::tick(SchematicTop& top) {
     /*p21.TALU*/ wire TALU_xBCDExxx = not(top.VENA_xBCDExxx());
     /*p27.SARY*/ SARY_WIN_MATCH_Y_SYNC.set(TALU_xBCDExxx, top.XAPO_VID_RSTn(), _WY_MATCHp);
 
-    /*p27.MYLO*/ wire _WX_MATCH0 = xnor(ppu_sig.XEHO_X0, WX0);
-    /*p27.PUWU*/ wire _WX_MATCH1 = xnor(ppu_sig.SAVY_X1, WX1);
-    /*p27.PUHO*/ wire _WX_MATCH2 = xnor(ppu_sig.XODU_X2, WX2);
-    /*p27.NYTU*/ wire _WX_MATCH3 = xnor(ppu_sig.XYDO_X3, WX3);
-    /*p27.NEZO*/ wire _WX_MATCH4 = xnor(ppu_sig.TUHU_X4, WX4);
-    /*p27.NORY*/ wire _WX_MATCH5 = xnor(ppu_sig.TUKY_X5, WX5);
-    /*p27.NONO*/ wire _WX_MATCH6 = xnor(ppu_sig.TAKO_X6, WX6);
-    /*p27.PASE*/ wire _WX_MATCH7 = xnor(ppu_sig.SYBE_X7, WX7);
+    /*p27.MYLO*/ wire _WX_MATCH0 = xnor(top.XEHO_X0(), WX0);
+    /*p27.PUWU*/ wire _WX_MATCH1 = xnor(top.SAVY_X1(), WX1);
+    /*p27.PUHO*/ wire _WX_MATCH2 = xnor(top.XODU_X2(), WX2);
+    /*p27.NYTU*/ wire _WX_MATCH3 = xnor(top.XYDO_X3(), WX3);
+    /*p27.NEZO*/ wire _WX_MATCH4 = xnor(top.TUHU_X4(), WX4);
+    /*p27.NORY*/ wire _WX_MATCH5 = xnor(top.TUKY_X5(), WX5);
+    /*p27.NONO*/ wire _WX_MATCH6 = xnor(top.TAKO_X6(), WX6);
+    /*p27.PASE*/ wire _WX_MATCH7 = xnor(top.SYBE_X7(), WX7);
 
     /*p27.PUKY*/ wire _WX_MATCH_HIn = nand(REJO_WY_MATCH_LATCH, _WX_MATCH4, _WX_MATCH5, _WX_MATCH6, _WX_MATCH7);
     /*p27.NUFA*/ wire _WX_MATCH_HI  = not (_WX_MATCH_HIn);
@@ -160,8 +158,8 @@ void WindowRegisters::tick(SchematicTop& top) {
       /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
       /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
       /*p27.PANY*/ wire WIN_MATCH_ONSCREEN = nor(WX_MATCHp, ppu_sig.ROZE_FINE_COUNT_STOPn);
-      /*p27.RYFA*/ RYFA_WIN_MATCH_TRIGA.set(ppu_sig.SEGU_CLKPIPEn, ppu_sig.XYMU_RENDERINGp, WIN_MATCH_ONSCREEN);
-      /*p27.RENE*/ RENE_WIN_MATCH_TRIGB.set(ALET_xBxDxFxH, ppu_sig.XYMU_RENDERINGp, RYFA_WIN_MATCH_TRIGA);
+      /*p27.RYFA*/ RYFA_WIN_MATCH_TRIGA.set(ppu_sig.SEGU_CLKPIPEn, top.XYMU_RENDERINGp(), WIN_MATCH_ONSCREEN);
+      /*p27.RENE*/ RENE_WIN_MATCH_TRIGB.set(ALET_xBxDxFxH, top.XYMU_RENDERINGp(), RYFA_WIN_MATCH_TRIGA);
       /*p27.SEKO*/ wire SEKO_WIN_MATCH_TRIGp = nor(!RYFA_WIN_MATCH_TRIGA, RENE_WIN_MATCH_TRIGB);
 
 #if 0

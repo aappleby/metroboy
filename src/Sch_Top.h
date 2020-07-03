@@ -21,7 +21,6 @@
 #include "Sch_SpriteFetcher.h"
 #include "Sch_TileFetcher.h"
 #include "Sch_SpriteScanner.h"
-#include "Sch_PpuConfig.h"
 
 namespace Schematics {
 
@@ -157,6 +156,154 @@ struct SchematicTop {
   }
 
   //-----------------------------------------------------------------------------
+  // PPU signals
+
+  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return ppu_reg.XYMU_RENDERINGp; }
+
+  /*p21.XEHO*/ wire XEHO_X0() const { return ppu_reg.XEHO_X0; }
+  /*p21.SAVY*/ wire SAVY_X1() const { return ppu_reg.SAVY_X1; }
+  /*p21.XODU*/ wire XODU_X2() const { return ppu_reg.XODU_X2; }
+  /*p21.XYDO*/ wire XYDO_X3() const { return ppu_reg.XYDO_X3; }
+  /*p21.TUHU*/ wire TUHU_X4() const { return ppu_reg.TUHU_X4; }
+  /*p21.TUKY*/ wire TUKY_X5() const { return ppu_reg.TUKY_X5; }
+  /*p21.TAKO*/ wire TAKO_X6() const { return ppu_reg.TAKO_X6; }
+  /*p21.SYBE*/ wire SYBE_X7() const { return ppu_reg.SYBE_X7; }
+
+  wire SERE_VRAM_RD() const {
+    // the logic here is kinda weird, still seems to select vram.
+    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09);
+    /*p25.SYRO*/ wire SYRO_FE00_FFFFp = not(TUNA_0000_FDFFp);
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(CPU_PIN_A13, CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p25.TEFA*/ wire TEFA_8000_9FFFp = nor(SYRO_FE00_FFFFp, TEXO_8000_9FFFn);
+    /*p25.SOSE*/ wire SOSE_8000_9FFFp = and (CPU_PIN_A15, TEFA_8000_9FFFp);
+    /*p25.TUCA*/ wire TUCA_CPU_VRAM_RD = and (SOSE_8000_9FFFp, ABUZ());
+    /*p25.TEFY*/ wire TEFY_MCSn_Cn = not(EXT_PIN_MCSn_C);
+    /*p25.TOLE*/ wire TOLE_VRAM_RD = mux2_p(TEFY_MCSn_Cn, TUCA_CPU_VRAM_RD, TUTO_DBG_VRAMp());
+    /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp());
+    /*p25.SERE*/ wire SERE_VRAM_RD = and (TOLE_VRAM_RD, ROPY_RENDERINGn);
+    return SERE_VRAM_RD;
+  }
+
+  //-----------------------------------------------------------------------------
+  // Tile fetcher signals
+
+  /*p23.DATY*/ wire DATY_SCX0() const { return tile_fetcher.DATY_SCX0; }
+  /*p23.DUZU*/ wire DUZU_SCX1() const { return tile_fetcher.DUZU_SCX1; }
+  /*p23.CYXU*/ wire CYXU_SCX2() const { return tile_fetcher.CYXU_SCX2; }
+
+  //-----------------------------------------------------------------------------
+  // Sprite scanner signals
+
+  /*p29.CEHA*/ wire CEHA_SCANNINGp() const { return not(sprite_scanner.CENO_SCANNINGp.qn()); }
+  /*p28.BESU*/ wire BESU_SCANNINGp() const { return sprite_scanner.BESU_SCANNINGp; }
+  /*p29.CENO*/ wire CENO_SCANNINGp() const { return sprite_scanner.CENO_SCANNINGp; }
+
+  wire AVAP_SCAN_DONE_TRIGp() const {
+    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(XAPO_VID_RSTn());
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(BYHA_VID_LINE_TRIG_d4n());
+    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
+    /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
+    /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or(BALU_SCAN_RST, sprite_scanner.SCAN_DONE_TRIG_B.q(), !sprite_scanner.SCAN_DONE_TRIG_A.q());
+    /*p29.AVAP*/ wire AVAP_SCAN_DONE_TRIGp = not(BEBU_SCAN_DONE_TRIGn);
+    return AVAP_SCAN_DONE_TRIGp;
+  }
+
+  wire DEGE_SPRITE_DELTA0() const { return sprite_scanner.DEGE_SPRITE_DELTA0; }
+  wire DABY_SPRITE_DELTA1() const { return sprite_scanner.DABY_SPRITE_DELTA1; }
+  wire DABU_SPRITE_DELTA2() const { return sprite_scanner.DABU_SPRITE_DELTA2; }
+  wire GYSA_SPRITE_DELTA3() const { return sprite_scanner.GYSA_SPRITE_DELTA3; }
+  wire CARE_STORE_ENp_ABxxEFxx() const { return sprite_scanner.CARE_STORE_ENp_ABxxEFxx; }
+
+  /*p28.GUSE*/ wire GUSE_SCAN0n() const { return not(sprite_scanner.SCAN0.q()); }
+  /*p28.GEMA*/ wire GEMA_SCAN1n() const { return not(sprite_scanner.SCAN1.q()); }
+  /*p28.FUTO*/ wire FUTO_SCAN2n() const { return not(sprite_scanner.SCAN2.q()); }
+  /*p28.FAKU*/ wire FAKU_SCAN3n() const { return not(sprite_scanner.SCAN3.q()); }
+  /*p28.GAMA*/ wire GAMA_SCAN4n() const { return not(sprite_scanner.SCAN4.q()); }
+  /*p28.GOBY*/ wire GOBY_SCAN5n() const { return not(sprite_scanner.SCAN5.q()); }
+
+  //-----------------------------------------------------------------------------
+  // Sprite fetcher signals
+
+  wire WEFY_SPR_READp() const {
+    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(XYMU_RENDERINGp());
+    /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, sprite_fetcher.TULY_SFETCH_S1, sprite_fetcher.TESE_SFETCH_S2);
+    /*p28.WEFY*/ wire WEFY_SPR_READp = and(TUVO_PPU_OAM_RDp, sprite_fetcher.TYFO_SFETCH_S0_D1);
+    return WEFY_SPR_READp;
+  }
+
+  wire VAPE_FETCH_OAM_CLK() const {
+#if 0
+    /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(TYFO_SFETCH_S0_D1, !TOXE_SFETCH_S0_D0);
+    /*p25.VAPE*/ wire VAPE_FETCH_OAM_CLK = and (RENDERING, !TULY_SFETCH_S1, !TESE_SFETCH_S2, TACU_SPR_SEQ_5_TRIG);
+#endif
+    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(XYMU_RENDERINGp());
+    /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, sprite_fetcher.TULY_SFETCH_S1, sprite_fetcher.TESE_SFETCH_S2);
+    /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(sprite_fetcher.TOXE_SFETCH_S0_D0);
+    /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1, TYTU_SFETCH_S0_D0n);
+    /*p25.VAPE*/ wire VAPE_FETCH_OAM_CLK = and (TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
+    return VAPE_FETCH_OAM_CLK;
+  }
+
+  wire VUSA_PIPE_LOAD_SPRITEn() const {
+    // TYNO_01 << TOXE_17
+    // TYNO_02 << SEBA_17
+    // TYNO_03 << VONU_17
+    // TYNO_04 >> VUSA_02
+
+    // VUSA_01 << TYFO_16
+    // VUSA_02 << TYNO_04
+    // VUSA_03 nc
+    // VUSA_04 >>
+
+    /*p29.TYNO*/ wire TYNO = nand(sprite_fetcher.TOXE_SFETCH_S0_D0.q(), sprite_fetcher.SEBA_SFETCH_S1_D5.q(), sprite_fetcher.VONU_SFETCH_S1_D4.q());
+    /*p29.VUSA*/ wire VUSA_PIPE_LOAD_SPRITEn = or(sprite_fetcher.TYFO_SFETCH_S0_D1.qn(), TYNO);
+    return VUSA_PIPE_LOAD_SPRITEn;
+  }
+
+  wire SOWO_SFETCH_RUNNINGn() const {
+    /*p27.SOWO*/ return not(sprite_fetcher.TAKA_SFETCH_RUNNINGp);
+  }
+
+  wire TEXY_SPRITE_READp() const {
+    /*p29.TEPA*/ wire TEPA_RENDERINGn = not(XYMU_RENDERINGp());
+    /*p29.SAKY*/ wire SAKY = nor(sprite_fetcher.TULY_SFETCH_S1.q(), sprite_fetcher.VONU_SFETCH_S1_D4.q());
+    /*p29.TYSO*/ wire TYSO_SPRITE_READn = or(SAKY, TEPA_RENDERINGn);
+    /*p29.TEXY*/ wire TEXY_SPRITE_READp = not(TYSO_SPRITE_READn);
+    return TEXY_SPRITE_READp;
+  }
+
+  wire SOHO_SPR_VRAM_RDp() const {
+    /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(sprite_fetcher.TOXE_SFETCH_S0_D0.q());
+    /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0_D0n);
+    /*p29.ABON*/ wire ABON_SPR_VRAM_RDp1 = not(TEXY_SPRITE_READp());
+    /*p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and (TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRAM_RDp1);
+    return SOHO_SPR_VRAM_RDp;
+  }
+
+
+  /*p33.PEFO*/ wire SPR_PIX_A0() const { return sprite_fetcher.SPR_PIX_A0; }
+  /*p33.ROKA*/ wire SPR_PIX_A1() const { return sprite_fetcher.SPR_PIX_A1; }
+  /*p33.MYTU*/ wire SPR_PIX_A2() const { return sprite_fetcher.SPR_PIX_A2; }
+  /*p33.RAMU*/ wire SPR_PIX_A3() const { return sprite_fetcher.SPR_PIX_A3; }
+  /*p33.SELE*/ wire SPR_PIX_A4() const { return sprite_fetcher.SPR_PIX_A4; }
+  /*p33.SUTO*/ wire SPR_PIX_A5() const { return sprite_fetcher.SPR_PIX_A5; }
+  /*p33.RAMA*/ wire SPR_PIX_A6() const { return sprite_fetcher.SPR_PIX_A6; }
+  /*p33.RYDU*/ wire SPR_PIX_A7() const { return sprite_fetcher.SPR_PIX_A7; }
+
+  /*p33.REWO*/ wire SPR_PIX_B0() const { return sprite_fetcher.SPR_PIX_B0; }
+  /*p33.PEBA*/ wire SPR_PIX_B1() const { return sprite_fetcher.SPR_PIX_B1; }
+  /*p33.MOFO*/ wire SPR_PIX_B2() const { return sprite_fetcher.SPR_PIX_B2; }
+  /*p33.PUDU*/ wire SPR_PIX_B3() const { return sprite_fetcher.SPR_PIX_B3; }
+  /*p33.SAJA*/ wire SPR_PIX_B4() const { return sprite_fetcher.SPR_PIX_B4; }
+  /*p33.SUNY*/ wire SPR_PIX_B5() const { return sprite_fetcher.SPR_PIX_B5; }
+  /*p33.SEMO*/ wire SPR_PIX_B6() const { return sprite_fetcher.SPR_PIX_B6; }
+  /*p33.SEGA*/ wire SPR_PIX_B7() const { return sprite_fetcher.SPR_PIX_B7; }
+
+
+  //-----------------------------------------------------------------------------
+
 
   int phase_counter = -32;
 
@@ -167,6 +314,15 @@ struct SchematicTop {
   uint8_t hiram[128];
   */
 
+  // FF40 - LCDC
+  /*p23.VYXE*/ Reg VYXE_LCDC_BGEN;
+  /*p23.XYLO*/ Reg XYLO_LCDC_SPEN;
+  /*p23.XYMO*/ Reg XYMO_LCDC_SPSIZE;
+  /*p23.XAFO*/ Reg XAFO_LCDC_BGMAP;
+  /*p23.WEXU*/ Reg WEXU_LCDC_BGTILE;
+  /*p23.WYMO*/ Reg WYMO_LCDC_WINEN;
+  /*p23.WOKY*/ Reg WOKY_LCDC_WINMAP;
+  /*p23.XONA*/ Reg XONA_LCDC_EN;
 
   //----------
 
@@ -224,6 +380,80 @@ struct SchematicTop {
   /* PIN_14 */ PinIn EXT_PIN_A13_C;   // -> P08.LURA
   /* PIN_15 */ PinIn EXT_PIN_A14_C;   // -> P08.PEVO
   /* PIN_16 */ PinIn EXT_PIN_A15_C;   // -> P08.RAZA
+
+  /* PIN_45 */ PinIn  EXT_PIN_MOEn_C;  // -> P25.TAVY
+  /* PIN_43 */ PinIn  EXT_PIN_MCSn_C;  // -> P25.TEFY
+
+  /* PIN_49 */ PinIn  EXT_PIN_MWRn_C;  // -> P25.SUDO
+
+  /* PIN_33 */ PinIn  EXT_PIN_MD0_C;   // -> P25.RODY
+  /* PIN_31 */ PinIn  EXT_PIN_MD1_C;   // -> P25.REBA
+  /* PIN_30 */ PinIn  EXT_PIN_MD2_C;   // -> P25.RYDO
+  /* PIN_29 */ PinIn  EXT_PIN_MD3_C;   // -> P25.REMO
+  /* PIN_28 */ PinIn  EXT_PIN_MD4_C;   // -> P25.ROCE
+  /* PIN_27 */ PinIn  EXT_PIN_MD5_C;   // -> P25.ROPU
+  /* PIN_26 */ PinIn  EXT_PIN_MD6_C;   // -> P25.RETA
+  /* PIN_25 */ PinIn  EXT_PIN_MD7_C;   // -> P25.RAKU
+
+  //----------
+  // VRAM control pins
+
+  /* PIN_43 */ PinOut EXT_PIN_MCSn_A;   // <- P25.SOKY
+  /* PIN_43 */ PinOut EXT_PIN_MCSn_D;   // <- P25.SETY
+
+  /* PIN_45 */ PinOut EXT_PIN_MOEn_A;   // <- P25.REFO
+  /* PIN_45 */ PinOut EXT_PIN_MOEn_D;   // <- P25.SAHA
+
+  /* PIN_49 */ PinOut EXT_PIN_MWRn_A;   // <- P25.SYSY
+  /* PIN_49 */ PinOut EXT_PIN_MWRn_D;   // <- P25.RAGU
+
+  //----------
+  // VRAM address pins
+
+  /* PIN_34 */ PinOut EXT_PIN_MA00_AD;  // <- P04.ECAL
+  /* PIN_35 */ PinOut EXT_PIN_MA01_AD;  // <- P04.EGEZ
+  /* PIN_36 */ PinOut EXT_PIN_MA02_AD;  // <- P04.FUHE
+  /* PIN_37 */ PinOut EXT_PIN_MA03_AD;  // <- P04.FYZY
+  /* PIN_38 */ PinOut EXT_PIN_MA04_AD;  // <- P04.DAMU
+  /* PIN_39 */ PinOut EXT_PIN_MA05_AD;  // <- P04.DAVA
+  /* PIN_40 */ PinOut EXT_PIN_MA06_AD;  // <- P04.ETEG
+  /* PIN_41 */ PinOut EXT_PIN_MA07_AD;  // <- P04.EREW
+  /* PIN_48 */ PinOut EXT_PIN_MA08_AD;  // <- P04.EVAX
+  /* PIN_47 */ PinOut EXT_PIN_MA09_AD;  // <- P04.DUVE
+  /* PIN_44 */ PinOut EXT_PIN_MA10_AD;  // <- P04.ERAF
+  /* PIN_46 */ PinOut EXT_PIN_MA11_AD;  // <- P04.FUSY
+  /* PIN_42 */ PinOut EXT_PIN_MA12_AD;  // <- P04.EXYF
+
+  //----------
+  // VRAM data pins
+
+  /* PIN_33 */ PinOut EXT_PIN_MD0_A;   // <- P25.REGE
+  /* PIN_31 */ PinOut EXT_PIN_MD1_A;   // <- P25.RYKY
+  /* PIN_30 */ PinOut EXT_PIN_MD2_A;   // <- P25.RAZO
+  /* PIN_29 */ PinOut EXT_PIN_MD3_A;   // <- P25.RADA
+  /* PIN_28 */ PinOut EXT_PIN_MD4_A;   // <- P25.RYRO
+  /* PIN_27 */ PinOut EXT_PIN_MD5_A;   // <- P25.REVU
+  /* PIN_26 */ PinOut EXT_PIN_MD6_A;   // <- P25.REKU
+  /* PIN_25 */ PinOut EXT_PIN_MD7_A;   // <- P25.RYZE
+
+  /* PIN_33 */ PinOut EXT_PIN_MD0_B;   // <- P25.ROFA
+  /* PIN_31 */ PinOut EXT_PIN_MD1_B;   // <- P25.ROFA
+  /* PIN_30 */ PinOut EXT_PIN_MD2_B;   // <- P25.ROFA
+  /* PIN_29 */ PinOut EXT_PIN_MD3_B;   // <- P25.ROFA
+  /* PIN_28 */ PinOut EXT_PIN_MD4_B;   // <- P25.ROFA
+  /* PIN_27 */ PinOut EXT_PIN_MD5_B;   // <- P25.ROFA
+  /* PIN_26 */ PinOut EXT_PIN_MD6_B;   // <- P25.ROFA
+  /* PIN_25 */ PinOut EXT_PIN_MD7_B;   // <- P25.ROFA
+
+  /* PIN_33 */ PinOut EXT_PIN_MD0_D;   // <- P25.RURA
+  /* PIN_31 */ PinOut EXT_PIN_MD1_D;   // <- P25.RULY
+  /* PIN_30 */ PinOut EXT_PIN_MD2_D;   // <- P25.RARE
+  /* PIN_29 */ PinOut EXT_PIN_MD3_D;   // <- P25.RODU
+  /* PIN_28 */ PinOut EXT_PIN_MD4_D;   // <- P25.RUBE
+  /* PIN_27 */ PinOut EXT_PIN_MD5_D;   // <- P25.RUMU
+  /* PIN_26 */ PinOut EXT_PIN_MD6_D;   // <- P25.RYTY
+  /* PIN_25 */ PinOut EXT_PIN_MD7_D;   // <- P25.RADY
+
   /* PIN_74 */ PinIn PIN_CLK_IN_xBxDxFxH;
   /* PIN_76 */ PinIn EXT_PIN_T2;
   /* PIN_77 */ PinIn EXT_PIN_T1;
@@ -281,7 +511,6 @@ struct SchematicTop {
   TileFetcher tile_fetcher;
   SpriteFetcher sprite_fetcher;
   SpriteScanner sprite_scanner;
-  PpuConfig ppu_config;
 
   BusMux bus_mux;
 

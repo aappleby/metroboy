@@ -40,7 +40,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-SpriteStoreSignals SpriteStoreRegisters::sig(const SchematicTop& gb) const {
+SpriteStoreSignals SpriteStoreRegisters::sig(const SchematicTop& top) const {
   SpriteStoreSignals sig;
 
 
@@ -52,18 +52,16 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const SchematicTop& gb) const {
   }
 
   {
-    auto& ppu_config = gb.ppu_config;
-    auto ppu_sig = gb.ppu_reg.sig(gb);
-    auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
+    auto ppu_sig = top.ppu_reg.sig(top);
 
-    /*p21.ACAM*/ wire X0n = not(ppu_sig.XEHO_X0);
-    /*p21.AZUB*/ wire X1n = not(ppu_sig.SAVY_X1);
-    /*p21.AMEL*/ wire X2n = not(ppu_sig.XODU_X2);
-    /*p21.AHAL*/ wire X3n = not(ppu_sig.XYDO_X3);
-    /*p21.APUX*/ wire X4n = not(ppu_sig.TUHU_X4);
-    /*p21.ABEF*/ wire X5n = not(ppu_sig.TUKY_X5);
-    /*p21.ADAZ*/ wire X6n = not(ppu_sig.TAKO_X6);
-    /*p21.ASAH*/ wire X7n = not(ppu_sig.SYBE_X7);
+    /*p21.ACAM*/ wire X0n = not(top.XEHO_X0());
+    /*p21.AZUB*/ wire X1n = not(top.SAVY_X1());
+    /*p21.AMEL*/ wire X2n = not(top.XODU_X2());
+    /*p21.AHAL*/ wire X3n = not(top.XYDO_X3());
+    /*p21.APUX*/ wire X4n = not(top.TUHU_X4());
+    /*p21.ABEF*/ wire X5n = not(top.TUKY_X5());
+    /*p21.ADAZ*/ wire X6n = not(top.TAKO_X6());
+    /*p21.ASAH*/ wire X7n = not(top.SYBE_X7());
 
     /*p31.ZOGY*/ wire STORE0_MATCH0n = xor (STORE0_X0, X0n);
     /*p31.ZEBA*/ wire STORE0_MATCH1n = xor (STORE0_X1, X1n);
@@ -176,9 +174,9 @@ SpriteStoreSignals SpriteStoreRegisters::sig(const SchematicTop& gb) const {
     /*p31.YLEV*/ wire STORE9_MATCHA = nor(STORE9_MATCH0n, STORE9_MATCH1n, STORE9_MATCH2n, STORE9_MATCH3n);
     /*p31.YTUB*/ wire STORE9_MATCHB = nor(STORE9_MATCH4n, STORE9_MATCH5n, STORE9_MATCH6n, STORE9_MATCH7n);
 
-    /*p29.BYJO*/ wire BYJO_SCANNINGn = not(sprite_scanner_sig.CEHA_SCANNINGp);
-    /*p29.AZEM*/ wire AZEM_RENDERINGp = and (BYJO_SCANNINGn, ppu_sig.XYMU_RENDERINGp);
-    /*p29.AROR*/ wire AROR_MATCH_ENp = and (AZEM_RENDERINGp, ppu_config.XYLO_LCDC_SPEN);
+    /*p29.BYJO*/ wire BYJO_SCANNINGn = not(top.CEHA_SCANNINGp());
+    /*p29.AZEM*/ wire AZEM_RENDERINGp = and (BYJO_SCANNINGn, top.XYMU_RENDERINGp());
+    /*p29.AROR*/ wire AROR_MATCH_ENp = and (AZEM_RENDERINGp, top.XYLO_LCDC_SPEN);
 
     /*p29.YDUG*/ sig.STORE0_MATCHn = nand(AROR_MATCH_ENp, STORE0_MATCHB, STORE0_MATCHA);
     /*p29.DYDU*/ sig.STORE1_MATCHn = nand(AROR_MATCH_ENp, STORE1_MATCHA, STORE1_MATCHB);
@@ -217,14 +215,13 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
 
   {
     auto sst_sig = sig(top);
-    auto sprite_scanner_sig = top.sprite_scanner.sig(top);
     
 
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
-    /*p30.WENU*/ WENU_TS_LINE_0.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DEGE_SPRITE_DELTA0);
-    /*p30.CUCU*/ CUCU_TS_LINE_1.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DABY_SPRITE_DELTA1);
-    /*p30.CUCA*/ CUCA_TS_LINE_2.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DABU_SPRITE_DELTA2);
-    /*p30.CEGA*/ CEGA_TS_LINE_3.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.GYSA_SPRITE_DELTA3);
+    /*p30.WENU*/ WENU_TS_LINE_0.set_tribuf(sst_sig.FEPO_STORE_MATCHp, top.DEGE_SPRITE_DELTA0());
+    /*p30.CUCU*/ CUCU_TS_LINE_1.set_tribuf(sst_sig.FEPO_STORE_MATCHp, top.DABY_SPRITE_DELTA1());
+    /*p30.CUCA*/ CUCA_TS_LINE_2.set_tribuf(sst_sig.FEPO_STORE_MATCHp, top.DABU_SPRITE_DELTA2());
+    /*p30.CEGA*/ CEGA_TS_LINE_3.set_tribuf(sst_sig.FEPO_STORE_MATCHp, top.GYSA_SPRITE_DELTA3());
 
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
@@ -257,7 +254,6 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
 
   {
     auto bus_sig = top.bus_mux.sig(top);
-    auto sprite_scanner_sig = top.sprite_scanner.sig(top);
     auto ppu_sig = top.ppu_reg.sig(top);
     
 
@@ -268,7 +264,7 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
     // BUZA04 >> WUZY01, WYSE01, ZYSU01, WYDA01, WUCO01, WEZA01
 
     // polarity seems wrong or something
-    /*p29.BUZA*/ wire BUZA_STORE_SPRITE_IDX = and (sprite_scanner_sig.CENO_SCANNINGp, ppu_sig.XYMU_RENDERINGp);
+    /*p29.BUZA*/ wire BUZA_STORE_SPRITE_IDX = and (top.CENO_SCANNINGp(), top.XYMU_RENDERINGp());
 
 
     // XADU01 nc
@@ -314,7 +310,6 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
 
   {
     auto sst_sig = sig(top);
-    auto sprite_fetcher_sig = top.sprite_fetcher.sig(top);
     wire P10_B = 0;
 
     /*p29.WEFU*/ wire STORE0_MATCH = not(sst_sig.STORE0_MATCHn);
@@ -351,7 +346,7 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
     /*p29.GUZE*/ wire GUZE_SPRITE9_GETp = nor(sst_sig.STORE9_MATCHn, STORE8_MATCH_OUT);
 
     // Delayed reset signal for the selected store
-    /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(sprite_fetcher_sig.VUSA_PIPE_LOAD_SPRITEn);
+    /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(top.VUSA_PIPE_LOAD_SPRITEn());
     /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
     /*p01.AMYG*/ wire AMYG_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p28.ABAK*/ wire ABAK_VID_LINE_TRIG_d4p = or (ATEJ_VID_LINE_TRIG_d4p, AMYG_VID_RSTp);
@@ -545,8 +540,7 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
     /*p29.DOGU*/ wire DOGU_STORE9_SELn = nand(FYCU_SPRITE_COUNT0p, CYPY_SPRITE_COUNT1n, CAPE_SPRITE_COUNT2n, ELYG_SPRITE_COUNT3p);
 
     // Sprite stores latch their input when their SELn signal goes _high_
-    auto sprite_scanner_sig = top.sprite_scanner.sig(top);
-    /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not(sprite_scanner_sig.CARE_STORE_ENp_ABxxEFxx);
+    /*p29.DYTY*/ wire DYTY_STORE_ENn_xxCDxxGH = not(top.CARE_STORE_ENp_ABxxEFxx());
     /*p29.CEMY*/ wire CEMY_STORE0_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, DEZO_STORE0_SELn);
     /*p29.BYBY*/ wire BYBY_STORE1_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, CUVA_STORE1_SELn);
     /*p29.WYXO*/ wire WYXO_STORE2_CLKp = or(DYTY_STORE_ENn_xxCDxxGH, GEBU_STORE2_SELn);

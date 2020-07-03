@@ -7,47 +7,12 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct SpriteFetcherSignals {
-  /*p33.PEFO*/ Signal SPR_PIX_A0;
-  /*p33.ROKA*/ Signal SPR_PIX_A1;
-  /*p33.MYTU*/ Signal SPR_PIX_A2;
-  /*p33.RAMU*/ Signal SPR_PIX_A3;
-  /*p33.SELE*/ Signal SPR_PIX_A4;
-  /*p33.SUTO*/ Signal SPR_PIX_A5;
-  /*p33.RAMA*/ Signal SPR_PIX_A6;
-  /*p33.RYDU*/ Signal SPR_PIX_A7;
-
-  /*p33.REWO*/ Signal SPR_PIX_B0;
-  /*p33.PEBA*/ Signal SPR_PIX_B1;
-  /*p33.MOFO*/ Signal SPR_PIX_B2;
-  /*p33.PUDU*/ Signal SPR_PIX_B3;
-  /*p33.SAJA*/ Signal SPR_PIX_B4;
-  /*p33.SUNY*/ Signal SPR_PIX_B5;
-  /*p33.SEMO*/ Signal SPR_PIX_B6;
-  /*p33.SEGA*/ Signal SPR_PIX_B7;
-
-  /*p28.WEFY*/ Signal WEFY_SPR_READp;         // to bus mux, controls oam data latch
-
-  /*p25.VAPE*/ Signal VAPE_FETCH_OAM_CLK;     // to bus mux, controls OAM_PIN_CLK
-
-  /*p29.VUSA*/ Signal VUSA_PIPE_LOAD_SPRITEn; // to pix pipe / ppu / sprite fetcher / sprite store
-
-  /*p27.SOWO*/ Signal SOWO_SFETCH_RUNNINGn;   // to ppu to stop overlapping sprite fetches
-
-  /*p25.SOHO*/ Signal SOHO_SPR_VRAM_RDp;      // to vram, controls PIN_MOEn
-  /*p29.TEXY*/ Signal TEXY_SPRITE_READp;      // to vram, controls PIN_MCSn
-
-
-};
-
-//-----------------------------------------------------------------------------
-
 struct SpriteFetcher {
-  SpriteFetcherSignals sig(const SchematicTop& gb) const;
   void tick(SchematicTop& gb);
   SignalHash commit();
 
 private:
+  friend struct SchematicTop;
 
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp;
   /*p27.SOBU*/ Reg17 SOBU_SPRITE_FETCH_TRIG_A;

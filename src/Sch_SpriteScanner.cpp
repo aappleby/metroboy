@@ -66,7 +66,7 @@ void SpriteScanner::tick(SchematicTop& top) {
     /*p29.BALU*/ wire BALU_SCAN_RSTp = not(ANOM_SCAN_RSTn);
     /*p29.BAGY*/ wire BAGY_SCAN_RSTn = not(BALU_SCAN_RSTp);
 
-    /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
+    /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (YFEL_SCAN0, WEWY_SCAN1, GOSO_SCAN2, FONY_SCAN5); // 32 + 4 + 2 + 1 = 39
     /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
     /*p29.BYBA*/ SCAN_DONE_TRIG_A.set(XUPY_xBCxxFGx, BAGY_SCAN_RSTn, FETO_SCAN_DONE_d0);
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
@@ -91,15 +91,15 @@ void SpriteScanner::tick(SchematicTop& top) {
   // Sprite scan takes 160 phases, 4 phases per sprite.
 
   {
-    /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
+    /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (YFEL_SCAN0, WEWY_SCAN1, GOSO_SCAN2, FONY_SCAN5); // 32 + 4 + 2 + 1 = 39
     /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
     /*p28.GAVA*/ wire SCAN_CLK = or(FETO_SCAN_DONE_d0, XUPY_xBCxxFGx);
-    /*p28.YFEL*/ SCAN0.set(SCAN_CLK, ANOM_SCAN_RSTn, !SCAN0);
-    /*p28.WEWY*/ SCAN1.set(!SCAN0,   ANOM_SCAN_RSTn, !SCAN1);
-    /*p28.GOSO*/ SCAN2.set(!SCAN1,   ANOM_SCAN_RSTn, !SCAN2);
-    /*p28.ELYN*/ SCAN3.set(!SCAN2,   ANOM_SCAN_RSTn, !SCAN3);
-    /*p28.FAHA*/ SCAN4.set(!SCAN3,   ANOM_SCAN_RSTn, !SCAN4);
-    /*p28.FONY*/ SCAN5.set(!SCAN4,   ANOM_SCAN_RSTn, !SCAN5);
+    /*p28.YFEL*/ YFEL_SCAN0.set(SCAN_CLK, ANOM_SCAN_RSTn, !YFEL_SCAN0);
+    /*p28.WEWY*/ WEWY_SCAN1.set(!YFEL_SCAN0,   ANOM_SCAN_RSTn, !WEWY_SCAN1);
+    /*p28.GOSO*/ GOSO_SCAN2.set(!WEWY_SCAN1,   ANOM_SCAN_RSTn, !GOSO_SCAN2);
+    /*p28.ELYN*/ ELYN_SCAN3.set(!GOSO_SCAN2,   ANOM_SCAN_RSTn, !ELYN_SCAN3);
+    /*p28.FAHA*/ FAHA_SCAN4.set(!ELYN_SCAN3,   ANOM_SCAN_RSTn, !FAHA_SCAN4);
+    /*p28.FONY*/ FONY_SCAN5.set(!FAHA_SCAN4,   ANOM_SCAN_RSTn, !FONY_SCAN5);
   }
 }
 
@@ -117,12 +117,12 @@ SignalHash SpriteScanner::commit() {
   /*p29.GYSA*/ hash << GYSA_SPRITE_DELTA3.reset();
   /*p29.CARE*/ hash << CARE_STORE_ENp_ABxxEFxx.reset();
 
-  /*p28.YFEL*/ hash << SCAN0.commit_reg();
-  /*p28.WEWY*/ hash << SCAN1.commit_reg();
-  /*p28.GOSO*/ hash << SCAN2.commit_reg();
-  /*p28.ELYN*/ hash << SCAN3.commit_reg();
-  /*p28.FAHA*/ hash << SCAN4.commit_reg();
-  /*p28.FONY*/ hash << SCAN5.commit_reg();
+  /*p28.YFEL*/ hash << YFEL_SCAN0.commit_reg();
+  /*p28.WEWY*/ hash << WEWY_SCAN1.commit_reg();
+  /*p28.GOSO*/ hash << GOSO_SCAN2.commit_reg();
+  /*p28.ELYN*/ hash << ELYN_SCAN3.commit_reg();
+  /*p28.FAHA*/ hash << FAHA_SCAN4.commit_reg();
+  /*p28.FONY*/ hash << FONY_SCAN5.commit_reg();
   /*p29.BYBA*/ hash << SCAN_DONE_TRIG_A.commit_reg();
   /*p29.DOBA*/ hash << SCAN_DONE_TRIG_B.commit_reg();
 

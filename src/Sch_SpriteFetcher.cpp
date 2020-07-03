@@ -12,10 +12,6 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void SpriteFetcher::tick(SchematicTop& top) {
-  auto ppu_sig = top.ppu_reg.sig(top);
-  
-  auto sst_sig = top.sst_reg.sig(top);
-  
   wire P10_B = 0;
 
   //----------------------------------------
@@ -34,13 +30,13 @@ void SpriteFetcher::tick(SchematicTop& top) {
     /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
     /*p01.LAPE*/ wire LAPE_AxCxExGx = not(ALET_xBxDxFxH);
     /*p27.TAVA*/ wire TAVA_xBxDxFxH = not(LAPE_AxCxExGx);
-    /*p27.SOBU*/ SOBU_SPRITE_FETCH_TRIG_A.set(TAVA_xBxDxFxH, VYPO_P10_Bn, ppu_sig.TEKY_SPRITE_FETCH);
+    /*p27.SOBU*/ SOBU_SPRITE_FETCH_TRIG_A.set(TAVA_xBxDxFxH, VYPO_P10_Bn, top.TEKY_SPRITE_FETCH());
     /*p27.SUDA*/ SUDA_SPRITE_FETCH_TRIG_B.set(LAPE_AxCxExGx, VYPO_P10_Bn, SOBU_SPRITE_FETCH_TRIG_A);
     /*p27.RYCE*/ wire RYCE_SPRITE_FETCH_TRIG = and (SOBU_SPRITE_FETCH_TRIG_A, !SUDA_SPRITE_FETCH_TRIG_B);
 
     /*p01.ROSY*/ wire ROSY_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCH_TRIG, ROSY_VID_RSTp, top.BYHA_VID_LINE_TRIG_d4n()); // def nor
-    /*p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_RUNNING_SETn, ppu_sig.VEKU_SFETCH_RUNNING_RSTn);
+    /*p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_RUNNING_SETn, top.VEKU_SFETCH_RUNNING_RSTn());
 
     /*p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand(TESE_SFETCH_S2, TOXE_SFETCH_S0_D0);
     /*p29.TOMA*/ wire TOMA_SFETCH_CLK = nand(LAPE_AxCxExGx, TAME_SFETCH_CLK_GATE);
@@ -124,11 +120,11 @@ void SpriteFetcher::tick(SchematicTop& top) {
     /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(bus_sig.YZOS_SPRITE_X6);
 
     /*p29.XUQU*/ wire _XUQU_SPRITE_AB = not(!VONU_SFETCH_S1_D4.q());
-    /*p29.CYVU*/ wire _CYVU_SPRITE_Y0 = xor (_WUKY_FLIP_Y, sst_sig.CUCU_TS_LINE_1);
-    /*p29.BORE*/ wire _BORE_SPRITE_Y1 = xor (_WUKY_FLIP_Y, sst_sig.CUCA_TS_LINE_2);
-    /*p29.BUVY*/ wire _BUVY_SPRITE_Y2 = xor (_WUKY_FLIP_Y, sst_sig.CEGA_TS_LINE_3);
+    /*p29.CYVU*/ wire _CYVU_SPRITE_Y0 = xor (_WUKY_FLIP_Y, top.CUCU_TS_LINE_1);
+    /*p29.BORE*/ wire _BORE_SPRITE_Y1 = xor (_WUKY_FLIP_Y, top.CUCA_TS_LINE_2);
+    /*p29.BUVY*/ wire _BUVY_SPRITE_Y2 = xor (_WUKY_FLIP_Y, top.CEGA_TS_LINE_3);
 
-    /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, sst_sig.WENU_TS_LINE_0);
+    /*p29.WAGO*/ wire _WAGO = xor (_WUKY_FLIP_Y, top.WENU_TS_LINE_0);
     /*p29.GEJY*/ wire _GEJY_SPRITE_Y3 = amux2(_FUFO_LCDC_SPSIZEn, !bus_sig.XUSO_SPRITE_Y0, top.XYMO_LCDC_SPSIZE, _WAGO);
 
     /*p29.ABON*/ wire ABON_SPRITE_READn = not(top.TEXY_SPRITE_READp());

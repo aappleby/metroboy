@@ -7,34 +7,8 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct WindowSignals {
-  /*p27.NOCU*/ Signal NOCU_WIN_MODEn;       // to tilefetcher map read, 
-  /*p27.NUNY*/ Signal NUNY_WIN_MODE_TRIGp;  // to NYXU_TILE_FETCHER_RSTn
-  /*p27.SYLO*/ Signal SYLO_WIN_HITn;        // to ppu.TYFA_CLKPIPEp_xBxDxFxH, ppu.TEKY_SPRITE_FETCH
-  /*p27.SEKO*/ Signal SEKO_WIN_MATCH_TRIGp; // to TEVO_FINE_RSTp, which I don't completely understand
-  /*p27.SUZU*/ Signal SUZU;                 // to TEVO_FINE_RSTp
-
-  /*p27.WYKA*/ Signal WIN_X3;
-  /*p27.WODY*/ Signal WIN_X4;
-  /*p27.WOBO*/ Signal WIN_X5;
-  /*p27.WYKO*/ Signal WIN_X6;
-  /*p27.XOLO*/ Signal WIN_X7;
-
-  /*p27.VYNO*/ Signal WIN_Y0;
-  /*p27.VUJO*/ Signal WIN_Y1;
-  /*p27.VYMU*/ Signal WIN_Y2;
-  /*p27.TUFU*/ Signal WIN_Y3;
-  /*p27.TAXA*/ Signal WIN_Y4;
-  /*p27.TOZO*/ Signal WIN_Y5;
-  /*p27.TATE*/ Signal WIN_Y6;
-  /*p27.TEKE*/ Signal WIN_Y7;
-};
-
-//-----------------------------------------------------------------------------
-
 struct WindowRegisters {
 
-  WindowSignals sig(const SchematicTop& gb) const;
   void tick(SchematicTop& gb);
   SignalHash commit();
 
@@ -42,6 +16,7 @@ struct WindowRegisters {
   int get_wx()   const { return pack(WX0, WX1, WX2, WX3, WX4, WX5, WX6, WX7); }
 
 private:
+  friend SchematicTop;
 
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_TRIGA;
   /*p27.RYDY*/ NorLatch RYDY_WIN_HIT_LATCHp;

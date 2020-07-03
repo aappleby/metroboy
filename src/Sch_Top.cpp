@@ -232,6 +232,42 @@ SignalHash SchematicTop::commit_everything() {
   hash << VRM_TRI_D7.commit_tribuf();
 
   //----------
+  // Tile fetcher regs
+
+  hash << BG_PIX_A0.commit_reg();
+  hash << BG_PIX_A1.commit_reg();
+  hash << BG_PIX_A2.commit_reg();
+  hash << BG_PIX_A3.commit_reg();
+  hash << BG_PIX_A4.commit_reg();
+  hash << BG_PIX_A5.commit_reg();
+  hash << BG_PIX_A6.commit_reg();
+  hash << BG_PIX_A7.commit_reg();
+
+  hash << BG_PIX_B0.commit_reg();
+  hash << BG_PIX_B1.commit_reg();
+  hash << BG_PIX_B2.commit_reg(); 
+  hash << BG_PIX_B3.commit_reg(); 
+  hash << BG_PIX_B4.commit_reg(); 
+  hash << BG_PIX_B5.commit_reg(); 
+  hash << BG_PIX_B6.commit_reg(); 
+  hash << BG_PIX_B7.commit_reg();
+
+  //----------
+  // Sprite store tribufs
+
+  hash << WUZY_TS_IDX_0.commit_tribuf();
+  hash << WYSE_TS_IDX_1.commit_tribuf();
+  hash << ZYSU_TS_IDX_2.commit_tribuf();
+  hash << WYDA_TS_IDX_3.commit_tribuf();
+  hash << WUCO_TS_IDX_4.commit_tribuf();
+  hash << WEZA_TS_IDX_5.commit_tribuf();
+
+  hash << WENU_TS_LINE_0.commit_tribuf();
+  hash << CUCU_TS_LINE_1.commit_tribuf();
+  hash << CUCA_TS_LINE_2.commit_tribuf();
+  hash << CEGA_TS_LINE_3.commit_tribuf();
+
+  //----------
 
   hash << clk_reg.commit();
   hash << dbg_reg.commit();

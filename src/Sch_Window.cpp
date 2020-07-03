@@ -33,45 +33,7 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-WindowSignals WindowRegisters::sig(const SchematicTop& gb) const {
-  WindowSignals sig;
-
-  auto ppu_sig = gb.ppu_reg.sig(gb);
-  
-
-  /*p27.NOCU*/ sig.NOCU_WIN_MODEn       = not(PYNU_WIN_MODE_TRIGA.q());
-  /*p27.NUNY*/ sig.NUNY_WIN_MODE_TRIGp  = and (PYNU_WIN_MODE_TRIGA, !NOPA_WIN_MODE_TRIGB);
-  /*p27.SEKO*/ sig.SEKO_WIN_MATCH_TRIGp = nor(!RYFA_WIN_MATCH_TRIGA, RENE_WIN_MATCH_TRIGB);
-
-  /*p27.SYLO*/ sig.SYLO_WIN_HITn = not(RYDY_WIN_HIT_LATCHp);
-  /*p27.TUXY*/ wire TUXY = nand(SOVY_WIN_HIT_SYNC, sig.SYLO_WIN_HITn);
-  /*p27.SUZU*/ sig.SUZU = not(TUXY);
-
-  sig.WIN_X3 = WIN_X3;
-  sig.WIN_X4 = WIN_X4;
-  sig.WIN_X5 = WIN_X5;
-  sig.WIN_X6 = WIN_X6;
-  sig.WIN_X7 = WIN_X7;
-
-  sig.WIN_Y0 = WIN_Y0;
-  sig.WIN_Y1 = WIN_Y1;
-  sig.WIN_Y2 = WIN_Y2;
-  sig.WIN_Y3 = WIN_Y3;
-  sig.WIN_Y4 = WIN_Y4;
-  sig.WIN_Y5 = WIN_Y5;
-  sig.WIN_Y6 = WIN_Y6;
-  sig.WIN_Y7 = WIN_Y7;
-
-  return sig;
-}
-
-//------------------------------------------------------------------------------
-
 void WindowRegisters::tick(SchematicTop& top) {
-  auto ppu_sig = top.ppu_reg.sig(top);
-  auto win_sig = top.win_reg.sig(top);
-  auto tile_fetcher_sig = top.tile_fetcher.sig(top);
-
   /*p27.NOCU*/ wire NOCU_WIN_MODEn = not(PYNU_WIN_MODE_TRIGA.q());
   /*p27.PORE*/ wire PORE_WIN_MODEp = not(NOCU_WIN_MODEn);
 
@@ -134,7 +96,7 @@ void WindowRegisters::tick(SchematicTop& top) {
       /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
       /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
       /*p27.MEHE*/ wire MEHE_AxCxExGx = not(ALET_xBxDxFxH);
-      /*p27.ROCO*/ wire ROCO_CLKPIPEp = not(ppu_sig.SEGU_CLKPIPEn);
+      /*p27.ROCO*/ wire ROCO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
       /*p27.PYCO*/ PYCO_WIN_MATCH_SYNC1.set(ROCO_CLKPIPEp,         top.XAPO_VID_RSTn(), WX_MATCHp);
       /*p27.NUNU*/ NUNU_WIN_MATCH_SYNC2.set(MEHE_AxCxExGx, top.XAPO_VID_RSTn(), PYCO_WIN_MATCH_SYNC1);
 
@@ -146,7 +108,7 @@ void WindowRegisters::tick(SchematicTop& top) {
       ///*p27.PUKU*/ PUKU = nor(RYDY, WIN_MODE_TRIG);
       ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
 
-      /*p27.RYDY*/ RYDY_WIN_HIT_LATCHp.nor_latch(NUNY_WIN_MODE_TRIGp, PYRY_VID_RSTp || tile_fetcher_sig.PORY_FETCH_DONE_Bp);
+      /*p27.RYDY*/ RYDY_WIN_HIT_LATCHp.nor_latch(NUNY_WIN_MODE_TRIGp, PYRY_VID_RSTp || top.PORY_FETCH_DONE_Bp());
       /*p27.SOVY*/ SOVY_WIN_HIT_SYNC.set(ALET_xBxDxFxH, top.XAPO_VID_RSTn(), RYDY_WIN_HIT_LATCHp);
     }
 
@@ -157,8 +119,8 @@ void WindowRegisters::tick(SchematicTop& top) {
       /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
       /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
       /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
-      /*p27.PANY*/ wire WIN_MATCH_ONSCREEN = nor(WX_MATCHp, ppu_sig.ROZE_FINE_COUNT_STOPn);
-      /*p27.RYFA*/ RYFA_WIN_MATCH_TRIGA.set(ppu_sig.SEGU_CLKPIPEn, top.XYMU_RENDERINGp(), WIN_MATCH_ONSCREEN);
+      /*p27.PANY*/ wire WIN_MATCH_ONSCREEN = nor(WX_MATCHp, top.ROZE_FINE_COUNT_STOPn());
+      /*p27.RYFA*/ RYFA_WIN_MATCH_TRIGA.set(top.SEGU_CLKPIPEn(), top.XYMU_RENDERINGp(), WIN_MATCH_ONSCREEN);
       /*p27.RENE*/ RENE_WIN_MATCH_TRIGB.set(ALET_xBxDxFxH, top.XYMU_RENDERINGp(), RYFA_WIN_MATCH_TRIGA);
       /*p27.SEKO*/ wire SEKO_WIN_MATCH_TRIGp = nor(!RYFA_WIN_MATCH_TRIGA, RENE_WIN_MATCH_TRIGB);
 
@@ -172,7 +134,7 @@ void WindowRegisters::tick(SchematicTop& top) {
       /*p27.SYLO*/ wire SYLO_WIN_HITn = not(RYDY_WIN_HIT_LATCHp.q());
       /*p27.TUXY*/ wire TUXY = nand(SOVY_WIN_HIT_SYNC, SYLO_WIN_HITn);
       /*p27.SUZU*/ wire SUZU = not(TUXY);
-      /*p27.TEVO*/ wire TEVO_FINE_RSTp = nor(SEKO_WIN_MATCH_TRIGp, SUZU, tile_fetcher_sig.TAVE_PORCH_DONE_TRIGp);
+      /*p27.TEVO*/ wire TEVO_FINE_RSTp = nor(SEKO_WIN_MATCH_TRIGp, SUZU, top.TAVE_PORCH_DONE_TRIGp());
 
       (void)TEVO_FINE_RSTp;
     }
@@ -209,7 +171,7 @@ void WindowRegisters::tick(SchematicTop& top) {
     // WYKA16 >> WYKA07, WODY02
     // WYKA17 >> XEJA
 
-    /*p27.VETU*/ wire VETU_WIN_MAP_CLK = and (ppu_sig.TEVO_FINE_RSTp, PORE_WIN_MODEp);
+    /*p27.VETU*/ wire VETU_WIN_MAP_CLK = and (top.TEVO_FINE_RSTp(), PORE_WIN_MODEp);
     /*p27.XACO*/ wire XACO_WIN_RSTn = not(XOFO_WIN_RSTp);
 
     /*p27.WYKA*/ WIN_X3.set(VETU_WIN_MAP_CLK, XACO_WIN_RSTn, !WIN_X3);

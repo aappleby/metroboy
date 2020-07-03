@@ -15,68 +15,14 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-TileFetcherSignals TileFetcher::sig(const SchematicTop& top) const {
-  TileFetcherSignals tile_fetcher_sig;
-
-  auto ppu_sig = top.ppu_reg.sig(top);
-
-  /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, ppu_sig.NYXU_TILE_FETCHER_RSTn);
-  /*p27.LYRY*/ tile_fetcher_sig.LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
-
-
-  /*p24.POKY*/ tile_fetcher_sig.POKY_PORCH_DONEp = POKY_PORCH_DONEp;
-  /*p24.PORY*/ tile_fetcher_sig.PORY_FETCH_DONE_Bp = PORY_FETCH_DONE_Bp;
-
-  tile_fetcher_sig.LONY_BG_READ_VRAM_LATCHp = LONY_BG_READ_VRAM_LATCHp;
-
-  /*p32.LEGU*/ tile_fetcher_sig.BG_PIX_A0 = BG_PIX_A0;
-  /*p32.NUDU*/ tile_fetcher_sig.BG_PIX_A1 = BG_PIX_A1;
-  /*p32.MUKU*/ tile_fetcher_sig.BG_PIX_A2 = BG_PIX_A2;
-  /*p32.LUZO*/ tile_fetcher_sig.BG_PIX_A3 = BG_PIX_A3;
-  /*p32.MEGU*/ tile_fetcher_sig.BG_PIX_A4 = BG_PIX_A4;
-  /*p32.MYJY*/ tile_fetcher_sig.BG_PIX_A5 = BG_PIX_A5;
-  /*p32.NASA*/ tile_fetcher_sig.BG_PIX_A6 = BG_PIX_A6;
-  /*p32.NEFO*/ tile_fetcher_sig.BG_PIX_A7 = BG_PIX_A7;
-
-  /*p32.RAWU*/ tile_fetcher_sig.BG_PIX_B0 = BG_PIX_B0;
-  /*p32.POZO*/ tile_fetcher_sig.BG_PIX_B1 = BG_PIX_B1;
-  /*p32.PYZO*/ tile_fetcher_sig.BG_PIX_B2 = BG_PIX_B2; 
-  /*p32.POXA*/ tile_fetcher_sig.BG_PIX_B3 = BG_PIX_B3; 
-  /*p32.PULO*/ tile_fetcher_sig.BG_PIX_B4 = BG_PIX_B4; 
-  /*p32.POJU*/ tile_fetcher_sig.BG_PIX_B5 = BG_PIX_B5; 
-  /*p32.POWY*/ tile_fetcher_sig.BG_PIX_B6 = BG_PIX_B6; 
-  /*p32.PYJU*/ tile_fetcher_sig.BG_PIX_B7 = BG_PIX_B7;
-
-  {
-    /*p27.ROMO*/ wire _ROMO_AFTER_PORCHn = not(POKY_PORCH_DONEp);
-    /*p27.SUVU*/ wire _SUVU_PORCH_ENDn = nand(top.XYMU_RENDERINGp(), _ROMO_AFTER_PORCHn, NYKA_FETCH_DONE_Ap, PORY_FETCH_DONE_Bp);
-    /*p27.TAVE*/ tile_fetcher_sig.TAVE_PORCH_DONE_TRIGp = not(_SUVU_PORCH_ENDn);
-  }
-
-  // something here doesn't make sense... these two signals should not be constant during a line
-  /*p32.LOZE*/ tile_fetcher_sig.LOZE_PIPE_A_LOAD = not(ppu_sig.NYXU_TILE_FETCHER_RSTn);
-  /*p32.LUXA*/ tile_fetcher_sig.LUXA_PIPE_B_LOAD = not(ppu_sig.NYXU_TILE_FETCHER_RSTn);
-
-  return tile_fetcher_sig;
-}
-
-//------------------------------------------------------------------------------
-
 void TileFetcher::tick(SchematicTop& top) {
-  auto ppu_sig = top.ppu_reg.sig(top);
-  
-  auto win_sig = top.win_reg.sig(top);
-  auto tile_fetcher_sig = sig(top);
-
-  //----------------------------------------
-
   {
     /*p27.LURY*/ wire LURY_BG_READ_VRAM_LATCH_RSTn = and(!LOVY_FETCH_DONEp, top.XYMU_RENDERINGp());
-    /*p27.LONY*/ LONY_BG_READ_VRAM_LATCHp.nand_latch(ppu_sig.NYXU_TILE_FETCHER_RSTn, LURY_BG_READ_VRAM_LATCH_RSTn);
+    /*p27.LONY*/ LONY_BG_READ_VRAM_LATCHp.nand_latch(top.NYXU_TILE_FETCHER_RSTn(), LURY_BG_READ_VRAM_LATCH_RSTn);
   }
 
   {
-    /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, ppu_sig.NYXU_TILE_FETCHER_RSTn);
+    /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, top.NYXU_TILE_FETCHER_RSTn());
     /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
@@ -85,23 +31,23 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
     /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
     /*p27.MYVO*/ wire MYVO_AxCxExGx = not(ALET_xBxDxFxH);
-    /*p27.LOVY*/ LOVY_FETCH_DONEp.set(MYVO_AxCxExGx, ppu_sig.NYXU_TILE_FETCHER_RSTn, LYRY_BFETCH_DONEp);
+    /*p27.LOVY*/ LOVY_FETCH_DONEp.set(MYVO_AxCxExGx, top.NYXU_TILE_FETCHER_RSTn(), LYRY_BFETCH_DONEp);
 
     /*p27.LEBO*/ wire LEBO_AxCxExGx = nand(ALET_xBxDxFxH, MOCE_BFETCH_DONEn);
 
-    /*p27.LAXU*/ LAXU_BFETCH_S0.set(LEBO_AxCxExGx,   ppu_sig.NYXU_TILE_FETCHER_RSTn, !LAXU_BFETCH_S0);
-    /*p27.MESU*/ MESU_BFETCH_S1.set(!LAXU_BFETCH_S0, ppu_sig.NYXU_TILE_FETCHER_RSTn, !MESU_BFETCH_S1);
-    /*p27.NYVA*/ NYVA_BFETCH_S2.set(!MESU_BFETCH_S1, ppu_sig.NYXU_TILE_FETCHER_RSTn, !NYVA_BFETCH_S2);
+    /*p27.LAXU*/ LAXU_BFETCH_S0.set(LEBO_AxCxExGx,   top.NYXU_TILE_FETCHER_RSTn(), !LAXU_BFETCH_S0);
+    /*p27.MESU*/ MESU_BFETCH_S1.set(!LAXU_BFETCH_S0, top.NYXU_TILE_FETCHER_RSTn(), !MESU_BFETCH_S1);
+    /*p27.NYVA*/ NYVA_BFETCH_S2.set(!MESU_BFETCH_S1, top.NYXU_TILE_FETCHER_RSTn(), !NYVA_BFETCH_S2);
 
     /*p27.LYZU*/ LYZU_BFETCH_S0_DELAY.set (ALET_xBxDxFxH, top.XYMU_RENDERINGp(),         LAXU_BFETCH_S0);
   }
 
   {
     /*p24.LOBY*/ wire LOBY_RENDERINGn = not(top.XYMU_RENDERINGp());
-    /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(win_sig.NUNY_WIN_MODE_TRIGp);
+    /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(top.NUNY_WIN_MODE_TRIGp());
     /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
     /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
-    /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, ppu_sig.NYXU_TILE_FETCHER_RSTn);
+    /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, top.NYXU_TILE_FETCHER_RSTn());
     /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
@@ -175,7 +121,7 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p27.NENY*/ wire NENY_FETCH_01n = not(NOGU_FETCH_01p);
     /*p27.POTU*/ wire POTU_BG_MAP_READp = and (LENA_BGW_VRAM_RD, NENY_FETCH_01n);
     
-    /*p27.PORE*/ wire PORE_WIN_MODE = not(win_sig.NOCU_WIN_MODEn);
+    /*p27.PORE*/ wire PORE_WIN_MODE = not(top.NOCU_WIN_MODEn());
     /*p26.AXAD*/ wire AXAD_WIN_MODEn = not(PORE_WIN_MODE);
     /*p26.ACEN*/ wire ACEN_BG_MAP_READp = and (POTU_BG_MAP_READp, AXAD_WIN_MODEn);
     /*p25.XEZE*/ wire XEZE_WIN_MAP_READp = and (POTU_BG_MAP_READp, PORE_WIN_MODE);
@@ -202,16 +148,16 @@ void TileFetcher::tick(SchematicTop& top) {
 
     // Window map read
     /*p25.WUKO*/ wire WUKO_WIN_MAP_READn = not(XEZE_WIN_MAP_READp);
-    /*p27.XEJA*/ top.VRM_TRI_A00.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_X3);
-    /*p27.XAMO*/ top.VRM_TRI_A01.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_X4);
-    /*p27.XAHE*/ top.VRM_TRI_A02.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_X5);
-    /*p27.XULO*/ top.VRM_TRI_A03.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_X6);
-    /*p27.WUJU*/ top.VRM_TRI_A04.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_X7);
-    /*p27.VYTO*/ top.VRM_TRI_A05.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_Y3);
-    /*p27.VEHA*/ top.VRM_TRI_A06.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_Y4);
-    /*p27.VACE*/ top.VRM_TRI_A07.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_Y5);
-    /*p27.VOVO*/ top.VRM_TRI_A08.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_Y6);
-    /*p27.VULO*/ top.VRM_TRI_A09.set_tribuf(WUKO_WIN_MAP_READn, win_sig.WIN_Y7);
+    /*p27.XEJA*/ top.VRM_TRI_A00.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X3());
+    /*p27.XAMO*/ top.VRM_TRI_A01.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X4());
+    /*p27.XAHE*/ top.VRM_TRI_A02.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X5());
+    /*p27.XULO*/ top.VRM_TRI_A03.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X6());
+    /*p27.WUJU*/ top.VRM_TRI_A04.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X7());
+    /*p27.VYTO*/ top.VRM_TRI_A05.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y3());
+    /*p27.VEHA*/ top.VRM_TRI_A06.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y4());
+    /*p27.VACE*/ top.VRM_TRI_A07.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y5());
+    /*p27.VOVO*/ top.VRM_TRI_A08.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y6());
+    /*p27.VULO*/ top.VRM_TRI_A09.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y7());
     /*p27.VEVY*/ top.VRM_TRI_A10.set_tribuf(WUKO_WIN_MAP_READn, top.WOKY_LCDC_WINMAP);
     /*p27.VEZA*/ top.VRM_TRI_A11.set_tribuf(WUKO_WIN_MAP_READn, VYPO_P10_Bn);
     /*p27.VOGU*/ top.VRM_TRI_A12.set_tribuf(WUKO_WIN_MAP_READn, VYPO_P10_Bn);
@@ -225,20 +171,20 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p26.DODE*/ top.VRM_TRI_A03.set_tribuf(BEJE_TILE_READn, ECAB_TILE_Y2S);
 
     /*p25.XONU*/ top.VRM_TRI_A00.set_tribuf(XUCY_TILE_READn, XUHA_FETCH_S2p);
-    /*p25.WUDO*/ top.VRM_TRI_A01.set_tribuf(XUCY_TILE_READn, win_sig.WIN_Y0);
-    /*p25.WAWE*/ top.VRM_TRI_A02.set_tribuf(XUCY_TILE_READn, win_sig.WIN_Y1);
-    /*p25.WOLU*/ top.VRM_TRI_A03.set_tribuf(XUCY_TILE_READn, win_sig.WIN_Y2);
+    /*p25.WUDO*/ top.VRM_TRI_A01.set_tribuf(XUCY_TILE_READn, top.WIN_Y0());
+    /*p25.WAWE*/ top.VRM_TRI_A02.set_tribuf(XUCY_TILE_READn, top.WIN_Y1());
+    /*p25.WOLU*/ top.VRM_TRI_A03.set_tribuf(XUCY_TILE_READn, top.WIN_Y2());
 
-    /*p25.VAPY*/ top.VRM_TRI_A04.set_tribuf(NETA_TILE_READn, BG_PIX_B0);
-    /*p25.SEZU*/ top.VRM_TRI_A05.set_tribuf(NETA_TILE_READn, BG_PIX_B1);
-    /*p25.VEJY*/ top.VRM_TRI_A06.set_tribuf(NETA_TILE_READn, BG_PIX_B2);
-    /*p25.RUSA*/ top.VRM_TRI_A07.set_tribuf(NETA_TILE_READn, BG_PIX_B3);
-    /*p25.ROHA*/ top.VRM_TRI_A08.set_tribuf(NETA_TILE_READn, BG_PIX_B4);
-    /*p25.RESO*/ top.VRM_TRI_A09.set_tribuf(NETA_TILE_READn, BG_PIX_B5);
-    /*p25.SUVO*/ top.VRM_TRI_A10.set_tribuf(NETA_TILE_READn, BG_PIX_B6);
-    /*p25.TOBO*/ top.VRM_TRI_A11.set_tribuf(NETA_TILE_READn, BG_PIX_B7);
+    /*p25.VAPY*/ top.VRM_TRI_A04.set_tribuf(NETA_TILE_READn, top.BG_PIX_B0);
+    /*p25.SEZU*/ top.VRM_TRI_A05.set_tribuf(NETA_TILE_READn, top.BG_PIX_B1);
+    /*p25.VEJY*/ top.VRM_TRI_A06.set_tribuf(NETA_TILE_READn, top.BG_PIX_B2);
+    /*p25.RUSA*/ top.VRM_TRI_A07.set_tribuf(NETA_TILE_READn, top.BG_PIX_B3);
+    /*p25.ROHA*/ top.VRM_TRI_A08.set_tribuf(NETA_TILE_READn, top.BG_PIX_B4);
+    /*p25.RESO*/ top.VRM_TRI_A09.set_tribuf(NETA_TILE_READn, top.BG_PIX_B5);
+    /*p25.SUVO*/ top.VRM_TRI_A10.set_tribuf(NETA_TILE_READn, top.BG_PIX_B6);
+    /*p25.TOBO*/ top.VRM_TRI_A11.set_tribuf(NETA_TILE_READn, top.BG_PIX_B7);
 
-    /*p25.VUZA*/ wire VUZA_TILE_BANKp = nor(top.WEXU_LCDC_BGTILE, BG_PIX_B7); // register reused
+    /*p25.VUZA*/ wire VUZA_TILE_BANKp = nor(top.WEXU_LCDC_BGTILE, top.BG_PIX_B7); // register reused
     /*p25.VURY*/ top.VRM_TRI_A12.set_tribuf(NETA_TILE_READn, VUZA_TILE_BANKp);
   }
 
@@ -283,26 +229,26 @@ void TileFetcher::tick(SchematicTop& top) {
     // BFETCH_100 - LOMA_BG_LATCHn = 1;
     // BFETCH_101 - LOMA_BG_LATCHn = 1;
 
-    /*p32.LEGU*/ BG_PIX_A0.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D0);
-    /*p32.NUDU*/ BG_PIX_A1.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D1);
-    /*p32.MUKU*/ BG_PIX_A2.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D2);
-    /*p32.LUZO*/ BG_PIX_A3.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D3);
-    /*p32.MEGU*/ BG_PIX_A4.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D4);
-    /*p32.MYJY*/ BG_PIX_A5.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D5);
-    /*p32.NASA*/ BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D6);
-    /*p32.NEFO*/ BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D7);
+    /*p32.LEGU*/ top.BG_PIX_A0.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D0);
+    /*p32.NUDU*/ top.BG_PIX_A1.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D1);
+    /*p32.MUKU*/ top.BG_PIX_A2.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D2);
+    /*p32.LUZO*/ top.BG_PIX_A3.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D3);
+    /*p32.MEGU*/ top.BG_PIX_A4.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D4);
+    /*p32.MYJY*/ top.BG_PIX_A5.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D5);
+    /*p32.NASA*/ top.BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D6);
+    /*p32.NEFO*/ top.BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D7);
 
     wire P10_B = 0;
     /*p27.VYPO*/ wire VYPO_P10_Bn = not(P10_B);
 
-    /*p32.RAWU*/ BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D0);
-    /*p32.POZO*/ BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D1);
-    /*p32.PYZO*/ BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D2);
-    /*p32.POXA*/ BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D3);
-    /*p32.PULO*/ BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D4);
-    /*p32.POJU*/ BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D5);
-    /*p32.POWY*/ BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D6);
-    /*p32.PYJU*/ BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D7);
+    /*p32.RAWU*/ top.BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D0);
+    /*p32.POZO*/ top.BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D1);
+    /*p32.PYZO*/ top.BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D2);
+    /*p32.POXA*/ top.BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D3);
+    /*p32.PULO*/ top.BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D4);
+    /*p32.POJU*/ top.BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D5);
+    /*p32.POWY*/ top.BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D6);
+    /*p32.PYJU*/ top.BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D7);
   }
 
   /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
@@ -409,24 +355,6 @@ SignalHash TileFetcher::commit() {
   hash << NYKA_FETCH_DONE_Ap.commit_reg();
   hash << PORY_FETCH_DONE_Bp.commit_reg();
   hash << LYZU_BFETCH_S0_DELAY.commit_reg();
-
-  hash << BG_PIX_A0.commit_reg();
-  hash << BG_PIX_A1.commit_reg();
-  hash << BG_PIX_A2.commit_reg();
-  hash << BG_PIX_A3.commit_reg();
-  hash << BG_PIX_A4.commit_reg();
-  hash << BG_PIX_A5.commit_reg();
-  hash << BG_PIX_A6.commit_reg();
-  hash << BG_PIX_A7.commit_reg();
-
-  hash << BG_PIX_B0.commit_reg();
-  hash << BG_PIX_B1.commit_reg();
-  hash << BG_PIX_B2.commit_reg(); 
-  hash << BG_PIX_B3.commit_reg(); 
-  hash << BG_PIX_B4.commit_reg(); 
-  hash << BG_PIX_B5.commit_reg(); 
-  hash << BG_PIX_B6.commit_reg(); 
-  hash << BG_PIX_B7.commit_reg();
 
   hash << GAVE_SCY0.commit_reg();
   hash << FYMO_SCY1.commit_reg();

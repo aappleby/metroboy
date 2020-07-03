@@ -7,43 +7,7 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct SpriteStoreSignals {
-  /*p29.FEPO*/ bool FEPO_STORE_MATCHp;
-
-  // to oam bus mux
-  /*p28.GYBU*/ bool GYBU_IDX_0n; 
-  /*p28.GYKA*/ bool GYKA_IDX_1n;
-  /*p28.FABY*/ bool FABY_IDX_2n;
-  /*p28.FACO*/ bool FACO_IDX_3n;
-  /*p28.FUGU*/ bool FUGU_IDX_4n;
-  /*p28.FYKE*/ bool FYKE_IDX_5n;
-
-  // to ppu fetcher
-  /*p30.WENU*/ bool WENU_TS_LINE_0; 
-  /*p30.CUCU*/ bool CUCU_TS_LINE_1;
-  /*p30.CUCA*/ bool CUCA_TS_LINE_2;
-  /*p30.CEGA*/ bool CEGA_TS_LINE_3;
-
-  // to sst.tick
-  /*p29.DYTY*/ bool DYTY_STORE_ENn_xxCDxxGH;
-
-  /*p29.YDUG*/ bool STORE0_MATCHn;
-  /*p29.DYDU*/ bool STORE1_MATCHn;
-  /*p29.DEGO*/ bool STORE2_MATCHn;
-  /*p29.YLOZ*/ bool STORE3_MATCHn;
-  /*p29.XAGE*/ bool STORE4_MATCHn;
-  /*p29.EGOM*/ bool STORE5_MATCHn;
-  /*p29.YBEZ*/ bool STORE6_MATCHn;
-  /*p29.DYKA*/ bool STORE7_MATCHn;
-  /*p29.EFYL*/ bool STORE8_MATCHn;
-  /*p29.YGEM*/ bool STORE9_MATCHn;
-};
-
-//-----------------------------------------------------------------------------
-
 struct SpriteStoreRegisters {
-
-  SpriteStoreSignals sig(const SchematicTop& gb) const;
   void tick(SchematicTop& gb);
   SignalHash commit();
 
@@ -75,6 +39,9 @@ struct SpriteStoreRegisters {
   }
 
 private:
+  friend struct SchematicTop;
+
+  /*p29.FEPO*/ Signal FEPO_STORE_MATCHp;
 
   /*p30.XADU*/ Reg13 XADU_SPRITE_IDX0;
   /*p30.XEDY*/ Reg13 XEDY_SPRITE_IDX1;
@@ -82,18 +49,6 @@ private:
   /*p30.XOBE*/ Reg13 XOBE_SPRITE_IDX3;
   /*p30.YDUF*/ Reg13 YDUF_SPRITE_IDX4;
   /*p30.XECU*/ Reg13 XECU_SPRITE_IDX5;
-
-  /*p30.WUZY*/ Tribuf WUZY_TS_IDX_0;
-  /*p30.WYSE*/ Tribuf WYSE_TS_IDX_1;
-  /*p30.ZYSU*/ Tribuf ZYSU_TS_IDX_2;
-  /*p30.WYDA*/ Tribuf WYDA_TS_IDX_3;
-  /*p30.WUCO*/ Tribuf WUCO_TS_IDX_4;
-  /*p30.WEZA*/ Tribuf WEZA_TS_IDX_5;
-
-  /*p30.WENU*/ Tribuf WENU_TS_LINE_0;
-  /*p30.CUCU*/ Tribuf CUCU_TS_LINE_1;
-  /*p30.CUCA*/ Tribuf CUCA_TS_LINE_2;
-  /*p30.CEGA*/ Tribuf CEGA_TS_LINE_3;
 
   /*p29.DEZY*/ Reg DEZY_STORE_ENn_SYNC;
   /*p29.BESE*/ Reg SPRITE_COUNT0;

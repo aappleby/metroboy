@@ -62,8 +62,6 @@ void VramPins::tick(SchematicTop& top) {
   }
 
   {
-    auto ppu_sig = top.ppu_reg.sig(top);
-
     /*p25.TAVY*/ wire TAVY_MOE_Cn = not(top.EXT_PIN_MOEn_C);
     /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
     /*p25.SYRO*/ wire SYRO_FE00_FFFFp = not(TUNA_0000_FDFFp);
@@ -175,8 +173,6 @@ void VramPins::tick(SchematicTop& top) {
   // RACU = and(RYLU, RAWA, MYMA, APAM);
 
   {
-    auto ppu_sig = top.ppu_reg.sig(top);
-    
     /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
     /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(top.ADYK_xxxxEFGH());
     /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
@@ -203,10 +199,6 @@ void VramPins::tick(SchematicTop& top) {
   }
 
   {
-    auto tile_fetcher_sig = top.tile_fetcher.sig(top);
-    auto ppu_sig = top.ppu_reg.sig(top);
-    
-
     /*p25.TAVY*/ wire TAVY_MOE_Cn = not(top.EXT_PIN_MOEn_C);
 
     /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
@@ -222,7 +214,7 @@ void VramPins::tick(SchematicTop& top) {
     /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);      /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor(LUFA_DMA_READ_VRAMp, top.XYMU_RENDERINGp()); // def nor
     /*p25.RYLU*/ wire RYLU_DBG_VRAM_RDn = nand(SALE_VRAM_WRn, XANE_VRAM_LOCKn);
     /*p25.RAWA*/ wire RAWA_SPR_VRAM_RDn = not(top.SOHO_SPR_VRAM_RDp());
-    /*p27.MYMA*/ wire MYMA_BGW_VRAM_RDn = not(tile_fetcher_sig.LONY_BG_READ_VRAM_LATCHp); // this should be correct
+    /*p27.MYMA*/ wire MYMA_BGW_VRAM_RDn = not(top.LONY_BG_READ_VRAM_LATCHp()); // this should be correct
     /*p25.APAM*/ wire APAM_DMA_VRAM_RDn = not(LUFA_DMA_READ_VRAMp);
     /*p25.RACU*/ wire RACU_MOEn   = and (RYLU_DBG_VRAM_RDn, RAWA_SPR_VRAM_RDn, MYMA_BGW_VRAM_RDn, APAM_DMA_VRAM_RDn); // def and
     /*p25.RACO*/ wire RACO_DBG_VRAMn = not(top.TUTO_DBG_VRAMp());
@@ -233,14 +225,10 @@ void VramPins::tick(SchematicTop& top) {
   }
 
   {
-    auto tile_fetcher_sig = top.tile_fetcher.sig(top);
-    auto ppu_sig = top.ppu_reg.sig(top);
-    
-
     /*p04.MUHO*/ wire MUHO_DMA_READ_VRAMn   = nand(top.MATU_DMA_RUNNINGp(), top.MUDA_DMA_SRC_VRAMp());
     /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);
     /*p29.ABON*/ wire ABON_SPR_VRAM_RDp1 = not(top.TEXY_SPRITE_READp());
-    /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(tile_fetcher_sig.LONY_BG_READ_VRAM_LATCHp);
+    /*p27.LUSU*/ wire LUSU_BGW_VRAM_RDn = not(top.LONY_BG_READ_VRAM_LATCHp());
     /*p27.LENA*/ wire LENA_BGW_VRAM_RD = not(LUSU_BGW_VRAM_RDn);
     /*p25.SUTU*/ wire SUTU_MCSn = nor(LENA_BGW_VRAM_RD, LUFA_DMA_READ_VRAMp, ABON_SPR_VRAM_RDp1, top.SERE_VRAM_RD());
     /*p25.RACO*/ wire RACO_DBG_VRAMn = not(top.TUTO_DBG_VRAMp());

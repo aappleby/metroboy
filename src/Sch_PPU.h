@@ -7,26 +7,8 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct PpuSignals {
-  /*p27.TEVO*/ Signal TEVO_FINE_RSTp;            // this interacts with window somehow... and also NYXU_TILE_FETCHER_RSTn
-  /*p21.WODU*/ Signal WODU_RENDER_DONEp;         // to ppu.tick
-  /*p27.NYXU*/ Signal NYXU_TILE_FETCHER_RSTn;    // to tile fetcher
-  /*p28.ACYL*/ Signal ACYL_SCANNINGp;            // to bus mux
-  /*p27.TEKY*/ Signal TEKY_SPRITE_FETCH;         // to sprite fetcher
-  /*p27.VEKU*/ Signal VEKU_SFETCH_RUNNING_RSTn;  // to sprite fetcher
-
-  /*p24.SEGU*/ Signal SEGU_CLKPIPEn;             // ppu.tick, window matcher. can prob move matcher into ppu now
-  /*p24.SACU*/ Signal SACU_CLKPIPEp;             // pixel pipe clock, xBxDxFxH, includes fine match discard
-
-  /*p27.ROZE*/ Signal ROZE_FINE_COUNT_STOPn;     // to ppu.tick, window
-  /*p21.VOTY*/ Signal VOTY_INT_STATp;            // to interrupts
-};
-
-//-----------------------------------------------------------------------------
-
 struct PpuRegisters {
 
-  PpuSignals sig(const SchematicTop& gb) const;
   void tick(SchematicTop& gb);
   SignalHash commit();
 

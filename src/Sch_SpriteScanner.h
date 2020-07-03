@@ -23,12 +23,12 @@ private:
   /*p29.GYSA*/ Signal GYSA_SPRITE_DELTA3;      // to sprite store
   /*p29.CARE*/ Signal CARE_STORE_ENp_ABxxEFxx; // to sprite store
 
-  /*p28.YFEL*/ Reg SCAN0;
-  /*p28.WEWY*/ Reg SCAN1;
-  /*p28.GOSO*/ Reg SCAN2;
-  /*p28.ELYN*/ Reg SCAN3;
-  /*p28.FAHA*/ Reg SCAN4;
-  /*p28.FONY*/ Reg SCAN5;
+  /*p28.YFEL*/ Reg YFEL_SCAN0;
+  /*p28.WEWY*/ Reg WEWY_SCAN1;
+  /*p28.GOSO*/ Reg GOSO_SCAN2;
+  /*p28.ELYN*/ Reg ELYN_SCAN3;
+  /*p28.FAHA*/ Reg FAHA_SCAN4;
+  /*p28.FONY*/ Reg FONY_SCAN5;
   /*p29.BYBA*/ Reg SCAN_DONE_TRIG_A;
   /*p29.DOBA*/ Reg SCAN_DONE_TRIG_B;
 };

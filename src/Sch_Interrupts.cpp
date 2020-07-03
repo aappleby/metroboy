@@ -9,7 +9,6 @@ using namespace Schematics;
 void InterruptRegisters::tick(SchematicTop& top) {
   auto ser_sig = top.ser_reg.sig(top);
   
-  auto ppu_sig = top.ppu_reg.sig(top);
   wire P10_B = 0;
 
   /*p07.SEMY*/ wire SEMY_ADDR_XX0X = nor(top.CPU_PIN_A07, top.CPU_PIN_A06, top.CPU_PIN_A05, top.CPU_PIN_A04);
@@ -48,7 +47,7 @@ void InterruptRegisters::tick(SchematicTop& top) {
   /*p21.VYPU*/ wire VYPU_VBLANKp = not(TOLU_VBLANKn);
 
   // int 1 source
-  wire VOTY_INT_STATp = ppu_sig.VOTY_INT_STATp;
+  wire VOTY_INT_STATp = top.VOTY_INT_STATp();
 
   // int 2 source
   wire MOBA_INT_TIMERp = top.MOBA_INT_TIMERp();

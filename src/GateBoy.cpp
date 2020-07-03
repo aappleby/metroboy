@@ -50,9 +50,9 @@ void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
     for (int pass = 0; pass < 256; pass++) {
       //gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
-      //gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
-      //gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 1);
-      //gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
+      //gb->cpu_bus.CPU_PIN_RD.preset(true, 0);
+      //gb->cpu_bus.CPU_PIN_WR.preset(true, 1);
+      //gb->cpu_bus.CPU_PIN_ADDR_VALID.preset(true, 1);
       //gb->cpu_bus.preset_addr(true, addr);
       //gb->cpu_bus.set_data(true, data);
 
@@ -78,9 +78,9 @@ void GateBoy::pass_cycle() {
     for (int pass = 0; pass < 256; pass++) {
       //gb->ext_pins_in.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
-      gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
-      gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
-      gb->cpu_bus.PIN_ADDR_VALID.preset(true, 0);
+      gb->cpu_bus.CPU_PIN_RD.preset(true, 0);
+      gb->cpu_bus.CPU_PIN_WR.preset(true, 0);
+      gb->cpu_bus.CPU_PIN_ADDR_VALID.preset(true, 0);
       gb->cpu_bus.preset_addr(true, 0x0000);
 
       //gb->joy_reg.clear_dir();
@@ -178,9 +178,9 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   gb->dbg_reg.preset_t1t2(0,0);
 
   gb->cpu_bus.CPU_PIN_CLKREQ.preset(true, 0);
-  gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
-  gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
-  gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
+  gb->cpu_bus.CPU_PIN_RD.preset(true, 0);
+  gb->cpu_bus.CPU_PIN_WR.preset(true, 0);
+  gb->cpu_bus.CPU_PIN_ADDR_VALID.preset(true, 1);
   gb->cpu_bus.CPU_PIN5.preset(true, 0);
   gb->cpu_bus.CPU_PIN6.preset(true, 0);
 

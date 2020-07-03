@@ -157,14 +157,14 @@ void SpriteFetcher::tick(SchematicTop& gb) {
     // SFETCH_111
 
     /*p29.XONO*/ wire XONO_FLIP_X = and (bus_sig.BAXO_SPRITE_X5, sprite_fetcher_sig.TEXY_SPRITE_READp);
-    /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2_p(vram_bus.TRI_D7, vram_bus.TRI_D0, XONO_FLIP_X);
-    /*p33.PACY*/ wire SPR_PIX_FLIP1 = mux2_p(vram_bus.TRI_D6, vram_bus.TRI_D1, XONO_FLIP_X);
-    /*p33.PONO*/ wire SPR_PIX_FLIP2 = mux2_p(vram_bus.TRI_D5, vram_bus.TRI_D2, XONO_FLIP_X);
-    /*p33.PUGU*/ wire SPR_PIX_FLIP3 = mux2_p(vram_bus.TRI_D4, vram_bus.TRI_D3, XONO_FLIP_X);
-    /*p33.PUTE*/ wire SPR_PIX_FLIP4 = mux2_p(vram_bus.TRI_D3, vram_bus.TRI_D4, XONO_FLIP_X);
-    /*p33.PULY*/ wire SPR_PIX_FLIP5 = mux2_p(vram_bus.TRI_D2, vram_bus.TRI_D5, XONO_FLIP_X);
-    /*p33.PELO*/ wire SPR_PIX_FLIP6 = mux2_p(vram_bus.TRI_D1, vram_bus.TRI_D6, XONO_FLIP_X);
-    /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2_p(vram_bus.TRI_D0, vram_bus.TRI_D7, XONO_FLIP_X);
+    /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2_p(vram_bus.CPU_TRI_D7, vram_bus.CPU_TRI_D0, XONO_FLIP_X);
+    /*p33.PACY*/ wire SPR_PIX_FLIP1 = mux2_p(vram_bus.CPU_TRI_D6, vram_bus.CPU_TRI_D1, XONO_FLIP_X);
+    /*p33.PONO*/ wire SPR_PIX_FLIP2 = mux2_p(vram_bus.CPU_TRI_D5, vram_bus.CPU_TRI_D2, XONO_FLIP_X);
+    /*p33.PUGU*/ wire SPR_PIX_FLIP3 = mux2_p(vram_bus.CPU_TRI_D4, vram_bus.CPU_TRI_D3, XONO_FLIP_X);
+    /*p33.PUTE*/ wire SPR_PIX_FLIP4 = mux2_p(vram_bus.CPU_TRI_D3, vram_bus.CPU_TRI_D4, XONO_FLIP_X);
+    /*p33.PULY*/ wire SPR_PIX_FLIP5 = mux2_p(vram_bus.CPU_TRI_D2, vram_bus.CPU_TRI_D5, XONO_FLIP_X);
+    /*p33.PELO*/ wire SPR_PIX_FLIP6 = mux2_p(vram_bus.CPU_TRI_D1, vram_bus.CPU_TRI_D6, XONO_FLIP_X);
+    /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2_p(vram_bus.CPU_TRI_D0, vram_bus.CPU_TRI_D7, XONO_FLIP_X);
 
 #if 0
     wire LATCH_SPPIXA = and (RENDERING, TOXE_SFETCH_S0_D0, !TYFO_SFETCH_S0_D1, TULY_SFETCH_S1);

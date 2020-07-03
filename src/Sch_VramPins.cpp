@@ -71,7 +71,7 @@ void VramPins::tick(SchematicTop& gb) {
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
     /*p25.TAVY*/ wire TAVY_MOE_Cn = not(vram_pins.PIN_MOEn_C);
-    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
+    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.CPU_PIN_WR); // Schematic wrong, second input is CPU_RAW_WR
     /*p25.SALE*/ wire SALE_DBG_VRAM_RDb = mux2_p(TAVY_MOE_Cn, TEGU_CPU_VRAM_WRn, dbg_sig.TUTO_DBG_VRAMp);
     /*p25.RUVY*/ wire RUVY_VRAM_WR = not(SALE_DBG_VRAM_RDb);
     /*p25.SAZO*/ wire SAZO_VRAM_RD = and (RUVY_VRAM_WR, ppu_sig.SERE_VRAM_RD);
@@ -81,24 +81,24 @@ void VramPins::tick(SchematicTop& gb) {
     /*p25.ROCY*/ wire ROCY_VBUS_TRISTATEn = and (REVO_VRAM_RDp, SAZO_VRAM_RD);
 
     /*p25.RAHU*/ wire RAHU_VBUS_TRISTATEp = not(ROCY_VBUS_TRISTATEn);
-    /*p25.SYNU*/ wire SYNU = or (vram_bus.TRI_D0, RAHU_VBUS_TRISTATEp);
-    /*p25.SYMA*/ wire SYMA = or (vram_bus.TRI_D1, RAHU_VBUS_TRISTATEp);
-    /*p25.ROKO*/ wire ROKO = or (vram_bus.TRI_D2, RAHU_VBUS_TRISTATEp);
-    /*p25.SYBU*/ wire SYBU = or (vram_bus.TRI_D3, RAHU_VBUS_TRISTATEp);
-    /*p25.SAKO*/ wire SAKO = or (vram_bus.TRI_D4, RAHU_VBUS_TRISTATEp);
-    /*p25.SEJY*/ wire SEJY = or (vram_bus.TRI_D5, RAHU_VBUS_TRISTATEp);
-    /*p25.SEDO*/ wire SEDO = or (vram_bus.TRI_D6, RAHU_VBUS_TRISTATEp);
-    /*p25.SAWU*/ wire SAWU = or (vram_bus.TRI_D7, RAHU_VBUS_TRISTATEp);
+    /*p25.SYNU*/ wire SYNU = or (vram_bus.CPU_TRI_D0, RAHU_VBUS_TRISTATEp);
+    /*p25.SYMA*/ wire SYMA = or (vram_bus.CPU_TRI_D1, RAHU_VBUS_TRISTATEp);
+    /*p25.ROKO*/ wire ROKO = or (vram_bus.CPU_TRI_D2, RAHU_VBUS_TRISTATEp);
+    /*p25.SYBU*/ wire SYBU = or (vram_bus.CPU_TRI_D3, RAHU_VBUS_TRISTATEp);
+    /*p25.SAKO*/ wire SAKO = or (vram_bus.CPU_TRI_D4, RAHU_VBUS_TRISTATEp);
+    /*p25.SEJY*/ wire SEJY = or (vram_bus.CPU_TRI_D5, RAHU_VBUS_TRISTATEp);
+    /*p25.SEDO*/ wire SEDO = or (vram_bus.CPU_TRI_D6, RAHU_VBUS_TRISTATEp);
+    /*p25.SAWU*/ wire SAWU = or (vram_bus.CPU_TRI_D7, RAHU_VBUS_TRISTATEp);
 
     /*p25.ROVE*/ wire ROVE_VBUS_TRISTATEn = not(RAHU_VBUS_TRISTATEp);
-    /*p25.SEFA*/ wire SEFA = and(vram_bus.TRI_D0, ROVE_VBUS_TRISTATEn);
-    /*p25.SOGO*/ wire SOGO = and(vram_bus.TRI_D1, ROVE_VBUS_TRISTATEn);
-    /*p25.SEFU*/ wire SEFU = and(vram_bus.TRI_D2, ROVE_VBUS_TRISTATEn);
-    /*p25.SUNA*/ wire SUNA = and(vram_bus.TRI_D3, ROVE_VBUS_TRISTATEn);
-    /*p25.SUMO*/ wire SUMO = and(vram_bus.TRI_D4, ROVE_VBUS_TRISTATEn);
-    /*p25.SAZU*/ wire SAZU = and(vram_bus.TRI_D5, ROVE_VBUS_TRISTATEn);
-    /*p25.SAMO*/ wire SAMO = and(vram_bus.TRI_D6, ROVE_VBUS_TRISTATEn);
-    /*p25.SUKE*/ wire SUKE = and(vram_bus.TRI_D7, ROVE_VBUS_TRISTATEn);
+    /*p25.SEFA*/ wire SEFA = and(vram_bus.CPU_TRI_D0, ROVE_VBUS_TRISTATEn);
+    /*p25.SOGO*/ wire SOGO = and(vram_bus.CPU_TRI_D1, ROVE_VBUS_TRISTATEn);
+    /*p25.SEFU*/ wire SEFU = and(vram_bus.CPU_TRI_D2, ROVE_VBUS_TRISTATEn);
+    /*p25.SUNA*/ wire SUNA = and(vram_bus.CPU_TRI_D3, ROVE_VBUS_TRISTATEn);
+    /*p25.SUMO*/ wire SUMO = and(vram_bus.CPU_TRI_D4, ROVE_VBUS_TRISTATEn);
+    /*p25.SAZU*/ wire SAZU = and(vram_bus.CPU_TRI_D5, ROVE_VBUS_TRISTATEn);
+    /*p25.SAMO*/ wire SAMO = and(vram_bus.CPU_TRI_D6, ROVE_VBUS_TRISTATEn);
+    /*p25.SUKE*/ wire SUKE = and(vram_bus.CPU_TRI_D7, ROVE_VBUS_TRISTATEn);
 
     /*p25.REGE*/ wire REGE = not(SEFA);
     /*p25.RYKY*/ wire RYKY = not(SOGO);
@@ -136,14 +136,14 @@ void VramPins::tick(SchematicTop& gb) {
     PIN_MD6_D.set(RYTY);
     PIN_MD7_D.set(RADY);
 
-    /*p25.TEME*/ vram_bus.TRI_D0.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D0);
-    /*p25.TEWU*/ vram_bus.TRI_D1.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D1);
-    /*p25.TYGO*/ vram_bus.TRI_D2.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D2);
-    /*p25.SOTE*/ vram_bus.TRI_D3.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D3);
-    /*p25.SEKE*/ vram_bus.TRI_D4.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D4);
-    /*p25.RUJO*/ vram_bus.TRI_D5.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D5);
-    /*p25.TOFA*/ vram_bus.TRI_D6.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D6);
-    /*p25.SUZA*/ vram_bus.TRI_D7.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.TRI_D7); // 10-rung
+    /*p25.TEME*/ vram_bus.CPU_TRI_D0.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.CPU_TRI_D0);
+    /*p25.TEWU*/ vram_bus.CPU_TRI_D1.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.CPU_TRI_D1);
+    /*p25.TYGO*/ vram_bus.CPU_TRI_D2.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.CPU_TRI_D2);
+    /*p25.SOTE*/ vram_bus.CPU_TRI_D3.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.CPU_TRI_D3);
+    /*p25.SEKE*/ vram_bus.CPU_TRI_D4.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.CPU_TRI_D4);
+    /*p25.RUJO*/ vram_bus.CPU_TRI_D5.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.CPU_TRI_D5);
+    /*p25.TOFA*/ vram_bus.CPU_TRI_D6.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.CPU_TRI_D6);
+    /*p25.SUZA*/ vram_bus.CPU_TRI_D7.set_tribuf(RAHU_VBUS_TRISTATEp, cpu_bus.CPU_TRI_D7); // 10-rung
 
     /*p25.RELA*/ wire RELA_MD_OEp = or (REVO_VRAM_RDp, SAZO_VRAM_RD);
     /*p25.RENA*/ wire RENA_MD_OEn = not(RELA_MD_OEp);
@@ -158,14 +158,14 @@ void VramPins::tick(SchematicTop& gb) {
     /*p25.ROFA*/ PIN_MD6_B.set(ROFA_MD_OEp);
     /*p25.ROFA*/ PIN_MD7_B.set(ROFA_MD_OEp);
 
-    /*p25.RODY*/ vram_bus.TRI_D0.set_tribuf(RENA_MD_OEn, PIN_MD0_C);
-    /*p25.REBA*/ vram_bus.TRI_D1.set_tribuf(RENA_MD_OEn, PIN_MD1_C);
-    /*p25.RYDO*/ vram_bus.TRI_D2.set_tribuf(RENA_MD_OEn, PIN_MD2_C);
-    /*p25.REMO*/ vram_bus.TRI_D3.set_tribuf(RENA_MD_OEn, PIN_MD3_C);
-    /*p25.ROCE*/ vram_bus.TRI_D4.set_tribuf(RENA_MD_OEn, PIN_MD4_C);
-    /*p25.ROPU*/ vram_bus.TRI_D5.set_tribuf(RENA_MD_OEn, PIN_MD5_C);
-    /*p25.RETA*/ vram_bus.TRI_D6.set_tribuf(RENA_MD_OEn, PIN_MD6_C);
-    /*p25.RAKU*/ vram_bus.TRI_D7.set_tribuf(RENA_MD_OEn, PIN_MD7_C);
+    /*p25.RODY*/ vram_bus.CPU_TRI_D0.set_tribuf(RENA_MD_OEn, PIN_MD0_C);
+    /*p25.REBA*/ vram_bus.CPU_TRI_D1.set_tribuf(RENA_MD_OEn, PIN_MD1_C);
+    /*p25.RYDO*/ vram_bus.CPU_TRI_D2.set_tribuf(RENA_MD_OEn, PIN_MD2_C);
+    /*p25.REMO*/ vram_bus.CPU_TRI_D3.set_tribuf(RENA_MD_OEn, PIN_MD3_C);
+    /*p25.ROCE*/ vram_bus.CPU_TRI_D4.set_tribuf(RENA_MD_OEn, PIN_MD4_C);
+    /*p25.ROPU*/ vram_bus.CPU_TRI_D5.set_tribuf(RENA_MD_OEn, PIN_MD5_C);
+    /*p25.RETA*/ vram_bus.CPU_TRI_D6.set_tribuf(RENA_MD_OEn, PIN_MD6_C);
+    /*p25.RAKU*/ vram_bus.CPU_TRI_D7.set_tribuf(RENA_MD_OEn, PIN_MD7_C);
   }
 
   // Die trace
@@ -198,7 +198,7 @@ void VramPins::tick(SchematicTop& gb) {
     auto dbg_sig = gb.dbg_reg.sig(gb);
 
     /*p25.TAVY*/ wire TAVY_MOE_Cn = not(PIN_MOEn_C);
-    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.PIN_CPU_RAW_WR); // Schematic wrong, second input is CPU_RAW_WR
+    /*p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand(cpu_sig.SOSE_8000_9FFFp, cpu_bus.CPU_PIN_WR); // Schematic wrong, second input is CPU_RAW_WR
     /*p25.SALE*/ wire SALE_VRAM_WRn = mux2_p(TAVY_MOE_Cn, TEGU_CPU_VRAM_WRn, dbg_sig.TUTO_DBG_VRAMp);
     /*p04.MUHO*/ wire MUHO_DMA_READ_VRAMn   = nand(dma_sig.MATU_DMA_RUNNINGp, dma_sig.MUDA_DMA_SRC_VRAMp);
     /*p04.LUFA*/ wire LUFA_DMA_READ_VRAMp = not(MUHO_DMA_READ_VRAMn);      /*p25.XANE*/ wire XANE_VRAM_LOCKn = nor(LUFA_DMA_READ_VRAMp, ppu_sig.XYMU_RENDERINGp); // def nor

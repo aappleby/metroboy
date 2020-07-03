@@ -23,8 +23,8 @@ void test_bus_dump(BusDump* dump_log, int len) {
 
     gb.bus_tri.set_addr(dump.cpu_addr);
     gb.bus_tri.set_data(dump.cpu_data);
-    gb.sys_reg.PIN_CPU_RAW_RD = dump.cpu_rd;
-    gb.sys_reg.PIN_CPU_RAW_WR = dump.cpu_wr;
+    gb.sys_reg.CPU_PIN_RD = dump.cpu_rd;
+    gb.sys_reg.CPU_PIN_WR = dump.cpu_wr;
 
     //gb.sim_phase(8);
 

@@ -23,14 +23,14 @@ SignalHash VramBus::commit() {
   hash << TRI_A11.commit_tribuf();
   hash << TRI_A12.commit_tribuf();
 
-  hash << TRI_D0.commit_tribuf();
-  hash << TRI_D1.commit_tribuf();
-  hash << TRI_D2.commit_tribuf();
-  hash << TRI_D3.commit_tribuf();
-  hash << TRI_D4.commit_tribuf();
-  hash << TRI_D5.commit_tribuf();
-  hash << TRI_D6.commit_tribuf();
-  hash << TRI_D7.commit_tribuf();
+  hash << CPU_TRI_D0.commit_tribuf();
+  hash << CPU_TRI_D1.commit_tribuf();
+  hash << CPU_TRI_D2.commit_tribuf();
+  hash << CPU_TRI_D3.commit_tribuf();
+  hash << CPU_TRI_D4.commit_tribuf();
+  hash << CPU_TRI_D5.commit_tribuf();
+  hash << CPU_TRI_D6.commit_tribuf();
+  hash << CPU_TRI_D7.commit_tribuf();
   return hash;
 }
 
@@ -43,8 +43,8 @@ void dump_pins(TextPainter& text_painter) {
     TRI_A04.q(), TRI_A05.q(), TRI_A06.q(), TRI_A07.q(),
     TRI_A08.q(), TRI_A09.q(), TRI_A10.q(), TRI_A11.q(), TRI_A12.q()));
   text_painter.dprintf("MDxx 0x%02x\n", pack(
-    TRI_D0.q(), TRI_D1.q(), TRI_D2.q(), TRI_D3.q(),
-    TRI_D4.q(), TRI_D5.q(), TRI_D6.q(), TRI_D7.q()));
+    CPU_TRI_D0.q(), CPU_TRI_D1.q(), CPU_TRI_D2.q(), CPU_TRI_D3.q(),
+    CPU_TRI_D4.q(), CPU_TRI_D5.q(), CPU_TRI_D6.q(), CPU_TRI_D7.q()));
   text_painter.newline();
 }
 

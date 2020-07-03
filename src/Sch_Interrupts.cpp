@@ -36,11 +36,11 @@ void InterruptRegisters::tick(SchematicTop& gb) {
     /*p02.MOPO*/ FF0F_L3.tp_latch(ROLO_FF0F_RDn, LALU_FF0F_1); // OUTPUT ON RUNG 10
     /*p02.PAVY*/ FF0F_L4.tp_latch(ROLO_FF0F_RDn, NYBO_FF0F_2); // OUTPUT ON RUNG 10
 
-    /*p02.NELA*/ cpu_bus.TRI_D0.set_tribuf(POLA_FF0F_RDa, FF0F_L0); // small tri
-    /*p02.NABO*/ cpu_bus.TRI_D1.set_tribuf(POLA_FF0F_RDa, FF0F_L1); // small tri
-    /*p02.ROVA*/ cpu_bus.TRI_D2.set_tribuf(POLA_FF0F_RDa, FF0F_L2);
-    /*p02.PADO*/ cpu_bus.TRI_D3.set_tribuf(POLA_FF0F_RDa, FF0F_L3);
-    /*p02.PEGY*/ cpu_bus.TRI_D4.set_tribuf(POLA_FF0F_RDa, FF0F_L4);
+    /*p02.NELA*/ cpu_bus.CPU_TRI_D0.set_tribuf(POLA_FF0F_RDa, FF0F_L0); // small tri
+    /*p02.NABO*/ cpu_bus.CPU_TRI_D1.set_tribuf(POLA_FF0F_RDa, FF0F_L1); // small tri
+    /*p02.ROVA*/ cpu_bus.CPU_TRI_D2.set_tribuf(POLA_FF0F_RDa, FF0F_L2);
+    /*p02.PADO*/ cpu_bus.CPU_TRI_D3.set_tribuf(POLA_FF0F_RDa, FF0F_L3);
+    /*p02.PEGY*/ cpu_bus.CPU_TRI_D4.set_tribuf(POLA_FF0F_RDa, FF0F_L4);
   }
 
   // int 0 source
@@ -68,28 +68,28 @@ void InterruptRegisters::tick(SchematicTop& gb) {
   /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
 
   /*p02.LETY*/ wire LETY_INT_VBL_ACKn  = not(PIN_ACK_VBLANK);
-  /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (cpu_bus.TRI_D0, REFA_FF0F_WRn);
-  /*p02.MYZU*/ wire MYZU_FF0F_SET0n    = nand(ROTU_FF0F_WRp, LETY_INT_VBL_ACKn, cpu_bus.TRI_D0);
+  /*p02.MUXE*/ wire MUXE_INT0_WRn      = or (cpu_bus.CPU_TRI_D0, REFA_FF0F_WRn);
+  /*p02.MYZU*/ wire MYZU_FF0F_SET0n    = nand(ROTU_FF0F_WRp, LETY_INT_VBL_ACKn, cpu_bus.CPU_TRI_D0);
   /*p02.LYTA*/ wire LYTA_FF0F_RST0n    = and (MUXE_INT0_WRn, LETY_INT_VBL_ACKn, ALUR_RSTn);
                                        
   /*p02.LEJA*/ wire LEJA_INT_STAT_ACKn = not(PIN_ACK_STAT);
-  /*p02.NABE*/ wire NABE               = or (cpu_bus.TRI_D1, REFA_FF0F_WRn);
-  /*p02.MODY*/ wire MODY_FF0F_SET1n    = nand(ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, cpu_bus.TRI_D1);
+  /*p02.NABE*/ wire NABE               = or (cpu_bus.CPU_TRI_D1, REFA_FF0F_WRn);
+  /*p02.MODY*/ wire MODY_FF0F_SET1n    = nand(ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, cpu_bus.CPU_TRI_D1);
   /*p02.MOVU*/ wire MOVU_FF0F_RST1n    = and (NABE,          LEJA_INT_STAT_ACKn, ALUR_RSTn);
                                        
   /*p02.LESA*/ wire LESA_INT_TIM_ACKn  = not(PIN_ACK_TIMER);
-  /*p02.RAKE*/ wire RAKE               = or (cpu_bus.TRI_D2, REFA_FF0F_WRn);
-  /*p02.PYHU*/ wire PYHU_FF0F_SET2n    = nand(ROTU_FF0F_WRp, LESA_INT_TIM_ACKn, cpu_bus.TRI_D2);
+  /*p02.RAKE*/ wire RAKE               = or (cpu_bus.CPU_TRI_D2, REFA_FF0F_WRn);
+  /*p02.PYHU*/ wire PYHU_FF0F_SET2n    = nand(ROTU_FF0F_WRp, LESA_INT_TIM_ACKn, cpu_bus.CPU_TRI_D2);
   /*p02.PYGA*/ wire PYGA_FF0F_RST2n    = and (RAKE,          LESA_INT_TIM_ACKn, ALUR_RSTn);
                                        
   /*p02.LUFE*/ wire LUFE_INT_SER_ACKn  = not(PIN_ACK_SERIAL);
-  /*p02.SULO*/ wire SULO               = or (cpu_bus.TRI_D3, REFA_FF0F_WRn);
-  /*p02.TOME*/ wire TOME_FF0F_SET3n    = nand(ROTU_FF0F_WRp, LUFE_INT_SER_ACKn, cpu_bus.TRI_D3);
+  /*p02.SULO*/ wire SULO               = or (cpu_bus.CPU_TRI_D3, REFA_FF0F_WRn);
+  /*p02.TOME*/ wire TOME_FF0F_SET3n    = nand(ROTU_FF0F_WRp, LUFE_INT_SER_ACKn, cpu_bus.CPU_TRI_D3);
   /*p02.TUNY*/ wire TUNY_FF0F_RST3n    = and (SULO,          LUFE_INT_SER_ACKn, ALUR_RSTn);
                                        
   /*p02.LAMO*/ wire LAMO_INT_JOY_ACKn  = not(PIN_ACK_JOYPAD);
-  /*p02.SEME*/ wire SEME               = or (cpu_bus.TRI_D4, REFA_FF0F_WRn);
-  /*p02.TOGA*/ wire TOGA_FF0F_SET4n    = nand(ROTU_FF0F_WRp, LAMO_INT_JOY_ACKn, cpu_bus.TRI_D4);
+  /*p02.SEME*/ wire SEME               = or (cpu_bus.CPU_TRI_D4, REFA_FF0F_WRn);
+  /*p02.TOGA*/ wire TOGA_FF0F_SET4n    = nand(ROTU_FF0F_WRp, LAMO_INT_JOY_ACKn, cpu_bus.CPU_TRI_D4);
   /*p02.TYME*/ wire TYME_FF0F_RST4n    = and (SEME,          LAMO_INT_JOY_ACKn, ALUR_RSTn);
 
 #if 0
@@ -106,8 +106,8 @@ void InterruptRegisters::tick(SchematicTop& gb) {
     wire TYME_FF0F_RST4n = 1;
   }
   else {
-    wire TOGA_FF0F_SET4n = !cpu_bus.TRI_D4;
-    wire TYME_FF0F_RST4n =  cpu_bus.TRI_D4;
+    wire TOGA_FF0F_SET4n = !cpu_bus.CPU_TRI_D4;
+    wire TYME_FF0F_RST4n =  cpu_bus.CPU_TRI_D4;
   }
 #endif
 

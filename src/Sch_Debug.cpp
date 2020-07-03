@@ -41,7 +41,7 @@ DebugSignals DebugRegisters::sig(const CpuBus& cpu_bus, wire EXT_PIN_RST) const 
   /*p08.RYCA*/ sig.RYCA_MODE_DBG2n = not(sig.UNOR_MODE_DBG2p);
   /*p25.TUTO*/ sig.TUTO_DBG_VRAMp = and (sig.UNOR_MODE_DBG2p, !SOTO_DBG);
 
-  /*p??.APAP*/ wire _APAP = not(cpu_bus.PIN_ADDR_VALID); // Missing from schematic
+  /*p??.APAP*/ wire _APAP = not(cpu_bus.CPU_PIN_ADDR_VALID); // Missing from schematic
   /*p01.AWOD*/ wire _AWOD = nor(sig.UNOR_MODE_DBG2p, _APAP);
   /*p01.ABUZ*/ sig.ABUZ = not(_AWOD);
 

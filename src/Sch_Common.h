@@ -323,10 +323,10 @@ private:
 
 //-----------------------------------------------------------------------------
 
-///*p32.NEFO*/ BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D7);
+///*p32.NEFO*/ BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D7);
 
 // NEFO_01 << LOMA_02    (clk)
-// NEFO_02 << TRI_D7     (d)
+// NEFO_02 << CPU_TRI_D7     (d)
 // NEFO_03 nc
 // NEFO_04 << COMP_CLOCK (clkn)
 // NEFO_05 nc

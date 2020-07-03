@@ -29,14 +29,14 @@ struct VramBus {
   Tribuf TRI_A11;
   Tribuf TRI_A12;
 
-  Tribuf TRI_D0;
-  Tribuf TRI_D1;
-  Tribuf TRI_D2;
-  Tribuf TRI_D3;
-  Tribuf TRI_D4;
-  Tribuf TRI_D5;
-  Tribuf TRI_D6;
-  Tribuf TRI_D7;
+  Tribuf CPU_TRI_D0;
+  Tribuf CPU_TRI_D1;
+  Tribuf CPU_TRI_D2;
+  Tribuf CPU_TRI_D3;
+  Tribuf CPU_TRI_D4;
+  Tribuf CPU_TRI_D5;
+  Tribuf CPU_TRI_D6;
+  Tribuf CPU_TRI_D7;
 };
 
 //-----------------------------------------------------------------------------

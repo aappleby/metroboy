@@ -409,10 +409,10 @@ void PpuRegisters::tick(SchematicTop& gb) {
     /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(PAGO_LYC_MATCH_RST, lcd_sig.ROPO_LY_MATCH_SYNCp);
 
     auto& cpu_bus = gb.cpu_bus;
-    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.TRI_D0);
-    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.TRI_D1);
-    /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.TRI_D2);
-    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.TRI_D3);
+    /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.CPU_TRI_D0);
+    /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.CPU_TRI_D1);
+    /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.CPU_TRI_D2);
+    /*p21.RUGU*/ RUGU_INT_LYC_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.CPU_TRI_D3);
 
     /*p21.PARU*/ wire PARU_IN_VBLANK = not(!lcd_sig.POPU_VBLANK_d4);
     auto ppu_sig = sig(gb);
@@ -420,13 +420,13 @@ void PpuRegisters::tick(SchematicTop& gb) {
     /*p21.SADU*/ wire SADU_STAT_MODE0n = nor(XYMU_RENDERINGp, PARU_IN_VBLANK); // die NOR
 
     // OK, these tribufs are _slightly_ different - compare SEGO and SASY, second rung.
-    /*p21.TEBY*/ cpu_bus.TRI_D0.set_tribuf(TOBE_FF41_RDa, not(SADU_STAT_MODE0n));
-    /*p21.WUGA*/ cpu_bus.TRI_D1.set_tribuf(TOBE_FF41_RDa, not(XATY_STAT_MODE1n));
-    /*p21.SEGO*/ cpu_bus.TRI_D2.set_tribuf(TOBE_FF41_RDa, not(RUPO_LYC_MATCH_LATCHn.q()));
-    /*p21.PUZO*/ cpu_bus.TRI_D3.set_tribuf(not(VAVE_FF41_RDb), ROXE_INT_HBL_EN.q());
-    /*p21.POFO*/ cpu_bus.TRI_D4.set_tribuf(not(VAVE_FF41_RDb), RUFO_INT_VBL_EN.q());
-    /*p21.SASY*/ cpu_bus.TRI_D5.set_tribuf(not(VAVE_FF41_RDb), REFE_INT_OAM_EN.q());
-    /*p21.POTE*/ cpu_bus.TRI_D6.set_tribuf(not(VAVE_FF41_RDb), RUGU_INT_LYC_EN.q());
+    /*p21.TEBY*/ cpu_bus.CPU_TRI_D0.set_tribuf(TOBE_FF41_RDa, not(SADU_STAT_MODE0n));
+    /*p21.WUGA*/ cpu_bus.CPU_TRI_D1.set_tribuf(TOBE_FF41_RDa, not(XATY_STAT_MODE1n));
+    /*p21.SEGO*/ cpu_bus.CPU_TRI_D2.set_tribuf(TOBE_FF41_RDa, not(RUPO_LYC_MATCH_LATCHn.q()));
+    /*p21.PUZO*/ cpu_bus.CPU_TRI_D3.set_tribuf(not(VAVE_FF41_RDb), ROXE_INT_HBL_EN.q());
+    /*p21.POFO*/ cpu_bus.CPU_TRI_D4.set_tribuf(not(VAVE_FF41_RDb), RUFO_INT_VBL_EN.q());
+    /*p21.SASY*/ cpu_bus.CPU_TRI_D5.set_tribuf(not(VAVE_FF41_RDb), REFE_INT_OAM_EN.q());
+    /*p21.POTE*/ cpu_bus.CPU_TRI_D6.set_tribuf(not(VAVE_FF41_RDb), RUGU_INT_LYC_EN.q());
   }
 }
 

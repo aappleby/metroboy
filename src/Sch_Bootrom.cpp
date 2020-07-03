@@ -66,10 +66,10 @@ void Bootrom::tick(SchematicTop& gb) {
     /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(cpu_bus.PIN_A04, cpu_bus.PIN_A06);
 
     /*p07.TEXE*/ wire FF50_RDp = and(cpu_sig.TEDO_CPU_RD, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
-    /*p07.SYPU*/ cpu_bus.TRI_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
+    /*p07.SYPU*/ cpu_bus.CPU_TRI_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
 
     /*p07.TUGE*/ wire FF50_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
-    /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.TRI_D0, BOOT_BITn);
+    /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.CPU_TRI_D0, BOOT_BITn);
 
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
     /*p07.TEPU*/ BOOT_BITn.set(FF50_WRn, ALUR_RSTn, BOOT_BIT_IN);
@@ -120,14 +120,14 @@ void Bootrom::tick(SchematicTop& gb) {
     uint16_t addr = (uint16_t)cpu_bus.get_addr();
     uint8_t data = DMG_ROM_bin[addr & 0xFF];
 
-    cpu_bus.TRI_D0.set_tribuf(_YULA_BOOT_RD, data & 0x01);
-    cpu_bus.TRI_D1.set_tribuf(_YULA_BOOT_RD, data & 0x02);
-    cpu_bus.TRI_D2.set_tribuf(_YULA_BOOT_RD, data & 0x04);
-    cpu_bus.TRI_D3.set_tribuf(_YULA_BOOT_RD, data & 0x08);
-    cpu_bus.TRI_D4.set_tribuf(_YULA_BOOT_RD, data & 0x10);
-    cpu_bus.TRI_D5.set_tribuf(_YULA_BOOT_RD, data & 0x20);
-    cpu_bus.TRI_D6.set_tribuf(_YULA_BOOT_RD, data & 0x40);
-    cpu_bus.TRI_D7.set_tribuf(_YULA_BOOT_RD, data & 0x80);
+    cpu_bus.CPU_TRI_D0.set_tribuf(_YULA_BOOT_RD, data & 0x01);
+    cpu_bus.CPU_TRI_D1.set_tribuf(_YULA_BOOT_RD, data & 0x02);
+    cpu_bus.CPU_TRI_D2.set_tribuf(_YULA_BOOT_RD, data & 0x04);
+    cpu_bus.CPU_TRI_D3.set_tribuf(_YULA_BOOT_RD, data & 0x08);
+    cpu_bus.CPU_TRI_D4.set_tribuf(_YULA_BOOT_RD, data & 0x10);
+    cpu_bus.CPU_TRI_D5.set_tribuf(_YULA_BOOT_RD, data & 0x20);
+    cpu_bus.CPU_TRI_D6.set_tribuf(_YULA_BOOT_RD, data & 0x40);
+    cpu_bus.CPU_TRI_D7.set_tribuf(_YULA_BOOT_RD, data & 0x80);
   }
 }
 

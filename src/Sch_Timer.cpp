@@ -80,14 +80,14 @@ void TimerRegisters::tick(
     /*p01.RAVE*/ wire DIV_11n = not(SOLA_DIV_11.q());
     /*p01.RYSO*/ wire DIV_12n = not(SUBU_DIV_12.q());
     /*p01.UDOR*/ wire DIV_13n = not(TEKA_DIV_13.q());
-    /*p01.TAWU*/ cpu_bus.TRI_D0.set_tribuf(FF04_RD, not(tim_sig.UMEK_DIV_06n));
-    /*p01.TAKU*/ cpu_bus.TRI_D1.set_tribuf(FF04_RD, not(tim_sig.UREK_DIV_07n));
-    /*p01.TEMU*/ cpu_bus.TRI_D2.set_tribuf(FF04_RD, not(DIV_08n));
-    /*p01.TUSE*/ cpu_bus.TRI_D3.set_tribuf(FF04_RD, not(DIV_09n));
-    /*p01.UPUG*/ cpu_bus.TRI_D4.set_tribuf(FF04_RD, not(DIV_10n));
-    /*p01.SEPU*/ cpu_bus.TRI_D5.set_tribuf(FF04_RD, not(DIV_11n));
-    /*p01.SAWA*/ cpu_bus.TRI_D6.set_tribuf(FF04_RD, not(DIV_12n));
-    /*p01.TATU*/ cpu_bus.TRI_D7.set_tribuf(FF04_RD, not(DIV_13n));
+    /*p01.TAWU*/ cpu_bus.CPU_TRI_D0.set_tribuf(FF04_RD, not(tim_sig.UMEK_DIV_06n));
+    /*p01.TAKU*/ cpu_bus.CPU_TRI_D1.set_tribuf(FF04_RD, not(tim_sig.UREK_DIV_07n));
+    /*p01.TEMU*/ cpu_bus.CPU_TRI_D2.set_tribuf(FF04_RD, not(DIV_08n));
+    /*p01.TUSE*/ cpu_bus.CPU_TRI_D3.set_tribuf(FF04_RD, not(DIV_09n));
+    /*p01.UPUG*/ cpu_bus.CPU_TRI_D4.set_tribuf(FF04_RD, not(DIV_10n));
+    /*p01.SEPU*/ cpu_bus.CPU_TRI_D5.set_tribuf(FF04_RD, not(DIV_11n));
+    /*p01.SAWA*/ cpu_bus.CPU_TRI_D6.set_tribuf(FF04_RD, not(DIV_12n));
+    /*p01.TATU*/ cpu_bus.CPU_TRI_D7.set_tribuf(FF04_RD, not(DIV_13n));
   }
 
   /*p03.TOPE*/ wire TOPE_FF05_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_bus.PIN_A00);
@@ -108,14 +108,14 @@ void TimerRegisters::tick(
 
     /*p03.SOGU*/ wire _TIMA_CLK = nor(_CLK_MUXc, TAC_2.qn());
     /*p03.MULO*/ wire _TIMA_RST = not(ALUR_RSTn);
-    /*p03.ROKE*/ wire _TIMA_MUX_0 = mux2_n(TMA_0.q(), cpu_bus.TRI_D0, TOPE_FF05_WRn);
-    /*p03.PETU*/ wire _TIMA_MUX_1 = mux2_n(TMA_1.q(), cpu_bus.TRI_D1, TOPE_FF05_WRn);
-    /*p03.NYKU*/ wire _TIMA_MUX_2 = mux2_n(TMA_2.q(), cpu_bus.TRI_D2, TOPE_FF05_WRn); // die annotation box wrong, this is a 5-rung
-    /*p03.SOCE*/ wire _TIMA_MUX_3 = mux2_n(TMA_3.q(), cpu_bus.TRI_D3, TOPE_FF05_WRn);
-    /*p03.SALA*/ wire _TIMA_MUX_4 = mux2_n(TMA_4.q(), cpu_bus.TRI_D4, TOPE_FF05_WRn);
-    /*p03.SYRU*/ wire _TIMA_MUX_5 = mux2_n(TMA_5.q(), cpu_bus.TRI_D5, TOPE_FF05_WRn);
-    /*p03.REFU*/ wire _TIMA_MUX_6 = mux2_n(TMA_6.q(), cpu_bus.TRI_D6, TOPE_FF05_WRn);
-    /*p03.RATO*/ wire _TIMA_MUX_7 = mux2_n(TMA_7.q(), cpu_bus.TRI_D7, TOPE_FF05_WRn);
+    /*p03.ROKE*/ wire _TIMA_MUX_0 = mux2_n(TMA_0.q(), cpu_bus.CPU_TRI_D0, TOPE_FF05_WRn);
+    /*p03.PETU*/ wire _TIMA_MUX_1 = mux2_n(TMA_1.q(), cpu_bus.CPU_TRI_D1, TOPE_FF05_WRn);
+    /*p03.NYKU*/ wire _TIMA_MUX_2 = mux2_n(TMA_2.q(), cpu_bus.CPU_TRI_D2, TOPE_FF05_WRn); // die annotation box wrong, this is a 5-rung
+    /*p03.SOCE*/ wire _TIMA_MUX_3 = mux2_n(TMA_3.q(), cpu_bus.CPU_TRI_D3, TOPE_FF05_WRn);
+    /*p03.SALA*/ wire _TIMA_MUX_4 = mux2_n(TMA_4.q(), cpu_bus.CPU_TRI_D4, TOPE_FF05_WRn);
+    /*p03.SYRU*/ wire _TIMA_MUX_5 = mux2_n(TMA_5.q(), cpu_bus.CPU_TRI_D5, TOPE_FF05_WRn);
+    /*p03.REFU*/ wire _TIMA_MUX_6 = mux2_n(TMA_6.q(), cpu_bus.CPU_TRI_D6, TOPE_FF05_WRn);
+    /*p03.RATO*/ wire _TIMA_MUX_7 = mux2_n(TMA_7.q(), cpu_bus.CPU_TRI_D7, TOPE_FF05_WRn);
     /*p03.PUXY*/ wire _TIMA_LD_0 = nor(_TIMA_RST, _TIMA_MUX_0);
     /*p03.NERO*/ wire _TIMA_LD_1 = nor(_TIMA_RST, _TIMA_MUX_1);
     /*p03.NADA*/ wire _TIMA_LD_2 = nor(_TIMA_RST, _TIMA_MUX_2);
@@ -134,14 +134,14 @@ void TimerRegisters::tick(
     /*p03.NUGA*/ TIMA_7.clk_n(TIMA_6.q(), MEXU_TIMA_LOAD, _TIMA_LD_7);
 
     /*p03.TEDA*/ wire _TEDA_FF05_RD = and (cpu_sig.TEDO_CPU_RD, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_bus.PIN_A00);
-    /*p03.SOKU*/ cpu_bus.TRI_D0.set_tribuf(_TEDA_FF05_RD, TIMA_0.q());
-    /*p03.RACY*/ cpu_bus.TRI_D1.set_tribuf(_TEDA_FF05_RD, TIMA_1.q());
-    /*p03.RAVY*/ cpu_bus.TRI_D2.set_tribuf(_TEDA_FF05_RD, TIMA_2.q());
-    /*p03.SOSY*/ cpu_bus.TRI_D3.set_tribuf(_TEDA_FF05_RD, TIMA_3.q());
-    /*p03.SOMU*/ cpu_bus.TRI_D4.set_tribuf(_TEDA_FF05_RD, TIMA_4.q());
-    /*p03.SURO*/ cpu_bus.TRI_D5.set_tribuf(_TEDA_FF05_RD, TIMA_5.q());
-    /*p03.ROWU*/ cpu_bus.TRI_D6.set_tribuf(_TEDA_FF05_RD, TIMA_6.q());
-    /*p03.PUSO*/ cpu_bus.TRI_D7.set_tribuf(_TEDA_FF05_RD, TIMA_7.q());
+    /*p03.SOKU*/ cpu_bus.CPU_TRI_D0.set_tribuf(_TEDA_FF05_RD, TIMA_0.q());
+    /*p03.RACY*/ cpu_bus.CPU_TRI_D1.set_tribuf(_TEDA_FF05_RD, TIMA_1.q());
+    /*p03.RAVY*/ cpu_bus.CPU_TRI_D2.set_tribuf(_TEDA_FF05_RD, TIMA_2.q());
+    /*p03.SOSY*/ cpu_bus.CPU_TRI_D3.set_tribuf(_TEDA_FF05_RD, TIMA_3.q());
+    /*p03.SOMU*/ cpu_bus.CPU_TRI_D4.set_tribuf(_TEDA_FF05_RD, TIMA_4.q());
+    /*p03.SURO*/ cpu_bus.CPU_TRI_D5.set_tribuf(_TEDA_FF05_RD, TIMA_5.q());
+    /*p03.ROWU*/ cpu_bus.CPU_TRI_D6.set_tribuf(_TEDA_FF05_RD, TIMA_6.q());
+    /*p03.PUSO*/ cpu_bus.CPU_TRI_D7.set_tribuf(_TEDA_FF05_RD, TIMA_7.q());
   }
 
   {
@@ -161,35 +161,35 @@ void TimerRegisters::tick(
   // FF06 TMA
   {
     /*p03.TYJU*/ wire _TYJU_FF06_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOVY_A00n, cpu_bus.PIN_A01);
-    /*p03.SABU*/ TMA_0.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D0);
-    /*p03.NYKE*/ TMA_1.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D1);
-    /*p03.MURU*/ TMA_2.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D2);
-    /*p03.TYVA*/ TMA_3.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D3);
-    /*p03.TYRU*/ TMA_4.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D4);
-    /*p03.SUFY*/ TMA_5.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D5);
-    /*p03.PETO*/ TMA_6.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D6);
-    /*p03.SETA*/ TMA_7.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.TRI_D7);
+    /*p03.SABU*/ TMA_0.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D0);
+    /*p03.NYKE*/ TMA_1.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D1);
+    /*p03.MURU*/ TMA_2.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D2);
+    /*p03.TYVA*/ TMA_3.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D3);
+    /*p03.TYRU*/ TMA_4.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D4);
+    /*p03.SUFY*/ TMA_5.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D5);
+    /*p03.PETO*/ TMA_6.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D6);
+    /*p03.SETA*/ TMA_7.set(_TYJU_FF06_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D7);
     /*p03.TUBY*/ wire FF06_RD = and (cpu_sig.TEDO_CPU_RD, cpu_sig.RYFO_FF04_FF07p, cpu_bus.PIN_A01, cpu_sig.TOVY_A00n);
-    /*p03.SETE*/ cpu_bus.TRI_D0.set_tribuf(FF06_RD, TMA_0.q());
-    /*p03.PYRE*/ cpu_bus.TRI_D1.set_tribuf(FF06_RD, TMA_1.q());
-    /*p03.NOLA*/ cpu_bus.TRI_D2.set_tribuf(FF06_RD, TMA_2.q());
-    /*p03.SALU*/ cpu_bus.TRI_D3.set_tribuf(FF06_RD, TMA_3.q());
-    /*p03.SUPO*/ cpu_bus.TRI_D4.set_tribuf(FF06_RD, TMA_4.q());
-    /*p03.SOTU*/ cpu_bus.TRI_D5.set_tribuf(FF06_RD, TMA_5.q());
-    /*p03.REVA*/ cpu_bus.TRI_D6.set_tribuf(FF06_RD, TMA_6.q());
-    /*p03.SAPU*/ cpu_bus.TRI_D7.set_tribuf(FF06_RD, TMA_7.q());
+    /*p03.SETE*/ cpu_bus.CPU_TRI_D0.set_tribuf(FF06_RD, TMA_0.q());
+    /*p03.PYRE*/ cpu_bus.CPU_TRI_D1.set_tribuf(FF06_RD, TMA_1.q());
+    /*p03.NOLA*/ cpu_bus.CPU_TRI_D2.set_tribuf(FF06_RD, TMA_2.q());
+    /*p03.SALU*/ cpu_bus.CPU_TRI_D3.set_tribuf(FF06_RD, TMA_3.q());
+    /*p03.SUPO*/ cpu_bus.CPU_TRI_D4.set_tribuf(FF06_RD, TMA_4.q());
+    /*p03.SOTU*/ cpu_bus.CPU_TRI_D5.set_tribuf(FF06_RD, TMA_5.q());
+    /*p03.REVA*/ cpu_bus.CPU_TRI_D6.set_tribuf(FF06_RD, TMA_6.q());
+    /*p03.SAPU*/ cpu_bus.CPU_TRI_D7.set_tribuf(FF06_RD, TMA_7.q());
   }
 
   // FF07 TAC
   {
     /*p03.SARA*/ wire _SARA_FF07_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_bus.PIN_A00, cpu_bus.PIN_A01);
-    /*p03.SOPU*/ TAC_0.set(_SARA_FF07_WRn, ALUR_RSTn, cpu_bus.TRI_D0);
-    /*p03.SAMY*/ TAC_1.set(_SARA_FF07_WRn, ALUR_RSTn, cpu_bus.TRI_D1);
-    /*p03.SABO*/ TAC_2.set(_SARA_FF07_WRn, ALUR_RSTn, cpu_bus.TRI_D2);
+    /*p03.SOPU*/ TAC_0.set(_SARA_FF07_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D0);
+    /*p03.SAMY*/ TAC_1.set(_SARA_FF07_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D1);
+    /*p03.SABO*/ TAC_2.set(_SARA_FF07_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D2);
     /*p03.SORA*/ wire FF07_RD = and (cpu_sig.TEDO_CPU_RD, cpu_sig.RYFO_FF04_FF07p, cpu_bus.PIN_A00, cpu_bus.PIN_A01);
-    /*p03.RYLA*/ cpu_bus.TRI_D0.set_tribuf(FF07_RD, TAC_0.q());
-    /*p03.ROTE*/ cpu_bus.TRI_D1.set_tribuf(FF07_RD, TAC_1.q());
-    /*p03.SUPE*/ cpu_bus.TRI_D2.set_tribuf(FF07_RD, TAC_2.q());
+    /*p03.RYLA*/ cpu_bus.CPU_TRI_D0.set_tribuf(FF07_RD, TAC_0.q());
+    /*p03.ROTE*/ cpu_bus.CPU_TRI_D1.set_tribuf(FF07_RD, TAC_1.q());
+    /*p03.SUPE*/ cpu_bus.CPU_TRI_D2.set_tribuf(FF07_RD, TAC_2.q());
   }
 }
 

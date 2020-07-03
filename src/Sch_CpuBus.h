@@ -65,18 +65,18 @@ struct CpuBus {
   SignalHash commit();
 
   int get_data() const {
-    return pack(TRI_D0, TRI_D1, TRI_D2, TRI_D3, TRI_D4, TRI_D5, TRI_D6, TRI_D7);
+    return pack(CPU_TRI_D0, CPU_TRI_D1, CPU_TRI_D2, CPU_TRI_D3, CPU_TRI_D4, CPU_TRI_D5, CPU_TRI_D6, CPU_TRI_D7);
   }
 
   void set_data(bool oe, uint8_t data) {
-    TRI_D0.set_tribuf(oe, data & 0x01);
-    TRI_D1.set_tribuf(oe, data & 0x02);
-    TRI_D2.set_tribuf(oe, data & 0x04);
-    TRI_D3.set_tribuf(oe, data & 0x08);
-    TRI_D4.set_tribuf(oe, data & 0x10);
-    TRI_D5.set_tribuf(oe, data & 0x20);
-    TRI_D6.set_tribuf(oe, data & 0x40);
-    TRI_D7.set_tribuf(oe, data & 0x80);
+    CPU_TRI_D0.set_tribuf(oe, data & 0x01);
+    CPU_TRI_D1.set_tribuf(oe, data & 0x02);
+    CPU_TRI_D2.set_tribuf(oe, data & 0x04);
+    CPU_TRI_D3.set_tribuf(oe, data & 0x08);
+    CPU_TRI_D4.set_tribuf(oe, data & 0x10);
+    CPU_TRI_D5.set_tribuf(oe, data & 0x20);
+    CPU_TRI_D6.set_tribuf(oe, data & 0x40);
+    CPU_TRI_D7.set_tribuf(oe, data & 0x80);
   }
 
   int get_addr() const {
@@ -84,9 +84,9 @@ struct CpuBus {
       PIN_A08, PIN_A09, PIN_A10, PIN_A11, PIN_A12, PIN_A13, PIN_A14, PIN_A15);
   }
 
-  void preset_rd(bool rd)            { PIN_CPU_RAW_RD.preset(true, rd); }
-  bool preset_wr(bool wr)            { PIN_CPU_RAW_WR.preset(true, wr); }
-  bool preset_addr_valid(bool valid) { PIN_ADDR_VALID.preset(true, valid); }
+  void preset_rd(bool rd)            { CPU_PIN_RD.preset(true, rd); }
+  bool preset_wr(bool wr)            { CPU_PIN_WR.preset(true, wr); }
+  bool preset_addr_valid(bool valid) { CPU_PIN_ADDR_VALID.preset(true, valid); }
   void preset_addr(bool oe, uint16_t addr) {
     PIN_A00.preset(oe, addr & 0x0001);
     PIN_A01.preset(oe, addr & 0x0002);
@@ -109,18 +109,18 @@ struct CpuBus {
   //----------
   // bottom left port, tristate data bus
 
-  Tribuf TRI_D0;
-  Tribuf TRI_D1;
-  Tribuf TRI_D2;
-  Tribuf TRI_D3;
-  Tribuf TRI_D4;
-  Tribuf TRI_D5;
-  Tribuf TRI_D6;
-  Tribuf TRI_D7;
+  Tribuf CPU_TRI_D0;
+  Tribuf CPU_TRI_D1;
+  Tribuf CPU_TRI_D2;
+  Tribuf CPU_TRI_D3;
+  Tribuf CPU_TRI_D4;
+  Tribuf CPU_TRI_D5;
+  Tribuf CPU_TRI_D6;
+  Tribuf CPU_TRI_D7;
 
-  PinIn  PIN_CPU_RAW_RD; // top right port PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
-  PinIn  PIN_CPU_RAW_WR; // top right port PORTA_01: -> P01.AREV, P08.LAGU.           This is almost definitely "raw write"
-  PinIn  PIN_ADDR_VALID; // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
+  PinIn  CPU_PIN_RD; // top right port PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
+  PinIn  CPU_PIN_WR; // top right port PORTA_01: -> P01.AREV, P08.LAGU.           This is almost definitely "raw write"
+  PinIn  CPU_PIN_ADDR_VALID; // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
   PinIn  CPU_PIN5; // top left port PORTD_06: -> ANUJ (FROM_CPU5). Maybe this means "latch the bus"?
   PinIn  CPU_PIN6;  // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
   PinIn  CPU_PIN_CLKREQ;     // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?

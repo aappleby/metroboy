@@ -55,7 +55,7 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
 
   /*p08.SORE*/ wire _SORE_0000_7FFFp = not(PIN_A15);
   /*p08.TEVY*/ wire _TEVY_8000_9FFFn = or(PIN_A13, PIN_A14, _SORE_0000_7FFFp);
-  /*p08.TEXO*/ sig.TEXO_8000_9FFFn = and (PIN_ADDR_VALID, _TEVY_8000_9FFFn);
+  /*p08.TEXO*/ sig.TEXO_8000_9FFFn = and (CPU_PIN_ADDR_VALID, _TEVY_8000_9FFFn);
   /*p08.LEVO*/ sig.LEVO_8000_9FFFp = not(sig.TEXO_8000_9FFFn);
 
   // the logic here is kinda weird, still seems to select vram.
@@ -74,12 +74,12 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   // UBAL4 nc
   // UBAL5 >>
 
-  /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(EXT_PIN_RD_C, PIN_CPU_RAW_RD, dbg_sig.UNOR_MODE_DBG2p);
+  /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(EXT_PIN_RD_C, CPU_PIN_RD, dbg_sig.UNOR_MODE_DBG2p);
   /*p07.TEDO*/ sig.TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
   /*p07.AJAS*/ wire AJAS_BUS_RD = not(sig.TEDO_CPU_RD);
   /*p07.ASOT*/ sig.ASOT_CPU_RD = not(AJAS_BUS_RD);
 
-  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(PIN_CPU_RAW_WR, clk_sig.AFAS_xxxxxFGH);
+  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(CPU_PIN_WR, clk_sig.AFAS_xxxxxFGH);
   /*p01.APOV*/ sig.APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
   /*p07.UBAL*/ wire UBAL_CPU_WR_ABCDExxx = mux2_n(EXT_PIN_WR_C, sig.APOV_CPU_WR_xxxxxFGH, dbg_sig.UNOR_MODE_DBG2p);
   /*p07.TAPU*/ sig.TAPU_CPU_WR_xxxxxFGH = not(UBAL_CPU_WR_ABCDExxx);
@@ -91,7 +91,7 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   // LAGU 5-rung
   // LAGU01
 
-  /*p08.LAGU*/ wire _LAGU = or(and(PIN_CPU_RAW_RD, sig.LEVO_8000_9FFFp), PIN_CPU_RAW_WR);
+  /*p08.LAGU*/ wire _LAGU = or(and(CPU_PIN_RD, sig.LEVO_8000_9FFFp), CPU_PIN_WR);
   /*p08.LYWE*/ wire _LYWE = not(_LAGU);
   /*p08.MOCA*/ sig.MOCA_DBG_EXT_RD = nor(sig.TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1p);
   /*p08.MOTY*/ sig.MOTY_CPU_EXT_RD = or(sig.MOCA_DBG_EXT_RD, _LYWE);
@@ -106,7 +106,7 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   /*p08.LOXO*/ wire _LOXO_LATCH_CPU_ADDRp = or (and (_MULE_MODE_DBG1n, sig.TEXO_8000_9FFFn), dbg_sig.UMUT_MODE_DBG1p);
   /*p08.LASY*/ wire _LASY_LATCH_CPU_ADDRn = not(_LOXO_LATCH_CPU_ADDRp);
   /*p08.MATE*/ sig.MATE_LATCH_CPU_ADDRp = not(_LASY_LATCH_CPU_ADDRn);
-  /*p08.LAVO*/ sig.LAVO_LATCH_CPU_DATAp = nand(PIN_CPU_RAW_RD, sig.TEXO_8000_9FFFn, CPU_PIN5);
+  /*p08.LAVO*/ sig.LAVO_LATCH_CPU_DATAp = nand(CPU_PIN_RD, sig.TEXO_8000_9FFFn, CPU_PIN5);
 
   /*p08.REDU*/ wire _REDU_CPU_RD = not(sig.TEDO_CPU_RD);
   /*p08.RORU*/ sig.RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RD, sig.MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
@@ -167,23 +167,23 @@ void CpuBus::tick(SchematicTop& gb) {
     PIN_D6_B.set(LULA_IBUS_TO_EBUSp);
     PIN_D7_B.set(LULA_IBUS_TO_EBUSp);
 
-    /*p25.RUXA*/ PIN_D0_A.set(nand(TRI_D0, LULA_IBUS_TO_EBUSp));
-    /*p25.RUJA*/ PIN_D1_A.set(nand(TRI_D1, LULA_IBUS_TO_EBUSp));
-    /*p25.RABY*/ PIN_D2_A.set(nand(TRI_D2, LULA_IBUS_TO_EBUSp));
-    /*p25.RERA*/ PIN_D3_A.set(nand(TRI_D3, LULA_IBUS_TO_EBUSp));
-    /*p25.RORY*/ PIN_D4_A.set(nand(TRI_D4, LULA_IBUS_TO_EBUSp));
-    /*p25.RYVO*/ PIN_D5_A.set(nand(TRI_D5, LULA_IBUS_TO_EBUSp));
-    /*p25.RAFY*/ PIN_D6_A.set(nand(TRI_D6, LULA_IBUS_TO_EBUSp));
-    /*p25.RAVU*/ PIN_D7_A.set(nand(TRI_D7, LULA_IBUS_TO_EBUSp));
+    /*p25.RUXA*/ PIN_D0_A.set(nand(CPU_TRI_D0, LULA_IBUS_TO_EBUSp));
+    /*p25.RUJA*/ PIN_D1_A.set(nand(CPU_TRI_D1, LULA_IBUS_TO_EBUSp));
+    /*p25.RABY*/ PIN_D2_A.set(nand(CPU_TRI_D2, LULA_IBUS_TO_EBUSp));
+    /*p25.RERA*/ PIN_D3_A.set(nand(CPU_TRI_D3, LULA_IBUS_TO_EBUSp));
+    /*p25.RORY*/ PIN_D4_A.set(nand(CPU_TRI_D4, LULA_IBUS_TO_EBUSp));
+    /*p25.RYVO*/ PIN_D5_A.set(nand(CPU_TRI_D5, LULA_IBUS_TO_EBUSp));
+    /*p25.RAFY*/ PIN_D6_A.set(nand(CPU_TRI_D6, LULA_IBUS_TO_EBUSp));
+    /*p25.RAVU*/ PIN_D7_A.set(nand(CPU_TRI_D7, LULA_IBUS_TO_EBUSp));
 
-    /*p08.RUNE*/ PIN_D0_D.set(nor(TRI_D0, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.RYPU*/ PIN_D1_D.set(nor(TRI_D1, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.SULY*/ PIN_D2_D.set(nor(TRI_D2, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.SEZE*/ PIN_D3_D.set(nor(TRI_D3, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.RESY*/ PIN_D4_D.set(nor(TRI_D4, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.TAMU*/ PIN_D5_D.set(nor(TRI_D5, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.ROGY*/ PIN_D6_D.set(nor(TRI_D6, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.RYDA*/ PIN_D7_D.set(nor(TRI_D7, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RUNE*/ PIN_D0_D.set(nor(CPU_TRI_D0, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RYPU*/ PIN_D1_D.set(nor(CPU_TRI_D1, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.SULY*/ PIN_D2_D.set(nor(CPU_TRI_D2, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.SEZE*/ PIN_D3_D.set(nor(CPU_TRI_D3, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RESY*/ PIN_D4_D.set(nor(CPU_TRI_D4, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.TAMU*/ PIN_D5_D.set(nor(CPU_TRI_D5, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.ROGY*/ PIN_D6_D.set(nor(CPU_TRI_D6, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RYDA*/ PIN_D7_D.set(nor(CPU_TRI_D7, cpu_sig.RORU_IBUS_TO_EBUSn));
   }
 
   {
@@ -213,14 +213,14 @@ void CpuBus::tick(SchematicTop& gb) {
 
     // RYMA 6-rung green tribuf
 
-    /*p08.RYMA*/ TRI_D0.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SOMA_CPU_DATA_LATCH_00);
-    /*p08.RUVO*/ TRI_D1.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RONY_CPU_DATA_LATCH_01);
-    /*p08.RYKO*/ TRI_D2.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RAXY_CPU_DATA_LATCH_02);
-    /*p08.TAVO*/ TRI_D3.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SELO_CPU_DATA_LATCH_03);
-    /*p08.TEPE*/ TRI_D4.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SODY_CPU_DATA_LATCH_04);
-    /*p08.SAFO*/ TRI_D5.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAGO_CPU_DATA_LATCH_05);
-    /*p08.SEVU*/ TRI_D6.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RUPA_CPU_DATA_LATCH_06);
-    /*p08.TAJU*/ TRI_D7.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAZY_CPU_DATA_LATCH_07);
+    /*p08.RYMA*/ CPU_TRI_D0.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SOMA_CPU_DATA_LATCH_00);
+    /*p08.RUVO*/ CPU_TRI_D1.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RONY_CPU_DATA_LATCH_01);
+    /*p08.RYKO*/ CPU_TRI_D2.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RAXY_CPU_DATA_LATCH_02);
+    /*p08.TAVO*/ CPU_TRI_D3.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SELO_CPU_DATA_LATCH_03);
+    /*p08.TEPE*/ CPU_TRI_D4.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SODY_CPU_DATA_LATCH_04);
+    /*p08.SAFO*/ CPU_TRI_D5.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAGO_CPU_DATA_LATCH_05);
+    /*p08.SEVU*/ CPU_TRI_D6.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RUPA_CPU_DATA_LATCH_06);
+    /*p08.TAJU*/ CPU_TRI_D7.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAZY_CPU_DATA_LATCH_07);
   }}
 
 //------------------------------------------------------------------------------
@@ -257,18 +257,18 @@ SignalHash CpuBus::commit() {
 
   hash << MAKA_FROM_CPU5_SYNC.commit_reg();
 
-  hash << TRI_D0.commit_tribuf();
-  hash << TRI_D1.commit_tribuf();
-  hash << TRI_D2.commit_tribuf();
-  hash << TRI_D3.commit_tribuf();
-  hash << TRI_D4.commit_tribuf();
-  hash << TRI_D5.commit_tribuf();
-  hash << TRI_D6.commit_tribuf();
-  hash << TRI_D7.commit_tribuf();
+  hash << CPU_TRI_D0.commit_tribuf();
+  hash << CPU_TRI_D1.commit_tribuf();
+  hash << CPU_TRI_D2.commit_tribuf();
+  hash << CPU_TRI_D3.commit_tribuf();
+  hash << CPU_TRI_D4.commit_tribuf();
+  hash << CPU_TRI_D5.commit_tribuf();
+  hash << CPU_TRI_D6.commit_tribuf();
+  hash << CPU_TRI_D7.commit_tribuf();
 
-  hash << PIN_CPU_RAW_RD.clear_preset();     // PORTA_00: -> UJYV, LAGU, LAVO
-  hash << PIN_CPU_RAW_WR.clear_preset();     // PORTA_01: -> AREV, LAGU.
-  hash << PIN_ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
+  hash << CPU_PIN_RD.clear_preset();     // PORTA_00: -> UJYV, LAGU, LAVO
+  hash << CPU_PIN_WR.clear_preset();     // PORTA_01: -> AREV, LAGU.
+  hash << CPU_PIN_ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
   hash << CPU_PIN5.clear_preset();     // PORTD_05: -> FROM_CPU5
   hash << CPU_PIN6.clear_preset();      // PORTD_00: -> LEXY, doesn't do anything
   hash << CPU_PIN_CLKREQ.clear_preset();         // PORTC_00: -> ABOL
@@ -405,14 +405,14 @@ void CpuPinsOut::tick(SchematicTop& gb) {
   ///*p05.KYWE*/ wire P05_NC1 = nor (DBG_FF00_D7, FF60_0o);
 
   /*p08.LYRA*/ wire DBG_D_RDn = nand(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
-  /*p08.TUTY*/ if (!DBG_D_RDn) TRI_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));
-  /*p08.SYWA*/ if (!DBG_D_RDn) TRI_D1 = not(/*p08.RUZY*/ not(pins.PIN_D1_C));
-  /*p08.SUGU*/ if (!DBG_D_RDn) TRI_D2 = not(/*p08.ROME*/ not(pins.PIN_D2_C));
-  /*p08.TAWO*/ if (!DBG_D_RDn) TRI_D3 = not(/*p08.SAZA*/ not(pins.PIN_D3_C));
-  /*p08.TUTE*/ if (!DBG_D_RDn) TRI_D4 = not(/*p08.TEHE*/ not(pins.PIN_D4_C));
-  /*p08.SAJO*/ if (!DBG_D_RDn) TRI_D5 = not(/*p08.RATU*/ not(pins.PIN_D5_C));
-  /*p08.TEMY*/ if (!DBG_D_RDn) TRI_D6 = not(/*p08.SOCA*/ not(pins.PIN_D6_C));
-  /*p08.ROPA*/ if (!DBG_D_RDn) TRI_D7 = not(/*p08.RYBA*/ not(pins.PIN_D7_C));
+  /*p08.TUTY*/ if (!DBG_D_RDn) CPU_TRI_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));
+  /*p08.SYWA*/ if (!DBG_D_RDn) CPU_TRI_D1 = not(/*p08.RUZY*/ not(pins.PIN_D1_C));
+  /*p08.SUGU*/ if (!DBG_D_RDn) CPU_TRI_D2 = not(/*p08.ROME*/ not(pins.PIN_D2_C));
+  /*p08.TAWO*/ if (!DBG_D_RDn) CPU_TRI_D3 = not(/*p08.SAZA*/ not(pins.PIN_D3_C));
+  /*p08.TUTE*/ if (!DBG_D_RDn) CPU_TRI_D4 = not(/*p08.TEHE*/ not(pins.PIN_D4_C));
+  /*p08.SAJO*/ if (!DBG_D_RDn) CPU_TRI_D5 = not(/*p08.RATU*/ not(pins.PIN_D5_C));
+  /*p08.TEMY*/ if (!DBG_D_RDn) CPU_TRI_D6 = not(/*p08.SOCA*/ not(pins.PIN_D6_C));
+  /*p08.ROPA*/ if (!DBG_D_RDn) CPU_TRI_D7 = not(/*p08.RYBA*/ not(pins.PIN_D7_C));
 #endif
 
   // hack, not correct
@@ -424,13 +424,13 @@ void CpuPinsOut::tick(SchematicTop& gb) {
 
     /*p05.KURA*/ wire FF60_0n = not(BURO_FF60_0);
     /*p05.JEVA*/ wire FF60_0o = not(BURO_FF60_0);
-    /*p07.BURO*/ BURO_FF60_0.set(FF60_WRn, rst_sig.SYS_RESETn, TRI_D0);
-    /*p07.AMUT*/ AMUT_FF60_1.set(FF60_WRn, rst_sig.SYS_RESETn, TRI_D1);
+    /*p07.BURO*/ BURO_FF60_0.set(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D0);
+    /*p07.AMUT*/ AMUT_FF60_1.set(FF60_WRn, rst_sig.SYS_RESETn, CPU_TRI_D1);
 
     ///*p05.KURA*/ wire FF60_0n = not(FF60);
     ///*p05.JEVA*/ wire FF60_0o = not(FF60);
-    /*p07.BURO*/ dbg_reg.BURO_FF60_0.set(1, rst_sig.ALUR_RSTn, TRI_D0);
-    /*p07.AMUT*/ dbg_reg.AMUT_FF60_1.set(1, rst_sig.ALUR_RSTn, TRI_D1);
+    /*p07.BURO*/ dbg_reg.BURO_FF60_0.set(1, rst_sig.ALUR_RSTn, CPU_TRI_D0);
+    /*p07.AMUT*/ dbg_reg.AMUT_FF60_1.set(1, rst_sig.ALUR_RSTn, CPU_TRI_D1);
   }
 #endif
 
@@ -534,9 +534,9 @@ void dump_pins(TextPainter& text_painter) {
 
   /*
   text_painter.dprintf("----- CPU BUS -----\n");
-  text_painter.dprintf("PIN_CPU_RAW_RD    %d\n", PIN_CPU_RAW_RD.a.val);
-  text_painter.dprintf("PIN_CPU_RAW_WR    %d\n", PIN_CPU_RAW_WR.a.val);
-  text_painter.dprintf("PIN_ADDR_VALID    %d\n", PIN_ADDR_VALID.a.val);
+  text_painter.dprintf("CPU_PIN_RD    %d\n", CPU_PIN_RD.a.val);
+  text_painter.dprintf("CPU_PIN_WR    %d\n", CPU_PIN_WR.a.val);
+  text_painter.dprintf("CPU_PIN_ADDR_VALID    %d\n", CPU_PIN_ADDR_VALID.a.val);
   */
 
   /*

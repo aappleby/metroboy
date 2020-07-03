@@ -45,23 +45,23 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus&
   /*p05.KEJA*/ JOYP_L2.setx(_BYZO_FF00_RDn, P12_C);
   /*p05.KOLO*/ JOYP_L3.setx(_BYZO_FF00_RDn, P13_C);
 
-  /*p05.KEMA*/ cpu_bus.TRI_D0.set_tribuf(!_BYZO_FF00_RDn, JOYP_L0.q());
-  /*p05.KURO*/ cpu_bus.TRI_D1.set_tribuf(!_BYZO_FF00_RDn, JOYP_L1.q());
-  /*p05.KUVE*/ cpu_bus.TRI_D2.set_tribuf(!_BYZO_FF00_RDn, JOYP_L2.q());
-  /*p05.JEKU*/ cpu_bus.TRI_D3.set_tribuf(!_BYZO_FF00_RDn, JOYP_L3.q());
-  /*p05.KOCE*/ cpu_bus.TRI_D4.set_tribuf(!_BYZO_FF00_RDn, JOYP_UDLR.q());
-  /*p05.CUDY*/ cpu_bus.TRI_D5.set_tribuf(!_BYZO_FF00_RDn, JOYP_ABCS.q());
-  /*p??.????*/ cpu_bus.TRI_D6.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D6.q());
-  /*p??.????*/ cpu_bus.TRI_D7.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D7.q());
+  /*p05.KEMA*/ cpu_bus.CPU_TRI_D0.set_tribuf(!_BYZO_FF00_RDn, JOYP_L0.q());
+  /*p05.KURO*/ cpu_bus.CPU_TRI_D1.set_tribuf(!_BYZO_FF00_RDn, JOYP_L1.q());
+  /*p05.KUVE*/ cpu_bus.CPU_TRI_D2.set_tribuf(!_BYZO_FF00_RDn, JOYP_L2.q());
+  /*p05.JEKU*/ cpu_bus.CPU_TRI_D3.set_tribuf(!_BYZO_FF00_RDn, JOYP_L3.q());
+  /*p05.KOCE*/ cpu_bus.CPU_TRI_D4.set_tribuf(!_BYZO_FF00_RDn, JOYP_UDLR.q());
+  /*p05.CUDY*/ cpu_bus.CPU_TRI_D5.set_tribuf(!_BYZO_FF00_RDn, JOYP_ABCS.q());
+  /*p??.????*/ cpu_bus.CPU_TRI_D6.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D6.q());
+  /*p??.????*/ cpu_bus.CPU_TRI_D7.set_tribuf(!_BYZO_FF00_RDn, DBG_FF00_D7.q());
 
-  /*p05.JUTE*/ JOYP_RA    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.TRI_D0);
-  /*p05.KECY*/ JOYP_LB    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.TRI_D1);
-  /*p05.JALE*/ JOYP_UC    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.TRI_D2);
-  /*p05.KYME*/ JOYP_DS    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.TRI_D3);
-  /*p05.KELY*/ JOYP_UDLR  .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.TRI_D4);
-  /*p05.COFY*/ JOYP_ABCS  .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.TRI_D5);
-  /*p05.KUKO*/ DBG_FF00_D6.set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.TRI_D6);
-  /*p05.KERU*/ DBG_FF00_D7.set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.TRI_D7);
+  /*p05.JUTE*/ JOYP_RA    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D0);
+  /*p05.KECY*/ JOYP_LB    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D1);
+  /*p05.JALE*/ JOYP_UC    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D2);
+  /*p05.KYME*/ JOYP_DS    .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D3);
+  /*p05.KELY*/ JOYP_UDLR  .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D4);
+  /*p05.COFY*/ JOYP_ABCS  .set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D5);
+  /*p05.KUKO*/ DBG_FF00_D6.set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D6);
+  /*p05.KERU*/ DBG_FF00_D7.set(_ATOZ_FF00_WRn, ALUR_RSTn, cpu_bus.CPU_TRI_D7);
 
   // FIXME
   wire BURO_FF60_0 = 0;

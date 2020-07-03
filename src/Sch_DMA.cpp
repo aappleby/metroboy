@@ -202,23 +202,23 @@ void DmaRegisters::tick(SchematicTop& gb) {
     /*p04.NYGO*/ wire NYGO_FF46_RDp = not(MOLU_FF46_RDn);
     /*p04.PUSY*/ wire PUSY_FF46_RDn = not(NYGO_FF46_RDp);
 
-    /*p04.POLY*/ cpu_bus.TRI_D0.set_tribuf(!PUSY_FF46_RDn, DMA_A08);
-    /*p04.ROFO*/ cpu_bus.TRI_D1.set_tribuf(!PUSY_FF46_RDn, DMA_A09);
-    /*p04.REMA*/ cpu_bus.TRI_D2.set_tribuf(!PUSY_FF46_RDn, DMA_A10);
-    /*p04.PANE*/ cpu_bus.TRI_D3.set_tribuf(!PUSY_FF46_RDn, DMA_A11);
-    /*p04.PARE*/ cpu_bus.TRI_D4.set_tribuf(!PUSY_FF46_RDn, DMA_A12);
-    /*p04.RALY*/ cpu_bus.TRI_D5.set_tribuf(!PUSY_FF46_RDn, DMA_A13);
-    /*p04.RESU*/ cpu_bus.TRI_D6.set_tribuf(!PUSY_FF46_RDn, DMA_A14);
-    /*p04.NUVY*/ cpu_bus.TRI_D7.set_tribuf(!PUSY_FF46_RDn, DMA_A15);
+    /*p04.POLY*/ cpu_bus.CPU_TRI_D0.set_tribuf(!PUSY_FF46_RDn, DMA_A08);
+    /*p04.ROFO*/ cpu_bus.CPU_TRI_D1.set_tribuf(!PUSY_FF46_RDn, DMA_A09);
+    /*p04.REMA*/ cpu_bus.CPU_TRI_D2.set_tribuf(!PUSY_FF46_RDn, DMA_A10);
+    /*p04.PANE*/ cpu_bus.CPU_TRI_D3.set_tribuf(!PUSY_FF46_RDn, DMA_A11);
+    /*p04.PARE*/ cpu_bus.CPU_TRI_D4.set_tribuf(!PUSY_FF46_RDn, DMA_A12);
+    /*p04.RALY*/ cpu_bus.CPU_TRI_D5.set_tribuf(!PUSY_FF46_RDn, DMA_A13);
+    /*p04.RESU*/ cpu_bus.CPU_TRI_D6.set_tribuf(!PUSY_FF46_RDn, DMA_A14);
+    /*p04.NUVY*/ cpu_bus.CPU_TRI_D7.set_tribuf(!PUSY_FF46_RDn, DMA_A15);
 
-    /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn, cpu_bus.TRI_D0);
-    /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn, cpu_bus.TRI_D1);
-    /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn, cpu_bus.TRI_D2);
-    /*p04.NYDO*/ DMA_A11.set(LORU_FF46_WRn, cpu_bus.TRI_D3);
-    /*p04.NYGY*/ DMA_A12.set(LORU_FF46_WRn, cpu_bus.TRI_D4);
-    /*p04.PULA*/ DMA_A13.set(LORU_FF46_WRn, cpu_bus.TRI_D5);
-    /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn, cpu_bus.TRI_D6);
-    /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn, cpu_bus.TRI_D7);
+    /*p04.NAFA*/ DMA_A08.set(LORU_FF46_WRn, cpu_bus.CPU_TRI_D0);
+    /*p04.PYNE*/ DMA_A09.set(LORU_FF46_WRn, cpu_bus.CPU_TRI_D1);
+    /*p04.PARA*/ DMA_A10.set(LORU_FF46_WRn, cpu_bus.CPU_TRI_D2);
+    /*p04.NYDO*/ DMA_A11.set(LORU_FF46_WRn, cpu_bus.CPU_TRI_D3);
+    /*p04.NYGY*/ DMA_A12.set(LORU_FF46_WRn, cpu_bus.CPU_TRI_D4);
+    /*p04.PULA*/ DMA_A13.set(LORU_FF46_WRn, cpu_bus.CPU_TRI_D5);
+    /*p04.POKU*/ DMA_A14.set(LORU_FF46_WRn, cpu_bus.CPU_TRI_D6);
+    /*p04.MARU*/ DMA_A15.set(LORU_FF46_WRn, cpu_bus.CPU_TRI_D7);
   }
 }
 

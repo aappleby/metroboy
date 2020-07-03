@@ -288,23 +288,23 @@ void TileFetcher::tick(SchematicTop& gb) {
     // BFETCH_100 - LOMA_BG_LATCHn = 1;
     // BFETCH_101 - LOMA_BG_LATCHn = 1;
 
-    /*p32.LEGU*/ BG_PIX_A0.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D0);
-    /*p32.NUDU*/ BG_PIX_A1.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D1);
-    /*p32.MUKU*/ BG_PIX_A2.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D2);
-    /*p32.LUZO*/ BG_PIX_A3.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D3);
-    /*p32.MEGU*/ BG_PIX_A4.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D4);
-    /*p32.MYJY*/ BG_PIX_A5.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D5);
-    /*p32.NASA*/ BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D6);
-    /*p32.NEFO*/ BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.TRI_D7);
+    /*p32.LEGU*/ BG_PIX_A0.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D0);
+    /*p32.NUDU*/ BG_PIX_A1.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D1);
+    /*p32.MUKU*/ BG_PIX_A2.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D2);
+    /*p32.LUZO*/ BG_PIX_A3.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D3);
+    /*p32.MEGU*/ BG_PIX_A4.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D4);
+    /*p32.MYJY*/ BG_PIX_A5.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D5);
+    /*p32.NASA*/ BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D6);
+    /*p32.NEFO*/ BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, vram_bus.CPU_TRI_D7);
 
-    /*p32.RAWU*/ BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.TRI_D0);
-    /*p32.POZO*/ BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.TRI_D1);
-    /*p32.PYZO*/ BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.TRI_D2);
-    /*p32.POXA*/ BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.TRI_D3);
-    /*p32.PULO*/ BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.TRI_D4);
-    /*p32.POJU*/ BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.TRI_D5);
-    /*p32.POWY*/ BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.TRI_D6);
-    /*p32.PYJU*/ BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.TRI_D7);
+    /*p32.RAWU*/ BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D0);
+    /*p32.POZO*/ BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D1);
+    /*p32.PYZO*/ BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D2);
+    /*p32.POXA*/ BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D3);
+    /*p32.PULO*/ BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D4);
+    /*p32.POJU*/ BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D5);
+    /*p32.POWY*/ BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D6);
+    /*p32.PYJU*/ BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, dbg_sig.VYPO_P10_Bn, vram_bus.CPU_TRI_D7);
   }
 }
 

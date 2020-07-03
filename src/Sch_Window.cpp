@@ -246,24 +246,24 @@ void WindowRegisters::tick(SchematicTop& gb) {
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
     /*p01.WALU*/ wire WALU_RSTn = not(XORE_RSTp);
-    /*p23.NESO*/ WY0.set(FF4A_WRn, WALU_RSTn, cpu_bus.TRI_D0);
-    /*p23.NYRO*/ WY1.set(FF4A_WRn, WALU_RSTn, cpu_bus.TRI_D1);
-    /*p23.NAGA*/ WY2.set(FF4A_WRn, WALU_RSTn, cpu_bus.TRI_D2);
-    /*p23.MELA*/ WY3.set(FF4A_WRn, WALU_RSTn, cpu_bus.TRI_D3);
-    /*p23.NULO*/ WY4.set(FF4A_WRn, WALU_RSTn, cpu_bus.TRI_D4);
-    /*p23.NENE*/ WY5.set(FF4A_WRn, WALU_RSTn, cpu_bus.TRI_D5);
-    /*p23.NUKA*/ WY6.set(FF4A_WRn, WALU_RSTn, cpu_bus.TRI_D6);
-    /*p23.NAFU*/ WY7.set(FF4A_WRn, WALU_RSTn, cpu_bus.TRI_D7);
+    /*p23.NESO*/ WY0.set(FF4A_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D0);
+    /*p23.NYRO*/ WY1.set(FF4A_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D1);
+    /*p23.NAGA*/ WY2.set(FF4A_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D2);
+    /*p23.MELA*/ WY3.set(FF4A_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D3);
+    /*p23.NULO*/ WY4.set(FF4A_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D4);
+    /*p23.NENE*/ WY5.set(FF4A_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D5);
+    /*p23.NUKA*/ WY6.set(FF4A_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D6);
+    /*p23.NAFU*/ WY7.set(FF4A_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D7);
 
 
-    /*p23.PUNU*/ cpu_bus.TRI_D0.set_tribuf(!FF4A_RDn, WY0.q());
-    /*p23.PODA*/ cpu_bus.TRI_D1.set_tribuf(!FF4A_RDn, WY1.q());
-    /*p23.PYGU*/ cpu_bus.TRI_D2.set_tribuf(!FF4A_RDn, WY2.q());
-    /*p23.LOKA*/ cpu_bus.TRI_D3.set_tribuf(!FF4A_RDn, WY3.q());
-    /*p23.MEGA*/ cpu_bus.TRI_D4.set_tribuf(!FF4A_RDn, WY4.q());
-    /*p23.PELA*/ cpu_bus.TRI_D5.set_tribuf(!FF4A_RDn, WY5.q());
-    /*p23.POLO*/ cpu_bus.TRI_D6.set_tribuf(!FF4A_RDn, WY6.q());
-    /*p23.MERA*/ cpu_bus.TRI_D7.set_tribuf(!FF4A_RDn, WY7.q());
+    /*p23.PUNU*/ cpu_bus.CPU_TRI_D0.set_tribuf(!FF4A_RDn, WY0.q());
+    /*p23.PODA*/ cpu_bus.CPU_TRI_D1.set_tribuf(!FF4A_RDn, WY1.q());
+    /*p23.PYGU*/ cpu_bus.CPU_TRI_D2.set_tribuf(!FF4A_RDn, WY2.q());
+    /*p23.LOKA*/ cpu_bus.CPU_TRI_D3.set_tribuf(!FF4A_RDn, WY3.q());
+    /*p23.MEGA*/ cpu_bus.CPU_TRI_D4.set_tribuf(!FF4A_RDn, WY4.q());
+    /*p23.PELA*/ cpu_bus.CPU_TRI_D5.set_tribuf(!FF4A_RDn, WY5.q());
+    /*p23.POLO*/ cpu_bus.CPU_TRI_D6.set_tribuf(!FF4A_RDn, WY6.q());
+    /*p23.MERA*/ cpu_bus.CPU_TRI_D7.set_tribuf(!FF4A_RDn, WY7.q());
   }
 
   // FF4B
@@ -282,24 +282,24 @@ void WindowRegisters::tick(SchematicTop& gb) {
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
     /*p01.XORE*/ wire XORE_RSTp = not(CUNU_RSTn);
     /*p01.WALU*/ wire WALU_RSTn = not(XORE_RSTp);
-    /*p23.MYPA*/ WX0.set(FF4B_WRn, WALU_RSTn, cpu_bus.TRI_D0);
-    /*p23.NOFE*/ WX1.set(FF4B_WRn, WALU_RSTn, cpu_bus.TRI_D1);
-    /*p23.NOKE*/ WX2.set(FF4B_WRn, WALU_RSTn, cpu_bus.TRI_D2);
-    /*p23.MEBY*/ WX3.set(FF4B_WRn, WALU_RSTn, cpu_bus.TRI_D3);
-    /*p23.MYPU*/ WX4.set(FF4B_WRn, WALU_RSTn, cpu_bus.TRI_D4);
-    /*p23.MYCE*/ WX5.set(FF4B_WRn, WALU_RSTn, cpu_bus.TRI_D5);
-    /*p23.MUVO*/ WX6.set(FF4B_WRn, WALU_RSTn, cpu_bus.TRI_D6);
-    /*p23.NUKU*/ WX7.set(FF4B_WRn, WALU_RSTn, cpu_bus.TRI_D7);
+    /*p23.MYPA*/ WX0.set(FF4B_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D0);
+    /*p23.NOFE*/ WX1.set(FF4B_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D1);
+    /*p23.NOKE*/ WX2.set(FF4B_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D2);
+    /*p23.MEBY*/ WX3.set(FF4B_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D3);
+    /*p23.MYPU*/ WX4.set(FF4B_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D4);
+    /*p23.MYCE*/ WX5.set(FF4B_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D5);
+    /*p23.MUVO*/ WX6.set(FF4B_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D6);
+    /*p23.NUKU*/ WX7.set(FF4B_WRn, WALU_RSTn, cpu_bus.CPU_TRI_D7);
 
 
-    /*p23.LOVA*/ cpu_bus.TRI_D0.set_tribuf(!FF4B_RDn, WX0.q());
-    /*p23.MUKA*/ cpu_bus.TRI_D1.set_tribuf(!FF4B_RDn, WX1.q());
-    /*p23.MOKO*/ cpu_bus.TRI_D2.set_tribuf(!FF4B_RDn, WX2.q());
-    /*p23.LOLE*/ cpu_bus.TRI_D3.set_tribuf(!FF4B_RDn, WX3.q());
-    /*p23.MELE*/ cpu_bus.TRI_D4.set_tribuf(!FF4B_RDn, WX4.q());
-    /*p23.MUFE*/ cpu_bus.TRI_D5.set_tribuf(!FF4B_RDn, WX5.q());
-    /*p23.MULY*/ cpu_bus.TRI_D6.set_tribuf(!FF4B_RDn, WX6.q());
-    /*p23.MARA*/ cpu_bus.TRI_D7.set_tribuf(!FF4B_RDn, WX7.q());
+    /*p23.LOVA*/ cpu_bus.CPU_TRI_D0.set_tribuf(!FF4B_RDn, WX0.q());
+    /*p23.MUKA*/ cpu_bus.CPU_TRI_D1.set_tribuf(!FF4B_RDn, WX1.q());
+    /*p23.MOKO*/ cpu_bus.CPU_TRI_D2.set_tribuf(!FF4B_RDn, WX2.q());
+    /*p23.LOLE*/ cpu_bus.CPU_TRI_D3.set_tribuf(!FF4B_RDn, WX3.q());
+    /*p23.MELE*/ cpu_bus.CPU_TRI_D4.set_tribuf(!FF4B_RDn, WX4.q());
+    /*p23.MUFE*/ cpu_bus.CPU_TRI_D5.set_tribuf(!FF4B_RDn, WX5.q());
+    /*p23.MULY*/ cpu_bus.CPU_TRI_D6.set_tribuf(!FF4B_RDn, WX6.q());
+    /*p23.MARA*/ cpu_bus.CPU_TRI_D7.set_tribuf(!FF4B_RDn, WX7.q());
   }
 }
 

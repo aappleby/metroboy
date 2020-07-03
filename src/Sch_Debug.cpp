@@ -15,9 +15,11 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 DebugSignals DebugRegisters::sig(const SchematicTop& gb) const {
-  DebugSignals sig;
+  return sig(gb.cpu_bus, gb.EXT_PIN_RST);
+}
 
-  auto& cpu_bus = gb.cpu_bus;
+DebugSignals DebugRegisters::sig(const CpuBus& cpu_bus, wire EXT_PIN_RST) const {
+  DebugSignals sig;
 
   wire P10_B = 0;
 
@@ -35,7 +37,7 @@ DebugSignals DebugRegisters::sig(const SchematicTop& gb) const {
   /*p07.UMUT*/ sig.UMUT_MODE_DBG1p = and (PIN_T1, sig.UVAR_T2n);
   /*p07.UNOR*/ sig.UNOR_MODE_DBG2p = and (PIN_T2, sig.UBET_T1n); // Must be UNORp, see UJYV/UBAL
   /*p08.TOVA*/ sig.TOVA_MODE_DBG2n = not(sig.UNOR_MODE_DBG2p);
-  /*p07.UPOJ*/ sig.UPOJ_MODE_PROD = nand(sig.UBET_T1n, sig.UVAR_T2n, gb.EXT_PIN_RST);
+  /*p07.UPOJ*/ sig.UPOJ_MODE_PROD = nand(sig.UBET_T1n, sig.UVAR_T2n, EXT_PIN_RST);
   /*p08.RYCA*/ sig.RYCA_MODE_DBG2n = not(sig.UNOR_MODE_DBG2p);
   /*p25.TUTO*/ sig.TUTO_DBG_VRAMp = and (sig.UNOR_MODE_DBG2p, !SOTO_DBG);
 
@@ -55,10 +57,10 @@ DebugSignals DebugRegisters::sig(const SchematicTop& gb) const {
 //-----------------------------------------------------------------------------
 
 void DebugRegisters::tick(const SchematicTop& gb) {
-  auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
-  auto dbg_sig = sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
+  tick(gb.dbg_reg.sig(gb), gb.rst_reg.sig(gb));
+}
 
+void DebugRegisters::tick(const DebugSignals& dbg_sig, const ResetSignals& rst_sig) {
   /*p25.SYCY*/ wire SYCY_DBG_CLOCKp = not(dbg_sig.UNOR_MODE_DBG2p);
   /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
   /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);

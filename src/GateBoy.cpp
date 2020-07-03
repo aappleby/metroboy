@@ -177,12 +177,12 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   gb->EXT_PIN_CLK_GOOD.preset(true, 0);
   gb->dbg_reg.preset_t1t2(0,0);
 
-  gb->cpu_bus.PIN_CLKREQ.preset(true, 0);
+  gb->cpu_bus.CPU_PIN_CLKREQ.preset(true, 0);
   gb->cpu_bus.PIN_CPU_RAW_RD.preset(true, 0);
   gb->cpu_bus.PIN_CPU_RAW_WR.preset(true, 0);
   gb->cpu_bus.PIN_ADDR_VALID.preset(true, 1);
-  gb->cpu_bus.PIN_FROM_CPU5p.preset(true, 0);
-  gb->cpu_bus.PIN_FROM_CPU6.preset(true, 0);
+  gb->cpu_bus.CPU_PIN5.preset(true, 0);
+  gb->cpu_bus.CPU_PIN6.preset(true, 0);
 
   /*
   gb->int_reg.PIN_ACK_SERIAL.preset(true, 0);
@@ -199,7 +199,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   pass_cycle();
   gb->EXT_PIN_CLK_GOOD.preset(true, 1);
   pass_cycle();
-  gb->cpu_bus.PIN_CLKREQ.preset(true, 1);
+  gb->cpu_bus.CPU_PIN_CLKREQ.preset(true, 1);
   pass_cycle();
 }
 

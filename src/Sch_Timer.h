@@ -27,8 +27,8 @@ struct TimerRegisters {
     const ResetSignals& rst_sig,
     const CpuBusSignals& cpu_sig,
     CpuBus& cpu_bus,
-    bool EXT_PIN_CLK_GOOD,
-    bool EXT_PIN_RST);
+    bool EXT_PIN_RST,
+    bool EXT_PIN_CLK_GOOD);
   
   SignalHash commit();
 

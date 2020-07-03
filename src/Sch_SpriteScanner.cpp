@@ -71,7 +71,8 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
     /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
-    /*p29.CARE*/ sprite_scanner_sig.CARE_STORE_ENp_ABxxEFxx = and (clk_sig.XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
+    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(clk_sig.WOSU_xxCDxxGH);
+    /*p29.CARE*/ sprite_scanner_sig.CARE_STORE_ENp_ABxxEFxx = and (XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
 
   {
@@ -104,8 +105,14 @@ void SpriteScanner::tick(SchematicTop& gb) {
     /*p29.BAGY*/ wire BAGY_SCAN_RSTn = not(BALU_SCAN_RSTp);
 
     /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
-    /*p29.BYBA*/ SCAN_DONE_TRIG_A.set(clk_sig.XUPY_xBCxxFGx, BAGY_SCAN_RSTn, FETO_SCAN_DONE_d0);
-    /*p29.DOBA*/ SCAN_DONE_TRIG_B.set(clk_sig.ALET_xBxDxFxH, BAGY_SCAN_RSTn, SCAN_DONE_TRIG_A);
+    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_sig.WUVU_AxxDExxH);
+    /*p29.BYBA*/ SCAN_DONE_TRIG_A.set(XUPY_xBCxxFGx, BAGY_SCAN_RSTn, FETO_SCAN_DONE_d0);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+    /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+    /*p29.DOBA*/ SCAN_DONE_TRIG_B.set(ALET_xBxDxFxH, BAGY_SCAN_RSTn, SCAN_DONE_TRIG_A);
 
     /*p29.BEBU*/ wire BEBU_SCAN_RSTn = or (BALU_SCAN_RSTp, SCAN_DONE_TRIG_B.q(), !SCAN_DONE_TRIG_A.q());
     /*p29.AVAP*/ wire AVAP_SCAN_RSTp = not(BEBU_SCAN_RSTn);
@@ -113,7 +120,7 @@ void SpriteScanner::tick(SchematicTop& gb) {
 
     /*p28.BESU*/ BESU_SCANNINGp.nor_latch(lcd_sig.CATU_VID_LINE_d4, ASEN_SCAN_RSTp);
     /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
-    /*p29.CENO*/ CENO_SCANNINGp.set(clk_sig.XUPY_xBCxxFGx, ABEZ_VID_RSTn, BESU_SCANNINGp);
+    /*p29.CENO*/ CENO_SCANNINGp.set(XUPY_xBCxxFGx, ABEZ_VID_RSTn, BESU_SCANNINGp);
   }
 
   //----------------------------------------
@@ -122,7 +129,8 @@ void SpriteScanner::tick(SchematicTop& gb) {
 
   {
     /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
-    /*p28.GAVA*/ wire SCAN_CLK = or(FETO_SCAN_DONE_d0, clk_sig.XUPY_xBCxxFGx);
+    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_sig.WUVU_AxxDExxH);
+    /*p28.GAVA*/ wire SCAN_CLK = or(FETO_SCAN_DONE_d0, XUPY_xBCxxFGx);
     /*p28.YFEL*/ SCAN0.set(SCAN_CLK, ANOM_SCAN_RSTn, !SCAN0);
     /*p28.WEWY*/ SCAN1.set(!SCAN0,   ANOM_SCAN_RSTn, !SCAN1);
     /*p28.GOSO*/ SCAN2.set(!SCAN1,   ANOM_SCAN_RSTn, !SCAN2);

@@ -27,14 +27,16 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus&
   /*p05.BYZO*/ wire _BYZO_FF00_RDn = not(_ACAT_FF00_RD);
   /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, cpu_sig.AKUG_A06n, cpu_sig.BYKO_A05n);
 
-  /*p02.AWOB*/ AWOB_WAKE_CPU.setx(clk_sig.BOGA_AxCDEFGH, _ANY_BUTTON);
+  /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
+  /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
+  /*p02.AWOB*/ AWOB_WAKE_CPU.setx(BOGA_AxCDEFGH, _ANY_BUTTON);
   // cpu_pins.TO_CPU2.set(WAKE_CPU.q());
 
   /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
-  /*p02.BATU*/ JP_GLITCH0.set(clk_sig.BOGA_AxCDEFGH, ALUR_RSTn, _ANY_BUTTON);
-  /*p02.ACEF*/ JP_GLITCH1.set(clk_sig.BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH0.q());
-  /*p02.AGEM*/ JP_GLITCH2.set(clk_sig.BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH1.q());
-  /*p02.APUG*/ JP_GLITCH3.set(clk_sig.BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH2.q());
+  /*p02.BATU*/ JP_GLITCH0.set(BOGA_AxCDEFGH, ALUR_RSTn, _ANY_BUTTON);
+  /*p02.ACEF*/ JP_GLITCH1.set(BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH0.q());
+  /*p02.AGEM*/ JP_GLITCH2.set(BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH1.q());
+  /*p02.APUG*/ JP_GLITCH3.set(BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH2.q());
 
   ///*p02.ASOK*/ wire INT_JP = and (JP_GLITCH3, JP_GLITCH0);
 

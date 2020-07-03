@@ -161,7 +161,13 @@ PpuSignals PpuRegisters::sig(const SchematicTop& gb) const {
     auto sst_sig = gb.sst_reg.sig(gb);
     auto win_sig = gb.win_reg.sig(gb);
 
-    /*p24.VYBO*/ wire VYBO_PIX_CLK_xBxDxFxH = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONEp, clk_sig.MYVO_AxCxExGx);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+    /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+    /*p27.MYVO*/ wire MYVO_AxCxExGx = not(ALET_xBxDxFxH);
+    /*p24.VYBO*/ wire VYBO_PIX_CLK_xBxDxFxH = nor(sst_sig.FEPO_STORE_MATCHp, ppu_sig.WODU_RENDER_DONEp, MYVO_AxCxExGx);
     /*p24.TOMU*/ wire TOMU_WIN_HITp = not(win_sig.SYLO_WIN_HITn);
     /*p24.SOCY*/ wire SOCY_WIN_HITn = not(TOMU_WIN_HITp);
     /*p24.TYFA*/ wire TYFA_CLKPIPEp_xBxDxFxH = and (SOCY_WIN_HITn, tile_fetcher_sig.POKY_PORCH_DONEp, VYBO_PIX_CLK_xBxDxFxH);
@@ -271,7 +277,12 @@ void PpuRegisters::tick(SchematicTop& gb) {
     auto ppu_sig = sig(gb);
     /*p24.ROXO*/ wire ROXO_CLKPIPEp = not(ppu_sig.SEGU_CLKPIPEn);
     auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
-    /*p27.MOXE*/ wire MOXE_AxCxExGx = not(clk_sig.ALET_xBxDxFxH);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+    /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+    /*p27.MOXE*/ wire MOXE_AxCxExGx = not(ALET_xBxDxFxH);
 
     auto& ppu_config = gb.ppu_config;
     /*p27.SUHA*/ wire SUHA_FINE_MATCH0p = xnor(ppu_config.DATY_SCX0, RYKU_FINE_CNT0); // Arms on the ground side, XNOR
@@ -346,7 +357,12 @@ void PpuRegisters::tick(SchematicTop& gb) {
     // having this reset connected to both RENDER_DONE_SYNC and x seems odd
     auto ppu_sig = sig(gb);
     auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
-    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(clk_sig.ALET_xBxDxFxH, TADY_X_RST, ppu_sig.WODU_RENDER_DONEp);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+    /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+    /*p21.VOGA*/ VOGA_RENDER_DONE_SYNC.set(ALET_xBxDxFxH, TADY_X_RST, ppu_sig.WODU_RENDER_DONEp);
   }
 
   //----------------------------------------

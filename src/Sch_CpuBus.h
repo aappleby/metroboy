@@ -121,9 +121,9 @@ struct CpuBus {
   PinIn  PIN_CPU_RAW_RD; // top right port PORTA_00: -> P07.UJYV, P08.LAGU, P08.LAVO
   PinIn  PIN_CPU_RAW_WR; // top right port PORTA_01: -> P01.AREV, P08.LAGU.           This is almost definitely "raw write"
   PinIn  PIN_ADDR_VALID; // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
-  PinIn  PIN_FROM_CPU5p; // top left port PORTD_06: -> ANUJ (FROM_CPU5). Maybe this means "latch the bus"?
-  PinIn  PIN_FROM_CPU6;  // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
-  PinIn  PIN_CLKREQ;     // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
+  PinIn  CPU_PIN5; // top left port PORTD_06: -> ANUJ (FROM_CPU5). Maybe this means "latch the bus"?
+  PinIn  CPU_PIN6;  // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? 
+  PinIn  CPU_PIN_CLKREQ;     // top center port PORTC_00: -> ABOL (an inverter) -> BATE. Something about "cpu ready". clock request?
 
   PinIn  PIN_A00; // bottom right port PORTB_00: -> A00
   PinIn  PIN_A01; // bottom right port PORTB_04: -> A01

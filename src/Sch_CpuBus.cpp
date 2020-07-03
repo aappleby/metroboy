@@ -96,7 +96,7 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   /*p08.MOCA*/ sig.MOCA_DBG_EXT_RD = nor(sig.TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1p);
   /*p08.MOTY*/ sig.MOTY_CPU_EXT_RD = or(sig.MOCA_DBG_EXT_RD, _LYWE);
 
-  /*p04.DECY*/ sig.DECY_FROM_CPU5n = not(PIN_FROM_CPU5p);
+  /*p04.DECY*/ sig.DECY_FROM_CPU5n = not(CPU_PIN5);
 
   /*p04.CATY*/ wire _CATY_FROM_CPU5p = not(sig.DECY_FROM_CPU5n);
   /*p28.MYNU*/ wire _MYNU_CPU_RDn = nand(sig.ASOT_CPU_RD, _CATY_FROM_CPU5p);
@@ -106,7 +106,7 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   /*p08.LOXO*/ wire _LOXO_LATCH_CPU_ADDRp = or (and (_MULE_MODE_DBG1n, sig.TEXO_8000_9FFFn), dbg_sig.UMUT_MODE_DBG1p);
   /*p08.LASY*/ wire _LASY_LATCH_CPU_ADDRn = not(_LOXO_LATCH_CPU_ADDRp);
   /*p08.MATE*/ sig.MATE_LATCH_CPU_ADDRp = not(_LASY_LATCH_CPU_ADDRn);
-  /*p08.LAVO*/ sig.LAVO_LATCH_CPU_DATAp = nand(PIN_CPU_RAW_RD, sig.TEXO_8000_9FFFn, PIN_FROM_CPU5p);
+  /*p08.LAVO*/ sig.LAVO_LATCH_CPU_DATAp = nand(PIN_CPU_RAW_RD, sig.TEXO_8000_9FFFn, CPU_PIN5);
 
   /*p08.REDU*/ wire _REDU_CPU_RD = not(sig.TEDO_CPU_RD);
   /*p08.RORU*/ sig.RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RD, sig.MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
@@ -123,7 +123,12 @@ void CpuBus::tick(SchematicTop& gb) {
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
     /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(clk_sig.ZEME_AxCxExGx, CUNU_RSTn, PIN_FROM_CPU5p);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+
+    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(ZEME_AxCxExGx, CUNU_RSTn, CPU_PIN5);
   }
 
   {
@@ -264,9 +269,9 @@ SignalHash CpuBus::commit() {
   hash << PIN_CPU_RAW_RD.clear_preset();     // PORTA_00: -> UJYV, LAGU, LAVO
   hash << PIN_CPU_RAW_WR.clear_preset();     // PORTA_01: -> AREV, LAGU.
   hash << PIN_ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
-  hash << PIN_FROM_CPU5p.clear_preset();     // PORTD_05: -> FROM_CPU5
-  hash << PIN_FROM_CPU6.clear_preset();      // PORTD_00: -> LEXY, doesn't do anything
-  hash << PIN_CLKREQ.clear_preset();         // PORTC_00: -> ABOL
+  hash << CPU_PIN5.clear_preset();     // PORTD_05: -> FROM_CPU5
+  hash << CPU_PIN6.clear_preset();      // PORTD_00: -> LEXY, doesn't do anything
+  hash << CPU_PIN_CLKREQ.clear_preset();         // PORTC_00: -> ABOL
 
   hash << PIN_A00.clear_preset();
   hash << PIN_A01.clear_preset();
@@ -429,14 +434,30 @@ void CpuPinsOut::tick(SchematicTop& gb) {
   }
 #endif
 
-  PIN_BOWA_AxCDEFGH.set(clk_sig.BOWA_AxCDEFGH);
-  PIN_BEDO_xBxxxxxx.set(clk_sig.BEDO_xBxxxxxx);
-  PIN_BEKO_xBCDExxx.set(clk_sig.BEKO_xBCDExxx);
-  PIN_BUDE_AxxxxFGH.set(clk_sig.BUDE_AxxxxFGH);
-  PIN_BOLO_xBCDEFGx.set(clk_sig.BOLO_xBCDEFGx);
-  PIN_BUKE_ABxxxxxH.set(clk_sig.BUKE_ABxxxxxH);
-  PIN_BOMA_xBxxxxxx.set(clk_sig.BOMA_xBxxxxxx);
-  PIN_BOGA_AxCDEFGH.set(clk_sig.BOGA_AxCDEFGH);
+  /*p01.BYXO*/ wire BYXO_AxCDEFGH = not(clk_sig.BUVU_xBxxxxxx);
+  /*p01.BEDO*/ wire BEDO_xBxxxxxx = not(BYXO_AxCDEFGH);
+  /*p01.BOWA*/ wire BOWA_AxCDEFGH = not(BEDO_xBxxxxxx);
+  /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
+  /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
+  /*p01.BOMA*/ wire BOMA_xBxxxxxx = not(BOGA_AxCDEFGH);
+  /*p01.BERU*/ wire BERU_xBCDEFGx = not(clk_sig.BAPY_AxxxxxxH);
+  /*p01.BUFA*/ wire BUFA_AxxxxxxH = not(BERU_xBCDEFGx);
+  /*p01.BOLO*/ wire BOLO_xBCDEFGx = not(BUFA_AxxxxxxH);
+
+  /*p01.BYRY*/ wire BYRY_xBCDExxx = not(clk_sig.NULE_AxxxxFGH);
+  /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+  /*p01.BEKO*/ wire BEKO_xBCDExxx = not(BUDE_AxxxxFGH);
+  /*p01.BASU*/ wire BASU_xxCDEFGx = not(clk_sig.BATE_ABxxxxxH);
+  /*p01.BUKE*/ wire BUKE_ABxxxxxH = not(BASU_xxCDEFGx);
+
+  PIN_BOWA_AxCDEFGH.set(BOWA_AxCDEFGH);
+  PIN_BEDO_xBxxxxxx.set(BEDO_xBxxxxxx);
+  PIN_BEKO_xBCDExxx.set(BEKO_xBCDExxx);
+  PIN_BUDE_AxxxxFGH.set(BUDE_AxxxxFGH);
+  PIN_BOLO_xBCDEFGx.set(BOLO_xBCDEFGx);
+  PIN_BUKE_ABxxxxxH.set(BUKE_ABxxxxxH);
+  PIN_BOMA_xBxxxxxx.set(BOMA_xBxxxxxx);
+  PIN_BOGA_AxCDEFGH.set(BOGA_AxCDEFGH);
   
   PIN_AFER_RSTp.set(rst_sig.AFER_RSTp);
   PIN_EXT_RESET.set(gb.EXT_PIN_RST);
@@ -487,9 +508,9 @@ void dump_pins(TextPainter& text_painter) {
   text_painter.dprintf("PIN_BOGA_AxCDEFGH %d\n", PIN_BOGA_AxCDEFGH.a.val);
 
   text_painter.dprintf("----- FROM CPU -----\n");
-  //text_painter.dprintf("PIN_CLKREQ        %d\n", PIN_CLKREQ.a.val);
-  //text_painter.dprintf("PIN_FROM_CPU5p     %d\n", PIN_FROM_CPU5p.a.val);
-  //text_painter.dprintf("PIN_FROM_CPU6     %d\n", PIN_FROM_CPU6.a.val);
+  //text_painter.dprintf("CPU_PIN_CLKREQ        %d\n", CPU_PIN_CLKREQ.a.val);
+  //text_painter.dprintf("CPU_PIN5     %d\n", CPU_PIN5.a.val);
+  //text_painter.dprintf("CPU_PIN6     %d\n", CPU_PIN6.a.val);
 
   text_painter.dprintf("----- TO CPU -----\n");
   text_painter.dprintf("PIN_AFER_RSTp     %d\n", PIN_AFER_RSTp.a.val);

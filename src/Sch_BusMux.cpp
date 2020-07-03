@@ -173,9 +173,13 @@ void BusMux::tick(SchematicTop& gb) {
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_sig.MATU_DMA_RUNNINGp);
     /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
 
+    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(clk_sig.NULE_AxxxxFGH);
+    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
+
     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(dma_sig.MATU_DMA_RUNNINGp, ppu_sig.ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor
     /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (cpu_sig.SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
-    /*p04.NAXY*/ wire NAXY_DMA_OAM_WENp = nor(clk_sig.UVYT_xBCDExxx, cpu_bus.MAKA_FROM_CPU5_SYNC); // def nor
+    /*p04.NAXY*/ wire NAXY_DMA_OAM_WENp = nor(UVYT_xBCDExxx, cpu_bus.MAKA_FROM_CPU5_SYNC); // def nor
     /*p04.POWU*/ wire POWU_DMA_OAM_WRp = and (dma_sig.MATU_DMA_RUNNINGp, NAXY_DMA_OAM_WENp); // def and
     /*p04.WYJA*/ wire WYJA_OAM_WRp = or (and (AMAB_OAM_LOCKn, cpu_sig.CUPA_CPU_WR_xxxxxFGH), POWU_DMA_OAM_WRp);
 
@@ -287,11 +291,17 @@ void BusMux::tick(SchematicTop& gb) {
     auto dma_sig = gb.dma_reg.sig(gb);
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
+    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(clk_sig.NULE_AxxxxFGH);
+    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
+    /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
+
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_sig.MATU_DMA_RUNNINGp);
     /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(dma_sig.MATU_DMA_RUNNINGp, ppu_sig.ACYL_SCANNINGp, AJON_OAM_BUSY); // def nor
     /*p28.XUTO*/ wire XUTO_CPU_OAM_WR = and (cpu_sig.SARO_FE00_FEFFp, cpu_sig.CUPA_CPU_WR_xxxxxFGH);
-    /*p28.WUJE*/ wire WUJE_CPU_OAM_WR = or (clk_sig.XYNY_xBCDExxx, XUTO_CPU_OAM_WR);
+    /*p28.XYNY*/ wire XYNY_xBCDExxx = not(MOPA_AxxxxFGH);
+    /*p28.WUJE*/ wire WUJE_CPU_OAM_WR = or (XYNY_xBCDExxx, XUTO_CPU_OAM_WR);
     /*p28.XUPA*/ wire XUPA_CPU_OAM_WR = not(WUJE_CPU_OAM_WR);
     /*p28.ADAH*/ wire ADAH_ADDR_OAM = not(cpu_sig.SARO_FE00_FEFFp);
     /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (cpu_sig.SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
@@ -325,7 +335,8 @@ void BusMux::tick(SchematicTop& gb) {
     auto cpu_sig = gb.cpu_bus.sig(gb);
     auto bus_sig = gb.bus_mux.sig(gb);
 
-    /*p28.AJEP*/ wire AJEP_SCAN_OAM_LATCH  = nand(ppu_sig.ACYL_SCANNINGp, clk_sig.XOCE_ABxxEFxx); // schematic wrong, is def nand
+    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(clk_sig.WOSU_xxCDxxGH);
+    /*p28.AJEP*/ wire AJEP_SCAN_OAM_LATCH  = nand(ppu_sig.ACYL_SCANNINGp, XOCE_ABxxEFxx); // schematic wrong, is def nand
     /*p28.XUJA*/ wire XUJA_FETCH_OAM_LATCH = not(sprite_fetcher_sig.WEFY_SPR_READp);
     /*p28.BOTA*/ wire BOTA_CPU_OAM_LATCH   = nand(cpu_sig.DECY_FROM_CPU5n, cpu_sig.SARO_FE00_FEFFp, cpu_sig.ASOT_CPU_RD); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire ASYT_OAM_LATCH = and(AJEP_SCAN_OAM_LATCH, XUJA_FETCH_OAM_LATCH, BOTA_CPU_OAM_LATCH);
@@ -362,9 +373,16 @@ void BusMux::tick(SchematicTop& gb) {
     auto dma_sig = gb.dma_reg.sig(gb);
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
-    /*p25.AVER*/ wire AVER_SCAN_OAM_CLK  = nand(ppu_sig.ACYL_SCANNINGp, clk_sig.XYSO_ABCxDEFx); 
+    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(clk_sig.NULE_AxxxxFGH);
+    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
+    /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
+
+    /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!clk_sig.WUVU_AxxDExxH, !clk_sig.WOSU_xxCDxxGH);
+    /*p29.XYSO*/ wire XYSO_ABCxDEFx = not(WOJO_xxxDxxxH);
+    /*p25.AVER*/ wire AVER_SCAN_OAM_CLK  = nand(ppu_sig.ACYL_SCANNINGp, XYSO_ABCxDEFx); 
     /*p25.XUJY*/ wire XUJY_FETCH_OAM_CLK = not(sprite_fetcher_sig.VAPE_FETCH_OAM_CLK);
-    /*p25.CUFE*/ wire CUFE_WRITE_OAM_CLK = and (or (cpu_sig.SARO_FE00_FEFFp, dma_sig.MATU_DMA_RUNNINGp), clk_sig.MOPA_AxxxxFGH);
+    /*p25.CUFE*/ wire CUFE_WRITE_OAM_CLK = and (or (cpu_sig.SARO_FE00_FEFFp, dma_sig.MATU_DMA_RUNNINGp), MOPA_AxxxxFGH);
     /*p25.BYCU*/ wire BYCU_OAM_CLK = nand(AVER_SCAN_OAM_CLK, XUJY_FETCH_OAM_CLK, CUFE_WRITE_OAM_CLK);
     /*p25.COTA*/ wire COTA_OAM_CLK = not(BYCU_OAM_CLK);
 

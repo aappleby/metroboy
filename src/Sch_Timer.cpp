@@ -36,17 +36,19 @@ void TimerRegisters::tick(
   const ResetSignals& rst_sig,
   const CpuBusSignals& cpu_sig,
   CpuBus& cpu_bus,
-  bool EXT_PIN_CLK_GOOD,
-  bool EXT_PIN_RST) {
+  bool EXT_PIN_RST,
+  bool EXT_PIN_CLK_GOOD) {
   auto tim_sig = sig();
 
   // FF04 DIV
   {
+    /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
+    /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
     /*p01.TAPE*/ wire FF04_WR = and(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_sig.TOVY_A00n);
     /*p01.UCOB*/ wire UCOB_CLKBAD = not(EXT_PIN_CLK_GOOD);
     /*p01.UFOL*/ wire DIV_RSTn = nor(UCOB_CLKBAD, EXT_PIN_RST, FF04_WR);
 
-    /*p01.UKUP*/ UKUP_DIV_00.set(clk_sig.BOGA_AxCDEFGH, DIV_RSTn, !UKUP_DIV_00.q());
+    /*p01.UKUP*/ UKUP_DIV_00.set(BOGA_AxCDEFGH, DIV_RSTn, !UKUP_DIV_00.q());
     /*p01.UFOR*/ UFOR_DIV_01.set(!UKUP_DIV_00.q(), DIV_RSTn, !UFOR_DIV_01.q());
     /*p01.UNER*/ UNER_DIV_02.set(!UFOR_DIV_01.q(), DIV_RSTn, !UNER_DIV_02.q());
     
@@ -89,7 +91,7 @@ void TimerRegisters::tick(
   }
 
   /*p03.TOPE*/ wire TOPE_FF05_WRn = nand(cpu_sig.TAPU_CPU_WR_xxxxxFGH, cpu_sig.RYFO_FF04_FF07p, cpu_sig.TOLA_A01n, cpu_bus.PIN_A00);
-  /*p03.MUZU*/ wire MUZU = or(cpu_bus.PIN_FROM_CPU5p.q(), TOPE_FF05_WRn);
+  /*p03.MUZU*/ wire MUZU = or(cpu_bus.CPU_PIN5.q(), TOPE_FF05_WRn);
   /*p03.MEKE*/ wire MEKE_INT_TIMERn = not(MOBA_INT_TIMERp.q());
 
   /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
@@ -144,12 +146,16 @@ void TimerRegisters::tick(
 
   {
     /*p03.MUGY*/ wire _TIMA_LOADn = not(MEXU_TIMA_LOAD);
-    /*p03.NYDU*/ TIMA_MAX.set(clk_sig.BOGA_AxCDEFGH, _TIMA_LOADn, TIMA_7.q());
+    /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
+    /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
+    /*p03.NYDU*/ TIMA_MAX.set(BOGA_AxCDEFGH, _TIMA_LOADn, TIMA_7.q());
   }
 
   {
     /*p03.MERY*/ wire _MERY_INT_TIMER_IN = nor(!TIMA_MAX.q(), TIMA_7.q());
-    /*p03.MOBA*/ MOBA_INT_TIMERp.set(clk_sig.BOGA_AxCDEFGH, ALUR_RSTn, _MERY_INT_TIMER_IN);
+    /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
+    /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
+    /*p03.MOBA*/ MOBA_INT_TIMERp.set(BOGA_AxCDEFGH, ALUR_RSTn, _MERY_INT_TIMER_IN);
   }
 
   // FF06 TMA

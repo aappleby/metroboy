@@ -132,24 +132,39 @@ void DmaRegisters::tick(SchematicTop& gb) {
   {
     /*p04.LYXE*/ LYXE_DMA_LATCHn.nor_latch(LOKO_DMA_RSTp, LAVY_FF46_WRp);
     /*p04.LUPA*/ wire LUPA_DMA_TRIG = nor(LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
-    /*p04.LUVY*/ LUVY_DMA_TRIG_d0.set(clk_sig.UVYT_xBCDExxx, CUNU_RSTn, LUPA_DMA_TRIG);
-    /*p04.LENE*/ LENE_DMA_TRIG_d4.set(clk_sig.MOPA_AxxxxFGH, CUNU_RSTn, LUVY_DMA_TRIG_d0.q());
+
+    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(clk_sig.NULE_AxxxxFGH);
+    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
+    /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
+
+    /*p04.LUVY*/ LUVY_DMA_TRIG_d0.set(UVYT_xBCDExxx, CUNU_RSTn, LUPA_DMA_TRIG);
+    /*p04.LENE*/ LENE_DMA_TRIG_d4.set(MOPA_AxxxxFGH, CUNU_RSTn, LUVY_DMA_TRIG_d0.q());
   }
 
   {
+    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(clk_sig.NULE_AxxxxFGH);
+    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
+
     // NAND latch
     /*p04.LOKY*/ LOKY_DMA_LATCHp = nand(LARA_DMA_LATCHn, !LENE_DMA_TRIG_d4.q());
     /*p04.LARA*/ LARA_DMA_LATCHn = nand(LOKY_DMA_LATCHp, CUNU_RSTn, !MYTE_DMA_DONE.q());
-    /*p04.MATU*/ MATU_DMA_RUNNINGp.set(clk_sig.UVYT_xBCDExxx, CUNU_RSTn, LOKY_DMA_LATCHp);
+    /*p04.MATU*/ MATU_DMA_RUNNINGp.set(UVYT_xBCDExxx, CUNU_RSTn, LOKY_DMA_LATCHp);
   }
 
   {
     /*p04.LAPA*/ wire LAPA_DMA_RSTn = not(LOKO_DMA_RSTp);
     /*p04.NAVO*/ wire NAVO_DMA_DONEn = nand(DMA_A00.q(), DMA_A01.q(), DMA_A02.q(), DMA_A03.q(), DMA_A04.q(), DMA_A07.q()); // 128+16+8+4+2+1 = 159, this must be "dma done"
     /*p04.NOLO*/ wire NOLO_DMA_DONEp = not(NAVO_DMA_DONEn);
-    /*p04.MYTE*/ MYTE_DMA_DONE.set(clk_sig.MOPA_AxxxxFGH, LAPA_DMA_RSTn, NOLO_DMA_DONEp);
 
-    /*p04.META*/ wire META_DMA_CLKp = and(clk_sig.UVYT_xBCDExxx, LOKY_DMA_LATCHp);
+    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(clk_sig.NULE_AxxxxFGH);
+    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
+    /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
+    /*p04.MYTE*/ MYTE_DMA_DONE.set(MOPA_AxxxxFGH, LAPA_DMA_RSTn, NOLO_DMA_DONEp);
+
+    /*p04.META*/ wire META_DMA_CLKp = and(UVYT_xBCDExxx, LOKY_DMA_LATCHp);
     /*p04.NAKY*/ DMA_A00.set(META_DMA_CLKp, LAPA_DMA_RSTn, !DMA_A00.q());
     /*p04.PYRO*/ DMA_A01.set(DMA_A00.qn(),  LAPA_DMA_RSTn, DMA_A01.qn());
     /*p04.NEFY*/ DMA_A02.set(DMA_A01.qn(),  LAPA_DMA_RSTn, DMA_A02.qn());

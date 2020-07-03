@@ -28,7 +28,11 @@ struct ResetSignals {
 struct ResetRegisters {
 
   ResetSignals sig(const SchematicTop& top) const;
-  ResetSignals sig(const TimerSignals& tim_sig, const DebugSignals& dbg_sig, const PpuConfig& ppu_config) const;
+  ResetSignals sig(
+    wire UPOF_DIV_15,
+    wire UMUT_MODE_DBG1p,
+    wire UNOR_MODE_DBG2p,
+    wire XONA_LCDC_EN) const;
   
   void tick(SchematicTop& gb);
   void tick(const ClockSignals& clk_sig,

@@ -6,11 +6,25 @@ using namespace Schematics;
 
 void SchematicTop::tick_everything() {
   auto clk_sig = clk_reg.sig(cpu_bus, EXT_PIN_CLK_GOOD);
-  auto rst_sig = rst_reg.sig(*this);
-  auto dbg_sig = dbg_reg.sig(*this);
-  auto cpu_sig = cpu_bus.sig(*this);
+  auto dbg_sig = dbg_reg.sig(cpu_bus, EXT_PIN_RST);
+  auto tim_sig = tim_reg.sig();
 
-  clk_reg.tick(clk_sig, rst_sig, dbg_sig);
+  auto cpu_sig = cpu_bus.sig(clk_sig, dbg_sig);
+  
+  auto rst_sig = rst_reg.sig(
+    tim_sig.UPOF_DIV_15,
+    dbg_sig.UMUT_MODE_DBG1p,
+    dbg_sig.UNOR_MODE_DBG2p,
+    ppu_config.XONA_LCDC_EN);
+
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+
+  clk_reg.tick(ABOL_CLKREQn, rst_sig.XAPO_VID_RSTn, dbg_sig.UPOJ_MODE_PROD);
+
+  dbg_reg.tick(dbg_sig, rst_sig);
+  rst_reg.tick(clk_sig, dbg_sig, rst_sig, cpu_bus, EXT_PIN_RST, EXT_PIN_CLK_GOOD);
+  tim_reg.tick(clk_sig, rst_sig, cpu_sig, cpu_bus, EXT_PIN_RST, EXT_PIN_CLK_GOOD);
+
 
   /*
   dma_reg.tick(*this);
@@ -33,19 +47,23 @@ void SchematicTop::tick_everything() {
 
 SignalHash SchematicTop::commit_everything() {
   SignalHash hash;
+
+  /* PIN_71 */ hash << EXT_PIN_RST.clear_preset();
+  /* PIN_74 */ hash << EXT_PIN_CLK_GOOD.clear_preset();
+
+  hash << clk_reg.commit();
+  hash << dbg_reg.commit();
+  hash << rst_reg.commit();
+  hash << tim_reg.commit();
+
+#if 0
   hash << lcd_reg.commit();
   hash << pxp_reg.commit();
   hash << sst_reg.commit();
-  hash << tim_reg.commit();
   hash << ppu_reg.commit();
   hash << win_reg.commit();
   hash << lcd_reg.commit();
   hash << ser_reg.commit();
-
-  /* PIN_71 */ hash << EXT_PIN_RST.clear_preset();
-  /* PIN_72 */ /*GND*/
-               /* PIN_73 */ /*CLKOUT*/
-  /* PIN_74 */ hash << EXT_PIN_CLK_GOOD.clear_preset();
 
   /* PIN_17 */ hash << EXT_PIN_D0_C.clear_preset();       // -> TOVO,SOMA
   /* PIN_18 */ hash << EXT_PIN_D1_C.clear_preset();       // -> RUZY,RONY
@@ -55,6 +73,8 @@ SignalHash SchematicTop::commit_everything() {
   /* PIN_22 */ hash << EXT_PIN_D5_C.clear_preset();       // -> RATU,SAGO
   /* PIN_23 */ hash << EXT_PIN_D6_C.clear_preset();       // -> SOCA,RUPA
   /* PIN_24 */ hash << EXT_PIN_D7_C.clear_preset();       // -> RYBA,SAZY
+#endif
+
   return hash;
 }
 

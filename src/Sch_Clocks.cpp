@@ -28,104 +28,100 @@ ClockSignals ClockRegisters::sig(const SchematicTop& gb) const {
 }
 
 ClockSignals ClockRegisters::sig(const CpuBus& cpu_bus, wire EXT_PIN_CLK_GOOD) const {
-  ClockSignals sig;
+  ClockSignals clk_sig;
 
   ///*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
-  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(PIN_CLK_IN_xBxDxFxH);
-  /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(EXT_PIN_CLK_GOOD);
-  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.PIN_CLKREQ);
-  /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
-
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(AFUR_PHAZ_xBCDExxx.qn());
-  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(ALEF_PHAZ_xxCDEFxx.q());
-  /*p01.AROV*/ wire AROV_xxxDEFGx = not(APUK_PHAZ_xxxDEFGx.qn());
-  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(ADYK_PHAZ_xxxxEFGH.q());
-
-  /*p01.ATAL*/ sig.ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-  /*p01.AZOF*/ sig.AZOF_AxCxExGx = not(sig.ATAL_xBxDxFxH);
-  /*p01.ZAXY*/ sig.ZAXY_xBxDxFxH = not(sig.AZOF_AxCxExGx);
-  /*p01.ZEME*/ sig.ZEME_AxCxExGx = not(sig.ZAXY_xBxDxFxH);
-  /*p01.ALET*/ sig.ALET_xBxDxFxH = not(sig.ZEME_AxCxExGx);
-  /*p27.MEHE*/ sig.MEHE_AxCxExGx = not(sig.ALET_xBxDxFxH);
-  /*p27.MYVO*/ sig.MYVO_AxCxExGx = not(sig.ALET_xBxDxFxH);
-  /*p01.LAPE*/ sig.LAPE_AxCxExGx = not(sig.ALET_xBxDxFxH);
-  /*p27.TAVA*/ sig.TAVA_xBxDxFxH = not(sig.LAPE_AxCxExGx);
-  /*p29.XYVA*/ sig.XYVA_AxCxExGx = not(sig.ZEME_AxCxExGx);
-  /*p29.XOTA*/ sig.XOTA_xBxDxFxH = not(sig.XYVA_AxCxExGx);
-  /*p29.XYFY*/ sig.XYFY_AxCxExGx = not(sig.XOTA_xBxDxFxH);
+  {
+    /*p01.ANOS*/ clk_sig.ANOS_AxCxExGx = not(PIN_CLK_IN_xBxDxFxH);
+    /*p29.WUVU*/ clk_sig.WUVU_AxxDExxH = WUVU_AxxDExxH;
+    /*p21.VENA*/ clk_sig.VENA_xBCDExxx = VENA_xBCDExxx;
+    /*p29.WOSU*/ clk_sig.WOSU_xxCDxxGH = WOSU_xxCDxxGH;
+  }
 
   ///*p01.ATAG*/ wire ATAG_xBxDxFxH = not(AZOF_AxCxExGx);
   ///*p01.AMUK*/ wire AMUK_AxCxExGx = not(ATAG_xBxDxFxH); // apu master 4m clock, but apu isn't hooked up yet
   ///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
 
-  /*p29.XUPY*/ sig.XUPY_xBCxxFGx = not(WUVU_AxxDExxH);
-  /*p29.XOCE*/ sig.XOCE_ABxxEFxx = not(WOSU_xxCDxxGH);
-  /*p30.CYKE*/ sig.CYKE_AxxDExxH = not(sig.XUPY_xBCxxFGx);
-  /*p30.WUDA*/ sig.WUDA_xBCxxFGx = not(sig.CYKE_AxxDExxH);
-  /*p01.NULE*/ sig.NULE_AxxxxFGH = nor(ABOL_CLKREQn, ATYP_xBCDExxx);
-  /*p01.BYRY*/ sig.BYRY_xBCDExxx = not(sig.NULE_AxxxxFGH);
-  /*p01.BUDE*/ sig.BUDE_AxxxxFGH = not(sig.BYRY_xBCDExxx);
-  /*p01.UVYT*/ sig.UVYT_xBCDExxx = not(sig.BUDE_AxxxxFGH);
-  /*p04.MOPA*/ sig.MOPA_AxxxxFGH = not(sig.UVYT_xBCDExxx);
-  /*p01.AFAS*/ sig.AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
-  /*p01.BUGO*/ sig.BUGO_xxCDEFxx = not(AFEP_ABxxxxGH);
-  /*p01.BATE*/ sig.BATE_ABxxxxxH = nor(ABOL_CLKREQn, sig.BUGO_xxCDEFxx, AROV_xxxDEFGx);
-  /*p01.BASU*/ sig.BASU_xxCDEFGx = not(sig.BATE_ABxxxxxH);
-  /*p01.BUKE*/ sig.BUKE_ABxxxxxH = not(sig.BASU_xxCDEFGx);
-  /*p01.BAPY*/ sig.BAPY_AxxxxxxH = nor(ABOL_CLKREQn, AROV_xxxDEFGx, ATYP_xBCDExxx);
-  /*p01.BERU*/ sig.BERU_xBCDEFGx = not(sig.BAPY_AxxxxxxH);
-  /*p01.BUFA*/ sig.BUFA_AxxxxxxH = not(sig.BERU_xBCDEFGx);
-  /*p01.BOLO*/ sig.BOLO_xBCDEFGx = not(sig.BUFA_AxxxxxxH);
-  /*p01.BEKO*/ sig.BEKO_xBCDExxx = not(sig.BUDE_AxxxxFGH);
-  /*p01.BEJA*/ sig.BEJA_AxxxxFGH = nand(sig.BOLO_xBCDEFGx, sig.BEKO_xBCDExxx);
-  /*p01.BANE*/ sig.BANE_xBCDExxx = not(sig.BEJA_AxxxxFGH);
-  /*p01.BELO*/ sig.BELO_AxxxxFGH = not(sig.BANE_xBCDExxx);
-  /*p01.BAZE*/ sig.BAZE_xBCDExxx = not(sig.BELO_AxxxxFGH);
-  /*p01.BUTO*/ sig.BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, sig.BAZE_xBCDExxx);
-  /*p01.BELE*/ sig.BELE_xBxxxxxx = not(sig.BUTO_AxCDEFGH);
-  /*p01.BYJU*/ sig.BYJU_AxCDEFGH = nor(sig.BELE_xBxxxxxx, ATEZ_CLKBAD);
-  /*p01.BALY*/ sig.BALY_xBxxxxxx = not(sig.BYJU_AxCDEFGH);
-  /*p01.BOGA*/ sig.BOGA_AxCDEFGH = not(sig.BALY_xBxxxxxx);
+  {
+    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_xBCDExxx);
+    /*p01.AROV*/ wire AROV_xxxDEFGx = not(!APUK_xxxDEFGx);
+    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(ADYK_xxxxEFGH);
+    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(ALEF_xxCDEFxx);
+    /*p01.BUGO*/ wire BUGO_xxCDEFxx = not(AFEP_ABxxxxGH);
+    /*p01.NULE*/ clk_sig.NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
+    /*p01.AFAS*/ clk_sig.AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
+    /*p01.BATE*/ clk_sig.BATE_ABxxxxxH = nor(ABOL_CLKREQn,  BUGO_xxCDEFxx, AROV_xxxDEFGx);
+    /*p01.BAPY*/ clk_sig.BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
+  }
 
-  /*p21.TALU*/ sig.TALU_xBCDExxx = not(VENA_xBCDExxx.qn());
-  /*p21.SONO*/ sig.SONO_AxxxxFGH = not(sig.TALU_xBCDExxx);
-  /*p28.AWOH*/ sig.AWOH_AxxDExxH = not(sig.XUPY_xBCxxFGx);
-  /*p28.XYNY*/ sig.XYNY_xBCDExxx = not(sig.MOPA_AxxxxFGH);
-  /*p01.BUVU*/ sig.BUVU_xBxxxxxx = and(BUTY_CLKREQ, sig.BALY_xBxxxxxx);
-  /*p01.BYXO*/ sig.BYXO_AxCDEFGH = not(sig.BUVU_xBxxxxxx);
-  /*p01.BEDO*/ sig.BEDO_xBxxxxxx = not(sig.BYXO_AxCDEFGH);
 
-  /*p29.WOJO*/ sig.WOJO_xxxDxxxH = nor(WUVU_AxxDExxH.qn(), WOSU_xxCDxxGH.qn());
-  /*p29.XYSO*/ sig.XYSO_ABCxDEFx = not(sig.WOJO_xxxDxxxH);
 
-  /*p17.ABUR*/ sig.ABUR_xxCDEFGx = not(sig.BUKE_ABxxxxxH);
-  /*p17.BORY*/ sig.BORY_ABxxxxxH = not(sig.ABUR_xxCDEFGx);
-  /*p01.BOMA*/ sig.BOMA_xBxxxxxx = not(sig.BOGA_AxCDEFGH);
-  /*p01.BOWA*/ sig.BOWA_AxCDEFGH = not(sig.BEDO_xBxxxxxx);
+  {
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!AFUR_xBCDExxx);
+    /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(ALEF_xxCDEFxx);
+    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(clk_sig.NULE_AxxxxFGH);
+    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+    /*p01.BERU*/ wire BERU_xBCDEFGx = not(clk_sig.BAPY_AxxxxxxH);
+    /*p01.BUFA*/ wire BUFA_AxxxxxxH = not(BERU_xBCDEFGx);
+    /*p01.BOLO*/ wire BOLO_xBCDEFGx = not(BUFA_AxxxxxxH);
+    /*p01.BEKO*/ wire BEKO_xBCDExxx = not(BUDE_AxxxxFGH);
+    /*p01.BEJA*/ wire BEJA_AxxxxFGH = nand(BOLO_xBCDEFGx, BEKO_xBCDExxx);
+    /*p01.BANE*/ wire BANE_xBCDExxx = not(BEJA_AxxxxFGH);
+    /*p01.BELO*/ wire BELO_AxxxxFGH = not(BANE_xBCDExxx);
+    /*p01.BAZE*/ wire BAZE_xBCDExxx = not(BELO_AxxxxFGH);
+    /*p01.BUTO*/ wire BUTO_AxCDEFGH = nand(AFEP_ABxxxxGH, ATYP_xBCDExxx, BAZE_xBCDExxx);
+    /*p01.BELE*/ wire BELE_xBxxxxxx = not(BUTO_AxCDEFGH);
+    /*p01.ATEZ*/ wire ATEZ_CLKBAD   = not(EXT_PIN_CLK_GOOD);
+    /*p01.BYJU*/ clk_sig.BYJU_AxCDEFGH = nor(BELE_xBxxxxxx, ATEZ_CLKBAD);
+  }
 
-  return sig;
+
+  {
+    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
+    /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
+    /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
+    /*p01.BUVU*/ clk_sig.BUVU_xBxxxxxx = and(BUTY_CLKREQ, BALY_xBxxxxxx);
+  }
+
+  return clk_sig;
 }
 
 //-----------------------------------------------------------------------------
 
 void ClockRegisters::tick(const SchematicTop& gb) {
-  tick(sig(gb), gb.rst_reg.sig(gb), gb.dbg_reg.sig(gb));
+  auto dbg_sig = gb.dbg_reg.sig(gb);
+  auto rst_sig = gb.rst_reg.sig(gb);
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(gb.cpu_bus.CPU_PIN_CLKREQ);
+
+  tick(ABOL_CLKREQn, rst_sig.XAPO_VID_RSTn, dbg_sig.UPOJ_MODE_PROD);
 }
 
-void ClockRegisters::tick(const ClockSignals& clk_sig, const ResetSignals& rst_sig, const DebugSignals& dbg_sig) {
+void ClockRegisters::tick(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD) {
   {
-    /*p01.AFUR*/ AFUR_PHAZ_xBCDExxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD, !ADYK_PHAZ_xxxxEFGH);
-    /*p01.ALEF*/ ALEF_PHAZ_xxCDEFxx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  AFUR_PHAZ_xBCDExxx);
-    /*p01.APUK*/ APUK_PHAZ_xxxDEFGx.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  ALEF_PHAZ_xxCDEFxx);
-    /*p01.ADYK*/ ADYK_PHAZ_xxxxEFGH.set_duo(clk_sig.ATAL_xBxDxFxH, dbg_sig.UPOJ_MODE_PROD,  APUK_PHAZ_xxxDEFGx);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(PIN_CLK_IN_xBxDxFxH);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
+    /*p01.AFUR*/ AFUR_xBCDExxx.set_duo(ATAL_xBxDxFxH, UPOJ_MODE_PROD, !ADYK_xxxxEFGH);
+    /*p01.ALEF*/ ALEF_xxCDEFxx.set_duo(ATAL_xBxDxFxH, UPOJ_MODE_PROD,  AFUR_xBCDExxx);
+    /*p01.APUK*/ APUK_xxxDEFGx.set_duo(ATAL_xBxDxFxH, UPOJ_MODE_PROD,  ALEF_xxCDEFxx);
+    /*p01.ADYK*/ ADYK_xxxxEFGH.set_duo(ATAL_xBxDxFxH, UPOJ_MODE_PROD,  APUK_xxxDEFGx);
   }
 
   {
-    /*p29.WUVU*/ WUVU_AxxDExxH.set(clk_sig.XOTA_xBxDxFxH, rst_sig.XAPO_VID_RSTn, !WUVU_AxxDExxH);
-    /*p21.VENA*/ VENA_xBCDExxx.set(!WUVU_AxxDExxH, rst_sig.XAPO_VID_RSTn, !VENA_xBCDExxx);
-    /*p29.WOSU*/ WOSU_xxCDxxGH.set(clk_sig.XYFY_AxCxExGx, rst_sig.XAPO_VID_RSTn, !WUVU_AxxDExxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(PIN_CLK_IN_xBxDxFxH);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
+    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+    /*p29.XYVA*/ wire XYVA_AxCxExGx = not(ZEME_AxCxExGx);
+    /*p29.XOTA*/ wire XOTA_xBxDxFxH = not(XYVA_AxCxExGx);
+    /*p29.XYFY*/ wire XYFY_AxCxExGx = not(XOTA_xBxDxFxH);
+
+    /*p29.WUVU*/ WUVU_AxxDExxH.set(XOTA_xBxDxFxH,  XAPO_VID_RSTn, !WUVU_AxxDExxH);
+    /*p21.VENA*/ VENA_xBCDExxx.set(!WUVU_AxxDExxH, XAPO_VID_RSTn, !VENA_xBCDExxx);
+    /*p29.WOSU*/ WOSU_xxCDxxGH.set(XYFY_AxCxExGx,  XAPO_VID_RSTn, !WUVU_AxxDExxH);
   }
 
   //cpu_pins.CLK_GOOD.set(sys_pins.CLK_GOOD);
@@ -141,7 +137,11 @@ void ClockRegisters::tick(const ClockSignals& clk_sig, const ResetSignals& rst_s
   // cpu_pins.BOMA_xBxxxxxx.set(clk_sig.BOMA_xBxxxxxx);
 
   {
-    /* PIN_75 */ PIN_PHI.set(clk_sig.BUDE_AxxxxFGH);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(AFUR_xBCDExxx.qn());
+    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn, ATYP_xBCDExxx);
+    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
+    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+    /* PIN_75 */ PIN_PHI.set(BUDE_AxxxxFGH);
   }
 }
 
@@ -152,10 +152,10 @@ SignalHash ClockRegisters::commit() {
   /* PIN_74 */ hash << PIN_CLK_IN_xBxDxFxH.clear_preset();
   /* PIN_75 */ hash << PIN_PHI.commit_pinout(); // <- BUDE/BEVA
 
-  hash << AFUR_PHAZ_xBCDExxx.commit_duo();
-  hash << ALEF_PHAZ_xxCDEFxx.commit_duo();
-  hash << APUK_PHAZ_xxxDEFGx.commit_duo();
-  hash << ADYK_PHAZ_xxxxEFGH.commit_duo();
+  hash << AFUR_xBCDExxx.commit_duo();
+  hash << ALEF_xxCDEFxx.commit_duo();
+  hash << APUK_xxxDEFGx.commit_duo();
+  hash << ADYK_xxxxEFGH.commit_duo();
 
   hash << WUVU_AxxDExxH.commit_reg();
   hash << VENA_xBCDExxx.commit_reg();

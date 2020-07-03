@@ -107,7 +107,8 @@ void WindowRegisters::tick(SchematicTop& gb) {
     /*p27.PAFU*/ wire _WY_MATCHn    = nand(_WY_MATCH_HI, _WY_MATCH0, _WY_MATCH1, _WY_MATCH2, _WY_MATCH3);
     /*p27.ROGE*/ wire _WY_MATCHp    = not(_WY_MATCHn);
 
-    /*p27.SARY*/ SARY_WIN_MATCH_Y_SYNC.set(clk_sig.TALU_xBCDExxx, rst_sig.XAPO_VID_RSTn, _WY_MATCHp);
+    /*p21.TALU*/ wire TALU_xBCDExxx = not(clk_sig.VENA_xBCDExxx);
+    /*p27.SARY*/ SARY_WIN_MATCH_Y_SYNC.set(TALU_xBCDExxx, rst_sig.XAPO_VID_RSTn, _WY_MATCHp);
 
     /*p27.MYLO*/ wire _WX_MATCH0 = xnor(ppu_sig.XEHO_X0, WX0);
     /*p27.PUWU*/ wire _WX_MATCH1 = xnor(ppu_sig.SAVY_X1, WX1);
@@ -124,12 +125,18 @@ void WindowRegisters::tick(SchematicTop& gb) {
     /*p27.NUKO*/ wire WX_MATCHp    = not(_WX_MATCHn);
 
     {
+      /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+      /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+      /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+      /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+      /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+      /*p27.MEHE*/ wire MEHE_AxCxExGx = not(ALET_xBxDxFxH);
       /*p27.ROCO*/ wire ROCO_CLKPIPEp = not(ppu_sig.SEGU_CLKPIPEn);
       /*p27.PYCO*/ PYCO_WIN_MATCH_SYNC1.set(ROCO_CLKPIPEp,         rst_sig.XAPO_VID_RSTn, WX_MATCHp);
-      /*p27.NUNU*/ NUNU_WIN_MATCH_SYNC2.set(clk_sig.MEHE_AxCxExGx, rst_sig.XAPO_VID_RSTn, PYCO_WIN_MATCH_SYNC1);
+      /*p27.NUNU*/ NUNU_WIN_MATCH_SYNC2.set(MEHE_AxCxExGx, rst_sig.XAPO_VID_RSTn, PYCO_WIN_MATCH_SYNC1);
 
       /*p27.PYNU*/ PYNU_WIN_MODE_TRIGA.nor_latch(NUNU_WIN_MATCH_SYNC2, XOFO_WIN_RSTp);
-      /*p27.NOPA*/ NOPA_WIN_MODE_TRIGB.set(clk_sig.ALET_xBxDxFxH, rst_sig.XAPO_VID_RSTn, PYNU_WIN_MODE_TRIGA);
+      /*p27.NOPA*/ NOPA_WIN_MODE_TRIGB.set(ALET_xBxDxFxH, rst_sig.XAPO_VID_RSTn, PYNU_WIN_MODE_TRIGA);
       /*p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp = and (PYNU_WIN_MODE_TRIGA, !NOPA_WIN_MODE_TRIGB);
 
       // PUKU/RYDY form a NOR latch. WIN_MODE_TRIG is SET, (VID_RESET | BFETCH_DONE_SYNC_DELAY) is RESET.
@@ -137,13 +144,18 @@ void WindowRegisters::tick(SchematicTop& gb) {
       ///*p27.RYDY*/ RYDY = nor(PUKU, rst_reg.VID_RESET4, BFETCH_DONE_SYNC_DELAY);
 
       /*p27.RYDY*/ RYDY_WIN_HIT_LATCHp.nor_latch(NUNY_WIN_MODE_TRIGp, PYRY_VID_RSTp || tile_fetcher_sig.PORY_FETCH_DONE_Bp);
-      /*p27.SOVY*/ SOVY_WIN_HIT_SYNC.set(clk_sig.ALET_xBxDxFxH, rst_sig.XAPO_VID_RSTn, RYDY_WIN_HIT_LATCHp);
+      /*p27.SOVY*/ SOVY_WIN_HIT_SYNC.set(ALET_xBxDxFxH, rst_sig.XAPO_VID_RSTn, RYDY_WIN_HIT_LATCHp);
     }
 
     {
+      /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(clk_sig.ANOS_AxCxExGx);
+      /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+      /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+      /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+      /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
       /*p27.PANY*/ wire WIN_MATCH_ONSCREEN = nor(WX_MATCHp, ppu_sig.ROZE_FINE_COUNT_STOPn);
       /*p27.RYFA*/ RYFA_WIN_MATCH_TRIGA.set(ppu_sig.SEGU_CLKPIPEn, ppu_sig.XYMU_RENDERINGp, WIN_MATCH_ONSCREEN);
-      /*p27.RENE*/ RENE_WIN_MATCH_TRIGB.set(clk_sig.ALET_xBxDxFxH, ppu_sig.XYMU_RENDERINGp, RYFA_WIN_MATCH_TRIGA);
+      /*p27.RENE*/ RENE_WIN_MATCH_TRIGB.set(ALET_xBxDxFxH, ppu_sig.XYMU_RENDERINGp, RYFA_WIN_MATCH_TRIGA);
       /*p27.SEKO*/ wire SEKO_WIN_MATCH_TRIGp = nor(!RYFA_WIN_MATCH_TRIGA, RENE_WIN_MATCH_TRIGB);
 
 #if 0

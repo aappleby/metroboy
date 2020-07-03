@@ -4,6 +4,13 @@
 
 using namespace Schematics;
 
+// TEVY box color wrong on die trace, but schematic correct.
+
+// Die trace:
+// SORE = not(A15)
+// TEVY = or(A13, A13, SORE) // A13 line not fully drawn
+// TEXO = and(ADDR_VALIDx?, TEVY)
+
 //------------------------------------------------------------------------------
 
 CpuBusSignals CpuBus::sig(const SchematicTop& gb) const {
@@ -11,20 +18,21 @@ CpuBusSignals CpuBus::sig(const SchematicTop& gb) const {
 }
 
 CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_sig) const {
+  auto& cpu_bus = *this;
   CpuBusSignals cpu_sig;
 
   {
-    /*p03.TOVY*/ cpu_sig.TOVY_A00n = not(CPU_PIN_A00);
-    /*p08.TOLA*/ cpu_sig.TOLA_A01n = not(CPU_PIN_A01);
-    /*p06.SEFY*/ cpu_sig.SEFY_A02n = not(CPU_PIN_A02);
-    /*p07.TONA*/ cpu_sig.TONA_A08n = not(CPU_PIN_A08);
+    /*p03.TOVY*/ cpu_sig.TOVY_A00n = not(cpu_bus.CPU_PIN_A00);
+    /*p08.TOLA*/ cpu_sig.TOLA_A01n = not(cpu_bus.CPU_PIN_A01);
+    /*p06.SEFY*/ cpu_sig.SEFY_A02n = not(cpu_bus.CPU_PIN_A02);
+    /*p07.TONA*/ cpu_sig.TONA_A08n = not(cpu_bus.CPU_PIN_A08);
 
-    /*p22.XOLA*/ cpu_sig.XOLA_A00n = not(CPU_PIN_A00);
-    /*p22.XENO*/ cpu_sig.XENO_A01n = not(CPU_PIN_A01);
-    /*p22.XUSY*/ cpu_sig.XUSY_A02n = not(CPU_PIN_A02);
-    /*p22.XERA*/ cpu_sig.XERA_A03n = not(CPU_PIN_A03);
-    /*p10.BYKO*/ cpu_sig.BYKO_A05n = not(CPU_PIN_A05);
-    /*p10.AKUG*/ cpu_sig.AKUG_A06n = not(CPU_PIN_A06);
+    /*p22.XOLA*/ cpu_sig.XOLA_A00n = not(cpu_bus.CPU_PIN_A00);
+    /*p22.XENO*/ cpu_sig.XENO_A01n = not(cpu_bus.CPU_PIN_A01);
+    /*p22.XUSY*/ cpu_sig.XUSY_A02n = not(cpu_bus.CPU_PIN_A02);
+    /*p22.XERA*/ cpu_sig.XERA_A03n = not(cpu_bus.CPU_PIN_A03);
+    /*p10.BYKO*/ cpu_sig.BYKO_A05n = not(cpu_bus.CPU_PIN_A05);
+    /*p10.AKUG*/ cpu_sig.AKUG_A06n = not(cpu_bus.CPU_PIN_A06);
 
     /*p22.WADO*/ cpu_sig.WADO_A00p = not(cpu_sig.XOLA_A00n);
     /*p22.WESA*/ cpu_sig.WESA_A01p = not(cpu_sig.XENO_A01n);
@@ -33,43 +41,21 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   }
 
   {
-    /*p07.TUNA*/ cpu_sig.TUNA_0000_FDFFp = nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09);
-    /*p06.SARE*/ cpu_sig.SARE_XX00_XX07p = nor(CPU_PIN_A07, CPU_PIN_A06, CPU_PIN_A05, CPU_PIN_A04, CPU_PIN_A03);
-    /*p07.SYKE*/ cpu_sig.SYKE_FF00_FFFFp = nor(cpu_sig.TUNA_0000_FDFFp, cpu_sig.TONA_A08n);
   }
 
   {
-    /*p22.XALY*/ wire _XALY_0x00xxxxp = nor(CPU_PIN_A07, CPU_PIN_A05, CPU_PIN_A04);
-    /*p22.WUTU*/ cpu_sig.WUTU_FF40_FF4Fn = nand(cpu_sig.SYKE_FF00_FFFFp, CPU_PIN_A06, _XALY_0x00xxxxp);
-  }
-
-  /*p03.RYFO*/ cpu_sig.RYFO_FF04_FF07p = and (CPU_PIN_A02, cpu_sig.SARE_XX00_XX07p, cpu_sig.SYKE_FF00_FFFFp);
-
-  {
-    /*p07.RYCU*/ wire _RYCU_FE00_FFFFp = not(cpu_sig.TUNA_0000_FDFFp);
-    /*p07.SOHA*/ wire _SOHA_FF00_FFFFn = not(cpu_sig.SYKE_FF00_FFFFp);
-    /*p07.ROPE*/ wire _ROPE_FE00_FEFFn = nand(_RYCU_FE00_FFFFp, _SOHA_FF00_FFFFn);
-    /*p07.SARO*/ cpu_sig.SARO_FE00_FEFFp = not(_ROPE_FE00_FEFFn);
   }
 
   {
-    // TEVY box color wrong on die trace, but schematic correct.
-
-    // Die trace:
-    // SORE = not(A15)
-    // TEVY = or(A13, A13, SORE) // A13 line not fully drawn
-    // TEXO = and(ADDR_VALIDx?, TEVY)
-
-    /*p08.SORE*/ wire _SORE_0000_7FFFp = not(CPU_PIN_A15);
-    /*p08.TEVY*/ wire _TEVY_8000_9FFFn = or(CPU_PIN_A13, CPU_PIN_A14, _SORE_0000_7FFFp);
-    /*p08.TEXO*/ cpu_sig.TEXO_8000_9FFFn = and (CPU_PIN_ADDR_VALID, _TEVY_8000_9FFFn);
   }
 
   {
-    // the logic here is kinda weird, still seems to select vram.
-    /*p25.SYRO*/ wire SYRO_FE00_FFFFp = not(cpu_sig.TUNA_0000_FDFFp);
-    /*p25.TEFA*/ wire _TEFA_8000_9FFFp = nor(SYRO_FE00_FFFFp, cpu_sig.TEXO_8000_9FFFn);
-    /*p25.SOSE*/ cpu_sig.SOSE_8000_9FFFp = and (CPU_PIN_A15, _TEFA_8000_9FFFp);
+  }
+
+  {
+  }
+
+  {
   }
 
   // UJYV01 << UNOR04
@@ -85,22 +71,13 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   // UBAL5 >>
 
   {
-    /*p07.UJYV*/ wire UJYV_BUS_RD_MUX = mux2_n(EXT_PIN_RD_C, CPU_PIN_RD, dbg_sig.UNOR_MODE_DBG2p);
-    /*p07.TEDO*/ cpu_sig.TEDO_CPU_RD = not(UJYV_BUS_RD_MUX);
+    /*p07.UJYV*/ cpu_sig.UJYV_CPU_RD = mux2_n(EXT_PIN_RD_C, cpu_bus.CPU_PIN_RD, dbg_sig.UNOR_MODE_DBG2p);
   }
 
   {
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(cpu_sig.TEDO_CPU_RD);
-    /*p07.ASOT*/ cpu_sig.ASOT_CPU_RD = not(AJAS_BUS_RD);
-  }
-
-  {
-    /*p01.AREV*/ cpu_sig.AREV_CPU_WRn_ABCDExxx = nand(CPU_PIN_WR, clk_sig.AFAS_xxxxxFGH);
-  }
-
-  {
-    /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(cpu_sig.AREV_CPU_WRn_ABCDExxx);
-    /*p07.UBAL*/ cpu_sig.UBAL_CPU_WR_ABCDExxx = mux2_n(EXT_PIN_WR_C, APOV_CPU_WR_xxxxxFGH, dbg_sig.UNOR_MODE_DBG2p);
+    /*p01.AREV*/ cpu_sig.AREV_CPU_WRn_ABCDExxx = nand(cpu_bus.CPU_PIN_WR, clk_sig.AFAS_xxxxxFGH);
+    /*p01.APOV*/ wire APOV_CPU_WRp_xxxxxFGH    = not(cpu_sig.AREV_CPU_WRn_ABCDExxx);
+    /*p07.UBAL*/ cpu_sig.UBAL_CPU_WRp_ABCDExxx = mux2_n(EXT_PIN_WRn_C, APOV_CPU_WRp_xxxxxFGH, dbg_sig.UNOR_MODE_DBG2p);
   }
 
   // i do not trust this block, seems weird.
@@ -109,27 +86,42 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   // LAGU01
 
   {
-    /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(cpu_sig.TEXO_8000_9FFFn);
-    /*p08.LAGU*/ wire _LAGU = or(and(CPU_PIN_RD, LEVO_8000_9FFFp), CPU_PIN_WR);
-    /*p08.LYWE*/ wire _LYWE = not(_LAGU);
-    /*p08.MOCA*/ cpu_sig.MOCA_DBG_EXT_RD = nor(cpu_sig.TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1p);
-    /*p08.MOTY*/ cpu_sig.MOTY_CPU_EXT_RD = or(cpu_sig.MOCA_DBG_EXT_RD, _LYWE);
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
+    /*p08.LAGU*/ wire LAGU = or(and(cpu_bus.CPU_PIN_RD, LEVO_8000_9FFFp), cpu_bus.CPU_PIN_WR);
+    /*p08.LYWE*/ wire LYWE = not(LAGU);
+    /*p08.MOCA*/ cpu_sig.MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1p);
+    /*p08.MOTY*/ cpu_sig.MOTY_CPU_EXT_RD = or(cpu_sig.MOCA_DBG_EXT_RD, LYWE);
   }
 
-  /*p04.DECY*/ cpu_sig.DECY_FROM_CPU5n = not(CPU_PIN5);
 
-  /*p04.CATY*/ wire _CATY_FROM_CPU5p = not(cpu_sig.DECY_FROM_CPU5n);
-  /*p28.MYNU*/ wire _MYNU_CPU_RDn = nand(cpu_sig.ASOT_CPU_RD, _CATY_FROM_CPU5p);
-  /*p28.LEKO*/ cpu_sig.LEKO_CPU_RDp = not(_MYNU_CPU_RDn);
+  {
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_bus.CPU_PIN5);
+    /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
+    /*p28.MYNU*/ cpu_sig.MYNU_CPU_RDn = nand(ASOT_CPU_RD, CATY_FROM_CPU5p);
+  }
 
-  /*p08.MULE*/ wire _MULE_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1p);
-  /*p08.LOXO*/ wire _LOXO_LATCH_CPU_ADDRp = or (and (_MULE_MODE_DBG1n, cpu_sig.TEXO_8000_9FFFn), dbg_sig.UMUT_MODE_DBG1p);
-  /*p08.LASY*/ wire _LASY_LATCH_CPU_ADDRn = not(_LOXO_LATCH_CPU_ADDRp);
-  /*p08.MATE*/ cpu_sig.MATE_LATCH_CPU_ADDRp = not(_LASY_LATCH_CPU_ADDRn);
-  /*p08.LAVO*/ cpu_sig.LAVO_LATCH_CPU_DATAp = nand(CPU_PIN_RD, cpu_sig.TEXO_8000_9FFFn, CPU_PIN5);
+  {
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.MULE*/ wire MULE_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1p);
+    /*p08.LOXO*/ wire LOXO_LATCH_CPU_ADDRp = or (and (MULE_MODE_DBG1n, TEXO_8000_9FFFn), dbg_sig.UMUT_MODE_DBG1p);
+    /*p08.LASY*/ wire LASY_LATCH_CPU_ADDRn = not(LOXO_LATCH_CPU_ADDRp);
+    /*p08.MATE*/ cpu_sig.MATE_LATCH_CPU_ADDRp = not(LASY_LATCH_CPU_ADDRn);
+    /*p08.LAVO*/ cpu_sig.LAVO_LATCH_CPU_DATAp = nand(cpu_bus.CPU_PIN_RD, TEXO_8000_9FFFn, cpu_bus.CPU_PIN5);
+  }
 
-  /*p08.REDU*/ wire _REDU_CPU_RD = not(cpu_sig.TEDO_CPU_RD);
-  /*p08.RORU*/ cpu_sig.RORU_IBUS_TO_EBUSn = mux2_p(_REDU_CPU_RD, cpu_sig.MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
+  {
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p08.REDU*/ wire REDU_CPU_RD = not(TEDO_CPU_RD);
+    /*p08.RORU*/ cpu_sig.RORU_IBUS_TO_EBUSn = mux2_p(REDU_CPU_RD, cpu_sig.MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
+  }
 
   return cpu_sig;
 }
@@ -247,7 +239,7 @@ void CpuBus::tick(SchematicTop& gb) {
 
 SignalHash CpuBus::commit() {
   SignalHash hash;
-  /* PIN_78 */ hash << EXT_PIN_WR_C.clear_preset();     // -> UBAL
+  /* PIN_78 */ hash << EXT_PIN_WRn_C.clear_preset();     // -> UBAL
   /* PIN_79 */ hash << EXT_PIN_RD_C.clear_preset();     // -> UJYV
 
   hash << SOMA_CPU_DATA_LATCH_00.commit_latch();
@@ -359,6 +351,8 @@ SignalHash CpuBus::commit() {
 //------------------------------------------------------------------------------
 
 void CpuPinsOut::tick(SchematicTop& gb) {
+  auto& cpu_bus = gb.cpu_bus;
+
   auto rst_sig = gb.rst_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto clk_sig = gb.clk_reg.sig(gb.cpu_bus, gb.EXT_PIN_CLK_GOOD);
@@ -484,7 +478,8 @@ void CpuPinsOut::tick(SchematicTop& gb) {
   PIN_EXT_CLKGOOD.set(gb.EXT_PIN_CLK_GOOD);
   PIN_TABA_RSTp.set(rst_sig.TABA_RSTp);
 
-  /*p25.SYRO*/ wire SYRO_FE00_FFFFp = not(cpu_sig.TUNA_0000_FDFFp);
+  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
+  /*p25.SYRO*/ wire SYRO_FE00_FFFFp = not(TUNA_0000_FDFFp);
   PIN_SYRO.set(SYRO_FE00_FFFFp);
   PIN_TUTU_BOOTp.set(boot_sig.TUTU_BOOTp);
 }

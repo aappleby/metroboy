@@ -65,11 +65,15 @@ void Bootrom::tick(SchematicTop& gb) {
     /*p07.TYRO*/ wire ADDR_0x0x0000p = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A03, cpu_bus.CPU_PIN_A02, cpu_bus.CPU_PIN_A01, cpu_bus.CPU_PIN_A00);
     /*p07.TUFA*/ wire ADDR_x1x1xxxxp = and(cpu_bus.CPU_PIN_A04, cpu_bus.CPU_PIN_A06);
 
-    /*p07.TEXE*/ wire FF50_RDp = and(cpu_sig.TEDO_CPU_RD, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
+    /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
+    /*p07.TEXE*/ wire FF50_RDp = and(TEDO_CPU_RD, SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SYPU*/ cpu_bus.CPU_TRI_D0.set_tribuf(FF50_RDp, BOOT_BITn); // does the rung of the tribuf control polarity?
 
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
-    /*p07.TUGE*/ wire FF50_WRn = nand(TAPU_CPU_WR_xxxxxFGH, cpu_sig.SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
+    /*p07.TUGE*/ wire FF50_WRn = nand(TAPU_CPU_WR_xxxxxFGH, SYKE_FF00_FFFFp, ADDR_0x0x0000p, ADDR_x1x1xxxxp);
     /*p07.SATO*/ wire BOOT_BIT_IN = or (cpu_bus.CPU_TRI_D0, BOOT_BITn);
 
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
@@ -115,7 +119,8 @@ void Bootrom::tick(SchematicTop& gb) {
     /*p07.TUTU*/ wire _TUTU_ADDR_BOOTp = and (_TERA_BOOT_BITp, _TULO_ADDR_00XXp);
 
     /*p07.YAZA*/ wire _YAZA_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1p); // suggests UMUTp
-    /*p07.YULA*/ wire _YULA_BOOT_RD = and (cpu_sig.TEDO_CPU_RD, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.YULA*/ wire _YULA_BOOT_RD = and (TEDO_CPU_RD, _YAZA_MODE_DBG1n, _TUTU_ADDR_BOOTp); // def AND
 
     // this is kind of a hack
     uint16_t addr = (uint16_t)cpu_bus.get_addr();

@@ -124,11 +124,19 @@ void DmaRegisters::tick(SchematicTop& gb) {
   /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
   /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
 
-  /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
+  /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+  /*p22.XALY*/ wire XALY_0x00xxxxp = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
+  /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
+  /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
+  /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
   /*p22.WATE*/ wire WATE_FF46n = nand(WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
   /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
-  /*p04.MOLU*/ wire MOLU_FF46_RDn = nand(XEDA_FF46p, cpu_sig.ASOT_CPU_RD);
-  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+  /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+  /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
+  /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+  /*p04.MOLU*/ wire MOLU_FF46_RDn = nand(XEDA_FF46p, ASOT_CPU_RD);
+  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
   /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
   /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
   /*p04.LAVY*/ wire LAVY_FF46_WRp = and (XEDA_FF46p, CUPA_CPU_WR_xxxxxFGH);

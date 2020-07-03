@@ -6,17 +6,17 @@ namespace Schematics {
 //-----------------------------------------------------------------------------
 
 struct CpuBusSignals {
-  /*p07.TEDO*/ Signal TEDO_CPU_RD;
-  /*p07.ASOT*/ Signal ASOT_CPU_RD;
+  /*p07.UJYV*/ Signal UJYV_CPU_RD; // main read
 
   /*p08.MOCA*/ Signal MOCA_DBG_EXT_RD;
   /*p08.MOTY*/ Signal MOTY_CPU_EXT_RD;
 
-  /*p07.UBAL*/ Signal UBAL_CPU_WR_ABCDExxx;
-  /*p01.AREV*/ Signal AREV_CPU_WRn_ABCDExxx;
+  /*p01.AREV*/ Signal AREV_CPU_WRn_ABCDExxx; // write w/o debug mux
+  /*p07.UBAL*/ Signal UBAL_CPU_WRp_ABCDExxx; // write with debug mux
   
   /*p04.DECY*/ Signal DECY_FROM_CPU5n;
-  /*p28.LEKO*/ Signal LEKO_CPU_RDp;
+
+  /*p28.MYNU*/ Signal MYNU_CPU_RDn;
 
   /*p08.MATE*/ Signal MATE_LATCH_CPU_ADDRp;
   /*p08.LAVO*/ Signal LAVO_LATCH_CPU_DATAp;
@@ -39,16 +39,6 @@ struct CpuBusSignals {
   /*p22.WESA*/ Signal WESA_A01p;
   /*p22.WALO*/ Signal WALO_A02p;
   /*p22.WEPO*/ Signal WEPO_A03p;
-
-  /*p07.TUNA*/ Signal TUNA_0000_FDFFp;
-  /*p06.SARE*/ Signal SARE_XX00_XX07p;
-  /*p07.SYKE*/ Signal SYKE_FF00_FFFFp;
-  /*p03.RYFO*/ Signal RYFO_FF04_FF07p;
-  /*p07.SARO*/ Signal SARO_FE00_FEFFp;
-
-  /*p22.WUTU*/ Signal WUTU_FF40_FF4Fn;
-  /*p25.SOSE*/ Signal SOSE_8000_9FFFp;
-  /*p08.TEXO*/ Signal TEXO_8000_9FFFn;
 };
 
 //-----------------------------------------------------------------------------
@@ -179,7 +169,7 @@ private:
 
 
   /* PIN_79 */ PinIn EXT_PIN_RD_C;   // -> P07.UJYV
-  /* PIN_78 */ PinIn EXT_PIN_WR_C;   // -> P07.UBAL
+  /* PIN_78 */ PinIn EXT_PIN_WRn_C;   // -> P07.UBAL
 
   //----------
   // Ext-to-cpu "latch" - looks more like a pass gate really

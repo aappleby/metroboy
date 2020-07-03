@@ -101,7 +101,7 @@ PIN_D7_C.preset(oe, d & 0x80);
 
 #if 0
 void ExtPinsOut::preset() {
-  EXT_PIN_WR_C.preset(true, 0);   // -> P07.UBAL
+  EXT_PIN_WRn_C.preset(true, 0);   // -> P07.UBAL
   EXT_PIN_RD_C.preset(true, 0);   // -> P07.UJYV
   EXT_PIN_A00_C.preset(true, 0);   // -> P08.KOVA
   EXT_PIN_A01_C.preset(true, 0);   // -> P08.CAMU

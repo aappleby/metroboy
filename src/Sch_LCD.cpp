@@ -247,10 +247,18 @@ void LcdRegisters::tick(SchematicTop& gb) {
     auto& cpu_bus = gb.cpu_bus;
 
     auto cpu_sig = gb.cpu_bus.sig(gb);
-    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
+    /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
+    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
+    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
     /*p22.WYLE*/ wire FF44n = nand(WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
     /*p22.XOGY*/ wire FF44 = not(FF44n);
-    /*p23.WAFU*/ wire FF44_RD = and (cpu_sig.ASOT_CPU_RD, FF44);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p23.WAFU*/ wire FF44_RD = and (ASOT_CPU_RD, FF44);
     /*p23.VARO*/ wire FF44_RDn = not(FF44_RD);
 
     /*p23.WURY*/ wire LY0n = not(MUWY_Y0.q());
@@ -277,12 +285,20 @@ void LcdRegisters::tick(SchematicTop& gb) {
     auto& cpu_bus = gb.cpu_bus;
 
     auto cpu_sig = gb.cpu_bus.sig(gb);
-    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
+    /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
+    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
+    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
     /*p22.WETY*/ wire FF45n = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
     /*p22.XAYU*/ wire FF45 = not(FF45n);
-    /*p23.XYLY*/ wire FF45_RD = and (cpu_sig.ASOT_CPU_RD, FF45);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p23.XYLY*/ wire FF45_RD = and (ASOT_CPU_RD, FF45);
     /*p23.WEKU*/ wire FF45_RDn = not(FF45_RD);
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
     /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
     /*p23.XUFA*/ wire FF45_WR = and (CUPA_CPU_WR_xxxxxFGH, FF45);

@@ -182,11 +182,20 @@ PpuSignals PpuRegisters::sig(const SchematicTop& gb) const {
   /*p27.ROZE*/ ppu_sig.ROZE_FINE_COUNT_STOPn = nand(RYKU_FINE_CNT0, ROGA_FINE_CNT1, RUBU_FINE_CNT2);
 
   {
+    auto& cpu_bus = gb.cpu_bus;
     auto& vram_pins = gb.vram_pins;
     auto dbg_sig = gb.dbg_reg.sig(gb);
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
-    /*p25.TUCA*/ wire TUCA_CPU_VRAM_RD = and (cpu_sig.SOSE_8000_9FFFp, dbg_sig.ABUZ);
+    // the logic here is kinda weird, still seems to select vram.
+    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
+    /*p25.SYRO*/ wire SYRO_FE00_FFFFp = not(TUNA_0000_FDFFp);
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p25.TEFA*/ wire TEFA_8000_9FFFp = nor(SYRO_FE00_FFFFp, TEXO_8000_9FFFn);
+    /*p25.SOSE*/ wire SOSE_8000_9FFFp = and (cpu_bus.CPU_PIN_A15, TEFA_8000_9FFFp);
+    /*p25.TUCA*/ wire TUCA_CPU_VRAM_RD = and (SOSE_8000_9FFFp, dbg_sig.ABUZ);
     /*p25.TEFY*/ wire TEFY_MCSn_Cn = not(vram_pins.PIN_MCSn_C);
     /*p25.TOLE*/ wire TOLE_VRAM_RD = mux2_p(TEFY_MCSn_Cn, TUCA_CPU_VRAM_RD, dbg_sig.TUTO_DBG_VRAMp);
     /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp);
@@ -388,14 +397,23 @@ void PpuRegisters::tick(SchematicTop& gb) {
     // when ROPO16 goes high, RUPO02 goes low.
 
     auto cpu_sig = gb.cpu_bus.sig(gb);
-    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(cpu_sig.WUTU_FF40_FF4Fn);
+    auto& cpu_bus = gb.cpu_bus;
+    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
+    /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
+    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
+    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
+    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
     /*p22.WOFA*/ wire WOFA_FF41n = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
     /*p22.VARY*/ wire VARY_FF41p = not(WOFA_FF41n);
 
-    /*p21.TOBE*/ wire TOBE_FF41_RDa = and (cpu_sig.ASOT_CPU_RD, VARY_FF41p); // die AND
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p21.TOBE*/ wire TOBE_FF41_RDa = and (ASOT_CPU_RD, VARY_FF41p); // die AND
     /*p21.VAVE*/ wire VAVE_FF41_RDb = not(TOBE_FF41_RDa); // die INV
 
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WR_ABCDExxx);
+    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
     /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
     /*p21.SEPA*/ wire SEPA_FF41_WRp = and (CUPA_CPU_WR_xxxxxFGH, VARY_FF41p);
@@ -412,7 +430,6 @@ void PpuRegisters::tick(SchematicTop& gb) {
     auto lcd_sig = gb.lcd_reg.sig(gb);
     /*p21.RUPO*/ RUPO_LYC_MATCH_LATCHn.nor_latch(PAGO_LYC_MATCH_RST, lcd_sig.ROPO_LY_MATCH_SYNCp);
 
-    auto& cpu_bus = gb.cpu_bus;
     /*p21.ROXE*/ ROXE_INT_HBL_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.CPU_TRI_D0);
     /*p21.RUFO*/ RUFO_INT_VBL_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.CPU_TRI_D1);
     /*p21.REFE*/ REFE_INT_OAM_EN.set(RYVE_FF41_WRn, WESY_RSTn, cpu_bus.CPU_TRI_D2);

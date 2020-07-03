@@ -214,7 +214,13 @@ void BusMux::tick(SchematicTop& gb) {
     OAM_PIN_A6.set(bus_sig.XEMU_OAM_A6p);
     OAM_PIN_A7.set(bus_sig.YZET_OAM_A7p);
 
-    /*p28.LEKO*/ wire LEKO_CPU_RDp = not(cpu_sig.MYNU_CPU_RDn);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_bus.CPU_PIN5);
+    /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
+    /*p28.MYNU*/ wire MYNU_CPU_RDn = nand(ASOT_CPU_RD, CATY_FROM_CPU5p);
+    /*p28.LEKO*/ wire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
     /*p28.WUKU*/ wire WUKU_OAM_A_CPU_RD = and (LEKO_CPU_RDp, AMAB_OAM_LOCKn, OAM_PIN_A0);
     /*p28.GUKO*/ wire GUKO_OAM_B_CPU_RD = and (LEKO_CPU_RDp, AMAB_OAM_LOCKn, WAFO_OAM_A0n);
 
@@ -375,7 +381,8 @@ void BusMux::tick(SchematicTop& gb) {
     /*p07.SOHA*/ wire SOHA_FF00_FFFFn = not(SYKE_FF00_FFFFp);
     /*p07.ROPE*/ wire ROPE_FE00_FEFFn = nand(RYCU_FE00_FFFFp, SOHA_FF00_FFFFn);
     /*p07.SARO*/ wire SARO_FE00_FEFFp = not(ROPE_FE00_FEFFn);
-    /*p28.BOTA*/ wire BOTA_CPU_OAM_LATCH   = nand(cpu_sig.DECY_FROM_CPU5n, SARO_FE00_FEFFp, ASOT_CPU_RD); // Schematic wrong, this is NAND
+    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_bus.CPU_PIN5);
+    /*p28.BOTA*/ wire BOTA_CPU_OAM_LATCH   = nand(DECY_FROM_CPU5n, SARO_FE00_FEFFp, ASOT_CPU_RD); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire ASYT_OAM_LATCH = and(AJEP_SCAN_OAM_LATCH, XUJA_FETCH_OAM_LATCH, BOTA_CPU_OAM_LATCH);
     /*p28.BODE*/ wire BODE_OAM_LATCH = not(ASYT_OAM_LATCH); // to the tribus receiver below
     /*p28.YVAL*/ wire YVAL_OAM_LATCH = not(BODE_OAM_LATCH);
@@ -490,7 +497,13 @@ void BusMux::tick(SchematicTop& gb) {
     auto& vram_bus = gb.vram_bus;
     auto& cpu_bus = gb.cpu_bus;
 
-    /*p28.LEKO*/ wire LEKO_CPU_RDp = not(cpu_sig.MYNU_CPU_RDn);
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_bus.CPU_PIN5);
+    /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
+    /*p28.MYNU*/ wire MYNU_CPU_RDn = nand(ASOT_CPU_RD, CATY_FROM_CPU5p);
+    /*p28.LEKO*/ wire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
     /*p25.TYVY*/ wire TYVY_VRAMD_TO_CPUDp = nand(ppu_sig.SERE_VRAM_RD, LEKO_CPU_RDp);
     /*p25.SEBY*/ wire SEBY_VRAMD_TO_CPUDn = not(TYVY_VRAMD_TO_CPUDp);
 
@@ -596,10 +609,20 @@ void BusMux::tick(SchematicTop& gb) {
   }
 
   {
+    auto& cpu_bus = gb.cpu_bus;
     auto bus_sig = gb.bus_mux.sig(gb);
     auto dbg_sig = gb.dbg_reg.sig(gb);
     auto dma_sig = gb.dma_reg.sig(gb);
     auto cpu_sig = gb.cpu_bus.sig(gb);
+
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
+    /*p08.LAGU*/ wire LAGU = or(and(cpu_bus.CPU_PIN_RD, LEVO_8000_9FFFp), cpu_bus.CPU_PIN_WR);
+    /*p08.LYWE*/ wire LYWE = not(LAGU);
+    /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1p);
+    /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RD, LYWE);
 
     /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(dma_sig.MUDA_DMA_SRC_VRAMp);
     /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
@@ -607,8 +630,8 @@ void BusMux::tick(SchematicTop& gb) {
 
     /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(cpu_sig.AREV_CPU_WRn_ABCDExxx);
     /*p08.MEXO*/ wire MEXO_ABCDExxx = not(APOV_CPU_WR_xxxxxFGH);
-    /*p08.NEVY*/ wire NEVY = or(MEXO_ABCDExxx, cpu_sig.MOCA_DBG_EXT_RD);
-    /*p08.TYMU*/ wire TYMU_RD_OUTn = nor(LUMA_DMA_READ_CARTp, cpu_sig.MOTY_CPU_EXT_RD);
+    /*p08.NEVY*/ wire NEVY = or(MEXO_ABCDExxx, MOCA_DBG_EXT_RD);
+    /*p08.TYMU*/ wire TYMU_RD_OUTn = nor(LUMA_DMA_READ_CARTp, MOTY_CPU_EXT_RD);
     /*p08.PUVA*/ wire PUVA_WR_OUTn = or(NEVY, LUMA_DMA_READ_CARTp);
 
     /*p08.UGAC*/ wire _UGAC_RDp_A = nand(TYMU_RD_OUTn, dbg_sig.TOVA_MODE_DBG2n);

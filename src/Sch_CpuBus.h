@@ -8,20 +8,8 @@ namespace Schematics {
 struct CpuBusSignals {
   /*p07.UJYV*/ Signal UJYV_CPU_RD; // main read
 
-  /*p08.MOCA*/ Signal MOCA_DBG_EXT_RD;
-  /*p08.MOTY*/ Signal MOTY_CPU_EXT_RD;
-
   /*p01.AREV*/ Signal AREV_CPU_WRn_ABCDExxx; // write w/o debug mux
-  /*p07.UBAL*/ Signal UBAL_CPU_WRp_ABCDExxx; // write with debug mux
-  
-  /*p04.DECY*/ Signal DECY_FROM_CPU5n;
-
-  /*p28.MYNU*/ Signal MYNU_CPU_RDn;
-
-  /*p08.MATE*/ Signal MATE_LATCH_CPU_ADDRp;
-  /*p08.LAVO*/ Signal LAVO_LATCH_CPU_DATAp;
-
-  /*p08.RORU*/ Signal RORU_IBUS_TO_EBUSn;
+  /*p07.UBAL*/ Signal UBAL_CPU_WRp_ABCDExxx; // write with debug mux, goes everywhere
 };
 
 //-----------------------------------------------------------------------------

@@ -11,6 +11,18 @@ using namespace Schematics;
 // TEVY = or(A13, A13, SORE) // A13 line not fully drawn
 // TEXO = and(ADDR_VALIDx?, TEVY)
 
+// UJYV01 << UNOR04
+// UJYV02 << (mux 1) RD_C
+// UJYV03 << (mux 0) CPU_RAW_RD
+// UJYV04 nc
+// UJYV05 >> TEDO01
+
+// UBAL1 << UNOR04
+// UBAL2 << (mux1) << WR_C
+// UBAL3 << (mux0) << APOV04
+// UBAL4 nc
+// UBAL5 >>
+
 //------------------------------------------------------------------------------
 
 CpuBusSignals CpuBus::sig(const SchematicTop& gb) const {
@@ -22,39 +34,6 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   CpuBusSignals cpu_sig;
 
   {
-  }
-
-  {
-  }
-
-  {
-  }
-
-  {
-  }
-
-  {
-  }
-
-  {
-  }
-
-  {
-  }
-
-  // UJYV01 << UNOR04
-  // UJYV02 << (mux 1) RD_C
-  // UJYV03 << (mux 0) CPU_RAW_RD
-  // UJYV04 nc
-  // UJYV05 >> TEDO01
-
-  // UBAL1 << UNOR04
-  // UBAL2 << (mux1) << WR_C
-  // UBAL3 << (mux0) << APOV04
-  // UBAL4 nc
-  // UBAL5 >>
-
-  {
     /*p07.UJYV*/ cpu_sig.UJYV_CPU_RD = mux2_n(EXT_PIN_RD_C, cpu_bus.CPU_PIN_RD, dbg_sig.UNOR_MODE_DBG2p);
   }
 
@@ -62,49 +41,6 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
     /*p01.AREV*/ cpu_sig.AREV_CPU_WRn_ABCDExxx = nand(cpu_bus.CPU_PIN_WR, clk_sig.AFAS_xxxxxFGH);
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxxFGH    = not(cpu_sig.AREV_CPU_WRn_ABCDExxx);
     /*p07.UBAL*/ cpu_sig.UBAL_CPU_WRp_ABCDExxx = mux2_n(EXT_PIN_WRn_C, APOV_CPU_WRp_xxxxxFGH, dbg_sig.UNOR_MODE_DBG2p);
-  }
-
-  // i do not trust this block, seems weird.
-
-  // LAGU 5-rung
-  // LAGU01
-
-  {
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
-    /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
-    /*p08.LAGU*/ wire LAGU = or(and(cpu_bus.CPU_PIN_RD, LEVO_8000_9FFFp), cpu_bus.CPU_PIN_WR);
-    /*p08.LYWE*/ wire LYWE = not(LAGU);
-    /*p08.MOCA*/ cpu_sig.MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1p);
-    /*p08.MOTY*/ cpu_sig.MOTY_CPU_EXT_RD = or(cpu_sig.MOCA_DBG_EXT_RD, LYWE);
-  }
-
-
-  {
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
-    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(cpu_bus.CPU_PIN5);
-    /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
-    /*p28.MYNU*/ cpu_sig.MYNU_CPU_RDn = nand(ASOT_CPU_RD, CATY_FROM_CPU5p);
-  }
-
-  {
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
-    /*p08.MULE*/ wire MULE_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1p);
-    /*p08.LOXO*/ wire LOXO_LATCH_CPU_ADDRp = or (and (MULE_MODE_DBG1n, TEXO_8000_9FFFn), dbg_sig.UMUT_MODE_DBG1p);
-    /*p08.LASY*/ wire LASY_LATCH_CPU_ADDRn = not(LOXO_LATCH_CPU_ADDRp);
-    /*p08.MATE*/ cpu_sig.MATE_LATCH_CPU_ADDRp = not(LASY_LATCH_CPU_ADDRn);
-    /*p08.LAVO*/ cpu_sig.LAVO_LATCH_CPU_DATAp = nand(cpu_bus.CPU_PIN_RD, TEXO_8000_9FFFn, cpu_bus.CPU_PIN5);
-  }
-
-  {
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
-    /*p08.REDU*/ wire REDU_CPU_RD = not(TEDO_CPU_RD);
-    /*p08.RORU*/ cpu_sig.RORU_IBUS_TO_EBUSn = mux2_p(REDU_CPU_RD, cpu_sig.MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
   }
 
   return cpu_sig;
@@ -128,32 +64,58 @@ void CpuBus::tick(SchematicTop& gb) {
   }
 
   {
+    auto& cpu_bus = gb.cpu_bus;
+    auto dbg_sig = gb.dbg_reg.sig(gb);
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
-    /*p08.ALOR*/ CPU_ADDR_LATCH_00.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A00);
-    /*p08.APUR*/ CPU_ADDR_LATCH_01.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A01);
-    /*p08.ALYR*/ CPU_ADDR_LATCH_02.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A02);
-    /*p08.ARET*/ CPU_ADDR_LATCH_03.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A03);
-    /*p08.AVYS*/ CPU_ADDR_LATCH_04.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A04);
-    /*p08.ATEV*/ CPU_ADDR_LATCH_05.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A05);
-    /*p08.AROS*/ CPU_ADDR_LATCH_06.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A06);
-    /*p08.ARYM*/ CPU_ADDR_LATCH_07.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A07);
-    /*p08.LUNO*/ CPU_ADDR_LATCH_08.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A08);
-    /*p08.LYSA*/ CPU_ADDR_LATCH_09.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A09);
-    /*p08.PATE*/ CPU_ADDR_LATCH_10.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A10);
-    /*p08.LUMY*/ CPU_ADDR_LATCH_11.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A11);
-    /*p08.LOBU*/ CPU_ADDR_LATCH_12.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A12);
-    /*p08.LONU*/ CPU_ADDR_LATCH_13.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A13);
-    /*p08.NYRE*/ CPU_ADDR_LATCH_14.tp_latch(cpu_sig.MATE_LATCH_CPU_ADDRp, CPU_PIN_A14);
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.MULE*/ wire MULE_MODE_DBG1n = not(dbg_sig.UMUT_MODE_DBG1p);
+    /*p08.LOXO*/ wire LOXO_LATCH_CPU_ADDRp = or (and (MULE_MODE_DBG1n, TEXO_8000_9FFFn), dbg_sig.UMUT_MODE_DBG1p);
+    /*p08.LASY*/ wire LASY_LATCH_CPU_ADDRn = not(LOXO_LATCH_CPU_ADDRp);
+    /*p08.MATE*/ wire MATE_LATCH_CPU_ADDRp = not(LASY_LATCH_CPU_ADDRn);
+
+    /*p08.ALOR*/ CPU_ADDR_LATCH_00.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A00);
+    /*p08.APUR*/ CPU_ADDR_LATCH_01.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A01);
+    /*p08.ALYR*/ CPU_ADDR_LATCH_02.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A02);
+    /*p08.ARET*/ CPU_ADDR_LATCH_03.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A03);
+    /*p08.AVYS*/ CPU_ADDR_LATCH_04.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A04);
+    /*p08.ATEV*/ CPU_ADDR_LATCH_05.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A05);
+    /*p08.AROS*/ CPU_ADDR_LATCH_06.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A06);
+    /*p08.ARYM*/ CPU_ADDR_LATCH_07.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A07);
+    /*p08.LUNO*/ CPU_ADDR_LATCH_08.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A08);
+    /*p08.LYSA*/ CPU_ADDR_LATCH_09.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A09);
+    /*p08.PATE*/ CPU_ADDR_LATCH_10.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A10);
+    /*p08.LUMY*/ CPU_ADDR_LATCH_11.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A11);
+    /*p08.LOBU*/ CPU_ADDR_LATCH_12.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A12);
+    /*p08.LONU*/ CPU_ADDR_LATCH_13.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A13);
+    /*p08.NYRE*/ CPU_ADDR_LATCH_14.tp_latch(MATE_LATCH_CPU_ADDRp, CPU_PIN_A14);
   }
 
   {
+    auto& cpu_bus = gb.cpu_bus;
     auto cpu_sig = gb.cpu_bus.sig(gb);
+    auto dbg_sig = gb.dbg_reg.sig(gb);
 
     // So does this mean that if the CPU writes to the external bus during dma, that data
     // will actually end up in oam?
 
-    /*p08.LULA*/ wire LULA_IBUS_TO_EBUSp = not(cpu_sig.RORU_IBUS_TO_EBUSn);
+
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
+    /*p08.LAGU*/ wire LAGU = or(and(cpu_bus.CPU_PIN_RD, LEVO_8000_9FFFp), cpu_bus.CPU_PIN_WR);
+    /*p08.LYWE*/ wire LYWE = not(LAGU);
+    /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, dbg_sig.UMUT_MODE_DBG1p);
+    /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RD, LYWE);
+
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
+    /*p08.REDU*/ wire REDU_CPU_RD = not(TEDO_CPU_RD);
+    /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn = mux2_p(REDU_CPU_RD, MOTY_CPU_EXT_RD, dbg_sig.UNOR_MODE_DBG2p);
+
+    /*p08.LULA*/ wire LULA_IBUS_TO_EBUSp = not(RORU_IBUS_TO_EBUSn);
     EXT_PIN_D0_B.set(LULA_IBUS_TO_EBUSp);
     EXT_PIN_D1_B.set(LULA_IBUS_TO_EBUSp);
     EXT_PIN_D2_B.set(LULA_IBUS_TO_EBUSp);
@@ -172,18 +134,18 @@ void CpuBus::tick(SchematicTop& gb) {
     /*p25.RAFY*/ EXT_PIN_D6_A.set(nand(CPU_TRI_D6, LULA_IBUS_TO_EBUSp));
     /*p25.RAVU*/ EXT_PIN_D7_A.set(nand(CPU_TRI_D7, LULA_IBUS_TO_EBUSp));
 
-    /*p08.RUNE*/ EXT_PIN_D0_D.set(nor(CPU_TRI_D0, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.RYPU*/ EXT_PIN_D1_D.set(nor(CPU_TRI_D1, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.SULY*/ EXT_PIN_D2_D.set(nor(CPU_TRI_D2, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.SEZE*/ EXT_PIN_D3_D.set(nor(CPU_TRI_D3, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.RESY*/ EXT_PIN_D4_D.set(nor(CPU_TRI_D4, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.TAMU*/ EXT_PIN_D5_D.set(nor(CPU_TRI_D5, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.ROGY*/ EXT_PIN_D6_D.set(nor(CPU_TRI_D6, cpu_sig.RORU_IBUS_TO_EBUSn));
-    /*p08.RYDA*/ EXT_PIN_D7_D.set(nor(CPU_TRI_D7, cpu_sig.RORU_IBUS_TO_EBUSn));
+    /*p08.RUNE*/ EXT_PIN_D0_D.set(nor(CPU_TRI_D0, RORU_IBUS_TO_EBUSn));
+    /*p08.RYPU*/ EXT_PIN_D1_D.set(nor(CPU_TRI_D1, RORU_IBUS_TO_EBUSn));
+    /*p08.SULY*/ EXT_PIN_D2_D.set(nor(CPU_TRI_D2, RORU_IBUS_TO_EBUSn));
+    /*p08.SEZE*/ EXT_PIN_D3_D.set(nor(CPU_TRI_D3, RORU_IBUS_TO_EBUSn));
+    /*p08.RESY*/ EXT_PIN_D4_D.set(nor(CPU_TRI_D4, RORU_IBUS_TO_EBUSn));
+    /*p08.TAMU*/ EXT_PIN_D5_D.set(nor(CPU_TRI_D5, RORU_IBUS_TO_EBUSn));
+    /*p08.ROGY*/ EXT_PIN_D6_D.set(nor(CPU_TRI_D6, RORU_IBUS_TO_EBUSn));
+    /*p08.RYDA*/ EXT_PIN_D7_D.set(nor(CPU_TRI_D7, RORU_IBUS_TO_EBUSn));
   }
 
   {
-    auto cpu_sig = gb.cpu_bus.sig(gb);
+    auto& cpu_bus = gb.cpu_bus;
 
     // External data bus to internal data bus
     // SOMA01 << LAVO04
@@ -198,25 +160,30 @@ void CpuBus::tick(SchematicTop& gb) {
 
     // Is this actually like a pass gate? We already know the latch cells, and this is bigger than those.
 
-    /*p08.SOMA*/ SOMA_CPU_DATA_LATCH_00.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D0_C);
-    /*p08.RONY*/ RONY_CPU_DATA_LATCH_01.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D1_C);
-    /*p08.RAXY*/ RAXY_CPU_DATA_LATCH_02.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D2_C);
-    /*p08.SELO*/ SELO_CPU_DATA_LATCH_03.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D3_C);
-    /*p08.SODY*/ SODY_CPU_DATA_LATCH_04.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D4_C);
-    /*p08.SAGO*/ SAGO_CPU_DATA_LATCH_05.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D5_C);
-    /*p08.RUPA*/ RUPA_CPU_DATA_LATCH_06.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D6_C);
-    /*p08.SAZY*/ SAZY_CPU_DATA_LATCH_07.tp_latch(cpu_sig.LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D7_C);
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (cpu_bus.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAp = nand(cpu_bus.CPU_PIN_RD, TEXO_8000_9FFFn, cpu_bus.CPU_PIN5);
+
+    /*p08.SOMA*/ SOMA_CPU_DATA_LATCH_00.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D0_C);
+    /*p08.RONY*/ RONY_CPU_DATA_LATCH_01.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D1_C);
+    /*p08.RAXY*/ RAXY_CPU_DATA_LATCH_02.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D2_C);
+    /*p08.SELO*/ SELO_CPU_DATA_LATCH_03.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D3_C);
+    /*p08.SODY*/ SODY_CPU_DATA_LATCH_04.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D4_C);
+    /*p08.SAGO*/ SAGO_CPU_DATA_LATCH_05.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D5_C);
+    /*p08.RUPA*/ RUPA_CPU_DATA_LATCH_06.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D6_C);
+    /*p08.SAZY*/ SAZY_CPU_DATA_LATCH_07.tp_latch(LAVO_LATCH_CPU_DATAp, gb.EXT_PIN_D7_C);
 
     // RYMA 6-rung green tribuf
 
-    /*p08.RYMA*/ CPU_TRI_D0.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SOMA_CPU_DATA_LATCH_00);
-    /*p08.RUVO*/ CPU_TRI_D1.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RONY_CPU_DATA_LATCH_01);
-    /*p08.RYKO*/ CPU_TRI_D2.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RAXY_CPU_DATA_LATCH_02);
-    /*p08.TAVO*/ CPU_TRI_D3.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SELO_CPU_DATA_LATCH_03);
-    /*p08.TEPE*/ CPU_TRI_D4.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SODY_CPU_DATA_LATCH_04);
-    /*p08.SAFO*/ CPU_TRI_D5.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAGO_CPU_DATA_LATCH_05);
-    /*p08.SEVU*/ CPU_TRI_D6.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, RUPA_CPU_DATA_LATCH_06);
-    /*p08.TAJU*/ CPU_TRI_D7.set_tribuf(cpu_sig.LAVO_LATCH_CPU_DATAp, SAZY_CPU_DATA_LATCH_07);
+    /*p08.RYMA*/ CPU_TRI_D0.set_tribuf(LAVO_LATCH_CPU_DATAp, SOMA_CPU_DATA_LATCH_00);
+    /*p08.RUVO*/ CPU_TRI_D1.set_tribuf(LAVO_LATCH_CPU_DATAp, RONY_CPU_DATA_LATCH_01);
+    /*p08.RYKO*/ CPU_TRI_D2.set_tribuf(LAVO_LATCH_CPU_DATAp, RAXY_CPU_DATA_LATCH_02);
+    /*p08.TAVO*/ CPU_TRI_D3.set_tribuf(LAVO_LATCH_CPU_DATAp, SELO_CPU_DATA_LATCH_03);
+    /*p08.TEPE*/ CPU_TRI_D4.set_tribuf(LAVO_LATCH_CPU_DATAp, SODY_CPU_DATA_LATCH_04);
+    /*p08.SAFO*/ CPU_TRI_D5.set_tribuf(LAVO_LATCH_CPU_DATAp, SAGO_CPU_DATA_LATCH_05);
+    /*p08.SEVU*/ CPU_TRI_D6.set_tribuf(LAVO_LATCH_CPU_DATAp, RUPA_CPU_DATA_LATCH_06);
+    /*p08.TAJU*/ CPU_TRI_D7.set_tribuf(LAVO_LATCH_CPU_DATAp, SAZY_CPU_DATA_LATCH_07);
   }}
 
 //------------------------------------------------------------------------------

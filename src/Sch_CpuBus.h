@@ -22,23 +22,6 @@ struct CpuBusSignals {
   /*p08.LAVO*/ Signal LAVO_LATCH_CPU_DATAp;
 
   /*p08.RORU*/ Signal RORU_IBUS_TO_EBUSn;
-
-  /*p03.TOVY*/ Signal TOVY_A00n;
-  /*p08.TOLA*/ Signal TOLA_A01n;
-  /*p06.SEFY*/ Signal SEFY_A02n;
-  /*p07.TONA*/ Signal TONA_A08n;
-
-  /*p22.XOLA*/ Signal XOLA_A00n;
-  /*p22.XENO*/ Signal XENO_A01n;
-  /*p22.XUSY*/ Signal XUSY_A02n;
-  /*p22.XERA*/ Signal XERA_A03n;
-  /*p10.BYKO*/ Signal BYKO_A05n;
-  /*p10.AKUG*/ Signal AKUG_A06n;
-
-  /*p22.WADO*/ Signal WADO_A00p;
-  /*p22.WESA*/ Signal WESA_A01p;
-  /*p22.WALO*/ Signal WALO_A02p;
-  /*p22.WEPO*/ Signal WEPO_A03p;
 };
 
 //-----------------------------------------------------------------------------

@@ -18,6 +18,10 @@ JoypadSignals JoypadRegisters::sig() const {
 
 void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus& cpu_bus, CpuBusSignals& cpu_sig) {
 
+  /*p10.BYKO*/ wire BYKO_A05n = not(cpu_bus.CPU_PIN_A05);
+  /*p10.AKUG*/ wire AKUG_A06n = not(cpu_bus.CPU_PIN_A06);
+
+
   /*p02.KERY*/ wire _ANY_BUTTON = or(P13_C, P12_C, P11_C, P10_C);
 
   /*p10.AMUS*/ wire _AMUS_0xx00000 = nor(cpu_bus.CPU_PIN_A00, cpu_bus.CPU_PIN_A01, cpu_bus.CPU_PIN_A02, cpu_bus.CPU_PIN_A03, cpu_bus.CPU_PIN_A04, cpu_bus.CPU_PIN_A07);
@@ -29,10 +33,10 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus&
   /*p10.ANAP*/ wire _ANAP_0xx00000 = and (_AMUS_0xx00000, SYKE_FF00_FFFFp);
 
   /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
-  /*p10.ACAT*/ wire _ACAT_FF00_RD = and (TEDO_CPU_RD, _ANAP_0xx00000, cpu_sig.AKUG_A06n, cpu_sig.BYKO_A05n);
+  /*p10.ACAT*/ wire _ACAT_FF00_RD = and (TEDO_CPU_RD, _ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
   /*p05.BYZO*/ wire _BYZO_FF00_RDn = not(_ACAT_FF00_RD);
   /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
-  /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, cpu_sig.AKUG_A06n, cpu_sig.BYKO_A05n);
+  /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
 
   /*p01.BALY*/ wire BALY_xBxxxxxx = not(clk_sig.BYJU_AxCDEFGH);
   /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);

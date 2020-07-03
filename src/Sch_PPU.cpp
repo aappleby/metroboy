@@ -246,6 +246,16 @@ PpuSignals PpuRegisters::sig(const SchematicTop& gb) const {
 //------------------------------------------------------------------------------
 
 void PpuRegisters::tick(SchematicTop& gb) {
+  auto& cpu_bus = gb.cpu_bus;
+
+  /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+
+  /*p22.XOLA*/ wire XOLA_A00n = not(cpu_bus.CPU_PIN_A00);
+  /*p22.XENO*/ wire XENO_A01n = not(cpu_bus.CPU_PIN_A01);
+  /*p22.XUSY*/ wire XUSY_A02n = not(cpu_bus.CPU_PIN_A02);
+  /*p22.XERA*/ wire XERA_A03n = not(cpu_bus.CPU_PIN_A03);
+
+  /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
 
   {
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
@@ -397,14 +407,12 @@ void PpuRegisters::tick(SchematicTop& gb) {
     // when ROPO16 goes high, RUPO02 goes low.
 
     auto cpu_sig = gb.cpu_bus.sig(gb);
-    auto& cpu_bus = gb.cpu_bus;
     /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
-    /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
     /*p22.XALY*/ wire XALY_0x00xxxxp = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
     /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
     /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
-    /*p22.WOFA*/ wire WOFA_FF41n = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.XERA_A03n);
+    /*p22.WOFA*/ wire WOFA_FF41n = nand(WERO_FF40_FF4Fp, WADO_A00p, XENO_A01n, XUSY_A02n, XERA_A03n);
     /*p22.VARY*/ wire VARY_FF41p = not(WOFA_FF41n);
 
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);

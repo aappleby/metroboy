@@ -10,6 +10,17 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
 
   //----------------------------------------
 
+  auto& cpu_bus = gb.cpu_bus;
+  /*p22.XOLA*/ wire XOLA_A00n = not(cpu_bus.CPU_PIN_A00);
+  /*p22.XENO*/ wire XENO_A01n = not(cpu_bus.CPU_PIN_A01);
+  /*p22.XUSY*/ wire XUSY_A02n = not(cpu_bus.CPU_PIN_A02);
+  /*p22.XERA*/ wire XERA_A03n = not(cpu_bus.CPU_PIN_A03);
+
+  /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
+  /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
+  /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
+  /*p22.WEPO*/ wire WEPO_A03p = not(XERA_A03n);
+
   {
     auto& ppu_config = gb.ppu_config;
 
@@ -376,7 +387,6 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
 
   // FF47 BGP
   {
-    auto& cpu_bus = gb.cpu_bus;
     auto cpu_sig = gb.cpu_bus.sig(gb);
     /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
     /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
@@ -384,7 +394,7 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
     /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
     /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
-    /*p22.WYBO*/ wire FF47n = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
+    /*p22.WYBO*/ wire FF47n = nand(WERO_FF40_FF4Fp, WADO_A00p, WESA_A01p, WALO_A02p, XERA_A03n);
     /*p22.WERA*/ wire FF47 = not(FF47n);
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
@@ -419,7 +429,6 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
 
   // FF48 OBP0
   {
-    auto& cpu_bus = gb.cpu_bus;
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
     /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
@@ -428,7 +437,7 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
     /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
     /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
-    /*p22.WETA*/ wire FF48n = nand(WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
+    /*p22.WETA*/ wire FF48n = nand(WERO_FF40_FF4Fp, XOLA_A00n, XENO_A01n, XUSY_A02n, WEPO_A03p);
     /*p22.XAYO*/ wire FF48 = not(FF48n);
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
@@ -463,7 +472,6 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
 
   // FF49 OBP1
   {
-    auto& cpu_bus = gb.cpu_bus;
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
     /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
@@ -472,7 +480,7 @@ void PixelPipeRegisters::tick(SchematicTop& gb) {
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
     /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
     /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
-    /*p22.VAMA*/ wire FF49n = nand(WERO_FF40_FF4Fp, cpu_sig.WADO_A00p, cpu_sig.XENO_A01n, cpu_sig.XUSY_A02n, cpu_sig.WEPO_A03p);
+    /*p22.VAMA*/ wire FF49n = nand(WERO_FF40_FF4Fp, WADO_A00p, XENO_A01n, XUSY_A02n, WEPO_A03p);
     /*p22.TEGO*/ wire FF49 = not(FF49n);
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
     /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);

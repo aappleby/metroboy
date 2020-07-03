@@ -22,22 +22,6 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   CpuBusSignals cpu_sig;
 
   {
-    /*p03.TOVY*/ cpu_sig.TOVY_A00n = not(cpu_bus.CPU_PIN_A00);
-    /*p08.TOLA*/ cpu_sig.TOLA_A01n = not(cpu_bus.CPU_PIN_A01);
-    /*p06.SEFY*/ cpu_sig.SEFY_A02n = not(cpu_bus.CPU_PIN_A02);
-    /*p07.TONA*/ cpu_sig.TONA_A08n = not(cpu_bus.CPU_PIN_A08);
-
-    /*p22.XOLA*/ cpu_sig.XOLA_A00n = not(cpu_bus.CPU_PIN_A00);
-    /*p22.XENO*/ cpu_sig.XENO_A01n = not(cpu_bus.CPU_PIN_A01);
-    /*p22.XUSY*/ cpu_sig.XUSY_A02n = not(cpu_bus.CPU_PIN_A02);
-    /*p22.XERA*/ cpu_sig.XERA_A03n = not(cpu_bus.CPU_PIN_A03);
-    /*p10.BYKO*/ cpu_sig.BYKO_A05n = not(cpu_bus.CPU_PIN_A05);
-    /*p10.AKUG*/ cpu_sig.AKUG_A06n = not(cpu_bus.CPU_PIN_A06);
-
-    /*p22.WADO*/ cpu_sig.WADO_A00p = not(cpu_sig.XOLA_A00n);
-    /*p22.WESA*/ cpu_sig.WESA_A01p = not(cpu_sig.XENO_A01n);
-    /*p22.WALO*/ cpu_sig.WALO_A02p = not(cpu_sig.XUSY_A02n);
-    /*p22.WEPO*/ cpu_sig.WEPO_A03p = not(cpu_sig.XERA_A03n);
   }
 
   {

@@ -108,6 +108,16 @@ void DmaRegisters::tick(SchematicTop& gb) {
 
   //----------------------------------------
 
+  /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
+
+  /*p22.XOLA*/ wire XOLA_A00n = not(cpu_bus.CPU_PIN_A00);
+  /*p22.XENO*/ wire XENO_A01n = not(cpu_bus.CPU_PIN_A01);
+  /*p22.XUSY*/ wire XUSY_A02n = not(cpu_bus.CPU_PIN_A02);
+  /*p22.XERA*/ wire XERA_A03n = not(cpu_bus.CPU_PIN_A03);
+
+  /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
+  /*p22.WALO*/ wire WALO_A02p = not(XUSY_A02n);
+
   // Arms on ground, NOR latch
   // LYXE00 << LAVY03
   // LYXE01 nc
@@ -125,12 +135,11 @@ void DmaRegisters::tick(SchematicTop& gb) {
   /*p04.LOKO*/ wire LOKO_DMA_RSTp = nand(CUNU_RSTn, !LENE_DMA_TRIG_d4.q());
 
   /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
-  /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
   /*p22.XALY*/ wire XALY_0x00xxxxp = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04);
   /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
   /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, cpu_bus.CPU_PIN_A06, XALY_0x00xxxxp);
   /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
-  /*p22.WATE*/ wire WATE_FF46n = nand(WERO_FF40_FF4Fp, cpu_sig.XOLA_A00n, cpu_sig.WESA_A01p, cpu_sig.WALO_A02p, cpu_sig.XERA_A03n);
+  /*p22.WATE*/ wire WATE_FF46n = nand(WERO_FF40_FF4Fp, XOLA_A00n, WESA_A01p, WALO_A02p, XERA_A03n);
   /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
   /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
   /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);

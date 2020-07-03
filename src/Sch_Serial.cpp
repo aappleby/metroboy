@@ -22,19 +22,22 @@ void SerialRegisters::tick(SchematicTop& gb) {
   /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(cpu_sig.UBAL_CPU_WRp_ABCDExxx);
 
   //----------------------------------------
+  /*p03.TOVY*/ wire TOVY_A00n = not(cpu_bus.CPU_PIN_A00);
+  /*p08.TOLA*/ wire TOLA_A01n = not(cpu_bus.CPU_PIN_A01);
+  /*p06.SEFY*/ wire SEFY_A02n = not(cpu_bus.CPU_PIN_A02);
 
   /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(cpu_bus.CPU_PIN_A15, cpu_bus.CPU_PIN_A14, cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A12, cpu_bus.CPU_PIN_A11, cpu_bus.CPU_PIN_A10, cpu_bus.CPU_PIN_A09);
   /*p07.TONA*/ wire TONA_A08n = not(cpu_bus.CPU_PIN_A08);
   /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
 
   /*p06.SARE*/ wire SARE_XX00_XX07p = nor(cpu_bus.CPU_PIN_A07, cpu_bus.CPU_PIN_A06, cpu_bus.CPU_PIN_A05, cpu_bus.CPU_PIN_A04, cpu_bus.CPU_PIN_A03);
-  /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (SARE_XX00_XX07p, cpu_sig.SEFY_A02n, SYKE_FF00_FFFFp);
-  /*p06.URYS*/ wire _FF01_WR_xxxxxFGHn = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, cpu_bus.CPU_PIN_A00, cpu_sig.TOLA_A01n);
+  /*p06.SANO*/ wire _ADDR_FF00_FF03 = and (SARE_XX00_XX07p, SEFY_A02n, SYKE_FF00_FFFFp);
+  /*p06.URYS*/ wire _FF01_WR_xxxxxFGHn = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, cpu_bus.CPU_PIN_A00, TOLA_A01n);
   /*p06.DAKU*/ wire _FF01_WR_xxxxxFGHp = not (_FF01_WR_xxxxxFGHn);
-  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, cpu_bus.CPU_PIN_A01, cpu_sig.TOVY_A00n);
+  /*p06.UWAM*/ wire _FF02_WRn_xxxxxFGH = nand(TAPU_CPU_WR_xxxxxFGH, _ADDR_FF00_FF03, cpu_bus.CPU_PIN_A01, TOVY_A00n);
   /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
-  /*p06.UFEG*/ wire _FF01_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_bus.CPU_PIN_A00, cpu_sig.TOLA_A01n);
-  /*p06.UCOM*/ wire _FF02_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_bus.CPU_PIN_A01, cpu_sig.TOVY_A00n);
+  /*p06.UFEG*/ wire _FF01_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_bus.CPU_PIN_A00, TOLA_A01n);
+  /*p06.UCOM*/ wire _FF02_RD = and (TEDO_CPU_RD, _ADDR_FF00_FF03, cpu_bus.CPU_PIN_A01, TOVY_A00n);
 
   /*p06.COBA*/ wire _SER_CNT3n = not(CALY_INT_SERIALp.q());
   /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place

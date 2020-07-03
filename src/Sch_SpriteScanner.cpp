@@ -28,7 +28,7 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
   {
     auto bus_sig = gb.bus_mux.sig(gb);
     auto& ppu_config = gb.ppu_config;
-    auto clk_sig = gb.clk_reg.sig();
+    auto& clk_reg = gb.clk_reg;
     auto lcd_sig = gb.lcd_reg.sig(gb);
     wire P10_B = 0;
 
@@ -71,7 +71,7 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
     /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
-    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(clk_sig.WOSU_xxCDxxGH);
+    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(clk_reg.WOSU_xxCDxxGH);
     /*p29.CARE*/ sprite_scanner_sig.CARE_STORE_ENp_ABxxEFxx = and (XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
 
@@ -91,7 +91,7 @@ SpriteScannerSignals SpriteScanner::sig(const SchematicTop& gb) const {
 
 void SpriteScanner::tick(SchematicTop& gb) {
   auto lcd_sig = gb.lcd_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig();
+  auto& clk_reg = gb.clk_reg;
   auto rst_sig = gb.rst_reg.sig(gb);
 
   /*p01.ATAR*/ wire ATAR_VID_RSTp = not(rst_sig.XAPO_VID_RSTn);
@@ -105,7 +105,7 @@ void SpriteScanner::tick(SchematicTop& gb) {
     /*p29.BAGY*/ wire BAGY_SCAN_RSTn = not(BALU_SCAN_RSTp);
 
     /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
-    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_sig.WUVU_AxxDExxH);
+    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_reg.WUVU_AxxDExxH);
     /*p29.BYBA*/ SCAN_DONE_TRIG_A.set(XUPY_xBCxxFGx, BAGY_SCAN_RSTn, FETO_SCAN_DONE_d0);
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(gb.PIN_CLK_IN_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
@@ -130,7 +130,7 @@ void SpriteScanner::tick(SchematicTop& gb) {
 
   {
     /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (SCAN0, SCAN1, SCAN2, SCAN5); // 32 + 4 + 2 + 1 = 39
-    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_sig.WUVU_AxxDExxH);
+    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_reg.WUVU_AxxDExxH);
     /*p28.GAVA*/ wire SCAN_CLK = or(FETO_SCAN_DONE_d0, XUPY_xBCxxFGx);
     /*p28.YFEL*/ SCAN0.set(SCAN_CLK, ANOM_SCAN_RSTn, !SCAN0);
     /*p28.WEWY*/ SCAN1.set(!SCAN0,   ANOM_SCAN_RSTn, !SCAN1);

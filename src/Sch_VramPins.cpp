@@ -185,10 +185,10 @@ void VramPins::tick(SchematicTop& gb) {
     auto ppu_sig = gb.ppu_reg.sig(gb);
     auto cpu_sig = gb.cpu_bus.sig(gb);
     auto dbg_sig = gb.dbg_reg.sig(gb);
-    auto clk_sig = gb.clk_reg.sig();
+    auto& clk_reg = gb.clk_reg;
 
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
-    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_sig.ADYK_xxxxEFGH);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
+    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.ADYK_xxxxEFGH);
     /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_bus.CPU_PIN_WR, AFAS_xxxxxFGH);
     /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);

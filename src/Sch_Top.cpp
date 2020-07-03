@@ -5,11 +5,12 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 void SchematicTop::tick_everything() {
-  auto clk_sig = clk_reg.sig();
-  auto dbg_sig = dbg_reg.sig(cpu_bus, EXT_PIN_RST);
+  auto& gb = *this;
+
+  auto dbg_sig = dbg_reg.sig(cpu_bus.CPU_PIN_ADDR_VALID, EXT_PIN_RST);
   auto tim_sig = tim_reg.sig();
 
-  auto cpu_sig = cpu_bus.sig(clk_sig, dbg_sig);
+  auto cpu_sig = cpu_bus.sig(clk_reg, dbg_sig);
   
   auto rst_sig = rst_reg.sig(
     tim_sig.UPOF_DIV_15,
@@ -22,8 +23,18 @@ void SchematicTop::tick_everything() {
   clk_reg.tick(ABOL_CLKREQn, rst_sig.XAPO_VID_RSTn, dbg_sig.UPOJ_MODE_PROD, PIN_CLK_IN_xBxDxFxH);
 
   dbg_reg.tick(dbg_sig, rst_sig);
-  rst_reg.tick(clk_sig, dbg_sig, rst_sig, cpu_bus, EXT_PIN_RST, EXT_PIN_CLK_GOOD);
-  tim_reg.tick(clk_sig, rst_sig, cpu_sig, cpu_bus, EXT_PIN_RST, EXT_PIN_CLK_GOOD);
+
+
+  rst_reg.tick(clk_reg,
+               dbg_reg.sig(gb).UPOJ_MODE_PROD,
+               rst_reg.sig(gb).TABA_RSTp,
+               cpu_bus.CPU_PIN_CLKREQ,
+               EXT_PIN_RST,
+               EXT_PIN_CLK_GOOD);
+
+
+
+  tim_reg.tick(clk_reg, rst_sig, cpu_sig, cpu_bus, EXT_PIN_RST, EXT_PIN_CLK_GOOD);
 
 
   /*
@@ -31,7 +42,7 @@ void SchematicTop::tick_everything() {
   tim_reg.tick(*this);
   ser_reg.tick(*this);
 
-  joy_reg.tick(rst_sig, clk_sig, cpu_bus, cpu_sig);
+  joy_reg.tick(rst_sig, clk_reg, cpu_bus, cpu_sig);
 
   ppu_reg.tick(*this);
   sst_reg.tick(*this);

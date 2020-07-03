@@ -16,7 +16,7 @@ JoypadSignals JoypadRegisters::sig() const {
 
 //------------------------------------------------------------------------------
 
-void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus& cpu_bus, CpuBusSignals& cpu_sig, wire EXT_PIN_CLK_GOOD) {
+void JoypadRegisters::tick(ResetSignals& rst_sig, ClockRegisters& clk_reg, CpuBus& cpu_bus, CpuBusSignals& cpu_sig, wire EXT_PIN_CLK_GOOD) {
 
   /*p10.BYKO*/ wire BYKO_A05n = not(cpu_bus.CPU_PIN_A05);
   /*p10.AKUG*/ wire AKUG_A06n = not(cpu_bus.CPU_PIN_A06);
@@ -39,11 +39,11 @@ void JoypadRegisters::tick(ResetSignals& rst_sig, ClockSignals& clk_sig, CpuBus&
   /*p10.ATOZ*/ wire _ATOZ_FF00_WRn = nand(TAPU_CPU_WR_xxxxxFGH, _ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
 
   /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
   /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_sig.APUK_xxxDEFGx);
+  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_reg.APUK_xxxDEFGx);
   /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
-  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_sig.ALEF_xxCDEFxx);
+  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.ALEF_xxCDEFxx);
   /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
   /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
   /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);

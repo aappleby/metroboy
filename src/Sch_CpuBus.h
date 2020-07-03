@@ -15,7 +15,7 @@ struct CpuBusSignals {
 struct CpuBus {
 
   CpuBusSignals sig(const SchematicTop& gb) const;
-  CpuBusSignals sig(const ClockSignals& clk_sig, const DebugSignals& dbg_sig) const;
+  CpuBusSignals sig(const ClockRegisters& clk_reg, const DebugSignals& dbg_sig) const;
 
   void tick(SchematicTop& gb);
   

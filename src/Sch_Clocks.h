@@ -5,24 +5,10 @@ namespace Schematics {
 
 //-----------------------------------------------------------------------------
 
-struct ClockSignals {
-  /*p01.AFUR*/ Signal AFUR_xBCDExxx;
-  /*p01.ALEF*/ Signal ALEF_xxCDEFxx;
-  /*p01.APUK*/ Signal APUK_xxxDEFGx;
-  /*p01.ADYK*/ Signal ADYK_xxxxEFGH;
-
-  /*p29.WUVU*/ Signal WUVU_AxxDExxH; // to lcd spritescanner spritestore
-  /*p21.VENA*/ Signal VENA_xBCDExxx; // to lcd window
-  /*p29.WOSU*/ Signal WOSU_xxCDxxGH; // to busmux spritescanner
-};
-
-//-----------------------------------------------------------------------------
-
 struct ClockRegisters {
 
   ClockSignals sig() const;
 
-  void tick(const SchematicTop& gb);
   void tick(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD, wire PIN_CLK_IN_xBxDxFxH);
   void tick2(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD, wire PIN_CLK_IN_xBxDxFxH);
 

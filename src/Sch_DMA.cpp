@@ -94,7 +94,7 @@ DmaSignals DmaRegisters::sig(const SchematicTop& /*gb*/) const {
 
 void DmaRegisters::tick(SchematicTop& gb) {
   auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto clk_sig = gb.clk_reg.sig();
+  auto& clk_reg = gb.clk_reg;
   auto rst_sig = gb.rst_reg.sig(gb);
   auto bus_sig = gb.bus_mux.sig(gb);
   auto dma_sig = gb.dma_reg.sig(gb);
@@ -155,7 +155,7 @@ void DmaRegisters::tick(SchematicTop& gb) {
     /*p04.LUPA*/ wire LUPA_DMA_TRIG = nor(LAVY_FF46_WRp, LYXE_DMA_LATCHn.q());
 
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
@@ -168,7 +168,7 @@ void DmaRegisters::tick(SchematicTop& gb) {
 
   {
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
@@ -186,7 +186,7 @@ void DmaRegisters::tick(SchematicTop& gb) {
     /*p04.NOLO*/ wire NOLO_DMA_DONEp = not(NAVO_DMA_DONEn);
 
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);

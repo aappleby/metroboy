@@ -71,7 +71,6 @@ void TileFetcher::tick(SchematicTop& gb) {
   auto& vram_bus = gb.vram_bus;
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig();
   auto win_sig = gb.win_reg.sig(gb);
   auto tile_fetcher_sig = sig(gb);
   auto lcd_sig = gb.lcd_reg.sig(gb);

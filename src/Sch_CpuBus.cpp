@@ -26,10 +26,10 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 CpuBusSignals CpuBus::sig(const SchematicTop& gb) const {
-  return sig(gb.clk_reg.sig(), gb.dbg_reg.sig(gb));
+  return sig(gb.clk_reg, gb.dbg_reg.sig(gb));
 }
 
-CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_sig) const {
+CpuBusSignals CpuBus::sig(const ClockRegisters& clk_reg, const DebugSignals& dbg_sig) const {
   auto& cpu_bus = *this;
   CpuBusSignals cpu_sig;
 
@@ -38,8 +38,8 @@ CpuBusSignals CpuBus::sig(const ClockSignals& clk_sig, const DebugSignals& dbg_s
   }
 
   {
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
-    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_sig.ADYK_xxxxEFGH);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
+    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.ADYK_xxxxEFGH);
     /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_bus.CPU_PIN_WR, AFAS_xxxxxFGH);
     /*p01.APOV*/ wire APOV_CPU_WRp_xxxxxFGH    = not(AREV_CPU_WRn_ABCDExxx);
@@ -247,8 +247,8 @@ void CpuPinsOut::tick(SchematicTop& gb) {
 
   auto rst_sig = gb.rst_reg.sig(gb);
   auto cpu_sig = gb.cpu_bus.sig(gb);
-  auto clk_sig = gb.clk_reg.sig();
   auto boot_sig = gb.bootrom.sig(gb);
+  auto& clk_reg = gb.clk_reg;
 
 #if 0
   // Debug stuff I disabled
@@ -259,11 +259,11 @@ void CpuPinsOut::tick(SchematicTop& gb) {
   //----------
   // weird debug things, probably not right
 
-  /*p05.AXYN*/ wire AXYN_xBCDEFGH = not(clk_sig.BEDO_xBxxxxxx);
+  /*p05.AXYN*/ wire AXYN_xBCDEFGH = not(clk_reg.BEDO_xBxxxxxx);
   /*p05.ADYR*/ wire ADYR_Axxxxxxx = not(AXYN_xBCDEFGH);
   /*p05.APYS*/ wire APYS_xBCDEFGH = nor(sys_sig.MODE_DBG2, ADYR_Axxxxxxx);
   /*p05.AFOP*/ wire AFOP_Axxxxxxx = not(APYS_xBCDEFGH);
-  /*p07.LECO*/ wire LECO_xBCDEFGH = nor(clk_sig.BEDO_xBxxxxxx, sys_sig.MODE_DBG2);
+  /*p07.LECO*/ wire LECO_xBCDEFGH = nor(clk_reg.BEDO_xBxxxxxx, sys_sig.MODE_DBG2);
 
   if (AFOP_Axxxxxxx) set_data(
     /*p05.ANOC*/ not(sys_sig.PIN_P10_B),
@@ -345,11 +345,11 @@ void CpuPinsOut::tick(SchematicTop& gb) {
   /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
   /*p01.BUTY*/ wire BUTY_CLKREQ   = not(ABOL_CLKREQn);
 
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
   /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_sig.APUK_xxxDEFGx);
+  /*p01.AROV*/ wire AROV_xxxDEFGx = not(!clk_reg.APUK_xxxDEFGx);
   /*p01.BAPY*/ wire BAPY_AxxxxxxH = nor(ABOL_CLKREQn,  AROV_xxxDEFGx, ATYP_xBCDExxx);
-  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_sig.ALEF_xxCDEFxx);
+  /*p01.AFEP*/ wire AFEP_ABxxxxGH = not(clk_reg.ALEF_xxCDEFxx);
   /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
   /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
   /*p01.BERU*/ wire BERU_xBCDEFGx = not(BAPY_AxxxxxxH);

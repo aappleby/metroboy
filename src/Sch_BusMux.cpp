@@ -171,7 +171,6 @@ void BusMux::tick(SchematicTop& gb) {
 
   {
     auto& cpu_bus = gb.cpu_bus;
-    auto clk_sig = gb.clk_reg.sig();
     auto rst_sig = gb.rst_reg.sig(gb);
     /*p01.ALUR*/ wire ALUR_RSTn = not(rst_sig.AVOR_RSTp);   // this goes all over the place
     /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
@@ -189,7 +188,7 @@ void BusMux::tick(SchematicTop& gb) {
     {
       auto& cpu_bus = gb.cpu_bus;
       auto ppu_sig = gb.ppu_reg.sig(gb);
-      auto clk_sig = gb.clk_reg.sig();
+      auto& clk_reg = gb.clk_reg;
       auto dma_sig = gb.dma_reg.sig(gb);
       auto bus_sig = gb.bus_mux.sig(gb);
       auto cpu_sig = gb.cpu_bus.sig(gb);
@@ -197,7 +196,7 @@ void BusMux::tick(SchematicTop& gb) {
       /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(dma_sig.MATU_DMA_RUNNINGp);
       /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, ppu_sig.XYMU_RENDERINGp); // def AND. ppu can read oam when there's rendering but no dma
       /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-      /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+      /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
       /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
       /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
       /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
@@ -357,13 +356,13 @@ void BusMux::tick(SchematicTop& gb) {
   // CPU bus -> oam
   {
     auto& cpu_bus = gb.cpu_bus;
-    auto clk_sig = gb.clk_reg.sig();
+    auto& clk_reg = gb.clk_reg;
     auto ppu_sig = gb.ppu_reg.sig(gb);
     auto dma_sig = gb.dma_reg.sig(gb);
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
@@ -417,11 +416,11 @@ void BusMux::tick(SchematicTop& gb) {
   {
     auto& cpu_bus = gb.cpu_bus;
     auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
-    auto clk_sig = gb.clk_reg.sig();
+    auto& clk_reg = gb.clk_reg;
     auto ppu_sig = gb.ppu_reg.sig(gb);
     auto cpu_sig = gb.cpu_bus.sig(gb);
 
-    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(clk_sig.WOSU_xxCDxxGH);
+    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(clk_reg.WOSU_xxCDxxGH);
     /*p28.AJEP*/ wire AJEP_SCAN_OAM_LATCH  = nand(ppu_sig.ACYL_SCANNINGp, XOCE_ABxxEFxx); // schematic wrong, is def nand
     /*p28.XUJA*/ wire XUJA_FETCH_OAM_LATCH = not(sprite_fetcher_sig.WEFY_SPR_READp);
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(cpu_sig.UJYV_CPU_RD);
@@ -466,21 +465,21 @@ void BusMux::tick(SchematicTop& gb) {
   {
     auto& cpu_bus = gb.cpu_bus;
     auto sprite_fetcher_sig = gb.sprite_fetcher.sig(gb);
-    auto clk_sig = gb.clk_reg.sig();
+    auto& clk_reg = gb.clk_reg;
     auto ppu_sig = gb.ppu_reg.sig(gb);
     auto dma_sig = gb.dma_reg.sig(gb);
 
     //----------
 
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
     /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
     /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
     /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
     /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
     /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
 
-    /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!clk_sig.WUVU_AxxDExxH, !clk_sig.WOSU_xxCDxxGH);
+    /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!clk_reg.WUVU_AxxDExxH, !clk_reg.WOSU_xxCDxxGH);
     /*p29.XYSO*/ wire XYSO_ABCxDEFx = not(WOJO_xxxDxxxH);
     /*p25.AVER*/ wire AVER_SCAN_OAM_CLK  = nand(ppu_sig.ACYL_SCANNINGp, XYSO_ABCxDEFx); 
     /*p25.XUJY*/ wire XUJY_FETCH_OAM_CLK = not(sprite_fetcher_sig.VAPE_FETCH_OAM_CLK);
@@ -708,7 +707,7 @@ void BusMux::tick(SchematicTop& gb) {
     auto& cpu_bus = gb.cpu_bus;
     auto dbg_sig = gb.dbg_reg.sig(gb);
     auto dma_sig = gb.dma_reg.sig(gb);
-    auto clk_sig = gb.clk_reg.sig();
+    auto& clk_reg = gb.clk_reg;
 
     /*p08.SORE*/ wire SORE_0000_7FFFp = not(cpu_bus.CPU_PIN_A15);
     /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(cpu_bus.CPU_PIN_A13, cpu_bus.CPU_PIN_A14, SORE_0000_7FFFp);
@@ -723,8 +722,8 @@ void BusMux::tick(SchematicTop& gb) {
     /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(dma_sig.MATU_DMA_RUNNINGp, LOGO_DMA_VRAMn);
     /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
 
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
-    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_sig.ADYK_xxxxEFGH);
+    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_reg.AFUR_xBCDExxx);
+    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(clk_reg.ADYK_xxxxEFGH);
     /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
     /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(cpu_bus.CPU_PIN_WR, AFAS_xxxxxFGH);
     /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);

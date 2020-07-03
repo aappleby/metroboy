@@ -10,6 +10,8 @@ struct DebugSignals;
 struct ResetSignals;
 struct CpuBusSignals;
 
+struct ClockRegisters;
+
 struct CpuBus;
 
 //-----------------------------------------------------------------------------
@@ -458,7 +460,7 @@ struct Reg9 : public RegisterBase {
 // set and reset must be async (see interrupts)
 // reset must take priority over set (see interrupts ALUR_RSTn)
 
-///*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_sig.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YFOT_OAM_A2p);
+///*p30.XADU*/ XADU_SPRITE_IDX0.set(clk_reg.WUDA_xBCxxFGx, dbg_sig.WEFE_P10_Bn, bus_sig.YFOT_OAM_A2p);
 
 // XADU_01 nc
 // XADU_02 << WEFE_02 (rstn)

@@ -10,6 +10,7 @@ struct PpuConfig;
 struct ClockSignals;
 struct ResetSignals;
 struct CpuBus;
+struct ClockRegisters;
 
 //-----------------------------------------------------------------------------
 
@@ -35,10 +36,10 @@ struct ResetRegisters {
     wire XONA_LCDC_EN) const;
   
   void tick(SchematicTop& gb);
-  void tick(const ClockSignals& clk_sig,
-            const DebugSignals& dbg_sig,
-            const ResetSignals& rst_sig,
-            const CpuBus& cpu_bus,
+  void tick(const ClockRegisters& clk_reg,
+            wire UPOJ_MODE_PROD,
+            wire TABA_RSTp,
+            wire CPU_PIN_CLKREQ,
             wire EXT_PIN_RST,
             wire EXT_PIN_CLK_GOOD);
 

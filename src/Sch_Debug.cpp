@@ -15,23 +15,11 @@ using namespace Schematics;
 //-----------------------------------------------------------------------------
 
 DebugSignals DebugRegisters::sig(const SchematicTop& gb) const {
-  return sig(gb.cpu_bus, gb.EXT_PIN_RST);
+  return sig(gb.cpu_bus.CPU_PIN_ADDR_VALID, gb.EXT_PIN_RST);
 }
 
-DebugSignals DebugRegisters::sig(const CpuBus& cpu_bus, wire EXT_PIN_RST) const {
+DebugSignals DebugRegisters::sig(wire CPU_PIN_ADDR_VALID, wire EXT_PIN_RST) const {
   DebugSignals sig;
-
-
-#if 0
-  wire P10_B = 0;
-  /*p27.VYPO*/ wire VYPO_P10_Bn = not(P10_B);
-  /*p28.WEFE*/ wire WEFE_P10_Bn = not(P10_B);
-  /*p28.WUWE*/ wire WUWE_P10_Bn = not(P10_B);
-  /*p28.GEFY*/ wire GEFY_P10_Bn = not(P10_B);
-  /*p28.GECA*/ wire GECA_P10_Bp = not(WEFE_P10_Bn);
-  /*p28.WYDU*/ wire WYDU_P10_Bp = not(WEFE_P10_Bn);
-#endif
-
 
 
   /*p07.UBET*/ sig.UBET_T1n = not(PIN_T1);
@@ -43,7 +31,7 @@ DebugSignals DebugRegisters::sig(const CpuBus& cpu_bus, wire EXT_PIN_RST) const 
   /*p08.RYCA*/ sig.RYCA_MODE_DBG2n = not(sig.UNOR_MODE_DBG2p);
   /*p25.TUTO*/ sig.TUTO_DBG_VRAMp = and (sig.UNOR_MODE_DBG2p, !SOTO_DBG);
 
-  /*p??.APAP*/ wire _APAP = not(cpu_bus.CPU_PIN_ADDR_VALID); // Missing from schematic
+  /*p??.APAP*/ wire _APAP = not(CPU_PIN_ADDR_VALID); // Missing from schematic
   /*p01.AWOD*/ wire _AWOD = nor(sig.UNOR_MODE_DBG2p, _APAP);
   /*p01.ABUZ*/ sig.ABUZ = not(_AWOD);
 

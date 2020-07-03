@@ -5,6 +5,11 @@
 namespace Schematics {
 
 #if 0
+
+///*p01.ATAG*/ wire ATAG_xBxDxFxH = not(AZOF_AxCxExGx);
+///*p01.AMUK*/ wire AMUK_AxCxExGx = not(ATAG_xBxDxFxH); // apu master 4m clock, but apu isn't hooked up yet
+///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
+
 //-----------------------------------------------------------------------------
 
 void P09_ApuControl_tick(const Gameboy& a,

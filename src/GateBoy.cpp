@@ -254,7 +254,7 @@ void GateBoy::render_frame(int /*screen_w*/, int /*screen_h*/, TextPainter& text
   text_painter.newline();
   //gb.ext_bus.dump_pins(text_painter);
   //gb.rst_reg.dump_regs(text_painter);
-  //gb.clk_reg.dump_regs(text_painter);
+  //.dump_regs(text_painter);
   //gb.vck_reg.dump_regs(text_painter);
   //gb.cpu_bus.dump_pins(text_painter);
   //gb.ext_bus.dump_pins(text_painter);

@@ -23,47 +23,10 @@ ADYK APUK ALEF AFUR
 
 //-----------------------------------------------------------------------------
 
-ClockSignals ClockRegisters::sig() const {
-  ClockSignals clk_sig;
-
+void ClockRegisters::tick(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD, wire PIN_CLK_IN_xBxDxFxH) {
   ///*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
-  {
-    /*p01.AFUR*/ clk_sig.AFUR_xBCDExxx = AFUR_xBCDExxx;
-    /*p01.ALEF*/ clk_sig.ALEF_xxCDEFxx = ALEF_xxCDEFxx;
-    /*p01.APUK*/ clk_sig.APUK_xxxDEFGx = APUK_xxxDEFGx;
-    /*p01.ADYK*/ clk_sig.ADYK_xxxxEFGH = ADYK_xxxxEFGH;
-
-    /*p29.WUVU*/ clk_sig.WUVU_AxxDExxH = WUVU_AxxDExxH;
-    /*p21.VENA*/ clk_sig.VENA_xBCDExxx = VENA_xBCDExxx;
-    /*p29.WOSU*/ clk_sig.WOSU_xxCDxxGH = WOSU_xxCDxxGH;
-  }
-
-  ///*p01.ATAG*/ wire ATAG_xBxDxFxH = not(AZOF_AxCxExGx);
-  ///*p01.AMUK*/ wire AMUK_AxCxExGx = not(ATAG_xBxDxFxH); // apu master 4m clock, but apu isn't hooked up yet
-  ///*p01.DOVA*/ wire DOVA_xBCDExxx = not(BUDE_AxxxxFGH); // and then this goes to channel 1
-
-#if 0
-  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(cpu_bus.CPU_PIN_CLKREQ);
-  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!clk_sig.AFUR_xBCDExxx);
-  /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-#endif
-
-  return clk_sig;
-}
-
-//-----------------------------------------------------------------------------
-
-void ClockRegisters::tick(const SchematicTop& gb) {
-  auto dbg_sig = gb.dbg_reg.sig(gb);
-  auto rst_sig = gb.rst_reg.sig(gb);
-  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(gb.cpu_bus.CPU_PIN_CLKREQ);
-
-  tick(ABOL_CLKREQn, rst_sig.XAPO_VID_RSTn, dbg_sig.UPOJ_MODE_PROD, gb.PIN_CLK_IN_xBxDxFxH);
-}
-
-void ClockRegisters::tick(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_PROD, wire PIN_CLK_IN_xBxDxFxH) {
   {
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(PIN_CLK_IN_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
@@ -91,14 +54,14 @@ void ClockRegisters::tick(wire ABOL_CLKREQn, wire XAPO_VID_RSTn, wire UPOJ_MODE_
   //cpu_pins.CLK_GOOD.set(sys_pins.CLK_GOOD);
 
   // phases checked and ok
-  // cpu_pins.BEDO_xBxxxxxx.set(clk_sig.BEDO_xBxxxxxx);
-  // cpu_pins.BOWA_AxCDEFGH.set(clk_sig.BOWA_AxCDEFGH);
-  // cpu_pins.BEKO_xBCDExxx.set(clk_sig.BEKO_xBCDExxx);
-  // cpu_pins.BUDE_AxxxxFGH.set(clk_sig.BUDE_AxxxxFGH);
-  // cpu_pins.BOLO_xBCDEFGx.set(clk_sig.BOLO_xBCDEFGx);
-  // cpu_pins.BUKE_ABxxxxxH.set(clk_sig.BUKE_ABxxxxxH);
-  // cpu_pins.BOGA_AxCDEFGH.set(clk_sig.BOGA_AxCDEFGH);
-  // cpu_pins.BOMA_xBxxxxxx.set(clk_sig.BOMA_xBxxxxxx);
+  // cpu_pins.BEDO_xBxxxxxx.set(clk_reg.BEDO_xBxxxxxx);
+  // cpu_pins.BOWA_AxCDEFGH.set(clk_reg.BOWA_AxCDEFGH);
+  // cpu_pins.BEKO_xBCDExxx.set(clk_reg.BEKO_xBCDExxx);
+  // cpu_pins.BUDE_AxxxxFGH.set(clk_reg.BUDE_AxxxxFGH);
+  // cpu_pins.BOLO_xBCDEFGx.set(clk_reg.BOLO_xBCDEFGx);
+  // cpu_pins.BUKE_ABxxxxxH.set(clk_reg.BUKE_ABxxxxxH);
+  // cpu_pins.BOGA_AxCDEFGH.set(clk_reg.BOGA_AxCDEFGH);
+  // cpu_pins.BOMA_xBxxxxxx.set(clk_reg.BOMA_xBxxxxxx);
 
   {
     /*p01.ATYP*/ wire ATYP_xBCDExxx = not(AFUR_xBCDExxx.qn());

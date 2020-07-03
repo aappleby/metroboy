@@ -6,7 +6,7 @@ namespace Schematics {
 
 #if 0
 
-void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
+void P16_Ch3Regs_tick(const ClkSignals& clk_reg,
                       const Gameboy& a,
                       const Gameboy& b,
                       Gameboy& next) {
@@ -283,7 +283,7 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
   {
     /*p16.GOMA*/ wire APU_RESETn = not(b.apu.APU_RESET1);
     // FIXME
-    ///*p16.FOBA*/ next.ch3.CH3_RESTART_SYNC = tock_pos(a.clk_sig.DOVA_ABCDxxxx, b.clk_sig.DOVA_ABCDxxxx, APU_RESETn, b.ch3.CH3_RESTART_SYNC, b.ch3.NR34_START);
+    ///*p16.FOBA*/ next.ch3.CH3_RESTART_SYNC = tock_pos(a.clk_reg.DOVA_ABCDxxxx, b.clk_reg.DOVA_ABCDxxxx, APU_RESETn, b.ch3.CH3_RESTART_SYNC, b.ch3.NR34_START);
   }
 
   {
@@ -299,8 +299,8 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
 
   {
     /*p17.BAMA*/ wire APU_RESETn = not(b.apu.APU_RESET1);
-    /*p17.COZY*/ next.ch3.COZY_CLK = not(clk_sig.AMUK_xBxDxFxH);
-    /*p17.ARUC*/ next.ch3.ARUC_CLK = not(clk_sig.AMUK_xBxDxFxH);
+    /*p17.COZY*/ next.ch3.COZY_CLK = not(clk_reg.AMUK_xBxDxFxH);
+    /*p17.ARUC*/ next.ch3.ARUC_CLK = not(clk_reg.AMUK_xBxDxFxH);
 
     /*p18.HEMA*/ wire WAVE_CLKb = not(b.ch3.WAVE_CLKo);
     /*p18.GASE*/ wire WAVE_CLKn = not(WAVE_CLKb);
@@ -325,7 +325,7 @@ void P16_Ch3Regs_tick(const ClkSignals& clk_sig,
     /*p17.BENA*/ wire CPU_WAVE_RD  = nand(CPU_RDa, ADDR_FF3X);
     /*p17.CAZU*/ wire CPU_WAVE_RDn = not(CPU_WAVE_RD);
 
-    /*p17.ABUR*/ wire ABUR_xxCDEFGx = not(clk_sig.BUKE_ABxxxxxH);
+    /*p17.ABUR*/ wire ABUR_xxCDEFGx = not(clk_reg.BUKE_ABxxxxxH);
     /*p17.BORY*/ wire BORY_ABxxxxxH = not(ABUR_xxCDEFGx);
     /*p17.BETA*/ wire BETA = or(WAVE_WR, CPU_WAVE_RDn, BORY_ABxxxxxH);
 

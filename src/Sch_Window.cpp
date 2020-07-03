@@ -73,7 +73,7 @@ void WindowRegisters::tick(SchematicTop& gb) {
 
   auto cpu_sig = gb.cpu_bus.sig(gb);
   auto rst_sig = gb.rst_reg.sig(gb);
-  auto clk_sig = gb.clk_reg.sig();
+  auto& clk_reg = gb.clk_reg;
   auto lcd_sig = gb.lcd_reg.sig(gb);
   auto ppu_sig = gb.ppu_reg.sig(gb);
   auto win_sig = gb.win_reg.sig(gb);
@@ -116,7 +116,7 @@ void WindowRegisters::tick(SchematicTop& gb) {
     /*p27.PAFU*/ wire _WY_MATCHn    = nand(_WY_MATCH_HI, _WY_MATCH0, _WY_MATCH1, _WY_MATCH2, _WY_MATCH3);
     /*p27.ROGE*/ wire _WY_MATCHp    = not(_WY_MATCHn);
 
-    /*p21.TALU*/ wire TALU_xBCDExxx = not(clk_sig.VENA_xBCDExxx);
+    /*p21.TALU*/ wire TALU_xBCDExxx = not(clk_reg.VENA_xBCDExxx);
     /*p27.SARY*/ SARY_WIN_MATCH_Y_SYNC.set(TALU_xBCDExxx, rst_sig.XAPO_VID_RSTn, _WY_MATCHp);
 
     /*p27.MYLO*/ wire _WX_MATCH0 = xnor(ppu_sig.XEHO_X0, WX0);

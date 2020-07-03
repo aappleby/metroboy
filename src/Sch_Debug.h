@@ -29,7 +29,7 @@ struct DebugSignals {
 struct DebugRegisters {
 
   DebugSignals sig(const SchematicTop& gb) const;
-  DebugSignals sig(const CpuBus& cpu_bus, wire EXT_PIN_RST) const;
+  DebugSignals sig(wire CPU_PIN_ADDR_VALID, wire EXT_PIN_RST) const;
 
   void tick(const SchematicTop& gb);
   void tick(const DebugSignals& dbg_sig, const ResetSignals& rst_sig);

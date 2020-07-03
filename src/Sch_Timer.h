@@ -23,7 +23,7 @@ struct TimerRegisters {
 
   void tick(SchematicTop& gb);
   void tick(
-    const ClockSignals& clk_sig,
+    const ClockRegisters& clk_reg,
     const ResetSignals& rst_sig,
     const CpuBusSignals& cpu_sig,
     CpuBus& cpu_bus,

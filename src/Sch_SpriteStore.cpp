@@ -219,7 +219,6 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     auto sst_sig = sig(gb);
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
     auto rst_sig = gb.rst_reg.sig(gb);
-    auto clk_sig = gb.clk_reg.sig();
 
     // FEPO_STORE_MATCHp here is weird, I guess it's just an easy signal to use to mux the bus?
     /*p30.WENU*/ WENU_TS_LINE_0.set_tribuf(sst_sig.FEPO_STORE_MATCHp, sprite_scanner_sig.DEGE_SPRITE_DELTA0);
@@ -263,7 +262,7 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     auto sprite_scanner_sig = gb.sprite_scanner.sig(gb);
     auto ppu_sig = gb.ppu_reg.sig(gb);
     auto dbg_sig = gb.dbg_reg.sig(gb);
-    auto clk_sig = gb.clk_reg.sig();
+    auto& clk_reg = gb.clk_reg;
 
     // BUZA def AND
     // BUZA01 << CENO16
@@ -295,7 +294,7 @@ void SpriteStoreRegisters::tick(SchematicTop& gb) {
     wire P10_B = 0;
     /*p28.WEFE*/ wire WEFE_P10_Bn = not(P10_B);
 
-    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_sig.WUVU_AxxDExxH);
+    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(clk_reg.WUVU_AxxDExxH);
     /*p30.CYKE*/ wire CYKE_AxxDExxH = not(XUPY_xBCxxFGx);
     /*p30.WUDA*/ wire WUDA_xBCxxFGx = not(CYKE_AxxDExxH);
     /*p30.XADU*/ XADU_SPRITE_IDX0.set(WUDA_xBCxxFGx, WEFE_P10_Bn, bus_sig.YFOT_OAM_A2p);

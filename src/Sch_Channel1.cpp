@@ -433,7 +433,7 @@ void Channel1_tick(const Pins& pins,
     /*p12.EXAC*/ next.ch1.SHIFTER_07 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_07, SHIFTER_RST_07, b.ch1.SHIFTER_07, b.ch1.SHIFTER_08);
     /*p12.ELUX*/ next.ch1.SHIFTER_08 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_08, SHIFTER_RST_08, b.ch1.SHIFTER_08, b.ch1.SHIFTER_09);
     /*p12.AGEZ*/ next.ch1.SHIFTER_09 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_09, SHIFTER_RST_09, b.ch1.SHIFTER_09, b.ch1.SHIFTER_10);
-    /*p12.BEKU*/ next.ch1.SHIFTER_10 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_10, SHIFTER_RST_10, b.ch1.SHIFTER_10, pins.P10_B);
+    /*p12.BEKU*/ next.ch1.SHIFTER_10 = srtock_pos(a.ch1.SHIFTER_CLKp, b.ch1.SHIFTER_CLKp, SHIFTER_SET_10, SHIFTER_RST_10, b.ch1.SHIFTER_10, pins.EXT_P10_B);
   }
 
   //----------

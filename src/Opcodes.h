@@ -71,7 +71,7 @@
 #define RLA            (0x17)
 #define RRA            (0x1F)
 #define DAA            (0x27)
-#define CPL            (0x2F)
+#define LCD_PIN_CPL            (0x2F)
 #define SCF            (0x37)
 #define CCF            (0x3F)
 

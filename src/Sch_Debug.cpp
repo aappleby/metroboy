@@ -34,8 +34,6 @@ SignalHash DebugRegisters::commit() {
   SignalHash hash;
 
   /*p25.SOTO*/ hash << SOTO_DBG.commit_reg();
-  //changed |= cpu_pins.UNOR_MODE_DBG2.commit_pinout();         // PORTA_02: <- P07.UNOR_MODE_DBG2
-  //changed |= cpu_pins.UMUT_MODE_DBG1.commit_pinout();         // PORTA_05: <- P07.UMUT_MODE_DBG1
   ///*p07.BURO*/ hash << BURO_FF60_0.commit_reg();
   ///*p07.AMUT*/ hash << AMUT_FF60_1.commit_reg();
   return hash;

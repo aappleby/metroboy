@@ -89,7 +89,7 @@ void WindowRegisters::tick(SchematicTop& top) {
     /*p27.NUKO*/ wire WX_MATCHp    = not(_WX_MATCHn);
 
     {
-      /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
+      /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
       /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
       /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
       /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -113,7 +113,7 @@ void WindowRegisters::tick(SchematicTop& top) {
     }
 
     {
-      /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
+      /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
       /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
       /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
       /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);

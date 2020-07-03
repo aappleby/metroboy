@@ -30,8 +30,6 @@ private:
 
   /*p24.PAHO*/ Reg PAHO_X_8_SYNC;
   /*p24.RUJU*/ NorLatch POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
-  /* PIN_54 */ PinOut ST;
-  /* PIN_53 */ PinOut CP;
   /*p21.WUSA*/ NorLatch WUSA_CPEN_LATCH;
 
   /*p??.ROXY*/ NorLatch ROXY_FINE_MATCH_LATCHn;

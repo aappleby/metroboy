@@ -19,7 +19,7 @@ uint8_t GateBoy::read_cycle(uint16_t /*addr*/) {
 
     Schematics::SignalHash old_hash;
     for (int pass = 0; pass < 256; pass++) {
-      //gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      //gb->ext_bus.SYS_PIN_CLK_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       //gb->cpu_pins.preset_rd(1);
       //gb->cpu_pins.preset_wr(0);
@@ -48,7 +48,7 @@ void GateBoy::write_cycle(uint16_t /*addr*/, uint8_t /*data*/) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      //gb->ext_bus.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      //gb->ext_bus.SYS_PIN_CLK_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       //gb->gb.CPU_PIN_RD.preset(true, 0);
       //gb->gb.CPU_PIN_WR.preset(true, 1);
@@ -76,7 +76,7 @@ void GateBoy::pass_cycle() {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      //gb->ext_pins_in.PIN_CLK_IN_xBxDxFxH.preset(true, (gb->phase_counter & 1));
+      //gb->ext_pins_in.SYS_PIN_CLK_xBxDxFxH.preset(true, (gb->phase_counter & 1));
 
       gb->CPU_PIN_RD.preset(true, 0);
       gb->CPU_PIN_WR.preset(true, 0);
@@ -141,7 +141,7 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
     gb->phase_counter++;
 
     for (int pass = 0; pass < 256; pass++) {
-      gb->PIN_CLK_IN_xBxDxFxH.preset(true, gb->phase_counter & 1);
+      gb->SYS_PIN_CLK_xBxDxFxH.preset(true, gb->phase_counter & 1);
 
       /*
       if (phase >= 32 && phase < 40) {
@@ -173,8 +173,8 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
 
   Schematics::SchematicTop* gb = state_manager.state();
 
-  gb->EXT_PIN_RST.preset(true, 1);
-  gb->EXT_PIN_CLK_GOOD.preset(true, 0);
+  gb->SYS_PIN_RST.preset(true, 1);
+  gb->SYS_PIN_CLK_GOOD.preset(true, 0);
   gb->preset_t1t2(0,0);
 
   gb->CPU_PIN_CLKREQ.preset(true, 0);
@@ -185,19 +185,19 @@ void GateBoy::reset(uint16_t /*new_pc*/) {
   gb->CPU_PIN6.preset(true, 0);
 
   /*
-  gb->int_reg.PIN_ACK_SERIAL.preset(true, 0);
-  gb->int_reg.PIN_ACK_STAT.preset(true, 0);
-  gb->int_reg.PIN_ACK_VBLANK.preset(true, 0);
-  gb->int_reg.PIN_ACK_TIMER.preset(true, 0);
-  gb->int_reg.PIN_ACK_JOYPAD.preset(true, 0);
+  gb->int_reg.CPU_PIN_ACK_SERIAL.preset(true, 0);
+  gb->int_reg.CPU_PIN_ACK_STAT.preset(true, 0);
+  gb->int_reg.CPU_PIN_ACK_VBLANK.preset(true, 0);
+  gb->int_reg.CPU_PIN_ACK_TIMER.preset(true, 0);
+  gb->int_reg.CPU_PIN_ACK_JOYPAD.preset(true, 0);
   */
 
   //gb->ext_pins_in.preset();
 
   pass_cycle();
-  gb->EXT_PIN_RST.preset(true, 0);
+  gb->SYS_PIN_RST.preset(true, 0);
   pass_cycle();
-  gb->EXT_PIN_CLK_GOOD.preset(true, 1);
+  gb->SYS_PIN_CLK_GOOD.preset(true, 1);
   pass_cycle();
   gb->CPU_PIN_CLKREQ.preset(true, 1);
   pass_cycle();

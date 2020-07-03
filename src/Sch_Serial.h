@@ -7,13 +7,8 @@ struct SchematicTop;
 
 //-----------------------------------------------------------------------------
 
-struct SerialSignals {
-  /*p06.CALY*/ wire CALY_INT_SERIALp;
-};
-
 struct SerialRegisters {
 
-  SerialSignals sig(const SchematicTop& gb) const;
   void tick(SchematicTop& gb);
   SignalHash commit();
 
@@ -24,6 +19,7 @@ struct SerialRegisters {
   void dump_pins(TextPainter& text_painter);
 
 private:
+  friend SchematicTop;
 
   /*p06.ETAF*/ Reg XFER_START;
   /*p06.CULY*/ Reg XFER_DIR;

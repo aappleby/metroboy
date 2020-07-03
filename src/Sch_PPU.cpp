@@ -133,7 +133,7 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p21.TOBA*/ wire _TOBA = and (top.SACU_CLKPIPEp(), WUSA_CPEN_LATCH);
     /*p21.SEMU*/ wire _SEMU_LCD_CPn = or(_TOBA, _POVA_FINE_MATCH_SETp);
     /*p21.RYPO*/ wire _RYPO_LCD_CP = not(_SEMU_LCD_CPn);
-    CP.set(_RYPO_LCD_CP);
+    top.LCD_PIN_CP.set(_RYPO_LCD_CP);
   }
 
   {
@@ -148,7 +148,7 @@ void PpuRegisters::tick(SchematicTop& top) {
 
   {
     /*p24.ROXO*/ wire ROXO_CLKPIPEp = not(top.SEGU_CLKPIPEn());
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -179,7 +179,7 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p24.PAHO*/ PAHO_X_8_SYNC.set(ROXO_CLKPIPEp, top.XYMU_RENDERINGp(), XYDO_X3);
     /*p24.RUJU*/ POFY_ST_LATCH.nor_latch(top.AVAP_SCAN_DONE_TRIGp(), PAHO_X_8_SYNC || TOFU_VID_RSTp);
     /*p24.RUZE*/ wire RUZE_PIN_ST = not(POFY_ST_LATCH);
-    ST.set(RUZE_PIN_ST);
+    top.LCD_PIN_ST.set(RUZE_PIN_ST);
   }
 
   //----------
@@ -220,7 +220,7 @@ void PpuRegisters::tick(SchematicTop& top) {
     /*p01.TOFU*/ wire TOFU_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p21.TADY*/ wire TADY_X_RST = nor(top.BYHA_VID_LINE_TRIG_d4n(), TOFU_VID_RSTp);
     // having this reset connected to both RENDER_DONE_SYNC and x seems odd
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -323,8 +323,6 @@ SignalHash PpuRegisters::commit() {
   /*p24.PAHO*/ hash << PAHO_X_8_SYNC.commit_reg();
   /*p24.RUJU*/ hash << POFY_ST_LATCH.commit_latch(); // nor latch with p24.RUJU, p24.POME
   /*p21.WUSA*/ hash << WUSA_CPEN_LATCH.commit_latch();
-  /* PIN_53 */ hash << CP.commit_pinout();
-  /* PIN_54 */ hash << ST.commit_pinout();
 
   // FF41 - STAT
   /*p21.ROXE*/ hash << ROXE_INT_HBL_EN.commit_reg();

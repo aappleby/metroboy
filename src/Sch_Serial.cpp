@@ -6,12 +6,6 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-SerialSignals SerialRegisters::sig(const SchematicTop& /*top*/) const {
-  return {
-    .CALY_INT_SERIALp = CALY_INT_SERIALp,
-  };
-}
-
 void SerialRegisters::tick(SchematicTop& top) {
 
   /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());

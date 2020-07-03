@@ -30,18 +30,6 @@ private:
   /*p02.NUTY*/ TpLatch FF0F_L2;
   /*p02.MOPO*/ TpLatch FF0F_L3;
   /*p02.PAVY*/ TpLatch FF0F_L4;
-
-  PinOut PIN_INT_VBLANK;    // bottom right port PORTB_03: <-        P02.LOPE, vblank int
-  PinOut PIN_INT_STAT;      // bottom right port PORTB_07: <-        P02.LALU, stat int
-  PinOut PIN_INT_TIMER;     // bottom right port PORTB_11: <-        P02.NYBO, timer int
-  PinOut PIN_INT_SERIAL;    // bottom right port PORTB_15: <-        P02.UBUL, serial int
-  PinOut PIN_INT_JOYPAD;    // bottom right port PORTB_19: <-        P02.ULAK, joypad int
-
-  PinIn  PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
-  PinIn  PIN_ACK_STAT;      // bottom right port PORTB_05: ->        P02.LEJA, stat int ack
-  PinIn  PIN_ACK_TIMER;     // bottom right port PORTB_09: ->        P02.LESA, timer int ack
-  PinIn  PIN_ACK_SERIAL;    // bottom right port PORTB_13: ->        P02.LUFE, serial int ack
-  PinIn  PIN_ACK_JOYPAD;    // bottom right port PORTB_17: ->        P02.LAMO, joypad int ack
 };
 
 //-----------------------------------------------------------------------------

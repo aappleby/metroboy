@@ -95,7 +95,7 @@ void LcdRegisters::tick(SchematicTop& top) {
   }
 
   {
-    // if LCDC_ENn, FR = 4k div clock. Otherwise FR = xor(LINE_EVEN,FRAME_EVEN)
+    // if LCDC_ENn, LCD_PIN_FR = 4k div clock. Otherwise LCD_PIN_FR = xor(LINE_EVEN,FRAME_EVEN)
     
     /*p01.LYHA*/ wire LYHA_VID_RSTp = not(top.XAPO_VID_RSTn());
     /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
@@ -109,7 +109,7 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(top.XONA_LCDC_EN);
     /*p24.KUPA*/ wire _KUPA = amux2(top.XONA_LCDC_EN, _KEBO, KEDY_LCDC_ENn, _USEC);
     /*p24.KOFO*/ wire _KOFO = not(_KUPA);
-    FR.set(_KOFO);
+    top.LCD_PIN_FR.set(_KOFO);
   }
 
   // LCD line strobe
@@ -136,10 +136,10 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p21.SYGU*/ SYGU_LINE_STROBE.set(SONO_AxxxxFGH, LYFE_VID_RSTn, _TEGY_LINE_STROBE);
     /*p21.RYNO*/ wire _RYNO = or(_TEGY_LINE_STROBE, RUTU_NEW_LINE_d0);
     /*p21.POGU*/ wire _POGU = not(_RYNO);
-    CPG.set(_POGU);
+    top.LCD_PIN_CPG.set(_POGU);
   }
 
-  // LCD CPL pin
+  // LCD LCD_PIN_CPL pin
   {
     /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(top.RUTU_NEW_LINE_d0());
     /*p24.KASA*/ wire _KASA_LINE_DONE = not(PURE_NEW_LINE_d0n);
@@ -147,7 +147,7 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p24.KEDY*/ wire KEDY_LCDC_ENn = not(top.XONA_LCDC_EN);
     /*p24.KAHE*/ wire _KAHE = amux2(top.XONA_LCDC_EN, _KASA_LINE_DONE, KEDY_LCDC_ENn, _UMOB_DIV_06p);
     /*p24.KYMO*/ wire _KYMO = not(_KAHE);
-    CPL.set(_KYMO);
+    top.LCD_PIN_CPL.set(_KYMO);
   }
 
   // LCD vertical sync pin
@@ -158,7 +158,7 @@ void LcdRegisters::tick(SchematicTop& top) {
     /*p01.LYFE*/ wire LYFE_VID_RSTn = not(LYHA_VID_RSTp);
     /*p24.MEDA*/ MEDA_VSYNC_OUTn.set(NYPE_NEW_LINE_d4, LYFE_VID_RSTn, _LINE_000n);
     /*p24.MURE*/ wire _MURE_PIN_S = not(MEDA_VSYNC_OUTn);
-    S.set(_MURE_PIN_S);
+    top.LCD_PIN_S.set(_MURE_PIN_S);
   }
 
   // ly match
@@ -307,11 +307,6 @@ SignalHash LcdRegisters::commit() {
   /*p23.RAHA*/ hash << RAHA_LYC7.commit_reg();
 
   /*p21.ROPO*/ hash << ROPO_LY_MATCH_SYNCp.commit_reg();
-
-  /* PIN_52 */ hash << CPG.commit_pinout();
-  /* PIN_55 */ hash << CPL.commit_pinout();
-  /* PIN_56 */ hash << FR.commit_pinout();
-  /* PIN_57 */ hash << S.commit_pinout();
   return hash;
 }
 
@@ -352,9 +347,9 @@ void dump_pins(TextPainter& text_painter) {
   text_painter.dprintf("----- LCD_PINS -----\n");
   //LD1.dump(text_painter, "LD1 ");
   //LD0.dump(text_painter, "LD0 ");
-  CPG.dump(text_painter, "CPG ");
-  CPL.dump(text_painter, "CPL ");
-  FR.dump(text_painter, "FR  ");
+  LCD_PIN_CPG.dump(text_painter, "LCD_PIN_CPG ");
+  LCD_PIN_CPL.dump(text_painter, "LCD_PIN_CPL ");
+  LCD_PIN_FR.dump(text_painter, "LCD_PIN_FR  ");
   S.dump(text_painter, "S   ");
   text_painter.newline();
 }

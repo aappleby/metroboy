@@ -13,9 +13,6 @@ struct PixelPipeRegisters {
 
 private:
 
-  /* PIN_50 */ PinOut LD1;
-  /* PIN_51 */ PinOut LD0;
-
   /*p32.MYDE*/ Reg22 BG_PIPE_A0;
   /*p32.NOZO*/ Reg22 BG_PIPE_A1;
   /*p32.MOJU*/ Reg22 BG_PIPE_A2;

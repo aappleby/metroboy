@@ -24,7 +24,7 @@ void TileFetcher::tick(SchematicTop& top) {
   {
     /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, top.NYXU_TILE_FETCHER_RSTn());
     /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -49,7 +49,7 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
     /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, top.NYXU_TILE_FETCHER_RSTn());
     /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
@@ -110,8 +110,7 @@ void TileFetcher::tick(SchematicTop& top) {
 
     // Background map read
 
-    wire P10_B = 0;
-    /*p27.VYPO*/ wire VYPO_P10_Bn = not(P10_B);
+    /*p27.VYPO*/ wire VYPO_P10_Bn = not(top.EXT_P10_B);
 
     /*p27.NAKO*/ wire NAKO_FETCH_S1n = not(MESU_BFETCH_S1.q());
     /*p27.NOFU*/ wire NOFU_FETCH_TILE_AB = not(NYVA_BFETCH_S2.q());
@@ -191,14 +190,6 @@ void TileFetcher::tick(SchematicTop& top) {
   //----------------------------------------
 
   {
-#if 0
-
-  /*p27.MYSO*/ wire MYSO_BG_TRIGp        = and(!ppu_sig.LOBY_RENDERINGn, LAXU_BFETCH_S0, !LYZU_BFETCH_S0_DELAY);
-  /*p32.LOMA*/ wire LOMA_LATCH_BG_PIX_Ap = nand(MYSO_BG_TRIGp,  MESU_BFETCH_S1, !NYVA_BFETCH_S2);
-  /*p32.LABU*/ wire LABU_LATCH_BG_PIX_Bp = nand(MYSO_BG_TRIGp, !MESU_BFETCH_S1);
-
-#endif
-
     /*p24.LOBY*/ wire LOBY_RENDERINGn      = not(top.XYMU_RENDERINGp());
     /*p27.LAXE*/ wire LAXE_BFETCH_S0n      = not(LAXU_BFETCH_S0.q());
     /*p27.NAKO*/ wire NAKO_BFETCH_S1n      = not(MESU_BFETCH_S1.q());
@@ -212,6 +203,8 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p32.LESO*/ wire LESO_LATCH_BG_PIX_Bp = not(MOFU_LATCH_BG_PIX_Bn);
     /*p32.AJAR*/ wire AJAR_LATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp);
     /*p32.LABU*/ wire LABU_LATCH_BG_PIX_Bp = not(AJAR_LATCH_BG_PIX_Bn);
+
+    /*p27.VYPO*/ wire VYPO_P10_Bn = not(top.EXT_P10_B);
 
     // Clock polarity wrong? Check regs on die.
 
@@ -238,9 +231,6 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p32.NASA*/ top.BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D6);
     /*p32.NEFO*/ top.BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D7);
 
-    wire P10_B = 0;
-    /*p27.VYPO*/ wire VYPO_P10_Bn = not(P10_B);
-
     /*p32.RAWU*/ top.BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D0);
     /*p32.POZO*/ top.BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D1);
     /*p32.PYZO*/ top.BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D2);
@@ -251,15 +241,14 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p32.PYJU*/ top.BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D7);
   }
 
-  /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
-  /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
-  /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
-  /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
-  /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
-  /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
 
   // FF42 SCY
   {
+    /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
+    /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
+    /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
+    /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
+    /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
     /*p22.WEBU*/ wire WEBU_FF42n = nand(top.WERO_FF40_FF4Fp(), XOLA_A00n, WESA_A01p, XUSY_A02n, XERA_A03n);
     /*p22.XARO*/ wire XARO_FF42p = not(WEBU_FF42n);
 
@@ -299,6 +288,12 @@ void TileFetcher::tick(SchematicTop& top) {
 
   // FF43 SCX
   {
+    /*p22.XOLA*/ wire XOLA_A00n = not(top.CPU_PIN_A00);
+    /*p22.XENO*/ wire XENO_A01n = not(top.CPU_PIN_A01);
+    /*p22.XUSY*/ wire XUSY_A02n = not(top.CPU_PIN_A02);
+    /*p22.XERA*/ wire XERA_A03n = not(top.CPU_PIN_A03);
+    /*p22.WADO*/ wire WADO_A00p = not(XOLA_A00n);
+    /*p22.WESA*/ wire WESA_A01p = not(XENO_A01n);
     /*p22.WAVU*/ wire WAVU_FF43n = nand(top.WERO_FF40_FF4Fp(), WADO_A00p, WESA_A01p, XUSY_A02n, XERA_A03n);
     /*p22.XAVY*/ wire XAVY_FF43p = not(WAVU_FF43n);
 

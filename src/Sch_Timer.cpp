@@ -29,8 +29,8 @@ void TimerRegisters::tick(SchematicTop& top) {
 
   // FF04 DIV
   {
-    /*p01.UCOB*/ wire UCOB_CLKBAD = not(top.EXT_PIN_CLK_GOOD);
-    /*p01.UFOL*/ wire DIV_RSTn = nor(UCOB_CLKBAD, top.EXT_PIN_RST, TAPE_FF04_WR);
+    /*p01.UCOB*/ wire UCOB_CLKBAD = not(top.SYS_PIN_CLK_GOOD);
+    /*p01.UFOL*/ wire DIV_RSTn = nor(UCOB_CLKBAD, top.SYS_PIN_RST, TAPE_FF04_WR);
 
     /*p01.BALY*/ wire BALY_xBxxxxxx = not(top.BYJU_AxCDEFGH());
     /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);

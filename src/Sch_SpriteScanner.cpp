@@ -7,15 +7,8 @@ using namespace Schematics;
 
 void SpriteScanner::tick(SchematicTop& top) {
 
-  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
-  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
-  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
-
   //----------------------------------------
   {
-    auto bus_sig = top.bus_mux.sig(top);
-    wire P10_B = 0;
-
     /*p29.EBOS*/ wire Y0n = not(top.MUWY_Y0());
     /*p29.DASA*/ wire Y1n = not(top.MYRO_Y1());
     /*p29.FUKY*/ wire Y2n = not(top.LEXA_Y2());
@@ -25,22 +18,22 @@ void SpriteScanner::tick(SchematicTop& top) {
     /*p29.FEMO*/ wire Y6n = not(top.MATO_Y6());
     /*p29.GUSU*/ wire Y7n = not(top.LAFO_Y7());
 
-    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, bus_sig.XUSO_SPRITE_Y0, P10_B); // are these really connected directly to the pin?
-    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, bus_sig.XUSO_SPRITE_Y0, P10_B);
-    /*p29.ENEF*/ wire YDIFF_S1 = add_s(Y1n, bus_sig.XEGU_SPRITE_Y1, YDIFF_C0);
-    /*p29.ENEF*/ wire YDIFF_C1 = add_c(Y1n, bus_sig.XEGU_SPRITE_Y1, YDIFF_C0);
-    /*p29.FECO*/ wire YDIFF_S2 = add_s(Y2n, bus_sig.YJEX_SPRITE_Y2, YDIFF_C1);
-    /*p29.FECO*/ wire YDIFF_C2 = add_c(Y2n, bus_sig.YJEX_SPRITE_Y2, YDIFF_C1);
-    /*p29.GYKY*/ wire YDIFF_S3 = add_s(Y3n, bus_sig.XYJU_SPRITE_Y3, YDIFF_C2);
-    /*p29.GYKY*/ wire YDIFF_C3 = add_c(Y3n, bus_sig.XYJU_SPRITE_Y3, YDIFF_C2);
-    /*p29.GOPU*/ wire YDIFF_S4 = add_s(Y4n, bus_sig.YBOG_SPRITE_Y4, YDIFF_C3);
-    /*p29.GOPU*/ wire YDIFF_C4 = add_c(Y4n, bus_sig.YBOG_SPRITE_Y4, YDIFF_C3);
-    /*p29.FUWA*/ wire YDIFF_S5 = add_s(Y5n, bus_sig.WYSO_SPRITE_Y5, YDIFF_C4);
-    /*p29.FUWA*/ wire YDIFF_C5 = add_c(Y5n, bus_sig.WYSO_SPRITE_Y5, YDIFF_C4);
-    /*p29.GOJU*/ wire YDIFF_S6 = add_s(Y6n, bus_sig.XOTE_SPRITE_Y6, YDIFF_C5);
-    /*p29.GOJU*/ wire YDIFF_C6 = add_c(Y6n, bus_sig.XOTE_SPRITE_Y6, YDIFF_C5);
-    /*p29.WUHU*/ wire YDIFF_S7 = add_s(Y7n, bus_sig.YZAB_SPRITE_Y7, YDIFF_C6);
-    /*p29.WUHU*/ wire YDIFF_C7 = add_c(Y7n, bus_sig.YZAB_SPRITE_Y7, YDIFF_C6);
+    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, top.XUSO_SPRITE_Y0(), top.EXT_P10_B); // are these really connected directly to the pin?
+    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, top.XUSO_SPRITE_Y0(), top.EXT_P10_B);
+    /*p29.ENEF*/ wire YDIFF_S1 = add_s(Y1n, top.XEGU_SPRITE_Y1(), YDIFF_C0);
+    /*p29.ENEF*/ wire YDIFF_C1 = add_c(Y1n, top.XEGU_SPRITE_Y1(), YDIFF_C0);
+    /*p29.FECO*/ wire YDIFF_S2 = add_s(Y2n, top.YJEX_SPRITE_Y2(), YDIFF_C1);
+    /*p29.FECO*/ wire YDIFF_C2 = add_c(Y2n, top.YJEX_SPRITE_Y2(), YDIFF_C1);
+    /*p29.GYKY*/ wire YDIFF_S3 = add_s(Y3n, top.XYJU_SPRITE_Y3(), YDIFF_C2);
+    /*p29.GYKY*/ wire YDIFF_C3 = add_c(Y3n, top.XYJU_SPRITE_Y3(), YDIFF_C2);
+    /*p29.GOPU*/ wire YDIFF_S4 = add_s(Y4n, top.YBOG_SPRITE_Y4(), YDIFF_C3);
+    /*p29.GOPU*/ wire YDIFF_C4 = add_c(Y4n, top.YBOG_SPRITE_Y4(), YDIFF_C3);
+    /*p29.FUWA*/ wire YDIFF_S5 = add_s(Y5n, top.WYSO_SPRITE_Y5(), YDIFF_C4);
+    /*p29.FUWA*/ wire YDIFF_C5 = add_c(Y5n, top.WYSO_SPRITE_Y5(), YDIFF_C4);
+    /*p29.GOJU*/ wire YDIFF_S6 = add_s(Y6n, top.XOTE_SPRITE_Y6(), YDIFF_C5);
+    /*p29.GOJU*/ wire YDIFF_C6 = add_c(Y6n, top.XOTE_SPRITE_Y6(), YDIFF_C5);
+    /*p29.WUHU*/ wire YDIFF_S7 = add_s(Y7n, top.YZAB_SPRITE_Y7(), YDIFF_C6);
+    /*p29.WUHU*/ wire YDIFF_C7 = add_c(Y7n, top.YZAB_SPRITE_Y7(), YDIFF_C6);
 
     /*p29.DEGE*/ DEGE_SPRITE_DELTA0 = not(YDIFF_S0);
     /*p29.DABY*/ DABY_SPRITE_DELTA1 = not(YDIFF_S1);
@@ -63,26 +56,30 @@ void SpriteScanner::tick(SchematicTop& top) {
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
 
   {
+    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
+    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
     /*p29.BALU*/ wire BALU_SCAN_RSTp = not(ANOM_SCAN_RSTn);
     /*p29.BAGY*/ wire BAGY_SCAN_RSTn = not(BALU_SCAN_RSTp);
 
     /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (YFEL_SCAN0, WEWY_SCAN1, GOSO_SCAN2, FONY_SCAN5); // 32 + 4 + 2 + 1 = 39
     /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
-    /*p29.BYBA*/ SCAN_DONE_TRIG_A.set(XUPY_xBCxxFGx, BAGY_SCAN_RSTn, FETO_SCAN_DONE_d0);
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
     /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
     /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+
+    /*p29.BYBA*/ SCAN_DONE_TRIG_A.set(XUPY_xBCxxFGx, BAGY_SCAN_RSTn, FETO_SCAN_DONE_d0);
     /*p29.DOBA*/ SCAN_DONE_TRIG_B.set(ALET_xBxDxFxH, BAGY_SCAN_RSTn, SCAN_DONE_TRIG_A);
 
     /*p29.BEBU*/ wire BEBU_SCAN_RSTn = or (BALU_SCAN_RSTp, SCAN_DONE_TRIG_B.q(), !SCAN_DONE_TRIG_A.q());
     /*p29.AVAP*/ wire AVAP_SCAN_RSTp = not(BEBU_SCAN_RSTn);
     /*p28.ASEN*/ wire ASEN_SCAN_RSTp = or (ATAR_VID_RSTp, AVAP_SCAN_RSTp);
+    /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
 
     /*p28.BESU*/ BESU_SCANNINGp.nor_latch(top.CATU_VID_LINE_d4(), ASEN_SCAN_RSTp);
-    /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
     /*p29.CENO*/ CENO_SCANNINGp.set(XUPY_xBCxxFGx, ABEZ_VID_RSTn, BESU_SCANNINGp);
   }
 
@@ -91,15 +88,19 @@ void SpriteScanner::tick(SchematicTop& top) {
   // Sprite scan takes 160 phases, 4 phases per sprite.
 
   {
+    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
+    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
+    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
     /*p28.FETO*/ wire FETO_SCAN_DONE_d0 = and (YFEL_SCAN0, WEWY_SCAN1, GOSO_SCAN2, FONY_SCAN5); // 32 + 4 + 2 + 1 = 39
     /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
     /*p28.GAVA*/ wire SCAN_CLK = or(FETO_SCAN_DONE_d0, XUPY_xBCxxFGx);
-    /*p28.YFEL*/ YFEL_SCAN0.set(SCAN_CLK, ANOM_SCAN_RSTn, !YFEL_SCAN0);
-    /*p28.WEWY*/ WEWY_SCAN1.set(!YFEL_SCAN0,   ANOM_SCAN_RSTn, !WEWY_SCAN1);
-    /*p28.GOSO*/ GOSO_SCAN2.set(!WEWY_SCAN1,   ANOM_SCAN_RSTn, !GOSO_SCAN2);
-    /*p28.ELYN*/ ELYN_SCAN3.set(!GOSO_SCAN2,   ANOM_SCAN_RSTn, !ELYN_SCAN3);
-    /*p28.FAHA*/ FAHA_SCAN4.set(!ELYN_SCAN3,   ANOM_SCAN_RSTn, !FAHA_SCAN4);
-    /*p28.FONY*/ FONY_SCAN5.set(!FAHA_SCAN4,   ANOM_SCAN_RSTn, !FONY_SCAN5);
+
+    /*p28.YFEL*/ YFEL_SCAN0.set(SCAN_CLK,    ANOM_SCAN_RSTn, !YFEL_SCAN0);
+    /*p28.WEWY*/ WEWY_SCAN1.set(!YFEL_SCAN0, ANOM_SCAN_RSTn, !WEWY_SCAN1);
+    /*p28.GOSO*/ GOSO_SCAN2.set(!WEWY_SCAN1, ANOM_SCAN_RSTn, !GOSO_SCAN2);
+    /*p28.ELYN*/ ELYN_SCAN3.set(!GOSO_SCAN2, ANOM_SCAN_RSTn, !ELYN_SCAN3);
+    /*p28.FAHA*/ FAHA_SCAN4.set(!ELYN_SCAN3, ANOM_SCAN_RSTn, !FAHA_SCAN4);
+    /*p28.FONY*/ FONY_SCAN5.set(!FAHA_SCAN4, ANOM_SCAN_RSTn, !FONY_SCAN5);
   }
 }
 

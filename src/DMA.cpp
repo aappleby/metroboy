@@ -2,9 +2,6 @@
 #include "Constants.h"
 #include <assert.h>
 
-#include "Schematics.h"
-using namespace Schematics;
-
 #if 0
 //-----------------------------------------------------------------------------
 
@@ -59,7 +56,7 @@ void DMA2::tock(int phase, const Req& req) {
   if (PHASE_B) {
     // something wrong here, inverting this until we figure it out.
     ///*p04.LUPA*/ bool LUPA = nor(DMA_WR, DMA_WR_LATCH);
-    /*p04.LUPA*/ bool LUPA = or(DMA_WR, DMA_WR_LATCH);
+    /*p04.LUPA*/ bool LUPA = DMA_WR || DMA_WR_LATCH;
     /*p04.LUVY*/ DMA_RUN_TRIG_d0 = LUPA;
     /*p04.MATU*/ DMA_RUN_WRITE = DMA_RUN_READ;
     if (DMA_RUN_READ) addr++;

@@ -28,7 +28,7 @@ void ClockRegisters::tick(const SchematicTop& top) {
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
   {
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AFUR*/ AFUR_xBCDExxx.set_duo(ATAL_xBxDxFxH, top.UPOJ_MODE_PROD(), !ADYK_xxxxEFGH);
     /*p01.ALEF*/ ALEF_xxCDEFxx.set_duo(ATAL_xBxDxFxH, top.UPOJ_MODE_PROD(),  AFUR_xBCDExxx);
@@ -37,7 +37,7 @@ void ClockRegisters::tick(const SchematicTop& top) {
   }
 
   {
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.PIN_CLK_IN_xBxDxFxH);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
     /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
     /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);

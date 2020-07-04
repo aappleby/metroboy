@@ -15,6 +15,10 @@ struct PpuRegisters {
 private:
   friend struct SchematicTop;
 
+  wire POHU_FINE_MATCHp(const SchematicTop& top) const;
+
+  /*p21.WODU*/ Signal WODU_RENDER_DONEp;
+
   /*p21.XEHO*/ Reg17 XEHO_X0;
   /*p21.SAVY*/ Reg17 SAVY_X1;
   /*p21.XODU*/ Reg17 XODU_X2;
@@ -30,7 +34,7 @@ private:
 
   /*p24.PAHO*/ Reg17 PAHO_X_8_SYNC;
   /*p24.RUJU*/ NorLatch POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
-  /*p21.WUSA*/ NorLatch WUSA_CPEN_LATCH;
+  /*p21.WUSA*/ NorLatch _WUSA_CPEN_LATCH;
 
   /*p??.ROXY*/ NorLatch ROXY_FINE_MATCH_LATCHn;
   /*p??.PUXA*/ Reg17 PUXA_FINE_MATCH_Ap;

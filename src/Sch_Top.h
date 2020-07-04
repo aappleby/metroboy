@@ -57,7 +57,6 @@ struct SchematicTop {
   wire UPOJ_MODE_PROD() const;
   wire TOVA_MODE_DBG2n() const;
   wire TUTO_DBG_VRAMp() const;
-  wire ABUZ() const;
   void preset_t1t2(bool t1, bool t2);
 
   //-----------------------------------------------------------------------------
@@ -183,17 +182,14 @@ struct SchematicTop {
   // PPU signals
 
   wire XYMU_RENDERINGp() const;
-  wire WODU_RENDER_DONEp() const;
   wire TEVO_FINE_RSTp() const;
   wire SERE_VRAM_RD() const;
   wire NYXU_TILE_FETCHER_RSTn() const;
   wire ACYL_SCANNINGp() const;
   wire LYRY_BFETCH_DONEp() const;
-  wire LOZE_PIPE_A_LOAD() const;
-  wire LUXA_PIPE_B_LOAD() const;
   wire SEGU_CLKPIPEn() const;
   wire SACU_CLKPIPEp() const;
-  wire ROZE_FINE_COUNT_STOPn() const;
+  wire ROZE_FINE_COUNT_7n() const;
   wire VOTY_INT_STATp() const;
   wire TEKY_SPRITE_FETCH() const;
   wire VEKU_SFETCH_RUNNING_RSTn() const;
@@ -213,7 +209,6 @@ struct SchematicTop {
   wire POKY_PORCH_DONEp() const;
   wire PORY_FETCH_DONE_Bp() const;
   wire LONY_BG_READ_VRAM_LATCHp() const;
-  wire TAVE_PORCH_DONE_TRIGp() const;
 
   wire DATY_SCX0() const;
   wire DUZU_SCX1() const;
@@ -226,7 +221,7 @@ struct SchematicTop {
   wire BESU_SCANNINGp() const;
   wire CENO_SCANNINGp() const;
 
-  wire AVAP_SCAN_DONE_TRIGp() const;
+  wire AVAP_RENDER_START_RST() const;
   wire CARE_STORE_ENp_ABxxEFxx() const;
 
   wire DEGE_SPRITE_DELTA0() const;
@@ -279,9 +274,6 @@ struct SchematicTop {
 
   wire NOCU_WIN_MODEn() const;
   wire NUNY_WIN_MODE_TRIGp() const;
-  wire SEKO_WIN_MATCH_TRIGp() const;
-  wire SYLO_WIN_HITn() const;
-  wire SUZU() const;
 
   wire WIN_X3() const;
   wire WIN_X4() const;

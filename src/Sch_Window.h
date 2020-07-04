@@ -18,6 +18,9 @@ struct WindowRegisters {
 private:
   friend SchematicTop;
 
+  wire ROGE_WY_MATCHp(const SchematicTop& top) const;
+  wire NUKO_WX_MATCHp(const SchematicTop& top) const;
+
   /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_TRIGA;
   /*p27.RYDY*/ NorLatch RYDY_WIN_HIT_LATCHp;
 
@@ -39,12 +42,14 @@ private:
 
   /*p27.NOPA*/ Reg17 NOPA_WIN_MODE_TRIGB;
   /*p27.SOVY*/ Reg17 SOVY_WIN_HIT_SYNC;
-  /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCH;
-  /*p27.SARY*/ Reg17 SARY_WIN_MATCH_Y_SYNC;
-  /*p27.RYFA*/ Reg17 RYFA_WIN_MATCH_TRIGA;
-  /*p27.RENE*/ Reg17 RENE_WIN_MATCH_TRIGB;
-  /*p27.PYCO*/ Reg17 PYCO_WIN_MATCH_SYNC1;
-  /*p27.NUNU*/ Reg17 NUNU_WIN_MATCH_SYNC2;
+  /*p27.REJO*/ NorLatch _REJO_WY_MATCH_LATCH;
+  /*p27.SARY*/ Reg17 _SARY_WY_MATCH;
+  /*p27.RYFA*/ Reg17 _RYFA_WX_PASS_TRIGA;
+  /*p27.RENE*/ Reg17 _RENE_WX_PASS_TRIGB;
+  /*p27.PYCO*/ Reg17 _PYCO_WIN_MATCH_SYNC1;
+  /*p27.NUNU*/ Reg17 _NUNU_WIN_MATCH_SYNC2;
+
+  /*p27.SEKO*/ Signal SEKO_WIN_PASS_TRIGp;
 
   // FF4A - WY
   /*p23.NESO*/ Reg9 WY0;

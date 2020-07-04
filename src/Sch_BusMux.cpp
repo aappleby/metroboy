@@ -685,11 +685,17 @@ void BusMux::tick(SchematicTop& top) {
 
   {
     // Something weird here
+
+    // still not sure what this is...
+    /*p??.APAP*/ wire APAP = not(top.CPU_PIN_ADDR_VALID); // Missing from schematic
+    /*p01.AWOD*/ wire AWOD = nor(top.UNOR_MODE_DBG2p(), APAP);
+    /*p01.ABUZ*/ wire ABUZ = not(AWOD);
+
     /*p07.TERA*/ wire TERA_BOOT_BITp  = not(top.BOOT_BITn());
     /*p07.TULO*/ wire TULO_ADDR_00XXp = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
     /*p07.TUTU*/ wire TUTU_ADDR_BOOTp = and (TERA_BOOT_BITp, TULO_ADDR_00XXp);
     /*p08.SOBY*/ wire SOBY = nor(top.CPU_PIN_A15, TUTU_ADDR_BOOTp);
-    /*p08.SEPY*/ wire SEPY = nand(top.ABUZ(), SOBY);
+    /*p08.SEPY*/ wire SEPY = nand(ABUZ, SOBY);
 
     /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(top.MUDA_DMA_SRC_VRAMp());
     /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(top.MATU_DMA_RUNNINGp(), LOGO_DMA_VRAMn);
@@ -752,9 +758,14 @@ void BusMux::tick(SchematicTop& top) {
     // TYNU 5-rung
     // TYNU01
 
+    // still not sure what this is...
+    /*p??.APAP*/ wire APAP = not(top.CPU_PIN_ADDR_VALID); // Missing from schematic
+    /*p01.AWOD*/ wire AWOD = nor(top.UNOR_MODE_DBG2p(), APAP);
+    /*p01.ABUZ*/ wire ABUZ = not(AWOD);
+
     /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or(and(top.CPU_PIN_A15, top.CPU_PIN_A14), _TUMA_CART_RAM);
     /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p08.TOZA*/ wire _TOZA = and(top.ABUZ(), _TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
+    /*p08.TOZA*/ wire _TOZA = and(ABUZ, _TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
 
     /*p08.TYHO*/ wire TYHO_CS_A = mux2_p(top.DMA_A15(), _TOZA, LUMA_DMA_READ_CARTp); // ABxxxxxx
 

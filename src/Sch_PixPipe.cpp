@@ -103,6 +103,8 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   }
 
   {
+    /*p32.LOZE*/ wire LOZE_PIPE_A_LOAD = not(top.NYXU_TILE_FETCHER_RSTn());
+
     /*p32.LUHE*/ wire BG_PIX_A0n = not(top.LEGU_BG_PIX_A0);
     /*p32.NOLY*/ wire BG_PIX_A1n = not(top.NUDU_BG_PIX_A1);
     /*p32.LEKE*/ wire BG_PIX_A2n = not(top.MUKU_BG_PIX_A2);
@@ -112,23 +114,23 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
     /*p32.NEZE*/ wire BG_PIX_A6n = not(top.NASA_BG_PIX_A6);
     /*p32.NOBO*/ wire BG_PIX_A7n = not(top.NEFO_BG_PIX_A7);
 
-    /*p32.LAKY*/ wire BG_PIPE_A_SET0 = nand(top.LOZE_PIPE_A_LOAD(), top.LEGU_BG_PIX_A0);
-    /*p32.NYXO*/ wire BG_PIPE_A_SET1 = nand(top.LOZE_PIPE_A_LOAD(), top.NUDU_BG_PIX_A1);
-    /*p32.LOTO*/ wire BG_PIPE_A_SET2 = nand(top.LOZE_PIPE_A_LOAD(), top.MUKU_BG_PIX_A2);
-    /*p32.LYDU*/ wire BG_PIPE_A_SET3 = nand(top.LOZE_PIPE_A_LOAD(), top.LUZO_BG_PIX_A3);
-    /*p32.MYVY*/ wire BG_PIPE_A_SET4 = nand(top.LOZE_PIPE_A_LOAD(), top.MEGU_BG_PIX_A4);
-    /*p32.LODO*/ wire BG_PIPE_A_SET5 = nand(top.LOZE_PIPE_A_LOAD(), top.MYJY_BG_PIX_A5);
-    /*p32.NUTE*/ wire BG_PIPE_A_SET6 = nand(top.LOZE_PIPE_A_LOAD(), top.NASA_BG_PIX_A6);
-    /*p32.NAJA*/ wire BG_PIPE_A_SET7 = nand(top.LOZE_PIPE_A_LOAD(), top.NEFO_BG_PIX_A7);
+    /*p32.LAKY*/ wire BG_PIPE_A_SET0 = nand(LOZE_PIPE_A_LOAD, top.LEGU_BG_PIX_A0);
+    /*p32.NYXO*/ wire BG_PIPE_A_SET1 = nand(LOZE_PIPE_A_LOAD, top.NUDU_BG_PIX_A1);
+    /*p32.LOTO*/ wire BG_PIPE_A_SET2 = nand(LOZE_PIPE_A_LOAD, top.MUKU_BG_PIX_A2);
+    /*p32.LYDU*/ wire BG_PIPE_A_SET3 = nand(LOZE_PIPE_A_LOAD, top.LUZO_BG_PIX_A3);
+    /*p32.MYVY*/ wire BG_PIPE_A_SET4 = nand(LOZE_PIPE_A_LOAD, top.MEGU_BG_PIX_A4);
+    /*p32.LODO*/ wire BG_PIPE_A_SET5 = nand(LOZE_PIPE_A_LOAD, top.MYJY_BG_PIX_A5);
+    /*p32.NUTE*/ wire BG_PIPE_A_SET6 = nand(LOZE_PIPE_A_LOAD, top.NASA_BG_PIX_A6);
+    /*p32.NAJA*/ wire BG_PIPE_A_SET7 = nand(LOZE_PIPE_A_LOAD, top.NEFO_BG_PIX_A7);
 
-    /*p32.LOTY*/ wire BG_PIPE_A_RST0 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A0n);
-    /*p32.NEXA*/ wire BG_PIPE_A_RST1 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A1n);
-    /*p32.LUTU*/ wire BG_PIPE_A_RST2 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A2n);
-    /*p32.LUJA*/ wire BG_PIPE_A_RST3 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A3n);
-    /*p32.MOSY*/ wire BG_PIPE_A_RST4 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A4n);
-    /*p32.LERU*/ wire BG_PIPE_A_RST5 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A5n);
-    /*p32.NYHA*/ wire BG_PIPE_A_RST6 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A6n);
-    /*p32.NADY*/ wire BG_PIPE_A_RST7 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A7n);
+    /*p32.LOTY*/ wire BG_PIPE_A_RST0 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A0n);
+    /*p32.NEXA*/ wire BG_PIPE_A_RST1 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A1n);
+    /*p32.LUTU*/ wire BG_PIPE_A_RST2 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A2n);
+    /*p32.LUJA*/ wire BG_PIPE_A_RST3 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A3n);
+    /*p32.MOSY*/ wire BG_PIPE_A_RST4 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A4n);
+    /*p32.LERU*/ wire BG_PIPE_A_RST5 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A5n);
+    /*p32.NYHA*/ wire BG_PIPE_A_RST6 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A6n);
+    /*p32.NADY*/ wire BG_PIPE_A_RST7 = nand(LOZE_PIPE_A_LOAD, BG_PIX_A7n);
 
     /*p32.MYDE*/ BG_PIPE_A0.set(top.SACU_CLKPIPEp(), BG_PIPE_A_SET0, BG_PIPE_A_RST0, top.JOY_PIN_P10_B);
     /*p32.NOZO*/ BG_PIPE_A1.set(top.SACU_CLKPIPEp(), BG_PIPE_A_SET1, BG_PIPE_A_RST1, BG_PIPE_A0);
@@ -141,6 +143,8 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   }
 
   {
+    /*p32.LUXA*/ wire LUXA_PIPE_B_LOAD = not(top.NYXU_TILE_FETCHER_RSTn());
+
     /*p32.TOSA*/ wire BG_PIX_B0n = not(top.RAWU_BG_PIX_B0);
     /*p32.RUCO*/ wire BG_PIX_B1n = not(top.POZO_BG_PIX_B1);
     /*p32.TYCE*/ wire BG_PIX_B2n = not(top.PYZO_BG_PIX_B2);
@@ -150,23 +154,23 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
     /*p32.RAPU*/ wire BG_PIX_B6n = not(top.POWY_BG_PIX_B6);
     /*p32.SOJA*/ wire BG_PIX_B7n = not(top.PYJU_BG_PIX_B7);
 
-    /*p32.TUXE*/ wire BG_PIPE_B_SET0 = nand(top.LUXA_PIPE_B_LOAD(), top.RAWU_BG_PIX_B0);
-    /*p32.SOLY*/ wire BG_PIPE_B_SET1 = nand(top.LUXA_PIPE_B_LOAD(), top.POZO_BG_PIX_B1);
-    /*p32.RUCE*/ wire BG_PIPE_B_SET2 = nand(top.LUXA_PIPE_B_LOAD(), top.PYZO_BG_PIX_B2);
-    /*p32.RYJA*/ wire BG_PIPE_B_SET3 = nand(top.LUXA_PIPE_B_LOAD(), top.POXA_BG_PIX_B3);
-    /*p32.RUTO*/ wire BG_PIPE_B_SET4 = nand(top.LUXA_PIPE_B_LOAD(), top.PULO_BG_PIX_B4);
-    /*p32.RAJA*/ wire BG_PIPE_B_SET5 = nand(top.LUXA_PIPE_B_LOAD(), top.POJU_BG_PIX_B5);
-    /*p32.RAJO*/ wire BG_PIPE_B_SET6 = nand(top.LUXA_PIPE_B_LOAD(), top.POWY_BG_PIX_B6);
-    /*p32.RAGA*/ wire BG_PIPE_B_SET7 = nand(top.LUXA_PIPE_B_LOAD(), top.PYJU_BG_PIX_B7);
+    /*p32.TUXE*/ wire BG_PIPE_B_SET0 = nand(LUXA_PIPE_B_LOAD, top.RAWU_BG_PIX_B0);
+    /*p32.SOLY*/ wire BG_PIPE_B_SET1 = nand(LUXA_PIPE_B_LOAD, top.POZO_BG_PIX_B1);
+    /*p32.RUCE*/ wire BG_PIPE_B_SET2 = nand(LUXA_PIPE_B_LOAD, top.PYZO_BG_PIX_B2);
+    /*p32.RYJA*/ wire BG_PIPE_B_SET3 = nand(LUXA_PIPE_B_LOAD, top.POXA_BG_PIX_B3);
+    /*p32.RUTO*/ wire BG_PIPE_B_SET4 = nand(LUXA_PIPE_B_LOAD, top.PULO_BG_PIX_B4);
+    /*p32.RAJA*/ wire BG_PIPE_B_SET5 = nand(LUXA_PIPE_B_LOAD, top.POJU_BG_PIX_B5);
+    /*p32.RAJO*/ wire BG_PIPE_B_SET6 = nand(LUXA_PIPE_B_LOAD, top.POWY_BG_PIX_B6);
+    /*p32.RAGA*/ wire BG_PIPE_B_SET7 = nand(LUXA_PIPE_B_LOAD, top.PYJU_BG_PIX_B7);
 
-    /*p32.SEJA*/ wire BG_PIPE_B_RST0 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B0n);
-    /*p32.SENO*/ wire BG_PIPE_B_RST1 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B1n);
-    /*p32.SURE*/ wire BG_PIPE_B_RST2 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B2n);
-    /*p32.SEBO*/ wire BG_PIPE_B_RST3 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B3n);
-    /*p32.SUCA*/ wire BG_PIPE_B_RST4 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B4n);
-    /*p32.SYWE*/ wire BG_PIPE_B_RST5 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B5n);
-    /*p32.SUPU*/ wire BG_PIPE_B_RST6 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B6n);
-    /*p32.RYJY*/ wire BG_PIPE_B_RST7 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B7n);
+    /*p32.SEJA*/ wire BG_PIPE_B_RST0 = nand(LUXA_PIPE_B_LOAD, BG_PIX_B0n);
+    /*p32.SENO*/ wire BG_PIPE_B_RST1 = nand(LUXA_PIPE_B_LOAD, BG_PIX_B1n);
+    /*p32.SURE*/ wire BG_PIPE_B_RST2 = nand(LUXA_PIPE_B_LOAD, BG_PIX_B2n);
+    /*p32.SEBO*/ wire BG_PIPE_B_RST3 = nand(LUXA_PIPE_B_LOAD, BG_PIX_B3n);
+    /*p32.SUCA*/ wire BG_PIPE_B_RST4 = nand(LUXA_PIPE_B_LOAD, BG_PIX_B4n);
+    /*p32.SYWE*/ wire BG_PIPE_B_RST5 = nand(LUXA_PIPE_B_LOAD, BG_PIX_B5n);
+    /*p32.SUPU*/ wire BG_PIPE_B_RST6 = nand(LUXA_PIPE_B_LOAD, BG_PIX_B6n);
+    /*p32.RYJY*/ wire BG_PIPE_B_RST7 = nand(LUXA_PIPE_B_LOAD, BG_PIX_B7n);
 
     /*p32.TOMY*/ BG_PIPE_B0.set(top.SACU_CLKPIPEp(), BG_PIPE_B_SET0, BG_PIPE_B_RST0, top.JOY_PIN_P10_B);
     /*p32.TACA*/ BG_PIPE_B1.set(top.SACU_CLKPIPEp(), BG_PIPE_B_SET1, BG_PIPE_B_RST1, BG_PIPE_B0);

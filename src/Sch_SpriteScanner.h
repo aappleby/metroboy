@@ -29,8 +29,8 @@ private:
   /*p28.ELYN*/ Reg17 ELYN_SCAN3;
   /*p28.FAHA*/ Reg17 FAHA_SCAN4;
   /*p28.FONY*/ Reg17 FONY_SCAN5;
-  /*p29.BYBA*/ Reg17 SCAN_DONE_TRIG_A;
-  /*p29.DOBA*/ Reg17 SCAN_DONE_TRIG_B;
+  /*p29.BYBA*/ Reg17 BYBA_SCAN_DONE_A;
+  /*p29.DOBA*/ Reg17 DOBA_SCAN_DONE_B;
 };
 
 //-----------------------------------------------------------------------------

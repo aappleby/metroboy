@@ -27,17 +27,6 @@ using namespace Schematics;
 // WEZA05 nc
 // WEZA06 
 
-// Arms on ground, nor latch
-// BESU01 << CATU17
-// BESU02 nc
-// BESU03 >> nc
-// BESU04 >> ACYL02
-// BESU05 nc
-// BESU06 << ASEN04
-
-// When CATU goes high, BESU goes high
-// When ASEN goes high, BESU goes low.
-
 //------------------------------------------------------------------------------
 
 void SpriteStoreRegisters::tick(SchematicTop& top) {

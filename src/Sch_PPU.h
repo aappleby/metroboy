@@ -15,8 +15,7 @@ struct PpuRegisters {
 private:
   friend struct SchematicTop;
 
-  wire POHU_FINE_MATCHp(const SchematicTop& top) const;
-
+  /*p27.POHU*/ Signal POHU_FINE_MATCHp;
   /*p21.WODU*/ Signal WODU_RENDER_DONEp;
 
   /*p21.XEHO*/ Reg17 XEHO_X0;
@@ -34,11 +33,11 @@ private:
 
   /*p24.PAHO*/ Reg17 PAHO_X_8_SYNC;
   /*p24.RUJU*/ NorLatch POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
-  /*p21.WUSA*/ NorLatch _WUSA_CPEN_LATCH;
+  /*p21.WUSA*/ NorLatch _WUSA_LCD_CLOCK_GATE;
 
   /*p??.ROXY*/ NorLatch ROXY_FINE_MATCH_LATCHn;
-  /*p??.PUXA*/ Reg17 PUXA_FINE_MATCH_Ap;
-  /*p27.NYZE*/ Reg17 NYZE_FINE_MATCH_Bp;
+  /*p??.PUXA*/ Reg17 PUXA_FINE_MATCH_A;
+  /*p27.NYZE*/ Reg17 NYZE_FINE_MATCH_B;
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
 

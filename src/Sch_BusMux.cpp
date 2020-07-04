@@ -92,20 +92,77 @@ using namespace Schematics;
 
 void BusMux::tick(SchematicTop& top) {
 
-  {
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
-    /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
-    /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+  // Clock tree
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
+  /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+  /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
 
+  /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_xxCDxxGH());
+
+  /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
+  /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
+  /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
+  /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
+  /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
+  /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
+  /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
+  /*p28.XYNY*/ wire XYNY_xBCDExxx = not(MOPA_AxxxxFGH);
+
+  /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!top.WUVU_AxxDExxH(), !top.WOSU_xxCDxxGH());
+  /*p29.XYSO*/ wire XYSO_ABCxDEFx = not(WOJO_xxxDxxxH);
+
+  /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(top.ADYK_xxxxEFGH());
+  /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
+
+  // Reset tree
+  /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+  /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+  /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
+
+  // Address decoder
+  /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
+  /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
+  /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
+  /*p07.RYCU*/ wire RYCU_FE00_FFFFp = not(TUNA_0000_FDFFp);
+  /*p07.SOHA*/ wire SOHA_FF00_FFFFn = not(SYKE_FF00_FFFFp);
+  /*p07.ROPE*/ wire ROPE_FE00_FEFFn = nand(RYCU_FE00_FFFFp, SOHA_FF00_FFFFn);
+  /*p07.SARO*/ wire SARO_FE00_FEFFp = not(ROPE_FE00_FEFFn);
+  /*p28.ADAH*/ wire ADAH_FE00_FEFFn = not(SARO_FE00_FEFFp);
+
+  /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
+  /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
+  /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+  /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
+
+  // CPU read/write
+
+  /*p04.DECY*/ wire DECY_FROM_CPU5n = not(top.CPU_PIN5);
+  /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
+
+  /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
+  /*p08.REDU*/ wire REDU_CPU_RD = not(TEDO_CPU_RD);
+  /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
+  /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
+  /*p28.MYNU*/ wire MYNU_CPU_RDn = nand(ASOT_CPU_RD, CATY_FROM_CPU5p);
+  /*p28.LEKO*/ wire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
+
+  /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
+  /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
+  /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
+
+  /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(top.CPU_PIN_WR, AFAS_xxxxxFGH);
+  /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
+  /*p08.MEXO*/ wire MEXO_CPU_WRn_ABCDExxx = not(APOV_CPU_WR_xxxxxFGH);
+
+  {
     /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(ZEME_AxCxExGx, CUNU_RSTn, top.CPU_PIN5);
   }
 
   {
+    // CPU controls OAM bus if there's no scanning, rendering, or dmaing.
+    /*p28.ASAM*/ wire ASAM_CPU_OAM_RDn  = or (top.ACYL_SCANNINGp(), top.XYMU_RENDERINGp(), top.MATU_DMA_RUNNINGp());
     /*p28.GARO*/ wire GARO_A0n = not(top.CPU_PIN_A00);
     /*p28.WACU*/ wire WACU_A1n = not(top.CPU_PIN_A01);
     /*p28.GOSE*/ wire GOSE_A2n = not(top.CPU_PIN_A02);
@@ -115,6 +172,10 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.WAXA*/ wire WAXA_A6n = not(top.CPU_PIN_A06);
     /*p28.FOBY*/ wire FOBY_A7n = not(top.CPU_PIN_A07);
 
+    // PPU controls OAM bus if it's rendering and there's no DMA running.
+    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(top.MATU_DMA_RUNNINGp());
+    /*p28.AJON*/ wire AJON_OAM_BUSY     = and (BOGE_DMA_RUNNINGn, top.XYMU_RENDERINGp());
+    /*p28.BETE*/ wire BETE_PPU_OAM_RDn  = not(AJON_OAM_BUSY);
     /*p28.GYBU*/ wire GYBU_IDX_0n = not(top.SPR_TRI_IDX_0);
     /*p28.GYKA*/ wire GYKA_IDX_1n = not(top.SPR_TRI_IDX_1);
     /*p28.FABY*/ wire FABY_IDX_2n = not(top.SPR_TRI_IDX_2);
@@ -122,6 +183,8 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.FUGU*/ wire FUGU_IDX_4n = not(top.SPR_TRI_IDX_4);
     /*p28.FYKE*/ wire FYKE_IDX_5n = not(top.SPR_TRI_IDX_5);
 
+    // Scanner controls OAM address if it's running (collision w/ DMA?)
+    /*p28.APAR*/ wire APAR_SCAN_OAM_RDn  = not(top.ACYL_SCANNINGp());
     /*p28.GUSE*/ wire GUSE_SCAN0n = not(top.YFEL_SCAN0());
     /*p28.GEMA*/ wire GEMA_SCAN1n = not(top.WEWY_SCAN1());
     /*p28.FUTO*/ wire FUTO_SCAN2n = not(top.GOSO_SCAN2());
@@ -129,6 +192,8 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.GAMA*/ wire GAMA_SCAN4n = not(top.FAHA_SCAN4());
     /*p28.GOBY*/ wire GOBY_SCAN5n = not(top.FONY_SCAN5());
 
+    // DMA controls OAM address if it's running.
+    /*p04.DUGA*/ wire DUGA_DMA_OAM_RDn  = not(top.MATU_DMA_RUNNINGp());
     /*p28.FODO*/ wire FODO_DMA_A00n = not(top.DMA_A00());
     /*p28.FESA*/ wire FESA_DMA_A01n = not(top.DMA_A01());
     /*p28.FAGO*/ wire FAGO_DMA_A02n = not(top.DMA_A02());
@@ -138,27 +203,21 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.FYDU*/ wire FYDU_DMA_A06n = not(top.DMA_A06());
     /*p28.FETU*/ wire FETU_DMA_A07n = not(top.DMA_A07());
 
-    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(top.MATU_DMA_RUNNINGp());
-    /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, top.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
-    /*p28.ASAM*/ wire ASAM_CPU_OAM_RDn = or (top.ACYL_SCANNINGp(), top.XYMU_RENDERINGp(), top.MATU_DMA_RUNNINGp());
-    /*p28.BETE*/ wire BETE_PPU_OAM_RDn = not(AJON_OAM_BUSY);
-    /*p28.APAR*/ wire APAR_PPU_OAM_RDn = not(top.ACYL_SCANNINGp());
-    /*p04.DUGA*/ wire DUGA_DMA_OAM_RDn = not(top.MATU_DMA_RUNNINGp()); // so if dma happens during oam parse, both drive the address line - bus conflict?
-
     /*p28.WEFE*/ wire WEFE_P10_Bn = not(top.JOY_PIN_P10_B);
     /*p28.WUWE*/ wire WUWE_P10_Bn = not(top.JOY_PIN_P10_B);
     /*p28.GEFY*/ wire GEFY_P10_Bn = not(top.JOY_PIN_P10_B);
     /*p28.GECA*/ wire GECA_P10_Bp = not(WEFE_P10_Bn);
     /*p28.WYDU*/ wire WYDU_P10_Bp = not(WEFE_P10_Bn);
 
-    /*p28.GEKA*/ GEKA_OAM_A0p = not((GARO_A0n & !ASAM_CPU_OAM_RDn) | (GECA_P10_Bp & !BETE_PPU_OAM_RDn) | (GEFY_P10_Bn & !APAR_PPU_OAM_RDn) | (FODO_DMA_A00n & !DUGA_DMA_OAM_RDn));
-    /*p28.ZYFO*/ ZYFO_OAM_A1p = not((WACU_A1n & !ASAM_CPU_OAM_RDn) | (WYDU_P10_Bp & !BETE_PPU_OAM_RDn) | (WUWE_P10_Bn & !APAR_PPU_OAM_RDn) | (FESA_DMA_A01n & !DUGA_DMA_OAM_RDn));
-    /*p28.YFOT*/ YFOT_OAM_A2p = not((GOSE_A2n & !ASAM_CPU_OAM_RDn) | (GYBU_IDX_0n & !BETE_PPU_OAM_RDn) | (GUSE_SCAN0n & !APAR_PPU_OAM_RDn) | (FAGO_DMA_A02n & !DUGA_DMA_OAM_RDn));
-    /*p28.YFOC*/ YFOC_OAM_A3p = not((WAPE_A3n & !ASAM_CPU_OAM_RDn) | (GYKA_IDX_1n & !BETE_PPU_OAM_RDn) | (GEMA_SCAN1n & !APAR_PPU_OAM_RDn) | (FYKY_DMA_A03n & !DUGA_DMA_OAM_RDn));
-    /*p28.YVOM*/ YVOM_OAM_A4p = not((FEVU_A4n & !ASAM_CPU_OAM_RDn) | (FABY_IDX_2n & !BETE_PPU_OAM_RDn) | (FUTO_SCAN2n & !APAR_PPU_OAM_RDn) | (ELUG_DMA_A04n & !DUGA_DMA_OAM_RDn));
-    /*p28.YMEV*/ YMEV_OAM_A5p = not((GERA_A5n & !ASAM_CPU_OAM_RDn) | (FACO_IDX_3n & !BETE_PPU_OAM_RDn) | (FAKU_SCAN3n & !APAR_PPU_OAM_RDn) | (EDOL_DMA_A05n & !DUGA_DMA_OAM_RDn));
-    /*p28.XEMU*/ XEMU_OAM_A6p = not((WAXA_A6n & !ASAM_CPU_OAM_RDn) | (FUGU_IDX_4n & !BETE_PPU_OAM_RDn) | (GAMA_SCAN4n & !APAR_PPU_OAM_RDn) | (FYDU_DMA_A06n & !DUGA_DMA_OAM_RDn));
-    /*p28.YZET*/ YZET_OAM_A7p = not((FOBY_A7n & !ASAM_CPU_OAM_RDn) | (FYKE_IDX_5n & !BETE_PPU_OAM_RDn) | (GOBY_SCAN5n & !APAR_PPU_OAM_RDn) | (FETU_DMA_A07n & !DUGA_DMA_OAM_RDn));
+    // Hacky model of weird tribus
+    /*p28.GEKA*/ GEKA_OAM_A0p = not((GARO_A0n & !ASAM_CPU_OAM_RDn) | (GECA_P10_Bp & !BETE_PPU_OAM_RDn) | (GEFY_P10_Bn & !APAR_SCAN_OAM_RDn) | (FODO_DMA_A00n & !DUGA_DMA_OAM_RDn));
+    /*p28.ZYFO*/ ZYFO_OAM_A1p = not((WACU_A1n & !ASAM_CPU_OAM_RDn) | (WYDU_P10_Bp & !BETE_PPU_OAM_RDn) | (WUWE_P10_Bn & !APAR_SCAN_OAM_RDn) | (FESA_DMA_A01n & !DUGA_DMA_OAM_RDn));
+    /*p28.YFOT*/ YFOT_OAM_A2p = not((GOSE_A2n & !ASAM_CPU_OAM_RDn) | (GYBU_IDX_0n & !BETE_PPU_OAM_RDn) | (GUSE_SCAN0n & !APAR_SCAN_OAM_RDn) | (FAGO_DMA_A02n & !DUGA_DMA_OAM_RDn));
+    /*p28.YFOC*/ YFOC_OAM_A3p = not((WAPE_A3n & !ASAM_CPU_OAM_RDn) | (GYKA_IDX_1n & !BETE_PPU_OAM_RDn) | (GEMA_SCAN1n & !APAR_SCAN_OAM_RDn) | (FYKY_DMA_A03n & !DUGA_DMA_OAM_RDn));
+    /*p28.YVOM*/ YVOM_OAM_A4p = not((FEVU_A4n & !ASAM_CPU_OAM_RDn) | (FABY_IDX_2n & !BETE_PPU_OAM_RDn) | (FUTO_SCAN2n & !APAR_SCAN_OAM_RDn) | (ELUG_DMA_A04n & !DUGA_DMA_OAM_RDn));
+    /*p28.YMEV*/ YMEV_OAM_A5p = not((GERA_A5n & !ASAM_CPU_OAM_RDn) | (FACO_IDX_3n & !BETE_PPU_OAM_RDn) | (FAKU_SCAN3n & !APAR_SCAN_OAM_RDn) | (EDOL_DMA_A05n & !DUGA_DMA_OAM_RDn));
+    /*p28.XEMU*/ XEMU_OAM_A6p = not((WAXA_A6n & !ASAM_CPU_OAM_RDn) | (FUGU_IDX_4n & !BETE_PPU_OAM_RDn) | (GAMA_SCAN4n & !APAR_SCAN_OAM_RDn) | (FYDU_DMA_A06n & !DUGA_DMA_OAM_RDn));
+    /*p28.YZET*/ YZET_OAM_A7p = not((FOBY_A7n & !ASAM_CPU_OAM_RDn) | (FYKE_IDX_5n & !BETE_PPU_OAM_RDn) | (GOBY_SCAN5n & !APAR_SCAN_OAM_RDn) | (FETU_DMA_A07n & !DUGA_DMA_OAM_RDn));
 
     top.OAM_PIN_A0.set(GEKA_OAM_A0p);
     top.OAM_PIN_A1.set(ZYFO_OAM_A1p);
@@ -173,24 +232,8 @@ void BusMux::tick(SchematicTop& top) {
   {
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(top.MATU_DMA_RUNNINGp());
     /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, top.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(top.MATU_DMA_RUNNINGp(), top.ACYL_SCANNINGp(), AJON_OAM_BUSY); // def nor
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p07.RYCU*/ wire RYCU_FE00_FFFFp = not(TUNA_0000_FDFFp);
-    /*p07.SOHA*/ wire SOHA_FF00_FFFFn = not(SYKE_FF00_FFFFp);
-    /*p07.ROPE*/ wire ROPE_FE00_FEFFn = nand(RYCU_FE00_FFFFp, SOHA_FF00_FFFFn);
-    /*p07.SARO*/ wire SARO_FE00_FEFFp = not(ROPE_FE00_FEFFn);
     /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
-    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
-    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
     /*p04.NAXY*/ wire NAXY_DMA_OAM_WENp = nor(UVYT_xBCDExxx, MAKA_FROM_CPU5_SYNC); // def nor
     /*p04.POWU*/ wire POWU_DMA_OAM_WRp = and (top.MATU_DMA_RUNNINGp(), NAXY_DMA_OAM_WENp); // def and
     /*p04.WYJA*/ wire WYJA_OAM_WRp = or (and (AMAB_OAM_LOCKn, CUPA_CPU_WR_xxxxxFGH), POWU_DMA_OAM_WRp);
@@ -205,25 +248,11 @@ void BusMux::tick(SchematicTop& top) {
 
   // Internal latch -> CPU bus
   {
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
-    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(top.CPU_PIN5);
-    /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
-    /*p28.MYNU*/ wire MYNU_CPU_RDn = nand(ASOT_CPU_RD, CATY_FROM_CPU5p);
-    /*p28.LEKO*/ wire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(top.MATU_DMA_RUNNINGp());
     /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, top.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
 
     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(top.MATU_DMA_RUNNINGp(), top.ACYL_SCANNINGp(), AJON_OAM_BUSY); // def nor
     /*p28.WAFO*/ wire WAFO_OAM_A0n = not(top.GEKA_OAM_A0p()); // def not
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p07.RYCU*/ wire RYCU_FE00_FFFFp = not(TUNA_0000_FDFFp);
-    /*p07.SOHA*/ wire SOHA_FF00_FFFFn = not(SYKE_FF00_FFFFp);
-    /*p07.ROPE*/ wire ROPE_FE00_FEFFn = nand(RYCU_FE00_FFFFp, SOHA_FF00_FFFFn);
-    /*p07.SARO*/ wire SARO_FE00_FEFFp = not(ROPE_FE00_FEFFn);
     /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
     /*p28.WUKU*/ wire WUKU_OAM_A_CPU_RD = and (LEKO_CPU_RDp, AMAB_OAM_LOCKn, top.OAM_PIN_A0);
     /*p28.GUKO*/ wire GUKO_OAM_B_CPU_RD = and (LEKO_CPU_RDp, AMAB_OAM_LOCKn, WAFO_OAM_A0n);
@@ -309,36 +338,16 @@ void BusMux::tick(SchematicTop& top) {
 
   // CPU bus -> oam
   {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
-    /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
 
     /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(top.MATU_DMA_RUNNINGp());
     /*p28.AJON*/ wire AJON_OAM_BUSY = and (BOGE_DMA_RUNNINGn, top.XYMU_RENDERINGp()); // def AND. ppu can read oam when there's rendering but no dma
     /*p28.AJUJ*/ wire AJUJ_OAM_BUSYn = nor(top.MATU_DMA_RUNNINGp(), top.ACYL_SCANNINGp(), AJON_OAM_BUSY); // def nor
-    /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());
-    /*p07.DYKY*/ wire DYKY_CPU_WR_ABCDExxx = not(TAPU_CPU_WR_xxxxxFGH);
-    /*p07.CUPA*/ wire CUPA_CPU_WR_xxxxxFGH = not(DYKY_CPU_WR_ABCDExxx);
 
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p07.RYCU*/ wire RYCU_FE00_FFFFp = not(TUNA_0000_FDFFp);
-    /*p07.SOHA*/ wire SOHA_FF00_FFFFn = not(SYKE_FF00_FFFFp);
-    /*p07.ROPE*/ wire ROPE_FE00_FEFFn = nand(RYCU_FE00_FFFFp, SOHA_FF00_FFFFn);
-
-    /*p07.SARO*/ wire SARO_FE00_FEFFp = not(ROPE_FE00_FEFFn);
     /*p28.XUTO*/ wire XUTO_CPU_OAM_WR = and (SARO_FE00_FEFFp, CUPA_CPU_WR_xxxxxFGH);
-    /*p28.XYNY*/ wire XYNY_xBCDExxx = not(MOPA_AxxxxFGH);
     /*p28.WUJE*/ wire WUJE_CPU_OAM_WR = or (XYNY_xBCDExxx, XUTO_CPU_OAM_WR);
     /*p28.XUPA*/ wire XUPA_CPU_OAM_WR = not(WUJE_CPU_OAM_WR);
-    /*p28.ADAH*/ wire ADAH_ADDR_OAM = not(SARO_FE00_FEFFp);
     /*p28.AMAB*/ wire AMAB_OAM_LOCKn = and (SARO_FE00_FEFFp, AJUJ_OAM_BUSYn); // def and
-    /*p28.APAG*/ wire APAG_CPUD_TO_OAMDp = amux2(XUPA_CPU_OAM_WR, AMAB_OAM_LOCKn, AJUJ_OAM_BUSYn, ADAH_ADDR_OAM);
+    /*p28.APAG*/ wire APAG_CPUD_TO_OAMDp = amux2(XUPA_CPU_OAM_WR, AMAB_OAM_LOCKn, AJUJ_OAM_BUSYn, ADAH_FE00_FEFFn);
     /*p28.AZUL*/ wire AZUL_CPUD_TO_OAMDn = not(APAG_CPUD_TO_OAMDp);
 
     /*p28.ZAXA*/ top.OAM_PIN_DA0.set_tribuf(AZUL_CPUD_TO_OAMDn, top.CPU_TRI_D0);
@@ -362,20 +371,8 @@ void BusMux::tick(SchematicTop& top) {
 
   // OAM data -> internal latch
   {
-    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_xxCDxxGH());
     /*p28.AJEP*/ wire AJEP_SCAN_OAM_LATCH  = nand(top.ACYL_SCANNINGp(), XOCE_ABxxEFxx); // schematic wrong, is def nand
     /*p28.XUJA*/ wire XUJA_FETCH_OAM_LATCH = not(top.WEFY_SPR_READp());
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p07.RYCU*/ wire RYCU_FE00_FFFFp = not(TUNA_0000_FDFFp);
-    /*p07.SOHA*/ wire SOHA_FF00_FFFFn = not(SYKE_FF00_FFFFp);
-    /*p07.ROPE*/ wire ROPE_FE00_FEFFn = nand(RYCU_FE00_FFFFp, SOHA_FF00_FFFFn);
-    /*p07.SARO*/ wire SARO_FE00_FEFFp = not(ROPE_FE00_FEFFn);
-    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(top.CPU_PIN5);
     /*p28.BOTA*/ wire BOTA_CPU_OAM_LATCH   = nand(DECY_FROM_CPU5n, SARO_FE00_FEFFp, ASOT_CPU_RD); // Schematic wrong, this is NAND
     /*p28.ASYT*/ wire ASYT_OAM_LATCH = and(AJEP_SCAN_OAM_LATCH, XUJA_FETCH_OAM_LATCH, BOTA_CPU_OAM_LATCH);
     /*p28.BODE*/ wire BODE_OAM_LATCH = not(ASYT_OAM_LATCH); // to the tribus receiver below
@@ -405,25 +402,8 @@ void BusMux::tick(SchematicTop& top) {
 
   // Internal latch -> sprite fetcher/matcher
   {
-    /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn,  ATYP_xBCDExxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /*p01.UVYT*/ wire UVYT_xBCDExxx = not(BUDE_AxxxxFGH);
-    /*p04.MOPA*/ wire MOPA_AxxxxFGH = not(UVYT_xBCDExxx);
-
-    /*p29.WOJO*/ wire WOJO_xxxDxxxH = nor(!top.WUVU_AxxDExxH(), !top.WOSU_xxCDxxGH());
-    /*p29.XYSO*/ wire XYSO_ABCxDEFx = not(WOJO_xxxDxxxH);
     /*p25.AVER*/ wire AVER_SCAN_OAM_CLK  = nand(top.ACYL_SCANNINGp(), XYSO_ABCxDEFx); 
     /*p25.XUJY*/ wire XUJY_FETCH_OAM_CLK = not(top.VAPE_FETCH_OAM_CLK());
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
-    /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p07.RYCU*/ wire RYCU_FE00_FFFFp = not(TUNA_0000_FDFFp);
-    /*p07.SOHA*/ wire SOHA_FF00_FFFFn = not(SYKE_FF00_FFFFp);
-    /*p07.ROPE*/ wire ROPE_FE00_FEFFn = nand(RYCU_FE00_FFFFp, SOHA_FF00_FFFFn);
-    /*p07.SARO*/ wire SARO_FE00_FEFFp = not(ROPE_FE00_FEFFn);
     /*p25.CUFE*/ wire CUFE_WRITE_OAM_CLK = and (or (SARO_FE00_FEFFp, top.MATU_DMA_RUNNINGp()), MOPA_AxxxxFGH);
     /*p25.BYCU*/ wire BYCU_OAM_CLK = nand(AVER_SCAN_OAM_CLK, XUJY_FETCH_OAM_CLK, CUFE_WRITE_OAM_CLK);
     /*p25.COTA*/ wire COTA_OAM_CLK = not(BYCU_OAM_CLK);
@@ -482,18 +462,6 @@ void BusMux::tick(SchematicTop& top) {
 
   // VRAM bus -> CPU bus
   {
-    wire UJYV_CPU_RD  = top.UJYV_CPU_RD();
-    wire CPU_PIN5     = top.CPU_PIN5;
-
-    //----------
-
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(UJYV_CPU_RD);
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
-    /*p04.DECY*/ wire DECY_FROM_CPU5n = not(CPU_PIN5);
-    /*p04.CATY*/ wire CATY_FROM_CPU5p = not(DECY_FROM_CPU5n);
-    /*p28.MYNU*/ wire MYNU_CPU_RDn = nand(ASOT_CPU_RD, CATY_FROM_CPU5p);
-    /*p28.LEKO*/ wire LEKO_CPU_RDp = not(MYNU_CPU_RDn);
     /*p25.TYVY*/ wire TYVY_VRAMD_TO_CPUDp = nand(top.SERE_VRAM_RD(), LEKO_CPU_RDp);
     /*p25.SEBY*/ wire SEBY_VRAMD_TO_CPUDn = not(TYVY_VRAMD_TO_CPUDp);
 
@@ -516,10 +484,8 @@ void BusMux::tick(SchematicTop& top) {
     /*p25.TOKU*/ top.CPU_TRI_D7.set_tribuf(SEBY_VRAMD_TO_CPUDn, SAME);
   }
 
+  // CPU address pins -> address latch
   {
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
     /*p08.MULE*/ wire MULE_MODE_DBG1n = not(top.UMUT_MODE_DBG1p());
     /*p08.LOXO*/ wire LOXO_LATCH_CPU_ADDRp = or (and (MULE_MODE_DBG1n, TEXO_8000_9FFFn), top.UMUT_MODE_DBG1p());
     /*p08.LASY*/ wire LASY_LATCH_CPU_ADDRn = not(LOXO_LATCH_CPU_ADDRp);
@@ -542,7 +508,7 @@ void BusMux::tick(SchematicTop& top) {
     /*p08.NYRE*/ CPU_ADDR_LATCH_14.tp_latch(MATE_LATCH_CPU_ADDRp, top.CPU_PIN_A14);
   }
 
-  // DMA addr / CPU addr -> ext addr pins
+  // DMA address / CPU address latch -> ext addr pins
   {
     /*p04.LOGO*/ wire LOGO_DMA_VRAMn      = not(top.MUDA_DMA_SRC_VRAMp());
     /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(top.MATU_DMA_RUNNINGp(), LOGO_DMA_VRAMn);
@@ -597,21 +563,16 @@ void BusMux::tick(SchematicTop& top) {
     /*p08.PAHY*/ top.EXT_PIN_A14_D.set(nor (EXT_ADDR_14, top.UNOR_MODE_DBG2p()));
   }
 
+  // CPU data bus -> external data bus
   {
     // So does this mean that if the CPU writes to the external bus during dma, that data
     // will actually end up in oam?
 
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
-    /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
     /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WR);
     /*p08.LYWE*/ wire LYWE = not(LAGU);
     /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p());
     /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RD, LYWE);
 
-    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
-    /*p08.REDU*/ wire REDU_CPU_RD = not(TEDO_CPU_RD);
     /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn = mux2_p(REDU_CPU_RD, MOTY_CPU_EXT_RD, top.UNOR_MODE_DBG2p());
 
     /*p08.LULA*/ wire LULA_IBUS_TO_EBUSp = not(RORU_IBUS_TO_EBUSn);
@@ -643,8 +604,8 @@ void BusMux::tick(SchematicTop& top) {
     /*p08.RYDA*/ top.EXT_PIN_D7_D.set(nor(top.CPU_TRI_D7, RORU_IBUS_TO_EBUSn));
   }
 
+  // External data bus -> CPU data bus
   {
-    // External data bus to internal data bus
     // SOMA01 << LAVO04
     // SOMA02 nc
     // SOMA03 << D0_C
@@ -657,9 +618,6 @@ void BusMux::tick(SchematicTop& top) {
 
     // Is this actually like a pass gate? We already know the latch cells, and this is bigger than those.
 
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
     /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAp = nand(top.CPU_PIN_RD, TEXO_8000_9FFFn, top.CPU_PIN5);
 
     /*p08.SOMA*/ SOMA_EXT_DATA_LATCH_00.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D0_C);
@@ -709,10 +667,6 @@ void BusMux::tick(SchematicTop& top) {
   }
 
   {
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
-    /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
     /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WR);
     /*p08.LYWE*/ wire LYWE = not(LAGU);
     /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p());
@@ -722,13 +676,7 @@ void BusMux::tick(SchematicTop& top) {
     /*p04.MORY*/ wire MORY_DMA_READ_CARTn = nand(top.MATU_DMA_RUNNINGp(), LOGO_DMA_VRAMn);
     /*p04.LUMA*/ wire LUMA_DMA_READ_CARTp = not(MORY_DMA_READ_CARTn);
 
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(!top.AFUR_xBCDExxx());
-    /*p01.ADAR*/ wire ADAR_ABCDxxxx = not(top.ADYK_xxxxEFGH());
-    /*p01.AFAS*/ wire AFAS_xxxxxFGH = nor(ADAR_ABCDxxxx, ATYP_xBCDExxx);
-    /*p01.AREV*/ wire AREV_CPU_WRn_ABCDExxx = nand(top.CPU_PIN_WR, AFAS_xxxxxFGH);
-    /*p01.APOV*/ wire APOV_CPU_WR_xxxxxFGH = not(AREV_CPU_WRn_ABCDExxx);
-    /*p08.MEXO*/ wire MEXO_ABCDExxx = not(APOV_CPU_WR_xxxxxFGH);
-    /*p08.NEVY*/ wire NEVY = or(MEXO_ABCDExxx, MOCA_DBG_EXT_RD);
+    /*p08.NEVY*/ wire NEVY = or(MEXO_CPU_WRn_ABCDExxx, MOCA_DBG_EXT_RD);
     /*p08.TYMU*/ wire TYMU_RD_OUTn = nor(LUMA_DMA_READ_CARTp, MOTY_CPU_EXT_RD);
     /*p08.PUVA*/ wire PUVA_WR_OUTn = or(NEVY, LUMA_DMA_READ_CARTp);
 
@@ -764,7 +712,6 @@ void BusMux::tick(SchematicTop& top) {
     /*p01.ABUZ*/ wire ABUZ = not(AWOD);
 
     /*p08.TYNU*/ wire _TYNU_ADDR_RAM = or(and(top.CPU_PIN_A15, top.CPU_PIN_A14), _TUMA_CART_RAM);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09);
     /*p08.TOZA*/ wire _TOZA = and(ABUZ, _TYNU_ADDR_RAM, TUNA_0000_FDFFp); // suggests ABUZp
 
     /*p08.TYHO*/ wire TYHO_CS_A = mux2_p(top.DMA_A15(), _TOZA, LUMA_DMA_READ_CARTp); // ABxxxxxx

@@ -253,8 +253,8 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p22.XARO*/ wire XARO_FF42p = not(WEBU_FF42n);
 
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
     /*p23.ANYP*/ wire ANYP_FF42_RDp = and(XARO_FF42p, ASOT_CPU_RD);
     /*p23.BUWY*/ wire BUWY_FF42_RDn = not(ANYP_FF42_RDp);
 
@@ -298,8 +298,8 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p22.XAVY*/ wire XAVY_FF43p = not(WAVU_FF43n);
 
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
     /*p23.AVOG*/ wire AVOG_FF43_RDp = and (XAVY_FF43p, ASOT_CPU_RD);
     /*p23.BEBA*/ wire BEBA_FF43_RDn = not(AVOG_FF43_RDp);
 

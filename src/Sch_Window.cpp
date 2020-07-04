@@ -109,8 +109,8 @@ void WindowRegisters::tick(SchematicTop& top) {
     /*p22.VYGA*/ wire FF4A = not(FF4An);
 
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
     /*p23.WAXU*/ wire FF4A_RD = and (ASOT_CPU_RD, FF4A);
     /*p23.VOMY*/ wire FF4A_RDn = not(FF4A_RD);
 
@@ -160,8 +160,8 @@ void WindowRegisters::tick(SchematicTop& top) {
     /*p22.VUMY*/ wire FF4B = not(FF4Bn);
 
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
     /*p23.WYZE*/ wire FF4B_RD = and (ASOT_CPU_RD, FF4B);
     /*p23.VYCU*/ wire FF4B_RDn = not(FF4B_RD);
 

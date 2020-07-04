@@ -160,8 +160,8 @@ struct SchematicTop {
 
   wire BYHA_VID_LINE_TRIG_d4n() const;
 
-  wire RUTU_NEW_LINE_d0() const;
-  wire CATU_VID_LINE_d4() const;
+  wire RUTU_LINE_END_F() const;
+  wire CATU_LINE_END_B() const;
   wire POPU_VBLANK_d4() const;
   wire ROPO_LY_MATCH_SYNCp() const;
   wire MUWY_Y0() const;

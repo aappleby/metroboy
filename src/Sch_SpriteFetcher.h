@@ -15,11 +15,14 @@ private:
   friend struct SchematicTop;
 
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp;
-  /*p27.SOBU*/ Reg17 SOBU_SPRITE_FETCH_TRIG_A;
-  /*p27.SUDA*/ Reg17 SUDA_SPRITE_FETCH_TRIG_B;
+  /*p27.SOBU*/ Reg17 SOBU_SPRITE_FETCH_A;
+  /*p27.SUDA*/ Reg17 SUDA_SPRITE_FETCH_B;
 
-  /*p29.TOXE*/ Reg17 TOXE_SFETCH_S0_D0;
+  // When TOXE & TYFO & VONU & SEBA, sprites are loaded into the pipe.
+
+  /*p29.TOXE*/ Reg17 TOXE_SFETCH_S0;
   /*p29.TYFO*/ Reg17 TYFO_SFETCH_S0_D1;
+
   /*p29.TULY*/ Reg17 TULY_SFETCH_S1;
   /*p29.TESE*/ Reg17 TESE_SFETCH_S2;
 

@@ -94,8 +94,8 @@ void DmaRegisters::tick(SchematicTop& top) {
     /*p22.WATE*/ wire WATE_FF46n = nand(top.WERO_FF40_FF4Fp(), XOLA_A00n, WESA_A01p, WALO_A02p, XERA_A03n);
     /*p22.XEDA*/ wire XEDA_FF46p = not(WATE_FF46n);
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
-    /*p07.AJAS*/ wire AJAS_BUS_RD = not(TEDO_CPU_RD);
-    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_BUS_RD);
+    /*p07.AJAS*/ wire AJAS_CPU_RD = not(TEDO_CPU_RD);
+    /*p07.ASOT*/ wire ASOT_CPU_RD = not(AJAS_CPU_RD);
     /*p04.MOLU*/ MOLU_FF46_RDn = nand(XEDA_FF46p, ASOT_CPU_RD);
 
     /*p07.TAPU*/ wire TAPU_CPU_WR_xxxxxFGH = not(top.UBAL_CPU_WRp_ABCDExxx());

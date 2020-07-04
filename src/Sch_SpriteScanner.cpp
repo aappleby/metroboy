@@ -7,35 +7,57 @@ using namespace Schematics;
 
 void SpriteScanner::tick(SchematicTop& top) {
 
-  /*p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and (YFEL_SCAN0, WEWY_SCAN1, GOSO_SCAN2, FONY_SCAN5); // 32 + 4 + 2 + 1 = 39
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
+  /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+  /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+  /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+
+  /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_xxCDxxGH());
+  /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
+
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
+  /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
+
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
+  /*p28.ANOM*/ wire ANOM_LINE_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
+  /*p29.BALU*/ wire BALU_LINE_RSTp = not(ANOM_LINE_RSTn);
+  /*p29.BAGY*/ wire BAGY_LINE_RSTn = not(BALU_LINE_RSTp);
+
+  /*p28.FETO*/ wire _FETO_SCAN_DONE_d0 = and (YFEL_SCAN0, WEWY_SCAN1, GOSO_SCAN2, FONY_SCAN5); // die AND. 32 + 4 + 2 + 1 = 39
 
   //----------------------------------------
   // Sprite scan trigger & reset. Why it resets both before and after the scan I do not know.
 
   {
-    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
-    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
-    /*p29.BALU*/ wire BALU_SCAN_RSTp = not(ANOM_SCAN_RSTn);
-    /*p29.BAGY*/ wire BAGY_SCAN_RSTn = not(BALU_SCAN_RSTp);
 
-    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-    /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+    /*p29.BYBA*/ BYBA_SCAN_DONE_A.set(XUPY_xBCxxFGx, BAGY_LINE_RSTn, _FETO_SCAN_DONE_d0);
+    /*p29.DOBA*/ DOBA_SCAN_DONE_B.set(ALET_xBxDxFxH, BAGY_LINE_RSTn, BYBA_SCAN_DONE_A);
 
-    /*p29.BYBA*/ SCAN_DONE_TRIG_A.set(XUPY_xBCxxFGx, BAGY_SCAN_RSTn, _FETO_SCAN_DONE_d0);
-    /*p29.DOBA*/ SCAN_DONE_TRIG_B.set(ALET_xBxDxFxH, BAGY_SCAN_RSTn, SCAN_DONE_TRIG_A);
+    // BEBU_01 << DOBA_17
+    // BEBU_02 << BALU_02
+    // BEBU_03 << BYBA_16
+    // BEBU_04 nc
+    // BEBU_05 >> AVAP_01
 
-    /*p29.BEBU*/ wire BEBU_SCAN_RSTn = or (BALU_SCAN_RSTp, SCAN_DONE_TRIG_B.q(), !SCAN_DONE_TRIG_A.q());
-    /*p29.AVAP*/ wire AVAP_SCAN_RSTp = not(BEBU_SCAN_RSTn);
-    /*p28.ASEN*/ wire ASEN_SCAN_RSTp = or (ATAR_VID_RSTp, AVAP_SCAN_RSTp);
-    /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
 
-    /*p28.BESU*/ BESU_SCANNINGp.nor_latch(top.CATU_VID_LINE_d4(), ASEN_SCAN_RSTp);
+    /*p29.BEBU*/ wire BEBU_SCAN_DONE_PEn = or (BALU_LINE_RSTp, DOBA_SCAN_DONE_B.q(), !BYBA_SCAN_DONE_A.q());
+    /*p29.AVAP*/ wire AVAP_SCAN_DONE_PE = not(BEBU_SCAN_DONE_PEn);
+    /*p28.ASEN*/ wire ASEN_SCAN_DONE_PE = or (ATAR_VID_RSTp, AVAP_SCAN_DONE_PE);
+
+    // Arms on ground, nor latch
+    // BESU01 << CATU17
+    // BESU02 nc
+    // BESU03 >> nc
+    // BESU04 >> ACYL02
+    // BESU05 nc
+    // BESU06 << ASEN04
+
+    // When CATU goes high, BESU goes high
+    // When ASEN goes high, BESU goes low.
+
+    /*p28.BESU*/ BESU_SCANNINGp.nor_latch(top.CATU_LINE_END_B(), ASEN_SCAN_DONE_PE);
     /*p29.CENO*/ CENO_SCANNINGp.set(XUPY_xBCxxFGx, ABEZ_VID_RSTn, BESU_SCANNINGp);
   }
 
@@ -44,19 +66,13 @@ void SpriteScanner::tick(SchematicTop& top) {
   // Sprite scan takes 160 phases, 4 phases per sprite.
 
   {
-    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(top.XAPO_VID_RSTn());
-    /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(top.BYHA_VID_LINE_TRIG_d4n());
-    /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
-
-    /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
-
     /*p28.GAVA*/ wire _GAVA_SCAN_CLK = or(_FETO_SCAN_DONE_d0, XUPY_xBCxxFGx);
-    /*p28.YFEL*/ YFEL_SCAN0.set(_GAVA_SCAN_CLK, ANOM_SCAN_RSTn, !YFEL_SCAN0);
-    /*p28.WEWY*/ WEWY_SCAN1.set(!YFEL_SCAN0,    ANOM_SCAN_RSTn, !WEWY_SCAN1);
-    /*p28.GOSO*/ GOSO_SCAN2.set(!WEWY_SCAN1,    ANOM_SCAN_RSTn, !GOSO_SCAN2);
-    /*p28.ELYN*/ ELYN_SCAN3.set(!GOSO_SCAN2,    ANOM_SCAN_RSTn, !ELYN_SCAN3);
-    /*p28.FAHA*/ FAHA_SCAN4.set(!ELYN_SCAN3,    ANOM_SCAN_RSTn, !FAHA_SCAN4);
-    /*p28.FONY*/ FONY_SCAN5.set(!FAHA_SCAN4,    ANOM_SCAN_RSTn, !FONY_SCAN5);
+    /*p28.YFEL*/ YFEL_SCAN0.set(_GAVA_SCAN_CLK, ANOM_LINE_RSTn, !YFEL_SCAN0);
+    /*p28.WEWY*/ WEWY_SCAN1.set(!YFEL_SCAN0,    ANOM_LINE_RSTn, !WEWY_SCAN1);
+    /*p28.GOSO*/ GOSO_SCAN2.set(!WEWY_SCAN1,    ANOM_LINE_RSTn, !GOSO_SCAN2);
+    /*p28.ELYN*/ ELYN_SCAN3.set(!GOSO_SCAN2,    ANOM_LINE_RSTn, !ELYN_SCAN3);
+    /*p28.FAHA*/ FAHA_SCAN4.set(!ELYN_SCAN3,    ANOM_LINE_RSTn, !FAHA_SCAN4);
+    /*p28.FONY*/ FONY_SCAN5.set(!FAHA_SCAN4,    ANOM_LINE_RSTn, !FONY_SCAN5);
   }
 
   //----------------------------------------
@@ -102,7 +118,6 @@ void SpriteScanner::tick(SchematicTop& top) {
     /*p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, YDIFF_C7, GOVU_SPSIZE_MATCH);
     /*p29.GESE*/ wire GESE_SCAN_MATCH_Y = not(WOTA_SCAN_MATCH_Yn);
     /*p29.CEHA*/ wire CEHA_SCANNINGp = not(CENO_SCANNINGp.qn());
-    /*p29.XOCE*/ wire XOCE_ABxxEFxx = not(top.WOSU_xxCDxxGH());
     /*p29.CARE*/ CARE_STORE_ENp_ABxxEFxx = and (XOCE_ABxxEFxx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Y); // Dots on VCC, this is AND. Die shot and schematic wrong.
   }
 }
@@ -127,8 +142,8 @@ SignalHash SpriteScanner::commit() {
   /*p28.ELYN*/ hash << ELYN_SCAN3.commit_reg();
   /*p28.FAHA*/ hash << FAHA_SCAN4.commit_reg();
   /*p28.FONY*/ hash << FONY_SCAN5.commit_reg();
-  /*p29.BYBA*/ hash << SCAN_DONE_TRIG_A.commit_reg();
-  /*p29.DOBA*/ hash << SCAN_DONE_TRIG_B.commit_reg();
+  /*p29.BYBA*/ hash << BYBA_SCAN_DONE_A.commit_reg();
+  /*p29.DOBA*/ hash << DOBA_SCAN_DONE_B.commit_reg();
 
   return hash;
 }

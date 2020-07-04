@@ -12,7 +12,22 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void SpriteFetcher::tick(SchematicTop& top) {
+
+  /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+  /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
+  /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+  /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+  /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+  /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
+  /*p01.LAPE*/ wire LAPE_AxCxExGx = not(ALET_xBxDxFxH);
+  /*p27.TAVA*/ wire TAVA_xBxDxFxH = not(LAPE_AxCxExGx);
+
+  /*p01.ROSY*/ wire ROSY_VID_RSTp = not(top.XAPO_VID_RSTn());
+
+  /*p24.LOBY*/ wire LOBY_RENDERINGn = not(top.XYMU_RENDERINGp());
+
   wire JOY_PIN_P10_B = 0;
+  /*p27.VYPO*/ wire VYPO_P10_Bn = not(JOY_PIN_P10_B);
 
   //----------------------------------------
   // So this is def the chunk that watches FEPO_STORE_MATCHp and triggers a sprite fetch...
@@ -20,47 +35,25 @@ void SpriteFetcher::tick(SchematicTop& top) {
   // Maybe we should annotate phase starting with the phase 0 = FEPO_MATCH_SYNC goes high?
 
   {
-    /*p27.VYPO*/ wire VYPO_P10_Bn = not(JOY_PIN_P10_B);
+    /*p27.SUDA*/ SUDA_SPRITE_FETCH_B.set(LAPE_AxCxExGx, VYPO_P10_Bn, SOBU_SPRITE_FETCH_A);
+    /*p27.RYCE*/ wire RYCE_SPRITE_FETCHpe = and (SOBU_SPRITE_FETCH_A, !SUDA_SPRITE_FETCH_B);
 
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-    /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
-    /*p01.LAPE*/ wire LAPE_AxCxExGx = not(ALET_xBxDxFxH);
-    /*p27.TAVA*/ wire TAVA_xBxDxFxH = not(LAPE_AxCxExGx);
-    /*p27.SOBU*/ SOBU_SPRITE_FETCH_TRIG_A.set(TAVA_xBxDxFxH, VYPO_P10_Bn, top.TEKY_SPRITE_FETCH());
-    /*p27.SUDA*/ SUDA_SPRITE_FETCH_TRIG_B.set(LAPE_AxCxExGx, VYPO_P10_Bn, SOBU_SPRITE_FETCH_TRIG_A);
-    /*p27.RYCE*/ wire RYCE_SPRITE_FETCH_TRIG = and (SOBU_SPRITE_FETCH_TRIG_A, !SUDA_SPRITE_FETCH_TRIG_B);
-
-    /*p01.ROSY*/ wire ROSY_VID_RSTp = not(top.XAPO_VID_RSTn());
-    /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCH_TRIG, ROSY_VID_RSTp, top.BYHA_VID_LINE_TRIG_d4n()); // def nor
+    /*p27.SECA*/ wire SECA_SFETCH_RUNNING_SETn = nor(RYCE_SPRITE_FETCHpe, ROSY_VID_RSTp, top.BYHA_VID_LINE_TRIG_d4n()); // def nor
     /*p27.TAKA*/ TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_RUNNING_SETn, top.VEKU_SFETCH_RUNNING_RSTn());
 
-    /*p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand(TESE_SFETCH_S2, TOXE_SFETCH_S0_D0);
+    /*p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand(TESE_SFETCH_S2, TOXE_SFETCH_S0);
     /*p29.TOMA*/ wire TOMA_SFETCH_CLK = nand(LAPE_AxCxExGx, TAME_SFETCH_CLK_GATE);
 
-    /*p29.TOXE*/ TOXE_SFETCH_S0_D0.set(TOMA_SFETCH_CLK, SECA_SFETCH_RUNNING_SETn, !TOXE_SFETCH_S0_D0);
-    /*p29.TYFO*/ TYFO_SFETCH_S0_D1.set(LAPE_AxCxExGx,   VYPO_P10_Bn,              TOXE_SFETCH_S0_D0);
-    /*p29.TULY*/ TULY_SFETCH_S1.set(!TOXE_SFETCH_S0_D0, SECA_SFETCH_RUNNING_SETn, !TULY_SFETCH_S1);
-    /*p29.TESE*/ TESE_SFETCH_S2.set(!TULY_SFETCH_S1,    SECA_SFETCH_RUNNING_SETn, !TESE_SFETCH_S2);
+    /*p29.TOXE*/ TOXE_SFETCH_S0.set(TOMA_SFETCH_CLK, SECA_SFETCH_RUNNING_SETn, !TOXE_SFETCH_S0);
+    /*p29.TULY*/ TULY_SFETCH_S1.set(!TOXE_SFETCH_S0, SECA_SFETCH_RUNNING_SETn, !TULY_SFETCH_S1);
+    /*p29.TESE*/ TESE_SFETCH_S2.set(!TULY_SFETCH_S1, SECA_SFETCH_RUNNING_SETn, !TESE_SFETCH_S2);
 
     /*p29.TOBU*/ TOBU_SFETCH_S1_D2.set(TAVA_xBxDxFxH, top.XYMU_RENDERINGp(), TULY_SFETCH_S1);    // note input is seq 1 not 2
     /*p29.VONU*/ VONU_SFETCH_S1_D4.set(TAVA_xBxDxFxH, top.XYMU_RENDERINGp(), TOBU_SFETCH_S1_D2);
-    /*p29.SEBA*/ SEBA_SFETCH_S1_D5.set(LAPE_AxCxExGx, top.XYMU_RENDERINGp(), VONU_SFETCH_S1_D4); // is this clock wrong?
+    /*p29.SEBA*/ SEBA_SFETCH_S1_D5.set(LAPE_AxCxExGx, top.XYMU_RENDERINGp(), VONU_SFETCH_S1_D4);
   }
 
   {
-    // SFETCH_000 - TOPU_SPRITE_PIX_LATCH_A = 0, 
-    // SFETCH_001
-    // SFETCH_010
-    // SFETCH_011
-    // SFETCH_100
-    // SFETCH_101
-    // SFETCH_110
-    // SFETCH_111
-
     /*p29.XONO*/ wire XONO_FLIP_X = and (top.BAXO_SPRITE_X5(), top.TEXY_SPRITE_READp());
     /*p33.POBE*/ wire SPR_PIX_FLIP0 = mux2_p(top.VRM_TRI_D7, top.VRM_TRI_D0, XONO_FLIP_X);
     /*p33.PACY*/ wire SPR_PIX_FLIP1 = mux2_p(top.VRM_TRI_D6, top.VRM_TRI_D1, XONO_FLIP_X);
@@ -71,16 +64,12 @@ void SpriteFetcher::tick(SchematicTop& top) {
     /*p33.PELO*/ wire SPR_PIX_FLIP6 = mux2_p(top.VRM_TRI_D1, top.VRM_TRI_D6, XONO_FLIP_X);
     /*p33.PAWE*/ wire SPR_PIX_FLIP7 = mux2_p(top.VRM_TRI_D0, top.VRM_TRI_D7, XONO_FLIP_X);
 
-#if 0
-    wire LATCH_SPPIXA = and (RENDERING, TOXE_SFETCH_S0_D0, !TYFO_SFETCH_S0_D1, TULY_SFETCH_S1);
-    wire LATCH_SPPIXB = and (RENDERING, TOXE_SFETCH_S0_D0, !TYFO_SFETCH_S0_D1, VONU_SFETCH_S1_D4);
-#endif
 
-    /*p29.TYTU*/ wire TYTU_SFETCH_S0n = not(TOXE_SFETCH_S0_D0.q());
-    /*p24.LOBY*/ wire LOBY_RENDERINGn = not(top.XYMU_RENDERINGp());
-    /*p29.SYCU*/ wire SYCU = nor(TYTU_SFETCH_S0n, LOBY_RENDERINGn, TYFO_SFETCH_S0_D1);
+    /*p29.TYFO*/ TYFO_SFETCH_S0_D1.set(LAPE_AxCxExGx, VYPO_P10_Bn, TOXE_SFETCH_S0);
+    /*p29.TYTU*/ wire TYTU_SFETCH_S0n = not(TOXE_SFETCH_S0.q());
+    /*p29.SYCU*/ wire SYCU_SFETCH_S0pe = nor(TYTU_SFETCH_S0n, LOBY_RENDERINGn, TYFO_SFETCH_S0_D1);
 
-    /*p29.TOPU*/ wire TOPU_LATCH_SPPIXA = and (TULY_SFETCH_S1, SYCU);
+    /*p29.TOPU*/ wire TOPU_LATCH_SPPIXA = and (TULY_SFETCH_S1, SYCU_SFETCH_S0pe);
     /*p29.VYWA*/ wire VYWA_CLKp = not(TOPU_LATCH_SPPIXA);
     /*p29.WENY*/ wire WENY_CLKn = not(VYWA_CLKp);
     /*p29.XADO*/ wire XADO_CLKp = not(WENY_CLKn);
@@ -93,7 +82,7 @@ void SpriteFetcher::tick(SchematicTop& top) {
     /*p33.RAMA*/ SPR_PIX_A6.set(XADO_CLKp, SPR_PIX_FLIP6);
     /*p33.RYDU*/ SPR_PIX_A7.set(XADO_CLKp, SPR_PIX_FLIP7);
 
-    /*p29.RACA*/ wire RACA_LATCH_SPPIXB = and (VONU_SFETCH_S1_D4, SYCU);
+    /*p29.RACA*/ wire RACA_LATCH_SPPIXB = and (VONU_SFETCH_S1_D4, SYCU_SFETCH_S0pe);
     /*p29.PEBY*/ wire PEBY_CLKp = not(RACA_LATCH_SPPIXB);
     /*p29.NYBE*/ wire NYBE_CLKn = not(PEBY_CLKp);
     /*p29.PUCO*/ wire PUCO_CLKb = not(NYBE_CLKn);
@@ -108,10 +97,6 @@ void SpriteFetcher::tick(SchematicTop& top) {
   }
 
   {
-#if 0
-    wire SPRITE_READ = RENDERING && (TULY_SFETCH_S1 || VONU_SFETCH_S1_D4);
-#endif
-
     /*p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not(top.XYMO_LCDC_SPSIZE);
     /*p29.WUKY*/ wire _WUKY_FLIP_Y = not(top.YZOS_SPRITE_X6());
 
@@ -147,10 +132,10 @@ SignalHash SpriteFetcher::commit() {
   SignalHash hash;
 
   /*p27.TAKA*/ hash << TAKA_SFETCH_RUNNINGp.commit_latch();
-  /*p27.SOBU*/ hash << SOBU_SPRITE_FETCH_TRIG_A.commit_reg();
-  /*p27.SUDA*/ hash << SUDA_SPRITE_FETCH_TRIG_B.commit_reg();
+  /*p27.SOBU*/ hash << SOBU_SPRITE_FETCH_A.commit_reg();
+  /*p27.SUDA*/ hash << SUDA_SPRITE_FETCH_B.commit_reg();
 
-  /*p29.TOXE*/ hash << TOXE_SFETCH_S0_D0.commit_reg();
+  /*p29.TOXE*/ hash << TOXE_SFETCH_S0.commit_reg();
   /*p29.TULY*/ hash << TULY_SFETCH_S1.commit_reg();
   /*p29.TESE*/ hash << TESE_SFETCH_S2.commit_reg();
   /*p29.TOBU*/ hash << TOBU_SFETCH_S1_D2.commit_reg();
@@ -187,7 +172,7 @@ SignalHash SpriteFetcher::commit() {
 void dump_regs(TextPainter& text_painter) {
   text_painter.dprintf("----- SPR_REG -----\n");
 
-  TOXE_SFETCH_S0_D0.dump(text_painter, "TOXE_SFETCH_S0_D0    ");
+  TOXE_SFETCH_S0.dump(text_painter, "TOXE_SFETCH_S0    ");
   TULY_SFETCH_S1.dump(text_painter, "TULY_SFETCH_S1    ");
   TESE_SFETCH_S2.dump(text_painter, "TESE_SFETCH_S2    ");
   TOBU_SFETCH_S1_D2.dump(text_painter, "TOBU_SFETCH_S1_D2  ");

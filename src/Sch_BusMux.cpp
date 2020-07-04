@@ -93,6 +93,19 @@ using namespace Schematics;
 void BusMux::tick(SchematicTop& top) {
 
   {
+    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
+    /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
+    /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
+    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
+    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
+    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
+    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
+    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
+
+    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(ZEME_AxCxExGx, CUNU_RSTn, top.CPU_PIN5);
+  }
+
+  {
     /*p28.GARO*/ wire GARO_A0n = not(top.CPU_PIN_A00);
     /*p28.WACU*/ wire WACU_A1n = not(top.CPU_PIN_A01);
     /*p28.GOSE*/ wire GOSE_A2n = not(top.CPU_PIN_A02);
@@ -132,10 +145,9 @@ void BusMux::tick(SchematicTop& top) {
     /*p28.APAR*/ wire APAR_PPU_OAM_RDn = not(top.ACYL_SCANNINGp());
     /*p04.DUGA*/ wire DUGA_DMA_OAM_RDn = not(top.MATU_DMA_RUNNINGp()); // so if dma happens during oam parse, both drive the address line - bus conflict?
 
-    wire EXT_P10_B = 0;
-    /*p28.WEFE*/ wire WEFE_P10_Bn = not(EXT_P10_B);
-    /*p28.WUWE*/ wire WUWE_P10_Bn = not(EXT_P10_B);
-    /*p28.GEFY*/ wire GEFY_P10_Bn = not(EXT_P10_B);
+    /*p28.WEFE*/ wire WEFE_P10_Bn = not(top.JOY_PIN_P10_B);
+    /*p28.WUWE*/ wire WUWE_P10_Bn = not(top.JOY_PIN_P10_B);
+    /*p28.GEFY*/ wire GEFY_P10_Bn = not(top.JOY_PIN_P10_B);
     /*p28.GECA*/ wire GECA_P10_Bp = not(WEFE_P10_Bn);
     /*p28.WYDU*/ wire WYDU_P10_Bp = not(WEFE_P10_Bn);
 
@@ -156,20 +168,6 @@ void BusMux::tick(SchematicTop& top) {
     top.OAM_PIN_A5.set(YMEV_OAM_A5p);
     top.OAM_PIN_A6.set(XEMU_OAM_A6p);
     top.OAM_PIN_A7.set(YZET_OAM_A7p);
-  }
-
-  {
-    
-    /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
-    /*p01.DULA*/ wire DULA_RSTp = not(ALUR_RSTn);
-    /*p01.CUNU*/ wire CUNU_RSTn = not(DULA_RSTp);
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-
-    /*p04.MAKA*/ MAKA_FROM_CPU5_SYNC.set(ZEME_AxCxExGx, CUNU_RSTn, top.CPU_PIN5);
   }
 
   {
@@ -600,6 +598,92 @@ void BusMux::tick(SchematicTop& top) {
   }
 
   {
+    // So does this mean that if the CPU writes to the external bus during dma, that data
+    // will actually end up in oam?
+
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.LEVO*/ wire LEVO_8000_9FFFp = not(TEXO_8000_9FFFn);
+    /*p08.LAGU*/ wire LAGU = or(and(top.CPU_PIN_RD, LEVO_8000_9FFFp), top.CPU_PIN_WR);
+    /*p08.LYWE*/ wire LYWE = not(LAGU);
+    /*p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor(TEXO_8000_9FFFn, top.UMUT_MODE_DBG1p());
+    /*p08.MOTY*/ wire MOTY_CPU_EXT_RD = or(MOCA_DBG_EXT_RD, LYWE);
+
+    /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
+    /*p08.REDU*/ wire REDU_CPU_RD = not(TEDO_CPU_RD);
+    /*p08.RORU*/ wire RORU_IBUS_TO_EBUSn = mux2_p(REDU_CPU_RD, MOTY_CPU_EXT_RD, top.UNOR_MODE_DBG2p());
+
+    /*p08.LULA*/ wire LULA_IBUS_TO_EBUSp = not(RORU_IBUS_TO_EBUSn);
+    top.EXT_PIN_D0_B.set(LULA_IBUS_TO_EBUSp);
+    top.EXT_PIN_D1_B.set(LULA_IBUS_TO_EBUSp);
+    top.EXT_PIN_D2_B.set(LULA_IBUS_TO_EBUSp);
+    top.EXT_PIN_D3_B.set(LULA_IBUS_TO_EBUSp);
+    top.EXT_PIN_D4_B.set(LULA_IBUS_TO_EBUSp);
+    top.EXT_PIN_D5_B.set(LULA_IBUS_TO_EBUSp);
+    top.EXT_PIN_D6_B.set(LULA_IBUS_TO_EBUSp);
+    top.EXT_PIN_D7_B.set(LULA_IBUS_TO_EBUSp);
+
+    /*p25.RUXA*/ top.EXT_PIN_D0_A.set(nand(top.CPU_TRI_D0, LULA_IBUS_TO_EBUSp));
+    /*p25.RUJA*/ top.EXT_PIN_D1_A.set(nand(top.CPU_TRI_D1, LULA_IBUS_TO_EBUSp));
+    /*p25.RABY*/ top.EXT_PIN_D2_A.set(nand(top.CPU_TRI_D2, LULA_IBUS_TO_EBUSp));
+    /*p25.RERA*/ top.EXT_PIN_D3_A.set(nand(top.CPU_TRI_D3, LULA_IBUS_TO_EBUSp));
+    /*p25.RORY*/ top.EXT_PIN_D4_A.set(nand(top.CPU_TRI_D4, LULA_IBUS_TO_EBUSp));
+    /*p25.RYVO*/ top.EXT_PIN_D5_A.set(nand(top.CPU_TRI_D5, LULA_IBUS_TO_EBUSp));
+    /*p25.RAFY*/ top.EXT_PIN_D6_A.set(nand(top.CPU_TRI_D6, LULA_IBUS_TO_EBUSp));
+    /*p25.RAVU*/ top.EXT_PIN_D7_A.set(nand(top.CPU_TRI_D7, LULA_IBUS_TO_EBUSp));
+
+    /*p08.RUNE*/ top.EXT_PIN_D0_D.set(nor(top.CPU_TRI_D0, RORU_IBUS_TO_EBUSn));
+    /*p08.RYPU*/ top.EXT_PIN_D1_D.set(nor(top.CPU_TRI_D1, RORU_IBUS_TO_EBUSn));
+    /*p08.SULY*/ top.EXT_PIN_D2_D.set(nor(top.CPU_TRI_D2, RORU_IBUS_TO_EBUSn));
+    /*p08.SEZE*/ top.EXT_PIN_D3_D.set(nor(top.CPU_TRI_D3, RORU_IBUS_TO_EBUSn));
+    /*p08.RESY*/ top.EXT_PIN_D4_D.set(nor(top.CPU_TRI_D4, RORU_IBUS_TO_EBUSn));
+    /*p08.TAMU*/ top.EXT_PIN_D5_D.set(nor(top.CPU_TRI_D5, RORU_IBUS_TO_EBUSn));
+    /*p08.ROGY*/ top.EXT_PIN_D6_D.set(nor(top.CPU_TRI_D6, RORU_IBUS_TO_EBUSn));
+    /*p08.RYDA*/ top.EXT_PIN_D7_D.set(nor(top.CPU_TRI_D7, RORU_IBUS_TO_EBUSn));
+  }
+
+  {
+    // External data bus to internal data bus
+    // SOMA01 << LAVO04
+    // SOMA02 nc
+    // SOMA03 << D0_C
+    // SOMA04 nc
+    // SOMA05 nc
+    // SOMA06 nc
+    // SOMA07 >> RYMA04
+    // SOMA08 nc
+    // SOMA09 == nc
+
+    // Is this actually like a pass gate? We already know the latch cells, and this is bigger than those.
+
+    /*p08.SORE*/ wire SORE_0000_7FFFp = not(top.CPU_PIN_A15);
+    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(top.CPU_PIN_A13, top.CPU_PIN_A14, SORE_0000_7FFFp);
+    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (top.CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
+    /*p08.LAVO*/ wire LAVO_LATCH_CPU_DATAp = nand(top.CPU_PIN_RD, TEXO_8000_9FFFn, top.CPU_PIN5);
+
+    /*p08.SOMA*/ SOMA_EXT_DATA_LATCH_00.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D0_C);
+    /*p08.RONY*/ RONY_EXT_DATA_LATCH_01.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D1_C);
+    /*p08.RAXY*/ RAXY_EXT_DATA_LATCH_02.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D2_C);
+    /*p08.SELO*/ SELO_EXT_DATA_LATCH_03.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D3_C);
+    /*p08.SODY*/ SODY_EXT_DATA_LATCH_04.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D4_C);
+    /*p08.SAGO*/ SAGO_EXT_DATA_LATCH_05.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D5_C);
+    /*p08.RUPA*/ RUPA_EXT_DATA_LATCH_06.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D6_C);
+    /*p08.SAZY*/ SAZY_EXT_DATA_LATCH_07.tp_latch(LAVO_LATCH_CPU_DATAp, top.EXT_PIN_D7_C);
+
+    // RYMA 6-rung green tribuf
+
+    /*p08.RYMA*/ top.CPU_TRI_D0.set_tribuf(LAVO_LATCH_CPU_DATAp, SOMA_EXT_DATA_LATCH_00);
+    /*p08.RUVO*/ top.CPU_TRI_D1.set_tribuf(LAVO_LATCH_CPU_DATAp, RONY_EXT_DATA_LATCH_01);
+    /*p08.RYKO*/ top.CPU_TRI_D2.set_tribuf(LAVO_LATCH_CPU_DATAp, RAXY_EXT_DATA_LATCH_02);
+    /*p08.TAVO*/ top.CPU_TRI_D3.set_tribuf(LAVO_LATCH_CPU_DATAp, SELO_EXT_DATA_LATCH_03);
+    /*p08.TEPE*/ top.CPU_TRI_D4.set_tribuf(LAVO_LATCH_CPU_DATAp, SODY_EXT_DATA_LATCH_04);
+    /*p08.SAFO*/ top.CPU_TRI_D5.set_tribuf(LAVO_LATCH_CPU_DATAp, SAGO_EXT_DATA_LATCH_05);
+    /*p08.SEVU*/ top.CPU_TRI_D6.set_tribuf(LAVO_LATCH_CPU_DATAp, RUPA_EXT_DATA_LATCH_06);
+    /*p08.TAJU*/ top.CPU_TRI_D7.set_tribuf(LAVO_LATCH_CPU_DATAp, SAZY_EXT_DATA_LATCH_07);
+  }
+
+  {
     // Something weird here
     /*p07.TERA*/ wire TERA_BOOT_BITp  = not(top.BOOT_BITn());
     /*p07.TULO*/ wire TULO_ADDR_00XXp = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
@@ -683,6 +767,8 @@ void BusMux::tick(SchematicTop& top) {
 SignalHash BusMux::commit() {
   SignalHash hash;
 
+  hash << MAKA_FROM_CPU5_SYNC.commit_reg();
+
   hash << GEKA_OAM_A0p.reset();
   hash << ZYFO_OAM_A1p.reset();
   hash << YFOT_OAM_A2p.reset();
@@ -691,8 +777,6 @@ SignalHash BusMux::commit() {
   hash << YMEV_OAM_A5p.reset();
   hash << XEMU_OAM_A6p.reset();
   hash << YZET_OAM_A7p.reset();
-
-  hash << MAKA_FROM_CPU5_SYNC.commit_reg();
 
   hash << CPU_ADDR_LATCH_00.commit_latch();
   hash << CPU_ADDR_LATCH_01.commit_latch();
@@ -710,6 +794,15 @@ SignalHash BusMux::commit() {
   hash << CPU_ADDR_LATCH_13.commit_latch();
   hash << CPU_ADDR_LATCH_14.commit_latch();
 
+  hash << SOMA_EXT_DATA_LATCH_00.commit_latch();
+  hash << RONY_EXT_DATA_LATCH_01.commit_latch();
+  hash << RAXY_EXT_DATA_LATCH_02.commit_latch();
+  hash << SELO_EXT_DATA_LATCH_03.commit_latch();
+  hash << SODY_EXT_DATA_LATCH_04.commit_latch();
+  hash << SAGO_EXT_DATA_LATCH_05.commit_latch();
+  hash << RUPA_EXT_DATA_LATCH_06.commit_latch();
+  hash << SAZY_EXT_DATA_LATCH_07.commit_latch();
+
   hash << XYKY_LATCH_OAM_A0.commit_latch();
   hash << YRUM_LATCH_OAM_A1.commit_latch();
   hash << YSEX_LATCH_OAM_A2.commit_latch();
@@ -718,6 +811,7 @@ SignalHash BusMux::commit() {
   hash << CYRA_LATCH_OAM_A5.commit_latch();
   hash << ZUVE_LATCH_OAM_A6.commit_latch();
   hash << ECED_LATCH_OAM_A7.commit_latch();
+
   hash << YDYV_LATCH_OAM_B0.commit_latch();
   hash << YCEB_LATCH_OAM_B1.commit_latch();
   hash << ZUCA_LATCH_OAM_B2.commit_latch();
@@ -726,6 +820,7 @@ SignalHash BusMux::commit() {
   hash << XAFU_LATCH_OAM_B5.commit_latch();
   hash << YSES_LATCH_OAM_B6.commit_latch();
   hash << ZECA_LATCH_OAM_B7.commit_latch();
+
   hash << YLOR_SPRITE_X0.commit_reg();
   hash << ZYTY_SPRITE_X1.commit_reg();
   hash << ZYVE_SPRITE_X2.commit_reg();
@@ -734,6 +829,7 @@ SignalHash BusMux::commit() {
   hash << BAXO_SPRITE_X5.commit_reg();
   hash << YZOS_SPRITE_X6.commit_reg();
   hash << DEPO_SPRITE_X7.commit_reg();
+
   hash << XUSO_SPRITE_Y0.commit_reg();
   hash << XEGU_SPRITE_Y1.commit_reg();
   hash << YJEX_SPRITE_Y2.commit_reg();

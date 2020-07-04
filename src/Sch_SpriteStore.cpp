@@ -260,8 +260,8 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
     ///*p30.CYKE*/ wire _CYKE_AxxDExxH = not(_XUPY_xBCxxFGx); // inverted clock
     ///*p30.WUDA*/ wire _WUDA_xBCxxFGx = not(_CYKE_AxxDExxH);
 
-    wire EXT_P10_B = 0;
-    /*p28.WEFE*/ wire WEFE_P10_Bn = not(EXT_P10_B);
+    wire JOY_PIN_P10_B = 0;
+    /*p28.WEFE*/ wire WEFE_P10_Bn = not(JOY_PIN_P10_B);
 
     /*p29.XUPY*/ wire XUPY_xBCxxFGx = not(top.WUVU_AxxDExxH());
     /*p30.CYKE*/ wire CYKE_AxxDExxH = not(XUPY_xBCxxFGx);
@@ -285,7 +285,7 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
   // Sprite store getter
 
   {
-    wire EXT_P10_B = 0;
+    wire JOY_PIN_P10_B = 0;
 
     /*p29.WEFU*/ wire STORE0_MATCH = not(STORE0_MATCHn);
     /*p29.GAJA*/ wire STORE1_MATCH = not(STORE1_MATCHn);
@@ -299,7 +299,7 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
 
     // Priority encoder so we fetch the first sprite that matches
 
-    /*p29.GEZE*/ wire STORE0_MATCH_OUT = or(STORE0_MATCH, EXT_P10_B);
+    /*p29.GEZE*/ wire STORE0_MATCH_OUT = or(STORE0_MATCH, JOY_PIN_P10_B);
     /*p29.FUMA*/ wire STORE1_MATCH_OUT = or(STORE1_MATCH, STORE0_MATCH_OUT);
     /*p29.GEDE*/ wire STORE2_MATCH_OUT = or(STORE2_MATCH, STORE1_MATCH_OUT);
     /*p29.WUTO*/ wire STORE3_MATCH_OUT = or(STORE3_MATCH, STORE2_MATCH_OUT);
@@ -309,7 +309,7 @@ void SpriteStoreRegisters::tick(SchematicTop& top) {
     /*p29.FAVO*/ wire STORE7_MATCH_OUT = or(STORE7_MATCH, STORE6_MATCH_OUT);
     /*p29.GYGA*/ wire STORE8_MATCH_OUT = or(STORE8_MATCH, STORE7_MATCH_OUT);
 
-    /*p29.GUVA*/ wire GUVA_SPRITE0_GETp = nor(STORE0_MATCHn, EXT_P10_B);
+    /*p29.GUVA*/ wire GUVA_SPRITE0_GETp = nor(STORE0_MATCHn, JOY_PIN_P10_B);
     /*p29.ENUT*/ wire ENUT_SPRITE1_GETp = nor(STORE1_MATCHn, STORE0_MATCH_OUT);
     /*p29.EMOL*/ wire EMOL_SPRITE2_GETp = nor(STORE2_MATCHn, STORE1_MATCH_OUT);
     /*p29.GYFY*/ wire GYFY_SPRITE3_GETp = nor(STORE3_MATCHn, STORE2_MATCH_OUT);

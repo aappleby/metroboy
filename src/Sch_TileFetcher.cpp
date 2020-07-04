@@ -110,7 +110,7 @@ void TileFetcher::tick(SchematicTop& top) {
 
     // Background map read
 
-    /*p27.VYPO*/ wire VYPO_P10_Bn = not(top.EXT_P10_B);
+    /*p27.VYPO*/ wire VYPO_P10_Bn = not(top.JOY_PIN_P10_B);
 
     /*p27.NAKO*/ wire NAKO_FETCH_S1n = not(MESU_BFETCH_S1.q());
     /*p27.NOFU*/ wire NOFU_FETCH_TILE_AB = not(NYVA_BFETCH_S2.q());
@@ -174,16 +174,16 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p25.WAWE*/ top.VRM_TRI_A02.set_tribuf(XUCY_TILE_READn, top.WIN_Y1());
     /*p25.WOLU*/ top.VRM_TRI_A03.set_tribuf(XUCY_TILE_READn, top.WIN_Y2());
 
-    /*p25.VAPY*/ top.VRM_TRI_A04.set_tribuf(NETA_TILE_READn, top.BG_PIX_B0);
-    /*p25.SEZU*/ top.VRM_TRI_A05.set_tribuf(NETA_TILE_READn, top.BG_PIX_B1);
-    /*p25.VEJY*/ top.VRM_TRI_A06.set_tribuf(NETA_TILE_READn, top.BG_PIX_B2);
-    /*p25.RUSA*/ top.VRM_TRI_A07.set_tribuf(NETA_TILE_READn, top.BG_PIX_B3);
-    /*p25.ROHA*/ top.VRM_TRI_A08.set_tribuf(NETA_TILE_READn, top.BG_PIX_B4);
-    /*p25.RESO*/ top.VRM_TRI_A09.set_tribuf(NETA_TILE_READn, top.BG_PIX_B5);
-    /*p25.SUVO*/ top.VRM_TRI_A10.set_tribuf(NETA_TILE_READn, top.BG_PIX_B6);
-    /*p25.TOBO*/ top.VRM_TRI_A11.set_tribuf(NETA_TILE_READn, top.BG_PIX_B7);
+    /*p25.VAPY*/ top.VRM_TRI_A04.set_tribuf(NETA_TILE_READn, top.RAWU_BG_PIX_B0);
+    /*p25.SEZU*/ top.VRM_TRI_A05.set_tribuf(NETA_TILE_READn, top.POZO_BG_PIX_B1);
+    /*p25.VEJY*/ top.VRM_TRI_A06.set_tribuf(NETA_TILE_READn, top.PYZO_BG_PIX_B2);
+    /*p25.RUSA*/ top.VRM_TRI_A07.set_tribuf(NETA_TILE_READn, top.POXA_BG_PIX_B3);
+    /*p25.ROHA*/ top.VRM_TRI_A08.set_tribuf(NETA_TILE_READn, top.PULO_BG_PIX_B4);
+    /*p25.RESO*/ top.VRM_TRI_A09.set_tribuf(NETA_TILE_READn, top.POJU_BG_PIX_B5);
+    /*p25.SUVO*/ top.VRM_TRI_A10.set_tribuf(NETA_TILE_READn, top.POWY_BG_PIX_B6);
+    /*p25.TOBO*/ top.VRM_TRI_A11.set_tribuf(NETA_TILE_READn, top.PYJU_BG_PIX_B7);
 
-    /*p25.VUZA*/ wire VUZA_TILE_BANKp = nor(top.WEXU_LCDC_BGTILE, top.BG_PIX_B7); // register reused
+    /*p25.VUZA*/ wire VUZA_TILE_BANKp = nor(top.WEXU_LCDC_BGTILE, top.PYJU_BG_PIX_B7); // register reused
     /*p25.VURY*/ top.VRM_TRI_A12.set_tribuf(NETA_TILE_READn, VUZA_TILE_BANKp);
   }
 
@@ -204,7 +204,7 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p32.AJAR*/ wire AJAR_LATCH_BG_PIX_Bn = not(LESO_LATCH_BG_PIX_Bp);
     /*p32.LABU*/ wire LABU_LATCH_BG_PIX_Bp = not(AJAR_LATCH_BG_PIX_Bn);
 
-    /*p27.VYPO*/ wire VYPO_P10_Bn = not(top.EXT_P10_B);
+    /*p27.VYPO*/ wire VYPO_P10_Bn = not(top.JOY_PIN_P10_B);
 
     // Clock polarity wrong? Check regs on die.
 
@@ -222,23 +222,23 @@ void TileFetcher::tick(SchematicTop& top) {
     // BFETCH_100 - LOMA_BG_LATCHn = 1;
     // BFETCH_101 - LOMA_BG_LATCHn = 1;
 
-    /*p32.LEGU*/ top.BG_PIX_A0.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D0);
-    /*p32.NUDU*/ top.BG_PIX_A1.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D1);
-    /*p32.MUKU*/ top.BG_PIX_A2.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D2);
-    /*p32.LUZO*/ top.BG_PIX_A3.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D3);
-    /*p32.MEGU*/ top.BG_PIX_A4.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D4);
-    /*p32.MYJY*/ top.BG_PIX_A5.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D5);
-    /*p32.NASA*/ top.BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D6);
-    /*p32.NEFO*/ top.BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D7);
+    /*p32.LEGU*/ top.LEGU_BG_PIX_A0.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D0);
+    /*p32.NUDU*/ top.NUDU_BG_PIX_A1.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D1);
+    /*p32.MUKU*/ top.MUKU_BG_PIX_A2.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D2);
+    /*p32.LUZO*/ top.LUZO_BG_PIX_A3.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D3);
+    /*p32.MEGU*/ top.MEGU_BG_PIX_A4.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D4);
+    /*p32.MYJY*/ top.MYJY_BG_PIX_A5.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D5);
+    /*p32.NASA*/ top.NASA_BG_PIX_A6.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D6);
+    /*p32.NEFO*/ top.NEFO_BG_PIX_A7.set(LOMA_LATCH_BG_PIX_Ap, top.VRM_TRI_D7);
 
-    /*p32.RAWU*/ top.BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D0);
-    /*p32.POZO*/ top.BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D1);
-    /*p32.PYZO*/ top.BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D2);
-    /*p32.POXA*/ top.BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D3);
-    /*p32.PULO*/ top.BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D4);
-    /*p32.POJU*/ top.BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D5);
-    /*p32.POWY*/ top.BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D6);
-    /*p32.PYJU*/ top.BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D7);
+    /*p32.RAWU*/ top.RAWU_BG_PIX_B0.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D0);
+    /*p32.POZO*/ top.POZO_BG_PIX_B1.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D1);
+    /*p32.PYZO*/ top.PYZO_BG_PIX_B2.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D2);
+    /*p32.POXA*/ top.POXA_BG_PIX_B3.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D3);
+    /*p32.PULO*/ top.PULO_BG_PIX_B4.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D4);
+    /*p32.POJU*/ top.POJU_BG_PIX_B5.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D5);
+    /*p32.POWY*/ top.POWY_BG_PIX_B6.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D6);
+    /*p32.PYJU*/ top.PYJU_BG_PIX_B7.set(LABU_LATCH_BG_PIX_Bp, VYPO_P10_Bn, top.VRM_TRI_D7);
   }
 
 

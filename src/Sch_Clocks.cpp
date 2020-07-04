@@ -23,7 +23,7 @@ ADYK APUK ALEF AFUR
 
 //-----------------------------------------------------------------------------
 
-void ClockRegisters::tick(const SchematicTop& top) {
+void ClockRegisters::tick(SchematicTop& top) {
   ///*p01.ARYS*/ wire ARYS_xBxDxFxH = not(ext_pins.CLK); // ignoring the deglitcher here
   ///*p01.AVET*/ wire AVET_AxCxExGx = ext_pins.CLK;
 
@@ -62,22 +62,12 @@ void ClockRegisters::tick(const SchematicTop& top) {
   // cpu_pins.BUKE_ABxxxxxH.set(clk_reg.BUKE_ABxxxxxH);
   // cpu_pins.BOGA_AxCDEFGH.set(clk_reg.BOGA_AxCDEFGH);
   // cpu_pins.BOMA_xBxxxxxx.set(clk_reg.BOMA_xBxxxxxx);
-
-  {
-    wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
-    /*p01.ATYP*/ wire ATYP_xBCDExxx = not(AFUR_xBCDExxx.qn());
-    /*p01.NULE*/ wire NULE_AxxxxFGH = nor(ABOL_CLKREQn, ATYP_xBCDExxx);
-    /*p01.BYRY*/ wire BYRY_xBCDExxx = not(NULE_AxxxxFGH);
-    /*p01.BUDE*/ wire BUDE_AxxxxFGH = not(BYRY_xBCDExxx);
-    /* PIN_75 */ PIN_PHI.set(BUDE_AxxxxFGH);
-  }
 }
 
 //-----------------------------------------------------------------------------
 
 SignalHash ClockRegisters::commit() {
   SignalHash hash;
-  /* PIN_75 */ hash << PIN_PHI.commit_pinout(); // <- BUDE/BEVA
 
   hash << AFUR_xBCDExxx.commit_duo();
   hash << ALEF_xxCDEFxx.commit_duo();

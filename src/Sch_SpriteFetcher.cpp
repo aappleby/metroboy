@@ -12,7 +12,7 @@ using namespace Schematics;
 //------------------------------------------------------------------------------
 
 void SpriteFetcher::tick(SchematicTop& top) {
-  wire EXT_P10_B = 0;
+  wire JOY_PIN_P10_B = 0;
 
   //----------------------------------------
   // So this is def the chunk that watches FEPO_STORE_MATCHp and triggers a sprite fetch...
@@ -20,7 +20,7 @@ void SpriteFetcher::tick(SchematicTop& top) {
   // Maybe we should annotate phase starting with the phase 0 = FEPO_MATCH_SYNC goes high?
 
   {
-    /*p27.VYPO*/ wire VYPO_P10_Bn = not(EXT_P10_B);
+    /*p27.VYPO*/ wire VYPO_P10_Bn = not(JOY_PIN_P10_B);
 
     /*p01.ANOS*/ wire ANOS_AxCxExGx = not(top.SYS_PIN_CLK_xBxDxFxH);
     /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
@@ -137,7 +137,7 @@ void SpriteFetcher::tick(SchematicTop& top) {
     /*p29.GOTU*/ top.VRM_TRI_A09.set_tribuf(ABON_SPRITE_READn, top.WYSO_SPRITE_Y5());
     /*p29.GEGU*/ top.VRM_TRI_A10.set_tribuf(ABON_SPRITE_READn, top.XOTE_SPRITE_Y6());
     /*p29.XEHE*/ top.VRM_TRI_A11.set_tribuf(ABON_SPRITE_READn, top.YZAB_SPRITE_Y7());
-    /*p29.DYSO*/ top.VRM_TRI_A12.set_tribuf(ABON_SPRITE_READn, EXT_P10_B);   // sprites always in low half of tile store
+    /*p29.DYSO*/ top.VRM_TRI_A12.set_tribuf(ABON_SPRITE_READn, JOY_PIN_P10_B);   // sprites always in low half of tile store
   }
 }
 

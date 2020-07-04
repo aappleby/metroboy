@@ -84,7 +84,7 @@ void InterruptRegisters::tick(SchematicTop& top) {
     /*p02.TUNY*/ wire TUNY_FF0F_RST3n    = and (SULO,          LUFE_INT_SER_ACKn,  ALUR_RSTn);
     /*p02.TYME*/ wire TYME_FF0F_RST4n    = and (SEME,          LAMO_INT_JOY_ACKn,  ALUR_RSTn);
 
-    /*p02.PESU*/ wire PESU_FF0F_INp = not(top.EXT_P10_B);
+    /*p02.PESU*/ wire PESU_FF0F_INp = not(top.JOY_PIN_P10_B);
 
     /*p02.LOPE*/ LOPE_FF0F_0.set(VYPU_VBLANKp,     MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, PESU_FF0F_INp);
     /*p02.LALU*/ LALU_FF0F_1.set(VOTY_INT_STATp,   MODY_FF0F_SET1n, MOVU_FF0F_RST1n, PESU_FF0F_INp);

@@ -8,7 +8,7 @@ using namespace Schematics;
 
 void JoypadRegisters::tick(SchematicTop& top) {
 
-  Signal BYZO_FF00_RDn;
+  Signal ACAT_FF00_RDp;
   Signal ATOZ_FF00_WRn;
   {
     /*p07.TEDO*/ wire TEDO_CPU_RD = not(top.UJYV_CPU_RD());
@@ -21,16 +21,16 @@ void JoypadRegisters::tick(SchematicTop& top) {
     /*p07.TONA*/ wire TONA_A08n = not(top.CPU_PIN_A08);
     /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
     /*p10.ANAP*/ wire ANAP_0xx00000 = and (AMUS_0xx00000, SYKE_FF00_FFFFp);
-    /*p10.ACAT*/ wire ACAT_FF00_RD = and (TEDO_CPU_RD, ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
 
-    /*p05.BYZO*/ BYZO_FF00_RDn = not(ACAT_FF00_RD);
+    /*p10.ACAT*/ ACAT_FF00_RDp = and (TEDO_CPU_RD,          ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
     /*p10.ATOZ*/ ATOZ_FF00_WRn = nand(TAPU_CPU_WR_xxxxxFGH, ANAP_0xx00000, AKUG_A06n, BYKO_A05n);
   }
 
   {
     /*p01.BALY*/ wire BALY_xBxxxxxx = not(top.BYJU_AxCDEFGH());
     /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
-    /*p02.KERY*/ wire ANY_BUTTON = or(top.EXT_P13_C, top.EXT_P12_C, top.EXT_P11_C, top.EXT_P10_C);
+    /*p02.KERY*/ wire ANY_BUTTON = or(top.JOY_PIN_P13_C, top.JOY_PIN_P12_C, top.JOY_PIN_P11_C, top.JOY_PIN_P10_C);
+
     /*p02.AWOB*/ AWOB_WAKE_CPU.setx(BOGA_AxCDEFGH, ANY_BUTTON);
     // cpu_pins.TO_CPU2.set(WAKE_CPU.q());
   }
@@ -39,6 +39,8 @@ void JoypadRegisters::tick(SchematicTop& top) {
     /*p01.ALUR*/ wire ALUR_RSTn = not(top.AVOR_RSTp());   // this goes all over the place
     /*p01.BALY*/ wire BALY_xBxxxxxx = not(top.BYJU_AxCDEFGH());
     /*p01.BOGA*/ wire BOGA_AxCDEFGH = not(BALY_xBxxxxxx);
+    /*p02.KERY*/ wire ANY_BUTTON = or(top.JOY_PIN_P13_C, top.JOY_PIN_P12_C, top.JOY_PIN_P11_C, top.JOY_PIN_P10_C);
+
     /*p02.BATU*/ JP_GLITCH0.set(BOGA_AxCDEFGH, ALUR_RSTn, ANY_BUTTON);
     /*p02.ACEF*/ JP_GLITCH1.set(BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH0.q());
     /*p02.AGEM*/ JP_GLITCH2.set(BOGA_AxCDEFGH, ALUR_RSTn, JP_GLITCH1.q());
@@ -46,13 +48,13 @@ void JoypadRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p05.KEVU*/ JOYP_L0.setx(BYZO_FF00_RDn, top.EXT_P10_C);
-    /*p05.KAPA*/ JOYP_L1.setx(BYZO_FF00_RDn, top.EXT_P11_C);
-    /*p05.KEJA*/ JOYP_L2.setx(BYZO_FF00_RDn, top.EXT_P12_C);
-    /*p05.KOLO*/ JOYP_L3.setx(BYZO_FF00_RDn, top.EXT_P13_C);
-  }
+    /*p05.BYZO*/ wire BYZO_FF00_RDn = not(ACAT_FF00_RDp);
 
-  {
+    /*p05.KEVU*/ JOYP_L0.setx(BYZO_FF00_RDn, top.JOY_PIN_P10_C);
+    /*p05.KAPA*/ JOYP_L1.setx(BYZO_FF00_RDn, top.JOY_PIN_P11_C);
+    /*p05.KEJA*/ JOYP_L2.setx(BYZO_FF00_RDn, top.JOY_PIN_P12_C);
+    /*p05.KOLO*/ JOYP_L3.setx(BYZO_FF00_RDn, top.JOY_PIN_P13_C);
+
     /*p05.KEMA*/ top.CPU_TRI_D0.set_tribuf(!BYZO_FF00_RDn, JOYP_L0.q());
     /*p05.KURO*/ top.CPU_TRI_D1.set_tribuf(!BYZO_FF00_RDn, JOYP_L1.q());
     /*p05.KUVE*/ top.CPU_TRI_D2.set_tribuf(!BYZO_FF00_RDn, JOYP_L2.q());
@@ -80,18 +82,19 @@ void JoypadRegisters::tick(SchematicTop& top) {
     wire BURO_FF60_0 = 0;
     wire FF60_0n = 1;
 
-    /*p05.KOLE*/ top.EXT_P10_A.set(nand(JOYP_RA.q(), BURO_FF60_0));
-    /*p05.KYBU*/ top.EXT_P10_D.set(nor(JOYP_RA.q(), FF60_0n));
-    /*p05.KYTO*/ top.EXT_P11_A.set(nand(JOYP_LB.q(), BURO_FF60_0));
-    /*p05.KABU*/ top.EXT_P11_D.set(nor(JOYP_LB.q(), FF60_0n));
-    /*p05.KYHU*/ top.EXT_P12_A.set(nand(JOYP_UC.q(), BURO_FF60_0));
-    /*p05.KASY*/ top.EXT_P12_D.set(nor(JOYP_UC.q(), FF60_0n)); // schematic wrong
-    /*p05.KORY*/ top.EXT_P13_A.set(nand(JOYP_DS.q(), BURO_FF60_0));
-    /*p05.KALE*/ top.EXT_P13_D.set(nor(JOYP_DS.q(), FF60_0n));
-    /*p05.KARU*/ top.EXT_P14_A.set(or (!JOYP_UDLR.q(), FF60_0n));
-    /*p05.KARU*/ top.EXT_P14_D.set(JOYP_UDLR.q());
-    /*p05.CELA*/ top.EXT_P15_A.set(or (!JOYP_ABCS.q(), FF60_0n));
-    /*p05.CELA*/ top.EXT_P15_D.set(!JOYP_ABCS.q()); // double check these
+    /*p05.KOLE*/ top.JOY_PIN_P10_A.set(nand(JOYP_RA.q(), BURO_FF60_0));
+    /*p05.KYBU*/ top.JOY_PIN_P10_D.set(nor (JOYP_RA.q(), FF60_0n));
+    /*p05.KYTO*/ top.JOY_PIN_P11_A.set(nand(JOYP_LB.q(), BURO_FF60_0));
+    /*p05.KABU*/ top.JOY_PIN_P11_D.set(nor (JOYP_LB.q(), FF60_0n));
+    /*p05.KYHU*/ top.JOY_PIN_P12_A.set(nand(JOYP_UC.q(), BURO_FF60_0));
+    /*p05.KASY*/ top.JOY_PIN_P12_D.set(nor (JOYP_UC.q(), FF60_0n)); // schematic wrong
+    /*p05.KORY*/ top.JOY_PIN_P13_A.set(nand(JOYP_DS.q(), BURO_FF60_0));
+    /*p05.KALE*/ top.JOY_PIN_P13_D.set(nor (JOYP_DS.q(), FF60_0n));
+
+    /*p05.KARU*/ top.JOY_PIN_P14_A.set(or (!JOYP_UDLR.q(), FF60_0n));
+    /*p05.KARU*/ top.JOY_PIN_P14_D.set(JOYP_UDLR.q());
+    /*p05.CELA*/ top.JOY_PIN_P15_A.set(or (!JOYP_ABCS.q(), FF60_0n));
+    /*p05.CELA*/ top.JOY_PIN_P15_D.set(!JOYP_ABCS.q()); // double check these
   }
 }
 
@@ -144,20 +147,20 @@ void dump_regs(TextPainter& text_painter) {
   AWOB_WAKE_CPU.dump(text_painter, "AWOB_WAKE_CPU    ");
   text_painter.newline();
   text_painter.dprintf("----- JOY_PINS -----\n");
-  text_painter.dprintf("P10 %d:%d:%d:%d\n", EXT_P10_A.a.val, EXT_P10_B.a.val, EXT_P10_C.a.val, EXT_P10_D.a.val);
-  text_painter.dprintf("P11 %d:%d:%d:%d\n", EXT_P11_A.a.val, EXT_P11_B.a.val, EXT_P11_C.a.val, EXT_P11_D.a.val);
-  text_painter.dprintf("P12 %d:%d:%d:%d\n", EXT_P12_A.a.val, EXT_P12_B.a.val, EXT_P12_C.a.val, EXT_P12_D.a.val);
-  text_painter.dprintf("P13 %d:%d:%d:%d\n", EXT_P13_A.a.val, EXT_P13_B.a.val, EXT_P13_C.a.val, EXT_P13_D.a.val);
-  text_painter.dprintf("P14 %d:x:x:%d\n", EXT_P14_A.a.val, EXT_P14_D.a.val);
-  text_painter.dprintf("P15 %d:x:x:%d\n", EXT_P15_A.a.val, EXT_P15_D.a.val);
+  text_painter.dprintf("P10 %d:%d:%d:%d\n", JOY_PIN_P10_A.a.val, JOY_PIN_P10_B.a.val, JOY_PIN_P10_C.a.val, JOY_PIN_P10_D.a.val);
+  text_painter.dprintf("P11 %d:%d:%d:%d\n", JOY_PIN_P11_A.a.val, JOY_PIN_P11_B.a.val, JOY_PIN_P11_C.a.val, JOY_PIN_P11_D.a.val);
+  text_painter.dprintf("P12 %d:%d:%d:%d\n", JOY_PIN_P12_A.a.val, JOY_PIN_P12_B.a.val, JOY_PIN_P12_C.a.val, JOY_PIN_P12_D.a.val);
+  text_painter.dprintf("P13 %d:%d:%d:%d\n", JOY_PIN_P13_A.a.val, JOY_PIN_P13_B.a.val, JOY_PIN_P13_C.a.val, JOY_PIN_P13_D.a.val);
+  text_painter.dprintf("P14 %d:x:x:%d\n", JOY_PIN_P14_A.a.val, JOY_PIN_P14_D.a.val);
+  text_painter.dprintf("P15 %d:x:x:%d\n", JOY_PIN_P15_A.a.val, JOY_PIN_P15_D.a.val);
   text_painter.newline();
 }
 
 void clear_dir() {
   // FIXME still don't know who drives these, so we always set them to 0.
-  EXT_P10_B.set(0);
-  EXT_P11_B.set(0);
-  EXT_P12_B.set(0);
-  EXT_P13_B.set(0);
+  JOY_PIN_P10_B.set(0);
+  JOY_PIN_P11_B.set(0);
+  JOY_PIN_P12_B.set(0);
+  JOY_PIN_P13_B.set(0);
 }
 #endif

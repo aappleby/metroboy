@@ -9,13 +9,11 @@ struct SchematicTop;
 
 struct ClockRegisters {
 
-  void tick(const SchematicTop& top);
+  void tick(SchematicTop& top);
   SignalHash commit();
 
 private:
   friend SchematicTop;
-
-  /* PIN_75 */ PinOut PIN_PHI;    // <- P01.BUDE/BEVA
 
   // Phase generator. These registers tick on _BOTH_EDGES_ of the master clock.
   /*p01.AFUR*/ Reg9_Duo AFUR_xBCDExxx;

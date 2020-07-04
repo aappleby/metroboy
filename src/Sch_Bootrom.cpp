@@ -48,6 +48,14 @@ static const uint8_t DMG_ROM_bin[] = {
 
 void Bootrom::tick(SchematicTop& top) {
 
+  {
+    /*p07.TERA*/ wire TERA_BOOT_BITp  = not(top.BOOT_BITn());
+    /*p07.TULO*/ wire TULO_ADDR_00XXp = nor(top.CPU_PIN_A15, top.CPU_PIN_A14, top.CPU_PIN_A13, top.CPU_PIN_A12, top.CPU_PIN_A11, top.CPU_PIN_A10, top.CPU_PIN_A09, top.CPU_PIN_A08);
+    /*p07.TUTU*/ wire TUTU_ADDR_BOOTp = and (TERA_BOOT_BITp, TULO_ADDR_00XXp);
+    /*p07.TUTU*/ wire TUTU_BOOTp = TUTU_ADDR_BOOTp;
+    top.CPU_PIN_BOOTp.set(TUTU_BOOTp);
+  }
+
   // FF50
   {
     /*p07.TYRO*/ wire ADDR_0x0x0000p = nor(top.CPU_PIN_A07, top.CPU_PIN_A05, top.CPU_PIN_A03, top.CPU_PIN_A02, top.CPU_PIN_A01, top.CPU_PIN_A00);

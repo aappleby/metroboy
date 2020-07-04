@@ -103,23 +103,23 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p32.LUHE*/ wire BG_PIX_A0n = not(top.BG_PIX_A0);
-    /*p32.NOLY*/ wire BG_PIX_A1n = not(top.BG_PIX_A1);
-    /*p32.LEKE*/ wire BG_PIX_A2n = not(top.BG_PIX_A2);
-    /*p32.LOMY*/ wire BG_PIX_A3n = not(top.BG_PIX_A3);
-    /*p32.LALA*/ wire BG_PIX_A4n = not(top.BG_PIX_A4);
-    /*p32.LOXA*/ wire BG_PIX_A5n = not(top.BG_PIX_A5);
-    /*p32.NEZE*/ wire BG_PIX_A6n = not(top.BG_PIX_A6);
-    /*p32.NOBO*/ wire BG_PIX_A7n = not(top.BG_PIX_A7);
+    /*p32.LUHE*/ wire BG_PIX_A0n = not(top.LEGU_BG_PIX_A0);
+    /*p32.NOLY*/ wire BG_PIX_A1n = not(top.NUDU_BG_PIX_A1);
+    /*p32.LEKE*/ wire BG_PIX_A2n = not(top.MUKU_BG_PIX_A2);
+    /*p32.LOMY*/ wire BG_PIX_A3n = not(top.LUZO_BG_PIX_A3);
+    /*p32.LALA*/ wire BG_PIX_A4n = not(top.MEGU_BG_PIX_A4);
+    /*p32.LOXA*/ wire BG_PIX_A5n = not(top.MYJY_BG_PIX_A5);
+    /*p32.NEZE*/ wire BG_PIX_A6n = not(top.NASA_BG_PIX_A6);
+    /*p32.NOBO*/ wire BG_PIX_A7n = not(top.NEFO_BG_PIX_A7);
 
-    /*p32.LAKY*/ wire BG_PIPE_A_SET0 = nand(top.LOZE_PIPE_A_LOAD(), top.BG_PIX_A0);
-    /*p32.NYXO*/ wire BG_PIPE_A_SET1 = nand(top.LOZE_PIPE_A_LOAD(), top.BG_PIX_A1);
-    /*p32.LOTO*/ wire BG_PIPE_A_SET2 = nand(top.LOZE_PIPE_A_LOAD(), top.BG_PIX_A2);
-    /*p32.LYDU*/ wire BG_PIPE_A_SET3 = nand(top.LOZE_PIPE_A_LOAD(), top.BG_PIX_A3);
-    /*p32.MYVY*/ wire BG_PIPE_A_SET4 = nand(top.LOZE_PIPE_A_LOAD(), top.BG_PIX_A4);
-    /*p32.LODO*/ wire BG_PIPE_A_SET5 = nand(top.LOZE_PIPE_A_LOAD(), top.BG_PIX_A5);
-    /*p32.NUTE*/ wire BG_PIPE_A_SET6 = nand(top.LOZE_PIPE_A_LOAD(), top.BG_PIX_A6);
-    /*p32.NAJA*/ wire BG_PIPE_A_SET7 = nand(top.LOZE_PIPE_A_LOAD(), top.BG_PIX_A7);
+    /*p32.LAKY*/ wire BG_PIPE_A_SET0 = nand(top.LOZE_PIPE_A_LOAD(), top.LEGU_BG_PIX_A0);
+    /*p32.NYXO*/ wire BG_PIPE_A_SET1 = nand(top.LOZE_PIPE_A_LOAD(), top.NUDU_BG_PIX_A1);
+    /*p32.LOTO*/ wire BG_PIPE_A_SET2 = nand(top.LOZE_PIPE_A_LOAD(), top.MUKU_BG_PIX_A2);
+    /*p32.LYDU*/ wire BG_PIPE_A_SET3 = nand(top.LOZE_PIPE_A_LOAD(), top.LUZO_BG_PIX_A3);
+    /*p32.MYVY*/ wire BG_PIPE_A_SET4 = nand(top.LOZE_PIPE_A_LOAD(), top.MEGU_BG_PIX_A4);
+    /*p32.LODO*/ wire BG_PIPE_A_SET5 = nand(top.LOZE_PIPE_A_LOAD(), top.MYJY_BG_PIX_A5);
+    /*p32.NUTE*/ wire BG_PIPE_A_SET6 = nand(top.LOZE_PIPE_A_LOAD(), top.NASA_BG_PIX_A6);
+    /*p32.NAJA*/ wire BG_PIPE_A_SET7 = nand(top.LOZE_PIPE_A_LOAD(), top.NEFO_BG_PIX_A7);
 
     /*p32.LOTY*/ wire BG_PIPE_A_RST0 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A0n);
     /*p32.NEXA*/ wire BG_PIPE_A_RST1 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A1n);
@@ -130,7 +130,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
     /*p32.NYHA*/ wire BG_PIPE_A_RST6 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A6n);
     /*p32.NADY*/ wire BG_PIPE_A_RST7 = nand(top.LOZE_PIPE_A_LOAD(), BG_PIX_A7n);
 
-    /*p32.MYDE*/ BG_PIPE_A0.set(top.SACU_CLKPIPEp(), BG_PIPE_A_SET0, BG_PIPE_A_RST0, top.EXT_P10_B);
+    /*p32.MYDE*/ BG_PIPE_A0.set(top.SACU_CLKPIPEp(), BG_PIPE_A_SET0, BG_PIPE_A_RST0, top.JOY_PIN_P10_B);
     /*p32.NOZO*/ BG_PIPE_A1.set(top.SACU_CLKPIPEp(), BG_PIPE_A_SET1, BG_PIPE_A_RST1, BG_PIPE_A0);
     /*p32.MOJU*/ BG_PIPE_A2.set(top.SACU_CLKPIPEp(), BG_PIPE_A_SET2, BG_PIPE_A_RST2, BG_PIPE_A1);
     /*p32.MACU*/ BG_PIPE_A3.set(top.SACU_CLKPIPEp(), BG_PIPE_A_SET3, BG_PIPE_A_RST3, BG_PIPE_A2);
@@ -141,23 +141,23 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
   }
 
   {
-    /*p32.TOSA*/ wire BG_PIX_B0n = not(top.BG_PIX_B0);
-    /*p32.RUCO*/ wire BG_PIX_B1n = not(top.BG_PIX_B1);
-    /*p32.TYCE*/ wire BG_PIX_B2n = not(top.BG_PIX_B2);
-    /*p32.REVY*/ wire BG_PIX_B3n = not(top.BG_PIX_B3);
-    /*p32.RYGA*/ wire BG_PIX_B4n = not(top.BG_PIX_B4);
-    /*p32.RYLE*/ wire BG_PIX_B5n = not(top.BG_PIX_B5);
-    /*p32.RAPU*/ wire BG_PIX_B6n = not(top.BG_PIX_B6);
-    /*p32.SOJA*/ wire BG_PIX_B7n = not(top.BG_PIX_B7);
+    /*p32.TOSA*/ wire BG_PIX_B0n = not(top.RAWU_BG_PIX_B0);
+    /*p32.RUCO*/ wire BG_PIX_B1n = not(top.POZO_BG_PIX_B1);
+    /*p32.TYCE*/ wire BG_PIX_B2n = not(top.PYZO_BG_PIX_B2);
+    /*p32.REVY*/ wire BG_PIX_B3n = not(top.POXA_BG_PIX_B3);
+    /*p32.RYGA*/ wire BG_PIX_B4n = not(top.PULO_BG_PIX_B4);
+    /*p32.RYLE*/ wire BG_PIX_B5n = not(top.POJU_BG_PIX_B5);
+    /*p32.RAPU*/ wire BG_PIX_B6n = not(top.POWY_BG_PIX_B6);
+    /*p32.SOJA*/ wire BG_PIX_B7n = not(top.PYJU_BG_PIX_B7);
 
-    /*p32.TUXE*/ wire BG_PIPE_B_SET0 = nand(top.LUXA_PIPE_B_LOAD(), top.BG_PIX_B0);
-    /*p32.SOLY*/ wire BG_PIPE_B_SET1 = nand(top.LUXA_PIPE_B_LOAD(), top.BG_PIX_B1);
-    /*p32.RUCE*/ wire BG_PIPE_B_SET2 = nand(top.LUXA_PIPE_B_LOAD(), top.BG_PIX_B2);
-    /*p32.RYJA*/ wire BG_PIPE_B_SET3 = nand(top.LUXA_PIPE_B_LOAD(), top.BG_PIX_B3);
-    /*p32.RUTO*/ wire BG_PIPE_B_SET4 = nand(top.LUXA_PIPE_B_LOAD(), top.BG_PIX_B4);
-    /*p32.RAJA*/ wire BG_PIPE_B_SET5 = nand(top.LUXA_PIPE_B_LOAD(), top.BG_PIX_B5);
-    /*p32.RAJO*/ wire BG_PIPE_B_SET6 = nand(top.LUXA_PIPE_B_LOAD(), top.BG_PIX_B6);
-    /*p32.RAGA*/ wire BG_PIPE_B_SET7 = nand(top.LUXA_PIPE_B_LOAD(), top.BG_PIX_B7);
+    /*p32.TUXE*/ wire BG_PIPE_B_SET0 = nand(top.LUXA_PIPE_B_LOAD(), top.RAWU_BG_PIX_B0);
+    /*p32.SOLY*/ wire BG_PIPE_B_SET1 = nand(top.LUXA_PIPE_B_LOAD(), top.POZO_BG_PIX_B1);
+    /*p32.RUCE*/ wire BG_PIPE_B_SET2 = nand(top.LUXA_PIPE_B_LOAD(), top.PYZO_BG_PIX_B2);
+    /*p32.RYJA*/ wire BG_PIPE_B_SET3 = nand(top.LUXA_PIPE_B_LOAD(), top.POXA_BG_PIX_B3);
+    /*p32.RUTO*/ wire BG_PIPE_B_SET4 = nand(top.LUXA_PIPE_B_LOAD(), top.PULO_BG_PIX_B4);
+    /*p32.RAJA*/ wire BG_PIPE_B_SET5 = nand(top.LUXA_PIPE_B_LOAD(), top.POJU_BG_PIX_B5);
+    /*p32.RAJO*/ wire BG_PIPE_B_SET6 = nand(top.LUXA_PIPE_B_LOAD(), top.POWY_BG_PIX_B6);
+    /*p32.RAGA*/ wire BG_PIPE_B_SET7 = nand(top.LUXA_PIPE_B_LOAD(), top.PYJU_BG_PIX_B7);
 
     /*p32.SEJA*/ wire BG_PIPE_B_RST0 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B0n);
     /*p32.SENO*/ wire BG_PIPE_B_RST1 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B1n);
@@ -168,7 +168,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
     /*p32.SUPU*/ wire BG_PIPE_B_RST6 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B6n);
     /*p32.RYJY*/ wire BG_PIPE_B_RST7 = nand(top.LUXA_PIPE_B_LOAD(), BG_PIX_B7n);
 
-    /*p32.TOMY*/ BG_PIPE_B0.set(top.SACU_CLKPIPEp(), BG_PIPE_B_SET0, BG_PIPE_B_RST0, top.EXT_P10_B);
+    /*p32.TOMY*/ BG_PIPE_B0.set(top.SACU_CLKPIPEp(), BG_PIPE_B_SET0, BG_PIPE_B_RST0, top.JOY_PIN_P10_B);
     /*p32.TACA*/ BG_PIPE_B1.set(top.SACU_CLKPIPEp(), BG_PIPE_B_SET1, BG_PIPE_B_RST1, BG_PIPE_B0);
     /*p32.SADY*/ BG_PIPE_B2.set(top.SACU_CLKPIPEp(), BG_PIPE_B_SET2, BG_PIPE_B_RST2, BG_PIPE_B1);
     /*p32.RYSA*/ BG_PIPE_B3.set(top.SACU_CLKPIPEp(), BG_PIPE_B_SET3, BG_PIPE_B_RST3, BG_PIPE_B2);
@@ -207,7 +207,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
         /*p33.NYLU*/ SPR_PIPE_A0 = SPR_PIX_A0;
       }
       else {
-        /*p33.NYLU*/ SPR_PIPE_A0.set(ppu_sig.SACU_CLKPIPEp, 1, 1, EXT_P10_B);
+        /*p33.NYLU*/ SPR_PIPE_A0.set(ppu_sig.SACU_CLKPIPEp, 1, 1, JOY_PIN_P10_B);
       }
 #endif
 
@@ -238,7 +238,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
       /*p33.TABY*/ wire SPR_PIX_A_RST6 = nand(SPRITE_MASK6n, SPR_PIX_A6n);
       /*p33.TULA*/ wire SPR_PIX_A_RST7 = nand(SPRITE_MASK7n, SPR_PIX_A7n);
 
-      /*p33.NYLU*/ SPR_PIPE_A0.set(top.SACU_CLKPIPEp(), SPR_PIX_A_SET0, SPR_PIX_A_RST0, top.EXT_P10_B);
+      /*p33.NYLU*/ SPR_PIPE_A0.set(top.SACU_CLKPIPEp(), SPR_PIX_A_SET0, SPR_PIX_A_RST0, top.JOY_PIN_P10_B);
       /*p33.PEFU*/ SPR_PIPE_A1.set(top.SACU_CLKPIPEp(), SPR_PIX_A_SET1, SPR_PIX_A_RST1, SPR_PIPE_A0);
       /*p33.NATY*/ SPR_PIPE_A2.set(top.SACU_CLKPIPEp(), SPR_PIX_A_SET2, SPR_PIX_A_RST2, SPR_PIPE_A1);
       /*p33.PYJO*/ SPR_PIPE_A3.set(top.SACU_CLKPIPEp(), SPR_PIX_A_SET3, SPR_PIX_A_RST3, SPR_PIPE_A2);
@@ -277,7 +277,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
       /*p33.TUPE*/ wire SPR_PIX_B_RST6 = nand(SPRITE_MASK6n, SPR_PIX_B6n);
       /*p33.XYVE*/ wire SPR_PIX_B_RST7 = nand(SPRITE_MASK7n, SPR_PIX_B7n);
 
-      /*p33.NURO*/ SPR_PIPE_B0.set(top.SACU_CLKPIPEp(), SPR_PIX_B_SET0, SPR_PIX_B_RST0, top.EXT_P10_B);
+      /*p33.NURO*/ SPR_PIPE_B0.set(top.SACU_CLKPIPEp(), SPR_PIX_B_SET0, SPR_PIX_B_RST0, top.JOY_PIN_P10_B);
       /*p33.MASO*/ SPR_PIPE_B1.set(top.SACU_CLKPIPEp(), SPR_PIX_B_SET1, SPR_PIX_B_RST1, SPR_PIPE_B0);
       /*p33.LEFE*/ SPR_PIPE_B2.set(top.SACU_CLKPIPEp(), SPR_PIX_B_SET2, SPR_PIX_B_RST2, SPR_PIPE_B1);
       /*p33.LESU*/ SPR_PIPE_B3.set(top.SACU_CLKPIPEp(), SPR_PIX_B_SET3, SPR_PIX_B_RST3, SPR_PIPE_B2);
@@ -316,7 +316,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
       /*p34.LOWA*/ wire SPRITE_PAL_PIPE_RST6n = nand(SPRITE_MASK6n, LADY);
       /*p34.LUNU*/ wire SPRITE_PAL_PIPE_RST7n = nand(SPRITE_MASK7n, LAFY);
 
-      /*p34.RUGO*/ PAL_PIPE_0.set(top.SACU_CLKPIPEp(), SPRITE_PAL_PIPE_SET0n, SPRITE_PAL_PIPE_RST0n, top.EXT_P10_B);
+      /*p34.RUGO*/ PAL_PIPE_0.set(top.SACU_CLKPIPEp(), SPRITE_PAL_PIPE_SET0n, SPRITE_PAL_PIPE_RST0n, top.JOY_PIN_P10_B);
       /*p34.SATA*/ PAL_PIPE_1.set(top.SACU_CLKPIPEp(), SPRITE_PAL_PIPE_SET1n, SPRITE_PAL_PIPE_RST1n, PAL_PIPE_0);
       /*p34.ROSA*/ PAL_PIPE_2.set(top.SACU_CLKPIPEp(), SPRITE_PAL_PIPE_SET2n, SPRITE_PAL_PIPE_RST2n, PAL_PIPE_1);
       /*p34.SOMY*/ PAL_PIPE_3.set(top.SACU_CLKPIPEp(), SPRITE_PAL_PIPE_SET3n, SPRITE_PAL_PIPE_RST3n, PAL_PIPE_2);
@@ -355,7 +355,7 @@ void PixelPipeRegisters::tick(SchematicTop& top) {
       /*p26.TENA*/ wire MASK_PIPE_RST6 = nand(SPRITE_MASK6n, TAFU);
       /*p26.WUBU*/ wire MASK_PIPE_RST7 = nand(SPRITE_MASK7n, XUHO);
 
-      /*p26.VEZO*/ MASK_PIPE_0.set(top.SACU_CLKPIPEp(), MASK_PIPE_SET0, MASK_PIPE_RST0, top.EXT_P10_B);
+      /*p26.VEZO*/ MASK_PIPE_0.set(top.SACU_CLKPIPEp(), MASK_PIPE_SET0, MASK_PIPE_RST0, top.JOY_PIN_P10_B);
       /*p26.WURU*/ MASK_PIPE_1.set(top.SACU_CLKPIPEp(), MASK_PIPE_SET1, MASK_PIPE_RST1, MASK_PIPE_0);
       /*p26.VOSA*/ MASK_PIPE_2.set(top.SACU_CLKPIPEp(), MASK_PIPE_SET2, MASK_PIPE_RST2, MASK_PIPE_1);
       /*p26.WYFU*/ MASK_PIPE_3.set(top.SACU_CLKPIPEp(), MASK_PIPE_SET3, MASK_PIPE_RST3, MASK_PIPE_2);
@@ -572,8 +572,8 @@ void dump_regs(TextPainter& text_painter) {
   text_painter.newline();
 }
 
-uint8_t bg_pix_a() { return (uint8_t)pack(BG_PIX_A0.q(), BG_PIX_A1.q(), BG_PIX_A2.q(), BG_PIX_A3.q(), BG_PIX_A4.q(), BG_PIX_A5.q(), BG_PIX_A6.q(), BG_PIX_A7.q()); }
-uint8_t bg_pix_b() { return (uint8_t)pack(BG_PIX_B0.q(), BG_PIX_B1.q(), BG_PIX_B2.q(), BG_PIX_B3.q(), BG_PIX_B4.q(), BG_PIX_B5.q(), BG_PIX_B6.q(), BG_PIX_B7.q()); }
+uint8_t bg_pix_a() { return (uint8_t)pack(LEGU_BG_PIX_A0.q(), NUDU_BG_PIX_A1.q(), MUKU_BG_PIX_A2.q(), LUZO_BG_PIX_A3.q(), MEGU_BG_PIX_A4.q(), MYJY_BG_PIX_A5.q(), NASA_BG_PIX_A6.q(), NEFO_BG_PIX_A7.q()); }
+uint8_t bg_pix_b() { return (uint8_t)pack(RAWU_BG_PIX_B0.q(), POZO_BG_PIX_B1.q(), PYZO_BG_PIX_B2.q(), POXA_BG_PIX_B3.q(), PULO_BG_PIX_B4.q(), POJU_BG_PIX_B5.q(), POWY_BG_PIX_B6.q(), PYJU_BG_PIX_B7.q()); }
 uint8_t spr_pix_a() { return (uint8_t)pack(SPR_PIX_A0.q(), SPR_PIX_A1.q(), SPR_PIX_A2.q(), SPR_PIX_A3.q(), SPR_PIX_A4.q(), SPR_PIX_A5.q(), SPR_PIX_A6.q(), SPR_PIX_A7.q()); }
 uint8_t spr_pix_b() { return (uint8_t)pack(SPR_PIX_B0.q(), SPR_PIX_B1.q(), SPR_PIX_B2.q(), SPR_PIX_B3.q(), SPR_PIX_B4.q(), SPR_PIX_B5.q(), SPR_PIX_B6.q(), SPR_PIX_B7.q()); }
 uint8_t bg_pipe_a() { return (uint8_t)pack(BG_PIPE_A0.q(), BG_PIPE_A1.q(), BG_PIPE_A2.q(), BG_PIPE_A3.q(), BG_PIPE_A4.q(), BG_PIPE_A5.q(), BG_PIPE_A6.q(), BG_PIPE_A7.q()); }

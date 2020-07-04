@@ -28,8 +28,22 @@ namespace Schematics {
 struct SchematicTop {
 
   void tick_everything();
-  void tick_vram_pins(SchematicTop& top);
+
+  void tick_vram_pins();
+  void tick_top_regs();
+
   SignalHash commit_everything();
+
+  SignalHash commit_ibus();
+  SignalHash commit_vbus();
+  SignalHash commit_ebus();
+  SignalHash commit_obus();
+
+  SignalHash commit_sys_pins();
+  SignalHash commit_lcd_pins();
+  SignalHash commit_joy_pins();
+
+  SignalHash commit_top_regs();
 
   //-----------------------------------------------------------------------------
   // Debug signals
@@ -49,9 +63,11 @@ struct SchematicTop {
   wire ALEF_xxCDEFxx() const;
   wire APUK_xxxDEFGx() const;
   wire ADYK_xxxxEFGH() const;
+
   wire WUVU_AxxDExxH() const;
   wire VENA_xBCDExxx() const;
   wire WOSU_xxCDxxGH() const;
+
   wire BYJU_AxCDEFGH() const;
 
   //-----------------------------------------------------------------------------
@@ -86,32 +102,32 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Bus mux signals
 
-  /*p28.GEKA*/ wire GEKA_OAM_A0p() const { return bus_mux.GEKA_OAM_A0p; }
-  /*p28.ZYFO*/ wire ZYFO_OAM_A1p() const { return bus_mux.ZYFO_OAM_A1p; }
-  /*p28.YFOT*/ wire YFOT_OAM_A2p() const { return bus_mux.YFOT_OAM_A2p; }
-  /*p28.YFOC*/ wire YFOC_OAM_A3p() const { return bus_mux.YFOC_OAM_A3p; }
-  /*p28.YVOM*/ wire YVOM_OAM_A4p() const { return bus_mux.YVOM_OAM_A4p; }
-  /*p28.YMEV*/ wire YMEV_OAM_A5p() const { return bus_mux.YMEV_OAM_A5p; }
-  /*p28.XEMU*/ wire XEMU_OAM_A6p() const { return bus_mux.XEMU_OAM_A6p; }
-  /*p28.YZET*/ wire YZET_OAM_A7p() const { return bus_mux.YZET_OAM_A7p; }
+  /*p28.GEKA*/ wire GEKA_OAM_A0p() const;
+  /*p28.ZYFO*/ wire ZYFO_OAM_A1p() const;
+  /*p28.YFOT*/ wire YFOT_OAM_A2p() const;
+  /*p28.YFOC*/ wire YFOC_OAM_A3p() const;
+  /*p28.YVOM*/ wire YVOM_OAM_A4p() const;
+  /*p28.YMEV*/ wire YMEV_OAM_A5p() const;
+  /*p28.XEMU*/ wire XEMU_OAM_A6p() const;
+  /*p28.YZET*/ wire YZET_OAM_A7p() const;
 
-  /*p31.YLOR*/ wire YLOR_SPRITE_X0() const { return bus_mux.YLOR_SPRITE_X0;}
-  /*p31.ZYTY*/ wire ZYTY_SPRITE_X1() const { return bus_mux.ZYTY_SPRITE_X1;}
-  /*p31.ZYVE*/ wire ZYVE_SPRITE_X2() const { return bus_mux.ZYVE_SPRITE_X2;}
-  /*p31.ZEZY*/ wire ZEZY_SPRITE_X3() const { return bus_mux.ZEZY_SPRITE_X3;}
-  /*p31.GOMO*/ wire GOMO_SPRITE_X4() const { return bus_mux.GOMO_SPRITE_X4;}
-  /*p31.BAXO*/ wire BAXO_SPRITE_X5() const { return bus_mux.BAXO_SPRITE_X5;}
-  /*p31.YZOS*/ wire YZOS_SPRITE_X6() const { return bus_mux.YZOS_SPRITE_X6;}
-  /*p31.DEPO*/ wire DEPO_SPRITE_X7() const { return bus_mux.DEPO_SPRITE_X7;}
+  /*p31.YLOR*/ wire YLOR_SPRITE_X0() const;
+  /*p31.ZYTY*/ wire ZYTY_SPRITE_X1() const;
+  /*p31.ZYVE*/ wire ZYVE_SPRITE_X2() const;
+  /*p31.ZEZY*/ wire ZEZY_SPRITE_X3() const;
+  /*p31.GOMO*/ wire GOMO_SPRITE_X4() const;
+  /*p31.BAXO*/ wire BAXO_SPRITE_X5() const;
+  /*p31.YZOS*/ wire YZOS_SPRITE_X6() const;
+  /*p31.DEPO*/ wire DEPO_SPRITE_X7() const;
 
-  /*p29.XUSO*/ wire XUSO_SPRITE_Y0() const { return bus_mux.XUSO_SPRITE_Y0; }
-  /*p29.XEGU*/ wire XEGU_SPRITE_Y1() const { return bus_mux.XEGU_SPRITE_Y1; }
-  /*p29.YJEX*/ wire YJEX_SPRITE_Y2() const { return bus_mux.YJEX_SPRITE_Y2; }
-  /*p29.XYJU*/ wire XYJU_SPRITE_Y3() const { return bus_mux.XYJU_SPRITE_Y3; }
-  /*p29.YBOG*/ wire YBOG_SPRITE_Y4() const { return bus_mux.YBOG_SPRITE_Y4; }
-  /*p29.WYSO*/ wire WYSO_SPRITE_Y5() const { return bus_mux.WYSO_SPRITE_Y5; }
-  /*p29.XOTE*/ wire XOTE_SPRITE_Y6() const { return bus_mux.XOTE_SPRITE_Y6; }
-  /*p29.YZAB*/ wire YZAB_SPRITE_Y7() const { return bus_mux.YZAB_SPRITE_Y7; }
+  /*p29.XUSO*/ wire XUSO_SPRITE_Y0() const;
+  /*p29.XEGU*/ wire XEGU_SPRITE_Y1() const;
+  /*p29.YJEX*/ wire YJEX_SPRITE_Y2() const;
+  /*p29.XYJU*/ wire XYJU_SPRITE_Y3() const;
+  /*p29.YBOG*/ wire YBOG_SPRITE_Y4() const;
+  /*p29.WYSO*/ wire WYSO_SPRITE_Y5() const;
+  /*p29.XOTE*/ wire XOTE_SPRITE_Y6() const;
+  /*p29.YZAB*/ wire YZAB_SPRITE_Y7() const;
 
   //-----------------------------------------------------------------------------
   // DMA signals
@@ -139,194 +155,65 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // LCD signals
 
+  wire BYHA_VID_LINE_TRIG_d4n() const;
 
-  wire BYHA_VID_LINE_TRIG_d4n() const {
-    /*p28.ABAF*/ wire ABAF_VID_LINE_d4n = not(lcd_reg.CATU_VID_LINE_d4.q());
-    /*p01.ATAR*/ wire ATAR_VID_RSTp = not(XAPO_VID_RSTn());
-    /*p01.ABEZ*/ wire ABEZ_VID_RSTn = not(ATAR_VID_RSTp);
-    /*p28.BYHA*/ wire BYHA_VID_LINE_TRIG_d4n = and (or (lcd_reg.ANEL_VID_LINE_d6.q(), ABAF_VID_LINE_d4n), ABEZ_VID_RSTn);
-    return BYHA_VID_LINE_TRIG_d4n;
-  }
-
-  wire RUTU_NEW_LINE_d0() const { return lcd_reg.RUTU_NEW_LINE_d0; }
-  wire CATU_VID_LINE_d4() const { return lcd_reg.CATU_VID_LINE_d4; }
-  wire POPU_VBLANK_d4() const { return lcd_reg.POPU_VBLANK_d4; }
-  wire ROPO_LY_MATCH_SYNCp() const { return lcd_reg.ROPO_LY_MATCH_SYNCp; }
-  wire MUWY_Y0() const { return lcd_reg.MUWY_Y0; }
-  wire MYRO_Y1() const { return lcd_reg.MYRO_Y1; }
-  wire LEXA_Y2() const { return lcd_reg.LEXA_Y2; }
-  wire LYDO_Y3() const { return lcd_reg.LYDO_Y3; }
-  wire LOVU_Y4() const { return lcd_reg.LOVU_Y4; }
-  wire LEMA_Y5() const { return lcd_reg.LEMA_Y5; }
-  wire MATO_Y6() const { return lcd_reg.MATO_Y6; }
-  wire LAFO_Y7() const { return lcd_reg.LAFO_Y7; }
+  wire RUTU_NEW_LINE_d0() const;
+  wire CATU_VID_LINE_d4() const;
+  wire POPU_VBLANK_d4() const;
+  wire ROPO_LY_MATCH_SYNCp() const;
+  wire MUWY_Y0() const;
+  wire MYRO_Y1() const;
+  wire LEXA_Y2() const;
+  wire LYDO_Y3() const;
+  wire LOVU_Y4() const;
+  wire LEMA_Y5() const;
+  wire MATO_Y6() const;
+  wire LAFO_Y7() const;
 
   //-----------------------------------------------------------------------------
   // Address decoder signals
 
-  wire WERO_FF40_FF4Fp() const {
-    /*p07.TONA*/ wire TONA_A08n = not(CPU_PIN_A08);
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09);
-    /*p22.XALY*/ wire XALY_0x00xxxxp = nor(CPU_PIN_A07, CPU_PIN_A05, CPU_PIN_A04);
-    /*p07.SYKE*/ wire SYKE_FF00_FFFFp = nor(TUNA_0000_FDFFp, TONA_A08n);
-    /*p22.WUTU*/ wire WUTU_FF40_FF4Fn = nand(SYKE_FF00_FFFFp, CPU_PIN_A06, XALY_0x00xxxxp);
-    /*p22.WERO*/ wire WERO_FF40_FF4Fp = not(WUTU_FF40_FF4Fn);
-    return WERO_FF40_FF4Fp;
-  }
+  wire WERO_FF40_FF4Fp() const;
 
   //-----------------------------------------------------------------------------
   // PPU signals
 
-  /*p21.XYMU*/ wire XYMU_RENDERINGp() const { return ppu_reg.XYMU_RENDERINGp; }
+  wire XYMU_RENDERINGp() const;
+  wire WODU_RENDER_DONEp() const;
+  wire TEVO_FINE_RSTp() const;
+  wire SERE_VRAM_RD() const;
+  wire NYXU_TILE_FETCHER_RSTn() const;
+  wire ACYL_SCANNINGp() const;
+  wire LYRY_BFETCH_DONEp() const;
+  wire LOZE_PIPE_A_LOAD() const;
+  wire LUXA_PIPE_B_LOAD() const;
+  wire SEGU_CLKPIPEn() const;
+  wire SACU_CLKPIPEp() const;
+  wire ROZE_FINE_COUNT_STOPn() const;
+  wire VOTY_INT_STATp() const;
+  wire TEKY_SPRITE_FETCH() const;
+  wire VEKU_SFETCH_RUNNING_RSTn() const;
 
-  /*p21.XEHO*/ wire XEHO_X0() const { return ppu_reg.XEHO_X0; }
-  /*p21.SAVY*/ wire SAVY_X1() const { return ppu_reg.SAVY_X1; }
-  /*p21.XODU*/ wire XODU_X2() const { return ppu_reg.XODU_X2; }
-  /*p21.XYDO*/ wire XYDO_X3() const { return ppu_reg.XYDO_X3; }
-  /*p21.TUHU*/ wire TUHU_X4() const { return ppu_reg.TUHU_X4; }
-  /*p21.TUKY*/ wire TUKY_X5() const { return ppu_reg.TUKY_X5; }
-  /*p21.TAKO*/ wire TAKO_X6() const { return ppu_reg.TAKO_X6; }
-  /*p21.SYBE*/ wire SYBE_X7() const { return ppu_reg.SYBE_X7; }
-
-  wire WODU_RENDER_DONEp() const {
-    /*p21.XUGU*/ wire _XUGU_X_167n = nand(ppu_reg.XEHO_X0.q(), ppu_reg.SAVY_X1.q(), ppu_reg.XODU_X2.q(), ppu_reg.TUKY_X5.q(), ppu_reg.SYBE_X7.q()); // 128 + 32 + 4 + 2 + 1 = 167
-    /*p21.XANO*/ wire _XANO_X_167 = not(_XUGU_X_167n);
-    /*p21.XENA*/ wire _XENA_STORE_MATCHn = not(FEPO_STORE_MATCHp());
-    /*p21.WODU*/ wire WODU_RENDER_DONEp = and (_XENA_STORE_MATCHn, _XANO_X_167);
-    return WODU_RENDER_DONEp;
-  }
-
-  /*p27.TEVO*/ wire TEVO_FINE_RSTp() const { return nor(SEKO_WIN_MATCH_TRIGp(), SUZU(), TAVE_PORCH_DONE_TRIGp()); }
-
-  wire SERE_VRAM_RD() const {
-    // the logic here is kinda weird, still seems to select vram.
-    /*p07.TUNA*/ wire TUNA_0000_FDFFp = nand(CPU_PIN_A15, CPU_PIN_A14, CPU_PIN_A13, CPU_PIN_A12, CPU_PIN_A11, CPU_PIN_A10, CPU_PIN_A09);
-    /*p25.SYRO*/ wire SYRO_FE00_FFFFp = not(TUNA_0000_FDFFp);
-    /*p08.SORE*/ wire SORE_0000_7FFFp = not(CPU_PIN_A15);
-    /*p08.TEVY*/ wire TEVY_8000_9FFFn = or(CPU_PIN_A13, CPU_PIN_A14, SORE_0000_7FFFp);
-    /*p08.TEXO*/ wire TEXO_8000_9FFFn = and (CPU_PIN_ADDR_VALID, TEVY_8000_9FFFn);
-    /*p25.TEFA*/ wire TEFA_8000_9FFFp = nor(SYRO_FE00_FFFFp, TEXO_8000_9FFFn);
-    /*p25.SOSE*/ wire SOSE_8000_9FFFp = and (CPU_PIN_A15, TEFA_8000_9FFFp);
-    /*p25.TUCA*/ wire TUCA_CPU_VRAM_RD = and (SOSE_8000_9FFFp, ABUZ());
-    /*p25.TEFY*/ wire TEFY_MCSn_Cn = not(EXT_PIN_MCSn_C);
-    /*p25.TOLE*/ wire TOLE_VRAM_RD = mux2_p(TEFY_MCSn_Cn, TUCA_CPU_VRAM_RD, TUTO_DBG_VRAMp());
-    /*p25.ROPY*/ wire ROPY_RENDERINGn = not(XYMU_RENDERINGp());
-    /*p25.SERE*/ wire SERE_VRAM_RD = and (TOLE_VRAM_RD, ROPY_RENDERINGn);
-    return SERE_VRAM_RD;
-  }
-
-  wire NYXU_TILE_FETCHER_RSTn() const {
-    /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(NUNY_WIN_MODE_TRIGp());
-    /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
-    /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn = nor(AVAP_SCAN_DONE_TRIGp(), MOSU_WIN_MODE_TRIGp, TEVO_FINE_RSTp());
-    return NYXU_TILE_FETCHER_RSTn;
-  }
-
-  // so dma stops oam scan?
-  wire ACYL_SCANNINGp() const {
-    /*p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not(MATU_DMA_RUNNINGp());
-    /*p28.ACYL*/ wire ACYL_SCANNINGp = and (BOGE_DMA_RUNNINGn, BESU_SCANNINGp());
-    return ACYL_SCANNINGp;
-  }
-
-  wire LYRY_BFETCH_DONEp() const {
-    /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(tile_fetcher.LAXU_BFETCH_S0, tile_fetcher.NYVA_BFETCH_S2, NYXU_TILE_FETCHER_RSTn());
-    /*p27.LYRY*/ wire LYRY_BFETCH_DONEp = not(MOCE_BFETCH_DONEn);
-    return LYRY_BFETCH_DONEp;
-  }
-
-  /*p32.LOZE*/ wire LOZE_PIPE_A_LOAD() const { return not(NYXU_TILE_FETCHER_RSTn()); }
-  
-  /*p32.LUXA*/ wire LUXA_PIPE_B_LOAD() const { return not(NYXU_TILE_FETCHER_RSTn()); }
-
-  wire SEGU_CLKPIPEn() const {
-    /*p01.ANOS*/ wire ANOS_AxCxExGx = not(SYS_PIN_CLK_xBxDxFxH);
-    /*p01.ATAL*/ wire ATAL_xBxDxFxH = not(ANOS_AxCxExGx);
-    /*p01.AZOF*/ wire AZOF_AxCxExGx = not(ATAL_xBxDxFxH);
-    /*p01.ZAXY*/ wire ZAXY_xBxDxFxH = not(AZOF_AxCxExGx);
-    /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
-    /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
-    /*p27.MYVO*/ wire MYVO_AxCxExGx = not(ALET_xBxDxFxH);
-    /*p24.VYBO*/ wire VYBO_PIX_CLK_xBxDxFxH = nor(FEPO_STORE_MATCHp(), WODU_RENDER_DONEp(), MYVO_AxCxExGx);
-    /*p24.TOMU*/ wire TOMU_WIN_HITp = not(SYLO_WIN_HITn());
-    /*p24.SOCY*/ wire SOCY_WIN_HITn = not(TOMU_WIN_HITp);
-    /*p24.TYFA*/ wire TYFA_CLKPIPEp_xBxDxFxH = and (SOCY_WIN_HITn, POKY_PORCH_DONEp(), VYBO_PIX_CLK_xBxDxFxH);
-
-    /*p24.SEGU*/ wire SEGU_CLKPIPEn = not(TYFA_CLKPIPEp_xBxDxFxH);
-    return SEGU_CLKPIPEn;
-  }
-
-  wire SACU_CLKPIPEp() const { return nor(SEGU_CLKPIPEn(), ppu_reg.ROXY_FINE_MATCH_LATCHn); }
-
-  /*p27.ROZE*/ wire ROZE_FINE_COUNT_STOPn() const { return nand(ppu_reg.RYKU_FINE_CNT0, ppu_reg.ROGA_FINE_CNT1, ppu_reg.RUBU_FINE_CNT2); }
-
-  wire VOTY_INT_STATp() const {
-    /*p21.PURE*/ wire PURE_NEW_LINE_d0n = not(RUTU_NEW_LINE_d0());
-    /*p21.SELA*/ wire SELA_NEW_LINE_d0p = not(PURE_NEW_LINE_d0n);
-    /*p21.PARU*/ wire PARU_VBLANKp = not(!POPU_VBLANK_d4());
-    /*p21.TOLU*/ wire TOLU_VBLANKn = not(PARU_VBLANKp);
-    /*p21.TAPA*/ wire TAPA_INT_OAM = and (TOLU_VBLANKn, SELA_NEW_LINE_d0p);
-    /*p21.TARU*/ wire TARU_INT_HBL = and (TOLU_VBLANKn, WODU_RENDER_DONEp());
-    /*p21.SUKO*/ wire SUKO_INT_STATb = amux4(ppu_reg.RUGU_INT_LYC_EN, ROPO_LY_MATCH_SYNCp(),
-                                             ppu_reg.REFE_INT_OAM_EN, TAPA_INT_OAM,
-                                             ppu_reg.RUFO_INT_VBL_EN, PARU_VBLANKp, // polarity?
-                                             ppu_reg.ROXE_INT_HBL_EN, TARU_INT_HBL);
-    /*p21.TUVA*/ wire TUVA_INT_STATn = not(SUKO_INT_STATb);
-    /*p21.VOTY*/ wire VOTY_INT_STATp = not(TUVA_INT_STATn);
-    return VOTY_INT_STATp;
-  }
-
-  wire TEKY_SPRITE_FETCH() const {
-    // This is the topmost "trigger sprite fetch" signal.
-    /*p24.TOMU*/ wire TOMU_WIN_HITp = not(SYLO_WIN_HITn());
-    /*p27.TUKU*/ wire TUKU_WIN_HITn = not(TOMU_WIN_HITp);
-    /*p27.TEKY*/ wire TEKY_SPRITE_FETCH = and (FEPO_STORE_MATCHp(), TUKU_WIN_HITn, LYRY_BFETCH_DONEp(), SOWO_SFETCH_RUNNINGn());
-    return TEKY_SPRITE_FETCH;
-  }
-
-  wire VEKU_SFETCH_RUNNING_RSTn() const {
-    // And this is the topmost "reset sprite fetcher" signal
-    /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(VUSA_PIPE_LOAD_SPRITEn());
-    /*p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn = nor(WUTY_PIPE_LOAD_SPRITEp, TAVE_PORCH_DONE_TRIGp()); // def nor
-    return VEKU_SFETCH_RUNNING_RSTn;
-  }
+  wire XEHO_X0() const;
+  wire SAVY_X1() const;
+  wire XODU_X2() const;
+  wire XYDO_X3() const;
+  wire TUHU_X4() const;
+  wire TUKY_X5() const;
+  wire TAKO_X6() const;
+  wire SYBE_X7() const;
 
   //-----------------------------------------------------------------------------
   // Tile fetcher signals
 
-  /*p24.POKY*/ wire POKY_PORCH_DONEp() const { return tile_fetcher.POKY_PORCH_DONEp; }
-  /*p24.PORY*/ wire PORY_FETCH_DONE_Bp() const { return tile_fetcher.PORY_FETCH_DONE_Bp; }
+  wire POKY_PORCH_DONEp() const;
+  wire PORY_FETCH_DONE_Bp() const;
+  wire LONY_BG_READ_VRAM_LATCHp() const;
+  wire TAVE_PORCH_DONE_TRIGp() const;
 
-  wire LONY_BG_READ_VRAM_LATCHp() const { return tile_fetcher.LONY_BG_READ_VRAM_LATCHp; }
-
-  wire TAVE_PORCH_DONE_TRIGp() const {
-    /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(POKY_PORCH_DONEp());
-    /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_FETCH_DONE_Ap, PORY_FETCH_DONE_Bp());
-    /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
-    return TAVE_PORCH_DONE_TRIGp;
-  }
-
-  /*p23.DATY*/ wire DATY_SCX0() const { return tile_fetcher.DATY_SCX0; }
-  /*p23.DUZU*/ wire DUZU_SCX1() const { return tile_fetcher.DUZU_SCX1; }
-  /*p23.CYXU*/ wire CYXU_SCX2() const { return tile_fetcher.CYXU_SCX2; }
-
-  /*p32.LEGU*/ Reg8 BG_PIX_A0; // 8-rung
-  /*p32.NUDU*/ Reg8 BG_PIX_A1;
-  /*p32.MUKU*/ Reg8 BG_PIX_A2;
-  /*p32.LUZO*/ Reg8 BG_PIX_A3;
-  /*p32.MEGU*/ Reg8 BG_PIX_A4;
-  /*p32.MYJY*/ Reg8 BG_PIX_A5;
-  /*p32.NASA*/ Reg8 BG_PIX_A6;
-  /*p32.NEFO*/ Reg8 BG_PIX_A7; // color wrong on die
-
-  /*p32.RAWU*/ Reg BG_PIX_B0; // 11-rung, also holds tile index during fetch
-  /*p32.POZO*/ Reg BG_PIX_B1; // 11-rung
-  /*p32.PYZO*/ Reg BG_PIX_B2; 
-  /*p32.POXA*/ Reg BG_PIX_B3; 
-  /*p32.PULO*/ Reg BG_PIX_B4; 
-  /*p32.POJU*/ Reg BG_PIX_B5; 
-  /*p32.POWY*/ Reg BG_PIX_B6; 
-  /*p32.PYJU*/ Reg BG_PIX_B7;
+  wire DATY_SCX0() const;
+  wire DUZU_SCX1() const;
+  wire CYXU_SCX2() const;
 
   //-----------------------------------------------------------------------------
   // Sprite scanner signals
@@ -473,7 +360,6 @@ struct SchematicTop {
   // Misc signals
 
   wire BOOT_BITn() const;    // Bootrom
-  wire TUTU_BOOTp() const;   // Bootrom
   wire ASOK_INT_JOYPADp() const; // Joypad
   wire CALY_INT_SERIALp() const { return ser_reg.CALY_INT_SERIALp; }
 
@@ -491,16 +377,34 @@ struct SchematicTop {
   /*p23.WOKY*/ Reg WOKY_LCDC_WINMAP;
   /*p23.XONA*/ Reg XONA_LCDC_EN;
 
+  /*p32.LEGU*/ Reg8 LEGU_BG_PIX_A0; // 8-rung
+  /*p32.NUDU*/ Reg8 NUDU_BG_PIX_A1;
+  /*p32.MUKU*/ Reg8 MUKU_BG_PIX_A2;
+  /*p32.LUZO*/ Reg8 LUZO_BG_PIX_A3;
+  /*p32.MEGU*/ Reg8 MEGU_BG_PIX_A4;
+  /*p32.MYJY*/ Reg8 MYJY_BG_PIX_A5;
+  /*p32.NASA*/ Reg8 NASA_BG_PIX_A6;
+  /*p32.NEFO*/ Reg8 NEFO_BG_PIX_A7; // color wrong on die
+
+  /*p32.RAWU*/ Reg RAWU_BG_PIX_B0; // 11-rung, also holds tile index during fetch
+  /*p32.POZO*/ Reg POZO_BG_PIX_B1; // 11-rung
+  /*p32.PYZO*/ Reg PYZO_BG_PIX_B2; 
+  /*p32.POXA*/ Reg POXA_BG_PIX_B3; 
+  /*p32.PULO*/ Reg PULO_BG_PIX_B4; 
+  /*p32.POJU*/ Reg POJU_BG_PIX_B5; 
+  /*p32.POWY*/ Reg POWY_BG_PIX_B6; 
+  /*p32.PYJU*/ Reg PYJU_BG_PIX_B7;
+
   //----------
 
   PinOut CPU_PIN_WAKE;          // top right wire by itself <- P02.AWOB
 
-  PinIn  CPU_PIN_RD;            // top right port PORTA_00
-  PinIn  CPU_PIN_WR;            // top right port PORTA_01
-  PinOut CPU_PIN_UNOR_DBG2;     // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
+  PinIn  CPU_PIN_RD;            // top right port PORTA_00: ->
+  PinIn  CPU_PIN_WR;            // top right port PORTA_01: ->
+  PinOut CPU_PIN_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2
   PinOut CPU_PIN_SYRO;          // top right port PORTA_03: <- P25.SYRO
   PinOut CPU_PIN_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
-  PinOut CPU_PIN_UMUT_DBG1;     // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
+  PinOut CPU_PIN_UMUT_DBG;      // top right port PORTA_05: <- P07.UMUT_MODE_DBG1
   PinIn  CPU_PIN_ADDR_VALID;    // top right port PORTA_06: -> TEXO, APAP       This is almost definitely "address valid", but not sure of polarity.
 
   PinIn  CPU_PIN_ACK_VBLANK;    // bottom right port PORTB_01: ->        P02.LETY, vblank int ack
@@ -548,22 +452,22 @@ struct SchematicTop {
   PinIn  CPU_PIN_A14;           // bottom right port PORTB_26: -> A14
   PinIn  CPU_PIN_A15;           // bottom right port PORTB_30: -> A15
                                 
-  Tribuf CPU_TRI_D0;            // bottom left port
-  Tribuf CPU_TRI_D1;            // bottom left port
-  Tribuf CPU_TRI_D2;            // bottom left port
-  Tribuf CPU_TRI_D3;            // bottom left port
-  Tribuf CPU_TRI_D4;            // bottom left port
-  Tribuf CPU_TRI_D5;            // bottom left port
-  Tribuf CPU_TRI_D6;            // bottom left port
-  Tribuf CPU_TRI_D7;            // bottom left port
+  Tribuf CPU_TRI_D0;            // bottom left port: <>
+  Tribuf CPU_TRI_D1;            // bottom left port: <>
+  Tribuf CPU_TRI_D2;            // bottom left port: <>
+  Tribuf CPU_TRI_D3;            // bottom left port: <>
+  Tribuf CPU_TRI_D4;            // bottom left port: <>
+  Tribuf CPU_TRI_D5;            // bottom left port: <>
+  Tribuf CPU_TRI_D6;            // bottom left port: <>
+  Tribuf CPU_TRI_D7;            // bottom left port: <>
 
   //----------
   // OAM pins
 
   PinOut OAM_PIN_CLK;
   PinOut OAM_PIN_OE;
-  PinOut OAM_PIN_WR_A; // definitely write
-  PinOut OAM_PIN_WR_B; // definitely write
+  PinOut OAM_PIN_WR_A;
+  PinOut OAM_PIN_WR_B;
 
   PinOut OAM_PIN_A0;
   PinOut OAM_PIN_A1;
@@ -607,11 +511,14 @@ struct SchematicTop {
   //----------
   // Sys pins
 
-  /* PIN_71 */ PinIn SYS_PIN_RST;
-  /* PIN_74 */ PinIn SYS_PIN_CLK_xBxDxFxH;
-  /* PIN_74 */ PinIn SYS_PIN_CLK_GOOD;
-  /* PIN_76 */ PinIn SYS_PIN_T2;
-  /* PIN_77 */ PinIn SYS_PIN_T1;
+  /* PIN_71 */ PinIn  SYS_PIN_RST;
+  /* PIN_74 */ PinIn  SYS_PIN_CLK_xBxDxFxH;
+  /* PIN_74 */ PinIn  SYS_PIN_CLK_GOOD;
+  /* PIN_76 */ PinIn  SYS_PIN_T2;
+  /* PIN_77 */ PinIn  SYS_PIN_T1;
+
+  //----------
+  // Joypad pins
 
   // The B connections on the joypad pins are werid.
   // They seem to be used as an input, or at least I can't find the driver
@@ -622,34 +529,36 @@ struct SchematicTop {
   // ARAR ATAJ ASUZ AJEC AKAJ ANOC BENU BEDA
   // BEKU
 
-  /* PIN_67 */ PinOut EXT_P10_A;   // <- P05.KOLE
-  /* PIN_67 */ PinOut EXT_P10_B;   // -> BENU BEDA ATAJ ASUZ AJEC AKAJ ANOC ARAR
-  /* PIN_67 */ PinIn  EXT_P10_C;   // -> P02.KERY, P05.KEVU
-  /* PIN_67 */ PinOut EXT_P10_D;   // <- P05.KYBU
+  /* PIN_67 */ PinOut JOY_PIN_P10_A;   // <- P05.KOLE
+  /* PIN_67 */ PinOut JOY_PIN_P10_B;   // -> BENU BEDA ATAJ ASUZ AJEC AKAJ ANOC ARAR
+  /* PIN_67 */ PinIn  JOY_PIN_P10_C;   // -> P02.KERY, P05.KEVU
+  /* PIN_67 */ PinOut JOY_PIN_P10_D;   // <- P05.KYBU
 
-  /* PIN_66 */ PinOut EXT_P11_A;   // <- P05.KYTO
-  /* PIN_66 */ PinOut EXT_P11_B;   
-  /* PIN_66 */ PinIn  EXT_P11_C;   // -> P02.KERY, P05.KAPA
-  /* PIN_66 */ PinOut EXT_P11_D;   // <- P05.KABU
+  /* PIN_66 */ PinOut JOY_PIN_P11_A;   // <- P05.KYTO
+  /* PIN_66 */ PinOut JOY_PIN_P11_B;   
+  /* PIN_66 */ PinIn  JOY_PIN_P11_C;   // -> P02.KERY, P05.KAPA
+  /* PIN_66 */ PinOut JOY_PIN_P11_D;   // <- P05.KABU
 
-  /* PIN_65 */ PinOut EXT_P12_A;   // <- P05.KYHU
-  /* PIN_65 */ PinOut EXT_P12_B;   
-  /* PIN_65 */ PinIn  EXT_P12_C;   // -> P02.KERY, P05.KEJA
-  /* PIN_65 */ PinOut EXT_P12_D;   // <- P05.KASY
+  /* PIN_65 */ PinOut JOY_PIN_P12_A;   // <- P05.KYHU
+  /* PIN_65 */ PinOut JOY_PIN_P12_B;   
+  /* PIN_65 */ PinIn  JOY_PIN_P12_C;   // -> P02.KERY, P05.KEJA
+  /* PIN_65 */ PinOut JOY_PIN_P12_D;   // <- P05.KASY
 
-  /* PIN_64 */ PinOut EXT_P13_A;   // <- P05.KORY
-  /* PIN_64 */ PinOut EXT_P13_B;   
-  /* PIN_64 */ PinIn  EXT_P13_C;   // -> P02.KERY, P05.KOLO
-  /* PIN_64 */ PinOut EXT_P13_D;   // <- P05.KALE
+  /* PIN_64 */ PinOut JOY_PIN_P13_A;   // <- P05.KORY
+  /* PIN_64 */ PinOut JOY_PIN_P13_B;   
+  /* PIN_64 */ PinIn  JOY_PIN_P13_C;   // -> P02.KERY, P05.KOLO
+  /* PIN_64 */ PinOut JOY_PIN_P13_D;   // <- P05.KALE
 
-  /* PIN_63 */ PinOut EXT_P14_A;   // <- p05.KARU
-  /* PIN_63 */ PinOut EXT_P14_D;   // <- p05.KELY
+  /* PIN_63 */ PinOut JOY_PIN_P14_A;   // <- p05.KARU
+  /* PIN_63 */ PinOut JOY_PIN_P14_D;   // <- p05.KELY
 
-  /* PIN_62 */ PinOut EXT_P15_A;   // <- p05.CELA
-  /* PIN_62 */ PinOut EXT_P15_D;   // <- p05.COFY
+  /* PIN_62 */ PinOut JOY_PIN_P15_A;   // <- p05.CELA
+  /* PIN_62 */ PinOut JOY_PIN_P15_D;   // <- p05.COFY
 
   //----------
   // Ext bus
+
+  /* PIN_75 */ PinOut EXT_PIN_CLK;     // <- P01.BUDE/BEVA
 
   /* PIN_78 */ PinOut EXT_PIN_WRn_A;   // <- P08.UVER
   /* PIN_78 */ PinIn  EXT_PIN_WRn_C;   // -> P07.UBAL
@@ -768,67 +677,67 @@ struct SchematicTop {
   //----------
   // VRAM bus
 
-  /* PIN_43 */ PinOut EXT_PIN_MCSn_A;   // <- P25.SOKY
-  /* PIN_43 */ PinIn  EXT_PIN_MCSn_C;   // -> P25.TEFY
-  /* PIN_43 */ PinOut EXT_PIN_MCSn_D;   // <- P25.SETY
+  /* PIN_43 */ PinOut VRAM_PIN_MCSn_A;   // <- P25.SOKY
+  /* PIN_43 */ PinIn  VRAM_PIN_MCSn_C;   // -> P25.TEFY
+  /* PIN_43 */ PinOut VRAM_PIN_MCSn_D;   // <- P25.SETY
 
-  /* PIN_45 */ PinOut EXT_PIN_MOEn_A;   // <- P25.REFO
-  /* PIN_45 */ PinIn  EXT_PIN_MOEn_C;   // -> P25.TAVY
-  /* PIN_45 */ PinOut EXT_PIN_MOEn_D;   // <- P25.SAHA
+  /* PIN_45 */ PinOut VRAM_PIN_MOEn_A;   // <- P25.REFO
+  /* PIN_45 */ PinIn  VRAM_PIN_MOEn_C;   // -> P25.TAVY
+  /* PIN_45 */ PinOut VRAM_PIN_MOEn_D;   // <- P25.SAHA
 
-  /* PIN_49 */ PinOut EXT_PIN_MWRn_A;   // <- P25.SYSY
-  /* PIN_49 */ PinIn  EXT_PIN_MWRn_C;   // -> P25.SUDO
-  /* PIN_49 */ PinOut EXT_PIN_MWRn_D;   // <- P25.RAGU
+  /* PIN_49 */ PinOut VRAM_PIN_MWRn_A;   // <- P25.SYSY
+  /* PIN_49 */ PinIn  VRAM_PIN_MWRn_C;   // -> P25.SUDO
+  /* PIN_49 */ PinOut VRAM_PIN_MWRn_D;   // <- P25.RAGU
 
-  /* PIN_34 */ PinOut EXT_PIN_MA00_AD;  // <- P04.ECAL
-  /* PIN_35 */ PinOut EXT_PIN_MA01_AD;  // <- P04.EGEZ
-  /* PIN_36 */ PinOut EXT_PIN_MA02_AD;  // <- P04.FUHE
-  /* PIN_37 */ PinOut EXT_PIN_MA03_AD;  // <- P04.FYZY
-  /* PIN_38 */ PinOut EXT_PIN_MA04_AD;  // <- P04.DAMU
-  /* PIN_39 */ PinOut EXT_PIN_MA05_AD;  // <- P04.DAVA
-  /* PIN_40 */ PinOut EXT_PIN_MA06_AD;  // <- P04.ETEG
-  /* PIN_41 */ PinOut EXT_PIN_MA07_AD;  // <- P04.EREW
-  /* PIN_48 */ PinOut EXT_PIN_MA08_AD;  // <- P04.EVAX
-  /* PIN_47 */ PinOut EXT_PIN_MA09_AD;  // <- P04.DUVE
-  /* PIN_44 */ PinOut EXT_PIN_MA10_AD;  // <- P04.ERAF
-  /* PIN_46 */ PinOut EXT_PIN_MA11_AD;  // <- P04.FUSY
-  /* PIN_42 */ PinOut EXT_PIN_MA12_AD;  // <- P04.EXYF
+  /* PIN_34 */ PinOut VRAM_PIN_MA00_AD;  // <- P04.ECAL
+  /* PIN_35 */ PinOut VRAM_PIN_MA01_AD;  // <- P04.EGEZ
+  /* PIN_36 */ PinOut VRAM_PIN_MA02_AD;  // <- P04.FUHE
+  /* PIN_37 */ PinOut VRAM_PIN_MA03_AD;  // <- P04.FYZY
+  /* PIN_38 */ PinOut VRAM_PIN_MA04_AD;  // <- P04.DAMU
+  /* PIN_39 */ PinOut VRAM_PIN_MA05_AD;  // <- P04.DAVA
+  /* PIN_40 */ PinOut VRAM_PIN_MA06_AD;  // <- P04.ETEG
+  /* PIN_41 */ PinOut VRAM_PIN_MA07_AD;  // <- P04.EREW
+  /* PIN_48 */ PinOut VRAM_PIN_MA08_AD;  // <- P04.EVAX
+  /* PIN_47 */ PinOut VRAM_PIN_MA09_AD;  // <- P04.DUVE
+  /* PIN_44 */ PinOut VRAM_PIN_MA10_AD;  // <- P04.ERAF
+  /* PIN_46 */ PinOut VRAM_PIN_MA11_AD;  // <- P04.FUSY
+  /* PIN_42 */ PinOut VRAM_PIN_MA12_AD;  // <- P04.EXYF
 
-  /* PIN_33 */ PinOut EXT_PIN_MD0_A;    // <- P25.REGE
-  /* PIN_31 */ PinOut EXT_PIN_MD1_A;    // <- P25.RYKY
-  /* PIN_30 */ PinOut EXT_PIN_MD2_A;    // <- P25.RAZO
-  /* PIN_29 */ PinOut EXT_PIN_MD3_A;    // <- P25.RADA
-  /* PIN_28 */ PinOut EXT_PIN_MD4_A;    // <- P25.RYRO
-  /* PIN_27 */ PinOut EXT_PIN_MD5_A;    // <- P25.REVU
-  /* PIN_26 */ PinOut EXT_PIN_MD6_A;    // <- P25.REKU
-  /* PIN_25 */ PinOut EXT_PIN_MD7_A;    // <- P25.RYZE
+  /* PIN_33 */ PinOut VRAM_PIN_MD0_A;    // <- P25.REGE
+  /* PIN_31 */ PinOut VRAM_PIN_MD1_A;    // <- P25.RYKY
+  /* PIN_30 */ PinOut VRAM_PIN_MD2_A;    // <- P25.RAZO
+  /* PIN_29 */ PinOut VRAM_PIN_MD3_A;    // <- P25.RADA
+  /* PIN_28 */ PinOut VRAM_PIN_MD4_A;    // <- P25.RYRO
+  /* PIN_27 */ PinOut VRAM_PIN_MD5_A;    // <- P25.REVU
+  /* PIN_26 */ PinOut VRAM_PIN_MD6_A;    // <- P25.REKU
+  /* PIN_25 */ PinOut VRAM_PIN_MD7_A;    // <- P25.RYZE
 
-  /* PIN_33 */ PinOut EXT_PIN_MD0_B;    // <- P25.ROFA
-  /* PIN_31 */ PinOut EXT_PIN_MD1_B;    // <- P25.ROFA
-  /* PIN_30 */ PinOut EXT_PIN_MD2_B;    // <- P25.ROFA
-  /* PIN_29 */ PinOut EXT_PIN_MD3_B;    // <- P25.ROFA
-  /* PIN_28 */ PinOut EXT_PIN_MD4_B;    // <- P25.ROFA
-  /* PIN_27 */ PinOut EXT_PIN_MD5_B;    // <- P25.ROFA
-  /* PIN_26 */ PinOut EXT_PIN_MD6_B;    // <- P25.ROFA
-  /* PIN_25 */ PinOut EXT_PIN_MD7_B;    // <- P25.ROFA
+  /* PIN_33 */ PinOut VRAM_PIN_MD0_B;    // <- P25.ROFA
+  /* PIN_31 */ PinOut VRAM_PIN_MD1_B;    // <- P25.ROFA
+  /* PIN_30 */ PinOut VRAM_PIN_MD2_B;    // <- P25.ROFA
+  /* PIN_29 */ PinOut VRAM_PIN_MD3_B;    // <- P25.ROFA
+  /* PIN_28 */ PinOut VRAM_PIN_MD4_B;    // <- P25.ROFA
+  /* PIN_27 */ PinOut VRAM_PIN_MD5_B;    // <- P25.ROFA
+  /* PIN_26 */ PinOut VRAM_PIN_MD6_B;    // <- P25.ROFA
+  /* PIN_25 */ PinOut VRAM_PIN_MD7_B;    // <- P25.ROFA
 
-  /* PIN_33 */ PinIn  EXT_PIN_MD0_C;    // -> P25.RODY
-  /* PIN_31 */ PinIn  EXT_PIN_MD1_C;    // -> P25.REBA
-  /* PIN_30 */ PinIn  EXT_PIN_MD2_C;    // -> P25.RYDO
-  /* PIN_29 */ PinIn  EXT_PIN_MD3_C;    // -> P25.REMO
-  /* PIN_28 */ PinIn  EXT_PIN_MD4_C;    // -> P25.ROCE
-  /* PIN_27 */ PinIn  EXT_PIN_MD5_C;    // -> P25.ROPU
-  /* PIN_26 */ PinIn  EXT_PIN_MD6_C;    // -> P25.RETA
-  /* PIN_25 */ PinIn  EXT_PIN_MD7_C;    // -> P25.RAKU
+  /* PIN_33 */ PinIn  VRAM_PIN_MD0_C;    // -> P25.RODY
+  /* PIN_31 */ PinIn  VRAM_PIN_MD1_C;    // -> P25.REBA
+  /* PIN_30 */ PinIn  VRAM_PIN_MD2_C;    // -> P25.RYDO
+  /* PIN_29 */ PinIn  VRAM_PIN_MD3_C;    // -> P25.REMO
+  /* PIN_28 */ PinIn  VRAM_PIN_MD4_C;    // -> P25.ROCE
+  /* PIN_27 */ PinIn  VRAM_PIN_MD5_C;    // -> P25.ROPU
+  /* PIN_26 */ PinIn  VRAM_PIN_MD6_C;    // -> P25.RETA
+  /* PIN_25 */ PinIn  VRAM_PIN_MD7_C;    // -> P25.RAKU
 
-  /* PIN_33 */ PinOut EXT_PIN_MD0_D;    // <- P25.RURA
-  /* PIN_31 */ PinOut EXT_PIN_MD1_D;    // <- P25.RULY
-  /* PIN_30 */ PinOut EXT_PIN_MD2_D;    // <- P25.RARE
-  /* PIN_29 */ PinOut EXT_PIN_MD3_D;    // <- P25.RODU
-  /* PIN_28 */ PinOut EXT_PIN_MD4_D;    // <- P25.RUBE
-  /* PIN_27 */ PinOut EXT_PIN_MD5_D;    // <- P25.RUMU
-  /* PIN_26 */ PinOut EXT_PIN_MD6_D;    // <- P25.RYTY
-  /* PIN_25 */ PinOut EXT_PIN_MD7_D;    // <- P25.RADY
+  /* PIN_33 */ PinOut VRAM_PIN_MD0_D;    // <- P25.RURA
+  /* PIN_31 */ PinOut VRAM_PIN_MD1_D;    // <- P25.RULY
+  /* PIN_30 */ PinOut VRAM_PIN_MD2_D;    // <- P25.RARE
+  /* PIN_29 */ PinOut VRAM_PIN_MD3_D;    // <- P25.RODU
+  /* PIN_28 */ PinOut VRAM_PIN_MD4_D;    // <- P25.RUBE
+  /* PIN_27 */ PinOut VRAM_PIN_MD5_D;    // <- P25.RUMU
+  /* PIN_26 */ PinOut VRAM_PIN_MD6_D;    // <- P25.RYTY
+  /* PIN_25 */ PinOut VRAM_PIN_MD7_D;    // <- P25.RADY
 
   Tribuf VRM_TRI_A00;
   Tribuf VRM_TRI_A01;
@@ -877,7 +786,6 @@ private:
   DmaRegisters dma_reg;
   InterruptRegisters int_reg;
   JoypadRegisters joy_reg;
-
   LcdRegisters lcd_reg;
   PixelPipeRegisters pxp_reg;
   ResetRegisters rst_reg;
@@ -886,19 +794,12 @@ private:
   TimerRegisters tim_reg;
   PpuRegisters ppu_reg;
   WindowRegisters win_reg;
-
   CpuBus  cpu_bus;
-
   TileFetcher tile_fetcher;
   SpriteFetcher sprite_fetcher;
   SpriteScanner sprite_scanner;
-
   BusMux bus_mux;
-
-
   Bootrom bootrom;
-
-
 };
 
 //-----------------------------------------------------------------------------

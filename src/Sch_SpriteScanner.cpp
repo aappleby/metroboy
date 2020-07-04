@@ -18,8 +18,8 @@ void SpriteScanner::tick(SchematicTop& top) {
     /*p29.FEMO*/ wire Y6n = not(top.MATO_Y6());
     /*p29.GUSU*/ wire Y7n = not(top.LAFO_Y7());
 
-    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, top.XUSO_SPRITE_Y0(), top.EXT_P10_B); // are these really connected directly to the pin?
-    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, top.XUSO_SPRITE_Y0(), top.EXT_P10_B);
+    /*p29.ERUC*/ wire YDIFF_S0 = add_c(Y0n, top.XUSO_SPRITE_Y0(), top.JOY_PIN_P10_B); // are these really connected directly to the pin?
+    /*p29.ERUC*/ wire YDIFF_C0 = add_s(Y0n, top.XUSO_SPRITE_Y0(), top.JOY_PIN_P10_B);
     /*p29.ENEF*/ wire YDIFF_S1 = add_s(Y1n, top.XEGU_SPRITE_Y1(), YDIFF_C0);
     /*p29.ENEF*/ wire YDIFF_C1 = add_c(Y1n, top.XEGU_SPRITE_Y1(), YDIFF_C0);
     /*p29.FECO*/ wire YDIFF_S2 = add_s(Y2n, top.YJEX_SPRITE_Y2(), YDIFF_C1);

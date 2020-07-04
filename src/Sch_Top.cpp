@@ -989,13 +989,11 @@ wire SchematicTop::TAKO_X6() const { /*p21.TAKO*/ return ppu_reg.TAKO_X6; }
 wire SchematicTop::SYBE_X7() const { /*p21.SYBE*/ return ppu_reg.SYBE_X7; }
 
 wire SchematicTop::TEVO_FINE_RSTp() const {
-  /*p27.SYLO*/ wire SYLO_WIN_HITn = not(win_reg.RYDY_WIN_HIT_LATCHp);
-  /*p27.TUXY*/ wire _TUXY = nand(win_reg.SOVY_WIN_HIT_SYNC, SYLO_WIN_HITn);
-  /*p27.SUZU*/ wire _SUZU = not(_TUXY);
-  /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(POKY_PORCH_DONEp());
+  
+  /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp);
   /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_FETCH_DONE_Ap, PORY_FETCH_DONE_Bp());
   /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
-  /*p27.TEVO*/ wire TEVO_FINE_RSTp = nor(win_reg.SEKO_WIN_PASS_TRIGp, _SUZU, TAVE_PORCH_DONE_TRIGp);
+  /*p27.TEVO*/ wire TEVO_FINE_RSTp = nor(win_reg.SEKO_WX_MATCHne, win_reg.SUZU_WIN_FIRST_TILEne, TAVE_PORCH_DONE_TRIGp);
   return TEVO_FINE_RSTp;
 }
 
@@ -1022,7 +1020,7 @@ wire SchematicTop::SERE_VRAM_RD() const {
 }
 
 wire SchematicTop::NYXU_TILE_FETCHER_RSTn() const {
-  /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(NUNY_WIN_MODE_TRIGp());
+  /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(NUNY_WX_MATCHpe());
   /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
   /*p27.NYXU*/ wire NYXU_TILE_FETCHER_RSTn = nor(AVAP_RENDER_START_RST(), MOSU_WIN_MODE_TRIGp, TEVO_FINE_RSTp());
   return NYXU_TILE_FETCHER_RSTn;
@@ -1049,12 +1047,12 @@ wire SchematicTop::SEGU_CLKPIPEn() const {
   /*p01.ZEME*/ wire ZEME_AxCxExGx = not(ZAXY_xBxDxFxH);
   /*p01.ALET*/ wire ALET_xBxDxFxH = not(ZEME_AxCxExGx);
   /*p27.MYVO*/ wire MYVO_AxCxExGx = not(ALET_xBxDxFxH);
-  /*p24.VYBO*/ wire VYBO_PIX_CLK_xBxDxFxH = nor(FEPO_STORE_MATCHp(), ppu_reg.WODU_RENDER_DONEp, MYVO_AxCxExGx);
+  /*p24.VYBO*/ wire VYBO_PIX_CLK_xBxDxFxH = nor(sst_reg.FEPO_STORE_MATCHp, ppu_reg.WODU_RENDER_DONEp, MYVO_AxCxExGx);
 
-  /*p27.SYLO*/ wire SYLO_WIN_HITn = not(win_reg.RYDY_WIN_HIT_LATCHp);
+  /*p27.SYLO*/ wire SYLO_WIN_HITn = not(win_reg.RYDY_WIN_FIRST_TILE_A);
   /*p24.TOMU*/ wire TOMU_WIN_HITp = not(SYLO_WIN_HITn);
   /*p24.SOCY*/ wire SOCY_WIN_HITn = not(TOMU_WIN_HITp);
-  /*p24.TYFA*/ wire TYFA_CLKPIPEp_xBxDxFxH = and (SOCY_WIN_HITn, POKY_PORCH_DONEp(), VYBO_PIX_CLK_xBxDxFxH);
+  /*p24.TYFA*/ wire TYFA_CLKPIPEp_xBxDxFxH = and (SOCY_WIN_HITn, tile_fetcher.POKY_PORCH_DONEp, VYBO_PIX_CLK_xBxDxFxH);
 
   /*p24.SEGU*/ wire SEGU_CLKPIPEn = not(TYFA_CLKPIPEp_xBxDxFxH);
   return SEGU_CLKPIPEn;
@@ -1087,17 +1085,17 @@ wire SchematicTop::VOTY_INT_STATp() const {
 
 wire SchematicTop::TEKY_SPRITE_FETCH() const {
   // This is the topmost "trigger sprite fetch" signal.
-  /*p27.SYLO*/ wire SYLO_WIN_HITn = not(win_reg.RYDY_WIN_HIT_LATCHp);
+  /*p27.SYLO*/ wire SYLO_WIN_HITn = not(win_reg.RYDY_WIN_FIRST_TILE_A);
   /*p24.TOMU*/ wire TOMU_WIN_HITp = not(SYLO_WIN_HITn);
   /*p27.TUKU*/ wire TUKU_WIN_HITn = not(TOMU_WIN_HITp);
-  /*p27.TEKY*/ wire TEKY_SPRITE_FETCH = and (FEPO_STORE_MATCHp(), TUKU_WIN_HITn, LYRY_BFETCH_DONEp(), SOWO_SFETCH_RUNNINGn());
+  /*p27.TEKY*/ wire TEKY_SPRITE_FETCH = and (sst_reg.FEPO_STORE_MATCHp, TUKU_WIN_HITn, LYRY_BFETCH_DONEp(), SOWO_SFETCH_RUNNINGn());
   return TEKY_SPRITE_FETCH;
 }
 
 wire SchematicTop::VEKU_SFETCH_RUNNING_RSTn() const {
   // And this is the topmost "reset sprite fetcher" signal
   /*p29.WUTY*/ wire WUTY_PIPE_LOAD_SPRITEp = not(VUSA_PIPE_LOAD_SPRITEn());
-  /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(POKY_PORCH_DONEp());
+  /*p27.ROMO*/ wire ROMO_AFTER_PORCHn = not(tile_fetcher.POKY_PORCH_DONEp);
   /*p27.SUVU*/ wire SUVU_PORCH_ENDn = nand(XYMU_RENDERINGp(), ROMO_AFTER_PORCHn, tile_fetcher.NYKA_FETCH_DONE_Ap, PORY_FETCH_DONE_Bp());
   /*p27.TAVE*/ wire TAVE_PORCH_DONE_TRIGp = not(SUVU_PORCH_ENDn);
   /*p27.VEKU*/ wire VEKU_SFETCH_RUNNING_RSTn = nor(WUTY_PIPE_LOAD_SPRITEp, TAVE_PORCH_DONE_TRIGp); // def nor
@@ -1106,10 +1104,6 @@ wire SchematicTop::VEKU_SFETCH_RUNNING_RSTn() const {
 
 //-----------------------------------------------------------------------------
 // Tile fetcher signals
-
-wire SchematicTop::POKY_PORCH_DONEp() const {
-  /*p24.POKY*/ return tile_fetcher.POKY_PORCH_DONEp;
-}
 
 wire SchematicTop::PORY_FETCH_DONE_Bp() const {
   /*p24.PORY*/ return tile_fetcher.PORY_FETCH_DONE_Bp;
@@ -1234,27 +1228,27 @@ wire SchematicTop::SPR_PIX_B7() const { /*p33.SEGA*/ return sprite_fetcher.SPR_P
 // Window signals
 
 wire SchematicTop::NOCU_WIN_MODEn() const {
-  /*p27.NOCU*/ return not(win_reg.PYNU_WIN_MODE_TRIGA.q());
+  /*p27.NOCU*/ return not(win_reg.PYNU_WIN_MODE_A.q());
 }
 
-wire SchematicTop::NUNY_WIN_MODE_TRIGp() const {
-  /*p27.NUNY*/ return and (win_reg.PYNU_WIN_MODE_TRIGA, !win_reg.NOPA_WIN_MODE_TRIGB);
+wire SchematicTop::NUNY_WX_MATCHpe() const {
+  /*p27.NUNY*/ return win_reg.NUNY_WX_MATCHpe;
 }
 
-wire SchematicTop::WIN_X3() const { return win_reg.WIN_X3; }
-wire SchematicTop::WIN_X4() const { return win_reg.WIN_X4; }
-wire SchematicTop::WIN_X5() const { return win_reg.WIN_X5; }
-wire SchematicTop::WIN_X6() const { return win_reg.WIN_X6; }
-wire SchematicTop::WIN_X7() const { return win_reg.WIN_X7; }
+wire SchematicTop::WYKA_WIN_X3() const { return win_reg.WYKA_WIN_X3; }
+wire SchematicTop::WODY_WIN_X4() const { return win_reg.WODY_WIN_X4; }
+wire SchematicTop::WOBO_WIN_X5() const { return win_reg.WOBO_WIN_X5; }
+wire SchematicTop::WYKO_WIN_X6() const { return win_reg.WYKO_WIN_X6; }
+wire SchematicTop::XOLO_WIN_X7() const { return win_reg.XOLO_WIN_X7; }
 
-wire SchematicTop::WIN_Y0() const { return win_reg.WIN_Y0; }
-wire SchematicTop::WIN_Y1() const { return win_reg.WIN_Y1; }
-wire SchematicTop::WIN_Y2() const { return win_reg.WIN_Y2; }
-wire SchematicTop::WIN_Y3() const { return win_reg.WIN_Y3; }
-wire SchematicTop::WIN_Y4() const { return win_reg.WIN_Y4; }
-wire SchematicTop::WIN_Y5() const { return win_reg.WIN_Y5; }
-wire SchematicTop::WIN_Y6() const { return win_reg.WIN_Y6; }
-wire SchematicTop::WIN_Y7() const { return win_reg.WIN_Y7; }
+wire SchematicTop::VYNO_WIN_Y0() const { return win_reg.VYNO_WIN_Y0; }
+wire SchematicTop::VUJO_WIN_Y1() const { return win_reg.VUJO_WIN_Y1; }
+wire SchematicTop::VYMU_WIN_Y2() const { return win_reg.VYMU_WIN_Y2; }
+wire SchematicTop::TUFU_WIN_Y3() const { return win_reg.TUFU_WIN_Y3; }
+wire SchematicTop::TAXA_WIN_Y4() const { return win_reg.TAXA_WIN_Y4; }
+wire SchematicTop::TOZO_WIN_Y5() const { return win_reg.TOZO_WIN_Y5; }
+wire SchematicTop::TATE_WIN_Y6() const { return win_reg.TATE_WIN_Y6; }
+wire SchematicTop::TEKE_WIN_Y7() const { return win_reg.TEKE_WIN_Y7; }
 
 //------------------------------------------------------------------------------
 // Misc signals

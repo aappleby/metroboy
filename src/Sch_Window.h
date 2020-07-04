@@ -12,8 +12,8 @@ struct WindowRegisters {
   void tick(SchematicTop& gb);
   SignalHash commit();
 
-  int get_wy()   const { return pack(WY0, WY1, WY2, WY3, WY4, WY5, WY6, WY7); }
-  int get_wx()   const { return pack(WX0, WX1, WX2, WX3, WX4, WX5, WX6, WX7); }
+  int get_wy()   const { return pack(NESO_WY0, NYRO_WY1, NAGA_WY2, MELA_WY3, NULO_WY4, NENE_WY5, NUKA_WY6, NAFU_WY7); }
+  int get_wx()   const { return pack(MYPA_WX0, NOFE_WX1, NOKE_WX2, MEBY_WX3, MYPU_WX4, MYCE_WX5, MUVO_WX6, NUKU_WX7); }
 
 private:
   friend SchematicTop;
@@ -21,55 +21,56 @@ private:
   wire ROGE_WY_MATCHp(const SchematicTop& top) const;
   wire NUKO_WX_MATCHp(const SchematicTop& top) const;
 
-  /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_TRIGA;
-  /*p27.RYDY*/ NorLatch RYDY_WIN_HIT_LATCHp;
+  /*p27.NUNY*/ Signal NUNY_WX_MATCHpe;
+  /*p27.SEKO*/ Signal SEKO_WX_MATCHne;
+  /*p27.SUZU*/ Signal SUZU_WIN_FIRST_TILEne;
 
-  /*p27.WYKA*/ Reg17 WIN_X3;
-  /*p27.WODY*/ Reg17 WIN_X4;
-  /*p27.WOBO*/ Reg17 WIN_X5;
-  /*p27.WYKO*/ Reg17 WIN_X6;
-  /*p27.XOLO*/ Reg17 WIN_X7;
+  /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_A;
+  /*p27.RYDY*/ NorLatch RYDY_WIN_FIRST_TILE_A;
 
-  /*p27.VYNO*/ Reg17 WIN_Y0;
-  /*p27.VUJO*/ Reg17 WIN_Y1;
-  /*p27.VYMU*/ Reg17 WIN_Y2;
-  /*p27.TUFU*/ Reg17 WIN_Y3;
-  /*p27.TAXA*/ Reg17 WIN_Y4;
-  /*p27.TOZO*/ Reg17 WIN_Y5;
-  /*p27.TATE*/ Reg17 WIN_Y6;
-  /*p27.TEKE*/ Reg17 WIN_Y7;
+  /*p27.WYKA*/ Reg17 WYKA_WIN_X3;
+  /*p27.WODY*/ Reg17 WODY_WIN_X4;
+  /*p27.WOBO*/ Reg17 WOBO_WIN_X5;
+  /*p27.WYKO*/ Reg17 WYKO_WIN_X6;
+  /*p27.XOLO*/ Reg17 XOLO_WIN_X7;
 
+  /*p27.VYNO*/ Reg17 VYNO_WIN_Y0;
+  /*p27.VUJO*/ Reg17 VUJO_WIN_Y1;
+  /*p27.VYMU*/ Reg17 VYMU_WIN_Y2;
+  /*p27.TUFU*/ Reg17 TUFU_WIN_Y3;
+  /*p27.TAXA*/ Reg17 TAXA_WIN_Y4;
+  /*p27.TOZO*/ Reg17 TOZO_WIN_Y5;
+  /*p27.TATE*/ Reg17 TATE_WIN_Y6;
+  /*p27.TEKE*/ Reg17 TEKE_WIN_Y7;
 
-  /*p27.NOPA*/ Reg17 NOPA_WIN_MODE_TRIGB;
-  /*p27.SOVY*/ Reg17 SOVY_WIN_HIT_SYNC;
+  /*p27.NOPA*/ Reg17 _NOPA_WIN_MODE_B;
+  /*p27.SOVY*/ Reg17 _SOVY_WIN_FIRST_TILE_B;
   /*p27.REJO*/ NorLatch _REJO_WY_MATCH_LATCH;
   /*p27.SARY*/ Reg17 _SARY_WY_MATCH;
-  /*p27.RYFA*/ Reg17 _RYFA_WX_PASS_TRIGA;
-  /*p27.RENE*/ Reg17 _RENE_WX_PASS_TRIGB;
-  /*p27.PYCO*/ Reg17 _PYCO_WIN_MATCH_SYNC1;
-  /*p27.NUNU*/ Reg17 _NUNU_WIN_MATCH_SYNC2;
-
-  /*p27.SEKO*/ Signal SEKO_WIN_PASS_TRIGp;
+  /*p27.RYFA*/ Reg17 _RYFA_WX_MATCHn_A;
+  /*p27.RENE*/ Reg17 _RENE_WX_MATCHn_B;
+  /*p27.PYCO*/ Reg17 _PYCO_WX_MATCH_A;
+  /*p27.NUNU*/ Reg17 _NUNU_WX_MATCH_B;
 
   // FF4A - WY
-  /*p23.NESO*/ Reg9 WY0;
-  /*p23.NYRO*/ Reg9 WY1;
-  /*p23.NAGA*/ Reg9 WY2;
-  /*p23.MELA*/ Reg9 WY3;
-  /*p23.NULO*/ Reg9 WY4;
-  /*p23.NENE*/ Reg9 WY5;
-  /*p23.NUKA*/ Reg9 WY6;
-  /*p23.NAFU*/ Reg9 WY7;
+  /*p23.NESO*/ Reg9 NESO_WY0;
+  /*p23.NYRO*/ Reg9 NYRO_WY1;
+  /*p23.NAGA*/ Reg9 NAGA_WY2;
+  /*p23.MELA*/ Reg9 MELA_WY3;
+  /*p23.NULO*/ Reg9 NULO_WY4;
+  /*p23.NENE*/ Reg9 NENE_WY5;
+  /*p23.NUKA*/ Reg9 NUKA_WY6;
+  /*p23.NAFU*/ Reg9 NAFU_WY7;
 
   // FF4B - WX
-  /*p23.MYPA*/ Reg9 WX0;
-  /*p23.NOFE*/ Reg9 WX1;
-  /*p23.NOKE*/ Reg9 WX2;
-  /*p23.MEBY*/ Reg9 WX3;
-  /*p23.MYPU*/ Reg9 WX4;
-  /*p23.MYCE*/ Reg9 WX5;
-  /*p23.MUVO*/ Reg9 WX6;
-  /*p23.NUKU*/ Reg9 WX7;
+  /*p23.MYPA*/ Reg9 MYPA_WX0;
+  /*p23.NOFE*/ Reg9 NOFE_WX1;
+  /*p23.NOKE*/ Reg9 NOKE_WX2;
+  /*p23.MEBY*/ Reg9 MEBY_WX3;
+  /*p23.MYPU*/ Reg9 MYPU_WX4;
+  /*p23.MYCE*/ Reg9 MYCE_WX5;
+  /*p23.MUVO*/ Reg9 MUVO_WX6;
+  /*p23.NUKU*/ Reg9 NUKU_WX7;
 };
 
 

@@ -44,7 +44,7 @@ void TileFetcher::tick(SchematicTop& top) {
 
   {
     /*p24.LOBY*/ wire LOBY_RENDERINGn = not(top.XYMU_RENDERINGp());
-    /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(top.NUNY_WIN_MODE_TRIGp());
+    /*p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not(top.NUNY_WX_MATCHpe());
     /*p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not(NYFO_WIN_MODE_TRIGn);
     /*p24.NAFY*/ wire NAFY_RENDERING_AND_NOT_WIN_TRIG = nor(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
     /*p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand(LAXU_BFETCH_S0, NYVA_BFETCH_S2, top.NYXU_TILE_FETCHER_RSTn());
@@ -147,16 +147,16 @@ void TileFetcher::tick(SchematicTop& top) {
 
     // Window map read
     /*p25.WUKO*/ wire WUKO_WIN_MAP_READn = not(XEZE_WIN_MAP_READp);
-    /*p27.XEJA*/ top.VRM_TRI_A00.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X3());
-    /*p27.XAMO*/ top.VRM_TRI_A01.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X4());
-    /*p27.XAHE*/ top.VRM_TRI_A02.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X5());
-    /*p27.XULO*/ top.VRM_TRI_A03.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X6());
-    /*p27.WUJU*/ top.VRM_TRI_A04.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_X7());
-    /*p27.VYTO*/ top.VRM_TRI_A05.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y3());
-    /*p27.VEHA*/ top.VRM_TRI_A06.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y4());
-    /*p27.VACE*/ top.VRM_TRI_A07.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y5());
-    /*p27.VOVO*/ top.VRM_TRI_A08.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y6());
-    /*p27.VULO*/ top.VRM_TRI_A09.set_tribuf(WUKO_WIN_MAP_READn, top.WIN_Y7());
+    /*p27.XEJA*/ top.VRM_TRI_A00.set_tribuf(WUKO_WIN_MAP_READn, top.WYKA_WIN_X3());
+    /*p27.XAMO*/ top.VRM_TRI_A01.set_tribuf(WUKO_WIN_MAP_READn, top.WODY_WIN_X4());
+    /*p27.XAHE*/ top.VRM_TRI_A02.set_tribuf(WUKO_WIN_MAP_READn, top.WOBO_WIN_X5());
+    /*p27.XULO*/ top.VRM_TRI_A03.set_tribuf(WUKO_WIN_MAP_READn, top.WYKO_WIN_X6());
+    /*p27.WUJU*/ top.VRM_TRI_A04.set_tribuf(WUKO_WIN_MAP_READn, top.XOLO_WIN_X7());
+    /*p27.VYTO*/ top.VRM_TRI_A05.set_tribuf(WUKO_WIN_MAP_READn, top.TUFU_WIN_Y3());
+    /*p27.VEHA*/ top.VRM_TRI_A06.set_tribuf(WUKO_WIN_MAP_READn, top.TAXA_WIN_Y4());
+    /*p27.VACE*/ top.VRM_TRI_A07.set_tribuf(WUKO_WIN_MAP_READn, top.TOZO_WIN_Y5());
+    /*p27.VOVO*/ top.VRM_TRI_A08.set_tribuf(WUKO_WIN_MAP_READn, top.TATE_WIN_Y6());
+    /*p27.VULO*/ top.VRM_TRI_A09.set_tribuf(WUKO_WIN_MAP_READn, top.TEKE_WIN_Y7());
     /*p27.VEVY*/ top.VRM_TRI_A10.set_tribuf(WUKO_WIN_MAP_READn, top.WOKY_LCDC_WINMAP);
     /*p27.VEZA*/ top.VRM_TRI_A11.set_tribuf(WUKO_WIN_MAP_READn, VYPO_P10_Bn);
     /*p27.VOGU*/ top.VRM_TRI_A12.set_tribuf(WUKO_WIN_MAP_READn, VYPO_P10_Bn);
@@ -170,9 +170,9 @@ void TileFetcher::tick(SchematicTop& top) {
     /*p26.DODE*/ top.VRM_TRI_A03.set_tribuf(BEJE_TILE_READn, ECAB_TILE_Y2S);
 
     /*p25.XONU*/ top.VRM_TRI_A00.set_tribuf(XUCY_TILE_READn, XUHA_FETCH_S2p);
-    /*p25.WUDO*/ top.VRM_TRI_A01.set_tribuf(XUCY_TILE_READn, top.WIN_Y0());
-    /*p25.WAWE*/ top.VRM_TRI_A02.set_tribuf(XUCY_TILE_READn, top.WIN_Y1());
-    /*p25.WOLU*/ top.VRM_TRI_A03.set_tribuf(XUCY_TILE_READn, top.WIN_Y2());
+    /*p25.WUDO*/ top.VRM_TRI_A01.set_tribuf(XUCY_TILE_READn, top.VYNO_WIN_Y0());
+    /*p25.WAWE*/ top.VRM_TRI_A02.set_tribuf(XUCY_TILE_READn, top.VUJO_WIN_Y1());
+    /*p25.WOLU*/ top.VRM_TRI_A03.set_tribuf(XUCY_TILE_READn, top.VYMU_WIN_Y2());
 
     /*p25.VAPY*/ top.VRM_TRI_A04.set_tribuf(NETA_TILE_READn, top.RAWU_BG_PIX_B0);
     /*p25.SEZU*/ top.VRM_TRI_A05.set_tribuf(NETA_TILE_READn, top.POZO_BG_PIX_B1);

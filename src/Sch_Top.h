@@ -206,7 +206,6 @@ struct SchematicTop {
   //-----------------------------------------------------------------------------
   // Tile fetcher signals
 
-  wire POKY_PORCH_DONEp() const;
   wire PORY_FETCH_DONE_Bp() const;
   wire LONY_BG_READ_VRAM_LATCHp() const;
 
@@ -273,22 +272,22 @@ struct SchematicTop {
   // Window signals
 
   wire NOCU_WIN_MODEn() const;
-  wire NUNY_WIN_MODE_TRIGp() const;
+  wire NUNY_WX_MATCHpe() const;
 
-  wire WIN_X3() const;
-  wire WIN_X4() const;
-  wire WIN_X5() const;
-  wire WIN_X6() const;
-  wire WIN_X7() const;
+  wire WYKA_WIN_X3() const;
+  wire WODY_WIN_X4() const;
+  wire WOBO_WIN_X5() const;
+  wire WYKO_WIN_X6() const;
+  wire XOLO_WIN_X7() const;
 
-  wire WIN_Y0() const;
-  wire WIN_Y1() const;
-  wire WIN_Y2() const;
-  wire WIN_Y3() const;
-  wire WIN_Y4() const;
-  wire WIN_Y5() const;
-  wire WIN_Y6() const;
-  wire WIN_Y7() const;
+  wire VYNO_WIN_Y0() const;
+  wire VUJO_WIN_Y1() const;
+  wire VYMU_WIN_Y2() const;
+  wire TUFU_WIN_Y3() const;
+  wire TAXA_WIN_Y4() const;
+  wire TOZO_WIN_Y5() const;
+  wire TATE_WIN_Y6() const;
+  wire TEKE_WIN_Y7() const;
 
   //-----------------------------------------------------------------------------
   // Misc signals

@@ -14,7 +14,7 @@ struct Bootrom {
 private:
   friend struct SchematicTop;
 
-  /*p07.TEPU*/ Reg BOOT_BITn; // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.
+  /*p07.TEPU*/ Reg17 BOOT_BITn; // Starts 0, set to 1 by bootrom which blocks reading 0x0000-0x00FF.
 };
 
 //-----------------------------------------------------------------------------

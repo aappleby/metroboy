@@ -17,9 +17,9 @@ private:
 
   /*p04.LYXE*/ NorLatch LYXE_DMA_LATCHn;
   /*p04.MATU*/ Reg17 MATU_DMA_RUNNINGp; // 17-rung, bottom rung _must_ be DMA_RUNNINGp.
-  /*p04.MYTE*/ Reg MYTE_DMA_DONE;
-  /*p04.LUVY*/ Reg LUVY_DMA_TRIG_d0;
-  /*p04.LENE*/ Reg LENE_DMA_TRIG_d4;
+  /*p04.MYTE*/ Reg17 MYTE_DMA_DONE;
+  /*p04.LUVY*/ Reg17 LUVY_DMA_TRIG_d0;
+  /*p04.LENE*/ Reg17 LENE_DMA_TRIG_d4;
 
   /*p04.NAKY*/ Reg17 DMA_A00;
   /*p04.PYRO*/ Reg17 DMA_A01;

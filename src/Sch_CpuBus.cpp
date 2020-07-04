@@ -25,7 +25,8 @@ using namespace Schematics;
 
 //------------------------------------------------------------------------------
 
-void CpuBus::tick(SchematicTop& top) {
+void SchematicTop::tick_cpu_bus() {
+  auto& top = *this;
 
   {
     /*p01.ABOL*/ wire ABOL_CLKREQn  = not(top.CPU_PIN_CLKREQ);
@@ -150,8 +151,8 @@ if (dbg_sig.VYPO_P10_Bn) bus_out.set_data(
 );
 
 // FIXME
-///*p05.KORE*/ wire P05_NC0 = nand(DBG_FF00_D7, FF60_0);
-///*p05.KYWE*/ wire P05_NC1 = nor (DBG_FF00_D7, FF60_0o);
+///*p05.KORE*/ wire P05_NC0 = nand(KERU_DBG_FF00_D7, FF60_0);
+///*p05.KYWE*/ wire P05_NC1 = nor (KERU_DBG_FF00_D7, FF60_0o);
 
 /*p08.LYRA*/ wire DBG_D_RDn = nand(sys_sig.MODE_DBG2, bus_sig.CBUS_TO_CEXTn);
 /*p08.TUTY*/ if (!DBG_D_RDn) CPU_TRI_D0 = not(/*p08.TOVO*/ not(pins.PIN_D0_C));

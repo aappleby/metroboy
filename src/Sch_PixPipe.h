@@ -68,34 +68,34 @@ private:
   /*p26.VAVA*/ Reg22 MASK_PIPE_7;
 
   // FF47 - BGP
-  /*p36.PAVO*/ Reg BGP0;
-  /*p36.NUSY*/ Reg BGP1;
-  /*p36.PYLU*/ Reg BGP2;
-  /*p36.MAXY*/ Reg BGP3;
-  /*p36.MUKE*/ Reg BGP4;
-  /*p36.MORU*/ Reg BGP5;
-  /*p36.MOGY*/ Reg BGP6;
-  /*p36.MENA*/ Reg BGP7;
+  /*p36.PAVO*/ Reg9 BGP0;
+  /*p36.NUSY*/ Reg9 BGP1;
+  /*p36.PYLU*/ Reg9 BGP2;
+  /*p36.MAXY*/ Reg9 BGP3;
+  /*p36.MUKE*/ Reg9 BGP4;
+  /*p36.MORU*/ Reg9 BGP5;
+  /*p36.MOGY*/ Reg9 BGP6;
+  /*p36.MENA*/ Reg9 BGP7;
 
   // FF48 - OBP0
-  /*p36.XUFU*/ Reg OBP00;
-  /*p36.XUKY*/ Reg OBP01;
-  /*p36.XOVA*/ Reg OBP02;
-  /*p36.XALO*/ Reg OBP03;
-  /*p36.XERU*/ Reg OBP04;
-  /*p36.XYZE*/ Reg OBP05;
-  /*p36.XUPO*/ Reg OBP06;
-  /*p36.XANA*/ Reg OBP07;
+  /*p36.XUFU*/ Reg9 OBP00;
+  /*p36.XUKY*/ Reg9 OBP01;
+  /*p36.XOVA*/ Reg9 OBP02;
+  /*p36.XALO*/ Reg9 OBP03;
+  /*p36.XERU*/ Reg9 OBP04;
+  /*p36.XYZE*/ Reg9 OBP05;
+  /*p36.XUPO*/ Reg9 OBP06;
+  /*p36.XANA*/ Reg9 OBP07;
 
   // FF49 - OBP1
-  /*p36.MOXY*/ Reg OBP10;
-  /*p36.LAWO*/ Reg OBP11;
-  /*p36.MOSA*/ Reg OBP12; // 9-rung, bottom rung is passthrough?
-  /*p36.LOSE*/ Reg OBP13;
-  /*p36.LUNE*/ Reg OBP14;
-  /*p36.LUGU*/ Reg OBP15;
-  /*p36.LEPU*/ Reg OBP16;
-  /*p36.LUXO*/ Reg OBP17;
+  /*p36.MOXY*/ Reg9 OBP10;
+  /*p36.LAWO*/ Reg9 OBP11;
+  /*p36.MOSA*/ Reg9 OBP12;
+  /*p36.LOSE*/ Reg9 OBP13;
+  /*p36.LUNE*/ Reg9 OBP14;
+  /*p36.LUGU*/ Reg9 OBP15;
+  /*p36.LEPU*/ Reg9 OBP16;
+  /*p36.LUXO*/ Reg9 OBP17;
 };
 
 //-----------------------------------------------------------------------------

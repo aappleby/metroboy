@@ -21,9 +21,9 @@ private:
   /*p01.APUK*/ Reg9_Duo APUK_xxxDEFGx;
   /*p01.ADYK*/ Reg9_Duo ADYK_xxxxEFGH;
 
-  /*p29.WUVU*/ Reg WUVU_AxxDExxH;
-  /*p21.VENA*/ Reg VENA_xBCDExxx;
-  /*p29.WOSU*/ Reg WOSU_xxCDxxGH;
+  /*p29.WUVU*/ Reg17 WUVU_AxxDExxH;
+  /*p21.VENA*/ Reg17 VENA_xBCDExxx;
+  /*p29.WOSU*/ Reg17 WOSU_xxCDxxGH;
 };
 
 //-----------------------------------------------------------------------------

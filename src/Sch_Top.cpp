@@ -1135,16 +1135,160 @@ wire SchematicTop::DATY_SCX0() const { /*p23.DATY*/ return tile_fetcher.DATY_SCX
 wire SchematicTop::DUZU_SCX1() const { /*p23.DUZU*/ return tile_fetcher.DUZU_SCX1; }
 wire SchematicTop::CYXU_SCX2() const { /*p23.CYXU*/ return tile_fetcher.CYXU_SCX2; }
 
+//-----------------------------------------------------------------------------
+// Sprite scanner signals
+
+wire SchematicTop::CEHA_SCANNINGp() const { /*p29.CEHA*/ return not(sprite_scanner.CENO_SCANNINGp.qn()); }
+wire SchematicTop::BESU_SCANNINGp() const { /*p28.BESU*/ return sprite_scanner.BESU_SCANNINGp; }
+wire SchematicTop::CENO_SCANNINGp() const { /*p29.CENO*/ return sprite_scanner.CENO_SCANNINGp; }
+
+wire SchematicTop::AVAP_SCAN_DONE_TRIGp() const {
+  /*p01.ATAR*/ wire ATAR_VID_RSTp = not(XAPO_VID_RSTn());
+  /*p28.ATEJ*/ wire ATEJ_VID_LINE_TRIG_d4p = not(BYHA_VID_LINE_TRIG_d4n());
+  /*p28.ANOM*/ wire ANOM_SCAN_RSTn = nor(ATEJ_VID_LINE_TRIG_d4p, ATAR_VID_RSTp);
+  /*p29.BALU*/ wire BALU_SCAN_RST = not(ANOM_SCAN_RSTn);
+  /*p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or(BALU_SCAN_RST, sprite_scanner.SCAN_DONE_TRIG_B.q(), !sprite_scanner.SCAN_DONE_TRIG_A.q());
+  /*p29.AVAP*/ wire AVAP_SCAN_DONE_TRIGp = not(BEBU_SCAN_DONE_TRIGn);
+  return AVAP_SCAN_DONE_TRIGp;
+}
+
+wire SchematicTop::DEGE_SPRITE_DELTA0() const { return sprite_scanner.DEGE_SPRITE_DELTA0; }
+wire SchematicTop::DABY_SPRITE_DELTA1() const { return sprite_scanner.DABY_SPRITE_DELTA1; }
+wire SchematicTop::DABU_SPRITE_DELTA2() const { return sprite_scanner.DABU_SPRITE_DELTA2; }
+wire SchematicTop::GYSA_SPRITE_DELTA3() const { return sprite_scanner.GYSA_SPRITE_DELTA3; }
+wire SchematicTop::CARE_STORE_ENp_ABxxEFxx() const { return sprite_scanner.CARE_STORE_ENp_ABxxEFxx; }
+
+wire SchematicTop::YFEL_SCAN0() const { /*p28.YFEL*/ return sprite_scanner.YFEL_SCAN0; }
+wire SchematicTop::WEWY_SCAN1() const { /*p28.WEWY*/ return sprite_scanner.WEWY_SCAN1; }
+wire SchematicTop::GOSO_SCAN2() const { /*p28.GOSO*/ return sprite_scanner.GOSO_SCAN2; }
+wire SchematicTop::ELYN_SCAN3() const { /*p28.ELYN*/ return sprite_scanner.ELYN_SCAN3; }
+wire SchematicTop::FAHA_SCAN4() const { /*p28.FAHA*/ return sprite_scanner.FAHA_SCAN4; }
+wire SchematicTop::FONY_SCAN5() const { /*p28.FONY*/ return sprite_scanner.FONY_SCAN5; }
+
+//-----------------------------------------------------------------------------
+// Sprite store signals
+
+wire SchematicTop::FEPO_STORE_MATCHp() const { /*p29.FEPO*/ return sst_reg.FEPO_STORE_MATCHp; }
+
+//-----------------------------------------------------------------------------
+// Sprite fetcher signals
+
+wire SchematicTop::WEFY_SPR_READp() const {
+  /*p29.TEPA*/ wire TEPA_RENDERINGn = not(XYMU_RENDERINGp());
+  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, sprite_fetcher.TULY_SFETCH_S1, sprite_fetcher.TESE_SFETCH_S2);
+  /*p28.WEFY*/ wire WEFY_SPR_READp = and(TUVO_PPU_OAM_RDp, sprite_fetcher.TYFO_SFETCH_S0_D1);
+  return WEFY_SPR_READp;
+}
+
+wire SchematicTop::VAPE_FETCH_OAM_CLK() const {
+  /*p29.TEPA*/ wire TEPA_RENDERINGn = not(XYMU_RENDERINGp());
+  /*p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor(TEPA_RENDERINGn, sprite_fetcher.TULY_SFETCH_S1, sprite_fetcher.TESE_SFETCH_S2);
+  /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(sprite_fetcher.TOXE_SFETCH_S0_D0);
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1, TYTU_SFETCH_S0_D0n);
+  /*p25.VAPE*/ wire VAPE_FETCH_OAM_CLK = and (TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
+  return VAPE_FETCH_OAM_CLK;
+}
+
+wire SchematicTop::VUSA_PIPE_LOAD_SPRITEn() const {
+  // TYNO_01 << TOXE_17
+  // TYNO_02 << SEBA_17
+  // TYNO_03 << VONU_17
+  // TYNO_04 >> VUSA_02
+
+  // VUSA_01 << TYFO_16
+  // VUSA_02 << TYNO_04
+  // VUSA_03 nc
+  // VUSA_04 >>
+
+  /*p29.TYNO*/ wire TYNO = nand(sprite_fetcher.TOXE_SFETCH_S0_D0.q(), sprite_fetcher.SEBA_SFETCH_S1_D5.q(), sprite_fetcher.VONU_SFETCH_S1_D4.q());
+  /*p29.VUSA*/ wire VUSA_PIPE_LOAD_SPRITEn = or(sprite_fetcher.TYFO_SFETCH_S0_D1.qn(), TYNO);
+  return VUSA_PIPE_LOAD_SPRITEn;
+}
+
+wire SchematicTop::SOWO_SFETCH_RUNNINGn() const {
+  /*p27.SOWO*/ return not(sprite_fetcher.TAKA_SFETCH_RUNNINGp);
+}
+
+wire SchematicTop::TEXY_SPRITE_READp() const {
+  /*p29.TEPA*/ wire TEPA_RENDERINGn = not(XYMU_RENDERINGp());
+  /*p29.SAKY*/ wire SAKY = nor(sprite_fetcher.TULY_SFETCH_S1.q(), sprite_fetcher.VONU_SFETCH_S1_D4.q());
+  /*p29.TYSO*/ wire TYSO_SPRITE_READn = or(SAKY, TEPA_RENDERINGn);
+  /*p29.TEXY*/ wire TEXY_SPRITE_READp = not(TYSO_SPRITE_READn);
+  return TEXY_SPRITE_READp;
+}
+
+wire SchematicTop::SOHO_SPR_VRAM_RDp() const {
+  /*p29.TYTU*/ wire TYTU_SFETCH_S0_D0n = not(sprite_fetcher.TOXE_SFETCH_S0_D0.q());
+  /*p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand(sprite_fetcher.TYFO_SFETCH_S0_D1.q(), TYTU_SFETCH_S0_D0n);
+  /*p29.ABON*/ wire ABON_SPR_VRAM_RDp1 = not(TEXY_SPRITE_READp());
+  /*p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and (TACU_SPR_SEQ_5_TRIG, ABON_SPR_VRAM_RDp1);
+  return SOHO_SPR_VRAM_RDp;
+}
+
+
+wire SchematicTop::SPR_PIX_A0() const { /*p33.PEFO*/ return sprite_fetcher.SPR_PIX_A0; }
+wire SchematicTop::SPR_PIX_A1() const { /*p33.ROKA*/ return sprite_fetcher.SPR_PIX_A1; }
+wire SchematicTop::SPR_PIX_A2() const { /*p33.MYTU*/ return sprite_fetcher.SPR_PIX_A2; }
+wire SchematicTop::SPR_PIX_A3() const { /*p33.RAMU*/ return sprite_fetcher.SPR_PIX_A3; }
+wire SchematicTop::SPR_PIX_A4() const { /*p33.SELE*/ return sprite_fetcher.SPR_PIX_A4; }
+wire SchematicTop::SPR_PIX_A5() const { /*p33.SUTO*/ return sprite_fetcher.SPR_PIX_A5; }
+wire SchematicTop::SPR_PIX_A6() const { /*p33.RAMA*/ return sprite_fetcher.SPR_PIX_A6; }
+wire SchematicTop::SPR_PIX_A7() const { /*p33.RYDU*/ return sprite_fetcher.SPR_PIX_A7; }
+
+wire SchematicTop::SPR_PIX_B0() const { /*p33.REWO*/ return sprite_fetcher.SPR_PIX_B0; }
+wire SchematicTop::SPR_PIX_B1() const { /*p33.PEBA*/ return sprite_fetcher.SPR_PIX_B1; }
+wire SchematicTop::SPR_PIX_B2() const { /*p33.MOFO*/ return sprite_fetcher.SPR_PIX_B2; }
+wire SchematicTop::SPR_PIX_B3() const { /*p33.PUDU*/ return sprite_fetcher.SPR_PIX_B3; }
+wire SchematicTop::SPR_PIX_B4() const { /*p33.SAJA*/ return sprite_fetcher.SPR_PIX_B4; }
+wire SchematicTop::SPR_PIX_B5() const { /*p33.SUNY*/ return sprite_fetcher.SPR_PIX_B5; }
+wire SchematicTop::SPR_PIX_B6() const { /*p33.SEMO*/ return sprite_fetcher.SPR_PIX_B6; }
+wire SchematicTop::SPR_PIX_B7() const { /*p33.SEGA*/ return sprite_fetcher.SPR_PIX_B7; }
+
+//-----------------------------------------------------------------------------
+// Window signals
+
+wire SchematicTop::NOCU_WIN_MODEn       () const { /*p27.NOCU*/ return not(win_reg.PYNU_WIN_MODE_TRIGA.q()); }
+wire SchematicTop::NUNY_WIN_MODE_TRIGp  () const { /*p27.NUNY*/ return and (win_reg.PYNU_WIN_MODE_TRIGA, !win_reg.NOPA_WIN_MODE_TRIGB); }
+wire SchematicTop::SEKO_WIN_MATCH_TRIGp () const { /*p27.SEKO*/ return nor(!win_reg.RYFA_WIN_MATCH_TRIGA, win_reg.RENE_WIN_MATCH_TRIGB); }
+
+wire SchematicTop::SYLO_WIN_HITn        () const { /*p27.SYLO*/ return not(win_reg.RYDY_WIN_HIT_LATCHp); }
+
+// FIXME this needs a name
+wire SchematicTop::SUZU() const {
+  /*p27.TUXY*/ wire TUXY = nand(win_reg.SOVY_WIN_HIT_SYNC, SYLO_WIN_HITn());
+  /*p27.SUZU*/ wire SUZU = not(TUXY);
+  return SUZU;
+}
+
+wire SchematicTop::WIN_X3() const { return win_reg.WIN_X3; }
+wire SchematicTop::WIN_X4() const { return win_reg.WIN_X4; }
+wire SchematicTop::WIN_X5() const { return win_reg.WIN_X5; }
+wire SchematicTop::WIN_X6() const { return win_reg.WIN_X6; }
+wire SchematicTop::WIN_X7() const { return win_reg.WIN_X7; }
+
+wire SchematicTop::WIN_Y0() const { return win_reg.WIN_Y0; }
+wire SchematicTop::WIN_Y1() const { return win_reg.WIN_Y1; }
+wire SchematicTop::WIN_Y2() const { return win_reg.WIN_Y2; }
+wire SchematicTop::WIN_Y3() const { return win_reg.WIN_Y3; }
+wire SchematicTop::WIN_Y4() const { return win_reg.WIN_Y4; }
+wire SchematicTop::WIN_Y5() const { return win_reg.WIN_Y5; }
+wire SchematicTop::WIN_Y6() const { return win_reg.WIN_Y6; }
+wire SchematicTop::WIN_Y7() const { return win_reg.WIN_Y7; }
+
 //------------------------------------------------------------------------------
 // Misc signals
 
 wire SchematicTop::ASOK_INT_JOYPADp() const {
-  /*p02.ASOK*/ wire ASOK_INT_JOYPADp = and (joy_reg.JP_GLITCH3, joy_reg.JP_GLITCH0);
+  /*p02.ASOK*/ wire ASOK_INT_JOYPADp = and (joy_reg.APUG_JP_GLITCH3, joy_reg.BATU_JP_GLITCH0);
   return ASOK_INT_JOYPADp;
 }
 
 wire SchematicTop::BOOT_BITn() const {
   /*p07.TEPU*/ return bootrom.BOOT_BITn;
+}
+
+wire SchematicTop::CALY_INT_SERIALp() const {
+  return ser_reg.CALY_INT_SERIALp;
 }
 
 //------------------------------------------------------------------------------

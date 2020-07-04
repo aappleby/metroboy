@@ -15,7 +15,7 @@ struct DebugRegisters {
 private:
   friend SchematicTop;
 
-  /*p25.SOTO*/ Reg SOTO_DBG; // 17-rung
+  /*p25.SOTO*/ Reg17 SOTO_DBG;
 };
 
 //-----------------------------------------------------------------------------

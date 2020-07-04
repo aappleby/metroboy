@@ -28,25 +28,25 @@ private:
   /*p27.ROGA*/ Reg17 ROGA_FINE_CNT1;
   /*p27.RUBU*/ Reg17 RUBU_FINE_CNT2;
 
-  /*p24.PAHO*/ Reg PAHO_X_8_SYNC;
+  /*p24.PAHO*/ Reg17 PAHO_X_8_SYNC;
   /*p24.RUJU*/ NorLatch POFY_ST_LATCH; // nor latch with p24.RUJU, p24.POME
   /*p21.WUSA*/ NorLatch WUSA_CPEN_LATCH;
 
   /*p??.ROXY*/ NorLatch ROXY_FINE_MATCH_LATCHn;
-  /*p??.PUXA*/ Reg PUXA_FINE_MATCH_Ap;
-  /*p27.NYZE*/ Reg NYZE_FINE_MATCH_Bp;
+  /*p??.PUXA*/ Reg17 PUXA_FINE_MATCH_Ap;
+  /*p27.NYZE*/ Reg17 NYZE_FINE_MATCH_Bp;
 
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGp; // this must be positive polarity, or stat read doesn't work
 
-  /*p21.VOGA*/ Reg VOGA_RENDER_DONE_SYNC;
+  /*p21.VOGA*/ Reg17 VOGA_RENDER_DONE_SYNC;
 
   /*p21.RUPO*/ NorLatch RUPO_LYC_MATCH_LATCHn;
 
   // FF41 - STAT
-  /*p21.ROXE*/ Reg ROXE_INT_HBL_EN;
-  /*p21.RUFO*/ Reg RUFO_INT_VBL_EN;
-  /*p21.REFE*/ Reg REFE_INT_OAM_EN;
-  /*p21.RUGU*/ Reg RUGU_INT_LYC_EN;
+  /*p21.ROXE*/ Reg9 ROXE_INT_HBL_EN;
+  /*p21.RUFO*/ Reg9 RUFO_INT_VBL_EN;
+  /*p21.REFE*/ Reg9 REFE_INT_OAM_EN;
+  /*p21.RUGU*/ Reg9 RUGU_INT_LYC_EN;
 };
 
 //-----------------------------------------------------------------------------

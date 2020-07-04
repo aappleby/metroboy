@@ -143,7 +143,6 @@ enum SignalFlags {
   SET     = 0b00001000,
   RST     = 0b00010000,
   ERROR   = 0b00100000,
-  //CHANGED = 0b01000000,
 };
 
 union SignalState {
@@ -155,7 +154,6 @@ union SignalState {
     bool set     : 1;
     bool rst     : 1;
     bool error   : 1;
-    //bool changed : 1;
   };
 
   SignalState(SignalFlags s) : state(uint8_t(s)) {}
@@ -168,7 +166,6 @@ union SignalState {
     c.clk     = clk;
     c.set     = set;
     c.rst     = rst;
-    //c.changed = changed;
     c.error   = error;
     return c;
   }
@@ -233,7 +230,6 @@ struct RegisterBase {
   operator const bool() const {
     if (a.error) __debugbreak();
     if (!b.error) __debugbreak();
-    //if (a.hiz)   __debugbreak();
     if (a.hiz) return 1;
     return a.val;
   }
@@ -270,11 +266,9 @@ struct PinIn : public RegisterBase {
 
   SignalState clear_preset() {
     SignalState old_a = a;
-    /*
-    if ( a.err) __debugbreak();
-    if (!b.err) __debugbreak();
-    a = ERR;
-    */
+    //if ( a.err) __debugbreak();
+    //if (!b.err) __debugbreak();
+    //a = ERR;
     return old_a;
   }
 };
@@ -290,7 +284,6 @@ struct PinOut : public RegisterBase {
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
-    //b.changed = 0;
     b.error = 0;
   }
 
@@ -332,7 +325,6 @@ struct Tribuf : public RegisterBase {
     b.clk = 0;
     b.set = 0;
     b.rst = 0;
-    //b.changed = 0;
     b.error = 0;
   }
 
@@ -369,62 +361,6 @@ struct Gate : public RegisterBase {
     b = ERROR;
     return a;
   }
-};
-
-//-----------------------------------------------------------------------------
-// set and reset must be async (see interrupts)
-// reset must take priority over set (see interrupts ALUR_RSTn)
-
-struct Reg : public RegisterBase {
-
-  void setx(bool clk, bool val) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = val;
-    b.hiz = 0;
-    b.clk = clk;
-    b.set = 0;
-    b.rst = 0;
-    b.error = 0;
-  }
-
-  void set(bool clk, bool rstN, bool val) {
-    if ( a.error)  __debugbreak();
-    if (!b.error) __debugbreak();
-    b.val = val;
-    b.hiz = 0;
-    b.clk = clk;
-    b.set = 0;
-    b.rst = !rstN;
-    b.error = 0;
-  }
-
-  SignalState commit_reg() {
-    if (a.error) __debugbreak();
-    if (b.error) __debugbreak();
-
-    bool new_a = (!a.clk && b.clk) ? b.val : a.val;
-
-    if (b.set) new_a = 1;
-    if (b.rst) new_a = 0;
-
-    a.val = new_a;
-    a.hiz = 0;
-    a.clk = b.clk;
-    a.set = b.set;
-    a.rst = b.rst;
-    //a.changed = 0;
-    a.error = 0;
-
-    b = ERROR;
-
-    return a;
-  }
-
-  /*
-private:
-  operator const bool() const;
-  */
 };
 
 //-----------------------------------------------------------------------------
@@ -478,7 +414,6 @@ struct Reg8 : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
@@ -553,11 +488,6 @@ struct Reg9 : public RegisterBase {
 
     return a;
   }
-
-  /*
-  private:
-  operator const bool() const;
-  */
 };
 
 //-----------------------------------------------------------------------------
@@ -607,18 +537,12 @@ struct Reg13 : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
 
     return a;
   }
-
-  /*
-  private:
-  operator const bool() const;
-  */
 };
 
 
@@ -656,7 +580,6 @@ struct Reg17 : public RegisterBase {
     b.clk = clk;
     b.set = 0;
     b.rst = !rstN;
-    //b.changed = 0;
     b.error = 0;
   }
 
@@ -674,7 +597,6 @@ struct Reg17 : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
@@ -743,7 +665,6 @@ struct Reg22 : public RegisterBase {
     b.clk = clk;
     b.set = !setN;
     b.rst = !rstN;
-    //b.changed = 0;
     b.error = 0;
   }
 
@@ -761,7 +682,6 @@ struct Reg22 : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
@@ -792,7 +712,6 @@ struct Reg9_Duo : public RegisterBase {
     b.clk = clk;
     b.set = 0;
     b.rst = !rstN;
-    //b.changed = 0;
     b.error = 0;
   }
 
@@ -810,18 +729,12 @@ struct Reg9_Duo : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
 
     return a;
   }
-
-  /*
-private:
-  operator const bool() const;
-  */
 };
 
 //-----------------------------------------------------------------------------
@@ -844,7 +757,6 @@ struct NorLatch : public RegisterBase {
     b.clk = 0;
     b.set = set;
     b.rst = rst;
-    //b.changed = 0;
     b.error = 0;
   }
 
@@ -862,7 +774,6 @@ struct NorLatch : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
@@ -891,7 +802,6 @@ struct NandLatch : public RegisterBase {
     b.clk = 0;
     b.set = !setN;
     b.rst = !rstN;
-    //b.changed = 0;
     b.error = 0;
   }
 
@@ -909,7 +819,6 @@ struct NandLatch : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
@@ -954,7 +863,6 @@ struct TpLatch : public RegisterBase {
     b.clk = 0;
     b.set = !latchN && val;
     b.rst = !latchN && !val;
-    //b.changed = 0;
     b.error = 0;
   }
 
@@ -972,7 +880,6 @@ struct TpLatch : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
@@ -983,11 +890,32 @@ struct TpLatch : public RegisterBase {
 
 
 //-----------------------------------------------------------------------------
-// FIXME good chance that count's not right (polarity or something)
-// Does this really contain two bits of data just to track the carry bit?
-
-
 // FIXME ticks on the NEGATIVE EDGE of the clock (see timer.cpp)
+
+// 20-rung
+
+// REGA_TIMA_0.clk_n(SOGY_TIMA_CLK,   MEXU_TIMA_LOAD, PUXY_TIMA_LD_0);
+
+// REGA_01 >> POVY_20
+// REGA_02 nc
+// REGA_03 << PUXY_03
+// REGA_04 << MEXU_04
+// REGA_05 nc
+// REGA_06 <> REGA_18
+// REGA_07 nc
+// REGA_08 nc
+// REGA_09 nc
+// REGA_10 nc
+// REGA_11 <> REGA_19
+// REGA_12 nc
+// REGA_13 nc
+// REGA_14 << MEXU_04
+// REGA_15 nc
+// REGA_16 << PUXY_03
+// REGA_17 >> SOKU_04
+// REGA_18 <> REGA_06
+// REGA_19 <> REGA_11
+// REGA_20 << SOGU_03
 
 struct Counter : public RegisterBase {
 
@@ -999,7 +927,6 @@ struct Counter : public RegisterBase {
     b.clk = clk;
     b.set = load && val;
     b.rst = load && !val;
-    //b.changed = 0;
     b.error = 0;
   }
 
@@ -1017,18 +944,12 @@ struct Counter : public RegisterBase {
     a.clk = b.clk;
     a.set = b.set;
     a.rst = b.rst;
-    //a.changed = 0;
     a.error = 0;
 
     b = ERROR;
 
     return a;
   }
-
-  /*
-private:
-  operator const bool() const;
-  */
 };
 
 //-----------------------------------------------------------------------------

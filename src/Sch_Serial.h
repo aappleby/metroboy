@@ -21,15 +21,15 @@ struct SerialRegisters {
 private:
   friend SchematicTop;
 
-  /*p06.ETAF*/ Reg XFER_START;
-  /*p06.CULY*/ Reg XFER_DIR;
+  /*p06.ETAF*/ Reg17 XFER_START;
+  /*p06.CULY*/ Reg17 XFER_DIR;
 
-  /*p06.COTY*/ Reg SER_CLK;
+  /*p06.COTY*/ Reg17 SER_CLK;
 
-  /*p06.CAFA*/ Reg SER_CNT0;
-  /*p06.CYLO*/ Reg SER_CNT1;
-  /*p06.CYDE*/ Reg SER_CNT2;
-  /*p06.CALY*/ Reg CALY_INT_SERIALp;
+  /*p06.CAFA*/ Reg17 SER_CNT0;
+  /*p06.CYLO*/ Reg17 SER_CNT1;
+  /*p06.CYDE*/ Reg17 SER_CNT2;
+  /*p06.CALY*/ Reg17 CALY_INT_SERIALp;
 
   /*p06.CUBA*/ Reg22 SER_DATA0;
   /*p06.DEGU*/ Reg22 SER_DATA1;
@@ -40,7 +40,7 @@ private:
   /*p06.EROD*/ Reg22 SER_DATA6;
   /*p06.EDER*/ Reg22 SER_DATA7;
 
-  /*p06.ELYS*/ Reg SER_OUT;
+  /*p06.ELYS*/ Reg17 SER_OUT;
 
   //----------
   // Serial pins

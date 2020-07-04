@@ -97,7 +97,7 @@ void SerialRegisters::tick(SchematicTop& top) {
   /*p06.EDER*/ SER_DATA7.set(_EPYT_SER_CLK, _SER_DATA7_SETn, _SER_DATA7_RSTn, SER_DATA6.q());
   /*p06.ELYS*/ SER_OUT.set(_EDYL_SER_CLK, ALUR_RSTn, SER_DATA7.q());
 
-  ///*p05.KENA*/ ser_reg.SOUT  = mux2n(DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);
+  ///*p05.KENA*/ ser_reg.SOUT  = mux2n(KUKO_DBG_FF00_D6, ser_reg.SER_OUT, FF60_0);
   /*p05.KENA*/ SOUT.set(SER_OUT.q());
   /*p06.KEXU*/ SCK_A.set(nand(SER_CLK.q(), XFER_DIR.q()));
   SCK_B.set(XFER_DIR.q());

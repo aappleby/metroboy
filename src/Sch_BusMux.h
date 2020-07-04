@@ -14,7 +14,7 @@ struct BusMux {
 private:
   friend SchematicTop;
 
-  /*p04.MAKA*/ Reg MAKA_FROM_CPU5_SYNC;
+  /*p04.MAKA*/ Reg17 MAKA_FROM_CPU5_SYNC;
 
   /*p28.GEKA*/ Signal GEKA_OAM_A0p;
   /*p28.ZYFO*/ Signal ZYFO_OAM_A1p;
@@ -51,24 +51,6 @@ private:
   /*p08.SAGO*/ TpLatch SAGO_EXT_DATA_LATCH_05;
   /*p08.RUPA*/ TpLatch RUPA_EXT_DATA_LATCH_06;
   /*p08.SAZY*/ TpLatch SAZY_EXT_DATA_LATCH_07;
-
-  /*p32.LEGU*/ Reg8 LEGU_BG_PIX_A0; // 8-rung
-  /*p32.NUDU*/ Reg8 NUDU_BG_PIX_A1;
-  /*p32.MUKU*/ Reg8 MUKU_BG_PIX_A2;
-  /*p32.LUZO*/ Reg8 LUZO_BG_PIX_A3;
-  /*p32.MEGU*/ Reg8 MEGU_BG_PIX_A4;
-  /*p32.MYJY*/ Reg8 MYJY_BG_PIX_A5;
-  /*p32.NASA*/ Reg8 NASA_BG_PIX_A6;
-  /*p32.NEFO*/ Reg8 NEFO_BG_PIX_A7; // color wrong on die
-
-  /*p32.RAWU*/ Reg RAWU_BG_PIX_B0; // 11-rung, also holds tile index during fetch
-  /*p32.POZO*/ Reg POZO_BG_PIX_B1; // 11-rung
-  /*p32.PYZO*/ Reg PYZO_BG_PIX_B2; 
-  /*p32.POXA*/ Reg POXA_BG_PIX_B3; 
-  /*p32.PULO*/ Reg PULO_BG_PIX_B4; 
-  /*p32.POJU*/ Reg POJU_BG_PIX_B5; 
-  /*p32.POWY*/ Reg POWY_BG_PIX_B6; 
-  /*p32.PYJU*/ Reg PYJU_BG_PIX_B7;
 
   /*p31.YLOR*/ Reg8 YLOR_SPRITE_X0;
   /*p31.ZYTY*/ Reg8 ZYTY_SPRITE_X1;

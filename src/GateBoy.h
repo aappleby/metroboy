@@ -17,6 +17,10 @@ public:
     state_manager.unstep(count);
   }
 
+  Schematics::SchematicTop* top() {
+    return state_manager.state();
+  }
+
   Schematics::SignalHash cycle(Schematics::SchematicTop* top, uint16_t addr, uint8_t data, bool read, bool write);
   Schematics::SignalHash phase(Schematics::SchematicTop* top);
   Schematics::SignalHash pass (Schematics::SchematicTop* top);

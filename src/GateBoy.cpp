@@ -7,9 +7,23 @@ using namespace Schematics;
 int GateBoy::main(int /*argc*/, char** /*argv*/) {
   printf("GateBoy sim starting\n");
 
-  GateBoy gb;
-  gb.init();
-  //gb.reset(0x100);
+  GateBoy gateboy;
+  gateboy.init();
+  //gateboy.reset(0x100);
+
+  auto gb = gateboy.top();
+
+  for (int i = 0; i < 10; i++) {
+    gb->preset_sys();
+    gb->preset_cpu(0, 0, 0, 0);
+    gb->preset_ext();
+    gb->preset_joy();
+    gb->preset_vram();
+    gb->preset_oam();
+
+    SignalHash hash = gb->tick();
+    printf("Hash 0x%016llx\n", hash.h);
+  }
 
   return 0;
 }

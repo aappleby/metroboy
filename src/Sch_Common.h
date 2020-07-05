@@ -230,10 +230,12 @@ struct PinIn {
 
   operator const bool() const {
     if (a.error) __debugbreak();
+    if (a.hiz)   __debugbreak();
     return a.val;
   }
 
   void preset(bool x)        { a = x ? SET_1 : SET_0; }
+  void preset(SignalFlags f) { a.state = uint8_t(f); }
   void preset(SignalState c) { a = c; }
 
   SignalState clear_preset() {
@@ -251,9 +253,10 @@ struct PinIn {
 struct RegisterBase {
 
   operator const bool() const {
-    if (a.error) __debugbreak();
+    if (a.error)  __debugbreak();
     if (!b.error) __debugbreak();
-    if (a.hiz) return 1;
+    if (a.hiz)    __debugbreak();
+    //if (a.hiz) return 1;
     return a.val;
   }
 
@@ -312,6 +315,16 @@ struct Tribuf : public RegisterBase {
   Tribuf() {
     a = HIZ;
     b = ERROR;
+  }
+
+  void preset(SignalFlags f) {
+    a.state = uint8_t(f);
+    b.state = uint8_t(f);
+  }
+
+  void preset(bool x) {
+    a = x ? SET_1 : SET_0;
+    b = x ? SET_1 : SET_0;
   }
 
   void set_tribuf(bool oe, bool val) {

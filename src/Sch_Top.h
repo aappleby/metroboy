@@ -27,7 +27,12 @@ namespace Schematics {
 
 struct SchematicTop {
 
-  void preset();
+  void preset_sys();
+  void preset_cpu(uint16_t addr, uint8_t data, bool read, bool write);
+  void preset_ext();
+  void preset_joy();
+  void preset_vram();
+  void preset_oam();
 
   SignalHash tick();
 
@@ -39,12 +44,12 @@ struct SchematicTop {
 
   //-----------------------------------------------------------------------------
 
+  SignalHash commit_io();
   SignalHash commit_ibus();
   SignalHash commit_vbus();
   SignalHash commit_ebus();
   SignalHash commit_obus();
 
-  SignalHash commit_sys_pins();
   SignalHash commit_lcd_pins();
   SignalHash commit_joy_pins();
 

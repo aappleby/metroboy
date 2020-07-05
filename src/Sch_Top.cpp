@@ -4,11 +4,18 @@ using namespace Schematics;
 
 //-----------------------------------------------------------------------------
 
-void SchematicTop::preset() {
-  CPU_PIN5;
-  CPU_PIN6;
+void SchematicTop::preset_sys() {
+  SYS_PIN_CLK_GOOD.preset(0);
+  SYS_PIN_CLK_xBxDxFxH.preset(phase_counter & 1);
+  SYS_PIN_RST.preset(1);
+  SYS_PIN_T1.preset(0);
+  SYS_PIN_T2.preset(0);
+}
 
-  /*
+//-----------------------------------------------------------------------------
+
+void SchematicTop::preset_cpu(uint16_t addr, uint8_t data, bool read, bool write) {
+
   CPU_PIN_A00.preset(addr & 0x0001);
   CPU_PIN_A01.preset(addr & 0x0002);
   CPU_PIN_A02.preset(addr & 0x0004);
@@ -26,74 +33,150 @@ void SchematicTop::preset() {
   CPU_PIN_A14.preset(addr & 0x4000);
   CPU_PIN_A15.preset(addr & 0x8000);
 
-  void SchematicTop::preset_rd(bool rd)            { CPU_PIN_RD.preset(true, rd); }
-  void SchematicTop::preset_wr(bool wr)            { CPU_PIN_WR.preset(true, wr); }
-  void SchematicTop::preset_addr_valid(bool valid) { CPU_PIN_ADDR_VALID.preset(true, valid); }
+  CPU_PIN_RD.preset(read);
+  CPU_PIN_WR.preset(write);
 
-  */
+  if (write) {
+    CPU_TRI_D0.preset(data & 0x01);
+    CPU_TRI_D1.preset(data & 0x02);
+    CPU_TRI_D2.preset(data & 0x04);
+    CPU_TRI_D3.preset(data & 0x08);
+    CPU_TRI_D4.preset(data & 0x10);
+    CPU_TRI_D5.preset(data & 0x20);
+    CPU_TRI_D6.preset(data & 0x40);
+    CPU_TRI_D7.preset(data & 0x80);
+  }
+  else {
+    CPU_TRI_D0.preset(HIZ);
+    CPU_TRI_D1.preset(HIZ);
+    CPU_TRI_D2.preset(HIZ);
+    CPU_TRI_D3.preset(HIZ);
+    CPU_TRI_D4.preset(HIZ);
+    CPU_TRI_D5.preset(HIZ);
+    CPU_TRI_D6.preset(HIZ);
+    CPU_TRI_D7.preset(HIZ);
+  }
 
-  CPU_PIN_ACK_JOYPAD;
-  CPU_PIN_ACK_SERIAL;
-  CPU_PIN_ACK_STAT;
-  CPU_PIN_ACK_TIMER;
-  CPU_PIN_ACK_VBLANK;
-  CPU_PIN_ADDR_VALID;
-  CPU_PIN_CLKREQ;
-  CPU_PIN_RD;
-  CPU_PIN_WR;
+  CPU_PIN5.preset(HIZ);
+  CPU_PIN6.preset(HIZ);
+  CPU_PIN_ADDR_VALID.preset(HIZ);
+  CPU_PIN_CLKREQ.preset(HIZ);
 
-  EXT_PIN_A00_C;
-  EXT_PIN_A01_C;
-  EXT_PIN_A02_C;
-  EXT_PIN_A03_C;
-  EXT_PIN_A04_C;
-  EXT_PIN_A05_C;
-  EXT_PIN_A06_C;
-  EXT_PIN_A07_C;
-  EXT_PIN_A08_C;
-  EXT_PIN_A09_C;
-  EXT_PIN_A10_C;
-  EXT_PIN_A11_C;
-  EXT_PIN_A12_C;
-  EXT_PIN_A13_C;
-  EXT_PIN_A14_C;
-  EXT_PIN_A15_C;
+  CPU_PIN_ACK_JOYPAD.preset(HIZ);
+  CPU_PIN_ACK_SERIAL.preset(HIZ);
+  CPU_PIN_ACK_STAT.preset(HIZ);
+  CPU_PIN_ACK_TIMER.preset(HIZ);
+  CPU_PIN_ACK_VBLANK.preset(HIZ);
+}
 
-  EXT_PIN_D0_C;
-  EXT_PIN_D1_C;
-  EXT_PIN_D2_C;
-  EXT_PIN_D3_C;
-  EXT_PIN_D4_C;
-  EXT_PIN_D5_C;
-  EXT_PIN_D6_C;
-  EXT_PIN_D7_C;
-  EXT_PIN_RDn_C;
-  EXT_PIN_WRn_C;
-  JOY_PIN_P10_C;
-  JOY_PIN_P11_C;
-  JOY_PIN_P12_C;
-  JOY_PIN_P13_C;
-  SYS_PIN_CLK_GOOD;
-  SYS_PIN_CLK_xBxDxFxH;
-  SYS_PIN_RST;
-  SYS_PIN_T1;
-  SYS_PIN_T2;
-  VRAM_PIN_MCSn_C;
-  VRAM_PIN_MD0_C;
-  VRAM_PIN_MD1_C;
-  VRAM_PIN_MD2_C;
-  VRAM_PIN_MD3_C;
-  VRAM_PIN_MD4_C;
-  VRAM_PIN_MD5_C;
-  VRAM_PIN_MD6_C;
-  VRAM_PIN_MD7_C;
-  VRAM_PIN_MOEn_C;
-  VRAM_PIN_MWRn_C;
+//-----------------------------------------------------------------------------
+
+void SchematicTop::preset_ext() {
+  EXT_PIN_A00_C.preset(HIZ);
+  EXT_PIN_A01_C.preset(HIZ);
+  EXT_PIN_A02_C.preset(HIZ);
+  EXT_PIN_A03_C.preset(HIZ);
+  EXT_PIN_A04_C.preset(HIZ);
+  EXT_PIN_A05_C.preset(HIZ);
+  EXT_PIN_A06_C.preset(HIZ);
+  EXT_PIN_A07_C.preset(HIZ);
+  EXT_PIN_A08_C.preset(HIZ);
+  EXT_PIN_A09_C.preset(HIZ);
+  EXT_PIN_A10_C.preset(HIZ);
+  EXT_PIN_A11_C.preset(HIZ);
+  EXT_PIN_A12_C.preset(HIZ);
+  EXT_PIN_A13_C.preset(HIZ);
+  EXT_PIN_A14_C.preset(HIZ);
+  EXT_PIN_A15_C.preset(HIZ);
+
+  EXT_PIN_D0_C.preset(HIZ);
+  EXT_PIN_D1_C.preset(HIZ);
+  EXT_PIN_D2_C.preset(HIZ);
+  EXT_PIN_D3_C.preset(HIZ);
+  EXT_PIN_D4_C.preset(HIZ);
+  EXT_PIN_D5_C.preset(HIZ);
+  EXT_PIN_D6_C.preset(HIZ);
+  EXT_PIN_D7_C.preset(HIZ);
+  EXT_PIN_RDn_C.preset(HIZ);
+  EXT_PIN_WRn_C.preset(HIZ);
+}
+
+//-----------------------------------------------------------------------------
+
+void SchematicTop::preset_joy() {
+  JOY_PIN_P10_C.preset(HIZ);
+  JOY_PIN_P11_C.preset(HIZ);
+  JOY_PIN_P12_C.preset(HIZ);
+  JOY_PIN_P13_C.preset(HIZ);
+}
+
+//-----------------------------------------------------------------------------
+
+void SchematicTop::preset_vram() {
+  VRAM_PIN_MCSn_C.preset(HIZ);
+  VRAM_PIN_MOEn_C.preset(HIZ);
+  VRAM_PIN_MWRn_C.preset(HIZ);
+
+  VRAM_PIN_MD0_C.preset(HIZ);
+  VRAM_PIN_MD1_C.preset(HIZ);
+  VRAM_PIN_MD2_C.preset(HIZ);
+  VRAM_PIN_MD3_C.preset(HIZ);
+  VRAM_PIN_MD4_C.preset(HIZ);
+  VRAM_PIN_MD5_C.preset(HIZ);
+  VRAM_PIN_MD6_C.preset(HIZ);
+  VRAM_PIN_MD7_C.preset(HIZ);
+
+  VRM_TRI_A00.preset(HIZ);
+  VRM_TRI_A01.preset(HIZ);
+  VRM_TRI_A02.preset(HIZ);
+  VRM_TRI_A03.preset(HIZ);
+  VRM_TRI_A04.preset(HIZ);
+  VRM_TRI_A05.preset(HIZ);
+  VRM_TRI_A06.preset(HIZ);
+  VRM_TRI_A07.preset(HIZ);
+  VRM_TRI_A08.preset(HIZ);
+  VRM_TRI_A09.preset(HIZ);
+  VRM_TRI_A10.preset(HIZ);
+  VRM_TRI_A11.preset(HIZ);
+  VRM_TRI_A12.preset(HIZ);
+
+  VRM_TRI_D0.preset(HIZ);
+  VRM_TRI_D1.preset(HIZ);
+  VRM_TRI_D2.preset(HIZ);
+  VRM_TRI_D3.preset(HIZ);
+  VRM_TRI_D4.preset(HIZ);
+  VRM_TRI_D5.preset(HIZ);
+  VRM_TRI_D6.preset(HIZ);
+  VRM_TRI_D7.preset(HIZ);
+}
+
+//-----------------------------------------------------------------------------
+
+void SchematicTop::preset_oam() {
+  OAM_PIN_DA0.preset(HIZ);
+  OAM_PIN_DA1.preset(HIZ);
+  OAM_PIN_DA2.preset(HIZ);
+  OAM_PIN_DA3.preset(HIZ);
+  OAM_PIN_DA4.preset(HIZ);
+  OAM_PIN_DA5.preset(HIZ);
+  OAM_PIN_DA6.preset(HIZ);
+  OAM_PIN_DA7.preset(HIZ);
+
+  OAM_PIN_DB0.preset(HIZ);
+  OAM_PIN_DB1.preset(HIZ);
+  OAM_PIN_DB2.preset(HIZ);
+  OAM_PIN_DB3.preset(HIZ);
+  OAM_PIN_DB4.preset(HIZ);
+  OAM_PIN_DB5.preset(HIZ);
+  OAM_PIN_DB6.preset(HIZ);
+  OAM_PIN_DB7.preset(HIZ);
 }
 
 //-----------------------------------------------------------------------------
 
 SignalHash SchematicTop::tick() {
+  printf("SchematicTop::tick()\n");
+
   //clk_reg.tick(*this);
   //dbg_reg.tick(*this);
   //rst_reg.tick(*this);
@@ -121,6 +204,8 @@ SignalHash SchematicTop::tick() {
   //----------
 
   SignalHash hash;
+
+  hash << commit_io();
 
   //hash << clk_reg.commit();
   //hash << dbg_reg.commit();
@@ -380,46 +465,29 @@ void SchematicTop::tick_top_regs() {
 
 //-----------------------------------------------------------------------------
 
-SignalHash SchematicTop::commit_ibus() {
+SignalHash SchematicTop::commit_io() {
   SignalHash hash;
 
-  hash << CPU_PIN_WAKE.commit_pinout();          // <- P02.AWOB
+  hash << SYS_PIN_RST.clear_preset();          // PIN_71
+  hash << SYS_PIN_CLK_xBxDxFxH.clear_preset(); // PIN_74
+  hash << SYS_PIN_CLK_GOOD.clear_preset();     // PIN_74
+  hash << SYS_PIN_T2.clear_preset();           // PIN_76
+  hash << SYS_PIN_T1.clear_preset();           // PIN_77
+
+  //----------------------------------------
 
   hash << CPU_PIN_RD.clear_preset();             // PORTA_00: -> UJYV, LAGU, LAVO
   hash << CPU_PIN_WR.clear_preset();             // PORTA_01: -> AREV, LAGU.
-  hash << CPU_PIN_UNOR_DBG.commit_pinout();      // PORTA_02: <- P07.UNOR_MODE_DBG2
-  hash << CPU_PIN_SYRO.commit_pinout();          // PORTA_03: <- SYRO
-  hash << CPU_PIN_BOOTp.commit_pinout();         // PORTA_04: <- TUTU
-  hash << CPU_PIN_UMUT_DBG.commit_pinout();      // PORTA_05: <- P07.UMUT_MODE_DBG1
   hash << CPU_PIN_ADDR_VALID.clear_preset();     // PORTA_06: -> APAP, TEXO
 
   hash << CPU_PIN_ACK_VBLANK.clear_preset();     // PORTB_01: -> LETY, vblank int ack
-  hash << CPU_PIN_INT_VBLANK.commit_pinout();    // PORTB_03: <- LOPE, vblank int
   hash << CPU_PIN_ACK_STAT.clear_preset();       // PORTB_05: -> LEJA, stat int ack
-  hash << CPU_PIN_INT_STAT.commit_pinout();      // PORTB_07: <- LALU, stat int
   hash << CPU_PIN_ACK_TIMER.clear_preset();      // PORTB_09: -> LESA, timer int ack
-  hash << CPU_PIN_INT_TIMER.commit_pinout();     // PORTB_11: <- NYBO, timer int
   hash << CPU_PIN_ACK_SERIAL.clear_preset();     // PORTB_13: -> LUFE, serial int ack
-  hash << CPU_PIN_INT_SERIAL.commit_pinout();    // PORTB_15: <- UBUL, serial int
   hash << CPU_PIN_ACK_JOYPAD.clear_preset();     // PORTB_17: -> LAMO, joypad int ack
-  hash << CPU_PIN_INT_JOYPAD.commit_pinout();    // PORTB_19: <- ULAK, joypad int
-
   hash << CPU_PIN_CLKREQ.clear_preset();         // PORTC_00: -> ABOL
-  hash << CPU_PIN_AFER_RSTp.commit_pinout();     // PORTC_01: <- AFER
-  hash << CPU_PIN_EXT_RESET.commit_pinout();     // PORTC_02: <- PIN_RESET directly connected to the pad
-  hash << CPU_PIN_EXT_CLKGOOD.commit_pinout();   // PORTC_03: <- CLKIN_A
-  hash << CPU_PIN_TABA_RSTp.commit_pinout();     // PORTC_04: <- TABA
-
   hash << CPU_PIN6.clear_preset();               // PORTD_00: -> LEXY, doesn't do anything
-  hash << CPU_PIN_BOWA_AxCDEFGH.commit_pinout(); // PORTD_01: <- BOWA
-  hash << CPU_PIN_BEDO_xBxxxxxx.commit_pinout(); // PORTD_02: <- BEDO _____fgh
-  hash << CPU_PIN_BEKO_xBCDExxx.commit_pinout(); // PORTD_03: <- BEKO ____efgh connection not indicated on P01
-  hash << CPU_PIN_BUDE_AxxxxFGH.commit_pinout(); // PORTD_04: <- BUDE abcd____
-  hash << CPU_PIN_BOLO_xBCDEFGx.commit_pinout(); // PORTD_05: <- BOLO
   hash << CPU_PIN5.clear_preset();               // PORTD_06: -> FROM_CPU5
-  hash << CPU_PIN_BUKE_ABxxxxxH.commit_pinout(); // PORTD_07: <- BUKE _____f__
-  hash << CPU_PIN_BOMA_xBxxxxxx.commit_pinout(); // PORTD_08: <- BOMA _____fgh
-  hash << CPU_PIN_BOGA_AxCDEFGH.commit_pinout(); // PORTD_09: <- BOGA abcde___
 
   hash << CPU_PIN_A00.clear_preset();
   hash << CPU_PIN_A01.clear_preset();
@@ -447,72 +515,20 @@ SignalHash SchematicTop::commit_ibus() {
   hash << CPU_TRI_D6.commit_tribuf();
   hash << CPU_TRI_D7.commit_tribuf();
 
-  return hash;
-}
+  //----------------------------------------
 
-//-----------------------------------------------------------------------------
-
-SignalHash SchematicTop::commit_vbus() {
-  SignalHash hash;
-
-  hash << VRAM_PIN_MCSn_A.commit_pinout();   // PIN_43 <- SOKY
   hash << VRAM_PIN_MCSn_C.clear_preset();    // PIN_43 -> TEFY
-  hash << VRAM_PIN_MCSn_D.commit_pinout();   // PIN_43 <- SETY
-
-  hash << VRAM_PIN_MOEn_A.commit_pinout();   // PIN_45 <- REFO
   hash << VRAM_PIN_MOEn_C.clear_preset();    // PIN_45 -> TAVY
-  hash << VRAM_PIN_MOEn_D.commit_pinout();   // PIN_45 <- SAHA
-
-  hash << VRAM_PIN_MWRn_A.commit_pinout();   // PIN_49 <- SYSY
   hash << VRAM_PIN_MWRn_C.clear_preset();    // PIN_49 -> SUDO
-  hash << VRAM_PIN_MWRn_D.commit_pinout();   // PIN_49 <- RAGU
 
-  hash << VRAM_PIN_MA00_AD.commit_pinout();  // PIN_34 <- ECAL
-  hash << VRAM_PIN_MA01_AD.commit_pinout();  // PIN_35 <- EGEZ
-  hash << VRAM_PIN_MA02_AD.commit_pinout();  // PIN_36 <- FUHE
-  hash << VRAM_PIN_MA03_AD.commit_pinout();  // PIN_37 <- FYZY
-  hash << VRAM_PIN_MA04_AD.commit_pinout();  // PIN_38 <- DAMU
-  hash << VRAM_PIN_MA05_AD.commit_pinout();  // PIN_39 <- DAVA
-  hash << VRAM_PIN_MA06_AD.commit_pinout();  // PIN_40 <- ETEG
-  hash << VRAM_PIN_MA07_AD.commit_pinout();  // PIN_41 <- EREW
-  hash << VRAM_PIN_MA08_AD.commit_pinout();  // PIN_48 <- EVAX
-  hash << VRAM_PIN_MA09_AD.commit_pinout();  // PIN_47 <- DUVE
-  hash << VRAM_PIN_MA10_AD.commit_pinout();  // PIN_44 <- ERAF
-  hash << VRAM_PIN_MA11_AD.commit_pinout();  // PIN_46 <- FUSY
-  hash << VRAM_PIN_MA12_AD.commit_pinout();  // PIN_42 <- EXYF
-
-  hash << VRAM_PIN_MD0_A.commit_pinout();    // PIN_33 <- REGE
-  hash << VRAM_PIN_MD0_B.commit_pinout();    // PIN_33 <- ROFA
   hash << VRAM_PIN_MD0_C.clear_preset();     // PIN_33 -> RODY
-  hash << VRAM_PIN_MD0_D.commit_pinout();    // PIN_33 <- RURA
-  hash << VRAM_PIN_MD1_A.commit_pinout();    // PIN_31 <- RYKY
-  hash << VRAM_PIN_MD1_B.commit_pinout();    // PIN_31 <- ROFA
   hash << VRAM_PIN_MD1_C.clear_preset();     // PIN_31 -> REBA
-  hash << VRAM_PIN_MD1_D.commit_pinout();    // PIN_31 <- RULY
-  hash << VRAM_PIN_MD2_A.commit_pinout();    // PIN_30 <- RAZO
-  hash << VRAM_PIN_MD2_B.commit_pinout();    // PIN_30 <- ROFA
   hash << VRAM_PIN_MD2_C.clear_preset();     // PIN_30 -> RYDO
-  hash << VRAM_PIN_MD2_D.commit_pinout();    // PIN_30 <- RARE
-  hash << VRAM_PIN_MD3_A.commit_pinout();    // PIN_29 <- RADA
-  hash << VRAM_PIN_MD3_B.commit_pinout();    // PIN_29 <- ROFA
   hash << VRAM_PIN_MD3_C.clear_preset();     // PIN_29 -> REMO
-  hash << VRAM_PIN_MD3_D.commit_pinout();    // PIN_29 <- RODU
-  hash << VRAM_PIN_MD4_A.commit_pinout();    // PIN_28 <- RYRO
-  hash << VRAM_PIN_MD4_B.commit_pinout();    // PIN_28 <- ROFA
   hash << VRAM_PIN_MD4_C.clear_preset();     // PIN_28 -> ROCE
-  hash << VRAM_PIN_MD4_D.commit_pinout();    // PIN_28 <- RUBE
-  hash << VRAM_PIN_MD5_A.commit_pinout();    // PIN_27 <- REVU
-  hash << VRAM_PIN_MD5_B.commit_pinout();    // PIN_27 <- ROFA
   hash << VRAM_PIN_MD5_C.clear_preset();     // PIN_27 -> ROPU
-  hash << VRAM_PIN_MD5_D.commit_pinout();    // PIN_27 <- RUMU
-  hash << VRAM_PIN_MD6_A.commit_pinout();    // PIN_26 <- REKU
-  hash << VRAM_PIN_MD6_B.commit_pinout();    // PIN_26 <- ROFA
   hash << VRAM_PIN_MD6_C.clear_preset();     // PIN_26 -> RETA
-  hash << VRAM_PIN_MD6_D.commit_pinout();    // PIN_26 <- RYTY
-  hash << VRAM_PIN_MD7_A.commit_pinout();    // PIN_25 <- RYZE
-  hash << VRAM_PIN_MD7_B.commit_pinout();    // PIN_25 <- ROFA
   hash << VRAM_PIN_MD7_C.clear_preset();     // PIN_25 -> RAKU
-  hash << VRAM_PIN_MD7_D.commit_pinout();    // PIN_25 <- RADY
 
   hash << VRM_TRI_A00.commit_tribuf();
   hash << VRM_TRI_A01.commit_tribuf();
@@ -537,6 +553,153 @@ SignalHash SchematicTop::commit_vbus() {
   hash << VRM_TRI_D6.commit_tribuf();
   hash << VRM_TRI_D7.commit_tribuf();
 
+  //----------------------------------------
+
+  hash << EXT_PIN_RDn_C.clear_preset();     // PIN_79 -> UJYV
+  hash << EXT_PIN_WRn_C.clear_preset();     // PIN_78 -> UBAL
+
+  hash << EXT_PIN_A00_C.clear_preset();     // PIN_01 -> KOVA
+  hash << EXT_PIN_A01_C.clear_preset();     // PIN_02 -> CAMU
+  hash << EXT_PIN_A02_C.clear_preset();     // PIN_03 -> BUXU
+  hash << EXT_PIN_A03_C.clear_preset();     // PIN_04 -> BASE
+  hash << EXT_PIN_A04_C.clear_preset();     // PIN_05 -> AFEC
+  hash << EXT_PIN_A05_C.clear_preset();     // PIN_06 -> ABUP
+  hash << EXT_PIN_A06_C.clear_preset();     // PIN_07 -> CYGU
+  hash << EXT_PIN_A07_C.clear_preset();     // PIN_08 -> COGO
+  hash << EXT_PIN_A08_C.clear_preset();     // PIN_09 -> MUJY
+  hash << EXT_PIN_A09_C.clear_preset();     // PIN_10 -> NENA
+  hash << EXT_PIN_A10_C.clear_preset();     // PIN_11 -> SURA
+  hash << EXT_PIN_A11_C.clear_preset();     // PIN_12 -> MADY
+  hash << EXT_PIN_A12_C.clear_preset();     // PIN_13 -> LAHE
+  hash << EXT_PIN_A13_C.clear_preset();     // PIN_14 -> LURA
+  hash << EXT_PIN_A14_C.clear_preset();     // PIN_15 -> PEVO
+  hash << EXT_PIN_A15_C.clear_preset();     // PIN_16 -> RAZA
+
+  hash << EXT_PIN_D0_C.clear_preset();      // PIN_17 -> TOVO,SOMA
+  hash << EXT_PIN_D1_C.clear_preset();      // PIN_18 -> RUZY,RONY
+  hash << EXT_PIN_D2_C.clear_preset();      // PIN_19 -> ROME,RAXY
+  hash << EXT_PIN_D3_C.clear_preset();      // PIN_20 -> SAZA,SELO
+  hash << EXT_PIN_D4_C.clear_preset();      // PIN_21 -> TEHE,SODY
+  hash << EXT_PIN_D5_C.clear_preset();      // PIN_22 -> RATU,SAGO
+  hash << EXT_PIN_D6_C.clear_preset();      // PIN_23 -> SOCA,RUPA
+  hash << EXT_PIN_D7_C.clear_preset();      // PIN_24 -> RYBA,SAZY
+
+  //----------------------------------------
+
+  hash << JOY_PIN_P10_C.clear_preset();     // PIN_67-> KERY, KEVU
+  hash << JOY_PIN_P11_C.clear_preset();     // PIN_66-> KERY, P05.KAPA
+  hash << JOY_PIN_P12_C.clear_preset();     // PIN_65-> KERY, P05.KEJA
+  hash << JOY_PIN_P13_C.clear_preset();     // PIN_64-> KERY, P05.KOLO
+
+  //----------------------------------------
+
+  hash << OAM_PIN_DA0.commit_tribuf();
+  hash << OAM_PIN_DA1.commit_tribuf();
+  hash << OAM_PIN_DA2.commit_tribuf();
+  hash << OAM_PIN_DA3.commit_tribuf();
+  hash << OAM_PIN_DA4.commit_tribuf();
+  hash << OAM_PIN_DA5.commit_tribuf();
+  hash << OAM_PIN_DA6.commit_tribuf();
+  hash << OAM_PIN_DA7.commit_tribuf();
+  hash << OAM_PIN_DB0.commit_tribuf();
+  hash << OAM_PIN_DB1.commit_tribuf();
+  hash << OAM_PIN_DB2.commit_tribuf();
+  hash << OAM_PIN_DB3.commit_tribuf();
+  hash << OAM_PIN_DB4.commit_tribuf();
+  hash << OAM_PIN_DB5.commit_tribuf();
+  hash << OAM_PIN_DB6.commit_tribuf();
+  hash << OAM_PIN_DB7.commit_tribuf();
+
+  return hash;
+}
+
+//-----------------------------------------------------------------------------
+
+SignalHash SchematicTop::commit_ibus() {
+  SignalHash hash;
+
+  hash << CPU_PIN_WAKE.commit_pinout();          // <- P02.AWOB
+
+  hash << CPU_PIN_UNOR_DBG.commit_pinout();      // PORTA_02: <- P07.UNOR_MODE_DBG2
+  hash << CPU_PIN_SYRO.commit_pinout();          // PORTA_03: <- SYRO
+  hash << CPU_PIN_BOOTp.commit_pinout();         // PORTA_04: <- TUTU
+  hash << CPU_PIN_UMUT_DBG.commit_pinout();      // PORTA_05: <- P07.UMUT_MODE_DBG1
+  hash << CPU_PIN_INT_VBLANK.commit_pinout();    // PORTB_03: <- LOPE, vblank int
+  hash << CPU_PIN_INT_STAT.commit_pinout();      // PORTB_07: <- LALU, stat int
+  hash << CPU_PIN_INT_TIMER.commit_pinout();     // PORTB_11: <- NYBO, timer int
+  hash << CPU_PIN_INT_SERIAL.commit_pinout();    // PORTB_15: <- UBUL, serial int
+  hash << CPU_PIN_INT_JOYPAD.commit_pinout();    // PORTB_19: <- ULAK, joypad int
+
+  hash << CPU_PIN_AFER_RSTp.commit_pinout();     // PORTC_01: <- AFER
+  hash << CPU_PIN_EXT_RESET.commit_pinout();     // PORTC_02: <- PIN_RESET directly connected to the pad
+  hash << CPU_PIN_EXT_CLKGOOD.commit_pinout();   // PORTC_03: <- CLKIN_A
+  hash << CPU_PIN_TABA_RSTp.commit_pinout();     // PORTC_04: <- TABA
+
+  hash << CPU_PIN_BOWA_AxCDEFGH.commit_pinout(); // PORTD_01: <- BOWA
+  hash << CPU_PIN_BEDO_xBxxxxxx.commit_pinout(); // PORTD_02: <- BEDO _____fgh
+  hash << CPU_PIN_BEKO_xBCDExxx.commit_pinout(); // PORTD_03: <- BEKO ____efgh connection not indicated on P01
+  hash << CPU_PIN_BUDE_AxxxxFGH.commit_pinout(); // PORTD_04: <- BUDE abcd____
+  hash << CPU_PIN_BOLO_xBCDEFGx.commit_pinout(); // PORTD_05: <- BOLO
+  hash << CPU_PIN_BUKE_ABxxxxxH.commit_pinout(); // PORTD_07: <- BUKE _____f__
+  hash << CPU_PIN_BOMA_xBxxxxxx.commit_pinout(); // PORTD_08: <- BOMA _____fgh
+  hash << CPU_PIN_BOGA_AxCDEFGH.commit_pinout(); // PORTD_09: <- BOGA abcde___
+
+  return hash;
+}
+
+//-----------------------------------------------------------------------------
+
+SignalHash SchematicTop::commit_vbus() {
+  SignalHash hash;
+
+  hash << VRAM_PIN_MCSn_A.commit_pinout();   // PIN_43 <- SOKY
+  hash << VRAM_PIN_MCSn_D.commit_pinout();   // PIN_43 <- SETY
+
+  hash << VRAM_PIN_MOEn_A.commit_pinout();   // PIN_45 <- REFO
+  hash << VRAM_PIN_MOEn_D.commit_pinout();   // PIN_45 <- SAHA
+
+  hash << VRAM_PIN_MWRn_A.commit_pinout();   // PIN_49 <- SYSY
+  hash << VRAM_PIN_MWRn_D.commit_pinout();   // PIN_49 <- RAGU
+
+  hash << VRAM_PIN_MA00_AD.commit_pinout();  // PIN_34 <- ECAL
+  hash << VRAM_PIN_MA01_AD.commit_pinout();  // PIN_35 <- EGEZ
+  hash << VRAM_PIN_MA02_AD.commit_pinout();  // PIN_36 <- FUHE
+  hash << VRAM_PIN_MA03_AD.commit_pinout();  // PIN_37 <- FYZY
+  hash << VRAM_PIN_MA04_AD.commit_pinout();  // PIN_38 <- DAMU
+  hash << VRAM_PIN_MA05_AD.commit_pinout();  // PIN_39 <- DAVA
+  hash << VRAM_PIN_MA06_AD.commit_pinout();  // PIN_40 <- ETEG
+  hash << VRAM_PIN_MA07_AD.commit_pinout();  // PIN_41 <- EREW
+  hash << VRAM_PIN_MA08_AD.commit_pinout();  // PIN_48 <- EVAX
+  hash << VRAM_PIN_MA09_AD.commit_pinout();  // PIN_47 <- DUVE
+  hash << VRAM_PIN_MA10_AD.commit_pinout();  // PIN_44 <- ERAF
+  hash << VRAM_PIN_MA11_AD.commit_pinout();  // PIN_46 <- FUSY
+  hash << VRAM_PIN_MA12_AD.commit_pinout();  // PIN_42 <- EXYF
+
+  hash << VRAM_PIN_MD0_A.commit_pinout();    // PIN_33 <- REGE
+  hash << VRAM_PIN_MD0_B.commit_pinout();    // PIN_33 <- ROFA
+  hash << VRAM_PIN_MD0_D.commit_pinout();    // PIN_33 <- RURA
+  hash << VRAM_PIN_MD1_A.commit_pinout();    // PIN_31 <- RYKY
+  hash << VRAM_PIN_MD1_B.commit_pinout();    // PIN_31 <- ROFA
+  hash << VRAM_PIN_MD1_D.commit_pinout();    // PIN_31 <- RULY
+  hash << VRAM_PIN_MD2_A.commit_pinout();    // PIN_30 <- RAZO
+  hash << VRAM_PIN_MD2_B.commit_pinout();    // PIN_30 <- ROFA
+  hash << VRAM_PIN_MD2_D.commit_pinout();    // PIN_30 <- RARE
+  hash << VRAM_PIN_MD3_A.commit_pinout();    // PIN_29 <- RADA
+  hash << VRAM_PIN_MD3_B.commit_pinout();    // PIN_29 <- ROFA
+  hash << VRAM_PIN_MD3_D.commit_pinout();    // PIN_29 <- RODU
+  hash << VRAM_PIN_MD4_A.commit_pinout();    // PIN_28 <- RYRO
+  hash << VRAM_PIN_MD4_B.commit_pinout();    // PIN_28 <- ROFA
+  hash << VRAM_PIN_MD4_D.commit_pinout();    // PIN_28 <- RUBE
+  hash << VRAM_PIN_MD5_A.commit_pinout();    // PIN_27 <- REVU
+  hash << VRAM_PIN_MD5_B.commit_pinout();    // PIN_27 <- ROFA
+  hash << VRAM_PIN_MD5_D.commit_pinout();    // PIN_27 <- RUMU
+  hash << VRAM_PIN_MD6_A.commit_pinout();    // PIN_26 <- REKU
+  hash << VRAM_PIN_MD6_B.commit_pinout();    // PIN_26 <- ROFA
+  hash << VRAM_PIN_MD6_D.commit_pinout();    // PIN_26 <- RYTY
+  hash << VRAM_PIN_MD7_A.commit_pinout();    // PIN_25 <- RYZE
+  hash << VRAM_PIN_MD7_B.commit_pinout();    // PIN_25 <- ROFA
+  hash << VRAM_PIN_MD7_D.commit_pinout();    // PIN_25 <- RADY
+
   return hash;
 }
 
@@ -547,96 +710,72 @@ SignalHash SchematicTop::commit_ebus() {
 
   hash << EXT_PIN_CLK.commit_pinout();      // PIN_75 <- BUDE/BEVA
 
+  
+
   hash << EXT_PIN_RDn_A.commit_pinout();    // PIN_79 <- UGAC
-  hash << EXT_PIN_RDn_C.clear_preset();     // PIN_79 -> UJYV
   hash << EXT_PIN_RDn_D.commit_pinout();    // PIN_79 <- URUN
 
   hash << EXT_PIN_WRn_A.commit_pinout();    // PIN_78 <- UVER
-  hash << EXT_PIN_WRn_C.clear_preset();     // PIN_78 -> UBAL
   hash << EXT_PIN_WRn_D.commit_pinout();    // PIN_78 <- USUF
 
   hash << EXT_PIN_CSn_A.commit_pinout();    // PIN_80 <- TYHO
 
   hash << EXT_PIN_A00_A.commit_pinout();    // PIN_01 <- KUPO
-  hash << EXT_PIN_A00_C.clear_preset();     // PIN_01 -> KOVA
   hash << EXT_PIN_A00_D.commit_pinout();    // PIN_01 <- KOTY
   hash << EXT_PIN_A01_A.commit_pinout();    // PIN_02 <- CABA
-  hash << EXT_PIN_A01_C.clear_preset();     // PIN_02 -> CAMU
   hash << EXT_PIN_A01_D.commit_pinout();    // PIN_02 <- COTU
   hash << EXT_PIN_A02_A.commit_pinout();    // PIN_03 <- BOKU
-  hash << EXT_PIN_A02_C.clear_preset();     // PIN_03 -> BUXU
   hash << EXT_PIN_A02_D.commit_pinout();    // PIN_03 <- BAJO
   hash << EXT_PIN_A03_A.commit_pinout();    // PIN_04 <- BOTY
-  hash << EXT_PIN_A03_C.clear_preset();     // PIN_04 -> BASE
   hash << EXT_PIN_A03_D.commit_pinout();    // PIN_04 <- BOLA
   hash << EXT_PIN_A04_A.commit_pinout();    // PIN_05 <- BYLA
-  hash << EXT_PIN_A04_C.clear_preset();     // PIN_05 -> AFEC
   hash << EXT_PIN_A04_D.commit_pinout();    // PIN_05 <- BEVO
   hash << EXT_PIN_A05_A.commit_pinout();    // PIN_06 <- BADU
-  hash << EXT_PIN_A05_C.clear_preset();     // PIN_06 -> ABUP
   hash << EXT_PIN_A05_D.commit_pinout();    // PIN_06 <- AJAV
   hash << EXT_PIN_A06_A.commit_pinout();    // PIN_07 <- CEPU
-  hash << EXT_PIN_A06_C.clear_preset();     // PIN_07 -> CYGU
   hash << EXT_PIN_A06_D.commit_pinout();    // PIN_07 <- CYKA
   hash << EXT_PIN_A07_A.commit_pinout();    // PIN_08 <- DEFY
-  hash << EXT_PIN_A07_C.clear_preset();     // PIN_08 -> COGO
   hash << EXT_PIN_A07_D.commit_pinout();    // PIN_08 <- COLO
   hash << EXT_PIN_A08_A.commit_pinout();    // PIN_09 <- MYNY
-  hash << EXT_PIN_A08_C.clear_preset();     // PIN_09 -> MUJY
   hash << EXT_PIN_A08_D.commit_pinout();    // PIN_09 <- MEGO
   hash << EXT_PIN_A09_A.commit_pinout();    // PIN_10 <- MUNE
-  hash << EXT_PIN_A09_C.clear_preset();     // PIN_10 -> NENA
   hash << EXT_PIN_A09_D.commit_pinout();    // PIN_10 <- MENY
   hash << EXT_PIN_A10_A.commit_pinout();    // PIN_11 <- ROXU
-  hash << EXT_PIN_A10_C.clear_preset();     // PIN_11 -> SURA
   hash << EXT_PIN_A10_D.commit_pinout();    // PIN_11 <- RORE
   hash << EXT_PIN_A11_A.commit_pinout();    // PIN_12 <- LEPY
-  hash << EXT_PIN_A11_C.clear_preset();     // PIN_12 -> MADY
   hash << EXT_PIN_A11_D.commit_pinout();    // PIN_12 <- LYNY
   hash << EXT_PIN_A12_A.commit_pinout();    // PIN_13 <- LUCE
-  hash << EXT_PIN_A12_C.clear_preset();     // PIN_13 -> LAHE
   hash << EXT_PIN_A12_D.commit_pinout();    // PIN_13 <- LOSO
   hash << EXT_PIN_A13_A.commit_pinout();    // PIN_14 <- LABE
-  hash << EXT_PIN_A13_C.clear_preset();     // PIN_14 -> LURA
   hash << EXT_PIN_A13_D.commit_pinout();    // PIN_14 <- LEVA
   hash << EXT_PIN_A14_A.commit_pinout();    // PIN_15 <- PUHE
-  hash << EXT_PIN_A14_C.clear_preset();     // PIN_15 -> PEVO
   hash << EXT_PIN_A14_D.commit_pinout();    // PIN_15 <- PAHY
   hash << EXT_PIN_A15_A.commit_pinout();    // PIN_16 <- SUZE
-  hash << EXT_PIN_A15_C.clear_preset();     // PIN_16 -> RAZA
   hash << EXT_PIN_A15_D.commit_pinout();    // PIN_16 <- RULO
 
   hash << EXT_PIN_D0_A.commit_pinout();     // PIN_17 <- RUXA
   hash << EXT_PIN_D0_B.commit_pinout();     // PIN_17 <- LULA
-  hash << EXT_PIN_D0_C.clear_preset();      // PIN_17 -> TOVO,SOMA
   hash << EXT_PIN_D0_D.commit_pinout();     // PIN_17 <- RUNE
   hash << EXT_PIN_D1_A.commit_pinout();     // PIN_18 <- RUJA
   hash << EXT_PIN_D1_B.commit_pinout();     // PIN_18 <- LULA
-  hash << EXT_PIN_D1_C.clear_preset();      // PIN_18 -> RUZY,RONY
   hash << EXT_PIN_D1_D.commit_pinout();     // PIN_18 <- RYPU
   hash << EXT_PIN_D2_A.commit_pinout();     // PIN_19 <- RABY
   hash << EXT_PIN_D2_B.commit_pinout();     // PIN_19 <- LULA
-  hash << EXT_PIN_D2_C.clear_preset();      // PIN_19 -> ROME,RAXY
   hash << EXT_PIN_D2_D.commit_pinout();     // PIN_19 <- SULY
   hash << EXT_PIN_D3_A.commit_pinout();     // PIN_20 <- RERA
   hash << EXT_PIN_D3_B.commit_pinout();     // PIN_20 <- LULA
-  hash << EXT_PIN_D3_C.clear_preset();      // PIN_20 -> SAZA,SELO
   hash << EXT_PIN_D3_D.commit_pinout();     // PIN_20 <- SEZE
   hash << EXT_PIN_D4_A.commit_pinout();     // PIN_21 <- RORY
   hash << EXT_PIN_D4_B.commit_pinout();     // PIN_21 <- LULA
-  hash << EXT_PIN_D4_C.clear_preset();      // PIN_21 -> TEHE,SODY
   hash << EXT_PIN_D4_D.commit_pinout();     // PIN_21 <- RESY
   hash << EXT_PIN_D5_A.commit_pinout();     // PIN_22 <- RYVO
   hash << EXT_PIN_D5_B.commit_pinout();     // PIN_22 <- LULA
-  hash << EXT_PIN_D5_C.clear_preset();      // PIN_22 -> RATU,SAGO
   hash << EXT_PIN_D5_D.commit_pinout();     // PIN_22 <- TAMU
   hash << EXT_PIN_D6_A.commit_pinout();     // PIN_23 <- RAFY
   hash << EXT_PIN_D6_B.commit_pinout();     // PIN_23 <- LULA
-  hash << EXT_PIN_D6_C.clear_preset();      // PIN_23 -> SOCA,RUPA
   hash << EXT_PIN_D6_D.commit_pinout();     // PIN_23 <- ROGY
   hash << EXT_PIN_D7_A.commit_pinout();     // PIN_24 <- RAVU
   hash << EXT_PIN_D7_B.commit_pinout();     // PIN_24 <- LULA
-  hash << EXT_PIN_D7_C.clear_preset();      // PIN_24 -> RYBA,SAZY
   hash << EXT_PIN_D7_D.commit_pinout();     // PIN_24 <- RYDA
 
   return hash;
@@ -660,23 +799,6 @@ SignalHash SchematicTop::commit_obus() {
   hash << OAM_PIN_A5.commit_pinout();
   hash << OAM_PIN_A6.commit_pinout();
   hash << OAM_PIN_A7.commit_pinout();
-
-  hash << OAM_PIN_DA0.commit_tribuf();
-  hash << OAM_PIN_DA1.commit_tribuf();
-  hash << OAM_PIN_DA2.commit_tribuf();
-  hash << OAM_PIN_DA3.commit_tribuf();
-  hash << OAM_PIN_DA4.commit_tribuf();
-  hash << OAM_PIN_DA5.commit_tribuf();
-  hash << OAM_PIN_DA6.commit_tribuf();
-  hash << OAM_PIN_DA7.commit_tribuf();
-  hash << OAM_PIN_DB0.commit_tribuf();
-  hash << OAM_PIN_DB1.commit_tribuf();
-  hash << OAM_PIN_DB2.commit_tribuf();
-  hash << OAM_PIN_DB3.commit_tribuf();
-  hash << OAM_PIN_DB4.commit_tribuf();
-  hash << OAM_PIN_DB5.commit_tribuf();
-  hash << OAM_PIN_DB6.commit_tribuf();
-  hash << OAM_PIN_DB7.commit_tribuf();
 
   //----------
   // Sprite store tribufs
@@ -703,38 +825,20 @@ SignalHash SchematicTop::commit_joy_pins() {
 
   hash << JOY_PIN_P10_A.commit_pinout();    // PIN_67<- KOLE
   hash << JOY_PIN_P10_B.commit_pinout();    // PIN_67
-  hash << JOY_PIN_P10_C.clear_preset();     // PIN_67-> KERY, KEVU
   hash << JOY_PIN_P10_D.commit_pinout();    // PIN_67<- KYBU
   hash << JOY_PIN_P11_A.commit_pinout();    // PIN_66<- KYTO
   hash << JOY_PIN_P11_B.commit_pinout();    // PIN_66
-  hash << JOY_PIN_P11_C.clear_preset();     // PIN_66-> KERY, P05.KAPA
   hash << JOY_PIN_P11_D.commit_pinout();    // PIN_66<- KABU
   hash << JOY_PIN_P12_A.commit_pinout();    // PIN_65<- KYHU
   hash << JOY_PIN_P12_B.commit_pinout();    // PIN_65
-  hash << JOY_PIN_P12_C.clear_preset();     // PIN_65-> KERY, P05.KEJA
   hash << JOY_PIN_P12_D.commit_pinout();    // PIN_65<- KASY
   hash << JOY_PIN_P13_A.commit_pinout();    // PIN_64<- KORY
   hash << JOY_PIN_P13_B.commit_pinout();    // PIN_64
-  hash << JOY_PIN_P13_C.clear_preset();     // PIN_64-> KERY, P05.KOLO
   hash << JOY_PIN_P13_D.commit_pinout();    // PIN_64<- KALE
   hash << JOY_PIN_P14_A.commit_pinout();    // PIN_63<- KARU
   hash << JOY_PIN_P14_D.commit_pinout();    // PIN_63<- KELY
   hash << JOY_PIN_P15_A.commit_pinout();    // PIN_62<- CELA
   hash << JOY_PIN_P15_D.commit_pinout();    // PIN_62<- COFY
-
-  return hash;
-}
-
-//-----------------------------------------------------------------------------
-
-SignalHash SchematicTop::commit_sys_pins() {
-  SignalHash hash;
-
-  hash << SYS_PIN_RST.clear_preset();          // PIN_71
-  hash << SYS_PIN_CLK_xBxDxFxH.clear_preset(); // PIN_74
-  hash << SYS_PIN_CLK_GOOD.clear_preset();     // PIN_74
-  hash << SYS_PIN_T2.clear_preset();           // PIN_76
-  hash << SYS_PIN_T1.clear_preset();           // PIN_77
 
   return hash;
 }
